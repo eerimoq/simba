@@ -1,5 +1,5 @@
 #
-# @file simba/drivers/drivers.mk
+# @file hello_world/Makefile
 # @version 1.0
 #
 # @section License
@@ -18,22 +18,11 @@
 # This file is part of the Simba project.
 #
 
-INC += $(SIMBA)/src/drivers
-INC += $(SIMBA)/src/drivers/ports/$(ARCH)
+NAME = hc0x
+BOARD = linux
+SRC += main.c
+DRIVERS_SRC = uart.c hc0x.c pin.c
+SLIB_SRC =
 
-DRIVERS_SRC ?= adc.c \
-	can.c \
-	cantp.c \
-	ds18b20.c \
-	enc28j60.c \
-	exti.c \
-	hc0x.c \
-	mcp2515.c \
-	nrf24l01.c \
-	owi.c \
-	pin.c \
-	pwm.c \
-	spi.c \
-	uart.c
-
-SRC += $(DRIVERS_SRC:%=$(SIMBA)/src/drivers/%)
+SIMBA = ../..
+include $(SIMBA)/make/app.mk

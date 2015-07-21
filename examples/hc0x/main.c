@@ -1,5 +1,5 @@
 /**
- * @file drivers.h
+ * @file main.c
  * @version 1.0
  *
  * @section License
@@ -18,25 +18,34 @@
  * This file is part of the Simba project.
  */
 
-#ifndef __DRIVERS_H__
-#define __DRIVERS_H__
+#include "simba.h"
 
-#include "drivers/exti.h"
-#include "drivers/pin.h"
-#include "drivers/pwm.h"
-#include "drivers/adc.h"
-#include "drivers/spi.h"
-#include "drivers/uart.h"
-#include "drivers/enc28j60.h"
-#include "drivers/owi.h"
-#include "drivers/ds18b20.h"
-#include "drivers/canif.h"
-#include "drivers/cantp.h"
-#if !defined(ARCH_AVR)
-#    include "drivers/can.h"
-#endif
-#include "drivers/mcp2515.h"
-#include "drivers/nrf24l01.h"
-#include "drivers/hc0x.h"
+static char buf[64];
 
-#endif
+int main()
+{
+    char c;
+    struct hc0x_driver_t hc0x;
+
+    sys_start();
+
+    uart_module_init();
+
+    /* Start the bloetooth device. */
+    hc0x_init(&hc0x, &uart_device[0], &pin_d7_dev, buf, sizeof(buf));
+    hc0x_start(&hc0x);
+
+    sys_set_stdout(&hc0x.uart.chout);
+
+    /* Read data and write it back to the sender two times. */
+    while (1) {
+        if (hc0x_read(&hc0x, &c, sizeof(c)) != sizeof(c)) {
+            continue;
+        }
+        
+        hc0x_write(&hc0x, &c, sizeof(c));
+        hc0x_write(&hc0x, &c, sizeof(c));
+    }
+    
+    return (0);
+}
