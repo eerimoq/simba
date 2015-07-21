@@ -1,0 +1,296 @@
+/**
+ * @file drivers/nrf24l01.c
+ * @version 1.0
+ *
+ * @section License
+ * Copyright (C) 2014-2015, Erik Moqvist
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * This file is part of the Simba project.
+ */
+
+#include "simba.h"
+
+/* Maximum packet payload size. */
+#define PAYLOAD_MAX 32
+
+/* SPI commands. */
+#define SPI_CMD_R_REGISTER          0x00
+#define SPI_CMD_W_REGISTER          0x20
+#define SPI_CMD_R_RX_PAYLOAD        0x61
+#define SPI_CMD_W_TX_PAYLOAD        0xa0
+#define SPI_CMD_FLUSH_TX            0xe1
+#define SPI_CMD_FLUSH_RX            0xe2
+#define SPI_CMD_REUSE_TX_PL         0xe3
+#define SPI_CMD_R_RX_PL_WID         0x60
+#define SPI_CMD_W_ACK_PAYLOAD       0xa8
+#define SPI_CMD_W_TX_PAYLOAD_NO_ACK 0xb0
+#define SPI_CMD_NOP                 0xff
+
+/* Registers. */
+#define REG_CONFIG        0x00
+#define REG_EN_AA         0x01
+#define REG_EN_RXADDR     0x02
+#define REG_SETUP_AW      0x03
+#define REG_SETUP_RETR    0x04
+#define REG_RF_CH         0x05
+#define REG_RF_SETUP      0x06
+#define REG_STATUS        0x07
+#define REG_OBSERVE_TX    0x08
+#define REG_RPD           0x09
+#define REG_RX_ADDR_P0    0x0a
+#define REG_RX_ADDR_P1    0x0b
+#define REG_RX_ADDR_P2    0x0c
+#define REG_RX_ADDR_P3    0x0d
+#define REG_RX_ADDR_P4    0x0e
+#define REG_RX_ADDR_P5    0x0f
+#define REG_TX_ADDR       0x10
+#define REG_RX_PW_P0      0x11
+#define REG_RX_PW_P1      0x12
+#define REG_RX_PW_P2      0x13
+#define REG_RX_PW_P3      0x14
+#define REG_RX_PW_P4      0x15
+#define REG_RX_PW_P5      0x16
+#define REG_FIFO_STATUS   0x17
+#define REG_DYNPD         0x1c
+#define REG_FEATURE       0x1d
+
+#define REG_CONFIG_EN_CRC   0x08
+#define REG_CONFIG_CRCO     0x04
+#define REG_CONFIG_PWR_UP   0x02
+#define REG_CONFIG_PRIM_RX  0x01
+
+#define REG_SETUP_AW_3BYTES 0x01
+#define REG_SETUP_AW_4BYTES 0x02
+#define REG_SETUP_AW_5BYTES 0x03
+
+#define REG_STATUS_RX_DR    0x40
+#define REG_STATUS_TX_DS    0x20
+
+static void isr(void *arg_p)
+{
+    char c;
+    struct nrf24l01_driver_t *drv_p = arg_p;
+
+    queue_write_irq(&drv_p->irqchan, &c, sizeof(c));
+}
+
+static void *isr_main(void *arg_p)
+{
+    char c;
+    struct nrf24l01_driver_t *drv_p = arg_p;
+    uint8_t status;
+    uint8_t buf[33];
+
+    while (1) {
+        /* Wait for interrupt. */
+        queue_read(&drv_p->irqchan, &c, sizeof(c));
+
+        /* Read status. */
+        status = SPI_CMD_NOP;
+        spi_transfer(&drv_p->spi, &status, &status, sizeof(status));
+
+        /* Handle packet reception. */
+        if (status & REG_STATUS_RX_DR) {
+            buf[0] = SPI_CMD_R_RX_PAYLOAD;
+            spi_transfer(&drv_p->spi, buf, buf, sizeof(buf));
+            queue_write(&drv_p->chin, &buf[1], 32);
+        }
+
+        /* Handle packet transmission completion. */
+        if (status & REG_STATUS_TX_DS) {
+            thrd_resume(drv_p->thrd_p, 0);
+        }
+
+        /* Clear interrupt flags. */
+        buf[0] = (SPI_CMD_W_REGISTER | REG_STATUS);
+        buf[1] = (REG_STATUS_RX_DR | REG_STATUS_TX_DS);
+        spi_write(&drv_p->spi, buf, 2);
+    }
+
+    return (NULL);
+}
+
+int nrf24l01_init(struct nrf24l01_driver_t *drv_p,
+                  struct spi_device_t *spi_p,
+                  struct pin_device_t *cs_p,
+                  struct pin_device_t *ce_p,
+                  struct exti_device_t *exti_p,
+                  uint32_t address)
+{
+    drv_p->address = address;
+
+    queue_init(&drv_p->irqchan, drv_p->irqbuf, sizeof(drv_p->irqbuf));
+    queue_init(&drv_p->chin, drv_p->chinbuf, sizeof(drv_p->chinbuf));
+
+    thrd_spawn(isr_main,
+               drv_p,
+               0,
+               drv_p->stack,
+               sizeof(drv_p->stack));
+
+    spi_init(&drv_p->spi,
+             spi_p,
+             cs_p,
+             SPI_MODE_MASTER,
+             SPI_SPEED_250KBPS,
+             0,
+             0);
+
+    exti_init(&drv_p->exti,
+              exti_p,
+              EXTI_TRIGGER_FALLING_EDGE,
+              isr,
+              drv_p);
+    exti_start(&drv_p->exti);
+
+    pin_init(&drv_p->ce, ce_p, PIN_OUTPUT);
+
+    return (0);
+}
+
+int nrf24l01_start(struct nrf24l01_driver_t *drv_p)
+{
+    uint8_t buf[6];
+    int i;
+
+    /* Use 4 bytes address. */
+    buf[0] = (SPI_CMD_W_REGISTER | REG_SETUP_AW);
+    buf[1] = REG_SETUP_AW_5BYTES;
+    spi_write(&drv_p->spi, buf, 2);
+
+    /* Disable acknoledgements. */
+    buf[0] = (SPI_CMD_W_REGISTER | REG_EN_AA);
+    buf[1] = 0;
+    spi_write(&drv_p->spi, buf, 2);
+
+    /* Set RX address for pipes. */
+    for (i = 0; i < 2; i++) {
+        buf[0] = (SPI_CMD_W_REGISTER | (REG_RX_ADDR_P0 + i));
+        buf[1] = drv_p->address >> 24;
+        buf[2] = drv_p->address >> 16;
+        buf[3] = drv_p->address >> 8;
+        buf[4] = drv_p->address;
+        buf[5] = i;
+        spi_write(&drv_p->spi, buf, 6);
+    }
+
+    for (; i < 6; i++) {
+        /* Set RX address for pipe. */
+        buf[0] = (SPI_CMD_W_REGISTER |
+                  (REG_RX_ADDR_P0 + i));
+        buf[1] = i;
+        spi_write(&drv_p->spi, buf, 2);
+    }
+
+    /* Receive 32 bytes. */
+    for (i = 0; i < 6; i++) {
+        buf[0] = (SPI_CMD_W_REGISTER | (REG_RX_PW_P0 + i));
+        buf[1] = 32;
+        spi_write(&drv_p->spi, buf, 2);
+    }
+
+    /* Enable RX pipes. */
+    buf[0] = (SPI_CMD_W_REGISTER | REG_EN_RXADDR);
+    buf[1] = 0x3f;
+    spi_write(&drv_p->spi, buf, 2);
+
+    /* Power up. */
+    pin_write(&drv_p->ce, 0);
+
+    buf[0] = (SPI_CMD_W_REGISTER | REG_CONFIG);
+    buf[1] = (REG_CONFIG_EN_CRC |
+              REG_CONFIG_CRCO |
+              REG_CONFIG_PWR_UP);
+    spi_write(&drv_p->spi, buf, 2);
+
+    time_sleep(3000);
+
+    /* Clear status flags. */
+    buf[0] = (SPI_CMD_W_REGISTER | REG_STATUS);
+    buf[1] = (REG_STATUS_RX_DR | REG_STATUS_TX_DS);
+    spi_write(&drv_p->spi, buf, 2);
+
+    /* Flush TX and RX fifos. */
+    buf[0] = SPI_CMD_FLUSH_TX;
+    spi_write(&drv_p->spi, buf, 1);
+
+    buf[0] = SPI_CMD_FLUSH_RX;
+    spi_write(&drv_p->spi, buf, 1);
+
+    return (0);
+}
+
+int nrf24l01_stop(struct nrf24l01_driver_t *drv_p)
+{
+    return (0);
+}
+
+ssize_t nrf24l01_read(struct nrf24l01_driver_t *drv_p,
+                      void *buf_p,
+                      size_t size)
+{
+    uint8_t buf[2];
+
+    ASSERT(size == PAYLOAD_MAX);
+
+    /* Setup RX mode. */
+    buf[0] = (SPI_CMD_W_REGISTER | REG_CONFIG);
+    buf[1] = (REG_CONFIG_EN_CRC |
+              REG_CONFIG_CRCO |
+              REG_CONFIG_PWR_UP |
+              REG_CONFIG_PRIM_RX);
+    spi_write(&drv_p->spi, buf, sizeof(buf));
+
+    /* Activate RX mode. */
+    pin_write(&drv_p->ce, 1);
+
+    /* Wait for packet. */
+    return (queue_read(&drv_p->chin, buf_p, size));
+}
+
+ssize_t nrf24l01_write(struct nrf24l01_driver_t *drv_p,
+                       uint32_t address,
+                       uint8_t pipe,
+                       const void *buf_p,
+                       size_t size)
+{
+    uint8_t buf[33];
+
+    ASSERT(size == PAYLOAD_MAX);
+
+    /* Set TX address. */
+    buf[0] = (SPI_CMD_W_REGISTER | REG_TX_ADDR);
+    buf[1] = address >> 24;
+    buf[2] = address >> 16;
+    buf[3] = address >> 8;
+    buf[4] = address;
+    buf[5] = pipe;
+    spi_write(&drv_p->spi, buf, 6);
+
+    /* Write payload. */
+    buf[0] = SPI_CMD_W_TX_PAYLOAD;
+    memcpy(&buf[1], buf_p, size);
+    spi_write(&drv_p->spi, buf, 33);
+
+    drv_p->thrd_p = thrd_self();
+
+    /* Pulse CE high to start transmission. */
+    pin_write(&drv_p->ce, 1);
+    time_sleep(15);
+    pin_write(&drv_p->ce, 0);
+
+    /* Wait for completion. */
+    thrd_suspend(NULL);
+
+    return (size);
+}
