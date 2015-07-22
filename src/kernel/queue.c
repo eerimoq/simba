@@ -27,8 +27,12 @@
     ((queue)->size - QUEUE_GET_SIZE(queue) - 1)
 
 struct queue_element_t {
+    /* Channel element base structure. */
     struct chan_element_t base;
+    /* Buffer to read data into. NOTE: not the internal queue input
+       buffer. */
     void *buf_p;
+    /* Number of bytes to read into buf_p.*/
     size_t size;
 };
 
@@ -261,6 +265,7 @@ ssize_t queue_write_irq(struct queue_t *queue_p,
     struct queue_element_t *reader_p;
     struct chan_element_t *r_p;
     size_t size0, n, left;
+    struct thrd_t *thrd_p;
 
     left = size;
 
@@ -270,20 +275,35 @@ ssize_t queue_write_irq(struct queue_t *queue_p,
     LIST_SL_REMOVE_HEAD(&queue_p->base.readers, &r_p);
     reader_p = (struct queue_element_t *)r_p;
 
+    /* A reader is added in two places; when calling read() and when
+       polling a list. In the second case there is no buffer to read
+       into, so add the data to the queue input buffer. */
     if (reader_p != NULL) {
-        /* Copy data to reader. */
-        n = (left > reader_p->size ? reader_p->size : left);
-        memcpy(reader_p->buf_p, buf_p, n);
-        reader_p->buf_p += n;
-        reader_p->size -= n;
-        buf_p += n;
-        left -= n;
-
-        /* Resume reader with all data received, otherwise re-add to list. */
-        if (reader_p->size == 0) {
-            thrd_resume_irq(reader_p->base.thrd_p, 0);
+        /* If the reader is in an active poll list, resume it. */
+        if (reader_p->base.list_p != NULL) {
+            if ((reader_p->base.list_p->flags & CHAN_LIST_POLLING) != 0) {
+                thrd_p = reader_p->base.thrd_p;
+                reader_p->base.thrd_p = NULL;
+                reader_p->base.list_p->flags = 0;
+                spin_unlock_irq(&chan_lock);
+                thrd_resume_irq(thrd_p, 0);
+                spin_lock_irq(&chan_lock);
+            }
         } else {
-            LIST_SL_ADD_HEAD(&queue_p->base.readers, &reader_p->base);
+            /* It's a normal read(), copy data to reader. */
+            n = (left > reader_p->size ? reader_p->size : left);
+            memcpy(reader_p->buf_p, buf_p, n);
+            reader_p->buf_p += n;
+            reader_p->size -= n;
+            buf_p += n;
+            left -= n;
+            
+            /* Resume reader with all data received, otherwise re-add to list. */
+            if (reader_p->size == 0) {
+                thrd_resume_irq(reader_p->base.thrd_p, 0);
+            } else {
+                LIST_SL_ADD_HEAD(&queue_p->base.readers, &reader_p->base);
+            }
         }
     }
 

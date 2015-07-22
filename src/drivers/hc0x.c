@@ -20,24 +20,14 @@
 
 #include "simba.h"
 
-#define BAUDRATE 38400
-
 int hc0x_init(struct hc0x_driver_t *drv_p,
-              struct uart_device_t *uart_dev_p,
-              struct pin_device_t *key_pin_dev_p,
-              void *rxbuf_p,
-              size_t size)
+              struct uart_driver_t *uart_p,
+              struct pin_device_t *key_pin_dev_p)
 {
-    uart_init(&drv_p->uart, uart_dev_p, BAUDRATE, rxbuf_p, size);
-
+    drv_p->uart_p = uart_p;
     pin_init(&drv_p->key, key_pin_dev_p, PIN_OUTPUT);
 
     return (0);
-}
-
-int hc0x_start(struct hc0x_driver_t *drv_p)
-{
-    return (uart_start(&drv_p->uart));
 }
 
 int hc0x_at_command_mode_begin(struct hc0x_driver_t *drv_p)

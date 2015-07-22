@@ -56,7 +56,7 @@ struct queue_t {
  * @param[in] size Size of buffer.
  * @return zero(0) or negative error code
  */
-int queue_init(struct queue_t *queue, void *buf_p, size_t size);
+int queue_init(struct queue_t *queue_p, void *buf_p, size_t size);
 
 /**
  * Read from given queue. Blocks until size bytes
@@ -66,7 +66,7 @@ int queue_init(struct queue_t *queue, void *buf_p, size_t size);
  * @param[in] size Size to read.
  * @return Number of read bytes or negative error code.
  */
-ssize_t queue_read(struct queue_t *queue, void *buf_p, size_t size);
+ssize_t queue_read(struct queue_t *queue_p, void *buf_p, size_t size);
 
 /**
  * Write bytes to given queue. Blocks until size bytes
@@ -76,7 +76,7 @@ ssize_t queue_read(struct queue_t *queue, void *buf_p, size_t size);
  * @param[in] size Number of bytes to write.
  * @return Number of written bytes or negative error code.
  */
-ssize_t queue_write(struct queue_t *queue, const void *buf_p, size_t size);
+ssize_t queue_write(struct queue_t *queue_p, const void *buf_p, size_t size);
 
 /**
  * Write bytes to given queue from interrupt context. May write
@@ -86,7 +86,7 @@ ssize_t queue_write(struct queue_t *queue, const void *buf_p, size_t size);
  * @param[in] size Number of bytes to write.
  * @return Number of written bytes or negative error code.
  */
-ssize_t queue_write_irq(struct queue_t *queue,
+ssize_t queue_write_irq(struct queue_t *queue_p,
                         const void *buf_p,
                         size_t size);
 
@@ -96,6 +96,6 @@ ssize_t queue_write_irq(struct queue_t *queue,
  * @param[in] queue Queue.
  * @return Number of bytes in queue.
  */
-ssize_t queue_size(struct queue_t *queue);
+ssize_t queue_size(struct queue_t *queue_p);
 
 #endif

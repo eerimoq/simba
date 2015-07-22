@@ -18,34 +18,89 @@
  * This file is part of the Simba project.
  */
 
+/**
+ * Setup a shell on the UART towards the PC
+ */
+
 #include "simba.h"
 
-static char buf[64];
+#define EOT '\x04'
+
+FS_COMMAND_DEFINE("/at", cmd_at);
+FS_COMMAND_DEFINE("/pipe", cmd_pipe);
+
+static struct uart_driver_t uart;
+static struct uart_driver_t uart_hc0x;
+static struct hc0x_driver_t hc0x;
+
+static int communicate(void *out_p, void *in_p)
+{
+    struct chan_list_t list;
+    chan_t *chan_p;
+    char c;
+    char buf[32];
+
+    /* Create channel list channel list. */
+    chan_list_init(&list, buf, sizeof(buf));
+    chan_list_add(&list, in_p);
+
+    /* Pass data between PC and bluetooth device. */
+    while (1) {
+        chan_p = chan_list_poll(&list);
+
+        if (chan_p == in_p) {
+            chan_read(in_p, &c, sizeof(c));
+            
+            if (c == EOT) {
+                break;
+            }
+        }
+    }
+
+    return (0);
+}
+
+int cmd_at(int argc,
+           const char *argv[],
+           void *out_p,
+           void *in_p)
+{
+    hc0x_at_command_mode_begin(&hc0x);
+    communicate(out_p, in_p);
+    hc0x_at_command_mode_end(&hc0x);
+
+    return (0);
+}
+
+int cmd_pipe(int argc,
+             const char *argv[],
+             void *out_p,
+             void *in_p)
+{
+    communicate(out_p, in_p);
+
+    return (0);
+}
+
+static char qinbuf[32];
+static struct shell_args_t shell_args;
 
 int main()
 {
-    char c;
-    struct hc0x_driver_t hc0x;
-
     sys_start();
 
     uart_module_init();
 
+    uart_init(&uart, &uart_device[0], 38400, qinbuf, sizeof(qinbuf));
+    uart_start(&uart);
+    sys_set_stdout(&uart.chout);
+
     /* Start the bloetooth device. */
-    hc0x_init(&hc0x, &uart_device[0], &pin_d7_dev, buf, sizeof(buf));
-    hc0x_start(&hc0x);
+    hc0x_init(&hc0x, &uart_hc0x, &pin_d7_dev);
 
-    sys_set_stdout(&hc0x.uart.chout);
+    shell_args.chin_p = &uart.chin;
+    shell_args.chout_p = &uart.chout;
+    shell_entry(&shell_args);
 
-    /* Read data and write it back to the sender two times. */
-    while (1) {
-        if (hc0x_read(&hc0x, &c, sizeof(c)) != sizeof(c)) {
-            continue;
-        }
-        
-        hc0x_write(&hc0x, &c, sizeof(c));
-        hc0x_write(&hc0x, &c, sizeof(c));
-    }
-    
     return (0);
 }

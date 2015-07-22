@@ -24,7 +24,7 @@
 #include "simba.h"
 
 struct hc0x_driver_t {
-    struct uart_driver_t uart;
+    struct uart_driver_t *uart_p;
     struct pin_driver_t key;
 };
 
@@ -38,10 +38,8 @@ struct hc0x_driver_t {
  * @return zero(0) or negative error code.
  */
 int hc0x_init(struct hc0x_driver_t *drv_p,
-              struct uart_device_t *uart_dev_p,
-              struct pin_device_t *key_pin_dev_p,
-              void *rxbuf_p,
-              size_t size);
+              struct uart_driver_t *uart_p,
+              struct pin_device_t *key_pin_dev_p);
 
 /**
  * Start the device.
@@ -72,7 +70,7 @@ int hc0x_at_command_mode_end(struct hc0x_driver_t *drv_p);
  * @return Number of received bytes or negative error code.
  */
 #define hc0x_read(drv_p, buf_p, size)           \
-    uart_read(&(drv_p)->uart, buf_p, size)
+    uart_read((drv_p)->uart_p, buf_p, size)
 
 /**
  * Write data to the HC-0X device.
@@ -82,6 +80,6 @@ int hc0x_at_command_mode_end(struct hc0x_driver_t *drv_p);
  * @return number of sent bytes or negative error code.
  */
 #define hc0x_write(drv_p, buf_p, size)          \
-    uart_write(&(drv_p)->uart, buf_p, size)
+    uart_write((drv_p)->uart_p, buf_p, size)
 
 #endif
