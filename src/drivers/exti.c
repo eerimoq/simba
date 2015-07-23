@@ -45,3 +45,8 @@ int exti_stop(struct exti_driver_t *drv_p)
 {
     return (exti_port_stop(drv_p));
 }
+
+int exti_clear(struct exti_driver_t *drv_p)
+{
+    return (exti_port_clear(drv_p));
+}

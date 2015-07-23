@@ -45,6 +45,9 @@
 
 #define pin_led_dev pin_d13_dev
 
+#define exti_d2_dev exti_device[0]
+#define exti_d3_dev exti_device[1]
+
 #define pwm_d3_dev pwm_device[3]
 #define pwm_d9_dev pwm_device[0]
 #define pwm_d10_dev pwm_device[1]

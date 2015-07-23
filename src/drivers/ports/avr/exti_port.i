@@ -57,9 +57,18 @@ static int exti_port_start(struct exti_driver_t *drv_p)
 
 static int exti_port_stop(struct exti_driver_t *drv_p)
 {
-    EICRA &= (~0x3 << (2 * drv_p->dev_p->id));
-    PCICR &= ~_BV(drv_p->dev_p->id);
+    struct exti_device_t *dev_p = drv_p->dev_p;
+
+    EIMSK &= ~_BV(dev_p->id);
     drv_p->dev_p = NULL;
+
+    return (0);
+}
+
+static int exti_port_clear(struct exti_driver_t *drv_p)
+{
+    /* Clear the interrupt flag. */
+    EIFR = _BV(drv_p->dev_p->id);
 
     return (0);
 }

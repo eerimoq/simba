@@ -1,5 +1,5 @@
 #
-# @file simba/drivers/drivers.mk
+# @file uart_soft/Makefile
 # @version 1.0
 #
 # @section License
@@ -18,23 +18,11 @@
 # This file is part of the Simba project.
 #
 
-INC += $(SIMBA)/src/drivers
-INC += $(SIMBA)/src/drivers/ports/$(ARCH)
+NAME = uart_soft
+BOARD = arduino_nano
+SRC += main.c
+DRIVERS_SRC = uart.c uart_soft.c pin.c exti.c
+SLIB_SRC =
 
-DRIVERS_SRC ?= adc.c \
-	can.c \
-	cantp.c \
-	ds18b20.c \
-	enc28j60.c \
-	exti.c \
-	hc0x.c \
-	mcp2515.c \
-	nrf24l01.c \
-	owi.c \
-	pin.c \
-	pwm.c \
-	spi.c \
-	uart.c \
-	uart_soft.c
-
-SRC += $(DRIVERS_SRC:%=$(SIMBA)/src/drivers/%)
+SIMBA = ../..
+include $(SIMBA)/make/app.mk
