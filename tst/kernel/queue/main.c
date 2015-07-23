@@ -117,20 +117,27 @@ static int test_poll(struct harness_t *harness_p)
 
     /* Use a list with one chan.*/
     BTASSERT(chan_list_init(&list, workspace, sizeof(workspace)) == 0);
+
     BTASSERT(chan_list_add(&list, &queue[0]) == 0);
     BTASSERT(chan_list_add(&list, &queue[1]) == 0);
+
     BTASSERT(chan_list_poll(&list) == &queue[1]);
     BTASSERT(chan_read(&queue[1], &b, sizeof(b)) == sizeof(b));
     BTASSERT(b == 8);
+
     BTASSERT(chan_list_poll(&list) == &queue[1]);
     BTASSERT(chan_read(&queue[1], &b, sizeof(b)) == sizeof(b));
     BTASSERT(b == 9);
+
     BTASSERT(chan_list_poll(&list) == &queue[1]);
     BTASSERT(chan_read(&queue[1], &b, sizeof(b)) == sizeof(b));
     BTASSERT(b == 10);
+
     BTASSERT(chan_list_poll(&list) == &queue[1]);
     BTASSERT(chan_read(&queue[1], &b, sizeof(b)) == sizeof(b));
     BTASSERT(b == 11);
+
+    BTASSERT(chan_list_destroy(&list) == 0)
 
     /* Read from inactive polled chan.*/
     /* BTASSERT(chan_read(&queue[0], &b, sizeof(b)) == sizeof(b)); */

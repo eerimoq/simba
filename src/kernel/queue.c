@@ -193,33 +193,33 @@ ssize_t queue_write(struct queue_t *queue_p,
                 thrd_p = reader_p->base.thrd_p;
                 reader_p->base.thrd_p = NULL;
                 reader_p->base.list_p->flags = 0;
+                /* TODO: BUG: cannot let go of the lock. a thrd resume
+                   without rescheduling is needed. */
                 spin_unlock(&chan_lock, &irq);
                 thrd_resume(thrd_p, 0);
                 spin_lock(&chan_lock, &irq);
             }
-
-            continue;
-        }
-
-        /* Copy data to reader. */
-        n = (element.size > reader_p->size ? reader_p->size : element.size);
-        memcpy(reader_p->buf_p, buf_p, n);
-        element.buf_p += n;
-        element.size -= n;
-        reader_p->buf_p += n;
-        reader_p->size -= n;
-
-        if (element.size == 0) {
-            LIST_SL_REMOVE_HEAD(&queue_p->writers, &w_p);
-        }
-
-        /* Resume reader with all data received, otherwise re-add to list. */
-        if (reader_p->size == 0) {
-            spin_unlock(&chan_lock, &irq);
-            thrd_resume(reader_p->base.thrd_p, 0);
-            spin_lock(&chan_lock, &irq);
         } else {
-            LIST_SL_ADD_HEAD(&queue_p->base.readers, &reader_p->base);
+            /* Copy data to reader. */
+            n = (element.size > reader_p->size ? reader_p->size : element.size);
+            memcpy(reader_p->buf_p, buf_p, n);
+            element.buf_p += n;
+            element.size -= n;
+            reader_p->buf_p += n;
+            reader_p->size -= n;
+
+            if (element.size == 0) {
+                LIST_SL_REMOVE_HEAD(&queue_p->writers, &w_p);
+            }
+
+            /* Resume reader with all data received, otherwise re-add to list. */
+            if (reader_p->size == 0) {
+                spin_unlock(&chan_lock, &irq);
+                thrd_resume(reader_p->base.thrd_p, 0);
+                spin_lock(&chan_lock, &irq);
+            } else {
+                LIST_SL_ADD_HEAD(&queue_p->base.readers, &reader_p->base);
+            }
         }
     }
 
