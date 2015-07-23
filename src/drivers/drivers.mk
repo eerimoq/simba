@@ -27,7 +27,6 @@ DRIVERS_SRC ?= adc.c \
 	ds18b20.c \
 	enc28j60.c \
 	exti.c \
-	hc0x.c \
 	mcp2515.c \
 	nrf24l01.c \
 	owi.c \

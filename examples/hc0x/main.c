@@ -27,21 +27,30 @@
 #define EOT '\x04'
 
 FS_COMMAND_DEFINE("/at", cmd_at);
-FS_COMMAND_DEFINE("/pipe", cmd_pipe);
 
 static struct uart_driver_t uart;
-static struct uart_driver_t uart_hc0x;
-static struct hc0x_driver_t hc0x;
+static struct uart_soft_driver_t uart_hc0x;
 
-static int communicate(void *out_p, void *in_p)
+static char qinbuf[32];
+static char qinbuf_hc0x[32];
+
+static struct shell_args_t shell_args;
+
+int cmd_at(int argc,
+           const char *argv[],
+           void *out_p,
+           void *in_p)
 {
     struct chan_list_t list;
     chan_t *chan_p;
     char c;
     char buf[32];
 
-    /* Create channel list channel list. */
+    std_fprintf(out_p, FSTR("type ctrl-d to exit\r\n"));
+
+    /* Wait for data from PC and HC-0X. */
     chan_list_init(&list, buf, sizeof(buf));
+    chan_list_add(&list, &uart_hc0x.chin);
     chan_list_add(&list, in_p);
 
     /* Pass data between PC and bluetooth device. */
@@ -49,41 +58,27 @@ static int communicate(void *out_p, void *in_p)
         chan_p = chan_list_poll(&list);
 
         if (chan_p == in_p) {
-            chan_read(in_p, &c, sizeof(c));
-            
+            chan_read(chan_p, &c, sizeof(c));
+
+            /* break if EOT is found, otherwise write to HC-0X. */
             if (c == EOT) {
                 break;
             }
+
+            chan_write(&uart_hc0x.chout, &c, sizeof(c));
+        } else if (chan_p == &uart_hc0x.chin) {
+            /* Write all output from HC-0X to the PC. */
+            chan_read(chan_p, &c, sizeof(c));
+            chan_write(out_p, &c, sizeof(c));
+        } else {
+            std_printf(FSTR("bad input channel 0x%02x\r\n"),  (int)chan_p);
         }
     }
 
-    return (0);
-}
-
-int cmd_at(int argc,
-           const char *argv[],
-           void *out_p,
-           void *in_p)
-{
-    hc0x_at_command_mode_begin(&hc0x);
-    communicate(out_p, in_p);
-    hc0x_at_command_mode_end(&hc0x);
+    chan_list_destroy(&list);
 
     return (0);
 }
-
-int cmd_pipe(int argc,
-             const char *argv[],
-             void *out_p,
-             void *in_p)
-{
-    communicate(out_p, in_p);
-
-    return (0);
-}
-
-static char qinbuf[32];
-static struct shell_args_t shell_args;
 
 int main()
 {
@@ -91,12 +86,29 @@ int main()
 
     uart_module_init();
 
-    uart_init(&uart, &uart_device[0], 38400, qinbuf, sizeof(qinbuf));
-    uart_start(&uart);
+    uart_init(&uart,
+              &uart_device[0],
+              38400,
+              qinbuf,
+              sizeof(qinbuf));
+
+    uart_soft_init(&uart_hc0x,
+                   &pin_d4_dev,
+                   &pin_d3_dev,
+                   &exti_d3_dev,
+                   9600,
+                   qinbuf_hc0x,
+                   sizeof(qinbuf_hc0x));
+
     sys_set_stdout(&uart.chout);
 
-    /* Start the bloetooth device. */
-    hc0x_init(&hc0x, &uart_hc0x, &pin_d7_dev);
+    uart_start(&uart);
+
+    std_printf(FSTR("Welcome to HC-0X configuration tool!\r\n"
+                    "\r\n"
+                    "SETUP: Connect pin34 to VCC so the device enters AT mode.\r\n"
+                    "\r\n"
+                    "Type 'at' to start communicating with the device.\r\n"));
 
     shell_args.chin_p = &uart.chin;
     shell_args.chout_p = &uart.chout;

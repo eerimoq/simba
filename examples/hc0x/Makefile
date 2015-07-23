@@ -1,5 +1,5 @@
 #
-# @file hello_world/Makefile
+# @file hc0x/Makefile
 # @version 1.0
 #
 # @section License
@@ -21,7 +21,7 @@
 NAME = hc0x
 BOARD = linux
 SRC += main.c
-DRIVERS_SRC = uart.c hc0x.c pin.c
+DRIVERS_SRC = exti.c pin.c uart.c uart_soft.c
 SLIB_SRC =
 
 SIMBA = ../..

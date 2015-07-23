@@ -110,6 +110,13 @@ int chan_list_init(struct chan_list_t *list_p,
                    size_t size);
 
 /**
+ * Destroy an initialized list of channels.
+ * @param[in] list_p List to destroy.
+ * @return zero(0) or negative error code.
+ */
+int chan_list_destroy(struct chan_list_t *list_p);
+
+/**
  * Add given channel to list of channels.
  * @param[in] list_p List of channels.
  * @param[in] chan_p Channel to add.

@@ -37,63 +37,87 @@ struct list_sl_iterator_t {
 };
 
 /* Initialize a singly linked list. */
-#define LIST_SL_INIT(l)                         \
+#define LIST_SL_INIT(list_p)                    \
     do {                                        \
-        (l)->head_p = NULL;                     \
-        (l)->tail_p = NULL;                     \
+        (list_p)->head_p = NULL;                \
+        (list_p)->tail_p = NULL;                \
     } while (0);
 
 #define LIST_SL_INIT_STRUCT                     \
     { .head_p = NULL, .tail_p = NULL }
 
-#define LIST_SL_PEEK_HEAD(l, e)                 \
+#define LIST_SL_PEEK_HEAD(list_p, element_pp)   \
     do {                                        \
-        *(e) = (l)->head_p;                     \
+        *(element_pp) = (list_p)->head_p;       \
     } while (0);
 
-#define LIST_SL_ADD_HEAD(l, e)                  \
+#define LIST_SL_ADD_HEAD(list_p, element_p)     \
     do {                                        \
-        (e)->next_p = (l)->head_p;              \
-        (l)->head_p = e;                        \
-        if ((l)->tail_p == NULL) {              \
-            (l)->tail_p = (e);                  \
+        (element_p)->next_p = (list_p)->head_p; \
+        (list_p)->head_p = element_p;           \
+        if ((list_p)->tail_p == NULL) {         \
+            (list_p)->tail_p = (element_p);     \
         }                                       \
     } while (0);
 
-#define LIST_SL_ADD_TAIL(l, e)                                  \
-    do {                                                        \
-        (e)->next_p = NULL;                                     \
-        if ((l)->tail_p != NULL) {                              \
-            ((struct list_next_t *)((l)->tail_p))->next_p = e;  \
-        } else if ((l)->head_p == NULL) {                       \
-            (l)->head_p = (e);                                  \
-        }                                                       \
-        (l)->tail_p = e;                                        \
+#define LIST_SL_ADD_TAIL(list_p, element_p)                             \
+    do {                                                                \
+        (element_p)->next_p = NULL;                                     \
+        if ((list_p)->tail_p != NULL) {                                 \
+            ((struct list_next_t *)((list_p)->tail_p))->next_p = element_p; \
+        } else if ((list_p)->head_p == NULL) {                          \
+            (list_p)->head_p = (element_p);                             \
+        }                                                               \
+        (list_p)->tail_p = element_p;                                   \
     } while (0);
 
-#define LIST_SL_REMOVE_HEAD(l, e)                                       \
-    do {                                                                \
-        *(e) = (l)->head_p;                                             \
-        if (*(e) != NULL) {                                             \
-                           (l)->head_p = (*(e))->next_p;                \
-                           (*(e))->next_p = NULL;                       \
-                           if ((l)->tail_p == *(e)) {                   \
-                                                     (l)->tail_p = NULL; \
-                                                     }                  \
-                           }                                            \
-        } while (0)
-
-#define LIST_SL_ITERATOR_INIT(i, l)             \
-    do {                                        \
-        (i)->next_p = (l)->head_p;              \
+#define LIST_SL_REMOVE_HEAD(list_p, element_pp)         \
+    do {                                                \
+        *(element_pp) = (list_p)->head_p;               \
+        if (*(element_pp) != NULL) {                    \
+            (list_p)->head_p = (*(element_pp))->next_p; \
+            (*(element_pp))->next_p = NULL;             \
+            if ((list_p)->tail_p == *(element_pp)) {    \
+                (list_p)->tail_p = NULL;                \
+            }                                           \
+        }                                               \
     } while (0)
 
-#define LIST_SL_ITERATOR_NEXT(i, e)                                     \
+#define LIST_SL_ITERATOR_INIT(iterator_p, list_p)       \
+    do {                                                \
+        (iterator_p)->next_p = (list_p)->head_p;        \
+    } while (0)
+
+#define LIST_SL_ITERATOR_NEXT(iterator_p, element_pp)                   \
     do {                                                                \
-        *(e) = (i)->next_p;                                             \
-        if ((i)->next_p != NULL) {                                      \
-            (i)->next_p = ((struct list_sl_iterator_t *)(i)->next_p)->next_p; \
+        *(element_pp) = (iterator_p)->next_p;                           \
+        if ((iterator_p)->next_p != NULL) {                             \
+            (iterator_p)->next_p =                                      \
+                ((struct list_sl_iterator_t *)(iterator_p)->next_p)->next_p; \
         }                                                               \
     } while (0)
+
+#define LIST_SL_REMOVE_ELEM(list_p, iterator_p, element_p, iterator_element_p, previous_element_p) \
+    LIST_SL_ITERATOR_INIT((iterator_p), (list_p));                      \
+    (previous_element_p) = NULL;                                        \
+    while (1) {                                                         \
+        LIST_SL_ITERATOR_NEXT((iterator_p), &(iterator_element_p));     \
+        if ((iterator_element_p) == NULL) {                             \
+            /* Element not found.*/                                     \
+            break;                                                      \
+        } else if ((iterator_element_p) == (element_p)) {               \
+            /* Element found. Remove it. */                             \
+            if ((previous_element_p) != NULL) {                         \
+                (previous_element_p)->next_p = (element_p)->next_p;     \
+            } else {                                                    \
+                (list_p)->head_p = NULL;                                \
+            }                                                           \
+            if ((element_p)->next_p == NULL) {                          \
+                (list_p)->tail_p = NULL;                                \
+            }                                                           \
+            break;                                                      \
+        }                                                               \
+        (previous_element_p) = (iterator_element_p);                    \
+    }
 
 #endif
