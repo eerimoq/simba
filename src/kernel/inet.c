@@ -19,11 +19,7 @@
  */
 
 #include "simba.h"
-
-#define htons(v) v
-#define htonl(v) v
-#define ntohs(v) v
-#define ntohl(v) v
+#include <arpa/inet.h>
 
 static uint32_t inet_checksum_begin(void)
 {
