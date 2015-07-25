@@ -99,6 +99,13 @@ ssize_t chan_write(chan_t *chan_p,
                    size_t size);
 
 /**
+ * Get number of bytes available to read from the channel.
+ * @param[in] chan_p Channel to write to.
+ * @return Number of bytes available.
+ */
+size_t chan_size(chan_t *chan_p);
+
+/**
  * Initialize an empty list of channels.
  * @param[in] list_p List to initialize.
  * @param[in] workspace_p Workspace for internal use.

@@ -102,6 +102,11 @@ ssize_t chan_write(chan_t *chan_p,
     return (((struct chan_t *)chan_p)->write(chan_p, buf_p, size));
 }
 
+size_t chan_size(chan_t *chan_p)
+{
+    return (((struct chan_t *)chan_p)->size(chan_p));
+}
+
 int chan_list_add(struct chan_list_t *list_p, chan_t *chan_p)
 {
     if (list_p->len == list_p->max) {
