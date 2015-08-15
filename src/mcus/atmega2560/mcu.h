@@ -21,12 +21,12 @@
 #ifndef __MCU_H__
 #define __MCU_H__
 
-#define PIN_DEVICE_MAX  20
-#define EXTI_DEVICE_MAX 2
+#define PIN_DEVICE_MAX  70
+#define EXTI_DEVICE_MAX 6
 #define SPI_DEVICE_MAX  1
 #define UART_DEVICE_MAX 4
 /* Timer0 is used for system tick, so two of the PWM pins cannot be used.*/
-#define PWM_DEVICE_MAX  4
+#define PWM_DEVICE_MAX  12
 #define ADC_DEVICE_MAX  1
 
 #endif
