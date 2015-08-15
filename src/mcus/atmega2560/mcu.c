@@ -23,26 +23,26 @@
 struct pin_device_t pin_device[PIN_DEVICE_MAX] = {
     { .sfr_p = &PINE, .mask = _BV(PINE0) }, /* D0 */
     { .sfr_p = &PINE, .mask = _BV(PINE1) }, /* D1 */
-    { .sfr_p = &PINE, .mask = _BV(PINE4) }, /* D2 */
-    { .sfr_p = &PINE, .mask = _BV(PINE5) }, /* D3 */
-    { .sfr_p = &PING, .mask = _BV(PING5) }, /* D4 */
-    { .sfr_p = &PINE, .mask = _BV(PINE3) }, /* D5 */
-    { .sfr_p = &PINH, .mask = _BV(PINH3) }, /* D6 */
-    { .sfr_p = &PINH, .mask = _BV(PINH4) }, /* D7 */
-    { .sfr_p = &PINH, .mask = _BV(PINH5) }, /* D8 */
-    { .sfr_p = &PINH, .mask = _BV(PINH6) }, /* D9 */
-    { .sfr_p = &PINB, .mask = _BV(PINB4) }, /* D10 */
-    { .sfr_p = &PINB, .mask = _BV(PINB5) }, /* D11 */
-    { .sfr_p = &PINB, .mask = _BV(PINB6) }, /* D12 */
-    { .sfr_p = &PINB, .mask = _BV(PINB7) }, /* D13 */
+    { .sfr_p = &PINE, .mask = _BV(PINE4) }, /* D2, PWM0, EXIT4 */
+    { .sfr_p = &PINE, .mask = _BV(PINE5) }, /* D3, PWM1, EXIT5 */
+    { .sfr_p = &PING, .mask = _BV(PING5) }, /* D4, PWM2 */
+    { .sfr_p = &PINE, .mask = _BV(PINE3) }, /* D5, PWM3 */
+    { .sfr_p = &PINH, .mask = _BV(PINH3) }, /* D6, PWM4 */
+    { .sfr_p = &PINH, .mask = _BV(PINH4) }, /* D7, PWM5 */
+    { .sfr_p = &PINH, .mask = _BV(PINH5) }, /* D8, PWM6 */
+    { .sfr_p = &PINH, .mask = _BV(PINH6) }, /* D9, PWM7 */
+    { .sfr_p = &PINB, .mask = _BV(PINB4) }, /* D10, PWM8 */
+    { .sfr_p = &PINB, .mask = _BV(PINB5) }, /* D11, PWM9 */
+    { .sfr_p = &PINB, .mask = _BV(PINB6) }, /* D12, PWM10 */
+    { .sfr_p = &PINB, .mask = _BV(PINB7) }, /* D13, PWM11 */
     { .sfr_p = &PINJ, .mask = _BV(PINJ1) }, /* D14 */
     { .sfr_p = &PINJ, .mask = _BV(PINJ0) }, /* D15 */
     { .sfr_p = &PINH, .mask = _BV(PINH1) }, /* D16 */
     { .sfr_p = &PINH, .mask = _BV(PINH0) }, /* D17 */
-    { .sfr_p = &PIND, .mask = _BV(PIND3) }, /* D18 */
-    { .sfr_p = &PIND, .mask = _BV(PIND2) }, /* D19 */
-    { .sfr_p = &PIND, .mask = _BV(PIND1) }, /* D20 */
-    { .sfr_p = &PIND, .mask = _BV(PIND0) }, /* D21 */
+    { .sfr_p = &PIND, .mask = _BV(PIND3) }, /* D18, EXIT3 */
+    { .sfr_p = &PIND, .mask = _BV(PIND2) }, /* D19, EXIT2 */
+    { .sfr_p = &PIND, .mask = _BV(PIND1) }, /* D20, EXIT1 */
+    { .sfr_p = &PIND, .mask = _BV(PIND0) }, /* D21, EXIT0 */
     { .sfr_p = &PINA, .mask = _BV(PINA0) }, /* D22 */
     { .sfr_p = &PINA, .mask = _BV(PINA1) }, /* D23 */
     { .sfr_p = &PINA, .mask = _BV(PINA2) }, /* D24 */
@@ -94,12 +94,12 @@ struct pin_device_t pin_device[PIN_DEVICE_MAX] = {
 };
 
 struct exti_device_t exti_device[EXTI_DEVICE_MAX] = {
-    { .drv_p = NULL, .pin_p = &pin_d21_dev, .id = 0 },
-    { .drv_p = NULL, .pin_p = &pin_d20_dev, .id = 1 },
-    { .drv_p = NULL, .pin_p = &pin_d19_dev, .id = 2 },
-    { .drv_p = NULL, .pin_p = &pin_d18_dev, .id = 3 },
-    { .drv_p = NULL, .pin_p =  &pin_d2_dev, .id = 4 },
-    { .drv_p = NULL, .pin_p =  &pin_d3_dev, .id = 5 }
+    { .drv_p = NULL, .pin_p = &pin_device[21], .id = 0 },
+    { .drv_p = NULL, .pin_p = &pin_device[20], .id = 1 },
+    { .drv_p = NULL, .pin_p = &pin_device[19], .id = 2 },
+    { .drv_p = NULL, .pin_p = &pin_device[18], .id = 3 },
+    { .drv_p = NULL, .pin_p = &pin_device[2],  .id = 4 },
+    { .drv_p = NULL, .pin_p = &pin_device[3],  .id = 5 }
 };
 
 struct spi_device_t spi_device[SPI_DEVICE_MAX] = {
@@ -120,18 +120,16 @@ struct uart_device_t uart_device[UART_DEVICE_MAX] = {
 };
 
 struct pwm_device_t pwm_device[PWM_DEVICE_MAX] = {
-    { .index =  0, .pin_dev_p = &pin_d2_dev }, /* timerx, pin  */
-    { .index =  1, .pin_dev_p = &pin_d3_dev }, /* timerx, pin  */
-    { .index =  2, .pin_dev_p = &pin_d4_dev }, /* timerx, pin  */
-    { .index =  3, .pin_dev_p = &pin_d5_dev },  /* timerx, pin  */
-    { .index =  4, .pin_dev_p = &pin_d6_dev }, /* timerx, pin  */
-    { .index =  5, .pin_dev_p = &pin_d7_dev }, /* timerx, pin  */
-    { .index =  6, .pin_dev_p = &pin_d8_dev }, /* timerx, pin  */
-    { .index =  7, .pin_dev_p = &pin_d9_dev },  /* timerx, pin  */
-    { .index =  8, .pin_dev_p = &pin_d10_dev }, /* timerx, pin  */
-    { .index =  9, .pin_dev_p = &pin_d11_dev }, /* timerx, pin  */
-    { .index = 10, .pin_dev_p = &pin_d12_dev }, /* timerx, pin  */
-    { .index = 11, .pin_dev_p = &pin_d13_dev }  /* timerx, pin  */
+    { .index = 0, .pin_dev_p = &pin_device[2] }, /* timerx, pin  */
+    { .index = 1, .pin_dev_p = &pin_device[3] }, /* timerx, pin  */
+    { .index = 2, .pin_dev_p = &pin_device[5] }, /* timerx, pin  */
+    { .index = 3, .pin_dev_p = &pin_device[6] }, /* timerx, pin  */
+    { .index = 4, .pin_dev_p = &pin_device[7] }, /* timerx, pin  */
+    { .index = 5, .pin_dev_p = &pin_device[8] }, /* timerx, pin  */
+    { .index = 6, .pin_dev_p = &pin_device[9] }, /* timerx, pin  */
+    { .index = 7, .pin_dev_p = &pin_device[10] }, /* timerx, pin  */
+    { .index = 8, .pin_dev_p = &pin_device[11] }, /* timerx, pin  */
+    { .index = 9, .pin_dev_p = &pin_device[12] }, /* timerx, pin  */
 };
 
 struct adc_device_t adc_device[ADC_DEVICE_MAX] = {

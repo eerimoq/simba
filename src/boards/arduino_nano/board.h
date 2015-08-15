@@ -21,27 +21,25 @@
 #ifndef __BOARD_H__
 #define __BOARD_H__
 
-#define PIN_DEVICE_BASE  2
+#define pin_d2_dev pin_device[2]
+#define pin_d3_dev pin_device[3]
+#define pin_d4_dev pin_device[4]
+#define pin_d5_dev pin_device[5]
+#define pin_d6_dev pin_device[6]
+#define pin_d7_dev pin_device[7]
+#define pin_d8_dev pin_device[8]
+#define pin_d9_dev pin_device[9]
+#define pin_d10_dev pin_device[10]
+#define pin_d11_dev pin_device[11]
+#define pin_d12_dev pin_device[12]
+#define pin_d13_dev pin_device[13]
 
-#define pin_d2_dev pin_device[2 - PIN_DEVICE_BASE]
-#define pin_d3_dev pin_device[3 - PIN_DEVICE_BASE]
-#define pin_d4_dev pin_device[4 - PIN_DEVICE_BASE]
-#define pin_d5_dev pin_device[5 - PIN_DEVICE_BASE]
-#define pin_d6_dev pin_device[6 - PIN_DEVICE_BASE]
-#define pin_d7_dev pin_device[7 - PIN_DEVICE_BASE]
-#define pin_d8_dev pin_device[8 - PIN_DEVICE_BASE]
-#define pin_d9_dev pin_device[9 - PIN_DEVICE_BASE]
-#define pin_d10_dev pin_device[10 - PIN_DEVICE_BASE]
-#define pin_d11_dev pin_device[11 - PIN_DEVICE_BASE]
-#define pin_d12_dev pin_device[12 - PIN_DEVICE_BASE]
-#define pin_d13_dev pin_device[13 - PIN_DEVICE_BASE]
-
-#define pin_a0_dev pin_device[14 - PIN_DEVICE_BASE]
-#define pin_a1_dev pin_device[15 - PIN_DEVICE_BASE]
-#define pin_a2_dev pin_device[16 - PIN_DEVICE_BASE]
-#define pin_a3_dev pin_device[17 - PIN_DEVICE_BASE]
-#define pin_a4_dev pin_device[18 - PIN_DEVICE_BASE]
-#define pin_a5_dev pin_device[19 - PIN_DEVICE_BASE]
+#define pin_a0_dev pin_device[14]
+#define pin_a1_dev pin_device[15]
+#define pin_a2_dev pin_device[16]
+#define pin_a3_dev pin_device[17]
+#define pin_a4_dev pin_device[18]
+#define pin_a5_dev pin_device[19]
 
 #define pin_led_dev pin_d13_dev
 

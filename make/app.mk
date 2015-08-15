@@ -38,7 +38,7 @@ CLEAN = $(OBJDIR) $(DEPSDIR) $(FSDIR) $(EXE) $(RUNLOG) size.log \
 
 # configuration
 TOOLCHAIN ?= gnu
-CFLAGS += $(INC:%=-I%) $(CFLAGS_EXTRA) -DARCH_$(UPPER_ARCH) -DBOARD_$(UPPER_BOARD)
+CFLAGS += $(INC:%=-I%) $(CFLAGS_EXTRA) -DARCH_$(UPPER_ARCH) -DMCU_$(UPPER_MCU) -DBOARD_$(UPPER_BOARD)
 ifeq ($(NDEBUG),yes)
   CFLAGS += -DNDEBUG
 endif
@@ -65,6 +65,7 @@ include $(SLIB.mk)
 include $(SIMBA)/make/toolchain.mk
 
 UPPER_ARCH = $(shell echo $(ARCH) | tr a-z A-Z)
+UPPER_MCU = $(shell echo $(MCU) | tr a-z A-Z)
 UPPER_BOARD = $(shell echo $(BOARD) | tr a-z A-Z)
 
 clean:

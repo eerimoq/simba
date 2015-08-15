@@ -22,33 +22,35 @@
 
 struct pin_device_t pin_device[PIN_DEVICE_MAX] = {
     /* PIN D */
-    { .sfr_p = &PIND, .mask = 0x04 },
-    { .sfr_p = &PIND, .mask = 0x08 },
-    { .sfr_p = &PIND, .mask = 0x10 },
-    { .sfr_p = &PIND, .mask = 0x20 },
-    { .sfr_p = &PIND, .mask = 0x40 },
-    { .sfr_p = &PIND, .mask = 0x80 },
+    { .sfr_p = &PIND, .mask = _BV(PIND0) },
+    { .sfr_p = &PIND, .mask = _BV(PIND1) },
+    { .sfr_p = &PIND, .mask = _BV(PIND2) },
+    { .sfr_p = &PIND, .mask = _BV(PIND3) },
+    { .sfr_p = &PIND, .mask = _BV(PIND4) },
+    { .sfr_p = &PIND, .mask = _BV(PIND5) },
+    { .sfr_p = &PIND, .mask = _BV(PIND6) },
+    { .sfr_p = &PIND, .mask = _BV(PIND7) },
 
     /* PIN B */
-    { .sfr_p = &PINB, .mask = 0x01 },
-    { .sfr_p = &PINB, .mask = 0x02 },
-    { .sfr_p = &PINB, .mask = 0x04 },
-    { .sfr_p = &PINB, .mask = 0x08 },
-    { .sfr_p = &PINB, .mask = 0x10 },
-    { .sfr_p = &PINB, .mask = 0x20 },
+    { .sfr_p = &PINB, .mask = _BV(PINB0) },
+    { .sfr_p = &PINB, .mask = _BV(PINB1) },
+    { .sfr_p = &PINB, .mask = _BV(PINB2) },
+    { .sfr_p = &PINB, .mask = _BV(PINB3) },
+    { .sfr_p = &PINB, .mask = _BV(PINB4) },
+    { .sfr_p = &PINB, .mask = _BV(PINB5) },
 
     /* PIN C */
-    { .sfr_p = &PINC, .mask = 0x01 },
-    { .sfr_p = &PINC, .mask = 0x02 },
-    { .sfr_p = &PINC, .mask = 0x04 },
-    { .sfr_p = &PINC, .mask = 0x08 },
-    { .sfr_p = &PINC, .mask = 0x10 },
-    { .sfr_p = &PINC, .mask = 0x20 },
+    { .sfr_p = &PINC, .mask = _BV(PINC0) },
+    { .sfr_p = &PINC, .mask = _BV(PINC1) },
+    { .sfr_p = &PINC, .mask = _BV(PINC2) },
+    { .sfr_p = &PINC, .mask = _BV(PINC3) },
+    { .sfr_p = &PINC, .mask = _BV(PINC4) },
+    { .sfr_p = &PINC, .mask = _BV(PINC5) },
 };
 
 struct exti_device_t exti_device[EXTI_DEVICE_MAX] = {
-    { .drv_p = NULL, .pin_p = &pin_d2_dev, .id = 0 },
-    { .drv_p = NULL, .pin_p = &pin_d3_dev, .id = 1 }
+    { .drv_p = NULL, .pin_p = &pin_device[2], .id = 0 },
+    { .drv_p = NULL, .pin_p = &pin_device[3], .id = 1 }
 };
 
 struct spi_device_t spi_device[SPI_DEVICE_MAX] = {
@@ -66,10 +68,10 @@ struct uart_device_t uart_device[UART_DEVICE_MAX] = {
 };
 
 struct pwm_device_t pwm_device[PWM_DEVICE_MAX] = {
-    { .index = 0, .pin_dev_p = &pin_device[7] }, /* timer1, pin D9 */
-    { .index = 1, .pin_dev_p = &pin_device[8] }, /* timer1, pin D10 */
-    { .index = 2, .pin_dev_p = &pin_device[9] }, /* timer2, pin D11 */
-    { .index = 3, .pin_dev_p = &pin_device[1] }  /* timer2, pin D3 */
+    { .index = 0, .pin_dev_p = &pin_device[9] },  /* timer1 */
+    { .index = 1, .pin_dev_p = &pin_device[10] }, /* timer1 */
+    { .index = 2, .pin_dev_p = &pin_device[11] }, /* timer2 */
+    { .index = 3, .pin_dev_p = &pin_device[3] }   /* timer2 */
 };
 
 struct adc_device_t adc_device[ADC_DEVICE_MAX] = {
