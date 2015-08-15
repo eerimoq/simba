@@ -107,6 +107,9 @@ static int thrd_port_spawn(struct thrd_t *thrd,
     context->r3  = (int)entry >> 8;
     context->r4  = (int)arg;
     context->r5  = (int)arg >> 8;
+#if defined(__AVR_3_BYTE_PC__)
+    context->pc_3rd_byte = (int)((long)(int)thrd_port_entry >> 16);
+#endif
     context->pcl = (int)thrd_port_entry >> 8;
     context->pch = (int)thrd_port_entry;
     thrd->port.context = context;

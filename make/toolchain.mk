@@ -27,18 +27,16 @@ ifeq ($(TOOLCHAIN), gnu)
   ifeq ($(ARCH),avr)
     CROSS_COMPILE = avr-
     CFLAGS += -D__DELAY_BACKWARD_COMPATIBLE__
-    LDFLAGS += -Wl,--defsym=__main_stack_end=0x800900
+    LDFLAGS += -Wl,--defsym=__main_stack_end=$(MAIN_STACK_END)
     SIZEARGS = --mcu=$(MCU) --format=avr
 
-    AVRDUDE_BOARD = /dev/ttyUSB0
-    AVRDUDE_BAUDRATE = 57600
-    AVRDUDE_PROGRAMMER = arduino
-    AVRDUDE_NO_VERIFY = -V
-    RUNARGS = ${MCU} ${NAME}.hex -P $(AVRDUDE_BOARD) -c $(AVRDUDE_PROGRAMMER) \
-	      $(AVRDUDE_NO_VERIFY) -b $(AVRDUDE_BAUDRATE)
+    AVRDUDE_PORT ?= /dev/ttyUSB0
+    AVRDUDE_NO_VERIFY ?= -V
+    RUNARGS = ${MCU} ${NAME}.hex -D -P $(AVRDUDE_PORT) -c $(AVRDUDE_PROGRAMMER) \
+              $(AVRDUDE_NO_VERIFY) -b $(AVRDUDE_BAUDRATE)
 
     CLEAN += $(NAME).hex
-    HELP_VARIABLES += "  AVRDUDE_BOARD                avrdude serial port" $$(echo -e '\n') \
+    HELP_VARIABLES += "  AVRDUDE_PORT                avrdude serial port" $$(echo -e '\n') \
                       "  AVRDUDE_BAUDRATE            avrdude serial baudrate" $$(echo -e '\n')
 
     SIZECMD = avr-size --mcu=$(MCU) --format=avr ${EXE} ; \
@@ -46,7 +44,7 @@ ifeq ($(TOOLCHAIN), gnu)
               echo "Drivers package:" ; avr-size $(DRIVERS_SRC:%.c=obj/%.o) obj/mcu.o obj/board.o -t ; echo ; \
               echo "Slib package:" ; avr-size $(SLIB_SRC:%.c=obj/%.o) -t ; echo ; \
               echo "Other:" ; avr-size $(filter-out obj/mcu.o obj/board.o $(KERNEL_SRC:%.c=obj/%.o) \
-		   $(DRIVERS_SRC:%.c=obj/%.o) $(SLIB_SRC:%.c=obj/%.o),$(OBJ) obj/fs_gen.o) -t
+                   $(DRIVERS_SRC:%.c=obj/%.o) $(SLIB_SRC:%.c=obj/%.o),$(OBJ) obj/fs_gen.o) -t
 
 all: $(NAME).hex
 $(NAME).hex: $(EXE)

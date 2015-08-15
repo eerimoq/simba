@@ -24,6 +24,11 @@ SRC += $(SIMBA)/src/mcus/atmega2560/mcu.c
 
 F_CPU = 16000000
 MCU = atmega2560
+MAIN_STACK_END = 0x802200
+
+AVRDUDE_BAUDRATE = 115200
+AVRDUDE_PROGRAMMER = wiring
+AVRDUDE_PORT = /dev/ttyACM0
 
 CFLAGS += -mmcu=$(MCU) -DF_CPU=$(F_CPU)UL -funsigned-char \
           -funsigned-bitfields -fpack-struct -fshort-enums -std=gnu99

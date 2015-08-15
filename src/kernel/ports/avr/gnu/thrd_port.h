@@ -41,6 +41,9 @@ struct thrd_port_context_t {
     uint8_t r4;
     uint8_t r3;
     uint8_t r2;
+#if defined(__AVR_3_BYTE_PC__)
+    uint8_t pc_3rd_byte;
+#endif
     uint8_t pcl;
     uint8_t pch;
 };

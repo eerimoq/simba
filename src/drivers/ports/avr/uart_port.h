@@ -25,6 +25,7 @@
 
 struct uart_device_t {
     struct uart_driver_t *drv_p;         /* Current started driver. */
+    volatile uint8_t *sfr_p;
 };
 
 struct uart_driver_t {

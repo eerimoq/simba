@@ -28,7 +28,11 @@ endif
 
 ifeq ($(BOARD),arduino_nano)
 TESTS = $(addprefix kernel/,fs prof queue sem shell std sys thrd timer)
-TESTS += $(addprefix drivers/, cantp ds18b20 mcp2515 owi pin uart)
+TESTS += $(addprefix slib/,hash_map)
+endif
+
+ifeq ($(BOARD),arduino_mega)
+TESTS = $(addprefix kernel/,fs prof queue sem shell std sys thrd timer)
 TESTS += $(addprefix slib/,hash_map)
 endif
 

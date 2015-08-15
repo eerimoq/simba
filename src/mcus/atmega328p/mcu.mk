@@ -21,9 +21,12 @@
 
 INC += $(SIMBA)/src/mcus/atmega328p
 SRC += $(SIMBA)/src/mcus/atmega328p/mcu.c
+AVRDUDE_BAUDRATE = 57600
+AVRDUDE_PROGRAMMER = arduino
 
 F_CPU = 16000000
 MCU = atmega328p
+MAIN_STACK_END = 0x800900
 
 CFLAGS += -mmcu=$(MCU) -DF_CPU=$(F_CPU)UL -funsigned-char \
           -funsigned-bitfields -fpack-struct -fshort-enums -std=gnu99

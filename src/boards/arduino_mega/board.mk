@@ -19,8 +19,8 @@
 # This file is part of the Simba project.
 #
 
-INC += $(SIMBA)/src/boards/funduino
-SRC += $(SIMBA)/src/boards/funduino/board.c
+INC += $(SIMBA)/src/boards/arduino_mega
+SRC += $(SIMBA)/src/boards/arduino_mega/board.c
 
 MCU = atmega2560
 ARCH = avr

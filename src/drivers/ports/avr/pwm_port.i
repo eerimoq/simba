@@ -28,11 +28,13 @@ static int pwm_port_init(struct pwm_driver_t *drv_p,
     switch (dev_p->index) {
     case 0:
     case 1:
+        /* pin d9 and d10. Timer 1. */
         TCCR1A |= _BV(WGM10);
         TCCR1B |= _BV(CS11) | _BV(CS10);
         break;
     case 2:
     case 3:
+        /* pin d11 and d3. Timer 2. */
         TCCR2A |= _BV(WGM20);
         TCCR2B |= _BV(CS22);
         break;

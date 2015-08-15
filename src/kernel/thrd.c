@@ -356,9 +356,11 @@ int thrd_module_init(void)
 #endif
     thrd_port_init_main(&main_thrd.port);
     scheduler.current_p = &main_thrd;
+    spin_init(&lock);
+
     thrd_spawn(idle_thrd, NULL, 127, idle_thrd_stack, sizeof(idle_thrd_stack));
 
-    return (spin_init(&lock));
+    return (0);
 }
 
 struct thrd_t *thrd_spawn(void *(*entry)(void *),

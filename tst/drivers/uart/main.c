@@ -28,7 +28,7 @@ int main()
     struct uart_driver_t uart;
     uint8_t flags = 3;
 
-    sys_module_init();
+    sys_start();
     uart_module_init();
 
     uart_init(&uart, &uart_device[0], 38400, buf, sizeof(buf));
