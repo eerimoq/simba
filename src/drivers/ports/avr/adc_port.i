@@ -21,8 +21,8 @@
 #include <avr/interrupt.h>
 
 /* Free running mode sampling rate.
-   FCPU / clockdiv / samplingtime = 16MHz / 128 / 13 = 9615Hz. */
-#define SAMPLING_RATE_HZ 9615
+   FCPU / clockdiv / samplingtime = 16MHz / 64 / 13 = 9615Hz. */
+#define SAMPLING_RATE_HZ (2 * 9615)
 
 /* Convert desired smpling rate to number of interrupts, rounded
    up. The error in the calculation is rather big for high sampling
@@ -75,7 +75,7 @@ static void start_adc_hw(struct adc_driver_t *drv_p)
     ADCSRB = 0;
     /* clock div 128. */
     ADCSRA = (_BV(ADEN) | _BV(ADSC) | _BV(ADATE) | _BV(ADIE)
-              | _BV(ADPS2) | _BV(ADPS1) | _BV(ADPS0));
+              | _BV(ADPS2) | _BV(ADPS1) /*| _BV(ADPS0)*/); /* Uncomment for 9615 Hz. */
 }
 
 static int adc_port_module_init()
