@@ -21,8 +21,8 @@
 #include <avr/interrupt.h>
 
 /* Free running mode sampling rate.
-   FCPU / clockdiv / samplingtime = 16MHz / 64 / 13 = 9615Hz. */
-#define SAMPLING_RATE_HZ (2 * 9615)
+   FCPU / clockdiv / samplingtime = 16MHz / 32 / 13 = 9615Hz. */
+#define SAMPLING_RATE_HZ 38462UL
 
 /* Convert desired smpling rate to number of interrupts, rounded
    up. The error in the calculation is rather big for high sampling
@@ -31,6 +31,10 @@
     ((SAMPLING_RATE_HZ + rate - 1) / rate)
 
 struct spin_lock_t lock;
+
+#if defined(ADC_DEBUG_PIN)
+struct pin_driver_t pin;
+#endif
 
 ISR(ADC_vect)
 {
@@ -45,6 +49,10 @@ ISR(ADC_vect)
     }
 
     drv_p->interrupt_count = 0;
+
+#if defined(ADC_DEBUG_PIN)
+    pin_toggle(&pin);
+#endif
 
     /* Read the sample from the output register. */
     drv_p->samples[drv_p->pos++] = ADC;
@@ -73,9 +81,9 @@ static void start_adc_hw(struct adc_driver_t *drv_p)
     /* Start AD Converter in free running mode. */
     ADMUX = drv_p->admux;
     ADCSRB = 0;
-    /* clock div 128. */
+    /* clock div 32. */
     ADCSRA = (_BV(ADEN) | _BV(ADSC) | _BV(ADATE) | _BV(ADIE)
-              | _BV(ADPS2) | _BV(ADPS1) /*| _BV(ADPS0)*/); /* Uncomment for 9615 Hz. */
+              | _BV(ADPS2) /*| _BV(ADPS1) */| _BV(ADPS0));
 }
 
 static int adc_port_module_init()
@@ -89,7 +97,7 @@ static int adc_port_init(struct adc_driver_t *drv_p,
                          struct adc_device_t *dev_p,
                          struct pin_device_t *pin_dev_p,
                          int reference,
-                         int sampling_rate)
+                         long sampling_rate)
 {
     int channel = 0;
 
@@ -98,9 +106,14 @@ static int adc_port_init(struct adc_driver_t *drv_p,
     }
 
     drv_p->dev_p = dev_p;
-    drv_p->interrupt_max = SAMPLING_RATE_TO_INTERRUPT_MAX(sampling_rate);
+    drv_p->interrupt_max = SAMPLING_RATE_TO_INTERRUPT_MAX((long)sampling_rate);
     drv_p->admux = (reference | (channel & 0x07));
     pin_init(&drv_p->pin_drv, pin_dev_p, PIN_INPUT);
+
+#if defined(ADC_DEBUG_PIN)
+    pin_init(&pin, &pin_d12_dev, PIN_OUTPUT);
+    pin_write(&pin, 0);
+#endif
 
     return (0);
 }

@@ -275,8 +275,8 @@ static char *formatf(char c,
                      char *negative_sign_p)
 {
     double value;
-    unsigned int whole_number;
-    unsigned int fraction_number;
+    unsigned long whole_number;
+    unsigned long fraction_number;
     int i;
 
     /* Get argument. */
@@ -288,10 +288,10 @@ static char *formatf(char c,
         *negative_sign_p = 1;
     }
 
-    /* Values bigger than 'unsigned int max' are not supported. */
+    /* Values bigger than 'unsigned long max' are not supported. */
     whole_number = (unsigned int)value;
     /* Always print 6 decimal places. */
-    fraction_number = (unsigned int)((value - whole_number) * 1000000.0);
+    fraction_number = (unsigned long)((value - whole_number) * 1000000.0);
 
     /* Write fraction number to output buffer. */
     for (i = 0; i < 6; i++) {
