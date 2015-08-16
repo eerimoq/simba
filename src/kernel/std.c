@@ -24,6 +24,9 @@
 
 #define STD_OUTPUT_BUFFER_MAX 16
 
+/* +7 for floating point decimal point and fraction. */
+#define VALUE_BUF_MAX (3 * sizeof(long) + 7)
+
 struct std_klog_entry_t {
     char *buf_p;
     int meta;
@@ -190,7 +193,7 @@ static void formats(void (*std_putc)(char c, void *arg),
                     char *str,
                     char flags,
                     signed char width,
-                    char sign)
+                    char negative_sign)
 {
     char *s = str;
 
@@ -200,7 +203,7 @@ static void formats(void (*std_putc)(char c, void *arg),
 
     /* Right justification. */
     if (flags != '-') {
-        if ((sign == 1) && (flags == '0')) {
+        if ((negative_sign == 1) && (flags == '0')) {
             std_putc(*str++, arg);
         }
 
@@ -227,7 +230,7 @@ static char *formati(char c,
                      char radix,
                      va_list *ap_p,
                      char length,
-                     char *sign_p)
+                     char *negative_sign_p)
 {
     unsigned long value;
     char digit;
@@ -241,7 +244,7 @@ static char *formati(char c,
 
     if ((c == 'd') && (value & (1UL << (sizeof(value) * CHAR_BIT - 1)))) {
         value *= -1;
-        *sign_p = 1;
+        *negative_sign_p = 1;
     }
 
     if (length == 0) {
@@ -258,7 +261,55 @@ static char *formati(char c,
         *--str_p = ('0' + digit);
     } while (value > 0);
 
-    if (*sign_p == 1) {
+    if (*negative_sign_p == 1) {
+        *--str_p = '-';
+    }
+
+    return (str_p);
+}
+
+static char *formatf(char c,
+                     char *str_p,
+                     va_list *ap_p,
+                     char length,
+                     char *negative_sign_p)
+{
+    double value;
+    unsigned int whole_number;
+    unsigned int fraction_number;
+    int i;
+
+    /* Get argument. */
+    value = va_arg(*ap_p, double);
+
+    /* Convert a negative value to positive. */
+    if (value < 0.0) {
+        value *= -1.0;
+        *negative_sign_p = 1;
+    }
+
+    /* Values bigger than 'unsigned int max' are not supported. */
+    whole_number = (unsigned int)value;
+    /* Always print 6 decimal places. */
+    fraction_number = (unsigned int)((value - whole_number) * 1000000.0);
+
+    /* Write fraction number to output buffer. */
+    for (i = 0; i < 6; i++) {
+        *--str_p = '0' + (fraction_number % 10);
+        fraction_number /= 10;
+    }
+
+    /* Write the decimal dot. */
+    *--str_p = '.';
+
+    /* Write whole number to output buffer. */
+    while (whole_number != 0) {
+        *--str_p = '0' + (whole_number % 10);
+        whole_number /= 10;
+    }
+
+    /* Add negative sign if the number is negative. */
+    if (*negative_sign_p == 1) {
         *--str_p = '-';
     }
 
@@ -270,7 +321,7 @@ static void std_vprintf(void (*std_putc)(char c, void *arg_p),
                         FAR const char *fmt_p,
                         va_list *ap_p)
 {
-    char c, flags, length, sign, buf[3 * sizeof(long)], *s_p;
+    char c, flags, length, negative_sign, buf[VALUE_BUF_MAX], *s_p;
     signed char width;
 
     buf[sizeof(buf) - 1] = '\0';
@@ -314,7 +365,7 @@ static void std_vprintf(void (*std_putc)(char c, void *arg_p),
         }
 
         /* Parse the specifier. */
-        sign = 0;
+        negative_sign = 0;
         switch (c) {
         case 's':
             s_p = va_arg(*ap_p, char*);
@@ -325,17 +376,20 @@ static void std_vprintf(void (*std_putc)(char c, void *arg_p),
             break;
         case 'd':
         case 'u':
-            s_p = formati(c, &buf[sizeof(buf) - 1], 10, ap_p, length, &sign);
+            s_p = formati(c, &buf[sizeof(buf) - 1], 10, ap_p, length, &negative_sign);
             break;
         case 'x':
-            s_p = formati(c, &buf[sizeof(buf) - 1], 16, ap_p, length, &sign);
+            s_p = formati(c, &buf[sizeof(buf) - 1], 16, ap_p, length, &negative_sign);
+            break;
+        case 'f':
+            s_p = formatf(c, &buf[sizeof(buf) - 1], ap_p, length, &negative_sign);
             break;
         default:
             std_putc(c, arg_p);
             continue;
         }
 
-        formats(std_putc, arg_p, s_p, flags, width, sign);
+        formats(std_putc, arg_p, s_p, flags, width, negative_sign);
     }
 }
 

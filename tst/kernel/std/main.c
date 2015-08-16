@@ -63,6 +63,34 @@ int test_sprintf(struct harness_t *harness_p)
     return (0);
 }
 
+int test_sprintf_double(struct harness_t *harness_p)
+{
+    char buf[128];
+    ssize_t size;
+
+    BTASSERT((size = std_sprintf(buf,
+                                 FSTR("Normal:                '%f' '%f'"),
+                                 10.5f, -37.731)) == 47);
+    std_printk(STD_LOG_NOTICE, FSTR("%s"), buf);
+
+    BTASSERT((size = std_sprintf(buf,
+                                 FSTR("Left justification:    '%-12f' '%-12f'"),
+                                 10.5f, -37.731)) == 52);
+    std_printk(STD_LOG_NOTICE, FSTR("%s"), buf);
+
+    BTASSERT((size = std_sprintf(buf,
+                                 FSTR("Preceding with blanks: '%12f' '%12f'"),
+                                 10.5f, -37.731)) == 52);
+    std_printk(STD_LOG_NOTICE, FSTR("%s"), buf);
+
+    BTASSERT((size = std_sprintf(buf,
+                                 FSTR("Preceding with zeros:  '%012f' '%012f'"),
+                                 10.5f, -37.731)) == 52);
+    std_printk(STD_LOG_NOTICE, FSTR("%s"), buf);
+
+    return (0);
+}
+
 int test_strtol(struct harness_t *harness_p)
 {
     long value;
@@ -140,6 +168,7 @@ int main()
         { test_strtol, "test_strtol" },
         /* { test_strlen, "test_strlen" }, */
         { test_readk, "test_readk" },
+        { test_sprintf_double, "test_sprintf_double" },
         { NULL, NULL }
     };
 
