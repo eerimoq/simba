@@ -68,6 +68,9 @@ static int shell_read_line(char *buf_p,
         chan_write(chout_p, &c, sizeof(c));
     }
 
+    /* string null termination.*/
+    *b_p = '\0';
+
     return (0);
 }
 
@@ -77,19 +80,36 @@ static int shell_login(char *buf_p,
                        const char *username_p,
                        const char *password_p)
 {
-    int correct_username = 0;
-    int correct_password = 0;
+    int correct_username;
+    int correct_password;
 
-    while (!(correct_username && correct_password)) {
+    shell_read_line(buf_p, chin_p, chout_p, 0);
+
+    while (1) {
+        correct_username = 0;
+        correct_password = 0;
+
         /* Read the username. */
         std_fprintf(chout_p, FSTR("username: "));
         shell_read_line(buf_p, chin_p, chout_p, 0);
+
+        /* Write 'username: ' on empty string. */
+        if (*buf_p == '\0') {
+            continue;
+        }
+
         correct_username = !strcmp(username_p, buf_p);
 
         /* Read the  password. */
         std_fprintf(chout_p, FSTR("password: "));
         shell_read_line(buf_p, chin_p, chout_p, 1);
         correct_password = !strcmp(password_p, buf_p);
+
+        if (correct_username && correct_password) {
+            break;
+        } else {
+            std_fprintf(chout_p, FSTR("authentication failure\r\n"));
+        }
     }
 
     /* Write a prompt on successful login. */
@@ -181,8 +201,8 @@ void *shell_entry(void *arg_p)
         /* Read command.*/
         if (shell_read_command(buf, chin_p, chout_p) > 0) {
             /* Logout handling. */
-            if (!std_strcmp(FSTR("logout"), buf)
-                || !std_strcmp(FSTR("/logout"), buf)) {
+            if (!std_strcmp(buf, FSTR("logout"))
+                || !std_strcmp(buf, FSTR("logout "))) {
                 if (username_p != NULL) {
                     authorized = 0;
                 }
