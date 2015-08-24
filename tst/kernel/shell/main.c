@@ -71,7 +71,9 @@ static QUEUE_INIT_DECL(qout, qoutbuf, sizeof(qoutbuf));
 static char shell_stack[356];
 static struct shell_args_t shell_args = {
     .chin_p = &qin,
-    .chout_p = &qout
+    .chout_p = &qout,
+    .username_p = "erik",
+    .password_p = "pannkaka"
 };
 
 #ifdef ARCH_LINUX
@@ -80,29 +82,36 @@ static struct shell_args_t shell_args = {
 #    define BUFFER_SIZE 128
 #endif
 
-static int chout_read_until_prompt(char *buf_p)
+static int chout_read_until(char *buf_p,
+                            const char *pattern)
 {
     char c;
-    size_t size = 0;
+    size_t length = 0;
+    size_t pattern_length = strlen(pattern);
 
-    while (size < BUFFER_SIZE - 3) {
+    while (length < BUFFER_SIZE - 1) {
         chan_read(&qout, &c, sizeof(c));
+#if defined(ARCH_LINUX)
+        printf("%c", c);
+#endif
         *buf_p++ = c;
-        size++;
+        length++;
+        *buf_p = '\0';
 
-        if (c == '$') {
-            chan_read(&qout, &c, sizeof(c));
-            *buf_p++ = c;
-            size++;
-
-            if (c == ' ') {
-                *buf_p = '\0';
+        /* Compare to pattern. */
+        if (length >= pattern_length) {
+            if (!strcmp(&buf_p[-pattern_length], pattern)) {
                 return (1);
             }
         }
     }
 
     return (0);
+}
+
+static int chout_read_until_prompt(char *buf_p)
+{
+    return (chout_read_until(buf_p, "$ "));
 }
 
 static int test_all(struct harness_t *harness_p)
@@ -114,6 +123,21 @@ static int test_all(struct harness_t *harness_p)
                0,
                shell_stack,
                sizeof(shell_stack));
+
+    /* Login. */
+    /* Username. */
+    chout_read_until(buf, "username: ");
+    BTASSERT(std_strcmp(buf, FSTR("username: ")) == 0, "%s\n", buf);
+    chan_write(&qin, "erik\n", sizeof("erik\n") - 1);
+    chout_read_until(buf, "erik\n");
+    BTASSERT(std_strcmp(buf, FSTR("erik\n")) == 0, "%s\n", buf);
+
+    /* Password. */
+    chout_read_until(buf, "password: ");
+    BTASSERT(std_strcmp(buf, FSTR("password: ")) == 0, "%s\n", buf);
+    chan_write(&qin, "pannkaka\n", sizeof("pannkaka\n") - 1);
+    chout_read_until_prompt(buf);
+    BTASSERT(std_strcmp(buf, FSTR("********\n$ ")) == 0, "%s\n", buf);
 
     /* Empty line. */
     chan_write(&qin, "\n", sizeof("\n") - 1);
@@ -154,6 +178,7 @@ static int test_all(struct harness_t *harness_p)
     BTASSERT(std_strcmp(buf,
                         FSTR("\r\n"
                              "kernel/\r\n"
+                             "logout\r\n"
                              "tmp/\r\n"
                              "$ ")) == 0, "%s\n", buf);
 
@@ -224,6 +249,13 @@ static int test_all(struct harness_t *harness_p)
                              "00000000000000000004\r\n"
                              "$ ")) == 0);
 #endif
+
+    /* Logout. */
+    chan_write(&qin, "logout\n", sizeof("logout\n") - 1);
+    chout_read_until(buf, "username: ");
+    BTASSERT(std_strcmp(buf,
+                        FSTR("logout\nusername: ")) == 0,
+             "%s\n", buf);
 
     return (0);
 }
