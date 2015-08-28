@@ -31,9 +31,11 @@ file_fmt = '''/**
 
 #include "simba.h"
 
-{extern}
+{command_externs}
 
-{parameter_extern}
+{counter_externs}
+
+{parameter_externs}
 
 {strings}
 
@@ -41,10 +43,20 @@ const FAR struct fs_node_t fs_nodes[] = {{
 {fs_nodes}
 }};
 
-{counters}
+const FAR int fs_counters[] = {{
+{counters_list}
+  -1
+}};
+
+const FAR int fs_parameters[] = {{
+{parameters_list}
+  -1
+}};
 '''
 
-extern_fmt = 'extern int {callback}(int argc, const char *argv[], void *out_p, void *in_p);'
+command_extern_fmt = 'extern int {callback}(int argc, const char *argv[], void *out_p, void *in_p);'
+counter_extern_fmt = 'extern long long FS_COUNTER({name});'
+parameter_extern_fmt = 'extern {type} FS_PARAMETER({name});'
 
 strings_fmt = 'static FAR const char {name}[] = "{value}";'
 
@@ -57,23 +69,18 @@ node_fmt = '''    /* index: {index} */
             .end = {end},
             .len = {len}
         }},
+        .parent = {parent},
         .callback = {callback}
     }},'''
 
-counter_fmt = '''struct fs_counter_t fs_counter_{name} = {{
-    .next_p = {next},
-    .value = 0,
-    .name_p = {name}
-}};'''
-
-parameter_extern_fmt = '''extern {type} FS_PARAMETER({name});'''
+list_entry_fmt = '{index},'
 
 major = 1
 minor = 0
 
 nodeindex = 0
 
-def node_generate_c(nodes, name, children, next):
+def generate_nodes(parent, nodes, name, children, next, path):
     global nodeindex
     index = nodeindex
     nodeindex += 1
@@ -88,15 +95,19 @@ def node_generate_c(nodes, name, children, next):
         callback = "NULL"
         i = 0
         for n, c in children.items():
-            i = node_generate_c(nodes, n, c, i)
+            i = generate_nodes(index, nodes, n, c, i, path + name + "/")
         begin = i
-    nodes.append((index, node_fmt.format(index=index,
-                                         next=next,
-                                         name=name,
-                                         begin=begin,
-                                         end=end,
-                                         len=length,
-                                         callback=callback), name))
+    nodes.append((index,
+                  node_fmt.format(index=index,
+                                  next=next,
+                                  name=name,
+                                  begin=begin,
+                                  end=end,
+                                  len=length,
+                                  parent=parent,
+                                  callback=callback),
+                  name,
+                  (path + name).replace('/__slash', '')))
     return index
 
 if __name__ == '__main__':
@@ -104,12 +115,13 @@ if __name__ == '__main__':
     infiles = sys.argv[2:]
 
     re_command = re.compile('^\w*\.\.fs_command\.\. '
-                            '"(?P<command>[^"]+)" '
+                            '"(?P<path>[^"]+)" '
                             '"(?P<callback>[^"]+)";$', re.MULTILINE)
     re_counter = re.compile('^\w*\.\.fs_counter\.\. '
+                            '"(?P<path>[^"]+)" '
                             '"(?P<name>[^"]+)";$', re.MULTILINE)
     re_parameter = re.compile('^\w*\.\.fs_parameter\.\. '
-                              '"(?P<command>[^"]+)" '
+                              '"(?P<path>[^"]+)" '
                               '"(?P<name>[^"]+)" '
                               '"(?P<type>[^"]+)";$',
                               re.MULTILINE)
@@ -121,17 +133,18 @@ if __name__ == '__main__':
     for inf in infiles:
         file_content = open(inf).read()
         for mo in re_command.finditer(file_content):
-            commands.append([mo.group('command'), mo.group('callback')])
+            commands.append([mo.group('path'), mo.group('callback')])
         for mo in re_counter.finditer(file_content):
-            counters.append(mo.group('name'))
+            counters.append([mo.group('path'), mo.group('name')])
+            commands.append([mo.group('path'), 'fs_counter_cmd_' + mo.group('name')])
         for mo in re_parameter.finditer(file_content):
-            parameters.append([mo.group('command'),
+            parameters.append([mo.group('path'),
                                mo.group('name'),
                                mo.group('type')])
-            commands.append([mo.group('command'), 'fs_parameter_cmd_' + mo.group('name')])
+            commands.append([mo.group('path'), 'fs_parameter_cmd_' + mo.group('name')])
 
     fs = {}
-    extern = []
+    command_externs = []
 
     # create a dictionary of given file system
     for command in commands:
@@ -145,56 +158,59 @@ if __name__ == '__main__':
                 fspath[part] = {}
             fspath = fspath[part]
         fspath[name] = callback
-        extern.append(extern_fmt.format(callback=callback))
+        command_externs.append(command_extern_fmt.format(callback=callback))
 
     # generate counters
-    fs_counters = []
-    counters.sort()
-    counters.insert(0, "__base")
-    for i, name in enumerate(counters[0:-1]):
-        fs_counters.append(counter_fmt.format(next='&fs_counter_' + counters[i+1],
-                                              name=name))
-    fs_counters.append(counter_fmt.format(next='NULL',
-                                          name=counters[-1]))
-    fs_counters.reverse()
+    counter_externs = []
+    for counter in counters:
+        counter_externs.append(counter_extern_fmt.format(name=counter[1]))
 
     #parameters
-    fs_parameter_extern = []
+    parameter_externs = []
     for parameter in parameters:
-        fs_parameter_extern.append(parameter_extern_fmt.format(name=parameter[1],
-                                                               type=parameter[2]))
+        parameter_externs.append(parameter_extern_fmt.format(name=parameter[1],
+                                                             type=parameter[2]))
 
     # generate c source file
     fs_nodes = []
-    node_generate_c(fs_nodes, '__slash', fs, 0)
+    generate_nodes(-1, fs_nodes, '__slash', fs, 0, "/")
     fs_nodes.sort(key=lambda n: n[0])
 
     # strings
-
-    # commands
     strings = [strings_fmt.format(name=name,
                                   value=name)
-               for _, _, name in fs_nodes
+               for _, _, name, _ in fs_nodes
                if name != '__slash']
     strings.append(strings_fmt.format(name='__slash', value="/"))
 
-    # counters
-    strings.extend([strings_fmt.format(name=name,
-                                       value=name)
-                    for name in counters
-                    if name != '__base'])
-    strings.append(strings_fmt.format(name='__base', value=""))
-
     # remote duplicates
     strings = list(set(strings))
+
+    # counters list
+    counters_list = []
+    for counter in counters:
+        for node in fs_nodes:
+            if counter[0] == node[3]:
+                counters_list.append(list_entry_fmt.format(index=node[0]))
+                break
+
+    # parameters list
+    parameters_list = []
+    for parameter in parameters:
+        for node in fs_nodes:
+            if parameter[0] == node[3]:
+                parameters_list.append(list_entry_fmt.format(index=node[0]))
+                break
 
     fout = open(outfile, 'w').write(
         file_fmt.format(filename=outfile,
                         major=major,
                         minor=minor,
                         date=time.strftime("%Y-%m-%d %H:%M %Z"),
-                        extern='\n'.join(extern),
-                        parameter_extern='\n'.join(fs_parameter_extern),
+                        command_externs='\n'.join(command_externs),
+                        counter_externs='\n'.join(counter_externs),
+                        parameter_externs='\n'.join(parameter_externs),
                         strings='\n'.join(strings),
                         fs_nodes='\n'.join(n[1] for n in fs_nodes),
-                        counters='\n'.join(fs_counters)))
+                        counters_list='\n'.join(counters_list),
+                        parameters_list='\n'.join(parameters_list)))

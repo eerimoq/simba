@@ -22,9 +22,9 @@
 
 FS_COMMAND_DEFINE("/tmp/foo", tmp_foo);
 
-FS_COUNTER_DEFINE(foo);
-FS_COUNTER_DEFINE(bar);
-FS_COUNTER_DEFINE(fie);
+FS_COUNTER_DEFINE("/foo", foo);
+FS_COUNTER_DEFINE("/bar", bar);
+FS_COUNTER_DEFINE("/fie", fie);
 
 int tmp_foo(int argc,
             const char *argv[],
@@ -39,8 +39,7 @@ int tmp_foo(int argc,
     }
 
     std_fprintf(out_p,
-                FSTR("name = %s, argc = %d, argv[0] = %s, argv[1] = %s, argv[2] = %s\r\n"),
-                name_p,
+                FSTR("argc = %d, argv[0] = %s, argv[1] = %s, argv[2] = %s\r\n"),
                 argc,
                 argv[0],
                 argv[1],

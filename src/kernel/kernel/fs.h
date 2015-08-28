@@ -25,17 +25,43 @@
 
 /* Add a command to the file system with given callback. */
 #if defined(__FS__)
-#    define FS_COMMAND_DEFINE(command, callback) ..fs_command.. command #callback
-#    define FS_COUNTER_DEFINE(name) ..fs_counter.. #name
-#    define FS_PARAMETER_DEFINE(command, name, type, default)   \
-    ..fs_parameter.. command #name #type
+#    define FS_COMMAND_DEFINE(path, callback) ..fs_command.. path #callback
+#    define FS_COUNTER_DEFINE(path, name) ..fs_counter.. path #name
+#    define FS_PARAMETER_DEFINE(path, name, type, default)      \
+    ..fs_parameter.. path #name #type
 #else
-#    define FS_COMMAND_DEFINE(command, callback)
-#    define FS_COUNTER_DEFINE(name) extern struct fs_counter_t fs_counter_ ## name;
-#    define FS_PARAMETER_DEFINE(command, name, type, default)   \
-    type fs_parameter_ ## name = default;                       \
+#    define FS_COMMAND_DEFINE(path, callback)
+#    define FS_COUNTER_DEFINE(path, name)       \
+    long long fs_counter_ ## name = 0;          \
+    FS_COUNTER_CMD(name)
+#    define FS_PARAMETER_DEFINE(path, name, type, default_value)        \
+    type fs_parameter_ ## name = default_value;                         \
     FS_PARAMETER_CMD(name, type)
 #endif
+
+/* Length of argv for get. */
+#define FS_ARGC_GET 1
+
+#define FS_COUNTER_CMD(name)                            \
+    int fs_counter_cmd_ ## name (int argc,              \
+                                 const char *argv[],    \
+                                 chan_t *chout_p,       \
+                                 chan_t *chin_p)        \
+    {                                                   \
+        if (argc == FS_ARGC_GET) {                      \
+            return (fs_counter_get(argc,                \
+                                   argv,                \
+                                   chout_p,             \
+                                   chin_p,              \
+                                   &FS_COUNTER(name))); \
+        } else {                                        \
+            return (fs_counter_set(argc,                \
+                                   argv,                \
+                                   chout_p,             \
+                                   chin_p,              \
+                                   &FS_COUNTER(name))); \
+        }                                               \
+    }
 
 #define FS_PARAMETER_CMD(name, handler)                                 \
     int fs_parameter_cmd_ ## name (int argc,                            \
@@ -43,30 +69,30 @@
                                    chan_t *chout_p,                     \
                                    chan_t *chin_p)                      \
     {                                                                   \
-        if (argc == 1) {                                                \
-            return (fs_parameter_handler_ ## handler ## _get(&FS_PARAMETER(name), \
-                                                             argc,      \
+        if (argc == FS_ARGC_GET) {                                      \
+            return (fs_parameter_handler_ ## handler ## _get(argc,      \
                                                              argv,      \
                                                              chout_p,   \
-                                                             chin_p));  \
+                                                             chin_p,    \
+                                                             &FS_PARAMETER(name))); \
         } else {                                                        \
-            return (fs_parameter_handler_ ## handler ## _set(&FS_PARAMETER(name), \
-                                                             argc,      \
+            return (fs_parameter_handler_ ## handler ## _set(argc,      \
                                                              argv,      \
                                                              chout_p,   \
-                                                             chin_p));  \
+                                                             chin_p,    \
+                                                             &FS_PARAMETER(name))); \
         }                                                               \
     }
 
 /* Increment given counter. */
-#define FS_COUNTER_INC(name, _value) (fs_counter_ ## name).value += (_value)
+#define FS_COUNTER(name) fs_counter_ ## name
+#define FS_COUNTER_INC(name, value) FS_COUNTER(name) += (value)
 
 /* Get and set parameter value. */
 #define FS_PARAMETER(name) fs_parameter_ ## name
 
 /* Counter node. */
 struct fs_counter_t {
-    struct fs_counter_t *next_p;
     long long unsigned int value;
     FAR const char *name_p;
 };
@@ -75,6 +101,7 @@ struct fs_counter_t {
 struct fs_node_t {
     int next;
     FAR const char *name_p;
+    int parent;
     struct {
         int begin;
         int end;
@@ -136,16 +163,28 @@ void fs_split(char *buf_p, char **path_pp, char **cmd_pp);
  */
 void fs_merge(char *path_p, char *cmd_p);
 
-int fs_parameter_handler_int_set(int *parameter_p,
-                                 int argc,
+int fs_parameter_handler_int_set(int argc,
                                  const char *argv[],
                                  chan_t *chout_p,
-                                 chan_t *chin_p);
+                                 chan_t *chin_p,
+                                 int *parameter_p);
 
-int fs_parameter_handler_int_get(int *parameter_p,
-                                 int argc,
+int fs_parameter_handler_int_get(int argc,
                                  const char *argv[],
                                  chan_t *chout_p,
-                                 chan_t *chin_p);
+                                 chan_t *chin_p,
+                                 int *parameter_p);
+
+int fs_counter_get(int argc,
+                   const char *argv[],
+                   chan_t *chout_p,
+                   chan_t *chin_p,
+                   long long *counter_p);
+
+int fs_counter_set(int argc,
+                   const char *argv[],
+                   chan_t *chout_p,
+                   chan_t *chin_p,
+                   long long *counter_p);
 
 #endif

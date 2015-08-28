@@ -20,14 +20,16 @@
 
 #include "simba.h"
 
-#define PARAMETER_FIE_DEFAULT 5
+#define OUR_PARAMETER_DEFAULT 5
+#define BUFFER_SIZE 512
 
 FS_COMMAND_DEFINE("/tmp/foo", tmp_foo);
 FS_COMMAND_DEFINE("/tmp/bar", tmp_bar);
 
-FS_COUNTER_DEFINE(counter1);
+FS_COUNTER_DEFINE("/my/counter", my_counter);
+FS_COUNTER_DEFINE("/your/counter", your_counter);
 
-FS_PARAMETER_DEFINE("/tmp/fie", tmp_fie, int, PARAMETER_FIE_DEFAULT);
+FS_PARAMETER_DEFINE("/our/parameter", our_parameter, int, OUR_PARAMETER_DEFAULT);
 
 int tmp_foo(int argc,
             const char *argv[],
@@ -61,32 +63,93 @@ int tmp_bar(int argc,
     return (0);
 }
 
-static char qoutbuf[512];
+static char qoutbuf[BUFFER_SIZE];
 static QUEUE_INIT_DECL(qout, qoutbuf, sizeof(qoutbuf));
 
-static int test_all(struct harness_t *harness_p)
+static int read_until(char *buf_p, const char *pattern)
 {
-    char buf[64];
+    char c;
+    size_t length = 0;
+    size_t pattern_length = strlen(pattern);
+
+    while (length < BUFFER_SIZE - 1) {
+        chan_read(&qout, &c, sizeof(c));
+#if defined(ARCH_LINUX)
+        printf("%c", c);
+#endif
+        *buf_p++ = c;
+        length++;
+        *buf_p = '\0';
+
+        /* Compare to pattern. */
+        if (length >= pattern_length) {
+            if (!strcmp(&buf_p[-pattern_length], pattern)) {
+                return (1);
+            }
+        }
+    }
+
+    return (0);
+}
+
+static int test_command(struct harness_t *harness_p)
+{
+    char buf[BUFFER_SIZE];
 
     strcpy(buf, "  /tmp/foo     foo1 foo2  ");
     BTASSERT(fs_call(buf, NULL, &qout) == 0);
+    read_until(buf, "\n");
+
     strcpy(buf, "/tmp/bar 1 2 3 4 5 6 7 8 9 10");
     BTASSERT(fs_call(buf, NULL, &qout) == -E2BIG);
+    read_until(buf, "\n");
+
     strcpy(buf, "/tmp/bar/missing");
     BTASSERT(fs_call(buf, NULL, &qout) == -ENOENT);
+    read_until(buf, "\n");
+
     strcpy(buf, "");
     BTASSERT(fs_call(buf, NULL, &qout) == -ENOENT);
-    strcpy(buf, "kernel/fs/counter_reset");
+    read_until(buf, "\n");
+
+    return (0);
+}
+
+static int test_counter(struct harness_t *harness_p)
+{
+    char buf[256];
+
+    strcpy(buf, "kernel/fs/counters_list");
     BTASSERT(fs_call(buf, NULL, &qout) == 0);
+    read_until(buf, "/your/counter                                    00000000000000000000\r\n");
+
+    FS_COUNTER_INC(my_counter, 3);
+
+    strcpy(buf, "my/counter");
+    BTASSERT(fs_call(buf, NULL, &qout) == 0);
+    read_until(buf, "00000000000000000003\r\n");
+
+    strcpy(buf, "kernel/fs/counters_reset");
+    BTASSERT(fs_call(buf, NULL, &qout) == 0);
+
+    strcpy(buf, "my/counter");
+    BTASSERT(fs_call(buf, NULL, &qout) == 0);
+    read_until(buf, "00000000000000000000\r\n");
 
     return (0);
 }
 
 static int test_parameter(struct harness_t *harness_p)
 {
-    BTASSERT(FS_PARAMETER(tmp_fie) == PARAMETER_FIE_DEFAULT);
-    FS_PARAMETER(tmp_fie) = 1;
-    BTASSERT(FS_PARAMETER(tmp_fie) == 1);
+    char buf[256];
+
+    strcpy(buf, "kernel/fs/parameters_list");
+    BTASSERT(fs_call(buf, NULL, &qout) == 0);
+    read_until(buf, "/our/parameter 5\r\n");
+
+    BTASSERT(FS_PARAMETER(our_parameter) == OUR_PARAMETER_DEFAULT);
+    FS_PARAMETER(our_parameter) = 1;
+    BTASSERT(FS_PARAMETER(our_parameter) == 1);
 
     return (0);
 }
@@ -95,7 +158,8 @@ int main()
 {
     struct harness_t harness;
     struct harness_testcase_t harness_testcases[] = {
-        { test_all, "test_all" },
+        { test_command, "test_command" },
+        { test_counter, "test_counter" },
         { test_parameter, "test_parameter" },
         { NULL, NULL }
     };

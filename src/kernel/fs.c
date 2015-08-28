@@ -24,19 +24,124 @@
 #define FS_COMMAND_ARGS_MAX 8
 #define FS_COMMAND_MAX 48
 
-#define FS_COUNTER_NAME_MAX 64
+#define FS_NAME_MAX 64
 
-FS_COMMAND_DEFINE("/kernel/fs/counter_list", fs_cmd_counter_list);
-FS_COMMAND_DEFINE("/kernel/fs/counter_reset", fs_cmd_counter_reset);
+FS_COMMAND_DEFINE("/kernel/fs/counters_list", fs_cmd_counters_list);
+FS_COMMAND_DEFINE("/kernel/fs/counters_reset", fs_cmd_counters_reset);
+
+FS_COMMAND_DEFINE("/kernel/fs/parameters_list", fs_cmd_parameters_list);
 
 extern const FAR struct fs_node_t fs_nodes[];
-extern struct fs_counter_t fs_counter___base;
+extern const FAR int fs_counters[];
+extern const FAR int fs_parameters[];
 
-int fs_parameter_handler_int_set(int *parameter_p,
-                                 int argc,
+/**
+ * Create the absolute path in the file tree for given node.
+ * @return pointer to destination string or NULL
+ */
+static char *get_abspath(char *buf_p,
+                         size_t size,
+                         const FAR struct fs_node_t *node_p)
+{
+    const FAR char *name_p;
+    size_t length;
+
+
+    /* Add null termination. */
+    buf_p += (size - 1);
+    *buf_p = '\0';
+
+    /* Stop when the root element is found. */
+
+    while (node_p->parent != -1) {
+        name_p = node_p->name_p;
+        length = std_strlen(name_p);
+
+        /* Prepend a slash. */
+        length += 1;
+        size -= length;
+
+        /* The name does not fit. */
+        if (size <= 0) {
+            return (NULL);
+        }
+
+        buf_p -= length;
+        *buf_p++ = '/';
+
+        /* Copy to output buffer. */
+        while (*name_p != '\0') {
+            *buf_p++ = *name_p++;
+        }
+
+        buf_p -= length;
+        node_p = &fs_nodes[node_p->parent];
+    }
+
+    return (buf_p);
+}
+
+static int list_indexed_items(chan_t *chout_p,
+                              chan_t *chin_p,
+                              const FAR int *index_p,
+                              const FAR char *path_format)
+{
+
+    int i;
+    const char *argv_callback[1];
+    const FAR struct fs_node_t *node_p;
+    char buf[FS_NAME_MAX], *abspath_p;
+
+    while (*index_p != -1) {
+        node_p = &fs_nodes[*index_p];
+
+        abspath_p = get_abspath(buf, membersof(buf), node_p);
+
+        std_fprintf(chout_p, path_format, abspath_p);
+
+        for (i = 0; i < FS_NAME_MAX; i++) {
+            buf[i] = node_p->name_p[i];
+        }
+
+        argv_callback[0] = buf;
+        node_p->callback(FS_ARGC_GET, argv_callback, chout_p, chin_p);
+
+        index_p++;
+    }
+
+    return (0);
+}
+
+int fs_counter_get(int argc,
+                   const char *argv[],
+                   chan_t *chout_p,
+                   chan_t *chin_p,
+                   long long *counter_p)
+{
+    std_fprintf(chout_p,
+                FSTR("%012lx%08lx\r\n"),
+                (long)(*counter_p >> 32),
+                (long)(*counter_p & 0xffffffff));
+
+    return (0);
+}
+
+int fs_counter_set(int argc,
+                   const char *argv[],
+                   chan_t *chout_p,
+                   chan_t *chin_p,
+                   long long *counter_p)
+{
+    *counter_p = 0;
+
+    return (0);
+}
+
+int fs_parameter_handler_int_set(int argc,
                                  const char *argv[],
                                  chan_t *chout_p,
-                                 chan_t *chin_p)
+                                 chan_t *chin_p,
+                                 int *parameter_p)
 {
     long value;
 
@@ -50,72 +155,75 @@ int fs_parameter_handler_int_set(int *parameter_p,
     return (0);
 }
 
-int fs_parameter_handler_int_get(int *parameter_p,
-                                 int argc,
+int fs_parameter_handler_int_get(int argc,
                                  const char *argv[],
                                  chan_t *chout_p,
-                                 chan_t *chin_p)
+                                 chan_t *chin_p,
+                                 int *parameter_p)
 {
     std_fprintf(chout_p, FSTR("%d\r\n"), *parameter_p);
 
     return (0);
 }
 
-int fs_cmd_counter_list(int argc,
-                        const char *argv[],
-                        chan_t *chout_p,
-                        chan_t *chin_p)
-{
-    UNUSED(chin_p);
-
-    int i;
-    struct fs_counter_t *counter_p;
-    char buf[FS_COUNTER_NAME_MAX];
-
-    std_fprintf(chout_p, FSTR("NAME                                             VALUE\r\n"));
-
-    counter_p = fs_counter___base.next_p;
-
-    while (counter_p != NULL) {
-        for (i = 0; i < FS_COUNTER_NAME_MAX; i++) {
-            buf[i] = counter_p->name_p[i];
-        }
-        std_fprintf(chout_p,
-                    FSTR("%-48s %012lx%08lx\r\n"),
-                    buf,
-                    (long)(counter_p->value >> 32),
-                    (long)(counter_p->value & 0xffffffff));
-        counter_p = counter_p->next_p;
-    }
-
-    return (0);
-}
-
-int fs_cmd_counter_reset(int argc,
+int fs_cmd_counters_list(int argc,
                          const char *argv[],
                          chan_t *chout_p,
                          chan_t *chin_p)
 {
     UNUSED(chin_p);
 
-    struct fs_counter_t *counter_p;
-    const char *filter_p = NULL;
+    std_fprintf(chout_p, FSTR("NAME                                             VALUE\r\n"));
 
-    if (argc > 1) {
-        filter_p = argv[1];
-    }
+    return (list_indexed_items(chout_p,
+                               chin_p,
+                               fs_counters,
+                               FSTR("%-48s ")));
+}
 
-    counter_p = fs_counter___base.next_p;
+int fs_cmd_counters_reset(int argc,
+                          const char *argv[],
+                          chan_t *chout_p,
+                          chan_t *chin_p)
+{
+    UNUSED(chin_p);
 
-    while (counter_p != NULL) {
-        if ((filter_p == NULL) || (std_strcmp(counter_p->name_p, filter_p) == 0)) {
-            counter_p->value = 0;
+    char buf[64];
+    int i;
+    const char *argv_callback[2];
+    const FAR int *index_p;
+    const FAR struct fs_node_t *node_p;
+
+    index_p = fs_counters;
+
+    while (*index_p != -1) {
+        node_p = &fs_nodes[*index_p];
+
+        for (i = 0; i < FS_NAME_MAX; i++) {
+            buf[i] = node_p->name_p[i];
         }
 
-        counter_p = counter_p->next_p;
+        argv_callback[0] = buf;
+        argv_callback[1] = "0";
+        node_p->callback(2, argv_callback, chout_p, chin_p);
+
+        index_p++;
     }
 
     return (0);
+}
+
+int fs_cmd_parameters_list(int argc,
+                           const char *argv[],
+                           chan_t *chout_p,
+                           chan_t *chin_p)
+{
+    UNUSED(chin_p);
+
+    return (list_indexed_items(chout_p,
+                               chin_p,
+                               fs_parameters,
+                               FSTR("%s ")));
 }
 
 /**

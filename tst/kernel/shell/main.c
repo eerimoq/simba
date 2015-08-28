@@ -23,9 +23,9 @@
 FS_COMMAND_DEFINE("/tmp/foo", tmp_foo);
 FS_COMMAND_DEFINE("/tmp/bar", tmp_bar);
 
-FS_COUNTER_DEFINE(foo);
-FS_COUNTER_DEFINE(bar);
-FS_COUNTER_DEFINE(fie);
+FS_COUNTER_DEFINE("/foo", foo);
+FS_COUNTER_DEFINE("/bar", bar);
+FS_COUNTER_DEFINE("/fie", fie);
 
 FS_PARAMETER_DEFINE("/tmp/fie", tmp_fie, int, 57);
 
@@ -178,6 +178,9 @@ static int test_all(struct harness_t *harness_p)
     chout_read_until_prompt(buf);
     BTASSERT(std_strcmp(buf,
                         FSTR("\r\n"
+                             "bar\r\n"
+                             "fie\r\n"
+                             "foo\r\n"
                              "kernel/\r\n"
                              "logout\r\n"
                              "tmp/\r\n"
@@ -237,17 +240,17 @@ static int test_all(struct harness_t *harness_p)
     FS_COUNTER_INC(foo, 2);
     FS_COUNTER_INC(bar, 339283982393);
     FS_COUNTER_INC(fie, 1);
-    chan_write(&qin, "/kernel/fs/counter_list\n", membersof("/kernel/fs/counter_list\n") - 1);
+    chan_write(&qin, "/kernel/fs/counters_list\n", membersof("/kernel/fs/counters_list\n") - 1);
     BTASSERT(chout_read_until_prompt(buf) == 1);
     BTASSERT(std_strcmp(buf,
-                        FSTR("/kernel/fs/counter_list\n"
+                        FSTR("/kernel/fs/counters_list\n"
                              "NAME                                             VALUE\r\n"
-                             "bar                                              "
-                             "00000000004efee6b839\r\n"
-                             "fie                                              "
-                             "00000000000000000001\r\n"
-                             "foo                                              "
+                             "/foo                                             "
                              "00000000000000000004\r\n"
+                             "/bar                                             "
+                             "00000000004efee6b839\r\n"
+                             "/fie                                             "
+                             "00000000000000000001\r\n"
                              "$ ")) == 0);
 #endif
 
