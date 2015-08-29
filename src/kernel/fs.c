@@ -46,13 +46,11 @@ static char *get_abspath(char *buf_p,
     const FAR char *name_p;
     size_t length;
 
-
     /* Add null termination. */
     buf_p += (size - 1);
     *buf_p = '\0';
 
     /* Stop when the root element is found. */
-
     while (node_p->parent != -1) {
         name_p = node_p->name_p;
         length = std_strlen(name_p);
@@ -86,7 +84,6 @@ static int list_indexed_items(chan_t *chout_p,
                               const FAR int *index_p,
                               const FAR char *path_format)
 {
-
     int i;
     const char *argv_callback[1];
     const FAR struct fs_node_t *node_p;
