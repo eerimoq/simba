@@ -311,16 +311,19 @@ ssize_t queue_write_irq(struct queue_t *queue_p,
     if ((left > 0) && (queue_p->buf_p != NULL)) {
         n = (left > QUEUE_GET_FREE(queue_p) ? QUEUE_GET_FREE(queue_p) : left);
 
-        if ((queue_p->wrpos + n) <= queue_p->size) {
-            memcpy(&((char *)queue_p->buf_p)[queue_p->wrpos], buf_p, n);
-        } else {
-            size0 = (queue_p->size - queue_p->wrpos);
-            memcpy(&((char *)queue_p->buf_p)[queue_p->wrpos], buf_p, size0);
-            memcpy(&((char *)queue_p->buf_p)[0], buf_p + size0, n - size0);
-        }
+        if (n > 0) {
+            if ((queue_p->wrpos + n) <= queue_p->size) {
+                memcpy(&((char *)queue_p->buf_p)[queue_p->wrpos], buf_p, n);
+            } else {
+                size0 = (queue_p->size - queue_p->wrpos);
+                memcpy(&((char *)queue_p->buf_p)[queue_p->wrpos], buf_p, size0);
+                memcpy(&((char *)queue_p->buf_p)[0], buf_p + size0, n - size0);
+            }
 
-        queue_p->wrpos += n;
-        queue_p->wrpos &= (queue_p->size - 1);
+            left -= n;
+            queue_p->wrpos += n;
+            queue_p->wrpos &= (queue_p->size - 1);
+        }
     }
 
     spin_unlock_irq(&chan_lock);
