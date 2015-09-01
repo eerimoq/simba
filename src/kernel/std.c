@@ -33,7 +33,7 @@ struct std_klog_entry_t {
 };
 
 struct buffered_output_t {
-    char_t *chan_p;
+    chan_t *chan_p;
     int pos;
     char buffer[STD_OUTPUT_BUFFER_MAX];
 };
@@ -395,6 +395,7 @@ static void std_vprintf(void (*std_putc)(char c, void *arg_p),
 int std_module_init(void)
 {
     memset(std_klog.buf, -1, sizeof(std_klog.buf));
+
     /* First footer. */
     std_klog.buf[0] = '\0';
 
@@ -465,6 +466,8 @@ void std_printk(char level, FAR const char *fmt_p, ...)
         return;
     }
 
+    std_klog.output.pos = 0;
+
     /* Add entry header. */
     entry.buf_p = std_klog.next_p;
     entry.meta = 1;
@@ -533,7 +536,7 @@ int std_readk(char *buf_p, size_t size, struct std_readk_t *iter_p)
 
 void std_klog_set_output_channel(chan_t *chan_p)
 {
-    std_klog.chout_p = chan_p;
+    std_klog.output.chan_p = chan_p;
 }
 
 int std_strtol(const char *str_p, long *value_p)

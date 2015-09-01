@@ -83,8 +83,6 @@ static int shell_login(char *buf_p,
     int correct_username;
     int correct_password;
 
-    shell_read_line(buf_p, chin_p, chout_p, 0);
-
     while (1) {
         correct_username = 0;
         correct_password = 0;
@@ -174,17 +172,22 @@ void *shell_entry(void *arg_p)
 {
     chan_t *chin_p, *chout_p;
     const char *username_p, *password_p;
-    struct shell_args_t *sarg_p;
+    struct shell_args_t *shell_args_p;
     char buf[SHELL_COMMAND_MAX];
     int authorized = 0;
 
-    thrd_set_name("shell");
+    shell_args_p = arg_p;
 
-    sarg_p = arg_p;
-    chin_p = sarg_p->chin_p;
-    chout_p = sarg_p->chout_p;
-    username_p = sarg_p->username_p;
-    password_p = sarg_p->password_p;
+    if (shell_args_p->name_p == NULL) {
+        shell_args_p->name_p = "shell";
+    }
+
+    thrd_set_name(shell_args_p->name_p);
+
+    chin_p = shell_args_p->chin_p;
+    chout_p = shell_args_p->chout_p;
+    username_p = shell_args_p->username_p;
+    password_p = shell_args_p->password_p;
 
     /* Always authorized if no login is required. */
     if (username_p == NULL) {

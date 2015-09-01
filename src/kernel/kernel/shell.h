@@ -26,6 +26,7 @@
 struct shell_args_t {
     chan_t *chin_p;
     chan_t *chout_p;
+    const char *name_p;
     const char *username_p;
     const char *password_p;
 };

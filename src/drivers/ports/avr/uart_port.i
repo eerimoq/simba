@@ -27,6 +27,8 @@
 #define UBRRn(dev_p) ((volatile uint16_t *)((dev_p)->sfr_p + 4))
 #define UDRn(dev_p) ((dev_p)->sfr_p + 6)
 
+FS_COUNTER_DEFINE("/drivers/uart/rx_errors", uart_rx_errors);
+
 static int uart_port_start(struct uart_driver_t *drv_p)
 {
     uint16_t baudrate = ((F_CPU / 8 / drv_p->baudrate - 1) / 2);
@@ -59,10 +61,11 @@ static ssize_t uart_port_write_cb(void *arg_p,
 {
     struct uart_driver_t *drv_p;
 
+    drv_p = container_of(arg_p, struct uart_driver_t, chout);
+
     sem_get(&drv_p->sem, NULL);
 
     /* Initiate transfer by writing the first byte. */
-    drv_p = container_of(arg_p, struct uart_driver_t, chout);
     drv_p->txbuf_p = txbuf_p;
     drv_p->txsize = (size - 1);
     drv_p->thrd_p = thrd_self();
@@ -82,6 +85,10 @@ static void tx_isr(int index)
 {
     struct uart_driver_t *drv_p = uart_device[index].drv_p;
 
+    if (drv_p == NULL) {
+        return;
+    }
+
     /* Write the next byte or resume suspended thread if all data have
        been written. */
     if (drv_p->txsize > 0) {
@@ -96,19 +103,39 @@ static void rx_isr(int index)
 {
     struct uart_driver_t *drv_p = uart_device[index].drv_p;
     char c;
+    uint8_t error;
 
-    /* Write data to input queue. */
+    if (drv_p == NULL) {
+        return;
+    }
+
+    error = (*UCSRnA(drv_p->dev_p) & (_BV(FE0) | _BV(DOR0) | _BV(UPE0)));
     c = *UDRn(drv_p->dev_p);
-    queue_write_irq(&drv_p->chin, &c, 1);
+
+    /* Error frames are discarded. */
+    if (error == 0) {
+        /* Write data to input queue. */
+        queue_write_irq(&drv_p->chin, &c, 1);
+    } else {
+        FS_COUNTER_INC(uart_rx_errors, 1);
+    }
 }
 
-#define UART_ISR(vector, index)            \
-    ISR(vector ## _RX_vect) {              \
-        rx_isr(index);                     \
-    }                                      \
-                                           \
-    ISR(vector ## _TX_vect) {              \
-        tx_isr(index);                     \
+static void udre_isr(int index)
+{
+}
+
+#define UART_ISR(vector, index)                 \
+    ISR(vector ## _RX_vect) {                   \
+        rx_isr(index);                          \
+    }                                           \
+                                                \
+    ISR(vector ## _TX_vect) {                   \
+        tx_isr(index);                          \
+    }                                           \
+                                                \
+    ISR(vector ## _UDRE_vect) {                 \
+        udre_isr(index);                        \
     }
 
 #if (UART_DEVICE_MAX >= 1)

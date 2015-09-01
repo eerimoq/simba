@@ -29,7 +29,7 @@ int uart_module_init()
 
 int uart_init(struct uart_driver_t *drv_p,
               struct uart_device_t *dev_p,
-              int baudrate,
+              long baudrate,
               void *rxbuf_p,
               size_t size)
 {

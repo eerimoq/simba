@@ -170,12 +170,12 @@ int fs_cmd_counters_list(int argc,
 {
     UNUSED(chin_p);
 
-    std_fprintf(chout_p, FSTR("NAME                                             VALUE\r\n"));
+    std_fprintf(chout_p, FSTR("NAME                                                 VALUE\r\n"));
 
     return (list_indexed_items(chout_p,
                                chin_p,
                                fs_counters,
-                               FSTR("%-48s ")));
+                               FSTR("%-52s ")));
 }
 
 int fs_cmd_counters_reset(int argc,
@@ -463,7 +463,7 @@ int fs_list(const char *path_p,
     return (0);
 }
 
-int fs_auto_complete(char *path, chan_t *chout)
+int fs_auto_complete(char *path, chan_t *chout_p)
 {
     int node, head, pos, flag, next,
         command_length, node_name_length, len;
@@ -531,7 +531,7 @@ int fs_auto_complete(char *path, chan_t *chout)
         if (flag == 0) {
             err = (pos - command_length + 1);
             pcmd_p[pos] = c;
-            chan_write(chout, &c, sizeof(c));
+            chan_write(chout_p, &c, sizeof(c));
         } else {
             break;
         }
@@ -550,7 +550,7 @@ int fs_auto_complete(char *path, chan_t *chout)
         }
 
         pcmd_p[pos++] = c;
-        chan_write(chout, &c, sizeof(c));
+        chan_write(chout_p, &c, sizeof(c));
     }
 
     pcmd_p[pos] = '\0';

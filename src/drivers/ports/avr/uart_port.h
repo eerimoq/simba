@@ -34,7 +34,7 @@ struct uart_driver_t {
     const char *txbuf_p;
     size_t txsize;
     struct thrd_t *thrd_p;
-    uint16_t baudrate;
+    long baudrate;
     struct chan_t chout;
     struct queue_t chin;
 };
