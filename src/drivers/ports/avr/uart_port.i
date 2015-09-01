@@ -20,6 +20,7 @@
 
 #include <avr/interrupt.h>
 
+/* Register access macros. */
 #define UCSRnA(dev_p) ((dev_p)->sfr_p + 0)
 #define UCSRnB(dev_p) ((dev_p)->sfr_p + 1)
 #define UCSRnC(dev_p) ((dev_p)->sfr_p + 2)
@@ -28,12 +29,11 @@
 
 static int uart_port_start(struct uart_driver_t *drv_p)
 {
-    uint16_t baudrate = (F_CPU / 16 / drv_p->baudrate - 1);
+    uint16_t baudrate = ((F_CPU / 8 / drv_p->baudrate - 1) / 2);
     struct uart_device_t *dev_p = drv_p->dev_p;
 
     *UBRRn(dev_p) = baudrate;
-    UBRR0L = baudrate;
-    UBRR0H = (baudrate >> 8);
+    *UCSRnA(dev_p) = 0;
     *UCSRnB(dev_p) = (_BV(RXCIE0) | _BV(TXCIE0) | _BV(RXEN0) | _BV(TXEN0));
     *UCSRnC(dev_p) = (_BV(UCSZ00) | _BV(UCSZ01));
 
@@ -44,6 +44,7 @@ static int uart_port_start(struct uart_driver_t *drv_p)
 
 static int uart_port_stop(struct uart_driver_t *drv_p)
 {
+    *UCSRnA(drv_p->dev_p) = 0;
     *UCSRnB(drv_p->dev_p) = 0;
     *UCSRnC(drv_p->dev_p) = 0;
 
@@ -58,14 +59,21 @@ static ssize_t uart_port_write_cb(void *arg_p,
 {
     struct uart_driver_t *drv_p;
 
+    sem_get(&drv_p->sem, NULL);
+
     /* Initiate transfer by writing the first byte. */
     drv_p = container_of(arg_p, struct uart_driver_t, chout);
     drv_p->txbuf_p = txbuf_p;
     drv_p->txsize = (size - 1);
     drv_p->thrd_p = thrd_self();
+
+    /* Write the first byte. The rest are written from the interrupt
+       routine. */
     *UDRn(drv_p->dev_p) = *drv_p->txbuf_p++;
 
     thrd_suspend(NULL);
+
+    sem_put(&drv_p->sem, 1);
 
     return (size);
 }
@@ -74,7 +82,8 @@ static void tx_isr(int index)
 {
     struct uart_driver_t *drv_p = uart_device[index].drv_p;
 
-    /* Write next byte or resume suspended thread. */
+    /* Write the next byte or resume suspended thread if all data have
+       been written. */
     if (drv_p->txsize > 0) {
         *UDRn(drv_p->dev_p) = *drv_p->txbuf_p++;
         drv_p->txsize--;

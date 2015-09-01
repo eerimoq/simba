@@ -36,6 +36,8 @@ int uart_init(struct uart_driver_t *drv_p,
     drv_p->dev_p = dev_p;
     drv_p->baudrate = baudrate;
 
+    sem_init(&drv_p->sem, 1);
+
     chan_init(&drv_p->chout,
               NULL,
               (ssize_t (*)(chan_t *, const void *, size_t))uart_port_write_cb,

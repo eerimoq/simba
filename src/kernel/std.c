@@ -32,16 +32,17 @@ struct std_klog_entry_t {
     int meta;
 };
 
+struct buffered_output_t {
+    char_t *chan_p;
+    int pos;
+    char buffer[STD_OUTPUT_BUFFER_MAX];
+};
+
 struct std_klog_t {
     char buf[STD_KLOG_BUFFER_MAX];
     char *next_p;
     uint16_t id;
-    chan_t *chout_p;
-};
-
-struct output_t {
-    int pos;
-    char buffer[STD_OUTPUT_BUFFER_MAX];
+    struct buffered_output_t output;
 };
 
 FS_COMMAND_DEFINE("/kernel/std/klog_stdout", std_cmd_klog_stdout);
@@ -51,12 +52,10 @@ FS_COMMAND_DEFINE("/kernel/std/klog_write", std_cmd_klog_write);
 static struct std_klog_t std_klog = {
     .next_p = std_klog.buf + 1,
     .id = 0,
-    .chout_p = NULL
-};
-
-/* Buffered output. */
-static struct output_t output = {
-    .pos = 0
+    .output = {
+        .chan_p = NULL,
+        .pos = 0
+    }
 };
 
 int std_cmd_klog_stdout(int argc,
@@ -133,13 +132,13 @@ static void sprintf_putc(char c, void *arg_p)
  */
 static void fprintf_putc(char c, void *arg_p)
 {
-    chan_t *chan_p = arg_p;
+    struct buffered_output_t *output_p = arg_p;
 
-    output.buffer[output.pos++] = c;
+    output_p->buffer[output_p->pos++] = c;
 
-    if (output.pos == membersof(output.buffer)) {
-        chan_write(chan_p, output.buffer, output.pos);
-        output.pos = 0;
+    if (output_p->pos == membersof(output_p->buffer)) {
+        chan_write(output_p->chan_p, output_p->buffer, output_p->pos);
+        output_p->pos = 0;
     }
 }
 
@@ -172,19 +171,19 @@ static void printk_putc(char c, void *arg_p)
         entry_p->buf_p = std_klog.buf;
     }
 
-    if ((std_klog.chout_p != NULL) && (entry_p->meta == 0)) {
-        fprintf_putc(c, std_klog.chout_p);
+    if ((std_klog.output.chan_p != NULL) && (entry_p->meta == 0)) {
+        fprintf_putc(c, &std_klog.output);
     }
 }
 
 /**
  * Flush output buffer to channel.
  */
-static void output_flush(chan_t *chan_p)
+static void output_flush(struct buffered_output_t *output_p)
 {
-    if (output.pos > 0) {
-        chan_write(chan_p, output.buffer, output.pos);
-        output.pos = 0;
+    if (output_p->pos > 0) {
+        chan_write(output_p->chan_p, output_p->buffer, output_p->pos);
+        output_p->pos = 0;
     }
 }
 
@@ -418,26 +417,31 @@ ssize_t std_sprintf(char *dst_p, FAR const char *fmt_p, ...)
 void std_printf(FAR const char *fmt_p, ...)
 {
     va_list ap;
-    chan_t *stdout_p;
+    struct buffered_output_t output;
 
-    stdout_p = sys_get_stdout();
+    output.pos = 0;
+    output.chan_p = sys_get_stdout();
 
-    if (stdout_p != NULL) {
+    if (output.chan_p != NULL) {
         va_start(ap, fmt_p);
-        std_vprintf(fprintf_putc, stdout_p, fmt_p, &ap);
+        std_vprintf(fprintf_putc, &output, fmt_p, &ap);
         va_end(ap);
-        output_flush(stdout_p);
+        output_flush(&output);
     }
 }
 
 void std_fprintf(chan_t *chan_p, FAR const char *fmt_p, ...)
 {
     va_list ap;
+    struct buffered_output_t output;
+
+    output.pos = 0;
+    output.chan_p = chan_p;
 
     va_start(ap, fmt_p);
-    std_vprintf(fprintf_putc, chan_p, fmt_p, &ap);
+    std_vprintf(fprintf_putc, &output, fmt_p, &ap);
     va_end(ap);
-    output_flush(chan_p);
+    output_flush(&output);
 }
 
 /**
@@ -489,8 +493,8 @@ void std_printk(char level, FAR const char *fmt_p, ...)
     printk_putc('\0', &entry);
 
     /* Flush buffered output. */
-    if (std_klog.chout_p != NULL) {
-        output_flush(std_klog.chout_p);
+    if (std_klog.output.chan_p != NULL) {
+        output_flush(&std_klog.output);
     }
 
     /* Update next entry pointer. */
