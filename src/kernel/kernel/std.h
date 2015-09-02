@@ -23,10 +23,6 @@
 
 #include "simba.h"
 
-#if !defined(STD_KLOG_BUFFER_MAX)
-#    define STD_KLOG_BUFFER_MAX 256
-#endif
-
 /* Severity levels' log masks. */
 #define STD_LOG_EMERG   0        /* System unusable. */
 #define STD_LOG_ALERT   1        /* Immediate action required. */
@@ -42,13 +38,6 @@
 
 /* Set all levels up to and including mask. */
 #define STD_LOG_UPTO(level) ((1 << (STD_LOG_ ## level + 1)) - 1)
-
-/* Initialize readk iterator. */
-#define STD_READK_ITER_INIT(iter) ((iter)->buf_p = NULL)
-
-struct std_readk_t {
-    char *buf_p;
-};
 
 /**
  * Initialize module.
@@ -92,30 +81,14 @@ void std_printf(FAR const char *fmt_p, ...);
 void std_fprintf(chan_t *chan_p, FAR const char *fmt_p, ...);
 
 /**
- * Format and print data to kernel log.
+ * Format and print data to standard output. A timestamp and log level
+ * is prepended to the formatted string.
  * @param[in] level Log level.
  * @param[in] fmt_p Format string.
  * @param[in] ... Variable arguemnts list.
- * @return void.
+ * @return true(1) if written, otherwise false(0).
  */
-void std_printk(char level, FAR const char *fmt_p, ...);
-
-/**
- * Read a kernel log entry. The entry is trunkated if it does
- * not fit into buffer.
- * @param[in] buf Buffer to read into.
- * @param[in] size Size of buffer.
- * @param[in] state Initialized read iterator.
- * @return zero(0) or negative error code.
- */
-int std_readk(char *buf_p, size_t size, struct std_readk_t *iter);
-
-/**
- * Set output channel for kernel log.
- * @param[in] chan Output channel.
- * @return void.
- */
-void std_klog_set_output_channel(chan_t *chan);
+int std_printk(char level, FAR const char *fmt_p, ...);
 
 /**
  * Convert string to integer.
@@ -124,6 +97,14 @@ void std_klog_set_output_channel(chan_t *chan);
  * @return zero(0) or negative error code.
  */
 int std_strtol(const char *str_p, long *value_p);
+
+/**
+ * Copy string from far memory to memory.
+ * @param[in] dst_p Normal memory string.
+ * @param[in] src_p Far memory string.
+ * @return String length or negative error code.
+ */
+int std_strcpy(char *dst_p, FAR const char *src_p);
 
 /**
  * Compare two strings.

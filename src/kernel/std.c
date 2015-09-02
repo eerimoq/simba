@@ -27,95 +27,32 @@
 /* +7 for floating point decimal point and fraction. */
 #define VALUE_BUF_MAX (3 * sizeof(long) + 7)
 
-struct std_klog_entry_t {
-    char *buf_p;
-    int meta;
-};
-
 struct buffered_output_t {
     chan_t *chan_p;
     int pos;
     char buffer[STD_OUTPUT_BUFFER_MAX];
 };
 
-struct std_klog_t {
-    char buf[STD_KLOG_BUFFER_MAX];
-    char *next_p;
-    uint16_t id;
-    struct buffered_output_t output;
+static FAR const char level_emergency[] = "emergency";
+static FAR const char level_alert[] = "alert";
+static FAR const char level_critical[] = "critical";
+static FAR const char level_error[] = "error";
+static FAR const char level_warning[] = "warning";
+static FAR const char level_notice[] = "notice";
+static FAR const char level_info[] = "info";
+static FAR const char level_debug[] = "debug";
+
+/* Level strings array. */
+static const char FAR *level_as_string[] = {
+    level_emergency,
+    level_alert,
+    level_critical,
+    level_error,
+    level_warning,
+    level_notice,
+    level_info,
+    level_debug
 };
-
-FS_COMMAND_DEFINE("/kernel/std/klog_stdout", std_cmd_klog_stdout);
-FS_COMMAND_DEFINE("/kernel/std/klog_read", std_cmd_klog_read);
-FS_COMMAND_DEFINE("/kernel/std/klog_write", std_cmd_klog_write);
-
-static struct std_klog_t std_klog = {
-    .next_p = std_klog.buf + 1,
-    .id = 0,
-    .output = {
-        .chan_p = NULL,
-        .pos = 0
-    }
-};
-
-int std_cmd_klog_stdout(int argc,
-                        const char *argv[],
-                        chan_t *chout_p,
-                        chan_t *chin_p)
-{
-    long value;
-
-    if (argc != 2) {
-        std_fprintf(chout_p, FSTR("Usage: stdout {1,0}\r\n"));
-        return (-EINVAL);
-    }
-
-    if (std_strtol(argv[1], &value)) {
-        std_fprintf(chout_p, FSTR("bad value '%s'\r\n"), argv[1]);
-        return (-EINVAL);
-    }
-
-    if (value == 1) {
-        std_klog_set_output_channel(sys_get_stdout());
-    } else {
-        std_klog_set_output_channel(NULL);
-    }
-
-    return (0);
-}
-
-int std_cmd_klog_read(int argc,
-                      const char *argv[],
-                      chan_t *chout_p,
-                      chan_t *chin_p)
-{
-    struct std_readk_t iter;
-    char buf[64];
-
-    STD_READK_ITER_INIT(&iter);
-
-    while (std_readk(buf,
-                     sizeof(buf),
-                     &iter) == 1) {
-        std_fprintf(chout_p, FSTR("%s"), buf);
-    }
-
-    return (0);
-}
-
-int std_cmd_klog_write(int argc,
-                       const char *argv[],
-                       chan_t *chout_p,
-                       chan_t *chin_p)
-{
-    if (argc != 2) {
-        return (-EINVAL);
-    }
-
-    std_printk(STD_LOG_NOTICE, FSTR("%s"), argv[1]);
-
-    return (0);
-}
 
 /**
  * Put characters to buffer.
@@ -139,40 +76,6 @@ static void fprintf_putc(char c, void *arg_p)
     if (output_p->pos == membersof(output_p->buffer)) {
         chan_write(output_p->chan_p, output_p->buffer, output_p->pos);
         output_p->pos = 0;
-    }
-}
-
-/**
- * Get character from kernel log.
- */
-static char printk_getc(struct std_readk_t *iter_p)
-{
-    char c;
-
-    c = *iter_p->buf_p++;
-
-    if (iter_p->buf_p == &std_klog.buf[STD_KLOG_BUFFER_MAX]) {
-        iter_p->buf_p = std_klog.buf;
-    }
-
-    return (c);
-}
-
-/**
- * Put characters to kernel log.
- */
-static void printk_putc(char c, void *arg_p)
-{
-    struct std_klog_entry_t *entry_p = arg_p;
-
-    *entry_p->buf_p++ = c;
-
-    if (entry_p->buf_p == &std_klog.buf[STD_KLOG_BUFFER_MAX]) {
-        entry_p->buf_p = std_klog.buf;
-    }
-
-    if ((std_klog.output.chan_p != NULL) && (entry_p->meta == 0)) {
-        fprintf_putc(c, &std_klog.output);
     }
 }
 
@@ -394,11 +297,6 @@ static void std_vprintf(void (*std_putc)(char c, void *arg_p),
 
 int std_module_init(void)
 {
-    memset(std_klog.buf, -1, sizeof(std_klog.buf));
-
-    /* First footer. */
-    std_klog.buf[0] = '\0';
-
     return (0);
 }
 
@@ -445,98 +343,35 @@ void std_fprintf(chan_t *chan_p, FAR const char *fmt_p, ...)
     output_flush(&output);
 }
 
-/**
- * Kernel buffer design:
- *                 next
- * >-|------e3------|--unused--|-------e0------|--e1--|---e2-_p->
- *
- * Each entry has a footer with information about where the entry
- * starts. An entry is valid if it's footer id and the previous entry's
- * footer id differs by one.
- */
-void std_printk(char level, FAR const char *fmt_p, ...)
+int std_printk(char level, FAR const char *fmt_p, ...)
 {
     va_list ap;
-    char buf[32], *b_p = buf;
+    char buf[16];
     struct time_t time;
-    struct std_klog_entry_t entry;
+    struct buffered_output_t output;
 
     /* Check if severity level is set. */
     if ((thrd_get_log_mask() & (1 << level)) == 0) {
-        return;
+        return (0);
     }
-
-    std_klog.output.pos = 0;
-
-    /* Add entry header. */
-    entry.buf_p = std_klog.next_p;
-    entry.meta = 1;
-    printk_putc('\0', &entry);
 
     /* Fromat and print header. */
     time_get(&time);
-    std_sprintf(buf, FSTR("%u:%lu: "), (unsigned int)std_klog.id++, time.seconds);
-    entry.meta = 0;
+    std_strcpy(buf, level_as_string[(int)level]);
+    std_printf(FSTR("%lu:%s: "), time.seconds, buf);
 
-    while (*b_p != '\0') {
-        printk_putc(*b_p, &entry);
-        b_p++;
-    }
+    /* Format and print data. */
+    output.pos = 0;
+    output.chan_p = sys_get_stdout();
 
-    /* Format and print user text. */
     va_start(ap, fmt_p);
-    std_vprintf(printk_putc, &entry, fmt_p, &ap);
+    std_vprintf(fprintf_putc, &output, fmt_p, &ap);
     va_end(ap);
+    output_flush(&output);
 
-    printk_putc('\r', &entry);
-    printk_putc('\n', &entry);
-
-    /* Add entry footer. */
-    entry.meta = 1;
-    printk_putc('\0', &entry);
-
-    /* Flush buffered output. */
-    if (std_klog.output.chan_p != NULL) {
-        output_flush(&std_klog.output);
-    }
-
-    /* Update next entry pointer. */
-    std_klog.next_p = entry.buf_p;
-}
-
-int std_readk(char *buf_p, size_t size, struct std_readk_t *iter_p)
-{
-    char c;
-
-    /* Initialize. */
-    if (iter_p->buf_p == NULL) {
-        iter_p->buf_p = std_klog.next_p;
-
-        /* Forward to first footer. */
-        while (printk_getc(iter_p) != '\0') {
-        }
-    }
-
-    /* Entry header found? */
-    if (printk_getc(iter_p) != '\0') {
-        return (-1);
-    }
-
-    /* Read entry. */
-    while ((c = printk_getc(iter_p)) != '\0') {
-        if (size-- > 1) {
-            *buf_p++ = c;
-        }
-    }
-
-    *buf_p = '\0';
+    std_printf(FSTR("\r\n"));
 
     return (1);
-}
-
-void std_klog_set_output_channel(chan_t *chan_p)
-{
-    std_klog.output.chan_p = chan_p;
 }
 
 int std_strtol(const char *str_p, long *value_p)
@@ -597,6 +432,20 @@ int std_strtol(const char *str_p, long *value_p)
     *value_p *= sign;
 
     return (0);
+}
+
+int std_strcpy(char *dst_p, FAR const char *src_p)
+{
+    size_t length = 0;
+
+    while (*src_p != '\0') {
+        *dst_p++ = *src_p++;
+        length++;
+    }
+
+    *dst_p = '\0';
+
+    return (length);
 }
 
 int std_strcmp(const char *str_p, FAR const char *fstr_p)

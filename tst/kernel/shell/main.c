@@ -126,9 +126,8 @@ static int test_all(struct harness_t *harness_p)
 
     /* Login. */
     /* Username. */
-    chan_write(&qin, "\n", sizeof("\n") - 1);
     chout_read_until(buf, "username: ");
-    BTASSERT(std_strcmp(buf, FSTR("\nusername: ")) == 0, "%s\n", buf);
+    BTASSERT(std_strcmp(buf, FSTR("username: ")) == 0, "%s\n", buf);
     chan_write(&qin, "erik\n", sizeof("erik\n") - 1);
     chout_read_until(buf, "erik\n");
     BTASSERT(std_strcmp(buf, FSTR("erik\n")) == 0, "%s\n", buf);
@@ -244,14 +243,14 @@ static int test_all(struct harness_t *harness_p)
     BTASSERT(chout_read_until_prompt(buf) == 1);
     BTASSERT(std_strcmp(buf,
                         FSTR("/kernel/fs/counters_list\n"
-                             "NAME                                             VALUE\r\n"
-                             "/foo                                             "
+                             "NAME                                                 VALUE\r\n"
+                             "/foo                                                 "
                              "00000000000000000004\r\n"
-                             "/bar                                             "
+                             "/bar                                                 "
                              "00000000004efee6b839\r\n"
-                             "/fie                                             "
+                             "/fie                                                 "
                              "00000000000000000001\r\n"
-                             "$ ")) == 0);
+                             "$ ")) == 0, "%s", buf);
 #endif
 
     /* Logout. */

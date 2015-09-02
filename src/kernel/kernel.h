@@ -35,6 +35,7 @@
 #include "kernel/shell.h"
 #include "kernel/sem.h"
 #include "kernel/std.h"
+#include "kernel/qlog.h"
 #include "kernel/queue.h"
 #include "kernel/inet.h"
 #include "kernel/inet_netif.h"

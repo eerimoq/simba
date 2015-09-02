@@ -24,7 +24,7 @@
 #include "simba.h"
 
 /* Add a command to the file system with given callback. */
-#if defined(__FS__)
+#if defined(__SIMBA_GEN__)
 #    define FS_COMMAND_DEFINE(path, callback) ..fs_command.. path #callback
 #    define FS_COUNTER_DEFINE(path, name) ..fs_counter.. path #name
 #    define FS_PARAMETER_DEFINE(path, name, type, default)      \

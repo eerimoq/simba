@@ -121,7 +121,7 @@ static int test_counter(struct harness_t *harness_p)
 
     strcpy(buf, "kernel/fs/counters_list");
     BTASSERT(fs_call(buf, NULL, &qout) == 0);
-    read_until(buf, "/your/counter                                    00000000000000000000\r\n");
+    read_until(buf, "/your/counter                                        00000000000000000000\r\n");
 
     FS_COUNTER_INC(my_counter, 3);
 

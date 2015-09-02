@@ -31,7 +31,12 @@ file_fmt = '''/**
 
 #include "simba.h"
 
-{command_externs}
+{fs}
+
+{qlog}
+'''
+
+fs_fmt = '''{command_externs}
 
 {counter_externs}
 
@@ -51,6 +56,15 @@ const FAR int fs_counters[] = {{
 const FAR int fs_parameters[] = {{
 {parameters_list}
   -1
+}};
+'''
+
+qlog_fmt = '''{qlog_ids}
+
+{qlog_strings}
+
+const char FAR *qlog_id_to_string[] = {{
+{qlog_strings_array}
 }};
 '''
 
@@ -110,10 +124,9 @@ def generate_nodes(parent, nodes, name, children, next, path):
                   (path + name).replace('/__slash', '')))
     return index
 
-if __name__ == '__main__':
-    outfile = sys.argv[1]
-    infiles = sys.argv[2:]
-
+def generate_fs(infiles):
+    """Generate file system commands, counters and parameters.
+    """
     re_command = re.compile('^\w*\.\.fs_command\.\. '
                             '"(?P<path>[^"]+)" '
                             '"(?P<callback>[^"]+)";$', re.MULTILINE)
@@ -202,15 +215,65 @@ if __name__ == '__main__':
                 parameters_list.append(list_entry_fmt.format(index=node[0]))
                 break
 
+    return fs_fmt.format(command_externs='\n'.join(command_externs),
+                         counter_externs='\n'.join(counter_externs),
+                         parameter_externs='\n'.join(parameter_externs),
+                         strings='\n'.join(strings),
+                         fs_nodes='\n'.join(n[1] for n in fs_nodes),
+                         counters_list='\n'.join(counters_list),
+                         parameters_list='\n'.join(parameters_list))
+
+
+def generate_qlog(infiles):
+    """Generate qlog identities and strings.
+    """
+    re_qlog = re.compile('^\w*\.\.qlog\.\. '
+                         '"(?P<level>[^"]+)" '
+                         '"(?P<name>[^"]+)" '
+                         '"(?P<fmt>[^"]+)";$',
+                         re.MULTILINE)
+
+
+    # create lists of files and counters
+    qlog_defines = []
+    for inf in infiles:
+        file_content = open(inf).read()
+        for mo in re_qlog.finditer(file_content):
+            qlog_defines.append([mo.group('level'), mo.group('name'), mo.group('fmt')])
+
+    identity = 0
+    qlog_ids = []
+    qlog_strings = []
+    qlog_strings_array = []
+    for qlog_define in qlog_defines:
+        level = qlog_define[0]
+        name = qlog_define[1]
+        fmt = qlog_define[2]
+
+        qlog_ids.append("qlog_id_t qlog_id_{name} = ((STD_LOG_{level} << 16) | {identity});"
+                        .format(level=level, name=name, identity=identity))
+        qlog_strings.append('static FAR const char qlog_id_{name}_fmt[] = "{fmt}\\r\\n";'
+                            .format(name=name, fmt=fmt))
+        qlog_strings_array.append("qlog_id_{name}_fmt,".format(name=name))
+
+        identity += 1
+
+    return qlog_fmt.format(qlog_ids='\n'.join(qlog_ids),
+                           qlog_strings='\n'.join(qlog_strings),
+                           qlog_strings_array='\n'.join(qlog_strings_array))
+
+
+if __name__ == '__main__':
+    outfile = sys.argv[1]
+    infiles = sys.argv[2:]
+
+    fs_formatted_data = generate_fs(infiles)
+    qlog_formatted_data = generate_qlog(infiles)
+
     fout = open(outfile, 'w').write(
         file_fmt.format(filename=outfile,
                         major=major,
                         minor=minor,
                         date=time.strftime("%Y-%m-%d %H:%M %Z"),
-                        command_externs='\n'.join(command_externs),
-                        counter_externs='\n'.join(counter_externs),
-                        parameter_externs='\n'.join(parameter_externs),
-                        strings='\n'.join(strings),
-                        fs_nodes='\n'.join(n[1] for n in fs_nodes),
-                        counters_list='\n'.join(counters_list),
-                        parameters_list='\n'.join(parameters_list)))
+                        fs=fs_formatted_data,
+                        qlog=qlog_formatted_data))

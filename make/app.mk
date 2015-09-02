@@ -23,16 +23,16 @@
 # files and folders
 OBJDIR = obj
 DEPSDIR = deps
-FSDIR = fs
+GENDIR = gen
 INC += . $(SIMBA)/src
 CSRC += $(filter %.c,$(SRC))
 COBJ = $(patsubst %,$(OBJDIR)/%,$(notdir $(CSRC:%.c=%.o)))
 OBJ = $(COBJ)
-FSCSRC = $(FSDIR)/fs_gen.c
-FSOBJ = $(patsubst %,$(OBJDIR)/%,$(notdir $(FSCSRC:%.c=%.o)))
+GENCSRC = $(GENDIR)/simba_gen.c
+GENOBJ = $(patsubst %,$(OBJDIR)/%,$(notdir $(GENCSRC:%.c=%.o)))
 EXE = $(NAME).out
 RUNLOG = run.log
-CLEAN = $(OBJDIR) $(DEPSDIR) $(FSDIR) $(EXE) $(RUNLOG) size.log \
+CLEAN = $(OBJDIR) $(DEPSDIR) $(GENDIR) $(EXE) $(RUNLOG) size.log \
         coverage.log coverage.xml gmon.out *.gcov profile.log \
 	index.*html
 
@@ -111,7 +111,7 @@ release:
 etags:
 	etags --declarations $(CSRC) $$(find $(INC) -name "*.h" | xargs)
 
-$(EXE): $(OBJ) $(FSOBJ)
+$(EXE): $(OBJ) $(GENOBJ)
 	@echo "Linking $@"
 	$(LD) -o $@ $^ $(LDFLAGS)
 
@@ -119,16 +119,16 @@ define COMPILE_template
 -include $(patsubst %.c,$(DEPSDIR)/%.o.dep,$(notdir $1))
 $(patsubst %.c,$(OBJDIR)/%.o,$(notdir $1)): $1
 	@echo "Compiling $1"
-	mkdir -p $(OBJDIR) $(DEPSDIR) $(FSDIR)
+	mkdir -p $(OBJDIR) $(DEPSDIR) $(GENDIR)
 	$$(CC) $$(CFLAGS) -o $$@ $$<
-	$$(CC) $$(CFLAGS) -D__FS__ -E -o $(patsubst %.c,$(FSDIR)/%.o.fs,$(notdir $1)) $$<
+	$$(CC) $$(CFLAGS) -D__SIMBA_GEN__ -E -o $(patsubst %.c,$(GENDIR)/%.o.pp,$(notdir $1)) $$<
 	gcc -MM -MT $$@ $$(filter -I% -D% -O%,$$(CFLAGS)) -o $(patsubst %.c,$(DEPSDIR)/%.o.dep,$(notdir $1)) $$<
 endef
 $(foreach file,$(CSRC),$(eval $(call COMPILE_template,$(file))))
 
-$(FSOBJ): $(OBJ)
-	$(SIMBA)/src/kernel/tools/fs.py $(FSCSRC) $(OBJ:$(OBJDIR)/%=$(FSDIR)/%.fs)
-	$(CC) $(CFLAGS) -o $@ $(FSCSRC)
+$(GENOBJ): $(OBJ)
+	$(SIMBA)/src/kernel/tools/gen.py $(GENCSRC) $(OBJ:$(OBJDIR)/%=$(GENDIR)/%.pp)
+	$(CC) $(CFLAGS) -o $@ $(GENCSRC)
 
 -include local.mk
 include $(SIMBA_GLOBAL_MK)

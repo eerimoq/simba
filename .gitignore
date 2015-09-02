@@ -3,24 +3,24 @@ deps
 *.out
 *.map
 run.log
-demo/*/fs
+demo/*/gen
 demo/*/profile.log
 *.gcov
 TAGS
 
-tst/*/*/fs
+tst/*/*/gen
 tst/*/*/profile.log
 tst/*/*/coverage.*
 tst/*/*/size.log
 tst/*/*/*.hex
 
-examples/*/fs
+examples/*/gen
 examples/*/profile.log
 examples/*/coverage.*
 examples/*/size.log
 examples/*/*.hex
 
-examples/*/*/fs
+examples/*/*/gen
 examples/*/*/profile.log
 examples/*/*/coverage.*
 examples/*/*/size.log

@@ -129,45 +129,12 @@ int test_strtol(struct harness_t *harness_p)
     return (0);
 }
 
-/* readk testcase fail if this test is executed. reak() has a bug probably. */
-/* int test_strlen(struct harness_t *harness_p) */
-/* { */
-/*     BTASSERT(std_strlen(FSTR("")) == 0); */
-
-/*     return (0); */
-/* } */
-
-int test_readk(struct harness_t *harness_p)
-{
-    struct std_readk_t iter;
-    char buf[128];
-
-    STD_READK_ITER_INIT(&iter);
-    BTASSERT(std_readk(buf, sizeof(buf), &iter) == 1);
-    std_printf(FSTR("readk: %s"), buf);
-    BTASSERT(std_readk(buf, sizeof(buf), &iter) == 1);
-    std_printf(FSTR("readk: %s"), buf);
-    BTASSERT(std_readk(buf, sizeof(buf), &iter) == 1);
-    std_printf(FSTR("readk: %s"), buf);
-    BTASSERT(std_readk(buf, sizeof(buf), &iter) == 1);
-    std_printf(FSTR("readk: %s"), buf);
-    BTASSERT(std_readk(buf, sizeof(buf), &iter) == 1);
-    std_printf(FSTR("readk: %s"), buf);
-    BTASSERT(std_readk(buf, sizeof(buf), &iter) == 1);
-    std_printf(FSTR("readk: %s"), buf);
-    BTASSERT(std_readk(buf, sizeof(buf), &iter) == -1);
-
-    return (0);
-}
-
 int main()
 {
     struct harness_t harness;
     struct harness_testcase_t harness_testcases[] = {
         { test_sprintf, "test_sprintf" },
         { test_strtol, "test_strtol" },
-        /* { test_strlen, "test_strlen" }, */
-        { test_readk, "test_readk" },
         { test_sprintf_double, "test_sprintf_double" },
         { NULL, NULL }
     };

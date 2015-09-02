@@ -24,7 +24,6 @@ int harness_init(struct harness_t *harness_p)
 {
     uart_init(&harness_p->uart, &uart_device[0], 38400, NULL, 0);
     uart_start(&harness_p->uart);
-    std_klog_set_output_channel(&harness_p->uart.chout);
     sys_set_stdout(&harness_p->uart.chout);
 
     return (0);
