@@ -31,31 +31,46 @@ QLOG_DEFINE(NOTICE,  qlog_trigger, "qlog_trigger %ld");
 
 int test_circular(struct harness_t *harness_p)
 {
+    int i;
+
     QLOG0(qlog0);
-    QLOG1(qlog1, 1);
-    QLOG2(qlog2, 1, 2);
-    QLOG3(qlog3, 1, 2, 3);
-    QLOG4(qlog4, 1, 2, 3, 4);
-    QLOG0(qlog5);
+
+    /* Fill the log and write some more. */
+    for (i = 0; i < QLOG_ENTRIES_MAX + 3; i++) {
+        QLOG1(qlog1, i);
+    }
+
+    QLOG2(qlog2, 3, 4);
+
+    /* Log must be turned off before formatting. */
+    BTASSERT(qlog_format(sys_get_stdout()) == -1);
 
     /* Format entries and write to standard output. */
-    qlog_format(sys_get_stdout());
+    BTASSERT(qlog_set_mode(QLOG_MODE_OFF) == QLOG_MODE_CIRCULAR);
+    BTASSERT(qlog_format(sys_get_stdout()) == 0);
 
     return (0);
 }
 
 int test_trigger(struct harness_t *harness_p)
 {
+    int i;
+
     qlog_set_trigger(QLOG_ID(qlog_trigger), 0x1, 4, 0, 0 ,0);
     qlog_set_mode(QLOG_MODE_TRIGGER);
 
     QLOG0(qlog0);
     QLOG1(qlog_trigger, 3);
     QLOG1(qlog_trigger, 4);
-    QLOG4(qlog4, 4, 3, 2, 1);
+
+    /* Fill the log and write some more. */
+    for (i = 0; i < QLOG_ENTRIES_MAX + 3; i++) {
+        QLOG4(qlog4, i, 2*i, 3*i, 4*i);
+    }
 
     /* Format entries and write to standard output. */
-    qlog_format(sys_get_stdout());
+    BTASSERT(qlog_set_mode(QLOG_MODE_OFF) == QLOG_MODE_OFF);
+    BTASSERT(qlog_format(sys_get_stdout()) == 0);
 
     return (0);
 }

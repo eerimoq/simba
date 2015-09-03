@@ -78,6 +78,7 @@ int qlog_get_mode();
  * @param[in] v1 Value 1.
  * @param[in] v2 Value 2.
  * @param[in] v3 Value 3.
+ * @return zero(0) or negative error code.
  */
 int qlog_set_trigger(qlog_id_t qlog_id,
                      uint8_t mask,
@@ -106,7 +107,7 @@ int qlog_write(qlog_id_t qlog_id,
  * Format all entries in the qlog buffer and write them to given
  * channel.
  * @param[in] chout_p Output channel.
- * @return Number of formatted enteris.
+ * @return zero(0) or negative error code.
  */
 int qlog_format(chan_t *chout_p);
 

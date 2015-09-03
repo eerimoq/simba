@@ -30,7 +30,11 @@ FS_COMMAND_DEFINE("/kernel/qlog/trigger", qlog_cmd_trigger);
 
 extern const char FAR *qlog_id_to_string[];
 
+#define LIST_EMPTY(begin, end) (begin == end)
+#define LIST_FULL(begin, end) (begin == ((end + 1) % QLOG_ENTRIES_MAX))
+
 struct entry_t {
+    unsigned long number;
     unsigned long time;
     qlog_id_t qlog_id;
     long args[4];
@@ -45,7 +49,9 @@ struct trigger_t {
 struct qlog_t {
     struct spin_lock_t spin;
     int mode;
-    int pos;
+    int begin; /* First valid entry. */
+    int end;   /* Entry after last valid entry. */
+    unsigned long next_number;
     struct entry_t entries[QLOG_ENTRIES_MAX];
     struct trigger_t trigger;
 };
@@ -89,16 +95,12 @@ int qlog_cmd_trigger(int argc,
 
 int qlog_module_init(void)
 {
-    int i;
-
     /* Initialize qlog object. */
     spin_init(&qlog.spin);
     qlog.mode = QLOG_MODE_CIRCULAR;
-    qlog.pos = 0;
-
-    for (i = 0; i < QLOG_ENTRIES_MAX; i++) {
-        qlog.entries[i].qlog_id = -1;
-    }
+    qlog.begin = 0;
+    qlog.end = 0;
+    qlog.next_number = 0;
 
     return (0);
 }
@@ -141,6 +143,10 @@ int qlog_set_trigger(qlog_id_t qlog_id,
     qlog.trigger.args[2] = v2;
     qlog.trigger.args[3] = v3;
 
+    qlog.begin = 0;
+    qlog.end = 0;
+    qlog.mode = QLOG_MODE_TRIGGER;
+
     spin_unlock(&qlog.spin, &irq);
 
     return (0);
@@ -174,23 +180,31 @@ int qlog_write(qlog_id_t qlog_id,
 
     spin_lock(&qlog.spin, &irq);
 
+    entry.number = qlog.next_number++;
+
     if (qlog.mode != QLOG_MODE_OFF) {
         if (qlog.mode == QLOG_MODE_TRIGGER) {
             if (is_trigger_condition_met(&entry) == 0) {
                 spin_unlock(&qlog.spin, &irq);
                 return (0);
+            } else {
+                qlog.mode = QLOG_MODE_CAPTURE;
             }
-
-            qlog.pos = 0;
-            qlog.mode = QLOG_MODE_CAPTURE;
         }
 
-        qlog.entries[qlog.pos++] = entry;
-        qlog.pos %= QLOG_ENTRIES_MAX;
+        /* Write entry to log. */
+        qlog.entries[qlog.end++] = entry;
+        qlog.end %= QLOG_ENTRIES_MAX;
 
         if (qlog.mode == QLOG_MODE_CAPTURE) {
-            if (qlog.pos == 0) {
+            if (qlog.end == QLOG_ENTRIES_MAX - 1) {
                 qlog.mode = QLOG_MODE_OFF;
+            }
+        } else {
+            /* Move begin position if the list is full. */
+            if (LIST_FULL(qlog.begin, qlog.end)) {
+                qlog.begin++;
+                qlog.begin %= QLOG_ENTRIES_MAX;
             }
         }
     }
@@ -202,39 +216,52 @@ int qlog_write(qlog_id_t qlog_id,
 
 int qlog_format(chan_t *chout_p)
 {
-    int i;
     int pos;
-    int old;
     struct entry_t *entry_p;
     FAR const char *fmt_p;
     uint16_t id;
+    int skipping;
 
-    old = qlog_set_mode(QLOG_MODE_OFF);
+    /* The logging must be turned off when formatting. */
+    if (qlog.mode != QLOG_MODE_OFF) {
+        return (-1);
+    }
 
-    pos = qlog.pos;
+    pos = qlog.begin;
+    skipping = 1;
 
-    for (i = 0; i < QLOG_ENTRIES_MAX; i++) {
+    while (pos != qlog.end) {
         entry_p = &qlog.entries[pos];
-
-        id = QLOG_ID_ID(entry_p->qlog_id);
-
-        if (id != 0xffff) {
-            fmt_p = qlog_id_to_string[id];
-
-            std_fprintf(chout_p, FSTR("%lu: "), entry_p->time);
-            std_fprintf(chout_p,
-                        fmt_p,
-                        entry_p->args[0],
-                        entry_p->args[1],
-                        entry_p->args[2],
-                        entry_p->args[3]);
-        }
 
         pos++;
         pos %= QLOG_ENTRIES_MAX;
-    }
 
-    qlog_set_mode(old);
+        if (entry_p->qlog_id == -1) {
+            if (skipping == 1) {
+                /* Skip any leading invalid entries. */
+                continue;
+            } else {
+                /* Stop when all entries have been frmatted. */
+                break;
+            }
+        }
+
+        /* Stop on next invalid entry. */
+        skipping = 0;
+
+        /* Format the entry. */
+        id = QLOG_ID_ID(entry_p->qlog_id);
+
+        fmt_p = qlog_id_to_string[id];
+
+        std_fprintf(chout_p, FSTR("%lu:%lu: "), entry_p->number, entry_p->time);
+        std_fprintf(chout_p,
+                    fmt_p,
+                    entry_p->args[0],
+                    entry_p->args[1],
+                    entry_p->args[2],
+                    entry_p->args[3]);
+    }
 
     return (0);
 }
