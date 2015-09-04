@@ -66,6 +66,7 @@ int test_trigger(struct harness_t *harness_p)
     QLOG0(qlog0);
     QLOG1(qlog_trigger, 3);
     QLOG1(qlog_trigger, 4);
+    QLOG0(qlog5);
 
     /* Format the trigger entry and write to standard output. */
     BTASSERT(qlog_set_mode(QLOG_MODE_OFF) == QLOG_MODE_CAPTURE);
