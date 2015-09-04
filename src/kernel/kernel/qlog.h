@@ -51,11 +51,25 @@
 
 typedef int32_t qlog_id_t;
 
+struct qlog_entry_t {
+    unsigned long number;
+    unsigned long time;
+    qlog_id_t qlog_id;
+    long args[4];
+};
+
 /**
  * Initialize module.
  * @return zero(0) or negative error code.
  */
 int qlog_module_init(void);
+
+/**
+ * Reset qlog module. Clears the log and sets the log mode to
+ * circular.
+ * @return zero(0) or negative error code.
+ */
+int qlog_reset();
 
 /**
  * Set qlog mode to off, circular or trigger.

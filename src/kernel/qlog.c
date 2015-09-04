@@ -33,13 +33,6 @@ extern const char FAR *qlog_id_to_string[];
 #define LIST_EMPTY(begin, end) (begin == end)
 #define LIST_FULL(begin, end) (begin == ((end + 1) % QLOG_ENTRIES_MAX))
 
-struct entry_t {
-    unsigned long number;
-    unsigned long time;
-    qlog_id_t qlog_id;
-    long args[4];
-};
-
 struct trigger_t {
     qlog_id_t qlog_id;
     uint8_t mask;
@@ -52,13 +45,13 @@ struct qlog_t {
     int begin; /* First valid entry. */
     int end;   /* Entry after last valid entry. */
     unsigned long next_number;
-    struct entry_t entries[QLOG_ENTRIES_MAX];
+    struct qlog_entry_t entries[QLOG_ENTRIES_MAX];
     struct trigger_t trigger;
 };
 
 static struct qlog_t qlog;
 
-static int is_trigger_condition_met(struct entry_t *entry_p)
+static int is_trigger_condition_met(struct qlog_entry_t *entry_p)
 {
     int i;
 
@@ -97,10 +90,23 @@ int qlog_module_init(void)
 {
     /* Initialize qlog object. */
     spin_init(&qlog.spin);
+
+    qlog.next_number = 0;
+
+    return (qlog_reset());
+}
+
+int qlog_reset()
+{
+    spin_irq_t irq;
+
+    spin_lock(&qlog.spin, &irq);
+
     qlog.mode = QLOG_MODE_CIRCULAR;
     qlog.begin = 0;
     qlog.end = 0;
-    qlog.next_number = 0;
+
+    spin_unlock(&qlog.spin, &irq);
 
     return (0);
 }
@@ -159,7 +165,7 @@ int qlog_write(qlog_id_t qlog_id,
                long v3)
 {
     struct time_t now;
-    struct entry_t entry;
+    struct qlog_entry_t entry;
     uint8_t level = QLOG_ID_LEVEL(qlog_id);
     int written = 0;
     spin_irq_t irq;
@@ -216,8 +222,8 @@ int qlog_write(qlog_id_t qlog_id,
 
 int qlog_format(chan_t *chout_p)
 {
-    int pos;
-    struct entry_t *entry_p;
+    int pos, number_of_entries;
+    struct qlog_entry_t *entry_p;
     FAR const char *fmt_p;
     uint16_t id;
     int skipping;
@@ -227,6 +233,7 @@ int qlog_format(chan_t *chout_p)
         return (-1);
     }
 
+    number_of_entries = 0;
     pos = qlog.begin;
     skipping = 1;
 
@@ -248,12 +255,13 @@ int qlog_format(chan_t *chout_p)
 
         /* Stop on next invalid entry. */
         skipping = 0;
+        number_of_entries++;
 
         /* Format the entry. */
         id = QLOG_ID_ID(entry_p->qlog_id);
 
         fmt_p = qlog_id_to_string[id];
-
+            
         std_fprintf(chout_p, FSTR("%lu:%lu: "), entry_p->number, entry_p->time);
         std_fprintf(chout_p,
                     fmt_p,
@@ -263,5 +271,5 @@ int qlog_format(chan_t *chout_p)
                     entry_p->args[3]);
     }
 
-    return (0);
+    return (number_of_entries);
 }

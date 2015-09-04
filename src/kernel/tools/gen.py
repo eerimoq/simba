@@ -250,7 +250,7 @@ def generate_qlog(infiles):
         name = qlog_define[1]
         fmt = qlog_define[2]
 
-        qlog_ids.append("qlog_id_t qlog_id_{name} = ((STD_LOG_{level} << 16) | {identity});"
+        qlog_ids.append("qlog_id_t qlog_id_{name} = (((int32_t)STD_LOG_{level} << 16) | {identity});"
                         .format(level=level, name=name, identity=identity))
         qlog_strings.append('static FAR const char qlog_id_{name}_fmt[] = "{fmt}\\r\\n";'
                             .format(name=name, fmt=fmt))

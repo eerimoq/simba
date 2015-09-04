@@ -33,6 +33,8 @@ int test_circular(struct harness_t *harness_p)
 {
     int i;
 
+    qlog_reset();
+
     QLOG0(qlog0);
 
     /* Fill the log and write some more. */
@@ -47,7 +49,7 @@ int test_circular(struct harness_t *harness_p)
 
     /* Format entries and write to standard output. */
     BTASSERT(qlog_set_mode(QLOG_MODE_OFF) == QLOG_MODE_CIRCULAR);
-    BTASSERT(qlog_format(sys_get_stdout()) == 0);
+    BTASSERT(qlog_format(sys_get_stdout()) == 30);
 
     return (0);
 }
@@ -56,12 +58,19 @@ int test_trigger(struct harness_t *harness_p)
 {
     int i;
 
+    qlog_reset();
+
     qlog_set_trigger(QLOG_ID(qlog_trigger), 0x1, 4, 0, 0 ,0);
     qlog_set_mode(QLOG_MODE_TRIGGER);
 
     QLOG0(qlog0);
     QLOG1(qlog_trigger, 3);
     QLOG1(qlog_trigger, 4);
+
+    /* Format the trigger entry and write to standard output. */
+    BTASSERT(qlog_set_mode(QLOG_MODE_OFF) == QLOG_MODE_CAPTURE);
+    BTASSERT(qlog_format(sys_get_stdout()) == 1);
+    BTASSERT(qlog_set_mode(QLOG_MODE_CAPTURE) == QLOG_MODE_OFF);
 
     /* Fill the log and write some more. */
     for (i = 0; i < QLOG_ENTRIES_MAX + 3; i++) {
@@ -70,7 +79,7 @@ int test_trigger(struct harness_t *harness_p)
 
     /* Format entries and write to standard output. */
     BTASSERT(qlog_set_mode(QLOG_MODE_OFF) == QLOG_MODE_OFF);
-    BTASSERT(qlog_format(sys_get_stdout()) == 0);
+    BTASSERT(qlog_format(sys_get_stdout()) == 31);
 
     return (0);
 }
