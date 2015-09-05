@@ -22,20 +22,39 @@
 
 int test_circular(struct harness_t *harness_p)
 {
+    int i;
+    
     log_reset();
-    log_set_mode(LOG_MODE_CIRCULAR);
 
-    LOG(NOTICE, "trace point1 %f %c %d %ld %u %lu", 1.0, 'a', 1, -2L, 3, 4);
+    log_set_mode(LOG_MODE_OFF);
+    BTASSERT(log_format(sys_get_stdout()) == 0);
+
+    std_printf(FSTR("formatted\r\n"));
+
+    BTASSERT(log_set_mode(LOG_MODE_CIRCULAR) == LOG_MODE_OFF);
+
+    LOG(NOTICE, "trace point1 %f %c %d %ld %u %lu", 1.0f, 'a', 1, -2L, 3, 4);
     LOG(NOTICE, "trace point2");
     LOG(CRIT, "trace point3");
     LOG(DEBUG, "trace point4");
     LOG(DEBUG, "trace point5");
     LOG(NOTICE, "trace point6 %f %c %d %ld %u %lu", 1.0, 'a', 1, -2L, 3, 4);
     LOG(ERR, "trace point7");
-    LOG(WARNING, "trace point8");
+
+    for (i = 0; i < 10; i++) {
+        LOG(WARNING, "trace point %d", i);
+    }
+
+    std_printf(FSTR("written\r\n"));
 
     BTASSERT(log_set_mode(LOG_MODE_OFF) == LOG_MODE_CIRCULAR);
+#if defined(ARCH_LINUX)
     BTASSERT(log_format(sys_get_stdout()) == 4);
+#else
+    BTASSERT(log_format(sys_get_stdout()) == 13);
+#endif
+
+    std_printf(FSTR("formatted\r\n"));
 
     return (0);
 }
@@ -50,7 +69,6 @@ int main()
 
     sys_start();
     uart_module_init();
-    log_module_init();
 
     harness_init(&harness);
     harness_run(&harness, harness_testcases);

@@ -45,6 +45,7 @@ int sys_module_init()
 int sys_start(void)
 {
     std_module_init();
+    log_module_init();
     spin_module_init();
     sem_module_init();
     chan_module_init();

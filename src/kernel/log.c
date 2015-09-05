@@ -22,8 +22,11 @@
 #include <stdarg.h>
 #include <limits.h>
 
+FS_COMMAND_DEFINE("/kernel/log/set_mode", log_cmd_set_mode);
+FS_COMMAND_DEFINE("/kernel/log/get_mode", log_cmd_get_mode);
 FS_COMMAND_DEFINE("/kernel/log/format", log_cmd_format);
-FS_COMMAND_DEFINE("/kernel/log/trigger", log_cmd_trigger);
+
+FS_COUNTER_DEFINE("/kernel/log/discarded", log_discarded);
 
 extern int (*log_id_to_format_fn[])(chan_t *, void *);
 
@@ -59,20 +62,60 @@ static const char FAR *level_as_string[] = {
     level_debug
 };
 
-int log_cmd_format(int argc,
-                    const char *argv[],
-                    chan_t *chout_p,
-                    chan_t *chin_p)
-{
-    return (log_format(chout_p));
-}
-
-int log_cmd_trigger(int argc,
+int log_cmd_set_mode(int argc,
                      const char *argv[],
                      chan_t *chout_p,
                      chan_t *chin_p)
 {
+    if (argc != 2) {
+        std_fprintf(chout_p, FSTR("Usage: set_mode <off|circular|capture>\r\n"));
+        return (1);
+    }
+
+    if (std_strcmp(argv[1], FSTR("off")) == 0) {
+        log_set_mode(LOG_MODE_OFF);
+    } else if (std_strcmp(argv[1], FSTR("circular")) == 0) {
+        log_set_mode(LOG_MODE_CIRCULAR);
+    } else if (std_strcmp(argv[1], FSTR("capture")) == 0) {
+        log_set_mode(LOG_MODE_CAPTURE);
+    } else {
+        std_fprintf(chout_p, FSTR("%s: bad mode\r\n"), argv[1]);
+        return (1);
+    }
+
     return (0);
+}
+
+int log_cmd_get_mode(int argc,
+                     const char *argv[],
+                     chan_t *chout_p,
+                     chan_t *chin_p)
+{
+    int mode;
+
+    mode = log_get_mode();
+
+    switch (mode) {
+    case LOG_MODE_OFF:
+        std_fprintf(chout_p, FSTR("off\r\n"));
+        break;
+    case LOG_MODE_CIRCULAR:
+        std_fprintf(chout_p, FSTR("circular\r\n"));
+        break;
+    case LOG_MODE_CAPTURE:
+        std_fprintf(chout_p, FSTR("capture\r\n"));
+        break;
+    }
+
+    return (0);
+}
+
+int log_cmd_format(int argc,
+                   const char *argv[],
+                   chan_t *chout_p,
+                   chan_t *chin_p)
+{
+    return (log_format(chout_p));
 }
 
 int log_module_init(void)
@@ -171,6 +214,8 @@ int log_write(char level, int id, void *buf_p, size_t size)
         if (log.write_p > log.end_p) {
             log.end_p = log.write_p;
         }
+    } else {
+        FS_COUNTER_INC(log_discarded, 1);
     }
 
     spin_unlock(&log.spin, &irq);
@@ -186,18 +231,17 @@ int log_format(chan_t *chout_p)
     void *begin_p, *buf_p, *entry_end_p;
     int (*format_fn)(chan_t *, void *);
     size_t entry_size;
-
-    /* The logging must be turned off when formatting. */
-    if (log.mode != LOG_MODE_OFF) {
-        return (-1);
-    }
+    int old_mode;
 
     /* Empty log? */
     if (log.end_p == &log.buffer[0]) {
         return (0);
     }
 
+    old_mode = log_set_mode(LOG_MODE_OFF);
+
     /* Find the first entry. */
+    number_of_entries = 0;
 
     /* From last written entry to the beginning of the buffer. */
     entry_end_p = log.write_p;
@@ -226,13 +270,15 @@ int log_format(chan_t *chout_p)
         entry_end_p -= entry_size;
     }
 
+    std_fprintf(chout_p, FSTR("number:time:level: message\r\n"));
+
     /* Write entries to the channel. */
     for (i = 0; i < number_of_entries; i++) {
         header_p = begin_p;
         buf_p = ((void *)header_p + sizeof(*header_p));
         footer_p = (buf_p + header_p->size);
 
-        std_fprintf(chout_p, FSTR("%d:%lu:"), header_p->id, header_p->time);
+        std_fprintf(chout_p, FSTR("%lu:%lu:"), header_p->number, header_p->time);
         std_fprintf(chout_p, level_as_string[(int)header_p->level]);
         std_fprintf(chout_p, FSTR(": "));
 
@@ -247,6 +293,8 @@ int log_format(chan_t *chout_p)
             begin_p = &log.buffer[0];
         }
     }
+
+    log_set_mode(old_mode);
 
     return (number_of_entries);
 }

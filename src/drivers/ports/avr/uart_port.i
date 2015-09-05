@@ -32,7 +32,7 @@ FS_COUNTER_DEFINE("/drivers/uart/rx_errors", uart_rx_errors);
 
 static int uart_port_start(struct uart_driver_t *drv_p)
 {
-    uint16_t baudrate = ((F_CPU / 8 / drv_p->baudrate - 1) / 2);
+    uint16_t baudrate = (F_CPU / 16 / drv_p->baudrate - 1);
     struct uart_device_t *dev_p = drv_p->dev_p;
 
     *UBRRn(dev_p) = baudrate;

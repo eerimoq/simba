@@ -97,7 +97,7 @@ argument_structure_fmt = '''struct {name}_t {{
 }};
 '''
 
-write_function_fmt = '''int {name}_write(int level, ...)
+write_function_fmt = '''int {name}_write(char level, ...)
 {{
     struct {name}_t args;
     va_list va;

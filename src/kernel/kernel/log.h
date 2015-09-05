@@ -46,8 +46,7 @@
 /* Log modes. */
 #define LOG_MODE_OFF      0
 #define LOG_MODE_CIRCULAR 1
-#define LOG_MODE_TRIGGER  2
-#define LOG_MODE_CAPTURE  3
+#define LOG_MODE_CAPTURE  2
 
 #define TOKENPASTE2(x, y) x ## y
 #define TOKENPASTE(x, y) TOKENPASTE2(x, y)
@@ -88,7 +87,7 @@ int log_module_init(void);
 int log_reset();
 
 /**
- * Set log mode to off, circular or trigger.
+ * Set log mode to off or circular.
  * @param[in] mode Mode to set.
  * @return Overwritten mode.
  */
