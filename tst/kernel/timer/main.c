@@ -47,12 +47,12 @@ int test_timer(struct harness_t *harness_p)
     thrd_usleep(100000);
 
     /* Periodic timer. */
-    std_printk(STD_LOG_NOTICE, FSTR("timer_set(PERIODIC)"));
+    std_printf(FSTR("timer_set(PERIODIC)\r\n"));
     timer_set(&timer, &timeout, callback, NULL, TIMER_PERIODIC);
 
     for (i = 0; i < 5; i++) {
         thrd_suspend(NULL);
-        std_printk(STD_LOG_NOTICE, FSTR("Timeout %d."), i);
+        std_printf(FSTR("Timeout %d.\r\n"), i);
     }
 
     return (0);

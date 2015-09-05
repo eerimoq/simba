@@ -28,26 +28,26 @@ int test_sprintf(struct harness_t *harness_p)
     BTASSERT((size = std_sprintf(buf,
                                  FSTR("Normal:                '%c' '%d' '%lu' '%s'"),
                                  'b', -43, 0xffffffffUL, "foo")) == 51);
-    std_printk(STD_LOG_NOTICE, FSTR("%s"), buf);
+    std_printf(FSTR("%s\r\n"), buf);
 
     BTASSERT((size = std_sprintf(buf,
                                  FSTR("Left justification:    '%-10c' '%-10d' '%-10lu' '%-10s'"),
                                  'b', -43, 0xffffffffUL, "foo")) == 74);
-    std_printk(STD_LOG_NOTICE, FSTR("%s"), buf);
+    std_printf(FSTR("%s\r\n"), buf);
 
     BTASSERT((size = std_sprintf(buf,
                                  FSTR("Preceding with blanks: '%10c' '%10d' '%10lu' '%10s'"),
                                  'b', -43, 0xffffffffUL, "foo")) == 74);
-    std_printk(STD_LOG_NOTICE, FSTR("%s"), buf);
+    std_printf(FSTR("%s\r\n"), buf);
 
     BTASSERT((size = std_sprintf(buf,
                                  FSTR("Preceding with zeros:  '%010c' '%010d' '%010lu' '%010s'"),
                                  'b', -43, 0xffffffffUL, "foo")) == 74);
-    std_printk(STD_LOG_NOTICE, FSTR("%s"), buf);
+    std_printf(FSTR("%s\r\n"), buf);
 
     BTASSERT((size = std_sprintf(buf,
                                  FSTR("Bad format: %g %"))) == 14);
-    std_printk(STD_LOG_NOTICE, FSTR("%s"), buf);
+    std_printf(FSTR("%s\r\n"), buf);
 
 #ifdef ARCH_LINUX
     BTASSERT((size = std_sprintf(buf,
@@ -58,7 +58,7 @@ int test_sprintf(struct harness_t *harness_p)
                                  FSTR("Big unsigned:          '%u'"),
                                  0xffffU)) == 30);
 #endif
-    std_printk(STD_LOG_NOTICE, FSTR("%s"), buf);
+    std_printf(FSTR("%s\r\n"), buf);
 
     return (0);
 }
@@ -71,22 +71,22 @@ int test_sprintf_double(struct harness_t *harness_p)
     BTASSERT((size = std_sprintf(buf,
                                  FSTR("Normal:                '%f' '%f'"),
                                  10.5f, -37.731)) == 47);
-    std_printk(STD_LOG_NOTICE, FSTR("%s"), buf);
+    std_printf(FSTR("%s\r\n"), buf);
 
     BTASSERT((size = std_sprintf(buf,
                                  FSTR("Left justification:    '%-12f' '%-12f'"),
                                  10.5f, -37.731)) == 52);
-    std_printk(STD_LOG_NOTICE, FSTR("%s"), buf);
+    std_printf(FSTR("%s\r\n"), buf);
 
     BTASSERT((size = std_sprintf(buf,
                                  FSTR("Preceding with blanks: '%12f' '%12f'"),
                                  10.5f, -37.731)) == 52);
-    std_printk(STD_LOG_NOTICE, FSTR("%s"), buf);
+    std_printf(FSTR("%s\r\n"), buf);
 
     BTASSERT((size = std_sprintf(buf,
                                  FSTR("Preceding with zeros:  '%012f' '%012f'"),
                                  10.5f, -37.731)) == 52);
-    std_printk(STD_LOG_NOTICE, FSTR("%s"), buf);
+    std_printf(FSTR("%s\r\n"), buf);
 
     return (0);
 }

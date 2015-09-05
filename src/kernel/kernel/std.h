@@ -23,22 +23,6 @@
 
 #include "simba.h"
 
-/* Severity levels' log masks. */
-#define STD_LOG_EMERG   0        /* System unusable. */
-#define STD_LOG_ALERT   1        /* Immediate action required. */
-#define STD_LOG_CRIT    2        /* Critical condition. */
-#define STD_LOG_ERR     3        /* Error conditions. */
-#define STD_LOG_WARNING 4        /* Warning conditions. */
-#define STD_LOG_NOTICE  5        /* Normal but significant conditions. */
-#define STD_LOG_INFO    6        /* Informational messages. */
-#define STD_LOG_DEBUG   7        /* Debugging messages. */
-
-/* Craete log mask from level. */
-#define STD_LOG_MASK(level) (1 << (STD_LOG_ ## level))
-
-/* Set all levels up to and including mask. */
-#define STD_LOG_UPTO(level) ((1 << (STD_LOG_ ## level + 1)) - 1)
-
 /**
  * Initialize module.
  * @return zero(0) or negative error code.
@@ -79,16 +63,6 @@ void std_printf(FAR const char *fmt_p, ...);
  * @return void.
  */
 void std_fprintf(chan_t *chan_p, FAR const char *fmt_p, ...);
-
-/**
- * Format and print data to standard output. A timestamp and log level
- * is prepended to the formatted string.
- * @param[in] level Log level.
- * @param[in] fmt_p Format string.
- * @param[in] ... Variable arguemnts list.
- * @return true(1) if written, otherwise false(0).
- */
-int std_printk(char level, FAR const char *fmt_p, ...);
 
 /**
  * Convert string to integer.

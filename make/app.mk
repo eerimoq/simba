@@ -120,8 +120,9 @@ define COMPILE_template
 $(patsubst %.c,$(OBJDIR)/%.o,$(notdir $1)): $1
 	@echo "Compiling $1"
 	mkdir -p $(OBJDIR) $(DEPSDIR) $(GENDIR)
-	$$(CC) $$(CFLAGS) -o $$@ $$<
-	$$(CC) $$(CFLAGS) -D__SIMBA_GEN__ -E -o $(patsubst %.c,$(GENDIR)/%.o.pp,$(notdir $1)) $$<
+	$$(CC) $$(CFLAGS) -DMODULE_NAME=$(basename $1) -D__SIMBA_GEN__ \
+	    -E -o $(patsubst %.c,$(GENDIR)/%.o.pp,$(notdir $1)) $$<
+	$$(CC) $$(CFLAGS) -DMODULE_NAME=$(basename $1) -o $$@ $$<
 	gcc -MM -MT $$@ $$(filter -I% -D% -O%,$$(CFLAGS)) -o $(patsubst %.c,$(DEPSDIR)/%.o.dep,$(notdir $1)) $$<
 endef
 $(foreach file,$(CSRC),$(eval $(call COMPILE_template,$(file))))

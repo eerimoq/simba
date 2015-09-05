@@ -18,7 +18,7 @@
 # This file is part of the Simba project.
 #
 
-NAME = qlog_suite
+NAME = log_suite
 BOARD = linux
 SRC += main.c
 SLIB_SRC = harness.c

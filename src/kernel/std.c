@@ -33,27 +33,6 @@ struct buffered_output_t {
     char buffer[STD_OUTPUT_BUFFER_MAX];
 };
 
-static FAR const char level_emergency[] = "emergency";
-static FAR const char level_alert[] = "alert";
-static FAR const char level_critical[] = "critical";
-static FAR const char level_error[] = "error";
-static FAR const char level_warning[] = "warning";
-static FAR const char level_notice[] = "notice";
-static FAR const char level_info[] = "info";
-static FAR const char level_debug[] = "debug";
-
-/* Level strings array. */
-static const char FAR *level_as_string[] = {
-    level_emergency,
-    level_alert,
-    level_critical,
-    level_error,
-    level_warning,
-    level_notice,
-    level_info,
-    level_debug
-};
-
 /**
  * Put characters to buffer.
  */
@@ -341,37 +320,6 @@ void std_fprintf(chan_t *chan_p, FAR const char *fmt_p, ...)
     std_vprintf(fprintf_putc, &output, fmt_p, &ap);
     va_end(ap);
     output_flush(&output);
-}
-
-int std_printk(char level, FAR const char *fmt_p, ...)
-{
-    va_list ap;
-    char buf[16];
-    struct time_t time;
-    struct buffered_output_t output;
-
-    /* Check if severity level is set. */
-    if ((thrd_get_log_mask() & (1 << level)) == 0) {
-        return (0);
-    }
-
-    /* Fromat and print header. */
-    time_get(&time);
-    std_strcpy(buf, level_as_string[(int)level]);
-    std_printf(FSTR("%lu:%s: "), time.seconds, buf);
-
-    /* Format and print data. */
-    output.pos = 0;
-    output.chan_p = sys_get_stdout();
-
-    va_start(ap, fmt_p);
-    std_vprintf(fprintf_putc, &output, fmt_p, &ap);
-    va_end(ap);
-    output_flush(&output);
-
-    std_printf(FSTR("\r\n"));
-
-    return (1);
 }
 
 int std_strtol(const char *str_p, long *value_p)

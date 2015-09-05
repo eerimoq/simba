@@ -30,10 +30,11 @@ file_fmt = '''/**
  */
 
 #include "simba.h"
+#include <stdarg.h>
 
 {fs}
 
-{qlog}
+{log}
 '''
 
 fs_fmt = '''{command_externs}
@@ -59,12 +60,14 @@ const FAR int fs_parameters[] = {{
 }};
 '''
 
-qlog_fmt = '''{qlog_ids}
+log_fmt = '''{argument_structures}
 
-{qlog_strings}
+{write_functions}
 
-const char FAR *qlog_id_to_string[] = {{
-{qlog_strings_array}
+{format_functions}
+
+void (*log_id_to_format_fn[])(chan_t *, void *) = {{
+{format_functions_array}
 }};
 '''
 
@@ -88,6 +91,32 @@ node_fmt = '''    /* index: {index} */
     }},'''
 
 list_entry_fmt = '{index},'
+
+argument_structure_fmt = '''struct {name}_t {{
+{members}
+}};
+'''
+
+write_function_fmt = '''int {name}_write(int level, ...)
+{{
+    struct {name}_t args;
+    va_list va;
+
+    va_start(va, level);
+{args}
+    va_end(va);
+
+    return (log_write(level, {identity}, &args, sizeof(args)));
+}}
+'''
+
+format_function_fmt = '''void {name}_format(chan_t *chan_p, struct {name}_t *args_p)
+{{
+    std_fprintf(chan_p, FSTR("{fmt}")
+{args}
+);
+}}
+'''
 
 major = 1
 minor = 0
@@ -127,13 +156,13 @@ def generate_nodes(parent, nodes, name, children, next, path):
 def generate_fs(infiles):
     """Generate file system commands, counters and parameters.
     """
-    re_command = re.compile('^\w*\.\.fs_command\.\. '
+    re_command = re.compile(r'^\s*\.\.fs_command\.\. '
                             '"(?P<path>[^"]+)" '
                             '"(?P<callback>[^"]+)";$', re.MULTILINE)
-    re_counter = re.compile('^\w*\.\.fs_counter\.\. '
+    re_counter = re.compile(r'^\s*\.\.fs_counter\.\. '
                             '"(?P<path>[^"]+)" '
                             '"(?P<name>[^"]+)";$', re.MULTILINE)
-    re_parameter = re.compile('^\w*\.\.fs_parameter\.\. '
+    re_parameter = re.compile(r'^\s*\.\.fs_parameter\.\. '
                               '"(?P<path>[^"]+)" '
                               '"(?P<name>[^"]+)" '
                               '"(?P<type>[^"]+)";$',
@@ -224,43 +253,85 @@ def generate_fs(infiles):
                          parameters_list='\n'.join(parameters_list))
 
 
-def generate_qlog(infiles):
-    """Generate qlog identities and strings.
+def parse_format_types(fmt):
+    types =[]
+    for mo in re.finditer(r"(%f|%c|%d|%ld|%u|%lu)", fmt):
+        if mo.group(1) == '%f':
+            types.append('double')
+        elif mo.group(1) == '%c':
+            types.append('int')
+        elif mo.group(1) == '%d':
+            types.append('int')
+        elif mo.group(1) == '%ld':
+            types.append('long')
+        elif mo.group(1) == '%u':
+            types.append('unsigned int')
+        elif mo.group(1) == '%lu':
+            types.append('unsigned long')
+    return types
+
+
+def log_point_gen(identity, name, fmt):
+    types = parse_format_types(fmt)
+
+    struct_members = []
+    write_args = []
+    format_args = []
+    for i, type in enumerate(types):
+        struct_members.append('        {type} arg{number};'.format(type=type,
+                                                                   number=i))
+        write_args.append('    args.arg{number} = va_arg(va, {type});'.format(type=type,
+                                                                              number=i))
+        format_args.append('    , args_p->arg{number}'.format(number=i))
+
+    argument_structures = argument_structure_fmt.format(name=name,
+                                                        members='\n'.join(struct_members))
+    write_functions = write_function_fmt.format(identity=identity,
+                                                name=name,
+                                                args='\n'.join(write_args))
+    format_functions = format_function_fmt.format(name=name,
+                                                  fmt=fmt,
+                                                  args='\n'.join(format_args))
+
+    return argument_structures, write_functions, format_functions
+
+
+def generate_log(infiles):
+    """Generate log identities and strings.
     """
-    re_qlog = re.compile('^\w*\.\.qlog\.\. '
-                         '"(?P<level>[^"]+)" '
-                         '"(?P<name>[^"]+)" '
-                         '"(?P<fmt>[^"]+)";$',
-                         re.MULTILINE)
+    re_log = re.compile(r'^\s*\.\.log-begin\.\. '
+                        '(?P<name>[^ ]+) '
+                        '"(?P<fmt>[^"]+)" '
+                        '\.\.log-end\.\.;$',
+                        re.MULTILINE)
 
 
     # create lists of files and counters
-    qlog_defines = []
+    log_points = []
     for inf in infiles:
         file_content = open(inf).read()
-        for mo in re_qlog.finditer(file_content):
-            qlog_defines.append([mo.group('level'), mo.group('name'), mo.group('fmt')])
+        for mo in re_log.finditer(file_content):
+            log_points.append([mo.group('name'), mo.group('fmt')])
 
-    identity = 0
-    qlog_ids = []
-    qlog_strings = []
-    qlog_strings_array = []
-    for qlog_define in qlog_defines:
-        level = qlog_define[0]
-        name = qlog_define[1]
-        fmt = qlog_define[2]
+    argument_structures = []
+    write_functions = []
+    format_functions = []
+    format_functions_array = []
+    for identity, log_point in enumerate(log_points):
+        name = log_point[0]
+        fmt = log_point[1]
 
-        qlog_ids.append("qlog_id_t qlog_id_{name} = (((int32_t)STD_LOG_{level} << 16) | {identity});"
-                        .format(level=level, name=name, identity=identity))
-        qlog_strings.append('static FAR const char qlog_id_{name}_fmt[] = "{fmt}\\r\\n";'
-                            .format(name=name, fmt=fmt))
-        qlog_strings_array.append("qlog_id_{name}_fmt,".format(name=name))
+        argument_structure, write_function, format_function = log_point_gen(identity, name, fmt)
+        argument_structures.append(argument_structure)
+        write_functions.append(write_function)
+        format_functions.append(format_function)
 
-        identity += 1
+        format_functions_array.append("    (void (*)(chan_t *, void *)){name}_format,".format(name=name))
 
-    return qlog_fmt.format(qlog_ids='\n'.join(qlog_ids),
-                           qlog_strings='\n'.join(qlog_strings),
-                           qlog_strings_array='\n'.join(qlog_strings_array))
+    return log_fmt.format(argument_structures='\n'.join(argument_structures),
+                          write_functions='\n'.join(write_functions),
+                          format_functions='\n'.join(format_functions),
+                          format_functions_array='\n'.join(format_functions_array))
 
 
 if __name__ == '__main__':
@@ -268,7 +339,7 @@ if __name__ == '__main__':
     infiles = sys.argv[2:]
 
     fs_formatted_data = generate_fs(infiles)
-    qlog_formatted_data = generate_qlog(infiles)
+    log_formatted_data = generate_log(infiles)
 
     fout = open(outfile, 'w').write(
         file_fmt.format(filename=outfile,
@@ -276,4 +347,4 @@ if __name__ == '__main__':
                         minor=minor,
                         date=time.strftime("%Y-%m-%d %H:%M %Z"),
                         fs=fs_formatted_data,
-                        qlog=qlog_formatted_data))
+                        log=log_formatted_data))

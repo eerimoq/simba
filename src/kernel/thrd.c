@@ -341,7 +341,7 @@ int thrd_module_init(void)
     main_thrd.prio = 0;
     main_thrd.state = THRD_STATE_CURRENT;
     main_thrd.err = 0;
-    main_thrd.log_mask = STD_LOG_UPTO(NOTICE);
+    main_thrd.log_mask = LOG_UPTO(NOTICE);
     main_thrd.name_p = "main";
     main_thrd.parent.thrd_p = NULL;
     LIST_SL_INIT(&main_thrd.children);
@@ -379,7 +379,7 @@ struct thrd_t *thrd_spawn(void *(*entry)(void *),
     thrd_p->prio = prio;
     thrd_p->state = THRD_STATE_READY;
     thrd_p->err = 0;
-    thrd_p->log_mask = STD_LOG_UPTO(NOTICE);
+    thrd_p->log_mask = LOG_UPTO(NOTICE);
     thrd_p->name_p = "";
     thrd_p->parent.thrd_p = thrd_self();
     LIST_SL_INIT(&thrd_p->children);

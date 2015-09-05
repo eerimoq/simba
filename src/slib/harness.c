@@ -44,17 +44,17 @@ int harness_run(struct harness_t *harness_p,
 
     while (testcase_p->callback != NULL) {
         if (testcase_p->name_p != NULL) {
-            std_printk(STD_LOG_NOTICE, FSTR("enter: %s"), testcase_p->name_p);
+            std_printf(FSTR("enter: %s\r\n"), testcase_p->name_p);
         }
 
         err = testcase_p->callback(harness_p);
 
         if (err == 0) {
             passed++;
-            std_printk(STD_LOG_NOTICE, FSTR("exit: %s: PASSED"), testcase_p->name_p);
+            std_printf(FSTR("exit: %s: PASSED\r\n"), testcase_p->name_p);
         } else {
             failed++;
-            std_printk(STD_LOG_NOTICE, FSTR("exit: %s: FAILED"), testcase_p->name_p);
+            std_printf(FSTR("exit: %s: FAILED\r\n"), testcase_p->name_p);
         }
 
         total++;
@@ -64,8 +64,7 @@ int harness_run(struct harness_t *harness_p,
     strcpy(buf, "kernel/thrd/list");
     fs_call(buf, NULL, &harness_p->uart.chout);
 
-    std_printk(STD_LOG_NOTICE,
-               FSTR("harness report: total(%d), passed(%d), failed(%d)"),
+    std_printf(FSTR("harness report: total(%d), passed(%d), failed(%d)\r\n"),
                total, passed, failed);
 
 
