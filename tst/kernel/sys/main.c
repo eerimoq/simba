@@ -43,7 +43,7 @@ int main()
 
     sys_start();
     uart_module_init();
-
+    while(1);
     harness_init(&harness);
     harness_run(&harness, harness_testcases);
 

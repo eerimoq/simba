@@ -155,6 +155,7 @@
 #define EKEYREVOKED     128 /* Key has been revoked */
 #define EKEYREJECTED    129 /* Key was rejected by service */
 
-#define ESTACK         1000 /* Stack currupt. */
+#define ESTACK           1000 /* Stack currupt. */
+#define EWATCHDOGTIMEOUT 1001 /* Watchdog timeout. */
 
 #endif
