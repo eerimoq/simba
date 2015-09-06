@@ -57,6 +57,11 @@ $(NAME).hex: $(EXE)
     CROSS_COMPILE =
     CFLAGS += -Werror -Wno-error=unused-variable -DNPROFILESTACK
     LDFLAGS += -Wl,-lpthread
+
+    ifneq ($(NPROFILE),yes)
+      CFLAGS += -pg -fprofile-arcs -ftest-coverage
+      LDFLAGS += -pg -fprofile-arcs -ftest-coverage -lgcov
+    endif
   endif
 
   CC = $(CROSS_COMPILE)gcc
@@ -70,11 +75,6 @@ $(NAME).hex: $(EXE)
     LDFLAGS += -g
   else
     CFLAGS += -O2
-  endif
-
-  ifneq ($(NPROFILE),yes)
-    CFLAGS += -pg -fprofile-arcs -ftest-coverage
-    LDFLAGS += -pg -fprofile-arcs -ftest-coverage -lgcov
   endif
 endif
 

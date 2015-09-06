@@ -36,8 +36,9 @@ if [ ${TARGET} == run ] ; then
         echo "Program does not fit in memory. Aborting."
     fi
 elif [ ${TARGET} == dump ] ; then
-        avrdude -p ${MCU} $@ -U eeprom:r:eeprom.bin:r 2>&1
-        ${SIMBA}/make/sys.py eeprom.bin
+    echo "avrdude -p ${MCU} $@ -U eeprom:r:eeprom.bin:r 2>&1"
+    avrdude -p ${MCU} $@ -U eeprom:r:eeprom.bin:r 2>&1
+    ${SIMBA}/make/sys.py eeprom.bin
 else
     echo "Bad target ${TARGET}."
     exit 1
