@@ -23,6 +23,10 @@
 
 #define UNUSED(v) (void)(v)
 
+#define TOKENPASTE2(x, y) x ## y
+#define TOKENPASTE(x, y) TOKENPASTE2(x, y)
+#define UNIQUE(x)  TOKENPASTE(x, TOKENPASTE(___, __LINE__))
+
 #define membersof(a) (sizeof(a) / sizeof((a)[0]))
 
 #define container_of(ptr, type, member)                         \

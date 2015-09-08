@@ -48,9 +48,7 @@
 #define LOG_MODE_CIRCULAR 1
 #define LOG_MODE_CAPTURE  2
 
-#define TOKENPASTE2(x, y) x ## y
-#define TOKENPASTE(x, y) TOKENPASTE2(x, y)
-#define LOG_NAME TOKENPASTE(log_, TOKENPASTE(MODULE_NAME, TOKENPASTE(_, __LINE__)))
+#define LOG_NAME TOKENPASTE(log_, UNIQUE(MODULE_NAME))
 #define LOG_NAME_WRITE TOKENPASTE(LOG_NAME, _write)
 
 #if defined(__SIMBA_GEN__)

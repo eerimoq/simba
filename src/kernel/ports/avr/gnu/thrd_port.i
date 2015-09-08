@@ -20,7 +20,7 @@
 
 #include <avr/sleep.h>
 
-#define THRD_IDLE_STACK_MAX 128
+#define THRD_IDLE_STACK_MAX 156
 
 static struct thrd_t main_thrd __attribute__ ((section (".noinit")));
 

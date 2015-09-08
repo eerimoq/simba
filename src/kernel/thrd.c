@@ -20,12 +20,13 @@
 
 #include "simba.h"
 
+/* Thread states. */
 #define THRD_STATE_CURRENT      0
 #define THRD_STATE_READY        1
 #define THRD_STATE_SUSPENDED    2
 #define THRD_STATE_KILLED       3
-#define THRD_STATE_RESUMED      4
 
+/* Stack usage and debugging. */
 #define THRD_STACK_LOW_MAGIC 0x1337
 #define THRD_FILL_PATTERN 0x19
 
@@ -146,7 +147,7 @@ static void thrd_reschedule(void)
     ASSERTN(out_p->stack_low_magic == THRD_STACK_LOW_MAGIC, ESTACK);
     in_p = scheduler_ready_pop();
 
-    /* Swap thrds. */
+    /* Swap threads. */
     in_p->state = THRD_STATE_CURRENT;
 
     if (in_p != out_p) {
@@ -411,9 +412,7 @@ int thrd_suspend(struct time_t *timeout_p)
     int err;
 
     sys_lock();
-
     err = thrd_suspend_irq(timeout_p);
-
     sys_unlock();
 
     return (err);

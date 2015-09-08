@@ -20,7 +20,16 @@
 
 #include "simba.h"
 
-#define BUFFER_SIZE(buffer_p) ((buffer_p)->end_p - (buffer_p)->begin_p - 1)
+#define BUFFER_SIZE(buffer_p) \
+    ((buffer_p)->end_p - (buffer_p)->begin_p - 1)
+#define BUFFER_USED_UNTIL_END(buffer_p) \
+    ((buffer_p)->end_p - (buffer_p)->read_p)
+#define WRITER_SIZE(queue_p) \
+    ((queue_p->base.writer_p != NULL) * queue_p->left)
+#define BUFFER_UNUSED_UNTIL_END(buffer_p) \
+    ((buffer_p)->end_p - (buffer_p)->write_p)
+#define BUFFER_UNUSED(buffer_p) \
+    (BUFFER_SIZE(buffer_p) - get_buffer_used(buffer_p))
 
 static inline size_t get_buffer_used(struct queue_buffer_t *buffer_p)
 {
@@ -37,13 +46,6 @@ static inline size_t get_buffer_used(struct queue_buffer_t *buffer_p)
                 - (buffer_p->read_p - buffer_p->write_p));
     }
 }
-
-#define BUFFER_USED_UNTIL_END(buffer_p) ((buffer_p)->end_p - (buffer_p)->read_p)
-
-#define WRITER_SIZE(queue_p) ((queue_p->base.writer_p != NULL) * queue_p->left)
-
-#define BUFFER_UNUSED_UNTIL_END(buffer_p) ((buffer_p)->end_p - (buffer_p)->write_p)
-#define BUFFER_UNUSED(buffer_p) (BUFFER_SIZE(buffer_p) - get_buffer_used(buffer_p))
 
 int queue_init(struct queue_t *queue_p,
                void *buf_p,
@@ -202,7 +204,7 @@ ssize_t queue_write_irq(struct queue_t *queue_p,
         }
     }
 
-    if (queue_p->buffer.begin_p != NULL) {
+    if ((left > 0) && (queue_p->buffer.begin_p != NULL)) {
         buffer_unused = BUFFER_UNUSED(&queue_p->buffer);
 
         if (left < buffer_unused) {
