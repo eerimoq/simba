@@ -143,69 +143,17 @@ ssize_t queue_write(struct queue_t *queue_p,
                     const void *buf_p,
                     size_t size)
 {
-    size_t n, left;
-    size_t buffer_unused_until_end, buffer_unused;
+    size_t left;
 
     left = size;
 
     sys_lock();
 
-    if (chan_is_polled(&queue_p->base)) {
-        thrd_resume_irq(queue_p->base.reader_p, 0);
-        queue_p->base.reader_p = NULL;
-    }
-
-    /* Copy data to the reader, if one is present. */
-    if (queue_p->base.reader_p != NULL) {
-        if (left < queue_p->left) {
-            n = left;
-        } else {
-            n = queue_p->left;
-        }
-
-        memcpy(queue_p->buf_p, buf_p, n);
-        queue_p->buf_p += n;
-        queue_p->left -= n;
-        buf_p += n;
-        left -= n;
-
-        /* Read buffer full. */
-        if (queue_p->left == 0) {
-            /* Wake the reader. */
-            thrd_resume_irq(queue_p->base.reader_p, 0);
-            queue_p->base.reader_p = NULL;
-        }
-    }
-
-    if (queue_p->buffer.begin_p != NULL) {
-        buffer_unused = BUFFER_UNUSED(&queue_p->buffer);
-
-        if (left < buffer_unused) {
-            n = left;
-        } else {
-            n = buffer_unused;
-        }
-
-        buffer_unused_until_end = BUFFER_UNUSED_UNTIL_END(&queue_p->buffer);
-
-        if (n <= buffer_unused_until_end) {
-            memcpy(queue_p->buffer.write_p, buf_p, n);
-            queue_p->buffer.write_p += n;
-        } else {
-            memcpy(queue_p->buffer.write_p, buf_p, buffer_unused_until_end);
-            memcpy(queue_p->buffer.begin_p,
-                   buf_p + buffer_unused_until_end,
-                   (n - buffer_unused_until_end));
-            queue_p->buffer.write_p = queue_p->buffer.begin_p;
-            queue_p->buffer.write_p += (n - buffer_unused_until_end);
-        }
-
-        buf_p += n;
-        left -= n;
-    }
+    left -= queue_write_irq(queue_p, buf_p, size);
 
     /* The writer writes the remaining data. */
     if (left > 0) {
+        buf_p += (size - left);
         queue_p->base.writer_p = thrd_self();
         queue_p->buf_p = (void *)buf_p;
         queue_p->left = left;
@@ -227,8 +175,6 @@ ssize_t queue_write_irq(struct queue_t *queue_p,
 
     left = size;
 
-    sys_lock_irq();
-
     if (chan_is_polled(&queue_p->base)) {
         thrd_resume_irq(queue_p->base.reader_p, 0);
         queue_p->base.reader_p = NULL;
@@ -243,9 +189,9 @@ ssize_t queue_write_irq(struct queue_t *queue_p,
         }
 
         memcpy(queue_p->buf_p, buf_p, n);
-        buf_p += n;
         queue_p->buf_p += n;
         queue_p->left -= n;
+        buf_p += n;
         left -= n;
 
         /* Read buffer full. */
@@ -282,8 +228,6 @@ ssize_t queue_write_irq(struct queue_t *queue_p,
         buf_p += n;
         left -= n;
     }
-
-    sys_unlock_irq();
 
     return (size - left);
 }

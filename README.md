@@ -127,19 +127,19 @@ A simple thread that waits to be resumed by another thread.
         return (NULL);
     }
 
-Threads usually communicates over channels. There are two kinds of channels;
-queue and sock. Both implements the same abstract channel interface.
+Threads usually communicates over channels. There are three kinds of channels;
+queue, event and sock. All implementing the same abstract channel interface.
 This makes channel very powerful as a synchronization primitive. They can be
 seen as file descriptors in linux.
 
 The most common channel is the queue. It can be either synchronous or
 semi-asynchronous. In the synchronous version the writing thread will
-block until all written data has been read by one or more readers. In the
-semi-asynchronous version the writer writes to a buffer withing the queue,
-and only blocks if not all data fits in the buffer. The buffer size is configured
-by the application.
+block until all written data has been read by the reader. In the
+semi-asynchronous version the writer writes to a buffer within the
+queue, and only blocks all data does not fit in the buffer. The buffer
+size is chosen by the application.
 
-The sock channel is used for internet protocols.
+The sock channel is used for internet protocols (not yet implemented).
 
 DRIVERS
 -------
@@ -159,7 +159,7 @@ an alternative, in particular for streaming devices like UART.
         
         sys_lock();
 
-        // 1. send something to hardware
+        // 1. send something to the hardware
         
         // 2. wait for response
         thrd_suspend_irq(NULL);
@@ -174,6 +174,6 @@ an alternative, in particular for streaming devices like UART.
     {
         drv_p = device[0].drv_p;
 
-        // 3. resume suspended thread
+        // 3. resume the suspended thread
         thrd_resume_irq(drv_p->thrd_p, 0);
     }
