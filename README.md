@@ -149,28 +149,31 @@ a driver operation. The driver sends a message to the hardware and suspends
 current thread. The hardware sends an interrupt and the calling thread is
 resumed. Driver operation complete. Use counting semaphores if atomic access
 to the device is required (not included in the example). A queue is also
-an alternative, especially to streaming devices like UART.
-
-    static struct thrd_t *completion_thread;
+an alternative, in particular for streaming devices like UART.
 
     int mydrv_exec(struct mydrv_t *drv)
     {
         int err = 0;
         
-        completion_thread = thrd_self();
+        drv_p->thrd_p = thrd_self();
         
+        sys_lock();
+
         // 1. send something to hardware
         
         // 2. wait for response
-        thrd_suspend(0);
+        thrd_suspend_irq(NULL);
+        sys_unlock();
         
         // 4. prepare result
         
         return (err);
     }
 
-    ISR(mydrv)
+    ISR(dev_vect)
     {
+        drv_p = device[0].drv_p;
+
         // 3. resume suspended thread
-        thrd_resume_irq(completion_thread, 0);
+        thrd_resume_irq(drv_p->thrd_p, 0);
     }
