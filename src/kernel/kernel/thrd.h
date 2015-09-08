@@ -99,6 +99,13 @@ int thrd_set_log_mask(struct thrd_t *thrd_p, int mask);
 int thrd_get_log_mask(void);
 
 /**
+ * Suspend given thread and wait to be resumed or timeout.
+ * @param[in] timeout_p Timeout.
+ * @return zero(0) or negative error code.
+ */
+int thrd_suspend_irq(struct time_t *timeout_p);
+
+/**
  * Resume given suspended thread from interrupt context.
  * @param[in] thrd_p Thread id.
  * @param[in] err Error code to be returned by thrd_suspend().

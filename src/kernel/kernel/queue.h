@@ -30,23 +30,35 @@
             .read = (ssize_t (*)(void *, void *, size_t))queue_read,    \
             .write = (ssize_t (*)(void *, const void *, size_t))queue_write, \
             .size = (size_t (*)(void *))queue_size,                     \
-            .readers = LIST_SL_INIT_STRUCT                              \
+            .writer_p = NULL,                                           \
+            .reader_p = NULL,                                           \
+            .list_p = NULL                                              \
         },                                                              \
-        .buf_p = _buf,                                                  \
-        .size = _size,                                                  \
-        .wrpos = 0,                                                     \
-        .rdpos = 0,                                                     \
-        .writers = LIST_SL_INIT_STRUCT,                                 \
+        .buffer = {                                                     \
+            .begin_p = _buf,                                            \
+            .read_p = _buf,                                             \
+            .write_p = _buf,                                            \
+            .end_p = &_buf[_size],                                       \
+        },                                                              \
+        .buf_p = NULL,                                                  \
+        .size = 0,                                                      \
+        .left = 0                                                       \
     }
+
+struct queue_buffer_t{
+    void *begin_p;
+    void *read_p;
+    void *write_p;
+    void *end_p;
+};
 
 /* Queue. */
 struct queue_t {
     struct chan_t base;
+    struct queue_buffer_t buffer;
     void *buf_p;
     size_t size;
-    volatile size_t wrpos;
-    volatile size_t rdpos;
-    struct list_singly_linked_t writers;
+    size_t left;
 };
 
 /**

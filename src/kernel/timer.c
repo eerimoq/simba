@@ -35,8 +35,6 @@ static struct timer_list_t list = {
     .head_p = &list.tail_timer
 };
 
-static struct spin_lock_t lock;
-
 static void timer_insert(struct timer_t *timer_p)
 {
     struct timer_t *elem_p, *prev_p;
@@ -67,14 +65,14 @@ static void timer_insert(struct timer_t *timer_p)
 
 int timer_module_init(void)
 {
-    return (spin_init(&lock));
+    return (0);
 }
 
 void timer_tick(void)
 {
     struct timer_t *timer_p;
 
-    spin_lock_irq(&lock);
+    sys_lock_irq();
 
     /* Return if no timers are active.*/
     if (list.head_p == &list.tail_timer) {
@@ -86,9 +84,7 @@ void timer_tick(void)
     while (list.head_p->delta == 0) {
         timer_p = list.head_p;
         list.head_p = timer_p->next_p;
-        spin_unlock_irq(&lock);
         timer_p->callback(timer_p->arg_p);
-        spin_lock_irq(&lock);
 
         /* Re-set periodic timers. */
         if (timer_p->flags & TIMER_PERIODIC) {
@@ -98,7 +94,7 @@ void timer_tick(void)
     }
 
  out:
-    spin_unlock_irq(&lock);
+    sys_unlock_irq();
 }
 
 int timer_set(struct timer_t *timer_p,
@@ -107,8 +103,23 @@ int timer_set(struct timer_t *timer_p,
               void *arg_p,
               int flags)
 {
-    spin_irq_t irq;
+    int err;
 
+    sys_lock();
+
+    err = timer_set_irq(timer_p, timeout_p, callback, arg_p, flags);
+
+    sys_unlock();
+
+    return (err);
+}
+
+int timer_set_irq(struct timer_t *timer_p,
+                  struct time_t *timeout_p,
+                  void (*callback)(void *arg_p),
+                  void *arg_p,
+                  int flags)
+{
     /* Initiate timer. */
     timer_p->timeout = T2ST(timeout_p);
 
@@ -121,11 +132,7 @@ int timer_set(struct timer_t *timer_p,
     timer_p->callback = callback;
     timer_p->arg_p = arg_p;
 
-    spin_lock(&lock, &irq);
-
     timer_insert(timer_p);
-
-    spin_unlock(&lock, &irq);
 
     return (0);
 }

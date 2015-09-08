@@ -76,11 +76,7 @@ static struct shell_args_t shell_args = {
     .password_p = "pannkaka"
 };
 
-#ifdef ARCH_LINUX
-#    define BUFFER_SIZE 512
-#else
-#    define BUFFER_SIZE 128
-#endif
+#define BUFFER_SIZE 512
 
 static int chout_read_until(char *buf_p,
                             const char *pattern)
@@ -91,9 +87,9 @@ static int chout_read_until(char *buf_p,
 
     while (length < BUFFER_SIZE - 1) {
         chan_read(&qout, &c, sizeof(c));
-#if defined(ARCH_LINUX)
-        printf("%c", c);
-#endif
+
+        std_printf(FSTR("%c"), c);
+
         *buf_p++ = c;
         length++;
         *buf_p = '\0';
@@ -152,7 +148,6 @@ static int test_all(struct harness_t *harness_p)
                              "/1/2/3: command not found\r\n"
                              "$ ")) == 0, "%s\n", buf);
 
-#ifdef ARCH_LINUX
     /* Command too long. */
     chan_write(&qin,
                "This command is too long for the shell to handle. "
@@ -170,7 +165,6 @@ static int test_all(struct harness_t *harness_p)
                         FSTR("mmand length is probably 64 characters.\n"
                              "mmand: command not found\r\n"
                              "$ ")) == 0, "%s\n", buf);
-#endif
 
     /* Auto completion. */
     chan_write(&qin, "\t", membersof("\t") - 1);
@@ -178,6 +172,9 @@ static int test_all(struct harness_t *harness_p)
     BTASSERT(std_strcmp(buf,
                         FSTR("\r\n"
                              "bar\r\n"
+#if !defined(ARCH_LINUX)
+                             "drivers/\r\n"
+#endif
                              "fie\r\n"
                              "foo\r\n"
                              "kernel/\r\n"

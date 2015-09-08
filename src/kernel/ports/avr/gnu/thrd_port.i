@@ -87,7 +87,8 @@ static void thrd_port_init_main(struct thrd_port_t *port)
 
 static void thrd_port_entry(void)
 {
-    SREG = irq;
+    sys_unlock();
+
     /* Call entry function with argument. */
     asm volatile ("movw r24, r4");
     asm volatile ("movw r30, r2");

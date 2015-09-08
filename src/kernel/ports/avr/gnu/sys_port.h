@@ -35,9 +35,9 @@
                                                                         ))
 
 #define BTASSERT(cond, ...)                     \
-  if (!(cond)) {                                \
-    exit(1);                                    \
-  }
+    if (!(cond)) {                              \
+        exit(EBTASSERT);                        \
+    }
 
 #if !defined(NASSERT)
 #  define ASSERTN(cond, n, ...)                 \

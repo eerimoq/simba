@@ -20,21 +20,30 @@
 
 #include "simba.h"
 
-#define QUEUE_GET_SIZE(queue)                                   \
-    (((queue)->wrpos - (queue)->rdpos) & ((queue)->size - 1))
+#define BUFFER_SIZE(buffer_p) ((buffer_p)->end_p - (buffer_p)->begin_p - 1)
 
-#define QUEUE_GET_FREE(queue)                                           \
-    ((queue)->size - QUEUE_GET_SIZE(queue) - 1)
+static inline size_t get_buffer_used(struct queue_buffer_t *buffer_p)
+{
+    if (buffer_p->begin_p == NULL) {
+        return (0);
+    }
 
-struct queue_element_t {
-    /* Channel element base structure. */
-    struct chan_element_t base;
-    /* Buffer to read data into. NOTE: not the internal queue input
-       buffer. */
-    void *buf_p;
-    /* Number of bytes to read into buf_p.*/
-    size_t size;
-};
+    if (buffer_p->write_p == buffer_p->read_p) {
+        return (0);
+    } else if (buffer_p->write_p > buffer_p->read_p) {
+        return (buffer_p->write_p > buffer_p->read_p);
+    } else {
+        return ((buffer_p->end_p - buffer_p->begin_p)
+                - (buffer_p->read_p - buffer_p->write_p));
+    }
+}
+
+#define BUFFER_USED_UNTIL_END(buffer_p) ((buffer_p)->end_p - (buffer_p)->read_p)
+
+#define WRITER_SIZE(queue_p) ((queue_p->base.writer_p != NULL) * queue_p->left)
+
+#define BUFFER_UNUSED_UNTIL_END(buffer_p) ((buffer_p)->end_p - (buffer_p)->write_p)
+#define BUFFER_UNUSED(buffer_p) (BUFFER_SIZE(buffer_p) - get_buffer_used(buffer_p))
 
 int queue_init(struct queue_t *queue_p,
                void *buf_p,
@@ -44,104 +53,88 @@ int queue_init(struct queue_t *queue_p,
               (ssize_t (*)(void *, void *, size_t))queue_read,
               (ssize_t (*)(void *, const void *, size_t))queue_write,
               (size_t (*)(void *))queue_size);
-    queue_p->buf_p = buf_p;
-    queue_p->size = size;
-    queue_p->wrpos = 0;
-    queue_p->rdpos = 0;
-    LIST_SL_INIT(&queue_p->writers);
+
+    queue_p->buffer.begin_p = buf_p;
+    queue_p->buffer.read_p = buf_p;
+    queue_p->buffer.write_p = buf_p;
+    queue_p->buffer.end_p = &((char*)buf_p)[size];
+
+    queue_p->buf_p = NULL;
+    queue_p->size = 0;
+    queue_p->left = 0;
 
     return (0);
 }
 
 ssize_t queue_read(struct queue_t *queue_p, void *buf_p, size_t size)
 {
-    struct queue_element_t element, *reader_p, *writer_p;
-    struct chan_element_t *r_p, *w_p;
-    size_t size0, n;
-    spin_irq_t irq;
+    size_t left, n, buffer_used_until_end, buffer_used;
 
-    spin_lock(&chan_lock, &irq);
+    left = size;
 
-    /* Add ourself to readers list. */
-    element.base.thrd_p = thrd_self();
-    element.base.list_p = NULL;
-    element.buf_p = buf_p;
-    element.size = size;
-    LIST_SL_ADD_TAIL(&queue_p->base.readers, &element.base);
+    sys_lock();
 
-    /* Just suspend if there are other readers in the list. Write function
-       will copy data from writer to reader. Therefore return when
-       resumed. */
-    LIST_SL_PEEK_HEAD(&queue_p->base.readers, &reader_p);
+    /* Copy data from queue buffer. */
+    if (queue_p->buffer.begin_p != NULL) {
+        buffer_used = get_buffer_used(&queue_p->buffer);
 
-    if (reader_p != &element) {
-        spin_unlock(&chan_lock, &irq);
-        thrd_suspend(NULL);
-
-        return (size);
-    }
-
-    /* Read from buffer if there is data to read. */
-    if (queue_p->buf_p != NULL) {
-        n = (element.size > QUEUE_GET_SIZE(queue_p) ?
-             QUEUE_GET_SIZE(queue_p) :
-             element.size);
-        if ((queue_p->rdpos + n) <= queue_p->size) {
-            memcpy(buf_p, &((char *)queue_p->buf_p)[queue_p->rdpos], n);
+        if (left < buffer_used) {
+            n = left;
         } else {
-            size0 = (queue_p->size - queue_p->rdpos);
-            memcpy(buf_p, &((char *)queue_p->buf_p)[queue_p->rdpos], size0);
-            memcpy(buf_p + size0, &((char *)queue_p->buf_p)[0], n - size0);
-        }
-        queue_p->rdpos += n;
-        queue_p->rdpos &= (queue_p->size - 1);
-        element.buf_p += n;
-        element.size -= n;
-    }
-
-    /* There is no readers present, is there any writers? */
-    while (element.size > 0) {
-        LIST_SL_REMOVE_HEAD(&queue_p->writers, &w_p);
-        writer_p = (struct queue_element_t *)w_p;
-
-        /* No writer in list. */
-        if (writer_p == NULL) {
-            break;
+            n = buffer_used;
         }
 
-        /* Copy data to ourself. */
-        n = (element.size > writer_p->size ? writer_p->size : element.size);
-        memcpy(element.buf_p, writer_p->buf_p, n);
-        element.buf_p += n;
-        element.size -= n;
-        writer_p->buf_p += n;
-        writer_p->size -= n;
+        buffer_used_until_end = BUFFER_USED_UNTIL_END(&queue_p->buffer);
 
-        if (element.size == 0) {
-            LIST_SL_REMOVE_HEAD(&queue_p->base.readers, &r_p);
-        }
-
-        /* Resume writer with all data written, otherwise re-add to list. */
-        if (writer_p->size == 0) {
-            spin_unlock(&chan_lock, &irq);
-            thrd_resume(writer_p->base.thrd_p, 0);
-            spin_lock(&chan_lock, &irq);
+        if (n <= buffer_used_until_end) {
+            memcpy(buf_p, queue_p->buffer.read_p, n);
+            queue_p->buffer.read_p += n;
         } else {
-            LIST_SL_ADD_HEAD(&queue_p->writers, &writer_p->base);
+            memcpy(buf_p, queue_p->buffer.read_p, buffer_used_until_end);
+            memcpy(buf_p + buffer_used_until_end,
+                   queue_p->buffer.begin_p,
+                   (n - buffer_used_until_end));
+            queue_p->buffer.read_p = queue_p->buffer.begin_p;
+            queue_p->buffer.read_p += (n - buffer_used_until_end);
+        }
+
+        buf_p += n;
+        left -= n;
+    }
+
+    /* Copy data from the writer, if one is present. */
+    if (queue_p->base.writer_p != NULL) {
+        if (left < queue_p->left) {
+            n = left;
+        } else {
+            n = queue_p->left;
+        }
+
+        memcpy(buf_p, queue_p->buf_p, n);
+        queue_p->buf_p += n;
+        queue_p->left -= n;
+        buf_p += n;
+        left -= n;
+
+        /* Writer buffer empty. */
+        if (queue_p->left == 0) {
+            /* Wake the writer. */
+            thrd_resume_irq(queue_p->base.writer_p, 0);
+            queue_p->base.writer_p = NULL;
         }
     }
 
-    if (element.size == 0) {
-        LIST_SL_REMOVE_HEAD(&queue_p->base.readers, &r_p);
+    /* Suspend this thread if more data should be read. */
+    if (left > 0) {
+        /* The writer writes the remaining data to the reader buffer. */
+        queue_p->base.reader_p = thrd_self();
+        queue_p->buf_p = buf_p;
+        queue_p->left = left;
+
+        thrd_suspend_irq(NULL);
     }
 
-    spin_unlock(&chan_lock, &irq);
-
-    /* If there is more data left to read, just suspend as we
-       are already in readers list.*/
-    if (element.size > 0) {
-        thrd_suspend(NULL);
-    }
+    sys_unlock();
 
     return (size);
 }
@@ -150,110 +143,77 @@ ssize_t queue_write(struct queue_t *queue_p,
                     const void *buf_p,
                     size_t size)
 {
-    struct queue_element_t element, *reader_p, *writer_p;
-    struct chan_element_t *r_p, *w_p;
-    struct thrd_t *thrd_p;
-    size_t size0, n;
-    spin_irq_t irq;
+    size_t n, left;
+    size_t buffer_unused_until_end, buffer_unused;
 
-    spin_lock(&chan_lock, &irq);
+    left = size;
 
-    /* Add ourself to writers list. */
-    element.base.thrd_p = thrd_self();
-    element.base.list_p = NULL;
-    element.buf_p = (void *)buf_p;
-    element.size = size;
-    LIST_SL_ADD_TAIL(&queue_p->writers, &element.base);
+    sys_lock();
 
-    /* Just suspend if there are other writers in the list. Read function
-       will copy data from writer to reader. Therefore return when
-       resumed. */
-    LIST_SL_PEEK_HEAD(&queue_p->writers, &writer_p);
+    /* if (chan_is_polled(&queue_p->base)) { */
+    /*     thrd_resume_irq(queue_p->base.reader_p, 0); */
+    /*     queue_p->base.reader_p = NULL; */
+    /* } */
 
-    if (writer_p != &element) {
-        spin_unlock(&chan_lock, &irq);
-        thrd_suspend(NULL);
-
-        return (size);
-    }
-
-    /* There is no writers present, is there any readers? */
-    while (element.size > 0) {
-        LIST_SL_REMOVE_HEAD(&queue_p->base.readers, &r_p);
-        reader_p = (struct queue_element_t *)r_p;
-
-        /* No reader in list. */
-        if (reader_p == NULL) {
-            break;
-        }
-
-        /* If the reader is in an active poll list, resume it. */
-        if (reader_p->base.list_p != NULL) {
-            if ((reader_p->base.list_p->flags & CHAN_LIST_POLLING) != 0) {
-                thrd_p = reader_p->base.thrd_p;
-                reader_p->base.thrd_p = NULL;
-                reader_p->base.list_p->flags = 0;
-                /* TODO: BUG: cannot let go of the lock. a thrd resume
-                   without rescheduling is needed. */
-                spin_unlock(&chan_lock, &irq);
-                thrd_resume(thrd_p, 0);
-                spin_lock(&chan_lock, &irq);
-            }
+    /* Copy data to the reader, if one is present. */
+    if (queue_p->base.reader_p != NULL) {
+        if (left < queue_p->left) {
+            n = left;
         } else {
-            /* Copy data to reader. */
-            n = (element.size > reader_p->size ? reader_p->size : element.size);
-            memcpy(reader_p->buf_p, buf_p, n);
-            element.buf_p += n;
-            element.size -= n;
-            reader_p->buf_p += n;
-            reader_p->size -= n;
+            n = queue_p->left;
+        }
 
-            if (element.size == 0) {
-                LIST_SL_REMOVE_HEAD(&queue_p->writers, &w_p);
-            }
+        memcpy(queue_p->buf_p, buf_p, n);
+        queue_p->buf_p += n;
+        queue_p->left -= n;
+        buf_p += n;
+        left -= n;
 
-            /* Resume reader with all data received, otherwise re-add to list. */
-            if (reader_p->size == 0) {
-                spin_unlock(&chan_lock, &irq);
-                thrd_resume(reader_p->base.thrd_p, 0);
-                spin_lock(&chan_lock, &irq);
-            } else {
-                LIST_SL_ADD_HEAD(&queue_p->base.readers, &reader_p->base);
-            }
+        /* Read buffer full. */
+        if (queue_p->left == 0) {
+            /* Wake the reader. */
+            thrd_resume_irq(queue_p->base.reader_p, 0);
+            queue_p->base.reader_p = NULL;
         }
     }
 
-    /* Write to buffer if there is data left to write. */
-    if (queue_p->buf_p != NULL) {
-        n = (element.size > QUEUE_GET_FREE(queue_p) ?
-             QUEUE_GET_FREE(queue_p) :
-             element.size);
+    if (queue_p->buffer.begin_p != NULL) {
+        buffer_unused = BUFFER_UNUSED(&queue_p->buffer);
 
-        if ((queue_p->wrpos + n) <= queue_p->size) {
-            memcpy(&((char *)queue_p->buf_p)[queue_p->wrpos], buf_p, n);
+        if (left < buffer_unused) {
+            n = left;
         } else {
-            size0 = (queue_p->size - queue_p->wrpos);
-            memcpy(&((char *)queue_p->buf_p)[queue_p->wrpos], buf_p, size0);
-            memcpy(&((char *)queue_p->buf_p)[0], buf_p + size0, n - size0);
+            n = buffer_unused;
         }
 
-        queue_p->wrpos += n;
-        queue_p->wrpos &= (queue_p->size - 1);
-        element.buf_p += n;
-        element.size -= n;
+        buffer_unused_until_end = BUFFER_UNUSED_UNTIL_END(&queue_p->buffer);
+
+        if (n <= buffer_unused_until_end) {
+            memcpy(queue_p->buffer.write_p, buf_p, n);
+            queue_p->buffer.write_p += n;
+        } else {
+            memcpy(queue_p->buffer.write_p, buf_p, buffer_unused_until_end);
+            memcpy(queue_p->buffer.begin_p,
+                   buf_p + buffer_unused_until_end,
+                   (n - buffer_unused_until_end));
+            queue_p->buffer.write_p = queue_p->buffer.begin_p;
+            queue_p->buffer.write_p += (n - buffer_unused_until_end);
+        }
+
+        buf_p += n;
+        left -= n;
     }
 
-    if (element.size == 0) {
-        LIST_SL_REMOVE_HEAD(&queue_p->writers, &w_p);
+    /* The writer writes the remaining data. */
+    if (left > 0) {
+        queue_p->base.writer_p = thrd_self();
+        queue_p->buf_p = (void *)buf_p;
+        queue_p->left = left;
+
+        thrd_suspend_irq(NULL);
     }
 
-    spin_unlock(&chan_lock, &irq);
-
-    /* If there is more data left to write, just suspend as we
-       are already in writers list.*/
-    if (element.size > 0) {
-        thrd_suspend(NULL);
-    }
+    sys_unlock();
 
     return (size);
 }
@@ -262,77 +222,73 @@ ssize_t queue_write_irq(struct queue_t *queue_p,
                         const void *buf_p,
                         size_t size)
 {
-    struct queue_element_t *reader_p;
-    struct chan_element_t *r_p;
-    size_t size0, n, left;
-    struct thrd_t *thrd_p;
+    size_t n, left;
+    size_t buffer_unused_until_end, buffer_unused;
 
     left = size;
 
-    spin_lock_irq(&chan_lock);
+    sys_lock_irq();
 
-    /* Any reader? */
-    LIST_SL_REMOVE_HEAD(&queue_p->base.readers, &r_p);
-    reader_p = (struct queue_element_t *)r_p;
+    if (chan_is_polled(&queue_p->base)) {
+        thrd_resume_irq(queue_p->base.reader_p, 0);
+        queue_p->base.reader_p = NULL;
+    }
 
-    /* A reader is added in two places; when calling read() and when
-       polling a list. In the second case there is no buffer to read
-       into, so add the data to the queue input buffer. */
-    if (reader_p != NULL) {
-        /* If the reader is in an active poll list, resume it. */
-        if (reader_p->base.list_p != NULL) {
-            if ((reader_p->base.list_p->flags & CHAN_LIST_POLLING) != 0) {
-                thrd_p = reader_p->base.thrd_p;
-                reader_p->base.thrd_p = NULL;
-                reader_p->base.list_p->flags = 0;
-                spin_unlock_irq(&chan_lock);
-                thrd_resume_irq(thrd_p, 0);
-                spin_lock_irq(&chan_lock);
-            }
+    /* Copy data to the reader, if one is present. */
+    if (queue_p->base.reader_p != NULL) {
+        if (left < queue_p->left) {
+            n = left;
         } else {
-            /* It's a normal read(), copy data to reader. */
-            n = (left > reader_p->size ? reader_p->size : left);
-            memcpy(reader_p->buf_p, buf_p, n);
-            reader_p->buf_p += n;
-            reader_p->size -= n;
-            buf_p += n;
-            left -= n;
-            
-            /* Resume reader with all data received, otherwise re-add to list. */
-            if (reader_p->size == 0) {
-                thrd_resume_irq(reader_p->base.thrd_p, 0);
-            } else {
-                LIST_SL_ADD_HEAD(&queue_p->base.readers, &reader_p->base);
-            }
+            n = queue_p->left;
+        }
+
+        memcpy(queue_p->buf_p, buf_p, n);
+        buf_p += n;
+        queue_p->buf_p += n;
+        queue_p->left -= n;
+        left -= n;
+
+        /* Read buffer full. */
+        if (queue_p->left == 0) {
+            /* Wake the reader. */
+            thrd_resume_irq(queue_p->base.reader_p, 0);
+            queue_p->base.reader_p = NULL;
         }
     }
 
-    /* Write to buffer if there is data left to write. */
-    if ((left > 0) && (queue_p->buf_p != NULL)) {
-        n = (left > QUEUE_GET_FREE(queue_p) ? QUEUE_GET_FREE(queue_p) : left);
+    if (queue_p->buffer.begin_p != NULL) {
+        buffer_unused = BUFFER_UNUSED(&queue_p->buffer);
 
-        if (n > 0) {
-            if ((queue_p->wrpos + n) <= queue_p->size) {
-                memcpy(&((char *)queue_p->buf_p)[queue_p->wrpos], buf_p, n);
-            } else {
-                size0 = (queue_p->size - queue_p->wrpos);
-                memcpy(&((char *)queue_p->buf_p)[queue_p->wrpos], buf_p, size0);
-                memcpy(&((char *)queue_p->buf_p)[0], buf_p + size0, n - size0);
-            }
-
-            left -= n;
-            queue_p->wrpos += n;
-            queue_p->wrpos &= (queue_p->size - 1);
+        if (left < buffer_unused) {
+            n = left;
+        } else {
+            n = buffer_unused;
         }
+
+        buffer_unused_until_end = BUFFER_UNUSED_UNTIL_END(&queue_p->buffer);
+
+        if (n <= buffer_unused_until_end) {
+            memcpy(queue_p->buffer.write_p, buf_p, n);
+            queue_p->buffer.write_p += n;
+        } else {
+            memcpy(queue_p->buffer.write_p, buf_p, buffer_unused_until_end);
+            memcpy(queue_p->buffer.begin_p,
+                   buf_p + buffer_unused_until_end,
+                   (n - buffer_unused_until_end));
+            queue_p->buffer.write_p = queue_p->buffer.begin_p;
+            queue_p->buffer.write_p += (n - buffer_unused_until_end);
+        }
+
+        buf_p += n;
+        left -= n;
     }
 
-    spin_unlock_irq(&chan_lock);
+    sys_unlock_irq();
 
     return (size - left);
 }
 
 ssize_t queue_size(struct queue_t *queue_p)
 {
-    return (((queue_p->wrpos - queue_p->rdpos) & (queue_p->size - 1)) +
-            (queue_p->writers.head_p != NULL));
+    return (get_buffer_used(&queue_p->buffer) + WRITER_SIZE(queue_p));
 }

@@ -26,11 +26,9 @@ struct sem_elem_t {
     struct thrd_t *thrd_p;
 };
 
-static struct spin_lock_t lock;
-
 int sem_module_init()
 {
-    return (spin_init(&lock));
+    return (0);
 }
 
 int sem_init(struct sem_t *sem_p,
@@ -47,18 +45,15 @@ int sem_get(struct sem_t *sem_p,
 {
     int err = 0;
     struct sem_elem_t elem;
-    spin_irq_t irq;
 
-    spin_lock(&lock, &irq);
+    sys_lock();
 
     if (sem_p->count == 0) {
         elem.thrd_p = thrd_self();
         elem.next_p = sem_p->head_p;
         elem.prev_p = NULL;
         sem_p->head_p = &elem;
-        spin_unlock(&lock, &irq);
-        err = thrd_suspend(timeout_p);
-        spin_lock(&lock, &irq);
+        err = thrd_suspend_irq(timeout_p);
 
         if (err == -ETIMEDOUT) {
             if (elem.prev_p != NULL) {
@@ -75,7 +70,7 @@ int sem_get(struct sem_t *sem_p,
         sem_p->count--;
     }
 
-    spin_unlock(&lock, &irq);
+    sys_unlock();
 
     return (err);
 }
@@ -84,9 +79,8 @@ int sem_put(struct sem_t *sem_p,
             int count)
 {
     struct sem_elem_t *elem_p;
-    spin_irq_t irq;
 
-    spin_lock(&lock, &irq);
+    sys_lock();
 
     sem_p->count += count;
 
@@ -99,12 +93,10 @@ int sem_put(struct sem_t *sem_p,
             elem_p->next_p->prev_p = NULL;
         }
 
-        spin_unlock(&lock, &irq);
-        thrd_resume(elem_p->thrd_p, 0);
-        spin_lock(&lock, &irq);
+        thrd_resume_irq(elem_p->thrd_p, 0);
     }
 
-    spin_unlock(&lock, &irq);
+    sys_unlock();
 
     return (0);
 }

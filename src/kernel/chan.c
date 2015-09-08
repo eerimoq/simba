@@ -20,11 +20,11 @@
 
 #include "simba.h"
 
-struct spin_lock_t chan_lock;
+#define CHAN_LIST_POLLING 0x1
 
 int chan_module_init()
 {
-    return (spin_init(&chan_lock));
+    return (0);
 }
 
 int chan_init(struct chan_t *chan_p,
@@ -35,7 +35,9 @@ int chan_init(struct chan_t *chan_p,
     chan_p->read = read;
     chan_p->write = write;
     chan_p->size = size;
-    LIST_SL_INIT(&chan_p->readers);
+    chan_p->writer_p = NULL;
+    chan_p->reader_p = NULL;
+    chan_p->list_p = NULL;
 
     return (0);
 }
@@ -44,14 +46,13 @@ int chan_list_init(struct chan_list_t *list_p,
                    void *workspace_p,
                    size_t size)
 {
-    list_p->max = (size / (sizeof(list_p->chans_pp[0]) + sizeof(list_p->elements_p[0])));
+    list_p->max = (size / sizeof(list_p->chans_pp[0]));
 
     if (list_p->max == 0) {
         return (-EINVAL);
     }
 
     list_p->chans_pp = workspace_p;
-    list_p->elements_p = (workspace_p + list_p->max * sizeof(list_p->chans_pp[0]));
     list_p->len = 0;
     list_p->flags = 0;
 
@@ -61,29 +62,16 @@ int chan_list_init(struct chan_list_t *list_p,
 int chan_list_destroy(struct chan_list_t *list_p)
 {
     struct chan_t *chan_p = NULL;
-    struct chan_element_t *element_p, *previous_element_p, *iterator_element_p;
     size_t i;
-    spin_irq_t irq;
-    struct list_sl_iterator_t iterator;
 
-    spin_lock(&chan_lock, &irq);
+    sys_lock();
 
     for (i = 0; i < list_p->len; i++) {
         chan_p = list_p->chans_pp[i];
-        element_p = &list_p->elements_p[i];
-
-        /* Remove any queued elements. An emelemt is queued if the
-           thrd_p pointer is set.*/
-        if (element_p->thrd_p != NULL) {
-            LIST_SL_REMOVE_ELEM(&chan_p->readers,
-                                &iterator,
-                                element_p,
-                                iterator_element_p,
-                                previous_element_p);
-        }
+        chan_p->list_p = NULL;
     }
 
-    spin_unlock(&chan_lock, &irq);
+    sys_unlock();
 
     return (0);
 }
@@ -112,9 +100,8 @@ int chan_list_add(struct chan_list_t *list_p, chan_t *chan_p)
     if (list_p->len == list_p->max) {
         return (-ENOMEM);
     }
+
     list_p->chans_pp[list_p->len] = chan_p;
-    list_p->elements_p[list_p->len].thrd_p = NULL;
-    list_p->elements_p[list_p->len].list_p = list_p;
     list_p->len++;
 
     return (0);
@@ -130,45 +117,53 @@ int chan_list_remove(struct chan_list_t *list, chan_t *chan_p)
 chan_t *chan_list_poll(struct chan_list_t *list_p)
 {
     struct chan_t *chan_p = NULL;
-    struct chan_element_t *element_p;
     size_t i;
-    spin_irq_t irq;
+
+    sys_lock();
 
     while (1) {
-        spin_lock(&chan_lock, &irq);
-
-        /* Check for data on any chan.*/
+        /* Check if data is available on any channel. */
         for (i = 0; i < list_p->len; i++) {
             chan_p = list_p->chans_pp[i];
+
             if (chan_p->size(chan_p) > 0) {
+                //                printf("list_poll: data on channel\n");
                 goto out;
             }
         }
 
-        /* Add thrd as reader on all chans.*/
+        /* Add the thread as a reader on all channels.*/
         list_p->flags = CHAN_LIST_POLLING;
 
         for (i = 0; i < list_p->len; i++) {
             chan_p = list_p->chans_pp[i];
-            element_p = &list_p->elements_p[i];
-
-            /* Add if not already in the reader list from a previous
-               poll.*/
-            if (element_p->thrd_p == NULL) {
-                element_p->thrd_p = thrd_self();
-                LIST_SL_ADD_TAIL(&chan_p->readers, element_p);
-            }
+            chan_p->reader_p = thrd_self();
+            chan_p->list_p = list_p;
         }
-
-        spin_unlock(&chan_lock, &irq);
 
         /* Not data was available, wait for data to be written to one
            of the channels. */
-        thrd_suspend(NULL);
+        //printf("list_poll: suspend reader\n");
+        thrd_suspend_irq(NULL);
     }
 
  out:
-    spin_unlock(&chan_lock, &irq);
+    sys_unlock();
 
     return (chan_p);
+}
+
+int chan_is_polled(struct chan_t *chan_p)
+{
+    if (chan_p->list_p != NULL) {
+        if (chan_p->list_p->flags & CHAN_LIST_POLLING) {
+            chan_p->list_p->flags = 0;
+            //            printf("polled\n");
+            return (1);
+        }
+    }
+
+    //    printf("not polled\n");
+    
+    return (0);
 }

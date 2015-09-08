@@ -48,15 +48,7 @@
 
 ISR(TIMER0_COMPA_vect)
 {
-    /* Kick the watchdog. */
-    asm volatile ("wdr");
-
     sys_tick();
-}
-
-ISR(WDT_vect)
-{
-    sys_stop(EWATCHDOGTIMEOUT);
 }
 
 static int sys_port_module_init(void)
@@ -69,15 +61,11 @@ static int sys_port_module_init(void)
     OCR0A = TCNT0_MAX;
     TIMSK0 = _BV(OCIE0A);
 
-    /* Configure the system watchdog with a 1 second timeout. IF is
-       kicked from the system tick interrupt. */
-    WDTCSR = (_BV(WDIE)/* | _BV(WDE)*/ | _BV(WDP2) | _BV(WDP1));
-
     /* Enable interrupts. */
     asm volatile ("sei");
 
     /* System status area in EEPROM. */
-    //eeprom_write_dword((uint32_t *)0x0, 0);
+    eeprom_write_dword((uint32_t *)0x0, -1);
     eeprom_write_dword((uint32_t *)0x4, MCUSR);
 
     return (0);

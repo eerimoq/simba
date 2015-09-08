@@ -23,21 +23,10 @@
 
 #include "simba.h"
 
-#define CHAN_LIST_POLLING 0x1
-
 typedef void chan_t;
-
-struct chan_list_t;
-
-struct chan_element_t {
-    struct chan_element_t *next_p;
-    struct thrd_t *thrd_p;
-    struct chan_list_t *list_p;
-};
 
 struct chan_list_t {
     struct chan_t **chans_pp;
-    struct chan_element_t *elements_p;
     size_t max;
     size_t len;
     int flags;
@@ -52,10 +41,13 @@ struct chan_t {
                      const void *buf_p,
                      size_t size);
     size_t (*size)(chan_t *chan_p);
-    struct list_singly_linked_t readers;
+    /* Reader thread waiting for data or writer thread waiting for a
+       reader. */
+    struct thrd_t *writer_p;
+    struct thrd_t *reader_p;
+    /* Used by the reader when polling channels. */
+    struct chan_list_t *list_p;
 };
-
-extern struct spin_lock_t chan_lock;
 
 /**
  * Initialize module.
@@ -146,5 +138,7 @@ int chan_list_remove(struct chan_list_t *list_p, chan_t *chan_p);
  * @return Channel with data or NULL.
  */
 chan_t *chan_list_poll(struct chan_list_t *list_p);
+
+int chan_is_polled(struct chan_t *chan_p);
 
 #endif

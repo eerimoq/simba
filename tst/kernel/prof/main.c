@@ -23,7 +23,6 @@
 int test_memory_usage(struct harness_t *harness_p)
 {
     /* chan */
-    std_printf(FSTR("sizeof(struct chan_element_t) = %d\n"), (int)sizeof(struct chan_element_t));
     std_printf(FSTR("sizeof(struct chan_list_t) = %d\n"), (int)sizeof(struct chan_list_t));
     std_printf(FSTR("sizeof(struct chan_t) = %d\n"), (int)sizeof(struct chan_t));
 

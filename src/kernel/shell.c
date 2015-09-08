@@ -41,7 +41,7 @@ static int shell_read_line(char *buf_p,
                            chan_t *chout_p,
                            int sensitive)
 {
-    char c, *b_p = buf_p;
+    char c, *write_p = buf_p;
     int newline_found = 0;
 
     while (newline_found == 0) {
@@ -52,13 +52,13 @@ static int shell_read_line(char *buf_p,
         } else if (c == '\r') {
         } else if (c == 127) {
             /* Delete character. */
-            if (b_p > buf_p) {
-                b_p--;
+            if (write_p > buf_p) {
+                write_p--;
                 std_fprintf(chout_p, FSTR("\x08 \x08"));
-                continue;
             }
+            continue;
         } else {
-            *b_p++ = c;
+            *write_p++ = c;
 
             if (sensitive != 0) {
                 c = '*';
@@ -69,7 +69,7 @@ static int shell_read_line(char *buf_p,
     }
 
     /* string null termination.*/
-    *b_p = '\0';
+    *write_p = '\0';
 
     return (0);
 }
@@ -120,19 +120,19 @@ static int shell_read_command(char *buf_p,
                               chan_t *chin_p,
                               chan_t *chout_p)
 {
-    char c, *b_p = buf_p, *filter_p, *path_p;
+    char c, *write_p = buf_p, *filter_p, *path_p;
     int err;
 
-    while (b_p < &buf_p[SHELL_COMMAND_MAX]) {
+    while (write_p < &buf_p[SHELL_COMMAND_MAX]) {
         chan_read(chin_p, &c, sizeof(c));
 
         if (c == '\t') {
             /* Auto-completion. */
-            *b_p = '\0';
+            *write_p = '\0';
             err = fs_auto_complete(buf_p, chout_p);
 
             if (err > 0) {
-                b_p += err;
+                write_p += err;
             } else if (err == 0) {
                 fs_split(buf_p, &path_p, &filter_p);
                 std_fprintf(chout_p, FSTR("\r\n"));
@@ -142,24 +142,24 @@ static int shell_read_command(char *buf_p,
             }
         } else if (c == '\n') {
             /* Comamnd termination. */
-            if (((b_p > buf_p) > 0) && (b_p[-1] == '\r')) {
-                b_p--;
+            if (((write_p > buf_p) > 0) && (write_p[-1] == '\r')) {
+                write_p--;
             }
 
             chan_write(chout_p, &c, sizeof(c));
-            *b_p = '\0';
+            *write_p = '\0';
 
-            return (b_p - buf_p);
+            return (write_p - buf_p);
         } else if (c == 127) {
             /* Delete character. */
-            if (b_p > buf_p) {
-                b_p--;
+            if (write_p > buf_p) {
+                write_p--;
                 std_fprintf(chout_p, FSTR("\x08 \x08"));
             }
         } else {
             /* Echo other characters. */
             chan_write(chout_p, &c, sizeof(c));
-            *b_p++ = c;
+            *write_p++ = c;
         }
     }
 

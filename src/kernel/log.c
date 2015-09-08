@@ -31,7 +31,6 @@ FS_COUNTER_DEFINE("/kernel/log/discarded", log_discarded);
 extern int (*log_id_to_format_fn[])(chan_t *, void *);
 
 struct log_t {
-    struct spin_lock_t spin;
     char mode;
     void *write_p;
     void *end_p;
@@ -120,9 +119,6 @@ int log_cmd_format(int argc,
 
 int log_module_init(void)
 {
-    /* Initialize log object. */
-    spin_init(&log.spin);
-
     log.next_number = 0;
 
     return (log_reset());
@@ -130,15 +126,13 @@ int log_module_init(void)
 
 int log_reset()
 {
-    spin_irq_t irq;
-
-    spin_lock(&log.spin, &irq);
+    sys_lock();
 
     log.mode = LOG_MODE_CIRCULAR;
     log.write_p = &log.buffer[0];
     log.end_p = &log.buffer[0];
 
-    spin_unlock(&log.spin, &irq);
+    sys_unlock();
 
     return (0);
 }
@@ -146,14 +140,13 @@ int log_reset()
 int log_set_mode(int mode)
 {
     int old;
-    spin_irq_t irq;
 
-    spin_lock(&log.spin, &irq);
+    sys_lock();
 
     old = log.mode;
     log.mode = mode;
 
-    spin_unlock(&log.spin, &irq);
+    sys_unlock();
 
     return (old);
 }
@@ -169,7 +162,6 @@ int log_write(char level, int id, void *buf_p, size_t size)
     struct log_entry_header_t header;
     struct log_entry_footer_t footer;
     int written = 0;
-    spin_irq_t irq;
     size_t entry_size = (size + sizeof(header) + sizeof(footer));
 
     /* Check if severity level is set. */
@@ -191,7 +183,7 @@ int log_write(char level, int id, void *buf_p, size_t size)
 
     footer.size = size;
 
-    spin_lock(&log.spin, &irq);
+    sys_lock();
 
     header.number = log.next_number++;
 
@@ -218,7 +210,7 @@ int log_write(char level, int id, void *buf_p, size_t size)
         FS_COUNTER_INC(log_discarded, 1);
     }
 
-    spin_unlock(&log.spin, &irq);
+    sys_unlock();
 
     return (written);
 }

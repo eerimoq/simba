@@ -79,9 +79,6 @@ static struct thrd_scheduler_t scheduler = {
 
 static void scheduler_ready_push(struct thrd_t *thrd_p);
 
-static struct spin_lock_t lock;
-static spin_irq_t irq;
-
 #include "thrd_port.i"
 
 static void scheduler_ready_push(struct thrd_t *thrd_p)
@@ -145,6 +142,7 @@ static void thrd_reschedule(void)
     struct thrd_t *in_p, *out_p;
 
     out_p = thrd_self();
+
     ASSERTN(out_p->stack_low_magic == THRD_STACK_LOW_MAGIC, ESTACK);
     in_p = scheduler_ready_pop();
 
@@ -319,11 +317,11 @@ static void *idle_thrd(void *arg_p)
     /* Wait for interrupts. */
     while (1) {
         thrd_port_idle_wait();
-        spin_lock(&lock, &irq);
+        sys_lock();
         thrd_p->state = THRD_STATE_READY;
         scheduler_ready_push(thrd_p);
         thrd_reschedule();
-        spin_unlock(&lock, &irq);
+        sys_unlock();
     }
 
     return (NULL);
@@ -352,11 +350,10 @@ int thrd_module_init(void)
 #if !defined(NPROFILESTACK)
     main_thrd.stack_size = (&__main_stack_end - (char *)(&main_thrd + 1));
     thrd_fill_pattern((char *)(&main_thrd + 1),
-                      &dummy - (char *)(&main_thrd + 1));
+                      &dummy - (char *)(&main_thrd + 2));
 #endif
     thrd_port_init_main(&main_thrd.port);
     scheduler.current_p = &main_thrd;
-    spin_init(&lock);
 
     thrd_spawn(idle_thrd, NULL, 127, idle_thrd_stack, sizeof(idle_thrd_stack));
 
@@ -394,9 +391,9 @@ struct thrd_t *thrd_spawn(void *(*entry)(void *),
     LIST_SL_ADD_TAIL(&thrd_p->parent.thrd_p->children, &thrd_p->parent);
 
     err = thrd_port_spawn(thrd_p, entry, arg_p, stack_p, stack_size);
-    spin_lock(&lock, &irq);
+    sys_lock();
     scheduler_ready_push(thrd_p);
-    spin_unlock(&lock, &irq);
+    sys_unlock();
 
     return (err == 0 ? stack_p : NULL);
 }
@@ -411,59 +408,27 @@ int thrd_kill(struct thrd_t *thrd_p)
 
 int thrd_suspend(struct time_t *timeout_p)
 {
-    struct thrd_t *thrd_p;
-    struct timer_t timer;
+    int err;
 
-    thrd_p = thrd_self();
+    sys_lock();
 
-    spin_lock(&lock, &irq);
+    err = thrd_suspend_irq(timeout_p);
 
-    /* Already resumed? */
-    if (thrd_p->state == THRD_STATE_RESUMED) {
-        thrd_p->state = THRD_STATE_CURRENT;
-        goto out;
-    }
+    sys_unlock();
 
-    thrd_p->state = THRD_STATE_SUSPENDED;
-
-    if (timeout_p != NULL) {
-        if ((timeout_p->seconds == 0) && (timeout_p->nanoseconds == 0)) {
-            thrd_p->err = -ETIMEDOUT;
-            goto out;
-        } else {
-            timer_set(&timer, timeout_p, thrd_port_suspend_timer_callback, thrd_p, 0);
-        }
-    }
-
-    thrd_reschedule();
-
- out:
-    spin_unlock(&lock, &irq);
-
-    return (thrd_p->err);
+    return (err);
 }
 
 int thrd_resume(struct thrd_t *thrd_p, int err)
 {
-    spin_lock(&lock, &irq);
+    sys_lock();
 
     thrd_p->err = err;
-
-    /* Thread not yet suspended. */
-    if (thrd_p->state == THRD_STATE_CURRENT) {
-        thrd_p->state = THRD_STATE_RESUMED;
-        goto out;
-    }
-
-    thrd_p->state = THRD_STATE_READY;
-    scheduler_ready_push(thrd_p);
-    thrd_p = thrd_self();
     thrd_p->state = THRD_STATE_READY;
     scheduler_ready_push(thrd_p);
     thrd_reschedule();
 
- out:
-    spin_unlock(&lock, &irq);
+    sys_unlock();
 
     return (0);
 }
@@ -471,18 +436,8 @@ int thrd_resume(struct thrd_t *thrd_p, int err)
 int thrd_resume_irq(struct thrd_t *thrd_p, int err)
 {
     thrd_p->err = err;
-
-    spin_lock_irq(&lock);
-
-    /* Thread not yet suspended. */
-    if (thrd_p->state == THRD_STATE_CURRENT) {
-        thrd_p->state = THRD_STATE_RESUMED;
-    } else {
-        thrd_p->state = THRD_STATE_READY;
-        scheduler_ready_push(thrd_p);
-    }
-
-    spin_unlock_irq(&lock);
+    thrd_p->state = THRD_STATE_READY;
+    scheduler_ready_push(thrd_p);
 
     return (0);
 }
@@ -529,4 +484,26 @@ int thrd_get_log_mask()
 void thrd_tick(void)
 {
     thrd_port_tick();
+}
+
+int thrd_suspend_irq(struct time_t *timeout_p)
+{
+    struct thrd_t *thrd_p;
+    struct timer_t timer;
+
+    thrd_p = thrd_self();
+
+    thrd_p->state = THRD_STATE_SUSPENDED;
+
+    if (timeout_p != NULL) {
+        if ((timeout_p->seconds == 0) && (timeout_p->nanoseconds == 0)) {
+            return (-ETIMEDOUT);
+        } else {
+            timer_set_irq(&timer, timeout_p, thrd_port_suspend_timer_callback, thrd_p, 0);
+        }
+    }
+
+    thrd_reschedule();
+
+    return (thrd_p->err);
 }

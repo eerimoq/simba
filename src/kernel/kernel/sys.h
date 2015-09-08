@@ -40,6 +40,10 @@ struct sys_t {
     sys_tick_t tick;
     void (*on_fatal_callback)(int error);
     chan_t *std_out_p;
+    struct {
+        struct spin_lock_t lock;
+        spin_irq_t irq;
+    } spin;
 };
 
 extern struct sys_t sys;
@@ -82,5 +86,13 @@ void sys_set_stdout(chan_t *chan);
  * @return Standard output channel or NULL.
  */
 chan_t *sys_get_stdout(void);
+
+void sys_lock();
+
+void sys_unlock();
+
+void sys_lock_irq();
+
+void sys_unlock_irq();
 
 #endif

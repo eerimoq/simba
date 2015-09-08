@@ -44,9 +44,11 @@ int sys_module_init()
 
 int sys_start(void)
 {
+    spin_module_init();
+    spin_init(&sys.spin.lock);
+
     std_module_init();
     log_module_init();
-    spin_module_init();
     sem_module_init();
     chan_module_init();
     thrd_module_init();
@@ -68,4 +70,24 @@ void sys_set_stdout(chan_t *chan_p)
 chan_t *sys_get_stdout(void)
 {
     return (sys.std_out_p);
+}
+
+void sys_lock()
+{
+    spin_lock(&sys.spin.lock, &sys.spin.irq);
+}
+
+void sys_unlock()
+{
+    spin_unlock(&sys.spin.lock, &sys.spin.irq);
+}
+
+void sys_lock_irq()
+{
+    spin_lock_irq(&sys.spin.lock);
+}
+
+void sys_unlock_irq()
+{
+    spin_unlock_irq(&sys.spin.lock);
 }

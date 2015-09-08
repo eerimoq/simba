@@ -52,6 +52,8 @@ static void *t0_entry(void *arg_p)
     BTASSERT(c[2] == 6);
     BTASSERT(c[3] == 7);
 
+    thrd_usleep(50000);
+
     /* List polling.*/
     c[0] = 8;
     c[1] = 9;
@@ -62,6 +64,8 @@ static void *t0_entry(void *arg_p)
     /* Write to chan that was polled but not read.*/
     b = 12;
     BTASSERT(chan_write(&queue_p[0], &b, sizeof(b)) == sizeof(b));
+
+    thrd_suspend(NULL);
     
     return (0);
 }
@@ -137,11 +141,11 @@ static int test_poll(struct harness_t *harness_p)
     BTASSERT(chan_read(&queue[1], &b, sizeof(b)) == sizeof(b));
     BTASSERT(b == 11);
 
-    BTASSERT(chan_list_destroy(&list) == 0)
+    BTASSERT(chan_list_destroy(&list) == 0);
 
     /* Read from inactive polled chan.*/
-    /* BTASSERT(chan_read(&queue[0], &b, sizeof(b)) == sizeof(b)); */
-    /* BTASSERT(b == 12); */
+    BTASSERT(chan_read(&queue[0], &b, sizeof(b)) == sizeof(b));
+    BTASSERT(b == 12);
 
     return (0);
 }

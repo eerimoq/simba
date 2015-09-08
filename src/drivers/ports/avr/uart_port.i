@@ -67,15 +67,19 @@ static ssize_t uart_port_write_cb(void *arg_p,
     sem_get(&drv_p->sem, NULL);
 
     /* Initiate transfer by writing the first byte. */
-    drv_p->txbuf_p = txbuf_p;
+    drv_p->txbuf_p = (txbuf_p + 1);
     drv_p->txsize = (size - 1);
     drv_p->thrd_p = thrd_self();
 
+    sys_lock();
+
     /* Write the first byte. The rest are written from the interrupt
        routine. */
-    *UDRn(drv_p->dev_p) = *drv_p->txbuf_p++;
+    *UDRn(drv_p->dev_p) = drv_p->txbuf_p[-1];
 
-    thrd_suspend(NULL);
+    thrd_suspend_irq(NULL);
+
+    sys_unlock();
 
     sem_put(&drv_p->sem, 1);
 
