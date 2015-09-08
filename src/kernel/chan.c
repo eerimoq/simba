@@ -127,7 +127,6 @@ chan_t *chan_list_poll(struct chan_list_t *list_p)
             chan_p = list_p->chans_pp[i];
 
             if (chan_p->size(chan_p) > 0) {
-                //                printf("list_poll: data on channel\n");
                 goto out;
             }
         }
@@ -143,7 +142,6 @@ chan_t *chan_list_poll(struct chan_list_t *list_p)
 
         /* Not data was available, wait for data to be written to one
            of the channels. */
-        //printf("list_poll: suspend reader\n");
         thrd_suspend_irq(NULL);
     }
 
@@ -158,12 +156,9 @@ int chan_is_polled(struct chan_t *chan_p)
     if (chan_p->list_p != NULL) {
         if (chan_p->list_p->flags & CHAN_LIST_POLLING) {
             chan_p->list_p->flags = 0;
-            //            printf("polled\n");
             return (1);
         }
     }
-
-    //    printf("not polled\n");
     
     return (0);
 }

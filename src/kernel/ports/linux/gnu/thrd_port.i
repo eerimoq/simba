@@ -106,9 +106,7 @@ static void thrd_port_suspend_timer_callback(void *arg)
     struct thrd_t *thrd = arg;
 
     thrd->state = THRD_STATE_READY;
-    sys_lock();
     scheduler_ready_push(thrd);
-    sys_unlock();
 
     /* Signal idle thrd.*/
     pthread_mutex_lock(&idle.mutex);

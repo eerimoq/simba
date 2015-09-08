@@ -150,10 +150,10 @@ ssize_t queue_write(struct queue_t *queue_p,
 
     sys_lock();
 
-    /* if (chan_is_polled(&queue_p->base)) { */
-    /*     thrd_resume_irq(queue_p->base.reader_p, 0); */
-    /*     queue_p->base.reader_p = NULL; */
-    /* } */
+    if (chan_is_polled(&queue_p->base)) {
+        thrd_resume_irq(queue_p->base.reader_p, 0);
+        queue_p->base.reader_p = NULL;
+    }
 
     /* Copy data to the reader, if one is present. */
     if (queue_p->base.reader_p != NULL) {

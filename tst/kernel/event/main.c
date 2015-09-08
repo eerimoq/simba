@@ -34,7 +34,7 @@ static int test_read_write(struct harness_t *harness)
     BTASSERT(chan_read(&event, &mask, sizeof(mask)) == 4);
     BTASSERT(mask == 0x1);
 
-    mask = 0x2;
+    mask = 0x3;
     BTASSERT(chan_read(&event, &mask, sizeof(mask)) == 4);
     BTASSERT(mask == 0x2);
 
