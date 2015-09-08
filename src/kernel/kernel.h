@@ -37,6 +37,7 @@
 #include "kernel/std.h"
 #include "kernel/log.h"
 #include "kernel/queue.h"
+#include "kernel/event.h"
 #include "kernel/inet.h"
 #include "kernel/inet_netif.h"
 #include "kernel/sock.h"

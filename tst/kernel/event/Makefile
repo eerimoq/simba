@@ -1,5 +1,5 @@
 #
-# @file kernel/kernel.mk
+# @file hello_world/Makefile
 # @version 1.0
 #
 # @section License
@@ -18,11 +18,11 @@
 # This file is part of the Simba project.
 #
 
+NAME = event_suite
+BOARD = linux
+SRC += main.c
+SLIB_SRC = harness.c
+DRIVERS_SRC = uart.c
 
-INC += $(SIMBA)/src/kernel
-INC += $(SIMBA)/src/kernel/ports/$(ARCH)/$(TOOLCHAIN)
-
-KERNEL_SRC ?= chan.c core.c event.c fs.c inet.c log.c queue.c sem.c shell.c \
-	      sock.c spin.c std.c sys.c thrd.c time.c timer.c
-
-SRC += $(KERNEL_SRC:%=$(SIMBA)/src/kernel/%)
+SIMBA = ../../..
+include $(SIMBA)/make/app.mk

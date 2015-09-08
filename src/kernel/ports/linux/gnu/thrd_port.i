@@ -39,7 +39,7 @@ static void *thrd_port_entry(void *arg)
     port = arg;
     pthread_cond_wait(&port->cond, &port->mutex);
     pthread_mutex_unlock(&port->mutex);
-    sys_unlock(&irq);
+    sys_unlock();
     port->entry(port->arg);
 
     return (NULL);
@@ -106,9 +106,9 @@ static void thrd_port_suspend_timer_callback(void *arg)
     struct thrd_t *thrd = arg;
 
     thrd->state = THRD_STATE_READY;
-    sys_lock(&irq);
+    sys_lock();
     scheduler_ready_push(thrd);
-    sys_unlock(&irq);
+    sys_unlock();
 
     /* Signal idle thrd.*/
     pthread_mutex_lock(&idle.mutex);

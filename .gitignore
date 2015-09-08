@@ -13,6 +13,7 @@ tst/*/*/profile.log
 tst/*/*/coverage.*
 tst/*/*/size.log
 tst/*/*/*.hex
+tst/*/*/eeprom.bin
 
 examples/*/gen
 examples/*/profile.log
