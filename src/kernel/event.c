@@ -76,6 +76,11 @@ ssize_t event_write_irq(struct event_t *event_p,
 {
     uint32_t mask;
 
+    if (chan_is_polled_irq(&event_p->base)) {
+        thrd_resume_irq(event_p->base.reader_p, 0);
+        event_p->base.reader_p = NULL;
+    }
+
     mask = *(uint32_t *)buf_p;
 
     event_p->mask |= mask;

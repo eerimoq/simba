@@ -43,11 +43,41 @@ static int test_read_write(struct harness_t *harness)
     return (0);
 }
 
+static int test_poll(struct harness_t *harness)
+{
+    uint32_t mask;
+    struct event_t event;
+    struct chan_list_t list;
+    char workspace[64];
+
+    BTASSERT(event_init(&event) == 0);
+
+    /* Use a list with one chan.*/
+    BTASSERT(chan_list_init(&list, workspace, sizeof(workspace)) == 0);
+    BTASSERT(chan_list_add(&list, &event) == 0);
+
+    mask = 0xc;
+    BTASSERT(chan_write(&event, &mask, sizeof(mask)) == 4);
+
+    BTASSERT(chan_list_poll(&list) == &event);
+
+    mask = 0x4;
+    BTASSERT(chan_read(&event, &mask, sizeof(mask)) == 4);
+    BTASSERT(mask == 0x4);
+
+    mask = 0x8;
+    BTASSERT(chan_read(&event, &mask, sizeof(mask)) == 4);
+    BTASSERT(mask == 0x8);
+
+    return (0);
+}
+
 int main()
 {
     struct harness_t harness;
     struct harness_testcase_t harness_testcases[] = {
         { test_read_write, "test_read_write" },
+        { test_poll, "test_poll" },
         { NULL, NULL }
     };
 

@@ -139,6 +139,6 @@ int chan_list_remove(struct chan_list_t *list_p, chan_t *chan_p);
  */
 chan_t *chan_list_poll(struct chan_list_t *list_p);
 
-int chan_is_polled(struct chan_t *chan_p);
+int chan_is_polled_irq(struct chan_t *chan_p);
 
 #endif

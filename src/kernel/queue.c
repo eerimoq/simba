@@ -177,7 +177,7 @@ ssize_t queue_write_irq(struct queue_t *queue_p,
 
     left = size;
 
-    if (chan_is_polled(&queue_p->base)) {
+    if (chan_is_polled_irq(&queue_p->base)) {
         thrd_resume_irq(queue_p->base.reader_p, 0);
         queue_p->base.reader_p = NULL;
     }

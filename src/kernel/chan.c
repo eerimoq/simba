@@ -151,7 +151,7 @@ chan_t *chan_list_poll(struct chan_list_t *list_p)
     return (chan_p);
 }
 
-int chan_is_polled(struct chan_t *chan_p)
+int chan_is_polled_irq(struct chan_t *chan_p)
 {
     if (chan_p->list_p != NULL) {
         if (chan_p->list_p->flags & CHAN_LIST_POLLING) {
