@@ -20,21 +20,8 @@
 
 BOARD ?= linux
 
-ifeq ($(BOARD),linux)
-TESTS = $(addprefix kernel/,event fs prof log queue sem shell std sys thrd timer)
-TESTS += $(addprefix drivers/,)
-TESTS += $(addprefix slib/,hash_map)
-endif
-
-ifeq ($(BOARD),arduino_nano)
 TESTS = $(addprefix kernel/,event fs prof log queue sem shell std sys thrd timer)
 TESTS += $(addprefix slib/,hash_map)
-endif
-
-ifeq ($(BOARD),arduino_mega)
-TESTS = $(addprefix kernel/,event fs prof log queue sem shell std sys thrd timer)
-TESTS += $(addprefix slib/,hash_map)
-endif
 
 all: $(TESTS:%=%.all)
 
