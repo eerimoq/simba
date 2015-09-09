@@ -53,6 +53,26 @@ static void *sys_port_ticker(void *arg)
     return (NULL);
 }
 
+static void sys_port_lock()
+{
+    pthread_mutex_lock(&mutex);
+}
+
+static void sys_port_unlock()
+{
+    pthread_mutex_unlock(&mutex);
+}
+
+static void sys_port_lock_irq()
+{
+    pthread_mutex_lock(&mutex);
+}
+
+static void sys_port_unlock_irq()
+{
+    pthread_mutex_unlock(&mutex);
+}
+
 int sys_port_module_init(void)
 {
     pthread_mutex_init(&mutex, NULL);

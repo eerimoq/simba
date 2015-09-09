@@ -244,7 +244,6 @@ static void *rx_main(void *arg)
     char c;
     struct spi_frame_t frame;
     struct canif_frame_t *frame_p;
-    spin_irq_t irq;
 
     while (1) {
         /* Wait for interrupt. */
@@ -259,7 +258,7 @@ static void *rx_main(void *arg)
             frame.instr = SPI_INSTR_READ_RX_BUFFER;
             spi_transfer(&drv_p->spi, &frame, &frame, sizeof(frame));
 
-            spin_lock(&drv_p->rx.spin, &irq);
+            sys_lock();
 
             /* Put frame in rx fifo. */
             frame_p = frame_put(drv_p);
@@ -279,12 +278,12 @@ static void *rx_main(void *arg)
                 frame_p->timestamp = 0;
                 memcpy(frame_p->data, frame.data, frame_p->size);
 
-                spin_unlock(&drv_p->rx.spin, &irq);
+                sys_unlock();
 
                 /* Frame available for reading. */
                 sem_put(&drv_p->rx.sem, 1);
             } else {
-                spin_unlock(&drv_p->rx.spin, &irq);
+                sys_unlock();
                 FS_COUNTER_INC(mcp2515_rx_frame_discarded, 1);
             }
         }
@@ -423,12 +422,10 @@ int mcp2515_read(struct mcp2515_driver_t *drv_p,
 {
     UNUSED(mailbox);
 
-    spin_irq_t irq;
-
     sem_get(&drv_p->rx.sem, NULL);
-    spin_lock(&drv_p->rx.spin, &irq);
+    sys_lock();
     *frame = *frame_get(drv_p);
-    spin_unlock(&drv_p->rx.spin, &irq);
+    sys_unlock();
 
     return (0);
 }

@@ -35,7 +35,6 @@ struct loopback_t {
     int valid;
     struct thrd_t *thrd_p;
     struct canif_frame_t frame;
-    struct spin_lock_t spin;
 };
 
 static struct loopback_t loopback;
@@ -45,21 +44,18 @@ static int loopback_read(void *drv_p,
                          int mailbox,
                          struct canif_frame_t *frame_p)
 {
-    spin_irq_t irq;
-
-    spin_lock(&loopback.spin, &irq);
+    sys_lock();
 
     if (loopback.valid == 0) {
         loopback.thrd_p = thrd_self();
-        spin_unlock(&loopback.spin, &irq);
-        thrd_suspend(NULL);
-        spin_lock(&loopback.spin, &irq);
+        thrd_suspend_irq(NULL);
         loopback.thrd_p = NULL;
     }
 
     *frame_p = loopback.frame;
     loopback.valid = 0;
-    spin_unlock(&loopback.spin, &irq);
+
+    sys_unlock();
 
     return (0);
 }
@@ -68,22 +64,18 @@ static int loopback_write(void *drv_p,
                           int mailbox,
                           const struct canif_frame_t *frame_p)
 {
-    spin_irq_t irq;
-        
     ASSERT(loopback.valid == 0);
 
     loopback.frame = *frame_p;
 
-    spin_lock(&loopback.spin, &irq);
+    sys_lock();
     loopback.valid = 1;
 
     if (loopback.thrd_p != NULL) {
-        spin_unlock(&loopback.spin, &irq);
-        thrd_resume(loopback.thrd_p, 0);
-        spin_lock(&loopback.spin, &irq);
+        thrd_resume_irq(loopback.thrd_p, 0);
     }
 
-    spin_unlock(&loopback.spin, &irq);
+    sys_unlock();
 
     return (0);
 }
@@ -194,7 +186,6 @@ int main()
     loopback.base.write = loopback_write;
     loopback.valid = 0;
     loopback.thrd_p = NULL;
-    spin_init(&loopback.spin);
     BTASSERT(cantp_init(&cantp,
                         &loopback.base,
                         cantp_config,

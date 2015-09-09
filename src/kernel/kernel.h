@@ -25,7 +25,6 @@
 #include "kernel/types.h"
 #include "kernel/list.h"
 #include "kernel/fifo.h"
-#include "kernel/spin.h"
 #include "kernel/time.h"
 #include "kernel/chan.h"
 #include "kernel/sys.h"

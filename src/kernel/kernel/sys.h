@@ -40,10 +40,6 @@ struct sys_t {
     sys_tick_t tick;
     void (*on_fatal_callback)(int error);
     chan_t *std_out_p;
-    struct {
-        struct spin_lock_t lock;
-        spin_irq_t irq;
-    } spin;
 };
 
 extern struct sys_t sys;

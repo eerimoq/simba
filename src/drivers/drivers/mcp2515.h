@@ -41,7 +41,6 @@ struct mcp2515_driver_t {
     struct {
         struct fifo_t fifo;
         struct canif_frame_t *frame_p;
-        struct spin_lock_t spin;
         struct sem_t sem;
         char stack[256];
     } rx;

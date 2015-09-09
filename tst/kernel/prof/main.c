@@ -51,9 +51,6 @@ int test_memory_usage(struct harness_t *harness_p)
     /* sock */
     std_printf(FSTR("sizeof(struct sock_t) = %d\n"), (int)sizeof(struct sock_t));
 
-    /* spin */
-    std_printf(FSTR("sizeof(struct spin_lock_t) = %d\n"), (int)sizeof(struct spin_lock_t));
-
     /* sys */
     std_printf(FSTR("sizeof(struct sys_t) = %d\n"), (int)sizeof(struct sys_t));
 

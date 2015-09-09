@@ -44,9 +44,6 @@ int sys_module_init()
 
 int sys_start(void)
 {
-    spin_module_init();
-    spin_init(&sys.spin.lock);
-
     std_module_init();
     log_module_init();
     sem_module_init();
@@ -74,20 +71,20 @@ chan_t *sys_get_stdout(void)
 
 void sys_lock()
 {
-    spin_lock(&sys.spin.lock, &sys.spin.irq);
+    sys_port_lock();
 }
 
 void sys_unlock()
 {
-    spin_unlock(&sys.spin.lock, &sys.spin.irq);
+    sys_port_unlock();
 }
 
 void sys_lock_irq()
 {
-    spin_lock_irq(&sys.spin.lock);
+    sys_port_lock_irq();
 }
 
 void sys_unlock_irq()
 {
-    spin_unlock_irq(&sys.spin.lock);
+    sys_port_unlock_irq();
 }

@@ -122,9 +122,17 @@ static void thrd_port_kill(struct thrd_t *thrd)
 {
 }
 
-static void thrd_port_idle_wait(void)
+static void thrd_port_idle_wait(struct thrd_t *thrd_p)
 {
+    /* NOTE: will enter sleep before any interrupt is taken. */
+    asm volatile ("sei" : : : "memory");
     asm volatile ("sleep" : : : "memory");
+    asm volatile ("cli" : : : "memory");
+
+    /* Add this thread to the ready list and reschedule. */
+    thrd_p->state = THRD_STATE_READY;
+    scheduler_ready_push(thrd_p);
+    thrd_reschedule();
 }
 
 extern struct uart_driver_t uart;

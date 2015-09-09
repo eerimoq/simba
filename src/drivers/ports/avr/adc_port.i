@@ -30,8 +30,6 @@
 #define SAMPLING_RATE_TO_INTERRUPT_MAX(rate) \
     ((SAMPLING_RATE_HZ + rate - 1) / rate)
 
-struct spin_lock_t lock;
-
 #if defined(ADC_DEBUG_PIN)
 struct pin_driver_t pin;
 #endif
@@ -88,8 +86,6 @@ static void start_adc_hw(struct adc_driver_t *drv_p)
 
 static int adc_port_module_init()
 {
-    spin_init(&lock);
-
     return (0);
 }
 
@@ -122,8 +118,6 @@ static int adc_port_async_convert(struct adc_driver_t *drv_p,
                                   int *samples,
                                   size_t length)
 {
-    spin_irq_t irq;
-
     /* Initialize. */
     drv_p->pos = 0;
     drv_p->samples = samples;
@@ -133,7 +127,7 @@ static int adc_port_async_convert(struct adc_driver_t *drv_p,
     drv_p->next_p = NULL;
 
     /* Enqueue. */
-    spin_lock(&lock, &irq);
+    sys_lock();
 
     if (drv_p->dev_p->jobs.head_p == NULL) {
         /* Empty queue. */
@@ -146,7 +140,7 @@ static int adc_port_async_convert(struct adc_driver_t *drv_p,
 
     drv_p->dev_p->jobs.tail_p = drv_p;
 
-    spin_unlock(&lock, &irq);
+    sys_unlock();
 
     return (0);
 }
@@ -154,9 +148,8 @@ static int adc_port_async_convert(struct adc_driver_t *drv_p,
 static int adc_port_async_wait(struct adc_driver_t *drv_p)
 {
     int has_finished;
-    spin_irq_t irq;
 
-    spin_lock(&lock, &irq);
+    sys_lock();
 
     has_finished = (drv_p->pos == drv_p->length);
 
@@ -164,12 +157,12 @@ static int adc_port_async_wait(struct adc_driver_t *drv_p)
        convertion has finished, thrd_p will be unused.*/
     drv_p->thrd_p = thrd_self();
 
-    spin_unlock(&lock, &irq);
-
     /* Wait until all samples have been converted. */
     if (!has_finished) {
-        thrd_suspend(NULL);
+        thrd_suspend_irq(NULL);
     }
+
+    sys_unlock();
 
     return (has_finished);
 }

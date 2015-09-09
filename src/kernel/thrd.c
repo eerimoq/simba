@@ -79,6 +79,7 @@ static struct thrd_scheduler_t scheduler = {
 };
 
 static void scheduler_ready_push(struct thrd_t *thrd_p);
+static void thrd_reschedule(void);
 
 #include "thrd_port.i"
 
@@ -315,14 +316,8 @@ static void *idle_thrd(void *arg_p)
 
     thrd_p = thrd_self();
 
-    /* Wait for interrupts. */
     while (1) {
-        thrd_port_idle_wait();
-        sys_lock();
-        thrd_p->state = THRD_STATE_READY;
-        scheduler_ready_push(thrd_p);
-        thrd_reschedule();
-        sys_unlock();
+        thrd_port_idle_wait(thrd_p);
     }
 
     return (NULL);

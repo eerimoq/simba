@@ -23,6 +23,6 @@ INC += $(SIMBA)/src/kernel
 INC += $(SIMBA)/src/kernel/ports/$(ARCH)/$(TOOLCHAIN)
 
 KERNEL_SRC ?= chan.c core.c event.c fs.c inet.c log.c queue.c sem.c shell.c \
-	      sock.c spin.c std.c sys.c thrd.c time.c timer.c
+	      sock.c std.c sys.c thrd.c time.c timer.c
 
 SRC += $(KERNEL_SRC:%=$(SIMBA)/src/kernel/%)

@@ -71,6 +71,24 @@ static int sys_port_module_init(void)
     return (0);
 }
 
+static void sys_port_lock()
+{
+    asm volatile ("cli" ::: "memory");
+}
+
+static void sys_port_unlock()
+{
+    asm volatile ("sei" ::: "memory");
+}
+
+static void sys_port_lock_irq()
+{
+}
+
+static void sys_port_unlock_irq()
+{
+}
+
 void sys_stop(int error)
 {
     eeprom_write_dword(0x0, error);
