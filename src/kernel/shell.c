@@ -36,10 +36,10 @@ int shell_cmd_logout(int argc,
     return (-1);
 }
 
-static int shell_read_line(char *buf_p,
-                           chan_t *chin_p,
-                           chan_t *chout_p,
-                           int sensitive)
+static int read_line(char *buf_p,
+                     chan_t *chin_p,
+                     chan_t *chout_p,
+                     int sensitive)
 {
     char c, *write_p = buf_p;
     int newline_found = 0;
@@ -74,11 +74,11 @@ static int shell_read_line(char *buf_p,
     return (0);
 }
 
-static int shell_login(char *buf_p,
-                       chan_t *chin_p,
-                       chan_t *chout_p,
-                       const char *username_p,
-                       const char *password_p)
+static int login(char *buf_p,
+                 chan_t *chin_p,
+                 chan_t *chout_p,
+                 const char *username_p,
+                 const char *password_p)
 {
     int correct_username;
     int correct_password;
@@ -89,7 +89,7 @@ static int shell_login(char *buf_p,
 
         /* Read the username. */
         std_fprintf(chout_p, FSTR("username: "));
-        shell_read_line(buf_p, chin_p, chout_p, 0);
+        read_line(buf_p, chin_p, chout_p, 0);
 
         /* Write 'username: ' on empty string. */
         if (*buf_p == '\0') {
@@ -100,7 +100,7 @@ static int shell_login(char *buf_p,
 
         /* Read the  password. */
         std_fprintf(chout_p, FSTR("password: "));
-        shell_read_line(buf_p, chin_p, chout_p, 1);
+        read_line(buf_p, chin_p, chout_p, 1);
         correct_password = !strcmp(password_p, buf_p);
 
         if (correct_username && correct_password) {
@@ -116,9 +116,9 @@ static int shell_login(char *buf_p,
     return (0);
 }
 
-static int shell_read_command(char *buf_p,
-                              chan_t *chin_p,
-                              chan_t *chout_p)
+static int read_command(char *buf_p,
+                        chan_t *chin_p,
+                        chan_t *chout_p)
 {
     char c, *write_p = buf_p, *filter_p, *path_p;
     int err;
@@ -197,12 +197,12 @@ void *shell_entry(void *arg_p)
     while (1) {
         /* Authorization. */
         if (authorized == 0) {
-            shell_login(buf, chin_p, chout_p, username_p, password_p);
+            login(buf, chin_p, chout_p, username_p, password_p);
             authorized = 1;
         }
 
         /* Read command.*/
-        if (shell_read_command(buf, chin_p, chout_p) > 0) {
+        if (read_command(buf, chin_p, chout_p) > 0) {
             /* Logout handling. */
             if (!std_strcmp(buf, FSTR("logout"))
                 || !std_strcmp(buf, FSTR("logout "))) {
