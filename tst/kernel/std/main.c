@@ -129,6 +129,41 @@ int test_strtol(struct harness_t *harness_p)
     return (0);
 }
 
+int test_strip(struct harness_t *harness_p)
+{
+    char leading_whitespace[] = "\t hej";
+    char trailing_whitespace[] = "hej \r\n";
+    char empty_string[] = "";
+    char leading_and_trailing_abc_string[] = "abc123abc";
+    char buf[32];
+    char *expected_p;
+
+    /* Leading whitespace characters. */
+    strcpy(buf, leading_whitespace);
+    expected_p = &buf[2];
+    BTASSERT(std_strip(buf, NULL) == expected_p);
+
+    /* Trailing whitespace characters. */
+    strcpy(buf, trailing_whitespace);
+    expected_p = buf;
+    BTASSERT(std_strip(buf, NULL) == expected_p);
+    BTASSERT(buf[3] == '\0');
+
+    /* Empty string. */
+    strcpy(buf, empty_string);
+    expected_p = buf;
+    BTASSERT(std_strip(buf, NULL) == expected_p);
+    BTASSERT(buf[0] == '\0');
+
+    /* Strip chosen character set. */
+    strcpy(buf, leading_and_trailing_abc_string);
+    expected_p = &buf[3];
+    BTASSERT(std_strip(buf, "xyzabc") == expected_p);
+    BTASSERT(buf[6] == '\0');
+
+    return (0);
+}
+
 int main()
 {
     struct harness_t harness;
@@ -136,6 +171,7 @@ int main()
         { test_sprintf, "test_sprintf" },
         { test_strtol, "test_strtol" },
         { test_sprintf_double, "test_sprintf_double" },
+        { test_strip, "test_strip" },
         { NULL, NULL }
     };
 

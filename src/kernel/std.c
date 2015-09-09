@@ -34,6 +34,23 @@ struct buffered_output_t {
 };
 
 /**
+ * @return true(1) if the character is part of the string, otherwise
+ *         false(0).
+ */
+static int char_in_string(char c, const char *str_p)
+{
+    while (*str_p != '\0') {
+        if (c == *str_p) {
+            return (1);
+        }
+
+        str_p++;
+    }
+
+    return (0);
+}
+
+/**
  * Put characters to buffer.
  */
 static void sprintf_putc(char c, void *arg_p)
@@ -447,4 +464,33 @@ int std_strlen(FAR const char *fstr_p)
     }
 
     return (fstr_p - fstr_start_p - 1);
+}
+
+char *std_strip(char *str_p, const char *strip_p)
+{
+    char *begin_p;
+    size_t length;
+
+    /* Strip whitespace characters by default. */
+    if (strip_p == NULL) {
+        strip_p = "\t\n\x0b\x0c\r ";
+    }
+
+    /* String leading characters. */
+    while ((*str_p != '\0') && char_in_string(*str_p, strip_p)) {
+        str_p++;
+    }
+
+    begin_p = str_p;
+
+    /* Strip training characters. */
+    length = strlen(str_p);
+    str_p += (length - 1);
+
+    while ((str_p >= begin_p) && char_in_string(*str_p, strip_p)) {
+        *str_p = '\0';
+        str_p--;
+    }
+
+    return (begin_p);
 }

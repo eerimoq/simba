@@ -204,8 +204,7 @@ void *shell_entry(void *arg_p)
         /* Read command.*/
         if (read_command(buf, chin_p, chout_p) > 0) {
             /* Logout handling. */
-            if (!std_strcmp(buf, FSTR("logout"))
-                || !std_strcmp(buf, FSTR("logout "))) {
+            if (!std_strcmp(std_strip(buf, NULL), FSTR("logout"))) {
                 if (username_p != NULL) {
                     authorized = 0;
                 }

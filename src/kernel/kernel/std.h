@@ -118,4 +118,13 @@ int std_strncmp_f(FAR const char *fstr0_p,
  */
 int std_strlen(FAR const char *fstr_p);
 
+/**
+ * Strip leading and trailing characters given by strip_p.
+ * @param[in] str_p String to strip.
+ * @param[in] strip_p Characters to strip or NULL for whitespace
+ *                    characters.
+ * @return Pointer to stripped string.
+ */
+char *std_strip(char *str_p, const char *strip_p);
+
 #endif

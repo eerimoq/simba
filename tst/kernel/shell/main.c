@@ -254,6 +254,8 @@ static int test_all(struct harness_t *harness_p)
 
     /* Logout. */
     chan_write(&qin, "logout\n", sizeof("logout\n") - 1);
+    chout_read_until(buf, "username: ");
+    BTASSERT(std_strcmp(buf, FSTR("logout\nusername: ")) == 0, "%s\n", buf);
 
     return (0);
 }
