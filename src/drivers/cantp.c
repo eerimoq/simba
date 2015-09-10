@@ -20,7 +20,7 @@
 
 #include "simba.h"
 
-FS_COUNTER_DEFINE(cantp_id_no_subscriber);
+FS_COUNTER_DEFINE("/drivers/can/no_subscriber", cantp_id_no_subscriber);
 
 enum cantp_type_t {
     cantp_tp_type_single_t = 0,
@@ -115,7 +115,7 @@ static void *rx_main(void *arg_p)
 
     while (1) {
         /* Wait for next CANTP frame. */
-        cantp_p->canif_p->read(cantp_p->canif_p, CANIF_MAILBOX_ANY, &frame);
+        cantp_p->canif_p->read(cantp_p->canif_p, &frame);
         config_p = cantp_p->get_id_config(cantp_p->get_id_config_arg_p, frame.id);
 
         if (config_p == NULL) {
@@ -160,7 +160,7 @@ static void *tx_main(void *arg_p)
             frame.size = (write_p->size + 1);
             frame.data[0] = ((cantp_tp_type_single_t << 4) | write_p->size);
             memcpy(&frame.data[1], write_p->buf_p, write_p->size);
-            cantp_p->canif_p->write(cantp_p->canif_p, 0, &frame);
+            cantp_p->canif_p->write(cantp_p->canif_p, &frame);
             queue_write(write_p->chan_p, &c, sizeof(c));
             break;
 

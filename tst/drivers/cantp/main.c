@@ -40,9 +40,7 @@ struct loopback_t {
 static struct loopback_t loopback;
 static struct cantp_t cantp;
 
-static int loopback_read(void *drv_p,
-                         int mailbox,
-                         struct canif_frame_t *frame_p)
+static int loopback_read(void *drv_p, struct canif_frame_t *frame_p)
 {
     sys_lock();
 
@@ -60,9 +58,7 @@ static int loopback_read(void *drv_p,
     return (0);
 }
 
-static int loopback_write(void *drv_p,
-                          int mailbox,
-                          const struct canif_frame_t *frame_p)
+static int loopback_write(void *drv_p, const struct canif_frame_t *frame_p)
 {
     ASSERT(loopback.valid == 0);
 
@@ -127,8 +123,7 @@ int test_read_write(struct harness_t *harness_p)
     size = chan_read(&controller_chan, &message, sizeof(message.motor));
     BTASSERT(message.header.id == CAN_DB_MOTOR_ID);
     BTASSERT(size == sizeof(message.motor));
-    std_printk(STD_LOG_NOTICE,
-               FSTR("controller_main: motor(0x%x): rpm = %u"),
+    std_printf(FSTR("controller_main: motor(0x%x): rpm = %u"),
                (unsigned int)message.header.id,
                (unsigned int)message.motor.rpm);
     BTASSERT(message.motor.rpm == MOTOR_RPM);
@@ -142,8 +137,7 @@ int test_read_write(struct harness_t *harness_p)
     /* Read message from controller. */
     size = chan_read(&actuator_chan, &message, sizeof(message.throttle));
     BTASSERT(message.header.id == CAN_DB_THROTTLE_ID);
-    std_printk(STD_LOG_NOTICE,
-               FSTR("actuator: throttle(0x%x): diff = %d"),
+    std_printf(FSTR("actuator: throttle(0x%x): diff = %d"),
                (unsigned int)message.header.id,
                (int)message.throttle.diff);
     BTASSERT(message.throttle.diff == THROTTLE_DIFF);

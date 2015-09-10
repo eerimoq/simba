@@ -22,8 +22,6 @@ INC += $(SIMBA)/src/drivers
 INC += $(SIMBA)/src/drivers/ports/$(ARCH)
 
 DRIVERS_SRC ?= adc.c \
-	can.c \
-	cantp.c \
 	ds18b20.c \
 	enc28j60.c \
 	exti.c \

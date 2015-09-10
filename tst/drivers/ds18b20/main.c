@@ -42,12 +42,10 @@ int test_get_temp(struct harness_t *harness_p)
     /* Create a temperature samle in all sensors. */
     BTASSERT(ds18b20_convert(&ds) == 0);
 
-    std_printk(STD_LOG_NOTICE,
-               FSTR("bedroom temperature: %s C"),
+    std_printf(FSTR("bedroom temperature: %s C"),
                ds18b20_get_temperature_str(&ds, bedroom_id, buf));
 
-    std_printk(STD_LOG_NOTICE,
-               FSTR("outdoors temperature: %s C"),
+    std_printf(FSTR("outdoors temperature: %s C"),
                ds18b20_get_temperature_str(&ds, outdoors_id, buf));
 
     strcpy(buf, "drivers/ds18b20/list");

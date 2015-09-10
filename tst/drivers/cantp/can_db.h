@@ -33,11 +33,11 @@
 
 /* RX mailboxes. */
 #define CAN_DB_MOTOR_RX_MAILBOX                      0x1
-#define CAN_DB_THROTTLE_RX_MAILBOX     CANIF_MAILBOX_ANY
+#define CAN_DB_THROTTLE_RX_MAILBOX                   0x1
 
 /* TX mailboxes. */
 #define CAN_DB_MOTOR_TX_MAILBOX                      0x2
-#define CAN_DB_THROTTLE_TX_MAILBOX     CANIF_MAILBOX_ANY
+#define CAN_DB_THROTTLE_TX_MAILBOX                   0x2
 
 /* Message data structures. */
 struct can_db_motor_t {

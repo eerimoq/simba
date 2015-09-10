@@ -275,9 +275,9 @@ static void enc28j60_spi_write_read(struct spi_driver_t *drv_p,
     spi_write(drv_p, &byte0, sizeof(byte0));
 
     if (size > 0) {
-        spi_write(drv, buf, size);
+        spi_write(drv_p, buf_p, size);
     } else {
-        spi_read(drv, buf, -size);
+        spi_read(drv_p, buf_p, -size);
     }
 }
 
@@ -286,7 +286,7 @@ static void enc28j60_spi_write(struct spi_driver_t *spi_p,
                               const void *buf_p,
                               size_t size)
 {
-    enc28j60_spi_write_read(spi_p, byte0, (void *)buf, size);
+    enc28j60_spi_write_read(spi_p, byte0, (void *)buf_p, size);
 }
 
 static void enc28j60_spi_read(struct spi_driver_t *spi_p,
@@ -294,7 +294,7 @@ static void enc28j60_spi_read(struct spi_driver_t *spi_p,
                               void *buf_p,
                               size_t size)
 {
-    enc28j60_spi_write_read(spi_p, byte0, buf, -(int16_t)size);
+    enc28j60_spi_write_read(spi_p, byte0, buf_p, -(int16_t)size);
 }
 
 static void enc28j60_write_set_ctrl_reg(struct spi_driver_t *spi_p,
@@ -338,9 +338,9 @@ static uint8_t enc28j60_read_ctrl_reg(struct spi_driver_t *spi_p,
     uint8_t offset = ((addr & MAC_MII_MASK) != 0);
     uint8_t bank = ((addr & BANK_MASK) >> 5);
 
-    enc28j60_spi_write(spi, (BFS | ECON1), &bank, sizeof(bank));
-    enc28j60_spi_read(spi, (RCR | (addr & ADDR_MASK)), value, 1 + offset);
-    enc28j60_spi_write(spi, (BFC | ECON1), &bank, sizeof(bank));
+    enc28j60_spi_write(spi_p, (BFS | ECON1), &bank, sizeof(bank));
+    enc28j60_spi_read(spi_p, (RCR | (addr & ADDR_MASK)), value, 1 + offset);
+    enc28j60_spi_write(spi_p, (BFC | ECON1), &bank, sizeof(bank));
 
     return (value[offset]);
 }
@@ -418,13 +418,13 @@ int enc28j60_init(struct enc28j60_driver_t *drv_p,
     /* HW MAC adress. */
     enc28j60_write_ctrl_reg_pair(spi_p,
                                  MAADR5,
-                                 (((uint16_t)macaddr[1] << 8) | macaddr[0]));
+                                 (((uint16_t)macaddr_p[1] << 8) | macaddr_p[0]));
     enc28j60_write_ctrl_reg_pair(spi_p,
                                  MAADR3,
-                                 (((uint16_t)macaddr[3] << 8) | macaddr[2]));
+                                 (((uint16_t)macaddr_p[3] << 8) | macaddr_p[2]));
     enc28j60_write_ctrl_reg_pair(spi_p,
                                  MAADR1,
-                                 (((uint16_t)macaddr[5] << 8) | macaddr[4]));
+                                 (((uint16_t)macaddr_p[5] << 8) | macaddr_p[4]));
 
     /* PHY configuration. */
     enc28j60_write_phy(spi_p, PHCON2, HDLDIS);
@@ -438,16 +438,14 @@ int enc28j60_start(struct enc28j60_driver_t *drv_p)
     enc28j60_set_ctrl_reg(drv_p->spi_p, EIE, (INTIE | PKTIE));
     enc28j60_set_ctrl_reg(drv_p->spi_p, ECON1, RXEN);
 
-    spi_start(drv_p->spi_p);
-    exti_start(drv_p->exti);
+    //exti_start(drv_p->exti);
 
     return (0);
 }
 
 int enc28j60_stop(struct enc28j60_driver_t *drv_p)
 {
-    exti_stop(drv_p->exti);
-    spi_stop(drv_p->spi_p);
+    //exti_stop(drv_p->exti);
 
     return (0);
 }
@@ -483,7 +481,7 @@ size_t enc28j60_read_begin(struct enc28j60_driver_t *drv_p)
 
 size_t enc28j60_read(struct enc28j60_driver_t *drv_p, void *buf_p, size_t size)
 {
-    enc28j60_spi_read(drv_p->spi_p, RBM, buf, size);
+    enc28j60_spi_read(drv_p->spi_p, RBM, buf_p, size);
 
     return (size);
 }
@@ -517,7 +515,7 @@ size_t enc28j60_write(struct enc28j60_driver_t *drv_p,
                       const void *buf_p,
                       size_t size)
 {
-    enc28j60_spi_write(drv_p->spi_p, WBM, buf, size);
+    enc28j60_spi_write(drv_p->spi_p, WBM, buf_p, size);
     drv_p->txsize += size;
 
     return (size);

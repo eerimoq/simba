@@ -35,7 +35,7 @@ static int test_convert(struct harness_t *harness_p)
     adc_convert(&adc, samples, membersof(samples));
 
     for (i = 0; i < membersof(samples); i++) {
-        std_printk(STD_LOG_NOTICE, FSTR("[%d]: %d"), i, samples[i]);
+        std_printf(FSTR("[%d]: %d"), i, samples[i]);
     }
 
     return (0);

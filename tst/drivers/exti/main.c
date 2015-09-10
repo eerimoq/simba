@@ -50,7 +50,7 @@ int test_exti(struct harness_t *harness_p)
         time_sleep(10000);
     }
 
-    std_printk(STD_LOG_NOTICE, FSTR("flag = %d"), (int)flag);
+    std_printf(FSTR("flag = %d"), (int)flag);
 
     BTASSERT(flag == 10);
 

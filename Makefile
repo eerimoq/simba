@@ -18,49 +18,61 @@
 # This file is part of the Simba project.
 #
 
+.PHONY: tags
+
 BOARD ?= linux
 
-TESTS = $(addprefix kernel/,event fs prof log queue sem shell std sys thrd timer)
-TESTS += $(addprefix slib/,hash_map)
+TESTS = $(addprefix tst/kernel/,event fs log prof queue sem shell std sys thrd timer)
+TESTS += $(addprefix tst/slib/,hash_map)
 
-all: $(TESTS:%=%.all)
+APPS = $(TESTS)
 
-release: $(TESTS:%=%.release)
+ifneq ($(BOARD),linux)
+    APPS += $(addprefix tst/drivers/,adc cantp ds18b20 enc28j60 exti mcp2515 owi pin uart)
+endif
 
-clean: $(TESTS:%=%.clean)
+all: $(APPS:%=%.all)
+
+release: $(APPS:%=%.release)
+
+clean: $(APPS:%=%.clean)
 
 run: $(TESTS:%=%.run)
 
+size: $(TESTS:%=%.size)
+
 report:
-	for t in $(TESTS) ; do $(MAKE) -C tst/$(basename $$t) report ; echo ; done
+	for t in $(TESTS) ; do $(MAKE) -C $(basename $$t) report ; echo ; done
 
 test: run
 	$(MAKE) report
 
-size: $(TESTS:%=%.size)
-
 jenkins-coverage: $(TESTS:%=%.jc)
 
-$(TESTS:%=%.all):
-	$(MAKE) -C tst/$(basename $@) all
+$(APPS:%=%.all):
+	$(MAKE) -C $(basename $@) all
 
-$(TESTS:%=%.release):
-	$(MAKE) -C tst/$(basename $@) release
+$(APPS:%=%.release):
+	$(MAKE) -C $(basename $@) release
 
-$(TESTS:%=%.clean):
-	$(MAKE) -C tst/$(basename $@) clean
+$(APPS:%=%.clean):
+	$(MAKE) -C $(basename $@) clean
+
+$(APPS:%=%.size):
+	$(MAKE) -C $(basename $@) size
 
 $(TESTS:%=%.run):
-	$(MAKE) -C tst/$(basename $@) run
+	$(MAKE) -C $(basename $@) run
 
 $(TESTS:%=%.report):
-	$(MAKE) -C tst/$(basename $@) report
-
-$(TESTS:%=%.size):
-	$(MAKE) -C tst/$(basename $@) size
+	$(MAKE) -C $(basename $@) report
 
 $(TESTS:%=%.jc):
-	$(MAKE) -C tst/$(basename $@) jenkins-coverage
+	$(MAKE) -C $(basename $@) jenkins-coverage
+
+tags:
+	echo "Creating tags file .TAGS"
+	etags -o .TAGS $$(git ls-files *.[hci] | xargs)
 
 help:
 	@echo "--------------------------------------------------------------------------------"

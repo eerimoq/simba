@@ -137,7 +137,7 @@ struct spi_frame_t {
 } __attribute__((packed));
 
 /* Number of frames discarded due to buffer overflow. */
-FS_COUNTER_DEFINE(mcp2515_rx_frame_discarded);
+FS_COUNTER_DEFINE("/drivers/mcp2515/rx_frame_discarded", mcp2515_rx_frame_discarded);
 
 /**
  * Interrupt handler.
@@ -359,6 +359,7 @@ int mcp2515_init(struct mcp2515_driver_t *drv_p,
 
     exti_init(&drv_p->exti,
               exti_p,
+              EXTI_TRIGGER_FALLING_EDGE,
               isr,
               drv_p);
 
@@ -417,11 +418,8 @@ int mcp2515_stop(struct mcp2515_driver_t *drv_p)
 }
 
 int mcp2515_read(struct mcp2515_driver_t *drv_p,
-                 int mailbox,
                  struct canif_frame_t *frame)
 {
-    UNUSED(mailbox);
-
     sem_get(&drv_p->rx.sem, NULL);
     sys_lock();
     *frame = *frame_get(drv_p);
@@ -431,11 +429,8 @@ int mcp2515_read(struct mcp2515_driver_t *drv_p,
 }
 
 int mcp2515_write(struct mcp2515_driver_t *drv_p,
-                  int mailbox,
                   const struct canif_frame_t *frame_p)
 {
-    UNUSED(mailbox);
-
     struct spi_frame_t frame;
     uint8_t rts = (SPI_INSTR_RTS | 0x1); /* Request to send mailbox 0. */
 

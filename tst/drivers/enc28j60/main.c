@@ -37,7 +37,7 @@ static const uint8_t macaddr[] = "\1\2\3\4\5\6";
 void on_interrupt(struct enc28j60_driver_t *drv_p,
                   uint8_t status)
 {
-    thrd_resume_i(thrd_p, 0);
+    thrd_resume_irq(thrd_p, 0);
 }
 
 int test_ping(struct harness_t *harness_p)
@@ -76,7 +76,13 @@ int main()
     uart_module_init();
     spi_module_init();
 
-    spi_init(&spi, &spi_device[0]);
+    spi_init(&spi,
+             &spi_device[0],
+             NULL,
+             SPI_MODE_MASTER,
+             SPI_SPEED_1MBPS,
+             0,
+             0);
     enc28j60_init(&enc28j60drv,
                   &spi,
                   &exti,

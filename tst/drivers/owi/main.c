@@ -28,15 +28,13 @@ int test_search(struct harness_t *harness_p)
 
     BTASSERT(owi_init(&owi, &pin_d7_dev, devices, membersof(devices)) == 0);
 
-    std_printk(STD_LOG_NOTICE, FSTR("Searching..."));
+    std_printf(FSTR("Searching..."));
 
-    std_printk(STD_LOG_NOTICE,
-               FSTR("Number of devices found on one wire bus: %d"),
+    std_printf(FSTR("Number of devices found on one wire bus: %d"),
                owi_search(&owi));
 
     for (i = 0; i < owi.len; i++) {
-      std_printk(STD_LOG_NOTICE,
-                 FSTR("id[%d]: 0x%02x%02x%02x%02x %02x%02x%02x%02x"),
+      std_printf(FSTR("id[%d]: 0x%02x%02x%02x%02x %02x%02x%02x%02x"),
                  i,
                  (unsigned int)owi.devices_p[i].id[0],
                  (unsigned int)owi.devices_p[i].id[1],
