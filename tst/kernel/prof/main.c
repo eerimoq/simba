@@ -30,12 +30,6 @@ int test_memory_usage(struct harness_t *harness_p)
     std_printf(FSTR("sizeof(struct fs_counter_t) = %d\n"), (int)sizeof(struct fs_counter_t));
     std_printf(FSTR("sizeof(struct fs_node_t) = %d\n"), (int)sizeof(struct fs_node_t));
 
-    /* inet */
-    std_printf(FSTR("sizeof(struct inet_tcp_t) = %d\n"), (int)sizeof(struct inet_tcp_t));
-    std_printf(FSTR("sizeof(struct inet_udp_t) = %d\n"), (int)sizeof(struct inet_udp_t));
-    std_printf(FSTR("sizeof(struct ip_header_t) = %d\n"), (int)sizeof(struct ip_header_t));
-    std_printf(FSTR("sizeof(struct etharp_header_t) = %d\n"), (int)sizeof(struct etharp_header_t));
-
     /* list */
     std_printf(FSTR("sizeof(struct list_singly_linked_t) = %d\n"), (int)sizeof(struct list_singly_linked_t));
 
@@ -47,9 +41,6 @@ int test_memory_usage(struct harness_t *harness_p)
 
     /* shell */
     std_printf(FSTR("sizeof(struct shell_args_t) = %d\n"), (int)sizeof(struct shell_args_t));
-
-    /* sock */
-    std_printf(FSTR("sizeof(struct sock_t) = %d\n"), (int)sizeof(struct sock_t));
 
     /* sys */
     std_printf(FSTR("sizeof(struct sys_t) = %d\n"), (int)sizeof(struct sys_t));

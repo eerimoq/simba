@@ -26,8 +26,8 @@ ifeq ($(TOOLCHAIN), gnu)
 
   ifeq ($(ARCH),avr)
     CROSS_COMPILE = avr-
-    CFLAGS += -D__DELAY_BACKWARD_COMPATIBLE__
-    LDFLAGS += -Wl,--defsym=__main_stack_end=$(MAIN_STACK_END)
+    CFLAGS += -D__DELAY_BACKWARD_COMPATIBLE__ -fdata-sections -ffunction-sections
+    LDFLAGS += -Wl,--defsym=__main_stack_end=$(MAIN_STACK_END) -Wl,--gc-sections
     SIZEARGS = --mcu=$(MCU) --format=avr
 
     AVRDUDE_PORT ?= /dev/ttyUSB0
@@ -67,8 +67,8 @@ $(NAME).hex: $(EXE)
   CC = $(CROSS_COMPILE)gcc
   LD = $(CROSS_COMPILE)gcc
 
-  CFLAGS += -c -fdata-sections -ffunction-sections -Wall -fstack-usage
-  LDFLAGS += -Wl,-Map=$(NAME).map -Wl,--gc-sections
+  CFLAGS += -c -Wall -fstack-usage
+  LDFLAGS += -Wl,-Map=$(NAME).map
 
   ifneq ($(NDEBUG),yes)
     CFLAGS += -g
