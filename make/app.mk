@@ -20,6 +20,8 @@
 
 .PHONY: all clean new run run-debugger help
 
+VERSION ?= 0.0.0
+
 # files and folders
 OBJDIR = obj
 DEPSDIR = deps
@@ -108,9 +110,6 @@ jenkins-coverage:
 release:
 	env NDEBUG=yes NPROFILE=yes $(MAKE)
 
-etags:
-	etags --declarations $(CSRC) $$(find $(INC) -name "*.h" | xargs)
-
 $(EXE): $(OBJ) $(GENOBJ)
 	@echo "Linking $@"
 	$(LD) -o $@ $^ $(LDFLAGS)
@@ -128,7 +127,8 @@ endef
 $(foreach file,$(CSRC),$(eval $(call COMPILE_template,$(file))))
 
 $(GENOBJ): $(OBJ)
-	$(SIMBA)/src/kernel/tools/gen.py $(GENCSRC) $(OBJ:$(OBJDIR)/%=$(GENDIR)/%.pp)
+	$(SIMBA)/src/kernel/tools/gen.py $(NAME) $(VERSION) \
+	    $(GENCSRC) $(OBJ:$(OBJDIR)/%=$(GENDIR)/%.pp)
 	@echo "Compiling $(GENCSRC)"
 	$(CC) $(CFLAGS) -o $@ $(GENCSRC)
 

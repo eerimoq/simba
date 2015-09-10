@@ -19,6 +19,8 @@
 #
 
 NAME = sys_suite
+VERSION = 1.0.0
+
 BOARD = linux
 SRC += main.c
 SLIB_SRC = harness.c

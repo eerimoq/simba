@@ -20,6 +20,8 @@
 
 #include "simba.h"
 
+FS_COMMAND_DEFINE("/kernel/sys/appinfo", sys_cmd_appinfo);
+
 struct sys_t sys = {
     .tick = 0,
     .on_fatal_callback = sys_stop,
@@ -28,6 +30,7 @@ struct sys_t sys = {
 
 extern void timer_tick(void);
 extern void thrd_tick(void);
+extern const FAR char appinfo[];
 
 static void sys_tick() {
     sys.tick++;
@@ -36,6 +39,16 @@ static void sys_tick() {
 }
 
 #include "sys_port.i"
+
+int sys_cmd_appinfo(int argc,
+                    const char *argv[],
+                    chan_t *chout_p,
+                    chan_t *chin_p)
+{
+    std_fprintf(chout_p, appinfo);
+
+    return (0);
+}
 
 int sys_module_init()
 {
@@ -87,4 +100,9 @@ void sys_lock_irq()
 void sys_unlock_irq()
 {
     sys_port_unlock_irq();
+}
+
+const FAR char *sys_get_appinfo()
+{
+    return (appinfo);
 }

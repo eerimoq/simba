@@ -83,12 +83,18 @@ void sys_set_stdout(chan_t *chan);
  */
 chan_t *sys_get_stdout(void);
 
-void sys_lock();
+void sys_lock(void);
 
-void sys_unlock();
+void sys_unlock(void);
 
-void sys_lock_irq();
+void sys_lock_irq(void);
 
-void sys_unlock_irq();
+void sys_unlock_irq(void);
+
+/**
+ * Get a pointer to the application information buffer.
+ * @return A pointer to the application information buffer.
+ */
+const FAR char *sys_get_appinfo(void);
 
 #endif
