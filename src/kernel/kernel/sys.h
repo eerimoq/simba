@@ -34,6 +34,8 @@
     (((time)->seconds * SYS_TICK_FREQUENCY) +                           \
      (((time)->nanoseconds / 1000) * SYS_TICK_FREQUENCY) / 1000000)
 
+#define VERSION_STR STRINGIFY(VERSION)
+
 typedef unsigned long sys_tick_t;
 
 struct sys_t {

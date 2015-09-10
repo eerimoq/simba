@@ -23,6 +23,9 @@
 
 #define UNUSED(v) (void)(v)
 
+#define STRINGIFY2(x) #x
+#define STRINGIFY(x) STRINGIFY2(x)
+
 #define TOKENPASTE2(x, y) x ## y
 #define TOKENPASTE(x, y) TOKENPASTE2(x, y)
 #define UNIQUE(x)  TOKENPASTE(x, TOKENPASTE(___, __LINE__))
