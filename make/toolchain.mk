@@ -56,7 +56,7 @@ $(NAME).hex: $(EXE)
   ifeq ($(ARCH),linux)
     CROSS_COMPILE =
     CFLAGS += -Werror -Wno-error=unused-variable -DNPROFILESTACK
-    LDFLAGS += -Wl,-lpthread
+    LDFLAGS += -Wl,-lpthread -lrt
 
     ifneq ($(NPROFILE),yes)
       CFLAGS += -pg -fprofile-arcs -ftest-coverage
