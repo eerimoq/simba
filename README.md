@@ -1,3 +1,5 @@
+|buildstatus|_
+
 OVERVIEW
 --------
 
@@ -177,3 +179,6 @@ an alternative, in particular for streaming devices like UART.
         // 3. resume the suspended thread
         thrd_resume_irq(drv_p->thrd_p, 0);
     }
+
+.. |buildstatus| image:: https://travis-ci.org/eerimoq/simba.svg
+.. _buildstatus: https://travis-ci.org/eerimoq/simba
