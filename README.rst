@@ -1,7 +1,7 @@
 |buildstatus|_
 
 OVERVIEW
---------
+========
 
 Simba is a microkernel and build framework.
 
@@ -19,6 +19,8 @@ Simba is a microkernel and build framework.
 'Hello World' application printing "Hello World!" once every second. A config.h
 and a Makefile is also needed. See 'examples/hello_world' folder for complete application.
 Build and run with 'make run' (under 'examples/hello_world').
+
+.. code-block:: c
 
     #include "simba.h"
     
@@ -40,7 +42,9 @@ Build and run with 'make run' (under 'examples/hello_world').
     }
 
 FILE TREE
----------
+=========
+
+.. code-block:: c
 
     -- {root}                       - this directory
        +-- examples/                - examples applications
@@ -58,7 +62,7 @@ FILE TREE
            +-- kernel/              - kernel suites
 
 PREREQUISITES
--------------
+=============
 
 * linux environment
 * GNU make 3.81
@@ -69,10 +73,12 @@ PREREQUISITES
 * For AVR: sudo apt-get install avrdude ckermit gcc-avr binutils-avr gdb-avr avr-libc
 
 BUILD AND RUN TESTS
--------------------
+===================
 
 Build for default board, given in application Makefile. Often the default board
 is a linux simulation.
+
+.. code-block:: c
 
     $ pwd
     /home/erik/archive/simba/tst/kernel/sys
@@ -81,17 +87,21 @@ is a linux simulation.
 To build for another board, in this case Arduino Nano. This overrides
 the default board.
 
+.. code-block:: c
+
     $ make BOARD=arduino_nano release size test
 
 Note: All application does not support every kind of board.
 
 APPLICATIONS, PACKAGES AND MODULES
-----------------------------------
+==================================
 
 A module is normally a header file and a source file. A package is a container of
 modules. An application is an executable consisting of zero or more modules.
 
 Preferred application file tree:
+
+.. code-block:: c
 
     -- myapplication
        +-- config.h
@@ -99,6 +109,8 @@ Preferred application file tree:
        +-- Makefile
 
 Preferred package file tree:
+
+.. code-block:: c
 
     -- mypackage
        +-- mypackage
@@ -108,12 +120,14 @@ Preferred package file tree:
        +-- module2.c
 
 THREADS
--------
+=======
 
 A thread is the basic execution entity. A scheduler controls the execution of
 threads.
 
 A simple thread that waits to be resumed by another thread.
+
+.. code-block:: c
 
     #include "simba.h"
 
@@ -144,7 +158,7 @@ size is chosen by the application.
 The sock channel is used for internet protocols (not yet implemented).
 
 DRIVERS
--------
+=======
 
 Typical thread-driver interaction template code. Call mydrv_write() to start
 a driver operation. The driver sends a message to the hardware and suspends
@@ -152,6 +166,8 @@ current thread. The hardware sends an interrupt and the calling thread is
 resumed. Driver operation complete. Use counting semaphores if atomic access
 to the device is required (not included in the example). A queue is also
 an alternative, in particular for streaming devices like UART.
+
+.. code-block:: c
 
     int mydrv_exec(struct mydrv_t *drv)
     {
