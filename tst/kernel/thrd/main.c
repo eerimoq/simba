@@ -23,6 +23,8 @@
 static char thrd_stack[256];
 static void *thrd(void *arg_p)
 {
+    thrd_set_name("resumer");
+
     thrd_resume(arg_p, 3);
 
     return (NULL);
