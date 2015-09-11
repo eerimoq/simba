@@ -93,6 +93,12 @@ static void thrd_port_entry(void)
     asm volatile ("movw r24, r4");
     asm volatile ("movw r30, r2");
     asm volatile ("icall");
+
+    /* The thread is terminated. */
+    sys_lock();
+    thrd_self()->state = THRD_STATE_TERMINATED;
+    thrd_reschedule();
+    sys_unlock();
 }
 
 static int thrd_port_spawn(struct thrd_t *thrd,
@@ -116,10 +122,6 @@ static int thrd_port_spawn(struct thrd_t *thrd,
     thrd->port.context = context;
 
     return (0);
-}
-
-static void thrd_port_kill(struct thrd_t *thrd)
-{
 }
 
 static void thrd_port_idle_wait(struct thrd_t *thrd_p)

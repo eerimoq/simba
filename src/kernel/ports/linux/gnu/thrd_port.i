@@ -42,6 +42,12 @@ static void *thrd_port_entry(void *arg)
     sys_unlock();
     port->entry(port->arg);
 
+    /* Thread termination. */
+    sys_lock();
+    thrd_self()->state = THRD_STATE_TERMINATED;
+    thrd_reschedule();
+    sys_unlock();
+
     return (NULL);
 }
 
@@ -87,11 +93,6 @@ static int thrd_port_spawn(struct thrd_t *thrd,
     }
 
     return (0);
-}
-
-static void thrd_port_kill(struct thrd_t *thrd)
-{
-    
 }
 
 static void thrd_port_idle_wait(struct thrd_t *thrd_p)

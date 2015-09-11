@@ -24,7 +24,8 @@
 #define THRD_STATE_CURRENT      0
 #define THRD_STATE_READY        1
 #define THRD_STATE_SUSPENDED    2
-#define THRD_STATE_KILLED       3
+#define THRD_STATE_RESUMED      3
+#define THRD_STATE_TERMINATED   4
 
 /* Stack usage and debugging. */
 #define THRD_STACK_LOW_MAGIC 0x1337
@@ -36,8 +37,8 @@ static char *state_fmt[] = {
     "current",
     "ready",
     "suspended",
-    "killed",
     "resumed",
+    "terminated"
 };
 
 FS_COMMAND_DEFINE("/kernel/thrd/list", thrd_cmd_list);
@@ -394,14 +395,6 @@ struct thrd_t *thrd_spawn(void *(*entry)(void *),
     return (err == 0 ? stack_p : NULL);
 }
 
-int thrd_kill(struct thrd_t *thrd_p)
-{
-    thrd_port_kill(thrd_p);
-    thrd_p->state = THRD_STATE_KILLED;
-
-    return (0);
-}
-
 int thrd_suspend(struct time_t *timeout_p)
 {
     int err;
@@ -416,12 +409,7 @@ int thrd_suspend(struct time_t *timeout_p)
 int thrd_resume(struct thrd_t *thrd_p, int err)
 {
     sys_lock();
-
-    thrd_p->err = err;
-    thrd_p->state = THRD_STATE_READY;
-    scheduler_ready_push(thrd_p);
-    thrd_reschedule();
-
+    thrd_resume_irq(thrd_p, err);
     sys_unlock();
 
     return (0);
@@ -430,8 +418,31 @@ int thrd_resume(struct thrd_t *thrd_p, int err)
 int thrd_resume_irq(struct thrd_t *thrd_p, int err)
 {
     thrd_p->err = err;
-    thrd_p->state = THRD_STATE_READY;
-    scheduler_ready_push(thrd_p);
+
+    if (thrd_p->state == THRD_STATE_SUSPENDED) {
+        thrd_p->state = THRD_STATE_READY;
+        scheduler_ready_push(thrd_p);
+    } else if (thrd_p->state != THRD_STATE_TERMINATED) {
+        thrd_p->state = THRD_STATE_RESUMED;
+    }
+
+    return (0);
+}
+
+int thrd_wait(struct thrd_t *thrd_p)
+{
+    while (1) {
+        sys_lock();
+
+        if (thrd_p->state == THRD_STATE_TERMINATED) {
+            sys_unlock();
+            break;
+        }
+
+        sys_unlock();
+
+        thrd_usleep(50000);
+    }
 
     return (0);
 }
@@ -486,6 +497,12 @@ int thrd_suspend_irq(struct time_t *timeout_p)
     struct timer_t timer;
 
     thrd_p = thrd_self();
+
+    /* Immediatly return if the thread is already resumed. */
+    if (thrd_p->state == THRD_STATE_RESUMED) {
+        printf("j\n");
+        return (0);
+    }
 
     thrd_p->state = THRD_STATE_SUSPENDED;
 

@@ -24,7 +24,6 @@ static char thrd_stack[256];
 static void *thrd(void *arg_p)
 {
     thrd_resume(arg_p, 3);
-    thrd_suspend(NULL);
 
     return (NULL);
 }
@@ -32,15 +31,19 @@ static void *thrd(void *arg_p)
 static int test_suspend_resume(struct harness_t *harness_p)
 {
     int err;
+    struct thrd_t *thrd_p;
 
-    thrd_spawn(thrd,
-               thrd_self(),
-               10,
-               thrd_stack,
-               sizeof(thrd_stack));
+    thrd_p = thrd_spawn(thrd,
+                        thrd_self(),
+                        10,
+                        thrd_stack,
+                        sizeof(thrd_stack));
 
     err = thrd_suspend(NULL);
     BTASSERT(err == 3, "err = %d", err);
+
+    /* Wait for the spawned thread to terminate. */
+    BTASSERT(thrd_wait(thrd_p) == 0);
 
     return (0);
 }

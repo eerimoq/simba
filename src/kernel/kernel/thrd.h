@@ -64,6 +64,13 @@ int thrd_suspend(struct time_t *timeout_p);
 int thrd_resume(struct thrd_t *thrd_p, int err);
 
 /**
+ * Wait for a thread to terminate.
+ * @param[in] thrd_p Thread to wait for.
+ * @return zero(0) or negative error code.
+ */
+int thrd_wait(struct thrd_t *thrd_p);
+
+/**
  * Sleep for given number of microseconds.
  * @param[in] useconds Microseconds to sleep.
  * @return zero(0) or negative error code.
