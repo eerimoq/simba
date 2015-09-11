@@ -40,7 +40,7 @@ file_fmt = '''/**
 {log}
 '''
 
-appinfo_fmt = '''const FAR char appinfo[] = "{name} ({version}) built {date} by {user}.\\r\\n";
+appinfo_fmt = '''const FAR char appinfo[] = "{name}-{version} built {date} by {user}.\\r\\n";
 '''
 
 fs_fmt = '''{command_externs}
