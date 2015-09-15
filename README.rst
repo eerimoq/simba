@@ -6,12 +6,11 @@ OVERVIEW
 Simba is a microkernel and build framework.
 
 * threads
-* timers
 * channels
+* timers
 * counting semaphores
 * drivers (spi, uart, ...)
 * shell
-* file system
 * portable (linux, AVR, ...)
 * modular
 * make based framework
@@ -47,19 +46,20 @@ FILE TREE
 .. code-block:: c
 
     -- {root}                       - this directory
-       +-- examples/                - examples applications
+       +-- examples/                - example applications
        +-- make/                    - build and run files
        +-- README
-       +-- src/                     - source directory
+       +-- src/                     - source code directory
        |   +-- boards/              - board configurations
        |   +-- drivers/             - drivers package with ports
        |   +-- kernel/              - kernel package with ports
-       |   +-- slib/                - slib package
+       |   +-- slib/                - slib (Simba lib) package
        |   +-- mcus/                - mcu configurations
        |   +-- simba.h              - includes kernel, drivers and slib headers
        +-- tst/                     - test suites
            +-- drivers/             - drivers suites
            +-- kernel/              - kernel suites
+           +-- slib/                - slib suites
 
 PREREQUISITES
 =============
@@ -82,16 +82,16 @@ is a linux simulation.
 
     $ pwd
     /home/erik/archive/simba/tst/kernel/sys
-    $ make test
+    $ make -s test
 
 To build for another board, in this case Arduino Nano. This overrides
 the default board.
 
 .. code-block:: c
 
-    $ make BOARD=arduino_nano release size test
+    $ make -s BOARD=arduino_nano release size test
 
-Note: All application does not support every kind of board.
+Note: Application may only support a subset of the available baords.
 
 APPLICATIONS, PACKAGES AND MODULES
 ==================================

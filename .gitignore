@@ -14,11 +14,13 @@ tst/*/*/coverage.*
 tst/*/*/size.log
 tst/*/*/*.hex
 tst/*/*/eeprom.bin
-tst/*/*/simba_settings.bin
+tst/*/*/settings.h
+tst/*/*/settings.bin
 
 examples/*/gen
 examples/*/profile.log
 examples/*/coverage.*
 examples/*/size.log
 examples/*/*.hex
-examples/*/simba_settings.bin
+examples/*/settings.h
+examples/*/settings.bin
