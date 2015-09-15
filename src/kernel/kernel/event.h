@@ -39,9 +39,9 @@ int event_init(struct event_t *event_p);
 /**
  * Wait for a event in given mask to occur.
  * @param[in] event Event channel to read from.
- * @param[in] buf_p The mask of events to wait for. When the function
- *                   return the mask contains the events that occured.
- * @param[in] size Size to read (always sizeof(mask).
+ * @param[in, out] buf_p The mask of events to wait for. When the function
+ *                       return the mask contains the events that occured.
+ * @param[in] size Size to read (always sizeof(mask)).
  * @return sizeof(mask) or negative error code.
  */
 ssize_t event_read(struct event_t *event_p, void *buf_p, size_t size);

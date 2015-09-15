@@ -85,12 +85,30 @@ void sys_set_stdout(chan_t *chan);
  */
 chan_t *sys_get_stdout(void);
 
+/**
+ * Take the system lock. Normally turns off interrupts.
+ * @return void.
+ */
 void sys_lock(void);
 
+/**
+ * Release the system lock. In many ports this function has no
+ * effect.
+ * @return void.
+ */
 void sys_unlock(void);
 
+/**
+ * Take the system lock from ISR. Normally turns off interrupts.
+ * @return void.
+ */
 void sys_lock_irq(void);
 
+/**
+ * Release the system lock from ISR. In many ports this function has no
+ * effect.
+ * @return void.
+ */
 void sys_unlock_irq(void);
 
 /**
