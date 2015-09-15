@@ -29,12 +29,12 @@ static int settings_port_read(void *dst_p, size_t src, size_t size)
 {
     eeprom_read_block(dst_p, (const void *)src, size);
 
-    return (0);
+    return (size);
 }
 
 static int settings_port_write(size_t dst, const void *src_p, size_t size)
 {
     eeprom_update_block(src_p, (void *)dst, size);
 
-    return (0);
+    return (size);
 }

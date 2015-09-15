@@ -47,6 +47,16 @@ int test_integer(struct harness_t *harness_p)
                            SETTINGS_INT64_SIZE) == SETTINGS_INT64_SIZE);
     BTASSERT(int64 == 64);
 
+    int64 = 46;
+    BTASSERT(settings_write(SETTINGS_INT64_ADDR,
+                            &int64,
+                            SETTINGS_INT64_SIZE) == SETTINGS_INT64_SIZE);
+
+    BTASSERT(settings_read(&int64,
+                           SETTINGS_INT64_ADDR,
+                           SETTINGS_INT64_SIZE) == SETTINGS_INT64_SIZE);
+    BTASSERT(int64 == 46);
+
     return (0);
 }
 
