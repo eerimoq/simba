@@ -43,8 +43,11 @@ H_FMT = """/**
 #define __SETTINGS_H__
 
 {addresses}
+
 {sizes}
+
 {types}
+
 {values}
 
 #endif
