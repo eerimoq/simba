@@ -50,4 +50,6 @@
 
 #define ASSERT(cond, ...) ASSERTN(cond, 1, __VA_ARGS__)
 
+#define SYS_SETTINGS_APP_BASE 0x100
+
 #endif

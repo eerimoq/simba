@@ -1,5 +1,5 @@
 /**
- * @file kernel.h
+ * @file avr/gnu/settings_port.i
  * @version 1.0
  *
  * @section License
@@ -18,26 +18,23 @@
  * This file is part of the Simba project.
  */
 
-#ifndef __KERNEL_H__
-#define __KERNEL_H__
+#include <avr/eeprom.h>
 
-#include "kernel/errno.h"
-#include "kernel/types.h"
-#include "kernel/list.h"
-#include "kernel/fifo.h"
-#include "kernel/settings.h"
-#include "kernel/time.h"
-#include "kernel/chan.h"
-#include "kernel/sys.h"
-#include "kernel/timer.h"
-#include "kernel/thrd.h"
-#include "kernel/fs.h"
-#include "kernel/shell.h"
-#include "kernel/sem.h"
-#include "kernel/std.h"
-#include "kernel/log.h"
-#include "kernel/queue.h"
-#include "kernel/event.h"
-#include "kernel/core.h"
+static int settings_port_module_init(void)
+{
+    return (0);
+}
 
-#endif
+static int settings_port_read(void *dst_p, size_t src, size_t size)
+{
+    eeprom_read_block(dst_p, (const void *)src, size);
+
+    return (0);
+}
+
+static int settings_port_write(size_t dst, const void *src_p, size_t size)
+{
+    eeprom_update_block(src_p, (void *)dst, size);
+
+    return (0);
+}

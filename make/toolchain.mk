@@ -30,7 +30,7 @@ ifeq ($(TOOLCHAIN), gnu)
     LDFLAGS += -Wl,--defsym=__main_stack_end=$(MAIN_STACK_END) -Wl,--gc-sections
     SIZEARGS = --mcu=$(MCU) --format=avr
 
-    AVRDUDE_PORT ?= /dev/ttyUSB0
+    AVRDUDE_PORT ?= /dev/arduino
     AVRDUDE_NO_VERIFY ?= -V
     RUNARGS = ${MCU} ${NAME}.hex -D -P $(AVRDUDE_PORT) -c $(AVRDUDE_PROGRAMMER) \
               $(AVRDUDE_NO_VERIFY) -b $(AVRDUDE_BAUDRATE)

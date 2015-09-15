@@ -1,5 +1,5 @@
 /**
- * @file kernel.h
+ * @file settings.c
  * @version 1.0
  *
  * @section License
@@ -18,26 +18,21 @@
  * This file is part of the Simba project.
  */
 
-#ifndef __KERNEL_H__
-#define __KERNEL_H__
+#include "simba.h"
 
-#include "kernel/errno.h"
-#include "kernel/types.h"
-#include "kernel/list.h"
-#include "kernel/fifo.h"
-#include "kernel/settings.h"
-#include "kernel/time.h"
-#include "kernel/chan.h"
-#include "kernel/sys.h"
-#include "kernel/timer.h"
-#include "kernel/thrd.h"
-#include "kernel/fs.h"
-#include "kernel/shell.h"
-#include "kernel/sem.h"
-#include "kernel/std.h"
-#include "kernel/log.h"
-#include "kernel/queue.h"
-#include "kernel/event.h"
-#include "kernel/core.h"
+#include "settings_port.i"
 
-#endif
+int settings_module_init()
+{
+    return (settings_port_module_init());
+}
+
+int settings_read(void *dst_p, size_t src, size_t size)
+{
+    return (settings_port_read(dst_p, src, size));
+}
+
+int settings_write(size_t dst, void *src_p, size_t size)
+{
+    return (settings_port_write(dst, src_p, size));
+}

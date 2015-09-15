@@ -1,5 +1,5 @@
 /**
- * @file kernel.h
+ * @file avr/gnu/settings_port.h
  * @version 1.0
  *
  * @section License
@@ -18,26 +18,9 @@
  * This file is part of the Simba project.
  */
 
-#ifndef __KERNEL_H__
-#define __KERNEL_H__
+#ifndef __KERNEL_SETTINGS_PORT_H__
+#define __KERNEL_SETTINGS_PORT_H__
 
-#include "kernel/errno.h"
-#include "kernel/types.h"
-#include "kernel/list.h"
-#include "kernel/fifo.h"
-#include "kernel/settings.h"
-#include "kernel/time.h"
-#include "kernel/chan.h"
-#include "kernel/sys.h"
-#include "kernel/timer.h"
-#include "kernel/thrd.h"
-#include "kernel/fs.h"
-#include "kernel/shell.h"
-#include "kernel/sem.h"
-#include "kernel/std.h"
-#include "kernel/log.h"
-#include "kernel/queue.h"
-#include "kernel/event.h"
-#include "kernel/core.h"
+#define SETTINGS_APP_BASE 0x100
 
 #endif

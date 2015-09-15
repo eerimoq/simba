@@ -32,6 +32,8 @@ COBJ = $(patsubst %,$(OBJDIR)/%,$(notdir $(CSRC:%.c=%.o)))
 OBJ = $(COBJ)
 GENCSRC = $(GENDIR)/simba_gen.c
 GENOBJ = $(patsubst %,$(OBJDIR)/%,$(notdir $(GENCSRC:%.c=%.o)))
+SETTINGS_INI ?= $(SIMBA)/make/settings.ini
+SETTINGS_BIN = simba_settings.bin
 EXE = $(NAME).out
 RUNLOG = run.log
 CLEAN = $(OBJDIR) $(DEPSDIR) $(GENDIR) $(EXE) $(RUNLOG) size.log \
@@ -51,7 +53,7 @@ endif
 LDFLAGS += $(LDFLAGS_EXTRA)
 SHELL = /usr/bin/env bash
 
-all: $(EXE)
+all: $(EXE) $(SETTINGS_BIN)
 
 # layers
 BOARD.mk ?= $(SIMBA)/src/boards/$(BOARD)/board.mk
@@ -114,6 +116,10 @@ release:
 $(EXE): $(OBJ) $(GENOBJ)
 	@echo "Linking $@"
 	$(LD) -o $@ $^ $(LDFLAGS)
+
+$(SETTINGS_BIN): $(SETTINGS_INI)
+	@echo "Generating $@ from $<"
+	$(SIMBA)/src/kernel/tools/settings.py $(SETTINGS_INI)
 
 define COMPILE_template
 -include $(patsubst %.c,$(DEPSDIR)/%.o.dep,$(notdir $1))
