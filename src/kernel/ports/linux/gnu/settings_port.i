@@ -20,10 +20,16 @@
 
 #define SETTINGS_FILENAME "settings.bin"
 
-static FILE *settings_p = NULL;
-
 static int settings_port_module_init(void)
 {
+    return (0);
+}
+
+static ssize_t settings_port_read(void *dst_p, size_t src, size_t size)
+{
+    FILE *settings_p;
+    ssize_t res;
+
     settings_p = fopen(SETTINGS_FILENAME, "rb");
 
     if (settings_p == NULL) {
@@ -31,19 +37,32 @@ static int settings_port_module_init(void)
         exit(1);
     }
 
-    return (0);
-}
-
-static int settings_port_read(void *dst_p, size_t src, size_t size)
-{
     fseek(settings_p, src, SEEK_SET);
 
-    return (fread(dst_p, 1, size, settings_p));
+    res = fread(dst_p, 1, size, settings_p);
+
+    fclose(settings_p);
+
+    return (res);
 }
 
-static int settings_port_write(size_t dst, const void *src_p, size_t size)
+static ssize_t settings_port_write(size_t dst, const void *src_p, size_t size)
 {
+    FILE *settings_p;
+    ssize_t res;
+
+    settings_p = fopen(SETTINGS_FILENAME, "wb");
+
+    if (settings_p == NULL) {
+        fprintf(stderr, "%s: file not found\n", SETTINGS_FILENAME);
+        exit(1);
+    }
+
     fseek(settings_p, dst, SEEK_SET);
 
-    return (fwrite(src_p, 1, size, settings_p));
+    res = fwrite(src_p, 1, size, settings_p);
+
+    fclose(settings_p);
+
+    return (res);
 }

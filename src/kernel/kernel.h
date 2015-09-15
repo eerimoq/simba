@@ -21,6 +21,7 @@
 #ifndef __KERNEL_H__
 #define __KERNEL_H__
 
+#include "settings.h"
 #include "kernel/errno.h"
 #include "kernel/types.h"
 #include "kernel/list.h"

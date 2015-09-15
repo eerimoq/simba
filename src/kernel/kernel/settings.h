@@ -38,17 +38,17 @@ int settings_module_init(void);
  * @param[in,out] dst_p Destination buffer.
  * @param[in] src Setting source address.
  * @param[in] size Number of words to read.
- * @return zero(0) or negative error code.
+ * @return Number of words read or negative error code.
  */
-int settings_read(void *dst_p, size_t src, size_t size);
+ssize_t settings_read(void *dst_p, size_t src, size_t size);
 
 /**
  * Write setting from buffer to address.
  * @param[in] dst Destination setting address.
  * @param[in] src_p Source buffer.
  * @param[in] size Number of words to write.
- * @return zero(0) or negative error code.
+ * @return Number of words written or negative error code.
  */
-int settings_write(size_t dst, const void *src_p, size_t size);
+ssize_t settings_write(size_t dst, const void *src_p, size_t size);
 
 #endif

@@ -27,12 +27,12 @@ int settings_module_init()
     return (settings_port_module_init());
 }
 
-int settings_read(void *dst_p, size_t src, size_t size)
+ssize_t settings_read(void *dst_p, size_t src, size_t size)
 {
     return (settings_port_read(dst_p, src, size));
 }
 
-int settings_write(size_t dst, const void *src_p, size_t size)
+ssize_t settings_write(size_t dst, const void *src_p, size_t size)
 {
     return (settings_port_write(dst, src_p, size));
 }

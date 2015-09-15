@@ -30,6 +30,8 @@ ifeq ($(TOOLCHAIN), gnu)
     LDFLAGS += -Wl,--defsym=__main_stack_end=$(MAIN_STACK_END) -Wl,--gc-sections
     SIZEARGS = --mcu=$(MCU) --format=avr
 
+    ENDIANESS = little
+
     AVRDUDE_PORT ?= /dev/arduino
     AVRDUDE_NO_VERIFY ?= -V
     RUNARGS = ${MCU} ${NAME}.hex ${SETTINGS_BIN} -D -P $(AVRDUDE_PORT) -c $(AVRDUDE_PROGRAMMER) \
@@ -57,6 +59,8 @@ $(NAME).hex: $(EXE)
     CROSS_COMPILE =
     CFLAGS += -Werror -Wno-error=unused-variable -DNPROFILESTACK
     LDFLAGS += -Wl,-lpthread -lrt
+
+    ENDIANESS = little
 
     ifneq ($(NPROFILE),yes)
       CFLAGS += -pg -fprofile-arcs -ftest-coverage

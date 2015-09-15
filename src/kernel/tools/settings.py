@@ -2,6 +2,9 @@
 
 import sys
 import time
+import struct
+import re
+
 from ConfigParser import ConfigParser
 from collections import OrderedDict
 
@@ -46,6 +49,9 @@ H_FMT = """/**
 
 #endif
 """
+
+re_integer = re.compile(r"(?P<sign>[u]?)int(?P<bits>\d+)_t")
+
 
 def parse_settings_file(filename):
     settings_parser = ConfigParser()
@@ -100,7 +106,8 @@ def create_settings_dict(addresses, sizes, types, values):
     return settings
 
 
-def create_binary_file(settings):
+def create_binary_file(settings, endianess):
+    endianess_prefix = ">" if endianess == "big" else "<"
     # create the settings file content
     content = ""
     for name, item in settings.items():
@@ -115,6 +122,27 @@ def create_binary_file(settings):
             content += item["value"]
             # null termination
             content += "\x00"
+        elif re_integer.match(item["type"]):
+            bits_to_fmt = {
+                8: "b",
+                16: "h",
+                32: "i",
+                64: "q"
+            }
+            mo = re_integer.match(item["type"])
+            sign = mo.group("sign")
+            bits = int(mo.group("bits"))
+            if bits not in [8, 16, 32, 64]:
+                sys.stderr.write("{}: bad type\n".format(item["type"]))
+                sys.exit(1)
+            if bits / 8 != item["size"]:
+                sys.stderr.write("{}: bad length of {}\n".format(item["size"],
+                                                                 item["type"]))
+                sys.exit(1)
+            fmt = bits_to_fmt[bits]
+            if sign == "u":
+                fmt.upper()
+            content += struct.pack(endianess_prefix + fmt, int(item["value"], 0))
         else:
             sys.stderr.write("{}: bad type\n".format(item["type"]))
             sys.exit(1)
@@ -156,8 +184,9 @@ def create_header_file(settings):
 
 
 if __name__ == "__main__":
+    endianess = sys.argv[2]
     items = parse_settings_file(sys.argv[1])
     settings = create_settings_dict(*items)
 
     create_header_file(settings)
-    create_binary_file(settings)
+    create_binary_file(settings, endianess)

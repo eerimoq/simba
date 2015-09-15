@@ -39,7 +39,7 @@ EXE = $(NAME).out
 RUNLOG = run.log
 CLEAN = $(OBJDIR) $(DEPSDIR) $(GENDIR) $(EXE) $(RUNLOG) size.log \
         coverage.log coverage.xml gmon.out *.gcov profile.log \
-	index.*html
+	index.*html $(SETTINGS_H) $(SETTINGS_BIN)
 
 # configuration
 TOOLCHAIN ?= gnu
@@ -120,7 +120,7 @@ $(EXE): $(OBJ) $(GENOBJ)
 
 $(SETTINGS_BIN) $(SETTINGS_H): $(SETTINGS_INI)
 	@echo "Generating $@ from $<"
-	$(SIMBA)/src/kernel/tools/settings.py $(SETTINGS_INI)
+	$(SIMBA)/src/kernel/tools/settings.py $(SETTINGS_INI) $(ENDIANESS)
 
 define COMPILE_template
 -include $(patsubst %.c,$(DEPSDIR)/%.o.dep,$(notdir $1))
