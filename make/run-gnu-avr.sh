@@ -24,10 +24,13 @@ EXE=$2
 SIMBA=$3
 MCU=$4
 HEX=$5
-shift 5
+SETTINGS_BIN=$6
+shift 6
 
 if [ ${TARGET} == run ] ; then
     if avr-size --mcu=${MCU} --format=avr ${EXE} | python -c "import re ; import sys ; sys.exit(len([ v for v in [re.search('\((\d+)', s).group(1) for s in sys.stdin.readlines() if re.search('\((\d+)', s)] if int(v) >= 100 ]))" ; then
+        echo "avrdude -p ${MCU} $@ -U eeprom:w:${SETTINGS_BIN}:r"
+        avrdude -p ${MCU} $@ -U eeprom:w:${SETTINGS_BIN}:r
         echo "avrdude -p ${MCU} $@ -U flash:w:${HEX}"
         avrdude -p ${MCU} $@ -U flash:w:${HEX} 2>&1
         ${SIMBA}/make/run.exp

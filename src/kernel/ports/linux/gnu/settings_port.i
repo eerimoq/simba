@@ -18,7 +18,7 @@
  * This file is part of the Simba project.
  */
 
-#define SETTINGS_FILENAME "simba_settings.bin"
+#define SETTINGS_FILENAME "settings.bin"
 
 static FILE *settings_p = NULL;
 

@@ -32,7 +32,7 @@ ifeq ($(TOOLCHAIN), gnu)
 
     AVRDUDE_PORT ?= /dev/arduino
     AVRDUDE_NO_VERIFY ?= -V
-    RUNARGS = ${MCU} ${NAME}.hex -D -P $(AVRDUDE_PORT) -c $(AVRDUDE_PROGRAMMER) \
+    RUNARGS = ${MCU} ${NAME}.hex ${SETTINGS_BIN} -D -P $(AVRDUDE_PORT) -c $(AVRDUDE_PROGRAMMER) \
               $(AVRDUDE_NO_VERIFY) -b $(AVRDUDE_BAUDRATE)
 
     CLEAN += $(NAME).hex

@@ -49,6 +49,6 @@ int settings_read(void *dst_p, size_t src, size_t size);
  * @param[in] size Number of words to write.
  * @return zero(0) or negative error code.
  */
-int settings_write(size_t dst, void *src_p, size_t size);
+int settings_write(size_t dst, const void *src_p, size_t size);
 
 #endif

@@ -32,7 +32,7 @@ int settings_read(void *dst_p, size_t src, size_t size)
     return (settings_port_read(dst_p, src, size));
 }
 
-int settings_write(size_t dst, void *src_p, size_t size)
+int settings_write(size_t dst, const void *src_p, size_t size)
 {
     return (settings_port_write(dst, src_p, size));
 }
