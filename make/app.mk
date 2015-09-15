@@ -33,7 +33,8 @@ OBJ = $(COBJ)
 GENCSRC = $(GENDIR)/simba_gen.c
 GENOBJ = $(patsubst %,$(OBJDIR)/%,$(notdir $(GENCSRC:%.c=%.o)))
 SETTINGS_INI ?= $(SIMBA)/make/settings.ini
-SETTINGS_BIN = simba_settings.bin
+SETTINGS_H = settings.h
+SETTINGS_BIN = settings.bin
 EXE = $(NAME).out
 RUNLOG = run.log
 CLEAN = $(OBJDIR) $(DEPSDIR) $(GENDIR) $(EXE) $(RUNLOG) size.log \
@@ -117,13 +118,13 @@ $(EXE): $(OBJ) $(GENOBJ)
 	@echo "Linking $@"
 	$(LD) -o $@ $^ $(LDFLAGS)
 
-$(SETTINGS_BIN): $(SETTINGS_INI)
+$(SETTINGS_BIN) $(SETTINGS_H): $(SETTINGS_INI)
 	@echo "Generating $@ from $<"
 	$(SIMBA)/src/kernel/tools/settings.py $(SETTINGS_INI)
 
 define COMPILE_template
 -include $(patsubst %.c,$(DEPSDIR)/%.o.dep,$(notdir $1))
-$(patsubst %.c,$(OBJDIR)/%.o,$(notdir $1)): $1
+$(patsubst %.c,$(OBJDIR)/%.o,$(notdir $1)): $1 $(SETTINGS_H)
 	@echo "Compiling $1"
 	mkdir -p $(OBJDIR) $(DEPSDIR) $(GENDIR)
 	$$(CC) $$(CFLAGS) -DMODULE_NAME=$(notdir $(basename $1)) -D__SIMBA_GEN__ \
