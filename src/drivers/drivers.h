@@ -28,7 +28,6 @@
 #include "drivers/spi.h"
 #include "drivers/uart.h"
 #include "drivers/uart_soft.h"
-#include "drivers/enc28j60.h"
 #include "drivers/owi.h"
 #include "drivers/ds18b20.h"
 #include "drivers/ds3231.h"

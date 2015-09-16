@@ -28,7 +28,7 @@ TESTS += $(addprefix tst/slib/,hash_map)
 APPS = $(TESTS)
 
 ifneq ($(BOARD),linux)
-    APPS += $(addprefix tst/drivers/,adc cantp ds18b20 enc28j60 exti mcp2515 owi pin uart)
+    APPS += $(addprefix tst/drivers/,adc cantp ds18b20 exti mcp2515 owi pin uart)
 endif
 
 all: $(APPS:%=%.all)

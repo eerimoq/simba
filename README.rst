@@ -143,8 +143,8 @@ A simple thread that waits to be resumed by another thread.
         return (NULL);
     }
 
-Threads usually communicates over channels. There are three kinds of channels;
-queue, event and sock. All implementing the same abstract channel interface.
+Threads usually communicates over channels. There are two kinds of channels;
+queue and event. Both implementing the same abstract channel interface.
 This makes channel very powerful as a synchronization primitive. They can be
 seen as file descriptors in linux.
 
@@ -154,8 +154,6 @@ block until all written data has been read by the reader. In the
 semi-asynchronous version the writer writes to a buffer within the
 queue, and only blocks all data does not fit in the buffer. The buffer
 size is chosen by the application.
-
-The sock channel is used for internet protocols (not yet implemented).
 
 DRIVERS
 =======
