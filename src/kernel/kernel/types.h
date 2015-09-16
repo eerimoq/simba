@@ -39,4 +39,7 @@
 
 #define DIV_CEIL(n, d) (((n) + (d) - 1) / d)
 
+#define BCD_ENCODE(decoded) (decoded)
+#define BCD_DECODE(encoded) (encoded)
+
 #endif

@@ -1,5 +1,5 @@
 /**
- * @file drivers.h
+ * @file drivers/ds3231.h
  * @version 1.0
  *
  * @section License
@@ -18,26 +18,24 @@
  * This file is part of the Simba project.
  */
 
-#ifndef __DRIVERS_H__
-#define __DRIVERS_H__
+#ifndef __DRIVERS_DS3231_H__
+#define __DRIVERS_DS3231_H__
 
-#include "drivers/exti.h"
-#include "drivers/pin.h"
-#include "drivers/pwm.h"
-#include "drivers/adc.h"
-#include "drivers/spi.h"
-#include "drivers/uart.h"
-#include "drivers/uart_soft.h"
-#include "drivers/enc28j60.h"
-#include "drivers/owi.h"
-#include "drivers/ds18b20.h"
-#include "drivers/ds3231.h"
-#include "drivers/canif.h"
-#include "drivers/cantp.h"
-#if !defined(ARCH_AVR)
-#    include "drivers/can.h"
-#endif
-#include "drivers/mcp2515.h"
-#include "drivers/nrf24l01.h"
+#include "simba.h"
+
+struct ds3231_driver_t {
+    //struct i2c_driver_t *owi2c_p;
+};
+
+/**
+ * Initialize driver object.
+ * @param[in,out] drv_p Driver object to be initialized.
+ * @return zero(0) or negative error code.
+ */
+int ds3231_init(struct ds3231_driver_t *drv_p);
+
+int ds3231_set_date(struct ds3231_driver_t *drv_p, struct date_t *date_p);
+
+int ds3231_get_date(struct ds3231_driver_t *drv_p, struct date_t *date_p);
 
 #endif

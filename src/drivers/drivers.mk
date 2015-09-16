@@ -23,6 +23,7 @@ INC += $(SIMBA)/src/drivers/ports/$(ARCH)
 
 DRIVERS_SRC ?= adc.c \
 	ds18b20.c \
+	ds3231.c \
 	enc28j60.c \
 	exti.c \
 	mcp2515.c \

@@ -28,6 +28,16 @@ struct time_t {
     uint32_t nanoseconds;
 };
 
+struct date_t {
+    int second;
+    int minute;
+    int hour;
+    int day;
+    int date;
+    int month;
+    int year;
+};
+
 /**
  * Get current time.
  * @param[out] now_p Current time.
