@@ -20,7 +20,7 @@
 
 #include "simba.h"
 
-FS_COUNTER_DEFINE("/drivers/can/no_subscriber", cantp_id_no_subscriber);
+COUNTER_DEFINE("/drivers/can/no_subscriber", cantp_id_no_subscriber);
 
 enum cantp_type_t {
     cantp_tp_type_single_t = 0,
@@ -120,7 +120,7 @@ static void *rx_main(void *arg_p)
 
         if (config_p == NULL) {
             /* No channel set for CANTP frame ID. */
-            FS_COUNTER_INC(cantp_id_no_subscriber, 1);
+            COUNTER_INC(cantp_id_no_subscriber, 1);
             continue;
         }
 

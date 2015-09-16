@@ -137,7 +137,7 @@ struct spi_frame_t {
 } __attribute__((packed));
 
 /* Number of frames discarded due to buffer overflow. */
-FS_COUNTER_DEFINE("/drivers/mcp2515/rx_frame_discarded", mcp2515_rx_frame_discarded);
+COUNTER_DEFINE("/drivers/mcp2515/rx_frame_discarded", mcp2515_rx_frame_discarded);
 
 /**
  * Interrupt handler.
@@ -284,7 +284,7 @@ static void *rx_main(void *arg)
                 sem_put(&drv_p->rx.sem, 1);
             } else {
                 sys_unlock();
-                FS_COUNTER_INC(mcp2515_rx_frame_discarded, 1);
+                COUNTER_INC(mcp2515_rx_frame_discarded, 1);
             }
         }
 
