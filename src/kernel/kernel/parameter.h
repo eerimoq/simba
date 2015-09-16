@@ -1,5 +1,5 @@
 /**
- * @file avr/gnu/setting_port.i
+ * @file kernel/parameter.h
  * @version 1.0
  *
  * @section License
@@ -18,23 +18,22 @@
  * This file is part of the Simba project.
  */
 
-#include <avr/eeprom.h>
+#ifndef __KERNEL_PARAMETER_H__
+#define __KERNEL_PARAMETER_H__
 
-static int setting_port_module_init(void)
-{
-    return (0);
-}
+#include "simba.h"
 
-static int setting_port_read(void *dst_p, size_t src, size_t size)
-{
-    eeprom_read_block(dst_p, (const void *)src, size);
+/* Add a command to the file system with given callback. */
+#if defined(__SIMBA_GEN__)
+#    define PARAMETER_DEFINE(path, name, type, default_value) \
+    ..fs_parameter.. path #name #type
+#else
+#    define PARAMETER_DEFINE(path, name, type, default_value)   \
+    type fs_parameter_ ## name = default_value;                 \
+    FS_PARAMETER_CMD(name, type)
+#endif
 
-    return (size);
-}
+/* Get and set parameter value. */
+#define PARAMETER(name) fs_parameter_ ## name
 
-static int setting_port_write(size_t dst, const void *src_p, size_t size)
-{
-    eeprom_update_block(src_p, (void *)dst, size);
-
-    return (size);
-}
+#endif

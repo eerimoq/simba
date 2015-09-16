@@ -1,5 +1,5 @@
 #
-# @file tst/kernel/settings/Makefile
+# @file tst/kernel/setting/Makefile
 # @version 1.0
 #
 # @section License
@@ -18,10 +18,10 @@
 # This file is part of the Simba project.
 #
 
-NAME = settings_suite
+NAME = setting_suite
 VERSION = 1.0.0
 
-SETTINGS_INI = settings.ini
+SETTINGS_INI = setting.ini
 
 BOARD = linux
 SRC += main.c

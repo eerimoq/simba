@@ -1,5 +1,5 @@
 /**
- * @file kernel/settings.h
+ * @file kernel/setting.h
  * @version 1.0
  *
  * @section License
@@ -18,20 +18,20 @@
  * This file is part of the Simba project.
  */
 
-#ifndef __KERNEL_SETTINGS_H__
-#define __KERNEL_SETTINGS_H__
+#ifndef __KERNEL_SETTING_H__
+#define __KERNEL_SETTING_H__
 
 #include "simba.h"
-#include "settings_port.h"
+#include "setting_port.h"
 
 /* Base address for non-kernel serttings. */
-#define SETTINGS_BASE_ADDR 0x100
+#define SETTING_BASE_ADDR 0x100
 
 /**
- * Initialize settings module.
+ * Initialize setting module.
  * @return zero(0) or negative error code.
  */
-int settings_module_init(void);
+int setting_module_init(void);
 
 /**
  * Read setting at address to buffer.
@@ -40,7 +40,7 @@ int settings_module_init(void);
  * @param[in] size Number of words to read.
  * @return Number of words read or negative error code.
  */
-ssize_t settings_read(void *dst_p, size_t src, size_t size);
+ssize_t setting_read(void *dst_p, size_t src, size_t size);
 
 /**
  * Write setting from buffer to address.
@@ -49,6 +49,6 @@ ssize_t settings_read(void *dst_p, size_t src, size_t size);
  * @param[in] size Number of words to write.
  * @return Number of words written or negative error code.
  */
-ssize_t settings_write(size_t dst, const void *src_p, size_t size);
+ssize_t setting_write(size_t dst, const void *src_p, size_t size);
 
 #endif

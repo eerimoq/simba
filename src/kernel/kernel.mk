@@ -29,7 +29,7 @@ KERNEL_SRC ?= chan.c \
               log.c \
               queue.c \
               sem.c \
-              settings.c \
+              setting.c \
               shell.c \
               std.c \
               sys.c \

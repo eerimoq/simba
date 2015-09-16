@@ -1,5 +1,5 @@
 /**
- * @file avr/gnu/settings_port.i
+ * @file avr/gnu/setting_port.i
  * @version 1.0
  *
  * @section License
@@ -18,27 +18,27 @@
  * This file is part of the Simba project.
  */
 
-#define SETTINGS_FILENAME "settings.bin"
+#define SETTINGS_FILENAME "setting.bin"
 
-static FILE *settings_p = NULL;
+static FILE *setting_p = NULL;
 
-static int settings_port_module_init(void)
+static int setting_port_module_init(void)
 {
-    settings_p = fopen(SETTINGS_FILENAME, "r+");
+    setting_p = fopen(SETTINGS_FILENAME, "r+");
 
-    return (settings_p == NULL);
+    return (setting_p == NULL);
 }
 
-static ssize_t settings_port_read(void *dst_p, size_t src, size_t size)
+static ssize_t setting_port_read(void *dst_p, size_t src, size_t size)
 {
-    fseek(settings_p, src, SEEK_SET);
+    fseek(setting_p, src, SEEK_SET);
 
-    return (fread(dst_p, 1, size, settings_p));
+    return (fread(dst_p, 1, size, setting_p));
 }
 
-static ssize_t settings_port_write(size_t dst, const void *src_p, size_t size)
+static ssize_t setting_port_write(size_t dst, const void *src_p, size_t size)
 {
-    fseek(settings_p, dst, SEEK_SET);
+    fseek(setting_p, dst, SEEK_SET);
 
-    return (fwrite(src_p, 1, size, settings_p));
+    return (fwrite(src_p, 1, size, setting_p));
 }

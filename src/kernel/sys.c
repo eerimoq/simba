@@ -57,7 +57,7 @@ int sys_module_init()
 
 int sys_start(void)
 {
-    settings_module_init();
+    setting_module_init();
     std_module_init();
     log_module_init();
     sem_module_init();

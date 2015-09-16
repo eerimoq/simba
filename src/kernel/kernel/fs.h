@@ -26,13 +26,8 @@
 /* Add a command to the file system with given callback. */
 #if defined(__SIMBA_GEN__)
 #    define FS_COMMAND_DEFINE(path, callback) ..fs_command.. path #callback
-#    define FS_PARAMETER_DEFINE(path, name, type, default)      \
-    ..fs_parameter.. path #name #type
 #else
 #    define FS_COMMAND_DEFINE(path, callback)
-#    define FS_PARAMETER_DEFINE(path, name, type, default_value)        \
-    type fs_parameter_ ## name = default_value;                         \
-    FS_PARAMETER_CMD(name, type)
 #endif
 
 /* Length of argv for get. */
@@ -70,18 +65,15 @@
                                                              argv,      \
                                                              chout_p,   \
                                                              chin_p,    \
-                                                             &FS_PARAMETER(name))); \
+                                                             &PARAMETER(name))); \
         } else {                                                        \
             return (fs_parameter_handler_ ## handler ## _set(argc,      \
                                                              argv,      \
                                                              chout_p,   \
                                                              chin_p,    \
-                                                             &FS_PARAMETER(name))); \
+                                                             &PARAMETER(name))); \
         }                                                               \
     }
-
-/* Get and set parameter value. */
-#define FS_PARAMETER(name) fs_parameter_ ## name
 
 /* Counter node. */
 struct fs_counter_t {

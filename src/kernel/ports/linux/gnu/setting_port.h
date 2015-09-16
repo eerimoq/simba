@@ -1,5 +1,5 @@
 /**
- * @file settings.c
+ * @file avr/gnu/setting_port.h
  * @version 1.0
  *
  * @section License
@@ -18,21 +18,7 @@
  * This file is part of the Simba project.
  */
 
-#include "simba.h"
+#ifndef __KERNEL_SETTINGS_PORT_H__
+#define __KERNEL_SETTINGS_PORT_H__
 
-#include "settings_port.i"
-
-int settings_module_init()
-{
-    return (settings_port_module_init());
-}
-
-ssize_t settings_read(void *dst_p, size_t src, size_t size)
-{
-    return (settings_port_read(dst_p, src, size));
-}
-
-ssize_t settings_write(size_t dst, const void *src_p, size_t size)
-{
-    return (settings_port_write(dst, src_p, size));
-}
+#endif

@@ -27,7 +27,7 @@ COUNTER_DEFINE("/foo", foo);
 COUNTER_DEFINE("/bar", bar);
 COUNTER_DEFINE("/fie", fie);
 
-FS_PARAMETER_DEFINE("/tmp/fie", tmp_fie, int, 57);
+PARAMETER_DEFINE("/tmp/fie", tmp_fie, int, 57);
 
 int tmp_foo(int argc,
             const char *argv[],
