@@ -26,14 +26,10 @@
 /* Add a command to the file system with given callback. */
 #if defined(__SIMBA_GEN__)
 #    define FS_COMMAND_DEFINE(path, callback) ..fs_command.. path #callback
-#    define FS_COUNTER_DEFINE(path, name) ..fs_counter.. path #name
 #    define FS_PARAMETER_DEFINE(path, name, type, default)      \
     ..fs_parameter.. path #name #type
 #else
 #    define FS_COMMAND_DEFINE(path, callback)
-#    define FS_COUNTER_DEFINE(path, name)       \
-    long long fs_counter_ ## name = 0;          \
-    FS_COUNTER_CMD(name)
 #    define FS_PARAMETER_DEFINE(path, name, type, default_value)        \
     type fs_parameter_ ## name = default_value;                         \
     FS_PARAMETER_CMD(name, type)
@@ -53,13 +49,13 @@
                                    argv,                \
                                    chout_p,             \
                                    chin_p,              \
-                                   &FS_COUNTER(name))); \
+                                   &COUNTER(name)));    \
         } else {                                        \
             return (fs_counter_set(argc,                \
                                    argv,                \
                                    chout_p,             \
                                    chin_p,              \
-                                   &FS_COUNTER(name))); \
+                                   &COUNTER(name)));    \
         }                                               \
     }
 
@@ -83,10 +79,6 @@
                                                              &FS_PARAMETER(name))); \
         }                                                               \
     }
-
-/* Increment given counter. */
-#define FS_COUNTER(name) fs_counter_ ## name
-#define FS_COUNTER_INC(name, value) FS_COUNTER(name) += (value)
 
 /* Get and set parameter value. */
 #define FS_PARAMETER(name) fs_parameter_ ## name

@@ -1,5 +1,5 @@
 /**
- * @file kernel.h
+ * @file kernel/counter.h
  * @version 1.0
  *
  * @section License
@@ -18,28 +18,23 @@
  * This file is part of the Simba project.
  */
 
-#ifndef __KERNEL_H__
-#define __KERNEL_H__
+#ifndef __KERNEL_COUNTER_H__
+#define __KERNEL_COUNTER_H__
 
-#include "settings.h"
-#include "kernel/errno.h"
-#include "kernel/types.h"
-#include "kernel/list.h"
-#include "kernel/fifo.h"
-#include "kernel/settings.h"
-#include "kernel/time.h"
-#include "kernel/chan.h"
-#include "kernel/sys.h"
-#include "kernel/timer.h"
-#include "kernel/thrd.h"
-#include "kernel/fs.h"
-#include "kernel/counter.h"
-#include "kernel/shell.h"
-#include "kernel/sem.h"
-#include "kernel/std.h"
-#include "kernel/log.h"
-#include "kernel/queue.h"
-#include "kernel/event.h"
-#include "kernel/core.h"
+#include "simba.h"
+
+/* Counter definition macros. */
+#if defined(__SIMBA_GEN__)
+#    define COUNTER_DEFINE(path, name) ..fs_counter.. path #name
+#else
+#    define COUNTER_DEFINE(path, name)          \
+    long long counter_ ## name = 0;             \
+    FS_COUNTER_CMD(name)
+#endif
+
+#define COUNTER(name) counter_ ## name
+
+/* Increment given counter. */
+#define COUNTER_INC(name, value) COUNTER(name) += (value)
 
 #endif

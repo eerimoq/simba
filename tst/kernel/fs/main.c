@@ -26,8 +26,8 @@
 FS_COMMAND_DEFINE("/tmp/foo", tmp_foo);
 FS_COMMAND_DEFINE("/tmp/bar", tmp_bar);
 
-FS_COUNTER_DEFINE("/my/counter", my_counter);
-FS_COUNTER_DEFINE("/your/counter", your_counter);
+COUNTER_DEFINE("/my/counter", my_counter);
+COUNTER_DEFINE("/your/counter", your_counter);
 
 FS_PARAMETER_DEFINE("/our/parameter", our_parameter, int, OUR_PARAMETER_DEFAULT);
 
@@ -123,7 +123,7 @@ static int test_counter(struct harness_t *harness_p)
     BTASSERT(fs_call(buf, NULL, &qout) == 0);
     read_until(buf, "/your/counter                                        00000000000000000000\r\n");
 
-    FS_COUNTER_INC(my_counter, 3);
+    COUNTER_INC(my_counter, 3);
 
     strcpy(buf, "my/counter");
     BTASSERT(fs_call(buf, NULL, &qout) == 0);

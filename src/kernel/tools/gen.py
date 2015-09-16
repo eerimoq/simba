@@ -78,7 +78,7 @@ void (*log_id_to_format_fn[])(chan_t *, void *) = {{
 '''
 
 command_extern_fmt = 'extern int {callback}(int argc, const char *argv[], void *out_p, void *in_p);'
-counter_extern_fmt = 'extern long long FS_COUNTER({name});'
+counter_extern_fmt = 'extern long long COUNTER({name});'
 parameter_extern_fmt = 'extern {type} FS_PARAMETER({name});'
 
 strings_fmt = 'static FAR const char fs_string_{name}[] = "{value}";'
