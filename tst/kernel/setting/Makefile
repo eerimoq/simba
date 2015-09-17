@@ -21,7 +21,7 @@
 NAME = setting_suite
 VERSION = 1.0.0
 
-SETTINGS_INI = setting.ini
+SETTINGS_INI = settings.ini
 
 BOARD = linux
 SRC += main.c

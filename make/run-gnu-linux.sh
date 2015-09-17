@@ -28,8 +28,7 @@ if [ ${TARGET} == debugger ] ; then
 elif [ ${TARGET} == profile ] ; then
     gprof ${EXE}
 elif [ ${TARGET} == coverage ] ; then
-    gcov obj/*.o
-    gcovr --html --html-details -o index.html -v -g -k -r $(readlink -f ../../..)
+    geninfo . -o coverage.info
 elif [ ${TARGET} == jenkins-coverage ] ; then
     gcovr -r $(readlink -f ../../..) -x -e ".*main.c"
 elif [ ${TARGET} == run ] ; then

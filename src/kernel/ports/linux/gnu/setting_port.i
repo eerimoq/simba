@@ -18,13 +18,18 @@
  * This file is part of the Simba project.
  */
 
-#define SETTINGS_FILENAME "setting.bin"
+#define SETTINGS_FILENAME "settings.bin"
 
 static FILE *setting_p = NULL;
 
 static int setting_port_module_init(void)
 {
     setting_p = fopen(SETTINGS_FILENAME, "r+");
+
+    if (setting_p == NULL) {
+        fprintf(stderr, "%s: settings file missing", SETTINGS_FILENAME);
+        sys_stop(1);
+    }
 
     return (setting_p == NULL);
 }

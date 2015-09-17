@@ -22,7 +22,7 @@
 
 BOARD ?= linux
 
-TESTS = $(addprefix tst/kernel/,event fs log prof queue sem shell std sys thrd timer)
+TESTS = $(addprefix tst/kernel/,event fs log prof queue sem setting shell std sys thrd timer)
 TESTS += $(addprefix tst/slib/,hash_map)
 
 APPS = $(TESTS)
@@ -47,6 +47,13 @@ report:
 test: run
 	$(MAKE) report
 
+coverage: $(TESTS:%=%.cov)
+	lcov $(TESTS:%=-a %/coverage.info) -o coverage.info
+	genhtml coverage.info
+	@echo
+	@echo "Run 'firefox index.html' to open the coverage report in a web browser."
+	@echo
+
 jenkins-coverage: $(TESTS:%=%.jc)
 
 $(APPS:%=%.all):
@@ -66,6 +73,9 @@ $(TESTS:%=%.run):
 
 $(TESTS:%=%.report):
 	$(MAKE) -C $(basename $@) report
+
+$(TESTS:%=%.cov):
+	$(MAKE) -C $(basename $@) coverage
 
 $(TESTS:%=%.jc):
 	$(MAKE) -C $(basename $@) jenkins-coverage
