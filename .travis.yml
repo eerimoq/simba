@@ -1,3 +1,7 @@
 language: c
-script: make -s test
 compiler: gcc
+before_install:
+  - pip install --user cpp-coveralls
+script: make -s test
+after_success:
+  - coveralls --gcov-options '\-lp'
