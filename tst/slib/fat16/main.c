@@ -101,6 +101,37 @@ int test_create_multiple_files(struct harness_t *harness)
     return (0);
 }
 
+int test_reopen(struct harness_t *harness)
+{
+    struct sd_driver_t sd;
+    struct fat16_t fs;
+    struct fat16_file_t bar;
+    char buf[16];
+
+    /* Initialize and start the SD card. */
+    BTASSERT(sd_init(&sd) == 0);
+
+    /* Initialize and start the file system. */
+    BTASSERT(fat16_init(&fs, &sd, 0) == 0);
+    BTASSERT(fat16_start(&fs) == 0);
+
+    /* Create an empty file and write to it. */
+    BTASSERT(fat16_file_open(&fs, &bar, "BAR.TXT", O_CREAT | O_WRITE | O_SYNC) == 0);
+    BTASSERT(fat16_file_write(&bar, "First open.\n", 12) == 12);
+    BTASSERT(fat16_file_close(&bar) == 0);
+
+    /* Re-open the file and read it's contents. */
+    BTASSERT(fat16_file_open(&fs, &bar, "BAR.TXT", O_READ) == 0);
+    BTASSERT(fat16_file_read(&bar, buf, 12) == 12);
+    BTASSERT(memcmp(buf, "First open.\n", 12) == 0);
+    BTASSERT(fat16_file_close(&bar) == 0);
+
+    /* Stop the file system. */
+    BTASSERT(fat16_stop(&fs) == 0);
+
+    return (0);
+}
+
 int test_ls(struct harness_t *harness)
 {
     struct sd_driver_t sd;
@@ -114,9 +145,11 @@ int test_ls(struct harness_t *harness)
     BTASSERT(fat16_start(&fs) == 0);
 
     /* List all files in the file system. */
+    std_printf(FSTR("List of files:\r\n"));
     BTASSERT(fat16_ls(&fs, &harness->uart.chout, 0) == 0);
 
     /* List all files in the file system. Show date and size columns. */
+    std_printf(FSTR("List of files with date and size columns:\r\n"));
     BTASSERT(fat16_ls(&fs,
                       &harness->uart.chout,
                       (FAT16_LS_DATE | FAT16_LS_SIZE)) == 0);
@@ -134,6 +167,7 @@ int main()
         { test_print, "test_print" },
         { test_file_operations, "test_file_operations" },
         { test_create_multiple_files, "test_create_multiple_files" },
+        { test_reopen, "test_reopen" },
         { test_ls, "test_ls" },
         { NULL, NULL }
     };

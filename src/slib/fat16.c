@@ -96,7 +96,7 @@
 /** Default time for file timestamp is 1 am */
 #define DEFAULT_TIME (1 << 11)
 
-static int is_eoc(fat_t cluster)
+static int is_end_of_cluster(fat_t cluster)
 {
     return (cluster >= 0xfff8);
 }
@@ -106,7 +106,8 @@ static int is_eoc(fat_t cluster)
  */
 static inline int dir_is_long_name(const struct dir_t* dir_p)
 {
-    return ((dir_p->attributes & DIR_ATTR_LONG_NAME_MASK) == DIR_ATTR_LONG_NAME);
+    return ((dir_p->attributes & DIR_ATTR_LONG_NAME_MASK)
+            == DIR_ATTR_LONG_NAME);
 }
 
 /**
@@ -122,7 +123,8 @@ static inline int dir_is_file(const struct dir_t* dir_p)
  */
 static inline int dir_is_subdir(const struct dir_t* dir_p)
 {
-    return ((dir_p->attributes & DIR_ATTR_FILE_TYPE_MASK) == DIR_ATTR_DIRECTORY);
+    return ((dir_p->attributes & DIR_ATTR_FILE_TYPE_MASK)
+            == DIR_ATTR_DIRECTORY);
 }
 
 /**
@@ -430,7 +432,7 @@ static int free_chain(struct fat16_t *fat16_p, fat_t cluster)
             return (1);
         }
 
-        if (is_eoc(next)) {
+        if (is_end_of_cluster(next)) {
             return (0);
         }
 
@@ -631,7 +633,7 @@ static int file_truncate(struct fat16_file_t *file_p,
             return (1);
         }
 
-        if (!is_eoc(toFree)) {
+        if (!is_end_of_cluster(toFree)) {
             /* Free extra clusters */
             if (!fat_put(file_p->fat16_p, file_p->cur_cluster, EOC16)) {
                 return (1);
@@ -758,7 +760,7 @@ int fat16_file_open(struct fat16_t *fat16_p,
                     const char* path_p,
                     int oflag)
 {
-    uint8_t dname[12];   /* name formated for dir entry */
+    uint8_t dname[11];   /* name formated for dir entry */
     int16_t empty = -1;  /* index of empty slot */
     struct dir_t* dir_p; /* pointer to cached dir entry */
     uint16_t index;
@@ -768,6 +770,7 @@ int fat16_file_open(struct fat16_t *fat16_p,
         return (1);
     }
 
+    /* Search for the file in the root directory. */
     for (index = 0; index < fat16_p->root_dir_entry_count; index++) {
         if (!(dir_p = cache_dir_entry(fat16_p, index, CACHE_FOR_READ))) {
             return (1);
@@ -825,7 +828,8 @@ int fat16_file_open(struct fat16_t *fat16_p,
     dir_p->last_write_date = dir_p->creation_date;
     dir_p->last_write_time = dir_p->creation_time;
 
-    /* Force created directory entry will be written to storage device */
+    /* Force created directory entry will be written to storage
+       device. */
     if (cache_flush(fat16_p) != 0) {
         return (1);
     }
@@ -878,7 +882,7 @@ ssize_t fat16_file_read(struct fat16_file_t *file_p,
             }
 
             /* Return error if bad cluster chain */
-            if (file_p->cur_cluster < 2 || is_eoc(file_p->cur_cluster)) {
+            if (file_p->cur_cluster < 2 || is_end_of_cluster(file_p->cur_cluster)) {
                 return (EOF);
             }
         }
@@ -959,7 +963,7 @@ ssize_t fat16_file_write(struct fat16_file_t *file_p,
                     return (EOF);
                 }
 
-                if (is_eoc(next)) {
+                if (is_end_of_cluster(next)) {
                     /* Add cluster if at end of chain */
                     if (add_cluster(file_p) != 0) {
                         return (EOF);

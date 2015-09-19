@@ -77,9 +77,9 @@ typedef uint16_t fat_t;
 union fat16_time_t {
     uint16_t as_uint16;
     struct {
-        uint8_t seconds:5;
-        uint8_t minutes:6;
-        uint8_t hours:5;
+        uint16_t seconds : 5;
+        uint16_t minutes : 6;
+        uint16_t hours : 5;
     } bits;
 };
 
@@ -99,9 +99,9 @@ union fat16_time_t {
 union fat16_date_t {
     uint16_t as_uint16;
     struct {
-        uint8_t day:5;
-        uint8_t month:4;
-        uint8_t year:7;
+        uint16_t day : 5;
+        uint16_t month : 4;
+        uint16_t year : 7;
     } bits;
 };
 
