@@ -1,5 +1,5 @@
 /**
- * @file drivers/uart.c
+ * @file uart.c
  * @version 1.0
  *
  * @section License

@@ -1,5 +1,5 @@
 #
-# @file slib/slib.mk
+# @file Makefile
 # @version 1.0
 #
 # @section License
@@ -18,11 +18,11 @@
 # This file is part of the Simba project.
 #
 
+NAME = sd_suite
+BOARD = linux
+SRC += main.c
+SLIB_SRC = harness.c
+DRIVERS_SRC = uart.c sd.c
 
-INC += $(SIMBA)/src/slib
-
-SLIB_SRC ?= fat16.c \
-            harness.c \
-            hash_map.c
-
-SRC += $(SLIB_SRC:%=$(SIMBA)/src/slib/%)
+SIMBA = ../../..
+include $(SIMBA)/make/app.mk

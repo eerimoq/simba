@@ -1,5 +1,5 @@
 /**
- * @file drivers/cantp.c
+ * @file cantp.c
  * @version 1.0
  *
  * @section License

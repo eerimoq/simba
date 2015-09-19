@@ -22,8 +22,8 @@
 
 BOARD ?= linux
 
-TESTS = $(addprefix tst/kernel/,event fs log prof queue sem setting shell std sys thrd timer)
-TESTS += $(addprefix tst/slib/,hash_map)
+TESTS = $(addprefix tst/kernel/, event fs log prof queue sem setting shell std sys thrd timer)
+TESTS += $(addprefix tst/slib/, fat16 hash_map)
 
 APPS = $(TESTS)
 

@@ -17,6 +17,8 @@ tst/*/*/eeprom.bin
 tst/*/*/settings.h
 tst/*/*/settings.bin
 
+tst/*/*/sdcard
+
 examples/*/gen
 examples/*/profile.log
 examples/*/coverage.*

@@ -1,5 +1,5 @@
 /**
- * @file drivers/adc.c
+ * @file adc.c
  * @version 1.0
  *
  * @section License

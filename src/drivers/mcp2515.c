@@ -1,5 +1,5 @@
 /**
- * @file drivers/mcp2515.c
+ * @file mcp2515.c
  * @version 1.0
  *
  * @section License

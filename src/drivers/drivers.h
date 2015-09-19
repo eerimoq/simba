@@ -38,5 +38,6 @@
 #endif
 #include "drivers/mcp2515.h"
 #include "drivers/nrf24l01.h"
+#include "drivers/sd.h"
 
 #endif

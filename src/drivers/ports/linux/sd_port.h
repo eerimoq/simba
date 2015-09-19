@@ -1,5 +1,5 @@
 /**
- * @file pin.c
+ * @file ports/linux/sd_port.h
  * @version 1.0
  *
  * @section License
@@ -18,40 +18,13 @@
  * This file is part of the Simba project.
  */
 
-#include "simba.h"
+#ifndef __DRIVERS_SD_PORT_H__
+#define __DRIVERS_SD_PORT_H__
 
-#include "pin_port.i"
+#define SD_BLOCK_SIZE 512
 
-int pin_module_init()
-{
-    return (0);
-}
+struct sd_driver_t {
+    FILE *file_p;
+};
 
-int pin_init(struct pin_driver_t *drv_p,
-             struct pin_device_t *dev_p,
-             int mode)
-{
-    drv_p->dev_p = dev_p;
-
-    return (pin_port_init(drv_p, dev_p, mode));
-}
-
-int pin_read(struct pin_driver_t *drv_p)
-{
-    return (pin_port_read(drv_p));
-}
-
-int pin_write(struct pin_driver_t *drv_p, int value)
-{
-    return (pin_port_write(drv_p, value));
-}
-
-int pin_toggle(struct pin_driver_t *drv_p)
-{
-    return (pin_port_toggle(drv_p));
-}
-
-int pin_set_mode(struct pin_driver_t *drv_p, int mode)
-{
-    return (pin_port_set_mode(drv_p, mode));
-}
+#endif

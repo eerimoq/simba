@@ -1,5 +1,5 @@
 /**
- * @file drivers/nrf24l01.c
+ * @file nrf24l01.c
  * @version 1.0
  *
  * @section License

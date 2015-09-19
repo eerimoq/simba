@@ -1,5 +1,5 @@
 /**
- * @file drivers/can.c
+ * @file can.c
  * @version 1.0
  *
  * @section License

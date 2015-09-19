@@ -23,5 +23,7 @@ BOARD = linux
 SRC += main.c
 DRIVERS_SRC = uart.c
 
+SLIB_SRC = harness.c hash_map.c
+
 SIMBA = ../../..
 include $(SIMBA)/make/app.mk

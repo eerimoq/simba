@@ -30,6 +30,7 @@ DRIVERS_SRC ?= adc.c \
 	owi.c \
 	pin.c \
 	pwm.c \
+	sd.c \
 	spi.c \
 	uart.c \
 	uart_soft.c

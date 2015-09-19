@@ -1,5 +1,5 @@
 /**
- * @file drivers/pwm.c
+ * @file pwm.c
  * @version 1.0
  *
  * @section License

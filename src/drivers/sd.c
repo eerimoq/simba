@@ -1,5 +1,5 @@
 /**
- * @file pin.c
+ * @file sd.c
  * @version 1.0
  *
  * @section License
@@ -20,38 +20,23 @@
 
 #include "simba.h"
 
-#include "pin_port.i"
+#include "sd_port.i"
 
-int pin_module_init()
+int sd_init(struct sd_driver_t *drv_p)
 {
-    return (0);
+    return (sd_port_init(drv_p));
 }
 
-int pin_init(struct pin_driver_t *drv_p,
-             struct pin_device_t *dev_p,
-             int mode)
+ssize_t sd_write(struct sd_driver_t *drv_p,
+                 uint32_t dst_block,
+                 const void *src_p)
 {
-    drv_p->dev_p = dev_p;
-
-    return (pin_port_init(drv_p, dev_p, mode));
+    return (sd_port_write(drv_p, dst_block, src_p));
 }
 
-int pin_read(struct pin_driver_t *drv_p)
+ssize_t sd_read(struct sd_driver_t *drv_p,
+                void *dst_p,
+                uint32_t src_block)
 {
-    return (pin_port_read(drv_p));
-}
-
-int pin_write(struct pin_driver_t *drv_p, int value)
-{
-    return (pin_port_write(drv_p, value));
-}
-
-int pin_toggle(struct pin_driver_t *drv_p)
-{
-    return (pin_port_toggle(drv_p));
-}
-
-int pin_set_mode(struct pin_driver_t *drv_p, int mode)
-{
-    return (pin_port_set_mode(drv_p, mode));
+    return (sd_port_read(drv_p, dst_p, src_block));
 }

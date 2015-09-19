@@ -21,6 +21,7 @@
 #ifndef __SLIB_H__
 #define __SLIB_H__
 
+#include "slib/fat16.h"
 #include "slib/harness.h"
 #include "slib/hash_map.h"
 

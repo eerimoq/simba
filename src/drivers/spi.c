@@ -1,5 +1,5 @@
 /**
- * @file drivers/spi.c
+ * @file spi.c
  * @version 1.0
  *
  * @section License

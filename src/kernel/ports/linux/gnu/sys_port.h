@@ -47,4 +47,6 @@
 
 #define ASSERT(cond, ...) ASSERTN(cond, 1, __VA_ARGS__)
 
+#define PACKED __attribute__((packed))
+
 #endif

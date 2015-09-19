@@ -18,10 +18,10 @@
 # This file is part of the Simba project.
 #
 
-NAME = hash_map_suite
+NAME = fat16_suite
 BOARD = linux
 SRC += main.c
-DRIVERS_SRC = uart.c
+DRIVERS_SRC = uart.c sd.c
 
 SIMBA = ../../..
 include $(SIMBA)/make/app.mk

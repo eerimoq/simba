@@ -1,5 +1,5 @@
 /**
- * @file drivers/ds3231.h
+ * @file ds3231.c
  * @version 1.0
  *
  * @section License
