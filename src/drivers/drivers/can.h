@@ -29,11 +29,13 @@ extern struct can_device_t can_device[CAN_DEVICE_MAX];
 
 /**
  * Initialize driver object.
+ *
  * @param[in] drv_p Driver object to initialize.
  * @param[in] dev_p Device to use.
  * @param[in] filter_p RX filter configuration.
  * @param[in] frames_p RX frame buffer in interrupt.
  * @param[in] length Length of frames array.
+ *
  * @return zero(0) or negative error code.
  */
 int can_init(struct can_driver_t *drv_p,
@@ -44,23 +46,29 @@ int can_init(struct can_driver_t *drv_p,
 
 /**
  * Starts the CAN device using given driver object.
+ *
  * @param[in] drv_p Initialized driver object.
+ *
  * @return zero(0) or negative error code.
  */
 int can_start(struct can_driver_t *drv_p);
 
 /**
  * Stops the CAN device referenced by driver object.
+ *
  * @param[in] drv_p Initialized driver object.
+ *
  * @return zero(0) or negative error code.
  */
 int can_stop(struct can_driver_t *drv_p);
 
 /**
  * Read CAN frame from given mailbox.
+ *
  * @param[in] drv_p Initialized driver object.
  * @param[in] mailbox Mailbox to read from.
  * @param[out] frame_p Read frame.
+ *
  * @return zero(0) or negative error code.
  */
 int can_read(struct can_driver_t *drv_p,
@@ -69,9 +77,11 @@ int can_read(struct can_driver_t *drv_p,
 
 /**
  * Write CAN frame to given mailbox.
+ *
  * @param[in] drv_p Initialized driver object.
  * @param[in] mailbox Mailbox to write to.
  * @param[out] frame_p Frame to write.
+ *
  * @return zero(0) or negative error code.
  */
 int can_write(struct can_driver_t *drv_p,

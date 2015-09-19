@@ -43,6 +43,7 @@ int nrf24l01_module_init(void);
 
 /**
  * Initialize driver object from given configuration.
+ *
  * @param[in] drv_p Driver object to be initialized.
  * @param[in] spi_p SPI device.
  * @param[in] cs_p Chip select pin device.
@@ -50,6 +51,7 @@ int nrf24l01_module_init(void);
  * @param[in] exti_p External interrupt flagdevice.
  * @param[in] address 4 MSB:s of RX pipes. LSB is set
  *                    to 0 through 5 for the 6 pipes.
+ *
  * @return zero(0) or negative error code.
  */
 int nrf24l01_init(struct nrf24l01_driver_t *drv_p,
@@ -61,23 +63,29 @@ int nrf24l01_init(struct nrf24l01_driver_t *drv_p,
 
 /**
  * Starts the NRF24L01 device using given driver object.
+ *
  * @param[in] drv_p Initialized driver object.
+ *
  * @return zero(0) or negative error code.
  */
 int nrf24l01_start(struct nrf24l01_driver_t *drv_p);
 
 /**
  * Stops the NRF24L01 device referenced by driver object.
+ *
  * @param[in] drv_p Initialized driver object.
+ *
  * @return zero(0) or negative error code.
  */
 int nrf24l01_stop(struct nrf24l01_driver_t *drv_p);
 
 /**
  * Read data from the NRF24L01 device.
+ *
  * @param[in] drv_p Initialized driver object.
  * @param[in] buf_p Buffer to read into.
  * @param[in] size Number of bytes to read (must be 32).
+ *
  * @return Number of received bytes or negative error code.
  */
 ssize_t nrf24l01_read(struct nrf24l01_driver_t *drv_p,
@@ -86,11 +94,13 @@ ssize_t nrf24l01_read(struct nrf24l01_driver_t *drv_p,
 
 /**
  * Write data to the NRF24L01 device.
+ *
  * @param[in] drv_p Initialized driver object.
  * @param[in] address 4 MSB:s of TX address.
  * @param[in] pipe LSB of TX address.
  * @param[in] buf_p Buffer to write.
  * @param[in] size Number of bytes to write (must be 32).
+ *
  * @return number of sent bytes or negative error code.
  */
 ssize_t nrf24l01_write(struct nrf24l01_driver_t *drv_p,

@@ -35,26 +35,31 @@ struct sem_t {
 
 /**
  * Initialize module.
+ *
  * @return zero(0) or negative error code
  */
 int sem_module_init(void);
 
 /**
- * Initialize given semaphore. Count is the number of threads
- * that can hold the semaphore at the same time.
+ * Initialize given semaphore. Count is the number of threads that can
+ * hold the semaphore at the same time.
+ *
  * @param[in] sem_p Semaphore to get.
  * @param[in] count Semaphore count.
+ *
  * @return zero(0) or negative error code.
  */
 int sem_init(struct sem_t *sem_p,
              int count);
 
 /**
- * Get given semaphore. If the semaphore count is zero
- * the calling thread will be suspended until count
- * is incremented by a put call by another thread/isr.
+ * Get given semaphore. If the semaphore count is zero the calling
+ * thread will be suspended until count is incremented by a put call
+ * by another thread/isr.
+ *
  * @param[in] sem_p Semaphore to get.
  * @param[in] timeout_p Timeout.
+ *
  * @return zero(0) or negative error code.
  */
 int sem_get(struct sem_t *sem_p,
@@ -62,8 +67,10 @@ int sem_get(struct sem_t *sem_p,
 
 /**
  * Put given value on semaphore.
+ *
  * @param[in] sem_p Semaphore to add count to.
  * @param[in] value Count to add.
+ *
  * @return zero(0) or negative error code.
  */
 int sem_put(struct sem_t *sem_p,

@@ -29,8 +29,10 @@ extern struct pwm_device_t pwm_device[PWM_DEVICE_MAX];
 
 /**
  * Initialize driver object.
+ *
  * @param[out] drv_p Driver object to be initialized.
  * @param[in] dev_p Device to use.
+ *
  * @return zero(0) or negative error code.
  */
 int pwm_init(struct pwm_driver_t *drv_p,
@@ -38,8 +40,10 @@ int pwm_init(struct pwm_driver_t *drv_p,
 
 /**
  * Set duty cycle.
+ *
  * @param[in] drv_p Driver object.
  * @param[in] value Value to set [0..255]
+ *
  * @return zero(0) or negative error code.
  */
 int pwm_set_duty(struct pwm_driver_t *drv_p,

@@ -76,8 +76,10 @@ int cantp_module_init(void);
 
 /**
  * Initialize CANTP object.
+ *
  * @param[in] cantp_p CANTP object to initialize.
  * @param[in] canif_p CAN interface to use.
+ *
  * @return zero(0) or negative error code.
  */
 int cantp_init(struct cantp_t *cantp_p,
@@ -87,13 +89,14 @@ int cantp_init(struct cantp_t *cantp_p,
                void *get_id_config_arg);
 
 /**
- * Subscribe for CANTP messages with given ID.
- * When a cantp frame/message is received from the hardware
- * it is written to the receive channel. Zero or more
- * subscribers per frame ID is allowed.
+ * Subscribe for CANTP messages with given ID.  When a cantp
+ * frame/message is received from the hardware it is written to the
+ * receive channel. Zero or more subscribers per frame ID is allowed.
+ *
  * @param[in] cantp_p Initialized driver object.
  * @param[in] id Frame ID to subscribe for.
  * @param[in] sub_p Subscribe structure with receive channel.
+ *
  * @return zero(0) or negative error code.
  */
 int cantp_subscribe(struct cantp_t *cantp_p,
@@ -102,9 +105,11 @@ int cantp_subscribe(struct cantp_t *cantp_p,
 
 /**
  * Unsubscribe for CANTP messages with given ID.
+ *
  * @param[in] cantp_p Initialized driver object.
  * @param[in] id Frame ID to unsubscribe from.
  * @param[in] sub_p Subscribe structure used when subscribing.
+ *
  * @return zero(0) or negative error code.
  */
 int cantp_unsubscribe(struct cantp_t *cantp_p,
@@ -113,10 +118,12 @@ int cantp_unsubscribe(struct cantp_t *cantp_p,
 
 /**
  * Open a CANTP channel for reading and writing of messages.
+ *
  * @param[in] cantp_p Initialized driver object.
  * @param[in] chan_p Channel to initialize.
  * @param[in] buf_p Receive buffer.
  * @param[in] size Receive buffer size.
+ *
  * @return zero(0) or negative error code.
  */
 int cantp_chan_init(struct cantp_t *cantp_p,
@@ -126,10 +133,12 @@ int cantp_chan_init(struct cantp_t *cantp_p,
 
 /**
  * Read message from channel.
+ *
  * @param[in] chan_p Receive channel.
  * @param[out] msg_p Read message with header and data. It musy fit
  *                   the expected message size.
  * @param[in] size Message size.
+ *
  * @return Number of bytes read or negative error code.
  */
 static inline ssize_t cantp_chan_read(struct cantp_chan_t *chan_p,
@@ -141,9 +150,11 @@ static inline ssize_t cantp_chan_read(struct cantp_chan_t *chan_p,
 
 /**
  * Write message to channel.
+ *
  * @param[in] chan_p Channel.
  * @param[in] msg_p Message to write.
  * @param[in] size Message size.
+ *
  * @return Number of bytes written or negative error code.
  */
 static inline ssize_t cantp_chan_write(struct cantp_chan_t *chan_p,

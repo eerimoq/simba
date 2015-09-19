@@ -25,6 +25,7 @@
 
 /**
  * Initialize module.
+ *
  * @return zero(0) or negative error code.
  */
 int std_module_init(void);
@@ -41,6 +42,7 @@ int std_module_init(void);
  * length: 'l' for long or nothing
  * specifier: c, s, d, u, x
  *
+ *
  * @param[out] dst Destination buffer.
  * @param[in] fmt_p Format string.
  * @param[in] ... Variable arguemnts list.
@@ -49,41 +51,51 @@ ssize_t std_sprintf(char *dst_p, FAR const char *fmt_p, ...);
 
 /**
  * Format and print data to standard output.
+ *
  * @param[in] fmt_p Format string.
  * @param[in] ... Variable arguemnts list.
+ *
  * @return void.
  */
 void std_printf(FAR const char *fmt_p, ...);
 
 /**
  * Format and print data to channel.
+ *
  * @param[in] chan_p Output channel.
  * @param[in] fmt_p Format string.
  * @param[in] ... Variable arguemnts list.
+ *
  * @return void.
  */
 void std_fprintf(chan_t *chan_p, FAR const char *fmt_p, ...);
 
 /**
  * Convert string to integer.
+ *
  * @param[in] str_p Integer string.
  * @param[out] value_p Integer value.
+ *
  * @return zero(0) or negative error code.
  */
 int std_strtol(const char *str_p, long *value_p);
 
 /**
  * Copy string from far memory to memory.
+ *
  * @param[in] dst_p Normal memory string.
  * @param[in] src_p Far memory string.
+ *
  * @return String length or negative error code.
  */
 int std_strcpy(char *dst_p, FAR const char *src_p);
 
 /**
  * Compare two strings.
+ *
  * @param[in] str_p Normal memory string.
  * @param[in] fstr_p Far memory string.
+ *
  * @return zero(0) if match, otherwise the difference of
  *         the mismatched characters
  */
@@ -91,21 +103,25 @@ int std_strcmp(const char *str_p, FAR const char *fstr_p);
 
 /**
  * Compare two strings.
+ *
  * @param[in] fstr0_p Far memory string.
  * @param[in] fstr1_p Far memory string.
- * @return zero(0) if match, otherwise the difference of
- *         the mismatched characters
+ *
+ * @return zero(0) if match, otherwise the difference of the
+ *         mismatched characters
  */
 int std_strcmp_f(FAR const char *fstr0_p,
                  FAR const char *fstr1_p);
 
 /**
  * Compare two strings.
+ *
  * @param[in] fstr0_p Far memory string.
  * @param[in] fstr1_p Far memory string.
  * @param[in] size Compare at most size number of bytes.
- * @return zero(0) if match, otherwise the difference of
- *         the mismatched characters
+ *
+ * @return zero(0) if match, otherwise the difference of the
+ *         mismatched characters
  */
 int std_strncmp_f(FAR const char *fstr0_p,
                   FAR const char *fstr1_p,
@@ -113,16 +129,20 @@ int std_strncmp_f(FAR const char *fstr0_p,
 
 /**
  * Get length of string, not including null termination.
+ *
  * @param[in] fstr_p Far memory string.
+ *
  * @return string length
  */
 int std_strlen(FAR const char *fstr_p);
 
 /**
  * Strip leading and trailing characters given by strip_p.
+ *
  * @param[in] str_p String to strip.
  * @param[in] strip_p Characters to strip or NULL for whitespace
  *                    characters.
+ *
  * @return Pointer to stripped string.
  */
 char *std_strip(char *str_p, const char *strip_p);

@@ -73,37 +73,43 @@ struct log_entry_footer_t {
 
 /**
  * Initialize module.
+ *
  * @return zero(0) or negative error code.
  */
 int log_module_init(void);
 
 /**
- * Reset log module. Clears the log and sets the log mode to
- * circular.
+ * Reset log module. Clears the log and sets the log mode to circular.
+ *
  * @return zero(0) or negative error code.
  */
 int log_reset();
 
 /**
  * Set log mode to off or circular.
+ *
  * @param[in] mode Mode to set.
+ *
  * @return Overwritten mode.
  */
 int log_set_mode(int mode);
 
 /**
  * Get current log mode.
+ *
  * @return Current log mode.
  */
 int log_get_mode();
 
 /**
  * Add log entry to quick log buffer.
+ *
  * @param[in] log_id Log point identity.
  * @param[in] v0 Value 0.
  * @param[in] v1 Value 1.
  * @param[in] v2 Value 2.
  * @param[in] v3 Value 3.
+ *
  * @return true(1) if the entry was written to the log and false(0)
  *         otherwise.
  */
@@ -112,7 +118,9 @@ int log_write(char level, int id, void *buf_p, size_t size);
 /**
  * Format all entries in the log buffer and write them to given
  * channel.
+ *
  * @param[in] chout_p Output channel.
+ *
  * @return zero(0) or negative error code.
  */
 int log_format(chan_t *chout_p);

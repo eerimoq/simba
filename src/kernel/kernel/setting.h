@@ -35,18 +35,22 @@ int setting_module_init(void);
 
 /**
  * Read setting at address to buffer.
+ *
  * @param[in,out] dst_p Destination buffer.
  * @param[in] src Setting source address.
  * @param[in] size Number of words to read.
+ *
  * @return Number of words read or negative error code.
  */
 ssize_t setting_read(void *dst_p, size_t src, size_t size);
 
 /**
  * Write setting from buffer to address.
+ *
  * @param[in] dst Destination setting address.
  * @param[in] src_p Source buffer.
  * @param[in] size Number of words to write.
+ *
  * @return Number of words written or negative error code.
  */
 ssize_t setting_write(size_t dst, const void *src_p, size_t size);

@@ -27,16 +27,20 @@
 
 /**
  * Initialize driver object.
+ *
  * @param[in,out] drv_p Driver object to initialize.
+ *
  * @return zero(0) or negative error code.
  */
 int sd_init(struct sd_driver_t *drv_p);
 
 /**
  * Read given block from SD card.
+ *
  * @param[in] drv_p Initialized driver object.
  * @param[in] buf_p Buffer to read into.
  * @param[in] src_block Block to read from.
+ *
  * @return Number of read bytes or negative error code.
  */
 ssize_t sd_read(struct sd_driver_t *drv_p,
@@ -45,9 +49,11 @@ ssize_t sd_read(struct sd_driver_t *drv_p,
 
 /**
  * Write data to the SD bus.
+ *
  * @param[in] drv_p Initialized driver object.
  * @param[in] dst_block Block to write to.
  * @param[in] src_p Buffer to write.
+ *
  * @return Number of written bytes or negative error code.
  */
 ssize_t sd_write(struct sd_driver_t *drv_p,

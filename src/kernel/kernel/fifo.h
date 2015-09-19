@@ -31,8 +31,10 @@ struct fifo_t {
 
 /**
  * Initialize given FIFO.
+ *
  * @param[in,out] fifo_p FIFO to initialize.
  * @param[in] max Maximum number of elements in the FIFO.
+ *
  * @return zero(0) or negative error code.
  */
 static inline int fifo_init(struct fifo_t *fifo_p,
@@ -47,7 +49,9 @@ static inline int fifo_init(struct fifo_t *fifo_p,
 
 /**
  * Put element to the FIFO.
+ *
  * @param[in] fifo_p Initialized FIFO.
+ *
  * @return Added element index in FIFO, or -1 if there are no free
  *         positions in the FIFO.
  */
@@ -68,7 +72,9 @@ static inline int fifo_put(struct fifo_t *fifo_p)
 
 /**
  * Get element to the FIFO.
+ *
  * @param[in] fifo_p Initialized FIFO.
+ *
  * @return Fetched element index in FIFO , or -1 if the FIFO is empty.
  */
 static inline int fifo_get(struct fifo_t *fifo_p)

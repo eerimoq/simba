@@ -31,35 +31,44 @@ struct event_t {
 
 /**
  * Initialize given event channel.
+ *
  * @param[in] event Event channel to initialize.
+ *
  * @return zero(0) or negative error code
  */
 int event_init(struct event_t *event_p);
 
 /**
  * Wait for a event in given mask to occur.
+ *
  * @param[in] event Event channel to read from.
- * @param[in, out] buf_p The mask of events to wait for. When the function
- *                       return the mask contains the events that occured.
+ * @param[in, out] buf_p The mask of events to wait for. When the
+ *                       function return the mask contains the events
+ *                       that occured.
  * @param[in] size Size to read (always sizeof(mask)).
+ *
  * @return sizeof(mask) or negative error code.
  */
 ssize_t event_read(struct event_t *event_p, void *buf_p, size_t size);
 
 /**
  * Write given events to the event channel.
+ *
  * @param[in] event Event channel to write to.
  * @param[in] buf The mask of events to write.
  * @param[in] size Always sizeof(mask).
+ *
  * @return sizeof(mask) or negative error code.
  */
 ssize_t event_write(struct event_t *event_p, const void *buf_p, size_t size);
 
 /**
  * Write given events to the event channel from interrupt context.
+ *
  * @param[in] event Event channel to write to.
  * @param[in] buf The mask of events to write.
  * @param[in] size Always sizeof(mask).
+ *
  * @return sizeof(mask) or negative error code.
  */
 ssize_t event_write_irq(struct event_t *event_p,
@@ -69,7 +78,9 @@ ssize_t event_write_irq(struct event_t *event_p,
 /**
  * Get the number of bytes currently stored in the event. May return
  * less bytes than number of bytes stored in the channel.
+ *
  * @param[in] event Event.
+ *
  * @return Number of bytes in event.
  */
 ssize_t event_size(struct event_t *event_p);

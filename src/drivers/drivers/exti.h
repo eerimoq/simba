@@ -35,9 +35,11 @@ extern struct exti_device_t exti_device[EXTI_DEVICE_MAX];
 
 /**
  * Initialize driver object.
+ *
  * @param[in] drv_p Driver object to be initialized.
  * @param[in] dev Device to use.
  * @param[in] on_interrupt Interrupt handler.
+ *
  * @return zero(0) or negative error code.
  */
 int exti_init(struct exti_driver_t *drv_p,
@@ -48,21 +50,27 @@ int exti_init(struct exti_driver_t *drv_p,
 
 /**
  * Starts the EXTI device using given driver object.
+ *
  * @param[in] drv_p Initialized driver object.
+ *
  * @return zero(0) or negative error code.
  */
 int exti_start(struct exti_driver_t *drv_p);
 
 /**
  * Stops the EXTI device referenced by driver object.
+ *
  * @param[in] drv_p Initialized driver object.
+ *
  * @return zero(0) or negative error code.
  */
 int exti_stop(struct exti_driver_t *drv_p);
 
 /**
  * Clear the interrutp flag.
+ *
  * @param[in] drv_p Initialized driver object.
+ *
  * @return zero(0) or negative error code.
  */
 int exti_clear(struct exti_driver_t *drv_p);

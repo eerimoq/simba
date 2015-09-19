@@ -42,10 +42,12 @@ struct hash_map_t {
 
 /**
  * Initialize hash map with given parameters.
+ *
  * @param[out] map_p Initialized hash map.
  * @param[in] entries_p Array of empty entries.
  * @param[in] entries_max Number of entries in 'entries'.
  * @param[in] hash Hash function.
+ *
  * @return zero(0) or negative error code.
  */
 int hash_map_init(struct hash_map_t *map_p,
@@ -56,11 +58,13 @@ int hash_map_init(struct hash_map_t *map_p,
                   int (*hash)(long key));
 
 /**
- * Add given key-value pair into hash map. Overwrites old value
- * if the key is already present in map.
+ * Add given key-value pair into hash map. Overwrites old value if the
+ * key is already present in map.
+ *
  * @param[in] map_p Initialized hash map.
  * @param[in] key Key to hash.
  * @param[in] value_p Value to insert for key.
+ *
  * @return zero(0) or negative error code.
  */
 int hash_map_add(struct hash_map_t *map_p,
@@ -69,8 +73,10 @@ int hash_map_add(struct hash_map_t *map_p,
 
 /**
  * Remove given key from hash map.
+ *
  * @param[in] map_p Initialized hash map.
  * @param[in] key Key to hash.
+ *
  * @return zero(0) or negative error code.
  */
 int hash_map_remove(struct hash_map_t *map_p,
@@ -78,8 +84,10 @@ int hash_map_remove(struct hash_map_t *map_p,
 
 /**
  * Get value for given key.
+ *
  * @param[in] map_p Initialized hash map.
  * @param[in] key Key to hash.
+ *
  * @return Value for key or NULL if key was not found in the map.
  */
 void *hash_map_get(struct hash_map_t *map_p,

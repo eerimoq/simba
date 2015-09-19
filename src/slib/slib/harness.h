@@ -36,15 +36,19 @@ struct harness_t {
 
 /**
  * Initialize a test harness.
+ *
  * @param[in] harness_p Test harness to initialize.
+ *
  * @return zero(0) or negative error code.
  */
 int harness_init(struct harness_t *harness_p);
 
 /**
  * Run testcases in test harness.
+ *
  * @param[in] harness_p Test harness.
  * @param[in] testcases_p Testcases to run.
+ *
  * @return zero(0) or negative error code.
  */
 int harness_run(struct harness_t *harness_p,

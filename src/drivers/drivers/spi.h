@@ -47,6 +47,7 @@ int spi_module_init(void);
 
 /**
  * Initialize driver object.
+ *
  * @param[out] drv_p Driver object to initialize.
  * @param[in] dev_p Device to use.
  * @param[in] ss_pin_p Slave select pin device.
@@ -54,6 +55,7 @@ int spi_module_init(void);
  * @param[in] speed Speed in kbps.
  * @param[in] cpol Polarity, 0 or 1.
  * @param[in] cpha Phase, 0 or 1.
+ *
  * @return zero(0) or negative error code.
  */
 int spi_init(struct spi_driver_t *drv_p,
@@ -66,10 +68,12 @@ int spi_init(struct spi_driver_t *drv_p,
 
 /**
  * Simultaniuos read/write operation over the SPI bus.
+ *
  * @param[in] drv_p Initialized driver object.
  * @param[in] rxbuf_p Buffer to read into.
  * @param[in] txbuf_p Buffer to write.
  * @param[in] size Number of bytes to transfer.
+ *
  * @return Number of transferred bytes or negative error code.
  */
 ssize_t spi_transfer(struct spi_driver_t *drv_p,
@@ -79,9 +83,11 @@ ssize_t spi_transfer(struct spi_driver_t *drv_p,
 
 /**
  * Read data from the SPI bus.
+ *
  * @param[in] drv_p Initialized driver object.
  * @param[in] buf_p Buffer to read into.
  * @param[in] size Number of bytes to receive.
+ *
  * @return Number of read bytes or negative error code.
  */
 ssize_t spi_read(struct spi_driver_t *drv_p,
@@ -90,9 +96,11 @@ ssize_t spi_read(struct spi_driver_t *drv_p,
 
 /**
  * Write data to the SPI bus.
+ *
  * @param[in] drv_p Initialized driver object.
  * @param[in] buf_p Buffer to write.
  * @param[in] size Number of bytes to write.
+ *
  * @return Number of written bytes or negative error code.
  */
 ssize_t spi_write(struct spi_driver_t *drv_p,

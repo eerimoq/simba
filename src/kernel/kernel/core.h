@@ -26,6 +26,7 @@
 
 /**
  * Lock core by disabling interrupts.
+ *
  * @return Interrupt mask
  */
 core_irq_t core_lock(void);

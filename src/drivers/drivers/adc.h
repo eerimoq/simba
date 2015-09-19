@@ -36,11 +36,13 @@ int adc_module_init(void);
 
 /**
  * Initialize driver object from given config.
+ *
  * @param[out] drv_p Driver object to be initialized.
  * @param[in] dev_p Device to use.
  * @param[in] pin_dev_p Pin device to use.
  * @param[in] reference Voltage reference.
  * @param[in] sampling_rate Sampling rate in Hz.
+ *
  * @return zero(0) or negative error code.
  */
 int adc_init(struct adc_driver_t *drv_p,
@@ -51,9 +53,11 @@ int adc_init(struct adc_driver_t *drv_p,
 
 /**
  * Start asynchronous convertion of analog signal to digital samples.
+ *
  * @param[in] drv_p Driver object.
  * @param[out] samples Converted samlpes.
  * @param[in] length Length of samples array.
+ *
  * @return zero(0) or negative error code.
  */
 int adc_async_convert(struct adc_driver_t *drv_p,
@@ -62,16 +66,20 @@ int adc_async_convert(struct adc_driver_t *drv_p,
 
 /**
  * Wait for asynchronous convertion to finish.
+ *
  * @param[in] drv_p Driver object.
+ *
  * @return zero(0) or negative error code.
  */
 int adc_async_wait(struct adc_driver_t *drv_p);
 
 /**
  * Start synchronous convertion of analog signal to digital samples.
+ *
  * @param[in] drv_p Driver object.
  * @param[out] samples Converted samlpes.
  * @param[in] length Length of samples array.
+ *
  * @return zero(0) or negative error code.
  */
 int adc_convert(struct adc_driver_t *drv_p,

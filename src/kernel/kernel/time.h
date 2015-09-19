@@ -40,21 +40,28 @@ struct date_t {
 
 /**
  * Get current time.
+ *
  * @param[out] now_p Current time.
+ *
  * @return zero(0) or negative error code.
  */
 int time_get(struct time_t *now_p);
 
 /**
  * Set current time.
+ *
  * @param[in] new_p New current time.
+ *
  * @return zero(0) or negative error code.
  */
 int time_set(struct time_t *new_p);
 
 /**
  * Sleep for given number of microseconds.
+ *
  * @param[in] usec Microseconds to sleep.
+ *
+ * @return void
  */
 void time_sleep(int us);
 

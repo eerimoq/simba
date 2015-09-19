@@ -51,6 +51,7 @@ struct mcp2515_driver_t {
 
 /**
  * Initialize driver object.
+ *
  * @param[out] drv_p Driver object to initialize.
  * @param[in] spi_p SPI driver to use.
  * @param[in] exti_p External interrupt tp use.
@@ -58,6 +59,7 @@ struct mcp2515_driver_t {
  * @param[in] speed CAN bus speed in kbps.
  * @param[in] frames RX frame buffers.
  * @param[in] length Length of frames array.
+ *
  * @return zero(0) or negative error code.
  */
 int mcp2515_init(struct mcp2515_driver_t *drv_p,
@@ -72,22 +74,28 @@ int mcp2515_init(struct mcp2515_driver_t *drv_p,
 
 /**
  * Starts the CAN device using given driver object.
+ *
  * @param[in] drv_p Initialized driver object.
+ *
  * @return zero(0) or negative error code.
  */
 int mcp2515_start(struct mcp2515_driver_t *drv_p);
 
 /**
  * Stops the CAN device referenced by driver object.
+ *
  * @param[in] drv_p Initialized driver object.
+ *
  * @return zero(0) or negative error code.
  */
 int mcp2515_stop(struct mcp2515_driver_t *drv_p);
 
 /**
  * Read CAN frame.
+ *
  * @param[in] drv_p Initialized driver object.
  * @param[out] frame_p Read frame.
+ *
  * @return zero(0) or negative error code.
  */
 int mcp2515_read(struct mcp2515_driver_t *drv_p,
@@ -95,8 +103,10 @@ int mcp2515_read(struct mcp2515_driver_t *drv_p,
 
 /**
  * Write CAN frame.
+ *
  * @param[in] drv_p Initialized driver object.
  * @param[out] frame_p Frame to write.
+ *
  * @return zero(0) or negative error code.
  */
 int mcp2515_write(struct mcp2515_driver_t *drv_p,

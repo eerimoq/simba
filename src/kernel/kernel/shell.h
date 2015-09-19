@@ -32,9 +32,11 @@ struct shell_args_t {
 };
 
 /**
- * Shell entry function. Listen for commands on input channel
- * and send response on output channel.
+ * Shell entry function. Listen for commands on input channel and send
+ * response on output channel.
+ *
  * @param[in] arg Pointer to 'struct shell_args_t'.
+ *
  * @return Never returns.
  */
 void *shell_entry(void *arg_p);

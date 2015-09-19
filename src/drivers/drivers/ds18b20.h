@@ -30,8 +30,10 @@ struct ds18b20_driver_t {
 
 /**
  * Initialize driver object.
+ *
  * @param[out] drv_p Driver object to be initialized.
  * @param[in] owi_p Owi driver.
+ *
  * @return zero(0) or negative error code.
  */
 int ds18b20_init(struct ds18b20_driver_t *drv_p,
@@ -39,17 +41,21 @@ int ds18b20_init(struct ds18b20_driver_t *drv_p,
 
 /**
  * Start temperature convertion on all sensors.
+ *
  * @param[in] drv_p Driver object to be initialized.
+ *
  * @return zero(0) or negative error code.
  */
 int ds18b20_convert(struct ds18b20_driver_t *drv_p);
 
 /**
  * Get temperature for given device identity.
+ *
  * @param[in] drv_p Driver object to be initialized.
  * @param[in] id_p Device identity.
- * @param[out] temp_p Measured temperature in Q4.4 to Q8.4
- *                    depending on resolution.
+ * @param[out] temp_p Measured temperature in Q4.4 to Q8.4 depending
+ *                    on resolution.
+ *
  * @return zero(0) or negative error code.
  */
 int ds18b20_get_temperature(struct ds18b20_driver_t *drv_p,
@@ -57,11 +63,13 @@ int ds18b20_get_temperature(struct ds18b20_driver_t *drv_p,
                             int *temp_p);
 
 /**
- * Get temperature for given device identity returned formatted
- * as a string.
+ * Get temperature for given device identity returned formatted as a
+ * string.
+ *
  * @param[in] drv_p Driver object to be initialized.
  * @param[in] id_p Device identity.
  * @param[in] buf_p Buffer.
+ *
  * @return Buffer or NULL.
  */
 char *ds18b20_get_temperature_str(struct ds18b20_driver_t *drv_p,

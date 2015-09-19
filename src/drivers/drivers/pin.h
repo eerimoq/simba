@@ -37,9 +37,11 @@ int pin_module_init(void);
 
 /**
  * Initialize driver object from given config.
+ *
  * @param[out] drv_p Driver object to be initialized.
  * @param[in] dev_p Device to use.
  * @param[in] mode Pin mode.
+ *
  * @return zero(0) or negative error code.
  */
 int pin_init(struct pin_driver_t *drv_p,
@@ -48,30 +50,38 @@ int pin_init(struct pin_driver_t *drv_p,
 
 /**
  * Write value to given pin.
+ *
  * @param[in] drv_p Driver object.
  * @param[in] value Value to vrite
+ *
  * @return zero(0) or negative error code.
  */
 int pin_write(struct pin_driver_t *drv_p, int value);
 
 /**
  * Read value on pin.
+ *
  * @param[in] drv_p Driver object.
+ *
  * @return Value or negative error code.
  */
 int pin_read(struct pin_driver_t *drv_p);
 
 /**
  * Toggle pin state.
+ *
  * @param[in] drv_p Driver object.
+ *
  * @return zero(0) or negative error code.
  */
 int pin_toggle(struct pin_driver_t *drv_p);
 
 /**
  * Set pin mode.
+ *
  * @param[in] drv_p Driver object.
  * @param[in] mode New pin mode.
+ *
  * @return zero(0) or negative error code.
  */
 int pin_set_mode(struct pin_driver_t *drv_p, int mode);

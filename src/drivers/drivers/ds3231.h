@@ -29,7 +29,9 @@ struct ds3231_driver_t {
 
 /**
  * Initialize driver object.
+ *
  * @param[in,out] drv_p Driver object to be initialized.
+ *
  * @return zero(0) or negative error code.
  */
 int ds3231_init(struct ds3231_driver_t *drv_p);

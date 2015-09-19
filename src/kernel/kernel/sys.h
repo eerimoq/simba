@@ -56,63 +56,75 @@ int sys_module_init(void);
 
 /**
  * Start system.
+ *
  * @return zero(0) or negative error code.
  */
 int sys_start(void);
 
 /**
  * Stop system.
+ *
  * @return Never returns.
  */
 void sys_stop(int error);
 
 /**
  * Set on fatal callback.
+ *
  * @param[in] callback Called on fatal error.
+ *
+ * @return void
  */
 void sys_set_on_fatal_callback(void (*callback)(int error));
 
 /**
  * Set standard output channel.
+ *
  * @param[in] chan Standard output channel.
+ *
  * @return void.
  */
 void sys_set_stdout(chan_t *chan);
 
 /**
  * Get standard output channel.
+ *
  * @return Standard output channel or NULL.
  */
 chan_t *sys_get_stdout(void);
 
 /**
  * Take the system lock. Normally turns off interrupts.
+ *
  * @return void.
  */
 void sys_lock(void);
 
 /**
- * Release the system lock. In many ports this function has no
- * effect.
+ * Release the system lock. In many ports this function has no effect.
+ *
  * @return void.
  */
 void sys_unlock(void);
 
 /**
  * Take the system lock from ISR. Normally turns off interrupts.
+ *
  * @return void.
  */
 void sys_lock_irq(void);
 
 /**
- * Release the system lock from ISR. In many ports this function has no
- * effect.
+ * Release the system lock from ISR. In many ports this function has
+ * no effect.
+ *
  * @return void.
  */
 void sys_unlock_irq(void);
 
 /**
  * Get a pointer to the application information buffer.
+ *
  * @return A pointer to the application information buffer.
  */
 const FAR char *sys_get_appinfo(void);

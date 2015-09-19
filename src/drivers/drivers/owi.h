@@ -43,10 +43,12 @@ struct owi_driver_t {
 
 /**
  * Initialize driver object.
+ *
  * @param[out] drv_p Driver object to be initialized.
  * @param[in] dev_p Pin device to use.
  * @param[in] devices_p Storage for devices found when searching.
  * @param[in] nmemb Number of members in devices.
+ *
  * @return zero(0) or negative error code.
  */
 int owi_init(struct owi_driver_t *drv_p,
@@ -56,7 +58,9 @@ int owi_init(struct owi_driver_t *drv_p,
 
 /**
  * Send reset on one wire bus.
+ *
  * @param[in] drv_p Driver object.
+ *
  * @return true(1) if one or more devices are connected to the bus,
  *         false(0) if no devices were found,
  *         otherwise negative error code.
@@ -65,16 +69,20 @@ int owi_reset(struct owi_driver_t *drv_p);
 
 /**
  * Search network for devices.
+ *
  * @param[in] drv_p Driver object.
+ *
  * @return Number of devices found or negative error code.
  */
 int owi_search(struct owi_driver_t *drv_p);
 
 /**
  * Read into buffer from one wire bus.
+ *
  * @param[in] drv_p Driver object.
  * @param[in] buf_p Buffer to read into.
  * @param[in] size Number of bits to read.
+ *
  * @return Number of bits read or negative error code.
  */
 ssize_t owi_read(struct owi_driver_t *drv_p,
@@ -83,9 +91,11 @@ ssize_t owi_read(struct owi_driver_t *drv_p,
 
 /**
  * Write buffer to given one wire bus.
+ *
  * @param[in] drv_p Driver object.
  * @param[in] buf_p Buffer to write.
  * @param[in] size Number of bits to write.
+ *
  * @return Number of bits written or negative error code.
  */
 ssize_t owi_write(struct owi_driver_t *drv_p,

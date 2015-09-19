@@ -443,6 +443,7 @@ struct fat16_file_t {
 
 /**
  * Initialize a FAT16 volume.
+ *
  * @param[in,out] fat16_p FAT16 object to initialize.
  * @param[in] sd_p SD device where the volume is located.
  * @param[in] partition Partition to be used. Legal values for a
@@ -451,6 +452,7 @@ struct fat16_file_t {
  *                      Master Boot Record, or zero if the device is
  *                      formatted as a super floppy with the FAT boot
  *                      sector in block zero.
+ *
  * @return zero(0) or negative error code.
  */
 int fat16_init(struct fat16_t *fat16_p,
@@ -460,21 +462,27 @@ int fat16_init(struct fat16_t *fat16_p,
 /**
  * Start given FAT16 volume. Starts the SD device and reads driver
  * information
+ *
  * @param[in] fat16_p FAT16 object.
+ *
  * @return zero(0) or negative error code.
  */
 int fat16_start(struct fat16_t *fat16_p);
 
 /**
  * Stop given FAT16 volume.
+ *
  * @param[in] fat16_p FAT16 object.
+ *
  * @return zero(0) or negative error code.
  */
 int fat16_stop(struct fat16_t *fat16_p);
 
 /**
  * Print volume information to given channel.
+ *
  * @param[in] fat16_p FAT16 object.
+ *
  * @return zero(0) or negative error code.
  */
 int fat16_print(struct fat16_t *fat16_p, chan_t *chan_p);
@@ -482,6 +490,7 @@ int fat16_print(struct fat16_t *fat16_p, chan_t *chan_p);
 /**
  * List directory contents to given iostream with selected
  * information.
+ *
  * @param[in] fat16_p FAT16 object.
  * @param[in] chan_p Output channel.
  * @param[in] flags The inclusive OR of FAT16_LS_DATE (file
@@ -503,6 +512,7 @@ int fat16_ls(struct fat16_t *fat16_p,
  *       long name "New Text Document.txt" you should not delete the
  *       8.3 name "NEWTEX~1.TXT".
  *
+ *
  * @return The value one, true, is returned for success and the value
  *         zero, false, is returned for failure. Reasons for failure
  *         include the file is read only, \a fileName is not found or
@@ -518,10 +528,12 @@ int fat16_rm(struct fat16_t *fat16_p,
  * the FAT volume has not been initialized, a file is already open,
  * file name, is invalid, the file does not exist, is a directory, or
  * can't be opened in the access mode specified by oflag.
+ *
  * @param[in] fat16_p FAT16 object.
  * @param[in,out] file_p File object to be initialized.
  * @param[in] path_p A valid 8.3 DOS name for a file in the root.
  * @param[in] oflag mode of file open (create, read, write, etc).
+ *
  * @return zero(0) or negative error code.
  */
 int fat16_file_open(struct fat16_t *fat16_p,
@@ -532,16 +544,20 @@ int fat16_file_open(struct fat16_t *fat16_p,
 /**
  * Close a file and force cached data and directory information to be
  * written to the storage device.
+ *
  * @param[in] file_p File object.
+ *
  * @return zero(0) or negative error code.
  */
 int fat16_file_close(struct fat16_file_t *file_p);
 
 /**
  * Read data to given buffer with given size from the file.
+ *
  * @param[in] file_p File object.
  * @param[in] buf buffer to read into.
  * @param[in] size number of bytes to read.
+ *
  * @return number of bytes read or EOF(-1).
  */
 ssize_t fat16_file_read(struct fat16_file_t *file_p,
@@ -550,9 +566,11 @@ ssize_t fat16_file_read(struct fat16_file_t *file_p,
 
 /**
  * Write data from buffer with given size to the file.
+ *
  * @param[in] file_p File object.
  * @param[in] buf buffer to write.
  * @param[in] size number of bytes to write.
+ *
  * @return number of bytes written or EOF(-1).
  */
 ssize_t fat16_file_write(struct fat16_file_t *file_p,
@@ -561,9 +579,11 @@ ssize_t fat16_file_write(struct fat16_file_t *file_p,
 
 /**
  * Sets the file's read/write position relative to mode.
+ *
  * @param[in] file_p File object.
  * @param[in] pos new position in bytes from given mode.
  * @param[in] mode absolute, relative and from end.
+ *
  * @return zero(0) or negative error code.
  */
 int fat16_file_seek(struct fat16_file_t *file_p,
@@ -572,14 +592,18 @@ int fat16_file_seek(struct fat16_file_t *file_p,
 
 /**
  * Return current position.
+ *
  * @param[in] file_p File object.
+ *
  * @return zero(0) or negative error code.
  */
 ssize_t fat16_file_tell(struct fat16_file_t *file_p);
 
 /**
  * Return number of bytes in file.
+ *
  * @param[in] file_p File object.
+ *
  * @return File size in bytes or negative error code.
  */
 ssize_t fat16_file_size(struct fat16_file_t *file_p);
@@ -587,7 +611,9 @@ ssize_t fat16_file_size(struct fat16_file_t *file_p);
 /**
  * The sync() call causes all modified data and directory fields to be
  * written to the storage device.
+ *
  * @param[in] file_p File object.
+ *
  * @return zero(0) or negative error code.
  */
 int fat16_file_sync(struct fat16_file_t *file_p);
