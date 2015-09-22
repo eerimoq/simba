@@ -1,5 +1,5 @@
 /**
- * @file ports/linux/sd_port.i
+ * @file sd_stub.c
  * @version 1.0
  *
  * @section License
@@ -18,41 +18,52 @@
  * This file is part of the Simba project.
  */
 
-static int sd_port_init(struct sd_driver_t *drv_p)
-{
-    drv_p->file_p = fopen("sdcard", "r+b");
+#include "simba.h"
 
-    return (drv_p->file_p == NULL);
+static FILE *file_p = NULL;
+
+int sd_init(struct sd_driver_t *drv_p,
+            struct spi_driver_t *spi_p)
+{
+    file_p = fopen("sdcard", "r+b");
+    
+    return (file_p == NULL);
 }
 
-static ssize_t sd_port_read(struct sd_driver_t *drv_p,
-                            void *dst_p,
-                            uint32_t src_block)
+ssize_t sd_read_block(struct sd_driver_t *drv_p,
+                      void *dst_p,
+                      uint32_t src_block)
 {
     size_t block_start;
 
     /* Find given block. */
     block_start = (SD_BLOCK_SIZE * src_block);
 
-    if (fseek(drv_p->file_p, block_start, SEEK_SET) != 0) {
+    if (fseek(file_p, block_start, SEEK_SET) != 0) {
         return (1);
     }
 
-    return (fread(dst_p, 1, SD_BLOCK_SIZE, drv_p->file_p));
+    return (fread(dst_p, 1, SD_BLOCK_SIZE, file_p));
 }
 
-static ssize_t sd_port_write(struct sd_driver_t *drv_p,
-                             uint32_t dst_block,
-                             const void *src_p)
+ssize_t sd_write_block(struct sd_driver_t *drv_p,
+                       uint32_t dst_block,
+                       const void *src_p)
 {
     size_t block_start;
 
     /* Find given block. */
     block_start = (SD_BLOCK_SIZE * dst_block);
 
-    if (fseek(drv_p->file_p, block_start, SEEK_SET) != 0) {
+    if (fseek(file_p, block_start, SEEK_SET) != 0) {
         return (1);
     }
 
-    return (fwrite(src_p, 1, SD_BLOCK_SIZE, drv_p->file_p));
+    if (fwrite(src_p, 1, SD_BLOCK_SIZE, file_p) != SD_BLOCK_SIZE) {
+        return (-1);
+    }
+
+    fflush(file_p);
+
+    return (SD_BLOCK_SIZE);
 }

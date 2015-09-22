@@ -73,6 +73,13 @@ ssize_t spi_transfer(struct spi_driver_t *drv_p,
     return (size);
 }
 
+ssize_t spi_read(struct spi_driver_t *drv_p,
+                 void *rxbuf_p,
+                 size_t size)
+{
+    return (spi_transfer(drv_p, rxbuf_p, NULL, size));
+}
+
 ssize_t spi_write(struct spi_driver_t *drv_p,
                   const void *txbuf_p,
                   size_t size)
@@ -80,9 +87,14 @@ ssize_t spi_write(struct spi_driver_t *drv_p,
     return (spi_transfer(drv_p, NULL, txbuf_p, size));
 }
 
-ssize_t spi_read(struct spi_driver_t *drv_p,
-                 void *rxbuf_p,
-                 size_t size)
+ssize_t spi_get(struct spi_driver_t *drv_p,
+                uint8_t *data_p)
 {
-    return (spi_transfer(drv_p, rxbuf_p, NULL, size));
+    return (spi_read(drv_p, data_p, NULL, 1));
+}
+
+ssize_t spi_put(struct spi_driver_t *drv_p,
+                uint8_t data)
+{
+    return (spi_write(drv_p, NULL, &data, 1));
 }

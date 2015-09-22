@@ -37,12 +37,6 @@
  * 3. https://github.com/mikaelpatel/Cosa/tree/master/libraries/FAT16
  */
 
-/* Show date column in ls output. */
-#define FAT16_LS_DATE 0x1
-
-/* Show time column in ls output. */
-#define FAT16_LS_SIZE 0x2
-
 /* File open options. */
 #define O_READ   0x01                /* Open for reading. */
 #define O_RDONLY O_READ              /* Same as O_READ. */
@@ -58,7 +52,25 @@
                                         exists. */
 #define O_TRUNC  0x40                /* Truncate the file to zero length. */
 
-/* FAT entry */
+/* file is read-only. */
+#define DIR_ATTR_READ_ONLY 0x01
+
+/* File should hidden in directory listings. */
+#define DIR_ATTR_HIDDEN 0x02
+
+/* Entry is for a system file. */
+#define DIR_ATTR_SYSTEM 0x04
+
+/* Directory entry contains the volume label. */
+#define DIR_ATTR_VOLUME_ID 0x08
+
+/* Entry is for a directory. */
+#define DIR_ATTR_DIRECTORY 0x10
+
+/* Old DOS archive bit for backup support. */
+#define DIR_ATTR_ARCHIVE 0x20
+
+/* FAT entry.  */
 typedef uint16_t fat_t;
 
 /**
@@ -186,12 +198,14 @@ struct bpb_t {
      */
     uint8_t sectors_per_cluster;
     /**
-     * Number of sectors before the first FAT.
-     * This value must not be zero.
+     * Number of sectors before the first FAT. This value must not be
+     * zero.
      */
     uint16_t reserved_sector_count;
-    /** The count of FAT data structures on the volume. This field should
-     *  always contain the value 2 for any FAT volume of any type.
+    /**
+     * The count of FAT data structures on the volume. This field
+     * should always contain the value 2 for any FAT volume of any
+     * type.
      */
     uint8_t fat_count;
     /**
@@ -434,11 +448,23 @@ struct fat16_t {
 struct fat16_file_t {
     struct fat16_t *fat16_p; /* file system that contains this file */
     uint8_t flags;           /* see above for bit definitions */
+    int16_t dir_entry_block; /* block of directory entry for open file */
     int16_t dir_entry_index; /* index of directory entry for open file */
     fat_t first_cluster;     /* first cluster of file */
     size_t file_size;        /* fileSize */
     fat_t cur_cluster;       /* current cluster */
     size_t cur_position;     /* current byte offset */
+};
+
+struct fat16_dir_t {
+    struct fat16_file_t file; /* use the file datastructure to
+                                 reresent a directory */
+};
+
+struct fat16_dir_entry_t {
+    char name[256];
+    uint8_t attributes;
+    size_t size;
 };
 
 /**
@@ -456,7 +482,7 @@ struct fat16_file_t {
  * @return zero(0) or negative error code.
  */
 int fat16_init(struct fat16_t *fat16_p,
-               struct sd_driver_t* sd_p,
+               struct sd_driver_t *sd_p,
                unsigned int partition);
 
 /**
@@ -479,6 +505,13 @@ int fat16_start(struct fat16_t *fat16_p);
 int fat16_stop(struct fat16_t *fat16_p);
 
 /**
+ * Crate an empty FAT16 file system on device.
+ *
+ * @param[in] fat16_p FAT16 object.
+ */
+int fat16_format(struct fat16_t *fat16_p);
+
+/**
  * Print volume information to given channel.
  *
  * @param[in] fat16_p FAT16 object.
@@ -488,57 +521,38 @@ int fat16_stop(struct fat16_t *fat16_p);
 int fat16_print(struct fat16_t *fat16_p, chan_t *chan_p);
 
 /**
- * List directory contents to given iostream with selected
- * information.
+ * Remove a file from the file system.
  *
  * @param[in] fat16_p FAT16 object.
- * @param[in] chan_p Output channel.
- * @param[in] flags The inclusive OR of FAT16_LS_DATE (file
- *                  modification date) and FAT16_LS_SIZE (file size).
+ * @param[in] path_p Absolute path of the file to remove.
+ *
+ * @return zero(0) or negative error code.
  */
-int fat16_ls(struct fat16_t *fat16_p,
-             chan_t *chan_p,
-             int flags);
+int fat16_rmfile(struct fat16_t *fat16_p, const char* path_p);
 
 /**
- * Remove a file. The directory entry and all data for the file are
- * deleted.
+ * Remove an empty directory from the file system.
  *
  * @param[in] fat16_p FAT16 object.
- * @param[in] path_p Name of the file to be removed.
+ * @param[in] path_p Absolute path of the directory to remove.
  *
- * @note This function should not be used to delete the 8.3 version of
- *       a file that has a long name. For example if a file has the
- *       long name "New Text Document.txt" you should not delete the
- *       8.3 name "NEWTEX~1.TXT".
- *
- *
- * @return The value one, true, is returned for success and the value
- *         zero, false, is returned for failure. Reasons for failure
- *         include the file is read only, \a fileName is not found or
- *         an I/O error occurred.
+ * @return zero(0) or negative error code.
  */
-int fat16_rm(struct fat16_t *fat16_p,
-             const char* path_p);
+int fat16_rmdir(struct fat16_t *fat16_p, const char* path_p);
 
 /**
- * Open a file by file name and mode flags. The file must be in the
- * root directory and must have a DOS 8.3 name. Returns true if
- * successful otherwise false for failure. Reasons for failure include
- * the FAT volume has not been initialized, a file is already open,
- * file name, is invalid, the file does not exist, is a directory, or
- * can't be opened in the access mode specified by oflag.
+ * Open a file by file path and mode flags.
  *
  * @param[in] fat16_p FAT16 object.
  * @param[in,out] file_p File object to be initialized.
- * @param[in] path_p A valid 8.3 DOS name for a file in the root.
+ * @param[in] path_p A valid 8.3 DOS name for a file path.
  * @param[in] oflag mode of file open (create, read, write, etc).
  *
  * @return zero(0) or negative error code.
  */
 int fat16_file_open(struct fat16_t *fat16_p,
                     struct fat16_file_t *file_p,
-                    const char* path_p,
+                    const char *path_p,
                     int oflag);
 
 /**
@@ -555,23 +569,23 @@ int fat16_file_close(struct fat16_file_t *file_p);
  * Read data to given buffer with given size from the file.
  *
  * @param[in] file_p File object.
- * @param[in] buf buffer to read into.
+ * @param[in] buf_p Buffer to read into.
  * @param[in] size number of bytes to read.
  *
  * @return number of bytes read or EOF(-1).
  */
 ssize_t fat16_file_read(struct fat16_file_t *file_p,
-                        void* buf_p,
+                        void *buf_p,
                         size_t size);
 
 /**
  * Write data from buffer with given size to the file.
  *
  * @param[in] file_p File object.
- * @param[in] buf buffer to write.
+ * @param[in] buf_p Buffer to write.
  * @param[in] size number of bytes to write.
  *
- * @return number of bytes written or EOF(-1).
+ * @return Number of bytes written or EOF(-1).
  */
 ssize_t fat16_file_write(struct fat16_file_t *file_p,
                          const void *buf_p,
@@ -591,16 +605,16 @@ int fat16_file_seek(struct fat16_file_t *file_p,
                     int whence);
 
 /**
- * Return current position.
+ * Return current position in the file.
  *
  * @param[in] file_p File object.
  *
- * @return zero(0) or negative error code.
+ * @return Current position or negative error code.
  */
 ssize_t fat16_file_tell(struct fat16_file_t *file_p);
 
 /**
- * Return number of bytes in file.
+ * Return number of bytes in the file.
  *
  * @param[in] file_p File object.
  *
@@ -609,13 +623,49 @@ ssize_t fat16_file_tell(struct fat16_file_t *file_p);
 ssize_t fat16_file_size(struct fat16_file_t *file_p);
 
 /**
- * The sync() call causes all modified data and directory fields to be
- * written to the storage device.
+ * Causes all modified data and directory fields to be written to the
+ * storage device.
  *
- * @param[in] file_p File object.
+ * @param[in] fat16_p FAT16 object.
  *
  * @return zero(0) or negative error code.
  */
 int fat16_file_sync(struct fat16_file_t *file_p);
+
+/**
+ * Open a directory by directory path and mode flags.
+ *
+ * @param[in] fat16_p FAT16 object.
+ * @param[in,out] dir_p Directory object to be initialized.
+ * @param[in] path_p A valid 8.3 DOS name for a directory path.
+ * @param[in] oflag mode of the directory to open (create, read, etc).
+ *
+ * @return zero(0) or negative error code.
+ */
+int fat16_dir_open(struct fat16_t *fat16_p,
+                   struct fat16_dir_t *dir_p,
+                   const char *path_p,
+                   int oflag);
+
+/**
+ * Close given directory.
+ *
+ * @param[in] dir_p Directory object.
+ *
+ * @return zero(0) or negative error code.
+ */
+int fat16_dir_close(struct fat16_dir_t *dir_p);
+
+/**
+ * Read the next file or directory within the opened directory.
+ *
+ * @param[in] dir_p Directory object.
+ * @param[out] entry_p Read entry.
+ *
+ * @return true(1) if an entry was read or false(0) if no entry could
+ *         be read, otherwise negative error code.
+ */
+int fat16_dir_read(struct fat16_dir_t *dir_p,
+                   struct fat16_dir_entry_t *entry_p);
 
 #endif

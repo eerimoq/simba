@@ -26,12 +26,16 @@ int test_print(struct harness_t *harness_p)
     struct fat16_t fs;
 
     /* Initialize and start the SD card. */
-    BTASSERT(sd_init(&sd) == 0);
+    BTASSERT(sd_init(&sd, NULL) == 0);
 
     /* Initialize and start the file system. */
     BTASSERT(fat16_init(&fs, &sd, 0) == 0);
     BTASSERT(fat16_start(&fs) == 0);
 
+    /* Format the file system. */
+    BTASSERT(fat16_format(&fs) == 0);
+
+    /* Print various information about the file system. */
     BTASSERT(fat16_print(&fs, &harness_p->uart.chout) == 0);
 
     /* Stop the file system. */
@@ -40,7 +44,7 @@ int test_print(struct harness_t *harness_p)
     return (0);
 }
 
-int test_file_operations(struct harness_t *harness)
+int test_file_operations(struct harness_t *harness_p)
 {
     struct sd_driver_t sd;
     struct fat16_t fs;
@@ -48,11 +52,14 @@ int test_file_operations(struct harness_t *harness)
     char buf[16];
 
     /* Initialize and start the SD card. */
-    BTASSERT(sd_init(&sd) == 0);
+    BTASSERT(sd_init(&sd, NULL) == 0);
 
     /* Initialize and start the file system. */
     BTASSERT(fat16_init(&fs, &sd, 0) == 0);
     BTASSERT(fat16_start(&fs) == 0);
+
+    /* Format the file system. */
+    BTASSERT(fat16_format(&fs) == 0);
 
     /* Create an empty file and operate on it. */
     BTASSERT(fat16_file_open(&fs, &foo, "FOO.TXT", O_CREAT | O_RDWR | O_SYNC) == 0);
@@ -73,7 +80,7 @@ int test_file_operations(struct harness_t *harness)
     return (0);
 }
 
-int test_create_multiple_files(struct harness_t *harness)
+int test_create_multiple_files(struct harness_t *harness_p)
 {
     struct sd_driver_t sd;
     struct fat16_t fs;
@@ -82,11 +89,14 @@ int test_create_multiple_files(struct harness_t *harness)
     int i;
 
     /* Initialize and start the SD card. */
-    BTASSERT(sd_init(&sd) == 0);
+    BTASSERT(sd_init(&sd, NULL) == 0);
 
     /* Initialize and start the file system. */
     BTASSERT(fat16_init(&fs, &sd, 0) == 0);
     BTASSERT(fat16_start(&fs) == 0);
+
+    /* Format the file system. */
+    BTASSERT(fat16_format(&fs) == 0);
 
     for (i = 0; i < 32; i++) {
         std_sprintf(filename, FSTR("FILE%d.TXT"), i);
@@ -101,7 +111,7 @@ int test_create_multiple_files(struct harness_t *harness)
     return (0);
 }
 
-int test_reopen(struct harness_t *harness)
+int test_reopen(struct harness_t *harness_p)
 {
     struct sd_driver_t sd;
     struct fat16_t fs;
@@ -109,11 +119,14 @@ int test_reopen(struct harness_t *harness)
     char buf[16];
 
     /* Initialize and start the SD card. */
-    BTASSERT(sd_init(&sd) == 0);
+    BTASSERT(sd_init(&sd, NULL) == 0);
 
     /* Initialize and start the file system. */
     BTASSERT(fat16_init(&fs, &sd, 0) == 0);
     BTASSERT(fat16_start(&fs) == 0);
+
+    /* Format the file system. */
+    BTASSERT(fat16_format(&fs) == 0);
 
     /* Create an empty file and write to it. */
     BTASSERT(fat16_file_open(&fs, &bar, "BAR.TXT", O_CREAT | O_WRITE | O_SYNC) == 0);
@@ -132,27 +145,68 @@ int test_reopen(struct harness_t *harness)
     return (0);
 }
 
-int test_ls(struct harness_t *harness)
+int test_directory(struct harness_t *harness_p)
 {
     struct sd_driver_t sd;
     struct fat16_t fs;
+    struct fat16_dir_t dir;
+    struct fat16_file_t foo;
+    struct fat16_dir_entry_t entry;
+    char buf[32];
 
     /* Initialize and start the SD card. */
-    BTASSERT(sd_init(&sd) == 0);
+    BTASSERT(sd_init(&sd, NULL) == 0);
 
     /* Initialize and start the file system. */
     BTASSERT(fat16_init(&fs, &sd, 1) == 0);
     BTASSERT(fat16_start(&fs) == 0);
 
-    /* List all files in the file system. */
-    std_printf(FSTR("List of files:\r\n"));
-    BTASSERT(fat16_ls(&fs, &harness->uart.chout, 0) == 0);
+    /* Format the file system. */
+    BTASSERT(fat16_format(&fs) == 0);
 
-    /* List all files in the file system. Show date and size columns. */
-    std_printf(FSTR("List of files with date and size columns:\r\n"));
-    BTASSERT(fat16_ls(&fs,
-                      &harness->uart.chout,
-                      (FAT16_LS_DATE | FAT16_LS_SIZE)) == 0);
+    /* Create an empty directory called HOME and read it's contents. */
+    BTASSERT(fat16_dir_open(&fs, &dir, "HOME", O_CREAT | O_WRITE | O_SYNC) == 0);
+    BTASSERT(fat16_dir_close(&dir) == 0);
+
+    /* Re-open the directory with read option set. */
+    BTASSERT(fat16_dir_open(&fs, &dir, "HOME", O_READ) == 0);
+
+    BTASSERT(fat16_dir_read(&dir, &entry) == 1);
+    BTASSERT(strcmp(entry.name, ".          ") == 0);
+
+    BTASSERT(fat16_dir_read(&dir, &entry) == 1);
+    BTASSERT(strcmp(entry.name, "..         ") == 0);
+
+    BTASSERT(fat16_dir_read(&dir, &entry) == 0);
+
+    BTASSERT(fat16_dir_close(&dir) == 0);
+
+    /* Create a directory called ERIK in the home directory. */
+    BTASSERT(fat16_dir_open(&fs, &dir, "HOME/ERIK", O_CREAT | O_WRITE | O_SYNC) == 0);
+    BTASSERT(fat16_dir_close(&dir) == 0);
+
+    /* Create a file in HOME and write to it. */
+    BTASSERT(fat16_file_open(&fs, &foo, "HOME/FOO.TXT", O_CREAT | O_WRITE | O_SYNC) == 0);
+    BTASSERT(fat16_file_write(&foo, "Write in subfolder.\n", 20) == 20);
+    BTASSERT(fat16_file_close(&foo) == 0);
+
+    /* Read from file in HOME. */
+    BTASSERT(fat16_file_open(&fs, &foo, "HOME/FOO.TXT", O_READ) == 0);
+    BTASSERT(fat16_file_read(&foo, buf, 20) == 20);
+    BTASSERT(memcmp(buf, "Write in subfolder.\n", 20) == 0);
+    BTASSERT(fat16_file_close(&foo) == 0);
+
+    /* Create a file in HOME/ERIK. */
+    BTASSERT(fat16_file_open(&fs, &foo, "HOME/ERIK/BAR.TXT", O_CREAT | O_WRITE | O_SYNC) == 0);
+    BTASSERT(fat16_file_close(&foo) == 0);
+
+    /* /\* Try to remove the non-empty HOME directory. It should fail */
+    /*    since it's only allowed to remove empty directories. *\/ */
+    /* BTASSERT(fat16_rmdir(&fs, "HOME") == -ENOTEMPTY); */
+
+    /* /\* Remove HOME/ERIK and then HOME, successfully. *\/ */
+    /* BTASSERT(fat16_rmdir(&fs, "HOME/ERIK") == 0); */
+    /* BTASSERT(fat16_rmdir(&fs, "HOME") == 0); */
 
     /* Stop the file system. */
     BTASSERT(fat16_stop(&fs) == 0);
@@ -168,7 +222,7 @@ int main()
         { test_file_operations, "test_file_operations" },
         { test_create_multiple_files, "test_create_multiple_files" },
         { test_reopen, "test_reopen" },
-        { test_ls, "test_ls" },
+        { test_directory, "test_directory" },
         { NULL, NULL }
     };
 

@@ -107,4 +107,24 @@ ssize_t spi_write(struct spi_driver_t *drv_p,
                   const void *buf_p,
                   size_t size);
 
+/**
+ * Get one byte of data from the SPI bus.
+ *
+ * @param[in] drv_p Initialized driver object.
+ * @param[out] data_p Read data.
+ *
+ * @return Number of read bytes or negative error code.
+ */
+ssize_t spi_get(struct spi_driver_t *drv_p, uint8_t *data_p);
+
+/**
+ * Put one byte of data to the SPI bus.
+ *
+ * @param[in] drv_p Initialized driver object.
+ * @param[in] data data to write.
+ *
+ * @return Number of written bytes or negative error code.
+ */
+ssize_t spi_put(struct spi_driver_t *drv_p, uint8_t data);
+
 #endif

@@ -20,8 +20,8 @@
 
 NAME = fat16_suite
 BOARD = linux
-SRC += main.c
-DRIVERS_SRC = uart.c sd.c
+SRC += main.c sd_stub.c
+DRIVERS_SRC = uart.c
 
 SIMBA = ../../..
 include $(SIMBA)/make/app.mk

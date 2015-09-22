@@ -23,15 +23,15 @@
 #include "simba.h"
 #include <arpa/inet.h>
 
-/* define fields in flags_ require sync directory entry */
+/* define fields in flags_ require sync directory entry. */
 #define F_OFLAG (O_RDWR | O_APPEND | O_SYNC)
 #define F_FILE_DIR_DIRTY 0x80
 
-/** Value for byte 510 and 511 of boot block or MBR */
+/** Value for byte 510 and 511 of boot block or MBR. */
 #define BOOTSIG ntohs(0x55aa)
 
-#define CACHE_FOR_READ  0    /* cache a block for read */
-#define CACHE_FOR_WRITE 1    /* cache a block and set dirty */
+#define CACHE_FOR_READ  0    /* cache a block for read. */
+#define CACHE_FOR_WRITE 1    /* cache a block and set dirty. */
 
 /* FAT16 end of chain value used by Microsoft. */
 #define EOC16 0xffff
@@ -48,52 +48,34 @@
 /* Mask a for FAT32 entry. Entries are 28 bits. */
 #define ENTRY32_MASK 0x0fffffff
 
-/* Type name for directoryEntry */
+/* Type name for directoryEntry. */
 
-/* escape for name[0] = 0xe5 */
+/* escape for name[0] = 0xe5. */
 #define DIR_NAME_0XE5 0x05
 
-/* name[0] value for entry that is free after being "deleted" */
+/* name[0] value for entry that is free after being "deleted". */
 #define DIR_NAME_DELETED 0xe5
 
-/* name[0] value for entry that is free and no allocated entries follow */
+/* name[0] value for entry that is free and no allocated entries follow. */
 #define DIR_NAME_FREE 0x00
 
-/* file is read-only */
-#define DIR_ATTR_READ_ONLY 0x01
-
-/* File should hidden in directory listings */
-#define DIR_ATTR_HIDDEN 0x02
-
-/* Entry is for a system file */
-#define DIR_ATTR_SYSTEM 0x04
-
-/* Directory entry contains the volume label */
-#define DIR_ATTR_VOLUME_ID 0x08
-
-/* Entry is for a directory */
-#define DIR_ATTR_DIRECTORY 0x10
-
-/* Old DOS archive bit for backup support */
-#define DIR_ATTR_ARCHIVE 0x20
-
-/* Test value for long name entry */
+/* Test value for long name entry. */
 #define DIR_ATTR_LONG_NAME 0x0f
 
-/* Test mask for long name entry */
+/* Test mask for long name entry. */
 #define DIR_ATTR_LONG_NAME_MASK 0x3f
 
-/* defined attribute bits */
+/* defined attribute bits. */
 #define DIR_ATTR_DEFINED_BITS 0x3f
 
-/* Mask for file/subdirectory tests */
+/* Mask for file/subdirectory tests. */
 #define DIR_ATTR_FILE_TYPE_MASK (DIR_ATTR_VOLUME_ID | DIR_ATTR_DIRECTORY)
 #define DIR_ATTR_SKIP           (DIR_ATTR_VOLUME_ID | DIR_ATTR_DIRECTORY)
 
-/** Default date for file timestamps is 1 Jan 2000 */
+/** Default date for file timestamps is 1 Jan 2000. */
 #define DEFAULT_DATE (((2000 - 1980) << 9) | (1 << 5) | 1)
 
-/** Default time for file timestamp is 1 am */
+/** Default time for file timestamp is 1 am. */
 #define DEFAULT_TIME (1 << 11)
 
 static int is_end_of_cluster(fat_t cluster)
@@ -135,19 +117,24 @@ static inline int dir_is_file_or_subdir(const struct dir_t* dir_p)
     return ((dir_p->attributes & DIR_ATTR_VOLUME_ID) == 0);
 }
 
-static int make_83_name(const char* str_p, uint8_t* name_p)
+static int make_83_name(const char* str_p,
+                        ssize_t size,
+                        uint8_t* name_p)
 {
     uint8_t c;
     uint8_t n = 7;
     uint8_t i;
     uint8_t b;
+    int pos;
     FAR const char *invalid_p;
 
     memset(name_p, ' ', 11);
 
     i = 0;
 
-    while ((c = *str_p++) != '\0') {
+    for (pos = 0; pos < size; pos++) {
+        c = str_p[pos];
+
         if (c == '.') {
             if (n == 10) {
                 return (0);
@@ -161,13 +148,13 @@ static int make_83_name(const char* str_p, uint8_t* name_p)
 
             while ((b = *invalid_p++) != '\0') {
                 if (b == c) {
-                    return (1);
+                    return (-1);
                 }
             }
 
             /* Invalid characters in file name. */
             if (i > n || c < 0x21 || c > 0x7e) {
-                return (1);
+                return (-1);
             }
 
             /* Add valid character to name. */
@@ -185,28 +172,28 @@ static int cache_flush(struct fat16_t *fat16_p)
     struct fat16_cache_t *cache_p = &fat16_p->cache;
 
     if (cache_p->dirty)
-    {
-        if (sd_write(fat16_p->sd_p,
-                     cache_p->block_number,
-                     cache_p->buffer.data) != SD_BLOCK_SIZE)
         {
-            return (1);
+            if (sd_write_block(fat16_p->sd_p,
+                               cache_p->block_number,
+                               cache_p->buffer.data) != SD_BLOCK_SIZE)
+                {
+                    return (-1);
+                }
+
+            if (cache_p->mirror_block)
+                {
+                    if (sd_write_block(fat16_p->sd_p,
+                                       cache_p->mirror_block,
+                                       cache_p->buffer.data) != SD_BLOCK_SIZE)
+                        {
+                            return (-1);
+                        }
+
+                    cache_p->mirror_block = 0;
+                }
+
+            cache_p->dirty = 0;
         }
-
-        if (cache_p->mirror_block)
-        {
-            if (sd_write(fat16_p->sd_p,
-                         cache_p->mirror_block,
-                         cache_p->buffer.data) != SD_BLOCK_SIZE)
-            {
-                return (1);
-            }
-
-            cache_p->mirror_block = 0;
-        }
-
-        cache_p->dirty = 0;
-    }
 
     return (0);
 }
@@ -243,21 +230,21 @@ static int cache_raw_block(struct fat16_t *fat16_p,
     struct fat16_cache_t *cache_p = &fat16_p->cache;
 
     if (cache_p->block_number != block_number)
-    {
-        if (cache_flush(fat16_p) != 0)
         {
-            return (1);
-        }
+            if (cache_flush(fat16_p) != 0)
+                {
+                    return (-1);
+                }
 
-        if (sd_read(fat16_p->sd_p,
-                    cache_p->buffer.data,
-                    block_number) != SD_BLOCK_SIZE)
-        {
-            return (1);
-        }
+            if (sd_read_block(fat16_p->sd_p,
+                              cache_p->buffer.data,
+                              block_number) != SD_BLOCK_SIZE)
+                {
+                    return (-1);
+                }
 
-        cache_p->block_number = block_number;
-    }
+            cache_p->block_number = block_number;
+        }
 
     cache_p->dirty |= action;
 
@@ -271,19 +258,19 @@ static int fat_get(struct fat16_t *fat16_p,
     uint32_t lba;
 
     if (cluster > (fat16_p->cluster_count + 1))
-    {
-        return (1);
-    }
+        {
+            return (-1);
+        }
 
     lba = fat16_p->fat_start_block + (cluster >> 8);
 
     if (lba != fat16_p->cache.block_number)
-    {
-        if (cache_raw_block(fat16_p, lba, CACHE_FOR_READ))
         {
-            return (1);
+            if (cache_raw_block(fat16_p, lba, CACHE_FOR_READ))
+                {
+                    return (-1);
+                }
         }
-    }
 
     *value = fat16_p->cache.buffer.fat[cluster & 0xff];
 
@@ -295,18 +282,18 @@ static int fat_put(struct fat16_t *fat16_p, fat_t cluster, fat_t value)
     uint32_t lba;
 
     if (cluster < 2) {
-        return (1);
+        return (-1);
     }
 
     if (cluster > (fat16_p->cluster_count + 1)) {
-        return (1);
+        return (-1);
     }
 
     lba = fat16_p->fat_start_block + (cluster >> 8);
 
     if (lba != fat16_p->cache.block_number) {
         if (cache_raw_block(fat16_p, lba, CACHE_FOR_READ) != 0) {
-            return (1);
+            return (-1);
         }
     }
 
@@ -321,102 +308,15 @@ static int fat_put(struct fat16_t *fat16_p, fat_t cluster, fat_t value)
 }
 
 static struct dir_t* cache_dir_entry(struct fat16_t *fat16_p,
+                                     uint16_t block,
                                      uint16_t index,
                                      uint8_t action)
 {
-    if (index >= fat16_p->root_dir_entry_count) {
-        return (NULL);
-    }
-
-    if (cache_raw_block(fat16_p,
-                        fat16_p->root_dir_start_block + (index >> 4),
-                        action) != 0) {
+    if (cache_raw_block(fat16_p, block + (index >> 4), action) != 0) {
         return (NULL);
     }
 
     return (&fat16_p->cache.buffer.dir[index & 0xf]);
-}
-
-static int fat16_read(struct fat16_t *fat16_p,
-                      struct dir_t* dir,
-                      uint16_t* index,
-                      uint8_t skip)
-{
-    struct dir_t* dir_p;
-    uint16_t i;
-
-    for (i = *index; ; i++) {
-        if (i >= fat16_p->root_dir_entry_count) {
-            return (1);
-        }
-
-        if (!(dir_p = cache_dir_entry(fat16_p, i, CACHE_FOR_READ))) {
-            return (1);
-        }
-
-        /* Done if beyond last used entry */
-        if (dir_p->name[0] == DIR_NAME_FREE) {
-            return (1);
-        }
-
-        /* Skip deleted entry */
-        if (dir_p->name[0] == DIR_NAME_DELETED) {
-            continue;
-        }
-
-        /* Skip long names */
-        if ((dir_p->attributes & DIR_ATTR_LONG_NAME_MASK) == DIR_ATTR_LONG_NAME) {
-            continue;
-        }
-
-        /* Skip if attribute match */
-        if (dir_p->attributes & skip) {
-            continue;
-        }
-
-        /* Return found index */
-        *index = i;
-
-        break;
-    }
-
-    memcpy(dir, dir_p, sizeof(struct dir_t));
-
-    return (0);
-}
-
-static int print_dir_name(chan_t *chan_p,
-                          const struct dir_t *dir_p,
-                          uint8_t width)
-{
-    uint8_t w = 0;
-    uint8_t i;
-
-    for (i = 0; i < 11; i++) {
-        if (dir_p->name[i] == ' ') {
-            continue;
-        }
-
-        if (i == 8) {
-            chan_write(chan_p, ".", 1);
-            w++;
-        }
-
-        chan_write(chan_p, &dir_p->name[i], 1);
-        w++;
-    }
-
-    if (dir_is_subdir(dir_p)) {
-        chan_write(chan_p, "/", 1);
-        w++;
-    }
-
-    while (w < width) {
-        chan_write(chan_p, " ", 1);
-        w++;
-    }
-
-    return (0);
 }
 
 static int free_chain(struct fat16_t *fat16_p, fat_t cluster)
@@ -425,11 +325,11 @@ static int free_chain(struct fat16_t *fat16_p, fat_t cluster)
 
     while (1) {
         if (fat_get(fat16_p, cluster, &next) != 0) {
-            return (1);
+            return (-1);
         }
 
         if (fat_put(fat16_p, cluster, 0) != 0) {
-            return (1);
+            return (-1);
         }
 
         if (is_end_of_cluster(next)) {
@@ -465,11 +365,11 @@ int fat16_start(struct fat16_t *fat16_p)
     uint32_t total_blocks;
     struct bpb_t* bpb_p;
 
-    /* If part == 0 assume super floppy with FAT16 boot sector in block zero */
-    /* If part > 0 assume mbr volume with partition table */
+    /* If part == 0 assume super floppy with FAT16 boot sector in block zero. */
+    /* If part > 0 assume mbr volume with partition table. */
     if (fat16_p->partition > 0) {
         if (cache_raw_block(fat16_p, volume_start_block, CACHE_FOR_READ) != 0) {
-            return (1);
+            return (-1);
         }
 
         volume_start_block =
@@ -477,12 +377,12 @@ int fat16_start(struct fat16_t *fat16_p)
     }
 
     if (cache_raw_block(fat16_p, volume_start_block, CACHE_FOR_READ) != 0) {
-        return (1);
+        return (-1);
     }
 
-    /* Check boot block signature */
+    /* Check boot block signature. */
     if (fat16_p->cache.buffer.fbs.boot_sector_sig != BOOTSIG) {
-        return (1);
+        return (-1);
     }
 
     bpb_p = &fat16_p->cache.buffer.fbs.bpb;
@@ -502,17 +402,17 @@ int fat16_start(struct fat16_t *fat16_p)
                                - (fat16_p->data_start_block - volume_start_block))
                               / bpb_p->sectors_per_cluster);
 
-    /* Check valid FAT16 volume */
-    if ((bpb_p->bytes_per_sector != 512)      /* Only allow 512 byte blocks */
-        || (bpb_p->sectors_per_fat == 0)      /* Zero for FAT32 */
-        || (fat16_p->cluster_count < 4085)    /* FAT12 if true */
-        || (total_blocks > 0x800000)          /* Max size for FAT16 volume */
-        || (bpb_p->reserved_sector_count == 0)  /* invalid volume */
-        || (bpb_p->fat_count == 0)             /* invalid volume */
+    /* Check valid FAT16 volume. */
+    if ((bpb_p->bytes_per_sector != 512)       /* Only allow 512 byte blocks. */
+        || (bpb_p->sectors_per_fat == 0)       /* Zero for FAT32. */
+        || (fat16_p->cluster_count < 4085)     /* FAT12 if true. */
+        || (total_blocks > 0x800000)           /* Max size for FAT16 volume. */
+        || (bpb_p->reserved_sector_count == 0) /* Invalid volume. */
+        || (bpb_p->fat_count == 0)             /* Invalid volume. */
         || (bpb_p->sectors_per_fat < (fat16_p->cluster_count >> 8))
         || (bpb_p->sectors_per_cluster == 0)
         || (bpb_p->sectors_per_cluster & (bpb_p->sectors_per_cluster - 1))) {
-        return (1);
+        return (-1);
     }
 
     return (0);
@@ -523,53 +423,87 @@ int fat16_stop(struct fat16_t *fat16_p)
     return (0);
 }
 
-int fat16_ls(struct fat16_t *fat16_p, chan_t *chan_p, int flags)
+int fat16_format(struct fat16_t *fat16_p)
 {
-    struct dir_t dir;
-    uint16_t index;
-    union fat16_date_t date;
-    union fat16_time_t time;
+    struct fbs_t fbs;
+    uint32_t volume_start_block = 0;
 
-    for (index = 0; fat16_read(fat16_p,
-                               &dir,
-                               &index,
-                               DIR_ATTR_VOLUME_ID) == 0; index++)
-    {
-        /* Print file name with possible blank fill */
-        print_dir_name(chan_p,
-                       &dir,
-                       (flags & (FAT16_LS_DATE | FAT16_LS_SIZE) ? 14 : 0));
+    fbs.jmp_to_boot_code[0] = 0xeb;
+    fbs.jmp_to_boot_code[1] = 0x3c;
+    fbs.jmp_to_boot_code[2] = 0x90;
+    strcpy(fbs.oem_name, "simba");
 
-        /* Print modify date/time if requested */
-        if (flags & FAT16_LS_DATE)
-        {
-            date = (union fat16_date_t)dir.last_write_date;
-            time = (union fat16_time_t)dir.last_write_time;
-            std_fprintf(chan_p, FSTR("%u-%u-%u %u:%u:%u"),
-                        1980 + date.bits.year,
-                        date.bits.month,
-                        date.bits.day,
-                        time.bits.hours,
-                        time.bits.minutes,
-                        2 * time.bits.seconds);
-        }
+    fbs.bpb.bytes_per_sector = 512;
+    fbs.bpb.sectors_per_cluster = 4;
+    fbs.bpb.reserved_sector_count = 1;
+    fbs.bpb.fat_count = 2;
+    fbs.bpb.root_dir_entry_count = 512;
+    fbs.bpb.total_sectors_small = 32768;
+    fbs.bpb.media_type = 248;
+    fbs.bpb.sectors_per_fat = 32;
+    fbs.bpb.sectors_per_track = 32;
+    fbs.bpb.head_count = 64;
+    fbs.bpb.hiddden_sectors = 0;
+    fbs.bpb.total_sectors_large = 0;
 
-        /* Print size if requested */
-        if (dir_is_file(&dir) && (flags & FAT16_LS_SIZE))
-        {
-            std_fprintf(chan_p, FSTR(" %lu"), (unsigned long)dir.file_size);
-        }
+    fbs.drive_number = 128;
+    fbs.reserved1 = 0;
+    fbs.boot_signature = 41;
+    fbs.volume_serial_number = 1817095464;
+    strcpy(fbs.volume_label, "NO NAME    ");
+    strcpy(fbs.file_system_type, "FAT16   ");
+    memset(fbs.boot_code, 0, sizeof(fbs.boot_code));
+    fbs.boot_sector_sig = BOOTSIG;
 
-        std_fprintf(chan_p, FSTR("\r\n"));
+    /* Cache volume start block. */
+    if (cache_raw_block(fat16_p, volume_start_block, CACHE_FOR_WRITE) != 0) {
+        return (-1);
     }
 
-    return (0);
+    fat16_p->cache.buffer.fbs = fbs;
+
+    /* Clear first fat block. */
+    if (cache_raw_block(fat16_p,
+                        fat16_p->fat_start_block,
+                        CACHE_FOR_WRITE) != 0) {
+        return (-1);
+    }
+
+    memset(&fat16_p->cache.buffer, 0, sizeof(fat16_p->cache.buffer));
+    fat16_p->cache.buffer.fat[0] = 0xfff8;
+    fat16_p->cache.buffer.fat[1] = 0xffff;
+
+    /* Clear mirrored fat block. */
+    if (cache_raw_block(fat16_p,
+                        fat16_p->fat_start_block + fat16_p->blocks_per_fat,
+                        CACHE_FOR_WRITE) != 0) {
+        return (-1);
+    }
+
+    memset(&fat16_p->cache.buffer, 0, sizeof(fat16_p->cache.buffer));
+    fat16_p->cache.buffer.fat[0] = 0xfff8;
+    fat16_p->cache.buffer.fat[1] = 0xffff;
+
+    /* Clear root directory block. */
+    if (cache_raw_block(fat16_p,
+                        fat16_p->root_dir_start_block,
+                        CACHE_FOR_WRITE) != 0) {
+        return (-1);
+    }
+
+    memset(&fat16_p->cache.buffer, 0, sizeof(fat16_p->cache.buffer));
+
+    return (cache_flush(fat16_p));
 }
 
-int fat16_rm(struct fat16_t *fat16_p,
-             const char* path_p)
+int fat16_rmfile(struct fat16_t *fat16_p, const char* path_p)
 {
-    return (0);
+    return (-1);
+}
+
+int fat16_rmdir(struct fat16_t *fat16_p, const char* path_p)
+{
+    return (-1);
 }
 
 int fat16_print(struct fat16_t *fat16_p, chan_t *chan_p)
@@ -601,16 +535,16 @@ static int file_truncate(struct fat16_file_t *file_p,
     uint32_t newPos;
     fat_t toFree;
 
-    /* Error if file is not open for write */
+    /* Error if file is not open for write. */
     if (!(file_p->flags & O_WRITE)) {
-        return (1);
+        return (-1);
     }
 
     if (length > file_p->file_size) {
-        return (1);
+        return (-1);
     }
 
-    /* Filesize and length are zero - nothing to do */
+    /* Filesize and length are zero - nothing to do. */
     if (file_p->file_size == 0) {
         return (0);
     }
@@ -618,29 +552,29 @@ static int file_truncate(struct fat16_file_t *file_p,
     newPos = file_p->cur_position > length ? length : file_p->cur_position;
 
     if (length == 0) {
-        /* Free all clusters */
+        /* Free all clusters. */
         if (!free_chain(file_p->fat16_p, file_p->first_cluster)) {
-            return (1);
+            return (-1);
         }
 
         file_p->cur_cluster = file_p->first_cluster = 0;
     } else {
         if (!fat16_file_seek(file_p, length, SEEK_SET)) {
-            return (1);
+            return (-1);
         }
 
         if (fat_get(file_p->fat16_p, file_p->cur_cluster, &toFree) != 0) {
-            return (1);
+            return (-1);
         }
 
         if (!is_end_of_cluster(toFree)) {
-            /* Free extra clusters */
+            /* Free extra clusters. */
             if (!fat_put(file_p->fat16_p, file_p->cur_cluster, EOC16)) {
-                return (1);
+                return (-1);
             }
 
             if (!free_chain(file_p->fat16_p, toFree)) {
-                return (1);
+                return (-1);
             }
         }
     }
@@ -649,48 +583,430 @@ static int file_truncate(struct fat16_file_t *file_p,
     file_p->flags |= F_FILE_DIR_DIRTY;
 
     if (fat16_file_sync(file_p) != 0) {
-        return (1);
+        return (-1);
     }
 
     return fat16_file_seek(file_p, newPos, SEEK_SET);
 }
 
+static int add_cluster(struct fat16_file_t *file_p)
+{
+    /* Start search after last cluster of file or at cluster two in FAT. */
+    fat_t free_cluster = file_p->cur_cluster ? file_p->cur_cluster : 1;
+    fat_t value;
+    fat_t i;
+    fat_t cluster_count = file_p->fat16_p->cluster_count;
+
+    for (i = 0; ; i++)
+        {
+            /* Return no free clusters. */
+            if (i >= cluster_count) {
+                return (-1);
+            }
+
+            /* Fat has cluster_count + 2 entries. */
+            if (free_cluster > cluster_count) {
+                free_cluster = 1;
+            }
+
+            free_cluster++;
+
+            if (fat_get(file_p->fat16_p, free_cluster, &value) != 0) {
+                return (-1);
+            }
+
+            if (value == 0) {
+                break;
+            }
+        }
+
+    /* Mark cluster allocated. */
+    if (fat_put(file_p->fat16_p, free_cluster, EOC16) != 0) {
+        return (-1);
+    }
+
+    if (file_p->cur_cluster != 0) {
+        /* Link cluster to chain. */
+        if (fat_put(file_p->fat16_p, file_p->cur_cluster, free_cluster) != 0) {
+            return (-1);
+        }
+    } else {
+        /* first cluster of file so update directory entry. */
+        file_p->flags |= F_FILE_DIR_DIRTY;
+        file_p->first_cluster = free_cluster;
+    }
+
+    file_p->cur_cluster = free_cluster;
+
+    return (0);
+}
+
+static int dir_init(struct dir_t *dir_p,
+                    uint8_t *name_p,
+                    uint8_t attributes)
+{
+    /* Initialize as empty file. */
+    memset(dir_p, 0, sizeof(*dir_p));
+    memcpy(dir_p->name, name_p, 11);
+
+    dir_p->attributes = attributes;
+
+    /* Set timestamps with user function or use default date/time. */
+    /* if (dateTime) { */
+    /*     dateTime(&dir_p->creationDate, &dir_p->creationTime); */
+    /* } else { */
+    dir_p->creation_date = DEFAULT_DATE;
+    dir_p->creation_time = DEFAULT_TIME;
+    /* } */
+
+    dir_p->last_access_date = dir_p->creation_date;
+    dir_p->last_write_date = dir_p->creation_date;
+    dir_p->last_write_time = dir_p->creation_time;
+
+    return (0);
+}
+
+static int dir_open_in_blocks(struct fat16_t *fat16_p,
+                              const uint8_t *name_p,
+                              struct dir_t **dir_pp,
+                              int16_t *block_p,
+                              int16_t *index_p,
+                              int start_block,
+                              int end_block)
+{
+    int16_t block;
+    int16_t index;
+    int dir_entries_per_block;
+
+    dir_entries_per_block = (512 / sizeof(**dir_pp));
+
+    for (block = start_block; block < end_block; block++) {
+        for (index = 0; index < dir_entries_per_block; index++) {
+            if (!(*dir_pp = cache_dir_entry(fat16_p,
+                                            block,
+                                            index,
+                                            CACHE_FOR_READ))) {
+                return (-1);
+            }
+
+            if (((*dir_pp)->name[0] == DIR_NAME_FREE)
+                || ((*dir_pp)->name[0] == DIR_NAME_DELETED)) {
+                /* Remember first empty slot */
+                if (*index_p < 0) {
+                    *block_p = block;
+                    *index_p = index;
+                }
+
+                /* Done if no entries follow. */
+                if ((*dir_pp)->name[0] == DIR_NAME_FREE) {
+                    (*dir_pp) = NULL;
+                    return (0);
+                }
+            } else if (!memcmp(name_p, (*dir_pp)->name, 11)) {
+                /* Existing file. */
+                *block_p = block;
+                *index_p = index;
+                return (0);
+            }
+        }
+    }
+
+    return (0);
+}
+
+/**
+ * Open directory with given name in the root folder.
+ *
+ * @param[out] index_p If true(1) is returned this is the index of an
+ *                     existing file. If false(0) is returned this is
+ *                     the index of the filst empty directory
+ *                     entry. Otherwise ignore this value.
+ *
+ * @return zero(0) or negative error code.
+ */
+static int dir_open_in_root(struct fat16_t *fat16_p,
+                            const uint8_t *name_p,
+                            struct dir_t **dir_pp,
+                            int16_t *block_p,
+                            int16_t *index_p)
+{
+    int root_dir_block_count;
+    int dir_entries_per_block;
+
+    *index_p = -1;         /* index of empty slot. */
+    dir_entries_per_block = (512 / sizeof(**dir_pp));
+    root_dir_block_count = (fat16_p->root_dir_entry_count / dir_entries_per_block);
+
+    /* Search for the file in the root directory. */
+    return (dir_open_in_blocks(fat16_p,
+                               name_p,
+                               dir_pp,
+                               block_p,
+                               index_p,
+                               fat16_p->root_dir_start_block,
+                               fat16_p->root_dir_start_block + root_dir_block_count));
+}
+
+/**
+ * Open directory with given name in geven sub folder.
+ *
+ * @param[out] index_p If true(1) is returned this is the index of an
+ *                     existing file. If false(0) is returned this is
+ *                     the index of the filst empty directory
+ *                     entry. Otherwise ignore this value.
+ *
+ * @return zero(0) or negative error code.
+ */
+static int dir_open_in_subdir(struct fat16_t *fat16_p,
+                              const uint8_t *name_p,
+                              struct dir_t **dir_pp,
+                              int16_t *block_p,
+                              int16_t *index_p)
+{
+    fat_t cluster;
+    int start_block;
+
+    *index_p = -1;         /* index of empty slot. */
+
+    /* Search for the file in the subdirectory. Iterate over clusters
+       allocated by this folder. */
+    cluster = (*dir_pp)->first_cluster_low;
+
+    do {
+        start_block = (fat16_p->data_start_block
+                       + ((cluster - 2) * fat16_p->blocks_per_cluster));
+
+        if (dir_open_in_blocks(fat16_p,
+                               name_p,
+                               dir_pp,
+                               block_p,
+                               index_p,
+                               start_block,
+                               start_block + fat16_p->blocks_per_cluster) != 0) {
+            return (-1);
+        }
+
+        if (fat_get(fat16_p, cluster, &cluster) != 0) {
+            return (-1);
+        }
+    } while (!is_end_of_cluster(cluster));
+
+    return (0);
+}
+
+/**
+ * Get name before first '/' or end of path.
+ *
+ * @param[in,out] path_p Path to parse. Is set to NULL when the
+ *                       function returns if the name is the last part
+ *                       of the path.
+ *
+ * @return zero(0) or negative error code.
+ */
+static int get_next_name(const char **path_p, uint8_t *name_p)
+{
+    const char *begin_p = *path_p;
+    size_t size;
+
+    /* Forward to end of name. */
+    while ((**path_p != '/') && (**path_p != '\0')) {
+        (*path_p)++;
+    }
+
+    size = (*path_p - begin_p);
+
+    /* Check valid 8.3 file name. */
+    if (make_83_name(begin_p, size, name_p) != 0) {
+        return (-1);
+    }
+
+    if (**path_p == '/') {
+        (*path_p)++;
+    }
+
+    if (**path_p == '\0') {
+        *path_p = NULL;
+    }
+
+    return (0);
+}
+
+static int dir_open(struct fat16_t *fat16_p,
+                    const char *path_p,
+                    int oflag,
+                    uint8_t attributes,
+                    int16_t *block_p,
+                    int16_t *index_p)
+{
+    uint8_t dname[11];           /* name formated for dir entry. */
+    struct dir_t *dir_p = NULL;  /* pointer to cached dir entry. */
+    int res;
+    int depth = 0;
+
+    do {
+        if (get_next_name(&path_p, dname) != 0) {
+            return (-1);
+        }
+
+        if (depth == 0) {
+            /* Search for the name in the root folder. */
+            res = dir_open_in_root(fat16_p, dname, &dir_p, block_p, index_p);
+        } else {
+            /* Search for the name in a subfolder. */
+            res = dir_open_in_subdir(fat16_p, dname, &dir_p, block_p, index_p);
+        }
+
+        if (res != 0) {
+            return (-1);
+        } else if ((dir_p == NULL) && (path_p != NULL)) {
+            /* Containing directory of next part of path was not found. */
+            return (-1);
+        }
+
+        depth++;
+    } while (path_p != NULL);
+
+    /* The file or directory already exists. */
+    if (dir_p != NULL) {
+        /* Don't open existing file if O_CREAT and O_EXCL. */
+        if ((oflag & (O_CREAT | O_EXCL)) == (O_CREAT | O_EXCL)) {
+            return (-1);
+        }
+
+        return (0);
+    }
+
+    /* Error if directory is full. */
+    if (*index_p < 0) {
+        return (-1);
+    }
+
+    /* Only create file if O_CREAT and O_WRITE. */
+    if ((oflag & (O_CREAT | O_WRITE)) != (O_CREAT | O_WRITE)) {
+        return (-1);
+    }
+
+    if (!(dir_p = cache_dir_entry(fat16_p,
+                                  *block_p,
+                                  *index_p,
+                                  CACHE_FOR_WRITE))) {
+        return (-1);
+    }
+
+    /* Initialize as empty file. */
+    dir_init(dir_p, dname, attributes);
+
+    /* Force created directory entry to be written to storage
+       device. */
+    if (cache_flush(fat16_p) != 0) {
+        return (-1);
+    }
+
+    return (0);
+}
+
+static int get_block(struct fat16_file_t *file_p,
+                     uint16_t *block_offset_p)
+{
+    uint8_t blk_of_cluster;
+    fat_t next;
+    uint32_t lba;
+
+    blk_of_cluster = block_of_cluster(file_p->fat16_p->blocks_per_cluster,
+                                      file_p->cur_position);
+
+    *block_offset_p = cache_data_offset(file_p->cur_position);
+
+    if ((blk_of_cluster == 0) && (*block_offset_p == 0)) {
+        /* Start of new cluster. */
+        if (file_p->cur_cluster == 0) {
+            if (file_p->first_cluster == 0) {
+                /* Allocate first cluster of file. */
+                if (add_cluster(file_p) != 0) {
+                    return (EOF);
+                }
+            } else {
+                file_p->cur_cluster = file_p->first_cluster;
+            }
+        } else {
+            if (fat_get(file_p->fat16_p, file_p->cur_cluster, &next) != 0) {
+                return (EOF);
+            }
+
+            if (is_end_of_cluster(next)) {
+                /* Add cluster if at end of chain. */
+                if (add_cluster(file_p) != 0) {
+                    return (EOF);
+                }
+            } else {
+                file_p->cur_cluster = next;
+            }
+        }
+    }
+
+    lba = data_block_lba(file_p, blk_of_cluster);
+
+    if ((*block_offset_p == 0) && (file_p->cur_position >= file_p->file_size)) {
+        /* Start of new block don't need to read into cache. */
+        if (cache_flush(file_p->fat16_p) != 0) {
+            return (EOF);
+        }
+
+        file_p->fat16_p->cache.block_number = lba;
+        cache_set_dirty(&file_p->fat16_p->cache);
+    } else {
+        /* Rewrite part of block. */
+        if (cache_raw_block(file_p->fat16_p, lba, CACHE_FOR_WRITE) != 0) {
+            return (EOF);
+        }
+    }
+
+    return (0);
+}
+
 static int file_open(struct fat16_t *fat16_p,
                      struct fat16_file_t *file_p,
-                     uint16_t index,
-                     int oflag)
+                     const char* path_p,
+                     int oflag,
+                     uint8_t attributes)
 {
+    int16_t block;
+    int16_t index;
     struct dir_t* dir_p;
 
+    /* Check for valid attributes. */
     if ((oflag & O_TRUNC) && !(oflag & O_WRITE)) {
-        return (1);
+        return (-1);
     }
 
-    dir_p = cache_dir_entry(fat16_p, index, CACHE_FOR_READ);
-
-    /* If bad file index or I/O error */
-    if (!dir_p) {
-        return (1);
+    /* Find directory index of existing file or create a new one. */
+    if (dir_open(fat16_p, path_p, oflag, attributes, &block, &index) != 0) {
+        return (-1);
     }
 
-    /* Error if unusedir_p entry */
-    if (dir_p->name[0] == DIR_NAME_FREE || dir_p->name[0] == DIR_NAME_DELETED) {
-        return (1);
+    dir_p = cache_dir_entry(fat16_p, block, index, CACHE_FOR_READ);
+
+    /* If bad file index or I/O error. */
+    if (dir_p == NULL) {
+        return (-1);
     }
 
-    /* Error if long name, volume label or subdirectory */
-    if ((dir_p->attributes & (DIR_ATTR_VOLUME_ID | DIR_ATTR_DIRECTORY)) != 0) {
-        return (1);
+    /* Error if volume label or subdirectory. */
+    if (dir_p->attributes != attributes) {
+        return (-1);
     }
 
-    /* Don't allow write or truncate if read-only */
-    if ((dir_p->attributes & DIR_ATTR_READ_ONLY) && (oflag & (O_WRITE | O_TRUNC))) {
-        return (1);
+    /* Don't allow write or truncate if read-only. */
+    if ((dir_p->attributes & DIR_ATTR_READ_ONLY)
+        && (oflag & (O_WRITE | O_TRUNC))) {
+        return (-1);
     }
 
+    /* Initiate the file datastructure. */
     file_p->fat16_p = fat16_p;
     file_p->cur_cluster = 0;
     file_p->cur_position = 0;
+    file_p->dir_entry_block = block;
     file_p->dir_entry_index = index;
     file_p->file_size = dir_p->file_size;
     file_p->first_cluster = dir_p->first_cluster_low;
@@ -703,139 +1019,12 @@ static int file_open(struct fat16_t *fat16_p,
     return (0);
 }
 
-static int add_cluster(struct fat16_file_t *file_p)
-{
-    /* Start search after last cluster of file or at cluster two in FAT */
-    fat_t freeCluster = file_p->cur_cluster ? file_p->cur_cluster : 1;
-    fat_t value;
-    fat_t i;
-    fat_t cluster_count = file_p->fat16_p->cluster_count;
-
-    for (i = 0; ; i++)
-    {
-        /* Return no free clusters */
-        if (i >= cluster_count) {
-            return (1);
-        }
-
-        /* Fat has cluster_count + 2 entries */
-        if (freeCluster > cluster_count) {
-            freeCluster = 1;
-        }
-
-        freeCluster++;
-
-        if (fat_get(file_p->fat16_p, freeCluster, &value) != 0) {
-            return (1);
-        }
-
-        if (value == 0) {
-            break;
-        }
-    }
-
-    /* Mark cluster allocated */
-    if (fat_put(file_p->fat16_p, freeCluster, EOC16) != 0) {
-        return (1);
-    }
-
-    if (file_p->cur_cluster != 0) {
-        /* Link cluster to chain */
-        if (fat_put(file_p->fat16_p, file_p->cur_cluster, freeCluster) != 0) {
-            return (1);
-        }
-    } else {
-        /* first cluster of file so update directory entry */
-        file_p->flags |= F_FILE_DIR_DIRTY;
-        file_p->first_cluster = freeCluster;
-    }
-
-    file_p->cur_cluster = freeCluster;
-
-    return (0);
-}
-
 int fat16_file_open(struct fat16_t *fat16_p,
                     struct fat16_file_t *file_p,
                     const char* path_p,
                     int oflag)
 {
-    uint8_t dname[11];   /* name formated for dir entry */
-    int16_t empty = -1;  /* index of empty slot */
-    struct dir_t* dir_p; /* pointer to cached dir entry */
-    uint16_t index;
-
-    /* Check valid 8.3 file name */
-    if (make_83_name(path_p, dname) != 0) {
-        return (1);
-    }
-
-    /* Search for the file in the root directory. */
-    for (index = 0; index < fat16_p->root_dir_entry_count; index++) {
-        if (!(dir_p = cache_dir_entry(fat16_p, index, CACHE_FOR_READ))) {
-            return (1);
-        }
-
-        if ((dir_p->name[0] == DIR_NAME_FREE)
-            || (dir_p->name[0] == DIR_NAME_DELETED)) {
-            /* Remember first empty slot */
-            if (empty < 0) {
-                empty = index;
-            }
-
-            /* Done if no entries follow */
-            if (dir_p->name[0] == DIR_NAME_FREE) {
-                break;
-            }
-        } else if (!memcmp(dname, dir_p->name, 11)) {
-            /* Don't open existing file if O_CREAT and O_EXCL */
-            if ((oflag & (O_CREAT | O_EXCL)) == (O_CREAT | O_EXCL)) {
-                return (1);
-            }
-
-            /* Open existing file */
-            return (file_open(fat16_p, file_p, index, oflag));
-        }
-    }
-
-    /* Error if directory is full */
-    if (empty < 0) {
-        return (1);
-    }
-
-    /* Only create file if O_CREAT and O_WRITE */
-    if ((oflag & (O_CREAT | O_WRITE)) != (O_CREAT | O_WRITE)) {
-        return (1);
-    }
-
-    if (!(dir_p = cache_dir_entry(fat16_p, empty, CACHE_FOR_WRITE))) {
-        return (1);
-    }
-
-    /* Initialize as empty file */
-    memset(dir_p, 0, sizeof(struct dir_t));
-    memcpy(dir_p->name, dname, 11);
-
-    /* Set timestamps with user function or use default date/time */
-    /* if (dateTime) { */
-    /*     dateTime(&dir_p->creationDate, &dir_p->creationTime); */
-    /* } else { */
-    dir_p->creation_date = DEFAULT_DATE;
-    dir_p->creation_time = DEFAULT_TIME;
-    /* } */
-
-    dir_p->last_access_date = dir_p->creation_date;
-    dir_p->last_write_date = dir_p->creation_date;
-    dir_p->last_write_time = dir_p->creation_time;
-
-    /* Force created directory entry will be written to storage
-       device. */
-    if (cache_flush(fat16_p) != 0) {
-        return (1);
-    }
-
-    /* Open entry */
-    return (file_open(fat16_p, file_p, empty, oflag));
+    return (file_open(fat16_p, file_p, path_p, oflag, 0));
 }
 
 int fat16_file_close(struct fat16_file_t *file_p)
@@ -853,26 +1042,26 @@ ssize_t fat16_file_read(struct fat16_file_t *file_p,
     uint8_t* src_p;
     uint16_t n;
 
-    /* Error if not open for read */
+    /* Error if not open for read. */
     if (!(file_p->flags & O_READ)) {
         return (EOF);
     }
 
-    /* Don't read beyond end of file */
+    /* Don't read beyond end of file. */
     if ((file_p->cur_position + size) > file_p->file_size) {
         size = file_p->file_size - file_p->cur_position;
     }
 
-    /* Bytes left to read in loop */
+    /* Bytes left to read in loop. */
     left = size;
 
     while (left > 0) {
         blk_of_cluster = block_of_cluster(file_p->fat16_p->blocks_per_cluster,
-                                            file_p->cur_position);
+                                          file_p->cur_position);
         block_offset = cache_data_offset(file_p->cur_position);
 
         if (blk_of_cluster == 0 && block_offset == 0) {
-            /* Start next cluster */
+            /* Start next cluster. */
             if (file_p->cur_cluster == 0) {
                 file_p->cur_cluster = file_p->first_cluster;
             } else {
@@ -881,31 +1070,31 @@ ssize_t fat16_file_read(struct fat16_file_t *file_p,
                 }
             }
 
-            /* Return error if bad cluster chain */
+            /* Return error if bad cluster chain. */
             if (file_p->cur_cluster < 2 || is_end_of_cluster(file_p->cur_cluster)) {
                 return (EOF);
             }
         }
 
-        /* Cache data block */
+        /* Cache data block. */
         if (cache_raw_block(file_p->fat16_p,
                             data_block_lba(file_p, blk_of_cluster),
                             CACHE_FOR_READ) != 0) {
             return (EOF);
         }
 
-        /* Location of data in cache */
+        /* Location of data in cache. */
         src_p = file_p->fat16_p->cache.buffer.data + block_offset;
 
-        /* Max number of byte available in block */
+        /* Max number of byte available in block. */
         n = 512 - block_offset;
 
-        /* Lesser of available and amount to read */
+        /* Lesser of available and amount to read. */
         if (n > left) {
             n = left;
         }
 
-        /* Copy data to caller */
+        /* Copy data to caller. */
         memcpy(buf_p, src_p, n);
 
         file_p->cur_position += n;
@@ -921,19 +1110,16 @@ ssize_t fat16_file_write(struct fat16_file_t *file_p,
                          size_t size)
 {
     uint16_t left = size;
-    uint8_t blk_of_cluster;
     uint16_t block_offset;
-    fat_t next;
-    uint32_t lba;
     uint8_t* dst_p;
     uint16_t n;
 
-    /* Error if file is not open for write */
+    /* Error if file is not open for write. */
     if (!(file_p->flags & O_WRITE)) {
         return (EOF);
     }
 
-    /* Go to end of file if O_APPEND */
+    /* Go to end of file if O_APPEND. */
     if ((file_p->flags & O_APPEND)
         && (file_p->cur_position != file_p->file_size)) {
         if (fat16_file_seek(file_p, 0, SEEK_END) != 0) {
@@ -942,66 +1128,21 @@ ssize_t fat16_file_write(struct fat16_file_t *file_p,
     }
 
     while (left > 0) {
-        blk_of_cluster = block_of_cluster(file_p->fat16_p->blocks_per_cluster,
-                                          file_p->cur_position);
-
-        block_offset = cache_data_offset(file_p->cur_position);
-
-        if (blk_of_cluster == 0 && block_offset == 0) {
-            /* Start of new cluster */
-            if (file_p->cur_cluster == 0) {
-                if (file_p->first_cluster == 0) {
-                    /* Allocate first cluster of file */
-                    if (add_cluster(file_p) != 0) {
-                        return (EOF);
-                    }
-                } else {
-                    file_p->cur_cluster = file_p->first_cluster;
-                }
-            } else {
-                if (fat_get(file_p->fat16_p, file_p->cur_cluster, &next) != 0) {
-                    return (EOF);
-                }
-
-                if (is_end_of_cluster(next)) {
-                    /* Add cluster if at end of chain */
-                    if (add_cluster(file_p) != 0) {
-                        return (EOF);
-                    }
-                } else {
-                    file_p->cur_cluster = next;
-                }
-            }
-        }
-
-        lba = data_block_lba(file_p, blk_of_cluster);
-
-        if (block_offset == 0 && file_p->cur_position >= file_p->file_size) {
-            /* Start of new block don't need to read into cache */
-            if (cache_flush(file_p->fat16_p) != 0) {
-                return (EOF);
-            }
-
-            file_p->fat16_p->cache.block_number = lba;
-            cache_set_dirty(&file_p->fat16_p->cache);
-        } else {
-            /* Rewrite part of block */
-            if (cache_raw_block(file_p->fat16_p, lba, CACHE_FOR_WRITE) != 0) {
-                return (EOF);
-            }
+        if (get_block(file_p, &block_offset) != 0) {
+            return (EOF);
         }
 
         dst_p = file_p->fat16_p->cache.buffer.data + block_offset;
 
-        /* Max space in block */
+        /* Max space in block. */
         n = 512 - block_offset;
 
-        /* Lesser of space and amount to write */
+        /* Lesser free space in current block than amount to write. */
         if (n > left) {
             n = left;
         }
 
-        /* Copy data to cache */
+        /* Copy data to cache. */
         memcpy(dst_p, src_p, n);
 
         file_p->cur_position += n;
@@ -1010,11 +1151,11 @@ ssize_t fat16_file_write(struct fat16_file_t *file_p,
     }
 
     if (file_p->cur_position > file_p->file_size) {
-        /* Update file_size and insure sync will update dir entry */
+        /* Update file_size and insure sync will update dir entry. */
         file_p->file_size = file_p->cur_position;
         file_p->flags |= F_FILE_DIR_DIRTY;
     }/*  else if (dateTime && size) { */
-    /* Force sync will update modified date and time */
+    /* Force sync will update modified date and time. */
     /*     file_p->flags |= F_FILE_DIR_DIRTY; */
     /* } */
 
@@ -1039,16 +1180,16 @@ int fat16_file_seek(struct fat16_file_t *file_p,
     } else if (whence == SEEK_END) {
         pos = file_p->file_size;
     } else if (whence != SEEK_SET) {
-        return (1);
+        return (-1);
     }
 
-    /* Error if file not open or seek past end of file */
+    /* Error if file not open or seek past end of file. */
     if (pos > file_p->file_size) {
-        return (1);
+        return (-1);
     }
 
     if (pos == 0) {
-        /* Set position to start of file */
+        /* Set position to start of file. */
         file_p->cur_cluster = 0;
         file_p->cur_position = 0;
 
@@ -1058,10 +1199,10 @@ int fat16_file_seek(struct fat16_file_t *file_p,
     n = ((pos - 1) >> 9) / blocks_per_cluster;
 
     if (pos < file_p->cur_position || file_p->cur_position == 0) {
-        /* Must follow chain from first cluster */
+        /* Must follow chain from first cluster. */
         file_p->cur_cluster = file_p->first_cluster;
     } else {
-        /* Advance from cur_position */
+        /* Advance from cur_position. */
         n -= ((file_p->cur_position - 1) >> 9) / blocks_per_cluster;
     }
 
@@ -1069,7 +1210,7 @@ int fat16_file_seek(struct fat16_file_t *file_p,
         if (fat_get(file_p->fat16_p,
                     file_p->cur_cluster,
                     &file_p->cur_cluster) != 0) {
-            return (1);
+            return (-1);
         }
     }
 
@@ -1093,20 +1234,21 @@ int fat16_file_sync(struct fat16_file_t *file_p)
     struct dir_t* dir_p;
 
     if (file_p->flags & F_FILE_DIR_DIRTY) {
-        /* Cache directory entry */
+        /* Cache directory entry. */
         dir_p = cache_dir_entry(file_p->fat16_p,
+                                file_p->dir_entry_block,
                                 file_p->dir_entry_index,
                                 CACHE_FOR_WRITE);
 
         if (!dir_p) {
-            return (1);
+            return (-1);
         }
 
-        /* Update file size and first cluster */
+        /* Update file size and first cluster. */
         dir_p->file_size = file_p->file_size;
         dir_p->first_cluster_low = file_p->first_cluster;
 
-        /* Set modify time if user supplied a callback date/time function */
+        /* Set modify time if user supplied a callback date/time function. */
         /* if (dateTime) { */
         /*     dateTime(&dir_p->last_write_date, &dir_p->last_write_time); */
         /*     dir_p->last_access_date = dir_p->last_write_date; */
@@ -1118,25 +1260,77 @@ int fat16_file_sync(struct fat16_file_t *file_p)
     return (cache_flush(file_p->fat16_p));
 }
 
+int fat16_dir_open(struct fat16_t *fat16_p,
+                   struct fat16_dir_t *dir_p,
+                   const char *path_p,
+                   int oflag)
+{
+    struct fat16_file_t *file_p = &dir_p->file;
+    uint8_t dname[11];
+    struct dir_t dir;
+
+    if (file_open(fat16_p, file_p, path_p, oflag, DIR_ATTR_DIRECTORY) != 0) {
+        return (-1);
+    }
+
+    /* Add '.'. */
+    memset(dname, ' ', sizeof(dname));
+    dname[0] = '.';
+    dir_init(&dir, dname, DIR_ATTR_DIRECTORY);
+    fat16_file_write(file_p, &dir, sizeof(dir));
+
+    /* Add '..'. */
+    dname[1] = '.';
+    dir_init(&dir, dname, DIR_ATTR_DIRECTORY);
+    fat16_file_write(file_p, &dir, sizeof(dir));
+
+    return (0);
+}
+
+int fat16_dir_close(struct fat16_dir_t *dir_p)
+{
+    return (0);
+}
+
+int fat16_dir_read(struct fat16_dir_t *dir_p,
+                   struct fat16_dir_entry_t *entry_p)
+{
+    struct fat16_file_t *file_p = &dir_p->file;
+    struct dir_t dir;
+
+    if (fat16_file_read(file_p, &dir, sizeof(dir)) != sizeof(dir)) {
+        return (0);
+    }
+
+    /* Copy information from directory entry to user supplied
+       structure. */
+    memcpy(entry_p->name, dir.name, sizeof(dir.name));
+    entry_p->name[11] = '\0';
+    entry_p->attributes = dir.attributes;
+    entry_p->size = dir.file_size;
+
+    return (1);
+}
+
 #if 0
 
 int fat16_file_remove(struct fat16_file_t *file_p)
 {
     struct struct dir_t* dir_p;
 
-    /* Error if file is not open for write */
+    /* Error if file is not open for write. */
     if (!(file_p->file_p->flags & O_WRITE)) {
-        return (1);
+        return (-1);
     }
 
     if (file_p->first_cluster && !free_chain(file_p->first_cluster)) {
-        return (1);
+        return (-1);
     }
 
     dir_p = cacheDirEntry(file_p->dir_entry_index, CACHE_FOR_WRITE);
 
     if (dir_p == NULL) {
-        return (1);
+        return (-1);
     }
 
     dir_p->name[0] = DIR_NAME_DELETED;
@@ -1148,13 +1342,13 @@ int fat16_file_remove(struct fat16_file_t *file_p)
 int fat16_file_direntry(struct dir_t* dir_p)
 {
     if (!sync()) {
-        return (1);
+        return (-1);
     }
 
     struct dir_t* p = cacheDirEntry(file_p->dir_entry_index, CACHE_FOR_WRITE);
 
     if (!p) {
-        return (1);
+        return (-1);
     }
 
     memcpy(dir, p, sizeof(struct dir_t));
