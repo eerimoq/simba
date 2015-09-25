@@ -496,16 +496,6 @@ int fat16_format(struct fat16_t *fat16_p)
     return (cache_flush(fat16_p));
 }
 
-int fat16_rmfile(struct fat16_t *fat16_p, const char* path_p)
-{
-    return (-1);
-}
-
-int fat16_rmdir(struct fat16_t *fat16_p, const char* path_p)
-{
-    return (-1);
-}
-
 int fat16_print(struct fat16_t *fat16_p, chan_t *chan_p)
 {
     std_fprintf(chan_p,
@@ -1252,7 +1242,7 @@ ssize_t fat16_file_tell(struct fat16_file_t *file_p)
 
 ssize_t fat16_file_size(struct fat16_file_t *file_p)
 {
-    return (0);
+    return (file_p->file_size);
 }
 
 int fat16_file_sync(struct fat16_file_t *file_p)
@@ -1340,48 +1330,3 @@ int fat16_dir_read(struct fat16_dir_t *dir_p,
 
     return (1);
 }
-
-#if 0
-
-int fat16_file_remove(struct fat16_file_t *file_p)
-{
-    struct struct dir_t* dir_p;
-
-    /* Error if file is not open for write. */
-    if (!(file_p->file_p->flags & O_WRITE)) {
-        return (-1);
-    }
-
-    if (file_p->first_cluster && !free_chain(file_p->first_cluster)) {
-        return (-1);
-    }
-
-    dir_p = cacheDirEntry(file_p->dir_entry_index, CACHE_FOR_WRITE);
-
-    if (dir_p == NULL) {
-        return (-1);
-    }
-
-    dir_p->name[0] = DIR_NAME_DELETED;
-    file_p->file_p->flags = 0;
-
-    return (cacheFlush());
-}
-
-int fat16_file_direntry(struct dir_t* dir_p)
-{
-    if (!sync()) {
-        return (-1);
-    }
-
-    struct dir_t* p = cacheDirEntry(file_p->dir_entry_index, CACHE_FOR_WRITE);
-
-    if (!p) {
-        return (-1);
-    }
-
-    memcpy(dir, p, sizeof(struct dir_t));
-
-    return (0);
-}
-#endif

@@ -521,26 +521,6 @@ int fat16_format(struct fat16_t *fat16_p);
 int fat16_print(struct fat16_t *fat16_p, chan_t *chan_p);
 
 /**
- * Remove a file from the file system.
- *
- * @param[in] fat16_p FAT16 object.
- * @param[in] path_p Absolute path of the file to remove.
- *
- * @return zero(0) or negative error code.
- */
-int fat16_rmfile(struct fat16_t *fat16_p, const char* path_p);
-
-/**
- * Remove an empty directory from the file system.
- *
- * @param[in] fat16_p FAT16 object.
- * @param[in] path_p Absolute path of the directory to remove.
- *
- * @return zero(0) or negative error code.
- */
-int fat16_rmdir(struct fat16_t *fat16_p, const char* path_p);
-
-/**
  * Open a file by file path and mode flags.
  *
  * @param[in] fat16_p FAT16 object.
