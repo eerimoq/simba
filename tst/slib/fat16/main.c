@@ -168,45 +168,54 @@ int test_directory(struct harness_t *harness_p)
     BTASSERT(fat16_dir_open(&fs, &dir, "HOME", O_CREAT | O_WRITE | O_SYNC) == 0);
     BTASSERT(fat16_dir_close(&dir) == 0);
 
-    /* Re-open the directory with read option set. */
-    BTASSERT(fat16_dir_open(&fs, &dir, "HOME", O_READ) == 0);
-
-    BTASSERT(fat16_dir_read(&dir, &entry) == 1);
-    BTASSERT(strcmp(entry.name, ".          ") == 0);
-
-    BTASSERT(fat16_dir_read(&dir, &entry) == 1);
-    BTASSERT(strcmp(entry.name, "..         ") == 0);
-
-    BTASSERT(fat16_dir_read(&dir, &entry) == 0);
-
-    BTASSERT(fat16_dir_close(&dir) == 0);
-
     /* Create a directory called ERIK in the home directory. */
     BTASSERT(fat16_dir_open(&fs, &dir, "HOME/ERIK", O_CREAT | O_WRITE | O_SYNC) == 0);
     BTASSERT(fat16_dir_close(&dir) == 0);
+
+    /* Create a file in HOME/ERIK. */
+    BTASSERT(fat16_file_open(&fs, &foo, "HOME/ERIK/BAR.TXT", O_CREAT | O_WRITE | O_SYNC) == 0);
+    BTASSERT(fat16_file_close(&foo) == 0);
 
     /* Create a file in HOME and write to it. */
     BTASSERT(fat16_file_open(&fs, &foo, "HOME/FOO.TXT", O_CREAT | O_WRITE | O_SYNC) == 0);
     BTASSERT(fat16_file_write(&foo, "Write in subfolder.\n", 20) == 20);
     BTASSERT(fat16_file_close(&foo) == 0);
 
-    /* Read from file in HOME. */
+    /* Try to create a file in a directory that does not exist. */
+    BTASSERT(fat16_file_open(&fs, &foo, "HOME2/FOO.TXT", O_CREAT | O_WRITE | O_SYNC) == -1);
+
+    /* Re-open the directory with read option set. */
+    BTASSERT(fat16_dir_open(&fs, &dir, "HOME", O_READ) == 0);
+
+    BTASSERT(fat16_dir_read(&dir, &entry) == 1);
+    BTASSERT(strcmp(entry.name, ".          ") == 0);
+    BTASSERT(entry.attributes == DIR_ATTR_DIRECTORY);
+    BTASSERT(entry.size == 0);
+
+    BTASSERT(fat16_dir_read(&dir, &entry) == 1);
+    BTASSERT(strcmp(entry.name, "..         ") == 0);
+    BTASSERT(entry.attributes == DIR_ATTR_DIRECTORY);
+    BTASSERT(entry.size == 0);
+
+    BTASSERT(fat16_dir_read(&dir, &entry) == 1);
+    BTASSERT(strcmp(entry.name, "ERIK       ") == 0);
+    BTASSERT(entry.attributes == DIR_ATTR_DIRECTORY);
+    BTASSERT(entry.size == 3 * sizeof(struct dir_t));
+
+    BTASSERT(fat16_dir_read(&dir, &entry) == 1);
+    BTASSERT(strcmp(entry.name, "FOO     TXT") == 0);
+    BTASSERT(entry.attributes == 0);
+    BTASSERT(entry.size == 20);
+
+    BTASSERT(fat16_dir_read(&dir, &entry) == 0);
+
+    BTASSERT(fat16_dir_close(&dir) == 0);
+
+    /* Read from FOO.TXT in the directory HOME. */
     BTASSERT(fat16_file_open(&fs, &foo, "HOME/FOO.TXT", O_READ) == 0);
     BTASSERT(fat16_file_read(&foo, buf, 20) == 20);
     BTASSERT(memcmp(buf, "Write in subfolder.\n", 20) == 0);
     BTASSERT(fat16_file_close(&foo) == 0);
-
-    /* Create a file in HOME/ERIK. */
-    BTASSERT(fat16_file_open(&fs, &foo, "HOME/ERIK/BAR.TXT", O_CREAT | O_WRITE | O_SYNC) == 0);
-    BTASSERT(fat16_file_close(&foo) == 0);
-
-    /* /\* Try to remove the non-empty HOME directory. It should fail */
-    /*    since it's only allowed to remove empty directories. *\/ */
-    /* BTASSERT(fat16_rmdir(&fs, "HOME") == -ENOTEMPTY); */
-
-    /* /\* Remove HOME/ERIK and then HOME, successfully. *\/ */
-    /* BTASSERT(fat16_rmdir(&fs, "HOME/ERIK") == 0); */
-    /* BTASSERT(fat16_rmdir(&fs, "HOME") == 0); */
 
     /* Stop the file system. */
     BTASSERT(fat16_stop(&fs) == 0);

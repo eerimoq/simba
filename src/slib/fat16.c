@@ -668,7 +668,6 @@ static int dir_init(struct dir_t *dir_p,
 
 static int dir_open_in_blocks(struct fat16_t *fat16_p,
                               const uint8_t *name_p,
-                              struct dir_t **dir_pp,
                               int16_t *block_p,
                               int16_t *index_p,
                               int start_block,
@@ -677,20 +676,21 @@ static int dir_open_in_blocks(struct fat16_t *fat16_p,
     int16_t block;
     int16_t index;
     int dir_entries_per_block;
+    struct dir_t *dir_p;
 
-    dir_entries_per_block = (512 / sizeof(**dir_pp));
+    dir_entries_per_block = (512 / sizeof(*dir_p));
 
     for (block = start_block; block < end_block; block++) {
         for (index = 0; index < dir_entries_per_block; index++) {
-            if (!(*dir_pp = cache_dir_entry(fat16_p,
-                                            block,
-                                            index,
-                                            CACHE_FOR_READ))) {
+            if (!(dir_p = cache_dir_entry(fat16_p,
+                                          block,
+                                          index,
+                                          CACHE_FOR_READ))) {
                 return (-1);
             }
 
-            if (((*dir_pp)->name[0] == DIR_NAME_FREE)
-                || ((*dir_pp)->name[0] == DIR_NAME_DELETED)) {
+            if ((dir_p->name[0] == DIR_NAME_FREE)
+                || (dir_p->name[0] == DIR_NAME_DELETED)) {
                 /* Remember first empty slot */
                 if (*index_p < 0) {
                     *block_p = block;
@@ -698,15 +698,14 @@ static int dir_open_in_blocks(struct fat16_t *fat16_p,
                 }
 
                 /* Done if no entries follow. */
-                if ((*dir_pp)->name[0] == DIR_NAME_FREE) {
-                    (*dir_pp) = NULL;
+                if (dir_p->name[0] == DIR_NAME_FREE) {
                     return (0);
                 }
-            } else if (!memcmp(name_p, (*dir_pp)->name, 11)) {
+            } else if (!memcmp(name_p, dir_p->name, 11)) {
                 /* Existing file. */
                 *block_p = block;
                 *index_p = index;
-                return (0);
+                return (1);
             }
         }
     }
@@ -726,7 +725,6 @@ static int dir_open_in_blocks(struct fat16_t *fat16_p,
  */
 static int dir_open_in_root(struct fat16_t *fat16_p,
                             const uint8_t *name_p,
-                            struct dir_t **dir_pp,
                             int16_t *block_p,
                             int16_t *index_p)
 {
@@ -734,13 +732,12 @@ static int dir_open_in_root(struct fat16_t *fat16_p,
     int dir_entries_per_block;
 
     *index_p = -1;         /* index of empty slot. */
-    dir_entries_per_block = (512 / sizeof(**dir_pp));
+    dir_entries_per_block = (512 / sizeof(struct dir_t));
     root_dir_block_count = (fat16_p->root_dir_entry_count / dir_entries_per_block);
 
     /* Search for the file in the root directory. */
     return (dir_open_in_blocks(fat16_p,
                                name_p,
-                               dir_pp,
                                block_p,
                                index_p,
                                fat16_p->root_dir_start_block,
@@ -759,30 +756,38 @@ static int dir_open_in_root(struct fat16_t *fat16_p,
  */
 static int dir_open_in_subdir(struct fat16_t *fat16_p,
                               const uint8_t *name_p,
-                              struct dir_t **dir_pp,
                               int16_t *block_p,
                               int16_t *index_p)
 {
     fat_t cluster;
     int start_block;
+    struct dir_t *dir_p;
+    int res = -1;
+
+    /* Cache the parent directory. */
+    if (!(dir_p = cache_dir_entry(fat16_p,
+                                  *block_p,
+                                  *index_p,
+                                  CACHE_FOR_WRITE))) {
+        return (-1);
+    }
 
     *index_p = -1;         /* index of empty slot. */
 
     /* Search for the file in the subdirectory. Iterate over clusters
        allocated by this folder. */
-    cluster = (*dir_pp)->first_cluster_low;
+    cluster = dir_p->first_cluster_low;
 
     do {
         start_block = (fat16_p->data_start_block
                        + ((cluster - 2) * fat16_p->blocks_per_cluster));
 
-        if (dir_open_in_blocks(fat16_p,
-                               name_p,
-                               dir_pp,
-                               block_p,
-                               index_p,
-                               start_block,
-                               start_block + fat16_p->blocks_per_cluster) != 0) {
+        if ((res = dir_open_in_blocks(fat16_p,
+                                      name_p,
+                                      block_p,
+                                      index_p,
+                                      start_block,
+                                      start_block + fat16_p->blocks_per_cluster)) < 0) {
             return (-1);
         }
 
@@ -791,7 +796,7 @@ static int dir_open_in_subdir(struct fat16_t *fat16_p,
         }
     } while (!is_end_of_cluster(cluster));
 
-    return (0);
+    return (res);
 }
 
 /**
@@ -838,10 +843,12 @@ static int dir_open(struct fat16_t *fat16_p,
                     int16_t *block_p,
                     int16_t *index_p)
 {
-    uint8_t dname[11];           /* name formated for dir entry. */
-    struct dir_t *dir_p = NULL;  /* pointer to cached dir entry. */
+    uint8_t dname[11];              /* name formated for dir entry. */
+    struct dir_t *dir_p = NULL;     /* pointer to cached dir entry. */
     int res;
     int depth = 0;
+    int16_t parent_block = -1;
+    int16_t parent_index = -1;
 
     do {
         if (get_next_name(&path_p, dname) != 0) {
@@ -850,24 +857,30 @@ static int dir_open(struct fat16_t *fat16_p,
 
         if (depth == 0) {
             /* Search for the name in the root folder. */
-            res = dir_open_in_root(fat16_p, dname, &dir_p, block_p, index_p);
+            res = dir_open_in_root(fat16_p, dname, block_p, index_p);
         } else {
             /* Search for the name in a subfolder. */
-            res = dir_open_in_subdir(fat16_p, dname, &dir_p, block_p, index_p);
+            res = dir_open_in_subdir(fat16_p, dname, block_p, index_p);
         }
 
-        if (res != 0) {
-            return (-1);
-        } else if ((dir_p == NULL) && (path_p != NULL)) {
-            /* Containing directory of next part of path was not found. */
-            return (-1);
+        if (res < 0) {
+            return (res);
+        } else if (path_p != NULL) {
+            if (res == 0) { 
+                /* Containing directory of next part of path was not found. */
+                return (-1);
+            } else {
+                /* Potentially parent directory. */
+                parent_block = *block_p;
+                parent_index = *index_p;
+            }
         }
 
         depth++;
     } while (path_p != NULL);
 
     /* The file or directory already exists. */
-    if (dir_p != NULL) {
+    if (res == 1) {
         /* Don't open existing file if O_CREAT and O_EXCL. */
         if ((oflag & (O_CREAT | O_EXCL)) == (O_CREAT | O_EXCL)) {
             return (-1);
@@ -884,6 +897,19 @@ static int dir_open(struct fat16_t *fat16_p,
     /* Only create file if O_CREAT and O_WRITE. */
     if ((oflag & (O_CREAT | O_WRITE)) != (O_CREAT | O_WRITE)) {
         return (-1);
+    }
+
+    /* Add the newly created file or directory to the parent
+       folder. */
+    if (parent_index >= 0) {
+        if (!(dir_p = cache_dir_entry(fat16_p,
+                                      parent_block,
+                                      parent_index,
+                                      CACHE_FOR_WRITE))) {
+            return (-1);
+        }
+        
+        dir_p->file_size += sizeof(*dir_p);
     }
 
     if (!(dir_p = cache_dir_entry(fat16_p,
@@ -1273,16 +1299,19 @@ int fat16_dir_open(struct fat16_t *fat16_p,
         return (-1);
     }
 
-    /* Add '.'. */
-    memset(dname, ' ', sizeof(dname));
-    dname[0] = '.';
-    dir_init(&dir, dname, DIR_ATTR_DIRECTORY);
-    fat16_file_write(file_p, &dir, sizeof(dir));
-
-    /* Add '..'. */
-    dname[1] = '.';
-    dir_init(&dir, dname, DIR_ATTR_DIRECTORY);
-    fat16_file_write(file_p, &dir, sizeof(dir));
+    /* Add '.' and '..' when a new directory is created. */
+    if ((oflag & (O_CREAT | O_WRITE)) == (O_CREAT | O_WRITE)) {
+        /* Add '.'. */
+        memset(dname, ' ', sizeof(dname));
+        dname[0] = '.';
+        dir_init(&dir, dname, DIR_ATTR_DIRECTORY);
+        fat16_file_write(file_p, &dir, sizeof(dir));
+        
+        /* Add '..'. */
+        dname[1] = '.';
+        dir_init(&dir, dname, DIR_ATTR_DIRECTORY);
+        fat16_file_write(file_p, &dir, sizeof(dir));
+    }
 
     return (0);
 }
