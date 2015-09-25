@@ -223,6 +223,127 @@ int test_directory(struct harness_t *harness_p)
     return (0);
 }
 
+int test_bad_file(struct harness_t *harness_p)
+{
+    struct sd_driver_t sd;
+    struct fat16_t fs;
+    struct fat16_file_t foo;
+
+    /* Initialize and start the SD card. */
+    BTASSERT(sd_init(&sd, NULL) == 0);
+
+    /* Initialize and start the file system. */
+    BTASSERT(fat16_init(&fs, &sd, 1) == 0);
+    BTASSERT(fat16_start(&fs) == 0);
+
+    /* Format the file system. */
+    BTASSERT(fat16_format(&fs) == 0);
+
+    /* Directory APA does not exist. */
+    BTASSERT(fat16_file_open(&fs, &foo, "APA/BAR.TXT", O_CREAT | O_WRITE | O_SYNC) == -1);
+
+    /* Invalid 8.3 file name. */
+    BTASSERT(fat16_file_open(&fs, &foo, "toolongfilename.txt", O_CREAT | O_WRITE | O_SYNC) == -1);
+
+    /* Invalid 8.3 file name. */
+    BTASSERT(fat16_file_open(&fs, &foo, "|", O_CREAT | O_WRITE | O_SYNC) == -1);
+
+    /* Stop the file system. */
+    BTASSERT(fat16_stop(&fs) == 0);
+
+    return (0);
+}
+
+int test_truncate(struct harness_t *harness_p)
+{
+    struct sd_driver_t sd;
+    struct fat16_t fs;
+    struct fat16_file_t foo;
+    char buf[32];
+
+    /* Initialize and start the SD card. */
+    BTASSERT(sd_init(&sd, NULL) == 0);
+
+    /* Initialize and start the file system. */
+    BTASSERT(fat16_init(&fs, &sd, 1) == 0);
+    BTASSERT(fat16_start(&fs) == 0);
+
+    /* Format the file system. */
+    BTASSERT(fat16_format(&fs) == 0);
+
+    /* Truncate file on open. */
+    BTASSERT(fat16_file_open(&fs, &foo, "BAR.TXT", O_CREAT | O_WRITE | O_SYNC | O_TRUNC) == 0);
+    BTASSERT(fat16_file_write(&foo, "To be truncated.\n", 17) == 17);
+    BTASSERT(fat16_file_close(&foo) == 0);
+
+    /* Read the file. */
+    BTASSERT(fat16_file_open(&fs, &foo, "BAR.TXT", O_READ) == 0);
+    BTASSERT(fat16_file_read(&foo, buf, 17) == 17);
+    BTASSERT(memcmp(buf, "To be truncated.\n", 17) == 0);
+    BTASSERT(fat16_file_close(&foo) == 0);
+
+    /* Truncate the file. */
+    BTASSERT(fat16_file_open(&fs, &foo, "BAR.TXT", O_WRITE | O_TRUNC) == 0);
+    BTASSERT(fat16_file_close(&foo) == 0);
+
+    /* Read the truncated file. */
+    BTASSERT(fat16_file_open(&fs, &foo, "BAR.TXT", O_READ) == 0);
+    BTASSERT(fat16_file_read(&foo, buf, 17) == 0);
+    BTASSERT(fat16_file_close(&foo) == 0);
+
+    /* Stop the file system. */
+    BTASSERT(fat16_stop(&fs) == 0);
+
+    return (0);
+}
+
+int test_append(struct harness_t *harness_p)
+{
+    struct sd_driver_t sd;
+    struct fat16_t fs;
+    struct fat16_file_t foo;
+    char buf[32];
+
+    /* Initialize and start the SD card. */
+    BTASSERT(sd_init(&sd, NULL) == 0);
+
+    /* Initialize and start the file system. */
+    BTASSERT(fat16_init(&fs, &sd, 1) == 0);
+    BTASSERT(fat16_start(&fs) == 0);
+
+    /* Format the file system. */
+    BTASSERT(fat16_format(&fs) == 0);
+
+    /* Open a file and write 0123 to it. */
+    BTASSERT(fat16_file_open(&fs, &foo, "BAR.TXT", O_CREAT | O_WRITE | O_SYNC) == 0);
+    BTASSERT(fat16_file_write(&foo, "0123", 4) == 4);
+    BTASSERT(fat16_file_close(&foo) == 0);
+    BTASSERT(fat16_file_size(&foo) == 4);
+
+    /* Overwrite 0123 with 4567. */
+    BTASSERT(fat16_file_open(&fs, &foo, "BAR.TXT", O_WRITE) == 0);
+    BTASSERT(fat16_file_write(&foo, "4567", 4) == 4);
+    BTASSERT(fat16_file_close(&foo) == 0);
+    BTASSERT(fat16_file_size(&foo) == 4);
+
+    /* Append 89. */
+    BTASSERT(fat16_file_open(&fs, &foo, "BAR.TXT", O_WRITE | O_APPEND | O_SYNC) == 0);
+    BTASSERT(fat16_file_write(&foo, "89", 2) == 2);
+    BTASSERT(fat16_file_close(&foo) == 0);
+    BTASSERT(fat16_file_size(&foo) == 6);
+
+    /* Read 456789. */
+    BTASSERT(fat16_file_open(&fs, &foo, "BAR.TXT", O_READ) == 0);
+    BTASSERT(fat16_file_read(&foo, buf, 6) == 6);
+    BTASSERT(memcmp(buf, "456789", 6) == 0);
+    BTASSERT(fat16_file_close(&foo) == 0);
+
+    /* Stop the file system. */
+    BTASSERT(fat16_stop(&fs) == 0);
+
+    return (0);
+}
+
 int main()
 {
     struct harness_t harness;
@@ -232,6 +353,9 @@ int main()
         { test_create_multiple_files, "test_create_multiple_files" },
         { test_reopen, "test_reopen" },
         { test_directory, "test_directory" },
+        { test_bad_file, "test_bad_file" },
+        { test_truncate, "test_truncate" },
+        { test_append, "test_append" },
         { NULL, NULL }
     };
 

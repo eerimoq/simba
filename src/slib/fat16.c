@@ -522,8 +522,8 @@ int fat16_print(struct fat16_t *fat16_p, chan_t *chan_p)
 static int file_truncate(struct fat16_file_t *file_p,
                          size_t length)
 {
-    uint32_t newPos;
-    fat_t toFree;
+    uint32_t new_pos;
+    fat_t to_free;
 
     /* Error if file is not open for write. */
     if (!(file_p->flags & O_WRITE)) {
@@ -539,11 +539,13 @@ static int file_truncate(struct fat16_file_t *file_p,
         return (0);
     }
 
-    newPos = file_p->cur_position > length ? length : file_p->cur_position;
+    new_pos = (file_p->cur_position > length
+               ? length
+               : file_p->cur_position);
 
     if (length == 0) {
         /* Free all clusters. */
-        if (!free_chain(file_p->fat16_p, file_p->first_cluster)) {
+        if (free_chain(file_p->fat16_p, file_p->first_cluster) != 0) {
             return (-1);
         }
 
@@ -553,17 +555,17 @@ static int file_truncate(struct fat16_file_t *file_p,
             return (-1);
         }
 
-        if (fat_get(file_p->fat16_p, file_p->cur_cluster, &toFree) != 0) {
+        if (fat_get(file_p->fat16_p, file_p->cur_cluster, &to_free) != 0) {
             return (-1);
         }
 
-        if (!is_end_of_cluster(toFree)) {
+        if (!is_end_of_cluster(to_free)) {
             /* Free extra clusters. */
             if (!fat_put(file_p->fat16_p, file_p->cur_cluster, EOC16)) {
                 return (-1);
             }
 
-            if (!free_chain(file_p->fat16_p, toFree)) {
+            if (!free_chain(file_p->fat16_p, to_free)) {
                 return (-1);
             }
         }
@@ -576,7 +578,7 @@ static int file_truncate(struct fat16_file_t *file_p,
         return (-1);
     }
 
-    return fat16_file_seek(file_p, newPos, SEEK_SET);
+    return (fat16_file_seek(file_p, new_pos, SEEK_SET));
 }
 
 static int add_cluster(struct fat16_file_t *file_p)
@@ -856,7 +858,7 @@ static int dir_open(struct fat16_t *fat16_p,
         if (res < 0) {
             return (res);
         } else if (path_p != NULL) {
-            if (res == 0) { 
+            if (res == 0) {
                 /* Containing directory of next part of path was not found. */
                 return (-1);
             } else {
@@ -898,7 +900,7 @@ static int dir_open(struct fat16_t *fat16_p,
                                       CACHE_FOR_WRITE))) {
             return (-1);
         }
-        
+
         dir_p->file_size += sizeof(*dir_p);
     }
 
@@ -1296,7 +1298,7 @@ int fat16_dir_open(struct fat16_t *fat16_p,
         dname[0] = '.';
         dir_init(&dir, dname, DIR_ATTR_DIRECTORY);
         fat16_file_write(file_p, &dir, sizeof(dir));
-        
+
         /* Add '..'. */
         dname[1] = '.';
         dir_init(&dir, dname, DIR_ATTR_DIRECTORY);
