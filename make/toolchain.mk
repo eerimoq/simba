@@ -25,6 +25,10 @@ ifeq ($(TOOLCHAIN), gnu)
     LDFLAGS += 
 
     ENDIANESS = little
+
+all: $(NAME).hex
+$(NAME).hex: $(EXE)
+	$(CROSS_COMPILE)objcopy -O ihex $< $@
   endif
 
   ifeq ($(ARCH),avr)

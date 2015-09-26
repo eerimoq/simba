@@ -20,13 +20,13 @@
 #
 
 INC += $(SIMBA)/src/mcus/sam3x8e
-SRC += $(SIMBA)/src/mcus/sam3x8e/mcu.c
+SRC += $(SIMBA)/src/mcus/sam3x8e/mcu.c $(SIMBA)/src/mcus/sam3x8e/sam3x8e.c
 
 MCU = cortex-m3
 
 CFLAGS += -mthumb -mcpu=$(MCU) -funsigned-char \
           -funsigned-bitfields -fpack-struct -fshort-enums \
           -std=gnu99
-LDFLAGS += -mcpu=$(MCU) -Wl,--cref
+LDFLAGS += -mcpu=$(MCU) -Wl,--cref -T$(SIMBA)/src/mcus/sam3x8e/script.ld
 
 ARCH = arm

@@ -23,6 +23,23 @@
 struct sys_port_t {
 };
 
+ISR(sys_tick)
+{
+    sys_tick();
+}
+
+static int sys_port_module_init(void)
+{
+    /* Setup the system tick timer. */
+    SAM_SYSTEM_TIMER->LOAD = SYSTEM_TIMER_LOAD_RELOAD(1000000);
+    SAM_SYSTEM_TIMER->CTRL = (SYSTEM_TIMER_CTRL_TICKINT
+                              | SYSTEM_TIMER_CTRL_ENABLE);
+
+    /* Enable interrupts. */
+
+    return (0);
+}
+
 static void sys_port_lock()
 {
 }
@@ -39,19 +56,12 @@ static void sys_port_unlock_irq()
 {
 }
 
-int sys_port_module_init(void)
-{
-    /* TODO: should be called from system tick interrupt. */
-    sys_tick();
-    return (0);
-}
-
 void sys_stop(int error)
 {
     return (exit(error));
 }
 
-/* newlib stub functions. */
+/* Newlib stub functions. */
 void _exit(int status)
 {
     while (1);

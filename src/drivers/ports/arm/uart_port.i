@@ -18,6 +18,12 @@
  * This file is part of the Simba project.
  */
 
+static void isr(int index)
+{
+    struct uart_driver_t *drv_p = uart_device[index].drv_p;
+    (void)drv_p;
+}
+
 static int uart_port_start(struct uart_driver_t *drv)
 {
     return (0);
@@ -32,12 +38,26 @@ static ssize_t uart_port_write_cb(void *arg,
                                   const void *txbuf,
                                   size_t size)
 {
-    const char *c = txbuf;
-
-    while (size > 0) {
-        putchar(*c++);
-        size--;
-    }
-
     return (size);
 }
+
+#define UART_ISR(vector, index)                 \
+    ISR(vector) {                               \
+        isr(index);                             \
+    }                                           \
+
+#if (UART_DEVICE_MAX >= 1)
+UART_ISR(usart0, 0)
+#endif
+
+#if (UART_DEVICE_MAX >= 2)
+UART_ISR(usart1, 1)
+#endif
+
+#if (UART_DEVICE_MAX >= 3)
+UART_ISR(usart2, 2)
+#endif
+
+#if (UART_DEVICE_MAX >= 4)
+UART_ISR(usart3, 3)
+#endif

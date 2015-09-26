@@ -70,7 +70,14 @@ PREREQUISITES
 * GNU toolchain with c compiler and linker for target architecture(s)
 * gcc
 * bash
-* For AVR: sudo apt-get install avrdude ckermit gcc-avr binutils-avr gdb-avr avr-libc
+
+AVR
+---
+sudo apt-get install avrdude ckermit gcc-avr binutils-avr gdb-avr avr-libc
+
+ARM
+---
+sudo apt-get install bossa-cli gcc-arm-none-eabi
 
 BUILD AND RUN TESTS
 ===================
