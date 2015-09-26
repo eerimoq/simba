@@ -29,6 +29,7 @@ elif [ ${TARGET} == profile ] ; then
     gprof ${EXE}
 elif [ ${TARGET} == coverage ] ; then
     geninfo . -o coverage.info
+    genhtml coverage.info
 elif [ ${TARGET} == jenkins-coverage ] ; then
     gcovr -r $(readlink -f ../../..) -x -e ".*main.c"
 elif [ ${TARGET} == run ] ; then
