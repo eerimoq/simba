@@ -23,76 +23,6 @@
 /* Defined in the linker script. */
 extern uint32_t __stack_end__;
 
-/* Vector table with all interrupt service routines and the start
-   stack pointer. */
-struct vector_table_t {
-    void (*stack)(void);
-
-    /* System exceptions (1-15). */
-    void (*reset)(void);
-    void (*nmi)(void);
-    void (*hard_fault)(void);
-    void (*mem_manage_fault)(void);
-    void (*bus_fault)(void);
-    void (*usage_fault)(void);
-    void (*reserved1)(void);
-    void (*reserved2)(void);
-    void (*reserved3)(void);
-    void (*reserved4)(void);
-    void (*svc)(void);
-    void (*debug_monitor)(void);
-    void (*reserved5)(void);
-    void (*pend_sv)(void);
-    void (*sys_tick)(void);
-
-    /* Non-system exceptions (16+). */
-    void (*supc)(void);
-    void (*rstc)(void);
-    void (*rtc)(void);
-    void (*rtt)(void);
-    void (*wdg)(void);
-    void (*pmc)(void);
-    void (*eefc0)(void);
-    void (*eefc1)(void);
-    void (*uart)(void);
-    void (*smc)(void);
-    void (*sdramc)(void);
-    void (*pioa)(void);
-    void (*piob)(void);
-    void (*pioc)(void);
-    void (*piod)(void);
-    void (*pioe)(void);
-    void (*piof)(void);
-    void (*usart0)(void);
-    void (*usart1)(void);
-    void (*usart2)(void);
-    void (*usart3)(void);
-    void (*hsmci)(void);
-    void (*twi0)(void);
-    void (*twi1)(void);
-    void (*spi0)(void);
-    void (*spi1)(void);
-    void (*ssc)(void);
-    void (*tc0)(void);
-    void (*tc1)(void);
-    void (*tc2)(void);
-    void (*tc3)(void);
-    void (*tc4)(void);
-    void (*tc5)(void);
-    void (*tc6)(void);
-    void (*tc7)(void);
-    void (*tc8)(void);
-    void (*pwm)(void);
-    void (*adc)(void);
-    void (*dacc)(void);
-    void (*dmac)(void);
-    void (*uotghs)(void);
-    void (*trng)(void);
-    void (*emac)(void);
-    void (*can0)(void);
-    void (*can1)(void);
-};
-
 /**
  * Do nothing if no interrupt service routine is installed in the
  * interrupt vector.
@@ -101,6 +31,7 @@ static void isr_none(void)
 {
 }
                                 
+/* System exceptions (1-15). */
 void isr_reset(void)            __attribute__ ((weak, alias("isr_none")));
 void isr_nmi(void)              __attribute__ ((weak, alias("isr_none")));
 void isr_hard_fault(void)       __attribute__ ((weak, alias("isr_none")));
@@ -117,6 +48,7 @@ void isr_reserved5(void)        __attribute__ ((weak, alias("isr_none")));
 void isr_pend_sv(void)          __attribute__ ((weak, alias("isr_none")));
 void isr_sys_tick(void)         __attribute__ ((weak, alias("isr_none")));
 
+/* Non-system exceptions (16+). */
 void isr_supc(void)             __attribute__ ((weak, alias("isr_none")));
 void isr_rstc(void)             __attribute__ ((weak, alias("isr_none")));
 void isr_rtc(void)              __attribute__ ((weak, alias("isr_none")));
@@ -163,69 +95,74 @@ void isr_emac(void)             __attribute__ ((weak, alias("isr_none")));
 void isr_can0(void)             __attribute__ ((weak, alias("isr_none")));
 void isr_can1(void)             __attribute__ ((weak, alias("isr_none")));
 
+/* Vector table with all interrupt service routines and the start
+   stack pointer. */
 __attribute__ ((section(".vectors"), used)) 
-struct vector_table_t vector_table = {
-    .stack = (void (*)(void))(&__stack_end__),
+void (*vector_table[])(void) = {
+    /* Start stack address. */
+    (void (*)(void))(&__stack_end__),
 
-    .reset = isr_reset,
-    .nmi = isr_nmi,
-    .hard_fault = isr_hard_fault,
-    .mem_manage_fault = isr_mem_manage_fault,
-    .bus_fault = isr_bus_fault,
-    .usage_fault = isr_usage_fault,
-    .reserved1 = isr_reserved1,
-    .reserved2 = isr_reserved2,
-    .reserved3 = isr_reserved3,
-    .reserved4 = isr_reserved4,
-    .svc = isr_svc,
-    .debug_monitor = isr_debug_monitor,
-    .reserved5 = isr_reserved5,
-    .pend_sv = isr_pend_sv,
-    .sys_tick = isr_sys_tick,
+    /* System exceptions (1-15). */
+    isr_reset,
+    isr_nmi,
+    isr_hard_fault,
+    isr_mem_manage_fault,
+    isr_bus_fault,
+    isr_usage_fault,
+    isr_reserved1,
+    isr_reserved2,
+    isr_reserved3,
+    isr_reserved4,
+    isr_svc,
+    isr_debug_monitor,
+    isr_reserved5,
+    isr_pend_sv,
+    isr_sys_tick,
 
-    .supc = isr_supc,
-    .rstc = isr_rstc,
-    .rtc = isr_rtc,
-    .rtt = isr_rtt,
-    .wdg = isr_wdg,
-    .pmc = isr_pmc,
-    .eefc0 = isr_eefc0,
-    .eefc1 = isr_eefc1,
-    .uart = isr_uart,
-    .smc = isr_smc,
-    .sdramc = isr_sdramc,
-    .pioa = isr_pioa,
-    .piob = isr_piob,
-    .pioc = isr_pioc,
-    .piod = isr_piod,
-    .pioe = isr_pioe,
-    .piof = isr_piof,
-    .usart0 = isr_usart0,
-    .usart1 = isr_usart1,
-    .usart2 = isr_usart2,
-    .usart3 = isr_usart3,
-    .hsmci = isr_hsmci,
-    .twi0 = isr_twi0,
-    .twi1 = isr_twi1,
-    .spi0 = isr_spi0,
-    .spi1 = isr_spi1,
-    .ssc = isr_ssc,
-    .tc0 = isr_tc0,
-    .tc1 = isr_tc1,
-    .tc2 = isr_tc2,
-    .tc3 = isr_tc3,
-    .tc4 = isr_tc4,
-    .tc5 = isr_tc5,
-    .tc6 = isr_tc6,
-    .tc7 = isr_tc7,
-    .tc8 = isr_tc8,
-    .pwm = isr_pwm,
-    .adc = isr_adc,
-    .dacc = isr_dacc,
-    .dmac = isr_dmac,
-    .uotghs = isr_uotghs,
-    .trng = isr_trng,
-    .emac = isr_emac,
-    .can0 = isr_can0,
-    .can1 = isr_can1
+    /* Non-system exceptions (16+). */
+    isr_supc,
+    isr_rstc,
+    isr_rtc,
+    isr_rtt,
+    isr_wdg,
+    isr_pmc,
+    isr_eefc0,
+    isr_eefc1,
+    isr_uart,
+    isr_smc,
+    isr_sdramc,
+    isr_pioa,
+    isr_piob,
+    isr_pioc,
+    isr_piod,
+    isr_pioe,
+    isr_piof,
+    isr_usart0,
+    isr_usart1,
+    isr_usart2,
+    isr_usart3,
+    isr_hsmci,
+    isr_twi0,
+    isr_twi1,
+    isr_spi0,
+    isr_spi1,
+    isr_ssc,
+    isr_tc0,
+    isr_tc1,
+    isr_tc2,
+    isr_tc3,
+    isr_tc4,
+    isr_tc5,
+    isr_tc6,
+    isr_tc7,
+    isr_tc8,
+    isr_pwm,
+    isr_adc,
+    isr_dacc,
+    isr_dmac,
+    isr_uotghs,
+    isr_trng,
+    isr_emac,
+    isr_can0,
+    isr_can1
 };
