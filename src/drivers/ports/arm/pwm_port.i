@@ -1,5 +1,5 @@
 /**
- * @file drivers.h
+ * @file drivers/linux/pwm_port.i
  * @version 1.0
  *
  * @section License
@@ -18,26 +18,14 @@
  * This file is part of the Simba project.
  */
 
-#ifndef __DRIVERS_H__
-#define __DRIVERS_H__
+static int pwm_port_init(struct pwm_driver_t *drv_p,
+                         const struct pwm_device_t *dev_p)
+{
+    return (0);
+}
 
-#include "drivers/exti.h"
-#include "drivers/pin.h"
-#include "drivers/pwm.h"
-#include "drivers/adc.h"
-#include "drivers/spi.h"
-#include "drivers/uart.h"
-#include "drivers/uart_soft.h"
-#include "drivers/owi.h"
-#include "drivers/ds18b20.h"
-#include "drivers/ds3231.h"
-#include "drivers/canif.h"
-#include "drivers/cantp.h"
-#if defined(ARCH_LINUX)
-#    include "drivers/can.h"
-#endif
-#include "drivers/mcp2515.h"
-#include "drivers/nrf24l01.h"
-#include "drivers/sd.h"
-
-#endif
+static int pwm_port_set_duty(struct pwm_driver_t *drv_p,
+                             uint8_t value)
+{
+    return (0);
+}

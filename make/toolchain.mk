@@ -21,7 +21,10 @@
 ifeq ($(TOOLCHAIN), gnu)
   ifeq ($(ARCH),arm)
     CROSS_COMPILE = arm-none-eabi-
-    LDFLAGS += -Wl,-spec=nosys.specs
+    CFLAGS += -Werror -Wno-error=unused-variable -DNPROFILESTACK
+    LDFLAGS += 
+
+    ENDIANESS = little
   endif
 
   ifeq ($(ARCH),avr)

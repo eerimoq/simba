@@ -1,5 +1,5 @@
 /**
- * @file drivers.h
+ * @file drivers/linux/pin_port.i
  * @version 1.0
  *
  * @section License
@@ -18,26 +18,29 @@
  * This file is part of the Simba project.
  */
 
-#ifndef __DRIVERS_H__
-#define __DRIVERS_H__
+static int pin_port_init(struct pin_driver_t *drv,
+                         const struct pin_device_t *dev,
+                         int mode)
+{
+    return (0);
+}
 
-#include "drivers/exti.h"
-#include "drivers/pin.h"
-#include "drivers/pwm.h"
-#include "drivers/adc.h"
-#include "drivers/spi.h"
-#include "drivers/uart.h"
-#include "drivers/uart_soft.h"
-#include "drivers/owi.h"
-#include "drivers/ds18b20.h"
-#include "drivers/ds3231.h"
-#include "drivers/canif.h"
-#include "drivers/cantp.h"
-#if defined(ARCH_LINUX)
-#    include "drivers/can.h"
-#endif
-#include "drivers/mcp2515.h"
-#include "drivers/nrf24l01.h"
-#include "drivers/sd.h"
+static int pin_port_read(struct pin_driver_t *drv)
+{
+    return (0);
+}
 
-#endif
+static int pin_port_write(struct pin_driver_t *drv, int value)
+{
+    return (0);
+}
+
+static int pin_port_toggle(struct pin_driver_t *drv)
+{
+    return (0);
+}
+
+static int pin_port_set_mode(struct pin_driver_t *drv, int mode)
+{
+    return (0);
+}

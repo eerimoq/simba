@@ -1,5 +1,5 @@
 /**
- * @file drivers.h
+ * @file mcu.h
  * @version 1.0
  *
  * @section License
@@ -18,26 +18,18 @@
  * This file is part of the Simba project.
  */
 
-#ifndef __DRIVERS_H__
-#define __DRIVERS_H__
+#ifndef __MCU_H__
+#define __MCU_H__
 
-#include "drivers/exti.h"
-#include "drivers/pin.h"
-#include "drivers/pwm.h"
-#include "drivers/adc.h"
-#include "drivers/spi.h"
-#include "drivers/uart.h"
-#include "drivers/uart_soft.h"
-#include "drivers/owi.h"
-#include "drivers/ds18b20.h"
-#include "drivers/ds3231.h"
-#include "drivers/canif.h"
-#include "drivers/cantp.h"
-#if defined(ARCH_LINUX)
-#    include "drivers/can.h"
-#endif
-#include "drivers/mcp2515.h"
-#include "drivers/nrf24l01.h"
-#include "drivers/sd.h"
+#define PIN_DEVICE_MAX  20
+#define EXTI_DEVICE_MAX 2
+#define SPI_DEVICE_MAX  1
+#define UART_DEVICE_MAX 1
+/* Timer0 is used for system tick, so two of the PWM pins cannot be used.*/
+#define PWM_DEVICE_MAX  4
+#define ADC_DEVICE_MAX  1
+
+#define USART0_TX_vect USART_TX_vect
+#define USART0_RX_vect USART_RX_vect
 
 #endif

@@ -1,5 +1,5 @@
 /**
- * @file drivers.h
+ * @file exti_port.i
  * @version 1.0
  *
  * @section License
@@ -18,26 +18,19 @@
  * This file is part of the Simba project.
  */
 
-#ifndef __DRIVERS_H__
-#define __DRIVERS_H__
+int exti_port_init(struct exti_driver_t *drv,
+                   struct exti_device_t *dev,
+                   void (*on_interrupt)(struct exti_driver_t *drv))
+{
+    return (0);
+}
 
-#include "drivers/exti.h"
-#include "drivers/pin.h"
-#include "drivers/pwm.h"
-#include "drivers/adc.h"
-#include "drivers/spi.h"
-#include "drivers/uart.h"
-#include "drivers/uart_soft.h"
-#include "drivers/owi.h"
-#include "drivers/ds18b20.h"
-#include "drivers/ds3231.h"
-#include "drivers/canif.h"
-#include "drivers/cantp.h"
-#if defined(ARCH_LINUX)
-#    include "drivers/can.h"
-#endif
-#include "drivers/mcp2515.h"
-#include "drivers/nrf24l01.h"
-#include "drivers/sd.h"
+int exti_port_start(struct exti_driver_t *drv)
+{
+    return (0);
+}
 
-#endif
+int exti_port_stop(struct exti_driver_t *drv)
+{
+    return (0);
+}

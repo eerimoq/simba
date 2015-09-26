@@ -1,5 +1,5 @@
 /**
- * @file drivers.h
+ * @file drivers/linux/spi_port.i
  * @version 1.0
  *
  * @section License
@@ -18,26 +18,20 @@
  * This file is part of the Simba project.
  */
 
-#ifndef __DRIVERS_H__
-#define __DRIVERS_H__
+static int spi_port_start(struct spi_driver_t *drv_p)
+{
+    return (0);
+}
 
-#include "drivers/exti.h"
-#include "drivers/pin.h"
-#include "drivers/pwm.h"
-#include "drivers/adc.h"
-#include "drivers/spi.h"
-#include "drivers/uart.h"
-#include "drivers/uart_soft.h"
-#include "drivers/owi.h"
-#include "drivers/ds18b20.h"
-#include "drivers/ds3231.h"
-#include "drivers/canif.h"
-#include "drivers/cantp.h"
-#if defined(ARCH_LINUX)
-#    include "drivers/can.h"
-#endif
-#include "drivers/mcp2515.h"
-#include "drivers/nrf24l01.h"
-#include "drivers/sd.h"
+static int spi_port_stop(struct spi_driver_t *drv_p)
+{
+    return (0);
+}
 
-#endif
+static ssize_t spi_port_transfer(struct spi_driver_t *drv,
+                                void *rxbuf,
+                                const void *txbuf,
+                                size_t n)
+{
+    return (-1);
+}

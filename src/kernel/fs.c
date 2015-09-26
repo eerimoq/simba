@@ -240,20 +240,20 @@ static void pack(char *string_p)
     }
 
     /* Remove beginning whitespaces.*/
-    while (isspace(*read_p)) {
+    while (isspace((int)*read_p)) {
         read_p++;
     }
 
     /* Merge internal whitespaces.*/
     while (*read_p != '\0') {
         *write_p++ = *read_p++;
-        while (isspace(*read_p) && isspace(read_p[1])) {
+        while (isspace((int)*read_p) && isspace((int)read_p[1])) {
             read_p++;
         }
     }
 
     /* Remove trailing whitespace.*/
-    if (isspace(write_p[-1])) {
+    if (isspace((int)write_p[-1])) {
         write_p--;
     }
 
