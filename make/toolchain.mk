@@ -44,14 +44,6 @@ ifeq ($(TOOLCHAIN), gnu)
     HELP_VARIABLES += "  AVRDUDE_PORT                avrdude serial port" $$(echo -e '\n') \
                       "  AVRDUDE_BAUDRATE            avrdude serial baudrate" $$(echo -e '\n')
 
-    SIZECMD = avr-size --mcu=$(MCU) --format=avr ${EXE} ; \
-              echo "Kernel package:" ; avr-size $(KERNEL_SRC:%.c=obj/%.o) -t ; echo ; \
-              echo "Drivers package:" ; avr-size $(DRIVERS_SRC:%.c=obj/%.o) obj/mcu.o \
-                   obj/board.o -t ; echo ; \
-              echo "Slib package:" ; avr-size $(SLIB_SRC:%.c=obj/%.o) -t ; echo ; \
-              echo "Other:" ; avr-size $(filter-out obj/mcu.o obj/board.o $(KERNEL_SRC:%.c=obj/%.o) \
-                   $(DRIVERS_SRC:%.c=obj/%.o) $(SLIB_SRC:%.c=obj/%.o),$(OBJ) obj/simba_gen.o) -t
-
 all: $(NAME).hex
 $(NAME).hex: $(EXE)
 	$(CROSS_COMPILE)objcopy -O ihex -R .eeprom $< $@
@@ -70,6 +62,15 @@ $(NAME).hex: $(EXE)
       LDFLAGS += -pg -fprofile-arcs -ftest-coverage -lgcov
     endif
   endif
+
+  SIZECMD = $(CROSS_COMPILE)size $(SIZEARGS) ${EXE} ; \
+            echo "Kernel package:" ; $(CROSS_COMPILE)size $(KERNEL_SRC:%.c=obj/%.o) -t ; echo ; \
+            echo "Drivers package:" ; $(CROSS_COMPILE)size $(DRIVERS_SRC:%.c=obj/%.o) obj/mcu.o \
+                 obj/board.o -t ; echo ; \
+            echo "Slib package:" ; $(CROSS_COMPILE)size $(SLIB_SRC:%.c=obj/%.o) -t ; echo ; \
+            echo "Other:" ; $(CROSS_COMPILE)size $(filter-out obj/mcu.o obj/board.o \
+                                                              $(KERNEL_SRC:%.c=obj/%.o) \
+                 $(DRIVERS_SRC:%.c=obj/%.o) $(SLIB_SRC:%.c=obj/%.o),$(OBJ) obj/simba_gen.o) -t
 
   CC = $(CROSS_COMPILE)gcc
   LD = $(CROSS_COMPILE)gcc
