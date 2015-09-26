@@ -38,17 +38,16 @@ int owi_reset(struct owi_driver_t *drv_p)
 {
     int attempts = 5;
     int err;
-    core_irq_t irq;
 
     do {
         pin_write(&drv_p->pin, 0);
         time_sleep(480);
-        irq = core_lock();
+        sys_lock();
         pin_write(&drv_p->pin, 1);
         pin_set_mode(&drv_p->pin, PIN_INPUT);
         time_sleep(70);
         err = pin_read(&drv_p->pin);
-        core_unlock(irq);
+        sys_unlock();
         time_sleep(410);
         pin_set_mode(&drv_p->pin, PIN_OUTPUT);
     } while ((--attempts > 0) && (err != 0));
@@ -144,17 +143,16 @@ ssize_t owi_read(struct owi_driver_t *drv_p,
 {
     uint8_t *b_p = buf_p;
     int i;
-    core_irq_t irq;
 
     for (i = 0; i < size; i++) {
-        irq = core_lock();
+        sys_lock();
         pin_write(&drv_p->pin, 0);
         time_sleep(5);
         pin_set_mode(&drv_p->pin, PIN_INPUT);
         time_sleep(9);
         *b_p >>= 1;
         *b_p |= (pin_read(&drv_p->pin) << 7);
-        core_unlock(irq);
+        sys_unlock();
         time_sleep(55);
         pin_set_mode(&drv_p->pin, PIN_OUTPUT);
         pin_write(&drv_p->pin, 1);
@@ -179,14 +177,13 @@ ssize_t owi_write(struct owi_driver_t *drv_p,
     int i;
     uint8_t value = 0;
     const uint8_t *b_p = buf_p;
-    core_irq_t irq;
 
     for (i = 0; i < size; i++) {
         if ((i & 0x7) == 0) {
             value = *b_p++;
         }
 
-        irq = core_lock();
+        sys_lock();
         pin_write(&drv_p->pin, 0);
 
         if (value & 1) {
@@ -199,7 +196,7 @@ ssize_t owi_write(struct owi_driver_t *drv_p,
             time_sleep(10);
         }
 
-        core_unlock(irq);
+        sys_unlock();
         value >>= 1;
     }
 

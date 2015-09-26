@@ -41,6 +41,5 @@
 #include "kernel/log.h"
 #include "kernel/queue.h"
 #include "kernel/event.h"
-#include "kernel/core.h"
 
 #endif

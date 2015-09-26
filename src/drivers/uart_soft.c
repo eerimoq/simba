@@ -63,14 +63,13 @@ static ssize_t uart_soft_write_cb(void *arg_p,
 {
     int i, j;
     uint8_t data;
-    core_irq_t irq;
     struct uart_soft_driver_t *drv_p;
     const uint8_t *tx_p = txbuf_p;
 
     drv_p = container_of(arg_p, struct uart_soft_driver_t, chout);
 
     for (i = 0; i < size; i++) {
-        irq = core_lock();
+        sys_lock();
         pin_write(&drv_p->tx_pin, 0);
 
         /* Put 8 bits on the transmission wire. */
@@ -85,7 +84,7 @@ static ssize_t uart_soft_write_cb(void *arg_p,
         time_sleep(drv_p->sample_time);
         pin_write(&drv_p->tx_pin, 1);
         time_sleep(drv_p->sample_time);
-        core_unlock(irq);
+        sys_unlock();
     }
 
     return (size);

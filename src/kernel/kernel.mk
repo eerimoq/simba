@@ -23,7 +23,6 @@ INC += $(SIMBA)/src/kernel
 INC += $(SIMBA)/src/kernel/ports/$(ARCH)/$(TOOLCHAIN)
 
 KERNEL_SRC ?= chan.c \
-              core.c \
               event.c \
               fs.c \
               log.c \
