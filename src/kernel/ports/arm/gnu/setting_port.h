@@ -1,5 +1,5 @@
 /**
- * @file avr/gnu/setting_port.h
+ * @file arm/gnu/setting_port.h
  * @version 1.0
  *
  * @section License

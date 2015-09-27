@@ -1,5 +1,5 @@
 /**
- * @file linux/gnu/thrd_port.i
+ * @file arm/gnu/thrd_port.i
  * @version 1.0
  *
  * @section License
@@ -31,24 +31,27 @@ ISR(sys_tick)
 static int sys_port_module_init(void)
 {
     /* Setup the system tick timer. */
-    SAM_SYSTEM_TIMER->LOAD = SYSTEM_TIMER_LOAD_RELOAD(1000000);
-    SAM_SYSTEM_TIMER->CTRL = (SYSTEM_TIMER_CTRL_TICKINT
-                              | SYSTEM_TIMER_CTRL_ENABLE);
+    SAM_ST->LOAD = SYSTEM_TIMER_LOAD_RELOAD(1000000);
+    SAM_ST->CTRL = (SYSTEM_TIMER_CTRL_TICKINT
+                    | SYSTEM_TIMER_CTRL_ENABLE);
 
     /* Enable interrupts. */
+    asm volatile("cpsie i");
 
     return (0);
 }
 
-static void sys_port_lock()
+static void sys_port_lock(void)
 {
+    asm volatile("cpsid i");
 }
 
-static void sys_port_unlock()
+static void sys_port_unlock(void)
 {
+    asm volatile("cpsie i");
 }
 
-static void sys_port_lock_irq()
+static void sys_port_lock_irq(void)
 {
 }
 

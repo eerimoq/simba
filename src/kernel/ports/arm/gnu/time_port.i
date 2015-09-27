@@ -1,9 +1,9 @@
 /**
- * @file time_port.i
+ * @file arm/gnu/time_port.i
  * @version 1.0
  *
  * @section License
- * Copyright (C) 2014-2015, Erik Moqvist
+ * Copyright (C) 2015, Erik Moqvist
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -18,10 +18,10 @@
  * This file is part of the Simba project.
  */
 
-#include <pthread.h>
-
 static int time_port_get(struct time_t *now)
 {
+    now->seconds = sys.tick;
+
     return (0);
 }
 

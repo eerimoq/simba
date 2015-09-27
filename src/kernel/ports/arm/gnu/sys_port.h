@@ -1,5 +1,5 @@
 /**
- * @file linux/gnu/sys_port.i
+ * @file arm/gnu/sys_port.i
  * @version 1.0
  *
  * @section License
@@ -25,22 +25,20 @@
 
 #define FSTR(s) s
 
-#define _ASSERTFMT(fmt, ...) printf(fmt "\n", ##__VA_ARGS__);
+#define _ASSERTFMT(fmt, ...) std_printf(FSTR(fmt "\n"), ##__VA_ARGS__);
 
-#define BTASSERT(cond, ...)                                     \
-    if (!(cond)) {                                              \
-        printf(__FILE__ ":%d: BTASSERT: %s ", __LINE__, #cond); \
-        _ASSERTFMT(__VA_ARGS__);                                \
-        exit(1);                                                \
+#define BTASSERT(cond, ...)                                             \
+    if (!(cond)) {                                                      \
+        std_printf(FSTR(__FILE__ ":%d: BTASSERT: " #cond), __LINE__); \
+        _ASSERTFMT(__VA_ARGS__);                                        \
+        exit(EBTASSERT);                                                \
     }
 
 #if !defined(NASSERT)
-#  define ASSERTN(cond, n, ...)                                   \
-    if (!(cond)) {                                              \
-        printf(__FILE__ ":%d: ASSERT: %s ", __LINE__, #cond);   \
-        _ASSERTFMT(__VA_ARGS__);                                \
-        sys.on_fatal_callback(n);                               \
-    }
+#  define ASSERTN(cond, n, ...)                 \
+  if (!(cond)) {                                \
+    sys.on_fatal_callback(n);                   \
+  }
 #else
 #  define ASSERTN(cond, n, ...)
 #endif

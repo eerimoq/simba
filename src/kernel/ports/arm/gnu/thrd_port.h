@@ -1,5 +1,5 @@
 /**
- * @file linux/gnu/thrd_port.i
+ * @file arm/gnu/thrd_port.i
  * @version 1.0
  *
  * @section License
@@ -21,11 +21,19 @@
 #ifndef __KERNEL_THRD_PORT_H__
 #define __KERNEL_THRD_PORT_H__
 
-#include <pthread.h>
+struct thrd_port_context_t {
+    uint32_t r11;
+    uint32_t r10;
+    uint32_t r9;
+    uint32_t r8;
+    uint32_t r7;
+    uint32_t r6;
+    uint32_t r5;
+    uint32_t r4;
+};
 
 struct thrd_port_t {
-    void *(*entry)(void *arg);
-    void *arg;
+    struct thrd_port_context_t *context_p;
 };
 
 #endif

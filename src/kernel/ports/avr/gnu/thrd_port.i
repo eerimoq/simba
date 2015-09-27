@@ -53,10 +53,10 @@ static void thrd_port_swap(struct thrd_t *in,
     asm volatile ("push r29");
 
     /* Save 'out' stack pointer.*/
-    out->port.context = (void *)SP;
+    out->port.context_p = (void *)SP;
 
     /* Restore 'in' stack pointer.*/
-    SP = (int)in->port.context;
+    SP = (int)in->port.context_p;
 
     /* Restore all call-saved registers for the 'in' thrd.*/
     asm volatile ("pop  r29");
@@ -107,19 +107,19 @@ static int thrd_port_spawn(struct thrd_t *thrd,
                            void *stack,
                            size_t stack_size)
 {
-    struct thrd_port_context_t *context;
+    struct thrd_port_context_t *context_p;
 
-    context = (stack + stack_size - sizeof(*context));
-    context->r2  = (int)entry;
-    context->r3  = (int)entry >> 8;
-    context->r4  = (int)arg;
-    context->r5  = (int)arg >> 8;
+    context_p = (stack + stack_size - sizeof(*context_p));
+    context_p->r2  = (int)entry;
+    context_p->r3  = (int)entry >> 8;
+    context_p->r4  = (int)arg;
+    context_p->r5  = (int)arg >> 8;
 #if defined(__AVR_3_BYTE_PC__)
-    context->pc_3rd_byte = (int)((long)(int)thrd_port_entry >> 16);
+    context_p->pc_3rd_byte = (int)((long)(int)thrd_port_entry >> 16);
 #endif
-    context->pcl = (int)thrd_port_entry >> 8;
-    context->pch = (int)thrd_port_entry;
-    thrd->port.context = context;
+    context_p->pcl = (int)thrd_port_entry >> 8;
+    context_p->pch = (int)thrd_port_entry;
+    thrd->port.context_p = context_p;
 
     return (0);
 }

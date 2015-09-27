@@ -24,6 +24,121 @@
 /* See "SAM3X / SAM3A Series, Atmel | SMART ARM-based MCU, DATASHEET"
    for details. */
 
+/* System control block. */
+struct sam_system_control_block_t {
+    uint32_t ACTLR;
+    uint32_t reserved1[3316];
+    uint32_t CPUID;
+    uint32_t ICSR;
+    uint32_t VTOR;
+    uint32_t AIRCR;
+    uint32_t SCR;
+    uint32_t CCR;
+    uint32_t SHPR1;
+    uint32_t SHPR2;
+    uint32_t SHPR3;
+    uint32_t SHCSR;
+    uint32_t CFSR;
+    uint32_t HFSR;
+    uint32_t MMAR;
+    uint32_t BFAR;
+};
+
+/* Auxiliary Control Register */
+#define SCB_ACTLR_DISMCYCINT (0x1 <<  0)
+#define SCB_ACTLR_DISDEFWBUF (0x1 <<  1)
+#define SCB_ACTLR_DISFOLD    (0x1 <<  2)
+
+/* CPUID Base Register */
+#define SCB_CPUID_REVISION_MASK     (0xf <<  0)
+#define SCB_CPUID_REVISION_GET(reg)            \
+    (((reg) & SCB_CPUID_REVISION_MASK) >> 0)
+#define SCB_CPUID_PARTNO_MASK       (0xfff <<  4)
+#define SCB_CPUID_PARTNO_GET(reg)              \
+    (((reg) & SCB_CPUID_PARTNO_MASK) >> 4)
+#define SCB_CPUID_CONSTANT_MASK     (0xf <<  16)
+#define SCB_CPUID_CONSTANT_GET(reg)            \
+    (((reg) & SCB_CPUID_CONSTANT_MASK) >> 16)
+#define SCB_CPUID_VARIANT_MASK      (0xf <<  20)
+#define SCB_CPUID_VARIANT_GET(reg)             \
+    (((reg) & SCB_CPUID_VARIANT_MASK) >> 20)
+
+/* Interrupt Control and State Register */
+#define SCB_ICSR_VECTACTIVE_MASK  (0x1ff <<  0)
+#define SCB_ICSR_RETTOBASE        (0x1 << 11)
+#define SCB_ICSR_VECTPENDING_MASK (0x3ff << 12)
+#define SCB_ICSR_ISRPENDING       (0x1 << 22)
+#define SCB_ICSR_PENDSTCLR        (0x1 << 25)
+#define SCB_ICSR_PENDSTSET        (0x1 << 26)
+#define SCB_ICSR_PENDSVCLR        (0x1 << 27)
+#define SCB_ICSR_PENDSVSET        (0x1 << 28)
+
+/* Vector Table Offset Register */
+#define SCB_VTOR_TBLOFF_MASK       (0x7fffff << 7)
+#define SCB_VTOR_TBLOFF_SET(value)             \
+    (((value) << 7) & SCB_VTOR_TBLOFF_MASK)
+
+/* Application Interrupt and Reset Control Register */
+#define SCB_AIRCR_VECTRESET     (0x1 <<  0)
+#define SCB_AIRCR_VECTCLRACTIVE (0x1 <<  1)
+#define SCB_AIRCR_SYSRESETREQ   (0x1 <<  2)
+#define SCB_AIRCR_PRIGROUP_MASK (0x7 <<  8)
+#define SCB_AIRCR_ENDIANESS     (0x1 << 15)
+#define SCB_AIRCR_VECTKEY_MASK  (0xffff << 16)
+
+/* System Control Register */
+#define SCB_SCR_SLEEONEXIT (0x1 <<  1)
+#define SCB_SCR_SLEEPDEEP  (0x1 <<  2)
+#define SCB_SCR_SEVONPEND  (0x1 <<  4)
+
+/* Configuration and Control Register */
+#define SCB_CCR_NONEBASETHRDENA (0x1 <<  0)
+#define SCB_CCR_USERSETMPEND    (0x1 <<  1)
+#define SCB_CCR_UNALIGN_TRP     (0x1 <<  3)
+#define SCB_CCR_DIV_0_TRP       (0x1 <<  4)
+#define SCB_CCR_BFHFNMIGN       (0x1 <<  8)
+#define SCB_CCR_STKALIGN        (0x1 <<  9)
+
+/* System Handler Priority Register 1 */
+#define SCB_SHPR1_PRI_4_MASK (0xff <<  0)
+#define SCB_SHPR1_PRI_5_MASK (0xff <<  8)
+#define SCB_SHPR1_PRI_6_MASK (0xff << 16)
+
+/* System Handler Priority Register 2 */
+#define SCB_SHPR2_PRI_11_MASK (0xff << 24)
+
+/* System Handler Priority Register 3 */
+#define SCB_SHPR3_PRI_14_MASK (0xff << 16)
+#define SCB_SHPR3_PRI_15_MASK (0xff << 24)
+
+/* System Handler Control and State Register */
+#define SCB_SHCSR_MEMFAULTACT    (0x1 <<  0)
+#define SCB_SHCSR_BUSFAULTACT    (0x1 <<  1)
+#define SCB_SHCSR_USGFAULTACT    (0x1 <<  3)
+#define SCB_SHCSR_SVCALLAVCT     (0x1 <<  7)
+#define SCB_SHCSR_MONITORACT     (0x1 <<  8)
+#define SCB_SHCSR_PENDSVACT      (0x1 << 10)
+#define SCB_SHCSR_SYSTICKACT     (0x1 << 11)
+#define SCB_SHCSR_USGFAULTPENDED (0x1 << 12)
+#define SCB_SHCSR_MEMFAULTPENDED (0x1 << 13)
+#define SCB_SHCSR_BUSFAULTPENDED (0x1 << 14)
+#define SCB_SHCSR_SVCALLPENDED   (0x1 << 15)
+#define SCB_SHCSR_MEMFAULTENA    (0x1 << 16)
+#define SCB_SHCSR_BUSFAULTENA    (0x1 << 17)
+#define SCB_SHCSR_USGFAULTENA    (0x1 << 18)
+
+/* Configurable Fault Status Register */
+#define SCB_CFSR
+
+/* Hard Fault Status Register */
+#define SCB_HFSR
+
+/* Memory Management Fault Address Register */
+#define SCB_MMAR
+
+/* Bus Fault Address Register */
+#define SCB_BFAR
+
 /* System timer. */
 struct sam_system_timer_t {
     uint32_t CTRL;
@@ -418,7 +533,8 @@ struct sam_usart_t {
 #define US_WPSR_WPVSRC_MASK             (0xffff << 8)
 
 /* Base addresses of private peripherals. */
-#define SAM_SYSTEM_TIMER ((struct sam_system_timer_t *)0xe000e010u)
+#define SAM_SCB        ((struct sam_system_control_block_t *)0xe000e008u)
+#define SAM_ST         ((struct sam_system_timer_t         *)0xe000e010u)
 
 /* Base addresses of peripherals. */
 #define SAM_HSMCI      ((struct sam_hsmci_t  *)0x40000000u)

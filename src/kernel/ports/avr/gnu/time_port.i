@@ -25,6 +25,7 @@
 static int time_port_get(struct time_t *now)
 {
     now->seconds = sys.tick;
+
     return (0);
 }
 

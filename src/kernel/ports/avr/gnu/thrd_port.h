@@ -49,7 +49,7 @@ struct thrd_port_context_t {
 };
 
 struct thrd_port_t {
-    struct thrd_port_context_t *context;
+    struct thrd_port_context_t *context_p;
 };
 
 #endif
