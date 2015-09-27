@@ -53,7 +53,7 @@ struct chan_t {
  * Initialize module.
  * @return void
  */
-int chan_module_init();
+int chan_module_init(void);
 
 /**
  * Initialize channel with given callbacks.

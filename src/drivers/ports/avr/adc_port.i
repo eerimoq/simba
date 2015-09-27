@@ -84,7 +84,7 @@ static void start_adc_hw(struct adc_driver_t *drv_p)
               | _BV(ADPS2) /*| _BV(ADPS1) */| _BV(ADPS0));
 }
 
-static int adc_port_module_init()
+static int adc_port_module_init(void)
 {
     return (0);
 }

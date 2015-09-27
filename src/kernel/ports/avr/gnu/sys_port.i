@@ -71,21 +71,21 @@ static int sys_port_module_init(void)
     return (0);
 }
 
-static void sys_port_lock()
+static void sys_port_lock(void)
 {
     asm volatile ("cli" ::: "memory");
 }
 
-static void sys_port_unlock()
+static void sys_port_unlock(void)
 {
     asm volatile ("sei" ::: "memory");
 }
 
-static void sys_port_lock_irq()
+static void sys_port_lock_irq(void)
 {
 }
 
-static void sys_port_unlock_irq()
+static void sys_port_unlock_irq(void)
 {
 }
 

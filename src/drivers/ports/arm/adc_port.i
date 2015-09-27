@@ -18,7 +18,7 @@
  * This file is part of the Simba project.
  */
 
-static int adc_port_module_init()
+static int adc_port_module_init(void)
 {
     return (0);
 }

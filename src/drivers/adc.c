@@ -22,7 +22,7 @@
 
 #include "adc_port.i"
 
-int adc_module_init()
+int adc_module_init(void)
 {
     return (adc_port_module_init());
 }

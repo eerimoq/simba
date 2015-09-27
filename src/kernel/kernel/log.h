@@ -83,7 +83,7 @@ int log_module_init(void);
  *
  * @return zero(0) or negative error code.
  */
-int log_reset();
+int log_reset(void);
 
 /**
  * Set log mode to off or circular.
@@ -99,7 +99,7 @@ int log_set_mode(int mode);
  *
  * @return Current log mode.
  */
-int log_get_mode();
+int log_get_mode(void);
 
 /**
  * Add log entry to quick log buffer.

@@ -32,7 +32,7 @@ extern void timer_tick(void);
 extern void thrd_tick(void);
 extern const FAR char appinfo[];
 
-static void sys_tick() {
+static void sys_tick(void) {
     sys.tick++;
     timer_tick();
     thrd_tick();
@@ -50,7 +50,7 @@ int sys_cmd_appinfo(int argc,
     return (0);
 }
 
-int sys_module_init()
+int sys_module_init(void)
 {
     return (sys_port_module_init());
 }
@@ -83,27 +83,27 @@ chan_t *sys_get_stdout(void)
     return (sys.std_out_p);
 }
 
-void sys_lock()
+void sys_lock(void)
 {
     sys_port_lock();
 }
 
-void sys_unlock()
+void sys_unlock(void)
 {
     sys_port_unlock();
 }
 
-void sys_lock_irq()
+void sys_lock_irq(void)
 {
     sys_port_lock_irq();
 }
 
-void sys_unlock_irq()
+void sys_unlock_irq(void)
 {
     sys_port_unlock_irq();
 }
 
-const FAR char *sys_get_appinfo()
+const FAR char *sys_get_appinfo(void)
 {
     return (appinfo);
 }

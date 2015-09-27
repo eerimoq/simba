@@ -22,7 +22,7 @@
 
 #include "setting_port.i"
 
-int setting_module_init()
+int setting_module_init(void)
 {
     return (setting_port_module_init());
 }

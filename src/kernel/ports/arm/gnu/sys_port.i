@@ -55,7 +55,7 @@ static void sys_port_lock_irq(void)
 {
 }
 
-static void sys_port_unlock_irq()
+static void sys_port_unlock_irq(void)
 {
 }
 

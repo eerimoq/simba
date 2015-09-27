@@ -22,7 +22,7 @@
 
 #include "spi_port.i"
 
-int spi_module_init()
+int spi_module_init(void)
 {
     return (0);
 }

@@ -26,7 +26,7 @@ struct sem_elem_t {
     struct thrd_t *thrd_p;
 };
 
-int sem_module_init()
+int sem_module_init(void)
 {
     return (0);
 }

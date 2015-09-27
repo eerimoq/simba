@@ -481,7 +481,7 @@ int thrd_set_log_mask(struct thrd_t *thrd_p, int mask)
     return (old);
 }
 
-int thrd_get_log_mask()
+int thrd_get_log_mask(void)
 {
     return (scheduler.current_p->log_mask);
 }

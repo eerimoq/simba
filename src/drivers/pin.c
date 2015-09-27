@@ -22,7 +22,7 @@
 
 #include "pin_port.i"
 
-int pin_module_init()
+int pin_module_init(void)
 {
     return (0);
 }

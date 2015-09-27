@@ -124,7 +124,7 @@ int log_module_init(void)
     return (log_reset());
 }
 
-int log_reset()
+int log_reset(void)
 {
     sys_lock();
 
@@ -151,7 +151,7 @@ int log_set_mode(int mode)
     return (old);
 }
 
-int log_get_mode()
+int log_get_mode(void)
 {
     return (log.mode);
 }

@@ -22,7 +22,7 @@
 
 #include "uart_port.i"
 
-int uart_module_init()
+int uart_module_init(void)
 {
     return (0);
 }

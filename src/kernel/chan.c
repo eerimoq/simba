@@ -22,7 +22,7 @@
 
 #define CHAN_LIST_POLLING 0x1
 
-int chan_module_init()
+int chan_module_init(void)
 {
     return (0);
 }
