@@ -156,7 +156,7 @@ struct sam_usart_t {
     uint32_t US_WPMR;
     uint32_t US_WPSR;
     uint32_t reserved4[5];
-    struct sam_pdc_t pdc;
+    struct sam_pdc_t US_PDC;
 };
 
 /* USART Control Register */
@@ -434,13 +434,9 @@ struct sam_usart_t {
 #define SAM_PWM        ((struct sam_pwm_t    *)0x40094000u)
 #define SAM_PDC_PWM    ((struct sam_pdc_t    *)0x40094100u)
 #define SAM_USART0     ((struct sam_usart_t  *)0x40098000u)
-#define SAM_PDC_USART0 ((struct sam_pdc_t    *)0x40098100u)
 #define SAM_USART1     ((struct sam_usart_t  *)0x4009c000u)
-#define SAM_PDC_USART1 ((struct sam_pdc_t    *)0x4009c100u)
 #define SAM_USART2     ((struct sam_usart_t  *)0x400a0000u)
-#define SAM_PDC_USART2 ((struct sam_pdc_t    *)0x400a0100u)
 #define SAM_USART3     ((struct sam_usart_t  *)0x400a4000u)
-#define SAM_PDC_USART3 ((struct sam_pdc_t    *)0x400a4100u)
 #define SAM_UOTGHS     ((struct sam_uotghs_t *)0x400ac000u)
 #define SAM_EMAC       ((struct sam_emac_t   *)0x400b0000u)
 #define SAM_CAN0       ((struct sam_can_t    *)0x400b4000u)

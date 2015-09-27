@@ -21,8 +21,12 @@
 ifeq ($(TOOLCHAIN), gnu)
   ifeq ($(ARCH),arm)
     CROSS_COMPILE = arm-none-eabi-
-    CFLAGS += -Werror -Wno-error=unused-variable -DNPROFILESTACK
-    LDFLAGS += 
+    CFLAGS += -Werror \
+              -Wno-error=unused-variable \
+              -DNPROFILESTACK \
+              -fdata-sections \
+              -ffunction-sections
+    LDFLAGS += -Wl,--gc-sections
 
     ENDIANESS = little
 

@@ -30,6 +30,10 @@ struct spi_device_t spi_device[SPI_DEVICE_MAX] = {
 };
 
 struct uart_device_t uart_device[UART_DEVICE_MAX] = {
+    { .drv_p = NULL, .regs_p = SAM_USART0 },
+    { .drv_p = NULL, .regs_p = SAM_USART1 },
+    { .drv_p = NULL, .regs_p = SAM_USART2 },
+    { .drv_p = NULL, .regs_p = SAM_USART3 }
 };
 
 struct pwm_device_t pwm_device[PWM_DEVICE_MAX] = {

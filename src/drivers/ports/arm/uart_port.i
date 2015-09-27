@@ -1,5 +1,5 @@
 /**
- * @file drivers/sh/uart_port.c
+ * @file drivers/arm/uart_port.i
  * @version 1.0
  *
  * @section License
@@ -18,27 +18,114 @@
  * This file is part of the Simba project.
  */
 
-static void isr(int index)
-{
-    struct uart_driver_t *drv_p = uart_device[index].drv_p;
-    (void)drv_p;
-}
+COUNTER_DEFINE("/drivers/uart/rx_channel_overflow", uart_rx_channel_overflow);
+COUNTER_DEFINE("/drivers/uart/rx_errors", uart_rx_errors);
 
-static int uart_port_start(struct uart_driver_t *drv)
+static int uart_port_start(struct uart_driver_t *drv_p)
 {
+    uint16_t cd = (F_CPU / 16 / drv_p->baudrate - 1);
+    struct uart_device_t *dev_p = drv_p->dev_p;
+
+    /* Set baudrate. */
+    dev_p->regs_p->US_BRGR = (US_BRGR_CD(cd) | US_BRGR_FP(0));
+
+    /* */
+    dev_p->regs_p->US_MR = (US_MR_USART_MODE_NORMAL
+                            | US_MR_USCLKS_MCK
+                            | US_MR_CHRL_8_BIT
+                            | US_MR_PAR_NO);
+
+    /* Setup RX buffer of one byte in PDC. */
+    dev_p->regs_p->US_PDC.PERIPH_RPR = (uint32_t)dev_p->rxbuf;
+    dev_p->regs_p->US_PDC.PERIPH_RCR = 1;
+
+    /* Enable TX and RX using the PDC. */
+    dev_p->regs_p->US_CR = (US_CR_RXEN | US_CR_TXEN);
+    dev_p->regs_p->US_IER = (US_IER_ENDRX | US_IER_ENDTX);
+    dev_p->regs_p->US_IDR = 0;
+    dev_p->regs_p->US_IMR = (US_IMR_ENDRX | US_IMR_ENDTX);
+    dev_p->regs_p->US_PDC.PERIPH_PTCR = (PERIPH_PTCR_RXTEN
+                                         | PERIPH_PTCR_TXTEN);
+
+    dev_p->drv_p = drv_p;
+
     return (0);
 }
 
-static int uart_port_stop(struct uart_driver_t *drv)
+static int uart_port_stop(struct uart_driver_t *drv_p)
 {
+    struct uart_device_t *dev_p = drv_p->dev_p;
+
+    dev_p->regs_p->US_CR = 0;
+    dev_p->regs_p->US_IER = 0;
+    dev_p->regs_p->US_IMR = 0;
+    dev_p->regs_p->US_PDC.PERIPH_PTCR = 0;
+
+    dev_p->drv_p = NULL;
+
     return (0);
 }
 
-static ssize_t uart_port_write_cb(void *arg,
-                                  const void *txbuf,
+static ssize_t uart_port_write_cb(void *arg_p,
+                                  const void *txbuf_p,
                                   size_t size)
 {
+    struct uart_driver_t *drv_p;
+    struct uart_device_t *dev_p;
+
+    drv_p = container_of(arg_p, struct uart_driver_t, chout);
+    dev_p = drv_p->dev_p;
+
+    sem_get(&drv_p->sem, NULL);
+
+    sys_lock();
+
+    /* Initiate transfer by writing to the PDC registers. */
+    dev_p->regs_p->US_PDC.PERIPH_TPR = (uint32_t)txbuf_p;
+    dev_p->regs_p->US_PDC.PERIPH_TCR = size;
+
+    drv_p->thrd_p = thrd_self();
+
+    thrd_suspend_irq(NULL);
+
+    sys_unlock();
+
+    sem_put(&drv_p->sem, 1);
+
     return (size);
+}
+
+static void isr(int index)
+{
+    struct uart_device_t *dev_p = &uart_device[index];
+    struct uart_driver_t *drv_p = dev_p->drv_p;
+    uint32_t csr, error;
+
+    if (drv_p == NULL) {
+        return;
+    }
+
+    csr = dev_p->regs_p->US_CSR;
+
+    if (csr & US_CSR_ENDTX) {
+        thrd_resume_irq(drv_p->thrd_p, 0);
+    }
+
+    if (csr & US_CSR_ENDRX) {
+        error = (csr & (US_CSR_OVRE | US_CSR_FRAME | US_CSR_PARE));
+
+        if (error == 0) {
+            /* Write data to input queue. */
+            if (queue_write_irq(&drv_p->chin, dev_p->rxbuf, 1) != 1) {
+                COUNTER_INC(uart_rx_channel_overflow, 1);
+            }
+        } else {
+            COUNTER_INC(uart_rx_errors, 1);
+        }
+
+        /* Reset counter to receive next byte. */
+        dev_p->regs_p->US_PDC.PERIPH_RCR = 1;
+    }
 }
 
 #define UART_ISR(vector, index)                 \
