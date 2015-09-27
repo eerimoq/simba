@@ -1,6 +1,4 @@
-#!/usr/bin/env bash
-#
-# @file simba/boards/shtest.mk
+# @file mcus/sam/3x8e/mcu.mk
 # @version 1.0
 #
 # @section License
@@ -19,16 +17,4 @@
 # This file is part of the Simba project.
 #
 
-INC += $(SIMBA)/src/mcus/sam3x8e
-SRC += $(SIMBA)/src/mcus/sam3x8e/mcu.c $(SIMBA)/src/mcus/sam3x8e/sam3x8e.c
-
-MCU = cortex-m3
-F_CPU = 84000000
-
-CFLAGS += -mthumb -mcpu=$(MCU) -DF_CPU=$(F_CPU)UL -funsigned-char \
-          -funsigned-bitfields -fpack-struct -fshort-enums \
-          -std=gnu99
-LDFLAGS += -mcpu=$(MCU) -DF_CPU=$(F_CPU)UL -Wl,--cref \
-           -T$(SIMBA)/src/mcus/sam3x8e/script.ld
-
-ARCH = arm
+include $(SIMBA)/src/mcus/sam/sam3.mk

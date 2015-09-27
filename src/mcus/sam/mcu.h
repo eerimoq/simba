@@ -21,13 +21,17 @@
 #ifndef __MCU_H__
 #define __MCU_H__
 
-#include "sam3x8e.h"
+#include "sam3.h"
 
-#define PIN_DEVICE_MAX  103
-#define EXTI_DEVICE_MAX 2
-#define SPI_DEVICE_MAX  1
-#define UART_DEVICE_MAX 4
-#define PWM_DEVICE_MAX  12
-#define ADC_DEVICE_MAX  1
+#if defined(MCU_SAM_3X8E)
+#    define PIN_DEVICE_MAX  103
+#    define EXTI_DEVICE_MAX 2
+#    define SPI_DEVICE_MAX  1
+#    define UART_DEVICE_MAX 4
+#    define PWM_DEVICE_MAX  12
+#    define ADC_DEVICE_MAX  1
+#else
+#     error "Unsupported MCU."
+#endif
 
 #endif

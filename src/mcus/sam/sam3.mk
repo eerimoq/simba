@@ -1,4 +1,4 @@
-# @file src/boards/arduino_due/board.mk
+# @file mcus/sam/sam3.mk
 # @version 1.0
 #
 # @section License
@@ -17,8 +17,17 @@
 # This file is part of the Simba project.
 #
 
-INC += $(SIMBA)/src/boards/arduino_due
-SRC += $(SIMBA)/src/boards/arduino_due/board.c
+INC += $(SIMBA)/src/mcus/sam
+SRC += $(SIMBA)/src/mcus/sam/sam3.c \
+       $(SIMBA)/src/mcus/sam/mcu.c
 
-MCU = sam/3x8e
+MCPU = cortex-m3
+F_CPU = 84000000
+
+CFLAGS += -mthumb -mcpu=$(MCPU) -DF_CPU=$(F_CPU)UL -funsigned-char \
+          -funsigned-bitfields -fpack-struct -fshort-enums \
+          -std=gnu99
+LDFLAGS += -mcpu=$(MCPU) -DF_CPU=$(F_CPU)UL -Wl,--cref \
+           -T$(SIMBA)/src/mcus/$(MCU)/script.ld
+
 ARCH = arm

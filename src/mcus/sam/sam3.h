@@ -1,9 +1,9 @@
 /**
- * @file mcu.h
+ * @file sam3x8e.h
  * @version 1.0
  *
  * @section License
- * Copyright (C) 2014-2015, Erik Moqvist
+ * Copyright (C) 2015, Erik Moqvist
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -51,17 +51,13 @@ struct sam_system_control_block_t {
 
 /* CPUID Base Register */
 #define SCB_CPUID_REVISION_MASK     (0xf <<  0)
-#define SCB_CPUID_REVISION_GET(reg)            \
-    (((reg) & SCB_CPUID_REVISION_MASK) >> 0)
+#define SCB_CPUID_REVISION_GET(reg) (((reg) & SCB_CPUID_REVISION_MASK) >> 0)
 #define SCB_CPUID_PARTNO_MASK       (0xfff <<  4)
-#define SCB_CPUID_PARTNO_GET(reg)              \
-    (((reg) & SCB_CPUID_PARTNO_MASK) >> 4)
+#define SCB_CPUID_PARTNO_GET(reg)   (((reg) & SCB_CPUID_PARTNO_MASK) >> 4)
 #define SCB_CPUID_CONSTANT_MASK     (0xf <<  16)
-#define SCB_CPUID_CONSTANT_GET(reg)            \
-    (((reg) & SCB_CPUID_CONSTANT_MASK) >> 16)
+#define SCB_CPUID_CONSTANT_GET(reg) (((reg) & SCB_CPUID_CONSTANT_MASK) >> 16)
 #define SCB_CPUID_VARIANT_MASK      (0xf <<  20)
-#define SCB_CPUID_VARIANT_GET(reg)             \
-    (((reg) & SCB_CPUID_VARIANT_MASK) >> 20)
+#define SCB_CPUID_VARIANT_GET(reg)  (((reg) & SCB_CPUID_VARIANT_MASK) >> 20)
 
 /* Interrupt Control and State Register */
 #define SCB_ICSR_VECTACTIVE_MASK  (0x1ff <<  0)
@@ -75,8 +71,7 @@ struct sam_system_control_block_t {
 
 /* Vector Table Offset Register */
 #define SCB_VTOR_TBLOFF_MASK       (0x7fffff << 7)
-#define SCB_VTOR_TBLOFF_SET(value)             \
-    (((value) << 7) & SCB_VTOR_TBLOFF_MASK)
+#define SCB_VTOR_TBLOFF_SET(value) (((value) << 7) & SCB_VTOR_TBLOFF_MASK)
 
 /* Application Interrupt and Reset Control Register */
 #define SCB_AIRCR_VECTRESET     (0x1 <<  0)

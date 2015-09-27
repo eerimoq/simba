@@ -23,7 +23,6 @@ ifeq ($(TOOLCHAIN), gnu)
     CROSS_COMPILE = arm-none-eabi-
     CFLAGS += -Werror \
               -Wno-error=unused-variable \
-              -DNPROFILESTACK \
               -fdata-sections \
               -ffunction-sections
     LDFLAGS += -Wl,--gc-sections
@@ -83,7 +82,7 @@ $(NAME).hex: $(EXE)
   CC = $(CROSS_COMPILE)gcc
   LD = $(CROSS_COMPILE)gcc
 
-  CFLAGS += -c -Wall -fstack-usage
+  CFLAGS += -c -Wall
   LDFLAGS += -Wl,-Map=$(NAME).map
 
   ifneq ($(NDEBUG),yes)

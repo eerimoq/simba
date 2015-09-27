@@ -1,5 +1,5 @@
 /**
- * @file mcus/atmega328p/mcu.c
+ * @file mcus/sam/mcu.c
  * @version 1.0
  *
  * @section License

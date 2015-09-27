@@ -41,7 +41,7 @@
  *
  */
 
-OUTPUT_FORMAT("elf32-littlearm", "elf32-littlearm", "elf32-littlearm")
+OUTPUT_FORMAT("elf32-littlearm")
 OUTPUT_ARCH(arm)
 SEARCH_DIR(.)
 
@@ -49,15 +49,11 @@ SEARCH_DIR(.)
 MEMORY
 {
 	rom (rx)    : ORIGIN = 0x00080000, LENGTH = 0x00080000 /* Flash, 512K */
-	sram0 (rwx) : ORIGIN = 0x20000000, LENGTH = 0x00010000 /* sram0, 64K */
-	sram1 (rwx) : ORIGIN = 0x20080000, LENGTH = 0x00008000 /* sram1, 32K */
 	ram (rwx)   : ORIGIN = 0x20070000, LENGTH = 0x00018000 /* sram, 96K */
-/*	ram (rwx)   : ORIGIN = ORIGIN( sram1 )-LENGTH( sram0 ), LENGTH = LENGTH( sram0 )+LENGTH( sram1 ) */ /* sram, 96K */
 }
 
-/* The stack size used by the application. NOTE: you need to adjust  */
-__stack_size__ = DEFINED(__stack_size__) ? __stack_size__ : 0x2000;
-__ram_end__ = ORIGIN(ram) + LENGTH(ram) - 4;
+/* The stack used by the main thread. */
+__main_stack_end = ORIGIN(ram) + LENGTH(ram) - 4;
 
 /* Section Definitions */ 
 SECTIONS 
@@ -141,16 +137,6 @@ SECTIONS
         *(COMMON)
         . = ALIGN(4);
         __bss_end__ = . ;
-    } > ram
-
-    /* stack section */
-    .stack (NOLOAD):
-    {
-        . = ALIGN(8);
-         __stack_start__ = .;
-        . = . + __stack_size__;
-        . = ALIGN(8);
-        __stack_end__ = .;
     } > ram
 
     . = ALIGN(4); 

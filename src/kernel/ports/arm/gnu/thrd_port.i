@@ -18,7 +18,7 @@
  * This file is part of the Simba project.
  */
 
-#define THRD_IDLE_STACK_MAX 1024
+#define THRD_IDLE_STACK_MAX 256
 
 static struct thrd_t main_thrd;
 
@@ -39,7 +39,8 @@ static inline void __set_sp(uint32_t value)
 static void thrd_port_swap(struct thrd_t *in_p,
                            struct thrd_t *out_p)
 {
-    /* Store registers. */
+    /* Store registers. lr is the return address. */
+    asm volatile ("push {lr}");
     asm volatile ("push {r4-r11}");
     
     /* Save 'out_p' stack pointer. */
@@ -48,28 +49,24 @@ static void thrd_port_swap(struct thrd_t *in_p,
     /* Restore 'in_p' stack pointer. */
     __set_sp((uint32_t)in_p->port.context_p);
 
-    /* Load registers. */
+    /* Load registers. pop lr to pc and continue execution. */
     asm volatile ("pop {r4-r11}");
+    asm volatile ("pop {pc}");
 }
 
 static void thrd_port_init_main(struct thrd_port_t *port)
 {
 }
 
+static void thrd_port_entry(void) __attribute__((naked));
 static void thrd_port_entry(void)
 {
-    sys_unlock();
+    /* Enable interrupts. */
+    asm volatile ("cpsie i");
 
-    /* Call entry function with argument. */
-    /* asm volatile ("movw r24, r4"); */
-    /* asm volatile ("movw r30, r2"); */
-    /* asm volatile ("icall"); */
-
-    /* The thread is terminated. */
-    sys_lock();
-    thrd_self()->state = THRD_STATE_TERMINATED;
-    thrd_reschedule();
-    sys_unlock();
+    /* Call thread entry function with argument. */
+    asm volatile ("mov r0, r10");
+    asm volatile ("blx r9"); 
 }
 
 static int thrd_port_spawn(struct thrd_t *thrd,
@@ -83,7 +80,7 @@ static int thrd_port_spawn(struct thrd_t *thrd,
     context_p = (stack + stack_size - sizeof(*context_p));
     context_p->r9 = (uint32_t)entry;
     context_p->r10 = (uint32_t)arg;
-    context_p->r11 = (uint32_t)thrd_port_entry;
+    context_p->pc = (uint32_t)thrd_port_entry;
     thrd->port.context_p = context_p;
 
     return (0);
@@ -91,6 +88,7 @@ static int thrd_port_spawn(struct thrd_t *thrd,
 
 static void thrd_port_idle_wait(struct thrd_t *thrd_p)
 {
+    asm volatile ("wfi");
 }
 
 static void thrd_port_suspend_timer_callback(void *arg_p)

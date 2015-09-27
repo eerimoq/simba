@@ -1,5 +1,5 @@
 /**
- * @file mcu.h
+ * @file sam3.c
  * @version 1.0
  *
  * @section License
@@ -21,7 +21,7 @@
 #include "simba.h"
 
 /* Defined in the linker script. */
-extern uint32_t __stack_end__;
+extern uint32_t __main_stack_end;
 
 /**
  * Do nothing if no interrupt service routine is installed in the
@@ -100,7 +100,7 @@ void isr_can1(void)             __attribute__ ((weak, alias("isr_none")));
 __attribute__ ((section(".vectors"), used)) 
 void (*vector_table[])(void) = {
     /* Start stack address. */
-    (void (*)(void))(&__stack_end__),
+    (void (*)(void))(&__main_stack_end),
 
     /* System exceptions (1-15). */
     isr_reset,

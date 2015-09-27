@@ -18,11 +18,6 @@
  * This file is part of the Simba project.
  */
 
-#include <pthread.h>
-
-struct sys_port_t {
-};
-
 ISR(sys_tick)
 {
     sys_tick();

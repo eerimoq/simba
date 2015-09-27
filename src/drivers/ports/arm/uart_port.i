@@ -39,7 +39,7 @@ static int uart_port_start(struct uart_driver_t *drv_p)
     dev_p->regs_p->US_PDC.PERIPH_RPR = (uint32_t)dev_p->rxbuf;
     dev_p->regs_p->US_PDC.PERIPH_RCR = 1;
 
-    /* Enable TX and RX using the PDC. */
+    /* Enable TX and RX using the PDC end of transfer interrupts. */
     dev_p->regs_p->US_CR = (US_CR_RXEN | US_CR_TXEN);
     dev_p->regs_p->US_IER = (US_IER_ENDRX | US_IER_ENDTX);
     dev_p->regs_p->US_IDR = 0;

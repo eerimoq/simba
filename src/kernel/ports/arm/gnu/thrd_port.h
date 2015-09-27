@@ -22,6 +22,7 @@
 #define __KERNEL_THRD_PORT_H__
 
 struct thrd_port_context_t {
+    uint32_t pc;
     uint32_t r11;
     uint32_t r10;
     uint32_t r9;

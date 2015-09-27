@@ -71,7 +71,7 @@ include $(SLIB.mk)
 include $(SIMBA)/make/toolchain.mk
 
 UPPER_ARCH = $(shell echo $(ARCH) | tr a-z A-Z)
-UPPER_MCU = $(shell echo $(MCU) | tr a-z A-Z | tr - _)
+UPPER_MCU = $(shell echo $(MCU) | tr a-z A-Z | tr - _ | tr / _)
 UPPER_BOARD = $(shell echo $(BOARD) | tr a-z A-Z)
 
 clean:
