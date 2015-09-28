@@ -1,5 +1,5 @@
 #
-# @file mcus/atmega2560/mcu.mk
+# @file make/gnu-linux.mk
 # @version 1.0
 #
 # @section License
@@ -18,16 +18,22 @@
 # This file is part of the Simba project.
 #
 
-INC += $(SIMBA)/src/mcus/atmega2560
-SRC += $(SIMBA)/src/mcus/atmega2560/mcu.c
+CROSS_COMPILE =
+CFLAGS += -Werror -Wno-error=unused-variable -DNPROFILESTACK
+LDFLAGS += -Wl,-lpthread -lrt
 
-F_CPU = 16000000
-CPU = atmega2560
-MAIN_STACK_END = 0x802200
+ENDIANESS = little
 
-AVRDUDE_BAUDRATE = 115200
-AVRDUDE_PROGRAMMER = wiring
+ifneq ($(NPROFILE),yes)
+  CFLAGS += -pg -fprofile-arcs -ftest-coverage
+  LDFLAGS += -pg -fprofile-arcs -ftest-coverage -lgcov
+endif
 
-ARCH = avr
+ifneq ($(NDEBUG),yes)
+  CFLAGS += -g
+  LDFLAGS += -g
+else
+  CFLAGS += -O2
+endif
 
-include $(SIMBA)/make/$(TOOLCHAIN)-avr.mk
+include $(SIMBA)/make/gnu.mk

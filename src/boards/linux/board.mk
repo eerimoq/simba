@@ -1,4 +1,3 @@
-#!/usr/bin/env bash
 #
 # @file boards/linux/board.mk
 # @version 1.0
@@ -23,4 +22,3 @@ INC += $(SIMBA)/src/boards/linux
 SRC += $(SIMBA)/src/boards/linux/board.c
 
 MCU = linux
-ARCH = linux

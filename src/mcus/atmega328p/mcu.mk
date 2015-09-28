@@ -1,6 +1,5 @@
-#!/usr/bin/env bash
 #
-# @file simba/boards/shtest.mk
+# @file mcus/atmega328p/mcu.mk
 # @version 1.0
 #
 # @section License
@@ -21,15 +20,14 @@
 
 INC += $(SIMBA)/src/mcus/atmega328p
 SRC += $(SIMBA)/src/mcus/atmega328p/mcu.c
+
 AVRDUDE_BAUDRATE = 57600
 AVRDUDE_PROGRAMMER = arduino
 
 F_CPU = 16000000
-MCU = atmega328p
+CPU = atmega328p
 MAIN_STACK_END = 0x800900
 
-CFLAGS += -mmcu=$(MCU) -DF_CPU=$(F_CPU)UL -funsigned-char \
-          -funsigned-bitfields -fpack-struct -fshort-enums -std=gnu99
-LDFLAGS += -mmcu=$(MCU) -DF_CPU=$(F_CPU)UL -Wl,--cref
-
 ARCH = avr
+
+include $(SIMBA)/make/$(TOOLCHAIN)-avr.mk

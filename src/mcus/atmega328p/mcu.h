@@ -31,5 +31,6 @@
 
 #define USART0_TX_vect USART_TX_vect
 #define USART0_RX_vect USART_RX_vect
+#define USART0_UDRE_vect USART_UDRE_vect
 
 #endif

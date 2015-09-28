@@ -1,4 +1,3 @@
-#!/usr/bin/env bash
 #
 # @file simba/boards/shtest.mk
 # @version 1.0
@@ -23,4 +22,3 @@ INC += $(SIMBA)/src/boards/arduino_mega
 SRC += $(SIMBA)/src/boards/arduino_mega/board.c
 
 MCU = atmega2560
-ARCH = avr

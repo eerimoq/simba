@@ -1,3 +1,4 @@
+#
 # @file mcus/sam/3x8e/mcu.mk
 # @version 1.0
 #

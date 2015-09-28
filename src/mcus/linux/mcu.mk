@@ -1,6 +1,5 @@
-#!/usr/bin/env bash
 #
-# @file simba/boards/shtest.mk
+# @file mcus/linux/mcu.mk
 # @version 1.0
 #
 # @section License
@@ -21,3 +20,7 @@
 
 INC += $(SIMBA)/src/mcus/linux
 SRC += $(SIMBA)/src/mcus/linux/mcu.c
+
+ARCH = linux
+
+include $(SIMBA)/make/$(TOOLCHAIN)-linux.mk

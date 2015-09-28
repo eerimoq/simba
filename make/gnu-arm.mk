@@ -1,5 +1,5 @@
 #
-# @file mcus/atmega2560/mcu.mk
+# @file make/gnu-arm.mk
 # @version 1.0
 #
 # @section License
@@ -18,16 +18,23 @@
 # This file is part of the Simba project.
 #
 
-INC += $(SIMBA)/src/mcus/atmega2560
-SRC += $(SIMBA)/src/mcus/atmega2560/mcu.c
+CROSS_COMPILE = arm-none-eabi-
+CFLAGS += -Werror \
+          -Wno-error=unused-variable \
+          -fdata-sections \
+          -ffunction-sections
+LDFLAGS += -Wl,--gc-sections
 
-F_CPU = 16000000
-CPU = atmega2560
-MAIN_STACK_END = 0x802200
+ENDIANESS = little
 
-AVRDUDE_BAUDRATE = 115200
-AVRDUDE_PROGRAMMER = wiring
+CFLAGS += -mthumb -mcpu=$(MCPU) -DF_CPU=$(F_CPU)UL -funsigned-char \
+          -funsigned-bitfields -fpack-struct -fshort-enums \
+          -std=gnu99
+LDFLAGS += -mcpu=$(MCPU) -DF_CPU=$(F_CPU)UL -Wl,--cref \
+           -T$(SIMBA)/src/mcus/$(MCU)/script.ld
 
-ARCH = avr
+all: $(NAME).hex
+$(NAME).hex: $(EXE)
+	$(CROSS_COMPILE)objcopy -O ihex $< $@
 
-include $(SIMBA)/make/$(TOOLCHAIN)-avr.mk
+include $(SIMBA)/make/gnu.mk

@@ -1,3 +1,4 @@
+#
 # @file src/boards/arduino_due/board.mk
 # @version 1.0
 #
@@ -21,4 +22,3 @@ INC += $(SIMBA)/src/boards/arduino_due
 SRC += $(SIMBA)/src/boards/arduino_due/board.c
 
 MCU = sam/3x8e
-ARCH = arm

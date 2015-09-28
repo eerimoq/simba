@@ -1,4 +1,3 @@
-#!/usr/bin/env bash
 #
 # @file simba/boards/shtest.mk
 # @version 1.0
@@ -23,4 +22,3 @@ INC += $(SIMBA)/src/boards/arduino_nano
 SRC += $(SIMBA)/src/boards/arduino_nano/board.c
 
 MCU = atmega328p
-ARCH = avr
