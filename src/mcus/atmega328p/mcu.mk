@@ -30,4 +30,4 @@ MAIN_STACK_END = 0x800900
 
 ARCH = avr
 
-include $(SIMBA)/make/$(TOOLCHAIN)-avr.mk
+include $(SIMBA)/make/$(TOOLCHAIN)/avr.mk

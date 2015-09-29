@@ -27,4 +27,4 @@ F_CPU = 84000000
 
 ARCH = arm
 
-include $(SIMBA)/make/$(TOOLCHAIN)-arm.mk
+include $(SIMBA)/make/$(TOOLCHAIN)/arm.mk

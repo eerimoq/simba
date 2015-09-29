@@ -23,4 +23,4 @@ SRC += $(SIMBA)/src/mcus/linux/mcu.c
 
 ARCH = linux
 
-include $(SIMBA)/make/$(TOOLCHAIN)-linux.mk
+include $(SIMBA)/make/$(TOOLCHAIN)/linux.mk

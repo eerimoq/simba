@@ -30,4 +30,4 @@ AVRDUDE_PROGRAMMER = wiring
 
 ARCH = avr
 
-include $(SIMBA)/make/$(TOOLCHAIN)-avr.mk
+include $(SIMBA)/make/$(TOOLCHAIN)/avr.mk
