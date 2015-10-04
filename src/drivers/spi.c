@@ -90,11 +90,11 @@ ssize_t spi_write(struct spi_driver_t *drv_p,
 ssize_t spi_get(struct spi_driver_t *drv_p,
                 uint8_t *data_p)
 {
-    return (spi_read(drv_p, data_p, NULL, 1));
+    return (spi_read(drv_p, data_p, 1));
 }
 
 ssize_t spi_put(struct spi_driver_t *drv_p,
                 uint8_t data)
 {
-    return (spi_write(drv_p, NULL, &data, 1));
+    return (spi_write(drv_p, &data, 1));
 }

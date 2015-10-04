@@ -36,9 +36,9 @@ struct spi_driver_t;
 
 struct spi_device_t {
     struct spi_driver_t *drv_p;
-    const struct pin_device_t *mosi_p;
-    const struct pin_device_t *miso_p;
-    const struct pin_device_t *sck_p;
+    struct pin_device_t *mosi_p;
+    struct pin_device_t *miso_p;
+    struct pin_device_t *sck_p;
     struct sem_t sem;
 };
 

@@ -27,6 +27,10 @@ ISR(SPI_STC_vect)
 {
     struct spi_driver_t *drv_p = spi_device[0].drv_p;
 
+    if (drv_p == NULL) {
+        return;
+    }
+
     /* Read incoming byte. */
     if (drv_p->rxbuf_p != NULL) {
         *drv_p->rxbuf_p++ = SPDR;
@@ -40,7 +44,7 @@ ISR(SPI_STC_vect)
         if (drv_p->txbuf_p != NULL) {
             SPDR = *drv_p->txbuf_p++;
         } else {
-            SPDR = 0;
+            SPDR = 0xff;
         }
         
         drv_p->size--;
@@ -107,7 +111,7 @@ static ssize_t spi_port_transfer(struct spi_driver_t *drv_p,
     if (drv_p->txbuf_p != NULL) {
         SPDR = *drv_p->txbuf_p++;
     } else {
-        SPDR = 0;
+        SPDR = 0xff;
     }
 
     thrd_suspend(NULL);

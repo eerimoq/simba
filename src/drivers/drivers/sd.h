@@ -54,6 +54,9 @@ struct sd_cid_t {
     (((csd_p)->write_bl_len_high << 2)          \
      | ((csd_p)->write_bl_len_low << 0))
 
+#define SD_CSD_STRUCTURE_V1 0
+#define SD_CSD_STRUCTURE_V2 1
+
 /* CSD, Card-Specific Data register, version 1.00. */
 struct sd_csd_v1_t {
     uint8_t reserved1 : 6;
@@ -146,6 +149,7 @@ union sd_csd_t {
 
 struct sd_driver_t {
     struct spi_driver_t *spi_p;
+    int type;
 };
 
 /**
@@ -186,8 +190,8 @@ int sd_stop(struct sd_driver_t *drv_p);
  *
  * @return zero(0) or negative error code.
  */
-int sd_read_cid(struct sd_driver_t *drv_p,
-                struct sd_cid_t* cid_p);
+ssize_t sd_read_cid(struct sd_driver_t *drv_p,
+                    struct sd_cid_t* cid_p);
 
 /**
  * Read card CSD register. The CSD contains that provides
@@ -198,8 +202,8 @@ int sd_read_cid(struct sd_driver_t *drv_p,
  *
  * @return zero(0) or negative error code.
  */
-int sd_read_csd(struct sd_driver_t *drv_p,
-                union sd_csd_t* csd_p);
+ssize_t sd_read_csd(struct sd_driver_t *drv_p,
+                    union sd_csd_t* csd_p);
 
 /**
  * Erase given block interval from start to end. Returns true if
