@@ -1,2 +1,3 @@
 # Run "dmesg | tail" to find idProduct and idVendor for the Arduino serial device
 SUBSYSTEMS=="usb", ATTRS{idProduct}=="0042", ATTRS{idVendor}=="2341", SYMLINK+="arduino"
+SUBSYSTEMS=="usb", ATTRS{idProduct}=="003d", ATTRS{idVendor}=="2341", SYMLINK+="arduino"

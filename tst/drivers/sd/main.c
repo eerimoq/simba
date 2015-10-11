@@ -198,6 +198,13 @@ static int test_read_write(struct harness_t *harness_p)
     BTASSERT(system("./create_sdcard_linux.sh") == 0);
 #endif
 
+    BTASSERT(spi_init(&spi,
+                      &spi_device[0],
+                      &pin_d53_dev,
+                      SPI_MODE_MASTER,
+                      SPI_PORT_SPEED_125KBPS,
+                      0,
+                      0) == 0);
     BTASSERT(sd_init(&sd, &spi) == 0);
     BTASSERT(sd_start(&sd) == 0);
 
@@ -225,8 +232,8 @@ int main()
 {
     struct harness_t harness;
     struct harness_testcase_t harness_testcases[] = {
-        { test_read_cid_csd, "test_read_cid_csd" },
-        /* { test_read_write, "test_read_write" }, */
+        /* { test_read_cid_csd, "test_read_cid_csd" }, */
+        { test_read_write, "test_read_write" },
         { NULL, NULL }
     };
 

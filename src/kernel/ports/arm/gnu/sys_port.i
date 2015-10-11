@@ -30,6 +30,9 @@ static int sys_port_module_init(void)
     SAM_ST->CTRL = (SYSTEM_TIMER_CTRL_TICKINT
                     | SYSTEM_TIMER_CTRL_ENABLE);
 
+    /* Disable the watchdog. */
+    SAM_WDT->MR = 0x8000;
+
     /* Enable interrupts. */
     asm volatile("cpsie i");
 

@@ -498,14 +498,11 @@ ssize_t sd_read_block(struct sd_driver_t *drv_p,
                       void *dst_p,
                       uint32_t src_block)
 {
-#if 0
     if (drv_p->type != TYPE_SDHC) {
-        block <<= 9;
+        src_block <<= 9;
     }
     
     return (read(drv_p, CMD_READ_SINGLE_BLOCK, dst_p, SD_BLOCK_SIZE));
-#endif
-    return (0);
 }
 
 ssize_t sd_write_block(struct sd_driver_t *drv_p,

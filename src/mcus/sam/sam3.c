@@ -22,6 +22,15 @@
 
 /* Defined in the linker script. */
 extern uint32_t __main_stack_end;
+extern uint32_t __text_start__;
+extern uint32_t __text_end__;
+extern uint32_t __relocate_start__;
+extern uint32_t __relocate_end__;
+extern uint32_t __zero_start__;
+extern uint32_t __zero_end__;
+
+extern void __libc_init_array(void);
+extern void main(void);
 
 /**
  * Do nothing if no interrupt service routine is installed in the
@@ -30,9 +39,9 @@ extern uint32_t __main_stack_end;
 static void isr_none(void)
 {
 }
-                                
+
 /* System exceptions (1-15). */
-void isr_reset(void)            __attribute__ ((weak, alias("isr_none")));
+//void isr_reset(void)            __attribute__ ((weak, alias("isr_none")));
 void isr_nmi(void)              __attribute__ ((weak, alias("isr_none")));
 void isr_hard_fault(void)       __attribute__ ((weak, alias("isr_none")));
 void isr_mem_manage_fault(void) __attribute__ ((weak, alias("isr_none")));
@@ -95,9 +104,89 @@ void isr_emac(void)             __attribute__ ((weak, alias("isr_none")));
 void isr_can0(void)             __attribute__ ((weak, alias("isr_none")));
 void isr_can1(void)             __attribute__ ((weak, alias("isr_none")));
 
+#define SYS_BOARD_MCKR      (PMC_MCKR_PRES_CLK_2 | PMC_MCKR_CSS_PLLA_CLK)
+
+/* Clock settings (84MHz) */
+static void clock_init(void)
+{
+    /* Set FWS according to SYS_BOARD_MCKR configuration */
+    SAM_EEFC0->FMR = EEFC_FMR_FWS(4);
+    SAM_EEFC1->FMR = EEFC_FMR_FWS(4);
+
+    /* Initialize main oscillator */
+    SAM_PMC->CKGR_MOR = (PMC_CKGR_MOR_KEY(0x37)
+                         | PMC_CKGR_MOR_MOSCXTST(0x8)
+                         | PMC_CKGR_MOR_MOSCRCEN
+                         | PMC_CKGR_MOR_MOSCXTEN);
+
+    while ((SAM_PMC->SR & PMC_SR_MOSCXTS) == 0);
+
+    /* Switch to the oscillator connected to XIN/XOUT. */
+    SAM_PMC->CKGR_MOR = (PMC_CKGR_MOR_KEY(0x37)
+                         | PMC_CKGR_MOR_MOSCXTST(0x8)
+                         | PMC_CKGR_MOR_MOSCRCEN
+                         | PMC_CKGR_MOR_MOSCXTEN
+                         | PMC_CKGR_MOR_MOSCSEL);
+
+    while ((SAM_PMC->SR & PMC_SR_MOSCSELS) == 0);
+
+    SAM_PMC->MCKR = ((SAM_PMC->MCKR & ~(uint32_t)PMC_MCKR_CSS_MASK)
+                     | PMC_MCKR_CSS_MAIN_CLK);
+
+    while ((SAM_PMC->SR & PMC_SR_MCKRDY) == 0);
+
+    /* Initialize PLLA. */
+    SAM_PMC->CKGR_PLLAR = (PMC_CKGR_PLLAR_ONE
+                           | PMC_CKGR_PLLAR_MULA(0xd)
+                           | PMC_CKGR_PLLAR_PLLACOUNT(0x3f)
+                           | PMC_CKGR_PLLAR_DIVA(1));
+
+    while ((SAM_PMC->SR & PMC_SR_LOCKA) == 0);
+
+    /* Switch to main clock. */
+    SAM_PMC->MCKR = (PMC_MCKR_PRES_CLK_2
+                     | PMC_MCKR_CSS_MAIN_CLK);
+
+    while ((SAM_PMC->SR & PMC_SR_MCKRDY) == 0);
+
+    /* Switch to PLLA. */
+    SAM_PMC->MCKR = (PMC_MCKR_PRES_CLK_2
+                     | PMC_MCKR_CSS_PLLA_CLK);
+
+    while ((SAM_PMC->SR & PMC_SR_MCKRDY) == 0);
+}
+
+void isr_reset(void)
+{
+    uint32_t *src_p, *dst_p;
+
+    clock_init();
+
+    /* Initialize the relocate segment */
+    src_p = &__text_end__;
+    dst_p = &__relocate_start__;
+
+    if (src_p != dst_p) {
+        while (dst_p < &__relocate_end__) {
+            *dst_p++ = *src_p++;
+        }
+    }
+
+    /* Clear the zero segment */
+    for (dst_p = &__zero_start__; dst_p < &__zero_end__;) {
+        *dst_p++ = 0;
+    }
+
+    /* Branch to main function */
+    main();
+
+    /* Infinite loop */
+    while (1);
+}
+
 /* Vector table with all interrupt service routines and the start
    stack pointer. */
-__attribute__ ((section(".vectors"), used)) 
+__attribute__ ((section(".vectors"), used))
 void (*vector_table[])(void) = {
     /* Start stack address. */
     (void (*)(void))(&__main_stack_end),

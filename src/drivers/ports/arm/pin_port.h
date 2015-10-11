@@ -22,6 +22,8 @@
 #define __DRIVERS_PIN_PORT_H__
 
 struct pin_device_t {
+    volatile struct sam_pio_t *pio_p;
+    uint32_t mask;
 };
 
 struct pin_driver_t {
