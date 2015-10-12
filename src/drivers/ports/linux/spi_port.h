@@ -23,6 +23,15 @@
 
 #include <io.h>
 
+/* Speed configuration is not used in this port. */
+#define SPI_PORT_SPEED_8MBPS    0
+#define SPI_PORT_SPEED_4MBPS    0
+#define SPI_PORT_SPEED_2MBPS    0
+#define SPI_PORT_SPEED_1MBPS    0
+#define SPI_PORT_SPEED_500KBPS  0
+#define SPI_PORT_SPEED_250KBPS  0
+#define SPI_PORT_SPEED_125KBPS  0
+
 struct spi_device_t {
     volatile struct st_rspi *port_p;
 };

@@ -61,7 +61,7 @@ SECTIONS
     .text : 
     { 
         . = ALIGN(4);
-        _sfixed = .;
+        __fixed_start__ = .;
         KEEP(*(.vectors .vectors.*))
         *(.text .text.* .gnu.linkonce.t.*) 	      
         *(.glue_7t) *(.glue_7)		                
@@ -104,7 +104,7 @@ SECTIONS
         KEEP (*crtend.o(.dtors))
 
         . = ALIGN(4);
-        _efixed = .;            /* End of text section */
+        __fixed_end__ = .;            /* End of text section */
     } > rom
 
     /* .ARM.exidx is sorted, so has to go in its own output section.  */
@@ -116,9 +116,9 @@ SECTIONS
     PROVIDE_HIDDEN (__exidx_end = .);
 
     . = ALIGN(4); 
-    _etext = .;
+    __text_end__ = .;
 
-    .relocate : AT (_etext)
+    .relocate : AT (__text_end__)
     {
         . = ALIGN(4);
         __relocate_start__ = .;
@@ -133,10 +133,12 @@ SECTIONS
     { 
         . = ALIGN(4);
         __bss_start__ = . ;
+        __zero_start__ = . ;
         *(.bss .bss.*)
         *(COMMON)
         . = ALIGN(4);
         __bss_end__ = . ;
+        __zero_end__ = . ;
     } > ram
 
     . = ALIGN(4); 

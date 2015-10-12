@@ -34,8 +34,8 @@ extern const FAR char appinfo[];
 
 static void sys_tick(void) {
     sys.tick++;
-    timer_tick();
-    thrd_tick();
+    //timer_tick();
+    //thrd_tick();
 }
 
 #include "sys_port.i"
@@ -62,7 +62,7 @@ int sys_start(void)
     log_module_init();
     sem_module_init();
     chan_module_init();
-    thrd_module_init();
+    /* thrd_module_init(); */
     sys_port_module_init();
 
     return (0);

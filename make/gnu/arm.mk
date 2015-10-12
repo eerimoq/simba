@@ -29,12 +29,15 @@ ENDIANESS = little
 
 CFLAGS += -mthumb -mcpu=$(MCPU) -DF_CPU=$(F_CPU)UL -funsigned-char \
           -funsigned-bitfields -fpack-struct -fshort-enums \
-          -std=gnu99
+          -std=gnu99 -Os
 LDFLAGS += -mcpu=$(MCPU) -DF_CPU=$(F_CPU)UL -Wl,--cref \
            -T$(SIMBA)/src/mcus/$(MCU)/script.ld
 
-all: $(NAME).hex
-$(NAME).hex: $(EXE)
-	$(CROSS_COMPILE)objcopy -O ihex $< $@
+
+RUNARGS = ${NAME}.bin
+
+all: $(NAME).bin
+$(NAME).bin: $(EXE)
+	$(CROSS_COMPILE)objcopy -O binary $< $@
 
 include $(SIMBA)/make/gnu.mk

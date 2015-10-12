@@ -18,29 +18,55 @@
  * This file is part of the Simba project.
  */
 
-static int pin_port_init(struct pin_driver_t *drv,
-                         const struct pin_device_t *dev,
+static int pin_port_init(struct pin_driver_t *drv_p,
+                         const struct pin_device_t *dev_p,
                          int mode)
 {
+    return (pin_set_mode(drv_p, mode));
+}
+
+static int pin_port_read(struct pin_driver_t *drv_p)
+{
+    return (-1);
+}
+
+static int pin_port_write(struct pin_driver_t *drv_p, int value)
+{
+    const struct pin_device_t *dev_p = drv_p->dev_p;
+
+    if (value == 1) {
+        dev_p->pio_p->SODR = dev_p->mask;
+    } else {
+        dev_p->pio_p->CODR = dev_p->mask;
+    }
+
     return (0);
 }
 
-static int pin_port_read(struct pin_driver_t *drv)
+static int pin_port_toggle(struct pin_driver_t *drv_p)
 {
+    const struct pin_device_t *dev_p = drv_p->dev_p;
+
+    if (dev_p->pio_p->ODSR & dev_p->mask) {
+        dev_p->pio_p->CODR = dev_p->mask;
+    } else {
+        dev_p->pio_p->SODR = dev_p->mask;
+    }
+
     return (0);
 }
 
-static int pin_port_write(struct pin_driver_t *drv, int value)
+static int pin_port_set_mode(struct pin_driver_t *drv_p, int mode)
 {
-    return (0);
-}
+    const struct pin_device_t *dev_p = drv_p->dev_p;
 
-static int pin_port_toggle(struct pin_driver_t *drv)
-{
-    return (0);
-}
+#define REG_PIOB_OER ((volatile uint32_t *)0x400E1010U) /**< \brief (PIOB) Output Enable Register */
 
-static int pin_port_set_mode(struct pin_driver_t *drv, int mode)
-{
+    if (mode == PIN_OUTPUT) {
+        dev_p->pio_p->OER = dev_p->mask;
+    } else {
+        dev_p->pio_p->ODR = dev_p->mask;
+    }
+
     return (0);
 }

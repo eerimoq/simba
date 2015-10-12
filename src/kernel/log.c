@@ -220,7 +220,7 @@ int log_format(chan_t *chout_p)
     int i, number_of_entries;
     struct log_entry_header_t *header_p;
     struct log_entry_footer_t *footer_p;
-    void *begin_p, *buf_p, *entry_end_p;
+    void *begin_p = NULL, *buf_p, *entry_end_p;
     int (*format_fn)(chan_t *, void *);
     size_t entry_size;
     int old_mode;

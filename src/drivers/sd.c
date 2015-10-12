@@ -19,6 +19,7 @@
  */
 
 #include "simba.h"
+#include "arpa/inet.h"
 
 /* Command Abbreviations (section 4.7.4 in specification). */
 #define CMD_GO_IDLE_STATE         0    /* Reset the SD Memory Card. */
@@ -74,6 +75,12 @@
 #define STATE_RCV   6
 #define STATE_PRG   7
 #define STATE_DIS   8
+
+/* SD card type. */
+#define TYPE_UNKNOWN 0
+#define TYPE_SD1     1
+#define TYPE_SD2     2
+#define TYPE_SDHC    3
 
 /* Responses. */
 
@@ -238,59 +245,79 @@ static uint16_t crc_xmodem_update(uint16_t crc, uint8_t data)
     return (crctab[((crc >> 8) ^ data) & 0xff] ^ (crc << 8));
 }
 
-static int send_command(struct sd_driver_t *drv_p,
+static uint16_t crc_xmodem(uint16_t crc, uint8_t *data_p, size_t size)
+{
+    while (size > 0) {
+        crc = crc_xmodem_update(crc, *data_p++);
+        size--;
+    }
+
+    return (crc);
+}
+
+static int wait_for_response(struct sd_driver_t *drv_p,
+                             uint8_t mask,
+                             uint8_t value,
+                             uint8_t *response_p)
+{
+    do {
+        if (spi_get(drv_p->spi_p, response_p) != 1) {
+            return (-1);
+        }
+    } while ((*response_p & mask) != value);
+
+    return (0);
+}
+
+/**
+ * Send command index with given argument to SD card and wait for
+ * response.
+ */
+static int command_call(struct sd_driver_t *drv_p,
                         uint8_t index,
                         uint32_t arg,
                         uint8_t *response_p)
 {
     /* Build request with command, argument and add check-sum (CRC7) */
     struct command_t command;
-    uint8_t b;
-    int i;
 
+    /* Initiate the command. */
     command.index = (0x40 | index);
-    command.arg = arg;
+    command.arg = htonl(arg);
     command.crc = crc7(&command, sizeof(command) - 1);
 
     /* Issue the command; wait while busy. */
-    do {
-        spi_get(drv_p->spi_p, &b);
-    } while (b == 0xff);
+    wait_for_response(drv_p, 0xff, 0xff, response_p);
 
     spi_write(drv_p->spi_p, &command, sizeof(command));
 
-    /* Wait for the response */
-    for (i = 0; i < RESPONSE_RETRY; i++) {
-        spi_get(drv_p->spi_p, response_p);
+    /* Wait for the response. */
+    wait_for_response(drv_p, 0x80, 0x0, response_p);
 
-        if ((*response_p & 0x80) == 0) {
-            break;
-        }
+    return (0);
+}
+
+static uint8_t application_command_call(struct sd_driver_t *drv_p,
+                                        uint8_t index,
+                                        uint32_t arg,
+                                        uint8_t *response_p)
+{
+    if (command_call(drv_p, CMD_APP_CMD, 0, response_p) != 0) {
+        return (-1);
     }
 
-    return ((*response_p & 0x80) != 0);
+    return (command_call(drv_p, index, arg, response_p));
 }
 
-static uint8_t send_application_command(struct sd_driver_t *drv_p,
-                                        uint8_t index,
-                                        uint32_t arg)
+static int read_command_response(struct sd_driver_t *drv_p,
+                                 uint32_t *response_p)
 {
-    send_command(drv_p, CMD_APP_CMD, 0, NULL);
+    spi_read(drv_p->spi_p, response_p, sizeof(*response_p));
 
-    return (send_command(drv_p, index, arg, NULL));
+    *response_p = ntohl(*response_p);
+
+    return (0);
 }
-
-/* static int receive(struct sd_driver_t *drv_p) */
-/* { */
-/*     univ32_t res; */
-
-/*     res.as_uint8[3] = spi.transfer(0xff); */
-/*     res.as_uint8[2] = spi.transfer(0xff); */
-/*     res.as_uint8[1] = spi.transfer(0xff); */
-/*     res.as_uint8[0] = spi.transfer(0xff); */
-
-/*     return (res.as_uint32); */
-/* } */
 
 static ssize_t read(struct sd_driver_t *drv_p,
                     uint8_t index,
@@ -298,23 +325,23 @@ static ssize_t read(struct sd_driver_t *drv_p,
                     size_t size)
 {
     uint16_t real_crc, expected_crc;
+    uint8_t response;
 
     /* Issue read command. */
-    if (send_command(drv_p, index, 0, NULL)) {
+    if (command_call(drv_p, index, 0, &response) != 0) {
         return (-1);
     }
 
     /* Receive the data block start token. */
-    if (await(drv_p, TOKEN_DATA_START_BLOCK) != 0) {
-        return (-1);
-    }
+    wait_for_response(drv_p, 0xff, TOKEN_DATA_START_BLOCK, &response);
 
     /* Receive the data and it's checksum. */
     spi_read(drv_p->spi_p, dst_p, size);    
     spi_read(drv_p->spi_p, &expected_crc, sizeof(expected_crc));
 
     /* Calculate the checksum of the received data. */
-    real_crc = crc_xmodem(0, dst_p, SD_BLOCK_SIZE);
+    real_crc = crc_xmodem(0, dst_p, size);
+    expected_crc = ntohs(expected_crc);
 
     if (real_crc != expected_crc) {
         return (-1);
@@ -333,74 +360,90 @@ int sd_init(struct sd_driver_t *drv_p,
 
 int sd_start(struct sd_driver_t *drv_p)
 {
-    int res = 1;
     uint32_t arg;
     union r1_t r1;
     union r7_t r7;
     int i;
     uint32_t ocr;
+    int res;
 
     /* Start with unknown card type */
     drv_p->type = TYPE_UNKNOWN;
 
-    /* See figure 7-2: SPI Mode Initialization Flow. */
+    /* Wait for at least one millisecond. */
+    thrd_usleep(1000);
+
+    /* Send 74 dummy clock pulses. */
+    for (i = 0; i < 10; i++) {
+        spi_put(drv_p->spi_p, 0xff);
+    }
 
     /* Reset card. */
-    if (write_cmd(drv_p, CMD_GO_IDLE_STATE) != 0) {
-        return (1);
+    if (command_call(drv_p, CMD_GO_IDLE_STATE, 0, &r1.as_uint8) != 0) {
+        return (-1);
+    }
+
+    /* Enable CRC. */
+    if (command_call(drv_p, CMD_CRC_ON_OFF, 1, &r1.as_uint8) != 0) {
+        return (-1);
+    }
+
+    if (R1_IS_ERROR(r1)) {
+        return (-1);
     }
 
     /* Check for version of SD card specification; 2.7-3.6V and check
        pattern. */
     drv_p->type = TYPE_SD1;
     arg = (0x100 | CHECK_PATTERN);
-    status = write_cmd_with_arg(SEND_IF_COND, arg);
 
-    if (status.in_idle_state) {
-        r7 = read_cmd_response();
+    res = command_call(drv_p, CMD_SEND_IF_COND, arg, &r1.as_uint8);
+
+    /* SD type 1 on error or no response. */
+    if ((res == 0) && !R1_IS_ERROR(r1)) {
+        if (read_command_response(drv_p, &r7.as_uint32) != 0) {
+            /* SD1 not supported. */
+            return (-1);
+        }
 
         if (r7.check_pattern != CHECK_PATTERN) {
             return (-1);
         }
-
+        
         drv_p->type = TYPE_SD2;
     }
 
-    /* Read OCR register and check type */
-    if (drv_p->type == TYPE_SD2) {
-        r1 = send_command(CMD_READ_OCR, 0);
-
-        if (R1_IS_ERROR(r1)) {
-            return (-1);
-        }
-
-        //ocr = receive();
-
-        if ((ocr & 0xC0000000L) == 0xC0000000L) {
-            drv_p->type = TYPE_SDHC;
-        }
-    }
-
-    /* Enable CRC. */
-    status = send_command(drv_p, CRC_ON_OFF, 1);
-
-    if (status.is_error()) {
-        goto error;
-    }
-
     /* Tell the device that the host supports SDHC. */
-    arg = (drv_p->type == TYPE_SD1) ? 0L : 0X40000000L;
+    arg = (drv_p->type == TYPE_SD1 ? 0L : 0x40000000L);
 
-    for (i = 0; i < INIT_RETRY; i++) {
-        if (!write_acmd(INIT_TIMEOUT, ACMD_SD_SEND_OP_COND, arg)) {
+    for (i = 0; i < 50; i++) {
+        if (application_command_call(drv_p,
+                                     ACMD_SD_SEND_OP_COND,
+                                     arg,
+                                     &r1.as_uint8) != 0) {
             return (-1);
         }
 
-        if (drv_p->response == 0) {
+        if (r1.in_idle_state == 0) {
             break;
         }
+
+        thrd_usleep(5000);
     }
-  
+
+    /* Read OCR register and check type. */
+    if (command_call(drv_p, CMD_READ_OCR, 0, &r1.as_uint8) != 0) {
+        return (-1);
+    }
+
+    if (read_command_response(drv_p, &ocr) != 0) {
+            return (-1);
+    }
+    
+    if ((ocr & 0xc0000000L) == 0xc0000000L) {
+        drv_p->type = TYPE_SDHC;
+    }
+    
     return (0);
 }
 
@@ -409,18 +452,16 @@ int sd_stop(struct sd_driver_t *drv_p)
     return (0);
 }
 
-int sd_read_cid(struct sd_driver_t *drv_p,
-                struct cid_t* cid_p)
+ssize_t sd_read_cid(struct sd_driver_t *drv_p,
+                    struct sd_cid_t *cid_p)
 {
-    return (read(drv_p, CMD_SEND_CID, cid_p, sizeof(*cid_p))
-            == sizeof(*cid_p));
+    return (read(drv_p, CMD_SEND_CID, cid_p, sizeof(*cid_p)));
 }
 
-int sd_read_csd(struct sd_driver_t *drv_p,
-                struct sd_csd_t* csd_p)
+ssize_t sd_read_csd(struct sd_driver_t *drv_p,
+                    union sd_csd_t *csd_p)
 {
-    return (read(drv_p, CMD_SEND_CSD, csd_p, sizeof(*csd_p))
-            == sizeof(*csd_p));
+    return (read(drv_p, CMD_SEND_CSD, csd_p, sizeof(*csd_p)));
 }
 
 int sd_erase_blocks(struct sd_driver_t *drv_p,
@@ -432,7 +473,7 @@ int sd_erase_blocks(struct sd_driver_t *drv_p,
         start <<= 9;
         end <<= 9;
     }
-
+#if 0
     /* Send commands for block erase */
     if (send(ERASE_WR_BLK_START, start)) {
         return (-1);
@@ -449,7 +490,7 @@ int sd_erase_blocks(struct sd_driver_t *drv_p,
     if (!await(ERASE_TIMEOUT)) {
         return (-1);
     }
-
+#endif
     return (0);
 }
 
@@ -458,7 +499,7 @@ ssize_t sd_read_block(struct sd_driver_t *drv_p,
                       uint32_t src_block)
 {
     if (drv_p->type != TYPE_SDHC) {
-        block <<= 9;
+        src_block <<= 9;
     }
     
     return (read(drv_p, CMD_READ_SINGLE_BLOCK, dst_p, SD_BLOCK_SIZE));
@@ -468,19 +509,19 @@ ssize_t sd_write_block(struct sd_driver_t *drv_p,
                        uint32_t dst_block,
                        const void *src_p)
 {
-    uint16_t crc;
+    //uint16_t crc;
     uint8_t status;
 
     /* Check for byte address adjustment */
     if (drv_p->type != TYPE_SDHC) {
         dst_block <<= 9;
     }
-
+#if 0
     /* Calculate the checksum of the reseiced data. */
     crc = crc_xmodem(0, src_p, SD_BLOCK_SIZE);
 
     /* Issue write block command, transfer block, calculate check sum. */
-    if (send_command(drv_p, CMD_WRITE_BLOCK, dst_block)) {
+    if (command_call(drv_p, CMD_WRITE_BLOCK, dst_block)) {
         return (-1);
     }
 
@@ -508,6 +549,7 @@ ssize_t sd_write_block(struct sd_driver_t *drv_p,
     }
 
     spi_get(&status);
-
-    return (status !== 0);
+#endif
+    status = 0;
+    return (status != 0);
 }

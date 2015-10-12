@@ -25,27 +25,42 @@ static int uart_port_start(struct uart_driver_t *drv_p)
 {
     uint16_t cd = (F_CPU / 16 / drv_p->baudrate - 1);
     struct uart_device_t *dev_p = drv_p->dev_p;
+    uint32_t mask;
+
+    /* Configure the RX pin. */
+    mask = dev_p->pio.rx.mask;
+    dev_p->pio.rx.regs_p->PDR = mask;
+    dev_p->pio.rx.regs_p->ODR = mask;
+    dev_p->pio.rx.regs_p->IDR = mask;
+    dev_p->pio.rx.regs_p->PUER = mask;
+    dev_p->pio.rx.regs_p->ABSR &= ~mask;
+
+    /* Configure the TX pin. */
+    mask = dev_p->pio.tx.mask;
+    dev_p->pio.tx.regs_p->PDR = mask;
+    dev_p->pio.tx.regs_p->ODR = mask;
+    dev_p->pio.tx.regs_p->IDR = mask;
+    dev_p->pio.tx.regs_p->ABSR &= ~mask;
 
     /* Set baudrate. */
-    dev_p->regs_p->US_BRGR = (US_BRGR_CD(cd) | US_BRGR_FP(0));
+    dev_p->regs_p->US_BRGR = cd;
 
-    /* */
+    /* Set mode and parity. */
     dev_p->regs_p->US_MR = (US_MR_USART_MODE_NORMAL
-                            | US_MR_USCLKS_MCK
-                            | US_MR_CHRL_8_BIT
                             | US_MR_PAR_NO);
-
+ 
     /* Setup RX buffer of one byte in PDC. */
-    dev_p->regs_p->US_PDC.PERIPH_RPR = (uint32_t)dev_p->rxbuf;
-    dev_p->regs_p->US_PDC.PERIPH_RCR = 1;
+    /* dev_p->regs_p->US_PDC.PERIPH_RPR = (uint32_t)dev_p->rxbuf; */
+    /* dev_p->regs_p->US_PDC.PERIPH_RCR = 1; */
 
     /* Enable TX and RX using the PDC end of transfer interrupts. */
-    dev_p->regs_p->US_CR = (US_CR_RXEN | US_CR_TXEN);
-    dev_p->regs_p->US_IER = (US_IER_ENDRX | US_IER_ENDTX);
-    dev_p->regs_p->US_IDR = 0;
-    dev_p->regs_p->US_IMR = (US_IMR_ENDRX | US_IMR_ENDTX);
-    dev_p->regs_p->US_PDC.PERIPH_PTCR = (PERIPH_PTCR_RXTEN
-                                         | PERIPH_PTCR_TXTEN);
+    dev_p->regs_p->US_CR = US_CR_TXEN;
+
+    /* dev_p->regs_p->US_IER = (US_IER_ENDRX | US_IER_ENDTX); */
+    /* dev_p->regs_p->US_IDR = 0; */
+    /* dev_p->regs_p->US_IMR = (US_IMR_ENDRX | US_IMR_ENDTX); */
+    /* dev_p->regs_p->US_PDC.PERIPH_PTCR = (PERIPH_PTCR_RXTEN */
+    /*                                      | PERIPH_PTCR_TXTEN); */
 
     dev_p->drv_p = drv_p;
 
@@ -59,7 +74,7 @@ static int uart_port_stop(struct uart_driver_t *drv_p)
     dev_p->regs_p->US_CR = 0;
     dev_p->regs_p->US_IER = 0;
     dev_p->regs_p->US_IMR = 0;
-    dev_p->regs_p->US_PDC.PERIPH_PTCR = 0;
+    dev_p->regs_p->US_PDC.PTCR = 0;
 
     dev_p->drv_p = NULL;
 
@@ -72,6 +87,8 @@ static ssize_t uart_port_write_cb(void *arg_p,
 {
     struct uart_driver_t *drv_p;
     struct uart_device_t *dev_p;
+    int i;
+    const uint8_t *tx_p = txbuf_p;
 
     drv_p = container_of(arg_p, struct uart_driver_t, chout);
     dev_p = drv_p->dev_p;
@@ -80,13 +97,23 @@ static ssize_t uart_port_write_cb(void *arg_p,
 
     sys_lock();
 
+    for (i = 0; i < size; i++) {
+        while ((dev_p->regs_p->US_CSR & US_CSR_TXRDY) == 0);
+        
+        dev_p->regs_p->US_THR = tx_p[i];
+    }
+
+#if 0
+
     /* Initiate transfer by writing to the PDC registers. */
-    dev_p->regs_p->US_PDC.PERIPH_TPR = (uint32_t)txbuf_p;
-    dev_p->regs_p->US_PDC.PERIPH_TCR = size;
+    dev_p->regs_p->US_PDC.TPR = (uint32_t)txbuf_p;
+    dev_p->regs_p->US_PDC.TCR = size;
 
     drv_p->thrd_p = thrd_self();
 
     thrd_suspend_irq(NULL);
+
+#endif
 
     sys_unlock();
 
@@ -124,7 +151,7 @@ static void isr(int index)
         }
 
         /* Reset counter to receive next byte. */
-        dev_p->regs_p->US_PDC.PERIPH_RCR = 1;
+        dev_p->regs_p->US_PDC.RCR = 1;
     }
 }
 
@@ -134,17 +161,17 @@ static void isr(int index)
     }                                           \
 
 #if (UART_DEVICE_MAX >= 1)
-UART_ISR(usart0, 0)
+UART_ISR(uart, 0)
 #endif
 
 #if (UART_DEVICE_MAX >= 2)
-UART_ISR(usart1, 1)
+UART_ISR(usart0, 1)
 #endif
 
 #if (UART_DEVICE_MAX >= 3)
-UART_ISR(usart2, 2)
+UART_ISR(usart1, 2)
 #endif
 
 #if (UART_DEVICE_MAX >= 4)
-UART_ISR(usart3, 3)
+UART_ISR(usart2, 3)
 #endif
