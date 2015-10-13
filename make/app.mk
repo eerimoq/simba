@@ -73,6 +73,8 @@ UPPER_ARCH = $(shell echo $(ARCH) | tr a-z A-Z)
 UPPER_MCU = $(shell echo $(MCU) | tr a-z A-Z | tr - _ | tr / _)
 UPPER_BOARD = $(shell echo $(BOARD) | tr a-z A-Z)
 
+RUNSCRIPT = $(SIMBA)/make/$(TOOLCHAIN)/$(ARCH).sh
+
 clean:
 	@echo "Cleaning"
 	rm -rf $(CLEAN)
@@ -83,10 +85,10 @@ new:
 
 run: all
 	@echo "Running $(EXE)"
-	set -o pipefail ; stdbuf -i0 -o0 -e0 $(SIMBA)/make/$(TOOLCHAIN)/$(ARCH).sh run ./$(EXE) $(SIMBA) $(RUNARGS) | tee $(RUNLOG)
+	set -o pipefail ; stdbuf -i0 -o0 -e0 $(RUNSCRIPT) run ./$(EXE) $(SIMBA) $(RUNARGS) | tee $(RUNLOG)
 
 dump:
-	set -o pipefail ; $(SIMBA)/make/$(TOOLCHAIN)/$(ARCH).sh dump ./$(EXE) $(SIMBA) $(RUNARGS)
+	set -o pipefail ; $(RUNSCRIPT) dump ./$(EXE) $(SIMBA) $(RUNARGS)
 
 report:
 	@echo "$(NAME):"
@@ -96,19 +98,19 @@ test: run
 	$(MAKE) report
 
 run-debugger: all
-	set -o pipefail ; stdbuf -i0 -o0 -e0 $(SIMBA)/make/$(TOOLCHAIN)/$(ARCH).sh debugger ./$(EXE) $(SIMBA) $(RUNARGS) | tee $(RUNLOG)
+	set -o pipefail ; stdbuf -i0 -o0 -e0 $(RUNSCRIPT) debugger ./$(EXE) $(SIMBA) $(RUNARGS) | tee $(RUNLOG)
 
 profile:
-	set -o pipefail ; $(SIMBA)/make/$(TOOLCHAIN)/$(ARCH).sh profile ./$(EXE) | tee profile.log
+	set -o pipefail ; $(RUNSCRIPT) profile ./$(EXE) | tee profile.log
 
 coverage:
-	set -o pipefail ; $(SIMBA)/make/$(TOOLCHAIN)/$(ARCH).sh coverage ./$(EXE) | tee coverage.log
+	set -o pipefail ; $(RUNSCRIPT) coverage ./$(EXE) | tee coverage.log
 
 size:
 	set -o pipefail ; $(SIZECMD) | tee size.log
 
 jenkins-coverage:
-	$(SIMBA)/make/$(TOOLCHAIN)/$(ARCH).sh jenkins-coverage ./$(EXE) > coverage.xml
+	$(RUNSCRIPT) jenkins-coverage ./$(EXE) > coverage.xml
 
 release:
 	env NDEBUG=yes NPROFILE=yes $(MAKE)

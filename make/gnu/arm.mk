@@ -1,5 +1,5 @@
 #
-# @file make/gnu-arm.mk
+# @file make/gnu/arm.mk
 # @version 1.0
 #
 # @section License
@@ -20,16 +20,11 @@
 
 CROSS_COMPILE = arm-none-eabi-
 CFLAGS += -Werror \
-          -Wno-error=unused-variable \
-          -fdata-sections \
-          -ffunction-sections
-LDFLAGS += -Wl,--gc-sections
+          -O2
 
 ENDIANESS = little
 
-CFLAGS += -mthumb -mcpu=$(MCPU) -DF_CPU=$(F_CPU)UL -funsigned-char \
-          -funsigned-bitfields -fpack-struct -fshort-enums \
-          -std=gnu99 -Os
+CFLAGS += -mthumb -mcpu=$(MCPU) -DF_CPU=$(F_CPU)UL
 LDFLAGS += -mcpu=$(MCPU) -DF_CPU=$(F_CPU)UL -Wl,--cref \
            -T$(SIMBA)/src/mcus/$(MCU)/script.ld
 

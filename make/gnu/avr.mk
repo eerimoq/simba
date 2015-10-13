@@ -22,11 +22,14 @@ CROSS_COMPILE = avr-
 
 SIZEARGS = --mcu=$(MCU) --format=avr
 
-CFLAGS += -mmcu=$(CPU) -DF_CPU=$(F_CPU)UL -funsigned-char \
-          -funsigned-bitfields -fpack-struct -fshort-enums -std=gnu99 \
-          -O2 -D__DELAY_BACKWARD_COMPATIBLE__ -fdata-sections -ffunction-sections
-LDFLAGS += -mmcu=$(CPU) -DF_CPU=$(F_CPU)UL -Wl,--cref \
-           -Wl,--defsym=__main_stack_end=$(MAIN_STACK_END) -Wl,--gc-sections
+CFLAGS += -mmcu=$(CPU) \
+          -DF_CPU=$(F_CPU)UL \
+          -D__DELAY_BACKWARD_COMPATIBLE__ \
+          -O2
+LDFLAGS += -mmcu=$(CPU) \
+           -DF_CPU=$(F_CPU)UL \
+           -Wl,--cref \
+           -Wl,--defsym=__main_stack_end=$(MAIN_STACK_END)
 
 ENDIANESS = little
 

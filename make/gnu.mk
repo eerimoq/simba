@@ -30,7 +30,16 @@ SIZECMD = $(CROSS_COMPILE)size $(SIZEARGS) ${EXE} ; \
 CC = $(CROSS_COMPILE)gcc
 LD = $(CROSS_COMPILE)gcc
 
-CFLAGS += -c -Wall
+CFLAGS += -c \
+          -Wall \
+          -funsigned-char \
+          -funsigned-bitfields \
+          -fpack-struct \
+          -fshort-enums \
+          -std=gnu99 \
+          -fdata-sections \
+          -ffunction-sections \
+          -Wno-error=unused-variable
 LDFLAGS += -Wl,-Map=$(NAME).map
 
 CLEAN += $(NAME).map

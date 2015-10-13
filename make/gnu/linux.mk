@@ -1,5 +1,5 @@
 #
-# @file make/gnu-linux.mk
+# @file make/gnu/linux.mk
 # @version 1.0
 #
 # @section License
