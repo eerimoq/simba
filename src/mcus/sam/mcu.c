@@ -221,3 +221,24 @@ struct pwm_device_t pwm_device[PWM_DEVICE_MAX] = {
 
 struct adc_device_t adc_device[ADC_DEVICE_MAX] = {
 };
+
+struct flash_device_t flash_device[FLASH_DEVICE_MAX] = {
+    .banks = {
+        {
+            .index = 0,
+            .begin = IFLASH0_START,
+            .end = IFLASH0_END,
+            .page_size = IFLASH0_PAGE_SIZE
+        },
+        {
+            .index = 1,
+            .begin = IFLASH1_START,
+            .end = IFLASH1_END,
+            .page_size = IFLASH1_PAGE_SIZE
+        }
+    },
+    .sem = {
+        .count = 1,
+        .head_p = NULL
+    }
+};
