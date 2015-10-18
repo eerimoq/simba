@@ -29,8 +29,8 @@ static struct thrd_t main_thrd __attribute__ ((section (".noinit")));
  * @param[in] out Thread to swap out (r22).
  */
 __attribute__((naked))
-static void thrd_port_swap(struct thrd_t *in,
-                           struct thrd_t *out)
+static void thrd_port_swap(struct thrd_t *in_p,
+                           struct thrd_t *out_p)
 {
     /* Save all call-saved registers for the 'out' thrd.*/
     asm volatile ("push r2");
@@ -53,10 +53,10 @@ static void thrd_port_swap(struct thrd_t *in,
     asm volatile ("push r29");
 
     /* Save 'out' stack pointer.*/
-    out->port.context_p = (void *)SP;
+    out_p->port.context_p = (void *)SP;
 
     /* Restore 'in' stack pointer.*/
-    SP = (int)in->port.context_p;
+    SP = (int)in_p->port.context_p;
 
     /* Restore all call-saved registers for the 'in' thrd.*/
     asm volatile ("pop  r29");

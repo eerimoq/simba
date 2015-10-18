@@ -42,6 +42,9 @@ int harness_run(struct harness_t *harness_p,
     failed = 0;
     testcase_p = testcases_p;
 
+    /* Print a header. */
+    std_printf(sys_get_appinfo());
+
     while (testcase_p->callback != NULL) {
         if (testcase_p->name_p != NULL) {
             std_printf(FSTR("enter: %s\r\n"), testcase_p->name_p);

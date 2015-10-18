@@ -50,6 +50,8 @@ int test_circular(struct harness_t *harness_p)
     BTASSERT(log_set_mode(LOG_MODE_OFF) == LOG_MODE_CIRCULAR);
 #if defined(ARCH_LINUX)
     BTASSERT(log_format(sys_get_stdout()) == 5);
+#elif defined(ARCH_ARM)
+    BTASSERT(log_format(sys_get_stdout()) == 9);
 #else
     BTASSERT(log_format(sys_get_stdout()) == 13);
 #endif

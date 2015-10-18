@@ -177,6 +177,8 @@ void isr_reset(void)
         *dst_p++ = 0;
     }
 
+    //__libc_init_array();
+
     /* Branch to main function */
     main();
 

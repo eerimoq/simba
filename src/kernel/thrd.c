@@ -81,8 +81,18 @@ static struct thrd_scheduler_t scheduler = {
 
 static void scheduler_ready_push(struct thrd_t *thrd_p);
 static void thrd_reschedule(void);
+static void terminate(void);
 
 #include "thrd_port.i"
+
+static void terminate(void)
+{
+    /* The thread is terminated. */
+    sys_lock();
+    thrd_self()->state = THRD_STATE_TERMINATED;
+    thrd_reschedule();
+    sys_unlock();
+}
 
 static void scheduler_ready_push(struct thrd_t *thrd_p)
 {
@@ -146,11 +156,17 @@ static void thrd_reschedule(void)
 
     out_p = thrd_self();
 
+    /* std_printf(FSTR("reschedule: out_p = 0x%x, magic = 0x%x\r\n"), */
+    /*            out_p, out_p->stack_low_magic); */
+
     ASSERTN(out_p->stack_low_magic == THRD_STACK_LOW_MAGIC, ESTACK);
+
     in_p = scheduler_ready_pop();
 
     /* Swap threads. */
     in_p->state = THRD_STATE_CURRENT;
+
+//    std_printf(FSTR("in_p = 0x%x, out_p = 0x%x\r\n"), in_p, out_p);
 
     if (in_p != out_p) {
         scheduler.current_p = in_p;
@@ -315,6 +331,8 @@ static void *idle_thrd(void *arg_p)
 
     thrd_set_name("idle");
 
+    //std_printf(FSTR("idle\r\n"));
+
     thrd_p = thrd_self();
 
     while (1) {
@@ -388,6 +406,7 @@ struct thrd_t *thrd_spawn(void *(*entry)(void *),
     LIST_SL_ADD_TAIL(&thrd_p->parent.thrd_p->children, &thrd_p->parent);
 
     err = thrd_port_spawn(thrd_p, entry, arg_p, stack_p, stack_size);
+
     sys_lock();
     scheduler_ready_push(thrd_p);
     sys_unlock();
@@ -420,6 +439,7 @@ int thrd_resume_irq(struct thrd_t *thrd_p, int err)
     thrd_p->err = err;
 
     if (thrd_p->state == THRD_STATE_SUSPENDED) {
+//        std_printf(FSTR("resume irq\r\n"));
         thrd_p->state = THRD_STATE_READY;
         scheduler_ready_push(thrd_p);
     } else if (thrd_p->state != THRD_STATE_TERMINATED) {
@@ -500,7 +520,6 @@ int thrd_suspend_irq(struct time_t *timeout_p)
 
     /* Immediatly return if the thread is already resumed. */
     if (thrd_p->state == THRD_STATE_RESUMED) {
-        printf("j\n");
         return (0);
     }
 

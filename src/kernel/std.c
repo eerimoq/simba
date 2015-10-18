@@ -180,7 +180,7 @@ static char *formatf(char c,
     /* Get argument. */
     value = va_arg(*ap_p, double);
 
-    /* Convert a negative value to positive. */
+    /* Convert a negative value a to positive. */
     if (value < 0.0) {
         value *= -1.0;
         *negative_sign_p = 1;

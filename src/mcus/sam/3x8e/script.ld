@@ -53,7 +53,7 @@ MEMORY
 }
 
 /* The stack used by the main thread. */
-__main_stack_end = ORIGIN(ram) + LENGTH(ram) - 4;
+__main_stack_end = ORIGIN(ram) + LENGTH(ram) - 8;
 
 /* Section Definitions */ 
 SECTIONS 
@@ -83,7 +83,7 @@ SECTIONS
         KEEP (*(.init_array))
         __init_array_end = .;
 
-        . = ALIGN(0x4);
+        . = ALIGN(4);
         KEEP (*crtbegin.o(.ctors))
         KEEP (*(EXCLUDE_FILE (*crtend.o) .ctors))
         KEEP (*(SORT(.ctors.*)))
@@ -139,6 +139,12 @@ SECTIONS
         . = ALIGN(4);
         __bss_end__ = . ;
         __zero_end__ = . ;
+    } > ram
+
+    /* Main thread stack section. */
+    .main_stack (NOLOAD) :
+    {
+        . = ALIGN(4);
     } > ram
 
     . = ALIGN(4); 

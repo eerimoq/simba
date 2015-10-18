@@ -40,6 +40,8 @@ CFLAGS += -c \
           -fdata-sections \
           -ffunction-sections \
           -Wno-error=unused-variable
-LDFLAGS += -Wl,-Map=$(NAME).map
+LDFLAGS += -Wl,-Map=$(NAME).map \
+           -Wl,--gc-sections \
+           -mthumb
 
 CLEAN += $(NAME).map

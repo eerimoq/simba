@@ -18,36 +18,23 @@
  * This file is part of the Simba project.
  */
 
-#define THRD_IDLE_STACK_MAX 256
+#define THRD_IDLE_STACK_MAX 512
 
-static struct thrd_t main_thrd;
+static struct thrd_t main_thrd __attribute__ ((section (".main_stack")));
 
-static inline uint32_t __get_sp(void)
-{
-    register uint32_t reg asm("sp");
- 
-    return (reg);
-}
-
-static inline void __set_sp(uint32_t value)
-{
-  register uint32_t reg asm("sp");
-  reg = value;
-  (void)reg;
-}
-
+__attribute__((naked))
 static void thrd_port_swap(struct thrd_t *in_p,
                            struct thrd_t *out_p)
 {
     /* Store registers. lr is the return address. */
     asm volatile ("push {lr}");
     asm volatile ("push {r4-r11}");
-    
+
     /* Save 'out_p' stack pointer. */
-    out_p->port.context_p = (void *)__get_sp();
-    
+    asm volatile ("mov %0, sp" : "=r" (out_p->port.context_p));
+
     /* Restore 'in_p' stack pointer. */
-    __set_sp((uint32_t)in_p->port.context_p);
+    asm volatile ("mov sp, %0" : : "r" (in_p->port.context_p));
 
     /* Load registers. pop lr to pc and continue execution. */
     asm volatile ("pop {r4-r11}");
@@ -58,7 +45,7 @@ static void thrd_port_init_main(struct thrd_port_t *port)
 {
 }
 
-static void thrd_port_entry(void) __attribute__((naked));
+__attribute__((naked))
 static void thrd_port_entry(void)
 {
     /* Enable interrupts. */
@@ -66,7 +53,10 @@ static void thrd_port_entry(void)
 
     /* Call thread entry function with argument. */
     asm volatile ("mov r0, r10");
-    asm volatile ("blx r9"); 
+    asm volatile ("blx r9");
+
+    /* Call termination function. */
+    asm volatile ("blx %0" : : "r" (terminate));
 }
 
 static int thrd_port_spawn(struct thrd_t *thrd,
@@ -89,13 +79,20 @@ static int thrd_port_spawn(struct thrd_t *thrd,
 static void thrd_port_idle_wait(struct thrd_t *thrd_p)
 {
     asm volatile ("wfi");
+
+    /* Add this thread to the ready list and reschedule. */
+    sys_lock();
+    thrd_p->state = THRD_STATE_READY;
+    scheduler_ready_push(thrd_p);
+    thrd_reschedule();
+    sys_unlock();
 }
 
 static void thrd_port_suspend_timer_callback(void *arg_p)
 {
     struct thrd_t *thrd = arg_p;
 
-    // Push thread on scheduler ready queue.
+    /* Push thread on scheduler ready queue. */
     thrd->state = THRD_STATE_READY;
     scheduler_ready_push(thrd);
 }

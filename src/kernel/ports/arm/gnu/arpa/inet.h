@@ -1,5 +1,5 @@
 /**
- * @file arm/gnu/thrd_port.i
+ * @file arpa/inet.h
  * @version 1.0
  *
  * @section License
@@ -18,23 +18,24 @@
  * This file is part of the Simba project.
  */
 
-#ifndef __KERNEL_THRD_PORT_H__
-#define __KERNEL_THRD_PORT_H__
+#ifndef __ARPA_INET_H__
+#define __ARPA_INET_H__
 
-struct thrd_port_context_t {
-    uint32_t r4;
-    uint32_t r5;
-    uint32_t r6;
-    uint32_t r7;
-    uint32_t r8;
-    uint32_t r9;
-    uint32_t r10;
-    uint32_t r11;
-    uint32_t pc;
-};
+static inline uint32_t htonl(uint32_t v)
+{
+    return (((v) << 24)
+            | (((v) & 0x0000ff00) << 8)
+            | (((v) & 0x00ff0000) >> 8)
+            | (((v) & 0xff000000) >> 24));
+}
 
-struct thrd_port_t {
-    struct thrd_port_context_t *context_p;
-};
+#define ntohl(v) htonl(v)
+
+static inline uint16_t htons(uint16_t v)
+{
+    return (((v) << 8) | (((v) & 0xff00) >> 8));
+}
+
+#define ntohs(v) htons(v)
 
 #endif
