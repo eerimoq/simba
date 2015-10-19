@@ -547,12 +547,12 @@ struct sam_system_control_block_t {
 #define SCB_BFAR
 
 /* System timer. */
-    struct sam_system_timer_t {
-        uint32_t CTRL;
-        uint32_t LOAD;
-        uint32_t VAL;
-        uint32_t CALIB;
-    };
+struct sam_system_timer_t {
+    uint32_t CTRL;
+    uint32_t LOAD;
+    uint32_t VAL;
+    uint32_t CALIB;
+};
 
 /* SysTick Control and Status Register */
 #define SYSTEM_TIMER_CTRL_ENABLE        BIT(0)
@@ -576,6 +576,23 @@ struct sam_system_control_block_t {
 #define SYSTEM_TIMER_CALIB_TENMS(value) BITFIELD(SYSTEM_TIMER_CALIB_TENMS, value)
 #define SYSTEM_TIMER_CALIB_SKEW         BIT(30)
 #define SYSTEM_TIMER_CALIB_NOREF        BIT(31)
+
+/* System nestedvectored interrupt controller. */
+struct sam_nvic_t {
+    uint32_t ISER0_ISER1;
+    uint32_t reserved1[31];
+    uint32_t ICER0_ICER1;
+    uint32_t reserved2[31];
+    uint32_t ISPR0_ISPR1;
+    uint32_t reserved3[31];
+    uint32_t ICPR0_ICPR1;
+    uint32_t reserved4[31];
+    uint32_t IABR0_IABR1;
+    uint32_t reserved5[63];
+    uint32_t IPR0_IPR7[8];
+    uint32_t reserved6[697];
+    uint32_t STIR;
+};
 
 /* High Speed MultiMedia Card Interface (HSMCI). */
 struct sam_hsmci_t {
@@ -1003,8 +1020,9 @@ struct sam_usart_t {
 #define US_WPSR_WPVSRC(value)           BITFIELD(US_WPSR_WPVSRC, value)
 
 /* Base addresses of private peripherals. */
-#define SAM_SCB        ((struct sam_system_control_block_t *)0xe000e008u)
-#define SAM_ST         ((struct sam_system_timer_t         *)0xe000e010u)
+#define SAM_SCB        ((volatile struct sam_system_control_block_t *)0xe000e008u)
+#define SAM_ST         ((volatile struct sam_system_timer_t         *)0xe000e010u)
+#define SAM_NVIC       ((volatile struct sam_nvic_t                 *)0xe000e100u)
 
 struct sam_pio_t {
     uint32_t PER;
@@ -1152,5 +1170,18 @@ struct sam_wdt_t {
 /* Interrupt service routine. */
 #define ISR(vector)                             \
     void isr_ ## vector(void)
+
+/* Internal flash memory. */
+#define FLASH0_SIZE      0x40000
+#define FLASH0_BEGIN     0x80000
+#define FLASH0_END       (FLASH0_BEGIN + FLASH0_SIZE)
+#define FLASH0_PAGE_SIZE 0x100
+
+#define FLASH1_SIZE      0x40000
+#define FLASH1_BEGIN     (FLASH0_END)
+#define FLASH1_END       (FLASH1_BEGIN + FLASH1_SIZE)
+#define FLASH1_PAGE_SIZE 0x100
+
+#define FLASH_IAP_ADDRESS (0x00100008)
 
 #endif

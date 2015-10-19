@@ -48,24 +48,24 @@ SEARCH_DIR(.)
 /* Memory Spaces Definitions */
 MEMORY
 {
-	rom (rx)    : ORIGIN = 0x00080000, LENGTH = 0x00080000 /* Flash, 512K */
-	ram (rwx)   : ORIGIN = 0x20070000, LENGTH = 0x00018000 /* sram, 96K */
+        rom (rx)    : ORIGIN = 0x00080000, LENGTH = 0x00080000 /* Flash, 512K */
+        ram (rwx)   : ORIGIN = 0x20070000, LENGTH = 0x00018000 /* sram, 96K */
 }
 
 /* The stack used by the main thread. */
 __main_stack_end = ORIGIN(ram) + LENGTH(ram) - 8;
 
-/* Section Definitions */ 
-SECTIONS 
-{ 
-    .text : 
-    { 
+/* Section Definitions */
+SECTIONS
+{
+    .text :
+    {
         . = ALIGN(4);
         __fixed_start__ = .;
         KEEP(*(.vectors .vectors.*))
-        *(.text .text.* .gnu.linkonce.t.*) 	      
-        *(.glue_7t) *(.glue_7)		                
-        *(.rodata .rodata* .gnu.linkonce.r.*)		    	                  
+        *(.text .text.* .gnu.linkonce.t.*)
+        *(.glue_7t) *(.glue_7)
+        *(.rodata .rodata* .gnu.linkonce.r.*)
         *(.ARM.extab* .gnu.linkonce.armextab.*)
 
         /* Support C constructors, and C destructors in both user code
@@ -103,7 +103,6 @@ SECTIONS
         KEEP (*(SORT(.dtors.*)))
         KEEP (*crtend.o(.dtors))
 
-        . = ALIGN(4);
         __fixed_end__ = .;            /* End of text section */
     } > rom
 
@@ -111,11 +110,17 @@ SECTIONS
     PROVIDE_HIDDEN (__exidx_start = .);
     .ARM.exidx :
     {
-      *(.ARM.exidx* .gnu.linkonce.armexidx.*)
+        *(.ARM.exidx* .gnu.linkonce.armexidx.*)
     } > rom
     PROVIDE_HIDDEN (__exidx_end = .);
 
-    . = ALIGN(4); 
+    /* Settings area. */
+    .setting :
+    {
+        . = ALIGN(256);
+    } > rom
+
+    . = ALIGN(256);
     __text_end__ = .;
 
     .relocate : AT (__text_end__)
@@ -128,9 +133,9 @@ SECTIONS
         __relocate_end__ = .;
     } > ram
 
-    /* .bss section which is used for uninitialized data */ 
+    /* .bss section which is used for uninitialized data */
     .bss (NOLOAD) :
-    { 
+    {
         . = ALIGN(4);
         __bss_start__ = . ;
         __zero_start__ = . ;
@@ -147,6 +152,6 @@ SECTIONS
         . = ALIGN(4);
     } > ram
 
-    . = ALIGN(4); 
-    _end = . ; 
+    . = ALIGN(4);
+    _end = . ;
 }

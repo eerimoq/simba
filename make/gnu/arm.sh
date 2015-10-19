@@ -26,8 +26,11 @@ BIN=$4
 shift 4
 
 if [ ${TARGET} == run ] ; then
+    echo "stty -F /dev/arduino 1200"
     stty -F /dev/arduino 1200
+    echo "bossac --port=arduino -e -w -b ${BIN}"
     bossac --port=arduino -e -w -b ${BIN}
+    echo "stty -F /dev/arduino 38400"
     stty -F /dev/arduino 38400
     ${SIMBA}/make/run.exp
     exit $?

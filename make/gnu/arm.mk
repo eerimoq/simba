@@ -26,8 +26,10 @@ ENDIANESS = little
 
 CFLAGS += -mthumb -mcpu=$(MCPU) -DF_CPU=$(F_CPU)UL
 LDFLAGS += -mcpu=$(MCPU) -DF_CPU=$(F_CPU)UL -Wl,--cref \
-           -T$(SIMBA)/src/mcus/$(MCU)/script.ld
+           -T$(SIMBA)/src/mcus/$(MCU)/script.ld \
+           -mthumb
 
+SRC += settings.c
 
 RUNARGS = ${NAME}.bin
 

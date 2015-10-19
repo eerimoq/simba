@@ -30,7 +30,9 @@ int flash_module_init(void)
 int flash_init(struct flash_driver_t *drv_p,
                struct flash_device_t *dev_p)
 {
-    return (flash_port_init(drv_p, dev_p));
+    drv_p->dev_p = dev_p;
+
+    return (0);
 }
 
 ssize_t flash_read(struct flash_driver_t *drv_p,

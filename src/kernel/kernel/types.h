@@ -39,6 +39,9 @@
 
 #define DIV_CEIL(n, d) (((n) + (d) - 1) / d)
 
+#define MIN(a, b) (((a) < (b)) ? (a) : (b))
+#define MAX(a, b) (((a) > (b)) ? (a) : (b))
+
 #define BCD_ENCODE(decoded) (decoded)
 #define BCD_DECODE(encoded) (encoded)
 

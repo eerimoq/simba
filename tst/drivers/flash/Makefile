@@ -1,9 +1,9 @@
 #
-# @file hello_world/Makefile
+# @file Makefile
 # @version 1.0
 #
 # @section License
-# Copyright (C) 2014-2015, Erik Moqvist
+# Copyright (C) 2015, Erik Moqvist
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
@@ -18,15 +18,11 @@
 # This file is part of the Simba project.
 #
 
-NAME = thrd_suite
+NAME = flash_suite
 BOARD = linux
 SRC += main.c
 SLIB_SRC = harness.c
-DRIVERS_SRC = uart.c
-
-ifeq ($(BOARD),arduino_due)
-    DRIVERS_SRC += flash.c
-endif
+DRIVERS_SRC = uart.c flash.c
 
 SIMBA = ../../..
 include $(SIMBA)/make/app.mk

@@ -18,17 +18,20 @@
  * This file is part of the Simba project.
  */
 
+extern char setting_area[];
+static struct flash_driver_t drv;
+
 static int setting_port_module_init(void)
 {
-    return (-1);
+    return (flash_init(&drv, &flash_0_dev));
 }
 
 static ssize_t setting_port_read(void *dst_p, size_t src, size_t size)
 {
-    return (-1);
+    return (flash_read(&drv, dst_p, (size_t)&setting_area[src], size));
 }
 
 static ssize_t setting_port_write(size_t dst, const void *src_p, size_t size)
 {
-    return (-1);
+    return (flash_write(&drv, (size_t)&setting_area[dst], src_p, size));
 }

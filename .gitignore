@@ -16,6 +16,7 @@ tst/*/*/*.hex
 tst/*/*/*.bin
 tst/*/*/eeprom.bin
 tst/*/*/settings.h
+tst/*/*/settings.c
 tst/*/*/settings.bin
 
 tst/*/*/sdcard

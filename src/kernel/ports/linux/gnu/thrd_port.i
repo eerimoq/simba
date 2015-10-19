@@ -43,10 +43,7 @@ static void *thrd_port_entry(void *arg)
     port->entry(port->arg);
 
     /* Thread termination. */
-    sys_lock();
-    thrd_self()->state = THRD_STATE_TERMINATED;
-    thrd_reschedule();
-    sys_unlock();
+    terminate();
 
     return (NULL);
 }

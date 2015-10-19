@@ -1,5 +1,5 @@
 /**
- * @file drivers.h
+ * @file drivers/flash_port.h
  * @version 1.0
  *
  * @section License
@@ -18,29 +18,25 @@
  * This file is part of the Simba project.
  */
 
-#ifndef __DRIVERS_H__
-#define __DRIVERS_H__
+#ifndef __DRIVERS_FLASH_PORT_H__
+#define __DRIVERS_FLASH_PORT_H__
 
-#include "drivers/exti.h"
-#if defined(ARCH_ARM)
-#    include "drivers/flash.h"
-#endif
-#include "drivers/pin.h"
-#include "drivers/pwm.h"
-#include "drivers/adc.h"
-#include "drivers/spi.h"
-#include "drivers/uart.h"
-#include "drivers/uart_soft.h"
-#include "drivers/owi.h"
-#include "drivers/ds18b20.h"
-#include "drivers/ds3231.h"
-#include "drivers/canif.h"
-#include "drivers/cantp.h"
-#if defined(ARCH_LINUX)
-#    include "drivers/can.h"
-#endif
-#include "drivers/mcp2515.h"
-#include "drivers/nrf24l01.h"
-#include "drivers/sd.h"
+#include <io.h>
+
+struct flash_device_bank_t {
+    int index;
+    uint32_t begin;
+    uint32_t end;
+    uint32_t page_size;
+};
+
+struct flash_device_t {
+    struct flash_device_bank_t banks[2];
+    struct sem_t sem;
+};
+
+struct flash_driver_t {
+    struct flash_device_t *dev_p;
+};
 
 #endif

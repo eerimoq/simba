@@ -35,19 +35,20 @@
 #define SAM_FLASH_SPUI  0x0F  /* Stop Read Unique Identifier */
 #define SAM_FLASH_GCALB 0x10  /* Get CALIB Bit */
 
-#define PAGE_BUFFER_SIZE_32 (IFLASH0_PAGE_SIZE / sizeof(uint32_t))
+#define PAGE_BUFFER_SIZE_32 (FLASH0_PAGE_SIZE / sizeof(uint32_t))
 
 static uint32_t page_buffer[PAGE_BUFFER_SIZE_32];
 
 typedef uint32_t (*iap_fn_t)(uint32_t index, uint32_t command);
 
 static int address_to_bank(size_t address,
-                           struct flash_bank_t **bank_pp,
+                           struct flash_device_t *dev_p,
+                           struct flash_device_bank_t **bank_pp,
                            size_t *page_p,
                            size_t *offset_p)
 {
     int bank;
-    struct flash_bank_t *bank_p;
+    struct flash_device_bank_t *bank_p;
 
     for (bank = 0; bank < membersof(dev_p->banks); bank++) {
         bank_p = &dev_p->banks[bank];
@@ -56,30 +57,32 @@ static int address_to_bank(size_t address,
             *bank_pp = bank_p;
             *page_p = ((address - bank_p->begin) / bank_p->page_size);
             *offset_p = ((address - bank_p->begin) % bank_p->page_size);
-            return (0)
+
+            return (0);
         }
     }
 
     return (-1);
 }
 
-static uint32_t bank_execute_command(struct flash_bank_t *bank_p,
-                                     uint16_t argument,
-                                     uint8_t command)
+static ssize_t bank_execute_command(struct flash_device_bank_t *bank_p,
+                                    uint8_t command,
+                                    uint16_t argument)
 {
     iap_fn_t iap_fn;
-    uint32_t status;
+    uint32_t status = 0;
 
-    iap_fn = (iap_fn_t)(FLASH_IAP_ADDRESS);
+    iap_fn = *((iap_fn_t *)(FLASH_IAP_ADDRESS));
+    
     status = iap_fn(bank_p->index,
-                    (EEFC_FCR_FKEY
+                    (EEFC_FCR_FKEY(0x5a)
                      | EEFC_FCR_FARG(argument)
                      | EEFC_FCR_FCMD(command)));
-
-    return ((status & EEFC_ERROR_FLAGS) == 0 ? 0 : -1);
+    
+    return ((status & (EEFC_FSR_FLOCKE | EEFC_FSR_FCMDE)) == 0 ? 0 : -1);
 }
 
-static ssize_t bank_page_write(struct flash_bank_t *bank_p,
+static ssize_t bank_page_write(struct flash_device_bank_t *bank_p,
                                size_t page,
                                size_t offset,
                                const void *src_p,
@@ -87,21 +90,23 @@ static ssize_t bank_page_write(struct flash_bank_t *bank_p,
 {
     size_t address;
     uint32_t *dst_p;
+    ssize_t res;
+    size_t i;
 
-    address = (page * bank_p->page_size);
+    address = (bank_p->begin + page * bank_p->page_size);
 
     /* Unlock the page. */
-    res = execute_command(bank_p, SAM_FLASH_CLB, page);
+    res = bank_execute_command(bank_p, SAM_FLASH_CLB, page);
 
     if (res != 0) {
         return (res);
     }
 
     /* Copy the whole page to a local buffer. */
-    memcpy(page_buffer, address, bank_p->page_size);
+    memcpy(page_buffer, (void *)address, bank_p->page_size);
 
     /* Overwrite part of the buffer. */
-    memcpy(&page_buffer[offset], src_p, size);
+    memcpy(&((char *)page_buffer)[offset], src_p, size);
 
     /* Write the buffer to the flash temporary buffer. */
     dst_p = (uint32_t *)address;
@@ -119,7 +124,7 @@ static ssize_t bank_page_write(struct flash_bank_t *bank_p,
     }
 
     /* Lock the page again. */
-    res = execute_command(bank_p, SAM_FLASH_SLB, page);
+    res = bank_execute_command(bank_p, SAM_FLASH_SLB, page);
 
     if (res != 0) {
         return (res);
@@ -133,20 +138,16 @@ int flash_port_module_init(void)
     return (0);
 }
 
-int flash_port_init(struct flash_driver_t *drv_p,
-                    struct flash_device_t *dev_p)
-{
-    return (0);
-}
-
 ssize_t flash_port_read(struct flash_driver_t *drv_p,
                         void *dst_p,
                         size_t src,
                         size_t size)
 {
-    sem_get();
-    memcpy(dst_p, src, size);
-    sem_put();
+    struct flash_device_t *dev_p = drv_p->dev_p;
+
+    sem_get(&dev_p->sem, NULL);
+    memcpy(dst_p, (void *)src, size);
+    sem_put(&dev_p->sem, 1);
 
     return (size);
 }
@@ -158,15 +159,17 @@ ssize_t flash_port_write(struct flash_driver_t *drv_p,
 {
     ssize_t res = size;
     struct flash_device_t *dev_p;
-    size_t end, n, left, page;
+    size_t n, left, page, offset;
+    struct flash_device_bank_t *bank_p;
 
+    dev_p = drv_p->dev_p;
     left = size;
 
-    sem_get(dev_p->sem);
+    sem_get(&dev_p->sem, NULL);
 
     /* Write one page at a time. */
     while (left > 0) {
-        if (address_to_bank(dst, &bank_p, &page, &offset) != 0) {
+        if (address_to_bank(dst, dev_p, &bank_p, &page, &offset) != 0) {
             res = -1;
             break;
         }
@@ -183,7 +186,7 @@ ssize_t flash_port_write(struct flash_driver_t *drv_p,
         src_p += n;
     }
 
-    sem_put(dev_p->sem, 1);
+    sem_put(&dev_p->sem, 1);
 
     return (res);
 }

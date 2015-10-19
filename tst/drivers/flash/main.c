@@ -20,22 +20,34 @@
 
 #include "simba.h"
 
-static void on_fatal(int error)
+static int test_read_write(struct harness_t *harness_p)
 {
-    std_printf(FSTR("on_fatal: error: %d\r\n"), error);
-}
+    struct flash_driver_t drv;
+    char name[] = "Kalle kula";
+    char buf[16];
+    uint32_t address;
 
-int test_set_on_fatal_callback(struct harness_t *harness_p)
-{
-    sys_set_on_fatal_callback(on_fatal);
-    ASSERT(0);
+    BTASSERT(flash_init(&drv, &flash_0_dev) == 0);
 
-    return (0);
-}
+    /* Write and read over a page boundary. */
+    address = (FLASH1_BEGIN + FLASH1_PAGE_SIZE - 2);
 
-int test_appinfo(struct harness_t *harness_p)
-{
-    std_printf(sys_get_appinfo());
+    BTASSERT(flash_write(&drv, address, name, sizeof(name)) == sizeof(name));
+
+    memset(buf, 0, sizeof(buf));
+    BTASSERT(flash_read(&drv, buf, address, sizeof(buf)) == sizeof(buf));
+
+    BTASSERT(strcmp(name, buf) == 0);
+
+    /* Write and read over a bank boundary. */
+    address = (FLASH1_BEGIN - 2);
+
+    BTASSERT(flash_write(&drv, address, name, sizeof(name)) == sizeof(name));
+
+    memset(buf, 0, sizeof(buf));
+    BTASSERT(flash_read(&drv, buf, address, sizeof(buf)) == sizeof(buf));
+
+    BTASSERT(strcmp(name, buf) == 0);
 
     return (0);
 }
@@ -44,13 +56,13 @@ int main()
 {
     struct harness_t harness;
     struct harness_testcase_t harness_testcases[] = {
-        { test_set_on_fatal_callback, "test_set_on_fatal_callback" },
-        { test_appinfo, "test_appinfo" },
+        { test_read_write, "test_read_write" },
         { NULL, NULL }
     };
 
     sys_start();
     uart_module_init();
+    flash_module_init();
 
     harness_init(&harness);
     harness_run(&harness, harness_testcases);

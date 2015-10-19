@@ -41,7 +41,6 @@ CFLAGS += -c \
           -ffunction-sections \
           -Wno-error=unused-variable
 LDFLAGS += -Wl,-Map=$(NAME).map \
-           -Wl,--gc-sections \
-           -mthumb
+           -Wl,--gc-sections
 
 CLEAN += $(NAME).map

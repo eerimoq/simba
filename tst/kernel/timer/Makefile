@@ -24,5 +24,9 @@ SRC += main.c
 SLIB_SRC = harness.c
 DRIVERS_SRC = uart.c
 
+ifeq ($(BOARD),arduino_due)
+    DRIVERS_SRC += flash.c
+endif
+
 SIMBA = ../../..
 include $(SIMBA)/make/app.mk

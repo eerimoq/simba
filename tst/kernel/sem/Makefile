@@ -24,6 +24,10 @@ SRC += main.c
 SLIB_SRC = harness.c
 DRIVERS_SRC = uart.c
 
+ifeq ($(BOARD),arduino_due)
+    DRIVERS_SRC += flash.c
+endif
+
 COVOBJ = obj/sem.o
 
 SIMBA = ../../..
