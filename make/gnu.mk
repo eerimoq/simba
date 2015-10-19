@@ -37,10 +37,7 @@ CFLAGS += -c \
           -fpack-struct \
           -fshort-enums \
           -std=gnu99 \
-          -fdata-sections \
-          -ffunction-sections \
           -Wno-error=unused-variable
-LDFLAGS += -Wl,-Map=$(NAME).map \
-           -Wl,--gc-sections
+LDFLAGS += -Wl,-Map=$(NAME).map
 
 CLEAN += $(NAME).map

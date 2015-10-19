@@ -24,10 +24,16 @@ CFLAGS += -Werror \
 
 ENDIANESS = little
 
-CFLAGS += -mthumb -mcpu=$(MCPU) -DF_CPU=$(F_CPU)UL
+CFLAGS += -mthumb \
+          -mcpu=$(MCPU) \
+          -DF_CPU=$(F_CPU)UL \
+          -fdata-sections \
+          -ffunction-sections
+
 LDFLAGS += -mcpu=$(MCPU) -DF_CPU=$(F_CPU)UL -Wl,--cref \
            -T$(SIMBA)/src/mcus/$(MCU)/script.ld \
-           -mthumb
+           -mthumb \
+           -Wl,--gc-sections
 
 SRC += settings.c
 
