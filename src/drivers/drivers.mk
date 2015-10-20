@@ -22,18 +22,17 @@ INC += $(SIMBA)/src/drivers
 INC += $(SIMBA)/src/drivers/ports/$(ARCH)
 
 DRIVERS_SRC ?= adc.c \
-	ds18b20.c \
-	ds3231.c \
-	exti.c \
-	flash.c \
-	mcp2515.c \
-	nrf24l01.c \
-	owi.c \
-	pin.c \
-	pwm.c \
-	sd.c \
-	spi.c \
-	uart.c \
-	uart_soft.c
+               ds18b20.c \
+               ds3231.c \
+               exti.c \
+               flash.c \
+               mcp2515.c \
+               nrf24l01.c \
+               owi.c \
+               pin.c \
+               pwm.c \
+               sd.c \
+               uart.c \
+               uart_soft.c
 
 SRC += $(DRIVERS_SRC:%=$(SIMBA)/src/drivers/%)
