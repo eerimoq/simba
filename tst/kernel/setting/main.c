@@ -28,28 +28,28 @@ int test_integer(struct harness_t *harness_p)
     int64_t int64;
 
     BTASSERT(setting_read(&int8,
-                           SETTINGS_INT8_ADDR,
-                           SETTINGS_INT8_SIZE) == SETTINGS_INT8_SIZE);
+                          SETTINGS_INT8_ADDR,
+                          SETTINGS_INT8_SIZE) == SETTINGS_INT8_SIZE);
     BTASSERT(int8 == SETTINGS_INT8_VALUE);
 
     BTASSERT(setting_read(&int16,
-                           SETTINGS_INT16_ADDR,
-                           SETTINGS_INT16_SIZE) == SETTINGS_INT16_SIZE);
+                          SETTINGS_INT16_ADDR,
+                          SETTINGS_INT16_SIZE) == SETTINGS_INT16_SIZE);
     BTASSERT(int16 == SETTINGS_INT16_VALUE);
 
     BTASSERT(setting_read(&int32,
-                           SETTINGS_INT32_ADDR,
-                           SETTINGS_INT32_SIZE) == SETTINGS_INT32_SIZE);
+                          SETTINGS_INT32_ADDR,
+                          SETTINGS_INT32_SIZE) == SETTINGS_INT32_SIZE);
     BTASSERT(int32 == SETTINGS_INT32_VALUE);
 
     int64 = 46;
     BTASSERT(setting_write(SETTINGS_INT64_ADDR,
-                            &int64,
-                            SETTINGS_INT64_SIZE) == SETTINGS_INT64_SIZE);
+                           &int64,
+                           SETTINGS_INT64_SIZE) == SETTINGS_INT64_SIZE);
 
     BTASSERT(setting_read(&int64,
-                           SETTINGS_INT64_ADDR,
-                           SETTINGS_INT64_SIZE) == SETTINGS_INT64_SIZE);
+                          SETTINGS_INT64_ADDR,
+                          SETTINGS_INT64_SIZE) == SETTINGS_INT64_SIZE);
     BTASSERT(int64 == 46);
 
     return (0);
@@ -63,28 +63,28 @@ int test_unsigned_integer(struct harness_t *harness_p)
     uint64_t uint64;
 
     BTASSERT(setting_read(&uint8,
-                           SETTINGS_UINT8_ADDR,
-                           SETTINGS_UINT8_SIZE) == SETTINGS_UINT8_SIZE);
+                          SETTINGS_UINT8_ADDR,
+                          SETTINGS_UINT8_SIZE) == SETTINGS_UINT8_SIZE);
     BTASSERT(uint8 == SETTINGS_UINT8_VALUE);
 
     BTASSERT(setting_read(&uint16,
-                           SETTINGS_UINT16_ADDR,
-                           SETTINGS_UINT16_SIZE) == SETTINGS_UINT16_SIZE);
+                          SETTINGS_UINT16_ADDR,
+                          SETTINGS_UINT16_SIZE) == SETTINGS_UINT16_SIZE);
     BTASSERT(uint16 == SETTINGS_UINT16_VALUE);
 
     BTASSERT(setting_read(&uint32,
-                           SETTINGS_UINT32_ADDR,
-                           SETTINGS_UINT32_SIZE) == SETTINGS_UINT32_SIZE);
+                          SETTINGS_UINT32_ADDR,
+                          SETTINGS_UINT32_SIZE) == SETTINGS_UINT32_SIZE);
     BTASSERT(uint32 == SETTINGS_UINT32_VALUE);
 
     uint64 = 46;
     BTASSERT(setting_write(SETTINGS_UINT64_ADDR,
-                            &uint64,
-                            SETTINGS_UINT64_SIZE) == SETTINGS_UINT64_SIZE);
+                           &uint64,
+                           SETTINGS_UINT64_SIZE) == SETTINGS_UINT64_SIZE);
 
     BTASSERT(setting_read(&uint64,
-                           SETTINGS_UINT64_ADDR,
-                           SETTINGS_UINT64_SIZE) == SETTINGS_UINT64_SIZE);
+                          SETTINGS_UINT64_ADDR,
+                          SETTINGS_UINT64_SIZE) == SETTINGS_UINT64_SIZE);
     BTASSERT(uint64 == 46);
 
     return (0);
@@ -97,13 +97,13 @@ int test_string(struct harness_t *harness_p)
     string[0] = 'x';
     string[1] = '\0';
     BTASSERT(setting_write(SETTINGS_STRING_ADDR,
-                            string,
-                            SETTINGS_STRING_SIZE) == SETTINGS_STRING_SIZE);
+                           string,
+                           SETTINGS_STRING_SIZE) == SETTINGS_STRING_SIZE);
 
     string[0] = 'X';
     BTASSERT(setting_read(string,
-                           SETTINGS_STRING_ADDR,
-                           SETTINGS_STRING_SIZE) == SETTINGS_STRING_SIZE);
+                          SETTINGS_STRING_ADDR,
+                          SETTINGS_STRING_SIZE) == SETTINGS_STRING_SIZE);
 
     BTASSERT(strcmp(string, "x") == 0);
 
