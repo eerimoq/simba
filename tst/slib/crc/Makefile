@@ -1,5 +1,5 @@
 #
-# @file slib/slib.mk
+# @file Makefile
 # @version 1.0
 #
 # @section License
@@ -18,12 +18,16 @@
 # This file is part of the Simba project.
 #
 
+NAME = crc_suite
+BOARD = linux
+SRC += main.c
+DRIVERS_SRC = uart.c
 
-INC += $(SIMBA)/src/slib
+ifeq ($(BOARD),arduino_due)
+    DRIVERS_SRC += flash.c
+endif
 
-SLIB_SRC ?= crc.c \
-            fat16.c \
-            harness.c \
-            hash_map.c
+SLIB_SRC = harness.c crc.c
 
-SRC += $(SLIB_SRC:%=$(SIMBA)/src/slib/%)
+SIMBA = ../../..
+include $(SIMBA)/make/app.mk

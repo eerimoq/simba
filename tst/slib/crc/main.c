@@ -1,5 +1,5 @@
 /**
- * @file slib.h
+ * @file main.c
  * @version 1.0
  *
  * @section License
@@ -18,12 +18,30 @@
  * This file is part of the Simba project.
  */
 
-#ifndef __SLIB_H__
-#define __SLIB_H__
+#include "simba.h"
 
-#include "slib/crc.h"
-#include "slib/fat16.h"
-#include "slib/harness.h"
-#include "slib/hash_map.h"
+int test_calculate_crc(struct harness_t *harness_p)
+{
+    char string[] = "The quick brown fox jumps over the lazy dog";
 
-#endif
+    BTASSERT(crc_32(0, string, strlen(string)) == 0x414fa339);
+
+    return (0);
+}
+
+int main()
+{
+    struct harness_t harness;
+    struct harness_testcase_t harness_testcases[] = {
+        { test_calculate_crc, "test_calculate_crc" },
+        { NULL, NULL }
+    };
+
+    sys_start();
+    uart_module_init();
+
+    harness_init(&harness);
+    harness_run(&harness, harness_testcases);
+
+    return (0);
+}
