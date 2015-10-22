@@ -73,11 +73,15 @@ static ssize_t bank_execute_command(struct flash_device_bank_t *bank_p,
     uint32_t status = 0;
 
     iap_fn = *((iap_fn_t *)(FLASH_IAP_ADDRESS));
+
+    sys_lock();
     
     status = iap_fn(bank_p->index,
                     (EEFC_FCR_FKEY(0x5a)
                      | EEFC_FCR_FARG(argument)
                      | EEFC_FCR_FCMD(command)));
+
+    sys_unlock();
     
     return ((status & (EEFC_FSR_FLOCKE | EEFC_FSR_FCMDE)) == 0 ? 0 : -1);
 }
@@ -115,9 +119,12 @@ static ssize_t bank_page_write(struct flash_device_bank_t *bank_p,
         *dst_p++ = page_buffer[i];
     }
 
+
     /* Erase the page and write from the temporary page buffer to the
        flash memory. */
+    bank_p->regs_p->FMR = EEFC_FMR_FWS(6);
     res = bank_execute_command(bank_p, SAM_FLASH_EWP, page);
+    bank_p->regs_p->FMR = EEFC_FMR_FWS(4);
 
     if (res != 0) {
         return (res);

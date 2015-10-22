@@ -25,6 +25,7 @@
 
 struct flash_device_bank_t {
     int index;
+    volatile struct sam_eefc_t *regs_p;
     uint32_t begin;
     uint32_t end;
     uint32_t page_size;

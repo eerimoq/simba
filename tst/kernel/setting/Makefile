@@ -25,11 +25,12 @@ SETTINGS_INI = settings.ini
 
 BOARD = linux
 SRC += main.c
-SLIB_SRC = harness.c
+SLIB_SRC = harness.c crc.c
 DRIVERS_SRC = uart.c
 
 ifeq ($(BOARD),arduino_due)
     DRIVERS_SRC += flash.c
+    SLIB_SRC += crc.c
 endif
 
 SIMBA = ../../..

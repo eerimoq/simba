@@ -227,12 +227,14 @@ struct flash_device_t flash_device[FLASH_DEVICE_MAX] = {
         .banks = {
             {
                 .index = 0,
+                .regs_p = SAM_EEFC0,
                 .begin = FLASH0_BEGIN,
                 .end = FLASH0_END,
                 .page_size = FLASH0_PAGE_SIZE
             },
             {
                 .index = 1,
+                .regs_p = SAM_EEFC1,
                 .begin = FLASH1_BEGIN,
                 .end = FLASH1_END,
                 .page_size = FLASH1_PAGE_SIZE

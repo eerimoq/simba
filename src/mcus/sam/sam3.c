@@ -38,6 +38,7 @@ extern void main(void);
  */
 static void isr_none(void)
 {
+    while (1);
 }
 
 /* System exceptions (1-15). */
@@ -159,6 +160,9 @@ static void clock_init(void)
 void isr_reset(void)
 {
     uint32_t *src_p, *dst_p;
+
+    /* Disable the watchdog. */
+    SAM_WDT->MR = 0x8000;
 
     clock_init();
 

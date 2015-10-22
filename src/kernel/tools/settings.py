@@ -4,6 +4,7 @@ import sys
 import time
 import struct
 import re
+import zlib
 
 from ConfigParser import ConfigParser
 from collections import OrderedDict
@@ -43,6 +44,9 @@ HEADER_FMT = """/**
 #ifndef __SETTINGS_H__
 #define __SETTINGS_H__
 
+#define SETTING_AREA_CRC_OFFSET 4092
+#define SETTING_AREA_SIZE       4096
+
 {addresses}
 
 {sizes}
@@ -80,8 +84,13 @@ SOURCE_FMT = """/**
 
 #include "simba.h"
 
-char setting_area[4096] __attribute__ ((section (".setting"))) = {{
-{content}
+uint8_t setting_area[2][SETTING_AREA_SIZE] __attribute__ ((section (".setting"))) = {{
+    {{
+        {content}
+    }},
+    {{
+        {content}
+    }}
 }};
 """
 
@@ -181,6 +190,11 @@ def create_binary_content(setting, endianess):
         else:
             sys.stderr.write("{}: bad type\n".format(item["type"]))
             sys.exit(1)
+
+    # pad the rest of the area and calculate a crc32
+    content += '\xff' * (4096 - 4 - len(content))
+    crc = (zlib.crc32(content) & 0xffffffff)
+    content += struct.pack(endianess_prefix + 'I', crc)
 
     return content
 

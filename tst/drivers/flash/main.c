@@ -26,6 +26,7 @@ static int test_read_write(struct harness_t *harness_p)
     char name[] = "Kalle kula";
     char buf[16];
     uint32_t address;
+    int i;
 
     BTASSERT(flash_init(&drv, &flash_0_dev) == 0);
 
