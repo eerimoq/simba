@@ -1,5 +1,5 @@
 #
-# @file tst/kernel/prof/Makefile
+# @file Makefile
 # @version 1.0
 #
 # @section License
