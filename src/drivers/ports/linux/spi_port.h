@@ -32,13 +32,17 @@
 #define SPI_PORT_SPEED_250KBPS  0
 #define SPI_PORT_SPEED_125KBPS  0
 
+struct spi_driver_t;
+
 struct spi_device_t {
-    volatile struct st_rspi *port_p;
+    struct spi_driver_t *drv_p;
+    struct sem_t sem;
 };
 
 struct spi_driver_t {
-    const struct spi_device_t *dev_p;
-    const struct spi_config_t *config_p;
+    struct spi_device_t *dev_p;
+    struct pin_driver_t ss;
+    int mode;
 };
 
 #endif

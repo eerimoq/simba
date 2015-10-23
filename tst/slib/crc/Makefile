@@ -21,13 +21,6 @@
 NAME = crc_suite
 BOARD = linux
 SRC += main.c
-DRIVERS_SRC = uart.c
-
-ifeq ($(BOARD),arduino_due)
-    DRIVERS_SRC += flash.c
-endif
-
-SLIB_SRC = harness.c crc.c
 
 SIMBA = ../../..
 include $(SIMBA)/make/app.mk

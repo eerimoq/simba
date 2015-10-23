@@ -23,13 +23,8 @@
 BOARD ?= linux
 
 # List of all tests to build and run
-TESTS = $(addprefix tst/kernel/, event fs log prof queue sem shell std sys thrd timer)
-TESTS += $(addprefix tst/slib/, hash_map)
-
-ifneq ($(BOARD),arduino_due)
-    TESTS += $(addprefix tst/kernel/, setting)
-    TESTS += $(addprefix tst/slib/, fat16)
-endif
+TESTS = $(addprefix tst/kernel/, event fs log prof queue sem setting shell std sys thrd timer)
+TESTS += $(addprefix tst/slib/, crc hash_map)
 
 # List of all application to build
 APPS = $(TESTS)

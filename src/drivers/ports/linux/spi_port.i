@@ -18,6 +18,17 @@
  * This file is part of the Simba project.
  */
 
+static int spi_port_init(struct spi_driver_t *drv_p,
+                         struct spi_device_t *dev_p,
+                         struct pin_device_t *ss_pin_p,
+                         int mode,
+                         int speed,
+                         int cpol,
+                         int cpha)
+{
+    return (0);
+}
+
 static int spi_port_start(struct spi_driver_t *drv_p)
 {
     return (0);
@@ -28,10 +39,10 @@ static int spi_port_stop(struct spi_driver_t *drv_p)
     return (0);
 }
 
-static ssize_t spi_port_transfer(struct spi_driver_t *drv,
-                                void *rxbuf,
-                                const void *txbuf,
-                                size_t n)
+static ssize_t spi_port_transfer(struct spi_driver_t *drv_p,
+                                 void *rxbuf_p,
+                                 const void *txbuf_p,
+                                 size_t n)
 {
-    return (-1);
+    return (n);
 }

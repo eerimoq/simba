@@ -21,11 +21,18 @@
 INC += $(SIMBA)/src/drivers
 INC += $(SIMBA)/src/drivers/ports/$(ARCH)
 
+ifeq ($(ARCH),linux)
+DRIVERS_SRC ?= pin.c \
+               sd.c \
+               spi.c \
+               uart.c
+endif
+
+ifeq ($(ARCH),avr)
 DRIVERS_SRC ?= adc.c \
                ds18b20.c \
                ds3231.c \
                exti.c \
-               flash.c \
                mcp2515.c \
                nrf24l01.c \
                owi.c \
@@ -34,5 +41,12 @@ DRIVERS_SRC ?= adc.c \
                sd.c \
                uart.c \
                uart_soft.c
+endif
+
+ifeq ($(ARCH),arm)
+DRIVERS_SRC ?= flash.c \
+               pin.c \
+               uart.c
+endif
 
 SRC += $(DRIVERS_SRC:%=$(SIMBA)/src/drivers/%)

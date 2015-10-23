@@ -21,26 +21,42 @@
 #ifndef __DRIVERS_H__
 #define __DRIVERS_H__
 
-#include "drivers/exti.h"
+#if defined(ARCH_LINUX)
+#    include "drivers/exti.h"
+#    include "drivers/pin.h"
+#    include "drivers/pwm.h"
+#    include "drivers/spi.h"
+#    include "drivers/uart.h"
+#    include "drivers/canif.h"
+#    include "drivers/cantp.h"
+#    include "drivers/can.h"
+#    include "drivers/sd.h"
+#endif
+
+#if defined(ARCH_AVR)
+#    include "drivers/exti.h"
+#    include "drivers/pin.h"
+#    include "drivers/pwm.h"
+#    include "drivers/adc.h"
+#    include "drivers/spi.h"
+#    include "drivers/uart.h"
+#    include "drivers/uart_soft.h"
+#    include "drivers/owi.h"
+#    include "drivers/ds18b20.h"
+#    include "drivers/ds3231.h"
+#    include "drivers/canif.h"
+#    include "drivers/cantp.h"
+#    include "drivers/mcp2515.h"
+#    include "drivers/nrf24l01.h"
+#    include "drivers/sd.h"
+#endif
+
 #if defined(ARCH_ARM)
 #    include "drivers/flash.h"
+#    include "drivers/pin.h"
+#    include "drivers/spi.h"
+#    include "drivers/uart.h"
+#    include "drivers/sd.h"
 #endif
-#include "drivers/pin.h"
-#include "drivers/pwm.h"
-#include "drivers/adc.h"
-#include "drivers/spi.h"
-#include "drivers/uart.h"
-#include "drivers/uart_soft.h"
-#include "drivers/owi.h"
-#include "drivers/ds18b20.h"
-#include "drivers/ds3231.h"
-#include "drivers/canif.h"
-#include "drivers/cantp.h"
-#if defined(ARCH_LINUX)
-#    include "drivers/can.h"
-#endif
-#include "drivers/mcp2515.h"
-#include "drivers/nrf24l01.h"
-#include "drivers/sd.h"
 
 #endif

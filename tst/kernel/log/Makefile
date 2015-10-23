@@ -21,13 +21,6 @@
 NAME = log_suite
 BOARD = linux
 SRC += main.c
-SLIB_SRC = harness.c
-DRIVERS_SRC = uart.c
-
-ifeq ($(BOARD),arduino_due)
-    DRIVERS_SRC += flash.c
-    SLIB_SRC += crc.c
-endif
 
 SIMBA = ../../..
 include $(SIMBA)/make/app.mk

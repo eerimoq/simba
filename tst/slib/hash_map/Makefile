@@ -21,14 +21,6 @@
 NAME = hash_map_suite
 BOARD = linux
 SRC += main.c
-DRIVERS_SRC = uart.c
-
-SLIB_SRC = harness.c hash_map.c
-
-ifeq ($(BOARD),arduino_due)
-    DRIVERS_SRC += flash.c
-    SLIB_SRC += crc.c
-endif
 
 SIMBA = ../../..
 include $(SIMBA)/make/app.mk

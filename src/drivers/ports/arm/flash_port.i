@@ -41,6 +41,11 @@ static uint32_t page_buffer[PAGE_BUFFER_SIZE_32];
 
 typedef uint32_t (*iap_fn_t)(uint32_t index, uint32_t command);
 
+/**
+ * Get bank, page and offset from given address.
+ *
+ * @return zero(0) or negative error code.
+ */
 static int address_to_bank(size_t address,
                            struct flash_device_t *dev_p,
                            struct flash_device_bank_t **bank_pp,
@@ -65,6 +70,11 @@ static int address_to_bank(size_t address,
     return (-1);
 }
 
+/**
+ * Execute given command with argument.
+ *
+ * @return zero(0) or negative error code.
+ */
 static ssize_t bank_execute_command(struct flash_device_bank_t *bank_p,
                                     uint8_t command,
                                     uint16_t argument)
@@ -86,6 +96,12 @@ static ssize_t bank_execute_command(struct flash_device_bank_t *bank_p,
     return ((status & (EEFC_FSR_FLOCKE | EEFC_FSR_FCMDE)) == 0 ? 0 : -1);
 }
 
+/**
+ * Write data to given bank at page and offset. The data must not span
+ * multiple pages.
+ *
+ * @return zero(0) or negative error code.
+ */
 static ssize_t bank_page_write(struct flash_device_bank_t *bank_p,
                                size_t page,
                                size_t offset,
