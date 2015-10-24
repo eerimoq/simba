@@ -21,8 +21,6 @@
 NAME = shell
 BOARD = arduino_nano
 SRC += main.c
-DRIVERS_SRC = uart.c owi.c ds18b20.c pin.c
-SLIB_SRC =
 
 SIMBA = ../..
 include $(SIMBA)/make/app.mk

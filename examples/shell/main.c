@@ -22,9 +22,9 @@
 
 FS_COMMAND_DEFINE("/tmp/foo", tmp_foo);
 
-FS_COUNTER_DEFINE("/foo", foo);
-FS_COUNTER_DEFINE("/bar", bar);
-FS_COUNTER_DEFINE("/fie", fie);
+COUNTER_DEFINE("/foo", foo);
+COUNTER_DEFINE("/bar", bar);
+COUNTER_DEFINE("/fie", fie);
 
 int tmp_foo(int argc,
             const char *argv[],
@@ -52,29 +52,29 @@ static char qinbuf[32];
 static struct uart_driver_t uart;
 static struct shell_args_t shell_args;
 
+extern volatile int rxcnt;
+
 int main()
 {
-    struct owi_driver_t owi;
-    struct ds18b20_driver_t ds;
-    struct owi_device_t devices[4];
-    
     sys_start();
     uart_module_init();
 
     uart_init(&uart, &uart_device[0], 38400, qinbuf, sizeof(qinbuf));
     uart_start(&uart);
 
-    /* Initialize temperature sensor. */
-    owi_init(&owi, &pin_d10_dev, devices, membersof(devices));
-    ds18b20_init(&ds, &owi);
+    sys_set_stdout(&uart.chout);
 
-    FS_COUNTER_INC(foo, 0xfffd);
-    FS_COUNTER_INC(foo, 2);
-    FS_COUNTER_INC(bar, 339283982393);
-    FS_COUNTER_INC(fie, 1);
+    COUNTER_INC(foo, 0xfffd);
+    COUNTER_INC(foo, 2);
+    COUNTER_INC(bar, 339283982393);
+    COUNTER_INC(fie, 1);
+
+    std_printf(sys_get_appinfo());
 
     shell_args.chin_p = &uart.chin;
     shell_args.chout_p = &uart.chout;
+    shell_args.username_p = "root";
+    shell_args.password_p = "root";
     shell_entry(&shell_args);
 
     return (0);

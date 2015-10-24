@@ -48,18 +48,23 @@ static int uart_port_start(struct uart_driver_t *drv_p)
     /* Set mode and parity. */
     dev_p->regs_p->US_MR = (US_MR_USART_MODE_NORMAL
                             | US_MR_PAR_NO);
- 
-    /* Setup RX buffer of one byte in PDC. */
-    /* dev_p->regs_p->US_PDC.RPR = (uint32_t)dev_p->rxbuf; */
-    /* dev_p->regs_p->US_PDC.RCR = 1; */
-
-    /* Enable TX and RX using the PDC end of transfer interrupts. */
-    dev_p->regs_p->US_CR = US_CR_TXEN;
 
     /* Disable all interrupts. */
     dev_p->regs_p->US_IDR = (0xfffffffful);
 
+    /* Setup RX buffer of one byte in PDC. */
+    dev_p->regs_p->US_PDC.RPR = (uint32_t)dev_p->rxbuf;
+    dev_p->regs_p->US_PDC.RCR = 1;
+
+    /* Enable rx signals and interrupt. */
+    dev_p->regs_p->US_IER = (US_IER_ENDRX | US_IER_RXRDY);
+    dev_p->regs_p->US_PDC.PTCR = (PERIPH_PTCR_RXTEN);
+
+    /* Disable tx interrupt. */
     dev_p->regs_p->US_PDC.PTCR = (PERIPH_PTCR_TXTDIS);
+
+    /* Enable tx and rx. */
+    dev_p->regs_p->US_CR = (US_CR_TXEN | US_CR_RXEN);
 
     /* PMC */
     pmc_peripheral_clock_enable(dev_p->id);
@@ -135,7 +140,7 @@ static void isr(int index)
     /* Mask the expected signals. */
     csr = dev_p->regs_p->US_CSR;
     csr &= dev_p->regs_p->US_IMR;
-    
+
     /* Handle tx complete signal. */
     if (csr & US_CSR_ENDTX) {
         dev_p->regs_p->US_IDR = (US_IDR_ENDTX);
@@ -155,6 +160,7 @@ static void isr(int index)
         }
 
         /* Reset counter to receive next byte. */
+        dev_p->regs_p->US_PDC.RPR = (uint32_t)dev_p->rxbuf;
         dev_p->regs_p->US_PDC.RCR = 1;
     }
 }
