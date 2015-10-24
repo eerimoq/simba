@@ -63,6 +63,32 @@ static void timer_insert(struct timer_t *timer_p)
     }
 }
 
+static int timer_remove(struct timer_t *timer_p)
+{
+    struct timer_t *elem_p, *prev_p;
+
+    /* Find element preceeding this timer.*/
+    elem_p = list.head_p;
+    prev_p = NULL;
+
+    while (elem_p != NULL) {
+        if (elem_p == timer_p) {
+            if (prev_p != NULL) {
+                prev_p->next_p = elem_p->next_p;
+            } else {
+                list.head_p = elem_p->next_p;
+            }
+
+            return (0);
+        }
+
+        prev_p = elem_p;
+        elem_p = elem_p->next_p;
+    }
+
+    return (-1);
+}
+
 int timer_module_init(void)
 {
     return (0);
@@ -81,6 +107,7 @@ void timer_tick(void)
 
     /* Fire all expired timers.*/
     list.head_p->delta--;
+
     while (list.head_p->delta == 0) {
         timer_p = list.head_p;
         list.head_p = timer_p->next_p;
@@ -139,5 +166,13 @@ int timer_set_irq(struct timer_t *timer_p,
 
 int timer_cancel(struct timer_t *timer_p)
 {
-    return (1);
+    int err = 0;
+
+    sys_lock();
+
+    err = timer_remove(timer_p);
+
+    sys_unlock();
+
+    return (err);
 }

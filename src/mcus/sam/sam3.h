@@ -577,19 +577,19 @@ struct sam_system_timer_t {
 #define SYSTEM_TIMER_CALIB_SKEW         BIT(30)
 #define SYSTEM_TIMER_CALIB_NOREF        BIT(31)
 
-/* System nestedvectored interrupt controller. */
+/* System nested vectored interrupt controller. */
 struct sam_nvic_t {
-    uint32_t ISER0_ISER1;
-    uint32_t reserved1[31];
-    uint32_t ICER0_ICER1;
-    uint32_t reserved2[31];
-    uint32_t ISPR0_ISPR1;
-    uint32_t reserved3[31];
-    uint32_t ICPR0_ICPR1;
-    uint32_t reserved4[31];
-    uint32_t IABR0_IABR1;
-    uint32_t reserved5[63];
-    uint32_t IPR0_IPR7[8];
+    uint32_t ISE[2];
+    uint32_t reserved1[30];
+    uint32_t ICE[2];
+    uint32_t reserved2[30];
+    uint32_t ISP[2];
+    uint32_t reserved3[30];
+    uint32_t ICP[2];
+    uint32_t reserved4[30];
+    uint32_t IAB[2];
+    uint32_t reserved5[62];
+    uint32_t IP[8];
     uint32_t reserved6[697];
     uint32_t STIR;
 };
@@ -1183,5 +1183,20 @@ struct sam_wdt_t {
 #define FLASH1_PAGE_SIZE 0x100
 
 #define FLASH_IAP_ADDRESS (0x00100008)
+
+static inline void nvic_enable_interrupt(int id)
+{
+    SAM_NVIC->ICP[id / 32] = (1 << (id % 32));
+    SAM_NVIC->ISE[id / 32] = (1 << (id % 32));
+}
+
+static inline void pmc_peripheral_clock_enable(int id)
+{
+    if (id < 32) {
+        SAM_PMC->PCER0 = (1 << (id % 32));
+    } else {
+        SAM_PMC->PCER1 = (1 << (id % 32));
+    }
+}
 
 #endif

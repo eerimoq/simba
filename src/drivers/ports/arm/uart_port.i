@@ -50,17 +50,22 @@ static int uart_port_start(struct uart_driver_t *drv_p)
                             | US_MR_PAR_NO);
  
     /* Setup RX buffer of one byte in PDC. */
-    /* dev_p->regs_p->US_PDC.PERIPH_RPR = (uint32_t)dev_p->rxbuf; */
-    /* dev_p->regs_p->US_PDC.PERIPH_RCR = 1; */
+    /* dev_p->regs_p->US_PDC.RPR = (uint32_t)dev_p->rxbuf; */
+    /* dev_p->regs_p->US_PDC.RCR = 1; */
 
     /* Enable TX and RX using the PDC end of transfer interrupts. */
     dev_p->regs_p->US_CR = US_CR_TXEN;
 
-    /* dev_p->regs_p->US_IER = (US_IER_ENDRX | US_IER_ENDTX); */
-    /* dev_p->regs_p->US_IDR = 0; */
-    /* dev_p->regs_p->US_IMR = (US_IMR_ENDRX | US_IMR_ENDTX); */
-    /* dev_p->regs_p->US_PDC.PERIPH_PTCR = (PERIPH_PTCR_RXTEN */
-    /*                                      | PERIPH_PTCR_TXTEN); */
+    /* Disable all interrupts. */
+    dev_p->regs_p->US_IDR = (0xfffffffful);
+
+    dev_p->regs_p->US_PDC.PTCR = (PERIPH_PTCR_TXTDIS);
+
+    /* PMC */
+    pmc_peripheral_clock_enable(dev_p->id);
+
+    /* nvic */
+    nvic_enable_interrupt(dev_p->id);
 
     dev_p->drv_p = drv_p;
 
@@ -72,8 +77,7 @@ static int uart_port_stop(struct uart_driver_t *drv_p)
     struct uart_device_t *dev_p = drv_p->dev_p;
 
     dev_p->regs_p->US_CR = 0;
-    dev_p->regs_p->US_IER = 0;
-    dev_p->regs_p->US_IMR = 0;
+    dev_p->regs_p->US_IDR = 0xfffffffful;
     dev_p->regs_p->US_PDC.PTCR = 0;
 
     dev_p->drv_p = NULL;
@@ -87,8 +91,6 @@ static ssize_t uart_port_write_cb(void *arg_p,
 {
     struct uart_driver_t *drv_p;
     struct uart_device_t *dev_p;
-    int i;
-    const uint8_t *tx_p = txbuf_p;
 
     drv_p = container_of(arg_p, struct uart_driver_t, chout);
     dev_p = drv_p->dev_p;
@@ -97,23 +99,21 @@ static ssize_t uart_port_write_cb(void *arg_p,
 
     sys_lock();
 
-    for (i = 0; i < size; i++) {
-        while ((dev_p->regs_p->US_CSR & US_CSR_TXRDY) == 0);
-        
-        dev_p->regs_p->US_THR = tx_p[i];
-    }
-
-#if 0
-
     /* Initiate transfer by writing to the PDC registers. */
     dev_p->regs_p->US_PDC.TPR = (uint32_t)txbuf_p;
     dev_p->regs_p->US_PDC.TCR = size;
+
+    /* Enalbe the PDC. */
+    dev_p->regs_p->US_PDC.PTCR = (PERIPH_PTCR_TXTEN);
+
+    dev_p->regs_p->US_IER = (US_IER_ENDTX);
 
     drv_p->thrd_p = thrd_self();
 
     thrd_suspend_irq(NULL);
 
-#endif
+    /* Disable the PDC. */
+    dev_p->regs_p->US_PDC.PTCR = (PERIPH_PTCR_TXTDIS);
 
     sys_unlock();
 
@@ -132,9 +132,13 @@ static void isr(int index)
         return;
     }
 
+    /* Mask the expected signals. */
     csr = dev_p->regs_p->US_CSR;
-
+    csr &= dev_p->regs_p->US_IMR;
+    
+    /* Handle tx complete signal. */
     if (csr & US_CSR_ENDTX) {
+        dev_p->regs_p->US_IDR = (US_IDR_ENDTX);
         thrd_resume_irq(drv_p->thrd_p, 0);
     }
 

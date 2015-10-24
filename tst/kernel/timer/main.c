@@ -20,29 +20,37 @@
 
 #include "simba.h"
 
+#define EVENT_MASK 0x1
+
 static struct thrd_t *thrd_p;
+struct event_t event;
 
 static void callback(void *arg_p)
 {
-    thrd_resume_irq(thrd_p, 0);
+    uint32_t mask = EVENT_MASK;
+
+    event_write_irq(&event, &mask, sizeof(mask));
 }
 
 int test_timer(struct harness_t *harness_p)
 {
     int i;
+    uint32_t mask;
     struct timer_t timer;
     struct time_t timeout = {
         .seconds = 0,
         .nanoseconds = 100000000
     };
 
-    sys_start();
+    event_init(&event);
 
     thrd_p = thrd_self();
 
     /* Single shot timer. */
     timer_set(&timer, &timeout, callback, NULL, 0);
-    thrd_suspend(NULL);
+
+    mask = EVENT_MASK;
+    event_read(&event, &mask, sizeof(mask));
 
     thrd_usleep(100000);
 
@@ -51,9 +59,12 @@ int test_timer(struct harness_t *harness_p)
     timer_set(&timer, &timeout, callback, NULL, TIMER_PERIODIC);
 
     for (i = 0; i < 5; i++) {
-        thrd_suspend(NULL);
+        mask = EVENT_MASK;
+        event_read(&event, &mask, sizeof(mask));
         std_printf(FSTR("Timeout %d.\r\n"), i);
     }
+
+    BTASSERT(timer_cancel(&timer) == 0);
 
     return (0);
 }

@@ -36,6 +36,7 @@ struct uart_device_t {
             uint32_t mask;
         } tx;
     } pio;
+    int id;
     uint8_t rxbuf[1];
 };
 

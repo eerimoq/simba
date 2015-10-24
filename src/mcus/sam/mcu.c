@@ -146,7 +146,8 @@ struct uart_device_t uart_device[UART_DEVICE_MAX] = {
                 .regs_p = SAM_PIOA,
                 .mask = SAM_PIO_P9
             }
-        }
+        },
+        .id = 8
     },
 
     {
@@ -161,7 +162,8 @@ struct uart_device_t uart_device[UART_DEVICE_MAX] = {
                 .regs_p = SAM_PIOA,
                 .mask = SAM_PIO_P11
             }
-        }
+        },
+        .id = 17
     },
 
     {
@@ -176,7 +178,8 @@ struct uart_device_t uart_device[UART_DEVICE_MAX] = {
                 .regs_p = SAM_PIOA,
                 .mask = SAM_PIO_P13
             }
-        }
+        },
+        .id = 18
     },
 
     {
@@ -191,7 +194,8 @@ struct uart_device_t uart_device[UART_DEVICE_MAX] = {
                 .regs_p = SAM_PIOB,
                 .mask = SAM_PIO_P22
             }
-        }
+        },
+        .id = 19
     },
 
     {
@@ -206,7 +210,8 @@ struct uart_device_t uart_device[UART_DEVICE_MAX] = {
                 .regs_p = SAM_PIOD,
                 .mask = SAM_PIO_P4
             }
-        }
+        },
+        .id = 20
     }
 };
 
