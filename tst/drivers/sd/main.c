@@ -174,8 +174,6 @@ static int test_read_cid_csd(struct harness_t *harness_p)
         break;
     }
 
-    BTASSERT(sd_stop(&sd) == 0);
-
     return (0);
 }
 
@@ -215,7 +213,7 @@ int main()
                       &spi_device[0],
                       &pin_d53_dev,
                       SPI_MODE_MASTER,
-                      SPI_PORT_SPEED_125KBPS,
+                      SPI_PORT_SPEED_500KBPS,
                       0,
                       1) == 0);
 

@@ -114,7 +114,7 @@ static int spi_port_start(struct spi_driver_t *drv_p)
     pmc_peripheral_clock_enable(dev_p->id);
     nvic_enable_interrupt(dev_p->id);
 
-    dev_p->regs_p->CSR[0] = (SPI_CSR_SCBR(0xa8)
+    dev_p->regs_p->CSR[0] = (SPI_CSR_SCBR(drv_p->speed)
                              | (SPI_CSR_NCPHA * drv_p->cpha)
                              | (SPI_CSR_CPOL * drv_p->cpol));
 

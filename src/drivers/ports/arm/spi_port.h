@@ -24,13 +24,11 @@
 #include <io.h>
 
 /* Speed configuration. SPI2X, SPR1 and SPR0 */
-#define SPI_PORT_SPEED_8MBPS    0x4
-#define SPI_PORT_SPEED_4MBPS    0x0
-#define SPI_PORT_SPEED_2MBPS    0x5
-#define SPI_PORT_SPEED_1MBPS    0x1
-#define SPI_PORT_SPEED_500KBPS  0x6
-#define SPI_PORT_SPEED_250KBPS  0x2
-#define SPI_PORT_SPEED_125KBPS  0x7
+#define SPI_PORT_SPEED_8MBPS    (F_CPU / 8000000)
+#define SPI_PORT_SPEED_4MBPS    (F_CPU / 4000000)
+#define SPI_PORT_SPEED_2MBPS    (F_CPU / 2000000)
+#define SPI_PORT_SPEED_1MBPS    (F_CPU / 1000000)
+#define SPI_PORT_SPEED_500KBPS  (F_CPU /  500000)
 
 struct spi_driver_t;
 
