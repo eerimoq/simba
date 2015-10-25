@@ -509,8 +509,8 @@ ssize_t sd_write_block(struct sd_driver_t *drv_p,
                        uint32_t dst_block,
                        const void *src_p)
 {
-    //uint16_t crc;
-    uint8_t status;
+    /* uint16_t crc; */
+    /* uint8_t status; */
 
     /* Check for byte address adjustment */
     if (drv_p->type != TYPE_SDHC) {
@@ -531,7 +531,7 @@ ssize_t sd_write_block(struct sd_driver_t *drv_p,
     spi_write(drv_p->spi_p, src_p, size);    
     spi_write(drv_p->spi_p, &crc, sizeof(crc));
 
-    spi_get(, &status);
+    spi_get(drv_p->spi_p, &status);
 
     if ((status & TOKEN_DATA_RES_MASK) != TOKEN_DATA_RES_ACCEPTED) {
         return (-1);
@@ -550,6 +550,6 @@ ssize_t sd_write_block(struct sd_driver_t *drv_p,
 
     spi_get(&status);
 #endif
-    status = 0;
-    return (status != 0);
+
+    return (-1);
 }

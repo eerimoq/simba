@@ -7,7 +7,7 @@
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
+ * License as publiavred by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
  *
  * This library is distributed in the hope that it will be useful,
@@ -23,13 +23,40 @@
 
 #include <io.h>
 
+/* Speed configuration. SPI2X, SPR1 and SPR0 */
+#define SPI_PORT_SPEED_8MBPS    0x4
+#define SPI_PORT_SPEED_4MBPS    0x0
+#define SPI_PORT_SPEED_2MBPS    0x5
+#define SPI_PORT_SPEED_1MBPS    0x1
+#define SPI_PORT_SPEED_500KBPS  0x6
+#define SPI_PORT_SPEED_250KBPS  0x2
+#define SPI_PORT_SPEED_125KBPS  0x7
+
+struct spi_driver_t;
+
 struct spi_device_t {
-    volatile struct st_rspi *port_p;
+    struct spi_driver_t *drv_p;
+    volatile struct sam_spi_t *regs_p;
+    struct pin_device_t *mosi_p;
+    struct pin_device_t *miso_p;
+    struct pin_device_t *sck_p;
+    int id;
+    struct sem_t sem;
 };
 
 struct spi_driver_t {
-    const struct spi_device_t *dev_p;
-    const struct spi_config_t *config_p;
+    struct spi_device_t *dev_p;
+    struct pin_driver_t ss;
+    int mode;
+    int speed;
+    int cpol;
+    int cpha;
+    uint8_t spcr;
+    uint8_t spsr;
+    uint8_t *rxbuf_p;                        /* Transfer receive buffer or NULL. */
+    const uint8_t *txbuf_p;                  /* Transfer transmit buffer or NULL. */
+    size_t size;                             /* Number of bytes left to transfer. */
+    struct thrd_t *thrd_p;                   /* Waiting thread. */
 };
 
 #endif

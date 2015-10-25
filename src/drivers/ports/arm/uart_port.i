@@ -57,7 +57,11 @@ static int uart_port_start(struct uart_driver_t *drv_p)
     dev_p->regs_p->US_PDC.RCR = 1;
 
     /* Enable rx signals and interrupt. */
-    dev_p->regs_p->US_IER = (US_IER_ENDRX | US_IER_RXRDY);
+    dev_p->regs_p->US_IER = (US_IER_ENDRX
+                             | US_IER_RXRDY
+                             | US_IER_OVRE
+                             | US_IER_FRAME
+                             | US_IER_PARE);
     dev_p->regs_p->US_PDC.PTCR = (PERIPH_PTCR_RXTEN);
 
     /* Disable tx interrupt. */
@@ -147,6 +151,7 @@ static void isr(int index)
         thrd_resume_irq(drv_p->thrd_p, 0);
     }
 
+    /* Handle rx complete signal. */
     if (csr & US_CSR_ENDRX) {
         error = (csr & (US_CSR_OVRE | US_CSR_FRAME | US_CSR_PARE));
 

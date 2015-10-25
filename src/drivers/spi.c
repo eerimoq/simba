@@ -37,6 +37,9 @@ int spi_init(struct spi_driver_t *drv_p,
 {
     drv_p->dev_p = dev_p;
     drv_p->mode = mode;
+    drv_p->speed = speed;
+    drv_p->cpol = cpol;
+    drv_p->cpha = cpha;
 
     return (spi_port_init(drv_p, dev_p, ss_pin_p, mode, speed, cpol, cpha));
 }

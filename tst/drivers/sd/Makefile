@@ -21,8 +21,6 @@
 NAME = sd_suite
 BOARD = linux
 SRC += main.c
-SLIB_SRC = harness.c
-DRIVERS_SRC = uart.c sd.c spi.c pin.c
 
 SIMBA = ../../..
 include $(SIMBA)/make/app.mk

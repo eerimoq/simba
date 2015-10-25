@@ -73,8 +73,8 @@ int main()
 
     shell_args.chin_p = &uart.chin;
     shell_args.chout_p = &uart.chout;
-    shell_args.username_p = "root";
-    shell_args.password_p = "root";
+    shell_args.username_p = NULL;
+    shell_args.password_p = NULL;
     shell_entry(&shell_args);
 
     return (0);

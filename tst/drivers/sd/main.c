@@ -20,22 +20,13 @@
 
 #include "simba.h"
 
+static struct spi_driver_t spi;
+static struct sd_driver_t sd;
+
 static int test_read_cid_csd(struct harness_t *harness_p)
 {
-    struct spi_driver_t spi;
-    struct sd_driver_t sd;
     struct sd_cid_t cid;
     union sd_csd_t csd;
-
-    BTASSERT(spi_init(&spi,
-                      &spi_device[0],
-                      &pin_d53_dev,
-                      SPI_MODE_MASTER,
-                      SPI_PORT_SPEED_125KBPS,
-                      0,
-                      0) == 0);
-    BTASSERT(sd_init(&sd, &spi) == 0);
-    BTASSERT(sd_start(&sd) == 0);
 
     /* Read CID and print it to stdout. */
     BTASSERT(sd_read_cid(&sd, &cid) == sizeof(cid));
@@ -190,9 +181,31 @@ static int test_read_cid_csd(struct harness_t *harness_p)
 
 static int test_read_write(struct harness_t *harness_p)
 {
-    struct spi_driver_t spi;
-    struct sd_driver_t sd;
     char buf[512];
+
+    /* Read the first block. */
+    BTASSERT(sd_read_block(&sd, buf, 0) == SD_BLOCK_SIZE);
+
+    /* Read the second block. */
+    BTASSERT(sd_read_block(&sd, buf, 1) == SD_BLOCK_SIZE);
+
+    /* Read the fifth block. */
+    BTASSERT(sd_read_block(&sd, buf, 4) == SD_BLOCK_SIZE);
+
+    return (0);
+}
+
+int main()
+{
+    struct harness_t harness;
+    struct harness_testcase_t harness_testcases[] = {
+        { test_read_cid_csd, "test_read_cid_csd" },
+        { test_read_write, "test_read_write" },
+        { NULL, NULL }
+    };
+
+    sys_start();
+    uart_module_init();
 
 #if defined(ARCH_LINUX)
     BTASSERT(system("./create_sdcard_linux.sh") == 0);
@@ -204,44 +217,15 @@ static int test_read_write(struct harness_t *harness_p)
                       SPI_MODE_MASTER,
                       SPI_PORT_SPEED_125KBPS,
                       0,
-                      0) == 0);
+                      1) == 0);
+
     BTASSERT(sd_init(&sd, &spi) == 0);
     BTASSERT(sd_start(&sd) == 0);
 
-    /* Read the first block. */
-    BTASSERT(sd_read_block(&sd, buf, 0) == SD_BLOCK_SIZE);
-    BTASSERT(memcmp(buf, "1 2 3", 5) == 0);
-    BTASSERT(memcmp(&buf[500], "153 154 155 ", 12) == 0);
-
-    /* Read the second block. */
-    BTASSERT(sd_read_block(&sd, buf, 1) == SD_BLOCK_SIZE);
-    BTASSERT(memcmp(buf, "156 157 158", 11) == 0);
-    BTASSERT(memcmp(&buf[500], "281 282 283 ", 12) == 0);
-
-    /* Read the fifth block. */
-    BTASSERT(sd_read_block(&sd, buf, 4) == SD_BLOCK_SIZE);
-    BTASSERT(memcmp(buf, "540 541 542", 11) == 0);
-    BTASSERT(memcmp(&buf[500], "665 666 667 ", 12) == 0);
-
-    BTASSERT(sd_stop(&sd) == 0);
-
-    return (0);
-}
-
-int main()
-{
-    struct harness_t harness;
-    struct harness_testcase_t harness_testcases[] = {
-        /* { test_read_cid_csd, "test_read_cid_csd" }, */
-        { test_read_write, "test_read_write" },
-        { NULL, NULL }
-    };
-
-    sys_start();
-    uart_module_init();
-
     harness_init(&harness);
     harness_run(&harness, harness_testcases);
+
+    BTASSERT(sd_stop(&sd) == 0);
 
     return (0);
 }

@@ -133,6 +133,18 @@ struct pin_device_t pin_device[PIN_DEVICE_MAX] = {
     { .pio_p = SAM_PIOD, .mask = SAM_PIO_P9 }
 };
 
+struct spi_device_t spi_device[SPI_DEVICE_MAX] = {
+    {
+        .drv_p = NULL,
+        .regs_p = SAM_SPI0,
+        .mosi_p = &pin_device[26],
+        .miso_p = &pin_device[25],
+        .sck_p = &pin_device[27],
+        .id = PERIPHERAL_ID_SPI0,
+        .sem = { .count = 1, .head_p = NULL }
+    }
+};
+
 struct uart_device_t uart_device[UART_DEVICE_MAX] = {
     {
         .drv_p = NULL,

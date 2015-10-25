@@ -28,6 +28,162 @@
 
 #define BITFIELD(name, value) (((value) << name ## _POS) & name ## _MASK)
 
+/* Peripheral identifiers. */
+#define PERIPHERAL_ID_SUPC              0 /* Supply Controller */
+#define PERIPHERAL_ID_RSTC              1 /* Reset Controller */
+#define PERIPHERAL_ID_RTC               2 /* Real-time Clock */
+#define PERIPHERAL_ID_RTT               3 /* Real-time Timer */
+#define PERIPHERAL_ID_WDG               4 /* Watchdog Timer */
+#define PERIPHERAL_ID_PMC               5 /* Power Management Controller */
+#define PERIPHERAL_ID_EEFC0             6 /* Enhanced Embedded Flash Controller 0 */
+#define PERIPHERAL_ID_EEFC1             7 /* Enhanced Embedded Flash Controller 1 */
+#define PERIPHERAL_ID_UART              8 /* Universal Asynchronous Receiver Transceiver */
+#define PERIPHERAL_ID_SMC_SDRAMC        9 /* Static Memory Controller / Synchronous Dynamic RAM Controller */
+#define PERIPHERAL_ID_SDRAMC           10 /* Synchronous Dynamic RAM Controller */
+#define PERIPHERAL_ID_PIOA             11 /* Parallel I/O Controller A */
+#define PERIPHERAL_ID_PIOB             12 /* Parallel I/O Controller B */
+#define PERIPHERAL_ID_PIOC             13 /* Parallel I/O Controller C */
+#define PERIPHERAL_ID_PIOD             14 /* Parallel I/O Controller D */
+#define PERIPHERAL_ID_PIOE             15 /* Parallel I/O Controller E */
+#define PERIPHERAL_ID_PIOF             16 /* Parallel I/O Controller F */
+#define PERIPHERAL_ID_USART0           17 /* Universal Synchronous Asynchronous Receiver Transmitter 0 */
+#define PERIPHERAL_ID_USART1           18 /* Universal Synchronous Asynchronous Receiver Transmitter 1 */
+#define PERIPHERAL_ID_USART2           19 /* Universal Synchronous Asynchronous Receiver Transmitter 2 */
+#define PERIPHERAL_ID_USART3           20 /* Universal Synchronous Asynchronous Receiver Transmitter 3 */
+#define PERIPHERAL_ID_HSMCI            21 /* High Speed Multimedia Card Interface */
+#define PERIPHERAL_ID_TWI0             22 /* Two-Wire Interface 0 */
+#define PERIPHERAL_ID_TWI1             23 /* Two-Wire Interface 1 */
+#define PERIPHERAL_ID_SPI0             24 /* Serial Peripheral Interface 0 */
+#define PERIPHERAL_ID_SPI1             25 /* Serial Peripheral Interface 1 */
+#define PERIPHERAL_ID_SSC              26 /* Synchronous Serial Controller */
+#define PERIPHERAL_ID_TC0              27 /* Timer Counter Channel 0 */
+#define PERIPHERAL_ID_TC1              28 /* Timer Counter Channel 1 */
+#define PERIPHERAL_ID_TC2              29 /* Timer Counter Channel 2 */
+#define PERIPHERAL_ID_TC3              30 /* Timer Counter Channel 3 */
+#define PERIPHERAL_ID_TC4              31 /* Timer Counter Channel 4 */
+#define PERIPHERAL_ID_TC5              32 /* Timer Counter Channel 5 */
+#define PERIPHERAL_ID_TC6              33 /* Timer Counter Channel 6 */
+#define PERIPHERAL_ID_TC7              34 /* Timer Counter Channel 7 */
+#define PERIPHERAL_ID_TC8              35 /* Timer Counter Channel 8 */
+#define PERIPHERAL_ID_PWM              36 /* Pulse Width Modulation Controller */
+#define PERIPHERAL_ID_ADC              37 /* ADC Controller */
+#define PERIPHERAL_ID_DACC             38 /* DAC Controller */
+#define PERIPHERAL_ID_DMAC             39 /* DMA Controller */
+#define PERIPHERAL_ID_UOTGHS           40 /* USB OTG High Speed */
+#define PERIPHERAL_ID_TRNG             41 /* True Random Number Generator */
+#define PERIPHERAL_ID_EMAC             42 /* Ethernet MAC */
+#define PERIPHERAL_ID_CAN0             43 /* CAN Controller 0 */
+#define PERIPHERAL_ID_CAN1             44 /* CAN Controller 1 */
+
+/* Serial peripheral interface. */
+struct sam_spi_t {
+    uint32_t CR;
+    uint32_t MR;
+    uint32_t RDR;
+    uint32_t TDR;
+    uint32_t SR;
+    uint32_t IER;
+    uint32_t IDR;
+    uint32_t IMR;
+    uint32_t reserved1[4];
+    uint32_t CSR[4];
+    uint32_t reserved2[38];
+    uint32_t WPMR;
+    uint32_t WPSR;
+};
+
+/* Control register. */
+#define SPI_CR_SPIEN                    BIT(0)
+#define SPI_CR_SPIDIS                   BIT(1)
+#define SPI_CR_SWRST                    BIT(7)
+#define SPI_CR_LASTXFER                 BIT(24)
+
+/* Mode register. */
+#define SPI_MR_MSTR                     BIT(0)
+#define SPI_MR_PS                       BIT(1)
+#define SPI_MR_PCSDEC                   BIT(2)
+#define SPI_MR_MODFDIS                  BIT(4)
+#define SPI_MR_WDRBT                    BIT(5)
+#define SPI_MR_LLB                      BIT(7)
+#define SPI_MR_PCS_POS                  (16)
+#define SPI_MR_PCS_MASK                 (0xf << SPI_MR_PCS_POS)
+#define SPI_MR_PCS(value)               BITFIELD(SPI_MR_PCS, value)
+#define SPI_MR_DLTBCS_POS               (24)
+#define SPI_MR_DLTBCS_MASK              (0xff << SPI_MR_DLTBCS_POS)
+#define SPI_MR_DLTBCS(value)            BITFIELD(SPI_MR_DLTBCS, value)
+
+/* Receive data register. */
+#define SPI_RDR_RD_POS                  (0)
+#define SPI_RDR_RD_MASK                 (0xffff << SPI_RDR_RD_POS)
+#define SPI_RDR_RD(value)               BITFIELD(SPI_RDR_RD, value)
+#define SPI_RDR_PCS_POS                 (16)
+#define SPI_RDR_PCS_MASK                (0xf << SPI_RDR_PCS_POS)
+#define SPI_RDR_PCS(value)              BITFIELD(SPI_RDR_PCS, value)
+
+/* Transmit data register. */
+#define SPI_TDR_TD_POS                  (0)
+#define SPI_TDR_TD_MASK                 (0xffff << SPI_TDR_TD_POS)
+#define SPI_TDR_TD(value)               BITFIELD(SPI_TDR_TD, value)
+#define SPI_TDR_PCS_POS                 (16)
+#define SPI_TDR_PCS_MASK                (0xf << SPI_TDR_PCS_POS)
+#define SPI_TDR_PCS(value)              BITFIELD(SPI_TDR_PCS, value)
+#define SPI_TDR_LASTXFER                BIT(24)
+
+/* Status register. */
+#define SPI_SR_RDRF                     BIT(0)
+#define SPI_SR_TDRE                     BIT(1)
+#define SPI_SR_MODF                     BIT(2)
+#define SPI_SR_OVRES                    BIT(3)
+#define SPI_SR_NSSR                     BIT(8)
+#define SPI_SR_TXEMPTY                  BIT(9)
+#define SPI_SR_UNDES                    BIT(10)
+#define SPI_SR_SPIENS                   BIT(16)
+
+/* Interrupt enable register. */
+#define SPI_IER_RDRF                    BIT(0)
+#define SPI_IER_TDRE                    BIT(1)
+#define SPI_IER_MODF                    BIT(2)
+#define SPI_IER_OVRES                   BIT(3)
+#define SPI_IER_NSSR                    BIT(8)
+#define SPI_IER_TXEMPTY                 BIT(9)
+#define SPI_IER_UNDES                   BIT(10)
+
+/* Interrupt disable register. */
+#define SPI_IDR_RDRF                    BIT(0)
+#define SPI_IDR_TDRE                    BIT(1)
+#define SPI_IDR_MODF                    BIT(2)
+#define SPI_IDR_OVRES                   BIT(3)
+#define SPI_IDR_NSSR                    BIT(8)
+#define SPI_IDR_TXEMPTY                 BIT(9)
+#define SPI_IDR_UNDES                   BIT(10)
+
+/* Interrupt mask register. */
+#define SPI_IMR_RDRF                    BIT(0)
+#define SPI_IMR_TDRE                    BIT(1)
+#define SPI_IMR_MODF                    BIT(2)
+#define SPI_IMR_OVRES                   BIT(3)
+#define SPI_IMR_NSSR                    BIT(8)
+#define SPI_IMR_TXEMPTY                 BIT(9)
+#define SPI_IMR_UNDES                   BIT(10)
+
+/* Chip select register. */
+#define SPI_CSR_CPOL                    BIT(0)
+#define SPI_CSR_NCPHA                   BIT(1)
+#define SPI_CSR_CSNAAT                  BIT(2)
+#define SPI_CSR_CSAAT                   BIT(3)
+#define SPI_CSR_BITS_POS                (4)
+#define SPI_CSR_BITS_MASK               (0xf << SPI_CSR_BITS_POS)
+#define SPI_CSR_BITS(value)             BITFIELD(SPI_CSR_BITS, value)
+#define SPI_CSR_SCBR_POS                (8)
+#define SPI_CSR_SCBR_MASK               (0xff << SPI_CSR_SCBR_POS)
+#define SPI_CSR_SCBR(value)             BITFIELD(SPI_CSR_SCBR, value)
+#define SPI_CSR_DLYBS_POS               (16)
+#define SPI_CSR_DLYBS_MASK              (0xff << SPI_CSR_DLYBS_POS)
+#define SPI_CSR_DLYBS(value)            BITFIELD(SPI_CSR_DLYBS, value)
+#define SPI_CSR_DLYBCT_POS              (24)
+#define SPI_CSR_DLYBCT_MASK             (0xff << SPI_CSR_DLYBCT_POS)
+#define SPI_CSR_DLYBCT(value)           BITFIELD(SPI_CSR_DLYBCT, value)
+
 /* Power management controller. */
 struct sam_pmc_t {
     uint32_t SCER;
