@@ -43,6 +43,9 @@ struct spi_driver_t {
     struct spi_device_t *dev_p;
     struct pin_driver_t ss;
     int mode;
+    int speed;
+    int cpol;
+    int cpha;
 };
 
 #endif

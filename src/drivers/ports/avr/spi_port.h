@@ -49,6 +49,9 @@ struct spi_driver_t {
     struct pin_driver_t miso;
     struct pin_driver_t sck;
     int mode;
+    int speed;
+    int cpol;
+    int cpha;
     uint8_t spcr;
     uint8_t spsr;
     uint8_t *rxbuf_p;                        /* Transfer receive buffer or NULL. */
