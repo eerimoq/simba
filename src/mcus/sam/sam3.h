@@ -75,6 +75,285 @@
 #define PERIPHERAL_ID_CAN0             43 /* CAN Controller 0 */
 #define PERIPHERAL_ID_CAN1             44 /* CAN Controller 1 */
 
+/*AHB DMA Controller. */
+struct sam_dmac_t {
+    uint32_t GCFG;
+    uint32_t EN;
+    uint32_t SREQ;
+    uint32_t CREQ;
+    uint32_t LAST;
+    uint32_t reserved1;
+    uint32_t EBCIER;
+    uint32_t EBCIDR;
+    uint32_t EBCIMR;
+    uint32_t EBCISR;
+    uint32_t CHER;
+    uint32_t CHDR;
+    uint32_t CHSR;
+    uint32_t reserved2[2];
+    struct {
+        uint32_t SADDR;
+        uint32_t DADDR;
+        uint32_t DSCR;
+        uint32_t CTRLA;
+        uint32_t CTRLB;
+        uint32_t CFG;
+        uint32_t reserved1[4];
+    } channel[6];
+    uint32_t WPMR;
+    uint32_t WPSR;
+};
+
+/* DMAC Global Configuration Register. */
+#define DMAC_GCFG_ARB_CFG               BIT(4)
+
+/* DMAC Enable register. */
+#define DMAC_EN_ENABLE                  BIT(0)
+
+/* DMAC Software Single Request Register. */
+#define DMAC_SREQ_SSREQ0                BIT(0)
+#define DMAC_SREQ_DSREQ0                BIT(1)
+#define DMAC_SREQ_SSREQ1                BIT(2)
+#define DMAC_SREQ_DSREQ1                BIT(3)
+#define DMAC_SREQ_SSREQ2                BIT(4)
+#define DMAC_SREQ_DSREQ2                BIT(5)
+#define DMAC_SREQ_SSREQ3                BIT(6)
+#define DMAC_SREQ_DSREQ3                BIT(7)
+#define DMAC_SREQ_SSREQ4                BIT(8)
+#define DMAC_SREQ_DSREQ4                BIT(9)
+#define DMAC_SREQ_SSREQ5                BIT(10)
+#define DMAC_SREQ_DSREQ5                BIT(11)
+
+/* DMAC Software Chunk Transfer Request Register. */
+#define DMAC_CREQ_SCREQ0                BIT(0)
+#define DMAC_CREQ_DCREQ0                BIT(1)
+#define DMAC_CREQ_SCREQ1                BIT(2)
+#define DMAC_CREQ_DCREQ1                BIT(3)
+#define DMAC_CREQ_SCREQ2                BIT(4)
+#define DMAC_CREQ_DCREQ2                BIT(5)
+#define DMAC_CREQ_SCREQ3                BIT(6)
+#define DMAC_CREQ_DCREQ3                BIT(7)
+#define DMAC_CREQ_SCREQ4                BIT(8)
+#define DMAC_CREQ_DCREQ4                BIT(9)
+#define DMAC_CREQ_SCREQ5                BIT(10)
+#define DMAC_CREQ_DCREQ5                BIT(11)
+
+/* DMAC Software Last Transfer Flag Register. */
+#define DMAC_LAST_SLAST0                BIT(0)
+#define DMAC_LAST_DLAST0                BIT(1)
+#define DMAC_LAST_SLAST1                BIT(2)
+#define DMAC_LAST_DLAST1                BIT(3)
+#define DMAC_LAST_SLAST2                BIT(4)
+#define DMAC_LAST_DLAST2                BIT(5)
+#define DMAC_LAST_SLAST3                BIT(6)
+#define DMAC_LAST_DLAST3                BIT(7)
+#define DMAC_LAST_SLAST4                BIT(8)
+#define DMAC_LAST_DLAST4                BIT(9)
+#define DMAC_LAST_SLAST5                BIT(10)
+#define DMAC_LAST_DLAST5                BIT(11)
+
+/* DMAC Error, Buffer Transfer and Chained Buffer Transfer Interrupt
+ * Enable Register. */
+#define DMAC_EBCIER_BTC0                BIT(0)
+#define DMAC_EBCIER_BTC1                BIT(1)
+#define DMAC_EBCIER_BTC2                BIT(2)
+#define DMAC_EBCIER_BTC3                BIT(3)
+#define DMAC_EBCIER_BTC4                BIT(4)
+#define DMAC_EBCIER_BTC5                BIT(5)
+#define DMAC_EBCIER_CBTC0               BIT(8)
+#define DMAC_EBCIER_CBTC1               BIT(9)
+#define DMAC_EBCIER_CBTC2               BIT(10)
+#define DMAC_EBCIER_CBTC3               BIT(11)
+#define DMAC_EBCIER_CBTC4               BIT(12)
+#define DMAC_EBCIER_CBTC5               BIT(13)
+#define DMAC_EBCIER_ERR0                BIT(16)
+#define DMAC_EBCIER_ERR1                BIT(17)
+#define DMAC_EBCIER_ERR2                BIT(18)
+#define DMAC_EBCIER_ERR3                BIT(19)
+#define DMAC_EBCIER_ERR4                BIT(20)
+#define DMAC_EBCIER_ERR5                BIT(21)
+
+/* DMAC Error, Buffer Transfer and Chained Buffer Transfer Interrupt
+ * Disable Register. */
+#define DMAC_EBCIDR_BTC0                BIT(0)
+#define DMAC_EBCIDR_BTC1                BIT(1)
+#define DMAC_EBCIDR_BTC2                BIT(2)
+#define DMAC_EBCIDR_BTC3                BIT(3)
+#define DMAC_EBCIDR_BTC4                BIT(4)
+#define DMAC_EBCIDR_BTC5                BIT(5)
+#define DMAC_EBCIDR_CBTC0               BIT(8)
+#define DMAC_EBCIDR_CBTC1               BIT(9)
+#define DMAC_EBCIDR_CBTC2               BIT(10)
+#define DMAC_EBCIDR_CBTC3               BIT(11)
+#define DMAC_EBCIDR_CBTC4               BIT(12)
+#define DMAC_EBCIDR_CBTC5               BIT(13)
+#define DMAC_EBCIDR_ERR0                BIT(16)
+#define DMAC_EBCIDR_ERR1                BIT(17)
+#define DMAC_EBCIDR_ERR2                BIT(18)
+#define DMAC_EBCIDR_ERR3                BIT(19)
+#define DMAC_EBCIDR_ERR4                BIT(20)
+#define DMAC_EBCIDR_ERR5                BIT(21)
+
+/* DMAC Error, Buffer Transfer and Chained Buffer Transfer Interrupt
+ * Mask Register. */
+#define DMAC_EBCIMR_BTC0                BIT(0)
+#define DMAC_EBCIMR_BTC1                BIT(1)
+#define DMAC_EBCIMR_BTC2                BIT(2)
+#define DMAC_EBCIMR_BTC3                BIT(3)
+#define DMAC_EBCIMR_BTC4                BIT(4)
+#define DMAC_EBCIMR_BTC5                BIT(5)
+#define DMAC_EBCIMR_CBTC0               BIT(8)
+#define DMAC_EBCIMR_CBTC1               BIT(9)
+#define DMAC_EBCIMR_CBTC2               BIT(10)
+#define DMAC_EBCIMR_CBTC3               BIT(11)
+#define DMAC_EBCIMR_CBTC4               BIT(12)
+#define DMAC_EBCIMR_CBTC5               BIT(13)
+#define DMAC_EBCIMR_ERR0                BIT(16)
+#define DMAC_EBCIMR_ERR1                BIT(17)
+#define DMAC_EBCIMR_ERR2                BIT(18)
+#define DMAC_EBCIMR_ERR3                BIT(19)
+#define DMAC_EBCIMR_ERR4                BIT(20)
+#define DMAC_EBCIMR_ERR5                BIT(21)
+
+/* DMAC Error, Buffer Transfer and Chained Buffer Transfer Interrupt
+ * Status Register. */
+#define DMAC_EBCISR_BTC0                BIT(0)
+#define DMAC_EBCISR_BTC1                BIT(1)
+#define DMAC_EBCISR_BTC2                BIT(2)
+#define DMAC_EBCISR_BTC3                BIT(3)
+#define DMAC_EBCISR_BTC4                BIT(4)
+#define DMAC_EBCISR_BTC5                BIT(5)
+#define DMAC_EBCISR_CBTC0               BIT(8)
+#define DMAC_EBCISR_CBTC1               BIT(9)
+#define DMAC_EBCISR_CBTC2               BIT(10)
+#define DMAC_EBCISR_CBTC3               BIT(11)
+#define DMAC_EBCISR_CBTC4               BIT(12)
+#define DMAC_EBCISR_CBTC5               BIT(13)
+#define DMAC_EBCISR_ERR0                BIT(16)
+#define DMAC_EBCISR_ERR1                BIT(17)
+#define DMAC_EBCISR_ERR2                BIT(18)
+#define DMAC_EBCISR_ERR3                BIT(19)
+#define DMAC_EBCISR_ERR4                BIT(20)
+#define DMAC_EBCISR_ERR5                BIT(21)
+
+/* DMAC Channel Handler Enable Register */
+#define DMAC_CHER_ENA0                  BIT(0)
+#define DMAC_CHER_ENA1                  BIT(1)
+#define DMAC_CHER_ENA2                  BIT(2)
+#define DMAC_CHER_ENA3                  BIT(3)
+#define DMAC_CHER_ENA4                  BIT(4)
+#define DMAC_CHER_ENA5                  BIT(5)
+#define DMAC_CHER_SUSP0                 BIT(8)
+#define DMAC_CHER_SUSP1                 BIT(9)
+#define DMAC_CHER_SUSP2                 BIT(10)
+#define DMAC_CHER_SUSP3                 BIT(11)
+#define DMAC_CHER_SUSP4                 BIT(12)
+#define DMAC_CHER_SUSP5                 BIT(13)
+#define DMAC_CHER_KEEP0                 BIT(24)
+#define DMAC_CHER_KEEP1                 BIT(25)
+#define DMAC_CHER_KEEP2                 BIT(26)
+#define DMAC_CHER_KEEP3                 BIT(27)
+#define DMAC_CHER_KEEP4                 BIT(28)
+#define DMAC_CHER_KEEP5                 BIT(29)
+
+/* DMAC Channel Handler Disable Register */
+#define DMAC_CHDR_DIS0                  BIT(0)
+#define DMAC_CHDR_DIS1                  BIT(1)
+#define DMAC_CHDR_DIS2                  BIT(2)
+#define DMAC_CHDR_DIS3                  BIT(3)
+#define DMAC_CHDR_DIS4                  BIT(4)
+#define DMAC_CHDR_DIS5                  BIT(5)
+#define DMAC_CHDR_RES0                  BIT(8)
+#define DMAC_CHDR_RES1                  BIT(9)
+#define DMAC_CHDR_RES2                  BIT(10)
+#define DMAC_CHDR_RES3                  BIT(11)
+#define DMAC_CHDR_RES4                  BIT(12)
+#define DMAC_CHDR_RES5                  BIT(13)
+
+/* DMAC Channel Handler Status Register */
+#define DMAC_CHSR_ENA0                  BIT(0)
+#define DMAC_CHSR_ENA1                  BIT(1)
+#define DMAC_CHSR_ENA2                  BIT(2)
+#define DMAC_CHSR_ENA3                  BIT(3)
+#define DMAC_CHSR_ENA4                  BIT(4)
+#define DMAC_CHSR_ENA5                  BIT(5)
+#define DMAC_CHSR_SUSP0                 BIT(8)
+#define DMAC_CHSR_SUSP1                 BIT(9)
+#define DMAC_CHSR_SUSP2                 BIT(10)
+#define DMAC_CHSR_SUSP3                 BIT(11)
+#define DMAC_CHSR_SUSP4                 BIT(12)
+#define DMAC_CHSR_SUSP5                 BIT(13)
+#define DMAC_CHSR_EMPT0                 BIT(16)
+#define DMAC_CHSR_EMPT1                 BIT(17)
+#define DMAC_CHSR_EMPT2                 BIT(18)
+#define DMAC_CHSR_EMPT3                 BIT(19)
+#define DMAC_CHSR_EMPT4                 BIT(20)
+#define DMAC_CHSR_EMPT5                 BIT(21)
+#define DMAC_CHSR_STAL0                 BIT(24)
+#define DMAC_CHSR_STAL1                 BIT(25)
+#define DMAC_CHSR_STAL2                 BIT(26)
+#define DMAC_CHSR_STAL3                 BIT(27)
+#define DMAC_CHSR_STAL4                 BIT(28)
+#define DMAC_CHSR_STAL5                 BIT(29)
+
+/* DMAC Channel x [x = 0..5] Control A Register */
+#define DMAC_CTRLA_BTSIZE_POS           (0)
+#define DMAC_CTRLA_BTSIZE_MASK          (0xffff << DMAC_CTRLA_BTSIZE_POS)
+#define DMAC_CTRLA_BTSIZE(value)        BITFIELD(DMAC_CTRLA_BTSIZE, (value))
+#define DMAC_CTRLA_SCSIZE_POS           (16)
+#define DMAC_CTRLA_SCSIZE_MASK          (0x7 << DMAC_CTRLA_SCSIZE_POS)
+#define DMAC_CTRLA_SCSIZE(value)        BITFIELD(DMAC_CTRLA_SCSIZE, (value))
+#define DMAC_CTRLA_DCSIZE_POS           (20)
+#define DMAC_CTRLA_DCSIZE_MASK          (0x7 << DMAC_CTRLA_DCSIZE_POS)
+#define DMAC_CTRLA_DCSIZE(value)        BITFIELD(DMAC_CTRLA_DCSIZE, (value))
+#define DMAC_CTRLA_SRC_WIDTH_POS        (24)
+#define DMAC_CTRLA_SRC_WIDTH_MASK       (0x3 << DMAC_CTRLA_SRC_WIDTH_POS)
+#define DMAC_CTRLA_SRC_WIDTH(value)     BITFIELD(DMAC_CTRLA_SRC_WIDTH, (value))
+#define DMAC_CTRLA_DST_WIDTH_POS        (28)
+#define DMAC_CTRLA_DST_WIDTH_MASK       (0x3 << DMAC_CTRLA_DST_WIDTH_POS)
+#define DMAC_CTRLA_DST_WIDTH(value)     BITFIELD(DMAC_CTRLA_DST_WIDTH, (value))
+#define DMAC_CTRLA_DONE                 BIT(31)
+
+/* DMAC Channel x [x = 0..5] Control B Register */
+#define DMAC_CTRLB_SRC_DSCR             (16)
+#define DMAC_CTRLB_DST_DSCR             (20)
+#define DMAC_CTRLB_FC_POS               (21)
+#define DMAC_CTRLB_FC_MASK              (0x7 << DMAC_CTRLB_FC_POS)
+#define DMAC_CTRLB_FC(value)            BITFIELD(DMAC_CTRLB_FC, (value))
+#define DMAC_CTRLB_SRC_INCR_POS         (24)
+#define DMAC_CTRLB_SRC_INCR_MASK        (0x3 << DMAC_CTRLB_SRC_INCR_POS)
+#define DMAC_CTRLB_SRC_INCR(value)      BITFIELD(DMAC_CTRLB_SRC_INCR, (value))
+#define DMAC_CTRLB_DST_INCR_POS         (28)
+#define DMAC_CTRLB_DST_INCR_MASK        (0x3 << DMAC_CTRLB_DST_INCR_POS)
+#define DMAC_CTRLB_DST_INCR(value)      BITFIELD(DMAC_CTRLB_DST_INCR, (value))
+#define DMAC_CTRLB_IEN                  BIT(30)
+
+/* DMAC Channel x [x = 0..5] Configuration Register */
+#define DMAC_CFG_SRC_PER_POS            (0)
+#define DMAC_CFG_SRC_PER_MASK           (0xf << DMAC_CFG_SRC_PER_POS)
+#define DMAC_CFG_SRC_PER(value)         BITFIELD(DMAC_CFG_SRC_PER, (value))
+#define DMAC_CFG_DST_PER_POS            (4)
+#define DMAC_CFG_DST_PER_MASK           (0xf << DMAC_CFG_DST_PER_POS)
+#define DMAC_CFG_DST_PER(value)         BITFIELD(DMAC_CFG_DST_PER, (value))
+#define DMAC_CFG_SRC_H2SEL              BIT(9)
+#define DMAC_CFG_DST_H2SEL              BIT(13)
+#define DMAC_CFG_SOD                    BIT(16)
+#define DMAC_CFG_LOCK_IF                BIT(20)
+#define DMAC_CFG_LOCK_B                 BIT(21)
+#define DMAC_CFG_LOCK_IF_L              BIT(22)
+#define DMAC_CFG_AHB_PROT_POS           (24)
+#define DMAC_CFG_AHB_PROT_MASK          (0x7 << DMAC_CFG_AHB_PROT_POS)
+#define DMAC_CFG_AHB_PROT(value)        BITFIELD(DMAC_CFG_AHB_PROT, (value))
+#define DMAC_CFG_FIFOCFG_POS            (28)
+#define DMAC_CFG_FIFOCFG_MASK           (0x3 << DMAC_CFG_FIFOCFG_POS)
+#define DMAC_CFG_FIFOCFG(value)         BITFIELD(DMAC_CFG_FIFOCFG, (value))
+
+/* DMAC Write Protect Mode Register */
+#define DMAC_WPMR_WPEN                  BIT(0)
+
+/* DMAC Write Protect Status Register */
+#define DMAC_WPSR_WPVS                  BIT(0)
+
 /* Serial peripheral interface. */
 struct sam_spi_t {
     uint32_t CR;
@@ -752,29 +1031,29 @@ struct sam_nvic_t {
 
 /* High Speed MultiMedia Card Interface (HSMCI). */
 struct sam_hsmci_t {
-    uint32_t HSMCI_CR;
-    uint32_t HSMCI_MR;
-    uint32_t HSMCI_DTOR;
-    uint32_t HSMCI_SDCR;
-    uint32_t HSMCI_ARGR;
-    uint32_t HSMCI_CMDR;
-    uint32_t HSMCI_BLKR;
-    uint32_t HSMCI_CSTOR;
-    uint32_t HSMCI_RSPR[4];
-    uint32_t HSMCI_RDR;
-    uint32_t HSMCI_TDR;
+    uint32_t CR;
+    uint32_t MR;
+    uint32_t DTOR;
+    uint32_t SDCR;
+    uint32_t ARGR;
+    uint32_t CMDR;
+    uint32_t BLKR;
+    uint32_t CSTOR;
+    uint32_t RSPR[4];
+    uint32_t RDR;
+    uint32_t TDR;
     uint32_t reserved1[2];
-    uint32_t HSMCI_SR;
-    uint32_t HSMCI_IER;
-    uint32_t HSMCI_IDR;
-    uint32_t HSMCI_IMR;
-    uint32_t HSMCI_DMA;
-    uint32_t HSMCI_CFG;
+    uint32_t SR;
+    uint32_t IER;
+    uint32_t IDR;
+    uint32_t IMR;
+    uint32_t DMA;
+    uint32_t CFG;
     uint32_t reserved2[35];
-    uint32_t HSMCI_WPMR;
-    uint32_t HSMCI_WPSR;
+    uint32_t WPMR;
+    uint32_t WPSR;
     uint32_t reserved3[69];
-    uint32_t HSMCI_FIFO[256];
+    uint32_t FIFO[256];
 };
 
 struct sam_pdc_t {
@@ -841,44 +1120,44 @@ struct sam_pdc_t {
 #define PERIPH_PTSR_TXTEN               BIT(8)
 
 struct sam_uart_t {
-    uint32_t US_CR;
-    uint32_t US_MR;
-    uint32_t US_IER;
-    uint32_t US_IDR;
-    uint32_t US_IMR;
-    uint32_t US_CSR;
-    uint32_t US_RHR;
-    uint32_t US_THR;
-    uint32_t US_BRGR;
+    uint32_t CR;
+    uint32_t MR;
+    uint32_t IER;
+    uint32_t IDR;
+    uint32_t IMR;
+    uint32_t CSR;
+    uint32_t RHR;
+    uint32_t THR;
+    uint32_t BRGR;
     uint32_t reserved1[55];
-    struct sam_pdc_t US_PDC;
+    struct sam_pdc_t PDC;
 };
 
 struct sam_usart_t {
-    uint32_t US_CR;
-    uint32_t US_MR;
-    uint32_t US_IER;
-    uint32_t US_IDR;
-    uint32_t US_IMR;
-    uint32_t US_CSR;
-    uint32_t US_RHR;
-    uint32_t US_THR;
-    uint32_t US_BRGR;
-    uint32_t US_RTOR;
-    uint32_t US_TTGR;
+    uint32_t CR;
+    uint32_t MR;
+    uint32_t IER;
+    uint32_t IDR;
+    uint32_t IMR;
+    uint32_t CSR;
+    uint32_t RHR;
+    uint32_t THR;
+    uint32_t BRGR;
+    uint32_t RTOR;
+    uint32_t TTGR;
     uint32_t reserved1[5];
-    uint32_t US_FIDI;
-    uint32_t US_NER;
+    uint32_t FIDI;
+    uint32_t NER;
     uint32_t reserved2[1];
-    uint32_t US_IF;
-    uint32_t US_MAN;
-    uint32_t US_LINMR;
-    uint32_t US_LINIR;
+    uint32_t IF;
+    uint32_t MAN;
+    uint32_t LINMR;
+    uint32_t LINIR;
     uint32_t reserved3[34];
-    uint32_t US_WPMR;
-    uint32_t US_WPSR;
+    uint32_t WPMR;
+    uint32_t WPSR;
     uint32_t reserved4[5];
-    struct sam_pdc_t US_PDC;
+    struct sam_pdc_t PDC;
 };
 
 /* USART Control Register */
