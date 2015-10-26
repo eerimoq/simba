@@ -90,6 +90,7 @@ int hash_map_add(struct hash_map_t *map_p,
         while (entry_p != NULL) {
             if (entry_p->key == key) {
                 entry_p->value_p = value_p;
+
                 return (0);
             }
 
@@ -141,6 +142,7 @@ int hash_map_remove(struct hash_map_t *map_p,
                 }
 
                 entry_free(map_p, entry_p);
+
                 return (0);
             }
 

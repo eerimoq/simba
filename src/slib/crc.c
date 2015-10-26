@@ -71,11 +71,11 @@ uint32_t crc_32(uint32_t crc, const void *buf_p, size_t size)
     const uint8_t *b_p;
 
     b_p = buf_p;
-    crc = crc ^ ~0u;
+    crc ^= ~0ul;
 
     while (size--) {
         crc = crc32_tab[(crc ^ *b_p++) & 0xff] ^ (crc >> 8);
     }
 
-    return (crc ^ ~0u);
+    return (crc ^ ~0ul);
 }
