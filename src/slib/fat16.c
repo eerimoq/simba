@@ -664,6 +664,47 @@ static int dir_init(struct dir_t *dir_p,
     return (0);
 }
 
+static int get_dir_at_index_in_root(struct fat16_t *fat16_p,
+                                    int16_t index,
+                                    struct dir_t *dir_p)
+{
+    int dir_entries_per_block;
+    int block;
+    struct dir_t *d_p;
+
+    dir_entries_per_block = (512 / sizeof(struct dir_t));
+    block = (fat16_p->root_dir_start_block + (index / dir_entries_per_block));
+    index = (index % dir_entries_per_block);
+
+    if (!(d_p = cache_dir_entry(fat16_p,
+                                  block,
+                                  index,
+                                  CACHE_FOR_READ))) {
+        return (-1);
+    }
+
+    /* Copy the directory entry to output variable. */
+    *dir_p = *d_p;
+
+    return (0);
+}
+
+/**
+ * Try to open directory entry of given name within range of blocks.
+ *
+ * @param[in] name_p Name of the file or directory to look for.
+ * @param[out] block_p Block index of the block containing name_p, or
+ *                     the first free block if the name was not found.
+ * @param[out] index_p Index within the block where the name matched,
+ *                     or the first free index in the block.
+ * @param[in] start_block Block to search from.
+ * @param[in] end_block Block to search to.
+ *
+ * @return true(1) if a directory entry for given name was found,
+ *         false(0) if the name was not found and the block_p and
+ *         index_p holds the address of an empty slot, otherwise
+ *         negative error code.
+ */
 static int dir_open_in_blocks(struct fat16_t *fat16_p,
                               const uint8_t *name_p,
                               int16_t *block_p,
@@ -1293,9 +1334,18 @@ int fat16_dir_open(struct fat16_t *fat16_p,
     uint8_t dname[11];
     struct dir_t dir;
 
-    if (file_open(fat16_p, file_p, path_p, oflag, DIR_ATTR_DIRECTORY) != 0) {
+    /* Root directory is special. */
+    if ((strcmp(path_p, ".") == 0) && (oflag & O_READ)) {
+        /* First index in root folder. */
+        dir_p->root_index = 0;
+        file_p->fat16_p = fat16_p;
+
+        return (0);
+    } else if (file_open(fat16_p, file_p, path_p, oflag, DIR_ATTR_DIRECTORY) != 0) {
         return (-1);
     }
+
+    dir_p->root_index = -1;
 
     /* Add '.' and '..' when a new directory is created. */
     if ((oflag & (O_CREAT | O_WRITE)) == (O_CREAT | O_WRITE)) {
@@ -1324,17 +1374,64 @@ int fat16_dir_read(struct fat16_dir_t *dir_p,
 {
     struct fat16_file_t *file_p = &dir_p->file;
     struct dir_t dir;
+    int pos;
+    union fat16_date_t date;
+    union fat16_time_t time;
+    int i;
 
-    if (fat16_file_read(file_p, &dir, sizeof(dir)) != sizeof(dir)) {
-        return (0);
-    }
+    /* Search for the next entry. */
+    do {
+        /* Break if there are no more entries. */
+        if (dir_p->root_index != -1) {
+            if (get_dir_at_index_in_root(dir_p->file.fat16_p,
+                                         dir_p->root_index,
+                                         &dir) != 0) {
+                return (-1);
+            }
+
+            dir_p->root_index++;
+        } else {
+            if (fat16_file_read(file_p, &dir, sizeof(dir)) != sizeof(dir)) {
+                return (0);
+            }
+        }
+        
+        /* No more entries in the list. */
+        if (dir.name[0] == DIR_NAME_FREE) {
+            return (0);
+        }
+    } while (dir.name[0] == DIR_NAME_DELETED);
 
     /* Copy information from directory entry to user supplied
        structure. */
-    memcpy(entry_p->name, dir.name, sizeof(dir.name));
-    entry_p->name[11] = '\0';
-    entry_p->attributes = dir.attributes;
+    pos = 0;
+
+    for (i = 0; i < 11; i++) {
+        if (dir.name[i] == ' ') {
+            continue;
+        }
+
+        if (i == 8) {
+            entry_p->name[pos] = '.';
+            pos++;
+        }
+
+        entry_p->name[pos] = dir.name[i];
+        pos++;
+    }
+
+    entry_p->name[pos] = '\0';
+    entry_p->is_dir = dir_is_subdir(&dir);
     entry_p->size = dir.file_size;
+
+    date = (union fat16_date_t)dir.last_write_date;
+    time = (union fat16_time_t)dir.last_write_time;
+    entry_p->latest_mod_date.year = 1980 + date.bits.year;
+    entry_p->latest_mod_date.month = date.bits.month;
+    entry_p->latest_mod_date.day = date.bits.day;
+    entry_p->latest_mod_date.hour = time.bits.hours;
+    entry_p->latest_mod_date.minute = time.bits.minutes;
+    entry_p->latest_mod_date.second = (2 * time.bits.seconds);
 
     return (1);
 }

@@ -457,14 +457,16 @@ struct fat16_file_t {
 };
 
 struct fat16_dir_t {
+    int16_t root_index;
     struct fat16_file_t file; /* use the file datastructure to
                                  reresent a directory */
 };
 
 struct fat16_dir_entry_t {
     char name[256];
-    uint8_t attributes;
+    int is_dir;
     size_t size;
+    struct date_t latest_mod_date;
 };
 
 /**
