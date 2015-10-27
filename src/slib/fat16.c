@@ -1057,7 +1057,7 @@ static int file_open(struct fat16_t *fat16_p,
     }
 
     /* Error if volume label or subdirectory. */
-    if (dir_p->attributes != attributes) {
+    if ((dir_p->attributes & ~DIR_ATTR_ARCHIVE) != attributes) {
         return (-1);
     }
 

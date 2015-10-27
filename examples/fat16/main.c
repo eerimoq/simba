@@ -66,7 +66,7 @@ static int format_entry(chan_t *chan_p,
 
     /* Print modify date/time if requested */
     std_fprintf(chan_p,
-                FSTR("%u-%u-%u %u:%u:%u"),
+                FSTR("%04u-%02u-%02u %02u:%02u:%02u"),
                 entry_p->latest_mod_date.year,
                 entry_p->latest_mod_date.month,
                 entry_p->latest_mod_date.day,
@@ -144,8 +144,6 @@ int file_read(int argc,
     }
 
     fat16_file_close(&file);
-
-    std_fprintf(out_p, FSTR("\r\n"));
 
     return (0);
 }
