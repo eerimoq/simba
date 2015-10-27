@@ -179,7 +179,7 @@ struct part_t {
      * Length of the partition, in blocks.
      */
     uint32_t total_sectors;
-} PACK_STRUCT_STRUCT;
+} PACKED;
 
 /**
  * BIOS parameter block; The BIOS parameter block describes the

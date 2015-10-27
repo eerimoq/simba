@@ -171,29 +171,28 @@ static int cache_flush(struct fat16_t *fat16_p)
 {
     struct fat16_cache_t *cache_p = &fat16_p->cache;
 
-    if (cache_p->dirty)
+    if (cache_p->dirty) {
+        if (sd_write_block(fat16_p->sd_p,
+                           cache_p->block_number,
+                           cache_p->buffer.data) != SD_BLOCK_SIZE)
+        {
+            return (-1);
+        }
+
+        if (cache_p->mirror_block)
         {
             if (sd_write_block(fat16_p->sd_p,
-                               cache_p->block_number,
+                               cache_p->mirror_block,
                                cache_p->buffer.data) != SD_BLOCK_SIZE)
-                {
-                    return (-1);
-                }
+            {
+                return (-1);
+            }
 
-            if (cache_p->mirror_block)
-                {
-                    if (sd_write_block(fat16_p->sd_p,
-                                       cache_p->mirror_block,
-                                       cache_p->buffer.data) != SD_BLOCK_SIZE)
-                        {
-                            return (-1);
-                        }
-
-                    cache_p->mirror_block = 0;
-                }
-
-            cache_p->dirty = 0;
+            cache_p->mirror_block = 0;
         }
+
+        cache_p->dirty = 0;
+    }
 
     return (0);
 }
@@ -229,22 +228,21 @@ static int cache_raw_block(struct fat16_t *fat16_p,
 {
     struct fat16_cache_t *cache_p = &fat16_p->cache;
 
-    if (cache_p->block_number != block_number)
+    if (cache_p->block_number != block_number) {
+        if (cache_flush(fat16_p) != 0)
         {
-            if (cache_flush(fat16_p) != 0)
-                {
-                    return (-1);
-                }
-
-            if (sd_read_block(fat16_p->sd_p,
-                              cache_p->buffer.data,
-                              block_number) != SD_BLOCK_SIZE)
-                {
-                    return (-1);
-                }
-
-            cache_p->block_number = block_number;
+            return (-1);
         }
+
+        if (sd_read_block(fat16_p->sd_p,
+                          cache_p->buffer.data,
+                          block_number) != SD_BLOCK_SIZE)
+        {
+            return (-1);
+        }
+
+        cache_p->block_number = block_number;
+    }
 
     cache_p->dirty |= action;
 
@@ -258,19 +256,19 @@ static int fat_get(struct fat16_t *fat16_p,
     uint32_t lba;
 
     if (cluster > (fat16_p->cluster_count + 1))
-        {
-            return (-1);
-        }
+    {
+        return (-1);
+    }
 
     lba = fat16_p->fat_start_block + (cluster >> 8);
 
     if (lba != fat16_p->cache.block_number)
+    {
+        if (cache_raw_block(fat16_p, lba, CACHE_FOR_READ))
         {
-            if (cache_raw_block(fat16_p, lba, CACHE_FOR_READ))
-                {
-                    return (-1);
-                }
+            return (-1);
         }
+    }
 
     *value = fat16_p->cache.buffer.fat[cluster & 0xff];
 
@@ -373,7 +371,7 @@ int fat16_start(struct fat16_t *fat16_p)
         }
 
         volume_start_block =
-            fat16_p->cache.buffer.mbr.part[fat16_p->partition-1].first_sector;
+            fat16_p->cache.buffer.mbr.part[fat16_p->partition - 1].first_sector;
     }
 
     if (cache_raw_block(fat16_p, volume_start_block, CACHE_FOR_READ) != 0) {
@@ -427,6 +425,9 @@ int fat16_format(struct fat16_t *fat16_p)
 {
     struct fbs_t fbs;
     uint32_t volume_start_block = 0;
+    uint32_t fat_start_block;
+    uint32_t blocks_per_fat;
+    uint32_t root_dir_start_block;
 
     fbs.jmp_to_boot_code[0] = 0xeb;
     fbs.jmp_to_boot_code[1] = 0x3c;
@@ -455,6 +456,11 @@ int fat16_format(struct fat16_t *fat16_p)
     memset(fbs.boot_code, 0, sizeof(fbs.boot_code));
     fbs.boot_sector_sig = BOOTSIG;
 
+    fat_start_block = (volume_start_block + fbs.bpb.reserved_sector_count);
+    blocks_per_fat = fbs.bpb.sectors_per_fat;
+    root_dir_start_block = (fat_start_block
+                            + fbs.bpb.fat_count * fbs.bpb.sectors_per_fat);
+
     /* Cache volume start block. */
     if (cache_raw_block(fat16_p, volume_start_block, CACHE_FOR_WRITE) != 0) {
         return (-1);
@@ -464,7 +470,7 @@ int fat16_format(struct fat16_t *fat16_p)
 
     /* Clear first fat block. */
     if (cache_raw_block(fat16_p,
-                        fat16_p->fat_start_block,
+                        fat_start_block,
                         CACHE_FOR_WRITE) != 0) {
         return (-1);
     }
@@ -475,7 +481,7 @@ int fat16_format(struct fat16_t *fat16_p)
 
     /* Clear mirrored fat block. */
     if (cache_raw_block(fat16_p,
-                        fat16_p->fat_start_block + fat16_p->blocks_per_fat,
+                        fat_start_block + blocks_per_fat,
                         CACHE_FOR_WRITE) != 0) {
         return (-1);
     }
@@ -486,7 +492,7 @@ int fat16_format(struct fat16_t *fat16_p)
 
     /* Clear root directory block. */
     if (cache_raw_block(fat16_p,
-                        fat16_p->root_dir_start_block,
+                        root_dir_start_block,
                         CACHE_FOR_WRITE) != 0) {
         return (-1);
     }
@@ -590,27 +596,27 @@ static int add_cluster(struct fat16_file_t *file_p)
     fat_t cluster_count = file_p->fat16_p->cluster_count;
 
     for (i = 0; ; i++)
-        {
-            /* Return no free clusters. */
-            if (i >= cluster_count) {
-                return (-1);
-            }
-
-            /* Fat has cluster_count + 2 entries. */
-            if (free_cluster > cluster_count) {
-                free_cluster = 1;
-            }
-
-            free_cluster++;
-
-            if (fat_get(file_p->fat16_p, free_cluster, &value) != 0) {
-                return (-1);
-            }
-
-            if (value == 0) {
-                break;
-            }
+    {
+        /* Return no free clusters. */
+        if (i >= cluster_count) {
+            return (-1);
         }
+
+        /* Fat has cluster_count + 2 entries. */
+        if (free_cluster > cluster_count) {
+            free_cluster = 1;
+        }
+
+        free_cluster++;
+
+        if (fat_get(file_p->fat16_p, free_cluster, &value) != 0) {
+            return (-1);
+        }
+
+        if (value == 0) {
+            break;
+        }
+    }
 
     /* Mark cluster allocated. */
     if (fat_put(file_p->fat16_p, free_cluster, EOC16) != 0) {

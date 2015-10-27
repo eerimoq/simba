@@ -205,6 +205,7 @@ ssize_t sd_read_cid(struct sd_driver_t *drv_p,
 ssize_t sd_read_csd(struct sd_driver_t *drv_p,
                     union sd_csd_t* csd_p);
 
+#if 0
 /**
  * Erase given block interval from start to end. Returns true if
  * successful otherwise false.
@@ -218,6 +219,7 @@ ssize_t sd_read_csd(struct sd_driver_t *drv_p,
 int sd_erase_blocks(struct sd_driver_t *drv_p,
                     uint32_t start_block,
                     uint32_t end_block);
+#endif
 
 /**
  * Read given block from SD card.

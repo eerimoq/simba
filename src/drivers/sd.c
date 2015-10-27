@@ -245,7 +245,7 @@ static uint16_t crc_xmodem_update(uint16_t crc, uint8_t data)
     return (crctab[((crc >> 8) ^ data) & 0xff] ^ (crc << 8));
 }
 
-static uint16_t crc_xmodem(uint16_t crc, uint8_t *data_p, size_t size)
+static uint16_t crc_xmodem(uint16_t crc, const uint8_t *data_p, size_t size)
 {
     while (size > 0) {
         crc = crc_xmodem_update(crc, *data_p++);
@@ -321,6 +321,7 @@ static int read_command_response(struct sd_driver_t *drv_p,
 
 static ssize_t read(struct sd_driver_t *drv_p,
                     uint8_t index,
+                    uint32_t arg,
                     void *dst_p,
                     size_t size)
 {
@@ -328,7 +329,7 @@ static ssize_t read(struct sd_driver_t *drv_p,
     uint8_t response;
 
     /* Issue read command. */
-    if (command_call(drv_p, index, 0, &response) != 0) {
+    if (command_call(drv_p, index, arg, &response) != 0) {
         return (-1);
     }
 
@@ -336,7 +337,7 @@ static ssize_t read(struct sd_driver_t *drv_p,
     wait_for_response(drv_p, 0xff, TOKEN_DATA_START_BLOCK, &response);
 
     /* Receive the data and it's checksum. */
-    spi_read(drv_p->spi_p, dst_p, size);    
+    spi_read(drv_p->spi_p, dst_p, size);
     spi_read(drv_p->spi_p, &expected_crc, sizeof(expected_crc));
 
     /* Calculate the checksum of the received data. */
@@ -409,7 +410,7 @@ int sd_start(struct sd_driver_t *drv_p)
         if (r7.check_pattern != CHECK_PATTERN) {
             return (-1);
         }
-        
+
         drv_p->type = TYPE_SD2;
     }
 
@@ -439,11 +440,11 @@ int sd_start(struct sd_driver_t *drv_p)
     if (read_command_response(drv_p, &ocr) != 0) {
             return (-1);
     }
-    
+
     if ((ocr & 0xc0000000L) == 0xc0000000L) {
         drv_p->type = TYPE_SDHC;
     }
-    
+
     return (0);
 }
 
@@ -455,44 +456,62 @@ int sd_stop(struct sd_driver_t *drv_p)
 ssize_t sd_read_cid(struct sd_driver_t *drv_p,
                     struct sd_cid_t *cid_p)
 {
-    return (read(drv_p, CMD_SEND_CID, cid_p, sizeof(*cid_p)));
+    return (read(drv_p, CMD_SEND_CID, 0, cid_p, sizeof(*cid_p)));
 }
 
 ssize_t sd_read_csd(struct sd_driver_t *drv_p,
                     union sd_csd_t *csd_p)
 {
-    return (read(drv_p, CMD_SEND_CSD, csd_p, sizeof(*csd_p)));
+    return (read(drv_p, CMD_SEND_CSD, 0, csd_p, sizeof(*csd_p)));
 }
 
+#if 0
 int sd_erase_blocks(struct sd_driver_t *drv_p,
                     uint32_t start,
                     uint32_t end)
 {
+    union r1_t r1;
+
     /* Check if block address should be mapped to byte address */
     if (drv_p->type != TYPE_SDHC) {
         start <<= 9;
         end <<= 9;
     }
-#if 0
+
     /* Send commands for block erase */
-    if (send(ERASE_WR_BLK_START, start)) {
+    if (command_call(drv_p, CMD_ERASE_WR_BLK_START, start, &r1.as_uint8)) {
         return (-1);
     }
 
-    if (send(ERASE_WR_BLK_END, end)) {
+    if (R1_IS_ERROR(r1)) {
         return (-1);
     }
 
-    if (send(ERASE)) {
+    if (command_call(drv_p, CMD_ERASE_WR_BLK_END, end, &r1.as_uint8)) {
         return (-1);
     }
 
-    if (!await(ERASE_TIMEOUT)) {
+    if (R1_IS_ERROR(r1)) {
         return (-1);
     }
-#endif
+
+    if (command_call(drv_p, CMD_ERASE, 0, &r1.as_uint8)) {
+        return (-1);
+    }
+
+    if (R1_IS_ERROR(r1)) {
+        return (-1);
+    }
+
+    wait_for_response(drv_p, 0xff, 0x0, &r1.as_uint8);
+
+    if (R1_IS_ERROR(r1)) {
+        return (-1);
+    }
+
     return (0);
 }
+#endif
 
 ssize_t sd_read_block(struct sd_driver_t *drv_p,
                       void *dst_p,
@@ -501,34 +520,35 @@ ssize_t sd_read_block(struct sd_driver_t *drv_p,
     if (drv_p->type != TYPE_SDHC) {
         src_block <<= 9;
     }
-    
-    return (read(drv_p, CMD_READ_SINGLE_BLOCK, dst_p, SD_BLOCK_SIZE));
+
+    return (read(drv_p, CMD_READ_SINGLE_BLOCK, src_block, dst_p, SD_BLOCK_SIZE));
 }
 
 ssize_t sd_write_block(struct sd_driver_t *drv_p,
                        uint32_t dst_block,
                        const void *src_p)
 {
-    /* uint16_t crc; */
-    /* uint8_t status; */
+    uint16_t crc;
+    uint8_t status;
 
     /* Check for byte address adjustment */
     if (drv_p->type != TYPE_SDHC) {
         dst_block <<= 9;
     }
-#if 0
+
     /* Calculate the checksum of the reseiced data. */
     crc = crc_xmodem(0, src_p, SD_BLOCK_SIZE);
+    crc = htons(crc);
 
     /* Issue write block command, transfer block, calculate check sum. */
-    if (command_call(drv_p, CMD_WRITE_BLOCK, dst_block)) {
+    if (command_call(drv_p, CMD_WRITE_BLOCK, dst_block, &status)) {
         return (-1);
     }
 
     spi_put(drv_p->spi_p, TOKEN_DATA_START_BLOCK);
 
     /* Write the data and it's checksum. */
-    spi_write(drv_p->spi_p, src_p, size);    
+    spi_write(drv_p->spi_p, src_p, SD_BLOCK_SIZE);
     spi_write(drv_p->spi_p, &crc, sizeof(crc));
 
     spi_get(drv_p->spi_p, &status);
@@ -538,18 +558,17 @@ ssize_t sd_write_block(struct sd_driver_t *drv_p,
     }
 
     /* Wait for the write operation to complete and check status */
-    if (!wait_until_idle(WRITE_TIMEOUT)) {
+    wait_for_response(drv_p, 0xff, 0x0, &status);
+
+    if (command_call(drv_p, CMD_SEND_STATUS, 0, &status)) {
         return (-1);
     }
-    
-    status = send(CMD_SEND_STATUS);
 
     if (status != 0) {
-        goto error;
+        return (-1);
     }
 
-    spi_get(&status);
-#endif
+    spi_get(drv_p->spi_p, &status);
 
-    return (-1);
+    return (status == 0 ? SD_BLOCK_SIZE : -1);
 }

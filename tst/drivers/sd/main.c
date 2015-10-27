@@ -23,6 +23,10 @@
 static struct spi_driver_t spi;
 static struct sd_driver_t sd;
 
+static char reference[SD_BLOCK_SIZE];
+static char zeros[SD_BLOCK_SIZE];
+static char buf[SD_BLOCK_SIZE];
+
 static int test_read_cid_csd(struct harness_t *harness_p)
 {
     struct sd_cid_t cid;
@@ -179,16 +183,29 @@ static int test_read_cid_csd(struct harness_t *harness_p)
 
 static int test_read_write(struct harness_t *harness_p)
 {
-    char buf[512];
+    int i, block;
 
-    /* Read the first block. */
-    BTASSERT(sd_read_block(&sd, buf, 0) == SD_BLOCK_SIZE);
+    memset(zeros, 0, sizeof(zeros));
 
-    /* Read the second block. */
-    BTASSERT(sd_read_block(&sd, buf, 1) == SD_BLOCK_SIZE);
+    /* Erase, write and read the first block. */
+    for (block = 0; block < 5; block++) {
+        std_printf(FSTR("block = %d\r\n"), block);
 
-    /* Read the fifth block. */
-    BTASSERT(sd_read_block(&sd, buf, 4) == SD_BLOCK_SIZE);
+        for (i = 0; i < membersof(reference); i++) {
+            reference[i] = (block + i);
+        }
+
+        BTASSERT(sd_write_block(&sd, 0, reference) == SD_BLOCK_SIZE);
+        memset(buf, 0, sizeof(buf));
+        BTASSERT(sd_read_block(&sd, buf, block) == SD_BLOCK_SIZE);
+        BTASSERT(memcmp(buf, reference, SD_BLOCK_SIZE) == 0);
+
+        /* Write zeros to the block. */
+        BTASSERT(sd_write_block(&sd, 0, zeros) == SD_BLOCK_SIZE);
+        memset(buf, -1, sizeof(buf));
+        BTASSERT(sd_read_block(&sd, buf, block) == SD_BLOCK_SIZE);
+        BTASSERT(memcmp(buf, zeros, SD_BLOCK_SIZE) == 0);
+    }
 
     return (0);
 }
