@@ -230,7 +230,7 @@ int main()
                       &spi_device[0],
                       &pin_d53_dev,
                       SPI_MODE_MASTER,
-                      SPI_PORT_SPEED_500KBPS,
+                      SPI_SPEED_500KBPS,
                       0,
                       1) == 0);
 
