@@ -52,23 +52,12 @@
                                         exists. */
 #define O_TRUNC  0x40                /* Truncate the file to zero length. */
 
-/* file is read-only. */
-#define DIR_ATTR_READ_ONLY 0x01
-
-/* File should hidden in directory listings. */
-#define DIR_ATTR_HIDDEN 0x02
-
-/* Entry is for a system file. */
-#define DIR_ATTR_SYSTEM 0x04
-
-/* Directory entry contains the volume label. */
-#define DIR_ATTR_VOLUME_ID 0x08
-
-/* Entry is for a directory. */
-#define DIR_ATTR_DIRECTORY 0x10
-
-/* Old DOS archive bit for backup support. */
-#define DIR_ATTR_ARCHIVE 0x20
+#define DIR_ATTR_READ_ONLY 0x01 /* file is read-only. */
+#define DIR_ATTR_HIDDEN    0x02 /* File should hidden in directory listings. */
+#define DIR_ATTR_SYSTEM    0x04 /* Entry is for a system file. */
+#define DIR_ATTR_VOLUME_ID 0x08 /* Directory entry contains the volume label. */
+#define DIR_ATTR_DIRECTORY 0x10 /* Entry is for a directory. */
+#define DIR_ATTR_ARCHIVE   0x20 /* Old DOS archive bit for backup support. */
 
 /* FAT entry.  */
 typedef uint16_t fat_t;

@@ -19,10 +19,13 @@
  */
 
 #include "simba.h"
+#include <limits.h>
 
-FS_COMMAND_DEFINE("/file/list", file_list);
-FS_COMMAND_DEFINE("/file/read", file_read);
-FS_COMMAND_DEFINE("/file/write", file_write);
+FS_COMMAND_DEFINE("/ls", file_list);
+FS_COMMAND_DEFINE("/open", file_open);
+FS_COMMAND_DEFINE("/close", file_close);
+FS_COMMAND_DEFINE("/read", file_read);
+FS_COMMAND_DEFINE("/write", file_write);
 
 static char qinbuf[32];
 static struct uart_driver_t uart;
@@ -31,6 +34,9 @@ static struct shell_args_t shell_args;
 static struct spi_driver_t spi;
 static struct sd_driver_t sd;
 static struct fat16_t fs;
+
+static int is_file_open = 0;
+static struct fat16_file_t file;
 
 static int print_dir_name(chan_t *chan_p,
                           const struct fat16_dir_entry_t *entry_p,
@@ -114,6 +120,71 @@ int file_list(int argc,
     return (0);
 }
 
+int file_open(int argc,
+              const char *argv[],
+              void *out_p,
+              void *in_p)
+{
+    UNUSED(in_p);
+
+    const char *path_p;
+    int flags;
+
+    if (argc != 3) {
+        std_fprintf(out_p, FSTR("Usage: %s <path> <r | w>\r\n"), argv[0]);
+        return (1);
+    }
+
+    if (is_file_open == 1) {
+        std_fprintf(out_p,
+                    FSTR("Cannot have more than one file open. Please close "
+                         "current file before opening a new one.\r\n"));
+        return (1);
+    }
+
+    path_p = argv[1];
+
+    if (argv[2][0] == 'w') {
+        flags = (O_CREAT | O_WRITE | O_SYNC);
+    } else {
+        flags = O_READ;
+    }
+
+    /* Re-open the directory with read option set. */
+    if (fat16_file_open(&fs, &file, path_p, flags) != 0) {
+        std_fprintf(out_p, FSTR("%s: file not found\r\n"), path_p);
+        return (1);
+    }
+
+    is_file_open = 1;
+
+    return (0);
+}
+
+int file_close(int argc,
+               const char *argv[],
+               void *out_p,
+               void *in_p)
+{
+    UNUSED(in_p);
+
+    if (argc != 1) {
+        std_fprintf(out_p, FSTR("Usage: %s\r\n"), argv[0]);
+        return (1);
+    }
+
+    if (is_file_open == 0) {
+        std_fprintf(out_p, FSTR("No file is open.\r\n"));
+        return (1);
+    }
+
+    fat16_file_close(&file);
+
+    is_file_open = 0;
+
+    return (0);
+}
+
 int file_read(int argc,
               const char *argv[],
               void *out_p,
@@ -121,29 +192,47 @@ int file_read(int argc,
 {
     UNUSED(in_p);
 
-    struct fat16_file_t file;
-    const char *path_p;
-    size_t size;
+    size_t read, n;
+    long size;
     char buf[64];
 
-    if (argc != 2) {
-        std_fprintf(out_p, FSTR("Usage: %s <path>\r\n"), argv[0]);
+    if (argc == 1) {
+        size = INT_MAX;
+    } else if (argc == 2) {
+        if (std_strtol(argv[1], &size) != 0) {
+            std_fprintf(out_p, FSTR("%s: expected posotove integer\r\n"), argv[1]);
+            return (1);
+        }
+    } else {
+        std_fprintf(out_p, FSTR("Usage: %s [<size to read>]\r\n"), argv[0]);
+
         return (1);
     }
 
-    path_p = argv[1];
+    /* A file must be open. */
+    if (is_file_open == 0) {
+        std_fprintf(out_p, FSTR("The file must be opened before it can be read from.\r\n"));
 
-    /* Re-open the directory with read option set. */
-    if (fat16_file_open(&fs, &file, path_p, O_READ) != 0) {
-        std_fprintf(out_p, FSTR("%s: file not found\r\n"), path_p);
         return (1);
     }
 
-    while ((size = fat16_file_read(&file, buf, sizeof(buf))) > 0) {
-        chan_write(out_p, buf, size);
-    }
+    /* Read from file. */
+    read = 0;
 
-    fat16_file_close(&file);
+    while (read < size) {
+        if ((size - read) < sizeof(buf)) {
+            n = (size - read);
+        } else {
+            n = sizeof(buf);
+        }
+
+        if ((n = fat16_file_read(&file, buf, n)) <= 0) {
+            break;
+        }
+
+        chan_write(out_p, buf, n);
+        read += n;
+    }
 
     return (0);
 }
@@ -155,24 +244,19 @@ int file_write(int argc,
 {
     UNUSED(in_p);
 
-    struct fat16_file_t file;
-    const char *path_p;
-
-    if (argc != 3) {
-        std_fprintf(out_p, FSTR("Usage: %s <path> <data to write>\r\n"),
-                    argv[0]);
+    if (argc != 2) {
+        std_fprintf(out_p, FSTR("Usage: %s <data to write>\r\n"), argv[0]);
         return (1);
     }
 
-    path_p = argv[1];
+    /* A file must be open. */
+    if (is_file_open == 0) {
+        std_fprintf(out_p, FSTR("The file must be opened before it can be written to.\r\n"));
 
-    /* Re-open the directory with read option set. */
-    if (fat16_file_open(&fs, &file, path_p, (O_CREAT | O_WRITE | O_SYNC)) != 0) {
         return (1);
     }
 
     fat16_file_write(&file, argv[2], strlen(argv[2]));
-    fat16_file_close(&file);
 
     return (0);
 }

@@ -117,6 +117,9 @@ static inline int dir_is_file_or_subdir(const struct dir_t* dir_p)
     return ((dir_p->attributes & DIR_ATTR_VOLUME_ID) == 0);
 }
 
+/**
+ * Create a 8.3 file name from given name.
+ */
 static int make_83_name(const char* str_p,
                         ssize_t size,
                         uint8_t* name_p)
@@ -165,6 +168,35 @@ static int make_83_name(const char* str_p,
     }
 
     return (name_p[0] == ' ');
+}
+
+/**
+ * Create file name from given 8.3 file name.
+ */
+static int make_name_from_83(char *dst_p, const char *dname_p)
+{
+    int i, pos;
+
+    pos = 0;
+
+    /* Set name. */
+    for (i = 0; i < 11; i++) {
+        if (dname_p[i] == ' ') {
+            continue;
+        }
+
+        if (i == 8) {
+            dst_p[pos] = '.';
+            pos++;
+        }
+
+        dst_p[pos] = dname_p[i];
+        pos++;
+    }
+
+    dst_p[pos] = '\0';
+
+    return (0);
 }
 
 static int cache_flush(struct fat16_t *fat16_p)
@@ -1374,13 +1406,11 @@ int fat16_dir_read(struct fat16_dir_t *dir_p,
 {
     struct fat16_file_t *file_p = &dir_p->file;
     struct dir_t dir;
-    int pos;
     union fat16_date_t date;
     union fat16_time_t time;
-    int i;
 
     /* Search for the next entry. */
-    do {
+    while (1) {
         /* Break if there are no more entries. */
         if (dir_p->root_index != -1) {
             if (get_dir_at_index_in_root(dir_p->file.fat16_p,
@@ -1395,35 +1425,31 @@ int fat16_dir_read(struct fat16_dir_t *dir_p,
                 return (0);
             }
         }
-        
+
         /* No more entries in the list. */
         if (dir.name[0] == DIR_NAME_FREE) {
             return (0);
         }
-    } while (dir.name[0] == DIR_NAME_DELETED);
-
-    /* Copy information from directory entry to user supplied
-       structure. */
-    pos = 0;
-
-    for (i = 0; i < 11; i++) {
-        if (dir.name[i] == ' ') {
+        
+        /* Skip volume id. */
+        if (dir.attributes & DIR_ATTR_VOLUME_ID) {
             continue;
         }
 
-        if (i == 8) {
-            entry_p->name[pos] = '.';
-            pos++;
+        if (dir.name[0] != DIR_NAME_DELETED) {
+            break;
         }
-
-        entry_p->name[pos] = dir.name[i];
-        pos++;
     }
 
-    entry_p->name[pos] = '\0';
+    /* Copy information from directory entry to user supplied
+       structure. */
+    make_name_from_83(entry_p->name, (char *)dir.name);
+
+    /* Set type and size. */
     entry_p->is_dir = dir_is_subdir(&dir);
     entry_p->size = dir.file_size;
 
+    /* Set the modification date. */
     date = (union fat16_date_t)dir.last_write_date;
     time = (union fat16_time_t)dir.last_write_time;
     entry_p->latest_mod_date.year = 1980 + date.bits.year;
