@@ -531,7 +531,7 @@ ssize_t sd_write_block(struct sd_driver_t *drv_p,
     uint16_t crc;
     uint8_t status;
 
-    /* Check for byte address adjustment */
+    /* Check for byte address adjustment. */
     if (drv_p->type != TYPE_SDHC) {
         dst_block <<= 9;
     }
