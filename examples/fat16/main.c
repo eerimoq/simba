@@ -192,7 +192,7 @@ int file_read(int argc,
 {
     UNUSED(in_p);
 
-    size_t read, n;
+    ssize_t read, n;
     long size;
     char buf[64];
 
@@ -256,7 +256,7 @@ int file_write(int argc,
         return (1);
     }
 
-    fat16_file_write(&file, argv[2], strlen(argv[2]));
+    fat16_file_write(&file, argv[1], strlen(argv[1]));
 
     return (0);
 }
