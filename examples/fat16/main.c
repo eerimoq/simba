@@ -266,7 +266,7 @@ static void init(void)
     sys_start();
     uart_module_init();
 
-    uart_init(&uart, &uart_device[0], 38400, qinbuf, sizeof(qinbuf));
+    uart_init(&uart, &uart_device[0], 115200, qinbuf, sizeof(qinbuf));
     uart_start(&uart);
 
     sys_set_stdout(&uart.chout);
@@ -277,14 +277,16 @@ static void init(void)
              &spi_device[0],
              &pin_d53_dev,
              SPI_MODE_MASTER,
-             SPI_SPEED_2MBPS,
+             SPI_SPEED_1MBPS,
              0,
              1);
 
     sd_init(&sd, &spi);
     sd_start(&sd);
+    std_printf(FSTR("sd card started\r\n"));
     fat16_init(&fs, &sd, 0);
     fat16_start(&fs);
+    std_printf(FSTR("fat16 started\r\n"));
 }
 
 int main()
