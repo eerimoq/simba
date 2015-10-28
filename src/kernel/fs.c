@@ -328,6 +328,8 @@ static int node_find(const char *cmd_p)
 
     while (index != 0) {
         /* Node found?*/
+        len = std_strlen(fs_nodes[index].name_p);
+
         if (cmp(fs_nodes[index].name_p, cmd_p, len) == 0) {
             cmd_p += len;
 
@@ -339,15 +341,6 @@ static int node_find(const char *cmd_p)
             /* Skip '/'.*/
             while (*cmd_p == '/') {
                 cmd_p++;
-            }
-
-            /* Find length.*/
-            p = cmd_p;
-            len = 0;
-
-            while ((*p != '/') && (*p != '\0')) {
-                len++;
-                p++;
             }
 
             index = fs_nodes[index].children.begin;
@@ -370,6 +363,7 @@ int fs_call(char *command_p,
     FAR const struct fs_node_t *node_p;
 
     argc = command_parse(command_p, argv);
+
     if (argc < 0) {
         err = argc;
         goto out;
