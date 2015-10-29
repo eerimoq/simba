@@ -67,6 +67,7 @@ struct thrd_t {
 #if !defined(NASSERT)
     uint16_t stack_low_magic;
 #endif
+    int cpu_usage;
 };
 
 struct thrd_scheduler_t {
@@ -156,9 +157,6 @@ static void thrd_reschedule(void)
 
     out_p = thrd_self();
 
-    /* std_printf(FSTR("reschedule: out_p = 0x%x, magic = 0x%x\r\n"), */
-    /*            out_p, out_p->stack_low_magic); */
-
     ASSERTN(out_p->stack_low_magic == THRD_STACK_LOW_MAGIC, ESTACK);
 
     in_p = scheduler_ready_pop();
@@ -166,12 +164,11 @@ static void thrd_reschedule(void)
     /* Swap threads. */
     in_p->state = THRD_STATE_CURRENT;
 
-//    std_printf(FSTR("in_p = 0x%x, out_p = 0x%x\r\n"), in_p, out_p);
-
     if (in_p != out_p) {
         scheduler.current_p = in_p;
+        thrd_port_cpu_usage_stop(out_p);
         thrd_port_swap(in_p, out_p);
-        in_p->count++;
+        thrd_port_cpu_usage_start(in_p);
     }
 }
 
@@ -342,6 +339,45 @@ static void *idle_thrd(void *arg_p)
     return (NULL);
 }
 
+static void update_cpu_usage(struct thrd_t *thrd_p)
+{
+    struct thrd_parent_t *child_p;
+    struct list_sl_iterator_t iter;
+
+    thrd_p->cpu_usage = thrd_port_cpu_usage_get(thrd_p);
+    thrd_port_cpu_usage_reset(thrd_p);
+
+    /* Children. */
+    LIST_SL_ITERATOR_INIT(&iter, &thrd_p->children);
+
+    while (1) {
+        LIST_SL_ITERATOR_NEXT(&iter, &child_p);
+
+        if (child_p == NULL) {
+            break;
+        }
+
+        update_cpu_usage(container_of(child_p, struct thrd_t, parent));
+    }
+}
+
+/**
+ * The monitor thread monitors the cpu usage of all threads.
+ */
+static char monitor_thrd_stack[THRD_MONITOR_STACK_MAX];
+static void *monitor_thrd(void *arg_p)
+{
+    thrd_set_name("monitor");
+
+    while (1) {
+        thrd_usleep(1000);
+
+        update_cpu_usage(&main_thrd);
+    }
+
+    return (NULL);
+}
+
 int thrd_module_init(void)
 {
 #if !defined(NPROFILESTACK)
@@ -371,6 +407,7 @@ int thrd_module_init(void)
     scheduler.current_p = &main_thrd;
 
     thrd_spawn(idle_thrd, NULL, 127, idle_thrd_stack, sizeof(idle_thrd_stack));
+    thrd_spawn(monitor_thrd, NULL, -80, monitor_thrd_stack, sizeof(monitor_thrd_stack));
 
     return (0);
 }

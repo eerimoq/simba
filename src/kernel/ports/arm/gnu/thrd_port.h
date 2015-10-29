@@ -34,6 +34,10 @@ struct thrd_port_context_t {
 };
 
 struct thrd_port_t {
+    struct {
+        uint32_t start;
+        uint32_t time;
+    } cpu;
     struct thrd_port_context_t *context_p;
 };
 

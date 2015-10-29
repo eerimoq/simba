@@ -463,6 +463,153 @@ struct sam_spi_t {
 #define SPI_CSR_DLYBCT_MASK             (0xff << SPI_CSR_DLYBCT_POS)
 #define SPI_CSR_DLYBCT(value)           BITFIELD(SPI_CSR_DLYBCT, value)
 
+/* Timer Counter. */
+struct sam_tc_t {
+    struct {
+        uint32_t CCR;
+        uint32_t CMR;
+        uint32_t SMMR;
+        uint32_t reserved1;
+        uint32_t CV;
+        uint32_t RA;
+        uint32_t RB;
+        uint32_t RC;
+        uint32_t SR;
+        uint32_t IER;
+        uint32_t IDR;
+        uint32_t IMR;
+    } CHANNEL[3];
+    uint32_t BCR;
+    uint32_t BMR;
+    uint32_t QIER;
+    uint32_t QIDR;
+    uint32_t QIMR;
+    uint32_t QISR;
+    uint32_t FMR;
+    uint32_t WPMR;
+};
+
+/* Channel Control Register. */
+#define TC_CCR_CLKEN                    BIT(0)
+#define TC_CCR_CLKDIS                   BIT(1)
+#define TC_CCR_SWTRG                    BIT(2)
+
+/* Channel Mode Register, Capture. */
+#define TC_CMR_CAPTURE_TCCLKS_POS       (0)
+#define TC_CMR_CAPTURE_TCCLKS_MASK      (0x7 << TC_CMR_CAPTURE_TCCLKS_POS)
+#define TC_CMR_CAPTURE_TCCLKS(value)    BITFIELD(TC_CMR_CAPTURE_TCCLKS, (value))
+#define TC_CMR_CAPTURE_CLKI             BIT(3)
+#define TC_CMR_CAPTURE_BURST_POS        (4)
+#define TC_CMR_CAPTURE_BURST_MASK       (0x3 << TC_CMR_CAPTURE_BURST_POS)
+#define TC_CMR_CAPTURE_BURST(value)     BITFIELD(TC_CMR_CAPTURE_BURST, (value))
+#define TC_CMR_CAPTURE_LDBSTOP          BIT(6)
+#define TC_CMR_CAPTURE_LDBDIS           BIT(7)
+#define TC_CMR_CAPTURE_ETRGEDG_POS      (8)
+#define TC_CMR_CAPTURE_ETRGEDG_MASK     (0x3 << TC_CMR_CAPTURE_ETRGEDG_POS)
+#define TC_CMR_CAPTURE_ETRGEDG(value)   BITFIELD(TC_CMR_CAPTURE_ETRGEDG, (value))
+#define TC_CMR_CAPTURE_ABETRG           BIT(10)
+#define TC_CMR_CAPTURE_CPCTRG           BIT(14)
+#define TC_CMR_CAPTURE_WAVE             BIT(15)
+#define TC_CMR_CAPTURE_LDRA_POS         (16)
+#define TC_CMR_CAPTURE_LDRA_MASK        (0x3 << TC_CMR_CAPTURE_LDRA_POS)
+#define TC_CMR_CAPTURE_LDRA(value)      BITFIELD(TC_CMR_CAPTURE_LDRA, (value))
+#define TC_CMR_CAPTURE_LDRB_POS         (18)
+#define TC_CMR_CAPTURE_LDRB_MASK        (0x3 << TC_CMR_CAPTURE_LDRB_POS)
+#define TC_CMR_CAPTURE_LDRB(value)      BITFIELD(TC_CMR_CAPTURE_LDRB, (value))
+
+/* Channel Mode Register, Waveform. */
+#define TC_CMR_WAVEFORM_TCCLKS_POS      (0)
+#define TC_CMR_WAVEFORM_TCCLKS_MASK     (0x7 << TC_CMR_WAVEFORM_TCCLKS_POS)
+#define TC_CMR_WAVEFORM_TCCLKS(value)   BITFIELD(TC_CMR_WAVEFORM_TCCLKS, (value))
+#define TC_CMR_WAVEFORM_CLKI            BIT(3)
+#define TC_CMR_WAVEFORM_BURST_POS       (4)
+#define TC_CMR_WAVEFORM_BURST_MASK      (0x3 << TC_CMR_WAVEFORM_BURST_POS)
+#define TC_CMR_WAVEFORM_BURST(value)    BITFIELD(TC_CMR_WAVEFORM_BURST, (value))
+#define TC_CMR_WAVEFORM_CPCSTOP         BIT(6)
+#define TC_CMR_WAVEFORM_CPCDIS          BIT(7)
+#define TC_CMR_WAVEFORM_EEVTEDG_POS     (8)
+#define TC_CMR_WAVEFORM_EEVTEDG_MASK    (0x3 << TC_CMR_WAVEFORM_EEVTEDG_POS)
+#define TC_CMR_WAVEFORM_EEVTEDG(value)  BITFIELD(TC_CMR_WAVEFORM_EEVTEDG, (value))
+#define TC_CMR_WAVEFORM_EEVT_POS        (10)
+#define TC_CMR_WAVEFORM_EEVT_MASK       (0x3 << TC_CMR_WAVEFORM_EEVT_POS)
+#define TC_CMR_WAVEFORM_EEVT(value)     BITFIELD(TC_CMR_WAVEFORM_EEVT, (value))
+#define TC_CMR_WAVEFORM_ENETRG          BIT(12)
+#define TC_CMR_WAVEFORM_WAVSEL_POS      (13)
+#define TC_CMR_WAVEFORM_WAVSEL_MASK     (0x3 << TC_CMR_WAVEFORM_WAVSEL_POS)
+#define TC_CMR_WAVEFORM_WAVSEL(value)   BITFIELD(TC_CMR_WAVEFORM_WAVSEL, (value))
+#define TC_CMR_WAVEFORM_WAVE            BIT(15)
+#define TC_CMR_WAVEFORM_ACPA_POS        (16)
+#define TC_CMR_WAVEFORM_ACPA_MASK       (0x3 << TC_CMR_WAVEFORM_ACPA_POS)
+#define TC_CMR_WAVEFORM_ACPA(value)     BITFIELD(TC_CMR_WAVEFORM_ACPA, (value))
+#define TC_CMR_WAVEFORM_ACPC_POS        (18)
+#define TC_CMR_WAVEFORM_ACPC_MASK       (0x3 << TC_CMR_WAVEFORM_ACPC_POS)
+#define TC_CMR_WAVEFORM_ACPC(value)     BITFIELD(TC_CMR_WAVEFORM_ACPC, (value))
+#define TC_CMR_WAVEFORM_AEEVT_POS       (20)
+#define TC_CMR_WAVEFORM_AEEVT_MASK      (0x3 << TC_CMR_WAVEFORM_AEEVT_POS)
+#define TC_CMR_WAVEFORM_AEEVT(value)    BITFIELD(TC_CMR_WAVEFORM_AEEVT, (value))
+#define TC_CMR_WAVEFORM_ASWTRG_POS      (22)
+#define TC_CMR_WAVEFORM_ASWTRG_MASK     (0x3 << TC_CMR_WAVEFORM_ASWTRG_POS)
+#define TC_CMR_WAVEFORM_ASWTRG(value)   BITFIELD(TC_CMR_WAVEFORM_ASWTRG, (value))
+#define TC_CMR_WAVEFORM_BCPB_POS        (24)
+#define TC_CMR_WAVEFORM_BCPB_MASK       (0x3 << TC_CMR_WAVEFORM_BCPB_POS)
+#define TC_CMR_WAVEFORM_BCPB(value)     BITFIELD(TC_CMR_WAVEFORM_BCPB, (value))
+#define TC_CMR_WAVEFORM_BCPC_POS        (26)
+#define TC_CMR_WAVEFORM_BCPC_MASK       (0x3 << TC_CMR_WAVEFORM_BCPC_POS)
+#define TC_CMR_WAVEFORM_BCPC(value)     BITFIELD(TC_CMR_WAVEFORM_BCPC, (value))
+#define TC_CMR_WAVEFORM_BEEVT_POS       (28)
+#define TC_CMR_WAVEFORM_BEEVT_MASK      (0x3 << TC_CMR_WAVEFORM_BEEVT_POS)
+#define TC_CMR_WAVEFORM_BEEVT(value)    BITFIELD(TC_CMR_WAVEFORM_BEEVT, (value))
+#define TC_CMR_WAVEFORM_BSWTRG_POS      (30)
+#define TC_CMR_WAVEFORM_BSWTRG_MASK     (0x3 << TC_CMR_WAVEFORM_BSWTRG_POS)
+#define TC_CMR_WAVEFORM_BSWTRG(value)   BITFIELD(TC_CMR_WAVEFORM_BSWTRG, (value))
+
+/* Stepper Motor Mode Register. */
+#define TC_SMMR_GCEN                    BIT(0)
+#define TC_SMMR_DOWN                    BIT(1)
+
+/* Status Register. */
+#define TC_SR_COVFS                     BIT(0)
+#define TC_SR_LOVRS                     BIT(1)
+#define TC_SR_CPAS                      BIT(2)
+#define TC_SR_CPBS                      BIT(3)
+#define TC_SR_CPCS                      BIT(4)
+#define TC_SR_LDRAS                     BIT(5)
+#define TC_SR_LDRBS                     BIT(6)
+#define TC_SR_ETRGS                     BIT(7)
+#define TC_SR_CLKSTA                    BIT(16)
+#define TC_SR_MTIOA                     BIT(17)
+#define TC_SR_MTIOB                     BIT(18)
+
+/* Interrupt Enable Register. */
+#define TC_IER_COVFS                    BIT(0)
+#define TC_IER_LOVRS                    BIT(1)
+#define TC_IER_CPAS                     BIT(2)
+#define TC_IER_CPBS                     BIT(3)
+#define TC_IER_CPCS                     BIT(4)
+#define TC_IER_LDRAS                    BIT(5)
+#define TC_IER_LDRBS                    BIT(6)
+#define TC_IER_ETRGS                    BIT(7)
+
+/* Interrupt Disable Register. */
+#define TC_IDR_COVFS                    BIT(0)
+#define TC_IDR_LOVRS                    BIT(1)
+#define TC_IDR_CPAS                     BIT(2)
+#define TC_IDR_CPBS                     BIT(3)
+#define TC_IDR_CPCS                     BIT(4)
+#define TC_IDR_LDRAS                    BIT(5)
+#define TC_IDR_LDRBS                    BIT(6)
+#define TC_IDR_ETRGS                    BIT(7)
+
+/* Interrupt Mask Register. */
+#define TC_IMR_COVFS                    BIT(0)
+#define TC_IMR_LOVRS                    BIT(1)
+#define TC_IMR_CPAS                     BIT(2)
+#define TC_IMR_CPBS                     BIT(3)
+#define TC_IMR_CPCS                     BIT(4)
+#define TC_IMR_LDRAS                    BIT(5)
+#define TC_IMR_LDRBS                    BIT(6)
+#define TC_IMR_ETRGS                    BIT(7)
+
 /* Power management controller. */
 struct sam_pmc_t {
     uint32_t SCER;
