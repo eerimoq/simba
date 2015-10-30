@@ -23,8 +23,8 @@
 static struct sem_t sem;
 static struct sem_t sem2;
 
-static char t0_stack[224];
-static char t1_stack[224];
+static THRD_STACK(t0_stack, 224);
+static THRD_STACK(t1_stack, 224);
 static void *entry(void *arg_p)
 {
     while (1) {

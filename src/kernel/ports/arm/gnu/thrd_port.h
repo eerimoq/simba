@@ -21,6 +21,10 @@
 #ifndef __KERNEL_THRD_PORT_H__
 #define __KERNEL_THRD_PORT_H__
 
+#define THRD_PORT_STACK(name, size)                             \
+    uint64_t name[DIV_CEIL(sizeof(struct thrd_t) + (size),      \
+                           sizeof(uint64_t))]
+
 struct thrd_port_context_t {
     uint32_t r4;
     uint32_t r5;
@@ -36,7 +40,10 @@ struct thrd_port_context_t {
 struct thrd_port_t {
     struct {
         uint32_t start;
-        uint32_t time;
+        struct {
+            uint32_t start;
+            uint32_t time;
+        } period;
     } cpu;
     struct thrd_port_context_t *context_p;
 };

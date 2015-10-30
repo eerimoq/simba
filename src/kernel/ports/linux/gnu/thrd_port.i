@@ -19,6 +19,7 @@
  */
 
 #define THRD_IDLE_STACK_MAX 1024
+#define THRD_MONITOR_STACK_MAX 1024
 
 struct thrd_port_idle_t {
     pthread_mutex_t mutex;
@@ -125,4 +126,21 @@ static void thrd_port_tick(void)
     pthread_mutex_lock(&idle.mutex);
     pthread_cond_signal(&idle.cond);
     pthread_mutex_unlock(&idle.mutex);        
+}
+
+static void thrd_port_cpu_usage_start(struct thrd_t *thrd_p)
+{
+}
+
+static void thrd_port_cpu_usage_stop(struct thrd_t *thrd_p)
+{
+}
+
+static float thrd_port_cpu_usage_get(struct thrd_t *thrd_p)
+{
+    return (0.0);
+}
+
+static void thrd_port_cpu_usage_reset(struct thrd_t *thrd_p)
+{
 }

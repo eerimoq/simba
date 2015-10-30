@@ -42,6 +42,10 @@ struct sys_t {
     sys_tick_t tick;
     void (*on_fatal_callback)(int error);
     chan_t *std_out_p;
+    struct {
+        uint32_t start;
+        uint32_t time;
+    } interrupt;
 };
 
 extern struct sys_t sys;
@@ -128,5 +132,9 @@ void sys_unlock_irq(void);
  * @return A pointer to the application information buffer.
  */
 const FAR char *sys_get_appinfo(void);
+
+float sys_interrupt_cpu_usage_get(void);
+
+void sys_interrupt_cpu_usage_reset(void);
 
 #endif

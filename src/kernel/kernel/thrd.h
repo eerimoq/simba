@@ -22,8 +22,36 @@
 #define __KERNEL_THRD_H__
 
 #include "simba.h"
+#include "thrd_port.h"
 
-struct thrd_t;
+#define THRD_STACK(name, size) THRD_PORT_STACK(name, size)
+
+struct thrd_parent_t {
+    struct thrd_t *next_p;
+    struct thrd_t *thrd_p;
+};
+
+struct thrd_t {
+    struct thrd_t *prev_p;
+    struct thrd_t *next_p;
+    struct thrd_port_t port;
+    int prio;
+    int state;
+    int err;
+    int log_mask;
+    const char *name_p;
+    struct thrd_parent_t parent;
+    struct list_singly_linked_t children;
+    struct {
+        float usage;
+    } cpu;
+#if !defined(NPROFILESTACK)
+    size_t stack_size;
+#endif
+#if !defined(NASSERT)
+    uint16_t stack_low_magic;
+#endif
+};
 
 /**
  * Initialize module.

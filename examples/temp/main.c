@@ -63,7 +63,7 @@ int set_min_max(int argc,
 static char qinbuf[32];
 static struct uart_driver_t uart;
 static struct shell_args_t shell_args;
-static char shell_stack[456];
+static THRD_STACK(shell_stack, 456);
 
 int main()
 {

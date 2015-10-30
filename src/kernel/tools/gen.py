@@ -166,8 +166,9 @@ def generate_fs(infiles):
                             '"(?P<path>[^"]+)" '
                             '"(?P<callback>[^"]+)";$', re.MULTILINE)
     re_counter = re.compile(r'^\s*\.\.fs_counter\.\. '
-                            '"(?P<path>[^"]+)" '
-                            '"(?P<name>[^"]+)";$', re.MULTILINE)
+                            '"(?P<path>.+)" '
+                            '\.\.fs_separator\.\. '
+                            '"(?P<name>[^"]+)";', re.MULTILINE)
     re_parameter = re.compile(r'^\s*\.\.fs_parameter\.\. '
                               '"(?P<path>[^"]+)" '
                               '"(?P<name>[^"]+)" '
@@ -181,12 +182,15 @@ def generate_fs(infiles):
     for inf in infiles:
         file_content = open(inf).read()
         for mo in re_command.finditer(file_content):
-            commands.append([mo.group('path'), mo.group('callback')])
+            path = mo.group('path').replace('" "', '')
+            commands.append([path, mo.group('callback')])
         for mo in re_counter.finditer(file_content):
-            counters.append([mo.group('path'), mo.group('name')])
-            commands.append([mo.group('path'), 'fs_counter_cmd_' + mo.group('name')])
+            path = mo.group('path').replace('" "', '')
+            counters.append([path, mo.group('name')])
+            commands.append([path, 'fs_counter_cmd_' + mo.group('name')])
         for mo in re_parameter.finditer(file_content):
-            parameters.append([mo.group('path'),
+            path = mo.group('path').replace('" "', '')
+            parameters.append([path,
                                mo.group('name'),
                                mo.group('type')])
             commands.append([mo.group('path'), 'fs_parameter_cmd_' + mo.group('name')])

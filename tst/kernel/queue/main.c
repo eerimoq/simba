@@ -20,7 +20,7 @@
 
 #include "simba.h"
 
-static char t0_stack[512];
+static THRD_STACK(t0_stack, 512);
 static void *t0_entry(void *arg_p)
 {
     int b, c[4];

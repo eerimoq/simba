@@ -31,19 +31,19 @@ static int sys_port_module_init(void)
                     | SYSTEM_TIMER_CTRL_ENABLE);
 
     /* Enable interrupts. */
-    asm volatile("cpsie i");
+    asm volatile("cpsie i" : : : "memory");
 
     return (0);
 }
 
 static void sys_port_lock(void)
 {
-    asm volatile("cpsid i");
+    asm volatile("cpsid i" : : : "memory");
 }
 
 static void sys_port_unlock(void)
 {
-    asm volatile("cpsie i");
+    asm volatile("cpsie i" : : : "memory");
 }
 
 static void sys_port_lock_irq(void)
@@ -103,4 +103,16 @@ int _read(int file, char *ptr, int len)
 int _write(int file, char *ptr, int len)
 {
     return (-1);
+}
+
+static float sys_port_interrupt_cpu_usage_get(void)
+{
+    return ((100.0 * sys.interrupt.time) /
+            (SAM_TC0->CHANNEL[0].CV - sys.interrupt.start));
+}
+
+static void sys_port_interrupt_cpu_usage_reset(void)
+{
+    sys.interrupt.start = SAM_TC0->CHANNEL[0].CV;
+    sys.interrupt.time = 0;
 }

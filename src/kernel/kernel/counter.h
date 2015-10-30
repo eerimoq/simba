@@ -25,7 +25,7 @@
 
 /* Counter definition macros. */
 #if defined(__SIMBA_GEN__)
-#    define COUNTER_DEFINE(path, name) ..fs_counter.. path #name
+#    define COUNTER_DEFINE(path, name) ..fs_counter.. path ..fs_separator.. #name
 #else
 #    define COUNTER_DEFINE(path, name)          \
     long long counter_ ## name = 0;             \

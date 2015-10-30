@@ -90,3 +90,12 @@ void sys_stop(int error)
 {
     return (exit(error));
 }
+
+static float sys_port_interrupt_cpu_usage_get(void)
+{
+    return (0.0f);
+}
+
+static void sys_port_interrupt_cpu_usage_reset(void)
+{
+}

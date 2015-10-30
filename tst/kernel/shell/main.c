@@ -68,7 +68,7 @@ static QUEUE_INIT_DECL(qin, qinbuf, sizeof(qinbuf));
 static char qoutbuf[256];
 static QUEUE_INIT_DECL(qout, qoutbuf, sizeof(qoutbuf));
 
-static char shell_stack[1024];
+static THRD_STACK(shell_stack, 1024);
 static struct shell_args_t shell_args = {
     .chin_p = &qin,
     .chout_p = &qout,

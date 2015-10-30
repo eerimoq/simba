@@ -20,6 +20,25 @@
 
 #include "simba.h"
 
+#if !defined(NPROFILEINTERRUPT)
+#    define ISR_COUNTER_DEFINE(path, name) COUNTER_DEFINE(path, name)
+#    define ISR_COUNTER_INC(name, value) COUNTER_INC(name, value)
+#else
+#    define ISR_COUNTER_DEFINE(path, name)
+#    define ISR_COUNTER_INC(name, value)
+#endif
+
+#define ISR_WRAPPER(vector)                                             \
+    ISR_COUNTER_DEFINE("/kernel/sys/interrupt/" #vector, sys_isr_ ## vector ## _count); \
+    static void isr_ ## vector ## _wrapper(void)                        \
+    {                                                                   \
+        uint32_t start;                                                 \
+        start = SAM_TC0->CHANNEL[0].CV;                                 \
+        ISR_COUNTER_INC(sys_isr_ ## vector ## _count, 1);               \
+        isr_ ## vector();                                               \
+            sys.interrupt.time += (SAM_TC0->CHANNEL[0].CV - start);     \
+    }
+
 /* Defined in the linker script. */
 extern uint32_t __main_stack_end;
 extern uint32_t __text_start__;
@@ -29,7 +48,8 @@ extern uint32_t __relocate_end__;
 extern uint32_t __zero_start__;
 extern uint32_t __zero_end__;
 
-extern void __libc_init_array(void);
+extern struct sys_t sys;
+
 extern void main(void);
 
 /**
@@ -42,7 +62,6 @@ static void isr_none(void)
 }
 
 /* System exceptions (1-15). */
-//void isr_reset(void)            __attribute__ ((weak, alias("isr_none")));
 void isr_nmi(void)              __attribute__ ((weak, alias("isr_none")));
 void isr_hard_fault(void)       __attribute__ ((weak, alias("isr_none")));
 void isr_mem_manage_fault(void) __attribute__ ((weak, alias("isr_none")));
@@ -105,14 +124,61 @@ void isr_emac(void)             __attribute__ ((weak, alias("isr_none")));
 void isr_can0(void)             __attribute__ ((weak, alias("isr_none")));
 void isr_can1(void)             __attribute__ ((weak, alias("isr_none")));
 
+/* Wrapper functions with interrupt load measurements. */
+ISR_WRAPPER(supc);
+ISR_WRAPPER(rstc);
+ISR_WRAPPER(rtc);
+ISR_WRAPPER(rtt);
+ISR_WRAPPER(wdg);
+ISR_WRAPPER(pmc);
+ISR_WRAPPER(eefc0);
+ISR_WRAPPER(eefc1);
+ISR_WRAPPER(uart);
+ISR_WRAPPER(smc);
+ISR_WRAPPER(sdramc);
+ISR_WRAPPER(pioa);
+ISR_WRAPPER(piob);
+ISR_WRAPPER(pioc);
+ISR_WRAPPER(piod);
+ISR_WRAPPER(pioe);
+ISR_WRAPPER(piof);
+ISR_WRAPPER(usart0);
+ISR_WRAPPER(usart1);
+ISR_WRAPPER(usart2);
+ISR_WRAPPER(usart3);
+ISR_WRAPPER(hsmci);
+ISR_WRAPPER(twi0);
+ISR_WRAPPER(twi1);
+ISR_WRAPPER(spi0);
+ISR_WRAPPER(spi1);
+ISR_WRAPPER(ssc);
+ISR_WRAPPER(tc0);
+ISR_WRAPPER(tc1);
+ISR_WRAPPER(tc2);
+ISR_WRAPPER(tc3);
+ISR_WRAPPER(tc4);
+ISR_WRAPPER(tc5);
+ISR_WRAPPER(tc6);
+ISR_WRAPPER(tc7);
+ISR_WRAPPER(tc8);
+ISR_WRAPPER(pwm);
+ISR_WRAPPER(adc);
+ISR_WRAPPER(dacc);
+ISR_WRAPPER(dmac);
+ISR_WRAPPER(uotghs);
+ISR_WRAPPER(trng);
+ISR_WRAPPER(emac);
+ISR_WRAPPER(can0);
+ISR_WRAPPER(can1);
+
 #define SYS_BOARD_MCKR      (PMC_MCKR_PRES_CLK_2 | PMC_MCKR_CSS_PLLA_CLK)
 
 /* Clock settings (84MHz) */
 static void clock_init(void)
 {
     /* Set FWS according to SYS_BOARD_MCKR configuration */
-    SAM_EEFC0->FMR = EEFC_FMR_FWS(4);
-    SAM_EEFC1->FMR = EEFC_FMR_FWS(4);
+    SAM_EEFC0->FMR = EEFC_FMR_FWS(4) | EEFC_FMR_FRDY;
+    SAM_EEFC1->FMR = EEFC_FMR_FWS(4) | EEFC_FMR_FRDY;
 
     /* Initialize main oscillator */
     SAM_PMC->CKGR_MOR = (PMC_CKGR_MOR_KEY(0x37)
@@ -181,8 +247,6 @@ void isr_reset(void)
         *dst_p++ = 0;
     }
 
-    //__libc_init_array();
-
     /* Branch to main function */
     main();
 
@@ -215,49 +279,49 @@ void (*vector_table[])(void) = {
     isr_sys_tick,
 
     /* Non-system exceptions (16+). */
-    isr_supc,
-    isr_rstc,
-    isr_rtc,
-    isr_rtt,
-    isr_wdg,
-    isr_pmc,
-    isr_eefc0,
-    isr_eefc1,
-    isr_uart,
-    isr_smc,
-    isr_sdramc,
-    isr_pioa,
-    isr_piob,
-    isr_pioc,
-    isr_piod,
-    isr_pioe,
-    isr_piof,
-    isr_usart0,
-    isr_usart1,
-    isr_usart2,
-    isr_usart3,
-    isr_hsmci,
-    isr_twi0,
-    isr_twi1,
-    isr_spi0,
-    isr_spi1,
-    isr_ssc,
-    isr_tc0,
-    isr_tc1,
-    isr_tc2,
-    isr_tc3,
-    isr_tc4,
-    isr_tc5,
-    isr_tc6,
-    isr_tc7,
-    isr_tc8,
-    isr_pwm,
-    isr_adc,
-    isr_dacc,
-    isr_dmac,
-    isr_uotghs,
-    isr_trng,
-    isr_emac,
-    isr_can0,
-    isr_can1
+    isr_supc_wrapper,
+    isr_rstc_wrapper,
+    isr_rtc_wrapper,
+    isr_rtt_wrapper,
+    isr_wdg_wrapper,
+    isr_pmc_wrapper,
+    isr_eefc0_wrapper,
+    isr_eefc1_wrapper,
+    isr_uart_wrapper,
+    isr_smc_wrapper,
+    isr_sdramc_wrapper,
+    isr_pioa_wrapper,
+    isr_piob_wrapper,
+    isr_pioc_wrapper,
+    isr_piod_wrapper,
+    isr_pioe_wrapper,
+    isr_piof_wrapper,
+    isr_usart0_wrapper,
+    isr_usart1_wrapper,
+    isr_usart2_wrapper,
+    isr_usart3_wrapper,
+    isr_hsmci_wrapper,
+    isr_twi0_wrapper,
+    isr_twi1_wrapper,
+    isr_spi0_wrapper,
+    isr_spi1_wrapper,
+    isr_ssc_wrapper,
+    isr_tc0_wrapper,
+    isr_tc1_wrapper,
+    isr_tc2_wrapper,
+    isr_tc3_wrapper,
+    isr_tc4_wrapper,
+    isr_tc5_wrapper,
+    isr_tc6_wrapper,
+    isr_tc7_wrapper,
+    isr_tc8_wrapper,
+    isr_pwm_wrapper,
+    isr_adc_wrapper,
+    isr_dacc_wrapper,
+    isr_dmac_wrapper,
+    isr_uotghs_wrapper,
+    isr_trng_wrapper,
+    isr_emac_wrapper,
+    isr_can0_wrapper,
+    isr_can1_wrapper
 };

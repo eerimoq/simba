@@ -1176,6 +1176,28 @@ struct sam_nvic_t {
     uint32_t STIR;
 };
 
+#define NVIC_ISER_SET(id)     (SAM_NVIC->ISE[(id) / 32] |= (1 << ((id) % 32)))
+#define NVIC_ISER_GET(id)     ((SAM_NVIC->ISE[(id) / 32] >> ((id) % 32)) & 0x1)
+                              
+#define NVIC_ICER_SET(id)     (SAM_NVIC->ICE[(id) / 32] |= (1 << ((id) % 32)))
+#define NVIC_ICER_GET(id)     ((SAM_NVIC->ICE[(id) / 32] >> ((id) % 32)) & 0x1)
+                              
+#define NVIC_ISPR_SET(id)     (SAM_NVIC->ISP[(id) / 32] |= (1 << ((id) % 32)))
+#define NVIC_ISPR_GET(id)     ((SAM_NVIC->ISP[(id) / 32] >> ((id) % 32)) & 0x1)
+                              
+#define NVIC_ICPR_SET(id)     (SAM_NVIC->ICP[(id) / 32] |= (1 << ((id) % 32)))
+#define NVIC_ICPR_GET(id)     ((SAM_NVIC->ICP[(id) / 32] >> ((id) % 32)) & 0x1)
+                              
+#define NVIC_IABR_GET(id)     ((SAM_NVIC->IAB[(id) / 32] >> ((id) % 32)) & 0x1)
+
+#define NVIC_IP_SET(id, prio) (SAM_NVIC->IP[id] |= (prio))
+#define NVIC_IP_GET(id)       (SAM_NVIC->IP[id])
+
+#define NVIC_IP_SET(id, prio) (SAM_NVIC->IP[id] |= (prio))
+#define NVIC_IP_GET(id)       (SAM_NVIC->IP[id])
+
+#define NVIC_STIR_INTID(id)   (id)
+
 /* High Speed MultiMedia Card Interface (HSMCI). */
 struct sam_hsmci_t {
     uint32_t CR;

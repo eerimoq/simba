@@ -23,6 +23,8 @@
 
 #include <pthread.h>
 
+#define THRD_PORT_STACK(name, size) char name[sizeof(struct thrd_t) + (size)]
+
 struct thrd_port_t {
     pthread_t thrd;
     pthread_mutex_t mutex;

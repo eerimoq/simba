@@ -22,5 +22,7 @@ NAME = fs_suite
 BOARD = linux
 SRC += main.c
 
+CFLAGS_EXTRA = -DNPROFILEINTERRUPT
+
 SIMBA = ../../..
 include $(SIMBA)/make/app.mk

@@ -31,7 +31,9 @@
 #define THRD_STACK_LOW_MAGIC 0x1337
 #define THRD_FILL_PATTERN 0x19
 
-#include "thrd_port.h"
+#if !defined(THRD_MONITOR_PRIO)
+#    define THRD_MONITOR_PRIO -80
+#endif
 
 static char *state_fmt[] = {
     "current",
@@ -43,42 +45,29 @@ static char *state_fmt[] = {
 
 FS_COMMAND_DEFINE("/kernel/thrd/list", thrd_cmd_list);
 FS_COMMAND_DEFINE("/kernel/thrd/set_log_mask", thrd_cmd_set_log_mask);
-
-struct thrd_parent_t {
-    struct thrd_t *next_p;
-    struct thrd_t *thrd_p;
-};
-
-struct thrd_t {
-    struct thrd_t *prev_p;
-    struct thrd_t *next_p;
-    struct thrd_port_t port;
-    int prio;
-    int state;
-    int err;
-    int log_mask;
-    const char *name_p;
-    struct thrd_parent_t parent;
-    struct list_singly_linked_t children;
-    uint32_t count;                        /* Number of times scheduled.*/
-#if !defined(NPROFILESTACK)
-    size_t stack_size;
-#endif
-#if !defined(NASSERT)
-    uint16_t stack_low_magic;
-#endif
-    int cpu_usage;
-};
+FS_COMMAND_DEFINE("/kernel/thrd/monitor/set_period_ms", thrd_cmd_monitor_set_period_ms);
+FS_COMMAND_DEFINE("/kernel/thrd/monitor/set_print", thrd_cmd_monitor_set_print);
 
 struct thrd_scheduler_t {
     struct thrd_t *current_p;
     struct thrd_t *ready_p;
 };
 
-static struct thrd_scheduler_t scheduler = {
+struct monitor_t {
+    long period_us;
+    int print;
+};
+
+static volatile struct thrd_scheduler_t scheduler = {
     .current_p = NULL,
     .ready_p = NULL
 };
+
+static struct monitor_t monitor = {
+    .period_us = 2000000,
+    .print = 0
+};
+
 
 static void scheduler_ready_push(struct thrd_t *thrd_p);
 static void thrd_reschedule(void);
@@ -168,7 +157,7 @@ static void thrd_reschedule(void)
         scheduler.current_p = in_p;
         thrd_port_cpu_usage_stop(out_p);
         thrd_port_swap(in_p, out_p);
-        thrd_port_cpu_usage_start(in_p);
+        thrd_port_cpu_usage_start(out_p);
     }
 }
 
@@ -211,7 +200,7 @@ static void thrd_list_thrd(struct thrd_t *thrd_p, chan_t *chout_p)
     struct list_sl_iterator_t iter;
 
     std_fprintf(chout_p,
-                FSTR("%16s %16s %12s %5d %8lu"
+                FSTR("%16s %16s %12s %5d %4u%%"
 #if !defined(NPROFILESTACK)
                      "    %6d/%6d"
 #endif
@@ -220,7 +209,7 @@ static void thrd_list_thrd(struct thrd_t *thrd_p, chan_t *chout_p)
                 thrd_p->parent.thrd_p != NULL ?
                 thrd_p->parent.thrd_p->name_p : "",
                 state_fmt[thrd_p->state], thrd_p->prio,
-                (unsigned long)thrd_p->count,
+                (unsigned int)thrd_p->cpu.usage,
 #if !defined(NPROFILESTACK)
                 thrd_get_used_stack(thrd_p),
                 (int)thrd_p->stack_size,
@@ -248,7 +237,7 @@ int thrd_cmd_list(int argc,
                   char *name)
 {
     std_fprintf(chout,
-                FSTR("            NAME           PARENT        STATE  PRIO     TIME"
+                FSTR("            NAME           PARENT        STATE  PRIO   CPU"
 #if !defined(NPROFILESTACK)
                      "  MAX-STACK-USAGE"
 #endif
@@ -321,14 +310,63 @@ int thrd_cmd_set_log_mask(int argc,
     return (0);
 }
 
-static char idle_thrd_stack[THRD_IDLE_STACK_MAX];
+int thrd_cmd_monitor_set_period_ms(int argc,
+                                   const char *argv[],
+                                   chan_t *out_p,
+                                   chan_t *in_p)
+{
+    long ms;
+
+    if (argc != 2) {
+        std_fprintf(out_p, FSTR("Usage: set_period_ms <milliseconds>\r\n"));
+
+        return (-EINVAL);
+    }
+
+    if (std_strtol(argv[1], &ms) != 0) {
+        return (-EINVAL);
+    }
+
+    monitor.period_us = (1000 * ms);
+
+    return (0);
+}
+
+int thrd_cmd_monitor_set_print(int argc,
+                               const char *argv[],
+                               chan_t *out_p,
+                               chan_t *in_p)
+{
+    long print;
+
+    if (argc != 2) {
+        goto err_inval;
+    }
+    
+    if (std_strtol(argv[1], &print) != 0) {
+        goto err_inval;
+    }
+
+    if ((print != 0) && (print != 1)) {
+        goto err_inval;
+    }
+
+    monitor.print = print;
+
+    return (0);
+
+err_inval:
+    std_fprintf(out_p, FSTR("Usage: set_print <1/0>\r\n"));
+    
+    return (-EINVAL);
+}
+
+static THRD_STACK(idle_thrd_stack, THRD_IDLE_STACK_MAX);
 static void *idle_thrd(void *arg_p)
 {
     struct thrd_t *thrd_p;
 
     thrd_set_name("idle");
-
-    //std_printf(FSTR("idle\r\n"));
 
     thrd_p = thrd_self();
 
@@ -339,13 +377,18 @@ static void *idle_thrd(void *arg_p)
     return (NULL);
 }
 
-static void update_cpu_usage(struct thrd_t *thrd_p)
+static void update_cpu_usage(struct thrd_t *thrd_p,
+                             int print)
 {
     struct thrd_parent_t *child_p;
     struct list_sl_iterator_t iter;
 
-    thrd_p->cpu_usage = thrd_port_cpu_usage_get(thrd_p);
+    thrd_p->cpu.usage = thrd_port_cpu_usage_get(thrd_p);
     thrd_port_cpu_usage_reset(thrd_p);
+
+    if (print == 1) {
+        std_printf(FSTR("%20s %10f%%\r\n"), thrd_p->name_p, thrd_p->cpu.usage);
+    }
 
     /* Children. */
     LIST_SL_ITERATOR_INIT(&iter, &thrd_p->children);
@@ -357,22 +400,35 @@ static void update_cpu_usage(struct thrd_t *thrd_p)
             break;
         }
 
-        update_cpu_usage(container_of(child_p, struct thrd_t, parent));
+        update_cpu_usage(container_of(child_p, struct thrd_t, parent),
+                         print);
     }
 }
 
 /**
  * The monitor thread monitors the cpu usage of all threads.
  */
-static char monitor_thrd_stack[THRD_MONITOR_STACK_MAX];
+static THRD_STACK(monitor_thrd_stack, THRD_MONITOR_STACK_MAX);
 static void *monitor_thrd(void *arg_p)
 {
+    int print;
+    float irq_usage;
+
     thrd_set_name("monitor");
 
     while (1) {
-        thrd_usleep(1000);
+        thrd_usleep(monitor.period_us);
+        print = monitor.print;
 
-        update_cpu_usage(&main_thrd);
+        if (print == 1) {
+            irq_usage = sys_interrupt_cpu_usage_get();
+            sys_interrupt_cpu_usage_reset();
+            std_printf(FSTR("\r\n                NAME         CPU\r\n"
+                            "                 irq %10f%%\r\n"),
+                       irq_usage);
+        }
+
+        update_cpu_usage(&main_thrd, print);
     }
 
     return (NULL);
@@ -394,7 +450,7 @@ int thrd_module_init(void)
     main_thrd.name_p = "main";
     main_thrd.parent.thrd_p = NULL;
     LIST_SL_INIT(&main_thrd.children);
-    main_thrd.count = 0;
+    main_thrd.cpu.usage = 0;
 #if !defined(NASSERT)
     main_thrd.stack_low_magic = THRD_STACK_LOW_MAGIC;
 #endif
@@ -407,7 +463,11 @@ int thrd_module_init(void)
     scheduler.current_p = &main_thrd;
 
     thrd_spawn(idle_thrd, NULL, 127, idle_thrd_stack, sizeof(idle_thrd_stack));
-    thrd_spawn(monitor_thrd, NULL, -80, monitor_thrd_stack, sizeof(monitor_thrd_stack));
+    thrd_spawn(monitor_thrd,
+               NULL,
+               THRD_MONITOR_PRIO,
+               monitor_thrd_stack,
+               sizeof(monitor_thrd_stack));
 
     return (0);
 }
@@ -432,7 +492,7 @@ struct thrd_t *thrd_spawn(void *(*entry)(void *),
     thrd_p->name_p = "";
     thrd_p->parent.thrd_p = thrd_self();
     LIST_SL_INIT(&thrd_p->children);
-    thrd_p->count = 0;
+    thrd_p->cpu.usage = 0.0f;
 #if !defined(NASSERT)
     thrd_p->stack_low_magic = THRD_STACK_LOW_MAGIC;
 #endif
@@ -476,7 +536,6 @@ int thrd_resume_irq(struct thrd_t *thrd_p, int err)
     thrd_p->err = err;
 
     if (thrd_p->state == THRD_STATE_SUSPENDED) {
-//        std_printf(FSTR("resume irq\r\n"));
         thrd_p->state = THRD_STATE_READY;
         scheduler_ready_push(thrd_p);
     } else if (thrd_p->state != THRD_STATE_TERMINATED) {

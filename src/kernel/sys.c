@@ -25,7 +25,11 @@ FS_COMMAND_DEFINE("/kernel/sys/appinfo", sys_cmd_appinfo);
 struct sys_t sys = {
     .tick = 0,
     .on_fatal_callback = sys_stop,
-    .std_out_p = NULL
+    .std_out_p = NULL,
+    .interrupt = {
+        .start = 0,
+        .time = 0
+    }
 };
 
 extern void timer_tick(void);
@@ -106,4 +110,14 @@ void sys_unlock_irq(void)
 const FAR char *sys_get_appinfo(void)
 {
     return (appinfo);
+}
+
+float sys_interrupt_cpu_usage_get(void)
+{
+    return (sys_port_interrupt_cpu_usage_get());
+}
+
+void sys_interrupt_cpu_usage_reset(void)
+{
+    sys_port_interrupt_cpu_usage_reset();
 }

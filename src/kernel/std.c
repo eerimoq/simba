@@ -187,7 +187,7 @@ static char *formatf(char c,
     }
 
     /* Values bigger than 'unsigned long max' are not supported. */
-    whole_number = (unsigned int)value;
+    whole_number = (unsigned long)value;
     /* Always print 6 decimal places. */
     fraction_number = (unsigned long)((value - whole_number) * 1000000.0);
 

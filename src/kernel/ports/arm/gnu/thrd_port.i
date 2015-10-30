@@ -18,7 +18,7 @@
  * This file is part of the Simba project.
  */
 
-#define THRD_IDLE_STACK_MAX    512
+#define THRD_IDLE_STACK_MAX    256
 #define THRD_MONITOR_STACK_MAX 512
 
 static struct thrd_t main_thrd __attribute__ ((section (".main_stack")));
@@ -46,6 +46,8 @@ static void thrd_port_init_main(struct thrd_port_t *port)
 {
     /* Configure the cpu usage timer counter. */
     pmc_peripheral_clock_enable(PERIPHERAL_ID_TC0);
+
+    SAM_TC0->CHANNEL[0].CMR = TC_CMR_CAPTURE_TCCLKS(3);
 
     /* Start the timer counter. */
     SAM_TC0->CHANNEL[0].CCR = (TC_CCR_CLKEN | TC_CCR_SWTRG);
@@ -114,16 +116,18 @@ static void thrd_port_cpu_usage_start(struct thrd_t *thrd_p)
 
 static void thrd_port_cpu_usage_stop(struct thrd_t *thrd_p)
 {
-    thrd_p->port.cpu.time += (SAM_TC0->CHANNEL[0].CV - thrd_p->port.cpu.start);
+    thrd_p->port.cpu.period.time += (SAM_TC0->CHANNEL[0].CV
+                                     - thrd_p->port.cpu.start);
 }
 
-static int thrd_port_cpu_usage_get(struct thrd_t *thrd_p)
+static float thrd_port_cpu_usage_get(struct thrd_t *thrd_p)
 {
-    return ((100 * thrd_p->port.cpu.time)
-            / (SAM_TC0->CHANNEL[0].CV - thrd_p->port.cpu.start));
+    return ((100.0 * thrd_p->port.cpu.period.time)
+            / (SAM_TC0->CHANNEL[0].CV - thrd_p->port.cpu.period.start));
 }
 
 static void thrd_port_cpu_usage_reset(struct thrd_t *thrd_p)
 {
-    thrd_p->port.cpu.time = 0;
+    thrd_p->port.cpu.period.start = SAM_TC0->CHANNEL[0].CV;
+    thrd_p->port.cpu.period.time = 0;
 }

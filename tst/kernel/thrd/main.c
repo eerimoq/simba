@@ -20,7 +20,7 @@
 
 #include "simba.h"
 
-static char thrd_stack[256];
+static THRD_STACK(thrd_stack, 256);
 static void *thrd(void *arg_p)
 {
     thrd_set_name("resumer");
