@@ -20,7 +20,7 @@
 
 #include "simba.h"
 
-FS_COMMAND_DEFINE("/kernel/sys/appinfo", sys_cmd_appinfo);
+FS_COMMAND_DEFINE("/kernel/sys/info", sys_cmd_info);
 
 struct sys_t sys = {
     .tick = 0,
@@ -34,7 +34,7 @@ struct sys_t sys = {
 
 extern void timer_tick(void);
 extern void thrd_tick(void);
-extern const FAR char appinfo[];
+extern const FAR char sysinfo[];
 
 static void sys_tick(void) {
     sys.tick++;
@@ -44,12 +44,12 @@ static void sys_tick(void) {
 
 #include "sys_port.i"
 
-int sys_cmd_appinfo(int argc,
-                    const char *argv[],
-                    chan_t *chout_p,
-                    chan_t *chin_p)
+int sys_cmd_info(int argc,
+                 const char *argv[],
+                 chan_t *out_p,
+                 chan_t *in_p)
 {
-    std_fprintf(chout_p, appinfo);
+    std_fprintf(out_p, sysinfo);
 
     return (0);
 }
@@ -107,9 +107,9 @@ void sys_unlock_irq(void)
     sys_port_unlock_irq();
 }
 
-const FAR char *sys_get_appinfo(void)
+const FAR char *sys_get_info(void)
 {
-    return (appinfo);
+    return (sysinfo);
 }
 
 float sys_interrupt_cpu_usage_get(void)

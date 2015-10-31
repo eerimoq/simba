@@ -136,7 +136,7 @@ endef
 $(foreach file,$(CSRC),$(eval $(call COMPILE_template,$(file))))
 
 $(GENOBJ): $(OBJ)
-	$(SIMBA)/src/kernel/tools/gen.py $(NAME) $(VERSION) \
+	$(SIMBA)/src/kernel/tools/gen.py $(NAME) $(VERSION) $(BOARD_DESC) $(MCU_DESC) \
 	    $(GENCSRC) $(OBJ:$(OBJDIR)/%=$(GENDIR)/%.pp)
 	@echo "Compiling $(GENCSRC)"
 	$(CC) $(CFLAGS) -o $@ $(GENCSRC)

@@ -21,4 +21,6 @@
 INC += $(SIMBA)/src/boards/arduino_due
 SRC += $(SIMBA)/src/boards/arduino_due/board.c
 
+BOARD_DESC = "Arduino Due"
+
 MCU = sam/3x8e

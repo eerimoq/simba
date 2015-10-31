@@ -131,7 +131,7 @@ void sys_unlock_irq(void);
  *
  * @return A pointer to the application information buffer.
  */
-const FAR char *sys_get_appinfo(void);
+const FAR char *sys_get_info(void);
 
 float sys_interrupt_cpu_usage_get(void);
 

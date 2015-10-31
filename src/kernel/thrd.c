@@ -68,12 +68,16 @@ static struct monitor_t monitor = {
     .print = 0
 };
 
-
+/* Forward declarations for thrd_port. */
 static void scheduler_ready_push(struct thrd_t *thrd_p);
 static void thrd_reschedule(void);
 static void terminate(void);
 
 #include "thrd_port.i"
+
+/* Stacks. */
+static THRD_STACK(idle_thrd_stack, THRD_IDLE_STACK_MAX);
+static THRD_STACK(monitor_thrd_stack, THRD_MONITOR_STACK_MAX);
 
 static void terminate(void)
 {
@@ -361,7 +365,6 @@ err_inval:
     return (-EINVAL);
 }
 
-static THRD_STACK(idle_thrd_stack, THRD_IDLE_STACK_MAX);
 static void *idle_thrd(void *arg_p)
 {
     struct thrd_t *thrd_p;
@@ -408,7 +411,6 @@ static void update_cpu_usage(struct thrd_t *thrd_p,
 /**
  * The monitor thread monitors the cpu usage of all threads.
  */
-static THRD_STACK(monitor_thrd_stack, THRD_MONITOR_STACK_MAX);
 static void *monitor_thrd(void *arg_p)
 {
     int print;

@@ -106,7 +106,7 @@ int main()
     COUNTER_INC(bar, 339283982393);
     COUNTER_INC(fie, 1);
 
-    std_printf(sys_get_appinfo());
+    std_printf(sys_get_info());
 
     thrd_spawn(worker_thrd, NULL, 20, worker_stack, sizeof(worker_stack));
 

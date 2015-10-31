@@ -33,14 +33,16 @@ file_fmt = '''/**
 #include "simba.h"
 #include <stdarg.h>
 
-{appinfo}
+{sysinfo}
 
 {fs}
 
 {log}
 '''
 
-appinfo_fmt = '''const FAR char appinfo[] = "{name}-{version} built {date} by {user}.\\r\\n";
+sysinfo_fmt = '''const FAR char sysinfo[] = "app:   {name}-{version} built {date} by {user}.\\r\\n"
+                           "board: {board}\\r\\n"
+                           "mcu:   {mcu}\\r\\n";
 '''
 
 fs_fmt = '''{command_externs}
@@ -347,15 +349,19 @@ def generate_log(infiles):
 if __name__ == '__main__':
     name = sys.argv[1]
     version = sys.argv[2]
-    outfile = sys.argv[3]
-    infiles = sys.argv[4:]
+    board = sys.argv[3]
+    mcu = sys.argv[4]
+    outfile = sys.argv[5]
+    infiles = sys.argv[6:]
 
     now = time.strftime("%Y-%m-%d %H:%M %Z")
 
-    appinfo = appinfo_fmt.format(name=name,
+    sysinfo = sysinfo_fmt.format(name=name,
                                  version=version,
                                  date=now,
-                                 user=getpass.getuser())
+                                 user=getpass.getuser(),
+                                 board=board,
+                                 mcu=mcu)
     fs_formatted_data = generate_fs(infiles)
     log_formatted_data = generate_log(infiles)
 
@@ -364,6 +370,6 @@ if __name__ == '__main__':
                         major=major,
                         minor=minor,
                         date=time.strftime("%Y-%m-%d %H:%M %Z"),
-                        appinfo=appinfo,
+                        sysinfo=sysinfo,
                         fs=fs_formatted_data,
                         log=log_formatted_data))
