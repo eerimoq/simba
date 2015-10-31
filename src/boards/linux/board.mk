@@ -21,4 +21,6 @@
 INC += $(SIMBA)/src/boards/linux
 SRC += $(SIMBA)/src/boards/linux/board.c
 
+BOARD_DESC = "Linux"
+
 MCU = linux

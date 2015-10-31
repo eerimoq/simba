@@ -23,4 +23,6 @@ SRC += $(SIMBA)/src/mcus/linux/mcu.c
 
 ARCH = linux
 
+MCU_DESC = "Linux"
+
 include $(SIMBA)/make/$(TOOLCHAIN)/linux.mk

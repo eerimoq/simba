@@ -33,9 +33,9 @@ int test_set_on_fatal_callback(struct harness_t *harness_p)
     return (0);
 }
 
-int test_appinfo(struct harness_t *harness_p)
+int test_info(struct harness_t *harness_p)
 {
-    std_printf(sys_get_appinfo());
+    std_printf(sys_get_info());
 
     return (0);
 }
@@ -45,7 +45,7 @@ int main()
     struct harness_t harness;
     struct harness_testcase_t harness_testcases[] = {
         { test_set_on_fatal_callback, "test_set_on_fatal_callback" },
-        { test_appinfo, "test_appinfo" },
+        { test_info, "test_info" },
         { NULL, NULL }
     };
 
