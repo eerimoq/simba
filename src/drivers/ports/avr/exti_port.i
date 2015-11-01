@@ -42,13 +42,55 @@ ISR(INT1_vect)
     }
 }
 
+ISR(INT2_vect)
+{
+    struct exti_driver_t *drv_p = exti_device[2].drv_p;
+
+    if (drv_p != NULL) {
+        drv_p->on_interrupt(drv_p->arg_p);
+    }
+}
+
+ISR(INT3_vect)
+{
+    struct exti_driver_t *drv_p = exti_device[3].drv_p;
+
+    if (drv_p != NULL) {
+        drv_p->on_interrupt(drv_p->arg_p);
+    }
+}
+
+ISR(INT4_vect)
+{
+    struct exti_driver_t *drv_p = exti_device[4].drv_p;
+
+    if (drv_p != NULL) {
+        drv_p->on_interrupt(drv_p->arg_p);
+    }
+}
+
+ISR(INT5_vect)
+{
+    struct exti_driver_t *drv_p = exti_device[5].drv_p;
+
+    if (drv_p != NULL) {
+        drv_p->on_interrupt(drv_p->arg_p);
+    }
+}
+
 static int exti_port_start(struct exti_driver_t *drv_p)
 {
     struct exti_device_t *dev_p = drv_p->dev_p;
 
     dev_p->drv_p = drv_p;
     *DDR(dev_p->pin_p->sfr_p) &= ~(dev_p->pin_p->mask);
-    EICRA |= (drv_p->trigger << (2 * dev_p->id));
+
+    if (dev_p->id < 3) {
+        EICRA |= (drv_p->trigger << (2 * dev_p->id));
+    } else {
+        EICRB |= (drv_p->trigger << (2 * (dev_p->id - 4)));
+    }
+
     EIFR = _BV(dev_p->id);
     EIMSK |= _BV(dev_p->id);
 

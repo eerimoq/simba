@@ -88,27 +88,18 @@ static int spi_port_start(struct spi_driver_t *drv_p)
     mask = dev_p->miso_p->mask;
     pio_p = dev_p->miso_p->pio_p;
     pio_p->PDR = mask;
-    pio_p->ODR = mask;
-    pio_p->IDR = mask;
-    pio_p->PUDR = mask;
     pio_p->ABSR &= ~mask;
 
     /* Configure mosi pin. */
     mask = dev_p->mosi_p->mask;
     pio_p = dev_p->mosi_p->pio_p;
     pio_p->PDR = mask;
-    pio_p->ODR = mask;
-    pio_p->IDR = mask;
-    pio_p->PUDR = mask;
     pio_p->ABSR &= ~mask;
 
     /* Configure sck pin. */
     mask = dev_p->sck_p->mask;
     pio_p = dev_p->sck_p->pio_p;
     pio_p->PDR = mask;
-    pio_p->ODR = mask;
-    pio_p->IDR = mask;
-    pio_p->PUDR = mask;
     pio_p->ABSR &= ~mask;
 
     pmc_peripheral_clock_enable(dev_p->id);
@@ -120,7 +111,7 @@ static int spi_port_start(struct spi_driver_t *drv_p)
 
     /* Set mode. */
     if (drv_p->mode == SPI_MODE_MASTER) {
-        dev_p->regs_p->MR = SPI_MR_MSTR;
+        dev_p->regs_p->MR = (SPI_MR_MODFDIS | SPI_MR_MSTR);
     } else {
         dev_p->regs_p->MR &= ~SPI_MR_MSTR;
     }

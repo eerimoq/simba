@@ -40,7 +40,7 @@ static inline size_t get_buffer_used(struct queue_buffer_t *buffer_p)
     if (buffer_p->write_p == buffer_p->read_p) {
         return (0);
     } else if (buffer_p->write_p > buffer_p->read_p) {
-        return (buffer_p->write_p > buffer_p->read_p);
+        return (buffer_p->write_p - buffer_p->read_p);
     } else {
         return ((buffer_p->end_p - buffer_p->begin_p)
                 - (buffer_p->read_p - buffer_p->write_p));
@@ -133,11 +133,7 @@ ssize_t queue_read(struct queue_t *queue_p, void *buf_p, size_t size)
         queue_p->buf_p = buf_p;
         queue_p->left = left;
 
-        //std_printf(FSTR("reading = 0x%x\r\n"), queue_p->base.reader_p);
-
         thrd_suspend_irq(NULL);
-
-        //std_printf(FSTR("reading resumed\r\n"));
     }
 
     sys_unlock();
@@ -163,8 +159,6 @@ ssize_t queue_write(struct queue_t *queue_p,
         queue_p->base.writer_p = thrd_self();
         queue_p->buf_p = (void *)buf_p;
         queue_p->left = left;
-
-        //std_printf(FSTR("wait\r\n"));
 
         thrd_suspend_irq(NULL);
     }
@@ -195,9 +189,6 @@ ssize_t queue_write_irq(struct queue_t *queue_p,
         } else {
             n = queue_p->left;
         }
-
-        /* std_printf(FSTR("queue_p->buf_p = 0x%x, buf_p = 0x%x, n = %d\r\n"), */
-        /*            queue_p->buf_p, buf_p, n); */
         
         memcpy(queue_p->buf_p, buf_p, n);
 
@@ -208,7 +199,6 @@ ssize_t queue_write_irq(struct queue_t *queue_p,
 
         /* Read buffer full. */
         if (queue_p->left == 0) {
-            //std_printf(FSTR("resuming = 0x%x\r\n"), queue_p->base.reader_p);
             /* Wake the reader. */
             thrd_resume_irq(queue_p->base.reader_p, 0);
             queue_p->base.reader_p = NULL;
@@ -241,8 +231,6 @@ ssize_t queue_write_irq(struct queue_t *queue_p,
         buf_p += n;
         left -= n;
     }
-
-    //std_printf(FSTR("write done\r\n"));
 
     return (size - left);
 }

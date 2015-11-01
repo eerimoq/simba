@@ -24,15 +24,15 @@
 #define F_OSC 16000000
 
 /* SPI instructions. */
-#define SPI_INSTR_RESET          0xc0
-#define SPI_INSTR_READ           0x03
-#define SPI_INSTR_READ_RX_BUFFER 0x90
 #define SPI_INSTR_WRITE          0x02
+#define SPI_INSTR_READ           0x03
+#define SPI_INSTR_BIT_MODIFY     0x05
 #define SPI_INSTR_LOAD_TX_BUFFER 0x40
 #define SPI_INSTR_RTS            0x80
+#define SPI_INSTR_READ_RX_BUFFER 0x90
 #define SPI_INSTR_READ_STATUS    0xa0
 #define SPI_INSTR_RX_STATUS      0xb0
-#define SPI_INSTR_BIT_MODIFY     0x05
+#define SPI_INSTR_RESET          0xc0
 
 /* Registers. */
 #define REG_BFPCTRL          0x0c
@@ -77,6 +77,16 @@
 #define REG_CANINTE_RX0IE 0x01
 
 /* CANINTF */
+#define REG_CANINTF_MERRF 0x80
+#define REG_CANINTF_WAKIF 0x40
+#define REG_CANINTF_ERRIF 0x20
+#define REG_CANINTF_TX2IF 0x10
+#define REG_CANINTF_TX1IF 0x08
+#define REG_CANINTF_TX0IF 0x04
+#define REG_CANINTF_RX1IF 0x02
+#define REG_CANINTF_RX0IF 0x01
+
+/* SPI_READ_STATUS */
 #define SPI_READ_STATUS_RX0IF  0x01
 #define SPI_READ_STATUS_RX1IF  0x02
 #define SPI_READ_STATUS_TXREQ0 0x04
@@ -123,47 +133,66 @@
 /* MCP2515 frame structure. */
 struct spi_frame_t {
     uint8_t instr;
-    uint16_t id : 11;
-    uint16_t srr : 1;
-    uint16_t ide : 1;
-    uint16_t reserved0 : 1;
-    uint16_t eid_17_16 : 2;
-    uint16_t eid_15_0;
-    uint8_t reserved1 : 1;
-    uint8_t rtr : 1;
-    uint8_t reserved2 : 2;
+    uint8_t id_10_3;
+    uint8_t eid_17_16 : 2;
+    uint8_t reserved0 : 1;
+    uint8_t ide : 1;
+    uint8_t srr : 1;
+    uint8_t id_2_0 : 3;
+    uint8_t eid_15_8;
+    uint8_t eid_7_0;
     uint8_t dlc : 4;
+    uint8_t reserved1 : 2;
+    uint8_t rtr : 1;
+    uint8_t reserved2 : 1;
     uint8_t data[8];
-} __attribute__((packed));
+    uint8_t canstat;
+} PACKED;
 
-/* Number of frames discarded due to buffer overflow. */
-COUNTER_DEFINE("/drivers/mcp2515/rx_frame_discarded", mcp2515_rx_frame_discarded);
-
-/**
- * Interrupt handler.
- * @param[in] arg Driver object.
- */
-static void isr(void *arg)
+/* Interrupt service routine serving the INT from the hardware. */
+static void isr(struct mcp2515_driver_t *drv_p)
 {
-    struct mcp2515_driver_t *drv_p = arg;
-    char c;
-
-    queue_write_irq(&drv_p->irqchan, &c, sizeof(c));
+    sem_put_irq(&drv_p->isr_sem, 1);
 }
 
 /**
  * Read status register.
  */
 static int read_status(struct mcp2515_driver_t *drv_p,
-                       uint8_t *value)
+                       uint8_t *value_p)
 {
     uint8_t buf[2];
-    
+
     buf[0] = SPI_INSTR_READ_STATUS;
     buf[1] = 0;
 
-    spi_transfer(&drv_p->spi, buf, buf, sizeof(buf));
-    *value = buf[1];
+    if (spi_transfer(&drv_p->spi, buf, buf, sizeof(buf)) != sizeof(buf)) {
+        return (-1);
+    }
+
+    *value_p = buf[1];
+
+    return (0);
+}
+
+/**
+ * Read a register value.
+ */
+static int register_read(struct mcp2515_driver_t *drv_p,
+                         uint8_t addr,
+                         uint8_t *value_p)
+{
+    uint8_t buf[3];
+
+    buf[0] = SPI_INSTR_READ;
+    buf[1] = addr;
+    buf[2] = 0;
+
+    if (spi_transfer(&drv_p->spi, buf, buf, sizeof(buf)) != sizeof(buf)) {
+        return (-1);
+    }
+
+    *value_p = buf[2];
 
     return (0);
 }
@@ -171,9 +200,9 @@ static int read_status(struct mcp2515_driver_t *drv_p,
 /**
  * Write to a register.
  */
-static int reg_write(struct mcp2515_driver_t *drv_p,
-                     uint8_t addr,
-                     uint8_t value)
+static int register_write(struct mcp2515_driver_t *drv_p,
+                          uint8_t addr,
+                          uint8_t value)
 {
     uint8_t buf[3];
 
@@ -181,7 +210,19 @@ static int reg_write(struct mcp2515_driver_t *drv_p,
     buf[1] = addr;
     buf[2] = value;
 
-    spi_write(&drv_p->spi, buf, sizeof(buf));
+    if (spi_write(&drv_p->spi, buf, sizeof(buf)) != sizeof(buf)) {
+        return (-1);
+    }
+
+    register_read(drv_p, addr, buf);
+
+    /* Verify that the bits were written. */
+    if (buf[0] != value) {
+        std_printf(FSTR("register_write failed. wrote 0x%x but read %x\r\n"),
+                   value,
+                   buf[0]);
+        return (-1);
+    }
 
     return (0);
 }
@@ -189,114 +230,67 @@ static int reg_write(struct mcp2515_driver_t *drv_p,
 /**
  * Write bit(s) in register with mask.
  */
-static int reg_write_bits(struct mcp2515_driver_t *drv_p,
-                          uint8_t addr,
-                          uint8_t mask,
-                          uint8_t value)
+static int register_write_bits(struct mcp2515_driver_t *drv_p,
+                               uint8_t addr,
+                               uint8_t mask,
+                               uint8_t value)
 {
     uint8_t buf[4];
-    
+
     buf[0] = SPI_INSTR_BIT_MODIFY;
     buf[1] = addr;
     buf[2] = mask;
     buf[3] = value;
 
-    spi_write(&drv_p->spi, buf, sizeof(buf));
+    if (spi_write(&drv_p->spi, buf, sizeof(buf)) != sizeof(buf)) {
+        return (-1);
+    }
+
+    register_read(drv_p, addr, buf);
+
+    /* Verify that the bits were written. */
+    if ((buf[0] & mask) != value) {
+        std_printf(FSTR("register_write_bits failed. wrote 0x%x but read %x\r\n"),
+                   value,
+                   (buf[0] & mask));
+        return (-1);
+    }
 
     return (0);
 }
 
-/**
- * Put a received frame in fifo.
- * @param[in] arg Driver object.
- * @return Frame to initiate or NULL.
- */
-struct canif_frame_t *frame_put(struct mcp2515_driver_t *drv_p)
+static ssize_t write_cb(void *arg_p,
+                        const struct mcp2515_frame_t *frame_p,
+                        size_t size)
 {
-    int i = fifo_put(&drv_p->rx.fifo);
-
-    if (i == -1) {
-        return (NULL);
-    }
-    
-    return (&drv_p->rx.frame_p[i]);
-}
-
-/**
- * Get the next received frame from fifo.
- * @param[in] arg Driver object.
- * @return Frame to read.
- */
-struct canif_frame_t *frame_get(struct mcp2515_driver_t *drv_p)
-{
-    return (&drv_p->rx.frame_p[fifo_get(&drv_p->rx.fifo)]);
-}
-
-/**
- * Thread handling interrupts from hardware.
- * @param[in] arg Driver object.
- * @return Never returns.
- */
-static void *rx_main(void *arg)
-{
-    struct mcp2515_driver_t *drv_p = arg;
-    uint8_t status;
-    char c;
+    struct mcp2515_driver_t *drv_p;
     struct spi_frame_t frame;
-    struct canif_frame_t *frame_p;
+    uint8_t rts = (SPI_INSTR_RTS | 0x1); /* Request to send mailbox 0. */
 
-    while (1) {
-        /* Wait for interrupt. */
-        queue_read(&drv_p->irqchan, &c, sizeof(c));
+    drv_p = container_of(arg_p, struct mcp2515_driver_t, chout);
 
-        /* Read status flags. */
-        read_status(drv_p, &status);
+    /* Initiate frame. Always use TX mailbox 0. */
+    frame.instr = SPI_INSTR_LOAD_TX_BUFFER;
+    frame.id_10_3 = ((frame_p->id >> 3) & 0xff);
+    frame.id_2_0 = (frame_p->id & 0x7);
+    frame.ide = 0;
+    frame.eid_17_16 = (frame_p->id >> 27);
+    frame.eid_15_8 = (frame_p->id >> 19);
+    frame.eid_7_0 = (frame_p->id >> 11);
+    frame.rtr = frame_p->rtr;
+    frame.dlc = frame_p->size;
+    memcpy(frame.data, frame_p->data, frame_p->size);
 
-        /* Handle RX frame available event. */
-        if (status & SPI_READ_STATUS_RX0IF) {
-            /* Read frame to temporary buffer. */
-            frame.instr = SPI_INSTR_READ_RX_BUFFER;
-            spi_transfer(&drv_p->spi, &frame, &frame, sizeof(frame));
+    /* Write frame to hardware. */
+    spi_write(&drv_p->spi, &frame, sizeof(frame));
+    spi_write(&drv_p->spi, &rts, sizeof(rts));
 
-            sys_lock();
+    /* Wait for the frame to be transmitted. */
+    sem_get(&drv_p->tx_sem, NULL);
 
-            /* Put frame in rx fifo. */
-            frame_p = frame_put(drv_p);
-
-            if (frame_p != NULL) {
-                frame_p->id = frame.id;
-
-                /* Extended frame ID. */
-                if (frame.ide == 1) {
-                    frame_p->id |= (CANIF_ID_EXTENDED_MASK |
-                                    ((uint32_t)frame.eid_17_16 << 18) |
-                                    ((uint32_t)frame.eid_15_0 << 16));
-                }
-
-                frame_p->size = frame.dlc;
-                frame_p->rtr = frame.rtr;
-                frame_p->timestamp = 0;
-                memcpy(frame_p->data, frame.data, frame_p->size);
-
-                sys_unlock();
-
-                /* Frame available for reading. */
-                sem_put(&drv_p->rx.sem, 1);
-            } else {
-                sys_unlock();
-                COUNTER_INC(mcp2515_rx_frame_discarded, 1);
-            }
-        }
-
-        /* Handle TX complete event. */
-        if (status & SPI_READ_STATUS_TX0IF) {
-            sem_put(&drv_p->tx.sem, 1);
-        }
-    }
-
-    return (NULL);
+    return (size);
 }
- 
+
 /**
  * Calculate register values for given speed.
  * @param[in] speed Desired speed in bits per second.
@@ -331,23 +325,84 @@ static int speed_to_cnf(int speed,
     return (0);
 }
 
+static void *isr_main(void *arg_p)
+{
+    struct mcp2515_driver_t *drv_p = arg_p;
+    struct mcp2515_frame_t frame;
+    struct spi_frame_t spi_frame;
+    uint8_t status;
+
+    thrd_set_name("mcp2515");
+
+    while (1) {
+        /* Wait for signal from interrupt handler. */
+        sem_get(&drv_p->isr_sem, NULL);
+
+        /* Read status flags. */
+        if (read_status(drv_p, &status) != 0) {
+            continue;
+        }
+
+        /* Handle RX frame available event. */
+        if (status & SPI_READ_STATUS_RX0IF) {
+            /* Read frame to temporary buffer. */
+            spi_frame.instr = SPI_INSTR_READ_RX_BUFFER;
+            spi_transfer(&drv_p->spi, &spi_frame, &spi_frame, sizeof(spi_frame));
+
+            /* Create the driver frame. */
+            frame.id = ((spi_frame.id_10_3 << 3) | spi_frame.id_2_0);
+            frame.size = spi_frame.dlc;
+            frame.rtr = spi_frame.rtr;
+            memcpy(frame.data, spi_frame.data, frame.size);
+
+            /* Write the frame to the input channel. */
+            if (chan_write(drv_p->chin_p, &frame, sizeof(frame)) != sizeof(frame)) {
+                PRINT_FILE_LINE();
+            }
+
+            /* Read status flags. */
+            if (read_status(drv_p, &status) != 0) {
+                continue;
+            }
+        }
+
+        /* Handle TX complete event. */
+        if (status & SPI_READ_STATUS_TX0IF) {
+            /* Clear the tx complete interrupt bit to allow aonther
+             * transmission. */
+            if (register_write_bits(drv_p,
+                                    REG_CANINTF,
+                                    REG_CANINTF_TX0IF,
+                                    0) != 0) {
+                std_printf(FSTR("failed to clear tx interrupt flag\r\n"));
+            }
+            sem_put(&drv_p->tx_sem, 1);
+        }
+    }
+
+    return (NULL);
+}
+
 int mcp2515_init(struct mcp2515_driver_t *drv_p,
                  struct spi_device_t *spi_p,
                  struct pin_device_t *cs_p,
                  struct exti_device_t *exti_p,
+                 chan_t *chin_p,
                  int mode,
-                 int speed,
-                 struct canif_filter_t filter[],
-                 struct canif_frame_t frames[],
-                 size_t length)
+                 int speed)
 {
     drv_p->mode = mode;
     drv_p->speed = speed;
-    fifo_init(&drv_p->rx.fifo, length);
-    drv_p->rx.frame_p = frames;
+    drv_p->chin_p = chin_p;
 
-    sem_init(&drv_p->rx.sem, 0);
-    sem_init(&drv_p->tx.sem, 1);
+    sem_init(&drv_p->isr_sem, 0);
+    sem_init(&drv_p->tx_sem, 0);
+
+    exti_init(&drv_p->exti,
+              exti_p,
+              EXTI_TRIGGER_FALLING_EDGE,
+              (void (*)(void *))isr,
+              drv_p);
 
     spi_init(&drv_p->spi,
              spi_p,
@@ -357,17 +412,16 @@ int mcp2515_init(struct mcp2515_driver_t *drv_p,
              0,
              0);
 
-    exti_init(&drv_p->exti,
-              exti_p,
-              EXTI_TRIGGER_FALLING_EDGE,
-              isr,
-              drv_p);
+    chan_init(&drv_p->chout,
+              NULL,
+              (ssize_t (*)(chan_t *, const void *, size_t))write_cb,
+              NULL);
 
-    thrd_spawn(rx_main,
+    thrd_spawn(isr_main,
                drv_p,
-               0,
-               drv_p->rx.stack,
-               sizeof(drv_p->rx.stack));
+               -15,
+               drv_p->stack,
+               sizeof(drv_p->stack));
 
     return (0);
 }
@@ -375,79 +429,79 @@ int mcp2515_init(struct mcp2515_driver_t *drv_p,
 int mcp2515_start(struct mcp2515_driver_t *drv_p)
 {
     uint8_t cnf1, cnf2, cnf3;
-    uint8_t buf[1];
+
+    exti_start(&drv_p->exti);
 
     if (speed_to_cnf(drv_p->speed, &cnf1, &cnf2, &cnf3) != 0) {
         return (-1);
     }
 
     /* Reset device. */
-    buf[0] = SPI_INSTR_RESET;
-    spi_write(&drv_p->spi, buf, 1);
+    if (spi_put(&drv_p->spi, SPI_INSTR_RESET) != 1) {
+        return (-1);
+    }
 
     /* Enter configuration mode. */
-    reg_write_bits(drv_p,
-                   REG_CANCTRL,
-                   REG_CANCTRL_REQOP_MASK,
-                   REG_CANCTRL_REQOP_CONFIG);
+    if (register_write_bits(drv_p,
+                            REG_CANCTRL,
+                            REG_CANCTRL_REQOP_MASK,
+                            REG_CANCTRL_REQOP_CONFIG) != 0) {
+        std_printf(FSTR("failed to enter configuration mode\r\n"));
+        return (-1);
+    }
 
     /* Configure speed. */
-    reg_write(drv_p, REG_CNF1, cnf1);
-    reg_write(drv_p, REG_CNF2, cnf2);
-    reg_write(drv_p, REG_CNF3, cnf3);
-    reg_write(drv_p, REG_CANINTE, (REG_CANINTE_MERRE |
-                                   REG_CANINTE_ERRIE |
-                                   REG_CANINTE_TX0IE |
-                                   REG_CANINTE_RX0IE));
+    if (register_write(drv_p, REG_CNF1, cnf1) != 0) {
+        std_printf(FSTR("failed to write cnf1\r\n"));
+        return (-1);
+    }
+
+    if (register_write(drv_p, REG_CNF2, cnf2) != 0) {
+        std_printf(FSTR("failed to write cnf2\r\n"));
+        return (-1);
+    }
+
+    if (register_write(drv_p, REG_CNF3, cnf3) != 0) {
+        std_printf(FSTR("failed to write cnf3\r\n"));
+        return (-1);
+    }
 
     /* Always use RX mailbox 0. */
-    reg_write(drv_p, REG_RXB0CTRL, REG_RXBNCTRL_RXM_ANY);
+    if (register_write(drv_p, REG_RXB0CTRL, REG_RXBNCTRL_RXM_ANY) != 0) {
+        std_printf(FSTR("failed to write rxb0ctrl\r\n"));
+        return (-1);
+    }
+
+    if (register_write(drv_p, REG_CANINTE, REG_CANINTE_TX0IE) != 0) {
+        std_printf(FSTR("failed to write caninte\r\n"));
+        return (-1);
+    }
 
     /* Enter normal/loopback mode. */
-    reg_write_bits(drv_p,
-                   REG_CANCTRL,
-                   REG_CANCTRL_REQOP_MASK,
-                   drv_p->mode);
+    if (register_write_bits(drv_p,
+                            REG_CANCTRL,
+                            REG_CANCTRL_REQOP_MASK,
+                            drv_p->mode) != 0) {
+        std_printf(FSTR("failed to enter desired mode\r\n"));
+        return (-1);
+    }
 
     return (0);
 }
 
 int mcp2515_stop(struct mcp2515_driver_t *drv_p)
 {
-    return (0);
+    return (exti_stop(&drv_p->exti));
 }
 
-int mcp2515_read(struct mcp2515_driver_t *drv_p,
-                 struct canif_frame_t *frame)
+ssize_t mcp2515_read(struct mcp2515_driver_t *drv_p,
+                     struct mcp2515_frame_t *frame_p)
 {
-    sem_get(&drv_p->rx.sem, NULL);
-    sys_lock();
-    *frame = *frame_get(drv_p);
-    sys_unlock();
-
-    return (0);
+    return (chan_read(drv_p->chin_p, frame_p, sizeof(*frame_p)));
 }
 
-int mcp2515_write(struct mcp2515_driver_t *drv_p,
-                  const struct canif_frame_t *frame_p)
+ssize_t mcp2515_write(struct mcp2515_driver_t *drv_p,
+                      const struct mcp2515_frame_t *frame_p)
 {
-    struct spi_frame_t frame;
-    uint8_t rts = (SPI_INSTR_RTS | 0x1); /* Request to send mailbox 0. */
-
-    /* Initiate frame. Always use TX mailbox 0. */
-    frame.instr = SPI_INSTR_LOAD_TX_BUFFER;
-    frame.id = (frame_p->id & 0x7ff);
-    frame.ide = CANIF_ID_IS_EXTENDED(frame_p->id);
-    frame.eid_17_16 = (frame_p->id >> 18);
-    frame.eid_15_0 = (frame_p->id >> 16);
-    frame.rtr = frame_p->rtr;
-    frame.dlc = frame_p->size;
-    memcpy(frame.data, frame_p->data, frame_p->size);
-
-    /* Write frame to hardware. */
-    sem_get(&drv_p->tx.sem, NULL);
-    spi_write(&drv_p->spi, &frame, sizeof(frame));
-    spi_write(&drv_p->spi, &rts, sizeof(rts));
-
-    return (0);
+    return (drv_p->chout.write(&drv_p->chout, frame_p, sizeof(*frame_p)));
 }

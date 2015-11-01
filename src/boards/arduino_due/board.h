@@ -31,7 +31,7 @@
 #define pin_d7_dev pin_device[SAM_PC+23]
 #define pin_d8_dev pin_device[SAM_PC+22]
 #define pin_d9_dev pin_device[SAM_PC+21]
-#define pin_d10_dev pin_device[SAM_PC+29]
+#define pin_d10_dev pin_device[SAM_PA+28]
 #define pin_d11_dev pin_device[SAM_PD+7]
 #define pin_d12_dev pin_device[SAM_PD+8]
 #define pin_d13_dev pin_device[SAM_PB+27]

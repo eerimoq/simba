@@ -20,21 +20,52 @@
 
 #include "simba.h"
 
-static char qinbuf[32];
 static struct uart_driver_t uart;
 
 int main()
 {
-    struct canif_frame_t frame;
     struct mcp2515_driver_t mcp2515;
-    struct pin_driver_t pin[3];
+    struct mcp2515_frame_t frame;
 
     sys_start();
     uart_module_init();
 
-    uart_init(&uart, &uart_device[0], 38400, qinbuf, sizeof(qinbuf));
+    uart_init(&uart, &uart_device[0], 38400, NULL, 0);
     uart_start(&uart);
 
+    sys_set_stdout(&uart.chout);
+
+    std_printf(FSTR("starting\r\n"));
+
+    mcp2515_init(&mcp2515,
+                 &spi_device[0],
+                 &pin_d10_dev,
+                 MCP2515_MODE_NORMAL,
+                 MCP2515_SPEED_1000KBPS);
+
+    std_printf(FSTR("mcp init done\r\n"));
+
+    mcp2515_start(&mcp2515);
+
+    std_printf(FSTR("mcp start done\r\n"));
+
+    frame.id = 0x123;
+    frame.size = 8;
+    frame.rtr = 0;
+    frame.data[0] = 0;
+    frame.data[1] = 1;
+    frame.data[2] = 2;
+    frame.data[3] = 3;
+    frame.data[4] = 4;
+    frame.data[5] = 5;
+    frame.data[6] = 6;
+    frame.data[7] = 7;
+
+    mcp2515_write(&mcp2515, &frame);
+
+    std_printf(FSTR("written frame\r\n"));
+
+#if 0
     /* Initialize led pins. */
     pin_init(&pin[0], &pin_d7_dev, PIN_OUTPUT);
     pin_init(&pin[1], &pin_d8_dev, PIN_OUTPUT);
@@ -59,6 +90,7 @@ int main()
         pin_write(&pin[1], (frame.data[0] >> 1) & 0x1);
         pin_write(&pin[2], (frame.data[0] >> 2) & 0x1);
     }
+#endif
 
     return (0);
 }

@@ -78,9 +78,17 @@ int sem_get(struct sem_t *sem_p,
 int sem_put(struct sem_t *sem_p,
             int count)
 {
-    struct sem_elem_t *elem_p;
-
     sys_lock();
+    sem_put_irq(sem_p, count);
+    sys_unlock();
+
+    return (0);
+}
+
+int sem_put_irq(struct sem_t *sem_p,
+                int count)
+{
+    struct sem_elem_t *elem_p;
 
     sem_p->count += count;
 
@@ -95,8 +103,6 @@ int sem_put(struct sem_t *sem_p,
 
         thrd_resume_irq(elem_p->thrd_p, 0);
     }
-
-    sys_unlock();
 
     return (0);
 }

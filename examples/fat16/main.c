@@ -271,7 +271,7 @@ static void init(void)
 
     sys_set_stdout(&uart.chout);
 
-    std_printf(sys_get_appinfo());
+    std_printf(sys_get_info());
 
     spi_init(&spi,
              &spi_device[0],

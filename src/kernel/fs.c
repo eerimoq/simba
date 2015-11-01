@@ -21,8 +21,8 @@
 #include "simba.h"
 #include <ctype.h>
 
-#define FS_COMMAND_ARGS_MAX 8
-#define FS_COMMAND_MAX 48
+#define FS_COMMAND_ARGS_MAX 16
+#define FS_COMMAND_MAX 64
 
 #define FS_NAME_MAX 64
 

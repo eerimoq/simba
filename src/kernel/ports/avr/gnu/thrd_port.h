@@ -21,6 +21,9 @@
 #ifndef __KERNEL_THRD_PORT_H__
 #define __KERNEL_THRD_PORT_H__
 
+#define THRD_PORT_STACK(name, size)             \
+    char name[sizeof(struct thrd_t) + (size)]
+
 struct thrd_port_context_t {
     uint8_t dummy;
     uint8_t r29;

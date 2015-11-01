@@ -58,6 +58,7 @@
 #    include "drivers/uart.h"
 #    include "drivers/sd.h"
 #    include "drivers/can.h"
+#    include "drivers/mcp2515.h"
 #endif
 
 #endif

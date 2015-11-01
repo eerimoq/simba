@@ -21,4 +21,6 @@
 INC += $(SIMBA)/src/boards/arduino_mega
 SRC += $(SIMBA)/src/boards/arduino_mega/board.c
 
+BOARD_DESC = "Arduino MEGA 2560"
+
 MCU = atmega2560

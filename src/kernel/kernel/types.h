@@ -45,4 +45,6 @@
 #define BCD_ENCODE(decoded) (decoded)
 #define BCD_DECODE(encoded) (encoded)
 
+#define PRINT_FILE_LINE() std_printf(FSTR("%s:%d:\r\n"), __FILE__, __LINE__);
+
 #endif

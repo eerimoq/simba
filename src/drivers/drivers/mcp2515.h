@@ -28,8 +28,17 @@
 #define MCP2515_SPEED_500KBPS   500
 
 /* Device mode. */
-#define MCP2515_MODE_NORMAL       0
-#define MCP2515_MODE_LOOPBACK     1
+#define MCP2515_MODE_NORMAL       0x00
+#define MCP2515_MODE_LOOPBACK     0x40
+
+/**/
+struct mcp2515_frame_t {
+    uint32_t id;        /* Frame ID. */
+    int size;           /* Number of bytes in data array. */
+    int rtr;            /* Remote transmission request. */
+    uint32_t timestamp; /* Receive timestamp. */
+    uint8_t data[8];    /* Payload. */
+};
 
 /* Driver data structure. */
 struct mcp2515_driver_t {
@@ -37,16 +46,11 @@ struct mcp2515_driver_t {
     struct exti_driver_t exti;
     int mode;
     int speed;
-    struct queue_t irqchan;
-    struct {
-        struct fifo_t fifo;
-        struct canif_frame_t *frame_p;
-        struct sem_t sem;
-        char stack[256];
-    } rx;
-    struct {
-        struct sem_t sem;
-    } tx;
+    struct chan_t chout;
+    struct chan_t *chin_p;
+    struct sem_t isr_sem;
+    struct sem_t tx_sem;
+    THRD_STACK(stack, 1024);
 };
 
 /**
@@ -66,11 +70,9 @@ int mcp2515_init(struct mcp2515_driver_t *drv_p,
                  struct spi_device_t *spi_p,
                  struct pin_device_t *cs_p,
                  struct exti_device_t *exti_p,
+                 chan_t *chin_p,
                  int mode,
-                 int speed,
-                 struct canif_filter_t filter[],
-                 struct canif_frame_t frames[],
-                 size_t length);
+                 int speed);
 
 /**
  * Starts the CAN device using given driver object.
@@ -98,8 +100,8 @@ int mcp2515_stop(struct mcp2515_driver_t *drv_p);
  *
  * @return zero(0) or negative error code.
  */
-int mcp2515_read(struct mcp2515_driver_t *drv_p,
-                 struct canif_frame_t *frame_p);
+ssize_t mcp2515_read(struct mcp2515_driver_t *drv_p,
+                     struct mcp2515_frame_t *frame_p);
 
 /**
  * Write CAN frame.
@@ -109,7 +111,7 @@ int mcp2515_read(struct mcp2515_driver_t *drv_p,
  *
  * @return zero(0) or negative error code.
  */
-int mcp2515_write(struct mcp2515_driver_t *drv_p,
-                  const struct canif_frame_t *frame_p);
+ssize_t mcp2515_write(struct mcp2515_driver_t *drv_p,
+                      const struct mcp2515_frame_t *frame_p);
 
 #endif

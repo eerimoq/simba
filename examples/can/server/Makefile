@@ -18,11 +18,9 @@
 # This file is part of the Simba project.
 #
 
-NAME = server
+NAME = can_server
 BOARD = arduino_nano
 SRC += main.c
-DRIVERS_SRC = uart.c mcp2515.c spi.c pin.c exti.c
-SLIB_SRC =
 
 SIMBA = ../../..
 include $(SIMBA)/make/app.mk

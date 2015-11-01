@@ -76,4 +76,15 @@ int sem_get(struct sem_t *sem_p,
 int sem_put(struct sem_t *sem_p,
             int count);
 
+/**
+ * Put given value on semaphore for irq.
+ *
+ * @param[in] sem_p Semaphore to add count to.
+ * @param[in] value Count to add.
+ *
+ * @return zero(0) or negative error code.
+ */
+int sem_put_irq(struct sem_t *sem_p,
+                int count);
+
 #endif

@@ -21,6 +21,7 @@
 #include <avr/sleep.h>
 
 #define THRD_IDLE_STACK_MAX 156
+#define THRD_MONITOR_STACK_MAX 512
 
 static struct thrd_t main_thrd __attribute__ ((section (".noinit")));
 
@@ -146,5 +147,22 @@ static void thrd_port_suspend_timer_callback(void *arg)
 }
 
 static void thrd_port_tick(void)
+{
+}
+
+static void thrd_port_cpu_usage_start(struct thrd_t *thrd_p)
+{
+}
+
+static void thrd_port_cpu_usage_stop(struct thrd_t *thrd_p)
+{
+}
+
+static float thrd_port_cpu_usage_get(struct thrd_t *thrd_p)
+{
+    return (0.0);
+}
+
+static void thrd_port_cpu_usage_reset(struct thrd_t *thrd_p)
 {
 }
