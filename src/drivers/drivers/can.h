@@ -25,6 +25,20 @@
 
 #include "can_port.h"
 
+#define CAN_SPEED_1000KBPS 1000
+#define CAN_SPEED_500KBPS   500
+
+struct can_frame_t {
+    uint32_t id;          /* Frame ID. */
+    int size;             /* Number of bytes in data array. */
+    int rtr;              /* Remote transmission request. */
+    uint32_t timestamp;   /* Receive timestamp. */
+    union {
+        uint8_t u8[8];
+        uint32_t u32[2];
+    } data;               /* Payload. */
+};
+
 extern struct can_device_t can_device[CAN_DEVICE_MAX];
 
 /**
@@ -40,9 +54,7 @@ extern struct can_device_t can_device[CAN_DEVICE_MAX];
  */
 int can_init(struct can_driver_t *drv_p,
              struct can_device_t *dev_p,
-             struct canif_filter_t *filter_p,
-             struct canif_frame_t *frames_p,
-             size_t length);
+             int speed);
 
 /**
  * Starts the CAN device using given driver object.
@@ -72,8 +84,7 @@ int can_stop(struct can_driver_t *drv_p);
  * @return zero(0) or negative error code.
  */
 int can_read(struct can_driver_t *drv_p,
-             int mailbox,
-             struct canif_frame_t *frame_p);
+             struct can_frame_t *frame_p);
 
 /**
  * Write CAN frame to given mailbox.
@@ -85,7 +96,6 @@ int can_read(struct can_driver_t *drv_p,
  * @return zero(0) or negative error code.
  */
 int can_write(struct can_driver_t *drv_p,
-              int mailbox,
-              const struct canif_frame_t *frame_p);
+              const struct can_frame_t *frame_p);
 
 #endif

@@ -37,6 +37,7 @@
 #    define PWM_DEVICE_MAX     12
 #    define ADC_DEVICE_MAX      1
 #    define FLASH_DEVICE_MAX    1
+#    define CAN_DEVICE_MAX      2
 #else
 #     error "Unsupported MCU."
 #endif

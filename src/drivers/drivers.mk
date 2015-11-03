@@ -44,7 +44,8 @@ DRIVERS_SRC ?= adc.c \
 endif
 
 ifeq ($(ARCH),arm)
-DRIVERS_SRC ?= flash.c \
+DRIVERS_SRC ?= can.c \
+               flash.c \
                pin.c \
                sd.c \
                spi.c \

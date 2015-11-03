@@ -57,6 +57,7 @@
 #    include "drivers/spi.h"
 #    include "drivers/uart.h"
 #    include "drivers/sd.h"
+#    include "drivers/can.h"
 #endif
 
 #endif

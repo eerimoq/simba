@@ -1628,6 +1628,268 @@ struct sam_usart_t {
 #define SAM_ST         ((volatile struct sam_system_timer_t         *)0xe000e010u)
 #define SAM_NVIC       ((volatile struct sam_nvic_t                 *)0xe000e100u)
 
+/* Controller Area Network (CAN). */
+struct sam_can_t {
+    uint32_t MR;
+    uint32_t IER;
+    uint32_t IDR;
+    uint32_t IMR;
+    uint32_t SR;
+    uint32_t BR;
+    uint32_t TIM;
+    uint32_t TIMESTP;
+    uint32_t ECR;
+    uint32_t TCR;
+    uint32_t ACR;
+    uint32_t reserved0[45];
+    uint32_t WPMR;
+    uint32_t WPSR;
+    uint32_t reserved1[68];
+    struct {
+        uint32_t MMR;
+        uint32_t MAM;
+        uint32_t MID;
+        uint32_t MFID;
+        uint32_t MSR;
+        uint32_t MDL;
+        uint32_t MDH;
+        uint32_t MCR;
+    } MAILBOX[8];
+};
+
+/* Mode Register. */
+#define CAN_MR_CANEN                    BIT(0)
+#define CAN_MR_LPM                      BIT(1)
+#define CAN_MR_ABM                      BIT(2)
+#define CAN_MR_OVL                      BIT(3)
+#define CAN_MR_TEOF                     BIT(4)
+#define CAN_MR_TTM                      BIT(5)
+#define CAN_MR_TIMFRZ                   BIT(6)
+#define CAN_MR_DRPT                     BIT(7)
+#define CAN_MR_RXSYNC_POS               (24)
+#define CAN_MR_RXSYNC_MASK              (0x7 << CAN_MR_RXSYNC_POS)
+#define CAN_MR_RXSYNC(value)            BITFIELD(CAN_MR_RXSYNC, value)
+
+/* Interrupt Enable Register. */
+#define CAN_IER_MB0                     BIT(0)
+#define CAN_IER_MB1                     BIT(1)
+#define CAN_IER_MB2                     BIT(2)
+#define CAN_IER_MB3                     BIT(3)
+#define CAN_IER_MB4                     BIT(4)
+#define CAN_IER_MB5                     BIT(5)
+#define CAN_IER_MB6                     BIT(6)
+#define CAN_IER_MB7                     BIT(7)
+#define CAN_IER_ERRA                    BIT(16)
+#define CAN_IER_WARN                    BIT(17)
+#define CAN_IER_ERRP                    BIT(18)
+#define CAN_IER_BOFF                    BIT(19)
+#define CAN_IER_SLEEP                   BIT(20)
+#define CAN_IER_WAKEUP                  BIT(21)
+#define CAN_IER_TOVF                    BIT(22)
+#define CAN_IER_TSTP                    BIT(23)
+#define CAN_IER_CERR                    BIT(24)
+#define CAN_IER_SERR                    BIT(25)
+#define CAN_IER_AERR                    BIT(26)
+#define CAN_IER_FERR                    BIT(27)
+#define CAN_IER_BERR                    BIT(28)
+
+/* Interrupt Disable Register. */
+#define CAN_IDR_MB0                     BIT(0)
+#define CAN_IDR_MB1                     BIT(1)
+#define CAN_IDR_MB2                     BIT(2)
+#define CAN_IDR_MB3                     BIT(3)
+#define CAN_IDR_MB4                     BIT(4)
+#define CAN_IDR_MB5                     BIT(5)
+#define CAN_IDR_MB6                     BIT(6)
+#define CAN_IDR_MB7                     BIT(7)
+#define CAN_IDR_ERRA                    BIT(16)
+#define CAN_IDR_WARN                    BIT(17)
+#define CAN_IDR_ERRP                    BIT(18)
+#define CAN_IDR_BOFF                    BIT(19)
+#define CAN_IDR_SLEEP                   BIT(20)
+#define CAN_IDR_WAKEUP                  BIT(21)
+#define CAN_IDR_TOVF                    BIT(22)
+#define CAN_IDR_TSTP                    BIT(23)
+#define CAN_IDR_CERR                    BIT(24)
+#define CAN_IDR_SERR                    BIT(25)
+#define CAN_IDR_AERR                    BIT(26)
+#define CAN_IDR_FERR                    BIT(27)
+#define CAN_IDR_BERR                    BIT(28)
+
+/* Interrupt Mask Register. */
+#define CAN_IMR_MB0                     BIT(0)
+#define CAN_IMR_MB1                     BIT(1)
+#define CAN_IMR_MB2                     BIT(2)
+#define CAN_IMR_MB3                     BIT(3)
+#define CAN_IMR_MB4                     BIT(4)
+#define CAN_IMR_MB5                     BIT(5)
+#define CAN_IMR_MB6                     BIT(6)
+#define CAN_IMR_MB7                     BIT(7)
+#define CAN_IMR_ERRA                    BIT(16)
+#define CAN_IMR_WARN                    BIT(17)
+#define CAN_IMR_ERRP                    BIT(18)
+#define CAN_IMR_BOFF                    BIT(19)
+#define CAN_IMR_SLEEP                   BIT(20)
+#define CAN_IMR_WAKEUP                  BIT(21)
+#define CAN_IMR_TOVF                    BIT(22)
+#define CAN_IMR_TSTP                    BIT(23)
+#define CAN_IMR_CERR                    BIT(24)
+#define CAN_IMR_SERR                    BIT(25)
+#define CAN_IMR_AERR                    BIT(26)
+#define CAN_IMR_FERR                    BIT(27)
+#define CAN_IMR_BERR                    BIT(28)
+
+/* Status Register. */
+#define CAN_SR_MB0                      BIT(0)
+#define CAN_SR_MB1                      BIT(1)
+#define CAN_SR_MB2                      BIT(2)
+#define CAN_SR_MB3                      BIT(3)
+#define CAN_SR_MB4                      BIT(4)
+#define CAN_SR_MB5                      BIT(5)
+#define CAN_SR_MB6                      BIT(6)
+#define CAN_SR_MB7                      BIT(7)
+#define CAN_SR_ERRA                     BIT(16)
+#define CAN_SR_WARN                     BIT(17)
+#define CAN_SR_ERRP                     BIT(18)
+#define CAN_SR_BOFF                     BIT(19)
+#define CAN_SR_SLEEP                    BIT(20)
+#define CAN_SR_WAKEUP                   BIT(21)
+#define CAN_SR_TOVF                     BIT(22)
+#define CAN_SR_TSTP                     BIT(23)
+#define CAN_SR_CERR                     BIT(24)
+#define CAN_SR_SERR                     BIT(25)
+#define CAN_SR_AERR                     BIT(26)
+#define CAN_SR_FERR                     BIT(27)
+#define CAN_SR_BERR                     BIT(28)
+#define CAN_SR_RBSY                     BIT(29)
+#define CAN_SR_TBSY                     BIT(30)
+#define CAN_SR_OVLSY                    BIT(31)
+
+/* Baudrate Register. */
+#define CAN_BR_PHASE2_POS               (0)
+#define CAN_BR_PHASE2_MASK              (0x7 << CAN_BR_PHASE2_POS)
+#define CAN_BR_PHASE2(value)            BITFIELD(CAN_BR_PHASE2, value)
+#define CAN_BR_PHASE1_POS               (4)
+#define CAN_BR_PHASE1_MASK              (0x7 << CAN_BR_PHASE1_POS)
+#define CAN_BR_PHASE1(value)            BITFIELD(CAN_BR_PHASE1, value)
+#define CAN_BR_PROPAG_POS               (8)
+#define CAN_BR_PROPAG_MASK              (0x7 << CAN_BR_PROPAG_POS)
+#define CAN_BR_PROPAG(value)            BITFIELD(CAN_BR_PROPAG, value)
+#define CAN_BR_SJW_POS                  (12)
+#define CAN_BR_SJW_MASK                 (0x3 << CAN_BR_SJW_POS)
+#define CAN_BR_SJW(value)               BITFIELD(CAN_BR_SJW, value)
+#define CAN_BR_BRP_POS                  (16)
+#define CAN_BR_BRP_MASK                 (0x7f << CAN_BR_BRP_POS)
+#define CAN_BR_BRP(value)               BITFIELD(CAN_BR_BRP, value)
+#define CAN_BR_SMP                      BIT(24)
+
+/* Timer Register. */
+#define CAN_TIM_TIMER_POS               (0)
+#define CAN_TIM_TIMER_MASK              (0xffff << CAN_TIM_TIMER_POS)
+#define CAN_TIM_TIMER(value)            BITFIELD(CAN_TIM_TIMER, value)
+
+/* Timestamp Register. */
+#define CAN_TIMESTP_MTIMESTAMP_POS      (0)
+#define CAN_TIMESTP_MTIMESTAMP_MASK     (0xffff << CAN_TIMESTP_MTIMESTAMP_POS)
+#define CAN_TIMESTP_MTIMESTAMP(value)   BITFIELD(CAN_TIMESTP_MTIMESTAMP, value)
+
+/* Error Counter Register. */
+#define CAN_ECR_REC_POS                 (0)
+#define CAN_ECR_REC_MASK                (0xff << CAN_ECR_REC_POS)
+#define CAN_ECR_REC(value)              BITFIELD(CAN_ECR_REC, value)
+#define CAN_ECR_TEC_POS                 (16)
+#define CAN_ECR_TEC_MASK                (0xff << CAN_ECR_TEC_POS)
+#define CAN_ECR_TEC(value)              BITFIELD(CAN_ECR_TEC, value)
+
+/* Transfer Command Register. */
+#define CAN_TCR_MB0                     BIT(0)
+#define CAN_TCR_MB1                     BIT(1)
+#define CAN_TCR_MB2                     BIT(2)
+#define CAN_TCR_MB3                     BIT(3)
+#define CAN_TCR_MB4                     BIT(4)
+#define CAN_TCR_MB5                     BIT(5)
+#define CAN_TCR_MB6                     BIT(6)
+#define CAN_TCR_MB7                     BIT(7)
+#define CAN_TCR_TIMRST                  BIT(31)
+
+/* Abort Register. */
+#define CAN_ACR_MB0                     BIT(0)
+#define CAN_ACR_MB1                     BIT(1)
+#define CAN_ACR_MB2                     BIT(2)
+#define CAN_ACR_MB3                     BIT(3)
+#define CAN_ACR_MB4                     BIT(4)
+#define CAN_ACR_MB5                     BIT(5)
+#define CAN_ACR_MB6                     BIT(6)
+#define CAN_ACR_MB7                     BIT(7)
+
+/* Write Protection Mode Register. */
+#define CAN_WPMR_WPEN                   BIT(0)
+#define CAN_WPMR_WPKEY_POS              (8)
+#define CAN_WPMR_WPKEY_MASK             (0xffffff << CAN_WPMR_WPKEY_POS)
+#define CAN_WPMR_WPKEY(value)           BITFIELD(CAN_WPMR_WPKEY, value)
+
+/* Write Protection Mode Register. */
+#define CAN_WPSR_WPVS                   BIT(0)
+#define CAN_WPSR_WPVSRC_POS             (8)
+#define CAN_WPSR_WPVSRC_MASK            (0xff << CAN_WPSR_WPVSRC_POS)
+#define CAN_WPSR_WPVSRC(value)          BITFIELD(CAN_WPSR_WPVSRC, value)
+
+/* Message Mode Register. */
+#define CAN_MMR_MTIMEMARK_POS           (0)
+#define CAN_MMR_MTIMEMARK_MASK          (0xffff << CAN_MMR_MTIMEMARK_POS)
+#define CAN_MMR_MTIMEMARK(value)        BITFIELD(CAN_MMR_MTIMEMARK, value)
+#define CAN_MMR_PRIOR_POS               (16)
+#define CAN_MMR_PRIOR_MASK              (0xf << CAN_MMR_PRIOR_POS)
+#define CAN_MMR_PRIOR(value)            BITFIELD(CAN_MMR_PRIOR, value)
+#define CAN_MMR_MOT_POS                 (24)
+#define CAN_MMR_MOT_MASK                (0x7 << CAN_MMR_MOT_POS)
+#define CAN_MMR_MOT(value)              BITFIELD(CAN_MMR_MOT, value)
+#define CAN_MMR_MOT_MB_RX               CAN_MMR_MOT(1)
+#define CAN_MMR_MOT_MB_TX               CAN_MMR_MOT(3)
+
+/* Message Acceptence Mask Register. */
+#define CAN_MAM_MIDVB_POS               (0)
+#define CAN_MAM_MIDVB_MASK              (0x3ffff << CAN_MAM_MIDVB_POS)
+#define CAN_MAM_MIDVB(value)            BITFIELD(CAN_MAM_MIDVB, value)
+#define CAN_MAM_MIDVA_POS               (18)
+#define CAN_MAM_MIDVA_MASK              (0x7ff << CAN_MAM_MIDVA_POS)
+#define CAN_MAM_MIDVA(value)            BITFIELD(CAN_MAM_MIDVA, value)
+#define CAN_MAM_MIDE                    BIT(29)
+
+/* Message ID Register. */
+#define CAN_MID_MIDVB_POS               (0)
+#define CAN_MID_MIDVB_MASK              (0x3ffff << CAN_MID_MIDVB_POS)
+#define CAN_MID_MIDVB(value)            BITFIELD(CAN_MID_MIDVB, value)
+#define CAN_MID_MIDVA_POS               (18)
+#define CAN_MID_MIDVA_MASK              (0x7ff << CAN_MID_MIDVA_POS)
+#define CAN_MID_MIDVA(value)            BITFIELD(CAN_MID_MIDVA, value)
+#define CAN_MID_MIDE                    BIT(29)
+
+/* Message Family ID Register. */
+#define CAN_MFID_MFID_POS               (0)
+#define CAN_MFID_MFID_MASK              (0x1fffffff << CAN_MFID_MFID_POS)
+#define CAN_MFID_MFID(value)            BITFIELD(CAN_MFID_MFID, value)
+
+/* Message Status Register. */
+#define CAN_MSR_MTIMESTAMP_POS          (0)
+#define CAN_MSR_MTIMESTAMP_MASK         (0xffff << CAN_MSR_MTIMESTAMP_POS)
+#define CAN_MSR_MTIMESTAMP(value)       BITFIELD(CAN_MSR_MTIMESTAMP, value)
+#define CAN_MSR_MDLC_POS                (16)
+#define CAN_MSR_MDLC_MASK               (0xf << CAN_MSR_MDLC_POS)
+#define CAN_MSR_MDLC(value)             BITFIELD(CAN_MSR_MDLC, value)
+#define CAN_MSR_MRTR                    BIT(20)
+#define CAN_MSR_MABT                    BIT(22)
+#define CAN_MSR_MRDY                    BIT(23)
+#define CAN_MSR_MMI                     BIT(24)
+
+/* Message Control Register. */
+#define CAN_MCR_MDLC_POS                (16)
+#define CAN_MCR_MDLC_MASK               (0xf << CAN_MCR_MDLC_POS)
+#define CAN_MCR_MDLC(value)             BITFIELD(CAN_MCR_MDLC, value)
+#define CAN_MCR_MRTR                    BIT(20)
+#define CAN_MCR_MACR                    BIT(22)
+#define CAN_MCR_MTCR                    BIT(23)
+
 struct sam_pio_t {
     uint32_t PER;
     uint32_t PDR;

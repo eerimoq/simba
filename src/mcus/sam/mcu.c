@@ -251,3 +251,17 @@ struct flash_device_t flash_device[FLASH_DEVICE_MAX] = {
         }
     }
 };
+
+struct can_device_t can_device[CAN_DEVICE_MAX] = {
+    {
+        .drv_p = NULL,
+        .regs_p = SAM_CAN0,
+        .id = PERIPHERAL_ID_CAN0
+    },
+
+    {
+        .drv_p = NULL,
+        .regs_p = SAM_CAN1,
+        .id = PERIPHERAL_ID_CAN1
+    }
+};

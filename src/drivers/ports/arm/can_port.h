@@ -24,17 +24,16 @@
 #include <io.h>
 
 struct can_device_t {
-    struct can_driver_t *drv;
-    int read_pos;
-    int write_pos;
-    struct canif_frame_t *frames_p;
-    int length;
+    struct can_driver_t *drv_p;
+    volatile struct sam_can_t *regs_p;
+    int id;
 };
 
 struct can_driver_t {
-    struct canif_t base;
-    struct thrd_t *thrd_p;
     struct can_device_t *dev_p;
+    struct sem_t tx_sem;
+    struct chan_t chout;
+    struct queue_t chin;
 };
 
 #endif
