@@ -52,6 +52,7 @@
 #endif
 
 #if defined(ARCH_ARM)
+#    include "drivers/exti.h"
 #    include "drivers/flash.h"
 #    include "drivers/pin.h"
 #    include "drivers/spi.h"

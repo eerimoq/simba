@@ -43,7 +43,8 @@ static void isr(struct can_device_t *dev_p)
 
     /* Handle TX complete interrupt. */
     if ((status & 0x1) != 0) {
-        //sem_put_irq(&drv_p->tx_sem, 1);
+        dev_p->regs_p->IDR = 0x00000001;
+        sem_put_irq(&drv_p->tx_sem, 1);
     }
 
     /* Look for frames in all RX mailboxes. */
@@ -85,12 +86,16 @@ ISR(can1)
     isr(&can_device[1]);
 }
 
-static ssize_t write_cb(struct can_driver_t *drv_p,
+static ssize_t write_cb(void *arg_p,
                         const void *buf_p,
                         size_t size)
 {
-    struct can_device_t *dev_p = drv_p->dev_p;
+    struct can_driver_t *drv_p;
+    struct can_device_t *dev_p;
     struct can_frame_t *frame_p = (struct can_frame_t *)buf_p;
+
+    drv_p = container_of(arg_p, struct can_driver_t, chout);
+    dev_p = drv_p->dev_p;
 
     /* Read the frame from the hardware. */
     dev_p->regs_p->MAILBOX[0].MID = CAN_MID_MIDVA(frame_p->id);
@@ -101,16 +106,19 @@ static ssize_t write_cb(struct can_driver_t *drv_p,
     dev_p->regs_p->MAILBOX[0].MCR = (CAN_MSR_MDLC(frame_p->size)
                                      | CAN_MCR_MTCR);
 
+    dev_p->regs_p->IER = 0x1;
+
     /* Wait for transmission to complete. */
-    //sem_get(drv_p->tx_sem, NULL);
+    sem_get(&drv_p->tx_sem, NULL);
 
     return (size);
 }
 
 int can_port_init(struct can_driver_t *drv_p,
                   struct can_device_t *dev_p,
-                  int speed)
+                  uint32_t speed)
 {
+    drv_p->speed = speed;
     sem_init(&drv_p->tx_sem, 0);
 
     return (0);
@@ -118,30 +126,50 @@ int can_port_init(struct can_driver_t *drv_p,
 
 int can_port_start(struct can_driver_t *drv_p)
 {
+    uint32_t mask;
+    volatile struct sam_pio_t *pio_p;
     struct can_device_t *dev_p = drv_p->dev_p;
     int i;
 
-    pmc_peripheral_clock_enable(dev_p->id);
-    nvic_enable_interrupt(dev_p->id);
+    /* Configure tx pin. */
+    mask = dev_p->tx.mask;
+    pio_p = dev_p->tx.pio_p;
+    pio_p->PDR = mask;
+    pio_p->ABSR &= ~mask;
 
-    /* Baud rate. */
-    dev_p->regs_p->BR = (CAN_BR_PHASE2(2)
-                         | CAN_BR_PHASE1(2)
-                         | CAN_BR_PROPAG(0)
-                         | CAN_BR_SJW(1)
-                         | CAN_BR_BRP(0));
+    /* Configure rx pin. */
+    mask = dev_p->rx.mask;
+    pio_p = dev_p->rx.pio_p;
+    pio_p->PDR = mask;
+    pio_p->ABSR &= ~mask;
+
+    pmc_peripheral_clock_enable(dev_p->id);
 
     /* One TX mailbox. */
     dev_p->regs_p->MAILBOX[0].MMR = CAN_MMR_MOT_MB_TX;
+    dev_p->regs_p->MAILBOX[0].MAM = CAN_MAM_MIDVA(0x7ff);
+    dev_p->regs_p->MAILBOX[0].MID &= ~CAN_MAM_MIDE;
 
     /* Use all but one mailbox for RX. */
     for (i = 1; i < MAILBOX_MAX; i++) {
         dev_p->regs_p->MAILBOX[i].MMR = CAN_MMR_MOT_MB_RX;
+        dev_p->regs_p->MAILBOX[i].MAM = CAN_MAM_MIDVA(0x0);
+        dev_p->regs_p->MAILBOX[i].MID = CAN_MID_MIDVA(0x0);
     }
 
-    dev_p->regs_p->IER = 0xffffffff;
+    /* Baud rate. */
+    dev_p->regs_p->BR = drv_p->speed;
 
+    dev_p->regs_p->IDR = 0xffffffff;
+    /* Enable interrupt for RX mailboxes.*/
+    dev_p->regs_p->IER = 0x000000fe;
     dev_p->regs_p->MR = (CAN_MR_CANEN);
+
+    while ((dev_p->regs_p->SR & CAN_SR_WAKEUP) == 0);
+
+    nvic_enable_interrupt(dev_p->id);
+
+    dev_p->drv_p = drv_p;
 
     return (0);
 }

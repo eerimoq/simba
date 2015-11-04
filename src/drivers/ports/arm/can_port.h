@@ -23,14 +23,41 @@
 
 #include <io.h>
 
+#define CAN_PORT_SPEED_1000KBPS (CAN_BR_PHASE2(3)         \
+                                 | CAN_BR_PHASE1(3)       \
+                                 | CAN_BR_PROPAG(2)       \
+                                 | CAN_BR_SJW(3)          \
+                                 | CAN_BR_BRP(0x6))
+
+#define CAN_PORT_SPEED_500KBPS  (CAN_BR_PHASE2(1)         \
+                                 | CAN_BR_PHASE1(1)       \
+                                 | CAN_BR_PROPAG(2)       \
+                                 | CAN_BR_SJW(2)          \
+                                 | CAN_BR_BRP(0x14))
+
+#define CAN_PORT_SPEED_250KBPS  (CAN_BR_PHASE2(1)         \
+                                 | CAN_BR_PHASE1(1)       \
+                                 | CAN_BR_PROPAG(2)       \
+                                 | CAN_BR_SJW(2)          \
+                                 | CAN_BR_BRP(0x29))
+
 struct can_device_t {
     struct can_driver_t *drv_p;
     volatile struct sam_can_t *regs_p;
     int id;
+    struct {
+        volatile struct sam_pio_t *pio_p;
+        uint32_t mask;
+    } rx;
+    struct {
+        volatile struct sam_pio_t *pio_p;
+        uint32_t mask;
+    } tx;
 };
 
 struct can_driver_t {
     struct can_device_t *dev_p;
+    uint32_t speed;
     struct sem_t tx_sem;
     struct chan_t chout;
     struct queue_t chin;

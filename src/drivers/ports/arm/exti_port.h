@@ -18,6 +18,10 @@
  * This file is part of the Simba project.
  */
 
+#define EXTI_PORT_TRIGGER_BOTH_EDGES   -1
+#define EXTI_PORT_TRIGGER_FALLING_EDGE -1
+#define EXTI_PORT_TRIGGER_RISING_EDGE  -1
+
 struct exti_device_t {
 };
 

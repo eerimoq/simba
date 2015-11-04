@@ -637,10 +637,10 @@ struct sam_pmc_t {
     uint32_t FSMR;
     uint32_t FSPR;
     uint32_t FOCR;
-    uint32_t reserved6[100];
+    uint32_t reserved6[26];
     uint32_t WPMR;
     uint32_t WPSR;
-    uint32_t reserved7[4];
+    uint32_t reserved7[5];
     uint32_t PCER1;
     uint32_t PCDR1;
     uint32_t PCSR1;
@@ -1641,10 +1641,10 @@ struct sam_can_t {
     uint32_t ECR;
     uint32_t TCR;
     uint32_t ACR;
-    uint32_t reserved0[45];
+    uint32_t reserved0[46];
     uint32_t WPMR;
     uint32_t WPSR;
-    uint32_t reserved1[68];
+    uint32_t reserved1[69];
     struct {
         uint32_t MMR;
         uint32_t MAM;

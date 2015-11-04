@@ -25,8 +25,9 @@
 
 #include "can_port.h"
 
-#define CAN_SPEED_1000KBPS 1000
-#define CAN_SPEED_500KBPS   500
+#define CAN_SPEED_1000KBPS CAN_PORT_SPEED_1000KBPS
+#define CAN_SPEED_500KBPS  CAN_PORT_SPEED_500KBPS
+#define CAN_SPEED_250KBPS  CAN_PORT_SPEED_250KBPS
 
 struct can_frame_t {
     uint32_t id;          /* Frame ID. */
@@ -54,7 +55,9 @@ extern struct can_device_t can_device[CAN_DEVICE_MAX];
  */
 int can_init(struct can_driver_t *drv_p,
              struct can_device_t *dev_p,
-             int speed);
+             uint32_t speed,
+             void *rxbuf_p,
+             size_t size);
 
 /**
  * Starts the CAN device using given driver object.

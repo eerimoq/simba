@@ -256,12 +256,28 @@ struct can_device_t can_device[CAN_DEVICE_MAX] = {
     {
         .drv_p = NULL,
         .regs_p = SAM_CAN0,
-        .id = PERIPHERAL_ID_CAN0
+        .id = PERIPHERAL_ID_CAN0,
+        .rx = {
+            .pio_p = SAM_PIOA,
+            .mask = SAM_PIO_P1
+        },
+        .tx = {
+            .pio_p = SAM_PIOA,
+            .mask = SAM_PIO_P0
+        }
     },
 
     {
         .drv_p = NULL,
         .regs_p = SAM_CAN1,
-        .id = PERIPHERAL_ID_CAN1
+        .id = PERIPHERAL_ID_CAN1,
+        .rx = {
+            .pio_p = SAM_PIOB,
+            .mask = SAM_PIO_P15
+        },
+        .tx = {
+            .pio_p = SAM_PIOB,
+            .mask = SAM_PIO_P14
+        }
     }
 };

@@ -29,34 +29,40 @@ int can_module_init(void)
 
 int can_init(struct can_driver_t *drv_p,
              struct can_device_t *dev_p,
-             int speed)
+             uint32_t speed,
+             void *rxbuf_p,
+             size_t size)
 {
+    drv_p->dev_p = dev_p;
+
     chan_init(&drv_p->chout,
               NULL,
               (ssize_t (*)(chan_t *, const void *, size_t))write_cb,
               NULL);
+
+    queue_init(&drv_p->chin, rxbuf_p, size);
 
     return (can_port_init(drv_p, dev_p, speed));
 }
 
 int can_start(struct can_driver_t *drv_p)
 {
-    return (0);
+    return (can_port_start(drv_p));
 }
 
 int can_stop(struct can_driver_t *drv_p)
 {
-    return (0);
+    return (can_port_stop(drv_p));
 }
 
 ssize_t can_read(struct can_driver_t *drv_p,
                  struct can_frame_t *frame_p)
 {
-    return (0);
+    return (queue_read(&drv_p->chin, frame_p, sizeof(*frame_p)));
 }
 
 ssize_t can_write(struct can_driver_t *drv_p,
                   const struct can_frame_t *frame_p)
 {
-    return (0);
+    return (chan_write(&drv_p->chout, frame_p, sizeof(*frame_p)));
 }
