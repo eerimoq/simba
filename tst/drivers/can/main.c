@@ -48,7 +48,7 @@
 static char can0_rx_buf[128];
 static char can1_rx_buf[128];
 
-int test_ping_pong(struct harness_t *harness_p)
+static int test_ping_pong(uint32_t speed)
 {
     struct can_frame_t frame;
     struct can_driver_t can0;
@@ -56,14 +56,14 @@ int test_ping_pong(struct harness_t *harness_p)
 
     BTASSERT(can_init(&can0,
                       &can_device[0],
-                      CAN_SPEED_1000KBPS,
+                      speed,
                       can0_rx_buf,
                       sizeof(can0_rx_buf)) == 0);
     BTASSERT(can_start(&can0) == 0);
 
     BTASSERT(can_init(&can1,
                       &can_device[1],
-                      CAN_SPEED_1000KBPS,
+                      speed,
                       can1_rx_buf,
                       sizeof(can1_rx_buf)) == 0);
     BTASSERT(can_start(&can1) == 0);
@@ -96,14 +96,34 @@ int test_ping_pong(struct harness_t *harness_p)
     BTASSERT(frame.id == PONG_ID);
     BTASSERT(frame.size == 0);
 
+    BTASSERT(can_stop(&can0) == 0);
+    BTASSERT(can_stop(&can1) == 0);
+
     return (0);
+}
+
+static int test_ping_pong_250k(struct harness_t *harness_p)
+{
+    return (test_ping_pong(CAN_SPEED_250KBPS));
+}
+
+static int test_ping_pong_500k(struct harness_t *harness_p)
+{
+    return (test_ping_pong(CAN_SPEED_500KBPS));
+}
+
+static int test_ping_pong_1000k(struct harness_t *harness_p)
+{
+    return (test_ping_pong(CAN_SPEED_1000KBPS));
 }
 
 int main()
 {
     struct harness_t harness;
     struct harness_testcase_t testcases[] = {
-        { test_ping_pong, "test_ping_pong" },
+        { test_ping_pong_250k, "test_ping_pong_250k" },
+        { test_ping_pong_500k, "test_ping_pong_500k" },
+        { test_ping_pong_1000k, "test_ping_pong_1000k" },
         { NULL, NULL }
     };
     

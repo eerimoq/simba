@@ -22,7 +22,6 @@
 #define __DRIVERS_CAN_H__
 
 #include "simba.h"
-
 #include "can_port.h"
 
 #define CAN_SPEED_1000KBPS CAN_PORT_SPEED_1000KBPS
@@ -78,10 +77,9 @@ int can_start(struct can_driver_t *drv_p);
 int can_stop(struct can_driver_t *drv_p);
 
 /**
- * Read CAN frame from given mailbox.
+ * Read a CAN frame.
  *
  * @param[in] drv_p Initialized driver object.
- * @param[in] mailbox Mailbox to read from.
  * @param[out] frame_p Read frame.
  *
  * @return zero(0) or negative error code.
@@ -90,10 +88,9 @@ int can_read(struct can_driver_t *drv_p,
              struct can_frame_t *frame_p);
 
 /**
- * Write CAN frame to given mailbox.
+ * Write a CAN frame.
  *
  * @param[in] drv_p Initialized driver object.
- * @param[in] mailbox Mailbox to write to.
  * @param[out] frame_p Frame to write.
  *
  * @return zero(0) or negative error code.
