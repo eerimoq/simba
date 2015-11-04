@@ -24,16 +24,9 @@
 #include <io.h>
 
 struct can_device_t {
-    struct can_driver_t *drv;
-    int read_pos;
-    int write_pos;
-    struct canif_frame_t *frames_p;
-    int length;
 };
 
 struct can_driver_t {
-    struct canif_t base;
-    struct thrd_t *thrd_p;
     struct can_device_t *dev_p;
 };
 

@@ -100,7 +100,7 @@ static int test_command(struct harness_t *harness_p)
     BTASSERT(fs_call(buf, NULL, &qout) == 0);
     read_until(buf, "\n");
 
-    strcpy(buf, "/tmp/bar 1 2 3 4 5 6 7 8 9 10");
+    strcpy(buf, "/tmp/bar 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16");
     BTASSERT(fs_call(buf, NULL, &qout) == -E2BIG);
     read_until(buf, "\n");
 

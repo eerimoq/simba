@@ -27,8 +27,6 @@
 #    include "drivers/pwm.h"
 #    include "drivers/spi.h"
 #    include "drivers/uart.h"
-#    include "drivers/canif.h"
-#    include "drivers/cantp.h"
 #    include "drivers/can.h"
 #    include "drivers/sd.h"
 #endif
@@ -44,8 +42,6 @@
 #    include "drivers/owi.h"
 #    include "drivers/ds18b20.h"
 #    include "drivers/ds3231.h"
-#    include "drivers/canif.h"
-#    include "drivers/cantp.h"
 #    include "drivers/mcp2515.h"
 #    include "drivers/nrf24l01.h"
 #    include "drivers/sd.h"
