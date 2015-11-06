@@ -78,11 +78,11 @@ int can_start(struct can_driver_t *drv_p);
 int can_stop(struct can_driver_t *drv_p);
 
 /**
- * Read a CAN frame.
+ * Read CAN frame(s).
  *
  * @param[in] drv_p Initialized driver object.
- * @param[out] frame_p Read frames.
- * @param[in] frame_p Size of frames buffer.
+ * @param[out] frame_p Array of read frames.
+ * @param[in] size Size of frames buffer in words.
  *
  * @return zero(0) or negative error code.
  */
@@ -91,11 +91,11 @@ int can_read(struct can_driver_t *drv_p,
              size_t size);
 
 /**
- * Write a CAN frame.
+ * Write a CAN frame(s).
  *
  * @param[in] drv_p Initialized driver object.
- * @param[out] frame_p Frame(s) to write.
- * @param[in] frame_p Size of frames buffer.
+ * @param[in] frame_p Array of frames to write.
+ * @param[in] size Size of frames buffer in words.
  *
  * @return zero(0) or negative error code.
  */

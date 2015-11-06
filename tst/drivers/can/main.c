@@ -155,6 +155,8 @@ static void *rx_thrd(void *arg_p)
     int id = 0;
     int i = 0;
 
+    thrd_set_name("rx_thrd");
+
     while (1) {
         BTASSERT(can_read(&can1, &frame, sizeof(frame)) == sizeof(frame));
         BTASSERT(frame.id == id, FSTR(" i = %d, frame.id = %d, id = %d\r\n"), i, frame.id, id);
@@ -222,7 +224,7 @@ static int test_max_throughput(struct harness_t *harness_p)
                             + sizes[i] * 8));
         data_bits_per_second = (frames_per_second * sizes[i] * 8);
 
-        std_printf(FSTR("elapsed_time = %f, %d frames/s, %d bits/s, %d data bits/s\r\n"),
+        std_printf(FSTR("elapsed time = %f s, %d frames/s, %d bits/s, %d data bits/s\r\n"),
                    elapsed_time,
                    (int)frames_per_second,
                    (int)bits_per_second,
@@ -238,6 +240,7 @@ static int test_max_throughput(struct harness_t *harness_p)
 
 int main()
 {
+    char buf[64];
     struct harness_t harness;
     struct harness_testcase_t testcases[] = {
         { test_ping_pong_250k, "test_ping_pong_250k" },
@@ -252,6 +255,13 @@ int main()
     uart_module_init();
 
     harness_init(&harness);
+
+    strcpy(buf, "/kernel/thrd/monitor/set_print 1");
+    fs_call(buf, NULL, sys_get_stdout());
+
+    strcpy(buf, "/kernel/thrd/monitor/set_period_ms 500");
+    fs_call(buf, NULL, sys_get_stdout());
+
     harness_run(&harness, testcases);
 
     return (0);
