@@ -56,13 +56,15 @@ int can_stop(struct can_driver_t *drv_p)
 }
 
 ssize_t can_read(struct can_driver_t *drv_p,
-                 struct can_frame_t *frame_p)
+                 struct can_frame_t *frame_p,
+                 size_t size)
 {
-    return (queue_read(&drv_p->chin, frame_p, sizeof(*frame_p)));
+    return (queue_read(&drv_p->chin, frame_p, size));
 }
 
 ssize_t can_write(struct can_driver_t *drv_p,
-                  const struct can_frame_t *frame_p)
+                  const struct can_frame_t *frame_p,
+                  size_t size)
 {
-    return (chan_write(&drv_p->chout, frame_p, sizeof(*frame_p)));
+    return (chan_write(&drv_p->chout, frame_p, size));
 }

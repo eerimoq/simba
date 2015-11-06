@@ -346,7 +346,7 @@ int thrd_cmd_monitor_set_print(int argc,
     if (argc != 2) {
         goto err_inval;
     }
-    
+
     if (std_strtol(argv[1], &print) != 0) {
         goto err_inval;
     }
@@ -361,7 +361,7 @@ int thrd_cmd_monitor_set_print(int argc,
 
 err_inval:
     std_fprintf(out_p, FSTR("Usage: set_print <1/0>\r\n"));
-    
+
     return (-EINVAL);
 }
 
@@ -618,16 +618,17 @@ int thrd_suspend_irq(struct time_t *timeout_p)
 
     /* Immediatly return if the thread is already resumed. */
     if (thrd_p->state == THRD_STATE_RESUMED) {
-        return (0);
-    }
+        thrd_p->state = THRD_STATE_READY;
+        scheduler_ready_push(thrd_p);
+    } else {
+        thrd_p->state = THRD_STATE_SUSPENDED;
 
-    thrd_p->state = THRD_STATE_SUSPENDED;
-
-    if (timeout_p != NULL) {
-        if ((timeout_p->seconds == 0) && (timeout_p->nanoseconds == 0)) {
-            return (-ETIMEDOUT);
-        } else {
-            timer_set_irq(&timer, timeout_p, thrd_port_suspend_timer_callback, thrd_p, 0);
+        if (timeout_p != NULL) {
+            if ((timeout_p->seconds == 0) && (timeout_p->nanoseconds == 0)) {
+                return (-ETIMEDOUT);
+            } else {
+                timer_set_irq(&timer, timeout_p, thrd_port_suspend_timer_callback, thrd_p, 0);
+            }
         }
     }
 

@@ -44,12 +44,9 @@
 #define PING_ID 0x23
 #define PONG_ID 0x24
 
-/* Throughput can frame id. */
-#define THROUGHPUT_ID 0x25
-
 /* CAN receive buffers. */
-static char can0_rx_buf[128];
-static char can1_rx_buf[128];
+static char can0_rx_buf[256];
+static char can1_rx_buf[256];
 
 struct can_driver_t can0;
 struct can_driver_t can1;
@@ -95,11 +92,11 @@ static int test_ping_pong(uint32_t speed, int extended_id)
     frame.extended_id = extended_id;
     frame.size = 1;
     frame.data.u8[0] = 0xfe;
-    BTASSERT(can_write(&can0, &frame) == sizeof(frame));
+    BTASSERT(can_write(&can0, &frame, sizeof(frame)) == sizeof(frame));
 
     /* Read ping. */
     memset(&frame, 0, sizeof(frame));
-    BTASSERT(can_read(&can1, &frame) == sizeof(frame));
+    BTASSERT(can_read(&can1, &frame, sizeof(frame)) == sizeof(frame));
     frame.id >>= (10 * extended_id);
     BTASSERT(frame.id == PING_ID);
     BTASSERT(frame.extended_id == extended_id);
@@ -113,11 +110,11 @@ static int test_ping_pong(uint32_t speed, int extended_id)
     frame.id <<= (10 * extended_id);
     frame.extended_id = extended_id;
     frame.size = 0;
-    BTASSERT(can_write(&can1, &frame) == sizeof(frame));
+    BTASSERT(can_write(&can1, &frame, sizeof(frame)) == sizeof(frame));
 
     /* Read pong. */
     memset(&frame, 0, sizeof(frame));
-    BTASSERT(can_read(&can0, &frame) == sizeof(frame));
+    BTASSERT(can_read(&can0, &frame, sizeof(frame)) == sizeof(frame));
     frame.id >>= (10 * extended_id);
     BTASSERT(frame.id == PONG_ID);
     BTASSERT(frame.extended_id == extended_id);
@@ -155,10 +152,21 @@ static THRD_STACK(rx_thrd_stack, 1024);
 static void *rx_thrd(void *arg_p)
 {
     struct can_frame_t frame;
+    int id = 0;
+    int i = 0;
 
     while (1) {
-        BTASSERT(can_read(&can1, &frame) == sizeof(frame));
-        BTASSERT(frame.id == THROUGHPUT_ID);
+        BTASSERT(can_read(&can1, &frame, sizeof(frame)) == sizeof(frame));
+        BTASSERT(frame.id == id, FSTR(" i = %d, frame.id = %d, id = %d\r\n"), i, frame.id, id);
+        i++;
+
+        if (i == 10000) {
+            i = 0;
+            id = 0;
+        } else {
+            id++;
+            id %= 0x800;
+        }
     }
 
     return (NULL);
@@ -166,10 +174,11 @@ static void *rx_thrd(void *arg_p)
 
 static int test_max_throughput(struct harness_t *harness_p)
 {
-    struct can_frame_t frame;
-    int i, j;
+    int i, j, k, id;
+    struct can_frame_t frames[8];
     struct time_t start_time, stop_time;
     float frames_per_second;
+    float bits_per_second;
     float data_bits_per_second;
     int sizes[] = {0, 4, 8};
     float elapsed_time;
@@ -183,17 +192,24 @@ static int test_max_throughput(struct harness_t *harness_p)
     start(CAN_SPEED_1000KBPS);
 
     for (i = 0; i < membersof(sizes); i++) {
-        frame.id = THROUGHPUT_ID;
-        frame.extended_id = 0;
-        frame.size = sizes[i];
-
         std_printf(FSTR("Writing 10000 frames with data size %d.\r\n"),
-                   frame.size);
-
+                   sizes[i]);
         time_get(&start_time);
+        id = 0;
 
-        for (j = 0; j < 10000; j++) {
-            BTASSERT(can_write(&can0, &frame) == sizeof(frame));
+        for (k = 0; k < membersof(frames); k++) {
+            frames[k].extended_id = 0;
+            frames[k].size = sizes[i];
+            memset(frames[k].data.u8, 0xaa, frames[k].size);
+        }
+
+        for (j = 0; j < 1250; j++) {
+            for (k = 0; k < membersof(frames); k++) {
+                frames[k].id = id;
+                id++;
+            }
+
+            BTASSERT(can_write(&can0, frames, sizeof(frames)) == sizeof(frames));
         }
 
         time_get(&stop_time);
@@ -201,13 +217,17 @@ static int test_max_throughput(struct harness_t *harness_p)
         elapsed_time = (stop_time.seconds - start_time.seconds) / (float)SYS_TICK_FREQUENCY;
 
         frames_per_second = (10000.0 / elapsed_time);
-        data_bits_per_second = (frames_per_second * frame.size * 8);
+        bits_per_second = (frames_per_second *
+                           (1 + 11 + 1 + 1 + 1 + 4 + 15 + 1 + 1 + 1 + 7
+                            + sizes[i] * 8));
+        data_bits_per_second = (frames_per_second * sizes[i] * 8);
 
-        std_printf(FSTR("elapsed_time = %f, frames_per_second = %f, data_bits_per_second = %f\r\n"),
+        std_printf(FSTR("elapsed_time = %f, %d frames/s, %d bits/s, %d data bits/s\r\n"),
                    elapsed_time,
-                   frames_per_second,
-                   data_bits_per_second);
-        std_printf(FSTR("can rx overflow counter = %lu\r\n"), (uint32_t)COUNTER(can_rx_channel_overflow));
+                   (int)frames_per_second,
+                   (int)bits_per_second,
+                   (int)data_bits_per_second);
+        BTASSERT(COUNTER(can_rx_channel_overflow) == 0);
         COUNTER(can_rx_channel_overflow) = 0;
     }
 

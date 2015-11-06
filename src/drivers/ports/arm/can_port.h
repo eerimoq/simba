@@ -58,9 +58,12 @@ struct can_device_t {
 struct can_driver_t {
     struct can_device_t *dev_p;
     uint32_t speed;
-    struct sem_t tx_sem;
+    struct thrd_t *thrd_p;
+    const struct can_frame_t *txframe_p;
+    size_t txsize;
     struct chan_t chout;
     struct queue_t chin;
+    struct sem_t sem;
 };
 
 #endif

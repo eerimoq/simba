@@ -24,6 +24,26 @@
 
 COUNTER_DEFINE("/drivers/can/rx_channel_overflow", can_rx_channel_overflow);
 
+static void write_frame_to_hw(volatile struct sam_can_t *regs_p,
+                              const struct can_frame_t *frame_p)
+{
+    /* Write the frame to the hardware. */
+    if (frame_p->extended_id == 0) {
+        regs_p->MAILBOX[0].MID = CAN_MID_MIDVA(frame_p->id);
+    } else {
+        regs_p->MAILBOX[0].MID = (CAN_MID_MIDE
+                                  | CAN_MID_MIDVA(frame_p->id & 0x7ff)
+                                  | CAN_MID_MIDVB(frame_p->id >> 11));
+    }
+
+    regs_p->MAILBOX[0].MDL = frame_p->data.u32[0];
+    regs_p->MAILBOX[0].MDH = frame_p->data.u32[1];
+
+    /* Set DLC and trigger the transmission. */
+    regs_p->MAILBOX[0].MCR = (CAN_MSR_MDLC(frame_p->size)
+                              | CAN_MCR_MTCR);
+}
+
 static void isr(struct can_device_t *dev_p)
 {
     struct can_frame_t frame;
@@ -40,11 +60,18 @@ static void isr(struct can_device_t *dev_p)
 
     /* Read the status. */
     status = dev_p->regs_p->SR;
+    status &= dev_p->regs_p->IMR;
 
     /* Handle TX complete interrupt. */
     if ((status & 0x1) != 0) {
-        dev_p->regs_p->IDR = 0x00000001;
-        sem_put_irq(&drv_p->tx_sem, 1);
+        if (drv_p->txsize > 0) {
+            write_frame_to_hw(dev_p->regs_p, drv_p->txframe_p);
+            drv_p->txsize -= sizeof(frame);
+            drv_p->txframe_p++;
+        } else {
+            dev_p->regs_p->IDR = 0x00000001;
+            thrd_resume_irq(drv_p->thrd_p, 0);
+        }
     }
 
     /* Look for frames in all RX mailboxes. */
@@ -94,31 +121,25 @@ static ssize_t write_cb(void *arg_p,
 {
     struct can_driver_t *drv_p;
     struct can_device_t *dev_p;
-    struct can_frame_t *frame_p = (struct can_frame_t *)buf_p;
+    const struct can_frame_t *frame_p = (struct can_frame_t *)buf_p;
 
     drv_p = container_of(arg_p, struct can_driver_t, chout);
     dev_p = drv_p->dev_p;
 
-    /* Write the frame to the hardware. */
-    if (frame_p->extended_id == 0) {
-        dev_p->regs_p->MAILBOX[0].MID = CAN_MID_MIDVA(frame_p->id);
-    } else {
-        dev_p->regs_p->MAILBOX[0].MID = (CAN_MID_MIDE
-                                         | CAN_MID_MIDVA(frame_p->id & 0x7ff)
-                                         | CAN_MID_MIDVB(frame_p->id >> 11));
-    }
+    drv_p->txframe_p = (frame_p + 1);
+    drv_p->txsize = (size - sizeof(*frame_p));
+    drv_p->thrd_p = thrd_self();
 
-    dev_p->regs_p->MAILBOX[0].MDL = frame_p->data.u32[0];
-    dev_p->regs_p->MAILBOX[0].MDH = frame_p->data.u32[1];
+    write_frame_to_hw(dev_p->regs_p, frame_p);
 
-    /* Set DLC and trigger the transmission. */
-    dev_p->regs_p->MAILBOX[0].MCR = (CAN_MSR_MDLC(frame_p->size)
-                                     | CAN_MCR_MTCR);
+    sys_lock();
 
     dev_p->regs_p->IER = 0x1;
 
     /* Wait for transmission to complete. */
-    sem_get(&drv_p->tx_sem, NULL);
+    thrd_suspend_irq(NULL);
+
+    sys_unlock();
 
     return (size);
 }
@@ -128,7 +149,6 @@ int can_port_init(struct can_driver_t *drv_p,
                   uint32_t speed)
 {
     drv_p->speed = speed;
-    sem_init(&drv_p->tx_sem, 0);
 
     return (0);
 }
@@ -194,7 +214,12 @@ int can_port_stop(struct can_driver_t *drv_p)
 {
     struct can_device_t *dev_p = drv_p->dev_p;
 
+    nvic_disable_interrupt(dev_p->id);
+
     dev_p->regs_p->MR = 0;
+    dev_p->regs_p->IDR = 0xffffffff;
+
+    pmc_peripheral_clock_disable(dev_p->id);
 
     return (0);
 }

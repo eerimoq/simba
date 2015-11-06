@@ -2056,12 +2056,27 @@ static inline void nvic_enable_interrupt(int id)
     SAM_NVIC->ISE[id / 32] = (1 << (id % 32));
 }
 
+static inline void nvic_disable_interrupt(int id)
+{
+    SAM_NVIC->ICE[id / 32] = (1 << (id % 32));
+    SAM_NVIC->ICP[id / 32] = (1 << (id % 32));
+}
+
 static inline void pmc_peripheral_clock_enable(int id)
 {
     if (id < 32) {
         SAM_PMC->PCER0 = (1 << (id % 32));
     } else {
         SAM_PMC->PCER1 = (1 << (id % 32));
+    }
+}
+
+static inline void pmc_peripheral_clock_disable(int id)
+{
+    if (id < 32) {
+        SAM_PMC->PCDR0 = (1 << (id % 32));
+    } else {
+        SAM_PMC->PCDR1 = (1 << (id % 32));
     }
 }
 
