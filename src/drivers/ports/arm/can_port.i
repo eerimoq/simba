@@ -55,7 +55,9 @@ static void isr(struct can_device_t *dev_p)
 
         /* Read the frame from the hardware. */
         mid = dev_p->regs_p->MAILBOX[i].MID;
-        frame.id = ((mid & CAN_MID_MIDVA_MASK) >> CAN_MID_MIDVA_POS);
+        frame.id = (((mid & CAN_MID_MIDVA_MASK) >> CAN_MID_MIDVA_POS)
+                    | ((mid & CAN_MID_MIDVB_MASK) << 11));
+        frame.extended_id = ((mid & CAN_MID_MIDE) != 0);
         msr = dev_p->regs_p->MAILBOX[i].MSR;
         frame.size = ((msr & CAN_MSR_MDLC_MASK) >> CAN_MSR_MDLC_POS);
         frame.rtr = ((msr & CAN_MSR_MRTR) != 0);
@@ -97,8 +99,15 @@ static ssize_t write_cb(void *arg_p,
     drv_p = container_of(arg_p, struct can_driver_t, chout);
     dev_p = drv_p->dev_p;
 
-    /* Read the frame from the hardware. */
-    dev_p->regs_p->MAILBOX[0].MID = CAN_MID_MIDVA(frame_p->id);
+    /* Write the frame to the hardware. */
+    if (frame_p->extended_id == 0) {
+        dev_p->regs_p->MAILBOX[0].MID = CAN_MID_MIDVA(frame_p->id);
+    } else {
+        dev_p->regs_p->MAILBOX[0].MID = (CAN_MID_MIDE
+                                         | CAN_MID_MIDVA(frame_p->id & 0x7ff)
+                                         | CAN_MID_MIDVB(frame_p->id >> 11));
+    }
+
     dev_p->regs_p->MAILBOX[0].MDL = frame_p->data.u32[0];
     dev_p->regs_p->MAILBOX[0].MDH = frame_p->data.u32[1];
 
@@ -150,11 +159,18 @@ int can_port_start(struct can_driver_t *drv_p)
     dev_p->regs_p->MAILBOX[0].MAM = CAN_MAM_MIDVA(0x7ff);
     dev_p->regs_p->MAILBOX[0].MID &= ~CAN_MAM_MIDE;
 
-    /* Use all but one mailbox for RX. */
-    for (i = 1; i < MAILBOX_MAX; i++) {
+    /* 3 RX mailboxes for extended ID. */
+    for (i = 1; i < 4; i++) {
         dev_p->regs_p->MAILBOX[i].MMR = CAN_MMR_MOT_MB_RX;
-        dev_p->regs_p->MAILBOX[i].MAM = CAN_MAM_MIDVA(0x0);
-        dev_p->regs_p->MAILBOX[i].MID = CAN_MID_MIDVA(0x0);
+        dev_p->regs_p->MAILBOX[i].MAM = CAN_MAM_MIDE;
+        dev_p->regs_p->MAILBOX[i].MID = CAN_MID_MIDE;
+    }
+
+    /* 4 RX mailboxes for standard ID. */
+    for (i = 4; i < MAILBOX_MAX; i++) {
+        dev_p->regs_p->MAILBOX[i].MMR = CAN_MMR_MOT_MB_RX;
+        dev_p->regs_p->MAILBOX[i].MAM = 0;
+        dev_p->regs_p->MAILBOX[i].MID = 0;
     }
 
     /* Baud rate. */
