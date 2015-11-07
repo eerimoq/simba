@@ -1994,6 +1994,100 @@ struct sam_can_t {
 #define CAN_MCR_MACR                    BIT(22)
 #define CAN_MCR_MTCR                    BIT(23)
 
+/* 44. Digital-to-Analog Converter Controller. */
+struct sam_dacc_t {
+    uint32_t CR;
+    uint32_t MR;
+    uint32_t reserved0[2];
+    uint32_t CHER;
+    uint32_t CHDR;
+    uint32_t CHSR;
+    uint32_t reserved1;
+    uint32_t CDR;
+    uint32_t IER;
+    uint32_t IDR;
+    uint32_t IMR;
+    uint32_t ISR;
+    uint32_t ACR;
+    uint32_t WPMR;
+    uint32_t WPSR;
+    uint32_t reserved2[24];
+    struct sam_pdc_t PDC;
+};
+
+/* Control Register. */
+#define SAM_DACC_CR_SWRST               BIT(0)
+
+/* Mode Register. */
+#define SAM_DACC_MR_TRGEN               BIT(0)
+#define SAM_DACC_TRGSEL_POS             (1)
+#define SAM_DACC_TRGSEL_MASK            (0x7 << SAM_DACC_TRGSEL_POS)
+#define SAM_DACC_TRGSEL(value)          BITFIELD(SAM_DACC_TRGSEL, value)
+#define SAM_DACC_MR_WORD                BIT(4)
+#define SAM_DACC_MR_SLEEP               BIT(5)
+#define SAM_DACC_MR_FASTWKUP            BIT(6)
+#define SAM_DACC_REFRESH_POS            (8)
+#define SAM_DACC_REFRESH_MASK           (0xff << SAM_DACC_REFRESH_POS)
+#define SAM_DACC_REFRESH(value)         BITFIELD(SAM_DACC_REFRESH, value)
+#define SAM_DACC_USER_SEL_POS           (16)
+#define SAM_DACC_USER_SEL_MASK          (0x3 << SAM_DACC_USER_SEL_POS)
+#define SAM_DACC_USER_SEL(value)        BITFIELD(SAM_DACC_USER_SEL, value)
+#define SAM_DACC_MR_TAG                 BIT(20)
+#define SAM_DACC_MR_MAXS                BIT(21)
+#define SAM_DACC_STARTUP_POS            (24)
+#define SAM_DACC_STARTUP_MASK           (0x3f << SAM_DACC_STARTUP_POS)
+#define SAM_DACC_STARTUP(value)         BITFIELD(SAM_DACC_STARTUP, value)
+
+/* Channel Enable Register. */
+#define SAM_DACC_CHER_CH0               BIT(0)
+#define SAM_DACC_CHER_CH1               BIT(1)
+
+/* Channel Disable Register. */
+#define SAM_DACC_CHDR_CH0               BIT(0)
+#define SAM_DACC_CHDR_CH1               BIT(1)
+
+/* Channel Status Register. */
+#define SAM_DACC_CHSR_CH0               BIT(0)
+#define SAM_DACC_CHSR_CH1               BIT(1)
+
+/* Interrupt Enable Register. */
+#define SAM_DACC_IER_TXRDY              BIT(0)
+#define SAM_DACC_IER_EOC                BIT(1)
+#define SAM_DACC_IER_ENDTX              BIT(2)
+#define SAM_DACC_IER_TXBUFE             BIT(3)
+
+/* Interrupt Disable Register. */
+#define SAM_DACC_IDR_TXRDY              BIT(0)
+#define SAM_DACC_IDR_EOC                BIT(1)
+#define SAM_DACC_IDR_ENDTX              BIT(2)
+#define SAM_DACC_IDR_TXBUFE             BIT(3)
+
+/* Interrupt Mask Register. */
+#define SAM_DACC_IMR_TXRDY              BIT(0)
+#define SAM_DACC_IMR_EOC                BIT(1)
+#define SAM_DACC_IMR_ENDTX              BIT(2)
+#define SAM_DACC_IMR_TXBUFE             BIT(3)
+
+/* Interrupt Status Register. */
+#define SAM_DACC_ISR_TXRDY              BIT(0)
+#define SAM_DACC_ISR_EOC                BIT(1)
+#define SAM_DACC_ISR_ENDTX              BIT(2)
+#define SAM_DACC_ISR_TXBUFE             BIT(3)
+
+/* Analog Current Register. */
+#define SAM_DACC_IBCTLCH0_POS           (0)
+#define SAM_DACC_IBCTLCH0_MASK          (0x3 << SAM_DACC_IBCTLCH0_POS)
+#define SAM_DACC_IBCTLCH0(value)        BITFIELD(SAM_DACC_IBCTLCH0, value)
+#define SAM_DACC_IBCTLCH1_POS           (2)
+#define SAM_DACC_IBCTLCH1_MASK          (0x3 << SAM_DACC_IBCTLCH1_POS)
+#define SAM_DACC_IBCTLCH1(value)        BITFIELD(SAM_DACC_IBCTLCH1, value)
+#define SAM_DACC_IBCTLDACCORE_POS       (8)
+#define SAM_DACC_IBCTLDACCORE_MASK      (0x3 << SAM_DACC_IBCTLDACCORE_POS)
+#define SAM_DACC_IBCTLDACCORE(value)    BITFIELD(SAM_DACC_IBCTLDACCORE, value)
+
+/* Write Protect Mode Register. */
+#define SAM_DACC_WPMR_WPEN              BIT(0)
+
 /* Base addresses of peripherals. */
 #define SAM_HSMCI      ((volatile struct sam_hsmci_t  *)0x40000000u)
 #define SAM_SSC        ((volatile struct sam_ssc_t    *)0x40004000u)
