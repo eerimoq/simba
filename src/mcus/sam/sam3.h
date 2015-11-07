@@ -75,7 +75,294 @@
 #define PERIPHERAL_ID_CAN0             43 /* CAN Controller 0 */
 #define PERIPHERAL_ID_CAN1             44 /* CAN Controller 1 */
 
-/*AHB DMA Controller. */
+/* Table 9-1. Peripheral identifiers. */
+#define PID_SUPC                        (0)
+#define PID_RSTC                        (1)
+#define PID_RTC                         (2)
+#define PID_RTT                         (3)
+#define PID_WDT                         (4)
+#define PID_PMC                         (5)
+#define PID_EFC0                        (6)
+#define PID_EFC1                        (7)
+#define PID_UART                        (8)
+#define PID_SMC                         (9)
+#define PID_PIOA                        (11)
+#define PID_PIOB                        (12)
+#define PID_PIOC                        (13)
+#define PID_PIOD                        (14)
+#define PID_USART0                      (17)
+#define PID_USART1                      (18)
+#define PID_USART2                      (19)
+#define PID_USART3                      (20)
+#define PID_HSMCI                       (21)
+#define PID_TWI0                        (22)
+#define PID_TWI1                        (23)
+#define PID_SPI0                        (24)
+#define PID_SSC                         (26)
+#define PID_TC0                         (27)
+#define PID_TC1                         (28)
+#define PID_TC2                         (29)
+#define PID_TC3                         (30)
+#define PID_TC4                         (31)
+#define PID_TC5                         (32)
+#define PID_TC6                         (33)
+#define PID_TC7                         (34)
+#define PID_TC8                         (35)
+#define PID_PWM                         (36)
+#define PID_ADC                         (37)
+#define PID_DACC                        (38)
+#define PID_DMAC                        (39)
+#define PID_UOTGHS                      (40)
+#define PID_TRNG                        (41)
+#define PID_EMAC                        (42)
+#define PID_CAN0                        (43)
+#define PID_CAN1                        (44)
+
+/* System control block. */
+struct sam_system_control_block_t {
+    uint32_t ACTLR;
+    uint32_t reserved1[3316];
+    uint32_t CPUID;
+    uint32_t ICSR;
+    uint32_t VTOR;
+    uint32_t AIRCR;
+    uint32_t SCR;
+    uint32_t CCR;
+    uint32_t SHPR1;
+    uint32_t SHPR2;
+    uint32_t SHPR3;
+    uint32_t SHCSR;
+    uint32_t CFSR;
+    uint32_t HFSR;
+    uint32_t MMAR;
+    uint32_t BFAR;
+};
+
+/* Auxiliary Control Register */
+#define SCB_ACTLR_DISMCYCINT            BIT(0)
+#define SCB_ACTLR_DISDEFWBUF            BIT(1)
+#define SCB_ACTLR_DISFOLD               BIT(2)
+
+/* CPUID Base Register */
+#define SCB_CPUID_REVISION_POS          (0)
+#define SCB_CPUID_REVISION_MASK         (0xf << SCB_CPUID_REVISION_POS)
+#define SCB_CPUID_REVISION(value)       BITFIELD(SCB_CPUID_REVISION, value)
+#define SCB_CPUID_PARTNO_POS            (4)
+#define SCB_CPUID_PARTNO_MASK           (0xfff << SCB_CPUID_PARTNO_POS)
+#define SCB_CPUID_PARTNO(value)         BITFIELD(SCB_CPUID_PARTNO, value)
+#define SCB_CPUID_CONSTANT_POS          (16)
+#define SCB_CPUID_CONSTANT_MASK         (0xf << SCB_CPUID_CONSTANT_POS)
+#define SCB_CPUID_CONSTANT(value)       BITFIELD(SCB_CPUID_CONSTANT, value)
+#define SCB_CPUID_VARIANT_POS           (20)
+#define SCB_CPUID_VARIANT_MASK          (0xf << SCB_CPUID_VARIANT_POS)
+#define SCB_CPUID_VARIANT(value)        BITFIELD(SCB_CPUID_VARIANT, value)
+#define SCB_CPUID_IMPLEMENTER_POS       (20)
+#define SCB_CPUID_IMPLEMENTER_MASK      (0xf << SCB_CPUID_IMPLEMENTER_POS)
+#define SCB_CPUID_IMPLEMENTER(value)    BITFIELD(SCB_CPUID_IMPLEMENTER, value)
+
+/* Interrupt Control and State Register */
+#define SCB_ICSR_VECTACTIVE_POS         (0)
+#define SCB_ICSR_VECTACTIVE_MASK        (0x1ff << SCB_ICSR_VECTACTIVE_POS)
+#define SCB_ICSR_VECTACTIVE(value)      BITFIELD(SCB_ICSR_VECTACTIVE, value)
+#define SCB_ICSR_RETTOBASE              BIT(11)
+#define SCB_ICSR_VECTPENDING_POS        (12)
+#define SCB_ICSR_VECTPENDING_MASK       (0x3ff << SCB_ICSR_VECTPENDING_POS)
+#define SCB_ICSR_VECTPENDING(value)     BITFIELD(SCB_ICSR_VECTPENDING, value)
+#define SCB_ICSR_ISRPENDING             BIT(22)
+#define SCB_ICSR_PENDSTCLR              BIT(25)
+#define SCB_ICSR_PENDSTSET              BIT(26)
+#define SCB_ICSR_PENDSVCLR              BIT(27)
+#define SCB_ICSR_PENDSVSET              BIT(28)
+
+/* Vector Table Offset Register */
+#define SCB_VTOR_TBLOFF_POS             (7)
+#define SCB_VTOR_TBLOFF_MASK            (0x7fffff << SCB_VTOR_TBLOFF_POS)
+#define SCB_VTOR_TBLOFF(value)          BITFIELD(SCB_VTOR_TBLOFF, value)
+
+/* Application Interrupt and Reset Control Register */
+#define SCB_AIRCR_VECTRESET             BIT(0)
+#define SCB_AIRCR_VECTCLRACTIVE         BIT(1)
+#define SCB_AIRCR_SYSRESETREQ           BIT(2)
+#define SCB_AIRCR_PRIGROUP_POS          (8)
+#define SCB_AIRCR_PRIGROUP_MASK         (0x7 << SCB_AIRCR_PRIGROUP_POS)
+#define SCB_AIRCR_PRIGROUP(value)       BITFIELD(SCB_AIRCR_PRIGROUP, value)
+#define SCB_AIRCR_ENDIANESS             BIT(15)
+#define SCB_AIRCR_VECTKEY_POS           (16)
+#define SCB_AIRCR_VECTKEY_MASK          (0xffff << SCB_AIRCR_VECTKEY_POS)
+#define SCB_AIRCR_VECTKEY(value)        BITFIELD(SCB_AIRCR_VECTKEY, value)
+
+/* System Control Register */
+#define SCB_SCR_SLEEONEXIT              BIT(1)
+#define SCB_SCR_SLEEPDEEP               BIT(2)
+#define SCB_SCR_SEVONPEND               BIT(4)
+
+/* Configuration and Control Register */
+#define SCB_CCR_NONEBASETHRDENA         BIT(0)
+#define SCB_CCR_USERSETMPEND            BIT(1)
+#define SCB_CCR_UNALIGN_TRP             BIT(3)
+#define SCB_CCR_DIV_0_TRP               BIT(4)
+#define SCB_CCR_BFHFNMIGN               BIT(8)
+#define SCB_CCR_STKALIGN                BIT(9)
+
+/* System Handler Priority Register 1 */
+#define SCB_SHPR1_PRI_4_POS             (0)
+#define SCB_SHPR1_PRI_4_MASK            (0xff <<  SCB_SHPR1_PRI_4_POS)
+#define SCB_SHPR1_PRI_4(value)          BITFIELD(SHPR1_PRI_4, value)
+#define SCB_SHPR1_PRI_5_POS             (8)
+#define SCB_SHPR1_PRI_5_MASK            (0xff << SCB_SHPR1_PRI_5_POS)
+#define SCB_SHPR1_PRI_5(value)          BITFIELD(SHPR1_PRI_5, value)
+#define SCB_SHPR1_PRI_6_POS             (16)
+#define SCB_SHPR1_PRI_6_MASK            (0xff << SCB_SHPR1_PRI_6_POS)
+#define SCB_SHPR1_PRI_6(value)          BITFIELD(SHPR1_PRI_6, value)
+
+/* System Handler Priority Register 2 */
+#define SCB_SHPR2_PRI_11_POS            (24)
+#define SCB_SHPR2_PRI_11_MASK           (0xff << SCB_SHPR2_PRI_11_POS)
+#define SCB_SHPR2_PRI_11(value)         BITFIELD(SCB_SHPR2_PRI_11, value)
+
+/* System Handler Priority Register 3 */
+#define SCB_SHPR3_PRI_14_POS            (16)
+#define SCB_SHPR3_PRI_14_MASK           (0xff << SCB_SHPR3_PRI_14_POS)
+#define SCB_SHPR3_PRI_14(value)         BITFIELD(SCB_SHPR3_PRI_14, value)
+#define SCB_SHPR3_PRI_15_POS            (24)
+#define SCB_SHPR3_PRI_15_MASK           (0xff << SCB_SHPR3_PRI_15_POS)
+#define SCB_SHPR3_PRI_15(value)         BITFIELD(SCB_SHPR3_PRI_15, value)
+
+/* System Handler Control and State Register */
+#define SCB_SHCSR_MEMFAULTACT           BIT(0)
+#define SCB_SHCSR_BUSFAULTACT           BIT(1)
+#define SCB_SHCSR_USGFAULTACT           BIT(3)
+#define SCB_SHCSR_SVCALLAVCT            BIT(7)
+#define SCB_SHCSR_MONITORACT            BIT(8)
+#define SCB_SHCSR_PENDSVACT             BIT(10)
+#define SCB_SHCSR_SYSTICKACT            BIT(11)
+#define SCB_SHCSR_USGFAULTPENDED        BIT(12)
+#define SCB_SHCSR_MEMFAULTPENDED        BIT(13)
+#define SCB_SHCSR_BUSFAULTPENDED        BIT(14)
+#define SCB_SHCSR_SVCALLPENDED          BIT(15)
+#define SCB_SHCSR_MEMFAULTENA           BIT(16)
+#define SCB_SHCSR_BUSFAULTENA           BIT(17)
+#define SCB_SHCSR_USGFAULTENA           BIT(18)
+
+/* Configurable Fault Status Register */
+#define SCB_CFSR
+
+/* Hard Fault Status Register */
+#define SCB_HFSR
+
+/* Memory Management Fault Address Register */
+#define SCB_MMAR
+
+/* Bus Fault Address Register */
+#define SCB_BFAR
+
+/* System timer. */
+struct sam_system_timer_t {
+    uint32_t CTRL;
+    uint32_t LOAD;
+    uint32_t VAL;
+    uint32_t CALIB;
+};
+
+/* SysTick Control and Status Register */
+#define SYSTEM_TIMER_CTRL_ENABLE        BIT(0)
+#define SYSTEM_TIMER_CTRL_TICKINT       BIT(1)
+#define SYSTEM_TIMER_CTRL_CLKSOURCE     BIT(2)
+#define SYSTEM_TIMER_CTRL_COUNTFLAG     BIT(16)
+
+/* SysTick Reload Value Register */
+#define SYSTEM_TIMER_LOAD_RELOAD_POS    (0)
+#define SYSTEM_TIMER_LOAD_RELOAD_MASK   (0xffffff << SYSTEM_TIMER_LOAD_RELOAD_POS)
+#define SYSTEM_TIMER_LOAD_RELOAD(value) BITFIELD(SYSTEM_TIMER_LOAD_RELOAD, value)
+
+/* SysTick Current Value Register */
+#define SYSTEM_TIMER_VAL_CURRENT_POS    (0)
+#define SYSTEM_TIMER_VAL_CURRENT_MASK   (0xffffff << SYSTEM_TIMER_VAL_CURRENT_POS)
+#define SYSTEM_TIMER_VAL_CURRENT(value) BITFIELD(SYSTEM_TIMER_VAL_CURRENT, value)
+
+    /* SysTick Calibration Value Register */
+#define SYSTEM_TIMER_CALIB_TENMS_POS    (0)
+#define SYSTEM_TIMER_CALIB_TENMS_MASK   (0xffffff << SYSTEM_TIMER_CALIB_TENMS_POS)
+#define SYSTEM_TIMER_CALIB_TENMS(value) BITFIELD(SYSTEM_TIMER_CALIB_TENMS, value)
+#define SYSTEM_TIMER_CALIB_SKEW         BIT(30)
+#define SYSTEM_TIMER_CALIB_NOREF        BIT(31)
+
+/* System nested vectored interrupt controller. */
+struct sam_nvic_t {
+    uint32_t ISE[2];
+    uint32_t reserved1[30];
+    uint32_t ICE[2];
+    uint32_t reserved2[30];
+    uint32_t ISP[2];
+    uint32_t reserved3[30];
+    uint32_t ICP[2];
+    uint32_t reserved4[30];
+    uint32_t IAB[2];
+    uint32_t reserved5[62];
+    uint32_t IP[8];
+    uint32_t reserved6[697];
+    uint32_t STIR;
+};
+
+#define NVIC_ISER_SET(id)     (SAM_NVIC->ISE[(id) / 32] |= (1 << ((id) % 32)))
+#define NVIC_ISER_GET(id)     ((SAM_NVIC->ISE[(id) / 32] >> ((id) % 32)) & 0x1)
+                              
+#define NVIC_ICER_SET(id)     (SAM_NVIC->ICE[(id) / 32] |= (1 << ((id) % 32)))
+#define NVIC_ICER_GET(id)     ((SAM_NVIC->ICE[(id) / 32] >> ((id) % 32)) & 0x1)
+                              
+#define NVIC_ISPR_SET(id)     (SAM_NVIC->ISP[(id) / 32] |= (1 << ((id) % 32)))
+#define NVIC_ISPR_GET(id)     ((SAM_NVIC->ISP[(id) / 32] >> ((id) % 32)) & 0x1)
+                              
+#define NVIC_ICPR_SET(id)     (SAM_NVIC->ICP[(id) / 32] |= (1 << ((id) % 32)))
+#define NVIC_ICPR_GET(id)     ((SAM_NVIC->ICP[(id) / 32] >> ((id) % 32)) & 0x1)
+                              
+#define NVIC_IABR_GET(id)     ((SAM_NVIC->IAB[(id) / 32] >> ((id) % 32)) & 0x1)
+
+#define NVIC_IP_SET(id, prio) (SAM_NVIC->IP[id] |= (prio))
+#define NVIC_IP_GET(id)       (SAM_NVIC->IP[id])
+
+#define NVIC_IP_SET(id, prio) (SAM_NVIC->IP[id] |= (prio))
+#define NVIC_IP_GET(id)       (SAM_NVIC->IP[id])
+
+#define NVIC_STIR_INTID(id)   (id)
+
+/* 15. Watchdog Timer. */
+struct sam_wdt_t {
+    uint32_t CR;
+    uint32_t MR;
+    uint32_t SR;
+};
+
+/* 18. Embedded flash controller. */
+struct sam_eefc_t {
+    uint32_t FMR;
+    uint32_t FCR;
+    uint32_t FSR;
+    uint32_t FRR;
+};
+
+#define EEFC_FMR_FRDY                   BIT(0)
+#define EEFC_FMR_FWS_POS                (8)
+#define EEFC_FMR_FWS_MASK               (0xf << EEFC_FMR_FWS_POS)
+#define EEFC_FMR_FWS(value)             BITFIELD(EEFC_FMR_FWS, value)
+#define EEFC_FMR_FAM                    BIT(24)
+#define EEFC_FCR_FCMD_POS               (0)
+#define EEFC_FCR_FCMD_MASK              (0xff << EEFC_FCR_FCMD_POS)
+#define EEFC_FCR_FCMD(value)            BITFIELD(EEFC_FCR_FCMD, value)
+#define EEFC_FCR_FARG_POS               (8)
+#define EEFC_FCR_FARG_MASK              (0xffff << EEFC_FCR_FARG_POS)
+#define EEFC_FCR_FARG(value)            BITFIELD(EEFC_FCR_FARG, value)
+#define EEFC_FCR_FKEY_POS               (24)
+#define EEFC_FCR_FKEY_MASK              (0xff << EEFC_FCR_FKEY_POS)
+#define EEFC_FCR_FKEY(value)            BITFIELD(EEFC_FCR_FKEY, value)
+#define EEFC_FSR_FRDY                   BIT(0)
+#define EEFC_FSR_FCMDE                  BIT(1)
+#define EEFC_FSR_FLOCKE                 BIT(2)
+#define EEFC_FRR_FVALUE_POS             (0)
+#define EEFC_FRR_FVALUE_MASK            (0xffffffff << EEFC_FRR_FVALUE_POS)
+#define EEFC_FRR_FVALUE(value)          BITFIELD(EEFC_FRR_FVALUE, value)
+
+/* 22. AHB DMA Controller. */
 struct sam_dmac_t {
     uint32_t GCFG;
     uint32_t EN;
@@ -354,263 +641,71 @@ struct sam_dmac_t {
 /* DMAC Write Protect Status Register */
 #define DMAC_WPSR_WPVS                  BIT(0)
 
-/* Serial peripheral interface. */
-struct sam_spi_t {
-    uint32_t CR;
-    uint32_t MR;
-    uint32_t RDR;
-    uint32_t TDR;
-    uint32_t SR;
-    uint32_t IER;
-    uint32_t IDR;
-    uint32_t IMR;
-    uint32_t reserved1[4];
-    uint32_t CSR[4];
-    uint32_t reserved2[38];
-    uint32_t WPMR;
-    uint32_t WPSR;
+/* 26. Peripheral DMA Controller. */
+struct sam_pdc_t {
+    uint32_t RPR;
+    uint32_t RCR;
+    uint32_t TPR;
+    uint32_t TCR;
+    uint32_t RNPR;
+    uint32_t RNCR;
+    uint32_t TNPR;
+    uint32_t TNCR;
+    uint32_t PTCR;
+    uint32_t PTSR;
 };
 
-/* Control register. */
-#define SPI_CR_SPIEN                    BIT(0)
-#define SPI_CR_SPIDIS                   BIT(1)
-#define SPI_CR_SWRST                    BIT(7)
-#define SPI_CR_LASTXFER                 BIT(24)
+/* Receive Pointer Register */
+#define PERIPH_RPR_RXPTR_POS            (0)
+#define PERIPH_RPR_RXPTR_MASK           (0xffffffff << PERIPH_RPR_RXPTR_POS)
+#define PERIPH_RPR_RXPTR(value)         BITFIELD(PERIPH_RPR_RXPTR, value)
 
-/* Mode register. */
-#define SPI_MR_MSTR                     BIT(0)
-#define SPI_MR_PS                       BIT(1)
-#define SPI_MR_PCSDEC                   BIT(2)
-#define SPI_MR_MODFDIS                  BIT(4)
-#define SPI_MR_WDRBT                    BIT(5)
-#define SPI_MR_LLB                      BIT(7)
-#define SPI_MR_PCS_POS                  (16)
-#define SPI_MR_PCS_MASK                 (0xf << SPI_MR_PCS_POS)
-#define SPI_MR_PCS(value)               BITFIELD(SPI_MR_PCS, value)
-#define SPI_MR_DLTBCS_POS               (24)
-#define SPI_MR_DLTBCS_MASK              (0xff << SPI_MR_DLTBCS_POS)
-#define SPI_MR_DLTBCS(value)            BITFIELD(SPI_MR_DLTBCS, value)
+/* Receive Counter Register */
+#define PERIPH_RCR_RXCTR_POS            (0)
+#define PERIPH_RCR_RXCTR_MASK           (0xffff << PERIPH_RCR_RXCTR_POS)
+#define PERIPH_RCR_RXCTR(value)         BITFIELD(PERIPH_RCR_RXCTR, value)
 
-/* Receive data register. */
-#define SPI_RDR_RD_POS                  (0)
-#define SPI_RDR_RD_MASK                 (0xffff << SPI_RDR_RD_POS)
-#define SPI_RDR_RD(value)               BITFIELD(SPI_RDR_RD, value)
-#define SPI_RDR_PCS_POS                 (16)
-#define SPI_RDR_PCS_MASK                (0xf << SPI_RDR_PCS_POS)
-#define SPI_RDR_PCS(value)              BITFIELD(SPI_RDR_PCS, value)
+/* Transmit Pointer Register */
+#define PERIPH_TPR_TXPTR_POS            (0)
+#define PERIPH_TPR_TXPTR_MASK           (0xffffffff << PERIPH_TPR_TXPTR_POS)
+#define PERIPH_TPR_TXPTR(value)         BITFIELD(PERIPH_TPR_TXPTR, value)
 
-/* Transmit data register. */
-#define SPI_TDR_TD_POS                  (0)
-#define SPI_TDR_TD_MASK                 (0xffff << SPI_TDR_TD_POS)
-#define SPI_TDR_TD(value)               BITFIELD(SPI_TDR_TD, value)
-#define SPI_TDR_PCS_POS                 (16)
-#define SPI_TDR_PCS_MASK                (0xf << SPI_TDR_PCS_POS)
-#define SPI_TDR_PCS(value)              BITFIELD(SPI_TDR_PCS, value)
-#define SPI_TDR_LASTXFER                BIT(24)
+/* Transmit Counter Register */
+#define PERIPH_TCR_TXCTR_POS            (0)
+#define PERIPH_TCR_TXCTR_MASK           (0xffff << PERIPH_TCR_TXCTR_POS)
+#define PERIPH_TCR_TXCTR(value)         BITFIELD(PERIPH_TCR_TXCTR, value)
 
-/* Status register. */
-#define SPI_SR_RDRF                     BIT(0)
-#define SPI_SR_TDRE                     BIT(1)
-#define SPI_SR_MODF                     BIT(2)
-#define SPI_SR_OVRES                    BIT(3)
-#define SPI_SR_NSSR                     BIT(8)
-#define SPI_SR_TXEMPTY                  BIT(9)
-#define SPI_SR_UNDES                    BIT(10)
-#define SPI_SR_SPIENS                   BIT(16)
+/* Receive Next Pointer Register */
+#define PERIPH_RNPR_RXNPTR_POS          (0)
+#define PERIPH_RNPR_RXNPTR_MASK         (0xffffffff << PERIPH_RNPR_RXNPTR_POS)
+#define PERIPH_RNPR_RXNPTR(value)       BITFIELD(PERIPH_RNPR_RXNPTR, value)
 
-/* Interrupt enable register. */
-#define SPI_IER_RDRF                    BIT(0)
-#define SPI_IER_TDRE                    BIT(1)
-#define SPI_IER_MODF                    BIT(2)
-#define SPI_IER_OVRES                   BIT(3)
-#define SPI_IER_NSSR                    BIT(8)
-#define SPI_IER_TXEMPTY                 BIT(9)
-#define SPI_IER_UNDES                   BIT(10)
+/* Receive Next Counter Register */
+#define PERIPH_RNCR_RXNCTR_POS          (0)
+#define PERIPH_RNCR_RXNCTR_MASK         (0xffff << PERIPH_RNCR_RXNCTR_POS)
+#define PERIPH_RNCR_RXNCTR(value)       BITFIELD(PERIPH_RNCR_RXNCTR, value)
 
-/* Interrupt disable register. */
-#define SPI_IDR_RDRF                    BIT(0)
-#define SPI_IDR_TDRE                    BIT(1)
-#define SPI_IDR_MODF                    BIT(2)
-#define SPI_IDR_OVRES                   BIT(3)
-#define SPI_IDR_NSSR                    BIT(8)
-#define SPI_IDR_TXEMPTY                 BIT(9)
-#define SPI_IDR_UNDES                   BIT(10)
+/* Transmit Next Pointer Register */
+#define PERIPH_TNPR_TXNPTR_POS          (0)
+#define PERIPH_TNPR_TXNPTR_MASK         (0xffffffff << PERIPH_TNPR_TXNPTR_POS)
+#define PERIPH_TNPR_TXNPTR(value)       BITFIELD(PERIPH_TNPR_TXNPTR, value)
 
-/* Interrupt mask register. */
-#define SPI_IMR_RDRF                    BIT(0)
-#define SPI_IMR_TDRE                    BIT(1)
-#define SPI_IMR_MODF                    BIT(2)
-#define SPI_IMR_OVRES                   BIT(3)
-#define SPI_IMR_NSSR                    BIT(8)
-#define SPI_IMR_TXEMPTY                 BIT(9)
-#define SPI_IMR_UNDES                   BIT(10)
+/* Transmit Next Counter Register */
+#define PERIPH_TNCR_TXNCTR_POS          (0)
+#define PERIPH_TNCR_TXNCTR_MASK         (0xffff << PERIPH_TNCR_TXNCTR_POS)
+#define PERIPH_TNCR_TXNCTR(value)       BITFIELD(PERIPH_TNCR_TXNCTR, value)
 
-/* Chip select register. */
-#define SPI_CSR_CPOL                    BIT(0)
-#define SPI_CSR_NCPHA                   BIT(1)
-#define SPI_CSR_CSNAAT                  BIT(2)
-#define SPI_CSR_CSAAT                   BIT(3)
-#define SPI_CSR_BITS_POS                (4)
-#define SPI_CSR_BITS_MASK               (0xf << SPI_CSR_BITS_POS)
-#define SPI_CSR_BITS(value)             BITFIELD(SPI_CSR_BITS, value)
-#define SPI_CSR_SCBR_POS                (8)
-#define SPI_CSR_SCBR_MASK               (0xff << SPI_CSR_SCBR_POS)
-#define SPI_CSR_SCBR(value)             BITFIELD(SPI_CSR_SCBR, value)
-#define SPI_CSR_DLYBS_POS               (16)
-#define SPI_CSR_DLYBS_MASK              (0xff << SPI_CSR_DLYBS_POS)
-#define SPI_CSR_DLYBS(value)            BITFIELD(SPI_CSR_DLYBS, value)
-#define SPI_CSR_DLYBCT_POS              (24)
-#define SPI_CSR_DLYBCT_MASK             (0xff << SPI_CSR_DLYBCT_POS)
-#define SPI_CSR_DLYBCT(value)           BITFIELD(SPI_CSR_DLYBCT, value)
+/* Transfer Control Register */
+#define PERIPH_PTCR_RXTEN               BIT(0)
+#define PERIPH_PTCR_RXTDIS              BIT(1)
+#define PERIPH_PTCR_TXTEN               BIT(8)
+#define PERIPH_PTCR_TXTDIS              BIT(9)
 
-/* Timer Counter. */
-struct sam_tc_t {
-    struct {
-        uint32_t CCR;
-        uint32_t CMR;
-        uint32_t SMMR;
-        uint32_t reserved1;
-        uint32_t CV;
-        uint32_t RA;
-        uint32_t RB;
-        uint32_t RC;
-        uint32_t SR;
-        uint32_t IER;
-        uint32_t IDR;
-        uint32_t IMR;
-    } CHANNEL[3];
-    uint32_t BCR;
-    uint32_t BMR;
-    uint32_t QIER;
-    uint32_t QIDR;
-    uint32_t QIMR;
-    uint32_t QISR;
-    uint32_t FMR;
-    uint32_t WPMR;
-};
+/* Transfer Status Register */
+#define PERIPH_PTSR_RXTEN               BIT(0)
+#define PERIPH_PTSR_TXTEN               BIT(8)
 
-/* Channel Control Register. */
-#define TC_CCR_CLKEN                    BIT(0)
-#define TC_CCR_CLKDIS                   BIT(1)
-#define TC_CCR_SWTRG                    BIT(2)
-
-/* Channel Mode Register, Capture. */
-#define TC_CMR_CAPTURE_TCCLKS_POS       (0)
-#define TC_CMR_CAPTURE_TCCLKS_MASK      (0x7 << TC_CMR_CAPTURE_TCCLKS_POS)
-#define TC_CMR_CAPTURE_TCCLKS(value)    BITFIELD(TC_CMR_CAPTURE_TCCLKS, (value))
-#define TC_CMR_CAPTURE_CLKI             BIT(3)
-#define TC_CMR_CAPTURE_BURST_POS        (4)
-#define TC_CMR_CAPTURE_BURST_MASK       (0x3 << TC_CMR_CAPTURE_BURST_POS)
-#define TC_CMR_CAPTURE_BURST(value)     BITFIELD(TC_CMR_CAPTURE_BURST, (value))
-#define TC_CMR_CAPTURE_LDBSTOP          BIT(6)
-#define TC_CMR_CAPTURE_LDBDIS           BIT(7)
-#define TC_CMR_CAPTURE_ETRGEDG_POS      (8)
-#define TC_CMR_CAPTURE_ETRGEDG_MASK     (0x3 << TC_CMR_CAPTURE_ETRGEDG_POS)
-#define TC_CMR_CAPTURE_ETRGEDG(value)   BITFIELD(TC_CMR_CAPTURE_ETRGEDG, (value))
-#define TC_CMR_CAPTURE_ABETRG           BIT(10)
-#define TC_CMR_CAPTURE_CPCTRG           BIT(14)
-#define TC_CMR_CAPTURE_WAVE             BIT(15)
-#define TC_CMR_CAPTURE_LDRA_POS         (16)
-#define TC_CMR_CAPTURE_LDRA_MASK        (0x3 << TC_CMR_CAPTURE_LDRA_POS)
-#define TC_CMR_CAPTURE_LDRA(value)      BITFIELD(TC_CMR_CAPTURE_LDRA, (value))
-#define TC_CMR_CAPTURE_LDRB_POS         (18)
-#define TC_CMR_CAPTURE_LDRB_MASK        (0x3 << TC_CMR_CAPTURE_LDRB_POS)
-#define TC_CMR_CAPTURE_LDRB(value)      BITFIELD(TC_CMR_CAPTURE_LDRB, (value))
-
-/* Channel Mode Register, Waveform. */
-#define TC_CMR_WAVEFORM_TCCLKS_POS      (0)
-#define TC_CMR_WAVEFORM_TCCLKS_MASK     (0x7 << TC_CMR_WAVEFORM_TCCLKS_POS)
-#define TC_CMR_WAVEFORM_TCCLKS(value)   BITFIELD(TC_CMR_WAVEFORM_TCCLKS, (value))
-#define TC_CMR_WAVEFORM_CLKI            BIT(3)
-#define TC_CMR_WAVEFORM_BURST_POS       (4)
-#define TC_CMR_WAVEFORM_BURST_MASK      (0x3 << TC_CMR_WAVEFORM_BURST_POS)
-#define TC_CMR_WAVEFORM_BURST(value)    BITFIELD(TC_CMR_WAVEFORM_BURST, (value))
-#define TC_CMR_WAVEFORM_CPCSTOP         BIT(6)
-#define TC_CMR_WAVEFORM_CPCDIS          BIT(7)
-#define TC_CMR_WAVEFORM_EEVTEDG_POS     (8)
-#define TC_CMR_WAVEFORM_EEVTEDG_MASK    (0x3 << TC_CMR_WAVEFORM_EEVTEDG_POS)
-#define TC_CMR_WAVEFORM_EEVTEDG(value)  BITFIELD(TC_CMR_WAVEFORM_EEVTEDG, (value))
-#define TC_CMR_WAVEFORM_EEVT_POS        (10)
-#define TC_CMR_WAVEFORM_EEVT_MASK       (0x3 << TC_CMR_WAVEFORM_EEVT_POS)
-#define TC_CMR_WAVEFORM_EEVT(value)     BITFIELD(TC_CMR_WAVEFORM_EEVT, (value))
-#define TC_CMR_WAVEFORM_ENETRG          BIT(12)
-#define TC_CMR_WAVEFORM_WAVSEL_POS      (13)
-#define TC_CMR_WAVEFORM_WAVSEL_MASK     (0x3 << TC_CMR_WAVEFORM_WAVSEL_POS)
-#define TC_CMR_WAVEFORM_WAVSEL(value)   BITFIELD(TC_CMR_WAVEFORM_WAVSEL, (value))
-#define TC_CMR_WAVEFORM_WAVE            BIT(15)
-#define TC_CMR_WAVEFORM_ACPA_POS        (16)
-#define TC_CMR_WAVEFORM_ACPA_MASK       (0x3 << TC_CMR_WAVEFORM_ACPA_POS)
-#define TC_CMR_WAVEFORM_ACPA(value)     BITFIELD(TC_CMR_WAVEFORM_ACPA, (value))
-#define TC_CMR_WAVEFORM_ACPC_POS        (18)
-#define TC_CMR_WAVEFORM_ACPC_MASK       (0x3 << TC_CMR_WAVEFORM_ACPC_POS)
-#define TC_CMR_WAVEFORM_ACPC(value)     BITFIELD(TC_CMR_WAVEFORM_ACPC, (value))
-#define TC_CMR_WAVEFORM_AEEVT_POS       (20)
-#define TC_CMR_WAVEFORM_AEEVT_MASK      (0x3 << TC_CMR_WAVEFORM_AEEVT_POS)
-#define TC_CMR_WAVEFORM_AEEVT(value)    BITFIELD(TC_CMR_WAVEFORM_AEEVT, (value))
-#define TC_CMR_WAVEFORM_ASWTRG_POS      (22)
-#define TC_CMR_WAVEFORM_ASWTRG_MASK     (0x3 << TC_CMR_WAVEFORM_ASWTRG_POS)
-#define TC_CMR_WAVEFORM_ASWTRG(value)   BITFIELD(TC_CMR_WAVEFORM_ASWTRG, (value))
-#define TC_CMR_WAVEFORM_BCPB_POS        (24)
-#define TC_CMR_WAVEFORM_BCPB_MASK       (0x3 << TC_CMR_WAVEFORM_BCPB_POS)
-#define TC_CMR_WAVEFORM_BCPB(value)     BITFIELD(TC_CMR_WAVEFORM_BCPB, (value))
-#define TC_CMR_WAVEFORM_BCPC_POS        (26)
-#define TC_CMR_WAVEFORM_BCPC_MASK       (0x3 << TC_CMR_WAVEFORM_BCPC_POS)
-#define TC_CMR_WAVEFORM_BCPC(value)     BITFIELD(TC_CMR_WAVEFORM_BCPC, (value))
-#define TC_CMR_WAVEFORM_BEEVT_POS       (28)
-#define TC_CMR_WAVEFORM_BEEVT_MASK      (0x3 << TC_CMR_WAVEFORM_BEEVT_POS)
-#define TC_CMR_WAVEFORM_BEEVT(value)    BITFIELD(TC_CMR_WAVEFORM_BEEVT, (value))
-#define TC_CMR_WAVEFORM_BSWTRG_POS      (30)
-#define TC_CMR_WAVEFORM_BSWTRG_MASK     (0x3 << TC_CMR_WAVEFORM_BSWTRG_POS)
-#define TC_CMR_WAVEFORM_BSWTRG(value)   BITFIELD(TC_CMR_WAVEFORM_BSWTRG, (value))
-
-/* Stepper Motor Mode Register. */
-#define TC_SMMR_GCEN                    BIT(0)
-#define TC_SMMR_DOWN                    BIT(1)
-
-/* Status Register. */
-#define TC_SR_COVFS                     BIT(0)
-#define TC_SR_LOVRS                     BIT(1)
-#define TC_SR_CPAS                      BIT(2)
-#define TC_SR_CPBS                      BIT(3)
-#define TC_SR_CPCS                      BIT(4)
-#define TC_SR_LDRAS                     BIT(5)
-#define TC_SR_LDRBS                     BIT(6)
-#define TC_SR_ETRGS                     BIT(7)
-#define TC_SR_CLKSTA                    BIT(16)
-#define TC_SR_MTIOA                     BIT(17)
-#define TC_SR_MTIOB                     BIT(18)
-
-/* Interrupt Enable Register. */
-#define TC_IER_COVFS                    BIT(0)
-#define TC_IER_LOVRS                    BIT(1)
-#define TC_IER_CPAS                     BIT(2)
-#define TC_IER_CPBS                     BIT(3)
-#define TC_IER_CPCS                     BIT(4)
-#define TC_IER_LDRAS                    BIT(5)
-#define TC_IER_LDRBS                    BIT(6)
-#define TC_IER_ETRGS                    BIT(7)
-
-/* Interrupt Disable Register. */
-#define TC_IDR_COVFS                    BIT(0)
-#define TC_IDR_LOVRS                    BIT(1)
-#define TC_IDR_CPAS                     BIT(2)
-#define TC_IDR_CPBS                     BIT(3)
-#define TC_IDR_CPCS                     BIT(4)
-#define TC_IDR_LDRAS                    BIT(5)
-#define TC_IDR_LDRBS                    BIT(6)
-#define TC_IDR_ETRGS                    BIT(7)
-
-/* Interrupt Mask Register. */
-#define TC_IMR_COVFS                    BIT(0)
-#define TC_IMR_LOVRS                    BIT(1)
-#define TC_IMR_CPAS                     BIT(2)
-#define TC_IMR_CPBS                     BIT(3)
-#define TC_IMR_CPCS                     BIT(4)
-#define TC_IMR_LDRAS                    BIT(5)
-#define TC_IMR_LDRBS                    BIT(6)
-#define TC_IMR_ETRGS                    BIT(7)
-
-/* Power management controller. */
+/* 28. Power management controller. */
 struct sam_pmc_t {
     uint32_t SCER;
     uint32_t SCDR;
@@ -918,376 +1013,208 @@ struct sam_pmc_t {
 #define PMC_PCR_DIV_PERIPH_DIV4_MCK     PMC_PCR_DIV(2)
 #define PMC_PCR_EN                      BIT(28)
 
-/* Table 9-1. Peripheral identifiers. */
-#define PID_SUPC                        (0)
-#define PID_RSTC                        (1)
-#define PID_RTC                         (2)
-#define PID_RTT                         (3)
-#define PID_WDT                         (4)
-#define PID_PMC                         (5)
-#define PID_EFC0                        (6)
-#define PID_EFC1                        (7)
-#define PID_UART                        (8)
-#define PID_SMC                         (9)
-#define PID_PIOA                        (11)
-#define PID_PIOB                        (12)
-#define PID_PIOC                        (13)
-#define PID_PIOD                        (14)
-#define PID_USART0                      (17)
-#define PID_USART1                      (18)
-#define PID_USART2                      (19)
-#define PID_USART3                      (20)
-#define PID_HSMCI                       (21)
-#define PID_TWI0                        (22)
-#define PID_TWI1                        (23)
-#define PID_SPI0                        (24)
-#define PID_SSC                         (26)
-#define PID_TC0                         (27)
-#define PID_TC1                         (28)
-#define PID_TC2                         (29)
-#define PID_TC3                         (30)
-#define PID_TC4                         (31)
-#define PID_TC5                         (32)
-#define PID_TC6                         (33)
-#define PID_TC7                         (34)
-#define PID_TC8                         (35)
-#define PID_PWM                         (36)
-#define PID_ADC                         (37)
-#define PID_DACC                        (38)
-#define PID_DMAC                        (39)
-#define PID_UOTGHS                      (40)
-#define PID_TRNG                        (41)
-#define PID_EMAC                        (42)
-#define PID_CAN0                        (43)
-#define PID_CAN1                        (44)
-
-/* Embedded flash controller. */
-struct sam_eefc_t {
-    uint32_t FMR;
-    uint32_t FCR;
-    uint32_t FSR;
-    uint32_t FRR;
+/* 31. Parallel Input/Output Controller. */
+struct sam_pio_t {
+    uint32_t PER;
+    uint32_t PDR;
+    uint32_t PSR;
+    uint32_t reserved1;
+    uint32_t OER;
+    uint32_t ODR;
+    uint32_t OSR;
+    uint32_t reserved2;
+    uint32_t IFER;
+    uint32_t IFDR;
+    uint32_t IFSR;
+    uint32_t reserved3;
+    uint32_t SODR;
+    uint32_t CODR;
+    uint32_t ODSR;
+    uint32_t PDSR;
+    uint32_t IER;
+    uint32_t IDR;
+    uint32_t IMR;
+    uint32_t ISR;
+    uint32_t MDER;
+    uint32_t MDDR;
+    uint32_t MDSR;
+    uint32_t reserved4;
+    uint32_t PUDR;
+    uint32_t PUER;
+    uint32_t PUSR;
+    uint32_t reserved5;
+    uint32_t ABSR;
+    uint32_t reserved6[3];
+    uint32_t SCIFSR;
+    uint32_t DIFSR;
+    uint32_t IFDGSR;
+    uint32_t SCDR;
+    uint32_t reserved7[4];
+    uint32_t OWER;
+    uint32_t OWDR;
+    uint32_t OWSR;
+    uint32_t reserved8;
+    uint32_t AIMER;
+    uint32_t AIMDR;
+    uint32_t AIMMR;
+    uint32_t reserved9;
+    uint32_t ESR;
+    uint32_t LSR;
+    uint32_t ELSR;
+    uint32_t reserved10;
+    uint32_t FELLSR;
+    uint32_t REHLSR;
+    uint32_t FRLHSR;
+    uint32_t reserved11;
+    uint32_t LOCKSR;
+    uint32_t WPMR;
+    uint32_t WPSR;
 };
 
-#define EEFC_FMR_FRDY                   BIT(0)
-#define EEFC_FMR_FWS_POS                (8)
-#define EEFC_FMR_FWS_MASK               (0xf << EEFC_FMR_FWS_POS)
-#define EEFC_FMR_FWS(value)             BITFIELD(EEFC_FMR_FWS, value)
-#define EEFC_FMR_FAM                    BIT(24)
-#define EEFC_FCR_FCMD_POS               (0)
-#define EEFC_FCR_FCMD_MASK              (0xff << EEFC_FCR_FCMD_POS)
-#define EEFC_FCR_FCMD(value)            BITFIELD(EEFC_FCR_FCMD, value)
-#define EEFC_FCR_FARG_POS               (8)
-#define EEFC_FCR_FARG_MASK              (0xffff << EEFC_FCR_FARG_POS)
-#define EEFC_FCR_FARG(value)            BITFIELD(EEFC_FCR_FARG, value)
-#define EEFC_FCR_FKEY_POS               (24)
-#define EEFC_FCR_FKEY_MASK              (0xff << EEFC_FCR_FKEY_POS)
-#define EEFC_FCR_FKEY(value)            BITFIELD(EEFC_FCR_FKEY, value)
-#define EEFC_FSR_FRDY                   BIT(0)
-#define EEFC_FSR_FCMDE                  BIT(1)
-#define EEFC_FSR_FLOCKE                 BIT(2)
-#define EEFC_FRR_FVALUE_POS             (0)
-#define EEFC_FRR_FVALUE_MASK            (0xffffffff << EEFC_FRR_FVALUE_POS)
-#define EEFC_FRR_FVALUE(value)          BITFIELD(EEFC_FRR_FVALUE, value)
+/* Port definitions. */
+#define SAM_PIO_P0                      BIT(0)
+#define SAM_PIO_P1                      BIT(1)
+#define SAM_PIO_P2                      BIT(2)
+#define SAM_PIO_P3                      BIT(3)
+#define SAM_PIO_P4                      BIT(4)
+#define SAM_PIO_P5                      BIT(5)
+#define SAM_PIO_P6                      BIT(6)
+#define SAM_PIO_P7                      BIT(7)
+#define SAM_PIO_P8                      BIT(8)
+#define SAM_PIO_P9                      BIT(9)
+#define SAM_PIO_P10                     BIT(10)
+#define SAM_PIO_P11                     BIT(11)
+#define SAM_PIO_P12                     BIT(12)
+#define SAM_PIO_P13                     BIT(13)
+#define SAM_PIO_P14                     BIT(14)
+#define SAM_PIO_P15                     BIT(15)
+#define SAM_PIO_P16                     BIT(16)
+#define SAM_PIO_P17                     BIT(17)
+#define SAM_PIO_P18                     BIT(18)
+#define SAM_PIO_P19                     BIT(19)
+#define SAM_PIO_P20                     BIT(20)
+#define SAM_PIO_P21                     BIT(21)
+#define SAM_PIO_P22                     BIT(22)
+#define SAM_PIO_P23                     BIT(23)
+#define SAM_PIO_P24                     BIT(24)
+#define SAM_PIO_P25                     BIT(25)
+#define SAM_PIO_P26                     BIT(26)
+#define SAM_PIO_P27                     BIT(27)
+#define SAM_PIO_P28                     BIT(28)
+#define SAM_PIO_P29                     BIT(29)
+#define SAM_PIO_P30                     BIT(30)
+#define SAM_PIO_P31                     BIT(31)
 
-/* System control block. */
-struct sam_system_control_block_t {
-    uint32_t ACTLR;
-    uint32_t reserved1[3316];
-    uint32_t CPUID;
-    uint32_t ICSR;
-    uint32_t VTOR;
-    uint32_t AIRCR;
-    uint32_t SCR;
-    uint32_t CCR;
-    uint32_t SHPR1;
-    uint32_t SHPR2;
-    uint32_t SHPR3;
-    uint32_t SHCSR;
-    uint32_t CFSR;
-    uint32_t HFSR;
-    uint32_t MMAR;
-    uint32_t BFAR;
-};
-
-/* Auxiliary Control Register */
-#define SCB_ACTLR_DISMCYCINT            BIT(0)
-#define SCB_ACTLR_DISDEFWBUF            BIT(1)
-#define SCB_ACTLR_DISFOLD               BIT(2)
-
-/* CPUID Base Register */
-#define SCB_CPUID_REVISION_POS          (0)
-#define SCB_CPUID_REVISION_MASK         (0xf << SCB_CPUID_REVISION_POS)
-#define SCB_CPUID_REVISION(value)       BITFIELD(SCB_CPUID_REVISION, value)
-#define SCB_CPUID_PARTNO_POS            (4)
-#define SCB_CPUID_PARTNO_MASK           (0xfff << SCB_CPUID_PARTNO_POS)
-#define SCB_CPUID_PARTNO(value)         BITFIELD(SCB_CPUID_PARTNO, value)
-#define SCB_CPUID_CONSTANT_POS          (16)
-#define SCB_CPUID_CONSTANT_MASK         (0xf << SCB_CPUID_CONSTANT_POS)
-#define SCB_CPUID_CONSTANT(value)       BITFIELD(SCB_CPUID_CONSTANT, value)
-#define SCB_CPUID_VARIANT_POS           (20)
-#define SCB_CPUID_VARIANT_MASK          (0xf << SCB_CPUID_VARIANT_POS)
-#define SCB_CPUID_VARIANT(value)        BITFIELD(SCB_CPUID_VARIANT, value)
-#define SCB_CPUID_IMPLEMENTER_POS       (20)
-#define SCB_CPUID_IMPLEMENTER_MASK      (0xf << SCB_CPUID_IMPLEMENTER_POS)
-#define SCB_CPUID_IMPLEMENTER(value)    BITFIELD(SCB_CPUID_IMPLEMENTER, value)
-
-/* Interrupt Control and State Register */
-#define SCB_ICSR_VECTACTIVE_POS         (0)
-#define SCB_ICSR_VECTACTIVE_MASK        (0x1ff << SCB_ICSR_VECTACTIVE_POS)
-#define SCB_ICSR_VECTACTIVE(value)      BITFIELD(SCB_ICSR_VECTACTIVE, value)
-#define SCB_ICSR_RETTOBASE              BIT(11)
-#define SCB_ICSR_VECTPENDING_POS        (12)
-#define SCB_ICSR_VECTPENDING_MASK       (0x3ff << SCB_ICSR_VECTPENDING_POS)
-#define SCB_ICSR_VECTPENDING(value)     BITFIELD(SCB_ICSR_VECTPENDING, value)
-#define SCB_ICSR_ISRPENDING             BIT(22)
-#define SCB_ICSR_PENDSTCLR              BIT(25)
-#define SCB_ICSR_PENDSTSET              BIT(26)
-#define SCB_ICSR_PENDSVCLR              BIT(27)
-#define SCB_ICSR_PENDSVSET              BIT(28)
-
-/* Vector Table Offset Register */
-#define SCB_VTOR_TBLOFF_POS             (7)
-#define SCB_VTOR_TBLOFF_MASK            (0x7fffff << SCB_VTOR_TBLOFF_POS)
-#define SCB_VTOR_TBLOFF(value)          BITFIELD(SCB_VTOR_TBLOFF, value)
-
-/* Application Interrupt and Reset Control Register */
-#define SCB_AIRCR_VECTRESET             BIT(0)
-#define SCB_AIRCR_VECTCLRACTIVE         BIT(1)
-#define SCB_AIRCR_SYSRESETREQ           BIT(2)
-#define SCB_AIRCR_PRIGROUP_POS          (8)
-#define SCB_AIRCR_PRIGROUP_MASK         (0x7 << SCB_AIRCR_PRIGROUP_POS)
-#define SCB_AIRCR_PRIGROUP(value)       BITFIELD(SCB_AIRCR_PRIGROUP, value)
-#define SCB_AIRCR_ENDIANESS             BIT(15)
-#define SCB_AIRCR_VECTKEY_POS           (16)
-#define SCB_AIRCR_VECTKEY_MASK          (0xffff << SCB_AIRCR_VECTKEY_POS)
-#define SCB_AIRCR_VECTKEY(value)        BITFIELD(SCB_AIRCR_VECTKEY, value)
-
-/* System Control Register */
-#define SCB_SCR_SLEEONEXIT              BIT(1)
-#define SCB_SCR_SLEEPDEEP               BIT(2)
-#define SCB_SCR_SEVONPEND               BIT(4)
-
-/* Configuration and Control Register */
-#define SCB_CCR_NONEBASETHRDENA         BIT(0)
-#define SCB_CCR_USERSETMPEND            BIT(1)
-#define SCB_CCR_UNALIGN_TRP             BIT(3)
-#define SCB_CCR_DIV_0_TRP               BIT(4)
-#define SCB_CCR_BFHFNMIGN               BIT(8)
-#define SCB_CCR_STKALIGN                BIT(9)
-
-/* System Handler Priority Register 1 */
-#define SCB_SHPR1_PRI_4_POS             (0)
-#define SCB_SHPR1_PRI_4_MASK            (0xff <<  SCB_SHPR1_PRI_4_POS)
-#define SCB_SHPR1_PRI_4(value)          BITFIELD(SHPR1_PRI_4, value)
-#define SCB_SHPR1_PRI_5_POS             (8)
-#define SCB_SHPR1_PRI_5_MASK            (0xff << SCB_SHPR1_PRI_5_POS)
-#define SCB_SHPR1_PRI_5(value)          BITFIELD(SHPR1_PRI_5, value)
-#define SCB_SHPR1_PRI_6_POS             (16)
-#define SCB_SHPR1_PRI_6_MASK            (0xff << SCB_SHPR1_PRI_6_POS)
-#define SCB_SHPR1_PRI_6(value)          BITFIELD(SHPR1_PRI_6, value)
-
-/* System Handler Priority Register 2 */
-#define SCB_SHPR2_PRI_11_POS            (24)
-#define SCB_SHPR2_PRI_11_MASK           (0xff << SCB_SHPR2_PRI_11_POS)
-#define SCB_SHPR2_PRI_11(value)         BITFIELD(SCB_SHPR2_PRI_11, value)
-
-/* System Handler Priority Register 3 */
-#define SCB_SHPR3_PRI_14_POS            (16)
-#define SCB_SHPR3_PRI_14_MASK           (0xff << SCB_SHPR3_PRI_14_POS)
-#define SCB_SHPR3_PRI_14(value)         BITFIELD(SCB_SHPR3_PRI_14, value)
-#define SCB_SHPR3_PRI_15_POS            (24)
-#define SCB_SHPR3_PRI_15_MASK           (0xff << SCB_SHPR3_PRI_15_POS)
-#define SCB_SHPR3_PRI_15(value)         BITFIELD(SCB_SHPR3_PRI_15, value)
-
-/* System Handler Control and State Register */
-#define SCB_SHCSR_MEMFAULTACT           BIT(0)
-#define SCB_SHCSR_BUSFAULTACT           BIT(1)
-#define SCB_SHCSR_USGFAULTACT           BIT(3)
-#define SCB_SHCSR_SVCALLAVCT            BIT(7)
-#define SCB_SHCSR_MONITORACT            BIT(8)
-#define SCB_SHCSR_PENDSVACT             BIT(10)
-#define SCB_SHCSR_SYSTICKACT            BIT(11)
-#define SCB_SHCSR_USGFAULTPENDED        BIT(12)
-#define SCB_SHCSR_MEMFAULTPENDED        BIT(13)
-#define SCB_SHCSR_BUSFAULTPENDED        BIT(14)
-#define SCB_SHCSR_SVCALLPENDED          BIT(15)
-#define SCB_SHCSR_MEMFAULTENA           BIT(16)
-#define SCB_SHCSR_BUSFAULTENA           BIT(17)
-#define SCB_SHCSR_USGFAULTENA           BIT(18)
-
-/* Configurable Fault Status Register */
-#define SCB_CFSR
-
-/* Hard Fault Status Register */
-#define SCB_HFSR
-
-/* Memory Management Fault Address Register */
-#define SCB_MMAR
-
-/* Bus Fault Address Register */
-#define SCB_BFAR
-
-/* System timer. */
-struct sam_system_timer_t {
-    uint32_t CTRL;
-    uint32_t LOAD;
-    uint32_t VAL;
-    uint32_t CALIB;
-};
-
-/* SysTick Control and Status Register */
-#define SYSTEM_TIMER_CTRL_ENABLE        BIT(0)
-#define SYSTEM_TIMER_CTRL_TICKINT       BIT(1)
-#define SYSTEM_TIMER_CTRL_CLKSOURCE     BIT(2)
-#define SYSTEM_TIMER_CTRL_COUNTFLAG     BIT(16)
-
-/* SysTick Reload Value Register */
-#define SYSTEM_TIMER_LOAD_RELOAD_POS    (0)
-#define SYSTEM_TIMER_LOAD_RELOAD_MASK   (0xffffff << SYSTEM_TIMER_LOAD_RELOAD_POS)
-#define SYSTEM_TIMER_LOAD_RELOAD(value) BITFIELD(SYSTEM_TIMER_LOAD_RELOAD, value)
-
-/* SysTick Current Value Register */
-#define SYSTEM_TIMER_VAL_CURRENT_POS    (0)
-#define SYSTEM_TIMER_VAL_CURRENT_MASK   (0xffffff << SYSTEM_TIMER_VAL_CURRENT_POS)
-#define SYSTEM_TIMER_VAL_CURRENT(value) BITFIELD(SYSTEM_TIMER_VAL_CURRENT, value)
-
-    /* SysTick Calibration Value Register */
-#define SYSTEM_TIMER_CALIB_TENMS_POS    (0)
-#define SYSTEM_TIMER_CALIB_TENMS_MASK   (0xffffff << SYSTEM_TIMER_CALIB_TENMS_POS)
-#define SYSTEM_TIMER_CALIB_TENMS(value) BITFIELD(SYSTEM_TIMER_CALIB_TENMS, value)
-#define SYSTEM_TIMER_CALIB_SKEW         BIT(30)
-#define SYSTEM_TIMER_CALIB_NOREF        BIT(31)
-
-/* System nested vectored interrupt controller. */
-struct sam_nvic_t {
-    uint32_t ISE[2];
-    uint32_t reserved1[30];
-    uint32_t ICE[2];
-    uint32_t reserved2[30];
-    uint32_t ISP[2];
-    uint32_t reserved3[30];
-    uint32_t ICP[2];
-    uint32_t reserved4[30];
-    uint32_t IAB[2];
-    uint32_t reserved5[62];
-    uint32_t IP[8];
-    uint32_t reserved6[697];
-    uint32_t STIR;
-};
-
-#define NVIC_ISER_SET(id)     (SAM_NVIC->ISE[(id) / 32] |= (1 << ((id) % 32)))
-#define NVIC_ISER_GET(id)     ((SAM_NVIC->ISE[(id) / 32] >> ((id) % 32)) & 0x1)
-                              
-#define NVIC_ICER_SET(id)     (SAM_NVIC->ICE[(id) / 32] |= (1 << ((id) % 32)))
-#define NVIC_ICER_GET(id)     ((SAM_NVIC->ICE[(id) / 32] >> ((id) % 32)) & 0x1)
-                              
-#define NVIC_ISPR_SET(id)     (SAM_NVIC->ISP[(id) / 32] |= (1 << ((id) % 32)))
-#define NVIC_ISPR_GET(id)     ((SAM_NVIC->ISP[(id) / 32] >> ((id) % 32)) & 0x1)
-                              
-#define NVIC_ICPR_SET(id)     (SAM_NVIC->ICP[(id) / 32] |= (1 << ((id) % 32)))
-#define NVIC_ICPR_GET(id)     ((SAM_NVIC->ICP[(id) / 32] >> ((id) % 32)) & 0x1)
-                              
-#define NVIC_IABR_GET(id)     ((SAM_NVIC->IAB[(id) / 32] >> ((id) % 32)) & 0x1)
-
-#define NVIC_IP_SET(id, prio) (SAM_NVIC->IP[id] |= (prio))
-#define NVIC_IP_GET(id)       (SAM_NVIC->IP[id])
-
-#define NVIC_IP_SET(id, prio) (SAM_NVIC->IP[id] |= (prio))
-#define NVIC_IP_GET(id)       (SAM_NVIC->IP[id])
-
-#define NVIC_STIR_INTID(id)   (id)
-
-/* High Speed MultiMedia Card Interface (HSMCI). */
-struct sam_hsmci_t {
+/* 32. Serial peripheral interface. */
+struct sam_spi_t {
     uint32_t CR;
     uint32_t MR;
-    uint32_t DTOR;
-    uint32_t SDCR;
-    uint32_t ARGR;
-    uint32_t CMDR;
-    uint32_t BLKR;
-    uint32_t CSTOR;
-    uint32_t RSPR[4];
     uint32_t RDR;
     uint32_t TDR;
-    uint32_t reserved1[2];
     uint32_t SR;
     uint32_t IER;
     uint32_t IDR;
     uint32_t IMR;
-    uint32_t DMA;
-    uint32_t CFG;
-    uint32_t reserved2[35];
+    uint32_t reserved1[4];
+    uint32_t CSR[4];
+    uint32_t reserved2[38];
     uint32_t WPMR;
     uint32_t WPSR;
-    uint32_t reserved3[69];
-    uint32_t FIFO[256];
 };
 
-struct sam_pdc_t {
-    uint32_t RPR;
-    uint32_t RCR;
-    uint32_t TPR;
-    uint32_t TCR;
-    uint32_t RNPR;
-    uint32_t RNCR;
-    uint32_t TNPR;
-    uint32_t TNCR;
-    uint32_t PTCR;
-    uint32_t PTSR;
-};
+/* Control register. */
+#define SPI_CR_SPIEN                    BIT(0)
+#define SPI_CR_SPIDIS                   BIT(1)
+#define SPI_CR_SWRST                    BIT(7)
+#define SPI_CR_LASTXFER                 BIT(24)
 
-/* Receive Pointer Register */
-#define PERIPH_RPR_RXPTR_POS            (0)
-#define PERIPH_RPR_RXPTR_MASK           (0xffffffff << PERIPH_RPR_RXPTR_POS)
-#define PERIPH_RPR_RXPTR(value)         BITFIELD(PERIPH_RPR_RXPTR, value)
+/* Mode register. */
+#define SPI_MR_MSTR                     BIT(0)
+#define SPI_MR_PS                       BIT(1)
+#define SPI_MR_PCSDEC                   BIT(2)
+#define SPI_MR_MODFDIS                  BIT(4)
+#define SPI_MR_WDRBT                    BIT(5)
+#define SPI_MR_LLB                      BIT(7)
+#define SPI_MR_PCS_POS                  (16)
+#define SPI_MR_PCS_MASK                 (0xf << SPI_MR_PCS_POS)
+#define SPI_MR_PCS(value)               BITFIELD(SPI_MR_PCS, value)
+#define SPI_MR_DLTBCS_POS               (24)
+#define SPI_MR_DLTBCS_MASK              (0xff << SPI_MR_DLTBCS_POS)
+#define SPI_MR_DLTBCS(value)            BITFIELD(SPI_MR_DLTBCS, value)
 
-/* Receive Counter Register */
-#define PERIPH_RCR_RXCTR_POS            (0)
-#define PERIPH_RCR_RXCTR_MASK           (0xffff << PERIPH_RCR_RXCTR_POS)
-#define PERIPH_RCR_RXCTR(value)         BITFIELD(PERIPH_RCR_RXCTR, value)
+/* Receive data register. */
+#define SPI_RDR_RD_POS                  (0)
+#define SPI_RDR_RD_MASK                 (0xffff << SPI_RDR_RD_POS)
+#define SPI_RDR_RD(value)               BITFIELD(SPI_RDR_RD, value)
+#define SPI_RDR_PCS_POS                 (16)
+#define SPI_RDR_PCS_MASK                (0xf << SPI_RDR_PCS_POS)
+#define SPI_RDR_PCS(value)              BITFIELD(SPI_RDR_PCS, value)
 
-/* Transmit Pointer Register */
-#define PERIPH_TPR_TXPTR_POS            (0)
-#define PERIPH_TPR_TXPTR_MASK           (0xffffffff << PERIPH_TPR_TXPTR_POS)
-#define PERIPH_TPR_TXPTR(value)         BITFIELD(PERIPH_TPR_TXPTR, value)
+/* Transmit data register. */
+#define SPI_TDR_TD_POS                  (0)
+#define SPI_TDR_TD_MASK                 (0xffff << SPI_TDR_TD_POS)
+#define SPI_TDR_TD(value)               BITFIELD(SPI_TDR_TD, value)
+#define SPI_TDR_PCS_POS                 (16)
+#define SPI_TDR_PCS_MASK                (0xf << SPI_TDR_PCS_POS)
+#define SPI_TDR_PCS(value)              BITFIELD(SPI_TDR_PCS, value)
+#define SPI_TDR_LASTXFER                BIT(24)
 
-/* Transmit Counter Register */
-#define PERIPH_TCR_TXCTR_POS            (0)
-#define PERIPH_TCR_TXCTR_MASK           (0xffff << PERIPH_TCR_TXCTR_POS)
-#define PERIPH_TCR_TXCTR(value)         BITFIELD(PERIPH_TCR_TXCTR, value)
+/* Status register. */
+#define SPI_SR_RDRF                     BIT(0)
+#define SPI_SR_TDRE                     BIT(1)
+#define SPI_SR_MODF                     BIT(2)
+#define SPI_SR_OVRES                    BIT(3)
+#define SPI_SR_NSSR                     BIT(8)
+#define SPI_SR_TXEMPTY                  BIT(9)
+#define SPI_SR_UNDES                    BIT(10)
+#define SPI_SR_SPIENS                   BIT(16)
 
-/* Receive Next Pointer Register */
-#define PERIPH_RNPR_RXNPTR_POS          (0)
-#define PERIPH_RNPR_RXNPTR_MASK         (0xffffffff << PERIPH_RNPR_RXNPTR_POS)
-#define PERIPH_RNPR_RXNPTR(value)       BITFIELD(PERIPH_RNPR_RXNPTR, value)
+/* Interrupt enable register. */
+#define SPI_IER_RDRF                    BIT(0)
+#define SPI_IER_TDRE                    BIT(1)
+#define SPI_IER_MODF                    BIT(2)
+#define SPI_IER_OVRES                   BIT(3)
+#define SPI_IER_NSSR                    BIT(8)
+#define SPI_IER_TXEMPTY                 BIT(9)
+#define SPI_IER_UNDES                   BIT(10)
 
-/* Receive Next Counter Register */
-#define PERIPH_RNCR_RXNCTR_POS          (0)
-#define PERIPH_RNCR_RXNCTR_MASK         (0xffff << PERIPH_RNCR_RXNCTR_POS)
-#define PERIPH_RNCR_RXNCTR(value)       BITFIELD(PERIPH_RNCR_RXNCTR, value)
+/* Interrupt disable register. */
+#define SPI_IDR_RDRF                    BIT(0)
+#define SPI_IDR_TDRE                    BIT(1)
+#define SPI_IDR_MODF                    BIT(2)
+#define SPI_IDR_OVRES                   BIT(3)
+#define SPI_IDR_NSSR                    BIT(8)
+#define SPI_IDR_TXEMPTY                 BIT(9)
+#define SPI_IDR_UNDES                   BIT(10)
 
-/* Transmit Next Pointer Register */
-#define PERIPH_TNPR_TXNPTR_POS          (0)
-#define PERIPH_TNPR_TXNPTR_MASK         (0xffffffff << PERIPH_TNPR_TXNPTR_POS)
-#define PERIPH_TNPR_TXNPTR(value)       BITFIELD(PERIPH_TNPR_TXNPTR, value)
+/* Interrupt mask register. */
+#define SPI_IMR_RDRF                    BIT(0)
+#define SPI_IMR_TDRE                    BIT(1)
+#define SPI_IMR_MODF                    BIT(2)
+#define SPI_IMR_OVRES                   BIT(3)
+#define SPI_IMR_NSSR                    BIT(8)
+#define SPI_IMR_TXEMPTY                 BIT(9)
+#define SPI_IMR_UNDES                   BIT(10)
 
-/* Transmit Next Counter Register */
-#define PERIPH_TNCR_TXNCTR_POS          (0)
-#define PERIPH_TNCR_TXNCTR_MASK         (0xffff << PERIPH_TNCR_TXNCTR_POS)
-#define PERIPH_TNCR_TXNCTR(value)       BITFIELD(PERIPH_TNCR_TXNCTR, value)
+/* Chip select register. */
+#define SPI_CSR_CPOL                    BIT(0)
+#define SPI_CSR_NCPHA                   BIT(1)
+#define SPI_CSR_CSNAAT                  BIT(2)
+#define SPI_CSR_CSAAT                   BIT(3)
+#define SPI_CSR_BITS_POS                (4)
+#define SPI_CSR_BITS_MASK               (0xf << SPI_CSR_BITS_POS)
+#define SPI_CSR_BITS(value)             BITFIELD(SPI_CSR_BITS, value)
+#define SPI_CSR_SCBR_POS                (8)
+#define SPI_CSR_SCBR_MASK               (0xff << SPI_CSR_SCBR_POS)
+#define SPI_CSR_SCBR(value)             BITFIELD(SPI_CSR_SCBR, value)
+#define SPI_CSR_DLYBS_POS               (16)
+#define SPI_CSR_DLYBS_MASK              (0xff << SPI_CSR_DLYBS_POS)
+#define SPI_CSR_DLYBS(value)            BITFIELD(SPI_CSR_DLYBS, value)
+#define SPI_CSR_DLYBCT_POS              (24)
+#define SPI_CSR_DLYBCT_MASK             (0xff << SPI_CSR_DLYBCT_POS)
+#define SPI_CSR_DLYBCT(value)           BITFIELD(SPI_CSR_DLYBCT, value)
 
-/* Transfer Control Register */
-#define PERIPH_PTCR_RXTEN               BIT(0)
-#define PERIPH_PTCR_RXTDIS              BIT(1)
-#define PERIPH_PTCR_TXTEN               BIT(8)
-#define PERIPH_PTCR_TXTDIS              BIT(9)
-
-/* Transfer Status Register */
-#define PERIPH_PTSR_RXTEN               BIT(0)
-#define PERIPH_PTSR_TXTEN               BIT(8)
-
+/* 34. Universal Asynchronous Receiver Tranceiver. */
 struct sam_uart_t {
     uint32_t CR;
     uint32_t MR;
@@ -1302,6 +1229,7 @@ struct sam_uart_t {
     struct sam_pdc_t PDC;
 };
 
+/* 35. Universal Synchrounous Asynchronous Receiver Tranceiver. */
 struct sam_usart_t {
     uint32_t CR;
     uint32_t MR;
@@ -1628,7 +1556,192 @@ struct sam_usart_t {
 #define SAM_ST         ((volatile struct sam_system_timer_t         *)0xe000e010u)
 #define SAM_NVIC       ((volatile struct sam_nvic_t                 *)0xe000e100u)
 
-/* Controller Area Network (CAN). */
+/* 36. Timer Counter. */
+struct sam_tc_t {
+    struct {
+        uint32_t CCR;
+        uint32_t CMR;
+        uint32_t SMMR;
+        uint32_t reserved1;
+        uint32_t CV;
+        uint32_t RA;
+        uint32_t RB;
+        uint32_t RC;
+        uint32_t SR;
+        uint32_t IER;
+        uint32_t IDR;
+        uint32_t IMR;
+    } CHANNEL[3];
+    uint32_t BCR;
+    uint32_t BMR;
+    uint32_t QIER;
+    uint32_t QIDR;
+    uint32_t QIMR;
+    uint32_t QISR;
+    uint32_t FMR;
+    uint32_t WPMR;
+};
+
+/* Channel Control Register. */
+#define TC_CCR_CLKEN                    BIT(0)
+#define TC_CCR_CLKDIS                   BIT(1)
+#define TC_CCR_SWTRG                    BIT(2)
+
+/* Channel Mode Register, Capture. */
+#define TC_CMR_CAPTURE_TCCLKS_POS       (0)
+#define TC_CMR_CAPTURE_TCCLKS_MASK      (0x7 << TC_CMR_CAPTURE_TCCLKS_POS)
+#define TC_CMR_CAPTURE_TCCLKS(value)    BITFIELD(TC_CMR_CAPTURE_TCCLKS, (value))
+#define TC_CMR_CAPTURE_CLKI             BIT(3)
+#define TC_CMR_CAPTURE_BURST_POS        (4)
+#define TC_CMR_CAPTURE_BURST_MASK       (0x3 << TC_CMR_CAPTURE_BURST_POS)
+#define TC_CMR_CAPTURE_BURST(value)     BITFIELD(TC_CMR_CAPTURE_BURST, (value))
+#define TC_CMR_CAPTURE_LDBSTOP          BIT(6)
+#define TC_CMR_CAPTURE_LDBDIS           BIT(7)
+#define TC_CMR_CAPTURE_ETRGEDG_POS      (8)
+#define TC_CMR_CAPTURE_ETRGEDG_MASK     (0x3 << TC_CMR_CAPTURE_ETRGEDG_POS)
+#define TC_CMR_CAPTURE_ETRGEDG(value)   BITFIELD(TC_CMR_CAPTURE_ETRGEDG, (value))
+#define TC_CMR_CAPTURE_ABETRG           BIT(10)
+#define TC_CMR_CAPTURE_CPCTRG           BIT(14)
+#define TC_CMR_CAPTURE_WAVE             BIT(15)
+#define TC_CMR_CAPTURE_LDRA_POS         (16)
+#define TC_CMR_CAPTURE_LDRA_MASK        (0x3 << TC_CMR_CAPTURE_LDRA_POS)
+#define TC_CMR_CAPTURE_LDRA(value)      BITFIELD(TC_CMR_CAPTURE_LDRA, (value))
+#define TC_CMR_CAPTURE_LDRB_POS         (18)
+#define TC_CMR_CAPTURE_LDRB_MASK        (0x3 << TC_CMR_CAPTURE_LDRB_POS)
+#define TC_CMR_CAPTURE_LDRB(value)      BITFIELD(TC_CMR_CAPTURE_LDRB, (value))
+
+/* Channel Mode Register, Waveform. */
+#define TC_CMR_WAVEFORM_TCCLKS_POS      (0)
+#define TC_CMR_WAVEFORM_TCCLKS_MASK     (0x7 << TC_CMR_WAVEFORM_TCCLKS_POS)
+#define TC_CMR_WAVEFORM_TCCLKS(value)   BITFIELD(TC_CMR_WAVEFORM_TCCLKS, (value))
+#define TC_CMR_WAVEFORM_CLKI            BIT(3)
+#define TC_CMR_WAVEFORM_BURST_POS       (4)
+#define TC_CMR_WAVEFORM_BURST_MASK      (0x3 << TC_CMR_WAVEFORM_BURST_POS)
+#define TC_CMR_WAVEFORM_BURST(value)    BITFIELD(TC_CMR_WAVEFORM_BURST, (value))
+#define TC_CMR_WAVEFORM_CPCSTOP         BIT(6)
+#define TC_CMR_WAVEFORM_CPCDIS          BIT(7)
+#define TC_CMR_WAVEFORM_EEVTEDG_POS     (8)
+#define TC_CMR_WAVEFORM_EEVTEDG_MASK    (0x3 << TC_CMR_WAVEFORM_EEVTEDG_POS)
+#define TC_CMR_WAVEFORM_EEVTEDG(value)  BITFIELD(TC_CMR_WAVEFORM_EEVTEDG, (value))
+#define TC_CMR_WAVEFORM_EEVT_POS        (10)
+#define TC_CMR_WAVEFORM_EEVT_MASK       (0x3 << TC_CMR_WAVEFORM_EEVT_POS)
+#define TC_CMR_WAVEFORM_EEVT(value)     BITFIELD(TC_CMR_WAVEFORM_EEVT, (value))
+#define TC_CMR_WAVEFORM_ENETRG          BIT(12)
+#define TC_CMR_WAVEFORM_WAVSEL_POS      (13)
+#define TC_CMR_WAVEFORM_WAVSEL_MASK     (0x3 << TC_CMR_WAVEFORM_WAVSEL_POS)
+#define TC_CMR_WAVEFORM_WAVSEL(value)   BITFIELD(TC_CMR_WAVEFORM_WAVSEL, (value))
+#define TC_CMR_WAVEFORM_WAVE            BIT(15)
+#define TC_CMR_WAVEFORM_ACPA_POS        (16)
+#define TC_CMR_WAVEFORM_ACPA_MASK       (0x3 << TC_CMR_WAVEFORM_ACPA_POS)
+#define TC_CMR_WAVEFORM_ACPA(value)     BITFIELD(TC_CMR_WAVEFORM_ACPA, (value))
+#define TC_CMR_WAVEFORM_ACPC_POS        (18)
+#define TC_CMR_WAVEFORM_ACPC_MASK       (0x3 << TC_CMR_WAVEFORM_ACPC_POS)
+#define TC_CMR_WAVEFORM_ACPC(value)     BITFIELD(TC_CMR_WAVEFORM_ACPC, (value))
+#define TC_CMR_WAVEFORM_AEEVT_POS       (20)
+#define TC_CMR_WAVEFORM_AEEVT_MASK      (0x3 << TC_CMR_WAVEFORM_AEEVT_POS)
+#define TC_CMR_WAVEFORM_AEEVT(value)    BITFIELD(TC_CMR_WAVEFORM_AEEVT, (value))
+#define TC_CMR_WAVEFORM_ASWTRG_POS      (22)
+#define TC_CMR_WAVEFORM_ASWTRG_MASK     (0x3 << TC_CMR_WAVEFORM_ASWTRG_POS)
+#define TC_CMR_WAVEFORM_ASWTRG(value)   BITFIELD(TC_CMR_WAVEFORM_ASWTRG, (value))
+#define TC_CMR_WAVEFORM_BCPB_POS        (24)
+#define TC_CMR_WAVEFORM_BCPB_MASK       (0x3 << TC_CMR_WAVEFORM_BCPB_POS)
+#define TC_CMR_WAVEFORM_BCPB(value)     BITFIELD(TC_CMR_WAVEFORM_BCPB, (value))
+#define TC_CMR_WAVEFORM_BCPC_POS        (26)
+#define TC_CMR_WAVEFORM_BCPC_MASK       (0x3 << TC_CMR_WAVEFORM_BCPC_POS)
+#define TC_CMR_WAVEFORM_BCPC(value)     BITFIELD(TC_CMR_WAVEFORM_BCPC, (value))
+#define TC_CMR_WAVEFORM_BEEVT_POS       (28)
+#define TC_CMR_WAVEFORM_BEEVT_MASK      (0x3 << TC_CMR_WAVEFORM_BEEVT_POS)
+#define TC_CMR_WAVEFORM_BEEVT(value)    BITFIELD(TC_CMR_WAVEFORM_BEEVT, (value))
+#define TC_CMR_WAVEFORM_BSWTRG_POS      (30)
+#define TC_CMR_WAVEFORM_BSWTRG_MASK     (0x3 << TC_CMR_WAVEFORM_BSWTRG_POS)
+#define TC_CMR_WAVEFORM_BSWTRG(value)   BITFIELD(TC_CMR_WAVEFORM_BSWTRG, (value))
+
+/* Stepper Motor Mode Register. */
+#define TC_SMMR_GCEN                    BIT(0)
+#define TC_SMMR_DOWN                    BIT(1)
+
+/* Status Register. */
+#define TC_SR_COVFS                     BIT(0)
+#define TC_SR_LOVRS                     BIT(1)
+#define TC_SR_CPAS                      BIT(2)
+#define TC_SR_CPBS                      BIT(3)
+#define TC_SR_CPCS                      BIT(4)
+#define TC_SR_LDRAS                     BIT(5)
+#define TC_SR_LDRBS                     BIT(6)
+#define TC_SR_ETRGS                     BIT(7)
+#define TC_SR_CLKSTA                    BIT(16)
+#define TC_SR_MTIOA                     BIT(17)
+#define TC_SR_MTIOB                     BIT(18)
+
+/* Interrupt Enable Register. */
+#define TC_IER_COVFS                    BIT(0)
+#define TC_IER_LOVRS                    BIT(1)
+#define TC_IER_CPAS                     BIT(2)
+#define TC_IER_CPBS                     BIT(3)
+#define TC_IER_CPCS                     BIT(4)
+#define TC_IER_LDRAS                    BIT(5)
+#define TC_IER_LDRBS                    BIT(6)
+#define TC_IER_ETRGS                    BIT(7)
+
+/* Interrupt Disable Register. */
+#define TC_IDR_COVFS                    BIT(0)
+#define TC_IDR_LOVRS                    BIT(1)
+#define TC_IDR_CPAS                     BIT(2)
+#define TC_IDR_CPBS                     BIT(3)
+#define TC_IDR_CPCS                     BIT(4)
+#define TC_IDR_LDRAS                    BIT(5)
+#define TC_IDR_LDRBS                    BIT(6)
+#define TC_IDR_ETRGS                    BIT(7)
+
+/* Interrupt Mask Register. */
+#define TC_IMR_COVFS                    BIT(0)
+#define TC_IMR_LOVRS                    BIT(1)
+#define TC_IMR_CPAS                     BIT(2)
+#define TC_IMR_CPBS                     BIT(3)
+#define TC_IMR_CPCS                     BIT(4)
+#define TC_IMR_LDRAS                    BIT(5)
+#define TC_IMR_LDRBS                    BIT(6)
+#define TC_IMR_ETRGS                    BIT(7)
+
+/* 37. High Speed MultiMedia Card Interface (HSMCI). */
+struct sam_hsmci_t {
+    uint32_t CR;
+    uint32_t MR;
+    uint32_t DTOR;
+    uint32_t SDCR;
+    uint32_t ARGR;
+    uint32_t CMDR;
+    uint32_t BLKR;
+    uint32_t CSTOR;
+    uint32_t RSPR[4];
+    uint32_t RDR;
+    uint32_t TDR;
+    uint32_t reserved1[2];
+    uint32_t SR;
+    uint32_t IER;
+    uint32_t IDR;
+    uint32_t IMR;
+    uint32_t DMA;
+    uint32_t CFG;
+    uint32_t reserved2[35];
+    uint32_t WPMR;
+    uint32_t WPSR;
+    uint32_t reserved3[69];
+    uint32_t FIFO[256];
+};
+
+/* 40. Controller Area Network (CAN). */
+struct sam_can_mailbox_t {
+    uint32_t MMR;
+    uint32_t MAM;
+    uint32_t MID;
+    uint32_t MFID;
+    uint32_t MSR;
+    uint32_t MDL;
+    uint32_t MDH;
+    uint32_t MCR;
+};
+
 struct sam_can_t {
     uint32_t MR;
     uint32_t IER;
@@ -1645,16 +1758,7 @@ struct sam_can_t {
     uint32_t WPMR;
     uint32_t WPSR;
     uint32_t reserved1[69];
-    struct {
-        uint32_t MMR;
-        uint32_t MAM;
-        uint32_t MID;
-        uint32_t MFID;
-        uint32_t MSR;
-        uint32_t MDL;
-        uint32_t MDH;
-        uint32_t MCR;
-    } MAILBOX[8];
+    struct sam_can_mailbox_t MAILBOX[8];
 };
 
 /* Mode Register. */
@@ -1890,103 +1994,6 @@ struct sam_can_t {
 #define CAN_MCR_MACR                    BIT(22)
 #define CAN_MCR_MTCR                    BIT(23)
 
-struct sam_pio_t {
-    uint32_t PER;
-    uint32_t PDR;
-    uint32_t PSR;
-    uint32_t reserved1;
-    uint32_t OER;
-    uint32_t ODR;
-    uint32_t OSR;
-    uint32_t reserved2;
-    uint32_t IFER;
-    uint32_t IFDR;
-    uint32_t IFSR;
-    uint32_t reserved3;
-    uint32_t SODR;
-    uint32_t CODR;
-    uint32_t ODSR;
-    uint32_t PDSR;
-    uint32_t IER;
-    uint32_t IDR;
-    uint32_t IMR;
-    uint32_t ISR;
-    uint32_t MDER;
-    uint32_t MDDR;
-    uint32_t MDSR;
-    uint32_t reserved4;
-    uint32_t PUDR;
-    uint32_t PUER;
-    uint32_t PUSR;
-    uint32_t reserved5;
-    uint32_t ABSR;
-    uint32_t reserved6[3];
-    uint32_t SCIFSR;
-    uint32_t DIFSR;
-    uint32_t IFDGSR;
-    uint32_t SCDR;
-    uint32_t reserved7[4];
-    uint32_t OWER;
-    uint32_t OWDR;
-    uint32_t OWSR;
-    uint32_t reserved8;
-    uint32_t AIMER;
-    uint32_t AIMDR;
-    uint32_t AIMMR;
-    uint32_t reserved9;
-    uint32_t ESR;
-    uint32_t LSR;
-    uint32_t ELSR;
-    uint32_t reserved10;
-    uint32_t FELLSR;
-    uint32_t REHLSR;
-    uint32_t FRLHSR;
-    uint32_t reserved11;
-    uint32_t LOCKSR;
-    uint32_t WPMR;
-    uint32_t WPSR;
-};
-
-/* Port definitions. */
-#define SAM_PIO_P0                      BIT(0)
-#define SAM_PIO_P1                      BIT(1)
-#define SAM_PIO_P2                      BIT(2)
-#define SAM_PIO_P3                      BIT(3)
-#define SAM_PIO_P4                      BIT(4)
-#define SAM_PIO_P5                      BIT(5)
-#define SAM_PIO_P6                      BIT(6)
-#define SAM_PIO_P7                      BIT(7)
-#define SAM_PIO_P8                      BIT(8)
-#define SAM_PIO_P9                      BIT(9)
-#define SAM_PIO_P10                     BIT(10)
-#define SAM_PIO_P11                     BIT(11)
-#define SAM_PIO_P12                     BIT(12)
-#define SAM_PIO_P13                     BIT(13)
-#define SAM_PIO_P14                     BIT(14)
-#define SAM_PIO_P15                     BIT(15)
-#define SAM_PIO_P16                     BIT(16)
-#define SAM_PIO_P17                     BIT(17)
-#define SAM_PIO_P18                     BIT(18)
-#define SAM_PIO_P19                     BIT(19)
-#define SAM_PIO_P20                     BIT(20)
-#define SAM_PIO_P21                     BIT(21)
-#define SAM_PIO_P22                     BIT(22)
-#define SAM_PIO_P23                     BIT(23)
-#define SAM_PIO_P24                     BIT(24)
-#define SAM_PIO_P25                     BIT(25)
-#define SAM_PIO_P26                     BIT(26)
-#define SAM_PIO_P27                     BIT(27)
-#define SAM_PIO_P28                     BIT(28)
-#define SAM_PIO_P29                     BIT(29)
-#define SAM_PIO_P30                     BIT(30)
-#define SAM_PIO_P31                     BIT(31)
-
-struct sam_wdt_t {
-    uint32_t CR;
-    uint32_t MR;
-    uint32_t SR;
-};
-
 /* Base addresses of peripherals. */
 #define SAM_HSMCI      ((volatile struct sam_hsmci_t  *)0x40000000u)
 #define SAM_SSC        ((volatile struct sam_ssc_t    *)0x40004000u)
@@ -1995,11 +2002,8 @@ struct sam_wdt_t {
 #define SAM_TC1        ((volatile struct sam_tc_t     *)0x40084000u)
 #define SAM_TC2        ((volatile struct sam_tc_t     *)0x40088000u)
 #define SAM_TWI0       ((volatile struct sam_twi_t    *)0x4008c000u)
-#define SAM_PDC_TWI0   ((volatile struct sam_pdc_t    *)0x4008c100u)
 #define SAM_TWI1       ((volatile struct sam_twi_t    *)0x40090000u)
-#define SAM_PDC_TWI1   ((volatile struct sam_pdc_t    *)0x40090100u)
 #define SAM_PWM        ((volatile struct sam_pwm_t    *)0x40094000u)
-#define SAM_PDC_PWM    ((volatile struct sam_pdc_t    *)0x40094100u)
 #define SAM_USART0     ((volatile struct sam_usart_t  *)0x40098000u)
 #define SAM_USART1     ((volatile struct sam_usart_t  *)0x4009c000u)
 #define SAM_USART2     ((volatile struct sam_usart_t  *)0x400a0000u)
@@ -2010,15 +2014,12 @@ struct sam_wdt_t {
 #define SAM_CAN1       ((volatile struct sam_can_t    *)0x400b8000u)
 #define SAM_TRNG       ((volatile struct sam_trng_t   *)0x400bc000u)
 #define SAM_ADC        ((volatile struct sam_adc_t    *)0x400c0000u)
-#define SAM_PDC_ADC    ((volatile struct sam_pdc_t    *)0x400c0100u)
 #define SAM_DMAC       ((volatile struct sam_dmac_t   *)0x400c4000u)
 #define SAM_DACC       ((volatile struct sam_dacc_t   *)0x400c8000u)
-#define SAM_PDC_DACC   ((volatile struct sam_pdc_t    *)0x400c8100u)
 #define SAM_SMC        ((volatile struct sam_smc_t    *)0x400e0000u)
 #define SAM_MATRIX     ((volatile struct sam_matrix_t *)0x400e0400u)
 #define SAM_PMC        ((volatile struct sam_pmc_t    *)0x400e0600u)
 #define SAM_UART       ((volatile struct sam_uart_t   *)0x400e0800u)
-#define SAM_PDC_UART   ((volatile struct sam_pdc_t    *)0x400e0900u)
 #define SAM_CHIPID     ((volatile struct sam_chipid_t *)0x400e0940u)
 #define SAM_EEFC0      ((volatile struct sam_eefc_t   *)0x400e0a00u)
 #define SAM_EEFC1      ((volatile struct sam_eefc_t   *)0x400e0c00u)
