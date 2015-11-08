@@ -38,7 +38,8 @@ static int test_sine_440_hz(struct harness_t *harness_p)
                       &pin_dac0_dev,
                       samples_per_second) == 0);
 
-    /* Samlples are in the range -1.0 to 1.0, */
+    /* Samples are in the range -1.0 to 1.0. Convert them to the range
+       0 to AMPLITUDE_MAX. */
     for (i = 0; i < membersof(samples); i++) {
         sample = dac_gen_sine[i % membersof(dac_gen_sine)];
         samples[i] =  AMPLITUDE_MAX * ((sample + 1.0) / 2.0);

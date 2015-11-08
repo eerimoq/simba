@@ -24,15 +24,28 @@
 struct dac_driver_t;
 
 struct dac_device_t {
+    volatile struct sam_dacc_t *regs_p;
+    int id;
     struct {
         struct dac_driver_t *head_p;
         struct dac_driver_t *tail_p;
     } jobs;
+    struct {
+        volatile struct sam_tc_t *regs_p;
+        int channel;
+        int id;
+    } tc;
 };
 
 struct dac_driver_t {
     struct dac_device_t *dev_p;
     struct pin_driver_t pin_drv;
+    struct {
+        const uint16_t *samples;
+        size_t length;
+        struct thrd_t *thrd_p;
+    } next;
+    struct dac_driver_t *next_p;
 };
 
 #endif
