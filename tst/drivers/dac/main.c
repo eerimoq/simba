@@ -35,7 +35,7 @@ static int test_sine_440_hz(struct harness_t *harness_p)
 
     BTASSERT(dac_init(&dac,
                       &dac_0_dev,
-                      &pin_dac0_dev,
+                      &pin_dac1_dev,
                       samples_per_second) == 0);
 
     /* Samples are in the range -1.0 to 1.0. Convert them to the range
@@ -45,9 +45,14 @@ static int test_sine_440_hz(struct harness_t *harness_p)
         samples[i] =  AMPLITUDE_MAX * ((sample + 1.0) / 2.0);
     }
 
+    std_printf(FSTR("Writing %d samples to DAC.\r\n"), 5 * samples_per_second);
+
     /* Output the signal on the DAC0-pin for 5 seconds. */
     for (i = 0; i < (5 * samples_per_second / membersof(samples)); i++) {
         BTASSERT(dac_async_convert(&dac, samples, membersof(samples)) == 0);
+        std_printf(FSTR("Wrote samples %d to %d.\r\n"),
+                   i * membersof(samples),
+                   (i + 1) * membersof(samples));
     }
 
     BTASSERT(dac_async_wait(&dac) == 0);

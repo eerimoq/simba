@@ -32,7 +32,6 @@ struct dac_device_t {
     } jobs;
     struct {
         volatile struct sam_tc_t *regs_p;
-        int channel;
         int id;
     } tc;
 };
@@ -40,11 +39,13 @@ struct dac_device_t {
 struct dac_driver_t {
     struct dac_device_t *dev_p;
     struct pin_driver_t pin_drv;
+    int channel;
     struct {
         const uint16_t *samples;
         size_t length;
-        struct thrd_t *thrd_p;
     } next;
+    struct thrd_t *thrd_p;
+    int state;
     struct dac_driver_t *next_p;
 };
 

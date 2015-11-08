@@ -284,9 +284,15 @@ struct can_device_t can_device[CAN_DEVICE_MAX] = {
 
 struct dac_device_t dac_device[DAC_DEVICE_MAX] = {
     {
+        .regs_p = SAM_DACC,
+        .id = PERIPHERAL_ID_DACC,
         .jobs = {
             .head_p = NULL,
             .tail_p = NULL
+        },
+        .tc = {
+            .regs_p = SAM_TC0,
+            .id = PERIPHERAL_ID_TC0
         }
     }
 };
