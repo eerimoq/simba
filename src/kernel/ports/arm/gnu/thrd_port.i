@@ -50,7 +50,7 @@ static void thrd_port_init_main(struct thrd_port_t *port)
     SAM_TC0->CHANNEL[0].CMR = TC_CMR_CAPTURE_TCCLKS(3);
 
     /* Start the timer counter. */
-    SAM_TC0->CHANNEL[0].CCR = (TC_CCR_CLKEN | TC_CCR_SWTRG);
+    SAM_TC0->CHANNEL[0].CCR = (TC_CCR_SWTRG | TC_CCR_CLKEN);
 }
 
 __attribute__((naked))

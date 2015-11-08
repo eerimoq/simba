@@ -18,21 +18,27 @@
  * This file is part of the Simba project.
  */
 
+/* Driver states. */
 #define STATE_CONVERTING 0
 #define STATE_WAITING    1
 #define STATE_EMPTY      2
 
-static void dac_hw_write(struct dac_driver_t *drv_p)
+static void write_next(struct dac_driver_t *drv_p)
 {
     drv_p->dev_p->regs_p->PDC.TNPR = (uint32_t)drv_p->next.samples;
     drv_p->dev_p->regs_p->PDC.TNCR = drv_p->next.length;
     drv_p->next.length = 0;
 }
 
-static void start_dac_hw(struct dac_driver_t *drv_p)
+static void convert_start(struct dac_driver_t *drv_p)
 {
     drv_p->dev_p->regs_p->CHER = (1 << drv_p->channel);
-    dac_hw_write(drv_p);
+    write_next(drv_p);
+}
+
+static void convert_stop(struct dac_driver_t *drv_p)
+{
+    drv_p->dev_p->regs_p->CHDR = (1 << drv_p->channel);
 }
 
 ISR(DAC_vect)
@@ -42,7 +48,7 @@ ISR(DAC_vect)
 
     /* Add more samples to the PDC, if any. */
     if (drv_p->next.length > 0) {
-        dac_hw_write(drv_p);
+        write_next(drv_p);
 
         /* Resume the waiting thread if it wants to write additional
            samples. */
@@ -53,10 +59,20 @@ ISR(DAC_vect)
 
     /* Act on empty PDC buffer. */
     if ((dev_p->regs_p->ISR & SAM_DACC_ISR_TXBUFE) != 0) {
+        convert_stop(drv_p);
+
         if (drv_p->state == STATE_WAITING) {
             thrd_resume_irq(drv_p->thrd_p, 0);
         } else {
             drv_p->state = STATE_EMPTY;
+        }
+
+        /* Dequeue this driver. */
+        dev_p->jobs.head_p = drv_p->next_p;
+
+        /* Start converting samples from next driver in queue. */
+        if (dev_p->jobs.head_p != NULL) {
+            convert_start(dev_p->jobs.head_p);
         }
     }
 }
@@ -93,8 +109,7 @@ static int dac_port_init(struct dac_driver_t *drv_p,
                          | SAM_DACC_MR_TRGSEL(2)
                          | SAM_DACC_MR_TRGEN);
 
-    /* Setup a Timer Counter to create the clock pulses to the
-       DACC. */
+    /* Setup a Timer Counter to send the clock pulses to the DACC. */
     pmc_peripheral_clock_enable(dev_p->tc.id);
 
     /* Create a square wave of the desired frequency. UPDOWN_RC
@@ -105,16 +120,16 @@ static int dac_port_init(struct dac_driver_t *drv_p,
                                         | TC_CMR_WAVEFORM_ACPA(1)
                                         | TC_CMR_WAVEFORM_WAVE
                                         | TC_CMR_WAVEFORM_WAVSEL_UPDOWN_RC
-                                        | TC_CMR_WAVEFORM_TCCLKS(1));
+                                        | TC_CMR_WAVEFORM_TCCLKS(0));
     rc = (F_CPU / 2 / sampling_rate);
     dev_p->tc.regs_p->CHANNEL[1].RA = (rc / 2);
     dev_p->tc.regs_p->CHANNEL[1].RC = rc;
-    dev_p->tc.regs_p->CHANNEL[1].CCR = TC_CCR_CLKEN;
+    dev_p->tc.regs_p->CHANNEL[1].CCR = (TC_CCR_SWTRG | TC_CCR_CLKEN);
 
-    /* Configure the TX pin. */
+    /* Configure the output pin. */
     mask = pin_dev_p->mask;
     pin_dev_p->pio_p->PDR = mask;
-    pin_dev_p->pio_p->ABSR |= mask;
+    /* pin_dev_p->pio_p->ABSR |= mask; */
 
     return (0);
 }
@@ -125,10 +140,10 @@ static int dac_port_async_convert(struct dac_driver_t *drv_p,
 {
     struct dac_device_t *dev_p = drv_p->dev_p;
 
+    drv_p->state = STATE_CONVERTING;
+
     /* Enqueue. */
     sys_lock();
-
-    drv_p->state = STATE_CONVERTING;
 
     /* Wait if last written data has not yet been written. */
     if (drv_p->next.length > 0) {
@@ -144,7 +159,7 @@ static int dac_port_async_convert(struct dac_driver_t *drv_p,
     if (dev_p->jobs.head_p == NULL) {
         /* Empty queue. */
         dev_p->jobs.head_p = drv_p;
-        start_dac_hw(drv_p);
+        convert_start(drv_p);
     } else {
         /* Non-empty queue. */
         drv_p->dev_p->jobs.tail_p->next_p = drv_p;

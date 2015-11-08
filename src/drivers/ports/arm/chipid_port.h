@@ -1,11 +1,11 @@
 /**
- * @file drivers/linux/pwm_port.i
+ * @file drivers/chipid_port.h
  * @version 1.0
  *
  * @section License
  * Copyright (C) 2014-2015, Erik Moqvist
  *
- * This library is free software; you can redistribute it and/or
+ * This library is free software; you chipid redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
@@ -18,14 +18,16 @@
  * This file is part of the Simba project.
  */
 
-static int pwm_port_init(struct pwm_driver_t *drv_p,
-                         const struct pwm_device_t *dev_p)
-{
-    return (0);
-}
+#ifndef __DRIVERS_CHIPID_PORT_H__
+#define __DRIVERS_CHIPID_PORT_H__
 
-static int pwm_port_set_duty(struct pwm_driver_t *drv_p,
-                             uint8_t value)
-{
-    return (0);
-}
+struct chipid_t {
+    int version;
+    int embedded_processor;
+    int non_volatile_program_memory_size[2];
+    int internal_sram_size;
+    int architecture;
+    int non_volatile_program_memory_type;
+};
+
+#endif

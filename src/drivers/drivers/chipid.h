@@ -1,11 +1,11 @@
 /**
- * @file drivers/pwm_port.h
+ * @file drivers/chipid.h
  * @version 1.0
  *
  * @section License
- * Copyright (C) 2014-2015, Erik Moqvist
+ * Copyright (C) 2015, Erik Moqvist
  *
- * This library is free software; you can redistribute it and/or
+ * This library is free software; you chipid redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
@@ -18,14 +18,19 @@
  * This file is part of the Simba project.
  */
 
-#ifndef __DRIVERS_PWM_PORT_H__
-#define __DRIVERS_PWM_PORT_H__
+#ifndef __DRIVERS_CHIPID_H__
+#define __DRIVERS_CHIPID_H__
 
-struct pwm_device_t {
-};
+#include "simba.h"
+#include "chipid_port.h"
 
-struct pwm_driver_t {
-    const struct pwm_device_t *dev_p;
-};
+/**
+ * Read chipset identify from the hardware.
+ *
+ * @param[out] id_p Read chip identity.
+ *
+ * @return zero(0) or negative error code.
+ */
+int chipid_read(struct chipid_t *id_p);
 
 #endif
