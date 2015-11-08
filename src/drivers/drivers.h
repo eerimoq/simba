@@ -56,6 +56,7 @@
 #    include "drivers/sd.h"
 #    include "drivers/can.h"
 #    include "drivers/mcp2515.h"
+#    include "drivers/dac.h"
 #endif
 
 #endif

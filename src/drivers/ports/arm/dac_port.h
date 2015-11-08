@@ -1,5 +1,5 @@
 /**
- * @file mcu.h
+ * @file drivers/dac_port.h
  * @version 1.0
  *
  * @section License
@@ -18,29 +18,21 @@
  * This file is part of the Simba project.
  */
 
-#ifndef __MCU_H__
-#define __MCU_H__
+#ifndef __DRIVERS_DAC_PORT_H__
+#define __DRIVERS_DAC_PORT_H__
 
-#include "sam3.h"
+struct dac_driver_t;
 
-/* Pin controller start indexes in devices array. */
-#define SAM_PA 0
-#define SAM_PB 30
-#define SAM_PC 62
-#define SAM_PD 93
+struct dac_device_t {
+    struct {
+        struct dac_driver_t *head_p;
+        struct dac_driver_t *tail_p;
+    } jobs;
+};
 
-#if defined(MCU_SAM_3X8E)
-#    define PIN_DEVICE_MAX    103
-#    define EXTI_DEVICE_MAX     2
-#    define SPI_DEVICE_MAX      1
-#    define UART_DEVICE_MAX     5
-#    define PWM_DEVICE_MAX     12
-#    define ADC_DEVICE_MAX      1
-#    define DAC_DEVICE_MAX      1
-#    define FLASH_DEVICE_MAX    1
-#    define CAN_DEVICE_MAX      2
-#else
-#     error "Unsupported MCU."
-#endif
+struct dac_driver_t {
+    struct dac_device_t *dev_p;
+    struct pin_driver_t pin_drv;
+};
 
 #endif

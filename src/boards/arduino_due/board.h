@@ -92,6 +92,9 @@
 
 #define pin_led_dev pin_d13_dev
 
+#define pin_dac0_dev pin_device[SAM_PB+15]
+#define pin_dac1_dev pin_device[SAM_PB+16]
+
 #define exti_d2_dev exti_device[4]
 #define exti_d3_dev exti_device[5]
 #define exti_d18_dev exti_device[3]
@@ -112,6 +115,7 @@
 #define pwm_d12_dev pwm_device[9]
 
 #define adc_0_dev adc_device[0]
+#define dac_0_dev dac_device[0]
 
 #define flash_0_dev flash_device[0]
 

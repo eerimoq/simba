@@ -46,6 +46,7 @@ endif
 
 ifeq ($(ARCH),arm)
 DRIVERS_SRC ?= can.c \
+               dac.c \
                flash.c \
                pin.c \
                sd.c \
