@@ -32,7 +32,9 @@ int event_init(struct event_t *event_p)
     return (0);
 }
 
-ssize_t event_read(struct event_t *event_p, void *buf_p, size_t size)
+ssize_t event_read(struct event_t *event_p,
+                   void *buf_p,
+                   size_t size)
 {
     uint32_t *mask_p, mask;
 
@@ -42,7 +44,7 @@ ssize_t event_read(struct event_t *event_p, void *buf_p, size_t size)
 
     mask = (event_p->mask & *mask_p);
 
-    /* Event already set? */
+    /* Event already set? Otherwise wait for it. */
     if (mask != 0) {
         *mask_p = mask;
     } else {
@@ -74,16 +76,12 @@ ssize_t event_write_irq(struct event_t *event_p,
                         const void *buf_p,
                         size_t size)
 {
-    uint32_t mask;
-
     if (chan_is_polled_irq(&event_p->base)) {
         thrd_resume_irq(event_p->base.reader_p, 0);
         event_p->base.reader_p = NULL;
     }
 
-    mask = *(uint32_t *)buf_p;
-
-    event_p->mask |= mask;
+    event_p->mask |= *(uint32_t *)buf_p;
 
     /* Resume waiting thread. */
     if (event_p->base.reader_p != NULL)  {

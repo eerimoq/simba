@@ -114,7 +114,8 @@ int chan_list_remove(struct chan_list_t *list, chan_t *chan_p)
     return (0);
 }
 
-chan_t *chan_list_poll(struct chan_list_t *list_p)
+chan_t *chan_list_poll(struct chan_list_t *list_p,
+                       struct time_t *timeout_p)
 {
     struct chan_t *chan_p = NULL;
     size_t i;
@@ -142,7 +143,10 @@ chan_t *chan_list_poll(struct chan_list_t *list_p)
 
         /* Not data was available, wait for data to be written to one
            of the channels. */
-        thrd_suspend_irq(NULL);
+        if (thrd_suspend_irq(timeout_p) == -ETIMEDOUT) {
+            chan_p = NULL;
+            goto out;
+        }
     }
 
  out:

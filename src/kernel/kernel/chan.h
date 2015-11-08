@@ -152,10 +152,13 @@ int chan_list_remove(struct chan_list_t *list_p, chan_t *chan_p);
  * channels has data ready to be read.
  *
  * @param[in] list_p List of channels to poll.
+ * @param[in] timeout_p Time to wait for data on any channel before a
+ *                      timeout occurs. Set to NULL to wait forever.
  *
  * @return Channel with data or NULL.
  */
-chan_t *chan_list_poll(struct chan_list_t *list_p);
+chan_t *chan_list_poll(struct chan_list_t *list_p,
+                       struct time_t *timeout_p);
 
 int chan_is_polled_irq(struct chan_t *chan_p);
 

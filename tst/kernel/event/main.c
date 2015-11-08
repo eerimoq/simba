@@ -92,7 +92,7 @@ static int test_poll(struct harness_t *harness)
 
     /* Poll the list of channels and make sure the event channel has
        events set.*/
-    BTASSERT(chan_list_poll(&list) == &event);
+    BTASSERT(chan_list_poll(&list, NULL) == &event);
 
     BTASSERT(chan_size(&event) == 1);
 
@@ -111,12 +111,41 @@ static int test_poll(struct harness_t *harness)
     return (0);
 }
 
+static int test_poll_timeout(struct harness_t *harness)
+{
+    struct event_t event;
+    struct chan_list_t list;
+    char workspace[64];
+    struct time_t timeout;
+
+    BTASSERT(event_init(&event) == 0);
+
+    /* Use a list with one chan.*/
+    BTASSERT(chan_list_init(&list, workspace, sizeof(workspace)) == 0);
+    BTASSERT(chan_list_add(&list, &event) == 0);
+
+    /* Poll the list of channels and make sure the event channel has
+       events set.*/
+    timeout.seconds = 0;
+    timeout.nanoseconds = 10000;
+    BTASSERT(chan_list_poll(&list, &timeout) == NULL);
+
+    /* Poll the list of channels and make sure the event channel has
+       events set.*/
+    timeout.seconds = 0;
+    timeout.nanoseconds = 0;
+    BTASSERT(chan_list_poll(&list, &timeout) == NULL);
+
+    return (0);
+}
+
 int main()
 {
     struct harness_t harness;
     struct harness_testcase_t harness_testcases[] = {
         { test_read_write, "test_read_write" },
         { test_poll, "test_poll" },
+        { test_poll_timeout, "test_poll_timeout" },
         { NULL, NULL }
     };
 

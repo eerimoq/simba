@@ -125,19 +125,19 @@ static int test_poll(struct harness_t *harness_p)
     BTASSERT(chan_list_add(&list, &queue[0]) == 0);
     BTASSERT(chan_list_add(&list, &queue[1]) == 0);
 
-    BTASSERT(chan_list_poll(&list) == &queue[1]);
+    BTASSERT(chan_list_poll(&list, NULL) == &queue[1]);
     BTASSERT(chan_read(&queue[1], &b, sizeof(b)) == sizeof(b));
     BTASSERT(b == 8);
 
-    BTASSERT(chan_list_poll(&list) == &queue[1]);
+    BTASSERT(chan_list_poll(&list, NULL) == &queue[1]);
     BTASSERT(chan_read(&queue[1], &b, sizeof(b)) == sizeof(b));
     BTASSERT(b == 9);
 
-    BTASSERT(chan_list_poll(&list) == &queue[1]);
+    BTASSERT(chan_list_poll(&list, NULL) == &queue[1]);
     BTASSERT(chan_read(&queue[1], &b, sizeof(b)) == sizeof(b));
     BTASSERT(b == 10);
 
-    BTASSERT(chan_list_poll(&list) == &queue[1]);
+    BTASSERT(chan_list_poll(&list, NULL) == &queue[1]);
     BTASSERT(chan_read(&queue[1], &b, sizeof(b)) == sizeof(b));
     BTASSERT(b == 11);
 

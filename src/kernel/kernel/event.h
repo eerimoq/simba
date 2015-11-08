@@ -23,10 +23,10 @@
 
 #include "simba.h"
 
-/* Event. */
+/* Event channel. */
 struct event_t {
     struct chan_t base;
-    uint32_t mask;
+    uint32_t mask;          /* Events that occured. */
 };
 
 /**
@@ -39,35 +39,40 @@ struct event_t {
 int event_init(struct event_t *event_p);
 
 /**
- * Wait for an event in given mask to occur.
+ * Wait for an event to occur in given mask.
  *
- * @param[in] event Event channel to read from.
+ * @param[in] event_p Initialized event channel to read from.
  * @param[in, out] buf_p The mask of events to wait for. When the
  *                       function return the mask contains the events
- *                       that occured.
+ *                       that have occured.
  * @param[in] size Size to read (always sizeof(mask)).
  *
  * @return sizeof(mask) or negative error code.
  */
-ssize_t event_read(struct event_t *event_p, void *buf_p, size_t size);
+ssize_t event_read(struct event_t *event_p,
+                   void *buf_p,
+                   size_t size);
 
 /**
  * Write given events to the event channel.
  *
- * @param[in] event Event channel to write to.
- * @param[in] buf The mask of events to write.
- * @param[in] size Always sizeof(mask).
+ * @param[in] event_p Initialized event channel to write to.
+ * @param[in] buf_p The mask of events to write.
+ * @param[in] size Must always be sizeof(mask).
  *
  * @return sizeof(mask) or negative error code.
  */
-ssize_t event_write(struct event_t *event_p, const void *buf_p, size_t size);
+ssize_t event_write(struct event_t *event_p,
+                    const void *buf_p,
+                    size_t size);
 
 /**
- * Write given events to the event channel from interrupt context.
+ * Write given events to the event channel from interrupt context, or
+ * with system lock taken.
  *
- * @param[in] event Event channel to write to.
- * @param[in] buf The mask of events to write.
- * @param[in] size Always sizeof(mask).
+ * @param[in] event_p Initialized event channel to write to.
+ * @param[in] buf_p The mask of events to write.
+ * @param[in] size Must always be sizeof(mask).
  *
  * @return sizeof(mask) or negative error code.
  */

@@ -69,7 +69,7 @@ static void thrd_port_init_main(struct thrd_port_t *port)
     pthread_cond_init (&port->cond, NULL);
 }
 
-static int thrd_port_spawn(struct thrd_t *thrd,
+static int thrd_port_spawn(struct thrd_t *thrd_p,
                            void *(*entry)(void *),
                            void *arg,
                            void *stack,
@@ -78,7 +78,7 @@ static int thrd_port_spawn(struct thrd_t *thrd,
     struct thrd_port_t *port;
 
     /* Initialize thrd port.*/
-    port = &thrd->port;
+    port = &thrd_p->port;
     port->entry = entry;
     port->arg = arg;
     pthread_mutex_init(&port->mutex, NULL);
@@ -109,10 +109,11 @@ static void thrd_port_idle_wait(struct thrd_t *thrd_p)
 
 static void thrd_port_suspend_timer_callback(void *arg)
 {
-    struct thrd_t *thrd = arg;
+    struct thrd_t *thrd_p = arg;
 
-    thrd->state = THRD_STATE_READY;
-    scheduler_ready_push(thrd);
+    thrd_p->err = -ETIMEDOUT;
+    thrd_p->state = THRD_STATE_READY;
+    scheduler_ready_push(thrd_p);
 
     /* Signal idle thrd.*/
     pthread_mutex_lock(&idle.mutex);
