@@ -20,6 +20,11 @@
 
 #include "simba.h"
 
+#define EVENT_BIT_0 0x1
+#define EVENT_BIT_1 0x2
+#define EVENT_BIT_2 0x4
+#define EVENT_BIT_3 0x8
+
 static int test_read_write(struct harness_t *harness)
 {
     uint32_t mask;
@@ -27,18 +32,41 @@ static int test_read_write(struct harness_t *harness)
 
     BTASSERT(event_init(&event) == 0);
 
-    mask = 0x3;
+    /* Write two events. */
+    mask = (EVENT_BIT_1 | EVENT_BIT_0);
     BTASSERT(chan_write(&event, &mask, sizeof(mask)) == 4);
 
     BTASSERT(chan_size(&event) == 1);
 
-    mask = 0x1;
+    /* Read first event. */
+    mask = EVENT_BIT_0;
     BTASSERT(chan_read(&event, &mask, sizeof(mask)) == 4);
-    BTASSERT(mask == 0x1);
+    BTASSERT(mask == EVENT_BIT_0);
 
-    mask = 0x3;
+    /* Read second event. */
+    mask = (EVENT_BIT_1 | EVENT_BIT_0);
     BTASSERT(chan_read(&event, &mask, sizeof(mask)) == 4);
-    BTASSERT(mask == 0x2);
+    BTASSERT(mask == EVENT_BIT_1);
+
+    /* Write second and third events. */
+    mask = (EVENT_BIT_2 | EVENT_BIT_1);
+    BTASSERT(chan_write(&event, &mask, sizeof(mask)) == 4);
+
+    /* Write first event. */
+    mask = EVENT_BIT_0;
+    BTASSERT(chan_write(&event, &mask, sizeof(mask)) == 4);
+
+    /* Read first and second events. */
+    mask = (EVENT_BIT_1 | EVENT_BIT_0);
+    BTASSERT(chan_read(&event, &mask, sizeof(mask)) == 4);
+    BTASSERT(mask == (EVENT_BIT_1 | EVENT_BIT_0));
+
+    /* Read third events. */
+    mask = EVENT_BIT_2;
+    BTASSERT(chan_read(&event, &mask, sizeof(mask)) == 4);
+    BTASSERT(mask == EVENT_BIT_2);
+
+    BTASSERT(chan_size(&event) == 0);
 
     return (0);
 }
@@ -47,27 +75,38 @@ static int test_poll(struct harness_t *harness)
 {
     uint32_t mask;
     struct event_t event;
+    struct event_t event_dummy;
     struct chan_list_t list;
     char workspace[64];
 
     BTASSERT(event_init(&event) == 0);
+    BTASSERT(event_init(&event_dummy) == 0);
 
     /* Use a list with one chan.*/
     BTASSERT(chan_list_init(&list, workspace, sizeof(workspace)) == 0);
     BTASSERT(chan_list_add(&list, &event) == 0);
+    BTASSERT(chan_list_add(&list, &event_dummy) == 0);
 
-    mask = 0xc;
+    mask = (EVENT_BIT_3 | EVENT_BIT_2);
     BTASSERT(chan_write(&event, &mask, sizeof(mask)) == 4);
 
+    /* Poll the list of channels and make sure the event channel has
+       events set.*/
     BTASSERT(chan_list_poll(&list) == &event);
 
-    mask = 0x4;
-    BTASSERT(chan_read(&event, &mask, sizeof(mask)) == 4);
-    BTASSERT(mask == 0x4);
+    BTASSERT(chan_size(&event) == 1);
 
-    mask = 0x8;
+    mask = EVENT_BIT_2;
     BTASSERT(chan_read(&event, &mask, sizeof(mask)) == 4);
-    BTASSERT(mask == 0x8);
+    BTASSERT(mask == EVENT_BIT_2);
+
+    BTASSERT(chan_size(&event) == 1);
+
+    mask = EVENT_BIT_3;
+    BTASSERT(chan_read(&event, &mask, sizeof(mask)) == 4);
+    BTASSERT(mask == EVENT_BIT_3);
+
+    BTASSERT(chan_size(&event) == 0);
 
     return (0);
 }

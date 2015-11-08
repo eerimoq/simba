@@ -39,7 +39,7 @@ struct event_t {
 int event_init(struct event_t *event_p);
 
 /**
- * Wait for a event in given mask to occur.
+ * Wait for an event in given mask to occur.
  *
  * @param[in] event Event channel to read from.
  * @param[in, out] buf_p The mask of events to wait for. When the
@@ -76,12 +76,12 @@ ssize_t event_write_irq(struct event_t *event_p,
                         size_t size);
 
 /**
- * Get the number of bytes currently stored in the event. May return
- * less bytes than number of bytes stored in the channel.
+ * Checks if there are events active on the event channel.
  *
- * @param[in] event Event.
+ * @param[in] event Initialized event channel.
  *
- * @return Number of bytes in event.
+ * @return true(1) is at least one event is active, otherwise
+ *         false(0).
  */
 ssize_t event_size(struct event_t *event_p);
 
