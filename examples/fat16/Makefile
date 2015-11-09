@@ -20,7 +20,6 @@
 
 NAME = fat16
 BOARD = arduino_due
-SRC += main.c
 
 SIMBA = ../..
 include $(SIMBA)/make/app.mk

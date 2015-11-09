@@ -20,7 +20,6 @@
 
 NAME = hello_world
 BOARD = linux
-SRC += main.c
 DRIVERS_SRC = uart.c
 SLIB_SRC =
 

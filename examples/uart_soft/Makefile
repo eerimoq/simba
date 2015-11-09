@@ -20,7 +20,6 @@
 
 NAME = uart_soft
 BOARD = arduino_nano
-SRC += main.c
 DRIVERS_SRC = uart.c uart_soft.c pin.c exti.c
 SLIB_SRC =
 

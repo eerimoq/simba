@@ -20,7 +20,6 @@
 
 NAME = chipid_suite
 BOARD = arduino_due
-SRC += main.c
 
 SIMBA = ../../..
 include $(SIMBA)/make/app.mk

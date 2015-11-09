@@ -20,7 +20,6 @@
 
 NAME = sem_suite
 BOARD = linux
-SRC += main.c
 
 COVOBJ = obj/sem.o
 

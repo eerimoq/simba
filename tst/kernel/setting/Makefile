@@ -20,11 +20,9 @@
 
 NAME = setting_suite
 VERSION = 1.0.0
+BOARD = linux
 
 SETTINGS_INI = settings.ini
-
-BOARD = linux
-SRC += main.c
 
 SIMBA = ../../..
 include $(SIMBA)/make/app.mk

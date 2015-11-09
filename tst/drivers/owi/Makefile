@@ -20,7 +20,6 @@
 
 NAME = owi_suite
 BOARD = linux
-SRC += main.c
 SLIB_SRC = harness.c
 DRIVERS_SRC = uart.c owi.c pin.c
 

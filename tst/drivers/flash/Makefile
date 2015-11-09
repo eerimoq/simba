@@ -20,7 +20,6 @@
 
 NAME = flash_suite
 BOARD = linux
-SRC += main.c
 SLIB_SRC = harness.c crc.c
 DRIVERS_SRC = uart.c flash.c
 

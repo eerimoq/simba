@@ -20,7 +20,6 @@
 
 NAME = hc0x
 BOARD = linux
-SRC += main.c
 DRIVERS_SRC = exti.c pin.c uart.c uart_soft.c
 SLIB_SRC =
 

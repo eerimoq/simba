@@ -30,6 +30,16 @@ int sd_init(struct sd_driver_t *drv_p,
     return (file_p == NULL);
 }
 
+int sd_start(struct sd_driver_t *drv_p)
+{
+    return (0);
+}
+
+int sd_stop(struct sd_driver_t *drv_p)
+{
+    return (0);
+}
+
 ssize_t sd_read_block(struct sd_driver_t *drv_p,
                       void *dst_p,
                       uint32_t src_block)

@@ -20,7 +20,6 @@
 
 NAME = owi
 BOARD = linux
-SRC += main.c
 DRIVERS_SRC = ds18b20.c uart.c owi.c pin.c
 SLIB_SRC = harness.c
 

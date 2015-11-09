@@ -20,7 +20,6 @@
 
 NAME = shell_suite
 BOARD = linux
-SRC += main.c
 
 CFLAGS_EXTRA = -DSTD_KLOG_BUFFER_MAX=96
 

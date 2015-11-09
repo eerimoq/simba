@@ -27,7 +27,9 @@ OBJDIR = obj
 DEPSDIR = deps
 GENDIR = gen
 INC += . $(SIMBA)/src
-CSRC += $(filter %.c,$(SRC))
+SRC += main.c
+SRC_FILTERED = $(filter-out $(SRC_IGNORE),$(SRC))
+CSRC += $(filter %.c,$(SRC_FILTERED))
 COBJ = $(patsubst %,$(OBJDIR)/%,$(notdir $(CSRC:%.c=%.o)))
 OBJ = $(COBJ)
 GENCSRC = $(GENDIR)/simba_gen.c

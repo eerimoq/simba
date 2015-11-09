@@ -20,7 +20,6 @@
 
 NAME = sd_suite
 BOARD = linux
-SRC += main.c
 
 SIMBA = ../../..
 include $(SIMBA)/make/app.mk

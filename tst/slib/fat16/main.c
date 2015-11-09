@@ -119,23 +119,23 @@ int test_directory(struct harness_t *harness_p)
     BTASSERT(fat16_dir_open(&fs, &dir, "HOME", O_READ) == 0);
 
     BTASSERT(fat16_dir_read(&dir, &entry) == 1);
-    BTASSERT(strcmp(entry.name, ".          ") == 0);
-    BTASSERT(entry.attributes == DIR_ATTR_DIRECTORY);
+    BTASSERT(strcmp(entry.name, ".") == 0);
+    BTASSERT(entry.is_dir == 1);
     BTASSERT(entry.size == 0);
 
     BTASSERT(fat16_dir_read(&dir, &entry) == 1);
-    BTASSERT(strcmp(entry.name, "..         ") == 0);
-    BTASSERT(entry.attributes == DIR_ATTR_DIRECTORY);
+    BTASSERT(strcmp(entry.name, "..") == 0);
+    BTASSERT(entry.is_dir == 1);
     BTASSERT(entry.size == 0);
 
     BTASSERT(fat16_dir_read(&dir, &entry) == 1);
-    BTASSERT(strcmp(entry.name, "ERIK       ") == 0);
-    BTASSERT(entry.attributes == DIR_ATTR_DIRECTORY);
+    BTASSERT(strcmp(entry.name, "ERIK") == 0);
+    BTASSERT(entry.is_dir == 1);
     BTASSERT(entry.size == 3 * sizeof(struct dir_t));
 
     BTASSERT(fat16_dir_read(&dir, &entry) == 1);
-    BTASSERT(strcmp(entry.name, "FOO     TXT") == 0);
-    BTASSERT(entry.attributes == 0);
+    BTASSERT(strcmp(entry.name, "FOO.TXT") == 0);
+    BTASSERT(entry.is_dir == 0);
     BTASSERT(entry.size == 20);
 
     BTASSERT(fat16_dir_read(&dir, &entry) == 0);
@@ -248,8 +248,7 @@ int main()
 #if defined(ARCH_LINUX)
     /* Create an empty sd card file. */
     system("./create_sdcard_linux.sh");
-#endif
-
+#else
     BTASSERT(spi_init(&spi,
                       &spi_device[0],
                       &pin_d53_dev,
@@ -257,6 +256,7 @@ int main()
                       SPI_SPEED_2MBPS,
                       0,
                       1) == 0);
+#endif
 
     BTASSERT(sd_init(&sd, &spi) == 0);
     BTASSERT(sd_start(&sd) == 0);

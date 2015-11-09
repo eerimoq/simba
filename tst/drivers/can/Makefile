@@ -21,7 +21,6 @@
 NAME = can_suite
 VERSION = 1.0.0
 BOARD = arduino_due
-SRC += main.c
 
 SIMBA = ../../..
 include $(SIMBA)/make/app.mk
