@@ -26,5 +26,7 @@ examples/*/profile.log
 examples/*/coverage.*
 examples/*/size.log
 examples/*/*.hex
+examples/*/*.bin
 examples/*/settings.h
+examples/*/settings.c
 examples/*/settings.bin

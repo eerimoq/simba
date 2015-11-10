@@ -98,7 +98,7 @@ the default board.
 
     $ make -s BOARD=arduino_nano release size test
 
-Note: Application may only support a subset of the available baords.
+Note: Application may only support a subset of the available boards.
 
 APPLICATIONS, PACKAGES AND MODULES
 ==================================
@@ -106,7 +106,8 @@ APPLICATIONS, PACKAGES AND MODULES
 A module is normally a header file and a source file. A package is a container of
 modules. An application is an executable consisting of zero or more modules.
 
-Preferred application file tree:
+Preferred application file tree. The application _must_ have a file
+called main.c. It should contain the main function of the application.
 
 .. code-block:: c
 
@@ -138,9 +139,9 @@ A simple thread that waits to be resumed by another thread.
 
     #include "simba.h"
 
-    void *mythread_entry(void *arg)
+    void *mythread_entry(void *arg_p)
     {
-        UNUSED(arg);
+        UNUSED(arg_p);
 
         while (1) {
             thrd_suspend(NULL);
@@ -197,7 +198,7 @@ an alternative, in particular for streaming devices like UART.
     {
         drv_p = device[0].drv_p;
 
-        // 3. resume the suspended thread
+        // 3. Resume the suspended thread.
         thrd_resume_irq(drv_p->thrd_p, 0);
     }
 
