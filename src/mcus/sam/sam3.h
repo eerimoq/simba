@@ -1599,7 +1599,7 @@ struct sam_tc_t {
         uint32_t CCR;
         uint32_t CMR;
         uint32_t SMMR;
-        uint32_t reserved1;
+        uint32_t reserved0;
         uint32_t CV;
         uint32_t RA;
         uint32_t RB;
@@ -1608,6 +1608,7 @@ struct sam_tc_t {
         uint32_t IER;
         uint32_t IDR;
         uint32_t IMR;
+        uint32_t reserved1[4];
     } CHANNEL[3];
     uint32_t BCR;
     uint32_t BMR;
@@ -2049,10 +2050,12 @@ struct sam_dacc_t {
     uint32_t IDR;
     uint32_t IMR;
     uint32_t ISR;
+    uint32_t reserved2[24];
     uint32_t ACR;
+    uint32_t reserved3[19];
     uint32_t WPMR;
     uint32_t WPSR;
-    uint32_t reserved2[24];
+    uint32_t reserved4[5];
     struct sam_pdc_t PDC;
 };
 

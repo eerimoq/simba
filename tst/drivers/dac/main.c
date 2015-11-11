@@ -24,18 +24,19 @@
 /* 12 bits resolution on SAM3. */
 #define AMPLITUDE_MAX 0xfff
 
-static int samples[4096];
+static uint16_t samples[4096];
 
 static int test_sine_440_hz(struct harness_t *harness_p)
 {
     int i;
-    struct dac_driver_t dac;
-    int samples_per_second = (membersof(dac_gen_sine) * 440);
     float sample;
+    int samples_per_second = (membersof(dac_gen_sine) * 440);
+    struct dac_driver_t dac;
+    int total_number_of_samples;
 
     BTASSERT(dac_init(&dac,
                       &dac_0_dev,
-                      &pin_dac1_dev,
+                      &pin_dac0_dev,
                       samples_per_second) == 0);
 
     /* Samples are in the range -1.0 to 1.0. Convert them to the range
@@ -45,15 +46,21 @@ static int test_sine_440_hz(struct harness_t *harness_p)
         samples[i] =  AMPLITUDE_MAX * ((sample + 1.0) / 2.0);
     }
 
-    std_printf(FSTR("Writing %d samples to DAC.\r\n"), 5 * samples_per_second);
+    std_printf(FSTR("Converting %d samples.\r\n"),
+               (int)membersof(samples));
+    BTASSERT(dac_convert(&dac, samples, membersof(samples)) == 0);
 
-    /* Output the signal on the DAC0-pin for 5 seconds. */
-    for (i = 0; i < (5 * samples_per_second / membersof(samples)); i++) {
+    /* Converting the signal on the DAC0-pin for 5 seconds. */
+    total_number_of_samples = (5 * samples_per_second);
+    std_printf(FSTR("Converting %d samples.\r\n"),
+               total_number_of_samples);
+
+    for (i = 0; i < total_number_of_samples; i += membersof(samples)) {
         BTASSERT(dac_async_convert(&dac, samples, membersof(samples)) == 0);
-        std_printf(FSTR("Wrote samples %d to %d.\r\n"),
-                   i * membersof(samples),
-                   (i + 1) * membersof(samples));
+        std_printf(FSTR("Samples left = %d\r\n"), total_number_of_samples - i);
     }
+
+    std_printf(FSTR("Waiting for last samples to be converted\r\n"));
 
     BTASSERT(dac_async_wait(&dac) == 0);
 

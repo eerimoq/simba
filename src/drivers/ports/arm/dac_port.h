@@ -32,6 +32,7 @@ struct dac_device_t {
     } jobs;
     struct {
         volatile struct sam_tc_t *regs_p;
+        int channel;
         int id;
     } tc;
 };

@@ -292,7 +292,8 @@ struct dac_device_t dac_device[DAC_DEVICE_MAX] = {
         },
         .tc = {
             .regs_p = SAM_TC0,
-            .id = PERIPHERAL_ID_TC0
+            .channel = 1,
+            .id = PERIPHERAL_ID_TC1
         }
     }
 };
