@@ -67,11 +67,32 @@ static int test_sine_440_hz(struct harness_t *harness_p)
     return (0);
 }
 
+static int test_pcm1611m(struct harness_t *harness_p)
+{
+    int i;
+    int samples_per_second = 11025;
+    struct dac_driver_t dac;
+
+    BTASSERT(dac_init(&dac,
+                      &dac_0_dev,
+                      &pin_dac0_dev,
+                      samples_per_second) == 0);
+
+    for (i = 0; i < membersof(dac_gen_pcm1611m); i += 4096) {
+        BTASSERT(dac_async_convert(&dac, &dac_gen_pcm1611m[i], 4096) == 0);
+    }
+
+    BTASSERT(dac_async_wait(&dac) == 0);
+
+    return (0);
+}
+
 int main()
 {
     struct harness_t harness;
     struct harness_testcase_t testcases[] = {
         { test_sine_440_hz, "test_sine_440_hz" },
+        { test_pcm1611m, "test_pcm1611m" },
         { NULL, NULL }
     };
 
