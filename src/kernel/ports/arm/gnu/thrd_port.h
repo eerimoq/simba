@@ -23,7 +23,7 @@
 
 #define THRD_PORT_STACK(name, size)                             \
     uint64_t name[DIV_CEIL(sizeof(struct thrd_t) + (size),      \
-                           sizeof(uint64_t))]
+                           sizeof(uint64_t))] __attribute((aligned (8)))
 
 struct thrd_port_context_t {
     uint32_t r4;

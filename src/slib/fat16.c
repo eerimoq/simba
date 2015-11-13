@@ -1133,11 +1133,11 @@ ssize_t fat16_file_read(struct fat16_file_t *file_p,
                         void* buf_p,
                         size_t size)
 {
-    uint16_t left;
+    size_t left;
     uint8_t blk_of_cluster;
     uint16_t block_offset;
-    uint8_t* src_p;
-    uint16_t n;
+    uint8_t *src_p, *dst_p;
+    size_t n;
 
     /* Error if not open for read. */
     if (!(file_p->flags & O_READ)) {
@@ -1151,6 +1151,7 @@ ssize_t fat16_file_read(struct fat16_file_t *file_p,
 
     /* Bytes left to read in loop. */
     left = size;
+    dst_p = buf_p;
 
     while (left > 0) {
         blk_of_cluster = block_of_cluster(file_p->fat16_p->blocks_per_cluster,
@@ -1192,9 +1193,10 @@ ssize_t fat16_file_read(struct fat16_file_t *file_p,
         }
 
         /* Copy data to caller. */
-        memcpy(buf_p, src_p, n);
+        memcpy(dst_p, src_p, n);
 
         file_p->cur_position += n;
+        dst_p += n;
         src_p += n;
         left -= n;
     }
@@ -1206,10 +1208,10 @@ ssize_t fat16_file_write(struct fat16_file_t *file_p,
                          const void *src_p,
                          size_t size)
 {
-    uint16_t left = size;
+    size_t left = size;
     uint16_t block_offset;
     uint8_t* dst_p;
-    uint16_t n;
+    size_t n;
 
     /* Error if file is not open for write. */
     if (!(file_p->flags & O_WRITE)) {

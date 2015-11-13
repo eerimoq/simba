@@ -37,6 +37,7 @@ static int test_sine_440_hz(struct harness_t *harness_p)
     BTASSERT(dac_init(&dac,
                       &dac_0_dev,
                       &pin_dac0_dev,
+                      NULL,
                       samples_per_second) == 0);
 
     /* Samples are in the range -1.0 to 1.0. Convert them to the range
@@ -46,9 +47,8 @@ static int test_sine_440_hz(struct harness_t *harness_p)
         samples[i] =  AMPLITUDE_MAX * ((sample + 1.0) / 2.0);
     }
 
-    std_printf(FSTR("Converting %d samples.\r\n"),
-               (int)membersof(samples));
-    BTASSERT(dac_convert(&dac, samples, membersof(samples)) == 0);
+    std_printf(FSTR("Converting %d samples.\r\n"), (int)membersof(samples));
+    BTASSERT(dac_convert(&dac, (uint32_t *)samples, membersof(samples) / 2) == 0);
 
     /* Converting the signal on the DAC0-pin for 5 seconds. */
     total_number_of_samples = (5 * samples_per_second);
@@ -56,7 +56,9 @@ static int test_sine_440_hz(struct harness_t *harness_p)
                total_number_of_samples);
 
     for (i = 0; i < total_number_of_samples; i += membersof(samples)) {
-        BTASSERT(dac_async_convert(&dac, samples, membersof(samples)) == 0);
+        BTASSERT(dac_async_convert(&dac,
+                                   (uint32_t *)samples,
+                                   membersof(samples) / 2) == 0);
         std_printf(FSTR("Samples left = %d\r\n"), total_number_of_samples - i);
     }
 
@@ -67,19 +69,23 @@ static int test_sine_440_hz(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_pcm1611m(struct harness_t *harness_p)
+static int test_pcm1611s(struct harness_t *harness_p)
 {
     int i;
-    int samples_per_second = 11025;
+    int samples_per_second = 2 * 11025;
     struct dac_driver_t dac;
 
     BTASSERT(dac_init(&dac,
                       &dac_0_dev,
                       &pin_dac0_dev,
+                      &pin_dac1_dev,
                       samples_per_second) == 0);
 
-    for (i = 0; i < membersof(dac_gen_pcm1611m); i += 4096) {
-        BTASSERT(dac_async_convert(&dac, &dac_gen_pcm1611m[i], 4096) == 0);
+    for (i = 0; i < membersof(dac_gen_pcm1611s); i += 4096) {
+        memcpy(samples, &dac_gen_pcm1611s[i], sizeof(samples));
+        BTASSERT(dac_async_convert(&dac,
+                                   (uint32_t *)samples,
+                                   4096 / 2) == 0);
     }
 
     BTASSERT(dac_async_wait(&dac) == 0);
@@ -92,7 +98,7 @@ int main()
     struct harness_t harness;
     struct harness_testcase_t testcases[] = {
         { test_sine_440_hz, "test_sine_440_hz" },
-        { test_pcm1611m, "test_pcm1611m" },
+        { test_pcm1611s, "test_pcm1611s" },
         { NULL, NULL }
     };
 

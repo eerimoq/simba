@@ -68,7 +68,8 @@ class WaveFile(object):
                           + (8 + self.subchunk1_size)
                           + (8 + self.subchunk2_size))
             if self.chunk_size != chunk_size:
-                raise RuntimeError("Bad WAVE header in {}.".format(path))
+                raise RuntimeError("Chunk size mismatch. Expected {}, but got {}".format(chunk_size,
+                                                                                         self.chunk_size))
 
             if self.bits_per_sample == 8:
                 self.unpack_read_size = 1
@@ -141,6 +142,6 @@ if __name__ == "__main__":
                 # Convert the sample to the range 0..65535 by adding
                 # 0x8000 and then downconvert it from 16 to 12 bits by
                 # shifting it 4 positions to the right.
-                if ch1:
-                    f.write(struct.pack("<H", ((ch1 + 0x8000) >> 4) | 0x1000))
-                f.write(struct.pack("<H", (ch0 + 0x8000) >> 4))
+                if ch1 is not None:
+                    f.write(struct.pack("<H", (((ch1 + 0x8000) >> 4) & 0xfff) | 0x1000))
+                f.write(struct.pack("<H", ((ch0 + 0x8000) >> 4) & 0xfff))

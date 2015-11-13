@@ -33,6 +33,8 @@
 #define EVENT_STOP        0x4
 #define EVENT_TIMEOUT     0x8
 
+uint32_t samples[4][SAMPLES_MAX];
+
 static int handle_event_play(struct music_player_t *self_p)
 {
     const char *path_p;
@@ -54,11 +56,14 @@ static int handle_event_play(struct music_player_t *self_p)
         break;
 
     case STATE_IDLE:
-        if ((path_p = self_p->cb.first_song_path_p(self_p->cb.arg_p)) != NULL) {
-            fat16_file_open(self_p->fat16_p, &self_p->file, path_p, O_READ);
-            strcpy(self_p->path, path_p);
-            std_printf(FSTR("Playing %s.\r\n"), self_p->path);
-            self_p->state = STATE_PLAYING;
+        if ((path_p = self_p->cb.current_song_path_p(self_p->cb.arg_p)) != NULL) {
+            if (fat16_file_open(self_p->fat16_p, &self_p->file, path_p, O_READ) == 0) {
+                strcpy(self_p->path, path_p);
+                std_printf(FSTR("Playing %s.\r\n"), self_p->path);
+                self_p->state = STATE_PLAYING;
+            } else {
+                std_printf(FSTR("Failed to open %s\r\n"), path_p);
+            }
         }
         break;
 
@@ -111,12 +116,13 @@ static int handle_event_stop(struct music_player_t *self_p)
 static int play_chunk(struct music_player_t *self_p)
 {
     const char *path_p;
-    void *buf_p;
+    uint32_t *buf_p;
     size_t size;
 
     /* Read samples from the file. */
     buf_p = self_p->samples.buf[self_p->samples.index];
-    self_p->samples.index ^= 1;
+    self_p->samples.index++;
+    self_p->samples.index %= membersof(self_p->samples.buf);
     size = fat16_file_read(&self_p->file,
                            buf_p,
                            sizeof(self_p->samples.buf[0]));
@@ -132,6 +138,8 @@ static int play_chunk(struct music_player_t *self_p)
             strcpy(self_p->path, path_p);
             std_printf(FSTR("Playing %s.\r\n"), self_p->path);
             fat16_file_open(self_p->fat16_p, &self_p->file, path_p, O_READ);
+        } else {
+            self_p->state = STATE_IDLE;
         }
     }
 
@@ -158,9 +166,11 @@ static void *music_player_main(struct music_player_t *self_p)
     uint32_t mask;
     struct time_t timeout;
 
+    thrd_set_name("music_player");
+
     /* Start the periodic fill timer. */
     timeout.seconds = 0;
-    timeout.nanoseconds = 100000000;
+    timeout.nanoseconds = 10000000;
     timer_set(&self_p->timer,
               &timeout,
               (void (*)(void *))fill_timer_cb,
@@ -175,16 +185,16 @@ static void *music_player_main(struct music_player_t *self_p)
                 | EVENT_TIMEOUT);
         event_read(&self_p->event, &mask, sizeof(mask));
 
-        if (mask & EVENT_PLAY) {
-            handle_event_play(self_p);
+        if (mask & EVENT_STOP) {
+            handle_event_stop(self_p);
         }
 
         if (mask & EVENT_PAUSE) {
             handle_event_pause(self_p);
         }
 
-        if (mask & EVENT_STOP) {
-            handle_event_stop(self_p);
+        if (mask & EVENT_PLAY) {
+            handle_event_play(self_p);
         }
 
         /* Play if the state in playing, eyy! */
@@ -199,7 +209,6 @@ static void *music_player_main(struct music_player_t *self_p)
 int music_player_init(struct music_player_t *self_p,
                       struct fat16_t *fat16_p,
                       struct dac_driver_t *dac_p,
-                      song_path_t first_song_path_p,
                       song_path_t current_song_path_p,
                       song_path_t next_song_path_p,
                       void *arg_p)
@@ -208,11 +217,11 @@ int music_player_init(struct music_player_t *self_p,
     self_p->fat16_p = fat16_p;
     self_p->dac_p = dac_p;
     self_p->samples.index = 0;
-    self_p->cb.first_song_path_p = first_song_path_p;
     self_p->cb.current_song_path_p = current_song_path_p;
     self_p->cb.next_song_path_p = next_song_path_p;
     self_p->cb.arg_p = arg_p;
     self_p->thrd_p = NULL;
+    event_init(&self_p->event);
 
     return (0);
 }

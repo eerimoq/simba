@@ -37,10 +37,9 @@ struct music_player_t {
     struct fat16_file_t file;
     struct {
         int index;
-        uint16_t buf[2][SAMPLES_MAX];
-    } samples;
+        uint32_t buf[4][SAMPLES_MAX] __attribute__((aligned (8)));
+    } samples __attribute__((aligned (8)));
     struct {
-        song_path_t first_song_path_p;
         song_path_t current_song_path_p;
         song_path_t next_song_path_p;
         void *arg_p;
@@ -56,7 +55,6 @@ struct music_player_t {
  * @param[in] fat16_p Fat16 file system to use.
  * @param[in] dac_p DAC used to convert song samples to an analog
  *                  singal.
- * @param[in] first_song_path_p Callback to get the first song path.
  * @param[in] current_song_path_p Callback to get the current song
  *                                path.
  * @param[in] next_song_path_p Callback to get the next song path.
@@ -67,7 +65,6 @@ struct music_player_t {
 int music_player_init(struct music_player_t *self_p,
                       struct fat16_t *fat16_p,
                       struct dac_driver_t *dac_p,
-                      song_path_t first_song_path_p,
                       song_path_t current_song_path_p,
                       song_path_t next_song_path_p,
                       void *arg_p);

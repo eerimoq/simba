@@ -26,6 +26,7 @@
 FS_COMMAND_DEFINE("/list", cmd_list);
 FS_COMMAND_DEFINE("/play", cmd_play);
 FS_COMMAND_DEFINE("/stop", cmd_stop);
+FS_COMMAND_DEFINE("/repeat", cmd_repeat);
 
 struct song_t {
     int number;
@@ -49,6 +50,7 @@ static struct hash_map_entry_t entries[128];
 static struct song_t songs[128];
 static struct sem_t sem;
 static long current_song;
+static int repeat = 0;
 
 /**
  * Hash song number.
@@ -59,31 +61,17 @@ static int hash_number(long key)
 }
 
 /**
- * Music player callback to get the first song path.
- */
-static const char *get_first_song_path(void *arg_p)
-{
-    const char *path_p;
-
-    sem_get(&sem, NULL);
-    path_p = hash_map_get(&song_map, FIRST_SONG_NUMBER);
-    sem_put(&sem, 1);
-
-    return (path_p);
-}
-
-/**
  * Music player callback to get the current song path.
  */
 static const char *get_current_song_path(void *arg_p)
 {
-    const char *path_p;
+    struct song_t *song_p;
 
     sem_get(&sem, NULL);
-    path_p = hash_map_get(&song_map, current_song);
+    song_p = hash_map_get(&song_map, current_song);
     sem_put(&sem, 1);
 
-    return (path_p);
+    return (song_p->name);
 }
 
 /**
@@ -91,17 +79,24 @@ static const char *get_current_song_path(void *arg_p)
  */
 static const char *get_next_song_path(void *arg_p)
 {
-    const char *path_p;
+    struct song_t *song_p;
 
     sem_get(&sem, NULL);
 
     /* Increment current song. */
-    current_song++;
-    path_p = hash_map_get(&song_map, current_song);
+    if (repeat == 0) {
+        current_song++;
+    }
 
+    song_p = hash_map_get(&song_map, current_song);
     sem_put(&sem, 1);
 
-    return (path_p);
+    if (song_p != NULL) {
+        return (song_p->name);
+    } else {
+        current_song = FIRST_SONG_NUMBER;
+        return (NULL);
+    }
 }
 
 int cmd_list(int argc,
@@ -127,7 +122,7 @@ int cmd_list(int argc,
          ((song_p = hash_map_get(&song_map, number)) != NULL);
          number++) {
         std_fprintf(out_p,
-                    FSTR("%06d %-15s %4d:%02d\r\n"),
+                    FSTR("%6d %15s %4d:%02d\r\n"),
                     song_p->number,
                     song_p->name,
                     song_p->minutes,
@@ -202,6 +197,22 @@ int cmd_stop(int argc,
     return (music_player_song_stop(&music_player));
 }
 
+int cmd_repeat(int argc,
+               const char *argv[],
+               void *out_p,
+               void *in_p)
+{
+    if (argc != 1) {
+        std_fprintf(out_p, FSTR("Usage: %s\r\n"), argv[0]);
+
+        return (-EINVAL);
+    }
+
+    repeat ^= 1;
+
+    return (0);
+}
+
 static void init(void)
 {
     long number;
@@ -213,7 +224,7 @@ static void init(void)
     sys_start();
     uart_module_init();
 
-    uart_init(&uart, &uart_device[0], 115200, qinbuf, sizeof(qinbuf));
+    uart_init(&uart, &uart_device[0], 38400, qinbuf, sizeof(qinbuf));
     uart_start(&uart);
 
     sys_set_stdout(&uart.chout);
@@ -239,7 +250,7 @@ static void init(void)
              &dac_0_dev,
              &pin_dac0_dev,
              &pin_dac1_dev,
-             44100);
+             2 * 11025);
 
     hash_map_init(&song_map,
                   buckets,
@@ -253,7 +264,6 @@ static void init(void)
     music_player_init(&music_player,
                       &fs,
                       &dac,
-                      get_first_song_path,
                       get_current_song_path,
                       get_next_song_path,
                       NULL);
@@ -283,7 +293,7 @@ static void init(void)
         /* Initialize the song entry. */
         song_p->number = number;
         strcpy(song_p->name, entry.name);
-        seconds = (entry.size / 2 / 44100);
+        seconds = (entry.size / 2 / 11025);
         song_p->minutes = (seconds / 60);
         song_p->seconds = (seconds % 60);
 
@@ -292,6 +302,8 @@ static void init(void)
     }
 
     fat16_dir_close(&dir);
+
+    music_player_start(&music_player);
 }
 
 int main()
