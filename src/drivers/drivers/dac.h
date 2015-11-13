@@ -37,14 +37,16 @@ int dac_module_init(void);
  *
  * @param[out] drv_p Driver object to be initialized.
  * @param[in] dev_p Device to use.
- * @param[in] pin_dev_p Pin device to use.
+ * @param[in] pin0_dev_p Pin used for mono or first stereo channel.
+ * @param[in] pin1_dev_p Second stereo pin.
  * @param[in] sampling_rate Sampling rate in Hz.
  *
  * @return zero(0) or negative error code.
  */
 int dac_init(struct dac_driver_t *drv_p,
              struct dac_device_t *dev_p,
-             struct pin_device_t *pin_dev_p,
+             struct pin_device_t *pin0_dev_p,
+             struct pin_device_t *pin1_dev_p,
              int sampling_rate);
 
 /**
@@ -57,7 +59,7 @@ int dac_init(struct dac_driver_t *drv_p,
  * @return zero(0) or negative error code.
  */
 int dac_async_convert(struct dac_driver_t *drv_p,
-                      uint16_t *samples_p,
+                      uint32_t *samples_p,
                       size_t length);
 
 /**
@@ -79,7 +81,7 @@ int dac_async_wait(struct dac_driver_t *drv_p);
  * @return zero(0) or negative error code.
  */
 int dac_convert(struct dac_driver_t *drv_p,
-                uint16_t *samples_p,
+                uint32_t *samples_p,
                 size_t length);
 
 #endif

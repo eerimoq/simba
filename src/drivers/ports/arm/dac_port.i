@@ -25,7 +25,7 @@
 
 static void write_next(struct dac_driver_t *drv_p)
 {
-    drv_p->dev_p->regs_p->PDC.TNPR = (uint32_t)drv_p->next.samples;
+    drv_p->dev_p->regs_p->PDC.TNPR = (uint32_t)drv_p->next.samples_p;
     drv_p->dev_p->regs_p->PDC.TNCR = drv_p->next.length;
     drv_p->next.length = 0;
 }
@@ -33,14 +33,14 @@ static void write_next(struct dac_driver_t *drv_p)
 static void convert_start(struct dac_driver_t *drv_p)
 {
     drv_p->dev_p->regs_p->IER = (SAM_DACC_IER_ENDTX | SAM_DACC_IER_TXBUFE);
-    drv_p->dev_p->regs_p->CHER = (1 << drv_p->channel);
+    drv_p->dev_p->regs_p->CHER = drv_p->chxr;
     write_next(drv_p);
 }
 
 static void convert_stop(struct dac_driver_t *drv_p)
 {
     drv_p->dev_p->regs_p->IDR = (SAM_DACC_IDR_ENDTX | SAM_DACC_IDR_TXBUFE);
-    drv_p->dev_p->regs_p->CHDR = (1 << drv_p->channel);
+    drv_p->dev_p->regs_p->CHDR = drv_p->chxr;
 }
 
 ISR(dacc)
@@ -89,7 +89,8 @@ static int dac_port_module_init(void)
 
 static int dac_port_init(struct dac_driver_t *drv_p,
                          struct dac_device_t *dev_p,
-                         struct pin_device_t *pin_dev_p,
+                         struct pin_device_t *pin0_dev_p,
+                         struct pin_device_t *pin1_dev_p,
                          long sampling_rate)
 {
     uint32_t rc;
@@ -98,13 +99,26 @@ static int dac_port_init(struct dac_driver_t *drv_p,
 
     drv_p->state = STATE_EMPTY;
     drv_p->next.length = 0;
+    drv_p->chxr = 0;
 
-    if (pin_dev_p == &pin_dac0_dev) {
-        drv_p->channel = 0;
-    } else if (pin_dev_p == &pin_dac1_dev) {
-        drv_p->channel = 1;
-    } else {
-        return (-1);
+    if ((pin0_dev_p == &pin_dac0_dev)
+        || (pin1_dev_p == &pin_dac0_dev)) {
+        drv_p->chxr |= 0x1;
+        
+        /* Configure the output pin. */
+        mask = pin_dac0_dev.mask;
+        pin_dac0_dev.pio_p->PDR = mask;
+        pin_dac0_dev.pio_p->ABSR |= mask;
+    }
+    
+    if ((pin1_dev_p == &pin_dac0_dev)
+        || (pin1_dev_p == &pin_dac1_dev)) {
+        drv_p->chxr |= 0x2;
+
+        /* Configure the output pin. */
+        mask = pin_dac1_dev.mask;
+        pin_dac1_dev.pio_p->PDR = mask;
+        pin_dac1_dev.pio_p->ABSR |= mask;
     }
 
     /* Setup a Timer Counter to send the clock pulses to the DACC. */
@@ -132,14 +146,10 @@ static int dac_port_init(struct dac_driver_t *drv_p,
     dev_p->regs_p->CR = (SAM_DACC_CR_SWRST);
     dev_p->regs_p->MR = (SAM_DACC_MR_REFRESH(8)
                          | SAM_DACC_MR_STARTUP(16)
-                         | SAM_DACC_MR_USER_SEL(drv_p->channel)
+                         | SAM_DACC_MR_TAG
+                         | SAM_DACC_MR_WORD
                          | SAM_DACC_MR_TRGSEL(channel + 1)
                          | SAM_DACC_MR_TRGEN);
-
-    /* Configure the output pin. */
-    mask = pin_dev_p->mask;
-    pin_dev_p->pio_p->PDR = mask;
-    pin_dev_p->pio_p->ABSR |= mask;
 
     dev_p->regs_p->PDC.PTCR = (PERIPH_PTCR_TXTEN);
 
@@ -149,7 +159,7 @@ static int dac_port_init(struct dac_driver_t *drv_p,
 }
 
 static int dac_port_async_convert(struct dac_driver_t *drv_p,
-                                  uint16_t *samples,
+                                  uint32_t *samples_p,
                                   size_t length)
 {
     struct dac_device_t *dev_p = drv_p->dev_p;
@@ -166,7 +176,7 @@ static int dac_port_async_convert(struct dac_driver_t *drv_p,
     }
 
     /* Initialize. */
-    drv_p->next.samples = (uint16_t *)samples;
+    drv_p->next.samples_p = samples_p;
     drv_p->next.length = length;
     drv_p->next_p = NULL;
 
@@ -205,10 +215,10 @@ static int dac_port_async_wait(struct dac_driver_t *drv_p)
 }
 
 static int dac_port_convert(struct dac_driver_t *drv_p,
-                            uint16_t *samples,
+                            uint32_t *samples_p,
                             size_t length)
 {
-    dac_port_async_convert(drv_p, samples, length);
+    dac_port_async_convert(drv_p, samples_p, length);
     dac_port_async_wait(drv_p);
 
     return (0);

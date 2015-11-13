@@ -29,17 +29,19 @@ int dac_module_init(void)
 
 int dac_init(struct dac_driver_t *drv_p,
              struct dac_device_t *dev_p,
-             struct pin_device_t *pin_dev_p,
+             struct pin_device_t *pin0_dev_p,
+             struct pin_device_t *pin1_dev_p,
              int sampling_rate)
 {
     return (dac_port_init(drv_p,
                           dev_p,
-                          pin_dev_p,
+                          pin0_dev_p,
+                          pin1_dev_p,
                           sampling_rate));
 }
 
 int dac_async_convert(struct dac_driver_t *drv_p,
-                      uint16_t *samples_p,
+                      uint32_t *samples_p,
                       size_t length)
 {
     return (dac_port_async_convert(drv_p, samples_p, length));
@@ -51,7 +53,7 @@ int dac_async_wait(struct dac_driver_t *drv_p)
 }
 
 int dac_convert(struct dac_driver_t *drv_p,
-                uint16_t *samples_p,
+                uint32_t *samples_p,
                 size_t length)
 {
     return (dac_port_convert(drv_p, samples_p, length));

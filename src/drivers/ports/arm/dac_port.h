@@ -40,9 +40,9 @@ struct dac_device_t {
 struct dac_driver_t {
     struct dac_device_t *dev_p;
     struct pin_driver_t pin_drv;
-    int channel;
+    int chxr;
     struct {
-        const uint16_t *samples;
+        const uint32_t *samples_p;
         size_t length;
     } next;
     struct thrd_t *thrd_p;

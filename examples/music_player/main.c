@@ -237,6 +237,7 @@ static void init(void)
 
     dac_init(&dac,
              &dac_0_dev,
+             &pin_dac0_dev,
              &pin_dac1_dev,
              44100);
 

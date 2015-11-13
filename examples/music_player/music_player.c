@@ -117,14 +117,13 @@ static int play_chunk(struct music_player_t *self_p)
     /* Read samples from the file. */
     buf_p = self_p->samples.buf[self_p->samples.index];
     self_p->samples.index ^= 1;
-
     size = fat16_file_read(&self_p->file,
                            buf_p,
                            sizeof(self_p->samples.buf[0]));
 
     if (size > 0) {
         /* Add samples to DAC convertion. */
-        dac_async_convert(self_p->dac_p, buf_p, size / 2);
+        dac_async_convert(self_p->dac_p, buf_p, size / 4);
     } else {
         /* Start playing the next file in the queue. */
         fat16_file_close(&self_p->file);

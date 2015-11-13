@@ -86,7 +86,12 @@ class WaveFile(object):
             sample = reader.read(self.unpack_read_size)
             if sample == '':
                 break
-            yield struct.unpack("<" + self.unpack_format, sample)[0]
+            ch0 = struct.unpack("<" + self.unpack_format, sample)[0]
+            ch1 = None
+            if self.num_channels == 2:
+                sample = reader.read(self.unpack_read_size)
+                ch1 = struct.unpack("<" + self.unpack_format, sample)[0]
+            yield ch0, ch1
 
     def __str__(self):
         """String representation of the WAVE file.
@@ -125,13 +130,17 @@ if __name__ == "__main__":
     # convert all samples to 12 bits, suitable for Arduino Due DAC
     print "Creating " + path + ".b12"
     with open(path + ".b12", "wb") as f:
-        for ch0_sample in wave_file.samples():
+        for ch0, ch1 in wave_file.samples():
             if wave_file.bits_per_sample == 8:
                 # Upconvert the sample from 8 to 12 bits by shifting
                 # it 4 positions to the left.
-                f.write(struct.pack("<H", ch0_sample << 4))
+                if ch1:
+                    f.write(struct.pack("<H", (ch1 << 4) | 0x1000))
+                f.write(struct.pack("<H", ch0 << 4))
             else:
                 # Convert the sample to the range 0..65535 by adding
                 # 0x8000 and then downconvert it from 16 to 12 bits by
                 # shifting it 4 positions to the right.
-                f.write(struct.pack("<H", (ch0_sample + 0x8000) >> 4))
+                if ch1:
+                    f.write(struct.pack("<H", ((ch1 + 0x8000) >> 4) | 0x1000))
+                f.write(struct.pack("<H", (ch0 + 0x8000) >> 4))
