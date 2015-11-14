@@ -42,7 +42,6 @@ static int handle_event_play(struct music_player_t *self_p)
     switch (self_p->state) {
 
     case STATE_PAUSED:
-        std_printf(FSTR("Resuming %s.\r\n"), self_p->path);
         self_p->state = STATE_PLAYING;
         break;
 
@@ -50,7 +49,6 @@ static int handle_event_play(struct music_player_t *self_p)
         if ((path_p = self_p->cb.current_song_path_p(self_p->cb.arg_p)) != NULL) {
             fat16_file_open(self_p->fat16_p, &self_p->file, path_p, O_READ);
             strcpy(self_p->path, path_p);
-            std_printf(FSTR("Restarting %s.\r\n"), self_p->path);
             self_p->state = STATE_PLAYING;
         }
         break;
@@ -59,7 +57,6 @@ static int handle_event_play(struct music_player_t *self_p)
         if ((path_p = self_p->cb.current_song_path_p(self_p->cb.arg_p)) != NULL) {
             if (fat16_file_open(self_p->fat16_p, &self_p->file, path_p, O_READ) == 0) {
                 strcpy(self_p->path, path_p);
-                std_printf(FSTR("Playing %s.\r\n"), self_p->path);
                 self_p->state = STATE_PLAYING;
             } else {
                 std_printf(FSTR("Failed to open %s\r\n"), path_p);
@@ -71,6 +68,10 @@ static int handle_event_play(struct music_player_t *self_p)
         break;
     }
 
+    if (self_p->state == STATE_PLAYING) {
+        std_printf(FSTR("Playing | %s\r\n"), self_p->path);
+    }
+
     return (0);
 }
 
@@ -79,7 +80,7 @@ static int handle_event_pause(struct music_player_t *self_p)
     switch (self_p->state) {
 
     case STATE_PLAYING:
-        std_printf(FSTR("Pausing %s.\r\n"), self_p->path);
+        std_printf(FSTR("Paused  | %s\r\n"), self_p->path);
         self_p->state = STATE_PAUSED;
         break;
 
@@ -96,7 +97,7 @@ static int handle_event_stop(struct music_player_t *self_p)
 
     case STATE_PLAYING:
     case STATE_PAUSED:
-        std_printf(FSTR("Stopping %s.\r\n"), self_p->path);
+        std_printf(FSTR("Stopped | %s\r\n"), self_p->path);
         fat16_file_close(&self_p->file);
         self_p->state = STATE_STOPPED;
         break;
@@ -136,7 +137,7 @@ static int play_chunk(struct music_player_t *self_p)
 
         if ((path_p = self_p->cb.next_song_path_p(self_p->cb.arg_p)) != NULL) {
             strcpy(self_p->path, path_p);
-            std_printf(FSTR("Playing %s.\r\n"), self_p->path);
+            std_printf(FSTR("Playing | %s\r\n"), self_p->path);
             fat16_file_open(self_p->fat16_p, &self_p->file, path_p, O_READ);
         } else {
             self_p->state = STATE_IDLE;

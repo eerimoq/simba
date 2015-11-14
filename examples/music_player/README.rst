@@ -18,19 +18,19 @@ Example shell commands to list, play, pause, resume and stop songs.
          2           50 50    4:21
          3      IN THE C~1    2:57
     $ play
-    Playing 'MAMMA MIA'.
-    Playing '50 50'.
+    Playing | MAMMA MIA
+    Playing | 50 50
     $ play 3
-    Playing 'IN THE C~1'.
+    Playing | IN THE C~1
     $ pause
-    Pausing 'IN THE C~1'.
+    Paused  | IN THE C~1
     $ play
-    Resuming 'IN THE C~1'.
+    Playing | IN THE C~1
     $ play 2
-    Playing '50 50'.
+    Playing | 50 50
     $ stop
-    Stopping '50 50'.
-    $ play 2
-    Playing '50 50'.
+    Stopped | 50 50
+    $ play
+    Playing | 50 50
     $ stop
-    Stopping '50 50'.
+    Stopped | 50 50
