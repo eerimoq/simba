@@ -58,6 +58,7 @@
 #    include "drivers/can.h"
 #    include "drivers/mcp2515.h"
 #    include "drivers/dac.h"
+#    include "drivers/usb.h"
 #endif
 
 #endif

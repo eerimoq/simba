@@ -1772,6 +1772,172 @@ struct sam_hsmci_t {
     uint32_t FIFO[256];
 };
 
+/* 39. Universal Synchrounous Asynchronous Receiver Tranceiver. */
+struct sam_uotghs_t {
+
+    /* USB Device registers. */
+    struct {
+        uint32_t CTRL;
+        uint32_t ISR;
+        uint32_t ICR;
+        uint32_t IFR;
+        uint32_t IMR;
+        uint32_t IDR;
+        uint32_t IER;
+        uint32_t EPT;
+        uint32_t FNUM;
+        uint32_t reserved0[0xbf];
+        uint32_t EPTCFG[10];
+        uint32_t reserved1[2];
+        uint32_t EPTISR[10];
+        uint32_t reserved2[2];
+        uint32_t EPTICR[10];
+        uint32_t reserved3[2];
+        uint32_t EPTIFR[10];
+        uint32_t reserved4[2];
+        uint32_t EPTIMR[10];
+        uint32_t reserved5[2];
+        uint32_t EPTIER[10];
+        uint32_t reserved6[2];
+        uint32_t EPTIDR[10];
+        uint32_t reserved7[2];
+        uint32_t reserved8[0xc0 - 12];
+        struct {
+            uint32_t NXTDSC;
+            uint32_t ADDRESS;
+            uint32_t CONTROL;
+            uint32_t STATUS;
+        } DMA[10];
+    } DEVICE;
+    uint32_t reserved0[0x100 - 10 * 0x10];
+
+    /* USB Host registers. */
+    struct {
+        uint32_t CTRL;
+        uint32_t ISR;
+        uint32_t ICR;
+        uint32_t IFR;
+        uint32_t IMR;
+        uint32_t IDR;
+        uint32_t IER;
+        uint32_t PIP;
+        uint32_t FNUM;
+        uint32_t ADDR1;
+        uint32_t ADDR2;
+        uint32_t ADDR3;
+        uint32_t reserved0[0xbf];
+        uint32_t PIPCFG[10];
+        uint32_t reverved1[2];
+        uint32_t PIPISR[10];
+        uint32_t reverved2[2];
+        uint32_t PIPICR[10];
+        uint32_t reverved3[2];
+        uint32_t PIPIFR[10];
+        uint32_t reverved4[2];
+        uint32_t PIPIMR[10];
+        uint32_t reverved5[2];
+        uint32_t PIPIER[10];
+        uint32_t reverved6[2];
+        uint32_t PIPIDR[10];
+        uint32_t reverved7[2];
+        uint32_t PIPINRQ[10];
+        uint32_t reverved8[2];
+        uint32_t PIPERR[10];
+        uint32_t reverved9[2];
+        uint32_t reserved10[120];
+        struct {
+            uint32_t DMANXTDSC;
+            uint32_t DMAADDRESS;
+            uint32_t DMACONTROL;
+            uint32_t DMASTATUS;
+        } DMA[10];
+    } HOST;
+    uint32_t reserved1[1];
+
+    /* General USB registers. */
+    uint32_t CTRL;
+    uint32_t SR;
+    uint32_t SCR;
+    uint32_t SFR;
+    uint32_t reserved2[1];
+    uint32_t FSM;
+};
+
+/* Device */
+
+/* Host. */
+
+/* General Control Register. */
+#define SAM_UOTGHS_CTRL_IDTE            BIT(0)
+#define SAM_UOTGHS_CTRL_VBUSTE          BIT(1)
+#define SAM_UOTGHS_CTRL_SRPE            BIT(2)
+#define SAM_UOTGHS_CTRL_VBERRE          BIT(3)
+#define SAM_UOTGHS_CTRL_BCERRE          BIT(4)
+#define SAM_UOTGHS_CTRL_ROLEEXE         BIT(5)
+#define SAM_UOTGHS_CTRL_HNPERRE         BIT(6)
+#define SAM_UOTGHS_CTRL_STOE            BIT(7)
+#define SAM_UOTGHS_CTRL_VBUSHWC         BIT(8)
+#define SAM_UOTGHS_CTRL_SRPSEL          BIT(9)
+#define SAM_UOTGHS_CTRL_SRPREQ          BIT(10)
+#define SAM_UOTGHS_CTRL_HNPREQ          BIT(11)
+#define SAM_UOTGHS_CTRL_OTGPADE         BIT(12)
+#define SAM_UOTGHS_CTRL_VBUSPO          BIT(13)
+#define SAM_UOTGHS_CTRL_FRZCLK          BIT(14)
+#define SAM_UOTGHS_CTRL_USBE            BIT(15)
+#define SAM_UOTGHS_CTRL_TIMVALUE_POS    (16)
+#define SAM_UOTGHS_CTRL_TIMVALUE_MASK   (0x3 << SAM_UOTGHS_CTRL_TIMVALUE_POS)
+#define SAM_UOTGHS_CTRL_TIMVALUE(value) BITFIELD_SET(SAM_UOTGHS_CTRL_TIMVALUE, (value))
+#define SAM_UOTGHS_CTRL_TIMPAGE_POS     (20)
+#define SAM_UOTGHS_CTRL_TIMPAGE_MASK    (0x3 << SAM_UOTGHS_CTRL_TIMPAGE_POS)
+#define SAM_UOTGHS_CTRL_TIMPAGE(value)  BITFIELD_SET(SAM_UOTGHS_CTRL_TIMPAGE, (value))
+#define SAM_UOTGHS_CTRL_UNLOCK          BIT(22)
+#define SAM_UOTGHS_CTRL_UIDE            BIT(24)
+#define SAM_UOTGHS_CTRL_UIMOD           BIT(25)
+
+/* General Status Register. */
+#define SAM_UOTGHS_SR_IDTI            BIT(0)
+#define SAM_UOTGHS_SR_VBUSTI          BIT(1)
+#define SAM_UOTGHS_SR_SRPI            BIT(2)
+#define SAM_UOTGHS_SR_VBERRI          BIT(3)
+#define SAM_UOTGHS_SR_BCERRI          BIT(4)
+#define SAM_UOTGHS_SR_ROLEEXI         BIT(5)
+#define SAM_UOTGHS_SR_HNPERRI         BIT(6)
+#define SAM_UOTGHS_SR_STOI            BIT(7)
+#define SAM_UOTGHS_SR_VBUSRQ          BIT(9)
+#define SAM_UOTGHS_SR_ID              BIT(10)
+#define SAM_UOTGHS_SR_VBUS            BIT(11)
+#define SAM_UOTGHS_SR_SPEED_POS       (12)
+#define SAM_UOTGHS_SR_SPEED_MASK      (0x3 << SAM_UOTGHS_SR_SPEED_POS)
+#define SAM_UOTGHS_SR_SPEED(value)    BITFIELD_SET(SAM_UOTGHS_SR_SPEED, (value))
+#define SAM_UOTGHS_SR_CLKUSABLE       BIT(14)
+
+/* General Status Clear Register. */
+#define SAM_UOTGHS_SR_IDTIC           BIT(0)
+#define SAM_UOTGHS_SR_VBUSTIC         BIT(1)
+#define SAM_UOTGHS_SR_SRPIC           BIT(2)
+#define SAM_UOTGHS_SR_VBERRIC         BIT(3)
+#define SAM_UOTGHS_SR_BCERRIC         BIT(4)
+#define SAM_UOTGHS_SR_ROLEEXIC        BIT(5)
+#define SAM_UOTGHS_SR_HNPERRIC        BIT(6)
+#define SAM_UOTGHS_SR_STOIC           BIT(7)
+#define SAM_UOTGHS_SR_VBUSRQC         BIT(9)
+
+/* General Status Set Register. */
+#define SAM_UOTGHS_SR_IDTIS           BIT(0)
+#define SAM_UOTGHS_SR_VBUSTIS         BIT(1)
+#define SAM_UOTGHS_SR_SRPIS           BIT(2)
+#define SAM_UOTGHS_SR_VBERRIS         BIT(3)
+#define SAM_UOTGHS_SR_BCERRIS         BIT(4)
+#define SAM_UOTGHS_SR_ROLEEXIS        BIT(5)
+#define SAM_UOTGHS_SR_HNPERRIS        BIT(6)
+#define SAM_UOTGHS_SR_STOIS           BIT(7)
+#define SAM_UOTGHS_SR_VBUSRQS         BIT(9)
+
+/* General Finite State Machine. */
+#define SAM_UOTGHS_FSM_DRDSTATE_POS       (0)
+#define SAM_UOTGHS_FSM_DRDSTATE_MASK      (0xf << SAM_UOTGHS_FSM_DRDSTATE_POS)
+#define SAM_UOTGHS_FSM_DRDSTATE(value)    BITFIELD_SET(SAM_UOTGHS_FSM_DRDSTATE, (value))
+
 /* 40. Controller Area Network (CAN). */
 struct sam_can_mailbox_t {
     uint32_t MMR;

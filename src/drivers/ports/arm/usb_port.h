@@ -1,5 +1,5 @@
 /**
- * @file mcu.h
+ * @file drivers/usb_port.h
  * @version 1.0
  *
  * @section License
@@ -18,30 +18,17 @@
  * This file is part of the Simba project.
  */
 
-#ifndef __MCU_H__
-#define __MCU_H__
+#ifndef __DRIVERS_USB_PORT_H__
+#define __DRIVERS_USB_PORT_H__
 
-#include "sam3.h"
+struct usb_device_t {
+    struct usb_driver_t *drv_p;
+    volatile struct sam_uotghs_t *regs_p;
+    int id;
+};
 
-/* Pin controller start indexes in devices array. */
-#define SAM_PA 0
-#define SAM_PB 30
-#define SAM_PC 62
-#define SAM_PD 93
-
-#if defined(MCU_SAM_3X8E)
-#    define PIN_DEVICE_MAX    103
-#    define EXTI_DEVICE_MAX     2
-#    define SPI_DEVICE_MAX      1
-#    define UART_DEVICE_MAX     5
-#    define PWM_DEVICE_MAX     12
-#    define ADC_DEVICE_MAX      1
-#    define DAC_DEVICE_MAX      1
-#    define FLASH_DEVICE_MAX    1
-#    define CAN_DEVICE_MAX      2
-#    define USB_DEVICE_MAX      1
-#else
-#     error "Unsupported MCU."
-#endif
+struct usb_driver_t {
+    struct usb_device_t *dev_p;
+};
 
 #endif

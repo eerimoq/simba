@@ -49,11 +49,12 @@ DRIVERS_SRC ?= can.c \
                chipid.c \
                dac.c \
                flash.c \
+               mcp2515.c \
                pin.c \
                sd.c \
                spi.c \
                uart.c \
-               mcp2515.c
+               usb.c
 endif
 
 SRC += $(DRIVERS_SRC:%=$(SIMBA)/src/drivers/%)
