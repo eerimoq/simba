@@ -22,6 +22,11 @@
 
 #include "exti_port.i"
 
+int exti_module_init()
+{
+    return (exti_port_module_init());
+}
+
 int exti_init(struct exti_driver_t *drv_p,
               struct exti_device_t *dev_p,
               int trigger,

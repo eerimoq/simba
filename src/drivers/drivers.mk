@@ -48,6 +48,7 @@ ifeq ($(ARCH),arm)
 DRIVERS_SRC ?= can.c \
                chipid.c \
                dac.c \
+               exti.c \
                flash.c \
                mcp2515.c \
                pin.c \

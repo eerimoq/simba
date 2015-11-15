@@ -34,6 +34,11 @@ struct exti_driver_t;
 extern struct exti_device_t exti_device[EXTI_DEVICE_MAX];
 
 /**
+ * Initialize EXTI module.
+ */
+int exti_module_init(void);
+
+/**
  * Initialize driver object.
  *
  * @param[in] drv_p Driver object to be initialized.
