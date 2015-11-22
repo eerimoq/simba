@@ -59,6 +59,9 @@
 #    include "drivers/mcp2515.h"
 #    include "drivers/dac.h"
 #    include "drivers/usb.h"
+#    include "drivers/usb_host.h"
+#    include "drivers/usb/host/class/usb_host_class_hid.h"
+#    include "drivers/usb/host/class/usb_host_class_mass_storage.h"
 #endif
 
 #endif

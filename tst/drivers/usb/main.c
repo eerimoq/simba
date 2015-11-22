@@ -24,21 +24,10 @@ struct usb_driver_t usb;
 
 static int test_list_devices(struct harness_t *harness_p)
 {
-    /* struct usb_device_t device; */
-    
     BTASSERT(usb_init(&usb, &usb_device[0]) == 0);
     BTASSERT(usb_start(&usb) == 0);
 
-    std_printf(FSTR("BUS  ADDRESS  CLASS  VENDOR  PRODUCT\r\n"));
-
-    /* while (usb_read(&usb, &device) == 1) { */
-    /*     std_printf(FSTR("%3d %8d %6x    %04x     %04x\r\n"), */
-    /*                device.bus, */
-    /*                device.address, */
-    /*                device.class, */
-    /*                device.vendor, */
-    /*                device.product); */
-    /* } */
+    std_printf(FSTR("ADDRESS  CLASS  VENDOR  PRODUCT\r\n"));
 
     BTASSERT(usb_stop(&usb) == 0);
 

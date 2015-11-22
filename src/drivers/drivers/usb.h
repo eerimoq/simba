@@ -25,47 +25,235 @@
 
 #include "usb_port.h"
 
+/* Request types. */
+#define REQUEST_TYPE_RECIPIENT_DEVICE              (0 << 0)
+#define REQUEST_TYPE_RECIPIENT_INTERFACE           (1 << 0)
+#define REQUEST_TYPE_RECIPIENT_ENDPOINT            (2 << 0)
+#define REQUEST_TYPE_RECIPIENT_OTHER               (3 << 0)
+#define REQUEST_TYPE_TYPE_STANDARD                 (0 << 5)
+#define REQUEST_TYPE_TYPE_CLASS                    (1 << 5)
+#define REQUEST_TYPE_TYPE_VENDOR                   (2 << 5)
+#define REQUEST_TYPE_DATA_DIRECTION_HOST_TO_DEVICE (0 << 7)
+#define REQUEST_TYPE_DATA_DIRECTION_DEVICE_TO_HOST (1 << 7)
+
+/* Setup requests. */
+#define REQUEST_GET_STATUS         0
+#define REQUEST_SET_ADDRESS        5
+#define REQUEST_GET_DESCRIPTOR     6
+#define REQUEST_SET_CONFIGURATION  9
+
+/* USB descriptor types. */
+#define DESCRIPTOR_TYPE_DEVICE          1
+#define DESCRIPTOR_TYPE_CONFIGURATION   2
+#define DESCRIPTOR_TYPE_STRING          3
+#define DESCRIPTOR_TYPE_INTERFACE       4
+#define DESCRIPTOR_TYPE_ENDPOINT        5
+#define DESCRIPTOR_TYPE_RPIPE          34
+
+/* USB classes. */
+#define USB_CLASS_USE_INTERFACE          0x00 /* Device. */
+#define USB_CLASS_AUDIO                  0x01 /* Interface. */
+#define USB_CLASS_CDC_CONTROL            0x02 /* Both. */
+#define USB_CLASS_HID                    0x03 /* Interface. */
+#define USB_CLASS_PHYSICAL               0x05 /* Interface. */
+#define USB_CLASS_IMAGE                  0x06 /* Interface. */
+#define USB_CLASS_PRINTER                0x07 /* Interface. */
+#define USB_CLASS_MASS_STORAGE           0x08 /* Interface. */
+#define USB_CLASS_HUB                    0x09 /* Device. */
+#define USB_CLASS_CDC_DATA               0x0a /* Interface. */
+#define USB_CLASS_SMART_CARD             0x0b /* Interface. */
+#define USB_CLASS_CONTENT_SECURITY       0x0d /* Interface. */
+#define USB_CLASS_VIDEO                  0x0e /* Interface. */
+#define USB_CLASS_PERSONAL_HEALTHCARE    0x0f /* Interface. */
+#define USB_CLASS_AUDIO_VIDEO_DEVICES    0x10 /* Interface. */
+#define USB_CLASS_BILLBOARD_DEVICE_CLASS 0x11 /* Device. */
+#define USB_CLASS_DIAGNOSTIC_DEVICE      0xdc /* Both. */
+#define USB_CLASS_WIRELESS_CONTROLLER    0xe0 /* Interface. */
+#define USB_CLASS_MISCELLANEOUS          0xef /* Both. */
+#define USB_CLASS_APPLICATION_SPECIFIC   0xfe /* Interface. */
+#define USB_CLASS_VENDOR_SPECIFIC        0xff /* Both. */
+
+/* Setups. */
+
+    struct usb_setup_t {
+        uint8_t request_type;
+        uint8_t request;
+        union {
+            struct {
+                uint16_t feature_selector;
+                uint16_t zero_interface_endpoint;
+            } clear_feature;
+            struct {
+                uint16_t zero0;
+                uint16_t zero1;
+            } get_configuration;
+            struct {
+                uint8_t descriptor_index;
+                uint8_t descriptor_type;
+                uint16_t language_id;
+            } get_descriptor;
+            struct {
+                uint16_t device_address;
+                uint16_t zero;
+            } set_address;
+            struct {
+                uint16_t configuration_value;
+                uint16_t zero;
+            } set_configuration;
+        } u;
+        uint16_t length;
+    };
+
+/* Responses. */
+
+struct usb_descriptor_header_t {
+    uint8_t length;
+    uint8_t descriptor_type;
+};
+
+struct usb_descriptor_device_t {
+    uint8_t length;
+    uint8_t descriptor_type;
+    uint16_t bcd_usb;
+    uint8_t device_class;
+    uint8_t device_sub_class;
+    uint8_t device_protocol;
+    uint8_t max_packet_size_0;
+    uint16_t id_vendor;
+    uint16_t id_product;
+    uint16_t bcd_device;
+    uint8_t manufacturer;
+    uint8_t product;
+    uint8_t serial_number;
+    uint8_t num_configurations;
+};
+
+/* Configuration descriptor. */
+struct usb_descriptor_configuration_t {
+    uint8_t length;
+    uint8_t descriptor_type;
+    uint16_t total_length;
+    uint8_t num_interfaces;
+    uint8_t configuration_value;
+    uint8_t configuration;
+    uint8_t configuration_attributes;
+    uint8_t max_power;
+};
+
+/* Interface descriptor. */
+struct usb_descriptor_interface_t {
+    uint8_t length;
+    uint8_t descriptor_type;
+    uint8_t interface_number;
+    uint8_t alternate_setting;
+    uint8_t num_endpoints;
+    uint8_t interface_class;
+    uint8_t interface_subclass;
+    uint8_t interface_protocol;
+    uint8_t interface;
+};
+
+/* Endpoint descriptor. */
+struct usb_descriptor_endpoint_t {
+    uint8_t length;
+    uint8_t descriptor_type;
+    uint8_t endpoint_address;
+    uint8_t attributes;
+    uint16_t max_packet_size;
+    uint8_t interval;
+};
+
+/* String descriptor. */
+struct usb_descriptor_string_t {
+    uint8_t length;
+    uint8_t descriptor_type;
+    uint8_t string[256];
+};
+
+union usb_descriptor_t {
+    struct usb_descriptor_header_t header;
+    struct usb_descriptor_device_t device;
+    struct usb_descriptor_configuration_t configuration;
+    struct usb_descriptor_interface_t interface;
+    struct usb_descriptor_endpoint_t endpoint;
+    struct usb_descriptor_string_t string;
+};
+
+#define USB_MESSAGE_TYPE_ADD    0
+#define USB_MESSAGE_TYPE_REMOVE 1
+
+struct usb_message_header_t {
+    int type;
+};
+
+struct usb_message_add_t {
+    struct usb_message_header_t header;
+    int device;
+};
+
+union usb_message_t {
+    struct usb_message_header_t header;
+    struct usb_message_add_t add;
+};
+
 extern struct usb_device_t usb_device[USB_DEVICE_MAX];
 
 /**
- * Initialize USB module.
+ * Format the descriptors and write them to given channel.
  */
-int usb_module_init(void);
+int usb_format_descriptors(chan_t *out_p,
+                           uint8_t *buf_p,
+                           size_t size);
 
 /**
- * Initialize driver object from given configuration.
+ * Get the configuration descriptor for given configuration index.
  *
- * @param[in] drv_p Driver object to be initialized.
- * @param[in] dev_p Device to use.
- * @param[in] baudrate Baudrate.
- * @param[in] rxbuf_p Reception buffer.
- * @param[in] size Reception buffer size.
+ * @param[in] device_p Device to use.
  *
- * @return zero(0) or negative error code.
+ * @return
  */
-int usb_init(struct usb_driver_t *drv_p,
-             struct usb_device_t *dev_p);
+struct usb_descriptor_configuration_t *
+usb_desc_get_configuration(uint8_t *desc_p,
+                           size_t size,
+                           int configuration);
 
 /**
- * Starts the USB device using given driver object.
+ * Get interface.
  *
- * @param[in] drv_p Initialized driver object.
+ * @param[in] device_p Device to use.
  *
- * @return zero(0) or negative error code.
+ * @return
  */
-int usb_start(struct usb_driver_t *drv_p);
+struct usb_descriptor_interface_t *
+usb_desc_get_interface(uint8_t *desc_p,
+                       size_t size,
+                       int configuration,
+                       int interface);
 
 /**
- * Stops the USB device referenced by driver object.
+ * Get interface.
  *
- * @param[in] drv_p Initialized driver object.
+ * @param[in] device_p Device to use.
  *
- * @return zero(0) or negative error code.
+ * @return
  */
-int usb_stop(struct usb_driver_t *drv_p);
+struct usb_descriptor_endpoint_t *
+usb_desc_get_endpoint(uint8_t *desc_p,
+                      size_t size,
+                      int configuration,
+                      int interface,
+                      int endpoint);
 
-ssize_t usb_read(struct usb_driver_t *drv_p);
-
-ssize_t usb_write(struct usb_driver_t *drv_p);
+/**
+ * Get interface class.
+ *
+ * @param[in] device_p Device to use.
+ *
+ * @return
+ */
+int usb_desc_get_class(uint8_t *buf_p,
+                       size_t size,
+                       int configuration,
+                       int interface);
 
 #endif

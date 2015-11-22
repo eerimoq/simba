@@ -55,7 +55,10 @@ DRIVERS_SRC ?= can.c \
                sd.c \
                spi.c \
                uart.c \
-               usb.c
+               usb.c \
+               usb_host.c \
+               usb/host/class/usb_host_class_hid.c \
+               usb/host/class/usb_host_class_mass_storage.c
 endif
 
 SRC += $(DRIVERS_SRC:%=$(SIMBA)/src/drivers/%)

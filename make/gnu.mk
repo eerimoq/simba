@@ -18,14 +18,17 @@
 # This file is part of the Simba project.
 #
 
+KERNEL_OBJ = $(patsubst %,$(OBJDIR)/%,$(notdir $(KERNEL_SRC:%.c=%.o)))
+DRIVERS_OBJ = $(patsubst %,$(OBJDIR)/%,$(notdir $(DRIVERS_SRC:%.c=%.o)))
+SLIB_OBJ = $(patsubst %,$(OBJDIR)/%,$(notdir $(SLIB_SRC:%.c=%.o)))
+
 SIZECMD = $(CROSS_COMPILE)size $(SIZEARGS) ${EXE} ; \
-          echo "Kernel package:" ; $(CROSS_COMPILE)size $(KERNEL_SRC:%.c=obj/%.o) -t ; echo ; \
-          echo "Drivers package:" ; $(CROSS_COMPILE)size $(DRIVERS_SRC:%.c=obj/%.o) obj/mcu.o \
+          echo "Kernel package:" ; $(CROSS_COMPILE)size $(KERNEL_OBJ) -t ; echo ; \
+          echo "Drivers package:" ; $(CROSS_COMPILE)size $(DRIVERS_OBJ) obj/mcu.o \
                obj/board.o -t ; echo ; \
-          echo "Slib package:" ; $(CROSS_COMPILE)size $(SLIB_SRC:%.c=obj/%.o) -t ; echo ; \
+          echo "Slib package:" ; $(CROSS_COMPILE)size $(SLIB_OBJ) -t ; echo ; \
           echo "Other:" ; $(CROSS_COMPILE)size $(filter-out obj/mcu.o obj/board.o \
-                                                            $(KERNEL_SRC:%.c=obj/%.o) \
-               $(DRIVERS_SRC:%.c=obj/%.o) $(SLIB_SRC:%.c=obj/%.o),$(OBJ) obj/simba_gen.o) -t
+               $(KERNEL_OBJ) $(DRIVERS_OBJ) $(SLIB_OBJ),$(OBJ) obj/simba_gen.o) -t
 
 CC = $(CROSS_COMPILE)gcc
 LD = $(CROSS_COMPILE)gcc

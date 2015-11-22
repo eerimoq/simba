@@ -307,16 +307,16 @@ struct sam_nvic_t {
 
 #define NVIC_ISER_SET(id)     (SAM_NVIC->ISE[(id) / 32] |= (1 << ((id) % 32)))
 #define NVIC_ISER_GET(id)     ((SAM_NVIC->ISE[(id) / 32] >> ((id) % 32)) & 0x1)
-                              
+
 #define NVIC_ICER_SET(id)     (SAM_NVIC->ICE[(id) / 32] |= (1 << ((id) % 32)))
 #define NVIC_ICER_GET(id)     ((SAM_NVIC->ICE[(id) / 32] >> ((id) % 32)) & 0x1)
-                              
+
 #define NVIC_ISPR_SET(id)     (SAM_NVIC->ISP[(id) / 32] |= (1 << ((id) % 32)))
 #define NVIC_ISPR_GET(id)     ((SAM_NVIC->ISP[(id) / 32] >> ((id) % 32)) & 0x1)
-                              
+
 #define NVIC_ICPR_SET(id)     (SAM_NVIC->ICP[(id) / 32] |= (1 << ((id) % 32)))
 #define NVIC_ICPR_GET(id)     ((SAM_NVIC->ICP[(id) / 32] >> ((id) % 32)) & 0x1)
-                              
+
 #define NVIC_IABR_GET(id)     ((SAM_NVIC->IAB[(id) / 32] >> ((id) % 32)) & 0x1)
 
 #define NVIC_IP_SET(id, prio) (SAM_NVIC->IP[id] |= (prio))
@@ -866,7 +866,7 @@ struct sam_pmc_t {
 #define PMC_IER_MOSCXTS                 BIT(0)
 #define PMC_IER_LOCKA                   BIT(1)
 #define PMC_IER_MCKRDY                  BIT(3)
-#define PMC_IER_LOCK                    BIT(6)
+#define PMC_IER_LOCKU                   BIT(6)
 #define PMC_IER_PCKRDY0                 BIT(8)
 #define PMC_IER_PCKRDY1                 BIT(9)
 #define PMC_IER_PCKRDY2                 BIT(10)
@@ -877,7 +877,7 @@ struct sam_pmc_t {
 #define PMC_IDR_MOSCXTS                 BIT(0)
 #define PMC_IDR_LOCKA                   BIT(1)
 #define PMC_IDR_MCKRDY                  BIT(3)
-#define PMC_IDR_LOCK                    BIT(6)
+#define PMC_IDR_LOCKU                   BIT(6)
 #define PMC_IDR_PCKRDY0                 BIT(8)
 #define PMC_IDR_PCKRDY1                 BIT(9)
 #define PMC_IDR_PCKRDY2                 BIT(10)
@@ -888,7 +888,7 @@ struct sam_pmc_t {
 #define PMC_SR_MOSCXTS                  BIT(0)
 #define PMC_SR_LOCKA                    BIT(1)
 #define PMC_SR_MCKRDY                   BIT(3)
-#define PMC_SR_LOCK                     BIT(6)
+#define PMC_SR_LOCKU                    BIT(6)
 #define PMC_SR_OSCSELS                  BIT(7)
 #define PMC_SR_PCKRDY0                  BIT(8)
 #define PMC_SR_PCKRDY1                  BIT(9)
@@ -902,7 +902,7 @@ struct sam_pmc_t {
 #define PMC_IMR_MOSCXTS                 BIT(0)
 #define PMC_IMR_LOCKA                   BIT(1)
 #define PMC_IMR_MCKRDY                  BIT(3)
-#define PMC_IMR_LOCK                    BIT(6)
+#define PMC_IMR_LOCKU                   BIT(6)
 #define PMC_IMR_PCKRDY0                 BIT(8)
 #define PMC_IMR_PCKRDY1                 BIT(9)
 #define PMC_IMR_PCKRDY2                 BIT(10)
@@ -1786,7 +1786,7 @@ struct sam_uotghs_t {
         uint32_t IER;
         uint32_t EPT;
         uint32_t FNUM;
-        uint32_t reserved0[0xbf];
+        uint32_t reserved0[55];
         uint32_t EPTCFG[10];
         uint32_t reserved1[2];
         uint32_t EPTISR[10];
@@ -1800,16 +1800,15 @@ struct sam_uotghs_t {
         uint32_t EPTIER[10];
         uint32_t reserved6[2];
         uint32_t EPTIDR[10];
-        uint32_t reserved7[2];
-        uint32_t reserved8[0xc0 - 12];
+        uint32_t reserved8[50];
         struct {
             uint32_t NXTDSC;
             uint32_t ADDRESS;
             uint32_t CONTROL;
             uint32_t STATUS;
-        } DMA[10];
+        } DMA[7];
     } DEVICE;
-    uint32_t reserved0[0x100 - 10 * 0x10];
+    uint32_t reserved0[32];
 
     /* USB Host registers. */
     struct {
@@ -1822,10 +1821,8 @@ struct sam_uotghs_t {
         uint32_t IER;
         uint32_t PIP;
         uint32_t FNUM;
-        uint32_t ADDR1;
-        uint32_t ADDR2;
-        uint32_t ADDR3;
-        uint32_t reserved0[0xbf];
+        uint32_t ADDR[3];
+        uint32_t reserved0[52];
         uint32_t PIPCFG[10];
         uint32_t reverved1[2];
         uint32_t PIPISR[10];
@@ -1843,29 +1840,398 @@ struct sam_uotghs_t {
         uint32_t PIPINRQ[10];
         uint32_t reverved8[2];
         uint32_t PIPERR[10];
-        uint32_t reverved9[2];
-        uint32_t reserved10[120];
+        uint32_t reserved10[26];
         struct {
-            uint32_t DMANXTDSC;
-            uint32_t DMAADDRESS;
-            uint32_t DMACONTROL;
-            uint32_t DMASTATUS;
-        } DMA[10];
+            uint32_t NXTDSC;
+            uint32_t ADDRESS;
+            uint32_t CONTROL;
+            uint32_t STATUS;
+        } DMA[7];
     } HOST;
-    uint32_t reserved1[1];
+    uint32_t reserved1[32];
 
     /* General USB registers. */
     uint32_t CTRL;
     uint32_t SR;
     uint32_t SCR;
     uint32_t SFR;
-    uint32_t reserved2[1];
+    uint32_t reserved2[7];
     uint32_t FSM;
 };
 
 /* Device */
 
 /* Host. */
+
+/* Host General Control Register. */
+#define SAM_UOTGHS_HOST_CTRL_SOFE               BIT(8)
+#define SAM_UOTGHS_HOST_CTRL_RESET              BIT(9)
+#define SAM_UOTGHS_HOST_CTRL_RESUME             BIT(10)
+#define SAM_UOTGHS_HOST_CTRL_SPDCONF_POS        (12)
+#define SAM_UOTGHS_HOST_CTRL_SPDCONF_MASK       (0x3 << SAM_UOTGHS_HOST_CTRL_SPDCONF_POS)
+#define SAM_UOTGHS_HOST_CTRL_SPDCONF(value)     BITFIELD_SET(SAM_UOTGHS_HOST_CTRL_SPDCONF, (value))
+#define SAM_UOTGHS_HOST_CTRL_SPDCONF_NORMAL     SAM_UOTGHS_HOST_CTRL_SPDCONF(0)
+#define SAM_UOTGHS_HOST_CTRL_SPDCONF_LOW_POWER  SAM_UOTGHS_HOST_CTRL_SPDCONF(1)
+#define SAM_UOTGHS_HOST_CTRL_SPDCONF_HIGH_SPEED SAM_UOTGHS_HOST_CTRL_SPDCONF(2)
+#define SAM_UOTGHS_HOST_CTRL_SPDCONF_FORCES_FS  SAM_UOTGHS_HOST_CTRL_SPDCONF(3)
+
+/* Host Global Interrupt Status Register. */
+#define SAM_UOTGHS_HOST_ISR_DCONNI      BIT(0)
+#define SAM_UOTGHS_HOST_ISR_DDISCI      BIT(1)
+#define SAM_UOTGHS_HOST_ISR_RSTI        BIT(2)
+#define SAM_UOTGHS_HOST_ISR_RSMEDI      BIT(3)
+#define SAM_UOTGHS_HOST_ISR_RXRSMI      BIT(4)
+#define SAM_UOTGHS_HOST_ISR_HSOFI       BIT(5)
+#define SAM_UOTGHS_HOST_ISR_HWUPI       BIT(6)
+#define SAM_UOTGHS_HOST_ISR_PEP_0       BIT(8)
+#define SAM_UOTGHS_HOST_ISR_PEP_1       BIT(9)
+#define SAM_UOTGHS_HOST_ISR_PEP_2       BIT(10)
+#define SAM_UOTGHS_HOST_ISR_PEP_3       BIT(11)
+#define SAM_UOTGHS_HOST_ISR_PEP_4       BIT(12)
+#define SAM_UOTGHS_HOST_ISR_PEP_5       BIT(13)
+#define SAM_UOTGHS_HOST_ISR_PEP_6       BIT(14)
+#define SAM_UOTGHS_HOST_ISR_PEP_7       BIT(15)
+#define SAM_UOTGHS_HOST_ISR_PEP_8       BIT(16)
+#define SAM_UOTGHS_HOST_ISR_PEP_9       BIT(17)
+#define SAM_UOTGHS_HOST_ISR_DMA_1       BIT(25)
+#define SAM_UOTGHS_HOST_ISR_DMA_2       BIT(26)
+#define SAM_UOTGHS_HOST_ISR_DMA_3       BIT(27)
+#define SAM_UOTGHS_HOST_ISR_DMA_4       BIT(28)
+#define SAM_UOTGHS_HOST_ISR_DMA_5       BIT(29)
+#define SAM_UOTGHS_HOST_ISR_DMA_6       BIT(30)
+
+/* Host Global Interrupt Clear Register. */
+#define SAM_UOTGHS_HOST_ICR_DCONNIC     BIT(0)
+#define SAM_UOTGHS_HOST_ICR_DDISCIC     BIT(1)
+#define SAM_UOTGHS_HOST_ICR_RSTIC       BIT(2)
+#define SAM_UOTGHS_HOST_ICR_RSMEDIC     BIT(3)
+#define SAM_UOTGHS_HOST_ICR_RXRSMIC     BIT(4)
+#define SAM_UOTGHS_HOST_ICR_HSOFIC      BIT(5)
+#define SAM_UOTGHS_HOST_ICR_HWUPIC      BIT(6)
+
+/* Host Global Interrupt Set Register. */
+#define SAM_UOTGHS_HOST_IFR_DCONNIS     BIT(0)
+#define SAM_UOTGHS_HOST_IFR_DDISCIS     BIT(1)
+#define SAM_UOTGHS_HOST_IFR_RSTIS       BIT(2)
+#define SAM_UOTGHS_HOST_IFR_RSMEDIS     BIT(3)
+#define SAM_UOTGHS_HOST_IFR_RXRSMIS     BIT(4)
+#define SAM_UOTGHS_HOST_IFR_HSOFIS      BIT(5)
+#define SAM_UOTGHS_HOST_IFR_HWUPIS      BIT(6)
+#define SAM_UOTGHS_HOST_IFR_DMA_1       BIT(25)
+#define SAM_UOTGHS_HOST_IFR_DMA_2       BIT(26)
+#define SAM_UOTGHS_HOST_IFR_DMA_3       BIT(27)
+#define SAM_UOTGHS_HOST_IFR_DMA_4       BIT(28)
+#define SAM_UOTGHS_HOST_IFR_DMA_5       BIT(29)
+#define SAM_UOTGHS_HOST_IFR_DMA_6       BIT(30)
+
+/* Host Global Interrupt Mask Register. */
+#define SAM_UOTGHS_HOST_IMR_DCONNIE     BIT(0)
+#define SAM_UOTGHS_HOST_IMR_DDISCIE     BIT(1)
+#define SAM_UOTGHS_HOST_IMR_RSTIE       BIT(2)
+#define SAM_UOTGHS_HOST_IMR_RSMEDIE     BIT(3)
+#define SAM_UOTGHS_HOST_IMR_RXRSMIE     BIT(4)
+#define SAM_UOTGHS_HOST_IMR_HSOFIE      BIT(5)
+#define SAM_UOTGHS_HOST_IMR_HWUPIE      BIT(6)
+#define SAM_UOTGHS_HOST_IMR_PEP_0       BIT(8)
+#define SAM_UOTGHS_HOST_IMR_PEP_1       BIT(9)
+#define SAM_UOTGHS_HOST_IMR_PEP_2       BIT(10)
+#define SAM_UOTGHS_HOST_IMR_PEP_3       BIT(11)
+#define SAM_UOTGHS_HOST_IMR_PEP_4       BIT(12)
+#define SAM_UOTGHS_HOST_IMR_PEP_5       BIT(13)
+#define SAM_UOTGHS_HOST_IMR_PEP_6       BIT(14)
+#define SAM_UOTGHS_HOST_IMR_PEP_7       BIT(15)
+#define SAM_UOTGHS_HOST_IMR_PEP_8       BIT(16)
+#define SAM_UOTGHS_HOST_IMR_PEP_9       BIT(17)
+#define SAM_UOTGHS_HOST_IMR_DMA_1       BIT(25)
+#define SAM_UOTGHS_HOST_IMR_DMA_2       BIT(26)
+#define SAM_UOTGHS_HOST_IMR_DMA_3       BIT(27)
+#define SAM_UOTGHS_HOST_IMR_DMA_4       BIT(28)
+#define SAM_UOTGHS_HOST_IMR_DMA_5       BIT(29)
+#define SAM_UOTGHS_HOST_IMR_DMA_6       BIT(30)
+
+/* Host Global Interrupt Disable Register. */
+#define SAM_UOTGHS_HOST_IDR_DCONNIED    BIT(0)
+#define SAM_UOTGHS_HOST_IDR_DDISCIED    BIT(1)
+#define SAM_UOTGHS_HOST_IDR_RSTIED      BIT(2)
+#define SAM_UOTGHS_HOST_IDR_RSMEDIED    BIT(3)
+#define SAM_UOTGHS_HOST_IDR_RXRSMIED    BIT(4)
+#define SAM_UOTGHS_HOST_IDR_HSOFIED     BIT(5)
+#define SAM_UOTGHS_HOST_IDR_HWUPIED     BIT(6)
+#define SAM_UOTGHS_HOST_IDR_PEP_0       BIT(8)
+#define SAM_UOTGHS_HOST_IDR_PEP_1       BIT(9)
+#define SAM_UOTGHS_HOST_IDR_PEP_2       BIT(10)
+#define SAM_UOTGHS_HOST_IDR_PEP_3       BIT(11)
+#define SAM_UOTGHS_HOST_IDR_PEP_4       BIT(12)
+#define SAM_UOTGHS_HOST_IDR_PEP_5       BIT(13)
+#define SAM_UOTGHS_HOST_IDR_PEP_6       BIT(14)
+#define SAM_UOTGHS_HOST_IDR_PEP_7       BIT(15)
+#define SAM_UOTGHS_HOST_IDR_PEP_8       BIT(16)
+#define SAM_UOTGHS_HOST_IDR_PEP_9       BIT(17)
+#define SAM_UOTGHS_HOST_IDR_DMA_1       BIT(25)
+#define SAM_UOTGHS_HOST_IDR_DMA_2       BIT(26)
+#define SAM_UOTGHS_HOST_IDR_DMA_3       BIT(27)
+#define SAM_UOTGHS_HOST_IDR_DMA_4       BIT(28)
+#define SAM_UOTGHS_HOST_IDR_DMA_5       BIT(29)
+#define SAM_UOTGHS_HOST_IDR_DMA_6       BIT(30)
+
+/* Host Global Interrupt Enable Register. */
+#define SAM_UOTGHS_HOST_IER_DCONNIES    BIT(0)
+#define SAM_UOTGHS_HOST_IER_DDISCIES    BIT(1)
+#define SAM_UOTGHS_HOST_IER_RSTIES      BIT(2)
+#define SAM_UOTGHS_HOST_IER_RSMEDIES    BIT(3)
+#define SAM_UOTGHS_HOST_IER_RXRSMIES    BIT(4)
+#define SAM_UOTGHS_HOST_IER_HSOFIES     BIT(5)
+#define SAM_UOTGHS_HOST_IER_HWUPIES     BIT(6)
+#define SAM_UOTGHS_HOST_IER_PEP_0       BIT(8)
+#define SAM_UOTGHS_HOST_IER_PEP_1       BIT(9)
+#define SAM_UOTGHS_HOST_IER_PEP_2       BIT(10)
+#define SAM_UOTGHS_HOST_IER_PEP_3       BIT(11)
+#define SAM_UOTGHS_HOST_IER_PEP_4       BIT(12)
+#define SAM_UOTGHS_HOST_IER_PEP_5       BIT(13)
+#define SAM_UOTGHS_HOST_IER_PEP_6       BIT(14)
+#define SAM_UOTGHS_HOST_IER_PEP_7       BIT(15)
+#define SAM_UOTGHS_HOST_IER_PEP_8       BIT(16)
+#define SAM_UOTGHS_HOST_IER_PEP_9       BIT(17)
+#define SAM_UOTGHS_HOST_IER_DMA_1       BIT(25)
+#define SAM_UOTGHS_HOST_IER_DMA_2       BIT(26)
+#define SAM_UOTGHS_HOST_IER_DMA_3       BIT(27)
+#define SAM_UOTGHS_HOST_IER_DMA_4       BIT(28)
+#define SAM_UOTGHS_HOST_IER_DMA_5       BIT(29)
+#define SAM_UOTGHS_HOST_IER_DMA_6       BIT(30)
+
+/* Host Frame Number Register. */
+#define SAM_UOTGHS_HOST_FNUM_MFNUM_POS       (0)
+#define SAM_UOTGHS_HOST_FNUM_MFNUM_MASK      (0x7 << SAM_UOTGHS_HOST_FNUM_MFNUM_POS)
+#define SAM_UOTGHS_HOST_FNUM_MFNUM(value)    BITFIELD_SET(SAM_UOTGHS_HOST_FNUM_MFNUM, (value))
+#define SAM_UOTGHS_HOST_FNUM_FNUM_POS        (3)
+#define SAM_UOTGHS_HOST_FNUM_FNUM_MASK       (0x7ff << SAM_UOTGHS_HOST_FNUM_FNUM_POS)
+#define SAM_UOTGHS_HOST_FNUM_FNUM(value)     BITFIELD_SET(SAM_UOTGHS_HOST_FNUM_FNUM, (value))
+#define SAM_UOTGHS_HOST_FNUM_FLENHIGH_POS    (16)
+#define SAM_UOTGHS_HOST_FNUM_FLENHIGH_MASK   (0xff << SAM_UOTGHS_HOST_FNUM_FLENHIGH_POS)
+#define SAM_UOTGHS_HOST_FNUM_FLENHIGH(value) BITFIELD_SET(SAM_UOTGHS_HOST_FNUM_FLENHIGH, (value))
+
+/* Host Address 1 Register. */
+#define SAM_UOTGHS_HOST_ADDR1_ADDRP0_POS     (0)
+#define SAM_UOTGHS_HOST_ADDR1_ADDRP0_MASK    (0x7f << SAM_UOTGHS_HOST_ADDR1_ADDRP0_POS)
+#define SAM_UOTGHS_HOST_ADDR1_ADDRP0(value)  BITFIELD_SET(SAM_UOTGHS_HOST_ADDR1_ADDRP0, (value))
+#define SAM_UOTGHS_HOST_ADDR1_ADDRP1_POS     (8)
+#define SAM_UOTGHS_HOST_ADDR1_ADDRP1_MASK    (0x7f << SAM_UOTGHS_HOST_ADDR1_ADDRP1_POS)
+#define SAM_UOTGHS_HOST_ADDR1_ADDRP1(value)  BITFIELD_SET(SAM_UOTGHS_HOST_ADDR1_ADDRP1, (value))
+#define SAM_UOTGHS_HOST_ADDR1_ADDRP2_POS     (16)
+#define SAM_UOTGHS_HOST_ADDR1_ADDRP2_MASK    (0x7f << SAM_UOTGHS_HOST_ADDR1_ADDRP2_POS)
+#define SAM_UOTGHS_HOST_ADDR1_ADDRP2(value)  BITFIELD_SET(SAM_UOTGHS_HOST_ADDR1_ADDRP2, (value))
+#define SAM_UOTGHS_HOST_ADDR1_ADDRP3_POS     (24)
+#define SAM_UOTGHS_HOST_ADDR1_ADDRP3_MASK    (0x7f << SAM_UOTGHS_HOST_ADDR1_ADDRP3_POS)
+#define SAM_UOTGHS_HOST_ADDR1_ADDRP3(value)  BITFIELD_SET(SAM_UOTGHS_HOST_ADDR1_ADDRP3, (value))
+
+/* Host Address 2 Register. */
+#define SAM_UOTGHS_HOST_ADDR2_ADDRP4_POS     (0)
+#define SAM_UOTGHS_HOST_ADDR2_ADDRP4_MASK    (0x7f << SAM_UOTGHS_HOST_ADDR2_ADDRP4_POS)
+#define SAM_UOTGHS_HOST_ADDR2_ADDRP4(value)  BITFIELD_SET(SAM_UOTGHS_HOST_ADDR2_ADDRP4, (value))
+#define SAM_UOTGHS_HOST_ADDR2_ADDRP5_POS     (8)
+#define SAM_UOTGHS_HOST_ADDR2_ADDRP5_MASK    (0x7f << SAM_UOTGHS_HOST_ADDR2_ADDRP5_POS)
+#define SAM_UOTGHS_HOST_ADDR2_ADDRP5(value)  BITFIELD_SET(SAM_UOTGHS_HOST_ADDR2_ADDRP5, (value))
+#define SAM_UOTGHS_HOST_ADDR2_ADDRP6_POS     (16)
+#define SAM_UOTGHS_HOST_ADDR2_ADDRP6_MASK    (0x7f << SAM_UOTGHS_HOST_ADDR2_ADDRP6_POS)
+#define SAM_UOTGHS_HOST_ADDR2_ADDRP6(value)  BITFIELD_SET(SAM_UOTGHS_HOST_ADDR2_ADDRP6, (value))
+#define SAM_UOTGHS_HOST_ADDR2_ADDRP7_POS     (24)
+#define SAM_UOTGHS_HOST_ADDR2_ADDRP7_MASK    (0x7f << SAM_UOTGHS_HOST_ADDR2_ADDRP7_POS)
+#define SAM_UOTGHS_HOST_ADDR2_ADDRP7(value)  BITFIELD_SET(SAM_UOTGHS_HOST_ADDR2_ADDRP7, (value))
+
+/* Host Address 3 Register. */
+#define SAM_UOTGHS_HOST_ADDR3_ADDRP8_POS     (0)
+#define SAM_UOTGHS_HOST_ADDR3_ADDRP8_MASK    (0x7f << SAM_UOTGHS_HOST_ADDR3_ADDRP8_POS)
+#define SAM_UOTGHS_HOST_ADDR3_ADDRP8(value)  BITFIELD_SET(SAM_UOTGHS_HOST_ADDR3_ADDRP8, (value))
+#define SAM_UOTGHS_HOST_ADDR3_ADDRP9_POS     (8)
+#define SAM_UOTGHS_HOST_ADDR3_ADDRP9_MASK    (0x7f << SAM_UOTGHS_HOST_ADDR3_ADDRP9_POS)
+#define SAM_UOTGHS_HOST_ADDR3_ADDRP9(value)  BITFIELD_SET(SAM_UOTGHS_HOST_ADDR3_ADDRP9, (value))
+
+/* Host Pipe Register. */
+#define SAM_UOTGHS_HOST_PIP_PEN0        BIT(0)
+#define SAM_UOTGHS_HOST_PIP_PEN1        BIT(1)
+#define SAM_UOTGHS_HOST_PIP_PEN2        BIT(2)
+#define SAM_UOTGHS_HOST_PIP_PEN3        BIT(3)
+#define SAM_UOTGHS_HOST_PIP_PEN4        BIT(4)
+#define SAM_UOTGHS_HOST_PIP_PEN5        BIT(5)
+#define SAM_UOTGHS_HOST_PIP_PEN6        BIT(6)
+#define SAM_UOTGHS_HOST_PIP_PEN7        BIT(7)
+#define SAM_UOTGHS_HOST_PIP_PEN8        BIT(8)
+#define SAM_UOTGHS_HOST_PIP_PRST0       BIT(16)
+#define SAM_UOTGHS_HOST_PIP_PRST1       BIT(17)
+#define SAM_UOTGHS_HOST_PIP_PRST2       BIT(18)
+#define SAM_UOTGHS_HOST_PIP_PRST3       BIT(19)
+#define SAM_UOTGHS_HOST_PIP_PRST4       BIT(20)
+#define SAM_UOTGHS_HOST_PIP_PRST5       BIT(21)
+#define SAM_UOTGHS_HOST_PIP_PRST6       BIT(22)
+#define SAM_UOTGHS_HOST_PIP_PRST7       BIT(23)
+#define SAM_UOTGHS_HOST_PIP_PRST8       BIT(24)
+
+/* Host Pipe x Configuration Register. */
+#define SAM_UOTGHS_HOST_PIPCFG_ALLOC                   BIT(1)
+#define SAM_UOTGHS_HOST_PIPCFG_PBK_POS                 (2)
+#define SAM_UOTGHS_HOST_PIPCFG_PBK_MASK                (0x3 << SAM_UOTGHS_HOST_PIPCFG_PBK_POS)
+#define SAM_UOTGHS_HOST_PIPCFG_PBK(value)              BITFIELD_SET(SAM_UOTGHS_HOST_PIPCFG_PBK, (value))
+#define SAM_UOTGHS_HOST_PIPCFG_PBK_1_BANK              SAM_UOTGHS_HOST_PIPCFG_PBK(0)
+#define SAM_UOTGHS_HOST_PIPCFG_PBK_2_BANK              SAM_UOTGHS_HOST_PIPCFG_PBK(1)
+#define SAM_UOTGHS_HOST_PIPCFG_PBK_3_BANK              SAM_UOTGHS_HOST_PIPCFG_PBK(2)
+#define SAM_UOTGHS_HOST_PIPCFG_PSIZE_POS               (4)
+#define SAM_UOTGHS_HOST_PIPCFG_PSIZE_MASK              (0x7 << SAM_UOTGHS_HOST_PIPCFG_PSIZE_POS)
+#define SAM_UOTGHS_HOST_PIPCFG_PSIZE(value)            BITFIELD_SET(SAM_UOTGHS_HOST_PIPCFG_PSIZE, (value))
+#define SAM_UOTGHS_HOST_PIPCFG_PSIZE_8_BYTES           SAM_UOTGHS_HOST_PIPCFG_PSIZE(0)
+#define SAM_UOTGHS_HOST_PIPCFG_PSIZE_16_BYTES          SAM_UOTGHS_HOST_PIPCFG_PSIZE(1)
+#define SAM_UOTGHS_HOST_PIPCFG_PSIZE_32_BYTES          SAM_UOTGHS_HOST_PIPCFG_PSIZE(2)
+#define SAM_UOTGHS_HOST_PIPCFG_PSIZE_64_BYTES          SAM_UOTGHS_HOST_PIPCFG_PSIZE(3)
+#define SAM_UOTGHS_HOST_PIPCFG_PSIZE_128_BYTES         SAM_UOTGHS_HOST_PIPCFG_PSIZE(4)
+#define SAM_UOTGHS_HOST_PIPCFG_PSIZE_256_BYTES         SAM_UOTGHS_HOST_PIPCFG_PSIZE(5)
+#define SAM_UOTGHS_HOST_PIPCFG_PSIZE_512_BYTES         SAM_UOTGHS_HOST_PIPCFG_PSIZE(6)
+#define SAM_UOTGHS_HOST_PIPCFG_PSIZE_1024_BYTES        SAM_UOTGHS_HOST_PIPCFG_PSIZE(7)
+#define SAM_UOTGHS_HOST_PIPCFG_PTOKEN_POS              (8)
+#define SAM_UOTGHS_HOST_PIPCFG_PTOKEN_MASK             (0x3 << SAM_UOTGHS_HOST_PIPCFG_PTOKEN_POS)
+#define SAM_UOTGHS_HOST_PIPCFG_PTOKEN(value)           BITFIELD_SET(SAM_UOTGHS_HOST_PIPCFG_PTOKEN, (value))
+#define SAM_UOTGHS_HOST_PIPCFG_PTOKEN_SET(reg, value)  (((reg) & ~SAM_UOTGHS_HOST_PIPCFG_PTOKEN_MASK) | \
+                                                        SAM_UOTGHS_HOST_PIPCFG_PTOKEN_ ## value)
+#define SAM_UOTGHS_HOST_PIPCFG_PTOKEN_SETUP            SAM_UOTGHS_HOST_PIPCFG_PTOKEN(0)
+#define SAM_UOTGHS_HOST_PIPCFG_PTOKEN_IN               SAM_UOTGHS_HOST_PIPCFG_PTOKEN(1)
+#define SAM_UOTGHS_HOST_PIPCFG_PTOKEN_OUT              SAM_UOTGHS_HOST_PIPCFG_PTOKEN(2)
+#define SAM_UOTGHS_HOST_PIPCFG_AUTOSW                  BIT(10)
+#define SAM_UOTGHS_HOST_PIPCFG_PTYPE_POS               (12)
+#define SAM_UOTGHS_HOST_PIPCFG_PTYPE_MASK              (0x3 << SAM_UOTGHS_HOST_PIPCFG_PTYPE_POS)
+#define SAM_UOTGHS_HOST_PIPCFG_PTYPE(value)            BITFIELD_SET(SAM_UOTGHS_HOST_PIPCFG_PTYPE, (value))
+#define SAM_UOTGHS_HOST_PIPCFG_PTYPE_CTRL              SAM_UOTGHS_HOST_PIPCFG_PTYPE(0)
+#define SAM_UOTGHS_HOST_PIPCFG_PTYPE_ISO               SAM_UOTGHS_HOST_PIPCFG_PTYPE(1)
+#define SAM_UOTGHS_HOST_PIPCFG_PTYPE_BLK               SAM_UOTGHS_HOST_PIPCFG_PTYPE(2)
+#define SAM_UOTGHS_HOST_PIPCFG_PTYPE_INTRPT            SAM_UOTGHS_HOST_PIPCFG_PTYPE(3)
+#define SAM_UOTGHS_HOST_PIPCFG_PEPNUM_POS              (16)
+#define SAM_UOTGHS_HOST_PIPCFG_PEPNUM_MASK             (0xf << SAM_UOTGHS_HOST_PIPCFG_PEPNUM_POS)
+#define SAM_UOTGHS_HOST_PIPCFG_PEPNUM(value)           BITFIELD_SET(SAM_UOTGHS_HOST_PIPCFG_PEPNUM, (value))
+#define SAM_UOTGHS_HOST_PIPCFG_PINGEN                  BIT(20)
+#define SAM_UOTGHS_HOST_PIPCFG_INTFRQ_BINTERVAL_POS    (24)
+#define SAM_UOTGHS_HOST_PIPCFG_INTFRQ_BINTERVAL_MASK   (0xff << SAM_UOTGHS_HOST_PIPCFG_INTFRQ_BINTERVAL_POS)
+#define SAM_UOTGHS_HOST_PIPCFG_INTFRQ_BINTERVAL(value) BITFIELD_SET(SAM_UOTGHS_HOST_PIPCFG_INTFRQ_BINTERVAL, (value))
+
+/* Host Pipe x Status Register. */
+#define SAM_UOTGHS_HOST_PIPISR_RXINI              BIT(0)
+#define SAM_UOTGHS_HOST_PIPISR_TXOUTI             BIT(1)
+#define SAM_UOTGHS_HOST_PIPISR_TXSTPI_UNDERFI     BIT(2)
+#define SAM_UOTGHS_HOST_PIPISR_PERRI              BIT(3)
+#define SAM_UOTGHS_HOST_PIPISR_NAKEDI             BIT(4)
+#define SAM_UOTGHS_HOST_PIPISR_OVERFI             BIT(5)
+#define SAM_UOTGHS_HOST_PIPISR_RXSTALLDI_CRCERRI  BIT(6)
+#define SAM_UOTGHS_HOST_PIPISR_SHORTPACKETI       BIT(7)
+#define SAM_UOTGHS_HOST_PIPISR_DTSEQ_POS          (8)
+#define SAM_UOTGHS_HOST_PIPISR_DTSEQ_MASK         (0x3 << SAM_UOTGHS_HOST_PIPISR_DTSEQ_POS)
+#define SAM_UOTGHS_HOST_PIPISR_DTSEQ(value)       BITFIELD_SET(SAM_UOTGHS_HOST_PIPISR_DTSEQ, (value))
+#define SAM_UOTGHS_HOST_PIPISR_NBUSYBK_POS        (12)
+#define SAM_UOTGHS_HOST_PIPISR_NBUSYBK_MASK       (0x3 << SAM_UOTGHS_HOST_PIPISR_NBUSYBK_POS)
+#define SAM_UOTGHS_HOST_PIPISR_NBUSYBK(value)     BITFIELD_SET(SAM_UOTGHS_HOST_PIPISR_NBUSYBK, (value))
+#define SAM_UOTGHS_HOST_PIPISR_CURRBK_POS         (14)
+#define SAM_UOTGHS_HOST_PIPISR_CURRBK_MASK        (0x3 << SAM_UOTGHS_HOST_PIPISR_CURRBK_POS)
+#define SAM_UOTGHS_HOST_PIPISR_CURRBK(value)      BITFIELD_SET(SAM_UOTGHS_HOST_PIPISR_CURRBK, (value))
+#define SAM_UOTGHS_HOST_PIPISR_RWALL              BIT(16)
+#define SAM_UOTGHS_HOST_PIPISR_CFGOK              BIT(18)
+#define SAM_UOTGHS_HOST_PIPISR_PBYCT_POS          (20)
+#define SAM_UOTGHS_HOST_PIPISR_PBYCT_MASK         (0x7ff << SAM_UOTGHS_HOST_PIPISR_PBYCT_POS)
+#define SAM_UOTGHS_HOST_PIPISR_PBYCT(value)       BITFIELD_SET(SAM_UOTGHS_HOST_PIPISR_PBYCT, (value))
+
+/* Host Pipe x Clear Register. */
+#define SAM_UOTGHS_HOST_PIPICR_RXINIC              BIT(0)
+#define SAM_UOTGHS_HOST_PIPICR_TXOUTIC             BIT(1)
+#define SAM_UOTGHS_HOST_PIPICR_TXSTPIC_UNDERFIC    BIT(2)
+#define SAM_UOTGHS_HOST_PIPICR_NAKEDIC             BIT(4)
+#define SAM_UOTGHS_HOST_PIPICR_OVERFIC             BIT(5)
+#define SAM_UOTGHS_HOST_PIPICR_RXSTALLDIC_CRCERRIC BIT(6)
+#define SAM_UOTGHS_HOST_PIPICR_SHORTPACKETIC       BIT(7)
+
+/* Host Pipe x Set Register. */
+#define SAM_UOTGHS_HOST_PIPIFR_RXINIS              BIT(0)
+#define SAM_UOTGHS_HOST_PIPIFR_TXOUTIS             BIT(1)
+#define SAM_UOTGHS_HOST_PIPIFR_TXSTPIS_UNDERFIS    BIT(2)
+#define SAM_UOTGHS_HOST_PIPIFR_NAKEDIS             BIT(4)
+#define SAM_UOTGHS_HOST_PIPIFR_OVERFIS             BIT(5)
+#define SAM_UOTGHS_HOST_PIPIFR_RXSTALLDIS_CRCERRIS BIT(6)
+#define SAM_UOTGHS_HOST_PIPIFR_SHORTPACKETIS       BIT(7)
+#define SAM_UOTGHS_HOST_PIPIFR_NBUSYBKS            BIT(12)
+
+/* Host Pipe x Mask Register. */
+#define SAM_UOTGHS_HOST_PIPIMR_RXINE               BIT(0)
+#define SAM_UOTGHS_HOST_PIPIMR_TXOUTE              BIT(1)
+#define SAM_UOTGHS_HOST_PIPIMR_TXSTPE_UNDERFE      BIT(2)
+#define SAM_UOTGHS_HOST_PIPIMR_NAKEDE              BIT(4)
+#define SAM_UOTGHS_HOST_PIPIMR_OVERFE              BIT(5)
+#define SAM_UOTGHS_HOST_PIPIMR_RXSTALLDE_CRCERRE   BIT(6)
+#define SAM_UOTGHS_HOST_PIPIMR_SHORTPACKETE        BIT(7)
+#define SAM_UOTGHS_HOST_PIPIMR_NBUSYBE             BIT(12)
+#define SAM_UOTGHS_HOST_PIPIMR_FIFOCON             BIT(14)
+#define SAM_UOTGHS_HOST_PIPIMR_PDISHDMA            BIT(16)
+#define SAM_UOTGHS_HOST_PIPIMR_PFREEZE             BIT(17)
+#define SAM_UOTGHS_HOST_PIPIMR_RSTDT               BIT(18)
+
+/* Host Pipe x Disable Register. */
+#define SAM_UOTGHS_HOST_PIPIDR_RXINEC               BIT(0)
+#define SAM_UOTGHS_HOST_PIPIDR_TXOUTEC              BIT(1)
+#define SAM_UOTGHS_HOST_PIPIDR_TXSTPEC_UNDERFEC     BIT(2)
+#define SAM_UOTGHS_HOST_PIPIDR_NAKEDEC              BIT(4)
+#define SAM_UOTGHS_HOST_PIPIDR_OVERFEC              BIT(5)
+#define SAM_UOTGHS_HOST_PIPIDR_RXSTALLDEC_CRCERREC  BIT(6)
+#define SAM_UOTGHS_HOST_PIPIDR_SHORTPACKETEC        BIT(7)
+#define SAM_UOTGHS_HOST_PIPIDR_NBUSYBEC             BIT(12)
+#define SAM_UOTGHS_HOST_PIPIDR_FIFOCONC             BIT(14)
+#define SAM_UOTGHS_HOST_PIPIDR_PDISHDMAC            BIT(16)
+#define SAM_UOTGHS_HOST_PIPIDR_PFREEZEC             BIT(17)
+
+/* Host Pipe x Enable Register. */
+#define SAM_UOTGHS_HOST_PIPIER_RXINES               BIT(0)
+#define SAM_UOTGHS_HOST_PIPIER_TXOUTES              BIT(1)
+#define SAM_UOTGHS_HOST_PIPIER_TXSTPES_UNDERFES     BIT(2)
+#define SAM_UOTGHS_HOST_PIPIER_NAKEDES              BIT(4)
+#define SAM_UOTGHS_HOST_PIPIER_OVERFES              BIT(5)
+#define SAM_UOTGHS_HOST_PIPIER_RXSTALLDES_CRCERRES  BIT(6)
+#define SAM_UOTGHS_HOST_PIPIER_SHORTPACKETES        BIT(7)
+#define SAM_UOTGHS_HOST_PIPIER_NBUSYBES             BIT(12)
+#define SAM_UOTGHS_HOST_PIPIER_PDISHDMAS            BIT(16)
+#define SAM_UOTGHS_HOST_PIPIER_PFREEZES             BIT(17)
+#define SAM_UOTGHS_HOST_PIPIER_RSTDTS               BIT(18)
+
+/* Host Pipe x IN Request Register. */
+#define SAM_UOTGHS_HOST_PIPINRQ_INRQ_POS          (0)
+#define SAM_UOTGHS_HOST_PIPINRQ_INRQ_MASK         (0xff << SAM_UOTGHS_HOST_PIPINRQ_INRQ_POS)
+#define SAM_UOTGHS_HOST_PIPINRQ_INRQ(value)       BITFIELD_SET(SAM_UOTGHS_HOST_PIPINRQ_INRQ, (value))
+#define SAM_UOTGHS_HOST_PIPINRQ_INMODE            BIT(8)
+
+/* Host Pipe x Error Register. */
+#define SAM_UOTGHS_HOST_PIPERR_DATATGL            BIT(0)
+#define SAM_UOTGHS_HOST_PIPERR_DATAPID            BIT(1)
+#define SAM_UOTGHS_HOST_PIPERR_PID                BIT(2)
+#define SAM_UOTGHS_HOST_PIPERR_TIMEOUT            BIT(3)
+#define SAM_UOTGHS_HOST_PIPERR_CRC16              BIT(4)
+#define SAM_UOTGHS_HOST_PIPERR_COUNTER_POS        (5)
+#define SAM_UOTGHS_HOST_PIPERR_COUNTER_MASK       (0x3 << SAM_UOTGHS_HOST_PIPERR_COUNTER_POS)
+#define SAM_UOTGHS_HOST_PIPERR_COUNTER(value)     BITFIELD_SET(SAM_UOTGHS_HOST_PIPERR_COUNTER, (value))
+
+/* Host DMA Channel x Control Register. */
+#define SAM_UOTGHS_HOST_DMA_CONTROL_CHANN_ENB          BIT(0)
+#define SAM_UOTGHS_HOST_DMA_CONTROL_LDNXT_DSC          BIT(1)
+#define SAM_UOTGHS_HOST_DMA_CONTROL_END_TR_EN          BIT(2)
+#define SAM_UOTGHS_HOST_DMA_CONTROL_END_B_EN           BIT(3)
+#define SAM_UOTGHS_HOST_DMA_CONTROL_END_TR_IT          BIT(4)
+#define SAM_UOTGHS_HOST_DMA_CONTROL_END_BUFFIT         BIT(5)
+#define SAM_UOTGHS_HOST_DMA_CONTROL_DESC_LD_IT         BIT(6)
+#define SAM_UOTGHS_HOST_DMA_CONTROL_BURST_LCK          BIT(7)
+#define SAM_UOTGHS_HOST_DMA_CONTROL_BUFF_LENGTH_POS    (16)
+#define SAM_UOTGHS_HOST_DMA_CONTROL_BUFF_LENGTH_MASK   (0xffff << SAM_UOTGHS_HOST_DMA_CONTROL_BUFF_LENGTH_POS)
+#define SAM_UOTGHS_HOST_DMA_CONTROL_BUFF_LENGTH(value) BITFIELD_SET(SAM_UOTGHS_HOST_DMA_CONTROL_BUFF_LENGTH, (value))
+
+/* Host DMA Channel x Status Register. */
+#define SAM_UOTGHS_HOST_DMA_CONTROL_CHANN_ENB         BIT(0)
+#define SAM_UOTGHS_HOST_DMA_CONTROL_LDNXT_DSC         BIT(1)
+#define SAM_UOTGHS_HOST_DMA_CONTROL_END_TR_IT         BIT(4)
+#define SAM_UOTGHS_HOST_DMA_CONTROL_END_BUFFIT        BIT(5)
+#define SAM_UOTGHS_HOST_DMA_CONTROL_DESC_LD_IT        BIT(6)
+#define SAM_UOTGHS_HOST_DMA_CONTROL_BUFF_COUNT_POS    (16)
+#define SAM_UOTGHS_HOST_DMA_CONTROL_BUFF_COUNT_MASK   (0xffff << SAM_UOTGHS_HOST_DMA_CONTROL_BUFF_COUNT_POS)
+#define SAM_UOTGHS_HOST_DMA_CONTROL_BUFF_COUNT(value) BITFIELD_SET(SAM_UOTGHS_HOST_DMA_CONTROL_BUFF_COUNT, (value))
+
+/* General. */
 
 /* General Control Register. */
 #define SAM_UOTGHS_CTRL_IDTE            BIT(0)
@@ -2354,6 +2720,10 @@ struct sam_dacc_t {
 #define FLASH1_PAGE_SIZE 0x100
 
 #define FLASH_IAP_ADDRESS (0x00100008)
+
+/* USBOTG DPRAM (DMA) base address. */
+#define SAM_UOTGHS_DPRAM_ADDRESS    (0x20180000u)
+#define SAM_UOTGHS_DPRAM_PIPE_SIZE  (0x8000)
 
 static inline void nvic_enable_interrupt(int id)
 {

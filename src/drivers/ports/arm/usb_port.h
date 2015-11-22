@@ -21,14 +21,20 @@
 #ifndef __DRIVERS_USB_PORT_H__
 #define __DRIVERS_USB_PORT_H__
 
-struct usb_device_t {
-    struct usb_driver_t *drv_p;
-    volatile struct sam_uotghs_t *regs_p;
+#define USB_PIPE_STATE_FREE      0
+#define USB_PIPE_STATE_ALLOCATED 1
+
+struct usb_pipe_t {
     int id;
+    int state;
+    struct thrd_t *thrd_p;
 };
 
-struct usb_driver_t {
-    struct usb_device_t *dev_p;
+struct usb_device_t {
+    void *drv_p;
+    volatile struct sam_uotghs_t *regs_p;
+    int id;
+    struct usb_pipe_t pipes[10];
 };
 
 #endif

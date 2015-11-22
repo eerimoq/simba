@@ -1,5 +1,5 @@
 /**
- * @file kernel.h
+ * @file drivers/usb_host_port.h
  * @version 1.0
  *
  * @section License
@@ -18,29 +18,20 @@
  * This file is part of the Simba project.
  */
 
-#ifndef __KERNEL_H__
-#define __KERNEL_H__
+#ifndef __DRIVERS_USB_HOST_PORT_H__
+#define __DRIVERS_USB_HOST_PORT_H__
 
-#include "settings.h"
-#include "kernel/errno.h"
-#include "kernel/types.h"
-#include "kernel/list.h"
-#include "kernel/fifo.h"
-#include "kernel/setting.h"
-#include "kernel/time.h"
-#include "kernel/chan.h"
-#include "kernel/sys.h"
-#include "kernel/timer.h"
-#include "kernel/thrd.h"
-#include "kernel/fs.h"
-#include "kernel/counter.h"
-#include "kernel/parameter.h"
-#include "kernel/shell.h"
-#include "kernel/sem.h"
-#include "kernel/std.h"
-#include "kernel/log.h"
-#include "kernel/queue.h"
-#include "kernel/event.h"
-#include "kernel/bits.h"
+#include "simba.h"
+
+struct usb_host_driver_t {
+    int id;                               /* The driver id. */
+    struct usb_device_t *dev_p;
+    size_t length;
+    struct usb_host_device_t *devices_p;
+    struct queue_t control;
+    struct event_t event;
+    struct usb_host_driver_t *next_p;
+    THRD_STACK(stack, 1024);
+};
 
 #endif
