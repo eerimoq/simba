@@ -46,4 +46,10 @@ int usb_host_class_mass_storage_start(struct usb_host_class_mass_storage_driver_
 
 int usb_host_class_mass_storage_stop(struct usb_host_class_mass_storage_driver_t *drv_p);
 
+ssize_t usb_host_class_mass_storage_device_read(
+    struct usb_host_device_t *device_p,
+    void *buf_p,
+    size_t address,
+    size_t size);
+
 #endif

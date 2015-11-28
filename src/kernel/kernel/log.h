@@ -39,7 +39,7 @@
 /* Set all levels up to and including mask. */
 #define LOG_UPTO(level) ((1 << (LOG_ ## level + 1)) - 1)
 
-#if !defined(LOG_ENTRIES_MAX)
+#if !defined(LOG_BUFFER_SIZE)
 #    define LOG_BUFFER_SIZE 256
 #endif
 

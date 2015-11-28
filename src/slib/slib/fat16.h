@@ -26,7 +26,7 @@
 #include "simba.h"
 
 /*
- * FAT16 file structures on SD card.
+ * FAT16 file structures.
  *
  * @section Acknowledgement
  * Refactoring of Arduino Fat16 Library, Copyright (C) 2009 by William Greiman
@@ -58,6 +58,13 @@
 #define DIR_ATTR_VOLUME_ID 0x08 /* Directory entry contains the volume label. */
 #define DIR_ATTR_DIRECTORY 0x10 /* Entry is for a directory. */
 #define DIR_ATTR_ARCHIVE   0x20 /* Old DOS archive bit for backup support. */
+
+typedef ssize_t (*fat16_read_t)(void *arg_p,
+                                void *dst_p,
+                                uint32_t src_block);
+typedef ssize_t (*fat16_write_t)(void *arg_p,
+                                 uint32_t dst_block,
+                                 const void *src_p);
 
 /* FAT entry.  */
 typedef uint16_t fat_t;
@@ -416,8 +423,10 @@ struct fat16_cache_t {
 };
 
 struct fat16_t {
-    /* The SD card reference. */
-    struct sd_driver_t *sd_p;
+    /* Data block read and wrte functions. */
+    fat16_read_t read;
+    fat16_write_t write;
+    void *arg_p;
     unsigned int partition;
 
     /* Volume info */
@@ -462,7 +471,8 @@ struct fat16_dir_entry_t {
  * Initialize a FAT16 volume.
  *
  * @param[in,out] fat16_p FAT16 object to initialize.
- * @param[in] sd_p SD device where the volume is located.
+ * @param[in] read_p Callback function used to read blocks of data.
+ * @param[in] write_p Callback function used to write blocks of data.
  * @param[in] partition Partition to be used. Legal values for a
  *                      partition are 1-4 to use the corresponding
  *                      partition on a device formatted with a MBR,
@@ -473,7 +483,9 @@ struct fat16_dir_entry_t {
  * @return zero(0) or negative error code.
  */
 int fat16_init(struct fat16_t *fat16_p,
-               struct sd_driver_t *sd_p,
+               fat16_read_t read,
+               fat16_write_t write,
+               void *arg_p,
                unsigned int partition);
 
 /**

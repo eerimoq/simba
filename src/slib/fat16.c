@@ -204,7 +204,7 @@ static int cache_flush(struct fat16_t *fat16_p)
     struct fat16_cache_t *cache_p = &fat16_p->cache;
 
     if (cache_p->dirty) {
-        if (sd_write_block(fat16_p->sd_p,
+        if (fat16_p->write(fat16_p->arg_p,
                            cache_p->block_number,
                            cache_p->buffer.data) != SD_BLOCK_SIZE)
         {
@@ -213,7 +213,7 @@ static int cache_flush(struct fat16_t *fat16_p)
 
         if (cache_p->mirror_block)
         {
-            if (sd_write_block(fat16_p->sd_p,
+            if (fat16_p->write(fat16_p->arg_p,
                                cache_p->mirror_block,
                                cache_p->buffer.data) != SD_BLOCK_SIZE)
             {
@@ -266,7 +266,7 @@ static int cache_raw_block(struct fat16_t *fat16_p,
             return (-1);
         }
 
-        if (sd_read_block(fat16_p->sd_p,
+        if (fat16_p->read(fat16_p->arg_p,
                           cache_p->buffer.data,
                           block_number) != SD_BLOCK_SIZE)
         {
@@ -371,7 +371,9 @@ static int free_chain(struct fat16_t *fat16_p, fat_t cluster)
 }
 
 int fat16_init(struct fat16_t *fat16_p,
-               struct sd_driver_t* sd_p,
+               fat16_read_t read,
+               fat16_write_t write,
+               void *arg_p,
                unsigned int partition)
 {
     /* Error if invalid partition. */
@@ -380,7 +382,9 @@ int fat16_init(struct fat16_t *fat16_p,
     }
 
     /* Initialize datastructure.*/
-    fat16_p->sd_p = sd_p;
+    fat16_p->read = read;
+    fat16_p->write = write;
+    fat16_p->arg_p = arg_p;
     fat16_p->partition = partition;
     fat16_p->cache.block_number = 0xffffffff;
     fat16_p->cache.dirty = 0;

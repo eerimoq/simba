@@ -20,7 +20,7 @@
 
 #include "simba.h"
 
-FS_COMMAND_DEFINE("/drivers/usb/list", cmd_list);
+FS_COMMAND_DEFINE("/drivers/usb_host/list", usb_host_cmd_list);
 
 /* Only one device supported for now. */
 #define DEVICE_ADDRESS    1
@@ -34,10 +34,10 @@ static struct usb_host_driver_t *drivers_p = NULL;
 
 static struct usb_host_device_driver_t *device_drivers_p = NULL;
 
-int cmd_list(int argc,
-             const char *argv[],
-             void *out_p,
-             void *in_p)
+int usb_host_cmd_list(int argc,
+                      const char *argv[],
+                      void *out_p,
+                      void *in_p)
 {
     int i;
     int verbose = 0;
@@ -519,6 +519,8 @@ ssize_t usb_host_device_control_transfer(struct usb_host_device_t *device_p,
                                          void *buf_p,
                                          size_t size)
 {
+    std_printf(FSTR("Starting a control transfer.\r\n"));
+
     if (usb_host_port_device_write_setup(device_p, setup_p) != sizeof(*setup_p)) {
         std_printf(FSTR("Failed to write SETUP.\r\n"));
 

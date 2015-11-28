@@ -86,14 +86,17 @@ static int thrd_port_spawn(struct thrd_t *thrd,
 
 static void thrd_port_idle_wait(struct thrd_t *thrd_p)
 {
+    /* Wait for an interrupt to occur. */
     asm volatile ("wfi");
+
+    /* Unlock the system to handle the interrupt. */
+    sys_unlock();
 
     /* Add this thread to the ready list and reschedule. */
     sys_lock();
     thrd_p->state = THRD_STATE_READY;
     scheduler_ready_push(thrd_p);
     thrd_reschedule();
-    sys_unlock();
 }
 
 static void thrd_port_suspend_timer_callback(void *arg_p)

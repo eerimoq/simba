@@ -33,6 +33,20 @@ static struct usb_host_class_hid_device_t hid_devices[1];
 static struct usb_host_class_mass_storage_driver_t mass_storage;
 static struct usb_host_class_mass_storage_device_t mass_storage_devices[1];
 
+FS_COMMAND_DEFINE("/state", cmd_state);
+
+extern void state();
+
+int cmd_state(int argc,
+              const char *argv[],
+              void *out_p,
+              void *in_p)
+{
+    state();
+
+    return (0);
+}
+
 /**
  * A thread that waits for a mouse to be attached and then reads
  * reports from it and prints them to standard output.
@@ -87,6 +101,7 @@ static int handle_message_add(struct usb_message_add_t *msg_p)
     int i, j;
     struct usb_descriptor_configuration_t *conf_p = NULL;
     struct usb_descriptor_interface_t *int_p = NULL;
+    uint8_t buf[512];
 
     device_p = usb_host_device_open(&usb, msg_p->device);
 
@@ -104,6 +119,20 @@ static int handle_message_add(struct usb_message_add_t *msg_p)
                 && (int_p->interface_protocol == USB_CLASS_HID_PROTOCOL_MOUSE)) {
                 std_printf(FSTR("A HID mouse interface was found.\r\n"));
                 break;
+            }
+
+            if (int_p->interface_class == USB_CLASS_MASS_STORAGE) {
+                std_printf(FSTR("A MASS_STORAGE interface was found.\r\n"));
+                std_printf(FSTR("reading from USB device\r\n"));
+                
+                usb_host_class_mass_storage_device_read(device_p,
+                                                        buf,
+                                                        0,
+                                                        512);
+                
+                std_printf(FSTR("read from USB device\r\n"));
+                
+                return (0);
             }
         }
 
@@ -139,7 +168,7 @@ static void *usb_control_main(void *arg_p)
                    message.header.type);
 
         switch (message.header.type) {
-            
+
         case USB_MESSAGE_TYPE_ADD:
             handle_message_add(&message.add);
             break;

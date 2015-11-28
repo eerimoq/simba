@@ -26,15 +26,17 @@
 #include "usb_port.h"
 
 /* Request types. */
+#define REQUEST_TYPE_DATA_DIRECTION_HOST_TO_DEVICE (0 << 7)
+#define REQUEST_TYPE_DATA_DIRECTION_DEVICE_TO_HOST (1 << 7)
+
+#define REQUEST_TYPE_TYPE_STANDARD                 (0 << 5)
+#define REQUEST_TYPE_TYPE_CLASS                    (1 << 5)
+#define REQUEST_TYPE_TYPE_VENDOR                   (2 << 5)
+
 #define REQUEST_TYPE_RECIPIENT_DEVICE              (0 << 0)
 #define REQUEST_TYPE_RECIPIENT_INTERFACE           (1 << 0)
 #define REQUEST_TYPE_RECIPIENT_ENDPOINT            (2 << 0)
 #define REQUEST_TYPE_RECIPIENT_OTHER               (3 << 0)
-#define REQUEST_TYPE_TYPE_STANDARD                 (0 << 5)
-#define REQUEST_TYPE_TYPE_CLASS                    (1 << 5)
-#define REQUEST_TYPE_TYPE_VENDOR                   (2 << 5)
-#define REQUEST_TYPE_DATA_DIRECTION_HOST_TO_DEVICE (0 << 7)
-#define REQUEST_TYPE_DATA_DIRECTION_DEVICE_TO_HOST (1 << 7)
 
 /* Setup requests. */
 #define REQUEST_GET_STATUS         0
@@ -75,34 +77,38 @@
 
 /* Setups. */
 
-    struct usb_setup_t {
-        uint8_t request_type;
-        uint8_t request;
-        union {
-            struct {
-                uint16_t feature_selector;
-                uint16_t zero_interface_endpoint;
-            } clear_feature;
-            struct {
-                uint16_t zero0;
-                uint16_t zero1;
-            } get_configuration;
-            struct {
-                uint8_t descriptor_index;
-                uint8_t descriptor_type;
-                uint16_t language_id;
-            } get_descriptor;
-            struct {
-                uint16_t device_address;
-                uint16_t zero;
-            } set_address;
-            struct {
-                uint16_t configuration_value;
-                uint16_t zero;
-            } set_configuration;
-        } u;
-        uint16_t length;
-    };
+struct usb_setup_t {
+    uint8_t request_type;
+    uint8_t request;
+    union {
+        struct {
+            uint16_t feature_selector;
+            uint16_t zero_interface_endpoint;
+        } clear_feature;
+        struct {
+            uint16_t zero0;
+            uint16_t zero1;
+        } get_configuration;
+        struct {
+            uint8_t descriptor_index;
+            uint8_t descriptor_type;
+            uint16_t language_id;
+        } get_descriptor;
+        struct {
+            uint16_t device_address;
+            uint16_t zero;
+        } set_address;
+        struct {
+            uint16_t configuration_value;
+            uint16_t zero;
+        } set_configuration;
+        struct {
+            uint16_t value;
+            uint16_t index;                
+        } base;
+    } u;
+    uint16_t length;
+};
 
 /* Responses. */
 

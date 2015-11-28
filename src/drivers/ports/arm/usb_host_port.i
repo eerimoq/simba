@@ -22,20 +22,25 @@
 
 #define EVENT_CONNECT 0x1
 
-void state()
+void state(int pipe)
 {
     /* std_printf(FSTR("  HOST.CTRL = 0x%lx\r\n"), SAM_UOTGHS->HOST.CTRL); */
     /* std_printf(FSTR("  HOST.ISR = 0x%lx\r\n"), SAM_UOTGHS->HOST.ISR); */
     /* std_printf(FSTR("  HOST.IMR = 0x%lx\r\n"), SAM_UOTGHS->HOST.IMR); */
+
     /* std_printf(FSTR("  HOST.ADDR[0] = 0x%lx\r\n"), SAM_UOTGHS->HOST.ADDR[0]); */
 
-    /* std_printf(FSTR("      HOST.PIPCFG[0] = 0x%lx\r\n"), SAM_UOTGHS->HOST.PIPCFG[0]); */
-    /* std_printf(FSTR("      HOST.PIPISR[0] = 0x%08lx\r\n"), SAM_UOTGHS->HOST.PIPISR[0]); */
-    /* std_printf(FSTR("      HOST.PIPIMR[0] = 0x%08lx\r\n\r\n"), SAM_UOTGHS->HOST.PIPIMR[0]); */
+    /* std_printf(FSTR("      HOST.PIPCFG[%d] = 0x%lx\r\n"), pipe, SAM_UOTGHS->HOST.PIPCFG[pipe]); */
+    /* std_printf(FSTR("      HOST.PIPISR[%d] = 0x%08lx\r\n"), pipe, SAM_UOTGHS->HOST.PIPISR[pipe]); */
+    /* std_printf(FSTR("      HOST.PIPIMR[%d] = 0x%08lx\r\n\r\n"), pipe, SAM_UOTGHS->HOST.PIPIMR[pipe]); */
 
     /* std_printf(FSTR("      HOST.PIPCFG[1] = 0x%08lx\r\n"), SAM_UOTGHS->HOST.PIPCFG[1]); */
     /* std_printf(FSTR("      HOST.PIPISR[1] = 0x%08lx\r\n"), SAM_UOTGHS->HOST.PIPISR[1]); */
     /* std_printf(FSTR("      HOST.PIPIMR[1] = 0x%08lx\r\n\r\n"), SAM_UOTGHS->HOST.PIPIMR[1]); */
+
+    /* std_printf(FSTR("      HOST.PIPCFG[2] = 0x%08lx\r\n"), SAM_UOTGHS->HOST.PIPCFG[2]); */
+    /* std_printf(FSTR("      HOST.PIPISR[2] = 0x%08lx\r\n"), SAM_UOTGHS->HOST.PIPISR[2]); */
+    /* std_printf(FSTR("      HOST.PIPIMR[2] = 0x%08lx\r\n\r\n"), SAM_UOTGHS->HOST.PIPIMR[2]); */
 }
 
 /* Token types. */
@@ -217,7 +222,8 @@ static struct usb_pipe_t *usb_pipe_alloc(struct usb_host_driver_t *drv_p,
 
     if (type == USB_PIPE_TYPE_CONTROL) {
         pipe_p = &dev_p->pipes[0];
-        reg = SAM_UOTGHS_HOST_PIPCFG_PTYPE_CTRL;
+        reg = (SAM_UOTGHS_HOST_PIPCFG_PTYPE_CTRL
+               | SAM_UOTGHS_HOST_PIPCFG_PSIZE_64_BYTES);
     } else {
         pipe_p = NULL;
 
@@ -233,19 +239,21 @@ static struct usb_pipe_t *usb_pipe_alloc(struct usb_host_driver_t *drv_p,
             return (NULL);
         }
 
+        reg = SAM_UOTGHS_HOST_PIPCFG_PSIZE_1024_BYTES;
+
         switch (type) {
 
         case USB_PIPE_TYPE_INTERRUPT:
-            reg = (SAM_UOTGHS_HOST_PIPCFG_PTYPE_INTRPT
+            reg |= (SAM_UOTGHS_HOST_PIPCFG_PTYPE_INTRPT
                    | SAM_UOTGHS_HOST_PIPCFG_INTFRQ_BINTERVAL(interval));
             break;
 
         case USB_PIPE_TYPE_ISOCHRONOUS:
-            reg = SAM_UOTGHS_HOST_PIPCFG_PTYPE_ISO;
+            reg |= SAM_UOTGHS_HOST_PIPCFG_PTYPE_ISO;
             break;
 
         case USB_PIPE_TYPE_BULK:
-            reg = SAM_UOTGHS_HOST_PIPCFG_PTYPE_BLK;
+            reg |= SAM_UOTGHS_HOST_PIPCFG_PTYPE_BLK;
             break;
 
         default:
@@ -264,7 +272,6 @@ static struct usb_pipe_t *usb_pipe_alloc(struct usb_host_driver_t *drv_p,
     regs_p->HOST.PIP |= (SAM_UOTGHS_HOST_PIP_PEN0 << pipe_p->id);
     regs_p->HOST.PIPCFG[pipe_p->id] =
         (SAM_UOTGHS_HOST_PIPCFG_PEPNUM(endpoint)
-         | SAM_UOTGHS_HOST_PIPCFG_PSIZE_64_BYTES
          | SAM_UOTGHS_HOST_PIPCFG_PBK_1_BANK
          | SAM_UOTGHS_HOST_PIPCFG_ALLOC
          | reg);
@@ -317,6 +324,9 @@ static ssize_t pipe_transfer(struct usb_device_t *dev_p,
 {
     volatile struct sam_uotghs_t *regs_p = dev_p->regs_p;
 
+    /* std_printf(FSTR("pipe %d transfer\r\n"), pipe); */
+    /* state(pipe); */
+
     /* Start the transfer. */
     dev_p->pipes[pipe].thrd_p = thrd_self();
 
@@ -334,6 +344,8 @@ static ssize_t pipe_transfer(struct usb_device_t *dev_p,
     dev_p->pipes[pipe].thrd_p = NULL;
 
     sys_unlock();
+
+    /* state(pipe); */
 
     return (0);
 }
@@ -360,6 +372,7 @@ static ssize_t usb_host_port_device_write_setup(struct usb_host_device_t *device
     }
 
     regs_p->HOST.PIPIER[pipe] = SAM_UOTGHS_HOST_PIPIER_TXSTPES_UNDERFES;
+    regs_p->HOST.PIPICR[pipe] = SAM_UOTGHS_HOST_PIPICR_SHORTPACKETIC;
 
     pipe_transfer(dev_p, pipe);
 
@@ -388,8 +401,8 @@ static ssize_t usb_host_port_device_write(struct usb_host_device_t *device_p,
     left = size;
 
     do {
-        if (left > 8) {
-            n = 8;
+        if (left > device_p->max_packet_size) {
+            n = device_p->max_packet_size;
         } else {
             n = left;
         }
@@ -402,11 +415,13 @@ static ssize_t usb_host_port_device_write(struct usb_host_device_t *device_p,
         }
 
         regs_p->HOST.PIPIER[pipe] = SAM_UOTGHS_HOST_PIPIER_TXOUTES;
+        regs_p->HOST.PIPICR[pipe] = SAM_UOTGHS_HOST_PIPICR_SHORTPACKETIC;
 
         pipe_transfer(dev_p, pipe);
 
         regs_p->HOST.PIPIER[pipe] = SAM_UOTGHS_HOST_PIPIER_PFREEZES;
         regs_p->HOST.PIPIDR[pipe] = SAM_UOTGHS_HOST_PIPIDR_TXOUTEC;
+        regs_p->HOST.PIPICR[pipe] = SAM_UOTGHS_HOST_PIPICR_TXOUTIC;
 
         left -= n;
     } while (left > 0);
@@ -451,7 +466,9 @@ static ssize_t usb_host_port_device_read(struct usb_host_device_t *device_p,
 
         count = ((SAM_UOTGHS->HOST.PIPISR[pipe] & SAM_UOTGHS_HOST_PIPISR_PBYCT_MASK)
                  >> SAM_UOTGHS_HOST_PIPISR_PBYCT_POS);
-        std_printf(FSTR("n = %lu, rx count = %lu\r\n"), n, count);
+        //std_printf(FSTR("n = %lu, rx count = %lu\r\n"), n, count);
+
+        //while ((regs_p->HOST.PIPIMR[pipe] & SAM_UOTGHS_HOST_PIPIMR_PFREEZE) == 0);
 
         if (count < n) {
             n = count;
