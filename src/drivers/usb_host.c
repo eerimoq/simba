@@ -212,7 +212,9 @@ static ssize_t device_get_descriptor_device(struct usb_host_device_t *device_p,
     /* Set the maximum packet size the device supports. */
     device_p->max_packet_size = desc_p->max_packet_size_0;
 
-    /* Read the wholse descriptor. */
+    std_printf(FSTR("max packet size = %d\r\n"), device_p->max_packet_size);
+
+    /* Read the whole descriptor. */
     setup.length = sizeof(*desc_p);
 
     if (usb_host_device_control_transfer(device_p, &setup, desc_p, setup.length)

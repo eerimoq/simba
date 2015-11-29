@@ -466,9 +466,8 @@ static ssize_t usb_host_port_device_read(struct usb_host_device_t *device_p,
 
         count = ((SAM_UOTGHS->HOST.PIPISR[pipe] & SAM_UOTGHS_HOST_PIPISR_PBYCT_MASK)
                  >> SAM_UOTGHS_HOST_PIPISR_PBYCT_POS);
-        //std_printf(FSTR("n = %lu, rx count = %lu\r\n"), n, count);
-
-        //while ((regs_p->HOST.PIPIMR[pipe] & SAM_UOTGHS_HOST_PIPIMR_PFREEZE) == 0);
+        /* Needed to make a mouse work. Unclear why. */
+        /* std_printf(FSTR("n = %lu, rx count = %lu\r\n"), n, count); */
 
         if (count < n) {
             n = count;

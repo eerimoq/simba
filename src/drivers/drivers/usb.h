@@ -185,6 +185,7 @@ union usb_descriptor_t {
     struct usb_descriptor_string_t string;
 };
 
+/* Message types. */
 #define USB_MESSAGE_TYPE_ADD    0
 #define USB_MESSAGE_TYPE_REMOVE 1
 
@@ -206,6 +207,12 @@ extern struct usb_device_t usb_device[USB_DEVICE_MAX];
 
 /**
  * Format the descriptors and write them to given channel.
+ *
+ * @param[in] out_p Output channel.
+ * @param[in] buf_p Pointer to the descriptors to format.
+ * @param[in] size Number of bytes in the descriptors buffer.
+ *
+ * @return zero(0) or negative error code.
  */
 int usb_format_descriptors(chan_t *out_p,
                            uint8_t *buf_p,
@@ -214,9 +221,11 @@ int usb_format_descriptors(chan_t *out_p,
 /**
  * Get the configuration descriptor for given configuration index.
  *
- * @param[in] device_p Device to use.
+ * @param[in] buf_p Pointer to the descriptors.
+ * @param[in] size Number of bytes in the descriptors buffer.
+ * @param[in] configuration Configuration to find.
  *
- * @return
+ * @return Configuration or NULL on failure.
  */
 struct usb_descriptor_configuration_t *
 usb_desc_get_configuration(uint8_t *desc_p,
@@ -224,11 +233,15 @@ usb_desc_get_configuration(uint8_t *desc_p,
                            int configuration);
 
 /**
- * Get interface.
+ * Get the interface descriptor for given configuration and interface
+ * index.
  *
- * @param[in] device_p Device to use.
+ * @param[in] buf_p Pointer to the descriptors.
+ * @param[in] size Number of bytes in the descriptors buffer.
+ * @param[in] configuration Configuration to find.
+ * @param[in] interface Interface to find.
  *
- * @return
+ * @return Interface or NULL on failure.
  */
 struct usb_descriptor_interface_t *
 usb_desc_get_interface(uint8_t *desc_p,
@@ -237,11 +250,16 @@ usb_desc_get_interface(uint8_t *desc_p,
                        int interface);
 
 /**
- * Get interface.
+ * Get the endpoint descriptor for given configuration, interface and
+ * endpoint index.
  *
- * @param[in] device_p Device to use.
+ * @param[in] buf_p Pointer to the descriptors.
+ * @param[in] size Number of bytes in the descriptors buffer.
+ * @param[in] configuration Configuration to find.
+ * @param[in] interface Interface to find.
+ * @param[in] endpoint Endpoint to find.
  *
- * @return
+ * @return Endpoint or NULL on failure.
  */
 struct usb_descriptor_endpoint_t *
 usb_desc_get_endpoint(uint8_t *desc_p,
@@ -251,9 +269,12 @@ usb_desc_get_endpoint(uint8_t *desc_p,
                       int endpoint);
 
 /**
- * Get interface class.
+ * Get the interface class.
  *
- * @param[in] device_p Device to use.
+ * @param[in] buf_p Pointer to the descriptors.
+ * @param[in] size Number of bytes in the descriptors buffer.
+ * @param[in] configuration Configuration to find.
+ * @param[in] interface Interface to find.
  *
  * @return
  */

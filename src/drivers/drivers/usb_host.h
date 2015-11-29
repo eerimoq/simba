@@ -1,5 +1,5 @@
 /**
- * @file drivers/usb.h
+ * @file drivers/usb_host.h
  * @version 1.0
  *
  * @section License
@@ -60,6 +60,9 @@ struct usb_host_device_t {
     } descriptors;
 };
 
+/**
+ * Used to find a device driver.
+ */
 struct usb_host_device_driver_t {
     int (*supports)(struct usb_host_device_t *);
     int (*enumerate)(struct usb_host_device_t *);
@@ -77,8 +80,10 @@ int usb_host_module_init(void);
  * Initialize driver object from given configuration.
  *
  * @param[in] drv_p Driver object to be initialized.
- * @param[in] dev_p Device to use.
- * @param[in] devices_p An array of devices.
+ * @param[in] dev_p USB device to use.
+ * @param[in] devices_p Array of devices. One entry in this array is
+                        allocated for each device that is connected to
+                        the host.
  * @param[in] length Length of the devices array.
  *
  * @return zero(0) or negative error code.
@@ -107,7 +112,7 @@ int usb_host_start(struct usb_host_driver_t *drv_p);
 int usb_host_stop(struct usb_host_driver_t *drv_p);
 
 /**
- * Add given driver to the USB driver.
+ * Add given class/vendor driver to the USB host driver.
  *
  * @param[in] drv_p Initialized driver object.
  * @param[in] driver_p USB device driver to add.
@@ -119,7 +124,7 @@ int usb_host_driver_add(struct usb_host_driver_t *drv_p,
                         void *arg_p);
 
 /**
- * Remove given driver from the USB driver.
+ * Remove given class/vendor driver from the USB host driver.
  *
  * @param[in] drv_p Initialized driver object.
  * @param[in] driver_p USB device driver to remove.
@@ -130,7 +135,8 @@ int usb_host_driver_remove(struct usb_host_driver_t *drv_p,
                            struct usb_host_device_driver_t *driver_p);
 
 /**
- * Open given device in given driver.
+ * Open given device in given driver. Open a device before reading and
+ * writing data to it with usb_host_device_read() or usb_host_device_write().
  *
  * @param[in] drv_p Initialized driver.
  * @param[in] device Device to open.

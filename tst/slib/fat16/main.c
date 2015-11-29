@@ -20,9 +20,54 @@
 
 #include "simba.h"
 
+#if !defined(ARCH_LINUX)
 static struct spi_driver_t spi;
 static struct sd_driver_t sd;
+#endif
+
 static struct fat16_t fs;
+
+#if defined(ARCH_LINUX)
+static FILE *file_p = NULL;
+
+static ssize_t linux_read_block(void *arg_p,
+                                void *dst_p,
+                                uint32_t src_block)
+{
+    size_t block_start;
+
+    /* Find given block. */
+    block_start = (SD_BLOCK_SIZE * src_block);
+
+    if (fseek(arg_p, block_start, SEEK_SET) != 0) {
+        return (1);
+    }
+
+    return (fread(dst_p, 1, SD_BLOCK_SIZE, arg_p));
+}
+
+static ssize_t linux_write_block(void *arg_p,
+                                 uint32_t dst_block,
+                                 const void *src_p)
+{
+    size_t block_start;
+
+    /* Find given block. */
+    block_start = (SD_BLOCK_SIZE * dst_block);
+
+    if (fseek(arg_p, block_start, SEEK_SET) != 0) {
+        return (1);
+    }
+
+    if (fwrite(src_p, 1, SD_BLOCK_SIZE, arg_p) != SD_BLOCK_SIZE) {
+        return (-1);
+    }
+
+    fflush(file_p);
+
+    return (SD_BLOCK_SIZE);
+}
+#endif
 
 int test_print(struct harness_t *harness_p)
 {
@@ -248,6 +293,12 @@ int main()
 #if defined(ARCH_LINUX)
     /* Create an empty sd card file. */
     system("./create_sdcard_linux.sh");
+    file_p = fopen("sdcard", "r+b");
+    BTASSERT(fat16_init(&fs,
+                        linux_read_block,
+                        linux_write_block,
+                        file_p,
+                        0) == 0);
 #else
     BTASSERT(spi_init(&spi,
                       &spi_device[0],
@@ -256,17 +307,23 @@ int main()
                       SPI_SPEED_2MBPS,
                       0,
                       1) == 0);
-#endif
-
     BTASSERT(sd_init(&sd, &spi) == 0);
     BTASSERT(sd_start(&sd) == 0);
-    BTASSERT(fat16_init(&fs, &sd, 0) == 0);
+    BTASSERT(fat16_init(&fs,
+                        sd_read_block,
+                        sd_write_block,
+                        &sd,
+                        0) == 0);
+#endif
+
     BTASSERT(fat16_start(&fs) == 0);
 
     harness_init(&harness);
     harness_run(&harness, harness_testcases);
 
+#if !defined(ARCH_LINUX)
     BTASSERT(sd_stop(&sd) == 0);
+#endif
 
     return (0);
 }

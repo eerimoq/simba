@@ -21,10 +21,5 @@
 NAME = fat16_suite
 BOARD = linux
 
-ifeq ($(BOARD),linux)
-    SRC += sd_stub.c
-    SRC_IGNORE = %/sd.c
-endif
-
 SIMBA = ../../..
 include $(SIMBA)/make/app.mk
