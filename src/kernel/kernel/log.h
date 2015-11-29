@@ -104,11 +104,10 @@ int log_get_mode(void);
 /**
  * Add log entry to quick log buffer.
  *
- * @param[in] log_id Log point identity.
- * @param[in] v0 Value 0.
- * @param[in] v1 Value 1.
- * @param[in] v2 Value 2.
- * @param[in] v3 Value 3.
+ * @param[in] level Log level.
+ * @param[in] id Log point identity.
+ * @param[in] buf_p Buffer to log.
+ * @param[in] size Buffer size.
  *
  * @return true(1) if the entry was written to the log and false(0)
  *         otherwise.
