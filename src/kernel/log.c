@@ -32,8 +32,8 @@ extern int (*log_id_to_format_fn[])(chan_t *, void *);
 
 struct log_t {
     char mode;
-    void *write_p;
-    void *end_p;
+    char *write_p;
+    char *end_p;
     unsigned long next_number;
     char buffer[LOG_BUFFER_SIZE];
 };
@@ -190,7 +190,7 @@ int log_write(char level, int id, void *buf_p, size_t size)
     if (log.mode != LOG_MODE_OFF) {
         /* Write the entry to the beginning of the buffer if it does
            not fit at the end of the buffer.*/
-        if (entry_size > ((void *)&log.buffer[LOG_BUFFER_SIZE] - log.write_p)) {
+        if (entry_size > ((char *)&log.buffer[LOG_BUFFER_SIZE] - log.write_p)) {
             log.end_p = log.write_p;
             log.write_p = &log.buffer[0];
         }
@@ -220,7 +220,7 @@ int log_format(chan_t *chout_p)
     int i, number_of_entries;
     struct log_entry_header_t *header_p;
     struct log_entry_footer_t *footer_p;
-    void *begin_p = NULL, *buf_p, *entry_end_p;
+    char *begin_p = NULL, *buf_p, *entry_end_p;
     int (*format_fn)(chan_t *, void *);
     size_t entry_size;
     int old_mode;
@@ -250,13 +250,13 @@ int log_format(chan_t *chout_p)
     /* From the end pointer to the write pointer. */
     entry_end_p = log.end_p;
 
-    while ((entry_end_p - sizeof(*footer_p)) > log.write_p) {
+    while (((char *)entry_end_p - sizeof(*footer_p)) > log.write_p) {
         footer_p = ((struct log_entry_footer_t *)entry_end_p - 1);
         entry_size = (footer_p->size + sizeof(*header_p) + sizeof(*footer_p));
 
-        if ((entry_end_p - entry_size) > log.write_p) {
+        if (((char *)entry_end_p - entry_size) > log.write_p) {
             number_of_entries++;
-            begin_p = (entry_end_p - entry_size);
+            begin_p = ((char *)entry_end_p - entry_size);
         }
 
         entry_end_p -= entry_size;
@@ -266,9 +266,9 @@ int log_format(chan_t *chout_p)
 
     /* Write entries to the channel. */
     for (i = 0; i < number_of_entries; i++) {
-        header_p = begin_p;
-        buf_p = ((void *)header_p + sizeof(*header_p));
-        footer_p = (buf_p + header_p->size);
+        header_p = (struct log_entry_header_t *)begin_p;
+        buf_p = (char *)(header_p + 1);
+        footer_p = (struct log_entry_footer_t *)(buf_p + header_p->size);
 
         std_fprintf(chout_p, FSTR("%lu:%lu:"), header_p->number, header_p->time);
         std_fprintf(chout_p, level_as_string[(int)header_p->level]);
@@ -279,7 +279,7 @@ int log_format(chan_t *chout_p)
 
         std_fprintf(chout_p, FSTR("\r\n"));
 
-        begin_p = (footer_p + 1);
+        begin_p = (char *)(footer_p + 1);
 
         if (begin_p >= log.end_p) {
             begin_p = &log.buffer[0];

@@ -1216,6 +1216,9 @@ ssize_t fat16_file_write(struct fat16_file_t *file_p,
     uint16_t block_offset;
     uint8_t* dst_p;
     size_t n;
+    const char *csrc_p;
+
+    csrc_p = src_p;
 
     /* Error if file is not open for write. */
     if (!(file_p->flags & O_WRITE)) {
@@ -1246,21 +1249,18 @@ ssize_t fat16_file_write(struct fat16_file_t *file_p,
         }
 
         /* Copy data to cache. */
-        memcpy(dst_p, src_p, n);
+        memcpy(dst_p, csrc_p, n);
 
         file_p->cur_position += n;
         left -= n;
-        src_p += n;
+        csrc_p += n;
     }
 
     if (file_p->cur_position > file_p->file_size) {
         /* Update file_size and insure sync will update dir entry. */
         file_p->file_size = file_p->cur_position;
         file_p->flags |= F_FILE_DIR_DIRTY;
-    }/*  else if (dateTime && size) { */
-    /* Force sync will update modified date and time. */
-    /*     file_p->flags |= F_FILE_DIR_DIRTY; */
-    /* } */
+    }
 
     if (file_p->flags & O_SYNC) {
         if (fat16_file_sync(file_p) != 0) {
