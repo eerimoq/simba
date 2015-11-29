@@ -34,7 +34,7 @@
 #define USB_PIPE_TYPE_BULK          3
 
 /**
- * An USB device on the bus.
+ * An USB device as seen by the host.
  */
 struct usb_host_device_t {
     int id;
@@ -196,10 +196,11 @@ ssize_t usb_host_device_write(struct usb_host_device_t *device_p,
  *
  * @param[in] device_p Device to write to.
  * @param[in] setup_p Setup packet to write.
- * @param[in] buf_p Buffer to write.
- * @param[in] size Number of bytes to write.
+ * @param[in] buf_p Buffer to read/write. May be NULL if no data shall
+ *                  be transferred.
+ * @param[in] size Number of bytes to read/write.
  *
- * @return Number of bytes written or negative error code.
+ * @return Number of bytes read/written or negative error code.
  */
 ssize_t usb_host_device_control_transfer(struct usb_host_device_t *device_p,
                                          struct usb_setup_t *setup_p,
@@ -207,7 +208,7 @@ ssize_t usb_host_device_control_transfer(struct usb_host_device_t *device_p,
                                          size_t size);
 
 /**
- * Set active configuration for given device.
+ * Set configuration for given device.
  *
  * @param[in] device_p Device to use.
  * @param[in] configuration Configuration to set.

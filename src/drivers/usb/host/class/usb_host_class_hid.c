@@ -20,6 +20,9 @@
 
 #include "simba.h"
 
+/**
+ * @return true(1) if the device class is HID, otherwise false(0)
+ */
 static int supports(struct usb_host_device_t *device_p)
 {
     int class;
@@ -32,6 +35,11 @@ static int supports(struct usb_host_device_t *device_p)
     return (class == USB_CLASS_HID);
 }
 
+/**
+ * HID-specific device enumeration.
+ *
+ * @return zero(0) or negative error code.
+ */
 static int enumerate(struct usb_host_device_t *device_p)
 {
     struct usb_descriptor_interface_t *int_desc_p;
@@ -73,5 +81,6 @@ int usb_host_class_hid_start(struct usb_host_class_hid_driver_t *drv_p)
 
 int usb_host_class_hid_stop(struct usb_host_class_hid_driver_t *drv_p)
 {
-    return (-1);
+    return (usb_host_driver_remove(drv_p->usb_p,
+                                   &drv_p->device_driver));
 }

@@ -20,6 +20,8 @@
 
 #include "usb_host_port.h"
 
+/* Events set by the interrupt service routine to notify the main
+ * thread about new events. */
 #define EVENT_CONNECT 0x1
 
 void state(int pipe)
@@ -42,11 +44,6 @@ void state(int pipe)
     /* std_printf(FSTR("      HOST.PIPISR[2] = 0x%08lx\r\n"), SAM_UOTGHS->HOST.PIPISR[2]); */
     /* std_printf(FSTR("      HOST.PIPIMR[2] = 0x%08lx\r\n\r\n"), SAM_UOTGHS->HOST.PIPIMR[2]); */
 }
-
-/* Token types. */
-#define USB_PORT_TOKEN_SETUP SAM_UOTGHS_HOST_PIPCFG_PTOKEN_SETUP
-#define USB_PORT_TOKEN_IN    SAM_UOTGHS_HOST_PIPCFG_PTOKEN_IN
-#define USB_PORT_TOKEN_OUT   SAM_UOTGHS_HOST_PIPCFG_PTOKEN_OUT
 
 ISR(uotghs)
 {
@@ -89,9 +86,7 @@ ISR(uotghs)
  */
 static int handle_event_connect(struct usb_host_driver_t *drv_p)
 {
-    device_enumerate(drv_p->devices_p);
-
-    return (0);
+    return (device_enumerate(drv_p->devices_p));
 }
 
 static int device_reset(struct usb_host_device_t *device_p)
@@ -208,11 +203,12 @@ static int usb_host_port_stop(struct usb_host_driver_t *drv_p)
     return (0);
 }
 
-static struct usb_pipe_t *usb_pipe_alloc(struct usb_host_driver_t *drv_p,
-                                         int type,
-                                         int endpoint,
-                                         int address,
-                                         int interval)
+static struct usb_pipe_t *
+usb_pipe_alloc(struct usb_host_driver_t *drv_p,
+               int type,
+               int endpoint,
+               int address,
+               int interval)
 {
     struct usb_device_t *dev_p = drv_p->dev_p;
     volatile struct sam_uotghs_t *regs_p = dev_p->regs_p;
@@ -230,6 +226,7 @@ static struct usb_pipe_t *usb_pipe_alloc(struct usb_host_driver_t *drv_p,
         for (i = 0; i < membersof(dev_p->pipes); i++) {
             if (dev_p->pipes[i].state == USB_PIPE_STATE_FREE) {
                 pipe_p = &dev_p->pipes[i];
+
                 break;
             }
         }
@@ -332,9 +329,10 @@ static ssize_t pipe_transfer(struct usb_device_t *dev_p,
 
     sys_lock();
 
-    /* Enable the SETUP transfer complete interrupt. */
+    /* Enable the transfer complete interrupt. */
     regs_p->HOST.IER = (SAM_UOTGHS_HOST_IER_PEP_0 << pipe);
 
+    /* Start the transfer.*/
     regs_p->HOST.PIPIDR[pipe] = (SAM_UOTGHS_HOST_PIPIDR_FIFOCONC
                                  | SAM_UOTGHS_HOST_PIPIDR_PFREEZEC);
 
@@ -353,8 +351,9 @@ static ssize_t pipe_transfer(struct usb_device_t *dev_p,
 /**
  * Write a SETUP packet to the device.
  */
-static ssize_t usb_host_port_device_write_setup(struct usb_host_device_t *device_p,
-                                                struct usb_setup_t *setup_p)
+static ssize_t 
+usb_host_port_device_write_setup(struct usb_host_device_t *device_p,
+                                 struct usb_setup_t *setup_p)
 {
     struct usb_device_t *dev_p = device_p->drv_p->dev_p;
     volatile struct sam_uotghs_t *regs_p = dev_p->regs_p;
@@ -395,6 +394,8 @@ static ssize_t usb_host_port_device_write(struct usb_host_device_t *device_p,
     int pipe = endpoint;
     size_t left, n, i;
 
+    /* This shold already be comfigured to the pipe. Should be removed
+     * from this function. */
     regs_p->HOST.PIPCFG[pipe] = SAM_UOTGHS_HOST_PIPCFG_PTOKEN_SET(
         regs_p->HOST.PIPCFG[pipe], OUT);
 
@@ -410,10 +411,13 @@ static ssize_t usb_host_port_device_write(struct usb_host_device_t *device_p,
         /* Write data to the pipe fifo. */
         fifo_p = (&((uint8_t *)SAM_UOTGHS_DPRAM_ADDRESS)[SAM_UOTGHS_DPRAM_PIPE_SIZE * pipe]);
 
+        /* Copy data from the local buffer to the transmission
+         * fifo. */
         for (i = 0; i < n; i++) {
             *fifo_p++ = *buf8_p++;
         }
 
+        /* Enable the transmission complete interrupt. */
         regs_p->HOST.PIPIER[pipe] = SAM_UOTGHS_HOST_PIPIER_TXOUTES;
         regs_p->HOST.PIPICR[pipe] = SAM_UOTGHS_HOST_PIPICR_SHORTPACKETIC;
 
@@ -442,6 +446,8 @@ static ssize_t usb_host_port_device_read(struct usb_host_device_t *device_p,
     size_t count;
     int short_packet = 0;
 
+    /* This shold already be comfigured to the pipe. Should be removed
+     * from this function. */
     regs_p->HOST.PIPCFG[pipe] = SAM_UOTGHS_HOST_PIPCFG_PTOKEN_SET(
         regs_p->HOST.PIPCFG[pipe], IN);
 
@@ -454,6 +460,7 @@ static ssize_t usb_host_port_device_read(struct usb_host_device_t *device_p,
             n = left;
         }
 
+        /* Enable the reception complete interrupt. */
         regs_p->HOST.PIPIER[pipe] = SAM_UOTGHS_HOST_PIPIER_RXINES;
 
         pipe_transfer(dev_p, pipe);
@@ -474,6 +481,8 @@ static ssize_t usb_host_port_device_read(struct usb_host_device_t *device_p,
             short_packet = 1;
         }
 
+        /* Copy the data received from the device to the local
+         * buffer. */
         for (i = 0; i < n; i++) {
             *buf8_p++ = *fifo_p++;
         }

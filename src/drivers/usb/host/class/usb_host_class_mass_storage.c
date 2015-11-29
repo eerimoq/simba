@@ -264,8 +264,6 @@ static int scsi_get_inquiry(struct usb_host_device_t *device_p)
         return (-1);
     }
 
-    /* std_printf(FSTR("wrote command wrapper.\r\n")); */
-
     /* Read the data from the device. */
     if (usb_host_device_read(device_p, 1, &inquiry_data, sizeof(inquiry_data))
         != sizeof(inquiry_data)) {
@@ -320,8 +318,6 @@ static int scsi_test_unit_ready(struct usb_host_device_t *device_p)
 
         return (-1);
     }
-
-    std_printf(FSTR("wrote command wrapper.\r\n"));
 
     /* Read the Comand Status Wrapper from the device. */
     if (usb_host_device_read(device_p, 1, &csw, sizeof(csw))
@@ -383,8 +379,6 @@ static int enumerate(struct usb_host_device_t *device_p)
         std_printf(FSTR("device is not ready\r\n"));
     }
 
-    /* read_capacity(); */
-
     return (0);
 }
 
@@ -411,7 +405,8 @@ int usb_host_class_mass_storage_start(struct usb_host_class_mass_storage_driver_
 
 int usb_host_class_mass_storage_stop(struct usb_host_class_mass_storage_driver_t *drv_p)
 {
-    return (-1);
+    return (usb_host_driver_remove(drv_p->usb_p,
+                                   &drv_p->device_driver));
 }
 
 ssize_t usb_host_class_mass_storage_device_read(
@@ -448,16 +443,12 @@ ssize_t usb_host_class_mass_storage_device_read(
         return (-1);
     }
 
-    /* std_printf(FSTR("wrote command wrapper.\r\n")); */
-
     /* Read the dat from the device. */
     if (usb_host_device_read(device_p, 1, buf_p, size) != size) {
         std_printf(FSTR("Failed to read data.\r\n"));
 
         return (-1);
     }
-
-    /* std_printf(FSTR("read data.\r\n")); */
 
     /* Read the Comand Status Wrapper from the device. */
     if (usb_host_device_read(device_p, 1, &csw, sizeof(csw))

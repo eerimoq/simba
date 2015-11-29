@@ -75,8 +75,19 @@
 #define USB_CLASS_APPLICATION_SPECIFIC   0xfe /* Interface. */
 #define USB_CLASS_VENDOR_SPECIFIC        0xff /* Both. */
 
-/* Setups. */
+/* Endpoint descriptor helper macros. */
+#define ENDPOINT_ENDPOINT_ADDRESS_DIRECTION(address) (((address) >> 7) & 0x1)
+#define ENDPOINT_ENDPOINT_ADDRESS_NUMBER(address) (((address) >> 0) & 0xf)
 
+#define ENDPOINT_ATTRIBUTES_USAGE_TYPE(attributes) (((attributes) >> 4) & 0x3)
+#define ENDPOINT_ATTRIBUTES_SYNCHRONISATION_TYPE(attributes) (((attributes) >> 2) & 0x3)
+#define ENDPOINT_ATTRIBUTES_TRANSFER_TYPE(attributes) (((attributes) >> 0) & 0x3)
+#define ENDPOINT_ATTRIBUTES_TRANSFER_TYPE_CONTROL     0
+#define ENDPOINT_ATTRIBUTES_TRANSFER_TYPE_ISOCHRONOUS 1
+#define ENDPOINT_ATTRIBUTES_TRANSFER_TYPE_BULK        2
+#define ENDPOINT_ATTRIBUTES_TRANSFER_TYPE_INTERRUPT   3
+
+/* Setups. */
 struct usb_setup_t {
     uint8_t request_type;
     uint8_t request;
@@ -110,13 +121,16 @@ struct usb_setup_t {
     uint16_t length;
 };
 
-/* Responses. */
+/* USB descriptors. */
 
+/* All descriptors starts with a length field and the descriptor
+ * type. */
 struct usb_descriptor_header_t {
     uint8_t length;
     uint8_t descriptor_type;
 };
 
+/* Device descriptor. */
 struct usb_descriptor_device_t {
     uint8_t length;
     uint8_t descriptor_type;

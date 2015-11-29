@@ -149,24 +149,33 @@ int usb_host_device_set_configuration(struct usb_host_device_t *device_p,
 
     device_p->current.configuration = configuration;
     device_p->current.descriptor.conf_p = NULL;
-    
+
     /* Iterate over all interfaces in the configuration and allocate a
      * pipe for each endpoint. */
     buf_p = device_p->descriptors.buf;
     size = device_p->descriptors.size;
-    
+
     for (i = 0;
          (int_p = usb_desc_get_interface(buf_p, size, 1, i)) != NULL;
          i++) {
         for (j = 1;
              (ep_p = usb_desc_get_endpoint(buf_p, size, 1, i, j)) != NULL;
              j++) {
-            switch (ep_p->attributes & 0x3) {
-            case 0: type = USB_PIPE_TYPE_CONTROL;     break;
-            case 1: type = USB_PIPE_TYPE_ISOCHRONOUS; break;
-            case 2: type = USB_PIPE_TYPE_BULK;        break;
-            case 3: type = USB_PIPE_TYPE_INTERRUPT;   break;
-            default: return (-1);
+            switch (ENDPOINT_ATTRIBUTES_TRANSFER_TYPE(ep_p->attributes)) {
+            case ENDPOINT_ATTRIBUTES_TRANSFER_TYPE_CONTROL:
+                type = USB_PIPE_TYPE_CONTROL;
+                break;
+            case ENDPOINT_ATTRIBUTES_TRANSFER_TYPE_ISOCHRONOUS:
+                type = USB_PIPE_TYPE_ISOCHRONOUS;
+                break;
+            case ENDPOINT_ATTRIBUTES_TRANSFER_TYPE_BULK:
+                type = USB_PIPE_TYPE_BULK;
+                break;
+            case ENDPOINT_ATTRIBUTES_TRANSFER_TYPE_INTERRUPT:
+                type = USB_PIPE_TYPE_INTERRUPT;
+                break;
+            default:
+                return (-1);
             }
 
             pipe_p = usb_pipe_alloc(device_p->drv_p,
@@ -174,10 +183,10 @@ int usb_host_device_set_configuration(struct usb_host_device_t *device_p,
                                     (ep_p->endpoint_address & 0x7f),
                                     device_p->address,
                                     ep_p->interval);
-            
+
             if (pipe_p == NULL) {
                 std_printf(FSTR("Pipe allocation failed.\r\n"));
-                
+
                 return (-1);
             }
         }
