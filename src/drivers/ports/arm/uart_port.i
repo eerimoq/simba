@@ -27,6 +27,9 @@ static int uart_port_start(struct uart_driver_t *drv_p)
     struct uart_device_t *dev_p = drv_p->dev_p;
     uint32_t mask;
 
+    /* PMC */
+    pmc_peripheral_clock_enable(dev_p->id);
+
     /* Configure the RX pin. */
     mask = dev_p->pio.rx.mask;
     dev_p->pio.rx.regs_p->PDR = mask;
@@ -46,8 +49,9 @@ static int uart_port_start(struct uart_driver_t *drv_p)
     dev_p->regs_p->BRGR = cd;
 
     /* Set mode and parity. */
-    dev_p->regs_p->MR = (US_MR_USART_MODE_NORMAL
-                         | US_MR_PAR_NO);
+    dev_p->regs_p->MR = (US_MR_PAR_NO
+                         | US_MR_CHRL_8_BIT
+                         | US_MR_USART_MODE_NORMAL);
 
     /* Disable all interrupts. */
     dev_p->regs_p->IDR = (0xfffffffful);
@@ -59,9 +63,9 @@ static int uart_port_start(struct uart_driver_t *drv_p)
     /* Enable rx signals and interrupt. */
     dev_p->regs_p->IER = (US_IER_ENDRX
                           | US_IER_RXRDY
-                             | US_IER_OVRE
-                             | US_IER_FRAME
-                             | US_IER_PARE);
+                          | US_IER_OVRE
+                          | US_IER_FRAME
+                          | US_IER_PARE);
     dev_p->regs_p->PDC.PTCR = (PERIPH_PTCR_RXTEN);
 
     /* Disable tx interrupt. */
@@ -69,9 +73,6 @@ static int uart_port_start(struct uart_driver_t *drv_p)
 
     /* Enable tx and rx. */
     dev_p->regs_p->CR = (US_CR_TXEN | US_CR_RXEN);
-
-    /* PMC */
-    pmc_peripheral_clock_enable(dev_p->id);
 
     /* nvic */
     nvic_enable_interrupt(dev_p->id);
