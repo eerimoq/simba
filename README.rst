@@ -11,12 +11,11 @@ Simba is a microkernel and build framework.
 * counting semaphores
 * drivers (spi, uart, ...)
 * shell
-* portable (linux, AVR, ...)
-* modular
-* make based framework
+* portable (linux, AVR, SAM3X8E, ...)
+* make based build framework
 
-'Hello World' application printing "Hello World!" once every second. A config.h
-and a Makefile is also needed. See 'examples/hello_world' folder for complete application.
+The 'Hello World' application printing "Hello World!" once every
+second. See 'examples/hello_world' folder for complete application.
 Build and run with 'make run' (under 'examples/hello_world').
 
 .. code-block:: c
@@ -64,7 +63,7 @@ FILE TREE
 PREREQUISITES
 =============
 
-* linux environment
+* linux development environment
 * GNU make 3.81
 * python 2.7
 * GNU toolchain with c compiler and linker for target architecture(s)
@@ -82,8 +81,8 @@ sudo apt-get install bossa-cli gcc-arm-none-eabi
 BUILD AND RUN TESTS
 ===================
 
-Build for default board, given in application Makefile. Often the default board
-is a linux simulation.
+This is how to build for default board, given in application
+Makefile. Often the default board is a linux simulation.
 
 .. code-block:: c
 
@@ -91,20 +90,21 @@ is a linux simulation.
     /home/erik/archive/simba/tst/kernel/sys
     $ make -s test
 
-To build for another board, in this case Arduino Nano. This overrides
-the default board.
+To build for another board, in this case Arduino Nano, use the BOARD
+make variable.
 
 .. code-block:: c
 
     $ make -s BOARD=arduino_nano release size test
 
-Note: Application may only support a subset of the available boards.
+Note: An application may only support a subset of the available boards.
 
 APPLICATIONS, PACKAGES AND MODULES
 ==================================
 
-A module is normally a header file and a source file. A package is a container of
-modules. An application is an executable consisting of zero or more modules.
+A module is normally a header and a source file. A package is a
+container of modules. An application is an executable consisting of
+zero or more modules.
 
 Preferred application file tree. The application _must_ have a file
 called main.c. It should contain the main function of the application.
@@ -130,8 +130,8 @@ Preferred package file tree:
 THREADS
 =======
 
-A thread is the basic execution entity. A scheduler controls the execution of
-threads.
+A thread is the basic execution entity. A scheduler controls the
+execution of threads.
 
 A simple thread that waits to be resumed by another thread.
 
@@ -151,10 +151,10 @@ A simple thread that waits to be resumed by another thread.
         return (NULL);
     }
 
-Threads usually communicates over channels. There are two kinds of channels;
-queue and event. Both implementing the same abstract channel interface.
-This makes channel very powerful as a synchronization primitive. They can be
-seen as file descriptors in linux.
+Threads usually communicates over channels. There are two kinds of
+channels; queue and event. Both implementing the same abstract channel
+interface.  This makes channel very powerful as a synchronization
+primitive. They can be seen as file descriptors in linux.
 
 The most common channel is the queue. It can be either synchronous or
 semi-asynchronous. In the synchronous version the writing thread will
@@ -166,12 +166,13 @@ size is chosen by the application.
 DRIVERS
 =======
 
-Typical thread-driver interaction template code. Call mydrv_write() to start
-a driver operation. The driver sends a message to the hardware and suspends
-current thread. The hardware sends an interrupt and the calling thread is
-resumed. Driver operation complete. Use counting semaphores if atomic access
-to the device is required (not included in the example). A queue is also
-an alternative, in particular for streaming devices like UART.
+Typical thread-driver interaction template code. Call mydrv_write() to
+start a driver operation. The driver sends a message to the hardware
+and suspends current thread. The hardware sends an interrupt and the
+calling thread is resumed. Driver operation complete. Use counting
+semaphores if atomic access to the device is required (not included in
+the example). A queue is also an alternative, in particular for
+streaming devices like UART.
 
 .. code-block:: c
 
