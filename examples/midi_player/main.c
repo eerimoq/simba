@@ -24,15 +24,6 @@ static char qinbuf[32];
 static struct uart_driver_t uart;
 static struct uart_driver_t uart_midi;
 
-/* The MIDI baudrate. */
-#define MIDI_BAUDRATE 31250
-
-/* MIDI commands. */
-#define MIDI_NOTE_OFF      0x80
-#define MIDI_NOTE_ON       0x90
-#define MIDI_SET_INTRUMENT 0xc0
-#define MIDI_DRUM          0x99
-
 /* Player operation codes. */
 #define COMMAND  0
 #define DELAY    1
@@ -45,95 +36,66 @@ struct operation_t {
 
 /* The song Spanien with notes and drums. */
 static struct operation_t spanien[] = {
-    /* Drum */
-    { COMMAND, 3, { MIDI_DRUM, 0x23, 0x45 } },
-    /* Hi Hat */
-    { COMMAND, 3, { MIDI_DRUM, 0x2a, 0x45 } },
-    /* C */
-    { COMMAND, 3, { MIDI_NOTE_ON, 0x3c, 0x45 } },
+    { COMMAND, 3, { MIDI_PERC, MIDI_PERC_ACOUSTIC_BASS_DRUM, 0x45 } },
+    { COMMAND, 3, { MIDI_PERC, MIDI_PERC_CLOSED_HI_HAT, 0x45 } },
+    { COMMAND, 3, { MIDI_NOTE_ON, MIDI_PITCH_C4, 0x45 } },
     { DELAY, 1 },
-    { COMMAND, 2, { MIDI_NOTE_OFF, 0x3c } },
-    /* D */
-    { COMMAND, 3, { MIDI_NOTE_ON, 0x3c + 2, 0x45 } },
+    { COMMAND, 2, { MIDI_NOTE_OFF, MIDI_PITCH_C4 } },
+    { COMMAND, 3, { MIDI_NOTE_ON, MIDI_PITCH_D4, 0x45 } },
     { DELAY, 1 },
-    { COMMAND, 2, { MIDI_NOTE_OFF, 0x3c + 2 } },
+    { COMMAND, 2, { MIDI_NOTE_OFF, MIDI_PITCH_D4 } },
 
-    /* Drum */
-    { COMMAND, 3, { MIDI_DRUM, 0x26, 0x45 } },
-    /* Hi Hat */
-    { COMMAND, 3, { MIDI_DRUM, 0x2a, 0x45 } },
-    /* E */
-    { COMMAND, 3, { MIDI_NOTE_ON, 0x3c + 4, 0x45 } },
+    { COMMAND, 3, { MIDI_PERC, MIDI_PERC_ACOUSTIC_SNARE, 0x45 } },
+    { COMMAND, 3, { MIDI_PERC, MIDI_PERC_CLOSED_HI_HAT, 0x45 } },
+    { COMMAND, 3, { MIDI_NOTE_ON, MIDI_PITCH_E4, 0x45 } },
     { DELAY, 2 },
-    { COMMAND, 2, { MIDI_NOTE_OFF, 0x3c + 4 } },
+    { COMMAND, 2, { MIDI_NOTE_OFF, MIDI_PITCH_E4 } },
 
-    /* Drum */
-    { COMMAND, 3, { MIDI_DRUM, 0x23, 0x45 } },
-    /* Hi Hat */
-    { COMMAND, 3, { MIDI_DRUM, 0x2a, 0x45 } },
-    /* C */
-    { COMMAND, 3, { MIDI_NOTE_ON, 0x3c, 0x45 } },
+    { COMMAND, 3, { MIDI_PERC, MIDI_PERC_ACOUSTIC_BASS_DRUM, 0x45 } },
+    { COMMAND, 3, { MIDI_PERC, MIDI_PERC_CLOSED_HI_HAT, 0x45 } },
+    { COMMAND, 3, { MIDI_NOTE_ON, MIDI_PITCH_C4, 0x45 } },
     { DELAY, 1 },
-    { COMMAND, 2, { MIDI_NOTE_OFF, 0x3c } },
-    /* D */
-    { COMMAND, 3, { MIDI_NOTE_ON, 0x3c + 2, 0x45 } },
+    { COMMAND, 2, { MIDI_NOTE_OFF, MIDI_PITCH_C4 } },
+    { COMMAND, 3, { MIDI_NOTE_ON, MIDI_PITCH_D4, 0x45 } },
     { DELAY, 1 },
-    { COMMAND, 2, { MIDI_NOTE_OFF, 0x3c + 2 } },
+    { COMMAND, 2, { MIDI_NOTE_OFF, MIDI_PITCH_D4 } },
 
-    /* Drum */
-    { COMMAND, 3, { MIDI_DRUM, 0x26, 0x45 } },
-    /* Hi Hat */
-    { COMMAND, 3, { MIDI_DRUM, 0x2a, 0x45 } },
-    /* E */
-    { COMMAND, 3, { MIDI_NOTE_ON, 0x3c + 4, 0x45 } },
+    { COMMAND, 3, { MIDI_PERC, MIDI_PERC_ACOUSTIC_SNARE, 0x45 } },
+    { COMMAND, 3, { MIDI_PERC, MIDI_PERC_CLOSED_HI_HAT, 0x45 } },
+    { COMMAND, 3, { MIDI_NOTE_ON, MIDI_PITCH_E4, 0x45 } },
     { DELAY, 2 },
-    { COMMAND, 2, { MIDI_NOTE_OFF, 0x3c + 4 } },
+    { COMMAND, 2, { MIDI_NOTE_OFF, MIDI_PITCH_E4 } },
 
-    /* Drum */
-    { COMMAND, 3, { MIDI_DRUM, 0x23, 0x45 } },
-    /* Hi Hat */
-    { COMMAND, 3, { MIDI_DRUM, 0x2a, 0x45 } },
-    /* D */
-    { COMMAND, 3, { MIDI_NOTE_ON, 0x3c + 2, 0x45 } },
+    { COMMAND, 3, { MIDI_PERC, MIDI_PERC_ACOUSTIC_BASS_DRUM, 0x45 } },
+    { COMMAND, 3, { MIDI_PERC, MIDI_PERC_CLOSED_HI_HAT, 0x45 } },
+    { COMMAND, 3, { MIDI_NOTE_ON, MIDI_PITCH_D4, 0x45 } },
     { DELAY, 1 },
-    { COMMAND, 2, { MIDI_NOTE_OFF, 0x3c + 2 } },
-    /* D */
-    { COMMAND, 3, { MIDI_NOTE_ON, 0x3c + 2, 0x45 } },
+    { COMMAND, 2, { MIDI_NOTE_OFF, MIDI_PITCH_D4 } },
+    { COMMAND, 3, { MIDI_NOTE_ON, MIDI_PITCH_D4, 0x45 } },
     { DELAY, 1 },
-    { COMMAND, 2, { MIDI_NOTE_OFF, 0x3c + 2 } },
+    { COMMAND, 2, { MIDI_NOTE_OFF, MIDI_PITCH_D4 } },
 
-    /* Drum */
-    { COMMAND, 3, { MIDI_DRUM, 0x26, 0x45 } },
-    /* Hi Hat */
-    { COMMAND, 3, { MIDI_DRUM, 0x2a, 0x45 } },
-    /* D */
-    { COMMAND, 3, { MIDI_NOTE_ON, 0x3c + 2, 0x45 } },
+    { COMMAND, 3, { MIDI_PERC, MIDI_PERC_ACOUSTIC_SNARE, 0x45 } },
+    { COMMAND, 3, { MIDI_PERC, MIDI_PERC_CLOSED_HI_HAT, 0x45 } },
+    { COMMAND, 3, { MIDI_NOTE_ON, MIDI_PITCH_D4, 0x45 } },
     { DELAY, 1 },
-    { COMMAND, 2, { MIDI_NOTE_OFF, 0x3c + 2 } },
-    /* D */
-    { COMMAND, 3, { MIDI_NOTE_ON, 0x3c + 2, 0x45 } },
+    { COMMAND, 2, { MIDI_NOTE_OFF, MIDI_PITCH_D4 } },
+    { COMMAND, 3, { MIDI_NOTE_ON, MIDI_PITCH_D4, 0x45 } },
     { DELAY, 1 },
-    { COMMAND, 2, { MIDI_NOTE_OFF, 0x3c + 2 } },
+    { COMMAND, 2, { MIDI_NOTE_OFF, MIDI_PITCH_D4 } },
 
-    /* Drum */
-    { COMMAND, 3, { MIDI_DRUM, 0x23, 0x45 } },
-    /* Hi Hat */
-    { COMMAND, 3, { MIDI_DRUM, 0x2a, 0x45 } },
-    /* C */
-    { COMMAND, 3, { MIDI_NOTE_ON, 0x3c, 0x45 } },
+    { COMMAND, 3, { MIDI_PERC, MIDI_PERC_ACOUSTIC_BASS_DRUM, 0x45 } },
+    { COMMAND, 3, { MIDI_PERC, MIDI_PERC_CLOSED_HI_HAT, 0x45 } },
+    { COMMAND, 3, { MIDI_NOTE_ON, MIDI_PITCH_C4, 0x45 } },
     { DELAY, 2 },
-    { COMMAND, 2, { MIDI_NOTE_OFF, 0x3c } },
+    { COMMAND, 2, { MIDI_NOTE_OFF, MIDI_PITCH_C4 } },
 
-    /* Drum */
-    { COMMAND, 3, { MIDI_DRUM, 0x26, 0x45 } },
-    /* Hi Hat */
-    { COMMAND, 3, { MIDI_DRUM, 0x2a, 0x45 } },
-    /* Cymbal */
-    { COMMAND, 3, { MIDI_DRUM, 0x31, 0x55 } },
-    /* C */
-    { COMMAND, 3, { MIDI_NOTE_ON, 0x3c, 0x45 } },
+    { COMMAND, 3, { MIDI_PERC, MIDI_PERC_ACOUSTIC_SNARE, 0x45 } },
+    { COMMAND, 3, { MIDI_PERC, MIDI_PERC_CLOSED_HI_HAT, 0x45 } },
+    { COMMAND, 3, { MIDI_PERC, MIDI_PERC_CRASH_CYMBAL_1, 0x55 } },
+    { COMMAND, 3, { MIDI_NOTE_ON, MIDI_PITCH_C4, 0x45 } },
     { DELAY, 2 },
-    { COMMAND, 2, { MIDI_NOTE_OFF, 0x3c } },
+    { COMMAND, 2, { MIDI_NOTE_OFF, MIDI_PITCH_C4 } },
 
     /* End of the song. */
     { DELAY, 3 },

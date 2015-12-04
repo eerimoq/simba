@@ -25,5 +25,6 @@
 #include "slib/fat16.h"
 #include "slib/harness.h"
 #include "slib/hash_map.h"
+#include "slib/midi.h"
 
 #endif
