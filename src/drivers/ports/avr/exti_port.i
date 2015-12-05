@@ -24,58 +24,38 @@
 #define DDR(sfr) ((sfr) + 1)
 #define PORT(sfr) ((sfr) + 2)
 
-ISR(INT0_vect)
-{
-    struct exti_driver_t *drv_p = exti_device[0].drv_p;
-
-    if (drv_p != NULL) {
-        drv_p->on_interrupt(drv_p->arg_p);
+#define ECTI_ISR(number)                                                \
+    ISR(INT ## number ## _vect)                                         \
+    {                                                                   \
+        struct exti_driver_t *drv_p = exti_device[number].drv_p;        \
+                                                                        \
+        if (drv_p != NULL) {                                            \
+            drv_p->on_interrupt(drv_p->arg_p);                          \
+        }                                                               \
     }
-}
 
-ISR(INT1_vect)
+#if (ECTI_DEVICE_MAX >= 1)
+EXTI_ISR(0);
+#endif
+#if (ECTI_DEVICE_MAX >= 2)
+EXTI_ISR(1);
+#endif
+#if (ECTI_DEVICE_MAX >= 3)
+EXTI_ISR(2);
+#endif
+#if (ECTI_DEVICE_MAX >= 4)
+EXTI_ISR(3);
+#endif
+#if (ECTI_DEVICE_MAX >= 5)
+EXTI_ISR(4);
+#endif
+#if (ECTI_DEVICE_MAX >= 6)
+EXTI_ISR(5);
+#endif
+
+static int exti_port_module_init()
 {
-    struct exti_driver_t *drv_p = exti_device[1].drv_p;
-
-    if (drv_p != NULL) {
-        drv_p->on_interrupt(drv_p->arg_p);
-    }
-}
-
-ISR(INT2_vect)
-{
-    struct exti_driver_t *drv_p = exti_device[2].drv_p;
-
-    if (drv_p != NULL) {
-        drv_p->on_interrupt(drv_p->arg_p);
-    }
-}
-
-ISR(INT3_vect)
-{
-    struct exti_driver_t *drv_p = exti_device[3].drv_p;
-
-    if (drv_p != NULL) {
-        drv_p->on_interrupt(drv_p->arg_p);
-    }
-}
-
-ISR(INT4_vect)
-{
-    struct exti_driver_t *drv_p = exti_device[4].drv_p;
-
-    if (drv_p != NULL) {
-        drv_p->on_interrupt(drv_p->arg_p);
-    }
-}
-
-ISR(INT5_vect)
-{
-    struct exti_driver_t *drv_p = exti_device[5].drv_p;
-
-    if (drv_p != NULL) {
-        drv_p->on_interrupt(drv_p->arg_p);
-    }
+    return (0);
 }
 
 static int exti_port_start(struct exti_driver_t *drv_p)
@@ -88,7 +68,9 @@ static int exti_port_start(struct exti_driver_t *drv_p)
     if (dev_p->id < 3) {
         EICRA |= (drv_p->trigger << (2 * dev_p->id));
     } else {
+#if (ECTI_DEVICE_MAX >= 2)
         EICRB |= (drv_p->trigger << (2 * (dev_p->id - 4)));
+#endif
     }
 
     EIFR = _BV(dev_p->id);

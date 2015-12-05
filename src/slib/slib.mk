@@ -24,6 +24,7 @@ INC += $(SIMBA)/src/slib
 SLIB_SRC ?= crc.c \
             fat16.c \
             harness.c \
-            hash_map.c
+            hash_map.c \
+            midi.c
 
 SRC += $(SLIB_SRC:%=$(SIMBA)/src/slib/%)

@@ -1,5 +1,5 @@
 #
-# @file simba/boards/shtest.mk
+# @file Makefile
 # @version 1.0
 #
 # @section License
@@ -18,9 +18,10 @@
 # This file is part of the Simba project.
 #
 
-INC += $(SIMBA)/src/boards/arduino_nano
-SRC += $(SIMBA)/src/boards/arduino_nano/board.c
+NAME = midi_synth
+BOARD = arduino_due
 
-BOARD_DESC = "Arduino Nano"
+SRC += oscillator.c
 
-MCU = atmega328p
+SIMBA = ../..
+include $(SIMBA)/make/app.mk

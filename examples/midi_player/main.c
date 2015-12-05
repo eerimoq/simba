@@ -3,7 +3,7 @@
  * @version 1.0
  *
  * @section License
- * Copyright (C) 2014-2015, Erik Moqvist
+ * Copyright (C) 2015, Erik Moqvist
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -20,8 +20,6 @@
 
 #include "simba.h"
 
-static char qinbuf[32];
-static struct uart_driver_t uart;
 static struct uart_driver_t uart_midi;
 
 /* Player operation codes. */
@@ -34,71 +32,109 @@ struct operation_t {
     uint8_t buf[4];
 };
 
-/* The song Spanien with notes and drums. */
-static struct operation_t spanien[] = {
-    { COMMAND, 3, { MIDI_PERC, MIDI_PERC_ACOUSTIC_BASS_DRUM, 0x45 } },
-    { COMMAND, 3, { MIDI_PERC, MIDI_PERC_CLOSED_HI_HAT, 0x45 } },
-    { COMMAND, 3, { MIDI_NOTE_ON, MIDI_PITCH_C4, 0x45 } },
-    { DELAY, 1 },
-    { COMMAND, 2, { MIDI_NOTE_OFF, MIDI_PITCH_C4 } },
-    { COMMAND, 3, { MIDI_NOTE_ON, MIDI_PITCH_D4, 0x45 } },
-    { DELAY, 1 },
-    { COMMAND, 2, { MIDI_NOTE_OFF, MIDI_PITCH_D4 } },
-
-    { COMMAND, 3, { MIDI_PERC, MIDI_PERC_ACOUSTIC_SNARE, 0x45 } },
-    { COMMAND, 3, { MIDI_PERC, MIDI_PERC_CLOSED_HI_HAT, 0x45 } },
-    { COMMAND, 3, { MIDI_NOTE_ON, MIDI_PITCH_E4, 0x45 } },
+/* The song Murderers. */
+static struct operation_t murderers[] = {
+    { COMMAND, 3, { MIDI_NOTE_ON, MIDI_NOTE_D4, 0x45 } },
     { DELAY, 2 },
-    { COMMAND, 2, { MIDI_NOTE_OFF, MIDI_PITCH_E4 } },
-
-    { COMMAND, 3, { MIDI_PERC, MIDI_PERC_ACOUSTIC_BASS_DRUM, 0x45 } },
-    { COMMAND, 3, { MIDI_PERC, MIDI_PERC_CLOSED_HI_HAT, 0x45 } },
-    { COMMAND, 3, { MIDI_NOTE_ON, MIDI_PITCH_C4, 0x45 } },
-    { DELAY, 1 },
-    { COMMAND, 2, { MIDI_NOTE_OFF, MIDI_PITCH_C4 } },
-    { COMMAND, 3, { MIDI_NOTE_ON, MIDI_PITCH_D4, 0x45 } },
-    { DELAY, 1 },
-    { COMMAND, 2, { MIDI_NOTE_OFF, MIDI_PITCH_D4 } },
-
-    { COMMAND, 3, { MIDI_PERC, MIDI_PERC_ACOUSTIC_SNARE, 0x45 } },
-    { COMMAND, 3, { MIDI_PERC, MIDI_PERC_CLOSED_HI_HAT, 0x45 } },
-    { COMMAND, 3, { MIDI_NOTE_ON, MIDI_PITCH_E4, 0x45 } },
+    { COMMAND, 3, { MIDI_NOTE_ON, MIDI_NOTE_F5 + 1, 0x45 } },
     { DELAY, 2 },
-    { COMMAND, 2, { MIDI_NOTE_OFF, MIDI_PITCH_E4 } },
+    { COMMAND, 3, { MIDI_NOTE_OFF, MIDI_NOTE_D4, 0 } },
+    { COMMAND, 3, { MIDI_NOTE_OFF, MIDI_NOTE_F5 + 1, 0 } },
 
-    { COMMAND, 3, { MIDI_PERC, MIDI_PERC_ACOUSTIC_BASS_DRUM, 0x45 } },
-    { COMMAND, 3, { MIDI_PERC, MIDI_PERC_CLOSED_HI_HAT, 0x45 } },
-    { COMMAND, 3, { MIDI_NOTE_ON, MIDI_PITCH_D4, 0x45 } },
-    { DELAY, 1 },
-    { COMMAND, 2, { MIDI_NOTE_OFF, MIDI_PITCH_D4 } },
-    { COMMAND, 3, { MIDI_NOTE_ON, MIDI_PITCH_D4, 0x45 } },
-    { DELAY, 1 },
-    { COMMAND, 2, { MIDI_NOTE_OFF, MIDI_PITCH_D4 } },
-
-    { COMMAND, 3, { MIDI_PERC, MIDI_PERC_ACOUSTIC_SNARE, 0x45 } },
-    { COMMAND, 3, { MIDI_PERC, MIDI_PERC_CLOSED_HI_HAT, 0x45 } },
-    { COMMAND, 3, { MIDI_NOTE_ON, MIDI_PITCH_D4, 0x45 } },
-    { DELAY, 1 },
-    { COMMAND, 2, { MIDI_NOTE_OFF, MIDI_PITCH_D4 } },
-    { COMMAND, 3, { MIDI_NOTE_ON, MIDI_PITCH_D4, 0x45 } },
-    { DELAY, 1 },
-    { COMMAND, 2, { MIDI_NOTE_OFF, MIDI_PITCH_D4 } },
-
-    { COMMAND, 3, { MIDI_PERC, MIDI_PERC_ACOUSTIC_BASS_DRUM, 0x45 } },
-    { COMMAND, 3, { MIDI_PERC, MIDI_PERC_CLOSED_HI_HAT, 0x45 } },
-    { COMMAND, 3, { MIDI_NOTE_ON, MIDI_PITCH_C4, 0x45 } },
+    { COMMAND, 3, { MIDI_NOTE_ON, MIDI_NOTE_E4, 0x45 } },
     { DELAY, 2 },
-    { COMMAND, 2, { MIDI_NOTE_OFF, MIDI_PITCH_C4 } },
-
-    { COMMAND, 3, { MIDI_PERC, MIDI_PERC_ACOUSTIC_SNARE, 0x45 } },
-    { COMMAND, 3, { MIDI_PERC, MIDI_PERC_CLOSED_HI_HAT, 0x45 } },
-    { COMMAND, 3, { MIDI_PERC, MIDI_PERC_CRASH_CYMBAL_1, 0x55 } },
-    { COMMAND, 3, { MIDI_NOTE_ON, MIDI_PITCH_C4, 0x45 } },
+    { COMMAND, 3, { MIDI_NOTE_ON, MIDI_NOTE_G5 + 1, 0x45 } },
     { DELAY, 2 },
-    { COMMAND, 2, { MIDI_NOTE_OFF, MIDI_PITCH_C4 } },
+    { COMMAND, 3, { MIDI_NOTE_OFF, MIDI_NOTE_E4, 0 } },
+    { COMMAND, 3, { MIDI_NOTE_OFF, MIDI_NOTE_G5 + 1, 0 } },
 
-    /* End of the song. */
-    { DELAY, 3 },
+    { COMMAND, 3, { MIDI_NOTE_ON, MIDI_NOTE_F4 + 1, 0x45 } },
+    { COMMAND, 3, { MIDI_NOTE_ON, MIDI_NOTE_A5, 0x45 } },
+    { DELAY, 4 },
+    { COMMAND, 3, { MIDI_NOTE_OFF, MIDI_NOTE_F4 + 1, 0 } },
+    { COMMAND, 3, { MIDI_NOTE_OFF, MIDI_NOTE_A5, 0 } },
+
+    { DELAY, 4 },
+
+
+    { COMMAND, 3, { MIDI_NOTE_ON, MIDI_NOTE_D4, 0x45 } },
+    { DELAY, 2 },
+    { COMMAND, 3, { MIDI_NOTE_ON, MIDI_NOTE_F5 + 1, 0x45 } },
+    { DELAY, 2 },
+    { COMMAND, 3, { MIDI_NOTE_OFF, MIDI_NOTE_D4, 0 } },
+    { COMMAND, 3, { MIDI_NOTE_OFF, MIDI_NOTE_F5 + 1, 0 } },
+
+    { COMMAND, 3, { MIDI_NOTE_ON, MIDI_NOTE_E4, 0x45 } },
+    { DELAY, 2 },
+    { COMMAND, 3, { MIDI_NOTE_ON, MIDI_NOTE_G5 + 1, 0x45 } },
+    { DELAY, 2 },
+    { COMMAND, 3, { MIDI_NOTE_OFF, MIDI_NOTE_E4, 0 } },
+    { COMMAND, 3, { MIDI_NOTE_OFF, MIDI_NOTE_G5 + 1, 0 } },
+
+    { COMMAND, 3, { MIDI_NOTE_ON, MIDI_NOTE_G4 + 1, 0x45 } },
+    { COMMAND, 3, { MIDI_NOTE_ON, MIDI_NOTE_B5, 0x45 } },
+    { DELAY, 2 },
+    { COMMAND, 3, { MIDI_NOTE_OFF, MIDI_NOTE_G4 + 1, 0 } },
+    { COMMAND, 3, { MIDI_NOTE_OFF, MIDI_NOTE_B5, 0 } },
+
+    { COMMAND, 3, { MIDI_NOTE_ON, MIDI_NOTE_F4 + 1, 0x45 } },
+    { COMMAND, 3, { MIDI_NOTE_ON, MIDI_NOTE_A5, 0x45 } },
+    { DELAY, 4 },
+    { COMMAND, 3, { MIDI_NOTE_OFF, MIDI_NOTE_F4 + 1, 0 } },
+    { COMMAND, 3, { MIDI_NOTE_OFF, MIDI_NOTE_A5, 0 } },
+
+    { DELAY, 4 },
+
+
+    { COMMAND, 3, { MIDI_NOTE_ON, MIDI_NOTE_D4 + 1, 0x45 } },
+    { DELAY, 2 },
+    { COMMAND, 3, { MIDI_NOTE_ON, MIDI_NOTE_E6, 0x45 } },
+    { DELAY, 2 },
+    { COMMAND, 3, { MIDI_NOTE_OFF, MIDI_NOTE_D4 + 1, 0 } },
+    { COMMAND, 3, { MIDI_NOTE_OFF, MIDI_NOTE_E6, 0 } },
+
+    { COMMAND, 3, { MIDI_NOTE_ON, MIDI_NOTE_G4 + 1, 0x45 } },
+    { COMMAND, 3, { MIDI_NOTE_ON, MIDI_NOTE_B5, 0x45 } },
+    { DELAY, 2 },
+    { COMMAND, 3, { MIDI_NOTE_OFF, MIDI_NOTE_G4 + 1, 0 } },
+    { COMMAND, 3, { MIDI_NOTE_OFF, MIDI_NOTE_B5, 0 } },
+
+    { COMMAND, 3, { MIDI_NOTE_ON, MIDI_NOTE_E4, 0x45 } },
+    { COMMAND, 3, { MIDI_NOTE_ON, MIDI_NOTE_G5 + 1, 0x45 } },
+    { DELAY, 2 },
+    { COMMAND, 3, { MIDI_NOTE_OFF, MIDI_NOTE_E4, 0 } },
+    { COMMAND, 3, { MIDI_NOTE_OFF, MIDI_NOTE_G5 + 1, 0 } },
+
+    { COMMAND, 3, { MIDI_NOTE_ON, MIDI_NOTE_F4 + 1, 0x45 } },
+    { COMMAND, 3, { MIDI_NOTE_ON, MIDI_NOTE_A5, 0x45 } },
+    { DELAY, 4 },
+    { COMMAND, 3, { MIDI_NOTE_OFF, MIDI_NOTE_F4 + 1, 0 } },
+    { COMMAND, 3, { MIDI_NOTE_OFF, MIDI_NOTE_A5, 0 } },
+
+    { DELAY, 4 },
+
+
+    { COMMAND, 3, { MIDI_NOTE_ON, MIDI_NOTE_D4, 0x45 } },
+    { DELAY, 2 },
+    { COMMAND, 3, { MIDI_NOTE_ON, MIDI_NOTE_F5 + 1, 0x45 } },
+    { DELAY, 2 },
+    { COMMAND, 3, { MIDI_NOTE_OFF, MIDI_NOTE_D4, 0 } },
+    { COMMAND, 3, { MIDI_NOTE_OFF, MIDI_NOTE_F5 + 1, 0 } },
+
+    { COMMAND, 3, { MIDI_NOTE_ON, MIDI_NOTE_E4, 0x45 } },
+    { DELAY, 2 },
+    { COMMAND, 3, { MIDI_NOTE_ON, MIDI_NOTE_G5 + 1, 0x45 } },
+    { DELAY, 2 },
+    { COMMAND, 3, { MIDI_NOTE_OFF, MIDI_NOTE_E4, 0 } },
+    { COMMAND, 3, { MIDI_NOTE_OFF, MIDI_NOTE_G5 + 1, 0 } },
+
+    { COMMAND, 3, { MIDI_NOTE_ON, MIDI_NOTE_C4 + 1, 0x45 } },
+    { COMMAND, 3, { MIDI_NOTE_ON, MIDI_NOTE_E5 + 1, 0x45 } },
+    { DELAY, 4 },
+    { COMMAND, 3, { MIDI_NOTE_OFF, MIDI_NOTE_C4 + 1, 0 } },
+    { COMMAND, 3, { MIDI_NOTE_OFF, MIDI_NOTE_E5 + 1, 0 } },
+
+    { DELAY, 4 }
 };
 
 static int set_instrument(int channel, int instrument)
@@ -118,15 +154,8 @@ static void init(void)
     sys_start();
     uart_module_init();
 
-    uart_init(&uart, &uart_device[0], 38400, qinbuf, sizeof(qinbuf));
-    uart_start(&uart);
-
-    uart_init(&uart_midi, &uart_device[1], MIDI_BAUDRATE, NULL, 0);
+    uart_init(&uart_midi, &uart_device[0], MIDI_BAUDRATE, NULL, 0);
     uart_start(&uart_midi);
-
-    sys_set_stdout(&uart.chout);
-
-    std_printf(sys_get_info());
 }
 
 int main()
@@ -140,19 +169,22 @@ int main()
             std_printf(FSTR("instrument = %d\r\n"), i);
             set_instrument(0, i);
 
-            for (j = 0; j < membersof(spanien); j++) {
-                switch (spanien[j].code) {
+            for (j = 0; j < membersof(murderers); j++) {
+                switch (murderers[j].code) {
 
                 case COMMAND:
-                    uart_write(&uart_midi, spanien[j].buf, spanien[j].size);
+                    uart_write(&uart_midi,
+                               murderers[j].buf,
+                               murderers[j].size);
                     break;
 
                 case DELAY:
-                    thrd_usleep(300000 * spanien[j].size);
+                    thrd_usleep(200000 * murderers[j].size);
                     break;
 
                 default:
-                    std_printf(FSTR("bad op code %d\r\n"), spanien[i].code);
+                    std_printf(FSTR("bad op code %d\r\n"),
+                               murderers[i].code);
                     break;
                 }
             }
