@@ -60,10 +60,10 @@ struct channel_t {
     int id;
     struct note_t notes[8];
     int length;
+    uint32_t *waveform_p;
 };
 
 struct synth_t {
-    uint32_t *waveform_p;
     float vibrato;
     struct event_t events;
     struct channel_t channels[16];
@@ -241,7 +241,7 @@ static int note_on(struct channel_t *channel_p,
     if (channel_p->length < membersof(channel_p->notes)) {
         channel_p->notes[channel_p->length].note = note;
         oscillator_init(&channel_p->notes[channel_p->length].oscillator,
-                        synth.waveform_p,
+                        channel_p->waveform_p,
                         membersof(waveform_sine_256),
                         frequency,
                         synth.vibrato,
@@ -295,24 +295,33 @@ int cmd_set_waveform(int argc,
                      void *out_p,
                      void *in_p)
 {
-    if (argc != 2) {
+    long channel;
+    struct channel_t *channel_p;
+
+    if (argc != 3) {
         std_fprintf(out_p,
-                    FSTR("Usage: %s <square or saw>\r\n"),
+                    FSTR("Usage: %s <channel> <square or saw>\r\n"),
                     argv[0]);
 
         return (-EINVAL);
     }
 
-    if (strcmp(argv[1], "sine") == 0) {
-        synth.waveform_p = waveform_sine_256;
-    } else if (strcmp(argv[1], "saw") == 0) {
-        synth.waveform_p = waveform_saw_256;
-    } else if (strcmp(argv[1], "square") == 0) {
-        synth.waveform_p = waveform_square_256;
+    if (std_strtol(argv[1], &channel) != 0) {
+        return (-EINVAL);
+    }
+
+    channel_p = &synth.channels[channel];
+
+    if (strcmp(argv[2], "sine") == 0) {
+        channel_p->waveform_p = waveform_sine_256;
+    } else if (strcmp(argv[2], "saw") == 0) {
+        channel_p->waveform_p = waveform_saw_256;
+    } else if (strcmp(argv[2], "square") == 0) {
+        channel_p->waveform_p = waveform_square_256;
     } else {
         std_fprintf(out_p,
                     FSTR("bad waveform %s\r\n"),
-                    argv[1]);
+                    argv[2]);
 
         return (-EINVAL);
     }
@@ -567,9 +576,9 @@ static int init(void)
     for (i = 0; i < membersof(synth.channels); i++) {
         synth.channels[i].id = i;
         synth.channels[i].length = 0;
+        synth.channels[i].waveform_p = waveform_square_256;
     }
 
-    synth.waveform_p = waveform_square_256;
     synth.vibrato = 0.0;
 
     /* Spawn the shell. */
