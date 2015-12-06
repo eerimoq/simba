@@ -45,7 +45,8 @@ DRIVERS_SRC ?= adc.c \
 endif
 
 ifeq ($(ARCH),arm)
-DRIVERS_SRC ?= can.c \
+DRIVERS_SRC ?= adc.c \
+               can.c \
                chipid.c \
                dac.c \
                exti.c \

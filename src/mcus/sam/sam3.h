@@ -2568,6 +2568,68 @@ struct sam_can_t {
 #define CAN_MCR_MACR                    BIT(22)
 #define CAN_MCR_MTCR                    BIT(23)
 
+/* 43. Analog-to-Digital Converter Controller. */
+struct sam_adc_t {
+    uint32_t CR;
+    uint32_t MR;
+    uint32_t SEQR1;
+    uint32_t SEQR2;
+    uint32_t CHER;
+    uint32_t CHDR;
+    uint32_t CHSR;
+    uint32_t reserved0;
+    uint32_t LCDR;
+    uint32_t IER;
+    uint32_t IDR;
+    uint32_t IMR;
+    uint32_t ISR;
+    uint32_t reserved1[2];
+    uint32_t OVER;
+    uint32_t EMR;
+    uint32_t CWR;
+    uint32_t CGR;
+    uint32_t COR;
+    uint32_t CDR[16];
+    uint32_t reserved2;
+    uint32_t ACR;
+    uint32_t reserved3[24];
+    uint32_t WPMR;
+    uint32_t WPSR;
+    uint32_t reserved4[24];
+    struct sam_pdc_t PDC;
+};
+
+/* Control Register. */
+#define SAM_ADC_CR_SWRST                BIT(0)
+#define SAM_ADC_CR_START                BIT(1)
+
+/* Mode Register. */
+#define SAM_ADC_MR_TRGEN                BIT(0)
+#define SAM_ADC_MR_TRGSEL_POS           (1)
+#define SAM_ADC_MR_TRGSEL_MASK          (0x7 << SAM_ADC_MR_TRGSEL_POS)
+#define SAM_ADC_MR_TRGSEL(value)        BITFIELD_SET(SAM_ADC_MR_TRGSEL, value)
+#define SAM_ADC_MR_LOWRES               BIT(4)
+#define SAM_ADC_MR_SLEEP                BIT(5)
+#define SAM_ADC_MR_FWUP                 BIT(6)
+#define SAM_ADC_MR_FREERUN              BIT(7)
+#define SAM_ADC_MR_PRESCAL_POS          (8)
+#define SAM_ADC_MR_PRESCAL_MASK         (0xff << SAM_ADC_MR_PRESCAL_POS)
+#define SAM_ADC_MR_PRESCAL(value)       BITFIELD_SET(SAM_ADC_MR_PRESCAL, value)
+#define SAM_ADC_MR_STARTUP_POS          (16)
+#define SAM_ADC_MR_STARTUP_MASK         (0xf << SAM_ADC_MR_STARTUP_POS)
+#define SAM_ADC_MR_STARTUP(value)       BITFIELD_SET(SAM_ADC_MR_STARTUP, value)
+#define SAM_ADC_MR_SETTLING_POS         (20)
+#define SAM_ADC_MR_SETTLING_MASK        (0x3 << SAM_ADC_MR_SETTLING_POS)
+#define SAM_ADC_MR_SETTLING(value)      BITFIELD_SET(SAM_ADC_MR_SETTLING, value)
+#define SAM_ADC_MR_ANACH                BIT(23)
+#define SAM_ADC_MR_TRACKTIM_POS         (24)
+#define SAM_ADC_MR_TRACKTIM_MASK        (0xf << SAM_ADC_MR_TRACKTIM_POS)
+#define SAM_ADC_MR_TRACKTIM(value)      BITFIELD_SET(SAM_ADC_MR_TRACKTIM, value)
+#define SAM_ADC_MR_TRANSFER_POS         (28)
+#define SAM_ADC_MR_TRANSFER_MASK        (0x3 << SAM_ADC_MR_TRANSFER_POS)
+#define SAM_ADC_MR_TRANSFER(value)      BITFIELD_SET(SAM_ADC_MR_TRANSFER, value)
+#define SAM_ADC_MR_USEQ                 BIT(31)
+
 /* 44. Digital-to-Analog Converter Controller. */
 struct sam_dacc_t {
     uint32_t CR;

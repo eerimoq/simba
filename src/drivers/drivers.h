@@ -57,6 +57,7 @@
 #    include "drivers/sd.h"
 #    include "drivers/can.h"
 #    include "drivers/mcp2515.h"
+#    include "drivers/adc.h"
 #    include "drivers/dac.h"
 #    include "drivers/usb.h"
 #    include "drivers/usb_host.h"

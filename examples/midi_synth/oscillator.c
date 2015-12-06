@@ -21,16 +21,16 @@
 #include "simba.h"
 #include "oscillator.h"
 
-/* Convert a floating point value to a fixed point Q26.5 value. */
+/* Convert a floating point value to a fixed point Q20.11 value. */
 #define FLOAT_TO_Q20_11(value) (q20_11_t)(value * 2048.0)
 
-/* Convert an integer value to a fixed point Q26.5 value. */
+/* Convert an integer value to a fixed point Q20.11 value. */
 #define INT_TO_Q20_11(value) (q20_11_t)(value << 11)
 
-/* Convert a fixed point Q26.5 value to a float value. */
+/* Convert a fixed point Q20.11 value to a float value. */
 #define Q20_11_TO_FLOAT(value) ((float)(value) / 2048.0)
 
-/* Convert a fixed point Q26.5 value to an integer value. */
+/* Convert a fixed point Q20.11 value to an integer value. */
 #define Q20_11_TO_INT(value) (int32_t)((value >> 11))
 
 static q20_11_t
@@ -93,7 +93,8 @@ int oscillator_read(struct oscillator_t *self_p,
         
         self_p->phase += self_p->phase_increment;
         self_p->phase += self_p->vibrato.phase_increment;
-        index = (Q20_11_TO_INT(self_p->phase) % self_p->waveform.length);
+        index = (((uint32_t)Q20_11_TO_INT(self_p->phase))
+                 % self_p->waveform.length);
         samples_p[i] = self_p->waveform.buf_p[index];
 
         self_p->sample_counter++;

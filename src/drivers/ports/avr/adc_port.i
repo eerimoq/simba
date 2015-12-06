@@ -102,7 +102,8 @@ static int adc_port_init(struct adc_driver_t *drv_p,
     }
 
     drv_p->dev_p = dev_p;
-    drv_p->interrupt_max = SAMPLING_RATE_TO_INTERRUPT_MAX((long)sampling_rate);
+    drv_p->interrupt_max =
+        SAMPLING_RATE_TO_INTERRUPT_MAX((long)sampling_rate);
     drv_p->admux = (reference | (channel & 0x07));
     pin_init(&drv_p->pin_drv, pin_dev_p, PIN_INPUT);
 
@@ -165,14 +166,4 @@ static int adc_port_async_wait(struct adc_driver_t *drv_p)
     sys_unlock();
 
     return (has_finished);
-}
-
-static int adc_port_convert(struct adc_driver_t *drv_p,
-                            int *samples,
-                            size_t length)
-{
-    adc_port_async_convert(drv_p, samples, length);
-    adc_port_async_wait(drv_p);
-
-    return (0);
 }

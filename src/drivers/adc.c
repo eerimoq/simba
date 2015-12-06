@@ -56,5 +56,8 @@ int adc_convert(struct adc_driver_t *drv_p,
                 int *samples,
                 size_t length)
 {
-    return (adc_port_convert(drv_p, samples, length));
+    adc_port_async_convert(drv_p, samples, length);
+    adc_port_async_wait(drv_p);
+    
+    return (0);
 }

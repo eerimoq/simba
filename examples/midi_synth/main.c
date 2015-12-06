@@ -74,6 +74,11 @@ struct synth_t {
     struct dac_driver_t dac;
     struct timer_t timer;
     struct sem_t sem;
+    struct {
+        struct adc_driver_t frequency0;
+        struct adc_driver_t frequency1;
+        struct event_t events;
+    } sensors;
 };
 
 static struct synth_t synth;
@@ -348,6 +353,39 @@ static void fill_timer_cb(void *arg_p)
     event_write_irq(&synth.events, &mask, sizeof(mask));
 }
 
+static THRD_STACK(sensors_main_stack, 1024);
+
+static void *sensors_main(void *arg_p)
+{
+    uint32_t mask;
+    int sample0, sample1;
+    float frequency0, frequency1;
+
+    thrd_set_name("sensors");
+
+    while (1) {
+        /* Wait for the periodic timeout event that drives the synth
+         * signal processing. */
+        mask = EVENT_TIMEOUT;
+        event_read(&synth.sensors.events, &mask, sizeof(mask));
+
+        adc_convert(&synth.sensors.frequency0, &sample0, 1);
+        adc_convert(&synth.sensors.frequency1, &sample1, 1);
+
+        frequency0 = 125.0;
+        frequency1 = 200.0;
+
+        sem_get(&synth.sem, NULL);
+        oscillator_set_frequency(&synth.channels[15].notes[0].oscillator,
+                                 frequency0);
+        oscillator_set_frequency(&synth.channels[15].notes[1].oscillator,
+                                  frequency1);
+        sem_put(&synth.sem, 1);
+    }
+
+    return (NULL);
+}
+
 static uint32_t samples[4][SAMPLES_MAX];
 static uint32_t buf[SAMPLES_MAX];
 
@@ -391,8 +429,8 @@ static void *synth_main(void *arg_p)
         memset(samples_p, 0, sizeof(samples[0]));
 
         /* Calculate the next few samples and start the convertion in
-         * the DAC. The smaller the buffer, the shorter the delay will
-         * be. */
+         * the DAC. The smaller the buffer, the shorter the delay to
+         * the speaker. */
         sem_get(&synth.sem, NULL);
 
         for (i = 0; i < membersof(synth.channels); i++) {
@@ -409,7 +447,7 @@ static void *synth_main(void *arg_p)
 
                 for (k = 0; k < SAMPLES_MAX; k++) {
                     samples_p[k] += buf[k];
-                }                
+                }
             }
 
             /* Apply channel effects. */
@@ -450,6 +488,7 @@ static int init(void)
     std_printf(sys_get_info());
 
     event_init(&synth.events);
+    event_init(&synth.sensors.events);
     sem_init(&synth.sem, 1);
 
     dac_init(&synth.dac,
@@ -483,6 +522,12 @@ static int init(void)
                -1,
                synth_main_stack,
                sizeof(synth_main_stack));
+
+    thrd_spawn(sensors_main,
+               NULL,
+               0,
+               sensors_main_stack,
+               sizeof(sensors_main_stack));
 
     return (0);
 }

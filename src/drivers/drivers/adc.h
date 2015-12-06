@@ -52,7 +52,7 @@ int adc_init(struct adc_driver_t *drv_p,
              int sampling_rate);
 
 /**
- * Start asynchronous convertion of analog signal to digital samples.
+ * Start an asynchronous convertion of analog signal to digital samples.
  *
  * @param[in] drv_p Driver object.
  * @param[out] samples Converted samlpes.
@@ -65,7 +65,7 @@ int adc_async_convert(struct adc_driver_t *drv_p,
                       size_t length);
 
 /**
- * Wait for asynchronous convertion to finish.
+ * Wait for an asynchronous convertion to finish.
  *
  * @param[in] drv_p Driver object.
  *
@@ -74,7 +74,7 @@ int adc_async_convert(struct adc_driver_t *drv_p,
 int adc_async_wait(struct adc_driver_t *drv_p);
 
 /**
- * Start synchronous convertion of analog signal to digital samples.
+ * Start a synchronous convertion of analog signal to digital samples.
  *
  * @param[in] drv_p Driver object.
  * @param[out] samples Converted samlpes.
