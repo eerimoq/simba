@@ -21,12 +21,25 @@
 #include "simba.h"
 #include "oscillator.h"
 
-static float
+/* Convert a floating point value to a fixed point Q26.5 value. */
+#define FLOAT_TO_Q23_8(value) (q23_8_t)(value * 32.0)
+
+/* Convert an integer value to a fixed point Q26.5 value. */
+#define INT_TO_Q23_8(value) (q23_8_t)(value << 5)
+
+/* Convert a fixed point Q26.5 value to a float value. */
+#define Q23_8_TO_FLOAT(value) ((float)(value) / 32.0)
+
+/* Convert a fixed point Q26.5 value to an integer value. */
+#define Q23_8_TO_INT(value) (int32_t)((value >> 5))
+
+static q23_8_t
 frequency_to_phase_increment(float frequency,
                              size_t waveform_length,
                              int sample_rate)
 {
-    return ((frequency * waveform_length) / sample_rate);
+    return FLOAT_TO_Q23_8(((frequency * waveform_length)
+                           / sample_rate));
 }
 
 int oscillator_init(struct oscillator_t *self_p,
@@ -39,8 +52,8 @@ int oscillator_init(struct oscillator_t *self_p,
     self_p->sample_rate = sample_rate;
     self_p->sample_counter = 0;
     self_p->frequency = frequency;
-    self_p->vibrato = vibrato;
-    self_p->phase = 0.0;
+    self_p->vibrato = FLOAT_TO_Q23_8(vibrato);
+    self_p->phase = 0;
     self_p->phase_increment =
         frequency_to_phase_increment(frequency,
                                      length,
@@ -72,12 +85,12 @@ int oscillator_read(struct oscillator_t *self_p,
 
     for (i = 0; i < length; i++) {
         if ((self_p->sample_counter % 4096) == 0) {
-            self_p->vibrato *= -1.0;
+            self_p->vibrato *= INT_TO_Q23_8(-1);
         }
         
         self_p->phase += self_p->phase_increment;
         self_p->phase += self_p->vibrato;
-        index = ((int)self_p->phase & (self_p->waveform.length - 1));
+        index = (Q23_8_TO_INT(self_p->phase) & (self_p->waveform.length - 1));
         samples_p[i] = self_p->waveform.buf_p[index];
 
         self_p->sample_counter++;
