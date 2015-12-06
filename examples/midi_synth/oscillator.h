@@ -33,7 +33,10 @@ struct oscillator_t {
     q23_8_t phase_increment; /* The number of steps to increment the
                               * phase to get the next sample in the
                               * waveform. */
-    q23_8_t vibrato;
+    struct {
+        float value;
+        q23_8_t phase_increment;
+    } vibrato;
     struct {
         int length; /* Length (number of samples) in the waveform
                      * cycle. */

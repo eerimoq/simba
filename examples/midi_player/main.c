@@ -26,6 +26,7 @@ static struct uart_driver_t uart_midi;
 #define COMMAND  0
 #define DELAY    1
 #define SPACING  2
+#define PACE     3
 
 struct operation_t {
     int code;
@@ -34,7 +35,7 @@ struct operation_t {
 };
 
 //#include "murderers.h"
-#include "staffan.h"
+#include "christmas.h"
 
 static int set_instrument(int channel, int instrument)
 {
@@ -61,6 +62,7 @@ int main()
 {
     int i, j;
     struct operation_t operation;
+    unsigned long pace = 200;
 
     init();
 
@@ -81,11 +83,15 @@ int main()
                     break;
 
                 case DELAY:
-                    thrd_usleep(200000 * operation.size);
+                    thrd_usleep(pace * operation.size);
                     break;
 
                 case SPACING:
-                    thrd_usleep(10000);
+                    thrd_usleep(5000);
+                    break;
+
+                case PACE:
+                    pace = 1000UL * operation.size;
                     break;
 
                 default:

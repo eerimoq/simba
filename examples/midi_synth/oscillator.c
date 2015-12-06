@@ -52,7 +52,8 @@ int oscillator_init(struct oscillator_t *self_p,
     self_p->sample_rate = sample_rate;
     self_p->sample_counter = 0;
     self_p->frequency = frequency;
-    self_p->vibrato = FLOAT_TO_Q23_8(vibrato);
+    self_p->vibrato.value = vibrato;
+    self_p->vibrato.phase_increment = FLOAT_TO_Q23_8(vibrato);
     self_p->phase = 0;
     self_p->phase_increment =
         frequency_to_phase_increment(frequency,
@@ -85,12 +86,15 @@ int oscillator_read(struct oscillator_t *self_p,
 
     for (i = 0; i < length; i++) {
         if ((self_p->sample_counter % 4096) == 0) {
-            self_p->vibrato *= INT_TO_Q23_8(-1);
+            self_p->vibrato.value *= -1.0;
+            self_p->vibrato.phase_increment =
+                FLOAT_TO_Q23_8(self_p->vibrato.value);
         }
         
         self_p->phase += self_p->phase_increment;
-        self_p->phase += self_p->vibrato;
-        index = (Q23_8_TO_INT(self_p->phase) & (self_p->waveform.length - 1));
+        self_p->phase += self_p->vibrato.phase_increment;
+        index = (Q23_8_TO_INT(self_p->phase)
+                 & (self_p->waveform.length - 1));
         samples_p[i] = self_p->waveform.buf_p[index];
 
         self_p->sample_counter++;
