@@ -93,8 +93,7 @@ int oscillator_read(struct oscillator_t *self_p,
         
         self_p->phase += self_p->phase_increment;
         self_p->phase += self_p->vibrato.phase_increment;
-        index = (Q20_11_TO_INT(self_p->phase)
-                 & (self_p->waveform.length - 1));
+        index = (Q20_11_TO_INT(self_p->phase) % self_p->waveform.length);
         samples_p[i] = self_p->waveform.buf_p[index];
 
         self_p->sample_counter++;
