@@ -23,19 +23,19 @@
 
 #include "simba.h"
 
-typedef int32_t q23_8_t;
+typedef int32_t q20_11_t;
 
 struct oscillator_t {
     float frequency;
     int sample_rate;
     int sample_counter;
-    q23_8_t phase; /* Current phase in the waveform. */
-    q23_8_t phase_increment; /* The number of steps to increment the
-                              * phase to get the next sample in the
-                              * waveform. */
+    q20_11_t phase; /* Current phase in the waveform. */
+    q20_11_t phase_increment; /* The number of steps to increment the
+                               * phase to get the next sample in the
+                               * waveform. */
     struct {
         float value;
-        q23_8_t phase_increment;
+        q20_11_t phase_increment;
     } vibrato;
     struct {
         int length; /* Length (number of samples) in the waveform

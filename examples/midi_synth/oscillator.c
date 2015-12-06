@@ -22,24 +22,24 @@
 #include "oscillator.h"
 
 /* Convert a floating point value to a fixed point Q26.5 value. */
-#define FLOAT_TO_Q23_8(value) (q23_8_t)(value * 32.0)
+#define FLOAT_TO_Q20_11(value) (q20_11_t)(value * 2048.0)
 
 /* Convert an integer value to a fixed point Q26.5 value. */
-#define INT_TO_Q23_8(value) (q23_8_t)(value << 5)
+#define INT_TO_Q20_11(value) (q20_11_t)(value << 11)
 
 /* Convert a fixed point Q26.5 value to a float value. */
-#define Q23_8_TO_FLOAT(value) ((float)(value) / 32.0)
+#define Q20_11_TO_FLOAT(value) ((float)(value) / 2048.0)
 
 /* Convert a fixed point Q26.5 value to an integer value. */
-#define Q23_8_TO_INT(value) (int32_t)((value >> 5))
+#define Q20_11_TO_INT(value) (int32_t)((value >> 11))
 
-static q23_8_t
+static q20_11_t
 frequency_to_phase_increment(float frequency,
                              size_t waveform_length,
                              int sample_rate)
 {
-    return FLOAT_TO_Q23_8(((frequency * waveform_length)
-                           / sample_rate));
+    return FLOAT_TO_Q20_11(((frequency * waveform_length)
+                            / sample_rate));
 }
 
 int oscillator_init(struct oscillator_t *self_p,
@@ -53,7 +53,7 @@ int oscillator_init(struct oscillator_t *self_p,
     self_p->sample_counter = 0;
     self_p->frequency = frequency;
     self_p->vibrato.value = vibrato;
-    self_p->vibrato.phase_increment = FLOAT_TO_Q23_8(vibrato);
+    self_p->vibrato.phase_increment = FLOAT_TO_Q20_11(vibrato);
     self_p->phase = 0;
     self_p->phase_increment =
         frequency_to_phase_increment(frequency,
@@ -88,12 +88,12 @@ int oscillator_read(struct oscillator_t *self_p,
         if ((self_p->sample_counter % 4096) == 0) {
             self_p->vibrato.value *= -1.0;
             self_p->vibrato.phase_increment =
-                FLOAT_TO_Q23_8(self_p->vibrato.value);
+                FLOAT_TO_Q20_11(self_p->vibrato.value);
         }
         
         self_p->phase += self_p->phase_increment;
         self_p->phase += self_p->vibrato.phase_increment;
-        index = (Q23_8_TO_INT(self_p->phase)
+        index = (Q20_11_TO_INT(self_p->phase)
                  & (self_p->waveform.length - 1));
         samples_p[i] = self_p->waveform.buf_p[index];
 
