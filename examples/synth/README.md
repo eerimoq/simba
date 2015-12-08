@@ -16,7 +16,8 @@ Needed devices:
 
 For MIDI input (optional):
     - 1 x Female DIN-5 (MIDI connector)
-    - 1 x 4k7 ohm resistors (pull-up)
+    - 1 x 220 ohm resistor
+    - 1 x 4k7 ohm resistor (pull-up)
 
 SCHEMATICS
 ----------
@@ -24,8 +25,10 @@ SCHEMATICS
       ,-----.      ,-----.     ,-----.
      /       \    /       \   /       \
     |  POT 0  |  |  POT 1  | |  DIN-5  |
-     \       /    \       /   \       /
+     \       /    \       /   \ 2 5 4 /
       `o-o-o´      `o-o-o´     `o-o-o´
+       | | |        | | |       | | |
+       | | |        | | |       | |220
        | | |        | | |       | | |
        | | |        | | |       | +----4k7-----+
        | | |        | | |       | | |          |
