@@ -1,8 +1,16 @@
 ABOUT
 =====
 
-A minimalistic synthesizer that creates audio from MIDI and analog
+A minimalistic synthesizer that creates sound from MIDI and analog
 inputs.
+
+See the source code, and mainly main.c, for usage. The documentation
+is very limited i nthis release and will probably not be improved in
+the furute.
+
+Channel 15 is reserved for sound controlled by the potentiometers. POT
+0 is used to control the frequency. POT 1 controls the vibrato of all
+channels.
 
 HARDWARE
 ========
