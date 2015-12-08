@@ -18,64 +18,101 @@
  * This file is part of the Simba project.
  */
 
-/* /\* Free running mode sampling rate. */
-/*    FCPU / clockdiv / samplingtime = 16MHz / 32 / 13 = 9615Hz. *\/ */
-/* #define SAMPLING_RATE_HZ 38462UL */
+/* Driver states. */
+#define STATE_RUNNING  0
+#define STATE_FINISHED 1
 
-/* /\* Convert desired smpling rate to number of interrupts, rounded */
-/*    up. The error in the calculation is rather big for high sampling */
-/*    frequencies.*\/ */
-/* #define SAMPLING_RATE_TO_INTERRUPT_MAX(rate) \ */
-/*     ((SAMPLING_RATE_HZ + rate - 1) / rate) */
+static void start_adc_hw(struct adc_driver_t *drv_p)
+{
+    volatile struct sam_adc_t *regs_p;
 
-/* ISR(adc) */
-/* { */
-/*     struct adc_device_t *dev_p = &adc_device[0]; */
-/*     struct adc_driver_t *drv_p = dev_p->jobs.head_p; */
+    regs_p = drv_p->dev_p->regs_p;
 
-/*     /\* The AD Converter is running in free mode. *\/ */
-/*     drv_p->interrupt_count++; */
+    /* Initialize the PDC. */
+    regs_p->PDC.RPR = (uint32_t)drv_p->samples_p;
+    regs_p->PDC.RCR = drv_p->length;
 
-/*     if (drv_p->interrupt_count < drv_p->interrupt_max) { */
-/*         return; */
-/*     } */
+    regs_p->CHER = (1 << drv_p->channel);
+    regs_p->IER = (SAM_ADC_IER_ENDRX);
 
-/*     drv_p->interrupt_count = 0; */
+    /* Start the convertion. */
+    regs_p->CR = (SAM_ADC_CR_START);
+}
 
-/*     /\* Read the sample from the output register. *\/ */
-/*     drv_p->samples[drv_p->pos++] = ADC; */
+static void stop_adc_hw(struct adc_driver_t *drv_p)
+{
+    volatile struct sam_adc_t *regs_p;
 
-/*     /\* Resume thread when all samples have been collected. *\/ */
-/*     if (drv_p->pos == drv_p->length) { */
-/*         /\* Detach job from job list as it is completed. *\/ */
-/*         dev_p->jobs.head_p = drv_p->next_p; */
+    regs_p = drv_p->dev_p->regs_p;
 
-/*         /\* Disable ADC hardware if there are no more queued jobs. *\/ */
-/*         if (drv_p->next_p != NULL) { */
-/*             ADMUX = drv_p->next_p->admux; */
-/*         } else { */
-/*             ADCSRA &= ~_BV(ADEN); */
-/*         } */
+    /* Stop the AD Converter. */
+    regs_p->CHDR = (1 << drv_p->channel);
+    regs_p->IDR = (SAM_ADC_IDR_ENDRX);
+}
 
-/*         /\* Resume the thread if it is waiting for completion. *\/ */
-/*         if (drv_p->thrd_p != NULL) { */
-/*             thrd_resume_irq(drv_p->thrd_p, 0); */
-/*         } */
-/*     } */
-/* } */
+ISR(adc)
+{
+    struct adc_device_t *dev_p = &adc_device[0];
+    struct adc_driver_t *drv_p = dev_p->jobs.head_p;
 
-/* static void start_adc_hw(struct adc_driver_t *drv_p) */
-/* { */
-/*     /\* Start AD Converter in free running mode. *\/ */
-/*     ADMUX = drv_p->admux; */
-/*     ADCSRB = 0; */
-/*     /\* clock div 32. *\/ */
-/*     ADCSRA = (_BV(ADEN) | _BV(ADSC) | _BV(ADATE) | _BV(ADIE) */
-/*               | _BV(ADPS2) /\*| _BV(ADPS1) *\/| _BV(ADPS0)); */
-/* } */
+    /* Mark the job as finished. */
+    drv_p->state = STATE_FINISHED;
+    
+    /* Detach the job from the job list as it is completed. */
+    dev_p->jobs.head_p = drv_p->next_p;
+    
+    /* Disable the ADC hardware. */
+    stop_adc_hw(drv_p);
+
+    /* Start the next job, if there is one. */
+    if (drv_p->next_p != NULL) {
+        start_adc_hw(drv_p->next_p);
+    }
+    
+    /* Resume the thread if it is waiting for completion. */
+    if (drv_p->thrd_p != NULL) {
+        thrd_resume_irq(drv_p->thrd_p, 0);
+    }
+}
 
 static int adc_port_module_init(void)
 {
+    int channel;
+    uint32_t rc;    
+    uint32_t sampling_rate = 10000;
+    struct adc_device_t *dev_p = &adc_device[0];
+
+    /* Setup a Timer Counter to send the clock pulses to the ADC. */
+    pmc_peripheral_clock_enable(dev_p->tc.id);
+
+    /* Create a square wave of the desired frequency. UPDOWN_RC
+       waveform is a triangle wave starting at zero and increasing to
+       the value of the RC register, then it decrements to zero
+       again. The tick frequency is MCR / 8, or 10.25 MHz. */
+    channel = dev_p->tc.channel;
+    dev_p->tc.regs_p->CHANNEL[channel].CMR = (TC_CMR_WAVEFORM_ACPC(2)
+                                              | TC_CMR_WAVEFORM_ACPA(1)
+                                              | TC_CMR_WAVEFORM_WAVE
+                                              | TC_CMR_WAVEFORM_WAVSEL_UP_RC
+                                              | TC_CMR_WAVEFORM_TCCLKS(1));
+    rc = (F_CPU / 8 / sampling_rate);
+    dev_p->tc.regs_p->CHANNEL[channel].RA = (rc / 2);
+    dev_p->tc.regs_p->CHANNEL[channel].RC = rc;
+    dev_p->tc.regs_p->CHANNEL[channel].CCR = (TC_CCR_SWTRG | TC_CCR_CLKEN);
+
+    /* Setup the ADC clocked by Timer Counter 0, channel 2. */
+    pmc_peripheral_clock_enable(dev_p->id);
+    nvic_enable_interrupt(dev_p->id);
+
+    dev_p->regs_p->CR = (SAM_ADC_CR_SWRST);
+    dev_p->regs_p->MR = (SAM_ADC_MR_STARTUP(8)
+                         | SAM_ADC_MR_TRACKTIM(8)
+                         | SAM_ADC_MR_TRGSEL(channel + 1)
+                         | SAM_ADC_MR_TRGEN);
+
+    /* Enable RX in the PDC. */
+    dev_p->regs_p->PDC.PTCR = (PERIPH_PTCR_RXTEN);
+
     return (0);
 }
 
@@ -85,48 +122,71 @@ static int adc_port_init(struct adc_driver_t *drv_p,
                          int reference,
                          long sampling_rate)
 {
-/*     int channel = 0; */
+    uint32_t mask;
 
-/*     while ((&pin_a0_dev + channel) != pin_dev_p) { */
-/*         channel++; */
-/*     } */
+    drv_p->dev_p = dev_p;
 
-/*     drv_p->dev_p = dev_p; */
-/*     drv_p->interrupt_max = */
-/*         SAMPLING_RATE_TO_INTERRUPT_MAX((long)sampling_rate); */
-/*     drv_p->admux = (reference | (channel & 0x07)); */
-/*     pin_init(&drv_p->pin_drv, pin_dev_p, PIN_INPUT); */
+    /* Disable the pull-up. */
+    mask = pin_dev_p->mask;
+    pin_dev_p->pio_p->PDR = mask;
+    pin_dev_p->pio_p->PUDR = mask;
+    pin_dev_p->pio_p->ABSR |= mask;
+
+    if (pin_dev_p == &pin_a0_dev) {
+        drv_p->channel = 7;
+    } else if (pin_dev_p == &pin_a1_dev) {
+        drv_p->channel = 6;
+    } else if (pin_dev_p == &pin_a2_dev) {
+        drv_p->channel = 5;
+    } else if (pin_dev_p == &pin_a3_dev) {
+        drv_p->channel = 4;
+    } else if (pin_dev_p == &pin_a4_dev) {
+        drv_p->channel = 3;
+    } else if (pin_dev_p == &pin_a5_dev) {
+        drv_p->channel = 2;
+    } else if (pin_dev_p == &pin_a6_dev) {
+        drv_p->channel = 1;
+    } else if (pin_dev_p == &pin_a7_dev) {
+        drv_p->channel = 0;
+    } else if (pin_dev_p == &pin_a8_dev) {
+        drv_p->channel = 10;
+    } else if (pin_dev_p == &pin_a9_dev) {
+        drv_p->channel = 11;
+    } else if (pin_dev_p == &pin_a10_dev) {
+        drv_p->channel = 12;
+    } else if (pin_dev_p == &pin_a11_dev) {
+        drv_p->channel = 13;
+    }
 
     return (0);
 }
 
 static int adc_port_async_convert(struct adc_driver_t *drv_p,
-                                  int *samples,
+                                  uint16_t *samples_p,
                                   size_t length)
 {
-    /* /\* Initialize. *\/ */
-    /* drv_p->pos = 0; */
-    /* drv_p->samples = samples; */
-    /* drv_p->length = length; */
-    /* drv_p->interrupt_count = 0; */
-    /* drv_p->thrd_p = NULL; */
-    /* drv_p->next_p = NULL; */
+    /* Initialize. */
+    drv_p->state = STATE_RUNNING;
+    drv_p->samples_p = samples_p;
+    drv_p->length = length;
+    drv_p->thrd_p = NULL;
+    drv_p->next_p = NULL;
 
-    /* /\* Enqueue. *\/ */
-    /* sys_lock(); */
+    /* Enqueue. */
+    sys_lock();
 
-    /* if (drv_p->dev_p->jobs.head_p == NULL) { */
-    /*     /\* Empty queue. *\/ */
-    /*     drv_p->dev_p->jobs.head_p = drv_p; */
-    /*     start_adc_hw(drv_p); */
-    /* } else { */
-    /*     /\* Non-empty queue. *\/ */
-    /*     drv_p->dev_p->jobs.tail_p->next_p = drv_p; */
-    /* } */
+    if (drv_p->dev_p->jobs.head_p == NULL) {
+        /* Empty queue. */
+        drv_p->dev_p->jobs.head_p = drv_p;
+        start_adc_hw(drv_p);
+    } else {
+        /* Non-empty queue. */
+        drv_p->dev_p->jobs.tail_p->next_p = drv_p;
+    }
 
-    /* drv_p->dev_p->jobs.tail_p = drv_p; */
+    drv_p->dev_p->jobs.tail_p = drv_p;
 
-    /* sys_unlock(); */
+    sys_unlock();
 
     return (0);
 }
@@ -137,16 +197,16 @@ static int adc_port_async_wait(struct adc_driver_t *drv_p)
 
     sys_lock();
 
-    has_finished = (drv_p->pos == drv_p->length);
+    has_finished = (drv_p->state == STATE_FINISHED);
 
-    /* /\* Always set thrd_p, even if the convertion has finished. If the */
-    /*    convertion has finished, thrd_p will be unused.*\/ */
-    /* drv_p->thrd_p = thrd_self(); */
+    /* Always set thrd_p, even if the convertion has finished. If the
+       convertion has finished, thrd_p will be unused.*/
+    drv_p->thrd_p = thrd_self();
 
-    /* /\* Wait until all samples have been converted. *\/ */
-    /* if (!has_finished) { */
-    /*     thrd_suspend_irq(NULL); */
-    /* } */
+    /* Wait until all samples have been converted. */
+    if (!has_finished) {
+        thrd_suspend_irq(NULL);
+    }
 
     sys_unlock();
 

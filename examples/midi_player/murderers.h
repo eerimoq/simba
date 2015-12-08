@@ -23,6 +23,9 @@
 
 /* The song Murderers. */
 static const FAR struct operation_t song[] = {
+
+    { PACE, 200 },
+
     { COMMAND, 3, { MIDI_NOTE_ON, MIDI_NOTE_D4, 0x45 } },
     { DELAY, 2 },
     { COMMAND, 3, { MIDI_NOTE_ON, MIDI_NOTE_F5 + 1, 0x45 } },

@@ -30,17 +30,20 @@ struct adc_device_t {
         struct adc_driver_t *head_p;
         struct adc_driver_t *tail_p;
     } jobs;
+    struct {
+        volatile struct sam_tc_t *regs_p;
+        int channel;
+        int id;
+    } tc;
 };
 
 struct adc_driver_t {
     struct adc_device_t *dev_p;
     struct pin_driver_t pin_drv;
-    uint8_t admux;
-    long interrupt_count;
-    long interrupt_max;
-    size_t pos;
+    int state;
+    int channel;
     size_t length;
-    int *samples;
+    uint16_t *samples_p;
     struct thrd_t *thrd_p;
     struct adc_driver_t *next_p;
 };

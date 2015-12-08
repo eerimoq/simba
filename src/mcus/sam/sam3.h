@@ -2592,10 +2592,10 @@ struct sam_adc_t {
     uint32_t CDR[16];
     uint32_t reserved2;
     uint32_t ACR;
-    uint32_t reserved3[24];
+    uint32_t reserved3[19];
     uint32_t WPMR;
     uint32_t WPSR;
-    uint32_t reserved4[24];
+    uint32_t reserved4[5];
     struct sam_pdc_t PDC;
 };
 
@@ -2629,6 +2629,34 @@ struct sam_adc_t {
 #define SAM_ADC_MR_TRANSFER_MASK        (0x3 << SAM_ADC_MR_TRANSFER_POS)
 #define SAM_ADC_MR_TRANSFER(value)      BITFIELD_SET(SAM_ADC_MR_TRANSFER, value)
 #define SAM_ADC_MR_USEQ                 BIT(31)
+
+/* Interrupt Enable Register */
+#define SAM_ADC_IER_DRDY               BIT(24)
+#define SAM_ADC_IER_GOVRE              BIT(25)
+#define SAM_ADC_IER_COMPE              BIT(26)
+#define SAM_ADC_IER_ENDRX              BIT(27)
+#define SAM_ADC_IER_RXBUFF             BIT(28)
+
+/* Interrupt Disable Register. */
+#define SAM_ADC_IDR_DRDY               BIT(24)
+#define SAM_ADC_IDR_GOVRE              BIT(25)
+#define SAM_ADC_IDR_COMPE              BIT(26)
+#define SAM_ADC_IDR_ENDRX              BIT(27)
+#define SAM_ADC_IDR_RXBUFF             BIT(28)
+
+/* Interrupt Mask Register. */
+#define SAM_ADC_IMR_DRDY               BIT(24)
+#define SAM_ADC_IMR_GOVRE              BIT(25)
+#define SAM_ADC_IMR_COMPE              BIT(26)
+#define SAM_ADC_IMR_ENDRX              BIT(27)
+#define SAM_ADC_IMR_RXBUFF             BIT(28)
+
+/* Interrupt Status Register. */
+#define SAM_ADC_ISR_DRDY               BIT(24)
+#define SAM_ADC_ISR_GOVRE              BIT(25)
+#define SAM_ADC_ISR_COMPE              BIT(26)
+#define SAM_ADC_ISR_ENDRX              BIT(27)
+#define SAM_ADC_ISR_RXBUFF             BIT(28)
 
 /* 44. Digital-to-Analog Converter Controller. */
 struct sam_dacc_t {

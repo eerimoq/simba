@@ -42,7 +42,7 @@ struct adc_driver_t {
     long interrupt_max;
     size_t pos;
     size_t length;
-    int *samples;
+    uint16_t *samples_p;
     struct thrd_t *thrd_p;
     struct adc_driver_t *next_p;
 };

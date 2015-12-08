@@ -402,6 +402,11 @@ struct adc_device_t adc_device[ADC_DEVICE_MAX] = {
         .jobs = {
             .head_p = NULL,
             .tail_p = NULL
+        },
+        .tc = {
+            .regs_p = SAM_TC0,
+            .channel = 2,
+            .id = PERIPHERAL_ID_TC2
         }
     }
 };

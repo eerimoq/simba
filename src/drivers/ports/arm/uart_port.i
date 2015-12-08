@@ -68,7 +68,7 @@ static int uart_port_start(struct uart_driver_t *drv_p)
                           | US_IER_PARE);
     dev_p->regs_p->PDC.PTCR = (PERIPH_PTCR_RXTEN);
 
-    /* Disable tx interrupt. */
+    /* Disable the tx interrupt. */
     dev_p->regs_p->PDC.PTCR = (PERIPH_PTCR_TXTDIS);
 
     /* Enable tx and rx. */

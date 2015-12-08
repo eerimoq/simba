@@ -61,7 +61,7 @@ int adc_init(struct adc_driver_t *drv_p,
  * @return zero(0) or negative error code.
  */
 int adc_async_convert(struct adc_driver_t *drv_p,
-                      int *samples,
+                      uint16_t *samples_p,
                       size_t length);
 
 /**
@@ -83,7 +83,7 @@ int adc_async_wait(struct adc_driver_t *drv_p);
  * @return zero(0) or negative error code.
  */
 int adc_convert(struct adc_driver_t *drv_p,
-                int *samples,
+                uint16_t *samples_p,
                 size_t length);
 
 #endif

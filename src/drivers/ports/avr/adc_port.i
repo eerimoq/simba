@@ -53,7 +53,7 @@ ISR(ADC_vect)
 #endif
 
     /* Read the sample from the output register. */
-    drv_p->samples[drv_p->pos++] = ADC;
+    drv_p->samples_p[drv_p->pos++] = ADC;
 
     /* Resume thread when all samples have been collected. */
     if (drv_p->pos == drv_p->length) {
@@ -116,12 +116,12 @@ static int adc_port_init(struct adc_driver_t *drv_p,
 }
 
 static int adc_port_async_convert(struct adc_driver_t *drv_p,
-                                  int *samples,
+                                  uint16_t *samples_p,
                                   size_t length)
 {
     /* Initialize. */
     drv_p->pos = 0;
-    drv_p->samples = samples;
+    drv_p->samples_p = samples_p;
     drv_p->length = length;
     drv_p->interrupt_count = 0;
     drv_p->thrd_p = NULL;

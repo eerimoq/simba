@@ -41,10 +41,10 @@ int adc_init(struct adc_driver_t *drv_p,
 }
 
 int adc_async_convert(struct adc_driver_t *drv_p,
-                      int *samples,
+                      uint16_t *samples_p,
                       size_t length)
 {
-    return (adc_port_async_convert(drv_p, samples, length));
+    return (adc_port_async_convert(drv_p, samples_p, length));
 }
 
 int adc_async_wait(struct adc_driver_t *drv_p)
@@ -53,10 +53,10 @@ int adc_async_wait(struct adc_driver_t *drv_p)
 }
 
 int adc_convert(struct adc_driver_t *drv_p,
-                int *samples,
+                uint16_t *samples_p,
                 size_t length)
 {
-    adc_port_async_convert(drv_p, samples, length);
+    adc_port_async_convert(drv_p, samples_p, length);
     adc_port_async_wait(drv_p);
     
     return (0);

@@ -74,6 +74,17 @@ int oscillator_set_frequency(struct oscillator_t *self_p,
                              float frequency);
 
 /**
+ * Set the vibrato of given oscillator.
+ *
+ * @param[in] self_p The oscillator.
+ * @param[in] vibrato Vibrato to set.
+ *
+ * @return zero(0) or negative error code.
+ */
+int oscillator_set_vibrato(struct oscillator_t *self_p,
+                           float vibrato);
+
+/**
  * Read the next samples from the oscillator.
  *
  * @param[in] self_p The oscillator.

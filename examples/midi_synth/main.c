@@ -29,8 +29,13 @@ FS_COMMAND_DEFINE("/set_waveform", cmd_set_waveform);
 FS_COMMAND_DEFINE("/set_vibrato", cmd_set_vibrato);
 FS_COMMAND_DEFINE("/note_on", cmd_note_on);
 FS_COMMAND_DEFINE("/note_off", cmd_note_off);
+FS_COMMAND_DEFINE("/channel_on", cmd_channel_on);
+FS_COMMAND_DEFINE("/channel_off", cmd_channel_off);
 
 #define EVENT_TIMEOUT 0x1
+
+#define CHANNEL_STATE_ON  0
+#define CHANNEL_STATE_OFF 1
 
 static char qinbuf[32];
 static struct uart_driver_t uart;
@@ -59,6 +64,7 @@ struct note_t {
  */
 struct channel_t {
     int id;
+    int state;
     struct note_t notes[8];
     int length;
     struct {
@@ -75,8 +81,8 @@ struct synth_t {
     struct timer_t timer;
     struct sem_t sem;
     struct {
-        struct adc_driver_t frequency0;
-        struct adc_driver_t frequency1;
+        struct adc_driver_t frequency;
+        struct adc_driver_t vibrato;
         struct event_t events;
     } sensors;
 };
@@ -144,8 +150,10 @@ int cmd_status(int argc,
 
         std_fprintf(out_p,
                     FSTR("channel %d {\r\n"
+                         "    status = %s\r\n"
                          "    length = %d\r\n"),
                     i,
+                    (channel_p->state == CHANNEL_STATE_ON ? "on" : "off"),
                     channel_p->length);
 
         for (j = 0; j < channel_p->length; j++) {
@@ -302,6 +310,54 @@ int cmd_note_off(int argc,
     return (note_off(&synth.channels[channel], note));
 }
 
+int cmd_channel_on(int argc,
+                   const char *argv[],
+                   void *out_p,
+                   void *in_p)
+{
+    long channel;
+
+    if (argc != 2) {
+        std_fprintf(out_p,
+                    FSTR("Usage: %s <channel>\r\n"),
+                    argv[0]);
+
+        return (-EINVAL);
+    }
+
+    if (std_strtol(argv[1], &channel) != 0) {
+        return (-EINVAL);
+    }
+
+    synth.channels[channel].state = CHANNEL_STATE_ON;
+
+    return (0);
+}
+
+int cmd_channel_off(int argc,
+                    const char *argv[],
+                    void *out_p,
+                    void *in_p)
+{
+    long channel;
+
+    if (argc != 2) {
+        std_fprintf(out_p,
+                    FSTR("Usage: %s <channel>\r\n"),
+                    argv[0]);
+
+        return (-EINVAL);
+    }
+
+    if (std_strtol(argv[1], &channel) != 0) {
+        return (-EINVAL);
+    }
+
+    synth.channels[channel].state = CHANNEL_STATE_OFF;
+
+    return (0);
+}
+
 static int handle_note_off(struct channel_t *channel_p,
                            uint8_t *buf_p,
                            size_t size)
@@ -351,6 +407,8 @@ static void fill_timer_cb(void *arg_p)
 
     mask = EVENT_TIMEOUT;
     event_write_irq(&synth.events, &mask, sizeof(mask));
+    mask = EVENT_TIMEOUT;
+    event_write_irq(&synth.sensors.events, &mask, sizeof(mask));
 }
 
 static THRD_STACK(sensors_main_stack, 1024);
@@ -358,10 +416,22 @@ static THRD_STACK(sensors_main_stack, 1024);
 static void *sensors_main(void *arg_p)
 {
     uint32_t mask;
-    int sample0, sample1;
-    float frequency0, frequency1;
+    uint16_t sample;
+    float frequency, vibrato;
 
     thrd_set_name("sensors");
+
+    adc_init(&synth.sensors.frequency,
+             &adc_device[0],
+             &pin_a0_dev,
+             0,
+             -1);
+
+    adc_init(&synth.sensors.vibrato,
+             &adc_device[0],
+             &pin_a1_dev,
+             0,
+             -1);
 
     while (1) {
         /* Wait for the periodic timeout event that drives the synth
@@ -369,17 +439,18 @@ static void *sensors_main(void *arg_p)
         mask = EVENT_TIMEOUT;
         event_read(&synth.sensors.events, &mask, sizeof(mask));
 
-        adc_convert(&synth.sensors.frequency0, &sample0, 1);
-        adc_convert(&synth.sensors.frequency1, &sample1, 1);
+        adc_convert(&synth.sensors.frequency, &sample, 1);
+        frequency = sample;
 
-        frequency0 = 125.0;
-        frequency1 = 200.0;
+        adc_convert(&synth.sensors.vibrato, &sample, 1);
+        vibrato = (0.002 * ((float)sample / 40.96));
 
         sem_get(&synth.sem, NULL);
+        synth.vibrato = vibrato;
         oscillator_set_frequency(&synth.channels[15].notes[0].oscillator,
-                                 frequency0);
-        oscillator_set_frequency(&synth.channels[15].notes[1].oscillator,
-                                  frequency1);
+                                 frequency);
+        oscillator_set_vibrato(&synth.channels[15].notes[0].oscillator,
+                               vibrato);
         sem_put(&synth.sem, 1);
     }
 
@@ -435,6 +506,10 @@ static void *synth_main(void *arg_p)
 
         for (i = 0; i < membersof(synth.channels); i++) {
             channel_p = &synth.channels[i];
+
+            if (channel_p->state == CHANNEL_STATE_OFF) {
+                continue;
+            }
 
             /* Process all notes for the channel. */
             for (j = 0; j < channel_p->length; j++) {
@@ -497,8 +572,11 @@ static int init(void)
              &pin_dac1_dev,
              2 * SAMPLE_RATE);
 
+    adc_module_init();
+
     for (i = 0; i < membersof(synth.channels); i++) {
         synth.channels[i].id = i;
+        synth.channels[i].state = CHANNEL_STATE_ON;
         synth.channels[i].length = 0;
         synth.channels[i].waveform.buf_p = waveform_square_256;
         synth.channels[i].waveform.length = membersof(waveform_square_256);

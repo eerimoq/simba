@@ -77,6 +77,19 @@ int oscillator_set_frequency(struct oscillator_t *self_p,
     return (0);
 }
 
+int oscillator_set_vibrato(struct oscillator_t *self_p,
+                           float vibrato)
+{
+    if (self_p->vibrato.value < 0.0) {
+        vibrato *= -1.0;
+    }
+
+    self_p->vibrato.value = vibrato;
+    self_p->vibrato.phase_increment = FLOAT_TO_Q20_11(vibrato);
+
+    return (0);
+}
+
 int oscillator_read(struct oscillator_t *self_p,
                     uint32_t *samples_p,
                     size_t length)
