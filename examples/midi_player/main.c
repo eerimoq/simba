@@ -59,6 +59,18 @@ static int set_instrument(int channel, int instrument)
                   sizeof(message)) != sizeof(message));
 }
 
+/**
+ * A thread for passing MIDI messages from the rx to tx, so called
+ * MIDI pass through. The messages received on rx must be multiplexed
+ * with the messages created by the player thread. All read data is
+ * parsed because we must keep track of whole messages. If all read
+ * byte would be immediatly written to the uart, a player message
+ * might be sent in the middle of a MIDI through message, and make it
+ * corrupt.
+ *
+ * Just NOTE ON, NOTE OFF and SET INSTRUMENT messages are handled in
+ * this implementaion.
+ */
 static THRD_STACK(midi_through_stack, 256);
 
 static void *midi_through_main(void *arg_p)
