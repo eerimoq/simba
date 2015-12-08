@@ -15,6 +15,7 @@ Needed devices:
     - cables
 
 For MIDI input (optional):
+
     - 1 x Female DIN-5 (MIDI connector)
     - 1 x 220 ohm resistor
     - 1 x 4k7 ohm resistor (pull-up)
