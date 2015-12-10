@@ -28,16 +28,11 @@ complete application.  Build and run with ``make run`` (under
 
     int main()
     {
-        struct time_t timeout = {
-            .seconds = 1,
-            .nanoseconds = 0
-        };
-
         sys_start();
 
         while (1) {
             std_printf(FSTR("Hello world!\n"));
-            thrd_suspend(&timeout);
+            thrd_usleep(1000000);
         }
 
         return (0);
