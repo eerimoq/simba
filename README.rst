@@ -18,9 +18,9 @@ A list of features:
 * make based build framework
 
 Bwlow is the simba "Hello World" application, printing "Hello World!"
-once every second. See `examples/hello_world` folder for the complete
-application.  Build and run with `make run` (under
-`examples/hello_world`).
+once every second. See ``examples/hello_world`` folder for the complete
+application.  Build and run with ``make run`` (under
+``examples/hello_world``).
 
 .. code-block:: c
 
@@ -120,7 +120,7 @@ about which MCU is present on the board and what the pin mapping is.
 In turn, the MCU contains information about available devices and
 clock frequencys.
 
-See `src/boards` and `src/mcus` for available configurations.
+See ``src/boards`` and ``src/mcus`` for available configurations.
 
 Only one MCU per board is supported. If there are two MCU:s on one
 physical board, two board configurations have to be created.
