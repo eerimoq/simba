@@ -19,7 +19,7 @@
 #
 
 NAME = owi
-BOARD = linux
+BOARD = arduino_nano
 DRIVERS_SRC = ds18b20.c uart.c owi.c pin.c
 SLIB_SRC = harness.c
 

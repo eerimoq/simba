@@ -18,7 +18,17 @@
 # This file is part of the Simba project.
 #
 
-DEMOS = hello_world owi shell workers
+DEMOS = fat16 \
+	hc0x \
+	hello_world \
+	midi_player \
+	nrf24l01 \
+	owi \
+	shell \
+	spi \
+	synthesizer \
+	temp \
+	usb
 
 all: $(DEMOS:%=%.all)
 

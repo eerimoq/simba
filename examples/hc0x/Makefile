@@ -1,5 +1,5 @@
 #
-# @file hc0x/Makefile
+# @file Makefile
 # @version 1.0
 #
 # @section License
@@ -19,7 +19,7 @@
 #
 
 NAME = hc0x
-BOARD = linux
+BOARD = arduino_nano
 DRIVERS_SRC = exti.c pin.c uart.c uart_soft.c
 SLIB_SRC =
 

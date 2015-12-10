@@ -55,7 +55,7 @@ int cmd_at(int argc,
 
     /* Pass data between PC and bluetooth device. */
     while (1) {
-        chan_p = chan_list_poll(&list);
+        chan_p = chan_list_poll(&list, NULL);
 
         if (chan_p == in_p) {
             chan_read(chan_p, &c, sizeof(c));

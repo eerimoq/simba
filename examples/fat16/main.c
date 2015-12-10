@@ -284,7 +284,11 @@ static void init(void)
     sd_init(&sd, &spi);
     sd_start(&sd);
     std_printf(FSTR("sd card started\r\n"));
-    fat16_init(&fs, &sd, 0);
+    fat16_init(&fs,
+               (fat16_read_t)sd_read_block,
+               (fat16_write_t)sd_write_block,
+               &sd,
+               0);
     fat16_start(&fs);
     std_printf(FSTR("fat16 started\r\n"));
 }

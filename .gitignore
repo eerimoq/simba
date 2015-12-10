@@ -7,6 +7,7 @@ demo/*/gen
 demo/*/profile.log
 *.gcov
 TAGS
+\#*
 
 tst/*/*/gen
 tst/*/*/profile.log
@@ -27,6 +28,14 @@ examples/*/coverage.*
 examples/*/size.log
 examples/*/*.hex
 examples/*/*.bin
-examples/*/settings.h
-examples/*/settings.c
+examples/*/settings.[hc]
 examples/*/settings.bin
+
+examples/*/*/gen
+examples/*/*/profile.log
+examples/*/*/coverage.*
+examples/*/*/size.log
+examples/*/*/*.hex
+examples/*/*/*.bin
+examples/*/*/settings.[hc]
+examples/*/*/settings.bin

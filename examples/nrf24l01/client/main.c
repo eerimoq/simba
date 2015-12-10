@@ -65,8 +65,6 @@ int set_min_max(int argc,
 
 static char qinbuf[32];
 static struct uart_driver_t uart;
-static struct shell_args_t shell_args;
-//static char shell_stack[456];
 static struct nrf24l01_driver_t nrf24l01;
 
 int main()
@@ -98,14 +96,6 @@ int main()
     /* Initialize temperature sensor. */
     owi_init(&owi, &pin_d5_dev, devices, membersof(devices));
     ds18b20_init(&ds, &owi);
-
-    /* shell_args.chin_p = &uart.chin; */
-    /* shell_args.chout_p = &uart.chout; */
-    /* thrd_spawn(shell_entry, */
-    /*            &shell_args, */
-    /*            0, */
-    /*            shell_stack, */
-    /*            sizeof(shell_stack)); */
 
     /* Read temperature periodically. */
     while (1) {

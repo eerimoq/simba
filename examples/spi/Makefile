@@ -1,9 +1,9 @@
 #
-# @file can/client/Makefile
+# @file Makefile
 # @version 1.0
 #
 # @section License
-# Copyright (C) 2014-2015, Erik Moqvist
+# Copyright (C) 2015, Erik Moqvist
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
@@ -18,8 +18,21 @@
 # This file is part of the Simba project.
 #
 
-NAME = can_client
-BOARD = arduino_nano
+APPS = client server
 
-SIMBA = ../../..
-include $(SIMBA)/make/app.mk
+all: $(APPS:%=%.all)
+
+clean: $(APPS:%=%.clean)
+
+$(APPS:%=%.all):
+	$(MAKE) -C $(basename $@) all
+
+$(APPS:%=%.clean):
+	$(MAKE) -C $(basename $@) clean
+
+help:
+	@echo "--------------------------------------------------------------------------------"
+	@echo "  target                      description"
+	@echo "--------------------------------------------------------------------------------"
+	@echo "  all                         compile and link the demos"
+	@echo
