@@ -1,22 +1,26 @@
 |buildstatus|_
 
-OVERVIEW
-========
+ABOUT
+=====
 
-Simba is a microkernel and build framework.
+Simba is a microkernel and build framework. It aims to make embedded
+programming easy and portable.
+
+A list of features:
 
 * threads
-* channels
+* channels for communication between threads
 * timers
 * counting semaphores
 * drivers (spi, uart, ...)
-* shell
+* a simple shell
 * portable (linux, AVR, SAM3X8E, ...)
 * make based build framework
 
-The 'Hello World' application printing "Hello World!" once every
-second. See 'examples/hello_world' folder for complete application.
-Build and run with 'make run' (under 'examples/hello_world').
+Bwlow is the simba "Hello World" application, printing "Hello World!"
+once every second. See `examples/hello_world` folder for the complete
+application.  Build and run with `make run` (under
+`examples/hello_world`).
 
 .. code-block:: c
 
@@ -78,27 +82,6 @@ ARM
 ---
 sudo apt-get install bossa-cli gcc-arm-none-eabi
 
-BUILD AND RUN TESTS
-===================
-
-This is how to build for default board, given in application
-Makefile. Often the default board is a linux simulation.
-
-.. code-block:: c
-
-    $ pwd
-    /home/erik/archive/simba/tst/kernel/sys
-    $ make -s test
-
-To build for another board, in this case Arduino Nano, use the BOARD
-make variable.
-
-.. code-block:: c
-
-    $ make -s BOARD=arduino_nano release size test
-
-Note: An application may only support a subset of the available boards.
-
 APPLICATIONS, PACKAGES AND MODULES
 ==================================
 
@@ -106,8 +89,9 @@ A module is normally a header and a source file. A package is a
 container of modules. An application is an executable consisting of
 zero or more modules.
 
-Preferred application file tree. The application _must_ have a file
-called main.c. It should contain the main function of the application.
+See below for the preferred application file tree. The application
+**must** have a file called main.c. It should contain the main function
+of the application.
 
 .. code-block:: c
 
@@ -116,7 +100,7 @@ called main.c. It should contain the main function of the application.
        +-- main.c
        +-- Makefile
 
-Preferred package file tree:
+For a package, the preferred file tree is:
 
 .. code-block:: c
 
@@ -126,6 +110,41 @@ Preferred package file tree:
            +-- module2.h
        +-- module1.c
        +-- module2.c
+
+BOARDS AND MCUS
+===============
+
+A board is the top level configuration entity. It contains information
+about which MCU is present on the board and what the pin mapping is.
+
+In turn, the MCU contains information about available devices and
+clock frequencys.
+
+See `src/boards` and `src/mcus` for available configurations.
+
+Only one MCU per board is supported. If there are two MCU:s on one
+physical board, two board configurations have to be created.
+
+BUILD AND RUN TESTS
+===================
+
+This is how to build for default board, given in application
+Makefile. Often the default board is a linux simulation.
+
+.. code-block:: c
+
+    $ pwd
+    /home/erik/workspace/simba/tst/kernel/sys
+    $ make -s test
+
+To build for another board, in this case Arduino Nano, use the BOARD
+make variable.
+
+.. code-block:: c
+
+    $ make -s BOARD=arduino_nano release test
+
+Note: An application may only support a subset of the available boards.
 
 THREADS
 =======

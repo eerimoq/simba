@@ -18,7 +18,7 @@
 # This file is part of the Simba project.
 #
 
-NAME = midi_synth
+NAME = synthesizer
 BOARD = arduino_due
 
 SRC += oscillator.c
