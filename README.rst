@@ -17,29 +17,29 @@ A list of features:
 * portable (linux, AVR, SAM3X8E, ...)
 * make based build framework
 
-Bwlow is the simba "Hello World" application, printing "Hello World!"
-once every second. See ``examples/hello_world`` folder for the complete
-application.  Build and run with ``make run`` (under
+Below is the simba "Hello World" application, printing "Hello World!"
+once every second. See ``examples/hello_world`` folder for the
+complete application.  Build and run with ``make run`` (under
 ``examples/hello_world``).
 
 .. code-block:: c
 
     #include "simba.h"
-    
+
     int main()
     {
         struct time_t timeout = {
             .seconds = 1,
             .nanoseconds = 0
         };
-    
+
         sys_start();
-        
+
         while (1) {
             std_printf(FSTR("Hello world!\n"));
             thrd_suspend(&timeout);
         }
-        
+
         return (0);
     }
 
@@ -90,8 +90,8 @@ container of modules. An application is an executable consisting of
 zero or more modules.
 
 See below for the preferred application file tree. The application
-**must** have a file called main.c. It should contain the main function
-of the application.
+**must** have a file called main.c. It should contain the main
+function of the application.
 
 .. code-block:: c
 
@@ -198,19 +198,19 @@ streaming devices like UART.
     int mydrv_exec(struct mydrv_t *drv)
     {
         int err = 0;
-        
+
         drv_p->thrd_p = thrd_self();
-        
+
         sys_lock();
 
         // 1. send something to the hardware
-        
+
         // 2. wait for response
         thrd_suspend_irq(NULL);
         sys_unlock();
-        
+
         // 4. prepare result
-        
+
         return (err);
     }
 
