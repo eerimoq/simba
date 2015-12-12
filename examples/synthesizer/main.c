@@ -19,10 +19,10 @@
  */
 
 #include "simba.h"
-#include "oscillator.h"
+#include "channel.h"
 #include "waveforms.h"
 
-COUNTER_DEFINE("/synth/unhandled_command", unhandled_command);
+COUNTER_DEFINE("/synth/midi_unhandled_command", midi_unhandled_command);
 
 FS_COMMAND_DEFINE("/status", cmd_status);
 FS_COMMAND_DEFINE("/set_waveform", cmd_set_waveform);
@@ -34,17 +34,6 @@ FS_COMMAND_DEFINE("/channel_off", cmd_channel_off);
 
 #define EVENT_TIMEOUT 0x1
 
-#define CHANNEL_STATE_ON  0
-#define CHANNEL_STATE_OFF 1
-
-static char qinbuf[32];
-static struct uart_driver_t uart;
-static struct shell_args_t shell_args;
-static THRD_STACK(shell_stack, 1024);
-
-static struct uart_driver_t uart_midi;
-static uint8_t uart_midi_inbuf[32];
-
 /**
  * Sampling rate: 44100 Hz
  * 10 ms tick period. 100 ticks per second.
@@ -54,26 +43,7 @@ static uint8_t uart_midi_inbuf[32];
 #define SAMPLE_RATE 44100
 #define SAMPLES_MAX 441
 
-struct note_t {
-    int note;
-    struct oscillator_t oscillator;
-};
-
-/**
- * A MIDI channel. It contains a list of all active notes.
- */
-struct channel_t {
-    int id;
-    int state;
-    struct note_t notes[8];
-    int length;
-    struct {
-        uint32_t *buf_p;
-        size_t length;
-    } waveform;
-};
-
-struct synth_t {
+struct synthesizer_t {
     float vibrato;
     struct event_t events;
     struct channel_t channels[16];
@@ -87,25 +57,38 @@ struct synth_t {
     } sensors;
 };
 
-static struct synth_t synth;
+static char qinbuf[32];
+static struct uart_driver_t uart;
+static struct shell_args_t shell_args;
+static THRD_STACK(shell_stack, 1024);
+
+static struct uart_driver_t uart_midi;
+static uint8_t uart_midi_inbuf[32];
+
+static uint32_t samples[4][SAMPLES_MAX];
+static uint32_t buf[SAMPLES_MAX];
+
+static struct synthesizer_t synthesizer;
+
+static THRD_STACK(sensors_main_stack, 1024);
+static THRD_STACK(midi_main_stack, 1024);
 
 static int note_off(struct channel_t *channel_p,
                     int note)
 {
-    int i;
+    struct note_t *note_p;
 
     LOG(INFO, "note off: note = %d", note);
 
-    sem_get(&synth.sem, NULL);
-    for (i = 0; i < channel_p->length; i++) {
-        if (channel_p->notes[i].note == note) {
-            channel_p->notes[i] = channel_p->notes[channel_p->length - 1];
-            channel_p->length--;
-            break;
-        }
+    sem_get(&synthesizer.sem, NULL);
+
+    note_p = channel_note_get(channel_p, note);
+
+    if (note_p != NULL) {
+        note_stop(note_p);
     }
 
-    sem_put(&synth.sem, 1);
+    sem_put(&synthesizer.sem, 1);
 
     return (0);
 }
@@ -115,38 +98,41 @@ static int note_on(struct channel_t *channel_p,
                    float frequency,
                    int velocity)
 {
+    struct note_t *note_p;
+
     LOG(INFO, "note on: note = %d, velocity = %d", note, velocity);
 
     /* Add the note to the list of notes on the channel. If the list
      * is full, remove the oldest note. */
-    sem_get(&synth.sem, NULL);
+    sem_get(&synthesizer.sem, NULL);
 
-    if (channel_p->length < membersof(channel_p->notes)) {
-        channel_p->notes[channel_p->length].note = note;
-        oscillator_init(&channel_p->notes[channel_p->length].oscillator,
-                        channel_p->waveform.buf_p,
-                        channel_p->waveform.length,
-                        frequency,
-                        synth.vibrato,
-                        SAMPLE_RATE);
-        channel_p->length++;
+    if ((note_p = channel_note_alloc(channel_p)) != NULL) {
+        std_printf(FSTR("allocated\r\n"));
+        note_init(note_p,
+                  note,
+                  channel_p->waveform.buf_p,
+                  channel_p->waveform.length,
+                  frequency,
+                  synthesizer.vibrato,
+                  SAMPLE_RATE);
+        note_start(note_p);
     }
 
-    sem_put(&synth.sem, 1);
+    sem_put(&synthesizer.sem, 1);
 
     return (0);
 }
 
 int cmd_status(int argc,
-                   const char *argv[],
-                   void *out_p,
-                   void *in_p)
+               const char *argv[],
+               void *out_p,
+               void *in_p)
 {
     int i, j;
     struct channel_t *channel_p;
 
-    for (i = 0; i < membersof(synth.channels); i++) {
-        channel_p = &synth.channels[i];
+    for (i = 0; i < membersof(synthesizer.channels); i++) {
+        channel_p = &synthesizer.channels[i];
 
         std_fprintf(out_p,
                     FSTR("channel %d {\r\n"
@@ -195,31 +181,34 @@ int cmd_set_waveform(int argc,
         return (-EINVAL);
     }
 
-    channel_p = &synth.channels[channel];
+    channel_p = &synthesizer.channels[channel];
 
     if (strcmp(argv[2], "sine") == 0) {
-        channel_p->waveform.buf_p = waveform_sine_256;
-        channel_p->waveform.length = membersof(waveform_sine_256);
+        channel_set_waveform(channel_p,
+                             waveform_sine_256,
+                             membersof(waveform_sine_256));
     } else if (strcmp(argv[2], "saw") == 0) {
-        channel_p->waveform.buf_p = waveform_saw_256;
-        channel_p->waveform.length = membersof(waveform_saw_256);
+        channel_set_waveform(channel_p,
+                             waveform_saw_256,
+                             membersof(waveform_saw_256));
     } else if (strcmp(argv[2], "square") == 0) {
-        channel_p->waveform.buf_p = waveform_square_256;
-        channel_p->waveform.length = membersof(waveform_square_256);
+        channel_set_waveform(channel_p,
+                             waveform_square_256,
+                             membersof(waveform_square_256));
     } else if (strcmp(argv[2], "acoustic_guitar") == 0) {
-        channel_p->waveform.buf_p = waveform_acoustic_guitar_600;
-        channel_p->waveform.length =
-            membersof(waveform_acoustic_guitar_600);
+        channel_set_waveform(channel_p,
+                             waveform_acoustic_guitar_600,
+                             membersof(waveform_acoustic_guitar_600));
     } else if (strcmp(argv[2], "flute") == 0) {
-        channel_p->waveform.buf_p = waveform_flute_600;
-        channel_p->waveform.length = membersof(waveform_flute_600);
+        channel_set_waveform(channel_p,
+                             waveform_flute_600,
+                             membersof(waveform_flute_600));
     } else if (strcmp(argv[2], "theremin") == 0) {
-        channel_p->waveform.buf_p = waveform_theremin_600;
-        channel_p->waveform.length = membersof(waveform_theremin_600);
+        channel_set_waveform(channel_p,
+                             waveform_theremin_600,
+                             membersof(waveform_theremin_600));
     } else {
-        std_fprintf(out_p,
-                    FSTR("bad waveform %s\r\n"),
-                    argv[2]);
+        std_fprintf(out_p, FSTR("bad waveform %s\r\n"), argv[2]);
 
         return (-EINVAL);
     }
@@ -246,7 +235,7 @@ int cmd_set_vibrato(int argc,
         return (-EINVAL);
     }
 
-    synth.vibrato = (0.002 * value);
+    synthesizer.vibrato = (0.002 * value);
 
     return (0);
 }
@@ -278,7 +267,7 @@ int cmd_note_on(int argc,
         return (-EINVAL);
     }
 
-    return (note_on(&synth.channels[channel],
+    return (note_on(&synthesizer.channels[channel],
                     note,
                     frequency,
                     65));
@@ -307,7 +296,7 @@ int cmd_note_off(int argc,
         return (-EINVAL);
     }
 
-    return (note_off(&synth.channels[channel], note));
+    return (note_off(&synthesizer.channels[channel], note));
 }
 
 int cmd_channel_on(int argc,
@@ -329,7 +318,7 @@ int cmd_channel_on(int argc,
         return (-EINVAL);
     }
 
-    synth.channels[channel].state = CHANNEL_STATE_ON;
+    synthesizer.channels[channel].state = CHANNEL_STATE_ON;
 
     return (0);
 }
@@ -353,7 +342,7 @@ int cmd_channel_off(int argc,
         return (-EINVAL);
     }
 
-    synth.channels[channel].state = CHANNEL_STATE_OFF;
+    synthesizer.channels[channel].state = CHANNEL_STATE_OFF;
 
     return (0);
 }
@@ -382,7 +371,7 @@ static int handle_note_on(struct channel_t *channel_p,
     note = buf_p[0];
     velocity = buf_p[1];
 
-    if (channel_p->id == 9) {
+    if (channel_get_id(channel_p) == 9) {
         return (0);
     }
 
@@ -406,13 +395,15 @@ static void fill_timer_cb(void *arg_p)
     uint32_t mask;
 
     mask = EVENT_TIMEOUT;
-    event_write_irq(&synth.events, &mask, sizeof(mask));
+    event_write_irq(&synthesizer.events, &mask, sizeof(mask));
     mask = EVENT_TIMEOUT;
-    event_write_irq(&synth.sensors.events, &mask, sizeof(mask));
+    event_write_irq(&synthesizer.sensors.events, &mask, sizeof(mask));
 }
 
-static THRD_STACK(sensors_main_stack, 1024);
-
+/**
+ * A thread that reads the analog input pins and configures the
+ * synthesizer accordingly.
+ */
 static void *sensors_main(void *arg_p)
 {
     uint32_t mask;
@@ -421,13 +412,13 @@ static void *sensors_main(void *arg_p)
 
     thrd_set_name("sensors");
 
-    adc_init(&synth.sensors.frequency,
+    adc_init(&synthesizer.sensors.frequency,
              &adc_device[0],
              &pin_a0_dev,
              0,
              -1);
 
-    adc_init(&synth.sensors.vibrato,
+    adc_init(&synthesizer.sensors.vibrato,
              &adc_device[0],
              &pin_a1_dev,
              0,
@@ -437,183 +428,32 @@ static void *sensors_main(void *arg_p)
         /* Wait for the periodic timeout event that drives the synth
          * signal processing. */
         mask = EVENT_TIMEOUT;
-        event_read(&synth.sensors.events, &mask, sizeof(mask));
+        event_read(&synthesizer.sensors.events, &mask, sizeof(mask));
 
-        adc_convert(&synth.sensors.frequency, &sample, 1);
+        adc_convert(&synthesizer.sensors.frequency, &sample, 1);
         frequency = sample;
 
-        adc_convert(&synth.sensors.vibrato, &sample, 1);
+        adc_convert(&synthesizer.sensors.vibrato, &sample, 1);
         vibrato = (0.002 * ((float)sample / 40.96));
 
-        sem_get(&synth.sem, NULL);
-        synth.vibrato = vibrato;
-        oscillator_set_frequency(&synth.channels[15].notes[0].oscillator,
+        sem_get(&synthesizer.sem, NULL);
+        synthesizer.vibrato = vibrato;
+        oscillator_set_frequency(&synthesizer.channels[15].notes[0].oscillator,
                                  frequency);
-        oscillator_set_vibrato(&synth.channels[15].notes[0].oscillator,
+        oscillator_set_vibrato(&synthesizer.channels[15].notes[0].oscillator,
                                vibrato);
-        sem_put(&synth.sem, 1);
+        sem_put(&synthesizer.sem, 1);
     }
 
     return (NULL);
 }
 
-static uint32_t samples[4][SAMPLES_MAX];
-static uint32_t buf[SAMPLES_MAX];
-
-static THRD_STACK(synth_main_stack, 1024);
-
-static void *synth_main(void *arg_p)
+/**
+ * A thread that reads the MIDI input and configures the synthesizer
+ * accordingly.
+ */
+static void *midi_main(void *arg_p)
 {
-    int i, j, k;
-    struct channel_t *channel_p;
-    struct note_t *note_p;
-    uint32_t *samples_p;
-    int samples_index = 0;
-    uint32_t mask;
-    struct time_t timeout;
-
-    thrd_set_name("synth");
-
-    /* Start the periodic fill timer. */
-    timeout.seconds = 0;
-    timeout.nanoseconds = 10000000;
-    timer_set(&synth.timer,
-              &timeout,
-              (void (*)(void *))fill_timer_cb,
-              NULL,
-              TIMER_PERIODIC);
-
-    while (1) {
-        /* Wait for the periodic timeout event that drives the synth
-         * signal processing. */
-        mask = EVENT_TIMEOUT;
-        event_read(&synth.events, &mask, sizeof(mask));
-
-        for (i = 0; i < SAMPLES_MAX; i++) {
-            buf[i] = 0;
-        }
-
-        samples_p = &samples[samples_index][0];
-        samples_index++;
-        samples_index %= membersof(samples);
-
-        memset(samples_p, 0, sizeof(samples[0]));
-
-        /* Calculate the next few samples and start the convertion in
-         * the DAC. The smaller the buffer, the shorter the delay to
-         * the speaker. */
-        sem_get(&synth.sem, NULL);
-
-        for (i = 0; i < membersof(synth.channels); i++) {
-            channel_p = &synth.channels[i];
-
-            if (channel_p->state == CHANNEL_STATE_OFF) {
-                continue;
-            }
-
-            /* Process all notes for the channel. */
-            for (j = 0; j < channel_p->length; j++) {
-                note_p = &channel_p->notes[j];
-                oscillator_read(&note_p->oscillator,
-                                buf,
-                                membersof(buf));
-
-                /* Apply note effects. */
-
-                for (k = 0; k < SAMPLES_MAX; k++) {
-                    samples_p[k] += buf[k];
-                }
-            }
-
-            /* Apply channel effects. */
-        }
-
-        sem_put(&synth.sem, 1);
-
-        /* Apply stream effects. */
-        for (i = 0; i < SAMPLES_MAX; i++) {
-            samples_p[i] >>= 7;
-        }
-
-        dac_async_convert(&synth.dac, samples_p, SAMPLES_MAX);
-    }
-
-    return (NULL);
-}
-
-static int init(void)
-{
-    int i;
-
-    sys_start();
-    uart_module_init();
-
-    uart_init(&uart, &uart_device[0], 38400, qinbuf, sizeof(qinbuf));
-    uart_start(&uart);
-
-    uart_init(&uart_midi,
-              &uart_device[1],
-              MIDI_BAUDRATE,
-              uart_midi_inbuf,
-              sizeof(uart_midi_inbuf));
-    uart_start(&uart_midi);
-
-    sys_set_stdout(&uart.chout);
-
-    std_printf(sys_get_info());
-
-    event_init(&synth.events);
-    event_init(&synth.sensors.events);
-    sem_init(&synth.sem, 1);
-
-    dac_init(&synth.dac,
-             &dac_0_dev,
-             &pin_dac0_dev,
-             &pin_dac1_dev,
-             2 * SAMPLE_RATE);
-
-    adc_module_init();
-
-    for (i = 0; i < membersof(synth.channels); i++) {
-        synth.channels[i].id = i;
-        synth.channels[i].state = CHANNEL_STATE_ON;
-        synth.channels[i].length = 0;
-        synth.channels[i].waveform.buf_p = waveform_square_256;
-        synth.channels[i].waveform.length = membersof(waveform_square_256);
-    }
-
-    synth.vibrato = 0.0;
-
-    /* Spawn the shell. */
-    shell_args.chin_p = &uart.chin;
-    shell_args.chout_p = &uart.chout;
-    shell_args.username_p = NULL;
-    shell_args.password_p = NULL;
-    thrd_spawn(shell_entry,
-               &shell_args,
-               0,
-               shell_stack,
-               sizeof(shell_stack));
-
-    thrd_spawn(synth_main,
-               NULL,
-               -1,
-               synth_main_stack,
-               sizeof(synth_main_stack));
-
-    thrd_spawn(sensors_main,
-               NULL,
-               0,
-               sensors_main_stack,
-               sizeof(sensors_main_stack));
-
-    return (0);
-}
-
-int main()
-{
-    init();
-
     uint8_t buf[3], previous_status = 0;
     uint8_t *buf_p;
     uint8_t status;
@@ -642,13 +482,13 @@ int main()
         switch (command) {
 
         case MIDI_NOTE_OFF:
-            handle_note_off(&synth.channels[channel],
+            handle_note_off(&synthesizer.channels[channel],
                             buf_p,
                             size);
             break;
 
         case MIDI_NOTE_ON:
-            handle_note_on(&synth.channels[channel],
+            handle_note_on(&synthesizer.channels[channel],
                            buf_p,
                            size);
             previous_status = status;
@@ -659,9 +499,135 @@ int main()
             break;
 
         default:
-            COUNTER_INC(unhandled_command, 1);
+            COUNTER_INC(midi_unhandled_command, 1);
             break;
         }
+    }
+
+    return (NULL);
+}
+
+static int init(void)
+{
+    int i;
+
+    sys_start();
+    uart_module_init();
+
+    uart_init(&uart, &uart_device[0], 38400, qinbuf, sizeof(qinbuf));
+    uart_start(&uart);
+
+    uart_init(&uart_midi,
+              &uart_device[1],
+              MIDI_BAUDRATE,
+              uart_midi_inbuf,
+              sizeof(uart_midi_inbuf));
+    uart_start(&uart_midi);
+
+    sys_set_stdout(&uart.chout);
+
+    std_printf(sys_get_info());
+
+    event_init(&synthesizer.events);
+    event_init(&synthesizer.sensors.events);
+    sem_init(&synthesizer.sem, 1);
+
+    dac_init(&synthesizer.dac,
+             &dac_0_dev,
+             &pin_dac0_dev,
+             &pin_dac1_dev,
+             2 * SAMPLE_RATE);
+
+    adc_module_init();
+
+    for (i = 0; i < membersof(synthesizer.channels); i++) {
+        channel_init(&synthesizer.channels[i],
+                     i,
+                     waveform_square_256,
+                     membersof(waveform_square_256));
+    }
+
+    synthesizer.vibrato = 0.0;
+
+    /* Spawn the shell. */
+    shell_args.chin_p = &uart.chin;
+    shell_args.chout_p = &uart.chout;
+    shell_args.username_p = NULL;
+    shell_args.password_p = NULL;
+
+    thrd_spawn(shell_entry,
+               &shell_args,
+               15,
+               shell_stack,
+               sizeof(shell_stack));
+
+    thrd_spawn(midi_main,
+               NULL,
+               10,
+               midi_main_stack,
+               sizeof(midi_main_stack));
+
+    thrd_spawn(sensors_main,
+               NULL,
+               5,
+               sensors_main_stack,
+               sizeof(sensors_main_stack));
+
+    return (0);
+}
+
+int main()
+{
+    int i;
+    uint32_t *samples_p;
+    int samples_index = 0;
+    uint32_t mask;
+    struct time_t timeout;
+
+    init();
+
+    thrd_set_name("synthesizer");
+
+    /* Start the periodic fill timer. */
+    timeout.seconds = 0;
+    timeout.nanoseconds = 10000000;
+    timer_set(&synthesizer.timer,
+              &timeout,
+              (void (*)(void *))fill_timer_cb,
+              NULL,
+              TIMER_PERIODIC);
+
+    while (1) {
+        /* Wait for the periodic timeout event that drives the synth
+         * signal processing. */
+        mask = EVENT_TIMEOUT;
+        event_read(&synthesizer.events, &mask, sizeof(mask));
+
+        /* Prepare the sample buffer. */
+        samples_p = &samples[samples_index][0];
+        samples_index++;
+        samples_index %= membersof(samples);
+        memset(samples_p, 0, sizeof(samples[0]));
+
+        /* Calculate the next few samples and start the convertion in
+         * the DAC. The smaller the buffer, the shorter the delay to
+         * the speaker. */
+        sem_get(&synthesizer.sem, NULL);
+
+        for (i = 0; i < membersof(synthesizer.channels); i++) {
+            channel_process(&synthesizer.channels[i],
+                            samples_p,
+                            buf,
+                            SAMPLES_MAX);
+        }
+
+        sem_put(&synthesizer.sem, 1);
+
+        for (i = 0; i < SAMPLES_MAX; i++) {
+            samples_p[i] >>= 7;
+        }
+
+        dac_async_convert(&synthesizer.dac, samples_p, SAMPLES_MAX);
     }
 
     return (0);

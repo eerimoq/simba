@@ -22,8 +22,7 @@
 #define __OSCILLATOR_H__
 
 #include "simba.h"
-
-typedef int32_t q20_11_t;
+#include "types.h"
 
 struct oscillator_t {
     float frequency;
