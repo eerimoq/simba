@@ -105,10 +105,10 @@ run-debugger: all
 	set -o pipefail ; stdbuf -i0 -o0 -e0 $(RUNSCRIPT) debugger ./$(EXE) $(SIMBA) $(RUNARGS) | tee $(RUNLOG)
 
 profile:
-	set -o pipefail ; $(RUNSCRIPT) profile ./$(EXE) | tee profile.log
+	set -o pipefail ; $(RUNSCRIPT) profile ./$(EXE) $(SIMBA) | tee profile.log
 
 coverage:
-	set -o pipefail ; $(RUNSCRIPT) coverage ./$(EXE) | tee coverage.log
+	set -o pipefail ; $(RUNSCRIPT) coverage ./$(EXE) $(SIMBA) | tee coverage.log
 
 size:
 	set -o pipefail ; $(SIZECMD) | tee size.log
