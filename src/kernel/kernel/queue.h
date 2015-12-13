@@ -46,17 +46,17 @@
     }
 
 struct queue_buffer_t{
-    void *begin_p;
-    void *read_p;
-    void *write_p;
-    void *end_p;
+    char *begin_p;
+    char *read_p;
+    char *write_p;
+    char *end_p;
 };
 
 /* Queue. */
 struct queue_t {
     struct chan_t base;
     struct queue_buffer_t buffer;
-    void *buf_p;
+    char *buf_p;
     size_t size;
     size_t left;
 };

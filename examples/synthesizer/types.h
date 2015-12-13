@@ -37,4 +37,18 @@ typedef int32_t q20_11_t;
 /* Convert a fixed point Q20.11 value to an integer value. */
 #define Q20_11_TO_INT(value) (int32_t)((value >> 11))
 
+typedef int32_t q11_20_t;
+
+/* Convert a floating point value to a fixed point Q11.20 value. */
+#define FLOAT_TO_Q11_20(value) (q11_20_t)(value * 1048576.0)
+
+/* Convert an integer value to a fixed point Q11.20 value. */
+#define INT_TO_Q11_20(value) (q11_20_t)(value << 20)
+
+/* Convert a fixed point Q11.20 value to a float value. */
+#define Q11_20_TO_FLOAT(value) ((float)(value) / 1048576.0)
+
+/* Convert a fixed point Q11.20 value to an integer value. */
+#define Q11_20_TO_INT(value) (int32_t)((value >> 20))
+
 #endif

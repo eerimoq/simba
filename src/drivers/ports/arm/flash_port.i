@@ -184,6 +184,7 @@ ssize_t flash_port_write(struct flash_driver_t *drv_p,
     struct flash_device_t *dev_p;
     size_t n, left, page, offset;
     struct flash_device_bank_t *bank_p;
+    const uint8_t *u8src_p = src_p;
 
     dev_p = drv_p->dev_p;
     left = size;
@@ -199,14 +200,14 @@ ssize_t flash_port_write(struct flash_driver_t *drv_p,
 
         n = MIN(left, bank_p->page_size - offset);
 
-        if (bank_page_write(bank_p, page, offset, src_p, n) != 0) {
+        if (bank_page_write(bank_p, page, offset, u8src_p, n) != 0) {
             res = -1;
             break;
         }
 
         left -= n;
         dst += n;
-        src_p += n;
+        u8src_p += n;
     }
 
     sem_put(&dev_p->sem, 1);

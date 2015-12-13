@@ -44,10 +44,13 @@ struct note_t {
  */
 int note_init(struct note_t *self_p,
               int note,
-              uint32_t *waveform_p,
+              int32_t *waveform_p,
               size_t length,
               float frequency,
               float vibrato,
+              long attack,
+              long decay,
+              long release,
               int sample_rate);
 
 /**

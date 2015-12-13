@@ -39,7 +39,7 @@ struct oscillator_t {
     struct {
         int length; /* Length (number of samples) in the waveform
                      * cycle. */
-        uint32_t *buf_p; /* Pointer to the waveform cycle. */
+        int32_t *buf_p; /* Pointer to the waveform cycle. */
     } waveform;
 };
 
@@ -55,7 +55,7 @@ struct oscillator_t {
  * @return zero(0) or negative error code.
  */
 int oscillator_init(struct oscillator_t *self_p,
-                    uint32_t *waveform_p,
+                    int32_t *waveform_p,
                     size_t length,
                     float frequency,
                     float vibrato,
@@ -93,7 +93,7 @@ int oscillator_set_vibrato(struct oscillator_t *self_p,
  * @return zero(0) or negative error code.
  */
 int oscillator_read(struct oscillator_t *self_p,
-                    uint32_t *samples_p,
+                    int32_t *samples_p,
                     size_t length);
 
 #endif

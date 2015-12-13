@@ -24,7 +24,7 @@
 extern uint8_t setting_area[2][SETTING_AREA_SIZE];
 static struct flash_driver_t drv;
 
-static int calculate_area_crc(const uint8_t *area_p)
+static uint32_t calculate_area_crc(const uint8_t *area_p)
 {
     uint32_t crc;
     uint8_t buf[256];
@@ -137,7 +137,7 @@ static ssize_t setting_port_write(size_t dst, const void *src_p, size_t size)
     }
 
     /* Update the crc. */
-    calculate_area_crc(&setting_area[PRIMARY][0]);
+    crc = calculate_area_crc(&setting_area[PRIMARY][0]);
 
     if (flash_write(&drv,
                     (size_t)&setting_area[PRIMARY][SETTING_AREA_CRC_OFFSET],

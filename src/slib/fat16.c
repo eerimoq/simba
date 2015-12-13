@@ -487,8 +487,8 @@ int fat16_format(struct fat16_t *fat16_p)
     fbs.reserved1 = 0;
     fbs.boot_signature = 41;
     fbs.volume_serial_number = 1817095464;
-    strcpy(fbs.volume_label, "NO NAME    ");
-    strcpy(fbs.file_system_type, "FAT16   ");
+    memcpy(fbs.volume_label, "NO NAME    ", sizeof(fbs.volume_label));
+    memcpy(fbs.file_system_type, "FAT16   ", sizeof(fbs.file_system_type));
     memset(fbs.boot_code, 0, sizeof(fbs.boot_code));
     fbs.boot_sector_sig = BOOTSIG;
 

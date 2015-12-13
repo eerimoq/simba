@@ -23,7 +23,7 @@
 
 int channel_init(struct channel_t *self_p,
                  int id,
-                 uint32_t *buf_p,
+                 int32_t *buf_p,
                  size_t length)
 {
     self_p->id = id;
@@ -80,7 +80,7 @@ struct note_t *channel_note_iter_next(struct channel_t *self_p)
 }
 
 int channel_set_waveform(struct channel_t *self_p,
-                         uint32_t *buf_p,
+                         int32_t *buf_p,
                          size_t length)
 {
     self_p->waveform.buf_p = buf_p;
@@ -103,8 +103,8 @@ int channel_get_id(struct channel_t *self_p)
 }
 
 int channel_process(struct channel_t *self_p,
-                    uint32_t *samples_p,
-                    uint32_t *buf_p,
+                    int32_t *samples_p,
+                    int32_t *buf_p,
                     size_t length)
 {
     int i, j;

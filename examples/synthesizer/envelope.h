@@ -30,15 +30,20 @@
 #define ENVELOPE_PHASE_SUSTAIN 2
 #define ENVELOPE_PHASE_RELEASE 3
 
+struct envelope_amplitude_sample_t {
+    int32_t factor;
+    int32_t shift;
+};
+
 struct envelope_phase_t {
-    q20_11_t position; /* The current position in the amplitude
+    q11_20_t position; /* The current position in the amplitude
                         * curve. */
-    q20_11_t increment; /* The number of steps to take in the
+    q11_20_t increment; /* The number of steps to take in the
                          * amplitude curve for each sample. */
     size_t step;
     size_t steps_max; /* Number of steps to take in the phase before
                        * going to the next phase. */
-    q20_11_t *amplitude_curve_p; /* The amplitude curve. */
+    struct envelope_amplitude_sample_t *amplitude_curve_p; /* The amplitude curve. */
 };
 
 struct envelope_t {
@@ -46,6 +51,9 @@ struct envelope_t {
     int released; /* Set when the note has been released. */
     struct envelope_phase_t attack;
     struct envelope_phase_t decay;
+    struct {
+        struct envelope_amplitude_sample_t gain;
+    } sustain;
     struct envelope_phase_t release;
 };
 
@@ -60,7 +68,10 @@ struct envelope_t {
  *
  * @return zero(0) or negative error code.
  */
-int envelope_init(struct envelope_t *self_p);
+int envelope_init(struct envelope_t *self_p,
+                  long attack,
+                  long decay,
+                  long release);
 
 /**
  * Start the release phase.
@@ -81,7 +92,7 @@ int envelope_set_phase_release(struct envelope_t *self_p);
  * @return zero(0) or negative error code.
  */
 size_t envelope_apply(struct envelope_t *self_p,
-                      uint32_t *samples_p,
+                      int32_t *samples_p,
                       size_t length);
 
 #endif

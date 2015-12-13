@@ -45,14 +45,16 @@ CLEAN = $(OBJDIR) $(DEPSDIR) $(GENDIR) $(EXE) $(RUNLOG) size.log \
 
 # configuration
 TOOLCHAIN ?= gnu
-CFLAGS += $(INC:%=-I%) $(CFLAGS_EXTRA) -DARCH_$(UPPER_ARCH) -DMCU_$(UPPER_MCU) \
-          -DBOARD_$(UPPER_BOARD) -DVERSION=$(VERSION)
+CFLAGS += $(INC:%=-I%) $(CFLAGS_EXTRA)
 ifeq ($(NDEBUG),yes)
-  CFLAGS += -DNDEBUG
+  CDEFS += -DNDEBUG
 endif
 ifeq ($(NPROFILE),yes)
-  CFLAGS += -DNPROFILE
+  CDEFS += -DNPROFILE
 endif
+CDEFS +=  -DARCH_$(UPPER_ARCH) -DMCU_$(UPPER_MCU) \
+          -DBOARD_$(UPPER_BOARD) -DVERSION=$(VERSION)
+CFLAGS += $(CDEFS)
 LDFLAGS += $(LDFLAGS_EXTRA)
 SHELL = /usr/bin/env bash
 
@@ -148,6 +150,13 @@ include $(SIMBA_GLOBAL_MK)
 
 valgrind:
 	valgrind --leak-check=full ./$(EXE)
+
+CPPCHECK_ENABLE = warning performance portability information
+
+cppcheck:
+	(for path in $(CSRC); do echo $$path; done) | \
+	cppcheck --std=c99 $(CPPCHECK_ENABLE:%=--enable=%) $(INC:%=-I%) $(CDEFS) \
+	--file-list=- --template=gcc --error-exitcode=1
 
 help:
 	@echo "--------------------------------------------------------------------------------"

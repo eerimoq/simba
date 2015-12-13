@@ -31,7 +31,7 @@ frequency_to_phase_increment(float frequency,
 }
 
 int oscillator_init(struct oscillator_t *self_p,
-                    uint32_t *waveform_p,
+                    int32_t *waveform_p,
                     size_t length,
                     float frequency,
                     float vibrato,
@@ -79,7 +79,7 @@ int oscillator_set_vibrato(struct oscillator_t *self_p,
 }
 
 int oscillator_read(struct oscillator_t *self_p,
-                    uint32_t *samples_p,
+                    int32_t *samples_p,
                     size_t length)
 {
     int i;

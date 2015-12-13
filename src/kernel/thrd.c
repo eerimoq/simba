@@ -439,7 +439,7 @@ static void *monitor_thrd(void *arg_p)
 int thrd_module_init(void)
 {
 #if !defined(NPROFILESTACK)
-    char dummy;
+    char dummy = 0;
 #endif
 
     /* Main function becomes a thrd. */

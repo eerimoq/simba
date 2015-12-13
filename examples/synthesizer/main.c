@@ -27,6 +27,7 @@ COUNTER_DEFINE("/synth/midi_unhandled_command", midi_unhandled_command);
 FS_COMMAND_DEFINE("/status", cmd_status);
 FS_COMMAND_DEFINE("/set_waveform", cmd_set_waveform);
 FS_COMMAND_DEFINE("/set_vibrato", cmd_set_vibrato);
+FS_COMMAND_DEFINE("/set_envelope", cmd_set_envelope);
 FS_COMMAND_DEFINE("/note_on", cmd_note_on);
 FS_COMMAND_DEFINE("/note_off", cmd_note_off);
 FS_COMMAND_DEFINE("/channel_on", cmd_channel_on);
@@ -45,6 +46,9 @@ FS_COMMAND_DEFINE("/channel_off", cmd_channel_off);
 
 struct synthesizer_t {
     float vibrato;
+    long attack;
+    long decay;
+    long release;
     struct event_t events;
     struct channel_t channels[16];
     struct dac_driver_t dac;
@@ -65,8 +69,8 @@ static THRD_STACK(shell_stack, 1024);
 static struct uart_driver_t uart_midi;
 static uint8_t uart_midi_inbuf[32];
 
-static uint32_t samples[4][SAMPLES_MAX];
-static uint32_t buf[SAMPLES_MAX];
+static int32_t samples[4][SAMPLES_MAX];
+static int32_t buf[SAMPLES_MAX];
 
 static struct synthesizer_t synthesizer;
 
@@ -107,13 +111,15 @@ static int note_on(struct channel_t *channel_p,
     sem_get(&synthesizer.sem, NULL);
 
     if ((note_p = channel_note_alloc(channel_p)) != NULL) {
-        std_printf(FSTR("allocated\r\n"));
         note_init(note_p,
                   note,
                   channel_p->waveform.buf_p,
                   channel_p->waveform.length,
                   frequency,
                   synthesizer.vibrato,
+                  synthesizer.attack,
+                  synthesizer.decay,
+                  synthesizer.release,
                   SAMPLE_RATE);
         note_start(note_p);
     }
@@ -195,18 +201,6 @@ int cmd_set_waveform(int argc,
         channel_set_waveform(channel_p,
                              waveform_square_256,
                              membersof(waveform_square_256));
-    } else if (strcmp(argv[2], "acoustic_guitar") == 0) {
-        channel_set_waveform(channel_p,
-                             waveform_acoustic_guitar_600,
-                             membersof(waveform_acoustic_guitar_600));
-    } else if (strcmp(argv[2], "flute") == 0) {
-        channel_set_waveform(channel_p,
-                             waveform_flute_600,
-                             membersof(waveform_flute_600));
-    } else if (strcmp(argv[2], "theremin") == 0) {
-        channel_set_waveform(channel_p,
-                             waveform_theremin_600,
-                             membersof(waveform_theremin_600));
     } else {
         std_fprintf(out_p, FSTR("bad waveform %s\r\n"), argv[2]);
 
@@ -236,6 +230,42 @@ int cmd_set_vibrato(int argc,
     }
 
     synthesizer.vibrato = (0.002 * value);
+
+    return (0);
+}
+
+int cmd_set_envelope(int argc,
+                     const char *argv[],
+                     void *out_p,
+                     void *in_p)
+{
+    long value;
+
+    if (argc != 4) {
+        std_fprintf(out_p,
+                    FSTR("Usage: %s <attack> <decay> <release>\r\n"),
+                    argv[0]);
+
+        return (-EINVAL);
+    }
+
+    if (std_strtol(argv[1], &value) != 0) {
+        return (-EINVAL);
+    }
+
+    synthesizer.attack = value;
+
+    if (std_strtol(argv[2], &value) != 0) {
+        return (-EINVAL);
+    }
+
+    synthesizer.decay = value;
+
+    if (std_strtol(argv[3], &value) != 0) {
+        return (-EINVAL);
+    }
+
+    synthesizer.release = value;
 
     return (0);
 }
@@ -437,11 +467,13 @@ static void *sensors_main(void *arg_p)
         vibrato = (0.002 * ((float)sample / 40.96));
 
         sem_get(&synthesizer.sem, NULL);
+
         synthesizer.vibrato = vibrato;
         oscillator_set_frequency(&synthesizer.channels[15].notes[0].oscillator,
                                  frequency);
         oscillator_set_vibrato(&synthesizer.channels[15].notes[0].oscillator,
                                vibrato);
+
         sem_put(&synthesizer.sem, 1);
     }
 
@@ -548,6 +580,9 @@ static int init(void)
     }
 
     synthesizer.vibrato = 0.0;
+    synthesizer.attack = 1000;
+    synthesizer.decay = 0;
+    synthesizer.release = 1000;
 
     /* Spawn the shell. */
     shell_args.chin_p = &uart.chin;
@@ -579,7 +614,7 @@ static int init(void)
 int main()
 {
     int i;
-    uint32_t *samples_p;
+    int32_t *samples_p;
     int samples_index = 0;
     uint32_t mask;
     struct time_t timeout;
@@ -624,10 +659,10 @@ int main()
         sem_put(&synthesizer.sem, 1);
 
         for (i = 0; i < SAMPLES_MAX; i++) {
-            samples_p[i] >>= 7;
+            samples_p[i] = ((samples_p[i] >> 7) + 2048);
         }
 
-        dac_async_convert(&synthesizer.dac, samples_p, SAMPLES_MAX);
+        dac_async_convert(&synthesizer.dac, (uint32_t *)samples_p, SAMPLES_MAX);
     }
 
     return (0);

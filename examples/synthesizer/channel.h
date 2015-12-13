@@ -40,7 +40,7 @@ struct channel_t {
         int pos;
     } iter;
     struct {
-        uint32_t *buf_p;
+        int32_t *buf_p;
         size_t length;
     } waveform;
 };
@@ -49,16 +49,15 @@ struct channel_t {
  * Initialize a channel with given configuration.
  *
  * @param[in] self_p The channel to initialize.
- * @param[in] waveform_p Waveform to use.
+ * @param[in] id Channel id.
+ * @param[in] buf_p Waveform to use.
  * @param[in] length Length of the waveform.
- * @param[in] frequency Channel frequency.
- * @param[in] sample_rate Sample rate.
  *
  * @return zero(0) or negative error code.
  */
 int channel_init(struct channel_t *self_p,
                  int id,
-                 uint32_t *buf_p,
+                 int32_t *buf_p,
                  size_t length);
 
 /**
@@ -72,8 +71,8 @@ int channel_init(struct channel_t *self_p,
  * @return zero(0) or negative error code.
  */
 int channel_process(struct channel_t *self_p,
-                    uint32_t *samples_p,
-                    uint32_t *buf_p,
+                    int32_t *samples_p,
+                    int32_t *buf_p,
                     size_t length);
 
 /**
@@ -86,7 +85,7 @@ int channel_process(struct channel_t *self_p,
  * @return zero(0) or negative error code.
  */
 int channel_set_waveform(struct channel_t *self_p,
-                         uint32_t *buf_p,
+                         int32_t *buf_p,
                          size_t length);
 
 /**

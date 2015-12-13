@@ -37,6 +37,7 @@ extern const FAR int fs_parameters[];
 
 /**
  * Create the absolute path in the file tree for given node.
+ *
  * @return pointer to destination string or NULL
  */
 static char *get_abspath(char *buf_p,
@@ -45,6 +46,7 @@ static char *get_abspath(char *buf_p,
 {
     const FAR char *name_p;
     size_t length;
+    ssize_t left = size;
 
     /* Add null termination. */
     buf_p += (size - 1);
@@ -57,10 +59,10 @@ static char *get_abspath(char *buf_p,
 
         /* Prepend a slash. */
         length += 1;
-        size -= length;
+        left -= length;
 
         /* The name does not fit. */
-        if (size <= 0) {
+        if (left <= 0) {
             return (NULL);
         }
 
