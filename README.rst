@@ -14,7 +14,7 @@ Features:
 * counting semaphores
 * drivers (spi, uart, ...)
 * a simple shell
-* portable (linux, Arduino Due, Arduino Mega, ...)
+  * portable (linux, Arduino Due, Arduino Mega, ...)
 * make based build framework
 
 Below is the simba "Hello World" application, printing "Hello World!"
@@ -86,7 +86,7 @@ ARM
 
 TOOLS
 -----
-``sudo apt-get install ckermit valgrind cppcheck``
+``sudo apt-get install ckermit valgrind cppcheck cloc``
 
 APPLICATIONS, PACKAGES AND MODULES
 ==================================

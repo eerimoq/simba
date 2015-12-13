@@ -90,6 +90,9 @@ tags:
 	echo "Creating tags file .TAGS"
 	etags -o .TAGS $$(git ls-files *.[hci] | xargs)
 
+cloc:
+	cloc $$(git ls-files | xargs)
+
 help:
 	@echo "--------------------------------------------------------------------------------"
 	@echo "  target                      description"
