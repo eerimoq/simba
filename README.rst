@@ -78,15 +78,15 @@ Optional:
 
 AVR
 ---
-sudo apt-get install avrdude ckermit gcc-avr binutils-avr gdb-avr avr-libc
+``sudo apt-get install avrdude ckermit gcc-avr binutils-avr gdb-avr avr-libc``
 
 ARM
 ---
-sudo apt-get install bossa-cli gcc-arm-none-eabi
+``sudo apt-get install bossa-cli gcc-arm-none-eabi``
 
 TOOLS
 -----
-sudo apt-get install valgrind cppcheck
+``sudo apt-get install valgrind cppcheck``
 
 APPLICATIONS, PACKAGES AND MODULES
 ==================================
