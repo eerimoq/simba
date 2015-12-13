@@ -14,7 +14,7 @@ Features:
 * counting semaphores
 * drivers (spi, uart, ...)
 * a simple shell
-* portable (linux, AVR, SAM3X8E, ...)
+* portable (linux, Arduino Due, Arduino Mega, ...)
 * make based build framework
 
 Below is the simba "Hello World" application, printing "Hello World!"
