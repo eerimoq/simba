@@ -104,5 +104,6 @@ help:
 	@echo "  test                        run + report"
 	@echo "  release                     compile with NDEBUG=yes and NPROFILE=yes"
 	@echo "  size                        print executable size information"
+	@echo "  cloc                        print source code statistics"
 	@echo "  help                        show this help"
 	@echo
