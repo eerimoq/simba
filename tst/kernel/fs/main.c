@@ -112,6 +112,17 @@ static int test_command(struct harness_t *harness_p)
     BTASSERT(fs_call(buf, NULL, &qout) == -ENOENT);
     read_until(buf, "\n");
 
+    strcpy(buf, "/tm");
+    BTASSERT(fs_auto_complete(buf, &qout) >= 1);
+    read_until(buf, "p/");
+
+    strcpy(buf, "/tmp/b");
+    BTASSERT(fs_auto_complete(buf, &qout) >= 1);
+    read_until(buf, "ar ");
+
+    strcpy(buf, "/tmp/q");
+    BTASSERT(fs_auto_complete(buf, &qout) == -ENOENT);
+
     return (0);
 }
 
