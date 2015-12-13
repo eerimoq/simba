@@ -93,6 +93,9 @@ tags:
 cloc:
 	cloc $$(git ls-files | xargs)
 
+pmccabe:
+	pmccabe $$(git ls-files "*.[hic]") | sort -n
+
 help:
 	@echo "--------------------------------------------------------------------------------"
 	@echo "  target                      description"
@@ -104,6 +107,7 @@ help:
 	@echo "  test                        run + report"
 	@echo "  release                     compile with NDEBUG=yes and NPROFILE=yes"
 	@echo "  size                        print executable size information"
-	@echo "  cloc                        print source code statistics"
+	@echo "  cloc                        print source code line statistics"
+	@echo "  pmccabe                     print source code complexity statistics"
 	@echo "  help                        show this help"
 	@echo
