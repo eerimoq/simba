@@ -14,7 +14,7 @@ Features:
 * counting semaphores
 * drivers (spi, uart, ...)
 * a simple shell
-  * portable (linux, Arduino Due, Arduino Mega, ...)
+* portable (linux, Arduino Due, Arduino Mega, ...)
 * make based build framework
 
 Below is the simba "Hello World" application, printing "Hello World!"
@@ -49,22 +49,21 @@ FILE TREE
        +-- README
        +-- src/                     - source code directory
        |   +-- boards/              - board configurations
-       |   +-- drivers/             - drivers package with ports
-       |   +-- kernel/              - kernel package with ports
-       |   +-- slib/                - slib (Simba lib) package
+       |   +-- drivers/             - drivers package source code
+       |   +-- kernel/              - kernel package source code
+       |   +-- slib/                - slib (Simba lib) package source code
        |   +-- mcus/                - mcu configurations
        |   +-- simba.h              - includes kernel, drivers and slib headers
        +-- tst/                     - test suites
-           +-- drivers/             - drivers suites
-           +-- kernel/              - kernel suites
-           +-- slib/                - slib suites
+           +-- drivers/             - drivers package test suites
+           +-- kernel/              - kernel package test suites
+           +-- slib/                - slib package test suites
 
 PREREQUISITES
 =============
 
 Required:
 
-* linux development environment
 * GNU make 3.81
 * python 2.7
 * GNU toolchain with c compiler and linker for target architecture(s)
