@@ -6,7 +6,7 @@ ABOUT
 Simba is a microkernel and build framework. It aims to make embedded
 programming easy and portable.
 
-A list of features:
+Features:
 
 * threads
 * channels for communication between threads
@@ -62,12 +62,19 @@ FILE TREE
 PREREQUISITES
 =============
 
+Required:
+
 * linux development environment
 * GNU make 3.81
 * python 2.7
 * GNU toolchain with c compiler and linker for target architecture(s)
 * gcc
 * bash
+
+Optional:
+
+* valgrind
+* cppcheck
 
 AVR
 ---
@@ -76,6 +83,10 @@ sudo apt-get install avrdude ckermit gcc-avr binutils-avr gdb-avr avr-libc
 ARM
 ---
 sudo apt-get install bossa-cli gcc-arm-none-eabi
+
+TOOLS
+-----
+sudo apt-get install valgrind cppcheck
 
 APPLICATIONS, PACKAGES AND MODULES
 ==================================
@@ -109,22 +120,23 @@ For a package, the preferred file tree is:
 BOARDS AND MCUS
 ===============
 
-A board is the top level configuration entity. It contains information
-about which MCU is present on the board and what the pin mapping is.
+A board is the top level configuration entity in the build
+framework. It contains information about the MCU and the pin mapping.
 
 In turn, the MCU contains information about available devices and
-clock frequencys.
+clock frequencys in the microcontroller.
 
 See ``src/boards`` and ``src/mcus`` for available configurations.
 
 Only one MCU per board is supported. If there are two MCU:s on one
-physical board, two board configurations have to be created.
+physical board, two board configurations have to be created, one for
+each MCU.
 
 BUILD AND RUN TESTS
 ===================
 
-This is how to build for default board, given in application
-Makefile. Often the default board is a linux simulation.
+This is how to build an application for the default board, given in
+the application Makefile. Often the default board is the linux simulator.
 
 .. code-block:: c
 
@@ -132,17 +144,18 @@ Makefile. Often the default board is a linux simulation.
     /home/erik/workspace/simba/tst/kernel/sys
     $ make -s test
 
-To build for another board, in this case Arduino Nano, use the BOARD
-make variable.
+To build the same application for another board, in this case Arduino
+Nano, use the BOARD make variable.
 
 .. code-block:: c
 
     $ make -s BOARD=arduino_nano release test
 
-Note: An application may only support a subset of the available boards.
+Note: An application may support only a subset of the boards defined
+in Simba.
 
-THREADS
-=======
+THREADS AND CHANNELS
+====================
 
 A thread is the basic execution entity. A scheduler controls the
 execution of threads.
@@ -167,15 +180,16 @@ A simple thread that waits to be resumed by another thread.
 
 Threads usually communicates over channels. There are two kinds of
 channels; queue and event. Both implementing the same abstract channel
-interface.  This makes channel very powerful as a synchronization
-primitive. They can be seen as file descriptors in linux.
+interface (see ``kernel/chan.h``).  This abstraction makes channel
+very powerful as a synchronization primitive. They can be seen as
+limited functionality file descriptors in linux.
 
 The most common channel is the queue. It can be either synchronous or
 semi-asynchronous. In the synchronous version the writing thread will
 block until all written data has been read by the reader. In the
 semi-asynchronous version the writer writes to a buffer within the
 queue, and only blocks all data does not fit in the buffer. The buffer
-size is chosen by the application.
+size is selected by the application.
 
 DRIVERS
 =======
@@ -198,13 +212,13 @@ streaming devices like UART.
 
         sys_lock();
 
-        // 1. send something to the hardware
+        /* 1. send something to the hardware */
 
-        // 2. wait for response
+        /* 2. wait for response from interrupt handler */
         thrd_suspend_irq(NULL);
         sys_unlock();
 
-        // 4. prepare result
+        /* 4. prepare result */
 
         return (err);
     }
@@ -213,7 +227,7 @@ streaming devices like UART.
     {
         drv_p = device[0].drv_p;
 
-        // 3. Resume the suspended thread.
+        /* 3. Resume the suspended thread. */
         thrd_resume_irq(drv_p->thrd_p, 0);
     }
 
