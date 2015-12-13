@@ -78,7 +78,7 @@ Optional:
 
 AVR
 ---
-``sudo apt-get install avrdude ckermit gcc-avr binutils-avr gdb-avr avr-libc``
+``sudo apt-get install avrdude gcc-avr binutils-avr gdb-avr avr-libc``
 
 ARM
 ---
@@ -86,7 +86,7 @@ ARM
 
 TOOLS
 -----
-``sudo apt-get install valgrind cppcheck``
+``sudo apt-get install ckermit valgrind cppcheck``
 
 APPLICATIONS, PACKAGES AND MODULES
 ==================================
