@@ -30,28 +30,28 @@
 COUNTER_DEFINE("/drivers/uart/rx_channel_overflow", uart_rx_channel_overflow);
 COUNTER_DEFINE("/drivers/uart/rx_errors", uart_rx_errors);
 
-static int uart_port_start(struct uart_driver_t *drv_p)
+static int uart_port_start(struct uart_driver_t *self_p)
 {
-    uint16_t baudrate = (F_CPU / 16 / drv_p->baudrate - 1);
-    struct uart_device_t *dev_p = drv_p->dev_p;
+    uint16_t baudrate = (F_CPU / 16 / self_p->baudrate - 1);
+    struct uart_device_t *dev_p = self_p->dev_p;
 
     *UBRRn(dev_p) = baudrate;
     *UCSRnA(dev_p) = 0;
     *UCSRnB(dev_p) = (_BV(RXCIE0) | _BV(TXCIE0) | _BV(RXEN0) | _BV(TXEN0));
     *UCSRnC(dev_p) = (_BV(UCSZ00) | _BV(UCSZ01));
 
-    dev_p->drv_p = drv_p;
+    dev_p->drv_p = self_p;
 
     return (0);
 }
 
-static int uart_port_stop(struct uart_driver_t *drv_p)
+static int uart_port_stop(struct uart_driver_t *self_p)
 {
-    *UCSRnA(drv_p->dev_p) = 0;
-    *UCSRnB(drv_p->dev_p) = 0;
-    *UCSRnC(drv_p->dev_p) = 0;
+    *UCSRnA(self_p->dev_p) = 0;
+    *UCSRnB(self_p->dev_p) = 0;
+    *UCSRnC(self_p->dev_p) = 0;
 
-    drv_p->dev_p->drv_p = NULL;
+    self_p->dev_p->drv_p = NULL;
 
     return (0);
 }
@@ -60,28 +60,28 @@ static ssize_t uart_port_write_cb(void *arg_p,
                                   const void *txbuf_p,
                                   size_t size)
 {
-    struct uart_driver_t *drv_p;
+    struct uart_driver_t *self_p;
 
-    drv_p = container_of(arg_p, struct uart_driver_t, chout);
+    self_p = container_of(arg_p, struct uart_driver_t, chout);
 
-    sem_get(&drv_p->sem, NULL);
+    sem_get(&self_p->sem, NULL);
 
     /* Initiate transfer by writing the first byte. */
-    drv_p->txbuf_p = (txbuf_p + 1);
-    drv_p->txsize = (size - 1);
-    drv_p->thrd_p = thrd_self();
+    self_p->txbuf_p = (txbuf_p + 1);
+    self_p->txsize = (size - 1);
+    self_p->thrd_p = thrd_self();
 
     sys_lock();
 
     /* Write the first byte. The rest are written from the interrupt
        routine. */
-    *UDRn(drv_p->dev_p) = drv_p->txbuf_p[-1];
+    *UDRn(self_p->dev_p) = self_p->txbuf_p[-1];
 
     thrd_suspend_irq(NULL);
 
     sys_unlock();
 
-    sem_put(&drv_p->sem, 1);
+    sem_put(&self_p->sem, 1);
 
     return (size);
 }

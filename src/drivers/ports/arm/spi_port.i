@@ -60,7 +60,7 @@ ISR(spi0)
     }
 }
 
-static int spi_port_init(struct spi_driver_t *drv_p,
+static int spi_port_init(struct spi_driver_t *self_p,
                          struct spi_device_t *dev_p,
                          struct pin_device_t *ss_pin_p,
                          int mode,
@@ -69,19 +69,19 @@ static int spi_port_init(struct spi_driver_t *drv_p,
                          int cpha)
 {
     if (mode == SPI_MODE_MASTER) {
-        pin_init(&drv_p->ss, ss_pin_p, PIN_OUTPUT);
-        pin_write(&drv_p->ss, 1);
+        pin_init(&self_p->ss, ss_pin_p, PIN_OUTPUT);
+        pin_write(&self_p->ss, 1);
     } else {
-        pin_init(&drv_p->ss, ss_pin_p, PIN_INPUT);
+        pin_init(&self_p->ss, ss_pin_p, PIN_INPUT);
     }
 
     return (0);
 }
 
-static int spi_port_start(struct spi_driver_t *drv_p)
+static int spi_port_start(struct spi_driver_t *self_p)
 {
     uint32_t mask;
-    struct spi_device_t *dev_p = drv_p->dev_p;
+    struct spi_device_t *dev_p = self_p->dev_p;
     volatile struct sam_pio_t *pio_p;
 
     /* Configure miso pin. */
@@ -105,12 +105,12 @@ static int spi_port_start(struct spi_driver_t *drv_p)
     pmc_peripheral_clock_enable(dev_p->id);
     nvic_enable_interrupt(dev_p->id);
 
-    dev_p->regs_p->CSR[0] = (SPI_CSR_SCBR(drv_p->speed)
-                             | (SPI_CSR_NCPHA * drv_p->cpha)
-                             | (SPI_CSR_CPOL * drv_p->cpol));
+    dev_p->regs_p->CSR[0] = (SPI_CSR_SCBR(self_p->speed)
+                             | (SPI_CSR_NCPHA * self_p->cpha)
+                             | (SPI_CSR_CPOL * self_p->cpol));
 
     /* Set mode. */
-    if (drv_p->mode == SPI_MODE_MASTER) {
+    if (self_p->mode == SPI_MODE_MASTER) {
         dev_p->regs_p->MR = (SPI_MR_MODFDIS | SPI_MR_MSTR);
     } else {
         dev_p->regs_p->MR &= ~SPI_MR_MSTR;
@@ -122,32 +122,32 @@ static int spi_port_start(struct spi_driver_t *drv_p)
     return (0);
 }
 
-static int spi_port_stop(struct spi_driver_t *drv_p)
+static int spi_port_stop(struct spi_driver_t *self_p)
 {
-    struct spi_device_t *dev_p = drv_p->dev_p;
+    struct spi_device_t *dev_p = self_p->dev_p;
 
     dev_p->regs_p->CR = SPI_CR_SPIDIS;
 
     return (0);
 }
 
-static ssize_t spi_port_transfer(struct spi_driver_t *drv_p,
+static ssize_t spi_port_transfer(struct spi_driver_t *self_p,
                                  void *rxbuf_p,
                                  const void *txbuf_p,
                                  size_t n)
 {
-    struct spi_device_t *dev_p = drv_p->dev_p;
+    struct spi_device_t *dev_p = self_p->dev_p;
 
-    drv_p->rxbuf_p = rxbuf_p;
-    drv_p->txbuf_p = txbuf_p;
-    drv_p->size = (n - 1);
-    drv_p->thrd_p = thrd_self();
+    self_p->rxbuf_p = rxbuf_p;
+    self_p->txbuf_p = txbuf_p;
+    self_p->size = (n - 1);
+    self_p->thrd_p = thrd_self();
 
     sys_lock();
 
     /* Write first byte. The rest are written from isr. */
-    if (drv_p->txbuf_p != NULL) {
-        dev_p->regs_p->TDR = SPI_TDR_TD(*drv_p->txbuf_p++);
+    if (self_p->txbuf_p != NULL) {
+        dev_p->regs_p->TDR = SPI_TDR_TD(*self_p->txbuf_p++);
     } else {
         dev_p->regs_p->TDR = SPI_TDR_TD(0xff);
     }

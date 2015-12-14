@@ -27,31 +27,31 @@ int exti_module_init()
     return (exti_port_module_init());
 }
 
-int exti_init(struct exti_driver_t *drv_p,
+int exti_init(struct exti_driver_t *self_p,
               struct exti_device_t *dev_p,
               int trigger,
               void (*on_interrupt)(void *arg_p),
               void *arg_p)
 {
-    drv_p->dev_p = dev_p;
-    drv_p->trigger = trigger;
-    drv_p->on_interrupt = on_interrupt;
-    drv_p->arg_p = arg_p;
+    self_p->dev_p = dev_p;
+    self_p->trigger = trigger;
+    self_p->on_interrupt = on_interrupt;
+    self_p->arg_p = arg_p;
 
     return (0);
 }
 
-int exti_start(struct exti_driver_t *drv_p)
+int exti_start(struct exti_driver_t *self_p)
 {
-    return (exti_port_start(drv_p));
+    return (exti_port_start(self_p));
 }
 
-int exti_stop(struct exti_driver_t *drv_p)
+int exti_stop(struct exti_driver_t *self_p)
 {
-    return (exti_port_stop(drv_p));
+    return (exti_port_stop(self_p));
 }
 
-int exti_clear(struct exti_driver_t *drv_p)
+int exti_clear(struct exti_driver_t *self_p)
 {
-    return (exti_port_clear(drv_p));
+    return (exti_port_clear(self_p));
 }

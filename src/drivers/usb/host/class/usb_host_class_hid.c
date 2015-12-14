@@ -58,29 +58,29 @@ static int enumerate(struct usb_host_device_t *device_p)
     return (usb_host_device_set_configuration(device_p, 1));
 }
 
-int usb_host_class_hid_init(struct usb_host_class_hid_driver_t *drv_p,
+int usb_host_class_hid_init(struct usb_host_class_hid_driver_t *self_p,
                             struct usb_host_driver_t *usb_p,
                             struct usb_host_class_hid_device_t *devices_p,
                             size_t length)
 {
-    drv_p->usb_p = usb_p;
-    drv_p->devices_p = devices_p;
-    drv_p->length = length;
-    drv_p->device_driver.supports = supports;
-    drv_p->device_driver.enumerate = enumerate;
+    self_p->usb_p = usb_p;
+    self_p->devices_p = devices_p;
+    self_p->length = length;
+    self_p->device_driver.supports = supports;
+    self_p->device_driver.enumerate = enumerate;
 
     return (0);
 }
 
-int usb_host_class_hid_start(struct usb_host_class_hid_driver_t *drv_p)
+int usb_host_class_hid_start(struct usb_host_class_hid_driver_t *self_p)
 {
-    return (usb_host_driver_add(drv_p->usb_p,
-                                &drv_p->device_driver,
-                                drv_p));
+    return (usb_host_driver_add(self_p->usb_p,
+                                &self_p->device_driver,
+                                self_p));
 }
 
-int usb_host_class_hid_stop(struct usb_host_class_hid_driver_t *drv_p)
+int usb_host_class_hid_stop(struct usb_host_class_hid_driver_t *self_p)
 {
-    return (usb_host_driver_remove(drv_p->usb_p,
-                                   &drv_p->device_driver));
+    return (usb_host_driver_remove(self_p->usb_p,
+                                   &self_p->device_driver));
 }

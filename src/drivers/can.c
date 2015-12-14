@@ -27,44 +27,44 @@ int can_module_init(void)
     return (0);
 }
 
-int can_init(struct can_driver_t *drv_p,
+int can_init(struct can_driver_t *self_p,
              struct can_device_t *dev_p,
              uint32_t speed,
              void *rxbuf_p,
              size_t size)
 {
-    drv_p->dev_p = dev_p;
+    self_p->dev_p = dev_p;
 
-    chan_init(&drv_p->chout,
+    chan_init(&self_p->chout,
               NULL,
               (ssize_t (*)(chan_t *, const void *, size_t))write_cb,
               NULL);
 
-    queue_init(&drv_p->chin, rxbuf_p, size);
+    queue_init(&self_p->chin, rxbuf_p, size);
 
-    return (can_port_init(drv_p, dev_p, speed));
+    return (can_port_init(self_p, dev_p, speed));
 }
 
-int can_start(struct can_driver_t *drv_p)
+int can_start(struct can_driver_t *self_p)
 {
-    return (can_port_start(drv_p));
+    return (can_port_start(self_p));
 }
 
-int can_stop(struct can_driver_t *drv_p)
+int can_stop(struct can_driver_t *self_p)
 {
-    return (can_port_stop(drv_p));
+    return (can_port_stop(self_p));
 }
 
-ssize_t can_read(struct can_driver_t *drv_p,
+ssize_t can_read(struct can_driver_t *self_p,
                  struct can_frame_t *frame_p,
                  size_t size)
 {
-    return (queue_read(&drv_p->chin, frame_p, size));
+    return (queue_read(&self_p->chin, frame_p, size));
 }
 
-ssize_t can_write(struct can_driver_t *drv_p,
+ssize_t can_write(struct can_driver_t *self_p,
                   const struct can_frame_t *frame_p,
                   size_t size)
 {
-    return (chan_write(&drv_p->chout, frame_p, size));
+    return (chan_write(&self_p->chout, frame_p, size));
 }

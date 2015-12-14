@@ -23,57 +23,57 @@
 #define STATE_WAITING    1
 #define STATE_EMPTY      2
 
-static void write_next(struct dac_driver_t *drv_p)
+static void write_next(struct dac_driver_t *self_p)
 {
-    drv_p->dev_p->regs_p->PDC.TNPR = (uint32_t)drv_p->next.samples_p;
-    drv_p->dev_p->regs_p->PDC.TNCR = drv_p->next.length;
-    drv_p->next.length = 0;
+    self_p->dev_p->regs_p->PDC.TNPR = (uint32_t)self_p->next.samples_p;
+    self_p->dev_p->regs_p->PDC.TNCR = self_p->next.length;
+    self_p->next.length = 0;
 }
 
-static void convert_start(struct dac_driver_t *drv_p)
+static void convert_start(struct dac_driver_t *self_p)
 {
-    drv_p->dev_p->regs_p->IER = (SAM_DACC_IER_ENDTX | SAM_DACC_IER_TXBUFE);
-    drv_p->dev_p->regs_p->CHER = drv_p->chxr;
-    write_next(drv_p);
+    self_p->dev_p->regs_p->IER = (SAM_DACC_IER_ENDTX | SAM_DACC_IER_TXBUFE);
+    self_p->dev_p->regs_p->CHER = self_p->chxr;
+    write_next(self_p);
 }
 
-static void convert_stop(struct dac_driver_t *drv_p)
+static void convert_stop(struct dac_driver_t *self_p)
 {
-    drv_p->dev_p->regs_p->IDR = (SAM_DACC_IDR_ENDTX | SAM_DACC_IDR_TXBUFE);
-    drv_p->dev_p->regs_p->CHDR = drv_p->chxr;
+    self_p->dev_p->regs_p->IDR = (SAM_DACC_IDR_ENDTX | SAM_DACC_IDR_TXBUFE);
+    self_p->dev_p->regs_p->CHDR = self_p->chxr;
 }
 
 ISR(dacc)
 {
     struct dac_device_t *dev_p = &dac_device[0];
-    struct dac_driver_t *drv_p = dev_p->jobs.head_p;
+    struct dac_driver_t *self_p = dev_p->jobs.head_p;
 
     /* Add more samples to the PDC, if any. */
-    if (drv_p->next.length > 0) {
-        write_next(drv_p);
+    if (self_p->next.length > 0) {
+        write_next(self_p);
 
         /* Resume the waiting thread if it wants to write additional
            samples. */
-        if ((drv_p->state == STATE_CONVERTING) &&
-            (drv_p->thrd_p != NULL)) {
-            thrd_resume_irq(drv_p->thrd_p, 0);
-            drv_p->thrd_p = NULL;
+        if ((self_p->state == STATE_CONVERTING) &&
+            (self_p->thrd_p != NULL)) {
+            thrd_resume_irq(self_p->thrd_p, 0);
+            self_p->thrd_p = NULL;
         }
     }
 
     /* Act on empty PDC buffer. */
     if ((dev_p->regs_p->ISR & SAM_DACC_ISR_TXBUFE) != 0) {
-        convert_stop(drv_p);
+        convert_stop(self_p);
 
-        if (drv_p->state == STATE_WAITING) {
-            thrd_resume_irq(drv_p->thrd_p, 0);
-            drv_p->thrd_p = NULL;
+        if (self_p->state == STATE_WAITING) {
+            thrd_resume_irq(self_p->thrd_p, 0);
+            self_p->thrd_p = NULL;
         } else {
-            drv_p->state = STATE_EMPTY;
+            self_p->state = STATE_EMPTY;
         }
 
         /* Dequeue this driver. */
-        dev_p->jobs.head_p = drv_p->next_p;
+        dev_p->jobs.head_p = self_p->next_p;
 
         /* Start converting samples from next driver in queue. */
         if (dev_p->jobs.head_p != NULL) {
@@ -87,7 +87,7 @@ static int dac_port_module_init(void)
     return (0);
 }
 
-static int dac_port_init(struct dac_driver_t *drv_p,
+static int dac_port_init(struct dac_driver_t *self_p,
                          struct dac_device_t *dev_p,
                          struct pin_device_t *pin0_dev_p,
                          struct pin_device_t *pin1_dev_p,
@@ -97,13 +97,13 @@ static int dac_port_init(struct dac_driver_t *drv_p,
     uint32_t mask;
     int channel;
 
-    drv_p->state = STATE_EMPTY;
-    drv_p->next.length = 0;
-    drv_p->chxr = 0;
+    self_p->state = STATE_EMPTY;
+    self_p->next.length = 0;
+    self_p->chxr = 0;
 
     if ((pin0_dev_p == &pin_dac0_dev)
         || (pin1_dev_p == &pin_dac0_dev)) {
-        drv_p->chxr |= 0x1;
+        self_p->chxr |= 0x1;
         
         /* Configure the output pin. */
         mask = pin_dac0_dev.mask;
@@ -113,7 +113,7 @@ static int dac_port_init(struct dac_driver_t *drv_p,
     
     if ((pin1_dev_p == &pin_dac0_dev)
         || (pin1_dev_p == &pin_dac1_dev)) {
-        drv_p->chxr |= 0x2;
+        self_p->chxr |= 0x2;
 
         /* Configure the output pin. */
         mask = pin_dac1_dev.mask;
@@ -153,44 +153,44 @@ static int dac_port_init(struct dac_driver_t *drv_p,
 
     dev_p->regs_p->PDC.PTCR = (PERIPH_PTCR_TXTEN);
 
-    drv_p->dev_p = dev_p;
+    self_p->dev_p = dev_p;
 
     return (0);
 }
 
-static int dac_port_async_convert(struct dac_driver_t *drv_p,
+static int dac_port_async_convert(struct dac_driver_t *self_p,
                                   uint32_t *samples_p,
                                   size_t length)
 {
-    struct dac_device_t *dev_p = drv_p->dev_p;
+    struct dac_device_t *dev_p = self_p->dev_p;
 
-    drv_p->state = STATE_CONVERTING;
+    self_p->state = STATE_CONVERTING;
 
     /* Enqueue. */
     sys_lock();
 
     /* Wait if last written data has not yet been written. */
-    if (drv_p->next.length > 0) {
-        drv_p->thrd_p = thrd_self();
+    if (self_p->next.length > 0) {
+        self_p->thrd_p = thrd_self();
         thrd_suspend_irq(NULL);
     }
 
     /* Initialize. */
-    drv_p->next.samples_p = samples_p;
-    drv_p->next.length = length;
-    drv_p->next_p = NULL;
+    self_p->next.samples_p = samples_p;
+    self_p->next.length = length;
+    self_p->next_p = NULL;
 
-    if (dev_p->jobs.head_p != drv_p) {
+    if (dev_p->jobs.head_p != self_p) {
         if (dev_p->jobs.head_p == NULL) {
             /* Empty queue. */
-            dev_p->jobs.head_p = drv_p;
-            convert_start(drv_p);
+            dev_p->jobs.head_p = self_p;
+            convert_start(self_p);
         } else {
             /* Non-empty queue. */
-            drv_p->dev_p->jobs.tail_p->next_p = drv_p;
+            self_p->dev_p->jobs.tail_p->next_p = self_p;
         }
         
-        drv_p->dev_p->jobs.tail_p = drv_p;
+        self_p->dev_p->jobs.tail_p = self_p;
     }
 
     sys_unlock();
@@ -198,15 +198,15 @@ static int dac_port_async_convert(struct dac_driver_t *drv_p,
     return (0);
 }
 
-static int dac_port_async_wait(struct dac_driver_t *drv_p)
+static int dac_port_async_wait(struct dac_driver_t *self_p)
 {
     sys_lock();
 
-    if (drv_p->state == STATE_CONVERTING) {
-        drv_p->state = STATE_WAITING;
-        drv_p->thrd_p = thrd_self();
+    if (self_p->state == STATE_CONVERTING) {
+        self_p->state = STATE_WAITING;
+        self_p->thrd_p = thrd_self();
         thrd_suspend_irq(NULL);
-        drv_p->state = STATE_EMPTY;
+        self_p->state = STATE_EMPTY;
     }
 
     sys_unlock();
@@ -214,12 +214,12 @@ static int dac_port_async_wait(struct dac_driver_t *drv_p)
     return (0);
 }
 
-static int dac_port_convert(struct dac_driver_t *drv_p,
+static int dac_port_convert(struct dac_driver_t *self_p,
                             uint32_t *samples_p,
                             size_t length)
 {
-    dac_port_async_convert(drv_p, samples_p, length);
-    dac_port_async_wait(drv_p);
+    dac_port_async_convert(self_p, samples_p, length);
+    dac_port_async_wait(self_p);
 
     return (0);
 }

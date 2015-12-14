@@ -161,12 +161,12 @@ int flash_port_module_init(void)
     return (0);
 }
 
-ssize_t flash_port_read(struct flash_driver_t *drv_p,
+ssize_t flash_port_read(struct flash_driver_t *self_p,
                         void *dst_p,
                         size_t src,
                         size_t size)
 {
-    struct flash_device_t *dev_p = drv_p->dev_p;
+    struct flash_device_t *dev_p = self_p->dev_p;
 
     sem_get(&dev_p->sem, NULL);
     memcpy(dst_p, (void *)src, size);
@@ -175,7 +175,7 @@ ssize_t flash_port_read(struct flash_driver_t *drv_p,
     return (size);
 }
 
-ssize_t flash_port_write(struct flash_driver_t *drv_p,
+ssize_t flash_port_write(struct flash_driver_t *self_p,
                          size_t dst,
                          const void *src_p,
                          size_t size)
@@ -186,7 +186,7 @@ ssize_t flash_port_write(struct flash_driver_t *drv_p,
     struct flash_device_bank_t *bank_p;
     const uint8_t *u8src_p = src_p;
 
-    dev_p = drv_p->dev_p;
+    dev_p = self_p->dev_p;
     left = size;
 
     sem_get(&dev_p->sem, NULL);

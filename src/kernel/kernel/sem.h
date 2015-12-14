@@ -44,12 +44,12 @@ int sem_module_init(void);
  * Initialize given semaphore. Count is the number of threads that can
  * hold the semaphore at the same time.
  *
- * @param[in] sem_p Semaphore to get.
+ * @param[in] self_p Semaphore to get.
  * @param[in] count Semaphore count.
  *
  * @return zero(0) or negative error code.
  */
-int sem_init(struct sem_t *sem_p,
+int sem_init(struct sem_t *self_p,
              int count);
 
 /**
@@ -57,34 +57,34 @@ int sem_init(struct sem_t *sem_p,
  * thread will be suspended until count is incremented by a put call
  * by another thread/isr.
  *
- * @param[in] sem_p Semaphore to get.
+ * @param[in] self_p Semaphore to get.
  * @param[in] timeout_p Timeout.
  *
  * @return zero(0) or negative error code.
  */
-int sem_get(struct sem_t *sem_p,
+int sem_get(struct sem_t *self_p,
             struct time_t *timeout_p);
 
 /**
  * Put given value on semaphore.
  *
- * @param[in] sem_p Semaphore to add count to.
+ * @param[in] self_p Semaphore to add count to.
  * @param[in] value Count to add.
  *
  * @return zero(0) or negative error code.
  */
-int sem_put(struct sem_t *sem_p,
+int sem_put(struct sem_t *self_p,
             int count);
 
 /**
  * Put given value on semaphore for irq.
  *
- * @param[in] sem_p Semaphore to add count to.
+ * @param[in] self_p Semaphore to add count to.
  * @param[in] value Count to add.
  *
  * @return zero(0) or negative error code.
  */
-int sem_put_irq(struct sem_t *sem_p,
+int sem_put_irq(struct sem_t *self_p,
                 int count);
 
 #endif

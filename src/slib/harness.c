@@ -20,16 +20,16 @@
 
 #include "simba.h"
 
-int harness_init(struct harness_t *harness_p)
+int harness_init(struct harness_t *self_p)
 {
-    uart_init(&harness_p->uart, &uart_device[0], 38400, NULL, 0);
-    uart_start(&harness_p->uart);
-    sys_set_stdout(&harness_p->uart.chout);
+    uart_init(&self_p->uart, &uart_device[0], 38400, NULL, 0);
+    uart_start(&self_p->uart);
+    sys_set_stdout(&self_p->uart.chout);
 
     return (0);
 }
 
-int harness_run(struct harness_t *harness_p,
+int harness_run(struct harness_t *self_p,
                 struct harness_testcase_t *testcases_p)
 {
     int err;
@@ -50,7 +50,7 @@ int harness_run(struct harness_t *harness_p,
             std_printf(FSTR("enter: %s\r\n"), testcase_p->name_p);
         }
 
-        err = testcase_p->callback(harness_p);
+        err = testcase_p->callback(self_p);
 
         if (err == 0) {
             passed++;
@@ -65,7 +65,7 @@ int harness_run(struct harness_t *harness_p,
     }
 
     strcpy(buf, "kernel/thrd/list");
-    fs_call(buf, NULL, &harness_p->uart.chout);
+    fs_call(buf, NULL, &self_p->uart.chout);
 
     std_printf(FSTR("harness report: total(%d), passed(%d), failed(%d)\r\n"),
                total, passed, failed);

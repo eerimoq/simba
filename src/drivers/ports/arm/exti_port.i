@@ -107,11 +107,11 @@ static int exti_port_module_init()
     return (0);
 }
 
-static int exti_port_start(struct exti_driver_t *drv_p)
+static int exti_port_start(struct exti_driver_t *self_p)
 {
-    volatile struct pin_device_t *dev_p = drv_p->dev_p->pin_dev_p;
+    volatile struct pin_device_t *dev_p = self_p->dev_p->pin_dev_p;
 
-    drv_p->dev_p->drv_p = drv_p;
+    self_p->dev_p->drv_p = self_p;
 
     /* Enable the interrupt. */
     dev_p->pio_p->PER |= dev_p->mask;
@@ -120,9 +120,9 @@ static int exti_port_start(struct exti_driver_t *drv_p)
 
     /* Trigger on both edges is not implemented yet. It's very little
      * work.*/
-    if (drv_p->trigger == EXTI_TRIGGER_FALLING_EDGE) {
+    if (self_p->trigger == EXTI_TRIGGER_FALLING_EDGE) {
         dev_p->pio_p->FELLSR |= dev_p->mask;
-    } else if (drv_p->trigger == EXTI_TRIGGER_RISING_EDGE) {
+    } else if (self_p->trigger == EXTI_TRIGGER_RISING_EDGE) {
         dev_p->pio_p->REHLSR |= dev_p->mask;
     } else {
         return (-1);
@@ -137,15 +137,15 @@ static int exti_port_start(struct exti_driver_t *drv_p)
     return (0);
 }
 
-static int exti_port_stop(struct exti_driver_t *drv_p)
+static int exti_port_stop(struct exti_driver_t *self_p)
 {
     /* Disable the interrupt. */
-    drv_p->dev_p->pin_dev_p->pio_p->IDR |= drv_p->dev_p->pin_dev_p->mask;
+    self_p->dev_p->pin_dev_p->pio_p->IDR |= self_p->dev_p->pin_dev_p->mask;
 
     return (0);
 }
 
-static int exti_port_clear(struct exti_driver_t *drv_p)
+static int exti_port_clear(struct exti_driver_t *self_p)
 {
     return (0);
 }

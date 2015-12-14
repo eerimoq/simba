@@ -34,13 +34,13 @@ struct chan_list_t {
 
 /* Channel. */
 struct chan_t {
-    ssize_t (*read)(chan_t *chan_p,
+    ssize_t (*read)(chan_t *self_p,
                     void *buf_p,
                     size_t size);
-    ssize_t (*write)(chan_t *chan_p,
+    ssize_t (*write)(chan_t *self_p,
                      const void *buf_p,
                      size_t size);
-    size_t (*size)(chan_t *chan_p);
+    size_t (*size)(chan_t *self_p);
     /* Reader thread waiting for data or writer thread waiting for a
        reader. */
     struct thrd_t *writer_p;
@@ -58,52 +58,52 @@ int chan_module_init(void);
 /**
  * Initialize channel with given callbacks.
  *
- * @param[in] chan_p Channel to initialize.
+ * @param[in] self_p Channel to initialize.
  * @param[in] read_p Read function callback.
  * @param[in] write_p Write function callback.
  * @param[in] size Size function callback.
  *
  * @return zero(0) or negative error code.
  */
-int chan_init(struct chan_t *chan_p,
-              ssize_t (*read)(chan_t *chan_p, void *buf_p, size_t size),
-              ssize_t (*write)(chan_t *chan_p, const void *buf_p, size_t size),
-              size_t (*size)(chan_t *chan_p));
+int chan_init(struct chan_t *self_p,
+              ssize_t (*read)(chan_t *self_p, void *buf_p, size_t size),
+              ssize_t (*write)(chan_t *self_p, const void *buf_p, size_t size),
+              size_t (*size)(chan_t *self_p));
 
 /**
  * Read from given channel.
  *
- * @param[in] chan_p Channel to read from.
+ * @param[in] self_p Channel to read from.
  * @param[in] buf_p Buffer to read to.
  * @param[in] size Size to read.
  *
  * @return Number of read bytes or negative error code.
  */
-ssize_t chan_read(chan_t *chan_p,
+ssize_t chan_read(chan_t *self_p,
                   void *buf_p,
                   size_t size);
 
 /**
  * Write bytes to given channel.
  *
- * @param[in] chan_p Channel to write to.
+ * @param[in] self_p Channel to write to.
  * @param[in] buf_p Buffer to write from.
  * @param[in] size Number of bytes to write.
  *
  * @return Number of written bytes or negative error code.
  */
-ssize_t chan_write(chan_t *chan_p,
+ssize_t chan_write(chan_t *self_p,
                    const void *buf_p,
                    size_t size);
 
 /**
  * Get number of bytes available to read from the channel.
  *
- * @param[in] chan_p Channel to write to.
+ * @param[in] self_p Channel to write to.
  *
  * @return Number of bytes available.
  */
-size_t chan_size(chan_t *chan_p);
+size_t chan_size(chan_t *self_p);
 
 /**
  * Initialize an empty list of channels.
@@ -160,6 +160,6 @@ int chan_list_remove(struct chan_list_t *list_p, chan_t *chan_p);
 chan_t *chan_list_poll(struct chan_list_t *list_p,
                        struct time_t *timeout_p);
 
-int chan_is_polled_irq(struct chan_t *chan_p);
+int chan_is_polled_irq(struct chan_t *self_p);
 
 #endif

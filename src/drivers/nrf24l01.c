@@ -79,66 +79,66 @@
 static void isr(void *arg_p)
 {
     char c;
-    struct nrf24l01_driver_t *drv_p = arg_p;
+    struct nrf24l01_driver_t *self_p = arg_p;
 
-    queue_write_irq(&drv_p->irqchan, &c, sizeof(c));
+    queue_write_irq(&self_p->irqchan, &c, sizeof(c));
 }
 
 static void *isr_main(void *arg_p)
 {
     char c;
-    struct nrf24l01_driver_t *drv_p = arg_p;
+    struct nrf24l01_driver_t *self_p = arg_p;
     uint8_t status;
     uint8_t buf[33];
 
     while (1) {
         /* Wait for interrupt. */
-        queue_read(&drv_p->irqchan, &c, sizeof(c));
+        queue_read(&self_p->irqchan, &c, sizeof(c));
 
         /* Read status. */
         status = SPI_CMD_NOP;
-        spi_transfer(&drv_p->spi, &status, &status, sizeof(status));
+        spi_transfer(&self_p->spi, &status, &status, sizeof(status));
 
         /* Handle packet reception. */
         if (status & REG_STATUS_RX_DR) {
             buf[0] = SPI_CMD_R_RX_PAYLOAD;
-            spi_transfer(&drv_p->spi, buf, buf, sizeof(buf));
-            queue_write(&drv_p->chin, &buf[1], 32);
+            spi_transfer(&self_p->spi, buf, buf, sizeof(buf));
+            queue_write(&self_p->chin, &buf[1], 32);
         }
 
         /* Handle packet transmission completion. */
         if (status & REG_STATUS_TX_DS) {
-            thrd_resume(drv_p->thrd_p, 0);
+            thrd_resume(self_p->thrd_p, 0);
         }
 
         /* Clear interrupt flags. */
         buf[0] = (SPI_CMD_W_REGISTER | REG_STATUS);
         buf[1] = (REG_STATUS_RX_DR | REG_STATUS_TX_DS);
-        spi_write(&drv_p->spi, buf, 2);
+        spi_write(&self_p->spi, buf, 2);
     }
 
     return (NULL);
 }
 
-int nrf24l01_init(struct nrf24l01_driver_t *drv_p,
+int nrf24l01_init(struct nrf24l01_driver_t *self_p,
                   struct spi_device_t *spi_p,
                   struct pin_device_t *cs_p,
                   struct pin_device_t *ce_p,
                   struct exti_device_t *exti_p,
                   uint32_t address)
 {
-    drv_p->address = address;
+    self_p->address = address;
 
-    queue_init(&drv_p->irqchan, drv_p->irqbuf, sizeof(drv_p->irqbuf));
-    queue_init(&drv_p->chin, drv_p->chinbuf, sizeof(drv_p->chinbuf));
+    queue_init(&self_p->irqchan, self_p->irqbuf, sizeof(self_p->irqbuf));
+    queue_init(&self_p->chin, self_p->chinbuf, sizeof(self_p->chinbuf));
 
     thrd_spawn(isr_main,
-               drv_p,
+               self_p,
                0,
-               drv_p->stack,
-               sizeof(drv_p->stack));
+               self_p->stack,
+               sizeof(self_p->stack));
 
-    spi_init(&drv_p->spi,
+    spi_init(&self_p->spi,
              spi_p,
              cs_p,
              SPI_MODE_MASTER,
@@ -146,19 +146,19 @@ int nrf24l01_init(struct nrf24l01_driver_t *drv_p,
              0,
              0);
 
-    exti_init(&drv_p->exti,
+    exti_init(&self_p->exti,
               exti_p,
               EXTI_TRIGGER_FALLING_EDGE,
               isr,
-              drv_p);
-    exti_start(&drv_p->exti);
+              self_p);
+    exti_start(&self_p->exti);
 
-    pin_init(&drv_p->ce, ce_p, PIN_OUTPUT);
+    pin_init(&self_p->ce, ce_p, PIN_OUTPUT);
 
     return (0);
 }
 
-int nrf24l01_start(struct nrf24l01_driver_t *drv_p)
+int nrf24l01_start(struct nrf24l01_driver_t *self_p)
 {
     uint8_t buf[6];
     int i;
@@ -166,22 +166,22 @@ int nrf24l01_start(struct nrf24l01_driver_t *drv_p)
     /* Use 4 bytes address. */
     buf[0] = (SPI_CMD_W_REGISTER | REG_SETUP_AW);
     buf[1] = REG_SETUP_AW_5BYTES;
-    spi_write(&drv_p->spi, buf, 2);
+    spi_write(&self_p->spi, buf, 2);
 
     /* Disable acknoledgements. */
     buf[0] = (SPI_CMD_W_REGISTER | REG_EN_AA);
     buf[1] = 0;
-    spi_write(&drv_p->spi, buf, 2);
+    spi_write(&self_p->spi, buf, 2);
 
     /* Set RX address for pipes. */
     for (i = 0; i < 2; i++) {
         buf[0] = (SPI_CMD_W_REGISTER | (REG_RX_ADDR_P0 + i));
-        buf[1] = drv_p->address >> 24;
-        buf[2] = drv_p->address >> 16;
-        buf[3] = drv_p->address >> 8;
-        buf[4] = drv_p->address;
+        buf[1] = self_p->address >> 24;
+        buf[2] = self_p->address >> 16;
+        buf[3] = self_p->address >> 8;
+        buf[4] = self_p->address;
         buf[5] = i;
-        spi_write(&drv_p->spi, buf, 6);
+        spi_write(&self_p->spi, buf, 6);
     }
 
     for (; i < 6; i++) {
@@ -189,53 +189,53 @@ int nrf24l01_start(struct nrf24l01_driver_t *drv_p)
         buf[0] = (SPI_CMD_W_REGISTER |
                   (REG_RX_ADDR_P0 + i));
         buf[1] = i;
-        spi_write(&drv_p->spi, buf, 2);
+        spi_write(&self_p->spi, buf, 2);
     }
 
     /* Receive 32 bytes. */
     for (i = 0; i < 6; i++) {
         buf[0] = (SPI_CMD_W_REGISTER | (REG_RX_PW_P0 + i));
         buf[1] = 32;
-        spi_write(&drv_p->spi, buf, 2);
+        spi_write(&self_p->spi, buf, 2);
     }
 
     /* Enable RX pipes. */
     buf[0] = (SPI_CMD_W_REGISTER | REG_EN_RXADDR);
     buf[1] = 0x3f;
-    spi_write(&drv_p->spi, buf, 2);
+    spi_write(&self_p->spi, buf, 2);
 
     /* Power up. */
-    pin_write(&drv_p->ce, 0);
+    pin_write(&self_p->ce, 0);
 
     buf[0] = (SPI_CMD_W_REGISTER | REG_CONFIG);
     buf[1] = (REG_CONFIG_EN_CRC |
               REG_CONFIG_CRCO |
               REG_CONFIG_PWR_UP);
-    spi_write(&drv_p->spi, buf, 2);
+    spi_write(&self_p->spi, buf, 2);
 
     time_sleep(3000);
 
     /* Clear status flags. */
     buf[0] = (SPI_CMD_W_REGISTER | REG_STATUS);
     buf[1] = (REG_STATUS_RX_DR | REG_STATUS_TX_DS);
-    spi_write(&drv_p->spi, buf, 2);
+    spi_write(&self_p->spi, buf, 2);
 
     /* Flush TX and RX fifos. */
     buf[0] = SPI_CMD_FLUSH_TX;
-    spi_write(&drv_p->spi, buf, 1);
+    spi_write(&self_p->spi, buf, 1);
 
     buf[0] = SPI_CMD_FLUSH_RX;
-    spi_write(&drv_p->spi, buf, 1);
+    spi_write(&self_p->spi, buf, 1);
 
     return (0);
 }
 
-int nrf24l01_stop(struct nrf24l01_driver_t *drv_p)
+int nrf24l01_stop(struct nrf24l01_driver_t *self_p)
 {
     return (0);
 }
 
-ssize_t nrf24l01_read(struct nrf24l01_driver_t *drv_p,
+ssize_t nrf24l01_read(struct nrf24l01_driver_t *self_p,
                       void *buf_p,
                       size_t size)
 {
@@ -249,16 +249,16 @@ ssize_t nrf24l01_read(struct nrf24l01_driver_t *drv_p,
               REG_CONFIG_CRCO |
               REG_CONFIG_PWR_UP |
               REG_CONFIG_PRIM_RX);
-    spi_write(&drv_p->spi, buf, sizeof(buf));
+    spi_write(&self_p->spi, buf, sizeof(buf));
 
     /* Activate RX mode. */
-    pin_write(&drv_p->ce, 1);
+    pin_write(&self_p->ce, 1);
 
     /* Wait for packet. */
-    return (queue_read(&drv_p->chin, buf_p, size));
+    return (queue_read(&self_p->chin, buf_p, size));
 }
 
-ssize_t nrf24l01_write(struct nrf24l01_driver_t *drv_p,
+ssize_t nrf24l01_write(struct nrf24l01_driver_t *self_p,
                        uint32_t address,
                        uint8_t pipe,
                        const void *buf_p,
@@ -275,19 +275,19 @@ ssize_t nrf24l01_write(struct nrf24l01_driver_t *drv_p,
     buf[3] = address >> 8;
     buf[4] = address;
     buf[5] = pipe;
-    spi_write(&drv_p->spi, buf, 6);
+    spi_write(&self_p->spi, buf, 6);
 
     /* Write payload. */
     buf[0] = SPI_CMD_W_TX_PAYLOAD;
     memcpy(&buf[1], buf_p, size);
-    spi_write(&drv_p->spi, buf, 33);
+    spi_write(&self_p->spi, buf, 33);
 
-    drv_p->thrd_p = thrd_self();
+    self_p->thrd_p = thrd_self();
 
     /* Pulse CE high to start transmission. */
-    pin_write(&drv_p->ce, 1);
+    pin_write(&self_p->ce, 1);
     time_sleep(15);
-    pin_write(&drv_p->ce, 0);
+    pin_write(&self_p->ce, 0);
 
     /* Wait for completion. */
     thrd_suspend(NULL);

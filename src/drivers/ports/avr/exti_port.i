@@ -27,10 +27,10 @@
 #define ECTI_ISR(number)                                                \
     ISR(INT ## number ## _vect)                                         \
     {                                                                   \
-        struct exti_driver_t *drv_p = exti_device[number].drv_p;        \
+        struct exti_driver_t *self_p = exti_device[number].self_p;        \
                                                                         \
-        if (drv_p != NULL) {                                            \
-            drv_p->on_interrupt(drv_p->arg_p);                          \
+        if (self_p != NULL) {                                            \
+            self_p->on_interrupt(self_p->arg_p);                          \
         }                                                               \
     }
 
@@ -58,18 +58,18 @@ static int exti_port_module_init()
     return (0);
 }
 
-static int exti_port_start(struct exti_driver_t *drv_p)
+static int exti_port_start(struct exti_driver_t *self_p)
 {
-    struct exti_device_t *dev_p = drv_p->dev_p;
+    struct exti_device_t *dev_p = self_p->dev_p;
 
-    dev_p->drv_p = drv_p;
+    dev_p->drv_p = self_p;
     *DDR(dev_p->pin_p->sfr_p) &= ~(dev_p->pin_p->mask);
 
     if (dev_p->id < 3) {
-        EICRA |= (drv_p->trigger << (2 * dev_p->id));
+        EICRA |= (self_p->trigger << (2 * dev_p->id));
     } else {
 #if (ECTI_DEVICE_MAX >= 2)
-        EICRB |= (drv_p->trigger << (2 * (dev_p->id - 4)));
+        EICRB |= (self_p->trigger << (2 * (dev_p->id - 4)));
 #endif
     }
 
@@ -79,20 +79,20 @@ static int exti_port_start(struct exti_driver_t *drv_p)
     return (0);
 }
 
-static int exti_port_stop(struct exti_driver_t *drv_p)
+static int exti_port_stop(struct exti_driver_t *self_p)
 {
-    struct exti_device_t *dev_p = drv_p->dev_p;
+    struct exti_device_t *dev_p = self_p->dev_p;
 
     EIMSK &= ~_BV(dev_p->id);
-    drv_p->dev_p = NULL;
+    self_p->dev_p = NULL;
 
     return (0);
 }
 
-static int exti_port_clear(struct exti_driver_t *drv_p)
+static int exti_port_clear(struct exti_driver_t *self_p)
 {
     /* Clear the interrupt flag. */
-    EIFR = _BV(drv_p->dev_p->id);
+    EIFR = _BV(self_p->dev_p->id);
 
     return (0);
 }

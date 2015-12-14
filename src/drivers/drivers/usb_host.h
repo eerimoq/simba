@@ -51,7 +51,7 @@ struct usb_host_device_t {
             struct usb_descriptor_configuration_t *conf_p;
         } descriptor;
     } current;
-    struct usb_host_driver_t *drv_p;
+    struct usb_host_driver_t *self_p;
     struct usb_pipe_t *pipes[32];
     /* A list of descriptors. */
     struct {
@@ -79,7 +79,7 @@ int usb_host_module_init(void);
 /**
  * Initialize driver object from given configuration.
  *
- * @param[in] drv_p Driver object to be initialized.
+ * @param[in] self_p Driver object to be initialized.
  * @param[in] dev_p USB device to use.
  * @param[in] devices_p Array of devices. One entry in this array is
                         allocated for each device that is connected to
@@ -88,7 +88,7 @@ int usb_host_module_init(void);
  *
  * @return zero(0) or negative error code.
  */
-int usb_host_init(struct usb_host_driver_t *drv_p,
+int usb_host_init(struct usb_host_driver_t *self_p,
                   struct usb_device_t *dev_p,
                   struct usb_host_device_t *devices_p,
                   size_t length);
@@ -96,66 +96,66 @@ int usb_host_init(struct usb_host_driver_t *drv_p,
 /**
  * Starts the USB device using given driver object.
  *
- * @param[in] drv_p Initialized driver object.
+ * @param[in] self_p Initialized driver object.
  *
  * @return zero(0) or negative error code.
  */
-int usb_host_start(struct usb_host_driver_t *drv_p);
+int usb_host_start(struct usb_host_driver_t *self_p);
 
 /**
  * Stops the USB device referenced by driver object.
  *
- * @param[in] drv_p Initialized driver object.
+ * @param[in] self_p Initialized driver object.
  *
  * @return zero(0) or negative error code.
  */
-int usb_host_stop(struct usb_host_driver_t *drv_p);
+int usb_host_stop(struct usb_host_driver_t *self_p);
 
 /**
  * Add given class/vendor driver to the USB host driver.
  *
- * @param[in] drv_p Initialized driver object.
+ * @param[in] self_p Initialized driver object.
  * @param[in] driver_p USB device driver to add.
  *
  * @return zero(0) or negative error code.
  */
-int usb_host_driver_add(struct usb_host_driver_t *drv_p,
+int usb_host_driver_add(struct usb_host_driver_t *self_p,
                         struct usb_host_device_driver_t *driver_p,
                         void *arg_p);
 
 /**
  * Remove given class/vendor driver from the USB host driver.
  *
- * @param[in] drv_p Initialized driver object.
+ * @param[in] self_p Initialized driver object.
  * @param[in] driver_p USB device driver to remove.
  *
  * @return zero(0) or negative error code.
  */
-int usb_host_driver_remove(struct usb_host_driver_t *drv_p,
+int usb_host_driver_remove(struct usb_host_driver_t *self_p,
                            struct usb_host_device_driver_t *driver_p);
 
 /**
  * Open given device in given driver. Open a device before reading and
  * writing data to it with usb_host_device_read() or usb_host_device_write().
  *
- * @param[in] drv_p Initialized driver.
+ * @param[in] self_p Initialized driver.
  * @param[in] device Device to open.
  *
  * @return Opened device or NULL on failure.
  */
 struct usb_host_device_t *
-usb_host_device_open(struct usb_host_driver_t *drv_p,
+usb_host_device_open(struct usb_host_driver_t *self_p,
                      int device);
 
 /**
  * Close given device in given driver.
  *
- * @param[in] drv_p Initialized driver.
+ * @param[in] self_p Initialized driver.
  * @param[in] device Device to close.
  *
  * @return zero(0) or negative error code.
  */
-int usb_host_device_close(struct usb_host_driver_t *drv_p,
+int usb_host_device_close(struct usb_host_driver_t *self_p,
                           int device);
 
 /**

@@ -27,26 +27,26 @@ int flash_module_init(void)
     return (flash_port_module_init());
 }
 
-int flash_init(struct flash_driver_t *drv_p,
+int flash_init(struct flash_driver_t *self_p,
                struct flash_device_t *dev_p)
 {
-    drv_p->dev_p = dev_p;
+    self_p->dev_p = dev_p;
 
     return (0);
 }
 
-ssize_t flash_read(struct flash_driver_t *drv_p,
+ssize_t flash_read(struct flash_driver_t *self_p,
                    void *dst_p,
                    size_t src,
                    size_t size)
 {
-    return (flash_port_read(drv_p, dst_p, src, size));
+    return (flash_port_read(self_p, dst_p, src, size));
 }
 
-ssize_t flash_write(struct flash_driver_t *drv_p,
+ssize_t flash_write(struct flash_driver_t *self_p,
                     size_t dst,
                     const void *src_p,
                     size_t size)
 {
-    return (flash_port_write(drv_p, dst, src_p, size));
+    return (flash_port_write(self_p, dst, src_p, size));
 }

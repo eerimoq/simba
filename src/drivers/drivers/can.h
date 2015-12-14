@@ -45,7 +45,7 @@ extern struct can_device_t can_device[CAN_DEVICE_MAX];
 /**
  * Initialize driver object.
  *
- * @param[in] drv_p Driver object to initialize.
+ * @param[in] self_p Driver object to initialize.
  * @param[in] dev_p Device to use.
  * @param[in] filter_p RX filter configuration.
  * @param[in] frames_p RX frame buffer in interrupt.
@@ -53,7 +53,7 @@ extern struct can_device_t can_device[CAN_DEVICE_MAX];
  *
  * @return zero(0) or negative error code.
  */
-int can_init(struct can_driver_t *drv_p,
+int can_init(struct can_driver_t *self_p,
              struct can_device_t *dev_p,
              uint32_t speed,
              void *rxbuf_p,
@@ -62,44 +62,44 @@ int can_init(struct can_driver_t *drv_p,
 /**
  * Starts the CAN device using given driver object.
  *
- * @param[in] drv_p Initialized driver object.
+ * @param[in] self_p Initialized driver object.
  *
  * @return zero(0) or negative error code.
  */
-int can_start(struct can_driver_t *drv_p);
+int can_start(struct can_driver_t *self_p);
 
 /**
  * Stops the CAN device referenced by driver object.
  *
- * @param[in] drv_p Initialized driver object.
+ * @param[in] self_p Initialized driver object.
  *
  * @return zero(0) or negative error code.
  */
-int can_stop(struct can_driver_t *drv_p);
+int can_stop(struct can_driver_t *self_p);
 
 /**
  * Read CAN frame(s).
  *
- * @param[in] drv_p Initialized driver object.
+ * @param[in] self_p Initialized driver object.
  * @param[out] frame_p Array of read frames.
  * @param[in] size Size of frames buffer in words.
  *
  * @return zero(0) or negative error code.
  */
-int can_read(struct can_driver_t *drv_p,
+int can_read(struct can_driver_t *self_p,
              struct can_frame_t *frame_p,
              size_t size);
 
 /**
  * Write a CAN frame(s).
  *
- * @param[in] drv_p Initialized driver object.
+ * @param[in] self_p Initialized driver object.
  * @param[in] frame_p Array of frames to write.
  * @param[in] size Size of frames buffer in words.
  *
  * @return zero(0) or negative error code.
  */
-int can_write(struct can_driver_t *drv_p,
+int can_write(struct can_driver_t *self_p,
               const struct can_frame_t *frame_p,
               size_t size);
 

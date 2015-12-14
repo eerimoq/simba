@@ -128,16 +128,16 @@ static ssize_t write_cb(void *arg_p,
                         const void *buf_p,
                         size_t size)
 {
-    struct can_driver_t *drv_p;
+    struct can_driver_t *self_p;
     struct can_device_t *dev_p;
     const struct can_frame_t *frame_p = (struct can_frame_t *)buf_p;
 
-    drv_p = container_of(arg_p, struct can_driver_t, chout);
-    dev_p = drv_p->dev_p;
+    self_p = container_of(arg_p, struct can_driver_t, chout);
+    dev_p = self_p->dev_p;
 
-    drv_p->txframe_p = (frame_p + 1);
-    drv_p->txsize = (size - sizeof(*frame_p));
-    drv_p->thrd_p = thrd_self();
+    self_p->txframe_p = (frame_p + 1);
+    self_p->txsize = (size - sizeof(*frame_p));
+    self_p->thrd_p = thrd_self();
 
     write_frame_to_hw(&dev_p->regs_p->MAILBOX[MAILBOX_TX],
                       frame_p);
@@ -154,20 +154,20 @@ static ssize_t write_cb(void *arg_p,
     return (size);
 }
 
-int can_port_init(struct can_driver_t *drv_p,
+int can_port_init(struct can_driver_t *self_p,
                   struct can_device_t *dev_p,
                   uint32_t speed)
 {
-    drv_p->speed = speed;
+    self_p->speed = speed;
 
     return (0);
 }
 
-int can_port_start(struct can_driver_t *drv_p)
+int can_port_start(struct can_driver_t *self_p)
 {
     uint32_t mask;
     volatile struct sam_pio_t *pio_p;
-    struct can_device_t *dev_p = drv_p->dev_p;
+    struct can_device_t *dev_p = self_p->dev_p;
 
     /* Configure tx pin. */
     mask = dev_p->tx.mask;
@@ -199,7 +199,7 @@ int can_port_start(struct can_driver_t *drv_p)
     dev_p->regs_p->MAILBOX[MAILBOX_RX_SID].MID = 0;
 
     /* Baud rate. */
-    dev_p->regs_p->BR = drv_p->speed;
+    dev_p->regs_p->BR = self_p->speed;
 
     dev_p->regs_p->IDR = 0xffffffff;
     /* Enable interrupt for RX mailboxes.*/
@@ -210,14 +210,14 @@ int can_port_start(struct can_driver_t *drv_p)
 
     nvic_enable_interrupt(dev_p->id);
 
-    dev_p->drv_p = drv_p;
+    dev_p->drv_p = self_p;
 
     return (0);
 }
 
-int can_port_stop(struct can_driver_t *drv_p)
+int can_port_stop(struct can_driver_t *self_p)
 {
-    struct can_device_t *dev_p = drv_p->dev_p;
+    struct can_device_t *dev_p = self_p->dev_p;
 
     nvic_disable_interrupt(dev_p->id);
 

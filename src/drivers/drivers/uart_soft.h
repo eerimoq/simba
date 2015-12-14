@@ -36,7 +36,7 @@ struct uart_soft_driver_t {
 /**
  * Initialize driver object from given configuration.
  *
- * @param[in] drv_p Driver object to be initialized.
+ * @param[in] self_p Driver object to be initialized.
  * @param[in] tx_dev_p TX pin device.
  * @param[in] rx_dev_p RX pin device.
  * @param[in] rx_exti_dev_p RX pin external interrupt device.
@@ -46,7 +46,7 @@ struct uart_soft_driver_t {
  *
  * @return zero(0) or negative error code.
  */
-int uart_soft_init(struct uart_soft_driver_t *drv_p,
+int uart_soft_init(struct uart_soft_driver_t *self_p,
                    struct pin_device_t *tx_dev_p,
                    struct pin_device_t *rx_dev_p,
                    struct exti_device_t *rx_exti_dev_p,
@@ -57,25 +57,25 @@ int uart_soft_init(struct uart_soft_driver_t *drv_p,
 /**
  * Read data from the UART.
  *
- * @param[in] drv_p Initialized driver object.
+ * @param[in] self_p Initialized driver object.
  * @param[in] buf_p Buffer to read into.
  * @param[in] size Number of bytes to receive.
  *
  * @return Number of received bytes or negative error code.
  */
-#define uart_soft_read(drv_p, buf_p, size)      \
-    queue_read(&(drv_p)->chin, buf_p, size)
+#define uart_soft_read(self_p, buf_p, size)      \
+    queue_read(&(self_p)->chin, buf_p, size)
 
 /**
  * Write data to the UART.
  *
- * @param[in] drv_p Initialized driver object.
+ * @param[in] self_p Initialized driver object.
  * @param[in] buf_p Buffer to write.
  * @param[in] size Number of bytes to write.
  *
  * @return number of sent bytes or negative error code.
  */
-#define uart_soft_write(drv_p, buf_p, size)             \
-    (drv_p)->chout.write(&(drv_p)->chout, buf_p, size)
+#define uart_soft_write(self_p, buf_p, size)             \
+    (self_p)->chout.write(&(self_p)->chout, buf_p, size)
 
 #endif

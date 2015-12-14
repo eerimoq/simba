@@ -36,12 +36,12 @@ struct event_t {
  *
  * @return zero(0) or negative error code
  */
-int event_init(struct event_t *event_p);
+int event_init(struct event_t *self_p);
 
 /**
  * Wait for an event to occur in given mask.
  *
- * @param[in] event_p Initialized event channel to read from.
+ * @param[in] self_p Initialized event channel to read from.
  * @param[in, out] buf_p The mask of events to wait for. When the
  *                       function return the mask contains the events
  *                       that have occured.
@@ -49,20 +49,20 @@ int event_init(struct event_t *event_p);
  *
  * @return sizeof(mask) or negative error code.
  */
-ssize_t event_read(struct event_t *event_p,
+ssize_t event_read(struct event_t *self_p,
                    void *buf_p,
                    size_t size);
 
 /**
  * Write given events to the event channel.
  *
- * @param[in] event_p Initialized event channel to write to.
+ * @param[in] self_p Initialized event channel to write to.
  * @param[in] buf_p The mask of events to write.
  * @param[in] size Must always be sizeof(mask).
  *
  * @return sizeof(mask) or negative error code.
  */
-ssize_t event_write(struct event_t *event_p,
+ssize_t event_write(struct event_t *self_p,
                     const void *buf_p,
                     size_t size);
 
@@ -70,13 +70,13 @@ ssize_t event_write(struct event_t *event_p,
  * Write given events to the event channel from interrupt context, or
  * with system lock taken.
  *
- * @param[in] event_p Initialized event channel to write to.
+ * @param[in] self_p Initialized event channel to write to.
  * @param[in] buf_p The mask of events to write.
  * @param[in] size Must always be sizeof(mask).
  *
  * @return sizeof(mask) or negative error code.
  */
-ssize_t event_write_irq(struct event_t *event_p,
+ssize_t event_write_irq(struct event_t *self_p,
                         const void *buf_p,
                         size_t size);
 
@@ -88,6 +88,6 @@ ssize_t event_write_irq(struct event_t *event_p,
  * @return true(1) is at least one event is active, otherwise
  *         false(0).
  */
-ssize_t event_size(struct event_t *event_p);
+ssize_t event_size(struct event_t *self_p);
 
 #endif

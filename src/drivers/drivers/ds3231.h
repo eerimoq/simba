@@ -30,14 +30,14 @@ struct ds3231_driver_t {
 /**
  * Initialize driver object.
  *
- * @param[in,out] drv_p Driver object to be initialized.
+ * @param[in,out] self_p Driver object to be initialized.
  *
  * @return zero(0) or negative error code.
  */
-int ds3231_init(struct ds3231_driver_t *drv_p);
+int ds3231_init(struct ds3231_driver_t *self_p);
 
-int ds3231_set_date(struct ds3231_driver_t *drv_p, struct date_t *date_p);
+int ds3231_set_date(struct ds3231_driver_t *self_p, struct date_t *date_p);
 
-int ds3231_get_date(struct ds3231_driver_t *drv_p, struct date_t *date_p);
+int ds3231_get_date(struct ds3231_driver_t *self_p, struct date_t *date_p);
 
 #endif

@@ -49,7 +49,7 @@ struct usb_host_class_hid_driver_t {
 /**
  * Initialize driver object from given configuration.
  *
- * @param[in] drv_p Driver object to be initialized.
+ * @param[in] self_p Driver object to be initialized.
  * @param[in] usb_p USB driver to use.
  * @param[in] devices_p Array of devices. One entry in this array is
                         allocated for each HID device that is connected to
@@ -58,7 +58,7 @@ struct usb_host_class_hid_driver_t {
  *
  * @return zero(0) or negative error code.
  */
-int usb_host_class_hid_init(struct usb_host_class_hid_driver_t *drv_p,
+int usb_host_class_hid_init(struct usb_host_class_hid_driver_t *self_p,
                             struct usb_host_driver_t *usb_p,
                             struct usb_host_class_hid_device_t *devices_p,
                             size_t length);
@@ -66,19 +66,19 @@ int usb_host_class_hid_init(struct usb_host_class_hid_driver_t *drv_p,
 /**
  * Starts the HID driver.
  *
- * @param[in] drv_p Initialized driver object to start.
+ * @param[in] self_p Initialized driver object to start.
  *
  * @return zero(0) or negative error code.
  */
-int usb_host_class_hid_start(struct usb_host_class_hid_driver_t *drv_p);
+int usb_host_class_hid_start(struct usb_host_class_hid_driver_t *self_p);
 
 /**
  * Stops the HID driver.
  *
- * @param[in] drv_p Initialized to stop.
+ * @param[in] self_p Initialized to stop.
  *
  * @return zero(0) or negative error code.
  */
-int usb_host_class_hid_stop(struct usb_host_class_hid_driver_t *drv_p);
+int usb_host_class_hid_stop(struct usb_host_class_hid_driver_t *self_p);
 
 #endif

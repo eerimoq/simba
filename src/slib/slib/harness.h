@@ -37,21 +37,21 @@ struct harness_t {
 /**
  * Initialize a test harness.
  *
- * @param[in] harness_p Test harness to initialize.
+ * @param[in] self_p Test harness to initialize.
  *
  * @return zero(0) or negative error code.
  */
-int harness_init(struct harness_t *harness_p);
+int harness_init(struct harness_t *self_p);
 
 /**
  * Run testcases in test harness.
  *
- * @param[in] harness_p Test harness.
+ * @param[in] self_p Test harness.
  * @param[in] testcases_p Testcases to run.
  *
  * @return zero(0) or negative error code.
  */
-int harness_run(struct harness_t *harness_p,
+int harness_run(struct harness_t *self_p,
                 struct harness_testcase_t *testcases_p);
 
 #endif

@@ -22,7 +22,7 @@
 
 static FILE *file_p = NULL;
 
-int sd_init(struct sd_driver_t *drv_p,
+int sd_init(struct sd_driver_t *self_p,
             struct spi_driver_t *spi_p)
 {
     file_p = fopen("sdcard", "r+b");
@@ -30,17 +30,17 @@ int sd_init(struct sd_driver_t *drv_p,
     return (file_p == NULL);
 }
 
-int sd_start(struct sd_driver_t *drv_p)
+int sd_start(struct sd_driver_t *self_p)
 {
     return (0);
 }
 
-int sd_stop(struct sd_driver_t *drv_p)
+int sd_stop(struct sd_driver_t *self_p)
 {
     return (0);
 }
 
-ssize_t sd_read_block(struct sd_driver_t *drv_p,
+ssize_t sd_read_block(struct sd_driver_t *self_p,
                       void *dst_p,
                       uint32_t src_block)
 {
@@ -56,7 +56,7 @@ ssize_t sd_read_block(struct sd_driver_t *drv_p,
     return (fread(dst_p, 1, SD_BLOCK_SIZE, file_p));
 }
 
-ssize_t sd_write_block(struct sd_driver_t *drv_p,
+ssize_t sd_write_block(struct sd_driver_t *self_p,
                        uint32_t dst_block,
                        const void *src_p)
 {

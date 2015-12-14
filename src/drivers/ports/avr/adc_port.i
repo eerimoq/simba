@@ -37,47 +37,47 @@ struct pin_driver_t pin;
 ISR(ADC_vect)
 {
     struct adc_device_t *dev_p = &adc_device[0];
-    struct adc_driver_t *drv_p = dev_p->jobs.head_p;
+    struct adc_driver_t *self_p = dev_p->jobs.head_p;
 
     /* The AD Converter is running in free mode. */
-    drv_p->interrupt_count++;
+    self_p->interrupt_count++;
 
-    if (drv_p->interrupt_count < drv_p->interrupt_max) {
+    if (self_p->interrupt_count < self_p->interrupt_max) {
         return;
     }
 
-    drv_p->interrupt_count = 0;
+    self_p->interrupt_count = 0;
 
 #if defined(ADC_DEBUG_PIN)
     pin_toggle(&pin);
 #endif
 
     /* Read the sample from the output register. */
-    drv_p->samples_p[drv_p->pos++] = ADC;
+    self_p->samples_p[self_p->pos++] = ADC;
 
     /* Resume thread when all samples have been collected. */
-    if (drv_p->pos == drv_p->length) {
+    if (self_p->pos == self_p->length) {
         /* Detach job from job list as it is completed. */
-        dev_p->jobs.head_p = drv_p->next_p;
+        dev_p->jobs.head_p = self_p->next_p;
 
         /* Disable ADC hardware if there are no more queued jobs. */
-        if (drv_p->next_p != NULL) {
-            ADMUX = drv_p->next_p->admux;
+        if (self_p->next_p != NULL) {
+            ADMUX = self_p->next_p->admux;
         } else {
             ADCSRA &= ~_BV(ADEN);
         }
 
         /* Resume the thread if it is waiting for completion. */
-        if (drv_p->thrd_p != NULL) {
-            thrd_resume_irq(drv_p->thrd_p, 0);
+        if (self_p->thrd_p != NULL) {
+            thrd_resume_irq(self_p->thrd_p, 0);
         }
     }
 }
 
-static void start_adc_hw(struct adc_driver_t *drv_p)
+static void start_adc_hw(struct adc_driver_t *self_p)
 {
     /* Start AD Converter in free running mode. */
-    ADMUX = drv_p->admux;
+    ADMUX = self_p->admux;
     ADCSRB = 0;
     /* clock div 32. */
     ADCSRA = (_BV(ADEN) | _BV(ADSC) | _BV(ADATE) | _BV(ADIE)
@@ -89,7 +89,7 @@ static int adc_port_module_init(void)
     return (0);
 }
 
-static int adc_port_init(struct adc_driver_t *drv_p,
+static int adc_port_init(struct adc_driver_t *self_p,
                          struct adc_device_t *dev_p,
                          struct pin_device_t *pin_dev_p,
                          int reference,
@@ -101,11 +101,11 @@ static int adc_port_init(struct adc_driver_t *drv_p,
         channel++;
     }
 
-    drv_p->dev_p = dev_p;
-    drv_p->interrupt_max =
+    self_p->dev_p = dev_p;
+    self_p->interrupt_max =
         SAMPLING_RATE_TO_INTERRUPT_MAX((long)sampling_rate);
-    drv_p->admux = (reference | (channel & 0x07));
-    pin_init(&drv_p->pin_drv, pin_dev_p, PIN_INPUT);
+    self_p->admux = (reference | (channel & 0x07));
+    pin_init(&self_p->pin_drv, pin_dev_p, PIN_INPUT);
 
 #if defined(ADC_DEBUG_PIN)
     pin_init(&pin, &pin_d12_dev, PIN_OUTPUT);
@@ -115,48 +115,48 @@ static int adc_port_init(struct adc_driver_t *drv_p,
     return (0);
 }
 
-static int adc_port_async_convert(struct adc_driver_t *drv_p,
+static int adc_port_async_convert(struct adc_driver_t *self_p,
                                   uint16_t *samples_p,
                                   size_t length)
 {
     /* Initialize. */
-    drv_p->pos = 0;
-    drv_p->samples_p = samples_p;
-    drv_p->length = length;
-    drv_p->interrupt_count = 0;
-    drv_p->thrd_p = NULL;
-    drv_p->next_p = NULL;
+    self_p->pos = 0;
+    self_p->samples_p = samples_p;
+    self_p->length = length;
+    self_p->interrupt_count = 0;
+    self_p->thrd_p = NULL;
+    self_p->next_p = NULL;
 
     /* Enqueue. */
     sys_lock();
 
-    if (drv_p->dev_p->jobs.head_p == NULL) {
+    if (self_p->dev_p->jobs.head_p == NULL) {
         /* Empty queue. */
-        drv_p->dev_p->jobs.head_p = drv_p;
-        start_adc_hw(drv_p);
+        self_p->dev_p->jobs.head_p = self_p;
+        start_adc_hw(self_p);
     } else {
         /* Non-empty queue. */
-        drv_p->dev_p->jobs.tail_p->next_p = drv_p;
+        self_p->dev_p->jobs.tail_p->next_p = self_p;
     }
 
-    drv_p->dev_p->jobs.tail_p = drv_p;
+    self_p->dev_p->jobs.tail_p = self_p;
 
     sys_unlock();
 
     return (0);
 }
 
-static int adc_port_async_wait(struct adc_driver_t *drv_p)
+static int adc_port_async_wait(struct adc_driver_t *self_p)
 {
     int has_finished;
 
     sys_lock();
 
-    has_finished = (drv_p->pos == drv_p->length);
+    has_finished = (self_p->pos == self_p->length);
 
     /* Always set thrd_p, even if the convertion has finished. If the
        convertion has finished, thrd_p will be unused.*/
-    drv_p->thrd_p = thrd_self();
+    self_p->thrd_p = thrd_self();
 
     /* Wait until all samples have been converted. */
     if (!has_finished) {

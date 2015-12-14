@@ -37,14 +37,14 @@ struct usb_host_class_mass_storage_driver_t {
     struct usb_host_device_driver_t device_driver;
 };
 
-int usb_host_class_mass_storage_init(struct usb_host_class_mass_storage_driver_t *drv_p,
+int usb_host_class_mass_storage_init(struct usb_host_class_mass_storage_driver_t *self_p,
                                      struct usb_host_driver_t *usb_p,
                                      struct usb_host_class_mass_storage_device_t *devices_p,
                                      size_t length);
 
-int usb_host_class_mass_storage_start(struct usb_host_class_mass_storage_driver_t *drv_p);
+int usb_host_class_mass_storage_start(struct usb_host_class_mass_storage_driver_t *self_p);
 
-int usb_host_class_mass_storage_stop(struct usb_host_class_mass_storage_driver_t *drv_p);
+int usb_host_class_mass_storage_stop(struct usb_host_class_mass_storage_driver_t *self_p);
 
 ssize_t usb_host_class_mass_storage_device_read(
     struct usb_host_device_t *device_p,

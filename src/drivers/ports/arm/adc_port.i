@@ -22,63 +22,63 @@
 #define STATE_RUNNING  0
 #define STATE_FINISHED 1
 
-static void start_adc_hw(struct adc_driver_t *drv_p)
+static void start_adc_hw(struct adc_driver_t *self_p)
 {
     volatile struct sam_adc_t *regs_p;
 
-    regs_p = drv_p->dev_p->regs_p;
+    regs_p = self_p->dev_p->regs_p;
 
     /* Initialize the PDC. */
-    regs_p->PDC.RPR = (uint32_t)drv_p->samples_p;
-    regs_p->PDC.RCR = drv_p->length;
+    regs_p->PDC.RPR = (uint32_t)self_p->samples_p;
+    regs_p->PDC.RCR = self_p->length;
 
-    regs_p->CHER = (1 << drv_p->channel);
+    regs_p->CHER = (1 << self_p->channel);
     regs_p->IER = (SAM_ADC_IER_ENDRX);
 
     /* Start the convertion. */
     regs_p->CR = (SAM_ADC_CR_START);
 }
 
-static void stop_adc_hw(struct adc_driver_t *drv_p)
+static void stop_adc_hw(struct adc_driver_t *self_p)
 {
     volatile struct sam_adc_t *regs_p;
 
-    regs_p = drv_p->dev_p->regs_p;
+    regs_p = self_p->dev_p->regs_p;
 
     /* Stop the AD Converter. */
-    regs_p->CHDR = (1 << drv_p->channel);
+    regs_p->CHDR = (1 << self_p->channel);
     regs_p->IDR = (SAM_ADC_IDR_ENDRX);
 }
 
 ISR(adc)
 {
     struct adc_device_t *dev_p = &adc_device[0];
-    struct adc_driver_t *drv_p = dev_p->jobs.head_p;
+    struct adc_driver_t *self_p = dev_p->jobs.head_p;
 
     /* Mark the job as finished. */
-    drv_p->state = STATE_FINISHED;
-    
+    self_p->state = STATE_FINISHED;
+
     /* Detach the job from the job list as it is completed. */
-    dev_p->jobs.head_p = drv_p->next_p;
-    
+    dev_p->jobs.head_p = self_p->next_p;
+
     /* Disable the ADC hardware. */
-    stop_adc_hw(drv_p);
+    stop_adc_hw(self_p);
 
     /* Start the next job, if there is one. */
-    if (drv_p->next_p != NULL) {
-        start_adc_hw(drv_p->next_p);
+    if (self_p->next_p != NULL) {
+        start_adc_hw(self_p->next_p);
     }
-    
+
     /* Resume the thread if it is waiting for completion. */
-    if (drv_p->thrd_p != NULL) {
-        thrd_resume_irq(drv_p->thrd_p, 0);
+    if (self_p->thrd_p != NULL) {
+        thrd_resume_irq(self_p->thrd_p, 0);
     }
 }
 
 static int adc_port_module_init(void)
 {
     int channel;
-    uint32_t rc;    
+    uint32_t rc;
     uint32_t sampling_rate = 10000;
     struct adc_device_t *dev_p = &adc_device[0];
 
@@ -116,7 +116,7 @@ static int adc_port_module_init(void)
     return (0);
 }
 
-static int adc_port_init(struct adc_driver_t *drv_p,
+static int adc_port_init(struct adc_driver_t *self_p,
                          struct adc_device_t *dev_p,
                          struct pin_device_t *pin_dev_p,
                          int reference,
@@ -124,7 +124,7 @@ static int adc_port_init(struct adc_driver_t *drv_p,
 {
     uint32_t mask;
 
-    drv_p->dev_p = dev_p;
+    self_p->dev_p = dev_p;
 
     /* Disable the pull-up. */
     mask = pin_dev_p->mask;
@@ -133,75 +133,75 @@ static int adc_port_init(struct adc_driver_t *drv_p,
     pin_dev_p->pio_p->ABSR |= mask;
 
     if (pin_dev_p == &pin_a0_dev) {
-        drv_p->channel = 7;
+        self_p->channel = 7;
     } else if (pin_dev_p == &pin_a1_dev) {
-        drv_p->channel = 6;
+        self_p->channel = 6;
     } else if (pin_dev_p == &pin_a2_dev) {
-        drv_p->channel = 5;
+        self_p->channel = 5;
     } else if (pin_dev_p == &pin_a3_dev) {
-        drv_p->channel = 4;
+        self_p->channel = 4;
     } else if (pin_dev_p == &pin_a4_dev) {
-        drv_p->channel = 3;
+        self_p->channel = 3;
     } else if (pin_dev_p == &pin_a5_dev) {
-        drv_p->channel = 2;
+        self_p->channel = 2;
     } else if (pin_dev_p == &pin_a6_dev) {
-        drv_p->channel = 1;
+        self_p->channel = 1;
     } else if (pin_dev_p == &pin_a7_dev) {
-        drv_p->channel = 0;
+        self_p->channel = 0;
     } else if (pin_dev_p == &pin_a8_dev) {
-        drv_p->channel = 10;
+        self_p->channel = 10;
     } else if (pin_dev_p == &pin_a9_dev) {
-        drv_p->channel = 11;
+        self_p->channel = 11;
     } else if (pin_dev_p == &pin_a10_dev) {
-        drv_p->channel = 12;
+        self_p->channel = 12;
     } else if (pin_dev_p == &pin_a11_dev) {
-        drv_p->channel = 13;
+        self_p->channel = 13;
     }
 
     return (0);
 }
 
-static int adc_port_async_convert(struct adc_driver_t *drv_p,
+static int adc_port_async_convert(struct adc_driver_t *self_p,
                                   uint16_t *samples_p,
                                   size_t length)
 {
     /* Initialize. */
-    drv_p->state = STATE_RUNNING;
-    drv_p->samples_p = samples_p;
-    drv_p->length = length;
-    drv_p->thrd_p = NULL;
-    drv_p->next_p = NULL;
+    self_p->state = STATE_RUNNING;
+    self_p->samples_p = samples_p;
+    self_p->length = length;
+    self_p->thrd_p = NULL;
+    self_p->next_p = NULL;
 
     /* Enqueue. */
     sys_lock();
 
-    if (drv_p->dev_p->jobs.head_p == NULL) {
+    if (self_p->dev_p->jobs.head_p == NULL) {
         /* Empty queue. */
-        drv_p->dev_p->jobs.head_p = drv_p;
-        start_adc_hw(drv_p);
+        self_p->dev_p->jobs.head_p = self_p;
+        start_adc_hw(self_p);
     } else {
         /* Non-empty queue. */
-        drv_p->dev_p->jobs.tail_p->next_p = drv_p;
+        self_p->dev_p->jobs.tail_p->next_p = self_p;
     }
 
-    drv_p->dev_p->jobs.tail_p = drv_p;
+    self_p->dev_p->jobs.tail_p = self_p;
 
     sys_unlock();
 
     return (0);
 }
 
-static int adc_port_async_wait(struct adc_driver_t *drv_p)
+static int adc_port_async_wait(struct adc_driver_t *self_p)
 {
     int has_finished;
 
     sys_lock();
 
-    has_finished = (drv_p->state == STATE_FINISHED);
+    has_finished = (self_p->state == STATE_FINISHED);
 
     /* Always set thrd_p, even if the convertion has finished. If the
        convertion has finished, thrd_p will be unused.*/
-    drv_p->thrd_p = thrd_self();
+    self_p->thrd_p = thrd_self();
 
     /* Wait until all samples have been converted. */
     if (!has_finished) {

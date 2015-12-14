@@ -42,8 +42,8 @@ struct timer_t {
  * timeout is rounded up to closest system tick. This applies for both
  * single shot and periodic timers.
  *
- * @param[in] timer_p Timer reference to be started with given
- *                    timeout.
+ * @param[in] self_p Timer reference to be started with given
+ *                   timeout.
  * @param[in] timeout_p Time until timer expiry.
  * @param[in] callback Expiry callback. Called from interrupt context.
  * @param[in] arg_p Callback argument.
@@ -51,7 +51,7 @@ struct timer_t {
  *
  * @return zero(0) or negative error code.
  */
-int timer_set(struct timer_t *timer_p,
+int timer_set(struct timer_t *self_p,
               struct time_t *timeout_p,
               void (*callback)(void *arg),
               void *arg_p,
@@ -60,11 +60,11 @@ int timer_set(struct timer_t *timer_p,
 /**
  * Cancel given timer.
  *
- * @param[in] timer_p Timer reference.
+ * @param[in] self_p Timer reference.
  *
  * @return zero(0) or negative error code.
  */
-int timer_cancel(struct timer_t *timer_p);
+int timer_cancel(struct timer_t *self_p);
 
 /**
  * Set a timer with given timeout and expiry callback. Timer timer
@@ -72,7 +72,7 @@ int timer_cancel(struct timer_t *timer_p);
  * timeout is rounded up to closest system tick. This applies for both
  * single shot and periodic timers.
  *
- * @param[in] timer_p Timer reference to be started with given timeout.
+ * @param[in] self_p Timer reference to be started with given timeout.
  * @param[in] timeout_p Time until timer expiry.
  * @param[in] callback Expiry callback. Called from interrupt context.
  * @param[in] arg_p Callback argument.
@@ -80,7 +80,7 @@ int timer_cancel(struct timer_t *timer_p);
  *
  * @return zero(0) or negative error code.
  */
-int timer_set_irq(struct timer_t *timer_p,
+int timer_set_irq(struct timer_t *self_p,
                   struct time_t *timeout_p,
                   void (*callback)(void *arg),
                   void *arg_p,

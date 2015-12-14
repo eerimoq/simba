@@ -84,23 +84,23 @@ ISR(uotghs)
 /**
  * Handle the device connect attempt hardware interrupt.
  */
-static int handle_event_connect(struct usb_host_driver_t *drv_p)
+static int handle_event_connect(struct usb_host_driver_t *self_p)
 {
-    return (device_enumerate(drv_p->devices_p));
+    return (device_enumerate(self_p->devices_p));
 }
 
 static int device_reset(struct usb_host_device_t *device_p)
 {
     std_printf(FSTR("Resetting the device.\r\n"));
 
-    device_p->drv_p->dev_p->regs_p->HOST.CTRL = SAM_UOTGHS_HOST_CTRL_RESET;
+    device_p->self_p->dev_p->regs_p->HOST.CTRL = SAM_UOTGHS_HOST_CTRL_RESET;
 
     thrd_usleep(100000);
 
     return (0);
 }
 
-static void *usb_main(struct usb_host_driver_t *drv_p)
+static void *usb_main(struct usb_host_driver_t *self_p)
 {
     uint32_t mask;
 
@@ -108,22 +108,22 @@ static void *usb_main(struct usb_host_driver_t *drv_p)
 
     while (1) {
         mask = EVENT_CONNECT;
-        event_read(&drv_p->event, &mask, sizeof(mask));
+        event_read(&self_p->event, &mask, sizeof(mask));
 
         if (mask & EVENT_CONNECT) {
-            handle_event_connect(drv_p);
+            handle_event_connect(self_p);
         }
     }
 
     return (NULL);
 }
 
-static int usb_host_port_init(struct usb_host_driver_t *drv_p,
+static int usb_host_port_init(struct usb_host_driver_t *self_p,
                               struct usb_device_t *dev_p)
 {
     int i;
 
-    event_init(&drv_p->event);
+    event_init(&self_p->event);
 
     for (i = 0; i < membersof(dev_p->pipes); i++) {
         dev_p->pipes[i].id = i;
@@ -133,9 +133,9 @@ static int usb_host_port_init(struct usb_host_driver_t *drv_p,
     return (0);
 }
 
-static int usb_host_port_start(struct usb_host_driver_t *drv_p)
+static int usb_host_port_start(struct usb_host_driver_t *self_p)
 {
-    struct usb_device_t *dev_p = drv_p->dev_p;
+    struct usb_device_t *dev_p = self_p->dev_p;
 
     std_printf(FSTR("Starting the USB clock.\r\n"));
 
@@ -175,28 +175,27 @@ static int usb_host_port_start(struct usb_host_driver_t *drv_p)
     /* Enable connection attempt interrupt. */
     dev_p->regs_p->HOST.IER = SAM_UOTGHS_HOST_IER_DCONNIES;
 
-    dev_p->drv_p = drv_p;
+    dev_p->drv_p = self_p;
 
     thrd_spawn((void *(*)(void *))usb_main,
-               drv_p,
+               self_p,
                -19,
-               drv_p->stack,
-               sizeof(drv_p->stack));
+               self_p->stack,
+               sizeof(self_p->stack));
 
     std_printf(FSTR("USB start finished.\r\n"));
 
     return (0);
 }
 
-static int usb_host_port_stop(struct usb_host_driver_t *drv_p)
+static int usb_host_port_stop(struct usb_host_driver_t *self_p)
 {
-    struct usb_device_t *dev_p = drv_p->dev_p;
+    struct usb_device_t *dev_p = self_p->dev_p;
 
     /* Disable the USB hardware. */
     dev_p->regs_p->CTRL &= ~SAM_UOTGHS_CTRL_USBE;
 
     /* Stop the USB clock. */
-
 
     dev_p->drv_p = NULL;
 
@@ -204,13 +203,13 @@ static int usb_host_port_stop(struct usb_host_driver_t *drv_p)
 }
 
 static struct usb_pipe_t *
-usb_pipe_alloc(struct usb_host_driver_t *drv_p,
+usb_pipe_alloc(struct usb_host_driver_t *self_p,
                int type,
                int endpoint,
                int address,
                int interval)
 {
-    struct usb_device_t *dev_p = drv_p->dev_p;
+    struct usb_device_t *dev_p = self_p->dev_p;
     volatile struct sam_uotghs_t *regs_p = dev_p->regs_p;
     struct usb_pipe_t *pipe_p;
     int i;
@@ -286,10 +285,10 @@ usb_pipe_alloc(struct usb_host_driver_t *drv_p,
     return (pipe_p);
 }
 
-static int usb_pipe_free(struct usb_host_driver_t *drv_p,
+static int usb_pipe_free(struct usb_host_driver_t *self_p,
                          struct usb_pipe_t *pipe_p)
 {
-    struct usb_device_t *dev_p = drv_p->dev_p;
+    struct usb_device_t *dev_p = self_p->dev_p;
     volatile struct sam_uotghs_t *regs_p = dev_p->regs_p;
 
     /* Disable the pipe. */
@@ -299,11 +298,11 @@ static int usb_pipe_free(struct usb_host_driver_t *drv_p,
     return (0);
 }
 
-static int usb_pipe_set_address(struct usb_host_driver_t *drv_p,
+static int usb_pipe_set_address(struct usb_host_driver_t *self_p,
                                 struct usb_pipe_t *pipe_p,
                                 int address)
 {
-    struct usb_device_t *dev_p = drv_p->dev_p;
+    struct usb_device_t *dev_p = self_p->dev_p;
     volatile struct sam_uotghs_t *regs_p = dev_p->regs_p;
 
     /* Set the pipe address. */
@@ -355,7 +354,7 @@ static ssize_t
 usb_host_port_device_write_setup(struct usb_host_device_t *device_p,
                                  struct usb_setup_t *setup_p)
 {
-    struct usb_device_t *dev_p = device_p->drv_p->dev_p;
+    struct usb_device_t *dev_p = device_p->self_p->dev_p;
     volatile struct sam_uotghs_t *regs_p = dev_p->regs_p;
     uint8_t *fifo_p, *buf8_p = (uint8_t *)setup_p;
     int pipe = 0, i;
@@ -387,7 +386,7 @@ static ssize_t usb_host_port_device_write(struct usb_host_device_t *device_p,
                                           const void *buf_p,
                                           size_t size)
 {
-    struct usb_device_t *dev_p = device_p->drv_p->dev_p;
+    struct usb_device_t *dev_p = device_p->self_p->dev_p;
     volatile struct sam_uotghs_t *regs_p = dev_p->regs_p;
     uint8_t *fifo_p;
     const uint8_t *buf8_p = buf_p;
@@ -438,7 +437,7 @@ static ssize_t usb_host_port_device_read(struct usb_host_device_t *device_p,
                                          void *buf_p,
                                          size_t size)
 {
-    struct usb_device_t *dev_p = device_p->drv_p->dev_p;
+    struct usb_device_t *dev_p = device_p->self_p->dev_p;
     volatile struct sam_uotghs_t *regs_p = dev_p->regs_p;
     uint8_t *fifo_p, *buf8_p = buf_p;
     int pipe = endpoint;

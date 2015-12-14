@@ -155,54 +155,54 @@ struct sd_driver_t {
 /**
  * Initialize driver object.
  *
- * @param[in,out] drv_p Driver object to initialize.
+ * @param[in,out] self_p Driver object to initialize.
  *
  * @return zero(0) or negative error code.
  */
-int sd_init(struct sd_driver_t *drv_p,
+int sd_init(struct sd_driver_t *self_p,
             struct spi_driver_t *spi_p);
 
 /**
  * Start driver.
  *
- * @param[in] drv_p Initialized driver object.
+ * @param[in] self_p Initialized driver object.
  *
  * @return zero(0) or negative error code.
  */
-int sd_start(struct sd_driver_t *drv_p);
+int sd_start(struct sd_driver_t *self_p);
 
 /**
  * Stop driver.
  *
- * @param[in] drv_p Initialized driver object.
+ * @param[in] self_p Initialized driver object.
  *
  * @return zero(0) or negative error code.
  */
-int sd_stop(struct sd_driver_t *drv_p);
+int sd_stop(struct sd_driver_t *self_p);
 
 /**
  * Read card CID register. The CID contains card identification
  * information such as Manufacturer ID, Product name, Product serial
  * number and Manufacturing date.
  *
- * @param[in] drv_p Initialized driver object.
+ * @param[in] self_p Initialized driver object.
  * @param[out] cid pointer to cid data store.
  *
  * @return zero(0) or negative error code.
  */
-ssize_t sd_read_cid(struct sd_driver_t *drv_p,
+ssize_t sd_read_cid(struct sd_driver_t *self_p,
                     struct sd_cid_t* cid_p);
 
 /**
  * Read card CSD register. The CSD contains that provides
  * information regarding access to the card's contents.
  *
- * @param[in] drv_p Initialized driver object.
+ * @param[in] self_p Initialized driver object.
  * @param[out] csd pointer to csd data store.
  *
  * @return zero(0) or negative error code.
  */
-ssize_t sd_read_csd(struct sd_driver_t *drv_p,
+ssize_t sd_read_csd(struct sd_driver_t *self_p,
                     union sd_csd_t* csd_p);
 
 #if 0
@@ -210,13 +210,13 @@ ssize_t sd_read_csd(struct sd_driver_t *drv_p,
  * Erase given block interval from start to end. Returns true if
  * successful otherwise false.
  *
- * @param[in] drv_p Initialized driver object.
+ * @param[in] self_p Initialized driver object.
  * @param[in] start block address.
  * @param[in] end block address.
  *
  * @return zero(0) or negative error code.
  */
-int sd_erase_blocks(struct sd_driver_t *drv_p,
+int sd_erase_blocks(struct sd_driver_t *self_p,
                     uint32_t start_block,
                     uint32_t end_block);
 #endif
@@ -224,26 +224,26 @@ int sd_erase_blocks(struct sd_driver_t *drv_p,
 /**
  * Read given block from SD card.
  *
- * @param[in] drv_p Initialized driver object.
+ * @param[in] self_p Initialized driver object.
  * @param[in] buf_p Buffer to read into.
  * @param[in] src_block Block to read from.
  *
  * @return Number of read bytes or negative error code.
  */
-ssize_t sd_read_block(struct sd_driver_t *drv_p,
+ssize_t sd_read_block(struct sd_driver_t *self_p,
                       void *dst_p,
                       uint32_t src_block);
 
 /**
  * Write data to the SD bus.
  *
- * @param[in] drv_p Initialized driver object.
+ * @param[in] self_p Initialized driver object.
  * @param[in] dst_block Block to write to.
  * @param[in] src_p Buffer to write.
  *
  * @return Number of written bytes or negative error code.
  */
-ssize_t sd_write_block(struct sd_driver_t *drv_p,
+ssize_t sd_write_block(struct sd_driver_t *self_p,
                        uint32_t dst_block,
                        const void *src_p);
 

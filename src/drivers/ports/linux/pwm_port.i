@@ -18,13 +18,13 @@
  * This file is part of the Simba project.
  */
 
-static int pwm_port_init(struct pwm_driver_t *drv_p,
+static int pwm_port_init(struct pwm_driver_t *self_p,
                          const struct pwm_device_t *dev_p)
 {
     return (0);
 }
 
-static int pwm_port_set_duty(struct pwm_driver_t *drv_p,
+static int pwm_port_set_duty(struct pwm_driver_t *self_p,
                              uint8_t value)
 {
     return (0);

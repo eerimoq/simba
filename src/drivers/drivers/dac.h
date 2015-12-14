@@ -35,7 +35,7 @@ int dac_module_init(void);
 /**
  * Initialize driver object from given configuration.
  *
- * @param[out] drv_p Driver object to be initialized.
+ * @param[out] self_p Driver object to be initialized.
  * @param[in] dev_p Device to use.
  * @param[in] pin0_dev_p Pin used for mono or first stereo channel.
  * @param[in] pin1_dev_p Second stereo pin.
@@ -43,7 +43,7 @@ int dac_module_init(void);
  *
  * @return zero(0) or negative error code.
  */
-int dac_init(struct dac_driver_t *drv_p,
+int dac_init(struct dac_driver_t *self_p,
              struct dac_device_t *dev_p,
              struct pin_device_t *pin0_dev_p,
              struct pin_device_t *pin1_dev_p,
@@ -52,35 +52,35 @@ int dac_init(struct dac_driver_t *drv_p,
 /**
  * Start asynchronous convertion of samples to an analog signal.
  *
- * @param[in] drv_p Driver object.
+ * @param[in] self_p Driver object.
  * @param[in] samples Samples to convert to an analog signal.
  * @param[in] length Length of samples array.
  *
  * @return zero(0) or negative error code.
  */
-int dac_async_convert(struct dac_driver_t *drv_p,
+int dac_async_convert(struct dac_driver_t *self_p,
                       uint32_t *samples_p,
                       size_t length);
 
 /**
  * Wait for asynchronous convertion to finish.
  *
- * @param[in] drv_p Driver object.
+ * @param[in] self_p Driver object.
  *
  * @return zero(0) or negative error code.
  */
-int dac_async_wait(struct dac_driver_t *drv_p);
+int dac_async_wait(struct dac_driver_t *self_p);
 
 /**
  * Start synchronous convertion of samples to an analog signal.
  *
- * @param[in] drv_p Driver object.
+ * @param[in] self_p Driver object.
  * @param[out] samples Converted samlpes.
  * @param[in] length Length of samples array.
  *
  * @return zero(0) or negative error code.
  */
-int dac_convert(struct dac_driver_t *drv_p,
+int dac_convert(struct dac_driver_t *self_p,
                 uint32_t *samples_p,
                 size_t length);
 

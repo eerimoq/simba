@@ -48,7 +48,7 @@ int spi_module_init(void);
 /**
  * Initialize driver object.
  *
- * @param[out] drv_p Driver object to initialize.
+ * @param[out] self_p Driver object to initialize.
  * @param[in] dev_p Device to use.
  * @param[in] ss_pin_p Slave select pin device.
  * @param[in] mode Master or slave mode.
@@ -58,7 +58,7 @@ int spi_module_init(void);
  *
  * @return zero(0) or negative error code.
  */
-int spi_init(struct spi_driver_t *drv_p,
+int spi_init(struct spi_driver_t *self_p,
              struct spi_device_t *dev_p,
              struct pin_device_t *ss_pin_p,
              int mode,
@@ -69,14 +69,14 @@ int spi_init(struct spi_driver_t *drv_p,
 /**
  * Simultaniuos read/write operation over the SPI bus.
  *
- * @param[in] drv_p Initialized driver object.
+ * @param[in] self_p Initialized driver object.
  * @param[in] rxbuf_p Buffer to read into.
  * @param[in] txbuf_p Buffer to write.
  * @param[in] size Number of bytes to transfer.
  *
  * @return Number of transferred bytes or negative error code.
  */
-ssize_t spi_transfer(struct spi_driver_t *drv_p,
+ssize_t spi_transfer(struct spi_driver_t *self_p,
                      void *rxbuf_p,
                      const void *txbuf_p,
                      size_t size);
@@ -84,47 +84,47 @@ ssize_t spi_transfer(struct spi_driver_t *drv_p,
 /**
  * Read data from the SPI bus.
  *
- * @param[in] drv_p Initialized driver object.
+ * @param[in] self_p Initialized driver object.
  * @param[in] buf_p Buffer to read into.
  * @param[in] size Number of bytes to receive.
  *
  * @return Number of read bytes or negative error code.
  */
-ssize_t spi_read(struct spi_driver_t *drv_p,
+ssize_t spi_read(struct spi_driver_t *self_p,
                  void *buf_p,
                  size_t size);
 
 /**
  * Write data to the SPI bus.
  *
- * @param[in] drv_p Initialized driver object.
+ * @param[in] self_p Initialized driver object.
  * @param[in] buf_p Buffer to write.
  * @param[in] size Number of bytes to write.
  *
  * @return Number of written bytes or negative error code.
  */
-ssize_t spi_write(struct spi_driver_t *drv_p,
+ssize_t spi_write(struct spi_driver_t *self_p,
                   const void *buf_p,
                   size_t size);
 
 /**
  * Get one byte of data from the SPI bus.
  *
- * @param[in] drv_p Initialized driver object.
+ * @param[in] self_p Initialized driver object.
  * @param[out] data_p Read data.
  *
  * @return Number of read bytes or negative error code.
  */
-ssize_t spi_get(struct spi_driver_t *drv_p, uint8_t *data_p);
+ssize_t spi_get(struct spi_driver_t *self_p, uint8_t *data_p);
 
 /**
  * Put one byte of data to the SPI bus.
  *
- * @param[in] drv_p Initialized driver object.
+ * @param[in] self_p Initialized driver object.
  * @param[in] data data to write.
  *
  * @return Number of written bytes or negative error code.
  */
-ssize_t spi_put(struct spi_driver_t *drv_p, uint8_t data);
+ssize_t spi_put(struct spi_driver_t *self_p, uint8_t data);
 
 #endif

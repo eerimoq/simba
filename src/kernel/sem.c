@@ -31,16 +31,16 @@ int sem_module_init(void)
     return (0);
 }
 
-int sem_init(struct sem_t *sem_p,
+int sem_init(struct sem_t *self_p,
              int count)
 {
-    sem_p->count = count;
-    sem_p->head_p = NULL;
+    self_p->count = count;
+    self_p->head_p = NULL;
 
     return (0);
 }
 
-int sem_get(struct sem_t *sem_p,
+int sem_get(struct sem_t *self_p,
             struct time_t *timeout_p)
 {
     int err = 0;
@@ -48,18 +48,18 @@ int sem_get(struct sem_t *sem_p,
 
     sys_lock();
 
-    if (sem_p->count == 0) {
+    if (self_p->count == 0) {
         elem.thrd_p = thrd_self();
-        elem.next_p = sem_p->head_p;
+        elem.next_p = self_p->head_p;
         elem.prev_p = NULL;
-        sem_p->head_p = &elem;
+        self_p->head_p = &elem;
         err = thrd_suspend_irq(timeout_p);
 
         if (err == -ETIMEDOUT) {
             if (elem.prev_p != NULL) {
                 elem.prev_p->next_p = elem.next_p;
             } else {
-                sem_p->head_p = elem.next_p;
+                self_p->head_p = elem.next_p;
             }
 
             if (elem.next_p != NULL) {
@@ -67,7 +67,7 @@ int sem_get(struct sem_t *sem_p,
             }
         }
     } else {
-        sem_p->count--;
+        self_p->count--;
     }
 
     sys_unlock();
@@ -75,27 +75,27 @@ int sem_get(struct sem_t *sem_p,
     return (err);
 }
 
-int sem_put(struct sem_t *sem_p,
+int sem_put(struct sem_t *self_p,
             int count)
 {
     sys_lock();
-    sem_put_irq(sem_p, count);
+    sem_put_irq(self_p, count);
     sys_unlock();
 
     return (0);
 }
 
-int sem_put_irq(struct sem_t *sem_p,
+int sem_put_irq(struct sem_t *self_p,
                 int count)
 {
     struct sem_elem_t *elem_p;
 
-    sem_p->count += count;
+    self_p->count += count;
 
-    if (sem_p->head_p != NULL) {
-        sem_p->count--;
-        elem_p = sem_p->head_p;
-        sem_p->head_p = elem_p->next_p;
+    if (self_p->head_p != NULL) {
+        self_p->count--;
+        elem_p = self_p->head_p;
+        self_p->head_p = elem_p->next_p;
 
         if (elem_p->next_p != NULL) {
             elem_p->next_p->prev_p = NULL;

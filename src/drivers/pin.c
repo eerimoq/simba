@@ -27,31 +27,31 @@ int pin_module_init(void)
     return (0);
 }
 
-int pin_init(struct pin_driver_t *drv_p,
+int pin_init(struct pin_driver_t *self_p,
              struct pin_device_t *dev_p,
              int mode)
 {
-    drv_p->dev_p = dev_p;
+    self_p->dev_p = dev_p;
 
-    return (pin_port_init(drv_p, dev_p, mode));
+    return (pin_port_init(self_p, dev_p, mode));
 }
 
-int pin_read(struct pin_driver_t *drv_p)
+int pin_read(struct pin_driver_t *self_p)
 {
-    return (pin_port_read(drv_p));
+    return (pin_port_read(self_p));
 }
 
-int pin_write(struct pin_driver_t *drv_p, int value)
+int pin_write(struct pin_driver_t *self_p, int value)
 {
-    return (pin_port_write(drv_p, value));
+    return (pin_port_write(self_p, value));
 }
 
-int pin_toggle(struct pin_driver_t *drv_p)
+int pin_toggle(struct pin_driver_t *self_p)
 {
-    return (pin_port_toggle(drv_p));
+    return (pin_port_toggle(self_p));
 }
 
-int pin_set_mode(struct pin_driver_t *drv_p, int mode)
+int pin_set_mode(struct pin_driver_t *self_p, int mode)
 {
-    return (pin_port_set_mode(drv_p, mode));
+    return (pin_port_set_mode(self_p, mode));
 }

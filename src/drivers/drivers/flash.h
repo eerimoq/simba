@@ -35,25 +35,25 @@ int flash_module_init(void);
 /**
  * Initialize driver object.
  *
- * @param[out] drv_p Driver object to initialize.
+ * @param[out] self_p Driver object to initialize.
  * @param[in] dev_p Device to use.
  *
  * @return zero(0) or negative error code.
  */
-int flash_init(struct flash_driver_t *drv_p,
+int flash_init(struct flash_driver_t *self_p,
                struct flash_device_t *dev_p);
 
 /**
  * Read data from the flash memory.
  *
- * @param[in] drv_p Initialized driver object.
+ * @param[in] self_p Initialized driver object.
  * @param[in] dst_p Buffer to read into.
  * @param[in] src Address in flash memory to read from.
  * @param[in] size Number of bytes to receive.
  *
  * @return Number of read bytes or negative error code.
  */
-ssize_t flash_read(struct flash_driver_t *drv_p,
+ssize_t flash_read(struct flash_driver_t *self_p,
                    void *dst_p,
                    size_t src,
                    size_t size);
@@ -61,14 +61,14 @@ ssize_t flash_read(struct flash_driver_t *drv_p,
 /**
  * Write data to the flash memory.
  *
- * @param[in] drv_p Initialized driver object.
+ * @param[in] self_p Initialized driver object.
  * @param[in] dst Address in flash memory to write to.
  * @param[in] src_p Buffer to write.
  * @param[in] size Number of bytes to write.
  *
  * @return Number of written bytes or negative error code.
  */
-ssize_t flash_write(struct flash_driver_t *drv_p,
+ssize_t flash_write(struct flash_driver_t *self_p,
                     size_t dst,
                     const void *src_p,
                     size_t size);

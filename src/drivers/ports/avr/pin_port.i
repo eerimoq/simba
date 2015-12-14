@@ -22,42 +22,42 @@
 #define DDR(sfr) ((sfr) + 1)
 #define PORT(sfr) ((sfr) + 2)
 
-static int pin_port_init(struct pin_driver_t *drv_p,
+static int pin_port_init(struct pin_driver_t *self_p,
                          const struct pin_device_t *dev_p,
                          int mode)
 {
-    return (pin_set_mode(drv_p, mode));
+    return (pin_set_mode(self_p, mode));
 }
 
-static int pin_port_read(struct pin_driver_t *drv_p)
+static int pin_port_read(struct pin_driver_t *self_p)
 {
-    return ((*PIN(drv_p->dev_p->sfr_p) & drv_p->dev_p->mask) != 0);
+    return ((*PIN(self_p->dev_p->sfr_p) & self_p->dev_p->mask) != 0);
 }
 
-static int pin_port_write(struct pin_driver_t *drv_p, int value)
+static int pin_port_write(struct pin_driver_t *self_p, int value)
 {
     if (value != 0) {
-        *PORT(drv_p->dev_p->sfr_p) |= drv_p->dev_p->mask;
+        *PORT(self_p->dev_p->sfr_p) |= self_p->dev_p->mask;
     } else {
-        *PORT(drv_p->dev_p->sfr_p) &= ~(drv_p->dev_p->mask);
+        *PORT(self_p->dev_p->sfr_p) &= ~(self_p->dev_p->mask);
     }
 
     return (0);
 }
 
-static int pin_port_toggle(struct pin_driver_t *drv_p)
+static int pin_port_toggle(struct pin_driver_t *self_p)
 {
-    *PORT(drv_p->dev_p->sfr_p) ^= drv_p->dev_p->mask;
+    *PORT(self_p->dev_p->sfr_p) ^= self_p->dev_p->mask;
 
     return (0);
 }
 
-static int pin_port_set_mode(struct pin_driver_t *drv_p, int mode)
+static int pin_port_set_mode(struct pin_driver_t *self_p, int mode)
 {
     if (mode == PIN_OUTPUT) {
-        *DDR(drv_p->dev_p->sfr_p) |= drv_p->dev_p->mask;
+        *DDR(self_p->dev_p->sfr_p) |= self_p->dev_p->mask;
     } else {
-        *DDR(drv_p->dev_p->sfr_p) &= ~(drv_p->dev_p->mask);
+        *DDR(self_p->dev_p->sfr_p) &= ~(self_p->dev_p->mask);
     }
 
     return (0);

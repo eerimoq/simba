@@ -470,7 +470,7 @@ struct fat16_dir_entry_t {
 /**
  * Initialize a FAT16 volume.
  *
- * @param[in,out] fat16_p FAT16 object to initialize.
+ * @param[in,out] self_p FAT16 object to initialize.
  * @param[in] read_p Callback function used to read blocks of data.
  * @param[in] write_p Callback function used to write blocks of data.
  * @param[in] partition Partition to be used. Legal values for a
@@ -482,7 +482,7 @@ struct fat16_dir_entry_t {
  *
  * @return zero(0) or negative error code.
  */
-int fat16_init(struct fat16_t *fat16_p,
+int fat16_init(struct fat16_t *self_p,
                fat16_read_t read,
                fat16_write_t write,
                void *arg_p,
@@ -492,48 +492,48 @@ int fat16_init(struct fat16_t *fat16_p,
  * Start given FAT16 volume. Starts the SD device and reads driver
  * information
  *
- * @param[in] fat16_p FAT16 object.
+ * @param[in] self_p FAT16 object.
  *
  * @return zero(0) or negative error code.
  */
-int fat16_start(struct fat16_t *fat16_p);
+int fat16_start(struct fat16_t *self_p);
 
 /**
  * Stop given FAT16 volume.
  *
- * @param[in] fat16_p FAT16 object.
+ * @param[in] self_p FAT16 object.
  *
  * @return zero(0) or negative error code.
  */
-int fat16_stop(struct fat16_t *fat16_p);
+int fat16_stop(struct fat16_t *self_p);
 
 /**
  * Crate an empty FAT16 file system on device.
  *
- * @param[in] fat16_p FAT16 object.
+ * @param[in] self_p FAT16 object.
  */
-int fat16_format(struct fat16_t *fat16_p);
+int fat16_format(struct fat16_t *self_p);
 
 /**
  * Print volume information to given channel.
  *
- * @param[in] fat16_p FAT16 object.
+ * @param[in] self_p FAT16 object.
  *
  * @return zero(0) or negative error code.
  */
-int fat16_print(struct fat16_t *fat16_p, chan_t *chan_p);
+int fat16_print(struct fat16_t *self_p, chan_t *chan_p);
 
 /**
  * Open a file by file path and mode flags.
  *
- * @param[in] fat16_p FAT16 object.
+ * @param[in] self_p FAT16 object.
  * @param[in,out] file_p File object to be initialized.
  * @param[in] path_p A valid 8.3 DOS name for a file path.
  * @param[in] oflag mode of file open (create, read, write, etc).
  *
  * @return zero(0) or negative error code.
  */
-int fat16_file_open(struct fat16_t *fat16_p,
+int fat16_file_open(struct fat16_t *self_p,
                     struct fat16_file_t *file_p,
                     const char *path_p,
                     int oflag);
@@ -609,7 +609,7 @@ ssize_t fat16_file_size(struct fat16_file_t *file_p);
  * Causes all modified data and directory fields to be written to the
  * storage device.
  *
- * @param[in] fat16_p FAT16 object.
+ * @param[in] self_p FAT16 object.
  *
  * @return zero(0) or negative error code.
  */
@@ -618,14 +618,14 @@ int fat16_file_sync(struct fat16_file_t *file_p);
 /**
  * Open a directory by directory path and mode flags.
  *
- * @param[in] fat16_p FAT16 object.
+ * @param[in] self_p FAT16 object.
  * @param[in,out] dir_p Directory object to be initialized.
  * @param[in] path_p A valid 8.3 DOS name for a directory path.
  * @param[in] oflag mode of the directory to open (create, read, etc).
  *
  * @return zero(0) or negative error code.
  */
-int fat16_dir_open(struct fat16_t *fat16_p,
+int fat16_dir_open(struct fat16_t *self_p,
                    struct fat16_dir_t *dir_p,
                    const char *path_p,
                    int oflag);

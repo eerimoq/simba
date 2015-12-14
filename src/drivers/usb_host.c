@@ -41,7 +41,7 @@ int usb_host_cmd_list(int argc,
 {
     int i;
     int verbose = 0;
-    struct usb_host_driver_t *drv_p;
+    struct usb_host_driver_t *self_p;
     struct usb_host_device_t *device_p;
 
     if (argc == 2) {
@@ -52,19 +52,19 @@ int usb_host_cmd_list(int argc,
 
     std_fprintf(out_p, FSTR("BUS  ADDRESS   VID   PID  DESCRIPTION\r\n"));
 
-    drv_p = drivers_p;
+    self_p = drivers_p;
 
-    while (drv_p != NULL) {
-        device_p = &drv_p->devices_p[0];
+    while (self_p != NULL) {
+        device_p = &self_p->devices_p[0];
 
-        for (i = 0; i < drv_p->length; i++, device_p++) {
+        for (i = 0; i < self_p->length; i++, device_p++) {
             if (device_p->state != USB_HOST_DEVICE_STATE_ATTACHED) {
                 continue;
             }
 
             std_fprintf(out_p,
                         FSTR("%3d %8d  %04x  %04x  %s\r\n"),
-                        device_p->drv_p->id,
+                        device_p->self_p->id,
                         device_p->address,
                         device_p->vid,
                         device_p->pid,
@@ -77,7 +77,7 @@ int usb_host_cmd_list(int argc,
             }
         }
 
-        drv_p = drv_p->next_p;
+        self_p = self_p->next_p;
     }
 
     return (0);
@@ -110,7 +110,7 @@ static int device_set_address(struct usb_host_device_t *device_p,
 
     device_p->address = address;
 
-    return (usb_pipe_set_address(device_p->drv_p,
+    return (usb_pipe_set_address(device_p->self_p,
                                  device_p->pipes[0],
                                  address));
 }
@@ -178,7 +178,7 @@ int usb_host_device_set_configuration(struct usb_host_device_t *device_p,
                 return (-1);
             }
 
-            pipe_p = usb_pipe_alloc(device_p->drv_p,
+            pipe_p = usb_pipe_alloc(device_p->self_p,
                                     type,
                                     (ep_p->endpoint_address & 0x7f),
                                     device_p->address,
@@ -354,7 +354,7 @@ static int device_enumerate(struct usb_host_device_t *device_p)
     }
 
     /* Allocate a control pipe. */
-    pipe_p = usb_pipe_alloc(device_p->drv_p,
+    pipe_p = usb_pipe_alloc(device_p->self_p,
                             USB_PIPE_TYPE_CONTROL,
                             0,
                             0,
@@ -411,7 +411,7 @@ static int device_enumerate(struct usb_host_device_t *device_p)
     message.add.header.type = USB_MESSAGE_TYPE_ADD;
     message.add.device = device_p->id;
 
-    queue_write(&device_p->drv_p->control,
+    queue_write(&device_p->self_p->control,
                 &message,
                 sizeof(message));
 
@@ -419,7 +419,7 @@ static int device_enumerate(struct usb_host_device_t *device_p)
 
 err:
     if (pipe_p != NULL) {
-        usb_pipe_free(device_p->drv_p, pipe_p);
+        usb_pipe_free(device_p->self_p, pipe_p);
     }
 
     return (-1);
@@ -430,47 +430,47 @@ int usb_module_init(void)
     return (0);
 }
 
-int usb_host_init(struct usb_host_driver_t *drv_p,
+int usb_host_init(struct usb_host_driver_t *self_p,
                   struct usb_device_t *dev_p,
                   struct usb_host_device_t *devices_p,
                   size_t length)
 {
     int i;
 
-    drv_p->dev_p =  dev_p;
-    drv_p->length = length;
-    drv_p->devices_p = devices_p;
+    self_p->dev_p =  dev_p;
+    self_p->length = length;
+    self_p->devices_p = devices_p;
 
-    queue_init(&drv_p->control, NULL, 0);
+    queue_init(&self_p->control, NULL, 0);
 
     for (i = 0; i < length; i++) {
-        drv_p->devices_p[i].id = i;
-        drv_p->devices_p[i].state = USB_HOST_DEVICE_STATE_NONE;
-        drv_p->devices_p[i].drv_p = drv_p;
+        self_p->devices_p[i].id = i;
+        self_p->devices_p[i].state = USB_HOST_DEVICE_STATE_NONE;
+        self_p->devices_p[i].self_p = self_p;
     }
 
-    return (usb_host_port_init(drv_p, dev_p));
+    return (usb_host_port_init(self_p, dev_p));
 }
 
-int usb_host_start(struct usb_host_driver_t *drv_p)
+int usb_host_start(struct usb_host_driver_t *self_p)
 {
-    if (usb_host_port_start(drv_p) != 0) {
+    if (usb_host_port_start(self_p) != 0) {
         return (-1);
     }
 
     /* Add the driver to the list. */
-    drv_p->next_p = drivers_p;
-    drivers_p = drv_p;
+    self_p->next_p = drivers_p;
+    drivers_p = self_p;
 
     return (0);
 }
 
-int usb_host_stop(struct usb_host_driver_t *drv_p)
+int usb_host_stop(struct usb_host_driver_t *self_p)
 {
-    return (usb_host_port_stop(drv_p));
+    return (usb_host_port_stop(self_p));
 }
 
-int usb_host_driver_add(struct usb_host_driver_t *drv_p,
+int usb_host_driver_add(struct usb_host_driver_t *self_p,
                         struct usb_host_device_driver_t *driver_p,
                         void *arg_p)
 {
@@ -481,16 +481,16 @@ int usb_host_driver_add(struct usb_host_driver_t *drv_p,
 }
 
 struct usb_host_device_t *
-usb_host_device_open(struct usb_host_driver_t *drv_p,
+usb_host_device_open(struct usb_host_driver_t *self_p,
                      int device)
 {
     struct usb_host_device_t *device_p;
 
-    if (device > drv_p->length - 1) {
+    if (device > self_p->length - 1) {
         return (NULL);
     }
 
-    device_p = &drv_p->devices_p[device];
+    device_p = &self_p->devices_p[device];
 
     if (device_p->state != USB_HOST_DEVICE_STATE_ATTACHED) {
         return (NULL);
@@ -499,10 +499,10 @@ usb_host_device_open(struct usb_host_driver_t *drv_p,
     return (device_p);
 }
 
-int usb_host_device_close(struct usb_host_driver_t *drv_p,
+int usb_host_device_close(struct usb_host_driver_t *self_p,
                           int device)
 {
-    if (device > drv_p->length - 1) {
+    if (device > self_p->length - 1) {
         return (-1);
     }
 

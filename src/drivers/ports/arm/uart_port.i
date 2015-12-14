@@ -21,10 +21,10 @@
 COUNTER_DEFINE("/drivers/uart/rx_channel_overflow", uart_rx_channel_overflow);
 COUNTER_DEFINE("/drivers/uart/rx_errors", uart_rx_errors);
 
-static int uart_port_start(struct uart_driver_t *drv_p)
+static int uart_port_start(struct uart_driver_t *self_p)
 {
-    uint16_t cd = (F_CPU / 16 / drv_p->baudrate - 1);
-    struct uart_device_t *dev_p = drv_p->dev_p;
+    uint16_t cd = (F_CPU / 16 / self_p->baudrate - 1);
+    struct uart_device_t *dev_p = self_p->dev_p;
     uint32_t mask;
 
     /* PMC */
@@ -77,14 +77,14 @@ static int uart_port_start(struct uart_driver_t *drv_p)
     /* nvic */
     nvic_enable_interrupt(dev_p->id);
 
-    dev_p->drv_p = drv_p;
+    dev_p->drv_p = self_p;
 
     return (0);
 }
 
-static int uart_port_stop(struct uart_driver_t *drv_p)
+static int uart_port_stop(struct uart_driver_t *self_p)
 {
-    struct uart_device_t *dev_p = drv_p->dev_p;
+    struct uart_device_t *dev_p = self_p->dev_p;
 
     dev_p->regs_p->CR = 0;
     dev_p->regs_p->IDR = 0xfffffffful;
@@ -99,13 +99,13 @@ static ssize_t uart_port_write_cb(void *arg_p,
                                   const void *txbuf_p,
                                   size_t size)
 {
-    struct uart_driver_t *drv_p;
+    struct uart_driver_t *self_p;
     struct uart_device_t *dev_p;
 
-    drv_p = container_of(arg_p, struct uart_driver_t, chout);
-    dev_p = drv_p->dev_p;
+    self_p = container_of(arg_p, struct uart_driver_t, chout);
+    dev_p = self_p->dev_p;
 
-    sem_get(&drv_p->sem, NULL);
+    sem_get(&self_p->sem, NULL);
 
     sys_lock();
 
@@ -118,7 +118,7 @@ static ssize_t uart_port_write_cb(void *arg_p,
 
     dev_p->regs_p->IER = (US_IER_ENDTX);
 
-    drv_p->thrd_p = thrd_self();
+    self_p->thrd_p = thrd_self();
 
     thrd_suspend_irq(NULL);
 
@@ -127,7 +127,7 @@ static ssize_t uart_port_write_cb(void *arg_p,
 
     sys_unlock();
 
-    sem_put(&drv_p->sem, 1);
+    sem_put(&self_p->sem, 1);
 
     return (size);
 }

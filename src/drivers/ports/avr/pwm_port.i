@@ -20,12 +20,12 @@
 
 #if defined(MCU_ATMEGA328P)
 
-static int pwm_port_init(struct pwm_driver_t *drv_p,
+static int pwm_port_init(struct pwm_driver_t *self_p,
                          struct pwm_device_t *dev_p)
 {
-    drv_p->dev_p = dev_p;
+    self_p->dev_p = dev_p;
 
-    pin_init(&drv_p->pin_drv, dev_p->pin_dev_p, PIN_OUTPUT);
+    pin_init(&self_p->pin_drv, dev_p->pin_dev_p, PIN_OUTPUT);
 
     switch (dev_p->index) {
     case 0:
@@ -47,10 +47,10 @@ static int pwm_port_init(struct pwm_driver_t *drv_p,
     return (0);
 }
 
-static int pwm_port_set_duty(struct pwm_driver_t *drv_p,
+static int pwm_port_set_duty(struct pwm_driver_t *self_p,
                              uint8_t value)
 {
-    switch (drv_p->dev_p->index) {
+    switch (self_p->dev_p->index) {
     case 0:
         TCCR1A |= _BV(COM1A1);
         OCR1A = value;
@@ -76,12 +76,12 @@ static int pwm_port_set_duty(struct pwm_driver_t *drv_p,
 
 #elif defined(MCU_ATMEGA2560)
 
-static int pwm_port_init(struct pwm_driver_t *drv_p,
+static int pwm_port_init(struct pwm_driver_t *self_p,
                          struct pwm_device_t *dev_p)
 {
-    drv_p->dev_p = dev_p;
+    self_p->dev_p = dev_p;
 
-    pin_init(&drv_p->pin_drv, dev_p->pin_dev_p, PIN_OUTPUT);
+    pin_init(&self_p->pin_drv, dev_p->pin_dev_p, PIN_OUTPUT);
 
     switch (dev_p->index) {
     case 0:
@@ -117,10 +117,10 @@ static int pwm_port_init(struct pwm_driver_t *drv_p,
     return (0);
 }
 
-static int pwm_port_set_duty(struct pwm_driver_t *drv_p,
+static int pwm_port_set_duty(struct pwm_driver_t *self_p,
                              uint8_t value)
 {
-    switch (drv_p->dev_p->index) {
+    switch (self_p->dev_p->index) {
     case 0:
         TCCR3B |= _BV(COM3B1);
         OCR3B = value;

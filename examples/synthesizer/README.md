@@ -69,3 +69,32 @@ BUILD AND RUN
 Build and run the applications.
 
     >>> make BOARD=arduino_due release size run
+
+IMPLEMENTATION DETAILS
+======================
+
+The processing chain for a given signal is fairly easy to understand.
+First, the note oscillator creates the basic shape of the signal, from
+given waveform and vibrato. Then, all active note effects are applied
+to the signal. When all notes on a channel have been processed, the
+channel effects are applied. Then, as the last step, the stream
+effects are applied.
+
+The number of effects to apply is controlled by the user of the
+synthesizer in runtime. After all, that's pretty much the purpose of
+the synthesizer. =)
+
+OSCILLATORS
+-----------
+
+The purpose of the oscillator is to create the basic shape of the
+signal. There are three parameters that controls the shape of the
+signal; the waveform, the frequency and the vibrato. There are three
+kinds of waveforms; square, saw and sine. The frequency and vibrato
+are just numerical values.
+
+EFFECTS
+-------
+
+Effects can be applied on three levels; note, channel or stream. All
+notes on a particular channel applies the same effects.

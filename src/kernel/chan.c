@@ -27,17 +27,17 @@ int chan_module_init(void)
     return (0);
 }
 
-int chan_init(struct chan_t *chan_p,
-              ssize_t (*read)(chan_t *chan_p, void *buf_p, size_t size),
-              ssize_t (*write)(chan_t *chan_p, const void *buf_p, size_t size),
-              size_t (*size)(chan_t *chan_p))
+int chan_init(struct chan_t *self_p,
+              ssize_t (*read)(chan_t *self_p, void *buf_p, size_t size),
+              ssize_t (*write)(chan_t *self_p, const void *buf_p, size_t size),
+              size_t (*size)(chan_t *self_p))
 {
-    chan_p->read = read;
-    chan_p->write = write;
-    chan_p->size = size;
-    chan_p->writer_p = NULL;
-    chan_p->reader_p = NULL;
-    chan_p->list_p = NULL;
+    self_p->read = read;
+    self_p->write = write;
+    self_p->size = size;
+    self_p->writer_p = NULL;
+    self_p->reader_p = NULL;
+    self_p->list_p = NULL;
 
     return (0);
 }
@@ -76,23 +76,23 @@ int chan_list_destroy(struct chan_list_t *list_p)
     return (0);
 }
 
-ssize_t chan_read(chan_t *chan_p,
+ssize_t chan_read(chan_t *self_p,
                   void *buf_p,
                   size_t size)
 {
-    return (((struct chan_t *)chan_p)->read(chan_p, buf_p, size));
+    return (((struct chan_t *)self_p)->read(self_p, buf_p, size));
 }
 
-ssize_t chan_write(chan_t *chan_p,
+ssize_t chan_write(chan_t *self_p,
                    const void *buf_p,
                    size_t size)
 {
-    return (((struct chan_t *)chan_p)->write(chan_p, buf_p, size));
+    return (((struct chan_t *)self_p)->write(self_p, buf_p, size));
 }
 
-size_t chan_size(chan_t *chan_p)
+size_t chan_size(chan_t *self_p)
 {
-    return (((struct chan_t *)chan_p)->size(chan_p));
+    return (((struct chan_t *)self_p)->size(self_p));
 }
 
 int chan_list_add(struct chan_list_t *list_p, chan_t *chan_p)
@@ -155,11 +155,11 @@ chan_t *chan_list_poll(struct chan_list_t *list_p,
     return (chan_p);
 }
 
-int chan_is_polled_irq(struct chan_t *chan_p)
+int chan_is_polled_irq(struct chan_t *self_p)
 {
-    if (chan_p->list_p != NULL) {
-        if (chan_p->list_p->flags & CHAN_LIST_POLLING) {
-            chan_p->list_p->flags = 0;
+    if (self_p->list_p != NULL) {
+        if (self_p->list_p->flags & CHAN_LIST_POLLING) {
+            self_p->list_p->flags = 0;
             return (1);
         }
     }

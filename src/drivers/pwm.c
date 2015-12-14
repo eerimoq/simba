@@ -22,14 +22,14 @@
 
 #include "pwm_port.i"
 
-int pwm_init(struct pwm_driver_t *drv_p,
+int pwm_init(struct pwm_driver_t *self_p,
              struct pwm_device_t *dev_p)
 {
-    return (pwm_port_init(drv_p, dev_p));
+    return (pwm_port_init(self_p, dev_p));
 }
 
-int pwm_set_duty(struct pwm_driver_t *drv_p,
+int pwm_set_duty(struct pwm_driver_t *self_p,
                  uint8_t value)
 {
-    return (pwm_port_set_duty(drv_p, value));
+    return (pwm_port_set_duty(self_p, value));
 }

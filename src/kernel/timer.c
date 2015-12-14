@@ -124,7 +124,7 @@ void timer_tick(void)
     sys_unlock_irq();
 }
 
-int timer_set(struct timer_t *timer_p,
+int timer_set(struct timer_t *self_p,
               struct time_t *timeout_p,
               void (*callback)(void *arg_p),
               void *arg_p,
@@ -134,43 +134,43 @@ int timer_set(struct timer_t *timer_p,
 
     sys_lock();
 
-    err = timer_set_irq(timer_p, timeout_p, callback, arg_p, flags);
+    err = timer_set_irq(self_p, timeout_p, callback, arg_p, flags);
 
     sys_unlock();
 
     return (err);
 }
 
-int timer_set_irq(struct timer_t *timer_p,
+int timer_set_irq(struct timer_t *self_p,
                   struct time_t *timeout_p,
                   void (*callback)(void *arg_p),
                   void *arg_p,
                   int flags)
 {
     /* Initiate timer. */
-    timer_p->timeout = T2ST(timeout_p);
+    self_p->timeout = T2ST(timeout_p);
 
-    if (timer_p->timeout == 0) {
-        timer_p->timeout = 1;
+    if (self_p->timeout == 0) {
+        self_p->timeout = 1;
     }
 
-    timer_p->delta = timer_p->timeout;
-    timer_p->flags = flags;
-    timer_p->callback = callback;
-    timer_p->arg_p = arg_p;
+    self_p->delta = self_p->timeout;
+    self_p->flags = flags;
+    self_p->callback = callback;
+    self_p->arg_p = arg_p;
 
-    timer_insert(timer_p);
+    timer_insert(self_p);
 
     return (0);
 }
 
-int timer_cancel(struct timer_t *timer_p)
+int timer_cancel(struct timer_t *self_p)
 {
     int err = 0;
 
     sys_lock();
 
-    err = timer_remove(timer_p);
+    err = timer_remove(self_p);
 
     sys_unlock();
 

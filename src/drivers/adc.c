@@ -27,37 +27,37 @@ int adc_module_init(void)
     return (adc_port_module_init());
 }
 
-int adc_init(struct adc_driver_t *drv_p,
+int adc_init(struct adc_driver_t *self_p,
              struct adc_device_t *dev_p,
              struct pin_device_t *pin_dev_p,
              int reference,
              int sampling_rate)
 {
-    return (adc_port_init(drv_p,
+    return (adc_port_init(self_p,
                           dev_p,
                           pin_dev_p,
                           reference,
                           sampling_rate));
 }
 
-int adc_async_convert(struct adc_driver_t *drv_p,
+int adc_async_convert(struct adc_driver_t *self_p,
                       uint16_t *samples_p,
                       size_t length)
 {
-    return (adc_port_async_convert(drv_p, samples_p, length));
+    return (adc_port_async_convert(self_p, samples_p, length));
 }
 
-int adc_async_wait(struct adc_driver_t *drv_p)
+int adc_async_wait(struct adc_driver_t *self_p)
 {
-    return (adc_port_async_wait(drv_p));
+    return (adc_port_async_wait(self_p));
 }
 
-int adc_convert(struct adc_driver_t *drv_p,
+int adc_convert(struct adc_driver_t *self_p,
                 uint16_t *samples_p,
                 size_t length)
 {
-    adc_port_async_convert(drv_p, samples_p, length);
-    adc_port_async_wait(drv_p);
+    adc_port_async_convert(self_p, samples_p, length);
+    adc_port_async_wait(self_p);
     
     return (0);
 }
