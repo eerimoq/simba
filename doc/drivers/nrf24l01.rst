@@ -1,0 +1,6 @@
+nrf24l01
+========
+
+.. doxygenfile:: drivers/nrf24l01.h
+   :project: simba
+

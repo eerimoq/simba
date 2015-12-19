@@ -1,0 +1,6 @@
+ds3231
+======
+
+.. doxygenfile:: drivers/ds3231.h
+   :project: simba
+

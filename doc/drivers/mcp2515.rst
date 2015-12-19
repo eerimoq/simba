@@ -1,0 +1,6 @@
+mcp2515
+=======
+
+.. doxygenfile:: drivers/mcp2515.h
+   :project: simba
+

@@ -1,0 +1,7 @@
+kernel
+======
+
+.. toctree::
+   :glob:   
+
+   kernel/*

@@ -1,0 +1,6 @@
+ds18b20
+=======
+
+.. doxygenfile:: drivers/ds18b20.h
+   :project: simba
+
