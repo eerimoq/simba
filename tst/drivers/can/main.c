@@ -199,13 +199,15 @@ static int test_max_throughput(struct harness_t *harness_p)
         time_get(&start_time);
         id = 0;
 
+        /* Prepare the array of frames. */
         for (k = 0; k < membersof(frames); k++) {
             frames[k].extended_id = 0;
             frames[k].size = sizes[i];
             memset(frames[k].data.u8, 0xaa, frames[k].size);
         }
 
-        for (j = 0; j < 1250; j++) {
+        /* Write the array of frames to the hardware. */
+        for (j = 0; j < 10000 / membersof(frames); j++) {
             for (k = 0; k < membersof(frames); k++) {
                 frames[k].id = id;
                 id++;
@@ -216,6 +218,7 @@ static int test_max_throughput(struct harness_t *harness_p)
 
         time_get(&stop_time);
 
+        /* Statistics. */
         elapsed_time = (stop_time.seconds - start_time.seconds) / (float)SYS_TICK_FREQUENCY;
 
         frames_per_second = (10000.0 / elapsed_time);
@@ -240,7 +243,6 @@ static int test_max_throughput(struct harness_t *harness_p)
 
 int main()
 {
-    char buf[64];
     struct harness_t harness;
     struct harness_testcase_t testcases[] = {
         { test_ping_pong_250k, "test_ping_pong_250k" },
@@ -255,12 +257,6 @@ int main()
     uart_module_init();
 
     harness_init(&harness);
-
-    strcpy(buf, "/kernel/thrd/monitor/set_print 1");
-    fs_call(buf, NULL, sys_get_stdout());
-
-    strcpy(buf, "/kernel/thrd/monitor/set_period_ms 500");
-    fs_call(buf, NULL, sys_get_stdout());
 
     harness_run(&harness, testcases);
 
