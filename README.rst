@@ -1,3 +1,7 @@
+.. image:: doc/images/Simba-Logo.png
+   :align: right
+   :height: 50
+
 |buildstatus|_
 
 ABOUT
