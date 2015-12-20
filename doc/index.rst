@@ -9,6 +9,8 @@ Welcome to Simba's documentation!
 Simba is a microkernel and build framework. It aims to make embedded
 programming easy and portable.
 
+Project homepage: https://github.com/eerimoq/simba
+
 .. toctree::
    :maxdepth: 2
    :titlesonly:
