@@ -23,11 +23,13 @@ Linux (Ubuntu)
 
 ``sudo apt-get install ckermit valgrind cppcheck cloc python``
 
-### Avr
+Avr
+~~~
 
 ``sudo apt-get install avrdude gcc-avr binutils-avr gdb-avr avr-libc``
 
-### Arm
+Arm
+~~~
 
 ``sudo apt-get install bossa-cli gcc-arm-none-eabi``
 
@@ -42,10 +44,12 @@ Download cygwin from `cygwin.com` and select the following packages:
 * git
 * gitk
 
-### Avr
+Avr
+~~~
 
 Download the AVR toolchain:
 
-### Arm
+Arm
+~~~
 
 Download the ARM toolchain:
