@@ -19,6 +19,8 @@ Features:
 * portable (linux, Arduino Due, Arduino Mega, ...)
 * make based build framework
 
+Documentation: http://simba-os.readthedocs.org/en/latest
+
 Prerequisites
 =============
 
