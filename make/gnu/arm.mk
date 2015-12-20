@@ -28,6 +28,7 @@ CFLAGS += -mthumb \
           -mcpu=$(MCPU) \
           -DF_CPU=$(F_CPU)UL \
           -fdata-sections \
+          -fpack-struct \
           -ffunction-sections
 
 LDFLAGS += -mcpu=$(MCPU) -DF_CPU=$(F_CPU)UL -Wl,--cref \

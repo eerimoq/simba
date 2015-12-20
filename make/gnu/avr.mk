@@ -27,6 +27,7 @@ CFLAGS += -mmcu=$(CPU) \
           -D__DELAY_BACKWARD_COMPATIBLE__ \
           -O2 \
           -fdata-sections \
+          -fpack-struct \
           -ffunction-sections
 
 LDFLAGS += -mmcu=$(CPU) \
