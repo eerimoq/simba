@@ -1,7 +1,7 @@
 drivers
 =======
 
-https://github.com/eerimoq/simba/tree/master/src/drivers/drivers
+`github`_
 
 Modules:
 
@@ -9,3 +9,5 @@ Modules:
    :glob:   
 
    drivers/*
+
+.. _github: https://github.com/eerimoq/simba/tree/master/src/drivers/drivers

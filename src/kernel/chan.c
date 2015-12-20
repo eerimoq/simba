@@ -28,9 +28,9 @@ int chan_module_init(void)
 }
 
 int chan_init(struct chan_t *self_p,
-              ssize_t (*read)(chan_t *self_p, void *buf_p, size_t size),
-              ssize_t (*write)(chan_t *self_p, const void *buf_p, size_t size),
-              size_t (*size)(chan_t *self_p))
+              thrd_read_fn_t read,
+              thrd_write_fn_t write,
+              thrd_size_fn_t size)
 {
     self_p->read = read;
     self_p->write = write;

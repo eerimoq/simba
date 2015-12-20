@@ -23,6 +23,8 @@
 
 #include "simba.h"
 
+typedef int (*hash_function_t)(long key);
+
 struct hash_map_entry_t {
     struct hash_map_entry_t *next_p;
     long key;
@@ -37,7 +39,7 @@ struct hash_map_t {
     struct hash_map_bucket_t *buckets_p;
     size_t buckets_max;
     struct hash_map_entry_t *entries_p;
-    int (*hash)(long key);
+    hash_function_t hash;
 };
 
 /**
@@ -55,7 +57,7 @@ int hash_map_init(struct hash_map_t *self_p,
                   size_t buckets_max,
                   struct hash_map_entry_t *entries_p,
                   size_t entries_max,
-                  int (*hash)(long key));
+                  hash_function_t hash);
 
 /**
  * Add given key-value pair into hash map. Overwrites old value if the

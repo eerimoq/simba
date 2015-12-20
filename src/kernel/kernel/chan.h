@@ -24,6 +24,13 @@
 #include "simba.h"
 
 typedef void chan_t;
+typedef ssize_t (*thrd_read_fn_t)(chan_t *self_p,
+                                    void *buf_p,
+                                    size_t size);
+typedef ssize_t (*thrd_write_fn_t)(chan_t *self_p,
+                                     const void *buf_p,
+                                     size_t size);
+typedef size_t (*thrd_size_fn_t)(chan_t *self_p);
 
 struct chan_list_t {
     struct chan_t **chans_pp;
@@ -34,13 +41,9 @@ struct chan_list_t {
 
 /* Channel. */
 struct chan_t {
-    ssize_t (*read)(chan_t *self_p,
-                    void *buf_p,
-                    size_t size);
-    ssize_t (*write)(chan_t *self_p,
-                     const void *buf_p,
-                     size_t size);
-    size_t (*size)(chan_t *self_p);
+    thrd_read_fn_t read;
+    thrd_write_fn_t write;
+    thrd_size_fn_t size;
     /* Reader thread waiting for data or writer thread waiting for a
        reader. */
     struct thrd_t *writer_p;
@@ -66,9 +69,9 @@ int chan_module_init(void);
  * @return zero(0) or negative error code.
  */
 int chan_init(struct chan_t *self_p,
-              ssize_t (*read)(chan_t *self_p, void *buf_p, size_t size),
-              ssize_t (*write)(chan_t *self_p, const void *buf_p, size_t size),
-              size_t (*size)(chan_t *self_p));
+              thrd_read_fn_t read,
+              thrd_write_fn_t write,
+              thrd_size_fn_t size);
 
 /**
  * Read from given channel.

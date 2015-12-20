@@ -45,7 +45,7 @@ int hash_map_init(struct hash_map_t *self_p,
                   size_t buckets_max,
                   struct hash_map_entry_t *entries_p,
                   size_t entries_max,
-                  int (*hash)(long key))
+                  hash_function_t hash)
 {
     size_t i;
 
