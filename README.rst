@@ -2,7 +2,7 @@
 
 .. image:: doc/images/Simba-Logo-50.png
 
-ABOUT
+About
 =====
 
 Simba is a microkernel and build framework. It aims to make embedded
@@ -19,49 +19,7 @@ Features:
 * portable (linux, Arduino Due, Arduino Mega, ...)
 * make based build framework
 
-Below is the simba "Hello World" application, printing "Hello World!"
-once every second. See ``examples/hello_world`` folder for the
-complete application.  Build and run with ``make run`` (under
-``examples/hello_world``).
-
-.. code-block:: c
-
-    #include "simba.h"
-
-    int main()
-    {
-        sys_start();
-
-        while (1) {
-            std_printf(FSTR("Hello world!\n"));
-            thrd_usleep(1000000);
-        }
-
-        return (0);
-    }
-
-FILE TREE
-=========
-
-.. code-block:: c
-
-    -- {root}                       - this directory
-       +-- examples/                - example applications
-       +-- make/                    - build and run files
-       +-- README
-       +-- src/                     - source code directory
-       |   +-- boards/              - board configurations
-       |   +-- drivers/             - drivers package source code
-       |   +-- kernel/              - kernel package source code
-       |   +-- slib/                - slib (Simba lib) package source code
-       |   +-- mcus/                - mcu configurations
-       |   +-- simba.h              - includes kernel, drivers and slib headers
-       +-- tst/                     - test suites
-           +-- drivers/             - drivers package test suites
-           +-- kernel/              - kernel package test suites
-           +-- slib/                - slib package test suites
-
-PREREQUISITES
+Prerequisites
 =============
 
 Required:
@@ -89,7 +47,49 @@ TOOLS
 -----
 ``sudo apt-get install ckermit valgrind cppcheck cloc``
 
-APPLICATIONS, PACKAGES AND MODULES
+Hello World
+===========
+
+Below is the simba "Hello World" application, printing "Hello World!"
+once every second. See ``examples/hello_world`` folder for the
+complete application. Build and run with ``make run`` (under
+``examples/hello_world``).
+
+.. code-block:: c
+
+    #include "simba.h"
+
+    int main()
+    {
+        sys_start();
+
+        std_printf(FSTR("Hello world!\n"));
+
+        return (0);
+    }
+
+File tree
+=========
+
+.. code-block:: c
+
+    -- {root}                       - this directory
+       +-- examples/                - example applications
+       +-- make/                    - build and run files
+       +-- README
+       +-- src/                     - source code directory
+       |   +-- boards/              - board configurations
+       |   +-- drivers/             - drivers package source code
+       |   +-- kernel/              - kernel package source code
+       |   +-- slib/                - slib (Simba lib) package source code
+       |   +-- mcus/                - mcu configurations
+       |   +-- simba.h              - includes kernel, drivers and slib headers
+       +-- tst/                     - test suites
+           +-- drivers/             - drivers package test suites
+           +-- kernel/              - kernel package test suites
+           +-- slib/                - slib package test suites
+
+Applications, packages and modules
 ==================================
 
 A module is normally a header and a source file. A package is a
@@ -118,7 +118,7 @@ For a package, the preferred file tree is:
        +-- module1.c
        +-- module2.c
 
-BOARDS AND MCUS
+Boards and mcus
 ===============
 
 A board is the top level configuration entity in the build
@@ -133,7 +133,7 @@ Only one MCU per board is supported. If there are two MCU:s on one
 physical board, two board configurations have to be created, one for
 each MCU.
 
-BUILD AND RUN TESTS
+Build and run tests
 ===================
 
 This is how to build an application for the default board, given in
@@ -155,7 +155,7 @@ Nano, use the BOARD make variable.
 Note: An application may support only a subset of the boards defined
 in Simba.
 
-THREADS AND CHANNELS
+Threads and channels
 ====================
 
 A thread is the basic execution entity. A scheduler controls the
@@ -192,7 +192,7 @@ semi-asynchronous version the writer writes to a buffer within the
 queue, and only blocks all data does not fit in the buffer. The buffer
 size is selected by the application.
 
-DRIVERS
+Drivers
 =======
 
 Typical thread-driver interaction template code. Call mydrv_write() to

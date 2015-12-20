@@ -1,5 +1,8 @@
-ds18b20
-=======
+:mod:`ds18b20` --- One-wire temperature sensor
+==============================================
+
+.. module:: ds18b20
+   :synopsis: One-wire temperature sensor.
 
 .. doxygenfile:: drivers/ds18b20.h
    :project: simba

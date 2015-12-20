@@ -1,15 +1,27 @@
-.. Simba documentation master file, created by
-   sphinx-quickstart on Sat Dec 19 15:51:40 2015.
+.. s documentation master file, created by
+   sphinx-quickstart on Sun Dec 20 08:56:50 2015.
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
 Welcome to Simba's documentation!
 =================================
 
-Contents:
+Simba is a microkernel and build framework. It aims to make embedded
+programming easy and portable.
 
 .. toctree::
    :maxdepth: 2
+   :titlesonly:
 
-   kernel
-   drivers
+   about
+   installation
+   user-guide
+   developer-guide
+   api-reference
+
+Indices and tables
+==================
+
+* :ref:`genindex`
+* :ref:`modindex`
+* :ref:`search`

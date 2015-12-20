@@ -1,5 +1,8 @@
-ds3231
-======
+:mod:`ds3231` --- RTC clock
+===========================
+
+.. module:: ds3231
+   :synopsis: RTC clock.
 
 .. doxygenfile:: drivers/ds3231.h
    :project: simba

@@ -1,5 +1,8 @@
-mcp2515
-=======
+:mod:`mcp2515` --- CAN BUS chipset
+==================================
+
+.. module:: mcp2515
+   :synopsis: CAN BUS chipset.
 
 .. doxygenfile:: drivers/mcp2515.h
    :project: simba
