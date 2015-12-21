@@ -1,38 +1,6 @@
 Installation
 ============
 
-Prerequisites
--------------
-
-Required:
-
-* GNU make 3.81
-* python 2.7
-* GNU toolchain with c compiler and linker for target architecture(s)
-* gcc
-* bash
-
-Optional:
-
-* valgrind
-* cppcheck
-* cloc
-
-Linux (Ubuntu)
---------------
-
-``sudo apt-get install ckermit valgrind cppcheck cloc python``
-
-Avr
-~~~
-
-``sudo apt-get install avrdude gcc-avr binutils-avr gdb-avr avr-libc``
-
-Arm
-~~~
-
-``sudo apt-get install bossa-cli gcc-arm-none-eabi``
-
 Windows
 -------
 
@@ -44,33 +12,24 @@ Download cygwin from `cygwin.com` and select the following packages:
 * git
 * gitk
 
-Directories
-~~~~~~~~~~~
-
-This is the directory structure expected by the cygwin setup script
-``cygwin_setup.sh``:
+Start Cygwin execute the following commands to download all software
+and setup the environment. Note that ``source cygwin_setup.sh`` has to
+be executed everytime you start a new Cygwin shell.
 
 .. code-block:: c
 
-  -- {root}
-     +-- simba/                    - Simba.
-     +-- arm-toolchain-windows/    - ARM toolchain.
-     +-- avr-toolchain-windows/    - Atmel AVR toolchain.
+   $ git clone https://github.com/eerimoq/simba
+   $ git clone https://github.com/eerimoq/avr-toolchain-windows
+   $ git clone https://github.com/eerimoq/arm-toolchain-windows
+   $ cd simba
+   $ source cygwin_setup.sh
 
-Avr
-~~~
+Linux (Ubuntu)
+--------------
 
-Download the Atmel AVR toolchain here:
-https://github.com/eerimoq/avr-toolchain-windows/archive/master.zip
+.. code-block:: c
 
-Unpack it in the same folder as ``simba/``. Then run ``source
-cygwin_setup.sh`` in ``simba/`` to add the bin directory to the path.
-
-Arm
-~~~
-
-Download the ARM toolchain here:
-https://github.com/eerimoq/arm-toolchain-windows/archive/master.zip
-
-Unpack it in the same folder as ``simba/``. Then run ``source
-cygwin_setup.sh`` in ``simba/`` to add the bin directory to the path.
+   $ git clone https://github.com/eerimoq/simba
+   $ sudo apt-get install ckermit valgrind cppcheck cloc python
+   $ sudo apt-get install avrdude gcc-avr binutils-avr gdb-avr avr-libc
+   $ sudo apt-get install bossa-cli gcc-arm-none-eabi
