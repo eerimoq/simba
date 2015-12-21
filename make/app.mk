@@ -56,7 +56,7 @@ CDEFS +=  -DARCH_$(UPPER_ARCH) -DMCU_$(UPPER_MCU) \
           -DBOARD_$(UPPER_BOARD) -DVERSION=$(VERSION)
 CFLAGS += $(CDEFS)
 LDFLAGS += $(LDFLAGS_EXTRA)
-SHELL = /usr/bin/env bash
+SHELL = /bin/bash
 
 all: $(EXE) $(SETTINGS_BIN)
 
@@ -73,9 +73,9 @@ include $(KERNEL.mk)
 include $(DRIVERS.mk)
 include $(SLIB.mk)
 
-UPPER_ARCH = $(shell echo $(ARCH) | tr a-z A-Z)
-UPPER_MCU = $(shell echo $(MCU) | tr a-z A-Z | tr - _ | tr / _)
-UPPER_BOARD = $(shell echo $(BOARD) | tr a-z A-Z)
+UPPER_ARCH := $(shell python -c "import sys; sys.stdout.write(sys.argv[1].upper())" $(ARCH))
+UPPER_MCU := $(shell python -c "import sys; sys.stdout.write(sys.argv[1].upper().replace('-', '_').replace('/', '_'))" $(MCU))
+UPPER_BOARD := $(shell python -c "import sys; sys.stdout.write(sys.argv[1].upper())" $(BOARD))
 
 RUNSCRIPT = $(SIMBA)/make/$(TOOLCHAIN)/$(ARCH).py
 
