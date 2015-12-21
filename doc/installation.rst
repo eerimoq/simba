@@ -4,7 +4,8 @@ Installation
 Windows
 -------
 
-Download cygwin from `cygwin.com` and select the following packages:
+Download cygwin from http://cygwin.com and select the following
+packages during the installation:
 
 * gcc-core
 * make
