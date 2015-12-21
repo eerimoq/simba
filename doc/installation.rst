@@ -50,6 +50,8 @@ Directories
 This is the directory structure expected by the cygwin setup script
 ``cygwin_setup.sh``:
 
+.. code-block:: c
+
   -- {root}
      +-- simba/                    - Simba.
      +-- arm-toolchain-windows/    - ARM toolchain.
