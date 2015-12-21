@@ -44,12 +44,31 @@ Download cygwin from `cygwin.com` and select the following packages:
 * git
 * gitk
 
+Directories
+~~~~~~~~~~~
+
+This is the directory structure expected by the cygwin setup script
+``cygwin_setup.sh``:
+
+  -- {root}
+     +-- simba/                    - Simba.
+     +-- arm-toolchain-windows/    - ARM toolchain.
+     +-- avr-toolchain-windows/    - Atmel AVR toolchain.
+
 Avr
 ~~~
 
-Download the AVR toolchain:
+Download the Atmel AVR toolchain here:
+https://github.com/eerimoq/avr-toolchain-windows/archive/master.zip
+
+Unpack it in the same folder as ``simba/``. Then run ``source
+cygwin_setup.sh`` in ``simba/`` to add the bin directory to the path.
 
 Arm
 ~~~
 
-Download the ARM toolchain:
+Download the ARM toolchain here:
+https://github.com/eerimoq/arm-toolchain-windows/archive/master.zip
+
+Unpack it in the same folder as ``simba/``. Then run ``source
+cygwin_setup.sh`` in ``simba/`` to add the bin directory to the path.

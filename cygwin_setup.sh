@@ -1,5 +1,5 @@
 #
-# Setup script for Cygwin on Windows
+# Setup script for Cygwin on Windows.
 #
 
 # AVR toolchain
