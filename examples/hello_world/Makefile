@@ -20,8 +20,9 @@
 
 NAME = hello_world
 BOARD = linux
-DRIVERS_SRC = uart.c
-SLIB_SRC =
+
+RUN_END_PATTERN = "Hello world!"
+RUN_END_PATTERN_SUCCESS = "Hello world!"
 
 SIMBA = ../..
 include $(SIMBA)/make/app.mk

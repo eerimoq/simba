@@ -31,10 +31,7 @@ int main()
     uart_start(&uart);
     sys_set_stdout(&uart.chout);
 
-    while (1) {
-        std_printf(FSTR("Hello world!\n"));
-        thrd_usleep(1000000);
-    }
+    std_printf(FSTR("Hello world!\n"));
     
     return (0);
 }

@@ -9,8 +9,6 @@ export PATH=$PATH:$(readlink -f ../avr-toolchain-windows/bin)
 export PATH=$PATH:$(readlink -f ../arm-toolchain-windows/arm-none-eabi-gcc/4.8.3-2014q1/bin)
 export PATH=$PATH:$(readlink -f ../arm-toolchain-windows/bossac/1.3a-arduino)
 
-mkdir -p .cygwin
-
 # Serial port
 read -p "Enter Arduino COM port (for example COM3): " com_port
 

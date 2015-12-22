@@ -78,6 +78,8 @@ UPPER_MCU := $(shell python -c "import sys; sys.stdout.write(sys.argv[1].upper()
 UPPER_BOARD := $(shell python -c "import sys; sys.stdout.write(sys.argv[1].upper())" $(BOARD))
 
 RUNSCRIPT = $(SIMBA)/make/$(TOOLCHAIN)/$(ARCH).py
+RUN_END_PATTERN ?= "harness report: total\(\d+\), passed\(\d+\), failed\(\d+\)"
+RUN_END_PATTERN_SUCCESS ?= "harness report: total\(\d+\), passed\(\d+\), failed\(0\)"
 
 clean:
 	@echo "Cleaning"
@@ -89,7 +91,7 @@ new:
 
 run: all
 	@echo "Running $(EXE)"
-	set -o pipefail ; stdbuf -i0 -o0 -e0 $(RUNSCRIPT) run ./$(EXE) $(SIMBA) $(RUNARGS) | tee $(RUNLOG)
+	set -o pipefail ; stdbuf -i0 -o0 -e0 $(RUNSCRIPT) run ./$(EXE) $(SIMBA) $(RUN_END_PATTERN) $(RUN_END_PATTERN_SUCCESS) $(RUNARGS) | tee $(RUNLOG)
 
 dump:
 	set -o pipefail ; $(RUNSCRIPT) dump ./$(EXE) $(SIMBA) $(RUNARGS)
