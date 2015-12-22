@@ -25,7 +25,7 @@ def upload(bossac_port):
 if "AVRDUDE_PORT" in os.environ:
 	bossac_port = os.environ["AVRDUDE_PORT"]
 else:
-	bossac_port = "/dev/arduino"
+	bossac_port = "arduino"
 
 if target == "run":
     try:
