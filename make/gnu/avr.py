@@ -26,7 +26,7 @@ if target == "run":
     run("avrdude -p {mcu} {rest} -U flash:w:{hex_file} 2>&1".format(mcu=mcu,
                                                                     rest=rest,
                                                                     hex_file=hex_file))
-    run(os.path.join(simba_path, "make/run.exp"))
+    run(os.path.join(simba_path, "make/run.py"))
 elif TARGET == "dump":
     run("avrdude -p {mcu} {rest} -U eeprom:r:eeprom.bin:r 2>&1".format(mcu=mcu,
                                                                        rest=rest))

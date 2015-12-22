@@ -166,15 +166,15 @@ def generate_fs(infiles):
     """
     re_command = re.compile(r'^\s*\.\.fs_command\.\. '
                             '"(?P<path>[^"]+)" '
-                            '"(?P<callback>[^"]+)";$', re.MULTILINE)
+                            '"(?P<callback>[^"]+)";\s*$', re.MULTILINE)
     re_counter = re.compile(r'^\s*\.\.fs_counter\.\. '
                             '"(?P<path>.+)" '
                             '\.\.fs_separator\.\. '
-                            '"(?P<name>[^"]+)";', re.MULTILINE)
+                            '"(?P<name>[^"]+)";\s*', re.MULTILINE)
     re_parameter = re.compile(r'^\s*\.\.fs_parameter\.\. '
                               '"(?P<path>[^"]+)" '
                               '"(?P<name>[^"]+)" '
-                              '"(?P<type>[^"]+)";$',
+                              '"(?P<type>[^"]+)";\s*$',
                               re.MULTILINE)
 
     # create lists of files and counters
@@ -314,7 +314,7 @@ def generate_log(infiles):
     re_log = re.compile(r'^\s*\.\.log-begin\.\. '
                         '(?P<name>[^ ]+) '
                         '"(?P<fmt>[^"]+)" '
-                        '\.\.log-end\.\.;$',
+                        '\.\.log-end\.\.;\s*$',
                         re.MULTILINE)
 
 

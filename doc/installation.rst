@@ -10,6 +10,7 @@ packages during the installation:
 * gcc-core
 * make
 * python
+* python-setuptools
 * git
 * gitk
 
@@ -19,6 +20,9 @@ be executed everytime you start a new Cygwin shell.
 
 .. code-block:: c
 
+   $ easy_install-2.7 pip
+   $ pip install pyserial
+   $ pip install xpect
    $ git clone https://github.com/eerimoq/simba
    $ git clone https://github.com/eerimoq/avr-toolchain-windows
    $ git clone https://github.com/eerimoq/arm-toolchain-windows
