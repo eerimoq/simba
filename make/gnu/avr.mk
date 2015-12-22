@@ -38,7 +38,8 @@ LDFLAGS += -mmcu=$(CPU) \
 
 ENDIANESS = little
 
-AVRDUDE_PORT ?= /dev/arduino
+# Use the environment variable AVRDUDE_PORT as default
+AVRDUDE_PORT ?= $(shell python -c "import os, sys; sys.stdout.write(os.environ['AVRDUDE_PORT'] if 'AVRDUDE_PORT' in os.environ else '/dev/arduino')")
 AVRDUDE_NO_VERIFY ?= -V
 RUNARGS = ${MCU} ${NAME}.hex ${SETTINGS_BIN} -D -P $(AVRDUDE_PORT) -c $(AVRDUDE_PROGRAMMER) \
           $(AVRDUDE_NO_VERIFY) -b $(AVRDUDE_BAUDRATE)

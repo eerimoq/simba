@@ -4,7 +4,7 @@ import sys
 import serial
 import expect
 
-dev_serial = serial.Serial("/dev/ttyS2", baudrate=38400, timeout=10)
+dev_serial = serial.Serial("/dev/arduino", baudrate=38400, timeout=10)
 dev = expect.Handler(dev_serial)
 
 status = 0
