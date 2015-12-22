@@ -1,7 +1,7 @@
 User Guide
 ==========
 
-This guide assumes that you have Simba installed. See the
+This guide requires that you have Simba installed. See the
 :doc:`installation` page for details.
 
 
@@ -33,7 +33,7 @@ Compile, link and run it by typing the commands below in a shell:
    Hello world!
    $
 
-Cross-compilation for Arduino Due:
+Cross-compile, link and then run on an Arduino Due:
 
 .. code-block:: c
 
