@@ -91,7 +91,9 @@ new:
 
 run: all
 	@echo "Running $(EXE)"
-	set -o pipefail ; stdbuf -i0 -o0 -e0 $(RUNSCRIPT) run ./$(EXE) $(SIMBA) $(RUN_END_PATTERN) $(RUN_END_PATTERN_SUCCESS) $(RUNARGS) | tee $(RUNLOG)
+	set -o pipefail ; stdbuf -i0 -o0 -e0 $(RUNSCRIPT) run ./$(EXE) $(SIMBA) \
+	                  $(RUN_END_PATTERN) $(RUN_END_PATTERN_SUCCESS) \
+                          $(RUNARGS) | tee $(RUNLOG)
 
 dump:
 	set -o pipefail ; $(RUNSCRIPT) dump ./$(EXE) $(SIMBA) $(RUNARGS)
