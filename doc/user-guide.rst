@@ -10,18 +10,40 @@ Hello World application
 
 Below is the Simba "Hello World" application.
 
+It consistion of two files; main.c and Makefile.
+
+main.c
+~~~~~~
+
 .. code-block:: c
 
-    #include "simba.h"
+   #include "simba.h"
 
-    int main()
-    {
-        sys_start();
+   int main()
+   {
+       sys_start();
 
-        std_printf(FSTR("Hello world!\n"));
+       std_printf(FSTR("Hello world!\n"));
 
-        return (0);
-    }
+       return (0);
+   }
+
+Makefile
+~~~~~~~~
+
+.. code-block:: c
+
+   NAME = hello_world
+   BOARD = linux
+
+   RUN_END_PATTERN = "Hello world!"
+   RUN_END_PATTERN_SUCCESS = "Hello world!"
+
+   SIMBA = ../..
+   include $(SIMBA)/make/app.mk
+
+Build and run
+~~~~~~~~~~~~~
 
 Compile, link and run it by typing the commands below in a shell:
 
@@ -81,7 +103,7 @@ framework. It contains information about the MCU and the pin mapping.
 In turn, the MCU contains information about available devices and
 clock frequencys in the microcontroller.
 
-See ``src/boards`` and ``src/mcus`` for available configurations.
+See `src/boards`_ and `src/mcus`_ for available configurations.
 
 Only one MCU per board is supported. If there are two MCU:s on one
 physical board, two board configurations have to be created, one for
@@ -113,7 +135,7 @@ A simple thread that waits to be resumed by another thread.
 
 Threads usually communicates over channels. There are two kinds of
 channels; queue and event. Both implementing the same abstract channel
-interface (see ``kernel/chan.h``).  This abstraction makes channel
+interface (see `kernel/chan.h`_).  This abstraction makes channel
 very powerful as a synchronization primitive. They can be seen as
 limited functionality file descriptors in linux.
 
@@ -123,3 +145,7 @@ block until all written data has been read by the reader. In the
 semi-asynchronous version the writer writes to a buffer within the
 queue, and only blocks all data does not fit in the buffer. The buffer
 size is selected by the application.
+
+.. _src/boards: https://github.com/eerimoq/simba/tree/master/src/boards
+.. _src/mcus: https://github.com/eerimoq/simba/tree/master/src/mcus
+.. _kernel/chan.h: https://github.com/eerimoq/simba/tree/master/src/kernel/kernel/chan.h
