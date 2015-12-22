@@ -15,4 +15,4 @@ source code instead of the generated documentation.
    drivers
    slib
 
-.. _github: https://github.com/eerimoq/simba/tree/master/src/kernel/kernel
+.. _github: https://github.com/eerimoq/simba/tree/master/src
