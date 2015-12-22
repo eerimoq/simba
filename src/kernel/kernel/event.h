@@ -39,11 +39,14 @@ struct event_t {
 int event_init(struct event_t *self_p);
 
 /**
- * Wait for an event to occur in given mask.
+ * Wait for an event to occur in given event mask. This function
+ * blocks until at least one of the events in the event mask has been
+ * set. When the function returns the given event mask has been
+ * overwritten with the events that actually occured.
  *
  * @param[in] self_p Initialized event channel to read from.
  * @param[in, out] buf_p The mask of events to wait for. When the
- *                       function return the mask contains the events
+ *                       function returns the mask contains the events
  *                       that have occured.
  * @param[in] size Size to read (always sizeof(mask)).
  *
@@ -54,7 +57,7 @@ ssize_t event_read(struct event_t *self_p,
                    size_t size);
 
 /**
- * Write given events to the event channel.
+ * Write given event(s) to the event channel.
  *
  * @param[in] self_p Initialized event channel to write to.
  * @param[in] buf_p The mask of events to write.

@@ -23,7 +23,12 @@
 
 #include "simba.h"
 
-/* Counter definition macros. */
+/**
+ * Define a 64 bit debug counter with given name and file system path.
+ *
+ * @param[in] path Path of the counter in the debug file system.
+ * @param[in] name Counter name.
+ */
 #if defined(__SIMBA_GEN__)
 #    define COUNTER_DEFINE(path, name) ..fs_counter.. path ..fs_separator.. #name
 #else
@@ -32,9 +37,23 @@
     FS_COUNTER_CMD(name)
 #endif
 
+/**
+ * Get the counter.
+ *
+ * @param[in] name Counter name. The same name as specified in
+ *                 `COUNTER_DEFINE()`.
+ *
+ * @return The counter.
+ */
 #define COUNTER(name) counter_ ## name
 
-/* Increment given counter. */
+/**
+ * Increment a counter with given value.
+ *
+ * @param[in] name Counter name. The same name as specified in
+ *                 `COUNTER_DEFINE()`.
+ * @param[in] value Value to add to given counter.
+ */
 #define COUNTER_INC(name, value) COUNTER(name) += (value)
 
 #endif

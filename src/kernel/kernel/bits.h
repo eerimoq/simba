@@ -24,12 +24,18 @@
 #include "simba.h"
 
 /**
- * Insert value of given size and position into value.
+ * Insert given number of bits into another value at given position.
  *
- * @param[in] value_p Value to insert into.
- * @param[in] position Position in value where to insert, counted from LSB.
+ * For example, `bits_insert_32(0xffffffff, 4, 8, 0x12)` would return
+ * `0xfffff12f`.
+ *
+ * @param[in] dst Value to insert into.
+ * @param[in] position Bit position, counted from LSB, in `dst` where
+ *                     to insert `src`.
  * @param[in] size Number of bits to insert.
- * @param[in] value Value to intert.
+ * @param[in] value Value to insert.
+ *
+ * @return The resulting value of the insertion.
  */
 static inline uint32_t bits_insert_32(uint32_t dst,
                                       int position,

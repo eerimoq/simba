@@ -23,13 +23,28 @@
 
 #include "simba.h"
 
+/**
+ * Abstract channel type.
+ */
 typedef void chan_t;
+
+/**
+ * Channel read function callback type.
+ */
 typedef ssize_t (*thrd_read_fn_t)(chan_t *self_p,
-                                    void *buf_p,
-                                    size_t size);
+                                  void *buf_p,
+                                  size_t size);
+
+/**
+ * Channel write function callback type.
+ */
 typedef ssize_t (*thrd_write_fn_t)(chan_t *self_p,
-                                     const void *buf_p,
-                                     size_t size);
+                                   const void *buf_p,
+                                   size_t size);
+
+/**
+ * Channel size function callback type.
+ */
 typedef size_t (*thrd_size_fn_t)(chan_t *self_p);
 
 struct chan_list_t {
@@ -39,7 +54,9 @@ struct chan_list_t {
     int flags;
 };
 
-/* Channel. */
+/**
+ * Channel datastructure.
+ */
 struct chan_t {
     thrd_read_fn_t read;
     thrd_write_fn_t write;
@@ -53,17 +70,20 @@ struct chan_t {
 };
 
 /**
- * Initialize module.
- * @return void
+ * Initialize the channel module. This function should only be called
+ * from `sys_start()`.
+ *
+ * @return zero(0) or negative error code.
  */
 int chan_module_init(void);
 
 /**
- * Initialize channel with given callbacks.
+ * Initialize given channel with given callbacks. A channel must be
+ * initialized before it can be used.
  *
  * @param[in] self_p Channel to initialize.
- * @param[in] read_p Read function callback.
- * @param[in] write_p Write function callback.
+ * @param[in] read Read function callback.
+ * @param[in] write Write function callback.
  * @param[in] size Size function callback.
  *
  * @return zero(0) or negative error code.
@@ -74,11 +94,13 @@ int chan_init(struct chan_t *self_p,
               thrd_size_fn_t size);
 
 /**
- * Read from given channel.
+ * Read data from given channel. The behaviour of this function
+ * depends on the channel implementation. Often, the calling thread
+ * will be blocked until all data has been read or an error occurs.
  *
  * @param[in] self_p Channel to read from.
- * @param[in] buf_p Buffer to read to.
- * @param[in] size Size to read.
+ * @param[in] buf_p Buffer to read into.
+ * @param[in] size Number of bytes to read.
  *
  * @return Number of read bytes or negative error code.
  */
@@ -87,7 +109,9 @@ ssize_t chan_read(chan_t *self_p,
                   size_t size);
 
 /**
- * Write bytes to given channel.
+ * Write data to given channel. The behaviour of this function depends
+ * on the channel implementation. Some channel implementations blocks
+ * until the receiver has read the data, and some returns immediately.
  *
  * @param[in] self_p Channel to write to.
  * @param[in] buf_p Buffer to write from.
@@ -100,20 +124,33 @@ ssize_t chan_write(chan_t *self_p,
                    size_t size);
 
 /**
- * Get number of bytes available to read from the channel.
+ * Get the number of bytes available to read from given channel.
  *
- * @param[in] self_p Channel to write to.
+ * @param[in] self_p Channel to get the size of.
  *
  * @return Number of bytes available.
  */
 size_t chan_size(chan_t *self_p);
 
 /**
- * Initialize an empty list of channels.
+ * Check if a channel is polled. May only be called from ISR or with
+ * the system lock taken.
+ *
+ * @param[in] self_p Channel to check.
+ *
+ * @return true(1) or false(0).
+ */
+int chan_is_polled_irq(struct chan_t *self_p);
+
+/**
+ * Initialize an empty list of channels. A list is used to wait for
+ * data on multiple channel at the same time. When there is data on at
+ * least one channel, the poll function returns and the application
+ * can read from the channel with data.
  *
  * @param[in] list_p List to initialize.
  * @param[in] workspace_p Workspace for internal use.
- * @param[in] size Size of workspace.
+ * @param[in] size Size of the workspace in bytes.
  *
  * @return zero(0) or negative error code.
  */
@@ -151,8 +188,8 @@ int chan_list_add(struct chan_list_t *list_p, chan_t *chan_p);
 int chan_list_remove(struct chan_list_t *list_p, chan_t *chan_p);
 
 /**
- * Poll given list of channels for events. Blocks until one of the
- * channels has data ready to be read.
+ * Poll given list of channels for events. Blocks until at least one
+ * of the channels in the list has data ready to be read.
  *
  * @param[in] list_p List of channels to poll.
  * @param[in] timeout_p Time to wait for data on any channel before a
@@ -162,7 +199,5 @@ int chan_list_remove(struct chan_list_t *list_p, chan_t *chan_p);
  */
 chan_t *chan_list_poll(struct chan_list_t *list_p,
                        struct time_t *timeout_p);
-
-int chan_is_polled_irq(struct chan_t *self_p);
 
 #endif
