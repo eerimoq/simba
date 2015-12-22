@@ -11,7 +11,10 @@ simba_path = sys.argv[3]
 
 def run(command):
     print command
-    subprocess.check_call(command, shell=True)
+    try:
+        subprocess.check_call(command, shell=True)
+    except:
+        sys.exit(1)
     
 
 if target == "debugger":

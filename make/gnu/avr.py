@@ -8,29 +8,30 @@ import re
 target = sys.argv[1]
 exe = sys.argv[2]
 simba_path = sys.argv[3]
-mcu = sys.argv[4]
-hex_file = sys.argv[5]
-settings_bin = sys.argv[6]
-rest = ' '.join(sys.argv[7:])
+run_end_pattern = sys.argv[4]
+run_end_pattern_success = sys.argv[5]
+mcu = sys.argv[6]
+hex_file = sys.argv[7]
+settings_bin = sys.argv[8]
+rest = sys.argv[9:]
 
 
 def run(command):
-    print command
-    subprocess.check_call(command, shell=True)
-    
+    print ' '.join(command)
+    try:
+        subprocess.check_call(command)
+    except:
+        sys.exit(1)
 
 if target == "run":
-    run("avrdude -p {mcu} {rest} -U eeprom:w:{settings_bin}:r".format(mcu=mcu,
-                                                                      rest=rest,
-                                                                      settings_bin=settings_bin))
-    run("avrdude -p {mcu} {rest} -U flash:w:{hex_file} 2>&1".format(mcu=mcu,
-                                                                    rest=rest,
-                                                                    hex_file=hex_file))
-    run(os.path.join(simba_path, "make/run.py"))
+    run(["avrdude", "-p", mcu] + rest + ["-U", "eeprom:w:" + settings_bin + ":r"])
+    run(["avrdude", "-p", mcu] + rest + ["-U", "flash:w:" + hex_file])
+    run([os.path.join(simba_path, "make/run.py"),
+         run_end_pattern,
+         run_end_pattern_success])
 elif TARGET == "dump":
-    run("avrdude -p {mcu} {rest} -U eeprom:r:eeprom.bin:r 2>&1".format(mcu=mcu,
-                                                                       rest=rest))
-    run(os.path.join(simba_path, "/make/dumpdecoder.py eeprom.bin"))
+    run(["avrdude", "-p", mcu] + rest + ["-U", "eeprom:r:eeprom.bin:r"])
+    run([os.path.join(simba_path, "make/dumpdecoder.py"), "eeprom.bin"])
 else:
     print "Bad target " + target
     sys.exit(1)

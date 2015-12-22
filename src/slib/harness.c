@@ -70,5 +70,7 @@ int harness_run(struct harness_t *self_p,
     std_printf(FSTR("harness report: total(%d), passed(%d), failed(%d)\r\n"),
                total, passed, failed);
 
+    sys_stop(failed);
+
     return (0);
 }
