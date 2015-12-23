@@ -152,6 +152,14 @@ Simba manager tool
 Create a new package with the simba manager tool and run the example
 test suite.
 
+In the output from ``tree my_package`` below, two files may catch your
+eyes; setup.py and __init__.py. Those are Python files and are often
+seen in Python packages. They are present in a Simba package because
+Simba uses the Python tool ``pip`` to release and install
+packages. The idea is that everyone that implements a useful package
+should release it and make it available for other users to install,
+just as Python!
+
 .. code-block:: c
 
    $ simba create --package my_package
@@ -184,7 +192,8 @@ Create a release of the package.
    $ cd ../../..
    $ simba release
 
-Install the package in ``${SIMBA_ROOT}/dist-packages``.
+Install the package in ``${SIMBA_ROOT}/dist-packages`` (the default
+installation folder).
 
 .. code-block:: c
 
