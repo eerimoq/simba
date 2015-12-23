@@ -1,6 +1,8 @@
 Installation
 ============
 
+Both Windows and Linux are supported as development environments.
+
 Windows
 -------
 
@@ -13,9 +15,10 @@ Download `cygwin`_ and select the following packages for installation:
 * git
 * gitk
 
-Start Cygwin execute the following commands to download all software
-and setup the environment. Note that ``source cygwin_setup.sh`` has to
-be executed everytime you start a new Cygwin shell.
+Start Cygwin and execute the following commands to download the Simba
+source code, install the prerequisities and setup the
+environment. Note that ``source cygwin_setup.sh`` has to be executed
+everytime you start a new Cygwin shell.
 
 .. code-block:: c
 
@@ -28,8 +31,10 @@ be executed everytime you start a new Cygwin shell.
    $ cd simba
    $ source cygwin_setup.sh
 
-Linux (Ubuntu)
+Linux (Ubuntu 14)
 --------------
+
+Download the Simba source code and install the prerequisities.
 
 .. code-block:: c
 
