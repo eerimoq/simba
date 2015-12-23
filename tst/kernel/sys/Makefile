@@ -22,5 +22,5 @@ NAME = sys_suite
 VERSION = 1.0.0
 BOARD = linux
 
-SIMBA = ../../..
-include $(SIMBA)/make/app.mk
+SIMBA_ROOT = ../../..
+include $(SIMBA_ROOT)/make/app.mk

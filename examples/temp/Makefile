@@ -23,5 +23,5 @@ BOARD = arduino_nano
 DRIVERS_SRC = uart.c owi.c ds18b20.c pin.c
 SLIB_SRC =
 
-SIMBA = ../..
-include $(SIMBA)/make/app.mk
+SIMBA_ROOT = ../..
+include $(SIMBA_ROOT)/make/app.mk

@@ -24,5 +24,5 @@ BOARD = linux
 
 SETTINGS_INI = settings.ini
 
-SIMBA = ../../..
-include $(SIMBA)/make/app.mk
+SIMBA_ROOT = ../../..
+include $(SIMBA_ROOT)/make/app.mk

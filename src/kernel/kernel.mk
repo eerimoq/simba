@@ -19,8 +19,8 @@
 #
 
 
-INC += $(SIMBA)/src/kernel
-INC += $(SIMBA)/src/kernel/ports/$(ARCH)/$(TOOLCHAIN)
+INC += $(SIMBA_ROOT)/src/kernel
+INC += $(SIMBA_ROOT)/src/kernel/ports/$(ARCH)/$(TOOLCHAIN)
 
 KERNEL_SRC ?= chan.c \
               event.c \
@@ -36,4 +36,4 @@ KERNEL_SRC ?= chan.c \
               time.c \
               timer.c
 
-SRC += $(KERNEL_SRC:%=$(SIMBA)/src/kernel/%)
+SRC += $(KERNEL_SRC:%=$(SIMBA_ROOT)/src/kernel/%)

@@ -18,11 +18,11 @@
 # This file is part of the Simba project.
 #
 
-INC += $(SIMBA)/src/mcus/linux
-SRC += $(SIMBA)/src/mcus/linux/mcu.c
+INC += $(SIMBA_ROOT)/src/mcus/linux
+SRC += $(SIMBA_ROOT)/src/mcus/linux/mcu.c
 
 ARCH = linux
 
 MCU_DESC = "Linux"
 
-include $(SIMBA)/make/$(TOOLCHAIN)/linux.mk
+include $(SIMBA_ROOT)/make/$(TOOLCHAIN)/linux.mk

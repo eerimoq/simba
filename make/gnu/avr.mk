@@ -53,4 +53,4 @@ $(NAME).hex: $(EXE)
 HELP_VARIABLES += "  AVRDUDE_PORT                avrdude serial port" $$(echo -e '\n') \
                   "  AVRDUDE_BAUDRATE            avrdude serial baudrate" $$(echo -e '\n')
 
-include $(SIMBA)/make/gnu.mk
+include $(SIMBA_ROOT)/make/gnu.mk

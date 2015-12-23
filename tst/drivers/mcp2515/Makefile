@@ -23,5 +23,5 @@ BOARD = linux
 SLIB_SRC = harness.c
 DRIVERS_SRC = mcp2515.c spi.c pin.c exti.c uart.c
 
-SIMBA = ../../..
-include $(SIMBA)/make/app.mk
+SIMBA_ROOT = ../../..
+include $(SIMBA_ROOT)/make/app.mk

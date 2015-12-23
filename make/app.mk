@@ -26,7 +26,7 @@ VERSION ?= 0.0.0
 OBJDIR = obj
 DEPSDIR = deps
 GENDIR = gen
-INC += . $(SIMBA)/src
+INC += . $(SIMBA_ROOT)/src
 SRC += main.c
 SRC_FILTERED = $(filter-out $(SRC_IGNORE),$(SRC))
 CSRC += $(filter %.c,$(SRC_FILTERED))
@@ -34,7 +34,7 @@ COBJ = $(patsubst %,$(OBJDIR)/%,$(notdir $(CSRC:%.c=%.o)))
 OBJ = $(COBJ)
 GENCSRC = $(GENDIR)/simba_gen.c
 GENOBJ = $(patsubst %,$(OBJDIR)/%,$(notdir $(GENCSRC:%.c=%.o)))
-SETTINGS_INI ?= $(SIMBA)/make/settings.ini
+SETTINGS_INI ?= $(SIMBA_ROOT)/make/settings.ini
 SETTINGS_H = settings.h
 SETTINGS_BIN = settings.bin
 EXE = $(NAME).out
@@ -61,12 +61,12 @@ SHELL = /bin/bash
 all: $(EXE) $(SETTINGS_BIN)
 
 # layers
-BOARD.mk ?= $(SIMBA)/src/boards/$(BOARD)/board.mk
+BOARD.mk ?= $(SIMBA_ROOT)/src/boards/$(BOARD)/board.mk
 include $(BOARD.mk)
-MCU.mk ?= $(SIMBA)/src/mcus/$(MCU)/mcu.mk
-KERNEL.mk ?= $(SIMBA)/src/kernel/kernel.mk
-DRIVERS.mk ?= $(SIMBA)/src/drivers/drivers.mk
-SLIB.mk ?= $(SIMBA)/src/slib/slib.mk
+MCU.mk ?= $(SIMBA_ROOT)/src/mcus/$(MCU)/mcu.mk
+KERNEL.mk ?= $(SIMBA_ROOT)/src/kernel/kernel.mk
+DRIVERS.mk ?= $(SIMBA_ROOT)/src/drivers/drivers.mk
+SLIB.mk ?= $(SIMBA_ROOT)/src/slib/slib.mk
 
 include $(MCU.mk)
 include $(KERNEL.mk)
@@ -77,7 +77,7 @@ UPPER_ARCH := $(shell python -c "import sys; sys.stdout.write(sys.argv[1].upper(
 UPPER_MCU := $(shell python -c "import sys; sys.stdout.write(sys.argv[1].upper().replace('-', '_').replace('/', '_'))" $(MCU))
 UPPER_BOARD := $(shell python -c "import sys; sys.stdout.write(sys.argv[1].upper())" $(BOARD))
 
-RUNSCRIPT = $(SIMBA)/make/$(TOOLCHAIN)/$(ARCH).py
+RUNSCRIPT = $(SIMBA_ROOT)/make/$(TOOLCHAIN)/$(ARCH).py
 RUN_END_PATTERN ?= "harness report: total\(\d+\), passed\(\d+\), failed\(\d+\)"
 RUN_END_PATTERN_SUCCESS ?= "harness report: total\(\d+\), passed\(\d+\), failed\(0\)"
 
@@ -91,28 +91,28 @@ new:
 
 run: all
 	@echo "Running $(EXE)"
-	set -o pipefail ; stdbuf -i0 -o0 -e0 $(RUNSCRIPT) run ./$(EXE) $(SIMBA) \
+	set -o pipefail ; stdbuf -i0 -o0 -e0 $(RUNSCRIPT) run ./$(EXE) $(SIMBA_ROOT) \
 	                  $(RUN_END_PATTERN) $(RUN_END_PATTERN_SUCCESS) \
                           $(RUNARGS) | tee $(RUNLOG)
 
 dump:
-	set -o pipefail ; $(RUNSCRIPT) dump ./$(EXE) $(SIMBA) $(RUNARGS)
+	set -o pipefail ; $(RUNSCRIPT) dump ./$(EXE) $(SIMBA_ROOT) $(RUNARGS)
 
 report:
 	@echo "$(NAME):"
-	grep "exit: test_" $(RUNLOG) | python $(SIMBA)/make/color.py || true
+	grep "exit: test_" $(RUNLOG) | python $(SIMBA_ROOT)/make/color.py || true
 
 test: run
 	$(MAKE) report
 
 run-debugger: all
-	set -o pipefail ; stdbuf -i0 -o0 -e0 $(RUNSCRIPT) debugger ./$(EXE) $(SIMBA) $(RUNARGS) | tee $(RUNLOG)
+	set -o pipefail ; stdbuf -i0 -o0 -e0 $(RUNSCRIPT) debugger ./$(EXE) $(SIMBA_ROOT) $(RUNARGS) | tee $(RUNLOG)
 
 profile:
-	set -o pipefail ; $(RUNSCRIPT) profile ./$(EXE) $(SIMBA) | tee profile.log
+	set -o pipefail ; $(RUNSCRIPT) profile ./$(EXE) $(SIMBA_ROOT) | tee profile.log
 
 coverage:
-	set -o pipefail ; $(RUNSCRIPT) coverage ./$(EXE) $(SIMBA) | tee coverage.log
+	set -o pipefail ; $(RUNSCRIPT) coverage ./$(EXE) $(SIMBA_ROOT) | tee coverage.log
 
 size:
 	set -o pipefail ; $(SIZECMD) | tee size.log
@@ -129,7 +129,7 @@ $(EXE): $(OBJ) $(GENOBJ)
 
 $(SETTINGS_BIN) $(SETTINGS_H): $(SETTINGS_INI)
 	@echo "Generating $@ from $<"
-	$(SIMBA)/src/kernel/tools/settings.py $(SETTINGS_INI) $(ENDIANESS)
+	$(SIMBA_ROOT)/src/kernel/tools/settings.py $(SETTINGS_INI) $(ENDIANESS)
 
 define COMPILE_template
 -include $(patsubst %.c,$(DEPSDIR)/%.o.dep,$(notdir $1))
@@ -144,7 +144,7 @@ endef
 $(foreach file,$(CSRC),$(eval $(call COMPILE_template,$(file))))
 
 $(GENOBJ): $(OBJ)
-	$(SIMBA)/src/kernel/tools/gen.py $(NAME) $(VERSION) $(BOARD_DESC) $(MCU_DESC) \
+	$(SIMBA_ROOT)/src/kernel/tools/gen.py $(NAME) $(VERSION) $(BOARD_DESC) $(MCU_DESC) \
 	    $(GENCSRC) $(OBJ:$(OBJDIR)/%=$(GENDIR)/%.pp)
 	@echo "Compiling $(GENCSRC)"
 	$(CC) $(CFLAGS) -o $@ $(GENCSRC)

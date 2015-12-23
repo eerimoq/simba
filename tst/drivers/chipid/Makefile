@@ -21,5 +21,5 @@
 NAME = chipid_suite
 BOARD = arduino_due
 
-SIMBA = ../../..
-include $(SIMBA)/make/app.mk
+SIMBA_ROOT = ../../..
+include $(SIMBA_ROOT)/make/app.mk

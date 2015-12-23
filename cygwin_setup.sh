@@ -2,6 +2,9 @@
 # Setup script for Cygwin on Windows.
 #
 
+# Add the simba bin folder to the path
+export PATH=$PATH:$(readlink -f bin)
+
 # AVR toolchain
 export PATH=$PATH:$(readlink -f ../avr-toolchain-windows/bin)
 

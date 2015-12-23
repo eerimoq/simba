@@ -23,5 +23,5 @@ BOARD = arduino_due
 
 SRC += channel.c note.c oscillator.c envelope.c
 
-SIMBA = ../..
-include $(SIMBA)/make/app.mk
+SIMBA_ROOT = ../..
+include $(SIMBA_ROOT)/make/app.mk

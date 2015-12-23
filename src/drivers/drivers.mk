@@ -18,8 +18,8 @@
 # This file is part of the Simba project.
 #
 
-INC += $(SIMBA)/src/drivers
-INC += $(SIMBA)/src/drivers/ports/$(ARCH)
+INC += $(SIMBA_ROOT)/src/drivers
+INC += $(SIMBA_ROOT)/src/drivers/ports/$(ARCH)
 
 ifeq ($(ARCH),linux)
 DRIVERS_SRC ?= pin.c \
@@ -62,4 +62,4 @@ DRIVERS_SRC ?= adc.c \
                usb/host/class/usb_host_class_mass_storage.c
 endif
 
-SRC += $(DRIVERS_SRC:%=$(SIMBA)/src/drivers/%)
+SRC += $(DRIVERS_SRC:%=$(SIMBA_ROOT)/src/drivers/%)

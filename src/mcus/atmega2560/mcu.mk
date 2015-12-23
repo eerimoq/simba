@@ -18,8 +18,8 @@
 # This file is part of the Simba project.
 #
 
-INC += $(SIMBA)/src/mcus/atmega2560
-SRC += $(SIMBA)/src/mcus/atmega2560/mcu.c
+INC += $(SIMBA_ROOT)/src/mcus/atmega2560
+SRC += $(SIMBA_ROOT)/src/mcus/atmega2560/mcu.c
 
 F_CPU = 16000000
 CPU = atmega2560
@@ -32,4 +32,4 @@ ARCH = avr
 
 MCU_DESC = "Atmel ATMega25600 AVR @ 16MHz, 8k sram, 256k flash"
 
-include $(SIMBA)/make/$(TOOLCHAIN)/avr.mk
+include $(SIMBA_ROOT)/make/$(TOOLCHAIN)/avr.mk

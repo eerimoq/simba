@@ -23,5 +23,5 @@ BOARD = linux
 
 COVOBJ = obj/sem.o
 
-SIMBA = ../../..
-include $(SIMBA)/make/app.mk
+SIMBA_ROOT = ../../..
+include $(SIMBA_ROOT)/make/app.mk

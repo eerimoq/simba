@@ -18,8 +18,8 @@
 # This file is part of the Simba project.
 #
 
-INC += $(SIMBA)/src/boards/arduino_nano
-SRC += $(SIMBA)/src/boards/arduino_nano/board.c
+INC += $(SIMBA_ROOT)/src/boards/arduino_nano
+SRC += $(SIMBA_ROOT)/src/boards/arduino_nano/board.c
 
 BOARD_DESC = "Arduino Nano"
 

@@ -36,4 +36,4 @@ else
   CFLAGS += -O2
 endif
 
-include $(SIMBA)/make/gnu.mk
+include $(SIMBA_ROOT)/make/gnu.mk

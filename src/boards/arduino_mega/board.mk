@@ -18,8 +18,8 @@
 # This file is part of the Simba project.
 #
 
-INC += $(SIMBA)/src/boards/arduino_mega
-SRC += $(SIMBA)/src/boards/arduino_mega/board.c
+INC += $(SIMBA_ROOT)/src/boards/arduino_mega
+SRC += $(SIMBA_ROOT)/src/boards/arduino_mega/board.c
 
 BOARD_DESC = "Arduino MEGA 2560"
 

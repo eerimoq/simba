@@ -18,13 +18,13 @@
 # This file is part of the Simba project.
 #
 
-INC += $(SIMBA)/src/mcus/sam
-SRC += $(SIMBA)/src/mcus/sam/sam3.c \
-       $(SIMBA)/src/mcus/sam/mcu.c
+INC += $(SIMBA_ROOT)/src/mcus/sam
+SRC += $(SIMBA_ROOT)/src/mcus/sam/sam3.c \
+       $(SIMBA_ROOT)/src/mcus/sam/mcu.c
 
 MCPU = cortex-m3
 F_CPU = 84000000
 
 ARCH = arm
 
-include $(SIMBA)/make/$(TOOLCHAIN)/arm.mk
+include $(SIMBA_ROOT)/make/$(TOOLCHAIN)/arm.mk

@@ -19,7 +19,7 @@
 #
 
 
-INC += $(SIMBA)/src/slib
+INC += $(SIMBA_ROOT)/src/slib
 
 SLIB_SRC ?= crc.c \
             fat16.c \
@@ -27,4 +27,4 @@ SLIB_SRC ?= crc.c \
             hash_map.c \
             midi.c
 
-SRC += $(SLIB_SRC:%=$(SIMBA)/src/slib/%)
+SRC += $(SLIB_SRC:%=$(SIMBA_ROOT)/src/slib/%)

@@ -23,5 +23,5 @@ BOARD = linux
 
 CFLAGS_EXTRA = -DSTD_KLOG_BUFFER_MAX=96
 
-SIMBA = ../../..
-include $(SIMBA)/make/app.mk
+SIMBA_ROOT = ../../..
+include $(SIMBA_ROOT)/make/app.mk

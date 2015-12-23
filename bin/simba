@@ -1,0 +1,374 @@
+#!/usr/bin/env python
+#
+# simba create --package foo
+# simba create --application fie
+#
+# simba install bar
+#
+# simba release foo
+#
+
+import sys
+import os
+import argparse
+import subprocess
+
+
+SETUP_PY = """#!/usr/bin/env python
+
+from setuptools import setup
+
+setup(name="{name}",
+      version="0.1",
+      description=("Add a description"),
+      author="{author}",
+      author_email='simba@simba.com',
+      packages=["{name}"],
+      package_data={{"": ["doc/*",
+                          "src/{name}.h",
+                          "src/{name}.mk", 
+                          "src/{name}/*.h",
+                          "src/*.c",
+                          "tst/*/*"]}},
+      license='MIT',
+      classifiers=[
+          'License :: OSI Approved :: MIT License',
+      ],
+      url='https://github.com/eerimoq/simba')
+"""
+
+SETUP_SH = """#!/usr/bin/env bash
+
+export {name_upper}_ROOT=$(readlink -f {name})
+"""
+
+PACKAGE_H = """/**
+ * @file {name}.h
+ * @version 0.1
+ *
+ * @section License
+ * Copyright (C) {year}, {author}
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ */
+
+#ifndef __{name_upper}_H__
+#define __{name_upper}_H__
+
+#include "{name}/example.h"
+
+#endif
+"""
+
+PACKAGE_MK = """#
+# @file {name}.mk
+# @version 0.1
+#
+# @section License
+# Copyright (C) {year}, {author}
+#
+# This library is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Lesser General Public
+# License as published by the Free Software Foundation; either
+# version 2.1 of the License, or (at your option) any later version.
+#
+# This library is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# Lesser General Public License for more details.
+#
+
+INC += $({name_upper}_ROOT)/src
+INC += $({name_upper}_ROOT)/src/ports/$(ARCH)/$(TOOLCHAIN)
+
+{name_upper}_SRC ?= example.c
+
+SRC += $({name_upper}_SRC:%=$({name_upper}_ROOT)/src/%)
+"""
+
+
+MODULE_H = """/**
+ * @file {name}/example.h
+ * @version 0.1
+ *
+ * @section License
+ * Copyright (C) {year}, {author}
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERBITSTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ */
+
+#ifndef __{name_upper}_EXAMPLE_H__
+#define __{name_upper}_EXAMPLE_H__
+
+#include "simba.h"
+#include "{name}.h"
+
+/**
+ * An example function.
+ *
+ * @return zero(0) or negative error code.
+ */
+int example_function(void);
+
+#endif
+"""
+
+
+MODULE_C = """/**
+ * @file example.c
+ * @version 0.1
+ *
+ * @section License
+ * Copyright (C) {year}, {author}
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ */
+
+#include "simba.h"
+#include "{name}.h"
+
+int example_function(void)
+{{
+    return (0);
+}}
+"""
+
+MAIN_C = """/**
+ * @file main.c
+ * @version 0.1
+ *
+ * @section License
+ * Copyright (C) {year}, {author}
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ */
+
+#include "simba.h"
+#include "{name}.h"
+
+int test_function(struct harness_t *harness_p)
+{{
+    return (example_function());
+}}
+
+int main()
+{{
+    struct harness_t harness;
+    struct harness_testcase_t harness_testcases[] = {{
+        {{ test_function, "test_function" }},
+        {{ NULL, NULL }}
+    }};
+
+    sys_start();
+    uart_module_init();
+
+    harness_init(&harness);
+    harness_run(&harness, harness_testcases);
+
+    return (0);
+}}
+"""
+
+MAKEFILE = """#
+# @file Makefile
+# @version 0.1
+#
+# @section License
+# Copyright (C) {year}, {author}
+#
+# This library is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Lesser General Public
+# License as published by the Free Software Foundation; either
+# version 2.1 of the License, or (at your option) any later version.
+#
+# This library is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# Lesser General Public License for more details.
+#
+
+NAME = example_suite
+VERSION = 0.1
+BOARD = linux
+
+include $({name_upper}_ROOT)/src/{name}.mk
+include $(SIMBA_ROOT)/make/app.mk
+"""
+
+
+def simba_root():
+    return os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+
+def create(args):
+    """The create subcommand.
+    """
+
+    name = args.name
+    author = "Erik"
+    year = 2015
+
+    # Create the package root directory
+    os.makedirs(name)
+
+    if args.package:
+        # Create setup.py
+        setup_path = os.path.join(name, "setup.py")
+        with open(setup_path, "w") as f:
+            f.write(SETUP_PY.format(name=name,
+                                    author=author))
+
+        # Create setup.sh
+        setup_path = os.path.join(name, "setup.sh")
+        with open(setup_path, "w") as f:
+            f.write(SETUP_SH.format(name=name,
+                                    name_upper=name.upper()))
+
+        # Create the subdirectories within the package
+        subdirs = ["doc", "src", "tst"]
+        for subdir in subdirs:
+            os.makedirs(os.path.join(name, name, subdir))
+        os.makedirs(os.path.join(name, name, "src", name))
+        os.makedirs(os.path.join(name, name, "tst", "example"))
+
+        # Create __init__.py
+        path = os.path.join(name, name, "__init__.py")
+        with open(path, "w") as f:
+            f.write("# This file was generated by simba")
+
+        # Create src/{name}.h
+        path = os.path.join(name, name, "src", name + ".h")
+        with open(path, "w") as f:
+            f.write(PACKAGE_H.format(name=name,
+                                     name_upper=name.upper(),
+                                     author=author,
+                                     year=year))
+
+        # Create src/{name}.mk
+        path = os.path.join(name, name, "src", name + ".mk")
+        with open(path, "w") as f:
+            f.write(PACKAGE_MK.format(name=name,
+                                      name_upper=name.upper(),
+                                      author=author,
+                                      year=year))
+
+        # Create src/{name}/example.h
+        path = os.path.join(name, name, "src", name, "example.h")
+        with open(path, "w") as f:
+            f.write(MODULE_H.format(name=name,
+                                    name_upper=name.upper(),
+                                    author=author,
+                                    year=year))
+
+        # Create src/example.c
+        path = os.path.join(name, name, "src", "example.c")
+        with open(path, "w") as f:
+            f.write(MODULE_C.format(name=name,
+                                    name_upper=name.upper(),
+                                    author=author,
+                                    year=year))
+
+        # Create tst/example/main.c
+        path = os.path.join(name, name, "tst", "example", "main.c")
+        with open(path, "w") as f:
+            f.write(MAIN_C.format(name=name,
+                                  name_upper=name.upper(),
+                                  author=author,
+                                  year=year))
+
+        # Create tst/example/Makefile
+        path = os.path.join(name, name, "tst", "example", "Makefile")
+        with open(path, "w") as f:
+            f.write(MAKEFILE.format(name=name,
+                                    name_upper=name.upper(),
+                                    author=author,
+                                    year=year))
+
+        print "Empty package", name, "created!"
+    else:
+        sys.exit(1)
+
+
+def install(args):
+    """The install subcommand.
+    """
+
+    dist_packages = os.path.join(simba_root(), "dist-packages")
+
+    print "Installing package", args.name, "into", dist_packages
+
+    # use pip to install the package into simbas' dist-packages
+    command = ["pip", "install", "--target=" + dist_packages, args.name]
+    print ' '.join(command)
+    subprocess.check_call(command)
+
+
+def release(_):
+    """The release subcommand.
+    """
+
+    subprocess.check_call(["python", "setup.py", "sdist"])
+    subprocess.check_call(["python", "setup.py", "bdist_wheel", "--universal"])
+    #subprocess.check_call(["twine", "upload", "dist"])
+
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    subparsers = parser.add_subparsers()
+
+    # The create subparser
+    create_parser = subparsers.add_parser("create")
+    create_parser.add_argument("--package",
+                               action="store_true",
+                               help="Create a package.")
+    create_parser.add_argument("--application",
+                               action="store_true",
+                               help="Create an application.")
+    create_parser.add_argument("name",
+                               help="Name of the package or application.")
+    create_parser.set_defaults(func=create)
+
+    # The install subparser
+    install_parser = subparsers.add_parser("install")
+    install_parser.add_argument("name",
+                                help="Name of the package.")
+    install_parser.set_defaults(func=install)
+
+    # The release subparser
+    install_parser = subparsers.add_parser("release")
+    install_parser.set_defaults(func=release)
+
+    parsed_args = parser.parse_args()
+    parsed_args.func(parsed_args)

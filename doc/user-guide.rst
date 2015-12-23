@@ -39,8 +39,8 @@ Makefile
    RUN_END_PATTERN = "Hello world!"
    RUN_END_PATTERN_SUCCESS = "Hello world!"
 
-   SIMBA = ../..
-   include $(SIMBA)/make/app.mk
+   SIMBA_ROOT = ../..
+   include $(SIMBA_ROOT)/make/app.mk
 
 Build and run
 ~~~~~~~~~~~~~

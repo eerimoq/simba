@@ -32,7 +32,7 @@ CFLAGS += -mthumb \
           -ffunction-sections
 
 LDFLAGS += -mcpu=$(MCPU) -DF_CPU=$(F_CPU)UL -Wl,--cref \
-           -T$(SIMBA)/src/mcus/$(MCU)/script.ld \
+           -T$(SIMBA_ROOT)/src/mcus/$(MCU)/script.ld \
            -mthumb \
            -Wl,--gc-sections
 
@@ -44,4 +44,4 @@ all: $(NAME).bin
 $(NAME).bin: $(EXE)
 	$(CROSS_COMPILE)objcopy -O binary $< $@
 
-include $(SIMBA)/make/gnu.mk
+include $(SIMBA_ROOT)/make/gnu.mk

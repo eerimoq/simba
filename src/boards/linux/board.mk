@@ -18,8 +18,8 @@
 # This file is part of the Simba project.
 #
 
-INC += $(SIMBA)/src/boards/linux
-SRC += $(SIMBA)/src/boards/linux/board.c
+INC += $(SIMBA_ROOT)/src/boards/linux
+SRC += $(SIMBA_ROOT)/src/boards/linux/board.c
 
 BOARD_DESC = "Linux"
 

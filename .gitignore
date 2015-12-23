@@ -17,3 +17,9 @@ size.log
 *.bin
 settings.[hc]
 settings.bin
+
+doc/_build
+doc/xml
+
+dist-packages/
+!dist-packages/README.rst

@@ -18,8 +18,8 @@
 # This file is part of the Simba project.
 #
 
-INC += $(SIMBA)/src/mcus/atmega328p
-SRC += $(SIMBA)/src/mcus/atmega328p/mcu.c
+INC += $(SIMBA_ROOT)/src/mcus/atmega328p
+SRC += $(SIMBA_ROOT)/src/mcus/atmega328p/mcu.c
 
 AVRDUDE_BAUDRATE = 57600
 AVRDUDE_PROGRAMMER = arduino
@@ -32,4 +32,4 @@ ARCH = avr
 
 MCU_DESC = "Atmel ATMega328p AVR @ 16MHz, 2k sram, 32k flash"
 
-include $(SIMBA)/make/$(TOOLCHAIN)/avr.mk
+include $(SIMBA_ROOT)/make/$(TOOLCHAIN)/avr.mk

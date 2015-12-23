@@ -18,8 +18,8 @@
 # This file is part of the Simba project.
 #
 
-INC += $(SIMBA)/src/boards/arduino_due
-SRC += $(SIMBA)/src/boards/arduino_due/board.c
+INC += $(SIMBA_ROOT)/src/boards/arduino_due
+SRC += $(SIMBA_ROOT)/src/boards/arduino_due/board.c
 
 BOARD_DESC = "Arduino Due"
 
