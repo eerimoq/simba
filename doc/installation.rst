@@ -44,4 +44,38 @@ Download the Simba source code and install the prerequisities.
    $ sudo apt-get install avrdude gcc-avr binutils-avr gdb-avr avr-libc
    $ sudo apt-get install bossa-cli gcc-arm-none-eabi
 
+Packages
+--------
+
+A package.
+
+.. code-block:: c
+
+   -- mypackage/
+      +-- setup.py
+      +-- doc/
+      +-- inc/
+      +-- src/
+      +-- tst/
+
+Installed packages.
+
+.. code-block:: c
+
+   -- {root}
+      +-- make/
+      +-- kernel/
+      +-- drivers/
+      +-- slib/
+      +-- json/
+      +-- xml/
+      +-- bitstruct/
+
+.. code-block:: c
+
+   $ simba install mypackage
+   $ simba install mypackage.zip
+   $ simba install https://github.com/user/mypackage-master.zip
+
 .. _cygwin: http://cygwin.com
+
