@@ -146,6 +146,50 @@ semi-asynchronous version the writer writes to a buffer within the
 queue, and only blocks all data does not fit in the buffer. The buffer
 size is selected by the application.
 
+Simba manager tool
+------------------
+
+Create a new package with the simba manager tool and run the example
+test suite.
+
+.. code-block:: c
+
+   $ simba create --package my_package
+   $ tree my_package
+   my_package/
+   ├── my_package
+   │   ├── doc
+   │   ├── __init__.py
+   │   ├── src
+   │   │   ├── example.c
+   │   │   ├── my_package
+   │   │   │   └── example.h
+   │   │   ├── my_package.h
+   │   │   └── my_package.mk
+   │   └── tst
+   │       └── example
+   │           ├── main.c
+   │           └── Makefile
+   ├── setup.py
+   └── setup.sh
+   $ cd my_package
+   $ source setup.sh
+   $ cd my_package/tst/example
+   $ make -s test
+
+Create a release of the package.
+
+.. code-block:: c
+
+   $ cd ../../..
+   $ simba release
+
+Install the package in ``${SIMBA_ROOT}/dist-packages``.
+
+.. code-block:: c
+
+   $ simba install dist/my_package-0.1-py2.py3-none-any.whl
+
 .. _src/boards: https://github.com/eerimoq/simba/tree/master/src/boards
 .. _src/mcus: https://github.com/eerimoq/simba/tree/master/src/mcus
 .. _kernel/chan.h: https://github.com/eerimoq/simba/tree/master/src/kernel/kernel/chan.h
