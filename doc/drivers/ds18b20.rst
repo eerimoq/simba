@@ -4,6 +4,11 @@
 .. module:: ds18b20
    :synopsis: One-wire temperature sensor.
 
+**Source code:** `drivers/ds18b20.h`_
+
+--------------------------------------------------------
+
 .. doxygenfile:: drivers/ds18b20.h
    :project: simba
 
+.. _drivers/ds18b20.h: https://github.com/eerimoq/simba/tree/master/src/drivers/drivers/ds18b20.h

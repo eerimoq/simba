@@ -4,6 +4,11 @@
 .. module:: ds3231
    :synopsis: RTC clock.
 
+**Source code:** `drivers/ds3231.h`_
+
+----------------------------------------------
+
 .. doxygenfile:: drivers/ds3231.h
    :project: simba
 
+.. _drivers/ds3231.h: https://github.com/eerimoq/simba/tree/master/src/drivers/drivers/ds3231.h
