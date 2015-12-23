@@ -10,8 +10,10 @@ export PATH=$PATH:$(readlink -f ../arm-toolchain-windows/arm-none-eabi-gcc/4.8.3
 export PATH=$PATH:$(readlink -f ../arm-toolchain-windows/bossac/1.3a-arduino)
 
 # Serial port
-read -p "Enter Arduino COM port (for example COM3): " com_port
+read -p "Enter Arduino COM port (for example COM3) or just hit Enter to skip this step: " com_port
 
-export AVRDUDE_PORT=${com_port}
+if [ ! -z "$com_port" ] ; then
+    export AVRDUDE_PORT=${com_port}
 
-(cd /dev && ln -sf $(python -c "import sys; sys.stdout.write('ttyS' + str(int(sys.argv[1][3:]) - 1))" $com_port) arduino)
+	(cd /dev && ln -sf $(python -c "import sys; sys.stdout.write('ttyS' + str(int(sys.argv[1][3:]) - 1))" $com_port) arduino)
+fi
