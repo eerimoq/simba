@@ -1,8 +1,8 @@
 Installation
 ============
 
-The Simba can be installed on `Windows`_ and `Linux (Ubuntu
-14)`_. Follow the installation procedure below for your OS.
+Simba can be installed on `Windows`_ and `Linux (Ubuntu 14)`_. Follow
+the installation procedure below for your OS.
 
 Windows
 -------
