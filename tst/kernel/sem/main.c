@@ -27,10 +27,13 @@ static THRD_STACK(t0_stack, 224);
 static THRD_STACK(t1_stack, 224);
 static void *entry(void *arg_p)
 {
-    while (1) {
-        sem_get(&sem, NULL);
-        sem_put(&sem2, 1);
-    }
+    sem_put(&sem2, 1);
+    printf("getting sem\n");
+    sem_get(&sem, NULL);
+    printf("got sem\n");
+    sem_put(&sem2, 1);
+
+    thrd_suspend(NULL);
 
     return (NULL);
 }
@@ -47,9 +50,8 @@ static int test_all(struct harness_t *harness_p)
     
     sem_get(&sem, NULL);
     BTASSERT(sem_get(&sem, &timeout) == -ETIMEDOUT);
-    sem_put(&sem, 1);
 
-    /* Create two thrds with higher priority than this thrd.*/
+    /* Create two thrds with higher priority than this thrd. */
     thrd_spawn(entry,
                NULL,
                -10,
@@ -61,8 +63,13 @@ static int test_all(struct harness_t *harness_p)
                t1_stack,
                sizeof(t1_stack));
 
-    sem_put(&sem, 1);
-    sem_put(&sem, 1);
+    /* Wait until both threads are waiting for sem. */
+    sem_get(&sem2, NULL);
+    sem_get(&sem2, NULL);
+
+    /* Start both threads. */
+    sem_put(&sem, 2);
+
     sem_get(&sem2, NULL);
     sem_get(&sem2, NULL);
 
