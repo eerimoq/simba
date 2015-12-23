@@ -57,12 +57,12 @@ int time_get(struct time_t *now_p);
 int time_set(struct time_t *new_p);
 
 /**
- * Sleep for given number of microseconds.
+ * Sleep (busy wait) for given number of microseconds.
  *
  * @param[in] usec Microseconds to sleep.
  *
  * @return void
  */
-void time_sleep(int us);
+void time_sleep(int usec);
 
 #endif

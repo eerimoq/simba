@@ -45,9 +45,11 @@ struct hash_map_t {
 /**
  * Initialize hash map with given parameters.
  *
- * @param[out] self_p Initialized hash map.
+ * @param[in,out] self_p Initialized hash map.
+ * @param[in] buckets_p Array of buckets.
+ * @param[in] buckets_max Number of entries in `buckets_p`.
  * @param[in] entries_p Array of empty entries.
- * @param[in] entries_max Number of entries in 'entries'.
+ * @param[in] entries_max Number of entries in `entries_p`.
  * @param[in] hash Hash function.
  *
  * @return zero(0) or negative error code.

@@ -28,9 +28,7 @@ static THRD_STACK(t1_stack, 224);
 static void *entry(void *arg_p)
 {
     sem_put(&sem2, 1);
-    printf("getting sem\n");
     sem_get(&sem, NULL);
-    printf("got sem\n");
     sem_put(&sem2, 1);
 
     thrd_suspend(NULL);

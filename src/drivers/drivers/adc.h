@@ -55,7 +55,7 @@ int adc_init(struct adc_driver_t *self_p,
  * Start an asynchronous convertion of analog signal to digital samples.
  *
  * @param[in] self_p Driver object.
- * @param[out] samples Converted samlpes.
+ * @param[out] samples_p Converted samlpes.
  * @param[in] length Length of samples array.
  *
  * @return zero(0) or negative error code.
@@ -77,7 +77,7 @@ int adc_async_wait(struct adc_driver_t *self_p);
  * Start a synchronous convertion of analog signal to digital samples.
  *
  * @param[in] self_p Driver object.
- * @param[out] samples Converted samlpes.
+ * @param[out] samples_p Converted samlpes.
  * @param[in] length Length of samples array.
  *
  * @return zero(0) or negative error code.

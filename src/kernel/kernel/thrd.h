@@ -142,11 +142,9 @@ int thrd_set_name(const char *name_p);
 int thrd_set_log_mask(struct thrd_t *thrd_p, int mask);
 
 /**
- * Get log mask for given thread.
+ * Get the log mask of the current thread.
  *
- * @param[in] thrd Thread.
- *
- * @return Log mask.
+ * @return Log mask of current thread.
  */
 int thrd_get_log_mask(void);
 

@@ -65,7 +65,7 @@ struct queue_t {
  * Initialize given queue.
  *
  * @param[in] self_p Queue to initialize.
- * @param[in] buf Buffer.
+ * @param[in] buf_p Buffer.
  * @param[in] size Size of buffer.
  *
  * @return zero(0) or negative error code
@@ -78,7 +78,7 @@ int queue_init(struct queue_t *self_p,
  * Read from given queue. Blocks until size bytes has been read.
  *
  * @param[in] self_p Queue to read from.
- * @param[in] buf Buffer to read to.
+ * @param[in] buf_p Buffer to read to.
  * @param[in] size Size to read.
  *
  * @return Number of read bytes or negative error code.
@@ -92,7 +92,7 @@ ssize_t queue_read(struct queue_t *self_p,
  * written.
  *
  * @param[in] self_p Queue to write to.
- * @param[in] buf Buffer to write from.
+ * @param[in] buf_p Buffer to write from.
  * @param[in] size Number of bytes to write.
  *
  * @return Number of written bytes or negative error code.
@@ -106,7 +106,7 @@ ssize_t queue_write(struct queue_t *self_p,
  * than size bytes.
  *
  * @param[in] self_p Queue to write to.
- * @param[in] buf Buffer to write from.
+ * @param[in] buf_p Buffer to write from.
  * @param[in] size Number of bytes to write.
  *
  * @return Number of written bytes or negative error code.

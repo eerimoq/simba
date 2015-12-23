@@ -102,8 +102,8 @@ struct fs_node_t {
  *
  * @param[in] command_p Command string to call. May be modified by
  *                      this function.
- * @param[in] chin Input channel.
- * @param[in] chout Output channel.
+ * @param[in] chin_p Input channel.
+ * @param[in] chout_p Output channel.
  *
  * @return zero(0) or negative error code.
  */
@@ -114,9 +114,9 @@ int fs_call(char *command_p,
 /**
  * List files and directories in 'path'.
  *
- * @param[in] path Directory to list.
- * @param[in] filter Filter files and folders.
- * @param[in] chout Output chan.
+ * @param[in] path_p Directory to list.
+ * @param[in] filter_p Filter files and folders.
+ * @param[in] chout_p Output chan.
  *
  * @return zero(0) or negative error code.
  */
@@ -127,8 +127,8 @@ int fs_list(const char *path_p,
 /**
  * Auto-complete given 'path'.
  *
- * @param[in,out] path Path to auto-complete.
- * @param[in] chout Output chan.
+ * @param[in,out] path_p Path to auto-complete.
+ * @param[in] chout_p Output chan.
  *
  * @return >=1 if completion happened. Match length.
  *         0 if no completion happend,
@@ -139,9 +139,9 @@ int fs_auto_complete(char *path_p, chan_t *chout_p);
 /**
  * Split buffer into path and command.
  *
- * @param[in] buf Buffer to split.
- * @param[out] path Path part.
- * @param[out] cmd Command part.
+ * @param[in] buf_p Buffer to split.
+ * @param[out] path_pp Path part.
+ * @param[out] cmd_pp Command part.
  *
  * @return zero(0) or negative error code.
  */
@@ -150,8 +150,8 @@ void fs_split(char *buf_p, char **path_pp, char **cmd_pp);
 /**
  * Merge path and command previously split using fs_split().
  *
- * @param[in] path Path from spilt.
- * @param[in] cmd Command from split.
+ * @param[in] path_p Path from spilt.
+ * @param[in] cmd_p Command from split.
  *
  * @return zero(0) or negative error code.
  */

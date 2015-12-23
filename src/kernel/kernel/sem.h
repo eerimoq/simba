@@ -23,6 +23,9 @@
 
 #include "simba.h"
 
+/**
+ * Compile-time declaration of a semaphore.
+ */
 #define SEM_INIT_DECL(name, _count)                             \
     struct sem_t name = { .count = _count, .head_p = NULL }
 
@@ -34,7 +37,7 @@ struct sem_t {
 };
 
 /**
- * Initialize module.
+ * Initialize the semaphore module.
  *
  * @return zero(0) or negative error code
  */
@@ -44,7 +47,7 @@ int sem_module_init(void);
  * Initialize given semaphore. Count is the number of threads that can
  * hold the semaphore at the same time.
  *
- * @param[in] self_p Semaphore to get.
+ * @param[in] self_p Semaphore to initialize.
  * @param[in] count Semaphore count.
  *
  * @return zero(0) or negative error code.
@@ -54,8 +57,8 @@ int sem_init(struct sem_t *self_p,
 
 /**
  * Get given semaphore. If the semaphore count is zero the calling
- * thread will be suspended until count is incremented by a put call
- * by another thread/isr.
+ * thread will be suspended until count is incremented by a sem_put()
+ * call.
  *
  * @param[in] self_p Semaphore to get.
  * @param[in] timeout_p Timeout.
@@ -66,10 +69,13 @@ int sem_get(struct sem_t *self_p,
             struct time_t *timeout_p);
 
 /**
- * Put given value on semaphore.
+ * Add given count to given semaphore. Any blocked thread waiting for
+ * this semaphore, in sem_get(), is unblocked. This continues until
+ * the semaphore count becomes zero or there are no threads in the
+ * blocked list.
  *
  * @param[in] self_p Semaphore to add count to.
- * @param[in] value Count to add.
+ * @param[in] count Count to add to the semaphore.
  *
  * @return zero(0) or negative error code.
  */
@@ -80,7 +86,7 @@ int sem_put(struct sem_t *self_p,
  * Put given value on semaphore for irq.
  *
  * @param[in] self_p Semaphore to add count to.
- * @param[in] value Count to add.
+ * @param[in] count Count to add.
  *
  * @return zero(0) or negative error code.
  */

@@ -92,7 +92,7 @@ int sem_put_irq(struct sem_t *self_p,
 
     self_p->count += count;
 
-    if (self_p->head_p != NULL) {
+    while ((self_p->count > 0) && (self_p->head_p != NULL)) {
         self_p->count--;
         elem_p = self_p->head_p;
         self_p->head_p = elem_p->next_p;

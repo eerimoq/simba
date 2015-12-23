@@ -471,8 +471,10 @@ struct fat16_dir_entry_t {
  * Initialize a FAT16 volume.
  *
  * @param[in,out] self_p FAT16 object to initialize.
- * @param[in] read_p Callback function used to read blocks of data.
- * @param[in] write_p Callback function used to write blocks of data.
+ * @param[in] read Callback function used to read blocks of data.
+ * @param[in] write Callback function used to write blocks of data.
+ * @param[in] arg_p Argument passed as the first arguemtn to read()
+ *                  and write().
  * @param[in] partition Partition to be used. Legal values for a
  *                      partition are 1-4 to use the corresponding
  *                      partition on a device formatted with a MBR,
@@ -518,6 +520,7 @@ int fat16_format(struct fat16_t *self_p);
  * Print volume information to given channel.
  *
  * @param[in] self_p FAT16 object.
+ * @param[in] chan_p Output channel.
  *
  * @return zero(0) or negative error code.
  */
@@ -578,8 +581,8 @@ ssize_t fat16_file_write(struct fat16_file_t *file_p,
  * Sets the file's read/write position relative to mode.
  *
  * @param[in] file_p File object.
- * @param[in] pos new position in bytes from given mode.
- * @param[in] mode absolute, relative and from end.
+ * @param[in] pos New position in bytes from given mode.
+ * @param[in] whence Absolute, relative or from end.
  *
  * @return zero(0) or negative error code.
  */
@@ -609,7 +612,7 @@ ssize_t fat16_file_size(struct fat16_file_t *file_p);
  * Causes all modified data and directory fields to be written to the
  * storage device.
  *
- * @param[in] self_p FAT16 object.
+ * @param[in] file_p File object.
  *
  * @return zero(0) or negative error code.
  */

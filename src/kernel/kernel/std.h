@@ -31,21 +31,27 @@
 int std_module_init(void);
 
 /**
- * Format and write data to buffer.
+ * Format and write data to destination buffer. The buffer must be big
+ * enough to fir the formatted string.
  *
- * Supported format specifiers are:
+ * A format specifiers has this format:
  *
- * %[flags][width][length]specifier
+ * ``%[flags][width][length]specifier``
+ *
+ * where
  *
  * flags: '0' or '-'
  * width: 0..127
  * length: 'l' for long or nothing
- * specifier: c, s, d, u, x
+ * specifier: c, s, d, u, x, f
  *
- *
- * @param[out] dst Destination buffer.
+ * @param[out] dst_p Destination buffer. The formatted string is
+ *                   written to this buffer.
  * @param[in] fmt_p Format string.
  * @param[in] ... Variable arguemnts list.
+ *
+ * @return Number of bytes written to the destination buffer or
+ *         negative error code.
  */
 ssize_t std_sprintf(char *dst_p, FAR const char *fmt_p, ...);
 

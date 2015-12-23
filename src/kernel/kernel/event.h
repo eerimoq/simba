@@ -32,7 +32,7 @@ struct event_t {
 /**
  * Initialize given event channel.
  *
- * @param[in] event Event channel to initialize.
+ * @param[in] self_p Event channel to initialize.
  *
  * @return zero(0) or negative error code
  */
@@ -86,7 +86,7 @@ ssize_t event_write_irq(struct event_t *self_p,
 /**
  * Checks if there are events active on the event channel.
  *
- * @param[in] event Initialized event channel.
+ * @param[in] self_p Initialized event channel.
  *
  * @return true(1) is at least one event is active, otherwise
  *         false(0).
