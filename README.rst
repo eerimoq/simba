@@ -1,3 +1,8 @@
+|buildstatus|_
+
+.. |buildstatus| image:: https://travis-ci.org/eerimoq/simba.svg
+.. _buildstatus: https://travis-ci.org/eerimoq/simba
+
 About
 =====
 
@@ -16,6 +21,7 @@ Features:
 * make based build framework
 
 Source code repository: http://github.com/eerimoq/simba
+
 Installation
 ============
 
@@ -56,6 +62,7 @@ Linux (Ubuntu)
    $ sudo apt-get install ckermit valgrind cppcheck cloc python
    $ sudo apt-get install avrdude gcc-avr binutils-avr gdb-avr avr-libc
    $ sudo apt-get install bossa-cli gcc-arm-none-eabi
+
 User Guide
 ==========
 
@@ -207,6 +214,7 @@ size is selected by the application.
 .. _src/boards: https://github.com/eerimoq/simba/tree/master/src/boards
 .. _src/mcus: https://github.com/eerimoq/simba/tree/master/src/mcus
 .. _kernel/chan.h: https://github.com/eerimoq/simba/tree/master/src/kernel/kernel/chan.h
+
 Developer Guide
 ===============
 

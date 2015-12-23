@@ -149,3 +149,4 @@ size is selected by the application.
 .. _src/boards: https://github.com/eerimoq/simba/tree/master/src/boards
 .. _src/mcus: https://github.com/eerimoq/simba/tree/master/src/mcus
 .. _kernel/chan.h: https://github.com/eerimoq/simba/tree/master/src/kernel/kernel/chan.h
+

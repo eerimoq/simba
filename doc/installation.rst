@@ -38,3 +38,4 @@ Linux (Ubuntu)
    $ sudo apt-get install ckermit valgrind cppcheck cloc python
    $ sudo apt-get install avrdude gcc-avr binutils-avr gdb-avr avr-libc
    $ sudo apt-get install bossa-cli gcc-arm-none-eabi
+
