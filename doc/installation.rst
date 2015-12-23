@@ -1,7 +1,8 @@
 Installation
 ============
 
-Both Windows and Linux are supported as development environments.
+The Simba can be installed on `Windows`_ and `Linux (Ubuntu
+14)`_. Follow the installation procedure below for your OS.
 
 Windows
 -------
@@ -16,7 +17,7 @@ Download `cygwin`_ and select the following packages for installation:
 * gitk
 
 Start Cygwin and execute the following commands to download the Simba
-source code, install the prerequisities and setup the
+source code, install the prerequisities and setup the development
 environment. Note that ``source cygwin_setup.sh`` has to be executed
 everytime you start a new Cygwin shell.
 
