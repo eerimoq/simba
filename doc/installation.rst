@@ -4,8 +4,7 @@ Installation
 Windows
 -------
 
-Download cygwin from http://cygwin.com and select the following
-packages during the installation:
+Download `cygwin`_ and select the following packages for installation:
 
 * gcc-core
 * make
@@ -39,3 +38,4 @@ Linux (Ubuntu)
    $ sudo apt-get install avrdude gcc-avr binutils-avr gdb-avr avr-libc
    $ sudo apt-get install bossa-cli gcc-arm-none-eabi
 
+.. _cygwin: http://cygwin.com
