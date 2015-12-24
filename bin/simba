@@ -241,6 +241,7 @@ Project homepage: <project homepage>
    :titlesonly:
 
    about
+   api-reference
 
 Indices and tables
 ==================
@@ -248,6 +249,37 @@ Indices and tables
 * :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`
+"""
+
+DOC_ABOUT_RST = """About
+=====
+"""
+
+DOC_HELLO_RST = """:mod:`hello` --- Hello world
+==================================
+
+.. module:: hello
+   :synopsis: Hello world.
+
+**Source code:** `{name}/hello.h`_
+
+----------------------------------------------
+
+.. doxygenfile:: {name}/hello.h
+   :project: {name}
+
+.. _{name}/hello.h: https://github.com/eerimoq/simba/tree/master/src/kernel/kernel/bits.h
+"""
+
+DOC_API_REFERENCE_RST = """API Reference
+=============
+
+.. toctree::
+   :maxdepth: 2
+   :numbered:
+   :glob:
+
+   {name}/*
 """
 
 DOC_CONF_PY = """# -*- coding: utf-8 -*-
@@ -3188,6 +3220,7 @@ def create(args):
         subdirs = ["doc", "src", "tst"]
         for subdir in subdirs:
             os.makedirs(os.path.join(name, name, subdir))
+        os.makedirs(os.path.join(name, name, "doc", name))
         os.makedirs(os.path.join(name, name, "src", name))
         os.makedirs(os.path.join(name, name, "tst", "hello"))
 
@@ -3202,8 +3235,11 @@ def create(args):
                 (DOC_BUILD_SH, os.path.join(name, name, "doc", "build.sh")),
                 (DOC_DOXYGEN_CFG, os.path.join(name, name, "doc", "doxygen.cfg")),
                 (DOC_MAKEFILE, os.path.join(name, name, "doc", "Makefile")),
+                (DOC_API_REFERENCE_RST, os.path.join(name, name, "doc", "api-reference.rst")),
                 (DOC_CONF_PY, os.path.join(name, name, "doc", "conf.py")),
-                (DOC_INDEX_RST, os.path.join(name, name, "doc", "index.rst"))
+                (DOC_INDEX_RST, os.path.join(name, name, "doc", "index.rst")),
+                (DOC_ABOUT_RST, os.path.join(name, name, "doc", "about.rst")),
+                (DOC_HELLO_RST, os.path.join(name, name, "doc", name, "hello.rst"))
             ]
 
         generate_files(files, name, year, author)
