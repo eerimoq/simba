@@ -21,7 +21,7 @@ source code, install the prerequisities and setup the development
 environment. Note that ``source cygwin_setup.sh`` has to be executed
 everytime you start a new Cygwin shell.
 
-.. code-block:: c
+.. code-block:: text
 
    $ easy_install-2.7 pip
    $ pip install pyserial
@@ -40,7 +40,7 @@ install the prerequisities and setup the development environment. Note
 that ``source setup.sh`` has to be executed everytime you start a
 shell.
 
-.. code-block:: c
+.. code-block:: text
 
    $ git clone https://github.com/eerimoq/simba
    $ sudo apt-get install ckermit valgrind cppcheck cloc python

@@ -4,7 +4,7 @@ Developer Guide
 File tree
 ---------
 
-.. code-block:: c
+.. code-block:: text
 
     -- {root}                       - this directory
        +-- examples/                - example applications

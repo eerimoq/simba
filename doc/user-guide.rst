@@ -36,7 +36,7 @@ Makefile
 `hello_world/Makefile`_ contains build configuration of the
 application.
 
-.. code-block:: c
+.. code-block:: makefile
 
    NAME = hello_world
    BOARD = linux
@@ -52,7 +52,7 @@ Build and run
 
 Compile, link and run it by typing the commands below in a shell:
 
-.. code-block:: c
+.. code-block:: text
 
    $ cd examples/hello_world
    $ make -s clean run
@@ -62,7 +62,7 @@ Compile, link and run it by typing the commands below in a shell:
 
 Cross-compile, link and then run on an Arduino Due:
 
-.. code-block:: c
+.. code-block:: text
 
    $ cd examples/hello_world
    $ make -s BOARD=arduino_due clean run
@@ -81,7 +81,7 @@ See below for the preferred application file tree. The application
 **must** have a file called main.c. It should contain the application
 entry function ``main()``.
 
-.. code-block:: c
+.. code-block:: text
 
     my_application
     ├── config.h
@@ -91,7 +91,7 @@ entry function ``main()``.
 For a package, the preferred file tree is seen below. See the inline
 comments for details about files and folders contents.
 
-.. code-block:: c
+.. code-block:: text
 
    my_package
    ├── my_package
@@ -198,24 +198,24 @@ packages. The idea is that everyone that implements a useful package
 should release it and make it available for other users to install,
 just as Python!
 
-.. code-block:: c
+.. code-block:: text
 
    $ simba create --package my_package
    $ tree my_package
    my_package/
    ├── my_package
-   │   ├── doc
-   │   ├── __init__.py
-   │   ├── src
-   │   │   ├── example.c
-   │   │   ├── my_package
-   │   │   │   └── example.h
-   │   │   ├── my_package.h
-   │   │   └── my_package.mk
-   │   └── tst
-   │       └── example
-   │           ├── main.c
-   │           └── Makefile
+   │   ├── doc
+   │   ├── __init__.py
+   │   ├── src
+   │   │   ├── example.c
+   │   │   ├── my_package
+   │   │   │   └── example.h
+   │   │   ├── my_package.h
+   │   │   └── my_package.mk
+   │   └── tst
+   │       └── example
+   │           ├── main.c
+   │           └── Makefile
    ├── setup.py
    └── setup.sh
    $ cd my_package
@@ -225,7 +225,7 @@ just as Python!
 
 Create a release of the package.
 
-.. code-block:: c
+.. code-block:: text
 
    $ cd ../../..
    $ simba release
@@ -233,7 +233,7 @@ Create a release of the package.
 Install the package in ``${SIMBA_ROOT}/dist-packages`` (the default
 installation folder).
 
-.. code-block:: c
+.. code-block:: text
 
    $ simba install dist/my_package-0.1-py2.py3-none-any.whl
 
