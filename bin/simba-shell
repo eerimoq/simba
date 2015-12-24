@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+
+echo "Entering the Simba shell."
+
+this_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+simba_root=$(readlink -f ${this_dir}/..)
+pwd=$(pwd)
+
+cd ${simba_root}
+
+if [ "${OSTYPE}" == "linux-gnu" ]; then
+    source setup.sh
+elif [ "${OSTYPE}" == "cygwin" ]; then
+    source cygwin_setup.sh
+else
+    echo "\$\{OSTYPE\} must be linux-gnu or cygwin."
+    exit 1
+fi
+
+cd ${pwd}
+
+export SIMBA_SHELL=yes
+
+$SHELL
+
+echo "Leaving the Simba shell."
