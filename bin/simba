@@ -60,7 +60,7 @@ PACKAGE_H = """/**
 #ifndef __{name_upper}_H__
 #define __{name_upper}_H__
 
-#include "{name}/example.h"
+#include "{name}/hello.h"
 
 #endif
 """
@@ -86,13 +86,13 @@ PACKAGE_MK = """#
 INC += $({name_upper}_ROOT)/src
 INC += $({name_upper}_ROOT)/src/ports/$(ARCH)/$(TOOLCHAIN)
 
-{name_upper}_SRC ?= example.c
+{name_upper}_SRC ?= hello.c
 
 SRC += $({name_upper}_SRC:%=$({name_upper}_ROOT)/src/%)
 """
 
 MODULE_H = """/**
- * @file {name}/example.h
+ * @file {name}/hello.h
  * @version 0.1
  *
  * @section License
@@ -109,24 +109,24 @@ MODULE_H = """/**
  * Lesser General Public License for more details.
  */
 
-#ifndef __{name_upper}_EXAMPLE_H__
-#define __{name_upper}_EXAMPLE_H__
+#ifndef __{name_upper}_HELLO_H__
+#define __{name_upper}_HELLO_H__
 
 #include "simba.h"
 #include "{name}.h"
 
 /**
- * An example function.
+ * An example function printing Hello World to stdout!.
  *
  * @return zero(0) or negative error code.
  */
-int {name}_example_function(void);
+int {name}_hello_world(void);
 
 #endif
 """
 
 MODULE_C = """/**
- * @file example.c
+ * @file hello.c
  * @version 0.1
  *
  * @section License
@@ -146,9 +146,9 @@ MODULE_C = """/**
 #include "simba.h"
 #include "{name}.h"
 
-int {name}_example_function(void)
+int {name}_hello_world(void)
 {{
-    std_printf(FSTR("{name}_example_function(void) says Hello!\\r\\n"));
+    std_printf(FSTR("{name}_hello_world says: Hello World!\\r\\n"));
 
     return (0);
 }}
@@ -177,7 +177,7 @@ MAIN_C = """/**
 
 int test_function(struct harness_t *harness_p)
 {{
-    return ({name}_example_function());
+    return ({name}_hello_world());
 }}
 
 int main()
@@ -216,7 +216,7 @@ MAKEFILE = """#
 # Lesser General Public License for more details.
 #
 
-NAME = example_suite
+NAME = hello_suite
 VERSION = 0.1
 BOARD = linux
 
@@ -3107,7 +3107,7 @@ int main()
     uart_start(&uart);
     sys_set_stdout(&uart.chout);
 
-    std_printf(FSTR("{name} says hello!\\r\\n"));
+    std_printf(FSTR("{name} says: Hello World!\\r\\n"));
 
     return (0);
 }}
@@ -3189,16 +3189,16 @@ def create(args):
         for subdir in subdirs:
             os.makedirs(os.path.join(name, name, subdir))
         os.makedirs(os.path.join(name, name, "src", name))
-        os.makedirs(os.path.join(name, name, "tst", "example"))
+        os.makedirs(os.path.join(name, name, "tst", "hello"))
 
         files = [
                 (INIT_PY, os.path.join(name, name, "__init__.py")),
                 (PACKAGE_H, os.path.join(name, name, "src", name + ".h")),
                 (PACKAGE_MK, os.path.join(name, name, "src", name + ".mk")),
-                (MODULE_H, os.path.join(name, name, "src", name, "example.h")),
-                (MODULE_C, os.path.join(name, name, "src", "example.c")),
-                (MAIN_C, os.path.join(name, name, "tst", "example", "main.c")),
-                (MAKEFILE, os.path.join(name, name, "tst", "example", "Makefile")),
+                (MODULE_H, os.path.join(name, name, "src", name, "hello.h")),
+                (MODULE_C, os.path.join(name, name, "src", "hello.c")),
+                (MAIN_C, os.path.join(name, name, "tst", "hello", "main.c")),
+                (MAKEFILE, os.path.join(name, name, "tst", "hello", "Makefile")),
                 (DOC_BUILD_SH, os.path.join(name, name, "doc", "build.sh")),
                 (DOC_DOXYGEN_CFG, os.path.join(name, name, "doc", "doxygen.cfg")),
                 (DOC_MAKEFILE, os.path.join(name, name, "doc", "Makefile")),
