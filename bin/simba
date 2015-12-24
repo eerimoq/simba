@@ -1,12 +1,5 @@
 #!/usr/bin/env python
 #
-# simba create --package foo
-# simba create --application fie
-#
-# simba install bar
-#
-# simba release foo
-#
 
 import sys
 import os
@@ -98,7 +91,6 @@ INC += $({name_upper}_ROOT)/src/ports/$(ARCH)/$(TOOLCHAIN)
 SRC += $({name_upper}_SRC:%=$({name_upper}_ROOT)/src/%)
 """
 
-
 MODULE_H = """/**
  * @file {name}/example.h
  * @version 0.1
@@ -132,7 +124,6 @@ int {name}_example_function(void);
 
 #endif
 """
-
 
 MODULE_C = """/**
  * @file example.c
@@ -3101,6 +3092,10 @@ APP_MAIN_C = """/**
 
 #include "simba.h"
 
+/* Include required packages here.
+ * #include "my_package.h"
+ */
+
 int main()
 {{
     struct uart_driver_t uart;
@@ -3140,8 +3135,13 @@ NAME = {name}
 VERSION = 0.1
 BOARD = linux
 
+# Include required packages here.
+# include $(MY_PACKAGE_ROOT)/src/my_package.mk
+
+# Include of the Simba application makefile.
 include $(SIMBA_ROOT)/make/app.mk
 """
+
 
 def simba_root():
     return os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -3221,6 +3221,7 @@ def create(args):
     else:
         print "Nothing to create. Aborting."
         sys.exit(1)
+
 
 def install(args):
     """The install subcommand.
