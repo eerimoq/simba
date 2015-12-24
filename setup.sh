@@ -1,14 +1,13 @@
 #
-# Setup script for Linux
+# Setup script for the Simba development environment. Source this file
+# in your shell to setup the environment.
 #
 
-# Add the simba bin folder to the path
-export PATH=$PATH:$(readlink -f bin)
-export SIMBA_ROOT=$(readlink -f .)
-
-dist_packages=$(ls dist-packages | grep -v dist-info | grep -v README.rst)
-
-for name in ${dist_packages} ; do
-    root=$(python -c "import sys; sys.stdout.write('${name}'.upper() + '_ROOT')")
-    export ${root}=$(readlink -f dist-packages/${name})
-done
+if [ "${OSTYPE}" == "linux-gnu" ]; then
+    source setup_linux.sh
+elif [ "${OSTYPE}" == "cygwin" ]; then
+    source setup_cygwin.sh
+else
+    echo "\$\{OSTYPE\} must be linux-gnu or cygwin."
+    exit 1
+fi

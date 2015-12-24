@@ -1,4 +1,9 @@
 #!/usr/bin/env bash
+#
+# Setup the Simba development environment and start a shell that
+# inherits this environment. An alternative is to source the setup
+# script manually.
+#
 
 echo "Entering the Simba shell."
 
@@ -7,16 +12,7 @@ simba_root=$(readlink -f ${this_dir}/..)
 pwd=$(pwd)
 
 cd ${simba_root}
-
-if [ "${OSTYPE}" == "linux-gnu" ]; then
-    source setup.sh
-elif [ "${OSTYPE}" == "cygwin" ]; then
-    source cygwin_setup.sh
-else
-    echo "\$\{OSTYPE\} must be linux-gnu or cygwin."
-    exit 1
-fi
-
+source setup.sh
 cd ${pwd}
 
 export SIMBA_SHELL=yes
