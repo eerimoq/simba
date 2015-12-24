@@ -78,21 +78,50 @@ function of the application.
 
 .. code-block:: c
 
-    -- myapplication
-       +-- config.h
-       +-- main.c
-       +-- Makefile
+    my_application
+    ├── config.h
+    ├── main.c                   # application entry
+    └── Makefile
 
-For a package, the preferred file tree is:
+For a package, the preferred file tree is seen below. See the inline
+comments for details about files and folders contents.
 
 .. code-block:: c
 
-    -- mypackage
-       +-- mypackage
-           +-- module1.h
-           +-- module2.h
-       +-- module1.c
-       +-- module2.c
+   my_package
+   ├── my_package
+   │   ├── doc                   # package documentation
+   │   ├── __init__.py
+   │   ├── src                   # package source code
+   │   │   ├── module1.c
+   │   │   ├── module2.c
+   │   │   ├── my_package        # module header files
+   │   │   │   ├── module1.h
+   │   │   │   └── module2.h
+   │   │   ├── my_package.h      # package header file
+   │   │   └── my_package.mk
+   │   └── tst                   # package test code
+   │       ├── module1
+   │       │   ├── main.c
+   │       │   └── Makefile
+   │       └── module2
+   │           ├── main.c
+   │           └── Makefile
+   ├── setup.py
+   └── setup.sh                  # package setup script
+
+All exported symbols in a package must have the prefix
+``<package>_<module>_``. This is needed to avoid namespace clashes
+between modules with the same name, present in multiple packages.
+
+There cannot be two packages with the same name, for the namespace
+reason. All packages must have unique names!
+
+.. code-block:: c
+
+    int mypackage_module1_foo(void);
+
+    int mypackage_module2_bar(void);
 
 Boards and mcus
 ---------------
@@ -202,4 +231,3 @@ installation folder).
 .. _src/boards: https://github.com/eerimoq/simba/tree/master/src/boards
 .. _src/mcus: https://github.com/eerimoq/simba/tree/master/src/mcus
 .. _kernel/chan.h: https://github.com/eerimoq/simba/tree/master/src/kernel/kernel/chan.h
-
