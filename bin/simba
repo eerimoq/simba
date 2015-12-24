@@ -12,7 +12,8 @@ import sys
 import os
 import argparse
 import subprocess
-
+import getpass
+import time
 
 SETUP_PY = """#!/usr/bin/env python
 
@@ -124,7 +125,7 @@ MODULE_H = """/**
  *
  * @return zero(0) or negative error code.
  */
-int example_function(void);
+int {name}_example_function(void);
 
 #endif
 """
@@ -151,8 +152,10 @@ MODULE_C = """/**
 #include "simba.h"
 #include "{name}.h"
 
-int example_function(void)
+int {name}_example_function(void)
 {{
+    std_printf(FSTR("{name}_example_function(void) says Hello!\\r\\n"));
+
     return (0);
 }}
 """
@@ -180,7 +183,7 @@ MAIN_C = """/**
 
 int test_function(struct harness_t *harness_p)
 {{
-    return (example_function());
+    return ({name}_example_function());
 }}
 
 int main()
@@ -237,8 +240,8 @@ def create(args):
     """
 
     name = args.name
-    author = "Erik"
-    year = 2015
+    author = getpass.getuser()
+    year = time.strftime("%Y")
 
     # Create the package root directory
     os.makedirs(name)

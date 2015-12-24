@@ -117,7 +117,7 @@ int log_module_init(void);
 int log_reset(void);
 
 /**
- * Set the log mode to off or circular.
+ * Set the log mode to off, circular or capture.
  *
  * @param[in] mode Mode to set. One of `LOG_MODE_OFF`,
  *                 `LOG_MODE_CIRCULAR` or `LOG_MODE_CAPTURE`.
@@ -134,12 +134,12 @@ int log_set_mode(int mode);
 int log_get_mode(void);
 
 /**
- * Add log entry to quick log buffer.
+ * Add log entry to log.
  *
  * @param[in] level Log level.
  * @param[in] id Log point identity.
  * @param[in] buf_p Buffer to log.
- * @param[in] size Buffer size.
+ * @param[in] size Number of bytes to log.
  *
  * @return true(1) if the entry was written to the log and false(0)
  *         otherwise.
@@ -147,8 +147,7 @@ int log_get_mode(void);
 int log_write(char level, int id, void *buf_p, size_t size);
 
 /**
- * Format all entries in the log buffer and write them to given
- * channel.
+ * Format all entries in the log and write them to given channel.
  *
  * @param[in] chout_p Output channel.
  *

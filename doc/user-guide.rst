@@ -10,10 +10,12 @@ Hello World application
 
 Below is the Simba "Hello World" application.
 
-It consistion of two files; main.c and Makefile.
+It consistion of two files; ``main.c`` and ``Makefile``.
 
 main.c
 ~~~~~~
+
+`hello_world/main.c`_ defines the application entry function ``main()``.
 
 .. code-block:: c
 
@@ -30,6 +32,9 @@ main.c
 
 Makefile
 ~~~~~~~~
+
+`hello_world/Makefile`_ contains build configuration of the
+application.
 
 .. code-block:: c
 
@@ -73,8 +78,8 @@ container of modules. An application is an executable consisting of
 zero or more modules.
 
 See below for the preferred application file tree. The application
-**must** have a file called main.c. It should contain the main
-function of the application.
+**must** have a file called main.c. It should contain the application
+entry function ``main()``.
 
 .. code-block:: c
 
@@ -116,6 +121,10 @@ between modules with the same name, present in multiple packages.
 
 There cannot be two packages with the same name, for the namespace
 reason. All packages must have unique names!
+
+There is one exception though, the three Simba packages; kernel,
+drivers and slib. Those packages does only use the module as prefix on
+exported symbols.
 
 .. code-block:: c
 
@@ -231,3 +240,6 @@ installation folder).
 .. _src/boards: https://github.com/eerimoq/simba/tree/master/src/boards
 .. _src/mcus: https://github.com/eerimoq/simba/tree/master/src/mcus
 .. _kernel/chan.h: https://github.com/eerimoq/simba/tree/master/src/kernel/kernel/chan.h
+ 
+.. _hello_world/main.c: https://github.com/eerimoq/simba/tree/master/examples/hello_world/main.c
+.. _hello_world/Makefile: https://github.com/eerimoq/simba/tree/master/examples/hello_world/Makefile
