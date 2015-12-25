@@ -1,11 +1,12 @@
 Installation
 ============
 
-`Simba` can be installed on `Windows`_ and `Linux (Ubuntu
-14)`_. Follow the installation procedure below for your OS.
+The `Simba` development environment can be installed on `Windows
+(Cygwin)`_ and `Linux (Ubuntu 14)`_. Follow the installation procedure
+below for your OS.
 
-Windows
--------
+Windows (Cygwin)
+----------------
 
 Download `Cygwin`_ and select the following packages for installation:
 
