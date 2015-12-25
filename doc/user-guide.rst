@@ -265,7 +265,7 @@ Further reading
 ---------------
 
 Please have a look at the :doc:`api-reference` for more juicy details
-about the functionality that is included in the Simba microkernel.
+about the functionality that the `Simba` microkernel provides.
 
 .. _hello_world/main.c: https://github.com/eerimoq/simba/tree/master/examples/hello_world/main.c
 .. _hello_world/Makefile: https://github.com/eerimoq/simba/tree/master/examples/hello_world/Makefile
