@@ -51,7 +51,11 @@ int test_circular(struct harness_t *harness_p)
     BTASSERT(log_set_mode(LOG_MODE_OFF) == LOG_MODE_CIRCULAR);
     number_of_entries = log_format(sys_get_stdout());
 #if defined(ARCH_LINUX)
-    BTASSERT(number_of_entries == 4);
+    if (sizeof(void *) == 8) {
+        BTASSERT(number_of_entries == 4);
+    } else {
+        BTASSERT(number_of_entries == 8);
+    }
 #elif defined(ARCH_ARM)
     BTASSERT(number_of_entries == 9);
 #else

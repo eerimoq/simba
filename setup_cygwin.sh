@@ -5,6 +5,7 @@
 # Add the simba bin folder to the path
 export PATH=$PATH:$(readlink -f bin)
 export SIMBA_ROOT=$(readlink -f .)
+export BOARD=cygwin
 
 # AVR toolchain
 export PATH=$PATH:$(readlink -f ../avr-toolchain-windows/bin)
