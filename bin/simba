@@ -38,11 +38,6 @@ setup(name="{name}",
       url='https://github.com/eerimoq/simba')
 """
 
-SETUP_SH = """#!/usr/bin/env bash
-
-export {name_upper}_ROOT=$(readlink -f {name})
-"""
-
 PACKAGE_H = """/**
  * @file {name}.h
  * @version 0.1
@@ -2903,7 +2898,22 @@ GENERATE_LEGEND        = YES
 DOT_CLEANUP            = YES
 """
 
-DOC_MAKEFILE = """# Makefile for Sphinx documentation
+DOC_MAKEFILE = """all:
+	doxygen doxygen.cfg
+	$(MAKE) -f sphinx.mk html
+
+doxygen:
+	doxygen doxygen.cfg
+
+sphinx:
+	$(MAKE) -f sphinx.mk html
+
+clean:
+	rm -rf xml
+	$(MAKE) -f sphinx.mk clean
+"""
+
+DOC_SPHINX_MK = """# Makefile for Sphinx documentation
 #
 
 # You can set these variables from the command line.
@@ -3225,12 +3235,6 @@ def subcommand_create(args):
             f.write(SETUP_PY.format(name=name,
                                     author=author))
 
-        # Create setup.sh
-        setup_path = os.path.join(name, "setup.sh")
-        with open(setup_path, "w") as f:
-            f.write(SETUP_SH.format(name=name,
-                                    name_upper=name.upper()))
-
         # Create the subdirectories within the package
         subdirs = ["doc", "src", "tst"]
         for subdir in subdirs:
@@ -3250,6 +3254,7 @@ def subcommand_create(args):
                 (DOC_BUILD_SH, os.path.join(doc_path, "build.sh")),
                 (DOC_DOXYGEN_CFG, os.path.join(doc_path, "doxygen.cfg")),
                 (DOC_MAKEFILE, os.path.join(doc_path, "Makefile")),
+                (DOC_SPHINX_MK, os.path.join(doc_path, "sphinx.mk")),
                 (DOC_API_REFERENCE_RST, os.path.join(doc_path, "api-reference.rst")),
                 (DOC_CONF_PY, os.path.join(doc_path, "conf.py")),
                 (DOC_INDEX_RST, os.path.join(doc_path, "index.rst")),
@@ -3259,8 +3264,7 @@ def subcommand_create(args):
 
         generate_files(files, name, year, author)
 
-        print ("Package '{name}' creted. Run 'cd {name} && source setup.sh'"
-               " to setup the package.").format(name=name)
+        print "Package '{name}' created in a folder with the same name.".format(name=name)
     elif args.application:
         files = [
             (APP_MAIN_C, os.path.join(name, "main.c")),
@@ -3269,7 +3273,7 @@ def subcommand_create(args):
 
         generate_files(files, name, year, author)
 
-        print "Application '{name}' created.".format(name=name)
+        print "Application '{name}' created in a folder with the same name.".format(name=name)
     else:
         print "Nothing to create. Aborting."
         sys.exit(1)
