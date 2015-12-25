@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 #
 # Setup the Simba development environment and start a shell that
-# inherits this environment. An alternative is to source the setup
-# script manually.
+# inherits this environment. An alternative is to source setup.sh
+# manually from the simba root folder.
 #
 
 echo "Entering the Simba shell."

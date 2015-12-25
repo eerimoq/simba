@@ -4,6 +4,8 @@ User Guide
 This guide requires that you have Simba installed. See the
 :doc:`installation` page for details.
 
+.. contents::
+   :local:
 
 Hello World application
 -----------------------
@@ -73,13 +75,17 @@ Cross-compile, link and then run on an Arduino Due:
 Applications, packages and modules
 ----------------------------------
 
-A module is normally a header and a source file. A package is a
-container of modules. An application is an executable consisting of
-zero or more modules.
+Simba has three software components; the application, the package and
+the module.
 
-See below for the preferred application file tree. The application
-**must** have a file called main.c. It should contain the application
-entry function ``main()``.
+Application
+~~~~~~~~~~~
+
+An application is an executable consisting of zero or more packages.
+
+See below for the application file tree. The application **must** have
+a file called main.c. It should contain the application entry function
+``main()``.
 
 .. code-block:: text
 
@@ -88,23 +94,31 @@ entry function ``main()``.
     ├── main.c                   # application entry
     └── Makefile
 
-For a package, the preferred file tree is seen below. See the inline
-comments for details about files and folders contents.
+Makefile
+^^^^^^^^
+
+Package
+~~~~~~~
+
+A package is a container of modules.
+
+See below for the package file tree. See the inline comments for
+details about files and folders contents.
 
 .. code-block:: text
 
-   my_package
-   ├── my_package
+   mypkg
+   ├── mypkg
    │   ├── doc                   # package documentation
    │   ├── __init__.py
    │   ├── src                   # package source code
    │   │   ├── module1.c
    │   │   ├── module2.c
-   │   │   ├── my_package        # module header files
+   │   │   ├── mypkg             # module header files
    │   │   │   ├── module1.h
    │   │   │   └── module2.h
-   │   │   ├── my_package.h      # package header file
-   │   │   └── my_package.mk
+   │   │   ├── mypkg.h           # package header file
+   │   │   └── mypkg.mk
    │   └── tst                   # package test code
    │       ├── module1
    │       │   ├── main.c
@@ -132,20 +146,85 @@ exported symbols.
 
     int mypackage_module2_bar(void);
 
-Boards and mcus
----------------
+mypkg.mk
+^^^^^^^^
 
-A board is the top level configuration entity in the build
-framework. It contains information about the MCU and the pin mapping.
+Module
+~~~~~~
 
-In turn, the MCU contains information about available devices and
-clock frequencys in the microcontroller.
+A module is normally a header and a source file. 
 
-See `src/boards`_ and `src/mcus`_ for available configurations.
+simba
+-----
 
-Only one MCU per board is supported. If there are two MCU:s on one
-physical board, two board configurations have to be created, one for
-each MCU.
+The program `simba` is used to manage Simba packages and applications.
+
+The main purpose of `simba` is to distribute software in the Simba
+community, just like `pip` for Python.
+
+How to create a package
+~~~~~~~~~~~~~~~~~~~~~~~
+
+This shows how to create a new package using `simba`.
+
+.. code-block:: text
+
+   $ simba create --package mypkg
+   $ tree mypkg
+   mypkg/
+   ├── mypkg
+   │   ├── doc
+   │   ├── __init__.py
+   │   ├── src
+   │   │   ├── example.c
+   │   │   ├── mypkg
+   │   │   │   └── example.h
+   │   │   ├── mypkg.h
+   │   │   └── mypkg.mk
+   │   └── tst
+   │       └── example
+   │           ├── main.c
+   │           └── Makefile
+   ├── setup.py
+   └── setup.sh
+   $ cd mypkg
+   $ source setup.sh
+   $ cd mypkg/tst/example
+   $ make -s test
+
+In the output from ``tree mypkg`` below, two files may catch your
+eyes; setup.py and __init__.py. Those are Python files and are often
+seen in Python packages. They are present in a Simba package because
+Simba uses the Python tool `pip` to release and install
+packages. The idea is that everyone that implements a useful package
+should release it and make it available for other users to install,
+just as Python!
+
+How to release a package
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+This is how to release a package. Two files are creted, one wth the
+suffix ``tar.gz`` and one with the suffix ``.whl``. The ``.whl``-file
+is input to the installation command, described in the next section.
+
+.. code-block:: text
+
+   $ cd ../../..
+   $ simba release
+   $ tree dist
+   dist
+   ├── mypkg-0.1-py2.py3-none-any.whl
+   └── mypkg-0.1.tar.gz
+   $
+
+How to install a package
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+This is how to install a package in ``${SIMBA_ROOT}/dist-packages``.
+
+.. code-block:: text
+
+   $ simba install dist/mypkg-0.1-py2.py3-none-any.whl
 
 Threads and channels
 --------------------
@@ -184,62 +263,24 @@ semi-asynchronous version the writer writes to a buffer within the
 queue, and only blocks all data does not fit in the buffer. The buffer
 size is selected by the application.
 
-Simba manager tool
-------------------
+Boards and mcus
+---------------
 
-Create a new package with the simba manager tool and run the example
-test suite.
+A board is the top level configuration entity in the build
+framework. It contains information about the MCU and the pin mapping.
 
-In the output from ``tree my_package`` below, two files may catch your
-eyes; setup.py and __init__.py. Those are Python files and are often
-seen in Python packages. They are present in a Simba package because
-Simba uses the Python tool ``pip`` to release and install
-packages. The idea is that everyone that implements a useful package
-should release it and make it available for other users to install,
-just as Python!
+In turn, the MCU contains information about available devices and
+clock frequencys in the microcontroller.
 
-.. code-block:: text
+See `src/boards`_ and `src/mcus`_ for available configurations.
 
-   $ simba create --package my_package
-   $ tree my_package
-   my_package/
-   ├── my_package
-   │   ├── doc
-   │   ├── __init__.py
-   │   ├── src
-   │   │   ├── example.c
-   │   │   ├── my_package
-   │   │   │   └── example.h
-   │   │   ├── my_package.h
-   │   │   └── my_package.mk
-   │   └── tst
-   │       └── example
-   │           ├── main.c
-   │           └── Makefile
-   ├── setup.py
-   └── setup.sh
-   $ cd my_package
-   $ source setup.sh
-   $ cd my_package/tst/example
-   $ make -s test
-
-Create a release of the package.
-
-.. code-block:: text
-
-   $ cd ../../..
-   $ simba release
-
-Install the package in ``${SIMBA_ROOT}/dist-packages`` (the default
-installation folder).
-
-.. code-block:: text
-
-   $ simba install dist/my_package-0.1-py2.py3-none-any.whl
+Only one MCU per board is supported. If there are two MCU:s on one
+physical board, two board configurations have to be created, one for
+each MCU.
 
 .. _src/boards: https://github.com/eerimoq/simba/tree/master/src/boards
 .. _src/mcus: https://github.com/eerimoq/simba/tree/master/src/mcus
 .. _kernel/chan.h: https://github.com/eerimoq/simba/tree/master/src/kernel/kernel/chan.h
- 
+
 .. _hello_world/main.c: https://github.com/eerimoq/simba/tree/master/examples/hello_world/main.c
 .. _hello_world/Makefile: https://github.com/eerimoq/simba/tree/master/examples/hello_world/Makefile

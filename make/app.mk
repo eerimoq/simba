@@ -36,12 +36,13 @@ GENCSRC = $(GENDIR)/simba_gen.c
 GENOBJ = $(patsubst %,$(OBJDIR)/%,$(notdir $(GENCSRC:%.c=%.o)))
 SETTINGS_INI ?= $(SIMBA_ROOT)/make/settings.ini
 SETTINGS_H = settings.h
+SETTINGS_C = settings.c
 SETTINGS_BIN = settings.bin
 EXE = $(NAME).out
 RUNLOG = run.log
 CLEAN = $(OBJDIR) $(DEPSDIR) $(GENDIR) $(EXE) $(RUNLOG) size.log \
         coverage.log coverage.xml gmon.out *.gcov profile.log \
-	index.*html $(SETTINGS_H) $(SETTINGS_BIN)
+	index.*html $(SETTINGS_H) $(SETTINGS_BIN) $(SETTINGS_C)
 
 # configuration
 TOOLCHAIN ?= gnu
@@ -80,6 +81,14 @@ UPPER_BOARD := $(shell python -c "import sys; sys.stdout.write(sys.argv[1].upper
 RUNSCRIPT = $(SIMBA_ROOT)/make/$(TOOLCHAIN)/$(ARCH).py
 RUN_END_PATTERN ?= "harness report: total\(\d+\), passed\(\d+\), failed\(\d+\)"
 RUN_END_PATTERN_SUCCESS ?= "harness report: total\(\d+\), passed\(\d+\), failed\(0\)"
+
+# include packages in dist-packages used by the application
+define DIST_PACKAGES_template
+$(shell python -c "import sys; sys.stdout.write(sys.argv[1].upper() + '_ROOT')" $1) ?= \
+    $(SIMBA_ROOT)/dist-packages/$1
+include $(SIMBA_ROOT)/dist-packages/$1/src/$1.mk
+endef
+$(foreach name,$(DIST_PACKAGES),$(eval $(call DIST_PACKAGES_template,$(name))))
 
 clean:
 	@echo "Cleaning"

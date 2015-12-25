@@ -21,7 +21,11 @@ setup(name="{name}",
       author="{author}",
       author_email='simba@simba.com',
       packages=["{name}"],
-      package_data={{"": ["doc/*",
+      package_data={{"": ["doc/*.rst",
+                          "doc/conf.py",
+                          "doc/Makefile",
+                          "doc/doxygen.cfg",
+                          "doc/{name}/*.rst",
                           "src/{name}.h",
                           "src/{name}.mk", 
                           "src/{name}/*.h",
@@ -3125,7 +3129,7 @@ APP_MAIN_C = """/**
 #include "simba.h"
 
 /* Include required packages here.
- * #include "my_package.h"
+ * #include "mypkg.h"
  */
 
 int main()
@@ -3167,8 +3171,15 @@ NAME = {name}
 VERSION = 0.1
 BOARD = linux
 
-# Include required packages here.
-# include $(MY_PACKAGE_ROOT)/src/my_package.mk
+# A list of packages to include from $(SIMBA_ROOT)/dist-packages
+DIST_PACKAGES =
+
+# This is how to include a package that is not in
+# dist-packages. Replace mypkg with the package name and change the
+# root path to point to the root of the package.
+#
+# MYPKG_ROOT = ../mypkg/mypkg
+# include $(MYPKG_ROOT)/src/mypkg.mk
 
 # Include of the Simba application makefile.
 include $(SIMBA_ROOT)/make/app.mk
@@ -3185,14 +3196,13 @@ def generate_files(files, name, year, author):
 
     for template, path in files:
         with open(path, "w") as f:
-            print "Generating", path
             f.write(template.format(name=name,
                                     name_upper=name.upper(),
                                     author=author,
                                     year=year))
 
 
-def create(args):
+def subcommand_create(args):
     """The create subcommand.
     """
 
@@ -3249,7 +3259,8 @@ def create(args):
 
         generate_files(files, name, year, author)
 
-        print "Package", name, "created!"
+        print ("Package '{name}' creted. Run 'cd {name} && source setup.sh'"
+               " to setup the package.").format(name=name)
     elif args.application:
         files = [
             (APP_MAIN_C, os.path.join(name, "main.c")),
@@ -3258,13 +3269,13 @@ def create(args):
 
         generate_files(files, name, year, author)
 
-        print "Application", name, "created!"
+        print "Application '{name}' created.".format(name=name)
     else:
         print "Nothing to create. Aborting."
         sys.exit(1)
 
 
-def install(args):
+def subcommand_install(args):
     """The install subcommand.
     """
 
@@ -3278,7 +3289,7 @@ def install(args):
     subprocess.check_call(command)
 
 
-def release(_):
+def subcommand_release(_):
     """The release subcommand.
     """
 
@@ -3287,12 +3298,32 @@ def release(_):
     #subprocess.check_call(["twine", "upload", "dist"])
 
 
+def subcommand_list(_):
+    """List all found packages.
+    """
+
+    print "{:16s} {}".format("PACKAGE", "PATH")
+
+    # a list of all found packages
+    packages = []
+    for name, path in os.environ.items():
+        if name.startswith(""):
+            packages.append((name[14:-5].lower(), path))
+
+    # sort the packages by name
+    packages.sort()
+    for name, path in packages:
+        print "{:16s} {}".format(name, path)
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     subparsers = parser.add_subparsers()
 
     # The create subparser
-    create_parser = subparsers.add_parser("create")
+    description = "Crate a package or an application of given name."
+    create_parser = subparsers.add_parser("create",
+                                          description=description)
     create_parser.add_argument("--package",
                                action="store_true",
                                help="Create a package.")
@@ -3301,17 +3332,26 @@ if __name__ == "__main__":
                                help="Create an application.")
     create_parser.add_argument("name",
                                help="Name of the package or application.")
-    create_parser.set_defaults(func=create)
+    create_parser.set_defaults(func=subcommand_create)
 
     # The install subparser
-    install_parser = subparsers.add_parser("install")
+    description = "Install given package."
+    install_parser = subparsers.add_parser("install",
+                                           description=description)
     install_parser.add_argument("name",
                                 help="Name of the package.")
-    install_parser.set_defaults(func=install)
+    install_parser.set_defaults(func=subcommand_install)
 
     # The release subparser
-    install_parser = subparsers.add_parser("release")
-    install_parser.set_defaults(func=release)
+    description = "Create a release of the current package."
+    release_parser = subparsers.add_parser("release",
+                                           description=description)
+    release_parser.set_defaults(func=subcommand_release)
+
+    # The list subparser
+    description = "List all found packages."
+    list_parser = subparsers.add_parser("list", description=description)
+    list_parser.set_defaults(func=subcommand_list)
 
     parsed_args = parser.parse_args()
     parsed_args.func(parsed_args)
