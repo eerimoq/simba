@@ -26,3 +26,4 @@ struct spi_device_t spi_device[SPI_DEVICE_MAX];
 struct uart_device_t uart_device[UART_DEVICE_MAX];
 struct can_device_t can_device[CAN_DEVICE_MAX];
 struct pwm_device_t pwm_device[PWM_DEVICE_MAX];
+struct adc_device_t adc_device[ADC_DEVICE_MAX];

@@ -33,20 +33,13 @@ static int adc_port_init(struct adc_driver_t *self_p,
 }
 
 static int adc_port_async_convert(struct adc_driver_t *self_p,
-                                  int *samples,
+                                  uint16_t *samples_p,
                                   size_t length)
 {
     return (0);
 }
 
 static int adc_port_async_wait(struct adc_driver_t *self_p)
-{
-    return (0);
-}
-
-static int adc_port_convert(struct adc_driver_t *self_p,
-                            int *samples,
-                            size_t length)
 {
     return (0);
 }
