@@ -2,8 +2,8 @@ Installation
 ============
 
 The `Simba` development environment can be installed on `Windows
-(Cygwin)`_ and `Linux (Ubuntu 14)`_. Follow the installation procedure
-below for your OS.
+(Cygwin)`_ and `Linux (Ubuntu 14)`_. Just follow the steps below and
+you'll be up and running in no time. =)
 
 Windows (Cygwin)
 ----------------
@@ -19,40 +19,42 @@ Download `Cygwin`_ and select the following packages for installation:
    - git               (Devel -> git)
    - doxygen           (Devel -> doxygen)
 
-Start `Cygwin` and execute the following commands to download the
-`Simba` source code, install the prerequisities, setup the development
-environment and run the hello world application. Note that ``source
-setup.sh`` has to be executed everytime you start a new `Cygwin`
-shell.
+Start `Cygwin` and execute the one-liner below to install `Simba`.
 
 .. code-block:: text
 
-   $ easy_install-2.7 pip && \
+   $ mkdir simba && \
+     cd simba && \
+     easy_install-2.7 pip && \
      pip install pyserial xpect sphinx breathe && \
      git clone https://github.com/eerimoq/avr-toolchain-windows && \
      git clone https://github.com/eerimoq/arm-toolchain-windows && \
-     git clone https://github.com/eerimoq/simba && \
-     cd simba && \
-     source setup.sh && \
-     cd examples/hello_world && \
-     make -s run
+     git clone https://github.com/eerimoq/simba
 
 Linux (Ubuntu 14)
 --------------
 
-Execute the following commands to download the `Simba` source code,
-install the prerequisities, setup the development environment and run
-the hello world application. Note that ``source setup.sh`` has to be
-executed everytime you start a shell.
+Execute the one-liner below to install `Simba`.
 
 .. code-block:: text
 
-   $ sudo apt-get install ckermit valgrind cppcheck cloc python python-pip doxygen && \
+   $ mkdir simba && \
+     cd simba && \
+     sudo apt-get install ckermit valgrind cppcheck cloc python python-pip doxygen git && \
      sudo apt-get install avrdude gcc-avr binutils-avr gdb-avr avr-libc && \
      sudo apt-get install bossa-cli gcc-arm-none-eabi && \
      pip install pyserial xpect sphinx breathe && \
-     git clone https://github.com/eerimoq/simba && \
-     cd simba && \
+     git clone https://github.com/eerimoq/simba
+
+Post-install
+------------
+
+Let's build and run the hello world application to verify that the
+installation was successful.
+
+.. code-block:: text
+
+   $ cd simba && \
      source setup.sh && \
      cd examples/hello_world && \
      make -s run
