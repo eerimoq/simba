@@ -3111,14 +3111,7 @@ pseudoxml:
 
 """
 
-DOC_BUILD_SH = """#!/usr/bin/env bash
-#
-# Generate the documentation
-#
-
-doxygen doxygen.cfg
-make html
-
+DOC_REQUIREMENTS_TXT = """breathe
 """
 
 APP_MAIN_C = """/**
@@ -3254,10 +3247,10 @@ def subcommand_create(args):
                 (MODULE_C, os.path.join(src_path, "hello.c")),
                 (MAIN_C, os.path.join(tst_path, "hello", "main.c")),
                 (MAKEFILE, os.path.join(tst_path, "hello", "Makefile")),
-                (DOC_BUILD_SH, os.path.join(doc_path, "build.sh")),
                 (DOC_DOXYGEN_CFG, os.path.join(doc_path, "doxygen.cfg")),
                 (DOC_MAKEFILE, os.path.join(doc_path, "Makefile")),
                 (DOC_SPHINX_MK, os.path.join(doc_path, "sphinx.mk")),
+                (DOC_REQUIREMENTS_TXT, os.path.join(doc_path, "requirements.txt")),
                 (DOC_API_REFERENCE_RST, os.path.join(doc_path, "api-reference.rst")),
                 (DOC_CONF_PY, os.path.join(doc_path, "conf.py")),
                 (DOC_INDEX_RST, os.path.join(doc_path, "index.rst")),
