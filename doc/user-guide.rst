@@ -84,27 +84,30 @@ Application
 
 An application is an executable consisting of zero or more packages.
 
-See below for the application file tree. The application **must** have
-a file called main.c. It should contain the application entry function
-``main()``.
+An application file tree can either be created manually or by using
+the tool `simba`_. See `How to create an application`_ for a guide of
+how to create an application using `simba`_.
 
 .. code-block:: text
 
-    my_application
-    ├── config.h
-    ├── main.c                   # application entry
-    └── Makefile
-
-Makefile
-^^^^^^^^
+   myapp
+   ├── main.c
+   └── Makefile
 
 Package
 ~~~~~~~
 
 A package is a container of modules.
 
-See below for the package file tree. See the inline comments for
-details about files and folders contents.
+A package file tree can either be created manually or by using the
+tool `simba`_. See `How to create a package`_ for a guide of how to
+create a package using `simba`_.
+
+A package file tree **must** be organized as seen below. This is
+required by the build framework and `Simba` tools.
+
+See the inline comments for details about the files and folders
+contents.
 
 .. code-block:: text
 
@@ -119,7 +122,7 @@ details about files and folders contents.
    │   │   │   ├── module1.h
    │   │   │   └── module2.h
    │   │   ├── mypkg.h           # package header file
-   │   │   └── mypkg.mk
+   │   │   └── mypkg.mk          # package makefile
    │   └── tst                   # package test code
    │       ├── module1
    │       │   ├── main.c
@@ -127,28 +130,26 @@ details about files and folders contents.
    │       └── module2
    │           ├── main.c
    │           └── Makefile
-   ├── setup.py
-   └── setup.sh                  # package setup script
+   └── setup.py
+
+Namespace
+^^^^^^^^^
 
 All exported symbols in a package must have the prefix
 ``<package>_<module>_``. This is needed to avoid namespace clashes
-between modules with the same name, present in multiple packages.
+between modules with the same name in different packages.
 
 There cannot be two packages with the same name, for the namespace
-reason. All packages must have unique names!
-
-There is one exception though, the three `Simba` packages; kernel,
-drivers and slib. Those packages does only use the module as prefix on
-exported symbols.
+reason. All packages must have unique names! There is one exception
+though, the three `Simba` packages; kernel, drivers and slib. Those
+packages does *not* have the package name as prefix on exported
+symbols.
 
 .. code-block:: c
 
     int mypackage_module1_foo(void);
 
     int mypackage_module2_bar(void);
-
-mypkg.mk
-^^^^^^^^
 
 Module
 ~~~~~~
@@ -167,13 +168,15 @@ community, just like `pip` for Python.
 How to create a package
 ~~~~~~~~~~~~~~~~~~~~~~~
 
-This shows how to create a new package using `simba`.
+The code block below shows how to create a new package using
+`simba`. After the package has been created, the generated test suite
+is built and executed.
 
 .. code-block:: text
 
    $ simba create --package mypkg
    $ tree mypkg
-   mypkg/
+   mypkg
    ├── mypkg
    │   ├── doc
    │   ├── __init__.py
@@ -187,11 +190,8 @@ This shows how to create a new package using `simba`.
    │       └── example
    │           ├── main.c
    │           └── Makefile
-   ├── setup.py
-   └── setup.sh
-   $ cd mypkg
-   $ source setup.sh
-   $ cd mypkg/tst/example
+   └── setup.py
+   $ cd mypkg/mypkg/tst/hello
    $ make -s test
 
 In the output from ``tree mypkg`` below, two files may catch your
@@ -227,6 +227,23 @@ This is how to install a package in ``${SIMBA_ROOT}/dist-packages``.
 .. code-block:: text
 
    $ simba install dist/mypkg-0.1-py2.py3-none-any.whl
+
+How to create an application
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The code block below shows how to create an new application using
+`simba`. After the application has been created, it is built and
+executed.
+
+.. code-block:: text
+
+   $ simba create --application myapp
+   $ tree myapp
+   myapp
+   ├── main.c
+   └── Makefile
+   $ cd myapp
+   $ make -s run
 
 Threads and channels
 --------------------

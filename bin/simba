@@ -219,6 +219,7 @@ NAME = hello_suite
 VERSION = 0.1
 BOARD ?= linux
 
+{name_upper}_ROOT = ../..
 include $({name_upper}_ROOT)/src/{name}.mk
 include $(SIMBA_ROOT)/make/app.mk
 """
