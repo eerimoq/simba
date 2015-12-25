@@ -41,7 +41,7 @@ application.
 .. code-block:: makefile
 
    NAME = hello_world
-   BOARD = linux
+   BOARD ?= linux
 
    RUN_END_PATTERN = "Hello world!"
    RUN_END_PATTERN_SUCCESS = "Hello world!"

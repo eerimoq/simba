@@ -19,7 +19,7 @@
 #
 
 NAME = can_suite
-BOARD = linux
+BOARD ?= linux
 SLIB_SRC = harness.c
 DRIVERS_SRC = mcp2515.c spi.c pin.c exti.c uart.c
 

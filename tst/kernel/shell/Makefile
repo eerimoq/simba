@@ -19,7 +19,7 @@
 #
 
 NAME = shell_suite
-BOARD = linux
+BOARD ?= linux
 
 CFLAGS_EXTRA = -DSTD_KLOG_BUFFER_MAX=96
 

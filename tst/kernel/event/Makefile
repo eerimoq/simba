@@ -19,7 +19,7 @@
 #
 
 NAME = event_suite
-BOARD = linux
+BOARD ?= linux
 
 SIMBA_ROOT = ../../..
 include $(SIMBA_ROOT)/make/app.mk

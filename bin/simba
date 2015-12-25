@@ -217,7 +217,7 @@ MAKEFILE = """#
 
 NAME = hello_suite
 VERSION = 0.1
-BOARD = linux
+BOARD ?= linux
 
 include $({name_upper}_ROOT)/src/{name}.mk
 include $(SIMBA_ROOT)/make/app.mk
@@ -3175,7 +3175,7 @@ APP_MAKEFILE = """#
 
 NAME = {name}
 VERSION = 0.1
-BOARD = linux
+BOARD ?= linux
 
 # A list of packages to include from $(SIMBA_ROOT)/dist-packages
 DIST_PACKAGES =

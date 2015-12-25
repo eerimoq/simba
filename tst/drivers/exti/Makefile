@@ -19,7 +19,7 @@
 #
 
 NAME = exti_suite
-BOARD = linux
+BOARD ?= linux
 SLIB_SRC = harness.c
 DRIVERS_SRC = uart.c exti.c pin.c
 

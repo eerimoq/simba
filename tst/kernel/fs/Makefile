@@ -19,7 +19,7 @@
 #
 
 NAME = fs_suite
-BOARD = linux
+BOARD ?= linux
 
 CFLAGS_EXTRA = -DNPROFILEINTERRUPT
 

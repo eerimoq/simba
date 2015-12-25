@@ -19,7 +19,7 @@
 #
 
 NAME = ds18b20_suite
-BOARD = linux
+BOARD ?= linux
 SLIB_SRC = harness.c
 DRIVERS_SRC = ds18b20.c uart.c owi.c pin.c
 

@@ -19,7 +19,7 @@
 #
 
 NAME = pin_suite
-BOARD = linux
+BOARD ?= linux
 SLIB_SRC = harness.c
 DRIVERS_SRC = uart.c pin.c
 

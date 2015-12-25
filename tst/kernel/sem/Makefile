@@ -19,7 +19,7 @@
 #
 
 NAME = sem_suite
-BOARD = linux
+BOARD ?= linux
 
 COVOBJ = obj/sem.o
 
