@@ -19,7 +19,7 @@ Download `cygwin`_ and select the following packages for installation:
 
 Start Cygwin and execute the following commands to download the Simba
 source code, install the prerequisities and setup the development
-environment. Note that ``source cygwin_setup.sh`` has to be executed
+environment. Note that ``source setup.sh`` has to be executed
 everytime you start a new Cygwin shell.
 
 .. code-block:: text
@@ -30,7 +30,7 @@ everytime you start a new Cygwin shell.
    $ git clone https://github.com/eerimoq/avr-toolchain-windows
    $ git clone https://github.com/eerimoq/arm-toolchain-windows
    $ cd simba
-   $ source cygwin_setup.sh
+   $ source setup.sh
 
 Linux (Ubuntu 14)
 --------------
