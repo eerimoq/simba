@@ -2898,15 +2898,18 @@ GENERATE_LEGEND        = YES
 DOT_CLEANUP            = YES
 """
 
-DOC_MAKEFILE = """all:
-	doxygen doxygen.cfg
-	$(MAKE) -f sphinx.mk html
+DOC_MAKEFILE = """.PHONY: all doxygen sphinx clean
+
+all:
+	$(MAKE) doxygen
+	$(MAKE) sphinx
 
 doxygen:
 	doxygen doxygen.cfg
 
 sphinx:
 	$(MAKE) -f sphinx.mk html
+	echo "Run 'firefox _build/html/index.html' to view the generated documentation."
 
 clean:
 	rm -rf xml
