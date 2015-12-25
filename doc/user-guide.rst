@@ -1,7 +1,7 @@
 User Guide
 ==========
 
-This guide requires that you have Simba installed. See the
+This guide requires that you have `Simba` installed. See the
 :doc:`installation` page for details.
 
 .. contents::
@@ -10,14 +10,15 @@ This guide requires that you have Simba installed. See the
 Hello World application
 -----------------------
 
-Below is the Simba "Hello World" application.
+Below is the `Simba` "Hello World" application.
 
 It consistion of two files; ``main.c`` and ``Makefile``.
 
 main.c
 ~~~~~~
 
-`hello_world/main.c`_ defines the application entry function ``main()``.
+`hello_world/main.c`_ defines the application entry function
+``main()``.
 
 .. code-block:: c
 
@@ -75,8 +76,8 @@ Cross-compile, link and then run on an Arduino Due:
 Applications, packages and modules
 ----------------------------------
 
-Simba has three software components; the application, the package and
-the module.
+`Simba` has three software components; the application, the package
+and the module.
 
 Application
 ~~~~~~~~~~~
@@ -136,7 +137,7 @@ between modules with the same name, present in multiple packages.
 There cannot be two packages with the same name, for the namespace
 reason. All packages must have unique names!
 
-There is one exception though, the three Simba packages; kernel,
+There is one exception though, the three `Simba` packages; kernel,
 drivers and slib. Those packages does only use the module as prefix on
 exported symbols.
 
@@ -157,9 +158,10 @@ A module is normally a header and a source file.
 simba
 -----
 
-The program `simba` is used to manage Simba packages and applications.
+The program `simba` is used to manage `Simba` packages and
+applications.
 
-The main purpose of `simba` is to distribute software in the Simba
+The main purpose of `simba` is to distribute software in the `Simba`
 community, just like `pip` for Python.
 
 How to create a package
@@ -194,8 +196,8 @@ This shows how to create a new package using `simba`.
 
 In the output from ``tree mypkg`` below, two files may catch your
 eyes; setup.py and __init__.py. Those are Python files and are often
-seen in Python packages. They are present in a Simba package because
-Simba uses the Python tool `pip` to release and install
+seen in Python packages. They are present in a `Simba` package because
+`Simba` uses the Python tool `pip` to release and install
 packages. The idea is that everyone that implements a useful package
 should release it and make it available for other users to install,
 just as Python!
@@ -203,7 +205,7 @@ just as Python!
 How to release a package
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
-This is how to release a package. Two files are creted, one wth the
+This is how to release a package. Two files are created, one with the
 suffix ``tar.gz`` and one with the suffix ``.whl``. The ``.whl``-file
 is input to the installation command, described in the next section.
 

@@ -1,7 +1,7 @@
 About
 =====
 
-Simba is a microkernel and build framework. It aims to make embedded
+`Simba` is a microkernel and build framework. It aims to make embedded
 programming easy and portable.
 
 Features:

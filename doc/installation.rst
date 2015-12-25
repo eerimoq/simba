@@ -1,13 +1,13 @@
 Installation
 ============
 
-Simba can be installed on `Windows`_ and `Linux (Ubuntu 14)`_. Follow
-the installation procedure below for your OS.
+`Simba` can be installed on `Windows`_ and `Linux (Ubuntu
+14)`_. Follow the installation procedure below for your OS.
 
 Windows
 -------
 
-Download `cygwin`_ and select the following packages for installation:
+Download `Cygwin`_ and select the following packages for installation:
 
 .. code-block:: text
 
@@ -18,10 +18,11 @@ Download `cygwin`_ and select the following packages for installation:
    - git               (Devel -> git)
    - doxygen           (Devel -> doxygen)
 
-Start Cygwin and execute the following commands to download the Simba
-source code, install the prerequisities and setup the development
-environment. Note that ``source setup.sh`` has to be executed
-everytime you start a new Cygwin shell.
+Start `Cygwin` and execute the following commands to download the
+`Simba` source code, install the prerequisities, setup the development
+environment and run the hello world application. Note that ``source
+setup.sh`` has to be executed everytime you start a new `Cygwin`
+shell.
 
 .. code-block:: text
 
@@ -31,15 +32,17 @@ everytime you start a new Cygwin shell.
      git clone https://github.com/eerimoq/arm-toolchain-windows && \
      git clone https://github.com/eerimoq/simba && \
      cd simba && \
-     source setup.sh
+     source setup.sh && \
+     cd examples/hello_world && \
+     make -s run
 
 Linux (Ubuntu 14)
 --------------
 
-Execute the following commands to download the Simba source code,
-install the prerequisities and setup the development environment. Note
-that ``source setup.sh`` has to be executed everytime you start a
-shell.
+Execute the following commands to download the `Simba` source code,
+install the prerequisities, setup the development environment and run
+the hello world application. Note that ``source setup.sh`` has to be
+executed everytime you start a shell.
 
 .. code-block:: text
 
@@ -49,6 +52,8 @@ shell.
      pip install pyserial xpect sphinx breathe && \
      git clone https://github.com/eerimoq/simba && \
      cd simba && \
-     source setup.sh
+     source setup.sh && \
+     cd examples/hello_world && \
+     make -s run
 
-.. _cygwin: https://cygwin.com/setup-x86.exe
+.. _Cygwin: https://cygwin.com/setup-x86.exe
