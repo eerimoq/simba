@@ -28,7 +28,7 @@ Hello World application
 Let's start with the `Simba` "Hello World" application. It examplifies
 what an application is and how to build and run it.
 
-It consistion of two files; ``main.c`` and ``Makefile``.
+It consists of two files; ``main.c`` and ``Makefile``.
 
 main.c
 ~~~~~~
