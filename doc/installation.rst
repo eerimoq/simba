@@ -9,13 +9,14 @@ Windows
 
 Download `cygwin`_ and select the following packages for installation:
 
-* gcc-core
-* make
-* python
-* python-setuptools
-* git
-* gitk
-* doxygen
+.. code-block:: text
+
+   - gcc-core          (Devel -> gcc-core)
+   - make              (Devel -> make)
+   - python            (Python -> python)
+   - python-setuptools (Python -> python-setuptools)
+   - git               (Devel -> git)
+   - doxygen           (Devel -> doxygen)
 
 Start Cygwin and execute the following commands to download the Simba
 source code, install the prerequisities and setup the development
@@ -24,13 +25,13 @@ everytime you start a new Cygwin shell.
 
 .. code-block:: text
 
-   $ easy_install-2.7 pip
-   $ pip install pyserial xpect sphinx breathe
-   $ git clone https://github.com/eerimoq/avr-toolchain-windows
-   $ git clone https://github.com/eerimoq/arm-toolchain-windows
-   $ git clone https://github.com/eerimoq/simba
-   $ cd simba
-   $ source setup.sh
+   easy_install-2.7 pip
+   pip install pyserial xpect sphinx breathe
+   git clone https://github.com/eerimoq/avr-toolchain-windows
+   git clone https://github.com/eerimoq/arm-toolchain-windows
+   git clone https://github.com/eerimoq/simba
+   cd simba
+   source setup.sh
 
 Linux (Ubuntu 14)
 --------------
@@ -42,12 +43,12 @@ shell.
 
 .. code-block:: text
 
-   $ sudo apt-get install ckermit valgrind cppcheck cloc python python-pip doxygen
-   $ sudo apt-get install avrdude gcc-avr binutils-avr gdb-avr avr-libc
-   $ sudo apt-get install bossa-cli gcc-arm-none-eabi
-   $ pip install pyserial xpect sphinx breathe
-   $ git clone https://github.com/eerimoq/simba
-   $ cd simba
-   $ source setup.sh
+   sudo apt-get install ckermit valgrind cppcheck cloc python python-pip doxygen
+   sudo apt-get install avrdude gcc-avr binutils-avr gdb-avr avr-libc
+   sudo apt-get install bossa-cli gcc-arm-none-eabi
+   pip install pyserial xpect sphinx breathe
+   git clone https://github.com/eerimoq/simba
+   cd simba
+   source setup.sh
 
 .. _cygwin: https://cygwin.com/setup-x86.exe
