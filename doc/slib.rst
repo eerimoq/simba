@@ -1,7 +1,7 @@
 slib
 ====
 
-`github`_
+The slib package interfaces on `github`_.
 
 .. toctree::
    :glob:   

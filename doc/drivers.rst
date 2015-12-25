@@ -1,7 +1,7 @@
 drivers
 =======
 
-`github`_
+The drivers package interfaces on `github`_.
 
 Modules:
 
