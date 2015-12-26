@@ -56,7 +56,7 @@ static int test_put_get(struct harness_t *harness)
     return (0);
 }
 
-static int test_put_get_data(struct harness_t *harness)
+static int test_put_get_int(struct harness_t *harness)
 {
     struct fifo_t fifo;
     int buf[4];
@@ -91,7 +91,7 @@ int main()
     struct harness_t harness;
     struct harness_testcase_t harness_testcases[] = {
         { test_put_get, "test_put_get" },
-        { test_put_get_data, "test_put_get_data" },
+        { test_put_get_int, "test_put_get_int" },
         { NULL, NULL }
     };
 
