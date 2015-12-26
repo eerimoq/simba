@@ -18,23 +18,8 @@
 # This file is part of the Simba project.
 #
 
-NAME = setting_suite
-VERSION = 1.0.0
-BOARD ?= linux
+NAME = blink
+BOARD = arduino_due
 
-# Remove the settings.bin file on linux and cygwin to force it to be
-# regenerated
-rm_settings_bin:
-	rm -f settings.bin
-
-ifeq ($(BOARD), linux)
-all: rm_settings_bin
-endif
-ifeq ($(BOARD), cygwin)
-all: rm_settings_bin
-endif
-
-SETTINGS_INI = settings.ini
-
-SIMBA_ROOT = ../../..
+SIMBA_ROOT = ../..
 include $(SIMBA_ROOT)/make/app.mk

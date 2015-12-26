@@ -18,7 +18,7 @@
 # This file is part of the Simba project.
 #
 
-.PHONY: all clean new run run-debugger help
+.PHONY: all generate build clean new run run-debugger help
 
 VERSION ?= 0.0.0
 
@@ -59,7 +59,13 @@ CFLAGS += $(CDEFS)
 LDFLAGS += $(LDFLAGS_EXTRA)
 SHELL = /bin/bash
 
-all: $(EXE) $(SETTINGS_BIN)
+all:
+	$(MAKE) generate
+	$(MAKE) build
+
+generate: $(SETTINGS_BIN) $(SETTINGS_H)
+
+build: $(EXE)
 
 # layers
 BOARD.mk ?= $(SIMBA_ROOT)/src/boards/$(BOARD)/board.mk

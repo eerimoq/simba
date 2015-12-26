@@ -46,7 +46,7 @@ RUNARGS = ${MCU} ${NAME}.hex ${SETTINGS_BIN} -D -P $(AVRDUDE_PORT) -c $(AVRDUDE_
 
 CLEAN += $(NAME).hex
 
-all: $(NAME).hex
+build: $(NAME).hex
 $(NAME).hex: $(EXE)
 	$(CROSS_COMPILE)objcopy -O ihex -R .eeprom $< $@
 

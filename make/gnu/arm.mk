@@ -40,7 +40,7 @@ SRC += settings.c
 
 RUNARGS = ${NAME}.bin
 
-all: $(NAME).bin
+build: $(NAME).bin
 $(NAME).bin: $(EXE)
 	$(CROSS_COMPILE)objcopy -O binary $< $@
 
