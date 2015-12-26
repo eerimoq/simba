@@ -5,6 +5,7 @@
    :synopsis: Bitwise operations.
 
 Source code: `kernel/bits.h`_
+
 Test code: `kernel/bits/main.c`_
 
 ----------------------------------------------
