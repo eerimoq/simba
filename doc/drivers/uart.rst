@@ -4,7 +4,9 @@
 .. module:: uart
    :synopsis: Universal Asynchronous Receiver/Transmitter.
 
-**Source code:** `drivers/uart.h`_
+Source code: `drivers/uart.h`_
+
+Test code: `drivers/uart/main.c`_
 
 ----------------------------------------------
 
@@ -12,4 +14,5 @@
    :project: simba
 
 .. _drivers/uart.h: https://github.com/eerimoq/simba/tree/master/src/drivers/drivers/uart.h
+.. _drivers/uart/main.c: https://github.com/eerimoq/simba/tree/master/tst/drivers/uart/main.c
 

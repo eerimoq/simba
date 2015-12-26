@@ -4,7 +4,7 @@
 .. module:: uart_soft
    :synopsis: Bitbang UART.
 
-**Source code:** `drivers/uart_soft.h`_
+Source code: `drivers/uart_soft.h`_
 
 ----------------------------------------------
 

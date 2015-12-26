@@ -4,7 +4,7 @@
 .. module:: types
    :synopsis: Common types.
 
-**Source code:** `kernel/types.h`_
+Source code: `kernel/types.h`_
 
 ----------------------------------------------
 

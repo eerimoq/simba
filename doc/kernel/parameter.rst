@@ -4,7 +4,7 @@
 .. module:: parameter
    :synopsis: Debug parameters.
 
-**Source code:** `kernel/parameter.h`_
+Source code: `kernel/parameter.h`_
 
 ----------------------------------------------
 

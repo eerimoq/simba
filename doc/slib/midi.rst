@@ -4,7 +4,7 @@
 .. module:: midi
    :synopsis: Musical Instrument Digital Interface.
 
-**Source code:** `slib/midi.h`_
+Source code: `slib/midi.h`_
 
 ---------------------------------------------------
 

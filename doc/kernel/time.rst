@@ -4,7 +4,7 @@
 .. module:: time
    :synopsis: System time.
 
-**Source code:** `kernel/time.h`_
+Source code: `kernel/time.h`_
 
 ----------------------------------------------
 

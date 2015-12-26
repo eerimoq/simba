@@ -4,7 +4,9 @@
 .. module:: sem
    :synopsis: Counting semaphores.
 
-**Source code:** `kernel/sem.h`_
+Source code: `kernel/sem.h`_
+
+Test code: `kernel/sem/main.c`_
 
 ----------------------------------------------
 
@@ -12,4 +14,5 @@
    :project: simba
 
 .. _kernel/sem.h: https://github.com/eerimoq/simba/tree/master/src/kernel/kernel/sem.h
+.. _kernel/sem/main.c: https://github.com/eerimoq/simba/tree/master/tst/kernel/sem/main.c
 

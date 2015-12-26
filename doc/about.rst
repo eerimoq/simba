@@ -12,6 +12,7 @@ Design goals
 * Rapid development.
 * Clean interfaces.
 * Small memory footprint.
+* No dynamic memory allocation.
 * Portability.
 
 Microkernel features
@@ -27,7 +28,7 @@ Microkernel features
 Framework features
 ------------------
 
-* Package handler (using Python `pip`).
+* Package handler (using Pythons' `pip`).
 
 Board support
 -------------

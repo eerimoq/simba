@@ -32,23 +32,23 @@ int std_module_init(void);
 
 /**
  * Format and write data to destination buffer. The buffer must be big
- * enough to fir the formatted string.
+ * enough to fit the formatted string.
  *
- * A format specifiers has this format:
+ * A format specifier has this format:
  *
- * ``%[flags][width][length]specifier``
+ * %[flags][width][length]specifier
  *
  * where
  *
- * flags: '0' or '-'
- * width: 0..127
- * length: 'l' for long or nothing
- * specifier: c, s, d, u, x, f
+ * * flags: ``0`` or ``-``
+ * * width: ``0``..``127``
+ * * length: ``l`` for long or nothing
+ * * specifier: ``c``, ``s``, ``d``, ``u``, ``x`` or ``f``
  *
  * @param[out] dst_p Destination buffer. The formatted string is
  *                   written to this buffer.
  * @param[in] fmt_p Format string.
- * @param[in] ... Variable arguemnts list.
+ * @param[in] ... Variable arguments list.
  *
  * @return Number of bytes written to the destination buffer or
  *         negative error code.
@@ -57,6 +57,8 @@ ssize_t std_sprintf(char *dst_p, FAR const char *fmt_p, ...);
 
 /**
  * Format and print data to standard output.
+ *
+ * See `std_sprintf()` for the the format string specification.
  *
  * @param[in] fmt_p Format string.
  * @param[in] ... Variable arguemnts list.
@@ -67,6 +69,8 @@ void std_printf(FAR const char *fmt_p, ...);
 
 /**
  * Format and print data to channel.
+ *
+ * See `std_sprintf()` for the the format string specification.
  *
  * @param[in] chan_p Output channel.
  * @param[in] fmt_p Format string.
@@ -97,7 +101,7 @@ int std_strtol(const char *str_p, long *value_p);
 int std_strcpy(char *dst_p, FAR const char *src_p);
 
 /**
- * Compare two strings.
+ * Compare a string with a far string.
  *
  * @param[in] str_p Normal memory string.
  * @param[in] fstr_p Far memory string.
@@ -108,48 +112,49 @@ int std_strcpy(char *dst_p, FAR const char *src_p);
 int std_strcmp(const char *str_p, FAR const char *fstr_p);
 
 /**
- * Compare two strings.
+ * Compare two far strings.
  *
  * @param[in] fstr0_p Far memory string.
  * @param[in] fstr1_p Far memory string.
  *
  * @return zero(0) if match, otherwise the difference of the
- *         mismatched characters
+ *         mismatched characters.
  */
 int std_strcmp_f(FAR const char *fstr0_p,
                  FAR const char *fstr1_p);
 
 /**
- * Compare two strings.
+ * Compare at most `size` bytes of two far strings.
  *
  * @param[in] fstr0_p Far memory string.
  * @param[in] fstr1_p Far memory string.
  * @param[in] size Compare at most size number of bytes.
  *
  * @return zero(0) if match, otherwise the difference of the
- *         mismatched characters
+ *         mismatched characters.
  */
 int std_strncmp_f(FAR const char *fstr0_p,
                   FAR const char *fstr1_p,
                   size_t size);
 
 /**
- * Get length of string, not including null termination.
+ * Get the length of given far string, not including null termination.
  *
  * @param[in] fstr_p Far memory string.
  *
- * @return string length
+ * @return String length.
  */
 int std_strlen(FAR const char *fstr_p);
 
 /**
- * Strip leading and trailing characters given by strip_p.
+ * Strip leading and trailing characters from a string. The characters
+ * to strip are given by `strip_p`.
  *
- * @param[in] str_p String to strip.
+ * @param[in] str_p String to strip characters from.
  * @param[in] strip_p Characters to strip or NULL for whitespace
- *                    characters.
+ *                    characters. Must be null-terminated.
  *
- * @return Pointer to stripped string.
+ * @return Pointer to the stripped string.
  */
 char *std_strip(char *str_p, const char *strip_p);
 

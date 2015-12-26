@@ -4,7 +4,7 @@
 .. module:: pwm
    :synopsis: Pulse width modulation.
 
-**Source code:** `drivers/pwm.h`_
+Source code: `drivers/pwm.h`_
 
 ----------------------------------------------
 
@@ -12,4 +12,3 @@
    :project: simba
 
 .. _drivers/pwm.h: https://github.com/eerimoq/simba/tree/master/src/drivers/drivers/pwm.h
-

@@ -4,7 +4,7 @@
 .. module:: bits
    :synopsis: Bitwise operations.
 
-**Source code:** `kernel/bits.h`_
+Source code: `kernel/bits.h`_
 
 ----------------------------------------------
 

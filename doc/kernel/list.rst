@@ -4,7 +4,7 @@
 .. module:: list
    :synopsis: Abstract lists.
 
-**Source code:** `kernel/list.h`_
+Source code: `kernel/list.h`_
 
 ----------------------------------------------
 

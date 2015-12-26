@@ -4,7 +4,9 @@
 .. module:: mcp2515
    :synopsis: CAN BUS chipset.
 
-**Source code:** `drivers/mcp2515.h`_
+Source code: `drivers/mcp2515.h`_
+
+Test code: `drivers/mcp2515/main.c`_
 
 ----------------------------------------------
 
@@ -12,3 +14,4 @@
    :project: simba
 
 .. _drivers/mcp2515.h: https://github.com/eerimoq/simba/tree/master/src/drivers/drivers/mcp2515.h
+.. _drivers/mcp2515/main.c: https://github.com/eerimoq/simba/tree/master/tst/drivers/mcp2515/main.c

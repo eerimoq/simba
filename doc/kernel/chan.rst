@@ -4,7 +4,7 @@
 .. module:: chan
    :synopsis: Abstract channel communication.
 
-**Source code:** `kernel/chan.h`_
+Source code: `kernel/chan.h`_
 
 ----------------------------------------------
 

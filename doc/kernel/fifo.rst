@@ -4,7 +4,7 @@
 .. module:: fifo
    :synopsis: Abstract FIFO.
 
-**Source code:** `kernel/fifo.h`_
+Source code: `kernel/fifo.h`_
 
 ----------------------------------------------
 
@@ -12,4 +12,3 @@
    :project: simba
 
 .. _kernel/fifo.h: https://github.com/eerimoq/simba/tree/master/src/kernel/kernel/fifo.h
-

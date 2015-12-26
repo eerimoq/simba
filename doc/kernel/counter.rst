@@ -4,7 +4,7 @@
 .. module:: counter
    :synopsis: Debug counters.
 
-**Source code:** `kernel/counter.h`_
+Source code: `kernel/counter.h`_
 
 ----------------------------------------------
 
