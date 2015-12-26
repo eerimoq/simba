@@ -5,6 +5,7 @@ import time
 import struct
 import re
 import zlib
+import argparse
 
 from ConfigParser import ConfigParser
 from collections import OrderedDict
@@ -251,11 +252,27 @@ def create_source_file(content):
     
 
 if __name__ == "__main__":
-    endianess = sys.argv[2]
-    items = parse_setting_file(sys.argv[1])
+    parser = argparse.ArgumentParser()
+
+    parser.add_argument("--header", action="store_true")
+    parser.add_argument("--binary", action="store_true")
+    parser.add_argument("--source", action="store_true")
+    parser.add_argument("settings")
+    parser.add_argument("endianess")
+
+    args = parser.parse_args()
+
+    endianess = args.endianess
+    items = parse_setting_file(args.settings)
     setting = create_setting_dict(*items)
 
-    create_header_file(setting)
+    if args.header:
+        create_header_file(setting)
+
     content = create_binary_content(setting, endianess)
-    create_binary_file(content)
-    create_source_file(content)
+
+    if args.binary:
+        create_binary_file(content)
+
+    if args.source:
+        create_source_file(content)

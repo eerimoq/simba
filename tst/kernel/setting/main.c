@@ -94,17 +94,25 @@ int test_string(struct harness_t *harness_p)
 {
     char string[SETTINGS_STRING_SIZE];
 
+    /* Read the default value. */
+    memset(string, 0, sizeof(string));
+    BTASSERT(setting_read(string,
+                          SETTINGS_STRING_ADDR,
+                          SETTINGS_STRING_SIZE) == SETTINGS_STRING_SIZE);
+    BTASSERT(strcmp(string, "y") == 0);
+
+    /* OVerwrite the default value with "x". */
     string[0] = 'x';
     string[1] = '\0';
     BTASSERT(setting_write(SETTINGS_STRING_ADDR,
                            string,
                            SETTINGS_STRING_SIZE) == SETTINGS_STRING_SIZE);
 
-    string[0] = 'X';
+    /* Read the overwritten value. */
+    memset(string, 0, sizeof(string));
     BTASSERT(setting_read(string,
                           SETTINGS_STRING_ADDR,
                           SETTINGS_STRING_SIZE) == SETTINGS_STRING_SIZE);
-
     BTASSERT(strcmp(string, "x") == 0);
 
     return (0);

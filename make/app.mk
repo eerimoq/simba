@@ -136,9 +136,13 @@ $(EXE): $(OBJ) $(GENOBJ)
 	@echo "Linking $@"
 	$(LD) -o $@ $^ $(LDFLAGS)
 
-$(SETTINGS_BIN) $(SETTINGS_H): $(SETTINGS_INI)
+$(SETTINGS_H): $(SETTINGS_INI)
 	@echo "Generating $@ from $<"
-	$(SIMBA_ROOT)/src/kernel/tools/settings.py $(SETTINGS_INI) $(ENDIANESS)
+	$(SIMBA_ROOT)/src/kernel/tools/settings.py --header --source $(SETTINGS_INI) $(ENDIANESS)
+
+$(SETTINGS_BIN): $(SETTINGS_INI)
+	@echo "Generating $@ from $<"
+	$(SIMBA_ROOT)/src/kernel/tools/settings.py --binary $(SETTINGS_INI) $(ENDIANESS)
 
 define COMPILE_template
 -include $(patsubst %.c,$(DEPSDIR)/%.o.dep,$(notdir $1))

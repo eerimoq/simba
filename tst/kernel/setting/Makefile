@@ -22,6 +22,14 @@ NAME = setting_suite
 VERSION = 1.0.0
 BOARD ?= linux
 
+# Remove the settings.bin file.
+ifeq ($(BOARD), linux)
+    $(shell rm settings.bin)
+endif
+ifeq ($(BOARD), cygwin)
+    $(shell rm settings.bin)
+endif
+
 SETTINGS_INI = settings.ini
 
 SIMBA_ROOT = ../../..
