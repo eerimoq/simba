@@ -21,6 +21,7 @@ Project homepage: https://github.com/eerimoq/simba
    installation
    user-guide
    developer-guide
+   sdk
    api-reference
 
 Indices and tables
