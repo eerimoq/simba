@@ -143,7 +143,7 @@ chan_t *chan_list_poll(struct chan_list_t *list_p,
 
         /* Not data was available, wait for data to be written to one
            of the channels. */
-        if (thrd_suspend_irq(timeout_p) == -ETIMEDOUT) {
+        if (thrd_suspend_isr(timeout_p) == -ETIMEDOUT) {
             chan_p = NULL;
             goto out;
         }
@@ -155,7 +155,7 @@ chan_t *chan_list_poll(struct chan_list_t *list_p,
     return (chan_p);
 }
 
-int chan_is_polled_irq(struct chan_t *self_p)
+int chan_is_polled_isr(struct chan_t *self_p)
 {
     if (self_p->list_p != NULL) {
         if (self_p->list_p->flags & CHAN_LIST_POLLING) {

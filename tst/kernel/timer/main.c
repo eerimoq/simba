@@ -29,7 +29,7 @@ static void callback(void *arg_p)
 {
     uint32_t mask = EVENT_MASK;
 
-    event_write_irq(&event, &mask, sizeof(mask));
+    event_write_isr(&event, &mask, sizeof(mask));
 }
 
 int test_timer(struct harness_t *harness_p)

@@ -102,8 +102,8 @@ ssize_t queue_write(struct queue_t *self_p,
                     size_t size);
 
 /**
- * Write bytes to given queue from interrupt context. May write less
- * than size bytes.
+ * Write bytes to given queue from isr or with the system lock
+ * taken (see `sys_lock()`). May write less than size bytes.
  *
  * @param[in] self_p Queue to write to.
  * @param[in] buf_p Buffer to write from.
@@ -111,7 +111,7 @@ ssize_t queue_write(struct queue_t *self_p,
  *
  * @return Number of written bytes or negative error code.
  */
-ssize_t queue_write_irq(struct queue_t *self_p,
+ssize_t queue_write_isr(struct queue_t *self_p,
                         const void *buf_p,
                         size_t size);
 

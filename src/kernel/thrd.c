@@ -518,7 +518,7 @@ int thrd_suspend(struct time_t *timeout_p)
     int err;
 
     sys_lock();
-    err = thrd_suspend_irq(timeout_p);
+    err = thrd_suspend_isr(timeout_p);
     sys_unlock();
 
     return (err);
@@ -527,13 +527,13 @@ int thrd_suspend(struct time_t *timeout_p)
 int thrd_resume(struct thrd_t *thrd_p, int err)
 {
     sys_lock();
-    thrd_resume_irq(thrd_p, err);
+    thrd_resume_isr(thrd_p, err);
     sys_unlock();
 
     return (0);
 }
 
-int thrd_resume_irq(struct thrd_t *thrd_p, int err)
+int thrd_resume_isr(struct thrd_t *thrd_p, int err)
 {
     thrd_p->err = err;
 
@@ -609,7 +609,7 @@ void thrd_tick(void)
     thrd_port_tick();
 }
 
-int thrd_suspend_irq(struct time_t *timeout_p)
+int thrd_suspend_isr(struct time_t *timeout_p)
 {
     struct thrd_t *thrd_p;
     struct timer_t timer;
@@ -627,7 +627,7 @@ int thrd_suspend_irq(struct time_t *timeout_p)
             if ((timeout_p->seconds == 0) && (timeout_p->nanoseconds == 0)) {
                 return (-ETIMEDOUT);
             } else {
-                timer_set_irq(&timer,
+                timer_set_isr(&timer,
                               timeout_p,
                               thrd_port_suspend_timer_callback,
                               thrd_p,

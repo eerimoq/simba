@@ -425,9 +425,9 @@ static void fill_timer_cb(void *arg_p)
     uint32_t mask;
 
     mask = EVENT_TIMEOUT;
-    event_write_irq(&synthesizer.events, &mask, sizeof(mask));
+    event_write_isr(&synthesizer.events, &mask, sizeof(mask));
     mask = EVENT_TIMEOUT;
-    event_write_irq(&synthesizer.sensors.events, &mask, sizeof(mask));
+    event_write_isr(&synthesizer.sensors.events, &mask, sizeof(mask));
 }
 
 /**

@@ -79,7 +79,7 @@ struct thrd_t *thrd_spawn(void *(*entry)(void *),
                           size_t stack_size);
 
 /**
- * Suspend given thread and wait to be resumed or timeout.
+ * Suspend given thread and wait to be resumed or a timeout occurs.
  *
  * @param[in] timeout_p Timeout.
  *
@@ -132,10 +132,10 @@ struct thrd_t *thrd_self(void);
 int thrd_set_name(const char *name_p);
 
 /**
- * Set log mask for given thread.
+ * Set the log mask of given thread.
  *
  * @param[in] thrd_p Thread.
- * @param[in] mask Log mask. See log module for available levels.
+ * @param[in] mask Log mask. See the log module for available levels.
  *
  * @return Old log mask.
  */
@@ -149,22 +149,24 @@ int thrd_set_log_mask(struct thrd_t *thrd_p, int mask);
 int thrd_get_log_mask(void);
 
 /**
- * Suspend given thread and wait to be resumed or timeout.
+ * Suspend given thread with the system lock taken (see `sys_lock()`),
+ * and wait to be resumed or a timeout occurs.
  *
  * @param[in] timeout_p Timeout.
  *
  * @return zero(0) or negative error code.
  */
-int thrd_suspend_irq(struct time_t *timeout_p);
+int thrd_suspend_isr(struct time_t *timeout_p);
 
 /**
- * Resume given suspended thread from interrupt context.
+ * Resume given suspended thread from interrupt context or with the
+ * system lock taken (see `sys_lock()`).
  *
  * @param[in] thrd_p Thread id.
  * @param[in] err Error code to be returned by thrd_suspend().
  *
  * @return zero(0) or negative error code.
  */
-int thrd_resume_irq(struct thrd_t *thrd_p, int err);
+int thrd_resume_isr(struct thrd_t *thrd_p, int err);
 
 #endif

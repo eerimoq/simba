@@ -48,7 +48,7 @@ static void rx_isr(void *arg_p)
     }
 
     /* Write data to input channel. */
-    queue_write_irq(&self_p->chin, &data, sizeof(data));
+    queue_write_isr(&self_p->chin, &data, sizeof(data));
 
     /* During the execution of this routinue multiple falling edges
        are detected by the hardware. The interrupt flag will be set

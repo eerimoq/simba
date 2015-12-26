@@ -120,7 +120,7 @@ static ssize_t uart_port_write_cb(void *arg_p,
 
     self_p->thrd_p = thrd_self();
 
-    thrd_suspend_irq(NULL);
+    thrd_suspend_isr(NULL);
 
     /* Disable the PDC. */
     dev_p->regs_p->PDC.PTCR = (PERIPH_PTCR_TXTDIS);
@@ -149,7 +149,7 @@ static void isr(int index)
     /* Handle tx complete signal. */
     if (csr & US_CSR_ENDTX) {
         dev_p->regs_p->IDR = (US_IDR_ENDTX);
-        thrd_resume_irq(drv_p->thrd_p, 0);
+        thrd_resume_isr(drv_p->thrd_p, 0);
     }
 
     /* Handle rx complete signal. */
@@ -158,7 +158,7 @@ static void isr(int index)
 
         if (error == 0) {
             /* Write data to input queue. */
-            if (queue_write_irq(&drv_p->chin, dev_p->rxbuf, 1) != 1) {
+            if (queue_write_isr(&drv_p->chin, dev_p->rxbuf, 1) != 1) {
                 COUNTER_INC(uart_rx_channel_overflow, 1);
             }
         } else {

@@ -81,7 +81,7 @@ static void isr(void *arg_p)
     char c;
     struct nrf24l01_driver_t *self_p = arg_p;
 
-    queue_write_irq(&self_p->irqchan, &c, sizeof(c));
+    queue_write_isr(&self_p->irqchan, &c, sizeof(c));
 }
 
 static void *isr_main(void *arg_p)

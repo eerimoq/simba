@@ -23,7 +23,12 @@
 
 #include "simba.h"
 
-/* Add a command to the file system with given callback. */
+/**
+ * Add a command to the file system.
+ *
+ * @param[in] path Path of the command in the debug file system.
+ * @param[in] name Command callback.
+ */
 #if defined(__SIMBA_GEN__)
 #    define FS_COMMAND_DEFINE(path, callback) ..fs_command.. path #callback
 #else

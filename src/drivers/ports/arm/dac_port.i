@@ -56,7 +56,7 @@ ISR(dacc)
            samples. */
         if ((self_p->state == STATE_CONVERTING) &&
             (self_p->thrd_p != NULL)) {
-            thrd_resume_irq(self_p->thrd_p, 0);
+            thrd_resume_isr(self_p->thrd_p, 0);
             self_p->thrd_p = NULL;
         }
     }
@@ -66,7 +66,7 @@ ISR(dacc)
         convert_stop(self_p);
 
         if (self_p->state == STATE_WAITING) {
-            thrd_resume_irq(self_p->thrd_p, 0);
+            thrd_resume_isr(self_p->thrd_p, 0);
             self_p->thrd_p = NULL;
         } else {
             self_p->state = STATE_EMPTY;
@@ -172,7 +172,7 @@ static int dac_port_async_convert(struct dac_driver_t *self_p,
     /* Wait if last written data has not yet been written. */
     if (self_p->next.length > 0) {
         self_p->thrd_p = thrd_self();
-        thrd_suspend_irq(NULL);
+        thrd_suspend_isr(NULL);
     }
 
     /* Initialize. */
@@ -205,7 +205,7 @@ static int dac_port_async_wait(struct dac_driver_t *self_p)
     if (self_p->state == STATE_CONVERTING) {
         self_p->state = STATE_WAITING;
         self_p->thrd_p = thrd_self();
-        thrd_suspend_irq(NULL);
+        thrd_suspend_isr(NULL);
         self_p->state = STATE_EMPTY;
     }
 

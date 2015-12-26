@@ -63,12 +63,12 @@ static void sys_port_unlock(void)
     pthread_mutex_unlock(&mutex);
 }
 
-static void sys_port_lock_irq(void)
+static void sys_port_lock_isr(void)
 {
     pthread_mutex_lock(&mutex);
 }
 
-static void sys_port_unlock_irq(void)
+static void sys_port_unlock_isr(void)
 {
     pthread_mutex_unlock(&mutex);
 }

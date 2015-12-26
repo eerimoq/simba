@@ -48,7 +48,7 @@ static void read_frame_from_hw(struct can_driver_t *drv_p,
     mailbox_p->MCR = CAN_MCR_MTCR;
 
     /* Write the received frame to the application input channel. */
-    if (queue_write_irq(&drv_p->chin,
+    if (queue_write_isr(&drv_p->chin,
                         &frame,
                         sizeof(frame)) != sizeof(frame)) {
         COUNTER_INC(can_rx_channel_overflow, 1);
@@ -99,7 +99,7 @@ static void isr(struct can_device_t *dev_p)
             drv_p->txframe_p++;
         } else {
             dev_p->regs_p->IDR = CAN_IDR_MB0;
-            thrd_resume_irq(drv_p->thrd_p, 0);
+            thrd_resume_isr(drv_p->thrd_p, 0);
         }
     }
 
@@ -147,7 +147,7 @@ static ssize_t write_cb(void *arg_p,
     dev_p->regs_p->IER = CAN_IER_MB0;
 
     /* Wait for transmission to complete. */
-    thrd_suspend_irq(NULL);
+    thrd_suspend_isr(NULL);
 
     sys_unlock();
 

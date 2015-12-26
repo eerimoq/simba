@@ -123,7 +123,7 @@ ssize_t queue_read(struct queue_t *self_p, void *buf_p, size_t size)
         /* Writer buffer empty. */
         if (self_p->left == 0) {
             /* Wake the writer. */
-            thrd_resume_irq(self_p->base.writer_p, 0);
+            thrd_resume_isr(self_p->base.writer_p, 0);
             self_p->base.writer_p = NULL;
         }
     }
@@ -135,7 +135,7 @@ ssize_t queue_read(struct queue_t *self_p, void *buf_p, size_t size)
         self_p->buf_p = cbuf_p;
         self_p->left = left;
 
-        thrd_suspend_irq(NULL);
+        thrd_suspend_isr(NULL);
     }
 
     sys_unlock();
@@ -155,7 +155,7 @@ ssize_t queue_write(struct queue_t *self_p,
 
     sys_lock();
 
-    left -= queue_write_irq(self_p, cbuf_p, size);
+    left -= queue_write_isr(self_p, cbuf_p, size);
 
     /* The writer writes the remaining data. */
     if (left > 0) {
@@ -164,7 +164,7 @@ ssize_t queue_write(struct queue_t *self_p,
         self_p->buf_p = (void *)cbuf_p;
         self_p->left = left;
 
-        thrd_suspend_irq(NULL);
+        thrd_suspend_isr(NULL);
     }
 
     sys_unlock();
@@ -172,7 +172,7 @@ ssize_t queue_write(struct queue_t *self_p,
     return (size);
 }
 
-ssize_t queue_write_irq(struct queue_t *self_p,
+ssize_t queue_write_isr(struct queue_t *self_p,
                         const void *buf_p,
                         size_t size)
 {
@@ -183,8 +183,8 @@ ssize_t queue_write_irq(struct queue_t *self_p,
     left = size;
     cbuf_p = buf_p;
 
-    if (chan_is_polled_irq(&self_p->base)) {
-        thrd_resume_irq(self_p->base.reader_p, 0);
+    if (chan_is_polled_isr(&self_p->base)) {
+        thrd_resume_isr(self_p->base.reader_p, 0);
         self_p->base.reader_p = NULL;
     }
 
@@ -206,7 +206,7 @@ ssize_t queue_write_irq(struct queue_t *self_p,
         /* Read buffer full. */
         if (self_p->left == 0) {
             /* Wake the reader. */
-            thrd_resume_irq(self_p->base.reader_p, 0);
+            thrd_resume_isr(self_p->base.reader_p, 0);
             self_p->base.reader_p = NULL;
         }
     }

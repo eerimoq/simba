@@ -66,7 +66,7 @@ ISR(uotghs)
 
         /* Notify the USB thread about the interrupt. */
         mask = EVENT_CONNECT;
-        event_write_irq(&drv_p->event, &mask, sizeof(mask));
+        event_write_isr(&drv_p->event, &mask, sizeof(mask));
     }
 
     /* Pipe interrupts. */
@@ -75,7 +75,7 @@ ISR(uotghs)
             dev_p->regs_p->HOST.IDR = (SAM_UOTGHS_HOST_IDR_PEP_0 << i);
 
             if (dev_p->pipes[i].thrd_p != NULL) {
-                thrd_resume_irq(dev_p->pipes[i].thrd_p, 0);
+                thrd_resume_isr(dev_p->pipes[i].thrd_p, 0);
             }
         }
     }
@@ -336,7 +336,7 @@ static ssize_t pipe_transfer(struct usb_device_t *dev_p,
                                  | SAM_UOTGHS_HOST_PIPIDR_PFREEZEC);
 
     /* Wait for completion. */
-    thrd_suspend_irq(NULL);
+    thrd_suspend_isr(NULL);
 
     dev_p->pipes[pipe].thrd_p = NULL;
 

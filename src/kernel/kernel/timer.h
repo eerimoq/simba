@@ -70,7 +70,8 @@ int timer_cancel(struct timer_t *self_p);
  * Set a timer with given timeout and expiry callback. Timer timer
  * resolution directly depends on the system tick frequency. The
  * timeout is rounded up to closest system tick. This applies for both
- * single shot and periodic timers.
+ * single shot and periodic timers. This function may only be called
+ * with the system lock taken (see `sys_lock()`).
  *
  * @param[in] self_p Timer reference to be started with given timeout.
  * @param[in] timeout_p Time until timer expiry.
@@ -80,7 +81,7 @@ int timer_cancel(struct timer_t *self_p);
  *
  * @return zero(0) or negative error code.
  */
-int timer_set_irq(struct timer_t *self_p,
+int timer_set_isr(struct timer_t *self_p,
                   struct time_t *timeout_p,
                   void (*callback)(void *arg),
                   void *arg_p,

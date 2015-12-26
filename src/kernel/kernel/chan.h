@@ -133,14 +133,14 @@ ssize_t chan_write(chan_t *self_p,
 size_t chan_size(chan_t *self_p);
 
 /**
- * Check if a channel is polled. May only be called from ISR or with
- * the system lock taken.
+ * Check if a channel is polled. May only be called from isr or with
+ * the system lock taken (see `sys_lock()`).
  *
  * @param[in] self_p Channel to check.
  *
  * @return true(1) or false(0).
  */
-int chan_is_polled_irq(struct chan_t *self_p);
+int chan_is_polled_isr(struct chan_t *self_p);
 
 /**
  * Initialize an empty list of channels. A list is used to wait for

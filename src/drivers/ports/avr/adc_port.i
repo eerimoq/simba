@@ -69,7 +69,7 @@ ISR(ADC_vect)
 
         /* Resume the thread if it is waiting for completion. */
         if (self_p->thrd_p != NULL) {
-            thrd_resume_irq(self_p->thrd_p, 0);
+            thrd_resume_isr(self_p->thrd_p, 0);
         }
     }
 }
@@ -160,7 +160,7 @@ static int adc_port_async_wait(struct adc_driver_t *self_p)
 
     /* Wait until all samples have been converted. */
     if (!has_finished) {
-        thrd_suspend_irq(NULL);
+        thrd_suspend_isr(NULL);
     }
 
     sys_unlock();

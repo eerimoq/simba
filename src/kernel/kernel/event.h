@@ -70,8 +70,8 @@ ssize_t event_write(struct event_t *self_p,
                     size_t size);
 
 /**
- * Write given events to the event channel from interrupt context, or
- * with system lock taken.
+ * Write given events to the event channel from isr or with the system
+ * lock taken (see `sys_lock()`).
  *
  * @param[in] self_p Initialized event channel to write to.
  * @param[in] buf_p The mask of events to write.
@@ -79,7 +79,7 @@ ssize_t event_write(struct event_t *self_p,
  *
  * @return sizeof(mask) or negative error code.
  */
-ssize_t event_write_irq(struct event_t *self_p,
+ssize_t event_write_isr(struct event_t *self_p,
                         const void *buf_p,
                         size_t size);
 

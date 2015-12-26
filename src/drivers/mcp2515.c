@@ -152,7 +152,7 @@ struct spi_frame_t {
 /* Interrupt service routine serving the INT from the hardware. */
 static void isr(struct mcp2515_driver_t *self_p)
 {
-    sem_put_irq(&self_p->isr_sem, 1);
+    sem_put_isr(&self_p->isr_sem, 1);
 }
 
 /**

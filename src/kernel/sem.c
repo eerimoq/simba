@@ -53,7 +53,7 @@ int sem_get(struct sem_t *self_p,
         elem.next_p = self_p->head_p;
         elem.prev_p = NULL;
         self_p->head_p = &elem;
-        err = thrd_suspend_irq(timeout_p);
+        err = thrd_suspend_isr(timeout_p);
 
         if (err == -ETIMEDOUT) {
             if (elem.prev_p != NULL) {
@@ -79,13 +79,13 @@ int sem_put(struct sem_t *self_p,
             int count)
 {
     sys_lock();
-    sem_put_irq(self_p, count);
+    sem_put_isr(self_p, count);
     sys_unlock();
 
     return (0);
 }
 
-int sem_put_irq(struct sem_t *self_p,
+int sem_put_isr(struct sem_t *self_p,
                 int count)
 {
     struct sem_elem_t *elem_p;
@@ -101,7 +101,7 @@ int sem_put_irq(struct sem_t *self_p,
             elem_p->next_p->prev_p = NULL;
         }
 
-        thrd_resume_irq(elem_p->thrd_p, 0);
+        thrd_resume_isr(elem_p->thrd_p, 0);
     }
 
     return (0);

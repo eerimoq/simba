@@ -97,14 +97,14 @@ void sys_unlock(void)
     sys_port_unlock();
 }
 
-void sys_lock_irq(void)
+void sys_lock_isr(void)
 {
-    sys_port_lock_irq();
+    sys_port_lock_isr();
 }
 
-void sys_unlock_irq(void)
+void sys_unlock_isr(void)
 {
-    sys_port_unlock_irq();
+    sys_port_unlock_isr();
 }
 
 const FAR char *sys_get_info(void)

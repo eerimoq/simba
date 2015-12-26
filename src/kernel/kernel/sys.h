@@ -112,19 +112,19 @@ void sys_lock(void);
 void sys_unlock(void);
 
 /**
- * Take the system lock from ISR. Normally turns off interrupts.
+ * Take the system lock from isr. Normally turns off interrupts.
  *
  * @return void.
  */
-void sys_lock_irq(void);
+void sys_lock_isr(void);
 
 /**
- * Release the system lock from ISR. In many ports this function has
+ * Release the system lock from isr. In many ports this function has
  * no effect.
  *
  * @return void.
  */
-void sys_unlock_irq(void);
+void sys_unlock_isr(void);
 
 /**
  * Get a pointer to the application information buffer.

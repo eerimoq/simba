@@ -81,11 +81,11 @@ static void sys_port_unlock(void)
     asm volatile ("sei" ::: "memory");
 }
 
-static void sys_port_lock_irq(void)
+static void sys_port_lock_isr(void)
 {
 }
 
-static void sys_port_unlock_irq(void)
+static void sys_port_unlock_isr(void)
 {
 }
 

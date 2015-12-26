@@ -77,7 +77,7 @@ static ssize_t uart_port_write_cb(void *arg_p,
        routine. */
     *UDRn(self_p->dev_p) = self_p->txbuf_p[-1];
 
-    thrd_suspend_irq(NULL);
+    thrd_suspend_isr(NULL);
 
     sys_unlock();
 
@@ -100,7 +100,7 @@ static void tx_isr(int index)
         *UDRn(drv_p->dev_p) = *drv_p->txbuf_p++;
         drv_p->txsize--;
     } else {
-        thrd_resume_irq(drv_p->thrd_p, 0);
+        thrd_resume_isr(drv_p->thrd_p, 0);
     }
 }
 
@@ -120,7 +120,7 @@ static void rx_isr(int index)
     /* Error frames are discarded. */
     if (error == 0) {
         /* Write data to input queue. */
-        if (queue_write_irq(&drv_p->chin, &c, 1) != 1) {
+        if (queue_write_isr(&drv_p->chin, &c, 1) != 1) {
             COUNTER_INC(uart_rx_channel_overflow, 1);
         }
     } else {

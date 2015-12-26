@@ -25,6 +25,9 @@
 
 /**
  * Compile-time declaration of a semaphore.
+ *
+ * @param[in] name Semaphore to initialize.
+ * @param[in] count Semaphore count.
  */
 #define SEM_INIT_DECL(name, _count)                             \
     struct sem_t name = { .count = _count, .head_p = NULL }
@@ -83,14 +86,15 @@ int sem_put(struct sem_t *self_p,
             int count);
 
 /**
- * Put given value on semaphore for irq.
+ * Put given value on semaphore from isr or with the system lock
+ * taken.
  *
  * @param[in] self_p Semaphore to add count to.
  * @param[in] count Count to add.
  *
  * @return zero(0) or negative error code.
  */
-int sem_put_irq(struct sem_t *self_p,
+int sem_put_isr(struct sem_t *self_p,
                 int count);
 
 #endif

@@ -38,7 +38,7 @@ ISR(SPI_STC_vect)
 
     /* Resume on complete transfer. */
     if (drv_p->size == 0) {
-        thrd_resume_irq(drv_p->thrd_p, 0);
+        thrd_resume_isr(drv_p->thrd_p, 0);
     } else {
         /* Write next byte. */
         if (drv_p->txbuf_p != NULL) {

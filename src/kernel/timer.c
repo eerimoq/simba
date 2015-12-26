@@ -98,7 +98,7 @@ void timer_tick(void)
 {
     struct timer_t *timer_p;
 
-    sys_lock_irq();
+    sys_lock_isr();
 
     /* Return if no timers are active.*/
     if (list.head_p == &list.tail_timer) {
@@ -121,7 +121,7 @@ void timer_tick(void)
     }
 
  out:
-    sys_unlock_irq();
+    sys_unlock_isr();
 }
 
 int timer_set(struct timer_t *self_p,
@@ -134,14 +134,14 @@ int timer_set(struct timer_t *self_p,
 
     sys_lock();
 
-    err = timer_set_irq(self_p, timeout_p, callback, arg_p, flags);
+    err = timer_set_isr(self_p, timeout_p, callback, arg_p, flags);
 
     sys_unlock();
 
     return (err);
 }
 
-int timer_set_irq(struct timer_t *self_p,
+int timer_set_isr(struct timer_t *self_p,
                   struct time_t *timeout_p,
                   void (*callback)(void *arg_p),
                   void *arg_p,

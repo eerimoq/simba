@@ -47,7 +47,7 @@ ISR(spi0)
     if (drv_p->size == 0) {
         /* Disable tx interrupt. */
         dev_p->regs_p->IDR = (SPI_IDR_TXEMPTY);
-        thrd_resume_irq(drv_p->thrd_p, 0);
+        thrd_resume_isr(drv_p->thrd_p, 0);
     } else {
         /* Write next byte. */
         if (drv_p->txbuf_p != NULL) {
@@ -155,7 +155,7 @@ static ssize_t spi_port_transfer(struct spi_driver_t *self_p,
     /* Enable tx interrupt. */
     dev_p->regs_p->IER = (SPI_IER_TXEMPTY);
 
-    thrd_suspend_irq(NULL);
+    thrd_suspend_isr(NULL);
 
     sys_unlock();
 
