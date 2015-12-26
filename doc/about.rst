@@ -22,13 +22,15 @@ Microkernel features
 * Channels, for inter-thread communication.
 * Timers.
 * Counting semaphores.
-* Drivers (spi, uart, ...)
-* Debug shell.
+* Device drivers (spi, uart, ...)
+* A simple shell.
+* ...
 
 Framework features
 ------------------
 
 * Package handler (using Pythons' `pip`).
+* ...
 
 Board support
 -------------
