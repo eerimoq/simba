@@ -44,7 +44,7 @@ static inline uint32_t bits_insert_32(uint32_t dst,
 {
     uint32_t mask;
 
-    mask = (((1 << size) - 1) << position);
+    mask = (((1LU << size) - 1) << position);
     dst &= ~mask;
     dst |= ((src << position) & mask);
 
