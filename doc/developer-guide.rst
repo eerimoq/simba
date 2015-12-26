@@ -1,8 +1,8 @@
 Developer Guide
 ===============
 
-This guide is intended for developers of the Simba packages and
-tools. Users are advised to read the :doc:`user-guide` instead.
+This guide is intended for developers of the Simba OS. Users are
+advised to read the :doc:`user-guide` instead.
 
 File tree
 ---------

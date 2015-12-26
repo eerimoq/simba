@@ -1,7 +1,7 @@
 User Guide
 ==========
 
-This guide is intended for users of the Simba packages and tools.
+This guide is intended for users of the Simba OS.
 
 The Simba installation guide can be found on the :doc:`installation`
 page.
@@ -270,7 +270,7 @@ executed.
 
 .. code-block:: text
 
-   $ simba create --application myapp
+   $ simba application --create myapp
    $ tree myapp
    myapp
    ├── main.c
@@ -287,7 +287,7 @@ is built and executed.
 
 .. code-block:: text
 
-   $ simba create --package mypkg
+   $ simba package --create mypkg
    $ tree mypkg
    mypkg
    ├── mypkg
@@ -325,7 +325,7 @@ is input to the installation command, described in the next section.
 .. code-block:: text
 
    $ cd ../../..
-   $ simba release
+   $ simba package --release
    $ tree dist
    dist
    ├── mypkg-0.1-py2.py3-none-any.whl
@@ -339,7 +339,7 @@ This is how to install a package in ``${SIMBA_ROOT}/dist-packages``.
 
 .. code-block:: text
 
-   $ simba install dist/mypkg-0.1-py2.py3-none-any.whl
+   $ simba package --install dist/mypkg-0.1-py2.py3-none-any.whl
 
 Further reading
 ---------------

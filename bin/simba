@@ -3209,94 +3209,118 @@ def generate_files(files, name, year, author):
                                     year=year))
 
 
-def subcommand_create(args):
-    """The create subcommand.
+def package_create(args):
+    """Create a package.
     """
 
-    name = args.name
+    name = args.create
     author = getpass.getuser()
     year = time.strftime("%Y")
 
     # Create the package root directory
     os.makedirs(name)
 
-    if args.package:
-        package_path = os.path.join(name, name)
-        doc_path = os.path.join(package_path, "doc")
-        src_path = os.path.join(package_path, "src")
-        tst_path = os.path.join(package_path, "tst")
+    package_path = os.path.join(name, name)
+    doc_path = os.path.join(package_path, "doc")
+    src_path = os.path.join(package_path, "src")
+    tst_path = os.path.join(package_path, "tst")
 
-        # Create setup.py
-        setup_path = os.path.join(name, "setup.py")
-        with open(setup_path, "w") as f:
-            f.write(SETUP_PY.format(name=name,
-                                    author=author))
+    # Create setup.py
+    setup_path = os.path.join(name, "setup.py")
+    with open(setup_path, "w") as f:
+        f.write(SETUP_PY.format(name=name,
+                                author=author))
 
-        # Create the subdirectories within the package
-        subdirs = ["doc", "src", "tst"]
-        for subdir in subdirs:
-            os.makedirs(os.path.join(package_path, subdir))
-        os.makedirs(os.path.join(doc_path, name))
-        os.makedirs(os.path.join(src_path, name))
-        os.makedirs(os.path.join(tst_path, "hello"))
+    # Create the subdirectories within the package
+    subdirs = ["doc", "src", "tst"]
+    for subdir in subdirs:
+        os.makedirs(os.path.join(package_path, subdir))
+    os.makedirs(os.path.join(doc_path, name))
+    os.makedirs(os.path.join(src_path, name))
+    os.makedirs(os.path.join(tst_path, "hello"))
 
-        files = [
-                (INIT_PY, os.path.join(package_path, "__init__.py")),
-                (PACKAGE_H, os.path.join(src_path, name + ".h")),
-                (PACKAGE_MK, os.path.join(src_path, name + ".mk")),
-                (MODULE_H, os.path.join(src_path, name, "hello.h")),
-                (MODULE_C, os.path.join(src_path, "hello.c")),
-                (MAIN_C, os.path.join(tst_path, "hello", "main.c")),
-                (MAKEFILE, os.path.join(tst_path, "hello", "Makefile")),
-                (DOC_DOXYGEN_CFG, os.path.join(doc_path, "doxygen.cfg")),
-                (DOC_MAKEFILE, os.path.join(doc_path, "Makefile")),
-                (DOC_SPHINX_MK, os.path.join(doc_path, "sphinx.mk")),
-                (DOC_REQUIREMENTS_TXT, os.path.join(doc_path, "requirements.txt")),
-                (DOC_API_REFERENCE_RST, os.path.join(doc_path, "api-reference.rst")),
-                (DOC_CONF_PY, os.path.join(doc_path, "conf.py")),
-                (DOC_INDEX_RST, os.path.join(doc_path, "index.rst")),
-                (DOC_ABOUT_RST, os.path.join(doc_path, "about.rst")),
-                (DOC_HELLO_RST, os.path.join(doc_path, name, "hello.rst"))
-            ]
+    files = [
+        (INIT_PY, os.path.join(package_path, "__init__.py")),
+        (PACKAGE_H, os.path.join(src_path, name + ".h")),
+        (PACKAGE_MK, os.path.join(src_path, name + ".mk")),
+        (MODULE_H, os.path.join(src_path, name, "hello.h")),
+        (MODULE_C, os.path.join(src_path, "hello.c")),
+        (MAIN_C, os.path.join(tst_path, "hello", "main.c")),
+        (MAKEFILE, os.path.join(tst_path, "hello", "Makefile")),
+        (DOC_DOXYGEN_CFG, os.path.join(doc_path, "doxygen.cfg")),
+        (DOC_MAKEFILE, os.path.join(doc_path, "Makefile")),
+        (DOC_SPHINX_MK, os.path.join(doc_path, "sphinx.mk")),
+        (DOC_REQUIREMENTS_TXT, os.path.join(doc_path, "requirements.txt")),
+        (DOC_API_REFERENCE_RST, os.path.join(doc_path, "api-reference.rst")),
+        (DOC_CONF_PY, os.path.join(doc_path, "conf.py")),
+        (DOC_INDEX_RST, os.path.join(doc_path, "index.rst")),
+        (DOC_ABOUT_RST, os.path.join(doc_path, "about.rst")),
+        (DOC_HELLO_RST, os.path.join(doc_path, name, "hello.rst"))
+    ]
 
-        generate_files(files, name, year, author)
+    generate_files(files, name, year, author)
 
-        print "Package '{name}' created in a folder with the same name.".format(name=name)
-    elif args.application:
+    print "Package '{name}' created in a folder with the same name.".format(name=name)
+
+
+def package_release(_):
+    """Release a package.
+    """
+
+    subprocess.check_call(["python", "setup.py", "sdist"])
+    subprocess.check_call(["python", "setup.py", "bdist_wheel", "--universal"])
+    #subprocess.check_call(["twine", "upload", "dist"])
+
+def package_install(args):
+    """Install a package.
+    """
+
+    name = args.install
+    dist_packages = os.path.join(simba_root(), "dist-packages")
+
+    print "Installing package", name, "into", dist_packages
+
+    # use pip to install the package into simbas' dist-packages
+    command = ["pip", "install", "--target=" + dist_packages, name]
+    print ' '.join(command)
+    subprocess.check_call(command)
+
+
+def subcommand_package(args):
+    """The package subcommand.
+    """
+
+    if args.create:
+        package_create(args)
+    elif args.release:
+        package_release(args)
+    elif args.install:
+        package_install(args)
+    
+
+def subcommand_application(args):
+    """The package subcommand.
+    """
+
+    if args.create:
+        name = args.create
+        author = getpass.getuser()
+        year = time.strftime("%Y")
+
+        # Create the package root directory
+        os.makedirs(name)
+
         files = [
             (APP_MAIN_C, os.path.join(name, "main.c")),
             (APP_MAKEFILE, os.path.join(name, "Makefile"))
         ]
 
         generate_files(files, name, year, author)
-
+    
         print "Application '{name}' created in a folder with the same name.".format(name=name)
     else:
-        print "Nothing to create. Aborting."
+        sys.stderr.write("Bad command.\n")
         sys.exit(1)
-
-
-def subcommand_install(args):
-    """The install subcommand.
-    """
-
-    dist_packages = os.path.join(simba_root(), "dist-packages")
-
-    print "Installing package", args.name, "into", dist_packages
-
-    # use pip to install the package into simbas' dist-packages
-    command = ["pip", "install", "--target=" + dist_packages, args.name]
-    print ' '.join(command)
-    subprocess.check_call(command)
-
-
-def subcommand_release(_):
-    """The release subcommand.
-    """
-
-    subprocess.check_call(["python", "setup.py", "sdist"])
-    subprocess.check_call(["python", "setup.py", "bdist_wheel", "--universal"])
-    #subprocess.check_call(["twine", "upload", "dist"])
 
 
 def subcommand_list(_):
@@ -3321,38 +3345,27 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     subparsers = parser.add_subparsers()
 
-    # The create subparser
-    description = "Crate a package or an application of given name."
-    create_parser = subparsers.add_parser("create",
-                                          description=description)
-    create_parser.add_argument("--package",
-                               action="store_true",
-                               help="Create a package.")
-    create_parser.add_argument("--application",
-                               action="store_true",
-                               help="Create an application.")
-    create_parser.add_argument("name",
-                               help="Name of the package or application.")
-    create_parser.set_defaults(func=subcommand_create)
-
-    # The install subparser
-    description = "Install given package."
-    install_parser = subparsers.add_parser("install",
+    # The package subparser
+    description = "Create, release and install packages."
+    package_parser = subparsers.add_parser("package",
                                            description=description)
-    install_parser.add_argument("name",
-                                help="Name of the package.")
-    install_parser.set_defaults(func=subcommand_install)
+    group = package_parser.add_mutually_exclusive_group(required=True)
+    group.add_argument("--create",
+                       help="Create a package with given name.")
+    group.add_argument("--release",
+                       action="store_true",
+                       help="Release the current package.")
+    group.add_argument("--install",
+                       help="Install a package.")
+    package_parser.set_defaults(func=subcommand_package)
 
-    # The release subparser
-    description = "Create a release of the current package."
-    release_parser = subparsers.add_parser("release",
-                                           description=description)
-    release_parser.set_defaults(func=subcommand_release)
-
-    # The list subparser
-    description = "List all found packages."
-    list_parser = subparsers.add_parser("list", description=description)
-    list_parser.set_defaults(func=subcommand_list)
+    # The application subparser
+    description = "Manage applications."
+    application_parser = subparsers.add_parser("application",
+                                               description=description)
+    application_parser.add_argument("--create",
+                                    help="Create an application with given name.")
+    application_parser.set_defaults(func=subcommand_application)
 
     parsed_args = parser.parse_args()
     parsed_args.func(parsed_args)
