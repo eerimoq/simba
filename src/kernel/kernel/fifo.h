@@ -31,44 +31,78 @@ struct fifo_t {
 };
 
 /**
- * Define the fifo functions for a given type.
+ * Define the fifo structure and functions for a given type.
+ *
+ * @rst
+ * .. code-block:: c
+ *
+ *    FIFO_DEFINE_TEMPLATE(int);
+ *
+ *    int foo()
+ *    {
+ *        struct fifo_int_t fifo;
+ *        int buf[4];
+ *        int value;
+ *
+ *        fifo_init_int(&fifo, buf, membersof(buf));
+ *
+ *        // Put a value into the fifo.
+ *        value = 10;
+ *        fifo_put_int(&fifo, &value);
+ *
+ *        // Get the value from the fifo.
+ *        fifo_get_int(&fifo, &value);
+ *
+ *        // Prints 'value = 10'.
+ *        std_printf(FSTR("value=  %d\r\n", value));
+ *    }
+ * @endrst
+ *
+ * @param[in] type Type of the elements in the defined fifo.
  */
-#define FIFO_FUNCTIONS_TEMPLATE(type)                                   \
-    static int fifo_init_ ## type(struct fifo_t *self_p,                \
+#define FIFO_DEFINE_TEMPLATE(type)                                      \
+    struct fifo_ ## type ## _t {                                        \
+        struct fifo_t fifo;                                             \
+        type *buf_p;                                                    \
+    };                                                                  \
+                                                                        \
+    static int fifo_init_ ## type(struct fifo_ ## type ## _t *self_p,   \
                                   type *buf_p,                          \
                                   int max)                              \
     {                                                                   \
         self_p->buf_p = buf_p;                                          \
                                                                         \
-        return (fifo_init(self_p, max));                                \
+        return (fifo_init(&self_p->fifo, max));                         \
     }                                                                   \
                                                                         \
-    static int fifo_put_ ## type(struct fifo_t *self_p, type *value_p)  \
+    static int fifo_put_ ## type(struct fifo_ ## type ## _t *self_p,    \
+                                 type *value_p)                         \
     {                                                                   \
         int index;                                                      \
                                                                         \
-        index = fifo_put(self_p);                                       \
+        index = fifo_put(&self_p->fifo);                                \
                                                                         \
         if (index == -1) {                                              \
             return (-1);                                                \
         }                                                               \
                                                                         \
-        ((type *)self_p->buf_p)[index] = *value_p;                      \
+        self_p->buf_p[index] = *value_p;                                \
                                                                         \
         return (0);                                                     \
     }                                                                   \
                                                                         \
-    static int fifo_get_ ## type(struct fifo_t *self_p, type *value_p)  \
+    static int fifo_get_ ## type(struct fifo_ ## type ## _t *self_p,    \
+                                 type *value_p)                         \
     {                                                                   \
         int index;                                                      \
                                                                         \
-        index = fifo_get(self_p);                                       \
+        index = fifo_get(&self_p->fifo);                                \
                                                                         \
         if (index == -1) {                                              \
             return (-1);                                                \
         }                                                               \
                                                                         \
-        *value_p = ((type *)self_p->buf_p)[index];                      \
+        *value_p = self_p->buf_p[index];                                \
                                                                         \
         return (0);                                                     \
     }

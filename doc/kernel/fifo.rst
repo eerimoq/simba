@@ -1,8 +1,8 @@
-:mod:`fifo` --- Abstract FIFO
-=============================
+:mod:`fifo` --- First In First Out queuing
+============================================
 
 .. module:: fifo
-   :synopsis: Abstract FIFO.
+   :synopsis: First In First Out queuing.
 
 Source code: `kernel/fifo.h`_
 

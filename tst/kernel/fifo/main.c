@@ -20,9 +20,8 @@
 
 #include "simba.h"
 
-/* Define the integer fifo functions; fifo_init_int(), fifo_put_int()
-   and fifo_get_int(). */
-FIFO_FUNCTIONS_TEMPLATE(int);
+/* Define the integer fifo. */
+FIFO_DEFINE_TEMPLATE(int);
 
 static int test_put_get(struct harness_t *harness)
 {
@@ -58,7 +57,7 @@ static int test_put_get(struct harness_t *harness)
 
 static int test_put_get_int(struct harness_t *harness)
 {
-    struct fifo_t fifo;
+    struct fifo_int_t fifo;
     int buf[4];
     int value;
 
