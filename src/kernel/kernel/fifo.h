@@ -26,14 +26,58 @@
 struct fifo_t {
     int rdpos;
     int wrpos;
+    void *buf_p;
     int max;
 };
 
 /**
- * Initialize given FIFO.
+ * Define the fifo functions for a given type.
+ */
+#define FIFO_FUNCTIONS_TEMPLATE(type)                                   \
+    static int fifo_init_ ## type(struct fifo_t *self_p,                \
+                                  type *buf_p,                          \
+                                  int max)                              \
+    {                                                                   \
+        self_p->buf_p = buf_p;                                          \
+                                                                        \
+        return (fifo_init(self_p, max));                                \
+    }                                                                   \
+                                                                        \
+    static int fifo_put_ ## type(struct fifo_t *self_p, type *value_p)  \
+    {                                                                   \
+        int index;                                                      \
+                                                                        \
+        index = fifo_put(self_p);                                       \
+                                                                        \
+        if (index == -1) {                                              \
+            return (-1);                                                \
+        }                                                               \
+                                                                        \
+        ((type *)self_p->buf_p)[index] = *value_p;                      \
+                                                                        \
+        return (0);                                                     \
+    }                                                                   \
+                                                                        \
+    static int fifo_get_ ## type(struct fifo_t *self_p, type *value_p)  \
+    {                                                                   \
+        int index;                                                      \
+                                                                        \
+        index = fifo_get(self_p);                                       \
+                                                                        \
+        if (index == -1) {                                              \
+            return (-1);                                                \
+        }                                                               \
+                                                                        \
+        *value_p = ((type *)self_p->buf_p)[index];                      \
+                                                                        \
+        return (0);                                                     \
+    }
+
+/**
+ * Initialize given fifo.
  *
- * @param[in,out] self_p FIFO to initialize.
- * @param[in] max Maximum number of elements in the FIFO.
+ * @param[in,out] self_p Fifo to initialize.
+ * @param[in] max Maximum number of elements in the fifo.
  *
  * @return zero(0) or negative error code.
  */
@@ -48,12 +92,12 @@ static inline int fifo_init(struct fifo_t *self_p,
 }
 
 /**
- * Put element to the FIFO.
+ * Put an element in the fifo.
  *
- * @param[in] self_p Initialized FIFO.
+ * @param[in] self_p Initialized fifo.
  *
- * @return Added element index in FIFO, or -1 if there are no free
- *         positions in the FIFO.
+ * @return Added element index in fifo, or -1 if there are no free
+ *         positions.
  */
 static inline int fifo_put(struct fifo_t *self_p)
 {
@@ -71,11 +115,12 @@ static inline int fifo_put(struct fifo_t *self_p)
 }
 
 /**
- * Get element to the FIFO.
+ * Get the next element from the fifo.
  *
- * @param[in] self_p Initialized FIFO.
+ * @param[in] self_p Initialized fifo.
  *
- * @return Fetched element index in FIFO , or -1 if the FIFO is empty.
+ * @return The fetched element index in fifo , or -1 if the fifo is
+ *         empty.
  */
 static inline int fifo_get(struct fifo_t *self_p)
 {
