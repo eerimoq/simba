@@ -4,7 +4,7 @@ About
 `Simba` is an operating system and build framework. It aims to make
 embedded programming easy and portable.
 
-Source code repository: http://github.com/eerimoq/simba
+Project homepage: http://github.com/eerimoq/simba
 
 Design goals
 ------------
@@ -35,6 +35,6 @@ Framework features
 Board support
 -------------
 
+* Arduino Mega
 * Ardunio Nano
-* Arduino Pro Mini (same as Arduino Nano)
 * Arduino Due
