@@ -88,6 +88,14 @@ static void terminate(void)
     sys_unlock();
 }
 
+/**
+ * Push a thread on the list of threads that are ready to be
+ * scheduled. The ready list is a linked list with the highest
+ * priority thread in the first element. The pushed thread is added
+ * _after_ any already pushed threads with the same priority.
+ *
+ * @param[in] thrd_p Thread to push to the ready list.
+ */
 static void scheduler_ready_push(struct thrd_t *thrd_p)
 {
     struct thrd_t *ready_p;
@@ -97,7 +105,7 @@ static void scheduler_ready_push(struct thrd_t *thrd_p)
 
     while (ready_p != NULL) {
         if (thrd_p->prio < ready_p->prio) {
-            /* Insert before 'ready' thrd. */
+            /* Insert before the 'ready_p' thrd. */
             if (ready_p->prev_p != NULL) {
                 ready_p->prev_p->next_p = thrd_p;
             } else {
@@ -127,6 +135,9 @@ static void scheduler_ready_push(struct thrd_t *thrd_p)
     thrd_p->next_p = NULL;
 }
 
+/**
+ * Pop the most important thread from the ready list.
+ */
 static struct thrd_t *scheduler_ready_pop(void)
 {
     struct thrd_t *thrd_p;
@@ -144,6 +155,13 @@ static struct thrd_t *scheduler_ready_pop(void)
     return (thrd_p);
 }
 
+/**
+ * Perform a rescheduling to let the currently most improtant thread
+ * to run.
+ *
+ * This function must be called with the system lock taken or from an
+ * isr (if the system is pre-emptive).
+ */
 static void thrd_reschedule(void)
 {
     struct thrd_t *in_p, *out_p;

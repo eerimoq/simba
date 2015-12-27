@@ -23,7 +23,7 @@
 
 #include "simba.h"
 
-/* Flags to timer_set(). */
+/* Flags to `timer_set()`. */
 #define TIMER_PERIODIC 0x1
 
 /* Timer. */
@@ -32,58 +32,49 @@ struct timer_t {
     sys_tick_t delta;
     sys_tick_t timeout;
     int flags;
-    void (*callback)(void *arg);
+    void (*callback)(void *arg_p);
     void *arg_p;
 };
 
 /**
- * Set a timer with given timeout and expiry callback. Timer timer
+ * Set a timer with given timeout and expiry callback. The timer
  * resolution directly depends on the system tick frequency. The
- * timeout is rounded up to closest system tick. This applies for both
- * single shot and periodic timers.
+ * timeout is rounded up to the closest system tick. This applies to
+ * both single shot and periodic timers.
  *
- * @param[in] self_p Timer reference to be started with given
- *                   timeout.
+ * @param[in] self_p Timer object to be started with given timeout.
  * @param[in] timeout_p Time until timer expiry.
- * @param[in] callback Expiry callback. Called from interrupt context.
- * @param[in] arg_p Callback argument.
+ * @param[in] callback Timer expiry callback. Called from interrupt
+ *                     context.
+ * @param[in] arg_p Timer expiry callback argument.
  * @param[in] flags Set TIMER_PERIODIC for periodic timer.
  *
  * @return zero(0) or negative error code.
  */
 int timer_set(struct timer_t *self_p,
               struct time_t *timeout_p,
-              void (*callback)(void *arg),
+              void (*callback)(void *arg_p),
               void *arg_p,
               int flags);
 
 /**
- * Cancel given timer.
+ * Cancel the timer.
  *
- * @param[in] self_p Timer reference.
+ * @param[in] self_p Timer object.
  *
  * @return zero(0) or negative error code.
  */
 int timer_cancel(struct timer_t *self_p);
 
 /**
- * Set a timer with given timeout and expiry callback. Timer timer
- * resolution directly depends on the system tick frequency. The
- * timeout is rounded up to closest system tick. This applies for both
- * single shot and periodic timers. This function may only be called
- * with the system lock taken (see `sys_lock()`).
+ * See `timer_set()` for a description.
  *
- * @param[in] self_p Timer reference to be started with given timeout.
- * @param[in] timeout_p Time until timer expiry.
- * @param[in] callback Expiry callback. Called from interrupt context.
- * @param[in] arg_p Callback argument.
- * @param[in] flags Set TIMER_PERIODIC for periodic timer.
- *
- * @return zero(0) or negative error code.
+ * This function may only be called with the system lock taken (see
+ * `sys_lock()`).
  */
 int timer_set_isr(struct timer_t *self_p,
                   struct time_t *timeout_p,
-                  void (*callback)(void *arg),
+                  void (*callback)(void *arg_p),
                   void *arg_p,
                   int flags);
 

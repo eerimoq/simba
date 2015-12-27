@@ -27,7 +27,7 @@
  * Compile-time declaration of a semaphore.
  *
  * @param[in] name Semaphore to initialize.
- * @param[in] count Semaphore count.
+ * @param[in] count Initial semaphore count.
  */
 #define SEM_INIT_DECL(name, _count)                             \
     struct sem_t name = { .count = _count, .head_p = NULL }
@@ -47,11 +47,11 @@ struct sem_t {
 int sem_module_init(void);
 
 /**
- * Initialize given semaphore. Count is the number of threads that can
- * hold the semaphore at the same time.
+ * Initialize given semaphore object. Count is the number of threads
+ * that can hold the semaphore at the same time.
  *
  * @param[in] self_p Semaphore to initialize.
- * @param[in] count Semaphore count.
+ * @param[in] count Initial semaphore count.
  *
  * @return zero(0) or negative error code.
  */
@@ -60,8 +60,8 @@ int sem_init(struct sem_t *self_p,
 
 /**
  * Get given semaphore. If the semaphore count is zero the calling
- * thread will be suspended until count is incremented by a sem_put()
- * call.
+ * thread will be suspended until count is incremented by a
+ * `sem_put()` call.
  *
  * @param[in] self_p Semaphore to get.
  * @param[in] timeout_p Timeout.
@@ -73,7 +73,7 @@ int sem_get(struct sem_t *self_p,
 
 /**
  * Add given count to given semaphore. Any blocked thread waiting for
- * this semaphore, in sem_get(), is unblocked. This continues until
+ * this semaphore, in `sem_get()`, is unblocked. This continues until
  * the semaphore count becomes zero or there are no threads in the
  * blocked list.
  *

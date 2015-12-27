@@ -44,7 +44,7 @@ int event_init(struct event_t *self_p);
  * set. When the function returns the given event mask has been
  * overwritten with the events that actually occured.
  *
- * @param[in] self_p Initialized event channel to read from.
+ * @param[in] self_p Event channel object.
  * @param[in, out] buf_p The mask of events to wait for. When the
  *                       function returns the mask contains the events
  *                       that have occured.
@@ -59,7 +59,7 @@ ssize_t event_read(struct event_t *self_p,
 /**
  * Write given event(s) to the event channel.
  *
- * @param[in] self_p Initialized event channel to write to.
+ * @param[in] self_p Event channel object.
  * @param[in] buf_p The mask of events to write.
  * @param[in] size Must always be sizeof(mask).
  *
@@ -73,7 +73,7 @@ ssize_t event_write(struct event_t *self_p,
  * Write given events to the event channel from isr or with the system
  * lock taken (see `sys_lock()`).
  *
- * @param[in] self_p Initialized event channel to write to.
+ * @param[in] self_p Event channel object.
  * @param[in] buf_p The mask of events to write.
  * @param[in] size Must always be sizeof(mask).
  *
@@ -86,7 +86,7 @@ ssize_t event_write_isr(struct event_t *self_p,
 /**
  * Checks if there are events active on the event channel.
  *
- * @param[in] self_p Initialized event channel.
+ * @param[in] self_p Event channel object.
  *
  * @return true(1) is at least one event is active, otherwise
  *         false(0).
