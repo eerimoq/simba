@@ -8,8 +8,7 @@ Source code: `boards/arduino_due/board.h`_
 
 ----------------------------------------------
 
-Pinout
-------
+**Pinout**
 
 .. image:: ../images/boards/arduino-due-pinout.png
    :width: 50%

@@ -8,8 +8,7 @@ Source code: `boards/arduino_nano/board.h`_
 
 ----------------------------------------------
 
-Pinout
-------
+**Pinout**
 
 .. image:: ../images/boards/arduino-nano-pinout.png
    :width: 50%

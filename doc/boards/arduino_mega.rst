@@ -8,8 +8,7 @@ Source code: `boards/arduino_mega/board.h`_
 
 ----------------------------------------------
 
-Pinout
-------
+**Pinout**
 
 .. image:: ../images/boards/arduino-mega-pinout.png
    :width: 50%
