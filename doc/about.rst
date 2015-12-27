@@ -35,6 +35,8 @@ Framework features
 Board support
 -------------
 
-* Arduino Mega
-* Ardunio Nano
-* Arduino Due
+* :doc:`Arduino Due <boards/arduino_due>`
+* :doc:`Arduino Mega <boards/arduino_mega>`
+* :doc:`Ardunio Nano <boards/arduino_nano>`
+* :doc:`Cygwin <boards/cygwin>`
+* :doc:`Linux <boards/linux>`
