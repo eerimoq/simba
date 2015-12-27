@@ -1,11 +1,11 @@
 boards
-=======
+======
 
 The boards supported by `Simba`.
 
 The boards on `github`_.
 
-Modules:
+Boards:
 
 .. toctree::
    :glob:   

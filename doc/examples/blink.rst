@@ -8,7 +8,13 @@ Boards: :doc:`Arduino Due <../boards/arduino_due>`, :doc:`Arduino Nano
 
 ------------------------------------------------
 
+About
+-----
+
 Turn a LED on and off periodically with a one second interval.
+
+Build and run
+-------------
 
 Build and run the application.
 

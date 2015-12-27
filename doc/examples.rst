@@ -8,6 +8,7 @@ The Examples on `github`_.
 Example applictions:
 
 .. toctree::
+   :maxdepth: 1
    :glob:   
 
    examples/*

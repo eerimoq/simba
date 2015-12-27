@@ -341,6 +341,17 @@ This is how to install a package in ``${SIMBA_ROOT}/dist-packages``.
 
    $ simba package --install dist/mypkg-0.1-py2.py3-none-any.whl
 
+Make variables
+--------------
+
+BOARD
+~~~~~
+
+``BOARD`` is used to select which board to build for. It can be
+assigned to one of the boards listed :doc:`here <boards>`. For
+example, the command to build for :doc:`Arduino Due
+<boards/arduino_due>` is ``make BOARD=arduino_due release``.
+
 Further reading
 ---------------
 
