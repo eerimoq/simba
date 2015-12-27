@@ -1,7 +1,7 @@
 About
 =====
 
-`Simba` is a operating system and build framework. It aims to make
+`Simba` is an operating system and build framework. It aims to make
 embedded programming easy and portable.
 
 Source code repository: http://github.com/eerimoq/simba
