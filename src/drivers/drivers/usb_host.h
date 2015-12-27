@@ -77,13 +77,13 @@ struct usb_host_device_driver_t {
 int usb_host_module_init(void);
 
 /**
- * Initialize driver object from given configuration.
+ * Initialize the USB host driver object from given configuration.
  *
  * @param[in] self_p Driver object to be initialized.
  * @param[in] dev_p USB device to use.
- * @param[in] devices_p Array of devices. One entry in this array is
-                        allocated for each device that is connected to
-                        the host.
+ * @param[in] devices_p An array of devices. One entry in this array
+ *                      is allocated for each USB device that is
+ *                      connected to the host.
  * @param[in] length Length of the devices array.
  *
  * @return zero(0) or negative error code.
@@ -94,7 +94,7 @@ int usb_host_init(struct usb_host_driver_t *self_p,
                   size_t length);
 
 /**
- * Starts the USB device using given driver object.
+ * Start the USB host device using given driver object.
  *
  * @param[in] self_p Initialized driver object.
  *
@@ -103,7 +103,7 @@ int usb_host_init(struct usb_host_driver_t *self_p,
 int usb_host_start(struct usb_host_driver_t *self_p);
 
 /**
- * Stops the USB device referenced by driver object.
+ * Stop the USB host device referenced by driver object.
  *
  * @param[in] self_p Initialized driver object.
  *
@@ -113,6 +113,11 @@ int usb_host_stop(struct usb_host_driver_t *self_p);
 
 /**
  * Add given class/vendor driver to the USB host driver.
+ *
+ * When a USB device is plugged in, its class and vendor information
+ * is read by the host. Those values are used to find the device
+ * driver for this particular device. If there is no driver, the
+ * device cannot be configured and will not work.
  *
  * @param[in] self_p Initialized driver object.
  * @param[in] driver_p USB device driver to add.
@@ -136,7 +141,8 @@ int usb_host_driver_remove(struct usb_host_driver_t *self_p,
 
 /**
  * Open given device in given driver. Open a device before reading and
- * writing data to it with usb_host_device_read() or usb_host_device_write().
+ * writing data to it with usb_host_device_read() or
+ * usb_host_device_write().
  *
  * @param[in] self_p Initialized driver.
  * @param[in] device Device to open.

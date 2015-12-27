@@ -11,5 +11,6 @@ source code instead of the generated documentation.
    kernel
    drivers
    slib
+   boards
 
 .. _github: https://github.com/eerimoq/simba/tree/master/src

@@ -24,8 +24,8 @@
 #if defined(ARCH_LINUX)
 #    include "drivers/exti.h"
 #    include "drivers/pin.h"
-#    include "drivers/adc.h"
 #    include "drivers/pwm.h"
+#    include "drivers/adc.h"
 #    include "drivers/spi.h"
 #    include "drivers/uart.h"
 #    include "drivers/can.h"
