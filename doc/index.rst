@@ -14,7 +14,7 @@ programming easy and portable.
 Project homepage: https://github.com/eerimoq/simba
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
    :titlesonly:
 
    about
