@@ -1,8 +1,8 @@
 About
 =====
 
-`Simba` is a microkernel and build framework. It aims to make embedded
-programming easy and portable.
+`Simba` is a operating system and build framework. It aims to make
+embedded programming easy and portable.
 
 Source code repository: http://github.com/eerimoq/simba
 
@@ -15,8 +15,8 @@ Design goals
 * No dynamic memory allocation.
 * Portability.
 
-Microkernel features
---------------------
+OS features
+-----------
 
 * Threads scheduled by a priority based cooperative scheduler.
 * Channels for inter-thread communication.
