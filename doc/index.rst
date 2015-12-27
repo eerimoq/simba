@@ -23,6 +23,7 @@ Project homepage: https://github.com/eerimoq/simba
    developer-guide
    sdk
    api-reference
+   examples
 
 Indices and tables
 ==================
