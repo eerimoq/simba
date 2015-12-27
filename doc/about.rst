@@ -18,8 +18,8 @@ Design goals
 Microkernel features
 --------------------
 
-* Threads, scheduled by a simple priority based scheduler.
-* Channels, for inter-thread communication.
+* Threads scheduled by a priority based cooperative scheduler.
+* Channels for inter-thread communication.
 * Timers.
 * Counting semaphores.
 * Device drivers (spi, uart, ...)
