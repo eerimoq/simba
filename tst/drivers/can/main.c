@@ -51,6 +51,16 @@ static char can1_rx_buf[256];
 struct can_driver_t can0;
 struct can_driver_t can1;
 
+extern long long COUNTER(can_rx_channel_overflow);
+
+static THRD_STACK(rx_thrd_stack, 1024);
+
+/**
+ * Initialize and start the two CAN controllers, CAN0 and CAN1, with
+ * given baudrate.
+ *
+ * @apram[in] speed Baudrate to use.
+ */
 static int start(uint32_t speed)
 {
     BTASSERT(can_init(&can0,
@@ -70,6 +80,9 @@ static int start(uint32_t speed)
     return (0);
 }
 
+/**
+ * Stop the two CAN controllers, CAN0 and CAN1.
+ */
 static int stop()
 {
     BTASSERT(can_stop(&can0) == 0);
@@ -78,6 +91,46 @@ static int stop()
     return (0);
 }
 
+/**
+ * Thread that receives CAN frames on controller CAN1 and verifies its
+ * content.
+ *
+ * This thread is used by the test `test_max_throughput()`.
+ */
+static void *rx_thrd(void *arg_p)
+{
+    struct can_frame_t frame;
+    int id = 0;
+    int i = 0;
+
+    thrd_set_name("rx_thrd");
+
+    while (1) {
+        BTASSERT(can_read(&can1, &frame, sizeof(frame)) == sizeof(frame));
+        BTASSERT(frame.id == id, FSTR(" i = %d, frame.id = %d, id = %d\r\n"), i, frame.id, id);
+        i++;
+
+        if (i == 10000) {
+            i = 0;
+            id = 0;
+        } else {
+            id++;
+            id %= 0x800;
+        }
+    }
+
+    return (NULL);
+}
+
+/**
+ * Ping-pong test. Starts the CAN controllers with given speed, sends
+ * a few CAN frames and then stops the CAN controllers.
+ *
+ * @param[in] speed Badrate to use.
+ *
+ * @param[in] extended_id Use extendend CAN frame id if true(1),
+ *                        otherwise use standard CAN id.
+ */
 static int test_ping_pong(uint32_t speed, int extended_id)
 {
     struct can_frame_t frame;
@@ -125,6 +178,9 @@ static int test_ping_pong(uint32_t speed, int extended_id)
     return (0);
 }
 
+/**
+ * Ping-pong tests with differnet configurations.
+ */
 static int test_ping_pong_250k(struct harness_t *harness_p)
 {
     return (test_ping_pong(CAN_SPEED_250KBPS, 0));
@@ -145,35 +201,9 @@ static int test_ping_pong_1000k_extended_id(struct harness_t *harness_p)
     return (test_ping_pong(CAN_SPEED_1000KBPS, 1));
 }
 
-extern long long COUNTER(can_rx_channel_overflow);
-
-static THRD_STACK(rx_thrd_stack, 1024);
-
-static void *rx_thrd(void *arg_p)
-{
-    struct can_frame_t frame;
-    int id = 0;
-    int i = 0;
-
-    thrd_set_name("rx_thrd");
-
-    while (1) {
-        BTASSERT(can_read(&can1, &frame, sizeof(frame)) == sizeof(frame));
-        BTASSERT(frame.id == id, FSTR(" i = %d, frame.id = %d, id = %d\r\n"), i, frame.id, id);
-        i++;
-
-        if (i == 10000) {
-            i = 0;
-            id = 0;
-        } else {
-            id++;
-            id %= 0x800;
-        }
-    }
-
-    return (NULL);
-}
-
+/**
+ * Test the maximum throughput on the CAN bus.
+ */
 static int test_max_throughput(struct harness_t *harness_p)
 {
     int i, j, k, id;
