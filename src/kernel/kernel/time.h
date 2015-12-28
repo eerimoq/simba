@@ -29,12 +29,19 @@ struct time_t {
 };
 
 struct date_t {
+    /** Second. 0-59 */
     int second;
+    /** Minute. 0-59 */
     int minute;
+    /** Hour. 0-23 */
     int hour;
+    /** Weekday. 1-7 */
     int day;
+    /** Day in month. 1-31 */
     int date;
+    /** Month. 1-12 */
     int month;
+    /** Year. 1970- */
     int year;
 };
 
@@ -65,5 +72,16 @@ int time_set(struct time_t *new_p);
  * @return void
  */
 void time_sleep(int usec);
+
+/**
+ * Convert given time to a date.
+ *
+ * @param[out] date_p Converted time.
+ * @param[in] time_p Time to convert.
+ *
+ * @return zero(0) or negative error code.
+ */
+int time_time_to_date(struct date_t *date_p,
+                      struct time_t *time_p);
 
 #endif
