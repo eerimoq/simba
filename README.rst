@@ -1,4 +1,5 @@
 |buildstatus|_
+|gitter|_
 
 Simba
 =====
@@ -14,3 +15,6 @@ improve Simba!
 
 .. |buildstatus| image:: https://travis-ci.org/eerimoq/simba.svg
 .. _buildstatus: https://travis-ci.org/eerimoq/simba
+
+.. |gitter| image:: https://badges.gitter.im/eerimoq/simba.svg
+.. _gitter: https://gitter.im/eerimoq/simba
