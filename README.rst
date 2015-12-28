@@ -1,5 +1,5 @@
-|buildstatus|_
 |gitter|_
+|buildstatus|_
 
 Simba
 =====
