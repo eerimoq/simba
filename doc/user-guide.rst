@@ -250,7 +250,7 @@ symbols.
 Module
 ~~~~~~
 
-A module is normally a header and a source file. 
+A module is normally a header and a source file.
 
 simba
 -----
@@ -261,8 +261,8 @@ applications.
 The main purpose of `simba` is to distribute software in the `Simba`
 community, just like `pip` for Python.
 
-How to create an application
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+How to create an application skeletorn
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The code block below shows how to create an new application using
 `simba`. After the application has been created, it is built and
@@ -270,12 +270,16 @@ executed.
 
 .. code-block:: text
 
-   $ simba application --create myapp
-   $ tree myapp
-   myapp
+   $ mkdir myapp
+   $ cd myapp
+   $ simba application init
+   Application name [foo]: <Enter>
+   Author [erik]:  <Enter>
+   Version [0.0.1]: <Enter>
+   $ tree .
+   .
    ├── main.c
    └── Makefile
-   $ cd myapp
    $ make -s run
 
 How to create a package
@@ -287,27 +291,42 @@ is built and executed.
 
 .. code-block:: text
 
-   $ simba package --create mypkg
-   $ tree mypkg
-   mypkg
-   ├── mypkg
+   $ mkdir mypkg
+   $ cd mkpkg
+   $ simba package init
+   Package name [foo]: <Enter>
+   Author [erik]:  <Enter>
+   Version [0.0.1]: <Enter>
+   $ tree
+   .
+   ├── mkpkg
    │   ├── doc
+   │   │   ├── about.rst
+   │   │   ├── api-reference.rst
+   │   │   ├── conf.py
+   │   │   ├── doxygen.cfg
+   │   │   ├── index.rst
+   │   │   ├── Makefile
+   │   │   ├── mkpkg
+   │   │   │   └── hello.rst
+   │   │   ├── requirements.txt
+   │   │   └── sphinx.mk
    │   ├── __init__.py
    │   ├── src
-   │   │   ├── example.c
-   │   │   ├── mypkg
-   │   │   │   └── example.h
-   │   │   ├── mypkg.h
-   │   │   └── mypkg.mk
+   │   │   ├── hello.c
+   │   │   ├── mkpkg
+   │   │   │   └── hello.h
+   │   │   ├── mkpkg.h
+   │   │   └── mkpkg.mk
    │   └── tst
-   │       └── example
+   │       └── hello
    │           ├── main.c
    │           └── Makefile
    └── setup.py
-   $ cd mypkg/mypkg/tst/hello
+   $ cd mypkg/tst/hello
    $ make -s test
 
-In the output from ``tree mypkg`` below, two files may catch your
+In the output from ``tree`` below, two files may catch your
 eyes; setup.py and __init__.py. Those are Python files and are often
 seen in Python packages. They are present in a `Simba` package because
 `Simba` uses the Python tool `pip` to release and install
@@ -325,12 +344,11 @@ is input to the installation command, described in the next section.
 .. code-block:: text
 
    $ cd ../../..
-   $ simba package --release
+   $ simba package release
    $ tree dist
    dist
    ├── mypkg-0.1-py2.py3-none-any.whl
    └── mypkg-0.1.tar.gz
-   $
 
 How to install a package
 ~~~~~~~~~~~~~~~~~~~~~~~~
@@ -339,7 +357,7 @@ This is how to install a package in ``${SIMBA_ROOT}/dist-packages``.
 
 .. code-block:: text
 
-   $ simba package --install dist/mypkg-0.1-py2.py3-none-any.whl
+   $ simba package install dist/mypkg-0.1-py2.py3-none-any.whl
 
 Make variables
 --------------
