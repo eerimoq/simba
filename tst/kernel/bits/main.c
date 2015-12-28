@@ -48,12 +48,12 @@ static int test_insert(struct harness_t *harness)
     size = 5;
     BTASSERT(bits_insert_32(dst, pos, size, src) == 0xffe9ffff);
  
-    /* Insert all. */
+    /* Insert the maximum 31 bits. */
     dst = 0xffffffff;
     src = 0x12345678;
     pos = 0;
-    size = 32;
-    BTASSERT(bits_insert_32(dst, pos, size, src) == 0x12345678);
+    size = 31;
+    BTASSERT(bits_insert_32(dst, pos, size, src) == 0x92345678);
 
     return (0);
 }

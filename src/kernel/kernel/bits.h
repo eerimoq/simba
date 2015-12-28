@@ -31,8 +31,8 @@
  *
  * @param[in] dst Value to insert into.
  * @param[in] position Bit position, counted from LSB, in `dst` where
- *                     to insert `src`.
- * @param[in] size Number of bits to insert.
+ *                     to insert `src`, 0-31.
+ * @param[in] size Number of bits to insert. 0-31.
  * @param[in] src Value to insert into dst.
  *
  * @return The resulting value of the insertion.
