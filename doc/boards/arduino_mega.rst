@@ -6,13 +6,22 @@
 
 Source code: `boards/arduino_mega/board.h`_
 
-----------------------------------------------
+Reference
+---------
 
-**Pinout**
+Homepage
+~~~~~~~~
+
+https://www.arduino.cc/en/Main/ArduinoBoardMega
+
+Pinout
+~~~~~~
 
 .. image:: ../images/boards/arduino-mega-pinout.png
    :width: 50%
    :target: ../_images/arduino-mega-pinout.png
+
+----------------------------------------------
 
 .. doxygenfile:: boards/arduino_mega/board.h
    :project: simba

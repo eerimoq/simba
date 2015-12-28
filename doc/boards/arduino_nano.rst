@@ -6,13 +6,22 @@
 
 Source code: `boards/arduino_nano/board.h`_
 
-----------------------------------------------
+Reference
+---------
 
-**Pinout**
+Homepage
+~~~~~~~~
+
+https://www.arduino.cc/en/Main/ArduinoBoardNano
+
+Pinout
+~~~~~~
 
 .. image:: ../images/boards/arduino-nano-pinout.png
    :width: 50%
    :target: ../_images/arduino-nano-pinout.png
+
+----------------------------------------------
 
 .. doxygenfile:: boards/arduino_nano/board.h
    :project: simba
