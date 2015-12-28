@@ -4,9 +4,9 @@
 #
 
 if [ "${OSTYPE}" == "linux-gnu" ]; then
-    source setup_linux.sh
+    source environment/setup_linux.sh
 elif [ "${OSTYPE}" == "cygwin" ]; then
-    source setup_cygwin.sh
+    source environment/setup_cygwin.sh
 else
     echo "\$\{OSTYPE\} must be linux-gnu or cygwin."
     exit 1

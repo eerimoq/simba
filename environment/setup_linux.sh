@@ -1,5 +1,5 @@
 #
-# Setup script for Linux.
+# Setup script for Linux. Must be sourced from the simba root folder.
 #
 
 # Add the simba bin folder to the path

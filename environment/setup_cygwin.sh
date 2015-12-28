@@ -1,5 +1,6 @@
 #
-# Setup script for Cygwin on Windows.
+# Setup script for Cygwin on Windows. Must be sourced from the simba
+# root folder.
 #
 
 # Add the simba bin folder to the path
