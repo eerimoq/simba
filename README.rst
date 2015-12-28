@@ -14,3 +14,8 @@ improve Simba!
 
 .. |buildstatus| image:: https://travis-ci.org/eerimoq/simba.svg
 .. _buildstatus: https://travis-ci.org/eerimoq/simba
+
+
+.. image:: https://badges.gitter.im/eerimoq/simba.svg
+   :alt: Join the chat at https://gitter.im/eerimoq/simba
+   :target: https://gitter.im/eerimoq/simba?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge
