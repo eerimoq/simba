@@ -29,14 +29,29 @@
 #    define SYS_TICK_FREQUENCY 100
 #endif
 
-/* Convertion macro for time to system ticks. */
-#define T2ST(time)                                                      \
-    (((time)->seconds * SYS_TICK_FREQUENCY) +                           \
-     (((time)->nanoseconds / 1000) * SYS_TICK_FREQUENCY) / 1000000)
+typedef uint64_t sys_tick_t;
+
+/**
+ * Convertion from the time struct to system ticks.
+ */
+static inline sys_tick_t t2st(struct time_t *time_p)
+{
+    return (((uint64_t)(time_p)->seconds * SYS_TICK_FREQUENCY) +
+            DIV_CEIL((DIV_CEIL((time_p)->nanoseconds, 1000)
+                      * SYS_TICK_FREQUENCY), 1000000));
+}
+
+/**
+ * Convertion from system ticks to the time struct.
+ */
+static inline void st2t(sys_tick_t tick, struct time_t *time_p)
+{
+    time_p->seconds = (tick / SYS_TICK_FREQUENCY);
+    time_p->nanoseconds = (((1000000 * (tick % SYS_TICK_FREQUENCY))
+                            / SYS_TICK_FREQUENCY) * 1000);
+}
 
 #define VERSION_STR STRINGIFY(VERSION)
-
-typedef unsigned long sys_tick_t;
 
 struct sys_t {
     sys_tick_t tick;

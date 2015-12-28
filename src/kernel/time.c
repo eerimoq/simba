@@ -22,14 +22,56 @@
 
 #include "time_port.i"
 
+struct state_t {
+    uint64_t tick; /* Current tick. 64 bits so it does not wrap around
+                      during the system's uptime. */
+    struct time_t now;
+};
+
+static struct state_t state = {
+    .tick = 0,
+    .now = { .seconds = 0, .nanoseconds = 0 }
+};
+
+static inline void tick_to_time(uint64_t tick,
+                                struct time_t *time_p)
+{
+    time_p->seconds = (tick / SYS_TICK_FREQUENCY);
+    time_p->nanoseconds =
+        ((1000000000ULL * (tick % SYS_TICK_FREQUENCY))
+         / SYS_TICK_FREQUENCY);
+}
+
+/**
+ * Update the current time every system tick.
+ */
+void time_tick(void)
+{
+    state.tick += 1;
+    tick_to_time(state.tick, &state.now);
+}
+
 int time_get(struct time_t *now_p)
 {
-    return (time_port_get(now_p));
+    sys_lock();
+    /* ToDo: Add the time since latest system tick by reading the
+       system tick counter register. */
+    *now_p = state.now;
+    sys_unlock();
+
+    return (0);
 }
 
 int time_set(struct time_t *new_p)
 {
-    return (time_port_set(new_p));
+    sys_lock();
+    state.tick = ((new_p->seconds * SYS_TICK_FREQUENCY) +
+                  DIV_CEIL((DIV_CEIL(new_p->nanoseconds, 1000)
+                            * SYS_TICK_FREQUENCY), 1000000));
+    tick_to_time(state.tick, &state.now);
+    sys_unlock();
+
+    return (0);
 }
 
 void time_sleep(int us)

@@ -22,18 +22,6 @@
 
 #define I_CPU (F_CPU / 1000000L)
 
-static int time_port_get(struct time_t *now)
-{
-    now->seconds = sys.tick;
-
-    return (0);
-}
-
-static int time_port_set(struct time_t *now)
-{
-    return (-1);
-}
-
 static void time_port_sleep(int us)
 {
     _delay_loop_2((us * I_CPU) / 4);

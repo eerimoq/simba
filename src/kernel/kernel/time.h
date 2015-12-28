@@ -39,7 +39,8 @@ struct date_t {
 };
 
 /**
- * Get current time.
+ * Get current time in seconds and nanoseconds. The resolution of the
+ * time is implementation specific.
  *
  * @param[out] now_p Current time.
  *
@@ -48,7 +49,7 @@ struct date_t {
 int time_get(struct time_t *now_p);
 
 /**
- * Set current time.
+ * Set current time in seconds and nanoseconds.
  *
  * @param[in] new_p New current time.
  *

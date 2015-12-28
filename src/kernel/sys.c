@@ -32,12 +32,14 @@ struct sys_t sys = {
     }
 };
 
+extern void time_tick(void);
 extern void timer_tick(void);
 extern void thrd_tick(void);
 extern const FAR char sysinfo[];
 
 static void sys_tick(void) {
     sys.tick++;
+    time_tick();
     timer_tick();
     thrd_tick();
 }

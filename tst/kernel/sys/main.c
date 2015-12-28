@@ -20,6 +20,12 @@
 
 #include "simba.h"
 
+struct test_time_t {
+    struct time_t time_in;
+    sys_tick_t tick;
+    struct time_t time_out;
+};
+
 static void on_fatal(int error)
 {
     std_printf(FSTR("on_fatal: error: %d\r\n"), error);
@@ -40,12 +46,90 @@ int test_info(struct harness_t *harness_p)
     return (0);
 }
 
+int test_time(struct harness_t *harness_p)
+{
+    int i;
+    struct time_t time;
+    sys_tick_t tick;
+
+    static struct test_time_t test_times[] = {
+        {
+            .time_in = { .seconds = 1, .nanoseconds = 0 },
+            .tick = 100,
+            .time_out = { .seconds = 1, .nanoseconds = 0 }
+        },
+
+        {
+            .time_in = { .seconds = 2, .nanoseconds = 0 },
+            .tick = 200,
+            .time_out = { .seconds = 2, .nanoseconds = 0 }
+        },
+
+        {
+            .time_in = { .seconds = 2, .nanoseconds = 10000000 },
+            .tick = 201,
+            .time_out = { .seconds = 2, .nanoseconds = 10000000 }
+        },
+        
+        /* nanoseconds rounded up. */
+        {
+            .time_in = { .seconds = 0, .nanoseconds = 15000000 },
+            .tick = 2,
+            .time_out = { .seconds = 0, .nanoseconds = 20000000 }
+        },
+        
+        /* All zeroes. */
+        {
+            .time_in = { .seconds = 0, .nanoseconds = 0 },
+            .tick = 0,
+            .time_out = { .seconds = 0, .nanoseconds = 0 }
+        },
+        
+        /* All zeroes. */
+        {
+            .time_in = { .seconds = 4325, .nanoseconds = 735000000 },
+            .tick = 432574,
+            .time_out = { .seconds = 4325, .nanoseconds = 740000000 }
+        },
+        
+        /* Max time. */
+        {
+            .time_in = { .seconds = 4294967295, .nanoseconds = 0 },
+            .tick = 429496729500,
+            .time_out = { .seconds = 4294967295, .nanoseconds = 0 }
+        },
+                
+        /* Max tick. */
+        {
+            .time_in = { .seconds = 42949672, .nanoseconds = 949999999 },
+            .tick = 4294967295,
+            .time_out = { .seconds = 42949672, .nanoseconds = 950000000 }
+        }
+    };
+
+    std_printf(FSTR("SYS_TICK_FREQUENCY = %d\r\n"), SYS_TICK_FREQUENCY);
+
+    for (i = 0; i < membersof(test_times); i++) {
+        /* Convertion from the time struct to ticks. */
+        tick = t2st(&test_times[i].time_in);
+        BTASSERT(tick == test_times[i].tick);
+        
+        /* Convertion from ticks to the time struct. */
+        st2t(tick, &time);
+        BTASSERT(time.seconds == test_times[i].time_out.seconds)
+        BTASSERT(time.nanoseconds == test_times[i].time_out.nanoseconds)
+    }
+
+    return (0);
+}
+
 int main()
 {
     struct harness_t harness;
     struct harness_testcase_t harness_testcases[] = {
         { test_set_on_fatal_callback, "test_set_on_fatal_callback" },
         { test_info, "test_info" },
+        { test_time, "test_time" },
         { NULL, NULL }
     };
 

@@ -94,7 +94,7 @@ static void terminate(void)
  * priority thread in the first element. The pushed thread is added
  * _after_ any already pushed threads with the same priority.
  *
- * @param[in] thrd_p Thread to push to the ready list.
+ * @param[in] thrd_p Thread to push to the the ready list.
  */
 static void scheduler_ready_push(struct thrd_t *thrd_p)
 {

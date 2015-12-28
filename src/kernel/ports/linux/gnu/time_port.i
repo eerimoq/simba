@@ -20,22 +20,6 @@
 
 #include <pthread.h>
 
-static int time_port_get(struct time_t *now)
-{
-    struct timespec _now;
-
-    clock_gettime(CLOCK_REALTIME, &_now);
-    now->seconds = _now.tv_sec;
-    now->nanoseconds = _now.tv_nsec;
-
-    return (0);
-}
-
-static int time_port_set(struct time_t *new)
-{
-    return (-1);
-}
-
 static void time_port_sleep(int us)
 {
 }

@@ -148,7 +148,7 @@ int timer_set_isr(struct timer_t *self_p,
                   int flags)
 {
     /* Initiate timer. */
-    self_p->timeout = T2ST(timeout_p);
+    self_p->timeout = t2st(timeout_p);
 
     if (self_p->timeout == 0) {
         self_p->timeout = 1;

@@ -1,9 +1,9 @@
 /**
- * @file arm/gnu/time_port.i
+ * @file config.h
  * @version 1.0
  *
  * @section License
- * Copyright (C) 2015, Erik Moqvist
+ * Copyright (C) 2014-2015, Erik Moqvist
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -18,6 +18,10 @@
  * This file is part of the Simba project.
  */
 
-static void time_port_sleep(int us)
-{
-}
+#ifndef __CONFIG_H__
+#define __CONFIG_H__
+
+/* Force 10 ms tick. */
+#define SYS_TICK_FREQUENCY 100
+
+#endif
