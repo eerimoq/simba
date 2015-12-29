@@ -58,6 +58,11 @@ struct monitor_t {
     int print;
 };
 
+struct get_by_name_t {
+    const char *name_p;
+    struct thrd_t *thrd_p;
+};
+
 static volatile struct thrd_scheduler_t scheduler = {
     .current_p = NULL,
     .ready_p = NULL
@@ -216,11 +221,53 @@ static int thrd_get_used_stack(struct thrd_t *thrd_p)
 
 #endif
 
-static void thrd_list_thrd(struct thrd_t *thrd_p, chan_t *chout_p)
+static int iterate_thread_children(struct thrd_t *thrd_p,
+                                   int (*callback)(void *arg_p,
+                                                   struct thrd_t *thrd_p),
+                                   void *arg_p)
 {
+    int res = 0;
     struct thrd_parent_t *child_p;
     struct list_sl_iterator_t iter;
+    
+    /* Call the callback. */
+    res = callback(arg_p, thrd_p);
 
+    if (res != 0) {
+        return (res);
+    }
+
+    /* Iterate over all children. */
+    LIST_SL_ITERATOR_INIT(&iter, &thrd_p->children);
+
+    while (res == 0) {
+        LIST_SL_ITERATOR_NEXT(&iter, &child_p);
+
+        if (child_p == NULL) {
+            break;
+        }
+
+        res = iterate_thread_children(container_of(child_p, struct thrd_t, parent),
+                                      callback,
+                                      arg_p);
+    }
+
+    return (res);
+}
+
+/**
+ * Recursively call given callback for all threads, starting with the main thread.
+ */
+static int iterate_threads(int (*callback)(void *arg_p,
+                                           struct thrd_t *thrd_p),
+                           void *arg_p)
+{
+    return (iterate_thread_children(&main_thrd, callback, arg_p));
+}
+
+static int cmd_list_thrd_print(chan_t *chout_p,
+                               struct thrd_t *thrd_p)
+{
     std_fprintf(chout_p,
                 FSTR("%16s %16s %12s %5d %4u%%"
 #if !defined(NPROFILESTACK)
@@ -238,69 +285,50 @@ static void thrd_list_thrd(struct thrd_t *thrd_p, chan_t *chout_p)
 #endif
                 thrd_p->log_mask);
 
-    /* Children. */
-    LIST_SL_ITERATOR_INIT(&iter, &thrd_p->children);
-
-    while (1) {
-        LIST_SL_ITERATOR_NEXT(&iter, &child_p);
-
-        if (child_p == NULL) {
-            break;
-        }
-
-        thrd_list_thrd(container_of(child_p, struct thrd_t, parent), chout_p);
-    }
+    return (0);
 }
 
 int thrd_cmd_list(int argc,
                   const char *argv[],
-                  chan_t *chout,
-                  chan_t *chin,
-                  char *name)
+                  chan_t *chout_p,
+                  chan_t *chin_p,
+                  char *name_p)
 {
-    std_fprintf(chout,
+    std_fprintf(chout_p,
                 FSTR("            NAME           PARENT        STATE  PRIO   CPU"
 #if !defined(NPROFILESTACK)
                      "  MAX-STACK-USAGE"
 #endif
                      "  LOGMASK\r\n"));
-    thrd_list_thrd(&main_thrd, chout);
+
+    return (iterate_threads(cmd_list_thrd_print, chout_p));
+}
+
+static int get_by_name(void *arg_p,
+                       struct thrd_t *thrd_p)
+{
+    struct get_by_name_t *data_p = arg_p;
+
+    /* Thread found? */
+    if (strcmp(thrd_p->name_p, data_p->name_p) == 0) {
+        data_p->thrd_p = thrd_p;
+
+        return (1);
+    }
 
     return (0);
 }
 
-static struct thrd_t *get_by_name(struct thrd_t *thrd_p,
-                                  const char *name_p)
+static struct thrd_t *thrd_get_by_name(const char *name_p)
 {
-    struct thrd_parent_t *child_p;
-    struct list_sl_iterator_t iter;
+    struct get_by_name_t data;
 
-    /* Thread found? */
-    if (strcmp(thrd_p->name_p, name_p) == 0) {
-        return (thrd_p);
-    }
+    data.name_p = name_p;
+    data.thrd_p = NULL;
 
-    /* Iterate over children. */
-    LIST_SL_ITERATOR_INIT(&iter, &thrd_p->children);
+    iterate_threads(get_by_name, &data);
 
-    thrd_p = NULL;
-
-    while (thrd_p == NULL) {
-        LIST_SL_ITERATOR_NEXT(&iter, &child_p);
-
-        if (child_p == NULL) {
-            break;
-        }
-
-        thrd_p = get_by_name(container_of(child_p, struct thrd_t, parent), name_p);
-    }
-
-    return (thrd_p);
-}
-
-static struct thrd_t *thrd_get_by_name(const char *name)
-{
-    return (get_by_name(&main_thrd, name));
+    return (data.thrd_p);
 }
 
 int thrd_cmd_set_log_mask(int argc,
@@ -398,32 +426,23 @@ static void *idle_thrd(void *arg_p)
     return (NULL);
 }
 
-static void update_cpu_usage(struct thrd_t *thrd_p,
-                             int print)
+/**
+ * Called for each thread when iterating over all threads.
+ */
+static int update_cpu_usage(void *arg_p,
+                            struct thrd_t *thrd_p)
 {
-    struct thrd_parent_t *child_p;
-    struct list_sl_iterator_t iter;
+    int *print_p = arg_p;
 
+    /* Get and reset the thread cpu usage. */
     thrd_p->cpu.usage = thrd_port_cpu_usage_get(thrd_p);
     thrd_port_cpu_usage_reset(thrd_p);
 
-    if (print == 1) {
+    if (*print_p == 1) {
         std_printf(FSTR("%20s %10f%%\r\n"), thrd_p->name_p, thrd_p->cpu.usage);
     }
 
-    /* Children. */
-    LIST_SL_ITERATOR_INIT(&iter, &thrd_p->children);
-
-    while (1) {
-        LIST_SL_ITERATOR_NEXT(&iter, &child_p);
-
-        if (child_p == NULL) {
-            break;
-        }
-
-        update_cpu_usage(container_of(child_p, struct thrd_t, parent),
-                         print);
-    }
+    return (0);
 }
 
 /**
@@ -440,15 +459,17 @@ static void *monitor_thrd(void *arg_p)
         thrd_usleep(monitor.period_us);
         print = monitor.print;
 
+        /* Get and reset the interrupt CPU usage. */
+        irq_usage = sys_interrupt_cpu_usage_get();
+        sys_interrupt_cpu_usage_reset();
+
         if (print == 1) {
-            irq_usage = sys_interrupt_cpu_usage_get();
-            sys_interrupt_cpu_usage_reset();
             std_printf(FSTR("\r\n                NAME         CPU\r\n"
                             "                 irq %10f%%\r\n"),
                        irq_usage);
         }
 
-        update_cpu_usage(&main_thrd, print);
+        iterate_threads(update_cpu_usage, &print);
     }
 
     return (NULL);
