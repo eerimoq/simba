@@ -1,8 +1,8 @@
 About
 =====
 
-`Simba` is an operating system and build framework. It aims to make
-embedded programming easy and portable.
+`Simba` is an RTOS and build framework. It aims to make embedded
+programming easy and portable.
 
 Project homepage: http://github.com/eerimoq/simba
 
