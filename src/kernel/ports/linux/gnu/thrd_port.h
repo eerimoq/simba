@@ -29,7 +29,7 @@ struct thrd_port_t {
     pthread_t thrd;
     pthread_mutex_t mutex;
     pthread_cond_t cond;
-    void *(*entry)(void *arg);
+    void *(*main)(void *arg);
     void *arg;
 };
 

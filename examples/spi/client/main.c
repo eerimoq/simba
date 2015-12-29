@@ -96,7 +96,7 @@ int main()
 
     shell_args.chin_p = &uart.chin;
     shell_args.chout_p = &uart.chout;
-    thrd_spawn(shell_entry,
+    thrd_spawn(shell_main,
                &shell_args,
                0,
                shell_stack,

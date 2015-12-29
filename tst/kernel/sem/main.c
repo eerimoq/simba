@@ -25,7 +25,7 @@ static struct sem_t sem2;
 
 static THRD_STACK(t0_stack, 224);
 static THRD_STACK(t1_stack, 224);
-static void *entry(void *arg_p)
+static void *sem_main(void *arg_p)
 {
     sem_put(&sem2, 1);
     sem_get(&sem, NULL);
@@ -50,12 +50,12 @@ static int test_all(struct harness_t *harness_p)
     BTASSERT(sem_get(&sem, &timeout) == -ETIMEDOUT);
 
     /* Create two thrds with higher priority than this thrd. */
-    thrd_spawn(entry,
+    thrd_spawn(sem_main,
                NULL,
                -10,
                t0_stack,
                sizeof(t0_stack));
-    thrd_spawn(entry,
+    thrd_spawn(sem_main,
                NULL,
                -10,
                t1_stack,

@@ -21,7 +21,7 @@
 #include "simba.h"
 
 static THRD_STACK(t0_stack, 512);
-static void *t0_entry(void *arg_p)
+static void *t0_main(void *arg_p)
 {
     int b, c[4];
     struct queue_t *queue_p = arg_p;
@@ -79,7 +79,7 @@ static int test_init(struct harness_t *harness)
     BTASSERT(queue_init(&queue[0], NULL, 0) == 0);
     BTASSERT(queue_init(&queue[1], NULL, 0) == 0);
     
-    BTASSERT((t0 = thrd_spawn(t0_entry,
+    BTASSERT((t0 = thrd_spawn(t0_main,
                               queue,
                               1,
                               t0_stack,

@@ -112,7 +112,7 @@ int main()
 
     shell_args.chin_p = &uart.chin;
     shell_args.chout_p = &uart.chout;
-    shell_entry(&shell_args);
+    shell_main(&shell_args);
 
     return (0);
 }

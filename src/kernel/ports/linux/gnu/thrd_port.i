@@ -33,7 +33,7 @@ static struct thrd_port_idle_t idle = {
     .cond = PTHREAD_COND_INITIALIZER
 };
 
-static void *thrd_port_entry(void *arg)
+static void *thrd_port_main(void *arg)
 {
     struct thrd_port_t *port;
 
@@ -41,7 +41,7 @@ static void *thrd_port_entry(void *arg)
     pthread_cond_wait(&port->cond, &port->mutex);
     pthread_mutex_unlock(&port->mutex);
     sys_unlock();
-    port->entry(port->arg);
+    port->main(port->arg);
 
     /* Thread termination. */
     terminate();
@@ -63,14 +63,14 @@ static void thrd_port_swap(struct thrd_t *in,
 
 static void thrd_port_init_main(struct thrd_port_t *port)
 {
-    port->entry = NULL;
+    port->main = NULL;
     port->arg = NULL;
     pthread_mutex_init(&port->mutex, NULL);
     pthread_cond_init (&port->cond, NULL);
 }
 
 static int thrd_port_spawn(struct thrd_t *thrd_p,
-                           void *(*entry)(void *),
+                           void *(*main)(void *),
                            void *arg,
                            void *stack,
                            size_t stack_size)
@@ -79,13 +79,13 @@ static int thrd_port_spawn(struct thrd_t *thrd_p,
 
     /* Initialize thrd port.*/
     port = &thrd_p->port;
-    port->entry = entry;
+    port->main = main;
     port->arg = arg;
     pthread_mutex_init(&port->mutex, NULL);
     pthread_cond_init (&port->cond, NULL);
     pthread_mutex_lock(&port->mutex);
 
-    if (pthread_create(&port->thrd, NULL, thrd_port_entry, port)) {
+    if (pthread_create(&port->thrd, NULL, thrd_port_main, port)) {
         fprintf(stderr, "Error creating thrd\n");
         return (1);
     }

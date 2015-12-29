@@ -114,7 +114,7 @@ static int test_all(struct harness_t *harness_p)
 {
     char buf[BUFFER_SIZE];
 
-    thrd_spawn(shell_entry,
+    thrd_spawn(shell_main,
                &shell_args,
                0,
                shell_stack,

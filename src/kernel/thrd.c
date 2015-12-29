@@ -513,7 +513,7 @@ int thrd_module_init(void)
     return (0);
 }
 
-struct thrd_t *thrd_spawn(void *(*entry)(void *),
+struct thrd_t *thrd_spawn(void *(*main)(void *),
                           void *arg_p,
                           int prio,
                           void *stack_p,
@@ -543,7 +543,7 @@ struct thrd_t *thrd_spawn(void *(*entry)(void *),
 #endif
     LIST_SL_ADD_TAIL(&thrd_p->parent.thrd_p->children, &thrd_p->parent);
 
-    err = thrd_port_spawn(thrd_p, entry, arg_p, stack_p, stack_size);
+    err = thrd_port_spawn(thrd_p, main, arg_p, stack_p, stack_size);
 
     sys_lock();
     scheduler_ready_push(thrd_p);

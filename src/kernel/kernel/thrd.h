@@ -61,15 +61,15 @@ struct thrd_t {
 int thrd_module_init(void);
 
 /**
- * Spawn a thread with given entry function and argument. The thread
- * is initialized and added to the ready queue in the scheduler for
- * execution when prioritized.
+ * Spawn a thread with given main (entry) function and argument. The
+ * thread is initialized and added to the ready queue in the scheduler
+ * for execution when prioritized.
  *
- * @param[in] entry Thread entry function. This function normally
- *                  contains an infinate loop waiting for events to
- *                  occur.
- * @param[in] arg_p Entry function argument. Passed as arg_p to the
- *                  entry function.
+ * @param[in] main Thread main (entry) function. This function
+ *                 normally contains an infinate loop waiting for
+ *                 events to occur.
+ * @param[in] arg_p Main function argument. Passed as arg_p to the
+ *                  main function.
  * @param[in] prio Thread scheduling priority. [-127..127], where -127
  *                 is the highest priority and 127 is the lowest.
  * @param[in] stack_p Stack pointer. The pointer to a stack created
@@ -78,7 +78,7 @@ int thrd_module_init(void);
  *
  * @return Thread id, or NULL on error.
  */
-struct thrd_t *thrd_spawn(void *(*entry)(void *),
+struct thrd_t *thrd_spawn(void *(*main)(void *),
                           void *arg_p,
                           int prio,
                           void *stack_p,

@@ -86,11 +86,11 @@ static void thrd_port_init_main(struct thrd_port_t *port)
 {
 }
 
-static void thrd_port_entry(void)
+static void thrd_port_main(void)
 {
     sys_unlock();
 
-    /* Call entry function with argument. */
+    /* Call main function with argument. */
     asm volatile ("movw r24, r4");
     asm volatile ("movw r30, r2");
     asm volatile ("icall");
@@ -100,7 +100,7 @@ static void thrd_port_entry(void)
 }
 
 static int thrd_port_spawn(struct thrd_t *thrd,
-                           void *(*entry)(void *),
+                           void *(*main)(void *),
                            void *arg,
                            void *stack,
                            size_t stack_size)
@@ -108,15 +108,15 @@ static int thrd_port_spawn(struct thrd_t *thrd,
     struct thrd_port_context_t *context_p;
 
     context_p = (stack + stack_size - sizeof(*context_p));
-    context_p->r2  = (int)entry;
-    context_p->r3  = (int)entry >> 8;
+    context_p->r2  = (int)main;
+    context_p->r3  = (int)main >> 8;
     context_p->r4  = (int)arg;
     context_p->r5  = (int)arg >> 8;
 #if defined(__AVR_3_BYTE_PC__)
-    context_p->pc_3rd_byte = (int)((long)(int)thrd_port_entry >> 16);
+    context_p->pc_3rd_byte = (int)((long)(int)thrd_port_main >> 16);
 #endif
-    context_p->pcl = (int)thrd_port_entry >> 8;
-    context_p->pch = (int)thrd_port_entry;
+    context_p->pcl = (int)thrd_port_main >> 8;
+    context_p->pch = (int)thrd_port_main;
     thrd->port.context_p = context_p;
 
     return (0);

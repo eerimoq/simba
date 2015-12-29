@@ -26,7 +26,7 @@
 FS_COMMAND_DEFINE("/logout", shell_cmd_logout);
 
 /**
- * Unused command callback. Logout handling in shell_entry().
+ * Unused command callback. Logout handling in shell_main().
  */
 int shell_cmd_logout(int argc,
                      const char *argv[],
@@ -168,7 +168,7 @@ static int read_command(char *buf_p,
     return (-E2BIG);
 }
 
-void *shell_entry(void *arg_p)
+void *shell_main(void *arg_p)
 {
     chan_t *chin_p, *chout_p;
     const char *username_p, *password_p;

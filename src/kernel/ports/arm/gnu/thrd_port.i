@@ -54,12 +54,12 @@ static void thrd_port_init_main(struct thrd_port_t *port)
 }
 
 __attribute__((naked))
-static void thrd_port_entry(void)
+static void thrd_port_main(void)
 {
     /* Enable interrupts. */
     asm volatile ("cpsie i");
 
-    /* Call thread entry function with argument. */
+    /* Call thread main function with argument. */
     asm volatile ("mov r0, r10");
     asm volatile ("blx r9");
 
@@ -68,7 +68,7 @@ static void thrd_port_entry(void)
 }
 
 static int thrd_port_spawn(struct thrd_t *thrd,
-                           void *(*entry)(void *),
+                           void *(*main)(void *),
                            void *arg,
                            void *stack,
                            size_t stack_size)
@@ -76,9 +76,9 @@ static int thrd_port_spawn(struct thrd_t *thrd,
     struct thrd_port_context_t *context_p;
 
     context_p = (stack + stack_size - sizeof(*context_p));
-    context_p->r9 = (uint32_t)entry;
+    context_p->r9 = (uint32_t)main;
     context_p->r10 = (uint32_t)arg;
-    context_p->pc = (uint32_t)thrd_port_entry;
+    context_p->pc = (uint32_t)thrd_port_main;
     thrd->port.context_p = context_p;
 
     return (0);

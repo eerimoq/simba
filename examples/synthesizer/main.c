@@ -590,7 +590,7 @@ static int init(void)
     shell_args.username_p = NULL;
     shell_args.password_p = NULL;
 
-    thrd_spawn(shell_entry,
+    thrd_spawn(shell_main,
                &shell_args,
                15,
                shell_stack,

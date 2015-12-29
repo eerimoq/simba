@@ -32,13 +32,16 @@ struct shell_args_t {
 };
 
 /**
- * Shell entry function. Listen for commands on the input channel and
- * send response on the output channel.
+ * The shell main function that listens for commands on the input
+ * channel and send response on the output channel. All received
+ * commands are passed to the debug file system function `fs_call()`
+ * for execution.
  *
- * @param[in] arg_p Pointer to 'struct shell_args_t'.
+ * @param[in] arg_p Pointer to 'struct shell_args_t' with shell
+ *                  configuration.
  *
  * @return Never returns.
  */
-void *shell_entry(void *arg_p);
+void *shell_main(void *arg_p);
 
 #endif

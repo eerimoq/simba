@@ -229,7 +229,7 @@ int main()
     shell_args.chout_p = &uart.chout;
     shell_args.username_p = NULL;
     shell_args.password_p = NULL;
-    shell_entry(&shell_args);
+    shell_main(&shell_args);
 
     return (0);
 }
