@@ -6,20 +6,7 @@
 
 Source code: `boards/arduino_due/board.h`_
 
-Reference
----------
-
-Homepage
-~~~~~~~~
-
-https://www.arduino.cc/en/Main/ArduinoBoardDue
-
-Pinout
-~~~~~~
-
-.. image:: ../images/boards/arduino-due-pinout.png
-   :width: 50%
-   :target: ../_images/arduino-due-pinout.png
+Hardware reference: :doc:`Arduino Due <../Boards/arduino_due>`
 
 ----------------------------------------------
 

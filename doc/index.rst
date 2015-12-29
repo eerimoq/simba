@@ -22,9 +22,10 @@ Project homepage: https://github.com/eerimoq/simba
    installation
    user-guide
    developer-guide
+   Boards
+   examples
    sdk
    api-reference
-   examples
 
 Indices and tables
 ==================

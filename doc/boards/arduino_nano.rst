@@ -6,20 +6,7 @@
 
 Source code: `boards/arduino_nano/board.h`_
 
-Reference
----------
-
-Homepage
-~~~~~~~~
-
-https://www.arduino.cc/en/Main/ArduinoBoardNano
-
-Pinout
-~~~~~~
-
-.. image:: ../images/boards/arduino-nano-pinout.png
-   :width: 50%
-   :target: ../_images/arduino-nano-pinout.png
+Hardware reference: :doc:`Arduino Nano <../Boards/arduino_nano>`
 
 ----------------------------------------------
 

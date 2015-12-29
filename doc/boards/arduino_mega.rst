@@ -6,20 +6,7 @@
 
 Source code: `boards/arduino_mega/board.h`_
 
-Reference
----------
-
-Homepage
-~~~~~~~~
-
-https://www.arduino.cc/en/Main/ArduinoBoardMega
-
-Pinout
-~~~~~~
-
-.. image:: ../images/boards/arduino-mega-pinout.png
-   :width: 50%
-   :target: ../_images/arduino-mega-pinout.png
+Hardware reference: :doc:`Arduino Mega <../Boards/arduino_mega>`
 
 ----------------------------------------------
 
