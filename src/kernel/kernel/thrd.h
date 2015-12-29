@@ -54,21 +54,27 @@ struct thrd_t {
 };
 
 /**
- * Initialize module.
+ * Initialize the thread module.
  *
  * @return zero(0) or negative error code
  */
 int thrd_module_init(void);
 
 /**
- * Spawn a thread with given entry function and argument.
+ * Spawn a thread with given entry function and argument. The thread
+ * is initialized and added to the ready queue in the scheduler for
+ * execution when prioritized.
  *
- * @param[in] entry Thread entry function.
- * @param[in] arg_p Entry function argument.
- * @param[in] prio Thread scheduling priority. [ -127..127 ], where a
- *                 lower number has higher priority.
- * @param[in] stack_p Stack pointer.
- * @param[in] stack_size Stack size.
+ * @param[in] entry Thread entry function. This function normally
+ *                  contains an infinate loop waiting for events to
+ *                  occur.
+ * @param[in] arg_p Entry function argument. Passed as arg_p to the
+ *                  entry function.
+ * @param[in] prio Thread scheduling priority. [-127..127], where -127
+ *                 is the highest priority and 127 is the lowest.
+ * @param[in] stack_p Stack pointer. The pointer to a stack created
+ *                    with the macro `THRD_STACK()`.
+ * @param[in] stack_size The stack size in number of bytes.
  *
  * @return Thread id, or NULL on error.
  */
@@ -79,20 +85,24 @@ struct thrd_t *thrd_spawn(void *(*entry)(void *),
                           size_t stack_size);
 
 /**
- * Suspend given thread and wait to be resumed or a timeout occurs.
+ * Suspend current thread and wait to be resumed or a timeout occurs
+ * (if given).
  *
- * @param[in] timeout_p Timeout.
+ * @param[in] timeout_p Time to wait to be resumed before a timeout
+ *                      occurs and the function returns.
  *
- * @return zero(0) or negative error code.
+ * @return zero(0), -ETIMEOUT on timeout or other negative error code.
  */
 int thrd_suspend(struct time_t *timeout_p);
 
 /**
  * Resume given thread. If resumed thread is not yet suspended it will
- * not be suspended on next suspend attempt.
+ * not be suspended on next suspend call to `thrd_suspend()` or
+ * `thrd_suspend_isr()`.
  *
- * @param[in] thrd_p Thread id.
- * @param[in] err Error code to be returned by thrd_suspend().
+ * @param[in] thrd_p Thread id to resume.
+ * @param[in] err Error code to be returned by `thrd_suspend()` or
+ *                `thrd_suspend_isr()`.
  *
  * @return zero(0) or negative error code.
  */
@@ -108,7 +118,7 @@ int thrd_resume(struct thrd_t *thrd_p, int err);
 int thrd_wait(struct thrd_t *thrd_p);
 
 /**
- * Sleep for given number of microseconds.
+ * Sleep the current thread for given number of microseconds.
  *
  * @param[in] useconds Microseconds to sleep.
  *
@@ -118,12 +128,13 @@ int thrd_usleep(long useconds);
 
 /**
  * Get current thread's id.
+ *
  * @return Thread id.
  */
 struct thrd_t *thrd_self(void);
 
 /**
- * Set name of given thread.
+ * Set the name of the current thread.
  *
  * @param[in] name_p New thread name.
  *
@@ -134,7 +145,7 @@ int thrd_set_name(const char *name_p);
 /**
  * Set the log mask of given thread.
  *
- * @param[in] thrd_p Thread.
+ * @param[in] thrd_p Thread to set the log mask of.
  * @param[in] mask Log mask. See the log module for available levels.
  *
  * @return Old log mask.
@@ -149,21 +160,26 @@ int thrd_set_log_mask(struct thrd_t *thrd_p, int mask);
 int thrd_get_log_mask(void);
 
 /**
- * Suspend given thread with the system lock taken (see `sys_lock()`),
- * and wait to be resumed or a timeout occurs.
+ * Suspend current thread with the system lock taken (see
+ * `sys_lock()`) and wait to be resumed or a timeout occurs (if
+ * given).
  *
- * @param[in] timeout_p Timeout.
+ * @param[in] timeout_p Time to wait to be resumed before a timeout
+ *                      occurs and the function returns.
  *
- * @return zero(0) or negative error code.
+ * @return zero(0), -ETIMEOUT on timeout or other negative error code.
  */
 int thrd_suspend_isr(struct time_t *timeout_p);
 
 /**
- * Resume given suspended thread from interrupt context or with the
- * system lock taken (see `sys_lock()`).
+ * Resume given thread from isr or with the system lock taken (see
+ * `sys_lock()`). If resumed thread is not yet suspended it will not
+ * be suspended on next suspend call to `thrd_suspend()` or
+ * `thrd_suspend_isr()`.
  *
- * @param[in] thrd_p Thread id.
- * @param[in] err Error code to be returned by thrd_suspend().
+ * @param[in] thrd_p Thread id to resume.
+ * @param[in] err Error code to be returned by `thrd_suspend()` or
+ *                `thrd_suspend_isr()`.
  *
  * @return zero(0) or negative error code.
  */
