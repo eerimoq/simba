@@ -43,11 +43,12 @@ int test_timer(struct harness_t *harness_p)
     };
 
     event_init(&event);
+    timer_init(&timer, &timeout, callback, NULL, 0);
 
     thrd_p = thrd_self();
 
     /* Single shot timer. */
-    timer_set(&timer, &timeout, callback, NULL, 0);
+    timer_start(&timer);
 
     mask = EVENT_MASK;
     event_read(&event, &mask, sizeof(mask));
@@ -56,7 +57,8 @@ int test_timer(struct harness_t *harness_p)
 
     /* Periodic timer. */
     std_printf(FSTR("timer_set(PERIODIC)\r\n"));
-    timer_set(&timer, &timeout, callback, NULL, TIMER_PERIODIC);
+    timer_init(&timer, &timeout, callback, NULL, TIMER_PERIODIC);
+    timer_start(&timer);
 
     for (i = 0; i < 5; i++) {
         mask = EVENT_MASK;
@@ -64,7 +66,7 @@ int test_timer(struct harness_t *harness_p)
         std_printf(FSTR("Timeout %d.\r\n"), i);
     }
 
-    BTASSERT(timer_cancel(&timer) == 0);
+    BTASSERT(timer_stop(&timer) == 0);
 
     return (0);
 }

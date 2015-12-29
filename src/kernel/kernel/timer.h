@@ -37,45 +37,54 @@ struct timer_t {
 };
 
 /**
- * Set a timer with given timeout and expiry callback. The timer
- * resolution directly depends on the system tick frequency. The
- * timeout is rounded up to the closest system tick. This applies to
- * both single shot and periodic timers.
+ * Initialize given timer object with given timeout and expiry
+ * callback. The timer resolution directly depends on the system tick
+ * frequency and is rounded up to the closest possible value. This
+ * applies to both single shot and periodic timers.
  *
- * @param[in] self_p Timer object to be started with given timeout.
- * @param[in] timeout_p Time until timer expiry.
- * @param[in] callback Timer expiry callback. Called from interrupt
- *                     context.
- * @param[in] arg_p Timer expiry callback argument.
+ * @param[in] self_p Timer object to initialize with given parameters.
+ * @param[in] timeout_p The timer timeout value.
+ * @param[in] callback Called when the timer expires. Called from
+ *                     interrupt context.
+ * @param[in] arg_p Callback argument. Passed to the callback when the
+ *                  timer expires.
  * @param[in] flags Set TIMER_PERIODIC for periodic timer.
  *
  * @return zero(0) or negative error code.
  */
-int timer_set(struct timer_t *self_p,
-              struct time_t *timeout_p,
-              void (*callback)(void *arg_p),
-              void *arg_p,
-              int flags);
+int timer_init(struct timer_t *self_p,
+               struct time_t *timeout_p,
+               void (*callback)(void *arg_p),
+               void *arg_p,
+               int flags);
 
 /**
- * Cancel the timer.
+ * Start given initialized timer object.
  *
- * @param[in] self_p Timer object.
+ * @param[in] self_p Timer object to start.
  *
  * @return zero(0) or negative error code.
  */
-int timer_cancel(struct timer_t *self_p);
+int timer_start(struct timer_t *self_p);
 
 /**
- * See `timer_set()` for a description.
+ * Stop given timer object. This has no effect on a timer that already
+ * expired or was never started. The return code is 0 if the timer was
+ * stopped and -1 otherwise.
+ *
+ * @param[in] self_p Timer object to stop.
+ *
+ * @return zero(0) if the timer was stopped and -1 if the timer has
+ *         already expired or was never started.
+ */
+int timer_stop(struct timer_t *self_p);
+
+/**
+ * See `timer_start()` for a description.
  *
  * This function may only be called with the system lock taken (see
  * `sys_lock()`).
  */
-int timer_set_isr(struct timer_t *self_p,
-                  struct time_t *timeout_p,
-                  void (*callback)(void *arg_p),
-                  void *arg_p,
-                  int flags);
+int timer_start_isr(struct timer_t *self_p);
 
 #endif

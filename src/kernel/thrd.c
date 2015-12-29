@@ -666,11 +666,12 @@ int thrd_suspend_isr(struct time_t *timeout_p)
             if ((timeout_p->seconds == 0) && (timeout_p->nanoseconds == 0)) {
                 return (-ETIMEDOUT);
             } else {
-                timer_set_isr(&timer,
-                              timeout_p,
-                              thrd_port_suspend_timer_callback,
-                              thrd_p,
-                              0);
+                timer_init(&timer,
+                           timeout_p,
+                           thrd_port_suspend_timer_callback,
+                           thrd_p,
+                           0);
+                timer_start_isr(&timer);
             }
         }
     }

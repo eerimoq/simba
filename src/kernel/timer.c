@@ -124,30 +124,12 @@ void timer_tick(void)
     sys_unlock_isr();
 }
 
-int timer_set(struct timer_t *self_p,
-              struct time_t *timeout_p,
-              void (*callback)(void *arg_p),
-              void *arg_p,
-              int flags)
+int timer_init(struct timer_t *self_p,
+               struct time_t *timeout_p,
+               void (*callback)(void *arg_p),
+               void *arg_p,
+               int flags)
 {
-    int err;
-
-    sys_lock();
-
-    err = timer_set_isr(self_p, timeout_p, callback, arg_p, flags);
-
-    sys_unlock();
-
-    return (err);
-}
-
-int timer_set_isr(struct timer_t *self_p,
-                  struct time_t *timeout_p,
-                  void (*callback)(void *arg_p),
-                  void *arg_p,
-                  int flags)
-{
-    /* Initiate timer. */
     self_p->timeout = t2st(timeout_p);
 
     if (self_p->timeout == 0) {
@@ -159,19 +141,30 @@ int timer_set_isr(struct timer_t *self_p,
     self_p->callback = callback;
     self_p->arg_p = arg_p;
 
+    return (0);
+}
+
+int timer_start(struct timer_t *self_p)
+{
+    sys_lock();
     timer_insert(self_p);
+    sys_unlock();
 
     return (0);
 }
 
-int timer_cancel(struct timer_t *self_p)
+int timer_start_isr(struct timer_t *self_p)
+{
+    timer_insert(self_p);
+    return (0);
+}
+
+int timer_stop(struct timer_t *self_p)
 {
     int err = 0;
 
     sys_lock();
-
     err = timer_remove(self_p);
-
     sys_unlock();
 
     return (err);
