@@ -68,20 +68,24 @@ extern struct sys_t sys;
 #define SYS_TICK_MAX (~0)
 
 /**
- * Initialize module.
+ * Initialize the sys module.
+ *
  * @return zero(0) or negative error code.
  */
 int sys_module_init(void);
 
 /**
- * Start system.
+ * Start the system. This initializes all kernel modules and converts
+ * the current context to the main thread.
+ *
+ * This function **must** be the first function call in main().
  *
  * @return zero(0) or negative error code.
  */
 int sys_start(void);
 
 /**
- * Stop system.
+ * Stop the system.
  *
  * @return Never returns.
  */
@@ -97,37 +101,38 @@ void sys_stop(int error);
 void sys_set_on_fatal_callback(void (*callback)(int error));
 
 /**
- * Set standard output channel.
+ * Set standard output to given channel. For example, `std_printf()`
+ * writes to the standard output channel.
  *
- * @param[in] chan Standard output channel.
+ * @param[in] chan Standard output channel to set.
  *
  * @return void.
  */
-void sys_set_stdout(chan_t *chan);
+void sys_set_stdout(chan_t *chan_p);
 
 /**
- * Get standard output channel.
+ * Get the standard output channel.
  *
  * @return Standard output channel or NULL.
  */
 chan_t *sys_get_stdout(void);
 
 /**
- * Take the system lock. Normally turns off interrupts.
+ * Take the system lock. Turns off interrupts.
  *
  * @return void.
  */
 void sys_lock(void);
 
 /**
- * Release the system lock. In many ports this function has no effect.
+ * Release the system lock. Turn on interrupts.
  *
  * @return void.
  */
 void sys_unlock(void);
 
 /**
- * Take the system lock from isr. Normally turns off interrupts.
+ * Take the system lock from isr. In many ports this has no effect.
  *
  * @return void.
  */
@@ -144,12 +149,20 @@ void sys_unlock_isr(void);
 /**
  * Get a pointer to the application information buffer.
  *
- * @return A pointer to the application information buffer.
+ * @return The pointer to the application information buffer.
  */
 const FAR char *sys_get_info(void);
 
+/**
+ * Get the current interrupt cpu usage counter.
+ *
+ * @return cpu usage, 0-100.
+ */
 float sys_interrupt_cpu_usage_get(void);
 
+/**
+ * Reset the interrupt cpu usage counter.
+ */
 void sys_interrupt_cpu_usage_reset(void);
 
 #endif

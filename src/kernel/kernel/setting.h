@@ -29,12 +29,13 @@
 
 /**
  * Initialize setting module.
+ *
  * @return zero(0) or negative error code.
  */
 int setting_module_init(void);
 
 /**
- * Read setting at address to buffer.
+ * Read setting at given address to given buffer.
  *
  * @param[in,out] dst_p Destination buffer.
  * @param[in] src Setting source address.
@@ -45,7 +46,7 @@ int setting_module_init(void);
 ssize_t setting_read(void *dst_p, size_t src, size_t size);
 
 /**
- * Write setting from buffer to address.
+ * Write setting from given buffer to given address.
  *
  * @param[in] dst Destination setting address.
  * @param[in] src_p Source buffer.

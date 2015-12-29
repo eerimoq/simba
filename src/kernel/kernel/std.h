@@ -138,11 +138,13 @@ int std_strncmp_f(FAR const char *fstr0_p,
                   size_t size);
 
 /**
- * Get the length of given far string, not including null termination.
+ * Get the length in bytes of given far string, not including null
+ * termination.
  *
  * @param[in] fstr_p Far memory string.
  *
- * @return String length.
+ * @return String length in number of bytes (not including the null
+ *         termination).
  */
 int std_strlen(FAR const char *fstr_p);
 
