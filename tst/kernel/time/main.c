@@ -98,9 +98,9 @@ static int test_date(struct harness_t *harness)
     };
 
     for (i = 0; i < membersof(times); i++) {
-        BTASSERT(time_time_to_date(&date, &times[i].time) == 0);
+        BTASSERT(time_unix_time_to_date(&date, &times[i].time) == 0);
 
-        /* Verify converted time. */
+        /* Verify the converted time. */
         BTASSERT(date.second == times[i].date.second);
         BTASSERT(date.minute == times[i].date.minute);
         BTASSERT(date.hour == times[i].date.hour);

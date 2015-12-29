@@ -23,33 +23,43 @@
 
 #include "simba.h"
 
+/**
+ * A time in seconds and nanoseconds. ``seconds`` and ``nanoseconds``
+ * shall be added to get the time.
+ */
 struct time_t {
+    /** Number of seconds. */
     uint32_t seconds;
+    /** Number of nanoseconds. */
     uint32_t nanoseconds;
 };
 
+/**
+ * A date in year, month, date, day, hour, minute and seconds.
+ */
 struct date_t {
-    /** Second. 0-59 */
+    /** Second [0..59]. */
     int second;
-    /** Minute. 0-59 */
+    /** Minute [0..59]. */
     int minute;
-    /** Hour. 0-23 */
+    /** Hour [0..23]. */
     int hour;
-    /** Weekday. 1-7 */
+    /** Weekday [1..7], where 1 is Monday and 7 is Sunday. */
     int day;
-    /** Day in month. 1-31 */
+    /** Day in month [1..31] */
     int date;
-    /** Month. 1-12 */
+    /** Month [1..12] where 1 is January and 12 is December. */
     int month;
-    /** Year. 1970- */
+    /** Year [1970..]. */
     int year;
 };
 
 /**
  * Get current time in seconds and nanoseconds. The resolution of the
- * time is implementation specific.
+ * time is implementation specific and may vary a lot between
+ * different architectures.
  *
- * @param[out] now_p Current time.
+ * @param[out] now_p Read current time.
  *
  * @return zero(0) or negative error code.
  */
@@ -74,14 +84,14 @@ int time_set(struct time_t *new_p);
 void time_sleep(int usec);
 
 /**
- * Convert given time to a date.
+ * Convert given unix time to a date.
  *
  * @param[out] date_p Converted time.
- * @param[in] time_p Time to convert.
+ * @param[in] time_p Unix time to convert.
  *
  * @return zero(0) or negative error code.
  */
-int time_time_to_date(struct date_t *date_p,
-                      struct time_t *time_p);
+int time_unix_time_to_date(struct date_t *date_p,
+                           struct time_t *time_p);
 
 #endif

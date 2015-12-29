@@ -114,8 +114,8 @@ void time_sleep(int us)
     time_port_sleep(us);
 }
 
-int time_time_to_date(struct date_t *date_p,
-                      struct time_t *time_p)
+int time_unix_time_to_date(struct date_t *date_p,
+                           struct time_t *time_p)
 {
     long long t = time_p->seconds;
     long long days, secs;
@@ -206,7 +206,6 @@ int time_time_to_date(struct date_t *date_p,
     date_p->month++;
     date_p->date = (remdays + 1);
     date_p->day = wday;
-    //date_p->yday = yday;
 
     date_p->hour = (remsecs / 3600);
     date_p->minute = (remsecs / 60 % 60);
