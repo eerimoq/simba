@@ -1,0 +1,159 @@
+# gcc
+# -I.
+# -I../../../src
+# -I../../../src/boards/linux
+# -I../../../src/mcus/linux
+# -I../../../src/kernel
+# -I../../../src/kernel/ports/linux/gnu
+# -I../../../src/drivers
+# -I../../../src/drivers/ports/linux
+# -I../../../src/slib
+# -DARCH_LINUX
+# -DMCU_LINUX
+# -DBOARD_LINUX
+# -DVERSION=1.0.0
+# -DNPROFILESTACK
+# -DMODULE_NAME=main
+# -Werror
+# -Wno-error=unused-variable
+# -pg
+# -fprofile-arcs
+# -ftest-coverage
+# -g
+# -c
+# -Wall
+# -funsigned-char
+# -funsigned-bitfields
+# -fshort-enums
+# -std=gnu99
+# -Wno-error=unused-variable
+# -o
+# obj/main.o
+# main.c
+
+import os
+
+env = DefaultEnvironment()
+
+# default values
+if "VERSION" not in env:
+    env.Append(VERSION="0.0.1")
+
+if "SETTINGS_INI" not in env:
+    env.Append(SETTINGS_INI=["$SIMBA_ROOT/make/settings.ini"])
+
+if "NPROFILE" not in env:
+    env.Append(NPROFILE="no")
+
+if "NDEBUG" not in env:
+    env.Append(NDEBUG=["no"])
+
+env.Append(INC=[Dir("#").abspath, "$SIMBA_ROOT/src"])
+env.Append(CPPDEFINES=["ARCH_$ARCH_UPPER",
+                       "MCU_$MCU_UPPER",
+                       "BOARD_$BOARD_UPPER",
+                       "VERSION=$VERSION"])
+
+# created files
+SETTINGS_H = "#/settings.h"
+SETTINGS_BIN = "#/settings.bin"
+SIMBA_GEN_C = "#/simba_gen.c"
+EXE = "#/" + env["NAME"] + ".out"
+
+# configuration
+env.Append(TOOLCHAIN="gnu")
+
+# include the board configration
+BOARD_SCONSCRIPT = os.path.join(env["SIMBA_ROOT"],
+                                "src",
+                                "boards",
+                                env["BOARD"],
+                                "board.sconscript")
+SConscript([BOARD_SCONSCRIPT])
+
+# include the mcu configuration
+MCU_SCONSCRIPT = os.path.join(env["SIMBA_ROOT"],
+                              "src",
+                              "mcus",
+                              env["MCU"],
+                              "mcu.sconscript")
+SConscript([MCU_SCONSCRIPT])
+
+# include the kernel package
+KERNEL_SCONSCRIPT = os.path.join(env["SIMBA_ROOT"],
+                                 "src",
+                                 "kernel",
+                                 "kernel.sconscript")
+SConscript([KERNEL_SCONSCRIPT])
+
+# include the drivers package
+DRIVERS_SCONSCRIPT = os.path.join(env["SIMBA_ROOT"],
+                                  "src",
+                                  "drivers",
+                                  "drivers.sconscript")
+SConscript([DRIVERS_SCONSCRIPT])
+
+# include the slib package
+SLIB_SCONSCRIPT = os.path.join(env["SIMBA_ROOT"],
+                               "src",
+                               "slib",
+                               "slib.sconscript")
+SConscript([SLIB_SCONSCRIPT])
+
+# variables in upper case for defines
+env.Append(ARCH_UPPER=env["ARCH"].upper())
+env.Append(MCU_UPPER=env["MCU"].upper())
+env.Append(BOARD_UPPER=env["BOARD"].upper())
+
+env.Append(CPPPATH=[env.subst(inc) for inc in env["INC"]])
+
+# generate settings
+env.Command(SETTINGS_H,
+            env["SETTINGS_INI"],
+            ("$SIMBA_ROOT/src/kernel/tools/settings.py --header "
+             "--source $SOURCE " + env["ENDIANESS"]))
+env.Command(SETTINGS_BIN,
+            env["SETTINGS_INI"],
+            "$SIMBA_ROOT/src/kernel/tools/settings.py --binary $SOURCE $ENDIANESS")
+
+# object builders
+OBJS = []
+PPSRC = []
+for src in env["SRC"]:
+    objenv = env.Clone()
+    
+    # add the module name define
+    module_name = os.path.splitext(os.path.basename(src))[0]
+    objenv.Append(CPPDEFINES=["MODULE_NAME=" + module_name])
+
+    obj = objenv.Object(src)
+    Depends(obj, [SETTINGS_H])
+    OBJS += obj
+
+    # command to generate pre-processed files
+    ppsrcenv = objenv.Clone()
+    ppsrcenv.Append(CPPDEFINES=["__SIMBA_GEN__"])
+    ppsrcenv.Append(CCFLAGS=["-E"])
+    command = " ".join([ppsrcenv["CC"]] +
+                       ["-o", src + ".pp"] +
+                       [ "-D" + ppsrcenv.subst(define) for define in ppsrcenv["CPPDEFINES"]] +
+                       [ "-I" + ppsrcenv.subst(path) for path in ppsrcenv["CPPPATH"]] +
+                       ppsrcenv["CCFLAGS"] +
+                       ["-c", src])
+    ppsrc = objenv.Command(src + ".pp",
+                           src,
+                           command)
+    Depends(ppsrc, [obj])
+
+    PPSRC += ppsrc
+
+# Command to generate simba_gen.c
+simba_gen_c = env.Command(SIMBA_GEN_C,
+                          PPSRC,
+                          ("$SIMBA_ROOT/src/kernel/tools/gen.py $NAME $VERSION "
+                           "$BOARD_DESC $MCU_DESC $TARGET $SOURCES"))
+OBJS += env.Object(SIMBA_GEN_C)
+
+exe = env.Program(EXE, OBJS)
+
+Default([exe])
