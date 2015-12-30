@@ -1,5 +1,5 @@
 #
-# @file slib/slib.sconscript
+# @file mcus/sam/sam3.sconscript
 # @version 1.0
 #
 # @section License
@@ -20,14 +20,13 @@
 
 env = DefaultEnvironment()
 
-env.Append(CPPPATH=["$SIMBA_ROOT/src/slib"])
+env.Append(CPPPATH=["$SIMBA_ROOT/src/mcus/sam"])
+env.Append(SRC=["$SIMBA_ROOT/src/mcus/sam/mcu.c",
+                "$SIMBA_ROOT/src/mcus/sam/sam3.c"])
 
-if not "SLIB_SRC" in env:
-    env.Append(SLIB_SRC=["crc.c",
-                         "fat16.c",
-                         "harness.c",
-                         "hash_map.c",
-                         "midi.c"])
+env.Append(MCPU="cortex-m3")
+env.Append(F_CPU="84000000")
 
-env.Append(SRC=["$SIMBA_ROOT/src/slib/" + src
-                for src in env["SLIB_SRC"]])
+env.Append(ARCH="arm")
+
+SConscript([env.subst("$SIMBA_ROOT/make/$TOOLCHAIN/arm.sconscript")])

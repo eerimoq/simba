@@ -22,8 +22,8 @@ import os
 
 env = DefaultEnvironment()
 
-env["INC"] += ["$SIMBA_ROOT/src/boards/linux"]
-env["SRC"] += ["$SIMBA_ROOT/src/boards/linux/board.c"]
+env.Append(CPPPATH=["$SIMBA_ROOT/src/boards/linux"])
+env.Append(SRC=["$SIMBA_ROOT/src/boards/linux/board.c"])
 
 env.Append(BOARD_DESC="Linux")
 env.Append(MCU="linux")

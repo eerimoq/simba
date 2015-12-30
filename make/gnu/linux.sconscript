@@ -26,15 +26,15 @@ env.Append(LIBS=["pthread", "rt"])
 
 env.Append(ENDIANESS="little")
 
-if env["NPROFILE"] != "yes":
+if "NPROFILE" not in env:
     env.Append(CCFLAGS=["-pg", "-fprofile-arcs", "-ftest-coverage"])
     env.Append(LDFLAGS=["-pg", "-fprofile-arcs", "-ftest-coverage"])
     env.Append(LIBS=["gcov"])
 
-if env["NDEBUG"] == "yes":
+if "NDEBUG" not in env:
+    env.Append(CCFLAGS=["-O2"])
+else:
     env.Append(CCFLAGS=["-g"])
     env.Append(LDFLAGS=["-g"])
-else:
-    env.Append(CCFLAGS=["-O2"])
 
-#include $(SIMBA_ROOT)/make/gnu.mk
+SConscript([env.subst("$SIMBA_ROOT/make/gnu.sconscript")])

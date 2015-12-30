@@ -20,8 +20,8 @@
 
 env = DefaultEnvironment()
 
-env["INC"] += ["$SIMBA_ROOT/src/kernel"]
-env["INC"] += ["$SIMBA_ROOT/src/kernel/ports/$ARCH/$TOOLCHAIN"]
+env.Append(CPPPATH=["$SIMBA_ROOT/src/kernel",
+                    "$SIMBA_ROOT/src/kernel/ports/$ARCH/$TOOLCHAIN"])
 
 if not "KERNEL_SRC" in env:
     env.Append(KERNEL_SRC=["chan.c",
@@ -37,6 +37,6 @@ if not "KERNEL_SRC" in env:
                            "thrd.c",
                            "time.c",
                            "timer.c"])
-
-env["SRC"] += ["$SIMBA_ROOT/src/kernel/" + src
-               for src in env["KERNEL_SRC"]]
+    
+env.Append(SRC=["$SIMBA_ROOT/src/kernel/" + src
+                for src in env["KERNEL_SRC"]])

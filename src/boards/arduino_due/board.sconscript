@@ -1,5 +1,5 @@
 #
-# @file slib/slib.sconscript
+# @file boards/arduino_due/board.sconscript
 # @version 1.0
 #
 # @section License
@@ -18,16 +18,12 @@
 # This file is part of the Simba project.
 #
 
+import os
+
 env = DefaultEnvironment()
 
-env.Append(CPPPATH=["$SIMBA_ROOT/src/slib"])
+env.Append(CPPPATH=["$SIMBA_ROOT/src/boards/arduino_due"])
+env.Append(SRC=["$SIMBA_ROOT/src/boards/arduino_due/board.c"])
 
-if not "SLIB_SRC" in env:
-    env.Append(SLIB_SRC=["crc.c",
-                         "fat16.c",
-                         "harness.c",
-                         "hash_map.c",
-                         "midi.c"])
-
-env.Append(SRC=["$SIMBA_ROOT/src/slib/" + src
-                for src in env["SLIB_SRC"]])
+env.Append(BOARD_DESC="Arduino Due")
+env.Append(MCU="sam/3x8e")

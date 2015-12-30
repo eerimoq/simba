@@ -20,8 +20,8 @@
 
 env = DefaultEnvironment()
 
-env["INC"] += ["$SIMBA_ROOT/src/mcus/linux"]
-env["SRC"] += ["$SIMBA_ROOT/src/mcus/linux/mcu.c"]
+env.Append(CPPPATH=["$SIMBA_ROOT/src/mcus/linux"])
+env.Append(SRC=["$SIMBA_ROOT/src/mcus/linux/mcu.c"])
 
 env.Append(ARCH="linux")
 env.Append(MCU_DESC="Linux")

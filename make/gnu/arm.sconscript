@@ -1,0 +1,51 @@
+#
+# @file make/gnu/arm.scons
+# @version 1.0
+#
+# @section License
+# Copyright (C) 2014-2015, Erik Moqvist
+#
+# This library is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Lesser General Public
+# License as published by the Free Software Foundation; either
+# version 2.1 of the License, or (at your option) any later version.
+#
+# This library is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# Lesser General Public License for more details.
+#
+# This file is part of the Simba project.
+#
+
+env = DefaultEnvironment()
+
+env.Append(CROSS_COMPILE="arm-none-eabi-")
+env.Append(CFLAGS=["-Werror",
+                   "-O2"])
+
+env.Append(ENDIANESS="little")
+
+env.Append(CCFLAGS=["-mthumb",
+                    "-mcpu=$MCPU",
+                    "-DF_CPU=${F_CPU}UL",
+                    "-fdata-sections",
+                    "-fpack-struct",
+                    "-ffunction-sections"])
+
+env.Append(LINKFLAGS=["-mcpu=$MCPU",
+                      "-DF_CPU=${F_CPU}UL",
+                      "-Wl,--cref",
+                      "-T$SIMBA_ROOT/src/mcus/$MCU/script.ld",
+                      "-mthumb",
+                      "-Wl,--gc-sections"])
+
+env.Append(SRC=[Dir("#").abspath + "/settings.c"])
+
+#RUNARGS = ${NAME}.bin
+
+#build: $(NAME).bin
+#$(NAME).bin: $(EXE)
+#	$(CROSS_COMPILE)objcopy -O binary $< $@
+
+SConscript([env.subst("$SIMBA_ROOT/make/gnu.sconscript")])

@@ -20,8 +20,8 @@
 
 env = DefaultEnvironment()
 
-env["INC"] += ["$SIMBA_ROOT/src/drivers"]
-env["INC"] += ["$SIMBA_ROOT/src/drivers/ports/$ARCH"]
+env.Append(CPPPATH=["$SIMBA_ROOT/src/drivers",
+                    "$SIMBA_ROOT/src/drivers/ports/$ARCH"])
 
 if not "DRIVERS_SRC" in env:
     src = []
@@ -66,5 +66,5 @@ if not "DRIVERS_SRC" in env:
 
     env.Append(DRIVERS_SRC=src)
 
-env["SRC"] += ["$SIMBA_ROOT/src/drivers/" + src
-               for src in env["DRIVERS_SRC"]]
+env.Append(SRC=["$SIMBA_ROOT/src/drivers/" + src
+                for src in env["DRIVERS_SRC"]])

@@ -1,5 +1,5 @@
 #
-# @file slib/slib.sconscript
+# @file mcus/sam/3x8e/mcu.sconscript
 # @version 1.0
 #
 # @section License
@@ -20,14 +20,6 @@
 
 env = DefaultEnvironment()
 
-env.Append(CPPPATH=["$SIMBA_ROOT/src/slib"])
+env.Append(MCU_DESC="Atmel SAM3X8E Cortex-M3 @ 84MHz, 96k sram, 512k flash")
 
-if not "SLIB_SRC" in env:
-    env.Append(SLIB_SRC=["crc.c",
-                         "fat16.c",
-                         "harness.c",
-                         "hash_map.c",
-                         "midi.c"])
-
-env.Append(SRC=["$SIMBA_ROOT/src/slib/" + src
-                for src in env["SLIB_SRC"]])
+SConscript([env.subst("$SIMBA_ROOT/src/mcus/sam/sam3.sconscript")])
