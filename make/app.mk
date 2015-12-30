@@ -106,12 +106,12 @@ new:
 
 run: all
 	@echo "Running $(EXE)"
-	set -o pipefail ; stdbuf -i0 -o0 -e0 $(RUNSCRIPT) run ./$(EXE) $(SIMBA_ROOT) \
-	                  $(RUN_END_PATTERN) $(RUN_END_PATTERN_SUCCESS) \
-                          $(RUNARGS) | tee $(RUNLOG)
+	python -u $(RUNSCRIPT) run ./$(EXE) $(SIMBA_ROOT) \
+                  $(RUNLOG) $(RUN_END_PATTERN) $(RUN_END_PATTERN_SUCCESS) \
+                  $(RUNARGS)
 
 dump:
-	set -o pipefail ; $(RUNSCRIPT) dump ./$(EXE) $(SIMBA_ROOT) $(RUNARGS)
+	python -u $(RUNSCRIPT) dump ./$(EXE) $(SIMBA_ROOT) $(RUNARGS)
 
 report:
 	@echo "$(NAME):"
@@ -121,13 +121,13 @@ test: run
 	$(MAKE) report
 
 run-debugger: all
-	set -o pipefail ; stdbuf -i0 -o0 -e0 $(RUNSCRIPT) debugger ./$(EXE) $(SIMBA_ROOT) $(RUNARGS) | tee $(RUNLOG)
+	python -u $(RUNSCRIPT) debugger ./$(EXE) $(SIMBA_ROOT) $(RUNLOG) $(RUNARGS)
 
 profile:
-	set -o pipefail ; $(RUNSCRIPT) profile ./$(EXE) $(SIMBA_ROOT) | tee profile.log
+	python -u $(RUNSCRIPT) profile ./$(EXE) $(SIMBA_ROOT) profile.log
 
 coverage:
-	set -o pipefail ; $(RUNSCRIPT) coverage ./$(EXE) $(SIMBA_ROOT) | tee coverage.log
+	python -u $(RUNSCRIPT) coverage ./$(EXE) $(SIMBA_ROOT) coverage.log
 
 size:
 	set -o pipefail ; $(SIZECMD) | tee size.log
