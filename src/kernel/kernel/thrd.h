@@ -109,7 +109,7 @@ int thrd_suspend(struct time_t *timeout_p);
 int thrd_resume(struct thrd_t *thrd_p, int err);
 
 /**
- * Wait for a thread to terminate.
+ * Wait for given thread to terminate.
  *
  * @param[in] thrd_p Thread to wait for.
  *
