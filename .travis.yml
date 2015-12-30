@@ -4,6 +4,6 @@ before_install:
   - pip install --user cpp-coveralls
   - sudo apt-get update -qq
   - sudo apt-get install -qq parted
-script: make -s test
+script: make -s travis
 after_success:
   - coveralls -b tst/kernel/sys

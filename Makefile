@@ -75,6 +75,11 @@ coverage: $(TESTS:%=%.cov)
 
 jenkins-coverage: $(TESTS:%=%.jc)
 
+travis:
+	scons -C tst/kernel/sys
+	scons -C tst/kernel/sys -c
+	$(MAKE) test
+
 $(APPS:%=%.all):
 	$(MAKE) -C $(basename $@) all
 
