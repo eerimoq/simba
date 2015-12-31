@@ -22,9 +22,9 @@ import os
 
 # Map the PlatformIO board name to the Simba board name
 BOARD_MAP = {
-    "nanoatmega328": "arduino_nano",
-    "mega": "arduino_mega",
-    "due": "arduino_due"
+    "due": "arduino_due",
+    "megaatmega2560": "arduino_mega",
+    "nanoatmega328": "arduino_nano"
 }
 
 env = DefaultEnvironment()
@@ -38,12 +38,23 @@ if "SIMBA_ROOT" not in env:
 if env["BOARD"] in BOARD_MAP:
     env["BOARD"] = BOARD_MAP[env["BOARD"]]
 
-# Remove duplicate defines
+# Remove defines that breaks the build.
+# -F_CPU -> duplicate define
 cppdefines = []
 for define in env["CPPDEFINES"]:
     if "F_CPU=" not in define:
         cppdefines.append(define)
 env.Replace(CPPDEFINES=cppdefines)
+
+# Remove flags that breaks the build.
+# -Os -> internal compiler error
+cppflags = []
+for flag in env["CPPFLAGS"]:
+    if (("-Os" not in flag) and
+        ("-g" not in flag)):
+        cppflags.append(flag)
+env.Replace(CPPFLAGS=cppflags)
+
 env.Replace(LINKFLAGS=[])
 
 SConscript("app_common.sconscript")
