@@ -1,5 +1,5 @@
 #
-# @file make/gnu/arm.scons
+# @file mcus/atmega2560/mcu.sconscript
 # @version 1.0
 #
 # @section License
@@ -20,30 +20,16 @@
 
 env = DefaultEnvironment()
 
-env.Append(CROSS_COMPILE="arm-none-eabi-")
+env.Append(CPPPATH=["$SIMBA_ROOT/src/mcus/atmega2560"])
+env.Append(SRC=["$SIMBA_ROOT/src/mcus/atmega2560/mcu.c"])
 
-env.Append(ENDIANESS="little")
+env.Append(F_CPU="16000000")
+env.Append(CPU="atmega2560")
 
-env.Append(CCFLAGS=[
-    "-Werror",
-    "-O2",
-    "-mthumb",
-    "-mcpu=$MCPU",
-    "-DF_CPU=${F_CPU}UL",
-    "-fdata-sections",
-    "-fpack-struct",
-    "-ffunction-sections"
-])
+env.Append(ARCH="avr")
 
-env.Append(LINKFLAGS=[
-    "-mcpu=$MCPU",
-    "-DF_CPU=${F_CPU}UL",
-    "-Wl,--cref",
-    "-Wl,-T$SIMBA_ROOT/src/mcus/$MCU/script.ld",
-    "-mthumb",
-    "-Wl,--gc-sections"
-])
+env.Append(MAIN_STACK_END="0x802200")
 
-env.Append(SRC=[Dir("#").abspath + "/settings.c"])
+env.Append(MCU_DESC="Atmel ATMega25600 AVR @ 16MHz, 8k sram, 256k flash")
 
-SConscript([env.subst("$SIMBA_ROOT/make/gnu.sconscript")])
+SConscript([env.subst("$SIMBA_ROOT/make/$TOOLCHAIN/avr.sconscript")])

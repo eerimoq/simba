@@ -16,7 +16,7 @@ status = 0
 try:
     report = dev.expect(pattern, timeout=10)
 except:
-        status = 1
+    status = 1
 
 if not re.match(pattern_success, report):
     status = 1

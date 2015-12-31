@@ -122,7 +122,7 @@ for src in env["SRC"]:
     ppsrcenv.Append(CCFLAGS=["-E"])
 
     gen_src = Dir("#").abspath + "/gen/" + os.path.splitext(os.path.basename(src))[0] + ".o.pp"
-    ppsrc = objenv.Object(gen_src, src)
+    ppsrc = ppsrcenv.Object(gen_src, src)
     Depends(ppsrc, [obj])
 
     PPSRC += ppsrc

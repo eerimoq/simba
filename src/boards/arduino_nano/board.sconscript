@@ -1,5 +1,5 @@
 #
-# @file make/gnu/arm.scons
+# @file simba/boards/board.sconscript
 # @version 1.0
 #
 # @section License
@@ -20,30 +20,8 @@
 
 env = DefaultEnvironment()
 
-env.Append(CROSS_COMPILE="arm-none-eabi-")
+env.Append(CPPPATH=["$SIMBA_ROOT/src/boards/arduino_nano"])
+env.Append(SRC=["$SIMBA_ROOT/src/boards/arduino_nano/board.c"])
 
-env.Append(ENDIANESS="little")
-
-env.Append(CCFLAGS=[
-    "-Werror",
-    "-O2",
-    "-mthumb",
-    "-mcpu=$MCPU",
-    "-DF_CPU=${F_CPU}UL",
-    "-fdata-sections",
-    "-fpack-struct",
-    "-ffunction-sections"
-])
-
-env.Append(LINKFLAGS=[
-    "-mcpu=$MCPU",
-    "-DF_CPU=${F_CPU}UL",
-    "-Wl,--cref",
-    "-Wl,-T$SIMBA_ROOT/src/mcus/$MCU/script.ld",
-    "-mthumb",
-    "-Wl,--gc-sections"
-])
-
-env.Append(SRC=[Dir("#").abspath + "/settings.c"])
-
-SConscript([env.subst("$SIMBA_ROOT/make/gnu.sconscript")])
+env.Append(BOARD_DESC="Arduino Nano")
+env.Append(MCU="atmega328p")

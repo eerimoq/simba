@@ -19,7 +19,6 @@ def run(command):
     if res != 0:
         sys.exit(res)
 
-
 if target == "debugger":
     run("gdb {exe} --eval-command \"break main\" --eval-command run".format(exe=exe))
 elif target == "profile":

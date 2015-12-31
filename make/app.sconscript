@@ -20,21 +20,13 @@
 
 import os
 
-def add_phony_targets(env, **kwargs):
-    for target, (action, depends) in kwargs.items():
-        env.AlwaysBuild(env.Alias(target, depends, action))
-
 env = DefaultEnvironment()
 
 # default values
 if "BOARD" in ARGUMENTS:
     env["BOARD"] = ARGUMENTS.get("BOARD")
 
-env.Replace(RUNLOG=Dir("#").abspath + "/run.log")
 env.Replace(EXE=Dir("#").abspath + "/" + env["NAME"] + ".out")
-env.Replace(RUNSCRIPT="$SIMBA_ROOT/make/$TOOLCHAIN/${ARCH}.py")
-env.Replace(RUN_END_PATTERN="harness report: total\(\d+\), passed\(\d+\), failed\(\d+\)")
-env.Replace(RUN_END_PATTERN_SUCCESS="harness report: total\(\d+\), passed\(\d+\), failed\(0\)")
 
 env.Append(CCFLAGS=[])
 
@@ -42,12 +34,5 @@ SConscript("app_common.sconscript")
 
 # Build the application
 exe = env.Program(env["EXE"], env["OBJS"])
-
-# Run the application
-run_command = ("python -u $RUNSCRIPT run $EXE $SIMBA_ROOT $RUNLOG "
-               "\"$RUN_END_PATTERN\" \"$RUN_END_PATTERN_SUCCESS\" "
-               "$RUNARGS"
-)
-add_phony_targets(env, run=(run_command, [exe]))
 
 Default([exe])

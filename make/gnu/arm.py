@@ -9,9 +9,21 @@ import time
 target = sys.argv[1]
 exe = sys.argv[2]
 simba_path = sys.argv[3]
-run_end_pattern = sys.argv[4]
-run_end_pattern_success = sys.argv[5]
-binary = sys.argv[6]
+runlog = sys.argv[4]
+run_end_pattern = sys.argv[5]
+run_end_pattern_success = sys.argv[6]
+binary = sys.argv[7]
+
+def run(command):
+    proc = subprocess.Popen(command, stdout=subprocess.PIPE)
+    lines_iterator = iter(proc.stdout.readline, b"")
+    with open(runlog, "w") as fout:
+        for line in lines_iterator:
+            sys.stdout.write(line)
+            fout.write(line)
+    res = proc.wait()
+    if res != 0:
+        sys.exit(res)
 
 def upload(bossac_port):
     print "Setting /dev/arduino to 1200 baud and setting DTR to reset the board."
@@ -39,9 +51,9 @@ if target == "run":
         except:
             upload(bossac_port)
     try:
-        subprocess.check_call([os.path.join(simba_path, "make/run.py"),
-                               run_end_pattern,
-                               run_end_pattern_success])
+        run([os.path.join(simba_path, "make/run.py"),
+             run_end_pattern,
+             run_end_pattern_success])
     except:
         sys.exit(1)
 else:

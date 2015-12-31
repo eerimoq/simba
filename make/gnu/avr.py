@@ -8,20 +8,24 @@ import re
 target = sys.argv[1]
 exe = sys.argv[2]
 simba_path = sys.argv[3]
-run_end_pattern = sys.argv[4]
-run_end_pattern_success = sys.argv[5]
-mcu = sys.argv[6]
-hex_file = sys.argv[7]
-settings_bin = sys.argv[8]
-rest = sys.argv[9:]
-
+runlog = sys.argv[4]
+run_end_pattern = sys.argv[5]
+run_end_pattern_success = sys.argv[6]
+mcu = sys.argv[7]
+hex_file = sys.argv[8]
+settings_bin = sys.argv[9]
+rest = sys.argv[10:]
 
 def run(command):
-    print ' '.join(command)
-    try:
-        subprocess.check_call(command)
-    except:
-        sys.exit(1)
+    proc = subprocess.Popen(command, stdout=subprocess.PIPE)
+    lines_iterator = iter(proc.stdout.readline, b"")
+    with open(runlog, "w") as fout:
+        for line in lines_iterator:
+            sys.stdout.write(line)
+            fout.write(line)
+    res = proc.wait()
+    if res != 0:
+        sys.exit(res)
 
 if target == "run":
     run(["avrdude", "-p", mcu] + rest + ["-U", "eeprom:w:" + settings_bin + ":r"])

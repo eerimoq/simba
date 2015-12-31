@@ -18,8 +18,6 @@
 # This file is part of the Simba project.
 #
 
-import os
-
 env = DefaultEnvironment()
 
 env.Append(CPPPATH=["$SIMBA_ROOT/src/boards/arduino_due"])
