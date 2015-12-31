@@ -36,7 +36,7 @@ env.Append(CCFLAGS=["-mthumb",
 env.Append(LINKFLAGS=["-mcpu=$MCPU",
                       "-DF_CPU=${F_CPU}UL",
                       "-Wl,--cref",
-                      "-T$SIMBA_ROOT/src/mcus/$MCU/script.ld",
+                      "-Wl,-T$SIMBA_ROOT/src/mcus/$MCU/script.ld",
                       "-mthumb",
                       "-Wl,--gc-sections"])
 

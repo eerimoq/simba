@@ -1,0 +1,52 @@
+#
+# @file make/platformio.sconscript
+# @version 1.0
+#
+# @section License
+# Copyright (C) 2014-2015, Erik Moqvist
+#
+# This library is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Lesser General Public
+# License as published by the Free Software Foundation; either
+# version 2.1 of the License, or (at your option) any later version.
+#
+# This library is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# Lesser General Public License for more details.
+#
+# This file is part of the Simba project.
+#
+
+import os
+
+# Map the PlatformIO board name to the Simba board name
+BOARD_MAP = {
+    "nanoatmega328": "arduino_nano",
+    "mega": "arduino_mega",
+    "due": "arduino_due"
+}
+
+env = DefaultEnvironment()
+
+# default values
+if "SIMBA_ROOT" not in env:
+    env.Append(SIMBA_ROOT=os.path.join(Dir(".").abspath, ".."))
+
+# Rename the name of boards that have different name in PlatformIO and
+# Simba.
+if env["BOARD"] in BOARD_MAP:
+    env["BOARD"] = BOARD_MAP[env["BOARD"]]
+
+# Remove duplicate defines
+cppdefines = []
+for define in env["CPPDEFINES"]:
+    if "F_CPU=" not in define:
+        cppdefines.append(define)
+env.Replace(CPPDEFINES=cppdefines)
+env.Replace(LINKFLAGS=[])
+
+SConscript("app_common.sconscript")
+
+# Add the simba library to the list of libraries that will be built
+env.Append(LIBS=[env.Library("#/simba", env["OBJS"])])
