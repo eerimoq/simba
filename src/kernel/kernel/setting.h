@@ -24,9 +24,6 @@
 #include "simba.h"
 #include "setting_port.h"
 
-/* Base address for non-kernel serttings. */
-#define SETTING_BASE_ADDR 0x100
-
 /**
  * Initialize setting module.
  *

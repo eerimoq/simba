@@ -1,5 +1,5 @@
 #
-# @file make/gnu/linux.mk
+# @file SConstruct
 # @version 1.0
 #
 # @section License
@@ -18,25 +18,18 @@
 # This file is part of the Simba project.
 #
 
-CROSS_COMPILE =
-CFLAGS += -Werror -Wno-error=unused-variable -DNPROFILESTACK
-LDFLAGS += -Wl,-lpthread -lrt
+import os
 
-SETTING_MEMORY = file
-SETTING_OFFSET = 0
-SETTING_SIZE = 4096
-ENDIANESS = little
+SRC = ["main.c"]
 
-ifneq ($(NPROFILE),yes)
-  CFLAGS += -pg -fprofile-arcs -ftest-coverage
-  LDFLAGS += -pg -fprofile-arcs -ftest-coverage -lgcov
-endif
+env = DefaultEnvironment()
 
-ifneq ($(NDEBUG),yes)
-  CFLAGS += -g
-  LDFLAGS += -g
-else
-  CFLAGS += -O2
-endif
+env.Append(BOARD="linux")
+env.Append(NAME="setting_suite")
+env.Append(SRC=[os.path.join(os.getcwd(), src) for src in SRC])
 
-include $(SIMBA_ROOT)/make/gnu.mk
+env.Append(SETTINGS_INI="#/settings.ini")
+
+SIMBA_ROOT = os.path.abspath(os.environ.get("SIMBA_ROOT", "../../.."))
+env.Append(SIMBA_ROOT=SIMBA_ROOT)
+SConscript(os.path.join(SIMBA_ROOT, "make", "app.sconscript"))

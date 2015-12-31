@@ -28,28 +28,28 @@ int test_integer(struct harness_t *harness_p)
     int64_t int64;
 
     BTASSERT(setting_read(&int8,
-                          SETTINGS_INT8_ADDR,
-                          SETTINGS_INT8_SIZE) == SETTINGS_INT8_SIZE);
-    BTASSERT(int8 == SETTINGS_INT8_VALUE);
+                          SETTING_INT8_ADDR,
+                          SETTING_INT8_SIZE) == SETTING_INT8_SIZE);
+    BTASSERT(int8 == SETTING_INT8_VALUE);
 
     BTASSERT(setting_read(&int16,
-                          SETTINGS_INT16_ADDR,
-                          SETTINGS_INT16_SIZE) == SETTINGS_INT16_SIZE);
-    BTASSERT(int16 == SETTINGS_INT16_VALUE);
+                          SETTING_INT16_ADDR,
+                          SETTING_INT16_SIZE) == SETTING_INT16_SIZE);
+    BTASSERT(int16 == SETTING_INT16_VALUE);
 
     BTASSERT(setting_read(&int32,
-                          SETTINGS_INT32_ADDR,
-                          SETTINGS_INT32_SIZE) == SETTINGS_INT32_SIZE);
-    BTASSERT(int32 == SETTINGS_INT32_VALUE);
+                          SETTING_INT32_ADDR,
+                          SETTING_INT32_SIZE) == SETTING_INT32_SIZE);
+    BTASSERT(int32 == SETTING_INT32_VALUE);
 
     int64 = 46;
-    BTASSERT(setting_write(SETTINGS_INT64_ADDR,
+    BTASSERT(setting_write(SETTING_INT64_ADDR,
                            &int64,
-                           SETTINGS_INT64_SIZE) == SETTINGS_INT64_SIZE);
+                           SETTING_INT64_SIZE) == SETTING_INT64_SIZE);
 
     BTASSERT(setting_read(&int64,
-                          SETTINGS_INT64_ADDR,
-                          SETTINGS_INT64_SIZE) == SETTINGS_INT64_SIZE);
+                          SETTING_INT64_ADDR,
+                          SETTING_INT64_SIZE) == SETTING_INT64_SIZE);
     BTASSERT(int64 == 46);
 
     return (0);
@@ -63,28 +63,28 @@ int test_unsigned_integer(struct harness_t *harness_p)
     uint64_t uint64;
 
     BTASSERT(setting_read(&uint8,
-                          SETTINGS_UINT8_ADDR,
-                          SETTINGS_UINT8_SIZE) == SETTINGS_UINT8_SIZE);
-    BTASSERT(uint8 == SETTINGS_UINT8_VALUE);
+                          SETTING_UINT8_ADDR,
+                          SETTING_UINT8_SIZE) == SETTING_UINT8_SIZE);
+    BTASSERT(uint8 == SETTING_UINT8_VALUE);
 
     BTASSERT(setting_read(&uint16,
-                          SETTINGS_UINT16_ADDR,
-                          SETTINGS_UINT16_SIZE) == SETTINGS_UINT16_SIZE);
-    BTASSERT(uint16 == SETTINGS_UINT16_VALUE);
+                          SETTING_UINT16_ADDR,
+                          SETTING_UINT16_SIZE) == SETTING_UINT16_SIZE);
+    BTASSERT(uint16 == SETTING_UINT16_VALUE);
 
     BTASSERT(setting_read(&uint32,
-                          SETTINGS_UINT32_ADDR,
-                          SETTINGS_UINT32_SIZE) == SETTINGS_UINT32_SIZE);
-    BTASSERT(uint32 == SETTINGS_UINT32_VALUE);
+                          SETTING_UINT32_ADDR,
+                          SETTING_UINT32_SIZE) == SETTING_UINT32_SIZE);
+    BTASSERT(uint32 == SETTING_UINT32_VALUE);
 
     uint64 = 46;
-    BTASSERT(setting_write(SETTINGS_UINT64_ADDR,
+    BTASSERT(setting_write(SETTING_UINT64_ADDR,
                            &uint64,
-                           SETTINGS_UINT64_SIZE) == SETTINGS_UINT64_SIZE);
+                           SETTING_UINT64_SIZE) == SETTING_UINT64_SIZE);
 
     BTASSERT(setting_read(&uint64,
-                          SETTINGS_UINT64_ADDR,
-                          SETTINGS_UINT64_SIZE) == SETTINGS_UINT64_SIZE);
+                          SETTING_UINT64_ADDR,
+                          SETTING_UINT64_SIZE) == SETTING_UINT64_SIZE);
     BTASSERT(uint64 == 46);
 
     return (0);
@@ -92,27 +92,27 @@ int test_unsigned_integer(struct harness_t *harness_p)
 
 int test_string(struct harness_t *harness_p)
 {
-    char string[SETTINGS_STRING_SIZE];
+    char string[SETTING_STRING_SIZE];
 
     /* Read the default value. */
     memset(string, 0, sizeof(string));
     BTASSERT(setting_read(string,
-                          SETTINGS_STRING_ADDR,
-                          SETTINGS_STRING_SIZE) == SETTINGS_STRING_SIZE);
+                          SETTING_STRING_ADDR,
+                          SETTING_STRING_SIZE) == SETTING_STRING_SIZE);
     BTASSERT(strcmp(string, "y") == 0);
 
     /* OVerwrite the default value with "x". */
     string[0] = 'x';
     string[1] = '\0';
-    BTASSERT(setting_write(SETTINGS_STRING_ADDR,
+    BTASSERT(setting_write(SETTING_STRING_ADDR,
                            string,
-                           SETTINGS_STRING_SIZE) == SETTINGS_STRING_SIZE);
+                           SETTING_STRING_SIZE) == SETTING_STRING_SIZE);
 
     /* Read the overwritten value. */
     memset(string, 0, sizeof(string));
     BTASSERT(setting_read(string,
-                          SETTINGS_STRING_ADDR,
-                          SETTINGS_STRING_SIZE) == SETTINGS_STRING_SIZE);
+                          SETTING_STRING_ADDR,
+                          SETTING_STRING_SIZE) == SETTING_STRING_SIZE);
     BTASSERT(strcmp(string, "x") == 0);
 
     return (0);

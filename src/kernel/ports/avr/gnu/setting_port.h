@@ -18,9 +18,9 @@
  * This file is part of the Simba project.
  */
 
-#ifndef __KERNEL_SETTINGS_PORT_H__
-#define __KERNEL_SETTINGS_PORT_H__
+#ifndef __KERNEL_SETTING_PORT_H__
+#define __KERNEL_SETTING_PORT_H__
 
-#define SETTINGS_APP_BASE 0x100
+#define SETTING_MEMORY_EEPROM
 
 #endif

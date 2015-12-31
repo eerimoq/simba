@@ -22,6 +22,9 @@ env = DefaultEnvironment()
 
 env.Append(CROSS_COMPILE="arm-none-eabi-")
 
+env.Append(SETTING_MEMORY="flash")
+env.Append(SETTING_OFFSET="0")
+env.Append(SETTING_SIZE="4096")
 env.Append(ENDIANESS="little")
 
 env.Append(CCFLAGS=[

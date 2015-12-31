@@ -144,11 +144,21 @@ $(EXE): $(OBJ) $(GENOBJ)
 
 $(SETTINGS_H): $(SETTINGS_INI)
 	@echo "Generating $@ from $<"
-	$(SIMBA_ROOT)/src/kernel/tools/settings.py --header --source $(SETTINGS_INI) $(ENDIANESS)
+	$(SIMBA_ROOT)/src/kernel/tools/settings.py --header $(SETTINGS_INI) \
+            --setting-memory $(SETTING_MEMORY) --setting-offset $(SETTING_OFFSET) \
+            --setting-size $(SETTING_SIZE) $(ENDIANESS)
+
+$(SETTINGS_C): $(SETTINGS_INI)
+	@echo "Generating $@ from $<"
+	$(SIMBA_ROOT)/src/kernel/tools/settings.py --source $(SETTINGS_INI) \
+            --setting-memory $(SETTING_MEMORY) --setting-offset $(SETTING_OFFSET) \
+            --setting-size $(SETTING_SIZE) $(ENDIANESS)
 
 $(SETTINGS_BIN): $(SETTINGS_INI)
 	@echo "Generating $@ from $<"
-	$(SIMBA_ROOT)/src/kernel/tools/settings.py --binary $(SETTINGS_INI) $(ENDIANESS)
+	$(SIMBA_ROOT)/src/kernel/tools/settings.py --binary $(SETTINGS_INI) \
+            --setting-memory $(SETTING_MEMORY) --setting-offset $(SETTING_OFFSET) \
+            --setting-size $(SETTING_SIZE) $(ENDIANESS)
 
 define COMPILE_template
 -include $(patsubst %.c,$(DEPSDIR)/%.o.dep,$(notdir $1))

@@ -31,6 +31,9 @@ env.Append(CCFLAGS=[
     "-ffunction-sections"
 ])
 
+env.Append(SETTING_MEMORY="eeprom")
+env.Append(SETTING_OFFSET="128")
+env.Append(SETTING_SIZE="256")
 env.Append(ENDIANESS="little")
 
 env.Append(LINKFLAGS=[
@@ -40,6 +43,8 @@ env.Append(LINKFLAGS=[
     "-Wl,--defsym=__main_stack_end=$MAIN_STACK_END",
     "-Wl,--gc-sections"
 ])
+
+env.Append(SRC=["$BUILD_DIR/settings.c"])
 
 SConscript([env.subst("$SIMBA_ROOT/make/gnu.sconscript")])
 

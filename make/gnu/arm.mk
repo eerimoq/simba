@@ -36,6 +36,9 @@ LDFLAGS += -mcpu=$(MCPU) -DF_CPU=$(F_CPU)UL -Wl,--cref \
            -mthumb \
            -Wl,--gc-sections
 
+SETTING_MEMORY = flash
+SETTING_OFFSET = 0
+SETTING_SIZE = 4096
 SRC += settings.c
 
 RUNARGS = ${NAME}.bin

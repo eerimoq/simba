@@ -21,4 +21,6 @@
 #ifndef __KERNEL_SETTINGS_PORT_H__
 #define __KERNEL_SETTINGS_PORT_H__
 
+#define SETTING_MEMORY_FLASH
+
 #endif

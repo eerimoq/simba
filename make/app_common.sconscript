@@ -96,15 +96,18 @@ env.Append(BOARD_UPPER=env["BOARD"].upper().replace("/", "_"))
 env.Command(SETTINGS_H,
             env["SETTINGS_INI"],
             ("$SIMBA_ROOT/src/kernel/tools/settings.py --header $SOURCE "
-             "--output-directory $BUILD_DIR " + env["ENDIANESS"]))
+             "--output-directory $BUILD_DIR --setting-memory $SETTING_MEMORY "
+             "--setting-offset $SETTING_OFFSET --setting-size $SETTING_SIZE $ENDIANESS"))
 env.Command(SETTINGS_C,
             env["SETTINGS_INI"],
             ("$SIMBA_ROOT/src/kernel/tools/settings.py --source $SOURCE "
-             "--output-directory $BUILD_DIR " + env["ENDIANESS"]))
+             "--output-directory $BUILD_DIR --setting-memory $SETTING_MEMORY "
+             "--setting-offset $SETTING_OFFSET --setting-size $SETTING_SIZE $ENDIANESS"))
 env.Command(SETTINGS_BIN,
             env["SETTINGS_INI"],
             ("$SIMBA_ROOT/src/kernel/tools/settings.py --binary $SOURCE "
-             "--output-directory $BUILD_DIR " + env["ENDIANESS"]))
+             "--output-directory $BUILD_DIR --setting-memory $SETTING_MEMORY "
+             "--setting-offset $SETTING_OFFSET --setting-size $SETTING_SIZE $ENDIANESS"))
 
 # object builders
 env.Replace(OBJS=[])
