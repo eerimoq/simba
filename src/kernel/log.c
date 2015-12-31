@@ -38,7 +38,12 @@ struct log_t {
     char buffer[LOG_BUFFER_SIZE];
 };
 
-static struct log_t log;
+static struct log_t log = {
+    .mode = LOG_MODE_CIRCULAR,
+    .write_p = &log.buffer[0],
+    .end_p = &log.buffer[0],
+    .next_number = 0
+};
 
 static FAR const char level_emergency[] = "emergency";
 static FAR const char level_alert[] = "alert";
@@ -119,9 +124,7 @@ int log_cmd_format(int argc,
 
 int log_module_init(void)
 {
-    log.next_number = 0;
-
-    return (log_reset());
+    return (0);
 }
 
 int log_reset(void)

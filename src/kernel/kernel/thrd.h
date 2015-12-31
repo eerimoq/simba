@@ -24,6 +24,9 @@
 #include "simba.h"
 #include "thrd_port.h"
 
+/**
+ * Macro that shall be used to declare a thread stack.
+ */
 #define THRD_STACK(name, size) THRD_PORT_STACK(name, size)
 
 struct thrd_parent_t {

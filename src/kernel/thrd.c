@@ -31,10 +31,6 @@
 #define THRD_STACK_LOW_MAGIC 0x1337
 #define THRD_FILL_PATTERN 0x19
 
-#if !defined(THRD_MONITOR_PRIO)
-#    define THRD_MONITOR_PRIO -80
-#endif
-
 static char *state_fmt[] = {
     "current",
     "ready",
@@ -45,17 +41,10 @@ static char *state_fmt[] = {
 
 FS_COMMAND_DEFINE("/kernel/thrd/list", thrd_cmd_list);
 FS_COMMAND_DEFINE("/kernel/thrd/set_log_mask", thrd_cmd_set_log_mask);
-FS_COMMAND_DEFINE("/kernel/thrd/monitor/set_period_ms", thrd_cmd_monitor_set_period_ms);
-FS_COMMAND_DEFINE("/kernel/thrd/monitor/set_print", thrd_cmd_monitor_set_print);
 
 struct thrd_scheduler_t {
     struct thrd_t *current_p;
     struct thrd_t *ready_p;
-};
-
-struct monitor_t {
-    long period_us;
-    int print;
 };
 
 struct get_by_name_t {
@@ -68,21 +57,30 @@ static volatile struct thrd_scheduler_t scheduler = {
     .ready_p = NULL
 };
 
-static struct monitor_t monitor = {
-    .period_us = 2000000,
-    .print = 0
-};
-
 /* Forward declarations for thrd_port. */
 static void scheduler_ready_push(struct thrd_t *thrd_p);
+
 static void thrd_reschedule(void);
+
 static void terminate(void);
+
+static int iterate_thread_children(struct thrd_t *thrd_p,
+                                   int (*callback)(void *arg_p,
+                                                   struct thrd_t *thrd_p),
+                                   void *arg_p);
+
+static int iterate_threads(int (*callback)(void *arg_p,
+                                           struct thrd_t *thrd_p),
+                           void *arg_p);
 
 #include "thrd_port.i"
 
+#if !defined(THRD_NMONITOR)
+#    include "thrd/thrd_monitor.i"
+#endif
+
 /* Stacks. */
 static THRD_STACK(idle_thrd_stack, THRD_IDLE_STACK_MAX);
-static THRD_STACK(monitor_thrd_stack, THRD_MONITOR_STACK_MAX);
 
 static void terminate(void)
 {
@@ -360,57 +358,6 @@ int thrd_cmd_set_log_mask(int argc,
     return (0);
 }
 
-int thrd_cmd_monitor_set_period_ms(int argc,
-                                   const char *argv[],
-                                   chan_t *out_p,
-                                   chan_t *in_p)
-{
-    long ms;
-
-    if (argc != 2) {
-        std_fprintf(out_p, FSTR("Usage: set_period_ms <milliseconds>\r\n"));
-
-        return (-EINVAL);
-    }
-
-    if (std_strtol(argv[1], &ms) != 0) {
-        return (-EINVAL);
-    }
-
-    monitor.period_us = (1000 * ms);
-
-    return (0);
-}
-
-int thrd_cmd_monitor_set_print(int argc,
-                               const char *argv[],
-                               chan_t *out_p,
-                               chan_t *in_p)
-{
-    long print;
-
-    if (argc != 2) {
-        goto err_inval;
-    }
-
-    if (std_strtol(argv[1], &print) != 0) {
-        goto err_inval;
-    }
-
-    if ((print != 0) && (print != 1)) {
-        goto err_inval;
-    }
-
-    monitor.print = print;
-
-    return (0);
-
-err_inval:
-    std_fprintf(out_p, FSTR("Usage: set_print <1/0>\r\n"));
-
-    return (-EINVAL);
-}
-
 static void *idle_thrd(void *arg_p)
 {
     struct thrd_t *thrd_p;
@@ -421,55 +368,6 @@ static void *idle_thrd(void *arg_p)
 
     while (1) {
         thrd_port_idle_wait(thrd_p);
-    }
-
-    return (NULL);
-}
-
-/**
- * Called for each thread when iterating over all threads.
- */
-static int update_cpu_usage(void *arg_p,
-                            struct thrd_t *thrd_p)
-{
-    int *print_p = arg_p;
-
-    /* Get and reset the thread cpu usage. */
-    thrd_p->cpu.usage = thrd_port_cpu_usage_get(thrd_p);
-    thrd_port_cpu_usage_reset(thrd_p);
-
-    if (*print_p == 1) {
-        std_printf(FSTR("%20s %10f%%\r\n"), thrd_p->name_p, thrd_p->cpu.usage);
-    }
-
-    return (0);
-}
-
-/**
- * The monitor thread monitors the cpu usage of all threads.
- */
-static void *monitor_thrd(void *arg_p)
-{
-    int print;
-    float irq_usage;
-
-    thrd_set_name("monitor");
-
-    while (1) {
-        thrd_usleep(monitor.period_us);
-        print = monitor.print;
-
-        /* Get and reset the interrupt CPU usage. */
-        irq_usage = sys_interrupt_cpu_usage_get();
-        sys_interrupt_cpu_usage_reset();
-
-        if (print == 1) {
-            std_printf(FSTR("\r\n                NAME         CPU\r\n"
-                            "                 irq %10f%%\r\n"),
-                       irq_usage);
-        }
-
-        iterate_threads(update_cpu_usage, &print);
     }
 
     return (NULL);
@@ -504,11 +402,14 @@ int thrd_module_init(void)
     scheduler.current_p = &main_thrd;
 
     thrd_spawn(idle_thrd, NULL, 127, idle_thrd_stack, sizeof(idle_thrd_stack));
+
+#if !defined(THRD_NMONITOR)
     thrd_spawn(monitor_thrd,
                NULL,
                THRD_MONITOR_PRIO,
                monitor_thrd_stack,
                sizeof(monitor_thrd_stack));
+#endif
 
     return (0);
 }
