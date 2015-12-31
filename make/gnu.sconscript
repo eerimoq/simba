@@ -20,18 +20,6 @@
 
 env = DefaultEnvironment()
 
-#KERNEL_OBJ = $(patsubst %,$(OBJDIR)/%,$(notdir $(KERNEL_SRC:%.c=%.o)))
-#DRIVERS_OBJ = $(patsubst %,$(OBJDIR)/%,$(notdir $(DRIVERS_SRC:%.c=%.o)))
-#SLIB_OBJ = $(patsubst %,$(OBJDIR)/%,$(notdir $(SLIB_SRC:%.c=%.o)))
-#
-#SIZECMD = $(CROSS_COMPILE)size $(SIZEARGS) ${EXE} ; \
-#          echo "Kernel package:" ; $(CROSS_COMPILE)size $(KERNEL_OBJ) -t ; echo ; \
-#          echo "Drivers package:" ; $(CROSS_COMPILE)size $(DRIVERS_OBJ) obj/mcu.o \
-#               obj/board.o -t ; echo ; \
-#          echo "Slib package:" ; $(CROSS_COMPILE)size $(SLIB_OBJ) -t ; echo ; \
-#          echo "Other:" ; $(CROSS_COMPILE)size $(filter-out obj/mcu.o obj/board.o \
-#               $(KERNEL_OBJ) $(DRIVERS_OBJ) $(SLIB_OBJ),$(OBJ) obj/simba_gen.o) -t
-
 env["CC"] = "${CROSS_COMPILE}gcc"
 env["LD"] = "${CROSS_COMPILE}gcc"
 
