@@ -36,12 +36,16 @@ SETTINGS_BIN = "#/settings.bin"
 SIMBA_GEN_C = "#/simba_gen.c"
 
 # configuration
-env.Append(CPPPATH=[Dir("#").abspath,
-                    "$SIMBA_ROOT/src"])
-env.Append(CPPDEFINES=["ARCH_$ARCH_UPPER",
-                       "MCU_$MCU_UPPER",
-                       "BOARD_$BOARD_UPPER",
-                       "VERSION=$VERSION"])
+env.Append(CPPPATH=[
+    Dir("#").abspath,
+    "$SIMBA_ROOT/src"
+])
+env.Append(CPPDEFINES=[
+    "ARCH_$ARCH_UPPER",
+    "MCU_$MCU_UPPER",
+    "BOARD_$BOARD_UPPER",
+    "VERSION=$VERSION"
+])
 env.Append(CCFLAGS=[])
 env.Append(TOOLCHAIN="gnu")
 

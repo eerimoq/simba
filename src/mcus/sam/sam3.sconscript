@@ -21,8 +21,10 @@
 env = DefaultEnvironment()
 
 env.Append(CPPPATH=["$SIMBA_ROOT/src/mcus/sam"])
-env.Append(SRC=["$SIMBA_ROOT/src/mcus/sam/mcu.c",
-                "$SIMBA_ROOT/src/mcus/sam/sam3.c"])
+env.Append(SRC=[
+    "$SIMBA_ROOT/src/mcus/sam/mcu.c",
+    "$SIMBA_ROOT/src/mcus/sam/sam3.c"
+])
 
 env.Append(MCPU="cortex-m3")
 env.Append(F_CPU="84000000")
