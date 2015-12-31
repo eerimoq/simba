@@ -23,12 +23,17 @@ env = DefaultEnvironment()
 env["CC"] = "${CROSS_COMPILE}gcc"
 env["LD"] = "${CROSS_COMPILE}gcc"
 
-env.Append(CFLAGS=["-Wall",
-                   "-funsigned-char",
-                   "-funsigned-bitfields",
-                   "-fshort-enums",
-                   "-std=gnu99",
-                   "-Wno-error=unused-variable"])
-env.Append(LINKFLAGS=["-Wl,-Map=${NAME}.map"])
+env.Append(CCFLAGS=[
+    "-Wall",
+    "-funsigned-char",
+    "-funsigned-bitfields",
+    "-fshort-enums",
+    "-std=gnu99",
+    "-Wno-error=unused-variable"
+])
+
+env.Append(LINKFLAGS=[
+    env.subst("-Wl,-Map=${NAME}.map")
+])
 
 env.Append(CLEAN="${NAME}.map")

@@ -29,9 +29,15 @@ BOARD_MAP = {
 
 env = DefaultEnvironment()
 
+env.Replace(
+    PLATFORMFW_DIR=os.path.join("$PIOPACKAGES_DIR", "framework-simba")
+)
+
 # default values
 if "SIMBA_ROOT" not in env:
-    env.Append(SIMBA_ROOT=os.path.join(Dir(".").abspath, ".."))
+    env.Append(SIMBA_ROOT=env.subst(env["PLATFORMFW_DIR"]))
+
+env.Replace(NAME="app_name")
 
 # Rename the name of boards that have different name in PlatformIO and
 # Simba.
@@ -39,7 +45,7 @@ if env["BOARD"] in BOARD_MAP:
     env["BOARD"] = BOARD_MAP[env["BOARD"]]
 
 # Remove defines that breaks the build.
-# -F_CPU -> duplicate define
+# F_CPU -> duplicate define
 cppdefines = []
 for define in env["CPPDEFINES"]:
     if "F_CPU=" not in define:
@@ -48,11 +54,7 @@ env.Replace(CPPDEFINES=cppdefines)
 
 # Remove flags that breaks the build.
 # -Os -> internal compiler error
-cppflags = []
-for flag in env["CPPFLAGS"]:
-    if (("-Os" not in flag) and
-        ("-g" not in flag)):
-        cppflags.append(flag)
+cppflags = list(set(env["CPPFLAGS"]) - set(["-Os", "-g"]))
 env.Replace(CPPFLAGS=cppflags)
 
 env.Replace(LINKFLAGS=[])
@@ -60,4 +62,6 @@ env.Replace(LINKFLAGS=[])
 SConscript("app_common.sconscript")
 
 # Add the simba library to the list of libraries that will be built
-env.Append(LIBS=[env.Library("#/simba", env["OBJS"])])
+env.Append(LIBS=[
+    env.Library(os.path.join("$BUILD_DIR", "simba"), env["OBJS"])
+])

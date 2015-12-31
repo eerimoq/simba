@@ -26,6 +26,8 @@ env = DefaultEnvironment()
 if "BOARD" in ARGUMENTS:
     env["BOARD"] = ARGUMENTS.get("BOARD")
 
+env.Append(BUILD_DIR=Dir("#").abspath)
+
 env.Replace(EXE=Dir("#").abspath + "/" + env["NAME"] + ".out")
 
 env.Append(CCFLAGS=[])

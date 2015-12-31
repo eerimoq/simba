@@ -6,6 +6,7 @@ import struct
 import re
 import zlib
 import argparse
+import os
 
 from ConfigParser import ConfigParser
 from collections import OrderedDict
@@ -200,7 +201,7 @@ def create_binary_content(setting, endianess):
     return content
 
 
-def create_header_file(setting):
+def create_header_file(outdir, setting):
 
     addresses = []
     sizes = []
@@ -220,7 +221,7 @@ def create_header_file(setting):
     now = time.strftime("%Y-%m-%d %H:%M %Z")
 
     # write to setting header file
-    with open(SETTINGS_H_FILENAME, "w") as fout:
+    with open(os.path.join(outdir, SETTINGS_H_FILENAME), "w") as fout:
         fout.write(HEADER_FMT.format(filename=SETTINGS_H_FILENAME,
                                      date=now,
                                      major=MAJOR,
@@ -231,19 +232,19 @@ def create_header_file(setting):
                                      values="\n".join(values)))
 
 
-def create_binary_file(content):
+def create_binary_file(outdir, content):
     # write the content to the setting file
-    with open(SETTINGS_BIN_FILENAME, "wb") as fout:
+    with open(os.path.join(outdir, SETTINGS_BIN_FILENAME), "wb") as fout:
         fout.write(content)
 
 
-def create_source_file(content):
+def create_source_file(outdir, content):
     now = time.strftime("%Y-%m-%d %H:%M %Z")
 
     content_bytes = ['{:#04x}'.format(ord(byte)) for byte in content]
 
     # write to setting source file
-    with open(SETTINGS_C_FILENAME, "w") as fout:
+    with open(os.path.join(outdir, SETTINGS_C_FILENAME), "w") as fout:
         fout.write(SOURCE_FMT.format(filename=SETTINGS_C_FILENAME,
                                      date=now,
                                      major=MAJOR,
@@ -257,6 +258,7 @@ if __name__ == "__main__":
     parser.add_argument("--header", action="store_true")
     parser.add_argument("--binary", action="store_true")
     parser.add_argument("--source", action="store_true")
+    parser.add_argument("--output-directory", default=".")
     parser.add_argument("settings")
     parser.add_argument("endianess")
 
@@ -267,12 +269,12 @@ if __name__ == "__main__":
     setting = create_setting_dict(*items)
 
     if args.header:
-        create_header_file(setting)
+        create_header_file(args.output_directory, setting)
 
     content = create_binary_content(setting, endianess)
 
     if args.binary:
-        create_binary_file(content)
+        create_binary_file(args.output_directory, content)
 
     if args.source:
-        create_source_file(content)
+        create_source_file(args.output_directory, content)

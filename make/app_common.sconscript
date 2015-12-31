@@ -30,14 +30,15 @@ if "SETTINGS_INI" not in env:
     env.Append(SETTINGS_INI=["$SIMBA_ROOT/make/settings.ini"])
 
 # created files
-SETTINGS_H = "#/settings.h"
-SETTINGS_C = Dir("#").abspath + "/settings.c"
-SETTINGS_BIN = "#/settings.bin"
-SIMBA_GEN_C = "#/simba_gen.c"
+SETTINGS_H = "$BUILD_DIR/settings.h"
+SETTINGS_C = env.subst("$BUILD_DIR/settings.c")
+SETTINGS_BIN = "$BUILD_DIR/settings.bin"
+SIMBA_GEN_C = "$BUILD_DIR/gen/simba_gen.c"
 
 # configuration
 env.Append(CPPPATH=[
     Dir("#").abspath,
+    "$BUILD_DIR",
     "$SIMBA_ROOT/src"
 ])
 env.Append(CPPDEFINES=[
@@ -95,14 +96,15 @@ env.Append(BOARD_UPPER=env["BOARD"].upper().replace("/", "_"))
 env.Command(SETTINGS_H,
             env["SETTINGS_INI"],
             ("$SIMBA_ROOT/src/kernel/tools/settings.py --header $SOURCE "
-             + env["ENDIANESS"]))
+             "--output-directory $BUILD_DIR " + env["ENDIANESS"]))
 env.Command(SETTINGS_C,
             env["SETTINGS_INI"],
             ("$SIMBA_ROOT/src/kernel/tools/settings.py --source $SOURCE "
-             + env["ENDIANESS"]))
+             "--output-directory $BUILD_DIR " + env["ENDIANESS"]))
 env.Command(SETTINGS_BIN,
             env["SETTINGS_INI"],
-            "$SIMBA_ROOT/src/kernel/tools/settings.py --binary $SOURCE $ENDIANESS")
+            ("$SIMBA_ROOT/src/kernel/tools/settings.py --binary $SOURCE "
+             "--output-directory $BUILD_DIR " + env["ENDIANESS"]))
 
 # object builders
 env.Replace(OBJS=[])
@@ -114,9 +116,9 @@ for src in env["SRC"]:
     module_name = os.path.splitext(os.path.basename(src))[0]
     objenv.Append(CPPDEFINES=["MODULE_NAME=" + module_name])
 
-    obj_path = "#/obj/" + os.path.splitext(os.path.basename(src))[0] + ".o"
+    obj_path = "$BUILD_DIR/obj/" + os.path.splitext(os.path.basename(src))[0] + ".o"
     obj = objenv.Object(obj_path, src)
-    Depends(obj, [SETTINGS_H])
+    Depends(obj, [objenv.subst(SETTINGS_H)])
     env.Append(OBJS=obj)
 
     # generate pre-processed files
@@ -125,7 +127,7 @@ for src in env["SRC"]:
     ppsrcenv.Append(CPPDEFINES=["__SIMBA_GEN__"])
     ppsrcenv.Append(CCFLAGS=["-E"])
 
-    gen_src = Dir("#").abspath + "/gen/" + os.path.splitext(os.path.basename(src))[0] + ".o.pp"
+    gen_src = "$BUILD_DIR/gen/" + os.path.splitext(os.path.basename(src))[0] + ".o.pp"
     ppsrc = ppsrcenv.Object(gen_src, src)
     Depends(ppsrc, [obj])
 
@@ -136,4 +138,4 @@ simba_gen_c = env.Command(SIMBA_GEN_C,
                           PPSRC,
                           ("$SIMBA_ROOT/src/kernel/tools/gen.py \"$NAME\" \"$VERSION\" "
                            "\"$BOARD_DESC\" \"$MCU_DESC\" \"$TARGET\" $SOURCES"))
-env.Append(OBJS=env.Object("#/obj/simba_gen.o", SIMBA_GEN_C))
+env.Append(OBJS=env.Object("$BUILD_DIR/obj/simba_gen.o", SIMBA_GEN_C))

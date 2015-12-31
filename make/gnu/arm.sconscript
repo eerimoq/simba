@@ -44,6 +44,6 @@ env.Append(LINKFLAGS=[
     "-Wl,--gc-sections"
 ])
 
-env.Append(SRC=[Dir("#").abspath + "/settings.c"])
+env.Append(SRC=["$BUILD_DIR/settings.c"])
 
 SConscript([env.subst("$SIMBA_ROOT/make/gnu.sconscript")])
