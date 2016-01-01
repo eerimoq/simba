@@ -4,15 +4,11 @@
 .. module:: sys
    :synopsis: System.
 
-Source code: `kernel/sys.h`_
+Source code: :source:`src/kernel/kernel/sys.h`
 
-Test code: `kernel/sys/main.c`_
+Test code: :source:`tst/kernel/sys/main.c`
 
 ----------------------------------------------
 
 .. doxygenfile:: kernel/sys.h
    :project: simba
-
-.. _kernel/sys.h: https://github.com/eerimoq/simba/tree/master/src/kernel/kernel/sys.h
-.. _kernel/sys/main.c: https://github.com/eerimoq/simba/tree/master/tst/kernel/sys/main.c
-

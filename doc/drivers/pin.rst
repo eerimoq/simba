@@ -4,15 +4,11 @@
 .. module:: pin
    :synopsis: Digital pins.
 
-Source code: `drivers/pin.h`_
+Source code: :source:`src/drivers/drivers/pin.h`
 
-Test code: `drivers/pin/main.c`_
+Test code: :source:`tst/drivers/pin/main.c`
 
 ----------------------------------------------
 
 .. doxygenfile:: drivers/pin.h
    :project: simba
-
-.. _drivers/pin.h: https://github.com/eerimoq/simba/tree/master/src/drivers/drivers/pin.h
-.. _drivers/pin/main.c: https://github.com/eerimoq/simba/tree/master/tst/drivers/pin/main.c
-

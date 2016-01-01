@@ -4,14 +4,11 @@
 .. module:: fifo
    :synopsis: First In First Out queuing.
 
-Source code: `kernel/fifo.h`_
+Source code: :source:`src/kernel/kernel/fifo.h`
 
-Test code: `kernel/fifo/main.c`_
+Test code: :source:`tst/kernel/fifo/main.c`
 
 ----------------------------------------------
 
 .. doxygenfile:: kernel/fifo.h
    :project: simba
-
-.. _kernel/fifo.h: https://github.com/eerimoq/simba/tree/master/src/kernel/kernel/fifo.h
-.. _kernel/fifo/main.c: https://github.com/eerimoq/simba/tree/master/tst/kernel/fifo/main.c

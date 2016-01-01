@@ -4,15 +4,11 @@
 .. module:: shell
    :synopsis: A simple shell.
 
-Source code: `kernel/shell.h`_
+Source code: :source:`src/kernel/kernel/shell.h`
 
-Test code: `kernel/shell/main.c`_
+Test code: :source:`tst/kernel/shell/main.c`
 
 ----------------------------------------------
 
 .. doxygenfile:: kernel/shell.h
    :project: simba
-
-.. _kernel/shell.h: https://github.com/eerimoq/simba/tree/master/src/kernel/kernel/shell.h
-.. _kernel/shell/main.c: https://github.com/eerimoq/simba/tree/master/tst/kernel/shell/main.c
-

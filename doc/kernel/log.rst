@@ -4,15 +4,11 @@
 .. module:: log
    :synopsis: Logging.
 
-Source code: `kernel/log.h`_
+Source code: :source:`src/kernel/kernel/log.h`
 
-Test code: `kernel/log/main.c`_
+Test code: :source:`tst/kernel/log/main.c`
 
 ----------------------------------------------
 
 .. doxygenfile:: kernel/log.h
    :project: simba
-
-.. _kernel/log.h: https://github.com/eerimoq/simba/tree/master/src/kernel/kernel/log.h
-.. _kernel/log/main.c: https://github.com/eerimoq/simba/tree/master/tst/kernel/log/main.c
-

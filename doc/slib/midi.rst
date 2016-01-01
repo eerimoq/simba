@@ -4,12 +4,9 @@
 .. module:: midi
    :synopsis: Musical Instrument Digital Interface.
 
-Source code: `slib/midi.h`_
+Source code: :source:`src/slib/slib/midi.h`
 
 ---------------------------------------------------
 
 .. doxygenfile:: slib/midi.h
    :project: simba
-
-.. _slib/midi.h: https://github.com/eerimoq/simba/tree/master/src/slib/slib/midi.h
-

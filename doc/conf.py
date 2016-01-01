@@ -43,7 +43,7 @@ breathe_projects = {
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
-extensions = ["breathe", "alabaster"]
+extensions = ["breathe", "alabaster", "sphinx.ext.extlinks"]
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -68,8 +68,8 @@ author = u'Erik Moqvist'
 # |version| and |release|, also used in various other places throughout the
 # built documents.
 #
-# The short X.Y version.
-version = u'0.1.0'
+# The name of the branch/tag on github
+version = u'master'
 # The full version, including alpha/beta/rc tags.
 release = u'0.1.0'
 
@@ -317,3 +317,9 @@ texinfo_documents = [
 
 # If true, do not generate a @detailmenu in the "Top" node's menu.
 #texinfo_no_detailmenu = False
+
+# extlins
+extlinks = {
+    'source':
+    ('https://github.com/eerimoq/simba/blob/' + version + '/', '')
+}

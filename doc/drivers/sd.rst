@@ -4,15 +4,11 @@
 .. module:: sd
    :synopsis: Secure Digital memory.
 
-Source code: `drivers/sd.h`_
+Source code: :source:`src/drivers/drivers/sd.h`
 
-Test code: `drivers/sd/main.c`_
+Test code: :source:`tst/drivers/sd/main.c`
 
 ----------------------------------------------
 
 .. doxygenfile:: drivers/sd.h
    :project: simba
-
-.. _drivers/sd.h: https://github.com/eerimoq/simba/tree/master/src/drivers/drivers/sd.h
-.. _drivers/sd/main.c: https://github.com/eerimoq/simba/tree/master/tst/drivers/sd/main.c
-

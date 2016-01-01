@@ -4,12 +4,9 @@
 .. module:: nrf24l01
    :synopsis: Wireless communication.
 
-Source code: `drivers/nrf24l01.h`_
+Source code: :source:`src/drivers/drivers/nrf24l01.h`
 
 ----------------------------------------------
 
 .. doxygenfile:: drivers/nrf24l01.h
    :project: simba
-
-.. _drivers/nrf24l01.h: https://github.com/eerimoq/simba/tree/master/src/drivers/drivers/nrf24l01.h
-

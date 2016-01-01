@@ -4,15 +4,11 @@
 .. module:: std
    :synopsis: Standard functions.
 
-Source code: `kernel/std.h`_
+Source code: :source:`src/kernel/kernel/std.h`
 
-Test code: `kernel/std/main.c`_
+Test code: :source:`tst/kernel/std/main.c`
 
 ----------------------------------------------
 
 .. doxygenfile:: kernel/std.h
    :project: simba
-
-.. _kernel/std.h: https://github.com/eerimoq/simba/tree/master/src/kernel/kernel/std.h
-.. _kernel/std/main.c: https://github.com/eerimoq/simba/tree/master/tst/kernel/std/main.c
-

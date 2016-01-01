@@ -4,12 +4,9 @@
 .. module:: errno
    :synopsis: Error numbers.
 
-Source code: `kernel/errno.h`_
+Source code: :source:`src/kernel/kernel/errno.h`
 
 ----------------------------------------------
 
 .. doxygenfile:: kernel/errno.h
    :project: simba
-
-.. _kernel/errno.h: https://github.com/eerimoq/simba/tree/master/src/kernel/kernel/errno.h
-

@@ -4,15 +4,11 @@
 .. module:: setting
    :synopsis: Persistent application settings.
 
-Source code: `kernel/setting.h`_
+Source code: :source:`src/kernel/kernel/setting.h`
 
-Test code: `kernel/setting/main.c`_
+Test code: :source:`tst/kernel/setting/main.c`
 
 ----------------------------------------------
 
 .. doxygenfile:: kernel/setting.h
    :project: simba
-
-.. _kernel/setting.h: https://github.com/eerimoq/simba/tree/master/src/kernel/kernel/setting.h
-.. _kernel/setting/main.c: https://github.com/eerimoq/simba/tree/master/tst/kernel/setting/main.c
-

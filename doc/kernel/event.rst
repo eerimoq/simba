@@ -4,15 +4,11 @@
 .. module:: event
    :synopsis: Event channel.
 
-Source code: `kernel/event.h`_
+Source code: :source:`src/kernel/kernel/event.h`
 
-Test code: `kernel/event/main.c`_
+Test code: :source:`tst/kernel/event/main.c`
 
 ----------------------------------------------
 
 .. doxygenfile:: kernel/event.h
    :project: simba
-
-.. _kernel/event.h: https://github.com/eerimoq/simba/tree/master/src/kernel/kernel/event.h
-.. _kernel/event/main.c: https://github.com/eerimoq/simba/tree/master/tst/kernel/event/main.c
-

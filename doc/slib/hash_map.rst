@@ -4,15 +4,11 @@
 .. module:: hash_map
    :synopsis: Hash map.
 
-Source code: `slib/hash_map.h`_
+Source code: :source:`src/slib/slib/hash_map.h`
 
-Test code: `slib/hash_map/main.c`_
+Test code: :source:`tst/slib/hash_map/main.c`
 
 ---------------------------------------------------
 
 .. doxygenfile:: slib/hash_map.h
    :project: simba
-
-.. _slib/hash_map.h: https://github.com/eerimoq/simba/tree/master/src/slib/slib/hash_map.h
-.. _slib/hash_map/main.c: https://github.com/eerimoq/simba/tree/master/tst/slib/hash_map/main.c
-

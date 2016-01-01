@@ -4,15 +4,11 @@
 .. module:: thrd
    :synopsis: Threads.
 
-Source code: `kernel/thrd.h`_
+Source code: :source:`src/kernel/kernel/thrd.h`
 
-Test code: `kernel/thrd/main.c`_
+Test code: :source:`tst/kernel/thrd/main.c`
 
 ----------------------------------------------
 
 .. doxygenfile:: kernel/thrd.h
    :project: simba
-
-.. _kernel/thrd.h: https://github.com/eerimoq/simba/tree/master/src/kernel/kernel/thrd.h
-.. _kernel/thrd/main.c: https://github.com/eerimoq/simba/tree/master/tst/kernel/thrd/main.c
-

@@ -4,11 +4,9 @@
 .. module:: chan
    :synopsis: Abstract channel communication.
 
-Source code: `kernel/chan.h`_
+Source code: :source:`src/kernel/kernel/chan.h`
 
 ----------------------------------------------
 
 .. doxygenfile:: kernel/chan.h
    :project: simba
-
-.. _kernel/chan.h: https://github.com/eerimoq/simba/tree/master/src/kernel/kernel/chan.h

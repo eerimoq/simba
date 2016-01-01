@@ -24,10 +24,19 @@
 #include "simba.h"
 
 struct shell_args_t {
+    /** The shell input channel. The shell waits for commands on this
+        channel. */
     chan_t *chin_p;
+    /** The shell output channel. The shell writes responses on this
+        channel. */
     chan_t *chout_p;
+    /** The shell thread name. */
     const char *name_p;
+    /** Shell login username, or NULL if no username is required to
+        use the shell. */
     const char *username_p;
+    /** Shell login password. This field is unused if `username_p` is
+        NULL. */
     const char *password_p;
 };
 
@@ -37,8 +46,9 @@ struct shell_args_t {
  * commands are passed to the debug file system function `fs_call()`
  * for execution.
  *
- * @param[in] arg_p Pointer to 'struct shell_args_t' with shell
- *                  configuration.
+ * @param[in] arg_p Pointer to the shell arguemnt struct `struct
+ *                  shell_args_t`. See the struct definition for a
+ *                  description of it's content.
  *
  * @return Never returns.
  */
