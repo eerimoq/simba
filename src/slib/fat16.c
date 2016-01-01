@@ -5,7 +5,7 @@
  * @section License
  * Copyright (C) 2009, William Greiman (Arduino Fat16 Library)
  * Copyright (C) 2013-2015, Mikael Patel (Cosa, Refactoring)
- * Copyright (C) 2015, Erik Moqvist
+ * Copyright (C) 2015-2016, Erik Moqvist
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public

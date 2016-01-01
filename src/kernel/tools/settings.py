@@ -24,7 +24,7 @@ HEADER_FMT = """/**
  * @version 0.1.0
  *
  * @section License
- * Copyright (C) 2014-2015, Erik Moqvist
+ * Copyright (C) 2014-2016, Erik Moqvist
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -66,7 +66,7 @@ SOURCE_FMT = """/**
  * @version 0.1.0
  *
  * @section License
- * Copyright (C) 2014-2015, Erik Moqvist
+ * Copyright (C) 2014-2016, Erik Moqvist
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
