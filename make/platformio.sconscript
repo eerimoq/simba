@@ -275,7 +275,7 @@ SETTINGS_BIN = env.subst("$BUILD_DIR/SimbaFramework/gen/settings.bin")
 SIMBA_GEN_C = "$BUILD_DIR/SimbaFramework/gen/simba_gen.c"
 
 # generate settings
-fmt = ("$PLATFORMFW_DIR/src/kernel/tools/settings.py --{filetype} "
+fmt = ('"$PYTHONEXE" "$PLATFORMFW_DIR/src/kernel/tools/settings.py" --{filetype} '
        "--output-directory $BUILD_DIR/SimbaFramework/gen --setting-memory $SETTING_MEMORY "
        "--setting-offset $SETTING_OFFSET --setting-size $SETTING_SIZE "
        "$SOURCE $ENDIANESS")
@@ -305,8 +305,8 @@ for src in env.LookupSources(variant_dir, src_dir, True, src_filter):
 # Command to generate simba_gen.c
 env.Command(SIMBA_GEN_C,
             pp_source,
-            ("$PLATFORMFW_DIR/src/kernel/tools/gen.py \"$NAME\" \"$VERSION\" "
-             "\"$BOARD_DESC\" \"$MCU_DESC\" \"$TARGET\" $SOURCES"))
+            ('"$PYTHONEXE" "$PLATFORMFW_DIR/src/kernel/tools/gen.py" "$NAME" "$VERSION" '
+             '"$BOARD_DESC" "$MCU_DESC" "$TARGET" $SOURCES'))
 source_files.append(SIMBA_GEN_C)
 source_files.append(SETTINGS_C)
 
