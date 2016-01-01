@@ -1,6 +1,6 @@
 #
 # @file make/app.mk
-# @version 1.0
+# @version 0.1.0
 #
 # @section License
 # Copyright (C) 2014-2015, Erik Moqvist
@@ -20,7 +20,7 @@
 
 .PHONY: all generate build clean new run run-debugger help
 
-VERSION ?= 0.0.0
+VERSION ?= $(shell cat $(SIMBA_ROOT)/VERSION.txt)
 
 # files and folders
 OBJDIR = obj

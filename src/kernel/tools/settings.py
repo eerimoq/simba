@@ -21,7 +21,7 @@ SETTINGS_BIN_FILENAME = "settings.bin"
 
 HEADER_FMT = """/**
  * @file {filename}
- * @version 1.0
+ * @version 0.1.0
  *
  * @section License
  * Copyright (C) 2014-2015, Erik Moqvist
@@ -63,7 +63,7 @@ HEADER_FMT = """/**
 
 SOURCE_FMT = """/**
  * @file {filename}
- * @version 1.0
+ * @version 0.1.0
  *
  * @section License
  * Copyright (C) 2014-2015, Erik Moqvist

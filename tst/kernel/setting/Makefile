@@ -1,6 +1,6 @@
 #
 # @file Makefile
-# @version 1.0
+# @version 0.1.0
 #
 # @section License
 # Copyright (C) 2014-2015, Erik Moqvist
@@ -19,7 +19,7 @@
 #
 
 NAME = setting_suite
-VERSION = 1.0.0
+VERSION = 0.1.0
 BOARD ?= linux
 
 # Remove the settings.bin file on linux and cygwin to force it to be
