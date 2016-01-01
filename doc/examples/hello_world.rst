@@ -70,5 +70,3 @@ Build and run the application.
    ...
    Hello World!
    $
-
-.. _examples/hello_world: https://github.com/eerimoq/simba/tree/master/examples/hello_world

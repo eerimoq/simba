@@ -71,5 +71,3 @@ Build and run the application.
 
    $ cd examples/blink
    $ make -s BOARD=<board> release size run
-
-.. _examples/blink: https://github.com/eerimoq/simba/tree/master/examples/blink
