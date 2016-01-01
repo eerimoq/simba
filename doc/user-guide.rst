@@ -275,7 +275,7 @@ executed.
    $ simba application init
    Application name [foo]: <Enter>
    Author [erik]:  <Enter>
-   Version [0.0.1]: <Enter>
+   Version [0.1.0]: <Enter>
    $ tree .
    .
    ├── main.c
@@ -296,7 +296,7 @@ is built and executed.
    $ simba package init
    Package name [foo]: <Enter>
    Author [erik]:  <Enter>
-   Version [0.0.1]: <Enter>
+   Version [0.1.0]: <Enter>
    $ tree
    .
    ├── mkpkg
