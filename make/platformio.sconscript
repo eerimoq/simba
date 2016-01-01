@@ -1,0 +1,316 @@
+#
+# @file make/platformio.sconscript
+# @version 0.1.0
+#
+# @section License
+# Copyright (C) 2014-2015, Erik Moqvist
+#
+# This library is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Lesser General Public
+# License as published by the Free Software Foundation; either
+# version 2.1 of the License, or (at your option) any later version.
+#
+# This library is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# Lesser General Public License for more details.
+#
+# This file is part of the Simba project.
+#
+
+import os
+from os.path import join
+
+from SCons.Script import DefaultEnvironment
+from platformio.builder.tools.platformio import SRC_DEFAULT_FILTER
+
+# Map the PlatformIO board name to the Simba board name
+BOARD_MAP = {
+    "due": "arduino_due",
+    "megaatmega2560": "arduino_mega",
+    "nanoatmega328": "arduino_nano",
+    "uno": "arduino_uno"
+}
+
+MCU_MAP = {
+    "at91sam3x8e": "sam/3x8e"
+}
+
+
+def set_default_values(env):
+    """Default values in the environment.
+
+    """
+
+    if "VERSION" not in env:
+        with open(env.subst(join("$PLATFORMFW_DIR", "VERSION.txt"))) as f:
+            env.Append(VERSION=f.read().strip())
+        
+    if "NAME" not in env:
+        env.Append(NAME="app_name")
+
+
+def setup_mcu_avr(env):
+    """Setup the AVR MCU environment.
+    """
+
+    if env.subst(env["BOARD_MCU"]) == "atmega2560":
+        env.Replace(MCU_DESC="Atmel ATMega25600 AVR @ 16MHz, 8k sram, 256k flash",
+                    MAIN_STACK_END="0x802200")
+    elif env.subst(env["BOARD_MCU"]) == "atmega328p":
+        env.Replace(MCU_DESC="Atmel ATMega328p AVR @ 16MHz, 2k sram, 32k flash",
+                    MAIN_STACK_END="0x800900")
+    else:
+        env.Replace(MCU_DESC="Not found")
+
+    env.Replace(ARCH="avr",
+                SETTING_MEMORY="eeprom",
+                SETTING_OFFSET="128",
+                SETTING_SIZE="256",
+                ENDIANESS="little")
+
+    env.Append(CPPDEFINES=["THRD_NMONITOR"])
+
+    env.Append(CCFLAGS=[
+        "-funsigned-char",
+        "-funsigned-bitfields",
+        "-std=gnu99",
+        "-Wno-error=unused-variable",
+        "-Werror",
+        "-O2",
+        "-fpack-struct"
+    ])
+
+    env.Append(LINKFLAGS=[
+        "-Wl,--defsym=__main_stack_end=$MAIN_STACK_END",
+        "-Wl,-Map=$BUILD_DIR/firmware.map", # This should be added to PlatformIO
+    ])
+
+
+def setup_mcu_sam(env):
+    """Setup the SAM MCU environment.
+    """
+
+    if env.subst(env["BOARD_MCU"]).endswith("/3x8e"):
+        env.Replace(MCU_DESC="Atmel SAM3X8E Cortex-M3 @ 84MHz, 96k sram, 512k flash")
+    else:
+        env.Replace(MCU_DESC="Not found")
+
+    env.Replace(ARCH="arm",
+                SETTING_MEMORY="flash",
+                SETTING_OFFSET="0",
+                SETTING_SIZE="4096",
+                ENDIANESS="little")
+
+    env.Append(CCFLAGS=[
+        "-funsigned-char",
+        "-funsigned-bitfields",
+        "-std=gnu99",
+        "-Wno-error=unused-variable",
+        "-Werror",
+        "-O2",
+        "-fpack-struct"
+    ])
+
+    linkflags = []
+    for flag in env["LINKFLAGS"]:
+        if "-Wl,--entry" not in flag:
+            linkflags.append(flag)
+
+    env.Replace(LINKFLAGS=linkflags + [
+        "-Wl,-T$PLATFORMFW_DIR/src/mcus/$BOARD_MCU/script.ld",
+        "-Wl,-Map=$BUILD_DIR/firmware.map" # This should be added to PlatformIO
+    ])
+
+
+def create_src_filter(env):
+    """Create the source filter string.
+    """
+
+    src_filter_patterns = []
+
+    # add the board files
+    src_filter_patterns.append("-<boards>")
+    if env.subst("$BOARD") == "arduino_due":
+        src_filter_patterns.append("+<boards/arduino_due>")
+
+    # add the mcu files
+    src_filter_patterns.append("-<mcus>")
+    if env.subst("$BOARD_MCU") == "sam/3x8e":
+        src_filter_patterns.append("+<mcus/sam>")
+    else:
+        src_filter_patterns.append(env.subst("+<mcus/$BOARD_MCU>"))
+
+    # add the drivers files
+    src_filter_patterns.append("-<drivers>")
+
+    if env.subst("$ARCH") == "arm":
+        files = [
+            "adc.c",
+            "can.c",
+            "chipid.c",
+            "dac.c",
+            "exti.c",
+            "flash.c",
+            "mcp2515.c",
+            "pin.c",
+            "sd.c",
+            "spi.c",
+            "uart.c",
+            "usb.c",
+            "usb_host.c",
+            "usb/host/class/usb_host_class_hid.c",
+            "usb/host/class/usb_host_class_mass_storage.c"
+        ]
+        for src in files:
+            src_filter_patterns.append("+<drivers/" + src + ">")
+
+    elif env.subst("$ARCH") == "avr":
+        files = [
+            "adc.c",
+            "ds18b20.c",
+            "ds3231.c",
+            "exti.c",
+            "mcp2515.c",
+            "nrf24l01.c",
+            "spi.c",
+            "owi.c",
+            "pin.c",
+            "pwm.c",
+            "sd.c",
+            "uart.c",
+            "uart_soft.c"
+        ]
+        for src in files:
+            src_filter_patterns.append("+<drivers/" + src + ">")
+
+    return SRC_DEFAULT_FILTER + " " + " ".join(src_filter_patterns)
+
+
+env = DefaultEnvironment()
+
+# Rename the name of boards that have different name in PlatformIO and
+# Simba.
+if env["BOARD"] in BOARD_MAP:
+    env["BOARD"] = BOARD_MAP[env["BOARD"]]
+
+# Rename the name of mcu that have different name in PlatformIO and
+# Simba.
+if env.subst(env["BOARD_MCU"]) in MCU_MAP:
+    env["BOARD_MCU"] = MCU_MAP[env.subst(env["BOARD_MCU"])]
+
+set_default_values(env)
+
+# Remove flags that breaks the build.
+# -Os -> internal compiler error
+cppflags = list(set(env["CPPFLAGS"]) - set(["-Os", "-g"]))
+env.Replace(CPPFLAGS=cppflags)
+
+if os.path.dirname(env.subst(env["BOARD_MCU"])) == "sam":
+    setup_mcu_sam(env)
+elif env.subst(env["BOARD_MCU"]) in ["atmega2560", "atmega328p"]:
+    setup_mcu_avr(env)
+else:
+    raise ValueError("MCU {} is not supported by Simba.".format(env.subst(env["BOARD_MCU"])))
+
+if "SETTINGS_INI" not in env:
+    env.Append(SETTINGS_INI=[join("$BUILD_DIR", "SimbaFramework", "make", "settings.ini")])
+    env.VariantDirWrap(
+        join("$BUILD_DIR", "SimbaFramework", "make"),
+        join("$PLATFORMFW_DIR", "make")
+    )
+
+env.VariantDirWrap(
+    join("$BUILD_DIR", "SimbaFramework", "src"),
+    join("$PLATFORMFW_DIR", "src")
+)
+
+paths = [
+    "gen",
+    join("boards", "$BOARD"),
+    join("mcus", "$MCU"),
+    join("kernel"),
+    join("kernel", "ports", "$ARCH", "gnu"),
+    join("drivers"),
+    join("drivers", "ports", "$ARCH"),
+    join("slib")
+]
+
+env.Append(CPPPATH=[join("$BUILD_DIR", "SimbaFramework")])
+    
+mcu = env.subst(env["BOARD_MCU"])
+dirname = os.path.dirname(mcu)
+if dirname:
+    paths.append(join("mcus", dirname))
+else:
+    paths.append(join("mcus", "$BOARD_MCU"))
+
+for path in paths:
+    env.VariantDirWrap(
+        join("$BUILD_DIR", "SimbaFramework", path),
+        join("$PLATFORMFW_DIR", "src", path)
+    )
+    env.Append(CPPPATH=[join("$BUILD_DIR", "SimbaFramework", path)])
+
+env.Append(
+    CPPDEFINES=[
+        "ARCH_$ARCH_UPPER",
+        "MCU_$MCU_UPPER",
+        "BOARD_$BOARD_UPPER",
+        "VERSION=$VERSION"
+    ]
+)
+
+env.Append(CCFLAGS=[])
+
+# variables in upper case for defines
+env.Append(ARCH_UPPER=env.subst(env["ARCH"]).upper().replace("/", "_"),
+           MCU_UPPER=env.subst(env["BOARD_MCU"]).upper().replace("/", "_"),
+           BOARD_UPPER=env.subst(env["BOARD"]).upper().replace("/", "_"))
+
+# generated files
+SETTINGS_H = "$BUILD_DIR/SimbaFramework/gen/settings.h"
+SETTINGS_C = env.subst("$BUILD_DIR/SimbaFramework/gen/settings.c")
+SETTINGS_BIN = env.subst("$BUILD_DIR/SimbaFramework/gen/settings.bin")
+SIMBA_GEN_C = "$BUILD_DIR/SimbaFramework/gen/simba_gen.c"
+
+# generate settings
+fmt = ("$PLATFORMFW_DIR/src/kernel/tools/settings.py --{filetype} "
+       "--output-directory $BUILD_DIR/SimbaFramework/gen --setting-memory $SETTING_MEMORY "
+       "--setting-offset $SETTING_OFFSET --setting-size $SETTING_SIZE "
+       "$SOURCE $ENDIANESS")
+env.Command(SETTINGS_H, env["SETTINGS_INI"], fmt.format(filetype="header"))
+env.Command(SETTINGS_C, env["SETTINGS_INI"], fmt.format(filetype="source"))
+env.Command(SETTINGS_BIN, env["SETTINGS_INI"], fmt.format(filetype="binary"))
+
+# create a list of all sources
+variant_dir = join("$BUILD_DIR", "SimbaFramework")
+src_dir = join("$PLATFORMFW_DIR", "src")
+src_filter = create_src_filter(env)
+
+source_files = []
+pp_source = []
+for src in env.LookupSources(variant_dir, src_dir, True, src_filter):
+    # add the module name
+    module_name = os.path.splitext(os.path.basename(str(src)))[0]
+    defines = env["CPPDEFINES"] + ["MODULE_NAME=" + module_name]
+    source_files.append(env.Object(src, CPPDEFINES=defines))
+    
+    # the file system is generated from pre-process the source files
+    ppenv = env.Clone()
+    ppenv.Append(CPPDEFINES=["__SIMBA_GEN__"])
+    ppenv.Append(CCFLAGS=["-E"])
+    pp_source.append(ppenv.Object(str(src) + ".pp", src))
+
+# Command to generate simba_gen.c
+env.Command(SIMBA_GEN_C,
+            pp_source,
+            ("$PLATFORMFW_DIR/src/kernel/tools/gen.py \"$NAME\" \"$VERSION\" "
+             "\"$BOARD_DESC\" \"$MCU_DESC\" \"$TARGET\" $SOURCES"))
+source_files.append(SIMBA_GEN_C)
+source_files.append(SETTINGS_C)
+
+lib = env.Library(target=variant_dir, source=source_files)
+Depends(lib, SETTINGS_BIN)
+
+env.Append(LIBS=[lib])
