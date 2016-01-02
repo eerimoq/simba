@@ -18,6 +18,22 @@
  * This file is part of the Simba project.
  */
 
-static void time_port_sleep(int us)
+static void time_port_sleep(int usec)
 {
+    /*
+     * Based on Paul Stoffregen's implementation
+     * for Teensy 3.0 (http://www.pjrc.com/)
+     */
+    uint32_t iterations;
+
+    if (usec == 0) {
+        return;
+    }
+
+    iterations = (usec * (F_CPU / 3000000));
+
+    asm volatile("L_%=_time_port_sleep:"       "\n\t"
+                 "subs   %0, #1"               "\n\t"
+                 "bne    L_%=_time_port_sleep" "\n"
+                 : "+r" (iterations) : );
 }
