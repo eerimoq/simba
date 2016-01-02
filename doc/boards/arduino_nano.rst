@@ -1,17 +1,43 @@
-:mod:`arduino_nano` --- Arduino Nano
-====================================
+Arduino Nano
+===========
 
-.. module:: arduino_nano
-   :synopsis: Arduino Nano.
+Homepage
+--------
 
-Source code: `boards/arduino_nano/board.h`_
+https://www.arduino.cc/en/Main/ArduinoBoardNano
 
-Hardware reference: :doc:`Arduino Nano <../Boards/arduino_nano>`
+Pinout
+------
 
-----------------------------------------------
+.. image:: ../images/boards/arduino-nano-pinout.png
+   :width: 50%
+   :target: ../_images/arduino-nano-pinout.png
 
-.. doxygenfile:: boards/arduino_nano/board.h
-   :project: simba
+Drivers
+-------
 
-.. _boards/arduino_nano/board.h: https://github.com/eerimoq/simba/tree/master/src/boards/arduino_nano/board.h
+- :doc:`../api-reference/drivers/adc`
+- :doc:`../api-reference/drivers/ds18b20`
+- :doc:`../api-reference/drivers/ds3231`
+- :doc:`../api-reference/drivers/exti`
+- :doc:`../api-reference/drivers/mcp2515`
+- :doc:`../api-reference/drivers/nrf24l01`
+- :doc:`../api-reference/drivers/owi`
+- :doc:`../api-reference/drivers/pin`
+- :doc:`../api-reference/drivers/pwm`
+- :doc:`../api-reference/drivers/sd`
+- :doc:`../api-reference/drivers/spi`
+- :doc:`../api-reference/drivers/uart`
+- :doc:`../api-reference/drivers/uart_soft`
 
+Mcu
+---
+
+:doc:`../mcus/atmega328p`
+
+API Reference
+-------------
+
+:doc:`Arduino Nano <../api-reference/boards/arduino_nano>`
+
+.. include:: extra/arduino_nano.rst

@@ -1,0 +1,13 @@
+About
+-----
+
+The `Simba` port for ESP8266 was a challange! In short, Simba is
+running in a FreeRTOS thread managed by `ESP8266 RTOS SDK`. It works
+amaizingly well!
+
+The reason for this kind implementation is simple; it would have been
+too much work to reverseengineer the WiFi module communication. The
+SDK does the work for us, and that's great. After all, the goal of
+this port was to enable the user to use the Simba API on the ESP and
+we are satisfied with the somewhat quirky implementation. It shouldn't
+affect the performance very much, I hope.

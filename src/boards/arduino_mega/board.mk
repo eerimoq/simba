@@ -21,6 +21,8 @@
 INC += $(SIMBA_ROOT)/src/boards/arduino_mega
 SRC += $(SIMBA_ROOT)/src/boards/arduino_mega/board.c
 
-BOARD_DESC = "Arduino MEGA 2560"
+BOARD_HOMEPAGE = "https://www.arduino.cc/en/Main/ArduinoBoardMega"
+BOARD_PINOUT = "arduino-mega-pinout.png"
+BOARD_DESC = "Arduino Mega"
 
 MCU = atmega2560

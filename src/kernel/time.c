@@ -118,12 +118,14 @@ int time_unix_time_to_date(struct date_t *date_p,
                            struct time_t *time_p)
 {
     long long t = time_p->seconds;
-    long long days, secs;
+    long long weeks, days, secs;
     int32_t remdays, remsecs, remyears;
     int32_t qc_cycles, c_cycles, q_cycles;
     int32_t years, months;
     int32_t wday, yday, leap;
-    static const char days_in_month[] = {31,30,31,30,31,31,30,31,30,31,31,29};
+    static const char days_in_month[] = {
+        31, 30, 31, 30, 31, 31, 30, 31, 30, 31, 31, 29
+    };
 
     /* Reject time_t values whose year would overflow int32_t */
     if ((t < INT32_MIN * 31622400LL) || (t > INT32_MAX * 31622400LL)) {
@@ -132,21 +134,22 @@ int time_unix_time_to_date(struct date_t *date_p,
 
     secs = (t - LEAPOCH);
     days = (secs / 86400);
-    remsecs = (secs % 86400);
+    remsecs = (secs - (86400 * days));
 
     if (remsecs < 0) {
         remsecs += 86400;
         days--;
     }
 
-    wday = ((3 + days) % 7);
+    weeks = ((3 + days) / 7);
+    wday = ((3 + days) - (7 * weeks));
 
     if (wday < 0) {
         wday += 7;
     }
 
     qc_cycles = (days / DAYS_PER_400Y);
-    remdays = (days % DAYS_PER_400Y);
+    remdays = (days - (qc_cycles * DAYS_PER_400Y));
 
     if (remdays < 0) {
         remdays += DAYS_PER_400Y;

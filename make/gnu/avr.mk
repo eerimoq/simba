@@ -25,16 +25,14 @@ SIZEARGS = --mcu=$(MCU) --format=avr
 CFLAGS += -mmcu=$(CPU) \
           -DF_CPU=$(F_CPU)UL \
           -D__DELAY_BACKWARD_COMPATIBLE__ \
+          -DTHRD_NMONITOR \
           -O2 \
-          -fdata-sections \
-          -fpack-struct \
-          -ffunction-sections
+          -fpack-struct
 
 LDFLAGS += -mmcu=$(CPU) \
            -DF_CPU=$(F_CPU)UL \
            -Wl,--cref \
-           -Wl,--defsym=__main_stack_end=$(MAIN_STACK_END) \
-           -Wl,--gc-sections
+           -Wl,--defsym=__main_stack_end=$(MAIN_STACK_END)
 
 ENDIANESS = little
 

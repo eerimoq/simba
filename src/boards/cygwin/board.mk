@@ -21,6 +21,8 @@
 INC += $(SIMBA_ROOT)/src/boards/linux
 SRC += $(SIMBA_ROOT)/src/boards/linux/board.c
 
+BOARD_HOMEPAGE = ""
+BOARD_PINOUT = ""
 BOARD_DESC = "Cygwin"
 
 MCU = linux

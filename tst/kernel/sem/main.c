@@ -25,6 +25,11 @@ static struct sem_t sem2;
 
 static THRD_STACK(t0_stack, 224);
 static THRD_STACK(t1_stack, 224);
+
+/* Defined in the linker script. */
+extern char __simba_stack_begin;
+extern char __simba_stack_size;
+
 static void *sem_main(void *arg_p)
 {
     sem_put(&sem2, 1);

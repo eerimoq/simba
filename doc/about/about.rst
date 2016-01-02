@@ -1,0 +1,7 @@
+- :doc:`../boards/arduino_due`
+- :doc:`../boards/arduino_mega`
+- :doc:`../boards/arduino_nano`
+- :doc:`../boards/arduino_uno`
+- :doc:`../boards/cygwin`
+- :doc:`../boards/esp12e`
+- :doc:`../boards/linux`

@@ -8,9 +8,9 @@ source code instead of the generated documentation.
    :maxdepth: 2
    :numbered:
 
-   kernel
-   drivers
-   slib
-   boards
+   api-reference/kernel
+   api-reference/drivers
+   api-reference/slib
+   api-reference/boards
 
 .. _github: https://github.com/eerimoq/simba/tree/master/src

@@ -66,4 +66,9 @@
 #    include "drivers/usb/host/class/usb_host_class_mass_storage.h"
 #endif
 
+#if defined(ARCH_ESP)
+#    include "drivers/pin.h"
+#    include "drivers/uart.h"
+#endif
+
 #endif

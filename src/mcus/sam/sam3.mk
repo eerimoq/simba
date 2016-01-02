@@ -18,12 +18,15 @@
 # This file is part of the Simba project.
 #
 
-INC += $(SIMBA_ROOT)/src/mcus/sam
+INC += $(SIMBA_ROOT)/src/mcus/sam \
+       $(SIMBA_ROOT)/src/kernel/socket/stub
 SRC += $(SIMBA_ROOT)/src/mcus/sam/sam3.c \
        $(SIMBA_ROOT)/src/mcus/sam/mcu.c
 
 MCPU = cortex-m3
 F_CPU = 84000000
+
+MCU_HOMEPAGE = "http://www.atmel.com"
 
 ARCH = arm
 

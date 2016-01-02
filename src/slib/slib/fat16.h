@@ -37,6 +37,13 @@
  * 3. https://github.com/mikaelpatel/Cosa/tree/master/libraries/FAT16
  */
 
+/* Seek whence. */
+#define FAT16_SEEK_SET  0
+#define FAT16_SEEK_CUR  1
+#define FAT16_SEEK_END  2
+
+#define FAT16_EOF      -1
+
 /* File open options. */
 #define O_READ   0x01                /* Open for reading. */
 #define O_RDONLY O_READ              /* Same as O_READ. */

@@ -172,7 +172,7 @@ static int test_all(struct harness_t *harness_p)
     BTASSERT(std_strcmp(buf,
                         FSTR("\r\n"
                              "bar\r\n"
-#if !defined(ARCH_LINUX)
+#if !defined(ARCH_LINUX) && !defined(ARCH_ESP)
                              "drivers/\r\n"
 #endif
                              "fie\r\n"
@@ -225,7 +225,7 @@ static int test_all(struct harness_t *harness_p)
                membersof("/kernel/thrd/set_log_mask shell 0xff\r\n") - 1);
     chout_read_until_prompt(buf);
 
-#ifdef ARCH_LINUX
+#if defined(ARCH_LINUX) || defined(ARCH_ESP)
     /* List thrds. */
     chan_write(&qin, "/kernel/thrd/list\r\n", membersof("/kernel/thrd/list\r\n") - 1);
     /* Read until a prompt is found to empty the buffer. */

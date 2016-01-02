@@ -28,6 +28,7 @@ DEPSDIR = deps
 GENDIR = gen
 INC += . $(SIMBA_ROOT)/src
 SRC += main.c
+LIBPATH ?=
 SRC_FILTERED = $(filter-out $(SRC_IGNORE),$(SRC))
 CSRC += $(filter %.c,$(SRC_FILTERED))
 COBJ = $(patsubst %,$(OBJDIR)/%,$(notdir $(CSRC:%.c=%.o)))
@@ -56,7 +57,7 @@ endif
 CDEFS +=  -DARCH_$(UPPER_ARCH) -DMCU_$(UPPER_MCU) \
           -DBOARD_$(UPPER_BOARD) -DVERSION=$(VERSION)
 CFLAGS += $(CDEFS)
-LDFLAGS += $(LDFLAGS_EXTRA)
+LDFLAGS += $(LIBPATH:%=-L%) $(LDFLAGS_EXTRA)
 SHELL = /bin/bash
 
 all:
@@ -110,6 +111,12 @@ run: all
                   $(RUNLOG) $(RUN_END_PATTERN) $(RUN_END_PATTERN_SUCCESS) \
                   $(RUNARGS)
 
+upload: all
+	@echo "Uploading $(EXE)"
+	python -u $(RUNSCRIPT) upload ./$(EXE) $(SIMBA_ROOT) \
+                  $(RUNLOG) $(RUN_END_PATTERN) $(RUN_END_PATTERN_SUCCESS) \
+                  $(RUNARGS)
+
 dump:
 	python -u $(RUNSCRIPT) dump ./$(EXE) $(SIMBA_ROOT) $(RUNARGS)
 
@@ -140,7 +147,7 @@ release:
 
 $(EXE): $(OBJ) $(GENOBJ)
 	@echo "Linking $@"
-	$(LD) -o $@ $^ $(LDFLAGS)
+	$(LD) -o $@ $(LDFLAGS) $^ $(LDFLAGS_AFTER)
 
 $(SETTINGS_H): $(SETTINGS_INI)
 	@echo "Generating $@ from $<"
@@ -217,3 +224,6 @@ help:
 	  echo $$h ; \
 	done
 	@echo
+
+print-%:
+	@echo $($*)

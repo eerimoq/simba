@@ -21,9 +21,11 @@
 #include <avr/interrupt.h>
 #include <avr/eeprom.h>
 
-/* Calculate system tick timer configuration parameters from
-   cpu frequency and desired system tick frequency. Select
-   closest match above desired system tick frequency.*/
+/**
+ * Calculate system tick timer configuration parameters from cpu
+ * frequency and desired system tick frequency. Select closest match
+ * above desired system tick frequency.
+ */
 #define CPU_CYCLES_PER_SYS_TICK (F_CPU / SYS_TICK_FREQUENCY)
 #if (CPU_CYCLES_PER_SYS_TICK == 0)
 #    error "SYS_TICK_FREQUENCY is too high."
@@ -53,8 +55,8 @@ ISR(TIMER0_COMPA_vect)
 
 static int sys_port_module_init(void)
 {
-    /* Start periodic system tick timer. An interrupt is generated when
-       TCNT0 matches OCR0A. CTC timer mode is used. */
+    /* Start periodic system tick timer. An interrupt is generated
+       when TCNT0 matches OCR0A. CTC timer mode is used. */
     TCCR0A = _BV(WGM01);
     TCCR0B = CLOCK_SELECT;
     TCNT0 = 0;

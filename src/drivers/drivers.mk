@@ -26,6 +26,8 @@ DRIVERS_SRC ?= pin.c \
                sd.c \
                spi.c \
                uart.c
+# \
+#               $(DRIVERS_WIFI_C)
 endif
 
 ifeq ($(ARCH),avr)
@@ -42,6 +44,8 @@ DRIVERS_SRC ?= adc.c \
                sd.c \
                uart.c \
                uart_soft.c
+# \
+#               $(DRIVERS_WIFI_C)
 endif
 
 ifeq ($(ARCH),arm)
@@ -60,6 +64,15 @@ DRIVERS_SRC ?= adc.c \
                usb_host.c \
                usb/host/class/usb_host_class_hid.c \
                usb/host/class/usb_host_class_mass_storage.c
+# \
+#               $(DRIVERS_WIFI_C)
+endif
+
+ifeq ($(ARCH),esp)
+DRIVERS_SRC ?= pin.c \
+               uart.c
+# \
+#               $(DRIVERS_WIFI_C)
 endif
 
 SRC += $(DRIVERS_SRC:%=$(SIMBA_ROOT)/src/drivers/%)

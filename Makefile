@@ -18,7 +18,7 @@
 # This file is part of the Simba project.
 #
 
-.PHONY: tags
+.PHONY: tags doc
 
 BOARD ?= linux
 
@@ -77,6 +77,14 @@ jenkins-coverage: $(TESTS:%=%.jc)
 
 travis:
 	$(MAKE) test
+
+release-test:
+	+bin/release.py --test
+
+doc:
+	+bin/dbgen.py > database.json
+	+bin/docgen.py database.json
+	$(MAKE) -s -C doc
 
 $(APPS:%=%.all):
 	$(MAKE) -C $(basename $@) all

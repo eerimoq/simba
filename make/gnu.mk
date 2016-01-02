@@ -37,9 +37,13 @@ CFLAGS += -c \
           -Wall \
           -funsigned-char \
           -funsigned-bitfields \
+          -ffunction-sections \
+          -fdata-sections \
           -fshort-enums \
           -std=gnu99 \
           -Wno-error=unused-variable
-LDFLAGS += -Wl,-Map=$(NAME).map
+
+LDFLAGS += -Wl,-Map=$(NAME).map \
+           -Wl,--gc-sections
 
 CLEAN += $(NAME).map

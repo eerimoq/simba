@@ -37,6 +37,7 @@ int test_timer(struct harness_t *harness_p)
     int i;
     uint32_t mask;
     struct timer_t timer;
+    struct time_t now;
     struct time_t timeout = {
         .seconds = 0,
         .nanoseconds = 100000000
@@ -56,14 +57,19 @@ int test_timer(struct harness_t *harness_p)
     thrd_usleep(100000);
 
     /* Periodic timer. */
-    std_printf(FSTR("timer_set(PERIODIC)\r\n"));
+    std_printf(FSTR("Starting a periodic timer with 100 ms period.\r\n"));
     timer_init(&timer, &timeout, callback, NULL, TIMER_PERIODIC);
     timer_start(&timer);
+
+    std_printf(FSTR(" MS  MESSAGE\r\n"));
 
     for (i = 0; i < 5; i++) {
         mask = EVENT_MASK;
         event_read(&event, &mask, sizeof(mask));
-        std_printf(FSTR("Timeout %d.\r\n"), i);
+        time_get(&now);
+        std_printf(FSTR("%03u: timeout %d.\r\n"),
+                   (now.nanoseconds / 1000000),
+                   i);
     }
 
     BTASSERT(timer_stop(&timer) == 0);

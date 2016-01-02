@@ -21,6 +21,8 @@
 INC += $(SIMBA_ROOT)/src/boards/arduino_uno
 SRC += $(SIMBA_ROOT)/src/boards/arduino_uno/board.c
 
+BOARD_HOMEPAGE = "https://www.arduino.cc/en/Main/ArduinoBoardUno"
+BOARD_PINOUT = "arduino-uno-pinout.png"
 BOARD_DESC = "Arduino Uno"
 
 MCU = atmega328p

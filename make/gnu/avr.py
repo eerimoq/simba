@@ -3,7 +3,6 @@
 import sys
 import subprocess
 import os
-import re
 
 target = sys.argv[1]
 exe = sys.argv[2]
@@ -17,6 +16,10 @@ settings_bin = sys.argv[9]
 rest = sys.argv[10:]
 
 def run(command):
+    """Run a command.
+    """
+    
+    print " ".join(command)
     proc = subprocess.Popen(command, stdout=subprocess.PIPE)
     lines_iterator = iter(proc.stdout.readline, b"")
     with open(runlog, "w") as fout:
@@ -27,13 +30,27 @@ def run(command):
     if res != 0:
         sys.exit(res)
 
-if target == "run":
-    run(["avrdude", "-p", mcu] + rest + ["-U", "eeprom:w:" + settings_bin + ":r"])
+
+def upload():
+    """Upload.
+
+    """
+
+    run(["avrdude", "-p", mcu]
+        + rest
+        + ["-U", "eeprom:w:" + settings_bin + ":r"])
     run(["avrdude", "-p", mcu] + rest + ["-U", "flash:w:" + hex_file])
+
+
+if target == "run":
+    upload()
     run([os.path.join(simba_path, "make/run.py"),
          run_end_pattern,
-         run_end_pattern_success])
-elif TARGET == "dump":
+         run_end_pattern_success,
+         "38400"])
+elif target == "upload":
+    upload()
+elif target == "dump":
     run(["avrdude", "-p", mcu] + rest + ["-U", "eeprom:r:eeprom.bin:r"])
     run([os.path.join(simba_path, "make/dumpdecoder.py"), "eeprom.bin"])
 else:

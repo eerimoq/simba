@@ -21,6 +21,8 @@
 INC += $(SIMBA_ROOT)/src/boards/arduino_nano
 SRC += $(SIMBA_ROOT)/src/boards/arduino_nano/board.c
 
+BOARD_HOMEPAGE = "https://www.arduino.cc/en/Main/ArduinoBoardNano"
+BOARD_PINOUT = "arduino-nano-pinout.png"
 BOARD_DESC = "Arduino Nano"
 
 MCU = atmega328p

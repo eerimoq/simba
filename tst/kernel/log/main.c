@@ -50,6 +50,8 @@ int test_circular(struct harness_t *harness_p)
 
     BTASSERT(log_set_mode(LOG_MODE_OFF) == LOG_MODE_CIRCULAR);
     number_of_entries = log_format(sys_get_stdout());
+    std_printf(FSTR("number of entries = %d\r\n"), number_of_entries);
+
 #if defined(ARCH_LINUX)
     if (sizeof(void *) == 8) {
         BTASSERT(number_of_entries == 4);
@@ -58,6 +60,8 @@ int test_circular(struct harness_t *harness_p)
     }
 #elif defined(ARCH_ARM)
     BTASSERT(number_of_entries == 9);
+#elif defined(ARCH_ESP)
+    BTASSERT(number_of_entries == 8);
 #else
     BTASSERT(number_of_entries == 13);
 #endif

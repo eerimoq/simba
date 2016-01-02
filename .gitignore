@@ -14,7 +14,6 @@ profile.log
 coverage.*
 size.log
 *.hex
-*.bin
 settings.[hc]
 settings.bin
 
@@ -23,3 +22,5 @@ doc/xml
 
 dist-packages/
 !dist-packages/README.rst
+
+database.json

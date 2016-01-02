@@ -23,6 +23,9 @@
 #include "simba.h"
 #include <arpa/inet.h>
 
+/** Chunk size in number of bytes. */
+#define BLOCK_SIZE 512
+
 /* define fields in flags_ require sync directory entry. */
 #define F_OFLAG (O_RDWR | O_APPEND | O_SYNC)
 #define F_FILE_DIR_DIRTY 0x80
@@ -206,7 +209,7 @@ static int cache_flush(struct fat16_t *self_p)
     if (cache_p->dirty) {
         if (self_p->write(self_p->arg_p,
                           cache_p->block_number,
-                          cache_p->buffer.data) != SD_BLOCK_SIZE)
+                          cache_p->buffer.data) != BLOCK_SIZE)
             {
                 return (-1);
             }
@@ -215,7 +218,7 @@ static int cache_flush(struct fat16_t *self_p)
             {
                 if (self_p->write(self_p->arg_p,
                                   cache_p->mirror_block,
-                                  cache_p->buffer.data) != SD_BLOCK_SIZE)
+                                  cache_p->buffer.data) != BLOCK_SIZE)
                     {
                         return (-1);
                     }
@@ -268,7 +271,7 @@ static int cache_raw_block(struct fat16_t *self_p,
 
         if (self_p->read(self_p->arg_p,
                          cache_p->buffer.data,
-                         block_number) != SD_BLOCK_SIZE)
+                         block_number) != BLOCK_SIZE)
             {
                 return (-1);
             }
@@ -593,7 +596,7 @@ static int file_truncate(struct fat16_file_t *file_p,
 
         file_p->cur_cluster = file_p->first_cluster = 0;
     } else {
-        if (!fat16_file_seek(file_p, length, SEEK_SET)) {
+        if (!fat16_file_seek(file_p, length, FAT16_SEEK_SET)) {
             return (-1);
         }
 
@@ -620,7 +623,7 @@ static int file_truncate(struct fat16_file_t *file_p,
         return (-1);
     }
 
-    return (fat16_file_seek(file_p, new_pos, SEEK_SET));
+    return (fat16_file_seek(file_p, new_pos, FAT16_SEEK_SET));
 }
 
 static int add_cluster(struct fat16_file_t *file_p)
@@ -1024,20 +1027,20 @@ static int get_block(struct fat16_file_t *file_p,
             if (file_p->first_cluster == 0) {
                 /* Allocate first cluster of file. */
                 if (add_cluster(file_p) != 0) {
-                    return (EOF);
+                    return (FAT16_EOF);
                 }
             } else {
                 file_p->cur_cluster = file_p->first_cluster;
             }
         } else {
             if (fat_get(file_p->fat16_p, file_p->cur_cluster, &next) != 0) {
-                return (EOF);
+                return (FAT16_EOF);
             }
 
             if (is_end_of_cluster(next)) {
                 /* Add cluster if at end of chain. */
                 if (add_cluster(file_p) != 0) {
-                    return (EOF);
+                    return (FAT16_EOF);
                 }
             } else {
                 file_p->cur_cluster = next;
@@ -1050,7 +1053,7 @@ static int get_block(struct fat16_file_t *file_p,
     if ((*block_offset_p == 0) && (file_p->cur_position >= file_p->file_size)) {
         /* Start of new block don't need to read into cache. */
         if (cache_flush(file_p->fat16_p) != 0) {
-            return (EOF);
+            return (FAT16_EOF);
         }
 
         file_p->fat16_p->cache.block_number = lba;
@@ -1058,7 +1061,7 @@ static int get_block(struct fat16_file_t *file_p,
     } else {
         /* Rewrite part of block. */
         if (cache_raw_block(file_p->fat16_p, lba, CACHE_FOR_WRITE) != 0) {
-            return (EOF);
+            return (FAT16_EOF);
         }
     }
 
@@ -1145,7 +1148,7 @@ ssize_t fat16_file_read(struct fat16_file_t *file_p,
 
     /* Error if not open for read. */
     if (!(file_p->flags & O_READ)) {
-        return (EOF);
+        return (FAT16_EOF);
     }
 
     /* Don't read beyond end of file. */
@@ -1168,13 +1171,13 @@ ssize_t fat16_file_read(struct fat16_file_t *file_p,
                 file_p->cur_cluster = file_p->first_cluster;
             } else {
                 if (fat_get(file_p->fat16_p, file_p->cur_cluster, &file_p->cur_cluster) != 0) {
-                    return (EOF);
+                    return (FAT16_EOF);
                 }
             }
 
             /* Return error if bad cluster chain. */
             if (file_p->cur_cluster < 2 || is_end_of_cluster(file_p->cur_cluster)) {
-                return (EOF);
+                return (FAT16_EOF);
             }
         }
 
@@ -1182,7 +1185,7 @@ ssize_t fat16_file_read(struct fat16_file_t *file_p,
         if (cache_raw_block(file_p->fat16_p,
                             data_block_lba(file_p, blk_of_cluster),
                             CACHE_FOR_READ) != 0) {
-            return (EOF);
+            return (FAT16_EOF);
         }
 
         /* Location of data in cache. */
@@ -1222,20 +1225,20 @@ ssize_t fat16_file_write(struct fat16_file_t *file_p,
 
     /* Error if file is not open for write. */
     if (!(file_p->flags & O_WRITE)) {
-        return (EOF);
+        return (FAT16_EOF);
     }
 
     /* Go to end of file if O_APPEND. */
     if ((file_p->flags & O_APPEND)
         && (file_p->cur_position != file_p->file_size)) {
-        if (fat16_file_seek(file_p, 0, SEEK_END) != 0) {
-            return (EOF);
+        if (fat16_file_seek(file_p, 0, FAT16_SEEK_END) != 0) {
+            return (FAT16_EOF);
         }
     }
 
     while (left > 0) {
         if (get_block(file_p, &block_offset) != 0) {
-            return (EOF);
+            return (FAT16_EOF);
         }
 
         dst_p = file_p->fat16_p->cache.buffer.data + block_offset;
@@ -1264,7 +1267,7 @@ ssize_t fat16_file_write(struct fat16_file_t *file_p,
 
     if (file_p->flags & O_SYNC) {
         if (fat16_file_sync(file_p) != 0) {
-            return (EOF);
+            return (FAT16_EOF);
         }
     }
 
@@ -1278,11 +1281,11 @@ int fat16_file_seek(struct fat16_file_t *file_p,
     fat_t n;
     uint8_t blocks_per_cluster = file_p->fat16_p->blocks_per_cluster;
 
-    if (whence == SEEK_CUR) {
+    if (whence == FAT16_SEEK_CUR) {
         pos += file_p->cur_position;
-    } else if (whence == SEEK_END) {
+    } else if (whence == FAT16_SEEK_END) {
         pos = file_p->file_size;
-    } else if (whence != SEEK_SET) {
+    } else if (whence != FAT16_SEEK_SET) {
         return (-1);
     }
 

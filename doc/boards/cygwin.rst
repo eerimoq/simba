@@ -1,15 +1,34 @@
-:mod:`cygwin` --- Cygwin
-========================
+Cygwin
+===========
 
-.. module:: cygwin
-   :synopsis: Cygwin.
+Homepage
+--------
 
-Source code: `boards/cygwin/board.h`_
 
-----------------------------------------------
 
-.. doxygenfile:: boards/cygwin/board.h
-   :project: simba
+Pinout
+------
 
-.. _boards/cygwin/board.h: https://github.com/eerimoq/simba/tree/master/src/boards/cygwin/board.h
+.. image:: ../images/boards/
+   :width: 50%
+   :target: ../_images/
 
+Drivers
+-------
+
+- :doc:`../api-reference/drivers/pin`
+- :doc:`../api-reference/drivers/sd`
+- :doc:`../api-reference/drivers/spi`
+- :doc:`../api-reference/drivers/uart`
+
+Mcu
+---
+
+:doc:`../mcus/linux`
+
+API Reference
+-------------
+
+:doc:`Cygwin <../api-reference/boards/cygwin>`
+
+.. include:: extra/cygwin.rst

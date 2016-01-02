@@ -20,7 +20,7 @@
 
 CROSS_COMPILE =
 CFLAGS += -Werror -Wno-error=unused-variable -DNPROFILESTACK
-LDFLAGS += -Wl,-lpthread -lrt
+LDFLAGS_AFTER += -lpthread -lrt
 
 SETTING_MEMORY = file
 SETTING_OFFSET = 0

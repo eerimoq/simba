@@ -30,6 +30,8 @@ MAIN_STACK_END = 0x800900
 
 ARCH = avr
 
+MCU_HOMEPAGE = "http://www.atmel.com"
+MCU_NAME = "Atmel ATMega328p"
 MCU_DESC = "Atmel ATMega328p AVR @ 16MHz, 2k sram, 32k flash"
 
 include $(SIMBA_ROOT)/make/$(TOOLCHAIN)/avr.mk

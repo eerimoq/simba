@@ -15,6 +15,7 @@ run_end_pattern_success = sys.argv[6]
 binary = sys.argv[7]
 
 def run(command):
+    print " ".join(command)
     proc = subprocess.Popen(command, stdout=subprocess.PIPE)
     lines_iterator = iter(proc.stdout.readline, b"")
     with open(runlog, "w") as fout:
@@ -25,37 +26,57 @@ def run(command):
     if res != 0:
         sys.exit(res)
 
-def upload(bossac_port):
-    print "Setting /dev/arduino to 1200 baud and setting DTR to reset the board."
+
+def _upload():
+    """Try to upload.
+    """
+
+    print ("Setting /dev/arduino to 1200 baud and setting DTR to "
+           "reset the board.")
     ser = serial.Serial("/dev/arduino", baudrate=1200)
     ser.setDTR(1)
     ser.close()
     time.sleep(0.4)
-    print "bossac --port=" + bossac_port + " -e -w -b " + binary
-    subprocess.check_call("bossac --port=" + bossac_port + " -U false -e -w -b " + binary,
-                          shell=True)
+    command = "bossac --port=" + bossac_port + " -e -w -b -R " + binary
+    print command
+    subprocess.check_call(command, shell=True)
 
-if "AVRDUDE_PORT" in os.environ:
-	bossac_port = os.environ["AVRDUDE_PORT"]
-else:
-	bossac_port = "arduino"
+def upload():
+    """Upload.
 
-if target == "run":
+    """
+
     try:
-        upload(bossac_port)
+        _upload()
     except:
         try:
-            # /dev/arduino cannot be opened unless a COM-port is opened first
-            subprocess.check_call("bossac --port=" + bossac_port + " -U false -e -w -b " + binary,
+            # /dev/arduino cannot be opened unless a COM-port is
+            # opened first
+            subprocess.check_call("bossac --port="
+                                  + bossac_port
+                                  + " -U false -e -w -b "
+                                  + binary,
                                   shell=True)
         except:
-            upload(bossac_port)
+            _upload()
+
+
+if "AVRDUDE_PORT" in os.environ:
+    bossac_port = os.environ["AVRDUDE_PORT"]
+else:
+    bossac_port = "arduino"
+
+if target == "run":
+    upload()
     try:
         run([os.path.join(simba_path, "make/run.py"),
              run_end_pattern,
-             run_end_pattern_success])
+             run_end_pattern_success,
+             "38400"])
     except:
         sys.exit(1)
+elif target == "upload":
+    upload()
 else:
     print "Bad target ${TARGET}."
     sys.exit(1)

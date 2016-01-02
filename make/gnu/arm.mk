@@ -27,14 +27,13 @@ ENDIANESS = little
 CFLAGS += -mthumb \
           -mcpu=$(MCPU) \
           -DF_CPU=$(F_CPU)UL \
-          -fdata-sections \
-          -fpack-struct \
-          -ffunction-sections
+          -fpack-struct
 
-LDFLAGS += -mcpu=$(MCPU) -DF_CPU=$(F_CPU)UL -Wl,--cref \
+LDFLAGS += -mcpu=$(MCPU) \
+           -DF_CPU=$(F_CPU)UL \
+           -Wl,--cref \
            -T$(SIMBA_ROOT)/src/mcus/$(MCU)/script.ld \
-           -mthumb \
-           -Wl,--gc-sections
+           -mthumb
 
 SETTING_MEMORY = flash
 SETTING_OFFSET = 0

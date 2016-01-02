@@ -1,16 +1,13 @@
-boards
+Boards
 ======
 
 The boards supported by `Simba`.
 
-The boards on `github`_.
-
 Boards:
 
 .. toctree::
-   :glob:   
+   :glob:
+   :titlesonly:
    :maxdepth: 1
 
    boards/*
-
-.. _github: https://github.com/eerimoq/simba/tree/master/src/boards

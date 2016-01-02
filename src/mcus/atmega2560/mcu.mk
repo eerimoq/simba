@@ -30,6 +30,8 @@ AVRDUDE_PROGRAMMER = wiring
 
 ARCH = avr
 
-MCU_DESC = "Atmel ATMega25600 AVR @ 16MHz, 8k sram, 256k flash"
+MCU_HOMEPAGE = "http://www.atmel.com"
+MCU_NAME = "Atmel ATMega2560"
+MCU_DESC = "Atmel ATMega2560 AVR @ 16MHz, 8k sram, 256k flash"
 
 include $(SIMBA_ROOT)/make/$(TOOLCHAIN)/avr.mk
