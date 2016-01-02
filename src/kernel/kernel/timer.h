@@ -23,8 +23,17 @@
 
 #include "simba.h"
 
-/* Flags to `timer_set()`. */
+/**
+ * A timer is "single shot" per default. Initialize a timer with this
+ * flag set in the ``flags`` argument to configure it as periodic.
+ *
+ * A periodic timer will call the function callback periodically. This
+ * continues until the timer is stopped.
+ */
 #define TIMER_PERIODIC 0x1
+
+/** Time callback prototype. */
+typedef void (*timer_callback_t)(void *arg_p);
 
 /* Timer. */
 struct timer_t {
@@ -32,7 +41,7 @@ struct timer_t {
     sys_tick_t delta;
     sys_tick_t timeout;
     int flags;
-    void (*callback)(void *arg_p);
+    timer_callback_t callback;
     void *arg_p;
 };
 
@@ -44,17 +53,17 @@ struct timer_t {
  *
  * @param[in] self_p Timer object to initialize with given parameters.
  * @param[in] timeout_p The timer timeout value.
- * @param[in] callback Called when the timer expires. Called from
- *                     interrupt context.
- * @param[in] arg_p Callback argument. Passed to the callback when the
- *                  timer expires.
+ * @param[in] callback Functaion called when the timer expires. Called
+ *                     from interrupt context.
+ * @param[in] arg_p Function callback argument. Passed to the callback
+ *                  when the timer expires.
  * @param[in] flags Set TIMER_PERIODIC for periodic timer.
  *
  * @return zero(0) or negative error code.
  */
 int timer_init(struct timer_t *self_p,
                struct time_t *timeout_p,
-               void (*callback)(void *arg_p),
+               timer_callback_t callback,
                void *arg_p,
                int flags);
 

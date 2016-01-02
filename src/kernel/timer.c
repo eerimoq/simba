@@ -126,7 +126,7 @@ void timer_tick(void)
 
 int timer_init(struct timer_t *self_p,
                struct time_t *timeout_p,
-               void (*callback)(void *arg_p),
+               timer_callback_t callback,
                void *arg_p,
                int flags)
 {
