@@ -25,7 +25,7 @@
 #include "setting_port.h"
 
 /**
- * Initialize setting module.
+ * Initialize the setting module.
  *
  * @return zero(0) or negative error code.
  */
