@@ -38,5 +38,6 @@ Board support
 * :doc:`Arduino Due <boards/arduino_due>`
 * :doc:`Arduino Mega <boards/arduino_mega>`
 * :doc:`Ardunio Nano <boards/arduino_nano>`
+* :doc:`Ardunio Uno <boards/arduino_uno>`
 * :doc:`Cygwin <boards/cygwin>`
 * :doc:`Linux <boards/linux>`

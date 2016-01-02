@@ -10,7 +10,7 @@ Boards: All.
 About
 -----
 
-This application prints "Hello World" on the standard output (serial
+This application prints "Hello world!" on the standard output (serial
 port).
 
 Source code
@@ -68,5 +68,5 @@ Build and run the application.
    $ cd examples/hello_world
    $ make -s BOARD=<board> release size run
    ...
-   Hello World!
+   Hello world!
    $
