@@ -46,6 +46,27 @@ struct shell_args_t {
  * commands are passed to the debug file system function `fs_call()`
  * for execution.
  *
+ * Here is an example of using the shell to list and execute debug
+ * file system commands.
+ *
+ * @rst
+ * .. code-block:: text
+ *
+ *    $ <tab>
+ *    drivers/
+ *    kernel/
+ *    $ kernel/ <tab>
+ *    fs/
+ *    sys/
+ *    thrd/
+ *    $ kernel/thrd/list
+ *                NAME           PARENT        STATE  PRIO   CPU  LOGMASK
+ *                main                       current     0    0%     0x3f
+ *                idle             main        ready   127    0%     0x3f
+ *             monitor             main        ready   -80    0%     0x3f
+ *    $
+ * @endrst
+ *
  * @param[in] arg_p Pointer to the shell arguemnt struct `struct
  *                  shell_args_t`. See the struct definition for a
  *                  description of it's content.

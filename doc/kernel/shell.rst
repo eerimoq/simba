@@ -1,8 +1,8 @@
-:mod:`shell` --- A simple shell
+:mod:`shell` --- Debug shell
 ===============================
 
 .. module:: shell
-   :synopsis: A simple shell.
+   :synopsis: Debug shell.
 
 Source code: :source:`src/kernel/kernel/shell.h`
 
