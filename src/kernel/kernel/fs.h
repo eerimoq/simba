@@ -24,7 +24,31 @@
 #include "simba.h"
 
 /**
- * Add a command to the file system.
+ * Add a command to the file system. This macro is normally used in
+ * the beginning of a source file to define the modules' file system
+ * commands. All commands defined with this macro can be called with
+ * the function `fs_call()`.
+ *
+ * In the example below the command `"/hello/world"` is defined and
+ * with the function `cmd_hello_world()` as callback. The callback
+ * writes "Hello World\r\n" to the output channel. The input arguments
+ * and input channel are unused.
+ *
+ * @rst
+ * .. code-block:: c
+ *
+ *    FS_COMMAND_DEFINE("/hello/world", cmd_hello_world);
+ *
+ *    int cmd_hello_world(int argc,              
+ *                        const char *argv[],    
+ *                        chan_t *chout_p,       
+ *                        chan_t *chin_p)
+ *    {
+ *       std_fprintf(out_p, FSTR("Hello World!\r\n"));
+ *
+ *       return (0);
+ *    }
+ * @endrst
  *
  * @param[in] path Path of the command in the debug file system.
  * @param[in] name Command callback.
@@ -103,7 +127,8 @@ struct fs_node_t {
 };
 
 /**
- * Call given file system command.
+ * Call given file system command with given input and output
+ * channels.
  *
  * @param[in] command_p Command string to call. May be modified by
  *                      this function.
@@ -117,10 +142,11 @@ int fs_call(char *command_p,
             chan_t *chout_p);
 
 /**
- * List files and directories in 'path'.
+ * List files (callbacks) and directories in given path. Optionally
+ * with given filter. The list is written to the output channel.
  *
  * @param[in] path_p Directory to list.
- * @param[in] filter_p Filter files and folders.
+ * @param[in] filter_p Filter out files and folders.
  * @param[in] chout_p Output chan.
  *
  * @return zero(0) or negative error code.
@@ -130,7 +156,7 @@ int fs_list(const char *path_p,
             chan_t *chout_p);
 
 /**
- * Auto-complete given 'path'.
+ * Auto-complete given path.
  *
  * @param[in,out] path_p Path to auto-complete.
  * @param[in] chout_p Output chan.
@@ -153,7 +179,7 @@ int fs_auto_complete(char *path_p, chan_t *chout_p);
 void fs_split(char *buf_p, char **path_pp, char **cmd_pp);
 
 /**
- * Merge path and command previously split using fs_split().
+ * Merge path and command previously split using `fs_split()`.
  *
  * @param[in] path_p Path from spilt.
  * @param[in] cmd_p Command from split.

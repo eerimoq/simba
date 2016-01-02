@@ -69,7 +69,7 @@ author = u'Erik Moqvist'
 # built documents.
 #
 # The name of the branch/tag on github
-version = u'0.1.1'
+version = u'master'
 # The full version, including alpha/beta/rc tags.
 release = u'0.1.1'
 
