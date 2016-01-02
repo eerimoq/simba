@@ -31,16 +31,16 @@
 extern struct pin_device_t pin_device[PIN_DEVICE_MAX];
 
 /**
- * Initialize PIN driver.
+ * Initialize the pin module.
  */
 int pin_module_init(void);
 
 /**
- * Initialize driver object from given config.
+ * Initialize given driver object from given configuration.
  *
  * @param[out] self_p Driver object to be initialized.
  * @param[in] dev_p Device to use.
- * @param[in] mode Pin mode.
+ * @param[in] mode Pin mode. One of ``PIN_INPUT`` or ``PIN_OUTPUT``.
  *
  * @return zero(0) or negative error code.
  */
@@ -49,7 +49,7 @@ int pin_init(struct pin_driver_t *self_p,
              int mode);
 
 /**
- * Write value to given pin.
+ * Write given value to given pin.
  *
  * @param[in] self_p Driver object.
  * @param[in] value Value to vrite
@@ -59,7 +59,7 @@ int pin_init(struct pin_driver_t *self_p,
 int pin_write(struct pin_driver_t *self_p, int value);
 
 /**
- * Read value on pin.
+ * Read the current value of given pin.
  *
  * @param[in] self_p Driver object.
  *
@@ -68,7 +68,7 @@ int pin_write(struct pin_driver_t *self_p, int value);
 int pin_read(struct pin_driver_t *self_p);
 
 /**
- * Toggle pin state.
+ * Toggle the pin state (high/low).
  *
  * @param[in] self_p Driver object.
  *
@@ -77,7 +77,7 @@ int pin_read(struct pin_driver_t *self_p);
 int pin_toggle(struct pin_driver_t *self_p);
 
 /**
- * Set pin mode.
+ * Set the pin mode.
  *
  * @param[in] self_p Driver object.
  * @param[in] mode New pin mode.

@@ -34,16 +34,21 @@ struct exti_driver_t;
 extern struct exti_device_t exti_device[EXTI_DEVICE_MAX];
 
 /**
- * Initialize EXTI module.
+ * Initialize the external interrupt (EXTI) module.
  */
 int exti_module_init(void);
 
 /**
- * Initialize driver object.
+ * Initialize given driver object.
  *
  * @param[in] self_p Driver object to be initialized.
- * @param[in] dev Device to use.
- * @param[in] on_interrupt Interrupt handler.
+ * @param[in] dev_p Device to use.
+ * @param[in] trigger One of ``EXTI_TRIGGER_BOTH_EDGES``,
+ *                    ``EXTI_TRIGGER_FALLING_EDGE`` or
+ *                    ``EXTI_TRIGGER_RISING_EDGE``.
+ * @param[in] on_interrupt Function callback called when an interrupt
+ *                         occurs.
+ * @param[in] on_interrupt Fucntion callback argument.
  *
  * @return zero(0) or negative error code.
  */
@@ -56,25 +61,25 @@ int exti_init(struct exti_driver_t *self_p,
 /**
  * Starts the EXTI device using given driver object.
  *
- * @param[in] self_p Initialized driver object.
+ * @param[in] self_p Driver object.
  *
  * @return zero(0) or negative error code.
  */
 int exti_start(struct exti_driver_t *self_p);
 
 /**
- * Stops the EXTI device referenced by driver object.
+ * Stops the EXTI device referenced by given driver object.
  *
- * @param[in] self_p Initialized driver object.
+ * @param[in] self_p Driver object.
  *
  * @return zero(0) or negative error code.
  */
 int exti_stop(struct exti_driver_t *self_p);
 
 /**
- * Clear the interrutp flag.
+ * Clear the interrupt flag.
  *
- * @param[in] self_p Initialized driver object.
+ * @param[in] self_p Driver object.
  *
  * @return zero(0) or negative error code.
  */

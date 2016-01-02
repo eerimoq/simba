@@ -43,7 +43,7 @@ struct can_frame_t {
 extern struct can_device_t can_device[CAN_DEVICE_MAX];
 
 /**
- * Initialize driver object.
+ * Initialize given driver object.
  *
  * @param[in] self_p Driver object to initialize.
  * @param[in] dev_p Device to use.

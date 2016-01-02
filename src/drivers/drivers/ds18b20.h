@@ -29,10 +29,10 @@ struct ds18b20_driver_t {
 };
 
 /**
- * Initialize driver object.
+ * Initialize given driver object.
  *
  * @param[out] self_p Driver object to be initialized.
- * @param[in] owi_p Owi driver.
+ * @param[in] owi_p One-Wire (OWI) driver.
  *
  * @return zero(0) or negative error code.
  */
@@ -49,7 +49,7 @@ int ds18b20_init(struct ds18b20_driver_t *self_p,
 int ds18b20_convert(struct ds18b20_driver_t *self_p);
 
 /**
- * Get temperature for given device identity.
+ * Get the temperature for given device identity.
  *
  * @param[in] self_p Driver object to be initialized.
  * @param[in] id_p Device identity.

@@ -33,7 +33,7 @@ extern struct dac_device_t dac_device[DAC_DEVICE_MAX];
 int dac_module_init(void);
 
 /**
- * Initialize driver object from given configuration.
+ * Initialize given driver object from given configuration.
  *
  * @param[out] self_p Driver object to be initialized.
  * @param[in] dev_p Device to use.
@@ -50,7 +50,7 @@ int dac_init(struct dac_driver_t *self_p,
              int sampling_rate);
 
 /**
- * Start asynchronous convertion of samples to an analog signal.
+ * Start an asynchronous convertion of samples to an analog signal.
  *
  * @param[in] self_p Driver object.
  * @param[in] samples Samples to convert to an analog signal.
@@ -63,7 +63,7 @@ int dac_async_convert(struct dac_driver_t *self_p,
                       size_t length);
 
 /**
- * Wait for asynchronous convertion to finish.
+ * Wait for ongoing asynchronous convertion to finish.
  *
  * @param[in] self_p Driver object.
  *

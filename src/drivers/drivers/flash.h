@@ -28,12 +28,12 @@
 extern struct flash_device_t flash_device[FLASH_DEVICE_MAX];
 
 /**
- * Initialize flash module.
+ * Initialize the flash module.
  */
 int flash_module_init(void);
 
 /**
- * Initialize driver object.
+ * Initialize given driver object.
  *
  * @param[out] self_p Driver object to initialize.
  * @param[in] dev_p Device to use.
@@ -44,7 +44,7 @@ int flash_init(struct flash_driver_t *self_p,
                struct flash_device_t *dev_p);
 
 /**
- * Read data from the flash memory.
+ * Read data from given flash memory.
  *
  * @param[in] self_p Initialized driver object.
  * @param[in] dst_p Buffer to read into.
@@ -59,7 +59,7 @@ ssize_t flash_read(struct flash_driver_t *self_p,
                    size_t size);
 
 /**
- * Write data to the flash memory.
+ * Write data to given flash memory.
  *
  * @param[in] self_p Initialized driver object.
  * @param[in] dst Address in flash memory to write to.

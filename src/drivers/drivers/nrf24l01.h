@@ -42,7 +42,7 @@ struct nrf24l01_driver_t {
 int nrf24l01_module_init(void);
 
 /**
- * Initialize driver object from given configuration.
+ * Initialize given driver object from given configuration.
  *
  * @param[in] self_p Driver object to be initialized.
  * @param[in] spi_p SPI device.

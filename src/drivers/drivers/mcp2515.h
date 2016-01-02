@@ -54,15 +54,16 @@ struct mcp2515_driver_t {
 };
 
 /**
- * Initialize driver object.
+ * Initialize given driver object.
  *
  * @param[out] self_p Driver object to initialize.
  * @param[in] spi_p SPI driver to use.
+ * @param[in] cs_p SPI chip select pin.
  * @param[in] exti_p External interrupt tp use.
+ * @param[in] chin_p Frames received from the hardware are written to
+ *                   this channel.
  * @param[in] mode Device mode.
  * @param[in] speed CAN bus speed in kbps.
- * @param[in] frames RX frame buffers.
- * @param[in] length Length of frames array.
  *
  * @return zero(0) or negative error code.
  */
@@ -93,7 +94,7 @@ int mcp2515_start(struct mcp2515_driver_t *self_p);
 int mcp2515_stop(struct mcp2515_driver_t *self_p);
 
 /**
- * Read CAN frame.
+ * Read a CAN frame.
  *
  * @param[in] self_p Initialized driver object.
  * @param[out] frame_p Read frame.
@@ -104,7 +105,7 @@ ssize_t mcp2515_read(struct mcp2515_driver_t *self_p,
                      struct mcp2515_frame_t *frame_p);
 
 /**
- * Write CAN frame.
+ * Write a CAN frame.
  *
  * @param[in] self_p Initialized driver object.
  * @param[out] frame_p Frame to write.

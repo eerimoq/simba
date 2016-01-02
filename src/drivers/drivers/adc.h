@@ -30,17 +30,18 @@
 extern struct adc_device_t adc_device[ADC_DEVICE_MAX];
 
 /**
- * Initialize ADC driver module.
+ * Initialize the ADC driver module.
  */
 int adc_module_init(void);
 
 /**
- * Initialize driver object from given config.
+ * Initialize given driver object from given configuration.
  *
  * @param[out] self_p Driver object to be initialized.
- * @param[in] dev_p Device to use.
+ * @param[in] dev_p ADC device to use.
  * @param[in] pin_dev_p Pin device to use.
- * @param[in] reference Voltage reference.
+ * @param[in] reference Voltage reference. Only ``ADC_REFERENCE_VCC``
+ *                      is supported.
  * @param[in] sampling_rate Sampling rate in Hz.
  *
  * @return zero(0) or negative error code.
@@ -52,7 +53,9 @@ int adc_init(struct adc_driver_t *self_p,
              int sampling_rate);
 
 /**
- * Start an asynchronous convertion of analog signal to digital samples.
+ * Start an asynchronous convertion of analog signal to digital
+ * samples. Call `adc_async_wait()` to wait for the convertion to
+ * complete.
  *
  * @param[in] self_p Driver object.
  * @param[out] samples_p Converted samlpes.
@@ -65,7 +68,7 @@ int adc_async_convert(struct adc_driver_t *self_p,
                       size_t length);
 
 /**
- * Wait for an asynchronous convertion to finish.
+ * Wait for an asynchronous convertion to complete.
  *
  * @param[in] self_p Driver object.
  *
@@ -74,7 +77,9 @@ int adc_async_convert(struct adc_driver_t *self_p,
 int adc_async_wait(struct adc_driver_t *self_p);
 
 /**
- * Start a synchronous convertion of analog signal to digital samples.
+ * Start a synchronous convertion of analog signal to digital
+ * samples. This is equivalent to `adc_async_convert()` +
+ * `adc_async_wait()`, but in a single function call.
  *
  * @param[in] self_p Driver object.
  * @param[out] samples_p Converted samlpes.
