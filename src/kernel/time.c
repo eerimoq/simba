@@ -109,9 +109,9 @@ int time_set(struct time_t *new_p)
     return (0);
 }
 
-void time_sleep(int us)
+void time_sleep(long usec)
 {
-    time_port_sleep(us);
+    time_port_sleep(usec);
 }
 
 int time_unix_time_to_date(struct date_t *date_p,
@@ -119,14 +119,14 @@ int time_unix_time_to_date(struct date_t *date_p,
 {
     long long t = time_p->seconds;
     long long days, secs;
-    int remdays, remsecs, remyears;
-    int qc_cycles, c_cycles, q_cycles;
-    int years, months;
-    int wday, yday, leap;
+    int32_t remdays, remsecs, remyears;
+    int32_t qc_cycles, c_cycles, q_cycles;
+    int32_t years, months;
+    int32_t wday, yday, leap;
     static const char days_in_month[] = {31,30,31,30,31,31,30,31,30,31,31,29};
 
-    /* Reject time_t values whose year would overflow int */
-    if ((t < INT_MIN * 31622400LL) || (t > INT_MAX * 31622400LL)) {
+    /* Reject time_t values whose year would overflow int32_t */
+    if ((t < INT32_MIN * 31622400LL) || (t > INT32_MAX * 31622400LL)) {
         return (-1);
     }
 
@@ -190,7 +190,7 @@ int time_unix_time_to_date(struct date_t *date_p,
         remdays -= days_in_month[months];
     }
 
-    if ((years + 100 > INT_MAX) || (years + 100 < INT_MIN)) {
+    if ((years + 100 > INT32_MAX) || (years + 100 < INT32_MIN)) {
         return (-1);
     }
 

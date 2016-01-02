@@ -98,6 +98,8 @@ static int test_date(struct harness_t *harness)
     };
 
     for (i = 0; i < membersof(times); i++) {
+        std_printf(FSTR("date index %d\r\n"), i);
+
         BTASSERT(time_unix_time_to_date(&date, &times[i].time) == 0);
 
         /* Verify the converted time. */
@@ -113,12 +115,56 @@ static int test_date(struct harness_t *harness)
     return (0);
 }
 
+static int test_sleep(struct harness_t *harness)
+{
+    struct time_t start, stop;
+    int i;
+
+    long times[] = {
+        1,
+        10,
+        100,
+        1000,
+        10000,
+        100000,
+        1000000, /* 1 second. */
+        2000000, /* 2 seconds. */
+    };
+
+    for (i = 0; i < membersof(times); i++) {
+        std_printf(FSTR("sleep for %ld microseconds\r\n"), times[i]);
+
+        start.seconds = 0;
+        start.nanoseconds = 0;
+        BTASSERT(time_set(&start) == 0);
+
+        BTASSERT(time_get(&start) == 0);
+        
+        std_printf(FSTR("  start: seconds = %lu, microseconds = %lu\r\n"),
+                   start.seconds, start.nanoseconds / 1000);
+        
+        time_sleep(times[i]);
+        
+        BTASSERT(time_get(&stop) == 0);
+        
+        std_printf(FSTR("  stop: seconds = %lu, microseconds = %lu\r\n"
+                        "  diff: seconds = %lu, microseconds = %lu\r\n"),
+                   stop.seconds,
+                   stop.nanoseconds / 1000,
+                   (stop.seconds - start.seconds),
+                   (stop.nanoseconds - start.nanoseconds) / 1000);
+    }
+
+    return (0);
+}
+
 int main()
 {
     struct harness_t harness;
     struct harness_testcase_t harness_testcases[] = {
         { test_get_set, "test_get_set" },
         { test_date, "test_date" },
+        { test_sleep, "test_sleep" },
         { NULL, NULL }
     };
 

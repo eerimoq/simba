@@ -18,7 +18,7 @@
  * This file is part of the Simba project.
  */
 
-static void time_port_sleep(int usec)
+static void time_port_sleep(long usec)
 {
     /*
      * Based on Paul Stoffregen's implementation

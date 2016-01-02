@@ -81,7 +81,7 @@ int time_set(struct time_t *new_p);
  *
  * @return void
  */
-void time_sleep(int usec);
+void time_sleep(long usec);
 
 /**
  * Convert given unix time to a date.

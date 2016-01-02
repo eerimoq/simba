@@ -22,7 +22,7 @@
 
 #define I_CPU (F_CPU / 1000000L)
 
-static void time_port_sleep(int us)
+static void time_port_sleep(long us)
 {
     _delay_loop_2((us * I_CPU) / 4);
 }
