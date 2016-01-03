@@ -35,7 +35,10 @@ static struct timer_list_t list = {
     .head_p = &list.tail_timer
 };
 
-static void timer_insert(struct timer_t *timer_p)
+/**
+ * Insert given timer in the list of active timers.
+ */
+static void timer_insert_isr(struct timer_t *timer_p)
 {
     struct timer_t *elem_p, *prev_p;
 
@@ -63,7 +66,10 @@ static void timer_insert(struct timer_t *timer_p)
     }
 }
 
-static int timer_remove(struct timer_t *timer_p)
+/**
+ * Remove given timer from the list of active timers.
+ */
+static int timer_remove_isr(struct timer_t *timer_p)
 {
     struct timer_t *elem_p, *prev_p;
 
@@ -116,7 +122,7 @@ void timer_tick(void)
         /* Re-set periodic timers. */
         if (timer_p->flags & TIMER_PERIODIC) {
             timer_p->delta = timer_p->timeout;
-            timer_insert(timer_p);
+            timer_insert_isr(timer_p);
         }
     }
 
@@ -147,7 +153,7 @@ int timer_init(struct timer_t *self_p,
 int timer_start(struct timer_t *self_p)
 {
     sys_lock();
-    timer_insert(self_p);
+    timer_insert_isr(self_p);
     sys_unlock();
 
     return (0);
@@ -155,7 +161,8 @@ int timer_start(struct timer_t *self_p)
 
 int timer_start_isr(struct timer_t *self_p)
 {
-    timer_insert(self_p);
+    timer_insert_isr(self_p);
+
     return (0);
 }
 
@@ -164,7 +171,7 @@ int timer_stop(struct timer_t *self_p)
     int err = 0;
 
     sys_lock();
-    err = timer_remove(self_p);
+    err = timer_remove_isr(self_p);
     sys_unlock();
 
     return (err);
