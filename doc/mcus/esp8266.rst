@@ -6,4 +6,4 @@ Homepage
 
 http://www.espressif.com
 
-.. include extra/esp8266.rst
+.. include:: extra/esp8266.rst
