@@ -1,6 +1,6 @@
 #
 # @file mcus/atmega328p/mcu.mk
-# @version 0.1.0
+# @version 0.2.0
 #
 # @section License
 # Copyright (C) 2014-2016, Erik Moqvist

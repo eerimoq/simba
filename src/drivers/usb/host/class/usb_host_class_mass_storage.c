@@ -1,6 +1,6 @@
 /**
  * @file usb_host_class_mass_storage.c
- * @version 0.1.0
+ * @version 0.2.0
  *
  * @section License
  * Copyright (C) 2014-2016, Erik Moqvist
