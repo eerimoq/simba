@@ -27,6 +27,8 @@ ENDIANESS = little
 CFLAGS += -mthumb \
           -mcpu=$(MCPU) \
           -DF_CPU=$(F_CPU)UL \
+          -ffunction-sections \
+          -fdata-sections \
           -fpack-struct
 
 LDFLAGS += -mcpu=$(MCPU) \

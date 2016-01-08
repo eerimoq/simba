@@ -26,6 +26,8 @@ CFLAGS += -DF_CPU=$(F_CPU)UL \
           -nostdlib \
           -mlongcalls \
           -mtext-section-literals \
+          -ffunction-sections \
+          -fdata-sections \
           -DICACHE_FLASH \
           -D__STRICT_ANSI__ \
           -DNPROFILESTACK \
