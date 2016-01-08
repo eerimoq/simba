@@ -27,3 +27,5 @@ if [ ! -z "$com_port" ] ; then
 
 	(cd /dev && ln -sf $(python -c "import sys; sys.stdout.write('ttyS' + str(int(sys.argv[1][3:]) - 1))" $com_port) arduino)
 fi
+
+export PYLINTRC=$(readlink -f environment/pylintrc)

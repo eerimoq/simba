@@ -10,3 +10,5 @@ export PATH=$PATH:$(readlink -f ../esp-open-sdk/xtensa-lx106-elf/bin)
 
 export SIMBA_ROOT=$(readlink -f .)
 export BOARD=linux
+
+export PYLINTRC=$(readlink -f environment/pylintrc)
