@@ -34,11 +34,11 @@ The shell line terminator is ``\r\n``.
 
    # print the coutner values in hexadecimal form
    $ foo
-   0000000000000000ffff
+   000000000000ffff
    $ fie
-   00000000000000000001
+   0000000000000001
    $ bar
-   00000000004efee6b839
+   0000004efee6b839
 
    # run the command "/tmp/foo" with arguments
    $ tmp/foo first second third
