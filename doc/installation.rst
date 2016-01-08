@@ -10,6 +10,8 @@ Windows (Cygwin)
 
 Download `Cygwin`_ and select the following packages for installation:
 
+For ESP8266 more packets are needed. See: https://github.com/eerimoq/esp-open-sdk.
+
 .. code-block:: text
 
    - gcc-core          (Devel -> gcc-core)
@@ -18,8 +20,6 @@ Download `Cygwin`_ and select the following packages for installation:
    - python-setuptools (Python -> python-setuptools)
    - git               (Devel -> git)
    - doxygen           (Devel -> doxygen)
-
-For ESP8266 more packets are needed. See: https://github.com/eerimoq/esp-open-sdk.
 
 Start `Cygwin` and execute the one-liner below to install `Simba`.
 
