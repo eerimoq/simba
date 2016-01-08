@@ -18,19 +18,8 @@ Download `Cygwin`_ and select the following packages for installation:
    - python-setuptools (Python -> python-setuptools)
    - git               (Devel -> git)
    - doxygen           (Devel -> doxygen)
-   - unrar
-   - autoconf
-   - automake
-   - libtool
-   - g++
-   - gperf
-   - flex
-   - bison
-   - texinfo
-   - gawk
-   - ncurses-dev
-   - libexpat-dev
-   - sed
+
+For ESP8266 more packets are needed. See: https://github.com/eerimoq/esp-open-sdk.
 
 Start `Cygwin` and execute the one-liner below to install `Simba`.
 
