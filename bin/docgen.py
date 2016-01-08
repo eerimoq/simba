@@ -52,7 +52,7 @@ Homepage
 
 {homepage}
 
-.. include extra/{name}.rst
+.. include:: extra/{name}.rst
 """
 
 SOURCE_CODE_FMT = """.. code-block:: c

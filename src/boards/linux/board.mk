@@ -21,8 +21,8 @@
 INC += $(SIMBA_ROOT)/src/boards/linux
 SRC += $(SIMBA_ROOT)/src/boards/linux/board.c
 
-BOARD_HOMEPAGE = ""
-BOARD_PINOUT = ""
+BOARD_HOMEPAGE = "http://www.kernel.org"
+BOARD_PINOUT = "linux-pinout.png"
 BOARD_DESC = "Linux"
 
 MCU = linux

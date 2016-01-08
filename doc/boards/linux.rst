@@ -4,14 +4,14 @@ Linux
 Homepage
 --------
 
-
+http://www.kernel.org
 
 Pinout
 ------
 
-.. image:: ../images/boards/
+.. image:: ../images/boards/linux-pinout.png
    :width: 50%
-   :target: ../_images/
+   :target: ../_images/linux-pinout.png
 
 Drivers
 -------

@@ -6,4 +6,4 @@ Homepage
 
 http://www.atmel.com
 
-.. include extra/atmega328p.rst
+.. include:: extra/atmega328p.rst

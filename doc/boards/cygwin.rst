@@ -4,14 +4,14 @@ Cygwin
 Homepage
 --------
 
-
+http://www.cygwin.com
 
 Pinout
 ------
 
-.. image:: ../images/boards/
+.. image:: ../images/boards/cygwin-pinout.png
    :width: 50%
-   :target: ../_images/
+   :target: ../_images/cygwin-pinout.png
 
 Drivers
 -------

@@ -6,4 +6,4 @@ Homepage
 
 http://www.atmel.com
 
-.. include extra/sam3x8e.rst
+.. include:: extra/sam3x8e.rst

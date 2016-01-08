@@ -6,4 +6,4 @@ Homepage
 
 
 
-.. include extra/linux.rst
+.. include:: extra/linux.rst

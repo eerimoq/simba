@@ -101,7 +101,7 @@ Application
 An application is an executable consisting of zero or more packages.
 
 An application file tree can either be created manually or by using
-the tool `simba`_. See `How to create an application`_ for a guide of
+the tool `simba`_. See `How to create an application skeletorn`_ for a guide of
 how to create an application using `simba`_.
 
 .. code-block:: text
