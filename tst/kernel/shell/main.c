@@ -242,13 +242,13 @@ static int test_all(struct harness_t *harness_p)
                         FSTR("/kernel/fs/counters_list\n"
                              "NAME                                                 VALUE\r\n"
                              "/foo                                                 "
-                             "00000000000000000004\r\n"
+                             "0000000000000004\r\n"
                              "/bar                                                 "
-                             "00000000004efee6b839\r\n"
+                             "0000004efee6b839\r\n"
                              "/fie                                                 "
-                             "00000000000000000001\r\n"
+                             "0000000000000001\r\n"
                              "/kernel/log/discarded                                "
-                             "00000000000000000000\r\n"
+                             "0000000000000000\r\n"
                              "$ ")) == 0, "%s", buf);
 #endif
 

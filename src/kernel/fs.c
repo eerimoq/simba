@@ -118,7 +118,7 @@ int fs_counter_get(int argc,
                    long long *counter_p)
 {
     std_fprintf(chout_p,
-                FSTR("%012lx%08lx\r\n"),
+                FSTR("%08lx%08lx\r\n"),
                 (long)(*counter_p >> 32),
                 (long)(*counter_p & 0xffffffff));
 

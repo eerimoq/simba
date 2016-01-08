@@ -132,20 +132,20 @@ static int test_counter(struct harness_t *harness_p)
 
     strcpy(buf, "kernel/fs/counters_list");
     BTASSERT(fs_call(buf, NULL, &qout) == 0);
-    read_until(buf, "/your/counter                                        00000000000000000000\r\n");
+    read_until(buf, "/your/counter                                        0000000000000000\r\n");
 
     COUNTER_INC(my_counter, 3);
 
     strcpy(buf, "my/counter");
     BTASSERT(fs_call(buf, NULL, &qout) == 0);
-    read_until(buf, "00000000000000000003\r\n");
+    read_until(buf, "0000000000000003\r\n");
 
     strcpy(buf, "kernel/fs/counters_reset");
     BTASSERT(fs_call(buf, NULL, &qout) == 0);
 
     strcpy(buf, "my/counter");
     BTASSERT(fs_call(buf, NULL, &qout) == 0);
-    read_until(buf, "00000000000000000000\r\n");
+    read_until(buf, "0000000000000000\r\n");
 
     return (0);
 }
