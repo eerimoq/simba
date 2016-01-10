@@ -109,6 +109,23 @@ int time_set(struct time_t *new_p)
     return (0);
 }
 
+int time_diff(struct time_t *diff_p,
+              struct time_t *left_p,
+              struct time_t *right_p)
+{
+    diff_p->seconds = (left_p->seconds - right_p->seconds);
+    diff_p->nanoseconds = (left_p->nanoseconds - right_p->nanoseconds);
+
+    if (diff_p->nanoseconds < 0) {
+        if (diff_p->seconds > 0) {
+            diff_p->seconds--;
+            diff_p->nanoseconds += 1000000000;
+        }
+    }
+
+    return (0);
+}
+
 void time_sleep(long usec)
 {
     time_port_sleep(usec);

@@ -181,7 +181,13 @@ static char *formatf(char c,
     value = va_arg(*ap_p, double);
 
     /* Convert a negative value a to positive. */
+#if defined(ARCH_ESP)
+    /* This will not work in all cases when the number is close to
+     * zero. */
     if ((int)value < 0) {
+#else
+    if (value < 0.0) {
+#endif
         value *= -1.0;
         *negative_sign_p = 1;
     }

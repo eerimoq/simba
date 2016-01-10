@@ -158,6 +158,51 @@ static int test_sleep(struct harness_t *harness)
     return (0);
 }
 
+static int test_diff(struct harness_t *harness)
+{
+    struct time_t *left_p, *right_p, diff;
+    float fleft, fright, fdiff;
+    int i;
+    
+    /* left, right, diff. */
+    struct time_t times[][3] = {
+        { { 0, 0 }, { 0, 0 }, { 0, 0 } },
+        { { 1, 0 }, { 0, 100000000 }, { 0, 900000000 } },
+        { { 1, 0 }, { 2, 0 }, { -1, 0 } },
+        { { 0, 0 }, { 0, 100000000 }, { 0, -100000000 } },
+        { { 1, 0 }, { 0, -100000000 }, { 1, 100000000 } },
+        { { 10, 100000000 }, { 2, 700000000 }, { 7, 400000000 } },
+        { { 10, 100000000 }, { 20, 700000000 }, { -10, -600000000 } },
+    };
+
+    for (i = 0; i < membersof(times); i++) {
+        left_p = &times[i][0];
+        right_p = &times[i][1];
+
+        time_diff(&diff, left_p, right_p);
+
+        fleft = (left_p->seconds + left_p->nanoseconds / 1000000000.0);
+        fright = (right_p->seconds + right_p->nanoseconds / 1000000000.0);
+        fdiff = (fleft - fright);
+
+        std_printf(FSTR("%ld;%ld - %ld;%ld = %ld;%ld (%f - %f = %f)\r\n"),
+                   (long)left_p->seconds,
+                   (long)left_p->nanoseconds / 100000000,
+                   (long)right_p->seconds,
+                   (long)right_p->nanoseconds / 100000000,
+                   (long)diff.seconds,
+                   (long)diff.nanoseconds / 100000000,
+                   fleft,
+                   fright,
+                   fdiff);
+
+        BTASSERT(diff.seconds == times[i][2].seconds);
+        BTASSERT(diff.nanoseconds == times[i][2].nanoseconds);
+    }
+
+    return (0);
+}
+
 int main()
 {
     struct harness_t harness;
@@ -165,6 +210,7 @@ int main()
         { test_get_set, "test_get_set" },
         { test_date, "test_date" },
         { test_sleep, "test_sleep" },
+        { test_diff, "test_diff" },
         { NULL, NULL }
     };
 

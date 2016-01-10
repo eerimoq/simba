@@ -29,9 +29,9 @@
  */
 struct time_t {
     /** Number of seconds. */
-    uint32_t seconds;
+    int32_t seconds;
     /** Number of nanoseconds. */
-    uint32_t nanoseconds;
+    int32_t nanoseconds;
 };
 
 /**
@@ -73,6 +73,20 @@ int time_get(struct time_t *now_p);
  * @return zero(0) or negative error code.
  */
 int time_set(struct time_t *new_p);
+
+/**
+ * Subtract given times.
+ *
+ * @param[out] diff_p The result of the subtrancting ``left_p`` from
+ *                    ``right_p``.
+ * @param[in] left_p The operand to subtract from.
+ * @param[in] right_p The operand to subtract.
+ *
+ * @return zero(0) or negative error code.
+ */
+int time_diff(struct time_t *diff_p,
+              struct time_t *left_p,
+              struct time_t *right_p);
 
 /**
  * Sleep (busy wait) for given number of microseconds.

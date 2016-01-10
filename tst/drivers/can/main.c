@@ -208,7 +208,7 @@ static int test_max_throughput(struct harness_t *harness_p)
 {
     int i, j, k, id;
     struct can_frame_t frames[8];
-    struct time_t start_time, stop_time;
+    struct time_t start_time, stop_time, diff_time;
     float frames_per_second;
     float bits_per_second;
     float data_bits_per_second;
@@ -243,13 +243,16 @@ static int test_max_throughput(struct harness_t *harness_p)
                 id++;
             }
 
-            BTASSERT(can_write(&can0, frames, sizeof(frames)) == sizeof(frames));
+            BTASSERT(can_write(&can0, frames, sizeof(frames))
+                     == sizeof(frames));
         }
 
         time_get(&stop_time);
 
         /* Statistics. */
-        elapsed_time = (stop_time.seconds - start_time.seconds) / (float)SYS_TICK_FREQUENCY;
+        time_diff(&diff_time, &stop_time, &start_time);
+        elapsed_time = (diff_time.seconds
+                        + diff_time.nanoseconds / 1000000000.0);
 
         frames_per_second = (10000.0 / elapsed_time);
         bits_per_second = (frames_per_second *
@@ -257,11 +260,13 @@ static int test_max_throughput(struct harness_t *harness_p)
                             + sizes[i] * 8));
         data_bits_per_second = (frames_per_second * sizes[i] * 8);
 
-        std_printf(FSTR("elapsed time = %f s, %d frames/s, %d bits/s, %d data bits/s\r\n"),
+        std_printf(FSTR("elapsed time = %f s, %d frames/s, %d bits/s, "
+                        "%d data bits/s\r\n"),
                    elapsed_time,
                    (int)frames_per_second,
                    (int)bits_per_second,
                    (int)data_bits_per_second);
+
         BTASSERT(COUNTER(can_rx_channel_overflow) == 0);
         COUNTER(can_rx_channel_overflow) = 0;
     }
