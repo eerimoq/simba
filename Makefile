@@ -133,5 +133,6 @@ help:
 	@echo "  size                        print executable size information"
 	@echo "  cloc                        print source code line statistics"
 	@echo "  pmccabe                     print source code complexity statistics"
+	@echo "  doc                         Generate the documentation."
 	@echo "  help                        show this help"
 	@echo
