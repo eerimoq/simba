@@ -69,12 +69,12 @@
  * `LOG_INFO` is enabled.
  *
  * @rst
- *     .. code-block:: c
+ * .. code-block:: c
  *
- *        void foo()
- *        {
- *            LOG(INFO, "one = %d", 1);
- *        }
+ *    void foo()
+ *    {
+ *        LOG(INFO, "one = %d", 1);
+ *    }
  * @endrst
  *
  * @param[in] level Log entry level.
