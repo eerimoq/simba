@@ -89,8 +89,8 @@ static int init()
     wifi_set_opmode_current(STATION_MODE);
 
     memset(&sta_config, 0, sizeof(sta_config));
-    std_sprintf((char *)sta_config.ssid, FSTR("%s"), "Qvist");
-    std_sprintf((char *)sta_config.password, FSTR("%s"), "Recmyng8");
+    std_sprintf((char *)sta_config.ssid, FSTR("%s"), "SSID");
+    std_sprintf((char *)sta_config.password, FSTR("%s"), "PASS");
 
     wifi_station_set_config(&sta_config);
 
