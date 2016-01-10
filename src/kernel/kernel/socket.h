@@ -1,6 +1,6 @@
 /**
  * @file kernel/socket.h
- * @version 0.1.0
+ * @version 0.2.0
  *
  * @section License
  * Copyright (C) 2016, Erik Moqvist
@@ -47,33 +47,11 @@ struct socket_t {
 /**
  * Initialize given socket with given domain, type and protocol.
  *
- * @rst
- * .. code-block:: c
- *
- *    // The function calls needed to setup an UDP socket and send a
- *    // packet. local_addr, remote_addr and buf should be initialized
- *    // before to this code.
- *    socket_init(&udp, AF_INET, SOCKET_DGRAM);
- *    socket_bind(&udp, &local_addr, sizeof(local_addr));
- *    socket_connect(&udp, &remote_addr, sizeof(remote_addr));
- *    socket_send(&udp, buf, sizeof(buf));
- *    socket_close(&udp);
- *
- *    // The function calls needed to setup an TCP socket and send a
- *    // packet. local_addr, remote_addr and buf should be initialized
- *    // before to this code.
- *    socket_init(&tcp, AF_INET, SOCKET_STREAM);
- *    socket_bind(&tcp, &local_addr, sizeof(local_addr));
- *    socket_connect(&tcp, &remote_addr, sizeof(remote_addr));
- *    socket_send(&tcp, buf, sizeof(buf));
- *    socket_close(&tcp);
- * @endrst
- *
  * @param[out] self_p Socket to initialize.
- * @param[in] domain AF_INET is the only supported domain. It is used
- *                   by internet sockets.
- * @param[in] type Socket type one of SOCK_TYPE_DGRAM (UDP)
- *                 and SOCK_TYPE_STREAM (TCP).
+ * @param[in] domain ``SOCKET_AF_INET`` is the only supported
+ *                   domain. It is used by internet sockets.
+ * @param[in] type Socket type one of ``SOCK_TYPE_DGRAM`` (UDP)
+ *                 and ``SOCK_TYPE_STREAM`` (TCP).
  * @param[in] protocol Unused.
  *
  * @return zero(0) or negative error code.
