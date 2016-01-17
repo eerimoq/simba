@@ -37,7 +37,7 @@ LIBPATH += "$(SIMBA_ROOT)/src/mcus/esp8266/ld"
 LDFLAGS += -Wl,--start-group \
             $(ESPLIBS:%=-l%) \
             -Wl,--end-group \
-            -Wl,-T"simba.flash.4m.ld"
+            -Wl,-T$(LINKER_SCRIPT)
 
 ESPLIBS += \
  minic \

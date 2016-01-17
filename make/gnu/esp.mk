@@ -60,7 +60,7 @@ $(NAME).bin: $(EXE)
 	$(CROSS_COMPILE)objcopy --only-section .data -O binary $< eagle.app.v6.data.bin
 	$(CROSS_COMPILE)objcopy --only-section .rodata -O binary $< eagle.app.v6.rodata.bin
 	$(CROSS_COMPILE)objcopy --only-section .irom0.text -O binary $< eagle.app.v6.irom0text.bin
-	python $(ESP8266_RTOS_SDK_ROOT)/tools/gen_appbin.py $< 2 0 0 6
+	python $(ESP8266_RTOS_SDK_ROOT)/tools/gen_appbin.py $< 2 0 0 $(ESP_FLASH_SIZE_MAP)
 	mv eagle.app.flash.bin $(NAME).bin
 	rm eagle.app.v6.text.bin eagle.app.v6.data.bin eagle.app.v6.rodata.bin eagle.app.v6.irom0text.bin
 

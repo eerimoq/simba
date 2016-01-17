@@ -6,7 +6,7 @@
 
 Source code: :source:`src/boards/esp12e/board.h`
 
-Hardware reference: :doc:`ESP8266 Development Board <../../boards/esp12e>`
+Hardware reference: :doc:`../../boards/esp12e`
 
 ----------------------------------------------
 

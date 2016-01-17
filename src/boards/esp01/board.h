@@ -23,13 +23,8 @@
 
 #define pin_d0_dev pin_device[0]
 #define pin_d2_dev pin_device[2]
-#define pin_d4_dev pin_device[4]
-#define pin_d5_dev pin_device[5]
-#define pin_d12_dev pin_device[12]
-#define pin_d13_dev pin_device[13]
-#define pin_d14_dev pin_device[14]
-#define pin_d15_dev pin_device[15]
+#define pin_d16_dev pin_device[15]
 
-#define pin_led_dev pin_d2_dev
+#define pin_led_dev pin_device[1]
 
 #endif
