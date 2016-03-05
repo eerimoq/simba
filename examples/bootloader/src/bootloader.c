@@ -25,14 +25,14 @@
 
 /* Memory ranges. */
 #define FLASH_BEGIN                                  0x00000000
-#define FLASH_END                                    0x00010000
+#define FLASH_END                                    0x20000000
 
 /* Memory ranges. */
 #define RAM_BEGIN                                    0x40000000
 #define RAM_END                                      0x40001000
 
 /* The maximum data transfer size. */
-#define TRANSFER_DATA_SIZE_MAX                       0x7fffffff
+#define TRANSFER_DATA_SIZE_MAX                             4096
 
 /* Diagnostics IDentifiers (DID). */
 #define DID_BOOTLOADER_VERSION                           0xf000
@@ -109,7 +109,13 @@ static int ignore(struct bootloader_t *self_p,
 static int write_flash(struct bootloader_t *self_p,
                        size_t size)
 {
+    uint8_t dummy;
+
     /* Write the data to the flash memory. */
+    while (size > 0) {
+        chan_read(self_p->chin_p, &dummy, 1);
+        size--;
+    }
 
     return (0);
 }
@@ -132,15 +138,20 @@ static int write_ram(struct bootloader_t *self_p,
 }
 
 static int write_response(struct bootloader_t *self_p,
+                          int32_t length,
                           uint8_t code)
 {
-    int32_t length;
-
-    length = htonl(1);
+    length = htonl(length + 1);
     chan_write(self_p->chout_p, &length, sizeof(length));
     chan_write(self_p->chout_p, &code, sizeof(code));
 
     return (0);
+}
+
+static int write_response_no_data(struct bootloader_t *self_p,
+                          uint8_t code)
+{
+    return (write_response(self_p, 0, code));
 }
 
 static int write_did_response(chan_t *chout_p,
@@ -208,7 +219,7 @@ static int handle_read_data_by_identifier(struct bootloader_t *self_p,
 
     if (length < 2) {
         ignore(self_p, length);
-        write_response(self_p, INCORRECT_MESSAGE_LENGTH_OR_INVALID_FORMAT);
+        write_response_no_data(self_p, INCORRECT_MESSAGE_LENGTH_OR_INVALID_FORMAT);
 
         return (-1);
     }
@@ -230,7 +241,7 @@ static int handle_read_data_by_identifier(struct bootloader_t *self_p,
 
     default:
         ignore(self_p, length);
-        write_response(self_p, SERVICE_NOT_SUPPORTED);
+        write_response_no_data(self_p, SERVICE_NOT_SUPPORTED);
         res = -1;
         break;
     }
@@ -249,7 +260,7 @@ static int handle_routine_control_call(struct bootloader_t *self_p,
 
     if (length != sizeof(address)) {
         ignore(self_p, length);
-        write_response(self_p, INCORRECT_MESSAGE_LENGTH_OR_INVALID_FORMAT);
+        write_response_no_data(self_p, INCORRECT_MESSAGE_LENGTH_OR_INVALID_FORMAT);
 
         return (-1);
     }
@@ -258,7 +269,7 @@ static int handle_routine_control_call(struct bootloader_t *self_p,
     address = ntohl(address);
 
     /* Write the response before calling to the address. */
-    write_response(self_p, (ROUTINE_CONTROL | POSITIVE_RESPONSE));
+    write_response_no_data(self_p, (ROUTINE_CONTROL | POSITIVE_RESPONSE));
 
     /* Call given address. */
     /* ((void (*)(void))(uintptr_t)address)(); */
@@ -293,7 +304,7 @@ static int handle_routine_control(struct bootloader_t *self_p,
     /* Length check. */
     if (length < 3) {
         ignore(self_p, length);
-        write_response(self_p, INCORRECT_MESSAGE_LENGTH_OR_INVALID_FORMAT);
+        write_response_no_data(self_p, INCORRECT_MESSAGE_LENGTH_OR_INVALID_FORMAT);
 
         return (-1);
     }
@@ -314,7 +325,7 @@ static int handle_routine_control(struct bootloader_t *self_p,
 
     default:
         ignore(self_p, length);
-        write_response(self_p, REQUEST_OUT_OF_RANGE);
+        write_response_no_data(self_p, REQUEST_OUT_OF_RANGE);
         res = -1;
         break;
     }
@@ -331,14 +342,14 @@ static int handle_routine_control(struct bootloader_t *self_p,
 static int handle_request_download(struct bootloader_t *self_p,
                                    int length)
 {
-    uint8_t buf[4];
+    uint8_t buf[5];
     uint32_t address;
     uint32_t size;
 
     /* Length check. */
     if (length < 3) {
         ignore(self_p, length);
-        write_response(self_p, INCORRECT_MESSAGE_LENGTH_OR_INVALID_FORMAT);
+        write_response_no_data(self_p, INCORRECT_MESSAGE_LENGTH_OR_INVALID_FORMAT);
 
         return (-1);
     }
@@ -349,7 +360,7 @@ static int handle_request_download(struct bootloader_t *self_p,
     /* The address and size should be 4 bytes each. */
     if ((buf[1] != sizeof(address)) || (buf[2] != sizeof(size))) {
         ignore(self_p, length);
-        write_response(self_p, REQUEST_OUT_OF_RANGE);
+        write_response_no_data(self_p, REQUEST_OUT_OF_RANGE);
 
         return (-1);
     }
@@ -357,7 +368,7 @@ static int handle_request_download(struct bootloader_t *self_p,
     /* Length check. */
     if (length < 8) {
         ignore(self_p, length);
-        write_response(self_p, INCORRECT_MESSAGE_LENGTH_OR_INVALID_FORMAT);
+        write_response_no_data(self_p, INCORRECT_MESSAGE_LENGTH_OR_INVALID_FORMAT);
 
         return (-1);
     }
@@ -380,7 +391,7 @@ static int handle_request_download(struct bootloader_t *self_p,
         self_p->swdl.write = write_ram;
     } else {
         ignore(self_p, length);
-        write_response(self_p, REQUEST_OUT_OF_RANGE);
+        write_response_no_data(self_p, REQUEST_OUT_OF_RANGE);
 
         return (-1);
     }
@@ -388,12 +399,15 @@ static int handle_request_download(struct bootloader_t *self_p,
     self_p->state = STATE_SWDL;
 
     /* Send the positive response. */
-    write_response(self_p, (REQUEST_DOWNLOAD | POSITIVE_RESPONSE));
+    write_response(self_p,
+                   sizeof(buf),
+                   (REQUEST_DOWNLOAD | POSITIVE_RESPONSE));
 
-    buf[0] = ((TRANSFER_DATA_SIZE_MAX >> 24) & 0xff);
-    buf[1] = ((TRANSFER_DATA_SIZE_MAX >> 16) & 0xff);
-    buf[2] = ((TRANSFER_DATA_SIZE_MAX >> 8) & 0xff);
-    buf[3] = ((TRANSFER_DATA_SIZE_MAX >> 0) & 0xff);
+    buf[0] = 0x40;
+    buf[1] = ((TRANSFER_DATA_SIZE_MAX >> 24) & 0xff);
+    buf[2] = ((TRANSFER_DATA_SIZE_MAX >> 16) & 0xff);
+    buf[3] = ((TRANSFER_DATA_SIZE_MAX >> 8) & 0xff);
+    buf[4] = ((TRANSFER_DATA_SIZE_MAX >> 0) & 0xff);
 
     chan_write(self_p->chout_p, buf, sizeof(buf));
 
@@ -414,27 +428,32 @@ static int handle_transfer_data(struct bootloader_t *self_p,
                                 int length)
 {
     int res;
+    uint8_t sequence_counter;
 
     /* A request download request must be sent before data can be
        transferred. */
     if (self_p->state != STATE_SWDL) {
         ignore(self_p, length);
-        write_response(self_p, CONDITIONS_NOT_CORRECT);
+        write_response_no_data(self_p, CONDITIONS_NOT_CORRECT);
 
         return (-1);
     }
 
     /* Length check. */
     if (length < 1) {
-        write_response(self_p, INCORRECT_MESSAGE_LENGTH_OR_INVALID_FORMAT);
+        write_response_no_data(self_p, INCORRECT_MESSAGE_LENGTH_OR_INVALID_FORMAT);
 
         return (-1);
     }
 
+    /* Sequence counter. */
+    chan_read(self_p->chin_p, &sequence_counter, sizeof(sequence_counter));
+    length--;
+
     /* Don't write outside the allowed memory region. */
     if (length > (self_p->swdl.size - self_p->swdl.offset)) {
         ignore(self_p, length);
-        write_response(self_p, REQUEST_OUT_OF_RANGE);
+        write_response_no_data(self_p, REQUEST_OUT_OF_RANGE);
 
         return (-1);
     }
@@ -442,10 +461,15 @@ static int handle_transfer_data(struct bootloader_t *self_p,
     /* Write to the memory. */
     if (self_p->swdl.write(self_p, length) == 0) {
         self_p->swdl.offset += length;
-        write_response(self_p, (TRANSFER_DATA | POSITIVE_RESPONSE));
+        write_response(self_p,
+                       sizeof(sequence_counter),
+                       (TRANSFER_DATA | POSITIVE_RESPONSE));
+        chan_write(self_p->chout_p,
+                   &sequence_counter,
+                   sizeof(sequence_counter));
         res = 0;
     } else {
-        write_response(self_p, GENERAL_PROGRAMMING_FAILURE);
+        write_response_no_data(self_p, GENERAL_PROGRAMMING_FAILURE);
         res = -1;
     }
 
@@ -466,21 +490,21 @@ static int handle_request_transfer_exit(struct bootloader_t *self_p,
     /* Sanity check. */
     if (length != 0) {
         ignore(self_p, length);
-        write_response(self_p, INCORRECT_MESSAGE_LENGTH_OR_INVALID_FORMAT);
+        write_response_no_data(self_p, INCORRECT_MESSAGE_LENGTH_OR_INVALID_FORMAT);
 
         return (-1);
     }
 
     /* Can only exit if swdl is active. */
     if (self_p->state != STATE_SWDL) {
-        write_response(self_p, CONDITIONS_NOT_CORRECT);
+        write_response_no_data(self_p, CONDITIONS_NOT_CORRECT);
 
         return (-1);
     }
 
     self_p->state = STATE_IDLE;
 
-    write_response(self_p, (REQUEST_TRANSFER_EXIT | POSITIVE_RESPONSE));
+    write_response_no_data(self_p, (REQUEST_TRANSFER_EXIT | POSITIVE_RESPONSE));
 
     return (0);
 }
@@ -492,7 +516,7 @@ static int handle_unknown_service_id(struct bootloader_t *self_p,
                                      int length)
 {
     ignore(self_p, length);
-    write_response(self_p, SERVICE_NOT_SUPPORTED);
+    write_response_no_data(self_p, SERVICE_NOT_SUPPORTED);
 
     return (0);
 }

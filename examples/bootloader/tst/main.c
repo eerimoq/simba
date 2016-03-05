@@ -210,6 +210,7 @@ static int test_request_download(struct harness_t *self_p)
     };
     int32_t length;
     uint8_t code;
+    uint8_t size;
     uint32_t max_size;
 
     queue_init(&qin, inbuf, sizeof(inbuf));
@@ -248,11 +249,13 @@ static int test_request_download(struct harness_t *self_p)
     /* Flash ok. */
     BTASSERT(bootloader_handle_service(&bootloader) == 0);
     BTASSERT(queue_read(&qout, &length, sizeof(length)) == sizeof(length));
-    BTASSERT(ntohl(length) == 1);
+    BTASSERT(ntohl(length) == 6);
     BTASSERT(queue_read(&qout, &code, sizeof(code)) == sizeof(code));
     BTASSERT(code == 0x74);
+    BTASSERT(queue_read(&qout, &size, sizeof(size)) == sizeof(size));
+    BTASSERT(size == 0x40);
     BTASSERT(queue_read(&qout, &max_size, sizeof(max_size)) == sizeof(max_size));
-    BTASSERT(ntohl(max_size) == 0x7fffffff);
+    BTASSERT(ntohl(max_size) == 4096);
 
     return (0);
 }
@@ -274,12 +277,14 @@ static int test_transfer_data(struct harness_t *self_p)
         /* Bad length. */
         0, 0, 0, 1, 0x36,
         /* Transfer too much data. */
-        0, 0, 0, 3, 0x36, 0x5a, 0x5a,
+        0, 0, 0, 4, 0x36, 0x00, 0x5a, 0x5a,
         /* Transfer ok. */
-        0, 0, 0, 2, 0x36, 0x5a
+        0, 0, 0, 3, 0x36, 0x00, 0x5a
     };
     int32_t length;
     uint8_t code;
+    uint8_t size;
+    uint8_t sequence_counter;
     uint32_t max_size;
 
     queue_init(&qin, inbuf, sizeof(inbuf));
@@ -297,11 +302,13 @@ static int test_transfer_data(struct harness_t *self_p)
     /* Flash ok. */
     BTASSERT(bootloader_handle_service(&bootloader) == 0);
     BTASSERT(queue_read(&qout, &length, sizeof(length)) == sizeof(length));
-    BTASSERT(ntohl(length) == 1);
+    BTASSERT(ntohl(length) == 6);
     BTASSERT(queue_read(&qout, &code, sizeof(code)) == sizeof(code));
     BTASSERT(code == 0x74);
+    BTASSERT(queue_read(&qout, &size, sizeof(size)) == sizeof(size));
+    BTASSERT(size == 0x40);
     BTASSERT(queue_read(&qout, &max_size, sizeof(max_size)) == sizeof(max_size));
-    BTASSERT(ntohl(max_size) == 0x7fffffff);
+    BTASSERT(ntohl(max_size) == 4096);
 
     /* Bad length. */
     BTASSERT(bootloader_handle_service(&bootloader) == -1);
@@ -320,9 +327,13 @@ static int test_transfer_data(struct harness_t *self_p)
     /* Transfer ok. */
     BTASSERT(bootloader_handle_service(&bootloader) == 0);
     BTASSERT(queue_read(&qout, &length, sizeof(length)) == sizeof(length));
-    BTASSERT(ntohl(length) == 1);
+    BTASSERT(ntohl(length) == 2);
     BTASSERT(queue_read(&qout, &code, sizeof(code)) == sizeof(code));
     BTASSERT(code == 0x76);
+    BTASSERT(queue_read(&qout,
+                        &sequence_counter,
+                        sizeof(sequence_counter)) == sizeof(sequence_counter));
+    BTASSERT(sequence_counter == 0x00);
 
     return (0);
 }
@@ -348,6 +359,7 @@ static int test_request_transfer_exit(struct harness_t *self_p)
     };
     int32_t length;
     uint8_t code;
+    uint8_t size;
     uint32_t max_size;
 
     queue_init(&qin, inbuf, sizeof(inbuf));
@@ -372,11 +384,13 @@ static int test_request_transfer_exit(struct harness_t *self_p)
     /* Flash ok. */
     BTASSERT(bootloader_handle_service(&bootloader) == 0);
     BTASSERT(queue_read(&qout, &length, sizeof(length)) == sizeof(length));
-    BTASSERT(ntohl(length) == 1);
+    BTASSERT(ntohl(length) == 6);
     BTASSERT(queue_read(&qout, &code, sizeof(code)) == sizeof(code));
     BTASSERT(code == 0x74);
+    BTASSERT(queue_read(&qout, &size, sizeof(size)) == sizeof(size));
+    BTASSERT(size == 0x40);
     BTASSERT(queue_read(&qout, &max_size, sizeof(max_size)) == sizeof(max_size));
-    BTASSERT(ntohl(max_size) == 0x7fffffff);
+    BTASSERT(ntohl(max_size) == 4096);
 
     /* Transfer exit ok. */
     BTASSERT(bootloader_handle_service(&bootloader) == 0);
