@@ -96,9 +96,17 @@ static int test_read_data_by_identifier(struct harness_t *self_p)
 
     /* Bad did. */
     BTASSERT(bootloader_handle_service(&bootloader) == -1);
+    BTASSERT(queue_read(&qout, &length, sizeof(length)) == sizeof(length));
+    BTASSERT(ntohl(length) == 1);
+    BTASSERT(queue_read(&qout, &code, sizeof(code)) == sizeof(code));
+    BTASSERT(code == 0x11);
 
     /* Bad did length. */
     BTASSERT(bootloader_handle_service(&bootloader) == -1);
+    BTASSERT(queue_read(&qout, &length, sizeof(length)) == sizeof(length));
+    BTASSERT(ntohl(length) == 1);
+    BTASSERT(queue_read(&qout, &code, sizeof(code)) == sizeof(code));
+    BTASSERT(code == 0x13);
 
     /* Bootloader version. */
     BTASSERT(bootloader_handle_service(&bootloader) == 0);
