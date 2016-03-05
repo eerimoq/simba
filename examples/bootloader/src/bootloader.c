@@ -36,6 +36,7 @@
 
 /* Diagnostics IDentifiers (DID). */
 #define DID_BOOTLOADER_VERSION                           0xf000
+#define DID_SYSTEM_TIME                                  0xf001
 
 /* Routines. */
 #define ROUTINE_ID_CALL                                  0xf000
@@ -176,6 +177,21 @@ static int handle_read_data_by_identifier_version(struct bootloader_t *self_p)
                                sizeof(version)));
 }
 
+static int handle_read_data_by_identifier_system_time(struct bootloader_t *self_p)
+{
+    char buf[32];
+    struct time_t now;
+
+    time_get(&now);
+    std_sprintf(buf, FSTR("%lu"), now.seconds);
+
+    return (write_did_response(self_p->chout_p,
+                               (READ_DATA_BY_IDENTIFIER | POSITIVE_RESPONSE),
+                               DID_SYSTEM_TIME,
+                               buf,
+                               strlen(buf) + 1));
+}
+
 /**
  * With this service it is possible to retrieve one or more values of
  * a control unit. This can be information of all kinds and of
@@ -192,6 +208,7 @@ static int handle_read_data_by_identifier(struct bootloader_t *self_p,
 
     if (length < 2) {
         ignore(self_p, length);
+        write_response(self_p, INCORRECT_MESSAGE_LENGTH_OR_INVALID_FORMAT);
 
         return (-1);
     }
@@ -207,7 +224,13 @@ static int handle_read_data_by_identifier(struct bootloader_t *self_p,
         res = handle_read_data_by_identifier_version(self_p);
         break;
 
+    case DID_SYSTEM_TIME:
+        res = handle_read_data_by_identifier_system_time(self_p);
+        break;
+
     default:
+        ignore(self_p, length);
+        write_response(self_p, SERVICE_NOT_SUPPORTED);
         res = -1;
         break;
     }
@@ -237,10 +260,8 @@ static int handle_routine_control_call(struct bootloader_t *self_p,
     /* Write the response before calling to the address. */
     write_response(self_p, (ROUTINE_CONTROL | POSITIVE_RESPONSE));
 
-#if !defined(ARCH_LINUX)
     /* Call given address. */
-    ((void (*)(void))(uintptr_t)address)();
-#endif
+    /* ((void (*)(void))(uintptr_t)address)(); */
 
     return (0);
 }

@@ -22,10 +22,11 @@
 
 #include "bootloader.h"
 
+static struct uart_driver_t uart;
+static uint8_t uart_rx_buffer[32];
+
 int main()
 {
-    struct uart_driver_t uart;
-    uint8_t uart_rx_buffer[32];
     struct bootloader_t bootloader;
 
     /* Start the system. */
@@ -41,11 +42,11 @@ int main()
     uart_start(&uart);
 
     /* Print the bootloader application information. */
-    sys_set_stdout(&uart);
+    sys_set_stdout(&uart.chout);
     std_printf(sys_get_info());
 
     /* Initialize the bootloader object and enter the main loop. */
-    bootloader_init(&bootloader, &uart, &uart);
+    bootloader_init(&bootloader, &uart.chin, &uart.chout);
     bootloader_main(&bootloader);
 
     return (0);

@@ -19,6 +19,7 @@
 #
 
 NAME = bootloader
+BOARD ?= linux
 
 # The half configuration work is needed for the bootloader.
 ifeq ($(BOARD),mpc_evk)

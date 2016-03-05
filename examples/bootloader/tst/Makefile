@@ -19,6 +19,7 @@
 #
 
 NAME = bootloader
+BOARD ?= linux
 
 BOOTLOADER_ROOT = ../src
 include $(BOOTLOADER_ROOT)/bootloader.mk
