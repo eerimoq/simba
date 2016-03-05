@@ -20,6 +20,9 @@
 
 #include "simba.h"
 
+#ifndef __BOOTLOADER_BOOTLOADER_H__
+#define __BOOTLOADER_BOOTLOADER_H__
+
 /* States. */
 #define STATE_IDLE        1
 #define STATE_SWDL        2
@@ -67,3 +70,5 @@ int bootloader_handle_service(struct bootloader_t *self_p);
  * @returns Never returns.
  */
 void bootloader_main(struct bootloader_t *self_p);
+
+#endif

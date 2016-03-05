@@ -82,12 +82,15 @@ static int test_read_data_by_identifier(struct harness_t *self_p)
         /* Bad did length. */
         0, 0, 0, 2, 0x22, 0x00,
         /* Bootloader version. */
-        0, 0, 0, 3, 0x22, 0xf0, 0x00
+        0, 0, 0, 3, 0x22, 0xf0, 0x00,
+        /* System time. */
+        0, 0, 0, 3, 0x22, 0xf0, 0x01
     };
     int32_t length;
     uint8_t code;
     char version[6];
     uint16_t did;
+    char time[16];
 
     queue_init(&qin, inbuf, sizeof(inbuf));
     queue_init(&qout, outbuf, sizeof(outbuf));
@@ -118,6 +121,18 @@ static int test_read_data_by_identifier(struct harness_t *self_p)
     BTASSERT(ntohs(did) == 0xf000);
     BTASSERT(queue_read(&qout, version, sizeof(version)) == sizeof(version));
     BTASSERT(strcmp(STRINGIFY(VERSION), version) == 0);
+
+    /* System time. */
+    BTASSERT(bootloader_handle_service(&bootloader) == 0);
+    BTASSERT(queue_read(&qout, &length, sizeof(length)) == sizeof(length));
+    length = ntohl(length);
+    BTASSERT(length > 3);
+    BTASSERT(queue_read(&qout, &code, sizeof(code)) == sizeof(code));
+    BTASSERT(code == 0x62);
+    BTASSERT(queue_read(&qout, &did, sizeof(did)) == sizeof(did));
+    BTASSERT(ntohs(did) == 0xf001);
+    BTASSERT(queue_read(&qout, time, length - 3) == length - 3);
+    std_printf(FSTR("System time: %s\n"), time);
 
     return (0);
 }

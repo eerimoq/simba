@@ -27,14 +27,13 @@
 #define FLASH_BEGIN                                  0x00000000
 #define FLASH_END                                    0x20000000
 
-/* Memory ranges. */
 #define RAM_BEGIN                                    0x40000000
 #define RAM_END                                      0x40001000
 
 /* The maximum data transfer size. */
 #define TRANSFER_DATA_SIZE_MAX                             4096
 
-/* Diagnostics IDentifiers (DID). */
+/* Data IDentifiers (DID). */
 #define DID_BOOTLOADER_VERSION                           0xf000
 #define DID_SYSTEM_TIME                                  0xf001
 
@@ -204,6 +203,34 @@ static int handle_read_data_by_identifier_system_time(struct bootloader_t *self_
 }
 
 /**
+ * Call given address.
+ */
+static int handle_routine_control_call(struct bootloader_t *self_p,
+                                       int sub_function,
+                                       int length)
+{
+    uint32_t address;
+
+    if (length != sizeof(address)) {
+        ignore(self_p, length);
+        write_response_no_data(self_p, INCORRECT_MESSAGE_LENGTH_OR_INVALID_FORMAT);
+
+        return (-1);
+    }
+
+    chan_read(self_p->chin_p, &address, sizeof(address));
+    address = ntohl(address);
+
+    /* Write the response before calling to the address. */
+    write_response_no_data(self_p, (ROUTINE_CONTROL | POSITIVE_RESPONSE));
+
+    /* Call given address. */
+    /* ((void (*)(void))(uintptr_t)address)(); */
+
+    return (0);
+}
+
+/**
  * With this service it is possible to retrieve one or more values of
  * a control unit. This can be information of all kinds and of
  * different lengths such as Partnumber or the software
@@ -247,34 +274,6 @@ static int handle_read_data_by_identifier(struct bootloader_t *self_p,
     }
 
     return (res);
-}
-
-/**
- * Call given address.
- */
-static int handle_routine_control_call(struct bootloader_t *self_p,
-                                       int sub_function,
-                                       int length)
-{
-    uint32_t address;
-
-    if (length != sizeof(address)) {
-        ignore(self_p, length);
-        write_response_no_data(self_p, INCORRECT_MESSAGE_LENGTH_OR_INVALID_FORMAT);
-
-        return (-1);
-    }
-
-    chan_read(self_p->chin_p, &address, sizeof(address));
-    address = ntohl(address);
-
-    /* Write the response before calling to the address. */
-    write_response_no_data(self_p, (ROUTINE_CONTROL | POSITIVE_RESPONSE));
-
-    /* Call given address. */
-    /* ((void (*)(void))(uintptr_t)address)(); */
-
-    return (0);
 }
 
 /**
@@ -584,7 +583,6 @@ int bootloader_handle_service(struct bootloader_t *self_p)
 
 void bootloader_main(struct bootloader_t *self_p)
 {
-
     while (1) {
         bootloader_handle_service(self_p);
     }
