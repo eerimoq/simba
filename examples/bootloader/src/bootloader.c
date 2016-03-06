@@ -819,12 +819,14 @@ void bootloader_main(struct bootloader_t *self_p)
 
     /* Check the "stay in bootloader" pin. */
     if (pin_read(&stay_in_bootloader_pin) == 0) {
-        std_printf(FSTR("stay in bootloader pin low\r\n"));
+        std_printf(FSTR("stay in bootloader pin (d2) low\r\n"));
 
         /* Call the application if it is valid. */
         if (is_application_valid(self_p) == 1) {
             std_printf(FSTR("calling application\r\n"));
             call_application(self_p);
+        } else {
+            std_printf(FSTR("application invalid\r\n"));
         }
     }
 
