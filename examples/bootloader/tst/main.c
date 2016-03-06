@@ -74,7 +74,6 @@ static int test_unknown_service_id(struct harness_t *self_p)
                     APPLICATION_ADDRESS,
                     APPLICATION_SIZE);
 
-
     BTASSERT(bootloader_handle_service(&bootloader) == 0);
     BTASSERT(queue_read(&qout, &length, sizeof(length)) == sizeof(length));
     BTASSERT(ntohl(length) == 1);
@@ -113,7 +112,6 @@ static int test_read_data_by_identifier(struct harness_t *self_p)
                     &qout,
                     APPLICATION_ADDRESS,
                     APPLICATION_SIZE);
-
 
     /* Bad did. */
     BTASSERT(bootloader_handle_service(&bootloader) == -1);
@@ -179,7 +177,6 @@ static int test_diagnostic_session_control(struct harness_t *self_p)
                     &qout,
                     APPLICATION_ADDRESS,
                     APPLICATION_SIZE);
-
 
     /* Bad length. */
     BTASSERT(bootloader_handle_service(&bootloader) == -1);
@@ -257,7 +254,6 @@ static int test_request_download(struct harness_t *self_p)
                     APPLICATION_ADDRESS,
                     APPLICATION_SIZE);
 
-
     /* Bad length. */
     BTASSERT(bootloader_handle_service(&bootloader) == -1);
     BTASSERT(queue_read(&qout, &length, sizeof(length)) == sizeof(length));
@@ -325,13 +321,15 @@ static int test_transfer_data(struct harness_t *self_p)
         0, 0, 0, 1, 0x36,
         /* Transfer too much data. */
         0, 0, 0, 4, 0x36, 0x00, 0x5a, 0x5a,
+        /* Transfer wrong sequence number. */
+        0, 0, 0, 3, 0x36, 0x01, 0x5a,
         /* Transfer ok. */
         0, 0, 0, 3, 0x36, 0x00, 0x5a
     };
     int32_t length;
     uint8_t code;
     uint8_t size;
-    uint8_t sequence_counter;
+    uint8_t block_sequence_counter;
     uint32_t max_size;
 
     queue_init(&qin, inbuf, sizeof(inbuf));
@@ -342,7 +340,6 @@ static int test_transfer_data(struct harness_t *self_p)
                     &qout,
                     APPLICATION_ADDRESS,
                     APPLICATION_SIZE);
-
 
     /* Bad state. */
     BTASSERT(bootloader_handle_service(&bootloader) == -1);
@@ -376,6 +373,13 @@ static int test_transfer_data(struct harness_t *self_p)
     BTASSERT(queue_read(&qout, &code, sizeof(code)) == sizeof(code));
     BTASSERT(code == 0x31);
 
+    /* Transfer wrong sequence counter. */
+    BTASSERT(bootloader_handle_service(&bootloader) == -1);
+    BTASSERT(queue_read(&qout, &length, sizeof(length)) == sizeof(length));
+    BTASSERT(ntohl(length) == 1);
+    BTASSERT(queue_read(&qout, &code, sizeof(code)) == sizeof(code));
+    BTASSERT(code == 0x73);
+
     /* Transfer ok. */
     BTASSERT(bootloader_handle_service(&bootloader) == 0);
     BTASSERT(queue_read(&qout, &length, sizeof(length)) == sizeof(length));
@@ -383,9 +387,9 @@ static int test_transfer_data(struct harness_t *self_p)
     BTASSERT(queue_read(&qout, &code, sizeof(code)) == sizeof(code));
     BTASSERT(code == 0x76);
     BTASSERT(queue_read(&qout,
-                        &sequence_counter,
-                        sizeof(sequence_counter)) == sizeof(sequence_counter));
-    BTASSERT(sequence_counter == 0x00);
+                        &block_sequence_counter,
+                        sizeof(block_sequence_counter)) == sizeof(block_sequence_counter));
+    BTASSERT(block_sequence_counter == 0x00);
 
     return (0);
 }
@@ -406,6 +410,8 @@ static int test_request_transfer_exit(struct harness_t *self_p)
         0x04, 0x04,
         0x00, 0x00, 0x00, 0x00,
         0x00, 0x00, 0x00, 0x01,
+        /* Transfer ok. */
+        0, 0, 0, 3, 0x36, 0x00, 0x5a,
         /* Transfer exit ok. */
         0, 0, 0, 1, 0x37
     };
@@ -413,6 +419,7 @@ static int test_request_transfer_exit(struct harness_t *self_p)
     uint8_t code;
     uint8_t size;
     uint32_t max_size;
+    uint8_t block_sequence_counter;
 
     queue_init(&qin, inbuf, sizeof(inbuf));
     queue_init(&qout, outbuf, sizeof(outbuf));
@@ -422,7 +429,6 @@ static int test_request_transfer_exit(struct harness_t *self_p)
                     &qout,
                     APPLICATION_ADDRESS,
                     APPLICATION_SIZE);
-
 
     /* Bad length. */
     BTASSERT(bootloader_handle_service(&bootloader) == -1);
@@ -448,6 +454,17 @@ static int test_request_transfer_exit(struct harness_t *self_p)
     BTASSERT(size == 0x40);
     BTASSERT(queue_read(&qout, &max_size, sizeof(max_size)) == sizeof(max_size));
     BTASSERT(ntohl(max_size) == 4096);
+
+    /* Transfer ok. */
+    BTASSERT(bootloader_handle_service(&bootloader) == 0);
+    BTASSERT(queue_read(&qout, &length, sizeof(length)) == sizeof(length));
+    BTASSERT(ntohl(length) == 2);
+    BTASSERT(queue_read(&qout, &code, sizeof(code)) == sizeof(code));
+    BTASSERT(code == 0x76);
+    BTASSERT(queue_read(&qout,
+                        &block_sequence_counter,
+                        sizeof(block_sequence_counter)) == sizeof(block_sequence_counter));
+    BTASSERT(block_sequence_counter == 0x00);
 
     /* Transfer exit ok. */
     BTASSERT(bootloader_handle_service(&bootloader) == 0);

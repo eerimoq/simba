@@ -37,6 +37,7 @@ struct bootloader_t {
         uint32_t address;
         uint32_t size;
         uint32_t offset;
+        uint8_t next_block_sequence_counter;
     } swdl;
 };
 
@@ -49,7 +50,9 @@ struct bootloader_t {
  * @param[in] application_address Start address of the application
  *                                flash area and the application entry
  *                                address.
- * @param[in] application_size Size of the application flash area.
+ * @param[in] application_size Size of the application flash area. The
+ *                             maximum appliction size is this size
+ *                             minus one.
  *
  * @returns zero(0) or negative error code
  */

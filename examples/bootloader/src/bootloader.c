@@ -23,6 +23,8 @@
 #include "bootloader.h"
 #include "arpa/inet.h"
 
+#define APPLICATION_VALID_FLAG                             0xbe
+
 /* The maximum data transfer size. */
 #define TRANSFER_DATA_SIZE_MAX                             4096
 
@@ -117,6 +119,31 @@ static int write_application(struct bootloader_t *self_p,
     return (0);
 }
 
+static int is_application_valid(struct bootloader_t *self_p)
+{
+    uint32_t flag_address;
+
+    flag_address = (self_p->application_address + self_p->application_size);
+
+    return (*(uint8_t *)(uintptr_t)flag_address == APPLICATION_VALID_FLAG);
+}
+
+static int write_application_valid_flag(struct bootloader_t *self_p)
+{
+    uint8_t flag;
+    uint32_t flag_address;
+
+    /* Write the flag at the end of the application flash area. */
+    flag = APPLICATION_VALID_FLAG;
+    flag_address = (self_p->application_address + self_p->application_size);
+
+    (void)flag;
+    (void)flag_address;
+    //flash_write(flag_address, &flag, sizeof(flag));
+
+    return (0);
+}
+
 static int write_response(struct bootloader_t *self_p,
                           int32_t length,
                           uint8_t code)
@@ -191,12 +218,20 @@ static int handle_read_data_by_identifier_system_time(struct bootloader_t *self_
  */
 static int handle_diagnostic_session_control_default(struct bootloader_t *self_p)
 {
+    /* if (is_application_valid(self_p) == 0) { */
+    /*     ignore_and_write_response_no_data(self_p, */
+    /*                                       0, */
+    /*                                       CONDITIONS_NOT_CORRECT); */
+
+    /*     return (-1); */
+    /* } */
+
     ignore_and_write_response_no_data(self_p,
                                       0,
                                       (DIAGNOSTIC_SESSION_CONTROL | POSITIVE_RESPONSE));
 
     /* Call the application. */
-    //((void (*)(void))(uintptr_t)self_p->application_address)();
+    /* ((void (*)(void))(uintptr_t)self_p->application_address)(); */
 
     return (0);
 }
@@ -355,9 +390,10 @@ static int handle_request_download(struct bootloader_t *self_p,
     self_p->swdl.address = ntohl(address);
     self_p->swdl.size = ntohl(size);
     self_p->swdl.offset = 0;
+    self_p->swdl.next_block_sequence_counter = 0;
 
     if (self_p->swdl.address == self_p->application_address) {
-        if (self_p->swdl.size > self_p->application_size) {
+        if (self_p->swdl.size > (self_p->application_size)) {
             ignore_and_write_response_no_data(self_p,
                                               length,
                                               REQUEST_OUT_OF_RANGE);
@@ -406,7 +442,7 @@ static int handle_transfer_data(struct bootloader_t *self_p,
                                 int length)
 {
     int res;
-    uint8_t sequence_counter;
+    uint8_t block_sequence_counter;
 
     /* A request download request must be sent before data can be
        transferred. */
@@ -428,8 +464,17 @@ static int handle_transfer_data(struct bootloader_t *self_p,
     }
 
     /* Sequence counter. */
-    chan_read(self_p->chin_p, &sequence_counter, sizeof(sequence_counter));
+    chan_read(self_p->chin_p, &block_sequence_counter, sizeof(block_sequence_counter));
     length--;
+
+    /* Only accept the expected sequence counter. */
+    if (block_sequence_counter != self_p->swdl.next_block_sequence_counter) {
+        ignore_and_write_response_no_data(self_p,
+                                          length,
+                                          WRONG_BLOCK_SEQUENCE_NUMBER);
+
+        return (-1);
+    }
 
     /* Don't write outside the allowed memory region. */
     if (length > (self_p->swdl.size - self_p->swdl.offset)) {
@@ -443,12 +488,13 @@ static int handle_transfer_data(struct bootloader_t *self_p,
     /* Write to the memory. */
     if (write_application(self_p, length) == 0) {
         self_p->swdl.offset += length;
+        self_p->swdl.next_block_sequence_counter++;
         write_response(self_p,
-                       sizeof(sequence_counter),
+                       sizeof(block_sequence_counter),
                        (TRANSFER_DATA | POSITIVE_RESPONSE));
         chan_write(self_p->chout_p,
-                   &sequence_counter,
-                   sizeof(sequence_counter));
+                   &block_sequence_counter,
+                   sizeof(block_sequence_counter));
         res = 0;
     } else {
         ignore_and_write_response_no_data(self_p,
@@ -489,6 +535,12 @@ static int handle_request_transfer_exit(struct bootloader_t *self_p,
         return (-1);
     }
 
+    /* Write the application valid flag if the whole application has
+       been written. */
+    if (self_p->swdl.offset == self_p->swdl.size) {
+        write_application_valid_flag(self_p);
+    }
+
     self_p->state = STATE_IDLE;
 
     ignore_and_write_response_no_data(self_p,
@@ -521,7 +573,8 @@ int bootloader_init(struct bootloader_t *self_p,
     self_p->chin_p = chin_p;
     self_p->chout_p = chout_p;
     self_p->application_address = application_address;
-    self_p->application_size = application_size;
+    /* Subtract one for the application valid flag. */
+    self_p->application_size = (application_size - 1);
 
     return (0);
 }
@@ -578,6 +631,19 @@ int bootloader_handle_service(struct bootloader_t *self_p)
 
 void bootloader_main(struct bootloader_t *self_p)
 {
+    struct pin_driver_t stay_in_bootloader_pin;
+
+    pin_init(&stay_in_bootloader_pin, &pin_d2_dev, PIN_INPUT);
+
+    /* Check the "stay in bootloader" pin. */
+    if (pin_read(&stay_in_bootloader_pin) == 0) {
+        /* Call the application if it is valid. */
+        if (is_application_valid(self_p) == 1) {
+            ((void (*)(void))(uintptr_t)self_p->application_address)();
+        }
+    }
+
+    /* Enter the bootloader main loop. */
     while (1) {
         bootloader_handle_service(self_p);
     }
