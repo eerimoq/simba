@@ -128,7 +128,7 @@ static int test_command(struct harness_t *harness_p)
 
 static int test_counter(struct harness_t *harness_p)
 {
-    char buf[256];
+    char buf[384];
 
     strcpy(buf, "kernel/fs/counters_list");
     BTASSERT(fs_call(buf, NULL, &qout) == 0);
