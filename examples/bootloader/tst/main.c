@@ -153,6 +153,60 @@ static int test_read_data_by_identifier(struct harness_t *self_p)
     return (0);
 }
 
+static int test_routine_control(struct harness_t *self_p)
+{
+    struct bootloader_t bootloader;
+    struct queue_t qin;
+    struct queue_t qout;
+    uint8_t input[] = {
+        /* Bad length. */
+        0, 0, 0, 1, 0x31,
+        /* Bad routine id. */
+        0, 0, 0, 4, 0x31, 0x01, 0x00, 0x00,
+        /* Start erase routine. */
+        0, 0, 0, 4, 0x31, 0x01, 0xf0, 0x00,
+    };
+    int32_t length;
+    uint8_t code;
+    uint16_t routine_id;
+
+    queue_init(&qin, inbuf, sizeof(inbuf));
+    queue_init(&qout, outbuf, sizeof(outbuf));
+    queue_write(&qin, input, sizeof(input));
+    bootloader_init(&bootloader,
+                    &qin,
+                    &qout,
+                    APPLICATION_ADDRESS,
+                    APPLICATION_SIZE);
+
+    /* Bad length. */
+    BTASSERT(bootloader_handle_service(&bootloader) == -1);
+    BTASSERT(queue_read(&qout, &length, sizeof(length)) == sizeof(length));
+    BTASSERT(ntohl(length) == 1);
+    BTASSERT(queue_read(&qout, &code, sizeof(code)) == sizeof(code));
+    BTASSERT(code == 0x13);
+
+    /* Bad routine id. */
+    BTASSERT(bootloader_handle_service(&bootloader) == -1);
+    BTASSERT(queue_read(&qout, &length, sizeof(length)) == sizeof(length));
+    BTASSERT(ntohl(length) == 1);
+    BTASSERT(queue_read(&qout, &code, sizeof(code)) == sizeof(code));
+    BTASSERT(code == 0x11);
+
+    /* Erase routine. */
+    BTASSERT(bootloader_handle_service(&bootloader) == 0);
+    BTASSERT(queue_read(&qout, &length, sizeof(length)) == sizeof(length));
+    BTASSERT(ntohl(length) == 3);
+    BTASSERT(queue_read(&qout, &code, sizeof(code)) == sizeof(code));
+    BTASSERT(code == 0x71);
+    BTASSERT(queue_read(&qout,
+                        &routine_id,
+                        sizeof(routine_id)) == sizeof(routine_id));
+    BTASSERT(ntohs(routine_id) == 0xf000);
+
+    return (0);
+}
+
 static int test_diagnostic_session_control(struct harness_t *self_p)
 {
     struct bootloader_t bootloader;
@@ -483,6 +537,7 @@ int main()
         { test_bad_size, "test_bad_size" },
         { test_unknown_service_id, "test_unknown_service_id" },
         { test_read_data_by_identifier, "test_read_data_by_identifier" },
+        { test_routine_control, "test_routine_control" },
         { test_diagnostic_session_control, "test_diagnostic_session_control" },
         { test_request_download, "test_request_download" },
         { test_transfer_data, "test_transfer_data" },

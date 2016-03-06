@@ -32,12 +32,16 @@
 #define DID_BOOTLOADER_VERSION                           0xf000
 #define DID_SYSTEM_TIME                                  0xf001
 
+/* Routines. */
+#define ROUTINE_ID_ERASE                                 0xf000
+
 /* Diagnostic session types. */
 #define DIAGNOSTIC_SESSION_CONTROL_DEFAULT                 0x02
 
 /* UDS routine identifiers. */
 #define DIAGNOSTIC_SESSION_CONTROL                         0x10
 #define READ_DATA_BY_IDENTIFIER                            0x22
+#define ROUTINE_CONTROL                                    0x31
 #define REQUEST_DOWNLOAD                                   0x34
 #define TRANSFER_DATA                                      0x36
 #define REQUEST_TRANSFER_EXIT                              0x37
@@ -236,6 +240,22 @@ static int handle_diagnostic_session_control_default(struct bootloader_t *self_p
     return (0);
 }
 
+static int handle_routine_control_erase(struct bootloader_t *self_p,
+                                        int sub_function,
+                                        int length)
+{
+    uint16_t routine_id;
+    
+    erase_application(self_p);
+    write_response(self_p,
+                   sizeof(routine_id),
+                   (ROUTINE_CONTROL | POSITIVE_RESPONSE));
+    routine_id = htons(ROUTINE_ID_ERASE);
+    chan_write(self_p->chout_p, &routine_id, sizeof(routine_id));
+
+    return (0);
+}
+
 /**
  * UDS uses different operating sessions, which can be changed using
  * the "Diagnostic Session Control". Depending on which session is
@@ -340,6 +360,64 @@ static int handle_read_data_by_identifier(struct bootloader_t *self_p,
 }
 
 /**
+ * The Control service routine services of all kinds can be
+ * performed. There are three different message types:
+ *
+ * 1. With the start-message, a service can be initiated. It can be
+ *    defined to confirm the beginning of the execution or to notify
+ *    when the service is completed.
+ *
+ * 2. With the Stop message, a running service can be interrupted at
+ *    any time.
+ *
+ * 3. The third option is a message to query the results of the
+ *    service.
+ *
+ * The start and stop message parameters can be specified. This makes
+ * it possible to implement every possible project-specific service.
+ */
+static int handle_routine_control(struct bootloader_t *self_p,
+                                  int length)
+{
+    uint8_t sub_function;
+    uint16_t routine_id;
+    int res;
+
+    /* Length check. */
+    if (length < 3) {
+        ignore_and_write_response_no_data(self_p,
+                                          length,
+                                          INCORRECT_MESSAGE_LENGTH_OR_INVALID_FORMAT);
+
+        return (-1);
+    }
+
+    /* Read sub-function and routine id. */
+    chan_read(self_p->chin_p, &sub_function, sizeof(sub_function));
+    chan_read(self_p->chin_p, &routine_id, sizeof(routine_id));
+
+    routine_id = ntohs(routine_id);
+    length -= 3;
+
+    /* Handle the routine. */
+    switch (routine_id) {
+
+    case ROUTINE_ID_ERASE:
+        res = handle_routine_control_erase(self_p, sub_function, length);
+        break;
+
+    default:
+        ignore_and_write_response_no_data(self_p,
+                                          length,
+                                          SERVICE_NOT_SUPPORTED);
+        res = -1;
+        break;
+    }
+
+    return (res);
+}
+
+/**
  * Downloading new software or other data into the control unit is
  * introduced using the "Request Download". Here, the location and
  * size of the data is specified. In turn, the controller specifies
@@ -351,6 +429,7 @@ static int handle_request_download(struct bootloader_t *self_p,
     uint8_t buf[5];
     uint32_t address;
     uint32_t size;
+    uint32_t swdl_end;
 
     /* Length check. */
     if (length < 3) {
@@ -390,19 +469,13 @@ static int handle_request_download(struct bootloader_t *self_p,
     self_p->swdl.address = ntohl(address);
     self_p->swdl.size = ntohl(size);
     self_p->swdl.offset = 0;
-    self_p->swdl.next_block_sequence_counter = 0;
+    self_p->swdl.next_block_sequence_counter = 1;
 
-    if (self_p->swdl.address == self_p->application_address) {
-        if (self_p->swdl.size > (self_p->application_size)) {
-            ignore_and_write_response_no_data(self_p,
-                                              length,
-                                              REQUEST_OUT_OF_RANGE);
+    swdl_end = (self_p->swdl.address + self_p->swdl.size);
 
-            return (-1);
-        }
-
-        erase_application(self_p);
-    } else {
+    if ((self_p->swdl.address < self_p->application_address)
+        || (swdl_end > (self_p->application_address
+                        + self_p->application_size))) {
         ignore_and_write_response_no_data(self_p,
                                           length,
                                           REQUEST_OUT_OF_RANGE);
@@ -607,6 +680,10 @@ int bootloader_handle_service(struct bootloader_t *self_p)
 
     case READ_DATA_BY_IDENTIFIER:
         res = handle_read_data_by_identifier(self_p, length);
+        break;
+
+    case ROUTINE_CONTROL:
+        res = handle_routine_control(self_p, length);
         break;
 
     case REQUEST_DOWNLOAD:
