@@ -18,6 +18,19 @@
  * This file is part of the Simba project.
  */
 
+static int pin_port_module_init(void)
+{
+    /* PMC */
+    pmc_peripheral_clock_enable(PERIPHERAL_ID_PIOA);
+    pmc_peripheral_clock_enable(PERIPHERAL_ID_PIOB);
+    pmc_peripheral_clock_enable(PERIPHERAL_ID_PIOC);
+    pmc_peripheral_clock_enable(PERIPHERAL_ID_PIOD);
+    pmc_peripheral_clock_enable(PERIPHERAL_ID_PIOE);
+    pmc_peripheral_clock_enable(PERIPHERAL_ID_PIOF);
+
+    return (0);
+}
+
 static int pin_port_init(struct pin_driver_t *self_p,
                          const struct pin_device_t *dev_p,
                          int mode)
@@ -27,7 +40,9 @@ static int pin_port_init(struct pin_driver_t *self_p,
 
 static int pin_port_read(struct pin_driver_t *self_p)
 {
-    return (-1);
+    const struct pin_device_t *dev_p = self_p->dev_p;
+
+    return ((dev_p->pio_p->PDSR & dev_p->mask) != 0);
 }
 
 static int pin_port_write(struct pin_driver_t *self_p, int value)
@@ -59,8 +74,6 @@ static int pin_port_toggle(struct pin_driver_t *self_p)
 static int pin_port_set_mode(struct pin_driver_t *self_p, int mode)
 {
     const struct pin_device_t *dev_p = self_p->dev_p;
-
-#define REG_PIOB_OER ((volatile uint32_t *)0x400E1010U) /**< \brief (PIOB) Output Enable Register */
 
     if (mode == PIN_OUTPUT) {
         dev_p->pio_p->OER = dev_p->mask;

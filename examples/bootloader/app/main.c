@@ -36,9 +36,15 @@ static uint8_t uart_rx_buffer[32];
 int main()
 {
     struct bootloader_t bootloader;
+#if defined(MCU_SAM_3X8E)
+    struct flash_driver_t flash;
+#endif
 
     /* Start the system. */
     sys_start();
+
+    /* Initialize the pin moudle. */
+    pin_module_init();
 
     /* Initialize and start the UART. */
     uart_module_init();
@@ -49,6 +55,12 @@ int main()
               sizeof(uart_rx_buffer));
     uart_start(&uart);
 
+#if defined(MCU_SAM_3X8E)
+    /* Initialize the flash memory objects. */
+    flash_module_init();
+    flash_init(&flash, &flash_device[0]);
+#endif
+
     /* Print the bootloader application information. */
     sys_set_stdout(&uart.chout);
     std_printf(sys_get_info());
@@ -58,7 +70,13 @@ int main()
                     &uart.chin,
                     &uart.chout,
                     APPLICATION_ADDRESS,
-                    APPLICATION_SIZE);
+                    APPLICATION_SIZE
+#if defined(MCU_SAM_3X8E)
+                    ,
+                    &flash
+#endif
+        );
+
     bootloader_main(&bootloader);
 
     return (0);

@@ -18,6 +18,11 @@
  * This file is part of the Simba project.
  */
 
+static int pin_port_module_init(void)
+{
+    return (0);
+}
+
 static int pin_port_init(struct pin_driver_t *drv_p,
                          const struct pin_device_t *dev_p,
                          int mode)

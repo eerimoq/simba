@@ -22,6 +22,11 @@
 #define DDR(sfr) ((sfr) + 1)
 #define PORT(sfr) ((sfr) + 2)
 
+static int pin_port_module_init(void)
+{
+    return (0);
+}
+
 static int pin_port_init(struct pin_driver_t *self_p,
                          const struct pin_device_t *dev_p,
                          int mode)

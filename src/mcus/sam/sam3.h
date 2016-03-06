@@ -124,7 +124,7 @@
 /* System control block. */
 struct sam_system_control_block_t {
     uint32_t ACTLR;
-    uint32_t reserved1[3316];
+    uint32_t reserved1[829];
     uint32_t CPUID;
     uint32_t ICSR;
     uint32_t VTOR;

@@ -26,6 +26,12 @@ ifeq ($(BOARD),mpc_evk)
     MPC_RCHW = yes
 endif
 
+ifeq ($(BOARD),arduino_due)
+    CFLAGS += -DAPPLICATION_ADDRESS=0x00090000
+    CFLAGS += -DAPPLICATION_SIZE=0x00070000
+    LINKER_SCRIPT_FILE = script.bootloader.ld
+endif
+
 BOOTLOADER_ROOT = ../src
 include $(BOOTLOADER_ROOT)/bootloader.mk
 SIMBA_ROOT = ../../..

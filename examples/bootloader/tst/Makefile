@@ -21,6 +21,8 @@
 NAME = bootloader
 BOARD ?= linux
 
+CFLAGS += -DBOOTLOADER_TEST
+
 BOOTLOADER_ROOT = ../src
 include $(BOOTLOADER_ROOT)/bootloader.mk
 SIMBA_ROOT = ../../..

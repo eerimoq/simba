@@ -24,7 +24,7 @@
 
 int pin_module_init(void)
 {
-    return (0);
+    return (pin_port_module_init());
 }
 
 int pin_init(struct pin_driver_t *self_p,

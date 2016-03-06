@@ -33,6 +33,9 @@ struct bootloader_t {
     chan_t *chout_p;
     uint32_t application_address;
     uint32_t application_size;
+#if defined(MCU_SAM_3X8E)
+    struct flash_driver_t *flash_p;
+#endif
     struct {
         uint32_t address;
         uint32_t size;
@@ -60,7 +63,12 @@ int bootloader_init(struct bootloader_t *self_p,
                     chan_t *chin_p,
                     chan_t *chout_p,
                     uint32_t application_address,
-                    uint32_t application_size);
+                    uint32_t application_size
+#if defined(MCU_SAM_3X8E)
+                    ,
+                    struct flash_driver_t *flash_p
+#endif
+);
 
 /**
  * Handle a service.

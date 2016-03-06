@@ -33,14 +33,15 @@
 #define DID_SYSTEM_TIME                                  0xf001
 
 /* Routines. */
-#define ROUTINE_ID_ERASE                                 0xf000
+#define ROUTINE_ID_ERASE                                 0xff00
 
 /* Diagnostic session types. */
-#define DIAGNOSTIC_SESSION_CONTROL_DEFAULT                 0x02
+#define DIAGNOSTIC_SESSION_CONTROL_DEFAULT                 0x01
 
 /* UDS routine identifiers. */
 #define DIAGNOSTIC_SESSION_CONTROL                         0x10
 #define READ_DATA_BY_IDENTIFIER                            0x22
+#define READ_MEMORY_BY_ADDRESS                             0x23
 #define ROUTINE_CONTROL                                    0x31
 #define REQUEST_DOWNLOAD                                   0x34
 #define TRANSFER_DATA                                      0x36
@@ -112,12 +113,33 @@ static int erase_application(struct bootloader_t *self_p)
 static int write_application(struct bootloader_t *self_p,
                              size_t size)
 {
-    uint8_t dummy;
+    size_t left;
+    uint8_t buffer[TRANSFER_DATA_SIZE_MAX];
+    size_t n;
+    size_t address;
 
-    /* Write the data to the memory. */
-    while (size > 0) {
-        chan_read(self_p->chin_p, &dummy, 1);
-        size--;
+    left = size;
+    address = (self_p->swdl.address + self_p->swdl.offset);
+
+    while (left > 0) {
+        if (left > sizeof(buffer)) {
+            n = sizeof(buffer);
+        } else {
+            n = left;
+        }
+
+        /* Read from the input channel and write to the memory. */
+        chan_read(self_p->chin_p, buffer, n);
+
+#if defined(MCU_SAM_3X8E)
+        flash_write(self_p->flash_p, address, buffer, n);
+#elif defined(MCU_LINUX)
+#else
+#    error "Application write function not implemented for this mcu."
+#endif
+
+        address += n;
+        left -= n;
     }
 
     return (0);
@@ -126,10 +148,18 @@ static int write_application(struct bootloader_t *self_p,
 static int is_application_valid(struct bootloader_t *self_p)
 {
     uint32_t flag_address;
+    uint8_t flag;
 
     flag_address = (self_p->application_address + self_p->application_size);
 
-    return (*(uint8_t *)(uintptr_t)flag_address == APPLICATION_VALID_FLAG);
+#if defined(MCU_SAM_3X8E)
+    flag = *((uint8_t *)(uintptr_t)flag_address);
+#else
+    flag = 0;
+    (void)flag_address;
+#endif
+
+    return (flag == APPLICATION_VALID_FLAG);
 }
 
 static int write_application_valid_flag(struct bootloader_t *self_p)
@@ -141,9 +171,40 @@ static int write_application_valid_flag(struct bootloader_t *self_p)
     flag = APPLICATION_VALID_FLAG;
     flag_address = (self_p->application_address + self_p->application_size);
 
+#if defined(MCU_SAM_3X8E)
+    flash_write(self_p->flash_p, flag_address, &flag, sizeof(flag));
+#else
     (void)flag;
     (void)flag_address;
-    //flash_write(flag_address, &flag, sizeof(flag));
+#endif
+
+    return (0);
+}
+
+static int call_application(struct bootloader_t *self_p)
+{
+#if defined(MCU_SAM_3X8E)
+    uint32_t reset_address;
+    uint32_t stack_address;
+    uint32_t tbloff;
+
+    sys_lock();
+
+    /* Set the vector offset to the application vector. */
+    tbloff = (self_p->application_address >> 7);
+    SAM_SCB->VTOR = SCB_VTOR_TBLOFF(tbloff);
+
+    /* Read the reset address. */
+    reset_address = *(uint32_t *)(self_p->application_address + 4);
+
+    /* Setup the stack pointer. */
+    stack_address = *(uint32_t *)(self_p->application_address);
+
+    /* Setup the stack pointer and call the application reset
+       function. */
+    asm volatile ("mov sp, %0" : : "r" (stack_address));
+    asm volatile ("blx %0" : : "r" (reset_address));
+#endif
 
     return (0);
 }
@@ -220,22 +281,27 @@ static int handle_read_data_by_identifier_system_time(struct bootloader_t *self_
 /**
  * Enter the default session.
  */
-static int handle_diagnostic_session_control_default(struct bootloader_t *self_p)
+static int handle_diagnostic_session_control_default(struct bootloader_t *self_p,
+                                                     int length)
 {
-    /* if (is_application_valid(self_p) == 0) { */
-    /*     ignore_and_write_response_no_data(self_p, */
-    /*                                       0, */
-    /*                                       CONDITIONS_NOT_CORRECT); */
+# if !defined(BOOTLOADER_TEST)
+    if (is_application_valid(self_p) == 0) {
+        ignore_and_write_response_no_data(self_p,
+                                          0,
+                                          CONDITIONS_NOT_CORRECT);
 
-    /*     return (-1); */
-    /* } */
+        return (-1);
+    }
+#endif
 
     ignore_and_write_response_no_data(self_p,
                                       0,
                                       (DIAGNOSTIC_SESSION_CONTROL | POSITIVE_RESPONSE));
 
     /* Call the application. */
-    /* ((void (*)(void))(uintptr_t)self_p->application_address)(); */
+# if !defined(BOOTLOADER_TEST)
+    call_application(self_p);
+#endif
 
     return (0);
 }
@@ -244,14 +310,10 @@ static int handle_routine_control_erase(struct bootloader_t *self_p,
                                         int sub_function,
                                         int length)
 {
-    uint16_t routine_id;
-    
     erase_application(self_p);
-    write_response(self_p,
-                   sizeof(routine_id),
-                   (ROUTINE_CONTROL | POSITIVE_RESPONSE));
-    routine_id = htons(ROUTINE_ID_ERASE);
-    chan_write(self_p->chout_p, &routine_id, sizeof(routine_id));
+    ignore_and_write_response_no_data(self_p,
+                                      length,
+                                      (ROUTINE_CONTROL | POSITIVE_RESPONSE));
 
     return (0);
 }
@@ -299,7 +361,7 @@ static int handle_diagnostic_session_control(struct bootloader_t *self_p,
     switch (session) {
 
     case DIAGNOSTIC_SESSION_CONTROL_DEFAULT:
-        res = handle_diagnostic_session_control_default(self_p);
+        res = handle_diagnostic_session_control_default(self_p, length);
         break;
 
     default:
@@ -357,6 +419,36 @@ static int handle_read_data_by_identifier(struct bootloader_t *self_p,
     }
 
     return (res);
+}
+
+/**
+ * Read data from the physical memory at the provided address.
+ */
+static int handle_read_memory_by_address(struct bootloader_t *self_p,
+                                         int length)
+{
+    uint32_t address;
+    uint8_t value;
+
+    if (length < 4) {
+        ignore_and_write_response_no_data(self_p,
+                                          length,
+                                          INCORRECT_MESSAGE_LENGTH_OR_INVALID_FORMAT);
+
+        return (-1);
+    }
+
+    chan_read(self_p->chin_p, &address, sizeof(address));
+
+    value = *((uint8_t *)(uintptr_t)htonl(address));
+
+    write_response(self_p,
+                   sizeof(address) + sizeof(value),
+                   (READ_MEMORY_BY_ADDRESS | POSITIVE_RESPONSE));
+    chan_write(self_p->chout_p, &address, sizeof(address));
+    chan_write(self_p->chout_p, &value, sizeof(value));
+
+    return (0);
 }
 
 /**
@@ -571,7 +663,7 @@ static int handle_transfer_data(struct bootloader_t *self_p,
         res = 0;
     } else {
         ignore_and_write_response_no_data(self_p,
-                                          0,
+                                          length,
                                           GENERAL_PROGRAMMING_FAILURE);
         res = -1;
     }
@@ -640,7 +732,12 @@ int bootloader_init(struct bootloader_t *self_p,
                     chan_t *chin_p,
                     chan_t *chout_p,
                     uint32_t application_address,
-                    uint32_t application_size)
+                    uint32_t application_size
+#if defined(MCU_SAM_3X8E)
+                    ,
+                    struct flash_driver_t *flash_p
+#endif
+)
 {
     self_p->state = STATE_IDLE;
     self_p->chin_p = chin_p;
@@ -648,6 +745,10 @@ int bootloader_init(struct bootloader_t *self_p,
     self_p->application_address = application_address;
     /* Subtract one for the application valid flag. */
     self_p->application_size = (application_size - 1);
+
+#if defined(MCU_SAM_3X8E)
+    self_p->flash_p = flash_p;
+#endif
 
     return (0);
 }
@@ -682,6 +783,10 @@ int bootloader_handle_service(struct bootloader_t *self_p)
         res = handle_read_data_by_identifier(self_p, length);
         break;
 
+    case READ_MEMORY_BY_ADDRESS:
+        res = handle_read_memory_by_address(self_p, length);
+        break;
+
     case ROUTINE_CONTROL:
         res = handle_routine_control(self_p, length);
         break;
@@ -714,11 +819,16 @@ void bootloader_main(struct bootloader_t *self_p)
 
     /* Check the "stay in bootloader" pin. */
     if (pin_read(&stay_in_bootloader_pin) == 0) {
+        std_printf(FSTR("stay in bootloader pin low\r\n"));
+
         /* Call the application if it is valid. */
         if (is_application_valid(self_p) == 1) {
-            ((void (*)(void))(uintptr_t)self_p->application_address)();
+            std_printf(FSTR("calling application\r\n"));
+            call_application(self_p);
         }
     }
+
+    std_printf(FSTR("staying in the bootloader\r\n"));
 
     /* Enter the bootloader main loop. */
     while (1) {

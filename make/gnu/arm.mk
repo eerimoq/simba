@@ -34,7 +34,7 @@ CFLAGS += -mthumb \
 LDFLAGS += -mcpu=$(MCPU) \
            -DF_CPU=$(F_CPU)UL \
            -Wl,--cref \
-           -T$(SIMBA_ROOT)/src/mcus/$(MCU)/script.ld \
+           -T$(LINKER_SCRIPT) \
            -mthumb
 
 SETTING_MEMORY = flash
