@@ -31,12 +31,12 @@ struct bootloader_t {
     int state;
     chan_t *chin_p;
     chan_t *chout_p;
+    uint32_t application_address;
+    uint32_t application_size;
     struct {
         uint32_t address;
         uint32_t size;
         uint32_t offset;
-        int (*write)(struct bootloader_t *self_p,
-                     size_t size);
     } swdl;
 };
 
@@ -46,12 +46,18 @@ struct bootloader_t {
  * @param[in,out] self_p Bootloader object.
  * @param[in] chin_p Input channel.
  * @param[in] chout_p Output channel.
+ * @param[in] application_address Start address of the application
+ *                                flash area and the application entry
+ *                                address.
+ * @param[in] application_size Size of the application flash area.
  *
  * @returns zero(0) or negative error code
  */
 int bootloader_init(struct bootloader_t *self_p,
                     chan_t *chin_p,
-                    chan_t *chout_p);
+                    chan_t *chout_p,
+                    uint32_t application_address,
+                    uint32_t application_size);
 
 /**
  * Handle a service.

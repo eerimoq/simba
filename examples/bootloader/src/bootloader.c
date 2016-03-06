@@ -23,13 +23,6 @@
 #include "bootloader.h"
 #include "arpa/inet.h"
 
-/* Memory ranges. */
-#define FLASH_BEGIN                                  0x00000000
-#define FLASH_END                                    0x20000000
-
-#define RAM_BEGIN                                    0x40000000
-#define RAM_END                                      0x40001000
-
 /* The maximum data transfer size. */
 #define TRANSFER_DATA_SIZE_MAX                             4096
 
@@ -37,12 +30,12 @@
 #define DID_BOOTLOADER_VERSION                           0xf000
 #define DID_SYSTEM_TIME                                  0xf001
 
-/* Routines. */
-#define ROUTINE_ID_CALL                                  0xf000
+/* Diagnostic session types. */
+#define DIAGNOSTIC_SESSION_CONTROL_DEFAULT                 0x02
 
 /* UDS routine identifiers. */
+#define DIAGNOSTIC_SESSION_CONTROL                         0x10
 #define READ_DATA_BY_IDENTIFIER                            0x22
-#define ROUTINE_CONTROL                                    0x31
 #define REQUEST_DOWNLOAD                                   0x34
 #define TRANSFER_DATA                                      0x36
 #define REQUEST_TRANSFER_EXIT                              0x37
@@ -105,31 +98,19 @@ static int ignore(struct bootloader_t *self_p,
     return (0);
 }
 
-static int write_flash(struct bootloader_t *self_p,
-                       size_t size)
+static int erase_application(struct bootloader_t *self_p)
 {
-    uint8_t dummy;
-
-    /* Write the data to the flash memory. */
-    while (size > 0) {
-        chan_read(self_p->chin_p, &dummy, 1);
-        size--;
-    }
-
     return (0);
 }
 
-static int write_ram(struct bootloader_t *self_p,
-                     size_t size)
+static int write_application(struct bootloader_t *self_p,
+                             size_t size)
 {
-    uint8_t *write_p;
+    uint8_t dummy;
 
-    write_p = (uint8_t *)(uintptr_t)(self_p->swdl.address + self_p->swdl.offset);
-
-    /* Write the data to the random access memory. */
+    /* Write the data to the memory. */
     while (size > 0) {
-        chan_read(self_p->chin_p, write_p, 1);
-        write_p++;
+        chan_read(self_p->chin_p, &dummy, 1);
         size--;
     }
 
@@ -147,9 +128,12 @@ static int write_response(struct bootloader_t *self_p,
     return (0);
 }
 
-static int write_response_no_data(struct bootloader_t *self_p,
-                          uint8_t code)
+static int ignore_and_write_response_no_data(struct bootloader_t *self_p,
+                                             size_t length,
+                                             uint8_t code)
 {
+    ignore(self_p, length);
+
     return (write_response(self_p, 0, code));
 }
 
@@ -203,31 +187,73 @@ static int handle_read_data_by_identifier_system_time(struct bootloader_t *self_
 }
 
 /**
- * Call given address.
+ * Enter the default session.
  */
-static int handle_routine_control_call(struct bootloader_t *self_p,
-                                       int sub_function,
-                                       int length)
+static int handle_diagnostic_session_control_default(struct bootloader_t *self_p)
 {
-    uint32_t address;
+    ignore_and_write_response_no_data(self_p,
+                                      0,
+                                      (DIAGNOSTIC_SESSION_CONTROL | POSITIVE_RESPONSE));
 
-    if (length != sizeof(address)) {
-        ignore(self_p, length);
-        write_response_no_data(self_p, INCORRECT_MESSAGE_LENGTH_OR_INVALID_FORMAT);
+    /* Call the application. */
+    //((void (*)(void))(uintptr_t)self_p->application_address)();
+
+    return (0);
+}
+
+/**
+ * UDS uses different operating sessions, which can be changed using
+ * the "Diagnostic Session Control". Depending on which session is
+ * active, different services are available. On start, the control
+ * unit is by default in the "Default Session". Other sessions are
+ * defined, but are not required to be implemented depending on the
+ * type of device:
+ *
+ * - "Programming Session" used to upload software.
+ *
+ * - "Extended Diagnostic Session" used to unlock additional
+ *   diagnostic functions, such as the adjustment of sensors.
+ *
+ * - "Safety system diagnostic session" used to test all
+ *   safety-critical diagnostic functions, such as airbag tests.
+ *
+ * In addition, there are reserved session identifiers that can be
+ * defined for vehicle manufacturers and vehicle suppliers specific
+ * use.
+ */
+static int handle_diagnostic_session_control(struct bootloader_t *self_p,
+                                             int length)
+{
+    uint8_t session;
+    int res;
+
+    /* Length check. */
+    if (length < 1) {
+        ignore_and_write_response_no_data(self_p,
+                                          0,
+                                          INCORRECT_MESSAGE_LENGTH_OR_INVALID_FORMAT);
 
         return (-1);
     }
 
-    chan_read(self_p->chin_p, &address, sizeof(address));
-    address = ntohl(address);
+    /* Read session type. */
+    chan_read(self_p->chin_p, &session, sizeof(session));
+    length -= 1;
 
-    /* Write the response before calling to the address. */
-    write_response_no_data(self_p, (ROUTINE_CONTROL | POSITIVE_RESPONSE));
+    /* Handle the session. */
+    switch (session) {
 
-    /* Call given address. */
-    /* ((void (*)(void))(uintptr_t)address)(); */
+    case DIAGNOSTIC_SESSION_CONTROL_DEFAULT:
+        res = handle_diagnostic_session_control_default(self_p);
+        break;
 
-    return (0);
+    default:
+        ignore_and_write_response_no_data(self_p, 0, REQUEST_OUT_OF_RANGE);
+        res = -1;
+        break;
+    }
+
+    return (res);
 }
 
 /**
@@ -245,8 +271,9 @@ static int handle_read_data_by_identifier(struct bootloader_t *self_p,
     int res;
 
     if (length < 2) {
-        ignore(self_p, length);
-        write_response_no_data(self_p, INCORRECT_MESSAGE_LENGTH_OR_INVALID_FORMAT);
+        ignore_and_write_response_no_data(self_p,
+                                          length,
+                                          INCORRECT_MESSAGE_LENGTH_OR_INVALID_FORMAT);
 
         return (-1);
     }
@@ -267,64 +294,9 @@ static int handle_read_data_by_identifier(struct bootloader_t *self_p,
         break;
 
     default:
-        ignore(self_p, length);
-        write_response_no_data(self_p, SERVICE_NOT_SUPPORTED);
-        res = -1;
-        break;
-    }
-
-    return (res);
-}
-
-/**
- * The Control service routine services of all kinds can be
- * performed. There are three different message types:
- *
- * 1. With the start-message, a service can be initiated. It can be
- *    defined to confirm the beginning of the execution or to notify
- *    when the service is completed.
- *
- * 2. With the Stop message, a running service can be interrupted at
- *    any time.
- *
- * 3. The third option is a message to query the results of the
- *    service.
- *
- * The start and stop message parameters can be specified. This makes
- * it possible to implement every possible project-specific service.
- */
-static int handle_routine_control(struct bootloader_t *self_p,
-                                  int length)
-{
-    uint8_t sub_function;
-    uint16_t routine_id;
-    int res;
-
-    /* Length check. */
-    if (length < 3) {
-        ignore(self_p, length);
-        write_response_no_data(self_p, INCORRECT_MESSAGE_LENGTH_OR_INVALID_FORMAT);
-
-        return (-1);
-    }
-
-    /* Read sub-function and routine id. */
-    chan_read(self_p->chin_p, &sub_function, sizeof(sub_function));
-    chan_read(self_p->chin_p, &routine_id, sizeof(routine_id));
-
-    routine_id = ntohs(routine_id);
-    length -= 3;
-
-    /* Handle the routine. */
-    switch (routine_id) {
-
-    case ROUTINE_ID_CALL:
-        res = handle_routine_control_call(self_p, sub_function, length);
-        break;
-
-    default:
-        ignore(self_p, length);
-        write_response_no_data(self_p, REQUEST_OUT_OF_RANGE);
+        ignore_and_write_response_no_data(self_p,
+                                          length,
+                                          SERVICE_NOT_SUPPORTED);
         res = -1;
         break;
     }
@@ -347,8 +319,9 @@ static int handle_request_download(struct bootloader_t *self_p,
 
     /* Length check. */
     if (length < 3) {
-        ignore(self_p, length);
-        write_response_no_data(self_p, INCORRECT_MESSAGE_LENGTH_OR_INVALID_FORMAT);
+        ignore_and_write_response_no_data(self_p,
+                                          length,
+                                          INCORRECT_MESSAGE_LENGTH_OR_INVALID_FORMAT);
 
         return (-1);
     }
@@ -358,16 +331,18 @@ static int handle_request_download(struct bootloader_t *self_p,
 
     /* The address and size should be 4 bytes each. */
     if ((buf[1] != sizeof(address)) || (buf[2] != sizeof(size))) {
-        ignore(self_p, length);
-        write_response_no_data(self_p, REQUEST_OUT_OF_RANGE);
+        ignore_and_write_response_no_data(self_p,
+                                          length,
+                                          REQUEST_OUT_OF_RANGE);
 
         return (-1);
     }
 
     /* Length check. */
     if (length < 8) {
-        ignore(self_p, length);
-        write_response_no_data(self_p, INCORRECT_MESSAGE_LENGTH_OR_INVALID_FORMAT);
+        ignore_and_write_response_no_data(self_p,
+                                          length,
+                                          INCORRECT_MESSAGE_LENGTH_OR_INVALID_FORMAT);
 
         return (-1);
     }
@@ -381,16 +356,20 @@ static int handle_request_download(struct bootloader_t *self_p,
     self_p->swdl.size = ntohl(size);
     self_p->swdl.offset = 0;
 
-    if ((self_p->swdl.address >= FLASH_BEGIN)
-        && (self_p->swdl.address < FLASH_END)) {
-        /* ToDo: Erase given memory region(s). */
-        self_p->swdl.write = write_flash;
-    } else if ((self_p->swdl.address >= RAM_BEGIN)
-               && (self_p->swdl.address < RAM_END)) {
-        self_p->swdl.write = write_ram;
+    if (self_p->swdl.address == self_p->application_address) {
+        if (self_p->swdl.size > self_p->application_size) {
+            ignore_and_write_response_no_data(self_p,
+                                              length,
+                                              REQUEST_OUT_OF_RANGE);
+
+            return (-1);
+        }
+
+        erase_application(self_p);
     } else {
-        ignore(self_p, length);
-        write_response_no_data(self_p, REQUEST_OUT_OF_RANGE);
+        ignore_and_write_response_no_data(self_p,
+                                          length,
+                                          REQUEST_OUT_OF_RANGE);
 
         return (-1);
     }
@@ -432,15 +411,18 @@ static int handle_transfer_data(struct bootloader_t *self_p,
     /* A request download request must be sent before data can be
        transferred. */
     if (self_p->state != STATE_SWDL) {
-        ignore(self_p, length);
-        write_response_no_data(self_p, CONDITIONS_NOT_CORRECT);
+        ignore_and_write_response_no_data(self_p,
+                                          length,
+                                          CONDITIONS_NOT_CORRECT);
 
         return (-1);
     }
 
     /* Length check. */
     if (length < 1) {
-        write_response_no_data(self_p, INCORRECT_MESSAGE_LENGTH_OR_INVALID_FORMAT);
+        ignore_and_write_response_no_data(self_p,
+                                          0,
+                                          INCORRECT_MESSAGE_LENGTH_OR_INVALID_FORMAT);
 
         return (-1);
     }
@@ -451,14 +433,15 @@ static int handle_transfer_data(struct bootloader_t *self_p,
 
     /* Don't write outside the allowed memory region. */
     if (length > (self_p->swdl.size - self_p->swdl.offset)) {
-        ignore(self_p, length);
-        write_response_no_data(self_p, REQUEST_OUT_OF_RANGE);
+        ignore_and_write_response_no_data(self_p,
+                                          length,
+                                          REQUEST_OUT_OF_RANGE);
 
         return (-1);
     }
 
     /* Write to the memory. */
-    if (self_p->swdl.write(self_p, length) == 0) {
+    if (write_application(self_p, length) == 0) {
         self_p->swdl.offset += length;
         write_response(self_p,
                        sizeof(sequence_counter),
@@ -468,7 +451,9 @@ static int handle_transfer_data(struct bootloader_t *self_p,
                    sizeof(sequence_counter));
         res = 0;
     } else {
-        write_response_no_data(self_p, GENERAL_PROGRAMMING_FAILURE);
+        ignore_and_write_response_no_data(self_p,
+                                          0,
+                                          GENERAL_PROGRAMMING_FAILURE);
         res = -1;
     }
 
@@ -488,22 +473,27 @@ static int handle_request_transfer_exit(struct bootloader_t *self_p,
 {
     /* Sanity check. */
     if (length != 0) {
-        ignore(self_p, length);
-        write_response_no_data(self_p, INCORRECT_MESSAGE_LENGTH_OR_INVALID_FORMAT);
+        ignore_and_write_response_no_data(self_p,
+                                          length,
+                                          INCORRECT_MESSAGE_LENGTH_OR_INVALID_FORMAT);
 
         return (-1);
     }
 
     /* Can only exit if swdl is active. */
     if (self_p->state != STATE_SWDL) {
-        write_response_no_data(self_p, CONDITIONS_NOT_CORRECT);
+        ignore_and_write_response_no_data(self_p,
+                                          0,
+                                          CONDITIONS_NOT_CORRECT);
 
         return (-1);
     }
 
     self_p->state = STATE_IDLE;
 
-    write_response_no_data(self_p, (REQUEST_TRANSFER_EXIT | POSITIVE_RESPONSE));
+    ignore_and_write_response_no_data(self_p,
+                                      0,
+                                      (REQUEST_TRANSFER_EXIT | POSITIVE_RESPONSE));
 
     return (0);
 }
@@ -514,19 +504,24 @@ static int handle_request_transfer_exit(struct bootloader_t *self_p,
 static int handle_unknown_service_id(struct bootloader_t *self_p,
                                      int length)
 {
-    ignore(self_p, length);
-    write_response_no_data(self_p, SERVICE_NOT_SUPPORTED);
+    ignore_and_write_response_no_data(self_p,
+                                      length,
+                                      SERVICE_NOT_SUPPORTED);
 
     return (0);
 }
 
 int bootloader_init(struct bootloader_t *self_p,
                     chan_t *chin_p,
-                    chan_t *chout_p)
+                    chan_t *chout_p,
+                    uint32_t application_address,
+                    uint32_t application_size)
 {
     self_p->state = STATE_IDLE;
     self_p->chin_p = chin_p;
     self_p->chout_p = chout_p;
+    self_p->application_address = application_address;
+    self_p->application_size = application_size;
 
     return (0);
 }
@@ -553,12 +548,12 @@ int bootloader_handle_service(struct bootloader_t *self_p)
     /* Handle the service. */
     switch (service_id) {
 
-    case READ_DATA_BY_IDENTIFIER:
-        res = handle_read_data_by_identifier(self_p, length);
+    case DIAGNOSTIC_SESSION_CONTROL:
+        res = handle_diagnostic_session_control(self_p, length);
         break;
 
-    case ROUTINE_CONTROL:
-        res = handle_routine_control(self_p, length);
+    case READ_DATA_BY_IDENTIFIER:
+        res = handle_read_data_by_identifier(self_p, length);
         break;
 
     case REQUEST_DOWNLOAD:

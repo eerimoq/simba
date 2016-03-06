@@ -22,6 +22,14 @@
 
 #include "bootloader.h"
 
+#if !defined(APPLICATION_ADDRESS)
+#    define APPLICATION_ADDRESS                      0x00000000
+#endif
+
+#if !defined(APPLICATION_SIZE)
+#    define APPLICATION_SIZE                         0x20000000
+#endif
+
 static struct uart_driver_t uart;
 static uint8_t uart_rx_buffer[32];
 
@@ -46,7 +54,11 @@ int main()
     std_printf(sys_get_info());
 
     /* Initialize the bootloader object and enter the main loop. */
-    bootloader_init(&bootloader, &uart.chin, &uart.chout);
+    bootloader_init(&bootloader,
+                    &uart.chin,
+                    &uart.chout,
+                    APPLICATION_ADDRESS,
+                    APPLICATION_SIZE);
     bootloader_main(&bootloader);
 
     return (0);
