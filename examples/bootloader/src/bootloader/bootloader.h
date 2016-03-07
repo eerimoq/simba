@@ -55,7 +55,8 @@ struct bootloader_t {
  *                                address.
  * @param[in] application_size Size of the application flash area. The
  *                             maximum appliction size is this size
- *                             minus one.
+ *                             minus one, because the last byte is
+ *                             used as application valid flag.
  *
  * @returns zero(0) or negative error code
  */

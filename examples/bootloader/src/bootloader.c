@@ -23,6 +23,7 @@
 #include "bootloader.h"
 #include "arpa/inet.h"
 
+/* Application valid flag. */
 #define APPLICATION_VALID_FLAG                             0xbe
 
 /* The maximum data transfer size. */
@@ -92,6 +93,14 @@
 #define VOLTAGE_TOO_HIGH                                   0x92
 #define VOLTAGE_TOO_LOW                                    0x93
 
+/**
+ * Read and discard given number of bytes from the input channel.
+ *
+ * @param[in] self_p Bootloader object.
+ * @param[in] size Number of byte to ignore.
+ *
+ * @returns zero(0) or negative error code.
+ */
 static int ignore(struct bootloader_t *self_p,
                   int size)
 {
@@ -105,11 +114,27 @@ static int ignore(struct bootloader_t *self_p,
     return (0);
 }
 
+/**
+ * Erase the application memory region.
+ *
+ * @param[in] self_p Bootloader object.
+ *
+ * @returns zero(0) or negative error code.
+ */
 static int erase_application(struct bootloader_t *self_p)
 {
     return (0);
 }
 
+/**
+ * Read given number of bytes from the input channel and write them to
+ * the flash memory.
+ *
+ * @param[in] self_p Bootloader object.
+ * @param[in] size Number of byte to write.
+ *
+ * @returns zero(0) or negative error code.
+ */
 static int write_application(struct bootloader_t *self_p,
                              size_t size)
 {
@@ -145,6 +170,15 @@ static int write_application(struct bootloader_t *self_p,
     return (0);
 }
 
+/**
+ * Returns true(1) if there is a valid application in the application
+ * memory region.
+ *
+ * @param[in] self_p Bootloader object.
+ *
+ * @returns true(1) if a valid application exists in the memory
+ *          region, otherwise false(0).
+ */
 static int is_application_valid(struct bootloader_t *self_p)
 {
     uint32_t flag_address;
@@ -162,6 +196,13 @@ static int is_application_valid(struct bootloader_t *self_p)
     return (flag == APPLICATION_VALID_FLAG);
 }
 
+/**
+ * Write the valid applicatin flag to the flash memory.
+ *
+ * @param[in] self_p Bootloader object.
+ *
+ * @returns zero(0) or negative error code.
+ */
 static int write_application_valid_flag(struct bootloader_t *self_p)
 {
     uint8_t flag;
@@ -181,6 +222,13 @@ static int write_application_valid_flag(struct bootloader_t *self_p)
     return (0);
 }
 
+/**
+ * Call the application.
+ *
+ * @param[in] self_p Bootloader object.
+ *
+ * @returns For most architechtures this function never returns.
+ */
 static int call_application(struct bootloader_t *self_p)
 {
 #if defined(MCU_SAM_3X8E)
@@ -209,6 +257,15 @@ static int call_application(struct bootloader_t *self_p)
     return (0);
 }
 
+/**
+ * Write an UDS response on the output channel.
+ *
+ * @param[in] self_p Bootloader object.
+ * @param[in] length Number of bytes in the response after the code.
+ * @param[in] code Response code.
+ *
+ * @returns zero(0) or negative error code.
+ */
 static int write_response(struct bootloader_t *self_p,
                           int32_t length,
                           uint8_t code)
@@ -220,6 +277,16 @@ static int write_response(struct bootloader_t *self_p,
     return (0);
 }
 
+/**
+ * Ignore given number of bytes and then write an UDS response on the
+ * output channel.
+ *
+ * @param[in] self_p Bootloader object.
+ * @param[in] length Number of bytes to ignore on the input channel.
+ * @param[in] code Response code.
+ *
+ * @returns zero(0) or negative error code.
+ */
 static int ignore_and_write_response_no_data(struct bootloader_t *self_p,
                                              size_t length,
                                              uint8_t code)
@@ -229,6 +296,17 @@ static int ignore_and_write_response_no_data(struct bootloader_t *self_p,
     return (write_response(self_p, 0, code));
 }
 
+/**
+ * Write a DID response on the output channel.
+ *
+ * @param[in] self_p Bootloader object.
+ * @param[in] response_code Response code.
+ * @param[in] did DID.
+ * @param[in] data_p Response data.
+ * @param[in] size Response data size.
+ *
+ * @returns zero(0) or negative error code.
+ */
 static int write_did_response(chan_t *chout_p,
                               uint8_t response_code,
                               uint16_t did,
@@ -252,6 +330,13 @@ static int write_did_response(chan_t *chout_p,
     return (0);
 }
 
+/**
+ * Handle the read version DID request.
+ *
+ * @param[in] self_p Bootloader object.
+ *
+ * @returns zero(0) or negative error code.
+ */
 static int handle_read_data_by_identifier_version(struct bootloader_t *self_p)
 {
     const char version[] = STRINGIFY(VERSION);
@@ -263,6 +348,13 @@ static int handle_read_data_by_identifier_version(struct bootloader_t *self_p)
                                sizeof(version)));
 }
 
+/**
+ * Handle the read system time DID request.
+ *
+ * @param[in] self_p Bootloader object.
+ *
+ * @returns zero(0) or negative error code.
+ */
 static int handle_read_data_by_identifier_system_time(struct bootloader_t *self_p)
 {
     char buf[32];
@@ -279,7 +371,13 @@ static int handle_read_data_by_identifier_system_time(struct bootloader_t *self_
 }
 
 /**
- * Enter the default session.
+ * Handle the diagnostic session control request to enter the default
+ * session (application).
+ *
+ * @param[in] self_p Bootloader object.
+ * @param[in] length Number of bytes left on the input channel.
+ *
+ * @returns zero(0) or negative error code.
  */
 static int handle_diagnostic_session_control_default(struct bootloader_t *self_p,
                                                      int length)
@@ -306,6 +404,15 @@ static int handle_diagnostic_session_control_default(struct bootloader_t *self_p
     return (0);
 }
 
+/**
+ * Handle the erase control routine.
+ *
+ * @param[in] self_p Bootloader object.
+ * @param[in] sub_function Sub function.
+ * @param[in] length Number of bytes left on the input channel.
+ *
+ * @returns zero(0) or negative error code.
+ */
 static int handle_routine_control_erase(struct bootloader_t *self_p,
                                         int sub_function,
                                         int length)
@@ -337,6 +444,11 @@ static int handle_routine_control_erase(struct bootloader_t *self_p,
  * In addition, there are reserved session identifiers that can be
  * defined for vehicle manufacturers and vehicle suppliers specific
  * use.
+ *
+ * @param[in] self_p Bootloader object.
+ * @param[in] length Number of bytes left on the input channel.
+ *
+ * @returns zero(0) or negative error code.
  */
 static int handle_diagnostic_session_control(struct bootloader_t *self_p,
                                              int length)
@@ -380,6 +492,11 @@ static int handle_diagnostic_session_control(struct bootloader_t *self_p,
  * version. Dynamic values such as the current state of the sensor
  * can be queried. Each value is associated to a Data Identifier
  * (DID) between 0 and 65535.
+ *
+ * @param[in] self_p Bootloader object.
+ * @param[in] length Number of bytes left on the input channel.
+ *
+ * @returns zero(0) or negative error code.
  */
 static int handle_read_data_by_identifier(struct bootloader_t *self_p,
                                           int length)
@@ -423,6 +540,11 @@ static int handle_read_data_by_identifier(struct bootloader_t *self_p,
 
 /**
  * Read data from the physical memory at the provided address.
+ *
+ * @param[in] self_p Bootloader object.
+ * @param[in] length Number of bytes left on the input channel.
+ *
+ * @returns zero(0) or negative error code.
  */
 static int handle_read_memory_by_address(struct bootloader_t *self_p,
                                          int length)
@@ -467,6 +589,11 @@ static int handle_read_memory_by_address(struct bootloader_t *self_p,
  *
  * The start and stop message parameters can be specified. This makes
  * it possible to implement every possible project-specific service.
+ *
+ * @param[in] self_p Bootloader object.
+ * @param[in] length Number of bytes left on the input channel.
+ *
+ * @returns zero(0) or negative error code.
  */
 static int handle_routine_control(struct bootloader_t *self_p,
                                   int length)
@@ -514,6 +641,11 @@ static int handle_routine_control(struct bootloader_t *self_p,
  * introduced using the "Request Download". Here, the location and
  * size of the data is specified. In turn, the controller specifies
  * how large the data packets can be.
+ *
+ * @param[in] self_p Bootloader object.
+ * @param[in] length Number of bytes left on the input channel.
+ *
+ * @returns zero(0) or negative error code.
  */
 static int handle_request_download(struct bootloader_t *self_p,
                                    int length)
@@ -602,6 +734,11 @@ static int handle_request_download(struct bootloader_t *self_p,
  * services. If the data set is larger than the maximum, the "Transfer
  * Data" service must be used several times in succession until all
  * data has arrived.
+ *
+ * @param[in] self_p Bootloader object.
+ * @param[in] length Number of bytes left on the input channel.
+ *
+ * @returns zero(0) or negative error code.
  */
 static int handle_transfer_data(struct bootloader_t *self_p,
                                 int length)
@@ -678,6 +815,11 @@ static int handle_transfer_data(struct bootloader_t *self_p,
  * can answer negatively on this request to stop a data transfer
  * request. This will be used when the amount of data (set in
  * "Request Download" or "Upload Request") has not been transferred.
+ *
+ * @param[in] self_p Bootloader object.
+ * @param[in] length Number of bytes left on the input channel.
+ *
+ * @returns zero(0) or negative error code.
  */
 static int handle_request_transfer_exit(struct bootloader_t *self_p,
                                         int length)
@@ -716,7 +858,12 @@ static int handle_request_transfer_exit(struct bootloader_t *self_p,
 }
 
 /**
- * Send a negative response to unknown service id:s.
+ * Handle an unknown service id by sending a negative response.
+ *
+ * @param[in] self_p Bootloader object.
+ * @param[in] length Number of bytes left on the input channel.
+ *
+ * @returns zero(0) or negative error code.
  */
 static int handle_unknown_service_id(struct bootloader_t *self_p,
                                      int length)
