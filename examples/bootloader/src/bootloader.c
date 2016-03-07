@@ -155,13 +155,7 @@ static int write_application(struct bootloader_t *self_p,
 
         /* Read from the input channel and write to the memory. */
         chan_read(self_p->chin_p, buffer, n);
-
-#if defined(MCU_SAM_3X8E)
         flash_write(self_p->flash_p, address, buffer, n);
-#elif defined(MCU_LINUX)
-#else
-#    error "Application write function not implemented for this mcu."
-#endif
 
         address += n;
         left -= n;
@@ -211,13 +205,7 @@ static int write_application_valid_flag(struct bootloader_t *self_p)
     /* Write the flag at the end of the application flash area. */
     flag = APPLICATION_VALID_FLAG;
     flag_address = (self_p->application_address + self_p->application_size);
-
-#if defined(MCU_SAM_3X8E)
     flash_write(self_p->flash_p, flag_address, &flag, sizeof(flag));
-#else
-    (void)flag;
-    (void)flag_address;
-#endif
 
     return (0);
 }
@@ -252,6 +240,9 @@ static int call_application(struct bootloader_t *self_p)
        function. */
     asm volatile ("mov sp, %0" : : "r" (stack_address));
     asm volatile ("blx %0" : : "r" (reset_address));
+#elif defined(MCU_LINUX)
+#else
+#    error "Unsupported mcu."
 #endif
 
     return (0);
@@ -879,12 +870,8 @@ int bootloader_init(struct bootloader_t *self_p,
                     chan_t *chin_p,
                     chan_t *chout_p,
                     uint32_t application_address,
-                    uint32_t application_size
-#if defined(MCU_SAM_3X8E)
-                    ,
-                    struct flash_driver_t *flash_p
-#endif
-)
+                    uint32_t application_size,
+                    struct flash_driver_t *flash_p)
 {
     self_p->state = STATE_IDLE;
     self_p->chin_p = chin_p;
@@ -892,10 +879,7 @@ int bootloader_init(struct bootloader_t *self_p,
     self_p->application_address = application_address;
     /* Subtract one for the application valid flag. */
     self_p->application_size = (application_size - 1);
-
-#if defined(MCU_SAM_3X8E)
     self_p->flash_p = flash_p;
-#endif
 
     return (0);
 }

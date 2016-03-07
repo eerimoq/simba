@@ -33,9 +33,7 @@ struct bootloader_t {
     chan_t *chout_p;
     uint32_t application_address;
     uint32_t application_size;
-#if defined(MCU_SAM_3X8E)
     struct flash_driver_t *flash_p;
-#endif
     struct {
         uint32_t address;
         uint32_t size;
@@ -57,6 +55,7 @@ struct bootloader_t {
  *                             maximum appliction size is this size
  *                             minus one, because the last byte is
  *                             used as application valid flag.
+ * @param[in] flash_p Flash memory to store the spplication in.
  *
  * @returns zero(0) or negative error code
  */
@@ -64,12 +63,8 @@ int bootloader_init(struct bootloader_t *self_p,
                     chan_t *chin_p,
                     chan_t *chout_p,
                     uint32_t application_address,
-                    uint32_t application_size
-#if defined(MCU_SAM_3X8E)
-                    ,
-                    struct flash_driver_t *flash_p
-#endif
-);
+                    uint32_t application_size,
+                    struct flash_driver_t *flash_p);
 
 /**
  * Handle a service.

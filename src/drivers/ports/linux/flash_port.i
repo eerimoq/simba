@@ -1,5 +1,5 @@
 /**
- * @file mcu.h
+ * @file drivers/flash_port.i
  * @version 0.2.0
  *
  * @section License
@@ -18,16 +18,23 @@
  * This file is part of the Simba project.
  */
 
-#ifndef __MCU_H__
-#define __MCU_H__
+int flash_port_module_init(void)
+{
+    return (0);
+}
 
-#define PIN_DEVICE_MAX  20
-#define EXTI_DEVICE_MAX  2
-#define SPI_DEVICE_MAX   1
-#define UART_DEVICE_MAX  1
-#define CAN_DEVICE_MAX   1
-#define PWM_DEVICE_MAX   1
-#define ADC_DEVICE_MAX   1
-#define FLASH_DEVICE_MAX 1
+ssize_t flash_port_read(struct flash_driver_t *self_p,
+                        void *dst_p,
+                        size_t src,
+                        size_t size)
+{
+    return (-1);
+}
 
-#endif
+ssize_t flash_port_write(struct flash_driver_t *self_p,
+                         size_t dst,
+                         const void *src_p,
+                         size_t size)
+{
+    return (-1);
+}

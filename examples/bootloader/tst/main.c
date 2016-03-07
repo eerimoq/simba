@@ -30,9 +30,7 @@
 static uint8_t inbuf[128];
 static uint8_t outbuf[128];
 
-#if defined(MCU_SAM_3X8E)
 static struct flash_driver_t flash;
-#endif
 
 static int test_bad_size(struct harness_t *self_p)
 {
@@ -50,12 +48,8 @@ static int test_bad_size(struct harness_t *self_p)
                     &qin,
                     &qout,
                     APPLICATION_ADDRESS,
-                    APPLICATION_SIZE
-#if defined(MCU_SAM_3X8E)
-                    ,
-                    &flash
-#endif
-        );
+                    APPLICATION_SIZE,
+                    &flash);
 
     BTASSERT(bootloader_handle_service(&bootloader) == -1);
 
@@ -80,12 +74,8 @@ static int test_unknown_service_id(struct harness_t *self_p)
                     &qin,
                     &qout,
                     APPLICATION_ADDRESS,
-                    APPLICATION_SIZE
-#if defined(MCU_SAM_3X8E)
-                    ,
-                    &flash
-#endif
-        );
+                    APPLICATION_SIZE,
+                    &flash);
 
     BTASSERT(bootloader_handle_service(&bootloader) == 0);
     BTASSERT(queue_read(&qout, &length, sizeof(length)) == sizeof(length));
@@ -124,12 +114,8 @@ static int test_read_data_by_identifier(struct harness_t *self_p)
                     &qin,
                     &qout,
                     APPLICATION_ADDRESS,
-                    APPLICATION_SIZE
-#if defined(MCU_SAM_3X8E)
-                    ,
-                    &flash
-#endif
-        );
+                    APPLICATION_SIZE,
+                    &flash);
 
     /* Bad did. */
     BTASSERT(bootloader_handle_service(&bootloader) == -1);
@@ -194,12 +180,8 @@ static int test_routine_control(struct harness_t *self_p)
                     &qin,
                     &qout,
                     APPLICATION_ADDRESS,
-                    APPLICATION_SIZE
-#if defined(MCU_SAM_3X8E)
-                    ,
-                    &flash
-#endif
-        );
+                    APPLICATION_SIZE,
+                    &flash);
 
     /* Bad length. */
     BTASSERT(bootloader_handle_service(&bootloader) == -1);
@@ -248,12 +230,8 @@ static int test_diagnostic_session_control(struct harness_t *self_p)
                     &qin,
                     &qout,
                     APPLICATION_ADDRESS,
-                    APPLICATION_SIZE
-#if defined(MCU_SAM_3X8E)
-                    ,
-                    &flash
-#endif
-        );
+                    APPLICATION_SIZE,
+                    &flash);
 
     /* Bad length. */
     BTASSERT(bootloader_handle_service(&bootloader) == -1);
@@ -329,12 +307,8 @@ static int test_request_download(struct harness_t *self_p)
                     &qin,
                     &qout,
                     APPLICATION_ADDRESS,
-                    APPLICATION_SIZE
-#if defined(MCU_SAM_3X8E)
-                    ,
-                    &flash
-#endif
-        );
+                    APPLICATION_SIZE,
+                    &flash);
 
     /* Bad length. */
     BTASSERT(bootloader_handle_service(&bootloader) == -1);
@@ -421,12 +395,8 @@ static int test_transfer_data(struct harness_t *self_p)
                     &qin,
                     &qout,
                     APPLICATION_ADDRESS,
-                    APPLICATION_SIZE
-#if defined(MCU_SAM_3X8E)
-                    ,
-                    &flash
-#endif
-        );
+                    APPLICATION_SIZE,
+                    &flash);
 
     /* Bad state. */
     BTASSERT(bootloader_handle_service(&bootloader) == -1);
@@ -515,12 +485,8 @@ static int test_request_transfer_exit(struct harness_t *self_p)
                     &qin,
                     &qout,
                     APPLICATION_ADDRESS,
-                    APPLICATION_SIZE
-#if defined(MCU_SAM_3X8E)
-                    ,
-                    &flash
-#endif
-        );
+                    APPLICATION_SIZE,
+                    &flash);
 
     /* Bad length. */
     BTASSERT(bootloader_handle_service(&bootloader) == -1);

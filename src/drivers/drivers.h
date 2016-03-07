@@ -30,6 +30,7 @@
 #    include "drivers/uart.h"
 #    include "drivers/can.h"
 #    include "drivers/sd.h"
+#    include "drivers/flash.h"
 #endif
 
 #if defined(ARCH_AVR)

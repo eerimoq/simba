@@ -24,6 +24,7 @@ INC += $(SIMBA_ROOT)/src/drivers/ports/$(ARCH)
 ifeq ($(ARCH),linux)
 DRIVERS_SRC ?= pin.c \
                sd.c \
+               flash.c \
                spi.c \
                uart.c
 # \
