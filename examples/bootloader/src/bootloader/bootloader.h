@@ -55,9 +55,9 @@ struct bootloader_t {
  *                             maximum appliction size is this size
  *                             minus one, because the last byte is
  *                             used as application valid flag.
- * @param[in] flash_p Flash memory to store the spplication in.
+ * @param[in] flash_p Flash memory to store the application in.
  *
- * @returns zero(0) or negative error code
+ * @returns zero(0) or negative error code.
  */
 int bootloader_init(struct bootloader_t *self_p,
                     chan_t *chin_p,
