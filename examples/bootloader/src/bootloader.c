@@ -123,6 +123,16 @@ static int ignore(struct bootloader_t *self_p,
  */
 static int erase_application(struct bootloader_t *self_p)
 {
+#if defined(MCU_SAM_3X8E)
+    uint8_t flag;
+    uint32_t flag_address;
+
+    /* Erase the flag at the end of the application flash area. */
+    flag = 0xff;
+    flag_address = (self_p->application_address + self_p->application_size);
+    flash_write(self_p->flash_p, flag_address, &flag, sizeof(flag));
+#endif
+
     return (0);
 }
 
@@ -553,7 +563,11 @@ static int handle_read_memory_by_address(struct bootloader_t *self_p,
 
     chan_read(self_p->chin_p, &address, sizeof(address));
 
+#if defined(BOOTLOADER_TEST)
+    value = 0x01;
+#else
     value = *((uint8_t *)(uintptr_t)htonl(address));
+#endif
 
     write_response(self_p,
                    sizeof(address) + sizeof(value),

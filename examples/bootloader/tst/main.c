@@ -157,6 +157,53 @@ static int test_read_data_by_identifier(struct harness_t *self_p)
     return (0);
 }
 
+static int test_read_memory_by_address(struct harness_t *self_p)
+{
+    struct bootloader_t bootloader;
+    struct queue_t qin;
+    struct queue_t qout;
+    uint8_t input[] = {
+        /* Bad length. */
+        0, 0, 0, 3, 0x23, 0x00, 0x00,
+        /* Ok. */
+        0, 0, 0, 5, 0x23, 0x00, 0x00, 0x00, 0x00
+    };
+    int32_t length;
+    uint32_t address;
+    uint8_t value;
+    uint8_t code;
+
+    queue_init(&qin, inbuf, sizeof(inbuf));
+    queue_init(&qout, outbuf, sizeof(outbuf));
+    queue_write(&qin, input, sizeof(input));
+    bootloader_init(&bootloader,
+                    &qin,
+                    &qout,
+                    APPLICATION_ADDRESS,
+                    APPLICATION_SIZE,
+                    &flash);
+
+    /* Bad length. */
+    BTASSERT(bootloader_handle_service(&bootloader) == -1);
+    BTASSERT(queue_read(&qout, &length, sizeof(length)) == sizeof(length));
+    BTASSERT(ntohl(length) == 1);
+    BTASSERT(queue_read(&qout, &code, sizeof(code)) == sizeof(code));
+    BTASSERT(code == 0x13);
+
+    /* Ok. */
+    BTASSERT(bootloader_handle_service(&bootloader) == 0);
+    BTASSERT(queue_read(&qout, &length, sizeof(length)) == sizeof(length));
+    BTASSERT(ntohl(length) == 6);
+    BTASSERT(queue_read(&qout, &code, sizeof(code)) == sizeof(code));
+    BTASSERT(code == 0x63);
+    BTASSERT(queue_read(&qout, &address, sizeof(address)) == sizeof(address));
+    BTASSERT(address == 0x00000000);
+    BTASSERT(queue_read(&qout, &value, sizeof(value)) == sizeof(value));
+    BTASSERT(value == 0x01);
+
+    return (0);
+}
+
 static int test_routine_control(struct harness_t *self_p)
 {
     struct bootloader_t bootloader;
@@ -541,6 +588,7 @@ int main()
         { test_bad_size, "test_bad_size" },
         { test_unknown_service_id, "test_unknown_service_id" },
         { test_read_data_by_identifier, "test_read_data_by_identifier" },
+        { test_read_memory_by_address, "test_read_memory_by_address" },
         { test_routine_control, "test_routine_control" },
         { test_diagnostic_session_control, "test_diagnostic_session_control" },
         { test_request_download, "test_request_download" },
