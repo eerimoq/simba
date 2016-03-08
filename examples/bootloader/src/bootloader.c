@@ -39,7 +39,7 @@
 /* Diagnostic session types. */
 #define DIAGNOSTIC_SESSION_CONTROL_DEFAULT                 0x01
 
-/* UDS routine identifiers. */
+/* UDS services. */
 #define DIAGNOSTIC_SESSION_CONTROL                         0x10
 #define READ_DATA_BY_IDENTIFIER                            0x22
 #define READ_MEMORY_BY_ADDRESS                             0x23
