@@ -51,7 +51,7 @@
 /* Positive response bit. */
 #define POSITIVE_RESPONSE                                  0x40
 
-/*Negative response codes. */
+/* Negative response codes. */
 #define GENERAL_REJECT                                     0x10
 #define SERVICE_NOT_SUPPORTED                              0x11
 #define SUBFUNCTION_NOT_SUPPORTED                          0x12
@@ -123,7 +123,6 @@ static int ignore(struct bootloader_t *self_p,
  */
 static int erase_application(struct bootloader_t *self_p)
 {
-#if defined(MCU_SAM_3X8E)
     uint8_t flag;
     uint32_t flag_address;
 
@@ -131,7 +130,6 @@ static int erase_application(struct bootloader_t *self_p)
     flag = 0xff;
     flag_address = (self_p->application_address + self_p->application_size);
     flash_write(self_p->flash_p, flag_address, &flag, sizeof(flag));
-#endif
 
     return (0);
 }

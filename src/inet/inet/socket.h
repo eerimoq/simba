@@ -1,5 +1,5 @@
 /**
- * @file kernel/socket.h
+ * @file inet/socket.h
  * @version 0.2.0
  *
  * @section License
@@ -18,19 +18,19 @@
  * This file is part of the Simba project.
  */
 
-#ifndef __KERNEL_SOCKET_H__
-#define __KERNEL_SOCKET_H__
+#ifndef __INET_SOCKET_H__
+#define __INET_SOCKET_H__
 
 #include "simba.h"
 
 /** Internet address family. */
-#define AF_INET  2
+#define SOCKET_DOMAIN_AF_INET  2
 
 /** TCP socket type. */
-#define SOCKET_TYPE_STREAM    1
+#define SOCKET_TYPE_STREAM     1
 
 /** UDP socket type. */
-#define SOCKET_TYPE_DGRAM     2
+#define SOCKET_TYPE_DGRAM      2
 
 struct socket_addr_t {
     /** IPv4 address. */
@@ -56,7 +56,7 @@ struct socket_t {
  *
  * @return zero(0) or negative error code.
  */
-int socket_init(struct socket_t *self_p,
+int socket_open(struct socket_t *self_p,
                 int domain,
                 int type,
                 int protocol);

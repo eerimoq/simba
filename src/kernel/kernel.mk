@@ -30,7 +30,6 @@ KERNEL_SRC ?= chan.c \
               sem.c \
               setting.c \
               shell.c \
-              socket.c \
               std.c \
               sys.c \
               thrd.c \

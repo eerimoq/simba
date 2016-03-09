@@ -105,6 +105,16 @@ int _write(int file, char *ptr, int len)
     return (-1);
 }
 
+int _kill(int pid)
+{
+    return (-1);
+}
+
+int _getpid()
+{
+    return (-1);
+}
+
 static float sys_port_interrupt_cpu_usage_get(void)
 {
     return ((100.0 * sys.interrupt.time) /

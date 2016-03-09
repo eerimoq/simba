@@ -20,10 +20,10 @@
 
 #include "simba.h"
 
-#if defined(ARCH_ESP)
-#    include "lwip/tcp.h"
-#    include "lwip/udp.h"
-#endif
+#include "inet.h"
+
+#include "lwip/tcp.h"
+#include "lwip/udp.h"
 
 /* /\** */
 /*  * Callback function called by lwip when there is data available. */
@@ -69,8 +69,6 @@ int socket_open(struct socket_t *self_p,
                 int type,
                 int protocol)
 {
-
-#if defined(ARCH_ESP)
     void *pcb_p = NULL;
     
     switch (type) {
@@ -97,27 +95,19 @@ int socket_open(struct socket_t *self_p,
     self_p->pcb_p = pcb_p;
 
     return (0);
-#else
-    return (-1);
-#endif
 }
 
 int socket_close(struct socket_t *self_p)
 {
-#if defined(ARCH_ESP)
     udp_remove(self_p->pcb_p);
 
     return (0);
-#else
-    return (-1);
-#endif
 }
 
 int socket_bind(struct socket_t *self_p,
                 const struct socket_addr_t *local_addr_p,
                 size_t addrlen)
 {
-#if defined(ARCH_ESP)
     ip_addr_t ip;
     
     ip.addr = local_addr_p->ip;
@@ -125,9 +115,6 @@ int socket_bind(struct socket_t *self_p,
     return (udp_bind(self_p->pcb_p,
                      &ip,
                      local_addr_p->port));
-#else
-    return (-1);
-#endif
 }
 
 int socket_listen(struct socket_t *self_p, int backlog)
@@ -150,7 +137,6 @@ int socket_accept(struct socket_t *self_p,
     return (-1);
 }
 
-
 ssize_t socket_sendto(struct socket_t *self_p,
                       const void *buf_p,
                       size_t size,
@@ -158,7 +144,6 @@ ssize_t socket_sendto(struct socket_t *self_p,
                       const struct socket_addr_t *remote_addr_p,
                       size_t addrlen)
 {
-#if defined(ARCH_ESP)
     struct pbuf *pbuf_p;
     ip_addr_t ip;
     
@@ -175,9 +160,6 @@ ssize_t socket_sendto(struct socket_t *self_p,
     }
 
     return (0);
-#else
-    return (-1);
-#endif
 }
 
 ssize_t socket_recvfrom(struct socket_t *self_p,

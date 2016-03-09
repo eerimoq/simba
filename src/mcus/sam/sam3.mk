@@ -18,8 +18,7 @@
 # This file is part of the Simba project.
 #
 
-INC += $(SIMBA_ROOT)/src/mcus/sam \
-       $(SIMBA_ROOT)/src/kernel/socket/stub
+INC += $(SIMBA_ROOT)/src/mcus/sam
 SRC += $(SIMBA_ROOT)/src/mcus/sam/sam3.c \
        $(SIMBA_ROOT)/src/mcus/sam/mcu.c
 
