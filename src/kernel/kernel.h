@@ -42,5 +42,6 @@
 #include "kernel/queue.h"
 #include "kernel/event.h"
 #include "kernel/bits.h"
+#include "kernel/bus.h"
 
 #endif
