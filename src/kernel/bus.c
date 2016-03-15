@@ -34,12 +34,12 @@ int bus_init(struct bus_t *self_p)
 }
 
 int bus_attach(struct bus_t *self_p,
-               struct bus_chan_t *chan_p)
+               struct bus_listener_t *listener_p)
 {
     sem_get(&self_p->sem, NULL);
 
-    chan_p->next_p = self_p->head_p;
-    self_p->head_p = chan_p;
+    listener_p->next_p = self_p->head_p;
+    self_p->head_p = listener_p;
 
     sem_put(&self_p->sem, 1);
 
@@ -47,10 +47,10 @@ int bus_attach(struct bus_t *self_p,
 }
 
 int bus_detatch(struct bus_t *self_p,
-                struct bus_chan_t *chan_p)
+                struct bus_listener_t *listener_p)
 {
     int res = -1;
-    struct bus_chan_t *curr_p, *prev_p;
+    struct bus_listener_t *curr_p, *prev_p;
 
     sem_get(&self_p->sem, NULL);
 
@@ -58,7 +58,7 @@ int bus_detatch(struct bus_t *self_p,
     prev_p = NULL;
 
     while (curr_p != NULL) {
-        if (curr_p == chan_p) {
+        if (curr_p == listener_p) {
             if (prev_p != NULL) {
                 prev_p->next_p = curr_p->next_p;     
             } else {
@@ -82,7 +82,7 @@ int bus_write(struct bus_t *self_p,
               struct bus_message_header_t *message_p)
 {
     int number_of_receivers;
-    struct bus_chan_t *curr_p;
+    struct bus_listener_t *curr_p;
 
     sem_get(&self_p->sem, NULL);
 
@@ -105,9 +105,9 @@ int bus_write(struct bus_t *self_p,
     return (number_of_receivers);
 }
 
-int bus_chan_init(struct bus_chan_t *self_p,
-                  chan_t *chan_p,
-                  int id)
+int bus_listener_init(struct bus_listener_t *self_p,
+                      int id,
+                      chan_t *chan_p)
 {
     self_p->id = id;
     self_p->chan_p = chan_p;

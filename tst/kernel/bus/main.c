@@ -36,11 +36,11 @@ struct bar_t {
 static int test_attach_detach(struct harness_t *harness)
 {
     struct bus_t bus;
-    struct bus_chan_t chan;
+    struct bus_listener_t chan;
     struct queue_t queue;
 
     BTASSERT(bus_init(&bus) == 0);
-    BTASSERT(bus_chan_init(&chan, &queue, ID_FOO) == 0);
+    BTASSERT(bus_listener_init(&chan, ID_FOO, &queue) == 0);
 
     /* Attach-detach a channel. */
     BTASSERT(bus_attach(&bus, &chan) == 0);
@@ -55,7 +55,7 @@ static int test_attach_detach(struct harness_t *harness)
 static int test_write_read(struct harness_t *harness)
 {
     struct bus_t bus;
-    struct bus_chan_t chans[2];
+    struct bus_listener_t chans[2];
     struct queue_t queues[2];
     struct foo_t foo;
     char bufs[2][32];
@@ -64,8 +64,8 @@ static int test_write_read(struct harness_t *harness)
     BTASSERT(bus_init(&bus) == 0);
     BTASSERT(queue_init(&queues[0], bufs[0], sizeof(bufs[0])) == 0);
     BTASSERT(queue_init(&queues[1], bufs[1], sizeof(bufs[1])) == 0);
-    BTASSERT(bus_chan_init(&chans[0], &queues[0], ID_FOO) == 0);
-    BTASSERT(bus_chan_init(&chans[1], &queues[1], ID_FOO) == 0);
+    BTASSERT(bus_listener_init(&chans[0], ID_FOO, &queues[0]) == 0);
+    BTASSERT(bus_listener_init(&chans[1], ID_FOO, &queues[1]) == 0);
 
     /* Write the message foo to the bus. No receiver is attached. */
     foo.header.id = ID_FOO;
@@ -102,7 +102,7 @@ static int test_write_read(struct harness_t *harness)
 static int test_multiple_ids(struct harness_t *harness)
 {
     struct bus_t bus;
-    struct bus_chan_t chans[2];
+    struct bus_listener_t chans[2];
     struct queue_t queues[2];
     struct foo_t foo;
     struct bar_t bar;
@@ -112,8 +112,8 @@ static int test_multiple_ids(struct harness_t *harness)
     BTASSERT(bus_init(&bus) == 0);
     BTASSERT(queue_init(&queues[0], bufs[0], sizeof(bufs[0])) == 0);
     BTASSERT(queue_init(&queues[1], bufs[1], sizeof(bufs[1])) == 0);
-    BTASSERT(bus_chan_init(&chans[0], &queues[0], ID_FOO) == 0);
-    BTASSERT(bus_chan_init(&chans[1], &queues[1], ID_BAR) == 0);
+    BTASSERT(bus_listener_init(&chans[0], ID_FOO, &queues[0]) == 0);
+    BTASSERT(bus_listener_init(&chans[1], ID_BAR, &queues[1]) == 0);
 
     /* Write the message foo to the bus. No receiver is attached. */
     foo.header.id = ID_FOO;

@@ -25,13 +25,13 @@
 
 struct bus_t {
     struct sem_t sem;
-    struct bus_chan_t *head_p;
+    struct bus_listener_t *head_p;
 };
 
-struct bus_chan_t {
+struct bus_listener_t {
     int id;
     chan_t *chan_p;
-    struct bus_chan_t *next_p;
+    struct bus_listener_t *next_p;
 };
 
 struct bus_message_header_t {
@@ -56,50 +56,55 @@ int bus_module_init(void);
 int bus_init(struct bus_t *self_p);
 
 /**
- * Attach given channel to given bus.
+ * Attach given listener to given bus. Messages written to the bus
+ * will be written to all listeners initialized with that message id.
  *
- * @param[in] self_p Bus to attach to.
- * @param[in] chan_p Channel to attach to given bus.
+ * @param[in] self_p Bus to attach the listener to.
+ * @param[in] listener_p Listener to attach to the bus.
  *
  * @return zero(0) or negative error code.
  */
 int bus_attach(struct bus_t *self_p,
-               struct bus_chan_t *chan_p);
+               struct bus_listener_t *listener_p);
 
 /**
- * Detatch given channel from given bus.
+ * Detatch given listener from given bus.
  *
- * @param[in] self_p Bus to detach from.
- * @param[in] chan_p Channel to detach from given bus.
+ * @param[in] self_p Bus to detach listener from.
+ * @param[in] listener_p Listener to detach from the bus.
  *
  * @return zero(0) or negative error code.
  */
 int bus_detatch(struct bus_t *self_p,
-                struct bus_chan_t *chan_p);
+                struct bus_listener_t *listener_p);
 
 /**
- * Write given message to given bus.
+ * Write given message to given bus. The message must start with the
+ * ``bus_message_header_t`` data structure.
  *
- * @param[in] self_p Bus to write to.
- * @param[in] message_p Message to write to given bus.
+ * @param[in] self_p Bus to write the message to.
+ * @param[in] message_p Message to write to the bus.
  *
- * @return Number of channels that received the message or negative
+ * @return Number of listeners that received the message, or negative
  *         error code.
  */
 int bus_write(struct bus_t *self_p,
               struct bus_message_header_t *message_p);
 
 /**
- * Initialize given channel.
+ * Initialize given listener to receive messages with given id, after
+ * the listener is attached to the bus. A listener can only receive
+ * messages of a single id, though, the same channel may be used in
+ * multiple listeners with different ids (if the channel supports it).
  *
- * @param[in] self_p Channel to initialize.
- * @param[in] chan_p Channel to write messages to.
+ * @param[in] self_p Listener to initialize.
  * @param[in] id Message id to receive.
+ * @param[in] chan_p Channel to receive messages on.
  *
  * @return zero(0) or negative error code.
  */
-int bus_chan_init(struct bus_chan_t *self_p,
-                  chan_t *chan_p,
-                  int id);
+int bus_listener_init(struct bus_listener_t *self_p,
+                      int id,
+                      chan_t *chan_p);
 
 #endif
