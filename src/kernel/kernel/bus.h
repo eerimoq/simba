@@ -36,7 +36,7 @@ struct bus_listener_t {
 
 struct bus_message_header_t {
     int id;      /** Unique message identifier. */
-    size_t size; /** Size of the message, not including the header size. */
+    size_t size; /** Size of the message, including the header size. */
 };
 
 /**
