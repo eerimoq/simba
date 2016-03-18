@@ -20,53 +20,67 @@
 
 #include "simba.h"
 
-int test_circular(struct harness_t *harness_p)
+int test_print(struct harness_t *harness_p)
 {
-    int i;
-    int number_of_entries;
+    struct log_object_t foo;
+    struct log_object_t bar;
 
-    log_reset();
+    /* Initialize the log objects. */
+    BTASSERT(log_object_init(&foo,
+                             "foo",
+                             LOG_UPTO(INFO)) == 0);
+    BTASSERT(log_object_init(&bar,
+                             "bar",
+                             LOG_UPTO(DEBUG)) == 0);
 
-    log_set_mode(LOG_MODE_OFF);
-    BTASSERT(log_format(sys_get_stdout()) == 0);
+    /* Write on INFO level. */
+    BTASSERT(log_object_print(&foo, LOG_INFO, FSTR("x = %d\r\n"), 1) == 1);
+    BTASSERT(log_object_print(&bar, LOG_INFO, FSTR("y = %d\r\n"), 2) == 1);
 
-    std_printf(FSTR("formatted\r\n"));
+    /* Write on DEBUG level. */
+    BTASSERT(log_object_print(&foo, LOG_DEBUG, FSTR("m = %d\r\n"), 3) == 0);
+    BTASSERT(log_object_print(&bar, LOG_DEBUG, FSTR("n = %d\r\n"), 4) == 1);
 
-    BTASSERT(log_set_mode(LOG_MODE_CIRCULAR) == LOG_MODE_OFF);
+    /* Write using the thread log mask instead of the log object
+     * mask. */
+    BTASSERT(log_object_print(NULL, LOG_DEBUG, FSTR("k = %d\r\n"), 5) == 0);
+    BTASSERT(log_object_print(NULL, LOG_ERR, FSTR("l = %d\r\n"), 6) == 1);
 
-    LOG(NOTICE, "trace point1 %f %c %d %ld %u %lu", 1.0f, 'a', 1, -2L, 3, 4);
-    LOG(NOTICE, "trace point2");
-    LOG(CRIT, "trace point3");
-    LOG(DEBUG, "trace point4");
-    LOG(DEBUG, "trace point5");
-    LOG(NOTICE, "trace point6 %f %c %d %ld %u %lu", 1.0, 'a', 1, -2L, 3, 4);
-    LOG(ERR, "trace point7");
+    return (0);
+}
 
-    for (i = 0; i < 10; i++) {
-        LOG(WARNING, "trace point %d", i);
-    }
+int test_handler(struct harness_t *harness_p)
+{
+    struct log_object_t foo;
+    struct log_handler_t handler;
 
-    std_printf(FSTR("written\r\n"));
+    /* Initialize the log objects. */
+    BTASSERT(log_object_init(&foo,
+                             "foo",
+                             LOG_UPTO(INFO)) == 0);
+    BTASSERT(log_handler_init(&handler, sys_get_stdout()) == 0);
+    
+    /* This should be printed once for the default handler. */
+    BTASSERT(log_object_print(&foo,
+                              LOG_INFO,
+                              FSTR("one handler\r\n")) == 1);
 
-    BTASSERT(log_set_mode(LOG_MODE_OFF) == LOG_MODE_CIRCULAR);
-    number_of_entries = log_format(sys_get_stdout());
-    std_printf(FSTR("number of entries = %d\r\n"), number_of_entries);
+    /* Add our handler. */
+    BTASSERT(log_add_handler(&handler) == 0);
 
-#if defined(ARCH_LINUX)
-    if (sizeof(void *) == 8) {
-        BTASSERT(number_of_entries == 4);
-    } else {
-        BTASSERT(number_of_entries == 8);
-    }
-#elif defined(ARCH_ARM)
-    BTASSERT(number_of_entries == 9);
-#elif defined(ARCH_ESP)
-    BTASSERT(number_of_entries == 8);
-#else
-    BTASSERT(number_of_entries == 13);
-#endif
+    /* This should be printed twice, one for the default handler and
+     * once for our handler. */
+    BTASSERT(log_object_print(&foo,
+                              LOG_INFO,
+                              FSTR("two handlers\r\n")) == 2);
 
-    std_printf(FSTR("formatted\r\n"));
+    /* Remove our handler. */
+    BTASSERT(log_remove_handler(&handler) == 0);
+
+    /* This should be printed once for the default handler. */
+    BTASSERT(log_object_print(&foo,
+                              LOG_INFO,
+                              FSTR("one handler again\r\n")) == 1);
 
     return (0);
 }
@@ -75,7 +89,8 @@ int main()
 {
     struct harness_t harness;
     struct harness_testcase_t harness_testcases[] = {
-        { test_circular, "test_circular" },
+        { test_print, "test_print" },
+        { test_handler, "test_handler" },
         { NULL, NULL }
     };
 

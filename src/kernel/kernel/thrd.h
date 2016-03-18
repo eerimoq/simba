@@ -146,6 +146,13 @@ struct thrd_t *thrd_self(void);
 int thrd_set_name(const char *name_p);
 
 /**
+ * Get the name of the current thread.
+ *
+ * @return Current thread name.
+ */
+const char *thrd_get_name(void);
+
+/**
  * Set the log mask of given thread.
  *
  * @param[in] thrd_p Thread to set the log mask of.

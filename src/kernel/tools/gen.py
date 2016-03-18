@@ -36,8 +36,6 @@ file_fmt = '''/**
 {sysinfo}
 
 {fs}
-
-{log}
 '''
 
 sysinfo_fmt = '''const FAR char sysinfo[] = "app:   {name}-{version} built {date} by {user}.\\r\\n"
@@ -68,17 +66,6 @@ const FAR int fs_parameters[] = {{
 }};
 '''
 
-log_fmt = '''{argument_structures}
-
-{write_functions}
-
-{format_functions}
-
-void (*log_id_to_format_fn[])(chan_t *, void *) = {{
-{format_functions_array}
-}};
-'''
-
 command_extern_fmt = 'extern int {callback}(int argc, const char *argv[], void *out_p, void *in_p);'
 counter_extern_fmt = 'extern long long FS_COUNTER({name});'
 parameter_extern_fmt = 'extern {type} FS_PARAMETER({name});'
@@ -103,27 +90,6 @@ list_entry_fmt = '{index},'
 argument_structure_fmt = '''struct {name}_t {{
 {members}
 }};
-'''
-
-write_function_fmt = '''int {name}_write(char level, ...)
-{{
-    struct {name}_t args;
-    va_list va;
-
-    va_start(va, level);
-{args}
-    va_end(va);
-
-    return (log_write(level, {identity}, &args, sizeof(args)));
-}}
-'''
-
-format_function_fmt = '''void {name}_format(chan_t *chan_p, struct {name}_t *args_p)
-{{
-    std_fprintf(chan_p, FSTR("{fmt}")
-{args}
-);
-}}
 '''
 
 major = 1
@@ -265,87 +231,6 @@ def generate_fs(infiles):
                          parameters_list='\n'.join(parameters_list))
 
 
-def parse_format_types(fmt):
-    types =[]
-    for mo in re.finditer(r"(%f|%c|%d|%ld|%u|%lu)", fmt):
-        if mo.group(1) == '%f':
-            types.append('double')
-        elif mo.group(1) == '%c':
-            types.append('int')
-        elif mo.group(1) == '%d':
-            types.append('int')
-        elif mo.group(1) == '%ld':
-            types.append('long')
-        elif mo.group(1) == '%u':
-            types.append('unsigned int')
-        elif mo.group(1) == '%lu':
-            types.append('unsigned long')
-    return types
-
-
-def log_point_gen(identity, name, fmt):
-    types = parse_format_types(fmt)
-
-    struct_members = []
-    write_args = []
-    format_args = []
-    for i, type in enumerate(types):
-        struct_members.append('        {type} arg{number};'.format(type=type,
-                                                                   number=i))
-        write_args.append('    args.arg{number} = va_arg(va, {type});'.format(type=type,
-                                                                              number=i))
-        format_args.append('    , args_p->arg{number}'.format(number=i))
-
-    argument_structures = argument_structure_fmt.format(name=name,
-                                                        members='\n'.join(struct_members))
-    write_functions = write_function_fmt.format(identity=identity,
-                                                name=name,
-                                                args='\n'.join(write_args))
-    format_functions = format_function_fmt.format(name=name,
-                                                  fmt=fmt,
-                                                  args='\n'.join(format_args))
-
-    return argument_structures, write_functions, format_functions
-
-
-def generate_log(infiles):
-    """Generate log identities and strings.
-    """
-    re_log = re.compile(r'^\s*\.\.log-begin\.\. '
-                        '(?P<name>[^ ]+) '
-                        '"(?P<fmt>[^"]+)" '
-                        '\.\.log-end\.\.;\s*$',
-                        re.MULTILINE)
-
-
-    # create lists of files and counters
-    log_points = []
-    for inf in infiles:
-        file_content = open(inf).read()
-        for mo in re_log.finditer(file_content):
-            log_points.append([mo.group('name'), mo.group('fmt')])
-
-    argument_structures = []
-    write_functions = []
-    format_functions = []
-    format_functions_array = []
-    for identity, log_point in enumerate(log_points):
-        name = log_point[0]
-        fmt = log_point[1]
-
-        argument_structure, write_function, format_function = log_point_gen(identity, name, fmt)
-        argument_structures.append(argument_structure)
-        write_functions.append(write_function)
-        format_functions.append(format_function)
-
-        format_functions_array.append("    (void (*)(chan_t *, void *)){name}_format,".format(name=name))
-
-    return log_fmt.format(argument_structures='\n'.join(argument_structures),
-                          write_functions='\n'.join(write_functions),
-                          format_functions='\n'.join(format_functions),
-                          format_functions_array='\n'.join(format_functions_array))
-
-
 if __name__ == '__main__':
     name = sys.argv[1]
     version = sys.argv[2]
@@ -363,7 +248,6 @@ if __name__ == '__main__':
                                  board=board,
                                  mcu=mcu)
     fs_formatted_data = generate_fs(infiles)
-    log_formatted_data = generate_log(infiles)
 
     fout = open(outfile, 'w').write(
         file_fmt.format(filename=outfile,
@@ -371,5 +255,4 @@ if __name__ == '__main__':
                         minor=minor,
                         date=time.strftime("%Y-%m-%d %H:%M %Z"),
                         sysinfo=sysinfo,
-                        fs=fs_formatted_data,
-                        log=log_formatted_data))
+                        fs=fs_formatted_data))

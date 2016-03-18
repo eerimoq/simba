@@ -48,57 +48,15 @@
 /** Set all levels up to and including mask. */
 #define LOG_UPTO(level) ((1 << (LOG_ ## level + 1)) - 1)
 
-#if !defined(LOG_BUFFER_SIZE)
-#    define LOG_BUFFER_SIZE 256
-#endif
-
-/** No logging. */
-#define LOG_MODE_OFF      0
-/** Circular logging. This is the default behaviour. */
-#define LOG_MODE_CIRCULAR 1
-/** Turn off logging when the buffer is full. */
-#define LOG_MODE_CAPTURE  2
-
-#define LOG_NAME TOKENPASTE(log_, UNIQUE(MODULE_NAME))
-#define LOG_NAME_WRITE TOKENPASTE(LOG_NAME, _write)
-
-/**
- * Write a log entry to the log.
- *
- * Example that writes a log entry to the log if the log level
- * `LOG_INFO` is enabled.
- *
- * @rst
- * .. code-block:: c
- *
- *    void foo()
- *    {
- *        LOG(INFO, "one = %d", 1);
- *    }
- * @endrst
- *
- * @param[in] level Log entry level.
- * @param[in] format Log entry format string.
- * @param[in] ... Variable argument list of values to log.
- */
-#if defined(__SIMBA_GEN__)
-#    define LOG(level, format, ...) ..log-begin.. LOG_NAME format ..log-end..
-#else
-#    define LOG(level, format, ...)             \
-    extern int LOG_NAME_WRITE(char, ...);       \
-    LOG_NAME_WRITE(LOG_ ## level, ## __VA_ARGS__)
-#endif
-
-struct log_entry_header_t {
-    size_t size;
-    unsigned long number;
-    unsigned long time;
-    char level;
-    int id;
+struct log_handler_t {
+    chan_t *chout_p;
+    struct log_handler_t *next_p;
 };
 
-struct log_entry_footer_t {
-    size_t size;
+struct log_object_t {
+    const char *name_p;
+    char mask;
+    struct log_object_t *next_p;
 };
 
 /**
@@ -109,50 +67,92 @@ struct log_entry_footer_t {
 int log_module_init(void);
 
 /**
- * Reset the log module. Clears the log and sets the log mode to
- * circular.
+ * Add given log handler.
+ *
+ * @param[in] handler_p Handler to add.
  *
  * @return zero(0) or negative error code.
  */
-int log_reset(void);
+int log_add_handler(struct log_handler_t *handler_p);
 
 /**
- * Set the log mode to off, circular or capture.
+ * Remove given log handler.
  *
- * @param[in] mode Mode to set. One of `LOG_MODE_OFF`,
- *                 `LOG_MODE_CIRCULAR` or `LOG_MODE_CAPTURE`.
+ * @param[in] handler_p Handler to remove.
  *
- * @return The old log mode.
+ * @return zero(0) or negative error code.
  */
-int log_set_mode(int mode);
+int log_remove_handler(struct log_handler_t *handler_p);
 
 /**
- * Get the current log mode.
+ * Add given log object.
  *
- * @return Current log mode.
+ * @param[in] object_p Object to add.
+ *
+ * @return zero(0) or negative error code.
  */
-int log_get_mode(void);
+int log_add_object(struct log_object_t *object_p);
 
 /**
- * Add log entry to log.
+ * Remove given log object.
  *
+ * @param[in] object_p Object to remove.
+ *
+ * @return zero(0) or negative error code.
+ */
+int log_remove_object(struct log_object_t *object_p);
+
+/**
+ * Set the default output channel.
+ *
+ * @param[in] chout_p Channel to set as the default output
+ *                    channel. May be NULL.
+ *
+ * @return zero(0) or negative error code.
+ */
+int log_set_default_handler_output_channel(chan_t *chout_p);
+
+/**
+ * Initialize given handler.
+ *
+ * @param[in] self_p Log handler to initialize.
+ * @param[in] chout_p Output handler.
+ *
+ * @return zero(0) or negative error code.
+ */
+int log_handler_init(struct log_handler_t *self_p,
+                     chan_t *chout_p);
+
+/**
+ * Initialize given log object with given name and mask.
+ *
+ * @param[in] self_p Log object to initialize.
+ * @param[in] name_p Log object name.
+ * @param[in] mask Log object mask.
+ *
+ * @return zero(0) or negative error code.
+ */
+int log_object_init(struct log_object_t *self_p,
+                    const char *name_p,
+                    char mask);
+
+/**
+ * Format message and print it if given log level is set in the log
+ * object mask.
+ *
+ * ``self_p`` may be NULL, and in that case the current thread log
+ * mask is used instead of the log object mask.
+ *
+ * @param[in] self_p Log object, or NULL to use the thread log mask.
  * @param[in] level Log level.
- * @param[in] id Log point identity.
- * @param[in] buf_p Buffer to log.
- * @param[in] size Number of bytes to log.
- *
- * @return true(1) if the entry was written to the log and false(0)
- *         otherwise.
- */
-int log_write(char level, int id, void *buf_p, size_t size);
-
-/**
- * Format all entries in the log and write them to given channel.
- *
- * @param[in] chout_p Output channel.
+ * @param[in] fmt_p Log format string.
+ * @param[in] ... Variable argument list.
  *
  * @return zero(0) or negative error code.
  */
-int log_format(chan_t *chout_p);
+int log_object_print(struct log_object_t *self_p,
+                     int level,
+                     const char *fmt_p,
+                     ...);
 
 #endif

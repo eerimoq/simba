@@ -25,6 +25,7 @@ int harness_init(struct harness_t *self_p)
     uart_init(&self_p->uart, &uart_device[0], 38400, NULL, 0);
     uart_start(&self_p->uart);
     sys_set_stdout(&self_p->uart.chout);
+    log_set_default_handler_output_channel(sys_get_stdout());
 
     return (0);
 }

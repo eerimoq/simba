@@ -22,6 +22,7 @@
 #define __KERNEL_STD_H__
 
 #include "simba.h"
+#include <stdarg.h>
 
 /**
  * Initialize module.
@@ -68,6 +69,18 @@ ssize_t std_sprintf(char *dst_p, FAR const char *fmt_p, ...);
 void std_printf(FAR const char *fmt_p, ...);
 
 /**
+ * Format and print data to standard output.
+ *
+ * See `std_sprintf()` for the the format string specification.
+ *
+ * @param[in] fmt_p Format string.
+ * @param[in] ap_p Variable arguemnts list.
+ *
+ * @return void.
+ */
+void std_vprintf(FAR const char *fmt_p, va_list *ap_p);
+
+/**
  * Format and print data to channel.
  *
  * See `std_sprintf()` for the the format string specification.
@@ -79,6 +92,19 @@ void std_printf(FAR const char *fmt_p, ...);
  * @return void.
  */
 void std_fprintf(chan_t *chan_p, FAR const char *fmt_p, ...);
+
+/**
+ * Format and print data to channel.
+ *
+ * See `std_sprintf()` for the the format string specification.
+ *
+ * @param[in] chan_p Output channel.
+ * @param[in] fmt_p Format string.
+ * @param[in] ... Variable arguemnts list.
+ *
+ * @return void.
+ */
+void std_vfprintf(chan_t *chan_p, FAR const char *fmt_p, va_list *ap_p);
 
 /**
  * Convert string to integer.

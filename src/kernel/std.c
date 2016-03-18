@@ -219,11 +219,11 @@ static char *formatf(char c,
 
     return (str_p);
 }
-
-static void std_vprintf(void (*std_putc)(char c, void *arg_p),
-                        void *arg_p,
-                        FAR const char *fmt_p,
-                        va_list *ap_p)
+    
+static void vcprintf(void (*std_putc)(char c, void *arg_p),
+                     void *arg_p,
+                     FAR const char *fmt_p,
+                     va_list *ap_p)
 {
     char c, flags, length, negative_sign, buf[VALUE_BUF_MAX], *s_p;
     signed char width;
@@ -308,7 +308,7 @@ ssize_t std_sprintf(char *dst_p, FAR const char *fmt_p, ...)
     char *d_p = dst_p;
 
     va_start(ap, fmt_p);
-    std_vprintf(sprintf_putc, &d_p, fmt_p, &ap);
+    vcprintf(sprintf_putc, &d_p, fmt_p, &ap);
     va_end(ap);
     sprintf_putc('\0', &d_p);
 
@@ -325,8 +325,21 @@ void std_printf(FAR const char *fmt_p, ...)
 
     if (output.chan_p != NULL) {
         va_start(ap, fmt_p);
-        std_vprintf(fprintf_putc, &output, fmt_p, &ap);
+        vcprintf(fprintf_putc, &output, fmt_p, &ap);
         va_end(ap);
+        output_flush(&output);
+    }
+}
+
+void std_vprintf(FAR const char *fmt_p, va_list *ap_p)
+{
+    struct buffered_output_t output;
+
+    output.pos = 0;
+    output.chan_p = sys_get_stdout();
+
+    if (output.chan_p != NULL) {
+        vcprintf(fprintf_putc, &output, fmt_p, ap_p);
         output_flush(&output);
     }
 }
@@ -340,8 +353,19 @@ void std_fprintf(chan_t *chan_p, FAR const char *fmt_p, ...)
     output.chan_p = chan_p;
 
     va_start(ap, fmt_p);
-    std_vprintf(fprintf_putc, &output, fmt_p, &ap);
+    vcprintf(fprintf_putc, &output, fmt_p, &ap);
     va_end(ap);
+    output_flush(&output);
+}
+
+void std_vfprintf(chan_t *chan_p, FAR const char *fmt_p, va_list *ap_p)
+{
+    struct buffered_output_t output;
+
+    output.pos = 0;
+    output.chan_p = chan_p;
+
+    vcprintf(fprintf_putc, &output, fmt_p, ap_p);
     output_flush(&output);
 }
 

@@ -529,6 +529,11 @@ int thrd_set_name(const char *name_p)
     return (0);
 }
 
+const char *thrd_get_name()
+{
+    return (thrd_self()->name_p);
+}
+
 int thrd_set_log_mask(struct thrd_t *thrd_p, int mask)
 {
     int old;

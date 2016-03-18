@@ -21,13 +21,13 @@
 #ifndef __MCU_H__
 #define __MCU_H__
 
-#define PIN_DEVICE_MAX  20
-#define EXTI_DEVICE_MAX  2
-#define SPI_DEVICE_MAX   1
-#define UART_DEVICE_MAX  1
-#define CAN_DEVICE_MAX   1
-#define PWM_DEVICE_MAX   1
-#define ADC_DEVICE_MAX   1
-#define FLASH_DEVICE_MAX 1
+#define PIN_DEVICE_MAX  64
+#define EXTI_DEVICE_MAX 32
+#define SPI_DEVICE_MAX   2
+#define UART_DEVICE_MAX  4
+#define CAN_DEVICE_MAX   4
+#define PWM_DEVICE_MAX   4
+#define ADC_DEVICE_MAX   4
+#define FLASH_DEVICE_MAX 4
 
 #endif

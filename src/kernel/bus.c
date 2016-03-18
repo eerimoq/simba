@@ -1,5 +1,5 @@
 /**
- * @file kernel/bus.c
+ * @file bus.c
  * @version 0.2.0
  *
  * @section License

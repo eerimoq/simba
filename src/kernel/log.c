@@ -20,29 +20,16 @@
 
 #include "simba.h"
 #include <stdarg.h>
-#include <limits.h>
 
-FS_COMMAND_DEFINE("/kernel/log/set_mode", log_cmd_set_mode);
-FS_COMMAND_DEFINE("/kernel/log/get_mode", log_cmd_get_mode);
-FS_COMMAND_DEFINE("/kernel/log/format", log_cmd_format);
+/* Define shell commands. */
+FS_COMMAND_DEFINE("/kernel/log/print", log_cmd_print);
+FS_COMMAND_DEFINE("/kernel/log/list", log_cmd_list);
+FS_COMMAND_DEFINE("/kernel/log/set_log_mask", log_cmd_set_log_mask);
 
-FS_COUNTER_DEFINE("/kernel/log/discarded", log_discarded);
-
-extern int (*log_id_to_format_fn[])(chan_t *, void *);
-
-struct log_t {
-    char mode;
-    char *write_p;
-    char *end_p;
-    unsigned long next_number;
-    char buffer[LOG_BUFFER_SIZE];
-};
-
-static struct log_t log = {
-    .mode = LOG_MODE_CIRCULAR,
-    .write_p = &log.buffer[0],
-    .end_p = &log.buffer[0],
-    .next_number = 0
+struct state_t {
+    struct log_handler_t handler;
+    struct log_object_t object;
+    struct sem_t sem;    
 };
 
 static FAR const char level_emergency[] = "emergency";
@@ -66,230 +53,295 @@ static const char FAR *level_as_string[] = {
     level_debug
 };
 
-int log_cmd_set_mode(int argc,
-                     const char *argv[],
-                     chan_t *chout_p,
-                     chan_t *chin_p)
+/* The module state. */
+static struct state_t state;
+
+/**
+ * The shell command callback for "/kernel/log/print".
+ */
+int log_cmd_print(int argc,
+                  const char *argv[],
+                  void *out_p,
+                  void *in_p)
 {
     if (argc != 2) {
-        std_fprintf(chout_p, FSTR("Usage: set_mode <off|circular|capture>\r\n"));
+        std_fprintf(out_p, FSTR("Usage: print <string>\r\n"));
+
         return (1);
     }
 
-    if (std_strcmp(argv[1], FSTR("off")) == 0) {
-        log_set_mode(LOG_MODE_OFF);
-    } else if (std_strcmp(argv[1], FSTR("circular")) == 0) {
-        log_set_mode(LOG_MODE_CIRCULAR);
-    } else if (std_strcmp(argv[1], FSTR("capture")) == 0) {
-        log_set_mode(LOG_MODE_CAPTURE);
-    } else {
-        std_fprintf(chout_p, FSTR("%s: bad mode\r\n"), argv[1]);
+    /* Write the argument to the log. */
+    log_object_print(&state.object, LOG_INFO, FSTR("%s\r\n"), argv[1]);
+
+    return (0);
+}
+
+/**
+ * The shell command callback for "/kernel/log/print".
+ */
+int log_cmd_list(int argc,
+                 const char *argv[],
+                 void *out_p,
+                 void *in_p)
+{
+    struct log_object_t *object_p;
+
+    if (argc != 1) {
+        std_fprintf(out_p, FSTR("Usage: list\r\n"));
+
         return (1);
     }
 
-    return (0);
-}
+    sem_get(&state.sem, NULL);
+    
+    std_fprintf(out_p, FSTR("     OBJECT NAME  MASK\r\n"));
 
-int log_cmd_get_mode(int argc,
-                     const char *argv[],
-                     chan_t *chout_p,
-                     chan_t *chin_p)
-{
-    int mode;
+    object_p = &state.object;
 
-    mode = log_get_mode();
-
-    switch (mode) {
-    case LOG_MODE_OFF:
-        std_fprintf(chout_p, FSTR("off\r\n"));
-        break;
-    case LOG_MODE_CIRCULAR:
-        std_fprintf(chout_p, FSTR("circular\r\n"));
-        break;
-    case LOG_MODE_CAPTURE:
-        std_fprintf(chout_p, FSTR("capture\r\n"));
-        break;
+    while (object_p != NULL) {
+        std_fprintf(out_p,
+                    FSTR("%16s  0x%02x\r\n"),
+                    object_p->name_p,
+                    (int)object_p->mask);
+        
+        object_p = object_p->next_p;            
     }
 
-    return (0);
-}
-
-int log_cmd_format(int argc,
-                   const char *argv[],
-                   chan_t *chout_p,
-                   chan_t *chin_p)
-{
-    return (log_format(chout_p));
-}
-
-int log_module_init(void)
-{
-    return (0);
-}
-
-int log_reset(void)
-{
-    sys_lock();
-
-    log.mode = LOG_MODE_CIRCULAR;
-    log.write_p = &log.buffer[0];
-    log.end_p = &log.buffer[0];
-
-    sys_unlock();
+    sem_put(&state.sem, 1);
 
     return (0);
 }
 
-int log_set_mode(int mode)
+/**
+ * The shell command callback for "/kernel/log/set_log_mask".
+ */
+int log_cmd_set_log_mask(int argc,
+                         const char *argv[],
+                         void *out_p,
+                         void *in_p)
 {
-    int old;
+    struct log_object_t *object_p;
+    long mask;
+    int found;
+    const char *name_p;
 
-    sys_lock();
+    if (argc != 3) {
+        std_fprintf(out_p, FSTR("Usage: set_log_mask <obejct> <mask>\r\n"));
 
-    old = log.mode;
-    log.mode = mode;
-
-    sys_unlock();
-
-    return (old);
-}
-
-int log_get_mode(void)
-{
-    return (log.mode);
-}
-
-int log_write(char level, int id, void *buf_p, size_t size)
-{
-    struct time_t now;
-    struct log_entry_header_t header;
-    struct log_entry_footer_t footer;
-    int written = 0;
-    size_t entry_size = (size + sizeof(header) + sizeof(footer));
-
-    /* Check if severity level is set. */
-    if ((thrd_get_log_mask() & (1 << level)) == 0) {
-        return (0);
+        return (1);
     }
 
-    /* The entry must fit in the buffer. */
-    if (entry_size > LOG_BUFFER_SIZE) {
+    if (std_strtol(argv[2], &mask) != 0) {
+        std_fprintf(out_p, FSTR("bad mask %s\r\n"), argv[2]);
+
         return (-1);
     }
 
-    /* Create the entry header and footer. */
-    time_get(&now);
-    header.size = size;
-    header.time = now.seconds;
-    header.level = level;
-    header.id = id;
+    name_p = argv[1];
+    found = 0;
 
-    footer.size = size;
+    sem_get(&state.sem, NULL);
 
-    sys_lock();
-
-    header.number = log.next_number++;
-
-    if (log.mode != LOG_MODE_OFF) {
-        /* Write the entry to the beginning of the buffer if it does
-           not fit at the end of the buffer.*/
-        if (entry_size > ((char *)&log.buffer[LOG_BUFFER_SIZE] - log.write_p)) {
-            log.end_p = log.write_p;
-            log.write_p = &log.buffer[0];
+    object_p = &state.object;
+    
+    while (object_p != NULL) {
+        if (strcmp(object_p->name_p, name_p) == 0) {
+            object_p->mask = mask;
+            found = 1;
+   
+            break;
         }
-
-        /* Write the entry to the buffer. */
-        memcpy(log.write_p, &header, sizeof(header));
-        log.write_p += sizeof(header);
-        memcpy(log.write_p, buf_p, size);
-        log.write_p += size;
-        memcpy(log.write_p, &footer, sizeof(footer));
-        log.write_p += sizeof(footer);
-
-        if (log.write_p > log.end_p) {
-            log.end_p = log.write_p;
-        }
-    } else {
-        FS_COUNTER_INC(log_discarded, 1);
+        
+        object_p = object_p->next_p;            
     }
 
-    sys_unlock();
+    sem_put(&state.sem, 1);
 
-    return (written);
+    if (found == 0) {
+        std_fprintf(out_p,
+                    FSTR("warning: no log object with name %s\r\n"),
+                    name_p);
+        
+        return (1);
+    }
+
+    return (0);
 }
 
-int log_format(chan_t *chout_p)
+int log_module_init()
 {
-    int i, number_of_entries;
-    struct log_entry_header_t *header_p;
-    struct log_entry_footer_t *footer_p;
-    char *begin_p = NULL, *buf_p, *entry_end_p;
-    int (*format_fn)(chan_t *, void *);
-    size_t entry_size;
-    int old_mode;
+    sem_init(&state.sem, 1);
 
-    /* Empty log? */
-    if (log.end_p == &log.buffer[0]) {
-        return (0);
-    }
+    state.handler.chout_p = sys_get_stdout();
+    state.handler.next_p = NULL;
 
-    old_mode = log_set_mode(LOG_MODE_OFF);
+    state.object.name_p = "log";
+    state.object.mask = LOG_UPTO(INFO);
+    state.object.next_p = NULL;
+    
+    return (0);
+}
 
-    /* Find the first entry. */
-    number_of_entries = 0;
+int log_add_handler(struct log_handler_t *handler_p)
+{
+    sem_get(&state.sem, NULL);
 
-    /* From last written entry to the beginning of the buffer. */
-    entry_end_p = log.write_p;
+    handler_p->next_p = state.handler.next_p;
+    state.handler.next_p = handler_p;
 
-    while (entry_end_p != &log.buffer[0]) {
-        number_of_entries++;
-        footer_p = ((struct log_entry_footer_t *)entry_end_p - 1);
-        entry_size = (footer_p->size + sizeof(*header_p) + sizeof(*footer_p));
-        entry_end_p -= entry_size;
-        begin_p = entry_end_p;
-    }
+    sem_put(&state.sem, 1);
 
+    return (0);
+}
 
-    /* From the end pointer to the write pointer. */
-    entry_end_p = log.end_p;
+int log_remove_handler(struct log_handler_t *handler_p)
+{
+    struct log_handler_t *curr_p, *prev_p;
 
-    while (((char *)entry_end_p - sizeof(*footer_p)) > log.write_p) {
-        footer_p = ((struct log_entry_footer_t *)entry_end_p - 1);
-        entry_size = (footer_p->size + sizeof(*header_p) + sizeof(*footer_p));
+    sem_get(&state.sem, NULL);
 
-        if (((char *)entry_end_p - entry_size) > log.write_p) {
-            number_of_entries++;
-            begin_p = ((char *)entry_end_p - entry_size);
-        }
+    curr_p = state.handler.next_p;
+    prev_p = &state.handler;
 
-        entry_end_p -= entry_size;
-    }
+    while (curr_p != NULL) {
+        if (curr_p == handler_p) {
+            if (prev_p != NULL) {
+                prev_p->next_p = curr_p->next_p;
+            }
 
-    std_fprintf(chout_p, FSTR("number:time:level: message\r\n"));
+            curr_p->next_p = NULL;
+            sem_put(&state.sem, 1);
 
-    /* Write entries to the channel. */
-    for (i = 0; i < number_of_entries; i++) {
-        header_p = (struct log_entry_header_t *)begin_p;
-        buf_p = (char *)(header_p + 1);
-        footer_p = (struct log_entry_footer_t *)(buf_p + header_p->size);
-
-        std_fprintf(chout_p, FSTR("%lu:%lu:"), header_p->number, header_p->time);
-        std_fprintf(chout_p, level_as_string[(int)header_p->level]);
-        std_fprintf(chout_p, FSTR(": "));
-
-        format_fn = log_id_to_format_fn[header_p->id];
-        format_fn(chout_p, buf_p);
-
-        std_fprintf(chout_p, FSTR("\r\n"));
-
-        begin_p = (char *)(footer_p + 1);
-
-        if (begin_p >= log.end_p) {
-            begin_p = &log.buffer[0];
+            return (0);
         }
     }
 
-    log_set_mode(old_mode);
+    sem_put(&state.sem, 1);
 
-    return (number_of_entries);
+    return (1);
+}
+
+int log_add_object(struct log_object_t *object_p)
+{
+    sem_get(&state.sem, NULL);
+
+    object_p->next_p = state.object.next_p;
+    state.object.next_p = object_p;
+
+    sem_put(&state.sem, 1);
+
+    return (0);
+}
+
+int log_remove_object(struct log_object_t *object_p)
+{
+    struct log_object_t *curr_p, *prev_p;
+
+    sem_get(&state.sem, NULL);
+
+    curr_p = state.object.next_p;
+    prev_p = &state.object;
+
+    while (curr_p != NULL) {
+        if (curr_p == object_p) {
+            if (prev_p != NULL) {
+                prev_p->next_p = curr_p->next_p;
+            }
+
+            curr_p->next_p = NULL;
+            sem_put(&state.sem, 1);
+
+            return (0);
+        }
+    }
+
+    sem_put(&state.sem, 1);
+
+    return (1);
+}
+
+int log_set_default_handler_output_channel(chan_t *chout_p)
+{
+    state.handler.chout_p = chout_p;
+
+    return (0);
+}
+
+int log_handler_init(struct log_handler_t *self_p,
+                     chan_t *chout_p)
+{
+    self_p->chout_p = chout_p;
+    self_p->next_p = NULL;
+
+    return (0);
+}
+
+int log_object_init(struct log_object_t *self_p,
+                    const char *name_p,
+                    char mask)
+{
+    self_p->name_p = name_p;
+    self_p->mask = mask;
+
+    return (0);
+}
+
+int log_object_print(struct log_object_t *self_p,
+                     int level,
+                     const char *fmt_p,
+                     ...)
+{
+    va_list ap;
+    struct time_t now;
+    struct log_handler_t *handler_p;
+    chan_t *chout_p;
+    int count;
+    const char *name_p;
+
+    /* Level filtering. */
+    if (self_p == NULL) {
+        /* Use the thread log mask if no log object is given. */
+        if ((thrd_get_log_mask() & (1 << level)) == 0) {
+            return (0);
+        }
+
+        name_p = "main";
+    } else {
+        if ((self_p->mask & (1 << level)) == 0) {
+            return (0);
+        }
+
+        name_p = self_p->name_p;
+    }
+
+    /* Print the formatted log entry to all handlers. */
+    count = 0;
+    handler_p = &state.handler;
+
+    while (handler_p != NULL) {
+        chout_p = handler_p->chout_p;
+
+        if (chout_p != NULL) {
+            time_get(&now);
+            
+            /* Write the header. */
+            std_fprintf(chout_p, FSTR("%lu:"), now.seconds);
+            std_fprintf(chout_p, level_as_string[level]);
+            std_fprintf(chout_p,
+                        FSTR(":%s:%s: "),
+                        thrd_get_name(),
+                        name_p);
+            
+            /* Write the custom message. */
+            va_start(ap, fmt_p);
+            std_vfprintf(chout_p, fmt_p, &ap);
+            va_end(ap);
+
+            count++;
+        }
+
+        handler_p = handler_p->next_p;
+    }
+
+    return (count);
 }
