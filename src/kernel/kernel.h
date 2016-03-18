@@ -33,8 +33,6 @@
 #include "kernel/timer.h"
 #include "kernel/thrd.h"
 #include "kernel/fs.h"
-#include "kernel/counter.h"
-#include "kernel/parameter.h"
 #include "kernel/shell.h"
 #include "kernel/sem.h"
 #include "kernel/std.h"

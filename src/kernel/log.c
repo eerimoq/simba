@@ -26,7 +26,7 @@ FS_COMMAND_DEFINE("/kernel/log/set_mode", log_cmd_set_mode);
 FS_COMMAND_DEFINE("/kernel/log/get_mode", log_cmd_get_mode);
 FS_COMMAND_DEFINE("/kernel/log/format", log_cmd_format);
 
-COUNTER_DEFINE("/kernel/log/discarded", log_discarded);
+FS_COUNTER_DEFINE("/kernel/log/discarded", log_discarded);
 
 extern int (*log_id_to_format_fn[])(chan_t *, void *);
 
@@ -210,7 +210,7 @@ int log_write(char level, int id, void *buf_p, size_t size)
             log.end_p = log.write_p;
         }
     } else {
-        COUNTER_INC(log_discarded, 1);
+        FS_COUNTER_INC(log_discarded, 1);
     }
 
     sys_unlock();

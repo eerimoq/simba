@@ -30,9 +30,9 @@
  * @param[in] name Counter name.
  */
 #if defined(__SIMBA_GEN__)
-#    define COUNTER_DEFINE(path, name) ..fs_counter.. path ..fs_separator.. #name
+#    define FS_COUNTER_DEFINE(path, name) ..fs_counter.. path ..fs_separator.. #name
 #else
-#    define COUNTER_DEFINE(path, name)          \
+#    define FS_COUNTER_DEFINE(path, name)          \
     long long counter_ ## name = 0;             \
     FS_COUNTER_CMD(name)
 #endif
@@ -41,19 +41,19 @@
  * Get the counter.
  *
  * @param[in] name Counter name. The same name as specified in
- *                 `COUNTER_DEFINE()`.
+ *                 `FS_COUNTER_DEFINE()`.
  *
  * @return The counter.
  */
-#define COUNTER(name) counter_ ## name
+#define FS_COUNTER(name) counter_ ## name
 
 /**
  * Increment a counter with given value.
  *
  * @param[in] name Counter name. The same name as specified in
- *                 `COUNTER_DEFINE()`.
+ *                 `FS_COUNTER_DEFINE()`.
  * @param[in] value Value to add to given counter.
  */
-#define COUNTER_INC(name, value) COUNTER(name) += (value)
+#define FS_COUNTER_INC(name, value) FS_COUNTER(name) += (value)
 
 #endif

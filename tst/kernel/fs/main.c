@@ -26,10 +26,10 @@
 FS_COMMAND_DEFINE("/tmp/foo", tmp_foo);
 FS_COMMAND_DEFINE("/tmp/bar", tmp_bar);
 
-COUNTER_DEFINE("/my/counter", my_counter);
-COUNTER_DEFINE("/your/counter", your_counter);
+FS_COUNTER_DEFINE("/my/counter", my_counter);
+FS_COUNTER_DEFINE("/your/counter", your_counter);
 
-PARAMETER_DEFINE("/our/parameter", our_parameter, int, OUR_PARAMETER_DEFAULT);
+FS_PARAMETER_DEFINE("/our/parameter", our_parameter, int, OUR_PARAMETER_DEFAULT);
 
 int tmp_foo(int argc,
             const char *argv[],
@@ -134,7 +134,7 @@ static int test_counter(struct harness_t *harness_p)
     BTASSERT(fs_call(buf, NULL, &qout) == 0);
     read_until(buf, "/your/counter                                        0000000000000000\r\n");
 
-    COUNTER_INC(my_counter, 3);
+    FS_COUNTER_INC(my_counter, 3);
 
     strcpy(buf, "my/counter");
     BTASSERT(fs_call(buf, NULL, &qout) == 0);
@@ -158,9 +158,9 @@ static int test_parameter(struct harness_t *harness_p)
     BTASSERT(fs_call(buf, NULL, &qout) == 0);
     read_until(buf, "/our/parameter 5\r\n");
 
-    BTASSERT(PARAMETER(our_parameter) == OUR_PARAMETER_DEFAULT);
-    PARAMETER(our_parameter) = 1;
-    BTASSERT(PARAMETER(our_parameter) == 1);
+    BTASSERT(FS_PARAMETER(our_parameter) == OUR_PARAMETER_DEFAULT);
+    FS_PARAMETER(our_parameter) = 1;
+    BTASSERT(FS_PARAMETER(our_parameter) == 1);
 
     return (0);
 }

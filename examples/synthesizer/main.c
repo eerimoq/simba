@@ -22,7 +22,7 @@
 #include "channel.h"
 #include "waveforms.h"
 
-COUNTER_DEFINE("/synth/midi_unhandled_command", midi_unhandled_command);
+FS_COUNTER_DEFINE("/synth/midi_unhandled_command", midi_unhandled_command);
 
 FS_COMMAND_DEFINE("/status", cmd_status);
 FS_COMMAND_DEFINE("/set_waveform", cmd_set_waveform);
@@ -531,7 +531,7 @@ static void *midi_main(void *arg_p)
             break;
 
         default:
-            COUNTER_INC(midi_unhandled_command, 1);
+            FS_COUNTER_INC(midi_unhandled_command, 1);
             break;
         }
     }

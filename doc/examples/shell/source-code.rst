@@ -26,9 +26,9 @@
    FS_COMMAND_DEFINE("/tmp/foo", tmp_foo);
    
    /* Define a few counters. */
-   COUNTER_DEFINE("/foo", foo);
-   COUNTER_DEFINE("/bar", bar);
-   COUNTER_DEFINE("/fie", fie);
+   FS_COUNTER_DEFINE("/foo", foo);
+   FS_COUNTER_DEFINE("/bar", bar);
+   FS_COUNTER_DEFINE("/fie", fie);
    
    static char qinbuf[32];
    static struct uart_driver_t uart;
@@ -72,10 +72,10 @@
        sys_set_stdout(&uart.chout);
    
        /* Increment the counters. */
-       COUNTER_INC(foo, 0xfffd);
-       COUNTER_INC(foo, 2);
-       COUNTER_INC(bar, 339283982393);
-       COUNTER_INC(fie, 1);
+       FS_COUNTER_INC(foo, 0xfffd);
+       FS_COUNTER_INC(foo, 2);
+       FS_COUNTER_INC(bar, 339283982393);
+       FS_COUNTER_INC(fie, 1);
    
        /* Print the system information. */
        std_printf(sys_get_info());

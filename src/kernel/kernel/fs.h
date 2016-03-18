@@ -59,7 +59,59 @@
 #    define FS_COMMAND_DEFINE(path, callback)
 #endif
 
-/* Length of argv for get. */
+/**
+ * Define a 64 bit debug counter with given name and file system path.
+ *
+ * @param[in] path Path of the counter in the debug file system.
+ * @param[in] name Counter name.
+ */
+#if defined(__SIMBA_GEN__)
+#    define FS_COUNTER_DEFINE(path, name) ..fs_counter.. path ..fs_separator.. #name
+#else
+#    define FS_COUNTER_DEFINE(path, name)          \
+    long long counter_ ## name = 0;             \
+    FS_COUNTER_CMD(name)
+#endif
+
+/**
+ * Get the counter.
+ *
+ * @param[in] name Counter name. The same name as specified in
+ *                 `FS_COUNTER_DEFINE()`.
+ *
+ * @return The counter.
+ */
+#define FS_COUNTER(name) counter_ ## name
+
+/**
+ * Increment a counter with given value.
+ *
+ * @param[in] name Counter name. The same name as specified in
+ *                 `FS_COUNTER_DEFINE()`.
+ * @param[in] value Value to add to given counter.
+ */
+#define FS_COUNTER_INC(name, value) FS_COUNTER(name) += (value)
+
+/**
+ * Add a command to the file system with given callback.
+ */
+#if defined(__SIMBA_GEN__)
+#    define FS_PARAMETER_DEFINE(path, name, type, default_value) \
+    ..fs_parameter.. path #name #type
+#else
+#    define FS_PARAMETER_DEFINE(path, name, type, default_value)   \
+    type fs_parameter_ ## name = default_value;                 \
+    FS_PARAMETER_CMD(name, type)
+#endif
+
+/**
+ * Get and set parameter value.
+ */
+#define FS_PARAMETER(name) fs_parameter_ ## name
+
+/**
+ * Length of argv for get.
+ */
 #define FS_ARGC_GET 1
 
 #define FS_COUNTER_CMD(name)                            \
@@ -73,13 +125,13 @@
                                    argv,                \
                                    chout_p,             \
                                    chin_p,              \
-                                   &COUNTER(name)));    \
+                                   &FS_COUNTER(name))); \
         } else {                                        \
             return (fs_counter_set(argc,                \
                                    argv,                \
                                    chout_p,             \
                                    chin_p,              \
-                                   &COUNTER(name)));    \
+                                   &FS_COUNTER(name))); \
         }                                               \
     }
 
@@ -94,13 +146,13 @@
                                                              argv,      \
                                                              chout_p,   \
                                                              chin_p,    \
-                                                             &PARAMETER(name))); \
+                                                             &FS_PARAMETER(name))); \
         } else {                                                        \
             return (fs_parameter_handler_ ## handler ## _set(argc,      \
                                                              argv,      \
                                                              chout_p,   \
                                                              chin_p,    \
-                                                             &PARAMETER(name))); \
+                                                             &FS_PARAMETER(name))); \
         }                                                               \
     }
 

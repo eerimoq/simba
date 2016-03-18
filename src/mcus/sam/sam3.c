@@ -21,20 +21,20 @@
 #include "simba.h"
 
 #if !defined(NPROFILEINTERRUPT)
-#    define ISR_COUNTER_DEFINE(path, name) COUNTER_DEFINE(path, name)
-#    define ISR_COUNTER_INC(name, value) COUNTER_INC(name, value)
+#    define ISR_FS_COUNTER_DEFINE(path, name) FS_COUNTER_DEFINE(path, name)
+#    define ISR_FS_COUNTER_INC(name, value) FS_COUNTER_INC(name, value)
 #else
-#    define ISR_COUNTER_DEFINE(path, name)
-#    define ISR_COUNTER_INC(name, value)
+#    define ISR_FS_COUNTER_DEFINE(path, name)
+#    define ISR_FS_COUNTER_INC(name, value)
 #endif
 
 #define ISR_WRAPPER(vector)                                             \
-    ISR_COUNTER_DEFINE("/kernel/sys/interrupt/" #vector, sys_isr_ ## vector ## _count); \
+    ISR_FS_COUNTER_DEFINE("/kernel/sys/interrupt/" #vector, sys_isr_ ## vector ## _count); \
     static void isr_ ## vector ## _wrapper(void)                        \
     {                                                                   \
         uint32_t start;                                                 \
         start = SAM_TC0->CHANNEL[0].CV;                                 \
-        ISR_COUNTER_INC(sys_isr_ ## vector ## _count, 1);               \
+        ISR_FS_COUNTER_INC(sys_isr_ ## vector ## _count, 1);               \
         isr_ ## vector();                                               \
             sys.interrupt.time += (SAM_TC0->CHANNEL[0].CV - start);     \
     }

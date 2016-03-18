@@ -25,15 +25,15 @@
 
 /* Add a command to the file system with given callback. */
 #if defined(__SIMBA_GEN__)
-#    define PARAMETER_DEFINE(path, name, type, default_value) \
+#    define FS_PARAMETER_DEFINE(path, name, type, default_value) \
     ..fs_parameter.. path #name #type
 #else
-#    define PARAMETER_DEFINE(path, name, type, default_value)   \
+#    define FS_PARAMETER_DEFINE(path, name, type, default_value)   \
     type fs_parameter_ ## name = default_value;                 \
     FS_PARAMETER_CMD(name, type)
 #endif
 
 /* Get and set parameter value. */
-#define PARAMETER(name) fs_parameter_ ## name
+#define FS_PARAMETER(name) fs_parameter_ ## name
 
 #endif

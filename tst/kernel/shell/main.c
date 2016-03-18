@@ -23,11 +23,11 @@
 FS_COMMAND_DEFINE("/tmp/foo", tmp_foo);
 FS_COMMAND_DEFINE("/tmp/bar", tmp_bar);
 
-COUNTER_DEFINE("/foo", foo);
-COUNTER_DEFINE("/bar", bar);
-COUNTER_DEFINE("/fie", fie);
+FS_COUNTER_DEFINE("/foo", foo);
+FS_COUNTER_DEFINE("/bar", bar);
+FS_COUNTER_DEFINE("/fie", fie);
 
-PARAMETER_DEFINE("/tmp/fie", tmp_fie, int, 57);
+FS_PARAMETER_DEFINE("/tmp/fie", tmp_fie, int, 57);
 
 int tmp_foo(int argc,
             const char *argv[],
@@ -232,10 +232,10 @@ static int test_all(struct harness_t *harness_p)
     BTASSERT(chout_read_until_prompt(buf) == 1);
 
     /* List counters. */
-    COUNTER_INC(foo, 2);
-    COUNTER_INC(foo, 2);
-    COUNTER_INC(bar, 339283982393);
-    COUNTER_INC(fie, 1);
+    FS_COUNTER_INC(foo, 2);
+    FS_COUNTER_INC(foo, 2);
+    FS_COUNTER_INC(bar, 339283982393);
+    FS_COUNTER_INC(fie, 1);
     chan_write(&qin, "/kernel/fs/counters_list\n", membersof("/kernel/fs/counters_list\n") - 1);
     BTASSERT(chout_read_until_prompt(buf) == 1);
     BTASSERT(std_strcmp(buf,

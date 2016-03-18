@@ -22,8 +22,8 @@
 #include "freertos/semphr.h"
 #include "esp_common.h"
 
-COUNTER_DEFINE("/drivers/uart/rx_channel_overflow", uart_rx_channel_overflow);
-COUNTER_DEFINE("/drivers/uart/rx_errors", uart_rx_errors);
+FS_COUNTER_DEFINE("/drivers/uart/rx_channel_overflow", uart_rx_channel_overflow);
+FS_COUNTER_DEFINE("/drivers/uart/rx_errors", uart_rx_errors);
 
 extern xSemaphoreHandle thrd_idle_sem;
 
@@ -77,12 +77,12 @@ static inline void rx_isr(struct uart_driver_t *drv_p,
     if (error == 0) {
         /* Write data to input queue. */
         if (queue_write_isr(&drv_p->chin, &c, 1) != 1) {
-            COUNTER_INC(uart_rx_channel_overflow, 1);
+            FS_COUNTER_INC(uart_rx_channel_overflow, 1);
         }
 
         xSemaphoreGiveFromISR(thrd_idle_sem, NULL);
     } else {
-        COUNTER_INC(uart_rx_errors, 1);
+        FS_COUNTER_INC(uart_rx_errors, 1);
     }
 }
 
