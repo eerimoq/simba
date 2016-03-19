@@ -67,7 +67,7 @@ int log_cmd_print(int argc,
     if (argc != 2) {
         std_fprintf(out_p, FSTR("Usage: print <string>\r\n"));
 
-        return (1);
+        return (-EINVAL);
     }
 
     /* Write the argument to the log. */
@@ -89,7 +89,7 @@ int log_cmd_list(int argc,
     if (argc != 1) {
         std_fprintf(out_p, FSTR("Usage: list\r\n"));
 
-        return (1);
+        return (-EINVAL);
     }
 
     sem_get(&state.sem, NULL);
@@ -128,13 +128,13 @@ int log_cmd_set_log_mask(int argc,
     if (argc != 3) {
         std_fprintf(out_p, FSTR("Usage: set_log_mask <obejct> <mask>\r\n"));
 
-        return (1);
+        return (-EINVAL);
     }
 
     if (std_strtol(argv[2], &mask) != 0) {
         std_fprintf(out_p, FSTR("bad mask %s\r\n"), argv[2]);
 
-        return (-1);
+        return (-EINVAL);
     }
 
     name_p = argv[1];
@@ -162,7 +162,7 @@ int log_cmd_set_log_mask(int argc,
                     FSTR("warning: no log object with name %s\r\n"),
                     name_p);
         
-        return (1);
+        return (-EINVAL);
     }
 
     return (0);

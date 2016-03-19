@@ -385,9 +385,7 @@ int fs_call(char *command_p,
         goto out;
     }
 
-    node_p->callback(argc, argv, chout_p, chin_p);
-
-    return (0);
+    return (node_p->callback(argc, argv, chout_p, chin_p));
 
  out:
     std_fprintf(chout_p, FSTR("%s: command not found\r\n"), command_p);

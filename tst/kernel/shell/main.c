@@ -247,8 +247,6 @@ static int test_all(struct harness_t *harness_p)
                              "0000004efee6b839\r\n"
                              "/fie                                                 "
                              "0000000000000001\r\n"
-                             "/kernel/log/discarded                                "
-                             "0000000000000000\r\n"
                              "$ ")) == 0, "%s", buf);
 #endif
 

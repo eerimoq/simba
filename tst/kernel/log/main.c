@@ -20,6 +20,11 @@
 
 #include "simba.h"
 
+struct command_t {
+    char *command_p;
+    int res;
+};
+
 int test_print(struct harness_t *harness_p)
 {
     struct log_object_t foo;
@@ -45,6 +50,23 @@ int test_print(struct harness_t *harness_p)
      * mask. */
     BTASSERT(log_object_print(NULL, LOG_DEBUG, FSTR("k = %d\r\n"), 5) == 0);
     BTASSERT(log_object_print(NULL, LOG_ERR, FSTR("l = %d\r\n"), 6) == 1);
+
+    return (0);
+}
+
+int test_object(struct harness_t *harness_p)
+{
+    struct log_object_t foo;
+
+    /* Initialize the log objects. */
+    BTASSERT(log_object_init(&foo,
+                             "foo",
+                             LOG_UPTO(INFO)) == 0);
+
+    /* Add our object, and the remove it. */
+    BTASSERT(log_add_object(&foo) == 0);
+    BTASSERT(log_remove_object(&foo) == 0);
+    BTASSERT(log_remove_object(&foo) == 1);
 
     return (0);
 }
@@ -76,6 +98,7 @@ int test_handler(struct harness_t *harness_p)
 
     /* Remove our handler. */
     BTASSERT(log_remove_handler(&handler) == 0);
+    BTASSERT(log_remove_handler(&handler) == 1);
 
     /* This should be printed once for the default handler. */
     BTASSERT(log_object_print(&foo,
@@ -85,12 +108,45 @@ int test_handler(struct harness_t *harness_p)
     return (0);
 }
 
+int test_fs(struct harness_t *harness_p)
+{
+    char command[64];
+    struct command_t *command_p;
+    struct command_t commands[] = {
+        { "/kernel/log/list", 0 },
+        { "/kernel/log/print foo", 0 },
+        { "/kernel/log/set_log_mask log 0xff", 0 },
+        
+        { "/kernel/log/list d", -EINVAL },
+        { "/kernel/log/print d d", -EINVAL },
+        { "/kernel/log/set_log_mask invalid_object 0xff", -EINVAL },
+        { "/kernel/log/set_log_mask missing_mask", -EINVAL },
+        { "/kernel/log/set_log_mask bad_mask ds", -EINVAL },
+        { NULL, 0 }
+    };
+
+    command_p = &commands[0];
+
+    while (command_p->command_p != NULL) {
+        strcpy(command, command_p->command_p);
+        BTASSERT(fs_call(command,
+                         NULL,
+                         sys_get_stdout()) == command_p->res);
+
+        command_p++;
+    }
+
+    return (0);
+}
+
 int main()
 {
     struct harness_t harness;
     struct harness_testcase_t harness_testcases[] = {
         { test_print, "test_print" },
+        { test_object, "test_object" },
         { test_handler, "test_handler" },
+        { test_fs, "test_fs" },
         { NULL, NULL }
     };
 
