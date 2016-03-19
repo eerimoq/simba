@@ -41,5 +41,6 @@
 #include "kernel/event.h"
 #include "kernel/bits.h"
 #include "kernel/bus.h"
+#include "kernel/rwlock.h"
 
 #endif

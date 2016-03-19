@@ -466,15 +466,19 @@ int thrd_suspend(struct time_t *timeout_p)
 
 int thrd_resume(struct thrd_t *thrd_p, int err)
 {
+    int res;
+
     sys_lock();
-    thrd_resume_isr(thrd_p, err);
+    res = thrd_resume_isr(thrd_p, err);
     sys_unlock();
 
-    return (0);
+    return (res);
 }
 
 int thrd_resume_isr(struct thrd_t *thrd_p, int err)
 {
+    int res = 1;
+
     thrd_p->err = err;
 
     if (thrd_p->state == THRD_STATE_SUSPENDED) {
@@ -482,9 +486,11 @@ int thrd_resume_isr(struct thrd_t *thrd_p, int err)
         scheduler_ready_push(thrd_p);
     } else if (thrd_p->state != THRD_STATE_TERMINATED) {
         thrd_p->state = THRD_STATE_RESUMED;
+    } else {
+        res = 0;
     }
 
-    return (0);
+    return (res);
 }
 
 int thrd_wait(struct thrd_t *thrd_p)

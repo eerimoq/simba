@@ -1,5 +1,5 @@
 #
-# @file kernel/kernel.mk
+# @file Makefile
 # @version 0.2.0
 #
 # @section License
@@ -18,24 +18,9 @@
 # This file is part of the Simba project.
 #
 
+NAME = rwlock_suite
 
-INC += $(SIMBA_ROOT)/src/kernel
-INC += $(SIMBA_ROOT)/src/kernel/ports/$(ARCH)/$(TOOLCHAIN)
+BOARD ?= linux
 
-KERNEL_SRC ?= chan.c \
-              event.c \
-              fs.c \
-              log.c \
-              queue.c \
-              rwlock.c \
-              sem.c \
-              setting.c \
-              shell.c \
-              std.c \
-              sys.c \
-              thrd.c \
-              time.c \
-              timer.c \
-              bus.c
-
-SRC += $(KERNEL_SRC:%=$(SIMBA_ROOT)/src/kernel/%)
+SIMBA_ROOT = ../../..
+include $(SIMBA_ROOT)/make/app.mk
