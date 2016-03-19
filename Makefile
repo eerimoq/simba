@@ -24,12 +24,14 @@ BOARD ?= linux
 
 # List of all tests to build and run
 TESTS = $(addprefix tst/kernel/, bits \
+                                 bus \
                                  event \
                                  fifo \
                                  fs \
                                  log \
                                  prof \
                                  queue \
+                                 rwlock \
                                  sem \
                                  setting \
                                  shell \
