@@ -21,7 +21,5 @@
 NAME = sem_suite
 BOARD ?= linux
 
-COVOBJ = obj/sem.o
-
 SIMBA_ROOT = ../../..
 include $(SIMBA_ROOT)/make/app.mk

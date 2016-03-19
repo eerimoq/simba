@@ -24,3 +24,34 @@ dist-packages/
 !dist-packages/README.rst
 
 database.json
+
+# Coverage output.
+tst/*/*/amber.png
+tst/*/*/emerald.png
+tst/*/*/gcov.css
+tst/*/*/glass.png
+tst/*/*/index.html
+tst/*/*/index-sort-f.html
+tst/*/*/index-sort-l.html
+tst/*/*/ruby.png
+tst/*/*/snow.png
+tst/*/*/updown.png
+tst/*/*/kernel/
+tst/*/*/home/
+tst/*/*/drivers/
+tst/*/*/slib/
+
+examples/*/*/amber.png
+examples/*/*/emerald.png
+examples/*/*/gcov.css
+examples/*/*/glass.png
+examples/*/*/index.html
+examples/*/*/index-sort-f.html
+examples/*/*/index-sort-l.html
+examples/*/*/ruby.png
+examples/*/*/snow.png
+examples/*/*/updown.png
+examples/*/*/kernel/
+examples/*/*/home/
+examples/*/*/drivers/
+examples/*/*/slib/
