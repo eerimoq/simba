@@ -24,7 +24,7 @@
 #include "simba.h"
 
 struct bus_t {
-    struct sem_t sem;
+    struct rwlock_t rwlock;
     struct bus_listener_t *head_p;
 };
 

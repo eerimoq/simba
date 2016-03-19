@@ -28,7 +28,7 @@ int bus_module_init()
 int bus_init(struct bus_t *self_p)
 {
     self_p->head_p = NULL;
-    sem_init(&self_p->sem, 1);
+    rwlock_init(&self_p->rwlock);
 
     return (0);
 }
@@ -36,12 +36,12 @@ int bus_init(struct bus_t *self_p)
 int bus_attach(struct bus_t *self_p,
                struct bus_listener_t *listener_p)
 {
-    sem_get(&self_p->sem, NULL);
+    rwlock_writer_get(&self_p->rwlock, NULL);
 
     listener_p->next_p = self_p->head_p;
     self_p->head_p = listener_p;
 
-    sem_put(&self_p->sem, 1);
+    rwlock_writer_put(&self_p->rwlock);
 
     return (0);
 }
@@ -52,7 +52,7 @@ int bus_detatch(struct bus_t *self_p,
     int res = -1;
     struct bus_listener_t *curr_p, *prev_p;
 
-    sem_get(&self_p->sem, NULL);
+    rwlock_writer_get(&self_p->rwlock, NULL);
 
     curr_p = self_p->head_p;
     prev_p = NULL;
@@ -73,7 +73,7 @@ int bus_detatch(struct bus_t *self_p,
         curr_p = curr_p->next_p;
     }
 
-    sem_put(&self_p->sem, 1);
+    rwlock_writer_put(&self_p->rwlock);
 
     return (res);
 }
@@ -84,7 +84,7 @@ int bus_write(struct bus_t *self_p,
     int number_of_receivers;
     struct bus_listener_t *curr_p;
 
-    sem_get(&self_p->sem, NULL);
+    rwlock_reader_get(&self_p->rwlock, NULL);
 
     curr_p = self_p->head_p;
     number_of_receivers = 0;
@@ -100,7 +100,7 @@ int bus_write(struct bus_t *self_p,
         curr_p = curr_p->next_p;
     }
 
-    sem_put(&self_p->sem, 1);
+    rwlock_reader_put(&self_p->rwlock);
 
     return (number_of_receivers);
 }
