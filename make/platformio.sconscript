@@ -240,6 +240,7 @@ env.Append(CPPPATH=[join("$BUILD_DIR", "SimbaFramework")])
     
 mcu = env.subst(env["BOARD_MCU"])
 dirname = os.path.dirname(mcu)
+
 if dirname:
     paths.append(join("mcus", dirname))
 else:
@@ -290,6 +291,7 @@ src_filter = create_src_filter(env)
 
 source_files = []
 pp_source = []
+
 for src in env.LookupSources(variant_dir, src_dir, True, src_filter):
     # add the module name
     module_name = os.path.splitext(os.path.basename(str(src)))[0]
