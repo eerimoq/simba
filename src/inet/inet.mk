@@ -18,7 +18,6 @@
 # This file is part of the Simba project.
 #
 
-
 INC += $(SIMBA_ROOT)/3pp/lwip-1.4.1/src/include
 INC += $(SIMBA_ROOT)/3pp/lwip-1.4.1/src/include/ipv4
 INC += $(SIMBA_ROOT)/src/inet

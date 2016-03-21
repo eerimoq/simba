@@ -23,15 +23,15 @@ setup(name="{name}",
       author_email='simba@simba.com',
       packages=["{name}"],
       package_data={{"": ["doc/*.rst",
-                          "doc/conf.py",
-                          "doc/Makefile",
-                          "doc/doxygen.cfg",
-                          "doc/{name}/*.rst",
-                          "src/{name}.h",
-                          "src/{name}.mk", 
-                          "src/{name}/*.h",
-                          "src/*.c",
-                          "tst/*/*"]}},
+                         "doc/conf.py",
+                         "doc/Makefile",
+                         "doc/doxygen.cfg",
+                         "doc/{name}/*.rst",
+                         "src/{name}.h",
+                         "src/{name}.mk",
+                         "src/{name}/*.h",
+                         "src/*.c",
+                         "tst/*/*"]}},
       license='MIT',
       classifiers=[
           'License :: OSI Approved :: MIT License',
@@ -175,7 +175,7 @@ MAIN_C = """/**
 #include "simba.h"
 #include "{name}.h"
 
-int test_function(struct harness_t *harness_p)
+static int test_function(struct harness_t *harness_p)
 {{
     return ({name}_hello_world());
 }}

@@ -31,7 +31,7 @@ SRC += main.c
 LIBPATH ?=
 SRC_FILTERED = $(filter-out $(SRC_IGNORE),$(SRC))
 CSRC += $(filter %.c,$(SRC_FILTERED))
-COBJ = $(patsubst %,$(OBJDIR)/%,$(notdir $(CSRC:%.c=%.o)))
+COBJ = $(patsubst %,$(OBJDIR)%,$(abspath $(CSRC:%.c=%.o)))
 OBJ = $(COBJ)
 GENCSRC = $(GENDIR)/simba_gen.c
 GENOBJ = $(patsubst %,$(OBJDIR)/%,$(notdir $(GENCSRC:%.c=%.o)))
@@ -168,14 +168,16 @@ $(SETTINGS_BIN): $(SETTINGS_INI)
             --setting-size $(SETTING_SIZE) $(ENDIANESS)
 
 define COMPILE_template
--include $(patsubst %.c,$(DEPSDIR)/%.o.dep,$(notdir $1))
-$(patsubst %.c,$(OBJDIR)/%.o,$(notdir $1)): $1 $(SETTINGS_H)
+-include $(patsubst %.c,$(DEPSDIR)%.o.dep,$(abspath $1))
+$(patsubst %.c,$(OBJDIR)%.o,$(abspath $1)): $1 $(SETTINGS_H)
 	@echo "Compiling $1"
-	mkdir -p $(OBJDIR) $(DEPSDIR) $(GENDIR)
+	mkdir -p $(OBJDIR)$(abspath $(dir $1))
+	mkdir -p $(DEPSDIR)$(abspath $(dir $1))
+	mkdir -p $(GENDIR)$(abspath $(dir $1))
 	$$(CC) $$(CFLAGS) -DMODULE_NAME=$(notdir $(basename $1)) -D__SIMBA_GEN__ \
-	    -E -o $(patsubst %.c,$(GENDIR)/%.o.pp,$(notdir $1)) $$<
+	    -E -o $(patsubst %.c,$(GENDIR)%.o.pp,$(abspath $1)) $$<
 	$$(CC) $$(CFLAGS) -DMODULE_NAME=$(notdir $(basename $1)) -o $$@ $$<
-	gcc -MM -MT $$@ $$(filter -I% -D% -O%,$$(CFLAGS)) -o $(patsubst %.c,$(DEPSDIR)/%.o.dep,$(notdir $1)) $$<
+	gcc -MM -MT $$@ $$(filter -I% -D% -O%,$$(CFLAGS)) -o $(patsubst %.c,$(DEPSDIR)%.o.dep,$(abspath $1)) $$<
 endef
 $(foreach file,$(CSRC),$(eval $(call COMPILE_template,$(file))))
 

@@ -35,7 +35,7 @@ static ssize_t uart_port_write_cb(void *arg,
     const char *c = txbuf;
 
     while (size > 0) {
-        putchar(*c++);
+        putc(*c++, stderr);
         size--;
     }
 

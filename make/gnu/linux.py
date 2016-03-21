@@ -9,8 +9,8 @@ simba_path = sys.argv[3]
 runlog = sys.argv[4]
 
 def run(command):
-    proc = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE)
-    lines_iterator = iter(proc.stdout.readline, b"")
+    proc = subprocess.Popen(command, shell=True, stderr=subprocess.PIPE)
+    lines_iterator = iter(proc.stderr.readline, b"")
     with open(runlog, "w") as fout:
         for line in lines_iterator:
             sys.stdout.write(line)
