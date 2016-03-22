@@ -1,5 +1,5 @@
 #
-# @file slib/slib.mk
+# @file Makefile
 # @version 0.2.0
 #
 # @section License
@@ -18,14 +18,8 @@
 # This file is part of the Simba project.
 #
 
+NAME = base64_suite
+BOARD ?= linux
 
-INC += $(SIMBA_ROOT)/src/slib
-
-SLIB_SRC ?= base64.c \
-            crc.c \
-            fat16.c \
-            harness.c \
-            hash_map.c \
-            midi.c
-
-SRC += $(SLIB_SRC:%=$(SIMBA_ROOT)/src/slib/%)
+SIMBA_ROOT = ../../..
+include $(SIMBA_ROOT)/make/app.mk

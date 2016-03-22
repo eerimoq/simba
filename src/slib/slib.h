@@ -26,5 +26,6 @@
 #include "slib/harness.h"
 #include "slib/hash_map.h"
 #include "slib/midi.h"
+#include "slib/base64.h"
 
 #endif
