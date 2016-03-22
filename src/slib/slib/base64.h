@@ -1,5 +1,5 @@
 /**
- * @file slib/crc.h
+ * @file slib/base64.h
  * @version 0.2.0
  *
  * @section License
