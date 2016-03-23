@@ -171,3 +171,17 @@ ssize_t socket_recvfrom(struct socket_t *self_p,
 {
     return (-1);
 }
+
+ssize_t socket_write(struct socket_t *self_p,
+                     const void *buf_p,
+                     size_t size)
+{
+    return (-1);
+}
+
+ssize_t socket_read(struct socket_t *self_p,
+                    void *buf_p,
+                    size_t size)
+{
+    return (-1);
+}
