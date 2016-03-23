@@ -74,11 +74,10 @@ int bus_detatch(struct bus_t *self_p,
                 struct bus_listener_t *listener_p);
 
 /**
- * Write given message to given bus. The message must start with the
- * ``bus_message_header_t`` data structure.
+ * Write given message to given bus.
  *
  * @param[in] self_p Bus to write the message to.
- * @param[in] id Message identify.
+ * @param[in] id Message identity.
  * @param[in] buf_p Buffer to write to the bus.
  * @param[in] size Number of bytes to write.
  *
