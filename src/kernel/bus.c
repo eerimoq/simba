@@ -79,7 +79,9 @@ int bus_detatch(struct bus_t *self_p,
 }
 
 int bus_write(struct bus_t *self_p,
-              struct bus_message_header_t *message_p)
+              int id,
+              const void *buf_p,
+              size_t size)
 {
     int number_of_receivers;
     struct bus_listener_t *curr_p;
@@ -90,10 +92,10 @@ int bus_write(struct bus_t *self_p,
     number_of_receivers = 0;
 
     while (curr_p != NULL) {
-        if (curr_p->id == message_p->id) {
+        if (curr_p->id == id) {
             ((struct chan_t *)curr_p->chan_p)->write(curr_p->chan_p,
-                                                     message_p,
-                                                     message_p->size);
+                                                     buf_p,
+                                                     size);
             number_of_receivers++;
         }
 

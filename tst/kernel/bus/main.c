@@ -23,16 +23,6 @@
 #define ID_FOO 0x0
 #define ID_BAR 0x1
 
-struct foo_t {
-    struct bus_message_header_t header;
-    int value;
-};
-
-struct bar_t {
-    struct bus_message_header_t header;
-    int value;
-};
-
 static int test_attach_detach(struct harness_t *harness)
 {
     struct bus_t bus;
@@ -57,8 +47,9 @@ static int test_write_read(struct harness_t *harness)
     struct bus_t bus;
     struct bus_listener_t chans[2];
     struct queue_t queues[2];
-    struct foo_t foo;
     char bufs[2][32];
+    int foo;
+    int value;
 
     /* Initiate. */
     BTASSERT(bus_init(&bus) == 0);
@@ -68,29 +59,23 @@ static int test_write_read(struct harness_t *harness)
     BTASSERT(bus_listener_init(&chans[1], ID_FOO, &queues[1]) == 0);
 
     /* Write the message foo to the bus. No receiver is attached. */
-    foo.header.id = ID_FOO;
-    foo.header.size = sizeof(foo);
-    foo.value = 5;
-    BTASSERT(bus_write(&bus, &foo.header) == 0);
+    foo = 5;
+    BTASSERT(bus_write(&bus, ID_FOO, &foo, sizeof(foo)) == 0);
 
     /* Attach two channels and write the foo message again. */
     BTASSERT(bus_attach(&bus, &chans[0]) == 0);
     BTASSERT(bus_attach(&bus, &chans[1]) == 0);
-    BTASSERT(bus_write(&bus, &foo.header) == 2);
+    BTASSERT(bus_write(&bus, ID_FOO, &foo, sizeof(foo)) == 2);
 
     /* Verify that the received message in queue 1 is correct. */
-    memset(&foo, 0, sizeof(foo));
-    BTASSERT(queue_read(&queues[0], &foo, sizeof(foo)) == sizeof(foo));
-    BTASSERT(foo.header.id == ID_FOO);
-    BTASSERT(foo.header.size == sizeof(foo));
-    BTASSERT(foo.value == 5);
+    value = 0;
+    BTASSERT(queue_read(&queues[0], &value, sizeof(value)) == sizeof(value));
+    BTASSERT(value == 5);
 
     /* Verify that the received message in queue 2 is correct. */
-    memset(&foo, 0, sizeof(foo));
-    BTASSERT(queue_read(&queues[1], &foo, sizeof(foo)) == sizeof(foo));
-    BTASSERT(foo.header.id == ID_FOO);
-    BTASSERT(foo.header.size == sizeof(foo));
-    BTASSERT(foo.value == 5);
+    value = 0;
+    BTASSERT(queue_read(&queues[1], &value, sizeof(value)) == sizeof(value));
+    BTASSERT(value == 5);
 
     /* Detach the channels. */
     BTASSERT(bus_detatch(&bus, &chans[0]) == 0);
@@ -103,51 +88,44 @@ static int test_multiple_ids(struct harness_t *harness)
 {
     struct bus_t bus;
     struct bus_listener_t chans[2];
-    struct queue_t queues[2];
-    struct foo_t foo;
-    struct bar_t bar;
-    char bufs[2][32];
+    struct queue_t queue;
+    struct event_t event;
+    char buf[32];
+    int foo, value;
+    uint32_t bar, mask;
 
     /* Initiate. */
     BTASSERT(bus_init(&bus) == 0);
-    BTASSERT(queue_init(&queues[0], bufs[0], sizeof(bufs[0])) == 0);
-    BTASSERT(queue_init(&queues[1], bufs[1], sizeof(bufs[1])) == 0);
-    BTASSERT(bus_listener_init(&chans[0], ID_FOO, &queues[0]) == 0);
-    BTASSERT(bus_listener_init(&chans[1], ID_BAR, &queues[1]) == 0);
+    BTASSERT(queue_init(&queue, buf, sizeof(buf)) == 0);
+    BTASSERT(event_init(&event) == 0);
+    BTASSERT(bus_listener_init(&chans[0], ID_FOO, &queue) == 0);
+    BTASSERT(bus_listener_init(&chans[1], ID_BAR, &event) == 0);
 
     /* Write the message foo to the bus. No receiver is attached. */
-    foo.header.id = ID_FOO;
-    foo.header.size = sizeof(foo);
-    foo.value = 5;
-    BTASSERT(bus_write(&bus, &foo.header) == 0);
+    foo = 5;
+    BTASSERT(bus_write(&bus, ID_FOO, &foo, sizeof(foo)) == 0);
 
     /* Write the message bar to the bus. No receiver is attached. */
-    bar.header.id = ID_BAR;
-    bar.header.size = sizeof(bar);
-    bar.value = 3;
-    BTASSERT(bus_write(&bus, &bar.header) == 0);
+    bar = 0x80;
+    BTASSERT(bus_write(&bus, ID_BAR, &bar, sizeof(bar)) == 0);
 
     /* Attach two channels and write the foo message again. */
     BTASSERT(bus_attach(&bus, &chans[0]) == 0);
     BTASSERT(bus_attach(&bus, &chans[1]) == 0);
-    BTASSERT(bus_write(&bus, &foo.header) == 1);
+    BTASSERT(bus_write(&bus, ID_FOO, &foo, sizeof(foo)) == 1);
 
     /* Verify that the received message in queue 1 is correct. */
-    memset(&foo, 0, sizeof(foo));
-    BTASSERT(queue_read(&queues[0], &foo, sizeof(foo)) == sizeof(foo));
-    BTASSERT(foo.header.id == ID_FOO);
-    BTASSERT(foo.header.size == sizeof(foo));
-    BTASSERT(foo.value == 5);
+    value = 0;
+    BTASSERT(queue_read(&queue, &value, sizeof(value)) == sizeof(value));
+    BTASSERT(value == 5);
 
     /* Write the bar message. */
-    BTASSERT(bus_write(&bus, &bar.header) == 1);
+    BTASSERT(bus_write(&bus, ID_BAR, &bar, sizeof(bar)) == 1);
 
-    /* Verify that the received message in queue 2 is correct. */
-    memset(&bar, 0, sizeof(bar));
-    BTASSERT(queue_read(&queues[1], &bar, sizeof(bar)) == sizeof(bar));
-    BTASSERT(bar.header.id == ID_BAR);
-    BTASSERT(bar.header.size == sizeof(bar));
-    BTASSERT(bar.value == 3);
+    /* Verify that the received event is correct. */
+    mask = 0xffffffff;
+    BTASSERT(event_read(&event, &mask, sizeof(mask)) == sizeof(mask));
+    BTASSERT(mask == 0x80);
     
     /* Detach the channels. */
     BTASSERT(bus_detatch(&bus, &chans[0]) == 0);

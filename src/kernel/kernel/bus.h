@@ -34,11 +34,6 @@ struct bus_listener_t {
     struct bus_listener_t *next_p;
 };
 
-struct bus_message_header_t {
-    int id;      /** Unique message identifier. */
-    size_t size; /** Size of the message, including the header size. */
-};
-
 /**
  * Initialize the bus module.
  *
@@ -83,13 +78,17 @@ int bus_detatch(struct bus_t *self_p,
  * ``bus_message_header_t`` data structure.
  *
  * @param[in] self_p Bus to write the message to.
- * @param[in] message_p Message to write to the bus.
+ * @param[in] id Message identify.
+ * @param[in] buf_p Buffer to write to the bus.
+ * @param[in] size Number of bytes to write.
  *
  * @return Number of listeners that received the message, or negative
  *         error code.
  */
 int bus_write(struct bus_t *self_p,
-              struct bus_message_header_t *message_p);
+              int id,
+              const void *buf_p,
+              size_t size);
 
 /**
  * Initialize given listener to receive messages with given id, after
