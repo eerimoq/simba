@@ -292,14 +292,14 @@ is built and executed.
 .. code-block:: text
 
    $ mkdir mypkg
-   $ cd mkpkg
+   $ cd mypkg
    $ simba package init
    Package name [foo]: <Enter>
    Author [erik]:  <Enter>
    Version [0.2.0]: <Enter>
    $ tree
    .
-   ├── mkpkg
+   ├── mypkg
    │   ├── doc
    │   │   ├── about.rst
    │   │   ├── api-reference.rst
@@ -307,17 +307,17 @@ is built and executed.
    │   │   ├── doxygen.cfg
    │   │   ├── index.rst
    │   │   ├── Makefile
-   │   │   ├── mkpkg
+   │   │   ├── mypkg
    │   │   │   └── hello.rst
    │   │   ├── requirements.txt
    │   │   └── sphinx.mk
    │   ├── __init__.py
    │   ├── src
    │   │   ├── hello.c
-   │   │   ├── mkpkg
+   │   │   ├── mypkg
    │   │   │   └── hello.h
-   │   │   ├── mkpkg.h
-   │   │   └── mkpkg.mk
+   │   │   ├── mypkg.h
+   │   │   └── mypkg.mk
    │   └── tst
    │       └── hello
    │           ├── main.c
