@@ -51,8 +51,25 @@ int bus_module_init(void);
 int bus_init(struct bus_t *self_p);
 
 /**
+ * Initialize given listener to receive messages with given id, after
+ * the listener is attached to the bus. A listener can only receive
+ * messages of a single id, though, the same channel may be used in
+ * multiple listeners with different ids (if the channel supports it).
+ *
+ * @param[in] self_p Listener to initialize.
+ * @param[in] id Message id to receive.
+ * @param[in] chan_p Channel to receive messages on.
+ *
+ * @return zero(0) or negative error code.
+ */
+int bus_listener_init(struct bus_listener_t *self_p,
+                      int id,
+                      chan_t *chan_p);
+
+/**
  * Attach given listener to given bus. Messages written to the bus
- * will be written to all listeners initialized with that message id.
+ * will be written to all listeners initialized with the written
+ * message id.
  *
  * @param[in] self_p Bus to attach the listener to.
  * @param[in] listener_p Listener to attach to the bus.
@@ -78,7 +95,8 @@ int bus_detatch(struct bus_t *self_p,
  *
  * @param[in] self_p Bus to write the message to.
  * @param[in] id Message identity.
- * @param[in] buf_p Buffer to write to the bus.
+ * @param[in] buf_p Buffer to write to the bus. All listeners with
+ *                  given message id will receive this data.
  * @param[in] size Number of bytes to write.
  *
  * @return Number of listeners that received the message, or negative
@@ -88,21 +106,5 @@ int bus_write(struct bus_t *self_p,
               int id,
               const void *buf_p,
               size_t size);
-
-/**
- * Initialize given listener to receive messages with given id, after
- * the listener is attached to the bus. A listener can only receive
- * messages of a single id, though, the same channel may be used in
- * multiple listeners with different ids (if the channel supports it).
- *
- * @param[in] self_p Listener to initialize.
- * @param[in] id Message id to receive.
- * @param[in] chan_p Channel to receive messages on.
- *
- * @return zero(0) or negative error code.
- */
-int bus_listener_init(struct bus_listener_t *self_p,
-                      int id,
-                      chan_t *chan_p);
 
 #endif

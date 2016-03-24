@@ -33,6 +33,17 @@ int bus_init(struct bus_t *self_p)
     return (0);
 }
 
+int bus_listener_init(struct bus_listener_t *self_p,
+                      int id,
+                      chan_t *chan_p)
+{
+    self_p->id = id;
+    self_p->chan_p = chan_p;
+    self_p->next_p = NULL;
+
+    return (0);
+}
+
 int bus_attach(struct bus_t *self_p,
                struct bus_listener_t *listener_p)
 {
@@ -105,15 +116,4 @@ int bus_write(struct bus_t *self_p,
     rwlock_reader_put(&self_p->rwlock);
 
     return (number_of_receivers);
-}
-
-int bus_listener_init(struct bus_listener_t *self_p,
-                      int id,
-                      chan_t *chan_p)
-{
-    self_p->id = id;
-    self_p->chan_p = chan_p;
-    self_p->next_p = NULL;
-
-    return (0);
 }
