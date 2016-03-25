@@ -29,6 +29,7 @@ struct bus_t {
 };
 
 struct bus_listener_t {
+    struct binary_tree_node_t base;
     int id;
     chan_t *chan_p;
     struct bus_listener_t *next_p;

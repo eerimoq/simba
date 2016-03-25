@@ -26,6 +26,7 @@
 #include "kernel/types.h"
 #include "kernel/list.h"
 #include "kernel/fifo.h"
+#include "kernel/binary_tree.h"
 #include "kernel/setting.h"
 #include "kernel/time.h"
 #include "kernel/chan.h"
