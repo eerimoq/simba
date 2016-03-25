@@ -23,7 +23,8 @@
 BOARD ?= linux
 
 # List of all tests to build and run
-TESTS = $(addprefix tst/kernel/, bits \
+TESTS = $(addprefix tst/kernel/, binary_tree \
+                                 bits \
                                  bus \
                                  event \
                                  fifo \
