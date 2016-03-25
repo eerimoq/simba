@@ -70,6 +70,7 @@
        uart_start(&uart);
    
        sys_set_stdout(&uart.chout);
+       log_set_default_handler_output_channel(sys_get_stdout());
    
        /* Increment the counters. */
        FS_COUNTER_INC(foo, 0xfffd);

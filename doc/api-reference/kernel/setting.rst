@@ -4,10 +4,6 @@
 .. module:: setting
    :synopsis: Persistent application settings.
 
-Source code: :source:`src/kernel/kernel/setting.h`
-
-Test code: :source:`tst/kernel/setting/main.c`
-
 Settings are stored in a non-volatile memory (NVM). In other words,
 settings are perserved even if the board is power cycled.
 
@@ -70,6 +66,12 @@ easier to read.
 
        return (0);
    }
+
+----------------------------------------------
+
+Source code: :source:`src/kernel/kernel/setting.h`
+
+Test code: :source:`tst/kernel/setting/main.c`
 
 ----------------------------------------------
 

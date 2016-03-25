@@ -42,7 +42,7 @@ struct bus_listener_t {
 int bus_module_init(void);
 
 /**
- * Initialize a bus.
+ * Initialize given bus.
  *
  * @param[in] self_p Bus to initialize.
  *
