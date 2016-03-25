@@ -5,7 +5,7 @@ deps
 *.map
 run.log
 *.gcov
-TAGS
+.TAGS
 \#*
 
 tst/*/*/sdcard
