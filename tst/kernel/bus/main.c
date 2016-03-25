@@ -45,7 +45,7 @@ static int test_attach_detach(struct harness_t *harness)
 static int test_write_read(struct harness_t *harness)
 {
     struct bus_t bus;
-    struct bus_listener_t chans[2];
+    struct bus_listener_t chans[5];
     struct queue_t queues[2];
     char bufs[2][32];
     int foo;
@@ -57,6 +57,9 @@ static int test_write_read(struct harness_t *harness)
     BTASSERT(queue_init(&queues[1], bufs[1], sizeof(bufs[1])) == 0);
     BTASSERT(bus_listener_init(&chans[0], ID_FOO, &queues[0]) == 0);
     BTASSERT(bus_listener_init(&chans[1], ID_FOO, &queues[1]) == 0);
+    BTASSERT(bus_listener_init(&chans[2], -1, NULL) == 0);
+    BTASSERT(bus_listener_init(&chans[3], -1, NULL) == 0);
+    BTASSERT(bus_listener_init(&chans[4], -1, NULL) == 0);
 
     /* Write the message foo to the bus. No receiver is attached. */
     foo = 5;
@@ -65,6 +68,9 @@ static int test_write_read(struct harness_t *harness)
     /* Attach two channels and write the foo message again. */
     BTASSERT(bus_attach(&bus, &chans[0]) == 0);
     BTASSERT(bus_attach(&bus, &chans[1]) == 0);
+    BTASSERT(bus_attach(&bus, &chans[2]) == 0);
+    BTASSERT(bus_attach(&bus, &chans[3]) == 0);
+    BTASSERT(bus_attach(&bus, &chans[4]) == 0);
     BTASSERT(bus_write(&bus, ID_FOO, &foo, sizeof(foo)) == 2);
 
     /* Verify that the received message in queue 1 is correct. */
@@ -77,9 +83,14 @@ static int test_write_read(struct harness_t *harness)
     BTASSERT(queue_read(&queues[1], &value, sizeof(value)) == sizeof(value));
     BTASSERT(value == 5);
 
-    /* Detach the channels. */
+    /* Detach the channels with id ID_FOO. */
     BTASSERT(bus_detatch(&bus, &chans[0]) == 0);
     BTASSERT(bus_detatch(&bus, &chans[1]) == 0);
+
+    /* Detach the channels with id -1. */
+    BTASSERT(bus_detatch(&bus, &chans[3]) == 0);
+    BTASSERT(bus_detatch(&bus, &chans[4]) == 0);
+    BTASSERT(bus_detatch(&bus, &chans[2]) == 0);
 
     return (0);
 }

@@ -25,7 +25,7 @@
 
 struct bus_t {
     struct rwlock_t rwlock;
-    struct bus_listener_t *head_p;
+    struct binary_tree_t listeners;
 };
 
 struct bus_listener_t {

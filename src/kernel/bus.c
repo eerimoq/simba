@@ -27,7 +27,7 @@ int bus_module_init()
 
 int bus_init(struct bus_t *self_p)
 {
-    self_p->head_p = NULL;
+    binary_tree_init(&self_p->listeners);
     rwlock_init(&self_p->rwlock);
 
     return (0);
@@ -37,6 +37,7 @@ int bus_listener_init(struct bus_listener_t *self_p,
                       int id,
                       chan_t *chan_p)
 {
+    self_p->base.key = id;
     self_p->id = id;
     self_p->chan_p = chan_p;
     self_p->next_p = NULL;
@@ -47,10 +48,19 @@ int bus_listener_init(struct bus_listener_t *self_p,
 int bus_attach(struct bus_t *self_p,
                struct bus_listener_t *listener_p)
 {
+    struct bus_listener_t *head_p;
+
     rwlock_writer_get(&self_p->rwlock, NULL);
 
-    listener_p->next_p = self_p->head_p;
-    self_p->head_p = listener_p;
+    /* Try to insert the node into the tree. It fails if there already
+     * is a node with the same key (id).*/
+    if (binary_tree_insert(&self_p->listeners, &listener_p->base) != 0) {
+        head_p = (struct bus_listener_t *)binary_tree_search(
+            &self_p->listeners, listener_p->id);
+
+        listener_p->next_p = head_p->next_p;
+        head_p->next_p = listener_p;
+    }
 
     rwlock_writer_put(&self_p->rwlock);
 
@@ -60,28 +70,38 @@ int bus_attach(struct bus_t *self_p,
 int bus_detatch(struct bus_t *self_p,
                 struct bus_listener_t *listener_p)
 {
-    int res = -1;
-    struct bus_listener_t *curr_p, *prev_p;
+    int res = 0;
+    struct bus_listener_t *head_p, *curr_p, *prev_p;
 
     rwlock_writer_get(&self_p->rwlock, NULL);
 
-    curr_p = self_p->head_p;
-    prev_p = NULL;
+    head_p = (struct bus_listener_t *)binary_tree_search(
+        &self_p->listeners, listener_p->id);
 
-    while (curr_p != NULL) {
-        if (curr_p == listener_p) {
-            if (prev_p != NULL) {
-                prev_p->next_p = curr_p->next_p;     
-            } else {
-                self_p->head_p = NULL;                
+    if (head_p == NULL) {
+        res = -1;
+    } else if (head_p == listener_p) {
+        res = binary_tree_delete(&self_p->listeners, listener_p->id);
+
+        if (listener_p->next_p != NULL) {
+            binary_tree_insert(&self_p->listeners,
+                               &listener_p->next_p->base);
+        }
+    } else {
+        curr_p = head_p->next_p;
+        prev_p = head_p;
+        res = -1;
+
+        while (curr_p != NULL) {
+            if (curr_p == listener_p) {
+                prev_p->next_p = listener_p->next_p;
+                res = 0;
+                break;
             }
 
-            res = 0;
-            break;
+            prev_p = curr_p;
+            curr_p = curr_p->next_p;
         }
-
-        prev_p = curr_p;
-        curr_p = curr_p->next_p;
     }
 
     rwlock_writer_put(&self_p->rwlock);
@@ -99,17 +119,15 @@ int bus_write(struct bus_t *self_p,
 
     rwlock_reader_get(&self_p->rwlock, NULL);
 
-    curr_p = self_p->head_p;
+    curr_p = (struct bus_listener_t *)binary_tree_search(
+        &self_p->listeners, id);
     number_of_receivers = 0;
 
     while (curr_p != NULL) {
-        if (curr_p->id == id) {
-            ((struct chan_t *)curr_p->chan_p)->write(curr_p->chan_p,
-                                                     buf_p,
-                                                     size);
-            number_of_receivers++;
-        }
-
+        ((struct chan_t *)curr_p->chan_p)->write(curr_p->chan_p,
+                                                 buf_p,
+                                                 size);
+        number_of_receivers++;
         curr_p = curr_p->next_p;
     }
 

@@ -1,5 +1,5 @@
 /**
- * @file slib/binary_tree.h
+ * @file kernel/binary_tree.h
  * @version 0.2.0
  *
  * @section License
@@ -18,8 +18,8 @@
  * This file is part of the Simba project.
  */
 
-#ifndef __SLIB_BINARY_TREE_H__
-#define __SLIB_BINARY_TREE_H__
+#ifndef __KERNEL_BINARY_TREE_H__
+#define __KERNEL_BINARY_TREE_H__
 
 #include "simba.h"
 
