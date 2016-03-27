@@ -42,6 +42,7 @@ struct thrd_t {
     int state;
     int err;
     int log_mask;
+    struct timer_t *timer_p;
     const char *name_p;
     struct thrd_parent_t parent;
     struct list_singly_linked_t children;

@@ -386,6 +386,7 @@ int thrd_module_init(void)
     main_thrd.state = THRD_STATE_CURRENT;
     main_thrd.err = 0;
     main_thrd.log_mask = LOG_UPTO(NOTICE);
+    main_thrd.timer_p = NULL;
     main_thrd.name_p = "main";
     main_thrd.parent.thrd_p = NULL;
     LIST_SL_INIT(&main_thrd.children);
@@ -431,6 +432,7 @@ struct thrd_t *thrd_spawn(void *(*main)(void *),
     thrd_p->state = THRD_STATE_READY;
     thrd_p->err = 0;
     thrd_p->log_mask = LOG_UPTO(NOTICE);
+    thrd_p->timer_p = NULL;
     thrd_p->name_p = "";
     thrd_p->parent.thrd_p = thrd_self();
     LIST_SL_INIT(&thrd_p->children);
@@ -483,6 +485,12 @@ int thrd_resume_isr(struct thrd_t *thrd_p, int err)
 
     if (thrd_p->state == THRD_STATE_SUSPENDED) {
         thrd_p->state = THRD_STATE_READY;
+
+        if (thrd_p->timer_p != NULL) {
+            timer_stop_isr(thrd_p->timer_p);
+            thrd_p->timer_p = NULL;
+        }
+
         scheduler_ready_push(thrd_p);
     } else if (thrd_p->state != THRD_STATE_TERMINATED) {
         thrd_p->state = THRD_STATE_RESUMED;
@@ -578,6 +586,7 @@ int thrd_suspend_isr(struct time_t *timeout_p)
             if ((timeout_p->seconds == 0) && (timeout_p->nanoseconds == 0)) {
                 return (-ETIMEDOUT);
             } else {
+                thrd_p->timer_p = &timer;
                 timer_init(&timer,
                            timeout_p,
                            thrd_port_suspend_timer_callback,

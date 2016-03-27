@@ -77,6 +77,14 @@ int timer_init(struct timer_t *self_p,
 int timer_start(struct timer_t *self_p);
 
 /**
+ * See `timer_start()` for a description.
+ *
+ * This function may only be called from an isr or with the system
+ * lock taken (see `sys_lock()`).
+ */
+int timer_start_isr(struct timer_t *self_p);
+
+/**
  * Stop given timer object. This has no effect on a timer that already
  * expired or was never started. The return code is 0 if the timer was
  * stopped and -1 otherwise.
@@ -89,11 +97,11 @@ int timer_start(struct timer_t *self_p);
 int timer_stop(struct timer_t *self_p);
 
 /**
- * See `timer_start()` for a description.
+ * See `timer_stop()` for description.
  *
- * This function may only be called with the system lock taken (see
- * `sys_lock()`).
+ * This function may only be called from an isr or with the system
+ * lock taken (see `sys_lock()`).
  */
-int timer_start_isr(struct timer_t *self_p);
+int timer_stop_isr(struct timer_t *self_p);
 
 #endif

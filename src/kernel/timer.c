@@ -46,6 +46,7 @@ static void timer_insert_isr(struct timer_t *timer_p)
     elem_p = list.head_p;
     prev_p = NULL;
 
+    /* Delta is initially the timeout. */
     while (elem_p->delta < timer_p->delta) {
         timer_p->delta -= elem_p->delta;
         prev_p = elem_p;
@@ -153,7 +154,7 @@ int timer_init(struct timer_t *self_p,
 int timer_start(struct timer_t *self_p)
 {
     sys_lock();
-    timer_insert_isr(self_p);
+    timer_start_isr(self_p);
     sys_unlock();
 
     return (0);
@@ -171,8 +172,13 @@ int timer_stop(struct timer_t *self_p)
     int err = 0;
 
     sys_lock();
-    err = timer_remove_isr(self_p);
+    err = timer_stop_isr(self_p);
     sys_unlock();
 
     return (err);
+}
+
+int timer_stop_isr(struct timer_t *self_p)
+{
+    return (timer_remove_isr(self_p));
 }

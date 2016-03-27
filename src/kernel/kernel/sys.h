@@ -65,7 +65,7 @@ struct sys_t {
 
 extern struct sys_t sys;
 
-#define SYS_TICK_MAX (~0)
+#define SYS_TICK_MAX (~0ULL)
 
 /**
  * Initialize the sys module.
