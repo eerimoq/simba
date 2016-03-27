@@ -71,6 +71,15 @@ static void *t0_main(void *arg_p)
     BTASSERT(chan_read(&queue_p[0], &b, sizeof(b)) == sizeof(b));
     BTASSERT(b == 1);
 
+    /* Test: test_stopped. */
+    while (queue_unused_size(&queue_p[1]) == 0) {
+        thrd_usleep(100);
+    }
+
+    b = 13;
+    BTASSERT(chan_write(&queue_p[1], &b, sizeof(b)) == sizeof(b));
+    BTASSERT(queue_stop(&queue_p[1]) == 1);
+
     thrd_suspend(NULL);
     
     return (0);
@@ -184,6 +193,24 @@ static int test_size(struct harness_t *harness_p)
     return (0);
 }
 
+static int test_stopped(struct harness_t *harness_p)
+{
+    int a[2];
+
+    /* The read function returns sizeof(int) because only sizeof(int)
+       bytes were written to the queue before it was stopped by the
+       other thread. */
+    BTASSERT(queue_read(&queue[1], a, sizeof(a)) == sizeof(int));
+    BTASSERT(a[0] == 13);
+
+    /* The read function returns -1 because the queue is stopped. */
+    BTASSERT(queue_read(&queue[1], a, sizeof(a)) == -1);
+
+    BTASSERT(queue_start(&queue[1]) == 0)
+
+    return (0);
+}
+
 int main()
 {
     struct harness_t harness;
@@ -192,6 +219,7 @@ int main()
         { test_read_write, "test_read_write" },
         { test_poll, "test_poll" },
         { test_size, "test_size" },
+        { test_stopped, "test_stopped" },
         { NULL, NULL }
     };
 

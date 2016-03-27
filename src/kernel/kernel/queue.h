@@ -23,6 +23,15 @@
 
 #include "simba.h"
 
+/** Queue initialized state. */
+#define QUEUE_STATE_INITIALIZED 0
+
+/** Queue running state. */
+#define QUEUE_STATE_RUNNING     1
+
+/** Queue stopped state. */
+#define QUEUE_STATE_STOPPED     2
+
 /* Compile time declaration and initialization of a channel. */
 #define QUEUE_INIT_DECL(_name, _buf, _size)                             \
     struct queue_t _name = {                                            \
@@ -41,6 +50,7 @@
             .end_p = &_buf[_size],                                      \
             .size = _size                                               \
         },                                                              \
+        .state = QUEUE_STATE_INITIALIZED,                               \
         .buf_p = NULL,                                                  \
         .size = 0,                                                      \
         .left = 0                                                       \
@@ -58,6 +68,7 @@ struct queue_buffer_t{
 struct queue_t {
     struct chan_t base;
     struct queue_buffer_t buffer;
+    int state;
     char *buf_p;
     size_t size;
     size_t left;
@@ -75,6 +86,28 @@ struct queue_t {
 int queue_init(struct queue_t *self_p,
                void *buf_p,
                size_t size);
+
+/**
+ * Start given queue. It is not required to start a queue unless it
+ * has been stopped.
+ *
+ * @param[in] self_p Queue to start.
+ *
+ * @return zero(0) or negative error code.
+ */
+int queue_start(struct queue_t *self_p);
+
+/**
+ * Stop given queue. Any ongoing read and write operations will return
+ * with the currently read/written number of bytes. Any read and write
+ * operations on a stopped queue will return -1.
+ *
+ * @param[in] self_p Queue to stop.
+ *
+ * @return true(1) if a thread was resumed, false(0) if no thread was
+ *         resumed, or negative error code.
+ */
+int queue_stop(struct queue_t *self_p);
 
 /**
  * Read from given queue. Blocks until size bytes has been read.
