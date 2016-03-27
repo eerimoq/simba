@@ -21,11 +21,13 @@
 #include "simba.h"
 
 #define BUFFER_SIZE(buffer_p) \
-    ((buffer_p)->end_p - (buffer_p)->begin_p - 1)
+    ((buffer_p)->size > 0 ? (buffer_p)->size - 1 : 0)
 #define BUFFER_USED_UNTIL_END(buffer_p) \
     ((buffer_p)->end_p - (buffer_p)->read_p)
 #define WRITER_SIZE(queue_p) \
     ((queue_p->base.writer_p != NULL) * queue_p->left)
+#define READER_SIZE(queue_p) \
+    ((queue_p->base.reader_p != NULL) * queue_p->left)
 #define BUFFER_UNUSED_UNTIL_END(buffer_p) \
     ((buffer_p)->end_p - (buffer_p)->write_p)
 #define BUFFER_UNUSED(buffer_p) \
@@ -60,6 +62,7 @@ int queue_init(struct queue_t *self_p,
     self_p->buffer.read_p = buf_p;
     self_p->buffer.write_p = buf_p;
     self_p->buffer.end_p = &((char*)buf_p)[size];
+    self_p->buffer.size = size;
 
     self_p->buf_p = NULL;
     self_p->size = 0;
@@ -157,7 +160,7 @@ ssize_t queue_write(struct queue_t *self_p,
 
     left -= queue_write_isr(self_p, cbuf_p, size);
 
-    /* The writer writes the remaining data. */
+    /* The reader reads the remaining data. */
     if (left > 0) {
         cbuf_p += (size - left);
         self_p->base.writer_p = thrd_self();
@@ -243,4 +246,22 @@ ssize_t queue_write_isr(struct queue_t *self_p,
 ssize_t queue_size(struct queue_t *self_p)
 {
     return (get_buffer_used(&self_p->buffer) + WRITER_SIZE(self_p));
+}
+
+ssize_t queue_unused_size(struct queue_t *self_p)
+{
+    ssize_t res;
+
+    sys_lock();
+
+    res = queue_unused_size_isr(self_p);
+
+    sys_unlock();
+
+    return (res);
+}
+
+ssize_t queue_unused_size_isr(struct queue_t *self_p)
+{
+    return (BUFFER_UNUSED(&self_p->buffer) + READER_SIZE(self_p));
 }

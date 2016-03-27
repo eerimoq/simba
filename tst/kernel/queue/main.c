@@ -28,6 +28,7 @@ static void *t0_main(void *arg_p)
 
     thrd_set_name("t0");
 
+    /* Test: test_read_write. */
     b = 1;
     BTASSERT(chan_write(&queue_p[0], &b, sizeof(b)) == sizeof(b));
     BTASSERT(b == 1);
@@ -54,7 +55,7 @@ static void *t0_main(void *arg_p)
 
     thrd_usleep(50000);
 
-    /* List polling.*/
+    /* Test: test_poll. */
     c[0] = 8;
     c[1] = 9;
     c[2] = 10;
@@ -64,6 +65,11 @@ static void *t0_main(void *arg_p)
     /* Write to chan that was polled but not read.*/
     b = 12;
     BTASSERT(chan_write(&queue_p[0], &b, sizeof(b)) == sizeof(b));
+
+    /* Test: test_size. */
+    b = 0;
+    BTASSERT(chan_read(&queue_p[0], &b, sizeof(b)) == sizeof(b));
+    BTASSERT(b == 1);
 
     thrd_suspend(NULL);
     
@@ -150,6 +156,34 @@ static int test_poll(struct harness_t *harness_p)
     return (0);
 }
 
+static int test_size(struct harness_t *harness_p)
+{
+    int b;
+    struct queue_t foo;
+    uint8_t buf[16];
+
+    BTASSERT(queue_init(&foo, buf, sizeof(buf)) == 0);
+
+    BTASSERT(queue_size(&foo) == 0);
+    BTASSERT(queue_unused_size(&foo) == 15);
+
+    b = 6;
+    BTASSERT(queue_write(&foo, &b, sizeof(b)));
+    
+    BTASSERT(queue_size(&foo) == sizeof(b));
+    BTASSERT(queue_unused_size(&foo) == (15 - sizeof(b)));
+
+    while (queue_unused_size(&queue[0]) != sizeof(int)) {
+        thrd_usleep(100);
+    }
+
+    b = 1;
+    BTASSERT(chan_write(&queue[0], &b, sizeof(b)) == sizeof(b));
+    BTASSERT(b == 1);
+
+    return (0);
+}
+
 int main()
 {
     struct harness_t harness;
@@ -157,6 +191,7 @@ int main()
         { test_init, "test_init" },
         { test_read_write, "test_read_write" },
         { test_poll, "test_poll" },
+        { test_size, "test_size" },
         { NULL, NULL }
     };
 

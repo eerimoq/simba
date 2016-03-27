@@ -39,6 +39,7 @@
             .read_p = _buf,                                             \
             .write_p = _buf,                                            \
             .end_p = &_buf[_size],                                      \
+            .size = _size                                               \
         },                                                              \
         .buf_p = NULL,                                                  \
         .size = 0,                                                      \
@@ -50,6 +51,7 @@ struct queue_buffer_t{
     char *read_p;
     char *write_p;
     char *end_p;
+    size_t size;
 };
 
 /* Queue. */
@@ -124,5 +126,24 @@ ssize_t queue_write_isr(struct queue_t *self_p,
  * @return Number of bytes in queue.
  */
 ssize_t queue_size(struct queue_t *self_p);
+
+/**
+ * Get the number of unused bytes in the queue.
+ *
+ * @param[in] self_p Queue.
+ *
+ * @return Number of bytes unused in the queue.
+ */
+ssize_t queue_unused_size(struct queue_t *self_p);
+
+/**
+ * Get the number of unused bytes in the queue from isr or with the
+ * system lock taken (see `sys_lock()`)..
+ *
+ * @param[in] self_p Queue.
+ *
+ * @return Number of bytes unused in the queue.
+ */
+ssize_t queue_unused_size_isr(struct queue_t *self_p);
 
 #endif

@@ -26,7 +26,7 @@
 
 FS_COUNTER_DEFINE("/drivers/can/rx_channel_overflow", can_rx_channel_overflow);
 
-static void read_frame_from_hw(struct can_driver_t *drv_p,
+static void read_frame_from_hw(struct can_driver_t *self_p,
                                volatile struct sam_can_mailbox_t *mailbox_p)
 {
     struct can_frame_t frame;
@@ -48,9 +48,11 @@ static void read_frame_from_hw(struct can_driver_t *drv_p,
     mailbox_p->MCR = CAN_MCR_MTCR;
 
     /* Write the received frame to the application input channel. */
-    if (queue_write_isr(&drv_p->chin,
+    if (queue_unused_size_isr(&self_p->chin) >= sizeof(frame)) {
+        queue_write_isr(&self_p->chin,
                         &frame,
-                        sizeof(frame)) != sizeof(frame)) {
+                        sizeof(frame));
+    } else {
         FS_COUNTER_INC(can_rx_channel_overflow, 1);
     }
 }
@@ -77,14 +79,14 @@ static void write_frame_to_hw(volatile struct sam_can_mailbox_t *mailbox_p,
 
 static void isr(struct can_device_t *dev_p)
 {
-    struct can_driver_t *drv_p;
+    struct can_driver_t *self_p;
     uint32_t status;
 
     if (dev_p->drv_p == NULL) {
         return;
     }
 
-    drv_p = dev_p->drv_p;
+    self_p = dev_p->drv_p;
 
     /* Read the status. */
     status = dev_p->regs_p->SR;
@@ -92,24 +94,24 @@ static void isr(struct can_device_t *dev_p)
 
     /* Handle TX complete interrupt. */
     if ((status & (1 << MAILBOX_TX)) != 0) {
-        if (drv_p->txsize > 0) {
+        if (self_p->txsize > 0) {
             write_frame_to_hw(&dev_p->regs_p->MAILBOX[MAILBOX_TX],
-                              drv_p->txframe_p);
-            drv_p->txsize -= sizeof(*drv_p->txframe_p);
-            drv_p->txframe_p++;
+                              self_p->txframe_p);
+            self_p->txsize -= sizeof(*self_p->txframe_p);
+            self_p->txframe_p++;
         } else {
             dev_p->regs_p->IDR = CAN_IDR_MB0;
-            thrd_resume_isr(drv_p->thrd_p, 0);
+            thrd_resume_isr(self_p->thrd_p, 0);
         }
     }
 
     if ((status & (1 << MAILBOX_RX_EID)) != 0) {
-        read_frame_from_hw(drv_p,
+        read_frame_from_hw(self_p,
                            &dev_p->regs_p->MAILBOX[MAILBOX_RX_EID]);
     }
 
     if ((status & (1 << MAILBOX_RX_SID)) != 0) {
-        read_frame_from_hw(drv_p,
+        read_frame_from_hw(self_p,
                            &dev_p->regs_p->MAILBOX[MAILBOX_RX_SID]);
     }
 }
