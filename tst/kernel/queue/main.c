@@ -204,7 +204,7 @@ static int test_stopped(struct harness_t *harness_p)
     BTASSERT(a[0] == 13);
 
     /* The read function returns -1 because the queue is stopped. */
-    BTASSERT(queue_read(&queue[1], a, sizeof(a)) == -1);
+    BTASSERT(queue_read(&queue[1], a, sizeof(a)) == 0);
 
     BTASSERT(queue_start(&queue[1]) == 0)
 

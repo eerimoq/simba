@@ -100,7 +100,7 @@ int queue_start(struct queue_t *self_p);
 /**
  * Stop given queue. Any ongoing read and write operations will return
  * with the currently read/written number of bytes. Any read and write
- * operations on a stopped queue will return -1.
+ * operations on a stopped queue will return zero(0).
  *
  * @param[in] self_p Queue to stop.
  *
@@ -108,6 +108,13 @@ int queue_start(struct queue_t *self_p);
  *         resumed, or negative error code.
  */
 int queue_stop(struct queue_t *self_p);
+
+/**
+ * Same as `queue_stop()` but from isr or with the system lock taken
+ * (see `sys_lock()`).
+ *
+ */
+int queue_stop_isr(struct queue_t *self_p);
 
 /**
  * Read from given queue. Blocks until size bytes has been read.
@@ -171,7 +178,7 @@ ssize_t queue_unused_size(struct queue_t *self_p);
 
 /**
  * Get the number of unused bytes in the queue from isr or with the
- * system lock taken (see `sys_lock()`)..
+ * system lock taken (see `sys_lock()`).
  *
  * @param[in] self_p Queue.
  *

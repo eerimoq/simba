@@ -90,6 +90,19 @@ int queue_stop(struct queue_t *self_p)
 
     sys_lock();
 
+    res = queue_stop_isr(self_p);
+
+    sys_unlock();
+
+    return (res);
+}
+
+int queue_stop_isr(struct queue_t *self_p)
+{
+    int res = 0;
+
+    /* If the reader is from a poll call, the resume value is
+       ignored. */
     if (self_p->base.reader_p != NULL) {
         thrd_resume_isr(self_p->base.reader_p, self_p->size - self_p->left);
         self_p->base.reader_p = NULL;
@@ -104,8 +117,6 @@ int queue_stop(struct queue_t *self_p)
 
     self_p->state = QUEUE_STATE_STOPPED;
 
-    sys_unlock();
-
     return (res);
 }
 
@@ -118,12 +129,6 @@ ssize_t queue_read(struct queue_t *self_p, void *buf_p, size_t size)
     cbuf_p = buf_p;
 
     sys_lock();
-
-    /* Read is not possible from a stopped queue. */
-    if (self_p->state == QUEUE_STATE_STOPPED) {
-        size = -1;
-        goto out;
-    }
 
     /* Copy data from queue buffer. */
     if (self_p->buffer.begin_p != NULL) {
@@ -177,16 +182,20 @@ ssize_t queue_read(struct queue_t *self_p, void *buf_p, size_t size)
 
     /* Suspend this thread if more data should be read. */
     if (left > 0) {
-        /* The writer writes the remaining data to the reader buffer. */
-        self_p->base.reader_p = thrd_self();
-        self_p->buf_p = cbuf_p;
-        self_p->size = size;
-        self_p->left = left;
+        /* No more data will be written to a stopped queue. */
+        if (self_p->state == QUEUE_STATE_STOPPED) {
+            size = (size - left);
+        } else {
+            /* The writer writes the remaining data to the reader buffer. */
+            self_p->base.reader_p = thrd_self();
+            self_p->buf_p = cbuf_p;
+            self_p->size = size;
+            self_p->left = left;
 
-        size = thrd_suspend_isr(NULL);
+            size = thrd_suspend_isr(NULL);
+        }
     }
 
- out:
     sys_unlock();
 
     return (size);
@@ -235,17 +244,18 @@ ssize_t queue_write_isr(struct queue_t *self_p,
     size_t buffer_unused_until_end, buffer_unused;
     const char *cbuf_p;
 
-    /* Write is not possible to a stopped queue. */
-    if (self_p->state == QUEUE_STATE_STOPPED) {
-        return (-1);
-    }
-
     left = size;
     cbuf_p = buf_p;
 
+    /* Resume any polling thread. */
     if (chan_is_polled_isr(&self_p->base)) {
         thrd_resume_isr(self_p->base.reader_p, 0);
         self_p->base.reader_p = NULL;
+    }
+
+    /* Write is not possible to a stopped queue. */
+    if (self_p->state == QUEUE_STATE_STOPPED) {
+        return (-1);
     }
 
     /* Copy data to the reader, if one is present. */
