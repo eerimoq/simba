@@ -1,6 +1,6 @@
 /**
  * @file drivers/flash.h
- * @version 0.2.0
+ * @version 0.3.0
  *
  * @section License
  * Copyright (C) 2014-2016, Erik Moqvist
