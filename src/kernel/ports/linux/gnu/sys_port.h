@@ -25,21 +25,21 @@
 
 #define FSTR(s) s
 
-#define _ASSERTFMT(fmt, ...) printf(fmt "\n", ##__VA_ARGS__);
+#define _ASSERTFMT(fmt, ...) fprintf(stderr, fmt "\n", ##__VA_ARGS__)
 
-#define BTASSERT(cond, ...)                                     \
-    if (!(cond)) {                                              \
-        printf(__FILE__ ":%d: BTASSERT: %s ", __LINE__, #cond); \
-        _ASSERTFMT(__VA_ARGS__);                                \
-        exit(1);                                                \
+#define BTASSERT(cond, ...)                                             \
+    if (!(cond)) {                                                      \
+        fprintf(stderr, __FILE__ ":%d: BTASSERT: %s ", __LINE__, #cond); \
+        _ASSERTFMT(__VA_ARGS__);                                        \
+        exit(1);                                                        \
     }
 
 #if !defined(NASSERT)
-#  define ASSERTN(cond, n, ...)                                   \
-    if (!(cond)) {                                              \
-        printf(__FILE__ ":%d: ASSERT: %s ", __LINE__, #cond);   \
-        _ASSERTFMT(__VA_ARGS__);                                \
-        sys.on_fatal_callback(n);                               \
+#  define ASSERTN(cond, n, ...)                                         \
+    if (!(cond)) {                                                      \
+        fprintf(stderr, __FILE__ ":%d: ASSERT: %s ", __LINE__, #cond);  \
+        _ASSERTFMT(__VA_ARGS__);                                        \
+        sys.on_fatal_callback(n);                                       \
     }
 #else
 #  define ASSERTN(cond, n, ...)
