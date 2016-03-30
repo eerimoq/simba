@@ -122,6 +122,8 @@ def setup_mcu_sam(env):
         "-Wl,-Map=$BUILD_DIR/firmware.map" # This should be added to PlatformIO
     ])
 
+    env.Append(LIBPATH=["$PLATFORMFW_DIR/src/mcus/$BOARD_MCU"])
+
 
 def create_src_filter(env):
     """Create the source filter string.
@@ -133,6 +135,8 @@ def create_src_filter(env):
     src_filter_patterns.append("-<boards>")
     if env.subst("$BOARD") == "arduino_due":
         src_filter_patterns.append("+<boards/arduino_due>")
+    else:
+        src_filter_patterns.append(env.subst("+<boards/$BOARD>"))
 
     # add the mcu files
     src_filter_patterns.append("-<mcus>")
@@ -140,6 +144,9 @@ def create_src_filter(env):
         src_filter_patterns.append("+<mcus/sam>")
     else:
         src_filter_patterns.append(env.subst("+<mcus/$BOARD_MCU>"))
+
+    # remote inet files
+    src_filter_patterns.append("-<inet>")
 
     # add the drivers files
     src_filter_patterns.append("-<drivers>")
