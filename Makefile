@@ -40,7 +40,7 @@ TESTS = $(addprefix tst/kernel/, binary_tree \
                                  sys \
                                  thrd \
                                  timer)
-TESTS += $(addprefix tst/slib/, crc hash_map)
+TESTS += $(addprefix tst/slib/, base64 crc hash hash_map)
 
 ifeq ($(BOARD), linux)
     TESTS += $(addprefix tst/slib/, fat16)
