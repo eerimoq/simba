@@ -22,7 +22,7 @@
 #define __KERNEL_SYS_PORT_H__
 
 /* Put far data in RAM for now. */
-#define FAR
+#define FAR const
 
 /**
  * @brief Stores string literal in FAR memory.
@@ -30,7 +30,7 @@
 #define FSTR(s)                                 \
     (__extension__(                             \
         {                                       \
-            static FAR const char __c[] = (s);  \
+            static FAR char __c[] = (s);        \
             __c;                                \
         }                                       \
         ))

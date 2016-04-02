@@ -19,9 +19,9 @@
  */
 
 #include "simba.h"
+#include "inet.h"
 
 #include "esp_common.h"
-#include "lwip/sockets.h"
 
 /* UDP ports to use. */
 #define UDP_LOCAL_PORT  30303
@@ -44,7 +44,7 @@ int cmd_udp_send(int argc,
     struct socket_addr_t addr;
 
     /* Open an UDP socket. */
-    socket_open(&udp, AF_INET, SOCKET_TYPE_DGRAM, 0);
+    socket_open(&udp, SOCKET_DOMAIN_AF_INET, SOCKET_TYPE_DGRAM, 0);
 
     addr.ip = 0x6801a8c0;
     addr.port = UDP_LOCAL_PORT;
