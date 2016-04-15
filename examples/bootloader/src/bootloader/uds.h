@@ -1,5 +1,5 @@
 /**
- * @file bootloader.h
+ * @file uds.h
  * @version 0.3.0
  *
  * @section License
@@ -18,16 +18,16 @@
  * This file is part of the Simba project.
  */
 
-#include "simba.h"
+#ifndef __BOOTLOADER_UDS_H__
+#define __BOOTLOADER_UDS_H__
 
-#ifndef __BOOTLOADER_BOOTLOADER_H__
-#define __BOOTLOADER_BOOTLOADER_H__
+#include "simba.h"
 
 /* States. */
 #define STATE_IDLE        1
 #define STATE_SWDL        2
 
-struct bootloader_t {
+struct uds_t {
     int state;
     chan_t *chin_p;
     chan_t *chout_p;
@@ -59,12 +59,12 @@ struct bootloader_t {
  *
  * @returns zero(0) or negative error code.
  */
-int bootloader_init(struct bootloader_t *self_p,
-                    chan_t *chin_p,
-                    chan_t *chout_p,
-                    uint32_t application_address,
-                    uint32_t application_size,
-                    struct flash_driver_t *flash_p);
+int uds_init(struct uds_t *self_p,
+             chan_t *chin_p,
+             chan_t *chout_p,
+             uint32_t application_address,
+             uint32_t application_size,
+             struct flash_driver_t *flash_p);
 
 /**
  * Handle a service.
@@ -73,7 +73,7 @@ int bootloader_init(struct bootloader_t *self_p,
  *
  * @returns zero(0) or negative error code.
  */
-int bootloader_handle_service(struct bootloader_t *self_p);
+int uds_handle_service(struct uds_t *self_p);
 
 /**
  * Run the main loop of the bootloader.
@@ -82,6 +82,6 @@ int bootloader_handle_service(struct bootloader_t *self_p);
  *
  * @returns Never returns.
  */
-void bootloader_main(struct bootloader_t *self_p);
+void uds_main(struct uds_t *self_p);
 
 #endif

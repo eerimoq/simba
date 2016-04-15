@@ -21,6 +21,8 @@
 #ifndef __BOOTLOADER_H__
 #define __BOOTLOADER_H__
 
-#include "bootloader/bootloader.h"
+#include "bootloader/common.h"
+#include "bootloader/console.h"
+#include "bootloader/uds.h"
 
 #endif

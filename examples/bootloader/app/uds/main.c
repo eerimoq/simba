@@ -35,7 +35,7 @@ static uint8_t uart_rx_buffer[32];
 
 int main()
 {
-    struct bootloader_t bootloader;
+    struct uds_t uds;
     struct flash_driver_t flash;
 
     /* Start the system. */
@@ -62,14 +62,14 @@ int main()
     std_printf(sys_get_info());
 
     /* Initialize the bootloader object and enter the main loop. */
-    bootloader_init(&bootloader,
-                    &uart.chin,
-                    &uart.chout,
-                    APPLICATION_ADDRESS,
-                    APPLICATION_SIZE,
-                    &flash);
+    uds_init(&uds,
+             &uart.chin,
+             &uart.chout,
+             APPLICATION_ADDRESS,
+             APPLICATION_SIZE,
+             &flash);
 
-    bootloader_main(&bootloader);
+    uds_main(&uds);
 
     return (0);
 }

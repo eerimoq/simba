@@ -1,5 +1,5 @@
 /**
- * @file bootloader.c
+ * @file uds.c
  * @version 0.3.0
  *
  * @section License
@@ -101,7 +101,7 @@
  *
  * @returns zero(0) or negative error code.
  */
-static int ignore(struct bootloader_t *self_p,
+static int ignore(struct uds_t *self_p,
                   int size)
 {
     uint8_t dummy;
@@ -115,26 +115,6 @@ static int ignore(struct bootloader_t *self_p,
 }
 
 /**
- * Erase the application memory region.
- *
- * @param[in] self_p Bootloader object.
- *
- * @returns zero(0) or negative error code.
- */
-static int erase_application(struct bootloader_t *self_p)
-{
-    uint8_t flag;
-    uint32_t flag_address;
-
-    /* Erase the flag at the end of the application flash area. */
-    flag = 0xff;
-    flag_address = (self_p->application_address + self_p->application_size);
-    flash_write(self_p->flash_p, flag_address, &flag, sizeof(flag));
-
-    return (0);
-}
-
-/**
  * Read given number of bytes from the input channel and write them to
  * the flash memory.
  *
@@ -143,7 +123,7 @@ static int erase_application(struct bootloader_t *self_p)
  *
  * @returns zero(0) or negative error code.
  */
-static int write_application(struct bootloader_t *self_p,
+static int write_application(struct uds_t *self_p,
                              size_t size)
 {
     size_t left;
@@ -173,90 +153,6 @@ static int write_application(struct bootloader_t *self_p,
 }
 
 /**
- * Returns true(1) if there is a valid application in the application
- * memory region.
- *
- * @param[in] self_p Bootloader object.
- *
- * @returns true(1) if a valid application exists in the memory
- *          region, otherwise false(0).
- */
-static int is_application_valid(struct bootloader_t *self_p)
-{
-    uint32_t flag_address;
-    uint8_t flag;
-
-    flag_address = (self_p->application_address + self_p->application_size);
-
-#if defined(MCU_SAM_3X8E)
-    flag = *((uint8_t *)(uintptr_t)flag_address);
-#else
-    flag = 0;
-    (void)flag_address;
-#endif
-
-    return (flag == APPLICATION_VALID_FLAG);
-}
-
-/**
- * Write the valid applicatin flag to the flash memory.
- *
- * @param[in] self_p Bootloader object.
- *
- * @returns zero(0) or negative error code.
- */
-static int write_application_valid_flag(struct bootloader_t *self_p)
-{
-    uint8_t flag;
-    uint32_t flag_address;
-
-    /* Write the flag at the end of the application flash area. */
-    flag = APPLICATION_VALID_FLAG;
-    flag_address = (self_p->application_address + self_p->application_size);
-    flash_write(self_p->flash_p, flag_address, &flag, sizeof(flag));
-
-    return (0);
-}
-
-/**
- * Call the application.
- *
- * @param[in] self_p Bootloader object.
- *
- * @returns For most architechtures this function never returns.
- */
-static int call_application(struct bootloader_t *self_p)
-{
-#if defined(MCU_SAM_3X8E)
-    uint32_t reset_address;
-    uint32_t stack_address;
-    uint32_t tbloff;
-
-    sys_lock();
-
-    /* Set the vector offset to the application vector. */
-    tbloff = (self_p->application_address >> 7);
-    SAM_SCB->VTOR = SCB_VTOR_TBLOFF(tbloff);
-
-    /* Read the reset address. */
-    reset_address = *(uint32_t *)(self_p->application_address + 4);
-
-    /* Setup the stack pointer. */
-    stack_address = *(uint32_t *)(self_p->application_address);
-
-    /* Setup the stack pointer and call the application reset
-       function. */
-    asm volatile ("mov sp, %0" : : "r" (stack_address));
-    asm volatile ("blx %0" : : "r" (reset_address));
-#elif defined(MCU_LINUX)
-#else
-#    error "Unsupported mcu."
-#endif
-
-    return (0);
-}
-
-/**
  * Write an UDS response on the output channel.
  *
  * @param[in] self_p Bootloader object.
@@ -265,7 +161,7 @@ static int call_application(struct bootloader_t *self_p)
  *
  * @returns zero(0) or negative error code.
  */
-static int write_response(struct bootloader_t *self_p,
+static int write_response(struct uds_t *self_p,
                           int32_t length,
                           uint8_t code)
 {
@@ -286,7 +182,7 @@ static int write_response(struct bootloader_t *self_p,
  *
  * @returns zero(0) or negative error code.
  */
-static int ignore_and_write_response_no_data(struct bootloader_t *self_p,
+static int ignore_and_write_response_no_data(struct uds_t *self_p,
                                              size_t length,
                                              uint8_t code)
 {
@@ -336,7 +232,7 @@ static int write_did_response(chan_t *chout_p,
  *
  * @returns zero(0) or negative error code.
  */
-static int handle_read_data_by_identifier_version(struct bootloader_t *self_p)
+static int handle_read_data_by_identifier_version(struct uds_t *self_p)
 {
     const char version[] = STRINGIFY(VERSION);
 
@@ -354,7 +250,7 @@ static int handle_read_data_by_identifier_version(struct bootloader_t *self_p)
  *
  * @returns zero(0) or negative error code.
  */
-static int handle_read_data_by_identifier_system_time(struct bootloader_t *self_p)
+static int handle_read_data_by_identifier_system_time(struct uds_t *self_p)
 {
     char buf[32];
     struct time_t now;
@@ -378,11 +274,12 @@ static int handle_read_data_by_identifier_system_time(struct bootloader_t *self_
  *
  * @returns zero(0) or negative error code.
  */
-static int handle_diagnostic_session_control_default(struct bootloader_t *self_p,
+static int handle_diagnostic_session_control_default(struct uds_t *self_p,
                                                      int length)
 {
 # if !defined(BOOTLOADER_TEST)
-    if (is_application_valid(self_p) == 0) {
+    if (bootloader_is_application_valid(self_p->swdl.address,
+                                        self_p->swdl.size) == 0) {
         ignore_and_write_response_no_data(self_p,
                                           0,
                                           CONDITIONS_NOT_CORRECT);
@@ -397,7 +294,7 @@ static int handle_diagnostic_session_control_default(struct bootloader_t *self_p
 
     /* Call the application. */
 # if !defined(BOOTLOADER_TEST)
-    call_application(self_p);
+    bootloader_jump(self_p->application_address);
 #endif
 
     return (0);
@@ -412,11 +309,13 @@ static int handle_diagnostic_session_control_default(struct bootloader_t *self_p
  *
  * @returns zero(0) or negative error code.
  */
-static int handle_routine_control_erase(struct bootloader_t *self_p,
+static int handle_routine_control_erase(struct uds_t *self_p,
                                         int sub_function,
                                         int length)
 {
-    erase_application(self_p);
+    bootloader_erase_application(self_p->application_address,
+                                 self_p->application_size,
+                                 self_p->flash_p);
     ignore_and_write_response_no_data(self_p,
                                       length,
                                       (ROUTINE_CONTROL | POSITIVE_RESPONSE));
@@ -449,7 +348,7 @@ static int handle_routine_control_erase(struct bootloader_t *self_p,
  *
  * @returns zero(0) or negative error code.
  */
-static int handle_diagnostic_session_control(struct bootloader_t *self_p,
+static int handle_diagnostic_session_control(struct uds_t *self_p,
                                              int length)
 {
     uint8_t session;
@@ -497,7 +396,7 @@ static int handle_diagnostic_session_control(struct bootloader_t *self_p,
  *
  * @returns zero(0) or negative error code.
  */
-static int handle_read_data_by_identifier(struct bootloader_t *self_p,
+static int handle_read_data_by_identifier(struct uds_t *self_p,
                                           int length)
 {
     uint16_t did;
@@ -545,7 +444,7 @@ static int handle_read_data_by_identifier(struct bootloader_t *self_p,
  *
  * @returns zero(0) or negative error code.
  */
-static int handle_read_memory_by_address(struct bootloader_t *self_p,
+static int handle_read_memory_by_address(struct uds_t *self_p,
                                          int length)
 {
     uint32_t address;
@@ -598,7 +497,7 @@ static int handle_read_memory_by_address(struct bootloader_t *self_p,
  *
  * @returns zero(0) or negative error code.
  */
-static int handle_routine_control(struct bootloader_t *self_p,
+static int handle_routine_control(struct uds_t *self_p,
                                   int length)
 {
     uint8_t sub_function;
@@ -650,7 +549,7 @@ static int handle_routine_control(struct bootloader_t *self_p,
  *
  * @returns zero(0) or negative error code.
  */
-static int handle_request_download(struct bootloader_t *self_p,
+static int handle_request_download(struct uds_t *self_p,
                                    int length)
 {
     uint8_t buf[5];
@@ -743,7 +642,7 @@ static int handle_request_download(struct bootloader_t *self_p,
  *
  * @returns zero(0) or negative error code.
  */
-static int handle_transfer_data(struct bootloader_t *self_p,
+static int handle_transfer_data(struct uds_t *self_p,
                                 int length)
 {
     int res;
@@ -824,7 +723,7 @@ static int handle_transfer_data(struct bootloader_t *self_p,
  *
  * @returns zero(0) or negative error code.
  */
-static int handle_request_transfer_exit(struct bootloader_t *self_p,
+static int handle_request_transfer_exit(struct uds_t *self_p,
                                         int length)
 {
     /* Sanity check. */
@@ -848,7 +747,9 @@ static int handle_request_transfer_exit(struct bootloader_t *self_p,
     /* Write the application valid flag if the whole application has
        been written. */
     if (self_p->swdl.offset == self_p->swdl.size) {
-        write_application_valid_flag(self_p);
+        bootloader_write_application_valid_flag(self_p->application_address,
+                                                self_p->application_size,
+                                                self_p->flash_p);
     }
 
     self_p->state = STATE_IDLE;
@@ -868,7 +769,7 @@ static int handle_request_transfer_exit(struct bootloader_t *self_p,
  *
  * @returns zero(0) or negative error code.
  */
-static int handle_unknown_service_id(struct bootloader_t *self_p,
+static int handle_unknown_service_id(struct uds_t *self_p,
                                      int length)
 {
     ignore_and_write_response_no_data(self_p,
@@ -878,12 +779,12 @@ static int handle_unknown_service_id(struct bootloader_t *self_p,
     return (0);
 }
 
-int bootloader_init(struct bootloader_t *self_p,
-                    chan_t *chin_p,
-                    chan_t *chout_p,
-                    uint32_t application_address,
-                    uint32_t application_size,
-                    struct flash_driver_t *flash_p)
+int uds_init(struct uds_t *self_p,
+             chan_t *chin_p,
+             chan_t *chout_p,
+             uint32_t application_address,
+             uint32_t application_size,
+             struct flash_driver_t *flash_p)
 {
     self_p->state = STATE_IDLE;
     self_p->chin_p = chin_p;
@@ -896,7 +797,7 @@ int bootloader_init(struct bootloader_t *self_p,
     return (0);
 }
 
-int bootloader_handle_service(struct bootloader_t *self_p)
+int uds_handle_service(struct uds_t *self_p)
 {
     int32_t length;
     int8_t service_id;
@@ -954,7 +855,7 @@ int bootloader_handle_service(struct bootloader_t *self_p)
     return (res);
 }
 
-void bootloader_main(struct bootloader_t *self_p)
+void uds_main(struct uds_t *self_p)
 {
     struct pin_driver_t stay_in_bootloader_pin;
 
@@ -965,9 +866,10 @@ void bootloader_main(struct bootloader_t *self_p)
         std_printf(FSTR("stay in bootloader pin (d2) low\r\n"));
 
         /* Call the application if it is valid. */
-        if (is_application_valid(self_p) == 1) {
+        if (bootloader_is_application_valid(self_p->application_address,
+                                            self_p->application_size) == 1) {
             std_printf(FSTR("calling application\r\n"));
-            call_application(self_p);
+            bootloader_jump(self_p->application_address);
         } else {
             std_printf(FSTR("application invalid\r\n"));
         }
@@ -977,6 +879,6 @@ void bootloader_main(struct bootloader_t *self_p)
 
     /* Enter the bootloader main loop. */
     while (1) {
-        bootloader_handle_service(self_p);
+        uds_handle_service(self_p);
     }
 }

@@ -34,7 +34,7 @@ static struct flash_driver_t flash;
 
 static int test_bad_size(struct harness_t *self_p)
 {
-    struct bootloader_t bootloader;
+    struct uds_t uds;
     struct queue_t qin;
     struct queue_t qout;
     uint8_t input[] = {
@@ -44,21 +44,21 @@ static int test_bad_size(struct harness_t *self_p)
     queue_init(&qin, inbuf, sizeof(inbuf));
     queue_init(&qout, outbuf, sizeof(outbuf));
     queue_write(&qin, input, sizeof(input));
-    bootloader_init(&bootloader,
-                    &qin,
-                    &qout,
-                    APPLICATION_ADDRESS,
-                    APPLICATION_SIZE,
-                    &flash);
+    uds_init(&uds,
+             &qin,
+             &qout,
+             APPLICATION_ADDRESS,
+             APPLICATION_SIZE,
+             &flash);
 
-    BTASSERT(bootloader_handle_service(&bootloader) == -1);
+    BTASSERT(uds_handle_service(&uds) == -1);
 
     return (0);
 }
 
 static int test_unknown_service_id(struct harness_t *self_p)
 {
-    struct bootloader_t bootloader;
+    struct uds_t uds;
     struct queue_t qin;
     struct queue_t qout;
     uint8_t input[] = {
@@ -70,14 +70,14 @@ static int test_unknown_service_id(struct harness_t *self_p)
     queue_init(&qin, inbuf, sizeof(inbuf));
     queue_init(&qout, outbuf, sizeof(outbuf));
     queue_write(&qin, input, sizeof(input));
-    bootloader_init(&bootloader,
-                    &qin,
-                    &qout,
-                    APPLICATION_ADDRESS,
-                    APPLICATION_SIZE,
-                    &flash);
+    uds_init(&uds,
+             &qin,
+             &qout,
+             APPLICATION_ADDRESS,
+             APPLICATION_SIZE,
+             &flash);
 
-    BTASSERT(bootloader_handle_service(&bootloader) == 0);
+    BTASSERT(uds_handle_service(&uds) == 0);
     BTASSERT(queue_read(&qout, &length, sizeof(length)) == sizeof(length));
     BTASSERT(ntohl(length) == 1);
     BTASSERT(queue_read(&qout, &code, sizeof(code)) == sizeof(code));
@@ -88,7 +88,7 @@ static int test_unknown_service_id(struct harness_t *self_p)
 
 static int test_read_data_by_identifier(struct harness_t *self_p)
 {
-    struct bootloader_t bootloader;
+    struct uds_t uds;
     struct queue_t qin;
     struct queue_t qout;
     uint8_t input[] = {
@@ -110,29 +110,29 @@ static int test_read_data_by_identifier(struct harness_t *self_p)
     queue_init(&qin, inbuf, sizeof(inbuf));
     queue_init(&qout, outbuf, sizeof(outbuf));
     queue_write(&qin, input, sizeof(input));
-    bootloader_init(&bootloader,
-                    &qin,
-                    &qout,
-                    APPLICATION_ADDRESS,
-                    APPLICATION_SIZE,
-                    &flash);
+    uds_init(&uds,
+             &qin,
+             &qout,
+             APPLICATION_ADDRESS,
+             APPLICATION_SIZE,
+             &flash);
 
     /* Bad did. */
-    BTASSERT(bootloader_handle_service(&bootloader) == -1);
+    BTASSERT(uds_handle_service(&uds) == -1);
     BTASSERT(queue_read(&qout, &length, sizeof(length)) == sizeof(length));
     BTASSERT(ntohl(length) == 1);
     BTASSERT(queue_read(&qout, &code, sizeof(code)) == sizeof(code));
     BTASSERT(code == 0x11);
 
     /* Bad did length. */
-    BTASSERT(bootloader_handle_service(&bootloader) == -1);
+    BTASSERT(uds_handle_service(&uds) == -1);
     BTASSERT(queue_read(&qout, &length, sizeof(length)) == sizeof(length));
     BTASSERT(ntohl(length) == 1);
     BTASSERT(queue_read(&qout, &code, sizeof(code)) == sizeof(code));
     BTASSERT(code == 0x13);
 
     /* Bootloader version. */
-    BTASSERT(bootloader_handle_service(&bootloader) == 0);
+    BTASSERT(uds_handle_service(&uds) == 0);
     BTASSERT(queue_read(&qout, &length, sizeof(length)) == sizeof(length));
     BTASSERT(ntohl(length) == 9);
     BTASSERT(queue_read(&qout, &code, sizeof(code)) == sizeof(code));
@@ -143,7 +143,7 @@ static int test_read_data_by_identifier(struct harness_t *self_p)
     BTASSERT(strcmp(STRINGIFY(VERSION), version) == 0);
 
     /* System time. */
-    BTASSERT(bootloader_handle_service(&bootloader) == 0);
+    BTASSERT(uds_handle_service(&uds) == 0);
     BTASSERT(queue_read(&qout, &length, sizeof(length)) == sizeof(length));
     length = ntohl(length);
     BTASSERT(length > 3);
@@ -159,7 +159,7 @@ static int test_read_data_by_identifier(struct harness_t *self_p)
 
 static int test_read_memory_by_address(struct harness_t *self_p)
 {
-    struct bootloader_t bootloader;
+    struct uds_t uds;
     struct queue_t qin;
     struct queue_t qout;
     uint8_t input[] = {
@@ -176,22 +176,22 @@ static int test_read_memory_by_address(struct harness_t *self_p)
     queue_init(&qin, inbuf, sizeof(inbuf));
     queue_init(&qout, outbuf, sizeof(outbuf));
     queue_write(&qin, input, sizeof(input));
-    bootloader_init(&bootloader,
-                    &qin,
-                    &qout,
-                    APPLICATION_ADDRESS,
-                    APPLICATION_SIZE,
-                    &flash);
+    uds_init(&uds,
+             &qin,
+             &qout,
+             APPLICATION_ADDRESS,
+             APPLICATION_SIZE,
+             &flash);
 
     /* Bad length. */
-    BTASSERT(bootloader_handle_service(&bootloader) == -1);
+    BTASSERT(uds_handle_service(&uds) == -1);
     BTASSERT(queue_read(&qout, &length, sizeof(length)) == sizeof(length));
     BTASSERT(ntohl(length) == 1);
     BTASSERT(queue_read(&qout, &code, sizeof(code)) == sizeof(code));
     BTASSERT(code == 0x13);
 
     /* Ok. */
-    BTASSERT(bootloader_handle_service(&bootloader) == 0);
+    BTASSERT(uds_handle_service(&uds) == 0);
     BTASSERT(queue_read(&qout, &length, sizeof(length)) == sizeof(length));
     BTASSERT(ntohl(length) == 6);
     BTASSERT(queue_read(&qout, &code, sizeof(code)) == sizeof(code));
@@ -206,7 +206,7 @@ static int test_read_memory_by_address(struct harness_t *self_p)
 
 static int test_routine_control(struct harness_t *self_p)
 {
-    struct bootloader_t bootloader;
+    struct uds_t uds;
     struct queue_t qin;
     struct queue_t qout;
     uint8_t input[] = {
@@ -223,29 +223,29 @@ static int test_routine_control(struct harness_t *self_p)
     queue_init(&qin, inbuf, sizeof(inbuf));
     queue_init(&qout, outbuf, sizeof(outbuf));
     queue_write(&qin, input, sizeof(input));
-    bootloader_init(&bootloader,
-                    &qin,
-                    &qout,
-                    APPLICATION_ADDRESS,
-                    APPLICATION_SIZE,
-                    &flash);
+    uds_init(&uds,
+             &qin,
+             &qout,
+             APPLICATION_ADDRESS,
+             APPLICATION_SIZE,
+             &flash);
 
     /* Bad length. */
-    BTASSERT(bootloader_handle_service(&bootloader) == -1);
+    BTASSERT(uds_handle_service(&uds) == -1);
     BTASSERT(queue_read(&qout, &length, sizeof(length)) == sizeof(length));
     BTASSERT(ntohl(length) == 1);
     BTASSERT(queue_read(&qout, &code, sizeof(code)) == sizeof(code));
     BTASSERT(code == 0x13);
 
     /* Bad routine id. */
-    BTASSERT(bootloader_handle_service(&bootloader) == -1);
+    BTASSERT(uds_handle_service(&uds) == -1);
     BTASSERT(queue_read(&qout, &length, sizeof(length)) == sizeof(length));
     BTASSERT(ntohl(length) == 1);
     BTASSERT(queue_read(&qout, &code, sizeof(code)) == sizeof(code));
     BTASSERT(code == 0x11);
 
     /* Erase routine. */
-    BTASSERT(bootloader_handle_service(&bootloader) == 0);
+    BTASSERT(uds_handle_service(&uds) == 0);
     BTASSERT(queue_read(&qout, &length, sizeof(length)) == sizeof(length));
     BTASSERT(ntohl(length) == 1);
     BTASSERT(queue_read(&qout, &code, sizeof(code)) == sizeof(code));
@@ -256,7 +256,7 @@ static int test_routine_control(struct harness_t *self_p)
 
 static int test_diagnostic_session_control(struct harness_t *self_p)
 {
-    struct bootloader_t bootloader;
+    struct uds_t uds;
     struct queue_t qin;
     struct queue_t qout;
     uint8_t input[] = {
@@ -273,29 +273,29 @@ static int test_diagnostic_session_control(struct harness_t *self_p)
     queue_init(&qin, inbuf, sizeof(inbuf));
     queue_init(&qout, outbuf, sizeof(outbuf));
     queue_write(&qin, input, sizeof(input));
-    bootloader_init(&bootloader,
-                    &qin,
-                    &qout,
-                    APPLICATION_ADDRESS,
-                    APPLICATION_SIZE,
-                    &flash);
+    uds_init(&uds,
+             &qin,
+             &qout,
+             APPLICATION_ADDRESS,
+             APPLICATION_SIZE,
+             &flash);
 
     /* Bad length. */
-    BTASSERT(bootloader_handle_service(&bootloader) == -1);
+    BTASSERT(uds_handle_service(&uds) == -1);
     BTASSERT(queue_read(&qout, &length, sizeof(length)) == sizeof(length));
     BTASSERT(ntohl(length) == 1);
     BTASSERT(queue_read(&qout, &code, sizeof(code)) == sizeof(code));
     BTASSERT(code == 0x13);
 
     /* Bad session. */
-    BTASSERT(bootloader_handle_service(&bootloader) == -1);
+    BTASSERT(uds_handle_service(&uds) == -1);
     BTASSERT(queue_read(&qout, &length, sizeof(length)) == sizeof(length));
     BTASSERT(ntohl(length) == 1);
     BTASSERT(queue_read(&qout, &code, sizeof(code)) == sizeof(code));
     BTASSERT(code == 0x31);
 
     /* Routine CALL: ok */
-    BTASSERT(bootloader_handle_service(&bootloader) == 0);
+    BTASSERT(uds_handle_service(&uds) == 0);
     BTASSERT(queue_read(&qout, &length, sizeof(length)) == sizeof(length));
     BTASSERT(ntohl(length) == 1);
     BTASSERT(queue_read(&qout, &code, sizeof(code)) == sizeof(code));
@@ -306,7 +306,7 @@ static int test_diagnostic_session_control(struct harness_t *self_p)
 
 static int test_request_download(struct harness_t *self_p)
 {
-    struct bootloader_t bootloader;
+    struct uds_t uds;
     struct queue_t qin;
     struct queue_t qout;
     uint8_t input[] = {
@@ -350,50 +350,50 @@ static int test_request_download(struct harness_t *self_p)
     queue_init(&qin, inbuf, sizeof(inbuf));
     queue_init(&qout, outbuf, sizeof(outbuf));
     queue_write(&qin, input, sizeof(input));
-    bootloader_init(&bootloader,
-                    &qin,
-                    &qout,
-                    APPLICATION_ADDRESS,
-                    APPLICATION_SIZE,
-                    &flash);
+    uds_init(&uds,
+             &qin,
+             &qout,
+             APPLICATION_ADDRESS,
+             APPLICATION_SIZE,
+             &flash);
 
     /* Bad length. */
-    BTASSERT(bootloader_handle_service(&bootloader) == -1);
+    BTASSERT(uds_handle_service(&uds) == -1);
     BTASSERT(queue_read(&qout, &length, sizeof(length)) == sizeof(length));
     BTASSERT(ntohl(length) == 1);
     BTASSERT(queue_read(&qout, &code, sizeof(code)) == sizeof(code));
     BTASSERT(code == 0x13);
 
     /* Bad field sizes. */
-    BTASSERT(bootloader_handle_service(&bootloader) == -1);
+    BTASSERT(uds_handle_service(&uds) == -1);
     BTASSERT(queue_read(&qout, &length, sizeof(length)) == sizeof(length));
     BTASSERT(ntohl(length) == 1);
     BTASSERT(queue_read(&qout, &code, sizeof(code)) == sizeof(code));
     BTASSERT(code == 0x31);
 
     /* Bad address and size length. */
-    BTASSERT(bootloader_handle_service(&bootloader) == -1);
+    BTASSERT(uds_handle_service(&uds) == -1);
     BTASSERT(queue_read(&qout, &length, sizeof(length)) == sizeof(length));
     BTASSERT(ntohl(length) == 1);
     BTASSERT(queue_read(&qout, &code, sizeof(code)) == sizeof(code));
     BTASSERT(code == 0x13);
 
     /* Bad address. */
-    BTASSERT(bootloader_handle_service(&bootloader) == -1);
+    BTASSERT(uds_handle_service(&uds) == -1);
     BTASSERT(queue_read(&qout, &length, sizeof(length)) == sizeof(length));
     BTASSERT(ntohl(length) == 1);
     BTASSERT(queue_read(&qout, &code, sizeof(code)) == sizeof(code));
     BTASSERT(code == 0x31);
 
     /* Bad size. */
-    BTASSERT(bootloader_handle_service(&bootloader) == -1);
+    BTASSERT(uds_handle_service(&uds) == -1);
     BTASSERT(queue_read(&qout, &length, sizeof(length)) == sizeof(length));
     BTASSERT(ntohl(length) == 1);
     BTASSERT(queue_read(&qout, &code, sizeof(code)) == sizeof(code));
     BTASSERT(code == 0x31);
 
     /* Flash ok. */
-    BTASSERT(bootloader_handle_service(&bootloader) == 0);
+    BTASSERT(uds_handle_service(&uds) == 0);
     BTASSERT(queue_read(&qout, &length, sizeof(length)) == sizeof(length));
     BTASSERT(ntohl(length) == 6);
     BTASSERT(queue_read(&qout, &code, sizeof(code)) == sizeof(code));
@@ -408,7 +408,7 @@ static int test_request_download(struct harness_t *self_p)
 
 static int test_transfer_data(struct harness_t *self_p)
 {
-    struct bootloader_t bootloader;
+    struct uds_t uds;
     struct queue_t qin;
     struct queue_t qout;
     uint8_t input[] = {
@@ -438,22 +438,22 @@ static int test_transfer_data(struct harness_t *self_p)
     queue_init(&qin, inbuf, sizeof(inbuf));
     queue_init(&qout, outbuf, sizeof(outbuf));
     queue_write(&qin, input, sizeof(input));
-    bootloader_init(&bootloader,
-                    &qin,
-                    &qout,
-                    APPLICATION_ADDRESS,
-                    APPLICATION_SIZE,
-                    &flash);
+    uds_init(&uds,
+             &qin,
+             &qout,
+             APPLICATION_ADDRESS,
+             APPLICATION_SIZE,
+             &flash);
 
     /* Bad state. */
-    BTASSERT(bootloader_handle_service(&bootloader) == -1);
+    BTASSERT(uds_handle_service(&uds) == -1);
     BTASSERT(queue_read(&qout, &length, sizeof(length)) == sizeof(length));
     BTASSERT(ntohl(length) == 1);
     BTASSERT(queue_read(&qout, &code, sizeof(code)) == sizeof(code));
     BTASSERT(code == 0x22);
 
     /* Flash ok. */
-    BTASSERT(bootloader_handle_service(&bootloader) == 0);
+    BTASSERT(uds_handle_service(&uds) == 0);
     BTASSERT(queue_read(&qout, &length, sizeof(length)) == sizeof(length));
     BTASSERT(ntohl(length) == 6);
     BTASSERT(queue_read(&qout, &code, sizeof(code)) == sizeof(code));
@@ -464,28 +464,28 @@ static int test_transfer_data(struct harness_t *self_p)
     BTASSERT(ntohl(max_size) == 4096);
 
     /* Bad length. */
-    BTASSERT(bootloader_handle_service(&bootloader) == -1);
+    BTASSERT(uds_handle_service(&uds) == -1);
     BTASSERT(queue_read(&qout, &length, sizeof(length)) == sizeof(length));
     BTASSERT(ntohl(length) == 1);
     BTASSERT(queue_read(&qout, &code, sizeof(code)) == sizeof(code));
     BTASSERT(code == 0x13);
 
     /* Transfer too much data. */
-    BTASSERT(bootloader_handle_service(&bootloader) == -1);
+    BTASSERT(uds_handle_service(&uds) == -1);
     BTASSERT(queue_read(&qout, &length, sizeof(length)) == sizeof(length));
     BTASSERT(ntohl(length) == 1);
     BTASSERT(queue_read(&qout, &code, sizeof(code)) == sizeof(code));
     BTASSERT(code == 0x31);
 
     /* Transfer wrong sequence counter. */
-    BTASSERT(bootloader_handle_service(&bootloader) == -1);
+    BTASSERT(uds_handle_service(&uds) == -1);
     BTASSERT(queue_read(&qout, &length, sizeof(length)) == sizeof(length));
     BTASSERT(ntohl(length) == 1);
     BTASSERT(queue_read(&qout, &code, sizeof(code)) == sizeof(code));
     BTASSERT(code == 0x73);
 
     /* Transfer ok. */
-    BTASSERT(bootloader_handle_service(&bootloader) == 0);
+    BTASSERT(uds_handle_service(&uds) == 0);
     BTASSERT(queue_read(&qout, &length, sizeof(length)) == sizeof(length));
     BTASSERT(ntohl(length) == 2);
     BTASSERT(queue_read(&qout, &code, sizeof(code)) == sizeof(code));
@@ -500,7 +500,7 @@ static int test_transfer_data(struct harness_t *self_p)
 
 static int test_request_transfer_exit(struct harness_t *self_p)
 {
-    struct bootloader_t bootloader;
+    struct uds_t uds;
     struct queue_t qin;
     struct queue_t qout;
     uint8_t input[] = {
@@ -528,29 +528,29 @@ static int test_request_transfer_exit(struct harness_t *self_p)
     queue_init(&qin, inbuf, sizeof(inbuf));
     queue_init(&qout, outbuf, sizeof(outbuf));
     queue_write(&qin, input, sizeof(input));
-    bootloader_init(&bootloader,
-                    &qin,
-                    &qout,
-                    APPLICATION_ADDRESS,
-                    APPLICATION_SIZE,
-                    &flash);
+    uds_init(&uds,
+             &qin,
+             &qout,
+             APPLICATION_ADDRESS,
+             APPLICATION_SIZE,
+             &flash);
 
     /* Bad length. */
-    BTASSERT(bootloader_handle_service(&bootloader) == -1);
+    BTASSERT(uds_handle_service(&uds) == -1);
     BTASSERT(queue_read(&qout, &length, sizeof(length)) == sizeof(length));
     BTASSERT(ntohl(length) == 1);
     BTASSERT(queue_read(&qout, &code, sizeof(code)) == sizeof(code));
     BTASSERT(code == 0x13);
 
     /* Bad state. */
-    BTASSERT(bootloader_handle_service(&bootloader) == -1);
+    BTASSERT(uds_handle_service(&uds) == -1);
     BTASSERT(queue_read(&qout, &length, sizeof(length)) == sizeof(length));
     BTASSERT(ntohl(length) == 1);
     BTASSERT(queue_read(&qout, &code, sizeof(code)) == sizeof(code));
     BTASSERT(code == 0x22);
 
     /* Flash ok. */
-    BTASSERT(bootloader_handle_service(&bootloader) == 0);
+    BTASSERT(uds_handle_service(&uds) == 0);
     BTASSERT(queue_read(&qout, &length, sizeof(length)) == sizeof(length));
     BTASSERT(ntohl(length) == 6);
     BTASSERT(queue_read(&qout, &code, sizeof(code)) == sizeof(code));
@@ -561,7 +561,7 @@ static int test_request_transfer_exit(struct harness_t *self_p)
     BTASSERT(ntohl(max_size) == 4096);
 
     /* Transfer ok. */
-    BTASSERT(bootloader_handle_service(&bootloader) == 0);
+    BTASSERT(uds_handle_service(&uds) == 0);
     BTASSERT(queue_read(&qout, &length, sizeof(length)) == sizeof(length));
     BTASSERT(ntohl(length) == 2);
     BTASSERT(queue_read(&qout, &code, sizeof(code)) == sizeof(code));
@@ -572,7 +572,7 @@ static int test_request_transfer_exit(struct harness_t *self_p)
     BTASSERT(block_sequence_counter == 0x01);
 
     /* Transfer exit ok. */
-    BTASSERT(bootloader_handle_service(&bootloader) == 0);
+    BTASSERT(uds_handle_service(&uds) == 0);
     BTASSERT(queue_read(&qout, &length, sizeof(length)) == sizeof(length));
     BTASSERT(ntohl(length) == 1);
     BTASSERT(queue_read(&qout, &code, sizeof(code)) == sizeof(code));

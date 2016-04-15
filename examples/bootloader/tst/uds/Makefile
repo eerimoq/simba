@@ -1,9 +1,9 @@
 #
-# @file bootloader.mk
-# @version 0.1
+# @file Makefile
+# @version 0.3.0
 #
 # @section License
-# Copyright (C) 2015-2016, Erik Moqvist
+# Copyright (C) 2014-2016, Erik Moqvist
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
@@ -15,14 +15,15 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 # Lesser General Public License for more details.
 #
-# This file is part of the Romeo project.
+# This file is part of the Simba project.
 #
 
-INC += $(BOOTLOADER_ROOT)
+NAME = uds_suite
+BOARD ?= linux
 
-BOOTLOADER_SRC ?= \
-	common.c \
-	console.c \
-	uds.c
+CFLAGS += -DBOOTLOADER_TEST
 
-SRC += $(BOOTLOADER_SRC:%=$(BOOTLOADER_ROOT)/%)
+BOOTLOADER_ROOT = ../../src
+include $(BOOTLOADER_ROOT)/bootloader.mk
+SIMBA_ROOT = ../../../..
+include $(SIMBA_ROOT)/make/app.mk

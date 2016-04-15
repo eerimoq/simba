@@ -18,7 +18,7 @@
 # This file is part of the Simba project.
 #
 
-NAME = bootloader
+NAME = console_bootloader
 BOARD ?= linux
 
 # The half configuration work is needed for the bootloader.
@@ -32,7 +32,7 @@ ifeq ($(BOARD),arduino_due)
     LINKER_SCRIPT_FILE = script.bootloader.ld
 endif
 
-BOOTLOADER_ROOT = ../src
+BOOTLOADER_ROOT = ../../src
 include $(BOOTLOADER_ROOT)/bootloader.mk
-SIMBA_ROOT = ../../..
+SIMBA_ROOT = ../../../..
 include $(SIMBA_ROOT)/make/app.mk

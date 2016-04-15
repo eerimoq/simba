@@ -18,12 +18,15 @@
 # This file is part of the Simba project.
 #
 
-NAME = bootloader
+NAME = test_application
 BOARD ?= linux
 
-CFLAGS += -DBOOTLOADER_TEST
+ifeq ($(BOARD),arduino_due)
+    LINKER_SCRIPT_FILE = script.application.ld
+endif
 
-BOOTLOADER_ROOT = ../src
+BOOTLOADER_SRC = common.c
+BOOTLOADER_ROOT = ../../src
 include $(BOOTLOADER_ROOT)/bootloader.mk
-SIMBA_ROOT = ../../..
+SIMBA_ROOT = ../../../..
 include $(SIMBA_ROOT)/make/app.mk
