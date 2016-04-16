@@ -175,7 +175,8 @@ struct fs_node_t {
     int (*callback)(int argc,
                     const char *argv[],
                     void *out_p,
-                    void *in_p);
+                    void *in_p,
+                    void *arg_p);
 };
 
 /**
@@ -186,12 +187,14 @@ struct fs_node_t {
  *                      this function.
  * @param[in] chin_p Input channel.
  * @param[in] chout_p Output channel.
+ * @param[in] arg_p User argument.
  *
  * @return zero(0) or negative error code.
  */
 int fs_call(char *command_p,
             chan_t *chin_p,
-            chan_t *chout_p);
+            chan_t *chout_p,
+            void *arg_p);
 
 /**
  * List files (callbacks) and directories in given path. Optionally

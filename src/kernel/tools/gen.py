@@ -66,7 +66,7 @@ const FAR int fs_parameters[] = {{
 }};
 '''
 
-command_extern_fmt = 'extern int {callback}(int argc, const char *argv[], void *out_p, void *in_p);'
+command_extern_fmt = 'extern int {callback}(int argc, const char *argv[], void *out_p, void *in_p, void *arg_p);'
 counter_extern_fmt = 'extern long long FS_COUNTER({name});'
 parameter_extern_fmt = 'extern {type} FS_PARAMETER({name});'
 

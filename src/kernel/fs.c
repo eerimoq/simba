@@ -83,6 +83,7 @@ static char *get_abspath(char *buf_p,
 
 static int list_indexed_items(chan_t *chout_p,
                               chan_t *chin_p,
+                              void *arg_p,
                               const FAR int *index_p,
                               const FAR char *path_format)
 {
@@ -103,7 +104,7 @@ static int list_indexed_items(chan_t *chout_p,
         }
 
         argv_callback[0] = buf;
-        node_p->callback(FS_ARGC_GET, argv_callback, chout_p, chin_p);
+        node_p->callback(FS_ARGC_GET, argv_callback, chout_p, chin_p, arg_p);
 
         index_p++;
     }
@@ -168,7 +169,8 @@ int fs_parameter_handler_int_get(int argc,
 int fs_cmd_counters_list(int argc,
                          const char *argv[],
                          chan_t *chout_p,
-                         chan_t *chin_p)
+                         chan_t *chin_p,
+                         void *arg_p)
 {
     UNUSED(chin_p);
 
@@ -176,6 +178,7 @@ int fs_cmd_counters_list(int argc,
 
     return (list_indexed_items(chout_p,
                                chin_p,
+                               arg_p,
                                fs_counters,
                                FSTR("%-52s ")));
 }
@@ -183,7 +186,8 @@ int fs_cmd_counters_list(int argc,
 int fs_cmd_counters_reset(int argc,
                           const char *argv[],
                           chan_t *chout_p,
-                          chan_t *chin_p)
+                          chan_t *chin_p,
+                          void *arg_p)
 {
     UNUSED(chin_p);
 
@@ -204,7 +208,7 @@ int fs_cmd_counters_reset(int argc,
 
         argv_callback[0] = buf;
         argv_callback[1] = "0";
-        node_p->callback(2, argv_callback, chout_p, chin_p);
+        node_p->callback(2, argv_callback, chout_p, chin_p, arg_p);
 
         index_p++;
     }
@@ -215,12 +219,14 @@ int fs_cmd_counters_reset(int argc,
 int fs_cmd_parameters_list(int argc,
                            const char *argv[],
                            chan_t *chout_p,
-                           chan_t *chin_p)
+                           chan_t *chin_p,
+                           void *arg_p)
 {
     UNUSED(chin_p);
 
     return (list_indexed_items(chout_p,
                                chin_p,
+                               arg_p,
                                fs_parameters,
                                FSTR("%s ")));
 }
@@ -358,7 +364,8 @@ static int node_find(const char *cmd_p)
 
 int fs_call(char *command_p,
             chan_t *chin_p,
-            chan_t *chout_p)
+            chan_t *chout_p,
+            void *arg_p)
 {
     int err, argc;
     const char *argv[FS_COMMAND_ARGS_MAX];
@@ -385,7 +392,7 @@ int fs_call(char *command_p,
         goto out;
     }
 
-    return (node_p->callback(argc, argv, chout_p, chin_p));
+    return (node_p->callback(argc, argv, chout_p, chin_p, arg_p));
 
  out:
     std_fprintf(chout_p, FSTR("%s: command not found\r\n"), command_p);

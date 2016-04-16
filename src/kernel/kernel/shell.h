@@ -30,6 +30,8 @@ struct shell_args_t {
     /** The shell output channel. The shell writes responses on this
         channel. */
     chan_t *chout_p;
+    /** User supplied argument passed to all commands. */
+    void *arg_p;
     /** The shell thread name. */
     const char *name_p;
     /** Shell login username, or NULL if no username is required to

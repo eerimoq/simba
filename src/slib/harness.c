@@ -66,7 +66,7 @@ int harness_run(struct harness_t *self_p,
     }
 
     strcpy(buf, "kernel/thrd/list");
-    fs_call(buf, NULL, &self_p->uart.chout);
+    fs_call(buf, NULL, &self_p->uart.chout, NULL);
 
     std_printf(FSTR("harness report: total(%d), passed(%d), failed(%d)\r\n"),
                total, passed, failed);

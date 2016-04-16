@@ -32,7 +32,8 @@ FS_PARAMETER_DEFINE("/tmp/fie", tmp_fie, int, 57);
 int tmp_foo(int argc,
             const char *argv[],
             void *out_p,
-            void *in_p)
+            void *in_p,
+            void *arg_p)
 {
     UNUSED(in_p);
 

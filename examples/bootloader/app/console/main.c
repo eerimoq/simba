@@ -30,6 +30,7 @@
 #    define APPLICATION_SIZE                         0x20000000
 #endif
 
+static struct console_t console;
 static struct uart_driver_t uart;
 static uint8_t uart_rx_buffer[32];
 
@@ -61,14 +62,15 @@ int main()
     std_printf(sys_get_info());
 
     /* Initialize the bootloader object and enter the main loop. */
-    console_init(&uart.chin,
+    console_init(&console,
+                 &uart.chin,
                  &uart.chout,
                  APPLICATION_ADDRESS,
                  APPLICATION_SIZE,
                  &flash);
 
     /* Enter the bootloader main loop. */
-    console_main();
+    console_main(&console);
 
     return (0);
 }

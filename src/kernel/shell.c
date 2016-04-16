@@ -212,7 +212,7 @@ void *shell_main(void *arg_p)
                 continue;
             }
 
-            fs_call(buf, chin_p, chout_p);
+            fs_call(buf, chin_p, chout_p, shell_args_p->arg_p);
         }
 
         std_fprintf(chout_p, FSTR(SHELL_PROMPT));

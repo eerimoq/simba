@@ -131,7 +131,8 @@ int test_fs(struct harness_t *harness_p)
         strcpy(command, command_p->command_p);
         BTASSERT(fs_call(command,
                          NULL,
-                         sys_get_stdout()) == command_p->res);
+                         sys_get_stdout(),
+                         NULL) == command_p->res);
 
         command_p++;
     }

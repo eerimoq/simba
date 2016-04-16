@@ -47,32 +47,11 @@
 #define LONG_PACKETS_LENGTH_MAX_MSB   1
 #define LONG_PACKETS_LENGTH_MAX_LSB  94
 
-struct kermit_t {
-    chan_t *chin_p;
-    chan_t *chout_p;
-    uint32_t application_address;
-    uint32_t application_size;
-    struct flash_driver_t *flash_p;
-    struct {
-        uint32_t address;
-    } swdl;
-    struct {
-        int end_of_line;
-        int pad_value;
-        int pad_count;
-    } peer;
-    struct {
-        uint8_t buf[256];
-        size_t size;
-    } input;
-};
-
 FS_COMMAND_DEFINE("/application/erase", cmd_application_erase);
 FS_COMMAND_DEFINE("/application/is_valid", cmd_application_is_valid);
 FS_COMMAND_DEFINE("/application/load_kermit", cmd_application_load_kermit);
 FS_COMMAND_DEFINE("/application/start", cmd_application_start);
 
-static struct kermit_t state;
 static struct shell_args_t shell_args;
 
 /**
@@ -120,8 +99,7 @@ static int checksum(uint8_t *buf_p, size_t length)
     return ((checksum + ((checksum >> 6) & 0x03)) & 0x3f);
 }
 
-static int write_ack(void *out_p,
-                     void *in_p,
+static int write_ack(struct console_t *self_p,
                      int sequence_number)
 {
     uint8_t response[6];
@@ -134,7 +112,7 @@ static int write_ack(void *out_p,
     response[4] = encode(checksum(&response[1], 3));
     response[5] = END_OF_LINE;
 
-    chan_write(out_p, response, sizeof(response));
+    chan_write(self_p->chout_p, response, sizeof(response));
 
     return (0);
 }
@@ -142,8 +120,7 @@ static int write_ack(void *out_p,
 /**
  * Handle a send packet.
  */
-static int handle_send(void *out_p,
-                       void *in_p,
+static int handle_send(struct console_t *self_p,
                        int sequence_number)
 {
     uint8_t response[20];
@@ -169,7 +146,7 @@ static int handle_send(void *out_p,
     response[17] = encode(checksum(&response[1], 16));
     response[18] = END_OF_LINE;
 
-    chan_write(out_p, response, 19);
+    chan_write(self_p->chout_p, response, 19);
 
     return (0);
 }
@@ -177,47 +154,44 @@ static int handle_send(void *out_p,
 /**
  * Handle a data packet.
  */
-static int handle_data(void *out_p,
-                       void *in_p,
+static int handle_data(struct console_t *self_p,
                        int sequence_number)
 {
     size_t i, j;
 
     /* Decode the buffer. */
-    for (i = 0, j = 0; i < state.input.size; i++, j++) {
-        if (state.input.buf[i] == QUOTE_CONTROL) {
+    for (i = 0, j = 0; i < self_p->input.size; i++, j++) {
+        if (self_p->input.buf[i] == QUOTE_CONTROL) {
             i++;
-            state.input.buf[j] = unescape(state.input.buf[i]);
+            self_p->input.buf[j] = unescape(self_p->input.buf[i]);
         } else {
-            state.input.buf[j] = state.input.buf[i];
+            self_p->input.buf[j] = self_p->input.buf[i];
         }
     }
 
-    flash_write(state.flash_p,
-                state.swdl.address,
-                state.input.buf,
+    flash_write(self_p->flash_p,
+                self_p->swdl.address,
+                self_p->input.buf,
                 j);
 
-    state.swdl.address += j;
+    self_p->swdl.address += j;
 
-    return (write_ack(out_p, in_p, sequence_number));
+    return (write_ack(self_p, sequence_number));
 }
 
 /**
  * Handle other packets.
  */
-static int handle_default(void *out_p,
-                          void *in_p,
+static int handle_default(struct console_t *self_p,
                           int sequence_number)
 {
-    return (write_ack(out_p, in_p, sequence_number));
+    return (write_ack(self_p, sequence_number));
 }
 
 /**
  * Read a packet from the input channel and process it.
  */
-static int handle_packet(void *out_p,
-                         void *in_p)
+static int handle_packet(struct console_t *self_p)
 {
     uint8_t value;
     int length, length_msb, length_lsb;
@@ -227,7 +201,7 @@ static int handle_packet(void *out_p,
 
     /* Wait for a packet. */
     while (1) {
-        chan_read(in_p, &value, sizeof(value));
+        chan_read(self_p->chin_p, &value, sizeof(value));
 
         if (value == START_OF_HEADING) {
             break;
@@ -239,47 +213,47 @@ static int handle_packet(void *out_p,
     actual_checksum = 0;
 
     /* Length. */
-    chan_read(in_p, &value, sizeof(value));
+    chan_read(self_p->chin_p, &value, sizeof(value));
     length = decode(value);
     actual_checksum += value;
 
     /* Sequence number. */
-    chan_read(in_p, &value, sizeof(value));
+    chan_read(self_p->chin_p, &value, sizeof(value));
     sequence_number = decode(value);
     actual_checksum += value;
     length--;
 
     /* Type. */
-    chan_read(in_p, &value, sizeof(value));
+    chan_read(self_p->chin_p, &value, sizeof(value));
     type = value;
     actual_checksum += value;
     length--;
 
     /* Extended length. */
     if (length == -2) {
-        chan_read(in_p, &value, sizeof(value));
+        chan_read(self_p->chin_p, &value, sizeof(value));
         actual_checksum += value;
         length_msb = decode(value);
 
-        chan_read(in_p, &value, sizeof(value));
+        chan_read(self_p->chin_p, &value, sizeof(value));
         actual_checksum += value;
         length_lsb = decode(value);
 
         length = (95 * length_msb + length_lsb);
 
-        chan_read(in_p, &value, sizeof(value));
+        chan_read(self_p->chin_p, &value, sizeof(value));
         /* Should compare the checksums here. */
         actual_checksum += value;
     }
 
     /* Read the packet. */
-    state.input.size = 0;
+    self_p->input.size = 0;
 
     while (length > 1) {
-        chan_read(in_p, &value, sizeof(value));
+        chan_read(self_p->chin_p, &value, sizeof(value));
         actual_checksum += value;
         length--;
-        state.input.buf[state.input.size++] = value;
+        self_p->input.buf[self_p->input.size++] = value;
     }
 
     actual_checksum += ((actual_checksum >> 6) & 0x03);
@@ -287,7 +261,7 @@ static int handle_packet(void *out_p,
     actual_checksum = encode(actual_checksum);
 
     /* Read the checksum. */
-    chan_read(in_p, &value, sizeof(value));
+    chan_read(self_p->chin_p, &value, sizeof(value));
     expected_checksum = value;
 
     /* Comapare the actual checksum to the expected checksum. */
@@ -301,7 +275,7 @@ static int handle_packet(void *out_p,
     }
 
     /* Read end character. */
-    chan_read(in_p, &value, sizeof(value));
+    chan_read(self_p->chin_p, &value, sizeof(value));
 
     if (value != END_OF_LINE) {
         std_printf(FSTR("error: bad end character %d\r\n"), value);
@@ -312,21 +286,21 @@ static int handle_packet(void *out_p,
     switch (type) {
 
     case PACKET_TYPE_SEND:
-        handle_send(out_p, in_p, sequence_number);
+        handle_send(self_p, sequence_number);
         break;
 
     case PACKET_TYPE_DATA:
-        handle_data(out_p, in_p, sequence_number);
+        handle_data(self_p, sequence_number);
         break;
 
     case PACKET_TYPE_BREAK:
-        write_ack(out_p, in_p, sequence_number);
-        std_fprintf(out_p,
+        write_ack(self_p, sequence_number);
+        std_fprintf(self_p->chout_p,
                     FSTR("File transfer completed successfully.\r\n"));
         return (1);
 
     default:
-        handle_default(out_p, in_p, sequence_number);
+        handle_default(self_p, sequence_number);
         break;
     }
 
@@ -339,11 +313,14 @@ static int handle_packet(void *out_p,
 int cmd_application_erase(int argc,
                           const char *argv[],
                           void *out_p,
-                          void *in_p)
+                          void *in_p,
+                          void *arg_p)
 {
-    bootloader_erase_application(state.application_address,
-                                 state.application_size,
-                                 state.flash_p);
+    struct console_t *self_p = arg_p;
+
+    bootloader_erase_application(self_p->application_address,
+                                 self_p->application_size,
+                                 self_p->flash_p);
 
     return (0);
 }
@@ -355,12 +332,14 @@ int cmd_application_erase(int argc,
 int cmd_application_is_valid(int argc,
                              const char *argv[],
                              void *out_p,
-                             void *in_p)
+                             void *in_p,
+                             void *arg_p)
 {
+    struct console_t *self_p = arg_p;
     int is_valid;
 
-    is_valid = bootloader_is_application_valid(state.application_address,
-                                               state.application_size);
+    is_valid = bootloader_is_application_valid(self_p->application_address,
+                                               self_p->application_size);
     std_fprintf(out_p, FSTR("%s\r\n"), is_valid ? "yes" : "no");
 
     return (0);
@@ -373,12 +352,14 @@ int cmd_application_is_valid(int argc,
 int cmd_application_load_kermit(int argc,
                                 const char *argv[],
                                 void *out_p,
-                                void *in_p)
+                                void *in_p,
+                                void *arg_p)
 {
+    struct console_t *self_p = arg_p;
     int res;
 
-    /* Initialize the software download state. */
-    state.swdl.address = state.application_address;
+    /* Initialize the software download self_p-> */
+    self_p->swdl.address = self_p->application_address;
 
     std_printf(FSTR("Ready to receive a file over the Kermit file "
                     "transfer protocol.\r\n"
@@ -389,12 +370,12 @@ int cmd_application_load_kermit(int argc,
                     "bootloader shell.\r\n"));
 
     while (1) {
-        res = handle_packet(out_p, in_p);
+        res = handle_packet(self_p);
 
         if (res == 1) {
-            bootloader_write_application_valid_flag(state.application_address,
-                                                    state.application_size,
-                                                    state.flash_p);
+            bootloader_write_application_valid_flag(self_p->application_address,
+                                                    self_p->application_size,
+                                                    self_p->flash_p);
 
             std_printf(FSTR("software download successful\r\n"));
             break;
@@ -413,11 +394,14 @@ int cmd_application_load_kermit(int argc,
 int cmd_application_start(int argc,
                           const char *argv[],
                           void *out_p,
-                          void *in_p)
+                          void *in_p,
+                          void *arg_p)
 {
 # if !defined(BOOTLOADER_TEST)
-    if (bootloader_is_application_valid(state.application_address,
-                                        state.application_size) == 0) {
+    struct console_t *self_p = arg_p;
+
+    if (bootloader_is_application_valid(self_p->application_address,
+                                        self_p->application_size) == 0) {
         std_printf(FSTR("error: no valid application found\r\n"));
 
         return (-1);
@@ -428,29 +412,30 @@ int cmd_application_start(int argc,
 
     /* Call the application. */
 # if !defined(BOOTLOADER_TEST)
-    bootloader_jump(state.application_address);
+    bootloader_jump(self_p->application_address);
 #endif
 
     return (0);
 }
 
-int console_init(chan_t *chin_p,
+int console_init(struct console_t *self_p,
+                 chan_t *chin_p,
                  chan_t *chout_p,
                  uint32_t application_address,
                  uint32_t application_size,
                  struct flash_driver_t *flash_p)
 {
-    state.chin_p = chin_p;
-    state.chout_p = chout_p;
-    state.application_address = application_address;
+    self_p->chin_p = chin_p;
+    self_p->chout_p = chout_p;
+    self_p->application_address = application_address;
     /* Subtract one for the application valid flag. */
-    state.application_size = (application_size - 1);
-    state.flash_p = flash_p;
+    self_p->application_size = (application_size - 1);
+    self_p->flash_p = flash_p;
 
     return (0);
 }
 
-void console_main()
+void console_main(struct console_t *self_p)
 {
     struct pin_driver_t stay_in_bootloader_pin;
 
@@ -461,10 +446,10 @@ void console_main()
         std_printf(FSTR("stay in bootloader pin (d2) low\r\n"));
 
         /* Call the application if it is valid. */
-        if (bootloader_is_application_valid(state.application_address,
-                                            state.application_size) == 1) {
+        if (bootloader_is_application_valid(self_p->application_address,
+                                            self_p->application_size) == 1) {
             std_printf(FSTR("calling application\r\n"));
-            bootloader_jump(state.application_address);
+            bootloader_jump(self_p->application_address);
         } else {
             std_printf(FSTR("application invalid\r\n"));
         }
@@ -475,7 +460,8 @@ void console_main()
     /* Enter the bootloader main loop. */
     shell_args.username_p = NULL;
     shell_args.password_p = NULL;
-    shell_args.chin_p = state.chin_p;
-    shell_args.chout_p = state.chout_p;
+    shell_args.chin_p = self_p->chin_p;
+    shell_args.chout_p = self_p->chout_p;
+    shell_args.arg_p = self_p;
     shell_main(&shell_args);
 }

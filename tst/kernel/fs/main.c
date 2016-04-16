@@ -97,19 +97,19 @@ static int test_command(struct harness_t *harness_p)
     char buf[BUFFER_SIZE];
 
     strcpy(buf, "  /tmp/foo     foo1 foo2  ");
-    BTASSERT(fs_call(buf, NULL, &qout) == 0);
+    BTASSERT(fs_call(buf, NULL, &qout, NULL) == 0);
     read_until(buf, "\n");
 
     strcpy(buf, "/tmp/bar 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16");
-    BTASSERT(fs_call(buf, NULL, &qout) == -E2BIG);
+    BTASSERT(fs_call(buf, NULL, &qout, NULL) == -E2BIG);
     read_until(buf, "\n");
 
     strcpy(buf, "/tmp/bar/missing");
-    BTASSERT(fs_call(buf, NULL, &qout) == -ENOENT);
+    BTASSERT(fs_call(buf, NULL, &qout, NULL) == -ENOENT);
     read_until(buf, "\n");
 
     strcpy(buf, "");
-    BTASSERT(fs_call(buf, NULL, &qout) == -ENOENT);
+    BTASSERT(fs_call(buf, NULL, &qout, NULL) == -ENOENT);
     read_until(buf, "\n");
 
     strcpy(buf, "/tm");
@@ -131,20 +131,20 @@ static int test_counter(struct harness_t *harness_p)
     char buf[384];
 
     strcpy(buf, "kernel/fs/counters_list");
-    BTASSERT(fs_call(buf, NULL, &qout) == 0);
+    BTASSERT(fs_call(buf, NULL, &qout, NULL) == 0);
     read_until(buf, "/your/counter                                        0000000000000000\r\n");
 
     FS_COUNTER_INC(my_counter, 3);
 
     strcpy(buf, "my/counter");
-    BTASSERT(fs_call(buf, NULL, &qout) == 0);
+    BTASSERT(fs_call(buf, NULL, &qout, NULL) == 0);
     read_until(buf, "0000000000000003\r\n");
 
     strcpy(buf, "kernel/fs/counters_reset");
-    BTASSERT(fs_call(buf, NULL, &qout) == 0);
+    BTASSERT(fs_call(buf, NULL, &qout, NULL) == 0);
 
     strcpy(buf, "my/counter");
-    BTASSERT(fs_call(buf, NULL, &qout) == 0);
+    BTASSERT(fs_call(buf, NULL, &qout, NULL) == 0);
     read_until(buf, "0000000000000000\r\n");
 
     return (0);
@@ -155,7 +155,7 @@ static int test_parameter(struct harness_t *harness_p)
     char buf[256];
 
     strcpy(buf, "kernel/fs/parameters_list");
-    BTASSERT(fs_call(buf, NULL, &qout) == 0);
+    BTASSERT(fs_call(buf, NULL, &qout, NULL) == 0);
     read_until(buf, "/our/parameter 5\r\n");
 
     BTASSERT(FS_PARAMETER(our_parameter) == OUR_PARAMETER_DEFAULT);
