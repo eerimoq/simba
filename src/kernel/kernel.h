@@ -43,5 +43,6 @@
 #include "kernel/bits.h"
 #include "kernel/rwlock.h"
 #include "kernel/bus.h"
+#include "kernel/heap.h"
 
 #endif
