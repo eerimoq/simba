@@ -8,6 +8,9 @@ export PATH=$PATH:$(readlink -f bin)
 # ESP8266 toolchain
 export PATH=$PATH:$(readlink -f ../esp-open-sdk/xtensa-lx106-elf/bin)
 
+# RUST bindgen
+export PATH=$PATH:$(readlink -f ../rust-bindgen/target/debug)
+
 export SIMBA_ROOT=$(readlink -f .)
 export BOARD=linux
 

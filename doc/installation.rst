@@ -29,10 +29,13 @@ Start `Cygwin` and execute the one-liner below to install `Simba`.
      cd simba && \
      easy_install-2.7 pip && \
      pip install pyserial xpect sphinx breathe && \
-     (cd .. && \
-      git clone --recursive https://github.com/eerimoq/esp-open-sdk.git && \
+     (git clone --recursive https://github.com/eerimoq/esp-open-sdk.git && \
       cd esp-open-sdk && \
       make STANDALONE=n) && \
+     (git clone https://github.com/eerimoq/rust-bindgen.git && \
+      cd rust-bindgen && \
+      cargo build) && \
+     git clone https://github.com/eerimoq/rust.git && \
      git clone https://github.com/eerimoq/avr-toolchain-windows && \
      git clone https://github.com/eerimoq/arm-toolchain-windows && \
      git clone https://github.com/eerimoq/simba
@@ -53,10 +56,13 @@ Execute the one-liner below to install `Simba`.
                           flex bison texinfo gawk ncurses-dev libexpat-dev \
                           python-serial sed && \
      pip install pyserial xpect sphinx breathe && \
-     (cd .. && \
-      git clone --recursive https://github.com/eerimoq/esp-open-sdk.git && \
+     (git clone --recursive https://github.com/eerimoq/esp-open-sdk.git && \
       cd esp-open-sdk && \
       make STANDALONE=n) && \
+     (git clone https://github.com/eerimoq/rust-bindgen.git && \
+      cd rust-bindgen && \
+      cargo build) && \
+     git clone https://github.com/eerimoq/rust.git && \
      git clone https://github.com/eerimoq/simba
 
 Post-install

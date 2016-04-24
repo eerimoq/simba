@@ -56,6 +56,8 @@ examples/*/*/home/
 examples/*/*/drivers/
 examples/*/*/slib/
 
+simba.rs
+
 examples/*/*/*/amber.png
 examples/*/*/*/emerald.png
 examples/*/*/*/gcov.css

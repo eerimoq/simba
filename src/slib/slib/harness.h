@@ -27,7 +27,7 @@ struct harness_t;
 
 struct harness_testcase_t {
     int (*callback)(struct harness_t *harness_p);
-    char *name_p;
+    const char *name_p;
 };
 
 struct harness_t {

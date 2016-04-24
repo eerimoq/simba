@@ -1,5 +1,5 @@
 #
-# @file src/boards/arduino_due/board.mk
+# @file Makefile
 # @version 0.3.0
 #
 # @section License
@@ -18,13 +18,10 @@
 # This file is part of the Simba project.
 #
 
-INC += $(SIMBA_ROOT)/src/boards/arduino_due
-SRC += $(SIMBA_ROOT)/src/boards/arduino_due/board.c
+NAME = thrd_suite
+BOARD ?= linux
 
-BOARD_HOMEPAGE = "https://www.arduino.cc/en/Main/ArduinoBoardDue"
-BOARD_PINOUT = "arduino-due-pinout.png"
-BOARD_DESC = "Arduino Due"
+RUST = yes
 
-MCU = sam/3x8e
-
-RUST_TARGET = thumbv7em-none-eabi
+SIMBA_ROOT = ../../../..
+include $(SIMBA_ROOT)/make/app.mk

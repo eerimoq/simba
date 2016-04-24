@@ -501,7 +501,7 @@ int thrd_resume_isr(struct thrd_t *thrd_p, int err)
     return (res);
 }
 
-int thrd_wait(struct thrd_t *thrd_p)
+int thrd_join(struct thrd_t *thrd_p)
 {
     while (1) {
         sys_lock();

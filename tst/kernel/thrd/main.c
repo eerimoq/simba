@@ -45,7 +45,7 @@ static int test_suspend_resume(struct harness_t *harness_p)
     BTASSERT(err == 3, "err = %d", err);
 
     /* Wait for the spawned thread to terminate. */
-    BTASSERT(thrd_wait(thrd_p) == 0);
+    BTASSERT(thrd_join(thrd_p) == 0);
 
     return (0);
 }

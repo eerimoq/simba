@@ -12,6 +12,9 @@ export PATH=$PATH:$(readlink -f ../esp-open-sdk/xtensa-lx106-elf/bin)
 export SIMBA_ROOT=$(readlink -f .)
 export BOARD=cygwin
 
+# RUST bindgen
+export PATH=$PATH:$(readlink -f ../rust-bindgen/target/debug)
+
 # AVR toolchain
 export PATH=$PATH:$(readlink -f ../avr-toolchain-windows/bin)
 

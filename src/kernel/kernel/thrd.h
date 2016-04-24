@@ -119,7 +119,7 @@ int thrd_resume(struct thrd_t *thrd_p, int err);
  *
  * @return zero(0) or negative error code.
  */
-int thrd_wait(struct thrd_t *thrd_p);
+int thrd_join(struct thrd_t *thrd_p);
 
 /**
  * Sleep the current thread for given number of microseconds.
