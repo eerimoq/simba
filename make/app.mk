@@ -233,11 +233,11 @@ endif
 
 $(RUST_LIBRARIES:%=$(RUSTLIB)/lib%.a):
 	@echo "Compiling RUST library $@..."
+	mkdir -p $(RUSTLIB)
 ifeq ($(RUST_TARGET),)
-	cp /usr/local/lib/rustlib/*-unknown-linux-gnu/lib/libcore-*.rlib $@
+	cp /usr/local/lib/rustlib/*-unknown-linux-gnu/lib/$(@:$(RUSTLIB)/%.a=%)-*.rlib $@
 else
 	rustc $(RSFLAGS) $(RUST_ROOT)/src/$(@:$(RUSTLIB)/%.a=%)/lib.rs --out-dir .
-	mkdir -p $(RUSTLIB)
 	cp $(@:$(RUSTLIB)/%.a=%.rlib) $@
 endif
 
