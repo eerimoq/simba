@@ -1,7 +1,3 @@
-libsimba.a
-libsimba.rlib
-libcore.a
-libcore.rlib
-
-simba/target/
-simba/Cargo.lock
+rustlib
+*.rlib
+*.bin

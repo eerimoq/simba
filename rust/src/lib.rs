@@ -174,7 +174,7 @@ extern crate collections as core_collections;
 pub use core_collections::vec;
 
 extern crate alloc;
-pub use alloc::boxed::Box;
+pub use alloc::boxed;
 
 pub type Res = Result<i32, i32>;
 

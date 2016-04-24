@@ -197,7 +197,7 @@ $(foreach file,$(CSRC),$(eval $(call COMPILE_template,$(file))))
 RUSTLIB = rustlib
 RUST_ROOT ?= $(SIMBA_ROOT)/rust/rust
 RUST_TARGET ?=
-RUST_SIMBA_RS = $(SIMBA_ROOT)/rust/simba/src/simba.rs
+RUST_SIMBA_RS = $(SIMBA_ROOT)/rust/src/simba.rs
 RUST_LIBSIMBA = libsimba.a
 RUST_LIBSIMBA_SRC = \
 	lib.rs \
@@ -241,9 +241,9 @@ else
 	cp $(@:$(RUSTLIB)/%.a=%.rlib) $@
 endif
 
-$(RUSTLIB)/$(RUST_LIBSIMBA): $(RUST_SIMBA_RS) $(RUST_LIBSIMBA_SRC:%=$(SIMBA_ROOT)/rust/simba/src/%)
+$(RUSTLIB)/$(RUST_LIBSIMBA): $(RUST_SIMBA_RS) $(RUST_LIBSIMBA_SRC:%=$(SIMBA_ROOT)/rust/src/%)
 	@echo "Compiling RUST $@..."
-	rustc $(RSFLAGS) $(SIMBA_ROOT)/rust/simba/src/lib.rs --crate-name simba --out-dir .
+	rustc $(RSFLAGS) $(SIMBA_ROOT)/rust/src/lib.rs --crate-name simba --out-dir .
 	cp libsimba.rlib $@
 
 -include $(DEPSDIR)/simba.rs.dep
