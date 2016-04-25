@@ -18,13 +18,35 @@
  * This file is part of the Simba project.
  */
 
-pub type Chan = ::Struct_chan_t;
+use ::kernel::errno;
+use core_collections::Vec;
 
-pub trait ChanHandleTrait {
+pub trait Channel {
 
-    fn get_chan_p(&self) -> *mut ::std::os::raw::c_void;
+    fn get_chan_p(&mut self) -> *mut ::std::os::raw::c_void;
 
-    fn write(&self, buf: &[u8]) -> ::Res;
+    fn write(&mut self, buf: &[u8]) -> ::Res;
 
-    fn read(&self, buf: &mut [u8]) -> ::Res;
+    fn read(&mut self, buf: &mut [u8]) -> ::Res;
+}
+
+pub fn poll(list: &mut Vec<&mut Channel>,
+            timeout: &Option<::kernel::time::Time>)
+            -> ::Res
+{
+    let mut chan_list: ::Struct_chan_list_t = Default::default();
+    let mut workspace: [u8; 64] = [0; 64];
+
+    unsafe {
+        ::chan_list_init(&mut chan_list as *mut ::Struct_chan_list_t,
+                         workspace.as_ptr() as *mut i32,
+                         64);
+
+        for item in list {
+            ::chan_list_add(&mut chan_list as *mut ::Struct_chan_list_t,
+                            item.get_chan_p());
+        }
+    }
+
+    Ok(0)
 }

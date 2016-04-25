@@ -18,7 +18,7 @@
  * This file is part of the Simba project.
  */
 
-use core::ptr::Shared;
+use alloc::boxed::Box;
 
 pub struct Queue {
     pub inner: ::Struct_queue_t
@@ -26,17 +26,33 @@ pub struct Queue {
 
 impl Queue {
 
-    pub fn init(&'static mut self, inbuf: &'static mut [u8])
-                -> (QueueTx, QueueRx)
+    pub fn new(size: Option<usize>)
+               -> Queue
     {
-        unsafe {
-            ::queue_init(&mut self.inner,
-                         inbuf.as_ptr() as *mut i32,
-                         inbuf.len() as u32);
-        }
+        let mut queue: Queue = Queue { inner: Default::default() };
         
-        (QueueTx { chan_p: unsafe { Shared::new(self) } },
-         QueueRx { chan_p: unsafe { Shared::new(self) } })
+        match size {
+
+            Some(bytes) => {
+                let mut buf_p = ::kernel::sys::__rust_allocate(bytes, 0);
+
+                unsafe {
+                    ::queue_init(&mut queue.inner,
+                                 buf_p as *mut i32,
+                                 bytes as u32);
+                }
+            },
+
+            None => {
+                unsafe {
+                    ::queue_init(&mut queue.inner,
+                                 0 as *mut i32,
+                                 0 as u32);
+                }
+            }
+        }
+
+        queue
     }
     
     pub fn write(&mut self, buf: &[u8]) -> ::Res
@@ -58,57 +74,26 @@ impl Queue {
     }
 }
 
-#[derive(Clone)]
-pub struct QueueTx {
-    chan_p: Shared<Queue>
-}
+unsafe impl Send for Queue {}
 
-unsafe impl Send for QueueTx {}
+impl ::kernel::chan::Channel for Queue {
 
-impl ::kernel::chan::ChanHandleTrait for QueueTx {
-
-    fn get_chan_p(&self) -> *mut ::std::os::raw::c_void
+    fn get_chan_p(&mut self) -> *mut ::std::os::raw::c_void
     {
-        *self.chan_p as *mut ::std::os::raw::c_void
+        &mut self.inner.base as *mut _ as *mut ::std::os::raw::c_void
     }
 
-    fn write(&self, buf: &[u8]) -> ::Res
+    fn write(&mut self, buf: &[u8]) -> ::Res
     {
         unsafe {
-            (**self.chan_p).write(buf)
+            self.write(buf)
         }
     }
 
-    fn read(&self, buf: &mut [u8]) -> ::Res
-    {
-        println!("bad read");
-        panic!();
-    }
-}
-
-pub struct QueueRx {
-    chan_p: Shared<Queue>
-}
-
-unsafe impl Send for QueueRx {}
-
-impl ::kernel::chan::ChanHandleTrait for QueueRx {
-
-    fn get_chan_p(&self) -> *mut ::std::os::raw::c_void
-    {
-        *self.chan_p as *mut ::std::os::raw::c_void
-    }
-
-    fn write(&self, buf: &[u8]) -> ::Res
-    {
-        println!("bad write");
-        panic!();
-    }
-
-    fn read(&self, buf: &mut [u8]) -> ::Res
+    fn read(&mut self, buf: &mut [u8]) -> ::Res
     {
         unsafe {
-            (**self.chan_p).read(buf)
+            self.read(buf)
         }
     }
 }

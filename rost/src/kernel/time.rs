@@ -1,6 +1,6 @@
 /**
- * @file slib/mod.rs
- * @version 0.2.0
+ * @file kernel/errno.rs
+ * @version 0.3.0
  *
  * @section License
  * Copyright (C) 2014-2016, Erik Moqvist
@@ -15,13 +15,7 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
  *
- * This file is part of the Pumba project.
+ * This file is part of the Simba project.
  */
 
-pub mod chan;
-pub mod errno;
-pub mod event;
-pub mod queue;
-pub mod sys;
-pub mod thrd;
-pub mod time;
+pub type Time = ::Struct_time_t;

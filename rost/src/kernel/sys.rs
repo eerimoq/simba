@@ -80,7 +80,7 @@ pub fn start()
 pub fn stop() {
 }
 
-pub fn set_stdout<T: ::kernel::chan::ChanHandleTrait>(chout: T)
+pub fn set_stdout<T: ::kernel::chan::Channel>(chout: &mut T)
 {
     unsafe {
         ::sys_set_stdout(chout.get_chan_p());

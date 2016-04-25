@@ -1,5 +1,10 @@
 #![no_std]
 #![feature(concat_idents)]
+#![feature(collections)]
+
+extern crate collections;
+
+use collections::vec::Vec;
 
 /**
  * @file main.c
@@ -23,8 +28,8 @@
 
 #[macro_use] extern crate simba;
 
-use simba::kernel::{errno, event, queue, sys, time};
-use simba::kernel::chan::ChanHandleTrait;
+use simba::kernel::{chan, errno, event, queue, sys, time};
+use simba::kernel::chan::Channel;
 use simba::drivers::uart;
 use simba::slib::harness::Harness;
 
@@ -35,42 +40,45 @@ fn test_poll_impl(_: *mut Harness)
     let timeout = time::Time { seconds: 0, nanoseconds: 100 };
     let mut queue = queue::Queue::new(Some(32));
     let mut event = event::Event::new();
-    let mut list = chan::Poll::new(2);
-
-    /* Add the channels to the poll list. */
-    list.add(&mut queue);
-    list.add(&mut event);
 
     println!("1. Writing to the queue channel.");
-    queue.write(&[2, 1, 0]);
+    assert!(queue.write(&[2, 1, 0]) == Ok(3));
 
     /* Poll the list waiting for data on any channel in the list. */
     loop {
-        println!("Polling the list.");
+        println!("Polling...");
 
-        match list.poll(&Some(timeout)) {
+        let res;
+
+        {
+            let mut l: Vec<&mut Channel> = vec![&mut queue, &mut event];
+            res = chan::poll(&mut l, &Some(timeout));
+        }
+
+        match res {
 
             Ok(0) => {
                 println!("2. Reading from the queue channel.");
-                assert!(queue.read(3) == Ok([2, 1, 0]));
+                let mut buf: [u8; 3] = [0; 3];
+                assert!(queue.read(&mut buf) == Ok(3));
             },
 
             Ok(1) => {
                 println!("4. Reading from the event channel.");
-                assert!(event.read(0x1) == Ok(0x1));
-                break;
+                let mut mask: [u8; 4] = [0; 4];
+                assert!(event.read(&mut mask) == Ok(4));
             },
 
             Err(errno::ETIMEDOUT) => {
                 println!("3. Timeout. Writing to the event channel.");
-                assert!(event.write(0x1) == Ok(0));
+                assert!(event.write(&[0, 0, 0, 1]) == Ok(4));
             },
 
-            _ => unreachable!();
+            _ => {
+                unreachable!();
+            }
         }
     }
-
-    Ok(0)
 }
 
 #[no_mangle]
