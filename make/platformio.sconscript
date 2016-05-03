@@ -20,6 +20,8 @@
 
 import os
 from os.path import join
+import subprocess
+import shutil
 
 from SCons.Script import DefaultEnvironment
 from platformio.builder.tools.platformio import SRC_DEFAULT_FILTER
@@ -175,7 +177,7 @@ def setup_mcu_sam(env):
     env.Append(LIBPATH=["$PLATFORMFW_DIR/src/mcus/$BOARD_MCU"])
 
 
-def setup_mcu_esp(env):
+def setup_mcu_esp(env, flash_size_map):
     """Setup the ESP environment.
 
     """
@@ -237,24 +239,40 @@ def setup_mcu_esp(env):
         if key not in ["ElfToBin"]:
             builders[key] = value
 
+    def build_function(target, source, env):
+	subprocess.check_call(
+            "xtensa-lx106-elf-objcopy --only-section .text -O binary "
+            + str(source[0]) + " eagle.app.v6.text.bin",
+            shell=True)
+	subprocess.check_call(
+            "xtensa-lx106-elf-objcopy --only-section .data -O binary "
+            + str(source[0]) + " eagle.app.v6.data.bin",
+            shell=True)
+	subprocess.check_call(
+            "xtensa-lx106-elf-objcopy --only-section .rodata -O binary "
+            + str(source[0]) + " eagle.app.v6.rodata.bin",
+            shell=True)
+	subprocess.check_call(
+            "xtensa-lx106-elf-objcopy --only-section .irom0.text -O binary "
+            + str(source[0]) + " eagle.app.v6.irom0text.bin",
+            shell=True)
+	subprocess.check_call(
+            env.subst('$PYTHONEXE $PLATFORMFW_DIR/3pp/ESP8266_RTOS_SDK/tools/gen_appbin.py') + " " + str(source[0]) + " 2 0 0 " + flash_size_map,
+            shell=True)
+        shutil.copy("eagle.app.flash.bin", str(target[0]))
+
     builders["ElfToBin"] = env.Builder(
-        action=" ".join([
-            '"$OBJCOPY"',
-            "-eo", ".pioenvs/esp12e/firmware.elf",
-            "-bo", ".pioenvs/esp12e/firmware.bin",
-            "-bm", "$BOARD_FLASH_MODE",
-            "-bf", "${__get_board_f_flash(__env__)}",
-            "-bz", "${__get_flash_size(__env__)}",
-            "-bp", "4096",
-            "-bs", ".irom0.text",
-            "-bs", ".text",
-            "-bs", ".data",
-            "-bs", ".rodata",
-            "-ec"
-        ]),
+        action=build_function,
         suffix=".bin")
 
     env.Replace(BUILDERS=builders)
+
+    env.Replace(UPLOADCMD=' '.join([
+        '"$PYTHONEXE" "$PLATFORMFW_DIR/3pp/esptool/esptool.py"',
+        '--baud 460800',
+        'write_flash',
+        '0x00000 $PLATFORMFW_DIR/3pp/ESP8266_RTOS_SDK/bin/boot_v1.4\(b1\).bin',
+        '0x01000 $BUILD_DIR/firmware.bin']))
 
 
 def setup_board_arduino_due(env):
@@ -266,8 +284,24 @@ def setup_board_arduino_due(env):
     setup_mcu_sam(env)
 
 
+def setup_board_arduino_mega(env):
+    """Setup the Arduino Mega environment.
+
+    """
+
+    setup_mcu_avr(env)
+
+
 def setup_board_arduino_uno(env):
     """Setup the Arduino Uno environment.
+
+    """
+
+    setup_mcu_avr(env)
+
+
+def setup_board_arduino_nano(env):
+    """Setup the Arduino Nano environment.
 
     """
 
@@ -279,7 +313,15 @@ def setup_board_esp12e(env):
 
     """
 
-    setup_mcu_esp(env)
+    setup_mcu_esp(env, "6")
+
+
+def setup_board_esp01(env):
+    """Setup the ESP01 environment.
+
+    """
+
+    setup_mcu_esp(env, "2")
     
 
 def create_src_filter(env):
