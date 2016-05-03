@@ -269,9 +269,10 @@ def setup_mcu_esp(env, linker_script, flash_size_map):
 
     env.Replace(UPLOADCMD=' '.join([
         '"$PYTHONEXE" "$PLATFORMFW_DIR/3pp/esptool/esptool.py"',
-        '--baud 460800',
+        '--baud 230400',
+        '--port $UPLOAD_PORT',
         'write_flash',
-        '0x00000 $PLATFORMFW_DIR/3pp/ESP8266_RTOS_SDK/bin/boot_v1.4\(b1\).bin',
+        '0x00000 $PLATFORMFW_DIR/3pp/ESP8266_RTOS_SDK/bin/boot_v1.4.bin',
         '0x01000 $BUILD_DIR/firmware.bin']))
 
 
@@ -323,7 +324,7 @@ def setup_board_esp01(env):
 
     setup_mcu_esp(env, "simba.flash.1m.ld", "2")
     
-
+    
 def create_src_filter(env):
     """Create the source filter string.
     """

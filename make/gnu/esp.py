@@ -45,7 +45,7 @@ def upload():
                      "3pp",
                      "ESP8266_RTOS_SDK",
                      "bin",
-                     "boot_v1.4(b1).bin"),
+                     "boot_v1.4.bin"),
         "0x01000",
         binary
     ]
