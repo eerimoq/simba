@@ -21,6 +21,10 @@
 #ifndef __SIMBA_H__
 #define __SIMBA_H__
 
+#if defined(ARCH_ESP)
+typedef unsigned long off_t;
+#endif
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

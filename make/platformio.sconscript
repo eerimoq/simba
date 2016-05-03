@@ -32,13 +32,60 @@ BOARD_MAP = {
     "uno": "arduino_uno"
 }
 
-MCU_MAP = {
-    "at91sam3x8e": "sam/3x8e"
-}
+
+def add_include_paths(env, paths):
+    """Add given list of include paths.
+
+    """
+        
+    for path in paths:
+        env.VariantDirWrap(
+            join("$BUILD_DIR", "SimbaFramework", path),
+            join("$PLATFORMFW_DIR", path)
+        )
+        env.Append(CPPPATH=[join("$BUILD_DIR", "SimbaFramework", path)])
+
+
+def add_common_include_paths(env):
+    """Add the common include paths.
+
+    """
+
+    env.Append(CPPPATH=[join("$BUILD_DIR", "SimbaFramework")])
+    env.Append(CPPPATH=[join("$BUILD_DIR", "SimbaFramework", "src")])
+
+    paths = [
+        "src",
+        "gen",
+        join("src", "boards", "$BOARD"),
+        join("src", "mcus", "$BOARD_MCU"),
+        join("src", "kernel"),
+        join("src", "kernel", "ports", "$ARCH", "gnu"),
+        join("src", "drivers"),
+        join("src", "drivers", "ports", "$ARCH"),
+        join("src", "slib")
+    ]
+
+    add_include_paths(env, paths)
+
+
+def add_common_defines(env):
+    """Add common defines.
+
+    """
+
+    env.Append(
+        CPPDEFINES=[
+            "ARCH_$ARCH_UPPER",
+            "MCU_$MCU_UPPER",
+            "BOARD_$BOARD_UPPER",
+            "VERSION=$VERSION"
+        ]
+    )
 
 
 def set_default_values(env):
-    """Default values in the environment.
+    """Set default values in the environment.
 
     """
 
@@ -52,6 +99,7 @@ def set_default_values(env):
 
 def setup_mcu_avr(env):
     """Setup the AVR MCU environment.
+
     """
 
     if env.subst(env["BOARD_MCU"]) == "atmega2560":
@@ -85,10 +133,11 @@ def setup_mcu_avr(env):
         "-Wl,--defsym=__main_stack_end=$MAIN_STACK_END",
         "-Wl,-Map=$BUILD_DIR/firmware.map", # This should be added to PlatformIO
     ])
-
+    
 
 def setup_mcu_sam(env):
     """Setup the SAM MCU environment.
+
     """
 
     if env.subst(env["BOARD_MCU"]).endswith("/3x8e"):
@@ -113,6 +162,7 @@ def setup_mcu_sam(env):
     ])
 
     linkflags = []
+
     for flag in env["LINKFLAGS"]:
         if "-Wl,--entry" not in flag:
             linkflags.append(flag)
@@ -125,33 +175,139 @@ def setup_mcu_sam(env):
     env.Append(LIBPATH=["$PLATFORMFW_DIR/src/mcus/$BOARD_MCU"])
 
 
+def setup_mcu_esp(env):
+    """Setup the ESP environment.
+
+    """
+
+    env.Replace(ARCH="esp",
+                SETTING_MEMORY="flash",
+                SETTING_OFFSET="128",
+                SETTING_SIZE="256",
+                ENDIANESS="little")
+
+    add_include_paths(env, [
+        "src/mcus/esp8266",
+        "3pp/ESP8266_RTOS_SDK/extra_include",
+        "3pp/ESP8266_RTOS_SDK/include",
+        "3pp/ESP8266_RTOS_SDK/include/espressif",
+        "3pp/ESP8266_RTOS_SDK/include/espressif/esp8266",
+        "3pp/ESP8266_RTOS_SDK/include/lwip",
+        "3pp/ESP8266_RTOS_SDK/include/lwip/ipv4",
+        "3pp/ESP8266_RTOS_SDK/include/lwip/ipv6"
+    ])
+
+    env.Append(CPPDEFINES=[
+        "THRD_NMONITOR",
+        "NPROFILESTACK"
+    ])
+
+    linkflags = []
+
+    for flag in env["LINKFLAGS"]:
+        if ("-Wl,-T" not in flag
+            and "-Wl,-wrap,register_chipv6_phy" not in flag):
+            linkflags.append(flag)
+
+    env.Replace(LINKFLAGS=linkflags + [
+        "-Wl,--start-group",
+        "-lminic",
+        "-lgcc",
+        "-lhal",
+        "-lphy",
+        "-lpp",
+        "-lnet80211",
+        "-lwpa",
+        "-lcrypto",
+        "-lmain",
+        "-lfreertos",
+        "-llwip",
+        "-Wl,--end-group",
+        "-Wl,-Tsimba.flash.4m.ld"
+    ])
+
+    env.Append(LIBPATH=[
+        "$PLATFORMFW_DIR/src/mcus/$BOARD_MCU/ld",
+        "$PLATFORMFW_DIR/3pp/ESP8266_RTOS_SDK/lib"
+    ])
+
+    builders = {}
+
+    for key, value in env["BUILDERS"].items():
+        if key not in ["ElfToBin"]:
+            builders[key] = value
+
+    builders["ElfToBin"] = env.Builder(
+        action=" ".join([
+            '"$OBJCOPY"',
+            "-eo", ".pioenvs/esp12e/firmware.elf",
+            "-bo", ".pioenvs/esp12e/firmware.bin",
+            "-bm", "$BOARD_FLASH_MODE",
+            "-bf", "${__get_board_f_flash(__env__)}",
+            "-bz", "${__get_flash_size(__env__)}",
+            "-bp", "4096",
+            "-bs", ".irom0.text",
+            "-bs", ".text",
+            "-bs", ".data",
+            "-bs", ".rodata",
+            "-ec"
+        ]),
+        suffix=".bin")
+
+    env.Replace(BUILDERS=builders)
+
+
+def setup_board_arduino_due(env):
+    """Setup the Arduino Due environment.
+
+    """
+
+    add_include_paths(env, ["src/mcus/sam"])
+    setup_mcu_sam(env)
+
+
+def setup_board_arduino_uno(env):
+    """Setup the Arduino Uno environment.
+
+    """
+
+    setup_mcu_avr(env)
+
+
+def setup_board_esp12e(env):
+    """Setup the ESP12E environment.
+
+    """
+
+    setup_mcu_esp(env)
+    
+
 def create_src_filter(env):
     """Create the source filter string.
     """
 
     src_filter_patterns = []
 
-    # add the board files
+    # Add the board files.
     src_filter_patterns.append("-<boards>")
-    if env.subst("$BOARD") == "arduino_due":
-        src_filter_patterns.append("+<boards/arduino_due>")
-    else:
-        src_filter_patterns.append(env.subst("+<boards/$BOARD>"))
+    src_filter_patterns.append(env.subst("+<boards/$BOARD>"))
 
-    # add the mcu files
+    # Add the mcu files.
     src_filter_patterns.append("-<mcus>")
-    if env.subst("$BOARD_MCU") == "sam/3x8e":
-        src_filter_patterns.append("+<mcus/sam>")
-    else:
-        src_filter_patterns.append(env.subst("+<mcus/$BOARD_MCU>"))
+    src_filter_patterns.append(env.subst("+<mcus/$BOARD_MCU>"))
 
-    # remote inet files
+    if env.subst("$BOARD_MCU") == "sam3x8e":
+        src_filter_patterns.append("+<mcus/sam>")
+
+    # Remove inet files.
     src_filter_patterns.append("-<inet>")
 
-    # add the drivers files
+    # Add the drivers files.
     src_filter_patterns.append("-<drivers>")
 
-    if env.subst("$ARCH") == "arm":
+    arch = env.subst("$ARCH")
+
+    if arch == "arm":
         files = [
             "adc.c",
             "can.c",
@@ -169,10 +325,8 @@ def create_src_filter(env):
             "usb/host/class/usb_host_class_hid.c",
             "usb/host/class/usb_host_class_mass_storage.c"
         ]
-        for src in files:
-            src_filter_patterns.append("+<drivers/" + src + ">")
 
-    elif env.subst("$ARCH") == "avr":
+    elif arch == "avr":
         files = [
             "adc.c",
             "ds18b20.c",
@@ -188,37 +342,55 @@ def create_src_filter(env):
             "uart.c",
             "uart_soft.c"
         ]
-        for src in files:
-            src_filter_patterns.append("+<drivers/" + src + ">")
+
+    elif arch == "esp":
+        files = [
+            "pin.c",
+            "uart.c"
+        ]
+
+    else:
+        raise ValueError("bad architecture {}".format())
+
+    for src in files:
+        src_filter_patterns.append("+<drivers/" + src + ">")
 
     return SRC_DEFAULT_FILTER + " " + " ".join(src_filter_patterns)
 
 
 env = DefaultEnvironment()
 
+set_default_values(env)
+
 # Rename the name of boards that have different name in PlatformIO and
 # Simba.
 if env["BOARD"] in BOARD_MAP:
     env["BOARD"] = BOARD_MAP[env["BOARD"]]
 
-# Rename the name of mcu that have different name in PlatformIO and
-# Simba.
-if env.subst(env["BOARD_MCU"]) in MCU_MAP:
-    env["BOARD_MCU"] = MCU_MAP[env.subst(env["BOARD_MCU"])]
+board = env.subst(env["BOARD"])
 
-set_default_values(env)
+add_common_include_paths(env)
+add_common_defines(env)
 
-# Remove flags that breaks the build.
-# -Os -> internal compiler error
-cppflags = list(set(env["CPPFLAGS"]) - set(["-Os", "-g"]))
-env.Replace(CPPFLAGS=cppflags)
-
-if os.path.dirname(env.subst(env["BOARD_MCU"])) == "sam":
-    setup_mcu_sam(env)
-elif env.subst(env["BOARD_MCU"]) in ["atmega2560", "atmega328p"]:
-    setup_mcu_avr(env)
+if board == "arduino_due":
+    setup_board_arduino_due(env)
+elif board == "arduino_mega":
+    setup_board_arduino_mega(env)
+elif board == "arduino_uno":
+    setup_board_arduino_uno(env)
+elif board == "arduino_nano":
+    setup_board_arduino_nano(env)
+elif board == "esp12e":
+    setup_board_esp12e(env)
+elif board == "esp01":
+    setup_board_esp01(env)
 else:
-    raise ValueError("MCU {} is not supported by Simba.".format(env.subst(env["BOARD_MCU"])))
+    raise ValueError("BOARD {} is not supported by Simba.".format(board))
+
+# variables in upper case for defines
+env.Append(ARCH_UPPER=env.subst(env["ARCH"]).upper().replace("/", "_"),
+           MCU_UPPER=env.subst(env["BOARD_MCU"]).upper().replace("/", "_"),
+           BOARD_UPPER=env.subst(env["BOARD"]).upper().replace("/", "_"))
 
 if "SETTINGS_INI" not in env:
     env.Append(SETTINGS_INI=[join("$BUILD_DIR", "SimbaFramework", "make", "settings.ini")])
@@ -226,55 +398,6 @@ if "SETTINGS_INI" not in env:
         join("$BUILD_DIR", "SimbaFramework", "make"),
         join("$PLATFORMFW_DIR", "make")
     )
-
-env.VariantDirWrap(
-    join("$BUILD_DIR", "SimbaFramework", "src"),
-    join("$PLATFORMFW_DIR", "src")
-)
-
-paths = [
-    "gen",
-    join("boards", "$BOARD"),
-    join("mcus", "$MCU"),
-    join("kernel"),
-    join("kernel", "ports", "$ARCH", "gnu"),
-    join("drivers"),
-    join("drivers", "ports", "$ARCH"),
-    join("slib")
-]
-
-env.Append(CPPPATH=[join("$BUILD_DIR", "SimbaFramework")])
-    
-mcu = env.subst(env["BOARD_MCU"])
-dirname = os.path.dirname(mcu)
-
-if dirname:
-    paths.append(join("mcus", dirname))
-else:
-    paths.append(join("mcus", "$BOARD_MCU"))
-
-for path in paths:
-    env.VariantDirWrap(
-        join("$BUILD_DIR", "SimbaFramework", path),
-        join("$PLATFORMFW_DIR", "src", path)
-    )
-    env.Append(CPPPATH=[join("$BUILD_DIR", "SimbaFramework", path)])
-
-env.Append(
-    CPPDEFINES=[
-        "ARCH_$ARCH_UPPER",
-        "MCU_$MCU_UPPER",
-        "BOARD_$BOARD_UPPER",
-        "VERSION=$VERSION"
-    ]
-)
-
-env.Append(CCFLAGS=[])
-
-# variables in upper case for defines
-env.Append(ARCH_UPPER=env.subst(env["ARCH"]).upper().replace("/", "_"),
-           MCU_UPPER=env.subst(env["BOARD_MCU"]).upper().replace("/", "_"),
-           BOARD_UPPER=env.subst(env["BOARD"]).upper().replace("/", "_"))
 
 # generated files
 SETTINGS_H = "$BUILD_DIR/SimbaFramework/gen/settings.h"
@@ -292,7 +415,7 @@ env.Command(SETTINGS_C, env["SETTINGS_INI"], fmt.format(filetype="source"))
 env.Command(SETTINGS_BIN, env["SETTINGS_INI"], fmt.format(filetype="binary"))
 
 # create a list of all sources
-variant_dir = join("$BUILD_DIR", "SimbaFramework")
+variant_dir = join("$BUILD_DIR", "SimbaFramework", "src")
 src_dir = join("$PLATFORMFW_DIR", "src")
 src_filter = create_src_filter(env)
 
@@ -309,7 +432,7 @@ for src in env.LookupSources(variant_dir, src_dir, True, src_filter):
     ppenv = env.Clone()
     ppenv.Append(CPPDEFINES=["__SIMBA_GEN__"])
     ppenv.Append(CCFLAGS=["-E"])
-    pp_source.append(ppenv.Object(str(src) + ".pp", src))
+    pp_source.append(ppenv.Object(join("src", str(src)) + ".pp", src))
 
 # Command to generate simba_gen.c
 env.Command(SIMBA_GEN_C,
@@ -319,7 +442,7 @@ env.Command(SIMBA_GEN_C,
 source_files.append(SIMBA_GEN_C)
 source_files.append(SETTINGS_C)
 
-lib = env.Library(target=variant_dir, source=source_files)
+lib = env.Library(target=join("$BUILD_DIR", "SimbaFramework"), source=source_files)
 Depends(lib, SETTINGS_BIN)
 
 env.Append(LIBS=[lib])

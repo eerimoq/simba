@@ -29,7 +29,7 @@
 #define SAM_PC 62
 #define SAM_PD 93
 
-#if defined(MCU_SAM_3X8E)
+#if defined(MCU_SAM3X8E)
 #    define PIN_DEVICE_MAX             103
 #    define EXTI_DEVICE_MAX PIN_DEVICE_MAX
 #    define SPI_DEVICE_MAX               1

@@ -25,6 +25,6 @@ BOARD_HOMEPAGE = "https://www.arduino.cc/en/Main/ArduinoBoardDue"
 BOARD_PINOUT = "arduino-due-pinout.png"
 BOARD_DESC = "Arduino Due"
 
-MCU = sam/3x8e
+MCU = sam3x8e
 
 RUST_TARGET = thumbv7em-none-eabi
