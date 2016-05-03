@@ -177,7 +177,7 @@ def setup_mcu_sam(env):
     env.Append(LIBPATH=["$PLATFORMFW_DIR/src/mcus/$BOARD_MCU"])
 
 
-def setup_mcu_esp(env, flash_size_map):
+def setup_mcu_esp(env, linker_script, flash_size_map):
     """Setup the ESP environment.
 
     """
@@ -225,7 +225,7 @@ def setup_mcu_esp(env, flash_size_map):
         "-lfreertos",
         "-llwip",
         "-Wl,--end-group",
-        "-Wl,-Tsimba.flash.4m.ld"
+        "-Wl,-T" + linker_script
     ])
 
     env.Append(LIBPATH=[
@@ -313,7 +313,7 @@ def setup_board_esp12e(env):
 
     """
 
-    setup_mcu_esp(env, "6")
+    setup_mcu_esp(env, "simba.flash.4m.ld", "6")
 
 
 def setup_board_esp01(env):
@@ -321,7 +321,7 @@ def setup_board_esp01(env):
 
     """
 
-    setup_mcu_esp(env, "2")
+    setup_mcu_esp(env, "simba.flash.1m.ld", "2")
     
 
 def create_src_filter(env):
