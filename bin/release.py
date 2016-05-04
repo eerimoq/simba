@@ -18,6 +18,7 @@ def clean():
 
 def test():
     """Test.
+
     """
 
     all_boards = glob.glob("src/boards/*")
@@ -39,7 +40,7 @@ def test():
 
         subprocess.check_call(command)
 
-    # run linux tests
+    # Run linux tests.
     clean()
 
     command = [
@@ -51,6 +52,14 @@ def test():
 
     subprocess.check_call(command)
 
+    # Build a PlatformIO application.
+    command = [
+        "platformio",
+        "run"
+    ]
+
+    subprocess.check_call(command, cwd="examples/platformio/blink")
+    
 
 def main():
     """Main.
