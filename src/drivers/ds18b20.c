@@ -31,7 +31,7 @@
 #define RECALL_E          0xb8
 #define READ_POWER_SUPPLY 0xb4
 
-FS_COMMAND_DEFINE("/drivers/ds18b20/list", ds18b20_list);
+static struct fs_command_t cmd_list;
 
 struct ds18b20_scratchpad_t {
     int16_t temperature;
@@ -44,10 +44,12 @@ struct ds18b20_scratchpad_t {
 
 static struct ds18b20_driver_t *list_p = NULL;
 
-int ds18b20_list(int argc,
-                 const char *argv[],
-                 chan_t *chout_p,
-                 chan_t *chin_p)
+static int cmd_list_cb(int argc,
+                       const char *argv[],
+                       chan_t *chout_p,
+                       chan_t *chin_p,
+                       void *arg_p,
+                       void *call_arg_p)
 {
     struct ds18b20_driver_t *self_p;
     char buf[10];
@@ -107,6 +109,17 @@ static int ds18b20_read_scratchpad(struct ds18b20_driver_t *self_p,
     b = READ_SCRATCHPAD;
     owi_write(self_p->owi_p, &b, 8);
     owi_read(self_p->owi_p, scratchpad_p, 8 * sizeof(*scratchpad_p));
+
+    return (0);
+}
+
+int ds18b20_module_init()
+{
+    fs_command_init(&cmd_list,
+                    FSTR("/drivers/ds18b20/list"),
+                    cmd_list_cb,
+                    NULL);
+    fs_command_register(&cmd_list);
 
     return (0);
 }

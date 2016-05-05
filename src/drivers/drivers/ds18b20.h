@@ -29,6 +29,13 @@ struct ds18b20_driver_t {
 };
 
 /**
+ * Initialize the DS18B20 driver module.
+ *
+ * @return zero(0) or negative error code.
+ */
+int ds18b20_module_init(void);
+
+/**
  * Initialize given driver object.
  *
  * @param[out] self_p Driver object to be initialized.

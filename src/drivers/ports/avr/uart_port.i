@@ -27,8 +27,23 @@
 #define UBRRn(dev_p) ((volatile uint16_t *)((dev_p)->sfr_p + 4))
 #define UDRn(dev_p) ((dev_p)->sfr_p + 6)
 
-FS_COUNTER_DEFINE("/drivers/uart/rx_channel_overflow", uart_rx_channel_overflow);
-FS_COUNTER_DEFINE("/drivers/uart/rx_errors", uart_rx_errors);
+static struct fs_counter_t rx_channel_overflow;
+static struct fs_counter_t rx_errors;
+
+static int uart_port_module_init()
+{
+    fs_counter_init(&rx_channel_overflow,
+                    FSTR("/drivers/uart/rx_channel_overflow"),
+                    0);
+    fs_counter_register(&rx_channel_overflow);
+    
+    fs_counter_init(&rx_errors,
+                    FSTR("/drivers/uart/rx_errors"),
+                    0);
+    fs_counter_register(&rx_errors);
+    
+    return (0);
+}
 
 static int uart_port_start(struct uart_driver_t *self_p)
 {
@@ -121,10 +136,10 @@ static void rx_isr(int index)
     if (error == 0) {
         /* Write data to input queue. */
         if (queue_write_isr(&drv_p->chin, &c, 1) != 1) {
-            FS_COUNTER_INC(uart_rx_channel_overflow, 1);
+            fs_counter_increment(&rx_channel_overflow, 1);
         }
     } else {
-        FS_COUNTER_INC(uart_rx_errors, 1);
+        fs_counter_increment(&rx_errors, 1);
     }
 }
 

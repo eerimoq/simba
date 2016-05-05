@@ -150,6 +150,20 @@ int std_strcmp_f(FAR const char *fstr0_p,
                  FAR const char *fstr1_p);
 
 /**
+ * Compare at most `size` bytes of one far string and one string.
+ *
+ * @param[in] fstr_p Far memory string.
+ * @param[in] str_p String.
+ * @param[in] size Compare at most size number of bytes.
+ *
+ * @return zero(0) if match, otherwise the difference of the
+ *         mismatched characters.
+ */
+int std_strncmp(FAR const char *fstr_p,
+                const char *str_p,
+                size_t size);
+
+/**
  * Compare at most `size` bytes of two far strings.
  *
  * @param[in] fstr0_p Far memory string.

@@ -22,13 +22,13 @@
 #    define THRD_MONITOR_PRIO -80
 #endif
 
-FS_COMMAND_DEFINE("/kernel/thrd/monitor/set_period_ms", thrd_cmd_monitor_set_period_ms);
-FS_COMMAND_DEFINE("/kernel/thrd/monitor/set_print", thrd_cmd_monitor_set_print);
-
 struct monitor_t {
     long period_us;
     int print;
 };
+
+static struct fs_command_t cmd_monitor_set_period_ms;
+static struct fs_command_t cmd_monitor_set_print;
 
 static struct monitor_t monitor = {
     .period_us = 2000000,
@@ -38,10 +38,12 @@ static struct monitor_t monitor = {
 /* Stacks. */
 static THRD_STACK(monitor_thrd_stack, THRD_MONITOR_STACK_MAX);
  
-int thrd_cmd_monitor_set_period_ms(int argc,
-                                   const char *argv[],
-                                   chan_t *out_p,
-                                   chan_t *in_p)
+static int cmd_monitor_set_period_ms_cb(int argc,
+                                        const char *argv[],
+                                        chan_t *out_p,
+                                        chan_t *in_p,
+                                        void *arg_p,
+                                        void *call_arg_p)
 {
     long ms;
 
@@ -60,10 +62,12 @@ int thrd_cmd_monitor_set_period_ms(int argc,
     return (0);
 }
 
-int thrd_cmd_monitor_set_print(int argc,
-                               const char *argv[],
-                               chan_t *out_p,
-                               chan_t *in_p)
+static int cmd_monitor_set_print_cb(int argc,
+                                    const char *argv[],
+                                    chan_t *out_p,
+                                    chan_t *in_p,
+                                    void *arg_p,
+                                    void *call_arg_p)
 {
     long print;
 

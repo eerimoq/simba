@@ -20,8 +20,6 @@
 
 #include "simba.h"
 
-FS_COMMAND_DEFINE("/kernel/sys/info", sys_cmd_info);
-
 struct sys_t sys = {
     .tick = 0,
     .on_fatal_callback = sys_stop,
@@ -31,6 +29,8 @@ struct sys_t sys = {
         .time = 0
     }
 };
+
+static struct fs_command_t cmd_info;
 
 extern void time_tick(void);
 extern void timer_tick(void);
@@ -46,10 +46,12 @@ static void sys_tick(void) {
 
 #include "sys_port.i"
 
-int sys_cmd_info(int argc,
-                 const char *argv[],
-                 chan_t *out_p,
-                 chan_t *in_p)
+static int cmd_info_cb(int argc,
+                       const char *argv[],
+                       chan_t *out_p,
+                       chan_t *in_p,
+                       void *arg_p,
+                       void *call_arg_p)
 {
     std_fprintf(out_p, sysinfo);
 
@@ -58,17 +60,25 @@ int sys_cmd_info(int argc,
 
 int sys_module_init(void)
 {
+    fs_command_init(&cmd_info,
+                    FSTR("/kernel/sys/info"),
+                    cmd_info_cb,
+                    NULL);
+    fs_command_register(&cmd_info);
+
     return (sys_port_module_init());
 }
 
 int sys_start(void)
 {
     setting_module_init();
+    fs_module_init();
     std_module_init();
     sem_module_init();
     log_module_init();
     chan_module_init();
     thrd_module_init();
+    shell_module_init();
     sys_port_module_init();
 
     return (0);

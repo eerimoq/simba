@@ -24,7 +24,7 @@
 
 int uart_module_init(void)
 {
-    return (0);
+    return (uart_port_module_init());
 }
 
 int uart_init(struct uart_driver_t *self_p,

@@ -27,8 +27,9 @@ int test_memory_usage(struct harness_t *harness_p)
     std_printf(FSTR("sizeof(struct chan_t) = %d\n"), (int)sizeof(struct chan_t));
 
     /* fs */
+    std_printf(FSTR("sizeof(struct fs_command_t) = %d\n"), (int)sizeof(struct fs_command_t));
     std_printf(FSTR("sizeof(struct fs_counter_t) = %d\n"), (int)sizeof(struct fs_counter_t));
-    std_printf(FSTR("sizeof(struct fs_node_t) = %d\n"), (int)sizeof(struct fs_node_t));
+    std_printf(FSTR("sizeof(struct fs_parameter_t) = %d\n"), (int)sizeof(struct fs_parameter_t));
 
     /* list */
     std_printf(FSTR("sizeof(struct list_singly_linked_t) = %d\n"), (int)sizeof(struct list_singly_linked_t));

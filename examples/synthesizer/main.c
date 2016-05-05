@@ -22,16 +22,16 @@
 #include "channel.h"
 #include "waveforms.h"
 
-FS_COUNTER_DEFINE("/synth/midi_unhandled_command", midi_unhandled_command);
+static struct fs_counter_t midi_unhandled_command;
 
-FS_COMMAND_DEFINE("/status", cmd_status);
-FS_COMMAND_DEFINE("/set_waveform", cmd_set_waveform);
-FS_COMMAND_DEFINE("/set_vibrato", cmd_set_vibrato);
-FS_COMMAND_DEFINE("/set_envelope", cmd_set_envelope);
-FS_COMMAND_DEFINE("/note_on", cmd_note_on);
-FS_COMMAND_DEFINE("/note_off", cmd_note_off);
-FS_COMMAND_DEFINE("/channel_on", cmd_channel_on);
-FS_COMMAND_DEFINE("/channel_off", cmd_channel_off);
+static struct fs_command_t cmd_status;
+static struct fs_command_t cmd_set_waveform;
+static struct fs_command_t cmd_set_vibrato;
+static struct fs_command_t cmd_set_envelope;
+static struct fs_command_t cmd_note_on;
+static struct fs_command_t cmd_note_off;
+static struct fs_command_t cmd_channel_on;
+static struct fs_command_t cmd_channel_off;
 
 #define EVENT_TIMEOUT 0x1
 
@@ -82,7 +82,10 @@ static int note_off(struct channel_t *channel_p,
 {
     struct note_t *note_p;
 
-    LOG(INFO, "note off: note = %d", note);
+    log_object_print(NULL,
+                     LOG_INFO,
+                     FSTR("note off: note = %d"),
+                     note);
 
     sem_get(&synthesizer.sem, NULL);
 
@@ -104,7 +107,11 @@ static int note_on(struct channel_t *channel_p,
 {
     struct note_t *note_p;
 
-    LOG(INFO, "note on: note = %d, velocity = %d", note, velocity);
+    log_object_print(NULL,
+                     LOG_INFO,
+                     FSTR("note on: note = %d, velocity = %d"),
+                     note,
+                     velocity);
 
     /* Add the note to the list of notes on the channel. If the list
      * is full, remove the oldest note. */
@@ -129,10 +136,12 @@ static int note_on(struct channel_t *channel_p,
     return (0);
 }
 
-int cmd_status(int argc,
-               const char *argv[],
-               void *out_p,
-               void *in_p)
+static int cmd_status_cb(int argc,
+                         const char *argv[],
+                         chan_t *out_p,
+                         chan_t *in_p,
+                         void *arg_p,
+                         void *call_arg_p)
 {
     int i, j;
     struct channel_t *channel_p;
@@ -167,10 +176,12 @@ int cmd_status(int argc,
     return (0);
 }
 
-int cmd_set_waveform(int argc,
-                     const char *argv[],
-                     void *out_p,
-                     void *in_p)
+static int cmd_set_waveform_cb(int argc,
+                               const char *argv[],
+                               chan_t *out_p,
+                               chan_t *in_p,
+                               void *arg_p,
+                               void *call_arg_p)
 {
     long channel;
     struct channel_t *channel_p;
@@ -210,10 +221,12 @@ int cmd_set_waveform(int argc,
     return (0);
 }
 
-int cmd_set_vibrato(int argc,
-                    const char *argv[],
-                    void *out_p,
-                    void *in_p)
+static int cmd_set_vibrato_cb(int argc,
+                              const char *argv[],
+                              chan_t *out_p,
+                              chan_t *in_p,
+                              void *arg_p,
+                              void *call_arg_p)
 {
     long value;
 
@@ -234,10 +247,12 @@ int cmd_set_vibrato(int argc,
     return (0);
 }
 
-int cmd_set_envelope(int argc,
-                     const char *argv[],
-                     void *out_p,
-                     void *in_p)
+static int cmd_set_envelope_cb(int argc,
+                               const char *argv[],
+                               chan_t *out_p,
+                               chan_t *in_p,
+                               void *arg_p,
+                               void *call_arg_p)
 {
     long value;
 
@@ -270,10 +285,12 @@ int cmd_set_envelope(int argc,
     return (0);
 }
 
-int cmd_note_on(int argc,
-                const char *argv[],
-                void *out_p,
-                void *in_p)
+static int cmd_note_on_cb(int argc,
+                          const char *argv[],
+                          chan_t *out_p,
+                          chan_t *in_p,
+                          void *arg_p,
+                          void *call_arg_p)
 {
     long channel, note, frequency;
 
@@ -303,10 +320,12 @@ int cmd_note_on(int argc,
                     65));
 }
 
-int cmd_note_off(int argc,
-                 const char *argv[],
-                 void *out_p,
-                 void *in_p)
+static int cmd_note_off_cb(int argc,
+                           const char *argv[],
+                           chan_t *out_p,
+                           chan_t *in_p,
+                           void *arg_p,
+                           void *call_arg_p)
 {
     long channel, note;
 
@@ -329,10 +348,12 @@ int cmd_note_off(int argc,
     return (note_off(&synthesizer.channels[channel], note));
 }
 
-int cmd_channel_on(int argc,
-                   const char *argv[],
-                   void *out_p,
-                   void *in_p)
+static int cmd_channel_on_cb(int argc,
+                             const char *argv[],
+                             chan_t *out_p,
+                             chan_t *in_p,
+                             void *arg_p,
+                             void *call_arg_p)
 {
     long channel;
 
@@ -353,10 +374,12 @@ int cmd_channel_on(int argc,
     return (0);
 }
 
-int cmd_channel_off(int argc,
-                    const char *argv[],
-                    void *out_p,
-                    void *in_p)
+static int cmd_channel_off_cb(int argc,
+                              const char *argv[],
+                              chan_t *out_p,
+                              chan_t *in_p,
+                              void *arg_p,
+                              void *call_arg_p)
 {
     long channel;
 
@@ -531,7 +554,7 @@ static void *midi_main(void *arg_p)
             break;
 
         default:
-            FS_COUNTER_INC(midi_unhandled_command, 1);
+            fs_counter_increment(&midi_unhandled_command, 1);
             break;
         }
     }
@@ -548,6 +571,59 @@ static int init(void)
 
     uart_init(&uart, &uart_device[0], 38400, qinbuf, sizeof(qinbuf));
     uart_start(&uart);
+
+    fs_counter_init(&midi_unhandled_command,
+                    FSTR("/synth/midi_unhandled_command"),
+                    0);
+    fs_counter_register(&midi_unhandled_command);
+
+    fs_command_init(&cmd_status,
+                    FSTR("/status"),
+                    cmd_status_cb,
+                    NULL);
+    fs_command_register(&cmd_status);
+
+    fs_command_init(&cmd_set_waveform,
+                    FSTR("/set_waveform"),
+                    cmd_set_waveform_cb,
+                    NULL);
+    fs_command_register(&cmd_set_waveform);
+
+    fs_command_init(&cmd_set_vibrato,
+                    FSTR("/set_vibrato"),
+                    cmd_set_vibrato_cb,
+                    NULL);
+    fs_command_register(&cmd_set_vibrato);
+
+    fs_command_init(&cmd_set_envelope,
+                    FSTR("/set_envelope"),
+                    cmd_set_envelope_cb,
+                    NULL);
+    fs_command_register(&cmd_set_envelope);
+
+    fs_command_init(&cmd_note_on,
+                    FSTR("/note_on"),
+                    cmd_note_on_cb,
+                    NULL);
+    fs_command_register(&cmd_note_on);
+
+    fs_command_init(&cmd_note_off,
+                    FSTR("/note_off"),
+                    cmd_note_off_cb,
+                    NULL);
+    fs_command_register(&cmd_note_off);
+
+    fs_command_init(&cmd_channel_on,
+                    FSTR("/channel_on"),
+                    cmd_channel_on_cb,
+                    NULL);
+    fs_command_register(&cmd_channel_on);
+
+    fs_command_init(&cmd_channel_off,
+                    FSTR("/channel_off"),
+                    cmd_channel_off_cb,
+                    NULL);
+    fs_command_register(&cmd_channel_off);
 
     uart_init(&uart_midi,
               &uart_device[1],
@@ -626,11 +702,12 @@ int main()
     /* Start the periodic fill timer. */
     timeout.seconds = 0;
     timeout.nanoseconds = 10000000;
-    timer_set(&synthesizer.timer,
-              &timeout,
-              (void (*)(void *))fill_timer_cb,
-              NULL,
-              TIMER_PERIODIC);
+    timer_init(&synthesizer.timer,
+               &timeout,
+               (void (*)(void *))fill_timer_cb,
+               NULL,
+               TIMER_PERIODIC);
+    timer_start(&synthesizer.timer);
 
     while (1) {
         /* Wait for the periodic timeout event that drives the synth

@@ -21,12 +21,11 @@
 #include "simba.h"
 
 /* Define a shell command. */
-FS_COMMAND_DEFINE("/tmp/foo", tmp_foo);
+static struct fs_command_t tmp_foo;
 
-/* Define a few counters. */
-FS_COUNTER_DEFINE("/foo", foo);
-FS_COUNTER_DEFINE("/bar", bar);
-FS_COUNTER_DEFINE("/fie", fie);
+/* Define two counters. */
+static struct fs_counter_t bar;
+static struct fs_counter_t fie;
 
 static char qinbuf[32];
 static struct uart_driver_t uart;
@@ -35,10 +34,12 @@ static struct shell_args_t shell_args;
 /**
  * The shell command callback for "/tmp/foo".
  */
-int tmp_foo(int argc,
-            const char *argv[],
-            void *out_p,
-            void *in_p)
+static int tmp_foo_cb(int argc,
+                      const char *argv[],
+                      chan_t *out_p,
+                      chan_t *in_p,
+                      void *arg_p,
+                      void *call_arg_p)
 {
     if (argc != 4) {
         std_fprintf(out_p, FSTR("3 arguments required.\r\n"));
@@ -48,11 +49,13 @@ int tmp_foo(int argc,
 
     /* Write the result to the shell output channel. */
     std_fprintf(out_p,
-                FSTR("argc = %d, argv[0] = %s, argv[1] = %s, argv[2] = %s\r\n"),
+                FSTR("argc = %d, argv[0] = %s, argv[1] = %s, "
+                     "argv[2] = %s, argv[3] = %s\r\n"),
                 argc,
                 argv[0],
                 argv[1],
-                argv[2]);
+                argv[2],
+                argv[3]);
 
     return (0);
 }
@@ -70,11 +73,18 @@ int main()
     sys_set_stdout(&uart.chout);
     log_set_default_handler_output_channel(sys_get_stdout());
 
-    /* Increment the counters. */
-    FS_COUNTER_INC(foo, 0xfffd);
-    FS_COUNTER_INC(foo, 2);
-    FS_COUNTER_INC(bar, 339283982393);
-    FS_COUNTER_INC(fie, 1);
+    /* Register a shell command. */
+    fs_command_init(&tmp_foo, FSTR("/tmp/foo"), tmp_foo_cb, NULL);
+    fs_command_register(&tmp_foo);
+
+    /* Register a few counters. */
+    fs_counter_init(&bar, FSTR("/bar"), 0);
+    fs_counter_register(&bar);
+    fs_counter_init(&fie, FSTR("/fie"), 1);
+    fs_counter_register(&fie);
+
+    /* Increment coutner bar. */
+    fs_counter_increment(&bar, 123);
 
     /* Print the system information. */
     std_printf(sys_get_info());

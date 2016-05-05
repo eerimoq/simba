@@ -51,8 +51,6 @@ static char can1_rx_buf[256];
 struct can_driver_t can0;
 struct can_driver_t can1;
 
-extern long long FS_COUNTER(can_rx_channel_overflow);
-
 static THRD_STACK(rx_thrd_stack, 1024);
 
 /**
@@ -266,9 +264,6 @@ static int test_max_throughput(struct harness_t *harness_p)
                    (int)frames_per_second,
                    (int)bits_per_second,
                    (int)data_bits_per_second);
-
-        BTASSERT(FS_COUNTER(can_rx_channel_overflow) == 0);
-        FS_COUNTER(can_rx_channel_overflow) = 0;
     }
 
     stop();

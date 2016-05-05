@@ -186,10 +186,8 @@ $(patsubst %.c,$(OBJDIR)%.o,$(abspath $1)): $1 $(SETTINGS_H)
 	@echo "Compiling $1"
 	mkdir -p $(OBJDIR)$(abspath $(dir $1))
 	mkdir -p $(DEPSDIR)$(abspath $(dir $1))
-	mkdir -p $(GENDIR)$(abspath $(dir $1))
-	$$(CC) $$(CFLAGS) -DMODULE_NAME=$(notdir $(basename $1)) -D__SIMBA_GEN__ \
-	    -E -o $(patsubst %.c,$(GENDIR)%.o.pp,$(abspath $1)) $$<
-	$$(CC) $$(CFLAGS) -DMODULE_NAME=$(notdir $(basename $1)) -o $$@ $$<
+	mkdir -p $(GENDIR)
+	$$(CC) $$(CFLAGS) -o $$@ $$<
 	gcc -MM -MT $$@ $$(filter -I% -D% -O%,$$(CFLAGS)) -o $(patsubst %.c,$(DEPSDIR)%.o.dep,$(abspath $1)) $$<
 endef
 $(foreach file,$(CSRC),$(eval $(call COMPILE_template,$(file))))
@@ -267,7 +265,7 @@ $(foreach file,$(RUST_SRC),$(eval $(call RUST_COMPILE_template,$(file))))
 
 $(GENOBJ): $(OBJ)
 	$(SIMBA_ROOT)/src/kernel/tools/gen.py $(NAME) $(VERSION) $(BOARD_DESC) $(MCU_DESC) \
-	    $(GENCSRC) $(OBJ:$(OBJDIR)/%=$(GENDIR)/%.pp)
+	    $(GENCSRC)
 	@echo "Compiling $(GENCSRC)"
 	$(CC) $(CFLAGS) -o $@ $(GENCSRC)
 

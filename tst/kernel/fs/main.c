@@ -23,18 +23,21 @@
 #define OUR_PARAMETER_DEFAULT 5
 #define BUFFER_SIZE 512
 
-FS_COMMAND_DEFINE("/tmp/foo", tmp_foo);
-FS_COMMAND_DEFINE("/tmp/bar", tmp_bar);
+static struct fs_command_t foo_bar;
+static struct fs_command_t bar;
 
-FS_COUNTER_DEFINE("/my/counter", my_counter);
-FS_COUNTER_DEFINE("/your/counter", your_counter);
+static struct fs_counter_t my_counter;
+static struct fs_counter_t your_counter;
 
-FS_PARAMETER_DEFINE("/our/parameter", our_parameter, int, OUR_PARAMETER_DEFAULT);
+static int our_parameter_value = OUR_PARAMETER_DEFAULT;
+static struct fs_parameter_t our_parameter;
 
-int tmp_foo(int argc,
-            const char *argv[],
-            struct chan_t *out_p,
-            struct chan_t *in_p)
+static int tmp_foo_bar(int argc,
+                       const char *argv[],
+                       chan_t *out_p,
+                       chan_t *in_p,
+                       void *arg_p,
+                       void *call_arg_p)
 {
     UNUSED(out_p);
     UNUSED(in_p);
@@ -50,10 +53,12 @@ int tmp_foo(int argc,
     return (0);
 }
 
-int tmp_bar(int argc,
-            const char *argv[],
-            struct chan_t *out_p,
-            struct chan_t *in_p)
+static int tmp_bar(int argc,
+                   const char *argv[],
+                   chan_t *out_p,
+                   chan_t *in_p,
+                   void *arg_p,
+                   void *call_arg_p)
 {
     UNUSED(argc);
     UNUSED(argv);
@@ -96,13 +101,12 @@ static int test_command(struct harness_t *harness_p)
 {
     char buf[BUFFER_SIZE];
 
-    strcpy(buf, "  /tmp/foo     foo1 foo2  ");
+    strcpy(buf, "  /tmp/foo/bar     foo1 foo2  ");
     BTASSERT(fs_call(buf, NULL, &qout, NULL) == 0);
     read_until(buf, "\n");
 
     strcpy(buf, "/tmp/bar 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16");
     BTASSERT(fs_call(buf, NULL, &qout, NULL) == -E2BIG);
-    read_until(buf, "\n");
 
     strcpy(buf, "/tmp/bar/missing");
     BTASSERT(fs_call(buf, NULL, &qout, NULL) == -ENOENT);
@@ -112,16 +116,24 @@ static int test_command(struct harness_t *harness_p)
     BTASSERT(fs_call(buf, NULL, &qout, NULL) == -ENOENT);
     read_until(buf, "\n");
 
-    strcpy(buf, "/tm");
-    BTASSERT(fs_auto_complete(buf, &qout) >= 1);
-    read_until(buf, "p/");
-
-    strcpy(buf, "/tmp/b");
-    BTASSERT(fs_auto_complete(buf, &qout) >= 1);
-    read_until(buf, "ar ");
-
     strcpy(buf, "/tmp/q");
-    BTASSERT(fs_auto_complete(buf, &qout) == -ENOENT);
+    BTASSERT(fs_auto_complete(buf) == -ENOENT);
+
+    strcpy(buf, "/tm");
+    BTASSERT(fs_auto_complete(buf) == 2);
+    BTASSERT(strcmp(buf, "/tmp/") == 0);
+
+    strcpy(buf, "/tmp/f");
+    BTASSERT(fs_auto_complete(buf) == 3);
+    BTASSERT(strcmp(buf, "/tmp/foo/") == 0);
+
+    strcpy(buf, "/tmp/foo/");
+    BTASSERT(fs_auto_complete(buf) == 4);
+    BTASSERT(strcmp(buf, "/tmp/foo/bar ") == 0);
+
+    strcpy(buf, "");
+    BTASSERT(fs_auto_complete(buf) == 0);
+    BTASSERT(strcmp(buf, "") == 0);
 
     return (0);
 }
@@ -134,7 +146,7 @@ static int test_counter(struct harness_t *harness_p)
     BTASSERT(fs_call(buf, NULL, &qout, NULL) == 0);
     read_until(buf, "/your/counter                                        0000000000000000\r\n");
 
-    FS_COUNTER_INC(my_counter, 3);
+    fs_counter_increment(&my_counter, 3);
 
     strcpy(buf, "my/counter");
     BTASSERT(fs_call(buf, NULL, &qout, NULL) == 0);
@@ -158,9 +170,49 @@ static int test_parameter(struct harness_t *harness_p)
     BTASSERT(fs_call(buf, NULL, &qout, NULL) == 0);
     read_until(buf, "/our/parameter 5\r\n");
 
-    BTASSERT(FS_PARAMETER(our_parameter) == OUR_PARAMETER_DEFAULT);
-    FS_PARAMETER(our_parameter) = 1;
-    BTASSERT(FS_PARAMETER(our_parameter) == 1);
+    BTASSERT(our_parameter_value == OUR_PARAMETER_DEFAULT);
+    our_parameter_value = 1;
+    BTASSERT(our_parameter_value == 1);
+
+    strcpy(buf, "/our/parameter");
+    BTASSERT(fs_call(buf, NULL, &qout, NULL) == 0);
+    read_until(buf, "1\r\n");
+
+    strcpy(buf, "/our/parameter 3");
+    BTASSERT(fs_call(buf, NULL, &qout, NULL) == 0);
+
+    strcpy(buf, "/our/parameter");
+    BTASSERT(fs_call(buf, NULL, &qout, NULL) == 0);
+    read_until(buf, "3\r\n");
+
+    return (0);
+}
+
+static int test_list(struct harness_t *harness_p)
+{
+    char buf[256];
+
+    strcpy(buf, "kernel");
+    BTASSERT(fs_list(buf, NULL, &qout) == 0);
+    read_until(buf,
+               "fs/\r\n"
+               "log/\r\n"
+               "thrd/\r\n");
+
+    strcpy(buf, "tmp/foo");
+    BTASSERT(fs_list(buf, NULL, &qout) == 0);
+    read_until(buf,
+               "bar\r\n");
+
+    strcpy(buf, "");
+    BTASSERT(fs_list(buf, NULL, &qout) == 0);
+    read_until(buf,
+               "kernel/\r\n"
+               "logout\r\n"
+               "my/\r\n"
+               "our/\r\n"
+               "tmp/\r\n"
+               "your/\r\n");
 
     return (0);
 }
@@ -172,11 +224,31 @@ int main()
         { test_command, "test_command" },
         { test_counter, "test_counter" },
         { test_parameter, "test_parameter" },
+        { test_list, "test_list" },
         { NULL, NULL }
     };
 
     sys_start();
     uart_module_init();
+
+    /* Setup the commands. */
+    fs_command_init(&foo_bar, FSTR("/tmp/foo/bar"), tmp_foo_bar, NULL);
+    fs_command_register(&foo_bar);
+    fs_command_init(&bar, FSTR("/tmp/bar"), tmp_bar, NULL);
+    fs_command_register(&bar);
+
+    /* Setup the counters. */
+    fs_counter_init(&my_counter, FSTR("/my/counter"), 0);
+    fs_counter_register(&my_counter);
+    fs_counter_init(&your_counter, FSTR("/your/counter"), 0);
+    fs_counter_register(&your_counter);
+
+    /* Setup the parameter. */
+    fs_parameter_init(&our_parameter,
+                      FSTR("/our/parameter"),
+                      fs_cmd_parameter_int,
+                      &our_parameter_value);
+    fs_parameter_register(&our_parameter);
 
     harness_init(&harness);
     harness_run(&harness, harness_testcases);

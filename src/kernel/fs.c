@@ -26,209 +26,117 @@
 
 #define FS_NAME_MAX 64
 
-FS_COMMAND_DEFINE("/kernel/fs/counters_list", fs_cmd_counters_list);
-FS_COMMAND_DEFINE("/kernel/fs/counters_reset", fs_cmd_counters_reset);
+struct state_t {
+    struct fs_command_t *commands_p;
+    struct fs_counter_t *counters_p;
+    struct fs_parameter_t *parameters_p;
+};
 
-FS_COMMAND_DEFINE("/kernel/fs/parameters_list", fs_cmd_parameters_list);
+static struct fs_command_t cmd_counters_list;
+static struct fs_command_t cmd_counters_reset;
+static struct fs_command_t cmd_parameters_list;
 
-extern const FAR struct fs_node_t fs_nodes[];
-extern const FAR int fs_counters[];
-extern const FAR int fs_parameters[];
+static struct state_t state;
 
-/**
- * Create the absolute path in the file tree for given node.
- *
- * @return pointer to destination string or NULL
- */
-static char *get_abspath(char *buf_p,
-                         size_t size,
-                         const FAR struct fs_node_t *node_p)
-{
-    const FAR char *name_p;
-    size_t length;
-    ssize_t left = size;
-
-    /* Add null termination. */
-    buf_p += (size - 1);
-    *buf_p = '\0';
-
-    /* Stop when the root element is found. */
-    while (node_p->parent != -1) {
-        name_p = node_p->name_p;
-        length = std_strlen(name_p);
-
-        /* Prepend a slash. */
-        length += 1;
-        left -= length;
-
-        /* The name does not fit. */
-        if (left <= 0) {
-            return (NULL);
-        }
-
-        buf_p -= length;
-        *buf_p++ = '/';
-
-        /* Copy to output buffer. */
-        while (*name_p != '\0') {
-            *buf_p++ = *name_p++;
-        }
-
-        buf_p -= length;
-        node_p = &fs_nodes[node_p->parent];
-    }
-
-    return (buf_p);
-}
-
-static int list_indexed_items(chan_t *chout_p,
-                              chan_t *chin_p,
-                              void *arg_p,
-                              const FAR int *index_p,
-                              const FAR char *path_format)
-{
-    int i;
-    const char *argv_callback[1];
-    const FAR struct fs_node_t *node_p;
-    char buf[FS_NAME_MAX], *abspath_p;
-
-    while (*index_p != -1) {
-        node_p = &fs_nodes[*index_p];
-
-        abspath_p = get_abspath(buf, membersof(buf), node_p);
-
-        std_fprintf(chout_p, path_format, abspath_p);
-
-        for (i = 0; i < FS_NAME_MAX; i++) {
-            buf[i] = node_p->name_p[i];
-        }
-
-        argv_callback[0] = buf;
-        node_p->callback(FS_ARGC_GET, argv_callback, chout_p, chin_p, arg_p);
-
-        index_p++;
-    }
-
-    return (0);
-}
-
-int fs_counter_get(int argc,
-                   const char *argv[],
-                   chan_t *chout_p,
-                   chan_t *chin_p,
-                   long long *counter_p)
+static int counter_get(struct fs_counter_t *counter_p,
+                       chan_t *chout_p)
 {
     std_fprintf(chout_p,
                 FSTR("%08lx%08lx\r\n"),
-                (long)(*counter_p >> 32),
-                (long)(*counter_p & 0xffffffff));
-
+                (long)(counter_p->value >> 32),
+                (long)(counter_p->value & 0xffffffff));
+    
     return (0);
 }
 
-int fs_counter_set(int argc,
-                   const char *argv[],
-                   chan_t *chout_p,
-                   chan_t *chin_p,
-                   long long *counter_p)
+static int counter_set(struct fs_counter_t *counter_p)
 {
-    *counter_p = 0;
+    counter_p->value = 0;
 
     return (0);
 }
 
-int fs_parameter_handler_int_set(int argc,
-                                 const char *argv[],
-                                 chan_t *chout_p,
-                                 chan_t *chin_p,
-                                 int *parameter_p)
-{
-    long value;
-
-    if (std_strtol(argv[1], &value)) {
-        std_fprintf(chout_p, FSTR("bad value '%s'\r\n"), argv[1]);
-        return (1);
-    }
-
-    *parameter_p = value;
-
-    return (0);
-}
-
-int fs_parameter_handler_int_get(int argc,
-                                 const char *argv[],
-                                 chan_t *chout_p,
-                                 chan_t *chin_p,
-                                 int *parameter_p)
-{
-    std_fprintf(chout_p, FSTR("%d\r\n"), *parameter_p);
-
-    return (0);
-}
-
-int fs_cmd_counters_list(int argc,
+static int counters_list(int argc,
                          const char *argv[],
                          chan_t *chout_p,
                          chan_t *chin_p,
-                         void *arg_p)
+                         void *arg_p,
+                         void *call_arg_p)
 {
-    UNUSED(chin_p);
+    struct fs_counter_t *counter_p;
+    char buf[FS_NAME_MAX];
 
-    std_fprintf(chout_p, FSTR("NAME                                                 VALUE\r\n"));
+    std_fprintf(chout_p,
+                FSTR("NAME                                                 VALUE\r\n"));
 
-    return (list_indexed_items(chout_p,
-                               chin_p,
-                               arg_p,
-                               fs_counters,
-                               FSTR("%-52s ")));
-}
+    counter_p = state.counters_p;
+    
+    while (counter_p != NULL) {
+        std_strcpy(buf, counter_p->command.path_p);
+        std_fprintf(chout_p, FSTR("%-53s"), buf);
+        counter_p->command.callback(FS_ARGC_GET,
+                                    NULL,
+                                    chout_p,
+                                    NULL,
+                                    counter_p->command.arg_p,
+                                    arg_p);
 
-int fs_cmd_counters_reset(int argc,
-                          const char *argv[],
-                          chan_t *chout_p,
-                          chan_t *chin_p,
-                          void *arg_p)
-{
-    UNUSED(chin_p);
-
-    char buf[64];
-    int i;
-    const char *argv_callback[2];
-    const FAR int *index_p;
-    const FAR struct fs_node_t *node_p;
-
-    index_p = fs_counters;
-
-    while (*index_p != -1) {
-        node_p = &fs_nodes[*index_p];
-
-        for (i = 0; i < FS_NAME_MAX; i++) {
-            buf[i] = node_p->name_p[i];
-        }
-
-        argv_callback[0] = buf;
-        argv_callback[1] = "0";
-        node_p->callback(2, argv_callback, chout_p, chin_p, arg_p);
-
-        index_p++;
+        counter_p = counter_p->next_p;
     }
 
     return (0);
 }
 
-int fs_cmd_parameters_list(int argc,
-                           const char *argv[],
-                           chan_t *chout_p,
-                           chan_t *chin_p,
-                           void *arg_p)
+static int counters_reset(int argc,
+                          const char *argv[],
+                          chan_t *chout_p,
+                          chan_t *chin_p,
+                          void *arg_p,
+                          void *call_arg_p)
 {
-    UNUSED(chin_p);
+    struct fs_counter_t *counter_p;
 
-    return (list_indexed_items(chout_p,
-                               chin_p,
-                               arg_p,
-                               fs_parameters,
-                               FSTR("%s ")));
+    counter_p = state.counters_p;
+    
+    while (counter_p != NULL) {
+        counter_p->command.callback(0,
+                                    NULL,
+                                    chout_p,
+                                    NULL,
+                                    counter_p->command.arg_p,
+                                    arg_p);
+
+        counter_p = counter_p->next_p;
+    }
+
+    return (0);
+}
+
+int parameters_list(int argc,
+                    const char *argv[],
+                    chan_t *chout_p,
+                    chan_t *chin_p,
+                    void *arg_p,
+                    void *call_arg_p)
+{
+    struct fs_parameter_t *parameter_p;
+ 
+    parameter_p = state.parameters_p;
+    
+    while (parameter_p != NULL) {
+        std_fprintf(chout_p, parameter_p->command.path_p);
+        std_fprintf(chout_p, FSTR(" "));
+        parameter_p->command.callback(FS_ARGC_GET,
+                                      NULL,
+                                      chout_p,
+                                      NULL,
+                                      parameter_p->command.arg_p,
+                                      call_arg_p);
+
+        parameter_p = parameter_p->next_p;
+    }
+
+    return (0);
 }
 
 /**
@@ -293,73 +201,45 @@ static int command_parse(char *command_p, const char *argv[])
     return (argc);
 }
 
-static int cmp(FAR const char *name_p, const char *cmd_p, int len)
+static int counter_cmd(int argc,
+                       const char *argv[],
+                       chan_t *chout_p,
+                       chan_t *chin_p,
+                       void *cmd_arg_p,
+                       void *arg_p)
 {
-    while (len > 0) {
-        if (*name_p != *cmd_p) {
-            return (1);
-        }
-
-        name_p++;
-        cmd_p++;
-        len--;
+    if (argc == FS_ARGC_GET) {
+        return (counter_get(cmd_arg_p, chout_p));
+    } else {
+        return (counter_set(cmd_arg_p));
     }
-
-    return (0);
 }
 
-static int node_find(const char *cmd_p)
+int fs_module_init()
 {
-    int index = 0, len;
-    const char *p;
+    state.commands_p = NULL;
+    state.counters_p = NULL;
+    state.parameters_p = NULL;
 
-    /* Skip '/'.*/
-    while (*cmd_p == '/') {
-        cmd_p++;
-    }
+    fs_command_init(&cmd_counters_list,
+                    FSTR("/kernel/fs/counters_list"),
+                    counters_list,
+                    NULL);
+    fs_command_register(&cmd_counters_list);
 
-    /* Find length.*/
-    p = cmd_p;
-    len = 0;
+    fs_command_init(&cmd_counters_reset,
+                    FSTR("/kernel/fs/counters_reset"), 
+                    counters_reset,
+                    NULL);
+    fs_command_register(&cmd_counters_reset);
 
-    while ((*p != '/') && (*p != '\0')) {
-        len++;
-        p++;
-    }
+    fs_command_init(&cmd_parameters_list,
+                    FSTR("/kernel/fs/parameters_list"), 
+                    parameters_list,
+                    NULL);
+    fs_command_register(&cmd_parameters_list);
 
-    /* Empty command is root node.*/
-    if (len == 0) {
-        return (0);
-    }
-
-    index = fs_nodes[0].children.begin;
-
-    while (index != 0) {
-        /* Node found?*/
-        len = std_strlen(fs_nodes[index].name_p);
-
-        if (cmp(fs_nodes[index].name_p, cmd_p, len) == 0) {
-            cmd_p += len;
-
-            if ((*cmd_p == '\0') ||
-                ((*cmd_p == '/') && (cmd_p[1] == '\0'))) {
-                return (index);
-            }
-
-            /* Skip '/'.*/
-            while (*cmd_p == '/') {
-                cmd_p++;
-            }
-
-            index = fs_nodes[index].children.begin;
-
-            continue;
-        }
-
-        index = fs_nodes[index].next;
-    }
-
-    return (-ENOENT);
+    return (0);
 }
 
 int fs_call(char *command_p,
@@ -367,196 +247,189 @@ int fs_call(char *command_p,
             chan_t *chout_p,
             void *arg_p)
 {
-    int err, argc;
+    int argc, skip_slash;
     const char *argv[FS_COMMAND_ARGS_MAX];
-    FAR const struct fs_node_t *node_p;
+    struct fs_command_t *current_p;
 
     argc = command_parse(command_p, argv);
 
     if (argc < 0) {
-        err = argc;
-        goto out;
+        return (argc);
     }
 
-    err = node_find(argv[0]);
+    /* Find given command. */
+    current_p = state.commands_p;
+    skip_slash = (argv[0][0] != '/');
 
-    if (err <= 0) {
-        err = -ENOENT;
-        goto out;
+    while (current_p != NULL) {
+        if (std_strcmp(argv[0], &current_p->path_p[skip_slash]) == 0) {
+            return (current_p->callback(argc,
+                                        argv,
+                                        chout_p,
+                                        chin_p,
+                                        current_p->arg_p,
+                                        arg_p));
+        }
+
+        current_p = current_p->next_p;
     }
 
-    node_p = &fs_nodes[err];
+    std_fprintf(chout_p, FSTR("%s: command not found\r\n"), argv[0]);
 
-    if (node_p->callback == NULL) {
-        err = -EISDIR;
-        goto out;
-    }
-
-    return (node_p->callback(argc, argv, chout_p, chin_p, arg_p));
-
- out:
-    std_fprintf(chout_p, FSTR("%s: command not found\r\n"), command_p);
-
-    return (err);
+    return (-ENOENT);
 }
 
 int fs_list(const char *path_p,
             const char *filter_p,
             chan_t *chout_p)
 {
-    int root, head, to_write, written, next, flen = 0;
-    const FAR struct fs_node_t *node_p;
+    int buf_length, path_offset, filter_offset, path_length;
+    struct fs_command_t *command_p;
+    char buf[64], next_char;
 
-    /* Find root node.*/
-    root = node_find(path_p);
+    filter_offset = path_length = strlen(path_p);
+    path_offset = 0;
 
-    if (root < 0) {
-        return (-ENOENT);
+    if (path_p[0] != '/') {
+        path_offset = 1;
+        filter_offset++;
     }
 
-    /* List in alphabetical order.*/
-    head = fs_nodes[root].children.begin;
-    written = -1;
-
-    if (filter_p != NULL) {
-        flen = strlen(filter_p);
+    if (path_length > 0) {
+        if (path_p[path_length - 1] == '/') {
+            path_length--;
+        } else {
+            filter_offset++;
+        }
     }
 
-    while (1) {
-        to_write = -1;
-        next = head;
+    buf_length = -1;
 
-        while (next != 0) {
-            /* Before current to_write node.*/
-            if ((to_write == -1) ||
-                (std_strcmp_f(fs_nodes[next].name_p, fs_nodes[to_write].name_p) < 0)) {
+    /* Find all paths matching given path and filter and output the
+       file or folder matching the filter. */
+    command_p = state.commands_p;
 
-                /* After last written node.*/
-                if ((written == -1) ||
-                    (std_strcmp_f(fs_nodes[next].name_p, fs_nodes[written].name_p) > 0)) {
-                    to_write = next;
+    while (command_p != NULL) {
+        /* Path match? */
+        if (std_strncmp(&command_p->path_p[path_offset],
+                        path_p,
+                        path_length) == 0) {
+            /* Filter match? */
+            if ((filter_p == NULL)
+                || (std_strncmp(&command_p->path_p[filter_offset],
+                                filter_p,
+                                strlen(filter_p)) == 0)) {
+                /* Output new files and folders. */
+                if ((buf_length == -1)
+                    || (std_strncmp(&command_p->path_p[filter_offset],
+                                    buf,
+                                    buf_length) != 0)) {
+                    /* Get file or folder name. */
+                    buf_length = 0;
+
+                    do {
+                        next_char = command_p->path_p[filter_offset + buf_length];
+                        
+                        buf[buf_length] = next_char;
+                        buf_length++;
+                    } while ((next_char != '\0') && (next_char != '/'));
+
+                    buf[buf_length] = '\0';
+
+                    std_fprintf(chout_p, FSTR("%s\r\n"), buf);
                 }
             }
-            next = fs_nodes[next].next;
         }
 
-        /* Break when all nodes are written to output chan.*/
-        if (to_write == -1) {
-            break;
-        }
-
-        /* Write node to output chan.*/
-        node_p = &fs_nodes[to_write];
-
-        if ((flen == 0) || (cmp(node_p->name_p, filter_p, flen) == 0)) {
-            std_fprintf(chout_p, node_p->name_p);
-
-            if (node_p->callback == NULL) {
-                std_fprintf(chout_p, FSTR("/"));
-            }
-
-            std_fprintf(chout_p, FSTR("\r\n"));
-        }
-
-        written = to_write;
+        command_p = command_p->next_p;
     }
 
     return (0);
 }
 
-int fs_auto_complete(char *path, chan_t *chout_p)
+int fs_auto_complete(char *path_p)
 {
-    int node, head, pos, flag, next,
-        command_length, node_name_length, len;
-    char c, *pcmd_p;
-    int err;
+    char next_char;
+    int mismatch, path_length, offset, size;
+    struct fs_command_t *command_p, *next_p;
 
-    /* Split command into path and uncompleted command. */
-    fs_split(path, &path, &pcmd_p);
-    node = node_find(path);
-    fs_merge(path, pcmd_p);
+    offset = 0;
+    size = path_length = strlen(path_p);
 
-    if (node == -ENOENT) {
-        return (-ENOENT);
+    /* Skip the leading slash in the registered commands if it is
+       missing in the input path. */
+    if (path_p[0] != '/') {
+        offset = 1;
     }
 
-    head = fs_nodes[node].children.begin;
-    node = head;
-    command_length = strlen(pcmd_p);
-    len = 0;
+    /* Find the first command matching given path. */
+    command_p = state.commands_p;
 
-    /* Any nodes matching path? */
-    if (command_length > 0) {
-        next = head;
-
-        while (next != 0) {
-            if (cmp(fs_nodes[next].name_p, pcmd_p, command_length) == 0) {
-                node_name_length = std_strlen(fs_nodes[next].name_p);
-
-                if (node_name_length > len) {
-                    len = node_name_length;
-                    node = next;
-                }
-            }
-
-            next = fs_nodes[next].next;
-        }
-
-        if (len == 0) {
-            return (-ENOENT);
-        }
-    }
-
-    err = 0;
-    pos = command_length;
-    node_name_length = std_strlen(fs_nodes[node].name_p);
-
-    /* Auto-complete. */
-    while (pos < node_name_length) {
-        next = head;
-        flag = 0;
-        c = fs_nodes[node].name_p[pos];
-
-        while (next != 0) {
-            if (std_strncmp_f(fs_nodes[next].name_p, fs_nodes[node].name_p, pos) == 0) {
-                if (c != fs_nodes[next].name_p[pos]) {
-                    flag = 1;
-                    break;
-                }
-            }
-
-            next = fs_nodes[next].next;
-        }
-
-        /* Completion happend? */
-        if (flag == 0) {
-            err = (pos - command_length + 1);
-            pcmd_p[pos] = c;
-            chan_write(chout_p, &c, sizeof(c));
-        } else {
+    while (command_p != NULL) {
+        if (std_strncmp(&command_p->path_p[offset],
+                        path_p,
+                        size) == 0) {
             break;
         }
 
-        pos++;
+        command_p = command_p->next_p;
     }
 
-    /* Append '/' or ' ' on full match. */
-    if (pos == node_name_length) {
-        err++;
+    /* No command matching the path. */
+    if (command_p == NULL) {
+        return (-ENOENT);
+    }
 
-        if (fs_nodes[node].callback == NULL) {
-            c = '/';
-        } else {
-            c = ' ';
+    /* Auto-complete given path. Compare the next character each
+       iteration.
+
+       Example:
+       path_p = "/tm"
+       commands = ["/tmp/foo", "/tmp/bar", "/zoo/lander"]
+       auto-completed = "/tmp/"
+    */
+    while (1) {
+        mismatch = 0;
+        next_char = command_p->path_p[offset + size];
+
+        /* It's a match if all commands matching path has the same
+           next character. */
+        next_p = command_p;
+
+        while ((next_p != NULL)
+               && (std_strncmp(&next_p->path_p[offset],
+                               path_p,
+                               size) == 0)) {
+            if (next_p->path_p[offset + size] != next_char) {
+                mismatch = 1;
+                break;
+            }
+
+            next_p = next_p->next_p;
         }
 
-        pcmd_p[pos++] = c;
-        chan_write(chout_p, &c, sizeof(c));
+        /* Completion happend? */
+        if (mismatch == 0) {
+            path_p[size] = next_char;
+            size++;
+
+            /* Auto-complete one directory at a time. */
+            if (next_char == '/') {
+                break;
+            } else if (next_char == '\0') {
+                /* Append a space on commands. */
+                path_p[size - 1] = ' ';
+                path_p[size] = '\0';
+                break;
+            }
+        } else {
+            break;
+        }
     }
 
-    pcmd_p[pos] = '\0';
+    path_p[size] = '\0';
 
-    return (err);
+    return (size - path_length);
 }
 
 void fs_split(char *buf_p, char **path_pp, char **cmd_pp)
@@ -586,4 +459,146 @@ void fs_merge(char *path_p, char *cmd_p)
     if (*path_p != '\0') {
         *--cmd_p = '/';
     }
+}
+
+int fs_command_init(struct fs_command_t *self_p,
+                    const FAR char *path_p,
+                    fs_callback_t callback,
+                    void *arg_p)
+{
+    self_p->next_p = NULL;
+    self_p->path_p = path_p;
+    self_p->callback = callback;
+    self_p->arg_p = arg_p;
+
+    return (0);
+}
+
+int fs_command_register(struct fs_command_t *command_p)
+{
+    int res = -1;
+    struct fs_command_t *current_p, *prev_p;
+
+    /* Insert in alphabetical order. */
+    prev_p = NULL;
+    current_p = state.commands_p;
+
+    while (current_p != NULL) {
+        if (strcmp(command_p->path_p, current_p->path_p) < 0) {
+            break;
+        }
+
+        prev_p = current_p;
+        current_p = current_p->next_p;
+    }
+
+    /* Insert into the list. */
+    command_p->next_p = current_p;
+
+    if (prev_p == NULL) {
+        state.commands_p = command_p;
+    } else {
+        prev_p->next_p = command_p;
+    }
+
+    return (res);
+}
+
+int fs_command_deregister(struct fs_command_t *command_p)
+{
+    return (-1);
+}
+
+int fs_counter_init(struct fs_counter_t *self_p,
+                    const FAR char *path_p,
+                    uint64_t value)
+{
+    fs_command_init(&self_p->command,
+                    path_p,
+                    counter_cmd,
+                    self_p);
+
+    self_p->value = value;
+    self_p->next_p = NULL;
+
+    return (0);
+}
+
+int fs_counter_increment(struct fs_counter_t *self_p,
+                         uint64_t value)
+{
+    self_p->value += value;
+
+    return (0);
+}
+
+int fs_counter_register(struct fs_counter_t *counter_p)
+{
+    /* Insert counter into the command list and the counter list. */
+    fs_command_register(&counter_p->command);
+
+    counter_p->next_p = state.counters_p;
+    state.counters_p = counter_p;
+
+    return (0);
+}
+
+int fs_counter_deregister(struct fs_counter_t *counter_p)
+{
+    return (0);
+}
+
+int fs_parameter_init(struct fs_parameter_t *self_p,
+                      const FAR char *path_p,
+                      fs_callback_t callback,
+                      void *value_p)
+{
+    fs_command_init(&self_p->command,
+                    path_p,
+                    callback,
+                    value_p);
+
+    self_p->next_p = NULL;
+
+    return (0);
+}
+
+int fs_parameter_register(struct fs_parameter_t *parameter_p)
+{
+    /* Insert counter into the command list and the counter list. */
+    fs_command_register(&parameter_p->command);
+
+    parameter_p->next_p = state.parameters_p;
+    state.parameters_p = parameter_p;
+
+    return (0);
+}
+
+int fs_parameter_deregister(struct fs_parameter_t *parameter_p)
+{
+    return (0);
+}
+
+int fs_cmd_parameter_int(int argc,
+                         const char *argv[],
+                         chan_t *chout_p,
+                         chan_t *chin_p,
+                         void *arg_p,
+                         void *call_arg_p)
+{
+    int *value_p = arg_p;
+    long value;
+
+    if (argc == FS_ARGC_GET) {
+        std_fprintf(chout_p, FSTR("%d\r\n"), *value_p);
+    } else {
+        if (std_strtol(argv[1], &value)) {
+            std_fprintf(chout_p, FSTR("bad value '%s'\r\n"), argv[1]);
+            return (1);
+        }
+        
+        *value_p = value;
+    }
+    
+    return (0);
 }

@@ -24,160 +24,44 @@
 #include "simba.h"
 
 /**
- * Add a command to the file system. This macro is normally used in
- * the beginning of a source file to define the modules' file system
- * commands. All commands defined with this macro can be called with
- * the function `fs_call()`.
- *
- * In the example below the command `"/hello/world"` is defined and
- * with the function `cmd_hello_world()` as callback. The callback
- * writes "Hello World\r\n" to the output channel. The input arguments
- * and input channel are unused.
- *
- * @rst
- * .. code-block:: c
- *
- *    FS_COMMAND_DEFINE("/hello/world", cmd_hello_world);
- *
- *    int cmd_hello_world(int argc,              
- *                        const char *argv[],    
- *                        chan_t *chout_p,       
- *                        chan_t *chin_p)
- *    {
- *       std_fprintf(out_p, FSTR("Hello World!\r\n"));
- *
- *       return (0);
- *    }
- * @endrst
- *
- * @param[in] path Path of the command in the debug file system.
- * @param[in] name Command callback.
- */
-#if defined(__SIMBA_GEN__)
-#    define FS_COMMAND_DEFINE(path, callback) ..fs_command.. path #callback
-#else
-#    define FS_COMMAND_DEFINE(path, callback)
-#endif
-
-/**
- * Define a 64 bit debug counter with given name and file system path.
- *
- * @param[in] path Path of the counter in the debug file system.
- * @param[in] name Counter name.
- */
-#if defined(__SIMBA_GEN__)
-#    define FS_COUNTER_DEFINE(path, name) ..fs_counter.. path ..fs_separator.. #name
-#else
-#    define FS_COUNTER_DEFINE(path, name)          \
-    long long counter_ ## name = 0;             \
-    FS_COUNTER_CMD(name)
-#endif
-
-/**
- * Get the counter.
- *
- * @param[in] name Counter name. The same name as specified in
- *                 `FS_COUNTER_DEFINE()`.
- *
- * @return The counter.
- */
-#define FS_COUNTER(name) counter_ ## name
-
-/**
- * Increment a counter with given value.
- *
- * @param[in] name Counter name. The same name as specified in
- *                 `FS_COUNTER_DEFINE()`.
- * @param[in] value Value to add to given counter.
- */
-#define FS_COUNTER_INC(name, value) FS_COUNTER(name) += (value)
-
-/**
- * Add a command to the file system with given callback.
- */
-#if defined(__SIMBA_GEN__)
-#    define FS_PARAMETER_DEFINE(path, name, type, default_value) \
-    ..fs_parameter.. path #name #type
-#else
-#    define FS_PARAMETER_DEFINE(path, name, type, default_value)   \
-    type fs_parameter_ ## name = default_value;                 \
-    FS_PARAMETER_CMD(name, type)
-#endif
-
-/**
- * Get and set parameter value.
- */
-#define FS_PARAMETER(name) fs_parameter_ ## name
-
-/**
  * Length of argv for get.
  */
 #define FS_ARGC_GET 1
 
-#define FS_COUNTER_CMD(name)                            \
-    int fs_counter_cmd_ ## name (int argc,              \
-                                 const char *argv[],    \
-                                 chan_t *chout_p,       \
-                                 chan_t *chin_p)        \
-    {                                                   \
-        if (argc == FS_ARGC_GET) {                      \
-            return (fs_counter_get(argc,                \
-                                   argv,                \
-                                   chout_p,             \
-                                   chin_p,              \
-                                   &FS_COUNTER(name))); \
-        } else {                                        \
-            return (fs_counter_set(argc,                \
-                                   argv,                \
-                                   chout_p,             \
-                                   chin_p,              \
-                                   &FS_COUNTER(name))); \
-        }                                               \
-    }
+typedef int (*fs_callback_t)(int argc,
+                             const char *argv[],
+                             void *out_p,
+                             void *in_p,
+                             void *arg_p,
+                             void *call_arg_p);
 
-#define FS_PARAMETER_CMD(name, handler)                                 \
-    int fs_parameter_cmd_ ## name (int argc,                            \
-                                   const char *argv[],                  \
-                                   chan_t *chout_p,                     \
-                                   chan_t *chin_p)                      \
-    {                                                                   \
-        if (argc == FS_ARGC_GET) {                                      \
-            return (fs_parameter_handler_ ## handler ## _get(argc,      \
-                                                             argv,      \
-                                                             chout_p,   \
-                                                             chin_p,    \
-                                                             &FS_PARAMETER(name))); \
-        } else {                                                        \
-            return (fs_parameter_handler_ ## handler ## _set(argc,      \
-                                                             argv,      \
-                                                             chout_p,   \
-                                                             chin_p,    \
-                                                             &FS_PARAMETER(name))); \
-        }                                                               \
-    }
+/* Command. */
+struct fs_command_t {
+    const FAR char *path_p;
+    fs_callback_t callback;
+    void *arg_p;
+    void *next_p;
+};
 
-/* Counter node. */
+/* Counter. */
 struct fs_counter_t {
+    struct fs_command_t command;
     long long unsigned int value;
-    FAR const char *name_p;
+    void *next_p;
 };
 
-/* File system node. */
-struct fs_node_t {
-    int next;
-    FAR const char *name_p;
-    int parent;
-    struct {
-        int begin;
-        int end;
-        int len;
-    } children;
-    int (*callback)(int argc,
-                    const char *argv[],
-                    void *out_p,
-                    void *in_p,
-                    void *arg_p);
+/* Parameter. */
+struct fs_parameter_t {
+    struct fs_command_t command;
+    void *next_p;
 };
+
+/**
+ * Initialize the file system module.
+ *
+ * @return zero(0) or negative error code.
+ */
+int fs_module_init(void);
 
 /**
  * Call given file system command with given input and output
@@ -214,13 +98,12 @@ int fs_list(const char *path_p,
  * Auto-complete given path.
  *
  * @param[in,out] path_p Path to auto-complete.
- * @param[in] chout_p Output chan.
  *
  * @return >=1 if completion happened. Match length.
  *         0 if no completion happend,
  *         or negative error code.
  */
-int fs_auto_complete(char *path_p, chan_t *chout_p);
+int fs_auto_complete(char *path_p);
 
 /**
  * Split buffer into path and command.
@@ -243,28 +126,122 @@ void fs_split(char *buf_p, char **path_pp, char **cmd_pp);
  */
 void fs_merge(char *path_p, char *cmd_p);
 
-int fs_parameter_handler_int_set(int argc,
-                                 const char *argv[],
-                                 chan_t *chout_p,
-                                 chan_t *chin_p,
-                                 int *parameter_p);
+/**
+ * Initialize given command.
+ *
+ * @param[in] self_p Command to initialize.
+ * @param[in] path_p Path to register.
+ * @param[in] callback Command callback function.
+ * @param[in] arg_p Callback argument.
+ *
+ * @return zero(0) or negative error code.
+ */
+int fs_command_init(struct fs_command_t *self_p,
+                    const FAR char *path_p,
+                    fs_callback_t callback,
+                    void *arg_p);
 
-int fs_parameter_handler_int_get(int argc,
-                                 const char *argv[],
-                                 chan_t *chout_p,
-                                 chan_t *chin_p,
-                                 int *parameter_p);
+/**
+ * Register given command.
+ *
+ * @param[in] self_p Command to register.
+ *
+ * @return zero(0) or negative error code.
+ */
+int fs_command_register(struct fs_command_t *command_p);
 
-int fs_counter_get(int argc,
-                   const char *argv[],
-                   chan_t *chout_p,
-                   chan_t *chin_p,
-                   long long *counter_p);
+/**
+ * Deregister given command.
+ *
+ * @param[in] self_p Command to deregister.
+ *
+ * @return zero(0) or negative error code.
+ */
+int fs_command_deregister(struct fs_command_t *command_p);
 
-int fs_counter_set(int argc,
-                   const char *argv[],
-                   chan_t *chout_p,
-                   chan_t *chin_p,
-                   long long *counter_p);
+/**
+ * Initialize given counter.
+ *
+ * @param[in] self_p Counter to initialize.
+ * @param[in] path_p Path to register.
+ * @param[in] value Initial value of the counter.
+ *
+ * @return zero(0) or negative error code.
+ */
+int fs_counter_init(struct fs_counter_t *self_p,
+                    const FAR char *path_p,
+                    uint64_t value);
+
+/**
+ * Increment given counter.
+ *
+ * @param[in] self_p Command to initialize.
+ * @param[in] value Increment value.
+ *
+ * @return zero(0) or negative error code.
+ */
+int fs_counter_increment(struct fs_counter_t *self_p,
+                         uint64_t value);
+
+/**
+ * Register given counter.
+ *
+ * @param[in] self_p Counter to register.
+ *
+ * @return zero(0) or negative error code.
+ */
+int fs_counter_register(struct fs_counter_t *counter_p);
+
+/**
+ * Deregister given counter.
+ *
+ * @param[in] self_p Counter to deregister.
+ *
+ * @return zero(0) or negative error code.
+ */
+int fs_counter_deregister(struct fs_counter_t *counter_p);
+
+/**
+ * Initialize given parameter.
+ *
+ * @param[in] self_p Parameter to initialize.
+ * @param[in] path_p Path to register.
+ * @param[in] callback Command callback function.
+ * @param[in] value_p Value.
+ *
+ * @return zero(0) or negative error code.
+ */
+int fs_parameter_init(struct fs_parameter_t *self_p,
+                      const FAR char *path_p,
+                      fs_callback_t callback,
+                      void *value_p);
+
+/**
+ * Register given parameter.
+ *
+ * @param[in] self_p Parameter to register.
+ *
+ * @return zero(0) or negative error code.
+ */
+int fs_parameter_register(struct fs_parameter_t *parameter_p);
+
+/**
+ * Deregister given parameter.
+ *
+ * @param[in] self_p Parameter to deregister.
+ *
+ * @return zero(0) or negative error code.
+ */
+int fs_parameter_deregister(struct fs_parameter_t *parameter_p);
+
+/**
+ * Command callback for an int parameter.
+ */
+int fs_cmd_parameter_int(int argc,
+                         const char *argv[],
+                         chan_t *chout_p,
+                         chan_t *chin_p,
+                         void *arg_p,
+                         void *call_arg_p);
 
 #endif

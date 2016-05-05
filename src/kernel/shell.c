@@ -23,15 +23,17 @@
 #define SHELL_COMMAND_MAX 64
 #define SHELL_PROMPT "$ "
 
-FS_COMMAND_DEFINE("/logout", shell_cmd_logout);
+static struct fs_command_t cmd_logout;
 
 /**
  * Unused command callback. Logout handling in shell_main().
  */
-int shell_cmd_logout(int argc,
-                     const char *argv[],
-                     chan_t *chout_p,
-                     chan_t *chin_p)
+static int cmd_logout_cb(int argc,
+                         const char *argv[],
+                         chan_t *chout_p,
+                         chan_t *chin_p,
+                         void *arg_p,
+                         void *call_arg_p)
 {
     return (-1);
 }
@@ -129,11 +131,13 @@ static int read_command(char *buf_p,
         if (c == '\t') {
             /* Auto-completion. */
             *write_p = '\0';
-            err = fs_auto_complete(buf_p, chout_p);
+            err = fs_auto_complete(buf_p);
 
             if (err > 0) {
+                std_fprintf(chout_p, FSTR("%s"), write_p);
                 write_p += err;
             } else if (err == 0) {
+                /* No auto-completion happend. */
                 fs_split(buf_p, &path_p, &filter_p);
                 std_fprintf(chout_p, FSTR("\r\n"));
                 fs_list(path_p, filter_p, chout_p);
@@ -141,7 +145,7 @@ static int read_command(char *buf_p,
                 std_fprintf(chout_p, FSTR(SHELL_PROMPT "%s"), buf_p);
             }
         } else if (c == '\n') {
-            /* Comamnd termination. */
+            /* Command termination. */
             if (((write_p > buf_p) > 0) && (write_p[-1] == '\r')) {
                 write_p--;
             }
@@ -166,6 +170,17 @@ static int read_command(char *buf_p,
     std_fprintf(chout_p, FSTR("\r\nshell: error: command too long\r\n"));
 
     return (-E2BIG);
+}
+
+int shell_module_init()
+{
+    fs_command_init(&cmd_logout,
+                    FSTR("/logout"),
+                    cmd_logout_cb,
+                    NULL);
+    fs_command_register(&cmd_logout);
+
+    return (0);
 }
 
 void *shell_main(void *arg_p)

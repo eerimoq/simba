@@ -466,6 +466,26 @@ int std_strcmp_f(FAR const char *fstr0_p,
     return (fstr0_p[-1] - fstr1_p[-1]);
 }
 
+int std_strncmp(FAR const char *fstr_p,
+                const char *str_p,
+                size_t size)
+{
+    FAR const char *fstr_end_p = (fstr_p + size);
+
+    /* Match if no characters are compared. */
+    if (size == 0) {
+        return (0);
+    }
+
+    while (*fstr_p++ == *str_p++) {
+        if ((fstr_p[-1] == '\0') || (fstr_p == fstr_end_p)) {
+            return (0);
+        }
+    }
+
+    return (fstr_p[-1] - str_p[-1]);
+}
+
 int std_strncmp_f(FAR const char *fstr0_p,
                   FAR const char *fstr1_p,
                   size_t size)

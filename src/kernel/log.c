@@ -21,10 +21,9 @@
 #include "simba.h"
 #include <stdarg.h>
 
-/* Define shell commands. */
-FS_COMMAND_DEFINE("/kernel/log/print", log_cmd_print);
-FS_COMMAND_DEFINE("/kernel/log/list", log_cmd_list);
-FS_COMMAND_DEFINE("/kernel/log/set_log_mask", log_cmd_set_log_mask);
+static struct fs_command_t cmd_print;
+static struct fs_command_t cmd_list;
+static struct fs_command_t cmd_set_log_mask;
 
 struct state_t {
     struct log_handler_t handler;
@@ -59,10 +58,12 @@ static struct state_t state;
 /**
  * The shell command callback for "/kernel/log/print".
  */
-int log_cmd_print(int argc,
-                  const char *argv[],
-                  void *out_p,
-                  void *in_p)
+static int cmd_print_cb(int argc,
+                        const char *argv[],
+                        chan_t *out_p,
+                        chan_t *in_p,
+                        void *arg_p,
+                        void *call_arg_p)
 {
     if (argc != 2) {
         std_fprintf(out_p, FSTR("Usage: print <string>\r\n"));
@@ -79,10 +80,12 @@ int log_cmd_print(int argc,
 /**
  * The shell command callback for "/kernel/log/print".
  */
-int log_cmd_list(int argc,
-                 const char *argv[],
-                 void *out_p,
-                 void *in_p)
+static int cmd_list_cb(int argc,
+                       const char *argv[],
+                       chan_t *out_p,
+                       chan_t *in_p,
+                       void *arg_p,
+                       void *call_arg_p)
 {
     struct log_object_t *object_p;
 
@@ -115,10 +118,12 @@ int log_cmd_list(int argc,
 /**
  * The shell command callback for "/kernel/log/set_log_mask".
  */
-int log_cmd_set_log_mask(int argc,
-                         const char *argv[],
-                         void *out_p,
-                         void *in_p)
+static int cmd_set_log_mask_cb(int argc,
+                               const char *argv[],
+                               chan_t *out_p,
+                               chan_t *in_p,
+                               void *arg_p,
+                               void *call_arg_p)
 {
     struct log_object_t *object_p;
     long mask;
@@ -178,6 +183,25 @@ int log_module_init()
     state.object.name_p = "log";
     state.object.mask = LOG_UPTO(INFO);
     state.object.next_p = NULL;
+
+    /* Setup shell commands. */
+    fs_command_init(&cmd_print,
+                    FSTR("/kernel/log/print"),
+                    cmd_print_cb,
+                    NULL);
+    fs_command_register(&cmd_print);
+
+    fs_command_init(&cmd_list,
+                    FSTR("/kernel/log/list"),
+                    cmd_list_cb,
+                    NULL);
+    fs_command_register(&cmd_list);
+
+    fs_command_init(&cmd_set_log_mask,
+                    FSTR("/kernel/log/set_log_mask"),
+                    cmd_set_log_mask_cb,
+                    NULL);
+    fs_command_register(&cmd_set_log_mask);
     
     return (0);
 }

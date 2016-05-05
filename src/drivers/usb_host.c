@@ -20,7 +20,7 @@
 
 #include "simba.h"
 
-FS_COMMAND_DEFINE("/drivers/usb_host/list", usb_host_cmd_list);
+static struct fs_command_t cmd_list;
 
 /* Only one device supported for now. */
 #define DEVICE_ADDRESS    1
@@ -34,10 +34,12 @@ static struct usb_host_driver_t *drivers_p = NULL;
 
 static struct usb_host_device_driver_t *device_drivers_p = NULL;
 
-int usb_host_cmd_list(int argc,
-                      const char *argv[],
-                      void *out_p,
-                      void *in_p)
+static int cmd_list_cb(int argc,
+                       const char *argv[],
+                       chan_t *out_p,
+                       chan_t *in_p,
+                       void * arg_p,
+                       void *call_arg_p)
 {
     int i;
     int verbose = 0;
@@ -425,8 +427,14 @@ err:
     return (-1);
 }
 
-int usb_module_init(void)
+int usb_host_module_init(void)
 {
+    fs_command_init(&cmd_list,
+                    FSTR("/drivers/usb_host/list"),
+                    cmd_list_cb,
+                    NULL);
+    fs_command_register(&cmd_list);
+
     return (0);
 }
 

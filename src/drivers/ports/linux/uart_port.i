@@ -18,6 +18,11 @@
  * This file is part of the Simba project.
  */
 
+static int uart_port_module_init()
+{
+    return (0);
+}
+
 static int uart_port_start(struct uart_driver_t *drv)
 {
     return (0);

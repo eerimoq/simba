@@ -42,6 +42,14 @@ struct shell_args_t {
     const char *password_p;
 };
 
+
+/**
+ * Initialize the shell module.
+ *
+ * @return zero(0) or negative error code.
+ */
+int shell_module_init(void);
+
 /**
  * The shell main function that listens for commands on the input
  * channel and send response on the output channel. All received

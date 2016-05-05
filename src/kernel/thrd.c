@@ -39,8 +39,8 @@ static char *state_fmt[] = {
     "terminated"
 };
 
-FS_COMMAND_DEFINE("/kernel/thrd/list", thrd_cmd_list);
-FS_COMMAND_DEFINE("/kernel/thrd/set_log_mask", thrd_cmd_set_log_mask);
+static struct fs_command_t cmd_list;
+static struct fs_command_t cmd_set_log_mask;
 
 struct thrd_scheduler_t {
     struct thrd_t *current_p;
@@ -286,11 +286,12 @@ static int cmd_list_thrd_print(chan_t *chout_p,
     return (0);
 }
 
-int thrd_cmd_list(int argc,
-                  const char *argv[],
-                  chan_t *chout_p,
-                  chan_t *chin_p,
-                  char *name_p)
+static int cmd_list_cb(int argc,
+                       const char *argv[],
+                       chan_t *chout_p,
+                       chan_t *chin_p,
+                       void *arg_p,
+                       void *call_arg_p)
 {
     std_fprintf(chout_p,
                 FSTR("            NAME           PARENT        STATE  PRIO   CPU"
@@ -329,11 +330,12 @@ static struct thrd_t *thrd_get_by_name(const char *name_p)
     return (data.thrd_p);
 }
 
-int thrd_cmd_set_log_mask(int argc,
-                          const char *argv[],
-                          chan_t *chout_p,
-                          chan_t *chin_p,
-                          char *name_p)
+static int cmd_set_log_mask_cb(int argc,
+                               const char *argv[],
+                               chan_t *chout_p,
+                               chan_t *chin_p,
+                               void *arg_p,
+                               void *call_arg_p)
 {
     struct thrd_t *thrd_p;
     long mask;
@@ -410,6 +412,32 @@ int thrd_module_init(void)
                THRD_MONITOR_PRIO,
                monitor_thrd_stack,
                sizeof(monitor_thrd_stack));
+#endif
+
+    fs_command_init(&cmd_list,
+                    FSTR("/kernel/thrd/list"),
+                    cmd_list_cb,
+                    NULL);
+    fs_command_register(&cmd_list);
+
+    fs_command_init(&cmd_set_log_mask,
+                    FSTR("/kernel/thrd/set_log_mask"),
+                    cmd_set_log_mask_cb,
+                    NULL);
+    fs_command_register(&cmd_set_log_mask);
+
+#if !defined(THRD_NMONITOR)
+    fs_command_init(&cmd_monitor_set_period_ms,
+                    FSTR("/kernel/thrd/monitor/set_period_ms"),
+                    cmd_monitor_set_period_ms_cb,
+                    NULL);
+    fs_command_register(&cmd_monitor_set_period_ms);
+
+    fs_command_init(&cmd_monitor_set_print,
+                    FSTR("/kernel/thrd/monitor/set_print"),
+                    cmd_monitor_set_print_cb,
+                    NULL);
+    fs_command_register(&cmd_monitor_set_print);
 #endif
 
     return (0);

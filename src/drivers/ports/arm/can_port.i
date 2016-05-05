@@ -24,7 +24,7 @@
 #define MAILBOX_RX_EID 1
 #define MAILBOX_RX_SID 2
 
-FS_COUNTER_DEFINE("/drivers/can/rx_channel_overflow", can_rx_channel_overflow);
+static struct fs_counter_t rx_channel_overflow;
 
 static void read_frame_from_hw(struct can_driver_t *self_p,
                                volatile struct sam_can_mailbox_t *mailbox_p)
@@ -53,7 +53,7 @@ static void read_frame_from_hw(struct can_driver_t *self_p,
                         &frame,
                         sizeof(frame));
     } else {
-        FS_COUNTER_INC(can_rx_channel_overflow, 1);
+        fs_counter_increment(&rx_channel_overflow, 1);
     }
 }
 
@@ -154,6 +154,16 @@ static ssize_t write_cb(void *arg_p,
     sys_unlock();
 
     return (size);
+}
+
+int can_port_module_init()
+{
+    fs_counter_init(&rx_channel_overflow,
+                    FSTR("/drivers/can/rx_channel_overflow"),
+                    0);
+    fs_counter_register(&rx_channel_overflow);
+
+    return (0);
 }
 
 int can_port_init(struct can_driver_t *self_p,

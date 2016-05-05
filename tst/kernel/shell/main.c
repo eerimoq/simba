@@ -20,23 +20,23 @@
 
 #include "simba.h"
 
-FS_COMMAND_DEFINE("/tmp/foo", tmp_foo);
-FS_COMMAND_DEFINE("/tmp/bar", tmp_bar);
+static struct fs_command_t cmd_tmp_foo;
+static struct fs_command_t cmd_tmp_bar;
 
-FS_COUNTER_DEFINE("/foo", foo);
-FS_COUNTER_DEFINE("/bar", bar);
-FS_COUNTER_DEFINE("/fie", fie);
+static struct fs_counter_t foo;
+static struct fs_counter_t bar;
+static struct fs_counter_t fie;
 
-FS_PARAMETER_DEFINE("/tmp/fie", tmp_fie, int, 57);
+static int tmp_fie_value = 57;
+static struct fs_parameter_t tmp_fie;
 
-int tmp_foo(int argc,
-            const char *argv[],
-            void *out_p,
-            void *in_p,
-            void *arg_p)
+static int tmp_foo(int argc,
+                   const char *argv[],
+                   chan_t *out_p,
+                   chan_t *in_p,
+                   void *arg_p,
+                   void *call_arg_p)
 {
-    UNUSED(in_p);
-
     BTASSERT(argc == 4);
     std_fprintf(out_p,
                 FSTR("argc = %d, argv[0] = %s, argv[1] = %s, argv[2] = %s\n"),
@@ -48,14 +48,14 @@ int tmp_foo(int argc,
     return (0);
 }
 
-int tmp_bar(int argc,
-            const char *argv[],
-            struct chan_t *out_p,
-            struct chan_t *in_p)
+static int tmp_bar(int argc,
+                   const char *argv[],
+                   chan_t *out_p,
+                   chan_t *in_p,
+                   void *arg_p,
+                   void *call_arg_p)
 {
     int i;
-
-    UNUSED(out_p);
 
     BTASSERT(argc == 2);
     i = (int)(*argv[1]) - '0';
@@ -233,14 +233,14 @@ static int test_all(struct harness_t *harness_p)
     BTASSERT(chout_read_until_prompt(buf) == 1);
 
     /* List counters. */
-    FS_COUNTER_INC(foo, 2);
-    FS_COUNTER_INC(foo, 2);
-    FS_COUNTER_INC(bar, 339283982393);
-    FS_COUNTER_INC(fie, 1);
-    chan_write(&qin, "/kernel/fs/counters_list\n", membersof("/kernel/fs/counters_list\n") - 1);
+    fs_counter_increment(&foo, 2);
+    fs_counter_increment(&foo, 2);
+    fs_counter_increment(&bar, 339283982393);
+    fs_counter_increment(&fie, 1);
+    chan_write(&qin, "/kernel/fs/counters_list\r\n", membersof("/kernel/fs/counters_list\r\n") - 1);
     BTASSERT(chout_read_until_prompt(buf) == 1);
     BTASSERT(std_strcmp(buf,
-                        FSTR("/kernel/fs/counters_list\n"
+                        FSTR("/kernel/fs/counters_list\r\n"
                              "NAME                                                 VALUE\r\n"
                              "/foo                                                 "
                              "0000000000000004\r\n"
@@ -269,6 +269,27 @@ int main()
 
     sys_start();
     uart_module_init();
+
+    /* Setup the commands. */
+    fs_command_init(&cmd_tmp_foo, FSTR("/tmp/foo"), tmp_foo, NULL);
+    fs_command_register(&cmd_tmp_foo);
+    fs_command_init(&cmd_tmp_bar, FSTR("/tmp/bar"), tmp_bar, NULL);
+    fs_command_register(&cmd_tmp_bar);
+
+    /* Setup the counters. */
+    fs_counter_init(&fie, FSTR("/fie"), 0);
+    fs_counter_register(&fie);
+    fs_counter_init(&bar, FSTR("/bar"), 0);
+    fs_counter_register(&bar);
+    fs_counter_init(&foo, FSTR("/foo"), 0);
+    fs_counter_register(&foo);
+
+    /* Setup the parameter. */
+    fs_parameter_init(&tmp_fie,
+                      FSTR("/tmp/fie"),
+                      fs_cmd_parameter_int,
+                      &tmp_fie_value);
+    fs_parameter_register(&tmp_fie);
 
     harness_init(&harness);
     harness_run(&harness, harness_testcases);
