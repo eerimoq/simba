@@ -8,8 +8,8 @@ import socket
 UDP_PORT = 30303
 TCP_PORT = 40404
 
-UDP_STRING = "hello udp"
-TCP_STRING = "hello tcp"
+UDP_STRING = "hello udp\x00"
+TCP_STRING = "hello tcp\x00"
 
 
 def udp_test(server_ip_address):

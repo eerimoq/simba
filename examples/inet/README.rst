@@ -9,13 +9,13 @@ given SSID and PASSWORD defines.
 BUILD AND RUN
 =============
 
-Build and run the applications on the ESP8266.
+1. Build and run the applications on the ESP8266.
 
 .. code-block:: text
 
     >>> make -s BOARD=esp12e CFLAGS_EXTRA="-DSSID=my_ssid -DPASSWORD=my_password" release run
 
-Run the PC script.
+2. Run the PC script.
 
 .. code-block:: text
 
@@ -36,9 +36,9 @@ Run the PC script.
     received 'hello tcp'
     closing socket
 
-Connect to the shell on port 50505.
+3. Connect to the shell on port 50505.
 
 .. code-block:: text
 
-   >>> telnet 192.168.1.107 50505
-   $ 
+   >>> telnet 192.168.1.103 50505
+   $

@@ -28,48 +28,99 @@
 #define TCP_PORT   40404
 #define SHELL_PORT 50505
 
-static char packet[512];
 static struct uart_driver_t uart;
-static struct fs_command_t cmd_udp_send;
 static struct shell_args_t shell_args;
+THRD_STACK(shell_stack, 1024);
 
-static int cmd_udp_send_cb(int argc,
-                           const char *argv[],
-                           chan_t *out_p,
-                           chan_t *in_p,
-                           void *arg_p,
-                           void *call_arg_p)
+static int udp_test(void)
 {
-    int i;
-    struct socket_t udp;
+    struct socket_t sock;
     struct socket_addr_t addr;
+    char buf[16];
 
-    /* Open an UDP socket. */
-    socket_open(&udp, SOCKET_DOMAIN_AF_INET, SOCKET_TYPE_DGRAM, 0);
+    std_printf(FSTR("opening socket\r\n"));
+    socket_open(&sock, SOCKET_DOMAIN_AF_INET, SOCKET_TYPE_DGRAM, 0);
 
+    std_printf(FSTR("binding to %d\r\n"), UDP_PORT);
     addr.ip = 0x6701a8c0;
     addr.port = UDP_PORT;
-    socket_bind(&udp, &addr, sizeof(addr));
+    socket_bind(&sock, &addr, sizeof(addr));
 
+    socket_read(&sock, buf, sizeof(buf));
+    std_printf(FSTR("received '{}' from {}\r\n"), buf);
+
+    std_printf(FSTR("sending '{}' to {}:{}\r\n"), buf);
     addr.ip = 0x6a01a8c0;
     addr.port = UDP_PORT;
-
-    for (i = 0; i < sizeof(packet); i++) {
-        packet[i] = i;
-    }
-    
-    /* Send a packet to the server. */
-    socket_sendto(&udp,
-                  packet,
-                  sizeof(packet),
+    socket_sendto(&sock,
+                  buf,
+                  strlen(buf),
                   0,
                   &addr,
                   sizeof(addr));
-        
-    std_printf(FSTR("Packet sent.\r\n"));
 
-    /* Close the socket. */
-    socket_close(&udp);
+    std_printf(FSTR("closing socket\r\n"));
+    socket_close(&sock);
+
+    return (0);
+}
+
+static int tcp_test(void)
+{
+    struct socket_t listener;
+    struct socket_t client;
+    struct socket_addr_t addr;
+    char buf[16];
+
+    std_printf(FSTR("opening socket\r\n"));
+    socket_open(&listener, SOCKET_DOMAIN_AF_INET, SOCKET_TYPE_STREAM, 0);
+
+    std_printf(FSTR("binding to %d\r\n"), TCP_PORT);
+    addr.ip = 0x6701a8c0;
+    addr.port = TCP_PORT;
+    socket_bind(&listener, &addr, sizeof(addr));
+
+    std_printf(FSTR("listening on {}\r\n"), TCP_PORT);
+    socket_listen(&listener, 0);
+
+    std_printf(FSTR("accepting '{}'\r\n"));
+    socket_accept(&listener, &client, &addr, NULL);
+
+    socket_read(&client, buf, 10);
+    std_printf(FSTR("received '{}'\r\n"), buf);
+
+    std_printf(FSTR("sending '{}'\r\n"), buf);
+    socket_write(&client, buf, 10);
+
+    std_printf(FSTR("closing socket\r\n"));
+    socket_close(&client);
+    socket_close(&listener);
+
+    return (0);
+}
+
+static int shell_test(void)
+{
+    struct socket_t listener, client;
+    struct socket_addr_t addr;
+
+    /* Spawn the shell thread communicating over given TCP socket. */
+    socket_open(&listener, SOCKET_DOMAIN_AF_INET, SOCKET_TYPE_STREAM, 0);
+    addr.ip = 0x6701a8c0;
+    addr.port = SHELL_PORT;
+    socket_bind(&listener, &addr, sizeof(addr));
+    socket_listen(&listener, 0);
+    socket_accept(&listener, &client, &addr, NULL);
+
+    shell_args.chin_p = &client;
+    shell_args.chout_p = &client;
+    shell_args.username_p = NULL;
+    shell_args.password_p = NULL;
+
+    shell_main(&shell_args);
+
+    socket_close(&client);
+    socket_close(&listener);
 
     return (0);
 }
@@ -78,19 +129,13 @@ static int init()
 {
     struct station_config sta_config;
     struct ip_info ip_config;
-    
+
     sys_start();
 
     uart_module_init();
     uart_init(&uart, &uart_device[0], 38400, NULL, 0);
     uart_start(&uart);
     sys_set_stdout(&uart.chout);
-
-    fs_command_init(&cmd_udp_send,
-                    FSTR("/udp_send"),
-                    cmd_udp_send_cb,
-                    NULL);
-    fs_command_register(&cmd_udp_send);
 
     /* Start WiFi in station mode. */
     wifi_set_opmode_current(STATION_MODE);
@@ -118,11 +163,11 @@ int main()
 {
     init();
 
-    shell_args.chin_p = &uart.chin;
-    shell_args.chout_p = &uart.chout;
-    shell_args.username_p = NULL;
-    shell_args.password_p = NULL;
-    shell_main(&shell_args);
-    
+    while (1) {
+        udp_test();
+        tcp_test();
+        shell_test();
+    }
+
     return (0);
 }
