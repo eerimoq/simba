@@ -19,21 +19,19 @@ Run the PC script.
 
 .. code-block:: text
 
-    >>> ./client.py --server-ip-address 192.168.1.107
+    >>> ./client.py --server-ip-address 192.168.1.103
     UDP
     ---
     opening socket
     binding to 192.168.1.106:30303
-    connecting to 192.168.1.107:30303
-    sending 'hello udp'
-    received 'hello udp'
+    sending 'hello udp' to 192.168.1.103:30303
+    received 'hello udp' from 192.168.1.106:30303
     closing socket
 
     TCP
     ---
     opening socket
-    binding to 192.168.1.106:40404
-    connecting to 192.168.1.107:40404
+    connecting to 192.168.1.103:40404
     sending 'hello tcp'
     received 'hello tcp'
     closing socket

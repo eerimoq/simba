@@ -23,13 +23,13 @@
 
 #include "esp_common.h"
 
-/* UDP ports to use. */
-#define UDP_LOCAL_PORT  30303
-#define UDP_REMOTE_PORT 30303
+/* Ports. */
+#define UDP_PORT   30303
+#define TCP_PORT   40404
+#define SHELL_PORT 50505
 
 static char packet[512];
 static struct uart_driver_t uart;
-
 static struct fs_command_t cmd_udp_send;
 static struct shell_args_t shell_args;
 
@@ -47,12 +47,12 @@ static int cmd_udp_send_cb(int argc,
     /* Open an UDP socket. */
     socket_open(&udp, SOCKET_DOMAIN_AF_INET, SOCKET_TYPE_DGRAM, 0);
 
-    addr.ip = 0x6801a8c0;
-    addr.port = UDP_LOCAL_PORT;
+    addr.ip = 0x6701a8c0;
+    addr.port = UDP_PORT;
     socket_bind(&udp, &addr, sizeof(addr));
 
     addr.ip = 0x6a01a8c0;
-    addr.port = UDP_REMOTE_PORT;
+    addr.port = UDP_PORT;
 
     for (i = 0; i < sizeof(packet); i++) {
         packet[i] = i;
