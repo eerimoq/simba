@@ -26,7 +26,7 @@
 
 #define EOT '\x04'
 
-FS_COMMAND_DEFINE("/at", cmd_at);
+static struct fs_command_t cmd_at;
 
 static struct uart_driver_t uart;
 static struct uart_soft_driver_t uart_hc0x;
@@ -36,10 +36,12 @@ static char qinbuf_hc0x[32];
 
 static struct shell_args_t shell_args;
 
-int cmd_at(int argc,
-           const char *argv[],
-           void *out_p,
-           void *in_p)
+static int cmd_at_cb(int argc,
+                     const char *argv[],
+                     chan_t *out_p,
+                     chan_t *in_p,
+                     void *arg_p,
+                     void *call_arg_p)
 {
     struct chan_list_t list;
     chan_t *chan_p;
@@ -99,6 +101,12 @@ int main()
                    9600,
                    qinbuf_hc0x,
                    sizeof(qinbuf_hc0x));
+
+    fs_command_init(&cmd_at,
+                    FSTR("/at"),
+                    cmd_at_cb,
+                    NULL);
+    fs_command_register(&cmd_at);
 
     sys_set_stdout(&uart.chout);
 

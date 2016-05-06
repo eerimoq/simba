@@ -22,15 +22,17 @@
 
 #define DS18B20_ID { 0x28, 0x09, 0x1e, 0xa3, 0x05, 0x00, 0x00, 0x42 }
 
-FS_COMMAND_DEFINE("/temp/set_min_max", set_min_max);
+static struct fs_command_t cmd_set_min_max;
 
 static volatile long temp_min = 230000;
 static volatile long temp_max = 290000;
 
-int set_min_max(int argc,
-                const char *argv[],
-                void *out_p,
-                void *in_p)
+static int cmd_set_min_max_cb(int argc,
+                              const char *argv[],
+                              chan_t *out_p,
+                              chan_t *in_p,
+                              void *arg_p,
+                              void *call_arg_p)
 {
     long min, max;
 
@@ -81,6 +83,12 @@ int main()
 
     uart_init(&uart, &uart_device[0], 38400, qinbuf, sizeof(qinbuf));
     uart_start(&uart);
+
+    fs_command_init(&cmd_set_min_max,
+                    FSTR("/temp/set_min_max"),
+                    cmd_set_min_max_cb,
+                    NULL);
+    fs_command_register(&cmd_set_min_max);
 
     spi_init(&spi,
              &spi_device[0],

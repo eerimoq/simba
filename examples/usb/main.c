@@ -33,14 +33,16 @@ static struct usb_host_class_hid_device_t hid_devices[1];
 static struct usb_host_class_mass_storage_driver_t mass_storage;
 static struct usb_host_class_mass_storage_device_t mass_storage_devices[1];
 
-FS_COMMAND_DEFINE("/state", cmd_state);
+static struct fs_command_t cmd_state;
 
 extern void state();
 
-int cmd_state(int argc,
-              const char *argv[],
-              void *out_p,
-              void *in_p)
+static int cmd_state_cb(int argc,
+                        const char *argv[],
+                        chan_t *out_p,
+                        chan_t *in_p,
+                        void *arg_p,
+                        void *call_arg_p)
 {
     state();
 
@@ -192,6 +194,12 @@ static void init(void)
     sys_set_stdout(&uart.chout);
 
     std_printf(sys_get_info());
+
+    fs_command_init(&cmd_state,
+                    FSTR("/state"),
+                    cmd_state_cb,
+                    NULL);
+    fs_command_register(&cmd_state);
 
     /* Initialize the USB host driver. */
     usb_host_init(&usb,

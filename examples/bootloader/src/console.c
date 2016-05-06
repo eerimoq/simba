@@ -47,10 +47,10 @@
 #define LONG_PACKETS_LENGTH_MAX_MSB   1
 #define LONG_PACKETS_LENGTH_MAX_LSB  94
 
-FS_COMMAND_DEFINE("/application/erase", cmd_application_erase);
-FS_COMMAND_DEFINE("/application/is_valid", cmd_application_is_valid);
-FS_COMMAND_DEFINE("/application/load_kermit", cmd_application_load_kermit);
-FS_COMMAND_DEFINE("/application/start", cmd_application_start);
+static struct fs_command_t cmd_application_erase;
+static struct fs_command_t cmd_application_is_valid;
+static struct fs_command_t cmd_application_load_kermit;
+static struct fs_command_t cmd_application_start;
 
 static struct shell_args_t shell_args;
 
@@ -310,11 +310,12 @@ static int handle_packet(struct console_t *self_p)
 /**
  * Shell command that erases the application from the flash memory.
  */
-int cmd_application_erase(int argc,
-                          const char *argv[],
-                          void *out_p,
-                          void *in_p,
-                          void *arg_p)
+static int cmd_application_erase_cb(int argc,
+                                    const char *argv[],
+                                    chan_t *out_p,
+                                    chan_t *in_p,
+                                    void *arg_p,
+                                    void *call_arg_P)
 {
     struct console_t *self_p = arg_p;
 
@@ -329,11 +330,12 @@ int cmd_application_erase(int argc,
  * Shell command that writes a file to flash using the kermit
  * protocol.
  */
-int cmd_application_is_valid(int argc,
-                             const char *argv[],
-                             void *out_p,
-                             void *in_p,
-                             void *arg_p)
+static int cmd_application_is_valid_cb(int argc,
+                                       const char *argv[],
+                                       chan_t *out_p,
+                                       chan_t *in_p,
+                                       void *arg_p,
+                                       void *call_arg_p)
 {
     struct console_t *self_p = arg_p;
     int is_valid;
@@ -349,11 +351,12 @@ int cmd_application_is_valid(int argc,
  * Shell command that receives a file over the Kermit file transfer
  * protocol and writes it to flash.
  */
-int cmd_application_load_kermit(int argc,
-                                const char *argv[],
-                                void *out_p,
-                                void *in_p,
-                                void *arg_p)
+static int cmd_application_load_kermit_cb(int argc,
+                                          const char *argv[],
+                                          chan_t *out_p,
+                                          chan_t *in_p,
+                                          void *arg_p,
+                                          void *call_arg_p)
 {
     struct console_t *self_p = arg_p;
     int res;
@@ -391,11 +394,12 @@ int cmd_application_load_kermit(int argc,
 /**
  * Start the application.
  */
-int cmd_application_start(int argc,
-                          const char *argv[],
-                          void *out_p,
-                          void *in_p,
-                          void *arg_p)
+static int cmd_application_start_cb(int argc,
+                                    const char *argv[],
+                                    chan_t *out_p,
+                                    chan_t *in_p,
+                                    void *arg_p,
+                                    void *call_arg_p)
 {
 # if !defined(BOOTLOADER_TEST)
     struct console_t *self_p = arg_p;
@@ -414,6 +418,35 @@ int cmd_application_start(int argc,
 # if !defined(BOOTLOADER_TEST)
     bootloader_jump(self_p->application_address);
 #endif
+
+    return (0);
+}
+
+int console_module_init()
+{
+    fs_command_init(&cmd_application_erase,
+                    FSTR("/application/erase"),
+                    cmd_application_erase_cb,
+                    NULL);
+    fs_command_register(&cmd_application_erase);
+
+    fs_command_init(&cmd_application_is_valid,
+                    FSTR("/application/is_valid"),
+                    cmd_application_is_valid_cb,
+                    NULL);
+    fs_command_register(&cmd_application_is_valid);
+
+    fs_command_init(&cmd_application_load_kermit,
+                    FSTR("/application/load_kermit"),
+                    cmd_application_load_kermit_cb,
+                    NULL);
+    fs_command_register(&cmd_application_load_kermit);
+
+    fs_command_init(&cmd_application_start,
+                    FSTR("/application/start"),
+                    cmd_application_start_cb,
+                    NULL);
+    fs_command_register(&cmd_application_start);
 
     return (0);
 }

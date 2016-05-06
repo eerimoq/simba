@@ -83,6 +83,7 @@ travis:
 
 release-test:
 	+bin/release.py --test
+	$(MAKE) -C examples
 
 doc:
 	+bin/dbgen.py > database.json

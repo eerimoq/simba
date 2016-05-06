@@ -30,14 +30,15 @@
 static char packet[512];
 static struct uart_driver_t uart;
 
-FS_COMMAND_DEFINE("/udp_send", cmd_udp_send);
-
+static struct fs_command_t cmd_udp_send;
 static struct shell_args_t shell_args;
 
-int cmd_udp_send(int argc,
-                 const char *argv[],
-                 void *out_p,
-                 void *in_p)
+static int cmd_udp_send_cb(int argc,
+                           const char *argv[],
+                           chan_t *out_p,
+                           chan_t *in_p,
+                           void *arg_p,
+                           void *call_arg_p)
 {
     int i;
     struct socket_t udp;
@@ -84,6 +85,12 @@ static int init()
     uart_init(&uart, &uart_device[0], 38400, NULL, 0);
     uart_start(&uart);
     sys_set_stdout(&uart.chout);
+
+    fs_command_init(&cmd_udp_send,
+                    FSTR("/udp_send"),
+                    cmd_udp_send_cb,
+                    NULL);
+    fs_command_register(&cmd_udp_send);
 
     /* Start WiFi in station mode. */
     wifi_set_opmode_current(STATION_MODE);

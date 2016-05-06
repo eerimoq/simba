@@ -53,6 +53,8 @@ int main()
               sizeof(uart_rx_buffer));
     uart_start(&uart);
 
+    console_module_init();
+
     /* Initialize the flash memory objects. */
     flash_module_init();
     flash_init(&flash, &flash_device[0]);

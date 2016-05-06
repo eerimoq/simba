@@ -38,6 +38,12 @@ struct console_t {
     } input;
 };
 
+/**
+ * Initialize the console module.
+ *
+ * @return zero(0) or negative error code.
+ */
+int console_module_init(void);
 
 /**
  * Initialize the bootloader object.

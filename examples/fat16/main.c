@@ -21,11 +21,11 @@
 #include "simba.h"
 #include <limits.h>
 
-FS_COMMAND_DEFINE("/ls", file_list);
-FS_COMMAND_DEFINE("/open", file_open);
-FS_COMMAND_DEFINE("/close", file_close);
-FS_COMMAND_DEFINE("/read", file_read);
-FS_COMMAND_DEFINE("/write", file_write);
+static struct fs_command_t cmd_ls;
+static struct fs_command_t cmd_open;
+static struct fs_command_t cmd_close;
+static struct fs_command_t cmd_read;
+static struct fs_command_t cmd_write;
 
 static char qinbuf[32];
 static struct uart_driver_t uart;
@@ -90,10 +90,12 @@ static int format_entry(chan_t *chan_p,
     return (0);
 }
 
-int file_list(int argc,
-              const char *argv[],
-              void *out_p,
-              void *in_p)
+static int cmd_ls_cb(int argc,
+                     const char *argv[],
+                     chan_t *out_p,
+                     chan_t *in_p,
+                     void *arg_p,
+                     void *call_arg_p)
 {
     UNUSED(in_p);
 
@@ -120,10 +122,12 @@ int file_list(int argc,
     return (0);
 }
 
-int file_open(int argc,
-              const char *argv[],
-              void *out_p,
-              void *in_p)
+static int cmd_open_cb(int argc,
+                       const char *argv[],
+                       chan_t *out_p,
+                       chan_t *in_p,
+                       void *arg_p,
+                       void *call_arg_p)
 {
     UNUSED(in_p);
 
@@ -161,10 +165,12 @@ int file_open(int argc,
     return (0);
 }
 
-int file_close(int argc,
-               const char *argv[],
-               void *out_p,
-               void *in_p)
+static int cmd_close_cb(int argc,
+                        const char *argv[],
+                        chan_t *out_p,
+                        chan_t *in_p,
+                        void *arg_p,
+                        void *call_arg_p)
 {
     UNUSED(in_p);
 
@@ -185,10 +191,12 @@ int file_close(int argc,
     return (0);
 }
 
-int file_read(int argc,
-              const char *argv[],
-              void *out_p,
-              void *in_p)
+static int cmd_read_cb(int argc,
+                       const char *argv[],
+                       chan_t *out_p,
+                       chan_t *in_p,
+                       void *arg_p,
+                       void *call_arg_p)
 {
     UNUSED(in_p);
 
@@ -237,10 +245,12 @@ int file_read(int argc,
     return (0);
 }
 
-int file_write(int argc,
-               const char *argv[],
-               void *out_p,
-               void *in_p)
+static int cmd_write_cb(int argc,
+                        const char *argv[],
+                        chan_t *out_p,
+                        chan_t *in_p,
+                        void *arg_p,
+                        void *call_arg_p)
 {
     UNUSED(in_p);
 
@@ -270,6 +280,37 @@ static void init(void)
     uart_start(&uart);
 
     sys_set_stdout(&uart.chout);
+
+    fs_command_init(&cmd_ls,
+                    FSTR("/ls"),
+                    cmd_ls_cb,
+                    NULL);
+    fs_command_register(&cmd_ls);
+
+    fs_command_init(&cmd_open,
+                    FSTR("/open"),
+                    cmd_open_cb,
+                    NULL);
+    fs_command_register(&cmd_open);
+
+    fs_command_init(&cmd_close,
+                    FSTR("/close"),
+                    cmd_close_cb,
+                    NULL);
+    fs_command_register(&cmd_close);
+
+    fs_command_init(&cmd_read,
+                    FSTR("/read"),
+                    cmd_read_cb,
+                    NULL);
+    fs_command_register(&cmd_read);
+
+    fs_command_init(&cmd_write,
+                    FSTR("/write"),
+                    cmd_write_cb,
+                    NULL);
+    fs_command_register(&cmd_write);
+
 
     std_printf(sys_get_info());
 

@@ -18,35 +18,6 @@
 # This file is part of the Simba project.
 #
 
-EXAMPLES = \
-	blink \
-	bootloader \
-	fat16 \
-	hc0x \
-	hello_world \
-	inet \
-	midi_player \
-	nrf24l01 \
-	owi \
-	shell \
-	spi \
-	synthesizer \
-	temp \
-	usb
-
-all: $(EXAMPLES:%=%.all)
-
-clean: $(EXAMPLES:%=%.clean)
-
-$(EXAMPLES:%=%.all):
-	$(MAKE) -C $(basename $@) all
-
-$(EXAMPLES:%=%.clean):
-	$(MAKE) -C $(basename $@) clean
-
-help:
-	@echo "--------------------------------------------------------------------------------"
-	@echo "  target                      description"
-	@echo "--------------------------------------------------------------------------------"
-	@echo "  all                         compile and link the examples"
-	@echo
+all:
+	$(MAKE) -C app/console
+	$(MAKE) -C app/uds
