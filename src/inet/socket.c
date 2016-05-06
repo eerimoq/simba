@@ -25,44 +25,76 @@
 #include "lwip/tcp.h"
 #include "lwip/udp.h"
 
-/* /\** */
-/*  * Callback function called by lwip when there is data available. */
-/*  *\/ */
-/* static err_t recv_cb(void *arg_p, */
-/*                      struct tcp_pcb *pcb_p, */
-/*                      struct pbuf *pbuf_p, */
-/*                      err_t err) */
-/* { */
-/*     struct socket_t *socket_p = arg_p; */
+#include "freertos/FreeRTOS.h"
+#include "freertos/semphr.h"
+#include "esp_common.h"
 
-/*     UNUSED(socket_p); */
+extern xSemaphoreHandle thrd_idle_sem;
 
-/*     return (0); */
-/* } */
+/**
+ * The LwIP-stack calls this function when a UDP packet has been
+ * received. It is called from the LwIP-thread. For ESP, this is the
+ * FreeRTOS LwIP-thread.
+ */
+static void on_udp_recv(void *arg_p,
+                        struct udp_pcb *pcb_p,
+                        struct pbuf *pbuf_p,
+                        ip_addr_t *addr_p,
+                        uint16_t port)
+{
+    struct socket_t *socket_p = arg_p;
 
-/* /\** */
-/*  * Callback function called by lwip when data has been sent. */
-/*  *\/ */
-/* static err_t sent_cb(void *arg_p, */
-/*                      struct tcp_pcb *pcb_p, */
-/*                      uint16_t len) */
-/* { */
-/*     struct socket_t *socket_p = arg_p; */
+    if (socket_p->recv.thrd_p != NULL) {
+        if (pbuf_p->tot_len < socket_p->recv.size) {
+            socket_p->recv.size = pbuf_p->tot_len;
+        }
 
-/*     UNUSED(socket_p); */
+        /* Write the packet to the receive buffer. */
+        pbuf_copy_partial(pbuf_p,
+                          socket_p->recv.buf_p,
+                          socket_p->recv.size,
+                          0);
 
-/*     return (0); */
-/* } */
+        /* Copy the remote address and port to the receiver. */
+        socket_p->recv.remote_addr_p->ip = addr_p->addr;
+        socket_p->recv.remote_addr_p->port = port;
 
-/* /\** */
-/*  * Callback function called by lwip when an error occurs. */
-/*  *\/ */
-/* static void err_cb(void *arg_p, err_t err) */
-/* { */
-/*     struct socket_t *socket_p = arg_p; */
+        /* Resume the reading thread. */
+        thrd_resume_isr(socket_p->recv.thrd_p, 0);
+        socket_p->recv.thrd_p = NULL;
+        xSemaphoreGive(thrd_idle_sem);
+    }
 
-/*     UNUSED(socket_p); */
-/* } */
+    pbuf_free(pbuf_p);
+}
+
+/**
+ * Called by lwip when there is TCP data available.
+ */
+static err_t on_tcp_recv(void *arg_p,
+                         struct tcp_pcb *pcb_p,
+                         struct pbuf *pbuf_p,
+                         err_t err)
+{
+    return (0);
+}
+
+/**
+ * Called by lwip when TCP data has been sent.
+ */
+static err_t on_tcp_sent(void *arg_p,
+                         struct tcp_pcb *pcb_p,
+                         uint16_t len)
+{
+    return (0);
+}
+
+/**
+ * Called by lwip when an TCP error occurs.
+ */
+static void on_tcp_err(void *arg_p, err_t err)
+{
+}
 
 int socket_open(struct socket_t *self_p,
                 int domain,
@@ -70,28 +102,30 @@ int socket_open(struct socket_t *self_p,
                 int protocol)
 {
     void *pcb_p = NULL;
-    
+
     switch (type) {
 
-    /* case SOCKET_TYPE_STREAM: */
-    /*     /\* /\\* Create and initiate the TCP pcb. *\\/ *\/ */
-    /*     /\* pcb_p = tcp_new(); *\/ */
-    /*     /\* tcp_arg(pcb_p, self_p); *\/ */
-    /*     /\* //tcp_accept(pcb_p, accept_cb); *\/ */
-    /*     /\* tcp_recv(pcb_p, recv_cb); *\/ */
-    /*     /\* tcp_sent(pcb_p, sent_cb); *\/ */
-    /*     /\* tcp_err(pcb_p, err_cb); *\/ */
-    /*     break; */
+    case SOCKET_TYPE_STREAM:
+        /* Create and initiate the TCP pcb. */
+        pcb_p = tcp_new();
+        tcp_arg(pcb_p, self_p);
+        //tcp_accept(pcb_p, on_tcp_accept);
+        tcp_recv(pcb_p, on_tcp_recv);
+        tcp_sent(pcb_p, on_tcp_sent);
+        tcp_err(pcb_p, on_tcp_err);
+        break;
 
     case SOCKET_TYPE_DGRAM:
         /* Create and initiate the UDP pcb. */
         pcb_p = udp_new();
+        udp_recv(pcb_p, on_udp_recv, self_p);
         break;
 
     default:
         return (-1);
     }
 
+    self_p->type = type;
     self_p->pcb_p = pcb_p;
 
     return (0);
@@ -99,7 +133,20 @@ int socket_open(struct socket_t *self_p,
 
 int socket_close(struct socket_t *self_p)
 {
-    udp_remove(self_p->pcb_p);
+    switch (self_p->type) {
+
+    case SOCKET_TYPE_STREAM:
+        tcp_close(self_p->pcb_p);
+        break;
+
+    case SOCKET_TYPE_DGRAM:
+        udp_recv(self_p->pcb_p, NULL, NULL);
+        udp_remove(self_p->pcb_p);
+        break;
+
+    default:
+        return (-1);
+    }
 
     return (0);
 }
@@ -109,24 +156,57 @@ int socket_bind(struct socket_t *self_p,
                 size_t addrlen)
 {
     ip_addr_t ip;
-    
+
     ip.addr = local_addr_p->ip;
-    
-    return (udp_bind(self_p->pcb_p,
-                     &ip,
-                     local_addr_p->port));
+
+    switch (self_p->type) {
+
+    case SOCKET_TYPE_STREAM:
+        return (tcp_bind(self_p->pcb_p, &ip, local_addr_p->port));
+        
+    case SOCKET_TYPE_DGRAM:
+        return (udp_bind(self_p->pcb_p, &ip, local_addr_p->port));
+        
+    default:
+        return (-1);
+    }
 }
 
 int socket_listen(struct socket_t *self_p, int backlog)
 {
-    return (-1);
+    switch (self_p->type) {
+
+    case SOCKET_TYPE_STREAM:
+        tcp_listen_with_backlog(self_p->pcb_p, backlog);
+        break;
+        
+    default:
+        return (-1);
+    }
+
+    return (0);
 }
 
 int socket_connect(struct socket_t *self_p,
                    const struct socket_addr_t *addr_p,
                    size_t addrlen)
 {
-    return (-1);
+    ip_addr_t ip;
+
+    ip.addr = addr_p->ip;
+
+    switch (self_p->type) {
+
+    case SOCKET_TYPE_STREAM:
+        return (tcp_connect(self_p->pcb_p, &ip, addr_p->port, NULL));
+        
+    case SOCKET_TYPE_DGRAM:
+        return (udp_connect(self_p->pcb_p, &ip, addr_p->port));
+        
+    default:
+        return (-1);
+    }
+
 }
 
 int socket_accept(struct socket_t *self_p,
@@ -144,32 +224,43 @@ ssize_t socket_sendto(struct socket_t *self_p,
                       const struct socket_addr_t *remote_addr_p,
                       size_t addrlen)
 {
+    ssize_t res = size;
     struct pbuf *pbuf_p;
     ip_addr_t ip;
-    
+
     ip.addr = remote_addr_p->ip;
     pbuf_p = pbuf_alloc(PBUF_TRANSPORT, size, PBUF_RAM);
-
     memcpy(pbuf_p->payload, buf_p, size);
 
     if (udp_sendto(self_p->pcb_p,
                    pbuf_p,
                    &ip,
                    remote_addr_p->port) != 0) {
-        return (-1);
+        res = -1;
     }
 
-    return (0);
+    pbuf_free(pbuf_p);
+
+    return (res);
 }
 
 ssize_t socket_recvfrom(struct socket_t *self_p,
                         void *buf_p,
                         size_t size,
                         int flags,
-                        struct socket_addr_t *remote_addr,
+                        struct socket_addr_t *remote_addr_p,
                         size_t addrlen)
 {
-    return (-1);
+    /* The receive callback copies the data to the receive buffer. */
+    self_p->recv.buf_p = buf_p;
+    self_p->recv.size = size;
+    self_p->recv.remote_addr_p = remote_addr_p;
+    self_p->recv.thrd_p = thrd_self();
+
+    /* Wait for data. Resumed from on_udp_recv(). */
+    thrd_suspend(NULL);
+    
+    return (self_p->recv.size);
 }
 
 ssize_t socket_write(struct socket_t *self_p,

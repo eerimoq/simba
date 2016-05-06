@@ -41,6 +41,13 @@ struct socket_addr_t {
 
 struct socket_t {
     struct chan_t base;
+    int type;
+    struct {
+        void *buf_p;
+        size_t size;
+        struct socket_addr_t *remote_addr_p;
+        struct thrd_t *thrd_p;
+    } recv;
     void *pcb_p;
 };
 

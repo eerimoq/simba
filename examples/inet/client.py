@@ -23,9 +23,9 @@ def udp_test(server_ip_address):
     print("binding to '':{}".format(UDP_PORT))
     sock.bind(('', UDP_PORT))
 
-    print("sending '{}' to {}:{}".format(UDP_STRING,
-                                         server_ip_address,
-                                         UDP_PORT))
+    print("sending '{}' to ('{}', {})".format(UDP_STRING,
+                                              server_ip_address,
+                                              UDP_PORT))
     sock.sendto(UDP_STRING, (server_ip_address, UDP_PORT))
 
     string, address = sock.recvfrom(1024)
@@ -69,7 +69,7 @@ def main():
     parser = argparse.ArgumentParser()
 
     parser.add_argument('--server-ip-address',
-                        default='192.168.1.107',
+                        default='192.168.1.103',
                         help='Server ip address.')
     args = parser.parse_args()
 

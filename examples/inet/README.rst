@@ -1,4 +1,4 @@
-OVERVIEW
+Overview
 ========
 
 Send TCP and UCP traffic between a PC and an ESP8266.
@@ -6,7 +6,7 @@ Send TCP and UCP traffic between a PC and an ESP8266.
 The ESP8266 will automatically connect to a WiFi at startup, using
 given SSID and PASSWORD defines.
 
-BUILD AND RUN
+Build and run
 =============
 
 1. Build and run the applications on the ESP8266.
@@ -23,9 +23,9 @@ BUILD AND RUN
     UDP
     ---
     opening socket
-    binding to 192.168.1.106:30303
-    sending 'hello udp' to 192.168.1.103:30303
-    received 'hello udp' from 192.168.1.106:30303
+    binding to '':30303
+    sending 'hello udp' to ('192.168.1.103', 30303)
+    received 'hello udp' from ('192.168.1.103', 30303)
     closing socket
 
     TCP
