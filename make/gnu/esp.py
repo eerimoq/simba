@@ -38,7 +38,7 @@ def upload():
     command = [
         os.path.join(simba_path, "3pp", "esptool", "esptool.py"),
         "--baud",
-        "230400",
+        "460800",
         "write_flash",
         "0x00000",
         os.path.join(simba_path,

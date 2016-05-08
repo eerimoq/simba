@@ -4,6 +4,7 @@ from __future__ import print_function
 
 import argparse
 import socket
+import time
 
 UDP_PORT = 30303
 TCP_PORT = 40404
@@ -43,11 +44,13 @@ def tcp_test(server_ip_address):
     """
 
     print("opening socket")
-    sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
     print("connecting to {}:{}".format(server_ip_address,
                                        TCP_PORT))
     sock.connect((server_ip_address, TCP_PORT))
+
+    time.sleep(1)
 
     print("sending '{}'".format(TCP_STRING))
     sock.sendall(TCP_STRING)
@@ -74,6 +77,7 @@ def main():
     args = parser.parse_args()
 
     udp_test(args.server_ip_address)
+    time.sleep(1)
     tcp_test(args.server_ip_address)
 
 
