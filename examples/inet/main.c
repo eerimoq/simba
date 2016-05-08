@@ -35,8 +35,6 @@
 static struct uart_driver_t uart;
 static struct shell_args_t shell_args;
 
-THRD_STACK(shell_stack, 1024);
-
 static int udp_test(void)
 {
     struct socket_t sock;
@@ -104,46 +102,47 @@ static int tcp_test(void)
     socket_accept(&listener, &client, &addr, NULL);
     std_printf(FSTR("accepted 0x%x:%d\r\n"), addr.ip, addr.port);
 
-    socket_read(&client, buf, 10);
+    socket_read(&client, buf, 5);
+    socket_read(&client, &buf[5], 5);
     std_printf(FSTR("read '%s'\r\n"), buf);
 
     std_printf(FSTR("writing '%s'\r\n"), buf);
     socket_write(&client, buf, 10);
 
-    std_printf(FSTR("closing sockets\r\n"));
-    socket_close(&client);
-    socket_close(&listener);
+    /* std_printf(FSTR("closing sockets\r\n")); */
+    /* socket_close(&client); */
+    /* socket_close(&listener); */
 
     return (0);
 }
 
-/* static int shell_test(void) */
-/* { */
-/*     struct socket_t listener, client; */
-/*     struct socket_addr_t addr; */
+static int shell_test(void)
+{
+    struct socket_t listener, client;
+    struct socket_addr_t addr;
 
-/*     std_printf(FSTR("shell test\r\n")); */
+    std_printf(FSTR("shell test\r\n"));
 
-/*     /\* Spawn the shell thread communicating over given TCP socket. *\/ */
-/*     socket_open(&listener, SOCKET_DOMAIN_AF_INET, SOCKET_TYPE_STREAM, 0); */
-/*     addr.ip = 0x6701a8c0; */
-/*     addr.port = SHELL_PORT; */
-/*     socket_bind(&listener, &addr, sizeof(addr)); */
-/*     socket_listen(&listener, 0); */
-/*     socket_accept(&listener, &client, &addr, NULL); */
+    /* Spawn the shell thread communicating over given TCP socket. */
+    socket_open(&listener, SOCKET_DOMAIN_AF_INET, SOCKET_TYPE_STREAM, 0);
+    addr.ip = 0x6701a8c0;
+    addr.port = SHELL_PORT;
+    socket_bind(&listener, &addr, sizeof(addr));
+    socket_listen(&listener, 5);
+    socket_accept(&listener, &client, &addr, NULL);
 
-/*     shell_args.chin_p = &client; */
-/*     shell_args.chout_p = &client; */
-/*     shell_args.username_p = NULL; */
-/*     shell_args.password_p = NULL; */
+    shell_args.chin_p = &client;
+    shell_args.chout_p = &client;
+    shell_args.username_p = NULL;
+    shell_args.password_p = NULL;
 
-/*     shell_main(&shell_args); */
+    shell_main(&shell_args);
 
-/*     socket_close(&client); */
-/*     socket_close(&listener); */
+    /* socket_close(&client); */
+    /* socket_close(&listener); */
 
-/*     return (0); */
-/* } */
+    return (0);
+}
 
 static int init()
 {
@@ -186,7 +185,7 @@ int main()
     while (1) {
         udp_test();
         tcp_test();
-        /* shell_test(); */
+        shell_test();
     }
 
     return (0);

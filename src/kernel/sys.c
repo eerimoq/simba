@@ -79,7 +79,7 @@ int sys_start(void)
     chan_module_init();
     thrd_module_init();
     shell_module_init();
-    sys_port_module_init();
+    sys_module_init();
 
     return (0);
 }

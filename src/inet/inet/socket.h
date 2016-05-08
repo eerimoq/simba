@@ -45,6 +45,8 @@ struct socket_t {
     struct {
         void *buf_p;
         size_t size;
+        size_t left;
+        size_t pbuf_offset;
         struct socket_addr_t *remote_addr_p;
         struct thrd_t *thrd_p;
     } recv;

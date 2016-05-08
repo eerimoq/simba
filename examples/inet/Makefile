@@ -18,7 +18,7 @@
 # This file is part of the Simba project.
 #
 
-NAME = udp_client
+NAME = inet
 BOARD = esp12e
 
 SIMBA_ROOT = ../..
