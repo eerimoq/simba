@@ -43,6 +43,10 @@ uint32_t main_stack[DIV_CEIL(sizeof(struct thrd_t)
                              sizeof(uint32_t))]
 __attribute__ ((section (".simba_main_stack")));
 
+static void putc_null(char c)
+{
+}
+
 static int sys_port_module_init(void)
 {
     /* Configure and start the system tick timer. */
@@ -57,6 +61,8 @@ static int sys_port_module_init(void)
     TM1_EDGE_INT_ENABLE();
     _xt_isr_unmask(1 << ESP8266_IRQ_NUM_TIMER1);
     ESP8266_TIMER0->LOAD = SYS_TICK_TIMER_LOAD;
+
+    os_install_putc1(putc_null);
 
     return (0);
 }

@@ -161,7 +161,6 @@ static int init()
     wifi_get_ip_info(STATION_IF, &ip_config);
 
     while (ip_config.ip.addr == 0) {
-        //thrd_usleep(50000);
         wifi_get_ip_info(STATION_IF, &ip_config);
     }
 

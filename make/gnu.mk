@@ -29,7 +29,6 @@ CFLAGS += -c \
           -Wall \
           -funsigned-char \
           -funsigned-bitfields \
-          -fshort-enums \
           -std=gnu99 \
           -Wno-error=unused-variable
 

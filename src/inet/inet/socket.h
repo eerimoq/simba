@@ -43,15 +43,27 @@ struct socket_t {
     struct chan_t base;
     int type;
     struct {
+        struct {
+            struct {
+                volatile void *buf_p;
+                volatile size_t size;
+                volatile size_t offset;
+            } pbuf;
+        } recv;
         void *buf_p;
         size_t size;
-        size_t left;
-        size_t pbuf_offset;
-        struct socket_addr_t *remote_addr_p;
+        struct socket_addr_t remote_addr;
         struct thrd_t *thrd_p;
-    } recv;
+    } io;
     void *pcb_p;
 };
+
+/**
+ * Initialize the socket module.
+ *
+ * @return zero(0) or negative error code.
+ */
+int socket_module_init(void);
 
 /**
  * Initialize given socket with given domain, type and protocol.
