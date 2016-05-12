@@ -24,7 +24,7 @@
 #include "freertos/FreeRTOS.h"
 #include "freertos/semphr.h"
 
-static struct thrd_t main_thrd __attribute__ ((section (".noinit")));
+static struct thrd_t main_thrd __attribute__ ((section (".simba_main_thrd")));
 
 xSemaphoreHandle thrd_idle_sem;
 

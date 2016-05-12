@@ -166,7 +166,9 @@ SECTIONS
     __simba_stack_begin = ABSOLUTE(.);
     *(.simba_stack_free)
     *(.simba_other_stacks)
+    *(.simba_main_thrd)
     *(.simba_main_stack)
+    __main_stack_end = ABSOLUTE(.);
     __simba_stack_end = ABSOLUTE(.);
     . = ALIGN (8);
     _bss_end = ABSOLUTE(.);

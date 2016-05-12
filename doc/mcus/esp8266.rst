@@ -1,5 +1,14 @@
 Espressif ESP8266
-==========
+=================
+
+Reset causes
+------------
+
+reset cause 1: normally during a Power-On-Reset or by CHIP_PD transient
+reset cause 2: normally during a reset caused by a nRESET transient
+reset cause 4: normally during a reset by wdt reset
+
+See more at: http://www.esp8266.com/viewtopic.php?p=25236#sthash.9edHC1PP.dpuf
 
 Homepage
 ---------

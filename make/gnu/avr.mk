@@ -29,7 +29,8 @@ CFLAGS += -mmcu=$(CPU) \
           -O2 \
           -ffunction-sections \
           -fdata-sections \
-          -fpack-struct
+          -fpack-struct \
+          -fshort-enums
 
 LDFLAGS += -mmcu=$(CPU) \
            -DF_CPU=$(F_CPU)UL \

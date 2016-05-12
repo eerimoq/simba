@@ -200,8 +200,7 @@ def setup_mcu_esp(env, linker_script, flash_size_map):
     ])
 
     env.Append(CPPDEFINES=[
-        "THRD_NMONITOR",
-        "NPROFILESTACK"
+        "THRD_NMONITOR"
     ])
 
     linkflags = []

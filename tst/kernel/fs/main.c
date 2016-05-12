@@ -197,6 +197,7 @@ static int test_list(struct harness_t *harness_p)
     read_until(buf,
                "fs/\r\n"
                "log/\r\n"
+               "sys/\r\n"
                "thrd/\r\n");
 
     strcpy(buf, "tmp/foo");
