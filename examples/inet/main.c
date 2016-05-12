@@ -23,8 +23,14 @@
 
 #include "esp_common.h"
 
-#if !defined(SSID) || !defined(PASSWORD)
-#    error "WiFi connection variables SSID and PASSWORD must be set."
+#if !defined(SSID)
+#    pragma message "WiFi connection variable SSID is not set. Using default value MySSID"
+#    define SSID MySSID
+#endif
+
+#if !defined(PASSWORD)
+#    pragma message "WiFi connection variable PASSWORD is not set. Using default value MyPassword"
+#    define PASSWORD MyPassword
 #endif
 
 /* Ports. */
