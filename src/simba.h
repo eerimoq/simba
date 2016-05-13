@@ -39,4 +39,8 @@ typedef unsigned long off_t;
 #include "drivers.h"
 #include "slib.h"
 
+#if defined(ARCH_ESP)
+#    include "inet.h"
+#endif
+
 #endif

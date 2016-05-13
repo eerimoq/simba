@@ -19,7 +19,6 @@
  */
 
 #include "simba.h"
-#include "inet.h"
 
 #include "esp_common.h"
 
