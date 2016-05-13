@@ -50,8 +50,6 @@ def tcp_test(server_ip_address):
                                        TCP_PORT))
     sock.connect((server_ip_address, TCP_PORT))
 
-    time.sleep(1)
-
     print("sending '{}'".format(TCP_STRING))
     sock.sendall(TCP_STRING)
 

@@ -50,6 +50,7 @@ static void init(struct socket_t *self_p,
 
     self_p->type = type;
     self_p->pcb_p = pcb_p;
+    self_p->io.recv.reading = 0;
     self_p->io.recv.pbuf.buf_p = NULL;
     self_p->io.recv.pbuf.size = -1;
     self_p->io.recv.pbuf.offset = 0;
@@ -126,7 +127,9 @@ static err_t on_tcp_recv(void *arg_p,
     }
 
     /* Resume any waiting thread. */
-    if (socket_p->io.thrd_p != NULL) {
+    if ((socket_p->io.thrd_p != NULL)
+        && (socket_p->io.recv.reading == 1)) {
+        socket_p->io.recv.reading = 0;
         resume(socket_p);
     }
 
@@ -147,7 +150,6 @@ static err_t on_tcp_accept(void *arg_p,
         /* Initialize the new socket and accpet the client. */
         tcp_arg(new_pcb_p, accepted_p);
         tcp_recv(new_pcb_p, on_tcp_recv);
-        tcp_nagle_disable(new_pcb_p);
         init(accepted_p, SOCKET_TYPE_STREAM, new_pcb_p);
         tcp_accepted(((struct tcp_pcb *)socket_p->pcb_p));
         resume(socket_p);
@@ -162,12 +164,19 @@ static err_t on_tcp_accept(void *arg_p,
 static void tcp_write_cb(void *ctx_p)
 {
     struct socket_t *self_p = ctx_p;
+    err_t res;
 
-    tcp_write(self_p->pcb_p,
-              self_p->io.buf_p,
-              self_p->io.size,
-              0);
+    res = tcp_write(self_p->pcb_p,
+                    self_p->io.buf_p,
+                    self_p->io.size,
+                    0);
+
+    if (res != ERR_OK) {
+        self_p->io.size = -1;
+    }
+
     tcp_output(self_p->pcb_p);
+
     resume(self_p);
 }
 
@@ -183,7 +192,6 @@ static void tcp_open_cb(void *ctx_p)
     pcb_p = tcp_new();
     tcp_arg(pcb_p, self_p);
     tcp_recv(pcb_p, on_tcp_recv);
-    tcp_nagle_disable((struct tcp_pcb *)pcb_p);
     init(self_p, SOCKET_TYPE_STREAM, pcb_p);
     resume(self_p);
 }
@@ -195,7 +203,6 @@ static void tcp_close_cb(void *ctx_p)
 {
     struct socket_t *self_p = ctx_p;
 
-    tcp_output(self_p->pcb_p);
     tcp_close(self_p->pcb_p);
     resume(self_p);
 }
@@ -244,9 +251,11 @@ static ssize_t tcp_send_to(struct socket_t *self_p,
     tcpip_callback_with_block(tcp_write_cb, self_p, 0);
     thrd_suspend(NULL);
 
-    fs_counter_increment(&tcp_tx_bytes, size);
+    if (self_p->io.size >= 0) {
+        fs_counter_increment(&tcp_tx_bytes, self_p->io.size);
+    }
 
-    return (size);
+    return (self_p->io.size);
 }
 
 static ssize_t udp_recv_from(struct socket_t *self_p,
@@ -300,6 +309,7 @@ static ssize_t tcp_recv_from(struct socket_t *self_p,
     while (left > 0) {
         /* Wait for data if none is available. */
         if (self_p->io.recv.pbuf.size == -1) {
+            self_p->io.recv.reading = 1;
             self_p->io.thrd_p = thrd_self();
             thrd_suspend(NULL);
         }

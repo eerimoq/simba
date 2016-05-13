@@ -39,6 +39,7 @@
 #define SHELL_PORT 50505
 
 static struct uart_driver_t uart;
+static char rxbuf[4];
 static struct shell_args_t shell_args;
 
 static int udp_test(void)
@@ -94,7 +95,7 @@ static int tcp_test(void)
 
     std_printf(FSTR("TCP test\r\n"));
 
-    std_printf(FSTR("opening socket\r\n"));
+    std_printf(FSTR("opening listener socket\r\n"));
     socket_open(&listener, SOCKET_DOMAIN_AF_INET, SOCKET_TYPE_STREAM, 0);
 
     std_printf(FSTR("binding to %d\r\n"), TCP_PORT);
@@ -106,7 +107,7 @@ static int tcp_test(void)
     socket_listen(&listener, 5);
 
     socket_accept(&listener, &client, &addr, NULL);
-    std_printf(FSTR("accepted 0x%x:%d\r\n"), addr.ip, addr.port);
+    std_printf(FSTR("accepted client 0x%x:%d\r\n"), addr.ip, addr.port);
 
     socket_read(&client, buf, 5);
     socket_read(&client, &buf[5], 5);
@@ -115,9 +116,11 @@ static int tcp_test(void)
     std_printf(FSTR("writing '%s'\r\n"), buf);
     socket_write(&client, buf, 10);
 
-    /* std_printf(FSTR("closing sockets\r\n")); */
-    /* socket_close(&client); */
-    /* socket_close(&listener); */
+    std_printf(FSTR("closing client socket\r\n"));
+    socket_close(&client);
+
+    std_printf(FSTR("closing listener socket\r\n"));
+    socket_close(&listener);
 
     return (0);
 }
@@ -129,7 +132,7 @@ static int shell_test(void)
 
     std_printf(FSTR("shell test\r\n"));
 
-    /* Spawn the shell thread communicating over given TCP socket. */
+    /* Start the shell communicating over given TCP socket. */
     socket_open(&listener, SOCKET_DOMAIN_AF_INET, SOCKET_TYPE_STREAM, 0);
     addr.ip = 0x6701a8c0;
     addr.port = SHELL_PORT;
@@ -144,8 +147,8 @@ static int shell_test(void)
 
     shell_main(&shell_args);
 
-    /* socket_close(&client); */
-    /* socket_close(&listener); */
+    socket_close(&client);
+    socket_close(&listener);
 
     return (0);
 }
@@ -172,8 +175,10 @@ static int init()
 
     sys_start();
 
+    socket_module_init();
+
     uart_module_init();
-    uart_init(&uart, &uart_device[0], 38400, NULL, 0);
+    uart_init(&uart, &uart_device[0], 38400, rxbuf, sizeof(rxbuf));
     uart_start(&uart);
     sys_set_stdout(&uart.chout);
 

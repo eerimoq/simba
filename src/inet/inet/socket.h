@@ -44,6 +44,7 @@ struct socket_t {
     int type;
     struct {
         struct {
+            int reading;
             struct {
                 volatile void *buf_p;
                 volatile size_t size;
