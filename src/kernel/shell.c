@@ -118,6 +118,11 @@ static int login(char *buf_p,
     return (0);
 }
 
+/**
+ * Read the next command.
+ *
+ * @return Command length or negative error code.
+ */
 static int read_command(char *buf_p,
                         chan_t *chin_p,
                         chan_t *chout_p)
@@ -126,7 +131,9 @@ static int read_command(char *buf_p,
     int err;
 
     while (write_p < &buf_p[SHELL_COMMAND_MAX]) {
-        chan_read(chin_p, &c, sizeof(c));
+        if (chan_read(chin_p, &c, sizeof(c)) != sizeof(c)) {
+            return (-EIO);
+        }
 
         if (c == '\t') {
             /* Auto-completion. */
@@ -190,6 +197,7 @@ void *shell_main(void *arg_p)
     struct shell_args_t *shell_args_p;
     char buf[SHELL_COMMAND_MAX];
     int authorized = 0;
+    int res;
 
     shell_args_p = arg_p;
 
@@ -217,7 +225,9 @@ void *shell_main(void *arg_p)
         }
 
         /* Read command.*/
-        if (read_command(buf, chin_p, chout_p) > 0) {
+        res = read_command(buf, chin_p, chout_p);
+
+        if (res > 0) {
             /* Logout handling. */
             if (!std_strcmp(std_strip(buf, NULL), FSTR("logout"))) {
                 if (username_p != NULL) {
@@ -228,6 +238,8 @@ void *shell_main(void *arg_p)
             }
 
             fs_call(buf, chin_p, chout_p, shell_args_p->arg_p);
+        } else if (res == -EIO) {
+            break;
         }
 
         std_fprintf(chout_p, FSTR(SHELL_PROMPT));
