@@ -22,7 +22,4 @@ NAME = inet
 BOARD = esp12e
 
 SIMBA_ROOT = ../..
-include $(SIMBA_ROOT)/src/inet/inet.mk
-INET_SRC = socket.c
-LWIP_SRC =
 include $(SIMBA_ROOT)/make/app.mk

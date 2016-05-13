@@ -88,11 +88,13 @@ MCU.mk ?= $(SIMBA_ROOT)/src/mcus/$(MCU)/mcu.mk
 KERNEL.mk ?= $(SIMBA_ROOT)/src/kernel/kernel.mk
 DRIVERS.mk ?= $(SIMBA_ROOT)/src/drivers/drivers.mk
 SLIB.mk ?= $(SIMBA_ROOT)/src/slib/slib.mk
+INET.mk ?= $(SIMBA_ROOT)/src/inet/inet.mk
 
 include $(MCU.mk)
 include $(KERNEL.mk)
 include $(DRIVERS.mk)
 include $(SLIB.mk)
+include $(INET.mk)
 
 UPPER_ARCH := $(shell python -c "import sys; sys.stdout.write(sys.argv[1].upper())" $(ARCH))
 UPPER_MCU := $(shell python -c "import sys; sys.stdout.write(sys.argv[1].upper().replace('-', '_').replace('/', '_'))" $(MCU))

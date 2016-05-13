@@ -190,6 +190,7 @@ def setup_mcu_esp(env, linker_script, flash_size_map):
 
     add_include_paths(env, [
         "src/mcus/esp8266",
+        "src/inet",
         "3pp/ESP8266_RTOS_SDK/extra_include",
         "3pp/ESP8266_RTOS_SDK/include",
         "3pp/ESP8266_RTOS_SDK/include/espressif",
@@ -341,9 +342,6 @@ def create_src_filter(env):
     if env.subst("$BOARD_MCU") == "sam3x8e":
         src_filter_patterns.append("+<mcus/sam>")
 
-    # Remove inet files.
-    src_filter_patterns.append("-<inet>")
-
     # Add the drivers files.
     src_filter_patterns.append("-<drivers>")
 
@@ -368,6 +366,9 @@ def create_src_filter(env):
             "usb/host/class/usb_host_class_mass_storage.c"
         ]
 
+        # Remove inet files.
+        src_filter_patterns.append("-<inet>")
+
     elif arch == "avr":
         files = [
             "adc.c",
@@ -384,6 +385,9 @@ def create_src_filter(env):
             "uart.c",
             "uart_soft.c"
         ]
+
+        # Remove inet files.
+        src_filter_patterns.append("-<inet>")
 
     elif arch == "esp":
         files = [
