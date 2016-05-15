@@ -86,7 +86,7 @@ int socket_open(struct socket_t *self_p,
 /**
  * Close given socket.
  *
- * @param[in] self_p Socket to disconnect.
+ * @param[in] self_p Socket to close.
  *
  * @return zero(0) or negative error code.
  */
@@ -106,7 +106,7 @@ int socket_bind(struct socket_t *self_p,
                 size_t addrlen);
 
 /**
- * Listen for conntctions. Only used by TCP sockets.
+ * Listen for connections. Only used by TCP sockets.
  *
  * @param[in] self_p Socket.
  * @param[in] backlog Unused.
@@ -118,7 +118,7 @@ int socket_listen(struct socket_t *self_p, int backlog);
 /**
  * Connect to given remote address. Connecting a UDP socket sets the
  * default remote address for outgoing datagrams. For TCP a three-way
- * handshake with the remote is initiated.
+ * handshake with the remote peer is initiated.
  *
  * @param[in] self_p Socket.
  * @param[in] remote_addr_p Remote address.
@@ -153,7 +153,7 @@ int socket_accept(struct socket_t *self_p,
  * @param[in] size Size of buffer to send.
  * @param[in] flags Unused.
  * @param[in] remote_addr_p Remote address to send the data to.
- * @param[in] addrlen Length of remote_addr.
+ * @param[in] addrlen Size of remote_addr.
  *
  * @return Number of sent bytes or negative error code.
  */
@@ -188,9 +188,9 @@ ssize_t socket_recvfrom(struct socket_t *self_p,
  *
  * @param[in] self_p Socket.
  * @param[in] buf_p Buffer to send.
- * @param[in] size Size of buffer to send.
+ * @param[in] size Numer of bytes to send.
  *
- * @return Number of sent bytes or negative error code.
+ * @return Number of written bytes or negative error code.
  */
 ssize_t socket_write(struct socket_t *self_p,
                      const void *buf_p,
@@ -201,9 +201,9 @@ ssize_t socket_write(struct socket_t *self_p,
  *
  * @param[in] self_p Socket.
  * @param[in] buf_p Buffer to read into.
- * @param[in] size Size of buffer to read.
+ * @param[in] size Number of bytes to read.
  *
- * @return Number of received bytes or negative error code.
+ * @return Number of read bytes or negative error code.
  */
 ssize_t socket_read(struct socket_t *self_p,
                     void *buf_p,

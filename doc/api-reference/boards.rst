@@ -3,7 +3,7 @@ boards
 
 The boards supported by `Simba`.
 
-The boards on `github`_.
+The boards on :source:`Github<src/boards>`.
 
 Boards:
 
@@ -12,5 +12,3 @@ Boards:
    :maxdepth: 1
 
    boards/*
-
-.. _github: https://github.com/eerimoq/simba/tree/master/src/boards

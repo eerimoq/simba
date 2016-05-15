@@ -27,26 +27,3 @@ ifneq (,$(filter $(BOARD), esp12e esp01))
 
     SRC += $(INET_SRC:%=$(SIMBA_ROOT)/src/inet/%)
 endif
-
-#LWIP_SRC ?= \
-#	../../3pp/lwip-1.4.1/src/core/stats.c \
-#	../../3pp/lwip-1.4.1/src/core/tcp_out.c \
-#	../../3pp/lwip-1.4.1/src/core/udp.c \
-#	../../3pp/lwip-1.4.1/src/core/timers.c \
-#	../../3pp/lwip-1.4.1/src/core/netif.c \
-#	../../3pp/lwip-1.4.1/src/core/def.c \
-#	../../3pp/lwip-1.4.1/src/core/raw.c \
-#	../../3pp/lwip-1.4.1/src/core/dns.c \
-#	../../3pp/lwip-1.4.1/src/core/tcp_in.c \
-#	../../3pp/lwip-1.4.1/src/core/memp.c \
-#	../../3pp/lwip-1.4.1/src/core/pbuf.c \
-#	../../3pp/lwip-1.4.1/src/core/tcp.c \
-#	../../3pp/lwip-1.4.1/src/core/ipv4/ip_frag.c \
-#	../../3pp/lwip-1.4.1/src/core/ipv4/ip.c \
-#	../../3pp/lwip-1.4.1/src/core/ipv4/ip_addr.c \
-#	../../3pp/lwip-1.4.1/src/core/ipv4/icmp.c \
-#	../../3pp/lwip-1.4.1/src/core/ipv4/inet.c \
-#	../../3pp/lwip-1.4.1/src/core/ipv4/inet_chksum.c \
-#	../../3pp/lwip-1.4.1/src/core/mem.c \
-#	../../3pp/lwip-1.4.1/src/netif/etharp.c \
-#	../../3pp/lwip-1.4.1/src/netif/ethernetif.c

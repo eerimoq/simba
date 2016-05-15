@@ -1,11 +1,9 @@
 slib
 ====
 
-The slib package interfaces on `github`_.
+The slib package interfaces on :source:`Github<src/slib/slib>`.
 
 .. toctree::
    :glob:   
 
    slib/*
-
-.. _github: https://github.com/eerimoq/simba/tree/master/src/slib/slib

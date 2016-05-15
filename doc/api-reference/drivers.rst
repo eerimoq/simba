@@ -1,7 +1,7 @@
 drivers
 =======
 
-The drivers package interfaces on `github`_.
+The drivers package interfaces on :source:`Github<src/drivers/drivers>`.
 
 Modules:
 
@@ -9,5 +9,3 @@ Modules:
    :glob:   
 
    drivers/*
-
-.. _github: https://github.com/eerimoq/simba/tree/master/src/drivers/drivers
