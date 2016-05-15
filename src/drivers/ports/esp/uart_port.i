@@ -89,12 +89,12 @@ static inline void rx_isr(struct uart_driver_t *drv_p,
     dev_p->regs_p->INT_CLR = ESP8266_UART_INT_CLR_RXFIFO_FULL;
 
     /* Error frames are discarded. */
-    if (error == 0) {
+    if ((error == 0) && (drv_p->rxsize > 0)) {
         /* Write data to input queue. */
         if (queue_write_isr(&drv_p->chin, &c, 1) != 1) {
             fs_counter_increment(&rx_channel_overflow, 1);
         }
-
+        
         xSemaphoreGiveFromISR(thrd_idle_sem, NULL);
     } else {
         fs_counter_increment(&rx_errors, 1);

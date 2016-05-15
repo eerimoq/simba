@@ -35,6 +35,7 @@ int uart_init(struct uart_driver_t *self_p,
 {
     self_p->dev_p = dev_p;
     self_p->baudrate = baudrate;
+    self_p->rxsize = size;
 
     sem_init(&self_p->sem, 1);
 
@@ -43,7 +44,11 @@ int uart_init(struct uart_driver_t *self_p,
               (ssize_t (*)(chan_t *, const void *, size_t))uart_port_write_cb,
               NULL);
 
-    return (queue_init(&self_p->chin, rxbuf_p, size));
+    if (size > 0) {
+        queue_init(&self_p->chin, rxbuf_p, size);
+    }
+
+    return (0);
 }
 
 int uart_start(struct uart_driver_t *self_p)

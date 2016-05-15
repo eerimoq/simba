@@ -31,6 +31,7 @@ struct uart_driver_t {
     const struct uart_device_t *dev_p;
     struct sem_t sem;
     long baudrate;
+    size_t rxsize;
     struct chan_t chout;
     struct queue_t chin;
 };
