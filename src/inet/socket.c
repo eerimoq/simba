@@ -169,13 +169,11 @@ static void tcp_write_cb(void *ctx_p)
     res = tcp_write(self_p->pcb_p,
                     self_p->io.buf_p,
                     self_p->io.size,
-                    0);
+                    TCP_WRITE_FLAG_COPY);
 
     if (res != ERR_OK) {
         self_p->io.size = -1;
     }
-
-    tcp_output(self_p->pcb_p);
 
     resume(self_p);
 }
