@@ -1,9 +1,9 @@
 #
-# @file lwip/lwip.mk
-# @version 0.3.0
+# @file Makefile
+# @version 0.0.1
 #
 # @section License
-# Copyright (C) 2014-2016, Erik Moqvist
+# Copyright (C) 2016, Erik Moqvist
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
@@ -15,17 +15,10 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 # Lesser General Public License for more details.
 #
-# This file is part of the Simba project.
-#
 
-# The inet package can only be used by the ESP.
-ifneq (,$(filter $(BOARD), esp12e esp01))
-    INC += $(SIMBA_ROOT)/src/inet
+NAME = http_server
+VERSION = 0.0.1
+BOARD ?= esp12e
 
-    INET_SRC ?= \
-	socket.c \
-	http_server.c \
-	http_websocket_server.c
-endif
-
-SRC += $(INET_SRC:%=$(SIMBA_ROOT)/src/inet/%)
+SIMBA_ROOT = ../..
+include $(SIMBA_ROOT)/make/app.mk

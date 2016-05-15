@@ -21,6 +21,9 @@
 #ifndef __INET_H__
 #define __INET_H__
 
+#include "inet/types.h"
 #include "inet/socket.h"
+#include "inet/http_server.h"
+#include "inet/http_websocket_server.h"
 
 #endif

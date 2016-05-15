@@ -39,9 +39,11 @@ LDFLAGS += -Wl,--start-group \
             -Wl,--end-group \
             -Wl,-T$(LINKER_SCRIPT)
 
+LDFLAGS_AFTER += \
+	$(ESPLIBS_AFTER:%=-l%)
+
 ESPLIBS += \
  minic \
- gcc \
  hal \
  phy \
  pp \
@@ -51,6 +53,9 @@ ESPLIBS += \
  main \
  freertos \
  lwip
+
+ESPLIBS_AFTER += \
+ gcc
 
 F_CPU = 80000000
 
