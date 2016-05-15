@@ -44,9 +44,9 @@ struct socket_t {
     int type;
     struct {
         struct {
-            int reading;
+            volatile int reading;
             struct {
-                volatile void *buf_p;
+                void * volatile buf_p;
                 volatile size_t size;
                 volatile size_t offset;
             } pbuf;
@@ -54,7 +54,7 @@ struct socket_t {
         void *buf_p;
         size_t size;
         struct socket_addr_t remote_addr;
-        struct thrd_t *thrd_p;
+        struct thrd_t * volatile thrd_p;
     } io;
     void *pcb_p;
 };

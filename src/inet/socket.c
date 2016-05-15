@@ -59,7 +59,7 @@ static void init(struct socket_t *self_p,
 static void resume(struct socket_t *socket_p)
 {
     /* Resume the reading thread. */
-    thrd_resume_isr(socket_p->io.thrd_p, 0);
+    thrd_resume_isr((struct thrd_t *)socket_p->io.thrd_p, 0);
     socket_p->io.thrd_p = NULL;
     xSemaphoreGive(thrd_idle_sem);
 }
@@ -306,11 +306,15 @@ static ssize_t tcp_recv_from(struct socket_t *self_p,
 
     while (left > 0) {
         /* Wait for data if none is available. */
+        sys_lock();
+
         if (self_p->io.recv.pbuf.size == -1) {
             self_p->io.recv.reading = 1;
             self_p->io.thrd_p = thrd_self();
-            thrd_suspend(NULL);
+            thrd_suspend_isr(NULL);
         }
+
+        sys_unlock();
 
         /* Socket closed. */
         if (self_p->io.recv.pbuf.size == 0) {
