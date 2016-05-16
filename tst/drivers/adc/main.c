@@ -23,7 +23,7 @@
 static int test_convert(struct harness_t *harness_p)
 {
     int i;
-    int samples[16];
+    uint16_t samples[16];
     struct adc_driver_t adc;
 
     adc_init(&adc,
@@ -35,7 +35,7 @@ static int test_convert(struct harness_t *harness_p)
     adc_convert(&adc, samples, membersof(samples));
 
     for (i = 0; i < membersof(samples); i++) {
-        std_printf(FSTR("[%d]: %d"), i, samples[i]);
+        std_printf(FSTR("[%d]: %d\r\n"), i, samples[i]);
     }
 
     return (0);

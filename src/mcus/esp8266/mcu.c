@@ -45,3 +45,5 @@ struct uart_device_t uart_device[UART_DEVICE_MAX] = {
     { .regs_p = ESP8266_UART0 },
     { .regs_p = ESP8266_UART1 }
 };
+
+struct adc_device_t adc_device[ADC_DEVICE_MAX];

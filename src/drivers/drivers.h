@@ -70,6 +70,7 @@
 #if defined(ARCH_ESP)
 #    include "drivers/pin.h"
 #    include "drivers/uart.h"
+#    include "drivers/adc.h"
 #endif
 
 #endif

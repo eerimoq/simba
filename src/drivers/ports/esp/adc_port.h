@@ -1,5 +1,5 @@
 /**
- * @file board.h
+ * @file drivers/ports/esp/adc_port.h
  * @version 0.4.0
  *
  * @section License
@@ -18,22 +18,20 @@
  * This file is part of the Simba project.
  */
 
-#ifndef __BOARD_H__
-#define __BOARD_H__
+#ifndef __DRIVERS_ADC_PORT_H__
+#define __DRIVERS_ADC_PORT_H__
 
-#define pin_d0_dev pin_device[0]
-#define pin_d2_dev pin_device[2]
-#define pin_d4_dev pin_device[4]
-#define pin_d5_dev pin_device[5]
-#define pin_d12_dev pin_device[12]
-#define pin_d13_dev pin_device[13]
-#define pin_d14_dev pin_device[14]
-#define pin_d15_dev pin_device[15]
+#define ADC_PORT_REFERENCE_VCC 0
 
-#define pin_led_dev pin_d2_dev
+struct adc_driver_t;
 
-#define pin_a0_dev pin_device[0]
+struct adc_device_t {
+};
 
-#define adc_0_dev adc_device[0]
+struct adc_driver_t {
+    struct adc_device_t *dev_p;
+    uint16_t *samples_p;
+    size_t length;
+};
 
 #endif
