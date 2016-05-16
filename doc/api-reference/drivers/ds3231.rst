@@ -4,7 +4,7 @@
 .. module:: ds3231
    :synopsis: RTC clock.
 
-Source code: :source:`src/drivers/drivers/ds3231.h`
+Source code: :github-blob:`src/drivers/drivers/ds3231.h`
 
 ----------------------------------------------
 

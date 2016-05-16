@@ -4,7 +4,7 @@
 .. module:: cygwin
    :synopsis: Cygwin.
 
-Source code: :source:`src/boards/cygwin/board.h`
+Source code: :github-blob:`src/boards/cygwin/board.h`
 
 ----------------------------------------------
 

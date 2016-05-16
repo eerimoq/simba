@@ -4,9 +4,9 @@
 .. module:: owi
    :synopsis: One-Wire Interface.
 
-Source code: :source:`src/drivers/drivers/owi.h`
+Source code: :github-blob:`src/drivers/drivers/owi.h`
 
-Test code: :source:`tst/drivers/owi/main.c`
+Test code: :github-blob:`tst/drivers/owi/main.c`
 
 ----------------------------------------------
 

@@ -4,7 +4,7 @@
 .. module:: errno
    :synopsis: Error numbers.
 
-Source code: :source:`src/kernel/kernel/errno.h`
+Source code: :github-blob:`src/kernel/kernel/errno.h`
 
 ----------------------------------------------
 

@@ -4,7 +4,7 @@
 .. module:: arduino_nano
    :synopsis: Arduino Nano.
 
-Source code: :source:`src/boards/arduino_nano/board.h`
+Source code: :github-blob:`src/boards/arduino_nano/board.h`
 
 Hardware reference: :doc:`Arduino Nano <../../boards/arduino_nano>`
 

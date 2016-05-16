@@ -2,9 +2,9 @@ API Reference
 =============
 
 Besides the generated documentation the source code of the interfaces
-are available on Github. See :source:`Kernel <src/kernel/kernel>`,
-:source:`Drivers <src/drivers/drivers>`, :source:`Slib
-<src/slib/slib>` and :source:`Inet<src/inet/inet>`.
+are available on Github. See :github-tree:`Kernel <src/kernel/kernel>`,
+:github-tree:`Drivers <src/drivers/drivers>`, :github-tree:`Slib
+<src/slib/slib>` and :github-tree:`Inet<src/inet/inet>`.
 
 .. toctree::
    :maxdepth: 2

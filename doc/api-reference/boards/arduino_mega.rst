@@ -4,7 +4,7 @@
 .. module:: arduino_mega
    :synopsis: Arduino Mega.
 
-Source code: :source:`src/boards/arduino_mega/board.h`
+Source code: :github-blob:`src/boards/arduino_mega/board.h`
 
 Hardware reference: :doc:`Arduino Mega <../../boards/arduino_mega>`
 

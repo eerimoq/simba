@@ -1,7 +1,7 @@
 Shell
 =====
 
-Source code: :source:`examples/shell/main.c`
+Source code: :github-blob:`examples/shell/main.c`
 
 ------------------------------------------------
 

@@ -4,7 +4,7 @@
 .. module:: harness
    :synopsis: Test harness.
 
-Source code: :source:`src/slib/slib/harness.h`
+Source code: :github-blob:`src/slib/slib/harness.h`
 
 ---------------------------------------------------
 

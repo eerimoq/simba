@@ -4,9 +4,9 @@
 .. module:: binary_tree
    :synopsis: Binary tree.
 
-Source code: :source:`src/kernel/kernel/binary_tree.h`
+Source code: :github-blob:`src/kernel/kernel/binary_tree.h`
 
-Test code: :source:`tst/kernel/binary_tree/main.c`
+Test code: :github-blob:`tst/kernel/binary_tree/main.c`
 
 ----------------------------------------------
 

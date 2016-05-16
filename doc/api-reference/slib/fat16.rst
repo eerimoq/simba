@@ -4,9 +4,9 @@
 .. module:: fat16
    :synopsis: FAT16 filesystem.
 
-Source code: :source:`src/slib/slib/fat16.h`
+Source code: :github-blob:`src/slib/slib/fat16.h`
 
-Test code: :source:`tst/slib/fat16/main.c`
+Test code: :github-blob:`tst/slib/fat16/main.c`
 
 ---------------------------------------------------
 

@@ -4,9 +4,9 @@
 .. module:: bits
    :synopsis: Bitwise operations.
 
-Source code: :source:`src/kernel/kernel/bits.h`
+Source code: :github-blob:`src/kernel/kernel/bits.h`
 
-Test code: :source:`tst/kernel/bits/main.c`
+Test code: :github-blob:`tst/kernel/bits/main.c`
 
 ----------------------------------------------
 

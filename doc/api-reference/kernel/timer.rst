@@ -4,9 +4,9 @@
 .. module:: timer
    :synopsis: Timers.
 
-Source code: :source:`src/kernel/kernel/timer.h`
+Source code: :github-blob:`src/kernel/kernel/timer.h`
 
-Test code: :source:`tst/kernel/timer/main.c`
+Test code: :github-blob:`tst/kernel/timer/main.c`
 
 ----------------------------------------------
 

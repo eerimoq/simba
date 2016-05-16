@@ -4,9 +4,9 @@
 .. module:: ds18b20
    :synopsis: One-wire temperature sensor.
 
-Source code: :source:`src/drivers/drivers/ds18b20.h`
+Source code: :github-blob:`src/drivers/drivers/ds18b20.h`
 
-Test code: :source:`tst/drivers/ds18b20/main.c`
+Test code: :github-blob:`tst/drivers/ds18b20/main.c`
 
 --------------------------------------------------------
 

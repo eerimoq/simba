@@ -4,9 +4,9 @@
 .. module:: dac
    :synopsis: Digital to analog convertion.
 
-Source code: :source:`src/drivers/drivers/dac.h`
+Source code: :github-blob:`src/drivers/drivers/dac.h`
 
-Test code: :source:`tst/drivers/dac/main.c`
+Test code: :github-blob:`tst/drivers/dac/main.c`
 
 --------------------------------------------------
 

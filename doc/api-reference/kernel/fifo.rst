@@ -4,9 +4,9 @@
 .. module:: fifo
    :synopsis: First In First Out queuing.
 
-Source code: :source:`src/kernel/kernel/fifo.h`
+Source code: :github-blob:`src/kernel/kernel/fifo.h`
 
-Test code: :source:`tst/kernel/fifo/main.c`
+Test code: :github-blob:`tst/kernel/fifo/main.c`
 
 ----------------------------------------------
 

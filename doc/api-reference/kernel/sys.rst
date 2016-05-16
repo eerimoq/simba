@@ -4,9 +4,9 @@
 .. module:: sys
    :synopsis: System.
 
-Source code: :source:`src/kernel/kernel/sys.h`
+Source code: :github-blob:`src/kernel/kernel/sys.h`
 
-Test code: :source:`tst/kernel/sys/main.c`
+Test code: :github-blob:`tst/kernel/sys/main.c`
 
 ----------------------------------------------
 

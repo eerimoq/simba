@@ -30,9 +30,9 @@ the listener.
 
 ----------------------------------------------
 
-Source code: :source:`src/kernel/kernel/bus.h`
+Source code: :github-blob:`src/kernel/kernel/bus.h`
 
-Test code: :source:`tst/kernel/bus/main.c`
+Test code: :github-blob:`tst/kernel/bus/main.c`
 
 ----------------------------------------------
 

@@ -1,7 +1,7 @@
 Hello World
 ===========
 
-Source code: :source:`examples/hello_world/main.c`
+Source code: :github-blob:`examples/hello_world/main.c`
 
 ------------------------------------------------
 

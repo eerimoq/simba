@@ -4,9 +4,9 @@
 .. module:: rwlock
    :synopsis: Reader-writer lock
 
-Source code: :source:`src/kernel/kernel/rwlock.h`
+Source code: :github-blob:`src/kernel/kernel/rwlock.h`
 
-Test code: :source:`tst/kernel/rwlock/main.c`
+Test code: :github-blob:`tst/kernel/rwlock/main.c`
 
 ----------------------------------------------
 

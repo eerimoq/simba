@@ -4,7 +4,7 @@
 .. module:: usb_host
    :synopsis: Universal Serial Bus - Host.
 
-Source code: :source:`src/drivers/drivers/usb_host.h`
+Source code: :github-blob:`src/drivers/drivers/usb_host.h`
 
 ----------------------------------------------
 

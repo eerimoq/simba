@@ -4,9 +4,9 @@
 .. module:: log
    :synopsis: Logging.
 
-Source code: :source:`src/kernel/kernel/log.h`
+Source code: :github-blob:`src/kernel/kernel/log.h`
 
-Test code: :source:`tst/kernel/log/main.c`
+Test code: :github-blob:`tst/kernel/log/main.c`
 
 ----------------------------------------------
 

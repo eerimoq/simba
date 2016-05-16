@@ -4,9 +4,9 @@
 .. module:: std
    :synopsis: Standard functions.
 
-Source code: :source:`src/kernel/kernel/std.h`
+Source code: :github-blob:`src/kernel/kernel/std.h`
 
-Test code: :source:`tst/kernel/std/main.c`
+Test code: :github-blob:`tst/kernel/std/main.c`
 
 ----------------------------------------------
 

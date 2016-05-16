@@ -4,9 +4,9 @@
 .. module:: pin
    :synopsis: Digital pins.
 
-Source code: :source:`src/drivers/drivers/pin.h`
+Source code: :github-blob:`src/drivers/drivers/pin.h`
 
-Test code: :source:`tst/drivers/pin/main.c`
+Test code: :github-blob:`tst/drivers/pin/main.c`
 
 ----------------------------------------------
 

@@ -1,7 +1,7 @@
 Blink
 =====
 
-Source code: :source:`examples/blink/main.c`
+Source code: :github-blob:`examples/blink/main.c`
 
 ------------------------------------------------
 

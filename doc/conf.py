@@ -69,7 +69,7 @@ author = u'Erik Moqvist'
 # built documents.
 #
 # The name of the branch/tag on github
-version = open("../VERSION.txt").read()
+version = open("../VERSION.txt").read().strip()
 # The full version, including alpha/beta/rc tags.
 release = version
 
@@ -326,6 +326,8 @@ texinfo_documents = [
 
 # extlins
 extlinks = {
-    'source':
-    ('https://github.com/eerimoq/simba/blob/' + version + '/', '')
+    'github-blob':
+    ('https://github.com/eerimoq/simba/blob/' + version + '/', ''),
+    'github-tree':
+    ('https://github.com/eerimoq/simba/tree/' + version + '/', '')
 }

@@ -4,9 +4,9 @@
 .. module:: base64
    :synopsis: Base64 encoding and decoding.
 
-Source code: :source:`src/slib/slib/base64.h`
+Source code: :github-blob:`src/slib/slib/base64.h`
 
-Test code: :source:`tst/slib/base64/main.c`
+Test code: :github-blob:`tst/slib/base64/main.c`
 
 ---------------------------------------------------
 

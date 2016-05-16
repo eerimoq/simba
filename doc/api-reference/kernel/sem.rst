@@ -4,9 +4,9 @@
 .. module:: sem
    :synopsis: Counting semaphores.
 
-Source code: :source:`src/kernel/kernel/sem.h`
+Source code: :github-blob:`src/kernel/kernel/sem.h`
 
-Test code: :source:`tst/kernel/sem/main.c`
+Test code: :github-blob:`tst/kernel/sem/main.c`
 
 ----------------------------------------------
 

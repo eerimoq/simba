@@ -4,9 +4,9 @@
 .. module:: fs
    :synopsis: Debug file system.
 
-Source code: :source:`src/kernel/kernel/fs.h`
+Source code: :github-blob:`src/kernel/kernel/fs.h`
 
-Test code: :source:`tst/kernel/fs/main.c`
+Test code: :github-blob:`tst/kernel/fs/main.c`
 
 ----------------------------------------------
 

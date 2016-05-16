@@ -7,4 +7,4 @@ Examples
 
    examples/*
 
-More examples are available on :source:`Github <examples>`.
+More examples are available on :github-blob:`Github <examples>`.

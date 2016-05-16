@@ -4,9 +4,9 @@
 .. module:: chipid
    :synopsis: Chip identity.
 
-Source code: :source:`src/drivers/drivers/chipid.h`
+Source code: :github-blob:`src/drivers/drivers/chipid.h`
 
-Test code: :source:`tst/drivers/chipid/main.c`
+Test code: :github-blob:`tst/drivers/chipid/main.c`
 
 --------------------------------------------------
 

@@ -4,7 +4,7 @@
 .. module:: socket
    :synopsis: Internet communication.
 
-Source code: :source:`src/inet/inet/socket.h`
+Source code: :github-blob:`src/inet/inet/socket.h`
 
 Sockets are used to communicate over IP networks. TCP and UDP are the
 most common transport protocols.

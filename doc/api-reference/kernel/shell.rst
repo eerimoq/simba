@@ -4,9 +4,9 @@
 .. module:: shell
    :synopsis: Debug shell.
 
-Source code: :source:`src/kernel/kernel/shell.h`
+Source code: :github-blob:`src/kernel/kernel/shell.h`
 
-Test code: :source:`tst/kernel/shell/main.c`
+Test code: :github-blob:`tst/kernel/shell/main.c`
 
 ----------------------------------------------
 

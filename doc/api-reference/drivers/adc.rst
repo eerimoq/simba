@@ -4,9 +4,9 @@
 .. module:: adc
    :synopsis: Analog to digital convertion.
 
-Source code: :source:`src/drivers/drivers/adc.h`
+Source code: :github-blob:`src/drivers/drivers/adc.h`
 
-Test code: :source:`tst/drivers/adc/main.c`
+Test code: :github-blob:`tst/drivers/adc/main.c`
 
 --------------------------------------------------
 

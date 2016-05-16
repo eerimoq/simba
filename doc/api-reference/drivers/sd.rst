@@ -4,9 +4,9 @@
 .. module:: sd
    :synopsis: Secure Digital memory.
 
-Source code: :source:`src/drivers/drivers/sd.h`
+Source code: :github-blob:`src/drivers/drivers/sd.h`
 
-Test code: :source:`tst/drivers/sd/main.c`
+Test code: :github-blob:`tst/drivers/sd/main.c`
 
 ----------------------------------------------
 

@@ -69,9 +69,9 @@ easier to read.
 
 ----------------------------------------------
 
-Source code: :source:`src/kernel/kernel/setting.h`
+Source code: :github-blob:`src/kernel/kernel/setting.h`
 
-Test code: :source:`tst/kernel/setting/main.c`
+Test code: :github-blob:`tst/kernel/setting/main.c`
 
 ----------------------------------------------
 

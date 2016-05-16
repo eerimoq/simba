@@ -4,7 +4,7 @@
 .. module:: list
    :synopsis: Abstract lists.
 
-Source code: :source:`src/kernel/kernel/list.h`
+Source code: :github-blob:`src/kernel/kernel/list.h`
 
 ----------------------------------------------
 

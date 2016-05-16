@@ -4,9 +4,9 @@
 .. module:: crc
    :synopsis: Cyclic Redundancy Checks.
 
-Source code: :source:`src/slib/slib/crc.h`
+Source code: :github-blob:`src/slib/slib/crc.h`
 
-Test code: :source:`tst/slib/crc/main.c`
+Test code: :github-blob:`tst/slib/crc/main.c`
 
 ---------------------------------------------------
 

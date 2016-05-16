@@ -4,9 +4,9 @@
 .. module:: http_websocket_server
    :synopsis: HTTP websocket server.
 
-Source code: :source:`src/inet/inet/http_websocket_server.h`
+Source code: :github-blob:`src/inet/inet/http_websocket_server.h`
 
-Test code: :source:`tst/inet/http_websocket_server/main.c`
+Test code: :github-blob:`tst/inet/http_websocket_server/main.c`
 
 ----------------------------------------------
 

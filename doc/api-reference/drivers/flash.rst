@@ -4,9 +4,9 @@
 .. module:: flash
    :synopsis: Flash memory.
 
-Source code: :source:`src/drivers/drivers/flash.h`
+Source code: :github-blob:`src/drivers/drivers/flash.h`
 
-Test code: :source:`tst/drivers/flash/main.c`
+Test code: :github-blob:`tst/drivers/flash/main.c`
 
 --------------------------------------------------
 

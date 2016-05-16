@@ -4,7 +4,7 @@
 .. module:: esp01
    :synopsis: ESP8266 Development Board.
 
-Source code: :source:`src/boards/esp01/board.h`
+Source code: :github-blob:`src/boards/esp01/board.h`
 
 Hardware reference: :doc:`../../boards/esp01`
 

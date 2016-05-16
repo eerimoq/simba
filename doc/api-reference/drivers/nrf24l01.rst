@@ -4,7 +4,7 @@
 .. module:: nrf24l01
    :synopsis: Wireless communication.
 
-Source code: :source:`src/drivers/drivers/nrf24l01.h`
+Source code: :github-blob:`src/drivers/drivers/nrf24l01.h`
 
 ----------------------------------------------
 

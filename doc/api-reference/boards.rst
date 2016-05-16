@@ -3,7 +3,7 @@ boards
 
 The boards supported by `Simba`.
 
-The boards on :source:`Github<src/boards>`.
+The boards on :github-tree:`Github<src/boards>`.
 
 Boards:
 

@@ -4,9 +4,9 @@
 .. module:: exti
    :synopsis: External interrupts.
 
-Source code: :source:`src/drivers/drivers/exti.h`
+Source code: :github-blob:`src/drivers/drivers/exti.h`
 
-Test code: :source:`tst/drivers/exti/main.c`
+Test code: :github-blob:`tst/drivers/exti/main.c`
 
 ----------------------------------------------
 

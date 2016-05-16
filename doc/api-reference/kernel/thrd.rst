@@ -4,9 +4,9 @@
 .. module:: thrd
    :synopsis: Threads.
 
-Source code: :source:`src/kernel/kernel/thrd.h`
+Source code: :github-blob:`src/kernel/kernel/thrd.h`
 
-Test code: :source:`tst/kernel/thrd/main.c`
+Test code: :github-blob:`tst/kernel/thrd/main.c`
 
 ----------------------------------------------
 

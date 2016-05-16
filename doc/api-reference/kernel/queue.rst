@@ -4,9 +4,9 @@
 .. module:: queue
    :synopsis: Queue channel.
 
-Source code: :source:`src/kernel/kernel/queue.h`
+Source code: :github-blob:`src/kernel/kernel/queue.h`
 
-Test code: :source:`tst/kernel/queue/main.c`
+Test code: :github-blob:`tst/kernel/queue/main.c`
 
 ----------------------------------------------
 

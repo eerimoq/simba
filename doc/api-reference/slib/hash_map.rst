@@ -4,9 +4,9 @@
 .. module:: hash_map
    :synopsis: Hash map.
 
-Source code: :source:`src/slib/slib/hash_map.h`
+Source code: :github-blob:`src/slib/slib/hash_map.h`
 
-Test code: :source:`tst/slib/hash_map/main.c`
+Test code: :github-blob:`tst/slib/hash_map/main.c`
 
 ---------------------------------------------------
 

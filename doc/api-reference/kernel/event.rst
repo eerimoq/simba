@@ -4,9 +4,9 @@
 .. module:: event
    :synopsis: Event channel.
 
-Source code: :source:`src/kernel/kernel/event.h`
+Source code: :github-blob:`src/kernel/kernel/event.h`
 
-Test code: :source:`tst/kernel/event/main.c`
+Test code: :github-blob:`tst/kernel/event/main.c`
 
 ----------------------------------------------
 
