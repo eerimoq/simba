@@ -25,5 +25,6 @@
 #include "inet/socket.h"
 #include "inet/http_server.h"
 #include "inet/http_websocket_server.h"
+#include "inet/http_websocket_client.h"
 
 #endif

@@ -1,5 +1,5 @@
 /**
- * @file websocket/server.c
+ * @file http_websocket_server.c
  * @version 0.3.0
  *
  * @section License
