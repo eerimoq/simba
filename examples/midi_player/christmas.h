@@ -1,6 +1,6 @@
 /**
  * @file staffan.h
- * @version 0.3.0
+ * @version 0.4.0
  *
  * @section License
  * Copyright (C) 2015-2016, Erik Moqvist
