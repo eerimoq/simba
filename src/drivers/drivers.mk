@@ -66,6 +66,7 @@ endif
 ifeq ($(ARCH),esp)
 DRIVERS_SRC ?= adc.c \
                pin.c \
+               spi.c \
                uart.c
 endif
 

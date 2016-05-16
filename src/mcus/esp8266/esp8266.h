@@ -266,9 +266,28 @@ struct esp8266_uart_t {
  * Serial Peripheral Interface.
  */
 struct esp8266_spi_t {
-    uint32_t reserverd0[16];
-    uint32_t CHIP_ID;
+    uint32_t CMD;
+    uint32_t ADDR;
+    uint32_t CTRL;
+    uint32_t RESERVED0;
+    uint32_t RD_STATUS;
+    uint32_t CTRL2;
+    uint32_t CLOCK;
+    uint32_t USER;
+    uint32_t USER1;
+    uint32_t USER2;
+    uint32_t WR_STATUS;
+    uint32_t PIN;
+    uint32_t SLAVE;
+    uint32_t SLAVE1;
+    uint32_t SLAVE2;
+    uint32_t SLAVE3;
+    uint32_t W_0_15[16];
+    uint32_t RESERVED1[0xa0];
+    uint32_t EXT3;
 };
+
+#define SPI_CMD_USR BIT(18)
 
 /**
  * General Purpose Input Output registers.
