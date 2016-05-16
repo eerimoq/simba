@@ -1,6 +1,6 @@
 /**
  * @file websocket/server.c
- * @version 0.0.1
+ * @version 0.3.0
  *
  * @section License
  * Copyright (C) 2016, Erik Moqvist
@@ -14,6 +14,8 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
+ *
+ * This file is part of the Simba project.
  */
 
 #include "simba.h"

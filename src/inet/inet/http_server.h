@@ -1,6 +1,6 @@
 /**
  * @file inet/http_server.h
- * @version 0.0.1
+ * @version 0.3.0
  *
  * @section License
  * Copyright (C) 2016, Erik Moqvist
@@ -14,6 +14,8 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERBITSTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
+ *
+ * This file is part of the Simba project.
  */
 
 #ifndef __INET_HTTP_SERVER_H__
@@ -21,6 +23,9 @@
 
 #include "simba.h"
 
+/**
+ * Request action types.
+ */
 enum http_server_request_action_t {
     http_server_request_action_get_t = 0
 };
@@ -163,6 +168,8 @@ int http_server_init(struct http_server_t *self_p,
  *
  * Spawn the threads and start listening for connections.
  *
+ * @param[in] self_p Http server.
+ *
  * @return zero(0) or negative error code.
  */
 int http_server_start(struct http_server_t *self_p);
@@ -173,6 +180,8 @@ int http_server_start(struct http_server_t *self_p);
  * Closes the listener and all open connections, and then kills the
  * threads.
  *
+ * @param[in] self_p Http server.
+ *
  * @return zero(0) or negative error code.
  */
 int http_server_stop(struct http_server_t *self_p);
@@ -182,7 +191,9 @@ int http_server_stop(struct http_server_t *self_p);
  * should only be called from the route callbacks to respond to given
  * request.
  *
- *
+ * @param[in] connection_p Current connection.
+ * @param[in] request_p Current request.
+ * @param[in] response_p Current response.
  *
  * @return zero(0) or negative error code.
  */
