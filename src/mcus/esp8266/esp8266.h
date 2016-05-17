@@ -389,9 +389,9 @@ struct esp8266_spi_t {
 /*  */
 #define SPI_USER1_REG_USR_ADDR_BITLEN
 /*  */
-#define SPI_USER1_REG_USR_MOSI_BITLEN
+#define SPI_USER1_REG_USR_MOSI_BITLEN(value) ((value) << 17)
 /*  */
-#define SPI_USER1_REG_USR_MISO_BITLEN
+#define SPI_USER1_REG_USR_MISO_BITLEN(value) ((value) << 8)
 /*  */
 #define SPI_USER1_REG_USR_DUMMY_CYCLELEN
 
@@ -667,8 +667,8 @@ struct esp8266_iomux_t {
 };
 
 /* Details for the CONF register. */
-#define ESP8266_IOMUX_CONF_SPI1_CLK_EQU_SYS_CLK  BIT(9)
-#define ESP8266_IOMUX_CONF_SPI0_CLK_EQU_SYS_CLK  BIT(8)
+#define ESP8266_IOMUX_CONF_SPI0_CLK_EQU_SYS_CLK  BIT(9)
+#define ESP8266_IOMUX_CONF_SPI1_CLK_EQU_SYS_CLK  BIT(8)
 
 /* Details for the PIN registers. */
 #define ESP8266_IOMUX_PIN_FUNC_HIGH_POS        (8)

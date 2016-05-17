@@ -20,8 +20,6 @@
 
 #include "simba.h"
 
-
-
 struct pin_device_t pin_device[PIN_DEVICE_MAX] = {
     { .id =  0, .mask =  BIT(0), .iomux = 12 },
     { .id =  1, .mask =  BIT(1), .iomux =  5 },
@@ -47,3 +45,11 @@ struct uart_device_t uart_device[UART_DEVICE_MAX] = {
 };
 
 struct adc_device_t adc_device[ADC_DEVICE_MAX];
+
+struct spi_device_t spi_device[SPI_DEVICE_MAX] = {
+    {
+        .drv_p = NULL,
+        .regs_p = ESP8266_SPI0,
+        .sem = { .count = 1, .head_p = NULL }
+    }
+};
