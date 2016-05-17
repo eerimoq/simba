@@ -20,12 +20,38 @@
 
 #include "esp_common.h"
 
-static void start_block_transfer(struct spi_driver_t *drv_p)
+/**
+ * Start a block transfer of up to 64 bytes.
+ */
+static void start_block_transfer_isr(struct spi_driver_t *drv_p)
 {
-    int i;
+    size_t i;
+    size_t size;
 
-    for (i = 0; i < 2; i++) {
-        drv_p->dev_p->regs_p->W_0_15[i] = *drv_p->txbuf_p++;
+    /* Block size. */
+    if (drv_p->size > 64) {
+        size = 64;
+    } else {
+        size = drv_p->size;
+    }
+
+    drv_p->block_size = size;
+    drv_p->size -= size;
+
+    /* Set bits to transfer. */
+    drv_p->dev_p->regs_p->USER1 =
+        (SPI_USER1_REG_USR_MISO_BITLEN(8 * size)
+         | SPI_USER1_REG_USR_MOSI_BITLEN(8 * size));
+
+    /* Fill the transmit buffer. */
+    if (drv_p->txbuf_p != NULL) {
+        for (i = 0; i < (size + 3) / 4; i++) {
+            drv_p->dev_p->regs_p->W_0_15[i] = *drv_p->txbuf_p++;
+        }
+    } else {
+        for (i = 0; i < (size + 3) / 4; i++) {
+            drv_p->dev_p->regs_p->W_0_15[i] = 0xffffffff;
+        }
     }
 }
 
@@ -37,15 +63,14 @@ static void isr(void *arg_p)
     int i;
     struct spi_driver_t *drv_p = NULL;
     struct spi_device_t *dev_p = drv_p->dev_p;
-
-    if (0) {
-        return;
-    }
+    uint8_t *buf_p;
 
     /* Read incoming byte(s). */
     if (drv_p->rxbuf_p != NULL) {
-        for (i = 0; i < 4; i++) {
-            *drv_p->rxbuf_p++ = dev_p->regs_p->W_0_15[i];
+        buf_p = (uint8_t *)(&dev_p->regs_p->W_0_15[0]);
+
+        for (i = 0; i < drv_p->block_size; i++) {
+            *drv_p->rxbuf_p++ = *buf_p++;
         }
     }
 
@@ -53,7 +78,7 @@ static void isr(void *arg_p)
     if (drv_p->size == 0) {
         thrd_resume_isr(drv_p->thrd_p, 0);
     } else {
-        start_block_transfer(drv_p);
+        start_block_transfer_isr(drv_p);
     }
 
     drv_p->size--;
@@ -70,6 +95,12 @@ static int spi_port_init(struct spi_driver_t *self_p,
     /* Install the interrupt handler. */
     _xt_isr_attach(ESP8266_IRQ_NUM_SPI, (_xt_isr)isr, NULL);
     _xt_isr_unmask(1 << ESP8266_IRQ_NUM_SPI);
+
+    if (mode == SPI_MODE_MASTER) {
+        dev_p->regs_p->USER = (SPI_USER_SPI_USR_MOSI);
+    } else {
+        return (-1);
+    }
 
     return (0);
 }
@@ -93,13 +124,14 @@ static ssize_t spi_port_transfer(struct spi_driver_t *self_p,
 {
     self_p->rxbuf_p = rxbuf_p;
     self_p->txbuf_p = txbuf_p;
-    self_p->size = (n - 1);
+    self_p->size = n;
     self_p->thrd_p = thrd_self();
 
     /* Write first block. The rest are written from isr. */
-    start_block_transfer(self_p);
-
-    thrd_suspend(NULL);
+    sys_lock();
+    start_block_transfer_isr(self_p);
+    thrd_suspend_isr(NULL);
+    sys_unlock();
 
     return (n);
 }

@@ -48,12 +48,11 @@ struct spi_driver_t {
     int speed;
     int cpol;
     int cpha;
-    uint8_t spcr;
-    uint8_t spsr;
-    uint8_t *rxbuf_p;                        /* Transfer receive buffer or NULL. */
-    const uint8_t *txbuf_p;                  /* Transfer transmit buffer or NULL. */
-    size_t size;                             /* Number of bytes left to transfer. */
-    struct thrd_t *thrd_p;                   /* Waiting thread. */
+    uint8_t *rxbuf_p;               /* Transfer receive buffer or NULL. */
+    const uint8_t *txbuf_p;         /* Transfer transmit buffer or NULL. */
+    size_t size;                    /* Number of bytes left to transfer. */
+    size_t block_size;
+    struct thrd_t *thrd_p;          /* Waiting thread. */
 };
 
 #endif

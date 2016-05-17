@@ -287,7 +287,197 @@ struct esp8266_spi_t {
     uint32_t EXT3;
 };
 
+/* Command register. */
+
+/* In the master mode, it is the start bit of a single
+   operation. Self-clear by hardware. */
 #define SPI_CMD_USR BIT(18)
+
+/* Address register. */
+
+/* In the master mode, it is the value of address in "address"
+   phase. */
+#define SPI_ADDR_IODATA_START_ADDR 0
+
+/* Control register. */
+
+/* In "command", "address", "write-data" (MOSI) phases, 1: LSB first;
+   0: MSB first. */
+#define SPI_CTRL_WR_BIT_ORDER BIT(26)
+/* In "read-data" (MISO) phase, 1: LSB first; 0: MSB first. */
+#define SPI_CTRL_RD_BIT_ORDER BIT(25)
+/* In the read operations, "address" phase and "read-data" phase apply
+   4 signals. */
+#define SPI_CTRL_QIO_MODE BIT(24)
+/* In the read operations, "address" phase and "read-data" phase apply
+   2 signals. */
+#define SPI_CTRL_DIO_MODE BIT(23)
+/* In the read operations, "read-data" phase apply 4 signals. */
+#define SPI_CTRL_QOUT_MODE BIT(20)
+/* In the read operations, "read-data" phase apply 2 signals. */
+#define SPI_CTRL_DOUT_MODE BIT(14)
+/* This bit enables the bits: spi_qio_mode, spi_dio_mode, spi_qout_mode
+   and spi_dout_mode. */
+#define SPI_CTRL_FASTRD_MODE BIT(13)
+
+/* Read status register. */
+
+/* In the slave mode, this register are the status register for the
+   master to read out. */
+#define SPI_RD_STATUS_SLV_RD_STATUS 0
+
+/* Control 2 register. */
+/*  */
+#define SPI_CTRL2_CS_DELAY_NUM
+/*  */
+#define SPI_CTRL2_CS_DELAY_MODE
+/*  */
+#define SPI_CTRL2_MOSI_DELAY_NUM
+/*  */
+#define SPI_CTRL2_MOSI_DELAY_MODE
+/*  */
+#define SPI_CTRL2_MISO_DELAY_NUM
+/*  */
+#define SPI_CTRL2_MISO_DELAY_MODE
+
+/* register. */
+/* In the master mode, 1: spi_clk is eqaul to 80MHz, 0: spi_clk is
+   divided from 80 MHz clock. */
+#define SPI_CLOCK_CLK_EQU_SYSCLK BIT(31)
+/*  */
+#define SPI_CLOCK_CLKDIV_PRE
+/*  */
+#define SPI_CLOCK_CLKCNT_N
+/*  */
+#define SPI_CLOCK_CLKCNT_H
+/*  */
+#define SPI_CLOCK_CLKCNT_L
+
+/* User register. */
+/*  */
+#define SPI_USER_SPI_USR_COMMAND BIT(31)
+/*  */
+#define SPI_USER_SPI_USR_ADDR BIT(30)
+/*  */
+#define SPI_USER_SPI_USR_DUMMY BIT(29)
+/*  */
+#define SPI_USER_SPI_USR_MISO BIT(28)
+/*  */
+#define SPI_USER_SPI_USR_MOSI BIT(27)
+/*  */
+#define SPI_USER_REG_USR_MOSI_HIGHPART BIT(25)
+/*  */
+#define SPI_USER_REG_USR_MISO_HIGHPART BIT(24)
+/*  */
+#define SPI_USER_SPI_SIO BIT(16)
+/*  */
+#define SPI_USER_SPI_FWRITE_QIO BIT(15)
+/*  */
+#define SPI_USER_SPI_FWRITE_DIO BIT(14)
+/*  */
+#define SPI_USER_SPI_FWRITE_QUAD BIT(13)
+/*  */
+#define SPI_USER_SPI_FWRITE_DUAL BIT(12)
+/*  */
+#define SPI_USER_SPI_WR_BYTE_ORDER BIT(11)
+/*  */
+#define SPI_USER_SPI_RD_BYTE_ORDER BIT(10)
+/*  */
+#define SPI_USER_SPI_CK_I_EDGE BIT(6)
+
+/* register. */
+/*  */
+#define SPI_USER1_REG_USR_ADDR_BITLEN
+/*  */
+#define SPI_USER1_REG_USR_MOSI_BITLEN
+/*  */
+#define SPI_USER1_REG_USR_MISO_BITLEN
+/*  */
+#define SPI_USER1_REG_USR_DUMMY_CYCLELEN
+
+/* register. */
+/*  */
+#define REG_USR_COMMAND_BITLEN
+/*  */
+#define REG_USR_COMMAND_VALUE
+
+/* register. */
+/*  */
+#define SLV_WR_STATUS
+
+/* register. */
+/*  */
+#define SPI_CS2_DIS
+/*  */
+#define SPI_CS1_DIS
+/*  */
+#define SPI_CS0_DIS
+
+/* register. */
+/*  */
+#define SPI_SYNC_RESET
+/*  */
+#define SPI_SLAVE_MODE
+/*  */
+#define SLV_CMD_DEFINE
+/*  */
+#define SPI_TRANS_CNT
+/*  */
+#define SPI_INT_EN
+/*  */
+#define SPI_TRANS_DONE
+/*  */
+#define SLV_WR_STA_DONE
+/*  */
+#define SLV_RD_STA_DONE
+/*  */
+#define SLV_WR_BUF_DONE
+/*  */
+#define SLV_RD_BUF_DONE
+
+/* register. */
+/*  */
+#define SLV_STATUS_BITLEN
+/*  */
+#define SLV_BUF_BITLEN
+/*  */
+#define SLV_RD_ADDR_BITLEN
+/*  */
+#define SLV_WR_ADDR_BITLEN
+/*  */
+#define SLV_WRSTA_DUMMY_EN
+/*  */
+#define SLV_RDSTA_DUMMY_EN
+/*  */
+#define SLV_WRBUF_DUMMY_EN
+/*  */
+#define SLV_RDBUF_DUMMY_EN
+
+/* register. */
+/*  */
+#define SLV_WRBUF_DUMMY_CYCLELEN
+/*  */
+#define SLV_RDBUF_DUMMY_CYCLELEN
+/*  */
+#define SLV_WRSTA_DUMMY_CYCLELEN
+/*  */
+#define SLV_RDSTA_DUMMY_CYCLELEN
+
+/* register. */
+/*  */
+#define SLV_WRSTA_CMD_VALUE
+/*  */
+#define SLV_RDSTA_CMD_VALUE
+/*  */
+#define SLV_WRBUF_CMD_VALUE
+/*  */
+#define SLV_RDBUF_CMD_VALUE
+
+/* register. */
+
+/* register. */
+/*  */
+#define REG_INT_HOLD_ENA
 
 /**
  * General Purpose Input Output registers.
