@@ -1,3 +1,9 @@
+ESP-12 pinout
+-------------
+
+.. image:: ../images/boards/esp12e-pinout.png
+   :width: 75%
+   :target: ../_images/esp12e-pinout.png
 
 Flashing
 --------
