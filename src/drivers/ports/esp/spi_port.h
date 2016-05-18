@@ -21,14 +21,14 @@
 #ifndef __DRIVERS_SPI_PORT_H__
 #define __DRIVERS_SPI_PORT_H__
 
-/* Speed configuration. SPI2X, SPR1 and SPR0 */
-#define SPI_PORT_SPEED_8MBPS    0x4
-#define SPI_PORT_SPEED_4MBPS    0x0
-#define SPI_PORT_SPEED_2MBPS    0x5
-#define SPI_PORT_SPEED_1MBPS    0x1
-#define SPI_PORT_SPEED_500KBPS  0x6
-#define SPI_PORT_SPEED_250KBPS  0x2
-#define SPI_PORT_SPEED_125KBPS  0x7
+/* Speed configuration (the clock register value). */
+#define SPI_PORT_SPEED_8MBPS    0x0101001
+#define SPI_PORT_SPEED_4MBPS    0x0241001
+#define SPI_PORT_SPEED_2MBPS    0x04c1001
+#define SPI_PORT_SPEED_1MBPS    0x09c1001
+#define SPI_PORT_SPEED_500KBPS  0x13c1001
+#define SPI_PORT_SPEED_250KBPS  0x27c1001
+#define SPI_PORT_SPEED_125KBPS  0x4fc1001
 
 struct spi_driver_t;
 
@@ -41,9 +41,6 @@ struct spi_device_t {
 struct spi_driver_t {
     struct spi_device_t *dev_p;
     struct pin_driver_t ss;
-    struct pin_driver_t mosi;
-    struct pin_driver_t miso;
-    struct pin_driver_t sck;
     int mode;
     int speed;
     int cpol;

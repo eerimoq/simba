@@ -24,7 +24,7 @@
 
 int spi_module_init(void)
 {
-    return (0);
+    return (spi_port_module_init());
 }
 
 int spi_init(struct spi_driver_t *self_p,

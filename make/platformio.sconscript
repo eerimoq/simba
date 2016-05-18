@@ -391,7 +391,9 @@ def create_src_filter(env):
 
     elif arch == "esp":
         files = [
+            "adc.c",
             "pin.c",
+            "spi.c",
             "uart.c"
         ]
 

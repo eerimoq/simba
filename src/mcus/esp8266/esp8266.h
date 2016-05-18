@@ -74,189 +74,113 @@ struct esp8266_uart_t {
     (0xff << ESP8266_UART_FIFO_RXFIFO_RD_BYTE_POS)
 
 /* UART INTERRUPT RAW STATE */
-/* The interrupt raw bit for Rx time-out interrupt(depands on the
-   UART_RX_TOUT_THRHD) */
-#define ESP8266_UART_INT_RAW_RXFIFO_TOUT BIT(8)
-/* The interrupt raw bit for Rx byte start error */
-#define ESP8266_UART_INT_RAW_BRK_DET     BIT(7)
-/* The interrupt raw bit for CTS changing level */
-#define ESP8266_UART_INT_RAW_CTS_CHG     BIT(6)
-/* The interrupt raw bit for DSR changing level */
-#define ESP8266_UART_INT_RAW_DSR_CHG     BIT(5)
-/* The interrupt raw bit for rx fifo overflow */
-#define ESP8266_UART_INT_RAW_RXFIFO_OVF  BIT(4)
-/* The interrupt raw bit for other rx error */
-#define ESP8266_UART_INT_RAW_FRM_ERR     BIT(3)
-/* The interrupt raw bit for parity check error */
-#define ESP8266_UART_INT_RAW_PARITY_ERR  BIT(2)
-/* The interrupt raw bit for tx fifo empty interrupt(depands on
-   UART_TXFIFO_EMPTY_THRHD bits) */
+#define ESP8266_UART_INT_RAW_RXFIFO_TOUT  BIT(8)
+#define ESP8266_UART_INT_RAW_BRK_DET      BIT(7)
+#define ESP8266_UART_INT_RAW_CTS_CHG      BIT(6)
+#define ESP8266_UART_INT_RAW_DSR_CHG      BIT(5)
+#define ESP8266_UART_INT_RAW_RXFIFO_OVF   BIT(4)
+#define ESP8266_UART_INT_RAW_FRM_ERR      BIT(3)
+#define ESP8266_UART_INT_RAW_PARITY_ERR   BIT(2)
 #define ESP8266_UART_INT_RAW_TXFIFO_EMPTY BIT(1)
-/* The interrupt raw bit for rx fifo full interrupt(depands on
-   UART_RXFIFO_FULL_THRHD bits) */
-#define ESP8266_UART_INT_RAW_RXFIFO_FULL BIT(0)
+#define ESP8266_UART_INT_RAW_RXFIFO_FULL  BIT(0)
 
 /* UART INTERRUPT STATE REGISTER（UART_INT_RAW&UART_INT_ENA） */
-/* The interrupt state bit for Rx time-out event */
-#define ESP8266_UART_INT_ST_RXFIFO_TOUT  BIT(8)
-/* The interrupt state bit for rx byte start error */
-#define ESP8266_UART_INT_ST_BRK_DET      BIT(7)
-/* The interrupt state bit for CTS changing level */
-#define ESP8266_UART_INT_ST_CTS_CHG      BIT(6)
-/* The interrupt state bit for DSR changing level */
-#define ESP8266_UART_INT_ST_DSR_CHG      BIT(5)
-/* The interrupt state bit for RX fifo overflow */
-#define ESP8266_UART_INT_ST_RXFIFO_OVF   BIT(4)
-/* The interrupt state for other rx error */
-#define ESP8266_UART_INT_ST_FRM_ERR      BIT(3)
-/* The interrupt state bit for rx parity error */
-#define ESP8266_UART_INT_ST_PARITY_ERR   BIT(2)
-/* The interrupt state bit for TX fifo empty */
-#define ESP8266_UART_INT_ST_TXFIFO_EMPTY BIT(1)
-/* The interrupt state bit for RX fifo full event */
-#define ESP8266_UART_INT_ST_RXFIFO_FULL  BIT(0)
+#define ESP8266_UART_INT_ST_RXFIFO_TOUT   BIT(8)
+#define ESP8266_UART_INT_ST_BRK_DET       BIT(7)
+#define ESP8266_UART_INT_ST_CTS_CHG       BIT(6)
+#define ESP8266_UART_INT_ST_DSR_CHG       BIT(5)
+#define ESP8266_UART_INT_ST_RXFIFO_OVF    BIT(4)
+#define ESP8266_UART_INT_ST_FRM_ERR       BIT(3)
+#define ESP8266_UART_INT_ST_PARITY_ERR    BIT(2)
+#define ESP8266_UART_INT_ST_TXFIFO_EMPTY  BIT(1)
+#define ESP8266_UART_INT_ST_RXFIFO_FULL   BIT(0)
 
 /* UART INTERRUPT ENABLE REGISTER */
-/* The interrupt enable bit for rx time-out interrupt */
-#define ESP8266_UART_INT_ENA_RXFIFO_TOUT BIT(8)
-/* The interrupt enable bit for rx byte start error */
-#define ESP8266_UART_INT_ENA_BRK_DET     BIT(7)
-/* The interrupt enable bit for CTS changing level */
-#define ESP8266_UART_INT_ENA_CTS_CHG     BIT(6)
-/* The interrupt enable bit for DSR changing level */
-#define ESP8266_UART_INT_ENA_DSR_CHG     BIT(5)
-/* The interrupt enable bit for rx fifo overflow */
-#define ESP8266_UART_INT_ENA_RXFIFO_OVF  BIT(4)
-/* The interrupt enable bit for other rx error */
-#define ESP8266_UART_INT_ENA_FRM_ERR     BIT(3)
-/* The interrupt enable bit for parity error */
-#define ESP8266_UART_INT_ENA_PARITY_ERR  BIT(2)
-/* The interrupt enable bit for tx fifo empty event */
+#define ESP8266_UART_INT_ENA_RXFIFO_TOUT  BIT(8)
+#define ESP8266_UART_INT_ENA_BRK_DET      BIT(7)
+#define ESP8266_UART_INT_ENA_CTS_CHG      BIT(6)
+#define ESP8266_UART_INT_ENA_DSR_CHG      BIT(5)
+#define ESP8266_UART_INT_ENA_RXFIFO_OVF   BIT(4)
+#define ESP8266_UART_INT_ENA_FRM_ERR      BIT(3)
+#define ESP8266_UART_INT_ENA_PARITY_ERR   BIT(2)
 #define ESP8266_UART_INT_ENA_TXFIFO_EMPTY BIT(1)
-/* The interrupt enable bit for rx fifo full event */
-#define ESP8266_UART_INT_ENA_RXFIFO_FULL BIT(0)
+#define ESP8266_UART_INT_ENA_RXFIFO_FULL  BIT(0)
 
 /* UART INTERRUPT CLEAR REGISTER */
-/* Set this bit to clear the rx time-out interrupt */
-#define ESP8266_UART_INT_CLR_RXFIFO_TOUT BIT(8)
-/* Set this bit to clear the rx byte start interrupt */
-#define ESP8266_UART_INT_CLR_BRK_DET     BIT(7)
-/* Set this bit to clear the CTS changing interrupt */
-#define ESP8266_UART_INT_CLR_CTS_CHG     BIT(6)
-/* Set this bit to clear the DSR changing interrupt */
-#define ESP8266_UART_INT_CLR_DSR_CHG     BIT(5)
-/* Set this bit to clear the rx fifo over-flow interrupt */
-#define ESP8266_UART_INT_CLR_RXFIFO_OVF  BIT(4)
-/* Set this bit to clear other rx error interrupt */
-#define ESP8266_UART_INT_CLR_FRM_ERR     BIT(3)
-/* Set this bit to clear the parity error interrupt */
-#define ESP8266_UART_INT_CLR_PARITY_ERR  BIT(2)
-/* Set this bit to clear the tx fifo empty interrupt */
+#define ESP8266_UART_INT_CLR_RXFIFO_TOUT  BIT(8)
+#define ESP8266_UART_INT_CLR_BRK_DET      BIT(7)
+#define ESP8266_UART_INT_CLR_CTS_CHG      BIT(6)
+#define ESP8266_UART_INT_CLR_DSR_CHG      BIT(5)
+#define ESP8266_UART_INT_CLR_RXFIFO_OVF   BIT(4)
+#define ESP8266_UART_INT_CLR_FRM_ERR      BIT(3)
+#define ESP8266_UART_INT_CLR_PARITY_ERR   BIT(2)
 #define ESP8266_UART_INT_CLR_TXFIFO_EMPTY BIT(1)
-/* Set this bit to clear the rx fifo full interrupt */
-#define ESP8266_UART_INT_CLR_RXFIFO_FULL BIT(0)
+#define ESP8266_UART_INT_CLR_RXFIFO_FULL  BIT(0)
 
 /* UART CLK DIV REGISTER */
-/* BAUDRATE = UART_CLK_FREQ / UART_CLKDIV */
-#define ESP8266_UART_CLKDIV_POS  0
-#define ESP8266_UART_CLKDIV_MASK 0xfffff
+#define ESP8266_UART_CLKDIV_POS           0
+#define ESP8266_UART_CLKDIV_MASK          0xfffff
 
 /* UART BAUDRATE DETECT REGISTER */
 #define ESP8266_UART_GLITCH_FILT_POS  (8)
 #define ESP8266_UART_GLITCH_FILT_MASK (0xff << ESP8266_UART_GLITCH_FILT_POS)
-/* Set this bit to enable baudrate detect */
 #define ESP8266_UART_AUTOBAUD_EN      BIT(0)
 
 /* UART STATUS REGISTER */
-/* The level of the uart txd pin. */
-#define ESP8266_UART_STATUS_TXD      BIT(31)
-/* The level of uart rts pin. */
-#define ESP8266_UART_STATUS_RTSN     BIT(30)
-/* The level of uart dtr pin. */
-#define ESP8266_UART_STATUS_DTRN     BIT(29)
-/* Number of bytes in uart tx fifo. */
+#define ESP8266_UART_STATUS_TXD             BIT(31)
+#define ESP8266_UART_STATUS_RTSN            BIT(30)
+#define ESP8266_UART_STATUS_DTRN            BIT(29)
 #define ESP8266_UART_STATUS_TXFIFO_CNT_POS  (16)
-#define ESP8266_UART_STATUS_TXFIFO_CNT_MASK \
+#define ESP8266_UART_STATUS_TXFIFO_CNT_MASK             \
     (0xff << ESP8266_UART_STATUS_TXFIFO_CNT_POS)
-/* The level of uart rxd pin. */
-#define ESP8266_UART_STATUS_RXD      BIT(15)
-/* The level of uart cts pin. */
-#define ESP8266_UART_STATUS_CTSN     BIT(14)
-/* The level of uart dsr pin. */
-#define ESP8266_UART_STATUS_DSRN     BIT(13)
-/* Number of bytes in uart rx fifo. */
+#define ESP8266_UART_STATUS_RXD             BIT(15)
+#define ESP8266_UART_STATUS_CTSN            BIT(14)
+#define ESP8266_UART_STATUS_DSRN            BIT(13)
 #define ESP8266_UART_STATUS_RXFIFO_CNT_POS  (0)
 #define ESP8266_UART_STATUS_RXFIFO_CNT_MASK             \
     (0xff << ESP8266_UART_STATUS_RXFIFO_CNT_POS)
 
 /* UART CONF0. */
-/* Set this bit to inverse uart dtr level. */
 #define ESP8266_UART_CONF0_UART_DTR_INV    BIT(24)
-/* Set this bit to inverse uart rts level. */
 #define ESP8266_UART_CONF0_UART_RTS_INV    BIT(23)
-/* Set this bit to inverse uart txd level. */
 #define ESP8266_UART_CONF0_UART_TXD_INV    BIT(22)
-/* Set this bit to inverse uart dsr level. */
 #define ESP8266_UART_CONF0_UART_DSR_INV    BIT(21)
-/* Set this bit to inverse uart cts level. */
 #define ESP8266_UART_CONF0_UART_CTS_INV    BIT(20)
-/* Set this bit to inverse uart rxd level. */
 #define ESP8266_UART_CONF0_UART_RXD_INV    BIT(19)
-/* Set this bit to reset uart tx fifo. */
 #define ESP8266_UART_CONF0_TXFIFO_RST      BIT(18)
-/* Set this bit to reset uart rx fifo. */
 #define ESP8266_UART_CONF0_RXFIFO_RST      BIT(17)
-/* Set this bit to enable uart tx hardware flow control. */
 #define ESP8266_UART_CONF0_TX_FLOW_EN      BIT(15)
-/* Set this bit to enable uart loopback test mode. */
 #define ESP8266_UART_CONF0_UART_LOOPBACK   BIT(14)
-/* RESERVED, DO NOT CHANGE THIS BIT. */
 #define ESP8266_UART_CONF0_TXD_BRK         BIT(8)
-/* sw dtr. */
 #define ESP8266_UART_CONF0_SW_DTR          BIT(7)
-/* sw rts. */
 #define ESP8266_UART_CONF0_SW_RTS          BIT(6)
-/* Set stop bit: 1:1bit  2:1.5bits  3:2bits */
 #define ESP8266_UART_CONF0_STOP_BIT_NUM_POS (4)
-#define ESP8266_UART_CONF0_STOP_BIT_NUM_MASK \
+#define ESP8266_UART_CONF0_STOP_BIT_NUM_MASK            \
     (0x3 << ESP8266_UART_CONF0_STOP_BIT_NUM_POS)
-/* Set bit num:  0:5bits 1:6bits 2:7bits 3:8bits */
 #define ESP8266_UART_CONF0_BIT_NUM_POS     (2)
 #define ESP8266_UART_CONF0_BIT_NUM_MASK         \
     (0x3 << ESP8266_UART_CONF0_BIT_NUM_POS)
-/* Set this bit to enable uart parity check. */
 #define ESP8266_UART_CONF0_PARITY_EN       BIT(1)
-/* Set parity check:  0:even 1:odd. */
 #define ESP8266_UART_CONF0_PARITY          BIT(0)
 
 /* UART_CONF1. */
-/* Set this bit to enable rx time-out function. */
 #define ESP8266_UART_CONF1_RX_TOUT_EN      BIT(31)
-/* Config bits for rx time-out threshold, uint: byte, 0-127 */
 #define ESP8266_UART_CONF1_RX_TOUT_THRHD   [30:24]
-/* Set this bit to enable rx hardware flow control */
 #define ESP8266_UART_CONF1_RX_FLOW_EN      [23]
-/* The config bits for rx flow control threshold, 0-127. */
 #define ESP8266_UART_CONF1_RX_FLOW_THRHD   [22:16]
-/* The config bits for tx fifo empty threshold, 0-127. */
 #define ESP8266_UART_CONF1_TXFIFO_EMPTY_THRHD [14:8]
-/* The config bits for rx fifo full threshold, 0-127. */
 #define ESP8266_UART_CONF1_RXFIFO_FULL_THRHD  [6:0]
 
 /* LOWPULSE */
-/* used in baudrate detect */
 #define ESP8266_UART_LOWPULSE_MIN_CNT [19:0]
 
 /* HIGHPULSE */
-/* used in baudrate detect */
 #define ESP8266_UART_HIGHPULSE_MIN_CNT [19:0]
 
 /* RXD_CNT */
-/* used in baudrate detect */
 #define ESP8266_UART_RXD_CNT_EDGE    [9:0]
 
 /* UART_DATE */
-/* UART HW INFO */
 #define ESP8266_UART_DATE       [31:0]
 
 /* UART_ID */
@@ -265,219 +189,132 @@ struct esp8266_uart_t {
 /**
  * Serial Peripheral Interface.
  */
-struct esp8266_spi_t {
-    uint32_t CMD;
-    uint32_t ADDR;
-    uint32_t CTRL;
-    uint32_t RESERVED0;
-    uint32_t RD_STATUS;
-    uint32_t CTRL2;
-    uint32_t CLOCK;
-    uint32_t USER;
-    uint32_t USER1;
-    uint32_t USER2;
-    uint32_t WR_STATUS;
-    uint32_t PIN;
-    uint32_t SLAVE;
-    uint32_t SLAVE1;
-    uint32_t SLAVE2;
-    uint32_t SLAVE3;
-    uint32_t W_0_15[16];
-    uint32_t RESERVED1[0xa0];
-    uint32_t EXT3;
-};
+    struct esp8266_spi_t {
+        uint32_t CMD;
+        uint32_t ADDR;
+        uint32_t CTRL;
+        uint32_t RESERVED0;
+        uint32_t RD_STATUS;
+        uint32_t CTRL2;
+        uint32_t CLOCK;
+        uint32_t USER;
+        uint32_t USER1;
+        uint32_t USER2;
+        uint32_t WR_STATUS;
+        uint32_t PIN;
+        uint32_t SLAVE;
+        uint32_t SLAVE1;
+        uint32_t SLAVE2;
+        uint32_t SLAVE3;
+        uint32_t W_0_15[16];
+        uint32_t RESERVED1[0xa0];
+        uint32_t EXT3;
+    };
 
-/* Command register. */
+/* CMD. */
+#define ESP8266_SPI_CMD_USR BIT(18)
 
-/* In the master mode, it is the start bit of a single
-   operation. Self-clear by hardware. */
-#define SPI_CMD_USR BIT(18)
+/* ADDR. */
+#define ESP8266_SPI_ADDR_IODATA_START_ADDR 0
 
-/* Address register. */
+/* CTRL. */
+#define ESP8266_SPI_CTRL_WR_BIT_ORDER BIT(26)
+#define ESP8266_SPI_CTRL_RD_BIT_ORDER BIT(25)
+#define ESP8266_SPI_CTRL_QIO_MODE     BIT(24)
+#define ESP8266_SPI_CTRL_DIO_MODE     BIT(23)
+#define ESP8266_SPI_CTRL_QOUT_MODE    BIT(20)
+#define ESP8266_SPI_CTRL_DOUT_MODE    BIT(14)
+#define ESP8266_SPI_CTRL_FASTRD_MODE  BIT(13)
 
-/* In the master mode, it is the value of address in "address"
-   phase. */
-#define SPI_ADDR_IODATA_START_ADDR 0
+/* RD_STATUS. */
+#define ESP8266_SPI_RD_STATUS_SLV_RD_STATUS 0
 
-/* Control register. */
+/* CTRL2. */
+#define ESP8266_SPI_CTRL2_CS_DELAY_NUM
+#define ESP8266_SPI_CTRL2_CS_DELAY_MODE
+#define ESP8266_SPI_CTRL2_MOSI_DELAY_NUM
+#define ESP8266_SPI_CTRL2_MOSI_DELAY_MODE
+#define ESP8266_SPI_CTRL2_MISO_DELAY_NUM
+#define ESP8266_SPI_CTRL2_MISO_DELAY_MODE
 
-/* In "command", "address", "write-data" (MOSI) phases, 1: LSB first;
-   0: MSB first. */
-#define SPI_CTRL_WR_BIT_ORDER BIT(26)
-/* In "read-data" (MISO) phase, 1: LSB first; 0: MSB first. */
-#define SPI_CTRL_RD_BIT_ORDER BIT(25)
-/* In the read operations, "address" phase and "read-data" phase apply
-   4 signals. */
-#define SPI_CTRL_QIO_MODE BIT(24)
-/* In the read operations, "address" phase and "read-data" phase apply
-   2 signals. */
-#define SPI_CTRL_DIO_MODE BIT(23)
-/* In the read operations, "read-data" phase apply 4 signals. */
-#define SPI_CTRL_QOUT_MODE BIT(20)
-/* In the read operations, "read-data" phase apply 2 signals. */
-#define SPI_CTRL_DOUT_MODE BIT(14)
-/* This bit enables the bits: spi_qio_mode, spi_dio_mode, spi_qout_mode
-   and spi_dout_mode. */
-#define SPI_CTRL_FASTRD_MODE BIT(13)
+/* CLOCK. */
+#define ESP8266_SPI_CLOCK_EQU_SYSCLK BIT(31)
+#define ESP8266_SPI_CLOCK_DIV_PRE
+#define ESP8266_SPI_CLOCK_CNT_N
+#define ESP8266_SPI_CLOCK_CNT_H
+#define ESP8266_SPI_CLOCK_CNT_L
 
-/* Read status register. */
+/* USER. */
+#define ESP8266_SPI_USER_COMMAND       BIT(31)
+#define ESP8266_SPI_USER_ADDR          BIT(30)
+#define ESP8266_SPI_USER_DUMMY         BIT(29)
+#define ESP8266_SPI_USER_MISO          BIT(28)
+#define ESP8266_SPI_USER_MOSI          BIT(27)
+#define ESP8266_SPI_USER_MOSI_HIGHPART BIT(25)
+#define ESP8266_SPI_USER_MISO_HIGHPART BIT(24)
+#define ESP8266_SPI_USER_SIO           BIT(16)
+#define ESP8266_SPI_USER_FWRITE_QIO    BIT(15)
+#define ESP8266_SPI_USER_FWRITE_DIO    BIT(14)
+#define ESP8266_SPI_USER_FWRITE_QUAD   BIT(13)
+#define ESP8266_SPI_USER_FWRITE_DUAL   BIT(12)
+#define ESP8266_SPI_USER_WR_BYTE_ORDER BIT(11)
+#define ESP8266_SPI_USER_RD_BYTE_ORDER BIT(10)
+#define ESP8266_SPI_USER_CK_I_EDGE     BIT(6)
 
-/* In the slave mode, this register are the status register for the
-   master to read out. */
-#define SPI_RD_STATUS_SLV_RD_STATUS 0
+/* USER1. */
+#define ESP8266_SPI_USER1_ADDR_BITLEN
+#define ESP8266_SPI_USER1_MOSI_BITLEN(value) ((value) << 17)
+#define ESP8266_SPI_USER1_MISO_BITLEN(value) ((value) << 8)
+#define ESP8266_SPI_USER1_DUMMY_CYCLELEN
 
-/* Control 2 register. */
-/*  */
-#define SPI_CTRL2_CS_DELAY_NUM
-/*  */
-#define SPI_CTRL2_CS_DELAY_MODE
-/*  */
-#define SPI_CTRL2_MOSI_DELAY_NUM
-/*  */
-#define SPI_CTRL2_MOSI_DELAY_MODE
-/*  */
-#define SPI_CTRL2_MISO_DELAY_NUM
-/*  */
-#define SPI_CTRL2_MISO_DELAY_MODE
+/* USER2. */
+#define ESP8266_SPI_USER2_COMMAND_BITLEN
+#define ESP8266_SPI_USER2_COMMAND_VALUE
 
-/* register. */
-/* In the master mode, 1: spi_clk is eqaul to 80MHz, 0: spi_clk is
-   divided from 80 MHz clock. */
-#define SPI_CLOCK_CLK_EQU_SYSCLK BIT(31)
-/*  */
-#define SPI_CLOCK_CLKDIV_PRE
-/*  */
-#define SPI_CLOCK_CLKCNT_N
-/*  */
-#define SPI_CLOCK_CLKCNT_H
-/*  */
-#define SPI_CLOCK_CLKCNT_L
+/* WR_STATUS. */
+#define ESP8266_SPI_WR_STATUS_SLV
 
-/* User register. */
-/*  */
-#define SPI_USER_SPI_USR_COMMAND BIT(31)
-/*  */
-#define SPI_USER_SPI_USR_ADDR BIT(30)
-/*  */
-#define SPI_USER_SPI_USR_DUMMY BIT(29)
-/*  */
-#define SPI_USER_SPI_USR_MISO BIT(28)
-/*  */
-#define SPI_USER_SPI_USR_MOSI BIT(27)
-/*  */
-#define SPI_USER_REG_USR_MOSI_HIGHPART BIT(25)
-/*  */
-#define SPI_USER_REG_USR_MISO_HIGHPART BIT(24)
-/*  */
-#define SPI_USER_SPI_SIO BIT(16)
-/*  */
-#define SPI_USER_SPI_FWRITE_QIO BIT(15)
-/*  */
-#define SPI_USER_SPI_FWRITE_DIO BIT(14)
-/*  */
-#define SPI_USER_SPI_FWRITE_QUAD BIT(13)
-/*  */
-#define SPI_USER_SPI_FWRITE_DUAL BIT(12)
-/*  */
-#define SPI_USER_SPI_WR_BYTE_ORDER BIT(11)
-/*  */
-#define SPI_USER_SPI_RD_BYTE_ORDER BIT(10)
-/*  */
-#define SPI_USER_SPI_CK_I_EDGE BIT(6)
+/* PIN. */
+#define ESP8266_SPI_PIN_CS2_DIS
+#define ESP8266_SPI_PIN_CS1_DIS
+#define ESP8266_SPI_PIN_CS0_DIS
 
-/* register. */
-/*  */
-#define SPI_USER1_REG_USR_ADDR_BITLEN
-/*  */
-#define SPI_USER1_REG_USR_MOSI_BITLEN(value) ((value) << 17)
-/*  */
-#define SPI_USER1_REG_USR_MISO_BITLEN(value) ((value) << 8)
-/*  */
-#define SPI_USER1_REG_USR_DUMMY_CYCLELEN
+/* SLAVE. */
+#define ESP8266_SPI_SLAVE_SYNC_RESET
+#define ESP8266_SPI_SLAVE_MODE
+#define ESP8266_SPI_SLAVE_CMD_DEFINE
+#define ESP8266_SPI_SLAVE_TRANS_CNT
+#define ESP8266_SPI_SLAVE_INT_EN_TRANS_DONE (1 << 9)
+#define ESP8266_SPI_SLAVE_TRANS_DONE
+#define ESP8266_SPI_SLAVE_WR_STA_DONE
+#define ESP8266_SPI_SLAVE_RD_STA_DONE
+#define ESP8266_SPI_SLAVE_WR_BUF_DONE
+#define ESP8266_SPI_SLAVE_RD_BUF_DONE
 
-/* register. */
-/*  */
-#define REG_USR_COMMAND_BITLEN
-/*  */
-#define REG_USR_COMMAND_VALUE
+/* SLAVE1. */
+#define ESP8266_SPI_SLAVE1_STATUS_BITLEN
+#define ESP8266_SPI_SLAVE1_BUF_BITLEN
+#define ESP8266_SPI_SLAVE1_RD_ADDR_BITLEN
+#define ESP8266_SPI_SLAVE1_WR_ADDR_BITLEN
+#define ESP8266_SPI_SLAVE1_WRSTA_DUMMY_EN
+#define ESP8266_SPI_SLAVE1_RDSTA_DUMMY_EN
+#define ESP8266_SPI_SLAVE1_WRBUF_DUMMY_EN
+#define ESP8266_SPI_SLAVE1_RDBUF_DUMMY_EN
 
-/* register. */
-/*  */
-#define SLV_WR_STATUS
+/* SLAVE2. */
+#define ESP8266_SPI_SLAVE2_WRBUF_DUMMY_CYCLELEN
+#define ESP8266_SPI_SLAVE2_RDBUF_DUMMY_CYCLELEN
+#define ESP8266_SPI_SLAVE2_WRSTA_DUMMY_CYCLELEN
+#define ESP8266_SPI_SLAVE2_RDSTA_DUMMY_CYCLELEN
 
-/* register. */
-/*  */
-#define SPI_CS2_DIS
-/*  */
-#define SPI_CS1_DIS
-/*  */
-#define SPI_CS0_DIS
+/* SLAVE3. */
+#define ESP8266_SPI_SLAVE3_WRSTA_CMD_VALUE
+#define ESP8266_SPI_SLAVE3_RDSTA_CMD_VALUE
+#define ESP8266_SPI_SLAVE3_WRBUF_CMD_VALUE
+#define ESP8266_SPI_SLAVE3_RDBUF_CMD_VALUE
 
-/* register. */
-/*  */
-#define SPI_SYNC_RESET
-/*  */
-#define SPI_SLAVE_MODE
-/*  */
-#define SLV_CMD_DEFINE
-/*  */
-#define SPI_TRANS_CNT
-/*  */
-#define SPI_INT_EN
-/*  */
-#define SPI_TRANS_DONE
-/*  */
-#define SLV_WR_STA_DONE
-/*  */
-#define SLV_RD_STA_DONE
-/*  */
-#define SLV_WR_BUF_DONE
-/*  */
-#define SLV_RD_BUF_DONE
-
-/* register. */
-/*  */
-#define SLV_STATUS_BITLEN
-/*  */
-#define SLV_BUF_BITLEN
-/*  */
-#define SLV_RD_ADDR_BITLEN
-/*  */
-#define SLV_WR_ADDR_BITLEN
-/*  */
-#define SLV_WRSTA_DUMMY_EN
-/*  */
-#define SLV_RDSTA_DUMMY_EN
-/*  */
-#define SLV_WRBUF_DUMMY_EN
-/*  */
-#define SLV_RDBUF_DUMMY_EN
-
-/* register. */
-/*  */
-#define SLV_WRBUF_DUMMY_CYCLELEN
-/*  */
-#define SLV_RDBUF_DUMMY_CYCLELEN
-/*  */
-#define SLV_WRSTA_DUMMY_CYCLELEN
-/*  */
-#define SLV_RDSTA_DUMMY_CYCLELEN
-
-/* register. */
-/*  */
-#define SLV_WRSTA_CMD_VALUE
-/*  */
-#define SLV_RDSTA_CMD_VALUE
-/*  */
-#define SLV_WRBUF_CMD_VALUE
-/*  */
-#define SLV_RDBUF_CMD_VALUE
-
-/* register. */
-
-/* register. */
-/*  */
-#define REG_INT_HOLD_ENA
+/* EXT3. */
+#define ESP8266_SPI_EXT3_INT_HOLD_ENA
 
 /**
  * General Purpose Input Output registers.
@@ -502,93 +339,66 @@ struct esp8266_gpio_t {
 /* Output register. */
 #define ESP8266_GPIO_BT_SEL             0x0000ffff
 #define ESP8266_GPIO_BT_SEL_POS         16
-/* The output value when the GPIO pin is set as output. */
 #define ESP8266_GPIO_OUT_DATA           0x0000ffff
 #define ESP8266_GPIO_OUT_DATA_POS       0
 
 /* Output register set. */
-/* Writing 1 into a bit in this register will set the related bit in
-   GPIO_OUT_DATA. */
 #define ESP8266_GPIO_OUT_DATA_W1TS      0x0000ffff
 #define ESP8266_GPIO_OUT_DATA_W1TS_POS  0
 
 /* Output register clear. */
-/* Writing 1 into a bit in this register will clear the related bit in
-   GPIO_OUT_DATA. */
 #define ESP8266_GPIO_OUT_DATA_W1TC      0x0000ffff
 #define ESP8266_GPIO_OUT_DATA_W1TC_POS  0
 
 /* Enable register. */
-/* SDIO-dis selection register. */
 #define ESP8266_GPIO_SDIO_SEL           0x0000003f
 #define ESP8266_GPIO_SDIO_SEL_POS       16
-/* The output enable register. */
 #define ESP8266_GPIO_ENABLE_DATA        0x0000ffff
 #define ESP8266_GPIO_ENABLE_DATA_POS    0
 
 /* Enable register set. */
-/* Writing 1 into a bit in this register will set the related bit in
-   GPIO_ENABLE_DATA. */
 #define ESP8266_GPIO_ENABLE_DATA_W1TS     0x0000ffff
 #define ESP8266_GPIO_ENABLE_DATA_W1TS_POS 0
 
 /* Enable register clear. */
-/* Writing 1 into a bit in this register will clear the related bit in
-   GPIO_ENABLE_DATA. */
 #define ESP8266_GPIO_ENABLE_DATA_W1TC      0x0000ffff
 #define ESP8266_GPIO_ENABLE_DATA_W1TC_POS  0
 
 /* Input register. */
-/* The values of the strapping pins. */
 #define ESP8266_GPIO_STRAPPING             0x0000ffff
 #define ESP8266_GPIO_STRAPPING_POS         16
-/* The values of the GPIO pins when the GPIO pin is set as input. */
 #define ESP8266_GPIO_IN_DATA               0x0000ffff
 #define ESP8266_GPIO_IN_DATA_POS           0
 
 /* Status register. */
-/* Interrupt enable register. */
 #define ESP8266_GPIO_STATUS_INTERRUPT      0x0000ffff
 #define ESP8266_GPIO_STATUS_INTERRUPT_POS  0
 
 /* Status register set. */
-/* Writing 1 into a bit in this register will set the related bit in
-   GPIO_STATUS_INTERRUPT. */
 #define ESP8266_GPIO_STATUS_INTERRUPT_W1TS     0x0000ffff
 #define ESP8266_GPIO_STATUS_INTERRUPT_W1TS_POS 0
 
 /* Status register clear. */
-/* Writing 1 into a bit in this register will clear the related bit in
-   GPIO_STATUS_INTERRUPT. */
 #define ESP8266_GPIO_STATUS_INTERRUPT_W1TC      0x0000ffff
 #define ESP8266_GPIO_STATUS_INTERRUPT_W1TC_POS  0
 
 /* Configuration register. */
-/* 0: disable; 1: enable GPIO wakeup CPU, only when GPIO_PIN0_INT_TYPE
-   is 0x4 or 0x5 */
 #define ESP8266_GPIO_CONF_WAKEUP_ENABLE    BIT(10)
-/* 0: disable; 1: positive edge; 2: negative edge; 3: both types of
-   edge; 4: low-level; 5: high-level */
 #define ESP8266_GPIO_CONF_INT_TYPE_POS     (7)
 #define ESP8266_GPIO_CONF_INT_TYPE_MASK         \
     (0x7 << ESP8266_GPIO_CONF_INT_TYPE_POS)
 #define ESP8266_GPIO_CONF_INT_TYPE(value)               \
     BITFIELD_SET(ESP8266_GPIO_CONF_INT_TYPE, value)
-/* 1: open drain; 0: normal */
 #define ESP8266_GPIO_CONF_DRIVER           BIT(2)
-/* 1: sigma-delta; 0: GPIO_DATA. */
 #define ESP8266_GPIO_CONF_SOURCE           BIT(0)
 
 /* Sigma delta register. */
-/* 1: enable sigma-delta; 0: disable */
 #define SIGMA_DELTA_ENABLE                      BIT(16)
-/* Clock pre-divider for sigma-delta. */
 #define ESP8266_GPIO_SIGMA_DELTA_PRESCALAR_POS       (8)
 #define ESP8266_GPIO_SIGMA_DELTA_PRESCALAR_MASK         \
     (0xff << ESP8266_GPIO_SIGMA_DELTA_PRESCALAR_POS)
 #define ESP8266_GPIO_SIGMA_DELTA_PRESCALAR(value)               \
     BITFIELD_SET(ESP8266_GPIO_SIGMA_DELTA_PRESCALAR, value)
-/* Target level of the sigma-delta. It is a signed byte. */
 #define ESP8266_GPIO_SIGMA_DELTA_TARGET_POS          (0)
 #define ESP8266_GPIO_SIGMA_DELTA_TARGET_MASK            \
     (0xff << ESP8266_GPIO_SIGMA_DELTA_TARGET_POS)
@@ -596,10 +406,7 @@ struct esp8266_gpio_t {
     BITFIELD_SET(ESP8266_GPIO_SIGMA_DELTA_TARGET, value)
 
 /* RTC register. */
-/* Positvie edge of this bit will trigger the RTC-clock-calibration
-   process. */
 #define RTC_CALIB_START                      BIT(31)
-/* The cycle number of RTC-clock during RTC-clock-calibration. */
 #define ESP8266_GPIO_RTC_PERIOD_NUM_POS      (0)
 #define ESP8266_GPIO_RTC_PERIOD_NUM_MASK        \
     (0x3ff << ESP8266_GPIO_RTC_PERIOD_NUM_POS)
@@ -607,14 +414,8 @@ struct esp8266_gpio_t {
     BITFIELD_SET(ESP8266_GPIO_RTC_PERIOD_NUM, value)
 
 /* RTC calibration value register. */
-/* 0: during RTC-clock-calibration; 1: RTC-clock-calibration is
-   done */
 #define ESP8266_GPIO_RTC_CALIB_RDY           BIT(31)
-/* 0: during RTC-clock-calibration; 1: RTC-clock-calibration is
-   done */
 #define ESP8266_GPIO_RTC_CALIB_RDY_REAL      BIT(30)
-/* The cycle number of clk_xtal (crystal clock) for the RTC_PERIOD_NUM
-   cycles of RTC-clock. */
 #define ESP8266_GPIO_RTC_CALIB_VALUE_POS     (0)
 #define ESP8266_GPIO_RTC_CALIB_VALUE_MASK               \
     (0xfffff << ESP8266_GPIO_RTC_CALIB_VALUE_POS)
@@ -661,10 +462,10 @@ struct esp8266_timer_t {
 /**
  * Input Output Multiplexing.
  */
-struct esp8266_iomux_t {
-    uint32_t CONF;
-    uint32_t PIN[16];
-};
+    struct esp8266_iomux_t {
+        uint32_t CONF;
+        uint32_t PIN[16];
+    };
 
 /* Details for the CONF register. */
 #define ESP8266_IOMUX_CONF_SPI0_CLK_EQU_SYS_CLK  BIT(9)

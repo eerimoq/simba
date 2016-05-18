@@ -60,6 +60,11 @@ ISR(spi0)
     }
 }
 
+static int spi_port_module_init(void)
+{
+    return (0);
+}
+
 static int spi_port_init(struct spi_driver_t *self_p,
                          struct spi_device_t *dev_p,
                          struct pin_device_t *ss_pin_p,
