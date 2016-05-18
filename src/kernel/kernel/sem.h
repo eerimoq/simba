@@ -1,6 +1,6 @@
 /**
  * @file kernel/sem.h
- * @version 0.4.0
+ * @version 0.5.0
  *
  * @section License
  * Copyright (C) 2014-2016, Erik Moqvist
