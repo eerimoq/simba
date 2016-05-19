@@ -20,6 +20,7 @@ Project homepage: https://github.com/eerimoq/simba
 
    about
    installation
+   platformio
    user-guide
    developer-guide
    boards

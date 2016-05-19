@@ -5,6 +5,9 @@ The `Simba` development environment can be installed on `Windows
 (Cygwin)`_ and `Linux (Ubuntu 14)`_. Just follow the steps below and
 you'll be up and running in no time. =)
 
+An alternative is to use `PlatformIO`_ to develop `Simba`
+applications.
+
 Windows (Cygwin)
 ----------------
 
@@ -79,3 +82,4 @@ installation was successful.
      make -s run
 
 .. _Cygwin: https://cygwin.com/setup-x86.exe
+.. _PlatformIO: http://platformio.org
