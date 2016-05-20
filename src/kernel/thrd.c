@@ -505,6 +505,17 @@ int thrd_resume(struct thrd_t *thrd_p, int err)
     return (res);
 }
 
+int thrd_yield(void)
+{
+    sys_lock();
+    scheduler.current_p->state = THRD_STATE_READY;
+    scheduler_ready_push(scheduler.current_p);
+    thrd_reschedule();
+    sys_unlock();
+
+    return (0);
+}
+
 int thrd_resume_isr(struct thrd_t *thrd_p, int err)
 {
     int res = 1;

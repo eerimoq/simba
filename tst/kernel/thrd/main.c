@@ -50,11 +50,19 @@ static int test_suspend_resume(struct harness_t *harness_p)
     return (0);
 }
 
+static int test_yield(struct harness_t *harness_p)
+{
+    BTASSERT(thrd_yield() == 0);
+
+    return (0);
+}
+
 int main()
 {
     struct harness_t harness;
     struct harness_testcase_t harness_testcases[] = {
         { test_suspend_resume, "test_suspend_resume" },
+        { test_yield, "test_yield" },
         { NULL, NULL }
     };
 

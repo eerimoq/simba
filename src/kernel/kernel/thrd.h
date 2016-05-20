@@ -113,6 +113,18 @@ int thrd_suspend(struct time_t *timeout_p);
 int thrd_resume(struct thrd_t *thrd_p, int err);
 
 /**
+ * Put the currently executing thread on the ready list and
+ * reschedule.
+ *
+ * This function is often called periodically from low priority work
+ * heavy threads to give higher priority threads the chance to
+ * execute.
+ *
+ * @return zero(0) or negative error code.
+ */
+int thrd_yield(void);
+
+/**
  * Wait for given thread to terminate.
  *
  * @param[in] thrd_p Thread to wait for.
