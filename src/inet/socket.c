@@ -20,7 +20,7 @@
 
 #include "simba.h"
 
-#include "inet.h"
+#if defined(ARCH_ESP)
 
 #include "lwip/tcp.h"
 #include "lwip/udp.h"
@@ -581,3 +581,86 @@ ssize_t socket_read(struct socket_t *self_p,
 {
     return (socket_recvfrom(self_p, buf_p, size, 0, NULL, 0));
 }
+
+#else
+
+int socket_module_init(void)
+{
+    return (0);    
+}
+
+int socket_open(struct socket_t *self_p,
+                int domain,
+                int type,
+                int protocol)
+{
+    return (-1);
+}
+
+int socket_close(struct socket_t *self_p)
+{
+    return (-1);
+}
+
+int socket_bind(struct socket_t *self_p,
+                const struct socket_addr_t *local_addr_p,
+                size_t addrlen)
+{
+    return (-1);
+}
+
+int socket_listen(struct socket_t *self_p, int backlog)
+{
+    return (-1);
+}
+
+int socket_connect(struct socket_t *self_p,
+                   const struct socket_addr_t *addr_p,
+                   size_t addrlen)
+{
+    return (-1);
+}
+
+int socket_accept(struct socket_t *self_p,
+                  struct socket_t *accepted_p,
+                  struct socket_addr_t *addr_p,
+                  size_t *addrlen_p)
+{
+    return (-1);
+}
+
+ssize_t socket_sendto(struct socket_t *self_p,
+                      const void *buf_p,
+                      size_t size,
+                      int flags,
+                      const struct socket_addr_t *remote_addr_p,
+                      size_t addrlen)
+{
+    return (-1);
+}
+
+ssize_t socket_recvfrom(struct socket_t *self_p,
+                        void *buf_p,
+                        size_t size,
+                        int flags,
+                        struct socket_addr_t *remote_addr_p,
+                        size_t addrlen)
+{
+    return (-1);
+}
+
+ssize_t socket_write(struct socket_t *self_p,
+                     const void *buf_p,
+                     size_t size)
+{
+    return (socket_sendto(self_p, buf_p, size, 0, NULL, 0));
+}
+
+ssize_t socket_read(struct socket_t *self_p,
+                    void *buf_p,
+                    size_t size)
+{
+    return (socket_recvfrom(self_p, buf_p, size, 0, NULL, 0));
+}
+
+#endif

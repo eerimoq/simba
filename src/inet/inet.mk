@@ -18,16 +18,13 @@
 # This file is part of the Simba project.
 #
 
-# The inet package can only be used by the ESP.
-ifneq (,$(filter $(BOARD), esp12e esp01))
-    INC += $(SIMBA_ROOT)/src/inet
+INC += $(SIMBA_ROOT)/src/inet
 
-    INET_SRC ?= \
+INET_SRC ?= \
 	socket.c \
 	http_server.c \
 	http_websocket_server.c \
 	http_websocket_client.c \
 	mqtt_client.c
-endif
 
 SRC += $(INET_SRC:%=$(SIMBA_ROOT)/src/inet/%)

@@ -65,7 +65,8 @@ def add_common_include_paths(env):
         join("src", "kernel", "ports", "$ARCH", "gnu"),
         join("src", "drivers"),
         join("src", "drivers", "ports", "$ARCH"),
-        join("src", "slib")
+        join("src", "slib"),
+        join("src", "inet")
     ]
 
     add_include_paths(env, paths)
@@ -190,7 +191,6 @@ def setup_mcu_esp(env, linker_script, flash_size_map):
 
     add_include_paths(env, [
         "src/mcus/esp8266",
-        "src/inet",
         "3pp/ESP8266_RTOS_SDK/extra_include",
         "3pp/ESP8266_RTOS_SDK/include",
         "3pp/ESP8266_RTOS_SDK/include/espressif",
@@ -366,9 +366,6 @@ def create_src_filter(env):
             "usb/host/class/usb_host_class_mass_storage.c"
         ]
 
-        # Remove inet files.
-        src_filter_patterns.append("-<inet>")
-
     elif arch == "avr":
         files = [
             "adc.c",
@@ -385,9 +382,6 @@ def create_src_filter(env):
             "uart.c",
             "uart_soft.c"
         ]
-
-        # Remove inet files.
-        src_filter_patterns.append("-<inet>")
 
     elif arch == "esp":
         files = [

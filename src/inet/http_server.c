@@ -20,13 +20,13 @@
 
 #include "simba.h"
 
-static FAR char ok_fmt[] =
+static const FAR char ok_fmt[] =
     "HTTP/1.1 200 OK\r\n"
     "Content-Type: %s\r\n"
     "Content-Length: %d\r\n"
     "\r\n";
 
-static FAR char not_found_fmt[] =
+static const FAR char not_found_fmt[] =
     "HTTP/1.1 404 Not Found\r\n"
     "Content-Type: %s\r\n"
     "Content-Length: %d\r\n"

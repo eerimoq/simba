@@ -23,9 +23,6 @@
 
 #include "simba.h"
 
-#define HTTP_TYPE_TEXT   1
-#define HTTP_TYPE_BINARY 2
-
 struct http_websocket_client_t {
     struct {
         struct socket_t socket;
@@ -96,6 +93,6 @@ ssize_t http_websocket_client_read(struct http_websocket_client_t *self_p,
 ssize_t http_websocket_client_write(struct http_websocket_client_t *self_p,
                                     int type,
                                     const void *buf_p,
-                                    size_t size);
+                                    uint32_t size);
 
 #endif

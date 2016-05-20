@@ -18,11 +18,12 @@
 # This file is part of the Simba project.
 #
 
-NAME = websocket_client_suite
+NAME = http_websocket_client_suite
 VERSION = 0.0.1
 BOARD ?= linux
 
 SRC += socket_stub.c
+SRC_IGNORE = $(SIMBA_ROOT)/src/inet/socket.c
 
 INET_SRC = \
 	http_websocket_client.c

@@ -21,7 +21,7 @@
 #include "simba.h"
 
 static int readline(struct http_websocket_client_t *self_p,
-                    FAR char *expected_p,
+                    const FAR char *expected_p,
                     size_t size)
 {
     int pos;
@@ -195,7 +195,7 @@ ssize_t http_websocket_client_read(struct http_websocket_client_t *self_p,
 ssize_t http_websocket_client_write(struct http_websocket_client_t *self_p,
                                     int type,
                                     const void *buf_p,
-                                    size_t size)
+                                    uint32_t size)
 {
     const uint8_t masking_key[4] = { 0x00, 0x00, 0x00, 0x00 };
     uint8_t header[16];

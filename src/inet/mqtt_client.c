@@ -117,7 +117,7 @@ static int read_fixed_header(struct mqtt_client_t *self_p,
                              size_t *size_p)
 {
     uint8_t byte;
-    int multiplier;
+    long multiplier;
 
     if (chan_read(self_p->transport.in_p, &byte, 1) != 1) {
         return (-EIO);
@@ -137,7 +137,7 @@ static int read_fixed_header(struct mqtt_client_t *self_p,
         *size_p += (byte & 0x7f) * multiplier;
         multiplier *= 128;
 
-        if (multiplier > 128 * 128 * 128) {
+        if (multiplier > 128L * 128L * 128L) {
             return (-1);
         }
     } while ((byte & 0x80) != 0);

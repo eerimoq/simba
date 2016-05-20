@@ -21,6 +21,9 @@
 #ifndef __INET_TYPES_H__
 #define __INET_TYPES_H__
 
+#define HTTP_TYPE_TEXT   1
+#define HTTP_TYPE_BINARY 2
+
 /**
  *  0                   1                   2                   3
  *  0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1

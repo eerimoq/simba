@@ -155,16 +155,12 @@ static int test_start(struct harness_t *harness_p)
                 }
             }
         },
+
         {
             .thrd = {
-                .name_p = "http_conn_1",
-                .stack = {
-                    .buf_p = NULL,
-                    .size = 0
-                }
+                .name_p = NULL
             }
-        },
-        { .thrd = { .name_p = NULL } }
+        }
     };
 
     socket_stub_init();

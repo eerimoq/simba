@@ -22,5 +22,4 @@ NAME = socket_suite
 BOARD ?= linux
 
 SIMBA_ROOT = ../../..
-include $(SIMBA_ROOT)/src/inet/inet.mk
 include $(SIMBA_ROOT)/make/app.mk
