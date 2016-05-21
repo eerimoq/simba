@@ -30,6 +30,10 @@ static void thrd_port_swap(struct thrd_t *in_p,
     /* Store registers. lr is the return address. */
     asm volatile ("push {lr}");
     asm volatile ("push {r4-r11}");
+#if defined(PREEMPTIVE_SCHEDULER)
+    asm volatile ("mrs r4, primask");
+    asm volatile ("push {r4}");
+#endif
 
     /* Save 'out_p' stack pointer. */
     asm volatile ("mov %0, sp" : "=r" (out_p->port.context_p));
@@ -38,6 +42,10 @@ static void thrd_port_swap(struct thrd_t *in_p,
     asm volatile ("mov sp, %0" : : "r" (in_p->port.context_p));
 
     /* Load registers. pop lr to pc and continue execution. */
+#if defined(PREEMPTIVE_SCHEDULER)
+    asm volatile ("pop {r4}");
+    asm volatile ("msr primask, r4");
+#endif
     asm volatile ("pop {r4-r11}");
     asm volatile ("pop {pc}");
 }

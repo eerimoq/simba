@@ -507,35 +507,11 @@ int thrd_resume(struct thrd_t *thrd_p, int err)
 
 int thrd_yield(void)
 {
+    int res;
+
     sys_lock();
-    scheduler.current_p->state = THRD_STATE_READY;
-    scheduler_ready_push(scheduler.current_p);
-    thrd_reschedule();
+    res = thrd_yield_isr();
     sys_unlock();
-
-    return (0);
-}
-
-int thrd_resume_isr(struct thrd_t *thrd_p, int err)
-{
-    int res = 1;
-
-    thrd_p->err = err;
-
-    if (thrd_p->state == THRD_STATE_SUSPENDED) {
-        thrd_p->state = THRD_STATE_READY;
-
-        if (thrd_p->timer_p != NULL) {
-            timer_stop_isr(thrd_p->timer_p);
-            thrd_p->timer_p = NULL;
-        }
-
-        scheduler_ready_push(thrd_p);
-    } else if (thrd_p->state != THRD_STATE_TERMINATED) {
-        thrd_p->state = THRD_STATE_RESUMED;
-    } else {
-        res = 0;
-    }
 
     return (res);
 }
@@ -602,9 +578,13 @@ int thrd_get_log_mask(void)
     return (scheduler.current_p->log_mask);
 }
 
-void thrd_tick(void)
+void thrd_tick_isr(void)
 {
     thrd_port_tick();
+
+#if defined(PREEMPTIVE_SCHEDULER)
+    THRD_RESCHEDULE_ISR;
+#endif
 }
 
 int thrd_suspend_isr(struct time_t *timeout_p)
@@ -639,4 +619,37 @@ int thrd_suspend_isr(struct time_t *timeout_p)
     thrd_reschedule();
 
     return (thrd_p->err);
+}
+
+int thrd_resume_isr(struct thrd_t *thrd_p, int err)
+{
+    int res = 1;
+
+    thrd_p->err = err;
+
+    if (thrd_p->state == THRD_STATE_SUSPENDED) {
+        thrd_p->state = THRD_STATE_READY;
+
+        if (thrd_p->timer_p != NULL) {
+            timer_stop_isr(thrd_p->timer_p);
+            thrd_p->timer_p = NULL;
+        }
+
+        scheduler_ready_push(thrd_p);
+    } else if (thrd_p->state != THRD_STATE_TERMINATED) {
+        thrd_p->state = THRD_STATE_RESUMED;
+    } else {
+        res = 0;
+    }
+
+    return (res);
+}
+
+int thrd_yield_isr(void)
+{
+    scheduler.current_p->state = THRD_STATE_READY;
+    scheduler_ready_push(scheduler.current_p);
+    thrd_reschedule();
+
+    return (0);
 }

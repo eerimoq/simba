@@ -25,7 +25,22 @@
     uint64_t name[DIV_CEIL(sizeof(struct thrd_t) + (size),      \
                            sizeof(uint64_t))] __attribute((aligned (8)))
 
+#define THRD_PORT_CONTEXT_STORE_ISR             \
+    do {                                        \
+        asm volatile ("push {r0-r3}");          \
+        asm volatile ("push {r12}");            \
+    } while (0);
+
+#define THRD_PORT_CONTEXT_LOAD_ISR              \
+    do {                                        \
+        asm volatile ("pop {r12}");             \
+        asm volatile ("pop {r0-r3}");           \
+    } while (0);
+
 struct thrd_port_context_t {
+#if defined(PREEMPTIVE_SCHEDULER)
+    uint32_t primask;
+#endif
     uint32_t r4;
     uint32_t r5;
     uint32_t r6;

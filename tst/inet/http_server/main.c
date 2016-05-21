@@ -29,8 +29,8 @@ extern void socket_stub_output(void *buf_p, size_t size);
 
 static struct http_server_t foo;
 
-THRD_STACK(listener_stack, 1024);
-THRD_STACK(connection_stack, 1024);
+THRD_STACK(listener_stack, 2048);
+THRD_STACK(connection_stack, 2048);
 
 /**
  * Handler for the index request.

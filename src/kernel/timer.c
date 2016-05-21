@@ -101,7 +101,7 @@ int timer_module_init(void)
     return (0);
 }
 
-void timer_tick(void)
+void timer_tick_isr(void)
 {
     struct timer_t *timer_p;
 

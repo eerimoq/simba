@@ -21,5 +21,10 @@
 NAME = thrd_suite
 BOARD ?= linux
 
+# Use the preemptive scheduler for ports that supports it.
+ifeq ($(BOARD),arduino_due)
+CFLAGS += -DPREEMPTIVE_SCHEDULER
+endif
+
 SIMBA_ROOT = ../../..
 include $(SIMBA_ROOT)/make/app.mk

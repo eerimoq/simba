@@ -20,11 +20,11 @@
 
 #include "simba.h"
 
-static THRD_STACK(thrd_stack, 256);
-static void *thrd(void *arg_p)
+static THRD_STACK(suspend_resume_stack, 256);
+
+static void *suspend_resume_main(void *arg_p)
 {
     thrd_set_name("resumer");
-
     thrd_resume(arg_p, 3);
 
     return (NULL);
@@ -35,11 +35,11 @@ static int test_suspend_resume(struct harness_t *harness_p)
     int err;
     struct thrd_t *thrd_p;
 
-    thrd_p = thrd_spawn(thrd,
+    thrd_p = thrd_spawn(suspend_resume_main,
                         thrd_self(),
                         10,
-                        thrd_stack,
-                        sizeof(thrd_stack));
+                        suspend_resume_stack,
+                        sizeof(suspend_resume_stack));
 
     err = thrd_suspend(NULL);
     BTASSERT(err == 3, "err = %d", err);
@@ -57,12 +57,52 @@ static int test_yield(struct harness_t *harness_p)
     return (0);
 }
 
+#if defined(PREEMPTIVE_SCHEDULER)
+
+static THRD_STACK(preemptive_stack, 256);
+
+static void *preemptive_main(void *arg_p)
+{
+    thrd_set_name("preemptive");
+
+    while (1);
+
+    return (NULL);
+}
+
+static int test_preemptive(struct harness_t *harness_p)
+{
+    struct time_t timeout;
+
+    /* Spawn a low priority worker thread. */
+    BTASSERT(thrd_spawn(preemptive_main,
+                        NULL,
+                        20,
+                        preemptive_stack,
+                        sizeof(preemptive_stack)) != NULL);
+
+    /* Suspend this thread to make sure the worker thread is in its
+       infinite loop. When the suspend timeout occurs, this thread
+       will be scheduled since it has higher priority than the worker
+       thread. */
+    timeout.seconds = 0;
+    timeout.nanoseconds = 100000;
+    BTASSERT(thrd_suspend(&timeout) == -ETIMEDOUT);
+
+    return (0);
+}
+
+#endif
+
 int main()
 {
     struct harness_t harness;
     struct harness_testcase_t harness_testcases[] = {
         { test_suspend_resume, "test_suspend_resume" },
         { test_yield, "test_yield" },
+#if defined(PREEMPTIVE_SCHEDULER)
+        { test_preemptive, "test_preemptive" },
+#endif
         { NULL, NULL }
     };
 

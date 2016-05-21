@@ -29,6 +29,31 @@
  */
 #define THRD_STACK(name, size) THRD_PORT_STACK(name, size)
 
+/**
+ * Push all callee-save registers not part of the context struct. The
+ * preemptive scheduler requires this macro before the
+ * thrd_yield_isr() function is called from interrupt context.
+ */
+#define THRD_CONTEXT_STORE_ISR THRD_PORT_CONTEXT_STORE_ISR
+
+/**
+ * Pop all callee-save registers not part of the context struct. The
+ * preemptive scheduler requires this macro after the thrd_yield_isr()
+ * function is called from interrupt context.
+ */
+#define THRD_CONTEXT_LOAD_ISR THRD_PORT_CONTEXT_LOAD_ISR
+
+/**
+ * Reschuedule from isr. Used by preemptive systems to interrupt low
+ * priority threads in favour of high priority threads.
+ */
+#define THRD_RESCHEDULE_ISR                     \
+    do {                                        \
+        THRD_CONTEXT_STORE_ISR;                 \
+        thrd_yield_isr();                       \
+        THRD_CONTEXT_LOAD_ISR;                  \
+    } while (0)    
+
 struct thrd_parent_t {
     struct thrd_t *next_p;
     struct thrd_t *thrd_p;
@@ -207,5 +232,13 @@ int thrd_suspend_isr(struct time_t *timeout_p);
  * @return zero(0) or negative error code.
  */
 int thrd_resume_isr(struct thrd_t *thrd_p, int err);
+
+/**
+ * Yield current thread from isr (preemptive scheduler only) or with
+ * the system lock taken.
+ *
+ * @return zero(0) or negative error code.
+ */
+int thrd_yield_isr(void);
 
 #endif

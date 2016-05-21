@@ -32,16 +32,16 @@ struct sys_t sys = {
 
 static struct fs_command_t cmd_info;
 
-extern void time_tick(void);
-extern void timer_tick(void);
-extern void thrd_tick(void);
+extern void time_tick_isr(void);
+extern void timer_tick_isr(void);
+extern void thrd_tick_isr(void);
 extern const FAR char sysinfo[];
 
 static void sys_tick(void) {
     sys.tick++;
-    time_tick();
-    timer_tick();
-    thrd_tick();
+    time_tick_isr();
+    timer_tick_isr();
+    thrd_tick_isr();
 }
 
 #include "sys_port.i"

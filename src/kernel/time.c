@@ -80,7 +80,7 @@ static inline void tick_to_time(uint64_t tick,
 /**
  * Update the current time every system tick.
  */
-void time_tick(void)
+void time_tick_isr(void)
 {
     state.tick += 1;
     tick_to_time(state.tick, &state.now);
