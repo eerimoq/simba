@@ -25,7 +25,7 @@ SIZEARGS = --mcu=$(MCU) --format=avr
 CFLAGS += -mmcu=$(CPU) \
           -DF_CPU=$(F_CPU)UL \
           -D__DELAY_BACKWARD_COMPATIBLE__ \
-          -DTHRD_NMONITOR \
+          -DCONFIG_MONITOR_THREAD=0 \
           -O2 \
           -ffunction-sections \
           -fdata-sections \

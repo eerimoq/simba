@@ -120,7 +120,9 @@ def setup_mcu_avr(env):
                 SETTING_SIZE="256",
                 ENDIANESS="little")
 
-    env.Append(CPPDEFINES=["THRD_NMONITOR"])
+    env.Append(CPPDEFINES=[
+        ("CONFIG_MONITOR_THREAD", 0)
+    ])
 
     env.Append(CCFLAGS=[
         "-funsigned-char",
@@ -201,7 +203,7 @@ def setup_mcu_esp(env, linker_script, flash_size_map):
     ])
 
     env.Append(CPPDEFINES=[
-        "THRD_NMONITOR"
+        ("CONFIG_MONITOR_THREAD", 0)
     ])
 
     linkflags = []

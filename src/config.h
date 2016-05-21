@@ -21,4 +21,18 @@
 #ifndef __CONFIG_H__
 #define __CONFIG_H__
 
+/**
+ * Use a preemptive scheduler.
+ */
+#ifndef CONFIG_PREEMPTIVE_SCHEDULER
+#    define CONFIG_PREEMPTIVE_SCHEDULER 0
+#endif
+
+/**
+ * Start the monitor thread.
+ */
+#ifndef CONFIG_MONITOR_THREAD
+#    define CONFIG_MONITOR_THREAD       1
+#endif
+
 #endif

@@ -30,7 +30,7 @@ static void thrd_port_swap(struct thrd_t *in_p,
     /* Store registers. lr is the return address. */
     asm volatile ("push {lr}");
     asm volatile ("push {r4-r11}");
-#if defined(PREEMPTIVE_SCHEDULER)
+#if CONFIG_PREEMPTIVE_SCHEDULER == 1
     asm volatile ("mrs r4, primask");
     asm volatile ("push {r4}");
 #endif
@@ -42,7 +42,7 @@ static void thrd_port_swap(struct thrd_t *in_p,
     asm volatile ("mov sp, %0" : : "r" (in_p->port.context_p));
 
     /* Load registers. pop lr to pc and continue execution. */
-#if defined(PREEMPTIVE_SCHEDULER)
+#if CONFIG_PREEMPTIVE_SCHEDULER == 1
     asm volatile ("pop {r4}");
     asm volatile ("msr primask, r4");
 #endif
@@ -132,6 +132,8 @@ static void thrd_port_cpu_usage_stop(struct thrd_t *thrd_p)
                                      - thrd_p->port.cpu.start);
 }
 
+#if CONFIG_MONITOR_THREAD == 1
+
 static float thrd_port_cpu_usage_get(struct thrd_t *thrd_p)
 {
     return ((100.0 * thrd_p->port.cpu.period.time)
@@ -143,3 +145,5 @@ static void thrd_port_cpu_usage_reset(struct thrd_t *thrd_p)
     thrd_p->port.cpu.period.start = SAM_TC0->CHANNEL[0].CV;
     thrd_p->port.cpu.period.time = 0;
 }
+
+#endif

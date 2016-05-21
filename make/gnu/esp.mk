@@ -30,7 +30,7 @@ CFLAGS += -DF_CPU=$(F_CPU)UL \
           -fdata-sections \
           -DICACHE_FLASH \
           -D__STRICT_ANSI__ \
-          -DTHRD_NMONITOR
+          -DCONFIG_MONITOR_THREAD=0
 
 LIBPATH += $(ESP8266_RTOS_SDK_ROOT)/lib
 

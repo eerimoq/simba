@@ -75,7 +75,7 @@ static int iterate_threads(int (*callback)(void *arg_p,
 
 #include "thrd_port.i"
 
-#if !defined(THRD_NMONITOR)
+#if CONFIG_MONITOR_THREAD == 1
 #    include "thrd/thrd_monitor.i"
 #endif
 
@@ -406,7 +406,7 @@ int thrd_module_init(void)
 
     thrd_spawn(idle_thrd, NULL, 127, idle_thrd_stack, sizeof(idle_thrd_stack));
 
-#if !defined(THRD_NMONITOR)
+#if CONFIG_MONITOR_THREAD == 1
     thrd_spawn(monitor_thrd,
                NULL,
                THRD_MONITOR_PRIO,
@@ -426,7 +426,7 @@ int thrd_module_init(void)
                     NULL);
     fs_command_register(&cmd_set_log_mask);
 
-#if !defined(THRD_NMONITOR)
+#if CONFIG_MONITOR_THREAD == 1
     fs_command_init(&cmd_monitor_set_period_ms,
                     FSTR("/kernel/thrd/monitor/set_period_ms"),
                     cmd_monitor_set_period_ms_cb,
@@ -582,7 +582,7 @@ void thrd_tick_isr(void)
 {
     thrd_port_tick();
 
-#if defined(PREEMPTIVE_SCHEDULER)
+#if CONFIG_PREEMPTIVE_SCHEDULER == 1
     THRD_RESCHEDULE_ISR;
 #endif
 }

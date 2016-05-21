@@ -23,7 +23,7 @@ BOARD ?= linux
 
 # Use the preemptive scheduler for ports that supports it.
 ifeq ($(BOARD),arduino_due)
-CFLAGS += -DPREEMPTIVE_SCHEDULER
+CFLAGS += -DCONFIG_PREEMPTIVE_SCHEDULER=1
 endif
 
 SIMBA_ROOT = ../../..

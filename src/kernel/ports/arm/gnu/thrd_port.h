@@ -38,7 +38,7 @@
     } while (0);
 
 struct thrd_port_context_t {
-#if defined(PREEMPTIVE_SCHEDULER)
+#if CONFIG_PREEMPTIVE_SCHEDULER == 1
     uint32_t primask;
 #endif
     uint32_t r4;

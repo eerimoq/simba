@@ -57,7 +57,7 @@ static int test_yield(struct harness_t *harness_p)
     return (0);
 }
 
-#if defined(PREEMPTIVE_SCHEDULER)
+#if CONFIG_PREEMPTIVE_SCHEDULER == 1
 
 static THRD_STACK(preemptive_stack, 256);
 
@@ -100,7 +100,7 @@ int main()
     struct harness_testcase_t harness_testcases[] = {
         { test_suspend_resume, "test_suspend_resume" },
         { test_yield, "test_yield" },
-#if defined(PREEMPTIVE_SCHEDULER)
+#if CONFIG_PREEMPTIVE_SCHEDULER == 1
         { test_preemptive, "test_preemptive" },
 #endif
         { NULL, NULL }

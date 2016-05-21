@@ -142,7 +142,7 @@ static void thrd_port_cpu_usage_stop(struct thrd_t *thrd_p)
 {
 }
 
-#if !defined(THRD_NMONITOR)
+#if CONFIG_MONITOR_THREAD == 1
 
 static float thrd_port_cpu_usage_get(struct thrd_t *thrd_p)
 {
