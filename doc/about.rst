@@ -18,12 +18,14 @@ Design goals
 OS features
 -----------
 
-* Threads scheduled by a priority based cooperative scheduler.
+* Threads scheduled by a priority based cooperative or preemptive
+  scheduler.
 * Channels for inter-thread communication.
 * Timers.
 * Counting semaphores.
 * Device drivers (spi, uart, ...)
 * A simple shell.
+* Internet protocols (TCP, UDP, HTTP, ...).
 * ...
 
 Framework features
