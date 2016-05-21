@@ -5,6 +5,7 @@ import sys
 import subprocess
 import os
 import time
+import string
 
 target = sys.argv[1]
 exe = sys.argv[2]
@@ -21,7 +22,10 @@ def run(command):
     with open(runlog, "w") as fout:
         for line in lines_iterator:
             sys.stdout.write(line)
-            fout.write(line)
+            filtered_line = "".join([char
+                                     for char in line
+                                     if char in string.printable])
+            fout.write(filtered_line)
     res = proc.wait()
     if res != 0:
         sys.exit(res)
