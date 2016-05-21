@@ -21,6 +21,10 @@
 #ifndef __KERNEL_THRD_PORT_H__
 #define __KERNEL_THRD_PORT_H__
 
+#if CONFIG_PREEMPTIVE_SCHEDULER == 1
+#    error "This port does not support a preemptive scheduler."
+#endif
+
 #define THRD_PORT_STACK(name, size)             \
     char name[sizeof(struct thrd_t) + (size)]
 

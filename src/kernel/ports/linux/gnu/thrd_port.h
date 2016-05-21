@@ -23,6 +23,10 @@
 
 #include <pthread.h>
 
+#if CONFIG_PREEMPTIVE_SCHEDULER == 1
+#    error "This port does not support a preemptive scheduler."
+#endif
+
 #define THRD_PORT_STACK(name, size) char name[sizeof(struct thrd_t) + (size)]
 
 struct thrd_port_t {
