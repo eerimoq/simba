@@ -27,7 +27,6 @@ LD = $(CROSS_COMPILE)gcc
 
 CFLAGS += -c \
           -Wall \
-          -funsigned-char \
           -funsigned-bitfields \
           -std=gnu99 \
           -Wno-error=unused-variable

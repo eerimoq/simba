@@ -125,7 +125,6 @@ def setup_mcu_avr(env):
     ])
 
     env.Append(CCFLAGS=[
-        "-funsigned-char",
         "-funsigned-bitfields",
         "-std=gnu99",
         "-Wno-error=unused-variable",
@@ -157,7 +156,6 @@ def setup_mcu_sam(env):
                 ENDIANESS="little")
 
     env.Append(CCFLAGS=[
-        "-funsigned-char",
         "-funsigned-bitfields",
         "-std=gnu99",
         "-Wno-error=unused-variable",
