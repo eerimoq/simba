@@ -55,11 +55,8 @@ CLEAN = $(OBJDIR) $(DEPSDIR) $(GENDIR) $(EXE) $(RUNLOG) size.log \
 # configuration
 TOOLCHAIN ?= gnu
 CFLAGS += $(INC:%=-I%) $(CFLAGS_EXTRA)
-ifeq ($(NDEBUG),yes)
-  CDEFS += -DNDEBUG
-endif
-ifeq ($(NPROFILE),yes)
-  CDEFS += -DNPROFILE
+ifeq ($(NASSERT),yes)
+  CDEFS += -DCONFIG_ASSERT=0
 endif
 CDEFS +=  -DARCH_$(UPPER_ARCH) -DMCU_$(UPPER_MCU) \
           -DBOARD_$(UPPER_BOARD) -DVERSION=$(VERSION)
@@ -158,7 +155,7 @@ jenkins-coverage:
 	$(RUNSCRIPT) jenkins-coverage ./$(EXE) > coverage.xml
 
 release:
-	env NDEBUG=yes NPROFILE=yes $(MAKE)
+	env NASSERT=yes $(MAKE)
 
 $(EXE): $(OBJ) $(GENOBJ)
 	@echo "Linking $@"
@@ -295,7 +292,7 @@ help:
 	@echo "  run-debugger                run the application in the debugger, break at main"
 	@echo "  report                      print test report"
 	@echo "  test                        run + report"
-	@echo "  release                     compile with NDEBUG=yes and NPROFILE=yes"
+	@echo "  release                     compile with NASSERT=yes"
 	@echo "  size                        print executable size information"
 	@IFS=$$'\n' ; for h in $(HELP_TARGETS) ; do \
 	  echo $$h ; \
@@ -304,8 +301,7 @@ help:
 	@echo "--------------------------------------------------------------------------------"
 	@echo "  variable                    description"
 	@echo "--------------------------------------------------------------------------------"
-	@echo "  NDEBUG                      yes - build without debug information"
-	@echo "  NPROFILE                    yes - build without profiling information"
+	@echo "  NASSERT                      yes - build without debug information"
 	@IFS=$$'\n' ; for h in $(HELP_VARIABLES) ; do \
 	  echo $$h ; \
 	done

@@ -186,7 +186,7 @@ static void thrd_reschedule(void)
     }
 }
 
-#if !defined(NPROFILESTACK)
+#if CONFIG_PROFILE_STACK == 1
 
 extern char __main_stack_end;
 
@@ -268,7 +268,7 @@ static int cmd_list_thrd_print(chan_t *chout_p,
 {
     std_fprintf(chout_p,
                 FSTR("%16s %16s %12s %5d %4u%%"
-#if !defined(NPROFILESTACK)
+#if CONFIG_PROFILE_STACK == 1
                      "    %6d/%6d"
 #endif
                      "     0x%02x\r\n"),
@@ -277,7 +277,7 @@ static int cmd_list_thrd_print(chan_t *chout_p,
                 thrd_p->parent.thrd_p->name_p : "",
                 state_fmt[thrd_p->state], thrd_p->prio,
                 (unsigned int)thrd_p->cpu.usage,
-#if !defined(NPROFILESTACK)
+#if CONFIG_PROFILE_STACK == 1
                 thrd_get_used_stack(thrd_p),
                 (int)thrd_p->stack_size,
 #endif
@@ -295,7 +295,7 @@ static int cmd_list_cb(int argc,
 {
     std_fprintf(chout_p,
                 FSTR("            NAME           PARENT        STATE  PRIO   CPU"
-#if !defined(NPROFILESTACK)
+#if CONFIG_PROFILE_STACK == 1
                      "  MAX-STACK-USAGE"
 #endif
                      "  LOGMASK\r\n"));
@@ -377,7 +377,7 @@ static void *idle_thrd(void *arg_p)
 
 int thrd_module_init(void)
 {
-#if !defined(NPROFILESTACK)
+#if CONFIG_PROFILE_STACK == 1
     char dummy = 0;
 #endif
 
@@ -393,10 +393,10 @@ int thrd_module_init(void)
     main_thrd.parent.thrd_p = NULL;
     LIST_SL_INIT(&main_thrd.children);
     main_thrd.cpu.usage = 0;
-#if !defined(NASSERT)
+#if CONFIG_ASSERT == 1
     main_thrd.stack_low_magic = THRD_STACK_LOW_MAGIC;
 #endif
-#if !defined(NPROFILESTACK)
+#if CONFIG_PROFILE_STACK == 1
     main_thrd.stack_size = (&__main_stack_end - (char *)(&main_thrd + 1));
     thrd_fill_pattern((char *)(&main_thrd + 1),
                       &dummy - (char *)(&main_thrd + 2));
@@ -465,10 +465,10 @@ struct thrd_t *thrd_spawn(void *(*main)(void *),
     thrd_p->parent.thrd_p = thrd_self();
     LIST_SL_INIT(&thrd_p->children);
     thrd_p->cpu.usage = 0.0f;
-#if !defined(NASSERT)
+#if CONFIG_ASSERT == 1
     thrd_p->stack_low_magic = THRD_STACK_LOW_MAGIC;
 #endif
-#if !defined(NPROFILESTACK)
+#if CONFIG_PROFILE_STACK == 1
     thrd_p->stack_size = (stack_size - sizeof(*thrd_p));
     thrd_fill_pattern((char *)(thrd_p + 1), thrd_p->stack_size);
 #endif

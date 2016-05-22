@@ -34,7 +34,7 @@
         exit(1);                                                        \
     }
 
-#if !defined(NASSERT)
+#if CONFIG_ASSERT == 1
 #  define ASSERTN(cond, n, ...)                                         \
     if (!(cond)) {                                                      \
         fprintf(stderr, __FILE__ ":%d: ASSERT: %s ", __LINE__, #cond);  \

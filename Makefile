@@ -136,7 +136,7 @@ help:
 	@echo "  run                         run the application"
 	@echo "  report                      print test report"
 	@echo "  test                        run + report"
-	@echo "  release                     compile with NDEBUG=yes and NPROFILE=yes"
+	@echo "  release                     compile with NASSERT=yes"
 	@echo "  size                        print executable size information"
 	@echo "  cloc                        print source code line statistics"
 	@echo "  pmccabe                     print source code complexity statistics"

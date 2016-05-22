@@ -44,7 +44,7 @@
         sys_stop(EBTASSERT);                                                \
     }
 
-#if !defined(NASSERT)
+#if CONFIG_ASSERT == 1
 #  define ASSERTN(cond, n, ...)                 \
     if (!(cond)) {                              \
         sys.on_fatal_callback(n);               \

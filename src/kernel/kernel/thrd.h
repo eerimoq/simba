@@ -74,10 +74,10 @@ struct thrd_t {
     struct {
         float usage;
     } cpu;
-#if !defined(NPROFILESTACK)
+#if CONFIG_PROFILE_STACK == 1
     size_t stack_size;
 #endif
-#if !defined(NASSERT)
+#if CONFIG_ASSERT == 1
     uint16_t stack_low_magic;
 #endif
 };

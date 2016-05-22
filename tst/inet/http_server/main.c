@@ -216,7 +216,7 @@ static int test_request_websocket(struct harness_t *harness_p)
 {
     int i;
     char *str_p;
-    char buf[128];
+    char buf[256];
 
     /* Input the accept answer. */
     socket_stub_accept();
@@ -241,6 +241,7 @@ static int test_request_websocket(struct harness_t *harness_p)
         "\r\n";
 
     socket_stub_output(buf, strlen(str_p));
+    buf[strlen(str_p)] = '\0';
     BTASSERT(strcmp(buf, str_p) == 0);
 
     for (i = 0; i < 3; i++) {

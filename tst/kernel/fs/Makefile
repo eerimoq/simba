@@ -21,7 +21,5 @@
 NAME = fs_suite
 BOARD ?= linux
 
-CFLAGS_EXTRA = -DNPROFILEINTERRUPT
-
 SIMBA_ROOT = ../../..
 include $(SIMBA_ROOT)/make/app.mk

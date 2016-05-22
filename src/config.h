@@ -22,6 +22,20 @@
 #define __CONFIG_H__
 
 /**
+ * Build with assert.
+ */
+#ifndef CONFIG_ASSERT
+#    define CONFIG_ASSERT               1
+#endif
+
+/**
+ * Stack profiling.
+ */
+#ifndef CONFIG_PROFILE_STACK
+#    define CONFIG_PROFILE_STACK        1
+#endif
+
+/**
  * Use a preemptive scheduler.
  */
 #ifndef CONFIG_PREEMPTIVE_SCHEDULER
