@@ -484,7 +484,7 @@ int fs_command_register(struct fs_command_t *command_p)
     current_p = state.commands_p;
 
     while (current_p != NULL) {
-        if (strcmp(command_p->path_p, current_p->path_p) < 0) {
+        if (std_strcmp_f(command_p->path_p, current_p->path_p) < 0) {
             break;
         }
 
