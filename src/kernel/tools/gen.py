@@ -36,9 +36,9 @@ file_fmt = """/**
 {sysinfo}
 """
 
-SYSINFO_FMT = """const FAR char sysinfo[] = "app:   {name}-{version} built {date} by {user}.\\r\\n"
-                           "board: {board}\\r\\n"
-                           "mcu:   {mcu}\\r\\n";
+SYSINFO_FMT = """const FAR char sysinfo[] = "app:    {name}-{version} built {date} by {user}.\\r\\n"
+                           "board:  {board}\\r\\n"
+                           "mcu:    {mcu}\\r\\n";
 """
 
 MAJOR = 1

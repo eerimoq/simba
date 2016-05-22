@@ -33,10 +33,9 @@ struct sys_t sys = {
 static struct fs_command_t cmd_info;
 
 static const FAR char config[] = 
-    "config:\r\n"
-    "    preemptive-scheduler=" STRINGIFY(CONFIG_PREEMPTIVE_SCHEDULER)
+    "config: preemptive-scheduler=" STRINGIFY(CONFIG_PREEMPTIVE_SCHEDULER)
     "\r\n"
-    "    monitor-thread=" STRINGIFY(CONFIG_MONITOR_THREAD)
+    "        monitor-thread=" STRINGIFY(CONFIG_MONITOR_THREAD)
     "\r\n";
 
 extern void time_tick_isr(void);
