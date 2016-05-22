@@ -165,8 +165,8 @@ static int test_connect(struct harness_t *harness_p)
 static int test_ping(struct harness_t *harness_p)
 {
     struct message_t message;
-    char response[2];
-    char request[2];
+    uint8_t response[2];
+    uint8_t request[2];
 
     /* Prepare the server to receive the ping request packet. */
     message.buf_p = NULL;

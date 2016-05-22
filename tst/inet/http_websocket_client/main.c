@@ -131,7 +131,7 @@ static int test_read(struct harness_t *harness_p)
 
 static int test_write(struct harness_t *harness_p)
 {
-    char buf[256];
+    uint8_t buf[256];
 
     buf[0] = 'f';
     buf[1] = 'u';
