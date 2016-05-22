@@ -154,6 +154,13 @@ void sys_unlock_isr(void);
 const FAR char *sys_get_info(void);
 
 /**
+ * Get a pointer to the application configuration buffer.
+ *
+ * @return The pointer to the application configuration buffer.
+ */
+const FAR char *sys_get_config(void);
+
+/**
  * Get the current interrupt cpu usage counter.
  *
  * @return cpu usage, 0-100.

@@ -32,6 +32,13 @@ struct sys_t sys = {
 
 static struct fs_command_t cmd_info;
 
+static const FAR char config[] = 
+    "config:\r\n"
+    "    preemptive-scheduler=" STRINGIFY(CONFIG_PREEMPTIVE_SCHEDULER)
+    "\r\n"
+    "    monitor-thread=" STRINGIFY(CONFIG_MONITOR_THREAD)
+    "\r\n";
+
 extern void time_tick_isr(void);
 extern void timer_tick_isr(void);
 extern void thrd_tick_isr(void);
@@ -54,6 +61,7 @@ static int cmd_info_cb(int argc,
                        void *call_arg_p)
 {
     std_fprintf(out_p, sysinfo);
+    std_fprintf(out_p, config);
 
     return (0);
 }
@@ -122,6 +130,11 @@ void sys_unlock_isr(void)
 const FAR char *sys_get_info(void)
 {
     return (sysinfo);
+}
+
+const FAR char *sys_get_config(void)
+{
+    return (config);
 }
 
 float sys_interrupt_cpu_usage_get(void)
