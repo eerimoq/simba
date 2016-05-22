@@ -21,10 +21,5 @@
 NAME = thrd_suite
 BOARD ?= linux
 
-# Use the preemptive scheduler for ports that supports it.
-ifeq ($(BOARD), $(filter $(BOARD), arduino_due arduino_mega))
-CFLAGS += -DCONFIG_PREEMPTIVE_SCHEDULER=1
-endif
-
 SIMBA_ROOT = ../../..
 include $(SIMBA_ROOT)/make/app.mk
