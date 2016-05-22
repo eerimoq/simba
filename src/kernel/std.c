@@ -451,7 +451,7 @@ int std_strcmp(const char *str_p, FAR const char *fstr_p)
         }
     }
 
-    return (1);
+    return (str_p[-1] - fstr_p[-1]);
 }
 
 int std_strcmp_f(FAR const char *fstr0_p,
