@@ -21,12 +21,48 @@
 #ifndef __KERNEL_THRD_PORT_H__
 #define __KERNEL_THRD_PORT_H__
 
-#if CONFIG_PREEMPTIVE_SCHEDULER == 1
-#    error "This port does not support a preemptive scheduler."
-#endif
-
 #define THRD_PORT_STACK(name, size)             \
     char name[sizeof(struct thrd_t) + (size)]
+
+#define THRD_PORT_CONTEXT_STORE_ISR             \
+    do {                                        \
+        asm volatile ("push r0");               \
+        asm volatile ("push r1");               \
+        asm volatile ("push r18");              \
+        asm volatile ("push r19");              \
+        asm volatile ("push r20");              \
+        asm volatile ("push r21");              \
+        asm volatile ("push r22");              \
+        asm volatile ("push r23");              \
+        asm volatile ("push r24");              \
+        asm volatile ("push r25");              \
+        asm volatile ("push r26");              \
+        asm volatile ("push r27");              \
+        asm volatile ("push r30");              \
+        asm volatile ("push r31");              \
+        asm volatile ("in   r31, 0x3f");        \
+        asm volatile ("push r31");              \
+    } while (0);
+
+#define THRD_PORT_CONTEXT_LOAD_ISR              \
+    do {                                        \
+        asm volatile ("pop r31");               \
+        asm volatile ("out 0x3f, r31");         \
+        asm volatile ("pop r31");               \
+        asm volatile ("pop r30");               \
+        asm volatile ("pop r27");               \
+        asm volatile ("pop r26");               \
+        asm volatile ("pop r25");               \
+        asm volatile ("pop r24");               \
+        asm volatile ("pop r23");               \
+        asm volatile ("pop r22");               \
+        asm volatile ("pop r21");               \
+        asm volatile ("pop r20");               \
+        asm volatile ("pop r19");               \
+        asm volatile ("pop r18");               \
+        asm volatile ("pop r1");                \
+        asm volatile ("pop r0");                \
+    } while (0);
 
 struct thrd_port_context_t {
     uint8_t dummy;
