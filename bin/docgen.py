@@ -8,9 +8,6 @@ import argparse
 import json
 
 
-ABOUT_FMT = """{boards}
-"""
-
 BOARD_FMT = """{desc}
 ===========
 
@@ -72,23 +69,6 @@ def get_arguments():
                         help="JSON database.")
 
     return parser.parse_args()
-
-
-def about_generate(database):
-    """Generate about.
-
-    """
-
-    boards = []
-    for board in sorted(database["boards"]):
-        boards.append("- :doc:`../boards/{}`".format(board))
-
-    rst = ABOUT_FMT.format(boards='\n'.join(boards))
-
-    rst_path = os.path.join("doc", "about", "about.rst")
-    print "Writing to ", rst_path
-    with open(rst_path, "w") as fout:
-        fout.write(rst)
 
 
 def boards_generate(database):
@@ -162,7 +142,6 @@ def main():
     with open(args.database) as fin:
         database = json.load(fin)
 
-    about_generate(database)
     boards_generate(database)
     mcus_generate(database)
     examples_generate(database)

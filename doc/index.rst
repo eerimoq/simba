@@ -17,8 +17,8 @@ Project homepage: https://github.com/eerimoq/simba
 .. toctree::
    :maxdepth: 1
    :titlesonly:
+   :hidden:
 
-   about
    installation
    platformio
    user-guide
@@ -27,6 +27,29 @@ Project homepage: https://github.com/eerimoq/simba
    mcus
    examples
    api-reference
+
+Features
+--------
+
+* Threads scheduled by a priority based cooperative or preemptive
+  scheduler.
+* Channels for inter-thread communication.
+* Timers.
+* Counting semaphores.
+* Device drivers (spi, uart, ...)
+* A simple shell.
+* Internet protocols (TCP, UDP, HTTP, ...).
+* Package handler (using Pythons' `pip`).
+* ...
+
+Design goals
+------------
+
+* Rapid development.
+* Clean interfaces.
+* Small memory footprint.
+* No dynamic memory allocation.
+* Portability.
 
 Indices and tables
 ==================
