@@ -13,7 +13,8 @@ Windows (Cygwin)
 
 Download `Cygwin`_ and select the following packages for installation:
 
-For ESP8266 more packets are needed. See: https://github.com/eerimoq/esp-open-sdk.
+**NOTE**: ESP8266 is not supported in Cygwin because the toolchain
+ cannot be created.
 
 .. code-block:: text
 
@@ -32,9 +33,6 @@ Start `Cygwin` and execute the one-liner below to install `Simba`.
      cd simba && \
      easy_install-2.7 pip && \
      pip install pyserial xpect sphinx breathe && \
-     (git clone --recursive https://github.com/eerimoq/esp-open-sdk.git && \
-      cd esp-open-sdk && \
-      make STANDALONE=n) && \
      (git clone https://github.com/eerimoq/rust-bindgen.git && \
       cd rust-bindgen && \
       cargo build) && \
