@@ -35,6 +35,7 @@ static void *alloc_fixed_size(struct heap_t *self_p,
     struct heap_buffer_header_t *header_p;
     struct heap_fixed_t *fixed_p = self_p->fixed;
     size_t left;
+    char *next_p;
 
     while (fixed_p != &self_p->fixed[HEAP_FIXED_SIZES_MAX]) {
         if (size <= fixed_p->size) {
@@ -42,15 +43,18 @@ static void *alloc_fixed_size(struct heap_t *self_p,
                 header_p = fixed_p->free_p;
                 fixed_p->free_p = *((void **)fixed_p->free_p);
             } else {
+                next_p = self_p->next_p;
+
                 /* Out of memory?. */
-                left = (self_p->size - (self_p->next_p - self_p->buf_p));
+                left = (self_p->size - (next_p - (char *)self_p->buf_p));
 
                 if (left < (sizeof(*header_p) + size)) {
                     break;
                 }
 
                 header_p = self_p->next_p;
-                self_p->next_p += (sizeof(*header_p) + size);
+                next_p += (sizeof(*header_p) + size);
+                self_p->next_p = next_p;
             }
 
             /* Initialize the allocated buffer. */
@@ -73,6 +77,7 @@ static void *alloc_dynamic_size(struct heap_t *self_p,
 {
     struct heap_buffer_header_t *header_p, *prev_p;
     size_t left;
+    char *next_p;
 
     /* Allocate from the free list. */
     header_p = self_p->dynamic.free_p;
@@ -95,15 +100,18 @@ static void *alloc_dynamic_size(struct heap_t *self_p,
         header_p = header_p->u.next_p;
     }
 
+    next_p = self_p->next_p;
+
     /* Allocate new memory. */
-    left = (self_p->size - (self_p->next_p - self_p->buf_p));
+    left = (self_p->size - (next_p - (char *)self_p->buf_p));
     
     if (left < (sizeof(*header_p) + size)) {
         return (NULL);
     }
     
     header_p = self_p->next_p;
-    self_p->next_p += (sizeof(*header_p) + size);
+    next_p += (sizeof(*header_p) + size);
+    self_p->next_p = next_p;
 
     /* Initialize the allocated buffer. */
     header_p->size = size;
