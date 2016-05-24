@@ -20,9 +20,9 @@ Project homepage: https://github.com/eerimoq/simba
    :hidden:
 
    installation
-   platformio
    user-guide
    developer-guide
+   platformio
    boards
    mcus
    examples
@@ -40,7 +40,6 @@ Features
 * A simple shell.
 * Internet protocols (TCP, UDP, HTTP, ...).
 * Package handler (using Pythons' `pip`).
-* ...
 
 Design goals
 ------------

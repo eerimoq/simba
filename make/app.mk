@@ -290,10 +290,10 @@ help:
 	@echo "  new                         clean + all"
 	@echo "  run                         run the application"
 	@echo "  run-debugger                run the application in the debugger, break at main"
-	@echo "  report                      print test report"
+	@echo "  report                      print the test report"
 	@echo "  test                        run + report"
 	@echo "  release                     compile with NASSERT=yes"
-	@echo "  size                        print executable size information"
+	@echo "  size                        print application size information"
 	@IFS=$$'\n' ; for h in $(HELP_TARGETS) ; do \
 	  echo $$h ; \
 	done
@@ -301,7 +301,7 @@ help:
 	@echo "--------------------------------------------------------------------------------"
 	@echo "  variable                    description"
 	@echo "--------------------------------------------------------------------------------"
-	@echo "  NASSERT                      yes - build without debug information"
+	@echo "  NASSERT                      yes - build without assertions"
 	@IFS=$$'\n' ; for h in $(HELP_VARIABLES) ; do \
 	  echo $$h ; \
 	done

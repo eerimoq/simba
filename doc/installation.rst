@@ -13,8 +13,7 @@ Windows (Cygwin)
 
 Download `Cygwin`_ and select the following packages for installation:
 
-**NOTE**: ESP8266 is not supported in Cygwin because the toolchain
- cannot be created.
+**NOTE**: ESP8266 is not supported in `Cygwin` because there is no toolchain available.
 
 .. code-block:: text
 
