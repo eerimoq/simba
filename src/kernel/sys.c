@@ -82,6 +82,7 @@ int sys_start(void)
     fs_module_init();
     std_module_init();
     sem_module_init();
+    timer_module_init();
     log_module_init();
     chan_module_init();
     thrd_module_init();

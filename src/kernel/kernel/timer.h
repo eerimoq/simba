@@ -46,6 +46,13 @@ struct timer_t {
 };
 
 /**
+ * Initialize the timer module.
+ *
+ * @return zero(0) or negative error code.
+ */
+int timer_module_init(void);
+
+/**
  * Initialize given timer object with given timeout and expiry
  * callback. The timer resolution directly depends on the system tick
  * frequency and is rounded up to the closest possible value. This
