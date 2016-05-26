@@ -31,7 +31,7 @@ Start `Cygwin` and execute the one-liner below to install `Simba`.
    $ mkdir simba && \
      cd simba && \
      easy_install-2.7 pip && \
-     pip install pyserial xpect sphinx breathe && \
+     pip install pyserial xpect readchar sphinx breathe && \
      (git clone https://github.com/eerimoq/rust-bindgen.git && \
       cd rust-bindgen && \
       cargo build) && \
@@ -55,7 +55,7 @@ Execute the one-liner below to install `Simba`.
      sudo apt-get install make unrar autoconf automake libtool gcc g++ gperf \
                           flex bison texinfo gawk ncurses-dev libexpat-dev \
                           python-serial sed && \
-     pip install pyserial xpect sphinx breathe && \
+     pip install pyserial xpect readchar sphinx breathe && \
      (git clone --recursive https://github.com/eerimoq/esp-open-sdk.git && \
       cd esp-open-sdk && \
       make STANDALONE=n) && \

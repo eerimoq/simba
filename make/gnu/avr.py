@@ -6,14 +6,15 @@ import os
 
 target = sys.argv[1]
 exe = sys.argv[2]
-simba_path = sys.argv[3]
-runlog = sys.argv[4]
-run_end_pattern = sys.argv[5]
-run_end_pattern_success = sys.argv[6]
-mcu = sys.argv[7]
-hex_file = sys.argv[8]
-settings_bin = sys.argv[9]
-rest = sys.argv[10:]
+baudrate = sys.argv[3]
+simba_path = sys.argv[4]
+runlog = sys.argv[5]
+run_end_pattern = sys.argv[6]
+run_end_pattern_success = sys.argv[7]
+mcu = sys.argv[8]
+hex_file = sys.argv[9]
+settings_bin = sys.argv[10]
+rest = sys.argv[11:]
 
 def run(command):
     """Run a command.

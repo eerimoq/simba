@@ -15,6 +15,8 @@ Targets
 +-----------------+-------------------------------------------------------+
 |  new            | | clean + all                                         |
 +-----------------+-------------------------------------------------------+
+|  upload         | | all + Upload the application to the device.         |
++-----------------+-------------------------------------------------------+
 |  run            | | Run the application.                                |
 +-----------------+-------------------------------------------------------+
 |  run-debugger   | | Run the application in the debugger, break at main. |
@@ -45,6 +47,8 @@ advanced user may read the make files in :github-tree:`make`.
 |  BOARD          | | The ``BOARD`` variable selects which board to build for. It can be assigned                    |
 |                 | | to one of the boards listed :doc:`here<../boards>`. For example, the command                   |
 |                 | | to build for :doc:`Arduino Due<../boards/arduino_due>` is ``make BOARD=arduino_due release``.  |
++-----------------+--------------------------------------------------------------------------------------------------+
+|  BAUDRATE       | | Serial port baudrate used by console and run targets.                                          |
 +-----------------+--------------------------------------------------------------------------------------------------+
 |  VERSION        | | The application version string. Usually on the                                                 |
 |                 | | form <major>.<minor>.<revision>.                                                               |

@@ -5,8 +5,9 @@ import subprocess
 
 target = sys.argv[1]
 exe = sys.argv[2]
-simba_path = sys.argv[3]
-runlog = sys.argv[4]
+baudrate = sys.argv[3]
+simba_path = sys.argv[4]
+runlog = sys.argv[5]
 
 def run(command):
     proc = subprocess.Popen(command, shell=True, stderr=subprocess.PIPE)

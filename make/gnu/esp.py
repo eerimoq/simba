@@ -7,11 +7,12 @@ import re
 
 target = sys.argv[1]
 exe = sys.argv[2]
-simba_path = sys.argv[3]
-runlog = sys.argv[4]
-run_end_pattern = sys.argv[5]
-run_end_pattern_success = sys.argv[6]
-binary = sys.argv[7]
+baudrate = sys.argv[3]
+simba_path = sys.argv[4]
+runlog = sys.argv[5]
+run_end_pattern = sys.argv[6]
+run_end_pattern_success = sys.argv[7]
+binary = sys.argv[8]
 
 
 def run(command):

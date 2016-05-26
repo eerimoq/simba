@@ -9,11 +9,12 @@ import string
 
 target = sys.argv[1]
 exe = sys.argv[2]
-simba_path = sys.argv[3]
-runlog = sys.argv[4]
-run_end_pattern = sys.argv[5]
-run_end_pattern_success = sys.argv[6]
-binary = sys.argv[7]
+baudrate = sys.argv[3]
+simba_path = sys.argv[4]
+runlog = sys.argv[5]
+run_end_pattern = sys.argv[6]
+run_end_pattern_success = sys.argv[7]
+binary = sys.argv[8]
 
 def run(command):
     print " ".join(command)
@@ -78,7 +79,7 @@ if target == "run":
              os.path.join(simba_path, "make/run.py"),
              run_end_pattern,
              run_end_pattern_success,
-             "38400"])
+             baudrate])
     except:
         sys.exit(1)
 elif target == "upload":

@@ -64,6 +64,8 @@ CFLAGS += $(CDEFS)
 LDFLAGS += $(LIBPATH:%=-L%) $(LDFLAGS_EXTRA)
 SHELL = /bin/bash
 
+BAUDRATE ?= 38400
+
 all:
 	$(MAKE) prepare
 	$(MAKE) generate
@@ -101,6 +103,8 @@ RUNSCRIPT = $(SIMBA_ROOT)/make/$(TOOLCHAIN)/$(ARCH).py
 RUN_END_PATTERN ?= "harness report: total\(\d+\), passed\(\d+\), failed\(\d+\)"
 RUN_END_PATTERN_SUCCESS ?= "harness report: total\(\d+\), passed\(\d+\), failed\(0\)"
 
+CONSOLESCRIPT = $(SIMBA_ROOT)/make/console.py
+
 # include packages in dist-packages used by the application
 define DIST_PACKAGES_template
 $(shell python -c "import sys; sys.stdout.write(sys.argv[1].upper() + '_ROOT')" $1) ?= \
@@ -119,15 +123,18 @@ new:
 
 run: all
 	@echo "Running $(EXE)"
-	python -u $(RUNSCRIPT) run ./$(EXE) $(SIMBA_ROOT) \
+	python -u $(RUNSCRIPT) run ./$(EXE) $(BAUDRATE) $(SIMBA_ROOT) \
                   $(RUNLOG) $(RUN_END_PATTERN) $(RUN_END_PATTERN_SUCCESS) \
                   $(RUNARGS)
 
 upload: all
 	@echo "Uploading $(EXE)"
-	python -u $(RUNSCRIPT) upload ./$(EXE) $(SIMBA_ROOT) \
+	python -u $(RUNSCRIPT) upload ./$(EXE) $(BAUDRATE) $(SIMBA_ROOT) \
                   $(RUNLOG) $(RUN_END_PATTERN) $(RUN_END_PATTERN_SUCCESS) \
                   $(RUNARGS)
+
+console:
+	python -u $(CONSOLESCRIPT) --baudrate $(BAUDRATE)
 
 dump:
 	python -u $(RUNSCRIPT) dump ./$(EXE) $(SIMBA_ROOT) $(RUNARGS)
@@ -285,19 +292,20 @@ help:
 	@echo "--------------------------------------------------------------------------------"
 	@echo "  target                      description"
 	@echo "--------------------------------------------------------------------------------"
-	@echo "  all                         compile and link the application"
-	@echo "  clean                       remove all generated files and folders"
+	@echo "  all                         Compile and link the application."
+	@echo "  clean                       Remove all generated files and folders."
 	@echo "  new                         clean + all"
-	@echo "  run                         run the application"
-	@echo "  run-debugger                run the application in the debugger, break at main"
-	@echo "  report                      print the test report"
+	@echo "  upload                      all + Upload the application to the device."
+	@echo "  run                         Run the application."
+	@echo "  run-debugger                Run the application in the debugger, break at main."
+	@echo "  report                      Print the test report."
 	@echo "  test                        run + report"
-	@echo "  release                     compile with NASSERT=yes"
-	@echo "  size                        print application size information"
+	@echo "  release                     Compile with NASSERT=yes."
+	@echo "  size                        Print application size information."
 	@IFS=$$'\n' ; for h in $(HELP_TARGETS) ; do \
 	  echo $$h ; \
 	done
-	@echo "  help                        show this help"
+	@echo "  help                        Show this help."
 	@echo "--------------------------------------------------------------------------------"
 	@echo "  variable                    description"
 	@echo "--------------------------------------------------------------------------------"
