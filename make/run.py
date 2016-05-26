@@ -17,22 +17,31 @@ dev = expect.Handler(dev_serial)
 status = 0
 
 print
-print "INFO: Pattern:", pattern
-print "INFO: Success pattern:", pattern_success
+print "INFO: RUN_END_PATTERN = '{}'".format(pattern)
+print "INFO: RUN_END_PATTERN_SUCCESS = '{}'".format(pattern_success)
 
 try:
-    print "INFO: Waiting for the end pattern."
+    print "INFO: Waiting for RUN_END_PATTERN."
+    print
+    print "INFO: Application output begin."
     print
     report = dev.expect(pattern, timeout=10)
+    print
+    print
+    print "INFO: Application output end."
+    print
 except:
     print
-    print "WARNING: The end pattern was never received."
+    print
+    print "INFO: Application output end."
+    print
+    print "WARNING: RUN_END_PATTERN was never found."
     print
     status = 1
 else:
     if not re.match(pattern_success, report):
         print
-        print "ERROR: The end pattern does not match the success end pattern."
+        print "ERROR: End pattern string does not match RUN_END_PATTERN_SUCCESS."
         print
         status = 1
 
