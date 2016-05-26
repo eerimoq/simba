@@ -7,29 +7,29 @@ Targets
 -------
 
 +-----------------+-------------------------------------------------------+
-|  Name           | | Description                                         |
+|  Name           |  Description                                          |
 +=================+=======================================================+
-|  all            | | Compile and link the application.                   |
+|  all            |  Compile and link the application.                    |
 +-----------------+-------------------------------------------------------+
-|  clean          | | Remove all generated files and folders.             |
+|  clean          |  Remove all generated files and folders.              |
 +-----------------+-------------------------------------------------------+
-|  new            | | clean + all                                         |
+|  new            |  clean + all                                          |
 +-----------------+-------------------------------------------------------+
-|  upload         | | all + Upload the application to the device.         |
+|  upload         |  all + Upload the application to the device.          |
 +-----------------+-------------------------------------------------------+
-|  run            | | Run the application.                                |
+|  run            |  all + upload + Wait for application output.          |
 +-----------------+-------------------------------------------------------+
-|  run-debugger   | | Run the application in the debugger, break at main. |
+|  run-debugger   |  Run the application in the debugger, break at main.  |
 +-----------------+-------------------------------------------------------+
-|  report         | | Print the test report.                              |
+|  report         |  Print the test report from a previous run.           |
 +-----------------+-------------------------------------------------------+
-|  test           | | run + report                                        |
+|  test           |  run + report                                         |
 +-----------------+-------------------------------------------------------+
-|  release        | | Compile with NASSERT=yes.                           |
+|  release        |  Compile with NASSERT=yes.                            |
 +-----------------+-------------------------------------------------------+
-|  size           | | Print application size information.                 |
+|  size           |  Print application size information.                  |
 +-----------------+-------------------------------------------------------+
-|  help           | | Show the help.                                      |
+|  help           |  Show the help.                                       |
 +-----------------+-------------------------------------------------------+
 
 Variables
@@ -40,28 +40,32 @@ process. Below is a list of the most frequently used variables. The
 advanced user may read the make files in :github-tree:`make`.
 
 +-----------------+--------------------------------------------------------------------------------------------------+
-|  Name           | | Description                                                                                    |
+|  Name           |  Description                                                                                     |
 +=================+==================================================================================================+
-|  SIMBA_ROOT     | | Path to the `Simba` root folder.                                                               |
+|  SIMBA_ROOT     |  Path to the `Simba` root folder.                                                                |
 +-----------------+--------------------------------------------------------------------------------------------------+
-|  BOARD          | | The ``BOARD`` variable selects which board to build for. It can be assigned                    |
-|                 | | to one of the boards listed :doc:`here<../boards>`. For example, the command                   |
-|                 | | to build for :doc:`Arduino Due<../boards/arduino_due>` is ``make BOARD=arduino_due release``.  |
+|  BOARD          |  The ``BOARD`` variable selects which board to build for. It can be assigned |br|                |
+|                 |  to one of the boards listed :doc:`here<../boards>`. For example, the command |br|               |
+|                 |  to build for :doc:`Arduino Due<../boards/arduino_due>` is ``make BOARD=arduino_due release``.   |
 +-----------------+--------------------------------------------------------------------------------------------------+
-|  BAUDRATE       | | Serial port baudrate used by console and run targets.                                          |
+|  BAUDRATE       |  Serial port baudrate used by console and run targets.                                           |
 +-----------------+--------------------------------------------------------------------------------------------------+
-|  VERSION        | | The application version string. Usually on the                                                 |
-|                 | | form <major>.<minor>.<revision>.                                                               |
+|  VERSION        |  The application version string. Usually on the form |br|                                        |
+|                 |  <major>.<minor>.<revision>.                                                                     |
 +-----------------+--------------------------------------------------------------------------------------------------+
-|  SETTINGS_INI   | | Path to the settings file.                                                                     |
+|  SETTINGS_INI   |  Path to the settings file.                                                                      |
 +-----------------+--------------------------------------------------------------------------------------------------+
-|  INC            | | Include paths.                                                                                 |
+|  INC            |  Include paths.                                                                                  |
 +-----------------+--------------------------------------------------------------------------------------------------+
-|  SRC            | | Source files (.c, .asm, .rs).                                                                  |
+|  SRC            |  Source files (.c, .asm, .rs).                                                                   |
 +-----------------+--------------------------------------------------------------------------------------------------+
-|  CFLAGS_EXTRA   | | Extra flags passed to the compiler.                                                            |
+|  CFLAGS_EXTRA   |  Extra flags passed to the compiler.                                                             |
 +-----------------+--------------------------------------------------------------------------------------------------+
-|  LDFLAGS_EXTRA  | | Extra flags passed to the linker.                                                              |
+|  LDFLAGS_EXTRA  |  Extra flags passed to the linker.                                                               |
 +-----------------+--------------------------------------------------------------------------------------------------+
-|  NASSERT        | | Build the application without assertions.                                                      |
+|  NASSERT        |  Build the application without assertions.                                                       |
 +-----------------+--------------------------------------------------------------------------------------------------+
+
+.. |br| raw:: html
+
+   <br />
