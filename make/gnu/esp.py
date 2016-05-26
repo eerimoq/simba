@@ -55,12 +55,12 @@ def upload():
 
 if target == "run":
     upload()
-    run([
-        os.path.join(simba_path, "make", "run.py"),
-        run_end_pattern,
-        run_end_pattern_success,
-        "38400"
-    ])
+    run(["python",
+         "-u",
+         os.path.join(simba_path, "make", "run.py"),
+         run_end_pattern,
+         run_end_pattern_success,
+         "38400"])
 elif target == "upload":
     upload()
 else:
