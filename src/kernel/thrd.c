@@ -21,15 +21,15 @@
 #include "simba.h"
 
 /* Thread states. */
-#define THRD_STATE_CURRENT      0
-#define THRD_STATE_READY        1
-#define THRD_STATE_SUSPENDED    2
-#define THRD_STATE_RESUMED      3
-#define THRD_STATE_TERMINATED   4
+#define THRD_STATE_CURRENT             0
+#define THRD_STATE_READY               1
+#define THRD_STATE_SUSPENDED           2
+#define THRD_STATE_RESUMED             3
+#define THRD_STATE_TERMINATED          4
 
 /* Stack usage and debugging. */
-#define THRD_STACK_LOW_MAGIC 0x1337
-#define THRD_FILL_PATTERN 0x19
+#define THRD_STACK_LOW_MAGIC      0x1337
+#define THRD_FILL_PATTERN           0x19
 
 static char *state_fmt[] = {
     "current",
@@ -44,6 +44,9 @@ static struct fs_command_t cmd_set_log_mask;
 
 struct thrd_scheduler_t {
     struct thrd_t *current_p;
+#if defined(ARCH_ARM)
+    struct thrd_t *next_p;
+#endif
     struct thrd_t *ready_p;
 };
 
@@ -159,11 +162,11 @@ static struct thrd_t *scheduler_ready_pop(void)
 }
 
 /**
- * Perform a rescheduling to let the currently most improtant thread
+ * Perform a rescheduling to let the currently most important thread
  * to run.
  *
  * This function must be called with the system lock taken or from an
- * isr (if the system is pre-emptive).
+ * isr.
  */
 static void thrd_reschedule(void)
 {
@@ -179,7 +182,9 @@ static void thrd_reschedule(void)
     in_p->state = THRD_STATE_CURRENT;
 
     if (in_p != out_p) {
+#if !defined(ARCH_ARM)
         scheduler.current_p = in_p;
+#endif
         thrd_port_cpu_usage_stop(out_p);
         thrd_port_swap(in_p, out_p);
         thrd_port_cpu_usage_start(out_p);
@@ -367,6 +372,8 @@ static void *idle_thrd(void *arg_p)
     thrd_set_name("idle");
 
     thrd_p = thrd_self();
+
+    sys_lock();
 
     while (1) {
         thrd_port_idle_wait(thrd_p);

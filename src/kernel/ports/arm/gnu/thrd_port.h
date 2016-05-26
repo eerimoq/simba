@@ -25,22 +25,13 @@
     uint64_t name[DIV_CEIL(sizeof(struct thrd_t) + (size),      \
                            sizeof(uint64_t))] __attribute((aligned (8)))
 
-#define THRD_PORT_CONTEXT_STORE_ISR             \
-    do {                                        \
-        asm volatile ("push {r0-r3}");          \
-        asm volatile ("push {r12}");            \
-    } while (0);
+#define THRD_PORT_CONTEXT_STORE_ISR
 
 #define THRD_PORT_CONTEXT_LOAD_ISR              \
-    do {                                        \
-        asm volatile ("pop {r12}");             \
-        asm volatile ("pop {r0-r3}");           \
-    } while (0);
+    asm volatile ("cpsie i");
 
 struct thrd_port_context_t {
-#if CONFIG_PREEMPTIVE_SCHEDULER == 1
-    uint32_t primask;
-#endif
+    /* Context stored by the software. */
     uint32_t r4;
     uint32_t r5;
     uint32_t r6;
@@ -49,7 +40,17 @@ struct thrd_port_context_t {
     uint32_t r9;
     uint32_t r10;
     uint32_t r11;
+    uint32_t lr_ex;
+
+    /* Context stored by the hardware when it enters an interrupt. */
+    uint32_t r0;
+    uint32_t r1;
+    uint32_t r2;
+    uint32_t r3;
+    uint32_t r12;
+    uint32_t lr;
     uint32_t pc;
+    uint32_t psr;
 };
 
 struct thrd_port_t {
