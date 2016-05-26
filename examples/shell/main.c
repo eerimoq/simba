@@ -60,17 +60,6 @@ static int tmp_foo_cb(int argc,
     return (0);
 }
 
-static THRD_STACK(preemptive_stack, 256);
-
-static void *preemptive_main(void *arg_p)
-{
-    thrd_set_name("preemptive");
-
-    while (1);
-
-    return (NULL);
-}
-
 int main()
 {
     /* Start the system. */
@@ -78,7 +67,7 @@ int main()
 
     /* Initialize the UART. */
     uart_module_init();
-    uart_init(&uart, &uart_device[0], 38400, qinbuf, sizeof(qinbuf));
+    uart_init(&uart, &uart_device[0], 115200, qinbuf, sizeof(qinbuf));
     uart_start(&uart);
 
     sys_set_stdout(&uart.chout);
@@ -99,13 +88,6 @@ int main()
 
     /* Print the system information. */
     std_printf(sys_get_info());
-
-    /* Spawn a low priority worker thread. */
-    BTASSERT(thrd_spawn(preemptive_main,
-                        NULL,
-                        20,
-                        preemptive_stack,
-                        sizeof(preemptive_stack)) != NULL);
 
     /* Call the shell main function. */
     shell_args.chin_p = &uart.chin;
