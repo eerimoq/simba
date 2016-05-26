@@ -73,6 +73,7 @@ static void *preemptive_main(void *arg_p)
 static int test_preemptive(struct harness_t *harness_p)
 {
     struct time_t timeout;
+    struct time_t start, stop, duration;
 
     /* Spawn a low priority worker thread. */
     BTASSERT(thrd_spawn(preemptive_main,
@@ -81,13 +82,21 @@ static int test_preemptive(struct harness_t *harness_p)
                         preemptive_stack,
                         sizeof(preemptive_stack)) != NULL);
 
+    BTASSERT(time_get(&start) == 0);
+
     /* Suspend this thread to make sure the worker thread is in its
        infinite loop. When the suspend timeout occurs, this thread
        will be scheduled since it has higher priority than the worker
        thread. */
     timeout.seconds = 0;
-    timeout.nanoseconds = 100000;
+    timeout.nanoseconds = 10000000;
     BTASSERT(thrd_suspend(&timeout) == -ETIMEDOUT);
+
+    BTASSERT(time_get(&stop) == 0);
+    BTASSERT(time_diff(&duration, &stop, &start) == 0);
+
+    BTASSERT(duration.seconds == 0);
+    BTASSERT(duration.nanoseconds == 10000000);
 
     return (0);
 }

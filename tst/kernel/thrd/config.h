@@ -50,7 +50,7 @@
  * Start the monitor thread.
  */
 #ifndef CONFIG_MONITOR_THREAD
-#    define CONFIG_MONITOR_THREAD       1
+#    define CONFIG_MONITOR_THREAD       0
 #endif
 
 #endif
