@@ -373,8 +373,6 @@ static void *idle_thrd(void *arg_p)
 
     thrd_p = thrd_self();
 
-    sys_lock();
-
     while (1) {
         thrd_port_idle_wait(thrd_p);
     }
