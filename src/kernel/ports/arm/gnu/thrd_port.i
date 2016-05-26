@@ -38,6 +38,7 @@ static void swap(void)
     asm volatile ("mov %0, sp" : "=r" (scheduler.current_p->port.context_p));
 
     scheduler.current_p = scheduler.next_p;
+    scheduler.next_p = NULL;
 
     /* Restore 'in_p' stack pointer. */
     asm volatile ("mov sp, %0" : : "r" (scheduler.current_p->port.context_p));

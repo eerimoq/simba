@@ -25,10 +25,12 @@
     uint64_t name[DIV_CEIL(sizeof(struct thrd_t) + (size),      \
                            sizeof(uint64_t))] __attribute((aligned (8)))
 
-#define THRD_PORT_CONTEXT_STORE_ISR
+#define THRD_PORT_CONTEXT_STORE_ISR             \
+    if (scheduler.next_p == NULL) {
 
 #define THRD_PORT_CONTEXT_LOAD_ISR              \
-    asm volatile ("cpsie i");
+    asm volatile ("cpsie i");                   \
+    }
 
 struct thrd_port_context_t {
     /* Context stored by the software. */
