@@ -40,7 +40,7 @@ TESTS = $(addprefix tst/kernel/, binary_tree \
                                  sys \
                                  thrd \
                                  timer)
-TESTS += $(addprefix tst/slib/, base64 crc hash hash_map re)
+TESTS += $(addprefix tst/slib/, base64 crc hash hash_map json re)
 TESTS += $(addprefix tst/inet/, http_server \
 				http_websocket_client \
 				mqtt_client)
