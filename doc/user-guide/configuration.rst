@@ -18,6 +18,8 @@ The configuration variables can also be set on the command line as
 +==============================+===========================================+
 |  CONFIG_ASSERT               | | Build with assert.                      |
 +------------------------------+-------------------------------------------+
+|  CONFIG_DEBUG                | | Build with debug.                       |
++------------------------------+-------------------------------------------+
 |  CONFIG_PROFILE_STACK        | | Stack profiling.                        |
 +------------------------------+-------------------------------------------+
 |  CONFIG_PREEMPTIVE_SCHEDULER | | Use a preemptive scheduler.             |

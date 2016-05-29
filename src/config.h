@@ -29,6 +29,13 @@
 #endif
 
 /**
+ * Build with debug.
+ */
+#ifndef CONFIG_DEBUG
+#    define CONFIG_DEBUG                1
+#endif
+
+/**
  * Stack profiling.
  */
 #ifndef CONFIG_PROFILE_STACK

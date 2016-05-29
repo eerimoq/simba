@@ -89,4 +89,10 @@
 /** Debug print of file and line. */
 #define PRINT_FILE_LINE() std_printf(FSTR("%s:%d:\r\n"), __FILE__, __LINE__);
 
+#if CONFIG_DEBUG == 1
+#    define STD_PRINTF_DEBUG(...) std_printf(__VA_ARGS__)
+#else
+#    define STD_PRINTF_DEBUG(...)
+#endif
+
 #endif
