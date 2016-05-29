@@ -32,10 +32,6 @@ Start `Cygwin` and execute the one-liner below to install `Simba`.
      cd simba && \
      easy_install-2.7 pip && \
      pip install pyserial xpect readchar sphinx breathe && \
-     (git clone https://github.com/eerimoq/rust-bindgen.git && \
-      cd rust-bindgen && \
-      cargo build) && \
-     git clone https://github.com/eerimoq/rust.git && \
      git clone https://github.com/eerimoq/avr-toolchain-windows && \
      git clone https://github.com/eerimoq/arm-toolchain-windows && \
      git clone https://github.com/eerimoq/simba
