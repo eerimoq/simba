@@ -34,6 +34,7 @@ static struct fs_command_t cmd_info;
 
 static const FAR char config[] = 
     "config: assert=" STRINGIFY(CONFIG_ASSERT) "\r\n"
+    "        debug=" STRINGIFY(CONFIG_DEBUG) "\r\n"
     "        profile-stack=" STRINGIFY(CONFIG_PROFILE_STACK) "\r\n"
     "        preemptive-scheduler=" STRINGIFY(CONFIG_PREEMPTIVE_SCHEDULER) "\r\n"
     "        monitor-thread=" STRINGIFY(CONFIG_MONITOR_THREAD) "\r\n";

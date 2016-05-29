@@ -28,5 +28,6 @@
 #include "slib/midi.h"
 #include "slib/base64.h"
 #include "slib/hash.h"
+#include "slib/re.h"
 
 #endif

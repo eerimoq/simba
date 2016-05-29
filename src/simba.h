@@ -31,6 +31,7 @@ typedef unsigned long off_t;
 #include <stddef.h>
 #include <stdint.h>
 #include <sys/types.h>
+#include <ctype.h>
 
 #include <config.h>
 #include "board.h"
