@@ -6,6 +6,7 @@
 |gitter|_
 |buildstatus|_
 |codecov|_
+|donate|_
 
 Welcome to Simba's documentation!
 =================================
@@ -66,3 +67,6 @@ Indices and tables
 
 .. |codecov| image:: https://codecov.io/gh/eerimoq/simba/branch/master/graph/badge.svg
 .. _codecov: https://codecov.io/gh/eerimoq/simba
+
+.. |donate| image:: https://img.shields.io/badge/paypal-donate-yellow.svg
+.. _donate: https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=X2NWV6RHV58GC&lc=SE&item_name=Simba%20OS%20and%20Build%20Framework&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donateCC_LG%2egif%3aNonHosted
