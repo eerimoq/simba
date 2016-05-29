@@ -46,6 +46,7 @@ TESTS += $(addprefix tst/inet/, http_server \
 				mqtt_client)
 
 ifeq ($(BOARD), linux)
+    TESTS += $(addprefix tst/kernel/, heap time)
     TESTS += $(addprefix tst/slib/, fat16)
 endif
 
