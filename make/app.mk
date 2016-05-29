@@ -147,13 +147,13 @@ test: run
 	$(MAKE) report
 
 run-debugger: all
-	python -u $(RUNSCRIPT) debugger ./$(EXE) $(SIMBA_ROOT) $(RUNLOG) $(RUNARGS)
+	python -u $(RUNSCRIPT) debugger ./$(EXE) $(BAUDRATE) $(SIMBA_ROOT) $(RUNLOG) $(RUNARGS)
 
 profile:
-	python -u $(RUNSCRIPT) profile ./$(EXE) $(SIMBA_ROOT) profile.log
+	python -u $(RUNSCRIPT) profile ./$(EXE) $(BAUDRATE) $(SIMBA_ROOT) profile.log
 
 coverage:
-	python -u $(RUNSCRIPT) coverage ./$(EXE) $(SIMBA_ROOT) coverage.log
+	python -u $(RUNSCRIPT) coverage ./$(EXE) $(BAUDRATE) $(SIMBA_ROOT) coverage.log
 
 size:
 	set -o pipefail ; $(SIZECMD) | tee size.log
