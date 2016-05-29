@@ -126,7 +126,7 @@ int json_init(struct json_parser_t *parser_p);
  * @param[in] js_p JSON string to parse.
  * @param[in] len JSON string length in bytes.
  * @param[out] tokens_p Array of parsed tokens.
- * @param[in] num_tokens Numbe rof tokens.
+ * @param[in] num_tokens Number of tokens.
  *
  * @return zero(0) or negative error code.
  */
