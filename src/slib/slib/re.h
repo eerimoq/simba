@@ -53,17 +53,6 @@ struct re_group_t {
     ssize_t size;
 };
 
-struct re_t {
-    struct {
-        const char *buf_p;
-        int *compiled_p;
-    } pattern;
-    struct {
-        struct re_group_t *array_p;
-        size_t size;
-    } groups;
-};
-
 /**
  * Compile given pattern.
  *
