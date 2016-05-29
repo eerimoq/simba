@@ -5,6 +5,7 @@
 
 |gitter|_
 |buildstatus|_
+|codecov|_
 
 Welcome to Simba's documentation!
 =================================
@@ -62,3 +63,6 @@ Indices and tables
 
 .. |gitter| image:: https://badges.gitter.im/eerimoq/simba.svg
 .. _gitter: https://gitter.im/eerimoq/simba
+
+.. |codecov| image:: https://codecov.io/gh/eerimoq/simba/branch/master/graph/badge.svg
+.. _codecov: https://codecov.io/gh/eerimoq/simba
