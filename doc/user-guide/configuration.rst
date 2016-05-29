@@ -14,15 +14,15 @@ The configuration variables can also be set on the command line as
 ``CFLAGS_EXTRA="-D<configuration variable>=<1 or 0>``.
 
 +------------------------------+-------------------------------------------+
-|  Name                        | | Description                             |
+|  Name                        | Description                               |
 +==============================+===========================================+
-|  CONFIG_ASSERT               | | Build with assert.                      |
+|  CONFIG_ASSERT               | Build with assert.                        |
 +------------------------------+-------------------------------------------+
-|  CONFIG_DEBUG                | | Build with debug.                       |
+|  CONFIG_DEBUG                | Build with debug.                         |
 +------------------------------+-------------------------------------------+
-|  CONFIG_PROFILE_STACK        | | Stack profiling.                        |
+|  CONFIG_PROFILE_STACK        | Stack profiling.                          |
 +------------------------------+-------------------------------------------+
-|  CONFIG_PREEMPTIVE_SCHEDULER | | Use a preemptive scheduler.             |
+|  CONFIG_PREEMPTIVE_SCHEDULER | Use a preemptive scheduler.               |
 +------------------------------+-------------------------------------------+
-|  CONFIG_MONITOR_THREAD       | | Start the monitor thread.               |
+|  CONFIG_MONITOR_THREAD       | Start the monitor thread.                 |
 +------------------------------+-------------------------------------------+
