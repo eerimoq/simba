@@ -23,14 +23,16 @@
 
 #include "simba.h"
 
-/** Queue initialized state. */
-#define QUEUE_STATE_INITIALIZED 0
+enum queue_state_t {
+    /** Queue initialized state. */
+    QUEUE_STATE_INITIALIZED = 0,
 
-/** Queue running state. */
-#define QUEUE_STATE_RUNNING     1
+    /** Queue running state. */
+    QUEUE_STATE_RUNNING,
 
-/** Queue stopped state. */
-#define QUEUE_STATE_STOPPED     2
+    /** Queue stopped state. */
+    QUEUE_STATE_STOPPED,
+};
 
 /* Compile time declaration and initialization of a channel. */
 #define QUEUE_INIT_DECL(_name, _buf, _size)                             \
@@ -68,7 +70,7 @@ struct queue_buffer_t{
 struct queue_t {
     struct chan_t base;
     struct queue_buffer_t buffer;
-    int state;
+    enum queue_state_t state;
     char *buf_p;
     size_t size;
     size_t left;

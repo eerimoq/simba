@@ -53,28 +53,32 @@
 
 /**
  * JSON type identifier.
- *
- * Basic types are:
- *
- * - Object
- * - Array
- * - String
- * - Other primitive: number, boolean (true/false) or null
  */
 enum json_type_t {
+    /** Undefined type. */
     JSON_UNDEFINED = 0,
+
+    /** Object, ``{}``. */
     JSON_OBJECT = 1,
+
+    /** Array, ``[]``. */
     JSON_ARRAY = 2,
+
+    /** String, ``\"...\"``. */
     JSON_STRING = 3,
+
+    /** Other primitive: number, boolean (true/false) or null. */
     JSON_PRIMITIVE = 4
 };
 
 enum json_err_t {
-    /* Not enough tokens were provided */
+    /** Not enough tokens were provided. */
     JSON_ERROR_NOMEM = -1,
-    /* Invalid character inside JSON string */
+
+    /** Invalid character inside JSON string. */
     JSON_ERROR_INVAL = -2,
-    /* The string is not a full JSON packet, more bytes expected */
+
+    /** The string is not a full JSON packet, more bytes expected. */
     JSON_ERROR_PART = -3
 };
 
@@ -97,10 +101,12 @@ struct json_tok_t {
  * string
  */
 struct json_parser_t {
-    unsigned int pos;     /* offset in the JSON string */
-    unsigned int toknext; /* next token to allocate */
-    int toksuper;         /* superior token node, e.g parent object or
-                             array */
+    /** Offset in the JSON string. */
+    unsigned int pos;
+    /** Next token to allocate. */
+    unsigned int toknext;
+    /** Superior token node, e.g parent object or array. */
+    int toksuper;
 };
 
 /**

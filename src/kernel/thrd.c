@@ -21,11 +21,13 @@
 #include "simba.h"
 
 /* Thread states. */
-#define THRD_STATE_CURRENT             0
-#define THRD_STATE_READY               1
-#define THRD_STATE_SUSPENDED           2
-#define THRD_STATE_RESUMED             3
-#define THRD_STATE_TERMINATED          4
+enum thrd_state_t {
+    THRD_STATE_CURRENT = 0,
+    THRD_STATE_READY,        
+    THRD_STATE_SUSPENDED,       
+    THRD_STATE_RESUMED,      
+    THRD_STATE_TERMINATED          
+};
 
 /* Stack usage and debugging. */
 #define THRD_STACK_LOW_MAGIC      0x1337

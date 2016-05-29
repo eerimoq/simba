@@ -130,26 +130,28 @@
 #include "simba.h"
 
 /* Parser operation codes. */
-#define OP_CODE_BEGIN                     0
-#define OP_CODE_END                       1
-#define OP_CODE_TEXT                      2
-#define OP_CODE_DOT                       3
-#define OP_CODE_WHITESPACE                4
-#define OP_CODE_DECIMAL_DIGIT             5
-#define OP_CODE_ALPHANUMERIC              6
-#define OP_CODE_ZERO_OR_ONE               7
-#define OP_CODE_ZERO_OR_MORE              8
-#define OP_CODE_ONE_OR_MORE               9
-#define OP_CODE_ZERO_OR_ONE_NON_GREEDY   10
-#define OP_CODE_ZERO_OR_MORE_NON_GREEDY  11
-#define OP_CODE_ONE_OR_MORE_NON_GREEDY   12
-#define OP_CODE_MEMBERS                  13
-#define OP_CODE_ALTERNATIVES             14
-#define OP_CODE_SET                      15
-#define OP_CODE_SET_SINGLE               16
-#define OP_CODE_SET_RANGE                17
-#define OP_CODE_GROUP                    18
-#define OP_CODE_RETURN                   19
+enum op_code_t {
+    OP_CODE_BEGIN = 0,
+    OP_CODE_END,
+    OP_CODE_TEXT,
+    OP_CODE_DOT,
+    OP_CODE_WHITESPACE,
+    OP_CODE_DECIMAL_DIGIT,
+    OP_CODE_ALPHANUMERIC,
+    OP_CODE_ZERO_OR_ONE,
+    OP_CODE_ZERO_OR_MORE,
+    OP_CODE_ONE_OR_MORE,
+    OP_CODE_ZERO_OR_ONE_NON_GREEDY,
+    OP_CODE_ZERO_OR_MORE_NON_GREEDY,
+    OP_CODE_ONE_OR_MORE_NON_GREEDY,
+    OP_CODE_MEMBERS,
+    OP_CODE_ALTERNATIVES,
+    OP_CODE_SET,
+    OP_CODE_SET_SINGLE,
+    OP_CODE_SET_RANGE,
+    OP_CODE_GROUP,
+    OP_CODE_RETURN
+};
 
 #define NON_GREEDY_OFFSET                 3
 
