@@ -212,3 +212,9 @@ static int adc_port_async_wait(struct adc_driver_t *self_p)
 
     return (has_finished);
 }
+
+int adc_port_convert_isr(struct adc_driver_t *self_p,
+                         uint16_t *sample_p)
+{
+    return (-1);
+}

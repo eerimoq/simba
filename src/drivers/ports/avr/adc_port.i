@@ -167,3 +167,27 @@ static int adc_port_async_wait(struct adc_driver_t *self_p)
 
     return (has_finished);
 }
+
+int adc_port_convert_isr(struct adc_driver_t *self_p,
+                         uint16_t *sample_p)
+{
+    /* Fail if there are ongoing job(s). */
+    if (self_p->dev_p->jobs.head_p != NULL) {
+        return (-1);
+    }
+
+    /* Start the convertion. */
+    ADMUX = self_p->admux;
+    ADCSRB = 0;
+    ADCSRA = (_BV(ADEN) | _BV(ADSC) | _BV(ADPS2) | _BV(ADPS0));
+    
+    /* Poll until the convertion is completed. */
+    while (ADCSRA & _BV(ADSC));
+
+    *sample_p = ADC;
+
+    /* Disable the ADC. */
+    ADCSRA &= ~_BV(ADEN);
+
+    return (0);
+}

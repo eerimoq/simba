@@ -61,3 +61,9 @@ int adc_convert(struct adc_driver_t *self_p,
     
     return (0);
 }
+
+int adc_convert_isr(struct adc_driver_t *self_p,
+                    uint16_t *sample_p)
+{
+    return (adc_port_convert_isr(self_p, sample_p));
+}

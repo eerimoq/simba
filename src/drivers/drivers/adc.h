@@ -91,4 +91,17 @@ int adc_convert(struct adc_driver_t *self_p,
                 uint16_t *samples_p,
                 size_t length);
 
+/**
+ * Start a synchronous convertion of analog signal to digital samples
+ * from isr or with the system lock taken. This function will poll the
+ * ADC hardware until the sample has been coverted.
+ *
+ * @param[in] self_p Driver object.
+ * @param[out] sample_p Converted samlpe.
+ *
+ * @return zero(0) or negative error code.
+ */
+int adc_convert_isr(struct adc_driver_t *self_p,
+                    uint16_t *sample_p);
+
 #endif
