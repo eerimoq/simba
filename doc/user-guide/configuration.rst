@@ -6,8 +6,8 @@ Here is a list of all configuration variables available in
 needs. The default values are defined in
 :github-blob:`src/config_default.h`.
 
-Configration search order
--------------------------
+Search order
+------------
 
 Highest priority first.
 
@@ -18,8 +18,8 @@ Highest priority first.
 
 3. The default configuration, :github-blob:`src/config_default.h`.
 
-Configuration variables
------------------------
+Variables
+---------
 
 +-------------------------------+-------------------------------------------+
 |  Name                         | Description                               |
