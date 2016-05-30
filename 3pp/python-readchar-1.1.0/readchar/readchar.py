@@ -11,7 +11,9 @@ if sys.platform.startswith('linux'):
     from .readchar_linux import readchar
 elif sys.platform == 'darwin':
     from .readchar_linux import readchar
-elif sys.platform in ('win32', 'cygwin'):
+elif sys.platform == 'cygwin':
+    from .readchar_linux import readchar
+elif sys.platform == 'win32':
     from .readchar_windows import readchar
 else:
     raise NotImplemented('The platform %s is not supported yet' % sys.platform)
