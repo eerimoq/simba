@@ -32,3 +32,5 @@ if [ ! -z "$com_port" ] ; then
 fi
 
 export PYLINTRC=$(readlink -f environment/pylintrc)
+
+export PYTHONPATH=$(readlink -f 3pp/python-readchar-1.1.0)

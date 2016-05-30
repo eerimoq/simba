@@ -1,0 +1,28 @@
+language: python
+
+sudo: false
+
+python:
+  - "2.6"
+  - "2.7"
+  - "3.2"
+  - "3.3"
+  - "3.4"
+  - "pypy"
+
+install:
+  - if [[ $TRAVIS_PYTHON_VERSION == 2* ]]; then pip install unittest2; fi
+  - python setup.py install
+  - pip install flake8
+
+script:
+  - make flakes
+  - make test
+
+after_success:
+  - make coveralls
+
+notifications:
+  email:
+    on_success: change
+    on_failure: change
