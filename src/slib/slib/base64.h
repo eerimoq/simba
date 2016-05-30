@@ -24,7 +24,8 @@
 #include "simba.h"
 
 /**
- * Encode given buffer.
+ * Encode given buffer. The encoded data will be ~33.3% larger than
+ * the source data. Choose the destination buffer size accordingly.
  *
  * @param[out] dst_p Encoded output data.
  * @param[in] src_p Input data.
@@ -35,7 +36,9 @@
 int base64_encode(char *dst_p, const void *src_p, size_t size);
 
 /**
- * Decode given base64 encoded buffer.
+ * Decode given base64 encoded buffer. The decoded data will be ~25%
+ * smaller than the destination data. Choose the destination buffer
+ * size accordingly.
  *
  * @param[out] dst_p Output data.
  * @param[in] src_p Encoded input data.
