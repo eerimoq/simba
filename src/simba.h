@@ -33,7 +33,7 @@ typedef unsigned long off_t;
 #include <sys/types.h>
 #include <ctype.h>
 
-#include "config.h"
+#include <config.h>
 #include "config_default.h"
 #include "board.h"
 #include "mcu.h"
