@@ -22,9 +22,9 @@
  * `time_time_to_date()` is based on the musl project code.
  *
  * musl as a whole is licensed under the following standard MIT license:
- * 
+ *
  * Copyright © 2005-2013 Rich Felker
- * 
+ *
  * Permission is hereby granted, free of charge, to any person obtaining
  * a copy of this software and associated documentation files (the
  * "Software"), to deal in the Software without restriction, including
@@ -32,10 +32,10 @@
  * distribute, sublicense, and/or sell copies of the Software, and to
  * permit persons to whom the Software is furnished to do so, subject to
  * the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be
  * included in all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
  * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
@@ -60,21 +60,19 @@
 struct state_t {
     uint64_t tick; /* Current tick. 64 bits so it does not wrap around
                       during the system's uptime. */
-    struct time_t now;
 };
 
 static struct state_t state = {
-    .tick = 0,
-    .now = { .seconds = 0, .nanoseconds = 0 }
+    .tick = 0
 };
 
 static inline void tick_to_time(uint64_t tick,
                                 struct time_t *time_p)
 {
-    time_p->seconds = (tick / SYS_TICK_FREQUENCY);
+    time_p->seconds = (tick / CONFIG_SYSTEM_TICK_FREQUENCY);
     time_p->nanoseconds =
-        ((1000000000ULL * (tick % SYS_TICK_FREQUENCY))
-         / SYS_TICK_FREQUENCY);
+        ((1000000000ULL * (tick % CONFIG_SYSTEM_TICK_FREQUENCY))
+         / CONFIG_SYSTEM_TICK_FREQUENCY);
 }
 
 /**
@@ -83,27 +81,31 @@ static inline void tick_to_time(uint64_t tick,
 void time_tick_isr(void)
 {
     state.tick += 1;
-    tick_to_time(state.tick, &state.now);
 }
 
 int time_get(struct time_t *now_p)
 {
+    uint64_t tick;
+
     sys_lock();
-    /* ToDo: Add the time since latest system tick by reading the
-       system tick counter register. */
-    *now_p = state.now;
+    tick = state.tick;
     sys_unlock();
+
+    tick_to_time(tick, now_p);
 
     return (0);
 }
 
 int time_set(struct time_t *new_p)
 {
+    uint64_t tick;
+
+    tick = ((new_p->seconds * CONFIG_SYSTEM_TICK_FREQUENCY) +
+            DIV_CEIL((DIV_CEIL(new_p->nanoseconds, 1000)
+                      * CONFIG_SYSTEM_TICK_FREQUENCY), 1000000));
+
     sys_lock();
-    state.tick = ((new_p->seconds * SYS_TICK_FREQUENCY) +
-                  DIV_CEIL((DIV_CEIL(new_p->nanoseconds, 1000)
-                            * SYS_TICK_FREQUENCY), 1000000));
-    tick_to_time(state.tick, &state.now);
+    state.tick = tick;
     sys_unlock();
 
     return (0);

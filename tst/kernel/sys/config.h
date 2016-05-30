@@ -21,7 +21,11 @@
 #ifndef __CONFIG_H__
 #define __CONFIG_H__
 
-/* Force 10 ms tick. */
-#define SYS_TICK_FREQUENCY 100
+/**
+ * Default system tick frequency.
+ */
+#ifndef CONFIG_SYSTEM_TICK_FREQUENCY
+#    define CONFIG_SYSTEM_TICK_FREQUENCY 100
+#endif
 
 #endif

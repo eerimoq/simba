@@ -24,11 +24,6 @@
 #include "simba.h"
 #include "sys_port.h"
 
-/* Default system tick frequency. */
-#ifndef SYS_TICK_FREQUENCY
-#    define SYS_TICK_FREQUENCY 100
-#endif
-
 typedef uint64_t sys_tick_t;
 
 /**
@@ -36,9 +31,9 @@ typedef uint64_t sys_tick_t;
  */
 static inline sys_tick_t t2st(struct time_t *time_p)
 {
-    return (((uint64_t)(time_p)->seconds * SYS_TICK_FREQUENCY) +
+    return (((uint64_t)(time_p)->seconds * CONFIG_SYSTEM_TICK_FREQUENCY) +
             DIV_CEIL((DIV_CEIL((time_p)->nanoseconds, 1000)
-                      * SYS_TICK_FREQUENCY), 1000000));
+                      * CONFIG_SYSTEM_TICK_FREQUENCY), 1000000));
 }
 
 /**
@@ -46,9 +41,9 @@ static inline sys_tick_t t2st(struct time_t *time_p)
  */
 static inline void st2t(sys_tick_t tick, struct time_t *time_p)
 {
-    time_p->seconds = (tick / SYS_TICK_FREQUENCY);
-    time_p->nanoseconds = (((1000000 * (tick % SYS_TICK_FREQUENCY))
-                            / SYS_TICK_FREQUENCY) * 1000);
+    time_p->seconds = (tick / CONFIG_SYSTEM_TICK_FREQUENCY);
+    time_p->nanoseconds = (((1000000 * (tick % CONFIG_SYSTEM_TICK_FREQUENCY))
+                            / CONFIG_SYSTEM_TICK_FREQUENCY) * 1000);
 }
 
 #define VERSION_STR STRINGIFY(VERSION)

@@ -26,9 +26,9 @@
  * frequency and desired system tick frequency. Select closest match
  * above desired system tick frequency.
  */
-#define CPU_CYCLES_PER_SYS_TICK (F_CPU / SYS_TICK_FREQUENCY)
+#define CPU_CYCLES_PER_SYS_TICK (F_CPU / CONFIG_SYSTEM_TICK_FREQUENCY)
 #if (CPU_CYCLES_PER_SYS_TICK == 0)
-#    error "SYS_TICK_FREQUENCY is too high."
+#    error "CONFIG_SYSTEM_TICK_FREQUENCY is too high."
 #elif (CPU_CYCLES_PER_SYS_TICK < 256)
 #    define CLOCK_SELECT _BV(CS00)
 #    define TCNT0_MAX (CPU_CYCLES_PER_SYS_TICK - 1)
@@ -45,7 +45,7 @@
 #    define CLOCK_SELECT (_BV(CS02) | _BV(CS00))
 #    define TCNT0_MAX (DIV_CEIL(CPU_CYCLES_PER_SYS_TICK, 1024) - 1)
 #else
-#    error "SYS_TICK_FREQUENCY is too low."
+#    error "CONFIG_SYSTEM_TICK_FREQUENCY is too low."
 #endif
 
 ISR(TIMER0_COMPA_vect)

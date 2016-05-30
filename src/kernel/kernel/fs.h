@@ -30,8 +30,8 @@
 
 typedef int (*fs_callback_t)(int argc,
                              const char *argv[],
-                             void *out_p,
-                             void *in_p,
+                             chan_t *out_p,
+                             chan_t *in_p,
                              void *arg_p,
                              void *call_arg_p);
 

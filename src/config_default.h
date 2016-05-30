@@ -18,25 +18,56 @@
  * This file is part of the Simba project.
  */
 
-#ifndef __CONFIG_H__
-#define __CONFIG_H__
+#ifndef __CONFIG_DEFAULT_H__
+#define __CONFIG_DEFAULT_H__
+
+/**
+ * Build with assert.
+ */
+#ifndef CONFIG_ASSERT
+#    define CONFIG_ASSERT               1
+#endif
+
+/**
+ * Build with debug.
+ */
+#ifndef CONFIG_DEBUG
+#    define CONFIG_DEBUG                1
+#endif
+
+/**
+ * Stack profiling.
+ */
+#ifndef CONFIG_PROFILE_STACK
+#    define CONFIG_PROFILE_STACK        1
+#endif
 
 /**
  * Use a preemptive scheduler.
  */
 #ifndef CONFIG_PREEMPTIVE_SCHEDULER
-#    if defined(ARCH_AVR) || defined(ARCH_ARM)
-#        define CONFIG_PREEMPTIVE_SCHEDULER 1
-#    else
-#        define CONFIG_PREEMPTIVE_SCHEDULER 0
-#    endif
+#    define CONFIG_PREEMPTIVE_SCHEDULER 0
 #endif
 
 /**
  * Start the monitor thread.
  */
 #ifndef CONFIG_MONITOR_THREAD
-#    define CONFIG_MONITOR_THREAD       0
+#    define CONFIG_MONITOR_THREAD       1
+#endif
+
+/**
+ * Backwards compatibility. Should be removed.
+ */
+#if defined(SYS_TICK_FREQUENCY)
+#    define CONFIG_SYSTEM_TICK_FREQUENCY SYS_TICK_FREQUENCY
+#endif
+
+/**
+ * Default system tick frequency.
+ */
+#ifndef CONFIG_SYSTEM_TICK_FREQUENCY
+#    define CONFIG_SYSTEM_TICK_FREQUENCY 100
 #endif
 
 #endif

@@ -107,8 +107,6 @@ int test_time(struct harness_t *harness_p)
         }
     };
 
-    std_printf(FSTR("SYS_TICK_FREQUENCY = %d\r\n"), SYS_TICK_FREQUENCY);
-
     for (i = 0; i < membersof(test_times); i++) {
         /* Convertion from the time struct to ticks. */
         tick = t2st(&test_times[i].time_in);

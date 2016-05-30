@@ -22,9 +22,11 @@ INC += $(SIMBA_ROOT)/src/drivers
 INC += $(SIMBA_ROOT)/src/drivers/ports/$(ARCH)
 
 ifeq ($(ARCH),linux)
-DRIVERS_SRC ?= pin.c \
-               sd.c \
+DRIVERS_SRC ?= adc.c \
                flash.c \
+               pin.c \
+               pwm.c \
+               sd.c \
                spi.c \
                uart.c
 endif
