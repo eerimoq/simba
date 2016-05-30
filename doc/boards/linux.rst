@@ -16,8 +16,10 @@ Pinout
 Drivers
 -------
 
+- :doc:`../api-reference/drivers/adc`
 - :doc:`../api-reference/drivers/flash`
 - :doc:`../api-reference/drivers/pin`
+- :doc:`../api-reference/drivers/pwm`
 - :doc:`../api-reference/drivers/sd`
 - :doc:`../api-reference/drivers/spi`
 - :doc:`../api-reference/drivers/uart`

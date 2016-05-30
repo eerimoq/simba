@@ -3,15 +3,23 @@ Configuration
 
 Here is a list of all configuration variables available in
 `Simba`. These are used to customize `Simba` for your application
-needs.
+needs. The default values are defined in
+:github-blob:`src/config_default.h`.
 
-By default, the configuration file :github-blob:`src/config.h` is used
-when building an application. Create a file with the same name,
-``config.h``, in your application folder to override the default
-configuration.
+Configration search order
+-------------------------
 
-The configuration variables can also be set on the command line as
-``CFLAGS_EXTRA="-D<configuration variable>=<1 or 0>``.
+Highest priority first.
+
+1. Command line as ``CFLAGS_EXTRA="-D<configuration
+   variable>=<value>``.
+
+2. A file named ``config.h`` in the application root folder.
+
+3. The default configuration, :github-blob:`src/config_default.h`.
+
+Configuration variables
+-----------------------
 
 +-------------------------------+-------------------------------------------+
 |  Name                         | Description                               |
