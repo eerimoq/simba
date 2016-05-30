@@ -296,6 +296,8 @@ help:
 	@echo "  clean                       Remove all generated files and folders."
 	@echo "  new                         clean + all"
 	@echo "  upload                      all + Upload the application to the device."
+	@echo "  console                     Open a serial console on /dev/arduino with"
+	@echo "                              baudrate BAUDRATE."
 	@echo "  run                         Run the application."
 	@echo "  run-debugger                Run the application in the debugger, break at main."
 	@echo "  report                      Print the test report."
