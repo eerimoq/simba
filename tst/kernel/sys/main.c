@@ -34,7 +34,7 @@ static void on_fatal(int error)
 int test_set_on_fatal_callback(struct harness_t *harness_p)
 {
     sys_set_on_fatal_callback(on_fatal);
-    ASSERT(0);
+    ASSERT(0 == 1, "intentional fatal assert");
 
     return (0);
 }
