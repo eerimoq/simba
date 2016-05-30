@@ -97,7 +97,7 @@ int adc_convert(struct adc_driver_t *self_p,
  * ADC hardware until the sample has been coverted.
  *
  * @param[in] self_p Driver object.
- * @param[out] sample_p Converted samlpe.
+ * @param[out] sample_p Converted sample.
  *
  * @return zero(0) or negative error code.
  */
