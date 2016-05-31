@@ -24,5 +24,7 @@
 
 int chipid_read(struct chipid_t *id_p)
 {
+    ASSERTN(id_p != NULL, EINVAL);
+
     return (chipid_port_read(id_p));
 }

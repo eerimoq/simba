@@ -22,15 +22,21 @@
 
 int ds3231_init(struct ds3231_driver_t *self_p)
 {
+    ASSERTN(0, ENOSYS);
+
     return (0);
 }
 
 int ds3231_set_date(struct ds3231_driver_t *self_p, struct date_t *date_p)
 {
+    ASSERTN(0, ENOSYS);
+
     return (0);
 }
 
 int ds3231_get_date(struct ds3231_driver_t *self_p, struct date_t *date_p)
 {
+    ASSERTN(0, ENOSYS);
+
     return (0);
 }

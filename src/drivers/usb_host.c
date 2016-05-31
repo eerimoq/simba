@@ -443,6 +443,11 @@ int usb_host_init(struct usb_host_driver_t *self_p,
                   struct usb_host_device_t *devices_p,
                   size_t length)
 {
+    ASSERTN(self_p != NULL, EINVAL);
+    ASSERTN(dev_p != NULL, EINVAL);
+    ASSERTN(devices_p != NULL, EINVAL);
+    ASSERTN(length > 0, EINVAL);
+
     int i;
 
     self_p->dev_p =  dev_p;
@@ -462,6 +467,8 @@ int usb_host_init(struct usb_host_driver_t *self_p,
 
 int usb_host_start(struct usb_host_driver_t *self_p)
 {
+    ASSERTN(self_p != NULL, EINVAL);
+
     if (usb_host_port_start(self_p) != 0) {
         return (-1);
     }
@@ -475,6 +482,8 @@ int usb_host_start(struct usb_host_driver_t *self_p)
 
 int usb_host_stop(struct usb_host_driver_t *self_p)
 {
+    ASSERTN(self_p != NULL, EINVAL);
+
     return (usb_host_port_stop(self_p));
 }
 
@@ -482,6 +491,9 @@ int usb_host_driver_add(struct usb_host_driver_t *self_p,
                         struct usb_host_device_driver_t *driver_p,
                         void *arg_p)
 {
+    ASSERTN(self_p != NULL, EINVAL);
+    ASSERTN(driver_p != NULL, EINVAL);
+
     driver_p->next_p = device_drivers_p;
     device_drivers_p = driver_p;
 
@@ -492,6 +504,8 @@ struct usb_host_device_t *
 usb_host_device_open(struct usb_host_driver_t *self_p,
                      int device)
 {
+    ASSERTN(self_p != NULL, EINVAL);
+
     struct usb_host_device_t *device_p;
 
     if (device > self_p->length - 1) {
@@ -510,6 +524,8 @@ usb_host_device_open(struct usb_host_driver_t *self_p,
 int usb_host_device_close(struct usb_host_driver_t *self_p,
                           int device)
 {
+    ASSERTN(self_p != NULL, EINVAL);
+
     if (device > self_p->length - 1) {
         return (-1);
     }
@@ -522,6 +538,10 @@ ssize_t usb_host_device_read(struct usb_host_device_t *device_p,
                              void *buf_p,
                              size_t size)
 {
+    ASSERTN(device_p != NULL, EINVAL);
+    ASSERTN(buf_p != NULL, EINVAL);
+    ASSERTN(size > 0, EINVAL);
+
     return (usb_host_port_device_read(device_p, endpoint, buf_p, size));
 }
 
@@ -530,6 +550,10 @@ ssize_t usb_host_device_write(struct usb_host_device_t *device_p,
                               const void *buf_p,
                               size_t size)
 {
+    ASSERTN(device_p != NULL, EINVAL);
+    ASSERTN(buf_p != NULL, EINVAL);
+    ASSERTN(size > 0, EINVAL);
+
     return (usb_host_port_device_write(device_p, endpoint, buf_p, size));
 }
 
@@ -538,6 +562,11 @@ ssize_t usb_host_device_control_transfer(struct usb_host_device_t *device_p,
                                          void *buf_p,
                                          size_t size)
 {
+    ASSERTN(device_p != NULL, EINVAL);
+    ASSERTN(setup_p != NULL, EINVAL);
+    ASSERTN(buf_p != NULL, EINVAL);
+    ASSERTN(size > 0, EINVAL);
+
     std_printf(FSTR("Starting a control transfer.\r\n"));
 
     if (usb_host_port_device_write_setup(device_p, setup_p) != sizeof(*setup_p)) {

@@ -98,6 +98,12 @@ int uart_soft_init(struct uart_soft_driver_t *self_p,
                    void *rxbuf_p,
                    size_t size)
 {
+    ASSERTN(self_p != NULL, EINVAL);
+    ASSERTN(tx_dev_p != NULL, EINVAL);
+    ASSERTN(rx_dev_p != NULL, EINVAL);
+    ASSERTN(rx_exti_dev_p != NULL, EINVAL);
+    ASSERTN(rxbuf_p != NULL, EINVAL);
+
     self_p->sample_time = BAUDRATE2US(baudrate);
 
     chan_init(&self_p->chout,

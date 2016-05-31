@@ -21,6 +21,8 @@
 #ifndef __DRIVERS_ADC_PORT_H__
 #define __DRIVERS_ADC_PORT_H__
 
+#define ADC_PORT_REFERENCE_VCC      0
+
 struct adc_driver_t;
 
 struct adc_device_t {

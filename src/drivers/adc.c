@@ -33,6 +33,12 @@ int adc_init(struct adc_driver_t *self_p,
              int reference,
              int sampling_rate)
 {
+    ASSERTN(self_p != NULL, EINVAL);
+    ASSERTN(dev_p != NULL, EINVAL);
+    ASSERTN(pin_dev_p != NULL, EINVAL);
+    ASSERTN(reference == ADC_REFERENCE_VCC, EINVAL);
+    ASSERTN(sampling_rate > 0, EINVAL);
+    
     return (adc_port_init(self_p,
                           dev_p,
                           pin_dev_p,
@@ -44,11 +50,17 @@ int adc_async_convert(struct adc_driver_t *self_p,
                       uint16_t *samples_p,
                       size_t length)
 {
+    ASSERTN(self_p != NULL, EINVAL);
+    ASSERTN(samples_p != NULL, EINVAL);
+    ASSERTN(length > 0, EINVAL);
+
     return (adc_port_async_convert(self_p, samples_p, length));
 }
 
 int adc_async_wait(struct adc_driver_t *self_p)
 {
+    ASSERTN(self_p != NULL, EINVAL);
+
     return (adc_port_async_wait(self_p));
 }
 
@@ -65,5 +77,8 @@ int adc_convert(struct adc_driver_t *self_p,
 int adc_convert_isr(struct adc_driver_t *self_p,
                     uint16_t *sample_p)
 {
+    ASSERTN(self_p != NULL, EINVAL);
+    ASSERTN(sample_p != NULL, EINVAL);
+
     return (adc_port_convert_isr(self_p, sample_p));
 }

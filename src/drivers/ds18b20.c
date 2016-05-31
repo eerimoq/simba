@@ -127,6 +127,9 @@ int ds18b20_module_init()
 int ds18b20_init(struct ds18b20_driver_t *self_p,
                  struct owi_driver_t *owi_p)
 {
+    ASSERTN(self_p != NULL, EINVAL);
+    ASSERTN(owi_p != NULL, EINVAL);
+
     self_p->owi_p = owi_p;
     self_p->next_p = list_p;
     list_p = self_p;
@@ -136,6 +139,8 @@ int ds18b20_init(struct ds18b20_driver_t *self_p,
 
 int ds18b20_convert(struct ds18b20_driver_t *self_p)
 {
+    ASSERTN(self_p != NULL, EINVAL);
+
     uint8_t b;
 
     owi_reset(self_p->owi_p);
@@ -152,6 +157,10 @@ int ds18b20_get_temperature(struct ds18b20_driver_t *self_p,
                             uint8_t *id_p,
                             int *temp_p)
 {
+    ASSERTN(self_p != NULL, EINVAL);
+    ASSERTN(id_p != NULL, EINVAL);
+    ASSERTN(temp_p != NULL, EINVAL);
+
     struct ds18b20_scratchpad_t scratchpad;
 
     ds18b20_read_scratchpad(self_p, &scratchpad, id_p);
@@ -164,6 +173,10 @@ char *ds18b20_get_temperature_str(struct ds18b20_driver_t *self_p,
                                   uint8_t *id_p,
                                   char *buf_p)
 {
+    ASSERTN(self_p != NULL, EINVAL);
+    ASSERTN(id_p != NULL, EINVAL);
+    ASSERTN(buf_p != NULL, EINVAL);
+
     int temp;
 
     ds18b20_get_temperature(self_p, id_p, &temp);

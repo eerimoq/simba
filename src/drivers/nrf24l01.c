@@ -127,6 +127,12 @@ int nrf24l01_init(struct nrf24l01_driver_t *self_p,
                   struct exti_device_t *exti_p,
                   uint32_t address)
 {
+    ASSERTN(self_p != NULL, EINVAL);
+    ASSERTN(spi_p != NULL, EINVAL);
+    ASSERTN(cs_p != NULL, EINVAL);
+    ASSERTN(ce_p != NULL, EINVAL);
+    ASSERTN(exti_p != NULL, EINVAL);
+
     self_p->address = address;
 
     queue_init(&self_p->irqchan, self_p->irqbuf, sizeof(self_p->irqbuf));
@@ -160,6 +166,8 @@ int nrf24l01_init(struct nrf24l01_driver_t *self_p,
 
 int nrf24l01_start(struct nrf24l01_driver_t *self_p)
 {
+    ASSERTN(self_p != NULL, EINVAL);
+
     uint8_t buf[6];
     int i;
 
@@ -232,6 +240,8 @@ int nrf24l01_start(struct nrf24l01_driver_t *self_p)
 
 int nrf24l01_stop(struct nrf24l01_driver_t *self_p)
 {
+    ASSERTN(self_p != NULL, EINVAL);
+
     return (0);
 }
 
@@ -239,6 +249,10 @@ ssize_t nrf24l01_read(struct nrf24l01_driver_t *self_p,
                       void *buf_p,
                       size_t size)
 {
+    ASSERTN(self_p != NULL, EINVAL);
+    ASSERTN(buf_p != NULL, EINVAL);
+    ASSERTN(size > 0, EINVAL);
+
     uint8_t buf[2];
 
     ASSERT(size == PAYLOAD_MAX);
@@ -264,6 +278,10 @@ ssize_t nrf24l01_write(struct nrf24l01_driver_t *self_p,
                        const void *buf_p,
                        size_t size)
 {
+    ASSERTN(self_p != NULL, EINVAL);
+    ASSERTN(buf_p != NULL, EINVAL);
+    ASSERTN(size > 0, EINVAL);
+
     uint8_t buf[33];
 
     ASSERT(size == PAYLOAD_MAX);

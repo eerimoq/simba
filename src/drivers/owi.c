@@ -25,6 +25,11 @@ int owi_init(struct owi_driver_t *self_p,
              struct owi_device_t *devices_p,
              size_t nmemb)
 {
+    ASSERTN(self_p != NULL, EINVAL);
+    ASSERTN(dev_p != NULL, EINVAL);
+    ASSERTN(devices_p != NULL, EINVAL);
+    ASSERTN(nmemb > 0, EINVAL);
+
     pin_init(&self_p->pin, dev_p, PIN_OUTPUT);
     pin_write(&self_p->pin, 1);
     self_p->devices_p = devices_p;
@@ -36,6 +41,8 @@ int owi_init(struct owi_driver_t *self_p,
 
 int owi_reset(struct owi_driver_t *self_p)
 {
+    ASSERTN(self_p != NULL, EINVAL);
+
     int attempts = 5;
     int err;
 
@@ -57,6 +64,8 @@ int owi_reset(struct owi_driver_t *self_p)
 
 int owi_search(struct owi_driver_t *self_p)
 {
+    ASSERTN(self_p != NULL, EINVAL);
+
     struct owi_device_t *dev_p;
     int8_t prev_discr = -1, discr = 0;
     uint8_t b;
@@ -141,6 +150,10 @@ ssize_t owi_read(struct owi_driver_t *self_p,
                  void *buf_p,
                  size_t size)
 {
+    ASSERTN(self_p != NULL, EINVAL);
+    ASSERTN(buf_p != NULL, EINVAL);
+    ASSERTN(size > 0, EINVAL);
+
     uint8_t *b_p = buf_p;
     int i;
 
@@ -174,6 +187,10 @@ ssize_t owi_write(struct owi_driver_t *self_p,
                   const void *buf_p,
                   size_t size)
 {
+    ASSERTN(self_p != NULL, EINVAL);
+    ASSERTN(buf_p != NULL, EINVAL);
+    ASSERTN(size > 0, EINVAL);
+
     int i;
     uint8_t value = 0;
     const uint8_t *b_p = buf_p;

@@ -31,6 +31,9 @@ int pin_init(struct pin_driver_t *self_p,
              struct pin_device_t *dev_p,
              int mode)
 {
+    ASSERTN(self_p != NULL, EINVAL);
+    ASSERTN(dev_p != NULL, EINVAL);
+
     self_p->dev_p = dev_p;
 
     return (pin_port_init(self_p, dev_p, mode));
@@ -38,20 +41,29 @@ int pin_init(struct pin_driver_t *self_p,
 
 int pin_read(struct pin_driver_t *self_p)
 {
+    ASSERTN(self_p != NULL, EINVAL);
+
     return (pin_port_read(self_p));
 }
 
 int pin_write(struct pin_driver_t *self_p, int value)
 {
+    ASSERTN(self_p != NULL, EINVAL);
+    ASSERTN((value == 0) || (value == 1), EINVAL);
+
     return (pin_port_write(self_p, value));
 }
 
 int pin_toggle(struct pin_driver_t *self_p)
 {
+    ASSERTN(self_p != NULL, EINVAL);
+
     return (pin_port_toggle(self_p));
 }
 
 int pin_set_mode(struct pin_driver_t *self_p, int mode)
 {
+    ASSERTN(self_p != NULL, EINVAL);
+
     return (pin_port_set_mode(self_p, mode));
 }

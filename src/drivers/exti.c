@@ -33,6 +33,10 @@ int exti_init(struct exti_driver_t *self_p,
               void (*on_interrupt)(void *arg_p),
               void *arg_p)
 {
+    ASSERTN(self_p != NULL, EINVAL);
+    ASSERTN(dev_p != NULL, EINVAL);
+    ASSERTN(on_interrupt != NULL, EINVAL);
+
     self_p->dev_p = dev_p;
     self_p->trigger = trigger;
     self_p->on_interrupt = on_interrupt;
@@ -43,15 +47,21 @@ int exti_init(struct exti_driver_t *self_p,
 
 int exti_start(struct exti_driver_t *self_p)
 {
+    ASSERTN(self_p != NULL, EINVAL);
+
     return (exti_port_start(self_p));
 }
 
 int exti_stop(struct exti_driver_t *self_p)
 {
+    ASSERTN(self_p != NULL, EINVAL);
+
     return (exti_port_stop(self_p));
 }
 
 int exti_clear(struct exti_driver_t *self_p)
 {
+    ASSERTN(self_p != NULL, EINVAL);
+
     return (exti_port_clear(self_p));
 }

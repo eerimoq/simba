@@ -354,6 +354,9 @@ static ssize_t read(struct sd_driver_t *self_p,
 int sd_init(struct sd_driver_t *self_p,
             struct spi_driver_t *spi_p)
 {
+    ASSERTN(self_p != NULL, EINVAL);
+    ASSERTN(spi_p != NULL, EINVAL);
+
     self_p->spi_p = spi_p;
 
     return (0);
@@ -361,6 +364,8 @@ int sd_init(struct sd_driver_t *self_p,
 
 int sd_start(struct sd_driver_t *self_p)
 {
+    ASSERTN(self_p != NULL, EINVAL);
+
     uint32_t arg;
     union r1_t r1;
     union r7_t r7;
@@ -450,18 +455,26 @@ int sd_start(struct sd_driver_t *self_p)
 
 int sd_stop(struct sd_driver_t *self_p)
 {
+    ASSERTN(self_p != NULL, EINVAL);
+
     return (0);
 }
 
 ssize_t sd_read_cid(struct sd_driver_t *self_p,
                     struct sd_cid_t *cid_p)
 {
+    ASSERTN(self_p != NULL, EINVAL);
+    ASSERTN(cid_p != NULL, EINVAL);
+
     return (read(self_p, CMD_SEND_CID, 0, cid_p, sizeof(*cid_p)));
 }
 
 ssize_t sd_read_csd(struct sd_driver_t *self_p,
                     union sd_csd_t *csd_p)
 {
+    ASSERTN(self_p != NULL, EINVAL);
+    ASSERTN(csd_p != NULL, EINVAL);
+
     return (read(self_p, CMD_SEND_CSD, 0, csd_p, sizeof(*csd_p)));
 }
 
@@ -470,6 +483,8 @@ int sd_erase_blocks(struct sd_driver_t *self_p,
                     uint32_t start,
                     uint32_t end)
 {
+    ASSERTN(self_p != NULL, EINVAL);
+
     union r1_t r1;
 
     /* Check if block address should be mapped to byte address */
@@ -517,6 +532,9 @@ ssize_t sd_read_block(struct sd_driver_t *self_p,
                       void *dst_p,
                       uint32_t src_block)
 {
+    ASSERTN(self_p != NULL, EINVAL);
+    ASSERTN(dst_p != NULL, EINVAL);
+
     if (self_p->type != TYPE_SDHC) {
         src_block <<= 9;
     }
@@ -528,6 +546,9 @@ ssize_t sd_write_block(struct sd_driver_t *self_p,
                        uint32_t dst_block,
                        const void *src_p)
 {
+    ASSERTN(self_p != NULL, EINVAL);
+    ASSERTN(src_p != NULL, EINVAL);
+
     uint16_t crc;
     uint8_t status;
 

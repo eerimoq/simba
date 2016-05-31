@@ -391,6 +391,12 @@ int mcp2515_init(struct mcp2515_driver_t *self_p,
                  int mode,
                  int speed)
 {
+    ASSERTN(self_p != NULL, EINVAL);
+    ASSERTN(spi_p != NULL, EINVAL);
+    ASSERTN(cs_p != NULL, EINVAL);
+    ASSERTN(exti_p != NULL, EINVAL);
+    ASSERTN(chin_p != NULL, EINVAL);
+
     self_p->mode = mode;
     self_p->speed = speed;
     self_p->chin_p = chin_p;
@@ -428,6 +434,8 @@ int mcp2515_init(struct mcp2515_driver_t *self_p,
 
 int mcp2515_start(struct mcp2515_driver_t *self_p)
 {
+    ASSERTN(self_p != NULL, EINVAL);
+
     uint8_t cnf1, cnf2, cnf3;
 
     exti_start(&self_p->exti);
@@ -491,17 +499,25 @@ int mcp2515_start(struct mcp2515_driver_t *self_p)
 
 int mcp2515_stop(struct mcp2515_driver_t *self_p)
 {
+    ASSERTN(self_p != NULL, EINVAL);
+
     return (exti_stop(&self_p->exti));
 }
 
 ssize_t mcp2515_read(struct mcp2515_driver_t *self_p,
                      struct mcp2515_frame_t *frame_p)
 {
+    ASSERTN(self_p != NULL, EINVAL);
+    ASSERTN(frame_p != NULL, EINVAL);
+
     return (chan_read(self_p->chin_p, frame_p, sizeof(*frame_p)));
 }
 
 ssize_t mcp2515_write(struct mcp2515_driver_t *self_p,
                       const struct mcp2515_frame_t *frame_p)
 {
+    ASSERTN(self_p != NULL, EINVAL);
+    ASSERTN(frame_p != NULL, EINVAL);
+
     return (self_p->chout.write(&self_p->chout, frame_p, sizeof(*frame_p)));
 }

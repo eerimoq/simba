@@ -35,6 +35,10 @@ int spi_init(struct spi_driver_t *self_p,
              int cpol,
              int cpha)
 {
+    ASSERTN(self_p != NULL, EINVAL);
+    ASSERTN(dev_p != NULL, EINVAL);
+    ASSERTN(ss_pin_p != NULL, EINVAL);
+
     self_p->dev_p = dev_p;
     self_p->mode = mode;
     self_p->speed = speed;
@@ -49,6 +53,10 @@ ssize_t spi_transfer(struct spi_driver_t *self_p,
                      const void *txbuf_p,
                      size_t size)
 {
+    ASSERTN(self_p != NULL, EINVAL);
+    ASSERTN((rxbuf_p != NULL) || (txbuf_p != NULL), EINVAL);
+    ASSERTN(size > 0, EINVAL);
+
     sem_get(&self_p->dev_p->sem, NULL);
 
     /* Configure and start SPI hardware with driver configuration. */
@@ -80,6 +88,10 @@ ssize_t spi_read(struct spi_driver_t *self_p,
                  void *rxbuf_p,
                  size_t size)
 {
+    ASSERTN(self_p != NULL, EINVAL);
+    ASSERTN(rxbuf_p != NULL, EINVAL);
+    ASSERTN(size > 0, EINVAL);
+
     return (spi_transfer(self_p, rxbuf_p, NULL, size));
 }
 
@@ -87,17 +99,26 @@ ssize_t spi_write(struct spi_driver_t *self_p,
                   const void *txbuf_p,
                   size_t size)
 {
+    ASSERTN(self_p != NULL, EINVAL);
+    ASSERTN(txbuf_p != NULL, EINVAL);
+    ASSERTN(size > 0, EINVAL);
+
     return (spi_transfer(self_p, NULL, txbuf_p, size));
 }
 
 ssize_t spi_get(struct spi_driver_t *self_p,
                 uint8_t *data_p)
 {
+    ASSERTN(self_p != NULL, EINVAL);
+    ASSERTN(data_p != NULL, EINVAL);
+
     return (spi_read(self_p, data_p, 1));
 }
 
 ssize_t spi_put(struct spi_driver_t *self_p,
                 uint8_t data)
 {
+    ASSERTN(self_p != NULL, EINVAL);
+
     return (spi_write(self_p, &data, 1));
 }

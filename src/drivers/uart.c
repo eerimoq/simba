@@ -33,6 +33,9 @@ int uart_init(struct uart_driver_t *self_p,
               void *rxbuf_p,
               size_t size)
 {
+    ASSERTN(self_p != NULL, EINVAL);
+    ASSERTN(dev_p != NULL, EINVAL);
+
     self_p->dev_p = dev_p;
     self_p->baudrate = baudrate;
     self_p->rxsize = size;
@@ -53,10 +56,14 @@ int uart_init(struct uart_driver_t *self_p,
 
 int uart_start(struct uart_driver_t *self_p)
 {
+    ASSERTN(self_p != NULL, EINVAL);
+
     return (uart_port_start(self_p));
 }
 
 int uart_stop(struct uart_driver_t *self_p)
 {
+    ASSERTN(self_p != NULL, EINVAL);
+
     return (uart_port_stop(self_p));
 }
