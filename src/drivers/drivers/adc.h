@@ -43,12 +43,12 @@ int adc_module_init(void);
  * @param[in] reference Voltage reference. Only ``ADC_REFERENCE_VCC``
  *                      is supported.
  * @param[in] sampling_rate Sampling rate in Hz. The lowest allowed
- *                          value is 1, and the highest value depends
+ *                          value is one and the highest value depends
  *                          on the architechture. The sampling rate is
- *                          not used in one sample convertions,
- *                          ie. calls of ``adc_async_convert()`` and
- *                          ``adc_convert()`` with length one(1); or
- *                          calls of ``adc_convert_isr()``.
+ *                          not used in single sample convertions,
+ *                          ie. calls to ``adc_async_convert()`` and
+ *                          ``adc_convert()`` with length one; or
+ *                          calls to ``adc_convert_isr()``.
  *
  * @return zero(0) or negative error code.
  */
