@@ -390,6 +390,8 @@ int socket_open(struct socket_t *self_p,
                 int type,
                 int protocol)
 {
+    ASSERTN(self_p != NULL, EINVAL)
+
     void *pcb_p = NULL;
 
     switch (type) {
@@ -416,6 +418,8 @@ int socket_open(struct socket_t *self_p,
 
 int socket_close(struct socket_t *self_p)
 {
+    ASSERTN(self_p != NULL, EINVAL)
+
     switch (self_p->type) {
 
     case SOCKET_TYPE_STREAM:
@@ -440,6 +444,9 @@ int socket_bind(struct socket_t *self_p,
                 const struct socket_addr_t *local_addr_p,
                 size_t addrlen)
 {
+    ASSERTN(self_p != NULL, EINVAL)
+    ASSERTN(local_addr_p != NULL, EINVAL)
+
     ip_addr_t ip;
 
     ip.addr = local_addr_p->ip;
@@ -459,6 +466,9 @@ int socket_bind(struct socket_t *self_p,
 
 int socket_listen(struct socket_t *self_p, int backlog)
 {
+    ASSERTN(self_p != NULL, EINVAL)
+    ASSERTN(backlog >= 0, EINVAL)
+
     switch (self_p->type) {
 
     case SOCKET_TYPE_STREAM:
@@ -477,6 +487,9 @@ int socket_connect(struct socket_t *self_p,
                    const struct socket_addr_t *addr_p,
                    size_t addrlen)
 {
+    ASSERTN(self_p != NULL, EINVAL)
+    ASSERTN(addr_p != NULL, EINVAL)
+
     ip_addr_t ip;
 
     ip.addr = addr_p->ip;
@@ -500,6 +513,9 @@ int socket_accept(struct socket_t *self_p,
                   struct socket_addr_t *addr_p,
                   size_t *addrlen_p)
 {
+    ASSERTN(self_p != NULL, EINVAL)
+    ASSERTN(accepted_p != NULL, EINVAL)
+
     self_p->io.buf_p = accepted_p;
     self_p->io.thrd_p = thrd_self();
     thrd_suspend(NULL);
@@ -515,6 +531,11 @@ ssize_t socket_sendto(struct socket_t *self_p,
                       const struct socket_addr_t *remote_addr_p,
                       size_t addrlen)
 {
+    ASSERTN(self_p != NULL, EINVAL)
+    ASSERTN(buf_p != NULL, EINVAL)
+    ASSERTN(size > 0, EINVAL)
+    ASSERTN(remote_addr_p != NULL, EINVAL)
+
     switch (self_p->type) {
 
     case SOCKET_TYPE_STREAM:
@@ -545,6 +566,11 @@ ssize_t socket_recvfrom(struct socket_t *self_p,
                         struct socket_addr_t *remote_addr_p,
                         size_t addrlen)
 {
+    ASSERTN(self_p != NULL, EINVAL)
+    ASSERTN(buf_p != NULL, EINVAL)
+    ASSERTN(size > 0, EINVAL)
+    ASSERTN(remote_addr_p != NULL, EINVAL)
+
     switch (self_p->type) {
 
     case SOCKET_TYPE_STREAM:
@@ -572,6 +598,10 @@ ssize_t socket_write(struct socket_t *self_p,
                      const void *buf_p,
                      size_t size)
 {
+    ASSERTN(self_p != NULL, EINVAL)
+    ASSERTN(buf_p != NULL, EINVAL)
+    ASSERTN(size > 0, EINVAL)
+
     return (socket_sendto(self_p, buf_p, size, 0, NULL, 0));
 }
 
@@ -579,6 +609,10 @@ ssize_t socket_read(struct socket_t *self_p,
                     void *buf_p,
                     size_t size)
 {
+    ASSERTN(self_p != NULL, EINVAL)
+    ASSERTN(buf_p != NULL, EINVAL)
+    ASSERTN(size > 0, EINVAL)
+
     return (socket_recvfrom(self_p, buf_p, size, 0, NULL, 0));
 }
 
@@ -653,6 +687,10 @@ ssize_t socket_write(struct socket_t *self_p,
                      const void *buf_p,
                      size_t size)
 {
+    ASSERTN(self_p != NULL, EINVAL)
+    ASSERTN(buf_p != NULL, EINVAL)
+    ASSERTN(size > 0, EINVAL)
+
     return (socket_sendto(self_p, buf_p, size, 0, NULL, 0));
 }
 
@@ -660,6 +698,10 @@ ssize_t socket_read(struct socket_t *self_p,
                     void *buf_p,
                     size_t size)
 {
+    ASSERTN(self_p != NULL, EINVAL)
+    ASSERTN(buf_p != NULL, EINVAL)
+    ASSERTN(size > 0, EINVAL)
+
     return (socket_recvfrom(self_p, buf_p, size, 0, NULL, 0));
 }
 

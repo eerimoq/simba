@@ -23,6 +23,9 @@
 int http_websocket_server_init(struct http_websocket_server_t *self_p,
                                struct socket_t *socket_p)
 {
+    ASSERTN(self_p != NULL, EINVAL)
+    ASSERTN(socket_p != NULL, EINVAL)
+
     self_p->socket_p = socket_p;
 
     return (0);
@@ -31,6 +34,9 @@ int http_websocket_server_init(struct http_websocket_server_t *self_p,
 int http_websocket_server_handshake(struct http_websocket_server_t *self_p,
                                     struct http_server_request_t *request_p)
 {
+    ASSERTN(self_p != NULL, EINVAL)
+    ASSERTN(request_p != NULL, EINVAL)
+
     char buf[160];
     char accept_key[29];
     const char *key_p;
@@ -87,6 +93,10 @@ ssize_t http_websocket_server_read(struct http_websocket_server_t *self_p,
                                    void *buf_p,
                                    size_t size)
 {
+    ASSERTN(self_p != NULL, EINVAL)
+    ASSERTN(buf_p != NULL, EINVAL)
+    ASSERTN(size > 0, EINVAL)
+
     uint8_t buf[16], *b_p = buf_p;
     size_t payload_left, left = size, n;
     int fin = 0;
@@ -159,6 +169,10 @@ ssize_t http_websocket_server_write(struct http_websocket_server_t *self_p,
                                     const void *buf_p,
                                     uint32_t size)
 {
+    ASSERTN(self_p != NULL, EINVAL)
+    ASSERTN(buf_p != NULL, EINVAL)
+    ASSERTN(size > 0, EINVAL)
+
     const uint8_t masking_key[4] = { 0x00, 0x00, 0x00, 0x00 };
     uint8_t header[16];
     size_t header_size = 2;

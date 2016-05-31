@@ -348,70 +348,6 @@ static void *listener_main(void *arg_p)
     return (NULL);
 }
 
-int http_server_init(struct http_server_t *self_p,
-                     struct http_server_listener_t *listener_p,
-                     struct http_server_connection_t *connections_p,
-                     const char *root_path_p,
-                     const struct http_server_route_t *routes_p,
-                     http_server_route_callback_t on_no_route)
-{
-    struct http_server_connection_t *connection_p;
-
-    self_p->listener_p = listener_p;
-    self_p->connections_p = connections_p;
-    self_p->root_path_p = root_path_p;
-    self_p->routes_p = routes_p;
-    self_p->on_no_route = on_no_route;
-
-    connection_p = self_p->connections_p;
-
-    while (connection_p->thrd.name_p != NULL) {
-        connection_p->state = http_server_connection_state_free_t;
-        connection_p->self_p = self_p;
-        event_init(&connection_p->events);
-
-        connection_p++;
-    }
-
-    event_init(&self_p->events);
-
-    return (0);
-}
-
-int http_server_start(struct http_server_t *self_p)
-{
-    struct http_server_connection_t *connection_p;
-
-    /* Spawn the listener thread. */
-    self_p->listener_p->thrd.id_p =
-        thrd_spawn(listener_main,
-                   self_p,
-                   0,
-                   self_p->listener_p->thrd.stack.buf_p,
-                   self_p->listener_p->thrd.stack.size);
-
-    connection_p = self_p->connections_p;
-
-    /* Spawn the connection threads. */
-    while (connection_p->thrd.stack.buf_p != NULL) {
-        connection_p->thrd.id_p =
-            thrd_spawn(connection_main,
-                       connection_p,
-                       0,
-                       connection_p->thrd.stack.buf_p,
-                       connection_p->thrd.stack.size);
-
-        connection_p++;
-    }
-
-    return (0);
-}
-
-int http_server_stop(struct http_server_t *self_p)
-{
-    return (0);
-}
-
 static int
 response_write_text_plain(struct http_server_connection_t *connection_p,
                           struct http_server_request_t *request_p,
@@ -500,11 +436,89 @@ response_write_text_html(struct http_server_connection_t *connection_p,
     return (res);
 }
 
+int http_server_init(struct http_server_t *self_p,
+                     struct http_server_listener_t *listener_p,
+                     struct http_server_connection_t *connections_p,
+                     const char *root_path_p,
+                     const struct http_server_route_t *routes_p,
+                     http_server_route_callback_t on_no_route)
+{
+    ASSERTN(self_p != NULL, EINVAL);
+    ASSERTN(listener_p != NULL, EINVAL)
+    ASSERTN(connections_p != NULL, EINVAL);
+    ASSERTN(routes_p != NULL, EINVAL);
+    ASSERTN(on_no_route != NULL, EINVAL)
+
+    struct http_server_connection_t *connection_p;
+
+    self_p->listener_p = listener_p;
+    self_p->connections_p = connections_p;
+    self_p->root_path_p = root_path_p;
+    self_p->routes_p = routes_p;
+    self_p->on_no_route = on_no_route;
+
+    connection_p = self_p->connections_p;
+
+    while (connection_p->thrd.name_p != NULL) {
+        connection_p->state = http_server_connection_state_free_t;
+        connection_p->self_p = self_p;
+        event_init(&connection_p->events);
+
+        connection_p++;
+    }
+
+    event_init(&self_p->events);
+
+    return (0);
+}
+
+int http_server_start(struct http_server_t *self_p)
+{
+    ASSERTN(self_p != NULL, EINVAL);
+
+    struct http_server_connection_t *connection_p;
+
+    /* Spawn the listener thread. */
+    self_p->listener_p->thrd.id_p =
+        thrd_spawn(listener_main,
+                   self_p,
+                   0,
+                   self_p->listener_p->thrd.stack.buf_p,
+                   self_p->listener_p->thrd.stack.size);
+
+    connection_p = self_p->connections_p;
+
+    /* Spawn the connection threads. */
+    while (connection_p->thrd.stack.buf_p != NULL) {
+        connection_p->thrd.id_p =
+            thrd_spawn(connection_main,
+                       connection_p,
+                       0,
+                       connection_p->thrd.stack.buf_p,
+                       connection_p->thrd.stack.size);
+
+        connection_p++;
+    }
+
+    return (0);
+}
+
+int http_server_stop(struct http_server_t *self_p)
+{
+    ASSERTN(self_p != NULL, EINVAL);
+
+    return (0);
+}
+
 int
 http_server_response_write(struct http_server_connection_t *connection_p,
                            struct http_server_request_t *request_p,
                            struct http_server_response_t *response_p)
 {
+    ASSERTN(connection_p != NULL, EINVAL);
+    ASSERTN(request_p != NULL, EINVAL);
+    ASSERTN(response_p != NULL, EINVAL);
+
     int res = 0;
 
     if (response_p->content.type == http_server_content_type_text_plain_t) {

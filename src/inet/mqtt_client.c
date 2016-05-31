@@ -760,22 +760,31 @@ static int control_routine(struct mqtt_client_t *self_p,
 
 int mqtt_client_connect(struct mqtt_client_t *self_p)
 {
+    ASSERTN(self_p != NULL, EINVAL)
+
     return (control_routine(self_p, CONTROL_CONNECT, NULL, 0));
 }
 
 int mqtt_client_disconnect(struct mqtt_client_t *self_p)
 {
+    ASSERTN(self_p != NULL, EINVAL)
+
     return (control_routine(self_p, CONTROL_DISCONNECT, NULL, 0));
 }
 
 int mqtt_client_ping(struct mqtt_client_t *self_p)
 {
+    ASSERTN(self_p != NULL, EINVAL)
+
     return (control_routine(self_p, CONTROL_PING, NULL, 0));
 }
 
 int mqtt_client_publish(struct mqtt_client_t *self_p,
                         struct mqtt_application_message_t *message_p)
 {
+    ASSERTN(self_p != NULL, EINVAL)
+    ASSERTN(message_p != NULL, EINVAL)
+
     return (control_routine(self_p,
                             CONTROL_PUBLISH,
                             &message_p,
@@ -785,6 +794,9 @@ int mqtt_client_publish(struct mqtt_client_t *self_p,
 int mqtt_client_subscribe(struct mqtt_client_t *self_p,
                         struct mqtt_application_message_t *message_p)
 {
+    ASSERTN(self_p != NULL, EINVAL)
+    ASSERTN(message_p != NULL, EINVAL)
+
     return (control_routine(self_p,
                             CONTROL_SUBSCRIBE,
                             &message_p,
@@ -794,6 +806,9 @@ int mqtt_client_subscribe(struct mqtt_client_t *self_p,
 int mqtt_client_unsubscribe(struct mqtt_client_t *self_p,
                         struct mqtt_application_message_t *message_p)
 {
+    ASSERTN(self_p != NULL, EINVAL)
+    ASSERTN(message_p != NULL, EINVAL)
+
     return (control_routine(self_p,
                             CONTROL_UNSUBSCRIBE,
                             &message_p,
