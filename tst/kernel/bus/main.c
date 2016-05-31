@@ -47,6 +47,7 @@ static int test_write_read(struct harness_t *harness)
     struct bus_t bus;
     struct bus_listener_t chans[5];
     struct queue_t queues[2];
+    struct queue_t dummy;
     char bufs[2][32];
     int foo;
     int value;
@@ -57,9 +58,9 @@ static int test_write_read(struct harness_t *harness)
     BTASSERT(queue_init(&queues[1], bufs[1], sizeof(bufs[1])) == 0);
     BTASSERT(bus_listener_init(&chans[0], ID_FOO, &queues[0]) == 0);
     BTASSERT(bus_listener_init(&chans[1], ID_FOO, &queues[1]) == 0);
-    BTASSERT(bus_listener_init(&chans[2], -1, NULL) == 0);
-    BTASSERT(bus_listener_init(&chans[3], -1, NULL) == 0);
-    BTASSERT(bus_listener_init(&chans[4], -1, NULL) == 0);
+    BTASSERT(bus_listener_init(&chans[2], -1, &dummy) == 0);
+    BTASSERT(bus_listener_init(&chans[3], -1, &dummy) == 0);
+    BTASSERT(bus_listener_init(&chans[4], -1, &dummy) == 0);
 
     /* Write the message foo to the bus. No receiver is attached. */
     foo = 5;

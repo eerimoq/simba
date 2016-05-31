@@ -29,10 +29,18 @@ int setting_module_init(void)
 
 ssize_t setting_read(void *dst_p, size_t src, size_t size)
 {
+    ASSERTN(dst_p != NULL, EINVAL);
+    ASSERTN(src >= 0, EINVAL);
+    ASSERTN(size > 0, EINVAL);
+
     return (setting_port_read(dst_p, src, size));
 }
 
 ssize_t setting_write(size_t dst, const void *src_p, size_t size)
 {
+    ASSERTN(dst >= 0, EINVAL);
+    ASSERTN(src_p != NULL, EINVAL);
+    ASSERTN(size > 0, EINVAL);
+
     return (setting_port_write(dst, src_p, size));
 }

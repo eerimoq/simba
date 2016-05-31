@@ -456,6 +456,10 @@ struct thrd_t *thrd_spawn(void *(*main)(void *),
                           void *stack_p,
                           size_t stack_size)
 {
+    ASSERTN(main != NULL, EINVAL);
+    ASSERTN(stack_p != NULL, EINVAL);
+    ASSERTN(stack_size > sizeof(struct thrd_t) + 1, EINVAL);
+
     struct thrd_t *thrd_p;
     int err = 0;
 
@@ -503,6 +507,8 @@ int thrd_suspend(struct time_t *timeout_p)
 
 int thrd_resume(struct thrd_t *thrd_p, int err)
 {
+    ASSERTN(thrd_p != NULL, EINVAL);
+
     int res;
 
     sys_lock();
@@ -525,6 +531,8 @@ int thrd_yield(void)
 
 int thrd_join(struct thrd_t *thrd_p)
 {
+    ASSERTN(thrd_p != NULL, EINVAL);
+
     while (1) {
         sys_lock();
 
@@ -572,6 +580,8 @@ const char *thrd_get_name()
 
 int thrd_set_log_mask(struct thrd_t *thrd_p, int mask)
 {
+    ASSERTN(thrd_p != NULL, EINVAL);
+
     int old;
 
     old = thrd_p->log_mask;

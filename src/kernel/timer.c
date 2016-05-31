@@ -137,6 +137,10 @@ int timer_init(struct timer_t *self_p,
                void *arg_p,
                int flags)
 {
+    ASSERTN(self_p != NULL, EINVAL);
+    ASSERTN(timeout_p != NULL, EINVAL);
+    ASSERTN(callback != NULL, EINVAL);
+
     self_p->timeout = t2st(timeout_p);
 
     if (self_p->timeout == 0) {
@@ -153,6 +157,8 @@ int timer_init(struct timer_t *self_p,
 
 int timer_start(struct timer_t *self_p)
 {
+    ASSERTN(self_p != NULL, EINVAL);
+
     sys_lock();
     timer_start_isr(self_p);
     sys_unlock();
@@ -169,6 +175,8 @@ int timer_start_isr(struct timer_t *self_p)
 
 int timer_stop(struct timer_t *self_p)
 {
+    ASSERTN(self_p != NULL, EINVAL);
+
     int err = 0;
 
     sys_lock();

@@ -33,6 +33,8 @@ int rwlock_module_init(void)
 
 int rwlock_init(struct rwlock_t *self_p)
 {
+    ASSERTN(self_p != NULL, EINVAL);
+
     self_p->number_of_readers = 0;
     self_p->number_of_writers = 0;
     self_p->readers_p = NULL;
@@ -44,6 +46,8 @@ int rwlock_init(struct rwlock_t *self_p)
 int rwlock_reader_get(struct rwlock_t *self_p,
                       struct time_t *timeout_p)
 {
+    ASSERTN(self_p != NULL, EINVAL);
+
     struct rwlock_elem_t elem;
     int res = 0;
 
@@ -80,6 +84,8 @@ int rwlock_reader_get(struct rwlock_t *self_p,
 
 int rwlock_reader_put(struct rwlock_t *self_p)
 {
+    ASSERTN(self_p != NULL, EINVAL);
+
     sys_lock();
     rwlock_reader_put_isr(self_p);
     sys_unlock();
@@ -89,6 +95,8 @@ int rwlock_reader_put(struct rwlock_t *self_p)
 
 int rwlock_reader_put_isr(struct rwlock_t *self_p)
 {
+    ASSERTN(self_p != NULL, EINVAL);
+
     self_p->number_of_readers--;
 
     if (self_p->number_of_writers > 0) {
@@ -107,6 +115,8 @@ int rwlock_reader_put_isr(struct rwlock_t *self_p)
 int rwlock_writer_get(struct rwlock_t *self_p,
                       struct time_t *timeout_p)
 {
+    ASSERTN(self_p != NULL, EINVAL);
+
     struct rwlock_elem_t elem;
     int res = 0;
 
@@ -143,6 +153,8 @@ int rwlock_writer_get(struct rwlock_t *self_p,
 
 int rwlock_writer_put(struct rwlock_t *self_p)
 {
+    ASSERTN(self_p != NULL, EINVAL);
+
     sys_lock();
     rwlock_writer_put_isr(self_p);
     sys_unlock();

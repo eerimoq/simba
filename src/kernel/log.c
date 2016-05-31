@@ -208,6 +208,8 @@ int log_module_init()
 
 int log_add_handler(struct log_handler_t *handler_p)
 {
+    ASSERTN(handler_p != NULL, EINVAL);
+
     sem_get(&state.sem, NULL);
 
     handler_p->next_p = state.handler.next_p;
@@ -220,6 +222,8 @@ int log_add_handler(struct log_handler_t *handler_p)
 
 int log_remove_handler(struct log_handler_t *handler_p)
 {
+    ASSERTN(handler_p != NULL, EINVAL);
+
     struct log_handler_t *curr_p, *prev_p;
 
     sem_get(&state.sem, NULL);
@@ -247,6 +251,8 @@ int log_remove_handler(struct log_handler_t *handler_p)
 
 int log_add_object(struct log_object_t *object_p)
 {
+    ASSERTN(object_p != NULL, EINVAL);
+
     sem_get(&state.sem, NULL);
 
     object_p->next_p = state.object.next_p;
@@ -259,6 +265,8 @@ int log_add_object(struct log_object_t *object_p)
 
 int log_remove_object(struct log_object_t *object_p)
 {
+    ASSERTN(object_p != NULL, EINVAL);
+
     struct log_object_t *curr_p, *prev_p;
 
     sem_get(&state.sem, NULL);
@@ -294,6 +302,9 @@ int log_set_default_handler_output_channel(chan_t *chout_p)
 int log_handler_init(struct log_handler_t *self_p,
                      chan_t *chout_p)
 {
+    ASSERTN(self_p != NULL, EINVAL);
+    ASSERTN(chout_p != NULL, EINVAL);
+
     self_p->chout_p = chout_p;
     self_p->next_p = NULL;
 
@@ -304,6 +315,9 @@ int log_object_init(struct log_object_t *self_p,
                     const char *name_p,
                     char mask)
 {
+    ASSERTN(self_p != NULL, EINVAL);
+    ASSERTN(name_p != NULL, EINVAL);
+
     self_p->name_p = name_p;
     self_p->mask = mask;
 
@@ -315,6 +329,8 @@ int log_object_print(struct log_object_t *self_p,
                      const char *fmt_p,
                      ...)
 {
+    ASSERTN(fmt_p != NULL, EINVAL);
+
     va_list ap;
     struct time_t now;
     struct log_handler_t *handler_p;

@@ -53,6 +53,10 @@ int queue_init(struct queue_t *self_p,
                void *buf_p,
                size_t size)
 {
+    ASSERTN(self_p != NULL, EINVAL);
+    ASSERTN((buf_p == NULL)
+            || ((buf_p != NULL) && (size > 0)), EINVAL);
+
     chan_init(&self_p->base,
               (ssize_t (*)(void *, void *, size_t))queue_read,
               (ssize_t (*)(void *, const void *, size_t))queue_write,
@@ -75,10 +79,10 @@ int queue_init(struct queue_t *self_p,
 
 int queue_start(struct queue_t *self_p)
 {
+    ASSERTN(self_p != NULL, EINVAL);
+
     sys_lock();
-
     self_p->state = QUEUE_STATE_RUNNING;
-
     sys_unlock();
 
     return (0);
@@ -86,12 +90,12 @@ int queue_start(struct queue_t *self_p)
 
 int queue_stop(struct queue_t *self_p)
 {
+    ASSERTN(self_p != NULL, EINVAL);
+
     int res = 0;
 
     sys_lock();
-
     res = queue_stop_isr(self_p);
-
     sys_unlock();
 
     return (res);
@@ -122,6 +126,10 @@ int queue_stop_isr(struct queue_t *self_p)
 
 ssize_t queue_read(struct queue_t *self_p, void *buf_p, size_t size)
 {
+    ASSERTN(self_p != NULL, EINVAL);
+    ASSERTN(buf_p != NULL, EINVAL);
+    ASSERTN(size > 0, EINVAL);
+
     size_t left, n, buffer_used_until_end, buffer_used;
     char *cbuf_p;
 
@@ -205,6 +213,10 @@ ssize_t queue_write(struct queue_t *self_p,
                     const void *buf_p,
                     size_t size)
 {
+    ASSERTN(self_p != NULL, EINVAL);
+    ASSERTN(buf_p != NULL, EINVAL);
+    ASSERTN(size > 0, EINVAL);
+
     ssize_t res;
     size_t left;
     const char *cbuf_p;
@@ -312,11 +324,15 @@ ssize_t queue_write_isr(struct queue_t *self_p,
 
 ssize_t queue_size(struct queue_t *self_p)
 {
+    ASSERTN(self_p != NULL, EINVAL);
+
     return (get_buffer_used(&self_p->buffer) + WRITER_SIZE(self_p));
 }
 
 ssize_t queue_unused_size(struct queue_t *self_p)
 {
+    ASSERTN(self_p != NULL, EINVAL);
+
     ssize_t res;
 
     sys_lock();

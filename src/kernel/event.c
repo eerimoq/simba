@@ -22,6 +22,8 @@
 
 int event_init(struct event_t *self_p)
 {
+    ASSERTN(self_p != NULL, EINVAL);
+
     chan_init(&self_p->base,
               (ssize_t (*)(void *, void *, size_t))event_read,
               (ssize_t (*)(void *, const void *, size_t))event_write,
@@ -36,6 +38,10 @@ ssize_t event_read(struct event_t *self_p,
                    void *buf_p,
                    size_t size)
 {
+    ASSERTN(self_p != NULL, EINVAL);
+    ASSERTN(buf_p != NULL, EINVAL);
+    ASSERTN(size == sizeof(uint32_t), EINVAL);
+
     uint32_t *mask_p, mask;
 
     mask_p = (uint32_t *)buf_p;
@@ -65,6 +71,10 @@ ssize_t event_write(struct event_t *self_p,
                     const void *buf_p,
                     size_t size)
 {
+    ASSERTN(self_p != NULL, EINVAL);
+    ASSERTN(buf_p != NULL, EINVAL);
+    ASSERTN(size == sizeof(uint32_t), EINVAL);
+
     sys_lock();
     size = event_write_isr(self_p, buf_p, size);
     sys_unlock();
@@ -94,5 +104,7 @@ ssize_t event_write_isr(struct event_t *self_p,
 
 ssize_t event_size(struct event_t *self_p)
 {
+    ASSERTN(self_p != NULL, EINVAL);
+
     return (self_p->mask != 0);
 }

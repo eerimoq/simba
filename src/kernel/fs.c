@@ -247,6 +247,8 @@ int fs_call(char *command_p,
             chan_t *chout_p,
             void *arg_p)
 {
+    ASSERTN(command_p != NULL, EINVAL);
+
     int argc, skip_slash;
     const char *argv[FS_COMMAND_ARGS_MAX];
     struct fs_command_t *current_p;
@@ -283,6 +285,9 @@ int fs_list(const char *path_p,
             const char *filter_p,
             chan_t *chout_p)
 {
+    ASSERTN(path_p != NULL, EINVAL);
+    ASSERTN(chout_p != NULL, EINVAL);
+
     int buf_length, path_offset, filter_offset, path_length;
     struct fs_command_t *command_p;
     char buf[64], next_char;
@@ -349,6 +354,8 @@ int fs_list(const char *path_p,
 
 int fs_auto_complete(char *path_p)
 {
+    ASSERTN(path_p != NULL, EINVAL);
+
     char next_char;
     int mismatch, path_length, offset, size;
     struct fs_command_t *command_p, *next_p;
@@ -434,6 +441,12 @@ int fs_auto_complete(char *path_p)
 
 void fs_split(char *buf_p, char **path_pp, char **cmd_pp)
 {
+    ASSERTN(buf_p != NULL, EINVAL);
+    ASSERTN(path_pp != NULL, EINVAL);
+    ASSERTN(*path_pp != NULL, EINVAL);
+    ASSERTN(cmd_pp != NULL, EINVAL);
+    ASSERTN(*cmd_pp != NULL, EINVAL);
+
     *path_pp = buf_p;
     *cmd_pp = NULL;
 
@@ -456,6 +469,9 @@ void fs_split(char *buf_p, char **path_pp, char **cmd_pp)
 
 void fs_merge(char *path_p, char *cmd_p)
 {
+    ASSERTN(path_p != NULL, EINVAL);
+    ASSERTN(cmd_p != NULL, EINVAL);
+
     if (*path_p != '\0') {
         *--cmd_p = '/';
     }
@@ -466,6 +482,10 @@ int fs_command_init(struct fs_command_t *self_p,
                     fs_callback_t callback,
                     void *arg_p)
 {
+    ASSERTN(self_p != NULL, EINVAL);
+    ASSERTN(path_p != NULL, EINVAL);
+    ASSERTN(callback != NULL, EINVAL);
+
     self_p->next_p = NULL;
     self_p->path_p = path_p;
     self_p->callback = callback;
@@ -476,6 +496,8 @@ int fs_command_init(struct fs_command_t *self_p,
 
 int fs_command_register(struct fs_command_t *command_p)
 {
+    ASSERTN(command_p != NULL, EINVAL);
+
     int res = -1;
     struct fs_command_t *current_p, *prev_p;
 
@@ -506,6 +528,8 @@ int fs_command_register(struct fs_command_t *command_p)
 
 int fs_command_deregister(struct fs_command_t *command_p)
 {
+    ASSERTN(0, ENOSYS);
+
     return (-1);
 }
 
@@ -513,6 +537,9 @@ int fs_counter_init(struct fs_counter_t *self_p,
                     const FAR char *path_p,
                     uint64_t value)
 {
+    ASSERTN(self_p != NULL, EINVAL);
+    ASSERTN(path_p != NULL, EINVAL);
+
     fs_command_init(&self_p->command,
                     path_p,
                     counter_cmd,
@@ -527,6 +554,8 @@ int fs_counter_init(struct fs_counter_t *self_p,
 int fs_counter_increment(struct fs_counter_t *self_p,
                          uint64_t value)
 {
+    ASSERTN(self_p != NULL, EINVAL);
+
     self_p->value += value;
 
     return (0);
@@ -534,6 +563,8 @@ int fs_counter_increment(struct fs_counter_t *self_p,
 
 int fs_counter_register(struct fs_counter_t *counter_p)
 {
+    ASSERTN(counter_p != NULL, EINVAL);
+
     /* Insert counter into the command list and the counter list. */
     fs_command_register(&counter_p->command);
 
@@ -545,6 +576,8 @@ int fs_counter_register(struct fs_counter_t *counter_p)
 
 int fs_counter_deregister(struct fs_counter_t *counter_p)
 {
+    ASSERTN(0, ENOSYS);
+
     return (0);
 }
 
@@ -553,6 +586,10 @@ int fs_parameter_init(struct fs_parameter_t *self_p,
                       fs_callback_t callback,
                       void *value_p)
 {
+    ASSERTN(self_p != NULL, ENOSYS);
+    ASSERTN(path_p != NULL, ENOSYS);
+    ASSERTN(callback != NULL, ENOSYS);
+
     fs_command_init(&self_p->command,
                     path_p,
                     callback,
@@ -565,6 +602,8 @@ int fs_parameter_init(struct fs_parameter_t *self_p,
 
 int fs_parameter_register(struct fs_parameter_t *parameter_p)
 {
+    ASSERTN(parameter_p != NULL, ENOSYS);
+
     /* Insert counter into the command list and the counter list. */
     fs_command_register(&parameter_p->command);
 
@@ -576,6 +615,8 @@ int fs_parameter_register(struct fs_parameter_t *parameter_p)
 
 int fs_parameter_deregister(struct fs_parameter_t *parameter_p)
 {
+    ASSERTN(0, ENOSYS);
+
     return (0);
 }
 

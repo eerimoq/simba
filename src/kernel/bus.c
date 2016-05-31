@@ -27,6 +27,8 @@ int bus_module_init()
 
 int bus_init(struct bus_t *self_p)
 {
+    ASSERTN(self_p != NULL, EINVAL);
+
     binary_tree_init(&self_p->listeners);
     rwlock_init(&self_p->rwlock);
 
@@ -37,6 +39,9 @@ int bus_listener_init(struct bus_listener_t *self_p,
                       int id,
                       chan_t *chan_p)
 {
+    ASSERTN(self_p != NULL, EINVAL);
+    ASSERTN(chan_p != NULL, EINVAL);
+
     self_p->base.key = id;
     self_p->id = id;
     self_p->chan_p = chan_p;
@@ -48,6 +53,9 @@ int bus_listener_init(struct bus_listener_t *self_p,
 int bus_attach(struct bus_t *self_p,
                struct bus_listener_t *listener_p)
 {
+    ASSERTN(self_p != NULL, EINVAL);
+    ASSERTN(listener_p != NULL, EINVAL);
+
     struct bus_listener_t *head_p;
 
     rwlock_writer_get(&self_p->rwlock, NULL);
@@ -70,6 +78,9 @@ int bus_attach(struct bus_t *self_p,
 int bus_detatch(struct bus_t *self_p,
                 struct bus_listener_t *listener_p)
 {
+    ASSERTN(self_p != NULL, EINVAL);
+    ASSERTN(listener_p != NULL, EINVAL);
+
     int res = 0;
     struct bus_listener_t *head_p, *curr_p, *prev_p;
 
@@ -114,6 +125,10 @@ int bus_write(struct bus_t *self_p,
               const void *buf_p,
               size_t size)
 {
+    ASSERTN(self_p != NULL, EINVAL);
+    ASSERTN(buf_p != NULL, EINVAL);
+    ASSERTN(size > 0, EINVAL);
+
     int number_of_receivers;
     struct bus_listener_t *curr_p;
 

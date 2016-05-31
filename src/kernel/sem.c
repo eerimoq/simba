@@ -34,6 +34,9 @@ int sem_module_init(void)
 int sem_init(struct sem_t *self_p,
              int count)
 {
+    ASSERTN(self_p != NULL, EINVAL);
+    ASSERTN(count >= 0, EINVAL);
+
     self_p->count = count;
     self_p->head_p = NULL;
 
@@ -43,6 +46,8 @@ int sem_init(struct sem_t *self_p,
 int sem_get(struct sem_t *self_p,
             struct time_t *timeout_p)
 {
+    ASSERTN(self_p != NULL, EINVAL);
+
     int err = 0;
     struct sem_elem_t elem;
 
@@ -78,6 +83,9 @@ int sem_get(struct sem_t *self_p,
 int sem_put(struct sem_t *self_p,
             int count)
 {
+    ASSERTN(self_p != NULL, EINVAL);
+    ASSERTN(count > 0, EINVAL);
+
     sys_lock();
     sem_put_isr(self_p, count);
     sys_unlock();

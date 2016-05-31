@@ -85,6 +85,8 @@ void time_tick_isr(void)
 
 int time_get(struct time_t *now_p)
 {
+    ASSERTN(now_p != NULL, EINVAL);
+
     uint64_t tick;
 
     sys_lock();
@@ -98,6 +100,8 @@ int time_get(struct time_t *now_p)
 
 int time_set(struct time_t *new_p)
 {
+    ASSERTN(new_p != NULL, EINVAL);
+
     uint64_t tick;
 
     tick = ((new_p->seconds * CONFIG_SYSTEM_TICK_FREQUENCY) +
@@ -115,6 +119,10 @@ int time_diff(struct time_t *diff_p,
               struct time_t *left_p,
               struct time_t *right_p)
 {
+    ASSERTN(diff_p != NULL, EINVAL);
+    ASSERTN(left_p != NULL, EINVAL);
+    ASSERTN(right_p != NULL, EINVAL);
+
     diff_p->seconds = (left_p->seconds - right_p->seconds);
     diff_p->nanoseconds = (left_p->nanoseconds - right_p->nanoseconds);
 
@@ -136,6 +144,9 @@ void time_sleep(long usec)
 int time_unix_time_to_date(struct date_t *date_p,
                            struct time_t *time_p)
 {
+    ASSERTN(date_p != NULL, EINVAL);
+    ASSERTN(time_p != NULL, EINVAL);
+
     long long t = time_p->seconds;
     long long weeks, days, secs;
     int32_t remdays, remsecs, remyears;

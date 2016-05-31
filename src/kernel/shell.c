@@ -192,6 +192,8 @@ int shell_module_init()
 
 void *shell_main(void *arg_p)
 {
+    ASSERTN(arg_p != NULL, EINVAL);
+
     chan_t *chin_p, *chout_p;
     const char *username_p, *password_p;
     struct shell_args_t *shell_args_p;

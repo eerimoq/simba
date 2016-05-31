@@ -32,6 +32,11 @@ int chan_init(struct chan_t *self_p,
               thrd_write_fn_t write,
               thrd_size_fn_t size)
 {
+    ASSERTN(self_p != NULL, EINVAL);
+    ASSERTN(read != NULL, EINVAL);
+    ASSERTN(write != NULL, EINVAL);
+    ASSERTN(size != NULL, EINVAL);
+
     self_p->read = read;
     self_p->write = write;
     self_p->size = size;
@@ -46,6 +51,10 @@ int chan_list_init(struct chan_list_t *list_p,
                    void *workspace_p,
                    size_t size)
 {
+    ASSERTN(list_p != NULL, EINVAL);
+    ASSERTN(workspace_p != NULL, EINVAL);
+    ASSERTN(size > 0, EINVAL);
+
     list_p->max = (size / sizeof(list_p->chans_pp[0]));
 
     if (list_p->max == 0) {
@@ -61,6 +70,8 @@ int chan_list_init(struct chan_list_t *list_p,
 
 int chan_list_destroy(struct chan_list_t *list_p)
 {
+    ASSERTN(list_p != NULL, EINVAL);
+
     struct chan_t *chan_p = NULL;
     size_t i;
 
@@ -80,6 +91,10 @@ ssize_t chan_read(chan_t *self_p,
                   void *buf_p,
                   size_t size)
 {
+    ASSERTN(self_p != NULL, EINVAL);
+    ASSERTN(buf_p != NULL, EINVAL);
+    ASSERTN(size > 0, EINVAL);
+
     return (((struct chan_t *)self_p)->read(self_p, buf_p, size));
 }
 
@@ -87,16 +102,25 @@ ssize_t chan_write(chan_t *self_p,
                    const void *buf_p,
                    size_t size)
 {
+    ASSERTN(self_p != NULL, EINVAL);
+    ASSERTN(buf_p != NULL, EINVAL);
+    ASSERTN(size > 0, EINVAL);
+
     return (((struct chan_t *)self_p)->write(self_p, buf_p, size));
 }
 
 size_t chan_size(chan_t *self_p)
 {
+    ASSERTN(self_p != NULL, EINVAL);
+
     return (((struct chan_t *)self_p)->size(self_p));
 }
 
 int chan_list_add(struct chan_list_t *list_p, chan_t *chan_p)
 {
+    ASSERTN(list_p != NULL, EINVAL);
+    ASSERTN(chan_p != NULL, EINVAL);
+
     if (list_p->len == list_p->max) {
         return (-ENOMEM);
     }
@@ -107,9 +131,12 @@ int chan_list_add(struct chan_list_t *list_p, chan_t *chan_p)
     return (0);
 }
 
-int chan_list_remove(struct chan_list_t *list, chan_t *chan_p)
+int chan_list_remove(struct chan_list_t *list_p, chan_t *chan_p)
 {
-    ASSERT(0, "chan_list_remove not implemented\n");
+    ASSERTN(list_p != NULL, EINVAL);
+    ASSERTN(chan_p != NULL, EINVAL);
+
+    ASSERTN(0, ENOSYS, "chan_list_remove not implemented\n");
 
     return (0);
 }
@@ -117,6 +144,8 @@ int chan_list_remove(struct chan_list_t *list, chan_t *chan_p)
 chan_t *chan_list_poll(struct chan_list_t *list_p,
                        struct time_t *timeout_p)
 {
+    ASSERTN(list_p != NULL, EINVAL);
+
     struct chan_t *chan_p = NULL;
     size_t i;
 
@@ -153,6 +182,25 @@ chan_t *chan_list_poll(struct chan_list_t *list_p,
     sys_unlock();
 
     return (chan_p);
+}
+
+ssize_t chan_read_null(chan_t *self_p,
+                       void *buf_p,
+                       size_t size)
+{
+    return (0);
+}
+
+ssize_t chan_write_null(chan_t *self_p,
+                        const void *buf_p,
+                        size_t size)
+{
+    return (0);
+}
+
+size_t chan_size_null(chan_t *self_p)
+{
+    return (0);
 }
 
 int chan_is_polled_isr(struct chan_t *self_p)

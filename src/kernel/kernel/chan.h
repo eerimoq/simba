@@ -200,4 +200,32 @@ int chan_list_remove(struct chan_list_t *list_p, chan_t *chan_p);
 chan_t *chan_list_poll(struct chan_list_t *list_p,
                        struct time_t *timeout_p);
 
+/**
+ * Null channel read function. Pass to ``chan_init()`` if no read
+ * function is required for the channel.
+ *
+ * @return Always returns zero(0).
+ */
+ssize_t chan_read_null(chan_t *self_p,
+                       void *buf_p,
+                       size_t size);
+
+/**
+ * Null channel write function. Pass to ``chan_init()`` if no write
+ * function is required for the channel.
+ *
+ * @return Always returns zero(0).
+ */
+ssize_t chan_write_null(chan_t *self_p,
+                        const void *buf_p,
+                        size_t size);
+
+/**
+ * Null channel size function. Pass to ``chan_init()`` if no size
+ * function is required for the channel.
+ *
+ * @return Always returns zero(0).
+ */
+size_t chan_size_null(chan_t *self_p);
+
 #endif
