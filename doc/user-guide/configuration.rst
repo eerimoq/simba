@@ -12,7 +12,7 @@ Search order
 Highest priority first.
 
 1. Command line as ``CFLAGS_EXTRA="-D<configuration
-   variable>=<value>``.
+   variable>=<value>"``.
 
 2. A file named ``config.h`` in the application root folder.
 
