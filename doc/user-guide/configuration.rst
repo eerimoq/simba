@@ -1,8 +1,8 @@
 Configuration
 =============
 
-Here is a list of all configuration variables available in
-`Simba`. These are used to customize `Simba` for your application
+Here is a list of all compile time configuration variables available
+in `Simba`. These are used to customize `Simba` for your application
 needs. The default values are defined in
 :github-blob:`src/config_default.h`.
 
