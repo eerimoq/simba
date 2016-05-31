@@ -24,9 +24,9 @@
    FCPU / clockdiv / samplingtime = 16MHz / 32 / 13 = 9615Hz. */
 #define SAMPLING_RATE_HZ 38462UL
 
-/* Convert desired smpling rate to number of interrupts, rounded
+/* Convert desired sampling rate to number of interrupts, rounded
    up. The error in the calculation is rather big for high sampling
-   frequencies.*/
+   frequencies. */
 #define SAMPLING_RATE_TO_INTERRUPT_MAX(rate) \
     ((SAMPLING_RATE_HZ + rate - 1) / rate)
 
@@ -123,7 +123,7 @@ static int adc_port_async_convert(struct adc_driver_t *self_p,
     self_p->pos = 0;
     self_p->samples_p = samples_p;
     self_p->length = length;
-    self_p->interrupt_count = 0;
+    self_p->interrupt_count = (self_p->interrupt_max - 1);
     self_p->thrd_p = NULL;
     self_p->next_p = NULL;
 
