@@ -25,7 +25,11 @@
  * Build with assert.
  */
 #ifndef CONFIG_ASSERT
-#    define CONFIG_ASSERT               1
+#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO)
+#        define CONFIG_ASSERT               0
+#    else
+#        define CONFIG_ASSERT               1
+#    endif
 #endif
 
 /**
