@@ -79,5 +79,7 @@ static float note_to_frequency_table[MIDI_NOTE_MAX] = {
 
 float midi_note_to_frequency(int note)
 {
+    ASSERTN(note < membersof(note_to_frequency_table), EINVAL);
+
     return (note_to_frequency_table[note]);
 }

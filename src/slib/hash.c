@@ -95,6 +95,8 @@ static void block_update(struct hash_sha1_t *self_p,
 
 int hash_sha1_init(struct hash_sha1_t *self_p)
 {
+    ASSERTN(self_p != NULL, EINVAL);
+
     self_p->block.size = 0;
     self_p->h[0] = 0x67452301;
     self_p->h[1] = 0xefcdab89;
@@ -110,6 +112,10 @@ int hash_sha1_update(struct hash_sha1_t *self_p,
                      void *buf_p,
                      size_t size)
 {
+    ASSERTN(self_p != NULL, EINVAL);
+    ASSERTN(buf_p != NULL, EINVAL);
+    ASSERTN(size >= 0, EINVAL);
+
     uint32_t temp;
     uint8_t *b_p = buf_p;
 
@@ -147,6 +153,9 @@ int hash_sha1_update(struct hash_sha1_t *self_p,
 int hash_sha1_digest(struct hash_sha1_t *self_p,
                      uint8_t *hash_p)
 {
+    ASSERTN(self_p != NULL, EINVAL);
+    ASSERTN(hash_p != NULL, EINVAL);
+
     int i;
 
     i = self_p->block.size;

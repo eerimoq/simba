@@ -47,6 +47,13 @@ int hash_map_init(struct hash_map_t *self_p,
                   size_t entries_max,
                   hash_function_t hash)
 {
+    ASSERTN(self_p != NULL, EINVAL);
+    ASSERTN(buckets_p != NULL, EINVAL);
+    ASSERTN(buckets_max > 0, EINVAL);
+    ASSERTN(entries_p != NULL, EINVAL);
+    ASSERTN(entries_max > 0, EINVAL);
+    ASSERTN(hash != NULL, EINVAL);
+
     size_t i;
 
     self_p->buckets_p = buckets_p;
@@ -74,6 +81,9 @@ int hash_map_add(struct hash_map_t *self_p,
                  long key,
                  void *value_p)
 {
+    ASSERTN(self_p != NULL, EINVAL);
+    ASSERTN(value_p != NULL, EINVAL);
+
     int hash;
     struct hash_map_bucket_t *bucket_p;
     struct hash_map_entry_t *entry_p;
@@ -119,6 +129,8 @@ int hash_map_add(struct hash_map_t *self_p,
 int hash_map_remove(struct hash_map_t *self_p,
                     long key)
 {
+    ASSERTN(self_p != NULL, EINVAL);
+
     int hash;
     struct hash_map_bucket_t *bucket_p;
     struct hash_map_entry_t *entry_p, *prev_p;
@@ -157,6 +169,8 @@ int hash_map_remove(struct hash_map_t *self_p,
 void *hash_map_get(struct hash_map_t *self_p,
                    long key)
 {
+    ASSERTN(self_p != NULL, EINVAL);
+
     int hash;
     struct hash_map_bucket_t *bucket_p;
     struct hash_map_entry_t *entry_p;

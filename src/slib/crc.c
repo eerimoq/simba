@@ -68,6 +68,9 @@ static uint32_t crc32_tab[] = {
 
 uint32_t crc_32(uint32_t crc, const void *buf_p, size_t size)
 {
+    ASSERTN(buf_p != NULL, EINVAL);
+    ASSERTN(size >= 0, EINVAL);
+
     const uint8_t *b_p;
 
     b_p = buf_p;

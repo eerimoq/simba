@@ -60,6 +60,10 @@ static int encoded_to_index(char encoded)
 
 int base64_encode(char *dst_p, const void *src_p, size_t size)
 {
+    ASSERTN(dst_p != NULL, EINVAL);
+    ASSERTN(src_p != NULL, EINVAL);
+    ASSERTN(size > 0, EINVAL);
+
     int i;
     int j;
     int index;
@@ -96,6 +100,10 @@ int base64_encode(char *dst_p, const void *src_p, size_t size)
 
 int base64_decode(void *dst_p, const char *src_p, size_t size)
 {
+    ASSERTN(dst_p != NULL, EINVAL);
+    ASSERTN(src_p != NULL, EINVAL);
+    ASSERTN(size > 0, EINVAL);
+
     int i;
     int j;
     uint8_t index[4];

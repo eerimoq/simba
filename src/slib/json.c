@@ -263,6 +263,8 @@ static int parse_string(struct json_parser_t *parser_p,
 
 int json_init(struct json_parser_t *parser_p)
 {
+    ASSERTN(parser_p != NULL, EINVAL);
+
     parser_p->pos = 0;
     parser_p->toknext = 0;
     parser_p->toksuper = -1;
@@ -279,6 +281,12 @@ int json_parse(struct json_parser_t *parser_p,
                struct json_tok_t *tokens_p, 
                unsigned int num_tokens)
 {
+    ASSERTN(parser_p != NULL, EINVAL);
+    ASSERTN(js_p != NULL, EINVAL);
+    ASSERTN(len > 0, EINVAL);
+    ASSERTN(((tokens_p != NULL) && (num_tokens > 0))
+            || (num_tokens == 0), EINVAL);
+
     int r;
     int i;
     struct json_tok_t *token_p;
