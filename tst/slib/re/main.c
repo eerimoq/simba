@@ -26,21 +26,15 @@ int test_text(struct harness_t *harness_p)
 
     BTASSERT(re_compile(re, "foo", 0, sizeof(re)) != NULL);
     BTASSERT(re_match(re, "foo", 3, NULL, NULL) == 3);
+    BTASSERT(re_match(re, "FoO", 3, NULL, NULL) == -1);
+
+    BTASSERT(re_compile(re, "foo", RE_IGNORECASE, sizeof(re)) != NULL);
+    BTASSERT(re_match(re, "foo", 3, NULL, NULL) == 3);
+    BTASSERT(re_match(re, "FoO", 3, NULL, NULL) == 3);
+    BTASSERT(re_match(re, "BAR", 3, NULL, NULL) == -1);
 
     BTASSERT(re_compile(re, "\n", 0, sizeof(re)) != NULL);
     BTASSERT(re_match(re, "\n", 1, NULL, NULL) == 1);
-
-    BTASSERT(re_compile(re, "foo", 0, sizeof(re)) != NULL);
-    BTASSERT(re_match(re, "fo", 2, NULL, NULL) == -1);
-
-    BTASSERT(re_compile(re, "foo", RE_IGNORECASE, sizeof(re)) != NULL);
-    BTASSERT(re_match(re, "FoO", 3, NULL, NULL) == 3);
-
-    BTASSERT(re_match(re_compile(re, "foo", 0, sizeof(re)),
-                      "foo",
-                      3,
-                      NULL,
-                      NULL) == 3);
 
     return (0);
 }
@@ -50,11 +44,11 @@ int test_newline(struct harness_t *harness_p)
     char re[32];
 
     /* RE_DOTALL. */
-    BTASSERT(re_compile(re, "a.b.c", RE_DOTALL, sizeof(re)) != NULL);
-    BTASSERT(re_match(re, "a\nb\nc", 5, NULL, NULL) == 5);
-
     BTASSERT(re_compile(re, "a.b.c", 0, sizeof(re)) != NULL);
     BTASSERT(re_match(re, "a\nb\nc", 5, NULL, NULL) == -1);
+
+    BTASSERT(re_compile(re, "a.b.c", RE_DOTALL, sizeof(re)) != NULL);
+    BTASSERT(re_match(re, "a\nb\nc", 5, NULL, NULL) == 5);
 
     /* RE_MULTILINE. */
     /* BTASSERT(re_compile(re, "^a\nb\nc$", 0, sizeof(re)) != NULL); */
@@ -190,10 +184,15 @@ int test_greed(struct harness_t *harness_p)
     /* Non-greedy, match as little as possible. */
     BTASSERT(re_compile(re, "<.\?\?>", 0, sizeof(re)) != NULL);
     BTASSERT(re_match(re, "<p>foo</p>", 10, NULL, NULL) == 3);
+    BTASSERT(re_match(re, "<>>", 3, NULL, NULL) == 2);
+
+    BTASSERT(re_compile(re, "<.\?\?>", 0, sizeof(re)) != NULL);
+    BTASSERT(re_match(re, "<", 1, NULL, NULL) == -1);
 
     /* Non-greedy, match as little as possible. */
     BTASSERT(re_compile(re, "<.*?>", 0, sizeof(re)) != NULL);
     BTASSERT(re_match(re, "<p>foo</p>", 10, NULL, NULL) == 3);
+    BTASSERT(re_match(re, "<>>", 3, NULL, NULL) == 2);
 
     /* Non-greedy, match as little as possible, at least one. */
     BTASSERT(re_compile(re, "<.+?>", 0, sizeof(re)) != NULL);
@@ -263,6 +262,27 @@ int test_custom(struct harness_t *harness_p)
     return (0);
 }
 
+int test_compile(struct harness_t *harness_p)
+{
+    char re[64];
+
+    /* Compiled buffer too small. */
+
+    BTASSERT(re_compile(re, ".", 0, 3) != NULL);
+    BTASSERT(re_compile(re, ".", 0, 2) == NULL);
+
+    BTASSERT(re_compile(re, ".?", 0, 6) != NULL);
+    BTASSERT(re_compile(re, ".?", 0, 4) == NULL);
+
+    BTASSERT(re_compile(re, ".{1}", 0, 9) != NULL);
+    BTASSERT(re_compile(re, ".{1}", 0, 7) == NULL);
+
+    BTASSERT(re_compile(re, "a", 0, 4) != NULL);
+    BTASSERT(re_compile(re, "a", 0, 2) == NULL);
+
+    return (0);
+}
+
 int main()
 {
     struct harness_t harness;
@@ -275,6 +295,7 @@ int main()
         { test_greed, "test_greed" },
         /* { test_groups, "test_groups" }, */
         { test_custom, "test_custom" },
+        { test_compile, "test_compile" },
         { NULL, NULL }
     };
 

@@ -599,13 +599,15 @@ char *re_compile(char *compiled_p,
     compiled_left--;
 
     while (1) {
+        STD_PRINTF_RE_DEBUG(FSTR("pattern = '%c', compiled_left = %d\r\n"),
+                            *pattern_p,
+                            compiled_left);
+
         if (compiled_left < 1) {
             return (NULL);
         }
 
         compiled_left--;
-
-        STD_PRINTF_RE_DEBUG(FSTR("pattern = '%c'\r\n"), *pattern_p);
 
         switch (*pattern_p) {
 
