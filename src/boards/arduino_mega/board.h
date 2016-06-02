@@ -116,4 +116,6 @@
 
 #define adc_0_dev adc_device[0]
 
+#define i2c_0_dev i2c_device[0]
+
 #endif

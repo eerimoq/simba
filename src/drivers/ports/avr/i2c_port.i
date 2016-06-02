@@ -1,0 +1,220 @@
+/**
+ * @file ports/avr/i2c_port.i
+ * @version 0.5.0
+ *
+ * @section License
+ * Copyright (C) 2014-2016, Erik Moqvist
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * This file is part of the Simba project.
+ */
+
+#include <avr/interrupt.h>
+
+/* READ/WRITE transfer. */
+#define I2C_WRITE                          0x00
+#define I2C_READ                           0x01
+
+/* Master start. */
+#define I2C_M_START                        0x08
+#define I2C_M_REPEATED_START               0x10
+
+/* Master transmit status codes. */
+#define I2C_M_TX_START                     0x08
+#define I2C_M_TX_REPEATED_START            0x10
+#define I2C_M_TX_SLA_W_ACK                 0x18
+#define I2C_M_TX_SLA_W_NACK                0x20
+#define I2C_M_TX_DATA_ACK                  0x28
+#define I2C_M_TX_DATA_NACK                 0x30
+#define I2C_M_TX_ARB_LOST                  0x38
+
+#define I2C_M_TX_MASK                      0x20
+
+/* Master receive status codes. */
+#define I2C_M_RX_START                     0x08
+#define I2C_M_RX_REPEATED_START            0x10
+#define I2C_M_RX_ARB_LOST                  0x38
+#define I2C_M_RX_SLA_R_ACK                 0x40
+#define I2C_M_RX_SLA_R_NACK                0x48
+#define I2C_M_RX_DATA_ACK                  0x50
+#define I2C_M_RX_DATA_NACK                 0x58
+
+#define I2C_M_RX_MASK                      0x40
+
+/* Slave receive status codes. */
+#define I2C_S_RX_SLA_W_ACK                 0x60
+#define I2C_S_RX_ARB_LOST_SLA_W_ACK        0x68
+#define I2C_S_RX_GENERAL_ADDR_ACK          0x70
+#define I2C_S_RX_ARB_LOST_GENERAL_ADDR_ACK 0x78
+#define I2C_S_RX_DATA_ACK                  0x80
+#define I2C_S_RX_DATA_NACK                 0x88
+#define I2C_S_RX_GENERAL_DATA_ACK          0x90
+#define I2C_S_RX_GENERAL_DATA_NACK         0x98
+#define I2C_S_RX_STOP_OR_REPEATED_START    0xa0
+
+/* Slave transmit status codes. */
+#define I2C_S_TX_SLA_R_ACK                 0xa8
+#define I2C_S_TX_ARB_LOST_SLA_R_ACK        0xb0
+#define I2C_S_TX_DATA_ACK                  0xb8
+#define I2C_S_TX_DATA_NACK                 0xc0
+#define I2C_S_TX_LAST_DATA_ACK             0xc8
+
+/* Miscellanous status codes. */
+#define I2C_MISC_NO_INFO                   0xf8
+#define I2C_MISC_ERROR                     0x00
+
+static ssize_t transfer(struct i2c_driver_t *self_p,
+                        int address,
+                        void *buf_p,
+                        size_t size)
+{
+    self_p->address = ((address << 1) | I2C_READ);
+    self_p->buf_p = (void *)buf_p;
+    self_p->size = (size + 1);
+    self_p->thrd_p = thrd_self();
+
+    /* Start the transfer by sending the START condition, and then
+       wait for the transfer to complete. */
+    sys_lock();
+    TWCR = (_BV(TWINT) | _BV(TWSTA) | _BV(TWEN) | _BV(TWIE));
+    thrd_suspend_isr(NULL);
+    sys_unlock();
+
+    return (size - self_p->size);
+}
+
+ISR(TWI_vect)
+{
+    struct i2c_device_t *dev_p = &i2c_device[0];
+    struct i2c_driver_t *drv_p = dev_p->drv_p;
+    uint8_t status;
+
+    if (drv_p == NULL) {
+        return;
+    }
+
+    status = (TWSR & 0xf8);
+
+    switch (status) {
+
+        /* Start. */
+    case I2C_M_START:
+    case I2C_M_REPEATED_START:
+        TWDR = drv_p->address;
+        TWCR = (_BV(TWINT) | _BV(TWEN) | _BV(TWIE));
+        break;
+
+        /* Acknowledgement. */
+    case I2C_M_TX_SLA_W_ACK:
+    case I2C_M_TX_DATA_ACK:
+    case I2C_M_RX_SLA_R_ACK:
+    case I2C_M_RX_DATA_ACK:
+        drv_p->size--;
+
+        if (drv_p->size > 0) {
+            if (status & I2C_M_TX_MASK) {
+                TWDR = *drv_p->buf_p++;
+                TWCR = (_BV(TWINT) | _BV(TWEN) | _BV(TWIE));
+            } else {
+                *drv_p->buf_p++ = TWDR;
+
+                if (drv_p->size > 1) {
+                    TWCR = (_BV(TWINT) | _BV(TWEN) | _BV(TWIE));
+                } else {
+                    TWCR = (_BV(TWINT) | _BV(TWIE));
+                }
+            }
+        } else {
+            TWCR = (_BV(TWINT) | _BV(TWSTO) | _BV(TWEN) | _BV(TWIE));
+            thrd_resume_isr(drv_p->thrd_p, 0);
+        }
+        
+        break;
+
+        /* Negative acknowledgement. */
+    case I2C_M_TX_SLA_W_NACK:
+    case I2C_M_TX_DATA_NACK:
+    case I2C_M_RX_SLA_R_NACK:
+    case I2C_M_RX_DATA_NACK:
+        TWCR = (_BV(TWINT) | _BV(TWSTO) | _BV(TWEN) | _BV(TWIE));
+        thrd_resume_isr(drv_p->thrd_p, 0);
+        break;
+        
+    default:
+        break;
+    }
+}
+
+int i2c_port_module_init()
+{
+    return (0);
+}
+
+int i2c_port_init(struct i2c_driver_t *self_p,
+                  struct i2c_device_t *dev_p,
+                  int baudrate,
+                  int address)
+{
+    self_p->dev_p = dev_p;
+    self_p->twbr = baudrate;
+
+    return (0);
+}
+
+int i2c_port_start(struct i2c_driver_t *self_p)
+{
+    self_p->dev_p->drv_p = self_p;
+
+    TWSR = 0;
+    TWBR = self_p->twbr;
+
+    return (0);
+}
+
+int i2c_port_stop(struct i2c_driver_t *self_p)
+{
+    return (0);
+}
+
+ssize_t i2c_port_read(struct i2c_driver_t *self_p,
+                      int address,
+                      void *buf_p,
+                      size_t size)
+{
+    return (transfer(self_p, address, buf_p, size));
+}
+ 
+ssize_t i2c_port_write(struct i2c_driver_t *self_p,
+                       int address,
+                       const void *buf_p,
+                       size_t size)
+{
+    return (transfer(self_p, address, (void *)buf_p, size));
+}
+
+ssize_t i2c_port_slave_read(struct i2c_driver_t *self_p,
+                            void *buf_p,
+                            size_t size)
+{
+    ASSERTN(0, ENOSYS);
+    
+    return (0);
+}
+
+ssize_t i2c_port_slave_write(struct i2c_driver_t *self_p,
+                             const void *buf_p,
+                             size_t size)
+{
+    ASSERTN(0, ENOSYS);
+
+    return (0);
+}

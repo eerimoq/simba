@@ -77,3 +77,7 @@ struct pwm_device_t pwm_device[PWM_DEVICE_MAX] = {
 struct adc_device_t adc_device[ADC_DEVICE_MAX] = {
     { .jobs = { .head_p = NULL, .tail_p = NULL } },
 };
+
+struct i2c_device_t i2c_device[I2C_DEVICE_MAX] = {
+    { .drv_p = NULL }
+};

@@ -36,6 +36,7 @@ DRIVERS_SRC ?= adc.c \
                ds18b20.c \
                ds3231.c \
                exti.c \
+               i2c.c \
                mcp2515.c \
                nrf24l01.c \
                spi.c \

@@ -1,5 +1,5 @@
 /**
- * @file mcu.h
+ * @file drivers/i2c.h
  * @version 0.5.0
  *
  * @section License
@@ -18,20 +18,25 @@
  * This file is part of the Simba project.
  */
 
-#ifndef __MCU_H__
-#define __MCU_H__
+#ifndef __DRIVERS_I2C_PORT_H__
+#define __DRIVERS_I2C_PORT_H__
 
-#define PIN_DEVICE_MAX     20
-#define EXTI_DEVICE_MAX     2
-#define SPI_DEVICE_MAX      1
-#define UART_DEVICE_MAX     1
-/* Timer0 is used for system tick, so two of the PWM pins cannot be used.*/
-#define PWM_DEVICE_MAX      4
-#define ADC_DEVICE_MAX      1
-#define I2C_DEVICE_MAX      1
+/* Predefined baudrates. */
+#define I2C_PORT_BAUDRATE_1MBPS    0x00
+#define I2C_PORT_BAUDRATE_400KBPS  0x0c
+#define I2C_PORT_BAUDRATE_100KBPS  0x48
 
-#define USART0_TX_vect USART_TX_vect
-#define USART0_RX_vect USART_RX_vect
-#define USART0_UDRE_vect USART_UDRE_vect
+struct i2c_device_t {
+    struct i2c_driver_t *drv_p;
+};
+
+struct i2c_driver_t {
+    struct i2c_device_t *dev_p;
+    int address;
+    int twbr;
+    size_t size;
+    uint8_t *buf_p;
+    struct thrd_t *thrd_p;
+};
 
 #endif

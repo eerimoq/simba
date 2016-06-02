@@ -47,6 +47,7 @@
 #    include "drivers/mcp2515.h"
 #    include "drivers/nrf24l01.h"
 #    include "drivers/sd.h"
+#    include "drivers/i2c.h"
 #endif
 
 #if defined(ARCH_ARM)

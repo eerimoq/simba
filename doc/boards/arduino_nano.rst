@@ -20,6 +20,7 @@ Drivers
 - :doc:`../api-reference/drivers/ds18b20`
 - :doc:`../api-reference/drivers/ds3231`
 - :doc:`../api-reference/drivers/exti`
+- :doc:`../api-reference/drivers/i2c`
 - :doc:`../api-reference/drivers/mcp2515`
 - :doc:`../api-reference/drivers/nrf24l01`
 - :doc:`../api-reference/drivers/owi`
