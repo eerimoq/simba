@@ -24,8 +24,14 @@
 
 static struct queue_t qinput;
 static struct queue_t qoutput;
+
+#if defined(ARCH_LINUX)
+static char qinputbuf[131072];
+static char qoutputbuf[131072];
+#else
 static char qinputbuf[256];
 static char qoutputbuf[256];
+#endif
 
 static ssize_t read(chan_t *self_p,
                     void *buf_p,
