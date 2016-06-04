@@ -61,7 +61,7 @@ static int test_convert_isr(struct harness_t *harness_p)
     /* Low value. */
     sample = 0xffff;
     BTASSERT(pin_write(&pin, 0) == 0);
-    time_sleep(100);
+    time_sleep(10);
     sys_lock();
     
     if (adc_convert_isr(&adc, &sample) != 0) {
@@ -75,7 +75,7 @@ static int test_convert_isr(struct harness_t *harness_p)
     BTASSERT(sample < 300);
 
     /* High value. */
-    sample = 0xffff;
+    sample = 0x0000;
     BTASSERT(pin_write(&pin, 1) == 0);
     time_sleep(10);
     sys_lock();

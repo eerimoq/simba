@@ -25,29 +25,6 @@
 
 struct i2c_driver_t i2c;
 
-static int test_baudrates(struct harness_t *harness_p)
-{
-    uint8_t value;
-    int i;
-    int baudrates[3] = {
-        I2C_BAUDRATE_100K,
-        I2C_BAUDRATE_400K,
-        I2C_BAUDRATE_1MBPS
-    };
-
-    for (i = 0; i < membersof(baudrates); i++) {
-        BTASSERT(i2c_init(&i2c, &i2c_0_dev, baudrates[i], -1) == 0);
-        BTASSERT(i2c_start(&i2c) == 0);
-        BTASSERT(i2c_read(&i2c,
-                          I2C_BAD_SLAVE_ADDRESS,
-                          &value,
-                          1) == -1);
-        BTASSERT(i2c_stop(&i2c) == 0);
-    }
-
-    return (0);
-}
-
 static int test_init(struct harness_t *harness_p)
 {
     BTASSERT(i2c_init(&i2c, &i2c_0_dev, I2C_BAUDRATE_100K, -1) == 0);
@@ -67,19 +44,18 @@ static int test_bad_slave(struct harness_t *harness_p)
     BTASSERT(i2c_read(&i2c,
                       I2C_BAD_SLAVE_ADDRESS,
                       buf,
-                      3) == -1);
+                      3) == 0);
 
     BTASSERT(i2c_write(&i2c,
                        I2C_BAD_SLAVE_ADDRESS,
                        buf,
-                       3) == -1);
+                       3) == 0);
 
     return (0);
 }
 
 static int test_read(struct harness_t *harness_p)
 {
-    int i;
     uint8_t buf[3];
 
     /* Read three bytes from the slave device. */
@@ -89,11 +65,6 @@ static int test_read(struct harness_t *harness_p)
                       I2C_SLAVE_ADDRESS,
                       buf,
                       3) == 3);
-
-    /* Print and verify the received data.*/
-    for (i = 0; i < 3; i++) {
-        std_printf(FSTR("[%d]: %d\r\n"), i, buf[i]);
-    }
 
     BTASSERT(buf[0] == 5);
     BTASSERT(buf[1] == 3);
@@ -126,24 +97,22 @@ static int test_echo(struct harness_t *harness_p)
     uint8_t value;
 
     /* Write ping value. */
-    value = 35;
+    value = 0x35;
 
-    BTASSERT(i2c_write(&i2c,
-                       I2C_SLAVE_ADDRESS,
-                       &value,
-                       1) == 1);
+    while (i2c_write(&i2c,
+                     I2C_SLAVE_ADDRESS,
+                     &value,
+                     1) != 1);
 
     /* Read pong value (ping + 1). */
     value = 0;
 
-    BTASSERT(i2c_read(&i2c,
-                      I2C_SLAVE_ADDRESS,
-                      &value,
-                      1) == 1);
+    while (i2c_read(&i2c,
+                    I2C_SLAVE_ADDRESS,
+                    &value,
+                    1) != 1);
 
-    /* Print and verify the value. */
-    std_printf(FSTR("value = %d\r\n"), value);
-    BTASSERT(value == 36);
+    BTASSERT(value == 0x36);
 
     return (0);
 }
@@ -177,11 +146,32 @@ static int test_stop(struct harness_t *harness_p)
     return (0);
 }
 
+static int test_baudrates(struct harness_t *harness_p)
+{
+    uint8_t value;
+    int i;
+    int baudrates[2] = {
+        I2C_BAUDRATE_100K,
+        I2C_BAUDRATE_400K
+    };
+
+    for (i = 0; i < membersof(baudrates); i++) {
+        BTASSERT(i2c_init(&i2c, &i2c_0_dev, baudrates[i], -1) == 0);
+        BTASSERT(i2c_start(&i2c) == 0);
+        BTASSERT(i2c_read(&i2c,
+                          I2C_BAD_SLAVE_ADDRESS,
+                          &value,
+                          1) == 0);
+        BTASSERT(i2c_stop(&i2c) == 0);
+    }
+
+    return (0);
+}
+
 int main()
 {
     struct harness_t harness;
     struct harness_testcase_t harness_testcases[] = {
-        { test_baudrates, "test_baudrates" },
         { test_init, "test_init" },
         { test_bad_slave, "test_bad_slave" },
         { test_read, "test_read" },
@@ -189,6 +179,7 @@ int main()
         { test_echo, "test_echo" },
         { test_mem_read, "test_mem_read" },
         { test_stop, "test_stop" },
+        { test_baudrates, "test_baudrates" },
         { NULL, NULL }
     };
 

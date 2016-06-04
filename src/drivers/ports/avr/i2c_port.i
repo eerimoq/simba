@@ -75,17 +75,34 @@
 static ssize_t transfer(struct i2c_driver_t *self_p,
                         int address,
                         void *buf_p,
-                        size_t size)
+                        size_t size,
+                        int direction)
 {
-    self_p->address = ((address << 1) | I2C_READ);
+    self_p->address = ((address << 1) | direction);
     self_p->buf_p = (void *)buf_p;
-    self_p->size = (size + 1);
+    self_p->size = size;
     self_p->thrd_p = thrd_self();
 
     /* Start the transfer by sending the START condition, and then
        wait for the transfer to complete. */
     sys_lock();
     TWCR = (_BV(TWINT) | _BV(TWSTA) | _BV(TWEN) | _BV(TWIE));
+    thrd_suspend_isr(NULL);
+    sys_unlock();
+
+    return (size - self_p->size);
+}
+
+static ssize_t slave_transfer(struct i2c_driver_t *self_p,
+                              void *buf_p,
+                              size_t size)
+{
+    self_p->buf_p = (void *)buf_p;
+    self_p->size = size;
+    self_p->thrd_p = thrd_self();
+
+    sys_lock();
+    TWCR = (_BV(TWEA) | _BV(TWEN) | _BV(TWIE));
     thrd_suspend_isr(NULL);
     sys_unlock();
 
@@ -116,40 +133,101 @@ ISR(TWI_vect)
         /* Acknowledgement. */
     case I2C_M_TX_SLA_W_ACK:
     case I2C_M_TX_DATA_ACK:
-    case I2C_M_RX_SLA_R_ACK:
-    case I2C_M_RX_DATA_ACK:
-        drv_p->size--;
-
         if (drv_p->size > 0) {
-            if (status & I2C_M_TX_MASK) {
-                TWDR = *drv_p->buf_p++;
-                TWCR = (_BV(TWINT) | _BV(TWEN) | _BV(TWIE));
-            } else {
-                *drv_p->buf_p++ = TWDR;
-
-                if (drv_p->size > 1) {
-                    TWCR = (_BV(TWINT) | _BV(TWEN) | _BV(TWIE));
-                } else {
-                    TWCR = (_BV(TWINT) | _BV(TWIE));
-                }
-            }
+            TWDR = *drv_p->buf_p++;
+            drv_p->size--;
+            TWCR = (_BV(TWINT) | _BV(TWEN) | _BV(TWIE));
         } else {
-            TWCR = (_BV(TWINT) | _BV(TWSTO) | _BV(TWEN) | _BV(TWIE));
+            TWCR = (_BV(TWINT) | _BV(TWSTO) | _BV(TWEN));
             thrd_resume_isr(drv_p->thrd_p, 0);
         }
         
         break;
 
+    case I2C_M_RX_SLA_R_ACK:
+        if (drv_p->size > 1) {
+            TWCR = (_BV(TWINT) | _BV(TWEA) | _BV(TWEN) | _BV(TWIE));
+        } else {
+            /* Last data read. */
+            TWCR = (_BV(TWINT) | _BV(TWEN) | _BV(TWIE));
+        }
+
+        break;
+
+    case I2C_M_RX_DATA_ACK:
+        *drv_p->buf_p++ = TWDR;
+        drv_p->size--;
+            
+        if (drv_p->size > 1) {
+            TWCR = (_BV(TWINT) | _BV(TWEA) | _BV(TWEN) | _BV(TWIE));
+        } else {
+            /* Send NACK on last data read. */
+            TWCR = (_BV(TWINT) | _BV(TWEN) | _BV(TWIE));
+        }
+
+        break;
+
         /* Negative acknowledgement. */
+    case I2C_M_RX_DATA_NACK:
+        *drv_p->buf_p++ = TWDR;
+        drv_p->size--;
     case I2C_M_TX_SLA_W_NACK:
     case I2C_M_TX_DATA_NACK:
     case I2C_M_RX_SLA_R_NACK:
-    case I2C_M_RX_DATA_NACK:
-        TWCR = (_BV(TWINT) | _BV(TWSTO) | _BV(TWEN) | _BV(TWIE));
+        TWCR = (_BV(TWINT) | _BV(TWSTO) | _BV(TWEN));
+        thrd_resume_isr(drv_p->thrd_p, 0);
+        break;
+
+        /* Slave tarnsmit. */
+    case I2C_S_TX_DATA_ACK:
+        drv_p->size--;
+    case I2C_S_TX_SLA_R_ACK:
+    case I2C_S_TX_ARB_LOST_SLA_R_ACK:
+        TWDR = *drv_p->buf_p++;
+
+        if (drv_p->size > 1) {
+            TWCR = (_BV(TWINT) | _BV(TWEA) | _BV(TWEN) | _BV(TWIE));
+        } else {
+            /* Last data transmission. */
+            TWCR = (_BV(TWINT) | _BV(TWEN) | _BV(TWIE));
+        }
+
+        break;
+
+    case I2C_S_TX_LAST_DATA_ACK:
+    case I2C_S_TX_DATA_NACK:
+        drv_p->size--;
+        TWCR = (_BV(TWINT) | _BV(TWEA) | _BV(TWEN));
+        thrd_resume_isr(drv_p->thrd_p, 0);
+        break;
+
+        /* Slave receive. */
+    case I2C_S_RX_SLA_W_ACK:
+    case I2C_S_RX_ARB_LOST_SLA_W_ACK:
+        TWCR = (_BV(TWINT) | _BV(TWEA) | _BV(TWEN) | _BV(TWIE));
+        break;
+
+    case I2C_S_RX_DATA_ACK:
+    case I2C_S_RX_DATA_NACK:
+        *drv_p->buf_p++ = TWDR;
+        drv_p->size--;
+
+        if (drv_p->size > 0) {
+            TWCR = (_BV(TWINT) | _BV(TWEA) | _BV(TWEN) | _BV(TWIE));
+        } else {
+            /* Last data transmission. */
+            TWCR = (_BV(TWINT) | _BV(TWEN) | _BV(TWIE));
+        }
+
+        break;
+
+    case I2C_S_RX_STOP_OR_REPEATED_START:
+        TWCR = (_BV(TWINT) | _BV(TWEN));
         thrd_resume_isr(drv_p->thrd_p, 0);
         break;
         
     default:
+        /* ToDo: Handle error cases. */
         break;
     }
 }
@@ -166,6 +244,7 @@ int i2c_port_init(struct i2c_driver_t *self_p,
 {
     self_p->dev_p = dev_p;
     self_p->twbr = baudrate;
+    self_p->address = address;
 
     return (0);
 }
@@ -176,6 +255,10 @@ int i2c_port_start(struct i2c_driver_t *self_p)
 
     TWSR = 0;
     TWBR = self_p->twbr;
+
+    if (self_p->address != -1) {
+        TWAR = (self_p->address << 1);
+    }
 
     return (0);
 }
@@ -190,7 +273,7 @@ ssize_t i2c_port_read(struct i2c_driver_t *self_p,
                       void *buf_p,
                       size_t size)
 {
-    return (transfer(self_p, address, buf_p, size));
+    return (transfer(self_p, address, buf_p, size, I2C_READ));
 }
  
 ssize_t i2c_port_write(struct i2c_driver_t *self_p,
@@ -198,23 +281,19 @@ ssize_t i2c_port_write(struct i2c_driver_t *self_p,
                        const void *buf_p,
                        size_t size)
 {
-    return (transfer(self_p, address, (void *)buf_p, size));
+    return (transfer(self_p, address, (void *)buf_p, size, I2C_WRITE));
 }
 
 ssize_t i2c_port_slave_read(struct i2c_driver_t *self_p,
                             void *buf_p,
                             size_t size)
 {
-    ASSERTN(0, ENOSYS);
-    
-    return (0);
+    return (slave_transfer(self_p, buf_p, size));
 }
 
 ssize_t i2c_port_slave_write(struct i2c_driver_t *self_p,
                              const void *buf_p,
                              size_t size)
 {
-    ASSERTN(0, ENOSYS);
-
-    return (0);
+    return (slave_transfer(self_p, (void *)buf_p, size));
 }

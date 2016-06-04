@@ -20,7 +20,7 @@
 
 #include "simba.h"
 
-#define I2C_SLAVE_ADDRESS          0xa
+#define I2C_SLAVE_ADDRESS          0x01
 
 struct i2c_driver_t i2c;
 
@@ -37,12 +37,12 @@ static int test_init(struct harness_t *harness_p)
 
 static int test_slave_write(struct harness_t *harness_p)
 {
-    uint8_t buf[8];
+    uint8_t buf[3];
 
     /* Write 3 bytes to the master. */
     buf[0] = 5;
-    buf[0] = 3;
-    buf[0] = 1;
+    buf[1] = 3;
+    buf[2] = 1;
 
     BTASSERT(i2c_slave_write(&i2c, buf, 3) == 3);
 
@@ -51,18 +51,12 @@ static int test_slave_write(struct harness_t *harness_p)
 
 static int test_slave_read(struct harness_t *harness_p)
 {
-    int i;
-    uint8_t buf[8];
+    uint8_t buf[5];
 
     /* Read 5 bytes from the master. */
     memset(buf, 0, sizeof(buf));
 
     BTASSERT(i2c_slave_read(&i2c, buf, 5) == 5);
-
-    /* Print and verify the read data. */
-    for (i = 0; i < 5; i++) {
-        std_printf(FSTR("[%d]: %d\r\n"), i, buf[i]);
-    }
 
     BTASSERT(buf[0] == 1);
     BTASSERT(buf[1] == 3);
@@ -81,8 +75,6 @@ static int test_echo(struct harness_t *harness_p)
     value = 0;
 
     BTASSERT(i2c_slave_read(&i2c, &value, 1) == 1);
-
-    std_printf(FSTR("ping = %d\r\n"));
 
     /* Write pong to the master (ping + 1). */
     value++;

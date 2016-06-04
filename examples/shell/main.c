@@ -70,6 +70,10 @@ int main()
     uart_init(&uart, &uart_device[0], 115200, qinbuf, sizeof(qinbuf));
     uart_start(&uart);
 
+#if defined(__DRIVERS_I2C_H__)
+    i2c_module_init();
+#endif
+
     sys_set_stdout(&uart.chout);
     log_set_default_handler_output_channel(sys_get_stdout());
 

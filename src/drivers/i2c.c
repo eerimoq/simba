@@ -22,8 +22,122 @@
 
 #include "i2c_port.i"
 
+static struct fs_command_t cmd_read;
+static struct fs_command_t cmd_write;
+
+static int cmd_read_cb(int argc,
+                       const char *argv[],
+                       chan_t *chout_p,
+                       chan_t *chin_p,
+                       void *arg_p,
+                       void *call_arg_p)
+{
+    struct i2c_driver_t i2c;
+    long value;
+    int slave_address;
+    uint8_t data;
+
+    if (argc != 2) {
+        std_printf(FSTR("Usage: %s <slave address>\r\n"), argv[0]);
+
+        return (-EINVAL);
+    }
+
+    if (std_strtol(argv[1], &value) != 0) {
+        std_printf(FSTR("Bad slave address.\r\n"));
+        
+        return (-EINVAL);
+    }
+
+    slave_address = value;
+    
+    i2c_init(&i2c, &i2c_0_dev, I2C_BAUDRATE_100K, -1);
+    i2c_start(&i2c);
+
+    if (i2c_read(&i2c, slave_address, &data, 1) != 1) {
+        std_printf(FSTR("Failed to read from slave device 0x%02x.\r\n"),
+                   slave_address);
+        goto out;
+    }
+
+    std_printf(FSTR("0x%02x\r\n"), data);
+
+ out:
+    i2c_stop(&i2c);
+
+    return (0);
+}
+
+static int cmd_write_cb(int argc,
+                        const char *argv[],
+                        chan_t *chout_p,
+                        chan_t *chin_p,
+                        void *arg_p,
+                        void *call_arg_p)
+{
+    struct i2c_driver_t i2c;
+    long value;
+    int slave_address;
+    uint8_t data;
+
+    if (argc != 3) {
+        std_printf(FSTR("Usage: %s <slave address> <data byte>\r\n"),
+                   argv[0]);
+
+        return (-EINVAL);
+    }
+
+    if (std_strtol(argv[1], &value) != 0) {
+        std_printf(FSTR("Bad slave address.\r\n"));
+        
+        return (-EINVAL);
+    }
+
+    slave_address = value;
+
+    if (std_strtol(argv[2], &value) != 0) {
+        std_printf(FSTR("Bad data value.\r\n"));
+
+        return (-EINVAL);
+    }
+
+    if ((value > 255) || (value < 0)) {
+        std_printf(FSTR("Data byte value out of range.\r\n"));
+
+        return (-EINVAL);
+    }
+
+    data = value;
+    
+    i2c_init(&i2c, &i2c_0_dev, I2C_BAUDRATE_100K, -1);
+    i2c_start(&i2c);
+
+    if (i2c_write(&i2c, slave_address, &data, 1) != 1) {
+        std_printf(FSTR("Failed to write data 0x%02x to slave"
+                        " device 0x%02x.\r\n"),
+                   data,
+                   slave_address);
+    }
+
+    i2c_stop(&i2c);
+
+    return (0);
+}
+
 int i2c_module_init()
 {
+    fs_command_init(&cmd_read,
+                    FSTR("/drivers/i2c/read"),
+                    cmd_read_cb,
+                    NULL);
+    fs_command_register(&cmd_read);
+
+    fs_command_init(&cmd_write,
+                    FSTR("/drivers/i2c/write"),
+                    cmd_write_cb,
+                    NULL);
+    fs_command_register(&cmd_write);
+
     return (i2c_port_module_init());
 }
 
