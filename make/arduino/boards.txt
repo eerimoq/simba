@@ -1,0 +1,94 @@
+# @file boards.txt
+# @version 0.6.0
+#
+# @section License
+# Copyright (C) 2016, Erik Moqvist
+#
+# This library is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Lesser General Public
+# License as published by the Free Software Foundation; either
+# version 2.1 of the License, or (at your option) any later version.
+#
+# This library is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# Lesser General Public License for more details.
+#
+# This file is part of the Simba project.
+
+##################################################################
+
+mega2560.name=Simba Arduino Mega
+mega2560.upload.tool=avrdude
+mega2560.upload.protocol=wiring
+mega2560.upload.maximum_size=253952
+mega2560.upload.maximum_data_size=8192
+mega2560.upload.maximum_eeprom_size=4096
+mega2560.upload.speed=115200
+
+mega2560.bootloader.tool=avrdude
+mega2560.bootloader.low_fuses=0xff
+mega2560.bootloader.high_fuses=0xd8
+mega2560.bootloader.extended_fuses=0xfd
+
+mega2560.build.mcu=atmega2560
+mega2560.build.f_cpu=16000000L
+mega2560.build.board=ARDUINO_MEGA2560
+mega2560.build.variant=arduino/arduino_mega
+mega2560.build.core=Simba:simba
+
+mega2560.compiler.c.extra_flags=-I{runtime.platform.path}/cores/simba/kernel/ports/avr/gnu -I{runtime.platform.path}/cores/simba/drivers/ports/avr -I{runtime.platform.path}/cores/simba/kernel -I{runtime.platform.path}/cores/simba/drivers -I{runtime.platform.path}/cores/simba/slib -I{runtime.platform.path}/cores/simba/inet -DBOARD_ARDUINO_MEGA -DMCU_ATMEGA2560 -DARCH_AVR
+
+mega2560.compiler.cpp.extra_flags={c.extra_flags}
+
+##################################################################
+
+nano.name=Simba Arduino Nano
+nano.upload.tool=avrdude
+nano.upload.protocol=arduino
+nano.upload.maximum_size=30720
+nano.upload.maximum_data_size=2048
+nano.upload.maximum_eeprom_size=1024
+nano.upload.speed=57600
+
+nano.bootloader.tool=avrdude
+nano.bootloader.low_fuses=0xff
+nano.bootloader.high_fuses=0xda
+nano.bootloader.extended_fuses=0x05
+
+nano.build.mcu=atmega328p
+nano.build.f_cpu=16000000L
+nano.build.board=ARDUINO_NANO
+nano.build.variant=arduino/nano
+nano.build.core=Simba:simba
+
+nano.compiler.c.extra_flags=-I{runtime.platform.path}/cores/simba/kernel/ports/avr/gnu -I{runtime.platform.path}/cores/simba/drivers/ports/avr -I{runtime.platform.path}/cores/simba/kernel -I{runtime.platform.path}/cores/simba/drivers -I{runtime.platform.path}/cores/simba/slib -I{runtime.platform.path}/cores/simba/inet -DBOARD_ARDUINO_NANO -DMCU_ATMEG328P -DARCH_AVR
+
+nano.compiler.cpp.extra_flags={c.extra_flags}
+
+##################################################################
+
+uno.name=Simba Arduino Uno
+uno.upload.tool=avrdude
+uno.upload.protocol=arduino
+uno.upload.maximum_size=30720
+uno.upload.maximum_data_size=2048
+uno.upload.maximum_eeprom_size=1024
+uno.upload.speed=57600
+
+uno.bootloader.tool=avrdude
+uno.bootloader.low_fuses=0xff
+uno.bootloader.high_fuses=0xde
+uno.bootloader.extended_fuses=0x05
+
+uno.build.mcu=atmega328p
+uno.build.f_cpu=16000000L
+uno.build.board=ARDUINO_UNO
+uno.build.variant=arduino/uno
+uno.build.core=Simba:simba
+
+uno.compiler.c.extra_flags=-I{runtime.platform.path}/cores/simba/kernel/ports/avr/gnu -I{runtime.platform.path}/cores/simba/drivers/ports/avr -I{runtime.platform.path}/cores/simba/kernel -I{runtime.platform.path}/cores/simba/drivers -I{runtime.platform.path}/cores/simba/slib -I{runtime.platform.path}/cores/simba/inet -DBOARD_ARDUINO_UNO -DMCU_ATMEG328P -DARCH_AVR
+
+uno.compiler.cpp.extra_flags={c.extra_flags}
+
+##################################################################

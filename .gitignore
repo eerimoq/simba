@@ -72,3 +72,5 @@ examples/*/*/*/kernel/
 examples/*/*/*/home/
 examples/*/*/*/drivers/
 examples/*/*/*/slib/
+
+simba-arduino

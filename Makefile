@@ -1,6 +1,6 @@
 #
 # @file Makefile
-# @version 0.5.0
+# @version 0.6.0
 #
 # @section License
 # Copyright (C) 2014-2016, Erik Moqvist
@@ -93,6 +93,9 @@ doc:
 	+bin/dbgen.py > database.json
 	+bin/docgen.py database.json
 	$(MAKE) -s -C doc
+
+arduino:
+	+make/arduino.py -r
 
 $(APPS:%=%.all):
 	$(MAKE) -C $(basename $@) all

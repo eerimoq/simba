@@ -1,6 +1,6 @@
 /**
  * @file mcus/esp8266/esp8266.c
- * @version 0.5.0
+ * @version 0.6.0
  *
  * @section License
  * Copyright (C) 2014-2016, Erik Moqvist
