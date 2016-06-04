@@ -1,15 +1,41 @@
 Installation
 ============
 
+Arduino IDE
+-----------
+
+Install `Simba` in the `Arduino IDE`_ using the Boards Manager.
+
+1. Open `"File"` -> `"Preferences"`.
+2. Append
+   ``https://raw.githubusercontent.com/eerimoq/simba/master/make/arduino/package_simba_index.json``
+   to `"Additional Boards Manager URLs"`.
+3. Press `"OK"`.
+4. Open `"Tools"` -> `"Board: ..."` -> `"Boards Manager..."`.
+5. Type `"simba"` in the search box.
+6. Click on `"Simba by Erik Moqivst version 0.6.0"` and click `"Install"`.
+7. Press `"Close"`.
+7. Open `"Tools"` -> `"Board: ..."` -> `"Boards Manager..."` and select one
+   of the Simba boards in the list.
+8. Copy the :github-blob:`Hello World <examples/hello_world/main.c>`
+   example into sketch.
+9. Verify and upload the sketch to your device.
+10. Done!
+
+PlatformIO
+----------
+
+Install `Simba` in `PlatformIO`_.
+
+Simba build system
+------------------
+
 The `Simba` development environment can be installed on `Windows
 (Cygwin)`_ and `Linux (Ubuntu 14)`_. Just follow the steps below and
 you'll be up and running in no time. =)
 
-An alternative is to use `PlatformIO`_ to develop `Simba`
-applications.
-
 Windows (Cygwin)
-----------------
+^^^^^^^^^^^^^^^^
 
 Download `Cygwin`_ and select the following packages for installation:
 
@@ -37,7 +63,7 @@ Start `Cygwin` and execute the one-liner below to install `Simba`.
      git clone https://github.com/eerimoq/simba
      
 Linux (Ubuntu 14)
---------------
+^^^^^^^^^^^^^^^^^
 
 Execute the one-liner below to install `Simba`.
 
@@ -62,7 +88,7 @@ Execute the one-liner below to install `Simba`.
      git clone https://github.com/eerimoq/simba
 
 Post-install
-------------
+^^^^^^^^^^^^
 
 Let's build and run the hello world application to verify that the
 installation was successful.
@@ -76,3 +102,4 @@ installation was successful.
 
 .. _Cygwin: https://cygwin.com/setup-x86.exe
 .. _PlatformIO: http://platformio.org
+.. _Arduino IDE: https://www.arduino.cc/en/Main/Software
