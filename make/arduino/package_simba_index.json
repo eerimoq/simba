@@ -1,7 +1,7 @@
 {
   "packages": [
     {
-      "name": "Simba AVR",
+      "name": "Simba-AVR",
       "maintainer": "Erik Moqvist",
       "websiteURL": "https://github.com/eerimoq/simba",
       "email": "erik.moqvist@gmail.com",
@@ -10,7 +10,7 @@
       },
       "platforms": [
         {
-          "name": "Simba AVR",
+          "name": "Simba-AVR",
           "architecture": "avr",
           "version": "0.6.0",
           "category": "Simba",

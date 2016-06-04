@@ -37,7 +37,7 @@ mega2560.build.board=ARDUINO_MEGA2560
 mega2560.build.variant=arduino/arduino_mega
 mega2560.build.core=Simba:simba
 
-mega2560.compiler.c.extra_flags=-I{runtime.platform.path}/cores/simba/kernel/ports/avr/gnu -I{runtime.platform.path}/cores/simba/drivers/ports/avr -I{runtime.platform.path}/cores/simba/kernel -I{runtime.platform.path}/cores/simba/drivers -I{runtime.platform.path}/cores/simba/slib -I{runtime.platform.path}/cores/simba/inet -DBOARD_ARDUINO_MEGA -DMCU_ATMEGA2560 -DARCH_AVR
+mega2560.compiler.c.extra_flags="-I{runtime.platform.path}/cores/simba/kernel/ports/avr/gnu" "-I{runtime.platform.path}/cores/simba/drivers/ports/avr" "-I{runtime.platform.path}/cores/simba/kernel" "-I{runtime.platform.path}/cores/simba/drivers" "-I{runtime.platform.path}/cores/simba/slib" "-I{runtime.platform.path}/cores/simba/inet" -DBOARD_ARDUINO_MEGA -DMCU_ATMEGA2560 -DARCH_AVR
 
 mega2560.compiler.cpp.extra_flags={c.extra_flags}
 
@@ -62,7 +62,7 @@ nano.build.board=ARDUINO_NANO
 nano.build.variant=arduino/nano
 nano.build.core=Simba:simba
 
-nano.compiler.c.extra_flags=-I{runtime.platform.path}/cores/simba/kernel/ports/avr/gnu -I{runtime.platform.path}/cores/simba/drivers/ports/avr -I{runtime.platform.path}/cores/simba/kernel -I{runtime.platform.path}/cores/simba/drivers -I{runtime.platform.path}/cores/simba/slib -I{runtime.platform.path}/cores/simba/inet -DBOARD_ARDUINO_NANO -DMCU_ATMEG328P -DARCH_AVR
+nano.compiler.c.extra_flags="-I{runtime.platform.path}/cores/simba/kernel/ports/avr/gnu" "-I{runtime.platform.path}/cores/simba/drivers/ports/avr" "-I{runtime.platform.path}/cores/simba/kernel" "-I{runtime.platform.path}/cores/simba/drivers" "-I{runtime.platform.path}/cores/simba/slib" "-I{runtime.platform.path}/cores/simba/inet" -DBOARD_ARDUINO_NANO -DMCU_ATMEG328P -DARCH_AVR
 
 nano.compiler.cpp.extra_flags={c.extra_flags}
 
@@ -87,7 +87,7 @@ uno.build.board=ARDUINO_UNO
 uno.build.variant=arduino/uno
 uno.build.core=Simba:simba
 
-uno.compiler.c.extra_flags=-I{runtime.platform.path}/cores/simba/kernel/ports/avr/gnu -I{runtime.platform.path}/cores/simba/drivers/ports/avr -I{runtime.platform.path}/cores/simba/kernel -I{runtime.platform.path}/cores/simba/drivers -I{runtime.platform.path}/cores/simba/slib -I{runtime.platform.path}/cores/simba/inet -DBOARD_ARDUINO_UNO -DMCU_ATMEG328P -DARCH_AVR
+uno.compiler.c.extra_flags="-I{runtime.platform.path}/cores/simba/kernel/ports/avr/gnu" "-I{runtime.platform.path}/cores/simba/drivers/ports/avr" "-I{runtime.platform.path}/cores/simba/kernel" "-I{runtime.platform.path}/cores/simba/drivers" "-I{runtime.platform.path}/cores/simba/slib" "-I{runtime.platform.path}/cores/simba/inet" -DBOARD_ARDUINO_UNO -DMCU_ATMEG328P -DARCH_AVR
 
 uno.compiler.cpp.extra_flags={c.extra_flags}
 
