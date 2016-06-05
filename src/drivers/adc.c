@@ -31,7 +31,7 @@ int adc_init(struct adc_driver_t *self_p,
              struct adc_device_t *dev_p,
              struct pin_device_t *pin_dev_p,
              int reference,
-             int sampling_rate)
+             long sampling_rate)
 {
     ASSERTN(self_p != NULL, EINVAL);
     ASSERTN(dev_p != NULL, EINVAL);
