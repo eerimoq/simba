@@ -41,8 +41,29 @@ static char decoded_ma[] = "Ma";
 static char encoded_man[] = "TWFu";
 static char decoded_man[] = "Man";
 
+static char *encoded[] = {
+    "",
+    "Zg==",
+    "Zm8=",
+    "Zm9v",
+    "Zm9vYg==",
+    "Zm9vYmE=",
+    "Zm9vYmFy"
+};
+
+static char *decoded[] = {
+    "",
+    "f",
+    "fo",
+    "foo",
+    "foob",
+    "fooba",
+    "foobar"
+};
+
 static int test_encode(struct harness_t *harness_p)
 {
+    int i;
     char buf[512];
 
     BTASSERT(base64_encode(buf, decoded_text, strlen(decoded_text)) == 0);
@@ -61,11 +82,24 @@ static int test_encode(struct harness_t *harness_p)
     buf[strlen(encoded_man)] = '\0';
     BTASSERT(strcmp(buf, encoded_man) == 0);
 
+    BTASSERT(base64_encode(buf, "\xfb\xff\xbf", 3) == 0);
+    BTASSERT(buf[0] == '+');
+    BTASSERT(buf[1] == '/');
+    BTASSERT(buf[2] == '+');
+    BTASSERT(buf[3] == '/');
+
+    for (i = 0; i < membersof(decoded); i++) {
+        BTASSERT(base64_encode(buf, decoded[i], strlen(decoded[i])) == 0);
+        buf[strlen(encoded[i])] = '\0';
+        BTASSERT(strcmp(buf, encoded[i]) == 0);
+    }
+
     return (0);
 }
 
 static int test_decode(struct harness_t *harness_p)
 {
+    int i;
     char buf[512];
 
     BTASSERT(base64_decode(buf, encoded_text, strlen(encoded_text)) == 0);
@@ -83,6 +117,20 @@ static int test_decode(struct harness_t *harness_p)
     BTASSERT(base64_decode(buf, encoded_man, strlen(encoded_man)) == 0);
     buf[strlen(decoded_man)] = '\0';
     BTASSERT(strcmp(buf, decoded_man) == 0);
+
+    BTASSERT(base64_decode(buf, encoded_man, 3) == -EINVAL);
+    BTASSERT(base64_decode(buf, "\x01\x02\x03\x04", 4) == -1);
+
+    BTASSERT(base64_decode(buf, "+/+/", 4) == 0);
+    BTASSERT(buf[0] == -5);
+    BTASSERT(buf[1] == -1);
+    BTASSERT(buf[2] == -65);
+
+    for (i = 0; i < membersof(encoded); i++) {
+        BTASSERT(base64_decode(buf, encoded[i], strlen(encoded[i])) == 0);
+        buf[strlen(decoded[i])] = '\0';
+        BTASSERT(strcmp(buf, decoded[i]) == 0);
+    }
 
     return (0);
 }
