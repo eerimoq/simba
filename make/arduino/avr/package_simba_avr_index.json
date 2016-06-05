@@ -19,7 +19,7 @@
           },
           "url": "http://github.com/eerimoq/simba-arduino-avr/archive/simba-arduino-avr-0.6.0.zip",
 	  "archiveFileName": "simba-arduino-avr-0.6.0.zip",
-	  "checksum": "SHA-256:d6f1d11e689bf4b01915e2038817fa617a27fed694c050c0dbe6b9ab22d2a07d",
+	  "checksum": "SHA-256:74d71530713934fac06cca7275a70414c0dad1771ff939867db1a14762e886e8",
 	  "size": "386354",
           "boards": [
 	    {"name" : "Arduino Mega 2560"},
