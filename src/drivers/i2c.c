@@ -51,7 +51,7 @@ static int cmd_read_cb(int argc,
 
     slave_address = value;
     
-    i2c_init(&i2c, &i2c_0_dev, I2C_BAUDRATE_100K, -1);
+    i2c_init(&i2c, &i2c_0_dev, I2C_BAUDRATE_100KBPS, -1);
     i2c_start(&i2c);
 
     if (i2c_read(&i2c, slave_address, &data, 1) != 1) {
@@ -109,7 +109,7 @@ static int cmd_write_cb(int argc,
 
     data = value;
     
-    i2c_init(&i2c, &i2c_0_dev, I2C_BAUDRATE_100K, -1);
+    i2c_init(&i2c, &i2c_0_dev, I2C_BAUDRATE_100KBPS, -1);
     i2c_start(&i2c);
 
     if (i2c_write(&i2c, slave_address, &data, 1) != 1) {
