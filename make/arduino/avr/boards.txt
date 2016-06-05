@@ -36,6 +36,7 @@ mega2560.build.f_cpu=16000000L
 mega2560.build.board=ARDUINO_MEGA2560
 mega2560.build.variant=arduino/arduino_mega
 mega2560.build.core=Simba:simba
+mega2560.build.main_stack_end=0x802200
 
 mega2560.compiler.c.extra_flags="-I{runtime.platform.path}/cores/simba/kernel/ports/avr/gnu" "-I{runtime.platform.path}/cores/simba/drivers/ports/avr" "-I{runtime.platform.path}/cores/simba/kernel" "-I{runtime.platform.path}/cores/simba/drivers" "-I{runtime.platform.path}/cores/simba/slib" "-I{runtime.platform.path}/cores/simba/inet" -DBOARD_ARDUINO_MEGA -DMCU_ATMEGA2560 -DARCH_AVR
 
@@ -61,6 +62,7 @@ nano.build.f_cpu=16000000L
 nano.build.board=ARDUINO_NANO
 nano.build.variant=arduino/arduino_nano
 nano.build.core=Simba:simba
+nano.build.main_stack_end=0x800900
 
 nano.compiler.c.extra_flags="-I{runtime.platform.path}/cores/simba/kernel/ports/avr/gnu" "-I{runtime.platform.path}/cores/simba/drivers/ports/avr" "-I{runtime.platform.path}/cores/simba/kernel" "-I{runtime.platform.path}/cores/simba/drivers" "-I{runtime.platform.path}/cores/simba/slib" "-I{runtime.platform.path}/cores/simba/inet" -DBOARD_ARDUINO_NANO -DMCU_ATMEGA328P -DARCH_AVR
 
@@ -86,6 +88,7 @@ uno.build.f_cpu=16000000L
 uno.build.board=ARDUINO_UNO
 uno.build.variant=arduino/arduino_uno
 uno.build.core=Simba:simba
+nano.build.main_stack_end=0x800900
 
 uno.compiler.c.extra_flags="-I{runtime.platform.path}/cores/simba/kernel/ports/avr/gnu" "-I{runtime.platform.path}/cores/simba/drivers/ports/avr" "-I{runtime.platform.path}/cores/simba/kernel" "-I{runtime.platform.path}/cores/simba/drivers" "-I{runtime.platform.path}/cores/simba/slib" "-I{runtime.platform.path}/cores/simba/inet" -DBOARD_ARDUINO_UNO -DMCU_ATMEGA328P -DARCH_AVR
 
