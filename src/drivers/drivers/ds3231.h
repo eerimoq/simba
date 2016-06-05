@@ -28,18 +28,35 @@ struct ds3231_driver_t {
 };
 
 /**
- * Initialize driver object.
+ * Initialize given driver object.
  *
- * @param[in,out] self_p Driver object to be initialized.
+ * @param[out] self_p Driver object to be initialized.
+ * @param[in] i2c_p I2C driver to use.
  *
  * @return zero(0) or negative error code.
  */
 int ds3231_init(struct ds3231_driver_t *self_p,
                 struct i2c_driver_t *i2c_p);
 
+/**
+ * Set date in the DS3231 device.
+ *
+ * @param[in] self_p Driver object.
+ * @param[in] date_p Date to set in the device.
+ *
+ * @return zero(0) or negative error code.
+ */
 int ds3231_set_date(struct ds3231_driver_t *self_p,
                     struct date_t *date_p);
 
+/**
+ * Get date from the DS3231 device.
+ *
+ * @param[in] self_p Driver object.
+ * @param[out] date_p Date read from the device.
+ *
+ * @return zero(0) or negative error code.
+ */
 int ds3231_get_date(struct ds3231_driver_t *self_p,
                     struct date_t *date_p);
 
