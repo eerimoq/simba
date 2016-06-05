@@ -27,6 +27,7 @@ Drivers
 - :doc:`../api-reference/drivers/sd`
 - :doc:`../api-reference/drivers/spi`
 - :doc:`../api-reference/drivers/uart`
+- :doc:`../api-reference/drivers/usb`
 - :doc:`../api-reference/drivers/usb_host`
 
 Mcu

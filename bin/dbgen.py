@@ -56,8 +56,7 @@ def main():
         drivers_src = get_make_variable(board, "DRIVERS_SRC").split()
         drivers = [os.path.splitext(os.path.basename(driver))[0]
                    for driver in drivers_src]
-        drivers = list(set(drivers) - set(["usb",
-                                           "usb_host_class_hid",
+        drivers = list(set(drivers) - set(["usb_host_class_hid",
                                            "usb_host_class_mass_storage"]))
         database["boards"][board]["drivers"] = drivers
 

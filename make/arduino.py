@@ -1038,7 +1038,16 @@ def generate_variants(arch, database):
                                     "drivers",
                                     driver + ".c")
             shutil.copy(driver_c, drivers_dir)
- 
+
+            driver_dir = os.path.join(simba_root,
+                                      "src",
+                                      "drivers",
+                                      driver)
+
+            if os.path.isdir(driver_dir):
+                shutil.copytree(driver_dir,
+                                os.path.join(drivers_dir, driver))
+
         with open(os.path.join(variant_dir, "simba_gen.c"), "w") as fout:
             fout.write(SIMBA_GEN_C_FMT.format(name="my_app",
                                               board=board_name,
