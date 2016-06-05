@@ -6,6 +6,8 @@
 
 Source code: :github-blob:`src/drivers/drivers/ds3231.h`
 
+Test code: :github-blob:`tst/drivers/ds3231/main.c`
+
 ----------------------------------------------
 
 .. doxygenfile:: drivers/ds3231.h

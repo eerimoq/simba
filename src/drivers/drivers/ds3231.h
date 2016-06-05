@@ -24,7 +24,7 @@
 #include "simba.h"
 
 struct ds3231_driver_t {
-    //struct i2c_driver_t *owi2c_p;
+    struct i2c_driver_t *i2c_p;
 };
 
 /**
@@ -34,10 +34,13 @@ struct ds3231_driver_t {
  *
  * @return zero(0) or negative error code.
  */
-int ds3231_init(struct ds3231_driver_t *self_p);
+int ds3231_init(struct ds3231_driver_t *self_p,
+                struct i2c_driver_t *i2c_p);
 
-int ds3231_set_date(struct ds3231_driver_t *self_p, struct date_t *date_p);
+int ds3231_set_date(struct ds3231_driver_t *self_p,
+                    struct date_t *date_p);
 
-int ds3231_get_date(struct ds3231_driver_t *self_p, struct date_t *date_p);
+int ds3231_get_date(struct ds3231_driver_t *self_p,
+                    struct date_t *date_p);
 
 #endif
