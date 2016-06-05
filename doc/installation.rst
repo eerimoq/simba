@@ -19,7 +19,7 @@ Boards Manager.
 8. Open `"Tools"` -> `"Board: ..."` -> `"Boards Manager..."` and select one
    of the Simba boards in the list.
 9. Copy the :github-blob:`Hello World <examples/hello_world/main.c>`
-   example into sketch.
+   example into a sketch.
 10. Select the Arduino serial port at `"Tools"` -> `"Port: ..."`.
 11. Open `"Tools"` -> `"Serial Monitor"` and change the baudrate to
     38400 in the bottom right corner.
@@ -65,7 +65,7 @@ Start `Cygwin` and execute the one-liner below to install `Simba`.
      git clone https://github.com/eerimoq/avr-toolchain-windows && \
      git clone https://github.com/eerimoq/arm-toolchain-windows && \
      git clone https://github.com/eerimoq/simba
-     
+
 Linux (Ubuntu 14)
 ^^^^^^^^^^^^^^^^^
 
