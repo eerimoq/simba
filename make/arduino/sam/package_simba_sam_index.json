@@ -11,31 +11,29 @@
       "platforms": [
         {
           "name": "Simba",
-          "architecture": "avr",
+          "architecture": "sam",
           "version": "0.6.0",
           "category": "Simba",
           "help": {
             "online": "https://simba-os.readthedocs.org"
           },
-          "url": "http://github.com/eerimoq/simba-arduino-avr/archive/0.6.0.zip",
-	  "archiveFileName": "0.6.0.zip",
-	  "checksum": "SHA-256:f2e3906b3c5c57fb454879ac0d54caa58a578dbefc96c2cdd2e35ea4e48f48ea",
-	  "size": "386354",
+          "url": "http://github.com/eerimoq/simba-arduino-sam/simba-arduino-sam-0.6.0.zip",
+	  "archiveFileName": "simba-arduino-sam-0.6.0.zip",
+	  "checksum": "SHA-256:8659a295cdc3c4117ae14a64437b267c40507542d9d1d95f413fff68f16d1c5e",
+	  "size": "343667",
           "boards": [
-	    {"name" : "Arduino Mega 2560"},
-	    {"name" : "Arduino Nano"},
-	    {"name" : "Arduino Uno"}
+	      {"name" : "Arduino Due"}
           ],
           "toolsDependencies": [
             {
               "packager": "arduino",
-              "name": "avr-gcc",
-              "version": "4.8.1-arduino5"
+              "name": "arm-none-eabi-gcc",
+              "version": "4.8.3-2014q1"
             },
             {
               "packager": "arduino",
-              "name": "avrdude",
-              "version": "6.0.1-arduino5"
+              "name": "bossac",
+              "version": "1.6.1-arduino"
             }
           ]
         }

@@ -129,21 +129,20 @@ def generate_cores():
         shutil.copy(os.path.join(simba_root, root_file), ".")
 
 
-def generate_variants(database):
+def generate_variants(arch, database):
     """Generate the variants directory with board unique information.
 
     """
 
     simba_root = os.environ["SIMBA_ROOT"]
 
-    for board_name, config in database['boards'].items():
-        avr_boards = [
-            "arduino_mega",
-            "arduino_uno",
-            "arduino_nano"
-        ]
+    print("Generating variants for architecture", arch)
 
-        if board_name not in avr_boards:
+    if arch == "sam":
+        arch = "arm"
+
+    for board_name, config in database['boards'].items():
+        if database["mcus"][config["mcu"]]["arch"] != arch:
             continue
 
         variant_dir = os.path.join("variants", "arduino", board_name)
@@ -157,11 +156,19 @@ def generate_variants(database):
                                               "boards",
                                               board_name,
                                               "*"))
+
         mcus_files = glob.glob(os.path.join(simba_root,
                                             "src",
                                             "mcus",
                                             config["mcu"],
                                             "*"))
+
+        if arch == "arm":
+            mcus_files += glob.glob(os.path.join(simba_root,
+                                                 "src",
+                                                 "mcus",
+                                                 "sam",
+                                                 "*"))
 
         for path in boards_files + mcus_files:
             shutil.copy(path, variant_dir)
@@ -178,13 +185,14 @@ def generate_variants(database):
             shutil.copy(driver_c, drivers_dir)
  
         with open(os.path.join(variant_dir, "simba_gen.c"), "w") as fout:
-            fout.write(SIMBA_GEN_C_FMT.format(name="myapp",
-                                              board="board",
-                                              mcu="mcu"))
+            fout.write(SIMBA_GEN_C_FMT.format(name="my_app",
+                                              board=board_name,
+                                              mcu=config["mcu"]))
 
 
-def copy_configuration_files():
-    """
+def copy_configuration_files(arch):
+    """Copy configuration files.
+
     """
 
     simba_root = os.environ["SIMBA_ROOT"]
@@ -198,26 +206,25 @@ def copy_configuration_files():
         shutil.copy(os.path.join(simba_root,
                                  "make",
                                  "arduino",
+                                 arch,
                                  configuration_file),
                     ".")
 
 
-def generate_files_and_folders(database, outdir, remove_outdir):
+def generate_files_and_folders(arch, database, outdir):
     """Generate files and folders.
 
     """
 
-    if remove_outdir:
-        if os.path.exists(outdir):
-            shutil.rmtree(outdir)
-
     os.makedirs(outdir)
+    cwd = os.getcwd()
     os.chdir(outdir)
 
     generate_cores()
-    generate_variants(database)
-    copy_configuration_files()
+    generate_variants(arch, database)
+    copy_configuration_files(arch)
 
+    os.chdir(cwd)
 
 def main():
     """Unpack given Simba release archive and modify files and folders as
@@ -230,8 +237,18 @@ def main():
     parser.add_argument("--remove-outdir", "-r", action="store_true")
     args = parser.parse_args()
 
+    if args.remove_outdir:
+        if os.path.exists(args.outdir):
+            shutil.rmtree(args.outdir)
+
+    print("Writing to", args.outdir)
+
     database = create_database()
-    generate_files_and_folders(database, args.outdir, args.remove_outdir)
+
+    for arch in ["avr", "sam"]:
+        generate_files_and_folders(arch,
+                                   database,
+                                   os.path.join(args.outdir, arch))
 
 
 if __name__ == "__main__":
