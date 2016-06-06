@@ -1,5 +1,5 @@
 #
-# @file mcus/linux/mcu.mk
+# @file src/boards/stm32f3discovery/board.mk
 # @version 0.6.0
 #
 # @section License
@@ -18,14 +18,11 @@
 # This file is part of the Simba project.
 #
 
-INC += $(SIMBA_ROOT)/src/mcus/linux
-SRC += $(SIMBA_ROOT)/src/mcus/linux/mcu.c
+INC += $(SIMBA_ROOT)/src/boards/stm32f3discovery
+SRC += $(SIMBA_ROOT)/src/boards/stm32f3discovery/board.c
 
-ARCH = linux
-FAMILY = linux
+BOARD_HOMEPAGE = "http://www.st.com/content/st_com/en/products/evaluation-tools/product-evaluation-tools/mcu-eval-tools/stm32-mcu-eval-tools/stm32-mcu-discovery-kits/stm32f3discovery.html"
+BOARD_PINOUT = "stm32f3discovery.jpg"
+BOARD_DESC = "STM32F3DISCOVERY"
 
-MCU_HOMEPAGE = ""
-MCU_NAME = "Linux"
-MCU_DESC = "Linux"
-
-include $(SIMBA_ROOT)/make/$(TOOLCHAIN)/linux.mk
+MCU = stm32f303vc

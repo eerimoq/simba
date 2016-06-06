@@ -46,7 +46,7 @@ arduino_due_x_dbg.build.core=Simba:simba
 
 arduino_due_x_dbg.compiler.c.elf.extra_flags="-L{runtime.platform.path}/variants/arduino/arduino_due"
 
-arduino_due_x_dbg.compiler.c.extra_flags="-I{runtime.platform.path}/cores/simba/kernel/ports/arm/gnu" "-I{runtime.platform.path}/cores/simba/drivers/ports/arm" "-I{runtime.platform.path}/cores/simba/kernel" "-I{runtime.platform.path}/cores/simba/drivers" "-I{runtime.platform.path}/cores/simba/slib" "-I{runtime.platform.path}/cores/simba/inet" -DBOARD_ARDUINO_DUE -DMCU_SAM3X8E -DARCH_ARM
+arduino_due_x_dbg.compiler.c.extra_flags="-I{runtime.platform.path}/cores/simba/kernel/ports/arm/gnu" "-I{runtime.platform.path}/cores/simba/drivers/ports/arm" "-I{runtime.platform.path}/cores/simba/kernel" "-I{runtime.platform.path}/cores/simba/drivers" "-I{runtime.platform.path}/cores/simba/slib" "-I{runtime.platform.path}/cores/simba/inet" -DBOARD_ARDUINO_DUE -DMCU_SAM3X8E -DARCH_ARM -DFAMILY_SAM
 
 arduino_due_x_dbg.compiler.cpp.extra_flags={c.extra_flags}
 

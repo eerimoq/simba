@@ -19,7 +19,7 @@
 #
 
 NAME = sys_suite
-VERSION = 0.3.0
+VERSION = 0.6.0
 BOARD ?= linux
 
 SIMBA_ROOT = ../../..

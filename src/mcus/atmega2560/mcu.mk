@@ -29,6 +29,7 @@ AVRDUDE_BAUDRATE = 115200
 AVRDUDE_PROGRAMMER = wiring
 
 ARCH = avr
+FAMILY = avr
 
 MCU_HOMEPAGE = "http://www.atmel.com"
 MCU_NAME = "Atmel ATMega2560"

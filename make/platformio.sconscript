@@ -64,7 +64,7 @@ def add_common_include_paths(env):
         join("src", "kernel"),
         join("src", "kernel", "ports", "$ARCH", "gnu"),
         join("src", "drivers"),
-        join("src", "drivers", "ports", "$ARCH"),
+        join("src", "drivers", "ports", "$FAMILY"),
         join("src", "slib"),
         join("src", "inet")
     ]
@@ -80,6 +80,7 @@ def add_common_defines(env):
     env.Append(
         CPPDEFINES=[
             "ARCH_$ARCH_UPPER",
+            "FAMILY_$FAMILY_UPPER",
             "MCU_$MCU_UPPER",
             "BOARD_$BOARD_UPPER",
             "VERSION=$VERSION"
@@ -115,6 +116,7 @@ def setup_mcu_avr(env):
         env.Replace(MCU_DESC="Not found")
 
     env.Replace(ARCH="avr",
+                FAMILY="avr",
                 SETTING_MEMORY="eeprom",
                 SETTING_OFFSET="128",
                 SETTING_SIZE="256",
@@ -150,6 +152,7 @@ def setup_mcu_sam(env):
         env.Replace(MCU_DESC="Not found")
 
     env.Replace(ARCH="arm",
+                FAMILY="sam",
                 SETTING_MEMORY="flash",
                 SETTING_OFFSET="0",
                 SETTING_SIZE="4096",
@@ -184,6 +187,7 @@ def setup_mcu_esp(env, linker_script, flash_size_map):
     """
 
     env.Replace(ARCH="esp",
+                FAMILY="esp",
                 SETTING_MEMORY="flash",
                 SETTING_OFFSET="128",
                 SETTING_SIZE="256",
@@ -432,6 +436,7 @@ else:
 
 # variables in upper case for defines
 env.Append(ARCH_UPPER=env.subst(env["ARCH"]).upper().replace("/", "_"),
+           FAMILY_UPPER=env.subst(env["FAMILY"]).upper().replace("/", "_"),
            MCU_UPPER=env.subst(env["BOARD_MCU"]).upper().replace("/", "_"),
            BOARD_UPPER=env.subst(env["BOARD"]).upper().replace("/", "_"))
 

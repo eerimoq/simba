@@ -1,5 +1,5 @@
 #
-# @file mcus/linux/mcu.mk
+# @file mcus/stm32f303vc/mcu.mk
 # @version 0.6.0
 #
 # @section License
@@ -18,14 +18,21 @@
 # This file is part of the Simba project.
 #
 
-INC += $(SIMBA_ROOT)/src/mcus/linux
-SRC += $(SIMBA_ROOT)/src/mcus/linux/mcu.c
+INC += $(SIMBA_ROOT)/src/mcus/stm32f303vc
+SRC += $(SIMBA_ROOT)/src/mcus/stm32f303vc/mcu.c
 
-ARCH = linux
-FAMILY = linux
+MCPU = cortex-m4
+F_CPU = 72000000
 
-MCU_HOMEPAGE = ""
-MCU_NAME = "Linux"
-MCU_DESC = "Linux"
+ARCH = arm
+FAMILY = stm32
 
-include $(SIMBA_ROOT)/make/$(TOOLCHAIN)/linux.mk
+MCU_HOMEPAGE = "http://www.st.com/content/st_com/en/products/microcontrollers/stm32-32-bit-arm-cortex-mcus/stm32f3-series/stm32f303/stm32f303vc.html"
+MCU_NAME = "ST STM32F303VC ARM Cortex-M4"
+MCU_DESC = "ST STM32F303VC ARM Cortex-M4 @ 72MHz, 40k sram, 256k flash"
+
+LIBPATH += "$(SIMBA_ROOT)/src/mcus/$(MCU)"
+LINKER_SCRIPT_FILE ?= script.ld
+LINKER_SCRIPT ?= $(SIMBA_ROOT)/src/mcus/$(MCU)/$(LINKER_SCRIPT_FILE)
+
+include $(SIMBA_ROOT)/make/$(TOOLCHAIN)/arm.mk

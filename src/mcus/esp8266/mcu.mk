@@ -60,6 +60,7 @@ ESPLIBS_AFTER += \
 F_CPU = 80000000
 
 ARCH = esp
+FAMILY = esp
 
 MCU_HOMEPAGE = "http://www.espressif.com"
 MCU_NAME = "Espressif ESP8266"

@@ -28,5 +28,6 @@ F_CPU = 84000000
 MCU_HOMEPAGE = "http://www.atmel.com"
 
 ARCH = arm
+FAMILY = sam
 
 include $(SIMBA_ROOT)/make/$(TOOLCHAIN)/arm.mk

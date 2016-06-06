@@ -59,13 +59,16 @@ static void thrd_port_swap(struct thrd_t *in_p,
                            struct thrd_t *out_p)
 {
     scheduler.next_p = in_p;
+#if defined(MCU_FAMILY_SAM)
     SAM_SCB->ICSR = SCB_ICSR_PENDSVSET;
+#endif
     asm volatile ("cpsie i");
     asm volatile ("cpsid i");
 }
 
 static void thrd_port_init_main(struct thrd_port_t *port)
 {
+#if defined(MCU_FAMILY_SAM)
     /* Configure the cpu usage timer counter. */
     pmc_peripheral_clock_enable(PERIPHERAL_ID_TC0);
 
@@ -73,6 +76,7 @@ static void thrd_port_init_main(struct thrd_port_t *port)
 
     /* Start the timer counter. */
     SAM_TC0->CHANNEL[0].CCR = (TC_CCR_SWTRG | TC_CCR_CLKEN);
+#endif
 }
 
 __attribute__((naked))
@@ -146,27 +150,37 @@ static void thrd_port_tick(void)
 
 static void thrd_port_cpu_usage_start(struct thrd_t *thrd_p)
 {
+#if defined(MCU_FAMILY_SAM)
     thrd_p->port.cpu.start = SAM_TC0->CHANNEL[0].CV;
+#endif
 }
 
 static void thrd_port_cpu_usage_stop(struct thrd_t *thrd_p)
 {
+#if defined(MCU_FAMILY_SAM)
     thrd_p->port.cpu.period.time += (SAM_TC0->CHANNEL[0].CV
                                      - thrd_p->port.cpu.start);
+#endif
 }
 
 #if CONFIG_MONITOR_THREAD == 1
 
 static float thrd_port_cpu_usage_get(struct thrd_t *thrd_p)
 {
+#if defined(MCU_FAMILY_SAM)
     return ((100.0 * thrd_p->port.cpu.period.time)
             / (SAM_TC0->CHANNEL[0].CV - thrd_p->port.cpu.period.start));
+#else
+    return (0);
+#endif
 }
 
 static void thrd_port_cpu_usage_reset(struct thrd_t *thrd_p)
 {
+#if defined(MCU_FAMILY_SAM)
     thrd_p->port.cpu.period.start = SAM_TC0->CHANNEL[0].CV;
     thrd_p->port.cpu.period.time = 0;
+#endif
 }
 
 #endif

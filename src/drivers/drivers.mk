@@ -19,9 +19,9 @@
 #
 
 INC += $(SIMBA_ROOT)/src/drivers
-INC += $(SIMBA_ROOT)/src/drivers/ports/$(ARCH)
+INC += $(SIMBA_ROOT)/src/drivers/ports/$(FAMILY)
 
-ifeq ($(ARCH),linux)
+ifeq ($(FAMILY),linux)
 DRIVERS_SRC ?= adc.c \
                flash.c \
                pin.c \
@@ -31,7 +31,7 @@ DRIVERS_SRC ?= adc.c \
                uart.c
 endif
 
-ifeq ($(ARCH),avr)
+ifeq ($(FAMILY),avr)
 DRIVERS_SRC ?= adc.c \
                ds18b20.c \
                ds3231.c \
@@ -48,7 +48,7 @@ DRIVERS_SRC ?= adc.c \
                uart_soft.c
 endif
 
-ifeq ($(ARCH),arm)
+ifeq ($(FAMILY),sam)
 DRIVERS_SRC ?= adc.c \
                can.c \
                chipid.c \
@@ -66,11 +66,16 @@ DRIVERS_SRC ?= adc.c \
                usb/host/class/usb_host_class_mass_storage.c
 endif
 
-ifeq ($(ARCH),esp)
+ifeq ($(FAMILY),esp)
 DRIVERS_SRC ?= adc.c \
                pin.c \
                spi.c \
                uart.c
+endif
+
+ifeq ($(FAMILY),stm32)
+DRIVERS_SRC ?= pin.c \
+	       uart.c
 endif
 
 SRC += $(DRIVERS_SRC:%=$(SIMBA_ROOT)/src/drivers/%)

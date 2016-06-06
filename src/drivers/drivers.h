@@ -21,7 +21,7 @@
 #ifndef __DRIVERS_H__
 #define __DRIVERS_H__
 
-#if defined(ARCH_LINUX)
+#if defined(FAMILY_LINUX)
 #    include "drivers/exti.h"
 #    include "drivers/pin.h"
 #    include "drivers/pwm.h"
@@ -33,7 +33,7 @@
 #    include "drivers/flash.h"
 #endif
 
-#if defined(ARCH_AVR)
+#if defined(FAMILY_AVR)
 #    include "drivers/exti.h"
 #    include "drivers/pin.h"
 #    include "drivers/pwm.h"
@@ -50,7 +50,7 @@
 #    include "drivers/sd.h"
 #endif
 
-#if defined(ARCH_ARM)
+#if defined(FAMILY_SAM)
 #    include "drivers/chipid.h"
 #    include "drivers/exti.h"
 #    include "drivers/flash.h"
@@ -68,11 +68,17 @@
 #    include "drivers/usb/host/class/usb_host_class_mass_storage.h"
 #endif
 
-#if defined(ARCH_ESP)
+#if defined(FAMILY_ESP)
 #    include "drivers/pin.h"
 #    include "drivers/spi.h"
 #    include "drivers/uart.h"
 #    include "drivers/adc.h"
+#endif
+
+#if defined(FAMILY_STM32)
+#    include "drivers/pin.h"
+#    include "drivers/uart.h"
+#    include "drivers/flash.h"
 #endif
 
 #endif

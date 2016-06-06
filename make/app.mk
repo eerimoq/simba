@@ -58,8 +58,12 @@ CFLAGS += $(INC:%=-I%) $(CFLAGS_EXTRA)
 ifeq ($(NASSERT),yes)
   CDEFS += -DCONFIG_ASSERT=0
 endif
-CDEFS +=  -DARCH_$(UPPER_ARCH) -DMCU_$(UPPER_MCU) \
-          -DBOARD_$(UPPER_BOARD) -DVERSION=$(VERSION)
+CDEFS += -DARCH_$(UPPER_ARCH) \
+	-DFAMILY_$(UPPER_FAMILY) \
+	-DMCU_$(UPPER_MCU) \
+	-DBOARD_$(UPPER_BOARD) \
+	-DVERSION=$(VERSION)
+
 CFLAGS += $(CDEFS)
 LDFLAGS += $(LIBPATH:%=-L%) $(LDFLAGS_EXTRA)
 SHELL = /bin/bash
@@ -96,6 +100,7 @@ include $(SLIB.mk)
 include $(INET.mk)
 
 UPPER_ARCH := $(shell python -c "import sys; sys.stdout.write(sys.argv[1].upper())" $(ARCH))
+UPPER_FAMILY := $(shell python -c "import sys; sys.stdout.write(sys.argv[1].upper())" $(FAMILY))
 UPPER_MCU := $(shell python -c "import sys; sys.stdout.write(sys.argv[1].upper().replace('-', '_').replace('/', '_'))" $(MCU))
 UPPER_BOARD := $(shell python -c "import sys; sys.stdout.write(sys.argv[1].upper())" $(BOARD))
 

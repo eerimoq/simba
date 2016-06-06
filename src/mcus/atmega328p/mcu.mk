@@ -29,6 +29,7 @@ CPU = atmega328p
 MAIN_STACK_END = 0x800900
 
 ARCH = avr
+FAMILY = avr
 
 MCU_HOMEPAGE = "http://www.atmel.com"
 MCU_NAME = "Atmel ATMega328p"
