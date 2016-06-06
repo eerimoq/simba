@@ -5,7 +5,7 @@ Often the board you want to use in your project is not yet supported
 by `Simba`. If you are lucky, `Simba` is already ported to the MCU on
 your board. Just create a folder with you board name in
 :github-tree:`src/boards/` and populate it with the ``board.h``,
-``board.c`` and ``Makefile``. If `Simba` is not ported to your MCU,
+``board.c`` and ``board.mk``. If `Simba` is not ported to your MCU,
 the kernel and drivers has to be ported.
 
 Kernel
