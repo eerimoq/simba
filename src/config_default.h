@@ -1,5 +1,5 @@
 /**
- * @file config.h
+ * @file config_default.h
  * @version 0.6.0
  *
  * @section License
@@ -58,13 +58,6 @@
  */
 #ifndef CONFIG_MONITOR_THREAD
 #    define CONFIG_MONITOR_THREAD       1
-#endif
-
-/**
- * Backwards compatibility. Should be removed.
- */
-#if defined(SYS_TICK_FREQUENCY)
-#    define CONFIG_SYSTEM_TICK_FREQUENCY SYS_TICK_FREQUENCY
 #endif
 
 /**
