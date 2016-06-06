@@ -3,8 +3,6 @@
 |codecov|_
 |donate|_
 
-|simba|_
-
 Simba
 =====
 
@@ -29,6 +27,3 @@ improve Simba!
 .. |donate| image:: https://img.shields.io/badge/paypal-donate-yellow.svg
 .. _donate: https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=X2NWV6RHV58GC&lc=SE&item_name=Simba%20OS%20and%20Build%20Framework&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donateCC_LG%2egif%3aNonHosted
 
-.. |simba| image:: doc/images/logo.svg
-           :width: 80 px
-.. _simba: http://github.com/eerimoq/simba
