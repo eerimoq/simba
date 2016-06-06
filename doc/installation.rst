@@ -2,8 +2,8 @@ Installation
 ============
 
 There are three build systems available; `PlatformIO`, `Arduino` and
-`Simba build system`. I recommend you to use the build system you are
-most familiar with.
+`Simba build system`. I recommend using the build system you are most
+comfortable with.
 
 |platformio| PlatformIO
 -----------------------
@@ -121,5 +121,5 @@ installation was successful.
 .. _platformio: http://platformio.org
 
 .. |simba| image:: images/logo.jpg
-                :width: 60 px
+                :width: 80 px
 .. _simba: http://github.com/eerimoq/simba
