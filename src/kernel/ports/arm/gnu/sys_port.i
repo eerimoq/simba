@@ -25,7 +25,7 @@ ISR(sys_tick)
 
 static int sys_port_module_init(void)
 {
-#if defined(MCU_FAMILY_SAM)
+#if defined(FAMILY_SAM)
     /* Setup the system tick timer. */
     SAM_ST->LOAD = SYSTEM_TIMER_LOAD_RELOAD(10000000 / CONFIG_SYSTEM_TICK_FREQUENCY);
     SAM_ST->CTRL = (SYSTEM_TIMER_CTRL_TICKINT
@@ -119,7 +119,7 @@ int _getpid()
 
 static float sys_port_interrupt_cpu_usage_get(void)
 {
-#if defined(MCU_FAMILY_SAM)
+#if defined(FAMILY_SAM)
     return ((100.0 * sys.interrupt.time) /
             (SAM_TC0->CHANNEL[0].CV - sys.interrupt.start));
 #else
@@ -129,7 +129,7 @@ static float sys_port_interrupt_cpu_usage_get(void)
 
 static void sys_port_interrupt_cpu_usage_reset(void)
 {
-#if defined(MCU_FAMILY_SAM)
+#if defined(FAMILY_SAM)
     sys.interrupt.start = SAM_TC0->CHANNEL[0].CV;
     sys.interrupt.time = 0;
 #endif
