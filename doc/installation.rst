@@ -1,8 +1,17 @@
 Installation
 ============
 
-Arduino IDE
------------
+There are three build systems available; `PlatformIO`, `Arduino` and
+`Simba build system`. I recommend you to use the build system you are
+most familiar with.
+
+|platformio| PlatformIO
+-----------------------
+
+Install `Simba` in `PlatformIO`_.
+
+|arduino| Arduino IDE
+---------------------
 
 Install `Simba` in the `Arduino IDE`_ as a third party board using the
 Boards Manager.
@@ -26,13 +35,8 @@ Boards Manager.
 12. Verify and upload the sketch to your device.
 13. Done!
 
-PlatformIO
-----------
-
-Install `Simba` in `PlatformIO`_.
-
-Simba build system
-------------------
+|simba| Simba build system
+--------------------------
 
 The `Simba` development environment can be installed on `Windows
 (Cygwin)`_ and `Linux (Ubuntu 14)`_. Just follow the steps below and
@@ -107,3 +111,15 @@ installation was successful.
 .. _Cygwin: https://cygwin.com/setup-x86.exe
 .. _PlatformIO: http://platformio.org
 .. _Arduino IDE: https://www.arduino.cc/en/Main/Software
+
+.. |arduino| image:: images/Arduino_Logo.svg
+             :width: 40 px
+.. _arduino: http://arduino.cc
+
+.. |platformio| image:: images/platformio-logo.png
+                :width: 40 px
+.. _platformio: http://platformio.org
+
+.. |simba| image:: images/logo.jpg
+                :width: 60 px
+.. _simba: http://github.com/eerimoq/simba
