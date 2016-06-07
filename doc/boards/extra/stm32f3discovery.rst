@@ -6,43 +6,43 @@ These are the default pin functions in Simba.
 +-------------+--------+
 |  Function   |  Pin   |
 +=============+========+
-|  UART1 TX   |  PA9   |
+|  UART0 TX   |  PA9   |
 +-------------+--------+
-|  UART1 RX   |  PA10  |
+|  UART0 RX   |  PA10  |
 +-------------+--------+
-|  UART2 TX   |  PA2   |
+|  UART1 TX   |  PA2   |
 +-------------+--------+
-|  UART2 RX   |  PA3   |
+|  UART1 RX   |  PA3   |
 +-------------+--------+
-|  UART3 TX   |  PB10  |
+|  UART2 TX   |  PB10  |
 +-------------+--------+
-|  UART3 RX   |  PB11  |
+|  UART2 RX   |  PB11  |
 +-------------+--------+
-|  SPI1 SCK   |  PA5   |
+|  SPI0 SCK   |  PA5   |
 +-------------+--------+
-|  SPI1 MISO  |  PA6   |
+|  SPI0 MISO  |  PA6   |
 +-------------+--------+
-|  SPI1 MOSI  |  PA7   |
+|  SPI0 MOSI  |  PA7   |
 +-------------+--------+
-|  SPI2 SCK   |  PA13  |
+|  SPI1 SCK   |  PA13  |
 +-------------+--------+
-|  SPI2 MISO  |  PA14  |
+|  SPI1 MISO  |  PA14  |
 +-------------+--------+
-|  SPI2 MOSI  |  PA15  |
+|  SPI1 MOSI  |  PA15  |
 +-------------+--------+
-|  SPI3 SCK   |  PC10  |
+|  SPI2 SCK   |  PC10  |
 +-------------+--------+
-|  SPI3 MISO  |  PC11  |
+|  SPI2 MISO  |  PC11  |
 +-------------+--------+
-|  SPI3 MOSI  |  PC12  |
+|  SPI2 MOSI  |  PC12  |
 +-------------+--------+
-|  I2C1 SCL   |  PB8   |
+|  I2C0 SCL   |  PB8   |
 +-------------+--------+
-|  I2C1 SDA   |  PB9   |
+|  I2C0 SDA   |  PB9   |
 +-------------+--------+
-|  I2C2 SCL   |  PF0   |
+|  I2C1 SCL   |  PF0   |
 +-------------+--------+
-|  I2C2 SDA   |  PF1   |
+|  I2C1 SDA   |  PF1   |
 +-------------+--------+
 |  CAN TX     |  PD1   |
 +-------------+--------+

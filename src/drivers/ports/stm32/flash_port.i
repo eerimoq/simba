@@ -1,5 +1,5 @@
 /**
- * @file mcus/atmega328p/mcu.c
+ * @file drivers/ports/flash.i
  * @version 0.6.0
  *
  * @section License
@@ -18,23 +18,23 @@
  * This file is part of the Simba project.
  */
 
-#include "simba.h"
+int flash_port_module_init(void)
+{
+    return (0);
+}
 
-struct uart_device_t uart_device[UART_DEVICE_MAX] = {
-    {
-        .drv_p = NULL,
-        .regs_p = STM32_USART1
-    },
+ssize_t flash_port_read(struct flash_driver_t *self_p,
+                        void *dst_p,
+                        size_t src,
+                        size_t size)
+{
+    return (size);
+}
 
-    {
-        .drv_p = NULL,
-        .regs_p = STM32_USART2
-    },
-
-    {
-        .drv_p = NULL,
-        .regs_p = STM32_USART3
-    }
-};
-
-struct flash_device_t flash_device[FLASH_DEVICE_MAX];
+ssize_t flash_port_write(struct flash_driver_t *self_p,
+                         size_t dst,
+                         const void *src_p,
+                         size_t size)
+{
+    return (0);
+}

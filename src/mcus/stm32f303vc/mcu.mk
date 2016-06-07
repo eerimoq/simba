@@ -19,7 +19,8 @@
 #
 
 INC += $(SIMBA_ROOT)/src/mcus/stm32f303vc
-SRC += $(SIMBA_ROOT)/src/mcus/stm32f303vc/mcu.c
+SRC += $(SIMBA_ROOT)/src/mcus/stm32f303vc/mcu.c \
+       $(SIMBA_ROOT)/src/mcus/stm32f303vc/stm32.c
 
 MCPU = cortex-m4
 F_CPU = 72000000

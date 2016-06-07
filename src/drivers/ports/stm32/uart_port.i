@@ -1,5 +1,5 @@
 /**
- * @file drivers/sh/uart_port.c
+ * @file uart_port.i
  * @version 0.6.0
  *
  * @section License
@@ -17,6 +17,33 @@
  *
  * This file is part of the Simba project.
  */
+
+static void isr(int index)
+{
+    struct uart_device_t *dev_p = &uart_device[index];
+    struct uart_driver_t *drv_p = dev_p->drv_p;
+
+    if (drv_p == NULL) {
+        return;
+    }
+
+    /* TX and/or RX complete. */
+}
+
+ISR(usart1)
+{
+    isr(0);
+}
+
+ISR(usart2)
+{
+    isr(1);
+}
+
+ISR(usart3)
+{
+    isr(2);
+}
 
 static int uart_port_module_init()
 {

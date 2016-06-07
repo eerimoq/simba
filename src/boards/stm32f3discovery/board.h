@@ -106,16 +106,16 @@
 #define pin_pe14_dev pin_device[]
 #define pin_pe15_dev pin_device[]
 
-#define uart_1_dev uart_device[0]
-#define uart_2_dev uart_device[1]
-#define uart_3_dev uart_device[2]
+#define uart_0_dev uart_device[0]
+#define uart_1_dev uart_device[1]
+#define uart_2_dev uart_device[2]
 
-#define spi_1_dev spi_device[0]
-#define spi_2_dev spi_device[1]
-#define spi_3_dev spi_device[2]
+#define spi_0_dev spi_device[0]
+#define spi_1_dev spi_device[1]
+#define spi_2_dev spi_device[2]
 
-#define i2c_1_dev i2c_device[0]
-#define i2c_2_dev i2c_device[1]
+#define i2c_0_dev i2c_device[0]
+#define i2c_1_dev i2c_device[1]
 
 #define can_0_dev can_device[0]
 
