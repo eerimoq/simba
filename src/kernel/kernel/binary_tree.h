@@ -35,44 +35,50 @@ struct binary_tree_t {
 };
 
 /**
- * Initialize binary tree.
+ * Initialize given binary tree.
  *
- * @param[in,out] self_p Binary tree.
+ * @param[in] self_p Binary tree.
  *
  * @return zero(0) or negative error code.
  */
 int binary_tree_init(struct binary_tree_t *self_p);
 
 /**
- * Insert given nodeent into given binary tree.
+ * Insert given node into given binary tree.
  *
- * @param[in] self_p Binary tree.
- * @param[in] node_p Nodeent to insert. There can not be two or more
- *                   nodeents in the tree with the same key.
+ * There can not be two or more nodes in the tree with the same
+ * key. This function returns -1 if a node with the same key is
+ * already in the binary tree.
  *
- * @return zero(0) or negative error code.
+ * @param[in] self_p Binary tree to insert the node into.
+ * @param[in] node_p Node to insert.
+ *
+ * @return zero(0) on success, -1 if a node with the same key is
+ *         already in the binary tree, otherwise negative error code.
  */
 int binary_tree_insert(struct binary_tree_t *self_p,
                        struct binary_tree_node_t *node_p);
 
 /**
- * Delete given nodeent from given binary tree.
+ * Delete given node from given binary tree.
  *
- * @param[in] self_p Binary tree.
- * @param[in] key Key to delete.
+ * @param[in] self_p Binary tree to delete the node from.
+ * @param[in] key Key of the node to delete.
  *
- * @return zero(0) or negative error code.
+ * @return zero(0) on success, -1 if the node was not found, otherwise
+ *         negative error code.
  */
 int binary_tree_delete(struct binary_tree_t *self_p,
                        int key);
 
 /**
- * Search for the binary tree nodeent with given key.
+ * Search the binary tree for the node with given key.
  *
- * @param[in] self_p Binary tree.
- * @param[in] key Key of the binary tree nodeent to search for.
+ * @param[in] self_p Binary tree to search in.
+ * @param[in] key Key of the binary tree node to search for.
  *
- * @return Value for key or NULL if key was not found in the tree.
+ * @return Pointer to found node or NULL if a node with given key was
+ *         not found in the tree.
  */
 struct binary_tree_node_t *
 binary_tree_search(struct binary_tree_t *self_p,
@@ -81,7 +87,7 @@ binary_tree_search(struct binary_tree_t *self_p,
 /**
  * Print given binary tree.
  *
- * @param[in] self_p binary tree.
+ * @param[in] self_p Binary tree to print.
  */
 void binary_tree_print(struct binary_tree_t *self_p);
 

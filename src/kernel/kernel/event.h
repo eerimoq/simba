@@ -23,7 +23,9 @@
 
 #include "simba.h"
 
-/* Event channel. */
+/**
+ * Event channel.
+ */
 struct event_t {
     struct chan_t base;
     uint32_t mask;          /* Events that occured. */
@@ -41,7 +43,7 @@ int event_init(struct event_t *self_p);
 /**
  * Wait for an event to occur in given event mask. This function
  * blocks until at least one of the events in the event mask has been
- * set. When the function returns the given event mask has been
+ * set. When the function returns, given event mask has been
  * overwritten with the events that actually occured.
  *
  * @param[in] self_p Event channel object.
@@ -57,7 +59,7 @@ ssize_t event_read(struct event_t *self_p,
                    size_t size);
 
 /**
- * Write given event(s) to the event channel.
+ * Write given event(s) to given event channel.
  *
  * @param[in] self_p Event channel object.
  * @param[in] buf_p The mask of events to write.
@@ -88,8 +90,7 @@ ssize_t event_write_isr(struct event_t *self_p,
  *
  * @param[in] self_p Event channel object.
  *
- * @return true(1) is at least one event is active, otherwise
- *         false(0).
+ * @return one(1) is at least one event is active, otherwise zero(0).
  */
 ssize_t event_size(struct event_t *self_p);
 

@@ -16,6 +16,7 @@ Pinout
 Drivers
 -------
 
+- :doc:`../api-reference/drivers/flash`
 - :doc:`../api-reference/drivers/pin`
 - :doc:`../api-reference/drivers/uart`
 

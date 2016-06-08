@@ -47,10 +47,10 @@ struct heap_t {
  * Initialize given heap.
  *
  * @param[in] self_p Heap to initialize.
- * @param[in] buf_p Buffer.
- * @param[in] size Size of buffer.
+ * @param[in] buf_p Heap memory buffer.
+ * @param[in] size Size of the heap memory buffer.
  *
- * @return zero(0) or negative error code
+ * @return zero(0) or negative error code.
  */
 int heap_init(struct heap_t *self_p,
               void *buf_p,
@@ -58,31 +58,32 @@ int heap_init(struct heap_t *self_p,
               size_t sizes[HEAP_FIXED_SIZES_MAX]);
 
 /**
- * Allocate a buffer from given heap.
+ * Allocate a buffer of given size from given heap.
  *
- * @param[in] self_p Heap.
- * @param[in] size Size to allocate.
+ * @param[in] self_p Heap to allocate from.
+ * @param[in] size Number of bytes to allocate.
  *
- * @return Allocated buffer.
+ * @return Pointer to allocated buffer, or NULL on failure.
  */
 void *heap_alloc(struct heap_t *self_p,
                  size_t size);
 
 /**
- * Free given buffer.
+ * Decrement the share count by once and free the buffer if the count
+ * becomes zero(0).
  *
- * @param[in] self_p Heap.
- * @param[in] buf_p Buffer to free.
+ * @param[in] self_p Heap of given buffer.
+ * @param[in] buf_p Memory buffer to free.
  *
- * @return zero(0) or negative error code.
+ * @return Share count after the free, or negative error code.
  */
 int heap_free(struct heap_t *self_p,
               void *buf_p);
 
 /**
- * Share given buffer.
+ * Share given buffer ``count`` times.
  *
- * @param[in] self_p Heap.
+ * @param[in] self_p Heap of given buffer.
  * @param[in] buf_p Buffer to share.
  * @param[in] count Share count.
  *

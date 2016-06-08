@@ -81,10 +81,19 @@ int chan_module_init(void);
  * Initialize given channel with given callbacks. A channel must be
  * initialized before it can be used.
  *
- * @param[in] self_p Channel to initialize.
- * @param[in] read Read function callback.
- * @param[in] write Write function callback.
- * @param[in] size Size function callback.
+ * @param[out] self_p Channel to initialize.
+ * @param[in] read Read function callback. This function must
+ *                 implement the channel read functionality, and will
+ *                 be called when the user reads data from the
+ *                 channel.
+ * @param[in] write Write function callback. This function must
+ *                  implement the channel write functionality, and
+ *                  will be called when the user writes data to the
+ *                  channel.
+ * @param[in] size Size function callback. This function must return
+ *                 the size of the channel. It should return zero(0)
+ *                 if there is no data available in the channel, and
+ *                 otherwise a positive integer.
  *
  * @return zero(0) or negative error code.
  */
@@ -99,7 +108,7 @@ int chan_init(struct chan_t *self_p,
  * will be blocked until all data has been read or an error occurs.
  *
  * @param[in] self_p Channel to read from.
- * @param[in] buf_p Buffer to read into.
+ * @param[out] buf_p Buffer to read into.
  * @param[in] size Number of bytes to read.
  *
  * @return Number of read bytes or negative error code.
@@ -114,7 +123,7 @@ ssize_t chan_read(chan_t *self_p,
  * until the receiver has read the data, and some returns immediately.
  *
  * @param[in] self_p Channel to write to.
- * @param[in] buf_p Buffer to write from.
+ * @param[in] buf_p Buffer to write.
  * @param[in] size Number of bytes to write.
  *
  * @return Number of written bytes or negative error code.

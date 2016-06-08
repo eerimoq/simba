@@ -36,7 +36,8 @@ struct bus_listener_t {
 };
 
 /**
- * Initialize the bus module.
+ * Initialize the bus module. This function must be called once before
+ * any other function calls to this module.
  *
  * @return zero(0) or negative error code
  */
@@ -81,7 +82,8 @@ int bus_attach(struct bus_t *self_p,
                struct bus_listener_t *listener_p);
 
 /**
- * Detatch given listener from given bus.
+ * Detatch given listener from given bus. A detached listener will not
+ * receive any messages from the bus.
  *
  * @param[in] self_p Bus to detach listener from.
  * @param[in] listener_p Listener to detach from the bus.
@@ -92,7 +94,8 @@ int bus_detatch(struct bus_t *self_p,
                 struct bus_listener_t *listener_p);
 
 /**
- * Write given message to given bus.
+ * Write given message to given bus. All attached listeners to given
+ * bus will receive the message.
  *
  * @param[in] self_p Bus to write the message to.
  * @param[in] id Message identity.
