@@ -42,10 +42,10 @@
 /** Debugging messages. */
 #define LOG_DEBUG   7
 
-/** Craete log mask from level. */
+/** Craete a log mask with given level set. */
 #define LOG_MASK(level) (1 << (LOG_ ## level))
 
-/** Set all levels up to and including mask. */
+/** Set all levels up to and including given level. */
 #define LOG_UPTO(level) ((1 << (LOG_ ## level + 1)) - 1)
 
 struct log_handler_t {

@@ -112,7 +112,7 @@ installation was successful.
 .. _PlatformIO: http://platformio.org
 .. _Arduino IDE: https://www.arduino.cc/en/Main/Software
 
-.. |arduino| image:: images/Arduino_Logo.svg
+.. |arduino| image:: images/Arduino_Logo.png
              :width: 40 px
 .. _arduino: http://arduino.cc
 

@@ -10,7 +10,7 @@ output channel.
 
 A log object called "log" and a log handler writing to standard output
 are created during the log module initialization. The log handler can
-be replaced by calling ``log_set_default_handler_output_channel()``.
+be replaced by calling `log_set_default_handler_output_channel()`.
 
 Normally one log object is created for each subsystem in an
 application. This gives the user the power to control which parts of
