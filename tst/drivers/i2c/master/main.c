@@ -27,7 +27,7 @@ struct i2c_driver_t i2c;
 
 static int test_init(struct harness_t *harness_p)
 {
-    BTASSERT(i2c_init(&i2c, &i2c_0_dev, I2C_BAUDRATE_100K, -1) == 0);
+    BTASSERT(i2c_init(&i2c, &i2c_0_dev, I2C_BAUDRATE_100KBPS, -1) == 0);
     BTASSERT(i2c_start(&i2c) == 0);
 
     return (0);
@@ -151,8 +151,8 @@ static int test_baudrates(struct harness_t *harness_p)
     uint8_t value;
     int i;
     int baudrates[2] = {
-        I2C_BAUDRATE_100K,
-        I2C_BAUDRATE_400K
+        I2C_BAUDRATE_100KBPS,
+        I2C_BAUDRATE_400KBPS
     };
 
     for (i = 0; i < membersof(baudrates); i++) {
