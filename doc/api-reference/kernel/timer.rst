@@ -4,11 +4,12 @@
 .. module:: timer
    :synopsis: Timers.
 
-Timers are started with a given timeout, and when the timer expires
-the timer callback function is called from interrupt context.
+Timers are started with a timeout, and when the time is up the timer
+expires and the timer callback function is called from interrupt
+context.
 
 The timeout resolution is the system tick period. Timeouts are always
-rounded up to the closest system tick. Tht is, a timer will never
+rounded up to the closest system tick. That is, a timer can never
 expire early, but may expire slightly late.
 
 An application requiring timers with higher precision than the system
