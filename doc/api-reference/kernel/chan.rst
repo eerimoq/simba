@@ -5,7 +5,7 @@
    :synopsis: Abstract channel communication.
 
 Threads often communicate over channels. The producer thread or isr
-writes data to the channels and the consumer reads it. The may be
+writes data to a channel and the consumer reads it. The may be
 multiple producers writing to a single channel, but only one consumer
 is allowed.
 
