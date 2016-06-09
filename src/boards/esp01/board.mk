@@ -28,3 +28,9 @@ BOARD_PINOUT = "esp01-pinout.png"
 BOARD_DESC = "ESP-01"
 
 MCU = esp8266
+
+upload:
+	@echo "Uploading $(EXE)"
+	python -u $(RUNSCRIPT) upload ./$(EXE) $(BAUDRATE) $(SIMBA_ROOT) \
+                  $(RUNLOG) $(RUN_END_PATTERN) $(RUN_END_PATTERN_SUCCESS) \
+                  $(RUNARGS)

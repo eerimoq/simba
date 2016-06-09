@@ -28,3 +28,9 @@ BOARD_PINOUT = "esp12e-pinout.jpg"
 BOARD_DESC = "ESP-12E Development Board"
 
 MCU = esp8266
+
+upload:
+	@echo "Uploading $(EXE)"
+	python -u $(RUNSCRIPT) upload ./$(EXE) $(BAUDRATE) $(SIMBA_ROOT) \
+                  $(RUNLOG) $(RUN_END_PATTERN) $(RUN_END_PATTERN_SUCCESS) \
+                  $(RUNARGS)

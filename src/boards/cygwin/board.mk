@@ -26,3 +26,5 @@ BOARD_PINOUT = "cygwin-pinout.png"
 BOARD_DESC = "Cygwin"
 
 MCU = linux
+
+upload:

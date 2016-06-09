@@ -26,3 +26,5 @@ BOARD_PINOUT = "linux-pinout.png"
 BOARD_DESC = "Linux"
 
 MCU = linux
+
+upload:

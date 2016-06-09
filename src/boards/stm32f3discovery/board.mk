@@ -26,3 +26,7 @@ BOARD_PINOUT = "stm32f3discovery.jpg"
 BOARD_DESC = "STM32F3DISCOVERY"
 
 MCU = stm32f303vc
+
+upload:
+	@echo "Uploading $(EXE)"
+	st-flash write $(NAME).bin 0x8000000

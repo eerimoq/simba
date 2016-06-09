@@ -1,5 +1,5 @@
 #
-# @file src/boards/arduino_due/board.mk
+# @file mcus/stm32f100rb/mcu.mk
 # @version 0.6.0
 #
 # @section License
@@ -18,19 +18,22 @@
 # This file is part of the Simba project.
 #
 
-INC += $(SIMBA_ROOT)/src/boards/arduino_due
-SRC += $(SIMBA_ROOT)/src/boards/arduino_due/board.c
+INC += $(SIMBA_ROOT)/src/mcus/stm32f100rb
+SRC += $(SIMBA_ROOT)/src/mcus/stm32f100rb/mcu.c \
+       $(SIMBA_ROOT)/src/mcus/stm32f100rb/stm32.c
 
-BOARD_HOMEPAGE = "https://www.arduino.cc/en/Main/ArduinoBoardDue"
-BOARD_PINOUT = "arduino-due-pinout.png"
-BOARD_DESC = "Arduino Due"
+MCPU = cortex-m3
+F_CPU = 24000000
 
-MCU = sam3x8e
+ARCH = arm
+FAMILY = stm32f1
 
-RUST_TARGET = thumbv7em-none-eabi
+MCU_HOMEPAGE = ""
+MCU_NAME = "ST STM32F100RB ARM Cortex-M3"
+MCU_DESC = "ST STM32F100RB ARM Cortex-M3 @ 24MHz, 8k sram, 128k flash"
 
-upload:
-	@echo "Uploading $(EXE)"
-	python -u $(RUNSCRIPT) upload ./$(EXE) $(BAUDRATE) $(SIMBA_ROOT) \
-                  $(RUNLOG) $(RUN_END_PATTERN) $(RUN_END_PATTERN_SUCCESS) \
-                  $(RUNARGS)
+LIBPATH += "$(SIMBA_ROOT)/src/mcus/$(MCU)"
+LINKER_SCRIPT_FILE ?= script.ld
+LINKER_SCRIPT ?= $(SIMBA_ROOT)/src/mcus/$(MCU)/$(LINKER_SCRIPT_FILE)
+
+include $(SIMBA_ROOT)/make/$(TOOLCHAIN)/arm.mk

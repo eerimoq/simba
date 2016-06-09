@@ -26,3 +26,9 @@ BOARD_PINOUT = "arduino-nano-pinout.png"
 BOARD_DESC = "Arduino Nano"
 
 MCU = atmega328p
+
+upload:
+	@echo "Uploading $(EXE)"
+	python -u $(RUNSCRIPT) upload ./$(EXE) $(BAUDRATE) $(SIMBA_ROOT) \
+                  $(RUNLOG) $(RUN_END_PATTERN) $(RUN_END_PATTERN_SUCCESS) \
+                  $(RUNARGS)

@@ -1,5 +1,5 @@
 #
-# @file src/boards/arduino_due/board.mk
+# @file src/boards/stm32f3discovery/board.mk
 # @version 0.6.0
 #
 # @section License
@@ -18,19 +18,15 @@
 # This file is part of the Simba project.
 #
 
-INC += $(SIMBA_ROOT)/src/boards/arduino_due
-SRC += $(SIMBA_ROOT)/src/boards/arduino_due/board.c
+INC += $(SIMBA_ROOT)/src/boards/stm32vldiscovery
+SRC += $(SIMBA_ROOT)/src/boards/stm32vldiscovery/board.c
 
-BOARD_HOMEPAGE = "https://www.arduino.cc/en/Main/ArduinoBoardDue"
-BOARD_PINOUT = "arduino-due-pinout.png"
-BOARD_DESC = "Arduino Due"
+BOARD_HOMEPAGE = "http://www.st.com/content/st_com/en/products/evaluation-tools/product-evaluation-tools/mcu-eval-tools/stm32-mcu-eval-tools/stm32-mcu-discovery-kits/stm32vldiscovery.html?sc=internet/evalboard/product/250863.jsp"
+BOARD_PINOUT = "stm32vldiscovery.jpg"
+BOARD_DESC = "STM32VLDISCOVERY"
 
-MCU = sam3x8e
-
-RUST_TARGET = thumbv7em-none-eabi
+MCU = stm32f100rb
 
 upload:
 	@echo "Uploading $(EXE)"
-	python -u $(RUNSCRIPT) upload ./$(EXE) $(BAUDRATE) $(SIMBA_ROOT) \
-                  $(RUNLOG) $(RUN_END_PATTERN) $(RUN_END_PATTERN_SUCCESS) \
-                  $(RUNARGS)
+	st-flash write $(NAME).bin 0x8000000

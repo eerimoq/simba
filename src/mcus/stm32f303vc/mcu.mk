@@ -26,7 +26,7 @@ MCPU = cortex-m4
 F_CPU = 72000000
 
 ARCH = arm
-FAMILY = stm32
+FAMILY = stm32f3
 
 MCU_HOMEPAGE = "http://www.st.com/content/st_com/en/products/microcontrollers/stm32-32-bit-arm-cortex-mcus/stm32f3-series/stm32f303/stm32f303vc.html"
 MCU_NAME = "ST STM32F303VC ARM Cortex-M4"

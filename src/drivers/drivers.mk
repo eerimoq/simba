@@ -73,7 +73,13 @@ DRIVERS_SRC ?= adc.c \
                uart.c
 endif
 
-ifeq ($(FAMILY),stm32)
+ifeq ($(FAMILY),stm32f1)
+DRIVERS_SRC ?= flash.c \
+               pin.c \
+	       uart.c
+endif
+
+ifeq ($(FAMILY),stm32f3)
 DRIVERS_SRC ?= flash.c \
                pin.c \
 	       uart.c

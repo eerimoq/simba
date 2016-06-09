@@ -26,3 +26,9 @@ BOARD_PINOUT = "arduino-mega-pinout.png"
 BOARD_DESC = "Arduino Mega"
 
 MCU = atmega2560
+
+upload:
+	@echo "Uploading $(EXE)"
+	python -u $(RUNSCRIPT) upload ./$(EXE) $(BAUDRATE) $(SIMBA_ROOT) \
+                  $(RUNLOG) $(RUN_END_PATTERN) $(RUN_END_PATTERN_SUCCESS) \
+                  $(RUNARGS)

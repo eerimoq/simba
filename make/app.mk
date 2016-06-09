@@ -133,10 +133,6 @@ run: all
                   $(RUNARGS)
 
 upload: all
-	@echo "Uploading $(EXE)"
-	python -u $(RUNSCRIPT) upload ./$(EXE) $(BAUDRATE) $(SIMBA_ROOT) \
-                  $(RUNLOG) $(RUN_END_PATTERN) $(RUN_END_PATTERN_SUCCESS) \
-                  $(RUNARGS)
 
 console:
 	python -u $(CONSOLESCRIPT) --baudrate $(BAUDRATE)

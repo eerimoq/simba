@@ -54,11 +54,6 @@ static int uart_port_start(struct uart_driver_t *self_p)
 {
     /* Configure pin functions. */
 
-    /* Enable the UART. */
-    self_p->dev_p->regs_p->CR1 = (STM32_USART_CR1_TE
-                                  | STM32_USART_CR1_RE
-                                  | STM32_USART_CR1_UE);
-
     return (0);
 }
 
