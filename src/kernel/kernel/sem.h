@@ -59,31 +59,31 @@ int sem_init(struct sem_t *self_p,
              int count);
 
 /**
- * Get given semaphore. If the semaphore count is zero the calling
+ * Take given semaphore. If the semaphore count is zero the calling
  * thread will be suspended until count is incremented by a
- * `sem_put()` call.
+ * `sem_give()` call.
  *
  * @param[in] self_p Semaphore to get.
  * @param[in] timeout_p Timeout.
  *
  * @return zero(0) or negative error code.
  */
-int sem_get(struct sem_t *self_p,
-            struct time_t *timeout_p);
+int sem_take(struct sem_t *self_p,
+             struct time_t *timeout_p);
 
 /**
- * Add given count to given semaphore. Any blocked thread waiting for
- * this semaphore, in `sem_get()`, is unblocked. This continues until
- * the semaphore count becomes zero or there are no threads in the
- * blocked list.
+ * Give given count to given semaphore. Any suspended thread waiting
+ * for this semaphore, in `sem_take()`, is resumed. This continues
+ * until the semaphore count becomes zero or there are no threads in
+ * the suspended list.
  *
  * @param[in] self_p Semaphore to add count to.
  * @param[in] count Count to add to the semaphore.
  *
  * @return zero(0) or negative error code.
  */
-int sem_put(struct sem_t *self_p,
-            int count);
+int sem_give(struct sem_t *self_p,
+             int count);
 
 /**
  * Put given value on semaphore from isr or with the system lock
@@ -94,7 +94,7 @@ int sem_put(struct sem_t *self_p,
  *
  * @return zero(0) or negative error code.
  */
-int sem_put_isr(struct sem_t *self_p,
-                int count);
+int sem_give_isr(struct sem_t *self_p,
+                 int count);
 
 #endif

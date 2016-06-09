@@ -57,7 +57,7 @@ ssize_t spi_transfer(struct spi_driver_t *self_p,
     ASSERTN((rxbuf_p != NULL) || (txbuf_p != NULL), EINVAL);
     ASSERTN(size > 0, EINVAL);
 
-    sem_get(&self_p->dev_p->sem, NULL);
+    sem_take(&self_p->dev_p->sem, NULL);
 
     /* Configure and start SPI hardware with driver configuration. */
     if (self_p->dev_p->drv_p != self_p) {
@@ -79,7 +79,7 @@ ssize_t spi_transfer(struct spi_driver_t *self_p,
         pin_write(&self_p->ss, 1);
     }
 
-    sem_put(&self_p->dev_p->sem, 1);
+    sem_give(&self_p->dev_p->sem, 1);
 
     return (size);
 }

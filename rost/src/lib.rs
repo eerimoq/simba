@@ -90,12 +90,12 @@ macro_rules! print {
     ($($arg:tt)*) => ({
         use core::fmt::Write;
         unsafe {
-            $crate::sem_get(&mut $crate::kernel::sys::STDOUT.sem
+            $crate::sem_take(&mut $crate::kernel::sys::STDOUT.sem
                             as *mut $crate::Struct_sem_t,
                             0 as *mut $crate::Struct_time_t);
             $crate::kernel::sys::STDOUT.write_fmt(
                 format_args!($($arg)*)).unwrap();
-            $crate::sem_put(&mut $crate::kernel::sys::STDOUT.sem,
+            $crate::sem_give(&mut $crate::kernel::sys::STDOUT.sem,
                             1);
         }
     });

@@ -95,7 +95,7 @@ static int cmd_list_cb(int argc,
         return (-EINVAL);
     }
 
-    sem_get(&state.sem, NULL);
+    sem_take(&state.sem, NULL);
     
     std_fprintf(out_p, FSTR("     OBJECT NAME  MASK\r\n"));
 
@@ -110,7 +110,7 @@ static int cmd_list_cb(int argc,
         object_p = object_p->next_p;            
     }
 
-    sem_put(&state.sem, 1);
+    sem_give(&state.sem, 1);
 
     return (0);
 }
@@ -145,7 +145,7 @@ static int cmd_set_log_mask_cb(int argc,
     name_p = argv[1];
     found = 0;
 
-    sem_get(&state.sem, NULL);
+    sem_take(&state.sem, NULL);
 
     object_p = &state.object;
     
@@ -160,7 +160,7 @@ static int cmd_set_log_mask_cb(int argc,
         object_p = object_p->next_p;            
     }
 
-    sem_put(&state.sem, 1);
+    sem_give(&state.sem, 1);
 
     if (found == 0) {
         std_fprintf(out_p,
@@ -210,12 +210,12 @@ int log_add_handler(struct log_handler_t *handler_p)
 {
     ASSERTN(handler_p != NULL, EINVAL);
 
-    sem_get(&state.sem, NULL);
+    sem_take(&state.sem, NULL);
 
     handler_p->next_p = state.handler.next_p;
     state.handler.next_p = handler_p;
 
-    sem_put(&state.sem, 1);
+    sem_give(&state.sem, 1);
 
     return (0);
 }
@@ -226,7 +226,7 @@ int log_remove_handler(struct log_handler_t *handler_p)
 
     struct log_handler_t *curr_p, *prev_p;
 
-    sem_get(&state.sem, NULL);
+    sem_take(&state.sem, NULL);
 
     curr_p = state.handler.next_p;
     prev_p = &state.handler;
@@ -238,13 +238,13 @@ int log_remove_handler(struct log_handler_t *handler_p)
             }
 
             curr_p->next_p = NULL;
-            sem_put(&state.sem, 1);
+            sem_give(&state.sem, 1);
 
             return (0);
         }
     }
 
-    sem_put(&state.sem, 1);
+    sem_give(&state.sem, 1);
 
     return (1);
 }
@@ -253,12 +253,12 @@ int log_add_object(struct log_object_t *object_p)
 {
     ASSERTN(object_p != NULL, EINVAL);
 
-    sem_get(&state.sem, NULL);
+    sem_take(&state.sem, NULL);
 
     object_p->next_p = state.object.next_p;
     state.object.next_p = object_p;
 
-    sem_put(&state.sem, 1);
+    sem_give(&state.sem, 1);
 
     return (0);
 }
@@ -269,7 +269,7 @@ int log_remove_object(struct log_object_t *object_p)
 
     struct log_object_t *curr_p, *prev_p;
 
-    sem_get(&state.sem, NULL);
+    sem_take(&state.sem, NULL);
 
     curr_p = state.object.next_p;
     prev_p = &state.object;
@@ -281,13 +281,13 @@ int log_remove_object(struct log_object_t *object_p)
             }
 
             curr_p->next_p = NULL;
-            sem_put(&state.sem, 1);
+            sem_give(&state.sem, 1);
 
             return (0);
         }
     }
 
-    sem_put(&state.sem, 1);
+    sem_give(&state.sem, 1);
 
     return (1);
 }

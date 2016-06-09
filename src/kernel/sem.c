@@ -43,8 +43,8 @@ int sem_init(struct sem_t *self_p,
     return (0);
 }
 
-int sem_get(struct sem_t *self_p,
-            struct time_t *timeout_p)
+int sem_take(struct sem_t *self_p,
+             struct time_t *timeout_p)
 {
     ASSERTN(self_p != NULL, EINVAL);
 
@@ -80,21 +80,21 @@ int sem_get(struct sem_t *self_p,
     return (err);
 }
 
-int sem_put(struct sem_t *self_p,
-            int count)
+int sem_give(struct sem_t *self_p,
+             int count)
 {
     ASSERTN(self_p != NULL, EINVAL);
     ASSERTN(count > 0, EINVAL);
 
     sys_lock();
-    sem_put_isr(self_p, count);
+    sem_give_isr(self_p, count);
     sys_unlock();
 
     return (0);
 }
 
-int sem_put_isr(struct sem_t *self_p,
-                int count)
+int sem_give_isr(struct sem_t *self_p,
+                 int count)
 {
     struct sem_elem_t *elem_p;
 

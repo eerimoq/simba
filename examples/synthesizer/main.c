@@ -87,7 +87,7 @@ static int note_off(struct channel_t *channel_p,
                      FSTR("note off: note = %d"),
                      note);
 
-    sem_get(&synthesizer.sem, NULL);
+    sem_take(&synthesizer.sem, NULL);
 
     note_p = channel_note_get(channel_p, note);
 
@@ -95,7 +95,7 @@ static int note_off(struct channel_t *channel_p,
         note_stop(note_p);
     }
 
-    sem_put(&synthesizer.sem, 1);
+    sem_give(&synthesizer.sem, 1);
 
     return (0);
 }
@@ -115,7 +115,7 @@ static int note_on(struct channel_t *channel_p,
 
     /* Add the note to the list of notes on the channel. If the list
      * is full, remove the oldest note. */
-    sem_get(&synthesizer.sem, NULL);
+    sem_take(&synthesizer.sem, NULL);
 
     if ((note_p = channel_note_alloc(channel_p)) != NULL) {
         note_init(note_p,
@@ -131,7 +131,7 @@ static int note_on(struct channel_t *channel_p,
         note_start(note_p);
     }
 
-    sem_put(&synthesizer.sem, 1);
+    sem_give(&synthesizer.sem, 1);
 
     return (0);
 }
@@ -489,7 +489,7 @@ static void *sensors_main(void *arg_p)
         adc_convert(&synthesizer.sensors.vibrato, &sample, 1);
         vibrato = (0.002 * ((float)sample / 40.96));
 
-        sem_get(&synthesizer.sem, NULL);
+        sem_take(&synthesizer.sem, NULL);
 
         synthesizer.vibrato = vibrato;
         oscillator_set_frequency(&synthesizer.channels[15].notes[0].oscillator,
@@ -497,7 +497,7 @@ static void *sensors_main(void *arg_p)
         oscillator_set_vibrato(&synthesizer.channels[15].notes[0].oscillator,
                                vibrato);
 
-        sem_put(&synthesizer.sem, 1);
+        sem_give(&synthesizer.sem, 1);
     }
 
     return (NULL);
@@ -724,7 +724,7 @@ int main()
         /* Calculate the next few samples and start the convertion in
          * the DAC. The smaller the buffer, the shorter the delay to
          * the speaker. */
-        sem_get(&synthesizer.sem, NULL);
+        sem_take(&synthesizer.sem, NULL);
 
         for (i = 0; i < membersof(synthesizer.channels); i++) {
             channel_process(&synthesizer.channels[i],
@@ -733,7 +733,7 @@ int main()
                             SAMPLES_MAX);
         }
 
-        sem_put(&synthesizer.sem, 1);
+        sem_give(&synthesizer.sem, 1);
 
         for (i = 0; i < SAMPLES_MAX; i++) {
             samples_p[i] = ((samples_p[i] >> 7) + 2048);

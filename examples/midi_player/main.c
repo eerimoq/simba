@@ -41,9 +41,9 @@ struct operation_t {
 
 static size_t write(void *buf_p, size_t size)
 {
-    sem_get(&sem, NULL);
+    sem_take(&sem, NULL);
     uart_write(&uart_midi, buf_p, size);
-    sem_put(&sem, 1);
+    sem_give(&sem, 1);
 
     return (size);
 }

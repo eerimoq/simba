@@ -152,7 +152,7 @@ struct spi_frame_t {
 /* Interrupt service routine serving the INT from the hardware. */
 static void isr(struct mcp2515_driver_t *self_p)
 {
-    sem_put_isr(&self_p->isr_sem, 1);
+    sem_give_isr(&self_p->isr_sem, 1);
 }
 
 /**
@@ -286,7 +286,7 @@ static ssize_t write_cb(void *arg_p,
     spi_write(&self_p->spi, &rts, sizeof(rts));
 
     /* Wait for the frame to be transmitted. */
-    sem_get(&self_p->tx_sem, NULL);
+    sem_take(&self_p->tx_sem, NULL);
 
     return (size);
 }
@@ -336,7 +336,7 @@ static void *isr_main(void *arg_p)
 
     while (1) {
         /* Wait for signal from interrupt handler. */
-        sem_get(&self_p->isr_sem, NULL);
+        sem_take(&self_p->isr_sem, NULL);
 
         /* Read status flags. */
         if (read_status(self_p, &status) != 0) {
@@ -376,7 +376,7 @@ static void *isr_main(void *arg_p)
                                     0) != 0) {
                 std_printf(FSTR("failed to clear tx interrupt flag\r\n"));
             }
-            sem_put(&self_p->tx_sem, 1);
+            sem_give(&self_p->tx_sem, 1);
         }
     }
 

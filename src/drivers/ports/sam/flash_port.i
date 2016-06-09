@@ -168,9 +168,9 @@ ssize_t flash_port_read(struct flash_driver_t *self_p,
 {
     struct flash_device_t *dev_p = self_p->dev_p;
 
-    sem_get(&dev_p->sem, NULL);
+    sem_take(&dev_p->sem, NULL);
     memcpy(dst_p, (void *)src, size);
-    sem_put(&dev_p->sem, 1);
+    sem_give(&dev_p->sem, 1);
 
     return (size);
 }
@@ -189,7 +189,7 @@ ssize_t flash_port_write(struct flash_driver_t *self_p,
     dev_p = self_p->dev_p;
     left = size;
 
-    sem_get(&dev_p->sem, NULL);
+    sem_take(&dev_p->sem, NULL);
 
     /* Write one page at a time. */
     while (left > 0) {
@@ -210,7 +210,7 @@ ssize_t flash_port_write(struct flash_driver_t *self_p,
         u8src_p += n;
     }
 
-    sem_put(&dev_p->sem, 1);
+    sem_give(&dev_p->sem, 1);
 
     return (res);
 }

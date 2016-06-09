@@ -160,7 +160,7 @@ static ssize_t uart_port_write_cb(void *arg_p,
 
     self_p = container_of(arg_p, struct uart_driver_t, chout);
 
-    sem_get(&self_p->sem, NULL);
+    sem_take(&self_p->sem, NULL);
 
     /* Initiate transfer by writing to the fifo. */
     self_p->txbuf_p = txbuf_p;
@@ -176,7 +176,7 @@ static ssize_t uart_port_write_cb(void *arg_p,
 
     sys_unlock();
 
-    sem_put(&self_p->sem, 1);
+    sem_give(&self_p->sem, 1);
 
     return (size);
 }
