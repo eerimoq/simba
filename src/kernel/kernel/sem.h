@@ -60,8 +60,8 @@ int sem_init(struct sem_t *self_p,
 
 /**
  * Take given semaphore. If the semaphore count is zero the calling
- * thread will be suspended until count is incremented by a
- * `sem_give()` call.
+ * thread will be suspended until count is incremented by
+ * `sem_give()`.
  *
  * @param[in] self_p Semaphore to get.
  * @param[in] timeout_p Timeout.
@@ -77,8 +77,8 @@ int sem_take(struct sem_t *self_p,
  * until the semaphore count becomes zero or there are no threads in
  * the suspended list.
  *
- * @param[in] self_p Semaphore to add count to.
- * @param[in] count Count to add to the semaphore.
+ * @param[in] self_p Semaphore to give count to.
+ * @param[in] count Count to give.
  *
  * @return zero(0) or negative error code.
  */
@@ -86,11 +86,11 @@ int sem_give(struct sem_t *self_p,
              int count);
 
 /**
- * Put given value on semaphore from isr or with the system lock
- * taken.
+ * Give given count to given semaphore from isr or with the system
+ * lock taken.
  *
- * @param[in] self_p Semaphore to add count to.
- * @param[in] count Count to add.
+ * @param[in] self_p Semaphore to give count to.
+ * @param[in] count Count to give.
  *
  * @return zero(0) or negative error code.
  */

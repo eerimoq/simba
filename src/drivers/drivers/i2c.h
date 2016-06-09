@@ -61,8 +61,9 @@ int i2c_init(struct i2c_driver_t *self_p,
 
 /**
  * Start given driver object in master mode. Enables data reception
- * and transmission, but does not start any transmission. Transmission
- * are started by calling the `i2c_read()` and `i2c_write()`.
+ * and transmission, but does not start any transmission. Data
+ * tarnsfers are started by calling the `i2c_read()` and
+ * `i2c_write()`.
  *
  * @param[in] self_p Driver object to initialize.
  *
@@ -112,8 +113,9 @@ ssize_t i2c_write(struct i2c_driver_t *self_p,
 
 /**
  * Start given driver object in slave mode. Enables data reception and
- * transmission, but does not start any transmission. Transmission are
- * started by calling the `i2c_slave_read()` and `i2c_slave_write()`.
+ * transmission, but does not start any transmission. Data transfers
+ * are started by calling the `i2c_slave_read()` and
+ * `i2c_slave_write()`.
  *
  * @param[in] self_p Driver object to initialize.
  *
