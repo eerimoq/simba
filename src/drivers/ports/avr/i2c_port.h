@@ -34,7 +34,7 @@ struct i2c_driver_t {
     struct i2c_device_t *dev_p;
     int address;
     int twbr;
-    size_t size;
+    volatile ssize_t size;
     uint8_t *buf_p;
     struct thrd_t *thrd_p;
 };

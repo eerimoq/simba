@@ -99,18 +99,18 @@ static int test_echo(struct harness_t *harness_p)
     /* Write ping value. */
     value = 0x35;
 
-    while (i2c_write(&i2c,
-                     I2C_SLAVE_ADDRESS,
-                     &value,
-                     1) != 1);
+    BTASSERT(i2c_write(&i2c,
+                       I2C_SLAVE_ADDRESS,
+                       &value,
+                       1) == 1);
 
     /* Read pong value (ping + 1). */
     value = 0;
 
-    while (i2c_read(&i2c,
-                    I2C_SLAVE_ADDRESS,
-                    &value,
-                    1) != 1);
+    BTASSERT(i2c_read(&i2c,
+                      I2C_SLAVE_ADDRESS,
+                      &value,
+                      1) == 1);
 
     BTASSERT(value == 0x36);
 

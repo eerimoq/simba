@@ -28,9 +28,9 @@ static int test_init(struct harness_t *harness_p)
 {
     BTASSERT(i2c_init(&i2c,
                       &i2c_0_dev,
-                      I2C_BAUDRATE_100KBPS,
-                      I2C_SLAVE_ADDRESS) == 0);
-    BTASSERT(i2c_start(&i2c) == 0);
+                      I2C_SLAVE_ADDRESS,
+                      -1) == 0);
+    BTASSERT(i2c_slave_start(&i2c) == 0);
 
     return (0);
 }
@@ -99,7 +99,7 @@ static int test_mem_read(struct harness_t *harness_p)
 
 static int test_stop(struct harness_t *harness_p)
 {
-    BTASSERT(i2c_stop(&i2c) == 0);
+    BTASSERT(i2c_slave_stop(&i2c) == 0);
 
     return (0);
 }

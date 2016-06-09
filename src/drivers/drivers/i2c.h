@@ -41,12 +41,16 @@ extern struct i2c_device_t i2c_device[I2C_DEVICE_MAX];
 int i2c_module_init();
 
 /**
- * Initialize given driver object.
+ * Initialize given driver object. The same driver object is used for
+ * both master and slave modes. Use `i2c_start()` to start the device
+ * as a master, and `i2c_slave_start()` to start it as a slave.
  *
  * @param[out] self_p Driver object to initialize.
  * @param[in] dev_p I2C device to use.
- * @param[in] address I2C local slave address. Set to -1 to disable
- *                    slave mode.
+ * @param[in] baudrates Bus baudrate when in master mode. Unused in
+ *            slave mode.
+ * @param[in] address Slave address when in slave mode. Unused in
+ *                    master mode.
  *
  * @return zero(0) or negative error code.
  */
@@ -56,7 +60,9 @@ int i2c_init(struct i2c_driver_t *self_p,
              int address);
 
 /**
- * Start given driver object. Enables data reception and transmission.
+ * Start given driver object in master mode. Enables data reception
+ * and transmission, but does not start any transmission. Transmission
+ * are started by calling the `i2c_read()` and `i2c_write()`.
  *
  * @param[in] self_p Driver object to initialize.
  *
@@ -65,7 +71,8 @@ int i2c_init(struct i2c_driver_t *self_p,
 int i2c_start(struct i2c_driver_t *self_p);
 
 /**
- * Stop given driver object. Disables data reception and transmission.
+ * Stop given driver object. Disables data reception and transmission
+ * in master mode.
  *
  * @param[in] self_p Driver object to initialize.
  *
@@ -74,10 +81,10 @@ int i2c_start(struct i2c_driver_t *self_p);
 int i2c_stop(struct i2c_driver_t *self_p);
 
 /**
- * Read into given buffer from given slave.
+ * Read into given buffer to given slave address.
  *
  * @param[in] self_p Driver object.
- * @param[in] address Slave address.
+ * @param[in] address Slave address to read from.
  * @param[out] buf_p Buffer to read into.
  * @param[in] size Number of bytes to read.
  *
@@ -89,10 +96,10 @@ ssize_t i2c_read(struct i2c_driver_t *self_p,
                  size_t size);
 
 /**
- * Write given buffer to given slave.
+ * Write given buffer to given slave address.
  *
  * @param[in] self_p Driver object.
- * @param[in] address Slave address.
+ * @param[in] address Slave address to write to.
  * @param[in] buf_p Buffer to write.
  * @param[in] size Number of bytes to write.
  *
@@ -104,11 +111,29 @@ ssize_t i2c_write(struct i2c_driver_t *self_p,
                   size_t size);
 
 /**
+ * Start given driver object in slave mode. Enables data reception and
+ * transmission, but does not start any transmission. Transmission are
+ * started by calling the `i2c_slave_read()` and `i2c_slave_write()`.
+ *
+ * @param[in] self_p Driver object to initialize.
+ *
+ * @return zero(0) or negative error code.
+ */
+int i2c_slave_start(struct i2c_driver_t *self_p);
+
+/**
+ * Stop given driver object. Disables data reception and transmission
+ * in slave mode.
+ *
+ * @param[in] self_p Driver object to initialize.
+ *
+ * @return zero(0) or negative error code.
+ */
+int i2c_slave_stop(struct i2c_driver_t *self_p);
+
+/**
  * Read into given buffer from the next master that addresses this
  * slave.
- *
- * NOTE: This function may only be used if the driver was initialized
- *       with a local slave address.
  *
  * @param[in] self_p Driver object.
  * @param[out] buf_p Buffer to read into.
@@ -123,9 +148,6 @@ ssize_t i2c_slave_read(struct i2c_driver_t *self_p,
 /**
  * Write given buffer to the next master that addresses this
  * slave.
- *
- * NOTE: This function may only be used if the driver was initialized
- *       with a local slave address.
  *
  * @param[in] self_p Driver object.
  * @param[in] buf_p Buffer to write.

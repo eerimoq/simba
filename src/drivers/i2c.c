@@ -192,6 +192,20 @@ ssize_t i2c_write(struct i2c_driver_t *self_p,
     return (i2c_port_write(self_p, address, buf_p, size));
 }
 
+int i2c_slave_start(struct i2c_driver_t *self_p)
+{
+    ASSERTN(self_p != NULL, EINVAL);
+
+    return (i2c_port_slave_start(self_p));
+}
+
+int i2c_slave_stop(struct i2c_driver_t *self_p)
+{
+    ASSERTN(self_p != NULL, EINVAL);
+
+    return (i2c_port_slave_stop(self_p));
+}
+
 ssize_t i2c_slave_read(struct i2c_driver_t *self_p,
                        void *buf_p,
                        size_t size)

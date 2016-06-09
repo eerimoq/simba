@@ -93,22 +93,6 @@ static ssize_t transfer(struct i2c_driver_t *self_p,
     return (size - self_p->size);
 }
 
-static ssize_t slave_transfer(struct i2c_driver_t *self_p,
-                              void *buf_p,
-                              size_t size)
-{
-    self_p->buf_p = (void *)buf_p;
-    self_p->size = size;
-    self_p->thrd_p = thrd_self();
-
-    sys_lock();
-    TWCR = (_BV(TWEA) | _BV(TWEN) | _BV(TWIE));
-    thrd_suspend_isr(NULL);
-    sys_unlock();
-
-    return (size - self_p->size);
-}
-
 ISR(TWI_vect)
 {
     struct i2c_device_t *dev_p = &i2c_device[0];
@@ -178,11 +162,16 @@ ISR(TWI_vect)
         thrd_resume_isr(drv_p->thrd_p, 0);
         break;
 
-        /* Slave tarnsmit. */
+        /* Slave transmit. */
     case I2C_S_TX_DATA_ACK:
         drv_p->size--;
     case I2C_S_TX_SLA_R_ACK:
     case I2C_S_TX_ARB_LOST_SLA_R_ACK:
+        if (drv_p->thrd_p == NULL) {
+            drv_p->size = -1;
+            break;
+        }
+
         TWDR = *drv_p->buf_p++;
 
         if (drv_p->size > 1) {
@@ -197,13 +186,19 @@ ISR(TWI_vect)
     case I2C_S_TX_LAST_DATA_ACK:
     case I2C_S_TX_DATA_NACK:
         drv_p->size--;
-        TWCR = (_BV(TWINT) | _BV(TWEA) | _BV(TWEN));
+        TWCR = (_BV(TWINT) | _BV(TWEA) | _BV(TWEN) | _BV(TWIE));
         thrd_resume_isr(drv_p->thrd_p, 0);
+        drv_p->thrd_p = NULL;
         break;
 
         /* Slave receive. */
     case I2C_S_RX_SLA_W_ACK:
     case I2C_S_RX_ARB_LOST_SLA_W_ACK:
+        if (drv_p->thrd_p == NULL) {
+            drv_p->size = -1;
+            break;
+        }
+        
         TWCR = (_BV(TWINT) | _BV(TWEA) | _BV(TWEN) | _BV(TWIE));
         break;
 
@@ -222,8 +217,9 @@ ISR(TWI_vect)
         break;
 
     case I2C_S_RX_STOP_OR_REPEATED_START:
-        TWCR = (_BV(TWINT) | _BV(TWEN));
+        TWCR = (_BV(TWINT) | _BV(TWEA) | _BV(TWEN) | _BV(TWIE));
         thrd_resume_isr(drv_p->thrd_p, 0);
+        drv_p->thrd_p = NULL;
         break;
         
     default:
@@ -252,13 +248,10 @@ int i2c_port_init(struct i2c_driver_t *self_p,
 int i2c_port_start(struct i2c_driver_t *self_p)
 {
     self_p->dev_p->drv_p = self_p;
+    self_p->thrd_p = NULL;
 
     TWSR = 0;
     TWBR = self_p->twbr;
-
-    if (self_p->address != -1) {
-        TWAR = (self_p->address << 1);
-    }
 
     return (0);
 }
@@ -284,16 +277,66 @@ ssize_t i2c_port_write(struct i2c_driver_t *self_p,
     return (transfer(self_p, address, (void *)buf_p, size, I2C_WRITE));
 }
 
+int i2c_port_slave_start(struct i2c_driver_t *self_p)
+{
+    self_p->dev_p->drv_p = self_p;
+    self_p->thrd_p = NULL;
+
+    TWSR = 0;
+    TWAR = (self_p->address << 1);
+    TWCR = (_BV(TWEA) | _BV(TWEN) | _BV(TWIE));
+
+    return (0);
+}
+
+int i2c_port_slave_stop(struct i2c_driver_t *self_p)
+{
+    return (0);
+}
+
 ssize_t i2c_port_slave_read(struct i2c_driver_t *self_p,
                             void *buf_p,
                             size_t size)
 {
-    return (slave_transfer(self_p, buf_p, size));
+    sys_lock();
+
+    /* Read immediately if already addressed by the master. */
+    if (self_p->size == -1) {
+        TWCR = (_BV(TWINT) | _BV(TWEA) | _BV(TWEN) | _BV(TWIE));
+    }
+
+    self_p->buf_p = (void *)buf_p;
+    self_p->size = size;
+    self_p->thrd_p = thrd_self();
+    thrd_suspend_isr(NULL);
+    sys_unlock();
+
+    return (size - self_p->size);
 }
 
 ssize_t i2c_port_slave_write(struct i2c_driver_t *self_p,
                              const void *buf_p,
                              size_t size)
 {
-    return (slave_transfer(self_p, (void *)buf_p, size));
+    sys_lock();
+    self_p->buf_p = (void *)buf_p;
+
+    /* Write immediately if already addressed by the master. */
+    if (self_p->size == -1) {
+        TWDR = *self_p->buf_p++;
+
+        if (size > 1) {
+            TWCR = (_BV(TWINT) | _BV(TWEA) | _BV(TWEN) | _BV(TWIE));
+        } else {
+            /* Last data transmission. */
+            TWCR = (_BV(TWINT) | _BV(TWEN) | _BV(TWIE));
+        }
+    }
+
+    self_p->size = size;
+    self_p->thrd_p = thrd_self();
+    thrd_suspend_isr(NULL);
+    sys_unlock();
+
+    return (size - self_p->size);
 }
