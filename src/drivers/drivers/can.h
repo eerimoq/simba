@@ -47,9 +47,9 @@ extern struct can_device_t can_device[CAN_DEVICE_MAX];
  *
  * @param[in] self_p Driver object to initialize.
  * @param[in] dev_p Device to use.
- * @param[in] filter_p RX filter configuration.
- * @param[in] frames_p RX frame buffer in interrupt.
- * @param[in] length Length of frames array.
+ * @param[in] speed Can bus speed.
+ * @param[in] rxbuf_p Reception buffer.
+ * @param[in] size Size of the reception buffer.
  *
  * @return zero(0) or negative error code.
  */
@@ -78,7 +78,7 @@ int can_start(struct can_driver_t *self_p);
 int can_stop(struct can_driver_t *self_p);
 
 /**
- * Read CAN frame(s).
+ * Read one or more CAN frames.
  *
  * @param[in] self_p Initialized driver object.
  * @param[out] frame_p Array of read frames.
@@ -91,7 +91,7 @@ int can_read(struct can_driver_t *self_p,
              size_t size);
 
 /**
- * Write a CAN frame(s).
+ * Write one or more CAN frames.
  *
  * @param[in] self_p Initialized driver object.
  * @param[in] frame_p Array of frames to write.
