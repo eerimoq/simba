@@ -28,3 +28,9 @@ BOARD_DESC = "Cygwin"
 MCU = linux
 
 upload:
+
+run:
+	@echo "Running $(EXE)"
+	python -u $(RUNSCRIPT) run ./$(EXE) $(BAUDRATE) $(SIMBA_ROOT) \
+                  $(RUNLOG) $(RUN_END_PATTERN) $(RUN_END_PATTERN_SUCCESS) \
+                  $(RUNARGS)

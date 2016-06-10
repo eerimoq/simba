@@ -29,10 +29,12 @@ struct uart_device_t {
 };
 
 struct uart_driver_t {
-    const struct uart_device_t *dev_p;
+    struct uart_device_t *dev_p;
     struct sem_t sem;
+    const uint8_t *txbuf_p;
+    size_t txsize;
+    struct thrd_t *thrd_p;
     long baudrate;
-    size_t rxsize;
     struct chan_t chout;
     struct queue_t chin;
 };

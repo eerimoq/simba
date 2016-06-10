@@ -59,9 +59,8 @@ static void thrd_port_swap(struct thrd_t *in_p,
                            struct thrd_t *out_p)
 {
     scheduler.next_p = in_p;
-#if defined(FAMILY_SAM)
-    SAM_SCB->ICSR = SCB_ICSR_PENDSVSET;
-#endif
+    ARM_SCB->ICSR = SCB_ICSR_PENDSVSET;
+
     asm volatile ("cpsie i");
     asm volatile ("cpsid i");
 }

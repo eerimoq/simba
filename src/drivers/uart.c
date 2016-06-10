@@ -38,7 +38,6 @@ int uart_init(struct uart_driver_t *self_p,
 
     self_p->dev_p = dev_p;
     self_p->baudrate = baudrate;
-    self_p->rxsize = size;
 
     sem_init(&self_p->sem, 1);
 

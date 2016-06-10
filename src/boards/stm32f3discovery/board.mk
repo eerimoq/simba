@@ -28,5 +28,12 @@ BOARD_DESC = "STM32F3DISCOVERY"
 MCU = stm32f303vc
 
 upload:
-	@echo "Uploading $(EXE)"
+	@echo "Uploading $(NAME).bin"
 	st-flash write $(NAME).bin 0x8000000
+
+run:
+	@echo "Running $(NAME).bin"
+	@python -u $(SIMBA_ROOT)/make/run.py \
+	     $(RUN_END_PATTERN) \
+	     $(RUN_END_PATTERN_SUCCESS) \
+	     $(BAUDRATE) | tee run.log

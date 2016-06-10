@@ -25,12 +25,11 @@ ISR(sys_tick)
 
 static int sys_port_module_init(void)
 {
-#if defined(FAMILY_SAM)
     /* Setup the system tick timer. */
-    SAM_ST->LOAD = SYSTEM_TIMER_LOAD_RELOAD(10000000 / CONFIG_SYSTEM_TICK_FREQUENCY);
-    SAM_ST->CTRL = (SYSTEM_TIMER_CTRL_TICKINT
+    ARM_ST->LOAD = SYSTEM_TIMER_LOAD_RELOAD(10000000
+                                            / CONFIG_SYSTEM_TICK_FREQUENCY);
+    ARM_ST->CTRL = (SYSTEM_TIMER_CTRL_TICKINT
                     | SYSTEM_TIMER_CTRL_ENABLE);
-#endif
 
     /* Enable interrupts. */
     asm volatile("cpsie i" : : : "memory");

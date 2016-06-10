@@ -72,7 +72,6 @@ else:
     bossac_port = "arduino"
 
 if target == "run":
-    upload()
     try:
         run(["python",
              "-u",

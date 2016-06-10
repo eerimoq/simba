@@ -21,6 +21,8 @@
 #ifndef __KERNEL_SYS_PORT_H__
 #define __KERNEL_SYS_PORT_H__
 
+#include "types.h"
+
 #define FAR
 
 #define FSTR(s) s

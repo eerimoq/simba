@@ -39,9 +39,24 @@ struct stm32_usart_t {
     uint32_t GTPR;
 };
 
+/* Status register. */
+#define STM32_USART_SR_PE             BIT(0)
+#define STM32_USART_SR_FE             BIT(1)
+#define STM32_USART_SR_NE             BIT(2)
+#define STM32_USART_SR_ORE            BIT(3)
+#define STM32_USART_SR_IDLE           BIT(4)
+#define STM32_USART_SR_RXNE           BIT(5)
+#define STM32_USART_SR_TC             BIT(6)
+#define STM32_USART_SR_TXE            BIT(7)
+#define STM32_USART_SR_LBD            BIT(8)
+#define STM32_USART_SR_CTS            BIT(9)
+
 /* Auxiliary Control Register */
 #define STM32_USART_CR1_RE            BIT(2)
 #define STM32_USART_CR1_TE            BIT(3)
+#define STM32_USART_CR1_RXNEIE        BIT(5)
+#define STM32_USART_CR1_TCIE          BIT(6)
+#define STM32_USART_CR1_TXEIE         BIT(7)
 #define STM32_USART_CR1_UE            BIT(13)
 
 struct stm32_rcc_t {
@@ -58,6 +73,29 @@ struct stm32_rcc_t {
     uint32_t RESERVED0;
     uint32_t CFGR2;
 };
+
+/* Clock control register. */
+#define STM32_RCC_CR_HSEON            BIT(16)
+#define STM32_RCC_CR_HSERDY           BIT(17)
+#define STM32_RCC_CR_PLLON            BIT(24)
+#define STM32_RCC_CR_PLLRDY           BIT(25)
+
+/* Clock configuration register. */
+
+#define STM32_RCC_CFGR_SW_POS         (0)
+#define STM32_RCC_CFGR_SW_MASK        (0x3 << STM32_RCC_CFGR_SW_POS)
+#define STM32_RCC_CFGR_SW(value)      BITFIELD_SET(STM32_RCC_CFGR_SW, value)
+#define STM32_RCC_CFGR_SW_PLL         STM32_RCC_CFGR_SW(2)
+#define STM32_RCC_CFGR_SWS_POS        (2)
+#define STM32_RCC_CFGR_SWS_MASK       (0x3 << STM32_RCC_CFGR_SWS_POS)
+#define STM32_RCC_CFGR_SWS(value)     BITFIELD_SET(STM32_RCC_CFGR_SWS, value)
+#define STM32_RCC_CFGR_SWS_PLL        STM32_RCC_CFGR_SWS(2)
+#define STM32_RCC_CFGR_PLLSRC_PREDIV1 BIT(16)
+#define STM32_RCC_CFGR_PLLMUL_POS     (18)
+#define STM32_RCC_CFGR_PLLMUL_MASK    (0xf << STM32_RCC_CFGR_PLLMUL_POS)
+#define STM32_RCC_CFGR_PLLMUL(value)  BITFIELD_SET(STM32_RCC_CFGR_PLLMUL, value)
+#define STM32_RCC_CFGR_PLLMUL_3       STM32_RCC_CFGR_PLLMUL(1)
+#define STM32_RCC_CFGR_PLLMUL_6       STM32_RCC_CFGR_PLLMUL(4)
 
 #define STM32_RCC_APB1ENR_PWREN       BIT(28)
 
@@ -77,10 +115,10 @@ struct stm32_gpio_t {
 };
 
 /* Base addresses of peripherals. */
-#define STM32_PWR               ((volatile struct stm32_pwr_t *)0x40007000)
-#define STM32_GPIOA             ((volatile struct stm32_gpio_t *)0x40010800)
-#define STM32_USART1            ((volatile struct stm32_usart_t *)0x40013800u)
-#define STM32_RCC               ((volatile struct stm32_rcc_t *)0x40021000u)
+#define STM32_PWR               ((volatile struct stm32_pwr_t *)0x40007000ul)
+#define STM32_GPIOA             ((volatile struct stm32_gpio_t *)0x40010800ul)
+#define STM32_USART1            ((volatile struct stm32_usart_t *)0x40013800ul)
+#define STM32_RCC               ((volatile struct stm32_rcc_t *)0x40021000ul)
 
 /* Interrupt service routine. */
 #define ISR(vector)                             \

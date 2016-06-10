@@ -126,11 +126,7 @@ new:
 	$(MAKE) clean
 	$(MAKE) all
 
-run: all
-	@echo "Running $(EXE)"
-	python -u $(RUNSCRIPT) run ./$(EXE) $(BAUDRATE) $(SIMBA_ROOT) \
-                  $(RUNLOG) $(RUN_END_PATTERN) $(RUN_END_PATTERN_SUCCESS) \
-                  $(RUNARGS)
+run: upload
 
 upload: all
 

@@ -55,7 +55,6 @@ def upload():
 
 
 if target == "run":
-    upload()
     run(["python",
          "-u",
          os.path.join(simba_path, "make", "run.py"),

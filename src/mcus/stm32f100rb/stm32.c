@@ -194,66 +194,40 @@ ISR_WRAPPER(dma2_ch3);
 ISR_WRAPPER(dma2_ch4);
 ISR_WRAPPER(dma2_ch5);
 
-/* #define SYS_BOARD_MCKR      (PMC_MCKR_PRES_CLK_2 | PMC_MCKR_CSS_PLLA_CLK) */
+/* Clock settings (24MHz) */
+static void clock_init(void)
+{
+    /* The HSI clock is used at reset. PLL is disabled. */
 
-/* /\* Clock settings (84MHz) *\/ */
-/* static void clock_init(void) */
-/* { */
-/*     /\* Set FWS according to SYS_BOARD_MCKR configuration *\/ */
-/*     SAM_EEFC0->FMR = EEFC_FMR_FWS(4) | EEFC_FMR_FRDY; */
-/*     SAM_EEFC1->FMR = EEFC_FMR_FWS(4) | EEFC_FMR_FRDY; */
+    /* Enable HSE. */
+    STM32_RCC->CR = (STM32_RCC_CR_HSEON);
 
-/*     /\* Initialize main oscillator *\/ */
-/*     SAM_PMC->CKGR_MOR = (PMC_CKGR_MOR_KEY(0x37) */
-/*                          | PMC_CKGR_MOR_MOSCXTST(0x8) */
-/*                          | PMC_CKGR_MOR_MOSCRCEN */
-/*                          | PMC_CKGR_MOR_MOSCXTEN); */
+    /* Wait for HSE to be stable. */
+    while ((STM32_RCC->CR & STM32_RCC_CR_HSERDY) == 0);
 
-/*     while ((SAM_PMC->SR & PMC_SR_MOSCXTS) == 0); */
+    /* Select HSE as input to PLL. */
+    STM32_RCC->CFGR = STM32_RCC_CFGR_PLLSRC_PREDIV1;
 
-/*     /\* Switch to the oscillator connected to XIN/XOUT. *\/ */
-/*     SAM_PMC->CKGR_MOR = (PMC_CKGR_MOR_KEY(0x37) */
-/*                          | PMC_CKGR_MOR_MOSCXTST(0x8) */
-/*                          | PMC_CKGR_MOR_MOSCRCEN */
-/*                          | PMC_CKGR_MOR_MOSCXTEN */
-/*                          | PMC_CKGR_MOR_MOSCSEL); */
+    /* Configure and enable PLL. */
+    STM32_RCC->CFGR |= (STM32_RCC_CFGR_PLLMUL_3);
+    STM32_RCC->CR |= (STM32_RCC_CR_PLLON);
 
-/*     while ((SAM_PMC->SR & PMC_SR_MOSCSELS) == 0); */
+    /* Wait for PLL to be stable. */
+    while ((STM32_RCC->CR & STM32_RCC_CR_PLLRDY) == 0);
 
-/*     SAM_PMC->MCKR = ((SAM_PMC->MCKR & ~(uint32_t)PMC_MCKR_CSS_MASK) */
-/*                      | PMC_MCKR_CSS_MAIN_CLK); */
+    /* Select PLL as SYSCLK. */
+    STM32_RCC->CFGR |= (STM32_RCC_CFGR_SW_PLL);
 
-/*     while ((SAM_PMC->SR & PMC_SR_MCKRDY) == 0); */
-
-/*     /\* Initialize PLLA. *\/ */
-/*     SAM_PMC->CKGR_PLLAR = (PMC_CKGR_PLLAR_ONE */
-/*                            | PMC_CKGR_PLLAR_MULA(0xd) */
-/*                            | PMC_CKGR_PLLAR_PLLACOUNT(0x3f) */
-/*                            | PMC_CKGR_PLLAR_DIVA(1)); */
-
-/*     while ((SAM_PMC->SR & PMC_SR_LOCKA) == 0); */
-
-/*     /\* Switch to main clock. *\/ */
-/*     SAM_PMC->MCKR = (PMC_MCKR_PRES_CLK_2 */
-/*                      | PMC_MCKR_CSS_MAIN_CLK); */
-
-/*     while ((SAM_PMC->SR & PMC_SR_MCKRDY) == 0); */
-
-/*     /\* Switch to PLLA. *\/ */
-/*     SAM_PMC->MCKR = (PMC_MCKR_PRES_CLK_2 */
-/*                      | PMC_MCKR_CSS_PLLA_CLK); */
-
-/*     while ((SAM_PMC->SR & PMC_SR_MCKRDY) == 0); */
-/* } */
+    /* Wait for PLL to be the selected clock. */
+    while ((STM32_RCC->CFGR & STM32_RCC_CFGR_SWS_MASK)
+           != STM32_RCC_CFGR_SWS_PLL);
+}
 
 void isr_reset(void)
 {
     uint32_t *src_p, *dst_p;
 
-    /* /\* Disable the watchdog. *\/ */
-    /* SAM_WDT->MR = 0x8000; */
-
-    /* clock_init(); */
+    clock_init();
 
     /* Initialize the relocate segment */
     src_p = &__text_end__;
