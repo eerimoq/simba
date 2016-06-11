@@ -22,10 +22,12 @@
 #define __DRIVERS_PIN_PORT_H__
 
 struct pin_device_t {
+    volatile struct stm32_gpio_t *regs_p;
+    int bit;
 };
 
 struct pin_driver_t {
-    const struct pin_device_t *dev_p;
+    struct pin_device_t *dev_p;
 };
 
 #endif

@@ -229,6 +229,10 @@ void isr_reset(void)
 
     clock_init();
 
+    STM32_RCC->APB2RSTR = 0x0;
+    STM32_RCC->APB2ENR = 0xffffffff;
+    STM32_RCC->APB1ENR = 0xffffffff;
+
     /* Initialize the relocate segment */
     src_p = &__text_end__;
     dst_p = &__relocate_start__;

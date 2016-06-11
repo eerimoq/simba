@@ -23,7 +23,7 @@
 
 #include "stm32.h"
 
-#define PIN_DEVICE_MAX     70
+#define PIN_DEVICE_MAX     51
 #define UART_DEVICE_MAX     3
 #define SPI_DEVICE_MAX      3
 #define I2C_DEVICE_MAX      2

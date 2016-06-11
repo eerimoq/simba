@@ -23,29 +23,58 @@ static int pin_port_module_init(void)
     return (0);
 }
 
-static int pin_port_init(struct pin_driver_t *drv,
+static int pin_port_init(struct pin_driver_t *self_p,
                          const struct pin_device_t *dev,
                          int mode)
 {
-    return (0);
+    return (pin_set_mode(self_p, mode));
 }
 
-static int pin_port_read(struct pin_driver_t *drv)
+static int pin_port_read(struct pin_driver_t *self_p)
 {
     return (0);
 }
 
-static int pin_port_write(struct pin_driver_t *drv, int value)
+static int pin_port_write(struct pin_driver_t *self_p, int value)
 {
+    if (value != 0) {
+        self_p->dev_p->regs_p->BSRR = (1 << self_p->dev_p->bit);
+    } else {
+        self_p->dev_p->regs_p->BSRR = (1 << (16 + self_p->dev_p->bit));
+    }
+
     return (0);
 }
 
-static int pin_port_toggle(struct pin_driver_t *drv)
+static int pin_port_toggle(struct pin_driver_t *self_p)
 {
-    return (0);
+    int value;
+
+    value = ((self_p->dev_p->regs_p->ODR & (1 << self_p->dev_p->bit)) != 0);
+
+    return (pin_port_write(self_p, !value));
 }
 
-static int pin_port_set_mode(struct pin_driver_t *drv, int mode)
+static int pin_port_set_mode(struct pin_driver_t *self_p, int mode)
 {
+    int shift;
+    volatile uint32_t *cr_p;
+    struct pin_device_t  *dev_p;
+
+    dev_p = self_p->dev_p;
+    shift = (4 * dev_p->bit);
+    cr_p = &dev_p->regs_p->CRL;
+
+    if (dev_p->bit >= 8) {
+        shift -= 32;
+        cr_p++;
+    }
+
+    if (mode == PIN_OUTPUT) {
+        *cr_p = bits_insert_32(*cr_p, shift, 4, 0x1);
+    } else {
+        *cr_p = bits_insert_32(*cr_p, shift, 4, 0x4);
+    }
+
     return (0);
 }

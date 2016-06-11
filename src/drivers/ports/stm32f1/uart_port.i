@@ -101,14 +101,8 @@ static int uart_port_start(struct uart_driver_t *self_p)
 
     regs_p = dev_p->regs_p;
 
-    /* Configure pin functions. */
-    STM32_RCC->APB2RSTR = 0x0;
-
-    /* Enable the UART peripheral. */
-    STM32_RCC->APB2ENR |= 0x4005;
-
-    /* Configure the pins. */
-    STM32_GPIOA->CRH = 0x000008b0;
+    /* Configure the TX and RX pins. */
+    STM32_GPIOA->CRH = bits_insert_32(STM32_GPIOA->CRH, 4, 8, 0x8b);
 
     regs_p->CR2 = 0;
     regs_p->CR3 = 0;

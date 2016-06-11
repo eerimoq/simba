@@ -20,7 +20,7 @@
 
 CROSS_COMPILE = arm-none-eabi-
 CFLAGS += -Werror \
-          -g
+          -O2
 
 ENDIANESS = little
 
