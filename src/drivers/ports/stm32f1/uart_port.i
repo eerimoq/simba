@@ -85,7 +85,7 @@ static int uart_port_module_init()
                     FSTR("/drivers/uart/rx_channel_overflow"),
                     0);
     fs_counter_register(&rx_channel_overflow);
-    
+
     fs_counter_init(&rx_errors,
                     FSTR("/drivers/uart/rx_errors"),
                     0);
@@ -111,6 +111,7 @@ static int uart_port_start(struct uart_driver_t *self_p)
     regs_p->CR1 = (STM32_USART_CR1_UE
                    | STM32_USART_CR1_TCIE
                    | STM32_USART_CR1_RXNEIE
+                   | STM32_USART_CR1_TE
                    | STM32_USART_CR1_RE);
 
     /* nvic */
@@ -144,7 +145,6 @@ static ssize_t uart_port_write_cb(void *arg_p,
     self_p->thrd_p = thrd_self();
 
     sys_lock();
-    self_p->dev_p->regs_p->CR1 |= STM32_USART_CR1_TE;
     self_p->dev_p->regs_p->DR = self_p->txbuf_p[-1];
     thrd_suspend_isr(NULL);
     sys_unlock();

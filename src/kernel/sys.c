@@ -31,6 +31,7 @@ struct sys_t sys = {
 };
 
 static struct fs_command_t cmd_info;
+static struct fs_command_t cmd_uptime;
 
 static const FAR char config[] = 
     "config: assert=" STRINGIFY(CONFIG_ASSERT) "\r\n"
@@ -67,6 +68,25 @@ static int cmd_info_cb(int argc,
     return (0);
 }
 
+static int cmd_uptime_cb(int argc,
+                         const char *argv[],
+                         chan_t *out_p,
+                         chan_t *in_p,
+                         void *arg_p,
+                         void *call_arg_p)
+{
+    struct time_t now;
+
+    time_get(&now);
+
+    std_fprintf(out_p,
+                FSTR("%lu.%lu seconds\r\n"),
+                now.seconds,
+                now.nanoseconds / 1000000ul);
+
+    return (0);
+}
+
 int sys_module_init(void)
 {
     fs_command_init(&cmd_info,
@@ -74,6 +94,12 @@ int sys_module_init(void)
                     cmd_info_cb,
                     NULL);
     fs_command_register(&cmd_info);
+
+    fs_command_init(&cmd_uptime,
+                    FSTR("/kernel/sys/uptime"),
+                    cmd_uptime_cb,
+                    NULL);
+    fs_command_register(&cmd_uptime);
 
     return (sys_port_module_init());
 }
