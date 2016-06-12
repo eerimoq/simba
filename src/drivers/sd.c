@@ -19,7 +19,6 @@
  */
 
 #include "simba.h"
-#include "arpa/inet.h"
 
 /* Command Abbreviations (section 4.7.4 in specification). */
 #define CMD_GO_IDLE_STATE         0    /* Reset the SD Memory Card. */

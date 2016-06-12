@@ -76,6 +76,8 @@
        i2c_module_init();
    #endif
    
+       pin_module_init();
+   
        sys_set_stdout(&uart.chout);
        log_set_default_handler_output_channel(sys_get_stdout());
    

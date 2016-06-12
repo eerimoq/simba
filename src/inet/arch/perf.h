@@ -1,9 +1,9 @@
 /**
- * @file inet.h
+ * @file inet/perf.h
  * @version 0.6.0
  *
  * @section License
- * Copyright (C) 2014-2016, Erik Moqvist
+ * Copyright (C) 2016, Erik Moqvist
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -12,22 +12,16 @@
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * MERSOCKTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
  *
  * This file is part of the Simba project.
  */
 
-#ifndef __INET_H__
-#define __INET_H__
+#ifndef __INET_ARCH_PERF_H__
+#define __INET_ARCH_PERF_H__
 
-#include "inet/types.h"
-#include "inet/socket.h"
-#include "inet/http_server.h"
-#include "inet/http_websocket_server.h"
-#include "inet/http_websocket_client.h"
-#include "inet/mqtt_client.h"
-#include "inet/network_interface.h"
-#include "inet/network_interface_slip.h"
+#define PERF_START    /* null definition */
+#define PERF_STOP(x)  /* null definition */
 
 #endif

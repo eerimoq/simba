@@ -19,8 +19,13 @@
 #
 
 CROSS_COMPILE = arm-none-eabi-
-CFLAGS += -Werror \
-          -O2
+CFLAGS += -Werror
+
+ifeq ($(NDEBUG),yes)
+CFLAGS += -O2
+else
+CFLAGS += -g
+endif
 
 ENDIANESS = little
 

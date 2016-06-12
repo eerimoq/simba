@@ -3,7 +3,7 @@
 # @version 0.6.0
 #
 # @section License
-# Copyright (C) 2015-2016, Erik Moqvist
+# Copyright (C) 2014-2016, Erik Moqvist
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
@@ -18,21 +18,8 @@
 # This file is part of the Simba project.
 #
 
-APPS = wifi/tcp wifi/udp slip
+NAME = inet_wifi_tcp
+BOARD = esp12e
 
-all: $(APPS:%=%.all)
-
-clean: $(APPS:%=%.clean)
-
-$(APPS:%=%.all):
-	$(MAKE) -C $(basename $@) all
-
-$(APPS:%=%.clean):
-	$(MAKE) -C $(basename $@) clean
-
-help:
-	@echo "--------------------------------------------------------------------------------"
-	@echo "  target                      description"
-	@echo "--------------------------------------------------------------------------------"
-	@echo "  all                         compile and link the demos"
-	@echo
+SIMBA_ROOT = ../../../..
+include $(SIMBA_ROOT)/make/app.mk

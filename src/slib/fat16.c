@@ -21,7 +21,6 @@
  */
 
 #include "simba.h"
-#include <arpa/inet.h>
 
 /** Chunk size in number of bytes. */
 #define BLOCK_SIZE 512

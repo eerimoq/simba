@@ -19,7 +19,6 @@
  */
 
 #include "simba.h"
-#include <arpa/inet.h>
 
 static inline uint32_t rotateleft(uint32_t value, int positions)
 {

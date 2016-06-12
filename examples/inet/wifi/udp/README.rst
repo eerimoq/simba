@@ -1,7 +1,7 @@
 Overview
 ========
 
-Send TCP and UCP traffic between a PC and an ESP8266.
+Send UCP traffic between a PC and an ESP8266.
 
 The ESP8266 will automatically connect to a WiFi at startup, using
 given SSID and PASSWORD defines.
@@ -27,18 +27,3 @@ Build and run
     sending 'hello udp' to ('192.168.1.103', 30303)
     received 'hello udp' from ('192.168.1.103', 30303)
     closing socket
-
-    TCP
-    ---
-    opening socket
-    connecting to 192.168.1.103:40404
-    sending 'hello tcp'
-    received 'hello tcp'
-    closing socket
-
-3. Connect to the shell on port 50505.
-
-.. code-block:: text
-
-   >>> telnet 192.168.1.103 50505
-   $

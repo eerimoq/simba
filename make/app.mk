@@ -159,7 +159,7 @@ jenkins-coverage:
 	$(RUNSCRIPT) jenkins-coverage ./$(EXE) > coverage.xml
 
 release:
-	env NASSERT=yes $(MAKE)
+	env NASSERT=yes NDEBUG=yes $(MAKE)
 
 $(EXE): $(OBJ) $(GENOBJ)
 	@echo "Linking $@"
@@ -299,7 +299,7 @@ help:
 	@echo "  run-debugger                Run the application in the debugger, break at main."
 	@echo "  report                      Print the test report."
 	@echo "  test                        run + report"
-	@echo "  release                     Compile with NASSERT=yes."
+	@echo "  release                     Compile with NASSERT=yes and NDEBUG=yes."
 	@echo "  size                        Print application size information."
 	@IFS=$$'\n' ; for h in $(HELP_TARGETS) ; do \
 	  echo $$h ; \

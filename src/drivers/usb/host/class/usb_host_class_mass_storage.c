@@ -20,8 +20,6 @@
 
 #include "simba.h"
 
-#include "arpa/inet.h"
-
 #define REQUEST_GET_MAX_LUN 0xfe
 #define REQUEST_RESET       0xff
 

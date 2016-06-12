@@ -20,17 +20,21 @@
 
 #include "simba.h"
 
-#if defined(ARCH_ESP)
+#if !defined(ARCH_LINUX)
 
 #include "lwip/tcp.h"
 #include "lwip/udp.h"
 #include "lwip/tcpip.h"
+
+#if defined(ARCH_ESP)
 
 #include "freertos/FreeRTOS.h"
 #include "freertos/semphr.h"
 #include "esp_common.h"
 
 extern xSemaphoreHandle thrd_idle_sem;
+
+#endif
 
 struct fs_counter_t udp_rx_bytes;
 struct fs_counter_t udp_tx_bytes;
@@ -58,10 +62,17 @@ static void init(struct socket_t *self_p,
 
 static void resume(struct socket_t *socket_p)
 {
+#if defined(ARCH_ESP)
     /* Resume the reading thread. */
     thrd_resume_isr((struct thrd_t *)socket_p->io.thrd_p, 0);
     socket_p->io.thrd_p = NULL;
     xSemaphoreGive(thrd_idle_sem);
+#else
+    sys_lock();
+    thrd_resume_isr((struct thrd_t *)socket_p->io.thrd_p, 0);
+    socket_p->io.thrd_p = NULL;
+    sys_unlock();
+#endif
 }
 
 /*
@@ -381,6 +392,11 @@ int socket_module_init(void)
                     FSTR("/inet/socket/tcp/tx_bytes"),
                     0);
     fs_counter_register(&tcp_tx_bytes);
+
+#if !defined(ARCH_ESP)
+    /* Initialize the LwIP stack. */
+    tcpip_init(NULL, NULL);
+#endif
 
     return (0);    
 }
