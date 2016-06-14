@@ -73,9 +73,9 @@ int http_websocket_client_init(struct http_websocket_client_t *self_p,
                                int port,
                                const char *path_p)
 {
-    ASSERTN(self_p != NULL, EINVAL)
-    ASSERTN(host_p != NULL, EINVAL)
-    ASSERTN(path_p != NULL, EINVAL)
+    ASSERTN(self_p != NULL, EINVAL);
+    ASSERTN(host_p != NULL, EINVAL);
+    ASSERTN(path_p != NULL, EINVAL);
 
     self_p->server.host_p = host_p;
     self_p->server.port = port;
@@ -86,7 +86,7 @@ int http_websocket_client_init(struct http_websocket_client_t *self_p,
 
 int http_websocket_client_connect(struct http_websocket_client_t *self_p)
 {
-    ASSERTN(self_p != NULL, EINVAL)
+    ASSERTN(self_p != NULL, EINVAL);
 
     int res;
     struct socket_addr_t server_addr;
@@ -135,7 +135,7 @@ int http_websocket_client_connect(struct http_websocket_client_t *self_p)
 
 int http_websocket_client_disconnect(struct http_websocket_client_t *self_p)
 {
-    ASSERTN(self_p != NULL, EINVAL)
+    ASSERTN(self_p != NULL, EINVAL);
 
     return (socket_close(&self_p->server.socket));
 }
@@ -144,9 +144,9 @@ ssize_t http_websocket_client_read(struct http_websocket_client_t *self_p,
                                    void *buf_p,
                                    size_t size)
 {
-    ASSERTN(self_p != NULL, EINVAL)
+    ASSERTN(self_p != NULL, EINVAL);
     ASSERTN(buf_p != NULL, EINVAL);
-    ASSERTN(size > 0, EINVAL)
+    ASSERTN(size > 0, EINVAL);
 
     uint8_t buf[16];
     size_t left = size, n;
@@ -209,9 +209,9 @@ ssize_t http_websocket_client_write(struct http_websocket_client_t *self_p,
                                     const void *buf_p,
                                     uint32_t size)
 {
-    ASSERTN(self_p != NULL, EINVAL)
+    ASSERTN(self_p != NULL, EINVAL);
     ASSERTN(buf_p != NULL, EINVAL);
-    ASSERTN(size > 0, EINVAL)
+    ASSERTN(size > 0, EINVAL);
 
     const uint8_t masking_key[4] = { 0x00, 0x00, 0x00, 0x00 };
     uint8_t header[16];

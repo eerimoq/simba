@@ -12,7 +12,7 @@ It is documented in RFC 1055.
 ----------------------------------------------
 
 Source code: :github-blob:`src/inet/inet/network_interface_slip.h`
- 
+
 ----------------------------------------------
 
 .. doxygenfile:: inet/network_interface_slip.h

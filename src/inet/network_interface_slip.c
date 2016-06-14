@@ -1,5 +1,5 @@
 /**
- * @file slip.c
+ * @file network_interface_slip.c
  * @version 0.6.0
  *
  * @section License
@@ -145,7 +145,8 @@ static int state_escaped_input(struct network_interface_slip_t *self_p,
         break;
 
     default:
-        /* Protocol error. */
+        /* Protocol error. Discard current frame. */
+        self_p->frame.size = 0;
         res = -1;
     }
 

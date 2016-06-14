@@ -326,7 +326,7 @@ static void *listener_main(void *arg_p)
                 SOCKET_DOMAIN_AF_INET,
                 SOCKET_TYPE_STREAM,
                 0);
-    addr.ip = 0x6701a8c0;
+    addr.ip = htonl(0xa9fe0102);
     addr.port = listener_p->port;
     socket_bind(&listener_p->socket, &addr, sizeof(addr));
     socket_listen(&listener_p->socket, 3);
@@ -447,7 +447,7 @@ int http_server_init(struct http_server_t *self_p,
     ASSERTN(listener_p != NULL, EINVAL)
     ASSERTN(connections_p != NULL, EINVAL);
     ASSERTN(routes_p != NULL, EINVAL);
-    ASSERTN(on_no_route != NULL, EINVAL)
+    ASSERTN(on_no_route != NULL, EINVAL);
 
     struct http_server_connection_t *connection_p;
 

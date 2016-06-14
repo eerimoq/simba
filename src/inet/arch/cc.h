@@ -34,13 +34,13 @@ typedef int32_t            s32_t;
 typedef uintptr_t          mem_ptr_t;
 
 /* Define (sn)printf formatters for these lwIP types */
-#define U16_F "hu"
-#define S16_F "hd"
-#define X16_F "hx"
+#define U16_F "u"
+#define S16_F "d"
+#define X16_F "x"
 #define U32_F "lu"
 #define S32_F "ld"
 #define X32_F "lx"
-#define SZT_F "uz"
+#define SZT_F "lu"
 
 /* ARM/LPC17xx is little endian only */
 #if !defined(ARCH_LINUX)
@@ -57,7 +57,7 @@ typedef uintptr_t          mem_ptr_t;
 /* Used with IP headers only */
 #define LWIP_CHKSUM_ALGORITHM   1
 
-#define LWIP_PLATFORM_DIAG(msg) { ; }
+#define LWIP_PLATFORM_DIAG(msg) { std_printf msg; }
 #define LWIP_PLATFORM_ASSERT(flag) { ; }
 
 #define LWIP_PLATFORM_HTONS(x)      htons(x)
