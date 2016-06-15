@@ -54,18 +54,17 @@ CLEAN = $(OBJDIR) $(DEPSDIR) $(GENDIR) $(EXE) $(RUNLOG) size.log \
 
 # configuration
 TOOLCHAIN ?= gnu
-CFLAGS += $(INC:%=-I%) $(CFLAGS_EXTRA)
+CFLAGS += $(CFLAGS_EXTRA)
 ifeq ($(NASSERT),yes)
-  CDEFS += -DCONFIG_ASSERT=0
+  CDEFS += CONFIG_ASSERT=0
 endif
-CDEFS += -DARCH_$(UPPER_ARCH) \
-	-DFAMILY_$(UPPER_FAMILY) \
-	-DMCU_$(UPPER_MCU) \
-	-DBOARD_$(UPPER_BOARD) \
-	-DVERSION=$(VERSION)
+CDEFS += ARCH_$(UPPER_ARCH) \
+	FAMILY_$(UPPER_FAMILY) \
+	MCU_$(UPPER_MCU) \
+	BOARD_$(UPPER_BOARD) \
+	VERSION=$(VERSION)
 
-CFLAGS += $(CDEFS)
-LDFLAGS += $(LIBPATH:%=-L%) $(LDFLAGS_EXTRA)
+LDFLAGS += $(LDFLAGS_EXTRA)
 SHELL = /bin/bash
 
 BAUDRATE ?= 38400
@@ -163,7 +162,7 @@ release:
 
 $(EXE): $(OBJ) $(GENOBJ)
 	@echo "Linking $@"
-	$(LD) -o $@ $(LDFLAGS) $^ $(LDFLAGS_AFTER)
+	$(LD) -o $@ $(LIBPATH:%=-L%) $(LDFLAGS) $^ $(LDFLAGS_AFTER)
 
 $(SETTINGS_H): $(SETTINGS_INI)
 	@echo "Generating $@ from $<"
@@ -190,8 +189,8 @@ $(patsubst %.c,$(OBJDIR)%.o,$(abspath $1)): $1 $(SETTINGS_H)
 	mkdir -p $(OBJDIR)$(abspath $(dir $1))
 	mkdir -p $(DEPSDIR)$(abspath $(dir $1))
 	mkdir -p $(GENDIR)
-	$$(CC) $$(CFLAGS) -o $$@ $$<
-	gcc -MM -MT $$@ $$(filter -I% -D% -O%,$$(CFLAGS)) -o $(patsubst %.c,$(DEPSDIR)%.o.dep,$(abspath $1)) $$<
+	$$(CC) $$(INC:%=-I%) $$(CDEFS:%=-D%) $$(CFLAGS) -o $$@ $$<
+	gcc -MM -MT $$@ $$(INC:%=-I%) $$(CDEFS:%=-D%) -o $(patsubst %.c,$(DEPSDIR)%.o.dep,$(abspath $1)) $$<
 endef
 $(foreach file,$(CSRC),$(eval $(call COMPILE_template,$(file))))
 
@@ -270,7 +269,7 @@ $(GENOBJ): $(OBJ)
 	$(SIMBA_ROOT)/src/kernel/tools/gen.py $(NAME) $(VERSION) $(BOARD_DESC) $(MCU_DESC) \
 	    $(GENCSRC)
 	@echo "Compiling $(GENCSRC)"
-	$(CC) $(CFLAGS) -o $@ $(GENCSRC)
+	$(CC) $(INC:%=-I%) $(CDEFS:%=-D%) $(CFLAGS) -o $@ $(GENCSRC)
 
 -include local.mk
 include $(SIMBA_GLOBAL_MK)
@@ -282,7 +281,7 @@ CPPCHECK_ENABLE = warning performance portability information
 
 cppcheck:
 	(for path in $(CSRC); do echo $$path; done) | \
-	cppcheck --std=c99 $(CPPCHECK_ENABLE:%=--enable=%) $(INC:%=-I%) $(CDEFS) \
+	cppcheck --std=c99 $(CPPCHECK_ENABLE:%=--enable=%) $(INC:%=-I%) $(CDEFS:%=-D%) \
 	--file-list=- --template=gcc --error-exitcode=1
 
 help:

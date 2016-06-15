@@ -29,15 +29,15 @@ endif
 
 ENDIANESS = little
 
+CDEFS += F_CPU=$(F_CPU)UL
+
 CFLAGS += -mthumb \
           -mcpu=$(MCPU) \
-          -DF_CPU=$(F_CPU)UL \
           -ffunction-sections \
           -fdata-sections \
           -fpack-struct
 
 LDFLAGS += -mcpu=$(MCPU) \
-           -DF_CPU=$(F_CPU)UL \
            -Wl,--cref \
            -T$(LINKER_SCRIPT) \
            -mthumb

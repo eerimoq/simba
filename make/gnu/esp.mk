@@ -20,27 +20,26 @@
 
 CROSS_COMPILE = xtensa-lx106-elf-
 
-CFLAGS += -DF_CPU=$(F_CPU)UL \
-          -Os \
+CDEFS += F_CPU=$(F_CPU)UL \
+	ICACHE_FLASH \
+	__STRICT_ANSI__ \
+	CONFIG_MONITOR_THREAD=0
+
+CFLAGS += -Os \
           -Werror \
           -nostdlib \
           -mlongcalls \
           -mtext-section-literals \
           -ffunction-sections \
-          -fdata-sections \
-          -DICACHE_FLASH \
-          -D__STRICT_ANSI__ \
-          -DCONFIG_MONITOR_THREAD=0
+          -fdata-sections
 
 LIBPATH += $(ESP8266_RTOS_SDK_ROOT)/lib
 
 LDFLAGS += -u call_user_start \
-           -DF_CPU=$(F_CPU)UL \
            -Wl,--cref \
            -nostdlib \
            -Wl,-EL \
            -mtext-section-literals \
-           -DICACHE_FLASH \
            -Wl,--gc-sections
 
 ENDIANESS = little

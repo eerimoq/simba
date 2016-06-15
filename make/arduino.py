@@ -10,6 +10,8 @@ import errno
 import os
 import shutil
 import glob
+import fnmatch
+import os
 
 
 ARDUINO_H = """/**
@@ -900,15 +902,6 @@ def mkdir_p(path):
             raise
 
 
-def extract_release_archive(archive_path):
-    """Unpack given archive into current directory.
-
-    """
-
-    with tarfile.open(archive_path) as fin:
-        fin.extractall()
-
-
 def create_database():
     """Generate the simba database with baord and mcu information.
 
@@ -917,8 +910,9 @@ def create_database():
     return json.loads(subprocess.check_output(["dbgen.py"]))
 
 
-def generate_cores(arch):
+def generate_cores(family):
     """Generate the cores directory, shared among all boards.
+
     """
 
     cores_dir = os.path.join("cores", "simba")
@@ -929,43 +923,15 @@ def generate_cores(arch):
     with open(os.path.join(cores_dir, "Arduino.h"), "w") as fout:
         fout.write(ARDUINO_H)
 
-    # Copy the kernel, drivers, inet and slib packages to the cores
-    # directory.
-    packages = [
-        "kernel",
-        "drivers",
-        "inet",
-        "slib"
-    ]
-
     simba_root = os.environ["SIMBA_ROOT"]
 
-    for package in packages:
-        shutil.copytree(os.path.join(simba_root, "src", package),
-                        os.path.join(cores_dir, package))
-
-    # Copy the header files.
-    for header in glob.glob(os.path.join(simba_root, "src/*.h")):
-        shutil.copy(header, cores_dir)
-
-    # Remove all c source files from the drivers package. They are
-    # added per variant.
-    for name in os.listdir(os.path.join(cores_dir, "drivers")):
-        if name in ["drivers.h", "drivers.mk", "drivers", "ports"]:
-            continue
-
-        path = os.path.join(cores_dir, "drivers", name)
-
-        if os.path.isfile(path):
-            os.remove(path)
-        else:
-            shutil.rmtree(path)
-
     # Generate a dummy settings files.
-    if arch == "avr":
+    if family == "avr":
         with open(os.path.join(cores_dir, "settings.h"), "w") as fout:
             fout.write(AVR_SETTINGS_H)
-    elif arch == "sam":
+        with open(os.path.join(cores_dir, "dummy.c"), "w") as fout:
+            fout.write("/* Generated dummy file to create core.a. */")
+    elif family == "sam":
         with open(os.path.join(cores_dir, "settings.h"), "w") as fout:
             fout.write(SAM_SETTINGS_H)
         with open(os.path.join(cores_dir, "settings.c"), "w") as fout:
@@ -984,69 +950,64 @@ def generate_cores(arch):
         shutil.copy(os.path.join(simba_root, root_file), ".")
 
 
-def generate_variants(arch, database):
+def generate_variants(family, database):
     """Generate the variants directory with board unique information.
 
     """
 
     simba_root = os.environ["SIMBA_ROOT"]
 
-    print("Generating variants for architecture", arch)
-
-    if arch == "sam":
-        arch = "arm"
+    print("Generating variants for family", family)
 
     for board_name, config in database['boards'].items():
-        if database["mcus"][config["mcu"]]["arch"] != arch:
+        if database["mcus"][config["mcu"]]["family"] != family:
             continue
 
-        variant_dir = os.path.join("variants", "arduino", board_name)
+        variant_dir = os.path.join("variants", board_name)
 
         # Create the variant directory.
         mkdir_p(variant_dir)
 
-        # Copy board and mcu files to the variant directory.
-        boards_files = glob.glob(os.path.join(simba_root,
-                                              "src",
-                                              "boards",
-                                              board_name,
-                                              "*"))
+        # Copy all source files.
+        for src in config["src"]:
+            dst_dir = os.path.join(variant_dir, os.path.dirname(src))
+            mkdir_p(dst_dir)
+            shutil.copy(os.path.join(simba_root, src), dst_dir)
 
-        mcus_files = glob.glob(os.path.join(simba_root,
-                                            "src",
-                                            "mcus",
-                                            config["mcu"],
-                                            "*"))
+        # Copy all header files.
+        for inc in config["inc"]:
+            inc_dir = os.path.join(simba_root, inc)
+            for root, _, filenames in os.walk(inc_dir):
+                for filename in fnmatch.filter(filenames, '*.[hi]'):
+                    file_path = os.path.join(root, filename)
+                    file_dir = os.path.dirname(file_path)
+                    variant_file_dir = file_dir.replace(simba_root + "/",
+                                                        "")
+                    mkdir_p(os.path.join(variant_dir, variant_file_dir))
+                    shutil.copy(file_path,
+                                os.path.join(variant_dir, variant_file_dir))
 
-        if arch == "arm":
-            mcus_files += glob.glob(os.path.join(simba_root,
-                                                 "src",
-                                                 "mcus",
-                                                 "sam",
-                                                 "*"))
+        # Copy linker script file.
+        linker_script = config["linker_script"]
 
-        for path in boards_files + mcus_files:
-            shutil.copy(path, variant_dir)
+        if linker_script:
+            dst_dir = os.path.join(variant_dir,
+                                   os.path.dirname(linker_script))
+            mkdir_p(dst_dir)
+            shutil.copy(os.path.join(simba_root, linker_script), dst_dir)
 
-        # Copy the drivers c files to the variant directory.
-        drivers_dir = os.path.join(variant_dir, "drivers")
-        mkdir_p(drivers_dir)
-
-        for driver in config["drivers"]:
-            driver_c = os.path.join(simba_root,
-                                    "src",
-                                    "drivers",
-                                    driver + ".c")
-            shutil.copy(driver_c, drivers_dir)
-
-            driver_dir = os.path.join(simba_root,
-                                      "src",
-                                      "drivers",
-                                      driver)
-
-            if os.path.isdir(driver_dir):
-                shutil.copytree(driver_dir,
-                                os.path.join(drivers_dir, driver))
+        # Copy all linker script files.
+        for libpath in config["libpath"]:
+            libpath_dir = os.path.join(simba_root, libpath)
+            for root, _, filenames in os.walk(libpath_dir):
+                for filename in fnmatch.filter(filenames, '*.ld'):
+                    file_path = os.path.join(root, filename)
+                    file_dir = os.path.dirname(file_path)
+                    variant_file_dir = file_dir.replace(simba_root + "/",
+                                                        "")
+                    mkdir_p(os.path.join(variant_dir, variant_file_dir))
+                    shutil.copy(file_path,
+                                os.path.join(variant_dir, variant_file_dir))
 
         with open(os.path.join(variant_dir, "simba_gen.c"), "w") as fout:
             fout.write(SIMBA_GEN_C_FMT.format(name="my_app",
@@ -1054,28 +1015,94 @@ def generate_variants(arch, database):
                                               mcu=config["mcu"]))
 
 
-def copy_configuration_files(arch):
-    """Copy configuration files.
+def get_extra_flags(board, database):
+    """Get include path and defines.
+
+    """
+
+    inc = database["boards"][board]["inc"]
+    cdefs = database["boards"][board]["cdefs"]
+
+    # Remove F_CPU since it is already set in the arduino build
+    # system.
+    cdefs = [cdef for cdef in cdefs if "F_CPU" not in cdef]
+
+    return " ".join(["\"-I{runtime.platform.path}/variants/" + board + "/" + i + "\""
+                     for i in inc]
+                    + ["-D" + d for d in cdefs])
+
+
+def get_libpath(board, database):
+    """Get library path.
+
+    """
+
+    libpath = database["boards"][board]["libpath"]
+
+    return " ".join(["\"-L{runtime.platform.path}/variants/"
+                     + board + "/" + l + "\""
+                     for l in libpath])
+
+
+def generate_boards_txt_avr(database, boards_txt_fmt):
+    """Generate boards.txt for AVR.
+
+    """
+
+    return boards_txt_fmt.format(
+        mega2560_compiler_c_extra_flags=get_extra_flags("arduino_mega",
+                                                        database),
+        nano_compiler_c_extra_flags=get_extra_flags("arduino_nano",
+                                                   database),
+        uno_compiler_c_extra_flags=get_extra_flags("arduino_uno",
+                                                   database))
+
+
+def generate_boards_txt_sam(database, boards_txt_fmt):
+    """Generate boards.txt for SAM.
+
+    """
+
+    return boards_txt_fmt.format(
+        arduino_due_x_dbg_build_ldscript=database["boards"]["arduino_due"]["linker_script"],
+        arduino_due_x_dbg_compiler_c_extra_flags=get_extra_flags(
+            "arduino_due",
+            database),
+        arduino_due_x_dbg_compiler_c_elf_extra_flags=get_libpath(
+            "arduino_due",
+            database))
+
+
+def generate_configuration_files(family, database):
+    """Generate copy configuration files.
 
     """
 
     simba_root = os.environ["SIMBA_ROOT"]
-
+    family_dir = os.path.join(simba_root,
+                            "make",
+                            "arduino",
+                            family)
     configuration_files = [
-        "boards.txt",
         "platform.txt"
     ]
 
     for configuration_file in configuration_files:
-        shutil.copy(os.path.join(simba_root,
-                                 "make",
-                                 "arduino",
-                                 arch,
-                                 configuration_file),
-                    ".")
+        shutil.copy(os.path.join(family_dir, configuration_file), ".")
+
+    with open("boards.txt", "w") as fout:
+        with open(os.path.join(family_dir, "boards.txt"), "r") as fin:
+            if family == "avr":
+                boards_txt = generate_boards_txt_avr(database, fin.read())
+            elif family == "sam":
+                boards_txt = generate_boards_txt_sam(database, fin.read())
+            else:
+                raise ValueError("Unsupported family {}.".format(family))
+
+            fout.write(boards_txt)
 
 
-def generate_files_and_folders(arch, database, outdir):
+def generate_files_and_folders(family, database, outdir):
     """Generate files and folders.
 
     """
@@ -1084,9 +1111,9 @@ def generate_files_and_folders(arch, database, outdir):
     cwd = os.getcwd()
     os.chdir(outdir)
 
-    generate_cores(arch)
-    generate_variants(arch, database)
-    copy_configuration_files(arch)
+    generate_cores(family)
+    generate_variants(family, database)
+    generate_configuration_files(family, database)
 
     os.chdir(cwd)
 
@@ -1109,10 +1136,10 @@ def main():
 
     database = create_database()
 
-    for arch in ["avr", "sam"]:
-        generate_files_and_folders(arch,
+    for family in ["avr", "sam"]:
+        generate_files_and_folders(family,
                                    database,
-                                   os.path.join(args.outdir, arch))
+                                   os.path.join(args.outdir, family))
 
 
 if __name__ == "__main__":

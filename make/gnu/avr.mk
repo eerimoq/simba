@@ -22,10 +22,11 @@ CROSS_COMPILE = avr-
 
 SIZEARGS = --mcu=$(MCU) --format=avr
 
+CDEFS += F_CPU=$(F_CPU)UL \
+	__DELAY_BACKWARD_COMPATIBLE__ \
+	CONFIG_MONITOR_THREAD=0	
+
 CFLAGS += -mmcu=$(CPU) \
-          -DF_CPU=$(F_CPU)UL \
-          -D__DELAY_BACKWARD_COMPATIBLE__ \
-          -DCONFIG_MONITOR_THREAD=0 \
           -O2 \
           -ffunction-sections \
           -fdata-sections \
@@ -33,7 +34,6 @@ CFLAGS += -mmcu=$(CPU) \
           -fshort-enums
 
 LDFLAGS += -mmcu=$(CPU) \
-           -DF_CPU=$(F_CPU)UL \
            -Wl,--cref \
            -Wl,--defsym=__main_stack_end=$(MAIN_STACK_END)
 
