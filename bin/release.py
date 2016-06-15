@@ -59,6 +59,20 @@ def test():
     ]
 
     subprocess.check_call(command, cwd="examples/platformio/blink")
+
+    # Build an application using the Arduino builder.
+    for family, board in [("avr", "nano"),
+                          ("avr", "uno"),
+                          ("avr", "mega2560"),
+                          ("sam", "arduino_due_x_dbg")]:
+        command = [
+            "make",
+            "all",
+            "FAMILY=" + family,
+            "BOARD=" + board
+        ]
+
+        subprocess.check_call(command, cwd="examples/arduino/blink")
     
 
 def main():

@@ -122,6 +122,11 @@ def setup_mcu_avr(env):
                 SETTING_SIZE="256",
                 ENDIANESS="little")
 
+    add_include_paths(env, [
+        join("3pp", "lwip-1.4.1", "src", "include"),
+        join("3pp", "lwip-1.4.1", "src", "include", "ipv4")
+    ])
+
     env.Append(CPPDEFINES=[
         ("CONFIG_MONITOR_THREAD", 0)
     ])
@@ -157,6 +162,11 @@ def setup_mcu_sam(env):
                 SETTING_OFFSET="0",
                 SETTING_SIZE="4096",
                 ENDIANESS="little")
+
+    add_include_paths(env, [
+        join("3pp", "lwip-1.4.1", "src", "include"),
+        join("3pp", "lwip-1.4.1", "src", "include", "ipv4")
+    ])
 
     env.Append(CCFLAGS=[
         "-funsigned-bitfields",
@@ -336,18 +346,24 @@ def create_src_filter(env):
     src_filter_patterns = []
 
     # Add the board files.
-    src_filter_patterns.append("-<boards>")
-    src_filter_patterns.append(env.subst("+<boards/$BOARD>"))
+    src_filter_patterns.append("-<src/boards>")
+    src_filter_patterns.append(env.subst("+<src/boards/$BOARD>"))
 
     # Add the mcu files.
-    src_filter_patterns.append("-<mcus>")
-    src_filter_patterns.append(env.subst("+<mcus/$BOARD_MCU>"))
+    src_filter_patterns.append("-<src/mcus>")
+    src_filter_patterns.append(env.subst("+<src/mcus/$BOARD_MCU>"))
 
     if env.subst("$BOARD_MCU") == "sam3x8e":
-        src_filter_patterns.append("+<mcus/sam>")
+        src_filter_patterns.append("+<src/mcus/sam>")
 
     # Add the drivers files.
-    src_filter_patterns.append("-<drivers>")
+    src_filter_patterns.append("-<src/drivers>")
+
+    src_filter_patterns.append("-<3pp/>")
+
+    src_filter_patterns.append("-<rost/>")
+
+    src_filter_patterns.append("-<tst/>")
 
     arch = env.subst("$ARCH")
 
@@ -400,7 +416,39 @@ def create_src_filter(env):
         raise ValueError("bad architecture {}".format())
 
     for src in files:
-        src_filter_patterns.append("+<drivers/" + src + ">")
+        src_filter_patterns.append("+<src/drivers/" + src + ">")
+
+    if arch != "esp":
+        files = [
+            "core/stats.c",
+            "core/tcp_out.c",
+            "core/udp.c",
+            "core/timers.c",
+            "core/netif.c",
+            "core/def.c",
+            "core/raw.c",
+            "core/dns.c",
+            "core/tcp_in.c",
+            "core/memp.c",
+            "core/pbuf.c",
+            "core/tcp.c",
+            "core/init.c",
+            "core/dhcp.c",
+            "core/ipv4/ip_frag.c",
+            "core/ipv4/ip.c",
+            "core/ipv4/ip_addr.c",
+            "core/ipv4/icmp.c",
+            "core/ipv4/igmp.c",
+            "core/ipv4/inet.c",
+            "core/ipv4/inet_chksum.c",
+            "core/mem.c",
+            "netif/etharp.c",
+            "netif/ethernetif.c",
+            "api/tcpip.c"
+        ]
+
+        for src in files:
+            src_filter_patterns.append("+<3pp/lwip-1.4.1/src/" + src + ">")
 
     return SRC_DEFAULT_FILTER + " " + " ".join(src_filter_patterns)
 
@@ -463,13 +511,16 @@ env.Command(SETTINGS_C, env["SETTINGS_INI"], fmt.format(filetype="source"))
 env.Command(SETTINGS_BIN, env["SETTINGS_INI"], fmt.format(filetype="binary"))
 
 # create a list of all sources
-variant_dir = join("$BUILD_DIR", "SimbaFramework", "src")
-src_dir = join("$PLATFORMFW_DIR", "src")
+variant_dir = join("$BUILD_DIR", "SimbaFramework")
+src_dir = join("$PLATFORMFW_DIR")
 src_filter = create_src_filter(env)
+
+#print src_filter
 
 source_files = []
 
 for src in env.LookupSources(variant_dir, src_dir, True, src_filter):
+#    print src
     source_files.append(env.Object(src))
 
 # Command to generate simba_gen.c

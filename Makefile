@@ -20,6 +20,8 @@
 
 .PHONY: tags doc
 
+SIMBA_VERSION ?= $(shell cat VERSION.txt)
+
 BOARD ?= linux
 
 # List of all tests to build and run
@@ -94,8 +96,21 @@ doc:
 	+bin/docgen.py database.json
 	$(MAKE) -s -C doc
 
-arduino:
-	+make/arduino.py -r
+arduino-generate:
+	+make/arduino.py generate -r
+
+arduino-release:
+	+make/arduino.py release \
+	--simba-arduino-avr-root $(SIMBA_ARDUINO_AVR_ROOT) \
+	--simba-arduino-sam-root $(SIMBA_ARDUINO_SAM_ROOT) \
+	--version $(SIMBA_VERSION)
+
+arduino-release-no-copy-release:
+	+make/arduino.py release \
+	--simba-arduino-avr-root $(SIMBA_ARDUINO_AVR_ROOT) \
+	--simba-arduino-sam-root $(SIMBA_ARDUINO_SAM_ROOT) \
+	--version $(SIMBA_VERSION) \
+	--no-copy-release
 
 $(APPS:%=%.all):
 	$(MAKE) -C $(basename $@) all

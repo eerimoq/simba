@@ -18,3 +18,7 @@ export SIMBA_ROOT=$(readlink -f .)
 export BOARD=linux
 
 export PYLINTRC=$(readlink -f environment/pylintrc)
+
+# Arduino release repositories.
+export SIMBA_ARDUINO_AVR_ROOT=$(readlink -f ../simba-arduino-avr)
+export SIMBA_ARDUINO_SAM_ROOT=$(readlink -f ../simba-arduino-sam)
