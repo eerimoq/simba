@@ -1,6 +1,6 @@
 /**
  * @file stm32.c
- * @version 0.6.0
+ * @version 0.7.0
  *
  * @section License
  * Copyright (C) 2014-2016, Erik Moqvist

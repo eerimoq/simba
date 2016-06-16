@@ -23,7 +23,7 @@ Boards Manager.
 3. Press `"OK"`.
 4. Open `"Tools"` -> `"Board: ..."` -> `"Boards Manager..."`.
 5. Type `"simba"` in the search box.
-6. Click on `"Simba by Erik Moqivst version 0.6.0"` and click `"Install"`.
+6. Click on `"Simba by Erik Moqivst version 0.7.0"` and click `"Install"`.
 7. Press `"Close"`.
 8. Open `"Tools"` -> `"Board: ..."` -> `"Boards Manager..."` and select one
    of the Simba boards in the list.

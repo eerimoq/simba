@@ -73,7 +73,33 @@ def test():
         ]
 
         subprocess.check_call(command, cwd="examples/arduino/blink")
-    
+
+
+def generate_docs():
+    """Generate the documentation.
+
+    """
+
+    command = [
+        "make",
+        "doc"
+    ]
+
+    subprocess.check_call(command)
+
+
+def generate_arduino():
+    """Generate the arduino files.
+
+    """
+
+    command = [
+        "make",
+        "arduino-generate"
+    ]
+
+    subprocess.check_call(command)
+
 
 def main():
     """Main.
@@ -96,6 +122,9 @@ def main():
     # run the tests before anything else
     if args.test:
         test()
+
+    generate_docs()
+    generate_arduino()
 
 
 if __name__ == "__main__":

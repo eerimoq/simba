@@ -59,6 +59,15 @@ def main():
             value = get_make_variable(board, variable)
             database["boards"][board][variable.lower()] = value.strip()
 
+        # Get the board drivers
+        drivers_src = get_make_variable(board, "DRIVERS_SRC").split()
+        drivers = [os.path.splitext(os.path.basename(driver))[0]
+                   for driver in drivers_src]
+        drivers = list(set(drivers) - set(["usb_host_class_hid",
+                                           "usb_host_class_mass_storage"]))
+        database["boards"][board]["drivers"] = drivers
+
+
         # Get the board include.
         inc = get_make_variable(board, "INC").split()
         inc = [i.replace("../../../", "") for i in inc]
