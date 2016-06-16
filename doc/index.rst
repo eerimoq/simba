@@ -24,11 +24,11 @@ Project homepage: https://github.com/eerimoq/simba
    installation
    user-guide
    developer-guide
-   platformio
    boards
    mcus
    examples
    api-reference
+   platformio
 
 Features
 --------
