@@ -37,18 +37,18 @@
 #define TCPIP_THREAD_STACKSIZE      1024
 #define TCPIP_THREAD_PRIO           0
 
-#define MEM_SIZE                    20000
+#define MEM_SIZE                    8000
 
 #define MEMP_NUM_SYS_TIMEOUT        16
 
 #define MEM_ALIGNMENT               4
 
-#define PBUF_POOL_SIZE              32
+#define PBUF_POOL_SIZE              8
 #define MEMP_NUM_TCP_PCB_LISTEN     4
 #define MEMP_NUM_TCP_PCB            4
 #define MEMP_NUM_UDP_PCB            4
-#define MEMP_NUM_PBUF               32
-#define MEMP_NUM_NETBUF             32
+#define MEMP_NUM_PBUF               8
+#define MEMP_NUM_NETBUF             8
 
 #define TCP_QUEUE_OOSEQ             0
 #define TCP_OVERSIZE                0
@@ -70,11 +70,9 @@
 #define LWIP_NOASSERT               1
 #define LWIP_STATS                  0
 
-//#define LWIP_PLATFORM_BYTESWAP      1
-
 /* MSS should match the hardware packet size */
 #define TCP_MSS                     1460
-#define TCP_SND_BUF                 (4 * TCP_MSS)
+#define TCP_SND_BUF                 (2 * TCP_MSS)
 #define TCP_WND                     (2 * TCP_MSS)
 //#define TCP_SND_QUEUELEN            (2 * TCP_SND_BUF/TCP_MSS)
 

@@ -88,7 +88,7 @@ travis:
 	$(MAKE) test
 
 release-test:
-	+bin/release.py --test
+	+bin/release.py
 	$(MAKE) -C examples
 
 doc:

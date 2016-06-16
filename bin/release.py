@@ -5,7 +5,6 @@
 
 import os
 import subprocess
-import argparse
 import glob
 
 
@@ -60,6 +59,8 @@ def test():
 
     subprocess.check_call(command, cwd="examples/platformio/blink")
 
+    generate_arduino()
+
     # Build an application using the Arduino builder.
     for family, board in [("avr", "nano"),
                           ("avr", "uno"),
@@ -95,36 +96,27 @@ def generate_arduino():
 
     command = [
         "make",
-        "arduino-generate"
+        "arduino"
     ]
 
     subprocess.check_call(command)
 
 
 def main():
-    """Main.
+    """Main function.
+
     """
-
-    parser = argparse.ArgumentParser()
-
-    parser.add_argument(
-        "--test",
-        action="store_true",
-        help="Test that the code about to be release works.")
-
-    args = parser.parse_args()
 
     # first of all, the repository must be clean
     raw_input("ATTENTION: All files not version controlled by git will be "
               "_removed_. Press any key to continue or ctrl-c to exit.")
     print
 
-    # run the tests before anything else
-    if args.test:
-        test()
+    test()
 
+    # Generate the documenation after the last "git clean -dfx"
+    # execution.
     generate_docs()
-    generate_arduino()
 
 
 if __name__ == "__main__":
