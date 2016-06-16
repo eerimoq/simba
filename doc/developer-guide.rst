@@ -14,3 +14,4 @@ advised to read the :doc:`user-guide` instead.
    developer-guide/threads-and-channels
    developer-guide/porting
    developer-guide/file-tree
+   developer-guide/release
