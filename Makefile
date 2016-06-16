@@ -97,16 +97,16 @@ doc:
 	$(MAKE) -s -C doc
 
 arduino-generate:
-	+make/arduino.py generate -r
+	+make/arduino/arduino.py generate -r
 
 arduino-release:
-	+make/arduino.py release \
+	+make/arduino/arduino.py release \
 	--simba-arduino-avr-root $(SIMBA_ARDUINO_AVR_ROOT) \
 	--simba-arduino-sam-root $(SIMBA_ARDUINO_SAM_ROOT) \
 	--version $(SIMBA_VERSION)
 
 arduino-release-no-copy-release:
-	+make/arduino.py release \
+	+make/arduino/arduino.py release \
 	--simba-arduino-avr-root $(SIMBA_ARDUINO_AVR_ROOT) \
 	--simba-arduino-sam-root $(SIMBA_ARDUINO_SAM_ROOT) \
 	--version $(SIMBA_VERSION) \

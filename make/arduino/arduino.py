@@ -3,15 +3,13 @@
 from __future__ import print_function
 
 import subprocess
-import tarfile
+import sys
 import argparse
 import json
 import errno
 import os
 import shutil
-import glob
 import fnmatch
-import os
 
 
 ARDUINO_H = """/**
@@ -1145,6 +1143,20 @@ def subcommand_release(args):
     """Release subcommand.
 
     """
+
+    if not os.path.exists(args.simba_arduino_avr_root):
+        print("AVR release directory does not exist.")
+        sys.exit(1)
+
+    if not os.path.exists(args.simba_arduino_sam_root):
+        print("SAM release directory does not exist.")
+        sys.exit(1)
+
+    if not os.path.exists(args.outdir):
+        print("Arduino output directory does not exist. "
+              "Use the 'generate' subcommand to generate the "
+              "files and folders.")
+        sys.exit(1)
 
     if not args.no_copy_release:
         subprocess.check_call('cd {root} '
