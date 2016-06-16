@@ -18,7 +18,7 @@ Boards Manager.
 
 1. Open `"File"` -> `"Preferences"`.
 2. Append
-   https://raw.githubusercontent.com/eerimoq/simba/master/make/arduino/avr/package_simba_avr_index.json,https://raw.githubusercontent.com/eerimoq/simba/master/make/arduino/sam/package_simba_sam_index.json
+   https://raw.githubusercontent.com/eerimoq/simba-arduino/master/avr/package_simba_avr_index.json,https://raw.githubusercontent.com/eerimoq/simba-arduino/master/sam/package_simba_sam_index.json
    to `"Additional Boards Manager URLs"`.
 3. Press `"OK"`.
 4. Open `"Tools"` -> `"Board: ..."` -> `"Boards Manager..."`.

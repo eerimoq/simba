@@ -96,21 +96,8 @@ doc:
 	+bin/docgen.py database.json
 	$(MAKE) -s -C doc
 
-arduino-generate:
-	+make/arduino/arduino.py generate -r
-
-arduino-release:
-	+make/arduino/arduino.py release \
-	--simba-arduino-avr-root $(SIMBA_ARDUINO_AVR_ROOT) \
-	--simba-arduino-sam-root $(SIMBA_ARDUINO_SAM_ROOT) \
-	--version $(SIMBA_VERSION)
-
-arduino-release-no-copy-release:
-	+make/arduino/arduino.py release \
-	--simba-arduino-avr-root $(SIMBA_ARDUINO_AVR_ROOT) \
-	--simba-arduino-sam-root $(SIMBA_ARDUINO_SAM_ROOT) \
-	--version $(SIMBA_VERSION) \
-	--no-copy-release
+arduino:
+	+make/arduino/arduino.py --remove-outdir --version $(SIMBA_VERSION)
 
 $(APPS:%=%.all):
 	$(MAKE) -C $(basename $@) all

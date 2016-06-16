@@ -10,6 +10,7 @@ import errno
 import os
 import shutil
 import fnmatch
+import hashlib
 
 
 ARDUINO_H = """/**
@@ -1116,120 +1117,6 @@ def generate_files_and_folders(family, database, outdir):
     os.chdir(cwd)
 
 
-def subcommand_generate(args):
-    """Generate subcommand.
-
-    """
-
-    if args.remove_outdir:
-        if os.path.exists(args.outdir):
-            print("Removing", args.outdir)
-            shutil.rmtree(args.outdir)
-
-    print("Writing to", args.outdir)
-
-    database = create_database()
-
-    for family in ["avr", "sam"]:
-        generate_files_and_folders(family,
-                                   database,
-                                   os.path.join(args.outdir,
-                                                "packages",
-                                                "Simba",
-                                                family))
-
-
-def subcommand_release(args):
-    """Release subcommand.
-
-    """
-
-    if not os.path.exists(args.simba_arduino_avr_root):
-        print("AVR release directory does not exist.")
-        sys.exit(1)
-
-    if not os.path.exists(args.simba_arduino_sam_root):
-        print("SAM release directory does not exist.")
-        sys.exit(1)
-
-    if not os.path.exists(args.outdir):
-        print("Arduino output directory does not exist. "
-              "Use the 'generate' subcommand to generate the "
-              "files and folders.")
-        sys.exit(1)
-
-    if not args.no_copy_release:
-        subprocess.check_call('cd {root} '
-                              '&& git clean -dfx '
-                              '&& git rm -rf --ignore-unmatch *'.format(
-                                  root=args.simba_arduino_avr_root),
-                              shell=True)
-        subprocess.check_call('cd {root} '
-                              '&& git clean -dfx '
-                              '&& git rm -rf --ignore-unmatch *'.format(
-                                  root=args.simba_arduino_sam_root),
-                              shell=True)
-        subprocess.check_call('cp -r {outdir}/packages/Simba/avr/* {root}'.format(
-            outdir=args.outdir,
-            root=args.simba_arduino_avr_root),
-                              shell=True)
-        subprocess.check_call('cp -r {outdir}/packages/Simba/sam/* {root}'.format(
-            outdir=args.outdir,
-            root=args.simba_arduino_sam_root),
-                              shell=True)
-        subprocess.check_call('cd {root} && git add . '
-                            '&& git commit -m "simba-arduino-avr-{version}" '
-                              '&& git tag -f simba-arduino-avr-{version}'.format(
-                                  root=args.simba_arduino_avr_root,
-                                  version=args.version),
-                              shell=True)
-        subprocess.check_call('cd {root} && git add . '
-                              '&& git commit -m "simba-arduino-sam-{version}" '
-                              '&& git tag -f simba-arduino-sam-{version}'.format(
-                                  root=args.simba_arduino_sam_root,
-                                  version=args.version),
-                              shell=True)
-
-    yes_or_no = raw_input("Do you want to push the new release to github? [y/N]")
-
-    if yes_or_no != "" and yes_or_no in "yY":
-        subprocess.check_call("cd {root} && git push origin master --tags".format(root=args.simba_arduino_avr_root), shell=True)
-        subprocess.check_call("cd {root} && git push origin master --tags".format(root=args.simba_arduino_sam_root), shell=True)
-
-        for family in ["avr", "sam"]:
-            # Try to fetch the archive a few times.
-            attempt = 1
-            attempts_max = 10
-            try:
-                subprocess.check_call("wget https://github.com/eerimoq/simba-arduino-{family}/archive/simba-arduino-{family}-{version}.zip".format(
-                    family=family,
-                    version=args.version),
-                                      shell=True)
-            except:
-                if attempt == attempts_max:
-                    print("Failed to fetch release archive from github.")
-                    sys.exit(1)
-
-                attempt += 1
-                time.sleep(3)
-
-            subprocess.check_call("sha256sum simba-arduino-{family}-{version}.zip".format(
-                family=family,
-                version=args.version),
-                                  shell=True)
-            subprocess.check_call("rm simba-arduino-{family}-{version}.zip".format(
-                family=family,
-                version=args.version),
-                                  shell=True)
-
-        print("### ")
-        print("### Manually update version and md5sum in arduino package json")
-        print("### files (make/arduino/*/package_simba_*_index.json)")
-        print("### ")
-    else:
-        print("Will not push to github.")
-
-
 def main():
     """Unpack given Simba release archive and modify files and folders as
     required by the Arduino build system.
@@ -1237,25 +1124,48 @@ def main():
     """
 
     parser = argparse.ArgumentParser()
-    parser.add_argument("--outdir", "-o", default="simba-arduino")
-    subparsers = parser.add_subparsers()
-
-    # Generate subparser.
-    generate = subparsers.add_parser('generate')
-    generate.add_argument("--remove-outdir", "-r", action="store_true")
-    generate.set_defaults(func=subcommand_generate)
-
-    # Release subparser.
-    release = subparsers.add_parser('release')
-    release.add_argument("--no-copy-release", action="store_true")
-    release.add_argument("--simba-arduino-avr-root", "-a", required=True)
-    release.add_argument("--simba-arduino-sam-root", "-s", required=True)
-    release.add_argument("--version", "-v", required=True)
-    release.set_defaults(func=subcommand_release)
-
+    parser.add_argument("--remove-outdir", "-r", action="store_true")
+    parser.add_argument("--outdir", default="simba-arduino")
+    parser.add_argument("--version", required=True)
     args = parser.parse_args()
 
-    args.func(args)
+    if args.remove_outdir:
+        if os.path.exists(args.outdir):
+            print("Removing", args.outdir)
+            shutil.rmtree(args.outdir)
+
+    print("Creating software database.")
+    database = create_database()
+
+    print("Writing to " + args.outdir + ".")
+
+    for family in ["avr", "sam"]:
+        packages_family_dir = os.path.join(args.outdir,
+                                           "packages",
+                                           "Simba",
+                                           family)
+        generate_files_and_folders(family,
+                                   database,
+                                   packages_family_dir)
+
+        # Create release archives and their sha256 sum.
+        temporary_family_dir = os.path.join(
+            args.outdir,
+            "simba-arduino-" + family)
+        shutil.copytree(packages_family_dir, temporary_family_dir)
+        archive_path_no_suffix = os.path.join(
+            args.outdir,
+            "simba-arduino-{family}-{version}".format(family=family,
+                                                      version=args.version))
+        shutil.make_archive(archive_path_no_suffix,
+                            "zip",
+                            args.outdir,
+                            "simba-arduino-" + family)
+        shutil.rmtree(temporary_family_dir)
+
+        with open(archive_path_no_suffix + ".zip.sha256", "w") as fout:
+            with open(archive_path_no_suffix + ".zip", "rb") as fin:
+                fout.write(hashlib.sha256(fin.read()).hexdigest())
 
 
 if __name__ == "__main__":

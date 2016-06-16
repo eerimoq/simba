@@ -34,3 +34,6 @@ fi
 export PYLINTRC=$(readlink -f environment/pylintrc)
 
 export PYTHONPATH=$(readlink -f 3pp/python-readchar-1.1.0)
+
+# Arduino release repository.
+export SIMBA_ARDUINO_ROOT=$(readlink -f ../simba-arduino)
