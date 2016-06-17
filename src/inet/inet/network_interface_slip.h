@@ -56,8 +56,8 @@ struct network_interface_slip_t {
 int network_interface_slip_module_init(void);
 
 /**
- * Initialize given slip network interface with given input and output
- * channels.
+ * Initialize given slip network interface with given configuration
+ * and output channel.
  *
  * @param[in] self_p Slip to initialize.
  * @param[in] ipaddr_p Network interface IP address.
@@ -74,7 +74,9 @@ int network_interface_slip_init(struct network_interface_slip_t *self_p,
                                 chan_t *chout_p);
 
 /**
- * Input a byte into the SLIP IP stack.
+ * Input a byte into the SLIP IP stack. Normally a user thread reads
+ * one byte at a time from the UART and calls this functions with the
+ * read byte as argument.
  *
  * @param[in] self_p Slip to initialize.
  * @param[in] data Byte to input into the stack.

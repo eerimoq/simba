@@ -60,7 +60,8 @@ struct socket_t {
 };
 
 /**
- * Initialize the socket module.
+ * Initialize the socket module. This function will start the lwIP
+ * TCP/IP stack.
  *
  * @return zero(0) or negative error code.
  */
