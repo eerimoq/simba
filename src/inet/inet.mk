@@ -30,6 +30,7 @@ INET_SRC ?= \
 	http_server.c \
 	http_websocket_server.c \
 	http_websocket_client.c \
+	inet.c \
 	mqtt_client.c \
 	network_interface.c \
 	network_interface_slip.c \

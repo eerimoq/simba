@@ -20,38 +20,51 @@
 
 #include "simba.h"
 
+static struct uart_driver_t ipuart;
+static char iprxbuf[512];
+static struct uart_driver_t uart;
+static uint8_t rxbuf[256];
+static struct network_interface_slip_t slip;
+
 int main()
 {
-    struct uart_driver_t uart;
-    uint8_t rxbuf[256];
-    struct network_interface_slip_t slip;
     uint8_t data;
-    ip_addr_t ipaddr;
-    ip_addr_t netmask;
-    ip_addr_t gw;
+    struct inet_ip_addr_t ipaddr;
+    struct inet_ip_addr_t netmask;
+    struct inet_ip_addr_t gw;
 
     sys_start();
+
     uart_module_init();
-    pin_module_init();
+    uart_init(&uart, &uart_device[0], 38400, rxbuf, sizeof(rxbuf));
+    uart_start(&uart);
+    sys_set_stdout(&uart.chout);
+
+    log_set_default_handler_output_channel(sys_get_stdout());
+
+    std_printf(sys_get_info());
+
+    uart_init(&ipuart, &uart_device[1], 115200, iprxbuf, sizeof(iprxbuf));
+    uart_start(&ipuart);
+
+    inet_module_init();
     socket_module_init();
     network_interface_slip_module_init();
 
-    sys_set_stdout(&uart.chout);
+    inet_aton("169.254.1.2", &ipaddr);
+    inet_aton("255.255.255.0", &netmask);
+    inet_aton("0.0.0.0", &gw);
 
-    /* Initialize and start the SLIP network interface. */
-    uart_init(&uart, &uart_device[0], 115200, rxbuf, sizeof(rxbuf));
-    uart_start(&uart);
-
-    ipaddr.addr = htonl(0xa9fe0102);
-    netmask.addr = htonl(0xffffff00);
-    gw.addr = 0x0;
-
-    network_interface_slip_init(&slip, &ipaddr, &netmask, &gw, &uart.chout);
+    network_interface_slip_init(&slip,
+                                &ipaddr,
+                                &netmask,
+                                &gw,
+                                &ipuart.chout);
     network_interface_add(&slip.network_interface);
     network_interface_enable(&slip.network_interface);
 
     while (1) {
-        uart_read(&uart, &data, 1);
+        uart_read(&ipuart, &data, 1);
         network_interface_slip_input(&slip, data);
     }
 

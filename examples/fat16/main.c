@@ -207,7 +207,7 @@ static int cmd_read_cb(int argc,
     if (argc == 1) {
         size = INT_MAX;
     } else if (argc == 2) {
-        if (std_strtol(argv[1], &size) != 0) {
+        if (std_strtol(argv[1], &size) == NULL) {
             std_fprintf(out_p, FSTR("%s: expected posotove integer\r\n"), argv[1]);
             return (1);
         }

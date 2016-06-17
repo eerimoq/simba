@@ -23,18 +23,14 @@
 
 #include "simba.h"
 
-#include "lwip/opt.h"
-#include "lwip/def.h"
-#include "lwip/pbuf.h"
-#include "lwip/stats.h"
 #include "lwip/sys.h"
 #include "lwip/ip.h"
 
 struct network_interface_t {
     struct netif netif;
-    ip_addr_t ipaddr;
-    ip_addr_t netmask;
-    ip_addr_t gw;
+    struct inet_ip_addr_t ipaddr;
+    struct inet_ip_addr_t netmask;
+    struct inet_ip_addr_t gw;
     netif_init_fn init;
 };
 

@@ -20,8 +20,6 @@
 
 #include "simba.h"
 
-#include "inet.h"
-
 extern void socket_stub_init(void);
 extern void socket_stub_accept();
 extern void socket_stub_input(void *buf_p, size_t size);

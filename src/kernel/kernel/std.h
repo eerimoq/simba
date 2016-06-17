@@ -112,9 +112,9 @@ void std_vfprintf(chan_t *chan_p, FAR const char *fmt_p, va_list *ap_p);
  * @param[in] str_p Integer string.
  * @param[out] value_p Integer value.
  *
- * @return zero(0) or negative error code.
+ * @return Pointer to the next byte or NULL on failure.
  */
-int std_strtol(const char *str_p, long *value_p);
+const char *std_strtol(const char *str_p, long *value_p);
 
 /**
  * Copy string from far memory to memory.

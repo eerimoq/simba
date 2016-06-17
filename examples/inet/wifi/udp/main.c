@@ -37,12 +37,11 @@
 
 static struct uart_driver_t uart;
 static char rxbuf[4];
-static struct shell_args_t shell_args;
 
 static int udp_test(void)
 {
     struct socket_t sock;
-    struct socket_addr_t addr;
+    struct inet_addr_t addr;
     char buf[16];
 
     std_printf(FSTR("UDP test\r\n"));
@@ -51,7 +50,7 @@ static int udp_test(void)
     socket_open(&sock, SOCKET_DOMAIN_AF_INET, SOCKET_TYPE_DGRAM, 0);
 
     std_printf(FSTR("binding to %d\r\n"), UDP_PORT);
-    addr.ip = 0x6701a8c0;
+    inet_aton("192.168.1.103", &addr.ip);
     addr.port = UDP_PORT;
     socket_bind(&sock, &addr, sizeof(addr));
 

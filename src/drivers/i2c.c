@@ -43,7 +43,7 @@ static int cmd_read_cb(int argc,
         return (-EINVAL);
     }
 
-    if (std_strtol(argv[1], &value) != 0) {
+    if (std_strtol(argv[1], &value) == NULL) {
         std_printf(FSTR("Bad slave address.\r\n"));
         
         return (-EINVAL);
@@ -87,7 +87,7 @@ static int cmd_write_cb(int argc,
         return (-EINVAL);
     }
 
-    if (std_strtol(argv[1], &value) != 0) {
+    if (std_strtol(argv[1], &value) == NULL) {
         std_printf(FSTR("Bad slave address.\r\n"));
         
         return (-EINVAL);
@@ -95,7 +95,7 @@ static int cmd_write_cb(int argc,
 
     slave_address = value;
 
-    if (std_strtol(argv[2], &value) != 0) {
+    if (std_strtol(argv[2], &value) == NULL) {
         std_printf(FSTR("Bad data value.\r\n"));
 
         return (-EINVAL);

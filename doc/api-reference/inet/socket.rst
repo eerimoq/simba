@@ -16,12 +16,12 @@ data.
 
    uint8_t buf[16];
    struct socket_t tcp;
-   struct socket_addr_t local_addr, remote_addr;
+   struct inet_addr_t local_addr, remote_addr;
 
    /* Set the local and remote addresses. */   
-   local_addr.ip = 0x6801a8c0;
+   inet_aton("192.168.1.103", &local_addr.ip);
    local_addr.port = 6000;
-   remote_addr.ip = 0x6a01a8c0;
+   inet_aton("192.168.1.106", &remote_addr.ip);
    remote_addr.port = 5000;
 
    /* Initialize the socket and connect to the server. */
@@ -45,9 +45,9 @@ And below is the same scenario for UDP.
    struct socket_addr_t local_addr, remote_addr;
 
    /* Set the local and remote addresses. */   
-   local_addr.ip = 0x6801a8c0;
+   inet_aton("192.168.1.103", &local_addr.ip);
    local_addr.port = 6000;
-   remote_addr.ip = 0x6a01a8c0;
+   inet_aton("192.168.1.106", &remote_addr.ip);
    remote_addr.port = 5000;
 
    /* Initialize the socket and connect to the server. */

@@ -633,7 +633,7 @@ int fs_cmd_parameter_int(int argc,
     if (argc == FS_ARGC_GET) {
         std_fprintf(chout_p, FSTR("%d\r\n"), *value_p);
     } else {
-        if (std_strtol(argv[1], &value)) {
+        if (std_strtol(argv[1], &value) == NULL) {
             std_fprintf(chout_p, FSTR("bad value '%s'\r\n"), argv[1]);
             return (1);
         }

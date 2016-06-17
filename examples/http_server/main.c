@@ -191,9 +191,9 @@ static void *slip_reader(void *arg_p)
 
 static int init()
 {
-    ip_addr_t ipaddr;
-    ip_addr_t netmask;
-    ip_addr_t gw;
+    struct inet_ip_addr_t ipaddr;
+    struct inet_ip_addr_t netmask;
+    struct inet_ip_addr_t gw;
 
     sys_start();
 
@@ -209,12 +209,13 @@ static int init()
     uart_init(&ipuart, &uart_device[1], 115200, iprxbuf, sizeof(iprxbuf));
     uart_start(&ipuart);
 
+    inet_module_init();
     socket_module_init();
     network_interface_slip_module_init();
 
-    ipaddr.addr = htonl(0xa9fe0102);
-    netmask.addr = htonl(0xffffff00);
-    gw.addr = 0x0;
+    inet_aton("169.254.1.2", &ipaddr);
+    inet_aton("255.255.255.0", &netmask);
+    inet_aton("0.0.0.0", &gw);
 
     network_interface_slip_init(&slip,
                                 &ipaddr,

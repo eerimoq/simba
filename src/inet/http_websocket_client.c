@@ -89,7 +89,7 @@ int http_websocket_client_connect(struct http_websocket_client_t *self_p)
     ASSERTN(self_p != NULL, EINVAL);
 
     int res;
-    struct socket_addr_t server_addr;
+    struct inet_addr_t server_addr;
 
     /* Open a TCP socket and connect to the server. */
     socket_open(&self_p->server.socket,

@@ -41,7 +41,7 @@ static int pin_str_to_pin(const char *str_p)
 
     gpio = (str_p[1] - 'a');
 
-    if (std_strtol(&str_p[2], &bit) != 0) {
+    if (std_strtol(&str_p[2], &bit) == NULL) {
         return (-1);
     }
 

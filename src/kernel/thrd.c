@@ -358,7 +358,7 @@ static int cmd_set_log_mask_cb(int argc,
         return (-ESRCH);
     }
 
-    if (std_strtol(argv[2], &mask) != 0) {
+    if (std_strtol(argv[2], &mask) == NULL) {
         return (-EINVAL);
     }
 

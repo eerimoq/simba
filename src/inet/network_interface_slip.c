@@ -20,6 +20,7 @@
 
 #include "simba.h"
 
+#include "lwip/stats.h"
 #include "lwip/tcpip.h"
 
 #if !defined(ARCH_LINUX)
@@ -161,9 +162,9 @@ int network_interface_slip_module_init(void)
 }
 
 int network_interface_slip_init(struct network_interface_slip_t *self_p,
-                                ip_addr_t *ipaddr_p,
-                                ip_addr_t *netmask_p,
-                                ip_addr_t *gw_p,
+                                struct inet_ip_addr_t *ipaddr_p,
+                                struct inet_ip_addr_t *netmask_p,
+                                struct inet_ip_addr_t *gw_p,
                                 chan_t *chout_p)
 {
     ASSERTN(self_p != NULL, EINVAL);
@@ -192,7 +193,7 @@ int network_interface_slip_init(struct network_interface_slip_t *self_p,
     self_p->network_interface.netif.mtu =
         NETWORK_INTERFACE_SLIP_FRAME_SIZE_MAX;
     self_p->network_interface.netif.flags |= NETIF_FLAG_POINTTOPOINT;
-
+    
     return (0);
 }
 
@@ -238,9 +239,9 @@ int network_interface_slip_module_init(void)
 }
 
 int network_interface_slip_init(struct network_interface_slip_t *self_p,
-                                ip_addr_t *ipaddr_p,
-                                ip_addr_t *netmask_p,
-                                ip_addr_t *gw_p,
+                                struct inet_ip_addr_t *ipaddr_p,
+                                struct inet_ip_addr_t *netmask_p,
+                                struct inet_ip_addr_t *gw_p,
                                 chan_t *chout_p)
 {
     return (0);

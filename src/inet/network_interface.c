@@ -29,10 +29,16 @@ int network_interface_module_init(void)
 
 int network_interface_add(struct network_interface_t *netif_p)
 {
+    ip_addr_t ipaddr, netmask, gw;
+
+    ipaddr.addr = netif_p->ipaddr.number;
+    netmask.addr = netif_p->netmask.number;
+    gw.addr = netif_p->gw.number;
+
     netif_add(&netif_p->netif,
-              &netif_p->ipaddr,
-              &netif_p->netmask,
-              &netif_p->gw,
+              &ipaddr,
+              &netmask,
+              &gw,
               NULL,
               netif_p->init,
               NULL);

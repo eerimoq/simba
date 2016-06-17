@@ -94,38 +94,52 @@ int test_sprintf_double(struct harness_t *harness_p)
 int test_strtol(struct harness_t *harness_p)
 {
     long value;
+    const char *next_p;
 
     /* Positive integers.*/
-    BTASSERT(std_strtol("0x1011", &value) == 0);
+    BTASSERT(std_strtol("0x1011", &value) != NULL);
     BTASSERT(value == 0x1011);
-    BTASSERT(std_strtol("0xf011", &value) == 0);
+    BTASSERT(std_strtol("0xf011", &value) != NULL);
     BTASSERT(value == 0xf011);
-    BTASSERT(std_strtol("0xB011", &value) == 0);
+    BTASSERT(std_strtol("0xB011", &value) != NULL);
     BTASSERT(value == 0xB011);
 
-    BTASSERT(std_strtol("1011", &value) == 0);
+    BTASSERT(std_strtol("1011", &value) != NULL);
     BTASSERT(value == 1011);
 
-    BTASSERT(std_strtol("0b1011", &value) == 0);
+    BTASSERT(std_strtol("0b1011", &value) != NULL);
     BTASSERT(value == 0b1011);
 
     /* Negative integers.*/
-    BTASSERT(std_strtol("-0x1011", &value) == 0);
+    BTASSERT(std_strtol("-0x1011", &value) != NULL);
     BTASSERT(value == -0x1011);
 
-    BTASSERT(std_strtol("-1011", &value) == 0);
+    BTASSERT(std_strtol("-1011", &value) != NULL);
     BTASSERT(value == -1011);
 
-    BTASSERT(std_strtol("-0b1011", &value) == 0);
+    BTASSERT(std_strtol("-0b1011", &value) != NULL);
     BTASSERT(value == -0b1011);
 
+    /* Non-null termination. */
+    BTASSERT(std_strtol("0x1r11", &value) != NULL);
+    BTASSERT(value == 0x1);
+    BTASSERT(std_strtol("0b1012", &value) != NULL);
+    BTASSERT(value == 0b101);
+
     /* Bad input. */
-    BTASSERT(std_strtol("0x1r11", &value) == -EINVAL);
+    BTASSERT(std_strtol("a011", &value) == NULL);
 
-    BTASSERT(std_strtol("a011", &value) == -EINVAL);
+    /* Next byte. */
+    next_p = std_strtol("0x1011", &value);
+    BTASSERT(next_p != NULL);
+    BTASSERT(value == 0x1011);
+    BTASSERT(*next_p == '\0');
 
-    BTASSERT(std_strtol("0b1012", &value) == -EINVAL);
-
+    next_p = std_strtol("0x101.", &value);
+    BTASSERT(next_p != NULL);
+    BTASSERT(value == 0x101);
+    BTASSERT(*next_p == '.');
+    
     return (0);
 }
 

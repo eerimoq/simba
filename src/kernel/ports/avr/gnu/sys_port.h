@@ -60,4 +60,21 @@
 
 #define PACKED __attribute__((packed))
 
+static inline uint32_t htonl(uint32_t v)
+{
+    return (((v) << 24)
+            | (((v) & 0x0000ff00) << 8)
+            | (((v) & 0x00ff0000) >> 8)
+            | (((v) & 0xff000000) >> 24));
+}
+
+#define ntohl(v) htonl(v)
+
+static inline uint16_t htons(uint16_t v)
+{
+    return (((v) << 8) | (((v) & 0xff00) >> 8));
+}
+
+#define ntohs(v) htons(v)
+
 #endif

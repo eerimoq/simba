@@ -25,18 +25,20 @@
 #    define BOOTLOADER_ADDRESS 0x00080000
 #endif
 
-FS_COMMAND_DEFINE("/bootloader/start", cmd_bootloader_start);
+static struct fs_command_t bootloader_start;
 
 static struct uart_driver_t uart;
 static struct shell_args_t shell_args;
 
-int cmd_bootloader_start(int argc,
-                         const char *argv[],
-                         void *out_p,
-                         void *in_p)
+static int cmd_bootloader_start(int argc,
+                                const char *argv[],
+                                chan_t *out_p,
+                                chan_t *in_p,
+                                void *arg_p,
+                                void *call_arg_p)
 {
     bootloader_jump(BOOTLOADER_ADDRESS);
-
+    
     return (0);
 }
 
@@ -53,6 +55,13 @@ int main()
               NULL,
               0);
     uart_start(&uart);
+
+    fs_command_init(&bootloader_start,
+                    FSTR("/bootloader/start"),
+                    cmd_bootloader_start,
+                    NULL);
+    fs_command_register(&bootloader_start);
+
 
     /* Print the bootloader application information. */
     sys_set_stdout(&uart.chout);

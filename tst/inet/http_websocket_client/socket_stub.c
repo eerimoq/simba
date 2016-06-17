@@ -66,7 +66,7 @@ int socket_close(struct socket_t *self_p)
 }
 
 int socket_bind(struct socket_t *self_p,
-                const struct socket_addr_t *local_addr_p,
+                const struct inet_addr_t *local_addr_p,
                 size_t addrlen)
 {
     return (0);
@@ -78,7 +78,7 @@ int socket_listen(struct socket_t *self_p, int backlog)
 }
 
 int socket_connect(struct socket_t *self_p,
-                   const struct socket_addr_t *addr_p,
+                   const struct inet_addr_t *addr_p,
                    size_t addrlen)
 {
     return (0);
@@ -86,7 +86,7 @@ int socket_connect(struct socket_t *self_p,
 
 int socket_accept(struct socket_t *self_p,
                   struct socket_t *accepted_p,
-                  struct socket_addr_t *addr_p,
+                  struct inet_addr_t *addr_p,
                   size_t *addrlen_p)
 {
     return (0);
@@ -96,7 +96,7 @@ ssize_t socket_sendto(struct socket_t *self_p,
                       const void *buf_p,
                       size_t size,
                       int flags,
-                      const struct socket_addr_t *remote_addr_p,
+                      const struct inet_addr_t *remote_addr_p,
                       size_t addrlen)
 {
     return (write(NULL, buf_p, size));
@@ -106,7 +106,7 @@ ssize_t socket_recvfrom(struct socket_t *self_p,
                         void *buf_p,
                         size_t size,
                         int flags,
-                        struct socket_addr_t *remote_addr,
+                        struct inet_addr_t *remote_addr,
                         size_t addrlen)
 {
     return (read(NULL, buf_p, size));

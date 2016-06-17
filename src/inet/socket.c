@@ -102,7 +102,7 @@ static void on_udp_recv(void *arg_p,
         }
 
         /* Copy the remote address and port to the receiver. */
-        socket_p->io.remote_addr.ip = addr_p->addr;
+        socket_p->io.remote_addr.ip.number = addr_p->addr;
         socket_p->io.remote_addr.port = port;
 
         /* Resume any waiting thread. */
@@ -220,7 +220,7 @@ static ssize_t udp_send_to(struct socket_t *self_p,
                            const void *buf_p,
                            size_t size,
                            int flags,
-                           const struct socket_addr_t *remote_addr_p,
+                           const struct inet_addr_t *remote_addr_p,
                            size_t addrlen)
 {
     ssize_t res = size;
@@ -228,7 +228,7 @@ static ssize_t udp_send_to(struct socket_t *self_p,
     ip_addr_t ip;
 
     /* Copy the data to a pbuf.*/
-    ip.addr = remote_addr_p->ip;
+    ip.addr = remote_addr_p->ip.number;
     pbuf_p = pbuf_alloc(PBUF_TRANSPORT, size, PBUF_RAM);
     memcpy(pbuf_p->payload, buf_p, size);
 
@@ -250,7 +250,7 @@ static ssize_t tcp_send_to(struct socket_t *self_p,
                            const void *buf_p,
                            size_t size,
                            int flags,
-                           const struct socket_addr_t *remote_addr_p,
+                           const struct inet_addr_t *remote_addr_p,
                            size_t addrlen)
 {
     self_p->io.buf_p = (void *)buf_p;
@@ -271,7 +271,7 @@ static ssize_t udp_recv_from(struct socket_t *self_p,
                              void *buf_p,
                              size_t size,
                              int flags,
-                             struct socket_addr_t *remote_addr_p,
+                             struct inet_addr_t *remote_addr_p,
                              size_t addrlen)
 {
     struct pbuf *pbuf_p;
@@ -309,7 +309,7 @@ static ssize_t tcp_recv_from(struct socket_t *self_p,
                              void *buf_p,
                              size_t size,
                              int flags,
-                             struct socket_addr_t *remote_addr_p,
+                             struct inet_addr_t *remote_addr_p,
                              size_t addrlen)
 {
     size_t left = size, pbuf_len, chunk_size;
@@ -457,7 +457,7 @@ int socket_close(struct socket_t *self_p)
 }
 
 int socket_bind(struct socket_t *self_p,
-                const struct socket_addr_t *local_addr_p,
+                const struct inet_addr_t *local_addr_p,
                 size_t addrlen)
 {
     ASSERTN(self_p != NULL, EINVAL);
@@ -465,7 +465,7 @@ int socket_bind(struct socket_t *self_p,
 
     ip_addr_t ip;
 
-    ip.addr = local_addr_p->ip;
+    ip.addr = local_addr_p->ip.number;
 
     switch (self_p->type) {
 
@@ -482,8 +482,8 @@ int socket_bind(struct socket_t *self_p,
 
 int socket_listen(struct socket_t *self_p, int backlog)
 {
-    ASSERTN(self_p != NULL, EINVAL)
-    ASSERTN(backlog >= 0, EINVAL)
+    ASSERTN(self_p != NULL, EINVAL);
+    ASSERTN(backlog >= 0, EINVAL);
 
     switch (self_p->type) {
 
@@ -500,15 +500,15 @@ int socket_listen(struct socket_t *self_p, int backlog)
 }
 
 int socket_connect(struct socket_t *self_p,
-                   const struct socket_addr_t *addr_p,
+                   const struct inet_addr_t *addr_p,
                    size_t addrlen)
 {
-    ASSERTN(self_p != NULL, EINVAL)
-    ASSERTN(addr_p != NULL, EINVAL)
+    ASSERTN(self_p != NULL, EINVAL);
+    ASSERTN(addr_p != NULL, EINVAL);
 
     ip_addr_t ip;
 
-    ip.addr = addr_p->ip;
+    ip.addr = addr_p->ip.number;
 
     switch (self_p->type) {
 
@@ -526,7 +526,7 @@ int socket_connect(struct socket_t *self_p,
 
 int socket_accept(struct socket_t *self_p,
                   struct socket_t *accepted_p,
-                  struct socket_addr_t *addr_p,
+                  struct inet_addr_t *addr_p,
                   size_t *addrlen_p)
 {
     ASSERTN(self_p != NULL, EINVAL);
@@ -544,7 +544,7 @@ ssize_t socket_sendto(struct socket_t *self_p,
                       const void *buf_p,
                       size_t size,
                       int flags,
-                      const struct socket_addr_t *remote_addr_p,
+                      const struct inet_addr_t *remote_addr_p,
                       size_t addrlen)
 {
     ASSERTN(self_p != NULL, EINVAL);
@@ -578,7 +578,7 @@ ssize_t socket_recvfrom(struct socket_t *self_p,
                         void *buf_p,
                         size_t size,
                         int flags,
-                        struct socket_addr_t *remote_addr_p,
+                        struct inet_addr_t *remote_addr_p,
                         size_t addrlen)
 {
     ASSERTN(self_p != NULL, EINVAL);
@@ -651,7 +651,7 @@ int socket_close(struct socket_t *self_p)
 }
 
 int socket_bind(struct socket_t *self_p,
-                const struct socket_addr_t *local_addr_p,
+                const struct inet_addr_t *local_addr_p,
                 size_t addrlen)
 {
     return (-1);
@@ -663,7 +663,7 @@ int socket_listen(struct socket_t *self_p, int backlog)
 }
 
 int socket_connect(struct socket_t *self_p,
-                   const struct socket_addr_t *addr_p,
+                   const struct inet_addr_t *addr_p,
                    size_t addrlen)
 {
     return (-1);
@@ -671,7 +671,7 @@ int socket_connect(struct socket_t *self_p,
 
 int socket_accept(struct socket_t *self_p,
                   struct socket_t *accepted_p,
-                  struct socket_addr_t *addr_p,
+                  struct inet_addr_t *addr_p,
                   size_t *addrlen_p)
 {
     return (-1);
@@ -681,7 +681,7 @@ ssize_t socket_sendto(struct socket_t *self_p,
                       const void *buf_p,
                       size_t size,
                       int flags,
-                      const struct socket_addr_t *remote_addr_p,
+                      const struct inet_addr_t *remote_addr_p,
                       size_t addrlen)
 {
     return (-1);
@@ -691,7 +691,7 @@ ssize_t socket_recvfrom(struct socket_t *self_p,
                         void *buf_p,
                         size_t size,
                         int flags,
-                        struct socket_addr_t *remote_addr_p,
+                        struct inet_addr_t *remote_addr_p,
                         size_t addrlen)
 {
     return (-1);
@@ -701,9 +701,9 @@ ssize_t socket_write(struct socket_t *self_p,
                      const void *buf_p,
                      size_t size)
 {
-    ASSERTN(self_p != NULL, EINVAL)
-    ASSERTN(buf_p != NULL, EINVAL)
-    ASSERTN(size > 0, EINVAL)
+    ASSERTN(self_p != NULL, EINVAL);
+    ASSERTN(buf_p != NULL, EINVAL);
+    ASSERTN(size > 0, EINVAL);
 
     return (socket_sendto(self_p, buf_p, size, 0, NULL, 0));
 }
@@ -712,9 +712,9 @@ ssize_t socket_read(struct socket_t *self_p,
                     void *buf_p,
                     size_t size)
 {
-    ASSERTN(self_p != NULL, EINVAL)
-    ASSERTN(buf_p != NULL, EINVAL)
-    ASSERTN(size > 0, EINVAL)
+    ASSERTN(self_p != NULL, EINVAL);
+    ASSERTN(buf_p != NULL, EINVAL);
+    ASSERTN(size > 0, EINVAL);
 
     return (socket_recvfrom(self_p, buf_p, size, 0, NULL, 0));
 }

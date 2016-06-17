@@ -384,7 +384,7 @@ void std_vfprintf(chan_t *chan_p, FAR const char *fmt_p, va_list *ap_p)
     output_flush(&output);
 }
 
-int std_strtol(const char *str_p, long *value_p)
+const char *std_strtol(const char *str_p, long *value_p)
 {
     ASSERTN(str_p != NULL, EINVAL);
     ASSERTN(value_p != NULL, EINVAL);
@@ -399,6 +399,11 @@ int std_strtol(const char *str_p, long *value_p)
     if (c == '-') {
         c = *str_p++;
         sign = -1;
+    }
+
+    /* The number must start with a digit. */
+    if (isdigit(c) == 0) {
+        return (NULL);
     }
 
     /* Find base based on prefix. */
@@ -419,7 +424,10 @@ int std_strtol(const char *str_p, long *value_p)
     /* Get number. */
     *value_p = 0;
 
-    while (c != '\0') {
+    while (((base == 16) && isxdigit(c))
+           || ((base == 10) && isdigit(c))
+           || ((base == 8) && (c >= '0') && (c < '8'))
+           || ((base == 2) && (c >= '0') && (c < '2'))) {
         *value_p *= base;
 
         /* Special handling of base 16. */
@@ -435,7 +443,7 @@ int std_strtol(const char *str_p, long *value_p)
         c -= '0';
 
         if (c >= base) {
-            return (-EINVAL);
+            return (NULL);
         }
 
         *value_p += c;
@@ -444,7 +452,7 @@ int std_strtol(const char *str_p, long *value_p)
 
     *value_p *= sign;
 
-    return (0);
+    return (str_p - 1);
 }
 
 int std_strcpy(char *dst_p, FAR const char *fsrc_p)

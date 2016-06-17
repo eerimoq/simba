@@ -32,13 +32,6 @@
 /** UDP socket type. */
 #define SOCKET_TYPE_DGRAM      2
 
-struct socket_addr_t {
-    /** IPv4 address. */
-    uint32_t ip;
-    /** Port. */
-    uint16_t port;
-};
-
 struct socket_t {
     struct chan_t base;
     int type;
@@ -53,7 +46,7 @@ struct socket_t {
         } recv;
         void *buf_p;
         size_t size;
-        struct socket_addr_t remote_addr;
+        struct inet_addr_t remote_addr;
         struct thrd_t * volatile thrd_p;
     } io;
     void *pcb_p;
@@ -103,7 +96,7 @@ int socket_close(struct socket_t *self_p);
  * @return zero(0) or negative error code.
  */
 int socket_bind(struct socket_t *self_p,
-                const struct socket_addr_t *local_addr_p,
+                const struct inet_addr_t *local_addr_p,
                 size_t addrlen);
 
 /**
@@ -128,7 +121,7 @@ int socket_listen(struct socket_t *self_p, int backlog);
  * @return zero(0) or negative error code.
  */
 int socket_connect(struct socket_t *self_p,
-                   const struct socket_addr_t *remote_addr_p,
+                   const struct inet_addr_t *remote_addr_p,
                    size_t addrlen);
 
 /**
@@ -143,7 +136,7 @@ int socket_connect(struct socket_t *self_p,
  */
 int socket_accept(struct socket_t *self_p,
                   struct socket_t *accepted_p,
-                  struct socket_addr_t *remote_addr_p,
+                  struct inet_addr_t *remote_addr_p,
                   size_t *addrlen_p);
 
 /**
@@ -162,7 +155,7 @@ ssize_t socket_sendto(struct socket_t *self_p,
                       const void *buf_p,
                       size_t size,
                       int flags,
-                      const struct socket_addr_t *remote_addr_p,
+                      const struct inet_addr_t *remote_addr_p,
                       size_t addrlen);
 
 /**
@@ -181,7 +174,7 @@ ssize_t socket_recvfrom(struct socket_t *self_p,
                         void *buf_p,
                         size_t size,
                         int flags,
-                        struct socket_addr_t *remote_addr_p,
+                        struct inet_addr_t *remote_addr_p,
                         size_t addrlen);
 
 /**

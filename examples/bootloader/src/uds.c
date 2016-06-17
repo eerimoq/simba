@@ -21,7 +21,6 @@
 #include "simba.h"
 
 #include "bootloader.h"
-#include "arpa/inet.h"
 
 /* Application valid flag. */
 #define APPLICATION_VALID_FLAG                             0xbe

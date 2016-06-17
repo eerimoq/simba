@@ -22,7 +22,7 @@
 #define __INET_ARCH_CC_H__
 
 #include <stdint.h>
-#include <arpa/inet.h>
+#include "sys_port.h"
 
 /* Types based on stdint.h */
 typedef uint8_t            u8_t;
@@ -58,7 +58,7 @@ typedef uintptr_t          mem_ptr_t;
 #define LWIP_CHKSUM_ALGORITHM   1
 
 #define LWIP_PLATFORM_DIAG(msg) { std_printf msg; }
-#define LWIP_PLATFORM_ASSERT(flag) { ; }
+#define LWIP_PLATFORM_ASSERT(flag) { ASSERT(flag); }
 
 #define LWIP_PLATFORM_HTONS(x)      htons(x)
 #define LWIP_PLATFORM_HTONL(x)      htonl(x)

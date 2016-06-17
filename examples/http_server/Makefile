@@ -19,7 +19,6 @@
 #
 
 NAME = http_server
-VERSION = 0.0.1
 BOARD ?= esp12e
 
 SIMBA_ROOT = ../..

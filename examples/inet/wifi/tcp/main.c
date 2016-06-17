@@ -44,7 +44,7 @@ static int tcp_test(void)
 {
     struct socket_t listener;
     struct socket_t client;
-    struct socket_addr_t addr;
+    struct inet_addr_t addr;
     char buf[16];
 
     std_printf(FSTR("TCP test\r\n"));
@@ -53,7 +53,7 @@ static int tcp_test(void)
     socket_open(&listener, SOCKET_DOMAIN_AF_INET, SOCKET_TYPE_STREAM, 0);
 
     std_printf(FSTR("binding to %d\r\n"), TCP_PORT);
-    addr.ip = 0x6701a8c0;
+    inet_aton("192.168.1.103", &addr.ip);
     addr.port = TCP_PORT;
     socket_bind(&listener, &addr, sizeof(addr));
 
@@ -82,13 +82,13 @@ static int tcp_test(void)
 static int shell_test(void)
 {
     struct socket_t listener, client;
-    struct socket_addr_t addr;
+    struct inet_addr_t addr;
 
     std_printf(FSTR("shell test\r\n"));
 
     /* Start the shell communicating over given TCP socket. */
     socket_open(&listener, SOCKET_DOMAIN_AF_INET, SOCKET_TYPE_STREAM, 0);
-    addr.ip = 0x6701a8c0;
+    inet_aton("192.168.1.103", &addr.ip);
     addr.port = SHELL_PORT;
     socket_bind(&listener, &addr, sizeof(addr));
     socket_listen(&listener, 5);

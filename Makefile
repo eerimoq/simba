@@ -45,6 +45,7 @@ TESTS = $(addprefix tst/kernel/, binary_tree \
 TESTS += $(addprefix tst/slib/, base64 crc hash hash_map json re)
 TESTS += $(addprefix tst/inet/, http_server \
 				http_websocket_client \
+				inet \
 				mqtt_client)
 
 ifeq ($(BOARD), linux)

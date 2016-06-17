@@ -46,8 +46,8 @@ static int cmd_set_min_max_cb(int argc,
         return (1);
     }
 
-    if ((std_strtol(argv[1], &min) != 0) ||
-        (std_strtol(argv[2], &max) != 0)) {
+    if ((std_strtol(argv[1], &min) == NULL) ||
+        (std_strtol(argv[2], &max) == NULL)) {
         std_fprintf(out_p,
                     FSTR("bad min or max value '%s' '%s'\r\n"),
                     argv[1],

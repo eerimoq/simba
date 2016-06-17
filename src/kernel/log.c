@@ -136,7 +136,7 @@ static int cmd_set_log_mask_cb(int argc,
         return (-EINVAL);
     }
 
-    if (std_strtol(argv[2], &mask) != 0) {
+    if (std_strtol(argv[2], &mask) == NULL) {
         std_fprintf(out_p, FSTR("bad mask %s\r\n"), argv[2]);
 
         return (-EINVAL);

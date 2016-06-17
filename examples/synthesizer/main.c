@@ -194,7 +194,7 @@ static int cmd_set_waveform_cb(int argc,
         return (-EINVAL);
     }
 
-    if (std_strtol(argv[1], &channel) != 0) {
+    if (std_strtol(argv[1], &channel) == NULL) {
         return (-EINVAL);
     }
 
@@ -238,7 +238,7 @@ static int cmd_set_vibrato_cb(int argc,
         return (-EINVAL);
     }
 
-    if (std_strtol(argv[1], &value) != 0) {
+    if (std_strtol(argv[1], &value) == NULL) {
         return (-EINVAL);
     }
 
@@ -264,19 +264,19 @@ static int cmd_set_envelope_cb(int argc,
         return (-EINVAL);
     }
 
-    if (std_strtol(argv[1], &value) != 0) {
+    if (std_strtol(argv[1], &value) == NULL) {
         return (-EINVAL);
     }
 
     synthesizer.attack = value;
 
-    if (std_strtol(argv[2], &value) != 0) {
+    if (std_strtol(argv[2], &value) == NULL) {
         return (-EINVAL);
     }
 
     synthesizer.decay = value;
 
-    if (std_strtol(argv[3], &value) != 0) {
+    if (std_strtol(argv[3], &value) == NULL) {
         return (-EINVAL);
     }
 
@@ -302,15 +302,15 @@ static int cmd_note_on_cb(int argc,
         return (-EINVAL);
     }
 
-    if (std_strtol(argv[1], &channel) != 0) {
+    if (std_strtol(argv[1], &channel) == NULL) {
         return (-EINVAL);
     }
 
-    if (std_strtol(argv[2], &note) != 0) {
+    if (std_strtol(argv[2], &note) == NULL) {
         return (-EINVAL);
     }
 
-    if (std_strtol(argv[3], &frequency) != 0) {
+    if (std_strtol(argv[3], &frequency) == NULL) {
         return (-EINVAL);
     }
 
@@ -337,11 +337,11 @@ static int cmd_note_off_cb(int argc,
         return (-EINVAL);
     }
 
-    if (std_strtol(argv[1], &channel) != 0) {
+    if (std_strtol(argv[1], &channel) == NULL) {
         return (-EINVAL);
     }
 
-    if (std_strtol(argv[2], &note) != 0) {
+    if (std_strtol(argv[2], &note) == NULL) {
         return (-EINVAL);
     }
 
@@ -365,7 +365,7 @@ static int cmd_channel_on_cb(int argc,
         return (-EINVAL);
     }
 
-    if (std_strtol(argv[1], &channel) != 0) {
+    if (std_strtol(argv[1], &channel) == NULL) {
         return (-EINVAL);
     }
 
@@ -391,7 +391,7 @@ static int cmd_channel_off_cb(int argc,
         return (-EINVAL);
     }
 
-    if (std_strtol(argv[1], &channel) != 0) {
+    if (std_strtol(argv[1], &channel) == NULL) {
         return (-EINVAL);
     }
 

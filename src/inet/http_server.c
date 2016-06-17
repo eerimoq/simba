@@ -316,7 +316,7 @@ static void *listener_main(void *arg_p)
     struct http_server_t *self_p = arg_p;
     struct http_server_listener_t *listener_p;
     struct http_server_connection_t *connection_p;
-    struct socket_addr_t addr;
+    struct inet_addr_t addr;
 
     thrd_set_name(self_p->listener_p->thrd.name_p);
 
@@ -326,7 +326,7 @@ static void *listener_main(void *arg_p)
                 SOCKET_DOMAIN_AF_INET,
                 SOCKET_TYPE_STREAM,
                 0);
-    addr.ip = htonl(0xa9fe0102);
+    addr.ip.number = htonl(0xa9fe0102);
     addr.port = listener_p->port;
     socket_bind(&listener_p->socket, &addr, sizeof(addr));
     socket_listen(&listener_p->socket, 3);

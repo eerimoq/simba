@@ -23,13 +23,6 @@
 
 #include "simba.h"
 
-#include "lwip/opt.h"
-#include "lwip/def.h"
-#include "lwip/pbuf.h"
-#include "lwip/stats.h"
-#include "lwip/sys.h"
-#include "lwip/ip.h"
-
 #define NETWORK_INTERFACE_SLIP_FRAME_SIZE_MAX 1500
 
 enum network_interface_slip_state_t {
@@ -68,9 +61,9 @@ int network_interface_slip_module_init(void);
  * @return zero(0) or negative error code.
  */
 int network_interface_slip_init(struct network_interface_slip_t *self_p,
-                                ip_addr_t *ipaddr_p,
-                                ip_addr_t *netmask_p,
-                                ip_addr_t *gw_p,
+                                struct inet_ip_addr_t *ipaddr_p,
+                                struct inet_ip_addr_t *netmask_p,
+                                struct inet_ip_addr_t *gw_p,
                                 chan_t *chout_p);
 
 /**

@@ -20,14 +20,18 @@
 
 #include "simba.h"
 
-int test_init(struct harness_t *harness_p)
+int test_aton(struct harness_t *harness_p)
 {
-    struct socket_t socket;
+    const char src[] = "1.2.3.4";
+    const char bad_src_1[] = "1.2.g.4";
+    const char bad_src_2[] = "1.2.3.";
+    struct inet_ip_addr_t dst;
 
-    BTASSERT(socket_open(&socket,
-                         SOCKET_DOMAIN_AF_INET,
-                         SOCKET_TYPE_DGRAM,
-                         0) == 0);
+    BTASSERT(inet_aton(src, &dst) == 0);
+    BTASSERT(dst.number == htonl(0x01020304));
+
+    BTASSERT(inet_aton(bad_src_1, &dst) == -EINVAL);
+    BTASSERT(inet_aton(bad_src_2, &dst) == -EINVAL);
 
     return (0);
 }
@@ -36,12 +40,13 @@ int main()
 {
     struct harness_t harness;
     struct harness_testcase_t harness_testcases[] = {
-        { test_init, "test_init" },
+        { test_aton, "test_aton" },
         { NULL, NULL }
     };
 
     sys_start();
     uart_module_init();
+    inet_module_init();
 
     harness_init(&harness);
     harness_run(&harness, harness_testcases);

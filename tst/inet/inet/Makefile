@@ -3,7 +3,7 @@
 # @version 0.7.0
 #
 # @section License
-# Copyright (C) 2015-2016, Erik Moqvist
+# Copyright (C) 2014-2016, Erik Moqvist
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
@@ -18,7 +18,8 @@
 # This file is part of the Simba project.
 #
 
-all:
-	$(MAKE) -C app/console
-	$(MAKE) -C app/uds
-	$(MAKE) -C app/testapp
+NAME = inet_suite
+BOARD ?= linux
+
+SIMBA_ROOT = ../../..
+include $(SIMBA_ROOT)/make/app.mk

@@ -53,7 +53,7 @@ static int cmd_monitor_set_period_ms_cb(int argc,
         return (-EINVAL);
     }
 
-    if (std_strtol(argv[1], &ms) != 0) {
+    if (std_strtol(argv[1], &ms) == NULL) {
         return (-EINVAL);
     }
 
@@ -75,7 +75,7 @@ static int cmd_monitor_set_print_cb(int argc,
         goto err_inval;
     }
 
-    if (std_strtol(argv[1], &print) != 0) {
+    if (std_strtol(argv[1], &print) == NULL) {
         goto err_inval;
     }
 
