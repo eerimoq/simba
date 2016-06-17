@@ -7,11 +7,13 @@ using the SLIP framing protocol.
 Setup
 =====
 
-     Linux PC                              Board
+.. code:: text
 
-+-----------------+    SLIP/UART    +-----------------+
-| ip: 169.254.1.1 o-----------------o ip: 169.254.1.2 |
-+-----------------+                 +-----------------+
+        Linux PC                              Board
+
+   +-----------------+    SLIP/UART    +-----------------+
+   | ip: 169.254.1.1 o-----------------o ip: 169.254.1.2 |
+   +-----------------+                 +-----------------+
 
 Configure the SLIP interface ``sl0`` on the Linux PC and ping the board.
 

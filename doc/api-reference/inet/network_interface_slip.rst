@@ -13,6 +13,8 @@ It is documented in RFC 1055.
 
 Source code: :github-blob:`src/inet/inet/network_interface_slip.h`
 
+Example code: :github-blob:`examples/inet/slip/main.c`
+
 ----------------------------------------------
 
 .. doxygenfile:: inet/network_interface_slip.h
