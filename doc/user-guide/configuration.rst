@@ -187,5 +187,5 @@ Fine-tuning even more
 ~~~~~~~~~~~~~~~~~~~~~
 
 To see the options that you can set, open
-``lwip/src/include/lwip/opt.h``. This file is fully commented and
-explains how many of the options are used.
+:github-blob:`3pp/lwip-1.4.1/src/include/lwip/opt.h`. This file is
+fully commented and explains how many of the options are used.
