@@ -89,6 +89,20 @@ def generate_docs():
     subprocess.check_call(command)
 
 
+def build_examples():
+    """Build the examples.
+
+    """
+
+    clean()
+
+    command = [
+        "make"
+    ]
+
+    subprocess.check_call(command, cwd="examples")
+
+
 def generate_arduino():
     """Generate the arduino files.
 
@@ -113,6 +127,7 @@ def main():
     print
 
     test()
+    build_examples()
 
     # Generate the documenation after the last "git clean -dfx"
     # execution.

@@ -1,6 +1,6 @@
 /**
  * @file drivers/arm/adc_port.i
- * @version 0.7.0
+ * @version 1.0.0
  *
  * @section License
  * Copyright (C) 2014-2016, Erik Moqvist
