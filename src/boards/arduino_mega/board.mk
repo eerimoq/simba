@@ -26,15 +26,17 @@ BOARD_PINOUT = "arduino-mega-pinout.png"
 BOARD_DESC = "Arduino Mega"
 
 MCU = atmega2560
+SERIAL_PORT = arduino
 
 upload:
 	@echo "Uploading $(EXE)"
-	python -u $(RUNSCRIPT) upload ./$(EXE) $(BAUDRATE) $(SIMBA_ROOT) \
-                  $(RUNLOG) $(RUN_END_PATTERN) $(RUN_END_PATTERN_SUCCESS) \
-                  $(RUNARGS)
+	avrdude -p atmega2560 -D -P /dev/$(SERIAL_PORT) -c wiring -V -b 115200 -U eeprom:w:settings.bin:r
+	avrdude -p atmega2560 -D -P /dev/$(SERIAL_PORT) -c wiring -V -b 115200 -U flash:w:$(NAME).hex
 
 run:
 	@echo "Running $(EXE)"
-	python -u $(RUNSCRIPT) run ./$(EXE) $(BAUDRATE) $(SIMBA_ROOT) \
-                  $(RUNLOG) $(RUN_END_PATTERN) $(RUN_END_PATTERN_SUCCESS) \
-                  $(RUNARGS)
+	python -u $(RUN_PY) --port $(SERIAL_PORT) \
+			    --baudrate $(BAUDRATE) \
+	 		    --pattern $(RUN_END_PATTERN)\
+			    --pattern-success $(RUN_END_PATTERN_SUCCESS) \
+			    | tee $(RUNLOG) ; test $${PIPESTATUS[0]} -eq 0

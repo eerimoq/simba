@@ -41,6 +41,7 @@ TESTS = $(addprefix tst/kernel/, binary_tree \
                                  std \
                                  sys \
                                  thrd \
+                                 time \
                                  timer)
 TESTS += $(addprefix tst/slib/, base64 crc hash hash_map json re)
 TESTS += $(addprefix tst/inet/, http_server \
@@ -51,6 +52,27 @@ TESTS += $(addprefix tst/inet/, http_server \
 ifeq ($(BOARD), linux)
     TESTS += $(addprefix tst/kernel/, heap time)
     TESTS += $(addprefix tst/slib/, fat16)
+    TESTS := $(filter-out tst/kernel/time, \
+		          $(TESTS))
+endif
+
+# Some tests does not fit in the arduino nano memory.
+ifeq ($(BOARD), arduino_nano)
+    TESTS := $(filter-out tst/kernel/fs \
+	  		  tst/kernel/shell \
+			  tst/slib/base64 \
+			  tst/slib/json \
+			  tst/inet/http_server \
+			  tst/inet/mqtt_client, \
+		          $(TESTS))
+endif
+
+# Setting is not implemented for ST.
+ifeq ($(BOARD), stm32vldiscovery)
+    TESTS := $(filter-out tst/kernel/setting \
+                          tst/slib/json \
+			  tst/inet/http_server, \
+		          $(TESTS))
 endif
 
 # List of all application to build
@@ -90,6 +112,32 @@ travis:
 
 release-test:
 	+bin/release.py
+
+test-arduino-due:
+	@echo "Arduino Due"
+	$(MAKE) BOARD=arduino_due SERIAL_PORT=simba-arduino_due clean test
+
+test-arduino-mega:
+	@echo "Arduino Mega"
+	$(MAKE) BOARD=arduino_mega SERIAL_PORT=simba-arduino_mega clean test
+
+test-arduino-nano:
+	@echo "Arduino Nano"
+	$(MAKE) BOARD=arduino_nano SERIAL_PORT=simba-arduino_nano clean test
+
+test-stm32vldiscovery:
+	@echo "STM32VLDISCOVERY"
+	$(MAKE) BOARD=stm32vldiscovery SERIAL_PORT=simba-stm32vldiscovery clean test
+
+test-esp12e:
+	@echo "ESP12-E"
+	$(MAKE) BOARD=esp12e SERIAL_PORT=simba-esp12e clean test
+
+test-all-boards: test-arduino-due
+test-all-boards: test-arduino-mega
+test-all-boards: test-arduino-nano
+test-all-boards: test-stm32vldiscovery
+test-all-boards: test-esp12e
 
 doc:
 	+bin/dbgen.py > database.json

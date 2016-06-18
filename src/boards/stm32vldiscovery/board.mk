@@ -26,14 +26,17 @@ BOARD_PINOUT = "stm32vldiscovery.jpg"
 BOARD_DESC = "STM32VLDISCOVERY"
 
 MCU = stm32f100rb
+SERIAL_PORT = arduino
+BOARD_PY = $(SIMBA_ROOT)/src/boards/stm32vldiscovery/board.py
 
 upload:
 	@echo "Uploading $(NAME).bin"
-	st-flash write $(NAME).bin 0x8000000
+	python -u $(BOARD_PY) upload --port $(SERIAL_PORT) $(NAME).bin
 
 run:
-	@echo "Running $(NAME).bin"
-	@python -u $(SIMBA_ROOT)/make/run.py \
-	     $(RUN_END_PATTERN) \
-	     $(RUN_END_PATTERN_SUCCESS) \
-	     $(BAUDRATE) | tee run.log
+	@echo "Running $(EXE)"
+	python -u $(RUN_PY) --port $(SERIAL_PORT) \
+			    --baudrate $(BAUDRATE) \
+	 		    --pattern $(RUN_END_PATTERN)\
+			    --pattern-success $(RUN_END_PATTERN_SUCCESS) \
+			    | tee $(RUNLOG) ; test $${PIPESTATUS[0]} -eq 0

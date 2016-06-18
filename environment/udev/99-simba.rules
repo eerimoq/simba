@@ -1,0 +1,7 @@
+# Rules used by the test environment.
+SUBSYSTEMS=="usb", KERNELS=="2-1.6", SYMLINK+="simba-arduino_nano"
+SUBSYSTEMS=="usb", KERNELS=="2-1.4", SYMLINK+="simba-arduino_mega"
+SUBSYSTEMS=="usb", KERNELS=="2-1.3", SYMLINK+="simba-arduino_due"
+SUBSYSTEMS=="usb", KERNELS=="2-1.1", SYMLINK+="simba-esp12e"
+SUBSYSTEMS=="usb", KERNELS=="2-1.5", SYMLINK+="simba-esp01"
+SUBSYSTEMS=="usb", KERNELS=="2-1.7", SYMLINK+="simba-stm32vldiscovery"

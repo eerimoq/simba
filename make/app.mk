@@ -103,6 +103,7 @@ UPPER_FAMILY := $(shell python -c "import sys; sys.stdout.write(sys.argv[1].uppe
 UPPER_MCU := $(shell python -c "import sys; sys.stdout.write(sys.argv[1].upper().replace('-', '_').replace('/', '_'))" $(MCU))
 UPPER_BOARD := $(shell python -c "import sys; sys.stdout.write(sys.argv[1].upper())" $(BOARD))
 
+RUN_PY = $(SIMBA_ROOT)/make/run.py
 RUNSCRIPT = $(SIMBA_ROOT)/make/$(TOOLCHAIN)/$(ARCH).py
 RUN_END_PATTERN ?= "harness report: total\(\d+\), passed\(\d+\), failed\(\d+\)"
 RUN_END_PATTERN_SUCCESS ?= "harness report: total\(\d+\), passed\(\d+\), failed\(0\)"
@@ -137,25 +138,13 @@ dump:
 
 report:
 	@echo "$(NAME):"
-	grep "exit: test_" $(RUNLOG) | python $(SIMBA_ROOT)/make/color.py || true
+	cat $(RUNLOG) | tr -cd '[:print:]\t\r\n' | grep "exit: test_" | python $(SIMBA_ROOT)/make/color.py || true
 
 test: run
 	$(MAKE) report
 
-run-debugger: all
-	python -u $(RUNSCRIPT) debugger ./$(EXE) $(BAUDRATE) $(SIMBA_ROOT) $(RUNLOG) $(RUNARGS)
-
-profile:
-	python -u $(RUNSCRIPT) profile ./$(EXE) $(BAUDRATE) $(SIMBA_ROOT) profile.log
-
-coverage:
-	python -u $(RUNSCRIPT) coverage ./$(EXE) $(BAUDRATE) $(SIMBA_ROOT) coverage.log
-
 size:
 	set -o pipefail ; $(SIZECMD) | tee size.log
-
-jenkins-coverage:
-	$(RUNSCRIPT) jenkins-coverage ./$(EXE) > coverage.xml
 
 release:
 	env NASSERT=yes NDEBUG=yes $(MAKE)

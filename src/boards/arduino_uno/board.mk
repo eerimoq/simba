@@ -29,12 +29,13 @@ MCU = atmega328p
 
 upload:
 	@echo "Uploading $(EXE)"
-	python -u $(RUNSCRIPT) upload ./$(EXE) $(BAUDRATE) $(SIMBA_ROOT) \
-                  $(RUNLOG) $(RUN_END_PATTERN) $(RUN_END_PATTERN_SUCCESS) \
-                  $(RUNARGS)
+	avrdude -p atmega328p -D -P /dev/$(SERIAL_PORT) -c arduino -V -b 57600 -U eeprom:w:settings.bin:r
+	avrdude -p atmega328p -D -P /dev/$(SERIAL_PORT) -c arduino -V -b 57600 -U flash:w:$(NAME).hex
 
 run:
 	@echo "Running $(EXE)"
-	python -u $(RUNSCRIPT) run ./$(EXE) $(BAUDRATE) $(SIMBA_ROOT) \
-                  $(RUNLOG) $(RUN_END_PATTERN) $(RUN_END_PATTERN_SUCCESS) \
-                  $(RUNARGS)
+	python -u $(RUN_PY) --port $(SERIAL_PORT) \
+			    --baudrate $(BAUDRATE) \
+	 		    --pattern $(RUN_END_PATTERN)\
+			    --pattern-success $(RUN_END_PATTERN_SUCCESS) \
+			    | tee $(RUNLOG) ; test $${PIPESTATUS[0]} -eq 0

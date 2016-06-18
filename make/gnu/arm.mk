@@ -47,8 +47,6 @@ SETTING_OFFSET = 0
 SETTING_SIZE = 4096
 SRC += settings.c
 
-RUNARGS = ${NAME}.bin
-
 build: $(NAME).bin
 $(NAME).bin: $(EXE)
 	$(CROSS_COMPILE)objcopy -O binary $< $@

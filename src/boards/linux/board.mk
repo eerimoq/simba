@@ -31,6 +31,17 @@ upload:
 
 run:
 	@echo "Running $(EXE)"
-	python -u $(RUNSCRIPT) run ./$(EXE) $(BAUDRATE) $(SIMBA_ROOT) \
-                  $(RUNLOG) $(RUN_END_PATTERN) $(RUN_END_PATTERN_SUCCESS) \
-                  $(RUNARGS)
+	./$(EXE) | tee $(RUNLOG) ; test $${PIPESTATUS[0]} -eq 0
+
+run-debugger: all
+	gdb $(EXE) --eval-command "break main" --eval-command run
+
+profile:
+	gprof $(EXE)
+
+coverage:
+	geninfo . -o coverage.info
+	genhtml coverage.info
+
+jenkins-coverage:
+	gcovr -r $(readlink -f ../../..) -x -e ".*main.c"

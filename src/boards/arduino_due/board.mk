@@ -29,14 +29,17 @@ MCU = sam3x8e
 
 RUST_TARGET = thumbv7em-none-eabi
 
+SERIAL_PORT=arduino
+BOARD_PY = $(SIMBA_ROOT)/src/boards/arduino_due/board.py
+
 upload:
-	@echo "Uploading $(EXE)"
-	python -u $(RUNSCRIPT) upload ./$(EXE) $(BAUDRATE) $(SIMBA_ROOT) \
-                  $(RUNLOG) $(RUN_END_PATTERN) $(RUN_END_PATTERN_SUCCESS) \
-                  $(RUNARGS)
+	@echo "Uploading '$(EXE)'."
+	python -u $(BOARD_PY) upload --port $(SERIAL_PORT) $(NAME).bin
 
 run:
-	@echo "Running $(EXE)"
-	python -u $(RUNSCRIPT) run ./$(EXE) $(BAUDRATE) $(SIMBA_ROOT) \
-                  $(RUNLOG) $(RUN_END_PATTERN) $(RUN_END_PATTERN_SUCCESS) \
-                  $(RUNARGS)
+	@echo "Running '$(EXE)'."
+	python -u $(RUN_PY) --port $(SERIAL_PORT) \
+			    --baudrate $(BAUDRATE) \
+	 		    --pattern $(RUN_END_PATTERN)\
+			    --pattern-success $(RUN_END_PATTERN_SUCCESS) \
+			    | tee $(RUNLOG) ; test $${PIPESTATUS[0]} -eq 0

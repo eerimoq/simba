@@ -122,9 +122,9 @@ static int test_decode(struct harness_t *harness_p)
     BTASSERT(base64_decode(buf, "\x01\x02\x03\x04", 4) == -1);
 
     BTASSERT(base64_decode(buf, "+/+/", 4) == 0);
-    BTASSERT(buf[0] == -5);
-    BTASSERT(buf[1] == -1);
-    BTASSERT(buf[2] == -65);
+    BTASSERT(buf[0] == '\xfb');
+    BTASSERT(buf[1] == '\xff');
+    BTASSERT(buf[2] == '\xbf');
 
     for (i = 0; i < membersof(encoded); i++) {
         BTASSERT(base64_decode(buf, encoded[i], strlen(encoded[i])) == 0);

@@ -28,15 +28,21 @@ BOARD_PINOUT = "esp12e-pinout.jpg"
 BOARD_DESC = "ESP-12E Development Board"
 
 MCU = esp8266
+SERIAL_PORT = arduino
 
 upload:
 	@echo "Uploading $(EXE)"
-	python -u $(RUNSCRIPT) upload ./$(EXE) $(BAUDRATE) $(SIMBA_ROOT) \
-                  $(RUNLOG) $(RUN_END_PATTERN) $(RUN_END_PATTERN_SUCCESS) \
-                  $(RUNARGS)
+	$(SIMBA_ROOT)/3pp/esptool/esptool.py \
+	    --port /dev/$(SERIAL_PORT) \
+	    --baud 460800 \
+	    write_flash \
+            0x00000 $(SIMBA_ROOT)/3pp/ESP8266_RTOS_SDK/bin/boot_v1.4.bin \
+            0x01000 $(NAME).bin
 
 run:
-	@echo "Running $(EXE)"
-	python -u $(RUNSCRIPT) run ./$(EXE) $(BAUDRATE) $(SIMBA_ROOT) \
-                  $(RUNLOG) $(RUN_END_PATTERN) $(RUN_END_PATTERN_SUCCESS) \
-                  $(RUNARGS)
+	@echo "Running '$(EXE)'."
+	python -u $(RUN_PY) --port $(SERIAL_PORT) \
+			    --baudrate $(BAUDRATE) \
+	 		    --pattern $(RUN_END_PATTERN)\
+			    --pattern-success $(RUN_END_PATTERN_SUCCESS) \
+			    | tee $(RUNLOG) ; test $${PIPESTATUS[0]} -eq 0
