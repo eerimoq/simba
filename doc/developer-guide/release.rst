@@ -37,8 +37,8 @@ Follow these steps to create a new release:
    .. code:: text
 
       make arduino
-      cp simba-arduino/simba-arduino-avr-<version>.zip ../simba-arduino/avr
-      cp simba-arduino/simba-arduino-sam-<version>.zip ../simba-arduino/sam
+      cp simba-arduino/simba-arduino-avr-*.zip ../simba-arduino/avr
+      cp simba-arduino/simba-arduino-sam-*.zip ../simba-arduino/sam
 
 6. Commit the Arduino changes in ``../simba-arduino``.
 
