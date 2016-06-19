@@ -24,6 +24,7 @@ def subcommand_upload(args):
         dev_serial = serial.Serial("/dev/" + args.port)
         dev_serial.dtr = 1
         time.sleep(0.1)
+        dev_serial.dtr = 0
         dev_serial.close()
         command = [
             "st-flash",
