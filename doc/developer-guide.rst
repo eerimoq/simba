@@ -15,3 +15,4 @@ advised to read the :doc:`user-guide` instead.
    developer-guide/porting
    developer-guide/file-tree
    developer-guide/release
+   developer-guide/testing
