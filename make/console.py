@@ -22,6 +22,7 @@ def main():
     """
 
     parser = argparse.ArgumentParser()
+    parser.add_argument("--port", default="/dev/arduino")
     parser.add_argument("--baudrate", "-b",
                         type=int,
                         required=True)
@@ -31,7 +32,7 @@ def main():
     print "Press CTRL-C to exit the console."
     print
 
-    dev_serial = serial.Serial("/dev/arduino", baudrate=args.baudrate)
+    dev_serial = serial.Serial(args.port, baudrate=args.baudrate)
 
     # Start the serial reader thread.
     serial_reader_thread = threading.Thread(target=serial_reader_main,

@@ -131,7 +131,8 @@ run: upload
 upload: all
 
 console:
-	python -u $(CONSOLESCRIPT) --baudrate $(BAUDRATE)
+	python -u $(CONSOLESCRIPT) --port $(SERIAL_PORT) \
+			           --baudrate $(BAUDRATE)
 
 dump:
 	python -u $(RUNSCRIPT) dump ./$(EXE) $(SIMBA_ROOT) $(RUNARGS)
