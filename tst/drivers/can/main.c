@@ -105,7 +105,11 @@ static void *rx_thrd(void *arg_p)
 
     while (1) {
         BTASSERT(can_read(&can1, &frame, sizeof(frame)) == sizeof(frame));
-        BTASSERT(frame.id == id, FSTR(" i = %d, frame.id = %d, id = %d\r\n"), i, frame.id, id);
+        BTASSERT(frame.id == id,
+                 FSTR(" i = %d, frame.id = %d, id = %d\r\n"),
+                 i,
+                 frame.id,
+                 id);
         i++;
 
         if (i == 10000) {
