@@ -119,7 +119,8 @@ ifeq ($(BOARD), arduino_mega)
 				    http_websocket_client \
 				    inet \
 				    mqtt_client)
-    TESTS += $(addprefix tst/drivers/, adc)
+    TESTS += $(addprefix tst/drivers/, adc \
+				       ds3231)
 endif
 
 ifeq ($(BOARD), arduino_nano)
@@ -197,35 +198,49 @@ travis:
 release-test:
 	+bin/release.py
 
+clean-arduino-due:
+	$(MAKE) BOARD=arduino_due SERIAL_PORT=simba-arduino_due clean
+
+clean-arduino-mega:
+	$(MAKE) BOARD=arduino_mega SERIAL_PORT=simba-arduino_mega clean
+
+clean-arduino-nano:
+	$(MAKE) BOARD=arduino_nano SERIAL_PORT=simba-arduino_nano clean
+
+clean-stm32vldiscovery:
+	$(MAKE) BOARD=stm32vldiscovery SERIAL_PORT=simba-stm32vldiscovery clean
+
+clean-esp12e:
+	$(MAKE) BOARD=esp12e SERIAL_PORT=simba-esp12e clean
+
 test-arduino-due:
 	@echo "Arduino Due"
-	$(MAKE) BOARD=arduino_due SERIAL_PORT=simba-arduino_due clean
 	$(MAKE) BOARD=arduino_due SERIAL_PORT=simba-arduino_due test
 
 test-arduino-mega:
 	@echo "Arduino Mega"
-	$(MAKE) BOARD=arduino_mega SERIAL_PORT=simba-arduino_mega clean
 	$(MAKE) BOARD=arduino_mega SERIAL_PORT=simba-arduino_mega test
 
 test-arduino-nano:
 	@echo "Arduino Nano"
-	$(MAKE) BOARD=arduino_nano SERIAL_PORT=simba-arduino_nano clean
 	$(MAKE) BOARD=arduino_nano SERIAL_PORT=simba-arduino_nano test
 
 test-stm32vldiscovery:
 	@echo "STM32VLDISCOVERY"
-	$(MAKE) BOARD=stm32vldiscovery SERIAL_PORT=simba-stm32vldiscovery clean
 	$(MAKE) BOARD=stm32vldiscovery SERIAL_PORT=simba-stm32vldiscovery test
 
 test-esp12e:
 	@echo "ESP12-E"
-	$(MAKE) BOARD=esp12e SERIAL_PORT=simba-esp12e clean
 	$(MAKE) BOARD=esp12e SERIAL_PORT=simba-esp12e test
 
 test-all-boards:
+	$(MAKE) clean-arduino-due
 	$(MAKE) test-arduino-due
+	$(MAKE) clean-arduino-mega
 	$(MAKE) test-arduino-mega
+	$(MAKE) clean-arduino-nano
 	$(MAKE) test-arduino-nano
+	$(MAKE) clean-stm32vldiscovery
 	$(MAKE) test-stm32vldiscovery
 #	$(MAKE) test-all-boards: test-esp12e
 
