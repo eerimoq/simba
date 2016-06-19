@@ -24,32 +24,32 @@
 #define DDR(sfr) ((sfr) + 1)
 #define PORT(sfr) ((sfr) + 2)
 
-#define ECTI_ISR(number)                                                \
+#define EXTI_ISR(number)                                                \
     ISR(INT ## number ## _vect)                                         \
     {                                                                   \
-        struct exti_driver_t *self_p = exti_device[number].self_p;        \
+        struct exti_driver_t *self_p = exti_device[number].drv_p;       \
                                                                         \
-        if (self_p != NULL) {                                            \
-            self_p->on_interrupt(self_p->arg_p);                          \
+        if (self_p != NULL) {                                           \
+            self_p->on_interrupt(self_p->arg_p);                        \
         }                                                               \
     }
 
-#if (ECTI_DEVICE_MAX >= 1)
+#if (EXTI_DEVICE_MAX >= 1)
 EXTI_ISR(0);
 #endif
-#if (ECTI_DEVICE_MAX >= 2)
+#if (EXTI_DEVICE_MAX >= 2)
 EXTI_ISR(1);
 #endif
-#if (ECTI_DEVICE_MAX >= 3)
+#if (EXTI_DEVICE_MAX >= 3)
 EXTI_ISR(2);
 #endif
-#if (ECTI_DEVICE_MAX >= 4)
+#if (EXTI_DEVICE_MAX >= 4)
 EXTI_ISR(3);
 #endif
-#if (ECTI_DEVICE_MAX >= 5)
+#if (EXTI_DEVICE_MAX >= 5)
 EXTI_ISR(4);
 #endif
-#if (ECTI_DEVICE_MAX >= 6)
+#if (EXTI_DEVICE_MAX >= 6)
 EXTI_ISR(5);
 #endif
 
@@ -68,7 +68,7 @@ static int exti_port_start(struct exti_driver_t *self_p)
     if (dev_p->id < 3) {
         EICRA |= (self_p->trigger << (2 * dev_p->id));
     } else {
-#if (ECTI_DEVICE_MAX >= 2)
+#if (EXTI_DEVICE_MAX > 2)
         EICRB |= (self_p->trigger << (2 * (dev_p->id - 4)));
 #endif
     }
