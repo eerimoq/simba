@@ -20,14 +20,14 @@
 
 #include "simba.h"
 
-static char buffer[4096];
+static char buffer[2048];
 
 static int test_alloc_free(struct harness_t *harness)
 {
     int i;
     struct heap_t heap;
     void *buffers[16];
-    size_t sizes[8] = { 16, 32, 64, 128, 256, 512, 1024, 2048 };
+    size_t sizes[8] = { 16, 32, 64, 128, 256, 512, 512, 512 };
 
     BTASSERT(heap_init(&heap, buffer, sizeof(buffer), sizes) == 0);
 
@@ -60,7 +60,7 @@ static int test_double_free(struct harness_t *harness)
 {
     struct heap_t heap;
     void *buf_p;
-    size_t sizes[8] = { 16, 32, 64, 128, 256, 512, 1024, 2048 };
+    size_t sizes[8] = { 16, 32, 64, 128, 256, 512, 512, 512 };
 
     BTASSERT(heap_init(&heap, buffer, sizeof(buffer), sizes) == 0);
 
@@ -76,7 +76,7 @@ static int test_share(struct harness_t *harness)
 {
     struct heap_t heap;
     void *buf_p;
-    size_t sizes[8] = { 16, 32, 64, 128, 256, 512, 1024, 2048 };
+    size_t sizes[8] = { 16, 32, 64, 128, 256, 512, 512, 512 };
 
     BTASSERT(heap_init(&heap, buffer, sizeof(buffer), sizes) == 0);
 
@@ -125,14 +125,14 @@ static int test_out_of_memory(struct harness_t *harness)
 {
     struct heap_t heap;
     void *buf_p;
-    size_t sizes[8] = { 16, 32, 64, 128, 256, 512, 1024, 2048 };
+    size_t sizes[8] = { 16, 32, 64, 128, 256, 512, 512, 512 };
 
     BTASSERT(heap_init(&heap, buffer, 32, sizes) == 0);
 
     buf_p = heap_alloc(&heap, 1);
     BTASSERT(buf_p != NULL);
 
-    buf_p = heap_alloc(&heap, 1);
+    buf_p = heap_alloc(&heap, 26);
     BTASSERT(buf_p == NULL);
 
     /* Big buffer. */
