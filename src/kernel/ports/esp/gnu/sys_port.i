@@ -93,11 +93,18 @@ static void sys_port_interrupt_cpu_usage_reset(void)
 {
 }
 
+static void putc_null(char c)
+{
+}
+
 /**
  * Simba runs in this FreeRTOS task.
  */
 static void main_task(void *events)
 {
+    /* Ignore all output from the SDK. */
+    os_install_putc1(putc_null);
+
     /* Call the Simba application main function. */
     main();
 
