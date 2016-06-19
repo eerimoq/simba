@@ -24,6 +24,7 @@ def main():
                                baudrate=args.baudrate,
                                timeout=1.0)
     dev_serial.dtr = 0
+    dev_serial.rts = 0
     dev = expect.Handler(dev_serial,
                          break_conditions=[])
 

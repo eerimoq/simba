@@ -142,24 +142,24 @@ class ESPROM:
     """ Perform a connection test """
     def sync(self):
         self.command(ESPROM.ESP_SYNC, '\x07\x07\x12\x20' + 32 * '\x55')
-        for i in xrange(7):
+        for _ in xrange(7):
             self.command()
 
     """ Try connecting repeatedly until successful, or giving up """
     def connect(self):
-        print 'Connecting...'
-
-        for _ in xrange(4):
+        for i in xrange(5):
             # issue reset-to-bootloader:
             # RTS = either CH_PD or nRESET (both active low = chip in reset)
             # DTR = GPIO0 (active low = boot to flasher)
+            print 'Connecting to the ESP, attempt {}/5.'.format(i+1)
+            time.sleep(0.1)
             self._port.setDTR(False)
             self._port.setRTS(True)
-            time.sleep(0.05)
+            time.sleep(0.1)
             self._port.setDTR(True)
-            self._port.setRTS(False)
-            time.sleep(0.05)
+            time.sleep(0.1)
             self._port.setDTR(False)
+            time.sleep(0.1)
 
             # worst-case latency timer should be 255ms (probably <20ms)
             self._port.timeout = 0.3
@@ -171,7 +171,7 @@ class ESPROM:
                     self._port.timeout = 5
                     return
                 except:
-                    time.sleep(0.05)
+                    time.sleep(2)
         raise FatalError('Failed to connect to ESP8266')
 
     """ Read memory address in target """

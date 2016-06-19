@@ -131,6 +131,33 @@ ifeq ($(BOARD), arduino_nano)
 				     uart)
 endif
 
+ifeq ($(BOARD), esp12e)
+    TESTS = $(addprefix tst/kernel/, binary_tree \
+                                     bits \
+                                     bus \
+                                     event \
+                                     fifo \
+                                     fs \
+                                     log \
+                                     prof \
+                                     queue \
+                                     rwlock \
+                                     sem \
+                                     shell \
+                                     std \
+                                     sys \
+                                     thrd \
+                                     timer)
+    TESTS += $(addprefix tst/slib/, base64 \
+				    crc \
+				    hash \
+				    hash_map \
+				    re)
+    TESTS += $(addprefix tst/inet/, http_websocket_client \
+				    inet \
+				    mqtt_client)
+endif
+
 ifeq ($(BOARD), stm32vldiscovery)
     TESTS = $(addprefix tst/kernel/, binary_tree \
                                      bits \
@@ -242,7 +269,8 @@ test-all-boards:
 	$(MAKE) test-arduino-nano
 	$(MAKE) clean-stm32vldiscovery
 	$(MAKE) test-stm32vldiscovery
-#	$(MAKE) test-all-boards: test-esp12e
+	$(MAKE) clean-esp12e
+	$(MAKE) test-esp12e
 
 doc:
 	+bin/dbgen.py > database.json
