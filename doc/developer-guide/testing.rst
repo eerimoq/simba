@@ -16,7 +16,7 @@ test suites on all boards.
    :doc:`../boards/stm32vldiscovery`, :doc:`../boards/esp12e` and
    :doc:`../boards/esp01`
 
-The DS3231 device (on the bread board to the left) is connected over
+The DS3231 device (on the breadboard to the left) is connected over
 i2c to the :doc:`../boards/arduino_mega`.
 
 CAN0 is connected to CAN1 on the :doc:`../boards/arduino_due`. The CAN
