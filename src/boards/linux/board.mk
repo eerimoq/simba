@@ -31,7 +31,7 @@ upload:
 
 run:
 	@echo "Running $(EXE)"
-	./$(EXE) | tee $(RUNLOG) ; test $${PIPESTATUS[0]} -eq 0
+	./$(EXE) 2>&1 | tee $(RUNLOG) ; test $${PIPESTATUS[0]} -eq 0
 
 run-debugger: all
 	gdb $(EXE) --eval-command "break main" --eval-command run
