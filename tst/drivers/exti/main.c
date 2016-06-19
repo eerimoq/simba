@@ -36,12 +36,12 @@ int test_exti(struct harness_t *harness_p)
     pin_init(&pin, &pin_d4_dev, PIN_OUTPUT);
     pin_write(&pin, 1);
     
-    exti_init(&exti,
-              &exti_device[1],
-              EXTI_TRIGGER_FALLING_EDGE,
-              isr,
-              NULL);
-    exti_start(&exti);
+    BTASSERT(exti_init(&exti,
+                       &exti_d3_dev,
+                       EXTI_TRIGGER_FALLING_EDGE,
+                       isr,
+                       NULL) == 0);
+    BTASSERT(exti_start(&exti) == 0);
 
     for (i = 0; i < 10; i++) {
         pin_write(&pin, 0);
@@ -50,8 +50,7 @@ int test_exti(struct harness_t *harness_p)
         time_sleep(10000);
     }
 
-    std_printf(FSTR("flag = %d"), (int)flag);
-
+    std_printf(FSTR("flag = %d\r\n"), (int)flag);
     BTASSERT(flag == 10);
 
     return (0);

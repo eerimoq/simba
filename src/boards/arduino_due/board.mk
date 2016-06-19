@@ -29,8 +29,9 @@ MCU = sam3x8e
 
 RUST_TARGET = thumbv7em-none-eabi
 
-SERIAL_PORT=arduino
+SERIAL_PORT ?= arduino
 BOARD_PY = $(SIMBA_ROOT)/src/boards/arduino_due/board.py
+TIMEOUT ?= 10
 
 upload:
 	@echo "Uploading '$(EXE)'."
@@ -39,6 +40,7 @@ upload:
 run:
 	@echo "Running '$(EXE)'."
 	python -u $(RUN_PY) --port $(SERIAL_PORT) \
+			    --timeout $(TIMEOUT) \
 			    --baudrate $(BAUDRATE) \
 	 		    --pattern $(RUN_END_PATTERN)\
 			    --pattern-success $(RUN_END_PATTERN_SUCCESS) \

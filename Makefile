@@ -24,63 +24,141 @@ SIMBA_VERSION ?= $(shell cat VERSION.txt)
 
 BOARD ?= linux
 
-# List of all tests to build and run
-TESTS = $(addprefix tst/kernel/, binary_tree \
-                                 bits \
-                                 bus \
-                                 event \
-                                 fifo \
-                                 fs \
-                                 log \
-                                 prof \
-                                 queue \
-                                 rwlock \
-                                 sem \
-                                 setting \
-                                 shell \
-                                 std \
-                                 sys \
-                                 thrd \
-                                 time \
-                                 timer)
-TESTS += $(addprefix tst/slib/, base64 crc hash hash_map json re)
-TESTS += $(addprefix tst/inet/, http_server \
-				http_websocket_client \
-				inet \
-				mqtt_client)
-
 ifeq ($(BOARD), linux)
-    TESTS += $(addprefix tst/kernel/, heap time)
-    TESTS += $(addprefix tst/slib/, fat16)
-    TESTS := $(filter-out tst/kernel/time, \
-		          $(TESTS))
+    TESTS = $(addprefix tst/kernel/, binary_tree \
+                                     bits \
+                                     bus \
+                                     event \
+                                     fifo \
+                                     fs \
+				     heap \
+                                     log \
+                                     prof \
+                                     queue \
+                                     rwlock \
+                                     sem \
+                                     setting \
+                                     shell \
+                                     std \
+                                     sys \
+                                     thrd \
+                                     timer)
+    TESTS += $(addprefix tst/slib/, base64 \
+				    crc \
+				    fat16 \
+				    hash \
+				    hash_map \
+				    json \
+				    re)
+    TESTS += $(addprefix tst/inet/, http_server \
+				    http_websocket_client \
+				    inet \
+				    mqtt_client)
 endif
 
-# Some tests does not fit in the arduino nano memory.
+ifeq ($(BOARD), arduino_due)
+    TESTS = $(addprefix tst/kernel/, binary_tree \
+                                     bits \
+                                     bus \
+                                     event \
+                                     fifo \
+                                     fs \
+				     heap \
+                                     log \
+                                     prof \
+                                     queue \
+                                     rwlock \
+                                     sem \
+                                     setting \
+                                     shell \
+                                     std \
+                                     sys \
+                                     thrd \
+                                     timer)
+    TESTS += $(addprefix tst/slib/, base64 \
+				    crc \
+				    hash \
+				    hash_map \
+				    json \
+				    re)
+    TESTS += $(addprefix tst/inet/, http_server \
+				    http_websocket_client \
+				    inet \
+				    mqtt_client)
+    TESTS += $(addprefix tst/drivers/, chipid \
+				       can \
+				       flash)
+endif
+
+ifeq ($(BOARD), arduino_mega)
+    TESTS = $(addprefix tst/kernel/, binary_tree \
+                                     bits \
+                                     bus \
+                                     event \
+                                     fifo \
+                                     fs \
+				     heap \
+                                     log \
+                                     prof \
+                                     queue \
+                                     rwlock \
+                                     sem \
+                                     setting \
+                                     shell \
+                                     std \
+                                     sys \
+                                     thrd \
+                                     timer)
+    TESTS += $(addprefix tst/slib/, base64 \
+				    crc \
+				    hash \
+				    hash_map \
+				    json \
+				    re)
+    TESTS += $(addprefix tst/inet/, http_server \
+				    http_websocket_client \
+				    inet \
+				    mqtt_client)
+    TESTS += $(addprefix tst/drivers/, adc)
+endif
+
 ifeq ($(BOARD), arduino_nano)
-    TESTS := $(filter-out tst/kernel/fs \
-	  		  tst/kernel/shell \
-			  tst/slib/base64 \
-			  tst/slib/json \
-			  tst/inet/http_server \
-			  tst/inet/mqtt_client, \
-		          $(TESTS))
+    TESTS = $(addprefix tst/drivers/, exti \
+				      pin)
+    APPS = $(addprefix tst/drivers/, ds18b20 \
+				     owi \
+				     uart)
 endif
 
-# Setting is not implemented for ST.
 ifeq ($(BOARD), stm32vldiscovery)
-    TESTS := $(filter-out tst/kernel/setting \
-                          tst/slib/json \
-			  tst/inet/http_server, \
-		          $(TESTS))
+    TESTS = $(addprefix tst/kernel/, binary_tree \
+                                     bits \
+                                     bus \
+                                     event \
+                                     fifo \
+                                     fs \
+                                     log \
+                                     prof \
+                                     queue \
+                                     rwlock \
+                                     sem \
+                                     shell \
+                                     std \
+                                     sys \
+                                     thrd \
+                                     timer)
+    TESTS += $(addprefix tst/slib/, base64 \
+				    crc \
+				    hash \
+				    hash_map \
+				    re)
+    TESTS += $(addprefix tst/inet/, http_websocket_client \
+				    inet \
+				    mqtt_client)
 endif
 
 # List of all application to build
-APPS = $(TESTS)
-
-ifeq ($(ARCH),avr)
-    APPS += $(addprefix tst/drivers/,adc cantp ds18b20 exti mcp2515 owi pin uart)
-endif
+APPS += $(TESTS)
 
 all: $(APPS:%=%.all)
 
@@ -88,12 +166,18 @@ release: $(APPS:%=%.release)
 
 clean: $(APPS:%=%.clean)
 
-run: $(TESTS:%=%.run)
+run: all
+	for test in $(TESTS) ; do \
+	    $(MAKE) -C $$test run || exit 1 ; \
+	done
 
 size: $(TESTS:%=%.size)
 
 report:
-	for t in $(TESTS) ; do $(MAKE) -C $(basename $$t) report ; echo ; done
+	for test in $(TESTS) ; do \
+	    $(MAKE) -C $(basename $$test) report ; \
+	    echo ; \
+	done
 
 test: run
 	$(MAKE) report
@@ -115,29 +199,35 @@ release-test:
 
 test-arduino-due:
 	@echo "Arduino Due"
-	$(MAKE) BOARD=arduino_due SERIAL_PORT=simba-arduino_due clean test
+	$(MAKE) BOARD=arduino_due SERIAL_PORT=simba-arduino_due clean
+	$(MAKE) BOARD=arduino_due SERIAL_PORT=simba-arduino_due test
 
 test-arduino-mega:
 	@echo "Arduino Mega"
-	$(MAKE) BOARD=arduino_mega SERIAL_PORT=simba-arduino_mega clean test
+	$(MAKE) BOARD=arduino_mega SERIAL_PORT=simba-arduino_mega clean
+	$(MAKE) BOARD=arduino_mega SERIAL_PORT=simba-arduino_mega test
 
 test-arduino-nano:
 	@echo "Arduino Nano"
-	$(MAKE) BOARD=arduino_nano SERIAL_PORT=simba-arduino_nano clean test
+	$(MAKE) BOARD=arduino_nano SERIAL_PORT=simba-arduino_nano clean
+	$(MAKE) BOARD=arduino_nano SERIAL_PORT=simba-arduino_nano test
 
 test-stm32vldiscovery:
 	@echo "STM32VLDISCOVERY"
-	$(MAKE) BOARD=stm32vldiscovery SERIAL_PORT=simba-stm32vldiscovery clean test
+	$(MAKE) BOARD=stm32vldiscovery SERIAL_PORT=simba-stm32vldiscovery clean
+	$(MAKE) BOARD=stm32vldiscovery SERIAL_PORT=simba-stm32vldiscovery test
 
 test-esp12e:
 	@echo "ESP12-E"
-	$(MAKE) BOARD=esp12e SERIAL_PORT=simba-esp12e clean test
+	$(MAKE) BOARD=esp12e SERIAL_PORT=simba-esp12e clean
+	$(MAKE) BOARD=esp12e SERIAL_PORT=simba-esp12e test
 
-test-all-boards: test-arduino-due
-test-all-boards: test-arduino-mega
-test-all-boards: test-arduino-nano
-test-all-boards: test-stm32vldiscovery
-test-all-boards: test-esp12e
+test-all-boards:
+	$(MAKE) test-arduino-due
+	$(MAKE) test-arduino-mega
+	$(MAKE) test-arduino-nano
+	$(MAKE) test-stm32vldiscovery
+#	$(MAKE) test-all-boards: test-esp12e
 
 doc:
 	+bin/dbgen.py > database.json
@@ -158,9 +248,6 @@ $(APPS:%=%.clean):
 
 $(APPS:%=%.size):
 	$(MAKE) -C $(basename $@) size
-
-$(TESTS:%=%.run):
-	$(MAKE) -C $(basename $@) run
 
 $(TESTS:%=%.report):
 	$(MAKE) -C $(basename $@) report

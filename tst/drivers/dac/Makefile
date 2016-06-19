@@ -20,6 +20,7 @@
 
 NAME = dac_suite
 BOARD ?= linux
+TIMEOUT=60
 
 SIMBA_ROOT = ../../..
 include $(SIMBA_ROOT)/make/app.mk

@@ -15,19 +15,22 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--port", default="arduino")
     parser.add_argument("--baudrate", type=int, default=38400)
+    parser.add_argument("--timeout", type=int, default=10)
     parser.add_argument("--pattern")
     parser.add_argument("--pattern-success")
     args = parser.parse_args()
 
     dev_serial = serial.Serial("/dev/" + args.port,
                                baudrate=args.baudrate,
-                               timeout=10)
+                               timeout=1.0)
     dev_serial.dtr = 0
-    dev = expect.Handler(dev_serial)
+    dev = expect.Handler(dev_serial,
+                         break_conditions=[])
 
     status = 0
 
     print
+    print "INFO: TIMEOUT = {}".format(args.timeout)
     print "INFO: RUN_END_PATTERN = '{}'".format(args.pattern)
     print "INFO: RUN_END_PATTERN_SUCCESS = '{}'".format(args.pattern_success)
 
@@ -36,7 +39,7 @@ def main():
         print
         print "INFO: Application output begin."
         print
-        report = dev.expect(args.pattern, timeout=10)
+        report = dev.expect(args.pattern, timeout=args.timeout)
         print
         print
         print "INFO: Application output end."

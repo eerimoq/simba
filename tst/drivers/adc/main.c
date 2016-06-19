@@ -42,13 +42,13 @@ static int test_convert(struct harness_t *harness_p)
     int i;
     uint16_t samples[16];
 
-    memset(samples, 0xffff, sizeof(samples));
+    memset(samples, 0, sizeof(samples));
 
     BTASSERT(adc_convert(&adc, samples, membersof(samples)) == 0);
 
     for (i = 0; i < membersof(samples); i++) {
         std_printf(FSTR("[%d]: %d\r\n"), i, samples[i]);
-        BTASSERT(samples[i] != 0xffff);
+        BTASSERT(samples[i] > 500);
     }
 
     return (0);

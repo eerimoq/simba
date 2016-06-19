@@ -20,8 +20,6 @@
 
 NAME = exti_suite
 BOARD ?= linux
-SLIB_SRC = harness.c
-DRIVERS_SRC = uart.c exti.c pin.c
 
 SIMBA_ROOT = ../../..
 include $(SIMBA_ROOT)/make/app.mk

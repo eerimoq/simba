@@ -49,7 +49,7 @@ int test_get_temp(struct harness_t *harness_p)
                ds18b20_get_temperature_str(&ds, outdoors_id, buf));
 
     strcpy(buf, "drivers/ds18b20/list");
-    fs_call(buf, NULL, sys_get_stdout());
+    fs_call(buf, NULL, sys_get_stdout(), NULL);
 
     return (0);
 }
