@@ -18,7 +18,7 @@
  * This file is part of the Simba project.
  */
 
-#define THRD_IDLE_STACK_MAX    256
+#define THRD_IDLE_STACK_MAX    384
 #define THRD_MONITOR_STACK_MAX 512
 
 static struct thrd_t main_thrd __attribute__ ((section (".main_stack")));
