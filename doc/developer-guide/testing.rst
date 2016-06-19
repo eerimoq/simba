@@ -16,7 +16,7 @@ test suites on all boards.
    :doc:`../boards/stm32vldiscovery`, :doc:`../boards/esp12e` and
    :doc:`../boards/esp01`
 
-A short description of the hardware setup:
+A short description of the setup:
 
 - The DS3231 device (on the breadboard to the left) is connected over
   i2c to the :doc:`../boards/arduino_mega`.
