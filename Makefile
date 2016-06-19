@@ -42,6 +42,7 @@ ifeq ($(BOARD), linux)
                                      std \
                                      sys \
                                      thrd \
+                                     time \
                                      timer)
     TESTS += $(addprefix tst/slib/, base64 \
 				    crc \
