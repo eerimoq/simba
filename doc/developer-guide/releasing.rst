@@ -1,5 +1,5 @@
-Release
-=======
+Releasing
+=========
 
 Follow these steps to create a new release:
 
