@@ -1,5 +1,8 @@
 #!/usr/bin/env python
 
+from __future__ import print_function
+
+import sys
 import serial
 import subprocess
 import argparse
@@ -22,22 +25,27 @@ def subcommand_upload(args):
                                    "bin",
                                    "boot_v1.4.bin")
 
-    # Set GPIO0 to low to boot into flashing mode, then reset the
-    # board.
-    dev_serial = serial.Serial(args.port)
-    dev_serial.rts = 1
-    dev_serial.dtr = 0
-    time.sleep(0.2)
-    dev_serial.dtr = 1
-    time.sleep(3)
-    subprocess.check_call([
-	esptool_path,
-        "--port", args.port,
-        "--baud", "460800",
-        "write_flash",
-        "0x00000", bootloader_path,
-        "0x01000", args.binary
-    ])
+    attempt = 1
+    attempts_max = 5
+
+    while attempt < attempts_max:
+        print("Attempt {}/{}.".format(attempt, attempts_max))
+
+        try:
+            subprocess.check_call([
+                "python", "-u", esptool_path,
+                "--port", args.port,
+                "--baud", "460800",
+                "write_flash",
+                "0x00000", bootloader_path,
+                "0x01000", args.binary
+            ])
+
+            break
+        except:
+            attempt += 1
+    else:
+        sys.exit(1)
 
 
 def main():

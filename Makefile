@@ -125,11 +125,11 @@ ifeq ($(BOARD), arduino_mega)
 endif
 
 ifeq ($(BOARD), arduino_nano)
-    TESTS = $(addprefix tst/drivers/, exti \
+    TESTS = $(addprefix tst/drivers/, ds18b20 \
+				      exti \
+				      owi \
 				      pin)
-    APPS = $(addprefix tst/drivers/, ds18b20 \
-				     owi \
-				     uart)
+    APPS = $(addprefix tst/drivers/, uart)
 endif
 
 ifeq ($(BOARD), esp12e)

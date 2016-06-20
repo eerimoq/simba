@@ -29,27 +29,18 @@ int test_get_temp(struct harness_t *harness_p)
     struct ds18b20_driver_t ds;
     struct owi_device_t devices[4];
     char buf[24];
-    uint8_t bedroom_id[8] = BEDROOM_ID;
-    uint8_t outdoors_id[8] = OUTDOORS_ID;
 
     BTASSERT(owi_init(&owi, &pin_d7_dev, devices, membersof(devices)) == 0);
     BTASSERT(ds18b20_init(&ds, &owi) == 0);
 
     time_sleep(50000);
 
-    BTASSERT(owi_search(&owi) == 3);
-
-    /* Create a temperature samle in all sensors. */
-    BTASSERT(ds18b20_convert(&ds) == 0);
-
-    std_printf(FSTR("bedroom temperature: %s C"),
-               ds18b20_get_temperature_str(&ds, bedroom_id, buf));
-
-    std_printf(FSTR("outdoors temperature: %s C"),
-               ds18b20_get_temperature_str(&ds, outdoors_id, buf));
-
     strcpy(buf, "drivers/ds18b20/list");
-    fs_call(buf, NULL, sys_get_stdout(), NULL);
+    BTASSERT(fs_call(buf, NULL, sys_get_stdout(), NULL) == 0);
+
+    time_sleep(50000);
+
+    BTASSERT(owi_search(&owi) == 2);
 
     return (0);
 }
@@ -64,6 +55,7 @@ int main()
 
     sys_start();
     uart_module_init();
+    ds18b20_module_init();
 
     harness_init(&harness);
     harness_run(&harness, harness_testcases);
