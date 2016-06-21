@@ -61,17 +61,35 @@ struct stm32_usart_t {
 
 struct stm32_rcc_t {
     uint32_t CR;
+    uint32_t PLLCFGR;
     uint32_t CFGR;
     uint32_t CIR;
-    uint32_t APB2RSTR;
+    uint32_t AHB1RSTR;
+    uint32_t AHB2RSTR;
+    uint32_t AHB3RSTR;
+    uint32_t RESERVED0;
     uint32_t APB1RSTR;
-    uint32_t AHBENR;
-    uint32_t APB2ENR;
+    uint32_t APB2RSTR;
+    uint32_t RESERVED1[2];
+    uint32_t AHB1ENR;
+    uint32_t AHB2ENR;
+    uint32_t AHB3ENR;
+    uint32_t RESERVED2;
     uint32_t APB1ENR;
+    uint32_t APB2ENR;
+    uint32_t RESERVED3[2];
+    uint32_t AHB1LPENR;
+    uint32_t AHB2LPENR;
+    uint32_t AHB3LPENR;
+    uint32_t RESERVED4;
+    uint32_t APB1LPENR;
+    uint32_t APB2LPENR;
+    uint32_t RESERVED5[2];
     uint32_t BDCR;
     uint32_t CSR;
-    uint32_t RESERVED0;
-    uint32_t CFGR2;
+    uint32_t RESERVED6[2];
+    uint32_t SSCGR;
+    uint32_t PLLI2SCFGR;
 };
 
 /* Clock control register. */
@@ -105,23 +123,25 @@ struct stm32_pwr_t {
 };
 
 struct stm32_gpio_t {
-    uint32_t CRL;
-    uint32_t CRH;
+    uint32_t MODER;
+    uint32_t OTYPER;
+    uint32_t OSPEEDER;
+    uint32_t PUPDR;
     uint32_t IDR;
     uint32_t ODR;
     uint32_t BSRR;
-    uint32_t BRR;
     uint32_t LCKR;
+    uint32_t AFR[2];
 };
 
 /* Base addresses of peripherals. */
 #define STM32_PWR               ((volatile struct stm32_pwr_t *)  0x40007000ul)
-#define STM32_GPIOA             ((volatile struct stm32_gpio_t *) 0x40010800ul)
-#define STM32_GPIOB             ((volatile struct stm32_gpio_t *) 0x40010c00ul)
-#define STM32_GPIOC             ((volatile struct stm32_gpio_t *) 0x40011000ul)
-#define STM32_GPIOD             ((volatile struct stm32_gpio_t *) 0x40011400ul)
-#define STM32_USART1            ((volatile struct stm32_usart_t *)0x40013800ul)
-#define STM32_RCC               ((volatile struct stm32_rcc_t *)  0x40021000ul)
+#define STM32_GPIOA             ((volatile struct stm32_gpio_t *) 0x40020000ul)
+#define STM32_GPIOB             ((volatile struct stm32_gpio_t *) 0x40020400ul)
+#define STM32_GPIOC             ((volatile struct stm32_gpio_t *) 0x40020800ul)
+#define STM32_GPIOD             ((volatile struct stm32_gpio_t *) 0x40020c00ul)
+#define STM32_USART1            ((volatile struct stm32_usart_t *)0x40011000ul)
+#define STM32_RCC               ((volatile struct stm32_rcc_t *)  0x40023800ul)
 
 /* Interrupt service routine. */
 #define ISR(vector)                             \

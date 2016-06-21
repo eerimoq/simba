@@ -81,6 +81,12 @@
 #    include "drivers/flash.h"
 #endif
 
+#if defined(FAMILY_STM32F2)
+#    include "drivers/pin.h"
+#    include "drivers/uart.h"
+#    include "drivers/flash.h"
+#endif
+
 #if defined(FAMILY_STM32F3)
 #    include "drivers/pin.h"
 #    include "drivers/uart.h"
