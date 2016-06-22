@@ -26,6 +26,8 @@
 struct uart_device_t {
     struct uart_driver_t *drv_p;
     volatile struct stm32_usart_t *regs_p;
+    struct pin_device_t *tx_pin_dev_p;
+    struct pin_device_t *rx_pin_dev_p;
 };
 
 struct uart_driver_t {

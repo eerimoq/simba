@@ -23,7 +23,7 @@ SRC += $(SIMBA_ROOT)/src/mcus/stm32f205rg/mcu.c \
        $(SIMBA_ROOT)/src/mcus/stm32f205rg/stm32.c
 
 MCPU = cortex-m3
-F_CPU = 12000000
+F_CPU = 120000000
 
 ARCH = arm
 FAMILY = stm32f2

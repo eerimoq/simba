@@ -96,26 +96,46 @@ static int uart_port_module_init()
 
 static int uart_port_start(struct uart_driver_t *self_p)
 {
-    /* volatile struct stm32_usart_t *regs_p; */
+    volatile struct stm32_usart_t *regs_p;
+    volatile struct stm32_gpio_t *pin_regs_p;
     struct uart_device_t *dev_p = self_p->dev_p;
 
-    /* regs_p = dev_p->regs_p; */
+    regs_p = dev_p->regs_p;
 
-    /* /\* Configure the TX and RX pins. *\/ */
-    /* STM32_GPIOA->CRH = bits_insert_32(STM32_GPIOA->CRH, 4, 8, 0x8b); */
+    /* Configure the TX pin. */
+    pin_regs_p = dev_p->tx_pin_dev_p->regs_p;
+    pin_regs_p->MODER = bits_insert_32(pin_regs_p->MODER,
+                                       2 * dev_p->tx_pin_dev_p->bit,
+                                       2,
+                                       0x2);
+    pin_regs_p->AFR[1] = bits_insert_32(pin_regs_p->AFR[1],
+                                        4 * (dev_p->tx_pin_dev_p->bit - 8),
+                                        4,
+                                        0x7);
+    
+    /* Configure the RX pin. */
+    pin_regs_p = dev_p->rx_pin_dev_p->regs_p;
+    pin_regs_p->MODER = bits_insert_32(pin_regs_p->MODER,
+                                       2 * dev_p->rx_pin_dev_p->bit,
+                                       2,
+                                       0x2);
+    pin_regs_p->AFR[1] = bits_insert_32(pin_regs_p->AFR[1],
+                                        4 * (dev_p->rx_pin_dev_p->bit - 8),
+                                        4,
+                                        0x7);
 
-    /* regs_p->CR2 = 0; */
-    /* regs_p->CR3 = 0; */
-    /* regs_p->BRR = ((F_CPU / 16 / self_p->baudrate) << 4); */
-    /* regs_p->SR = 0; */
-    /* regs_p->CR1 = (STM32_USART_CR1_UE */
-    /*                | STM32_USART_CR1_TCIE */
-    /*                | STM32_USART_CR1_RXNEIE */
-    /*                | STM32_USART_CR1_TE */
-    /*                | STM32_USART_CR1_RE); */
+    regs_p->CR2 = 0;
+    regs_p->CR3 = 0;
+    regs_p->BRR = ((F_CPU / 32 / self_p->baudrate) << 4);
+    regs_p->SR = 0;
+    regs_p->CR1 = (STM32_USART_CR1_UE
+                   | STM32_USART_CR1_TCIE
+                   | STM32_USART_CR1_RXNEIE
+                   | STM32_USART_CR1_TE
+                   | STM32_USART_CR1_RE);
 
-    /* /\* nvic *\/ */
-    /* nvic_enable_interrupt(37); */
+    /* nvic */
+    nvic_enable_interrupt(37);
 
     dev_p->drv_p = self_p;
 

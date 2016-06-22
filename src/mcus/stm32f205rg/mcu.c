@@ -84,7 +84,9 @@ struct pin_device_t pin_device[PIN_DEVICE_MAX] = {
 struct uart_device_t uart_device[UART_DEVICE_MAX] = {
     {
         .drv_p = NULL,
-        .regs_p = STM32_USART1
+        .regs_p = STM32_USART1,
+        .tx_pin_dev_p = &pin_device[9],
+        .rx_pin_dev_p = &pin_device[10]
     }
 };
 

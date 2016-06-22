@@ -220,7 +220,9 @@ void isr_reset(void)
     uint32_t *src_p, *dst_p;
     uint32_t tbloff;
 
-    clock_init();
+    if (0) {
+        clock_init();
+    }
 
     /* Set the vector table offset. */
     tbloff = ((uint32_t)&__fixed_start__ >> 7);
