@@ -35,8 +35,7 @@ To enter DFU Mode:
 
 4. Release the SETUP button.
 
-5. Upload the software, ``make upload``.
-
+Upload the software, ``make BOARD=photon upload``.
 
 Wifi driver
 ^^^^^^^^^^^
