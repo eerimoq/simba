@@ -1,4 +1,4 @@
-ST STM32F205FG ARM Cortex-M3
+ST STM32F205RG ARM Cortex-M3
 ==========
 
 Homepage
