@@ -6,7 +6,7 @@ SEARCH_DIR(.)
 MEMORY
 {
         rom (rx)    : ORIGIN = 0x08020000, LENGTH = 0x00020000 /* Flash, 128K */
-        ram (rwx)   : ORIGIN = 0x20000000, LENGTH = 0x00002000 /* sram, 8K */
+        ram (rwx)   : ORIGIN = 0x20000000, LENGTH = 0x00020000 /* sram, 128K */
 }
 
 INCLUDE "script.common.ld"

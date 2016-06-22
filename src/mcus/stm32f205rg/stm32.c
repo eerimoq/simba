@@ -20,15 +20,6 @@
 
 #include "simba.h"
 
-/* #define ISR_WRAPPER(vector)                                             \ */
-/*     static void isr_ ## vector ## _wrapper(void)                        \ */
-/*     {                                                                   \ */
-/*         uint32_t start;                                                 \ */
-/*         start = SAM_TC0->CHANNEL[0].CV;                                 \ */
-/*         isr_ ## vector();                                               \ */
-/*             sys.interrupt.time += (SAM_TC0->CHANNEL[0].CV - start);     \ */
-/*     } */
-
 #define ISR_WRAPPER(vector)                             \
     static void isr_ ## vector ## _wrapper(void)        \
     {                                                   \
@@ -36,6 +27,7 @@
     }
 
 /* Defined in the linker script. */
+extern uint32_t __fixed_start__;
 extern uint32_t __main_stack_end;
 extern uint32_t __text_start__;
 extern uint32_t __text_end__;
@@ -226,12 +218,25 @@ static void clock_init(void)
 void isr_reset(void)
 {
     uint32_t *src_p, *dst_p;
+    uint32_t tbloff;
 
     clock_init();
 
+    /* Set the vector table offset. */
+    tbloff = ((uint32_t)&__fixed_start__ >> 7);
+    ARM_SCB->VTOR = SCB_VTOR_TBLOFF(tbloff);
+
+    STM32_RCC->APB1RSTR = 0x0;
+    STM32_RCC->APB1ENR = 0xffffffff;
+
     STM32_RCC->APB2RSTR = 0x0;
     STM32_RCC->APB2ENR = 0xffffffff;
-    STM32_RCC->APB1ENR = 0xffffffff;
+
+    STM32_RCC->AHB1RSTR = 0x0;
+    STM32_RCC->AHB2RSTR = 0x0;
+
+    STM32_RCC->AHB1ENR = 0xffffffff;
+    STM32_RCC->AHB2ENR = 0xffffffff;
 
     /* Initialize the relocate segment */
     src_p = &__text_end__;
@@ -254,14 +259,12 @@ void isr_reset(void)
     /* Infinite loop */
     while (1);
 }
-
 /* Vector table with all interrupt service routines and the start
    stack pointer. */
 __attribute__ ((section(".vectors"), used))
 void (*vector_table[])(void) = {
     /* Start stack address. */
     (void (*)(void))(&__main_stack_end),
-
     /* System exceptions (1-15). */
     isr_reset,
     isr_nmi,

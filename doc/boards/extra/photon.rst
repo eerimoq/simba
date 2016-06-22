@@ -8,7 +8,7 @@ bootloader that accepts firmware binary files via the dfu-utility.
 Prerequisities
 ^^^^^^^^^^^^^^
 
-Install the dfu utility.
+Install the dfu-utility.
 
 .. code:: text
 
@@ -35,10 +35,8 @@ To enter DFU Mode:
 
 4. Release the SETUP button.
 
-5. Upload the software:
-   
-      ``sudo dfu-util -d 2b04:d006-D -a 0 -s 0x08020000:leave -D
-      firmware.bin``
+5. Upload the software, ``make upload``.
+
 
 Wifi driver
 ^^^^^^^^^^^

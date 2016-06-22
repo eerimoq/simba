@@ -25,6 +25,10 @@ BOARD_HOMEPAGE = "https://docs.particle.io/datasheets/photon-datasheet/"
 BOARD_PINOUT = "particle-io-photon.png"
 BOARD_DESC = "Particle IO Photon"
 
+LIBPATH += "$(SIMBA_ROOT)/src/boards/$(BOARD)"
+LINKER_SCRIPT_FILE ?= script.ld
+LINKER_SCRIPT ?= $(SIMBA_ROOT)/src/boards/$(BOARD)/$(LINKER_SCRIPT_FILE)
+
 MCU = stm32f205rg
 SERIAL_PORT = arduino
 BOARD_PY = $(SIMBA_ROOT)/src/boards/photon/board.py

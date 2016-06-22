@@ -134,6 +134,13 @@ struct stm32_gpio_t {
     uint32_t AFR[2];
 };
 
+struct stm32_iwdg_t {
+    uint32_t KR;
+    uint32_t PR;
+    uint32_t RLR;
+    uint32_t SR;
+};
+
 /* Base addresses of peripherals. */
 #define STM32_PWR               ((volatile struct stm32_pwr_t *)  0x40007000ul)
 #define STM32_GPIOA             ((volatile struct stm32_gpio_t *) 0x40020000ul)
@@ -141,6 +148,7 @@ struct stm32_gpio_t {
 #define STM32_GPIOC             ((volatile struct stm32_gpio_t *) 0x40020800ul)
 #define STM32_GPIOD             ((volatile struct stm32_gpio_t *) 0x40020c00ul)
 #define STM32_USART1            ((volatile struct stm32_usart_t *)0x40011000ul)
+#define STM32_IWDG              ((volatile struct stm32_iwdg_t *) 0x40003000ul)
 #define STM32_RCC               ((volatile struct stm32_rcc_t *)  0x40023800ul)
 
 /* Interrupt service routine. */

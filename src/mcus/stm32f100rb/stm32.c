@@ -20,15 +20,6 @@
 
 #include "simba.h"
 
-/* #define ISR_WRAPPER(vector)                                             \ */
-/*     static void isr_ ## vector ## _wrapper(void)                        \ */
-/*     {                                                                   \ */
-/*         uint32_t start;                                                 \ */
-/*         start = SAM_TC0->CHANNEL[0].CV;                                 \ */
-/*         isr_ ## vector();                                               \ */
-/*             sys.interrupt.time += (SAM_TC0->CHANNEL[0].CV - start);     \ */
-/*     } */
-
 #define ISR_WRAPPER(vector)                             \
     static void isr_ ## vector ## _wrapper(void)        \
     {                                                   \

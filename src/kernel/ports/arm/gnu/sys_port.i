@@ -20,6 +20,9 @@
 
 ISR(sys_tick)
 {
+    /* Kick the watchdog. */
+    STM32_IWDG->KR = 0xaaaa;
+
     sys_tick();
 }
 

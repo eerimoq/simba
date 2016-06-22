@@ -53,17 +53,28 @@ __ram_begin = ORIGIN(ram);
 __ram_end = ORIGIN(ram) + LENGTH(ram);
 __ram_size = LENGTH(ram);
 
+__module_info_begin = ORIGIN(rom) + 0x184;
+
 /* The stack used by the main thread. */
-__main_stack_end = ORIGIN(ram) + LENGTH(ram) - 8;
+__main_stack_end = ORIGIN(ram) + LENGTH(ram);
 
 /* Section Definitions */
 SECTIONS
 {
-    .text :
+    .text.vectors :
     {
         . = ALIGN(4);
         __fixed_start__ = .;
         KEEP(*(.vectors .vectors.*))
+    } > rom
+
+    .text.module_info __module_info_begin :
+    {
+        KEEP(*(.module_info .module_info.*))
+    } > rom
+
+    .text :
+    {
         *(.text .text.* .gnu.linkonce.t.*)
         *(.glue_7t) *(.glue_7)
         *(.rodata .rodata* .gnu.linkonce.r.*)

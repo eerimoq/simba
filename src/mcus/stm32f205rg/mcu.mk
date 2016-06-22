@@ -32,8 +32,4 @@ MCU_HOMEPAGE = ""
 MCU_NAME = "ST STM32F205RG ARM Cortex-M3"
 MCU_DESC = "ST STM32F205RG ARM Cortex-M3 @ 120MHz, 128k sram, 1M flash"
 
-LIBPATH += "$(SIMBA_ROOT)/src/mcus/$(MCU)"
-LINKER_SCRIPT_FILE ?= script.ld
-LINKER_SCRIPT ?= $(SIMBA_ROOT)/src/mcus/$(MCU)/$(LINKER_SCRIPT_FILE)
-
 include $(SIMBA_ROOT)/make/$(TOOLCHAIN)/arm.mk
