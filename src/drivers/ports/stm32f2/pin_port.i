@@ -96,9 +96,17 @@ static int pin_port_toggle(struct pin_driver_t *self_p)
 static int pin_port_set_mode(struct pin_driver_t *self_p, int mode)
 {
     if (mode == PIN_OUTPUT) {
-        self_p->dev_p->regs_p->MODER = (0x1 << (2 * self_p->dev_p->bit));
+        self_p->dev_p->regs_p->MODER =
+            bits_insert_32(self_p->dev_p->regs_p->MODER,
+                           2 * self_p->dev_p->bit,
+                           2,
+                           0x1);
     } else {
-        self_p->dev_p->regs_p->MODER = 0x00000000;
+        self_p->dev_p->regs_p->MODER =
+            bits_insert_32(self_p->dev_p->regs_p->MODER,
+                           2 * self_p->dev_p->bit,
+                           2,
+                           0x0);
     }
 
     return (0);

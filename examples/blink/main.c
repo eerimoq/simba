@@ -32,7 +32,7 @@ int main()
     pin_write(&led, 1);
 
     while (1) {
-        /* Wait a second. */
+        /* Wait half a second. */
         thrd_usleep(500000);
 
         /* Toggle the LED on/off. */

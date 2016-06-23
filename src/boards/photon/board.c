@@ -20,6 +20,9 @@
 
 #include "simba.h"
 
+extern uint32_t __rom_begin;
+extern uint32_t __text_end__;
+
 /**
  * This datastructure is used ny the Photon bootloader to verify that
  * the application is valid. It must be reallocated to application
@@ -42,7 +45,7 @@ struct module_info_t {
 
 __attribute__ ((section(".module_info"), used))
 struct module_info_t module_info = {
-    .module_start_address = (const void *)0x08020000,
-    .module_end_address = (const void *)0x0805d438,
+    .module_start_address = (const void *)&__rom_begin,
+    .module_end_address = (const void *)&__text_end__,
     .platform_id = 6,
 };

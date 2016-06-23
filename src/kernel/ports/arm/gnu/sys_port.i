@@ -29,7 +29,7 @@ ISR(sys_tick)
 static int sys_port_module_init(void)
 {
     /* Setup the system tick timer. */
-    ARM_ST->LOAD = SYSTEM_TIMER_LOAD_RELOAD(10000000
+    ARM_ST->LOAD = SYSTEM_TIMER_LOAD_RELOAD(20000000
                                             / CONFIG_SYSTEM_TICK_FREQUENCY);
     ARM_ST->CTRL = (SYSTEM_TIMER_CTRL_TICKINT
                     | SYSTEM_TIMER_CTRL_ENABLE);
