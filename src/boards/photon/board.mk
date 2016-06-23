@@ -22,7 +22,7 @@ INC += $(SIMBA_ROOT)/src/boards/photon
 SRC += $(SIMBA_ROOT)/src/boards/photon/board.c
 
 BOARD_HOMEPAGE = "https://docs.particle.io/datasheets/photon-datasheet/"
-BOARD_PINOUT = "particle-io-photon.png"
+BOARD_PINOUT = "photon-pinout.png"
 BOARD_DESC = "Particle IO Photon"
 
 LIBPATH += "$(SIMBA_ROOT)/src/boards/$(BOARD)"

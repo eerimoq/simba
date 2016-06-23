@@ -1,12 +1,29 @@
-Flashing
---------
+Detailed pinout
+---------------
 
-If you wish to program your Photon with a custom firmware via USB,
-you'll need to use this mode. This mode triggers the on-board
-bootloader that accepts firmware binary files via the dfu-utility.
+Right side pins
+^^^^^^^^^^^^^^^
+
+.. image:: ../images/boards/photon-pinout1.png
+   :width: 100%
+   :target: ../_images/photon-pinout1.png
+
+Left side pins
+^^^^^^^^^^^^^^
+
+.. image:: ../images/boards/photon-pinout2.png
+   :width: 100%
+   :target: ../_images/photon-pinout2.png
+
+User I/O
+^^^^^^^^
+
+.. image:: ../images/boards/photon-pinout3.png
+   :width: 100%
+   :target: ../_images/photon-pinout3.png
 
 Prerequisities
-^^^^^^^^^^^^^^
+--------------
 
 Install the dfu-utility.
 
@@ -21,8 +38,8 @@ Install the dfu-utility.
    sudo make install
    cd ..
 
-Flasing sequence
-^^^^^^^^^^^^^^^^
+Flashing
+--------
 
 To enter DFU Mode:
 
@@ -38,7 +55,7 @@ To enter DFU Mode:
 Upload the software, ``make BOARD=photon upload``.
 
 Wifi driver
-^^^^^^^^^^^
+-----------
 
 Use the WICED library from Broadcom to communicate with the WiFi
 module. Requires an account on the Boardcom homepage?

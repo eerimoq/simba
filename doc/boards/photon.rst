@@ -9,9 +9,9 @@ https://docs.particle.io/datasheets/photon-datasheet/
 Pinout
 ------
 
-.. image:: ../images/boards/particle-io-photon.png
+.. image:: ../images/boards/photon-pinout.png
    :width: 50%
-   :target: ../_images/particle-io-photon.png
+   :target: ../_images/photon-pinout.png
 
 Drivers
 -------
