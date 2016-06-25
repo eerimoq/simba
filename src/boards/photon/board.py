@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 
+from __future__ import print_function
+
 import serial
 import subprocess
 import time
@@ -11,17 +13,24 @@ def subcommand_upload(args):
 
     """
 
+    dev_serial = serial.Serial("/dev/" + args.port)
+
     # 1. Hold down the RESET and SETUP buttons.
-    time.sleep(0.1)
+    dev_serial.dtr = 1
+    dev_serial.rts = 1
 
     # 2. Release only the RESET button, while holding down the SETUP
     #    button.
+    dev_serial.rts = 0
 
     # 3. Wait for the LED to start flashing yellow (it will flash
     #    magenta first).
-    time.sleep(3.0)
+    time.sleep(4.0)
 
     # 4. Release the SETUP button.
+    dev_serial.dtr = 0
+
+    time.sleep(1.0)
 
     # 5. Upload the software,
     command = [
@@ -31,7 +40,9 @@ def subcommand_upload(args):
         "--dfuse-address", "0x08020000:leave",
         "--download", args.binary
     ]
-    print ' '.join(command)
+
+    print(' '.join(command))
+
     subprocess.check_call(command)
 
 

@@ -20,8 +20,10 @@
 
 ISR(sys_tick)
 {
+#if defined(FAMILY_STM32F2)
     /* Kick the watchdog. */
     STM32_IWDG->KR = 0xaaaa;
+#endif
 
     sys_tick();
 }
