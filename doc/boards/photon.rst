@@ -16,8 +16,10 @@ Pinout
 Drivers
 -------
 
+- :doc:`../api-reference/drivers/bcm43362`
 - :doc:`../api-reference/drivers/flash`
 - :doc:`../api-reference/drivers/pin`
+- :doc:`../api-reference/drivers/sdio`
 - :doc:`../api-reference/drivers/uart`
 
 Mcu

@@ -21,6 +21,11 @@
 INC += $(SIMBA_ROOT)/src/boards/photon
 SRC += $(SIMBA_ROOT)/src/boards/photon/board.c
 
+# WiFi module driver from Particle IO.
+INC += $(SIMBA_ROOT)/3pp/wiced/WWD/include
+LDFLAGS_AFTER += -lwwdsdio
+LIBPATH += "$(SIMBA_ROOT)/3pp/wiced/WWD/lib"
+
 BOARD_HOMEPAGE = "https://docs.particle.io/datasheets/photon-datasheet/"
 BOARD_PINOUT = "photon-pinout.png"
 BOARD_DESC = "Particle IO Photon"

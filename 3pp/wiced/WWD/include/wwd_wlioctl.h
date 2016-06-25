@@ -2705,7 +2705,7 @@ typedef struct wl_rssi_event
 
 
 
-#pragma pack(1)
+/* #pragma pack(1) */
 
 typedef struct sta_prbreq_wps_ie_hdr
 {
@@ -2759,7 +2759,7 @@ typedef struct edcf_acparam edcf_acparam_t;
 
 
 /* Stop packing structures */
-#pragma pack()
+/* #pragma pack() */
 
 
 

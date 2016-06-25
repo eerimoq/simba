@@ -1,0 +1,12 @@
+:mod:`bcm43362` --- BCM43362
+===========================================
+
+.. module:: bcm43362
+   :synopsis: BCM43362.
+
+Source code: :github-blob:`src/drivers/drivers/bcm43362.h`
+
+----------------------------------------------
+
+.. doxygenfile:: drivers/bcm43362.h
+   :project: simba

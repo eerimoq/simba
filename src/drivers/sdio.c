@@ -1,5 +1,5 @@
 /**
- * @file mcu.h
+ * @file sdio.c
  * @version 1.0.0
  *
  * @section License
@@ -18,17 +18,4 @@
  * This file is part of the Simba project.
  */
 
-#ifndef __MCU_H__
-#define __MCU_H__
-
-#include "stm32.h"
-
-#define PIN_DEVICE_MAX     51
-#define UART_DEVICE_MAX     3
-#define SPI_DEVICE_MAX      3
-#define I2C_DEVICE_MAX      2
-#define CAN_DEVICE_MAX      1
-#define FLASH_DEVICE_MAX    1
-#define SDIO_DEVICE_MAX     1
-
-#endif
+#include "simba.h"

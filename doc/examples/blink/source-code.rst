@@ -22,12 +22,16 @@
    
    #include "simba.h"
    
+   #include "wwd_management.h"
+   
    int main()
    {
        struct pin_driver_t led;
    
        /* Start the system. */
        sys_start();
+   
+       wwd_management_init(WICED_COUNTRY_SWEDEN, NULL);
    
        /* Initialize the LED pin as output and set its value to 1. */
        pin_init(&led, &pin_led_dev, PIN_OUTPUT);

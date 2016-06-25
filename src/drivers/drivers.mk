@@ -80,15 +80,17 @@ DRIVERS_SRC ?= flash.c \
 endif
 
 ifeq ($(FAMILY),stm32f2)
-DRIVERS_SRC ?= flash.c \
+DRIVERS_SRC ?= bcm43362.c \
+	       flash.c \
                pin.c \
+	       sdio.c \
 	       uart.c
 endif
 
 ifeq ($(FAMILY),stm32f3)
 DRIVERS_SRC ?= flash.c \
                pin.c \
-	       uart.c
+               uart.c
 endif
 
 SRC += $(DRIVERS_SRC:%=$(SIMBA_ROOT)/src/drivers/%)

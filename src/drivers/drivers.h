@@ -85,6 +85,8 @@
 #    include "drivers/pin.h"
 #    include "drivers/uart.h"
 #    include "drivers/flash.h"
+#    include "drivers/sdio.h"
+#    include "drivers/bcm43362.h"
 #endif
 
 #if defined(FAMILY_STM32F3)
