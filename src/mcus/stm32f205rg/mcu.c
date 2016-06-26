@@ -92,4 +92,9 @@ struct uart_device_t uart_device[UART_DEVICE_MAX] = {
 
 struct flash_device_t flash_device[FLASH_DEVICE_MAX];
 
-struct sdio_device_t sdio_device[SDIO_DEVICE_MAX];
+struct sdio_device_t sdio_device[SDIO_DEVICE_MAX] = {
+    {
+        .drv_p = NULL,
+        .regs_p = STM32_SDIO
+    }
+};

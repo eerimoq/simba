@@ -23,6 +23,7 @@
 
 struct sdio_device_t {
     struct sdio_driver_t *drv_p;
+    volatile struct stm32_sdio_t *regs_p;
 };
 
 struct sdio_driver_t {

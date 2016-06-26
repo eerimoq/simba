@@ -141,15 +141,36 @@ struct stm32_iwdg_t {
     uint32_t SR;
 };
 
+struct stm32_sdio_t {
+    uint32_t POWER;
+    uint32_t CLKCR;
+    uint32_t ARG;
+    uint32_t CMD;
+    uint32_t RESPCMD;
+    uint32_t RESP[4];
+    uint32_t DTIMER;
+    uint32_t DLEN;
+    uint32_t DCTRL;
+    uint32_t DCOUNT;
+    uint32_t STA;
+    uint32_t ICR;
+    uint32_t MASK;
+    uint32_t RESERVED0[2];
+    uint32_t FIFOCNT;
+    uint32_t RESERVED1[50];
+    uint32_t FIFO;
+};
+
 /* Base addresses of peripherals. */
-#define STM32_PWR               ((volatile struct stm32_pwr_t *)  0x40007000ul)
-#define STM32_GPIOA             ((volatile struct stm32_gpio_t *) 0x40020000ul)
-#define STM32_GPIOB             ((volatile struct stm32_gpio_t *) 0x40020400ul)
-#define STM32_GPIOC             ((volatile struct stm32_gpio_t *) 0x40020800ul)
-#define STM32_GPIOD             ((volatile struct stm32_gpio_t *) 0x40020c00ul)
-#define STM32_USART1            ((volatile struct stm32_usart_t *)0x40011000ul)
-#define STM32_IWDG              ((volatile struct stm32_iwdg_t *) 0x40003000ul)
-#define STM32_RCC               ((volatile struct stm32_rcc_t *)  0x40023800ul)
+#define STM32_PWR            ((volatile struct stm32_pwr_t *)  0x40007000ul)
+#define STM32_GPIOA          ((volatile struct stm32_gpio_t *) 0x40020000ul)
+#define STM32_GPIOB          ((volatile struct stm32_gpio_t *) 0x40020400ul)
+#define STM32_GPIOC          ((volatile struct stm32_gpio_t *) 0x40020800ul)
+#define STM32_GPIOD          ((volatile struct stm32_gpio_t *) 0x40020c00ul)
+#define STM32_USART1         ((volatile struct stm32_usart_t *)0x40011000ul)
+#define STM32_SDIO           ((volatile struct stm32_sdio_t *) 0x40012c00ul)
+#define STM32_IWDG           ((volatile struct stm32_iwdg_t *) 0x40003000ul)
+#define STM32_RCC            ((volatile struct stm32_rcc_t *)  0x40023800ul)
 
 /* Interrupt service routine. */
 #define ISR(vector)                             \

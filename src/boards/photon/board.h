@@ -51,4 +51,6 @@
 
 #define flash_0_dev flash_device[0]
 
+#define sdio_0_dev sdio_device[0]
+
 #endif

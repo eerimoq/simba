@@ -77,28 +77,28 @@ void isr_exti1(void)            __attribute__ ((weak, alias("isr_none")));
 void isr_exti2(void)            __attribute__ ((weak, alias("isr_none")));
 void isr_exti3(void)            __attribute__ ((weak, alias("isr_none")));
 void isr_exti4(void)            __attribute__ ((weak, alias("isr_none")));
-void isr_dma1_ch1(void)         __attribute__ ((weak, alias("isr_none")));
-void isr_dma1_ch2(void)         __attribute__ ((weak, alias("isr_none")));
-void isr_dma1_ch3(void)         __attribute__ ((weak, alias("isr_none")));
-void isr_dma1_ch4(void)         __attribute__ ((weak, alias("isr_none")));
-void isr_dma1_ch5(void)         __attribute__ ((weak, alias("isr_none")));
-void isr_dma1_ch6(void)         __attribute__ ((weak, alias("isr_none")));
-void isr_dma1_ch7(void)         __attribute__ ((weak, alias("isr_none")));
-void isr_adc1(void)             __attribute__ ((weak, alias("isr_none")));
-void isr_reserved6(void)        __attribute__ ((weak, alias("isr_none")));
-void isr_reserved7(void)        __attribute__ ((weak, alias("isr_none")));
-void isr_reserved8(void)        __attribute__ ((weak, alias("isr_none")));
-void isr_reserved9(void)        __attribute__ ((weak, alias("isr_none")));
+void isr_dma1_stream0(void)     __attribute__ ((weak, alias("isr_none")));
+void isr_dma1_stream1(void)     __attribute__ ((weak, alias("isr_none")));
+void isr_dma1_stream2(void)     __attribute__ ((weak, alias("isr_none")));
+void isr_dma1_stream3(void)     __attribute__ ((weak, alias("isr_none")));
+void isr_dma1_stream4(void)     __attribute__ ((weak, alias("isr_none")));
+void isr_dma1_stream5(void)     __attribute__ ((weak, alias("isr_none")));
+void isr_dma1_stream6(void)     __attribute__ ((weak, alias("isr_none")));
+void isr_adc(void)              __attribute__ ((weak, alias("isr_none")));
+void isr_can1_tx(void)          __attribute__ ((weak, alias("isr_none")));
+void isr_can1_rx0(void)         __attribute__ ((weak, alias("isr_none")));
+void isr_can1_rx1(void)         __attribute__ ((weak, alias("isr_none")));
+void isr_can1_sce(void)         __attribute__ ((weak, alias("isr_none")));
 void isr_exti9_5(void)          __attribute__ ((weak, alias("isr_none")));
-void isr_tim1_brk_tim15(void)   __attribute__ ((weak, alias("isr_none")));
-void isr_tim1_up_tim16(void)    __attribute__ ((weak, alias("isr_none")));
-void isr_tim1_trg_com_tim17(void) __attribute__ ((weak, alias("isr_none")));
+void isr_tim1_brk_tim9(void)    __attribute__ ((weak, alias("isr_none")));
+void isr_tim1_up_tim10(void)    __attribute__ ((weak, alias("isr_none")));
+void isr_tim1_trg_com_tim11(void) __attribute__ ((weak, alias("isr_none")));
 void isr_tim1_cc(void)          __attribute__ ((weak, alias("isr_none")));
 void isr_tim2(void)             __attribute__ ((weak, alias("isr_none")));
 void isr_tim3(void)             __attribute__ ((weak, alias("isr_none")));
 void isr_tim4(void)             __attribute__ ((weak, alias("isr_none")));
 void isr_i2c1_ev(void)          __attribute__ ((weak, alias("isr_none")));
-void isr_i2c_er(void)           __attribute__ ((weak, alias("isr_none")));
+void isr_i2c1_er(void)          __attribute__ ((weak, alias("isr_none")));
 void isr_i2c2_ev(void)          __attribute__ ((weak, alias("isr_none")));
 void isr_i2c2_er(void)          __attribute__ ((weak, alias("isr_none")));
 void isr_spi1(void)             __attribute__ ((weak, alias("isr_none")));
@@ -108,26 +108,45 @@ void isr_usart2(void)           __attribute__ ((weak, alias("isr_none")));
 void isr_usart3(void)           __attribute__ ((weak, alias("isr_none")));
 void isr_exti15_10(void)        __attribute__ ((weak, alias("isr_none")));
 void isr_rtc_alarm(void)        __attribute__ ((weak, alias("isr_none")));
-void isr_cec(void)              __attribute__ ((weak, alias("isr_none")));
-void isr_tim12(void)            __attribute__ ((weak, alias("isr_none")));
-void isr_tim13(void)            __attribute__ ((weak, alias("isr_none")));
-void isr_tim14(void)            __attribute__ ((weak, alias("isr_none")));
+void isr_otg_fs_wkup(void)      __attribute__ ((weak, alias("isr_none")));
+void isr_tim8_brk_tim12(void)   __attribute__ ((weak, alias("isr_none")));
+void isr_tim8_up_tim13(void)    __attribute__ ((weak, alias("isr_none")));
+void isr_tim8_trg_com_tim14(void) __attribute__ ((weak, alias("isr_none")));
 void isr_tim8_cc(void)          __attribute__ ((weak, alias("isr_none")));
-void isr_reserved10(void)       __attribute__ ((weak, alias("isr_none")));
-void isr_reserved11(void)       __attribute__ ((weak, alias("isr_none")));
-void isr_fmc(void)              __attribute__ ((weak, alias("isr_none")));
-void isr_reserved12(void)       __attribute__ ((weak, alias("isr_none")));
+void isr_dma1_stream7(void)     __attribute__ ((weak, alias("isr_none")));
+void isr_fsmc(void)             __attribute__ ((weak, alias("isr_none")));
+void isr_sdio(void)             __attribute__ ((weak, alias("isr_none")));
 void isr_tim5(void)             __attribute__ ((weak, alias("isr_none")));
 void isr_spi3(void)             __attribute__ ((weak, alias("isr_none")));
 void isr_uart4(void)            __attribute__ ((weak, alias("isr_none")));
 void isr_uart5(void)            __attribute__ ((weak, alias("isr_none")));
 void isr_tim6_dac(void)         __attribute__ ((weak, alias("isr_none")));
 void isr_tim7(void)             __attribute__ ((weak, alias("isr_none")));
-void isr_dma2_ch1(void)         __attribute__ ((weak, alias("isr_none")));
-void isr_dma2_ch2(void)         __attribute__ ((weak, alias("isr_none")));
-void isr_dma2_ch3(void)         __attribute__ ((weak, alias("isr_none")));
-void isr_dma2_ch4(void)         __attribute__ ((weak, alias("isr_none")));
-void isr_dma2_ch5(void)         __attribute__ ((weak, alias("isr_none")));
+void isr_dma2_stream0(void)     __attribute__ ((weak, alias("isr_none")));
+void isr_dma2_stream1(void)     __attribute__ ((weak, alias("isr_none")));
+void isr_dma2_stream2(void)     __attribute__ ((weak, alias("isr_none")));
+void isr_dma2_stream3(void)     __attribute__ ((weak, alias("isr_none")));
+void isr_dma2_stream4(void)     __attribute__ ((weak, alias("isr_none")));
+void isr_eth(void)              __attribute__ ((weak, alias("isr_none")));
+void isr_eth_wkup(void)         __attribute__ ((weak, alias("isr_none")));
+void isr_can2_tx(void)          __attribute__ ((weak, alias("isr_none")));
+void isr_can2_rx0(void)         __attribute__ ((weak, alias("isr_none")));
+void isr_can2_rx1(void)         __attribute__ ((weak, alias("isr_none")));
+void isr_can2_sce(void)         __attribute__ ((weak, alias("isr_none")));
+void isr_otg_fs(void)           __attribute__ ((weak, alias("isr_none")));
+void isr_dma2_stream5(void)     __attribute__ ((weak, alias("isr_none")));
+void isr_dma2_stream6(void)     __attribute__ ((weak, alias("isr_none")));
+void isr_dma2_stream7(void)     __attribute__ ((weak, alias("isr_none")));
+void isr_usart6(void)           __attribute__ ((weak, alias("isr_none")));
+void isr_i2c3_ev(void)          __attribute__ ((weak, alias("isr_none")));
+void isr_i2c3_er(void)          __attribute__ ((weak, alias("isr_none")));
+void isr_otg_hs_ep1_out(void)   __attribute__ ((weak, alias("isr_none")));
+void isr_otg_hs_ep1_in(void)    __attribute__ ((weak, alias("isr_none")));
+void isr_otg_hs_wkup(void)      __attribute__ ((weak, alias("isr_none")));
+void isr_otg_hs(void)           __attribute__ ((weak, alias("isr_none")));
+void isr_dcmi(void)             __attribute__ ((weak, alias("isr_none")));
+void isr_cryp(void)             __attribute__ ((weak, alias("isr_none")));
+void isr_hash_rng(void)         __attribute__ ((weak, alias("isr_none")));
 
 /* Wrapper functions with interrupt load measurements. */
 ISR_WRAPPER(wwdg);
@@ -141,24 +160,28 @@ ISR_WRAPPER(exti1);
 ISR_WRAPPER(exti2);
 ISR_WRAPPER(exti3);
 ISR_WRAPPER(exti4);
-ISR_WRAPPER(dma1_ch1);
-ISR_WRAPPER(dma1_ch2);
-ISR_WRAPPER(dma1_ch3);
-ISR_WRAPPER(dma1_ch4);
-ISR_WRAPPER(dma1_ch5);
-ISR_WRAPPER(dma1_ch6);
-ISR_WRAPPER(dma1_ch7);
-ISR_WRAPPER(adc1);
+ISR_WRAPPER(dma1_stream0);
+ISR_WRAPPER(dma1_stream1);
+ISR_WRAPPER(dma1_stream2);
+ISR_WRAPPER(dma1_stream3);
+ISR_WRAPPER(dma1_stream4);
+ISR_WRAPPER(dma1_stream5);
+ISR_WRAPPER(dma1_stream6);
+ISR_WRAPPER(adc);
+ISR_WRAPPER(can1_tx);
+ISR_WRAPPER(can1_rx0);
+ISR_WRAPPER(can1_rx1);
+ISR_WRAPPER(can1_sce);
 ISR_WRAPPER(exti9_5);
-ISR_WRAPPER(tim1_brk_tim15);
-ISR_WRAPPER(tim1_up_tim16);
-ISR_WRAPPER(tim1_trg_com_tim17);
+ISR_WRAPPER(tim1_brk_tim9);
+ISR_WRAPPER(tim1_up_tim10);
+ISR_WRAPPER(tim1_trg_com_tim11);
 ISR_WRAPPER(tim1_cc);
 ISR_WRAPPER(tim2);
 ISR_WRAPPER(tim3);
 ISR_WRAPPER(tim4);
 ISR_WRAPPER(i2c1_ev);
-ISR_WRAPPER(i2c_er);
+ISR_WRAPPER(i2c1_er);
 ISR_WRAPPER(i2c2_ev);
 ISR_WRAPPER(i2c2_er);
 ISR_WRAPPER(spi1);
@@ -168,23 +191,45 @@ ISR_WRAPPER(usart2);
 ISR_WRAPPER(usart3);
 ISR_WRAPPER(exti15_10);
 ISR_WRAPPER(rtc_alarm);
-ISR_WRAPPER(cec);
-ISR_WRAPPER(tim12);
-ISR_WRAPPER(tim13);
-ISR_WRAPPER(tim14);
+ISR_WRAPPER(otg_fs_wkup);
+ISR_WRAPPER(tim8_brk_tim12);
+ISR_WRAPPER(tim8_up_tim13);
+ISR_WRAPPER(tim8_trg_com_tim14);
 ISR_WRAPPER(tim8_cc);
-ISR_WRAPPER(fmc);
+ISR_WRAPPER(dma1_stream7);
+ISR_WRAPPER(fsmc);
+ISR_WRAPPER(sdio);
 ISR_WRAPPER(tim5);
 ISR_WRAPPER(spi3);
 ISR_WRAPPER(uart4);
 ISR_WRAPPER(uart5);
 ISR_WRAPPER(tim6_dac);
 ISR_WRAPPER(tim7);
-ISR_WRAPPER(dma2_ch1);
-ISR_WRAPPER(dma2_ch2);
-ISR_WRAPPER(dma2_ch3);
-ISR_WRAPPER(dma2_ch4);
-ISR_WRAPPER(dma2_ch5);
+ISR_WRAPPER(dma2_stream0);
+ISR_WRAPPER(dma2_stream1);
+ISR_WRAPPER(dma2_stream2);
+ISR_WRAPPER(dma2_stream3);
+ISR_WRAPPER(dma2_stream4);
+ISR_WRAPPER(eth);
+ISR_WRAPPER(eth_wkup);
+ISR_WRAPPER(can2_tx);
+ISR_WRAPPER(can2_rx0);
+ISR_WRAPPER(can2_rx1);
+ISR_WRAPPER(can2_sce);
+ISR_WRAPPER(otg_fs);
+ISR_WRAPPER(dma2_stream5);
+ISR_WRAPPER(dma2_stream6);
+ISR_WRAPPER(dma2_stream7);
+ISR_WRAPPER(usart6);
+ISR_WRAPPER(i2c3_ev);
+ISR_WRAPPER(i2c3_er);
+ISR_WRAPPER(otg_hs_ep1_out);
+ISR_WRAPPER(otg_hs_ep1_in);
+ISR_WRAPPER(otg_hs_wkup);
+ISR_WRAPPER(otg_hs);
+ISR_WRAPPER(dcmi);
+ISR_WRAPPER(cryp);
+ISR_WRAPPER(hash_rng);
 
 /* Clock settings (24MHz) */
 static void clock_init(void)
@@ -296,28 +341,28 @@ void (*vector_table[])(void) = {
     isr_exti2_wrapper,
     isr_exti3_wrapper,
     isr_exti4_wrapper,
-    isr_dma1_ch1_wrapper,
-    isr_dma1_ch2_wrapper,
-    isr_dma1_ch3_wrapper,
-    isr_dma1_ch4_wrapper,
-    isr_dma1_ch5_wrapper,
-    isr_dma1_ch6_wrapper,
-    isr_dma1_ch7_wrapper,
-    isr_adc1_wrapper,
-    isr_reserved6,
-    isr_reserved7,
-    isr_reserved8,
-    isr_reserved9,
+    isr_dma1_stream0_wrapper,
+    isr_dma1_stream1_wrapper,
+    isr_dma1_stream2_wrapper,
+    isr_dma1_stream3_wrapper,
+    isr_dma1_stream4_wrapper,
+    isr_dma1_stream5_wrapper,
+    isr_dma1_stream6_wrapper,
+    isr_adc_wrapper,
+    isr_can1_tx_wrapper,
+    isr_can1_rx0_wrapper,
+    isr_can1_rx1_wrapper,
+    isr_can1_sce_wrapper,
     isr_exti9_5_wrapper,
-    isr_tim1_brk_tim15_wrapper,
-    isr_tim1_up_tim16_wrapper,
-    isr_tim1_trg_com_tim17_wrapper,
+    isr_tim1_brk_tim9_wrapper,
+    isr_tim1_up_tim10_wrapper,
+    isr_tim1_trg_com_tim11_wrapper,
     isr_tim1_cc_wrapper,
     isr_tim2_wrapper,
     isr_tim3_wrapper,
     isr_tim4_wrapper,
     isr_i2c1_ev_wrapper,
-    isr_i2c_er_wrapper,
+    isr_i2c1_er_wrapper,
     isr_i2c2_ev_wrapper,
     isr_i2c2_er_wrapper,
     isr_spi1_wrapper,
@@ -327,24 +372,43 @@ void (*vector_table[])(void) = {
     isr_usart3_wrapper,
     isr_exti15_10_wrapper,
     isr_rtc_alarm_wrapper,
-    isr_cec_wrapper,
-    isr_tim12_wrapper,
-    isr_tim13_wrapper,
-    isr_tim14_wrapper,
+    isr_otg_fs_wkup_wrapper,
+    isr_tim8_brk_tim12_wrapper,
+    isr_tim8_up_tim13_wrapper,
+    isr_tim8_trg_com_tim14_wrapper,
     isr_tim8_cc_wrapper,
-    isr_reserved10,
-    isr_reserved11,
-    isr_fmc_wrapper,
-    isr_reserved12,
+    isr_dma1_stream7_wrapper,
+    isr_fsmc_wrapper,
+    isr_sdio_wrapper,
     isr_tim5_wrapper,
     isr_spi3_wrapper,
     isr_uart4_wrapper,
     isr_uart5_wrapper,
     isr_tim6_dac_wrapper,
     isr_tim7_wrapper,
-    isr_dma2_ch1_wrapper,
-    isr_dma2_ch2_wrapper,
-    isr_dma2_ch3_wrapper,
-    isr_dma2_ch4_wrapper,
-    isr_dma2_ch5_wrapper
+    isr_dma2_stream0_wrapper,
+    isr_dma2_stream1_wrapper,
+    isr_dma2_stream2_wrapper,
+    isr_dma2_stream3_wrapper,
+    isr_dma2_stream4_wrapper,
+    isr_eth_wrapper,
+    isr_eth_wkup_wrapper,
+    isr_can2_tx_wrapper,
+    isr_can2_rx0_wrapper,
+    isr_can2_rx1_wrapper,
+    isr_can2_sce_wrapper,
+    isr_otg_fs_wrapper,
+    isr_dma2_stream5_wrapper,
+    isr_dma2_stream6_wrapper,
+    isr_dma2_stream7_wrapper,
+    isr_usart6_wrapper,
+    isr_i2c3_ev_wrapper,
+    isr_i2c3_er_wrapper,
+    isr_otg_hs_ep1_out_wrapper,
+    isr_otg_hs_ep1_in_wrapper,
+    isr_otg_hs_wkup_wrapper,
+    isr_otg_hs_wrapper,
+    isr_dcmi_wrapper,
+    isr_cryp_wrapper,
+    isr_hash_rng_wrapper
 };

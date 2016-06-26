@@ -35,7 +35,7 @@ static struct bcm43362_driver_t bcm43362;
 static int test_start(struct harness_t *harness_p)
 {
     BTASSERT(bcm43362_init(&bcm43362,
-                           &sdio_device[0]) == 0);
+                           &sdio_0_dev) == 0);
     BTASSERT(bcm43362_start(&bcm43362) == 0);
 
     return (0);
