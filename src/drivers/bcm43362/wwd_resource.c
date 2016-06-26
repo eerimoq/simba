@@ -25,12 +25,16 @@
 wwd_result_t host_platform_resource_size(wwd_resource_t resource,
                                          uint32_t* size_out)
 {
+    ASSERTN(0, ENOSYS);
+    
     return (WWD_SUCCESS);
 }
 
 wwd_result_t host_platform_resource_read_direct(wwd_resource_t resource,
                                                 const void** ptr_out)
 {
+    ASSERTN(0, ENOSYS);
+    
     return (WWD_SUCCESS);
 }
 
@@ -40,5 +44,7 @@ wwd_result_t host_platform_resource_read_indirect(wwd_resource_t resource,
                                                   uint32_t buffer_size,
                                                   uint32_t* size_out)
 {
+    ASSERTN(0, ENOSYS);
+    
     return (WWD_SUCCESS);
 }

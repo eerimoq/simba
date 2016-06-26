@@ -32,33 +32,45 @@ wwd_result_t host_platform_sdio_transfer(wwd_bus_transfer_direction_t direction,
                                          sdio_response_needed_t response_expected,
                                          uint32_t* response)
 {
+    ASSERTN(0, ENOSYS);
+    
     return (WWD_SUCCESS);
 }
 
 wwd_result_t host_platform_sdio_enumerate()
 {
+    ASSERTN(0, ENOSYS);
+    
     return (WWD_SUCCESS);
 }
 
 void host_platform_enable_high_speed_sdio()
 {
+    ASSERTN(0, ENOSYS);
 }
 
 void sdio_irq()
 {
+    ASSERTN(0, ENOSYS);
 }
 
 wwd_result_t host_platform_unmask_sdio_interrupt()
 {
+    ASSERTN(0, ENOSYS);
+    
     return (WWD_SUCCESS);
 }
 
 wwd_result_t host_enable_oob_interrupt()
 {
+    ASSERTN(0, ENOSYS);
+    
     return (WWD_SUCCESS);
 }
 
 uint8_t host_platform_get_oob_interrupt_pin()
 {
+    ASSERTN(0, ENOSYS);
+    
     return (0);
 }

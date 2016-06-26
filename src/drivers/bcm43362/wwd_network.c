@@ -25,4 +25,5 @@
 void host_network_process_ethernet_data(wiced_buffer_t buffer,
                                         wwd_interface_t interface)
 {
+    ASSERTN(0, ENOSYS);
 }

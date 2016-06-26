@@ -24,24 +24,33 @@
 
 wwd_result_t host_platform_bus_init()
 {
+    ASSERTN(0, ENOSYS);
+    
     return (WWD_SUCCESS);
 }
 
 wwd_result_t host_platform_bus_deinit()
 {
+    ASSERTN(0, ENOSYS);
+    
     return (WWD_SUCCESS);
 }
 
 wwd_result_t host_platform_bus_enable_interrupt()
 {
+    ASSERTN(0, ENOSYS);
+    
     return (WWD_SUCCESS);
 }
 
 wwd_result_t host_platform_bus_disable_interrupt()
 {
+    ASSERTN(0, ENOSYS);
+    
     return (WWD_SUCCESS);
 }
 
 void host_platform_bus_buffer_freed(wwd_buffer_dir_t direction)
 {
+    ASSERTN(0, ENOSYS);
 }
