@@ -41,21 +41,10 @@ Install the dfu-utility.
 Flashing
 --------
 
-To enter DFU Mode:
+- Connect DTR on the serial adapter to the RST pin on the Photon.
 
-1. Hold down the RESET and SETUP buttons.
+- Connect RTS on the serial adapter to the SETUP pad on the bottom
+  side of the Photon. This requires soldering a cable to the SETUP
+  pad.
 
-2. Release only the RESET button, while holding down the SETUP button.
-
-3. Wait for the LED to start flashing yellow (it will flash magenta
-   first).
-
-4. Release the SETUP button.
-
-Upload the software, ``make BOARD=photon upload``.
-
-Wifi driver
------------
-
-Use the WICED library from Broadcom to communicate with the WiFi
-module. Requires an account on the Boardcom homepage?
+Upload the software with ``make BOARD=photon upload``.
