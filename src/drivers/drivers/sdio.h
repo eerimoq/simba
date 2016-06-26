@@ -80,8 +80,8 @@ int sdio_start(struct sdio_driver_t *self_p);
 int sdio_stop(struct sdio_driver_t *self_p);
 
 /**
- * Send the send relative address command (CMD3) to the device and
- * optionally wait for the repponse.
+ * Send the `send relative address` command (CMD3) to the device and
+ * optionally wait for the response.
  *
  * @param[in] self_p Initialized driver object.
  *
@@ -90,8 +90,8 @@ int sdio_stop(struct sdio_driver_t *self_p);
 int sdio_send_relative_addr(struct sdio_driver_t *self_p);
 
 /**
- * Send the io send operation condition command (CMD5) to the device
- * and optionally wait for the repponse.
+ * Send the `io send operation condition` command (CMD5) to the device
+ * and optionally wait for the response.
  *
  * @param[in] self_p Initialized driver object.
  *
@@ -100,8 +100,8 @@ int sdio_send_relative_addr(struct sdio_driver_t *self_p);
 int sdio_io_send_op_cond(struct sdio_driver_t *self_p);
 
 /**
- * Send the select/deselect card command (CMD7) to the device and
- * optionally wait for the repponse.
+ * Send the `select/deselect card` command (CMD7) to the device and
+ * optionally wait for the response.
  *
  * @param[in] self_p Initialized driver object.
  *

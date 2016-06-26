@@ -19,3 +19,96 @@
  */
 
 #include "simba.h"
+
+int sdio_module_init(void)
+{
+    ASSERTN(0, ENOSYS);
+
+    return (-1);
+}
+
+int sdio_init(struct sdio_driver_t *self_p,
+              struct sdio_device_t *dev_p)
+{
+    ASSERTN(0, ENOSYS);
+
+    return (-1);
+}
+
+int sdio_start(struct sdio_driver_t *self_p)
+{
+    ASSERTN(0, ENOSYS);
+
+    return (-1);
+}
+
+int sdio_stop(struct sdio_driver_t *self_p)
+{
+    ASSERTN(0, ENOSYS);
+
+    return (-1);
+}
+
+
+int sdio_send_relative_addr(struct sdio_driver_t *self_p)
+{
+    ASSERTN(0, ENOSYS);
+
+    return (-1);
+}
+
+
+int sdio_io_send_op_cond(struct sdio_driver_t *self_p)
+{
+    ASSERTN(0, ENOSYS);
+
+    return (-1);
+}
+
+
+int sdio_select_deselect_card(struct sdio_driver_t *self_p)
+{
+    ASSERTN(0, ENOSYS);
+
+    return (-1);
+}
+
+
+int sdio_io_read_direct(struct sdio_driver_t *self_p,
+                        void *dst_p)
+{
+    ASSERTN(0, ENOSYS);
+
+    return (-1);
+}
+
+
+int sdio_io_write_direct(struct sdio_driver_t *self_p,
+                         void *src_p)
+{
+    ASSERTN(0, ENOSYS);
+
+    return (-1);
+}
+
+
+ssize_t sdio_io_read_extended(struct sdio_driver_t *self_p,
+                              void *dst_p,
+                              uint32_t src_address,
+                              size_t size)
+{
+    ASSERTN(0, ENOSYS);
+
+    return (-1);
+}
+
+
+ssize_t sdio_io_write_extended(struct sdio_driver_t *self_p,
+                               uint32_t dst_address,
+                               const void *src_p,
+                               size_t size)
+{
+    ASSERTN(0, ENOSYS);
+
+    return (-1);
+}

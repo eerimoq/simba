@@ -33,7 +33,7 @@ static int test_start(struct harness_t *harness_p)
 
 static int test_write(struct harness_t *harness_p)
 {
-    BTASSERT(bcm43362_write(&bcm43362, "foo", 3) == 3);
+    BTASSERT(bcm43362_write(&bcm43362, NULL, 3) == 3);
 
     return (0);
 }

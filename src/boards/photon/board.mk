@@ -23,6 +23,8 @@ SRC += $(SIMBA_ROOT)/src/boards/photon/board.c
 
 # WiFi module driver from Particle IO.
 INC += $(SIMBA_ROOT)/3pp/wiced/WWD/include
+INC += $(SIMBA_ROOT)/3pp/wiced/WWD/internal/bus_protocols/SDIO
+INC += $(SIMBA_ROOT)/3pp/wiced/WWD/internal/chips/43362A2
 LDFLAGS_AFTER += -lwwdsdio
 LIBPATH += "$(SIMBA_ROOT)/3pp/wiced/WWD/lib"
 

@@ -23,6 +23,8 @@
 
 #include "simba.h"
 
+#include "lwip/pbuf.h"
+
 struct bcm43362_driver_t {
     struct sdio_driver_t sdio;
 };
@@ -62,6 +64,19 @@ int bcm43362_start(struct bcm43362_driver_t *self_p);
 int bcm43362_stop(struct bcm43362_driver_t *self_p);
 
 /**
+ * Connect to an WiFi Access Point (AP) with given SSID and password.
+ *
+ * @param[in] self_p Initialized driver object.
+ * @param[in] ssid_p SSID of the WiFi AP to connect to.
+ * @param[in] password_p Password.
+ *
+ * @return zero(0) or negative error code.
+ */
+int bcm43362_connect(struct bcm43362_driver_t *self_p,
+                     const char *ssid_p,
+                     const char *password_p);
+
+/**
  * Read a packet from the BCM43362 device.
  *
  * @param[in] self_p Initialized driver object.
@@ -71,7 +86,7 @@ int bcm43362_stop(struct bcm43362_driver_t *self_p);
  * @return Number of read bytes or negative error code.
  */
 ssize_t bcm43362_read(struct bcm43362_driver_t *self_p,
-                      void *buf_p,
+                      struct pbuf *pbuf_p,
                       size_t size);
 
 /**
@@ -85,7 +100,7 @@ ssize_t bcm43362_read(struct bcm43362_driver_t *self_p,
  * @return Number of written bytes or negative error code.
  */
 ssize_t bcm43362_write(struct bcm43362_driver_t *self_p,
-                       const void *buf_p,
+                       struct pbuf *pbuf_p,
                        size_t size);
 
 #endif

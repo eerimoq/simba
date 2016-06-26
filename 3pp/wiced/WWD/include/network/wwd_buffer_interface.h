@@ -66,7 +66,7 @@ typedef enum
 
 typedef wiced_buffer_t  wwd_buffer_queue_ptr_t;
 
-#pragma pack(1)
+/* #pragma pack(1) */
 
 typedef struct
 {
@@ -76,7 +76,7 @@ typedef struct
 #endif /* ifdef WWD_BUS_HAS_HEADER */
 } wwd_buffer_header_t;
 
-#pragma pack()
+/* #pragma pack() */
 
 /** @endcond */
 

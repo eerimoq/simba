@@ -171,7 +171,7 @@ typedef struct
 /**
  * Structure for storing AP information
  */
-#pragma pack(1)
+/* #pragma pack(1) */
 typedef struct wiced_ap_info
 {
     wiced_ssid_t              SSID;             /**< Service Set Identification (i.e. Name of Access Point)                    */
@@ -184,12 +184,12 @@ typedef struct wiced_ap_info
     wiced_802_11_band_t       band;             /**< Radio band                                                                */
     struct wiced_ap_info*     next;             /**< Pointer to the next scan result                                           */
 } wiced_ap_info_t;
-#pragma pack()
+/* #pragma pack() */
 
 /**
  * Structure for storing scan results
  */
-#pragma pack(1)
+/* #pragma pack(1) */
 typedef struct wiced_scan_result
 {
     wiced_ssid_t              SSID;             /**< Service Set Identification (i.e. Name of Access Point)                    */
@@ -203,7 +203,7 @@ typedef struct wiced_scan_result
     wiced_bool_t              on_channel;       /**< True if scan result was recorded on the channel advertised in the packet  */
     struct wiced_scan_result* next;             /**< Pointer to the next scan result                                           */
 } wiced_scan_result_t;
-#pragma pack()
+/* #pragma pack() */
 
 /**
  * Structure for storing a WEP key
@@ -227,7 +227,7 @@ typedef struct
 } wiced_listen_interval_t;
 
 
-#pragma pack(1)
+/* #pragma pack(1) */
 
 /**
  * Structure describing a list of associated softAP clients
@@ -238,7 +238,7 @@ typedef struct
     wiced_mac_t   mac_list[1];   /**< Variable length array of MAC addresses */
 } wiced_maclist_t;
 
-#pragma pack()
+/* #pragma pack() */
 
 
 /******************************************************
