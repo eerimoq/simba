@@ -110,50 +110,69 @@ int sdio_io_send_op_cond(struct sdio_driver_t *self_p);
 int sdio_select_deselect_card(struct sdio_driver_t *self_p);
 
 /**
- * Read (CMD52).
+ * Execute the `input output read write direct` command (CMD52) as a
+ * read operation with given parameters.
  *
  * @param[in] self_p Initialized driver object.
+ * @param[out] dst_p Destination buffer.
  *
- * @return Number of transferred bytes or negative error code.
+ * @return Number of bytes read or negative error code.
  */
 int sdio_io_read_direct(struct sdio_driver_t *self_p,
                         void *dst_p);
 
 /**
- * Write (CMD52).
+ * Execute the `input output read write direct` command (CMD52) as a
+ * write operation with given parameters.
  *
  * @param[in] self_p Initialized driver object.
- * @param[in] rxbuf_p Buffer to read into.
- * @param[in] txbuf_p Buffer to write.
- * @param[in] size Number of bytes to transfer.
+ * @param[in] src_p Source buffer.
  *
- * @return Number of transferred bytes or negative error code.
+ * @return Number of bytes written or negative error code.
  */
 int sdio_io_write_direct(struct sdio_driver_t *self_p,
-                         void *src_p);
+                         const void *src_p);
 
 /**
- * Read (CMD53).
+ * Execute the `input output read write extended` command (CMD53) as a
+ * read operation with given parameters.
  *
  * @param[in] self_p Initialized driver object.
+ * @param[in] function_number Function number.
+ * @param[in] block_mode Block or byte mode.
+ * @param[in] op_code Operation code.
+ * @param[out] dst_p Destination buffer.
+ * @param[in] src_address Source address.
  * @param[in] size Number of bytes to read.
  *
  * @return Number of bytes read or negative error code.
  */
 ssize_t sdio_io_read_extended(struct sdio_driver_t *self_p,
+                              int function_number,
+                              int block_mode,
+                              int op_code,
                               void *dst_p,
                               uint32_t src_address,
                               size_t size);
 
 /**
- * Write (CMD53).
+ * Execute the `input output read write extended` command (CMD53) as a
+ * write operation with given parameters.
  *
  * @param[in] self_p Initialized driver object.
+ * @param[in] function_number Function number.
+ * @param[in] block_mode Block or byte mode.
+ * @param[in] op_code Operation code.
+ * @param[in] dst_address Destination address.
+ * @param[in] src_p Source buffer.
  * @param[in] size Number of bytes to write.
  *
  * @return Number of bytes written or negative error code.
  */
 ssize_t sdio_io_write_extended(struct sdio_driver_t *self_p,
+                               int function_number,
+                               int block_mode,
+                               int op_code,
                                uint32_t dst_address,
                                const void *src_p,
                                size_t size);

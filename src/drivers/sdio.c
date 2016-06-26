@@ -84,7 +84,7 @@ int sdio_io_read_direct(struct sdio_driver_t *self_p,
 
 
 int sdio_io_write_direct(struct sdio_driver_t *self_p,
-                         void *src_p)
+                         const void *src_p)
 {
     ASSERTN(0, ENOSYS);
 
@@ -93,6 +93,9 @@ int sdio_io_write_direct(struct sdio_driver_t *self_p,
 
 
 ssize_t sdio_io_read_extended(struct sdio_driver_t *self_p,
+                              int function_number,
+                              int block_mode,
+                              int op_code,
                               void *dst_p,
                               uint32_t src_address,
                               size_t size)
@@ -104,6 +107,9 @@ ssize_t sdio_io_read_extended(struct sdio_driver_t *self_p,
 
 
 ssize_t sdio_io_write_extended(struct sdio_driver_t *self_p,
+                               int function_number,
+                               int block_mode,
+                               int op_code,
                                uint32_t dst_address,
                                const void *src_p,
                                size_t size)
