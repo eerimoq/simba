@@ -41,10 +41,37 @@ Install the dfu-utility.
 Flashing
 --------
 
+The Photon must enter DFU mode before software can be uploaded to
+it. It's recommended to use the manual method to verify that software
+can be successfully uploaded to the board, and then start using the
+automatic method to reduce the manual work for each software upload.
+
+Automatic (recommended)
+^^^^^^^^^^^^^^^^^^^^^^^
+
 - Connect DTR on the serial adapter to the RST pin on the Photon.
 
 - Connect RTS on the serial adapter to the SETUP pad on the bottom
   side of the Photon. This requires soldering a cable to the SETUP
   pad.
+
+Upload the software with ``make BOARD=photon upload``.
+
+Manual
+^^^^^^
+
+To enter DFU Mode:
+
+1. Hold down the RESET and SETUP buttons.
+
+2. Release only the RESET button, while holding down the SETUP button.
+
+3. Wait for the LED to start flashing yellow (it will flash magenta
+   first).
+
+4. Release the SETUP button.
+
+NOTE: Do **not** connect DTR and/or RTS using manual upload. They must
+only be connected using the automatic method.
 
 Upload the software with ``make BOARD=photon upload``.
