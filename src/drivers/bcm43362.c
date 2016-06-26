@@ -72,6 +72,13 @@ int bcm43362_connect(struct bcm43362_driver_t *self_p,
     return (wwd_res == WWD_SUCCESS ? 0 : -1);
 }
 
+int bcm43362_disconnect(struct bcm43362_driver_t *self_p)
+{
+    ASSERTN(0, ENOSYS);
+
+    return (-1);
+}
+
 ssize_t bcm43362_read(struct bcm43362_driver_t *self_p,
                       struct pbuf *pbuf_p,
                       size_t size)

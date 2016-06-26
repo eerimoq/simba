@@ -20,6 +20,16 @@
 
 #include "simba.h"
 
+#if !defined(SSID)
+#    pragma message "WiFi connection variable SSID is not set. Using default value MySSID"
+#    define SSID MySSID
+#endif
+
+#if !defined(PASSWORD)
+#    pragma message "WiFi connection variable PASSWORD is not set. Using default value MyPassword"
+#    define PASSWORD MyPassword
+#endif
+
 static struct bcm43362_driver_t bcm43362;
 
 static int test_start(struct harness_t *harness_p)
@@ -31,9 +41,25 @@ static int test_start(struct harness_t *harness_p)
     return (0);
 }
 
+static int test_connect(struct harness_t *harness_p)
+{
+    BTASSERT(bcm43362_connect(&bcm43362,
+                              STRINGIFY(SSID),
+                              STRINGIFY(PASSWORD)) == 0);
+
+    return (0);
+}
+
 static int test_write(struct harness_t *harness_p)
 {
     BTASSERT(bcm43362_write(&bcm43362, NULL, 3) == 3);
+
+    return (0);
+}
+
+static int test_disconnect(struct harness_t *harness_p)
+{
+    BTASSERT(bcm43362_disconnect(&bcm43362) == 0);
 
     return (0);
 }
@@ -50,7 +76,9 @@ int main()
     struct harness_t harness;
     struct harness_testcase_t harness_testcases[] = {
         { test_start, "test_start" },
+        { test_connect, "test_connect" },
         { test_write, "test_write" },
+        { test_disconnect, "test_disconnect" },
         { test_stop, "test_stop" },
         { NULL, NULL }
     };
