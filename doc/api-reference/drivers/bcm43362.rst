@@ -6,7 +6,7 @@
 
 BCM43362 is a WiFi module by Boadcom.
 
-Homepage: `https://www.broadcom.com/products/wireless-connectivity/wireless-lan/bcm43362`
+Homepage: https://www.broadcom.com/products/wireless-connectivity/wireless-lan/bcm43362
 
 ----------------------------------------------
 
