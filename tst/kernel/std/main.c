@@ -178,6 +178,17 @@ int test_strip(struct harness_t *harness_p)
     return (0);
 }
 
+int test_in(struct harness_t *harness_p)
+{
+    BTASSERT(std_strin("foobar", "foobar") == 1);
+    BTASSERT(std_strin("foobar", "foo") == 1);
+    BTASSERT(std_strin("foobar", "bar") == 1);
+
+    BTASSERT(std_strin("foobar", "fum") == 0);
+
+    return (0);
+}
+
 int main()
 {
     struct harness_t harness;
@@ -186,6 +197,7 @@ int main()
         { test_strtol, "test_strtol" },
         { test_sprintf_double, "test_sprintf_double" },
         { test_strip, "test_strip" },
+        { test_in, "test_in" },
         { NULL, NULL }
     };
 

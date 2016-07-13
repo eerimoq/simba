@@ -200,4 +200,16 @@ int std_strlen(FAR const char *fstr_p);
  */
 char *std_strip(char *str_p, const char *strip_p);
 
+/**
+ * Search for given pattern in given string.
+ *
+ * @param[in] str_p String to search in.
+ * @param[in] pattern_p String to search for.
+ *
+ * @return true(1) if the string contains the pattern, false(0) if the
+ *         string does not comtain the pattern, and otherwise negative
+ *         error code.
+ */
+int std_strin(const char *str_p, const char *pattern_p);
+
 #endif
