@@ -56,10 +56,12 @@ int harness_run(struct harness_t *self_p,
 
         if (err == 0) {
             passed++;
-            std_printf(FSTR("exit: %s: PASSED\r\n"), testcase_p->name_p);
+            std_printf(FSTR("exit: %s: PASSED\r\n\r\n"),
+                       testcase_p->name_p);
         } else {
             failed++;
-            std_printf(FSTR("exit: %s: FAILED\r\n"), testcase_p->name_p);
+            std_printf(FSTR("exit: %s: FAILED\r\n\r\n"),
+                       testcase_p->name_p);
         }
 
         total++;
