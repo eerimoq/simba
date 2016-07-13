@@ -21,6 +21,8 @@
 NAME = shell_suite
 BOARD ?= linux
 
+TIMEOUT ?= 30
+
 CFLAGS_EXTRA = -DSTD_KLOG_BUFFER_MAX=96
 
 SIMBA_ROOT = ../../..

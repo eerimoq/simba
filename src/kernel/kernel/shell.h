@@ -23,23 +23,45 @@
 
 #include "simba.h"
 
-struct shell_args_t {
-    /** The shell input channel. The shell waits for commands on this
-        channel. */
+struct shell_history_elem_t {
+    struct shell_history_elem_t *next_p;
+    struct shell_history_elem_t *prev_p;
+    char buf[1];
+};
+
+struct shell_line_t {
+    char buf[CONFIG_SHELL_COMMAND_MAX];
+    int length;
+    int cursor;
+};
+
+struct shell_t {
     chan_t *chin_p;
-    /** The shell output channel. The shell writes responses on this
-        channel. */
     chan_t *chout_p;
-    /** User supplied argument passed to all commands. */
     void *arg_p;
-    /** The shell thread name. */
     const char *name_p;
-    /** Shell login username, or NULL if no username is required to
-        use the shell. */
     const char *username_p;
-    /** Shell login password. This field is unused if `username_p` is
-        NULL. */
     const char *password_p;
+    struct shell_line_t line;
+    int carriage_return_received;
+    int newline_received;
+    int authorized;
+
+#if CONFIG_SHELL_MINIMAL == 0
+
+    struct {
+        struct shell_history_elem_t *head_p;
+        struct shell_history_elem_t *tail_p;
+        struct shell_history_elem_t *current_p;
+        char buf[CONFIG_SHELL_COMMAND_MAX];
+        int buf_valid;
+        struct {
+            struct heap_t heap;
+            uint8_t buffer[CONFIG_SHELL_HISTORY_SIZE];
+        } heap;
+    } history;
+
+#endif
 };
 
 
@@ -49,6 +71,28 @@ struct shell_args_t {
  * @return zero(0) or negative error code.
  */
 int shell_module_init(void);
+
+/**
+ * Initialize a shell with given parameters.
+ *
+ * @param[in] chin_p The shell input channel. The shell waits for
+ *                   commands on this channel.
+ * @param[in] chout_p The shell output channel. The shell writes
+ *                    responses on this channel.
+ * @param[in] arg_p User supplied argument passed to all commands.
+ * @param[in] name_p The shell thread name.
+ * @param[in] username_p Shell login username, or NULL if no username
+ *                       is required to use the shell.
+ * @param[in] password_p Shell login password. This field is unused if
+ *                       `username_p` is NULL.
+ */
+int shell_init(struct shell_t *self_p,
+               chan_t *chin_p,
+               chan_t *chout_p,
+               void *arg_p,
+               const char *name_p,
+               const char *username_p,
+               const char *password_p);
 
 /**
  * The shell main function that listens for commands on the input

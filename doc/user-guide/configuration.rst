@@ -21,21 +21,30 @@ Highest priority first.
 Variables
 ---------
 
-+-------------------------------+-------------------------------------------+
-|  Name                         | Description                               |
-+===============================+===========================================+
-|  CONFIG_ASSERT                | Build with assert.                        |
-+-------------------------------+-------------------------------------------+
-|  CONFIG_DEBUG                 | Build with debug.                         |
-+-------------------------------+-------------------------------------------+
-|  CONFIG_PROFILE_STACK         | Stack profiling.                          |
-+-------------------------------+-------------------------------------------+
-|  CONFIG_PREEMPTIVE_SCHEDULER  | Use a preemptive scheduler.               |
-+-------------------------------+-------------------------------------------+
-|  CONFIG_SYSTEM_TICK_FREQUENCY | System tick frequency in Hertz.           |
-+-------------------------------+-------------------------------------------+
-|  CONFIG_MONITOR_THREAD        | Start the monitor thread.                 |
-+-------------------------------+-------------------------------------------+
++-------------------------------+-----------------------------------------------------------------+
+|  Name                         | Description                                                     |
++===============================+=================================================================+
+|  CONFIG_ASSERT                | Build with assert.                                              |
++-------------------------------+-----------------------------------------------------------------+
+|  CONFIG_DEBUG                 | Build with debug.                                               |
++-------------------------------+-----------------------------------------------------------------+
+|  CONFIG_PROFILE_STACK         | Stack profiling.                                                |
++-------------------------------+-----------------------------------------------------------------+
+|  CONFIG_PREEMPTIVE_SCHEDULER  | Use a preemptive scheduler.                                     |
++-------------------------------+-----------------------------------------------------------------+
+|  CONFIG_MONITOR_THREAD        | Start the monitor thread.                                       |
++-------------------------------+-----------------------------------------------------------------+
+|  CONFIG_SYSTEM_TICK_FREQUENCY | System tick frequency in Hertz.                                 |
++-------------------------------+-----------------------------------------------------------------+
+|  CONFIG_SHELL_MINIMAL         | Minimal shell functionality. Do not use command history or |br| |
+|                               | ANSI escape sequences.                                          |
++-------------------------------+-----------------------------------------------------------------+
+|  CONFIG_SHELL_PROMPT          | The shell prompt.                                               |
++-------------------------------+-----------------------------------------------------------------+
+|  CONFIG_SHELL_COMMAND_MAX     | Maximum number of characters in a shell command.                |
++-------------------------------+-----------------------------------------------------------------+
+|  CONFIG_SHELL_HISTORY_SIZE    | Size of the shell history buffer.                               |
++-------------------------------+-----------------------------------------------------------------+
 
 lwIP
 ^^^^
@@ -54,7 +63,7 @@ Module support (Code size)
 Enabling and disabling modules
 """"""""""""""""""""""""""""""
 
-You can tune your code size by only compiling the features you really
+You can tune your codeg size by only compiling the features you really
 need. The following is a list of what gets compiled in "out of the
 box" with lwIP.
 
@@ -189,3 +198,7 @@ Fine-tuning even more
 To see the options that you can set, open
 :github-blob:`3pp/lwip-1.4.1/src/include/lwip/opt.h`. This file is
 fully commented and explains how many of the options are used.
+
+.. |br| raw:: html
+
+   <br />

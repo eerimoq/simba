@@ -29,7 +29,7 @@ static struct fs_counter_t fie;
 
 static char qinbuf[32];
 static struct uart_driver_t uart;
-static struct shell_args_t shell_args;
+static struct shell_t shell;
 
 /**
  * The shell command callback for "/tmp/foo".
@@ -67,7 +67,7 @@ int main()
 
     /* Initialize the UART. */
     uart_module_init();
-    uart_init(&uart, &uart_device[0], 115200, qinbuf, sizeof(qinbuf));
+    uart_init(&uart, &uart_device[0], 38400, qinbuf, sizeof(qinbuf));
     uart_start(&uart);
 
 #if defined(__DRIVERS_I2C_H__)
@@ -96,11 +96,14 @@ int main()
     std_printf(sys_get_info());
 
     /* Call the shell main function. */
-    shell_args.chin_p = &uart.chin;
-    shell_args.chout_p = &uart.chout;
-    shell_args.username_p = NULL;
-    shell_args.password_p = NULL;
-    shell_main(&shell_args);
+    shell_init(&shell,
+               &uart.chin,
+               &uart.chout,
+               NULL,
+               NULL,
+               NULL,
+               NULL);
+    shell_main(&shell);
 
     return (0);
 }

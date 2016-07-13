@@ -41,7 +41,7 @@ int test_memory_usage(struct harness_t *harness_p)
     std_printf(FSTR("sizeof(struct sem_t) = %d\n"), (int)sizeof(struct sem_t));
 
     /* shell */
-    std_printf(FSTR("sizeof(struct shell_args_t) = %d\n"), (int)sizeof(struct shell_args_t));
+    std_printf(FSTR("sizeof(struct shell_t) = %d\n"), (int)sizeof(struct shell_t));
 
     /* sys */
     std_printf(FSTR("sizeof(struct sys_t) = %d\n"), (int)sizeof(struct sys_t));

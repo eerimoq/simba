@@ -67,4 +67,36 @@
 #    define CONFIG_SYSTEM_TICK_FREQUENCY 100
 #endif
 
+/**
+ * Minimal shell functionality.
+ */
+#ifndef CONFIG_SHELL_MINIMAL
+#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO)
+#        define CONFIG_SHELL_MINIMAL    1
+#    else
+#        define CONFIG_SHELL_MINIMAL    0
+#    endif
+#endif
+
+/**
+ * The shell prompt.
+ */
+#ifndef CONFIG_SHELL_PROMPT
+#    define CONFIG_SHELL_PROMPT "$ "
+#endif
+
+/**
+ * Maximum number of characters in a shell command.
+ */
+#ifndef CONFIG_SHELL_COMMAND_MAX
+#    define CONFIG_SHELL_COMMAND_MAX     64
+#endif
+
+/**
+ * Size of the shell history buffer.
+ */
+#ifndef CONFIG_SHELL_HISTORY_SIZE
+#    define CONFIG_SHELL_HISTORY_SIZE   (10 * CONFIG_SHELL_COMMAND_MAX)
+#endif
+
 #endif
