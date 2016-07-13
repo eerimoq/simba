@@ -28,6 +28,7 @@
 #include "kernel/fifo.h"
 #include "kernel/binary_tree.h"
 #include "kernel/setting.h"
+#include "kernel/heap.h"
 #include "kernel/time.h"
 #include "kernel/chan.h"
 #include "kernel/sys.h"
@@ -43,6 +44,6 @@
 #include "kernel/bits.h"
 #include "kernel/rwlock.h"
 #include "kernel/bus.h"
-#include "kernel/heap.h"
+#include "kernel/color.h"
 
 #endif
