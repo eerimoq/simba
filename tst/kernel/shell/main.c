@@ -452,6 +452,62 @@ static int test_cursor_insert(struct harness_t *harness_p)
     return (0);
 }
 
+static int test_cursor_cut(struct harness_t *harness_p)
+{
+    char buf[BUFFER_SIZE];
+
+    /* Write 'foo' to the shell. */
+    chan_write(&qin, "foo", sizeof("foo") - 1);
+    chout_read_until(buf, "foo");
+    BTASSERT(std_strcmp(buf, FSTR("foo")) == 0);
+
+    /* Move the cursor to the beginning of the line (Ctrl+A). */
+    chan_write(&qin, "\x01", 1);
+    chout_read_until(buf, "\x1b[3D");
+    BTASSERT(std_strcmp(buf, FSTR("\x1b[3D")) == 0);
+
+    /* Cut the whole line (Ctrl+K). */
+    chan_write(&qin, "\x0b", 1);
+    chout_read_until(buf, "\x08 \x08\x08 \x08\x08 \x08");
+    BTASSERT(std_strcmp(buf, FSTR("   \x08 \x08\x08 \x08\x08 \x08")) == 0);
+
+    /* Read until a new prompt to clean up. */
+    chan_write(&qin, "\r\n", 2);
+    chout_read_until_prompt(buf);
+
+    std_printf(FSTR("\r\n"));
+
+    return (0);
+}
+
+static int test_swap_characters(struct harness_t *harness_p)
+{
+    char buf[BUFFER_SIZE];
+
+    /* Write 'bra' to the shell. */
+    chan_write(&qin, "bra", sizeof("bra") - 1);
+    chout_read_until(buf, "bra");
+    BTASSERT(std_strcmp(buf, FSTR("bra")) == 0);
+
+    /* Move the cursor one step to the left. */
+    chan_write(&qin, "\x1b[D", 3);
+    chout_read_until(buf, "\x1b[1D");
+    BTASSERT(std_strcmp(buf, FSTR("\x1b[1D")) == 0);
+
+    /* Swap 'r' and 'a' (Ctrl+T). */
+    chan_write(&qin, "\x14", 1);
+    chout_read_until(buf, "bar");
+    BTASSERT(std_strcmp(buf, FSTR("\x1b[2D\x1b[Kbar")) == 0);
+
+    /* Read until a new prompt to clean up. */
+    chan_write(&qin, "\r\n", 2);
+    chout_read_until_prompt(buf);
+
+    std_printf(FSTR("\r\n"));
+
+    return (0);
+}
+
 static int test_backspace(struct harness_t *harness_p)
 {
     char buf[BUFFER_SIZE];
@@ -661,6 +717,8 @@ int main()
         { test_fs_counters_list, "test_fs_counters_list" },
         { test_cursor_movement, "test_cursor_movement" },
         { test_cursor_insert, "test_cursor_insert" },
+        { test_cursor_cut, "test_cursor_cut" },
+        { test_swap_characters, "test_swap_characters" },
         { test_backspace, "test_backspace" },
         { test_history_clear, "test_history_clear" },
         { test_history, "test_history" },

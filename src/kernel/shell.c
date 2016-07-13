@@ -770,14 +770,6 @@ static int handle_ctrl_r(struct shell_t *self_p)
 }
 
 /**
- * Ctrl+G Escape from history searching mode.
- */
-static int handle_ctrl_g(struct shell_t *self_p)
-{
-    return (0);
-}
-
-/**
  * ALT.
  */
 static int handle_alt(struct shell_t *self_p)
@@ -953,10 +945,6 @@ static int read_command(struct shell_t *self_p)
 
         case CTRL_R:
             handle_ctrl_r(self_p);
-            break;
-
-        case CTRL_G:
-            handle_ctrl_g(self_p);
             break;
 
         case ALT:
