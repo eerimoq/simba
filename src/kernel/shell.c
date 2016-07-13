@@ -195,27 +195,27 @@ static int cmd_help_cb(int argc,
     std_fprintf(chout_p,
                 FSTR("%sCursor movement%s\r\n"
                      "\r\n"
-                     "       LEFT   Go left one character.\r\n"
-                     "      RIGHT   Go right on character.\r\n"
-                     "     Ctrl+A   Go to the beginning of the line.\r\n"
-                     "     Ctrl+E   Go to the end of the line.\r\n"
+                     "         LEFT   Go left one character.\r\n"
+                     "        RIGHT   Go right on character.\r\n"
+                     "  HOME/Ctrl+A   Go to the beginning of the line.\r\n"
+                     "   END/Ctrl+E   Go to the end of the line.\r\n"
                      "\r\n"
                      "%sEdit%s\r\n"
                      "\r\n"
-                     "      Alt+D   Delete the word at the cursor.\r\n"
-                     "     Ctrl+D   Delete the chracter at the cursor.\r\n"
-                     "     Ctrl+K   Cut the line from cursor to end.\r\n"
-                     "     Ctrl+T   Swap the last two characters before the cursor (typo).\r\n"
-                     "        TAB   Tab completion for file/directory names.\r\n"
-                     "  BACKSPACE   Delete the character before the cursor.\r\n"
+                     "        Alt+D   Delete the word at the cursor.\r\n"
+                     "       Ctrl+D   Delete the chracter at the cursor.\r\n"
+                     "       Ctrl+K   Cut the line from cursor to end.\r\n"
+                     "       Ctrl+T   Swap the last two characters before the cursor (typo).\r\n"
+                     "          TAB   Tab completion for file/directory names.\r\n"
+                     "    BACKSPACE   Delete the character before the cursor.\r\n"
                      "\r\n"
                      "%sHistory%s\r\n"
                      "\r\n"
-                     "         UP   Previous command.\r\n"
-                     "       DOWN   Next command.\r\n"
-                     "     Ctrl+R   Recall the last command including the specified character(s)\r\n"
-                     "              searches the command history as you type.\r\n"
-                     "     Ctrl+G   Escape from history searching mode.\r\n"),
+                     "           UP   Previous command.\r\n"
+                     "         DOWN   Next command.\r\n"
+                     "       Ctrl+R   Recall the last command including the specified character(s)\r\n"
+                     "                searches the command history as you type.\r\n"
+                     "       Ctrl+G   Escape from history searching mode.\r\n"),
                 title_color_on, title_color_off,
                 title_color_on, title_color_off,
                 title_color_on, title_color_off);
@@ -523,10 +523,9 @@ static int handle_tab(struct shell_t *self_p)
         fs_split(buf, &path_p, &filter_p);
         std_fprintf(self_p->chout_p, FSTR("\r\n"));
         fs_list(path_p, filter_p, self_p->chout_p);
-        fs_merge(path_p, filter_p);
         std_fprintf(self_p->chout_p,
                     FSTR(CONFIG_SHELL_PROMPT "%s"),
-                    buf);
+                    line_get_buf(&self_p->line));
     }
 
     return (0);
@@ -539,9 +538,6 @@ static int handle_carrige_return(struct shell_t *self_p)
     return (0);
 }
 
-/**
- * Command termination.
- */
 static int handle_newline(struct shell_t *self_p)
 {
     self_p->newline_received = 1;
