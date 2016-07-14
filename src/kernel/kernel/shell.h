@@ -43,6 +43,7 @@ struct shell_t {
     const char *username_p;
     const char *password_p;
     struct shell_line_t line;
+    struct shell_line_t prev_line;
     int carriage_return_received;
     int newline_received;
     int authorized;
@@ -53,8 +54,11 @@ struct shell_t {
         struct shell_history_elem_t *head_p;
         struct shell_history_elem_t *tail_p;
         struct shell_history_elem_t *current_p;
-        char buf[CONFIG_SHELL_COMMAND_MAX];
-        int buf_valid;
+        struct shell_line_t pattern;
+        struct shell_line_t match;
+        /* Command line when first UP was pressed. */
+        struct shell_line_t line;
+        int line_valid;
         struct {
             struct heap_t heap;
             uint8_t buffer[CONFIG_SHELL_HISTORY_SIZE];

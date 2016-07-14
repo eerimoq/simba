@@ -262,8 +262,8 @@ static int history_init(struct shell_t *self_p)
     self_p->history.head_p = NULL;
     self_p->history.tail_p = NULL;
     self_p->history.current_p = NULL;
-    self_p->history.buf[0] = '\0';
-    self_p->history.buf_valid = 0;
+    line_init(&self_p->history.line);
+    self_p->history.line_valid = 0;
 
     heap_init(&self_p->history.heap.heap,
               self_p->history.heap.buffer,
@@ -349,8 +349,8 @@ static char *history_get_previous_command(struct shell_t *self_p)
 
         /* Save the current command to be able to restore it when DOWN
            is pressed. */
-        strcpy(self_p->history.buf, line_get_buf(&self_p->line));
-        self_p->history.buf_valid = 1;
+        self_p->history.line = self_p->line;
+        self_p->history.line_valid = 1;
     } else if (self_p->history.current_p != self_p->history.head_p) {
         self_p->history.current_p = self_p->history.current_p->prev_p;
     }
@@ -373,10 +373,10 @@ static char *history_get_next_command(struct shell_t *self_p)
 
     if (self_p->history.current_p != NULL) {
         return (self_p->history.current_p->buf);
-    } else if (self_p->history.buf_valid == 1) {
-        self_p->history.buf_valid = 0;
+    } else if (self_p->history.line_valid == 1) {
+        self_p->history.line_valid = 0;
 
-        return (self_p->history.buf);
+        return (line_get_buf(&self_p->history.line));
     } else {
         return (NULL);
     }
@@ -413,11 +413,11 @@ static int read_line(struct shell_t *self_p,
                      int sensitive)
 {
     char c;
-    int newline_found = 0;
 
     line_init(&self_p->line);
+    self_p->newline_received = 0;
 
-    while (newline_found == 0) {
+    while (self_p->newline_received == 0) {
         if (chan_read(self_p->chin_p, &c, sizeof(c)) != sizeof(c)) {
             return (-EIO);
         }
@@ -425,7 +425,7 @@ static int read_line(struct shell_t *self_p,
         switch (c) {
 
         case NEWLINE:
-            newline_found = 1;
+            self_p->newline_received = 1;
             break;
 
         case CARRIAGE_RETURN:
@@ -453,6 +453,10 @@ static int read_line(struct shell_t *self_p,
     return (0);
 }
 
+/**
+ * Let the user write its username and password and compare them to
+ * the allowed shell credentials.
+ */
 static int login(struct shell_t *self_p)
 {
     int res;
@@ -624,7 +628,7 @@ static int handle_ctrl_t(struct shell_t *self_p)
     return (0);
 }
 
-static int restore_original_line(struct shell_t *self_p,
+static int restore_previous_line(struct shell_t *self_p,
                                  struct shell_line_t *pattern_p)
 {
     int cursor;
@@ -634,10 +638,10 @@ static int restore_original_line(struct shell_t *self_p,
                                       "\x1b[K"
                                       "%s"),
                 17 + line_get_length(pattern_p),
-                line_get_buf(&self_p->line));
+                line_get_buf(&self_p->prev_line));
 
-    cursor = line_get_cursor(&self_p->line);
-    length = line_get_length(&self_p->line);
+    cursor = line_get_cursor(&self_p->prev_line);
+    length = line_get_length(&self_p->prev_line);
 
     if (cursor != length) {
         std_fprintf(self_p->chout_p,
@@ -659,11 +663,9 @@ static int restore_original_line(struct shell_t *self_p,
 static int handle_ctrl_r(struct shell_t *self_p)
 {
     char c, *buf_p;
-    struct shell_line_t pattern;
-    struct shell_line_t match;
 
-    line_init(&pattern);
-    line_init(&match);
+    line_init(&self_p->history.pattern);
+    line_init(&self_p->history.match);
 
     if (!line_is_empty(&self_p->line)) {
         std_fprintf(self_p->chout_p,
@@ -684,25 +686,25 @@ static int handle_ctrl_r(struct shell_t *self_p)
         switch (c) {
 
         case BACKSPACE:
-            if (!line_is_empty(&pattern)) {
+            if (!line_is_empty(&self_p->history.pattern)) {
                 std_fprintf(self_p->chout_p, FSTR("\x1b[1D"
                                                   "\x1b[K"
                                                   "': "));
-                line_seek(&pattern, -1);
-                line_delete(&pattern);
+                line_seek(&self_p->history.pattern, -1);
+                line_delete(&self_p->history.pattern);
                 buf_p = history_reverse_search(self_p,
-                                               line_get_buf(&pattern));
-                line_init(&match);
+                                               line_get_buf(&self_p->history.pattern));
+                line_init(&self_p->history.match);
 
                 if (buf_p != NULL) {
-                    line_insert_string(&match, buf_p);
+                    line_insert_string(&self_p->history.match, buf_p);
                 }
 
                 std_fprintf(self_p->chout_p,
                             FSTR("%s"
                                  "\x1b[%dD"),
-                            line_get_buf(&match),
-                            line_get_length(&match) + 3);
+                            line_get_buf(&self_p->history.match),
+                            line_get_length(&self_p->history.match) + 3);
             }
             break;
 
@@ -711,35 +713,35 @@ static int handle_ctrl_r(struct shell_t *self_p)
             break;
 
         case CTRL_G:
-            restore_original_line(self_p, &pattern);
+            restore_previous_line(self_p, &self_p->history.pattern);
             return (0);
 
         default:
             if (isprint((int)c)) {
-                if (line_insert(&pattern, c) == 0) {
+                if (line_insert(&self_p->history.pattern, c) == 0) {
                     std_fprintf(self_p->chout_p, FSTR("\x1b[K"
                                                       "%c"
                                                       "': "),
                                 c);
                     buf_p = history_reverse_search(self_p,
-                                                   line_get_buf(&pattern));
-                    line_init(&match);
+                                                   line_get_buf(&self_p->history.pattern));
+                    line_init(&self_p->history.match);
 
                     if (buf_p != NULL) {
-                        line_insert_string(&match, buf_p);
+                        line_insert_string(&self_p->history.match, buf_p);
                     }
 
                     std_fprintf(self_p->chout_p,
                                 FSTR("%s"
                                      "\x1b[%dD"),
-                                line_get_buf(&match),
-                                line_get_length(&match) + 3);
+                                line_get_buf(&self_p->history.match),
+                                line_get_length(&self_p->history.match) + 3);
                 }
             } else {
-                restore_original_line(self_p, &pattern);
+                restore_previous_line(self_p, &self_p->history.pattern);
 
-                /* Copy match to current line. */
-                self_p->line = match;
+                /* Copy the match to current line. */
+                self_p->line = self_p->history.match;
 
                 if (c == NEWLINE) {
                     self_p->newline_received = 1;
@@ -876,6 +878,115 @@ static int handle_other(struct shell_t *self_p,
 }
 
 /**
+ * Show updated line to the user and update the cursor to its new
+ * position.
+ */
+static int show_line(struct shell_t *self_p)
+{
+    int i;
+    int cursor, new_cursor;
+    int length, new_length, min_length;
+
+    cursor = line_get_cursor(&self_p->prev_line);
+    length = line_get_length(&self_p->prev_line);
+    new_length = line_get_length(&self_p->line);
+
+#if CONFIG_SHELL_MINIMAL == 0
+
+    new_cursor = line_get_cursor(&self_p->line);
+    min_length = MIN(line_get_length(&self_p->prev_line), new_length);
+
+    /* Was the line edited? */
+    if (strcmp(line_get_buf(&self_p->line),
+               line_get_buf(&self_p->prev_line)) != 0) {
+        /* Only output the change if the last part of the string
+           shall be deleted. */
+        if ((strncmp(line_get_buf(&self_p->line),
+                     line_get_buf(&self_p->prev_line),
+                     min_length) == 0)
+            && (new_cursor == new_length)) {
+
+#else
+            UNUSED(new_cursor);
+            UNUSED(min_length);
+#endif
+
+            if (length < new_length) {
+                /* New character. */
+                std_fprintf(self_p->chout_p,
+                            FSTR("%s"),
+                            &line_get_buf(&self_p->line)[cursor]);
+            } else {
+                /* Move the cursor to the end of the old line. */
+                for (i = cursor; i < length; i++) {
+                    std_fprintf(self_p->chout_p, FSTR(" "));
+                }
+
+                /* Backspace. */
+                for (i = new_length; i < length; i++) {
+                    std_fprintf(self_p->chout_p, FSTR("\x08 \x08"));
+                }
+            }
+
+#if CONFIG_SHELL_MINIMAL == 0
+
+        } else {
+            if (cursor > 0) {
+                std_fprintf(self_p->chout_p, FSTR("\x1b[%dD"), cursor);
+            }
+
+            std_fprintf(self_p->chout_p,
+                        FSTR("\x1b[K"
+                             "%s"),
+                        line_get_buf(&self_p->line));
+
+            if (new_cursor < new_length) {
+                std_fprintf(self_p->chout_p,
+                            FSTR("\x1b[%dD"),
+                            new_length - new_cursor);
+            }
+        }
+    } else if (cursor < new_cursor) {
+        std_fprintf(self_p->chout_p,
+                    FSTR("\x1b[%dC"),
+                    new_cursor - cursor);
+    } else if (new_cursor < cursor) {
+        std_fprintf(self_p->chout_p,
+                    FSTR("\x1b[%dD"),
+                    cursor - new_cursor);
+    }
+
+#endif
+
+    return (0);
+}
+
+/**
+ * Execute the current line.
+ */
+static int execute_line(struct shell_t *self_p)
+{
+    if (self_p->carriage_return_received == 1) {
+        std_fprintf(self_p->chout_p, FSTR("\r"));
+    }
+    
+    std_fprintf(self_p->chout_p, FSTR("\n"));
+
+#if CONFIG_SHELL_MINIMAL == 0
+
+    /* Append the command to the history. */
+    if (!line_is_empty(&self_p->line)) {
+        history_append(self_p, line_get_buf(&self_p->line));
+    }
+
+    history_reset_current(self_p);
+
+#endif
+
+    return (line_get_length(&self_p->line));
+}
+
+/**
  * Read the next command.
  *
  * @return Command length or negative error code.
@@ -883,10 +994,6 @@ static int handle_other(struct shell_t *self_p,
 static int read_command(struct shell_t *self_p)
 {
     char c;
-    int i;
-    int cursor, new_cursor;
-    int length, new_length, min_length;
-    char buf[CONFIG_SHELL_COMMAND_MAX];
 
     /* Initialize the read command state. */
     line_init(&self_p->line);
@@ -899,9 +1006,7 @@ static int read_command(struct shell_t *self_p)
         }
 
         /* Save current line. */
-        strcpy(buf,  line_get_buf(&self_p->line));
-        cursor = line_get_cursor(&self_p->line);
-        length = line_get_length(&self_p->line);
+        self_p->prev_line = self_p->line;
 
         switch (c) {
 
@@ -958,93 +1063,12 @@ static int read_command(struct shell_t *self_p)
             break;
         }
 
-        new_length = line_get_length(&self_p->line);
-
-#if CONFIG_SHELL_MINIMAL == 0
-
-        new_cursor = line_get_cursor(&self_p->line);
-        min_length = MIN(length, new_length);
-
-        /* Was the line edited? */
-        if (strcmp(line_get_buf(&self_p->line), buf) != 0) {
-            /* Only output the change if the last part of the string
-               shall be deleted. */
-            if ((strncmp(line_get_buf(&self_p->line),
-                         buf,
-                         min_length) == 0)
-                && (new_cursor == new_length)) {
-
-#else
-    UNUSED(new_cursor);
-    UNUSED(min_length);
-#endif
-
-                if (length < new_length) {
-                    /* New character. */
-                    std_fprintf(self_p->chout_p,
-                                FSTR("%s"),
-                                &line_get_buf(&self_p->line)[cursor]);
-                } else {
-                    /* Move the cursor to the end of the old line. */
-                    for (i = cursor; i < length; i++) {
-                        std_fprintf(self_p->chout_p, FSTR(" "));
-                    }
-
-                    /* Backspace. */
-                    for (i = new_length; i < length; i++) {
-                        std_fprintf(self_p->chout_p, FSTR("\x08 \x08"));
-                    }
-                }
-
-#if CONFIG_SHELL_MINIMAL == 0
-
-            } else {
-                if (cursor > 0) {
-                    std_fprintf(self_p->chout_p, FSTR("\x1b[%dD"), cursor);
-                }
-
-                std_fprintf(self_p->chout_p,
-                            FSTR("\x1b[K"
-                                 "%s"),
-                            line_get_buf(&self_p->line));
-
-                if (new_cursor < new_length) {
-                    std_fprintf(self_p->chout_p,
-                                FSTR("\x1b[%dD"),
-                                new_length - new_cursor);
-                }
-            }
-        } else if (cursor < new_cursor) {
-            std_fprintf(self_p->chout_p,
-                        FSTR("\x1b[%dC"),
-                        new_cursor - cursor);
-        } else if (new_cursor < cursor) {
-            std_fprintf(self_p->chout_p,
-                        FSTR("\x1b[%dD"),
-                        cursor - new_cursor);
-        }
-
-#endif
+        /* Show the new line to the user and execute it if enter was
+           pressed. */
+        show_line(self_p);
 
         if (self_p->newline_received == 1) {
-            if (self_p->carriage_return_received == 1) {
-                std_fprintf(self_p->chout_p, FSTR("\r"));
-            }
-
-            std_fprintf(self_p->chout_p, FSTR("\n"));
-
-#if CONFIG_SHELL_MINIMAL == 0
-
-            /* Append the command to the history. */
-            if (!line_is_empty(&self_p->line)) {
-                history_append(self_p, line_get_buf(&self_p->line));
-            }
-
-            history_reset_current(self_p);
-
-#endif
-
-            return (line_get_length(&self_p->line));
+            return (execute_line(self_p));
         }
     }
 
