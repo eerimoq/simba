@@ -29,6 +29,7 @@
 #include "kernel/binary_tree.h"
 #include "kernel/setting.h"
 #include "kernel/heap.h"
+#include "kernel/circular_heap.h"
 #include "kernel/time.h"
 #include "kernel/chan.h"
 #include "kernel/sys.h"
