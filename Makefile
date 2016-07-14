@@ -28,6 +28,7 @@ ifeq ($(BOARD), linux)
     TESTS = $(addprefix tst/kernel/, binary_tree \
                                      bits \
                                      bus \
+                                     circular_heap \
                                      event \
                                      fifo \
                                      fs \
@@ -61,6 +62,7 @@ ifeq ($(BOARD), arduino_due)
     TESTS = $(addprefix tst/kernel/, binary_tree \
                                      bits \
                                      bus \
+                                     circular_heap \
                                      event \
                                      fifo \
                                      fs \
@@ -95,6 +97,7 @@ ifeq ($(BOARD), arduino_mega)
     TESTS = $(addprefix tst/kernel/, binary_tree \
                                      bits \
                                      bus \
+                                     circular_heap \
                                      event \
                                      fifo \
                                      fs \
@@ -136,6 +139,7 @@ ifeq ($(BOARD), esp12e)
     TESTS = $(addprefix tst/kernel/, binary_tree \
                                      bits \
                                      bus \
+                                     circular_heap \
                                      event \
                                      fifo \
                                      fs \
@@ -163,6 +167,7 @@ ifeq ($(BOARD), stm32vldiscovery)
     TESTS = $(addprefix tst/kernel/, binary_tree \
                                      bits \
                                      bus \
+                                     circular_heap \
                                      event \
                                      fifo \
                                      fs \
@@ -190,6 +195,7 @@ ifeq ($(BOARD), photon)
     TESTS = $(addprefix tst/kernel/, binary_tree \
                                      bits \
                                      bus \
+                                     circular_heap \
                                      event \
                                      fifo \
                                      fs \
