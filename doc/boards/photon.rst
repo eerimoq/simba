@@ -21,6 +21,13 @@ Drivers
 - :doc:`../api-reference/drivers/pin`
 - :doc:`../api-reference/drivers/sdio`
 - :doc:`../api-reference/drivers/uart`
+- :doc:`../api-reference/drivers/wwd_buffer`
+- :doc:`../api-reference/drivers/wwd_bus`
+- :doc:`../api-reference/drivers/wwd_network`
+- :doc:`../api-reference/drivers/wwd_platform`
+- :doc:`../api-reference/drivers/wwd_resource`
+- :doc:`../api-reference/drivers/wwd_rtos`
+- :doc:`../api-reference/drivers/wwd_sdio`
 
 Mcu
 ---
