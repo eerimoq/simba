@@ -60,8 +60,8 @@ struct shell_t {
         struct shell_line_t line;
         int line_valid;
         struct {
-            struct heap_t heap;
-            uint8_t buffer[CONFIG_SHELL_HISTORY_SIZE];
+            struct circular_heap_t heap;
+            uint8_t buf[CONFIG_SHELL_HISTORY_SIZE];
         } heap;
     } history;
 

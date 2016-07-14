@@ -256,19 +256,15 @@ static int cmd_history_cb(int argc,
 
 static int history_init(struct shell_t *self_p)
 {
-    /* No fixed buffers. */
-    size_t sizes[HEAP_FIXED_SIZES_MAX] = { 0 };
-
     self_p->history.head_p = NULL;
     self_p->history.tail_p = NULL;
     self_p->history.current_p = NULL;
     line_init(&self_p->history.line);
     self_p->history.line_valid = 0;
 
-    heap_init(&self_p->history.heap.heap,
-              self_p->history.heap.buffer,
-              sizeof(self_p->history.heap.buffer),
-              sizes);
+    circular_heap_init(&self_p->history.heap.heap,
+                       self_p->history.heap.buf,
+                       sizeof(self_p->history.heap.buf));
 
     return (0);
 }
@@ -292,8 +288,8 @@ static int history_append(struct shell_t *self_p,
 
     while (elem_p == NULL) {
         /* Allocate memory. */
-        elem_p = heap_alloc(&self_p->history.heap.heap,
-                            sizeof(*elem_p) + command_size);
+        elem_p = circular_heap_alloc(&self_p->history.heap.heap,
+                                     sizeof(*elem_p) + command_size);
 
         /* Free the oldest command if there is no memory available. */
         if (elem_p == NULL) {
@@ -313,7 +309,7 @@ static int history_append(struct shell_t *self_p,
                 head_p->next_p->prev_p = NULL;
             }
 
-            heap_free(&self_p->history.heap.heap, head_p);
+            circular_heap_free(&self_p->history.heap.heap, head_p);
         }
     }
 
@@ -969,7 +965,7 @@ static int execute_line(struct shell_t *self_p)
     if (self_p->carriage_return_received == 1) {
         std_fprintf(self_p->chout_p, FSTR("\r"));
     }
-    
+
     std_fprintf(self_p->chout_p, FSTR("\n"));
 
 #if CONFIG_SHELL_MINIMAL == 0
