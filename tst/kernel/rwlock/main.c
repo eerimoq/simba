@@ -27,19 +27,19 @@ static int test_one_thread(struct harness_t *harness_p)
 
     BTASSERT(rwlock_init(&foo) == 0);
 
-    BTASSERT(rwlock_reader_get(&foo, NULL) == 0);
-    BTASSERT(rwlock_reader_get(&foo, NULL) == 0);
-    BTASSERT(rwlock_reader_put(&foo) == 0);
+    BTASSERT(rwlock_reader_take(&foo, NULL) == 0);
+    BTASSERT(rwlock_reader_take(&foo, NULL) == 0);
+    BTASSERT(rwlock_reader_give(&foo) == 0);
 
     timeout.seconds = 0;
     timeout.nanoseconds = 1;
 
-    BTASSERT(rwlock_writer_get(&foo, &timeout) == -ETIMEDOUT);
-    BTASSERT(rwlock_reader_put(&foo) == 0);
+    BTASSERT(rwlock_writer_take(&foo, &timeout) == -ETIMEDOUT);
+    BTASSERT(rwlock_reader_give(&foo) == 0);
 
-    BTASSERT(rwlock_writer_get(&foo, NULL) == 0);
-    BTASSERT(rwlock_reader_get(&foo, &timeout) == -ETIMEDOUT);
-    BTASSERT(rwlock_writer_put(&foo) == 0);
+    BTASSERT(rwlock_writer_take(&foo, NULL) == 0);
+    BTASSERT(rwlock_reader_take(&foo, &timeout) == -ETIMEDOUT);
+    BTASSERT(rwlock_writer_give(&foo) == 0);
 
     return (0);
 }
