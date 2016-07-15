@@ -20,6 +20,26 @@
 
 #include "simba.h"
 
+static void test_vprintf_wrapper(FAR const char *fmt_p, ...)
+{
+    va_list ap;
+
+    va_start(ap, fmt_p);
+    std_vprintf(fmt_p, &ap);
+    va_end(ap);
+}
+
+static void test_vfprintf_wrapper(chan_t *chan_p,
+                                  FAR const char *fmt_p,
+                                  ...)
+{
+    va_list ap;
+
+    va_start(ap, fmt_p);
+    std_vfprintf(chan_p, fmt_p, &ap);
+    va_end(ap);
+}
+
 int test_sprintf(struct harness_t *harness_p)
 {
     char buf[128];
@@ -59,6 +79,22 @@ int test_sprintf(struct harness_t *harness_p)
                                  0xffffU)) == 30);
 #endif
     std_printf(FSTR("%s\r\n"), buf);
+
+    return (0);
+}
+
+int test_vprintf(struct harness_t *harness_p)
+{
+    test_vprintf_wrapper(FSTR("vprintf: %d\r\n"), 1);
+
+    return (0);
+}
+
+int test_vfprintf(struct harness_t *harness_p)
+{
+    test_vfprintf_wrapper(sys_get_stdout(),
+                          FSTR("vprintf: %d\r\n"),
+                          1);
 
     return (0);
 }
@@ -104,9 +140,15 @@ int test_strtol(struct harness_t *harness_p)
     BTASSERT(std_strtol("0xB011", &value) != NULL);
     BTASSERT(value == 0xB011);
 
+    /* Base 10. */
     BTASSERT(std_strtol("1011", &value) != NULL);
     BTASSERT(value == 1011);
 
+    /* Base 8. */
+    BTASSERT(std_strtol("01011", &value) != NULL);
+    BTASSERT(value == 01011);
+
+    /* Base 2. */
     BTASSERT(std_strtol("0b1011", &value) != NULL);
     BTASSERT(value == 0b1011);
 
@@ -140,6 +182,47 @@ int test_strtol(struct harness_t *harness_p)
     BTASSERT(value == 0x101);
     BTASSERT(*next_p == '.');
     
+    return (0);
+}
+
+int test_strcpy(struct harness_t *harness_p)
+{
+    char buf[16];
+    
+    BTASSERT(std_strcpy(buf, FSTR("foo")) == 3);
+    BTASSERT(buf[0] == 'f');
+    BTASSERT(buf[1] == 'o');
+    BTASSERT(buf[2] == 'o');
+    BTASSERT(buf[3] == '\0');
+
+    BTASSERT(std_strcpy(buf, FSTR("")) == 0);
+    BTASSERT(buf[0] == '\0');
+
+    return (0);
+}
+
+int test_strcmp(struct harness_t *harness_p)
+{
+    /* Far + local. */
+    BTASSERT(std_strncmp(FSTR("foo"), "foo", 3) == 0);
+    BTASSERT(std_strncmp(FSTR("foo"), "foo", 0) == 0);
+    BTASSERT(std_strncmp(FSTR("foo"), "foobar", 3) == 0);
+    BTASSERT(std_strncmp(FSTR("foo"), "foobar", 4) == -'b');
+
+    /* Far + far. */
+    BTASSERT(std_strncmp_f(FSTR("foo"), FAR("foo"), 3) == 0);
+    BTASSERT(std_strncmp_f(FSTR("foo"), FAR("foo"), 0) == 0);
+    BTASSERT(std_strncmp_f(FSTR("foo"), FAR("foobar"), 3) == 0);
+    BTASSERT(std_strncmp_f(FSTR("foo"), FAR("foobar"), 4) == -'b');
+
+    return (0);
+}
+
+int test_strlen(struct harness_t *harness_p)
+{
+    BTASSERT(std_strlen(FSTR("foo")) == 3);
+    BTASSERT(std_strlen(FSTR("")) == 0);
+
     return (0);
 }
 
@@ -194,7 +277,12 @@ int main()
     struct harness_t harness;
     struct harness_testcase_t harness_testcases[] = {
         { test_sprintf, "test_sprintf" },
+        { test_vprintf, "test_vprintf" },
+        { test_vfprintf, "test_vfprintf" },
         { test_strtol, "test_strtol" },
+        { test_strcpy, "test_strcpy" },
+        { test_strcmp, "test_strcmp" },
+        { test_strlen, "test_strlen" },
         { test_sprintf_double, "test_sprintf_double" },
         { test_strip, "test_strip" },
         { test_in, "test_in" },
