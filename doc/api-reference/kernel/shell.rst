@@ -4,8 +4,12 @@
 .. module:: shell
    :synopsis: Debug shell.
 
-The shell in a command line interface where the user can execute
+The shell is a command line interface where the user can execute
 various commands to control, debug and monitor its application.
+
+.. image:: ../../images/shell.png
+   :width: 70%
+   :target: ../../_images/shell.png
 
 The shell module has a few configuration variables that can be used to
 tailor the shell to the application requirements. Most noticeably is
