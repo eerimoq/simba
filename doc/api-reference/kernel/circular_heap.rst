@@ -49,7 +49,7 @@ buffers are allocated and freed.
 
 5. Allocating a buffer that is bigger than the available space between
    `alloc` and `end` results in a buffer starting at `begin`. The
-   memory between `free` and `end` will be unused.
+   memory between the old `alloc` and `end` will be unused.
 
    .. code:: text
 
