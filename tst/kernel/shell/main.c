@@ -369,6 +369,16 @@ static int test_cursor_movement(struct harness_t *harness_p)
     chout_read_until(buf, "\x1b[2C");
     BTASSERT(std_strcmp(buf, FSTR("\x1b[2C")) == 0);
 
+    /* Move the cursor to the beginning of the line (HOME). */
+    chan_write(&qin, "\x1bOH", 3);
+    chout_read_until(buf, "\x1b[3D");
+    BTASSERT(std_strcmp(buf, FSTR("\x1b[3D")) == 0);
+
+    /* Move the cursor to the end of the line (END).*/
+    chan_write(&qin, "\x1bOF", 3);
+    chout_read_until(buf, "\x1b[3C");
+    BTASSERT(std_strcmp(buf, FSTR("\x1b[3C")) == 0);
+
     /* Move the cursor one step to the right (right arrow). This
        should not output anything since the cursor is already at the
        end of the line. */
@@ -550,6 +560,49 @@ static int test_backspace(struct harness_t *harness_p)
     return (0);
 }
 
+static int test_delete_word(struct harness_t *harness_p)
+{
+    char buf[BUFFER_SIZE];
+    int i;
+
+    /* Delete from empty line. */
+    chan_write(&qin, "\x1b""d", 2);
+
+    /* Write '1' to the shell. */
+    chan_write(&qin, "123 456 789", sizeof("123 456 789") - 1);
+    chout_read_until(buf, "123 456 789");
+    BTASSERT(std_strcmp(buf, FSTR("123 456 789")) == 0);
+
+    /* Move the cursor eight step to the left. */
+    for (i = 0; i < 8; i++) {
+        chan_write(&qin, "\x1b[D", 3);
+        chout_read_until(buf, "\x1b[1D");
+        BTASSERT(std_strcmp(buf, FSTR("\x1b[1D")) == 0);
+    }
+
+    /* Delete the word ' 456'. */
+    chan_write(&qin, "\x1b""d", 2);
+    chout_read_until(buf, "\x1b[4D");
+    BTASSERT(std_strcmp(buf, FSTR("\x1b[3D\x1b[K123 789\x1b[4D")) == 0);
+
+    /* Delete the word ' 789'. */
+    chan_write(&qin, "\x1b""d", 2);
+    chout_read_until(buf, "\x08 \x08\x08 \x08\x08 \x08\x08 \x08");
+    BTASSERT(std_strcmp(buf, FSTR("    "
+                                  "\x08 \x08"
+                                  "\x08 \x08"
+                                  "\x08 \x08"
+                                  "\x08 \x08")) == 0);
+
+    /* Read until a new prompt to clean up. */
+    chan_write(&qin, "\r\n", 2);
+    chout_read_until_prompt(buf);
+
+    std_printf(FSTR("\r\n"));
+
+    return (0);
+}
+
 static int test_history_clear(struct harness_t *harness_p)
 {
     char buf[BUFFER_SIZE];
@@ -720,6 +773,7 @@ int main()
         { test_cursor_cut, "test_cursor_cut" },
         { test_swap_characters, "test_swap_characters" },
         { test_backspace, "test_backspace" },
+        { test_delete_word, "test_delete_word" },
         { test_history_clear, "test_history_clear" },
         { test_history, "test_history" },
         { test_history_up_down, "test_history_up_down" },
