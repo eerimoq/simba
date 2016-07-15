@@ -47,65 +47,65 @@ int rwlock_module_init(void);
 int rwlock_init(struct rwlock_t *self_p);
 
 /**
- * Lock given reader-writer lock. Multiple threads can have the reader
+ * Take given reader-writer lock. Multiple threads can have the reader
  * lock at the same time.
  *
- * @param[in] self_p Reader-writer lock to lock.
+ * @param[in] self_p Reader-writer lock to take.
  * @param[in] timeout_p Timeout.
  *
  * @return zero(0) or negative error code.
  */
-int rwlock_reader_lock(struct rwlock_t *self_p,
+int rwlock_reader_take(struct rwlock_t *self_p,
                        struct time_t *timeout_p);
 
 /**
- * Unlock given reader-writer lock.
+ * Give given reader-writer lock.
  *
  * @param[in] self_p Reader-writer lock to add count to.
  *
  * @return zero(0) or negative error code.
  */
-int rwlock_reader_unlock(struct rwlock_t *self_p);
+int rwlock_reader_give(struct rwlock_t *self_p);
 
 /**
- * Unlock given reader-writer lock from isr or with the system lock
+ * Give given reader-writer lock from isr or with the system lock
  * taken.
  *
  * @param[in] self_p Reader-writer lock.
  *
  * @return zero(0) or negative error code.
  */
-int rwlock_reader_unlock_isr(struct rwlock_t *self_p);
+int rwlock_reader_give_isr(struct rwlock_t *self_p);
 
 /**
- * Lock given reader-writer lock as a writer. Only one thread can have
+ * Take given reader-writer lock as a writer. Only one thread can have
  * the lock at a time, including both readers and writers.
  *
- * @param[in] self_p Reader-writer lock to lock.
+ * @param[in] self_p Reader-writer lock to take.
  * @param[in] timeout_p Timeout.
  *
  * @return zero(0) or negative error code.
  */
-int rwlock_writer_lock(struct rwlock_t *self_p,
+int rwlock_writer_take(struct rwlock_t *self_p,
                        struct time_t *timeout_p);
 
 /**
- * Unlock given reader-writer lock.
+ * Give given reader-writer lock.
  *
  * @param[in] self_p Reader-writer lock.
  *
  * @return zero(0) or negative error code.
  */
-int rwlock_writer_unlock(struct rwlock_t *self_p);
+int rwlock_writer_give(struct rwlock_t *self_p);
 
 /**
- * Unlock given reader-writer lock from isr or with the system lock
+ * Give given reader-writer lock from isr or with the system lock
  * taken.
  *
  * @param[in] self_p Reader-writer lock to add count to.
  *
  * @return zero(0) or negative error code.
  */
-int rwlock_writer_unlock_isr(struct rwlock_t *self_p);
+int rwlock_writer_give_isr(struct rwlock_t *self_p);
 
 #endif

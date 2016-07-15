@@ -58,7 +58,7 @@ int bus_attach(struct bus_t *self_p,
 
     struct bus_listener_t *head_p;
 
-    rwlock_writer_lock(&self_p->rwlock, NULL);
+    rwlock_writer_take(&self_p->rwlock, NULL);
 
     /* Try to insert the node into the tree. It fails if there already
      * is a node with the same key (id).*/
@@ -70,7 +70,7 @@ int bus_attach(struct bus_t *self_p,
         head_p->next_p = listener_p;
     }
 
-    rwlock_writer_unlock(&self_p->rwlock);
+    rwlock_writer_give(&self_p->rwlock);
 
     return (0);
 }
@@ -84,7 +84,7 @@ int bus_detatch(struct bus_t *self_p,
     int res = 0;
     struct bus_listener_t *head_p, *curr_p, *prev_p;
 
-    rwlock_writer_lock(&self_p->rwlock, NULL);
+    rwlock_writer_take(&self_p->rwlock, NULL);
 
     head_p = (struct bus_listener_t *)binary_tree_search(
         &self_p->listeners, listener_p->id);
@@ -115,7 +115,7 @@ int bus_detatch(struct bus_t *self_p,
         }
     }
 
-    rwlock_writer_unlock(&self_p->rwlock);
+    rwlock_writer_give(&self_p->rwlock);
 
     return (res);
 }
@@ -132,7 +132,7 @@ int bus_write(struct bus_t *self_p,
     int number_of_receivers;
     struct bus_listener_t *curr_p;
 
-    rwlock_reader_lock(&self_p->rwlock, NULL);
+    rwlock_reader_take(&self_p->rwlock, NULL);
 
     curr_p = (struct bus_listener_t *)binary_tree_search(
         &self_p->listeners, id);
@@ -146,7 +146,7 @@ int bus_write(struct bus_t *self_p,
         curr_p = curr_p->next_p;
     }
 
-    rwlock_reader_unlock(&self_p->rwlock);
+    rwlock_reader_give(&self_p->rwlock);
 
     return (number_of_receivers);
 }
