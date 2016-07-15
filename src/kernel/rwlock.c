@@ -43,7 +43,7 @@ int rwlock_init(struct rwlock_t *self_p)
     return (0);
 }
 
-int rwlock_reader_take(struct rwlock_t *self_p,
+int rwlock_reader_lock(struct rwlock_t *self_p,
                        struct time_t *timeout_p)
 {
     ASSERTN(self_p != NULL, EINVAL);
@@ -82,18 +82,18 @@ int rwlock_reader_take(struct rwlock_t *self_p,
     return (res);
 }
 
-int rwlock_reader_give(struct rwlock_t *self_p)
+int rwlock_reader_unlock(struct rwlock_t *self_p)
 {
     ASSERTN(self_p != NULL, EINVAL);
 
     sys_lock();
-    rwlock_reader_give_isr(self_p);
+    rwlock_reader_unlock_isr(self_p);
     sys_unlock();
 
     return (0);
 }
 
-int rwlock_reader_give_isr(struct rwlock_t *self_p)
+int rwlock_reader_unlock_isr(struct rwlock_t *self_p)
 {
     ASSERTN(self_p != NULL, EINVAL);
 
@@ -112,7 +112,7 @@ int rwlock_reader_give_isr(struct rwlock_t *self_p)
     return (0);
 }
 
-int rwlock_writer_take(struct rwlock_t *self_p,
+int rwlock_writer_lock(struct rwlock_t *self_p,
                        struct time_t *timeout_p)
 {
     ASSERTN(self_p != NULL, EINVAL);
@@ -151,18 +151,18 @@ int rwlock_writer_take(struct rwlock_t *self_p,
     return (res);
 }
 
-int rwlock_writer_give(struct rwlock_t *self_p)
+int rwlock_writer_unlock(struct rwlock_t *self_p)
 {
     ASSERTN(self_p != NULL, EINVAL);
 
     sys_lock();
-    rwlock_writer_give_isr(self_p);
+    rwlock_writer_unlock_isr(self_p);
     sys_unlock();
 
     return (0);
 }
 
-int rwlock_writer_give_isr(struct rwlock_t *self_p)
+int rwlock_writer_unlock_isr(struct rwlock_t *self_p)
 {
     volatile struct rwlock_elem_t *elem_p;
 
