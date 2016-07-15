@@ -20,6 +20,23 @@ Sometimes it's useful to write log entries to multiple channels. This
 is possible by creating and adding another log handler to the log
 module.
 
+The log entry format is:
+
+.. code:: text
+
+   <timestamp>:<log level>:<thread name>:<log object name>: <message>
+
+A few example outputs using three log objects; foo, bar and the
+default log object main. All logs are from the main thread as can be
+seen in the third field in the entries.
+
+.. code:: text
+
+   23:info:main:foo: A foo info message.
+   24:info:main:bar: A bar info message.
+   37:debug:main:bar: A bar debug message.
+   56:error:main:main: A main error message.
+
 ----------------------------------------------
 
 Source code: :github-blob:`src/kernel/kernel/log.h`
