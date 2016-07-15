@@ -24,15 +24,27 @@
 #include "simba.h"
 
 /**
- * Calculate crc using the polynom
+ * Calculate a 32 bits crc using the polynom
  * ``x^32+x^26+x^23+x^22+x^16+x^12+x^11+x^10+x^8+x^7+x^5+x^4+x^2+x^1+x^0``.
  *
- * @param[in] crc Initial crc. Often zero(0).
+ * @param[in] crc Initial crc. Often 0x00000000.
  * @param[in] buf_p Buffer to calculate crc of.
  * @param[in] size Size of the buffer.
  *
  * @return Calculated crc.
  */
 uint32_t crc_32(uint32_t crc, const void *buf_p, size_t size);
+
+/**
+ * Calculate a 16 bits crc using the CCITT polynom
+ * ``x^16+x^12+x^5+x^1``.
+ *
+ * @param[in] crc Initial crc. Should be 0xffff for CCITT.
+ * @param[in] buf_p Buffer to calculate crc of.
+ * @param[in] size Size of the buffer.
+ *
+ * @return Calculated crc.
+ */
+uint16_t crc_ccitt(uint16_t crc, const void *buf_p, size_t size);
 
 #endif
