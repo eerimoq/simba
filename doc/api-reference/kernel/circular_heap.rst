@@ -53,8 +53,7 @@ buffers are allocated and freed.
 
    .. code:: text
 
-      begin
-                         alloc   free                        end
+      begin              alloc   free                        end
         |==================|------|================|oooooooooo|
 
 6. Freeing the second buffer increments `free` to the position of the
