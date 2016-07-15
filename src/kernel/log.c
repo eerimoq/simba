@@ -175,7 +175,7 @@ static int cmd_set_log_mask_cb(int argc,
 
 int log_module_init()
 {
-    sem_init(&state.sem, 1);
+    sem_init(&state.sem, 0, 1);
 
     state.handler.chout_p = sys_get_stdout();
     state.handler.next_p = NULL;

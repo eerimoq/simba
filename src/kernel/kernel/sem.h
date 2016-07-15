@@ -27,15 +27,25 @@
  * Compile-time declaration of a semaphore.
  *
  * @param[in] name Semaphore to initialize.
- * @param[in] count Initial semaphore count.
+ * @param[in] count Initial count. Set the initial count to the same
+ *                  value as count_max to initialize the semaphore
+ *                  with all resources used.
+ * @param[in] count_max Maximum number of users holding the semaphore
+ *                      at the same time.
  */
-#define SEM_INIT_DECL(name, _count)                             \
-    struct sem_t name = { .count = _count, .head_p = NULL }
+#define SEM_INIT_DECL(name, _count, _count_max)         \
+    struct sem_t name = { .count = _count,              \
+                          .count_max = _count_max,      \
+                          .head_p = NULL }
 
 struct sem_elem_t;
 
 struct sem_t {
+    /** Number of used resources. */
     int count;
+    /** Maximum number of resources. */
+    int count_max;
+    /** Wait list. */
     struct sem_elem_t *head_p;
 };
 
@@ -47,16 +57,21 @@ struct sem_t {
 int sem_module_init(void);
 
 /**
- * Initialize given semaphore object. Count is the number of threads
- * that can hold the semaphore at the same time.
+ * Initialize given semaphore object. Maximum count is the number of
+ * resources that can be taken at any given moment.
  *
  * @param[in] self_p Semaphore to initialize.
- * @param[in] count Initial semaphore count.
+ * @param[in] count Initial taken resource count. Set the initial
+ *                  count to the same value as count_max to initialize
+ *                  the semaphore with all resources taken.
+ * @param[in] count_max Maximum number of resources that can be taken
+ *                      at any given moment.
  *
  * @return zero(0) or negative error code.
  */
 int sem_init(struct sem_t *self_p,
-             int count);
+             int count,
+             int count_max);
 
 /**
  * Take given semaphore. If the semaphore count is zero the calling
@@ -76,6 +91,11 @@ int sem_take(struct sem_t *self_p,
  * for this semaphore, in `sem_take()`, is resumed. This continues
  * until the semaphore count becomes zero or there are no threads in
  * the suspended list.
+ *
+ * Giving a count greater than the currently taken count is allowed
+ * and results in all resources available. This is especially useful
+ * for binary semaphores where `sem_give()` if often called more often
+ * than `sem_take()`.
  *
  * @param[in] self_p Semaphore to give count to.
  * @param[in] count Count to give.

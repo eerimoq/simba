@@ -32,12 +32,15 @@ int sem_module_init(void)
 }
 
 int sem_init(struct sem_t *self_p,
-             int count)
+             int count,
+             int count_max)
 {
     ASSERTN(self_p != NULL, EINVAL);
-    ASSERTN(count >= 0, EINVAL);
+    ASSERTN((count >= 0) && (count <= count_max), EINVAL);
+    ASSERTN(count_max > 0, EINVAL);
 
     self_p->count = count;
+    self_p->count_max = count_max;
     self_p->head_p = NULL;
 
     return (0);
@@ -53,7 +56,7 @@ int sem_take(struct sem_t *self_p,
 
     sys_lock();
 
-    if (self_p->count == 0) {
+    if (self_p->count == self_p->count_max) {
         elem.thrd_p = thrd_self();
         elem.next_p = self_p->head_p;
         elem.prev_p = NULL;
@@ -72,7 +75,7 @@ int sem_take(struct sem_t *self_p,
             }
         }
     } else {
-        self_p->count--;
+        self_p->count++;
     }
 
     sys_unlock();
@@ -84,7 +87,7 @@ int sem_give(struct sem_t *self_p,
              int count)
 {
     ASSERTN(self_p != NULL, EINVAL);
-    ASSERTN(count > 0, EINVAL);
+    ASSERTN(count >= 0, EINVAL);
 
     sys_lock();
     sem_give_isr(self_p, count);
@@ -98,10 +101,14 @@ int sem_give_isr(struct sem_t *self_p,
 {
     struct sem_elem_t *elem_p;
 
-    self_p->count += count;
+    self_p->count -= count;
 
-    while ((self_p->count > 0) && (self_p->head_p != NULL)) {
-        self_p->count--;
+    if (self_p->count < 0) {
+        self_p->count = 0;
+    }
+
+    while ((self_p->count <= self_p->count_max) && (self_p->head_p != NULL)) {
+        self_p->count++;
         elem_p = self_p->head_p;
         self_p->head_p = elem_p->next_p;
 

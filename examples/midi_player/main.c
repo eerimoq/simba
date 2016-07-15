@@ -138,7 +138,7 @@ static void init(void)
               sizeof(uart_midi_in));
     uart_start(&uart_midi);
 
-    sem_init(&sem, 1);
+    sem_init(&sem, 0, 1);
 
     thrd_spawn(midi_through_main,
                NULL,

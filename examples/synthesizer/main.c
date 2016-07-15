@@ -638,7 +638,7 @@ static int init(void)
 
     event_init(&synthesizer.events);
     event_init(&synthesizer.sensors.events);
-    sem_init(&synthesizer.sem, 1);
+    sem_init(&synthesizer.sem, 0, 1);
 
     dac_init(&synthesizer.dac,
              &dac_0_dev,

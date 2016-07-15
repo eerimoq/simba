@@ -401,8 +401,8 @@ int mcp2515_init(struct mcp2515_driver_t *self_p,
     self_p->speed = speed;
     self_p->chin_p = chin_p;
 
-    sem_init(&self_p->isr_sem, 0);
-    sem_init(&self_p->tx_sem, 0);
+    sem_init(&self_p->isr_sem, 1, 1);
+    sem_init(&self_p->tx_sem, 0, 1);
 
     exti_init(&self_p->exti,
               exti_p,

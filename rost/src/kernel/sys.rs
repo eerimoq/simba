@@ -24,6 +24,7 @@ use core::ptr;
 pub static mut STDOUT: Stdout = Stdout {
     sem: ::Struct_sem_t {
         count: 0,
+        count_max: 1,
         head_p: 0 as *mut ::Struct_sem_elem_t
     }
 };
@@ -68,7 +69,7 @@ pub fn start()
     let sizes: [u32; 8] = [16, 32, 64, 128, 256, 512, 1024, 2048];
 
     unsafe {
-        ::sem_init(&mut STDOUT.sem as *mut ::Struct_sem_t, 1);
+        ::sem_init(&mut STDOUT.sem as *mut ::Struct_sem_t, 0, 1);
         ::heap_init(&mut HEAP as *mut ::Struct_heap_t,
                     HEAP_BUF.as_ptr() as *mut i32,
                     HEAP_BUF.len() as u32,

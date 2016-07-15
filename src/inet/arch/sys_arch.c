@@ -90,7 +90,7 @@ u32_t sys_arch_mbox_tryfetch(sys_mbox_t *self_p, void **msg_pp)
 
 err_t sys_sem_new(sys_sem_t *self_p, u8_t count)
 {
-    sem_init(self_p, count);
+    sem_init(self_p, 0, count);
 
     return (ERR_OK);
 }
@@ -116,7 +116,7 @@ void sys_sem_free(sys_sem_t *self_p)
 
 err_t sys_mutex_new(sys_mutex_t *self_p)
 {
-    sem_init(self_p, 1);
+    sem_init(self_p, 0, 1);
 
     return (ERR_OK);
 }
