@@ -4,8 +4,6 @@
 .. module:: socket
    :synopsis: Internet communication.
 
-Source code: :github-blob:`src/inet/inet/socket.h`
-
 Sockets are used to communicate over IP networks. TCP and UDP are the
 most common transport protocols.
 
@@ -61,6 +59,10 @@ And below is the same scenario for UDP.
 
    /* Close the connection. */
    socket_close(&udp);
+
+----------------------------------------------
+
+Source code: :github-blob:`src/inet/socket.h`
  
 ----------------------------------------------
 

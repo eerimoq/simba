@@ -2,16 +2,23 @@ API Reference
 =============
 
 Besides the generated documentation the source code of the interfaces
-are available on Github. See :github-tree:`Kernel <src/kernel/kernel>`,
-:github-tree:`Drivers <src/drivers/drivers>`, :github-tree:`Slib
-<src/slib/slib>` and :github-tree:`Inet<src/inet/inet>`.
+and their implementatins are available on :github-tree:`Github <src>`.
 
 .. toctree::
    :maxdepth: 2
    :numbered:
 
    api-reference/kernel
+   api-reference/sync
+   api-reference/collections
+   api-reference/alloc
+   api-reference/text
+   api-reference/debug
+   api-reference/oam
+   api-reference/storage
    api-reference/drivers
-   api-reference/slib
+   api-reference/encode
+   api-reference/hash
    api-reference/inet
+   api-reference/multimedia
    api-reference/boards

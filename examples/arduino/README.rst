@@ -6,4 +6,4 @@ IDE.
 
 The examples requires Arduino build system files is
 $SIMBA_ROOT/simba-arduino/. Generate those files by running "make
-arduino-generate" in $SIMBA_ROOT.
+arduino" in $SIMBA_ROOT.

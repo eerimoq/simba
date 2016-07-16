@@ -87,16 +87,10 @@ postpare:
 BOARD.mk ?= $(SIMBA_ROOT)/src/boards/$(BOARD)/board.mk
 include $(BOARD.mk)
 MCU.mk ?= $(SIMBA_ROOT)/src/mcus/$(MCU)/mcu.mk
-KERNEL.mk ?= $(SIMBA_ROOT)/src/kernel/kernel.mk
-DRIVERS.mk ?= $(SIMBA_ROOT)/src/drivers/drivers.mk
-SLIB.mk ?= $(SIMBA_ROOT)/src/slib/slib.mk
-INET.mk ?= $(SIMBA_ROOT)/src/inet/inet.mk
+SIMBA.mk ?= $(SIMBA_ROOT)/src/simba.mk
 
 include $(MCU.mk)
-include $(KERNEL.mk)
-include $(DRIVERS.mk)
-include $(SLIB.mk)
-include $(INET.mk)
+include $(SIMBA.mk)
 
 UPPER_ARCH := $(shell python -c "import sys; sys.stdout.write(sys.argv[1].upper())" $(ARCH))
 UPPER_FAMILY := $(shell python -c "import sys; sys.stdout.write(sys.argv[1].upper())" $(FAMILY))

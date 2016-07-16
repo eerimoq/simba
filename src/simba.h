@@ -37,9 +37,136 @@ typedef unsigned long off_t;
 #include "config_default.h"
 #include "board.h"
 #include "mcu.h"
-#include "kernel.h"
-#include "drivers.h"
-#include "slib.h"
-#include "inet.h"
+
+#include "settings.h"
+#include "kernel/errno.h"
+#include "kernel/types.h"
+
+#include "collections/binary_tree.h"
+#include "collections/bits.h"
+#include "collections/fifo.h"
+#include "collections/list.h"
+#include "collections/hash_map.h"
+
+#include "kernel/time.h"
+#include "sync/chan.h"
+#include "kernel/sys.h"
+#include "kernel/timer.h"
+#include "kernel/thrd.h"
+
+#include "sync/sem.h"
+#include "sync/queue.h"
+#include "sync/event.h"
+#include "sync/rwlock.h"
+#include "sync/bus.h"
+
+#include "alloc/heap.h"
+#include "alloc/circular_heap.h"
+
+#include "oam/fs.h"
+#include "oam/shell.h"
+
+#include "storage/setting.h"
+#include "storage/fat16.h"
+
+#include "debug/log.h"
+
+#include "text/color.h"
+#include "text/re.h"
+#include "text/std.h"
+
+#include "encode/base64.h"
+#include "encode/json.h"
+
+#include "hash/crc.h"
+#include "hash/sha1.h"
+
+#if defined(FAMILY_LINUX)
+#    include "drivers/exti.h"
+#    include "drivers/pin.h"
+#    include "drivers/pwm.h"
+#    include "drivers/adc.h"
+#    include "drivers/spi.h"
+#    include "drivers/uart.h"
+#    include "drivers/can.h"
+#    include "drivers/sd.h"
+#    include "drivers/flash.h"
+#endif
+
+#if defined(FAMILY_AVR)
+#    include "drivers/exti.h"
+#    include "drivers/pin.h"
+#    include "drivers/pwm.h"
+#    include "drivers/adc.h"
+#    include "drivers/spi.h"
+#    include "drivers/uart.h"
+#    include "drivers/i2c.h"
+#    include "drivers/uart_soft.h"
+#    include "drivers/owi.h"
+#    include "drivers/ds18b20.h"
+#    include "drivers/ds3231.h"
+#    include "drivers/mcp2515.h"
+#    include "drivers/nrf24l01.h"
+#    include "drivers/sd.h"
+#endif
+
+#if defined(FAMILY_SAM)
+#    include "drivers/chipid.h"
+#    include "drivers/exti.h"
+#    include "drivers/flash.h"
+#    include "drivers/pin.h"
+#    include "drivers/spi.h"
+#    include "drivers/uart.h"
+#    include "drivers/sd.h"
+#    include "drivers/can.h"
+#    include "drivers/mcp2515.h"
+#    include "drivers/adc.h"
+#    include "drivers/dac.h"
+#    include "drivers/usb.h"
+#    include "drivers/usb_host.h"
+#    include "drivers/usb/host/class/usb_host_class_hid.h"
+#    include "drivers/usb/host/class/usb_host_class_mass_storage.h"
+#endif
+
+#if defined(FAMILY_ESP)
+#    include "drivers/pin.h"
+#    include "drivers/spi.h"
+#    include "drivers/uart.h"
+#    include "drivers/adc.h"
+#endif
+
+#if defined(FAMILY_STM32F1)
+#    include "drivers/pin.h"
+#    include "drivers/uart.h"
+#    include "drivers/flash.h"
+#endif
+
+#if defined(FAMILY_STM32F2)
+#    include "drivers/pin.h"
+#    include "drivers/uart.h"
+#    include "drivers/flash.h"
+#    include "drivers/sdio.h"
+#    include "drivers/bcm43362.h"
+#endif
+
+#if defined(FAMILY_STM32F3)
+#    include "drivers/pin.h"
+#    include "drivers/uart.h"
+#    include "drivers/flash.h"
+#endif
+
+#include "debug/harness.h"
+
+#include "multimedia/midi.h"
+
+#include "inet/types.h"
+#include "inet/inet.h"
+#include "inet/socket.h"
+#include "inet/http_server.h"
+#include "inet/http_websocket_server.h"
+#include "inet/http_websocket_client.h"
+#include "inet/mqtt_client.h"
+#include "inet/network_interface.h"
+#include "inet/network_interface_slip.h"
 
 #endif

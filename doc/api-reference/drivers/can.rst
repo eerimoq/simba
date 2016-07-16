@@ -4,7 +4,7 @@
 .. module:: can
    :synopsis: CAN bus.
 
-Source code: :github-blob:`src/drivers/drivers/can.h`
+Source code: :github-blob:`src/drivers/can.h`
 
 Test code: :github-blob:`tst/drivers/can/main.c`
 

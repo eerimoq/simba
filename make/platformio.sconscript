@@ -61,11 +61,8 @@ def add_common_include_paths(env):
         "gen",
         join("src", "boards", "$BOARD"),
         join("src", "mcus", "$BOARD_MCU"),
-        join("src", "kernel"),
         join("src", "kernel", "ports", "$ARCH", "gnu"),
-        join("src", "drivers"),
         join("src", "drivers", "ports", "$FAMILY"),
-        join("src", "slib"),
         join("src", "inet")
     ]
 

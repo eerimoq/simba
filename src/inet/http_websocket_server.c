@@ -40,7 +40,7 @@ int http_websocket_server_handshake(struct http_websocket_server_t *self_p,
     char buf[160];
     char accept_key[29];
     const char *key_p;
-    struct hash_sha1_t sha;
+    struct sha1_t sha;
     uint8_t hash[20];
     size_t size;
     static const char secret[] = "258EAFA5-E914-47DA-95CA-C5AB0DC85B11";
@@ -65,9 +65,9 @@ int http_websocket_server_handshake(struct http_websocket_server_t *self_p,
     memcpy(buf, key_p, size);
     memcpy(&buf[size], secret, sizeof(secret));
 
-    hash_sha1_init(&sha);
-    hash_sha1_update(&sha, buf, size + sizeof(secret) - 1);
-    hash_sha1_digest(&sha, hash);
+    sha1_init(&sha);
+    sha1_update(&sha, buf, size + sizeof(secret) - 1);
+    sha1_digest(&sha, hash);
 
     base64_encode(accept_key, hash, sizeof(hash));
     accept_key[sizeof(accept_key) - 1] = '\0';

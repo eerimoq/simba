@@ -25,33 +25,32 @@ SIMBA_VERSION ?= $(shell cat VERSION.txt)
 BOARD ?= linux
 
 ifeq ($(BOARD), linux)
-    TESTS = $(addprefix tst/kernel/, binary_tree \
-                                     bits \
-                                     bus \
-                                     circular_heap \
-                                     event \
-                                     fifo \
-                                     fs \
-				     heap \
-                                     log \
-                                     prof \
-                                     queue \
-                                     rwlock \
-                                     sem \
-                                     setting \
-                                     shell \
-                                     std \
-                                     sys \
+    TESTS = $(addprefix tst/kernel/, sys \
                                      thrd \
                                      time \
                                      timer)
-    TESTS += $(addprefix tst/slib/, base64 \
-				    crc \
-				    fat16 \
-				    hash \
-				    hash_map \
-				    json \
-				    re)
+    TESTS += $(addprefix tst/sync/, bus \
+                                    event \
+                                    queue \
+                                    rwlock \
+                                    sem)
+    TESTS += $(addprefix tst/collections/, binary_tree \
+                                           bits \
+                                           fifo \
+                                           hash_map)
+    TESTS += $(addprefix tst/alloc/, circular_heap \
+                                     heap)
+    TESTS += $(addprefix tst/text/, std \
+                                    re)
+    TESTS += $(addprefix tst/debug/, log)
+    TESTS += $(addprefix tst/oam/, fs \
+	        		   shell)
+    TESTS += $(addprefix tst/storage/, setting \
+                                       fat16)
+    TESTS += $(addprefix tst/encode/, base64 \
+                                      json)
+    TESTS += $(addprefix tst/hash/, crc \
+                                    sha1)
     TESTS += $(addprefix tst/inet/, http_server \
 				    http_websocket_client \
 				    inet \
@@ -59,31 +58,31 @@ ifeq ($(BOARD), linux)
 endif
 
 ifeq ($(BOARD), arduino_due)
-    TESTS = $(addprefix tst/kernel/, binary_tree \
-                                     bits \
-                                     bus \
-                                     circular_heap \
-                                     event \
-                                     fifo \
-                                     fs \
-				     heap \
-                                     log \
-                                     prof \
-                                     queue \
-                                     rwlock \
-                                     sem \
-                                     setting \
-                                     shell \
-                                     std \
-                                     sys \
+    TESTS = $(addprefix tst/kernel/, sys \
                                      thrd \
+                                     time \
                                      timer)
-    TESTS += $(addprefix tst/slib/, base64 \
-				    crc \
-				    hash \
-				    hash_map \
-				    json \
-				    re)
+    TESTS += $(addprefix tst/sync/, bus \
+                                    event \
+                                    queue \
+                                    rwlock \
+                                    sem)
+    TESTS += $(addprefix tst/collections/, binary_tree \
+                                           bits \
+                                           fifo \
+                                           hash_map)
+    TESTS += $(addprefix tst/alloc/, circular_heap \
+                                     heap)
+    TESTS += $(addprefix tst/text/, std \
+                                    re)
+    TESTS += $(addprefix tst/debug/, log)
+    TESTS += $(addprefix tst/oam/, fs \
+	        		   shell)
+    TESTS += $(addprefix tst/storage/, setting)
+    TESTS += $(addprefix tst/encode/, base64 \
+                                      json)
+    TESTS += $(addprefix tst/hash/, crc \
+                                    sha1)
     TESTS += $(addprefix tst/inet/, http_server \
 				    http_websocket_client \
 				    inet \
@@ -94,31 +93,31 @@ ifeq ($(BOARD), arduino_due)
 endif
 
 ifeq ($(BOARD), arduino_mega)
-    TESTS = $(addprefix tst/kernel/, binary_tree \
-                                     bits \
-                                     bus \
-                                     circular_heap \
-                                     event \
-                                     fifo \
-                                     fs \
-				     heap \
-                                     log \
-                                     prof \
-                                     queue \
-                                     rwlock \
-                                     sem \
-                                     setting \
-                                     shell \
-                                     std \
-                                     sys \
+    TESTS = $(addprefix tst/kernel/, sys \
                                      thrd \
+                                     time \
                                      timer)
-    TESTS += $(addprefix tst/slib/, base64 \
-				    crc \
-				    hash \
-				    hash_map \
-				    json \
-				    re)
+    TESTS += $(addprefix tst/sync/, bus \
+                                    event \
+                                    queue \
+                                    rwlock \
+                                    sem)
+    TESTS += $(addprefix tst/collections/, binary_tree \
+                                           bits \
+                                           fifo \
+                                           hash_map)
+    TESTS += $(addprefix tst/alloc/, circular_heap \
+                                     heap)
+    TESTS += $(addprefix tst/text/, std \
+                                    re)
+    TESTS += $(addprefix tst/debug/, log)
+    TESTS += $(addprefix tst/oam/, fs \
+	        		   shell)
+    TESTS += $(addprefix tst/storage/, setting)
+    TESTS += $(addprefix tst/encode/, base64 \
+                                      json)
+    TESTS += $(addprefix tst/hash/, crc \
+                                    sha1)
     TESTS += $(addprefix tst/inet/, http_server \
 				    http_websocket_client \
 				    inet \
@@ -136,84 +135,85 @@ ifeq ($(BOARD), arduino_nano)
 endif
 
 ifeq ($(BOARD), esp12e)
-    TESTS = $(addprefix tst/kernel/, binary_tree \
-                                     bits \
-                                     bus \
-                                     circular_heap \
-                                     event \
-                                     fifo \
-                                     fs \
-                                     log \
-                                     prof \
-                                     queue \
-                                     rwlock \
-                                     sem \
-                                     shell \
-                                     std \
-                                     sys \
+    TESTS = $(addprefix tst/kernel/, sys \
                                      thrd \
                                      timer)
-    TESTS += $(addprefix tst/slib/, base64 \
-				    crc \
-				    hash \
-				    hash_map \
-				    re)
+    TESTS += $(addprefix tst/sync/, bus \
+                                    event \
+                                    queue \
+                                    rwlock \
+                                    sem)
+    TESTS += $(addprefix tst/collections/, binary_tree \
+                                           bits \
+                                           fifo \
+                                           hash_map)
+    TESTS += $(addprefix tst/alloc/, circular_heap)
+    TESTS += $(addprefix tst/text/, std \
+                                    re)
+    TESTS += $(addprefix tst/debug/, log)
+    TESTS += $(addprefix tst/oam/, fs \
+	        		   shell)
+    TESTS += $(addprefix tst/encode/, base64 \
+                                      json)
+    TESTS += $(addprefix tst/hash/, crc \
+                                    sha1)
     TESTS += $(addprefix tst/inet/, http_websocket_client \
 				    inet \
 				    mqtt_client)
 endif
 
 ifeq ($(BOARD), stm32vldiscovery)
-    TESTS = $(addprefix tst/kernel/, binary_tree \
-                                     bits \
-                                     bus \
-                                     circular_heap \
-                                     event \
-                                     fifo \
-                                     fs \
-                                     log \
-                                     prof \
-                                     queue \
-                                     rwlock \
-                                     sem \
-                                     shell \
-                                     std \
-                                     sys \
+    TESTS = $(addprefix tst/kernel/, sys \
                                      thrd \
                                      timer)
-    TESTS += $(addprefix tst/slib/, base64 \
-				    crc \
-				    hash \
-				    hash_map \
-				    re)
+    TESTS += $(addprefix tst/sync/, bus \
+                                    event \
+                                    queue \
+                                    rwlock \
+                                    sem)
+    TESTS += $(addprefix tst/collections/, binary_tree \
+                                           bits \
+                                           fifo \
+                                           hash_map)
+    TESTS += $(addprefix tst/alloc/, circular_heap)
+    TESTS += $(addprefix tst/text/, std \
+                                    re)
+    TESTS += $(addprefix tst/debug/, log)
+    TESTS += $(addprefix tst/oam/, fs \
+	        		   shell)
+    TESTS += $(addprefix tst/encode/, base64 \
+                                      json)
+    TESTS += $(addprefix tst/hash/, crc \
+                                    sha1)
     TESTS += $(addprefix tst/inet/, http_websocket_client \
 				    inet \
 				    mqtt_client)
 endif
 
 ifeq ($(BOARD), photon)
-    TESTS = $(addprefix tst/kernel/, binary_tree \
-                                     bits \
-                                     bus \
-                                     circular_heap \
-                                     event \
-                                     fifo \
-                                     fs \
-                                     log \
-                                     prof \
-                                     queue \
-                                     rwlock \
-                                     sem \
-                                     shell \
-                                     std \
-                                     sys \
+    TESTS = $(addprefix tst/kernel/, sys \
+                                     thrd \
 				     time \
                                      timer)
-    TESTS += $(addprefix tst/slib/, base64 \
-				    crc \
-				    hash \
-				    hash_map \
-				    re)
+    TESTS += $(addprefix tst/sync/, bus \
+                                    event \
+                                    queue \
+                                    rwlock \
+                                    sem)
+    TESTS += $(addprefix tst/collections/, binary_tree \
+                                           bits \
+                                           fifo \
+                                           hash_map)
+    TESTS += $(addprefix tst/alloc/, circular_heap)
+    TESTS += $(addprefix tst/text/, std \
+                                    re)
+    TESTS += $(addprefix tst/debug/, log)
+    TESTS += $(addprefix tst/oam/, fs \
+	        		   shell)
+    TESTS += $(addprefix tst/encode/, base64 \
+                                      json)
+    TESTS += $(addprefix tst/hash/, crc \
+                                    sha1)
     TESTS += $(addprefix tst/inet/, http_websocket_client \
 				    inet \
 				    mqtt_client)

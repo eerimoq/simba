@@ -1,7 +1,7 @@
 drivers
 =======
 
-The drivers package interfaces on :github-tree:`Github<src/drivers/drivers>`.
+The drivers package on :github-tree:`Github<src/drivers>`.
 
 Modules:
 

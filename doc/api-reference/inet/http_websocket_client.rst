@@ -4,7 +4,7 @@
 .. module:: http_websocket_client
    :synopsis: HTTP websocket client.
 
-Source code: :github-blob:`src/inet/inet/http_websocket_client.h`
+Source code: :github-blob:`src/inet/http_websocket_client.h`
 
 Test code: :github-blob:`tst/inet/http_websocket_client/main.c`
 

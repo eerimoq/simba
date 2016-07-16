@@ -10,7 +10,7 @@ Homepage: https://www.broadcom.com/products/wireless-connectivity/wireless-lan/b
 
 ----------------------------------------------
 
-Source code: :github-blob:`src/drivers/drivers/bcm43362.h`
+Source code: :github-blob:`src/drivers/bcm43362.h`
 
 Test code: :github-blob:`tst/drivers/bcm43362/main.c`
 

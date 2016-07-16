@@ -4,7 +4,7 @@
 .. module:: mqtt_client
    :synopsis: MQTT client.
 
-Source code: :github-blob:`src/inet/inet/mqtt_client.h`
+Source code: :github-blob:`src/inet/mqtt_client.h`
 
 ----------------------------------------------
 

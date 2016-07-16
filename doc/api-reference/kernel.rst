@@ -1,11 +1,10 @@
 kernel
 ======
 
-The kernel package is the heart in `Simba`. They implement the thread
-scheduler, synchronization primitives and logging, among other useful
-functions.
+The kernel package is the heart in `Simba`. It implements the thread
+scheduler.
 
-The kernel package interfaces on :github-tree:`Github<src/kernel/kernel>`.
+The kernel package on :github-tree:`Github<src/kernel>`.
 
 .. toctree::
    :glob:   

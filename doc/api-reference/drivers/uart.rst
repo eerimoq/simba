@@ -4,7 +4,7 @@
 .. module:: uart
    :synopsis: Universal Asynchronous Receiver/Transmitter.
 
-Source code: :github-blob:`src/drivers/drivers/uart.h`
+Source code: :github-blob:`src/drivers/uart.h`
 
 Test code: :github-blob:`tst/drivers/uart/main.c`
 

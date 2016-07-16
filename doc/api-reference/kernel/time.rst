@@ -4,7 +4,7 @@
 .. module:: time
    :synopsis: System time.
 
-Source code: :github-blob:`src/kernel/kernel/time.h`
+Source code: :github-blob:`src/kernel/time.h`
 
 ----------------------------------------------
 

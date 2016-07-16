@@ -6,7 +6,7 @@
 
 ----------------------------------------------
 
-Source code: :github-blob:`src/inet/inet/network_interface_bcm43362.h`
+Source code: :github-blob:`src/inet/network_interface_bcm43362.h`
 
 Example code: :github-blob:`examples/inet/bcm43362/main.c`
 
