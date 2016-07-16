@@ -154,7 +154,7 @@ enum op_code_t {
 
 #define NON_GREEDY_OFFSET                 3
 
-#define RE_DEBUG
+//#define RE_DEBUG
 
 struct compile_t {
     char *compiled_p;
@@ -396,10 +396,7 @@ static int compile_set(struct compile_t *self_p)
     }
 
     pattern_char = *self_p->pattern_p;
-    
-    STD_PRINTF_RE_DEBUG(FSTR("initial pattern_char %c\r\n"),
-                        pattern_char);
-    
+        
     if ((pattern_char == ']') || (pattern_char == '-')) {
         *self_p->compiled_p++ = OP_CODE_SET_SINGLE;
         *self_p->compiled_p++ = OP_CODE_TEXT;
@@ -419,9 +416,6 @@ static int compile_set(struct compile_t *self_p)
         /* Parse one operation; single or range. */
         pattern_char = *self_p->pattern_p++;
         
-        STD_PRINTF_RE_DEBUG(FSTR("first pattern_char %c\r\n"),
-                            pattern_char);
-
         /* Break when the closing bracket is found. */
         if (pattern_char == ']') {
             self_p->pattern_p--;
@@ -438,10 +432,7 @@ static int compile_set(struct compile_t *self_p)
         if (pattern_char == '\0') {
             return (-1);
         } else if (pattern_char == '\\') {
-            PRINT_FILE_LINE();
             pattern_char = *self_p->pattern_p++;
-            STD_PRINTF_RE_DEBUG(FSTR("escaped pattern_char %c\r\n"),
-                                pattern_char);
             res = compile_escape_char(self_p, pattern_char);
 
             /* Special escape characters are not allowed in a
@@ -472,9 +463,6 @@ static int compile_set(struct compile_t *self_p)
 
         /* Find out if it's a range entry. */
         pattern_char = *self_p->pattern_p;
-
-        STD_PRINTF_RE_DEBUG(FSTR("second pattern_char %c\r\n"),
-                            pattern_char);
         
         /* Create a single entry and break if the closing bracket is
            found. */
@@ -496,9 +484,6 @@ static int compile_set(struct compile_t *self_p)
         /* Skip the range operator. */
         self_p->pattern_p++;
         pattern_char = *self_p->pattern_p++;
-
-        STD_PRINTF_RE_DEBUG(FSTR("third pattern_char %c\r\n"),
-                            pattern_char);
 
         /* Handle the second character for this range entry. */
         if (pattern_char == '\0') {
