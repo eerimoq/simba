@@ -64,15 +64,21 @@ int test_special_escaped(struct harness_t *harness_p)
 {
     char re[32];
 
-    BTASSERT(re_compile(re, "\\s+", 0, sizeof(re)) != NULL);
+    BTASSERT(re_compile(re, "\\s\\s\\s\\s\\s\\s", 0, sizeof(re)) != NULL);
     BTASSERT(re_match(re, " \t\r\n\f\v", 6, NULL, NULL) == 6);
     BTASSERT(re_match(re, "non-space", 9, NULL, NULL) == -1);
 
-    BTASSERT(re_compile(re, "\\d+", 0, sizeof(re)) != NULL);
+    BTASSERT(re_compile(re,
+                        "\\d\\d\\d\\d\\d\\d\\d\\d\\d\\d",
+                        0,
+                        sizeof(re)) != NULL);
     BTASSERT(re_match(re, "0123456789", 10, NULL, NULL) == 10);
     BTASSERT(re_match(re, "non-decimal-digits", 18, NULL, NULL) == -1);
 
-    BTASSERT(re_compile(re, "\\w+", 0, sizeof(re)) != NULL);
+    BTASSERT(re_compile(re,
+                        "\\w\\w\\w\\w\\w\\w\\w\\w\\w\\w",
+                        0,
+                        sizeof(re)) != NULL);
     BTASSERT(re_match(re, "amzAMZ059_", 10, NULL, NULL) == 10);
     BTASSERT(re_match(re, "-.,\t", 4, NULL, NULL) == -1);
 
@@ -82,18 +88,24 @@ int test_special_escaped(struct harness_t *harness_p)
 int test_special(struct harness_t *harness_p)
 {
     char re[32];
-    /* struct re_group_t groups[2]; */
-    /* size_t number_of_groups; */
 
     BTASSERT(re_compile(re, ".", 0, sizeof(re)) != NULL);
     BTASSERT(re_match(re, "a", 1, NULL, NULL) == 1);
 
-    /* BTASSERT(re_compile(re, "^$", 0, sizeof(re)) != NULL); */
-    /* BTASSERT(re_match(re, "", 0, NULL, NULL) == 0); */
-
     BTASSERT(re_compile(re, "a?b", 0, sizeof(re)) != NULL);
     BTASSERT(re_match(re, "b", 1, NULL, NULL) == 1);
     BTASSERT(re_match(re, "c", 1, NULL, NULL) == -1);
+
+    BTASSERT(re_compile(re, "\\(escape\\)", 0, sizeof(re)) != NULL);
+    BTASSERT(re_match(re, "(escape)", 8, NULL, NULL) == 8);
+    BTASSERT(re_match(re, "(escape", 7, NULL, NULL) == -1);
+
+    return (0);
+}
+
+int test_repetition(struct harness_t *harness_p)
+{
+    char re[32];
 
     BTASSERT(re_compile(re, ".*", 0, sizeof(re)) != NULL);
     BTASSERT(re_match(re, "", 0, NULL, NULL) == 0);
@@ -116,10 +128,6 @@ int test_special(struct harness_t *harness_p)
     BTASSERT(re_match(re, "aabb", 4, NULL, NULL) == 4);
     BTASSERT(re_match(re, "aabbcd", 6, NULL, NULL) == 4);
 
-    BTASSERT(re_compile(re, "\\(escape\\)", 0, sizeof(re)) != NULL);
-    BTASSERT(re_match(re, "(escape)", 8, NULL, NULL) == 8);
-    BTASSERT(re_match(re, "(escape", 7, NULL, NULL) == -1);
-
     BTASSERT(re_compile(re, "\\(*\\)+", 0, sizeof(re)) != NULL);
     BTASSERT(re_match(re, "((()))", 6, NULL, NULL) == 6);
     BTASSERT(re_match(re, "()", 2, NULL, NULL) == 2);
@@ -134,38 +142,19 @@ int test_special(struct harness_t *harness_p)
     BTASSERT(re_match(re, "abb", 3, NULL, NULL) == 3);
     BTASSERT(re_match(re, "abc", 3, NULL, NULL) == -1);
 
-    /* BTASSERT(re_compile(re, "a|b", 0, sizeof(re)) != NULL); */
-    /* BTASSERT(re_match(re, "b", 1, NULL, NULL) == 1); */
-
-    /* BTASSERT(re_compile(re, "[ab]", 0, sizeof(re)) != NULL); */
-    /* BTASSERT(re_match(re, "b", 1, NULL, NULL) == 1); */
-
-    /* BTASSERT(re_compile(re, "(.)", 0, sizeof(re)) != NULL); */
-    /* BTASSERT(re_match(re, "a", 1, groups, &number_of_groups) == 1); */
-
-    /* BTASSERT(re_compile(re, "(.)", 0, sizeof(re)) != NULL); */
-
-    /* number_of_groups = membersof(groups); */
-    /* BTASSERT(re_match(re, "a", 1, groups, &number_of_groups) == 1); */
-
-    /* BTASSERT(number_of_groups == 1); */
-    /* BTASSERT(groups[0].buf_p != NULL); */
-    /* BTASSERT(groups[0].size == 1); */
-    /* BTASSERT(groups[0].buf_p[0] == 'a'); */
-
     return (0);
 }
 
-int test_special_character_set(struct harness_t *harness_p)
+int test_set(struct harness_t *harness_p)
 {
     char re[32];
 
     BTASSERT(re_compile(re, "[a]", 0, sizeof(re)) != NULL);
     BTASSERT(re_match(re, "a", 1, NULL, NULL) == 1);
-    
+
     BTASSERT(re_compile(re, "[ ]+", 0, sizeof(re)) != NULL);
     BTASSERT(re_match(re, "  ", 2, NULL, NULL) == 2);
-    
+
     BTASSERT(re_compile(re, "[0-9]+", 0, sizeof(re)) != NULL);
     BTASSERT(re_match(re, "0123456789", 10, NULL, NULL) == 10);
 
@@ -228,45 +217,24 @@ int test_special_character_set(struct harness_t *harness_p)
     return (0);
 }
 
-int test_greed(struct harness_t *harness_p)
+int test_groups(struct harness_t *harness_p)
 {
-    char re[32];
-
-    /* Greedy, match as much as possible. */
-    BTASSERT(re_compile(re, "<.\?>", 0, sizeof(re)) != NULL);
-    BTASSERT(re_match(re, "<p>foo</p>", 10, NULL, NULL) == 3);
-
-    /* Greedy, match as much as possible. */
-    BTASSERT(re_compile(re, "<.*>", 0, sizeof(re)) != NULL);
-    BTASSERT(re_match(re, "<p>foo</p>", 10, NULL, NULL) == 10);
-
-    /* Greedy, match as much as possible, at least one. */
-    BTASSERT(re_compile(re, "<.+>", 0, sizeof(re)) != NULL);
-    BTASSERT(re_match(re, "<p>foo</p>", 10, NULL, NULL) == 10);
-
-    /* Non-greedy, match as little as possible. */
-    BTASSERT(re_compile(re, "<.\?\?>", 0, sizeof(re)) != NULL);
-    BTASSERT(re_match(re, "<p>foo</p>", 10, NULL, NULL) == 3);
-    BTASSERT(re_match(re, "<>>", 3, NULL, NULL) == 2);
-    BTASSERT(re_match(re, "<", 1, NULL, NULL) == -1);
-
-    /* Non-greedy, match as little as possible. */
-    BTASSERT(re_compile(re, "<.*?>", 0, sizeof(re)) != NULL);
-    BTASSERT(re_match(re, "<p>foo</p>", 10, NULL, NULL) == 3);
-    BTASSERT(re_match(re, "<>>", 3, NULL, NULL) == 2);
-
-    /* Non-greedy, match as little as possible, at least one. */
-    BTASSERT(re_compile(re, "<.+?>", 0, sizeof(re)) != NULL);
-    BTASSERT(re_match(re, "<p>foo</p>", 10, NULL, NULL) == 3);
-
-    return (0);
-}
-
-/* int test_groups(struct harness_t *harness_p) */
-/* { */
 /*     char re[32]; */
 /*     struct re_group_t groups[2]; */
 /*     size_t number_of_groups; */
+
+    /* BTASSERT(re_compile(re, "(.)", 0, sizeof(re)) != NULL); */
+    /* BTASSERT(re_match(re, "a", 1, groups, &number_of_groups) == 1); */
+
+    /* BTASSERT(re_compile(re, "(.)", 0, sizeof(re)) != NULL); */
+
+    /* number_of_groups = membersof(groups); */
+    /* BTASSERT(re_match(re, "a", 1, groups, &number_of_groups) == 1); */
+
+    /* BTASSERT(number_of_groups == 1); */
+    /* BTASSERT(groups[0].buf_p != NULL); */
+    /* BTASSERT(groups[0].size == 1); */
+    /* BTASSERT(groups[0].buf_p[0] == 'a'); */
 
 /*     /\* Two groups. *\/ */
 /*     BTASSERT(re_compile(re, "(\\d+)(\\w+)", 0, sizeof(re)) == 0); */
@@ -310,10 +278,54 @@ int test_greed(struct harness_t *harness_p)
 /*     BTASSERT(groups[1].size == 3); */
 /*     BTASSERT(strncmp(groups[1].buf_p, "abc", 3) == 0); */
 
-/*     return (0); */
-/* } */
+    return (1);
+}
 
-int test_custom(struct harness_t *harness_p)
+int test_alternatives(struct harness_t *harness_p)
+{
+    /* char re[32]; */
+
+    /* BTASSERT(re_compile(re, "a|b", 0, sizeof(re)) != NULL); */
+    /* BTASSERT(re_match(re, "b", 1, NULL, NULL) == 1); */
+
+    return (1);
+}
+
+int test_greed(struct harness_t *harness_p)
+{
+    char re[32];
+
+    /* Greedy, match as much as possible. */
+    BTASSERT(re_compile(re, "<.\?>", 0, sizeof(re)) != NULL);
+    BTASSERT(re_match(re, "<p>foo</p>", 10, NULL, NULL) == 3);
+
+    /* Greedy, match as much as possible. */
+    BTASSERT(re_compile(re, "<.*>", 0, sizeof(re)) != NULL);
+    BTASSERT(re_match(re, "<p>foo</p>", 10, NULL, NULL) == 10);
+
+    /* Greedy, match as much as possible, at least one. */
+    BTASSERT(re_compile(re, "<.+>", 0, sizeof(re)) != NULL);
+    BTASSERT(re_match(re, "<p>foo</p>", 10, NULL, NULL) == 10);
+
+    /* Non-greedy, match as little as possible. */
+    BTASSERT(re_compile(re, "<.\?\?>", 0, sizeof(re)) != NULL);
+    BTASSERT(re_match(re, "<p>foo</p>", 10, NULL, NULL) == 3);
+    BTASSERT(re_match(re, "<>>", 3, NULL, NULL) == 2);
+    BTASSERT(re_match(re, "<", 1, NULL, NULL) == -1);
+
+    /* Non-greedy, match as little as possible. */
+    BTASSERT(re_compile(re, "<.*?>", 0, sizeof(re)) != NULL);
+    BTASSERT(re_match(re, "<p>foo</p>", 10, NULL, NULL) == 3);
+    BTASSERT(re_match(re, "<>>", 3, NULL, NULL) == 2);
+
+    /* Non-greedy, match as little as possible, at least one. */
+    BTASSERT(re_compile(re, "<.+?>", 0, sizeof(re)) != NULL);
+    BTASSERT(re_match(re, "<p>foo</p>", 10, NULL, NULL) == 3);
+
+    return (0);
+}
+
+int test_complex(struct harness_t *harness_p)
 {
     char re[64];
 
@@ -352,10 +364,12 @@ int main()
         { test_newline, "test_newline" },
         { test_special_escaped, "test_special_escaped" },
         { test_special, "test_special" },
-        { test_special_character_set, "test_special_character_set" },
+        { test_repetition, "test_repetition" },
+        { test_set, "test_set" },
+        { test_groups, "test_groups" },
+        { test_alternatives, "test_alternatives" },
         { test_greed, "test_greed" },
-        /* { test_groups, "test_groups" }, */
-        { test_custom, "test_custom" },
+        { test_complex, "test_complex" },
         { test_compile, "test_compile" },
         { NULL, NULL }
     };
