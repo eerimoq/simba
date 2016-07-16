@@ -1,8 +1,9 @@
 Developer Guide
 ===============
 
-This guide is intended for developers of the Simba RTOS. Users are
-advised to read the :doc:`user-guide` instead.
+This guide is intended for developers of the Simba Embedded
+Programming Platform. Users are advised to read the :doc:`user-guide`
+instead.
 
 **Contents:**
 

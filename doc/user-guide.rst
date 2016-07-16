@@ -1,7 +1,8 @@
 User Guide
 ==========
 
-This guide is intended for users of the Simba RTOS and build system.
+This guide is intended for users of the Simba Embedded Programming
+Platform.
 
 The Simba installation guide can be found on the :doc:`installation`
 page.

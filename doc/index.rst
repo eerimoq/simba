@@ -11,7 +11,7 @@
 Welcome to Simba's documentation!
 =================================
 
-`Simba` is an RTOS and build framework. It aims to make embedded
+`Simba` is an Embedded Programming Platform. It aims to make embedded
 programming easy and portable.
 
 Project homepage: https://github.com/eerimoq/simba
@@ -40,8 +40,13 @@ Features
 * Counting semaphores.
 * Device drivers (spi, uart, ...)
 * A simple shell.
+* Logging.
 * Internet protocols (TCP, UDP, HTTP, ...).
-* Package handler (using Pythons' `pip`).
+* JSON.
+* Regular expressions.
+* CRC.
+
+See the :doc:`api-reference` for a full list of features.
 
 Design goals
 ------------

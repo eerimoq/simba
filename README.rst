@@ -6,8 +6,8 @@
 Simba
 =====
 
-This is the source code repository of the Simba RTOS. See
-http://simba-os.readthedocs.org for further details.
+This is the source code repository of the Simba Embedded Programming
+Platform. See http://simba-os.readthedocs.org for further details.
 
 Don't hesitate to create issues or pull requests if you want to
 improve Simba!
