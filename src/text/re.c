@@ -88,20 +88,19 @@
  *     OP_CODE_RETURN
  * ]
  *
- * pattern = "[ac-d]"
+ * pattern = "[a]"
  * code = [
- *     OP_CODE_SET, 5,
- *     OP_CODE_SET_SINGLE, 'a',
- *     OP_CODE_SET_RANGE, 'c', 'd',
+ *     OP_CODE_SET, 3,
+ *     OP_CODE_SET_SINGLE, OP_CODE_TEXT, 'a',
  *     OP_CODE_RETURN
  * ]
  *
- * pattern = "[ac-d]{3}"
+ * pattern = "[\wc-d]{3}"
  * code = [
  *     OP_CODE_MEMBERS, 0, 7, 0, 3,
- *     OP_CODE_SET, 5,
- *     OP_CODE_SET_SINGLE, 'a',
- *     OP_CODE_SET_RANGE, 'c', 'd',
+ *     OP_CODE_SET, 7,
+ *     OP_CODE_SET_SINGLE, OP_CODE_ALPHANUMERIC,
+ *     OP_CODE_SET_RANGE, OP_CODE_TEXT, 'c', OP_CODE_TEXT, 'd',
  *     OP_CODE_RETURN
  * ]
  *
@@ -155,7 +154,7 @@ enum op_code_t {
 
 #define NON_GREEDY_OFFSET                 3
 
-//#define RE_DEBUG
+#define RE_DEBUG
 
 struct compile_t {
     char *compiled_p;
@@ -209,6 +208,41 @@ static char *op_code_str[] = {
 #else
 #    define STD_PRINTF_RE_DEBUG(...)
 #endif
+
+static int compile_escape_char(struct compile_t *self_p,
+                               char escaped_char)
+{
+    switch (escaped_char) {
+
+    case '\0':
+        return (-1);
+
+    case 's':
+        *self_p->compiled_p++ = OP_CODE_WHITESPACE;
+        break;
+
+    case 'd':
+        *self_p->compiled_p++ = OP_CODE_DECIMAL_DIGIT;
+        break;
+
+    case 'w':
+        *self_p->compiled_p++ = OP_CODE_ALPHANUMERIC;
+        break;
+
+    default:
+        if (self_p->compiled_left < 1) {
+            return (-1);
+        }
+        
+        *self_p->compiled_p++ = OP_CODE_TEXT;
+        *self_p->compiled_p++ = escaped_char;
+        self_p->compiled_left--;
+        
+        return (2);
+    }
+
+    return (1);
+}
 
 static int compile_repetition(struct compile_t *self_p,
                               int op_code)
@@ -329,41 +363,170 @@ static int compile_escape(struct compile_t *self_p)
     self_p->pattern_p++;
     self_p->current_repetition_op_code_p = self_p->compiled_p;
 
-    switch (*self_p->pattern_p) {
-
-    case '\0':
-        return (-1);
-
-    case 's':
-        *self_p->compiled_p++ = OP_CODE_WHITESPACE;
-        break;
-
-    case 'd':
-        *self_p->compiled_p++ = OP_CODE_DECIMAL_DIGIT;
-        break;
-
-    case 'w':
-        *self_p->compiled_p++ = OP_CODE_ALPHANUMERIC;
-        break;
-
-    default:
-        /* Text. */
-        if (self_p->compiled_left < 1) {
-            return (-1);
-        }
-
-        *self_p->compiled_p++ = OP_CODE_TEXT;
-        *self_p->compiled_p++ = *self_p->pattern_p;
-        self_p->compiled_left--;
-        break;
-    }
-
-    return (0);
+    return (compile_escape_char(self_p, *self_p->pattern_p));
 }
 
 static int compile_set(struct compile_t *self_p)
 {
-    return (-1);
+    char pattern_char;
+    char *compiled_op_code_p;
+    int code_size;
+    int res;
+
+    self_p->pattern_p++;
+    self_p->current_repetition_op_code_p = self_p->compiled_p;
+
+    /* Check that space is available for the size field. */
+    if (self_p->compiled_left < 2) {
+        return (-1);
+    }
+
+    *self_p->compiled_p++ = OP_CODE_SET;
+    code_size = 0;
+
+    /* Make room for the size. */
+    self_p->compiled_p += 2;
+
+    /* Accept unescaped ']' and '-' as the first character. */
+    
+    /* Make sure a range entry fits in the compile buffer as it is
+       bigger than a single entry. */
+    if (self_p->compiled_left < 3) {
+        return (-1);
+    }
+
+    pattern_char = *self_p->pattern_p;
+    
+    STD_PRINTF_RE_DEBUG(FSTR("initial pattern_char %c\r\n"),
+                        pattern_char);
+    
+    if ((pattern_char == ']') || (pattern_char == '-')) {
+        *self_p->compiled_p++ = OP_CODE_SET_SINGLE;
+        *self_p->compiled_p++ = OP_CODE_TEXT;
+        *self_p->compiled_p++ = pattern_char;
+        pattern_char = *self_p->pattern_p++;
+        self_p->compiled_left -= 3;
+        code_size += 3;
+    }
+
+    while (1) {
+        /* Make sure a range entry fits in the compile buffer as it is
+           bigger than a single entry. */
+        if (self_p->compiled_left < 5) {
+            return (-1);
+        }
+
+        /* Parse one operation; single or range. */
+        pattern_char = *self_p->pattern_p++;
+        
+        STD_PRINTF_RE_DEBUG(FSTR("first pattern_char %c\r\n"),
+                            pattern_char);
+
+        /* Break when the closing bracket is found. */
+        if (pattern_char == ']') {
+            self_p->pattern_p--;
+            break;
+        }
+
+        /* Make room for single/range op code. */
+        compiled_op_code_p = self_p->compiled_p;
+        self_p->compiled_p++;
+        self_p->compiled_left--;
+        code_size++;
+
+        /* Handle the first character for this single/range entry. */
+        if (pattern_char == '\0') {
+            return (-1);
+        } else if (pattern_char == '\\') {
+            PRINT_FILE_LINE();
+            pattern_char = *self_p->pattern_p++;
+            STD_PRINTF_RE_DEBUG(FSTR("escaped pattern_char %c\r\n"),
+                                pattern_char);
+            res = compile_escape_char(self_p, pattern_char);
+
+            /* Special escape characters are not allowed in a
+               range. */
+            if ((res < 0)
+                || ((res < 2)
+                    && (self_p->pattern_p[0] == '-')
+                    && (self_p->pattern_p[1] != ']'))) {
+                return (-1);
+            }
+
+            code_size += res;
+        } else if (pattern_char == '-') {
+            if (*self_p->pattern_p == ']') {
+                *self_p->compiled_p++ = OP_CODE_TEXT;
+                *self_p->compiled_p++ = pattern_char;
+                self_p->compiled_left -= 2;
+                code_size += 2;
+            } else {
+                return (-1);
+            }
+        } else {
+            *self_p->compiled_p++ = OP_CODE_TEXT;
+            *self_p->compiled_p++ = pattern_char;
+            self_p->compiled_left -= 2;
+            code_size += 2;
+        }
+
+        /* Find out if it's a range entry. */
+        pattern_char = *self_p->pattern_p;
+
+        STD_PRINTF_RE_DEBUG(FSTR("second pattern_char %c\r\n"),
+                            pattern_char);
+        
+        /* Create a single entry and break if the closing bracket is
+           found. */
+        if (pattern_char == ']') {
+            *compiled_op_code_p = OP_CODE_SET_SINGLE;
+            break;
+        }
+        
+        /* Create a single entry and continue unless the range
+           operater is found at the end of the set. */
+        if ((pattern_char != '-') || (self_p->pattern_p[1] == ']')) {
+            *compiled_op_code_p = OP_CODE_SET_SINGLE;
+            continue;
+        }
+        
+        /* It's a range entry. */
+        *compiled_op_code_p = OP_CODE_SET_RANGE;
+
+        /* Skip the range operator. */
+        self_p->pattern_p++;
+        pattern_char = *self_p->pattern_p++;
+
+        STD_PRINTF_RE_DEBUG(FSTR("third pattern_char %c\r\n"),
+                            pattern_char);
+
+        /* Handle the second character for this range entry. */
+        if (pattern_char == '\0') {
+            return (-1);
+        } else if (pattern_char == '\\') {
+            pattern_char = *self_p->pattern_p++;
+            res = compile_escape_char(self_p, pattern_char);
+
+            /* Do not allow special escape characters in a range. */
+            if (res < 2) {
+                return (-1);
+            }
+
+            code_size += res;
+        } else if (pattern_char == '-') {
+            return (-1);
+        } else {
+            *self_p->compiled_p++ = OP_CODE_TEXT;
+            *self_p->compiled_p++ = pattern_char;
+            self_p->compiled_left -= 2;
+            code_size += 2;
+        }
+    }
+
+    self_p->current_repetition_op_code_p[1] = ((code_size >> 8) & 0xff);
+    self_p->current_repetition_op_code_p[2] = (code_size & 0xff);
+
+    return (0);
 }
 
 static int compile_alternatives(struct compile_t *self_p)
@@ -388,7 +551,7 @@ static int compile_text(struct compile_t *self_p)
     if (self_p->compiled_left < 1) {
         return (-1);
     }
-    
+
     self_p->current_repetition_op_code_p = self_p->compiled_p;
     *self_p->compiled_p++ = OP_CODE_TEXT;
     *self_p->compiled_p++ = *self_p->pattern_p;
@@ -487,23 +650,63 @@ static int match_end(struct match_t *self_p)
 
 static int match_text(struct match_t *self_p)
 {
+    int value, reference;
+
     if (self_p->buf_left < 1) {
         return (-1);
     }
 
+    value = (int)*self_p->buf_p;
+    reference = *self_p->compiled_p;
+
     STD_PRINTF_RE_DEBUG(FSTR("Comparing '%c' and '%c'.\r\n"),
-                        (int)*self_p->buf_p,
-                        (int)*self_p->compiled_p);
+                        value,
+                        reference);
 
     if (self_p->flags & RE_IGNORECASE) {
-        if (tolower((int)*self_p->buf_p++)
-            != tolower((int)*self_p->compiled_p++)) {
-            return (-1);
-        }
-    } else {
-        if (*self_p->buf_p++ != *self_p->compiled_p++) {
-            return (-1);
-        }
+        value = tolower(value);
+        reference = tolower(reference);
+    }
+        
+    if (value != reference) {
+
+        return (-1);
+    }
+
+    self_p->buf_p++;
+    self_p->compiled_p++;
+    self_p->buf_left--;
+
+    return (1);
+}
+
+static int match_text_range(struct match_t *self_p,
+                            int lower,
+                            int upper)
+{
+    int value;
+
+    if (self_p->buf_left < 1) {
+        return (-1);
+    }
+
+    value = (int)*self_p->buf_p++;
+
+    STD_PRINTF_RE_DEBUG(FSTR("Comparing '%c' with range '%c' to '%c'.\r\n"),
+                        value,
+                        (int)lower,
+                        (int)upper);
+    
+    if (self_p->flags & RE_IGNORECASE) {
+        value = tolower(value);
+        lower = tolower(lower);
+        upper = tolower(upper);
+    }
+    
+    if ((value < lower) || (value > upper)) {
+        self_p->buf_p--;
+
+        return (-1);
     }
 
     self_p->buf_left--;
@@ -525,7 +728,7 @@ static int match_dot(struct match_t *self_p)
 
     self_p->buf_p++;
     self_p->buf_left--;
-            
+
     return (1);
 }
 
@@ -541,7 +744,7 @@ static int match_whitespace(struct match_t *self_p)
 
     self_p->buf_p++;
     self_p->buf_left--;
-            
+
     return (1);
 }
 
@@ -593,12 +796,12 @@ static int match_zero_or_one(struct match_t *self_p,
     if (res >= 0) {
         return (matched_size + res);
     }
-    
+
     /* Try zero. */
     code_size = ((self_p->compiled_p[0] << 8) | self_p->compiled_p[1]);
     state = *self_p;
-    state.compiled_p += 2 + code_size;
-    
+    state.compiled_p += (2 + code_size);
+
     res = match(&state);
 
     if (res >= 0) {
@@ -672,23 +875,79 @@ static int match_members(struct match_t *self_p)
                          | self_p->compiled_p[3]);
     self_p->compiled_p += 4;
     matched_size = 0;
-    
+
     for (i = 0; i < number_of_members; i++) {
         state = *self_p;
         res = match(&state);
-        
+
         if (res < 0) {
             return (res);
         }
-        
+
         self_p->buf_p += res;
         self_p->buf_left -= res;
         matched_size += res;
     }
-    
+
     self_p->compiled_p += code_size;
 
     return (matched_size);
+}
+
+static int match_set(struct match_t *self_p)
+{
+    int res;
+    char lower, upper;
+    int code_size;
+    const char *compiled_end_p;
+
+    code_size = ((self_p->compiled_p[0] << 8) | self_p->compiled_p[1]);
+    self_p->compiled_p += 2;
+    compiled_end_p = (self_p->compiled_p + code_size);
+
+    while (*self_p->compiled_p != OP_CODE_RETURN) {
+        if (*self_p->compiled_p++ == OP_CODE_SET_SINGLE) {
+            switch (*self_p->compiled_p++) {
+
+            case OP_CODE_WHITESPACE:
+                res = match_whitespace(self_p);
+                break;
+
+            case OP_CODE_DECIMAL_DIGIT:
+                res = match_decimal_digit(self_p);
+                break;
+
+            case OP_CODE_ALPHANUMERIC:
+                res = match_alphanumeric(self_p);
+                break;
+
+            case OP_CODE_TEXT:
+                res = match_text(self_p);
+
+                if (res < 0) {
+                    self_p->compiled_p++;
+                }
+                break;
+
+            default:
+                return (-1);
+            }
+        } else {
+            lower = self_p->compiled_p[1];
+            upper = self_p->compiled_p[3];
+            self_p->compiled_p += 4;
+
+            res = match_text_range(self_p, lower, upper);
+        }
+
+        /* Return when a match is found. */
+        if (res >= 0) {
+            self_p->compiled_p = compiled_end_p;
+            return (res);
+        }
+    }
+
+    return (-1);
 }
 
 /**
@@ -767,7 +1026,8 @@ static ssize_t match(struct match_t *self_p)
             return (-1);
 
         case OP_CODE_SET:
-            return (-1);
+            res = match_set(self_p);
+            break;
 
         case OP_CODE_GROUP:
             return (-1);
@@ -789,7 +1049,7 @@ static ssize_t match(struct match_t *self_p)
         matched_size += res;
     }
 }
-        
+
 char *re_compile(char *compiled_p,
                  const char *pattern_p,
                  char flags,
@@ -809,15 +1069,17 @@ char *re_compile(char *compiled_p,
     state.compiled_left--;
     res = 0;
 
-    while (res == 0) {
+    while (res >= 0) {
         STD_PRINTF_RE_DEBUG(FSTR("pattern = '%c', compiled_left = %d\r\n"),
                             *state.pattern_p,
                             state.compiled_left);
 
+        /* Check that the op code fits in the compilation buffer. */
         if (state.compiled_left < 1) {
             return (NULL);
         }
 
+        /* Decrement once for the op code. */
         state.compiled_left--;
 
         switch (*state.pattern_p) {
@@ -828,11 +1090,11 @@ char *re_compile(char *compiled_p,
 
         case '^':
             res = compile_begin(&state);
-            return (NULL);
+            break;
 
         case '$':
             res = compile_end(&state);
-            return (NULL);
+            break;
 
         case '*':
             res = compile_repetition(&state, OP_CODE_ZERO_OR_MORE);

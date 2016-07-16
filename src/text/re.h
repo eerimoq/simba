@@ -69,7 +69,7 @@ struct re_group_t {
  * - ``+?``    - One or more repetitions (non-greedy).
  * - ``{m}``   - Exactly ``m`` repetitions.
  * - ``\\``    - Escape character.
- * - ``[]``    - Set of characters (**not yet supported**).
+ * - ``[]``    - Set of characters.
  * - ``'|'``   - Alternatives (**not yet supported**).
  * - ``(...)`` - Groups (**not yet supported**).
  * - ``\\d``   - Decimal digits ``[0-9]``.

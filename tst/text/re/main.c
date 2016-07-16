@@ -156,14 +156,77 @@ int test_special(struct harness_t *harness_p)
     return (0);
 }
 
-/* int test_special_character_set(struct harness_t *harness_p) */
-/* { */
-/*     BTASSERT(re_match("[ \t\r\n\f\v]+", " \t\r\n\f\v", NULL, NULL, 0) == 6); */
-/*     BTASSERT(re_match("[0-9]+", "0123456789", NULL, NULL, 0) == 10); */
-/*     BTASSERT(re_match("[a-zA-Z0-9_]+", "azAZ09_", NULL, NULL, 0) == 7); */
+int test_special_character_set(struct harness_t *harness_p)
+{
+    char re[32];
 
-/*     return (0); */
-/* } */
+    BTASSERT(re_compile(re, "[a]", 0, sizeof(re)) != NULL);
+    BTASSERT(re_match(re, "a", 1, NULL, NULL) == 1);
+    
+    BTASSERT(re_compile(re, "[ ]+", 0, sizeof(re)) != NULL);
+    BTASSERT(re_match(re, "  ", 2, NULL, NULL) == 2);
+    
+    BTASSERT(re_compile(re, "[0-9]+", 0, sizeof(re)) != NULL);
+    BTASSERT(re_match(re, "0123456789", 10, NULL, NULL) == 10);
+
+    BTASSERT(re_compile(re, "[a-zA-Z0-9_]+", 0, sizeof(re)) != NULL);
+    BTASSERT(re_match(re, "azAZ09_", 7, NULL, NULL) == 7);
+    BTASSERT(re_match(re, "-", 1, NULL, NULL) == -1);
+
+    /* Number of characters must be at least one. */
+    BTASSERT(re_compile(re, "[]]", 0, sizeof(re)) != NULL);
+    BTASSERT(re_match(re, "]", 1, NULL, NULL) == 1);
+
+    BTASSERT(re_compile(re, "[\\]]", 0, sizeof(re)) != NULL);
+    BTASSERT(re_match(re, "]", 1, NULL, NULL) == 1);
+
+    /* Missing closing bracket. */
+    BTASSERT(re_compile(re, "[\\]", 0, sizeof(re)) == NULL);
+
+    BTASSERT(re_compile(re, "[\\w]", 0, sizeof(re)) != NULL);
+    BTASSERT(re_match(re, "f", 1, NULL, NULL) == 1);
+
+    /* Allow unescaped range operator as first character. */
+    BTASSERT(re_compile(re, "[-]", 0, sizeof(re)) != NULL);
+    BTASSERT(re_match(re, "-", 1, NULL, NULL) == 1);
+
+    BTASSERT(re_compile(re, "[\\-]", 0, sizeof(re)) != NULL);
+    BTASSERT(re_match(re, "-", 1, NULL, NULL) == 1);
+
+    BTASSERT(re_compile(re, "[a-]", 0, sizeof(re)) != NULL);
+    BTASSERT(re_match(re, "-", 1, NULL, NULL) == 1);
+
+    /* Esacpe range operator '-' to include it in the sequence of
+       characters. */
+    BTASSERT(re_compile(re, "[a\\-f]", 0, sizeof(re)) != NULL);
+    BTASSERT(re_match(re, "-", 1, NULL, NULL) == 1);
+
+    BTASSERT(re_compile(re, "[a-z]", RE_IGNORECASE, sizeof(re)) != NULL);
+    BTASSERT(re_match(re, "A", 1, NULL, NULL) == 1);
+
+    /* Missing closing bracket. */
+    BTASSERT(re_compile(re, "[a-", 0, sizeof(re)) == NULL);
+
+    /* Special escape character are not allowed in a range. */
+    BTASSERT(re_compile(re, "[a-\\d]", 0, sizeof(re)) == NULL);
+    BTASSERT(re_compile(re, "[a\\w-3]", 0, sizeof(re)) == NULL);
+
+    BTASSERT(re_compile(re, "[\\h-y]", 0, sizeof(re)) != NULL);
+    BTASSERT(re_match(re, "h", 1, NULL, NULL) == 1);
+
+    BTASSERT(re_compile(re, "[h-\\y]", 0, sizeof(re)) != NULL);
+    BTASSERT(re_match(re, "h", 1, NULL, NULL) == 1);
+
+    BTASSERT(re_compile(re, "[h--]", 0, sizeof(re)) == NULL);
+
+    BTASSERT(re_compile(re, "[\\s]", 0, sizeof(re)) != NULL);
+    BTASSERT(re_match(re, "\t", 1, NULL, NULL) == 1);
+
+    BTASSERT(re_compile(re, "[\\d]", 0, sizeof(re)) != NULL);
+    BTASSERT(re_match(re, "9", 1, NULL, NULL) == 1);
+
+    return (0);
+}
 
 int test_greed(struct harness_t *harness_p)
 {
@@ -185,8 +248,6 @@ int test_greed(struct harness_t *harness_p)
     BTASSERT(re_compile(re, "<.\?\?>", 0, sizeof(re)) != NULL);
     BTASSERT(re_match(re, "<p>foo</p>", 10, NULL, NULL) == 3);
     BTASSERT(re_match(re, "<>>", 3, NULL, NULL) == 2);
-
-    BTASSERT(re_compile(re, "<.\?\?>", 0, sizeof(re)) != NULL);
     BTASSERT(re_match(re, "<", 1, NULL, NULL) == -1);
 
     /* Non-greedy, match as little as possible. */
@@ -291,7 +352,7 @@ int main()
         { test_newline, "test_newline" },
         { test_special_escaped, "test_special_escaped" },
         { test_special, "test_special" },
-        /* { test_special_character_set, "test_special_character_set" }, */
+        { test_special_character_set, "test_special_character_set" },
         { test_greed, "test_greed" },
         /* { test_groups, "test_groups" }, */
         { test_custom, "test_custom" },
