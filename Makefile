@@ -55,6 +55,7 @@ ifeq ($(BOARD), linux)
 				    http_websocket_client \
 				    inet \
 				    mqtt_client)
+    TESTS += $(addprefix tst/multimedia/, midi)
 endif
 
 ifeq ($(BOARD), arduino_due)
