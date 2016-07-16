@@ -35,12 +35,13 @@ int harness_run(struct harness_t *self_p,
 {
     int err;
     struct harness_testcase_t *testcase_p;
-    int total, passed, failed;
+    int total, passed, failed, skipped;
     char buf[17];
 
     total = 0;
     passed = 0;
     failed = 0;
+    skipped = 0;
     testcase_p = testcases_p;
 
     /* Print a header. */
@@ -58,9 +59,13 @@ int harness_run(struct harness_t *self_p,
             passed++;
             std_printf(FSTR("exit: %s: PASSED\r\n\r\n"),
                        testcase_p->name_p);
-        } else {
+        } else if (err < 0) {
             failed++;
             std_printf(FSTR("exit: %s: FAILED\r\n\r\n"),
+                       testcase_p->name_p);
+        } else {
+            skipped++;
+            std_printf(FSTR("exit: %s: SKIPPED\r\n\r\n"),
                        testcase_p->name_p);
         }
 
@@ -71,8 +76,9 @@ int harness_run(struct harness_t *self_p,
     strcpy(buf, "kernel/thrd/list");
     fs_call(buf, NULL, &self_p->uart.chout, NULL);
 
-    std_printf(FSTR("harness report: total(%d), passed(%d), failed(%d)\r\n"),
-               total, passed, failed);
+    std_printf(FSTR("harness report: total(%d), passed(%d), "
+                    "failed(%d), skipped(%d)\r\n"),
+               total, passed, failed, skipped);
 
     sys_stop(failed);
 

@@ -99,8 +99,8 @@ UPPER_BOARD := $(shell python -c "import sys; sys.stdout.write(sys.argv[1].upper
 
 RUN_PY = $(SIMBA_ROOT)/make/run.py
 RUNSCRIPT = $(SIMBA_ROOT)/make/$(TOOLCHAIN)/$(ARCH).py
-RUN_END_PATTERN ?= "harness report: total\(\d+\), passed\(\d+\), failed\(\d+\)"
-RUN_END_PATTERN_SUCCESS ?= "harness report: total\(\d+\), passed\(\d+\), failed\(0\)"
+RUN_END_PATTERN ?= "harness report: total\(\d+\), passed\(\d+\), failed\(\d+\), skipped\(\d+\)"
+RUN_END_PATTERN_SUCCESS ?= "harness report: total\(\d+\), passed\(\d+\), failed\(0\), skipped\(\d+\)"
 
 CONSOLESCRIPT = $(SIMBA_ROOT)/make/console.py
 
