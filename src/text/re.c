@@ -157,6 +157,23 @@ enum op_code_t {
 
 //#define RE_DEBUG
 
+struct compile_t {
+    char *compiled_p;
+    const char *pattern_p;
+    char *compiled_begin_p;
+    size_t compiled_left;
+    char *current_repetition_op_code_p;
+};
+
+struct match_t {
+    const char *compiled_p;
+    char flags;
+    const char *buf_p;
+    size_t buf_left;
+    struct re_group_t *groups_p;
+    size_t *number_of_groups_p;
+};
+
 #if CONFIG_DEBUG == 1 && defined(RE_DEBUG)
 
 /**
@@ -193,85 +210,238 @@ static char *op_code_str[] = {
 #    define STD_PRINTF_RE_DEBUG(...)
 #endif
 
-#define COMPILE_REPETITION(op_code_base)                                \
-    {                                                                   \
-        int op_code = op_code_base;                                     \
-                                                                        \
-        if (pattern_p[1] == '?') {                                      \
-            op_code += NON_GREEDY_OFFSET;                               \
-            pattern_p++;                                                \
-        }                                                               \
-                                                                        \
-        if (compiled_left < 3) {                                        \
-            return (NULL);                                              \
-        }                                                               \
-                                                                        \
-        /* Insert before last op, group or set. */                      \
-        code_size = (compiled_p - current_repetition_op_code_p);        \
-        memmove(&current_repetition_op_code_p[3],                       \
-                current_repetition_op_code_p,                           \
-                code_size);                                             \
-        code_size++;                                                    \
-        current_repetition_op_code_p[0] = op_code;                      \
-        current_repetition_op_code_p[1] = ((code_size >> 8) & 0xff);    \
-        current_repetition_op_code_p[2] = (code_size & 0xff);           \
-        compiled_p[3] = OP_CODE_RETURN;                                 \
-        compiled_p += 4;                                                \
-        pattern_p++;                                                    \
-        compiled_left -= 3;                                             \
+static int compile_repetition(struct compile_t *self_p,
+                              int op_code)
+{
+    int code_size;
+
+    if (self_p->pattern_p[1] == '?') {
+        op_code += NON_GREEDY_OFFSET;
+        self_p->pattern_p++;
     }
 
-static ssize_t match(const char *compiled_p,
-                     char flags,
-                     const char *buf_p,
-                     size_t size,
-                     struct re_group_t *groups_p,
-                     size_t *number_of_groups_p);
+    if (self_p->compiled_left < 3) {
+        return (-1);
+    }
 
-static ssize_t match_repetition(const char *compiled_p,
-                                char flags,
-                                const char *buf_p,
-                                size_t buf_left,
-                                struct re_group_t *groups_p,
-                                size_t *number_of_groups_p,
-                                ssize_t matched_size,
+    /* Insert before last op, group or set. */
+    code_size = (self_p->compiled_p - self_p->current_repetition_op_code_p);
+    memmove(&self_p->current_repetition_op_code_p[3],
+            self_p->current_repetition_op_code_p,
+            code_size);
+    code_size++;
+    self_p->current_repetition_op_code_p[0] = op_code;
+    self_p->current_repetition_op_code_p[1] = ((code_size >> 8) & 0xff);
+    self_p->current_repetition_op_code_p[2] = (code_size & 0xff);
+    self_p->compiled_p[3] = OP_CODE_RETURN;
+    self_p->compiled_p += 4;
+    self_p->compiled_left -= 3;
+
+    return (0);
+}
+
+static int compile_dot(struct compile_t *self_p)
+{
+    self_p->current_repetition_op_code_p = self_p->compiled_p;
+    *self_p->compiled_p++ = OP_CODE_DOT;
+
+    return (0);
+}
+
+static int compile_begin(struct compile_t *self_p)
+{
+    *self_p->compiled_p++ = OP_CODE_BEGIN;
+
+    return (0);
+}
+
+static int compile_end(struct compile_t *self_p)
+{
+    *self_p->compiled_p++ = OP_CODE_END;
+
+    return (0);
+}
+
+static int compile_zero_or_one(struct compile_t *self_p)
+{
+    int op_code = OP_CODE_ZERO_OR_ONE;
+    int code_size;
+
+    if (self_p->compiled_left < 2) {
+        return (-1);
+    }
+
+    if (self_p->pattern_p[1] == '?') {
+        op_code += NON_GREEDY_OFFSET;
+        self_p->pattern_p++;
+    }
+
+    /* Insert before last op, group or set. */
+    code_size = (self_p->compiled_p - self_p->current_repetition_op_code_p);
+    memmove(&self_p->current_repetition_op_code_p[3],
+            self_p->current_repetition_op_code_p,
+            code_size);
+    self_p->current_repetition_op_code_p[0] = op_code;
+    self_p->current_repetition_op_code_p[1] = ((code_size >> 8) & 0xff);
+    self_p->current_repetition_op_code_p[2] = (code_size & 0xff);
+    self_p->compiled_p += 3;
+    self_p->compiled_left -= 2;
+
+    return (0);
+}
+
+static int compile_members(struct compile_t *self_p)
+{
+    int number_of_members = 0;
+    int code_size;
+
+    if (self_p->compiled_left < 5) {
+        return (-1);
+    }
+
+    self_p->pattern_p++;
+
+    while (isdigit((int)*self_p->pattern_p)) {
+        number_of_members *= 10;
+        number_of_members += (*self_p->pattern_p++ - '0');
+    }
+
+    code_size = (self_p->compiled_p - self_p->current_repetition_op_code_p);
+    memmove(&self_p->current_repetition_op_code_p[5],
+            self_p->current_repetition_op_code_p,
+            code_size);
+    code_size++;
+    self_p->current_repetition_op_code_p[0] = OP_CODE_MEMBERS;
+    self_p->current_repetition_op_code_p[1] = ((code_size >> 8) & 0xff);
+    self_p->current_repetition_op_code_p[2] = (code_size & 0xff);
+    self_p->current_repetition_op_code_p[3] = ((number_of_members >> 8)
+                                               & 0xff);
+    self_p->current_repetition_op_code_p[4] = (number_of_members & 0xff);
+    self_p->compiled_p[5] = OP_CODE_RETURN;
+    self_p->compiled_p += 6;
+    self_p->compiled_left -= 5;
+
+    return (0);
+}
+
+static int compile_escape(struct compile_t *self_p)
+{
+    self_p->pattern_p++;
+    self_p->current_repetition_op_code_p = self_p->compiled_p;
+
+    switch (*self_p->pattern_p) {
+
+    case '\0':
+        return (-1);
+
+    case 's':
+        *self_p->compiled_p++ = OP_CODE_WHITESPACE;
+        break;
+
+    case 'd':
+        *self_p->compiled_p++ = OP_CODE_DECIMAL_DIGIT;
+        break;
+
+    case 'w':
+        *self_p->compiled_p++ = OP_CODE_ALPHANUMERIC;
+        break;
+
+    default:
+        /* Text. */
+        if (self_p->compiled_left < 1) {
+            return (-1);
+        }
+
+        *self_p->compiled_p++ = OP_CODE_TEXT;
+        *self_p->compiled_p++ = *self_p->pattern_p;
+        self_p->compiled_left--;
+        break;
+    }
+
+    return (0);
+}
+
+static int compile_set(struct compile_t *self_p)
+{
+    return (-1);
+}
+
+static int compile_alternatives(struct compile_t *self_p)
+{
+    return (-1);
+}
+
+static int compile_group(struct compile_t *self_p)
+{
+    return (-1);
+}
+
+static int compile_return(struct compile_t *self_p)
+{
+    *self_p->compiled_p++ = OP_CODE_RETURN;
+
+    return (0);
+}
+
+static int compile_text(struct compile_t *self_p)
+{
+    if (self_p->compiled_left < 1) {
+        return (-1);
+    }
+    
+    self_p->current_repetition_op_code_p = self_p->compiled_p;
+    *self_p->compiled_p++ = OP_CODE_TEXT;
+    *self_p->compiled_p++ = *self_p->pattern_p;
+    self_p->compiled_left--;
+
+    return (0);
+}
+
+static ssize_t match(struct match_t *self_p);
+
+static ssize_t match_repetition(struct match_t *self_p,
+                                int matched_size,
                                 int greedy,
                                 int repetitions_min,
                                 int repetitions_max)
 {
     int res, matched_size_repetition, code_size;
     int longest_matched_size_repetition = -1;
+    struct match_t state;
 
     matched_size_repetition = 0;
-    code_size = ((compiled_p[0] << 8) | compiled_p[1]);
-    compiled_p += 2;
+    code_size = ((self_p->compiled_p[0] << 8) | self_p->compiled_p[1]);
+    self_p->compiled_p += 2;
 
     while (1) {
-        /* Match the rest of the pattern. */
-        res = match(compiled_p + code_size,
-                    flags,
-                    buf_p + matched_size_repetition,
-                    buf_left - matched_size_repetition,
-                    NULL,
-                    NULL);
+        /* Initialize the match state. */
+        state.compiled_p = self_p->compiled_p + code_size;
+        state.flags = self_p->flags;
+        state.buf_p = self_p->buf_p + matched_size_repetition;
+        state.buf_left = self_p->buf_left - matched_size_repetition;
+        state.groups_p = NULL;
+        state.number_of_groups_p = NULL;
+
+        res = match(&state);
 
         if (res >= 0) {
             longest_matched_size_repetition = matched_size_repetition;
 
             if (greedy == 0) {
-                if ((repetitions_min == 0) || (matched_size_repetition > 0)) {
+                if ((repetitions_min == 0)
+                    || (matched_size_repetition > 0)) {
                     break;
                 }
             }
         }
 
         /* Match the repetition pattern. */
-        res = match(compiled_p,
-                    flags,
-                    buf_p + matched_size_repetition,
-                    buf_left - matched_size_repetition,
-                    NULL,
-                    NULL);
+        state.compiled_p = self_p->compiled_p;
+        state.flags = self_p->flags;
+        state.buf_p = self_p->buf_p + matched_size_repetition;
+        state.buf_left = self_p->buf_left - matched_size_repetition;
+
+        res = match(&state);
 
         if (res < 0) {
             break;
@@ -284,20 +454,20 @@ static ssize_t match_repetition(const char *compiled_p,
         res = 0;
 
         while (res < longest_matched_size_repetition) {
-            res += match(compiled_p,
-                         flags,
-                         buf_p + res,
-                         buf_left - res,
-                         groups_p,
-                         number_of_groups_p);
+            state = *self_p;
+            state.buf_p += res;
+            state.buf_left -= res;
+
+            res += match(&state);
         }
 
-        res += match(compiled_p + code_size,
-                     flags,
-                     buf_p + longest_matched_size_repetition,
-                     buf_left - longest_matched_size_repetition,
-                     groups_p,
-                     number_of_groups_p);
+        /* Match the rest of the pattern. */
+        state = *self_p;
+        state.compiled_p += code_size;
+        state.buf_p += longest_matched_size_repetition;
+        state.buf_left -= longest_matched_size_repetition;
+
+        res += match(&state);
 
         return (matched_size + res);
     }
@@ -305,31 +475,237 @@ static ssize_t match_repetition(const char *compiled_p,
     return (-1);
 }
 
+static int match_begin(struct match_t *self_p)
+{
+    return (-1);
+}
+
+static int match_end(struct match_t *self_p)
+{
+    return (-1);
+}
+
+static int match_text(struct match_t *self_p)
+{
+    if (self_p->buf_left < 1) {
+        return (-1);
+    }
+
+    STD_PRINTF_RE_DEBUG(FSTR("Comparing '%c' and '%c'.\r\n"),
+                        (int)*self_p->buf_p,
+                        (int)*self_p->compiled_p);
+
+    if (self_p->flags & RE_IGNORECASE) {
+        if (tolower((int)*self_p->buf_p++)
+            != tolower((int)*self_p->compiled_p++)) {
+            return (-1);
+        }
+    } else {
+        if (*self_p->buf_p++ != *self_p->compiled_p++) {
+            return (-1);
+        }
+    }
+
+    self_p->buf_left--;
+
+    return (1);
+}
+
+static int match_dot(struct match_t *self_p)
+{
+    if (self_p->buf_left < 1) {
+        return (-1);
+    }
+
+    if (!(self_p->flags & RE_DOTALL)) {
+        if (*self_p->buf_p == '\n') {
+            return (-1);
+        }
+    }
+
+    self_p->buf_p++;
+    self_p->buf_left--;
+            
+    return (1);
+}
+
+static int match_whitespace(struct match_t *self_p)
+{
+    if (self_p->buf_left < 1) {
+        return (-1);
+    }
+
+    if (!isspace((int)*self_p->buf_p)) {
+        return (-1);
+    }
+
+    self_p->buf_p++;
+    self_p->buf_left--;
+            
+    return (1);
+}
+
+static int match_decimal_digit(struct match_t *self_p)
+{
+    if (self_p->buf_left < 1) {
+        return (-1);
+    }
+
+    if (!isdigit((int)*self_p->buf_p)) {
+        return (-1);
+    }
+
+    self_p->buf_p++;
+    self_p->buf_left--;
+
+    return (1);
+}
+
+static int match_alphanumeric(struct match_t *self_p)
+{
+    if (self_p->buf_left < 1) {
+        return (-1);
+    }
+
+    if ((!isalnum((int)*self_p->buf_p)) && (*self_p->buf_p != '_')) {
+        return (-1);
+    }
+
+    self_p->buf_p++;
+    self_p->buf_left--;
+
+    return (1);
+}
+
+static int match_zero_or_one(struct match_t *self_p,
+                             int matched_size)
+{
+    int res;
+    int code_size;
+    struct match_t state;
+
+    /* Greedy match - try one. */
+    state = *self_p;
+    state.compiled_p += 2;
+
+    res = match(&state);
+
+    if (res >= 0) {
+        return (matched_size + res);
+    }
+    
+    /* Try zero. */
+    code_size = ((self_p->compiled_p[0] << 8) | self_p->compiled_p[1]);
+    state = *self_p;
+    state.compiled_p += 2 + code_size;
+    
+    res = match(&state);
+
+    if (res >= 0) {
+        return (matched_size + res);
+    }
+
+    return (res);
+}
+
+static int match_zero_or_more(struct match_t *self_p,
+                              int matched_size)
+{
+    return (match_repetition(self_p, matched_size, 1, 0, -1));
+}
+
+static int match_one_or_more(struct match_t *self_p,
+                             int matched_size)
+{
+    return (match_repetition(self_p, matched_size, 1, 1, -1));
+}
+
+static int match_zero_or_one_non_greedy(struct match_t *self_p,
+                                        int matched_size)
+{
+    int res;
+    int code_size;
+    struct match_t state;
+
+    /* Non-greedy match - try zero. */
+    code_size = ((self_p->compiled_p[0] << 8)
+                 | self_p->compiled_p[1]);
+    self_p->compiled_p += 2;
+    state = *self_p;
+    state.compiled_p += code_size;
+
+    res = match(&state);
+
+    if (res >= 0) {
+        return (matched_size + res);
+    }
+
+    /* Try one. */
+    res = match(self_p);
+
+    if (res >= 0) {
+        return (matched_size + res);
+    }
+
+    return (-1);
+}
+
+static int match_zero_or_more_non_greedy(struct match_t *self_p,
+                                         int matched_size)
+{
+    return (match_repetition(self_p, matched_size, 0, 0, -1));
+}
+
+static int match_one_or_more_non_greedy(struct match_t *self_p,
+                                        int matched_size)
+{
+    return (match_repetition(self_p, matched_size, 0, 1, -1));
+}
+
+static int match_members(struct match_t *self_p)
+{
+    int res, number_of_members, i, code_size, matched_size;
+    struct match_t state;
+
+    code_size = ((self_p->compiled_p[0] << 8) | self_p->compiled_p[1]);
+    number_of_members = ((self_p->compiled_p[2] << 8)
+                         | self_p->compiled_p[3]);
+    self_p->compiled_p += 4;
+    matched_size = 0;
+    
+    for (i = 0; i < number_of_members; i++) {
+        state = *self_p;
+        res = match(&state);
+        
+        if (res < 0) {
+            return (res);
+        }
+        
+        self_p->buf_p += res;
+        self_p->buf_left -= res;
+        matched_size += res;
+    }
+    
+    self_p->compiled_p += code_size;
+
+    return (matched_size);
+}
+
 /**
  * Recursive match using given compiled pattern.
  *
- * @param[in] compiled_p Compiled regular expression.
- * @param[in] buf_p Buffer to apply the pattern to.
- * @param[in] size Number of bytes in buffer.
- * @param[out] groups_p Read groups.
- * @param[in,out] number_of_groups Number of read groups.
+ * @param[in] self_p The match state.
  *
  * @return Number of matched bytes or negative error code.
  */
-static ssize_t match(const char *compiled_p,
-                     char flags,
-                     const char *buf_p,
-                     size_t size,
-                     struct re_group_t *groups_p,
-                     size_t *number_of_groups_p)
+static ssize_t match(struct match_t *self_p)
 {
+    int res;
     int op_code;
     size_t matched_size = 0;
-    size_t buf_left = size;
-    size_t code_size;
 
     while (1) {
-        op_code = *compiled_p++;
+        op_code = *self_p->compiled_p++;
 
         STD_PRINTF_RE_DEBUG(FSTR("op = %s (%d)\r\n"),
                             op_code_str[op_code],
@@ -338,232 +714,53 @@ static ssize_t match(const char *compiled_p,
         switch (op_code) {
 
         case OP_CODE_BEGIN:
+            res = match_begin(self_p);
             break;
 
         case OP_CODE_END:
+            res = match_end(self_p);
             break;
 
         case OP_CODE_TEXT:
-            if (buf_left < 1) {
-                return (-1);
-            }
-
-            STD_PRINTF_RE_DEBUG(FSTR("Comparing '%c' and '%c'.\r\n"),
-                                (int)*buf_p,
-                                (int)*compiled_p);
-
-            if (flags & RE_IGNORECASE) {
-                if (tolower((int)*buf_p++) != tolower((int)*compiled_p++)) {
-                    return (-1);
-                }
-            } else {
-                if (*buf_p++ != *compiled_p++) {
-                    return (-1);
-                }
-            }
-
-            buf_left--;
-            matched_size++;
+            res = match_text(self_p);
             break;
 
         case OP_CODE_DOT:
-            if (buf_left < 1) {
-                return (-1);
-            }
-
-            if (!(flags & RE_DOTALL)) {
-                if (*buf_p == '\n') {
-                    return (-1);
-                }
-            }
-
-            buf_p++;
-            buf_left--;
-            matched_size++;
+            res = match_dot(self_p);
             break;
 
         case OP_CODE_WHITESPACE:
-            if (buf_left < 1) {
-                return (-1);
-            }
-
-            if (!isspace((int)*buf_p)) {
-                return (-1);
-            }
-
-            buf_p++;
-            buf_left--;
-            matched_size++;
+            res = match_whitespace(self_p);
             break;
 
         case OP_CODE_DECIMAL_DIGIT:
-            if (buf_left < 1) {
-                return (-1);
-            }
-
-            if (!isdigit((int)*buf_p)) {
-                return (-1);
-            }
-
-            buf_p++;
-            buf_left--;
-            matched_size++;
+            res = match_decimal_digit(self_p);
             break;
 
         case OP_CODE_ALPHANUMERIC:
-            if (buf_left < 1) {
-                return (-1);
-            }
-
-            if ((!isalnum((int)*buf_p)) && (*buf_p != '_')) {
-                return (-1);
-            }
-
-            buf_p++;
-            buf_left--;
-            matched_size++;
+            res = match_alphanumeric(self_p);
             break;
 
         case OP_CODE_ZERO_OR_ONE:
-            {
-                int res;
-
-                /* Greedy match - try one. */
-                res = match(compiled_p + 2,
-                            flags,
-                            buf_p,
-                            buf_left,
-                            groups_p,
-                            number_of_groups_p);
-
-                if (res >= 0) {
-                    return (matched_size + res);
-                }
-
-                /* Try zero. */
-                code_size = ((compiled_p[0] << 8) | compiled_p[1]);
-                res = match(compiled_p + 2 + code_size,
-                            flags,
-                            buf_p,
-                            buf_left,
-                            groups_p,
-                            number_of_groups_p);
-
-                if (res >= 0) {
-                    return (matched_size + res);
-                }
-
-                return (-1);
-            }
+            return (match_zero_or_one(self_p, matched_size));
 
         case OP_CODE_ZERO_OR_MORE:
-            return (match_repetition(compiled_p,
-                                     flags,
-                                     buf_p,
-                                     buf_left,
-                                     groups_p,
-                                     number_of_groups_p,
-                                     matched_size,
-                                     1,
-                                     0,
-                                     -1));
+            return (match_zero_or_more(self_p, matched_size));
 
         case OP_CODE_ONE_OR_MORE:
-            return (match_repetition(compiled_p,
-                                     flags,
-                                     buf_p,
-                                     buf_left,
-                                     groups_p,
-                                     number_of_groups_p,
-                                     matched_size,
-                                     1,
-                                     1,
-                                     -1));
+            return (match_one_or_more(self_p, matched_size));
 
         case OP_CODE_ZERO_OR_ONE_NON_GREEDY:
-            {
-                int res;
-
-                /* Non-greedy match - try zero. */
-                code_size = ((compiled_p[0] << 8) | compiled_p[1]);
-                compiled_p += 2;
-                res = match(compiled_p + code_size,
-                            flags,
-                            buf_p,
-                            buf_left,
-                            groups_p,
-                            number_of_groups_p);
-
-                if (res >= 0) {
-                    return (matched_size + res);
-                }
-
-                /* Try one. */
-                res = match(compiled_p,
-                            flags,
-                            buf_p,
-                            buf_left,
-                            groups_p,
-                            number_of_groups_p);
-
-                if (res >= 0) {
-                    return (matched_size + res);
-                }
-
-                return (-1);
-            }
+            return (match_zero_or_one_non_greedy(self_p, matched_size));
 
         case OP_CODE_ZERO_OR_MORE_NON_GREEDY:
-            return (match_repetition(compiled_p,
-                                     flags,
-                                     buf_p,
-                                     buf_left,
-                                     groups_p,
-                                     number_of_groups_p,
-                                     matched_size,
-                                     0,
-                                     0,
-                                     -1));
+            return (match_zero_or_more_non_greedy(self_p, matched_size));
 
         case OP_CODE_ONE_OR_MORE_NON_GREEDY:
-            return (match_repetition(compiled_p,
-                                     flags,
-                                     buf_p,
-                                     buf_left,
-                                     groups_p,
-                                     number_of_groups_p,
-                                     matched_size,
-                                     0,
-                                     1,
-                                     -1));
+            return (match_one_or_more_non_greedy(self_p, matched_size));
 
         case OP_CODE_MEMBERS:
-            {
-                int res, number_of_members, i;
-
-                code_size = ((compiled_p[0] << 8) | compiled_p[1]);
-                number_of_members = ((compiled_p[2] << 8) | compiled_p[3]);
-                compiled_p += 4;
-
-                for (i = 0; i < number_of_members; i++) {
-                    res = match(compiled_p,
-                                flags,
-                                buf_p,
-                                buf_left,
-                                groups_p,
-                                number_of_groups_p);
-
-                    if (res < 0) {
-                        return (-1);
-                    }
-
-                    buf_p += res;
-                    buf_left -= res;
-                    matched_size += res;
-                }
-
-                compiled_p += code_size;
-            }
+            res = match_members(self_p);
             break;
 
         case OP_CODE_ALTERNATIVES:
@@ -579,185 +776,106 @@ static ssize_t match(const char *compiled_p,
             return (matched_size);
 
         default:
-            return (-1);
-
+            STD_PRINTF_RE_DEBUG(FSTR("Bad op code %d.\r\n"), op_code);
+            res = -1;
+            break;
         }
+
+        /* No match found. */
+        if (res < 0) {
+            return (res);
+        }
+
+        matched_size += res;
     }
 }
-
+        
 char *re_compile(char *compiled_p,
                  const char *pattern_p,
                  char flags,
                  size_t size)
 {
-    char *compiled_begin_p = compiled_p;
-    size_t compiled_left = size;
-    char *current_repetition_op_code_p = NULL;
-    size_t code_size;
+    int res;
+    struct compile_t state;
 
-    *compiled_p++ = flags;
-    compiled_left--;
+    /* Initialize the compile self_p-> */
+    state.compiled_p = compiled_p;
+    state.pattern_p = pattern_p;
+    state.compiled_begin_p = compiled_p;
+    state.compiled_left = size;
+    state.current_repetition_op_code_p = NULL;
 
-    while (1) {
+    *state.compiled_p++ = flags;
+    state.compiled_left--;
+    res = 0;
+
+    while (res == 0) {
         STD_PRINTF_RE_DEBUG(FSTR("pattern = '%c', compiled_left = %d\r\n"),
-                            *pattern_p,
-                            compiled_left);
+                            *state.pattern_p,
+                            state.compiled_left);
 
-        if (compiled_left < 1) {
+        if (state.compiled_left < 1) {
             return (NULL);
         }
 
-        compiled_left--;
+        state.compiled_left--;
 
-        switch (*pattern_p) {
+        switch (*state.pattern_p) {
 
         case '.':
-            current_repetition_op_code_p = compiled_p;
-            *compiled_p++ = OP_CODE_DOT;
-            pattern_p++;
+            res = compile_dot(&state);
             break;
 
         case '^':
-            *compiled_p++ = OP_CODE_BEGIN;
-            pattern_p++;
+            res = compile_begin(&state);
             return (NULL);
 
         case '$':
-            *compiled_p++ = OP_CODE_END;
-            pattern_p++;
+            res = compile_end(&state);
             return (NULL);
 
         case '*':
-            COMPILE_REPETITION(OP_CODE_ZERO_OR_MORE);
+            res = compile_repetition(&state, OP_CODE_ZERO_OR_MORE);
             break;
 
         case '+':
-            COMPILE_REPETITION(OP_CODE_ONE_OR_MORE);
+            res = compile_repetition(&state, OP_CODE_ONE_OR_MORE);
             break;
 
         case '?':
-            {
-                int op_code = OP_CODE_ZERO_OR_ONE;
-
-                if (compiled_left < 2) {
-                    return (NULL);
-                }
-
-                if (pattern_p[1] == '?') {
-                    op_code += NON_GREEDY_OFFSET;
-                    pattern_p++;
-                }
-
-                /* Insert before last op, group or set. */
-                code_size = (compiled_p - current_repetition_op_code_p);
-                memmove(&current_repetition_op_code_p[3],
-                        current_repetition_op_code_p,
-                        code_size);
-                current_repetition_op_code_p[0] = op_code;
-                current_repetition_op_code_p[1] = ((code_size >> 8) & 0xff);
-                current_repetition_op_code_p[2] = (code_size & 0xff);
-                compiled_p += 3;
-                compiled_left -= 2;
-                pattern_p++;
-            }
+            res = compile_zero_or_one(&state);
             break;
 
         case '{':
-            if (compiled_left < 5) {
-                return (NULL);
-            }
-
-            /* Insert before last op, group or set. */
-            int number_of_members = 0;
-
-            pattern_p++;
-
-            while (isdigit((int)*pattern_p)) {
-                number_of_members *= 10;
-                number_of_members += (*pattern_p++ - '0');
-            }
-
-            pattern_p++;
-
-            code_size = (compiled_p - current_repetition_op_code_p);
-            memmove(&current_repetition_op_code_p[5],
-                    current_repetition_op_code_p,
-                    code_size);
-            code_size++;
-            current_repetition_op_code_p[0] = OP_CODE_MEMBERS;
-            current_repetition_op_code_p[1] = ((code_size >> 8) & 0xff);
-            current_repetition_op_code_p[2] = (code_size & 0xff);
-            current_repetition_op_code_p[3] = ((number_of_members >> 8) & 0xff);
-            current_repetition_op_code_p[4] = (number_of_members & 0xff);
-            compiled_p[5] = OP_CODE_RETURN;
-            compiled_p += 6;
-            compiled_left -= 5;
+            res = compile_members(&state);
             break;
 
         case '\\':
-            {
-                pattern_p++;
-                current_repetition_op_code_p = compiled_p;
-
-                switch (*pattern_p) {
-
-                case '\0':
-                    return (NULL);
-
-                case 's':
-                    *compiled_p++ = OP_CODE_WHITESPACE;
-                    break;
-
-                case 'd':
-                    *compiled_p++ = OP_CODE_DECIMAL_DIGIT;
-                    break;
-
-                case 'w':
-                    *compiled_p++ = OP_CODE_ALPHANUMERIC;
-                    break;
-
-                default:
-                    /* Text. */
-                    if (compiled_left < 1) {
-                        return (NULL);
-                    }
-
-                    *compiled_p++ = OP_CODE_TEXT;
-                    *compiled_p++ = *pattern_p;
-                    compiled_left--;
-                    break;
-                }
-
-                pattern_p++;
-            }
+            res = compile_escape(&state);
             break;
 
         case '[':
-            return (NULL);
+            res = compile_set(&state);
+            break;
 
         case '|':
-            /* Insert at the beginning of current group. */
-            return (NULL);
+            res = compile_alternatives(&state);
+            break;
 
         case '(':
-            return (NULL);
+            res = compile_group(&state);
+            break;
 
         case '\0':
-            *compiled_p++ = OP_CODE_RETURN;
-            return (compiled_begin_p);
+            compile_return(&state);
+            return (state.compiled_begin_p);
 
         default:
-            /* Text. */
-            if (compiled_left < 1) {
-                return (NULL);
-            }
-
-            current_repetition_op_code_p = compiled_p;
-            *compiled_p++ = OP_CODE_TEXT;
-            *compiled_p++ = *pattern_p++;
-            compiled_left--;
+            res = compile_text(&state);
             break;
         }
+
+        state.pattern_p++;
     }
 
     return (NULL);
@@ -769,10 +887,15 @@ ssize_t re_match(const char *compiled_p,
                  struct re_group_t *groups_p,
                  size_t *number_of_groups_p)
 {
-    return (match(&compiled_p[1],
-                  compiled_p[0],
-                  buf_p,
-                  size,
-                  groups_p,
-                  number_of_groups_p));
+    struct match_t state;
+
+    /* Initialize the match state. */
+    state.compiled_p = &compiled_p[1];
+    state.flags = compiled_p[0];
+    state.buf_p = buf_p;
+    state.buf_left = size;
+    state.groups_p = groups_p;
+    state.number_of_groups_p = number_of_groups_p;
+
+    return (match(&state));
 }

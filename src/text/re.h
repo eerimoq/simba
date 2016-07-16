@@ -79,8 +79,8 @@ struct re_group_t {
  * @param[out] compiled_p Compiled regular expression pattern.
  * @param[in] pattern_p Regular expression pattern.
  * @param[in] flags A combination of the flags ``RE_IGNORECASE``,
- *                  ``RE_DOTALL`` and ``RE_MULTILINE`` (RE_MULTILINE
- *                  is **not yet supported**).
+ *                  ``RE_DOTALL`` and ``RE_MULTILINE``
+ *                  (``RE_MULTILINE`` is **not yet supported**).
  * @param[in] size Size of the compiled buffer.
  *
  * @return Compiled patten, or NULL if the compilation failed.
@@ -98,7 +98,7 @@ char *re_compile(char *compiled_p,
  * @param[in] buf_p Buffer to apply the compiled pattern to.
  * @param[in] size Number of bytes in the buffer.
  * @param[out] groups_p Read groups or NULL.
- * @param[in,out] number_of_groups Number of read groups or NULL.
+ * @param[in,out] number_of_groups_p Number of read groups or NULL.
  *
  * @return Number of matched bytes or negative error code.
  */
