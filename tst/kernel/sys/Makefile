@@ -1,6 +1,6 @@
 #
 # @file Makefile
-# @version 1.0.0
+# @version 1.1.0
 #
 # @section License
 # Copyright (C) 2014-2016, Erik Moqvist
@@ -19,7 +19,7 @@
 #
 
 NAME = sys_suite
-VERSION = 1.0.0
+VERSION = 1.1.0
 BOARD ?= linux
 
 SIMBA_ROOT ?= ../../..
