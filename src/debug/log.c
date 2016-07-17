@@ -345,7 +345,7 @@ int log_object_print(struct log_object_t *self_p,
             return (0);
         }
 
-        name_p = "main";
+        name_p = "default";
     } else {
         if ((self_p->mask & (1 << level)) == 0) {
             return (0);

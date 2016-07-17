@@ -26,16 +26,16 @@ The log entry format is:
 
    <timestamp>:<log level>:<thread name>:<log object name>: <message>
 
-A few example outputs using three log objects; foo, bar and the
-default log object main. All logs are from the main thread as can be
-seen in the third field in the entries.
+A few example outputs using three log objects; `foo`, `bar` and the
+default log object `default`. All logs are from the main thread as can
+be seen in the third field in the entries.
 
 .. code:: text
 
    23:info:main:foo: A foo info message.
    24:info:main:bar: A bar info message.
    37:debug:main:bar: A bar debug message.
-   56:error:main:main: A main error message.
+   56:error:main:default: A main error message.
 
 ----------------------------------------------
 

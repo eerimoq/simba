@@ -47,7 +47,7 @@ int test_print(struct harness_t *harness_p)
     BTASSERT(log_object_print(&bar, LOG_DEBUG, FSTR("n = %d\r\n"), 4) == 1);
 
     /* Write using the thread log mask instead of the log object
-     * mask. */
+       mask. */
     BTASSERT(log_object_print(NULL, LOG_DEBUG, FSTR("k = %d\r\n"), 5) == 0);
     BTASSERT(log_object_print(NULL, LOG_ERR, FSTR("l = %d\r\n"), 6) == 1);
 
@@ -91,7 +91,7 @@ int test_handler(struct harness_t *harness_p)
     BTASSERT(log_add_handler(&handler) == 0);
 
     /* This should be printed twice, one for the default handler and
-     * once for our handler. */
+       once for our handler. */
     BTASSERT(log_object_print(&foo,
                               LOG_INFO,
                               FSTR("two handlers\r\n")) == 2);
