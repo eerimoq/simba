@@ -76,18 +76,8 @@ struct http_server_response_t {
     enum http_server_response_code_t code;
     struct {
         int type;
-        union {
-            union {
-                struct {
-                    const char *buf_p;
-                    size_t size;
-                } plain;
-                struct {
-                    const char *buf_p;
-                    size_t size;
-                } html;
-            } text;
-        } u;
+        const char *buf_p;
+        size_t size;
     } content;
 };
 

@@ -45,9 +45,9 @@ static int request_index(struct http_server_connection_t *connection_p,
 
     /* Create the response. */
     response.code = http_server_response_code_200_ok_t;
-    response.content.type = http_server_content_type_text_plain_t;
-    response.content.u.text.plain.buf_p = "Welcome!";
-    response.content.u.text.plain.size = strlen(response.content.u.text.plain.buf_p);
+    response.content.type = http_server_content_type_text_html_t;
+    response.content.buf_p = "Welcome!";
+    response.content.size = strlen(response.content.buf_p);
 
     return (http_server_response_write(connection_p, request_p, &response));
 }
@@ -107,8 +107,8 @@ static int request_404_not_found(struct http_server_connection_t *connection_p,
                        request_p->path);
     response.code = http_server_response_code_404_not_found_t;
     response.content.type = http_server_content_type_text_plain_t;
-    response.content.u.text.plain.buf_p = NULL;
-    response.content.u.text.plain.size = size;
+    response.content.buf_p = NULL;
+    response.content.size = size;
 
     res = http_server_response_write(connection_p, request_p, &response);
 
@@ -198,7 +198,7 @@ static int test_request_index(struct harness_t *harness_p)
     /* Read the GET response and verify it. */
     str_p =
         "HTTP/1.1 200 OK\r\n"
-        "Content-Type: text/plain\r\n"
+        "Content-Type: text/html\r\n"
         "Content-Length: 8\r\n"
         "\r\n"
         "Welcome!";

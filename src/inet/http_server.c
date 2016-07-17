@@ -348,94 +348,6 @@ static void *listener_main(void *arg_p)
     return (NULL);
 }
 
-static int
-response_write_text_plain(struct http_server_connection_t *connection_p,
-                          struct http_server_request_t *request_p,
-                          struct http_server_response_t *response_p)
-{
-    int res = 0;
-    ssize_t size;
-    char buf[128];
-
-    /* Write the header. */
-    if (response_p->code == http_server_response_code_200_ok_t) {
-        size = std_sprintf(buf,
-                           ok_fmt,
-                           "text/plain",
-                           response_p->content.u.text.plain.size);
-    } else {
-        size = std_sprintf(buf,
-                           not_found_fmt,
-                           "text/plain",
-                           response_p->content.u.text.plain.size);
-    }
-
-    res = socket_write(&connection_p->socket, buf, size);
-
-    if (res != size) {
-        return (-1);
-    }
-
-    /* Write the content. */
-    if (response_p->content.u.text.plain.buf_p != NULL) {
-        res = socket_write(&connection_p->socket,
-                           response_p->content.u.text.plain.buf_p,
-                           response_p->content.u.text.plain.size);
-            
-        if (res != response_p->content.u.text.plain.size) {
-            return (-1);
-        }
-    } else {
-        res = 0;
-    }
-    
-    return (res);
-}
-
-static int
-response_write_text_html(struct http_server_connection_t *connection_p,
-                         struct http_server_request_t *request_p,
-                         struct http_server_response_t *response_p)
-{
-    int res = 0;
-    ssize_t size;
-    char buf[128];
-
-    /* Write the header. */
-    if (response_p->code == http_server_response_code_200_ok_t) {
-        size = std_sprintf(buf,
-                           ok_fmt,
-                           "text/html",
-                           response_p->content.u.text.html.size);
-    } else {
-        size = std_sprintf(buf,
-                           not_found_fmt,
-                           "text/html",
-                           response_p->content.u.text.html.size);
-    }
-
-    res = socket_write(&connection_p->socket, buf, size);
-
-    if (res != size) {
-        return (-1);
-    }
-
-    /* Write the content. */
-    if (response_p->content.u.text.html.buf_p != NULL) {
-        res = socket_write(&connection_p->socket,
-                           response_p->content.u.text.html.buf_p,
-                           response_p->content.u.text.html.size);
-            
-        if (res != response_p->content.u.text.html.size) {
-            return (-1);
-        }
-    } else {
-        res = 0;
-    }
-
-    return (res);
-}
-
 int http_server_init(struct http_server_t *self_p,
                      struct http_server_listener_t *listener_p,
                      struct http_server_connection_t *connections_p,
@@ -520,18 +432,51 @@ http_server_response_write(struct http_server_connection_t *connection_p,
     ASSERTN(response_p != NULL, EINVAL);
 
     int res = 0;
+    ssize_t size;
+    char buf[128];
+    char *content_type_p;
 
+    /* Set content type. */
     if (response_p->content.type == http_server_content_type_text_plain_t) {
-        res = response_write_text_plain(connection_p,
-                                        request_p,
-                                        response_p);
-    } else if (response_p->content.type == http_server_content_type_text_html_t) {
-        res = response_write_text_html(connection_p,
-                                       request_p,
-                                       response_p);
+        content_type_p = "text/plain";
+    } else if (response_p->content.type
+               == http_server_content_type_text_html_t) {
+        content_type_p = "text/html";
     } else {
-        res = -1;
+        return (-1);
     }
 
+    /* Write the header. */
+    if (response_p->code == http_server_response_code_200_ok_t) {
+        size = std_sprintf(buf,
+                           ok_fmt,
+                           content_type_p,
+                           response_p->content.size);
+    } else {
+        size = std_sprintf(buf,
+                           not_found_fmt,
+                           content_type_p,
+                           response_p->content.size);
+    }
+
+    res = socket_write(&connection_p->socket, buf, size);
+
+    if (res != size) {
+        return (-1);
+    }
+
+    /* Write the content. */
+    if (response_p->content.buf_p != NULL) {
+        res = socket_write(&connection_p->socket,
+                           response_p->content.buf_p,
+                           response_p->content.size);
+            
+        if (res != response_p->content.size) {
+            return (-1);
+        }
+    } else {
+        res = 0;
+    }
+    
     return (res);
 }
