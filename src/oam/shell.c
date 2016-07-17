@@ -150,13 +150,17 @@ static int line_get_length(struct shell_line_t *self_p)
 
 static int line_seek(struct shell_line_t *self_p, int pos)
 {
-    self_p->cursor += pos;
-
-    if ((self_p->cursor < 0) || (self_p->cursor > self_p->length)) {
-        self_p->cursor -= pos;
-
-        return (-1);
+    if (pos < 0) {
+        if ((self_p->cursor + pos) < 0) {
+            return (-1);
+        }
+    } else {
+        if ((self_p->cursor + pos) > self_p->length) {
+            return (-1);
+        }
     }
+
+    self_p->cursor += pos;
 
     return (0);
 }
