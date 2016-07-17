@@ -25,8 +25,19 @@
 
 struct harness_t;
 
+/**
+ * The testcase function callback.
+ *
+ * @param[in] harness_t The harness object.
+ *
+ * @return zero(0) if the testcase passed, a negative error code if
+ *         the testcase failed, and a positive value if the testcase
+ *         was skipped.
+ */
+typedef int (*harness_testcase_cb_t)(struct harness_t *harness_p);
+
 struct harness_testcase_t {
-    int (*callback)(struct harness_t *harness_p);
+    harness_testcase_cb_t callback;
     const char *name_p;
 };
 
@@ -35,7 +46,7 @@ struct harness_t {
 };
 
 /**
- * Initialize a test harness.
+ * Initialize given test harness.
  *
  * @param[in] self_p Test harness to initialize.
  *
@@ -44,7 +55,7 @@ struct harness_t {
 int harness_init(struct harness_t *self_p);
 
 /**
- * Run testcases in test harness.
+ * Run testcases in given test harness.
  *
  * @param[in] self_p Test harness.
  * @param[in] testcases_p Testcases to run.
