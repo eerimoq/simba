@@ -28,7 +28,7 @@ static struct fs_command_t cmd_set_log_mask;
 struct state_t {
     struct log_handler_t handler;
     struct log_object_t object;
-    struct sem_t sem;    
+    struct sem_t sem;
 };
 
 static FAR const char level_emergency[] = "emergency";
@@ -96,7 +96,7 @@ static int cmd_list_cb(int argc,
     }
 
     sem_take(&state.sem, NULL);
-    
+
     std_fprintf(out_p, FSTR("     OBJECT NAME  MASK\r\n"));
 
     object_p = &state.object;
@@ -106,8 +106,8 @@ static int cmd_list_cb(int argc,
                     FSTR("%16s  0x%02x\r\n"),
                     object_p->name_p,
                     (int)object_p->mask);
-        
-        object_p = object_p->next_p;            
+
+        object_p = object_p->next_p;
     }
 
     sem_give(&state.sem, 1);
@@ -148,16 +148,16 @@ static int cmd_set_log_mask_cb(int argc,
     sem_take(&state.sem, NULL);
 
     object_p = &state.object;
-    
+
     while (object_p != NULL) {
         if (strcmp(object_p->name_p, name_p) == 0) {
             object_p->mask = mask;
             found = 1;
-   
+
             break;
         }
-        
-        object_p = object_p->next_p;            
+
+        object_p = object_p->next_p;
     }
 
     sem_give(&state.sem, 1);
@@ -166,7 +166,7 @@ static int cmd_set_log_mask_cb(int argc,
         std_fprintf(out_p,
                     FSTR("warning: no log object with name %s\r\n"),
                     name_p);
-        
+
         return (-EINVAL);
     }
 
@@ -202,7 +202,7 @@ int log_module_init()
                     cmd_set_log_mask_cb,
                     NULL);
     fs_command_register(&cmd_set_log_mask);
-    
+
     return (0);
 }
 
@@ -358,12 +358,14 @@ int log_object_print(struct log_object_t *self_p,
     count = 0;
     handler_p = &state.handler;
 
+    sem_take(&state.sem, NULL);
+
+    time_get(&now);
+
     while (handler_p != NULL) {
         chout_p = handler_p->chout_p;
 
         if (chout_p != NULL) {
-            time_get(&now);
-            
             /* Write the header. */
             std_fprintf(chout_p, FSTR("%lu:"), now.seconds);
             std_fprintf(chout_p, level_as_string[level]);
@@ -371,7 +373,7 @@ int log_object_print(struct log_object_t *self_p,
                         FSTR(":%s:%s: "),
                         thrd_get_name(),
                         name_p);
-            
+
             /* Write the custom message. */
             va_start(ap, fmt_p);
             std_vfprintf(chout_p, fmt_p, &ap);
@@ -382,6 +384,8 @@ int log_object_print(struct log_object_t *self_p,
 
         handler_p = handler_p->next_p;
     }
+
+    sem_give(&state.sem, 1);
 
     return (count);
 }
