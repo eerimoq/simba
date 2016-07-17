@@ -80,7 +80,7 @@ static int read_until(char *buf_p, const char *pattern)
     while (length < BUFFER_SIZE - 1) {
         chan_read(&qout, &c, sizeof(c));
 #if defined(ARCH_LINUX)
-        printf("%c", c);
+        std_printf(FSTR("%c"), c);
 #endif
         *buf_p++ = c;
         length++;
@@ -218,6 +218,55 @@ static int test_list(struct harness_t *harness_p)
     return (0);
 }
 
+static int test_split_merge(struct harness_t *harness_p)
+{
+    char buf[256];
+    char *path_p;
+    char * command_p;
+
+    /* Split "/foo/fie/bar" into "/foo/fie" and "bar". */
+    strcpy(buf, "/foo/fie/bar");
+    fs_split(buf, &path_p, &command_p);
+
+    BTASSERT(path_p == &buf[0]);
+    BTASSERT(strcmp(path_p, "/foo/fie") == 0);
+    BTASSERT(command_p == &buf[9]);
+    BTASSERT(strcmp(command_p, "bar") == 0);
+
+    /* Merge "/foo/fie" and "bar" to "/foo/fie/bar". */
+    fs_merge(path_p, command_p);
+
+    BTASSERT(strcmp(buf, "/foo/fie/bar") == 0);
+
+    /* Split "bar" into "" and "bar". */
+    strcpy(buf, "bar");
+    fs_split(buf, &path_p, &command_p);
+
+    BTASSERT(strcmp(path_p, "") == 0);
+    BTASSERT(command_p == &buf[0]);
+    BTASSERT(strcmp(command_p, "bar") == 0);
+
+    /* Merge "" and "bar" to "bar". */
+    fs_merge(path_p, command_p);
+
+    BTASSERT(strcmp(buf, "bar") == 0);
+
+    /* Split "/bar" into "" and "bar". */
+    strcpy(buf, "/bar");
+    fs_split(buf, &path_p, &command_p);
+
+    BTASSERT(strcmp(path_p, "") == 0);
+    BTASSERT(command_p == &buf[1]);
+    BTASSERT(strcmp(command_p, "bar") == 0);
+
+    /* Merge "" and "bar" to "/bar". */
+    fs_merge(path_p, command_p);
+
+    BTASSERT(strcmp(buf, "/bar") == 0);
+
+    return (0);
+}
+
 int main()
 {
     struct harness_t harness;
@@ -226,6 +275,7 @@ int main()
         { test_counter, "test_counter" },
         { test_parameter, "test_parameter" },
         { test_list, "test_list" },
+        { test_split_merge, "test_split_merge" },
         { NULL, NULL }
     };
 

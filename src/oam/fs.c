@@ -37,6 +37,7 @@ static struct fs_command_t cmd_counters_reset;
 static struct fs_command_t cmd_parameters_list;
 
 static struct state_t state;
+static char empty_path[] = "";
 
 static int counter_get(struct fs_counter_t *counter_p,
                        chan_t *chout_p)
@@ -447,23 +448,25 @@ void fs_split(char *buf_p, char **path_pp, char **cmd_pp)
     ASSERTN(cmd_pp != NULL, EINVAL);
     ASSERTN(*cmd_pp != NULL, EINVAL);
 
-    *path_pp = buf_p;
-    *cmd_pp = NULL;
+    char *last_slash_p = NULL;
 
+    *path_pp = buf_p;
+
+    /* Find the last slash. */
     while (*buf_p != '\0') {
         if (*buf_p == '/') {
-            *cmd_pp = buf_p;
+            last_slash_p = buf_p;
         }
 
         buf_p++;
     }
 
-    if (*cmd_pp != NULL) {
-        **cmd_pp = '\0';
-        (*cmd_pp)++;
+    if (last_slash_p != NULL) {
+        *last_slash_p = '\0';
+        *cmd_pp = (last_slash_p + 1);
     } else {
         *cmd_pp = *path_pp;
-        *path_pp = "";
+        *path_pp = empty_path;
     }
 }
 
@@ -472,8 +475,8 @@ void fs_merge(char *path_p, char *cmd_p)
     ASSERTN(path_p != NULL, EINVAL);
     ASSERTN(cmd_p != NULL, EINVAL);
 
-    if (*path_p != '\0') {
-        *--cmd_p = '/';
+    if (path_p != empty_path) {
+        cmd_p[-1] = '/';
     }
 }
 

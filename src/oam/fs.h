@@ -106,11 +106,11 @@ int fs_list(const char *path_p,
 int fs_auto_complete(char *path_p);
 
 /**
- * Split buffer into path and command.
+ * Split buffer into path and command inplace.
  *
  * @param[in] buf_p Buffer to split.
- * @param[out] path_pp Path part.
- * @param[out] cmd_pp Command part.
+ * @param[out] path_pp Path or NULL if no path was found.
+ * @param[out] cmd_pp Command or empty string.
  *
  * @return zero(0) or negative error code.
  */
