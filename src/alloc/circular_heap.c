@@ -50,6 +50,10 @@ void *circular_heap_alloc(struct circular_heap_t *self_p,
 
     size += sizeof(*header_p);
 
+    /* Align the buffer to a 4 byte boundary. */
+    size += 3;
+    size &= 0xffffffc;
+
     /* Does it fit before end_p or free_p? */
     if (self_p->alloc_p >= self_p->free_p)  {
         /* begin_p <-> free_p <-> alloc_p <-> end_p */
