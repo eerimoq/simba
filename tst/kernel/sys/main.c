@@ -41,7 +41,22 @@ int test_set_on_fatal_callback(struct harness_t *harness_p)
 
 int test_info(struct harness_t *harness_p)
 {
+    char buf[32];
+
     std_printf(sys_get_info());
+
+    strcpy(buf, "/kernel/sys/info");
+    BTASSERT(fs_call(buf, chan_null(), sys_get_stdout(), NULL) == 0);
+
+    return (0);
+}
+
+int test_uptime(struct harness_t *harness_p)
+{
+    char buf[32];
+
+    strcpy(buf, "/kernel/sys/uptime");
+    BTASSERT(fs_call(buf, chan_null(), sys_get_stdout(), NULL) == 0);
 
     return (0);
 }
@@ -127,6 +142,7 @@ int main()
     struct harness_testcase_t harness_testcases[] = {
         { test_set_on_fatal_callback, "test_set_on_fatal_callback" },
         { test_info, "test_info" },
+        { test_uptime, "test_uptime" },
         { test_time, "test_time" },
         { NULL, NULL }
     };
