@@ -612,14 +612,27 @@ static int handle_ctrl_t(struct shell_t *self_p)
     /* Is a swap possible? */
     cursor = line_get_cursor(&self_p->line);
 
-    if ((cursor == 0) || (cursor == line_get_length(&self_p->line))) {
+    /* Cannot swap if the cursor is at the beginning of the line. */
+    if (cursor == 0) {
         return (-1);
+    }
+
+    /* Cannot swap if there are less than two characters. */
+    if (line_get_length(&self_p->line) < 2) {
+        return (-1);
+    }
+
+    /* Move the cursor to the second character. */
+    if (cursor == line_get_length(&self_p->line)) {
+        line_seek(&self_p->line, -1);
     }
 
     /* Swap the two characters. */
     c = line_peek(&self_p->line);
+    line_delete(&self_p->line);
     line_seek(&self_p->line, -1);
     line_insert(&self_p->line, c);
+    line_seek(&self_p->line, 1);
 
     return (0);
 }

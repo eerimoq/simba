@@ -129,19 +129,53 @@ static int test_login(struct harness_t *harness_p)
 {
     char buf[BUFFER_SIZE];
 
-    /* Username. */
+    /* Bad username. */
     chout_read_until(buf, "username: ");
-    BTASSERT(std_strcmp(buf, FSTR("username: ")) == 0, "%s\n", buf);
-    chan_write(&qin, "erik\n", sizeof("erik\n") - 1);
-    chout_read_until(buf, "erik\n");
-    BTASSERT(std_strcmp(buf, FSTR("erik\n")) == 0, "%s\n", buf);
+    BTASSERT(std_strcmp(buf, FSTR("username: ")) == 0);
+    chan_write(&qin, "bad\r\n", 5);
+    chout_read_until(buf, "bad\r\n");
+    BTASSERT(std_strcmp(buf, FSTR("bad\r\n")) == 0);
 
-    /* Password. */
+    /* Ok password. */
     chout_read_until(buf, "password: ");
-    BTASSERT(std_strcmp(buf, FSTR("password: ")) == 0, "%s\n", buf);
-    chan_write(&qin, "pannkaka\n", sizeof("pannkaka\n") - 1);
+    BTASSERT(std_strcmp(buf, FSTR("password: ")) == 0);
+    chan_write(&qin, "pannkaka\n", 9);
+    chout_read_until(buf, "authentication failure\r\n");
+    BTASSERT(std_strcmp(buf,
+                        FSTR("********\nauthentication failure\r\n")) == 0);
+
+    /* Ok username. */
+    chout_read_until(buf, "username: ");
+    BTASSERT(std_strcmp(buf, FSTR("username: ")) == 0);
+    chan_write(&qin, "erik\r\n", 6);
+    chout_read_until(buf, "erik\r\n");
+    BTASSERT(std_strcmp(buf, FSTR("erik\r\n")) == 0);
+
+    /* Bad password. */
+    chout_read_until(buf, "password: ");
+    BTASSERT(std_strcmp(buf, FSTR("password: ")) == 0);
+    chan_write(&qin, "bad\n", 4);
+    chout_read_until(buf, "authentication failure\r\n");
+    BTASSERT(std_strcmp(buf, FSTR("***\nauthentication failure\r\n")) == 0);
+
+    /* Misspell the username ... */
+    chout_read_until(buf, "username: ");
+    BTASSERT(std_strcmp(buf, FSTR("username: ")) == 0);
+    chan_write(&qin, "eril", 4);
+    chout_read_until(buf, "eril");
+    BTASSERT(std_strcmp(buf, FSTR("eril")) == 0);
+
+    /* ... and correct it using backspace. */
+    chan_write(&qin, "\x7fk\r\n", 4);
+    chout_read_until(buf, "\x08 \x08k\r\n");
+    BTASSERT(std_strcmp(buf, FSTR("\x08 \x08k\r\n")) == 0);
+
+    /* OK password. */
+    chout_read_until(buf, "password: ");
+    BTASSERT(std_strcmp(buf, FSTR("password: ")) == 0);
+    chan_write(&qin, "pannkaka\n", 9);
     chout_read_until_prompt(buf);
-    BTASSERT(std_strcmp(buf, FSTR("********\n$ ")) == 0, "%s\n", buf);
+    BTASSERT(std_strcmp(buf, FSTR("********\n$ ")) == 0);
 
     std_printf(FSTR("\r\n"));
 
@@ -207,7 +241,7 @@ static int test_auto_completion(struct harness_t *harness_p)
     char buf[BUFFER_SIZE];
 
     /* Auto completion. */
-    chan_write(&qin, "\t", membersof("\t") - 1);
+    chan_write(&qin, "\t", 1);
     chout_read_until_prompt(buf);
     BTASSERT(std_strcmp(buf,
                         FSTR("\r\n"
@@ -222,7 +256,14 @@ static int test_auto_completion(struct harness_t *harness_p)
                              "kernel/\r\n"
                              "logout\r\n"
                              "tmp/\r\n"
-                             "$ ")) == 0, "%s\n", buf);
+                             "$ ")) == 0);
+
+    /* Auto completion. */
+    chan_write(&qin, "ba\t\r\n", 5);
+    chout_read_until_prompt(buf);
+    BTASSERT(std_strcmp(buf, FSTR("bar \r\n"
+                                  "0000000000000000\r\n"
+                                  "$ ")) == 0);
 
     std_printf(FSTR("\r\n"));
 
@@ -234,7 +275,7 @@ static int test_commands_foo_and_bar(struct harness_t *harness_p)
     char buf[BUFFER_SIZE];
 
     /* Test command foo. */
-    chan_write(&qin, "/tmp/foo 3 2 1\n", membersof("/tmp/foo 3 2 1\n") - 1);
+    chan_write(&qin, "/tmp/foo 3 2 1\n", 15);
     chout_read_until_prompt(buf);
     BTASSERT(std_strcmp(buf,
                         FSTR("/tmp/foo 3 2 1\n"
@@ -242,7 +283,7 @@ static int test_commands_foo_and_bar(struct harness_t *harness_p)
                              "$ ")) == 0, "%s\n", buf);
 
     /* Test command bar. */
-    chan_write(&qin, "/tmp/bar 3\n", membersof("/tmp/bar 3\n") - 1);
+    chan_write(&qin, "/tmp/bar 3\n", 11);
     chout_read_until_prompt(buf);
     BTASSERT(std_strcmp(buf,
                         FSTR("/tmp/bar 3\n"
@@ -259,7 +300,7 @@ static int test_parameters(struct harness_t *harness_p)
     char buf[BUFFER_SIZE];
 
     /* Get parameter value. */
-    chan_write(&qin, "/tmp/fie\n", membersof("/tmp/fie\n") - 1);
+    chan_write(&qin, "/tmp/fie\n", 9);
     chout_read_until_prompt(buf);
     BTASSERT(std_strcmp(buf,
                         FSTR("/tmp/fie\n"
@@ -267,13 +308,13 @@ static int test_parameters(struct harness_t *harness_p)
                              "$ ")) == 0, "%s\n", buf);
 
     /* Set parameter value. */
-    chan_write(&qin, "/tmp/fie 58\n", membersof("/tmp/fie 58\n") - 1);
+    chan_write(&qin, "/tmp/fie 58\n", 12);
     chout_read_until_prompt(buf);
     BTASSERT(std_strcmp(buf,
                         FSTR("/tmp/fie 58\n$ ")) == 0, "%s\n", buf);
 
     /* Get modified parameter value. */
-    chan_write(&qin, "/tmp/fie\n", membersof("/tmp/fie\n") - 1);
+    chan_write(&qin, "/tmp/fie\n", 9);
     chout_read_until_prompt(buf);
     BTASSERT(std_strcmp(buf,
                         FSTR("/tmp/fie\n"
@@ -290,8 +331,7 @@ static int test_set_log_mask(struct harness_t *harness_p)
     char buf[BUFFER_SIZE];
 
     /* Set main thread log mask. */
-    chan_write(&qin, "/kernel/thrd/set_log_mask shell 0xff\r\n",
-               membersof("/kernel/thrd/set_log_mask shell 0xff\r\n") - 1);
+    chan_write(&qin, "/kernel/thrd/set_log_mask shell 0xff\r\n", 38);
     chout_read_until_prompt(buf);
 
     std_printf(FSTR("\r\n"));
@@ -305,7 +345,7 @@ static int test_thrd_list(struct harness_t *harness_p)
     char buf[BUFFER_SIZE];
 
     /* List thrds. */
-    chan_write(&qin, "/kernel/thrd/list\r\n", membersof("/kernel/thrd/list\r\n") - 1);
+    chan_write(&qin, "/kernel/thrd/list\r\n", 19);
     /* Read until a prompt is found to empty the buffer. */
     BTASSERT(chout_read_until_prompt(buf) == 1);
 
@@ -326,7 +366,7 @@ static int test_fs_counters_list(struct harness_t *harness_p)
     fs_counter_increment(&foo, 2);
     fs_counter_increment(&bar, 339283982393);
     fs_counter_increment(&fie, 1);
-    chan_write(&qin, "/kernel/fs/counters_list\r\n", membersof("/kernel/fs/counters_list\r\n") - 1);
+    chan_write(&qin, "/kernel/fs/counters_list\r\n", 26);
     BTASSERT(chout_read_until_prompt(buf) == 1);
     BTASSERT(std_strcmp(buf,
                         FSTR("/kernel/fs/counters_list\r\n"
@@ -350,7 +390,7 @@ static int test_cursor_movement(struct harness_t *harness_p)
     char buf[BUFFER_SIZE];
 
     /* Write '123' to the shell. */
-    chan_write(&qin, "123", sizeof("123") - 1);
+    chan_write(&qin, "123", 3);
     chout_read_until(buf, "123");
     BTASSERT(std_strcmp(buf, FSTR("123")) == 0);
 
@@ -404,7 +444,7 @@ static int test_cursor_insert(struct harness_t *harness_p)
     char buf[BUFFER_SIZE];
 
     /* Write 'ep' to the shell. */
-    chan_write(&qin, "ep", sizeof("ep") - 1);
+    chan_write(&qin, "ep", 2);
     chout_read_until(buf, "ep");
     BTASSERT(std_strcmp(buf, FSTR("ep")) == 0);
 
@@ -443,6 +483,10 @@ static int test_cursor_insert(struct harness_t *harness_p)
     chout_read_until(buf, "fff");
     BTASSERT(std_strcmp(buf, FSTR("fff")) == 0);
 
+    /* Delete a character at the end of the line. Nothing should
+       happen (Ctrl+D). */
+    chan_write(&qin, "\x04", 1);
+
     /* Move the cursor to the beginning of the line (Ctrl+A). */
     chan_write(&qin, "\x01", 1);
     chout_read_until(buf, "\x1b[3D");
@@ -467,7 +511,7 @@ static int test_cursor_cut(struct harness_t *harness_p)
     char buf[BUFFER_SIZE];
 
     /* Write 'foo' to the shell. */
-    chan_write(&qin, "foo", sizeof("foo") - 1);
+    chan_write(&qin, "foo", 3);
     chout_read_until(buf, "foo");
     BTASSERT(std_strcmp(buf, FSTR("foo")) == 0);
 
@@ -494,20 +538,46 @@ static int test_swap_characters(struct harness_t *harness_p)
 {
     char buf[BUFFER_SIZE];
 
-    /* Write 'bra' to the shell. */
-    chan_write(&qin, "bra", sizeof("bra") - 1);
-    chout_read_until(buf, "bra");
-    BTASSERT(std_strcmp(buf, FSTR("bra")) == 0);
+    /* Write 'b' to the shell. */
+    chan_write(&qin, "b", 1);
+    chout_read_until(buf, "b");
+    BTASSERT(std_strcmp(buf, FSTR("b")) == 0);
+
+    /* Cannot swap one character. At least two are needed. (Ctrl+T). */
+    chan_write(&qin, "\x14", 1);
+
+    /* Write 'ra' to the shell. */
+    chan_write(&qin, "ra", 2);
+    chout_read_until(buf, "ra");
+    BTASSERT(std_strcmp(buf, FSTR("ra")) == 0);
+
+    /* Move the cursor to the beginning of the line (Ctrl+A). */
+    chan_write(&qin, "\x01", 1);
+    chout_read_until(buf, "\x1b[3D");
+    BTASSERT(std_strcmp(buf, FSTR("\x1b[3D")) == 0);
+
+    /* Cannot swap at the beginning of the line (Ctrl+T). */
+    chan_write(&qin, "\x14", 1);
+
+    /* Move the cursor to the end of the line (Ctrl+E).*/
+    chan_write(&qin, "\x05", 1);
+    chout_read_until(buf, "\x1b[3C");
+    BTASSERT(std_strcmp(buf, FSTR("\x1b[3C")) == 0);
+
+    /* Swap 'r' and 'a' to get "bar" (Ctrl+T). */
+    chan_write(&qin, "\x14", 1);
+    chout_read_until(buf, "bar");
+    BTASSERT(std_strcmp(buf, FSTR("\x1b[3D\x1b[Kbar")) == 0);
 
     /* Move the cursor one step to the left. */
     chan_write(&qin, "\x1b[D", 3);
     chout_read_until(buf, "\x1b[1D");
     BTASSERT(std_strcmp(buf, FSTR("\x1b[1D")) == 0);
 
-    /* Swap 'r' and 'a' (Ctrl+T). */
+    /* Swap 'a' and 'r' to get "bra" (Ctrl+T).*/
     chan_write(&qin, "\x14", 1);
-    chout_read_until(buf, "bar");
-    BTASSERT(std_strcmp(buf, FSTR("\x1b[2D\x1b[Kbar")) == 0);
+    chout_read_until(buf, "bra");
+    BTASSERT(std_strcmp(buf, FSTR("\x1b[2D\x1b[Kbra")) == 0);
 
     /* Read until a new prompt to clean up. */
     chan_write(&qin, "\r\n", 2);
@@ -526,7 +596,7 @@ static int test_backspace(struct harness_t *harness_p)
     chan_write(&qin, "\x7f", 1);
 
     /* Write '1' to the shell. */
-    chan_write(&qin, "1", sizeof("1") - 1);
+    chan_write(&qin, "1", 1);
     chout_read_until(buf, "1");
     BTASSERT(std_strcmp(buf, FSTR("1")) == 0);
 
@@ -536,7 +606,7 @@ static int test_backspace(struct harness_t *harness_p)
     BTASSERT(std_strcmp(buf, FSTR("\x08 \x08")) == 0);
 
     /* Write '123' to the shell. */
-    chan_write(&qin, "123", sizeof("123") - 1);
+    chan_write(&qin, "123", 3);
     chout_read_until(buf, "123");
     BTASSERT(std_strcmp(buf, FSTR("123")) == 0);
 
@@ -569,7 +639,7 @@ static int test_delete_word(struct harness_t *harness_p)
     chan_write(&qin, "\x1b""d", 2);
 
     /* Write '1' to the shell. */
-    chan_write(&qin, "123 456 789", sizeof("123 456 789") - 1);
+    chan_write(&qin, "123 456 789", 11);
     chout_read_until(buf, "123 456 789");
     BTASSERT(std_strcmp(buf, FSTR("123 456 789")) == 0);
 
@@ -608,7 +678,7 @@ static int test_history_clear(struct harness_t *harness_p)
     char buf[BUFFER_SIZE];
 
     /* Clear the history. */
-    chan_write(&qin, "history -c\n", sizeof("history -c\n") - 1);
+    chan_write(&qin, "history -c\n", 11);
     chout_read_until_prompt(buf);
 
     std_printf(FSTR("\r\n"));
@@ -621,7 +691,7 @@ static int test_history(struct harness_t *harness_p)
     char buf[BUFFER_SIZE];
 
     /* Print the history. */
-    chan_write(&qin, "history\n", sizeof("history\n") - 1);
+    chan_write(&qin, "history\n", 8);
     chout_read_until_prompt(buf);
 
     std_printf(FSTR("\r\n"));
@@ -744,7 +814,7 @@ static int test_logout(struct harness_t *harness_p)
     char buf[BUFFER_SIZE];
 
     /* Logout. */
-    chan_write(&qin, "logout\n", sizeof("logout\n") - 1);
+    chan_write(&qin, "logout\n", 7);
     chout_read_until(buf, "username: ");
     BTASSERT(std_strcmp(buf, FSTR("logout\nusername: ")) == 0);
 
