@@ -174,6 +174,9 @@ static int test_start(struct harness_t *harness_p)
 
     thrd_set_log_mask(listener.thrd.id_p, LOG_UPTO(DEBUG));
     thrd_set_log_mask(connections[0].thrd.id_p, LOG_UPTO(DEBUG));
+    
+    /* Less log clobbering. */
+    thrd_usleep(100000);
 
     return (0);
 }
@@ -206,6 +209,9 @@ static int test_request_index(struct harness_t *harness_p)
     socket_stub_output(buf, strlen(str_p));
     buf[strlen(str_p)] = '\0';
     BTASSERT(strcmp(buf, str_p) == 0);
+
+    /* Less log clobbering. */
+    thrd_usleep(100000);
 
     return (0);
 }
@@ -261,6 +267,9 @@ static int test_request_websocket(struct harness_t *harness_p)
         BTASSERT(strcmp(&buf[6], "123") == 0);
     }
 
+    /* Less log clobbering. */
+    thrd_usleep(100000);
+
     return (0);
 }
 
@@ -292,6 +301,9 @@ static int test_request_no_route(struct harness_t *harness_p)
     socket_stub_output(buf, strlen(str_p));
     buf[strlen(str_p)] = '\0';
     BTASSERT(strcmp(buf, str_p) == 0);
+
+    /* Less log clobbering. */
+    thrd_usleep(100000);
 
     return (0);
 }
