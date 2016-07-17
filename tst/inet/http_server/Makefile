@@ -25,7 +25,7 @@ BOARD ?= linux
 SRC += socket_stub.c
 SRC_IGNORE = $(SIMBA_ROOT)/src/inet/socket.c
 
-SIMBA_ROOT = ../../..
+SIMBA_ROOT ?= ../../..
 
 INET_SRC = \
 	http_server.c \

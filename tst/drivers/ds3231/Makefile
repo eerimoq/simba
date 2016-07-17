@@ -20,5 +20,5 @@
 
 NAME = ds3231_suite
 
-SIMBA_ROOT = ../../..
+SIMBA_ROOT ?= ../../..
 include $(SIMBA_ROOT)/make/app.mk

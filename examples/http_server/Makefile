@@ -21,5 +21,5 @@
 NAME = http_server
 BOARD ?= esp12e
 
-SIMBA_ROOT = ../..
+SIMBA_ROOT ?= ../..
 include $(SIMBA_ROOT)/make/app.mk

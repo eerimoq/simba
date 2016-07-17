@@ -34,5 +34,5 @@ endif
 
 BOOTLOADER_ROOT = ../../src
 include $(BOOTLOADER_ROOT)/bootloader.mk
-SIMBA_ROOT = ../../../..
+SIMBA_ROOT ?= ../../../..
 include $(SIMBA_ROOT)/make/app.mk

@@ -28,5 +28,5 @@ SRC_IGNORE = $(SIMBA_ROOT)/src/inet/socket.c
 INET_SRC = \
 	http_websocket_client.c
 
-SIMBA_ROOT = ../../..
+SIMBA_ROOT ?= ../../..
 include $(SIMBA_ROOT)/make/app.mk

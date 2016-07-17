@@ -21,5 +21,5 @@
 NAME = init_slip
 BOARD ?= linux
 
-SIMBA_ROOT = ../../..
+SIMBA_ROOT ?= ../../..
 include $(SIMBA_ROOT)/make/app.mk

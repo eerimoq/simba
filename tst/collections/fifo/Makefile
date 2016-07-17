@@ -21,5 +21,5 @@
 NAME = fifo_suite
 BOARD ?= linux
 
-SIMBA_ROOT = ../../..
+SIMBA_ROOT ?= ../../..
 include $(SIMBA_ROOT)/make/app.mk

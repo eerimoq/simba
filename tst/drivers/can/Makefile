@@ -22,5 +22,5 @@ NAME = can_suite
 VERSION = 0.3.0
 BOARD = arduino_due
 
-SIMBA_ROOT = ../../..
+SIMBA_ROOT ?= ../../..
 include $(SIMBA_ROOT)/make/app.mk

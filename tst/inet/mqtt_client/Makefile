@@ -24,5 +24,5 @@ BOARD ?= linux
 SRC += socket_stub.c
 SRC_IGNORE = $(SIMBA_ROOT)/src/inet/socket.c
 
-SIMBA_ROOT = ../../..
+SIMBA_ROOT ?= ../../..
 include $(SIMBA_ROOT)/make/app.mk

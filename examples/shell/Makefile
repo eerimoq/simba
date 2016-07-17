@@ -25,5 +25,5 @@ ifeq ($(USE_BOOTLOADER),yes)
     LINKER_SCRIPT_FILE = script.application.ld
 endif
 
-SIMBA_ROOT = ../..
+SIMBA_ROOT ?= ../..
 include $(SIMBA_ROOT)/make/app.mk

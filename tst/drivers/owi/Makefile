@@ -23,5 +23,5 @@ BOARD ?= linux
 SLIB_SRC = harness.c
 DRIVERS_SRC = uart.c owi.c pin.c
 
-SIMBA_ROOT = ../../..
+SIMBA_ROOT ?= ../../..
 include $(SIMBA_ROOT)/make/app.mk

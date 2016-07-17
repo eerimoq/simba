@@ -21,5 +21,5 @@
 NAME = i2c_suite_slave
 BOARD ?= arduino_mega
 
-SIMBA_ROOT = ../../../..
+SIMBA_ROOT ?= ../../../..
 include $(SIMBA_ROOT)/make/app.mk
