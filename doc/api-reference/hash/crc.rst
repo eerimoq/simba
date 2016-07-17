@@ -8,6 +8,8 @@ Source code: :github-blob:`src/hash/crc.h`
 
 Test code: :github-blob:`tst/hash/crc/main.c`
 
+Test coverage: :codecov:`src/hash/crc.c`
+
 ---------------------------------------------------
 
 .. doxygenfile:: hash/crc.h

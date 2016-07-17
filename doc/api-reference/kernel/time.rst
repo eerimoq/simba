@@ -6,6 +6,10 @@
 
 Source code: :github-blob:`src/kernel/time.h`
 
+Test code: :github-blob:`tst/kernel/time/main.c`
+
+Test coverage: :codecov:`src/kernel/time.c`
+
 ----------------------------------------------
 
 .. doxygenfile:: kernel/time.h

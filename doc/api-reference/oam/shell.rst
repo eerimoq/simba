@@ -28,6 +28,8 @@ Source code: :github-blob:`src/oam/shell.h`
 
 Test code: :github-blob:`tst/oam/shell/main.c`
 
+Test coverage: :codecov:`src/oam/shell.c`
+
 Example code: :github-blob:`examples/shell/main.c`
 
 ----------------------------------------------

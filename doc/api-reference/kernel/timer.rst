@@ -21,6 +21,8 @@ Source code: :github-blob:`src/kernel/timer.h`
 
 Test code: :github-blob:`tst/kernel/timer/main.c`
 
+Test coverage: :codecov:`src/kernel/timer.c`
+
 ----------------------------------------------
 
 .. doxygenfile:: kernel/timer.h

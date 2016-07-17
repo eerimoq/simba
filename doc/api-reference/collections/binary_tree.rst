@@ -21,6 +21,8 @@ Source code: :github-blob:`src/collections/binary_tree.h`
 
 Test code: :github-blob:`tst/collections/binary_tree/main.c`
 
+Test coverage: :codecov:`src/collections/binary_tree.c`
+
 ----------------------------------------------
 
 .. doxygenfile:: collections/binary_tree.h

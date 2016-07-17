@@ -329,5 +329,7 @@ extlinks = {
     'github-blob':
     ('https://github.com/eerimoq/simba/blob/' + version + '/', ''),
     'github-tree':
-    ('https://github.com/eerimoq/simba/tree/' + version + '/', '')
+    ('https://github.com/eerimoq/simba/tree/' + version + '/', ''),
+    'codecov':
+    ('https://codecov.io/gh/eerimoq/simba/src/' + version + '/', '')
 }

@@ -8,6 +8,8 @@ Source code: :github-blob:`src/hash/sha1.h`
 
 Test code: :github-blob:`tst/hash/main.c`
 
+Test coverage: :codecov:`src/hash/sha1.c`
+
 ---------------------------------------------------
 
 .. doxygenfile:: hash/sha1.h

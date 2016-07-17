@@ -8,6 +8,8 @@ Source code: :github-blob:`src/text/re.h`
 
 Test code: :github-blob:`tst/text/re/main.c`
 
+Test coverage: :codecov:`src/text/re.c`
+
 ---------------------------------------------------
 
 .. doxygenfile:: text/re.h

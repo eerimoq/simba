@@ -34,6 +34,8 @@ Source code: :github-blob:`src/sync/bus.h`
 
 Test code: :github-blob:`tst/sync/bus/main.c`
 
+Test coverage: :codecov:`src/sync/bus.c`
+
 ----------------------------------------------
 
 .. doxygenfile:: sync/bus.h

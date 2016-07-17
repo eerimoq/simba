@@ -8,6 +8,8 @@ Source code: :github-blob:`src/inet/http_websocket_client.h`
 
 Test code: :github-blob:`tst/inet/http_websocket_client/main.c`
 
+Test coverage: :codecov:`src/inet/http_websocket_client.c`
+
 ----------------------------------------------
 
 .. doxygenfile:: inet/http_websocket_client.h

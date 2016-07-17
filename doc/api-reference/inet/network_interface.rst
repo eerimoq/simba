@@ -6,6 +6,8 @@
 
 Source code: :github-blob:`src/inet/network_interface.h`
 
+Test coverage: :codecov:`src/inet/network_interface.c`
+
 ----------------------------------------------
 
 .. doxygenfile:: inet/network_interface.h

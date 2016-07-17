@@ -19,6 +19,8 @@ Source code: :github-blob:`src/sync/rwlock.h`
 
 Test code: :github-blob:`tst/sync/rwlock/main.c`
 
+Test coverage: :codecov:`src/sync/rwlock.c`
+
 ----------------------------------------------
 
 .. doxygenfile:: sync/rwlock.h

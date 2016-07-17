@@ -21,6 +21,8 @@ Source code: :github-blob:`src/sync/sem.h`
 
 Test code: :github-blob:`tst/sync/sem/main.c`
 
+Test coverage: :codecov:`src/sync/sem.c`
+
 ----------------------------------------------
 
 .. doxygenfile:: sync/sem.h

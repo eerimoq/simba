@@ -43,6 +43,8 @@ Source code: :github-blob:`src/debug/log.h`
 
 Test code: :github-blob:`tst/debug/log/main.c`
 
+Test coverage: :codecov:`src/debug/log.c`
+
 ----------------------------------------------
 
 .. doxygenfile:: debug/log.h

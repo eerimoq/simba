@@ -37,6 +37,8 @@ the written data.
 
 Source code: :github-blob:`src/sync/chan.h`
 
+Test coverage: :codecov:`src/sync/chan.c`
+
 ----------------------------------------------
 
 .. doxygenfile:: sync/chan.h

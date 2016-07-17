@@ -8,6 +8,8 @@ Source code: :github-blob:`src/storage/fat16.h`
 
 Test code: :github-blob:`tst/storage/fat16/main.c`
 
+Test coverage: :codecov:`src/storage/fat16.c`
+
 ---------------------------------------------------
 
 .. doxygenfile:: storage/fat16.h

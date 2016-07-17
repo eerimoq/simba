@@ -8,6 +8,8 @@ Source code: :github-blob:`src/encode/base64.h`
 
 Test code: :github-blob:`tst/encode/base64/main.c`
 
+Test coverage: :codecov:`src/encode/base64.c`
+
 ---------------------------------------------------
 
 .. doxygenfile:: encode/base64.h

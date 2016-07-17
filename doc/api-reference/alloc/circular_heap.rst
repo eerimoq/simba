@@ -81,6 +81,8 @@ Source code: :github-blob:`src/alloc/circular_heap.h`
 
 Test code: :github-blob:`tst/alloc/circular_heap/main.c`
 
+Test coverage: :codecov:`src/alloc/circular_heap.c`
+
 ----------------------------------------------
 
 .. doxygenfile:: alloc/circular_heap.h

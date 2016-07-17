@@ -73,6 +73,8 @@ Source code: :github-blob:`src/kernel/kernel/setting.h`
 
 Test code: :github-blob:`tst/kernel/setting/main.c`
 
+Test coverage: :codecov:`src/kernel/kernel/setting.c`
+
 ----------------------------------------------
 
 .. doxygenfile:: kernel/setting.h

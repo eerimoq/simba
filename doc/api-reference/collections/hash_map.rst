@@ -8,6 +8,8 @@ Source code: :github-blob:`src/collections/hash_map.h`
 
 Test code: :github-blob:`tst/collections/hash_map/main.c`
 
+Test coverage: :codecov:`src/collections/hash_map.c`
+
 ---------------------------------------------------
 
 .. doxygenfile:: collections/hash_map.h

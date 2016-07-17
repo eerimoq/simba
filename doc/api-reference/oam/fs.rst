@@ -8,6 +8,8 @@ Source code: :github-blob:`src/oam/fs.h`
 
 Test code: :github-blob:`tst/oam/fs/main.c`
 
+Test coverage: :codecov:`src/oam/fs.c`
+
 ----------------------------------------------
 
 .. doxygenfile:: oam/fs.h

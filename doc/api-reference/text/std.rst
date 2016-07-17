@@ -8,6 +8,8 @@ Source code: :github-blob:`src/text/std.h`
 
 Test code: :github-blob:`tst/text/std/main.c`
 
+Test coverage: :codecov:`src/text/std.c`
+
 ----------------------------------------------
 
 .. doxygenfile:: text/std.h
