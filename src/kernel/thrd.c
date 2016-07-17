@@ -46,9 +46,6 @@ static struct fs_command_t cmd_set_log_mask;
 
 struct thrd_scheduler_t {
     struct thrd_t *current_p;
-#if defined(ARCH_ARM)
-    struct thrd_t *next_p;
-#endif
     struct thrd_t *ready_p;
 };
 
@@ -184,9 +181,7 @@ static void thrd_reschedule(void)
     in_p->state = THRD_STATE_CURRENT;
 
     if (in_p != out_p) {
-#if !defined(ARCH_ARM)
         scheduler.current_p = in_p;
-#endif
         thrd_port_cpu_usage_stop(out_p);
         thrd_port_swap(in_p, out_p);
         thrd_port_cpu_usage_start(out_p);

@@ -21,16 +21,16 @@
 #ifndef __KERNEL_THRD_PORT_H__
 #define __KERNEL_THRD_PORT_H__
 
+#if CONFIG_PREEMPTIVE_SCHEDULER == 1
+#    error "This port does not support a preemptive scheduler."
+#endif
+
 #define THRD_PORT_STACK(name, size)                             \
     uint64_t name[DIV_CEIL(sizeof(struct thrd_t) + (size),      \
                            sizeof(uint64_t))] __attribute((aligned (8)))
 
-#define THRD_PORT_CONTEXT_STORE_ISR             \
-    if (scheduler.next_p == NULL) {
-
-#define THRD_PORT_CONTEXT_LOAD_ISR              \
-    asm volatile ("cpsie i");                   \
-    }
+#define THRD_PORT_CONTEXT_STORE_ISR
+#define THRD_PORT_CONTEXT_LOAD_ISR
 
 struct thrd_port_context_t {
     /* Context stored by the software. */
@@ -42,17 +42,18 @@ struct thrd_port_context_t {
     uint32_t r9;
     uint32_t r10;
     uint32_t r11;
-    uint32_t lr_ex;
+    /* uint32_t lr_ex; */
 
-    /* Context stored by the hardware when it enters an interrupt. */
-    uint32_t r0;
-    uint32_t r1;
-    uint32_t r2;
-    uint32_t r3;
-    uint32_t r12;
-    uint32_t lr;
+    /* /\* Context stored by the hardware when it enters an
+       interrupt. *\/ */
+    /* uint32_t r0; */
+    /* uint32_t r1; */
+    /* uint32_t r2; */
+    /* uint32_t r3; */
+    /* uint32_t r12; */
+    /* uint32_t lr; */
     uint32_t pc;
-    uint32_t psr;
+    /* uint32_t psr; */
 };
 
 struct thrd_port_t {

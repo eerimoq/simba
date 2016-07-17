@@ -28,42 +28,23 @@ static void thrd_port_cpu_usage_start(struct thrd_t *thrd_p);
 static void thrd_port_cpu_usage_stop(struct thrd_t *thrd_p);
 
 __attribute__((naked))
-static void swap(void)
+static void thrd_port_swap(struct thrd_t *in_p,
+                           struct thrd_t *out_p)
 {
     /* Store registers. lr is the return address. */
     asm volatile ("push {lr}");
     asm volatile ("push {r4-r11}");
-
+ 
     /* Save 'out_p' stack pointer. */
-    asm volatile ("mov %0, sp" : "=r" (scheduler.current_p->port.context_p));
-
-    scheduler.current_p = scheduler.next_p;
-    scheduler.next_p = NULL;
-
+    asm volatile ("mov %0, sp" : "=r" (out_p->port.context_p));
+    
     /* Restore 'in_p' stack pointer. */
-    asm volatile ("mov sp, %0" : : "r" (scheduler.current_p->port.context_p));
-
+    asm volatile ("mov sp, %0" : : "r" (in_p->port.context_p));
+    
+    /* Load registers. pop lr to pc and continue execution. */
     asm volatile ("pop {r4-r11}");
     asm volatile ("pop {pc}");
-}
-
-ISR(pend_sv)
-{
-    swap();
-}
-
-/**
- * Trigger the pendsv interrupt that handles the rescheduling.
- */
-static void thrd_port_swap(struct thrd_t *in_p,
-                           struct thrd_t *out_p)
-{
-    scheduler.next_p = in_p;
-    ARM_SCB->ICSR = SCB_ICSR_PENDSVSET;
-
-    asm volatile ("cpsie i");
-    asm volatile ("cpsid i");
-}
+ }
 
 static void thrd_port_init_main(struct thrd_port_t *port)
 {
@@ -107,13 +88,8 @@ static int thrd_port_spawn(struct thrd_t *thrd_p,
     context_p->r9 = (uint32_t)main;
     context_p->r10 = (uint32_t)arg_p;
 
-    /* 0xfffffff9 is used to return from an exception. See EXC_RETURN
-       in ARM documentation. */
-    context_p->lr_ex = 0xfffffff9;
-
     /* Prepare the hardware context. */
     context_p->pc = (uint32_t)thrd_port_main;
-    context_p->psr = 0x01000000;
 
     return (0);
 }

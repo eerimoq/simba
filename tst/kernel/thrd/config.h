@@ -25,7 +25,7 @@
  * Use a preemptive scheduler.
  */
 #ifndef CONFIG_PREEMPTIVE_SCHEDULER
-#    if defined(ARCH_AVR) || defined(ARCH_ARM)
+#    if defined(ARCH_AVR)
 #        define CONFIG_PREEMPTIVE_SCHEDULER 1
 #    else
 #        define CONFIG_PREEMPTIVE_SCHEDULER 0
