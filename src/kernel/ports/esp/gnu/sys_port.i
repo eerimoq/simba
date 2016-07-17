@@ -24,7 +24,7 @@
 #define SYS_TICK_TIMER_PRESCALE ESP8266_TIMER_CTRL_PRESCALE_256
 #define SYS_TICK_TIMER_LOAD 3125
 
-#define SYS_SIMBA_MAIN_STACK_MAX 2048
+#define SYS_SIMBA_MAIN_STACK_MAX 4096
 
 /* The main function is defined by the user in main.c. */
 extern int main();
