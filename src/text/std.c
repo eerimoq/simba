@@ -22,15 +22,13 @@
 #include <stdarg.h>
 #include <limits.h>
 
-#define STD_OUTPUT_BUFFER_MAX 16
-
 /* +7 for floating point decimal point and fraction. */
 #define VALUE_BUF_MAX (3 * sizeof(long) + 7)
 
 struct buffered_output_t {
     chan_t *chan_p;
     int pos;
-    char buffer[STD_OUTPUT_BUFFER_MAX];
+    char buffer[CONFIG_STD_OUTPUT_BUFFER_MAX];
 };
 
 /**

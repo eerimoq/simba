@@ -30,11 +30,9 @@ Variables
 +-------------------------------+-----------------------------------------------------------------+
 |  CONFIG_PROFILE_STACK         | Stack profiling.                                                |
 +-------------------------------+-----------------------------------------------------------------+
-|  CONFIG_PREEMPTIVE_SCHEDULER  | Use a preemptive scheduler.                                     |
-+-------------------------------+-----------------------------------------------------------------+
 |  CONFIG_MONITOR_THREAD        | Start the monitor thread.                                       |
 +-------------------------------+-----------------------------------------------------------------+
-|  CONFIG_SYSTEM_TICK_FREQUENCY | System tick frequency in Hertz.                                 |
+|  CONFIG_PREEMPTIVE_SCHEDULER  | Use a preemptive scheduler.                                     |
 +-------------------------------+-----------------------------------------------------------------+
 |  CONFIG_SHELL_MINIMAL         | Minimal shell functionality. Do not use command history or |br| |
 |                               | ANSI escape sequences.                                          |
@@ -44,6 +42,10 @@ Variables
 |  CONFIG_SHELL_COMMAND_MAX     | Maximum number of characters in a shell command.                |
 +-------------------------------+-----------------------------------------------------------------+
 |  CONFIG_SHELL_HISTORY_SIZE    | Size of the shell history buffer.                               |
++-------------------------------+-----------------------------------------------------------------+
+|  CONFIG_SYSTEM_TICK_FREQUENCY | System tick frequency in Hertz.                                 |
++-------------------------------+-----------------------------------------------------------------+
+|  CONFIG_STD_OUTPUT_BUFFER_MAX | Maximum number of bytes in the print output buffer.             |
 +-------------------------------+-----------------------------------------------------------------+
 
 lwIP
