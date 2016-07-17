@@ -39,7 +39,8 @@ static const FAR char config[] =
     "        profile-stack=" STRINGIFY(CONFIG_PROFILE_STACK) "\r\n"
     "        preemptive-scheduler=" STRINGIFY(CONFIG_PREEMPTIVE_SCHEDULER) "\r\n"
     "        system-tick-frequency=" STRINGIFY(CONFIG_SYSTEM_TICK_FREQUENCY) "\r\n"
-    "        monitor-thread=" STRINGIFY(CONFIG_MONITOR_THREAD) "\r\n";
+    "        monitor-thread=" STRINGIFY(CONFIG_MONITOR_THREAD) "\r\n"
+    "        shell-minimal=" STRINGIFY(CONFIG_SHELL_MINIMAL) "\r\n";
 
 extern void time_tick_isr(void);
 extern void timer_tick_isr(void);
