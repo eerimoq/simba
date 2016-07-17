@@ -79,28 +79,28 @@ static int vtokeq(const char *s_p,
             }
 
             if (t_p[i].type != type) {
-                printf("token %d type is %d, not %d\n",
-                       i, t_p[i].type, type);
+                std_printf(FSTR("token %d type is %d, not %d\r\n"),
+                           i, t_p[i].type, type);
                 return (0);
             }
 
             if ((start != -1) && (end != -1)) {
                 if (t_p[i].start != start) {
-                    printf("token %d start is %d, not %d\n",
-                           i, t_p[i].start, start);
+                    std_printf(FSTR("token %d start is %d, not %d\r\n"),
+                               i, t_p[i].start, start);
                     return (0);
                 }
 
                 if (t_p[i].end != end ) {
-                    printf("token %d end is %d, not %d\n",
-                           i, t_p[i].end, end);
+                    std_printf(FSTR("token %d end is %d, not %d\r\n"),
+                               i, t_p[i].end, end);
                     return (0);
                 }
             }
 
             if ((size != -1) && (t_p[i].size != size)) {
-                printf("token %d size is %d, not %d\n",
-                       i, t_p[i].size, size);
+                std_printf(FSTR("token %d size is %d, not %d\r\n"),
+                           i, t_p[i].size, size);
                 return (0);
             }
 
@@ -109,11 +109,11 @@ static int vtokeq(const char *s_p,
 
                 if ((strlen(value_p) != t_p[i].end - t_p[i].start) ||
                     (strncmp(p_p, value_p, t_p[i].end - t_p[i].start) != 0)) {
-                    printf("token %d value is %.*s, not %s\n",
-                           i,
-                           t_p[i].end - t_p[i].start,
-                           s_p + t_p[i].start,
-                           value_p);
+                    std_printf(FSTR("token %d value is %.*s, not %s\r\n"),
+                               i,
+                               t_p[i].end - t_p[i].start,
+                               s_p + t_p[i].start,
+                               value_p);
                     return (0);
                 }
             }
@@ -132,7 +132,7 @@ static int tokeq(const char *s_p,
     va_list args;
 
     va_start(args, numtok);
-    ok = vtokeq(s_p, tokens_p, numtok, args); 
+    ok = vtokeq(s_p, tokens_p, numtok, args);
     va_end(args);
 
     return (ok);
@@ -150,8 +150,6 @@ static int parse(const char *s_p,
     static struct json_tok_t t[128];
 
     if (numtok > 128) {
-        printf("apa\r\n");
-        exit(1);
         return (0);
     }
 
@@ -159,13 +157,13 @@ static int parse(const char *s_p,
     r = json_parse(&p, s_p, strlen(s_p), t, numtok);
 
     if (r != status) {
-        printf("status is %d, not %d\n", r, status);
+        std_printf(FSTR("status is %d, not %d\r\n"), r, status);
         return (0);
     }
 
     if (status >= 0) {
         va_start(args, numtok);
-        ok = vtokeq(s_p, t, numtok, args); 
+        ok = vtokeq(s_p, t, numtok, args);
         va_end(args);
     }
 
@@ -358,10 +356,10 @@ int test_partial_array(struct harness_t *harness_p)
     js_p = "[ 1, true, [123, \"hello\"]]";
 
     json_init(&p);
-   
+
     for (i = 1; i <= strlen(js); i++) {
         r = json_parse(&p, js, i, tok, sizeof(tok)/sizeof(tok[0]));
-    
+
         if (i == strlen(js)) {
             BTASSERT(r == 6);
             BTASSERT(tokeq(js, tok, 6,
