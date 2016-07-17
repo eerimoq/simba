@@ -22,7 +22,7 @@
 
 static char qinbuf[32];
 static struct uart_driver_t uart;
-static struct shell_args_t shell_args;
+static struct shell_t shell;
 
 static struct usb_host_driver_t usb;
 static struct usb_host_device_t host_devices[1];
@@ -126,14 +126,14 @@ static int handle_message_add(struct usb_message_add_t *msg_p)
             if (int_p->interface_class == USB_CLASS_MASS_STORAGE) {
                 std_printf(FSTR("A MASS_STORAGE interface was found.\r\n"));
                 std_printf(FSTR("reading from USB device\r\n"));
-                
+
                 usb_host_class_mass_storage_device_read(device_p,
                                                         buf,
                                                         0,
                                                         512);
-                
+
                 std_printf(FSTR("read from USB device\r\n"));
-                
+
                 return (0);
             }
         }
@@ -233,11 +233,8 @@ int main()
 {
     init();
 
-    shell_args.chin_p = &uart.chin;
-    shell_args.chout_p = &uart.chout;
-    shell_args.username_p = NULL;
-    shell_args.password_p = NULL;
-    shell_main(&shell_args);
+    shell_init(&shell, &uart.chin, &uart.chout, NULL, NULL, NULL, NULL);
+    shell_main(&shell);
 
     return (0);
 }

@@ -64,7 +64,7 @@ static int cmd_set_min_max_cb(int argc,
 
 static char qinbuf[32];
 static struct uart_driver_t uart;
-static struct shell_args_t shell_args;
+static struct shell_t shell;
 static THRD_STACK(shell_stack, 456);
 
 int main()
@@ -99,10 +99,9 @@ int main()
     pin_init(&pin[1], &pin_d8_dev, PIN_OUTPUT);
     pin_init(&pin[2], &pin_d9_dev, PIN_OUTPUT);
 
-    shell_args.chin_p = &uart.chin;
-    shell_args.chout_p = &uart.chout;
+    shell_init(&shell, &uart.chin, &uart.chout, NULL, NULL, NULL, NULL);
     thrd_spawn(shell_main,
-               &shell_args,
+               &shell,
                0,
                shell_stack,
                sizeof(shell_stack));

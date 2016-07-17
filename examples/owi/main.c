@@ -22,7 +22,7 @@
 
 static char qinbuf[32];
 static struct uart_driver_t uart;
-static struct shell_args_t shell_args;
+static struct shell_t shell;
 static struct owi_driver_t owi;
 static struct ds18b20_driver_t ds;
 static struct owi_device_t devices[4];
@@ -38,9 +38,8 @@ int main()
     owi_init(&owi, &pin_d7_dev, devices, membersof(devices));
     ds18b20_init(&ds, &owi);
 
-    shell_args.chin_p = &uart.chin;
-    shell_args.chout_p = &uart.chout;
-    shell_main(&shell_args);
+    shell_init(&shell, &uart.chin, &uart.chout, NULL, NULL, NULL, NULL);
+    shell_main(&shell);
 
     return (0);
 }

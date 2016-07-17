@@ -28,7 +28,7 @@
 static struct fs_command_t bootloader_start;
 
 static struct uart_driver_t uart;
-static struct shell_args_t shell_args;
+static struct shell_t shell;
 
 static int cmd_bootloader_start(int argc,
                                 const char *argv[],
@@ -38,7 +38,7 @@ static int cmd_bootloader_start(int argc,
                                 void *call_arg_p)
 {
     bootloader_jump(BOOTLOADER_ADDRESS);
-    
+
     return (0);
 }
 
@@ -68,11 +68,8 @@ int main()
     std_printf(FSTR("Welcome to the test application!\r\n"));
 
     /* Enter the application main loop. */
-    shell_args.username_p = NULL;
-    shell_args.password_p = NULL;
-    shell_args.chin_p = &uart.chin;
-    shell_args.chout_p = &uart.chout;
-    shell_main(&shell_args);
+    shell_init(&shell, &uart.chin, &uart.chout, NULL, NULL, NULL, NULL);
+    shell_main(&shell);
 
     return (0);
 }

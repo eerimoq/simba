@@ -38,7 +38,7 @@
 
 static struct uart_driver_t uart;
 static char rxbuf[4];
-static struct shell_args_t shell_args;
+static struct shell_t shell;
 
 static int tcp_test(void)
 {
@@ -94,12 +94,8 @@ static int shell_test(void)
     socket_listen(&listener, 5);
     socket_accept(&listener, &client, &addr, NULL);
 
-    shell_args.chin_p = &client;
-    shell_args.chout_p = &client;
-    shell_args.username_p = NULL;
-    shell_args.password_p = NULL;
-
-    shell_main(&shell_args);
+    shell_init(&shell, &uart.chin, &uart.chout, NULL, NULL, NULL, NULL);
+    shell_main(&shell);
 
     socket_close(&client);
     socket_close(&listener);

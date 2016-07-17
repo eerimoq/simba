@@ -32,7 +32,7 @@
 static struct http_server_t server;
 static struct uart_driver_t uart;
 static char rxbuf[16];
-static struct shell_args_t shell_args;
+static struct shell_t shell;
 
 THRD_STACK(listener_stack, 1024);
 THRD_STACK(connection_stack, 1500);
@@ -249,11 +249,8 @@ int main()
 {
     init();
 
-    shell_args.chin_p = &uart.chin;
-    shell_args.chout_p = &uart.chout;
-    shell_args.username_p = NULL;
-    shell_args.password_p = NULL;
-    shell_main(&shell_args);
+    shell_init(&shell, &uart.chin, &uart.chout, NULL, NULL, NULL, NULL);
+    shell_main(&shell);
 
     return (0);
 }

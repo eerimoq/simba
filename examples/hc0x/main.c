@@ -34,7 +34,7 @@ static struct uart_soft_driver_t uart_hc0x;
 static char qinbuf[32];
 static char qinbuf_hc0x[32];
 
-static struct shell_args_t shell_args;
+static struct shell_t shell;
 
 static int cmd_at_cb(int argc,
                      const char *argv[],
@@ -118,9 +118,8 @@ int main()
                     "\r\n"
                     "Type 'at' to start communicating with the device.\r\n"));
 
-    shell_args.chin_p = &uart.chin;
-    shell_args.chout_p = &uart.chout;
-    shell_main(&shell_args);
+    shell_init(&shell, &uart.chin, &uart.chout, NULL, NULL, NULL, NULL);
+    shell_main(&shell);
 
     return (0);
 }

@@ -63,7 +63,7 @@ struct synthesizer_t {
 
 static char qinbuf[32];
 static struct uart_driver_t uart;
-static struct shell_args_t shell_args;
+static struct shell_t shell;
 static THRD_STACK(shell_stack, 1024);
 
 static struct uart_driver_t uart_midi;
@@ -661,13 +661,9 @@ static int init(void)
     synthesizer.release = 1000;
 
     /* Spawn the shell. */
-    shell_args.chin_p = &uart.chin;
-    shell_args.chout_p = &uart.chout;
-    shell_args.username_p = NULL;
-    shell_args.password_p = NULL;
-
+    shell_init(&shell, &uart.chin, &uart.chout, NULL, NULL, NULL, NULL);
     thrd_spawn(shell_main,
-               &shell_args,
+               &shell,
                15,
                shell_stack,
                sizeof(shell_stack));

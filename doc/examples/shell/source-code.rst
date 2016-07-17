@@ -98,13 +98,7 @@
        std_printf(sys_get_info());
    
        /* Call the shell main function. */
-       shell_init(&shell,
-                  &uart.chin,
-                  &uart.chout,
-                  NULL,
-                  NULL,
-                  NULL,
-                  NULL);
+       shell_init(&shell, &uart.chin, &uart.chout, NULL, NULL, NULL, NULL);
        shell_main(&shell);
    
        return (0);

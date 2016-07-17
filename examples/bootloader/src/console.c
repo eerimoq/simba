@@ -52,7 +52,7 @@ static struct fs_command_t cmd_application_is_valid;
 static struct fs_command_t cmd_application_load_kermit;
 static struct fs_command_t cmd_application_start;
 
-static struct shell_args_t shell_args;
+static struct shell_t shell;
 
 /**
  * Encode given binary value to a printable ascii value.
@@ -491,10 +491,12 @@ void console_main(struct console_t *self_p)
     std_printf(FSTR("staying in the bootloader\r\n"));
 
     /* Enter the bootloader main loop. */
-    shell_args.username_p = NULL;
-    shell_args.password_p = NULL;
-    shell_args.chin_p = self_p->chin_p;
-    shell_args.chout_p = self_p->chout_p;
-    shell_args.arg_p = self_p;
-    shell_main(&shell_args);
+    shell_init(&shell,
+               self_p->chin_p,
+               self_p->chout_p,
+               self_p,
+               NULL,
+               NULL,
+               NULL);
+    shell_main(&shell);
 }

@@ -210,10 +210,10 @@ int test_strcmp(struct harness_t *harness_p)
     BTASSERT(std_strncmp(FSTR("foo"), "foobar", 4) == -'b');
 
     /* Far + far. */
-    BTASSERT(std_strncmp_f(FSTR("foo"), FAR("foo"), 3) == 0);
-    BTASSERT(std_strncmp_f(FSTR("foo"), FAR("foo"), 0) == 0);
-    BTASSERT(std_strncmp_f(FSTR("foo"), FAR("foobar"), 3) == 0);
-    BTASSERT(std_strncmp_f(FSTR("foo"), FAR("foobar"), 4) == -'b');
+    BTASSERT(std_strncmp_f(FSTR("foo"), FSTR("foo"), 3) == 0);
+    BTASSERT(std_strncmp_f(FSTR("foo"), FSTR("foo"), 0) == 0);
+    BTASSERT(std_strncmp_f(FSTR("foo"), FSTR("foobar"), 3) == 0);
+    BTASSERT(std_strncmp_f(FSTR("foo"), FSTR("foobar"), 4) == -'b');
 
     return (0);
 }
