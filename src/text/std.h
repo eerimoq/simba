@@ -51,7 +51,7 @@ int std_module_init(void);
  * @param[in] fmt_p Format string.
  * @param[in] ... Variable arguments list.
  *
- * @return Number of bytes written to the destination buffer or
+ * @return Length of the string written to the destination buffer, or
  *         negative error code.
  */
 ssize_t std_sprintf(char *dst_p, FAR const char *fmt_p, ...);
