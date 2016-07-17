@@ -229,7 +229,7 @@ chan_t *chan_list_poll(struct chan_list_t *list_p,
  * Get a reference to the null channel. This channel will ignore all
  * written data but return that it was successfully written.
  *
- * @return Always returns zero(0).
+ * @return The null channel.
  */
 chan_t *chan_null(void);
 
