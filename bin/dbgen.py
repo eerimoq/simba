@@ -59,6 +59,9 @@ def main():
             value = get_make_variable(board, variable)
             database["boards"][board][variable.lower()] = value.strip()
 
+        simba_root = get_make_variable(board, "SIMBA_ROOT").strip()
+        simba_root += '/'
+
         # Get the board drivers
         drivers_src = get_make_variable(board, "DRIVERS_SRC").split()
         drivers = [os.path.splitext(os.path.basename(driver))[0]
@@ -70,15 +73,15 @@ def main():
 
         # Get the board include.
         inc = get_make_variable(board, "INC").split()
-        inc = [i.replace("../../../", "") for i in inc]
+        inc = [i.replace(simba_root, "") for i in inc]
         inc = list(set(inc) - set("."))
         database["boards"][board]["inc"] = inc
 
         # Get the board sources.
         src = get_make_variable(board, "SRC").split()
         src = list(set(src) - set(["main.c", "settings.c"]))
-        src = [s.replace("../../../", "") for s in src]
-        src = [s.replace("src/inet/../../", "") for s in src]
+        src = [s.replace(simba_root, "") for s in src]
+        src = [s.replace(simba_root + "src/inet/../../", "") for s in src]
         database["boards"][board]["src"] = src
 
         # Get the CFLAGS.
@@ -95,14 +98,14 @@ def main():
 
         # Get the LIBPATH.
         libpath = get_make_variable(board, "LIBPATH").split()
-        libpath = [l.replace("../../../", "") for l in libpath]
+        libpath = [l.replace(simba_root, "") for l in libpath]
         database["boards"][board]["libpath"] = libpath
 
         # get linker file
         try:
             linker_script = get_make_variable(board,
                                               "LINKER_SCRIPT").strip()
-            linker_script = linker_script.replace("../../../", "")
+            linker_script = linker_script.replace(simba_root, "")
         except:
             linker_script = ""
 
