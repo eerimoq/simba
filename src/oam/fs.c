@@ -444,9 +444,7 @@ void fs_split(char *buf_p, char **path_pp, char **cmd_pp)
 {
     ASSERTN(buf_p != NULL, EINVAL);
     ASSERTN(path_pp != NULL, EINVAL);
-    ASSERTN(*path_pp != NULL, EINVAL);
     ASSERTN(cmd_pp != NULL, EINVAL);
-    ASSERTN(*cmd_pp != NULL, EINVAL);
 
     char *last_slash_p = NULL;
 
