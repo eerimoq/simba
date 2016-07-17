@@ -43,8 +43,7 @@ int rwlock_init(struct rwlock_t *self_p)
     return (0);
 }
 
-int rwlock_reader_take(struct rwlock_t *self_p,
-                       struct time_t *timeout_p)
+int rwlock_reader_take(struct rwlock_t *self_p)
 {
     ASSERTN(self_p != NULL, EINVAL);
 
@@ -62,19 +61,7 @@ int rwlock_reader_take(struct rwlock_t *self_p,
         elem.prev_p = NULL;
         self_p->readers_p = &elem;
 
-        res = thrd_suspend_isr(timeout_p);
-
-        if (res == -ETIMEDOUT) {
-            self_p->number_of_readers--;
-
-            if (elem.prev_p != NULL) {
-                elem.prev_p->next_p = elem.next_p;
-            }
-
-            if (elem.next_p != NULL) {
-                elem.next_p->prev_p = elem.prev_p;
-            }
-        }
+        thrd_suspend_isr(NULL);
     }
 
     sys_unlock();
@@ -97,23 +84,26 @@ int rwlock_reader_give_isr(struct rwlock_t *self_p)
 {
     ASSERTN(self_p != NULL, EINVAL);
 
+    volatile struct rwlock_elem_t *elem_p;
+
     self_p->number_of_readers--;
 
-    if (self_p->number_of_writers > 0) {
-        if (thrd_resume_isr(self_p->writers_p->thrd_p, 0) == 1) {
-            self_p->writers_p = self_p->writers_p->next_p;
+    if ((self_p->number_of_writers > 0)
+        && (self_p->number_of_readers == 0)) {
+        elem_p = self_p->writers_p;
+        self_p->writers_p = elem_p->next_p;
 
-            if (self_p->writers_p != NULL) {
-                self_p->writers_p->prev_p = NULL;
-            }
+        if (self_p->writers_p != NULL) {
+            self_p->writers_p->prev_p = NULL;
         }
+
+        thrd_resume_isr(elem_p->thrd_p, 0);
     }
 
     return (0);
 }
 
-int rwlock_writer_take(struct rwlock_t *self_p,
-                       struct time_t *timeout_p)
+int rwlock_writer_take(struct rwlock_t *self_p)
 {
     ASSERTN(self_p != NULL, EINVAL);
 
@@ -124,26 +114,15 @@ int rwlock_writer_take(struct rwlock_t *self_p,
 
     self_p->number_of_writers++;
 
-    /* Wait if the lock is taken by a reader. */
-    if (self_p->number_of_readers > 0) {
+    /* Wait if the lock is taken by a reader or another writer. */
+    if ((self_p->number_of_readers > 0)
+        || (self_p->number_of_writers > 1)) {
         elem.thrd_p = thrd_self();
         elem.next_p = self_p->writers_p;
         elem.prev_p = NULL;
         self_p->writers_p = &elem;
 
-        res = thrd_suspend_isr(timeout_p);
-
-        if (res == -ETIMEDOUT) {
-            self_p->number_of_writers--;
-
-            if (elem.prev_p != NULL) {
-                elem.prev_p->next_p = elem.next_p;
-            }
-
-            if (elem.next_p != NULL) {
-                elem.next_p->prev_p = elem.prev_p;
-            }
-        }
+        thrd_suspend_isr(NULL);
     }
 
     sys_unlock();
@@ -170,24 +149,27 @@ int rwlock_writer_give_isr(struct rwlock_t *self_p)
 
     if (self_p->number_of_writers > 0) {
         elem_p = self_p->writers_p;
+        self_p->writers_p = elem_p->next_p;
 
-        if (thrd_resume_isr(elem_p->thrd_p, 0) == 1) {
-            self_p->writers_p = elem_p->next_p;
-
-            if (self_p->writers_p != NULL) {
-                self_p->writers_p->prev_p = NULL;
-            }
+        if (self_p->writers_p != NULL) {
+            self_p->writers_p->prev_p = NULL;
         }
+
+        thrd_resume_isr(elem_p->thrd_p, 0);
     } else if (self_p->number_of_readers > 0) {
         elem_p = self_p->readers_p;
 
-        if (thrd_resume_isr(elem_p->thrd_p, 0) == 1) {
+        do {
             self_p->readers_p = elem_p->next_p;
 
             if (self_p->readers_p != NULL) {
                 self_p->readers_p->prev_p = NULL;
             }
-        }
+
+            thrd_resume_isr(elem_p->thrd_p, 0);
+
+            elem_p = elem_p->next_p;
+        } while (elem_p != NULL);
     }
 
     return (0);

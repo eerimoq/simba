@@ -51,12 +51,10 @@ int rwlock_init(struct rwlock_t *self_p);
  * lock at the same time.
  *
  * @param[in] self_p Reader-writer lock to take.
- * @param[in] timeout_p Timeout.
  *
  * @return zero(0) or negative error code.
  */
-int rwlock_reader_take(struct rwlock_t *self_p,
-                       struct time_t *timeout_p);
+int rwlock_reader_take(struct rwlock_t *self_p);
 
 /**
  * Give given reader-writer lock.
@@ -82,12 +80,10 @@ int rwlock_reader_give_isr(struct rwlock_t *self_p);
  * the lock at a time, including both readers and writers.
  *
  * @param[in] self_p Reader-writer lock to take.
- * @param[in] timeout_p Timeout.
  *
  * @return zero(0) or negative error code.
  */
-int rwlock_writer_take(struct rwlock_t *self_p,
-                       struct time_t *timeout_p);
+int rwlock_writer_take(struct rwlock_t *self_p);
 
 /**
  * Give given reader-writer lock.

@@ -108,6 +108,7 @@ int sys_module_init(void)
 int sys_start(void)
 {
     setting_module_init();
+    rwlock_module_init();
     fs_module_init();
     std_module_init();
     sem_module_init();
