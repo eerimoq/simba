@@ -30,6 +30,12 @@ typedef void chan_t;
 
 /**
  * Channel read function callback type.
+ *
+ * @param[in] self_p Channel to read from.
+ * @param[out] buf_p Buffer to read into.
+ * @param[in] size Number of bytes to read.
+ *
+ * @return Number of read bytes or negative error code.
  */
 typedef ssize_t (*thrd_read_fn_t)(chan_t *self_p,
                                   void *buf_p,
@@ -37,6 +43,12 @@ typedef ssize_t (*thrd_read_fn_t)(chan_t *self_p,
 
 /**
  * Channel write function callback type.
+ *
+ * @param[in] self_p Channel to write to.
+ * @param[in] buf_p Buffer to write.
+ * @param[in] size Number of bytes to write.
+ *
+ * @return Number of written bytes or negative error code.
  */
 typedef ssize_t (*thrd_write_fn_t)(chan_t *self_p,
                                    const void *buf_p,
@@ -44,6 +56,10 @@ typedef ssize_t (*thrd_write_fn_t)(chan_t *self_p,
 
 /**
  * Channel size function callback type.
+ *
+ * @param[in] self_p Channel to get the size of.
+ *
+ * @return Number of bytes available.
  */
 typedef size_t (*thrd_size_fn_t)(chan_t *self_p);
 
@@ -210,28 +226,36 @@ chan_t *chan_list_poll(struct chan_list_t *list_p,
                        struct time_t *timeout_p);
 
 /**
- * Null channel read function. Pass to ``chan_init()`` if no read
- * function is required for the channel.
+ * Get a reference to the null channel. This channel will ignore all
+ * written data but return that it was successfully written.
  *
  * @return Always returns zero(0).
+ */
+chan_t *chan_null(void);
+
+/**
+ * Null channel read function callback. Pass to ``chan_init()`` if no
+ * read function callback is needed for the channel.
+ *
+ * @return Always returns -1.
  */
 ssize_t chan_read_null(chan_t *self_p,
                        void *buf_p,
                        size_t size);
 
 /**
- * Null channel write function. Pass to ``chan_init()`` if no write
- * function is required for the channel.
+ * Null channel write function callback. Pass to ``chan_init()`` if no
+ * write function callback is needed for the channel.
  *
- * @return Always returns zero(0).
+ * @return Always returns ``size``.
  */
 ssize_t chan_write_null(chan_t *self_p,
                         const void *buf_p,
                         size_t size);
 
 /**
- * Null channel size function. Pass to ``chan_init()`` if no size
- * function is required for the channel.
+ * Null channel size function callback. Pass to ``chan_init()`` if no
+ * size function callback is needed for the channel.
  *
  * @return Always returns zero(0).
  */

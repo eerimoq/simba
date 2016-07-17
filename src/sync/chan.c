@@ -22,8 +22,12 @@
 
 #define CHAN_LIST_POLLING 0x1
 
+static struct chan_t null;
+
 int chan_module_init(void)
 {
+    chan_init(&null, chan_read_null, chan_write_null, chan_size_null);
+
     return (0);
 }
 
@@ -184,18 +188,23 @@ chan_t *chan_list_poll(struct chan_list_t *list_p,
     return (chan_p);
 }
 
+chan_t *chan_null(void)
+{
+    return (&null);
+}
+
 ssize_t chan_read_null(chan_t *self_p,
                        void *buf_p,
                        size_t size)
 {
-    return (0);
+    return (-1);
 }
 
 ssize_t chan_write_null(chan_t *self_p,
                         const void *buf_p,
                         size_t size)
 {
-    return (0);
+    return (size);
 }
 
 size_t chan_size_null(chan_t *self_p)
