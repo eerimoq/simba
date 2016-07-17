@@ -59,7 +59,7 @@ int rwlock_reader_take(struct rwlock_t *self_p);
 /**
  * Give given reader-writer lock.
  *
- * @param[in] self_p Reader-writer lock to add count to.
+ * @param[in] self_p Reader-writer lock give.
  *
  * @return zero(0) or negative error code.
  */
@@ -69,7 +69,7 @@ int rwlock_reader_give(struct rwlock_t *self_p);
  * Give given reader-writer lock from isr or with the system lock
  * taken.
  *
- * @param[in] self_p Reader-writer lock.
+ * @param[in] self_p Reader-writer lock to give.
  *
  * @return zero(0) or negative error code.
  */
@@ -88,7 +88,7 @@ int rwlock_writer_take(struct rwlock_t *self_p);
 /**
  * Give given reader-writer lock.
  *
- * @param[in] self_p Reader-writer lock.
+ * @param[in] self_p Reader-writer lock to give.
  *
  * @return zero(0) or negative error code.
  */
@@ -98,7 +98,7 @@ int rwlock_writer_give(struct rwlock_t *self_p);
  * Give given reader-writer lock from isr or with the system lock
  * taken.
  *
- * @param[in] self_p Reader-writer lock to add count to.
+ * @param[in] self_p Reader-writer lock to give.
  *
  * @return zero(0) or negative error code.
  */
