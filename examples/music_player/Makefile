@@ -18,36 +18,15 @@
 # This file is part of the Simba project.
 #
 
-EXAMPLES = \
-	blink \
-	bootloader \
-	fat16 \
-	hc0x \
-	hello_world \
-	inet \
-	midi_player \
-	music_player \
-	nrf24l01 \
-	owi \
-	shell \
-	spi \
-	synthesizer \
-	temp \
-	usb
+NAME = music_player
+BOARD ?= arduino_due
+VERSION = 1.0.0
 
-all: $(EXAMPLES:%=%.all)
+SRC += music_player.c
 
-clean: $(EXAMPLES:%=%.clean)
+CDEFS_EXTRA = \
+	MUSIC_PLAYER_STORAGE_USB \
+	LOG_BUFFER_SIZE=2048
 
-$(EXAMPLES:%=%.all):
-	$(MAKE) -C $(basename $@) all
-
-$(EXAMPLES:%=%.clean):
-	$(MAKE) -C $(basename $@) clean
-
-help:
-	@echo "--------------------------------------------------------------------------------"
-	@echo "  target                      description"
-	@echo "--------------------------------------------------------------------------------"
-	@echo "  all                         compile and link the examples"
-	@echo
+SIMBA_ROOT ?= ../..
+include $(SIMBA_ROOT)/make/app.mk
