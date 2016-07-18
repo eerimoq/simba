@@ -37,43 +37,125 @@
  * 3. https://github.com/mikaelpatel/Cosa/tree/master/libraries/FAT16
  */
 
-/* Seek whence. */
+/**
+ * The offset is relative to the start of the file.
+ */
 #define FAT16_SEEK_SET  0
+
+/**
+ * The offset is relative to the current position indicator.
+ */
 #define FAT16_SEEK_CUR  1
+
+/**
+ * The offset is relative to the end of the file.
+ */
 #define FAT16_SEEK_END  2
 
+/**
+ * End of file indicator.
+ */
 #define FAT16_EOF      -1
 
-/* File open options. */
-#define O_READ   0x01                /* Open for reading. */
-#define O_RDONLY O_READ              /* Same as O_READ. */
-#define O_WRITE  0x02                /* Open for write. */
-#define O_WRONLY O_WRITE             /* Same as O_WRITE. */
-#define O_RDWR   (O_READ | O_WRITE)  /* Open for reading and writing. */
-#define O_APPEND 0x04                /* The file offset shall be set to the
-                                        end of the file prior to each write. */
-#define O_SYNC   0x08                /* Synchronous writes. */
-#define O_CREAT  0x10                /* Create the file if nonexistent. */
-#define O_EXCL   0x20                /* If O_CREAT and O_EXCL are set,
-                                        open() shall fail if the file
-                                        exists. */
-#define O_TRUNC  0x40                /* Truncate the file to zero length. */
+/**
+ * Open for reading.
+ */
+#define O_READ             0x01
 
-#define DIR_ATTR_READ_ONLY 0x01 /* file is read-only. */
-#define DIR_ATTR_HIDDEN    0x02 /* File should hidden in directory listings. */
-#define DIR_ATTR_SYSTEM    0x04 /* Entry is for a system file. */
-#define DIR_ATTR_VOLUME_ID 0x08 /* Directory entry contains the volume label. */
-#define DIR_ATTR_DIRECTORY 0x10 /* Entry is for a directory. */
-#define DIR_ATTR_ARCHIVE   0x20 /* Old DOS archive bit for backup support. */
+/**
+ * Same as O_READ. 
+ */
+#define O_RDONLY           O_READ              
 
+/**
+ * Open for write.
+ */
+#define O_WRITE            0x02
+
+/**
+ * Same as O_WRITE.
+ */
+#define O_WRONLY           O_WRITE
+
+/**
+ * Open for reading and writing.
+ */
+#define O_RDWR             (O_READ | O_WRITE)
+
+/**
+ * The file position indicator shall be set to the end of the file
+ * prior to each write.
+ */
+#define O_APPEND           0x04
+
+/**
+ * Synchronous writes.
+ */
+#define O_SYNC             0x08
+
+/**
+ * Create the file if non-existent.
+ */
+#define O_CREAT            0x10
+
+/**
+ * If O_CREAT and O_EXCL are set, file open shall fail if the file
+ * exists.
+ */
+#define O_EXCL             0x20
+
+/**
+ * Truncate the file to zero length.
+ */
+#define O_TRUNC            0x40
+
+/**
+ * File is read-only.
+ */
+#define DIR_ATTR_READ_ONLY 0x01
+
+/**
+ * File should hidden in directory listings.
+ */
+#define DIR_ATTR_HIDDEN    0x02
+
+/**
+ * Entry is for a system file.
+ */
+#define DIR_ATTR_SYSTEM    0x04
+
+/**
+ * Directory entry contains the volume label.
+ */
+#define DIR_ATTR_VOLUME_ID 0x08
+
+/**
+ * Entry is for a directory.
+ */
+#define DIR_ATTR_DIRECTORY 0x10
+
+/**
+ * Old DOS archive bit for backup support.
+ */
+#define DIR_ATTR_ARCHIVE   0x20
+
+/**
+ * Block read function callback.
+ */
 typedef ssize_t (*fat16_read_t)(void *arg_p,
                                 void *dst_p,
                                 uint32_t src_block);
+
+/**
+ * Block write function callback.
+ */
 typedef ssize_t (*fat16_write_t)(void *arg_p,
                                  uint32_t dst_block,
                                  const void *src_p);
 
-/* FAT entry.  */
+/**
+ * A FAT entry.
+ */
 typedef uint16_t fat_t;
 
 /**

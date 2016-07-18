@@ -34,7 +34,7 @@ int setting_module_init(void);
 /**
  * Read setting at given address to given buffer.
  *
- * @param[in,out] dst_p Destination buffer.
+ * @param[out] dst_p Destination buffer.
  * @param[in] src Setting source address.
  * @param[in] size Number of words to read.
  *
