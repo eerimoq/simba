@@ -1,6 +1,6 @@
 /**
  * @file drivers/ds18b20.h
- * @version 1.1.0
+ * @version 2.0.0
  *
  * @section License
  * Copyright (C) 2014-2016, Erik Moqvist
