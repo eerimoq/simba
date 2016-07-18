@@ -171,6 +171,47 @@ static int test_read(struct harness_t *harness_p)
     BTASSERT(buf[1] == 'i');
     BTASSERT(buf[2] == 'e');
 
+    /* Prepare socket input with 1 length byte. */
+    buf[0] = 0x81; /* FIN & TEXT. */
+    buf[1] = 0x83; /* MASK and 1 byte payload length. */
+    buf[2] = 0x00; /* Masking key 0. */
+    buf[3] = 0x00; /* Masking key 1. */
+    buf[4] = 0x00; /* Masking key 2. */
+    buf[5] = 0x00; /* Masking key 3. */
+    buf[6] = 'f'; /* Payload 0. */
+    buf[7] = 'o'; /* Payload 1. */
+    buf[8] = 'o'; /* Payload 2. */
+    socket_stub_input(buf, 9);
+
+    /* Read only two of the three bytes. The third byte should be
+       discarded. */
+    BTASSERT(http_websocket_server_read(&server,
+                                        &type,
+                                        buf,
+                                        2) == 2);
+    BTASSERT(buf[0] == 'f');
+    BTASSERT(buf[1] == 'o');
+
+    /* Prepare socket input with 1 length byte. */
+    buf[0] = 0x81; /* FIN & TEXT. */
+    buf[1] = 0x83; /* MASK and 1 byte payload length. */
+    buf[2] = 0x00; /* Masking key 0. */
+    buf[3] = 0x00; /* Masking key 1. */
+    buf[4] = 0x00; /* Masking key 2. */
+    buf[5] = 0x00; /* Masking key 3. */
+    buf[6] = 'f'; /* Payload 0. */
+    buf[7] = 'o'; /* Payload 1. */
+    buf[8] = 'o'; /* Payload 2. */
+    socket_stub_input(buf, 9);
+
+    BTASSERT(http_websocket_server_read(&server,
+                                        &type,
+                                        buf,
+                                        sizeof(buf)) == 3);
+    BTASSERT(buf[0] == 'f');
+    BTASSERT(buf[1] == 'o');
+    BTASSERT(buf[2] == 'o');
+
     return (0);
 }
 
