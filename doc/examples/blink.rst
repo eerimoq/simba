@@ -18,9 +18,9 @@ Source code
 Build and run
 -------------
 
-Build and run the application.
+Build and upload the application.
 
 .. code-block:: text
 
    $ cd examples/blink
-   $ make -s BOARD=<board> release size upload
+   $ make -s BOARD=<board> upload

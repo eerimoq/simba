@@ -24,7 +24,7 @@ Build and run the application.
 .. code-block:: text
 
    $ cd examples/hello_world
-   $ make -s BOARD=<board> release size run
+   $ make -s BOARD=<board> run
    ...
    Hello world!
    $

@@ -23,10 +23,10 @@ Build and run the application.
 .. code-block:: text
 
    $ cd examples/shell
-   $ make -s BOARD=<board> release size upload
+   $ make -s BOARD=<board> upload
 
 Communicate with the board using a serial terminal emulator, for
-example TeraTerm. The baudrate is 115200.
+example TeraTerm. The baudrate is 38400.
 
 The shell line terminator is ``\r\n``.
 
