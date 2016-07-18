@@ -53,6 +53,7 @@ ifeq ($(BOARD), linux)
                                     sha1)
     TESTS += $(addprefix tst/inet/, http_server \
 				    http_websocket_client \
+				    http_websocket_server \
 				    inet \
 				    mqtt_client)
     TESTS += $(addprefix tst/multimedia/, midi)
@@ -86,6 +87,7 @@ ifeq ($(BOARD), arduino_due)
                                     sha1)
     TESTS += $(addprefix tst/inet/, http_server \
 				    http_websocket_client \
+				    http_websocket_server \
 				    inet \
 				    mqtt_client)
     TESTS += $(addprefix tst/drivers/, chipid \
@@ -121,6 +123,7 @@ ifeq ($(BOARD), arduino_mega)
                                     sha1)
     TESTS += $(addprefix tst/inet/, http_server \
 				    http_websocket_client \
+				    http_websocket_server \
 				    inet \
 				    mqtt_client)
     TESTS += $(addprefix tst/drivers/, adc \
@@ -159,6 +162,7 @@ ifeq ($(BOARD), esp12e)
     TESTS += $(addprefix tst/hash/, crc \
                                     sha1)
     TESTS += $(addprefix tst/inet/, http_websocket_client \
+				    http_websocket_server \
 				    inet \
 				    mqtt_client)
 endif
@@ -187,6 +191,7 @@ ifeq ($(BOARD), stm32vldiscovery)
     TESTS += $(addprefix tst/hash/, crc \
                                     sha1)
     TESTS += $(addprefix tst/inet/, http_websocket_client \
+				    http_websocket_server \
 				    inet \
 				    mqtt_client)
 endif
@@ -216,6 +221,7 @@ ifeq ($(BOARD), photon)
     TESTS += $(addprefix tst/hash/, crc \
                                     sha1)
     TESTS += $(addprefix tst/inet/, http_websocket_client \
+				    http_websocket_server \
 				    inet \
 				    mqtt_client)
 endif
