@@ -29,15 +29,11 @@ BOARD_DESC = "ESP-01"
 
 MCU = esp8266
 SERIAL_PORT = arduino
+BOARD_PY = $(SIMBA_ROOT)/src/boards/esp12e/board.py
 
 upload:
 	@echo "Uploading $(EXE)"
-	$(SIMBA_ROOT)/3pp/esptool/esptool.py \
-	    --port /dev/$(SERIAL_PORT) \
-	    --baud 460800 \
-	    write_flash \
-            0x00000 $(SIMBA_ROOT)/3pp/ESP8266_RTOS_SDK/bin/boot_v1.4.bin \
-            0x01000 $(NAME).bin
+	python -u $(BOARD_PY) upload --port /dev/$(SERIAL_PORT) $(NAME).bin
 
 run:
 	@echo "Running '$(EXE)'."

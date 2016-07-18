@@ -83,7 +83,6 @@ def main():
         src = get_make_variable(board, "SRC").split()
         src = list(set(src) - set(["main.c", "settings.c"]))
         src = [s.replace(simba_root, "") for s in src]
-        src = [s.replace(simba_root + "src/inet/../../", "") for s in src]
         database["boards"][board]["src"] = src
 
         # Get CFLAGS.
