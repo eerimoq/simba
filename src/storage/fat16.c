@@ -563,68 +563,6 @@ int fat16_print(struct fat16_t *self_p, chan_t *chan_p)
     return (0);
 }
 
-static int file_truncate(struct fat16_file_t *file_p,
-                         size_t length)
-{
-    uint32_t new_pos;
-    fat_t to_free;
-
-    /* Error if file is not open for write. */
-    if (!(file_p->flags & O_WRITE)) {
-        return (-1);
-    }
-
-    if (length > file_p->file_size) {
-        return (-1);
-    }
-
-    /* Filesize and length are zero - nothing to do. */
-    if (file_p->file_size == 0) {
-        return (0);
-    }
-
-    new_pos = (file_p->cur_position > length
-               ? length
-               : file_p->cur_position);
-
-    if (length == 0) {
-        /* Free all clusters. */
-        if (free_chain(file_p->fat16_p, file_p->first_cluster) != 0) {
-            return (-1);
-        }
-
-        file_p->cur_cluster = file_p->first_cluster = 0;
-    } else {
-        if (!fat16_file_seek(file_p, length, FAT16_SEEK_SET)) {
-            return (-1);
-        }
-
-        if (fat_get(file_p->fat16_p, file_p->cur_cluster, &to_free) != 0) {
-            return (-1);
-        }
-
-        if (!is_end_of_cluster(to_free)) {
-            /* Free extra clusters. */
-            if (!fat_put(file_p->fat16_p, file_p->cur_cluster, EOC16)) {
-                return (-1);
-            }
-
-            if (!free_chain(file_p->fat16_p, to_free)) {
-                return (-1);
-            }
-        }
-    }
-
-    file_p->file_size = length;
-    file_p->flags |= F_FILE_DIR_DIRTY;
-
-    if (fat16_file_sync(file_p) != 0) {
-        return (-1);
-    }
-
-    return (fat16_file_seek(file_p, new_pos, FAT16_SEEK_SET));
-}
-
 static int add_cluster(struct fat16_file_t *file_p)
 {
     /* Start search after last cluster of file or at cluster two in FAT. */
@@ -1116,7 +1054,7 @@ static int file_open(struct fat16_t *self_p,
     file_p->flags = oflag & (O_RDWR | O_SYNC | O_APPEND);
 
     if (oflag & O_TRUNC) {
-        return (file_truncate(file_p, 0));
+        return (fat16_file_truncate(file_p, 0));
     }
 
     return (0);
@@ -1327,6 +1265,84 @@ int fat16_file_seek(struct fat16_file_t *file_p,
 ssize_t fat16_file_tell(struct fat16_file_t *file_p)
 {
     return (file_p->cur_position);
+}
+
+int fat16_file_truncate(struct fat16_file_t *file_p,
+                        size_t size)
+{
+    uint32_t new_pos;
+    fat_t to_free;
+    size_t n;
+    char zero;
+
+    /* Error if file is not open for write. */
+    if (!(file_p->flags & O_WRITE)) {
+        return (-1);
+    }
+
+    if (size > file_p->file_size) {
+        if (fat16_file_seek(file_p, 0, FAT16_SEEK_END) != 0) {
+            return (-1);
+        }
+
+        n = (size - file_p->file_size);
+        zero = '\0';
+
+        /* Write one '\0' byte at a time for simplicity. */
+        while (n--) {
+            if (fat16_file_write(file_p, &zero, 1) != 1) {
+                return (-1);
+            }
+        }
+
+        return (0);
+    }
+
+    /* Filesize and size are zero - nothing to do. */
+    if (file_p->file_size == 0) {
+        return (0);
+    }
+
+    new_pos = (file_p->cur_position > size
+               ? size
+               : file_p->cur_position);
+
+    if (size == 0) {
+        /* Free all clusters. */
+        if (free_chain(file_p->fat16_p, file_p->first_cluster) != 0) {
+            return (-1);
+        }
+
+        file_p->cur_cluster = file_p->first_cluster = 0;
+    } else {
+        if (fat16_file_seek(file_p, size, FAT16_SEEK_SET) != 0) {
+            return (-1);
+        }
+
+        if (fat_get(file_p->fat16_p, file_p->cur_cluster, &to_free) != 0) {
+            return (-1);
+        }
+
+        if (!is_end_of_cluster(to_free)) {
+            /* Free extra clusters. */
+            if (!fat_put(file_p->fat16_p, file_p->cur_cluster, EOC16)) {
+                return (-1);
+            }
+
+            if (!free_chain(file_p->fat16_p, to_free)) {
+                return (-1);
+            }
+        }
+    }
+
+    file_p->file_size = size;
+    file_p->flags |= F_FILE_DIR_DIRTY;
+
+    if (fat16_file_sync(file_p) != 0) {
+        return (-1);
+    }
+
+    return (fat16_file_seek(file_p, new_pos, FAT16_SEEK_SET));
 }
 
 ssize_t fat16_file_size(struct fat16_file_t *file_p)

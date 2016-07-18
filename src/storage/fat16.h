@@ -607,6 +607,21 @@ int fat16_file_seek(struct fat16_file_t *file_p,
 ssize_t fat16_file_tell(struct fat16_file_t *file_p);
 
 /**
+ * Truncate given file to a size of precisly `size` bytes.
+ *
+ * If the file previously was larger than this size, the extra data is
+ * lost. If the file previously was shorter, it is extended, and the
+ * extended part reads as null bytes ('\0').
+ *
+ * @param[in] file_p File object.
+ * @param[in] size New size of the file in bytes.
+ *
+ * @return zero(0) or negative error code.
+ */
+int fat16_file_truncate(struct fat16_file_t *file_p,
+                        size_t size);
+
+/**
  * Return number of bytes in the file.
  *
  * @param[in] file_p File object.
