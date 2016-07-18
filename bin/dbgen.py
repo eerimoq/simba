@@ -62,46 +62,48 @@ def main():
         simba_root = get_make_variable(board, "SIMBA_ROOT").strip()
         simba_root += '/'
 
-        # Get the board drivers
+        # Get board drivers.
+        drivers_dir = simba_root + "src/drivers/"
         drivers_src = get_make_variable(board, "DRIVERS_SRC").split()
-        drivers = [os.path.splitext(os.path.basename(driver))[0]
-                   for driver in drivers_src]
-        drivers = list(set(drivers) - set(["usb_host_class_hid",
-                                           "usb_host_class_mass_storage"]))
+        drivers_src = [s.replace(drivers_dir, "") for s in drivers_src]
+        drivers = []
+        for src in drivers_src:
+            if not os.path.split(src)[0]:
+                drivers.append(os.path.splitext(src)[0])
         database["boards"][board]["drivers"] = drivers
 
 
-        # Get the board include.
+        # Get board include paths.
         inc = get_make_variable(board, "INC").split()
         inc = [i.replace(simba_root, "") for i in inc]
         inc = list(set(inc) - set("."))
         database["boards"][board]["inc"] = inc
 
-        # Get the board sources.
+        # Get board sources.
         src = get_make_variable(board, "SRC").split()
         src = list(set(src) - set(["main.c", "settings.c"]))
         src = [s.replace(simba_root, "") for s in src]
         src = [s.replace(simba_root + "src/inet/../../", "") for s in src]
         database["boards"][board]["src"] = src
 
-        # Get the CFLAGS.
+        # Get CFLAGS.
         cflags = get_make_variable(board, "CFLAGS").split()
         database["boards"][board]["cflags"] = cflags
 
-        # Get the CDEFS.
+        # Get CDEFS.
         cdefs = get_make_variable(board, "CDEFS").split()
         database["boards"][board]["cdefs"] = cdefs
 
-        # Get the LDFLAGS.
+        # Get LDFLAGS.
         ldflags = get_make_variable(board, "LDFLAGS").split()
         database["boards"][board]["ldflags"] = ldflags
 
-        # Get the LIBPATH.
+        # Get LIBPATH.
         libpath = get_make_variable(board, "LIBPATH").split()
         libpath = [l.replace(simba_root, "") for l in libpath]
         database["boards"][board]["libpath"] = libpath
 
-        # get linker file
+        # Get linker file.
         try:
             linker_script = get_make_variable(board,
                                               "LINKER_SCRIPT").strip()
@@ -110,7 +112,7 @@ def main():
             linker_script = ""
 
         database["boards"][board]["linker_script"] = linker_script
-        
+
         # get the board MCU
         mcu = get_make_variable(board, "MCU").strip()
         mcu = mcu.replace("/", "")
