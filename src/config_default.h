@@ -25,7 +25,7 @@
  * Build with assert.
  */
 #ifndef CONFIG_ASSERT
-#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO)
+#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO)
 #        define CONFIG_ASSERT               0
 #    else
 #        define CONFIG_ASSERT               1
@@ -64,7 +64,7 @@
  * Minimal shell functionality.
  */
 #ifndef CONFIG_SHELL_MINIMAL
-#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO)
+#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO)
 #        define CONFIG_SHELL_MINIMAL    1
 #    else
 #        define CONFIG_SHELL_MINIMAL    0

@@ -37,7 +37,7 @@ LINKER_SCRIPT_FILE ?= script.ld
 LINKER_SCRIPT ?= $(SIMBA_ROOT)/src/boards/$(BOARD)/$(LINKER_SCRIPT_FILE)
 
 MCU = stm32f205rg
-SERIAL_PORT = arduino
+SERIAL_PORT ?= /dev/arduino
 BOARD_PY = $(SIMBA_ROOT)/src/boards/photon/board.py
 
 upload:

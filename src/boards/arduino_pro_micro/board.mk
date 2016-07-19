@@ -1,5 +1,5 @@
 #
-# @file src/boards/arduino_uno/board.mk
+# @file src/boards/arduino_pro_micro/board.mk
 # @version 2.0.0
 #
 # @section License
@@ -18,19 +18,21 @@
 # This file is part of the Simba project.
 #
 
-INC += $(SIMBA_ROOT)/src/boards/arduino_uno
-SRC += $(SIMBA_ROOT)/src/boards/arduino_uno/board.c
+INC += $(SIMBA_ROOT)/src/boards/arduino_pro_micro
+SRC += $(SIMBA_ROOT)/src/boards/arduino_pro_micro/board.c
 
-BOARD_HOMEPAGE = "https://www.arduino.cc/en/Main/ArduinoBoardUno"
-BOARD_PINOUT = "arduino-uno-pinout.png"
-BOARD_DESC = "Arduino Uno"
+BOARD_HOMEPAGE = "https://www.sparkfun.com/products/12640"
+BOARD_PINOUT = "arduino-pro-micro-pinout.jpg"
+BOARD_DESC = "Arduino Pro Micro"
 
-MCU = atmega328p
+MCU = atmega32u4
+
+SERIAL_PORT ?= /dev/arduino
+BOARD_PY = $(SIMBA_ROOT)/src/boards/arduino_pro_micro/board.py
 
 upload:
 	@echo "Uploading $(EXE)"
-	avrdude -p atmega328p -D -P $(SERIAL_PORT) -c arduino -V -b 57600 -U eeprom:w:settings.bin:r
-	avrdude -p atmega328p -D -P $(SERIAL_PORT) -c arduino -V -b 57600 -U flash:w:$(NAME).hex
+	python -u $(BOARD_PY) upload --port $(SERIAL_PORT) $(NAME).hex
 
 run:
 	@echo "Running $(EXE)"

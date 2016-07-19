@@ -267,46 +267,46 @@ release-test:
 	+bin/release.py
 
 clean-arduino-due:
-	$(MAKE) BOARD=arduino_due SERIAL_PORT=simba-arduino_due clean
+	$(MAKE) BOARD=arduino_due SERIAL_PORT=/dev/simba-arduino_due clean
 
 clean-arduino-mega:
-	$(MAKE) BOARD=arduino_mega SERIAL_PORT=simba-arduino_mega clean
+	$(MAKE) BOARD=arduino_mega SERIAL_PORT=/dev/simba-arduino_mega clean
 
 clean-arduino-nano:
-	$(MAKE) BOARD=arduino_nano SERIAL_PORT=simba-arduino_nano clean
+	$(MAKE) BOARD=arduino_nano SERIAL_PORT=/dev/simba-arduino_nano clean
 
 clean-esp12e:
-	$(MAKE) BOARD=esp12e SERIAL_PORT=simba-esp12e clean
+	$(MAKE) BOARD=esp12e SERIAL_PORT=/dev/simba-esp12e clean
 
 clean-stm32vldiscovery:
-	$(MAKE) BOARD=stm32vldiscovery SERIAL_PORT=simba-stm32vldiscovery clean
+	$(MAKE) BOARD=stm32vldiscovery SERIAL_PORT=/dev/simba-stm32vldiscovery clean
 
 clean-photon:
-	$(MAKE) BOARD=photon SERIAL_PORT=simba-photon clean
+	$(MAKE) BOARD=photon SERIAL_PORT=/dev/simba-photon clean
 
 test-arduino-due:
 	@echo "Arduino Due"
-	$(MAKE) BOARD=arduino_due SERIAL_PORT=simba-arduino_due test
+	$(MAKE) BOARD=arduino_due SERIAL_PORT=/dev/simba-arduino_due test
 
 test-arduino-mega:
 	@echo "Arduino Mega"
-	$(MAKE) BOARD=arduino_mega SERIAL_PORT=simba-arduino_mega test
+	$(MAKE) BOARD=arduino_mega SERIAL_PORT=/dev/simba-arduino_mega test
 
 test-arduino-nano:
 	@echo "Arduino Nano"
-	$(MAKE) BOARD=arduino_nano SERIAL_PORT=simba-arduino_nano test
+	$(MAKE) BOARD=arduino_nano SERIAL_PORT=/dev/simba-arduino_nano test
 
 test-esp12e:
 	@echo "ESP12-E"
-	$(MAKE) BOARD=esp12e SERIAL_PORT=simba-esp12e test
+	$(MAKE) BOARD=esp12e SERIAL_PORT=/dev/simba-esp12e test
 
 test-stm32vldiscovery:
 	@echo "STM32VLDISCOVERY"
-	$(MAKE) BOARD=stm32vldiscovery SERIAL_PORT=simba-stm32vldiscovery test
+	$(MAKE) BOARD=stm32vldiscovery SERIAL_PORT=/dev/simba-stm32vldiscovery test
 
 test-photon:
 	@echo "Photon"
-	$(MAKE) BOARD=photon SERIAL_PORT=simba-photon test
+	$(MAKE) BOARD=photon SERIAL_PORT=/dev/simba-photon test
 
 test-all-boards:
 	$(MAKE) clean-arduino-due

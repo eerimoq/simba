@@ -21,7 +21,7 @@ def subcommand_upload(args):
             attempts_max))
         print("Resetting the board by pulling the reset pin "
               "low for 0.1 seconds.")
-        dev_serial = serial.Serial("/dev/" + args.port)
+        dev_serial = serial.Serial(args.port)
         dev_serial.dtr = 1
         time.sleep(0.1)
         dev_serial.dtr = 0

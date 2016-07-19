@@ -1,5 +1,5 @@
 #
-# @file board.mk
+# @file src/boards/esp01/board.mk
 # @version 2.0.0
 #
 # @section License
@@ -28,12 +28,12 @@ BOARD_PINOUT = "esp01-pinout.png"
 BOARD_DESC = "ESP-01"
 
 MCU = esp8266
-SERIAL_PORT = arduino
+SERIAL_PORT ?= /dev/arduino
 BOARD_PY = $(SIMBA_ROOT)/src/boards/esp12e/board.py
 
 upload:
 	@echo "Uploading $(EXE)"
-	python -u $(BOARD_PY) upload --port /dev/$(SERIAL_PORT) $(NAME).bin
+	python -u $(BOARD_PY) upload --port $(SERIAL_PORT) $(NAME).bin
 
 run:
 	@echo "Running '$(EXE)'."

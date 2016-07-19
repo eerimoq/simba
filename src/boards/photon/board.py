@@ -14,7 +14,7 @@ def upload(port, binary):
 
     """
 
-    dev_serial = serial.Serial("/dev/" + port)
+    dev_serial = serial.Serial(port)
 
     # 1. Hold down the RESET and SETUP buttons.
     dev_serial.dtr = 1

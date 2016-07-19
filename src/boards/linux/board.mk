@@ -1,5 +1,5 @@
 #
-# @file boards/linux/board.mk
+# @file src/boards/linux/board.mk
 # @version 2.0.0
 #
 # @section License

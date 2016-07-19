@@ -1,5 +1,5 @@
 #
-# @file simba/boards/shtest.mk
+# @file src/boards/arduino_nano/board.mk
 # @version 2.0.0
 #
 # @section License
@@ -26,12 +26,12 @@ BOARD_PINOUT = "arduino-nano-pinout.png"
 BOARD_DESC = "Arduino Nano"
 
 MCU = atmega328p
-SERIAL_PORT = arduino
+SERIAL_PORT ?= /dev/arduino
 
 upload:
 	@echo "Uploading $(EXE)"
-	avrdude -p atmega328p -D -P /dev/$(SERIAL_PORT) -c arduino -V -b 57600 -U eeprom:w:settings.bin:r
-	avrdude -p atmega328p -D -P /dev/$(SERIAL_PORT) -c arduino -V -b 57600 -U flash:w:$(NAME).hex
+	avrdude -p atmega328p -D -P $(SERIAL_PORT) -c arduino -V -b 57600 -U eeprom:w:settings.bin:r
+	avrdude -p atmega328p -D -P $(SERIAL_PORT) -c arduino -V -b 57600 -U flash:w:$(NAME).hex
 
 run:
 	@echo "Running $(EXE)"

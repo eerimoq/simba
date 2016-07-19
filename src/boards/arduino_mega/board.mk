@@ -1,5 +1,5 @@
 #
-# @file simba/boards/shtest.mk
+# @file src/boards/arduino_mega/board.mk
 # @version 2.0.0
 #
 # @section License
@@ -26,12 +26,12 @@ BOARD_PINOUT = "arduino-mega-pinout.png"
 BOARD_DESC = "Arduino Mega"
 
 MCU = atmega2560
-SERIAL_PORT = arduino
+SERIAL_PORT ?= /dev/arduino
 
 upload:
 	@echo "Uploading $(EXE)"
-	avrdude -p atmega2560 -D -P /dev/$(SERIAL_PORT) -c wiring -V -b 115200 -U eeprom:w:settings.bin:r
-	avrdude -p atmega2560 -D -P /dev/$(SERIAL_PORT) -c wiring -V -b 115200 -U flash:w:$(NAME).hex
+	avrdude -p atmega2560 -D -P $(SERIAL_PORT) -c wiring -V -b 115200 -U eeprom:w:settings.bin:r
+	avrdude -p atmega2560 -D -P $(SERIAL_PORT) -c wiring -V -b 115200 -U flash:w:$(NAME).hex
 
 run:
 	@echo "Running $(EXE)"

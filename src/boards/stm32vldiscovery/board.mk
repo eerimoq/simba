@@ -26,7 +26,7 @@ BOARD_PINOUT = "stm32vldiscovery.jpg"
 BOARD_DESC = "STM32VLDISCOVERY"
 
 MCU = stm32f100rb
-SERIAL_PORT = arduino
+SERIAL_PORT ?= /dev/arduino
 BOARD_PY = $(SIMBA_ROOT)/src/boards/stm32vldiscovery/board.py
 
 upload:

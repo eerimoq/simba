@@ -1,5 +1,5 @@
 #
-# @file src/boards/cygwin/board.mk
+# @file mcus/atmega32u4/mcu.mk
 # @version 2.0.0
 #
 # @section License
@@ -18,30 +18,18 @@
 # This file is part of the Simba project.
 #
 
-INC += $(SIMBA_ROOT)/src/boards/linux
-SRC += $(SIMBA_ROOT)/src/boards/linux/board.c
+INC += $(SIMBA_ROOT)/src/mcus/atmega32u4
+SRC += $(SIMBA_ROOT)/src/mcus/atmega32u4/mcu.c
 
-BOARD_HOMEPAGE = "http://www.cygwin.com"
-BOARD_PINOUT = "cygwin-pinout.png"
-BOARD_DESC = "Cygwin"
+F_CPU = 16000000
+CPU = atmega32u4
+MAIN_STACK_END = 0x800900
 
-MCU = linux
+ARCH = avr
+FAMILY = avr
 
-upload:
+MCU_HOMEPAGE = "http://www.atmel.com"
+MCU_NAME = "Atmel ATMega32u4"
+MCU_DESC = "Atmel ATMega32u4 AVR @ 16MHz, 2.5k sram, 32k flash"
 
-run:
-	@echo "Running $(EXE)"
-	./$(EXE) | tee $(RUNLOG) ; test $${PIPESTATUS[0]} -eq 0
-
-run-debugger: all
-	gdb $(EXE) --eval-command "break main" --eval-command run
-
-profile:
-	gprof $(EXE)
-
-coverage:
-	geninfo . -o coverage.info
-	genhtml coverage.info
-
-jenkins-coverage:
-	gcovr -r $(readlink -f ../../..) -x -e ".*main.c"
+include $(SIMBA_ROOT)/make/$(TOOLCHAIN)/avr.mk

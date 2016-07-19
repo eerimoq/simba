@@ -168,6 +168,20 @@ static int pwm_port_set_duty(struct pwm_driver_t *self_p,
     return (0);
 }
 
+#elif defined(MCU_ATMEGA32U4)
+
+static int pwm_port_init(struct pwm_driver_t *self_p,
+                         struct pwm_device_t *dev_p)
+{
+    return (-1);
+}
+
+static int pwm_port_set_duty(struct pwm_driver_t *self_p,
+                             uint8_t value)
+{
+    return (-1);
+}
+
 #else
 #    error "PWM not implemented for this MCU"
 #endif

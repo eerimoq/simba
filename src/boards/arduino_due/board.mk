@@ -29,7 +29,7 @@ MCU = sam3x8e
 
 RUST_TARGET = thumbv7em-none-eabi
 
-SERIAL_PORT ?= arduino
+SERIAL_PORT ?= /dev/arduino
 BOARD_PY = $(SIMBA_ROOT)/src/boards/arduino_due/board.py
 TIMEOUT ?= 10
 

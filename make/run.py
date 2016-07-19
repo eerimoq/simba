@@ -13,14 +13,14 @@ def main():
     """
 
     parser = argparse.ArgumentParser()
-    parser.add_argument("--port", default="arduino")
+    parser.add_argument("--port", default="/dev/arduino")
     parser.add_argument("--baudrate", type=int, default=38400)
     parser.add_argument("--timeout", type=int, default=10)
     parser.add_argument("--pattern")
     parser.add_argument("--pattern-success")
     args = parser.parse_args()
 
-    dev_serial = serial.Serial("/dev/" + args.port,
+    dev_serial = serial.Serial(args.port,
                                baudrate=args.baudrate,
                                timeout=1.0)
     dev_serial.dtr = 0
