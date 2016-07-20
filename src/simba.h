@@ -125,8 +125,8 @@ typedef unsigned long off_t;
 #    include "drivers/dac.h"
 #    include "drivers/usb.h"
 #    include "drivers/usb_host.h"
-#    include "drivers/usb/host/class/usb_host_class_hid.h"
-#    include "drivers/usb/host/class/usb_host_class_mass_storage.h"
+#    include "drivers/usb/host/class/hid.h"
+#    include "drivers/usb/host/class/mass_storage.h"
 #endif
 
 #if defined(FAMILY_ESP)

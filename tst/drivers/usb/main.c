@@ -20,16 +20,20 @@
 
 #include "simba.h"
 
-struct usb_driver_t usb;
+struct usb_host_driver_t usb;
+static struct usb_host_device_t host_devices[1];
 
 static int test_list_devices(struct harness_t *harness_p)
 {
-    BTASSERT(usb_init(&usb, &usb_device[0]) == 0);
-    BTASSERT(usb_start(&usb) == 0);
+    BTASSERT(usb_host_init(&usb,
+                           &usb_device[0],
+                           host_devices,
+                           membersof(host_devices)) == 0);
+    BTASSERT(usb_host_start(&usb) == 0);
 
     std_printf(FSTR("ADDRESS  CLASS  VENDOR  PRODUCT\r\n"));
 
-    BTASSERT(usb_stop(&usb) == 0);
+    BTASSERT(usb_host_stop(&usb) == 0);
 
     return (0);
 }

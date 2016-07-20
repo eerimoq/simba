@@ -82,8 +82,8 @@ DRIVERS_SRC ?= adc.c \
                uart.c \
                usb.c \
                usb_host.c \
-               usb/host/class/usb_host_class_hid.c \
-               usb/host/class/usb_host_class_mass_storage.c
+               usb/host/class/hid.c \
+               usb/host/class/mass_storage.c
 endif
 
 ifeq ($(FAMILY),esp)
