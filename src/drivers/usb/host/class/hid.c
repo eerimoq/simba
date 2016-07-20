@@ -1,5 +1,5 @@
 /**
- * @file usb_host_class_hid.c
+ * @file hid.c
  * @version 2.0.0
  *
  * @section License

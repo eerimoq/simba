@@ -109,6 +109,12 @@ typedef unsigned long off_t;
 #    include "drivers/mcp2515.h"
 #    include "drivers/nrf24l01.h"
 #    include "drivers/sd.h"
+#
+#    if defined(MCU_ATMEGA32U4)
+#        include "drivers/usb.h"
+#        include "drivers/usb_device.h"
+#        include "drivers/usb/device/class/cdc.h"
+#    endif
 #endif
 
 #if defined(FAMILY_SAM)

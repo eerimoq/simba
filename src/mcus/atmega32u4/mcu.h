@@ -29,6 +29,7 @@
 #define PWM_DEVICE_MAX      4
 #define ADC_DEVICE_MAX      1
 #define I2C_DEVICE_MAX      1
+#define USB_DEVICE_MAX      1
 
 #define USART0_TX_vect USART1_TX_vect
 #define USART0_RX_vect USART1_RX_vect

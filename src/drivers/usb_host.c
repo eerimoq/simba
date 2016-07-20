@@ -1,5 +1,5 @@
 /**
- * @file usb.c
+ * @file usb_host.c
  * @version 2.0.0
  *
  * @section License

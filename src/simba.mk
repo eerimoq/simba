@@ -52,20 +52,28 @@ DRIVERS_SRC ?= adc.c \
 endif
 
 ifeq ($(FAMILY),avr)
-DRIVERS_SRC ?= adc.c \
-               ds18b20.c \
-               ds3231.c \
-               exti.c \
-               i2c.c \
-               mcp2515.c \
-               nrf24l01.c \
-               spi.c \
-               owi.c \
-               pin.c \
-               pwm.c \
-               sd.c \
-               uart.c \
-               uart_soft.c
+DRIVERS_SRC_TMP = adc.c \
+                  ds18b20.c \
+                  ds3231.c \
+                  exti.c \
+                  i2c.c \
+                  mcp2515.c \
+                  nrf24l01.c \
+                  spi.c \
+                  owi.c \
+                  pin.c \
+                  pwm.c \
+                  sd.c \
+                  uart.c \
+                  uart_soft.c
+
+ifeq ($(MCU),atmega32u4)
+DRIVERS_SRC_TMP += usb.c \
+                   usb_device.c
+endif
+
+DRIVERS_SRC ?= $(DRIVERS_SRC_TMP)
+
 endif
 
 ifeq ($(FAMILY),sam)

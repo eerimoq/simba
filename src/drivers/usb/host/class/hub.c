@@ -1,5 +1,5 @@
 /**
- * @file usb_class_hub.c
+ * @file hub.c
  * @version 2.0.0
  *
  * @section License

@@ -1,5 +1,5 @@
 /**
- * @file usb_host_class_mass_storage.h
+ * @file drivers/usb/host/class/mass_storage.h
  * @version 2.0.0
  *
  * @section License

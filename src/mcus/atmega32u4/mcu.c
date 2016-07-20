@@ -90,3 +90,7 @@ struct adc_device_t adc_device[ADC_DEVICE_MAX] = {
 struct i2c_device_t i2c_device[I2C_DEVICE_MAX] = {
     { .drv_p = NULL }
 };
+
+struct usb_device_t usb_device[USB_DEVICE_MAX] = {
+    { .drv_p = NULL }
+};
