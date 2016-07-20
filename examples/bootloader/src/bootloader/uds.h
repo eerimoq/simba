@@ -27,7 +27,7 @@
 #define STATE_IDLE        1
 #define STATE_SWDL        2
 
-struct uds_t {
+struct bootloader_uds_t {
     int state;
     chan_t *chin_p;
     chan_t *chout_p;
@@ -59,12 +59,12 @@ struct uds_t {
  *
  * @returns zero(0) or negative error code.
  */
-int uds_init(struct uds_t *self_p,
-             chan_t *chin_p,
-             chan_t *chout_p,
-             uint32_t application_address,
-             uint32_t application_size,
-             struct flash_driver_t *flash_p);
+int bootloader_uds_init(struct bootloader_uds_t *self_p,
+                        chan_t *chin_p,
+                        chan_t *chout_p,
+                        uint32_t application_address,
+                        uint32_t application_size,
+                        struct flash_driver_t *flash_p);
 
 /**
  * Handle a service.
@@ -73,7 +73,7 @@ int uds_init(struct uds_t *self_p,
  *
  * @returns zero(0) or negative error code.
  */
-int uds_handle_service(struct uds_t *self_p);
+int bootloader_uds_handle_service(struct bootloader_uds_t *self_p);
 
 /**
  * Run the main loop of the bootloader.
@@ -82,6 +82,6 @@ int uds_handle_service(struct uds_t *self_p);
  *
  * @returns Never returns.
  */
-void uds_main(struct uds_t *self_p);
+void bootloader_uds_main(struct bootloader_uds_t *self_p);
 
 #endif

@@ -379,7 +379,6 @@ int main()
     };
 
     sys_start();
-    uart_module_init();
 
     self_p = thrd_self();
 

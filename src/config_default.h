@@ -61,6 +61,49 @@
 #endif
 
 /**
+ * Default system tick frequency.
+ */
+#ifndef CONFIG_SYSTEM_TICK_FREQUENCY
+#    define CONFIG_SYSTEM_TICK_FREQUENCY 100
+#endif
+
+/**
+ * Maximum number of bytes in the print output buffer.
+ */
+#ifndef CONFIG_STD_OUTPUT_BUFFER_MAX
+#    define CONFIG_STD_OUTPUT_BUFFER_MAX 16
+#endif
+
+/**
+ * Default console device (UART/USB CDC).
+ */
+#define CONFIG_CONSOLE_NONE         0
+#define CONFIG_CONSOLE_UART         1
+#define CONFIG_CONSOLE_USB_CDC      2
+
+#ifndef CONFIG_CONSOLE
+#    if defined(BOARD_ARDUINO_PRO_MICRO)
+#        define CONFIG_CONSOLE CONFIG_CONSOLE_USB_CDC
+#    else
+#        define CONFIG_CONSOLE CONFIG_CONSOLE_UART
+#    endif
+#endif
+
+/**
+ * Default console device index.
+ */
+#ifndef CONFIG_CONSOLE_DEVICE
+#    define CONFIG_CONSOLE_DEVICE        0
+#endif
+
+/**
+ * Default console baudrate.
+ */
+#ifndef CONFIG_CONSOLE_BAUDRATE
+#    define CONFIG_CONSOLE_BAUDRATE  38400
+#endif
+
+/**
  * Minimal shell functionality.
  */
 #ifndef CONFIG_SHELL_MINIMAL
@@ -90,20 +133,6 @@
  */
 #ifndef CONFIG_SHELL_HISTORY_SIZE
 #    define CONFIG_SHELL_HISTORY_SIZE   (10 * CONFIG_SHELL_COMMAND_MAX)
-#endif
-
-/**
- * Maximum number of bytes in the print output buffer.
- */
-#ifndef CONFIG_STD_OUTPUT_BUFFER_MAX
-#    define CONFIG_STD_OUTPUT_BUFFER_MAX 16
-#endif
-
-/**
- * Default system tick frequency.
- */
-#ifndef CONFIG_SYSTEM_TICK_FREQUENCY
-#    define CONFIG_SYSTEM_TICK_FREQUENCY 100
 #endif
 
 #endif

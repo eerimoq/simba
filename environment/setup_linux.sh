@@ -11,11 +11,13 @@ export PATH=$PATH:$(readlink -f ../esp-open-sdk/xtensa-lx106-elf/bin)
 # RUST bindgen
 export PATH=$PATH:$(readlink -f ../rust-bindgen/target/debug)
 
-# st-link
+# st-link (STM32)
 export PATH=$PATH:$(readlink -f ../stlink)
 
+# dfu-util (Photon)
+export PATH=$PATH:$(readlink -f ../dfu-util/src)
+
 export SIMBA_ROOT=$(readlink -f .)
-export BOARD=linux
 
 export PYLINTRC=$(readlink -f environment/pylintrc)
 

@@ -261,17 +261,6 @@ int test_strip(struct harness_t *harness_p)
     return (0);
 }
 
-int test_in(struct harness_t *harness_p)
-{
-    BTASSERT(std_strin("foobar", "foobar") == 1);
-    BTASSERT(std_strin("foobar", "foo") == 1);
-    BTASSERT(std_strin("foobar", "bar") == 1);
-
-    BTASSERT(std_strin("foobar", "fum") == 0);
-
-    return (0);
-}
-
 int main()
 {
     struct harness_t harness;
@@ -285,12 +274,10 @@ int main()
         { test_strlen, "test_strlen" },
         { test_sprintf_double, "test_sprintf_double" },
         { test_strip, "test_strip" },
-        { test_in, "test_in" },
         { NULL, NULL }
     };
 
     sys_start();
-    uart_module_init();
 
     harness_init(&harness);
     harness_run(&harness, harness_testcases);

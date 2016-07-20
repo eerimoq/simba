@@ -27,8 +27,6 @@ static struct fs_command_t tmp_foo;
 static struct fs_counter_t bar;
 static struct fs_counter_t fie;
 
-static char qinbuf[32];
-static struct uart_driver_t uart;
 static struct shell_t shell;
 
 /**
@@ -65,19 +63,11 @@ int main()
     /* Start the system. */
     sys_start();
 
-    /* Initialize the UART. */
-    uart_module_init();
-    uart_init(&uart, &uart_device[0], 38400, qinbuf, sizeof(qinbuf));
-    uart_start(&uart);
-
 #if defined(__DRIVERS_I2C_H__)
     i2c_module_init();
 #endif
 
     pin_module_init();
-
-    sys_set_stdout(&uart.chout);
-    log_set_default_handler_output_channel(sys_get_stdout());
 
     /* Register a shell command. */
     fs_command_init(&tmp_foo, FSTR("/tmp/foo"), tmp_foo_cb, NULL);
@@ -96,7 +86,13 @@ int main()
     std_printf(sys_get_info());
 
     /* Call the shell main function. */
-    shell_init(&shell, &uart.chin, &uart.chout, NULL, NULL, NULL, NULL);
+    shell_init(&shell,
+               console_get_input_channel(),
+               console_get_output_channel(),
+               NULL,
+               NULL,
+               NULL,
+               NULL);
     shell_main(&shell);
 
     return (0);

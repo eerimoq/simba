@@ -62,8 +62,6 @@ static int cmd_set_min_max_cb(int argc,
     return (0);
 }
 
-static char qinbuf[32];
-static struct uart_driver_t uart;
 static struct shell_t shell;
 static THRD_STACK(shell_stack, 456);
 
@@ -79,10 +77,6 @@ int main()
     uint8_t id[8] = DS18B20_ID;
 
     sys_start();
-    uart_module_init();
-
-    uart_init(&uart, &uart_device[0], 38400, qinbuf, sizeof(qinbuf));
-    uart_start(&uart);
 
     fs_command_init(&cmd_set_min_max,
                     FSTR("/temp/set_min_max"),
@@ -102,7 +96,13 @@ int main()
     owi_init(&owi, &pin_d6_dev, devices, membersof(devices));
     ds18b20_init(&ds, &owi);
 
-    shell_init(&shell, &uart.chin, &uart.chout, NULL, NULL, NULL, NULL);
+    shell_init(&shell,
+               console_get_input_channel(),
+               console_get_output_channel(),
+               NULL,
+               NULL,
+               NULL,
+               NULL);
     thrd_spawn(shell_main,
                &shell,
                0,

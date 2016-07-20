@@ -22,8 +22,16 @@
 
 #include "uart_port.i"
 
+static int initialized = 0;
+
 int uart_module_init(void)
 {
+    if (initialized == 1) {
+        return (0);
+    }
+
+    initialized = 1;
+
     return (uart_port_module_init());
 }
 

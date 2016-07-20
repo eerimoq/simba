@@ -44,6 +44,28 @@ static int history_init(struct shell_t *self_p);
 
 #endif
 
+static int shell_command_compare(const char *line_p,
+                                 FAR const char *command_p,
+                                 size_t length)
+{
+    return ((std_strncmp(line_p, command_p, length) == 0)
+            && ((line_p[length] == '\0')
+                || (line_p[length] == ' ')));
+}
+
+/**
+ * Check if given line is a shell command.
+ *
+ * @return true(1) if given line is a shell command, otherwise
+ *         false(0).
+ */
+static int is_shell_command(const char *line_p)
+{
+    return (shell_command_compare(line_p, FSTR("logout"), 6)
+            || shell_command_compare(line_p, FSTR("history"), 7)
+            || shell_command_compare(line_p, FSTR("help"), 4));
+}
+
 /**
  * Unused command callback. Logout handling in shell_main().
  */
@@ -54,7 +76,13 @@ static int cmd_logout_cb(int argc,
                          void *arg_p,
                          void *call_arg_p)
 {
-    return (-1);
+    struct shell_t *self_p = call_arg_p;
+
+    if (self_p->username_p != NULL) {
+        self_p->authorized = 0;
+    }
+    
+    return (1);
 }
 
 static int line_init(struct shell_line_t *self_p)
@@ -193,6 +221,7 @@ static int cmd_help_cb(int argc,
                        void *arg_p,
                        void *call_arg_p)
 {
+    struct shell_t *self_p = call_arg_p;
     const char title_color_on[] = COLOR(COLOR_BOLD_ON);
     const char title_color_off[] = COLOR(COLOR_RESET);
 
@@ -224,6 +253,8 @@ static int cmd_help_cb(int argc,
                 title_color_on, title_color_off,
                 title_color_on, title_color_off);
 
+    std_fprintf(self_p->chout_p, FSTR(CONFIG_SHELL_PROMPT));
+
     return (0);
 }
 
@@ -235,10 +266,8 @@ static int cmd_history_cb(int argc,
                           void *call_arg_p)
 {
     struct shell_history_elem_t *current_p;
-    struct shell_t *self_p;
+    struct shell_t *self_p = call_arg_p;
     int i;
-
-    self_p = call_arg_p;
 
     if (argc == 1) {
         current_p = self_p->history.head_p;
@@ -255,6 +284,8 @@ static int cmd_history_cb(int argc,
         }
     }
 
+    std_fprintf(self_p->chout_p, FSTR(CONFIG_SHELL_PROMPT));
+        
     return (0);
 }
 
@@ -1155,6 +1186,7 @@ void *shell_main(void *arg_p)
 
     struct shell_t *self_p;
     int res;
+    char *stripped_line_p;
 
     self_p = arg_p;
 
@@ -1176,20 +1208,21 @@ void *shell_main(void *arg_p)
         res = read_command(self_p);
 
         if (res > 0) {
-            /* Logout handling. */
-            if (!std_strcmp(std_strip(line_get_buf(&self_p->line), NULL),
-                            FSTR("logout"))) {
-                if (self_p->username_p != NULL) {
-                    self_p->authorized = 0;
-                }
-
+            stripped_line_p = std_strip(line_get_buf(&self_p->line),
+                                        NULL);
+            
+            if (is_shell_command(stripped_line_p) == 1) {
+                fs_call(stripped_line_p,
+                        self_p->chin_p,
+                        self_p->chout_p,
+                        self_p);
                 continue;
+            } else {
+                fs_call(stripped_line_p,
+                        self_p->chin_p,
+                        self_p->chout_p,
+                        self_p->arg_p);
             }
-
-            fs_call(line_get_buf(&self_p->line),
-                    self_p->chin_p,
-                    self_p->chout_p,
-                    self_p);
         } else if (res == -EIO) {
             break;
         }

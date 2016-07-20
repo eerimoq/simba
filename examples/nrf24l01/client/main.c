@@ -66,7 +66,6 @@ static int cmd_set_min_max_cb(int argc,
 }
 
 static char qinbuf[32];
-static struct uart_driver_t uart;
 static struct nrf24l01_driver_t nrf24l01;
 
 int main()
@@ -80,12 +79,6 @@ int main()
     uint8_t id[8] = DS18B20_ID;
 
     sys_start();
-    uart_module_init();
-
-    uart_init(&uart, &uart_device[0], 38400, qinbuf, sizeof(qinbuf));
-    uart_start(&uart);
-
-    sys_set_stdout(&uart.chout);
 
     fs_command_init(&cmd_set_min_max,
                     FSTR("/temp/set_min_max"),

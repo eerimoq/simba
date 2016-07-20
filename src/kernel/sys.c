@@ -39,6 +39,17 @@ static const FAR char config[] =
     "        profile-stack=" STRINGIFY(CONFIG_PROFILE_STACK) "\r\n"
     "        preemptive-scheduler=" STRINGIFY(CONFIG_PREEMPTIVE_SCHEDULER) "\r\n"
     "        system-tick-frequency=" STRINGIFY(CONFIG_SYSTEM_TICK_FREQUENCY) "\r\n"
+    "        console="
+#if CONFIG_CONSOLE == CONFIG_CONSOLE_UART
+    "uart"
+#elif CONFIG_CONSOLE == CONFIG_CONSOLE_USB_CDC
+    "usb_cdc"
+#else
+    "none"
+#endif
+    "\r\n"
+    "        console-device=" STRINGIFY(CONFIG_CONSOLE_DEVICE) "\r\n"
+    "        console-baudrate=" STRINGIFY(CONFIG_CONSOLE_BAUDRATE) "\r\n"
     "        monitor-thread=" STRINGIFY(CONFIG_MONITOR_THREAD) "\r\n"
     "        shell-minimal=" STRINGIFY(CONFIG_SHELL_MINIMAL) "\r\n";
 
@@ -118,6 +129,18 @@ int sys_start(void)
     thrd_module_init();
     shell_module_init();
     sys_module_init();
+
+#if CONFIG_CONSOLE == CONFIG_CONSOLE_UART
+
+    console_module_init();
+    console_init();
+    console_start();
+
+    sys_set_stdout(console_get_output_channel());
+    log_set_default_handler_output_channel(console_get_output_channel());
+
+#elif CONFIG_CONSOLE == CONFIG_CONSOLE_USB_CDC
+#endif
 
     return (0);
 }

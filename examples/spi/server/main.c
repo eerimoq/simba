@@ -20,9 +20,6 @@
 
 #include "simba.h"
 
-static char qinbuf[32];
-static struct uart_driver_t uart;
-
 int main()
 {
     struct spi_driver_t spi;
@@ -30,10 +27,6 @@ int main()
     uint8_t state;
 
     sys_start();
-    uart_module_init();
-
-    uart_init(&uart, &uart_device[0], 38400, qinbuf, sizeof(qinbuf));
-    uart_start(&uart);
 
     spi_init(&spi,
              &spi_device[0],
@@ -50,7 +43,7 @@ int main()
 
     while (1) {
         spi_read(&spi, &state, sizeof(state));
-        std_fprintf(&uart.chout, FSTR("state = 0x%x\r\n"), (int)state);
+        std_printf(FSTR("state = 0x%x\r\n"), (int)state);
 
         /* Upadte LED. */
         pin_write(&pin[0], (state >> 0) & 0x1);

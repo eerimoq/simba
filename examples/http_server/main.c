@@ -30,8 +30,6 @@
 #endif
 
 static struct http_server_t server;
-static struct uart_driver_t uart;
-static char rxbuf[16];
 static struct shell_t shell;
 
 THRD_STACK(listener_stack, 1024);
@@ -146,11 +144,6 @@ static int init()
 
     sys_start();
 
-    uart_module_init();
-    uart_init(&uart, &uart_device[0], 38400, rxbuf, sizeof(rxbuf));
-    uart_start(&uart);
-    sys_set_stdout(&uart.chout);
-
     std_printf(FSTR("Connected to AP. Got IP 0x%x\r\n"),
                ip_config.ip.addr);
 
@@ -196,13 +189,6 @@ static int init()
     struct inet_ip_addr_t gw;
 
     sys_start();
-
-    uart_module_init();
-    uart_init(&uart, &uart_device[0], 38400, rxbuf, sizeof(rxbuf));
-    uart_start(&uart);
-    sys_set_stdout(&uart.chout);
-
-    log_set_default_handler_output_channel(sys_get_stdout());
 
     std_printf(sys_get_info());
 

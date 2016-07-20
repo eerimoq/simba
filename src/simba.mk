@@ -202,7 +202,8 @@ MULTIMEDIA_SRC ?= midi.c
 SRC += $(MULTIMEDIA_SRC:%=$(SIMBA_ROOT)/src/multimedia/%)
 
 # Oam package.
-OAM_SRC ?= fs.c \
+OAM_SRC ?= console.c \
+	   fs.c \
 	   shell.c
 
 SRC += $(OAM_SRC:%=$(SIMBA_ROOT)/src/oam/%)

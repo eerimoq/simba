@@ -84,7 +84,6 @@ int main()
     };
 
     sys_start();
-    uart_module_init();
     sdio_module_init();
     bcm43362_module_init();
 

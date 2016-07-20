@@ -27,8 +27,6 @@ static struct fs_command_t cmd_close;
 static struct fs_command_t cmd_read;
 static struct fs_command_t cmd_write;
 
-static char qinbuf[32];
-static struct uart_driver_t uart;
 static struct shell_t shell;
 
 static struct spi_driver_t spi;
@@ -274,12 +272,6 @@ static int cmd_write_cb(int argc,
 static void init(void)
 {
     sys_start();
-    uart_module_init();
-
-    uart_init(&uart, &uart_device[0], 38400, qinbuf, sizeof(qinbuf));
-    uart_start(&uart);
-
-    sys_set_stdout(&uart.chout);
 
     fs_command_init(&cmd_ls,
                     FSTR("/ls"),
@@ -338,7 +330,13 @@ int main()
 {
     init();
 
-    shell_init(&shell, &uart.chin, &uart.chout, NULL, NULL, NULL, NULL);
+    shell_init(&shell,
+               console_get_input_channel(),
+               console_get_output_channel(),
+               NULL,
+               NULL,
+               NULL,
+               NULL);
     shell_main(&shell);
 
     return (0);

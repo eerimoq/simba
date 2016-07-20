@@ -20,6 +20,7 @@
 
 static struct fs_counter_t rx_channel_overflow;
 static struct fs_counter_t rx_errors;
+static struct fs_counter_t tx_resume_thrd_null;
 
 static void isr(int index)
 {
@@ -43,7 +44,12 @@ static void isr(int index)
             drv_p->txsize--;
         } else {
             regs_p->SR = ~STM32_USART_SR_TC;
-            thrd_resume_isr(drv_p->thrd_p, 0);
+
+            if (drv_p->thrd_p != NULL) {
+                thrd_resume_isr(drv_p->thrd_p, 0);
+            } else {
+                fs_counter_increment(&tx_resume_thrd_null, 1);
+            }
         }
     }
 
@@ -90,6 +96,11 @@ static int uart_port_module_init()
                     FSTR("/drivers/uart/rx_errors"),
                     0);
     fs_counter_register(&rx_errors);
+
+    fs_counter_init(&tx_resume_thrd_null,
+                    FSTR("/drivers/uart/tx_resume_thrd_null"),
+                    0);
+    fs_counter_register(&tx_resume_thrd_null);
 
     return (0);
 }

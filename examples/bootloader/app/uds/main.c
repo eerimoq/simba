@@ -30,12 +30,9 @@
 #    define APPLICATION_SIZE                         0x20000000
 #endif
 
-static struct uart_driver_t uart;
-static uint8_t uart_rx_buffer[32];
-
 int main()
 {
-    struct uds_t uds;
+    struct bootloader_uds_t uds;
     struct flash_driver_t flash;
 
     /* Start the system. */
@@ -44,32 +41,22 @@ int main()
     /* Initialize the pin moudle. */
     pin_module_init();
 
-    /* Initialize and start the UART. */
-    uart_module_init();
-    uart_init(&uart,
-              &uart_device[0],
-              115200,
-              uart_rx_buffer,
-              sizeof(uart_rx_buffer));
-    uart_start(&uart);
-
     /* Initialize the flash memory objects. */
     flash_module_init();
     flash_init(&flash, &flash_device[0]);
 
     /* Print the bootloader application information. */
-    sys_set_stdout(&uart.chout);
     std_printf(sys_get_info());
 
     /* Initialize the bootloader object and enter the main loop. */
-    uds_init(&uds,
-             &uart.chin,
-             &uart.chout,
-             APPLICATION_ADDRESS,
-             APPLICATION_SIZE,
-             &flash);
+    bootloader_uds_init(&uds,
+                        console_get_input_channel(),
+                        console_get_output_channel(),
+                        APPLICATION_ADDRESS,
+                        APPLICATION_SIZE,
+                        &flash);
 
-    uds_main(&uds);
+    bootloader_uds_main(&uds);
 
     return (0);
 }

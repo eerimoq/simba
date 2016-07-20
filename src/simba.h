@@ -63,6 +63,7 @@ typedef unsigned long off_t;
 #include "alloc/heap.h"
 #include "alloc/circular_heap.h"
 
+#include "oam/console.h"
 #include "oam/fs.h"
 #include "oam/shell.h"
 

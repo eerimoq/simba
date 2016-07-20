@@ -23,9 +23,6 @@
 #define SERVER_ADDRESS 0x12345678
 #define CLIENT_ADDRESS 0x87654321
 
-static char qinbuf[32];
-static struct uart_driver_t uart;
-
 int main()
 {
     struct nrf24l01_driver_t nrf24l01;
@@ -33,12 +30,6 @@ int main()
     uint8_t state[32];
 
     sys_start();
-    uart_module_init();
-
-    uart_init(&uart, &uart_device[0], 38400, qinbuf, sizeof(qinbuf));
-    uart_start(&uart);
-
-    sys_set_stdout(&uart.chout);
 
     nrf24l01_init(&nrf24l01,
                   &spi_device[0],
@@ -60,7 +51,7 @@ int main()
     while (1) {
         /* Read state from client. */
         nrf24l01_read(&nrf24l01, state, sizeof(state));
-        std_fprintf(&uart.chout, FSTR("state = 0x%x\r\n"), (int)state[0]);
+        std_printf(FSTR("state = 0x%x\r\n"), (int)state[0]);
 
         /* Upadte LED. */
         pin_write(&pin[0], (state[0] >> 0) & 0x1);

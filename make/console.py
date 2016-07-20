@@ -33,6 +33,7 @@ def main():
     print
 
     dev_serial = serial.Serial(args.port, baudrate=args.baudrate)
+    dev_serial.dtr = False
 
     # Start the serial reader thread.
     serial_reader_thread = threading.Thread(target=serial_reader_main,

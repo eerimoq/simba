@@ -1,5 +1,5 @@
 /**
- * @file main.c
+ * @file config.h
  * @version 2.0.0
  *
  * @section License
@@ -18,28 +18,9 @@
  * This file is part of the Simba project.
  */
 
-#include "simba.h"
+#ifndef __CONFIG_H__
+#define __CONFIG_H__
 
-static struct shell_t shell;
-static struct owi_driver_t owi;
-static struct ds18b20_driver_t ds;
-static struct owi_device_t devices[4];
+#define CONFIG_CONSOLE  CONFIG_CONSOLE_NONE
 
-int main()
-{
-    sys_start();
-
-    owi_init(&owi, &pin_d7_dev, devices, membersof(devices));
-    ds18b20_init(&ds, &owi);
-
-    shell_init(&shell,
-               console_get_input_channel(),
-               console_get_output_channel(),
-               NULL,
-               NULL,
-               NULL,
-               NULL);
-    shell_main(&shell);
-
-    return (0);
-}
+#endif

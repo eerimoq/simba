@@ -22,3 +22,12 @@ all:
 	$(MAKE) -C app/console
 	$(MAKE) -C app/uds
 	$(MAKE) -C app/testapp
+	$(MAKE) -C tst/console
+	$(MAKE) -C tst/uds
+
+clean:
+	$(MAKE) -C app/console clean
+	$(MAKE) -C app/uds clean
+	$(MAKE) -C app/testapp clean
+	$(MAKE) -C tst/console clean
+	$(MAKE) -C tst/uds clean

@@ -587,9 +587,9 @@ int fs_parameter_init(struct fs_parameter_t *self_p,
                       fs_callback_t callback,
                       void *value_p)
 {
-    ASSERTN(self_p != NULL, ENOSYS);
-    ASSERTN(path_p != NULL, ENOSYS);
-    ASSERTN(callback != NULL, ENOSYS);
+    ASSERTN(self_p != NULL, EINVAL);
+    ASSERTN(path_p != NULL, EINVAL);
+    ASSERTN(callback != NULL, EINVAL);
 
     fs_command_init(&self_p->command,
                     path_p,
@@ -603,7 +603,7 @@ int fs_parameter_init(struct fs_parameter_t *self_p,
 
 int fs_parameter_register(struct fs_parameter_t *parameter_p)
 {
-    ASSERTN(parameter_p != NULL, ENOSYS);
+    ASSERTN(parameter_p != NULL, EINVAL);
 
     /* Insert counter into the command list and the counter list. */
     fs_command_register(&parameter_p->command);

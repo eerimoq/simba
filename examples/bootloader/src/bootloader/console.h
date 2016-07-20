@@ -23,7 +23,7 @@
 
 #include "simba.h"
 
-struct console_t {
+struct bootloader_console_t {
     chan_t *chin_p;
     chan_t *chout_p;
     uint32_t application_address;
@@ -43,12 +43,11 @@ struct console_t {
  *
  * @return zero(0) or negative error code.
  */
-int console_module_init(void);
+int bootloader_console_module_init(void);
 
 /**
  * Initialize the bootloader object.
  *
- * @param[in,out] self_p Bootloader object.
  * @param[in] chin_p Input channel.
  * @param[in] chout_p Output channel.
  * @param[in] application_address Start address of the application
@@ -62,20 +61,17 @@ int console_module_init(void);
  *
  * @returns zero(0) or negative error code.
  */
-int console_init(struct console_t *self_p,
-                 chan_t *chin_p,
-                 chan_t *chout_p,
-                 uint32_t application_address,
-                 uint32_t application_size,
-                 struct flash_driver_t *flash_p);
+int bootloader_console_init(chan_t *chin_p,
+                            chan_t *chout_p,
+                            uint32_t application_address,
+                            uint32_t application_size,
+                            struct flash_driver_t *flash_p);
 
 /**
  * Run the main loop of the bootloader.
  *
- * @param[in] self_p Bootloader object.
- *
  * @returns Never returns.
  */
-void console_main(struct console_t *self_p);
+void bootloader_console_main(void);
 
 #endif

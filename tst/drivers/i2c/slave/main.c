@@ -118,7 +118,6 @@ int main()
     };
 
     sys_start();
-    uart_module_init();
     i2c_module_init();
 
     harness_init(&harness);

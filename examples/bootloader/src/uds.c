@@ -100,7 +100,7 @@
  *
  * @returns zero(0) or negative error code.
  */
-static int ignore(struct uds_t *self_p,
+static int ignore(struct bootloader_uds_t *self_p,
                   int size)
 {
     uint8_t dummy;
@@ -122,7 +122,7 @@ static int ignore(struct uds_t *self_p,
  *
  * @returns zero(0) or negative error code.
  */
-static int write_application(struct uds_t *self_p,
+static int write_application(struct bootloader_uds_t *self_p,
                              size_t size)
 {
     size_t left;
@@ -160,7 +160,7 @@ static int write_application(struct uds_t *self_p,
  *
  * @returns zero(0) or negative error code.
  */
-static int write_response(struct uds_t *self_p,
+static int write_response(struct bootloader_uds_t *self_p,
                           int32_t length,
                           uint8_t code)
 {
@@ -181,7 +181,7 @@ static int write_response(struct uds_t *self_p,
  *
  * @returns zero(0) or negative error code.
  */
-static int ignore_and_write_response_no_data(struct uds_t *self_p,
+static int ignore_and_write_response_no_data(struct bootloader_uds_t *self_p,
                                              size_t length,
                                              uint8_t code)
 {
@@ -231,7 +231,7 @@ static int write_did_response(chan_t *chout_p,
  *
  * @returns zero(0) or negative error code.
  */
-static int handle_read_data_by_identifier_version(struct uds_t *self_p)
+static int handle_read_data_by_identifier_version(struct bootloader_uds_t *self_p)
 {
     const char version[] = STRINGIFY(VERSION);
 
@@ -249,7 +249,7 @@ static int handle_read_data_by_identifier_version(struct uds_t *self_p)
  *
  * @returns zero(0) or negative error code.
  */
-static int handle_read_data_by_identifier_system_time(struct uds_t *self_p)
+static int handle_read_data_by_identifier_system_time(struct bootloader_uds_t *self_p)
 {
     char buf[32];
     struct time_t now;
@@ -273,7 +273,7 @@ static int handle_read_data_by_identifier_system_time(struct uds_t *self_p)
  *
  * @returns zero(0) or negative error code.
  */
-static int handle_diagnostic_session_control_default(struct uds_t *self_p,
+static int handle_diagnostic_session_control_default(struct bootloader_uds_t *self_p,
                                                      int length)
 {
 # if !defined(BOOTLOADER_TEST)
@@ -308,7 +308,7 @@ static int handle_diagnostic_session_control_default(struct uds_t *self_p,
  *
  * @returns zero(0) or negative error code.
  */
-static int handle_routine_control_erase(struct uds_t *self_p,
+static int handle_routine_control_erase(struct bootloader_uds_t *self_p,
                                         int sub_function,
                                         int length)
 {
@@ -347,7 +347,7 @@ static int handle_routine_control_erase(struct uds_t *self_p,
  *
  * @returns zero(0) or negative error code.
  */
-static int handle_diagnostic_session_control(struct uds_t *self_p,
+static int handle_diagnostic_session_control(struct bootloader_uds_t *self_p,
                                              int length)
 {
     uint8_t session;
@@ -395,7 +395,7 @@ static int handle_diagnostic_session_control(struct uds_t *self_p,
  *
  * @returns zero(0) or negative error code.
  */
-static int handle_read_data_by_identifier(struct uds_t *self_p,
+static int handle_read_data_by_identifier(struct bootloader_uds_t *self_p,
                                           int length)
 {
     uint16_t did;
@@ -443,7 +443,7 @@ static int handle_read_data_by_identifier(struct uds_t *self_p,
  *
  * @returns zero(0) or negative error code.
  */
-static int handle_read_memory_by_address(struct uds_t *self_p,
+static int handle_read_memory_by_address(struct bootloader_uds_t *self_p,
                                          int length)
 {
     uint32_t address;
@@ -496,7 +496,7 @@ static int handle_read_memory_by_address(struct uds_t *self_p,
  *
  * @returns zero(0) or negative error code.
  */
-static int handle_routine_control(struct uds_t *self_p,
+static int handle_routine_control(struct bootloader_uds_t *self_p,
                                   int length)
 {
     uint8_t sub_function;
@@ -548,7 +548,7 @@ static int handle_routine_control(struct uds_t *self_p,
  *
  * @returns zero(0) or negative error code.
  */
-static int handle_request_download(struct uds_t *self_p,
+static int handle_request_download(struct bootloader_uds_t *self_p,
                                    int length)
 {
     uint8_t buf[5];
@@ -641,7 +641,7 @@ static int handle_request_download(struct uds_t *self_p,
  *
  * @returns zero(0) or negative error code.
  */
-static int handle_transfer_data(struct uds_t *self_p,
+static int handle_transfer_data(struct bootloader_uds_t *self_p,
                                 int length)
 {
     int res;
@@ -722,7 +722,7 @@ static int handle_transfer_data(struct uds_t *self_p,
  *
  * @returns zero(0) or negative error code.
  */
-static int handle_request_transfer_exit(struct uds_t *self_p,
+static int handle_request_transfer_exit(struct bootloader_uds_t *self_p,
                                         int length)
 {
     /* Sanity check. */
@@ -768,7 +768,7 @@ static int handle_request_transfer_exit(struct uds_t *self_p,
  *
  * @returns zero(0) or negative error code.
  */
-static int handle_unknown_service_id(struct uds_t *self_p,
+static int handle_unknown_service_id(struct bootloader_uds_t *self_p,
                                      int length)
 {
     ignore_and_write_response_no_data(self_p,
@@ -778,12 +778,12 @@ static int handle_unknown_service_id(struct uds_t *self_p,
     return (0);
 }
 
-int uds_init(struct uds_t *self_p,
-             chan_t *chin_p,
-             chan_t *chout_p,
-             uint32_t application_address,
-             uint32_t application_size,
-             struct flash_driver_t *flash_p)
+int bootloader_uds_init(struct bootloader_uds_t *self_p,
+                        chan_t *chin_p,
+                        chan_t *chout_p,
+                        uint32_t application_address,
+                        uint32_t application_size,
+                        struct flash_driver_t *flash_p)
 {
     self_p->state = STATE_IDLE;
     self_p->chin_p = chin_p;
@@ -796,7 +796,7 @@ int uds_init(struct uds_t *self_p,
     return (0);
 }
 
-int uds_handle_service(struct uds_t *self_p)
+int bootloader_uds_handle_service(struct bootloader_uds_t *self_p)
 {
     int32_t length;
     int8_t service_id;
@@ -854,7 +854,7 @@ int uds_handle_service(struct uds_t *self_p)
     return (res);
 }
 
-void uds_main(struct uds_t *self_p)
+void bootloader_uds_main(struct bootloader_uds_t *self_p)
 {
     struct pin_driver_t stay_in_bootloader_pin;
 
@@ -878,6 +878,6 @@ void uds_main(struct uds_t *self_p)
 
     /* Enter the bootloader main loop. */
     while (1) {
-        uds_handle_service(self_p);
+        bootloader_uds_handle_service(self_p);
     }
 }

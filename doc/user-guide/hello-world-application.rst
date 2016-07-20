@@ -18,18 +18,8 @@ application entry function ``main()``.
 
    int main()
    {
-       struct uart_driver_t uart;
-   
        /* Start the system. */
        sys_start();
-   
-       /* Initialize the UART. */
-       uart_module_init();
-       uart_init(&uart, &uart_device[0], 38400, NULL, 0);
-       uart_start(&uart);
-   
-       /* Set standard output to the UART. */
-       sys_set_stdout(&uart.chout);
    
        std_printf(FSTR("Hello world!\n"));
    }

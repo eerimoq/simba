@@ -20,8 +20,8 @@
 
 #include "simba.h"
 
-static struct uart_driver_t uart_midi;
-static uint8_t uart_midi_in[8];
+static struct uart_driver_t uart;
+static uint8_t uart_in[8];
 static struct sem_t sem;
 
 /* Player operation codes. */
@@ -42,7 +42,7 @@ struct operation_t {
 static size_t write(void *buf_p, size_t size)
 {
     sem_take(&sem, NULL);
-    uart_write(&uart_midi, buf_p, size);
+    uart_write(&uart, buf_p, size);
     sem_give(&sem, 1);
 
     return (size);
@@ -81,7 +81,7 @@ static void *midi_through_main(void *arg_p)
 
     while (1) {
         /* Wait for a MIDI command on the serial port. */
-        uart_read(&uart_midi, &buf[1], 1);
+        uart_read(&uart, &buf[1], 1);
 
         /* Use the previous status if a data byte is read. */
         if ((buf[1] & 0x80) != 0) {
@@ -96,17 +96,17 @@ static void *midi_through_main(void *arg_p)
         switch (command) {
 
         case MIDI_NOTE_OFF:
-            uart_read(&uart_midi, &buf[1], 2);
+            uart_read(&uart, &buf[1], 2);
             write(buf, 3);
             break;
 
         case MIDI_NOTE_ON:
             if (buf[1] & 0x80) {
-                uart_read(&uart_midi, &buf[2], 2);
+                uart_read(&uart, &buf[2], 2);
                 write(&buf[1], 3);
             } else {
                 buf[0] = status;
-                uart_read(&uart_midi, &buf[2], 1);
+                uart_read(&uart, &buf[2], 1);
                 write(buf, 3);
             }
 
@@ -114,7 +114,7 @@ static void *midi_through_main(void *arg_p)
             break;
 
         case MIDI_SET_INTRUMENT:
-            uart_read(&uart_midi, &buf[1], 1);
+            uart_read(&uart, &buf[1], 1);
             write(buf, 2);
             break;
 
@@ -131,12 +131,12 @@ static void init(void)
     sys_start();
     uart_module_init();
 
-    uart_init(&uart_midi,
+    uart_init(&uart,
               &uart_device[0],
               MIDI_BAUDRATE,
-              uart_midi_in,
-              sizeof(uart_midi_in));
-    uart_start(&uart_midi);
+              uart_in,
+              sizeof(uart_in));
+    uart_start(&uart);
 
     sem_init(&sem, 0, 1);
 

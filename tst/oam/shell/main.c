@@ -853,7 +853,6 @@ int main()
     };
 
     sys_start();
-    uart_module_init();
 
     /* Setup the commands. */
     fs_command_init(&cmd_tmp_foo, FSTR("/tmp/foo"), tmp_foo, NULL);

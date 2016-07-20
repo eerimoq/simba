@@ -62,7 +62,6 @@ int main()
     };
 
     sys_start();
-    uart_module_init();
     flash_module_init();
 
     harness_init(&harness);

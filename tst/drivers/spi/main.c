@@ -31,12 +31,7 @@ int main()
     int i;
 
     sys_start();
-    uart_module_init();
     spi_module_init();
-
-    uart_init(&uart, &uart_device[0], 38400, qinbuf, sizeof(qinbuf));
-    uart_start(&uart);
-    sys_set_stdout(&uart.chout);
 
     spi_init(&spi,
              &spi_device[0],

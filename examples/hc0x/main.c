@@ -28,11 +28,9 @@
 
 static struct fs_command_t cmd_at;
 
-static struct uart_driver_t uart;
-static struct uart_soft_driver_t uart_hc0x;
+static struct uart_soft_driver_t uart;
 
 static char qinbuf[32];
-static char qinbuf_hc0x[32];
 
 static struct shell_t shell;
 
@@ -52,7 +50,7 @@ static int cmd_at_cb(int argc,
 
     /* Wait for data from PC and HC-0X. */
     chan_list_init(&list, buf, sizeof(buf));
-    chan_list_add(&list, &uart_hc0x.chin);
+    chan_list_add(&list, &uart.chin);
     chan_list_add(&list, in_p);
 
     /* Pass data between PC and bluetooth device. */
@@ -67,8 +65,8 @@ static int cmd_at_cb(int argc,
                 break;
             }
 
-            chan_write(&uart_hc0x.chout, &c, sizeof(c));
-        } else if (chan_p == &uart_hc0x.chin) {
+            chan_write(&uart.chout, &c, sizeof(c));
+        } else if (chan_p == &uart.chin) {
             /* Write all output from HC-0X to the PC. */
             chan_read(chan_p, &c, sizeof(c));
             chan_write(out_p, &c, sizeof(c));
@@ -86,21 +84,13 @@ int main()
 {
     sys_start();
 
-    uart_module_init();
-
-    uart_init(&uart,
-              &uart_device[0],
-              38400,
-              qinbuf,
-              sizeof(qinbuf));
-
-    uart_soft_init(&uart_hc0x,
+    uart_soft_init(&uart,
                    &pin_d4_dev,
                    &pin_d3_dev,
                    &exti_d3_dev,
                    9600,
-                   qinbuf_hc0x,
-                   sizeof(qinbuf_hc0x));
+                   qinbuf,
+                   sizeof(qinbuf));
 
     fs_command_init(&cmd_at,
                     FSTR("/at"),
@@ -108,17 +98,19 @@ int main()
                     NULL);
     fs_command_register(&cmd_at);
 
-    sys_set_stdout(&uart.chout);
-
-    uart_start(&uart);
-
     std_printf(FSTR("Welcome to HC-0X configuration tool!\r\n"
                     "\r\n"
                     "SETUP: Connect pin34 to VCC so the device enters AT mode.\r\n"
                     "\r\n"
                     "Type 'at' to start communicating with the device.\r\n"));
 
-    shell_init(&shell, &uart.chin, &uart.chout, NULL, NULL, NULL, NULL);
+    shell_init(&shell,
+               console_get_input_channel(),
+               console_get_output_channel(),
+               NULL,
+               NULL,
+               NULL,
+               NULL);
     shell_main(&shell);
 
     return (0);

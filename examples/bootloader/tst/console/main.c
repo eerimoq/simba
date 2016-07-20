@@ -20,22 +20,21 @@
 
 #include "simba.h"
 
-#include "arpa/inet.h"
 #include "bootloader.h"
 
 /* Memory ranges. */
 #define APPLICATION_ADDRESS                      0x00000000
 #define APPLICATION_SIZE                         0x20000000
 
-extern int cmd_application_load_kermit(int argc,
-                                       const char *argv[],
-                                       void *out_p,
-                                       void *in_p,
-                                       void *arg_p);
+extern int bootloader_cmd_application_load_kermit(int argc,
+                                                  const char *argv[],
+                                                  void *out_p,
+                                                  void *in_p,
+                                                  void *arg_p);
 
 static uint8_t inbuf[128];
 static uint8_t outbuf[128];
-static uint8_t buf[128];
+static char buf[128];
 
 static struct flash_driver_t flash;
 
@@ -43,7 +42,7 @@ static int test_send_file_kermit(struct harness_t *self_p)
 {
     struct queue_t qin;
     struct queue_t qout;
-    struct console_t console;
+    struct bootloader_console_t console;
 
     static char input[] =
         "kermit -ir\r\n"
@@ -64,10 +63,16 @@ static int test_send_file_kermit(struct harness_t *self_p)
     queue_init(&qin, inbuf, sizeof(inbuf));
     queue_init(&qout, outbuf, sizeof(outbuf));
 
-    console_init(&console, &qin, &qout, 0, 128, &flash);
+    bootloader_console_module_init();
+    bootloader_console_init(&qin,
+                            &qout,
+                            0,
+                            128,
+                            &flash);
 
     queue_write(&qin, input, sizeof(input) - 1);
-    BTASSERT(cmd_application_load_kermit(1, NULL, &qout, &qin, &console) == 0);
+    strcpy(buf, "/application/load_kermit");
+    BTASSERT(fs_call(buf, &qin, &qout, &console) == 0);
 
     queue_read(&qout, buf, sizeof(output) - 1);
     BTASSERT(memcmp(output, buf, sizeof(output) - 1) == 0);
@@ -84,7 +89,6 @@ int main()
     };
 
     sys_start();
-    uart_module_init();
 
 #if defined(MCU_SAM_3X8E)
     /* Initialize the flash memory objects. */

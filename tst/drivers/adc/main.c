@@ -104,7 +104,6 @@ int main()
     };
 
     sys_start();
-    uart_module_init();
     adc_module_init();
 
     harness_init(&harness);

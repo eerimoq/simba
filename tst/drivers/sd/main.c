@@ -220,7 +220,6 @@ int main()
     };
 
     sys_start();
-    uart_module_init();
 
 #if defined(ARCH_LINUX)
     BTASSERT(system("./create_sdcard_linux.sh") == 0);

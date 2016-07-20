@@ -280,7 +280,6 @@ int main()
     };
 
     sys_start();
-    uart_module_init();
 
     /* Setup the commands. */
     fs_command_init(&foo_bar, FSTR("/tmp/foo/bar"), tmp_foo_bar, NULL);

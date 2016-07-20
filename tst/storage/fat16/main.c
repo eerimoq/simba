@@ -112,7 +112,7 @@ int test_format(struct harness_t *harness_p)
 int test_print(struct harness_t *harness_p)
 {
     /* Print various information about the file system. */
-    BTASSERT(fat16_print(&fs, &harness_p->uart.chout) == 0);
+    BTASSERT(fat16_print(&fs, sys_get_stdout()) == 0);
 
     return (0);
 }
@@ -425,7 +425,6 @@ int main()
     };
 
     sys_start();
-    uart_module_init();
 
     harness_init(&harness);
     harness_run(&harness, harness_testcases);

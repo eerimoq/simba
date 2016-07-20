@@ -20,8 +20,6 @@
 
 #include "simba.h"
 
-static char qinbuf[32];
-static struct uart_driver_t uart;
 static struct shell_t shell;
 
 static struct usb_host_driver_t usb;
@@ -186,12 +184,6 @@ static void *usb_control_main(void *arg_p)
 static void init(void)
 {
     sys_start();
-    uart_module_init();
-
-    uart_init(&uart, &uart_device[0], 38400, qinbuf, sizeof(qinbuf));
-    uart_start(&uart);
-
-    sys_set_stdout(&uart.chout);
 
     std_printf(sys_get_info());
 
@@ -233,7 +225,13 @@ int main()
 {
     init();
 
-    shell_init(&shell, &uart.chin, &uart.chout, NULL, NULL, NULL, NULL);
+    shell_init(&shell,
+               console_get_input_channel(),
+               console_get_output_channel(),
+               NULL,
+               NULL,
+               NULL,
+               NULL);
     shell_main(&shell);
 
     return (0);
