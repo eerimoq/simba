@@ -20,7 +20,7 @@
 
 #include "simba.h"
 
-int board_pin_str_to_pin(const char *str_p)
+int board_pin_string_to_device_index(const char *str_p)
 {
     int port;
     int gpio;
