@@ -29,8 +29,8 @@ MCU = atmega328p
 
 upload:
 	@echo "Uploading $(EXE)"
-	avrdude -p atmega328p -D -P $(SERIAL_PORT) -c arduino -V -b 57600 -U eeprom:w:settings.bin:r
-	avrdude -p atmega328p -D -P $(SERIAL_PORT) -c arduino -V -b 57600 -U flash:w:$(NAME).hex
+	avrdude -p atmega328p -D -P $(SERIAL_PORT) -c arduino -V -b 115200 -U eeprom:w:settings.bin:r
+	avrdude -p atmega328p -D -P $(SERIAL_PORT) -c arduino -V -b 115200 -U flash:w:$(NAME).hex
 
 run:
 	@echo "Running $(EXE)"
