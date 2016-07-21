@@ -9,9 +9,9 @@ https://www.sparkfun.com/products/12640
 Pinout
 ------
 
-.. image:: ../images/boards/arduino-pro-micro-pinout.jpg
+.. image:: ../images/boards/arduino-pro-micro-pinout.png
    :width: 50%
-   :target: ../_images/arduino-pro-micro-pinout.jpg
+   :target: ../_images/arduino-pro-micro-pinout.png
 
 Drivers
 -------
@@ -30,6 +30,8 @@ Drivers
 - :doc:`../api-reference/drivers/spi`
 - :doc:`../api-reference/drivers/uart`
 - :doc:`../api-reference/drivers/uart_soft`
+- :doc:`../api-reference/drivers/usb`
+- :doc:`../api-reference/drivers/usb_device`
 
 Mcu
 ---
