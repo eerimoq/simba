@@ -30,8 +30,8 @@
 #define pin_d8_dev pin_device[8]
 #define pin_d9_dev pin_device[9]
 #define pin_d10_dev pin_device[10]
-#define pin_d11_dev pin_device[11]
-#define pin_d12_dev pin_device[12]
+#define pin_d11_dev pin_device[12]
+#define pin_d12_dev pin_device[11]
 #define pin_d13_dev pin_device[13]
 
 #define pin_a0_dev pin_device[14]
@@ -54,5 +54,14 @@
 #define adc_0_dev adc_device[0]
 
 #define i2c_0_dev i2c_device[0]
+
+/**
+ * Convert given pin string to the pin number.
+ *
+ * @param[in] str_p Pin as a string.
+ *
+ * @return Pin number of negative error code.
+ */
+int board_pin_str_to_pin(const char *str_p);
 
 #endif

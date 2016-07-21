@@ -49,3 +49,34 @@ struct module_info_t module_info = {
     .module_end_address = (const void *)&__text_end__,
     .platform_id = 6,
 };
+
+int board_pin_str_to_pin(const char *str_p)
+{
+    int gpio;
+    long bit;
+
+    /* Get gpio and bit. */
+    if (str_p[0] != 'p') {
+        return (-1);
+    }
+
+    if ((str_p[1] < 'a') || (str_p[1] > 'd')) {
+        return (-1);
+    }
+
+    gpio = (str_p[1] - 'a');
+
+    if (std_strtol(&str_p[2], &bit) == NULL) {
+        return (-1);
+    }
+
+    if (bit < 0) {
+        return (-1);
+    }
+
+    if ((gpio == 'd' && bit > 3) || (bit > 15)) {
+        return (-1);
+    }
+
+    return (16 * gpio + bit);
+}

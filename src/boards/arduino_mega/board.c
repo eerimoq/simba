@@ -19,3 +19,34 @@
  */
 
 #include "simba.h"
+
+int board_pin_str_to_pin(const char *str_p)
+{
+    long pin;
+
+    if (tolower((int)str_p[0]) == 'd') {
+        if (std_strtol(&str_p[1], &pin) == NULL) {
+            return (-1);
+        }
+        
+        if ((pin < 0) || (pin > 53)) {
+            return (-1);
+        }
+    } else if (tolower((int)str_p[0]) == 'a') {
+        if (std_strtol(&str_p[1], &pin) == NULL) {
+            return (-1);
+        }
+        
+        if ((pin < 0) || (pin > 15)) {
+            return (-1);
+        }
+        
+        pin += 54;
+    } else if (strcmp(str_p, "led") == 0) {
+        pin = 13;
+    } else {
+        return (-1);
+    }
+
+    return (pin);
+}

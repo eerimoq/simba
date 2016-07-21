@@ -19,3 +19,8 @@
  */
 
 #include "simba.h"
+
+int board_pin_str_to_pin(const char *str_p)
+{
+    return (-1);
+}

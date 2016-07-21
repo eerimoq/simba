@@ -53,4 +53,13 @@
 
 #define sdio_0_dev sdio_device[0]
 
+/**
+ * Convert given pin string to the pin number.
+ *
+ * @param[in] str_p Pin as a string.
+ *
+ * @return Pin number of negative error code.
+ */
+int board_pin_str_to_pin(const char *str_p);
+
 #endif

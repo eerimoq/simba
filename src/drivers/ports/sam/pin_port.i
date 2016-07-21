@@ -18,18 +18,6 @@
  * This file is part of the Simba project.
  */
 
-/**
- * Convert given pin string to the pin number.
- *
- * @param[in] str_p Pin as a string.
- *
- * @return Pin number of negative error code.
- */
-static int pin_str_to_pin(const char *str_p)
-{
-    return (-1);
-}
-
 static int pin_port_module_init(void)
 {
     /* PMC */

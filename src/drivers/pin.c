@@ -44,7 +44,7 @@ static int cmd_init_cb(int argc,
     }
 
     /* Get pin. */
-    pin = pin_str_to_pin(argv[1]);
+    pin = board_pin_str_to_pin(argv[1]);
 
     if (pin == -1) {
         std_fprintf(out_p, FSTR("Bad pin '%s',\r\n"), argv[1]);
@@ -86,7 +86,7 @@ static int cmd_write_cb(int argc,
     }
 
     /* Get pin. */
-    pin = pin_str_to_pin(argv[1]);
+    pin = board_pin_str_to_pin(argv[1]);
 
     if (pin == -1) {
         std_fprintf(out_p, FSTR("Bad pin '%s',\r\n"), argv[1]);

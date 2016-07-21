@@ -18,44 +18,6 @@
  * This file is part of the Simba project.
  */
 
-/**
- * Convert given pin string to the pin number.
- *
- * @param[in] str_p Pin as a string.
- *
- * @return Pin number of negative error code.
- */
-static int pin_str_to_pin(const char *str_p)
-{
-    int gpio;
-    long bit;
-
-    /* Get gpio and bit. */
-    if (str_p[0] != 'p') {
-        return (-1);
-    }
-
-    if ((str_p[1] < 'a') || (str_p[1] > 'd')) {
-        return (-1);
-    }
-
-    gpio = (str_p[1] - 'a');
-
-    if (std_strtol(&str_p[2], &bit) == NULL) {
-        return (-1);
-    }
-
-    if (bit < 0) {
-        return (-1);
-    }
-
-    if ((gpio == 'd' && bit > 3) || (bit > 15)) {
-        return (-1);
-    }
-
-    return (16 * gpio + bit);
-}
-
 static int pin_port_module_init(void)
 {
     return (0);
