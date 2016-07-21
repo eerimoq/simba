@@ -18,7 +18,7 @@
 # This file is part of the Simba project.
 #
 
-NAME = usb_suite
+NAME = usb_device_suite
 BOARD ?= linux
 
 SIMBA_ROOT ?= ../../..
