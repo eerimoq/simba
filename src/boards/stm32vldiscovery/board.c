@@ -31,7 +31,7 @@ int board_pin_str_to_pin(const char *str_p)
         return (-1);
     }
 
-    port = tolower(str_p[1]);
+    port = tolower((int)str_p[1]);
 
     if ((port < 'a') || (port > 'd')) {
         return (-1);

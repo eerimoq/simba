@@ -82,11 +82,7 @@
 #define CONFIG_CONSOLE_USB_CDC      2
 
 #ifndef CONFIG_CONSOLE
-#    if defined(BOARD_ARDUINO_PRO_MICRO)
-#        define CONFIG_CONSOLE CONFIG_CONSOLE_USB_CDC
-#    else
-#        define CONFIG_CONSOLE CONFIG_CONSOLE_UART
-#    endif
+#    define CONFIG_CONSOLE CONFIG_CONSOLE_UART
 #endif
 
 /**

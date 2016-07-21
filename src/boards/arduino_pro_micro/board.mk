@@ -22,7 +22,7 @@ INC += $(SIMBA_ROOT)/src/boards/arduino_pro_micro
 SRC += $(SIMBA_ROOT)/src/boards/arduino_pro_micro/board.c
 
 BOARD_HOMEPAGE = "https://www.sparkfun.com/products/12640"
-BOARD_PINOUT = "arduino-pro-micro-pinout.jpg"
+BOARD_PINOUT = "arduino-pro-micro-pinout.png"
 BOARD_DESC = "Arduino Pro Micro"
 
 MCU = atmega32u4
