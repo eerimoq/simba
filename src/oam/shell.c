@@ -48,7 +48,7 @@ static int shell_command_compare(const char *line_p,
                                  FAR const char *command_p,
                                  size_t length)
 {
-    return ((std_strncmp(line_p, command_p, length) == 0)
+    return ((std_strncmp(command_p, line_p, length) == 0)
             && ((line_p[length] == '\0')
                 || (line_p[length] == ' ')));
 }
