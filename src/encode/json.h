@@ -87,9 +87,9 @@ enum json_err_t {
  */
 struct json_tok_t {
     enum json_type_t type;
-    int start;
-    int end;
-    int size;
+    const char *buf_p;
+    size_t size;
+    int num_tokens;
 #ifdef JSON_PARENT_LINKS
     int parent;
 #endif
@@ -100,7 +100,7 @@ struct json_tok_t {
  * stores the string being parsed now and current position in that
  * string
  */
-struct json_parser_t {
+struct json_t {
     /** Offset in the JSON string. */
     unsigned int pos;
     /** Next token to allocate. */
@@ -110,13 +110,30 @@ struct json_parser_t {
 };
 
 /**
- * Initialize given JSON parser.
+ * Initialize given JSON object.
  *
- * @param[in,out] parser_p Parser to initialize.
+ * @param[in,out] parser_p Object to initialize.
  *
  * @return zero(0) or negative error code.
  */
-int json_init(struct json_parser_t *parser_p);
+int json_init(struct json_t *self_p);
+
+/**
+ * Parse given JSON data string into and array of tokens, each
+ * describing a single JSON object.
+ *
+ * @param[in] parser_p Initialized parser.
+ * @param[in] tokens_p Array of tokens to encode.
+ * @param[in] num_tokens Number of tokens.
+ * @param[out] js_p Encoded JSON string including termination.
+ *
+ * @return Encoded string length (not including termination) or
+ *         negative error code.
+ */
+ssize_t json_encode(struct json_t *self_p,
+                    struct json_tok_t *tokens_p,
+                    unsigned int num_tokens,
+                    char *js_p);
 
 /**
  * Parse given JSON data string into and array of tokens, each
@@ -128,12 +145,73 @@ int json_init(struct json_parser_t *parser_p);
  * @param[out] tokens_p Array of parsed tokens.
  * @param[in] num_tokens Number of tokens.
  *
- * @return zero(0) or negative error code.
+ * @return Number of decoded tokens or negative error code.
  */
-int json_parse(struct json_parser_t *parser_p,
-               const char *js_p,
-               size_t len,
-               struct json_tok_t *tokens_p,
-               unsigned int num_tokens);
+int json_decode(struct json_t *self_p,
+                const char *js_p,
+                size_t len,
+                struct json_tok_t *tokens_p,
+                unsigned int num_tokens);
+
+/**
+ * Initialize a JSON object token.
+ *
+ * @param[in] num_tokens Number of tokens.
+ *
+ * @return Initialized object token.
+ */
+struct json_tok_t json_token_object(int num_tokens);
+
+/**
+ * Initialize a JSON array token.
+ *
+ * @param[in] num_tokens Number of tokens.
+ *
+ * @return Initialized array token.
+ */
+struct json_tok_t json_token_array(int num_tokens);
+
+/**
+ * Initialize a JSON boolean true token.
+ *
+ * @return Initialized boolean true token.
+ */
+struct json_tok_t json_token_true(void);
+
+/**
+ * Initialize a JSON boolean false token.
+ *
+ * @return Initialized boolean false token.
+ */
+struct json_tok_t json_token_false(void);
+
+/**
+ * Initialize a JSON null token.
+ *
+ * @return Initialized null token.
+ */
+struct json_tok_t json_token_null(void);
+
+/**
+ * Initialize a JSON number (integer/float) token.
+ *
+ * @param[in] buf_p Number as a string.
+ * @param[in] size String length.
+ *
+ * @return Initialized number token.
+ */
+struct json_tok_t json_token_number(const char *buf_p,
+                                    size_t size);
+
+/**
+ * Initialize a JSON string token.
+ *
+ * @param[in] buf_p String.
+ * @param[in] size String length.
+ *
+ * @return Initialized string token.
+ */
+struct json_tok_t json_token_string(const char *buf_p,
+                                    size_t size);
 
 #endif
