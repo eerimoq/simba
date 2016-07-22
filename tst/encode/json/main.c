@@ -641,8 +641,10 @@ static int test_encode_keys(struct harness_t *harness_p)
     tokens[8] = json_token_null();
     tokens[9] = json_token_string("foo", 3);
     tokens[10] = json_token_null();
+    memset(buf, -1, sizeof(buf));
     status = json_encode(&p, tokens, 11, buf);
     BTASSERT(status == 55);
+    BTASSERT(strlen(buf) == 55);
     BTASSERT(memcmp(buf,
                     "{"
                     "true:null,"

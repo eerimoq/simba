@@ -119,13 +119,12 @@ struct json_t {
 int json_init(struct json_t *self_p);
 
 /**
- * Parse given JSON data string into and array of tokens, each
- * describing a single JSON object.
+ * Encode given JSON tokens into a string.
  *
  * @param[in] parser_p Initialized parser.
  * @param[in] tokens_p Array of tokens to encode.
  * @param[in] num_tokens Number of tokens.
- * @param[out] js_p Encoded JSON string including termination.
+ * @param[out] js_p Encoded null terminated JSON string.
  *
  * @return Encoded string length (not including termination) or
  *         negative error code.
@@ -136,7 +135,7 @@ ssize_t json_encode(struct json_t *self_p,
                     char *js_p);
 
 /**
- * Parse given JSON data string into and array of tokens, each
+ * Decode given JSON data string into and array of tokens, each
  * describing a single JSON object.
  *
  * @param[in] parser_p Initialized parser.
