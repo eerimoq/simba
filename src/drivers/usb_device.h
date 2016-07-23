@@ -35,10 +35,13 @@ int usb_device_module_init(void);
  *
  * @param[in] self_p Driver object to be initialized.
  * @param[in] dev_p USB device to use.
- * @param[in] devices_p An array of devices. One entry in this array
- *                      is allocated for each USB device that is
- *                      connected to the device.
- * @param[in] length Length of the devices array.
+ * @param[in] drivers_pp An array of initialized drivers.
+ * @param[in] drivers_max Length of the drivers array.
+ * @param[in] descriptors_pp A NULL terminated array of USB
+ *                           descriptors.
+ * @param[in] string_language_p The language string.
+ * @param[in] string_iproduct_p The product string.
+ * @param[in] string_imanufacturer_p The manufacturer string.
  *
  * @return zero(0) or negative error code.
  */

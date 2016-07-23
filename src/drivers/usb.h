@@ -141,7 +141,7 @@ struct usb_descriptor_device_t {
     uint8_t descriptor_type;
     uint16_t bcd_usb;
     uint8_t device_class;
-    uint8_t device_sub_class;
+    uint8_t device_subclass;
     uint8_t device_protocol;
     uint8_t max_packet_size_0;
     uint16_t id_vendor;
@@ -175,7 +175,7 @@ struct usb_descriptor_interface_t {
     uint8_t alternate_setting;
     uint8_t num_endpoints;
     uint8_t interface_class;
-    uint8_t interface_sub_class;
+    uint8_t interface_subclass;
     uint8_t interface_protocol;
     uint8_t interface;
 };
@@ -203,7 +203,7 @@ struct usb_descriptor_interface_association_t {
     uint8_t first_interface;
     uint8_t interface_count;
     uint8_t function_class;
-    uint8_t function_sub_class;
+    uint8_t function_subclass;
     uint8_t function_protocol;
     uint8_t function;
 };

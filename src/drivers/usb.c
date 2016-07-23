@@ -130,7 +130,7 @@ int usb_format_descriptors(chan_t *out_p,
                             "  descriptor_type = %d\r\n"
                             "  bcd_usb = %02x.%02x\r\n"
                             "  device_class = %d (%s)\r\n"
-                            "  device_sub_class = %d\r\n"
+                            "  device_subclass = %d\r\n"
                             "  device_protocol = %d\r\n"
                             "  max_packet_size_0 = %d\r\n"
                             "  id_vendor = 0x%04x\r\n"
@@ -147,7 +147,7 @@ int usb_format_descriptors(chan_t *out_p,
                        desc_p->device.device_class,
                        get_str_by_id(class_map,
                                      desc_p->device.device_class),
-                       desc_p->device.device_sub_class,
+                       desc_p->device.device_subclass,
                        desc_p->device.device_protocol,
                        desc_p->device.max_packet_size_0,
                        desc_p->device.id_vendor,
@@ -199,7 +199,7 @@ int usb_format_descriptors(chan_t *out_p,
                        desc_p->interface.interface_class,
                        get_str_by_id(class_map,
                                      desc_p->interface.interface_class),
-                       desc_p->interface.interface_sub_class,
+                       desc_p->interface.interface_subclass,
                        desc_p->interface.interface_protocol,
                        desc_p->interface.interface);
             break;

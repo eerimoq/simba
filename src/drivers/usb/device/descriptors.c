@@ -25,7 +25,7 @@ static FAR const struct usb_descriptor_device_t device_descriptor = {
     .descriptor_type = DESCRIPTOR_TYPE_DEVICE,
     .bcd_usb = 0x0200,
     .device_class = USB_CLASS_USE_INTERFACE,
-    .device_sub_class = 0,
+    .device_subclass = 0,
     .device_protocol = 0,
     .max_packet_size_0 = 64,
     .id_vendor = CONFIG_USB_DEVICE_VID,
@@ -56,7 +56,7 @@ inferface_association_descriptor = {
     .first_interface = 0,
     .interface_count = 2,
     .function_class = 2,
-    .function_sub_class = 2,
+    .function_subclass = 2,
     .function = 0
 };
 
@@ -68,7 +68,7 @@ inferface_0_descriptor = {
     .alternate_setting = 0,
     .num_endpoints = 1,
     .interface_class = USB_CLASS_CDC_CONTROL,
-    .interface_sub_class = 2,
+    .interface_subclass = 2,
     .interface_protocol = 0,
     .interface = 0
 };
@@ -123,7 +123,7 @@ inferface_1_descriptor = {
     .alternate_setting = 0,
     .num_endpoints = 2,
     .interface_class = USB_CLASS_CDC_DATA,
-    .interface_sub_class = 0,
+    .interface_subclass = 0,
     .interface_protocol = 0,
     .interface = 0
 };
