@@ -4,7 +4,17 @@
 .. module:: usb_device
    :synopsis: Universal Serial Bus - Device.
 
-Submodules:
+A USB device is powered and enumerated by a USB host.
+
+The implementation of this module aims to be simple, and yet
+flexible. The configuration descriptors are static, allowing them to
+be stored in ROM. This saves precious RAM on embedded devices. Class
+drivers are initialized and given as input to the device driver before
+is is started.
+
+----------------------------------------------
+
+Class drivers:
 
 .. toctree::
    :glob:   

@@ -4,7 +4,11 @@
 .. module:: usb_host
    :synopsis: Universal Serial Bus - Host.
 
-Submodules:
+A USB host powers the bus and enumerates connected USB devices.
+
+----------------------------------------------
+
+Class drivers:
 
 .. toctree::
    :glob:   
