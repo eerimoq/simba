@@ -21,10 +21,6 @@
 #ifndef __KERNEL_SYS_PORT_H__
 #define __KERNEL_SYS_PORT_H__
 
-#define FAR
-
-#define FSTR(s) s
-
 #define _ASSERTFMT(fmt, ...) fprintf(stderr, fmt "\n", ##__VA_ARGS__)
 
 #define BTASSERT(cond, ...)                                             \
@@ -46,8 +42,6 @@
 #endif
 
 #define ASSERT(cond, ...) ASSERTN(cond, 1, __VA_ARGS__)
-
-#define PACKED __attribute__((packed))
 
 static inline uint32_t htonl(uint32_t v)
 {

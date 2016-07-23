@@ -59,8 +59,6 @@
 
 #define SYS_SETTINGS_APP_BASE 0x100
 
-#define PACKED __attribute__((packed))
-
 static inline uint32_t htonl(uint32_t v)
 {
     return (((v) << 24)

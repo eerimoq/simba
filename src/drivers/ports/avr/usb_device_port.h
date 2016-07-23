@@ -23,7 +23,30 @@
 
 #include "simba.h"
 
+struct usb_device_driver_base_t;
+
+typedef int (*usb_device_start_of_frame_cb_t)(struct usb_device_driver_base_t *self_p);
+typedef int (*usb_device_setup_cb_t)(struct usb_device_driver_base_t *self_p,
+                                     struct usb_setup_t *setup_p);
+typedef int (*usb_device_print_cb_t)(struct usb_device_driver_base_t *self_p,
+                                     chan_t *chout_p);
+
+struct usb_device_driver_base_t {
+    struct usb_device_driver_base_t *next_p;
+    usb_device_start_of_frame_cb_t start_of_frame_isr;
+    usb_device_setup_cb_t setup_isr;
+    usb_device_print_cb_t print;
+};
+
 struct usb_device_driver_t {
+    struct usb_device_t *dev_p;
+    int configuration;
+    struct usb_device_driver_base_t **drivers_pp;
+    int drivers_max;
+    FAR const union usb_descriptor_t **descriptors_pp;
+    FAR const uint16_t *string_language_p;
+    FAR const uint16_t *string_iproduct_p;
+    FAR const uint16_t *string_imanufacturer_p;
 };
 
 #endif

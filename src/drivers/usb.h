@@ -26,17 +26,20 @@
 #include "usb_port.h"
 
 /* Request types. */
-#define REQUEST_TYPE_DATA_DIRECTION_HOST_TO_DEVICE (0 << 7)
-#define REQUEST_TYPE_DATA_DIRECTION_DEVICE_TO_HOST (1 << 7)
+#define REQUEST_TYPE_DATA_MASK                     (0x80)
+#define REQUEST_TYPE_DATA_DIRECTION_HOST_TO_DEVICE (0x00)
+#define REQUEST_TYPE_DATA_DIRECTION_DEVICE_TO_HOST (0x80)
 
-#define REQUEST_TYPE_TYPE_STANDARD                 (0 << 5)
-#define REQUEST_TYPE_TYPE_CLASS                    (1 << 5)
-#define REQUEST_TYPE_TYPE_VENDOR                   (2 << 5)
+#define REQUEST_TYPE_TYPE_MASK                     (0x60)
+#define REQUEST_TYPE_TYPE_STANDARD                 (0x00)
+#define REQUEST_TYPE_TYPE_CLASS                    (0x20)
+#define REQUEST_TYPE_TYPE_VENDOR                   (0x40)
 
-#define REQUEST_TYPE_RECIPIENT_DEVICE              (0 << 0)
-#define REQUEST_TYPE_RECIPIENT_INTERFACE           (1 << 0)
-#define REQUEST_TYPE_RECIPIENT_ENDPOINT            (2 << 0)
-#define REQUEST_TYPE_RECIPIENT_OTHER               (3 << 0)
+#define REQUEST_TYPE_RECIPIENT_MASK                (0x0f)
+#define REQUEST_TYPE_RECIPIENT_DEVICE              (0x00)
+#define REQUEST_TYPE_RECIPIENT_INTERFACE           (0x01)
+#define REQUEST_TYPE_RECIPIENT_ENDPOINT            (0x02)
+#define REQUEST_TYPE_RECIPIENT_OTHER               (0x03)
 
 /* Setup requests. */
 #define REQUEST_GET_STATUS         0
@@ -45,12 +48,14 @@
 #define REQUEST_SET_CONFIGURATION  9
 
 /* USB descriptor types. */
-#define DESCRIPTOR_TYPE_DEVICE          1
-#define DESCRIPTOR_TYPE_CONFIGURATION   2
-#define DESCRIPTOR_TYPE_STRING          3
-#define DESCRIPTOR_TYPE_INTERFACE       4
-#define DESCRIPTOR_TYPE_ENDPOINT        5
-#define DESCRIPTOR_TYPE_RPIPE          34
+#define DESCRIPTOR_TYPE_DEVICE                   1
+#define DESCRIPTOR_TYPE_CONFIGURATION            2
+#define DESCRIPTOR_TYPE_STRING                   3
+#define DESCRIPTOR_TYPE_INTERFACE                4
+#define DESCRIPTOR_TYPE_ENDPOINT                 5
+#define DESCRIPTOR_TYPE_INTERFACE_ASSOCIATION   11
+#define DESCRIPTOR_TYPE_RPIPE                   34
+#define DESCRIPTOR_TYPE_CDC                     36
 
 /* USB classes. */
 #define USB_CLASS_USE_INTERFACE          0x00 /* Device. */
@@ -148,6 +153,8 @@ struct usb_descriptor_device_t {
     uint8_t num_configurations;
 };
 
+#define CONFIGURATION_ATTRIBUTES_BUS_POWERED          0x80
+
 /* Configuration descriptor. */
 struct usb_descriptor_configuration_t {
     uint8_t length;
@@ -168,7 +175,7 @@ struct usb_descriptor_interface_t {
     uint8_t alternate_setting;
     uint8_t num_endpoints;
     uint8_t interface_class;
-    uint8_t interface_subclass;
+    uint8_t interface_sub_class;
     uint8_t interface_protocol;
     uint8_t interface;
 };
@@ -190,6 +197,24 @@ struct usb_descriptor_string_t {
     uint8_t string[256];
 };
 
+struct usb_descriptor_interface_association_t {
+    uint8_t length;
+    uint8_t descriptor_type;
+    uint8_t first_interface;
+    uint8_t interface_count;
+    uint8_t function_class;
+    uint8_t function_sub_class;
+    uint8_t function_protocol;
+    uint8_t function;
+};
+
+struct usb_descriptor_cdc_t {
+    uint8_t length;
+    uint8_t descriptor_type;
+    uint8_t sub_type;
+    uint8_t data[2];
+};
+
 union usb_descriptor_t {
     struct usb_descriptor_header_t header;
     struct usb_descriptor_device_t device;
@@ -197,6 +222,17 @@ union usb_descriptor_t {
     struct usb_descriptor_interface_t interface;
     struct usb_descriptor_endpoint_t endpoint;
     struct usb_descriptor_string_t string;
+};
+
+#define USB_CDC_LINE_CODING             0x20
+#define USB_CDC_CONTROL_LINE_STATE      0x22
+#define USB_CDC_SEND_BREAK              0x23
+
+struct usb_cdc_line_info_t {
+  uint32_t dte_rate;
+  uint8_t char_format;
+  uint8_t parity_type;
+  uint8_t data_bits;
 };
 
 /* Message types. */

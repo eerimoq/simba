@@ -23,10 +23,6 @@
 
 #include "types.h"
 
-#define FAR
-
-#define FSTR(s) s
-
 #define _ASSERTFMT(fmt, ...) std_printf(FSTR(fmt "\n"), ##__VA_ARGS__);
 
 #define BTASSERT(cond, ...)                                             \
@@ -48,8 +44,6 @@
 #endif
 
 #define ASSERT(cond, ...) ASSERTN(cond, 1, __VA_ARGS__)
-
-#define PACKED __attribute__((packed))
 
 static inline uint32_t htonl(uint32_t v)
 {

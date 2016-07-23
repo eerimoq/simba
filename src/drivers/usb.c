@@ -199,7 +199,7 @@ int usb_format_descriptors(chan_t *out_p,
                        desc_p->interface.interface_class,
                        get_str_by_id(class_map,
                                      desc_p->interface.interface_class),
-                       desc_p->interface.interface_subclass,
+                       desc_p->interface.interface_sub_class,
                        desc_p->interface.interface_protocol,
                        desc_p->interface.interface);
             break;

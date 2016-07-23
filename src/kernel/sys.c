@@ -130,7 +130,7 @@ int sys_start(void)
     shell_module_init();
     sys_module_init();
 
-#if CONFIG_CONSOLE == CONFIG_CONSOLE_UART
+#if CONFIG_CONSOLE != CONFIG_CONSOLE_NONE
 
     console_module_init();
     console_init();
@@ -139,7 +139,6 @@ int sys_start(void)
     sys_set_stdout(console_get_output_channel());
     log_set_default_handler_output_channel(console_get_output_channel());
 
-#elif CONFIG_CONSOLE == CONFIG_CONSOLE_USB_CDC
 #endif
 
     return (0);

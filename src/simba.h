@@ -33,6 +33,7 @@ typedef unsigned long off_t;
 #include <sys/types.h>
 #include <ctype.h>
 
+#include "compiler.h"
 #include <config.h>
 #include "config_default.h"
 #include "board.h"
@@ -113,6 +114,7 @@ typedef unsigned long off_t;
 #    if defined(MCU_ATMEGA32U4)
 #        include "drivers/usb.h"
 #        include "drivers/usb_device.h"
+#        include "drivers/usb/device/descriptors.h"
 #        include "drivers/usb/device/class/cdc.h"
 #    endif
 #endif

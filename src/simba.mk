@@ -69,7 +69,9 @@ DRIVERS_SRC_TMP = adc.c \
 
 ifeq ($(MCU),atmega32u4)
 DRIVERS_SRC_TMP += usb.c \
-                   usb_device.c
+                   usb_device.c \
+		   usb/device/descriptors.c \
+		   usb/device/class/cdc.c
 endif
 
 DRIVERS_SRC ?= $(DRIVERS_SRC_TMP)

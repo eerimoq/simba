@@ -20,13 +20,45 @@
 
 #include "simba.h"
 
-struct usb_device_driver_t usb;
+static struct usb_device_driver_t usb;
+static struct usb_device_driver_base_t *drivers[1];
+static struct usb_device_class_cdc_driver_t cdc;
+static uint8_t rxbuf[32];
 
 static int test_init(struct harness_t *harness_p)
 {
-    BTASSERT(usb_device_init(&usb, &usb_device[0]) == 0);
+    char c;
+
+    BTASSERT(usb_device_module_init() == 0);
+    BTASSERT(usb_device_class_cdc_module_init() == 0);
+
+    /* Initialize the CDC driver object. */
+    BTASSERT(usb_device_class_cdc_init(&cdc,
+                                       2,
+                                       3,
+                                       rxbuf,
+                                       sizeof(rxbuf)) == 0);
+    drivers[0] = &cdc.base;
+
+    /* Initialize the USB device driver. */
+    BTASSERT(usb_device_init(&usb,
+                             &usb_device[0],
+                             drivers,
+                             membersof(drivers),
+                             usb_device_descriptors,
+                             usb_device_descriptor_string_language,
+                             usb_device_descriptor_string_iproduct,
+                             usb_device_descriptor_string_imanufacturer) == 0);
     BTASSERT(usb_device_start(&usb) == 0);
-    BTASSERT(usb_device_stop(&usb) == 0);
+
+    while (1) {
+        /* Write read data back to the sender. */
+        if (usb_device_class_cdc_read(&cdc,
+                                      &c,
+                                      sizeof(c)) == sizeof(c)) {
+            usb_device_class_cdc_write(&cdc, &c, sizeof(c));
+        }
+    }
 
     return (0);
 }
@@ -40,7 +72,6 @@ int main()
     };
 
     sys_start();
-    uart_module_init();
 
     harness_init(&harness);
     harness_run(&harness, testcases);

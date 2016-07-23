@@ -82,7 +82,11 @@
 #define CONFIG_CONSOLE_USB_CDC      2
 
 #ifndef CONFIG_CONSOLE
-#    define CONFIG_CONSOLE CONFIG_CONSOLE_UART
+#    if defined(BOARD_ARDUINO_PRO_MICRO)
+#        define CONFIG_CONSOLE CONFIG_CONSOLE_USB_CDC
+#    else
+#        define CONFIG_CONSOLE CONFIG_CONSOLE_UART
+#    endif
 #endif
 
 /**
@@ -129,6 +133,31 @@
  */
 #ifndef CONFIG_SHELL_HISTORY_SIZE
 #    define CONFIG_SHELL_HISTORY_SIZE   (10 * CONFIG_SHELL_COMMAND_MAX)
+#endif
+
+/**
+ * USB device CDC.
+ */
+#ifndef CONFIG_USB_DEVICE_CDC
+#    if defined(BOARD_ARDUINO_PRO_MICRO)
+#        define CONFIG_USB_DEVICE_CDC    1
+#    else
+#        define CONFIG_USB_DEVICE_CDC    0
+#    endif
+#endif
+
+/**
+ * USB device vendor id.
+ */
+#ifndef CONFIG_USB_DEVICE_VID
+#    define CONFIG_USB_DEVICE_VID    0x2341
+#endif
+
+/**
+ * USB device product id.
+ */
+#ifndef CONFIG_USB_DEVICE_PID
+#    define CONFIG_USB_DEVICE_PID    0x8037
 #endif
 
 #endif

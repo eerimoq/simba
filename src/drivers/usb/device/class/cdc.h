@@ -24,50 +24,44 @@
 #include "simba.h"
 
 struct usb_device_class_cdc_driver_t {
+    struct usb_device_driver_base_t base;
+    struct usb_device_driver_t *drv_p;
+    int endpoint_in;
+    int endpoint_out;
+    int line_state;
+    struct usb_cdc_line_info_t line_info;
+    struct chan_t chout;
+    struct queue_t chin;
 };
 
-struct usb_device_class_cdc_device_t {
-};
+/**
+ * Initialize the CDC module.
+ *
+ * @return zero(0) or negative error code.
+ */
+int usb_device_class_cdc_module_init(void);
 
 /**
  * Initialize driver object from given configuration.
  *
  * @param[in] self_p Driver object to be initialized.
- * @param[in] dev_p Device to use.
  * @param[in] rxbuf_p Reception buffer.
  * @param[in] size Reception buffer size.
  *
  * @return zero(0) or negative error code.
  */
 int usb_device_class_cdc_init(struct usb_device_class_cdc_driver_t *self_p,
-                              struct usb_device_class_cdc_device_t *dev_p,
+                              int endpoint_in,
+                              int endpoint_out,
                               void *rxbuf_p,
                               size_t size);
 
 /**
- * Starts the CDC device using given driver object.
- *
- * @param[in] self_p Initialized driver object.
- *
- * @return zero(0) or negative error code.
- */
-int usb_device_class_cdc_start(struct usb_device_class_cdc_driver_t *self_p);
-
-/**
- * Stops the CDC device referenced by driver object.
- *
- * @param[in] self_p Initialized driver object.
- *
- * @return zero(0) or negative error code.
- */
-int usb_device_class_cdc_stop(struct usb_device_class_cdc_driver_t *self_p);
-
-/**
- * Read data from the CDC.
+ * Read data from the CDC driver.
  *
  * @param[in] self_p Initialized driver object.
  * @param[in] buf_p Buffer to read into.
- * @param[in] size Number of bytes to receive.
+ * @param[in] size Number of bytes to read.
  *
  * @return Number of bytes read or negative error code.
  */
@@ -75,7 +69,7 @@ int usb_device_class_cdc_stop(struct usb_device_class_cdc_driver_t *self_p);
     queue_read(&(self_p)->chin, buf_p, size)
 
 /**
- * Write data to the CDC.
+ * Write data to the CDC driver.
  *
  * @param[in] self_p Initialized driver object.
  * @param[in] buf_p Buffer to write.
@@ -85,5 +79,15 @@ int usb_device_class_cdc_stop(struct usb_device_class_cdc_driver_t *self_p);
  */
 #define usb_device_class_cdc_write(self_p, buf_p, size)         \
     (self_p)->chout.write(&(self_p)->chout, buf_p, size)
+
+/**
+ * Called by the USB device driver periodically to let the CDC driver
+ * read received data from the hardware.
+ *
+ * @param[in] self_p Initialized driver object.
+ *
+ * @return zero(0) or negative error code.
+ */
+int usb_device_class_cdc_input_isr(struct usb_device_class_cdc_driver_t *self_p);
 
 #endif
