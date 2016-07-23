@@ -124,10 +124,6 @@ def setup_mcu_avr(env):
         join("3pp", "lwip-1.4.1", "src", "include", "ipv4")
     ])
 
-    env.Append(CPPDEFINES=[
-        ("CONFIG_MONITOR_THREAD", 0)
-    ])
-
     env.Append(CCFLAGS=[
         "-funsigned-bitfields",
         "-std=gnu99",
@@ -209,10 +205,6 @@ def setup_mcu_esp(env, linker_script, flash_size_map):
         "3pp/ESP8266_RTOS_SDK/include/lwip",
         "3pp/ESP8266_RTOS_SDK/include/lwip/ipv4",
         "3pp/ESP8266_RTOS_SDK/include/lwip/ipv6"
-    ])
-
-    env.Append(CPPDEFINES=[
-        ("CONFIG_MONITOR_THREAD", 0)
     ])
 
     linkflags = []

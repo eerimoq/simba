@@ -26,9 +26,9 @@
  */
 #ifndef CONFIG_ASSERT
 #    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO)
-#        define CONFIG_ASSERT               0
+#        define CONFIG_ASSERT                               0
 #    else
-#        define CONFIG_ASSERT               1
+#        define CONFIG_ASSERT                               1
 #    endif
 #endif
 
@@ -36,56 +36,247 @@
  * Build with debug.
  */
 #ifndef CONFIG_DEBUG
-#    define CONFIG_DEBUG                1
+#    define CONFIG_DEBUG                                    1
 #endif
 
 /**
  * Stack profiling.
  */
 #ifndef CONFIG_PROFILE_STACK
-#    define CONFIG_PROFILE_STACK        1
+#    define CONFIG_PROFILE_STACK                            1
 #endif
 
 /**
  * Use a preemptive scheduler.
  */
 #ifndef CONFIG_PREEMPTIVE_SCHEDULER
-#    define CONFIG_PREEMPTIVE_SCHEDULER 0
+#    define CONFIG_PREEMPTIVE_SCHEDULER                     0
 #endif
 
 /**
  * Start the monitor thread.
  */
 #ifndef CONFIG_MONITOR_THREAD
-#    define CONFIG_MONITOR_THREAD       1
+#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(BOARD_ESP12E) || defined(BOARD_ESP01)
+#        define CONFIG_MONITOR_THREAD                       0
+#    else
+#        define CONFIG_MONITOR_THREAD                       1
+#    endif
 #endif
 
 /**
  * Default system tick frequency.
  */
 #ifndef CONFIG_SYSTEM_TICK_FREQUENCY
-#    define CONFIG_SYSTEM_TICK_FREQUENCY 100
+#    define CONFIG_SYSTEM_TICK_FREQUENCY                  100
 #endif
 
 /**
  * Maximum number of bytes in the print output buffer.
  */
 #ifndef CONFIG_STD_OUTPUT_BUFFER_MAX
-#    define CONFIG_STD_OUTPUT_BUFFER_MAX 16
+#    define CONFIG_STD_OUTPUT_BUFFER_MAX                   16
+#endif
+
+/**
+ * File system command.
+ */
+#ifndef CONFIG_FS_CMD_USB_DEVICE_LIST
+#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO)
+#        define CONFIG_FS_CMD_USB_DEVICE_LIST               0
+#    else
+#        define CONFIG_FS_CMD_USB_DEVICE_LIST               1
+#    endif
+#endif
+
+/**
+ * File system command.
+ */
+#ifndef CONFIG_FS_CMD_USB_HOST_LIST
+#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO)
+#        define CONFIG_FS_CMD_USB_HOST_LIST                 0
+#    else
+#        define CONFIG_FS_CMD_USB_HOST_LIST                 1
+#    endif
+#endif
+
+/**
+ * File system command.
+ */
+#ifndef CONFIG_FS_CMD_PIN_INIT
+#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO)
+#        define CONFIG_FS_CMD_PIN_INIT                      0
+#    else
+#        define CONFIG_FS_CMD_PIN_INIT                      1
+#    endif
+#endif
+
+/**
+ * File system command.
+ */
+#ifndef CONFIG_FS_CMD_PIN_WRITE
+#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO)
+#        define CONFIG_FS_CMD_PIN_WRITE                     0
+#    else
+#        define CONFIG_FS_CMD_PIN_WRITE                     1
+#    endif
+#endif
+
+/**
+ * File system command.
+ */
+#ifndef CONFIG_FS_CMD_DS18B20_LIST
+#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO)
+#        define CONFIG_FS_CMD_DS18B20_LIST                  0
+#    else
+#        define CONFIG_FS_CMD_DS18B20_LIST                  1
+#    endif
+#endif
+
+/**
+ * File system command.
+ */
+#ifndef CONFIG_FS_CMD_I2C_READ
+#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO)
+#        define CONFIG_FS_CMD_I2C_READ                      0
+#    else
+#        define CONFIG_FS_CMD_I2C_READ                      1
+#    endif
+#endif
+
+/**
+ * File system command.
+ */
+#ifndef CONFIG_FS_CMD_I2C_WRITE
+#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO)
+#        define CONFIG_FS_CMD_I2C_WRITE                     0
+#    else
+#        define CONFIG_FS_CMD_I2C_WRITE                     1
+#    endif
+#endif
+
+/**
+ * File system command.
+ */
+#ifndef CONFIG_FS_CMD_THRD_LIST
+#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO)
+#        define CONFIG_FS_CMD_THRD_LIST                     0
+#    else
+#        define CONFIG_FS_CMD_THRD_LIST                     1
+#    endif
+#endif
+
+/**
+ * File system command.
+ */
+#ifndef CONFIG_FS_CMD_THRD_SET_LOG_MASK
+#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO)
+#        define CONFIG_FS_CMD_THRD_SET_LOG_MASK             0
+#    else
+#        define CONFIG_FS_CMD_THRD_SET_LOG_MASK             1
+#    endif
+#endif
+
+/**
+ * File system command.
+ */
+#ifndef CONFIG_FS_CMD_SYS_INFO
+#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO)
+#        define CONFIG_FS_CMD_SYS_INFO                      0
+#    else
+#        define CONFIG_FS_CMD_SYS_INFO                      1
+#    endif
+#endif
+
+/**
+ * File system command.
+ */
+#ifndef CONFIG_FS_CMD_SYS_UPTIME
+#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO)
+#        define CONFIG_FS_CMD_SYS_UPTIME                    0
+#    else
+#        define CONFIG_FS_CMD_SYS_UPTIME                    1
+#    endif
+#endif
+
+/**
+ * File system command.
+ */
+#ifndef CONFIG_FS_CMD_FS_COUNTERS_LIST
+#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO)
+#        define CONFIG_FS_CMD_FS_COUNTERS_LIST              0
+#    else
+#        define CONFIG_FS_CMD_FS_COUNTERS_LIST              1
+#    endif
+#endif
+
+/**
+ * File system command.
+ */
+#ifndef CONFIG_FS_CMD_FS_COUNTERS_RESET
+#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO)
+#        define CONFIG_FS_CMD_FS_COUNTERS_RESET             0
+#    else
+#        define CONFIG_FS_CMD_FS_COUNTERS_RESET             1
+#    endif
+#endif
+
+/**
+ * File system command.
+ */
+#ifndef CONFIG_FS_CMD_FS_PARAMETERS_LIST
+#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO)
+#        define CONFIG_FS_CMD_FS_PARAMETERS_LIST            0
+#    else
+#        define CONFIG_FS_CMD_FS_PARAMETERS_LIST            1
+#    endif
+#endif
+
+/**
+ * File system command.
+ */
+#ifndef CONFIG_FS_CMD_LOG_PRINT
+#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO)
+#        define CONFIG_FS_CMD_LOG_PRINT                     0
+#    else
+#        define CONFIG_FS_CMD_LOG_PRINT                     1
+#    endif
+#endif
+
+/**
+ * File system command.
+ */
+#ifndef CONFIG_FS_CMD_LOG_LIST
+#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO)
+#        define CONFIG_FS_CMD_LOG_LIST                      0
+#    else
+#        define CONFIG_FS_CMD_LOG_LIST                      1
+#    endif
+#endif
+
+/**
+ * File system command.
+ */
+#ifndef CONFIG_FS_CMD_LOG_SET_LOG_MASK
+#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO)
+#        define CONFIG_FS_CMD_LOG_SET_LOG_MASK              0
+#    else
+#        define CONFIG_FS_CMD_LOG_SET_LOG_MASK              1
+#    endif
 #endif
 
 /**
  * Default console device (UART/USB CDC).
  */
-#define CONFIG_CONSOLE_NONE         0
-#define CONFIG_CONSOLE_UART         1
-#define CONFIG_CONSOLE_USB_CDC      2
+#define CONFIG_CONSOLE_NONE                                 0
+#define CONFIG_CONSOLE_UART                                 1
+#define CONFIG_CONSOLE_USB_CDC                              2
 
 #ifndef CONFIG_CONSOLE
 #    if defined(BOARD_ARDUINO_PRO_MICRO)
-#        define CONFIG_CONSOLE CONFIG_CONSOLE_USB_CDC
+#        define CONFIG_CONSOLE         CONFIG_CONSOLE_USB_CDC
 #    else
-#        define CONFIG_CONSOLE CONFIG_CONSOLE_UART
+#        define CONFIG_CONSOLE            CONFIG_CONSOLE_UART
 #    endif
 #endif
 
@@ -93,14 +284,14 @@
  * Default console device index.
  */
 #ifndef CONFIG_CONSOLE_DEVICE
-#    define CONFIG_CONSOLE_DEVICE        0
+#    define CONFIG_CONSOLE_DEVICE                           0
 #endif
 
 /**
  * Default console baudrate.
  */
 #ifndef CONFIG_CONSOLE_BAUDRATE
-#    define CONFIG_CONSOLE_BAUDRATE  38400
+#    define CONFIG_CONSOLE_BAUDRATE                     38400
 #endif
 
 /**
@@ -108,9 +299,9 @@
  */
 #ifndef CONFIG_SHELL_MINIMAL
 #    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO)
-#        define CONFIG_SHELL_MINIMAL    1
+#        define CONFIG_SHELL_MINIMAL                        1
 #    else
-#        define CONFIG_SHELL_MINIMAL    0
+#        define CONFIG_SHELL_MINIMAL                        0
 #    endif
 #endif
 
@@ -125,7 +316,7 @@
  * Maximum number of characters in a shell command.
  */
 #ifndef CONFIG_SHELL_COMMAND_MAX
-#    define CONFIG_SHELL_COMMAND_MAX     64
+#    define CONFIG_SHELL_COMMAND_MAX                       64
 #endif
 
 /**
@@ -140,9 +331,9 @@
  */
 #ifndef CONFIG_USB_DEVICE_CDC
 #    if defined(BOARD_ARDUINO_PRO_MICRO)
-#        define CONFIG_USB_DEVICE_CDC    1
+#        define CONFIG_USB_DEVICE_CDC                       1
 #    else
-#        define CONFIG_USB_DEVICE_CDC    0
+#        define CONFIG_USB_DEVICE_CDC                       0
 #    endif
 #endif
 
@@ -150,14 +341,14 @@
  * USB device vendor id.
  */
 #ifndef CONFIG_USB_DEVICE_VID
-#    define CONFIG_USB_DEVICE_VID    0x2341
+#    define CONFIG_USB_DEVICE_VID                      0x2341
 #endif
 
 /**
  * USB device product id.
  */
 #ifndef CONFIG_USB_DEVICE_PID
-#    define CONFIG_USB_DEVICE_PID    0x8037
+#    define CONFIG_USB_DEVICE_PID                      0x8037
 #endif
 
 #endif

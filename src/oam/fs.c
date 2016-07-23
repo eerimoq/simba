@@ -32,10 +32,6 @@ struct state_t {
     struct fs_parameter_t *parameters_p;
 };
 
-static struct fs_command_t cmd_counters_list;
-static struct fs_command_t cmd_counters_reset;
-static struct fs_command_t cmd_parameters_list;
-
 static struct state_t state;
 static char empty_path[] = "";
 
@@ -57,12 +53,16 @@ static int counter_set(struct fs_counter_t *counter_p)
     return (0);
 }
 
-static int counters_list(int argc,
-                         const char *argv[],
-                         chan_t *chout_p,
-                         chan_t *chin_p,
-                         void *arg_p,
-                         void *call_arg_p)
+#if CONFIG_FS_CMD_FS_COUNTERS_LIST == 1
+
+static struct fs_command_t cmd_counters_list;
+
+static int cmd_counters_list_cb(int argc,
+                                const char *argv[],
+                                chan_t *chout_p,
+                                chan_t *chin_p,
+                                void *arg_p,
+                                void *call_arg_p)
 {
     struct fs_counter_t *counter_p;
     char buf[FS_NAME_MAX];
@@ -88,12 +88,18 @@ static int counters_list(int argc,
     return (0);
 }
 
-static int counters_reset(int argc,
-                          const char *argv[],
-                          chan_t *chout_p,
-                          chan_t *chin_p,
-                          void *arg_p,
-                          void *call_arg_p)
+#endif
+
+#if CONFIG_FS_CMD_FS_COUNTERS_RESET == 1
+
+static struct fs_command_t cmd_counters_reset;
+
+static int cmd_counters_reset_cb(int argc,
+                                 const char *argv[],
+                                 chan_t *chout_p,
+                                 chan_t *chin_p,
+                                 void *arg_p,
+                                 void *call_arg_p)
 {
     struct fs_counter_t *counter_p;
 
@@ -113,12 +119,18 @@ static int counters_reset(int argc,
     return (0);
 }
 
-int parameters_list(int argc,
-                    const char *argv[],
-                    chan_t *chout_p,
-                    chan_t *chin_p,
-                    void *arg_p,
-                    void *call_arg_p)
+#endif
+
+#if CONFIG_FS_CMD_FS_PARAMETERS_LIST == 1
+
+static struct fs_command_t cmd_parameters_list;
+
+static int cmd_parameters_list_cb(int argc,
+                                  const char *argv[],
+                                  chan_t *chout_p,
+                                  chan_t *chin_p,
+                                  void *arg_p,
+                                  void *call_arg_p)
 {
     struct fs_parameter_t *parameter_p;
  
@@ -139,6 +151,8 @@ int parameters_list(int argc,
 
     return (0);
 }
+
+#endif
 
 /**
  * Remove whitespaces from beginning and end of string. Replace sequence
@@ -202,12 +216,12 @@ static int command_parse(char *command_p, const char *argv[])
     return (argc);
 }
 
-static int counter_cmd(int argc,
-                       const char *argv[],
-                       chan_t *chout_p,
-                       chan_t *chin_p,
-                       void *cmd_arg_p,
-                       void *arg_p)
+static int cmd_counter_cb(int argc,
+                          const char *argv[],
+                          chan_t *chout_p,
+                          chan_t *chin_p,
+                          void *cmd_arg_p,
+                          void *arg_p)
 {
     if (argc == FS_ARGC_GET) {
         return (counter_get(cmd_arg_p, chout_p));
@@ -222,23 +236,35 @@ int fs_module_init()
     state.counters_p = NULL;
     state.parameters_p = NULL;
 
+#if CONFIG_FS_CMD_FS_COUNTERS_LIST == 1
+
     fs_command_init(&cmd_counters_list,
                     FSTR("/kernel/fs/counters_list"),
-                    counters_list,
+                    cmd_counters_list_cb,
                     NULL);
     fs_command_register(&cmd_counters_list);
 
+#endif
+
+#if CONFIG_FS_CMD_FS_COUNTERS_RESET == 1
+
     fs_command_init(&cmd_counters_reset,
                     FSTR("/kernel/fs/counters_reset"), 
-                    counters_reset,
+                    cmd_counters_reset_cb,
                     NULL);
     fs_command_register(&cmd_counters_reset);
 
+#endif
+
+#if CONFIG_FS_CMD_FS_PARAMETERS_LIST == 1
+
     fs_command_init(&cmd_parameters_list,
                     FSTR("/kernel/fs/parameters_list"), 
-                    parameters_list,
+                    cmd_parameters_list_cb,
                     NULL);
     fs_command_register(&cmd_parameters_list);
+
+#endif
 
     return (0);
 }
@@ -543,7 +569,7 @@ int fs_counter_init(struct fs_counter_t *self_p,
 
     fs_command_init(&self_p->command,
                     path_p,
-                    counter_cmd,
+                    cmd_counter_cb,
                     self_p);
 
     self_p->value = value;

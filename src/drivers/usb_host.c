@@ -20,8 +20,6 @@
 
 #include "simba.h"
 
-static struct fs_command_t cmd_list;
-
 /* Only one device supported for now. */
 #define DEVICE_ADDRESS    1
 
@@ -33,6 +31,10 @@ static int device_enumerate(struct usb_host_device_t *device_p);
 static struct usb_host_driver_t *drivers_p = NULL;
 
 static struct usb_host_device_driver_t *device_drivers_p = NULL;
+
+#if CONFIG_FS_CMD_USB_HOST_LIST == 1
+
+static struct fs_command_t cmd_list;
 
 static int cmd_list_cb(int argc,
                        const char *argv[],
@@ -84,6 +86,8 @@ static int cmd_list_cb(int argc,
 
     return (0);
 }
+
+#endif
 
 /**
  * Set the device address.

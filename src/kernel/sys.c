@@ -30,9 +30,6 @@ struct sys_t sys = {
     }
 };
 
-static struct fs_command_t cmd_info;
-static struct fs_command_t cmd_uptime;
-
 static const FAR char config[] = 
     "config: assert=" STRINGIFY(CONFIG_ASSERT) "\r\n"
     "        debug=" STRINGIFY(CONFIG_DEBUG) "\r\n"
@@ -67,6 +64,10 @@ static void sys_tick(void) {
 
 #include "sys_port.i"
 
+#if CONFIG_FS_CMD_SYS_INFO == 1
+
+static struct fs_command_t cmd_info;
+
 static int cmd_info_cb(int argc,
                        const char *argv[],
                        chan_t *out_p,
@@ -79,6 +80,12 @@ static int cmd_info_cb(int argc,
 
     return (0);
 }
+
+#endif
+
+#if CONFIG_FS_CMD_SYS_UPTIME == 1
+
+static struct fs_command_t cmd_uptime;
 
 static int cmd_uptime_cb(int argc,
                          const char *argv[],
@@ -99,19 +106,29 @@ static int cmd_uptime_cb(int argc,
     return (0);
 }
 
+#endif
+
 int sys_module_init(void)
 {
+#if CONFIG_FS_CMD_SYS_INFO == 1
+
     fs_command_init(&cmd_info,
                     FSTR("/kernel/sys/info"),
                     cmd_info_cb,
                     NULL);
     fs_command_register(&cmd_info);
 
+#endif
+
+#if CONFIG_FS_CMD_SYS_UPTIME == 1
+
     fs_command_init(&cmd_uptime,
                     FSTR("/kernel/sys/uptime"),
                     cmd_uptime_cb,
                     NULL);
     fs_command_register(&cmd_uptime);
+
+#endif
 
     return (sys_port_module_init());
 }

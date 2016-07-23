@@ -164,6 +164,8 @@ static int setup_isr(struct usb_device_driver_base_t *base_p,
     return (res);
 }
 
+#if CONFIG_FS_CMD_USB_DEVICE_LIST == 1
+
 static int print(struct usb_device_driver_base_t *base_p,
                  chan_t *chout_p)
 {
@@ -193,6 +195,8 @@ static int print(struct usb_device_driver_base_t *base_p,
     return (0);
 }
 
+#endif
+
 int usb_device_class_cdc_module_init(void)
 {
     return (0);
@@ -206,7 +210,9 @@ int usb_device_class_cdc_init(struct usb_device_class_cdc_driver_t *self_p,
 {
     self_p->base.start_of_frame_isr = start_of_frame_isr;
     self_p->base.setup_isr = setup_isr;
+#if CONFIG_FS_CMD_USB_DEVICE_LIST == 1
     self_p->base.print = print;
+#endif
 
     self_p->endpoint_in = endpoint_in;
     self_p->endpoint_out = endpoint_out;

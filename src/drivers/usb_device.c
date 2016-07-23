@@ -23,6 +23,9 @@
 #include "usb_device_port.i"
 
 static struct usb_device_driver_t *driver_p = NULL;
+
+#if CONFIG_FS_CMD_USB_DEVICE_LIST == 1
+
 static struct fs_command_t cmd_list;
 
 static int cmd_list_cb(int argc,
@@ -46,13 +49,19 @@ static int cmd_list_cb(int argc,
     return (0);
 }
 
+#endif
+
 int usb_device_module_init(void)
 {
+#if CONFIG_FS_CMD_USB_DEVICE_LIST == 1
+
     fs_command_init(&cmd_list,
                     FSTR("/drivers/usb_device/list"),
                     cmd_list_cb,
                     NULL);
     fs_command_register(&cmd_list);
+
+#endif
 
     return (usb_device_port_module_init());
 }

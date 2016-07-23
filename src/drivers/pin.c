@@ -22,9 +22,15 @@
 
 #include "pin_port.i"
 
-static struct fs_command_t cmd_init;
-static struct fs_command_t cmd_write;
+#if (CONFIG_FS_CMD_PIN_INIT == 1) || (CONFIG_FS_CMD_PIN_WRITE == 1)
+
 static struct pin_driver_t drivers[PIN_DEVICE_MAX];
+
+#endif
+
+#if CONFIG_FS_CMD_PIN_INIT == 1
+
+static struct fs_command_t cmd_init;
 
 static int cmd_init_cb(int argc,
                        const char *argv[],
@@ -68,6 +74,12 @@ static int cmd_init_cb(int argc,
     return (0);
 }
 
+#endif
+
+#if CONFIG_FS_CMD_PIN_WRITE == 1
+
+static struct fs_command_t cmd_write;
+
 static int cmd_write_cb(int argc,
                         const char *argv[],
                         chan_t *out_p,
@@ -110,19 +122,29 @@ static int cmd_write_cb(int argc,
     return (0);
 }
 
+#endif
+
 int pin_module_init(void)
 {
+#if CONFIG_FS_CMD_PIN_INIT == 1
+    
     fs_command_init(&cmd_init,
                     FSTR("/drivers/pin/init"),
                     cmd_init_cb,
                     NULL);
     fs_command_register(&cmd_init);
+    
+#endif
+
+#if CONFIG_FS_CMD_PIN_WRITE == 1
 
     fs_command_init(&cmd_write,
                     FSTR("/drivers/pin/write"),
                     cmd_write_cb,
                     NULL);
     fs_command_register(&cmd_write);
+
+#endif
 
     return (pin_port_module_init());
 }

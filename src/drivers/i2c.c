@@ -22,8 +22,9 @@
 
 #include "i2c_port.i"
 
+#if CONFIG_FS_CMD_I2C_READ == 1
+
 static struct fs_command_t cmd_read;
-static struct fs_command_t cmd_write;
 
 static int cmd_read_cb(int argc,
                        const char *argv[],
@@ -67,6 +68,12 @@ static int cmd_read_cb(int argc,
 
     return (0);
 }
+
+#endif
+
+#if CONFIG_FS_CMD_I2C_WRITE == 1
+
+static struct fs_command_t cmd_write;
 
 static int cmd_write_cb(int argc,
                         const char *argv[],
@@ -124,19 +131,29 @@ static int cmd_write_cb(int argc,
     return (0);
 }
 
+#endif
+
 int i2c_module_init()
 {
+#if CONFIG_FS_CMD_I2C_READ == 1
+
     fs_command_init(&cmd_read,
                     FSTR("/drivers/i2c/read"),
                     cmd_read_cb,
                     NULL);
     fs_command_register(&cmd_read);
 
+#endif
+
+#if CONFIG_FS_CMD_I2C_WRITE == 1
+
     fs_command_init(&cmd_write,
                     FSTR("/drivers/i2c/write"),
                     cmd_write_cb,
                     NULL);
     fs_command_register(&cmd_write);
+
+#endif
 
     return (i2c_port_module_init());
 }

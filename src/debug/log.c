@@ -21,10 +21,6 @@
 #include "simba.h"
 #include <stdarg.h>
 
-static struct fs_command_t cmd_print;
-static struct fs_command_t cmd_list;
-static struct fs_command_t cmd_set_log_mask;
-
 struct state_t {
     struct log_handler_t handler;
     struct log_object_t object;
@@ -55,6 +51,10 @@ static const char FAR *level_as_string[] = {
 /* The module state. */
 static struct state_t state;
 
+#if CONFIG_FS_CMD_LOG_PRINT == 1
+
+static struct fs_command_t cmd_print;
+
 /**
  * The shell command callback for "/kernel/log/print".
  */
@@ -76,6 +76,12 @@ static int cmd_print_cb(int argc,
 
     return (0);
 }
+
+#endif
+
+#if CONFIG_FS_CMD_LOG_LIST == 1
+
+static struct fs_command_t cmd_list;
 
 /**
  * The shell command callback for "/kernel/log/print".
@@ -114,6 +120,12 @@ static int cmd_list_cb(int argc,
 
     return (0);
 }
+
+#endif
+
+#if CONFIG_FS_CMD_LOG_SET_LOG_MASK == 1
+
+static struct fs_command_t cmd_set_log_mask;
 
 /**
  * The shell command callback for "/kernel/log/set_log_mask".
@@ -173,6 +185,8 @@ static int cmd_set_log_mask_cb(int argc,
     return (0);
 }
 
+#endif
+
 int log_module_init()
 {
     sem_init(&state.sem, 0, 1);
@@ -184,6 +198,8 @@ int log_module_init()
     state.object.mask = LOG_UPTO(INFO);
     state.object.next_p = NULL;
 
+#if CONFIG_FS_CMD_LOG_PRINT == 1
+
     /* Setup shell commands. */
     fs_command_init(&cmd_print,
                     FSTR("/kernel/log/print"),
@@ -191,17 +207,27 @@ int log_module_init()
                     NULL);
     fs_command_register(&cmd_print);
 
+#endif
+
+#if CONFIG_FS_CMD_LOG_LIST == 1
+
     fs_command_init(&cmd_list,
                     FSTR("/kernel/log/list"),
                     cmd_list_cb,
                     NULL);
     fs_command_register(&cmd_list);
 
+#endif
+
+#if CONFIG_FS_CMD_LOG_SET_LOG_MASK == 1
+
     fs_command_init(&cmd_set_log_mask,
                     FSTR("/kernel/log/set_log_mask"),
                     cmd_set_log_mask_cb,
                     NULL);
     fs_command_register(&cmd_set_log_mask);
+
+#endif
 
     return (0);
 }

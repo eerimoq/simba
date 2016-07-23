@@ -23,11 +23,10 @@ CROSS_COMPILE = avr-
 SIZEARGS = --mcu=$(MCU) --format=avr
 
 CDEFS += F_CPU=$(F_CPU)UL \
-	__DELAY_BACKWARD_COMPATIBLE__ \
-	CONFIG_MONITOR_THREAD=0	
+	__DELAY_BACKWARD_COMPATIBLE__
 
 CFLAGS += -mmcu=$(CPU) \
-          -O2 \
+          -Os \
           -ffunction-sections \
           -fdata-sections \
           -fpack-struct \

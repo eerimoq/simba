@@ -33,17 +33,6 @@ enum thrd_state_t {
 #define THRD_STACK_LOW_MAGIC      0x1337
 #define THRD_FILL_PATTERN           0x19
 
-static char *state_fmt[] = {
-    "current",
-    "ready",
-    "suspended",
-    "resumed",
-    "terminated"
-};
-
-static struct fs_command_t cmd_list;
-static struct fs_command_t cmd_set_log_mask;
-
 struct thrd_scheduler_t {
     struct thrd_t *current_p;
     struct thrd_t *ready_p;
@@ -66,6 +55,8 @@ static void thrd_reschedule(void);
 
 static void terminate(void);
 
+#if (CONFIG_MONITOR_THREAD == 1) || (CONFIG_FS_CMD_THRD_LIST == 1) || (CONFIG_FS_CMD_THRD_SET_LOG_MASK == 1)
+
 static int iterate_thread_children(struct thrd_t *thrd_p,
                                    int (*callback)(void *arg_p,
                                                    struct thrd_t *thrd_p),
@@ -74,6 +65,8 @@ static int iterate_thread_children(struct thrd_t *thrd_p,
 static int iterate_threads(int (*callback)(void *arg_p,
                                            struct thrd_t *thrd_p),
                            void *arg_p);
+
+#endif
 
 #include "thrd_port.i"
 
@@ -201,6 +194,8 @@ static void thrd_fill_pattern(char *from_p, size_t size)
   }
 }
 
+#if CONFIG_FS_CMD_THRD_LIST == 1
+
 static int thrd_get_used_stack(struct thrd_t *thrd_p)
 {
   char *stack_p;
@@ -220,6 +215,10 @@ static int thrd_get_used_stack(struct thrd_t *thrd_p)
 }
 
 #endif
+
+#endif
+
+#if (CONFIG_MONITOR_THREAD == 1) || (CONFIG_FS_CMD_THRD_LIST == 1) || (CONFIG_FS_CMD_THRD_SET_LOG_MASK == 1)
 
 static int iterate_thread_children(struct thrd_t *thrd_p,
                                    int (*callback)(void *arg_p,
@@ -256,7 +255,8 @@ static int iterate_thread_children(struct thrd_t *thrd_p,
 }
 
 /**
- * Recursively call given callback for all threads, starting with the main thread.
+ * Recursively call given callback for all threads, starting with the
+ * main thread.
  */
 static int iterate_threads(int (*callback)(void *arg_p,
                                            struct thrd_t *thrd_p),
@@ -264,6 +264,20 @@ static int iterate_threads(int (*callback)(void *arg_p,
 {
     return (iterate_thread_children(&main_thrd, callback, arg_p));
 }
+
+#endif
+
+#if CONFIG_FS_CMD_THRD_LIST == 1
+
+static char *state_fmt[] = {
+    "current",
+    "ready",
+    "suspended",
+    "resumed",
+    "terminated"
+};
+
+static struct fs_command_t cmd_list;
 
 static int cmd_list_thrd_print(chan_t *chout_p,
                                struct thrd_t *thrd_p)
@@ -304,6 +318,12 @@ static int cmd_list_cb(int argc,
 
     return (iterate_threads(cmd_list_thrd_print, chout_p));
 }
+
+#endif
+
+#if CONFIG_FS_CMD_THRD_SET_LOG_MASK == 1
+
+static struct fs_command_t cmd_set_log_mask;
 
 static int get_by_name(void *arg_p,
                        struct thrd_t *thrd_p)
@@ -362,6 +382,8 @@ static int cmd_set_log_mask_cb(int argc,
     return (0);
 }
 
+#endif
+
 static void *idle_thrd(void *arg_p)
 {
     struct thrd_t *thrd_p;
@@ -395,26 +417,37 @@ int thrd_module_init(void)
     main_thrd.parent.thrd_p = NULL;
     LIST_SL_INIT(&main_thrd.children);
     main_thrd.cpu.usage = 0;
+
 #if CONFIG_ASSERT == 1
+
     main_thrd.stack_low_magic = THRD_STACK_LOW_MAGIC;
+
 #endif
+
 #if CONFIG_PROFILE_STACK == 1
+
     main_thrd.stack_size = (&__main_stack_end - (char *)(&main_thrd + 1));
     thrd_fill_pattern((char *)(&main_thrd + 1),
                       &dummy - (char *)(&main_thrd + 2));
+
 #endif
+
     thrd_port_init_main(&main_thrd.port);
     scheduler.current_p = &main_thrd;
 
     thrd_spawn(idle_thrd, NULL, 127, idle_thrd_stack, sizeof(idle_thrd_stack));
 
 #if CONFIG_MONITOR_THREAD == 1
+
     thrd_spawn(monitor_thrd,
                NULL,
                THRD_MONITOR_PRIO,
                monitor_thrd_stack,
                sizeof(monitor_thrd_stack));
+
 #endif
+
+#if CONFIG_FS_CMD_THRD_LIST == 1
 
     fs_command_init(&cmd_list,
                     FSTR("/kernel/thrd/list"),
@@ -422,13 +455,20 @@ int thrd_module_init(void)
                     NULL);
     fs_command_register(&cmd_list);
 
+#endif
+
+#if CONFIG_FS_CMD_THRD_SET_LOG_MASK == 1
+
     fs_command_init(&cmd_set_log_mask,
                     FSTR("/kernel/thrd/set_log_mask"),
                     cmd_set_log_mask_cb,
                     NULL);
     fs_command_register(&cmd_set_log_mask);
 
+#endif
+
 #if CONFIG_MONITOR_THREAD == 1
+
     fs_command_init(&cmd_monitor_set_period_ms,
                     FSTR("/kernel/thrd/monitor/set_period_ms"),
                     cmd_monitor_set_period_ms_cb,
@@ -440,6 +480,7 @@ int thrd_module_init(void)
                     cmd_monitor_set_print_cb,
                     NULL);
     fs_command_register(&cmd_monitor_set_print);
+
 #endif
 
     return (0);

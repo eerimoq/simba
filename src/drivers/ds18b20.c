@@ -31,8 +31,6 @@
 #define RECALL_E          0xb8
 #define READ_POWER_SUPPLY 0xb4
 
-static struct fs_command_t cmd_list;
-
 struct ds18b20_scratchpad_t {
     int16_t temperature;
     int8_t high_trigger;
@@ -43,6 +41,10 @@ struct ds18b20_scratchpad_t {
 };
 
 static struct ds18b20_driver_t *list_p = NULL;
+
+#if CONFIG_FS_CMD_DS18B20_LIST == 1
+
+static struct fs_command_t cmd_list;
 
 static int cmd_list_cb(int argc,
                        const char *argv[],
@@ -89,6 +91,8 @@ static int cmd_list_cb(int argc,
     return (0);
 }
 
+#endif
+
 /**
  * Read scratchpad in device.
  * @param[in] drv Driver object to be initialized.
@@ -115,11 +119,15 @@ static int ds18b20_read_scratchpad(struct ds18b20_driver_t *self_p,
 
 int ds18b20_module_init()
 {
+#if CONFIG_FS_CMD_DS18B20_LIST == 1
+
     fs_command_init(&cmd_list,
                     FSTR("/drivers/ds18b20/list"),
                     cmd_list_cb,
                     NULL);
     fs_command_register(&cmd_list);
+
+#endif
 
     return (0);
 }
