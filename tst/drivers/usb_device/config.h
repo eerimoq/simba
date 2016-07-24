@@ -21,6 +21,6 @@
 #ifndef __CONFIG_H__
 #define __CONFIG_H__
 
-#define CONFIG_CONSOLE  CONFIG_CONSOLE_UART
+#define CONFIG_CONSOLE  CONFIG_CONSOLE_NONE
 
 #endif

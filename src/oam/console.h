@@ -50,11 +50,25 @@ int console_start(void);
 int console_stop(void);
 
 /**
+ * Set the pointer to the input channel.
+ *
+ * @return zero(0) or negative error code.
+ */
+int console_set_input_channel(chan_t *chan_p);
+
+/**
  * Get the pointer to the input channel.
  *
  * @return Input channel or NULL.
  */
 chan_t *console_get_input_channel(void);
+
+/**
+ * Set the pointer to the output channel.
+ *
+ * @return zero(0) or negative error code.
+ */
+chan_t *console_set_output_channel(chan_t *chan_p);
 
 /**
  * Get the pointer to the output channel.

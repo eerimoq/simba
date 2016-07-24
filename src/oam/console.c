@@ -127,6 +127,61 @@ chan_t *console_get_output_channel(void)
 }
 
 #elif CONFIG_CONSOLE == CONFIG_CONSOLE_NONE
+
+struct console_t {
+    chan_t *chin_p;
+    chan_t *chout_p;
+};
+
+static struct console_t console;
+
+int console_module_init(void)
+{
+    console.chin_p = NULL;
+    console.chout_p = NULL;
+
+    return (0);
+}
+
+int console_init(void)
+{
+    return (0);
+}
+
+int console_start(void)
+{
+    return (0);
+}
+
+int console_stop(void)
+{
+    return (0);
+}
+
+int console_set_input_channel(chan_t *chan_p)
+{
+    console.chin_p = chan_p;
+
+    return (0);
+}
+
+chan_t *console_get_input_channel(void)
+{
+    return (console.chin_p);
+}
+
+chan_t *console_set_output_channel(chan_t *chan_p)
+{
+    console.chout_p = chan_p;
+
+    return (0);
+}
+
+chan_t *console_get_output_channel(void)
+{
+    return (console.chout_p);
+}
+
 #else
 #    error "Bad console."
 #endif

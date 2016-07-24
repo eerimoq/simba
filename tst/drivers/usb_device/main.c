@@ -21,41 +21,43 @@
 #include "simba.h"
 
 /* These must match the definitions in descriptors.c. */
-#define CDC_0_CONTROL_INTERACE   0
-#define CDC_0_ENDPOINT_IN        2
-#define CDC_0_ENDPOINT_OUT       3
-
-#define CDC_1_CONTROL_INTERACE   2
-#define CDC_1_ENDPOINT_IN        5
-#define CDC_1_ENDPOINT_OUT       6
+#define ECHO_CONTROL_INTERACE   2
+#define ECHO_ENDPOINT_IN        5
+#define ECHO_ENDPOINT_OUT       6
 
 static struct usb_device_driver_t usb;
 static struct usb_device_driver_base_t *drivers[2];
-static struct usb_device_class_cdc_driver_t cdc[2];
-static uint8_t rxbuf[2][32];
 
-static int test_init(struct harness_t *harness_p)
+/* The console serial port will likely be /dev/ttyACM0 in linux. */
+static struct usb_device_class_cdc_driver_t console;
+static uint8_t console_rxbuf[8];
+
+/* The echo serial port will likely be /dev/ttyACM1 in linux. */
+static struct usb_device_class_cdc_driver_t echo;
+static uint8_t echo_rxbuf[8];
+
+static int test_start(struct harness_t *harness_p)
 {
     BTASSERT(usb_device_module_init() == 0);
     BTASSERT(usb_device_class_cdc_module_init() == 0);
-    
+
     /* Initialize the first CDC driver object. */
-    BTASSERT(usb_device_class_cdc_init(&cdc[0],
-                                       CDC_0_CONTROL_INTERACE,
-                                       CDC_0_ENDPOINT_IN,
-                                       CDC_0_ENDPOINT_OUT,
-                                       &rxbuf[0][0],
-                                       sizeof(rxbuf[0])) == 0);
-    drivers[0] = &cdc[0].base;
+    BTASSERT(usb_device_class_cdc_init(&console,
+                                       CONFIG_CONSOLE_USB_CDC_CONTROL_INTERFACE,
+                                       CONFIG_CONSOLE_USB_CDC_ENDPOINT_IN,
+                                       CONFIG_CONSOLE_USB_CDC_ENDPOINT_OUT,
+                                       &console_rxbuf[0],
+                                       sizeof(console_rxbuf)) == 0);
+    drivers[0] = &console.base;
 
     /* Initialize the second CDC driver object. */
-    BTASSERT(usb_device_class_cdc_init(&cdc[1],
-                                       CDC_1_CONTROL_INTERACE,
-                                       CDC_1_ENDPOINT_IN,
-                                       CDC_1_ENDPOINT_OUT,
-                                       &rxbuf[1][0],
-                                       sizeof(rxbuf[0])) == 0);
-    drivers[1] = &cdc[1].base;
+    BTASSERT(usb_device_class_cdc_init(&echo,
+                                       ECHO_CONTROL_INTERACE,
+                                       ECHO_ENDPOINT_IN,
+                                       ECHO_ENDPOINT_OUT,
+                                       &echo_rxbuf[0],
+                                       sizeof(echo_rxbuf)) == 0);
+    drivers[1] = &echo.base;
 
     /* Initialize the USB device driver. */
     BTASSERT(usb_device_init(&usb,
@@ -70,34 +72,33 @@ static int test_init(struct harness_t *harness_p)
     /* Start the USB device driver. */
     BTASSERT(usb_device_start(&usb) == 0);
 
+    /* Manually setup the console channels. */
+    console_set_input_channel(&console.chin);
+    console_set_output_channel(&console.chout);
+
+    /* Set the standard output channel to the console output
+       channel. */
+    sys_set_stdout(console_get_output_channel());
+
     return (0);
 }
 
 static int test_echo(struct harness_t *harness_p)
 {
     char c;
-    struct chan_list_t list;
-    int worksapce[32];
-    chan_t *chan_p;
 
-    /* Poll both channels. */
-    chan_list_init(&list, worksapce, sizeof(worksapce));
-    chan_list_add(&list, &cdc[0].chin);
-    chan_list_add(&list, &cdc[1].chin);
+    /* Read one character and write it back to the sender. */
+    BTASSERT(chan_read(&echo.chin, &c, sizeof(c)) == sizeof(c));
+    BTASSERT(chan_write(&echo.chout, &c, sizeof(c)) == sizeof(c));
 
-    while (1) {
-        /* Wait for data to be available. */
-        chan_p = chan_list_poll(&list, NULL);
+    return (0);
+}
 
-        /* Read a byte and write it back the sender. */
-        if (chan_p == &cdc[0].chin) {
-            chan_read(&cdc[0].chin, &c, sizeof(c));
-            chan_write(&cdc[0].chout, &c, sizeof(c));
-        } else if (chan_p == &cdc[1].chin) {
-            chan_read(&cdc[1].chin, &c, sizeof(c));
-            chan_write(&cdc[1].chout, &c, sizeof(c));
-        }
-    }
+static int test_stop(struct harness_t *harness_p)
+{
+    /* Stop the USB device driver. */
+    std_printf(FSTR("Willl not stop the driver since "
+                    "it's the console.\r\n"));
 
     return (0);
 }
@@ -106,8 +107,9 @@ int main()
 {
     struct harness_t harness;
     struct harness_testcase_t testcases[] = {
-        { test_init, "test_init" },
+        { test_start, "test_start" },
         { test_echo, "test_echo" },
+        { test_stop, "test_stop" },
         { NULL, NULL }
     };
 

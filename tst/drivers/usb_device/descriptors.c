@@ -244,6 +244,7 @@ FAR const union usb_descriptor_t *
 usb_device_descriptors[] = {
     (FAR const union usb_descriptor_t *)&device_descriptor,
     (FAR const union usb_descriptor_t *)&configuration_descriptor,
+    /* Interface association 0 (/dev/ttyACM0). */
     (FAR const union usb_descriptor_t *)&inferface_association_0_descriptor,
     (FAR const union usb_descriptor_t *)&inferface_0_descriptor,
     (FAR const union usb_descriptor_t *)&cdc_header_descriptor,
@@ -254,6 +255,7 @@ usb_device_descriptors[] = {
     (FAR const union usb_descriptor_t *)&inferface_1_descriptor,
     (FAR const union usb_descriptor_t *)&endpoint_2_descriptor,
     (FAR const union usb_descriptor_t *)&endpoint_3_descriptor,
+    /* Interface association 1 (/dev/ttyACM1). */
     (FAR const union usb_descriptor_t *)&inferface_association_1_descriptor,
     (FAR const union usb_descriptor_t *)&inferface_2_descriptor,
     (FAR const union usb_descriptor_t *)&cdc_header_descriptor,

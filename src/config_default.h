@@ -290,8 +290,29 @@
 /**
  * Default console baudrate.
  */
-#ifndef CONFIG_CONSOLE_BAUDRATE
-#    define CONFIG_CONSOLE_BAUDRATE                     38400
+#ifndef CONFIG_CONSOLE_UART_BAUDRATE
+#    define CONFIG_CONSOLE_UART_BAUDRATE                38400
+#endif
+
+/**
+ * Default console USB CDC control interface number.
+ */
+#ifndef CONFIG_CONSOLE_USB_CDC_CONTROL_INTERFACE
+#    define CONFIG_CONSOLE_USB_CDC_CONTROL_INTERFACE        0
+#endif
+
+/**
+ * Default console USB CDC input endpoint.
+ */
+#ifndef CONFIG_CONSOLE_USB_CDC_ENDPOINT_IN
+#    define CONFIG_CONSOLE_USB_CDC_ENDPOINT_IN              2
+#endif
+
+/**
+ * Default console USB CDC output endpoint.
+ */
+#ifndef CONFIG_CONSOLE_USB_CDC_ENDPOINT_OUT
+#    define CONFIG_CONSOLE_USB_CDC_ENDPOINT_OUT             3
 #endif
 
 /**
