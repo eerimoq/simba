@@ -45,9 +45,9 @@ int test_exti(struct harness_t *harness_p)
 
     for (i = 0; i < 10; i++) {
         pin_write(&pin, 0);
-        time_sleep(10000);
+        time_busy_wait_us(10000);
         pin_write(&pin, 1);
-        time_sleep(10000);
+        time_busy_wait_us(10000);
     }
 
     std_printf(FSTR("flag = %d\r\n"), (int)flag);

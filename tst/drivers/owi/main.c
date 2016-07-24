@@ -28,7 +28,7 @@ int test_search(struct harness_t *harness_p)
 
     BTASSERT(owi_init(&owi, &pin_d7_dev, devices, membersof(devices)) == 0);
 
-    thrd_usleep(50000);
+    thrd_sleep_us(50000);
 
     std_printf(FSTR("Searching...\r\n"));
 

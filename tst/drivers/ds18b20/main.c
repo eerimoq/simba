@@ -33,12 +33,12 @@ int test_get_temp(struct harness_t *harness_p)
     BTASSERT(owi_init(&owi, &pin_d7_dev, devices, membersof(devices)) == 0);
     BTASSERT(ds18b20_init(&ds, &owi) == 0);
 
-    time_sleep(50000);
+    time_busy_wait_us(50000);
 
     strcpy(buf, "drivers/ds18b20/list");
     BTASSERT(fs_call(buf, NULL, sys_get_stdout(), NULL) == 0);
 
-    time_sleep(50000);
+    time_busy_wait_us(50000);
 
     BTASSERT(owi_search(&owi) == 2);
 

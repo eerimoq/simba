@@ -95,7 +95,7 @@ static int device_reset(struct usb_host_device_t *device_p)
 
     device_p->self_p->dev_p->regs_p->HOST.CTRL = SAM_UOTGHS_HOST_CTRL_RESET;
 
-    thrd_usleep(100000);
+    thrd_sleep_us(100000);
 
     return (0);
 }

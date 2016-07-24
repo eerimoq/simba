@@ -34,10 +34,10 @@ static void *writer_main(void *arg_p)
     int i;
 
     for (i = 0; i < 10; i++) {
-        thrd_usleep(15000);
+        thrd_sleep_us(15000);
         rwlock_writer_take(&count_lock);
         count++;
-        thrd_usleep(25);
+        thrd_sleep_us(25);
         rwlock_writer_give(&count_lock);
     }
 
@@ -49,10 +49,10 @@ static void *reader_main(void *arg_p)
     int read_count;
 
     do {
-        thrd_usleep(10);
+        thrd_sleep_us(10);
         rwlock_reader_take(&count_lock);
         read_count = count;
-        thrd_usleep(10);
+        thrd_sleep_us(10);
         rwlock_reader_give(&count_lock);
     } while (read_count < 30);
 

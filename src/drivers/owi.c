@@ -48,14 +48,14 @@ int owi_reset(struct owi_driver_t *self_p)
 
     do {
         pin_write(&self_p->pin, 0);
-        time_sleep(480);
+        time_busy_wait_us(480);
         sys_lock();
         pin_write(&self_p->pin, 1);
         pin_set_mode(&self_p->pin, PIN_INPUT);
-        time_sleep(70);
+        time_busy_wait_us(70);
         err = pin_read(&self_p->pin);
         sys_unlock();
-        time_sleep(410);
+        time_busy_wait_us(410);
         pin_set_mode(&self_p->pin, PIN_OUTPUT);
     } while ((--attempts > 0) && (err != 0));
 
@@ -134,7 +134,7 @@ int owi_search(struct owi_driver_t *self_p)
                 owi_write(self_p, &b, 1);
                 dev_p->id[i] |= (b << 7);
                 p++;
-                time_sleep(1);
+                time_busy_wait_us(1);
             }
         }
 
@@ -160,13 +160,13 @@ ssize_t owi_read(struct owi_driver_t *self_p,
     for (i = 0; i < size; i++) {
         sys_lock();
         pin_write(&self_p->pin, 0);
-        time_sleep(5);
+        time_busy_wait_us(5);
         pin_set_mode(&self_p->pin, PIN_INPUT);
-        time_sleep(9);
+        time_busy_wait_us(9);
         *b_p >>= 1;
         *b_p |= (pin_read(&self_p->pin) << 7);
         sys_unlock();
-        time_sleep(55);
+        time_busy_wait_us(55);
         pin_set_mode(&self_p->pin, PIN_OUTPUT);
         pin_write(&self_p->pin, 1);
 
@@ -204,13 +204,13 @@ ssize_t owi_write(struct owi_driver_t *self_p,
         pin_write(&self_p->pin, 0);
 
         if (value & 1) {
-            time_sleep(5);
+            time_busy_wait_us(5);
             pin_write(&self_p->pin, 1);
-            time_sleep(64);
+            time_busy_wait_us(64);
         } else {
-            time_sleep(59);
+            time_busy_wait_us(59);
             pin_write(&self_p->pin, 1);
-            time_sleep(10);
+            time_busy_wait_us(10);
         }
 
         sys_unlock();

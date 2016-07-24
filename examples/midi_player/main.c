@@ -169,11 +169,11 @@ int main()
                     break;
 
                 case DELAY:
-                    thrd_usleep(pace * operation.size);
+                    thrd_sleep_us(pace * operation.size);
                     break;
 
                 case SPACING:
-                    thrd_usleep(5000);
+                    thrd_sleep_us(5000);
                     break;
 
                 case PACE:

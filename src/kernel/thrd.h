@@ -159,13 +159,13 @@ int thrd_yield(void);
 int thrd_join(struct thrd_t *thrd_p);
 
 /**
- * Sleep the current thread for given number of microseconds.
+ * Pauses the current thread for given amount of microseconds.
  *
- * @param[in] useconds Microseconds to sleep.
+ * @param[in] microseconds Microseconds to sleep.
  *
  * @return zero(0) or negative error code.
  */
-int thrd_usleep(long useconds);
+int thrd_sleep_us(long microseconds);
 
 /**
  * Get current thread's id.

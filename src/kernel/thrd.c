@@ -579,13 +579,13 @@ int thrd_join(struct thrd_t *thrd_p)
 
         sys_unlock();
 
-        thrd_usleep(50000);
+        thrd_sleep_us(50000);
     }
 
     return (0);
 }
 
-int thrd_usleep(long useconds)
+int thrd_sleep_us(long useconds)
 {
     struct time_t timeout;
     int err;

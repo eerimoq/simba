@@ -84,7 +84,7 @@ static int setup_isr(struct usb_device_driver_base_t *base_p,
         return (0);
     }
 
-    time_sleep(50);
+    time_busy_wait_us(50);
 
     direction = (setup_p->request_type & REQUEST_TYPE_DATA_MASK);
 

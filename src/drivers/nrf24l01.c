@@ -221,7 +221,7 @@ int nrf24l01_start(struct nrf24l01_driver_t *self_p)
               REG_CONFIG_PWR_UP);
     spi_write(&self_p->spi, buf, 2);
 
-    time_sleep(3000);
+    time_busy_wait_us(3000);
 
     /* Clear status flags. */
     buf[0] = (SPI_CMD_W_REGISTER | REG_STATUS);
@@ -304,7 +304,7 @@ ssize_t nrf24l01_write(struct nrf24l01_driver_t *self_p,
 
     /* Pulse CE high to start transmission. */
     pin_write(&self_p->ce, 1);
-    time_sleep(15);
+    time_busy_wait_us(15);
     pin_write(&self_p->ce, 0);
 
     /* Wait for completion. */

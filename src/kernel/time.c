@@ -136,7 +136,7 @@ int time_diff(struct time_t *diff_p,
     return (0);
 }
 
-void time_sleep(long usec)
+void time_busy_wait_us(long usec)
 {
     time_port_sleep(usec);
 }

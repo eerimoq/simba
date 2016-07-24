@@ -376,7 +376,7 @@ int sd_start(struct sd_driver_t *self_p)
     self_p->type = TYPE_UNKNOWN;
 
     /* Wait for at least one millisecond. */
-    thrd_usleep(1000);
+    thrd_sleep_us(1000);
 
     /* Send 74 dummy clock pulses. */
     for (i = 0; i < 10; i++) {
@@ -433,7 +433,7 @@ int sd_start(struct sd_driver_t *self_p)
             break;
         }
 
-        thrd_usleep(5000);
+        thrd_sleep_us(5000);
     }
 
     /* Read OCR register and check type. */

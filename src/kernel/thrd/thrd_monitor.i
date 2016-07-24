@@ -123,7 +123,7 @@ static void *monitor_thrd(void *arg_p)
     thrd_set_name("monitor");
 
     while (1) {
-        thrd_usleep(monitor.period_us);
+        thrd_sleep_us(monitor.period_us);
         print = monitor.print;
 
         /* Get and reset the interrupt CPU usage. */

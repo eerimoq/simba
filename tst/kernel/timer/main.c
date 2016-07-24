@@ -54,7 +54,7 @@ int test_timer(struct harness_t *harness_p)
     mask = EVENT_MASK;
     event_read(&event, &mask, sizeof(mask));
 
-    thrd_usleep(100000);
+    thrd_sleep_us(100000);
 
     /* Periodic timer. */
     std_printf(FSTR("Starting a periodic timer with 100 ms period.\r\n"));

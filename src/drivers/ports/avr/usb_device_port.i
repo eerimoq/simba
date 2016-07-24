@@ -426,7 +426,7 @@ static int usb_device_port_start(struct usb_device_driver_t *self_p)
     /* Some tests on specific versions of macosx (10.7.3), reported
        some strange behaviors when the board is reset using the serial
        port touch at 1200 bps. This delay fixes this behavior. */
-    time_sleep(1000);
+    time_busy_wait_us(1000);
 
     /* Start USB clock, enable VBUS Pad */
     USBCON &= ~_BV(FRZCLK);
@@ -503,7 +503,7 @@ static ssize_t usb_device_port_write_isr(struct usb_device_driver_t *self_p,
                 return (-1);
             }
 
-            time_sleep(1000);
+            time_busy_wait_us(1000);
             continue;
         }
 

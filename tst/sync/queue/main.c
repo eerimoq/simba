@@ -53,7 +53,7 @@ static void *t0_main(void *arg_p)
     BTASSERT(c[2] == 6);
     BTASSERT(c[3] == 7);
 
-    thrd_usleep(50000);
+    thrd_sleep_us(50000);
 
     /* Test: test_poll. */
     c[0] = 8;
@@ -73,7 +73,7 @@ static void *t0_main(void *arg_p)
 
     /* Test: test_stopped. */
     while (queue_unused_size(&queue_p[1]) == 0) {
-        thrd_usleep(100);
+        thrd_sleep_us(100);
     }
 
     b = 13;
@@ -183,7 +183,7 @@ static int test_size(struct harness_t *harness_p)
     BTASSERT(queue_unused_size(&foo) == (15 - sizeof(b)));
 
     while (queue_unused_size(&queue[0]) != sizeof(int)) {
-        thrd_usleep(100);
+        thrd_sleep_us(100);
     }
 
     b = 1;

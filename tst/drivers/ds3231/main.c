@@ -59,7 +59,7 @@ static int test_date(struct harness_t *harness_p)
         std_printf(FSTR("month = %d\r\n"), date.month);
         std_printf(FSTR("year = %d\r\n\r\n"), date.year);
 
-        thrd_usleep(1000000);
+        thrd_sleep_us(1000000);
     }
 
     /* Get the date from the DS3231 device. */

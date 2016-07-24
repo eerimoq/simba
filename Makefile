@@ -138,6 +138,10 @@ ifeq ($(BOARD), arduino_nano)
     APPS = $(addprefix tst/drivers/, uart)
 endif
 
+ifeq ($(BOARD), arduino_pro_micro)
+    APPS = $(addprefix tst/drivers/, usb_device)
+endif
+
 ifeq ($(BOARD), esp12e)
     TESTS = $(addprefix tst/kernel/, sys \
                                      thrd \
@@ -275,6 +279,9 @@ clean-arduino-mega:
 clean-arduino-nano:
 	$(MAKE) BOARD=arduino_nano SERIAL_PORT=/dev/simba-arduino_nano clean
 
+clean-arduino-pro-micro:
+	$(MAKE) BOARD=arduino_pro_micro SERIAL_PORT=/dev/simba-arduino_pro_micro clean
+
 clean-esp12e:
 	$(MAKE) BOARD=esp12e SERIAL_PORT=/dev/simba-esp12e clean
 
@@ -295,6 +302,10 @@ test-arduino-mega:
 test-arduino-nano:
 	@echo "Arduino Nano"
 	$(MAKE) BOARD=arduino_nano SERIAL_PORT=/dev/simba-arduino_nano test
+
+test-arduino-pro-micro:
+	@echo "Arduino Pro Micro"
+	$(MAKE) BOARD=arduino_pro_micro SERIAL_PORT=/dev/simba-arduino_pro_micro test
 
 test-esp12e:
 	@echo "ESP12-E"

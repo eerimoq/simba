@@ -37,7 +37,7 @@ static int test_get_set(struct harness_t *harness)
                time1.seconds, time1.nanoseconds);
 
     /* Wait a while and verify that the time has changed. */
-    thrd_usleep(100000);
+    thrd_sleep_us(100000);
     BTASSERT(time_get(&time2) == 0);
 
     std_printf(FSTR("time2: seconds = %lu, nanoseconds = %lu\r\n"),
@@ -58,7 +58,7 @@ static int test_get_set(struct harness_t *harness)
                time1.seconds, time1.nanoseconds);
 
     /* Wait a while and verify that the time has changed. */
-    thrd_usleep(100000);
+    thrd_sleep_us(100000);
     BTASSERT(time_get(&time2) == 0);
 
     std_printf(FSTR("time2: seconds = %lu, nanoseconds = %lu\r\n"),
@@ -143,7 +143,7 @@ static int test_sleep(struct harness_t *harness)
         std_printf(FSTR("  start: seconds = %lu, microseconds = %lu\r\n"),
                    start.seconds, start.nanoseconds / 1000);
         
-        time_sleep(times[i]);
+        time_busy_wait_us(times[i]);
         
         BTASSERT(time_get(&stop) == 0);
         

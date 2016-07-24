@@ -38,7 +38,7 @@ static int test_binary_counter(struct harness_t *harness_p)
     i = 0;
 
     for (i = 0; i < 16; i++) {
-        thrd_usleep(500000);
+        thrd_sleep_us(500000);
         pin_write(&red, (i & 0x1) != 0);
         pin_write(&green, (i & 0x2) != 0);
         pin_write(&blue, (i & 0x4) != 0);

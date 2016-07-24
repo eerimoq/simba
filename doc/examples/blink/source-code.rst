@@ -35,7 +35,7 @@
    
        while (1) {
            /* Wait half a second. */
-           thrd_usleep(500000);
+           thrd_sleep_us(500000);
    
            /* Toggle the LED on/off. */
            pin_toggle(&led);

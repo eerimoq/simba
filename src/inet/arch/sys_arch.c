@@ -167,7 +167,7 @@ u32_t sys_now(void)
 
 void sys_msleep(u32_t ms)
 {
-    thrd_usleep(1000 * ms);
+    thrd_sleep_us(1000 * ms);
 }
 
 sys_thread_t sys_thread_new(const char *pcName,

@@ -89,13 +89,15 @@ int time_diff(struct time_t *diff_p,
               struct time_t *right_p);
 
 /**
- * Sleep (busy wait) for given number of microseconds.
+ * Busy wait for given number of microseconds.
  *
- * @param[in] usec Microseconds to sleep.
+ * NOTE: The maximum allowed time to sleep is target specific.
+ *
+ * @param[in] useconds Microseconds to sleep.
  *
  * @return void
  */
-void time_sleep(long usec);
+void time_busy_wait_us(long useconds);
 
 /**
  * Convert given unix time to a date.

@@ -35,11 +35,11 @@ static void rx_isr(void *arg_p)
 
     /* Wait half the sample time so following samples are taken in the
        middle of the sample period.*/
-    time_sleep(self_p->sample_time / 3);
+    time_busy_wait_us(self_p->sample_time / 3);
 
     /* Get 8 bits. */
     for (i = 0; i < 8; i++) {
-        time_sleep(self_p->sample_time);
+        time_busy_wait_us(self_p->sample_time);
 
         /* Sample the pin. */
         data >>= 1;
@@ -76,14 +76,14 @@ static ssize_t uart_soft_write_cb(void *arg_p,
         data = tx_p[i];
 
         for (j = 0; j < 8; j++) {
-            time_sleep(self_p->sample_time);
+            time_busy_wait_us(self_p->sample_time);
             pin_write(&self_p->tx_pin, data & 1);
             data >>= 1;
         }
 
-        time_sleep(self_p->sample_time);
+        time_busy_wait_us(self_p->sample_time);
         pin_write(&self_p->tx_pin, 1);
-        time_sleep(self_p->sample_time);
+        time_busy_wait_us(self_p->sample_time);
         sys_unlock();
     }
 

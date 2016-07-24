@@ -127,7 +127,7 @@ static int uart_port_start(struct uart_driver_t *drv_p)
    /* Wait until the transmit fifo is empty. */
     while ((regs_p->STATUS & ESP8266_UART_STATUS_TXFIFO_CNT_MASK) != 0);
 
-    thrd_usleep(100000);
+    thrd_sleep_us(100000);
 
     /* Configure the hardware and reset the fifos. */
     regs_p->CLKDIV = (F_CPU / drv_p->baudrate);
