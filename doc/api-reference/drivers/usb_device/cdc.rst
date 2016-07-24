@@ -10,9 +10,11 @@ More information on Wikipedia_.
 ----------------------------------------------
 
 .. module:: cdc
-   :synopsis: CD ACM (serial port over USB).
+   :synopsis: CDC ACM (serial port over USB).
 
 Source code: :github-blob:`src/drivers/usb/device/class/cdc.h`
+
+Test code: :github-blob:`tst/drivers/usb_device/main.c`
 
 ----------------------------------------------
 
