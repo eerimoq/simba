@@ -6,11 +6,17 @@
 
 A USB device is powered and enumerated by a USB host.
 
-The implementation of this module aims to be simple, and yet
-flexible. The configuration descriptors are static, allowing them to
-be stored in ROM. This saves precious RAM on embedded devices. Class
-drivers are initialized and given as input to the device driver before
-is is started.
+The implementation of this module aims to be simple, but yet flexible.
+It's possible to change the USB configuration descriptors at runtime
+by stopping the current driver, initialize a new driver and start the
+new driver. For simple devices only a single configuration is normally
+needed.
+
+Using the USB device module is fairly easy. First write the USB
+descriptors, then initialize the class drivers, then initialize the
+USB device driver and then start it.
+
+See the test code below for an example usage.
 
 ----------------------------------------------
 

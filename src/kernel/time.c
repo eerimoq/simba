@@ -193,7 +193,6 @@ int time_unix_time_to_date(struct date_t *date_p,
     }
 
     remdays -= (c_cycles * DAYS_PER_100Y);
-
     q_cycles = (remdays / DAYS_PER_4Y);
 
     if (q_cycles == 25) {
@@ -201,7 +200,6 @@ int time_unix_time_to_date(struct date_t *date_p,
     }
 
     remdays -= (q_cycles * DAYS_PER_4Y);
-
     remyears = (remdays / 365);
 
     if (remyears == 4) {
@@ -209,7 +207,6 @@ int time_unix_time_to_date(struct date_t *date_p,
     }
 
     remdays -= (remyears * 365);
-
     leap = (!remyears && (q_cycles || !c_cycles));
     yday = (remdays + 31 + 28 + leap);
 
