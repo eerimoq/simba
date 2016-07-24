@@ -1,10 +1,10 @@
 Configuration
 =============
 
-Here is a list of all compile time configuration variables available
-in `Simba`. These are used to customize `Simba` for your application
-needs. The default values are defined in
-:github-blob:`src/config_default.h`.
+Here is a list of selected compile time configuration variables in
+ `Simba`. These are used to customize `Simba` for your application
+ needs. All configuration variables and their default values are
+ defined in :github-blob:`src/config_default.h`.
 
 Search order
 ------------
@@ -37,16 +37,11 @@ Variables
 |  CONFIG_SHELL_MINIMAL         | Minimal shell functionality. Do not use command history or |br| |
 |                               | ANSI escape sequences.                                          |
 +-------------------------------+-----------------------------------------------------------------+
-|  CONFIG_SHELL_PROMPT          | The shell prompt.                                               |
-+-------------------------------+-----------------------------------------------------------------+
-|  CONFIG_SHELL_COMMAND_MAX     | Maximum number of characters in a shell command.                |
-+-------------------------------+-----------------------------------------------------------------+
-|  CONFIG_SHELL_HISTORY_SIZE    | Size of the shell history buffer.                               |
-+-------------------------------+-----------------------------------------------------------------+
 |  CONFIG_SYSTEM_TICK_FREQUENCY | System tick frequency in Hertz.                                 |
 +-------------------------------+-----------------------------------------------------------------+
-|  CONFIG_STD_OUTPUT_BUFFER_MAX | Maximum number of bytes in the print output buffer.             |
-+-------------------------------+-----------------------------------------------------------------+
+
+See :github-blob:`src/config_default.h` for a list of all
+configuration variables.
 
 lwIP
 ^^^^
