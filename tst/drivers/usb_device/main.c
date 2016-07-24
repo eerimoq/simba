@@ -20,6 +20,15 @@
 
 #include "simba.h"
 
+/* These must match the definitions in descriptors.c. */
+#define CDC_0_CONTROL_INTERACE   0
+#define CDC_0_ENDPOINT_IN        2
+#define CDC_0_ENDPOINT_OUT       3
+
+#define CDC_1_CONTROL_INTERACE   2
+#define CDC_1_ENDPOINT_IN        5
+#define CDC_1_ENDPOINT_OUT       6
+
 static struct usb_device_driver_t usb;
 static struct usb_device_driver_base_t *drivers[2];
 static struct usb_device_class_cdc_driver_t cdc[2];
@@ -32,18 +41,18 @@ static int test_init(struct harness_t *harness_p)
     
     /* Initialize the first CDC driver object. */
     BTASSERT(usb_device_class_cdc_init(&cdc[0],
-                                       0,
-                                       2,
-                                       3,
+                                       CDC_0_CONTROL_INTERACE,
+                                       CDC_0_ENDPOINT_IN,
+                                       CDC_0_ENDPOINT_OUT,
                                        &rxbuf[0][0],
                                        sizeof(rxbuf[0])) == 0);
     drivers[0] = &cdc[0].base;
 
     /* Initialize the second CDC driver object. */
     BTASSERT(usb_device_class_cdc_init(&cdc[1],
-                                       2,
-                                       5,
-                                       6,
+                                       CDC_1_CONTROL_INTERACE,
+                                       CDC_1_ENDPOINT_IN,
+                                       CDC_1_ENDPOINT_OUT,
                                        &rxbuf[1][0],
                                        sizeof(rxbuf[0])) == 0);
     drivers[1] = &cdc[1].base;
@@ -58,6 +67,7 @@ static int test_init(struct harness_t *harness_p)
                              usb_device_descriptor_string_iproduct,
                              usb_device_descriptor_string_imanufacturer) == 0);
 
+    /* Start the USB device driver. */
     BTASSERT(usb_device_start(&usb) == 0);
 
     return (0);

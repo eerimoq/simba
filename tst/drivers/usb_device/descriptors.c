@@ -27,9 +27,6 @@ static FAR const struct usb_descriptor_device_t device_descriptor = {
     .device_class = 0xef,
     .device_subclass = 2,
     .device_protocol = 1,
-    /* .device_class = USB_CLASS_USE_INTERFACE, */
-    /* .device_subclass = 0, */
-    /* .device_protocol = 0, */
     .max_packet_size_0 = 64,
     .id_vendor = CONFIG_USB_DEVICE_VID,
     .id_product = CONFIG_USB_DEVICE_PID,
@@ -268,19 +265,4 @@ usb_device_descriptors[] = {
     (FAR const union usb_descriptor_t *)&endpoint_5_descriptor,
     (FAR const union usb_descriptor_t *)&endpoint_6_descriptor,
     NULL
-};
-
-FAR const uint16_t usb_device_descriptor_string_language[2] = {
-    (DESCRIPTOR_TYPE_STRING << 8) | (2 + 2),
-    0x0409
-};
-
-FAR const uint16_t usb_device_descriptor_string_iproduct[17] = {
-    (DESCRIPTOR_TYPE_STRING << 8) | (2 + 2 * 16),
-    'A','r','d','u','i','n','o',' ','M','i','c','r','o',' ',' ',' '
-};
-
-FAR const uint16_t usb_device_descriptor_string_imanufacturer[12] = {
-    (DESCRIPTOR_TYPE_STRING << 8) | (2 + 2 * 11),
-    'U','n','k','n','o','w','n',' ',' ',' ',' '
 };
