@@ -20,7 +20,7 @@
 
 #include "esp_misc.h"
 
-static void time_port_sleep(int us)
+static void time_port_busy_wait_us(int microseconds)
 {
-    os_delay_us(us);
+    os_delay_us(microseconds);
 }

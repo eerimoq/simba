@@ -136,9 +136,9 @@ int time_diff(struct time_t *diff_p,
     return (0);
 }
 
-void time_busy_wait_us(long usec)
+void time_busy_wait_us(long microseconds)
 {
-    time_port_sleep(usec);
+    time_port_busy_wait_us(microseconds);
 }
 
 int time_unix_time_to_date(struct date_t *date_p,

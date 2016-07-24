@@ -18,7 +18,7 @@
  * This file is part of the Simba project.
  */
 
-static void time_port_sleep(long usec)
+static void time_port_busy_wait_us(long microseconds)
 {
     /*
      * Based on Paul Stoffregen's implementation
@@ -26,14 +26,14 @@ static void time_port_sleep(long usec)
      */
     uint32_t iterations;
 
-    if (usec == 0) {
+    if (microseconds == 0) {
         return;
     }
 
-    iterations = (usec * (F_CPU / 3000000));
+    iterations = (microseconds * (F_CPU / 3000000));
 
-    asm volatile("L_%=_time_port_sleep:"       "\n\t"
+    asm volatile("L_%=_time_port_busy_wait_us:"       "\n\t"
                  "subs   %0, #1"               "\n\t"
-                 "bne    L_%=_time_port_sleep" "\n"
+                 "bne    L_%=_time_port_busy_wait_us" "\n"
                  : "+r" (iterations) : );
 }

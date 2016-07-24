@@ -20,6 +20,6 @@
 
 #include <pthread.h>
 
-static void time_port_sleep(long us)
+static void time_port_busy_wait_us(long microseconds)
 {
 }
