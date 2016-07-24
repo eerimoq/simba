@@ -79,6 +79,11 @@ static int setup_isr(struct usb_device_driver_base_t *base_p,
         return (-1);
     }
 
+    /* Is the addressed interface owned by this driver? */
+    if (self_p->control_interface != setup_p->u.base.index) {
+        return (0);
+    }
+
     time_sleep(50);
 
     direction = (setup_p->request_type & REQUEST_TYPE_DATA_MASK);
@@ -203,6 +208,7 @@ int usb_device_class_cdc_module_init(void)
 }
 
 int usb_device_class_cdc_init(struct usb_device_class_cdc_driver_t *self_p,
+                              int control_interface,
                               int endpoint_in,
                               int endpoint_out,
                               void *rxbuf_p,
@@ -214,6 +220,7 @@ int usb_device_class_cdc_init(struct usb_device_class_cdc_driver_t *self_p,
     self_p->base.print = print;
 #endif
 
+    self_p->control_interface = control_interface;
     self_p->endpoint_in = endpoint_in;
     self_p->endpoint_out = endpoint_out;
     self_p->line_state = 0;

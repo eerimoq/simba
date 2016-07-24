@@ -208,11 +208,34 @@ struct usb_descriptor_interface_association_t {
     uint8_t function;
 };
 
-struct usb_descriptor_cdc_t {
+struct usb_descriptor_cdc_header_t {
     uint8_t length;
     uint8_t descriptor_type;
     uint8_t sub_type;
-    uint8_t data[2];
+    uint16_t bcd;
+};
+
+struct usb_descriptor_cdc_acm_t {
+    uint8_t length;
+    uint8_t descriptor_type;
+    uint8_t sub_type;
+    uint8_t capabilities;
+};
+
+struct usb_descriptor_cdc_union_t {
+    uint8_t length;
+    uint8_t descriptor_type;
+    uint8_t sub_type;
+    uint8_t master_interface;
+    uint8_t slave_interface;
+};
+
+struct usb_descriptor_cdc_call_management_t {
+    uint8_t length;
+    uint8_t descriptor_type;
+    uint8_t sub_type;
+    uint8_t capabilities;
+    uint8_t data_interface;
 };
 
 union usb_descriptor_t {

@@ -86,6 +86,7 @@ int console_init(void)
 {
     /* Initialize the CDC driver object. */
     usb_device_class_cdc_init(&console.cdc,
+                              0,
                               2,
                               3,
                               console.rxbuf,

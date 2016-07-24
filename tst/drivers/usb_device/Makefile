@@ -21,5 +21,7 @@
 NAME = usb_device_suite
 BOARD ?= linux
 
+SRC += descriptors.c
+
 SIMBA_ROOT ?= ../../..
 include $(SIMBA_ROOT)/make/app.mk

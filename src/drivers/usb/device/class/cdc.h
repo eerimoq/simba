@@ -26,6 +26,7 @@
 struct usb_device_class_cdc_driver_t {
     struct usb_device_driver_base_t base;
     struct usb_device_driver_t *drv_p;
+    int control_interface;
     int endpoint_in;
     int endpoint_out;
     int line_state;
@@ -51,6 +52,7 @@ int usb_device_class_cdc_module_init(void);
  * @return zero(0) or negative error code.
  */
 int usb_device_class_cdc_init(struct usb_device_class_cdc_driver_t *self_p,
+                              int control_interface,
                               int endpoint_in,
                               int endpoint_out,
                               void *rxbuf_p,

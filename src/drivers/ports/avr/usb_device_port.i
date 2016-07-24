@@ -54,6 +54,9 @@ FAR const int8_t endpoints[] = {
     ENDPOINT_TYPE_INTERRUPT_IN,      /* CDC_ENDPOINT_ACM */
     ENDPOINT_TYPE_BULK_OUT,          /* CDC_ENDPOINT_OUT */
     ENDPOINT_TYPE_BULK_IN,           /* CDC_ENDPOINT_IN */
+    ENDPOINT_TYPE_INTERRUPT_IN,      /* CDC_ENDPOINT_ACM */
+    ENDPOINT_TYPE_BULK_OUT,          /* CDC_ENDPOINT_OUT */
+    ENDPOINT_TYPE_BULK_IN,           /* CDC_ENDPOINT_IN */
 };
 
 struct pin_driver_t pin;
@@ -87,13 +90,13 @@ static void endpoints_init(void)
     int i;
 
     for (i = 1; i < membersof(endpoints); i++) {
-        UENUM = i;
+        endpoint_select(i);
         UECONX = 1;
         UECFG0X = endpoints[i];
         UECFG1X = ENDPOINT_DOUBLE_64;
     }
 
-    UERST = 0x7E;
+    UERST = 0x7e;
     UERST = 0;
 }
 
@@ -131,14 +134,14 @@ static void stall(void)
     UECONX = (_BV(STALLRQ) | _BV(EPEN));
 }
 
-static uint8_t ReadWriteAllowed(void)
+static uint8_t read_write_allowed(void)
 {
     return (UEINTX & _BV(RWAL));
 }
 
-static uint8_t USB_SendSpace(void)
+static uint8_t send_space(void)
 {
-    if (!ReadWriteAllowed()) {
+    if (read_write_allowed() == 0) {
         return (0);
     }
 
@@ -493,7 +496,7 @@ static ssize_t usb_device_port_write_isr(struct usb_device_driver_t *self_p,
     endpoint_select(endpoint);
 
     while (size > 0) {
-        uint8_t n = USB_SendSpace();
+        uint8_t n = send_space();
 
         if (n == 0) {
             if (--timeout == 0) {
@@ -510,7 +513,7 @@ static ssize_t usb_device_port_write_isr(struct usb_device_driver_t *self_p,
 
         /* Frame may have been released by the SOF interrupt
            handler. */
-        if (ReadWriteAllowed() == 0) {
+        if (read_write_allowed() == 0) {
             continue;
         }
 
