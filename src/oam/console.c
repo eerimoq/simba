@@ -38,7 +38,7 @@ int console_init(void)
 {
     return (uart_init(&console.uart,
                       &uart_device[CONFIG_CONSOLE_DEVICE],
-                      CONFIG_CONSOLE_BAUDRATE,
+                      CONFIG_CONSOLE_UART_BAUDRATE,
                       console.rxbuf,
                       sizeof(console.rxbuf)));
 }
@@ -53,9 +53,19 @@ int console_stop(void)
     return (uart_stop(&console.uart));
 }
 
+int console_set_input_channel(chan_t *chan_p)
+{
+    return (-1);
+}
+
 chan_t *console_get_input_channel(void)
 {
     return (&console.uart.chin);
+}
+
+chan_t *console_set_output_channel(chan_t *chan_p)
+{
+    return (NULL);
 }
 
 chan_t *console_get_output_channel()
@@ -116,9 +126,19 @@ int console_stop(void)
     return (usb_device_stop(&console.usb));
 }
 
+int console_set_input_channel(chan_t *chan_p)
+{
+    return (-1);
+}
+
 chan_t *console_get_input_channel(void)
 {
     return (&console.cdc.chin);
+}
+
+chan_t *console_set_output_channel(chan_t *chan_p)
+{
+    return (NULL);
 }
 
 chan_t *console_get_output_channel(void)
