@@ -22,6 +22,11 @@
 
 #include "watchdog_port.i"
 
+int watchdog_module_init()
+{
+    return (0);
+}
+
 int watchdog_start_ms(int timeout)
 {
     return (watchdog_port_start_ms(timeout));
