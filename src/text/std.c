@@ -587,23 +587,3 @@ char *std_strip(char *str_p, const char *strip_p)
 
     return (begin_p);
 }
-
-int std_strin(const char *str_p, const char *pattern_p)
-{
-    size_t offset;
-    size_t str_len, pattern_len;
-
-    offset = 0;
-    str_len = strlen(str_p);
-    pattern_len = strlen(pattern_p);
-
-    while ((offset + pattern_len) <= str_len) {
-        if (strncmp(pattern_p, str_p + offset, pattern_len) == 0) {
-            return (1);
-        }
-
-        offset++;
-    }
-
-    return (0);
-}

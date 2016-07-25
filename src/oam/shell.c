@@ -428,7 +428,7 @@ static char *history_reverse_search(struct shell_t *self_p,
     elem_p = self_p->history.tail_p;
 
     while (elem_p != NULL) {
-        if (std_strin(elem_p->buf, pattern_p) == 1) {
+        if (strstr(elem_p->buf, pattern_p) != NULL) {
             return (elem_p->buf);
         }
 
