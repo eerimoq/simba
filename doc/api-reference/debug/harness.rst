@@ -23,27 +23,34 @@ test cases; test_passed, test_failed and test_skipped.
 The test macro ``BTASSERT(condition)`` should be used to validate
 conditions.
 
-.. code:: c
+.. code-block:: c
 
    #include "simba.h"
 
    int test_passed(struct harness_t *harness_p)
    {
+       /* Return zero(0) when a test case passes. */
        return (0);
    }
 
    int test_failed(struct harness_t *harness_p)
    {
-       return (-1);
+       /* Return a negative integer when a test case fails. BTASSERT
+          will return -1 when the condition is false. */
+       BTASSERT(0);
+
+       return (0);
    }
 
    int test_skipped(struct harness_t *harness_p)
    {
+       /* Return a positive integer when a test case is skipped. */
        return (1);
    }
 
    int main()
    {
+       /* Test harness and NULL terminated list of test cases.*/
        struct harness_t harness;
        struct harness_testcase_t harness_testcases[] = {
            { test_passed, "test_passed" },
@@ -59,6 +66,30 @@ conditions.
 
        return (0);
    }
+
+The output from the test suite is:
+
+.. code-block:: text
+
+   app:    test_suite-2.0.0 built 2016-07-25 17:38 CEST by erik.
+   board:  Linux
+   mcu:    Linux
+   config: assert=1
+           debug=1
+           profile-stack=0
+   enter: test_passed
+   exit: test_passed: PASSED
+
+   enter: test_failed
+   exit: test_failed: FAILED
+
+   enter: test_skipped
+   exit: test_skipped: SKIPPED
+
+               NAME           PARENT        STATE  PRIO   CPU  LOGMASK
+               main                       current     0    0%     0x3f
+                                main        ready   127    0%     0x3f
+   harness report: total(3), passed(1), failed(1), skipped(1)
 
 There are plenty of test suites in the :github-tree:`tst<tst>` folder
 on Github.

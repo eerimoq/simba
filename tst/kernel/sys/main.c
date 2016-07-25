@@ -64,9 +64,13 @@ int test_uptime(struct harness_t *harness_p)
     strcpy(buf, "/kernel/sys/uptime");
     BTASSERT(fs_call(buf, chan_null(), sys_get_stdout(), NULL) == 0);
 
-#endif
-
     return (0);
+
+#else
+
+    return (1);
+
+#endif
 }
 
 int test_time(struct harness_t *harness_p)
@@ -93,35 +97,35 @@ int test_time(struct harness_t *harness_p)
             .tick = 201,
             .time_out = { .seconds = 2, .nanoseconds = 10000000 }
         },
-        
+
         /* nanoseconds rounded up. */
         {
             .time_in = { .seconds = 0, .nanoseconds = 15000000 },
             .tick = 2,
             .time_out = { .seconds = 0, .nanoseconds = 20000000 }
         },
-        
+
         /* All zeroes. */
         {
             .time_in = { .seconds = 0, .nanoseconds = 0 },
             .tick = 0,
             .time_out = { .seconds = 0, .nanoseconds = 0 }
         },
-        
+
         /* All zeroes. */
         {
             .time_in = { .seconds = 4325, .nanoseconds = 735000000 },
             .tick = 432574,
             .time_out = { .seconds = 4325, .nanoseconds = 740000000 }
         },
-        
+
         /* Max time. */
         {
             .time_in = { .seconds = 4294967295 / 2, .nanoseconds = 0 },
             .tick = 214748364700,
             .time_out = { .seconds = 4294967295 / 2, .nanoseconds = 0 }
         },
-                
+
         /* Max tick. */
         {
             .time_in = { .seconds = 42949672, .nanoseconds = 949999999 },
@@ -134,7 +138,7 @@ int test_time(struct harness_t *harness_p)
         /* Convertion from the time struct to ticks. */
         tick = t2st(&test_times[i].time_in);
         BTASSERT(tick == test_times[i].tick);
-        
+
         /* Convertion from ticks to the time struct. */
         st2t(tick, &time);
         BTASSERT(time.seconds == test_times[i].time_out.seconds)
