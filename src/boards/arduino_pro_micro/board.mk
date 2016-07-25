@@ -40,4 +40,6 @@ run:
 			    --baudrate $(BAUDRATE) \
 	 		    --pattern $(RUN_END_PATTERN)\
 			    --pattern-success $(RUN_END_PATTERN_SUCCESS) \
+			    --dtr 1 \
+			    --rts 1 \
 			    | tee $(RUNLOG) ; test $${PIPESTATUS[0]} -eq 0

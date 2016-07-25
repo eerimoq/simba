@@ -70,28 +70,19 @@ int usb_device_init(struct usb_device_driver_t *self_p,
                     struct usb_device_t *dev_p,
                     struct usb_device_driver_base_t **drivers_pp,
                     int drivers_max,
-                    FAR const union usb_descriptor_t **descriptors_pp,
-                    FAR const uint16_t *string_language_p,
-                    FAR const uint16_t *string_iproduct_p,
-                    FAR const uint16_t *string_imanufacturer_p)
+                    FAR const union usb_descriptor_t **descriptors_pp)
 {
     ASSERTN(self_p != NULL, INVAL);
     ASSERTN(dev_p != NULL, INVAL);
     ASSERTN(drivers_pp != NULL, INVAL);
     ASSERTN(drivers_max > 0, INVAL);
     ASSERTN(descriptors_pp != NULL, INVAL);
-    ASSERTN(string_language_p != NULL, INVAL);
-    ASSERTN(string_iproduct_p != NULL, INVAL);
-    ASSERTN(string_imanufacturer_p != NULL, INVAL);
 
     self_p->dev_p = dev_p;
     self_p->configuration = -1;
     self_p->drivers_pp = drivers_pp;
     self_p->drivers_max = drivers_max;
     self_p->descriptors_pp = descriptors_pp;
-    self_p->string_language_p = string_language_p;
-    self_p->string_iproduct_p = string_iproduct_p;
-    self_p->string_imanufacturer_p = string_imanufacturer_p;
 
     return (usb_device_port_init(self_p, dev_p));
 }

@@ -31,7 +31,6 @@ int harness_run(struct harness_t *self_p,
     int err;
     struct harness_testcase_t *testcase_p;
     int total, passed, failed, skipped;
-    char buf[17];
 
     total = 0;
     passed = 0;
@@ -68,8 +67,14 @@ int harness_run(struct harness_t *self_p,
         testcase_p++;
     }
 
+#if CONFIG_FS_CMD_THRD_LIST == 1
+
+    char buf[17];
+
     strcpy(buf, "kernel/thrd/list");
     fs_call(buf, NULL, console_get_output_channel(), NULL);
+
+#endif
 
     std_printf(FSTR("harness report: total(%d), passed(%d), "
                     "failed(%d), skipped(%d)\r\n"),

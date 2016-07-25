@@ -80,6 +80,11 @@ static int test_start(struct harness_t *harness_p)
        channel. */
     sys_set_stdout(console_get_output_channel());
 
+    /* Wait for the host to connect. */
+    while (usb_device_class_cdc_is_connected(&console) == 0) {
+        thrd_sleep_us(100000);
+    }
+
     return (0);
 }
 
@@ -97,7 +102,7 @@ static int test_echo(struct harness_t *harness_p)
 static int test_stop(struct harness_t *harness_p)
 {
     /* Stop the USB device driver. */
-    std_printf(FSTR("Willl not stop the driver since "
+    std_printf(FSTR("Will not stop the driver since "
                     "it's the console.\r\n"));
 
     return (0);

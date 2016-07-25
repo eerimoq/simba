@@ -18,13 +18,15 @@ def main():
     parser.add_argument("--timeout", type=int, default=10)
     parser.add_argument("--pattern")
     parser.add_argument("--pattern-success")
+    parser.add_argument("--dtr", type=int, default=0)
+    parser.add_argument("--rts", type=int, default=0)
     args = parser.parse_args()
 
     dev_serial = serial.Serial(args.port,
                                baudrate=args.baudrate,
                                timeout=1.0)
-    dev_serial.dtr = 0
-    dev_serial.rts = 0
+    dev_serial.dtr = args.dtr
+    dev_serial.rts = args.rts
     dev = expect.Handler(dev_serial,
                          break_conditions=[])
 

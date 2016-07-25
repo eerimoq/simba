@@ -39,9 +39,6 @@ int usb_device_module_init(void);
  * @param[in] drivers_max Length of the drivers array.
  * @param[in] descriptors_pp A NULL terminated array of USB
  *                           descriptors.
- * @param[in] string_language_p The language string.
- * @param[in] string_iproduct_p The product string.
- * @param[in] string_imanufacturer_p The manufacturer string.
  *
  * @return zero(0) or negative error code.
  */
@@ -49,10 +46,7 @@ int usb_device_init(struct usb_device_driver_t *self_p,
                     struct usb_device_t *dev_p,
                     struct usb_device_driver_base_t **drivers_pp,
                     int drivers_max,
-                    FAR const union usb_descriptor_t **descriptors_pp,
-                    FAR const uint16_t *string_language_p,
-                    FAR const uint16_t *string_iproduct_p,
-                    FAR const uint16_t *string_imanufacturer_p);
+                    FAR const union usb_descriptor_t **descriptors_pp);
 
 /**
  * Start the USB device device using given driver object.

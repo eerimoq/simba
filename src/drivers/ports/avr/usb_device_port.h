@@ -46,9 +46,6 @@ struct usb_device_driver_t {
     struct usb_device_driver_base_t **drivers_pp;
     int drivers_max;
     FAR const union usb_descriptor_t **descriptors_pp;
-    FAR const uint16_t *string_language_p;
-    FAR const uint16_t *string_iproduct_p;
-    FAR const uint16_t *string_imanufacturer_p;
 };
 
 #endif

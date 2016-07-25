@@ -92,4 +92,14 @@ int usb_device_class_cdc_init(struct usb_device_class_cdc_driver_t *self_p,
  */
 int usb_device_class_cdc_input_isr(struct usb_device_class_cdc_driver_t *self_p);
 
+/**
+ * Check if the CDC is connected to the remote endpoint.
+ *
+ * @param[in] self_p Initialized driver object.
+ *
+ * @return true(1) if connected, false(0) if disconnected, otherwise
+ *         negative error code.
+ */
+int usb_device_class_cdc_is_connected(struct usb_device_class_cdc_driver_t *self_p);
+
 #endif

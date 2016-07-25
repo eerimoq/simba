@@ -316,6 +316,13 @@
 #endif
 
 /**
+ * Wait for the host to connect after starting the console.
+ */
+#ifndef CONFIG_CONSOLE_USB_CDC_WAIT_FOR_CONNETION
+#    define CONFIG_CONSOLE_USB_CDC_WAIT_FOR_CONNETION       1
+#endif
+
+/**
  * Minimal shell functionality.
  */
 #ifndef CONFIG_SHELL_MINIMAL

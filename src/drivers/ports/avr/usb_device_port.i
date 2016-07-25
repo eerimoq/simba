@@ -59,8 +59,6 @@ FAR const int8_t endpoints[] = {
     ENDPOINT_TYPE_BULK_IN,           /* CDC_ENDPOINT_IN */
 };
 
-struct pin_driver_t pin;
-
 /**
  * Select given endpoint in the CPU.
  */
@@ -221,24 +219,7 @@ static int handle_get_descriptor(struct usb_device_driver_t *self_p,
         break;
 
     case DESCRIPTOR_TYPE_STRING:
-        if (index == 0) {
-            res = control_write(self_p->string_language_p,
-                                ((FAR const uint8_t *)
-                                 self_p->string_language_p)[0],
-                                0);
-        } else if (index == 1) {
-            res = control_write(self_p->string_iproduct_p,
-                                ((FAR const uint8_t *)
-                                 self_p->string_iproduct_p)[0],
-                                0);
-        } else if (index == 2) {
-            res = control_write(self_p->string_imanufacturer_p,
-                                ((FAR const uint8_t *)
-                                 self_p->string_imanufacturer_p)[0],
-                                0);
-        } else {
-            res = -1;
-        }
+        res = -1;
         break;
 
     default:
@@ -400,9 +381,6 @@ ISR(USB_GEN_vect)
 
 static int usb_device_port_module_init(void)
 {
-    pin_init(&pin, &pin_d2_dev, PIN_OUTPUT);
-    pin_write(&pin, 1);
-
     return (0);
 }
 
@@ -466,6 +444,11 @@ static ssize_t usb_device_port_read_isr(struct usb_device_driver_t *self_p,
 
     fifo_size = UEBCLX;
     size = MIN(size, fifo_size);
+
+    if (size == 0) {
+        return (0);
+    }
+
     b_p = buf_p;
 
     for (i = 0; i < size; i++) {

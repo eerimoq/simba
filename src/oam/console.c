@@ -108,17 +108,27 @@ int console_init(void)
                     &usb_device[0],
                     console.drivers,
                     membersof(console.drivers),
-                    usb_device_descriptors,
-                    usb_device_descriptor_string_language,
-                    usb_device_descriptor_string_iproduct,
-                    usb_device_descriptor_string_imanufacturer);
+                    usb_device_descriptors);
 
     return (0);
 }
 
 int console_start(void)
 {
-    return (usb_device_start(&console.usb));
+    usb_device_start(&console.usb);
+
+#if CONFIG_CONSOLE_USB_CDC_WAIT_FOR_CONNETION == 1
+
+    /* Wait for the host to connect. */
+    while (usb_device_class_cdc_is_connected(&console.cdc) == 0) {
+        thrd_sleep_us(100000);
+    }
+
+    thrd_sleep_us(100000);
+
+#endif
+
+    return (0);
 }
 
 int console_stop(void)

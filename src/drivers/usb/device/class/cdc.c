@@ -20,6 +20,10 @@
 
 #include "simba.h"
 
+/**
+ * Output channel callback. Called when the user writes dat ato the
+ * driver.
+ */
 static ssize_t write_cb(chan_t *chan_p,
                         const void *buf_p,
                         size_t size)
@@ -36,6 +40,9 @@ static ssize_t write_cb(chan_t *chan_p,
                              size));
 }
 
+/**
+ * USB device driver callback.
+ */
 static int start_of_frame_isr(struct usb_device_driver_base_t *base_p)
 {
     char c;
@@ -63,6 +70,9 @@ static int start_of_frame_isr(struct usb_device_driver_base_t *base_p)
     return (0);
 }
 
+/**
+ * USB device driver setup callback.
+ */
 static int setup_isr(struct usb_device_driver_base_t *base_p,
                      struct usb_setup_t *setup_p)
 {
@@ -76,12 +86,12 @@ static int setup_isr(struct usb_device_driver_base_t *base_p,
     type = (setup_p->request_type & REQUEST_TYPE_RECIPIENT_MASK);
 
     if (type != REQUEST_TYPE_RECIPIENT_INTERFACE) {
-        return (-1);
+        return (1);
     }
 
     /* Is the addressed interface owned by this driver? */
     if (self_p->control_interface != setup_p->u.base.index) {
-        return (0);
+        return (1);
     }
 
     time_busy_wait_us(50);
@@ -122,11 +132,11 @@ static int setup_isr(struct usb_device_driver_base_t *base_p,
         case USB_CDC_CONTROL_LINE_STATE:
             self_p->line_state = (setup_p->u.base.value & 0xff);
 
-            /* auto-reset into the bootloader is triggered when the
-               port, already open at 1200 bps, is closed.  this is the
+            /* Auto-reset into the bootloader is triggered when the
+               port, already open at 1200 bps, is closed. This is the
                signal to start the watchdog with a relatively long
                period so it can finish housekeeping tasks like
-               servicing endpoints before the sketch ends. */
+               servicing endpoints before the application ends. */
             if (self_p->line_info.dte_rate == 1200) {
                 /* We check DTR state to determine if host port is
                    open (bit 0 of line state). */
@@ -240,4 +250,9 @@ int usb_device_class_cdc_init(struct usb_device_class_cdc_driver_t *self_p,
     }
 
     return (0);
+}
+
+int usb_device_class_cdc_is_connected(struct usb_device_class_cdc_driver_t *self_p)
+{
+    return (self_p->line_state != 0);
 }
