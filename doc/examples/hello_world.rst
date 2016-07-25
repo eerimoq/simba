@@ -8,8 +8,7 @@ Source code: :github-blob:`examples/hello_world/main.c`
 About
 -----
 
-This application prints "Hello world!" on the standard output (serial
-port).
+This application prints "Hello world!" to standard output.
 
 Source code
 -----------
