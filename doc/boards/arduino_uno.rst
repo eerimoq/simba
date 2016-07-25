@@ -30,6 +30,7 @@ Drivers
 - :doc:`../api-reference/drivers/spi`
 - :doc:`../api-reference/drivers/uart`
 - :doc:`../api-reference/drivers/uart_soft`
+- :doc:`../api-reference/drivers/watchdog`
 
 Mcu
 ---

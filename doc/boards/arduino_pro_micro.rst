@@ -32,6 +32,7 @@ Drivers
 - :doc:`../api-reference/drivers/uart_soft`
 - :doc:`../api-reference/drivers/usb`
 - :doc:`../api-reference/drivers/usb_device`
+- :doc:`../api-reference/drivers/watchdog`
 
 Mcu
 ---

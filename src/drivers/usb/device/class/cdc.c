@@ -52,7 +52,7 @@ static ssize_t write_cb(chan_t *chan_p,
  * housekeeping tasks like servicing endpoints before the application
  * ends.
  */
-int check_reset_to_bootloader(struct usb_device_class_cdc_driver_t *self_p)
+static int check_reset_to_bootloader(struct usb_device_class_cdc_driver_t *self_p)
 {
 #if defined(BOARD_ARDUINO_PRO_MICRO)
 
