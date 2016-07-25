@@ -59,8 +59,8 @@ is built and executed.
    │   │   └── sphinx.mk
    │   ├── __init__.py
    │   ├── src
-   │   │   ├── hello.c
    │   │   ├── mypkg
+   │   │   │   ├── hello.c
    │   │   │   └── hello.h
    │   │   ├── mypkg.h
    │   │   └── mypkg.mk

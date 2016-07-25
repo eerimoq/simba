@@ -30,7 +30,7 @@ setup(name="{name}",
                          "src/{name}.h",
                          "src/{name}.mk",
                          "src/{name}/*.h",
-                         "src/*.c",
+                         "src/{name}/*.c",
                          "tst/*/*"]}},
       license='MIT',
       classifiers=[
@@ -84,9 +84,8 @@ PACKAGE_MK = """#
 #
 
 INC += $({name_upper}_ROOT)/src
-INC += $({name_upper}_ROOT)/src/ports/$(ARCH)/$(TOOLCHAIN)
 
-{name_upper}_SRC ?= hello.c
+{name_upper}_SRC ?= {name}/hello.c
 
 SRC += $({name_upper}_SRC:%=$({name_upper}_ROOT)/src/%)
 """
@@ -3142,14 +3141,7 @@ APP_MAIN_C = """/**
 
 int main()
 {{
-    struct uart_driver_t uart;
-
     sys_start();
-
-    uart_module_init();
-    uart_init(&uart, &uart_device[0], 38400, NULL, 0);
-    uart_start(&uart);
-    sys_set_stdout(&uart.chout);
 
     std_printf(FSTR("{name} says: Hello World!\\r\\n"));
 
@@ -3262,7 +3254,7 @@ def subcommand_package_init(args):
         (PACKAGE_H, os.path.join(src_path, name + ".h")),
         (PACKAGE_MK, os.path.join(src_path, name + ".mk")),
         (MODULE_H, os.path.join(src_path, name, "hello.h")),
-        (MODULE_C, os.path.join(src_path, "hello.c")),
+        (MODULE_C, os.path.join(src_path, name, "hello.c")),
         (MAIN_C, os.path.join(tst_path, "hello", "main.c")),
         (MAKEFILE, os.path.join(tst_path, "hello", "Makefile")),
         (DOC_DOXYGEN_CFG, os.path.join(doc_path, "doxygen.cfg")),

@@ -1,9 +1,12 @@
 Installation
 ============
 
-There are three build systems available; `PlatformIO`, `Arduino` and
-`Simba build system`. I recommend using the build system you are most
-comfortable with.
+There are three build systems available; `PlatformIO`, `Arduino IDE`
+and `Simba build system`. The `Simba build system` has more features
+than to the other two. It supports executing test suites, generating
+code coverage, profiling and more. Still, if you are familiar with
+`Arduino IDE` or `PlatformIO`, use that instead since it will be less
+troublesome.
 
 |platformio| PlatformIO
 -----------------------

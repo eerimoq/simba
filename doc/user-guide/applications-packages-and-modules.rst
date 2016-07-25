@@ -44,8 +44,8 @@ contents.
    │   ├── doc                   # package documentation
    │   ├── __init__.py
    │   ├── src                   # package source code
-   │   │   ├── module1.c
-   │   │   ├── mypkg             # module header files
+   │   │   ├── mypkg
+   │   │   │   ├── module1.c
    │   │   │   └── module1.h
    │   │   ├── mypkg.h           # package header file
    │   │   └── mypkg.mk          # package makefile
@@ -60,10 +60,10 @@ Development workflow
 
 The package development workflow is fairly straight forward. Suppose
 we want to add a new module to the file tree above. Create
-``src/mypkg/module2.h`` and ``src/module2.c``, then include
-``mypkg/module2.h`` in ``src/mypkg.h`` and add ``module2.c`` to the
-list of source files in ``src/mypkg.mk``. Create a test suite for the
-module. It consists of the two files ``tst/module2/main.c`` and
+``src/mypkg/module2.h`` and ``src/mypkg/module2.c``, then include
+``mypkg/module2.h`` in ``src/mypkg.h`` and add ``mypkg/module2.c`` to
+the list of source files in ``src/mypkg.mk``. Create a test suite for
+the module. It consists of the two files ``tst/module2/main.c`` and
 ``tst/module2/Makefile``.
 
 It's often conveniant to use an existing modules' files as skeleton
@@ -78,10 +78,10 @@ After adding the module ``module2`` the file tree looks like this.
    │   ├── doc
    │   ├── __init__.py
    │   ├── src
-   │   │   ├── module1.c
-   │   │   ├── module2.c
    │   │   ├── mypkg
+   │   │   │   ├── module1.c
    │   │   │   ├── module1.h
+   │   │   │   ├── module2.c
    │   │   │   └── module2.h
    │   │   ├── mypkg.h
    │   │   └── mypkg.mk
