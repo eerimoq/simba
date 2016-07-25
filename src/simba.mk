@@ -65,7 +65,8 @@ DRIVERS_SRC_TMP = adc.c \
                   pwm.c \
                   sd.c \
                   uart.c \
-                  uart_soft.c
+                  uart_soft.c \
+		  watchdog.c
 
 ifeq ($(MCU),atmega32u4)
 DRIVERS_SRC_TMP += usb.c \
