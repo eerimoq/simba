@@ -1,7 +1,7 @@
 Examples
 ========
 
-Below is a list of a few simple examples that useful to understand the
+Below is a short list of simple examples that useful to understand the
 basics of `Simba`.
 
 There are a lot more :github-tree:`examples<examples>` and
