@@ -21,6 +21,8 @@
 NAME = usb_device_suite
 BOARD ?= linux
 
+TIMEOUT ?= 40
+
 SRC += descriptors.c
 
 SIMBA_ROOT ?= ../../..

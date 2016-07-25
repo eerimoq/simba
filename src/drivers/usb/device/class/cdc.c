@@ -20,6 +20,9 @@
 
 #include "simba.h"
 
+#define LINE_STATE_DTR              0x01
+#define STAY_IN_BOOT_LOADER_MAGIC 0x7777
+
 /**
  * Output channel callback. Called when the user writes dat ato the
  * driver.
@@ -38,6 +41,44 @@ static ssize_t write_cb(chan_t *chan_p,
                              self_p->endpoint_out,
                              buf_p,
                              size));
+}
+
+/**
+ * Arduino Pro Micro bootloader.
+ *
+ * Auto-reset into the bootloader is triggered when the port, already
+ * open at 1200 bps, is closed. This is the signal to start the
+ * watchdog with a relatively long period so it can finish
+ * housekeeping tasks like servicing endpoints before the application
+ * ends.
+ */
+int check_reset_to_bootloader(struct usb_device_class_cdc_driver_t *self_p)
+{
+#if defined(BOARD_ARDUINO_PRO_MICRO)
+
+    if (self_p->line_info.dte_rate != 1200) {
+        return (0);
+    }
+
+    /* Most OSs do some intermediate steps when configuring ports
+       and DTR can twiggle more than once before stabilizing. To
+       avoid spurious resets we set the watchdog to 120ms and
+       eventually cancel if DTR goes back high. */
+
+    /* We check DTR state to determine if host port is open (bit 0 of
+       line state). */
+    if ((self_p->line_state & LINE_STATE_DTR) == 0) {
+        *(uint16_t*)0x0800 = STAY_IN_BOOT_LOADER_MAGIC;
+        usb_device_stop(self_p->drv_p);
+        watchdog_start_ms(100);
+    } else {
+        *(uint16_t *)0x0800 = 0x0;
+        watchdog_stop();
+    }
+
+#endif
+    
+    return (0);
 }
 
 /**
@@ -126,35 +167,13 @@ static int setup_isr(struct usb_device_driver_base_t *base_p,
                                 0,
                                 &self_p->line_info,
                                 sizeof(self_p->line_info));
+            check_reset_to_bootloader(self_p);
             res = 0;
             break;
 
         case USB_CDC_CONTROL_LINE_STATE:
-            self_p->line_state = (setup_p->u.base.value & 0xff);
-
-            /* Auto-reset into the bootloader is triggered when the
-               port, already open at 1200 bps, is closed. This is the
-               signal to start the watchdog with a relatively long
-               period so it can finish housekeeping tasks like
-               servicing endpoints before the application ends. */
-            if (self_p->line_info.dte_rate == 1200) {
-                /* We check DTR state to determine if host port is
-                   open (bit 0 of line state). */
-                /* if ((self_p->line_state & 0x01) == 0) { */
-                /*     *(uint16_t*)0x0800 = 0x7777; */
-                /*     wdt_enable(WDTO_120MS); */
-                /* } else { */
-                /*     /\* Most OSs do some intermediate steps when */
-                /*        configuring ports and DTR can twiggle more than */
-                /*        once before stabilizing. To avoid spurious */
-                /*        resets we set the watchdog to 120ms and */
-                /*        eventually cancel if DTR goes back high. *\/ */
-                /*     wdt_disable(); */
-                /*     wdt_reset(); */
-                /*     *(uint16_t *)0x0800 = 0x0; */
-                /* } */
-            }
-
+            self_p->line_state = setup_p->u.base.value;
+            check_reset_to_bootloader(self_p);
             res = 0;
             break;
 

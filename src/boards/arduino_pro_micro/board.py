@@ -39,7 +39,7 @@ def _upload(args):
     attempt = 1
     while attempt < 20:
         try:
-            serial.Serial(args.port, baudrate=1200).close()
+            serial.Serial(args.port, baudrate=38400).close()
             print "done."
             break
         except:

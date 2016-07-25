@@ -64,10 +64,7 @@ static int test_start(struct harness_t *harness_p)
                              &usb_device[0],
                              drivers,
                              membersof(drivers),
-                             usb_device_descriptors,
-                             usb_device_descriptor_string_language,
-                             usb_device_descriptor_string_iproduct,
-                             usb_device_descriptor_string_imanufacturer) == 0);
+                             usb_device_descriptors) == 0);
 
     /* Start the USB device driver. */
     BTASSERT(usb_device_start(&usb) == 0);
@@ -90,13 +87,35 @@ static int test_start(struct harness_t *harness_p)
 
 static int test_echo(struct harness_t *harness_p)
 {
+    int res = 0;
     char c;
+    struct chan_list_t list;
+    int workspace[16];
+    chan_t *chan_p;
+    struct time_t timeout;
 
-    /* Read one character and write it back to the sender. */
-    BTASSERT(chan_read(&echo.chin, &c, sizeof(c)) == sizeof(c));
-    BTASSERT(chan_write(&echo.chout, &c, sizeof(c)) == sizeof(c));
+    chan_list_init(&list, workspace, sizeof(workspace));
+    chan_list_add(&list, &echo.chin);
 
-    return (0);
+    timeout.seconds = 30;
+    timeout.nanoseconds = 0;
+
+    std_printf(FSTR("### Waiting for one character on the serial port "
+                    "/dev/ttyACM1 with a 30 seconds timeout...\r\n"));
+
+    chan_p = chan_list_poll(&list, &timeout);
+
+    if (chan_p != NULL) {
+        /* Read one character and write it back to the sender. */
+        BTASSERT(chan_read(&echo.chin, &c, sizeof(c)) == sizeof(c));
+        BTASSERT(chan_write(&echo.chout, &c, sizeof(c)) == sizeof(c));
+        std_printf(FSTR("### Read the character '%c'.\r\n"), c);
+    } else {
+        std_printf(FSTR("### Timeout. No character read.\r\n"));
+        res = -1;
+    }
+
+    return (res);
 }
 
 static int test_stop(struct harness_t *harness_p)

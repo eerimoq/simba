@@ -94,6 +94,15 @@ static void sys_port_unlock_isr(void)
 void sys_stop(int error)
 {
     eeprom_write_dword(0x0, error);
+
+#if defined(BOARD_ARDUINO_PRO_MICRO)
+
+    /* Handle USB device driver interrupts to reset the baord and
+       enter the bootloader. */
+    while (1);
+
+#endif
+
     exit(error);
 }
 

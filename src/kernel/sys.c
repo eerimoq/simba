@@ -46,7 +46,7 @@ static const FAR char config[] =
 #endif
     "\r\n"
     "        console-device=" STRINGIFY(CONFIG_CONSOLE_DEVICE) "\r\n"
-    "        console-baudrate=" STRINGIFY(CONFIG_CONSOLE_BAUDRATE) "\r\n"
+    "        console-uart-baudrate=" STRINGIFY(CONFIG_CONSOLE_UART_BAUDRATE) "\r\n"
     "        monitor-thread=" STRINGIFY(CONFIG_MONITOR_THREAD) "\r\n"
     "        shell-minimal=" STRINGIFY(CONFIG_SHELL_MINIMAL) "\r\n";
 
