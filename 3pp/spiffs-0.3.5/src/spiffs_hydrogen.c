@@ -5,7 +5,7 @@
  *      Author: petera
  */
 
-#include "spiffs.h"
+#include "storage/spiffs.h"
 #include "spiffs_nucleus.h"
 
 #if SPIFFS_FILEHDL_OFFSET
@@ -278,7 +278,7 @@ spiffs_file SPIFFS_open(spiffs *fs, const char *path, spiffs_flags flags, spiffs
   return SPIFFS_FH_OFFS(fs, fd->file_nbr);
 }
 
-spiffs_file SPIFFS_open_by_dirent(spiffs *fs, struct spiffs_dirent *e, spiffs_flags flags, spiffs_mode mode) {
+spiffs_file SPIFFS_open_by_dirent(spiffs *fs, spiffs_dirent *e, spiffs_flags flags, spiffs_mode mode) {
   SPIFFS_API_CHECK_CFG(fs);
   SPIFFS_API_CHECK_MOUNT(fs);
   SPIFFS_LOCK(fs);
@@ -685,7 +685,7 @@ s32_t SPIFFS_fremove(spiffs *fs, spiffs_file fh) {
 #endif // SPIFFS_READ_ONLY
 }
 
-static s32_t spiffs_stat_pix(spiffs *fs, spiffs_page_ix pix, spiffs_file fh, spiffs_stat *s) {
+static s32_t spiffs_stat_pix(spiffs *fs, spiffs_page_ix pix, spiffs_file fh, struct spiffs_stat_t *s) {
   (void)fh;
   spiffs_page_object_ix_header objix_hdr;
   spiffs_obj_id obj_id;
@@ -708,7 +708,7 @@ static s32_t spiffs_stat_pix(spiffs *fs, spiffs_page_ix pix, spiffs_file fh, spi
   return res;
 }
 
-s32_t SPIFFS_stat(spiffs *fs, const char *path, spiffs_stat *s) {
+s32_t SPIFFS_stat(spiffs *fs, const char *path, struct spiffs_stat_t *s) {
   SPIFFS_API_CHECK_CFG(fs);
   SPIFFS_API_CHECK_MOUNT(fs);
   if (strlen(path) > SPIFFS_OBJ_NAME_LEN - 1) {
@@ -729,7 +729,7 @@ s32_t SPIFFS_stat(spiffs *fs, const char *path, spiffs_stat *s) {
   return res;
 }
 
-s32_t SPIFFS_fstat(spiffs *fs, spiffs_file fh, spiffs_stat *s) {
+s32_t SPIFFS_fstat(spiffs *fs, spiffs_file fh, struct spiffs_stat_t *s) {
   SPIFFS_API_CHECK_CFG(fs);
   SPIFFS_API_CHECK_MOUNT(fs);
   SPIFFS_LOCK(fs);
@@ -915,7 +915,7 @@ static s32_t spiffs_read_dir_v(
       objix_hdr.p_hdr.span_ix == 0 &&
       (objix_hdr.p_hdr.flags& (SPIFFS_PH_FLAG_DELET | SPIFFS_PH_FLAG_FINAL | SPIFFS_PH_FLAG_IXDELE)) ==
           (SPIFFS_PH_FLAG_DELET | SPIFFS_PH_FLAG_IXDELE)) {
-    struct spiffs_dirent *e = (struct spiffs_dirent*)user_var_p;
+    struct spiffs_dirent_t *e = (struct spiffs_dirent_t*)user_var_p;
     e->obj_id = obj_id;
     strcpy((char *)e->name, (char *)objix_hdr.name);
     e->type = objix_hdr.type;

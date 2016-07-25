@@ -1,4 +1,4 @@
-#include "spiffs.h"
+#include "storage/spiffs.h"
 #include "spiffs_nucleus.h"
 
 #if !SPIFFS_READ_ONLY
@@ -358,7 +358,7 @@ typedef struct {
   spiffs_page_ix cur_objix_pix;
   int stored_scan_entry_index;
   u8_t obj_id_found;
-} spiffs_gc;
+} spiffs_gc_t;
 
 // Empties given block by moving all data into free pages of another block
 // Strategy:
@@ -378,7 +378,7 @@ s32_t spiffs_gc_clean(spiffs *fs, spiffs_block_ix bix) {
   int entries_per_page = (SPIFFS_CFG_LOG_PAGE_SZ(fs) / sizeof(spiffs_obj_id));
   int cur_entry = 0;
   spiffs_obj_id *obj_lu_buf = (spiffs_obj_id *)fs->lu_work;
-  spiffs_gc gc;
+  spiffs_gc_t gc;
   spiffs_page_ix cur_pix = 0;
   spiffs_page_object_ix_header *objix_hdr = (spiffs_page_object_ix_header *)fs->work;
   spiffs_page_object_ix *objix = (spiffs_page_object_ix *)fs->work;

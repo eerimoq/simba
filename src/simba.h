@@ -70,6 +70,7 @@ typedef unsigned long off_t;
 
 #include "storage/setting.h"
 #include "storage/fat16.h"
+#include "storage/spiffs.h"
 
 #include "debug/log.h"
 

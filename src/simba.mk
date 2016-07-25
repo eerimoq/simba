@@ -221,9 +221,19 @@ SRC += $(OAM_SRC:%=$(SIMBA_ROOT)/src/oam/%)
 
 # Storage package.
 STORAGE_SRC ?= setting.c \
-               fat16.c
+               fat16.c \
+	       spiffs.c
 
 SRC += $(STORAGE_SRC:%=$(SIMBA_ROOT)/src/storage/%)
+
+SPIFFS_SRC ?= \
+	3pp/spiffs-0.3.5/src/spiffs_nucleus.c \
+	3pp/spiffs-0.3.5/src/spiffs_gc.c \
+	3pp/spiffs-0.3.5/src/spiffs_hydrogen.c \
+	3pp/spiffs-0.3.5/src/spiffs_cache.c \
+	3pp/spiffs-0.3.5/src/spiffs_check.c
+
+SRC += $(SPIFFS_SRC:%=$(SIMBA_ROOT)/%)
 
 # Sync package.
 SYNC_SRC ?= bus.c \

@@ -20,7 +20,7 @@
  */
 
 
-#include "spiffs.h"
+#include "storage/spiffs.h"
 #include "spiffs_nucleus.h"
 
 #if !SPIFFS_READ_ONLY
