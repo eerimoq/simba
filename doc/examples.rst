@@ -7,4 +7,5 @@ Examples
 
    examples/*
 
-More examples are available on :github-blob:`Github <examples>`.
+Find more :github-blob:`examples<examples>` and :github-blob:`unit
+ tests<tst>` on Github.
