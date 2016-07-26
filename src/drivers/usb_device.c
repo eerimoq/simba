@@ -1,6 +1,6 @@
 /**
  * @file usb_device.c
- * @version 3.0.0
+ * @version 3.1.0
  *
  * @section License
  * Copyright (C) 2016, Erik Moqvist

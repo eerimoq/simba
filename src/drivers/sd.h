@@ -1,6 +1,6 @@
 /**
  * @file drivers/sd.h
- * @version 3.0.0
+ * @version 3.1.0
  *
  * @section License
  * Copyright (C) 2014-2016, Erik Moqvist
@@ -57,7 +57,7 @@ struct sd_cid_t {
 #define SD_CSD_STRUCTURE_V1 0
 #define SD_CSD_STRUCTURE_V2 1
 
-/* CSD, Card-Specific Data register, version 3.0.00. */
+/* CSD, Card-Specific Data register, version 3.1.00. */
 struct sd_csd_v1_t {
     uint8_t reserved1 : 6;
     uint8_t csd_structure : 2;      /* CSD structure. */
