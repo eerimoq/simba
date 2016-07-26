@@ -1,6 +1,6 @@
 #
 # @file simba.mk
-# @version 2.0.0
+# @version 3.0.0
 #
 # @section License
 # Copyright (C) 2014-2016, Erik Moqvist
@@ -220,6 +220,8 @@ OAM_SRC ?= console.c \
 SRC += $(OAM_SRC:%=$(SIMBA_ROOT)/src/oam/%)
 
 # Storage package.
+INC += $(SIMBA_ROOT)/3pp/spiffs-0.3.5/src
+
 STORAGE_SRC ?= setting.c \
                fat16.c \
 	       spiffs.c

@@ -1,6 +1,6 @@
 /**
  * @file main.c
- * @version 2.0.0
+ * @version 3.0.0
  *
  * @section License
  * Copyright (C) 2014-2016, Erik Moqvist
@@ -65,7 +65,6 @@ static int cmd_set_min_max_cb(int argc,
     return (0);
 }
 
-static char qinbuf[32];
 static struct nrf24l01_driver_t nrf24l01;
 
 int main()

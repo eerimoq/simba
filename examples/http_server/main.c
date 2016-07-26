@@ -1,6 +1,6 @@
 /**
  * @file main.c
- * @version 2.0.0
+ * @version 3.0.0
  *
  * @section License
  * Copyright (C) 2016, Erik Moqvist
@@ -21,12 +21,18 @@
 #include "simba.h"
 
 #if defined(ARCH_ESP)
-#    include "esp_common.h"
+#    include "esp_wifi.h"
+#    include "esp_sta.h"
+#endif
 
-#    if !defined(SSID) || !defined(PASSWORD)
-#        error "WiFi connection variables SSID and PASSWORD must be set."
-#    endif
+#if !defined(SSID)
+#    pragma message "WiFi connection variable SSID is not set. Using default value MySSID"
+#    define SSID MySSID
+#endif
 
+#if !defined(PASSWORD)
+#    pragma message "WiFi connection variable PASSWORD is not set. Using default value MyPassword"
+#    define PASSWORD MyPassword
 #endif
 
 static struct http_server_t server;
@@ -92,9 +98,9 @@ static int request_index(struct http_server_connection_t *connection_p,
     /* Create the response. */
     response.code = http_server_response_code_200_ok_t;
     response.content.type = http_server_content_type_text_html_t;
-    response.content.u.text.html.buf_p = index_html;
-    response.content.u.text.html.size =
-        strlen(response.content.u.text.html.buf_p);
+    response.content.buf_p = index_html;
+    response.content.size =
+        strlen(response.content.buf_p);
 
     return (http_server_response_write(connection_p,
                                        request_p,
@@ -112,8 +118,8 @@ static int no_route(struct http_server_connection_t *connection_p,
     /* Create the response. */
     response.code = http_server_response_code_404_not_found_t;
     response.content.type = http_server_content_type_text_html_t;
-    response.content.u.text.html.buf_p = NULL;
-    response.content.u.text.html.size = 0;
+    response.content.buf_p = NULL;
+    response.content.size = 0;
 
     return (http_server_response_write(connection_p,
                                        request_p,
@@ -235,7 +241,13 @@ int main()
 {
     init();
 
-    shell_init(&shell, &uart.chin, &uart.chout, NULL, NULL, NULL, NULL);
+    shell_init(&shell,
+               console_get_input_channel(),
+               console_get_output_channel(),
+               NULL,
+               NULL,
+               NULL,
+               NULL);
     shell_main(&shell);
 
     return (0);

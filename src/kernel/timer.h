@@ -1,6 +1,6 @@
 /**
  * @file kernel/timer.h
- * @version 2.0.0
+ * @version 3.0.0
  *
  * @section License
  * Copyright (C) 2014-2016, Erik Moqvist

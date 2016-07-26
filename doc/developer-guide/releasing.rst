@@ -16,7 +16,7 @@ Follow these steps to create a new release:
 
    .. code:: text
 
-      for f in $(git ls-files | xargs) ; do
+      for f in $(git ls-files | grep -v "package_simba_*" | xargs) ; do
           sed -i 's/<version>/<new version>/g' $f
       done
 
