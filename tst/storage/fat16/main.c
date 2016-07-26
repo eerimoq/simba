@@ -102,14 +102,14 @@ int test_start(struct harness_t *harness_p)
     return (0);
 }
 
-int test_format(struct harness_t *harness_p)
+static int test_format(struct harness_t *harness_p)
 {
     BTASSERT(fat16_format(&fs) == 0);
 
     return (0);
 }
 
-int test_print(struct harness_t *harness_p)
+static int test_print(struct harness_t *harness_p)
 {
     /* Print various information about the file system. */
     BTASSERT(fat16_print(&fs, sys_get_stdout()) == 0);
@@ -117,7 +117,7 @@ int test_print(struct harness_t *harness_p)
     return (0);
 }
 
-int test_file_operations(struct harness_t *harness_p)
+static int test_file_operations(struct harness_t *harness_p)
 {
     struct fat16_file_t foo;
     char buf[16];
@@ -138,7 +138,7 @@ int test_file_operations(struct harness_t *harness_p)
     return (0);
 }
 
-int test_create_multiple_files(struct harness_t *harness_p)
+static int test_create_multiple_files(struct harness_t *harness_p)
 {
     struct fat16_file_t file;
     char filename[32];
@@ -154,7 +154,7 @@ int test_create_multiple_files(struct harness_t *harness_p)
     return (0);
 }
 
-int test_reopen(struct harness_t *harness_p)
+static int test_reopen(struct harness_t *harness_p)
 {
     struct fat16_file_t bar;
     char buf[16];
@@ -173,7 +173,7 @@ int test_reopen(struct harness_t *harness_p)
     return (0);
 }
 
-int test_directory(struct harness_t *harness_p)
+static int test_directory(struct harness_t *harness_p)
 {
     struct fat16_dir_t dir;
     struct fat16_file_t foo;
@@ -248,7 +248,7 @@ int test_directory(struct harness_t *harness_p)
     return (0);
 }
 
-int test_bad_file(struct harness_t *harness_p)
+static int test_bad_file(struct harness_t *harness_p)
 {
     struct fat16_file_t foo;
 
@@ -273,7 +273,7 @@ int test_bad_file(struct harness_t *harness_p)
     return (0);
 }
 
-int test_truncate(struct harness_t *harness_p)
+static int test_truncate(struct harness_t *harness_p)
 {
     struct fat16_file_t bar;
     char buf[32];
@@ -316,7 +316,7 @@ int test_truncate(struct harness_t *harness_p)
     return (0);
 }
 
-int test_append(struct harness_t *harness_p)
+static int test_append(struct harness_t *harness_p)
 {
     struct fat16_file_t bar;
     char buf[32];
@@ -348,7 +348,7 @@ int test_append(struct harness_t *harness_p)
     return (0);
 }
 
-int test_seek(struct harness_t *harness_p)
+static int test_seek(struct harness_t *harness_p)
 {
     struct fat16_file_t bar;
     char buf[32];
@@ -394,7 +394,7 @@ int test_seek(struct harness_t *harness_p)
     return (0);
 }
 
-int test_stop(struct harness_t *harness_p)
+static int test_stop(struct harness_t *harness_p)
 {
     BTASSERT(fat16_stop(&fs) == 0);
 

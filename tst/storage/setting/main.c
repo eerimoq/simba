@@ -20,7 +20,7 @@
 
 #include "simba.h"
 
-int test_integer(struct harness_t *harness_p)
+static int test_integer(struct harness_t *harness_p)
 {
     int8_t int8;
     int16_t int16;
@@ -55,7 +55,7 @@ int test_integer(struct harness_t *harness_p)
     return (0);
 }
 
-int test_unsigned_integer(struct harness_t *harness_p)
+static int test_unsigned_integer(struct harness_t *harness_p)
 {
     uint8_t uint8;
     uint16_t uint16;
@@ -90,7 +90,7 @@ int test_unsigned_integer(struct harness_t *harness_p)
     return (0);
 }
 
-int test_string(struct harness_t *harness_p)
+static int test_string(struct harness_t *harness_p)
 {
     char string[SETTING_STRING_SIZE];
 

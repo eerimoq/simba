@@ -23,12 +23,12 @@
 #define LOG_PAGE_SIZE 64
 #define PHY_SIZE 1024
 
-uint8_t fs_storage[PHY_SIZE];
+static uint8_t fs_storage[PHY_SIZE];
 
-int32_t my_read(struct spiffs_t *fs_p,
-                uint32_t addr,
-                uint32_t size,
-                uint8_t *dst_p)
+static int32_t my_read(struct spiffs_t *fs_p,
+                       uint32_t addr,
+                       uint32_t size,
+                       uint8_t *dst_p)
 {
     BTASSERT(addr >= 0);
     BTASSERT(addr + size < sizeof(fs_storage));
@@ -38,10 +38,10 @@ int32_t my_read(struct spiffs_t *fs_p,
     return (0);
 }
 
-int32_t my_write(struct spiffs_t *fs_p,
-                 uint32_t addr,
-                 uint32_t size,
-                 uint8_t *src_p)
+static int32_t my_write(struct spiffs_t *fs_p,
+                        uint32_t addr,
+                        uint32_t size,
+                        uint8_t *src_p)
 {
     BTASSERT(addr >= 0);
     BTASSERT(addr + size < sizeof(fs_storage));
@@ -51,9 +51,9 @@ int32_t my_write(struct spiffs_t *fs_p,
     return (0);
 }
 
-int32_t my_erase(struct spiffs_t *fs_p,
-                 uint32_t addr,
-                 uint32_t size)
+static int32_t my_erase(struct spiffs_t *fs_p,
+                        uint32_t addr,
+                        uint32_t size)
 {
     BTASSERT(addr >= 0);
     BTASSERT(addr + size <= sizeof(fs_storage));
@@ -63,7 +63,7 @@ int32_t my_erase(struct spiffs_t *fs_p,
     return (0);
 }
 
-int test_read_write(struct harness_t *harness_p)
+static int test_read_write(struct harness_t *harness_p)
 {
     int res;
     char buf[12];
