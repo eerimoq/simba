@@ -27,6 +27,7 @@
 #include "esp_ssc.h"
 
 #include "esp8266/esp8266.h"
+#include "freertos/FreeRTOS.h"
 
 #include "eagle_soc.h"
 

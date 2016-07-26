@@ -18,6 +18,8 @@
  * This file is part of the Simba project.
  */
 
+#include "freertos/FreeRTOS.h"
+
 /**
  * Start a block transfer of up to 64 bytes.
  */
