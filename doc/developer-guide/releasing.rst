@@ -26,22 +26,26 @@ Follow these steps to create a new release:
 
       make release-test
 
-4. Commit the changes, and tag the commit with the new version.
-
-5. Generate files for Arduino and copy them to the Arduino release
-   area. Also add the new release to
-   ``../simba-arduino/<family>/package_simba_<family>_index.json``. The
-   sh256 sums of the zip-archives are calculated by ``make arduino``
+4. Generate files for Arduino and add the new releases to
+   ``make/arduino/<family>/package_simba_<family>_index.json``. The
+   sha256 sums of the zip-archives are calculated by ``make arduino``
    and written to ``simba-arduino/*.sha256``.
 
    .. code:: text
 
       make arduino
-      cp simba-arduino/simba-arduino-avr-*.zip ../simba-arduino/avr
-      cp simba-arduino/simba-arduino-sam-*.zip ../simba-arduino/sam
 
-6. Commit the Arduino changes in ``../simba-arduino``.
+5. Commit the changes, and tag the commit with the new version.
 
-7. Push new commits and tags in both repositories.
+6. Push the new commit and tag.
 
+7. Copy the Simba Arduino releases to SourceForge.
+
+   .. code:: text
+
+      scp simba-arduino/simba-arduino-avr-*.zip <user>@frs.sourceforge.net:/home/frs/project/simba-arduino/avr
+      scp simba-arduino/simba-arduino-sam-*.zip <user>@frs.sourceforge.net:/home/frs/project/simba-arduino/sam
+      scp make/arduino/avr/package_simba_avr_index.json <user>@frs.sourceforge.net:/home/frs/project/simba-arduino/avr
+      scp make/arduino/sam/package_simba_sam_index.json <user>@frs.sourceforge.net:/home/frs/project/simba-arduino/sam
+      
 8. Done.
