@@ -95,3 +95,33 @@ uno.compiler.c.extra_flags={uno_compiler_c_extra_flags}
 uno.compiler.cpp.extra_flags={{c.extra_flags}}
 
 ##################################################################
+
+pro-micro.name=Simba Arduino Pro Micro
+pro-micro.upload.tool=avrdude
+pro-micro.upload.protocol=avr109
+pro-micro.upload.maximum_size=28672
+pro-micro.upload.maximum_data_size=2560
+pro-micro.upload.maximum_eeprom_size=1024
+pro-micro.upload.speed=57600
+pro-micro.upload.disable_flushing=true
+pro-micro.upload.use_1200bps_touch=true
+pro-micro.upload.wait_for_upload_port=true
+
+pro-micro.bootloader.path=caterina
+pro-micro.bootloader.tool=avrdude
+pro-micro.bootloader.low_fuses=0xff
+pro-micro.bootloader.high_fuses=0xd8
+pro-micro.bootloader.extended_fuses=0xcb
+
+pro-micro.build.mcu=atmega32u4
+pro-micro.build.f_cpu=16000000L
+pro-micro.build.board=ARDUINO_PRO_MICRO
+pro-micro.build.variant=arduino_pro_micro
+pro-micro.build.core=Simba:simba
+pro-micro.build.main_stack_end=0x800900
+
+pro-micro.compiler.c.extra_flags={pro_micro_compiler_c_extra_flags}
+
+pro-micro.compiler.cpp.extra_flags={{c.extra_flags}}
+
+##################################################################

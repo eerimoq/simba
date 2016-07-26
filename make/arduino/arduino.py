@@ -1054,7 +1054,9 @@ def generate_boards_txt_avr(database, boards_txt_fmt):
         nano_compiler_c_extra_flags=get_extra_flags("arduino_nano",
                                                    database),
         uno_compiler_c_extra_flags=get_extra_flags("arduino_uno",
-                                                   database))
+                                                   database),
+        pro_micro_compiler_c_extra_flags=get_extra_flags("arduino_pro_micro",
+                                                         database))
 
 
 def generate_boards_txt_sam(database, boards_txt_fmt):
