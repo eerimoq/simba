@@ -507,7 +507,7 @@ spiffs_file_t spiffs_open_by_page(struct spiffs_t *self_p,
  *
  * @param[in] self_p The file system struct.
  * @param[in] fh The filehandle.
- * @param[in] buf Where to put read data.
+ * @param[in] buf_p Where to put read data.
  * @param[in] len How much to read.
  *
  * @return Number of bytes read or negative error code.
