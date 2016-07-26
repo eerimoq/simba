@@ -168,7 +168,7 @@
 
 // Enable this if you want the HAL callbacks to be called with the spiffs struct
 #ifndef SPIFFS_HAL_CALLBACK_EXTRA
-#define SPIFFS_HAL_CALLBACK_EXTRA         0
+#define SPIFFS_HAL_CALLBACK_EXTRA         1
 #endif
 
 // Enable this if you want to add an integer offset to all file handles
@@ -199,7 +199,7 @@
 // in the api. This function will visualize all filesystem using given printf
 // function.
 #ifndef SPIFFS_TEST_VISUALISATION
-#define SPIFFS_TEST_VISUALISATION         1
+#define SPIFFS_TEST_VISUALISATION         0
 #endif
 #if SPIFFS_TEST_VISUALISATION
 #ifndef spiffs_printf

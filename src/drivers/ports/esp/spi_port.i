@@ -18,8 +18,6 @@
  * This file is part of the Simba project.
  */
 
-#include "esp_common.h"
-
 /**
  * Start a block transfer of up to 64 bytes.
  */

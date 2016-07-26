@@ -30,7 +30,6 @@
 
 #include "freertos/FreeRTOS.h"
 #include "freertos/semphr.h"
-#include "esp_common.h"
 
 extern xSemaphoreHandle thrd_idle_sem;
 

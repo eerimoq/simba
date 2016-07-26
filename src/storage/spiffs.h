@@ -426,9 +426,9 @@ int32_t spiffs_mount(struct spiffs_t *self_p,
  *
  * @param[in] self_p The file system struct.
  *
- * @return zero(0) or negative error code.
+ * @return void.
  */
-void SPIFFS_unmount(struct spiffs_t *self_p);
+void spiffs_unmount(struct spiffs_t *self_p);
 
 /**
  * Creates a new file.
@@ -655,6 +655,8 @@ int32_t spiffs_errno(struct spiffs_t *self_p);
  * Clears last error.
  *
  * @param[in] self_p The file system struct.
+ *
+ * @return void.
  */
 void spiffs_clearerr(struct spiffs_t *self_p);
 

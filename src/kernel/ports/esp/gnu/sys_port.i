@@ -18,7 +18,16 @@
  * This file is part of the Simba project.
  */
 
-#include "esp_common.h"
+#include "c_types.h"
+#include "esp_libc.h"
+#include "esp_misc.h"
+#include "esp_wifi.h"
+#include "esp_system.h"
+#include "esp_timer.h"
+#include "esp_ssc.h"
+
+#include "esp8266/esp8266.h"
+
 #include "eagle_soc.h"
 
 #define SYS_TICK_TIMER_PRESCALE ESP8266_TIMER_CTRL_PRESCALE_256

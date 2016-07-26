@@ -20,7 +20,6 @@
 
 #include "freertos/FreeRTOS.h"
 #include "freertos/semphr.h"
-#include "esp_common.h"
 
 static struct fs_counter_t rx_channel_overflow;
 static struct fs_counter_t rx_errors;
