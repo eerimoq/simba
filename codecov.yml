@@ -1,0 +1,5 @@
+coverage:
+  ignore:
+    - 3pp/*
+    - examples/*
+    - tst/*
