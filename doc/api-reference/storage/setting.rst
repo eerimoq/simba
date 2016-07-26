@@ -69,13 +69,13 @@ easier to read.
 
 ----------------------------------------------
 
-Source code: :github-blob:`src/kernel/kernel/setting.h`
+Source code: :github-blob:`src/storage/setting.h`
 
-Test code: :github-blob:`tst/kernel/setting/main.c`
+Test code: :github-blob:`tst/storage/setting/main.c`
 
-Test coverage: :codecov:`src/kernel/kernel/setting.c`
+Test coverage: :codecov:`src/storage/setting.c`
 
 ----------------------------------------------
 
-.. doxygenfile:: kernel/setting.h
+.. doxygenfile:: storage/setting.h
    :project: simba
