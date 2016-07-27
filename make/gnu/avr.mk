@@ -1,6 +1,6 @@
 #
 # @file make/gnu-avr.mk
-# @version 3.1.0
+# @version 3.1.1
 #
 # @section License
 # Copyright (C) 2014-2016, Erik Moqvist
@@ -26,7 +26,7 @@ CDEFS += F_CPU=$(F_CPU)UL \
 	__DELAY_BACKWARD_COMPATIBLE__
 
 CFLAGS += -mmcu=$(CPU) \
-          -Os \
+          -O2 \
           -ffunction-sections \
           -fdata-sections \
           -fpack-struct \

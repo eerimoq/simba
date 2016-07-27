@@ -1,6 +1,6 @@
 /**
  * @file main.c
- * @version 3.1.0
+ * @version 3.1.1
  *
  * @section License
  * Copyright (C) 2014-2016, Erik Moqvist
@@ -146,8 +146,8 @@ static int encode(const char *r_p,
     int ok = 1;
     va_list ap;
     struct json_t p;
-    static char buf[512];
-    static struct json_tok_t t[128];
+    char buf[512];
+    struct json_tok_t t[128];
 
     va_start(ap, numtok);
 
@@ -200,7 +200,7 @@ static int decode(const char *s_p,
     int ok = 1;
     va_list args;
     struct json_t p;
-    static struct json_tok_t t[128];
+    struct json_tok_t t[128];
 
     if (numtok > 128) {
         return (0);

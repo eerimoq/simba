@@ -1,6 +1,6 @@
 #
 # @file make/app.mk
-# @version 3.1.0
+# @version 3.1.1
 #
 # @section License
 # Copyright (C) 2014-2016, Erik Moqvist
