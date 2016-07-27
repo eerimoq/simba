@@ -55,7 +55,7 @@ int network_interface_slip_module_init(void);
  * @param[in] self_p Slip to initialize.
  * @param[in] ipaddr_p Network interface IP address.
  * @param[in] netmask_p Network interface netmask.
- * @param[in] gw_p Network interface gateway.
+ * @param[in] gateway_p Network interface gateway.
  * @param[in] chout_p Output channel.
  *
  * @return zero(0) or negative error code.
@@ -63,7 +63,7 @@ int network_interface_slip_module_init(void);
 int network_interface_slip_init(struct network_interface_slip_t *self_p,
                                 struct inet_ip_addr_t *ipaddr_p,
                                 struct inet_ip_addr_t *netmask_p,
-                                struct inet_ip_addr_t *gw_p,
+                                struct inet_ip_addr_t *gateway_p,
                                 chan_t *chout_p);
 
 /**

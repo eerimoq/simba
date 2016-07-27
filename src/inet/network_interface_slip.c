@@ -164,13 +164,13 @@ int network_interface_slip_module_init(void)
 int network_interface_slip_init(struct network_interface_slip_t *self_p,
                                 struct inet_ip_addr_t *ipaddr_p,
                                 struct inet_ip_addr_t *netmask_p,
-                                struct inet_ip_addr_t *gw_p,
+                                struct inet_ip_addr_t *gateway_p,
                                 chan_t *chout_p)
 {
     ASSERTN(self_p != NULL, EINVAL);
     ASSERTN(ipaddr_p != NULL, EINVAL);
     ASSERTN(netmask_p != NULL, EINVAL);
-    ASSERTN(gw_p != NULL, EINVAL);
+    ASSERTN(gateway_p != NULL, EINVAL);
     ASSERTN(chout_p != NULL, EINVAL);
 
     self_p->state = NETWORK_INTERFACE_SLIP_STATE_NORMAL;
@@ -184,7 +184,7 @@ int network_interface_slip_init(struct network_interface_slip_t *self_p,
 
     self_p->network_interface.ipaddr = *ipaddr_p;
     self_p->network_interface.netmask = *netmask_p;
-    self_p->network_interface.gw = *gw_p;
+    self_p->network_interface.gw = *gateway_p;
     self_p->network_interface.init = init;
 
     self_p->network_interface.netif.name[0] = 's';
@@ -241,7 +241,7 @@ int network_interface_slip_module_init(void)
 int network_interface_slip_init(struct network_interface_slip_t *self_p,
                                 struct inet_ip_addr_t *ipaddr_p,
                                 struct inet_ip_addr_t *netmask_p,
-                                struct inet_ip_addr_t *gw_p,
+                                struct inet_ip_addr_t *gateway_p,
                                 chan_t *chout_p)
 {
     return (0);
