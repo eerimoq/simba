@@ -61,7 +61,7 @@ int main()
                                 &gw,
                                 &ipuart.chout);
     network_interface_add(&slip.network_interface);
-    network_interface_enable(&slip.network_interface);
+    network_interface_start(&slip.network_interface);
 
     while (1) {
         uart_read(&ipuart, &data, 1);

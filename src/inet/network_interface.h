@@ -26,12 +26,19 @@
 #include "lwip/sys.h"
 #include "lwip/ip.h"
 
+struct network_interface_t;
+
+typedef int (*network_interface_start_t)(struct network_interface_t *netif_p);
+typedef int (*network_interface_stop_t)(struct network_interface_t *netif_p);
+
 struct network_interface_t {
     struct netif netif;
     struct inet_ip_addr_t ipaddr;
     struct inet_ip_addr_t netmask;
     struct inet_ip_addr_t gw;
     netif_init_fn init;
+    network_interface_start_t start;
+    network_interface_stop_t stop;
 };
 
 /**
@@ -57,6 +64,26 @@ int network_interface_add(struct network_interface_t *netif_p);
  *
  * @return zero(0) or negative error code.
  */
-int network_interface_enable(struct network_interface_t *netif_p);
+int network_interface_start(struct network_interface_t *netif_p);
+
+/**
+ * Get the ip address of given network interface.
+ *
+ * @param[in] netif_p Network interface to get the ip address of.
+ *
+ * @return zero(0) or negative error code.
+ */
+int network_interface_set_ip_address(struct network_interface_t *netif_p,
+                                     struct inet_ip_addr_t *addr_p);
+
+/**
+ * Get the ip address of given network interface.
+ *
+ * @param[in] netif_p Network interface to get the ip address of.
+ *
+ * @return zero(0) or negative error code.
+ */
+int network_interface_get_ip_address(struct network_interface_t *netif_p,
+                                     struct inet_ip_addr_t *addr_p);
 
 #endif

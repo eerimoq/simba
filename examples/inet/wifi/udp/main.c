@@ -20,11 +20,6 @@
 
 #include "simba.h"
 
-#if defined(ARCH_ESP)
-#    include "esp_wifi.h"
-#    include "esp_sta.h"
-#endif
-
 #if !defined(SSID)
 #    pragma message "WiFi connection variable SSID is not set. Using default value MySSID"
 #    define SSID MySSID
@@ -38,8 +33,7 @@
 /* Ports. */
 #define UDP_PORT   30303
 
-static struct uart_driver_t uart;
-static char rxbuf[4];
+static struct network_interface_wifi_station_espressif_t wifi;
 
 static int udp_test(void)
 {
@@ -87,36 +81,39 @@ static int udp_test(void)
 
 static int init()
 {
-    struct station_config sta_config;
-    struct ip_info ip_config;
-
-    /* Start WiFi in station mode. */
-    wifi_set_opmode_current(STATION_MODE);
-
-    memset(&sta_config, 0, sizeof(sta_config));
-    std_sprintf((char *)sta_config.ssid, FSTR("%s"), STRINGIFY(SSID));
-    std_sprintf((char *)sta_config.password, FSTR("%s"), STRINGIFY(PASSWORD));
-
-    wifi_station_set_config(&sta_config);
-
-    wifi_get_ip_info(STATION_IF, &ip_config);
-
-    while (ip_config.ip.addr == 0) {
-        wifi_get_ip_info(STATION_IF, &ip_config);
-    }
+    struct inet_ip_addr_t addr;
+    char buf[20];
 
     sys_start();
 
+    network_interface_module_init();
     socket_module_init();
 
-    uart_module_init();
-    uart_init(&uart, &uart_device[0], 38400, rxbuf, sizeof(rxbuf));
-    uart_start(&uart);
-    sys_set_stdout(&uart.chout);
+#if defined(ARCH_ESP)
 
-    std_printf(FSTR("Connected to AP. Got IP 0x%x\r\n"),
-               ip_config.ip.addr);
+    /* Initialize WiFi in station mode with given SSID and
+       password. */
+    network_interface_wifi_station_espressif_module_init();
+    network_interface_wifi_station_espressif_init(&wifi,
+                                                  (uint8_t *)STRINGIFY(SSID),
+                                                  (uint8_t *)STRINGIFY(PASSWORD));
 
+#else
+#    error "Only the ESP is supported in this example."
+#endif
+
+    network_interface_add(&wifi.network_interface);
+
+    /* Start WiFi and connect to the Access Point with given SSID and
+       password. */
+    network_interface_start(&wifi.network_interface);
+
+    network_interface_get_ip_address(&wifi.network_interface,
+                                     &addr);
+
+    std_printf(FSTR("Connected to Access Point (AP). Got IP %s.\r\n"),
+               inet_ntoa(&addr, buf));
+    
     return (0);
 }
 

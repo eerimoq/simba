@@ -153,7 +153,7 @@ endif
 # Inet package.
 INC += $(SIMBA_ROOT)/src/inet
 
-INET_SRC ?= \
+INET_SRC_TMP ?= \
 	http_server.c \
 	http_websocket_server.c \
 	http_websocket_client.c \
@@ -162,6 +162,12 @@ INET_SRC ?= \
 	network_interface.c \
 	network_interface_slip.c \
 	socket.c
+
+ifeq ($(ARCH), esp)
+INET_SRC_TMP += network_interface_wifi_station_espressif.c
+endif
+
+INET_SRC ?= $(INET_SRC_TMP)
 
 ifneq ($(ARCH),$(filter $(ARCH), esp linux))
     LWIP_SRC ?= \

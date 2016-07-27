@@ -20,7 +20,24 @@
 
 #include "simba.h"
 
-#if !defined(ARCH_LINUX)
+#if defined(ARCH_ESP)
+
+int network_interface_module_init(void)
+{
+    return (0);
+}
+
+int network_interface_add(struct network_interface_t *netif_p)
+{
+    return (0);
+}
+
+int network_interface_start(struct network_interface_t *netif_p)
+{
+    return (netif_p->start(netif_p));
+}
+
+#elif !defined(ARCH_LINUX)
 
 int network_interface_module_init(void)
 {
@@ -46,11 +63,17 @@ int network_interface_add(struct network_interface_t *netif_p)
     return (0);
 }
 
-int network_interface_enable(struct network_interface_t *netif_p)
+int network_interface_start(struct network_interface_t *netif_p)
 {
-    netif_set_up(&netif_p->netif);
+    int res;
 
-    return (0);
+    res = netif_p->start(netif_p);
+
+    if (res == 0) {
+        netif_set_up(&netif_p->netif);
+    }
+
+    return (res);
 }
 
 #else
@@ -65,9 +88,25 @@ int network_interface_add(struct network_interface_t *netif_p)
     return (0);
 }
 
-int network_interface_enable(struct network_interface_t *netif_p)
+int network_interface_start(struct network_interface_t *netif_p)
 {
     return (0);
 }
 
 #endif
+
+int network_interface_set_ip_address(struct network_interface_t *netif_p,
+                                     struct inet_ip_addr_t *addr_p)
+{
+    netif_p->ipaddr = *addr_p;
+
+    return (0);
+}
+
+int network_interface_get_ip_address(struct network_interface_t *netif_p,
+                                     struct inet_ip_addr_t *addr_p)
+{
+    *addr_p = netif_p->ipaddr;
+
+    return (0);
+}

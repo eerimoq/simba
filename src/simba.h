@@ -180,4 +180,8 @@ typedef unsigned long off_t;
 #include "inet/network_interface.h"
 #include "inet/network_interface_slip.h"
 
+#if defined(FAMILY_ESP)
+#    include "inet/network_interface_wifi_station_espressif.h"
+#endif
+
 #endif
