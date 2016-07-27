@@ -26,7 +26,7 @@ CDEFS += F_CPU=$(F_CPU)UL \
 	__DELAY_BACKWARD_COMPATIBLE__
 
 CFLAGS += -mmcu=$(CPU) \
-          -Os \
+          -O2 \
           -ffunction-sections \
           -fdata-sections \
           -fpack-struct \

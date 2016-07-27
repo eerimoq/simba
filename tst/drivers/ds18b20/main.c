@@ -29,18 +29,23 @@ int test_get_temp(struct harness_t *harness_p)
     struct ds18b20_driver_t ds;
     struct owi_device_t devices[4];
     char buf[24];
+    int number_of_sensors;
 
     BTASSERT(owi_init(&owi, &pin_d7_dev, devices, membersof(devices)) == 0);
     BTASSERT(ds18b20_init(&ds, &owi) == 0);
 
     time_busy_wait_us(50000);
 
+    number_of_sensors = owi_search(&owi);
+
+    std_printf(FSTR("number_of_sensors = %d\r\n"), number_of_sensors);
+
+    BTASSERT(number_of_sensors == 2);
+
     strcpy(buf, "drivers/ds18b20/list");
     BTASSERT(fs_call(buf, NULL, sys_get_stdout(), NULL) == 0);
 
     time_busy_wait_us(50000);
-
-    BTASSERT(owi_search(&owi) == 2);
 
     return (0);
 }
