@@ -8,5 +8,6 @@ The collections package on :github-tree:`Github<src/collections>`.
 
 .. toctree::
    :glob:   
+   :titlesonly:
 
    collections/*

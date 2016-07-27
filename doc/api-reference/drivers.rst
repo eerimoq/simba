@@ -7,5 +7,6 @@ Modules:
 
 .. toctree::
    :glob:   
+   :titlesonly:
 
    drivers/*

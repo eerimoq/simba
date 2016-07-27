@@ -7,5 +7,6 @@ The text package on :github-tree:`Github<src/text>`.
 
 .. toctree::
    :glob:   
+   :titlesonly:
 
    text/*

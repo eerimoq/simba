@@ -8,5 +8,6 @@ The hash package on :github-tree:`Github<src/hash>`.
 
 .. toctree::
    :glob:   
+   :titlesonly:
 
    hash/*

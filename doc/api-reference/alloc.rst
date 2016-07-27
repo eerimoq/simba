@@ -10,5 +10,6 @@ The alloc package on :github-tree:`Github<src/alloc>`.
 
 .. toctree::
    :glob:   
+   :titlesonly:
 
    alloc/*

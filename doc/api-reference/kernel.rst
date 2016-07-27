@@ -8,5 +8,6 @@ The kernel package on :github-tree:`Github<src/kernel>`.
 
 .. toctree::
    :glob:   
+   :titlesonly:
 
    kernel/*

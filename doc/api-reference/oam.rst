@@ -8,5 +8,6 @@ The oam package on :github-tree:`Github<src/oam>`.
 
 .. toctree::
    :glob:   
+   :titlesonly:
 
    oam/*

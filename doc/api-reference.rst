@@ -5,8 +5,9 @@ Besides the generated documentation the source code of the interfaces
 and their implementatins are available on :github-tree:`Github <src>`.
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 3
    :numbered:
+   :titlesonly:
 
    api-reference/kernel
    api-reference/sync

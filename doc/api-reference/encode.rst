@@ -8,5 +8,6 @@ The encode package on :github-tree:`Github<src/encode>`.
 
 .. toctree::
    :glob:   
+   :titlesonly:
 
    encode/*

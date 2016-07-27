@@ -7,5 +7,6 @@ The storage package on :github-tree:`Github<src/storage>`.
 
 .. toctree::
    :glob:   
+   :titlesonly:
 
    storage/*

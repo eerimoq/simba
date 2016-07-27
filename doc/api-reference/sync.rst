@@ -9,5 +9,6 @@ The sync package on :github-tree:`Github<src/sync>`.
 
 .. toctree::
    :glob:   
+   :titlesonly:
 
    sync/*
