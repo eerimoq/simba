@@ -1,4 +1,3 @@
-ARDUINO_ROOT ?= /home/erik/arduino-1.6.9
 BUILD_DIR ?= $(shell readlink -f ../build)
 
 ifeq ($(FAMILY),)

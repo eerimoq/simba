@@ -9,4 +9,4 @@ Build and run
 .. code-block:: bash
 
     # Process example project.
-    > make compile
+    > make all FAMILY=avr BOARD=nano

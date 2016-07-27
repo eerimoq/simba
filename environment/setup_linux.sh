@@ -23,3 +23,6 @@ export PYLINTRC=$(readlink -f environment/pylintrc)
 
 # Arduino release repository.
 export SIMBA_ARDUINO_ROOT=$(readlink -f ../simba-arduino)
+
+# Arduino IDE folder.
+export ARDUINO_ROOT=$(readlink -f ../../arduino-1.6.10)
