@@ -43,22 +43,35 @@ struct inet_addr_t {
 int inet_module_init(void);
 
 /**
- * Convert the Internet host address cp from the IPv4 numbers-and-dots
- * notation into binary form (in network byte order) and stores it in
- * the structure that inp points to.
+ * Convert the Internet host address src_p from the IPv4
+ * numbers-and-dots notation into binary form (in network byte order)
+ * and stores it in the structure that dst_p points to.
  *
- * The address supplied in cp can have one of the following forms:
+ * The address supplied in src_p can have one of the following forms:
  *
  * - a.b.c.d Each of the four numeric parts specifies a byte of the
  *           address; the bytes are assigned in left-to-right order to
  *           produce the binary address.
  *
- * @param[in] addr_str_p Address a.b.c.d to convert into a number.
- * @param[out] addr_p Converted address.
+ * @param[in] src_p Address a.b.c.d to convert into a number.
+ * @param[out] dst_p Converted address.
  *
  * @return zero(0) or negative error code.
  */
-int inet_aton(const char *addr_str_p,
-              struct inet_ip_addr_t *addr_p);
+int inet_aton(const char *src_p,
+              struct inet_ip_addr_t *dst_p);
+
+/**
+ * Convert the Internet host src_p from the IPv4 binary form (in
+ * network byte order) to numbers-and-dots notation and stores it in
+ * the structure that dst_p points to.
+ *
+ * @param[in] src_p Address to convert into a string.
+ * @param[out] dst_p Converted address as a string.
+ *
+ * @return Converted address pointer or NULL on failure.
+ */
+char *inet_ntoa(const struct inet_ip_addr_t *src_p,
+                char *dst_p);
 
 #endif
