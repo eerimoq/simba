@@ -1,6 +1,6 @@
 /**
  * @file storage/fat16.h
- * @version 3.1.0
+ * @version 3.1.1
  *
  * @section License
  * Copyright (C) 2009, William Greiman (Arduino Fat16 Library)
