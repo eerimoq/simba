@@ -10,8 +10,7 @@ terminated by a shell to enable the user to control and debug the
 application.
 
 Configure the console by changing the :doc:`configuration
- variables<../../user-guide/configuration>` called
- ``CONFIG_CONSOLE*``.
+variables<../../user-guide/configuration>` called ``CONFIG_CONSOLE*``.
 
 ----------------------------------------------
 
