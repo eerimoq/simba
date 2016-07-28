@@ -101,6 +101,13 @@ static int test_preemptive(struct harness_t *harness_p)
     return (0);
 }
 
+#else
+
+static int test_preemptive(struct harness_t *harness_p)
+{
+    return (1);
+}
+
 #endif
 
 int main()
@@ -109,9 +116,7 @@ int main()
     struct harness_testcase_t harness_testcases[] = {
         { test_suspend_resume, "test_suspend_resume" },
         { test_yield, "test_yield" },
-#if CONFIG_PREEMPTIVE_SCHEDULER == 1
         { test_preemptive, "test_preemptive" },
-#endif
         { NULL, NULL }
     };
 
