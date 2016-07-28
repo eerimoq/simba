@@ -8,6 +8,7 @@ import serial
 import expect
 import re
 import sys
+import time
 
 
 UDP_PORT = 30303
@@ -97,12 +98,16 @@ def main():
                         help='Server ip address.')
     args = parser.parse_args()
 
-    # Reset the board.
     dev_serial = serial.Serial(args.port,
                                baudrate=args.baudrate,
                                timeout=1.0)
-    dev_serial.dtr = args.dtr
-    dev_serial.rts = args.rts
+    # Boot from Flash.
+    dev_serial.rts = 0
+    # Hold the chip in reset.
+    dev_serial.dtr = 1
+    time.sleep(0.5)
+    # Let go of the reset.
+    dev_serial.dtr = 0
     dev = expect.Handler(dev_serial,
                          break_conditions=[])
 

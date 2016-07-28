@@ -30,6 +30,7 @@ BOARD_DESC = "ESP-12E Development Board"
 MCU = esp8266
 SERIAL_PORT ?= /dev/arduino
 BOARD_PY = $(SIMBA_ROOT)/src/boards/esp12e/board.py
+RUN_PY ?= $(SIMBA_ROOT)/src/boards/esp12e/run.py
 
 upload:
 	@echo "Uploading $(EXE)"
