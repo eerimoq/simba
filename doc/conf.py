@@ -327,9 +327,9 @@ texinfo_documents = [
 # extlins
 extlinks = {
     'github-blob':
-    ('https://github.com/eerimoq/simba/blob/' + version + '/', ''),
+    ('https://github.com/eerimoq/simba/blob/' + version + '/%s', ''),
     'github-tree':
-    ('https://github.com/eerimoq/simba/tree/' + version + '/', ''),
+    ('https://github.com/eerimoq/simba/tree/' + version + '/%s', ''),
     'codecov':
-    ('https://codecov.io/gh/eerimoq/simba/src/' + version + '/', '')
+    ('https://codecov.io/gh/eerimoq/simba/src/' + version + '/%s', '')
 }

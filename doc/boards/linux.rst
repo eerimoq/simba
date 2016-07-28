@@ -1,5 +1,5 @@
 Linux
-===========
+=====
 
 Homepage
 --------
@@ -34,4 +34,4 @@ API Reference
 
 :doc:`Linux <../api-reference/boards/linux>`
 
-.. include:: extra/linux.rst
+

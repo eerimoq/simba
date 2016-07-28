@@ -1,9 +1,9 @@
 ST STM32F205RG ARM Cortex-M3
-==========
+============================
 
 Homepage
 ---------
 
 
 
-.. include:: extra/stm32f205rg.rst
+

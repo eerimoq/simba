@@ -42,4 +42,4 @@ API Reference
 
 :doc:`Arduino Uno <../api-reference/boards/arduino_uno>`
 
-.. include:: extra/arduino_uno.rst
+

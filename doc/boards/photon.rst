@@ -1,5 +1,5 @@
 Particle IO Photon
-===========
+==================
 
 Homepage
 --------

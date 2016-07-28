@@ -9,7 +9,7 @@ import json
 
 
 BOARD_FMT = """{desc}
-===========
+{desc_underline}
 
 Homepage
 --------
@@ -38,18 +38,18 @@ API Reference
 
 :doc:`{desc} <../api-reference/boards/{name}>`
 
-.. include:: extra/{name}.rst
+{include_extra}
 """
 
 MCU_FMT = """{desc}
-==========
+{desc_underline}
 
 Homepage
 ---------
 
 {homepage}
 
-.. include:: extra/{name}.rst
+{include_extra}
 """
 
 SOURCE_CODE_FMT = """.. code-block:: c
@@ -81,12 +81,20 @@ def boards_generate(database):
         for driver in sorted(data["drivers"]):
             drivers.append("- :doc:`../api-reference/drivers/{}`".format(
                 driver))
+
+        if os.path.exists(os.path.join("doc", "boards", "extra", board + ".rst")):
+            include_extra = ".. include:: extra/{name}.rst".format(name=board)
+        else:
+            include_extra = ""
+
         rst = BOARD_FMT.format(name=board,
                                desc=data["board_desc"],
+                               desc_underline="=" * len(data["board_desc"]),
                                homepage=data["board_homepage"],
                                pinout=data["board_pinout"],
                                mcu=data["mcu"].replace("/", ""),
-                               drivers='\n'.join(drivers))
+                               drivers='\n'.join(drivers),
+                               include_extra=include_extra)
 
         rst_path = os.path.join("doc", "boards", board + ".rst")
         print "Writing to ", rst_path
@@ -100,9 +108,16 @@ def mcus_generate(database):
     """
 
     for mcu, data in database["mcus"].items():
+        if os.path.exists(os.path.join("doc", "mcus", "extra", mcu + ".rst")):
+            include_extra = ".. include:: extra/{name}.rst".format(name=mcu)
+        else:
+            include_extra = ""
+
         rst = MCU_FMT.format(name=mcu,
                              desc=data["mcu_name"],
-                             homepage=data["mcu_homepage"])
+                             desc_underline="=" * len(data["mcu_name"]),
+                             homepage=data["mcu_homepage"],
+                             include_extra=include_extra)
 
         rst_path = os.path.join("doc", "mcus", mcu + ".rst")
         print "Writing to ", rst_path

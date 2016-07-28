@@ -1,5 +1,5 @@
 Arduino Mega
-===========
+============
 
 Homepage
 --------
@@ -42,4 +42,4 @@ API Reference
 
 :doc:`Arduino Mega <../api-reference/boards/arduino_mega>`
 
-.. include:: extra/arduino_mega.rst
+

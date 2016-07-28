@@ -1,5 +1,5 @@
 Arduino Nano
-===========
+============
 
 Homepage
 --------
@@ -42,4 +42,4 @@ API Reference
 
 :doc:`Arduino Nano <../api-reference/boards/arduino_nano>`
 
-.. include:: extra/arduino_nano.rst
+

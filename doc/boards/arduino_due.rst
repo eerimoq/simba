@@ -40,4 +40,4 @@ API Reference
 
 :doc:`Arduino Due <../api-reference/boards/arduino_due>`
 
-.. include:: extra/arduino_due.rst
+

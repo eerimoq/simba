@@ -1,5 +1,5 @@
 Cygwin
-===========
+======
 
 Homepage
 --------
@@ -34,4 +34,4 @@ API Reference
 
 :doc:`Cygwin <../api-reference/boards/cygwin>`
 
-.. include:: extra/cygwin.rst
+
