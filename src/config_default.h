@@ -266,6 +266,17 @@
 #endif
 
 /**
+ * Network interface list command.
+ */
+#ifndef CONFIG_FS_CMD_NETWORK_INTERFACE_LIST
+#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO)
+#        define CONFIG_FS_CMD_NETWORK_INTERFACE_LIST        0
+#    else
+#        define CONFIG_FS_CMD_NETWORK_INTERFACE_LIST        1
+#    endif
+#endif
+
+/**
  * Default console device (UART/USB CDC).
  */
 #define CONFIG_CONSOLE_NONE                                 0

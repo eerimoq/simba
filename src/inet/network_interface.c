@@ -20,12 +20,43 @@
 
 #include "simba.h"
 
-#if defined(ARCH_ESP)
+#if CONFIG_FS_CMD_NETWORK_INTERFACE_LIST == 1
+
+static struct fs_command_t cmd_list;
+
+static int cmd_list_cb(int argc,
+                       const char *argv[],
+                       chan_t *out_p,
+                       chan_t *in_p,
+                       void *arg_p,
+                       void *call_arg_p)
+{
+    std_fprintf(out_p, FSTR("            NAME   STATE             "
+                            "ADDRESS       TX BYTES       RX BYTES\r\n"));
+    std_fprintf(out_p, FSTR(" not-implemented      up    "
+                            "192.168.1.103/24        2343224             43\r\n"));
+    
+    return (0);
+}
+
+#endif
 
 int network_interface_module_init(void)
 {
+#if CONFIG_FS_CMD_NETWORK_INTERFACE_LIST == 1
+    
+    fs_command_init(&cmd_list,
+                    FSTR("/inet/network_interface/list"),
+                    cmd_list_cb,
+                    NULL);
+    fs_command_register(&cmd_list);
+    
+#endif
+
     return (0);
 }
+
+#if defined(ARCH_ESP)
 
 int network_interface_add(struct network_interface_t *netif_p)
 {
@@ -38,11 +69,6 @@ int network_interface_start(struct network_interface_t *netif_p)
 }
 
 #elif !defined(ARCH_LINUX)
-
-int network_interface_module_init(void)
-{
-    return (0);
-}
 
 int network_interface_add(struct network_interface_t *netif_p)
 {
@@ -79,11 +105,6 @@ int network_interface_start(struct network_interface_t *netif_p)
 }
 
 #else
-
-int network_interface_module_init(void)
-{
-    return (0);
-}
 
 int network_interface_add(struct network_interface_t *netif_p)
 {
