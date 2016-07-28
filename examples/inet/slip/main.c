@@ -22,8 +22,6 @@
 
 static struct uart_driver_t ipuart;
 static char iprxbuf[512];
-static struct uart_driver_t uart;
-static uint8_t rxbuf[256];
 static struct network_interface_slip_t slip;
 
 int main()
@@ -31,16 +29,9 @@ int main()
     uint8_t data;
     struct inet_ip_addr_t ipaddr;
     struct inet_ip_addr_t netmask;
-    struct inet_ip_addr_t gw;
+    struct inet_ip_addr_t gateway;
 
     sys_start();
-
-    uart_module_init();
-    uart_init(&uart, &uart_device[0], 38400, rxbuf, sizeof(rxbuf));
-    uart_start(&uart);
-    sys_set_stdout(&uart.chout);
-
-    log_set_default_handler_output_channel(sys_get_stdout());
 
     std_printf(sys_get_info());
 
@@ -53,12 +44,12 @@ int main()
 
     inet_aton("169.254.1.2", &ipaddr);
     inet_aton("255.255.255.0", &netmask);
-    inet_aton("0.0.0.0", &gw);
+    inet_aton("0.0.0.0", &gateway);
 
     network_interface_slip_init(&slip,
                                 &ipaddr,
                                 &netmask,
-                                &gw,
+                                &gateway,
                                 &ipuart.chout);
     network_interface_add(&slip.network_interface);
     network_interface_start(&slip.network_interface);
