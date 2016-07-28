@@ -244,6 +244,10 @@ int network_interface_slip_init(struct network_interface_slip_t *self_p,
                                 struct inet_ip_addr_t *gateway_p,
                                 chan_t *chout_p)
 {
+    self_p->network_interface.init = NULL;
+    self_p->network_interface.start = NULL;
+    self_p->network_interface.stop = NULL;
+
     return (0);
 }
 

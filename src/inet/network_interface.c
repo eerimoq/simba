@@ -65,9 +65,11 @@ int network_interface_add(struct network_interface_t *netif_p)
 
 int network_interface_start(struct network_interface_t *netif_p)
 {
-    int res;
+    int res = 0;
 
-    res = netif_p->start(netif_p);
+    if (netif_p->start != NULL) {
+        res = netif_p->start(netif_p);
+    }
 
     if (res == 0) {
         netif_set_up(&netif_p->netif);
