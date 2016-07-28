@@ -1,8 +1,8 @@
-:mod:`json` --- JSON parser
-=================================
+:mod:`json` --- JSON encoding and decoding
+==========================================
 
 .. module:: json
-   :synopsis: JSON parser.
+   :synopsis: JSON encoding and decoding.
 
 Source code: :github-blob:`src/encode/json.h`
 
