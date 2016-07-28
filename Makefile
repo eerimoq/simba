@@ -141,7 +141,9 @@ ifeq ($(BOARD), arduino_nano)
 endif
 
 ifeq ($(BOARD), arduino_pro_micro)
-    APPS = $(addprefix tst/drivers/, usb_device)
+    TESTS = $(addprefix tst/kernel/, sys \
+                                     thrd \
+                                     timer)
 endif
 
 ifeq ($(BOARD), esp12e)
@@ -329,6 +331,8 @@ test-all-boards:
 	$(MAKE) test-arduino-mega
 	$(MAKE) clean-arduino-nano
 	$(MAKE) test-arduino-nano
+	$(MAKE) clean-arduino-pro-micro
+	$(MAKE) test-arduino-pro-micro
 	$(MAKE) clean-esp12e
 	$(MAKE) test-esp12e
 	$(MAKE) clean-stm32vldiscovery
