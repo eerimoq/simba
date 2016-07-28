@@ -98,8 +98,7 @@ UPPER_FAMILY := $(shell python -c "import sys; sys.stdout.write(sys.argv[1].uppe
 UPPER_MCU := $(shell python -c "import sys; sys.stdout.write(sys.argv[1].upper().replace('-', '_').replace('/', '_'))" $(MCU))
 UPPER_BOARD := $(shell python -c "import sys; sys.stdout.write(sys.argv[1].upper())" $(BOARD))
 
-RUN_PY = $(SIMBA_ROOT)/make/run.py
-RUNSCRIPT = $(SIMBA_ROOT)/make/$(TOOLCHAIN)/$(ARCH).py
+RUN_PY ?= $(SIMBA_ROOT)/make/run.py
 RUN_END_PATTERN ?= "harness report: total\(\d+\), passed\(\d+\), failed\(\d+\), skipped\(\d+\)"
 RUN_END_PATTERN_SUCCESS ?= "harness report: total\(\d+\), passed\(\d+\), failed\(0\), skipped\(\d+\)"
 
@@ -128,9 +127,6 @@ upload: all
 console:
 	python -u $(CONSOLESCRIPT) --port $(SERIAL_PORT) \
 			           --baudrate $(BAUDRATE)
-
-dump:
-	python -u $(RUNSCRIPT) dump ./$(EXE) $(SIMBA_ROOT) $(RUNARGS)
 
 report:
 	@echo "$(NAME):"

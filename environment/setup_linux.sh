@@ -26,3 +26,8 @@ export SIMBA_ARDUINO_ROOT=$(readlink -f ../simba-arduino)
 
 # Arduino IDE folder.
 export ARDUINO_ROOT=$(readlink -f ../../arduino-1.6.10)
+
+# Source the user defined setup.
+if [ -f ~/.simbarc ]; then
+    source ~/.simbarc
+fi

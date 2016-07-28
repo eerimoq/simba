@@ -170,7 +170,8 @@ ifeq ($(BOARD), esp12e)
     TESTS += $(addprefix tst/inet/, http_websocket_client \
 				    http_websocket_server \
 				    inet \
-				    mqtt_client)
+				    mqtt_client \
+				    network_interface/wifi_station_espressif)
 endif
 
 ifeq ($(BOARD), stm32vldiscovery)

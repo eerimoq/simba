@@ -8,7 +8,7 @@
 
 Source code: :github-blob:`src/inet/network_interface/wifi_station_espressif.h`
 
-Example code: :github-blob:`examples/inet/udp/main.c`
+Test code: :github-blob:`tst/inet/network_interface/wifi_station_espressif/main.c`
 
 ----------------------------------------------
 

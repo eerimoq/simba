@@ -18,8 +18,21 @@
 # This file is part of the Simba project.
 #
 
-NAME = inet_wifi_tcp
-BOARD = esp12e
+NAME = wifi_station_espressif_suite
+
+ifneq ($(SSID),)
+CDEFS_EXTRA += SSID=$(SSID)
+endif
+
+ifneq ($(PASSWORD),)
+CDEFS_EXTRA += PASSWORD=$(PASSWORD)
+endif
+
+ifneq ($(ESP8266_IP),)
+CDEFS_EXTRA += ESP8266_IP=$(ESP8266_IP)
+endif
+
+RUN_PY = run.py
 
 SIMBA_ROOT ?= ../../../..
 include $(SIMBA_ROOT)/make/app.mk
