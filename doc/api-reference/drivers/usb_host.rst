@@ -8,7 +8,7 @@ A USB host powers the bus and enumerates connected USB devices.
 
 ----------------------------------------------
 
-Class drivers:
+Class driver modules:
 
 .. toctree::
    :glob:   

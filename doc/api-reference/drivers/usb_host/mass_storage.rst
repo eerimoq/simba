@@ -1,4 +1,4 @@
-:mod:`mass_storage` --- Mass Storage
+:mod:`usb_host_class_mass_storage` --- Mass Storage
 ====================================
 
 The USB mass storage device class (also known as USB MSC or UMS) is a
@@ -12,7 +12,7 @@ More information on Wikipedia_.
 
 ----------------------------------------------
 
-.. module:: cdc
+.. module:: usb_host_class_mass_storage
    :synopsis: Mass Storage.
 
 Source code: :github-blob:`src/drivers/usb/host/class/mass_storage.h`

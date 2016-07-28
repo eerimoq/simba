@@ -20,7 +20,7 @@ See the test code below for an example usage.
 
 ----------------------------------------------
 
-Class drivers:
+Class driver modules:
 
 .. toctree::
    :glob:   

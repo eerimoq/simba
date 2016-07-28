@@ -160,11 +160,11 @@ INET_SRC_TMP ?= \
 	inet.c \
 	mqtt_client.c \
 	network_interface.c \
-	network_interface_slip.c \
+	network_interface/slip.c \
 	socket.c
 
 ifeq ($(ARCH), esp)
-INET_SRC_TMP += network_interface_wifi_station_espressif.c
+INET_SRC_TMP += network_interface/wifi_station_espressif.c
 endif
 
 INET_SRC ?= $(INET_SRC_TMP)

@@ -1,4 +1,4 @@
-:mod:`hid` --- Human Interface Device (HID)
+:mod:`usb_host_class_hid` --- Human Interface Device (HID)
 ==========================================
 
 In computing, the USB human interface device class (USB HID class) is
@@ -11,7 +11,7 @@ More information on Wikipedia_.
 
 ----------------------------------------------
 
-.. module:: hid
+.. module:: usb_host_class_hid
    :synopsis: Human Interface Device (HID).
 
 Source code: :github-blob:`src/drivers/usb/host/class/hid.h`

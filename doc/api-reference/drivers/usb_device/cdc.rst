@@ -1,4 +1,4 @@
-:mod:`cdc` --- CDC ACM (serial port over USB)
+:mod:`usb_device_class_cdc` --- CDC ACM (serial port over USB)
 =============================================
 
 USB CDC (Communications Device Class) ACM (Abstract Control Model) is
@@ -9,7 +9,7 @@ More information on Wikipedia_.
 
 ----------------------------------------------
 
-.. module:: cdc
+.. module:: usb_device_class_cdc
    :synopsis: CDC ACM (serial port over USB).
 
 Source code: :github-blob:`src/drivers/usb/device/class/cdc.h`

@@ -178,10 +178,10 @@ typedef unsigned long off_t;
 #include "inet/http_websocket_client.h"
 #include "inet/mqtt_client.h"
 #include "inet/network_interface.h"
-#include "inet/network_interface_slip.h"
+#include "inet/network_interface/slip.h"
 
 #if defined(FAMILY_ESP)
-#    include "inet/network_interface_wifi_station_espressif.h"
+#    include "inet/network_interface/wifi_station_espressif.h"
 #endif
 
 #endif

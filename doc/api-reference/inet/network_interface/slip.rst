@@ -11,11 +11,11 @@ It is documented in RFC 1055.
 
 ----------------------------------------------
 
-Source code: :github-blob:`src/inet/network_interface_slip.h`
+Source code: :github-blob:`src/inet/network_interface/slip.h`
 
 Example code: :github-blob:`examples/inet/slip/main.c`
 
 ----------------------------------------------
 
-.. doxygenfile:: inet/network_interface_slip.h
+.. doxygenfile:: inet/network_interface/slip.h
    :project: simba
