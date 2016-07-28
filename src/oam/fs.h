@@ -18,8 +18,8 @@
  * This file is part of the Simba project.
  */
 
-#ifndef __KERNEL_FS_H__
-#define __KERNEL_FS_H__
+#ifndef __OAM_FS_H__
+#define __OAM_FS_H__
 
 #include "simba.h"
 
