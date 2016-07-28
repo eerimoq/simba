@@ -1,5 +1,5 @@
 :mod:`stm32vldiscovery` --- STM32VLDISCOVERY
-==================================
+============================================
 
 .. module:: stm32vldiscovery
    :synopsis: STM32VLDISCOVERY.

@@ -1,5 +1,5 @@
 /**
- * @file arch/sys_arch.c
+ * @file inet/arch/sys_arch.c
  * @version 3.1.1
  *
  * @section License

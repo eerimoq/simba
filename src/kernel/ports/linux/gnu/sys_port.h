@@ -1,5 +1,5 @@
 /**
- * @file linux/gnu/sys_port.i
+ * @file kernel/ports/linux/gnu/sys_port.h
  * @version 3.1.1
  *
  * @section License

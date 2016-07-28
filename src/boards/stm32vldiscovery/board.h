@@ -1,5 +1,5 @@
 /**
- * @file board.h
+ * @file boards/stm32vldiscovery/board.h
  * @version 3.1.1
  *
  * @section License

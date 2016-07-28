@@ -1,5 +1,5 @@
 /**
- * @file drivers/spi_port.h
+ * @file drivers/ports/sam/spi_port.h
  * @version 3.1.1
  *
  * @section License

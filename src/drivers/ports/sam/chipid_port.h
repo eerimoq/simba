@@ -1,5 +1,5 @@
 /**
- * @file drivers/chipid_port.h
+ * @file drivers/ports/sam/chipid_port.h
  * @version 3.1.1
  *
  * @section License

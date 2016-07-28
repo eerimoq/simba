@@ -1,5 +1,5 @@
 /**
- * @file drivers/exti.h
+ * @file drivers/ports/sam/exti_port.h
  * @version 3.1.1
  *
  * @section License

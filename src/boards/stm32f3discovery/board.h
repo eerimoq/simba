@@ -1,5 +1,5 @@
 /**
- * @file board.h
+ * @file boards/stm32f3discovery/board.h
  * @version 3.1.1
  *
  * @section License

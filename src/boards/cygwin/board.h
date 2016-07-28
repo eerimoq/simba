@@ -1,5 +1,5 @@
 /**
- * @file board.h
+ * @file boards/cygwin/board.h
  * @version 3.1.1
  *
  * @section License

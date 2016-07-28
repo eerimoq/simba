@@ -1,5 +1,5 @@
 /**
- * @file mcu.h
+ * @file mcus/stm32f205rg/mcu.h
  * @version 3.1.1
  *
  * @section License

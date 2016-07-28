@@ -1,5 +1,5 @@
 /**
- * @file kernel/fs.h
+ * @file oam/fs.h
  * @version 3.1.1
  *
  * @section License

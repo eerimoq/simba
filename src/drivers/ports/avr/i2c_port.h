@@ -1,5 +1,5 @@
 /**
- * @file drivers/i2c.h
+ * @file drivers/ports/avr/i2c_port.h
  * @version 3.1.1
  *
  * @section License

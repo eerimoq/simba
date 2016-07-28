@@ -1,5 +1,5 @@
 /**
- * @file drivers/watchdog_port.h
+ * @file drivers/ports/avr/watchdog_port.h
  * @version 3.1.1
  *
  * @section License

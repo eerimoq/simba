@@ -1,5 +1,5 @@
 /**
- * @file arm/gnu/thrd_port.i
+ * @file kernel/ports/arm/gnu/thrd_port.h
  * @version 3.1.1
  *
  * @section License

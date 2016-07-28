@@ -1,5 +1,5 @@
 /**
- * @file inet/network_interface_bcm43362.h
+ * @file inet/network_interface/bcm43362.h
  * @version 3.1.1
  *
  * @section License

@@ -1,5 +1,5 @@
 /**
- * @file sys/types.h
+ * @file kernel/ports/esp/gnu/sys/types.h
  * @version 3.1.1
  *
  * @section License

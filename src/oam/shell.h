@@ -1,5 +1,5 @@
 /**
- * @file kernel/shell.h
+ * @file oam/shell.h
  * @version 3.1.1
  *
  * @section License

@@ -1,5 +1,5 @@
 /**
- * @file drivers/flash_port.h
+ * @file drivers/ports/stm32f3/flash_port.h
  * @version 3.1.1
  *
  * @section License

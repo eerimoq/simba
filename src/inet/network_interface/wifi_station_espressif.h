@@ -1,5 +1,5 @@
 /**
- * @file inet/network_interface_wifi_espressif.h
+ * @file inet/network_interface/wifi_station_espressif.h
  * @version 3.1.0
  *
  * @section License

@@ -1,5 +1,5 @@
 /**
- * @file inet/perf.h
+ * @file inet/arch/perf.h
  * @version 3.1.1
  *
  * @section License

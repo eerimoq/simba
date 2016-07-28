@@ -1,5 +1,5 @@
 :mod:`usb_host_class_mass_storage` --- Mass Storage
-====================================
+===================================================
 
 The USB mass storage device class (also known as USB MSC or UMS) is a
 set of computing communications protocols defined by the USB

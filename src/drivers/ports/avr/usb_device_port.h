@@ -1,5 +1,5 @@
 /**
- * @file drivers/usb_device_port.h
+ * @file drivers/ports/avr/usb_device_port.h
  * @version 3.1.1
  *
  * @section License

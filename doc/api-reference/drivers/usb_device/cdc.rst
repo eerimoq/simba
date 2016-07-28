@@ -1,5 +1,5 @@
 :mod:`usb_device_class_cdc` --- CDC ACM (serial port over USB)
-=============================================
+==============================================================
 
 USB CDC (Communications Device Class) ACM (Abstract Control Model) is
 a vendor-independent publicly documented protocol that can be used for

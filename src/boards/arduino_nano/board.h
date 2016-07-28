@@ -1,5 +1,5 @@
 /**
- * @file board.h
+ * @file boards/arduino_nano/board.h
  * @version 3.1.1
  *
  * @section License

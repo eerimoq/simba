@@ -1,5 +1,5 @@
 :mod:`usb_host_class_hid` --- Human Interface Device (HID)
-==========================================
+==========================================================
 
 In computing, the USB human interface device class (USB HID class) is
 a part of the USB specification for computer peripherals: it specifies

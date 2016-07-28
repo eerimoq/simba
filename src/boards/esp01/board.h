@@ -1,5 +1,5 @@
 /**
- * @file board.h
+ * @file boards/esp01/board.h
  * @version 3.1.1
  *
  * @section License

@@ -1,5 +1,5 @@
 /**
- * @file drivers/flash_port.h
+ * @file drivers/ports/sam/flash_port.h
  * @version 3.1.1
  *
  * @section License

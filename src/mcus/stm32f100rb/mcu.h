@@ -1,5 +1,5 @@
 /**
- * @file mcu.h
+ * @file mcus/stm32f100rb/mcu.h
  * @version 3.1.1
  *
  * @section License

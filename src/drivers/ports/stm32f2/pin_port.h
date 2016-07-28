@@ -1,5 +1,5 @@
 /**
- * @file drivers/pin_port.h
+ * @file drivers/ports/stm32f2/pin_port.h
  * @version 3.1.1
  *
  * @section License

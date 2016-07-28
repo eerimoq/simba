@@ -1,5 +1,5 @@
 /**
- * @file mcu.h
+ * @file mcus/atmega2560/mcu.h
  * @version 3.1.1
  *
  * @section License

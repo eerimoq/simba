@@ -1,5 +1,5 @@
 /**
- * @file mcu.h
+ * @file mcus/atmega328p/mcu.h
  * @version 3.1.1
  *
  * @section License
