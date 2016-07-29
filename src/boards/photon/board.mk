@@ -41,8 +41,8 @@ SERIAL_PORT ?= /dev/arduino
 BOARD_PY = $(SIMBA_ROOT)/src/boards/photon/board.py
 
 upload:
-	@echo "Uploading $(NAME).bin"
-	python -u $(BOARD_PY) upload --port $(SERIAL_PORT) $(NAME).bin
+	@echo "Uploading $(BIN)"
+	python -u $(BOARD_PY) upload --port $(SERIAL_PORT) $(BIN)
 
 run:
 	@echo "Running $(EXE)"
