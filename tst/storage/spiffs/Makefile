@@ -21,5 +21,7 @@
 NAME = spiffs_suite
 BOARD ?= linux
 
+TIMEOUT = 240
+
 SIMBA_ROOT ?= ../../..
 include $(SIMBA_ROOT)/make/app.mk
