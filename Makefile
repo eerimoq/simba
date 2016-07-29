@@ -328,20 +328,22 @@ test-photon:
 	$(MAKE) BOARD=photon SERIAL_PORT=/dev/simba-photon test
 
 test-all-boards:
-	$(MAKE) clean-arduino-due
 	$(MAKE) test-arduino-due
-	$(MAKE) clean-arduino-mega
 	$(MAKE) test-arduino-mega
-	$(MAKE) clean-arduino-nano
 	$(MAKE) test-arduino-nano
-	$(MAKE) clean-arduino-pro-micro
 	$(MAKE) test-arduino-pro-micro
-	$(MAKE) clean-esp12e
 	$(MAKE) test-esp12e
-	$(MAKE) clean-stm32vldiscovery
 	$(MAKE) test-stm32vldiscovery
-	$(MAKE) clean-photon
 	$(MAKE) test-photon
+
+clean-all-boards:
+	$(MAKE) clean-arduino-due
+	$(MAKE) clean-arduino-mega
+	$(MAKE) clean-arduino-nano
+	$(MAKE) clean-arduino-pro-micro
+	$(MAKE) clean-esp12e
+	$(MAKE) clean-stm32vldiscovery
+	$(MAKE) clean-photon
 
 doc:
 	+bin/dbgen.py > database.json

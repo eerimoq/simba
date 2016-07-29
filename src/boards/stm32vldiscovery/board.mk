@@ -31,7 +31,7 @@ BOARD_PY = $(SIMBA_ROOT)/src/boards/stm32vldiscovery/board.py
 
 upload:
 	@echo "Uploading $(NAME).bin"
-	python -u $(BOARD_PY) upload --port $(SERIAL_PORT) $(NAME).bin
+	python -u $(BOARD_PY) upload --port $(SERIAL_PORT) $(BIN)
 
 run:
 	@echo "Running $(EXE)"

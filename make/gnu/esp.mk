@@ -47,19 +47,19 @@ ENDIANESS = little
 SETTING_MEMORY = flash
 SETTING_OFFSET = 128
 SETTING_SIZE = 256
-SRC += settings.c
+SRC += $(SETTINGS_C)
 
-RUNARGS = ${NAME}.bin
+RUNARGS = $(BIN)
 
-build: $(NAME).bin
-$(NAME).bin: $(EXE)
+build: $(BIN)
+$(BIN): $(EXE)
 	rm -f eagle.app.flash.bin eagle.app.v6.text.bin eagle.app.v6.data.bin eagle.app.v6.rodata.bin eagle.app.v6.irom0text.bin
 	$(CROSS_COMPILE)objcopy --only-section .text -O binary $< eagle.app.v6.text.bin
 	$(CROSS_COMPILE)objcopy --only-section .data -O binary $< eagle.app.v6.data.bin
 	$(CROSS_COMPILE)objcopy --only-section .rodata -O binary $< eagle.app.v6.rodata.bin
 	$(CROSS_COMPILE)objcopy --only-section .irom0.text -O binary $< eagle.app.v6.irom0text.bin
 	python $(ESP8266_RTOS_SDK_ROOT)/tools/gen_appbin.py $< 2 0 0 $(ESP_FLASH_SIZE_MAP)
-	mv eagle.app.flash.bin $(NAME).bin
+	mv eagle.app.flash.bin $(BIN)
 	rm eagle.app.v6.text.bin eagle.app.v6.data.bin eagle.app.v6.rodata.bin eagle.app.v6.irom0text.bin
 
 

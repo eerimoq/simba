@@ -35,7 +35,7 @@ TIMEOUT ?= 10
 
 upload:
 	@echo "Uploading '$(EXE)'."
-	python -u $(BOARD_PY) upload --port $(SERIAL_PORT) $(NAME).bin
+	python -u $(BOARD_PY) upload --port $(SERIAL_PORT) $(BIN)
 
 run:
 	@echo "Running '$(EXE)'."

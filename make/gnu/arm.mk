@@ -45,10 +45,10 @@ LDFLAGS += -mcpu=$(MCPU) \
 SETTING_MEMORY = flash
 SETTING_OFFSET = 0
 SETTING_SIZE = 4096
-SRC += settings.c
+SRC += $(SETTINGS_C)
 
-build: $(NAME).bin
-$(NAME).bin: $(EXE)
+build: $(BIN)
+$(BIN): $(EXE)
 	$(CROSS_COMPILE)objcopy -O binary $< $@
 
 include $(SIMBA_ROOT)/make/gnu.mk

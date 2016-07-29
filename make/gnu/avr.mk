@@ -41,18 +41,17 @@ ENDIANESS = little
 SETTING_MEMORY = eeprom
 SETTING_OFFSET = 128
 SETTING_SIZE = 256
-SRC += settings.c
+SRC += $(SETTINGS_C)
 
 # Use the environment variable AVRDUDE_PORT as default
 AVRDUDE_PORT ?= $(shell python -c "import os, sys; sys.stdout.write(os.environ['AVRDUDE_PORT'] if 'AVRDUDE_PORT' in os.environ else '/dev/arduino')")
 AVRDUDE_NO_VERIFY ?= -V
-RUNARGS = ${MCU} ${NAME}.hex ${SETTINGS_BIN} -D -P $(AVRDUDE_PORT) -c $(AVRDUDE_PROGRAMMER) \
+RUNARGS = ${MCU} ${HEX} ${SETTINGS_BIN} -D -P $(AVRDUDE_PORT) -c $(AVRDUDE_PROGRAMMER) \
           $(AVRDUDE_NO_VERIFY) -b $(AVRDUDE_BAUDRATE)
 
-CLEAN += $(NAME).hex
-
-build: $(NAME).hex
-$(NAME).hex: $(EXE)
+build: $(HEX)
+$(HEX): $(EXE)
+	@echo "Creating $@"
 	$(CROSS_COMPILE)objcopy -O ihex -R .eeprom $< $@
 
 HELP_VARIABLES += "  AVRDUDE_PORT                avrdude serial port" $$(echo -e '\n') \

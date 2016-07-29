@@ -23,10 +23,11 @@
 VERSION ?= $(shell cat $(SIMBA_ROOT)/VERSION.txt)
 
 # files and folders
-OBJDIR = obj
-DEPSDIR = deps
-GENDIR = gen
-INC += . $(SIMBA_ROOT)/src
+BUILDDIR = build/$(BOARD)
+OBJDIR = $(BUILDDIR)/obj
+DEPSDIR = $(BUILDDIR)/deps
+GENDIR = $(BUILDDIR)/gen
+INC += . $(SIMBA_ROOT)/src $(BUILDDIR)
 ifeq ($(RUST),yes)
     SRC += main.rs
 else
@@ -42,12 +43,15 @@ OBJ = $(COBJ) $(RUST_OBJ)
 GENCSRC = $(GENDIR)/simba_gen.c
 GENOBJ = $(patsubst %,$(OBJDIR)/%,$(notdir $(GENCSRC:%.c=%.o)))
 SETTINGS_INI ?= $(SIMBA_ROOT)/make/settings.ini
-SETTINGS_H = settings.h
-SETTINGS_C = settings.c
-SETTINGS_BIN = settings.bin
-EXE = $(NAME).out
-RUNLOG = run.log
-CLEAN = $(OBJDIR) $(DEPSDIR) $(GENDIR) $(EXE) $(RUNLOG) size.log \
+SETTINGS_H = $(BUILDDIR)/settings.h
+SETTINGS_C = $(BUILDDIR)/settings.c
+SETTINGS_BIN = $(BUILDDIR)/settings.bin
+EXE = $(BUILDDIR)/$(NAME).out
+BIN = $(BUILDDIR)/$(NAME).bin
+HEX = $(BUILDDIR)/$(NAME).hex
+MAP = $(BUILDDIR)/$(NAME).map
+RUNLOG = $(BUILDDIR)/run.log
+CLEAN = $(BUILDDIR) $(EXE) $(RUNLOG) size.log \
         coverage.log coverage.xml gmon.out *.gcov profile.log \
 	index.*html $(SETTINGS_H) $(SETTINGS_BIN) $(SETTINGS_C) \
 	$(RUST_SIMBA_RS) $(RUST_LIBSIMBA) $(RUST_LIBCORE)
@@ -78,7 +82,7 @@ all:
 
 prepare:
 
-generate: $(SETTINGS_BIN) $(SETTINGS_H)
+generate: $(SETTINGS_BIN) $(SETTINGS_H) $(SETTINGS_C)
 
 build: $(EXE)
 
@@ -136,7 +140,7 @@ test: run
 	$(MAKE) report
 
 size:
-	set -o pipefail ; $(SIZECMD) | tee size.log
+	set -o pipefail ; $(SIZECMD) | tee $(BUILDDIR)/size.log
 
 release:
 	env NASSERT=yes NDEBUG=yes $(MAKE)
@@ -147,21 +151,36 @@ $(EXE): $(OBJ) $(GENOBJ)
 
 $(SETTINGS_H): $(SETTINGS_INI)
 	@echo "Generating $@ from $<"
-	$(SIMBA_ROOT)/src/kernel/tools/settings.py --header $(SETTINGS_INI) \
-            --setting-memory $(SETTING_MEMORY) --setting-offset $(SETTING_OFFSET) \
-            --setting-size $(SETTING_SIZE) $(ENDIANESS)
+	mkdir -p $(BUILDDIR)
+	$(SIMBA_ROOT)/src/kernel/tools/settings.py \
+	    --header \
+	    --output-directory $(dir $@)\
+            --setting-memory $(SETTING_MEMORY) \
+	    --setting-offset $(SETTING_OFFSET) \
+            --setting-size $(SETTING_SIZE) \
+	    $^ $(ENDIANESS)
 
 $(SETTINGS_C): $(SETTINGS_INI)
 	@echo "Generating $@ from $<"
-	$(SIMBA_ROOT)/src/kernel/tools/settings.py --source $(SETTINGS_INI) \
-            --setting-memory $(SETTING_MEMORY) --setting-offset $(SETTING_OFFSET) \
-            --setting-size $(SETTING_SIZE) $(ENDIANESS)
+	mkdir -p $(BUILDDIR)
+	$(SIMBA_ROOT)/src/kernel/tools/settings.py \
+	    --source \
+	    --output-directory $(dir $@)\
+            --setting-memory $(SETTING_MEMORY) \
+	    --setting-offset $(SETTING_OFFSET) \
+            --setting-size $(SETTING_SIZE) \
+	    $^ $(ENDIANESS)
 
 $(SETTINGS_BIN): $(SETTINGS_INI)
 	@echo "Generating $@ from $<"
-	$(SIMBA_ROOT)/src/kernel/tools/settings.py --binary $(SETTINGS_INI) \
-            --setting-memory $(SETTING_MEMORY) --setting-offset $(SETTING_OFFSET) \
-            --setting-size $(SETTING_SIZE) $(ENDIANESS)
+	mkdir -p $(BUILDDIR)
+	$(SIMBA_ROOT)/src/kernel/tools/settings.py \
+	    --binary \
+	    --output-directory $(dir $@)\
+            --setting-memory $(SETTING_MEMORY) \
+            --setting-offset $(SETTING_OFFSET) \
+            --setting-size $(SETTING_SIZE) \
+	    $^ $(ENDIANESS)
 
 define COMPILE_template
 -include $(patsubst %.c,$(DEPSDIR)%.o.dep,$(abspath $1))

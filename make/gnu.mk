@@ -31,7 +31,5 @@ CFLAGS += -c \
           -std=gnu99 \
           -Wno-error=unused-variable
 
-LDFLAGS += -Wl,-Map=$(NAME).map \
+LDFLAGS += -Wl,-Map=$(MAP) \
            -Wl,--gc-sections
-
-CLEAN += $(NAME).map

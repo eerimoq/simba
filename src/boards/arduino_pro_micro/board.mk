@@ -33,7 +33,7 @@ TIMEOUT ?= 10
 
 upload:
 	@echo "Uploading $(EXE)"
-	python -u $(BOARD_PY) upload --port $(SERIAL_PORT) $(NAME).hex
+	python -u $(BOARD_PY) upload --port $(SERIAL_PORT) $(HEX)
 
 run:
 	@echo "Running $(EXE)"
