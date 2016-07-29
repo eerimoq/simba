@@ -1,5 +1,5 @@
-:mod:`configfile` --- Configuration file
-========================================
+:mod:`configfile` --- Configuration file (INI-file)
+===================================================
 
 .. module:: configfile
    :synopsis: Configuration file.
@@ -10,8 +10,8 @@ basic structure composed of sections, properties, and values.
 
 More information on Wikipedia_.
 
-Format description
-------------------
+File format description
+-----------------------
 
 - Line terminations: ``\n``, ``\r\n`` or ``\n\r``.
 
