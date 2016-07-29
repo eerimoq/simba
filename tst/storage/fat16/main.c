@@ -73,7 +73,7 @@ int test_start(struct harness_t *harness_p)
 {
 #if defined(ARCH_LINUX)
     /* Create an empty sd card file. */
-    system("./create_sdcard_linux.sh");
+    system("../../create_sdcard_linux.sh");
     file_p = fopen("sdcard", "r+b");
     BTASSERT(fat16_init(&fs,
                         linux_read_block,
