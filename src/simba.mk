@@ -254,7 +254,8 @@ SYNC_SRC ?= bus.c \
 SRC += $(SYNC_SRC:%=$(SIMBA_ROOT)/src/sync/%)
 
 # Text package.
-TEXT_SRC ?= std.c \
+TEXT_SRC ?= configfile.c \
+	    std.c \
             re.c
 
 SRC += $(TEXT_SRC:%=$(SIMBA_ROOT)/src/text/%)

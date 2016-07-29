@@ -40,7 +40,8 @@ ifeq ($(BOARD), linux)
                                            hash_map)
     TESTS += $(addprefix tst/alloc/, circular_heap \
                                      heap)
-    TESTS += $(addprefix tst/text/, std \
+    TESTS += $(addprefix tst/text/, configfile \
+				    std \
                                     re)
     TESTS += $(addprefix tst/debug/, log)
     TESTS += $(addprefix tst/oam/, fs \
@@ -76,7 +77,8 @@ ifeq ($(BOARD), arduino_due)
                                            hash_map)
     TESTS += $(addprefix tst/alloc/, circular_heap \
                                      heap)
-    TESTS += $(addprefix tst/text/, std \
+    TESTS += $(addprefix tst/text/, configfile \
+				    std \
                                     re)
     TESTS += $(addprefix tst/debug/, log)
     TESTS += $(addprefix tst/oam/, fs \
@@ -113,7 +115,8 @@ ifeq ($(BOARD), arduino_mega)
                                            hash_map)
     TESTS += $(addprefix tst/alloc/, circular_heap \
                                      heap)
-    TESTS += $(addprefix tst/text/, std \
+    TESTS += $(addprefix tst/text/, configfile \
+				    std \
                                     re)
     TESTS += $(addprefix tst/debug/, log)
     TESTS += $(addprefix tst/oam/, fs \

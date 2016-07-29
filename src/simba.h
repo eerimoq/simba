@@ -77,6 +77,7 @@ typedef unsigned long off_t;
 #include "text/color.h"
 #include "text/re.h"
 #include "text/std.h"
+#include "text/configfile.h"
 
 #include "encode/base64.h"
 #include "encode/json.h"
