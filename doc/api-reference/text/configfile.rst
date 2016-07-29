@@ -13,7 +13,7 @@ More information on Wikipedia_.
 File format description
 -----------------------
 
-- Line terminations: ``\n``, ``\r\n`` or ``\n\r``.
+- Line terminators: ``\n``, ``\r\n`` or ``\n\r``.
 
 - Opening bracket (``[``) at the beginning of a line indicates a
   section. The section name is all characters until a closing bracket
