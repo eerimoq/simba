@@ -31,7 +31,7 @@ upload:
 
 run:
 	@echo "Running $(EXE)"
-	cd $(BUILDDIR) && ./$(notdir $(EXE)) 2>&1 | tee $(RUNLOG) ; \
+	(cd $(BUILDDIR) && ./$(notdir $(EXE))) 2>&1 | tee $(RUNLOG) ; \
 	test $${PIPESTATUS[0]} -eq 0
 
 run-debugger: all
