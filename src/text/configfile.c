@@ -229,7 +229,7 @@ int configfile_get_float(struct configfile_t *self_p,
     }
 
     /* Convert the option value string to a float. */
-    *value_p = strtof(buf, &next_p);
+    *value_p = strtod(buf, &next_p);
 
     if ((buf == next_p) || (*next_p != '\0')) {
         return (-1);
