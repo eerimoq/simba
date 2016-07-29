@@ -36,10 +36,6 @@ tst/*/*/index-sort-l.html
 tst/*/*/ruby.png
 tst/*/*/snow.png
 tst/*/*/updown.png
-tst/*/*/kernel/
-tst/*/*/home/
-tst/*/*/drivers/
-tst/*/*/slib/
 
 examples/*/*/amber.png
 examples/*/*/emerald.png
@@ -51,10 +47,6 @@ examples/*/*/index-sort-l.html
 examples/*/*/ruby.png
 examples/*/*/snow.png
 examples/*/*/updown.png
-examples/*/*/kernel/
-examples/*/*/home/
-examples/*/*/drivers/
-examples/*/*/slib/
 
 simba.rs
 
@@ -68,9 +60,6 @@ examples/*/*/*/index-sort-l.html
 examples/*/*/*/ruby.png
 examples/*/*/*/snow.png
 examples/*/*/*/updown.png
-examples/*/*/*/kernel/
-examples/*/*/*/home/
-examples/*/*/*/drivers/
-examples/*/*/*/slib/
 
 simba-arduino
+build

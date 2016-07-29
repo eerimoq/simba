@@ -31,7 +31,7 @@ static int test_get_colon(struct harness_t *harness_p)
 
     BTASSERT(configfile_init(&configfile, buf, sizeof(buf)) == 0);
 
-    /* Get the value of option 'milk' in section 'shopping list'. */
+    /* Get the value of property 'milk' in section 'shopping list'. */
     BTASSERT(configfile_get(&configfile,
                             "shopping list", 
                             "milk", 
@@ -39,7 +39,8 @@ static int test_get_colon(struct harness_t *harness_p)
                             sizeof(value)) == &value[0]);
     BTASSERT(strcmp(&value[0], "3") == 0);
 
-    /* Get the value of option 'cheese' in section 'shopping list'. */
+    /* Get the value of property 'cheese' in section 'shopping
+       list'. */
     BTASSERT(configfile_get(&configfile,
                             "shopping list",
                             "cheese",
@@ -47,14 +48,16 @@ static int test_get_colon(struct harness_t *harness_p)
                             sizeof(value)) == &value[0]);
     BTASSERT(strcmp(&value[0], "1 cheddar") == 0);
 
-    /* Get the value of a non-existing option in section 'shopping list'. */
+    /* Get the value of a non-existing property in section 'shopping
+       list'. */
     BTASSERT(configfile_get(&configfile,
                             "shopping list",
                             "ham",
                             &value[0],
                             sizeof(value)) == NULL);
 
-    /* Get the value of a non-existing option in a non-existing section. */
+    /* Get the value of a non-existing property in a non-existing
+       section. */
     BTASSERT(configfile_get(&configfile,
                             "clothes",
                             "skirt",
@@ -75,7 +78,7 @@ static int test_get_equal_sign(struct harness_t *harness_p)
 
     BTASSERT(configfile_init(&configfile, buf, sizeof(buf)) == 0);
 
-    /* Get the value of option 'milk' in section 'shopping list'. */
+    /* Get the value of property 'milk' in section 'shopping list'. */
     BTASSERT(configfile_get(&configfile,
                             "shopping list", 
                             "milk", 
@@ -98,29 +101,29 @@ static int test_get_long(struct harness_t *harness_p)
 
     BTASSERT(configfile_init(&configfile, buf, sizeof(buf)) == 0);
 
-    /* Get the value of option 'positive' in section 'numbers'. */
+    /* Get the value of property 'positive' in section 'numbers'. */
     BTASSERT(configfile_get_long(&configfile,
                                  "numbers", 
                                  "positive", 
                                  &value) == 0);
     BTASSERT(value == 3);
 
-    /* Get the value of option 'negative' in section 'numbers'. */
+    /* Get the value of property 'negative' in section 'numbers'. */
     BTASSERT(configfile_get_long(&configfile,
                                  "numbers", 
                                  "negative", 
                                  &value) == 0);
     BTASSERT(value == -54);
 
-    /* Get the value of option 'NaN' in section 'numbers'. Fails since
-       "NaN" is not an integer. */
+    /* Get the value of property 'NaN' in section 'numbers'. Fails
+       since "NaN" is not an integer. */
     BTASSERT(configfile_get_long(&configfile,
                                  "numbers", 
                                  "NaN", 
                                  &value) == -1);
 
-    /* Get the value of option 'missing' in section 'numbers'. Fails
-       since the option is missing. */
+    /* Get the value of property 'missing' in section 'numbers'. Fails
+       since the property is missing. */
     BTASSERT(configfile_get_long(&configfile,
                                  "numbers", 
                                  "missing", 
@@ -142,36 +145,36 @@ static int test_get_float(struct harness_t *harness_p)
 
     BTASSERT(configfile_init(&configfile, buf, sizeof(buf)) == 0);
 
-    /* Get the value of option 'positive' in section 'numbers'. */
+    /* Get the value of property 'positive' in section 'numbers'. */
     BTASSERT(configfile_get_float(&configfile,
                                   "numbers", 
                                   "positive", 
                                   &value) == 0);
     BTASSERT(value == 3.0f);
 
-    /* Get the value of option 'negative' in section 'numbers'. */
+    /* Get the value of property 'negative' in section 'numbers'. */
     BTASSERT(configfile_get_float(&configfile,
                                   "numbers", 
                                   "negative", 
                                   &value) == 0);
     BTASSERT(value == -54.5f);
 
-    /* Get the value of option 'NaN' in section 'numbers'. Fails since
-       "NaN" is not an integer. */
+    /* Get the value of property 'NaN' in section 'numbers'. Fails
+       since "NaN" is not an integer. */
     BTASSERT(configfile_get_float(&configfile,
                                   "numbers", 
                                   "NaN", 
                                   &value) == -1);
 
-    /* Get the value of option 'NaN2' in section 'numbers'. Fails
+    /* Get the value of property 'NaN2' in section 'numbers'. Fails
        since "NaN2" is not an integer. */
     BTASSERT(configfile_get_float(&configfile,
                                   "numbers", 
                                   "NaN2", 
                                   &value) == -1);
 
-    /* Get the value of option 'missing' in section 'numbers'. Fails
-       since the option is missing. */
+    /* Get the value of property 'missing' in section 'numbers'. Fails
+       since the property is missing. */
     BTASSERT(configfile_get_float(&configfile,
                                   "numbers", 
                                   "missing", 
@@ -193,7 +196,7 @@ static int test_get_line_termination(struct harness_t *harness_p)
 
     BTASSERT(configfile_init(&configfile, buf, sizeof(buf)) == 0);
 
-    /* Get the value of option 'milk' in section 'shopping list'. */
+    /* Get the value of property 'milk' in section 'shopping list'. */
     BTASSERT(configfile_get(&configfile,
                             "shopping list", 
                             "milk", 
@@ -201,7 +204,8 @@ static int test_get_line_termination(struct harness_t *harness_p)
                             sizeof(value)) == &value[0]);
     BTASSERT(strcmp(&value[0], "3") == 0);
 
-    /* Get the value of option 'cheese' in section 'shopping list'. */
+    /* Get the value of property 'cheese' in section 'shopping
+       list'. */
     BTASSERT(configfile_get(&configfile,
                             "shopping list",
                             "cheese",
@@ -227,7 +231,7 @@ static int test_get_null_after_section(struct harness_t *harness_p)
 
     BTASSERT(configfile_init(&configfile, buf, sizeof(buf)) == 0);
 
-    /* Get the value of option 'milk' in section 'shopping list'. */
+    /* Get the value of property 'milk' in section 'shopping list'. */
     BTASSERT(configfile_get(&configfile,
                             "shopping list", 
                             "milk", 
@@ -245,7 +249,7 @@ static int test_get_missing_section_termination(struct harness_t *harness_p)
 
     BTASSERT(configfile_init(&configfile, buf, sizeof(buf)) == 0);
 
-    /* Get the value of option 'milk' in section 'shopping list'. */
+    /* Get the value of property 'milk' in section 'shopping list'. */
     BTASSERT(configfile_get(&configfile,
                             "shopping list", 
                             "milk", 
@@ -267,7 +271,7 @@ static int test_get_comments(struct harness_t *harness_p)
 
     BTASSERT(configfile_init(&configfile, buf, sizeof(buf)) == 0);
 
-    /* Get the value of option 'milk' in section 'shopping
+    /* Get the value of property 'milk' in section 'shopping
        list'. Finds nothing since the milk line is a coment.*/
     BTASSERT(configfile_get(&configfile,
                             "shopping list", 
@@ -275,7 +279,8 @@ static int test_get_comments(struct harness_t *harness_p)
                             value,
                             sizeof(value)) == NULL);
 
-    /* Get the value of option 'cheese' in section 'shopping list'. */
+    /* Get the value of property 'cheese' in section 'shopping
+       list'. */
     BTASSERT(configfile_get(&configfile,
                             "shopping list",
                             "cheese",
@@ -297,7 +302,7 @@ static int test_get_whitespace(struct harness_t *harness_p)
 
     BTASSERT(configfile_init(&configfile, buf, sizeof(buf)) == 0);
 
-    /* Get the value of option 'milk' in section 'shopping list'. */
+    /* Get the value of property 'milk' in section 'shopping list'. */
     BTASSERT(configfile_get(&configfile,
                             "shopping list", 
                             "milk", 
@@ -305,7 +310,8 @@ static int test_get_whitespace(struct harness_t *harness_p)
                             sizeof(value)) == &value[0]);
     BTASSERT(strcmp(&value[0], "3") == 0);
 
-    /* Get the value of option 'cheese' in section 'shopping list'. */
+    /* Get the value of property 'cheese' in section 'shopping
+       list'. */
     BTASSERT(configfile_get(&configfile,
                             "shopping list",
                             "cheese",
@@ -316,7 +322,7 @@ static int test_get_whitespace(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_get_bad_option_format(struct harness_t *harness_p)
+static int test_get_bad_property_format(struct harness_t *harness_p)
 {
     struct configfile_t configfile;
     char buf[] =
@@ -326,7 +332,7 @@ static int test_get_bad_option_format(struct harness_t *harness_p)
 
     BTASSERT(configfile_init(&configfile, buf, sizeof(buf)) == 0);
 
-    /* Bad option format. */
+    /* Bad property format. */
     BTASSERT(configfile_get(&configfile,
                             "shopping list",
                             "milk",
@@ -366,16 +372,17 @@ static int test_set(struct harness_t *harness_p)
 
 #if 0
 
-    /* Set the value of option 'milk' in section 'shopping list'. */
+    /* Set the value of property 'milk' in section 'shopping list'. */
     BTASSERT(configfile_set(&configfile, "shopping list", "milk", "2") == 0);
 
-    /* Set the value of option 'cheese' in section 'shopping list'. */
+    /* Set the value of property 'cheese' in section 'shopping
+       list'. */
     BTASSERT(configfile_set(&configfile, "shopping list", "cheese", "brie") == 0);
 
-    /* Set the value of option 'skirt' in section 'clothes'. */
+    /* Set the value of property 'skirt' in section 'clothes'. */
     BTASSERT(configfile_set(&configfile, "clothes", "skirt", "1") == 0);
 
-    /* No room left in the buffer for another option. */
+    /* No room left in the buffer for another property. */
     BTASSERT(configfile_set(&configfile, "clothes", "pants", "2") == -1);
 
     BTASSERT(memcmp(buf,
@@ -391,6 +398,68 @@ static int test_set(struct harness_t *harness_p)
     return (0);
 }
 
+
+static int test_get_complex(struct harness_t *harness_p)
+{
+    struct configfile_t configfile;
+    char buf[] = 
+        "; last modified 1 April 2001 by John Doe\n"
+        "[owner]\n"
+        "name = John Doe\n"
+        "organization = Acme Widgets Inc.\n"
+        "\n"
+        "[database]\n"
+        "; use IP address in case network name resolution is not working\n"
+        "server = 192.0.2.62\n"
+        "port = 143\n"
+        "file = \"payroll.dat\"\n";
+    char value[32];
+    long long_value;
+
+    BTASSERT(configfile_init(&configfile, buf, sizeof(buf)) == 0);
+
+    /* owner -> name. */
+    BTASSERT(configfile_get(&configfile,
+                            "owner", 
+                            "name", 
+                            value,
+                            sizeof(value)) == &value[0]);
+    BTASSERT(strcmp(&value[0], "John Doe") == 0);
+
+    /* owner -> organization. */
+    BTASSERT(configfile_get(&configfile,
+                            "owner",
+                            "organization",
+                            &value[0],
+                            sizeof(value)) == &value[0]);
+    BTASSERT(strcmp(&value[0], "Acme Widgets Inc.") == 0);
+
+    /* database -> server. */
+    BTASSERT(configfile_get(&configfile,
+                            "database",
+                            "server",
+                            &value[0],
+                            sizeof(value)) == &value[0]);
+    BTASSERT(strcmp(&value[0], "192.0.2.62") == 0);
+
+    /* database -> port. */
+    BTASSERT(configfile_get_long(&configfile,
+                                 "database",
+                                 "port",
+                                 &long_value) == 0);
+    BTASSERT(long_value == 143);
+
+    /* database -> file. */
+    BTASSERT(configfile_get(&configfile,
+                            "database",
+                            "file",
+                            &value[0],
+                            sizeof(value)) == &value[0]);
+    BTASSERT(strcmp(&value[0], "\"payroll.dat\"") == 0);
+
+    return (0);
+}         
+
 int main()
 {
     struct harness_t harness;
@@ -404,8 +473,9 @@ int main()
         { test_get_missing_section_termination, "test_get_missing_section_termination" },
         { test_get_comments, "test_get_comments" },
         { test_get_whitespace, "test_get_whitespace" },
-        { test_get_bad_option_format, "test_get_bad_option_format" },
+        { test_get_bad_property_format, "test_get_bad_property_format" },
         { test_get_value_too_long, "test_get_value_too_long" },
+        { test_get_complex, "test_get_complex" },
         { test_set, "test_set" },
         { NULL, NULL }
     };

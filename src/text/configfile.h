@@ -43,67 +43,67 @@ int configfile_init(struct configfile_t *self_p,
                     size_t size);
 
 /**
- * Set the value of given option in given section.
+ * Set the value of given property in given section.
  *
  * @param[in] self_p Initialized parser.
- * @param[in] section_p Section to set the option from.
- * @param[in] option_p Option to set the value for.
+ * @param[in] section_p Section to set the property from.
+ * @param[in] property_p Property to set the value for.
  * @param[in] value_p NULL terminated value to set.
  *
  * @return zero(0) or negative error code.
  */
 int configfile_set(struct configfile_t *self_p,
                    const char *section_p,
-                   const char *option_p,
+                   const char *property_p,
                    const char *value_p);
 
 /**
- * Get the value of given option in given section.
+ * Get the value of given property in given section.
  *
  * @param[in] self_p Initialized parser.
- * @param[in] section_p Section to get the option from.
- * @param[in] option_p Option to get the value for.
- * @param[out] value_p Value of given option in given section.
+ * @param[in] section_p Section to get the property from.
+ * @param[in] property_p Property to get the value for.
+ * @param[out] value_p Value of given property in given section.
  * @param[in] size Size of the value buffer.
  *
  * @return Value pointer or NULL on failure.
  */
 char *configfile_get(struct configfile_t *self_p,
                      const char *section_p,
-                     const char *option_p,
+                     const char *property_p,
                      char *value_p,
                      int length);
 
 /**
- * Get the value of given option in given section, converted to an
+ * Get the value of given property in given section, converted to an
  * integer.
  *
  * @param[in] self_p Initialized parser.
- * @param[in] section_p Section to get the option from.
- * @param[in] option_p Option to get the value for.
- * @param[out] value_p Value of given option in given section.
+ * @param[in] section_p Section to get the property from.
+ * @param[in] property_p Property to get the value for.
+ * @param[out] value_p Value of given property in given section.
  *
  * @return zero(0) or negative error code.
  */
 int configfile_get_long(struct configfile_t *self_p,
                         const char *section_p,
-                        const char *option_p,
+                        const char *property_p,
                         long *value_p);
 
 /**
- * Get the value of given option in given section, converted to a
+ * Get the value of given property in given section, converted to a
  * float.
  *
  * @param[in] self_p Initialized parser.
- * @param[in] section_p Section to get the option from.
- * @param[in] option_p Option to get the value for.
- * @param[out] value_p Value of given option in given section.
+ * @param[in] section_p Section to get the property from.
+ * @param[in] property_p Property to get the value for.
+ * @param[out] value_p Value of given property in given section.
  *
  * @return zero(0) or negative error code.
  */
 int configfile_get_float(struct configfile_t *self_p,
                         const char *section_p,
-                        const char *option_p,
+                        const char *property_p,
                         float *value_p);
 
 #endif

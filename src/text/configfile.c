@@ -36,7 +36,7 @@ int configfile_init(struct configfile_t *self_p,
 
 int configfile_set(struct configfile_t *self_p,
                    const char *section_p,
-                   const char *option_p,
+                   const char *property_p,
                    const char *value_p)
 {
     return (-1);
@@ -44,19 +44,19 @@ int configfile_set(struct configfile_t *self_p,
 
 char *configfile_get(struct configfile_t *self_p,
                      const char *section_p,
-                     const char *option_p,
+                     const char *property_p,
                      char *value_p,
                      int length)
 {
     ASSERTN(self_p != NULL, EINVAL);
     ASSERTN(section_p != NULL, EINVAL);
-    ASSERTN(option_p != NULL, EINVAL);
+    ASSERTN(property_p != NULL, EINVAL);
     ASSERTN(value_p != NULL, EINVAL);
     ASSERTN(length > 0, EINVAL);
 
     int in_correct_section;
     int section_length;
-    int option_length;
+    int property_length;
     int value_length;
     int first_length;
     int section_end_found;
@@ -65,7 +65,7 @@ char *configfile_get(struct configfile_t *self_p,
     in_correct_section = 0;
     buf_p = self_p->buf_p;
     section_length = strlen(section_p);
-    option_length = strlen(option_p);
+    property_length = strlen(property_p);
 
     while (*buf_p != '\0') {
         if (*buf_p == '\r') {
@@ -113,7 +113,7 @@ char *configfile_get(struct configfile_t *self_p,
                 in_correct_section = 0;
             }
         } else if (in_correct_section == 0) {
-            /* Ignore any option in wrong section. */
+            /* Ignore any property in wrong section. */
             while (*buf_p != '\n') {
                 if (*buf_p == '\0') {
                     return (NULL);
@@ -122,10 +122,10 @@ char *configfile_get(struct configfile_t *self_p,
                 buf_p++;
             }
         } else {
-            /* Option or empty line.*/
-            if (strncmp(option_p, buf_p, option_length) == 0) {
+            /* Property or empty line.*/
+            if (strncmp(property_p, buf_p, property_length) == 0) {
                 value_length = 0;
-                buf_p += option_length;
+                buf_p += property_length;
 
                 /* Ignore whitespaces before ':'. */
                 while ((*buf_p == ' ') || (*buf_p == '\t')) {
@@ -137,7 +137,7 @@ char *configfile_get(struct configfile_t *self_p,
                 }
 
                 if ((*buf_p != ':') && (*buf_p != '=')) {
-                    /* Malformed option entry. */
+                    /* Malformed property entry. */
                     return (NULL);
                 }
 
@@ -175,7 +175,7 @@ char *configfile_get(struct configfile_t *self_p,
 
                 return (std_strip(value_p, NULL));
             } else {
-                /* Ignore wrong option. */
+                /* Ignore wrong property. */
                 while (*buf_p != '\n') {
                     if (*buf_p == '\0') {
                         return (NULL);
@@ -194,18 +194,18 @@ char *configfile_get(struct configfile_t *self_p,
 
 int configfile_get_long(struct configfile_t *self_p,
                         const char *section_p,
-                        const char *option_p,
+                        const char *property_p,
                         long *value_p)
 {
     char buf[16];
     const char *next_p;
 
-    /* Get the option value as a string. */
-    if (configfile_get(self_p, section_p, option_p, buf, sizeof(buf)) == NULL) {
+    /* Get the property value as a string. */
+    if (configfile_get(self_p, section_p, property_p, buf, sizeof(buf)) == NULL) {
         return (-1);
     }
 
-    /* Convert the option value string to a long. */
+    /* Convert the property value string to a long. */
     next_p = std_strtol(buf, value_p);
 
     if ((next_p == NULL) || (*next_p != '\0')) {
@@ -217,18 +217,18 @@ int configfile_get_long(struct configfile_t *self_p,
 
 int configfile_get_float(struct configfile_t *self_p,
                          const char *section_p,
-                         const char *option_p,
+                         const char *property_p,
                          float *value_p)
 {
     char buf[32];
     char *next_p;
 
-    /* Get the option value as a string. */
-    if (configfile_get(self_p, section_p, option_p, buf, sizeof(buf)) == NULL) {
+    /* Get the property value as a string. */
+    if (configfile_get(self_p, section_p, property_p, buf, sizeof(buf)) == NULL) {
         return (-1);
     }
 
-    /* Convert the option value string to a float. */
+    /* Convert the property value string to a float. */
     *value_p = strtod(buf, &next_p);
 
     if ((buf == next_p) || (*next_p != '\0')) {
