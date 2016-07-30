@@ -20,7 +20,7 @@
 
 #include "simba.h"
 
-int test_crc_32(struct harness_t *harness_p)
+static int test_crc_32(struct harness_t *harness_p)
 {
     char string[] = "The quick brown fox jumps over the lazy dog";
 
@@ -29,7 +29,7 @@ int test_crc_32(struct harness_t *harness_p)
     return (0);
 }
 
-int test_crc_ccitt(struct harness_t *harness_p)
+static int test_crc_ccitt(struct harness_t *harness_p)
 {
     uint16_t crc;
 
@@ -40,13 +40,29 @@ int test_crc_ccitt(struct harness_t *harness_p)
     crc = crc_ccitt(0xffff, "12345", 5);
     BTASSERT(crc_ccitt(crc, "6789", 4) == 0x29b1);
 
-    /* XModem uses the same algorithm as CCITT but with 0x0000 as
-       initial value. */
-    BTASSERT(crc_ccitt(0x0000, "", 0) == 0x0000);
-    BTASSERT(crc_ccitt(0x0000, "1", 1) == 0x2672);
-    BTASSERT(crc_ccitt(0x0000, "123456789", 9) == 0x31c3);
-    crc = crc_ccitt(0x0000, "12345", 5);
-    BTASSERT(crc_ccitt(crc, "6789", 4) == 0x31c3);
+    return (0);
+}
+
+static int test_crc_xmodem(struct harness_t *harness_p)
+{
+    uint16_t crc;
+
+    /* XModem with 0x0000 as initial value. */
+    BTASSERT(crc_xmodem(0x0000, "", 0) == 0x0000);
+    BTASSERT(crc_xmodem(0x0000, "1", 1) == 0x2672);
+    BTASSERT(crc_xmodem(0x0000, "123456789", 9) == 0x31c3);
+    crc = crc_xmodem(0x0000, "12345", 5);
+    BTASSERT(crc_xmodem(crc, "6789", 4) == 0x31c3);
+
+    return (0);
+}
+
+static int test_crc_7(struct harness_t *harness_p)
+{
+    /* CRC-7 calculation. */
+    BTASSERT(crc_7("", 0) == 0x01);
+    BTASSERT(crc_7("1", 1) == 0x45);
+    BTASSERT(crc_7("123456789", 9) == 0xeb);
 
     return (0);
 }
@@ -57,6 +73,8 @@ int main()
     struct harness_testcase_t harness_testcases[] = {
         { test_crc_32, "test_crc_32" },
         { test_crc_ccitt, "test_crc_ccitt" },
+        { test_crc_xmodem, "test_crc_xmodem" },
+        { test_crc_7, "test_crc_7" },
         { NULL, NULL }
     };
 

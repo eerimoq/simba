@@ -20,7 +20,7 @@
 
 #include "simba.h"
 
-static uint32_t crc32_tab[] = {
+static FAR const uint32_t crc32_tab[] = {
     0x00000000, 0x77073096, 0xee0e612c, 0x990951ba, 0x076dc419, 0x706af48f,
     0xe963a535, 0x9e6495a3, 0x0edb8832, 0x79dcb8a4, 0xe0d5e91e, 0x97d2d988,
     0x09b64c2b, 0x7eb17cbd, 0xe7b82d07, 0x90bf1d91, 0x1db71064, 0x6ab020f2,
@@ -66,7 +66,7 @@ static uint32_t crc32_tab[] = {
     0xb40bbe37, 0xc30c8ea1, 0x5a05df1b, 0x2d02ef8d
 };
 
-static uint16_t ccitt_tab[256] = {
+static FAR const uint16_t ccitt_tab[256] = {
     0x0000, 0x1021, 0x2042, 0x3063, 0x4084, 0x50a5, 0x60c6, 0x70e7,
     0x8108, 0x9129, 0xa14a, 0xb16b, 0xc18c, 0xd1ad, 0xe1ce, 0xf1ef,
     0x1231, 0x0210, 0x3273, 0x2252, 0x52b5, 0x4294, 0x72f7, 0x62d6,
@@ -134,3 +134,31 @@ uint16_t crc_ccitt(uint16_t crc, const void *buf_p, size_t size)
 
     return (crc);
 }
+
+uint16_t crc_xmodem(uint16_t crc, const void *buf_p, size_t size)
+{
+    return (crc_ccitt(crc, buf_p, size));
+}
+
+uint8_t crc_7(const void* buf_p, size_t size)
+{
+    uint8_t *b_p = (uint8_t *)buf_p;
+    uint8_t crc = 0;
+    uint8_t data;
+
+    while (size--) {
+        data = *b_p++;
+        data ^= (crc << 1);
+
+        if (data & 0x80) {
+            data ^= 9;
+        }
+
+        crc = (data ^ (crc & 0x78) ^ (crc << 4) ^ ((crc >> 3) & 0x0f));
+    }
+
+    crc = ((crc << 1) ^ (crc << 4) ^ (crc & 0x70) ^ ((crc >> 3) & 0x0f));
+
+    return (crc | 1);
+}
+
