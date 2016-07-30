@@ -110,16 +110,13 @@ struct command_t {
 };
 
 /** Internal timeout periods. */
-#define INIT_TIMEOUT       2000
-#define ERASE_TIMEOUT     10000
-#define READ_TIMEOUT        300
-#define WRITE_TIMEOUT       600
+#define WRITE_TIMEOUT      2000
 
 /** Internal number of init pulses. */
 #define INIT_PULSES          10
 
 /** Internal number of retry. */
-#define RESPONSE_RETRIES      255
+#define RESPONSE_RETRIES   2000
 
 /**
  * Wait for the the data start block
@@ -143,16 +140,20 @@ static int wait_for_data_start_block(struct sd_driver_t *self_p)
         attempt++;
     }
 
-    return (-1);
+    return (-SD_ERR_NORESPONSE_WAIT_FOR_DATA_START_BLOCK);
 }
 
-static int wait_not_busy(struct sd_driver_t *self_p)
+/**
+ * Wait until the SD card is not busy, or until a timeout occurs.
+ */
+static int wait_not_busy(struct sd_driver_t *self_p,
+                         int timeout_ms)
 {
     int i;
     uint8_t status;
 
     /* Wait for the card to be idle. */
-    for (i = 0; i < RESPONSE_RETRIES; i++) {
+    for (i = 0; i < timeout_ms; i++) {
         if (spi_get(self_p->spi_p, &status) != 1) {
             return (-1);
         }
@@ -160,6 +161,8 @@ static int wait_not_busy(struct sd_driver_t *self_p)
         if (status == 0xff) {
             return (0);
         }
+
+        thrd_sleep_us(1000);
     }
 
     return (-1);
@@ -175,7 +178,7 @@ static int command_write(struct sd_driver_t *self_p,
     struct command_t command;
 
     /* Wait for the card to be idle. */
-    wait_not_busy(self_p);
+    wait_not_busy(self_p, 300);
 
     /* Initiate the command. */
     command.index = (0x40 | index);
@@ -271,18 +274,18 @@ static ssize_t read(struct sd_driver_t *self_p,
     uint16_t real_crc, expected_crc;
     ssize_t res;
 
-    res = -1;
-
     spi_take_bus(self_p->spi_p);
     spi_select(self_p->spi_p);
 
     /* Issue read command. */
     if (command_check_call(self_p, index, arg, 0) != 0) {
+        res = -SD_ERR_READ_COMMAND;
         goto out;
     }
 
     /* Receive the data block start token. */
     if (wait_for_data_start_block(self_p) != 0) {
+        res = -SD_ERR_READ_DATA_START_BLOCK;
         goto out;
     }
 
@@ -295,6 +298,7 @@ static ssize_t read(struct sd_driver_t *self_p,
     expected_crc = ntohs(expected_crc);
 
     if (real_crc != expected_crc) {
+        res = -SD_ERR_READ_WRONG_DATA_CRC;
         goto out;
     }
 
@@ -341,7 +345,7 @@ int sd_start(struct sd_driver_t *self_p)
     spi_take_bus(self_p->spi_p);
 
     /* Send 74 dummy clock pulses with the slave deselected. */
-    for (i = 0; i < 10; i++) {
+    for (i = 0; i < INIT_PULSES; i++) {
         spi_put(self_p->spi_p, 0xff);
     }
 
@@ -350,12 +354,14 @@ int sd_start(struct sd_driver_t *self_p)
 
     /* Reset the card. */
     if (command_check_call_idle(self_p, CMD_GO_IDLE_STATE, 0) != 0) {
+        res = -SD_ERR_GO_IDLE_STATE;
         goto out;
     }
 
     /* Enable CRC. Host should enable CRC verification before issuing
        ACMD41. */
     if (command_check_call_idle(self_p, CMD_CRC_ON_OFF, 1) != 0) {
+        res = -SD_ERR_CRC_ON_OFF;
         goto out;
     }
 
@@ -365,6 +371,7 @@ int sd_start(struct sd_driver_t *self_p)
 
     /* SD type 1 if no response is received. */
     if (command_check_call_idle(self_p, CMD_SEND_IF_COND, arg) != 0) {
+        res = -SD_ERR_SEND_IF_COND;
         goto out;
     }
 
@@ -374,6 +381,7 @@ int sd_start(struct sd_driver_t *self_p)
     }
 
     if (buf[3] != CHECK_PATTERN) {
+        res = -SD_ERR_CHECK_PATTERN;
         goto out;
     }
 
@@ -394,11 +402,13 @@ int sd_start(struct sd_driver_t *self_p)
     }
 
     if (i == 10) {
+        res = -SD_ERR_SD_SEND_OP_COND;
         goto out;
     }
 
     /* Read OCR. */
     if (command_check_call(self_p, CMD_READ_OCR, arg, 0) != 0) {
+        res = -SD_ERR_READ_OCR;
         goto out;
     }
 
@@ -411,7 +421,7 @@ int sd_start(struct sd_driver_t *self_p)
     if (buf[0] & 0xc0) {
         self_p->type = TYPE_SDHC;
     }
-
+ 
     res = 0;
 
  out:
@@ -525,6 +535,7 @@ ssize_t sd_write_block(struct sd_driver_t *self_p,
 
     /* Issue write block command. */
     if (command_check_call(self_p, CMD_WRITE_BLOCK, dst_block, 0) != 0) {
+        res = -SD_ERR_WRITE_BLOCK;
         goto out;
     }
 
@@ -539,15 +550,18 @@ ssize_t sd_write_block(struct sd_driver_t *self_p,
     spi_get(self_p->spi_p, &response);
 
     if ((response & TOKEN_DATA_RES_MASK) != TOKEN_DATA_RES_ACCEPTED) {
+        res = -SD_ERR_WRITE_BLOCK_TOKEN_DATA_RES_ACCEPTED;
         goto out;
     }
 
     /* Wait for the write operation to complete and check status */
-    if (wait_not_busy(self_p) != 0) {
+    if (wait_not_busy(self_p, WRITE_TIMEOUT) != 0) {
+        res = -SD_ERR_WRITE_BLOCK_WAIT_NOT_BUSY;
         goto out;
     }
 
     if (command_check_call(self_p, CMD_SEND_STATUS, 0, 0) != 0) {
+        res = -SD_ERR_WRITE_BLOCK_SEND_STATUS;
         goto out;
     }
 

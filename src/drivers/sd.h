@@ -23,6 +23,22 @@
 
 #include "simba.h"
 
+/* Error codes. */
+#define SD_ERR_NORESPONSE_WAIT_FOR_DATA_START_BLOCK  5001
+#define SD_ERR_GO_IDLE_STATE                         5002
+#define SD_ERR_CRC_ON_OFF                            5003
+#define SD_ERR_SEND_IF_COND                          5004
+#define SD_ERR_CHECK_PATTERN                         5005
+#define SD_ERR_SD_SEND_OP_COND                       5006
+#define SD_ERR_READ_OCR                              5007
+#define SD_ERR_READ_COMMAND                          5008
+#define SD_ERR_READ_DATA_START_BLOCK                 5009
+#define SD_ERR_READ_WRONG_DATA_CRC                   5010
+#define SD_ERR_WRITE_BLOCK                           5011
+#define SD_ERR_WRITE_BLOCK_TOKEN_DATA_RES_ACCEPTED   5012
+#define SD_ERR_WRITE_BLOCK_WAIT_NOT_BUSY             5013
+#define SD_ERR_WRITE_BLOCK_SEND_STATUS               5014
+
 #define SD_BLOCK_SIZE 512
 
 /* CID, Card Identification register, table 5-2. */

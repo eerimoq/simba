@@ -27,6 +27,8 @@ static uint8_t buf[SD_BLOCK_SIZE];
 
 static int test_init(struct harness_t *harness_p)
 {
+    int res;
+
 #if defined(ARCH_LINUX)
     BTASSERT(system("./create_sdcard_linux.sh") == 0);
 #endif
@@ -40,7 +42,7 @@ static int test_init(struct harness_t *harness_p)
                       0) == 0);
 
     BTASSERT(sd_init(&sd, &spi) == 0);
-    BTASSERT(sd_start(&sd) == 0);
+    BTASSERT((res = sd_start(&sd)) == 0, ", res = %d\r\n", res);
 
     return (0);
 }
@@ -216,7 +218,7 @@ static int test_read_csd(struct harness_t *harness_p)
 
 static int test_read_write(struct harness_t *harness_p)
 {
-    int i, block;
+    int i, block, res;
 
     /* Write to and read from the first five blocks. */
     for (block = 0; block < 5; block++) {
@@ -226,12 +228,13 @@ static int test_read_write(struct harness_t *harness_p)
             buf[i] = ((block + i) & 0xff);
         }
 
-        BTASSERT(sd_write_block(&sd, block, buf) == SD_BLOCK_SIZE);
+        BTASSERT((res = sd_write_block(&sd, block, buf)) == SD_BLOCK_SIZE,
+                 ", res = %d\r\n", res);
         memset(buf, 0, sizeof(buf));
-        BTASSERT(sd_read_block(&sd, buf, block) == SD_BLOCK_SIZE);
+        BTASSERT((res = sd_read_block(&sd, buf, block)) == SD_BLOCK_SIZE,
+                 ", res = %d\r\n", res);
 
         for (i = 0; i < membersof(buf); i++) {
-            /* std_printf(FSTR("0x%x, 0x%x\r\n"), buf[i], ((block + i) & 0xff)); */
             BTASSERT(buf[i] == ((block + i) & 0xff));
         }
 
@@ -242,9 +245,11 @@ static int test_read_write(struct harness_t *harness_p)
         }
 
         memset(buf, 0, sizeof(buf));
-        BTASSERT(sd_write_block(&sd, block, buf) == SD_BLOCK_SIZE);
+        BTASSERT((res = sd_write_block(&sd, block, buf)) == SD_BLOCK_SIZE,
+                 ", res = %d\r\n", res);
         memset(buf, -1, sizeof(buf));
-        BTASSERT(sd_read_block(&sd, buf, block) == SD_BLOCK_SIZE);
+        BTASSERT((res = sd_read_block(&sd, buf, block)) == SD_BLOCK_SIZE,
+                 ", res = %d\r\n", res);
 
         for (i = 0; i < membersof(buf); i++) {
             BTASSERT(buf[i] == 0);
@@ -256,7 +261,7 @@ static int test_read_write(struct harness_t *harness_p)
 
 static int test_write_performance(struct harness_t *harness_p)
 {
-    int i, block;
+    int i, block, res;
     struct time_t start, stop, diff;
     float seconds;
     unsigned long bytes_per_seconds;
@@ -272,7 +277,8 @@ static int test_write_performance(struct harness_t *harness_p)
 
     /* Write to and read from the first five blocks. */
     for (block = 0; block < number_of_blocks; block++) {
-        BTASSERT(sd_write_block(&sd, block, buf) == SD_BLOCK_SIZE);
+        BTASSERT((res = sd_write_block(&sd, block, buf)) == SD_BLOCK_SIZE,
+                 ", res = %d\r\n", res);
     }
 
     time_get(&stop);
@@ -290,7 +296,7 @@ static int test_write_performance(struct harness_t *harness_p)
 
 static int test_read_performance(struct harness_t *harness_p)
 {
-    int i, block;
+    int i, block, res;
     struct time_t start, stop, diff;
     float seconds;
     unsigned long bytes_per_seconds;
@@ -306,7 +312,8 @@ static int test_read_performance(struct harness_t *harness_p)
 
     /* Write to and read from the first five blocks. */
     for (block = 0; block < number_of_blocks; block++) {
-        BTASSERT(sd_read_block(&sd, buf, block) == SD_BLOCK_SIZE);
+        BTASSERT((res = sd_read_block(&sd, buf, block)) == SD_BLOCK_SIZE,
+                 ", res = %d\r\n", res);
     }
 
     time_get(&stop);
