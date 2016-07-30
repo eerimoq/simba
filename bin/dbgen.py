@@ -81,7 +81,8 @@ def main():
 
         # Get board sources.
         src = get_make_variable(board, "SRC").split()
-        src = list(set(src) - set(["main.c", "settings.c"]))
+        src = list(set(src) - set(["main.c",
+                                   os.path.join("build", board, "settings.c")]))
         src = [s.replace(simba_root, "") for s in src]
         database["boards"][board]["src"] = src
 

@@ -18,7 +18,7 @@
 # This file is part of the Simba project.
 #
 
-APPS = wifi/tcp wifi/udp slip
+APPS = slip
 
 all: $(APPS:%=%.all)
 
