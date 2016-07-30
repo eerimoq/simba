@@ -68,7 +68,7 @@ struct spi_device_t spi_device[SPI_DEVICE_MAX] = {
         .mosi_p = &pin_d16_dev,
         .miso_p = &pin_d14_dev,
         .sck_p = &pin_d15_dev,
-        .sem = { .count = 1, .head_p = NULL }
+        .sem = { .count = 0, .count_max = 1, .head_p = NULL }
     }
 };
 

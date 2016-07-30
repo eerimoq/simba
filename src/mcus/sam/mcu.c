@@ -141,7 +141,7 @@ struct spi_device_t spi_device[SPI_DEVICE_MAX] = {
         .miso_p = &pin_device[25],
         .sck_p = &pin_device[27],
         .id = PERIPHERAL_ID_SPI0,
-        .sem = { .count = 1, .head_p = NULL }
+        .sem = { .count = 0, .count_max = 1, .head_p = NULL }
     }
 };
 
@@ -359,7 +359,8 @@ struct flash_device_t flash_device[FLASH_DEVICE_MAX] = {
             }
         },
         .sem = {
-            .count = 1,
+            .count = 0,
+            .count_max = 1,
             .head_p = NULL
         }
     }

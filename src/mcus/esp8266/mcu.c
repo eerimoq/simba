@@ -50,6 +50,6 @@ struct spi_device_t spi_device[SPI_DEVICE_MAX] = {
     {
         .drv_p = NULL,
         .regs_p = ESP8266_SPI0,
-        .sem = { .count = 1, .head_p = NULL }
+        .sem = { .count = 0, .count_max = 1, .head_p = NULL }
     }
 };
