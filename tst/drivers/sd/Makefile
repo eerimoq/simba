@@ -21,5 +21,7 @@
 NAME = sd_suite
 BOARD ?= linux
 
+TIMEOUT = 30
+
 SIMBA_ROOT ?= ../../..
 include $(SIMBA_ROOT)/make/app.mk

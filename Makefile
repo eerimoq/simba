@@ -139,7 +139,8 @@ ifeq ($(BOARD), arduino_nano)
     TESTS = $(addprefix tst/drivers/, ds18b20 \
 				      exti \
 				      owi \
-				      pin)
+				      pin \
+				      sd)
     APPS = $(addprefix tst/drivers/, uart)
 endif
 

@@ -23,35 +23,68 @@
 static struct spi_driver_t spi;
 static struct sd_driver_t sd;
 
-static char reference[SD_BLOCK_SIZE];
-static char zeros[SD_BLOCK_SIZE];
-static char buf[SD_BLOCK_SIZE];
+static uint8_t buf[SD_BLOCK_SIZE];
 
-static int test_read_cid_csd(struct harness_t *harness_p)
+static int test_init(struct harness_t *harness_p)
+{
+#if defined(ARCH_LINUX)
+    BTASSERT(system("./create_sdcard_linux.sh") == 0);
+#endif
+
+    BTASSERT(spi_init(&spi,
+                      &spi_device[0],
+                      &pin_d6_dev,
+                      SPI_MODE_MASTER,
+                      SPI_SPEED_250KBPS,
+                      0,
+                      0) == 0);
+
+    BTASSERT(sd_init(&sd, &spi) == 0);
+    BTASSERT(sd_start(&sd) == 0);
+
+    return (0);
+}
+
+static int test_read_cid(struct harness_t *harness_p)
 {
     struct sd_cid_t cid;
-    union sd_csd_t csd;
+    static const char *mdt_month[16] = {
+        "0",
+        "Jan", "Feb", "Mar", "Apr",
+        "May", "June", "July", "Aug",
+        "Sep", "Oct", "Nov", "Dec",
+        "13", "14", "15"
+    };
 
     /* Read CID and print it to stdout. */
     BTASSERT(sd_read_cid(&sd, &cid) == sizeof(cid));
 
     std_printf(FSTR("cid {\r\n"
-                    "    manufacturer id = %u\r\n"
+                    "    manufacturer id = 0x%02x\r\n"
                     "    application id = '%c%c'\r\n"
                     "    product name = '%c%c%c%c%c'\r\n"
-                    "    product revision = %u\r\n"
+                    "    product revision = %02x\r\n"
                     "    product serial number = %lu\r\n"
-                    "    manufacturing date = %u\r\n"
-                    "    crc checksum = %x\r\n"
+                    "    manufacturing date = %s %u\r\n"
+                    "    crc checksum = 0x%02x\r\n"
                     "}\r\n"),
                (unsigned int)cid.mid,
                cid.oid[0], cid.oid[1],
                cid.pnm[0], cid.pnm[1], cid.pnm[2], cid.pnm[3], cid.pnm[4],
                cid.prv,
                cid.psn,
-               cid.mdt,
+               mdt_month[ntohs(cid.mdt) & 0xf],
+               2000 + ((ntohs(cid.mdt) >> 4) & 0xff),
                cid.crc);
 
+    return (0);
+}
+
+static int test_read_csd(struct harness_t *harness_p)
+{
+    union sd_csd_t csd;
+
+    /* Read CSD and print it to stdout. */
     BTASSERT(sd_read_csd(&sd, &csd) == sizeof(csd));
 
     switch (csd.v1.csd_structure) {
@@ -86,7 +119,7 @@ static int test_read_cid_csd(struct harness_t *harness_p)
                         "    perm_write_protect = %u\r\n"
                         "    tmp_write_protect = %u\r\n"
                         "    file_format = %u\r\n"
-                        "    crc = %u\r\n"
+                        "    crc = 0x%02x\r\n"
                         "}\r\n"),
                    csd.v1.csd_structure,
                    csd.v1.taac,
@@ -185,27 +218,106 @@ static int test_read_write(struct harness_t *harness_p)
 {
     int i, block;
 
-    memset(zeros, 0, sizeof(zeros));
-
-    /* Erase, write and read the first block. */
+    /* Write to and read from the first five blocks. */
     for (block = 0; block < 5; block++) {
-        std_printf(FSTR("block = %d\r\n"), block);
-
-        for (i = 0; i < membersof(reference); i++) {
-            reference[i] = (block + i);
+        /* Write reference data to given block and verify that it was
+           written. */
+        for (i = 0; i < membersof(buf); i++) {
+            buf[i] = ((block + i) & 0xff);
         }
 
-        BTASSERT(sd_write_block(&sd, 0, reference) == SD_BLOCK_SIZE);
+        BTASSERT(sd_write_block(&sd, block, buf) == SD_BLOCK_SIZE);
         memset(buf, 0, sizeof(buf));
         BTASSERT(sd_read_block(&sd, buf, block) == SD_BLOCK_SIZE);
-        BTASSERT(memcmp(buf, reference, SD_BLOCK_SIZE) == 0);
 
-        /* Write zeros to the block. */
-        BTASSERT(sd_write_block(&sd, 0, zeros) == SD_BLOCK_SIZE);
+        for (i = 0; i < membersof(buf); i++) {
+            /* std_printf(FSTR("0x%x, 0x%x\r\n"), buf[i], ((block + i) & 0xff)); */
+            BTASSERT(buf[i] == ((block + i) & 0xff));
+        }
+
+        /* Write zeros to given block and verify that it was
+           written. */
+        for (i = 0; i < membersof(buf); i++) {
+            buf[i] = 0;
+        }
+
+        memset(buf, 0, sizeof(buf));
+        BTASSERT(sd_write_block(&sd, block, buf) == SD_BLOCK_SIZE);
         memset(buf, -1, sizeof(buf));
         BTASSERT(sd_read_block(&sd, buf, block) == SD_BLOCK_SIZE);
-        BTASSERT(memcmp(buf, zeros, SD_BLOCK_SIZE) == 0);
+
+        for (i = 0; i < membersof(buf); i++) {
+            BTASSERT(buf[i] == 0);
+        }
     }
+
+    return (0);
+}
+
+static int test_write_performance(struct harness_t *harness_p)
+{
+    int i, block;
+    struct time_t start, stop, diff;
+    float seconds;
+    unsigned long bytes_per_seconds;
+    int number_of_blocks = 32;
+
+    /* Write reference data to given block and verify that it was
+       written. */
+    for (i = 0; i < membersof(buf); i++) {
+        buf[i] = (i & 0xff);
+    }
+
+    time_get(&start);
+
+    /* Write to and read from the first five blocks. */
+    for (block = 0; block < number_of_blocks; block++) {
+        BTASSERT(sd_write_block(&sd, block, buf) == SD_BLOCK_SIZE);
+    }
+
+    time_get(&stop);
+    time_diff(&diff, &stop, &start);
+    seconds = (diff.seconds + diff.nanoseconds / 1000000000.0f);
+    bytes_per_seconds = ((SD_BLOCK_SIZE * number_of_blocks) / seconds);
+
+    std_printf(FSTR("Wrote 32 blocks of %d bytes in %f s (%lu bytes/s).\r\n"),
+               SD_BLOCK_SIZE,
+               seconds,
+               bytes_per_seconds);
+
+    return (0);
+}
+
+static int test_read_performance(struct harness_t *harness_p)
+{
+    int i, block;
+    struct time_t start, stop, diff;
+    float seconds;
+    unsigned long bytes_per_seconds;
+    int number_of_blocks = 32;
+
+    /* Write reference data to given block and verify that it was
+       written. */
+    for (i = 0; i < membersof(buf); i++) {
+        buf[i] = (i & 0xff);
+    }
+
+    time_get(&start);
+
+    /* Write to and read from the first five blocks. */
+    for (block = 0; block < number_of_blocks; block++) {
+        BTASSERT(sd_read_block(&sd, buf, block) == SD_BLOCK_SIZE);
+    }
+
+    time_get(&stop);
+    time_diff(&diff, &stop, &start);
+    seconds = (diff.seconds + diff.nanoseconds / 1000000000.0f);
+    bytes_per_seconds = ((SD_BLOCK_SIZE * number_of_blocks) / seconds);
+
+    std_printf(FSTR("Read 32 blocks of %d bytes in %f s (%lu bytes/s).\r\n"),
+               SD_BLOCK_SIZE,
+               seconds,
+               bytes_per_seconds);
 
     return (0);
 }
@@ -214,27 +326,16 @@ int main()
 {
     struct harness_t harness;
     struct harness_testcase_t harness_testcases[] = {
-        { test_read_cid_csd, "test_read_cid_csd" },
+        { test_init, "test_init" },
+        { test_read_cid, "test_read_cid" },
+        { test_read_csd, "test_read_csd" },
         { test_read_write, "test_read_write" },
+        { test_write_performance, "test_write_performance" },
+        { test_read_performance, "test_read_performance" },
         { NULL, NULL }
     };
 
     sys_start();
-
-#if defined(ARCH_LINUX)
-    BTASSERT(system("./create_sdcard_linux.sh") == 0);
-#endif
-
-    BTASSERT(spi_init(&spi,
-                      &spi_device[0],
-                      &pin_d53_dev,
-                      SPI_MODE_MASTER,
-                      SPI_SPEED_500KBPS,
-                      0,
-                      1) == 0);
-
-    BTASSERT(sd_init(&sd, &spi) == 0);
-    BTASSERT(sd_start(&sd) == 0);
 
     harness_init(&harness);
     harness_run(&harness, harness_testcases);

@@ -30,7 +30,7 @@ struct sd_cid_t {
     uint8_t mid;		/* Manufacturer ID. */
     char oid[2];		/* OEM/Application ID. */
     char pnm[5];		/* Product name. */
-    uint8_t prv; 		/* Product revision. */
+    uint8_t prv;                /* Product revision. */
     uint32_t psn;		/* Product serial number. */
     uint16_t mdt;		/* Manufacturing date. */
     uint8_t crc;		/* CRC7 checksum. */
@@ -153,7 +153,7 @@ struct sd_driver_t {
 };
 
 /**
- * Initialize driver object.
+ * Initialize given driver object.
  *
  * @param[in,out] self_p Driver object to initialize.
  *
@@ -163,7 +163,8 @@ int sd_init(struct sd_driver_t *self_p,
             struct spi_driver_t *spi_p);
 
 /**
- * Start driver.
+ * Start given SD card driver. This resets the SD card and performs
+ * the initialization sequence.
  *
  * @param[in] self_p Initialized driver object.
  *
@@ -172,7 +173,7 @@ int sd_init(struct sd_driver_t *self_p,
 int sd_start(struct sd_driver_t *self_p);
 
 /**
- * Stop driver.
+ * Stop given SD card driver.
  *
  * @param[in] self_p Initialized driver object.
  *
