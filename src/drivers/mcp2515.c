@@ -166,9 +166,17 @@ static int read_status(struct mcp2515_driver_t *self_p,
     buf[0] = SPI_INSTR_READ_STATUS;
     buf[1] = 0;
 
+    spi_take_bus(&self_p->spi);
+    spi_select(&self_p->spi);
+
     if (spi_transfer(&self_p->spi, buf, buf, sizeof(buf)) != sizeof(buf)) {
+        spi_deselect(&self_p->spi);
+        spi_give_bus(&self_p->spi);
         return (-1);
     }
+
+    spi_deselect(&self_p->spi);
+    spi_give_bus(&self_p->spi);
 
     *value_p = buf[1];
 
@@ -188,10 +196,18 @@ static int register_read(struct mcp2515_driver_t *self_p,
     buf[1] = addr;
     buf[2] = 0;
 
+    spi_take_bus(&self_p->spi);
+    spi_select(&self_p->spi);
+
     if (spi_transfer(&self_p->spi, buf, buf, sizeof(buf)) != sizeof(buf)) {
+        spi_deselect(&self_p->spi);
+        spi_give_bus(&self_p->spi);
         return (-1);
     }
 
+    spi_deselect(&self_p->spi);
+    spi_give_bus(&self_p->spi);
+        
     *value_p = buf[2];
 
     return (0);
@@ -210,9 +226,17 @@ static int register_write(struct mcp2515_driver_t *self_p,
     buf[1] = addr;
     buf[2] = value;
 
+    spi_take_bus(&self_p->spi);
+    spi_select(&self_p->spi);
+
     if (spi_write(&self_p->spi, buf, sizeof(buf)) != sizeof(buf)) {
+        spi_deselect(&self_p->spi);
+        spi_give_bus(&self_p->spi);
         return (-1);
     }
+
+    spi_deselect(&self_p->spi);
+    spi_give_bus(&self_p->spi);
 
     register_read(self_p, addr, buf);
 
@@ -242,11 +266,19 @@ static int register_write_bits(struct mcp2515_driver_t *self_p,
     buf[2] = mask;
     buf[3] = value;
 
+    spi_take_bus(&self_p->spi);
+    spi_select(&self_p->spi);
+
     if (spi_write(&self_p->spi, buf, sizeof(buf)) != sizeof(buf)) {
+        spi_deselect(&self_p->spi);
+        spi_give_bus(&self_p->spi);
         return (-1);
     }
 
     register_read(self_p, addr, buf);
+
+    spi_deselect(&self_p->spi);
+    spi_give_bus(&self_p->spi);
 
     /* Verify that the bits were written. */
     if ((buf[0] & mask) != value) {
@@ -281,9 +313,15 @@ static ssize_t write_cb(void *arg_p,
     frame.dlc = frame_p->size;
     memcpy(frame.data, frame_p->data, frame_p->size);
 
+    spi_take_bus(&self_p->spi);
+    spi_select(&self_p->spi);
+
     /* Write frame to hardware. */
     spi_write(&self_p->spi, &frame, sizeof(frame));
     spi_write(&self_p->spi, &rts, sizeof(rts));
+
+    spi_deselect(&self_p->spi);
+    spi_give_bus(&self_p->spi);
 
     /* Wait for the frame to be transmitted. */
     sem_take(&self_p->tx_sem, NULL);
@@ -347,7 +385,12 @@ static void *isr_main(void *arg_p)
         if (status & SPI_READ_STATUS_RX0IF) {
             /* Read frame to temporary buffer. */
             spi_frame.instr = SPI_INSTR_READ_RX_BUFFER;
+
+            spi_take_bus(&self_p->spi);
+            spi_select(&self_p->spi);
             spi_transfer(&self_p->spi, &spi_frame, &spi_frame, sizeof(spi_frame));
+            spi_deselect(&self_p->spi);
+            spi_give_bus(&self_p->spi);
 
             /* Create the driver frame. */
             frame.id = ((spi_frame.id_10_3 << 3) | spi_frame.id_2_0);
@@ -438,16 +481,25 @@ int mcp2515_start(struct mcp2515_driver_t *self_p)
 
     uint8_t cnf1, cnf2, cnf3;
 
+    spi_start(&self_p->spi);
     exti_start(&self_p->exti);
 
     if (speed_to_cnf(self_p->speed, &cnf1, &cnf2, &cnf3) != 0) {
         return (-1);
     }
 
+    spi_take_bus(&self_p->spi);
+    spi_select(&self_p->spi);
+
     /* Reset device. */
     if (spi_put(&self_p->spi, SPI_INSTR_RESET) != 1) {
+        spi_deselect(&self_p->spi);
+        spi_give_bus(&self_p->spi);
         return (-1);
     }
+
+    spi_deselect(&self_p->spi);
+    spi_give_bus(&self_p->spi);
 
     /* Enter configuration mode. */
     if (register_write_bits(self_p,

@@ -23,9 +23,9 @@ Connect devices as below.
        |       +--4k7-+     OWI
        |       |      |
     +--o-------o------o--+
-    | GND  d6        VCC |
+    | GND     d7     VCC |
     |       client       |
-    | d10  d11  d12  d13 |
+    |  d6  d11  d12  d13 |
     +--o----o----o----o--+
        |    |    |    |
        |    |    |    |     SPI

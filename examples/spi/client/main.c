@@ -86,14 +86,17 @@ int main()
 
     spi_init(&spi,
              &spi_device[0],
-             &pin_d10_dev,
+             &pin_d6_dev,
              SPI_MODE_MASTER,
              SPI_SPEED_250KBPS,
              1,
              1);
+    spi_start(&spi);
+    spi_take_bus(&spi);
+    spi_select(&spi);
 
     /* Initialize temperature sensor. */
-    owi_init(&owi, &pin_d6_dev, devices, membersof(devices));
+    owi_init(&owi, &pin_d7_dev, devices, membersof(devices));
     ds18b20_init(&ds, &owi);
 
     shell_init(&shell,

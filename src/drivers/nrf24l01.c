@@ -171,6 +171,10 @@ int nrf24l01_start(struct nrf24l01_driver_t *self_p)
     uint8_t buf[6];
     int i;
 
+    spi_start(&self_p->spi);
+    spi_take_bus(&self_p->spi);
+    spi_select(&self_p->spi);
+
     /* Use 4 bytes address. */
     buf[0] = (SPI_CMD_W_REGISTER | REG_SETUP_AW);
     buf[1] = REG_SETUP_AW_5BYTES;
@@ -235,6 +239,9 @@ int nrf24l01_start(struct nrf24l01_driver_t *self_p)
     buf[0] = SPI_CMD_FLUSH_RX;
     spi_write(&self_p->spi, buf, 1);
 
+    spi_deselect(&self_p->spi);
+    spi_give_bus(&self_p->spi);
+
     return (0);
 }
 
@@ -257,6 +264,9 @@ ssize_t nrf24l01_read(struct nrf24l01_driver_t *self_p,
 
     ASSERT(size == PAYLOAD_MAX);
 
+    spi_take_bus(&self_p->spi);
+    spi_select(&self_p->spi);
+
     /* Setup RX mode. */
     buf[0] = (SPI_CMD_W_REGISTER | REG_CONFIG);
     buf[1] = (REG_CONFIG_EN_CRC |
@@ -264,6 +274,9 @@ ssize_t nrf24l01_read(struct nrf24l01_driver_t *self_p,
               REG_CONFIG_PWR_UP |
               REG_CONFIG_PRIM_RX);
     spi_write(&self_p->spi, buf, sizeof(buf));
+
+    spi_deselect(&self_p->spi);
+    spi_give_bus(&self_p->spi);
 
     /* Activate RX mode. */
     pin_write(&self_p->ce, 1);
@@ -286,6 +299,9 @@ ssize_t nrf24l01_write(struct nrf24l01_driver_t *self_p,
 
     ASSERT(size == PAYLOAD_MAX);
 
+    spi_take_bus(&self_p->spi);
+    spi_select(&self_p->spi);
+
     /* Set TX address. */
     buf[0] = (SPI_CMD_W_REGISTER | REG_TX_ADDR);
     buf[1] = address >> 24;
@@ -299,6 +315,9 @@ ssize_t nrf24l01_write(struct nrf24l01_driver_t *self_p,
     buf[0] = SPI_CMD_W_TX_PAYLOAD;
     memcpy(&buf[1], buf_p, size);
     spi_write(&self_p->spi, buf, 33);
+
+    spi_deselect(&self_p->spi);
+    spi_give_bus(&self_p->spi);
 
     self_p->thrd_p = thrd_self();
 

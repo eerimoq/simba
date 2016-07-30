@@ -35,6 +35,8 @@ int main()
              SPI_SPEED_250KBPS,
              1,
              1);
+    spi_start(&spi);
+    spi_take_bus(&spi);
 
     /* Initialize led pins. */
     pin_init(&pin[0], &pin_d7_dev, PIN_OUTPUT);
