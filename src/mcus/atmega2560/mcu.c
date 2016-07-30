@@ -105,9 +105,10 @@ struct exti_device_t exti_device[EXTI_DEVICE_MAX] = {
 struct spi_device_t spi_device[SPI_DEVICE_MAX] = {
     {
         .drv_p = NULL,
-        .mosi_p = &pin_d51_dev,
-        .miso_p = &pin_d50_dev,
-        .sck_p = &pin_d52_dev,
+        .ss_p = &pin_device[53],
+        .sck_p = &pin_device[52],
+        .mosi_p = &pin_device[51],
+        .miso_p = &pin_device[50],
         .sem = { .count = 0, .count_max = 1, .head_p = NULL }
     }
 };
