@@ -46,7 +46,7 @@ ISR(SPI_STC_vect)
         } else {
             SPDR = 0xff;
         }
-        
+
         drv_p->size--;
     }
 }
@@ -65,11 +65,11 @@ static int spi_port_init(struct spi_driver_t *self_p,
                          int cpha)
 {
     self_p->spcr = (_BV(SPIE) |
-                   _BV(SPE) |
-                   (mode << 4) |
-                   (cpol << 3) |
-                   (cpha << 2) |
-                   (speed & 0x3));
+                    _BV(SPE) |
+                    (mode << 4) |
+                    (cpol << 3) |
+                    (cpha << 2) |
+                    (speed & 0x3));
     self_p->spsr = (speed >> 2);
 
     /* Pin initialization. */
@@ -79,6 +79,10 @@ static int spi_port_init(struct spi_driver_t *self_p,
         pin_init(&self_p->miso, dev_p->miso_p, PIN_INPUT);
         pin_init(&self_p->ss, ss_pin_p, PIN_OUTPUT);
         pin_write(&self_p->ss, 1);
+        /* The SS pin must be set as output and set to high in master
+           mode, even if it is not used as select pin. */
+        pin_init(&self_p->hw_ss, dev_p->ss_p, PIN_OUTPUT);
+        pin_write(&self_p->hw_ss, 1);
     } else {
         pin_init(&self_p->sck, dev_p->sck_p, PIN_INPUT);
         pin_init(&self_p->mosi, dev_p->mosi_p, PIN_INPUT);
@@ -112,6 +116,8 @@ static ssize_t spi_port_transfer(struct spi_driver_t *self_p,
     self_p->size = (n - 1);
     self_p->thrd_p = thrd_self();
 
+    sys_lock();
+
     /* Write first byte. The rest are written from isr. */
     if (self_p->txbuf_p != NULL) {
         SPDR = *self_p->txbuf_p++;
@@ -119,7 +125,9 @@ static ssize_t spi_port_transfer(struct spi_driver_t *self_p,
         SPDR = 0xff;
     }
 
-    thrd_suspend(NULL);
+    thrd_suspend_isr(NULL);
+
+    sys_unlock();
 
     return (n);
 }

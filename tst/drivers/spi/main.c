@@ -20,35 +20,46 @@
 
 #include "simba.h"
 
-static char qinbuf[32];
-static struct uart_driver_t uart;
 static struct spi_driver_t spi;
 static uint8_t txbuf[128];
 static uint8_t rxbuf[128];
 
-int main()
+static int test_init(struct harness_t *harness_p)
+{
+    BTASSERT(spi_module_init() == 0);
+
+    BTASSERT(spi_init(&spi,
+                      &spi_device[0],
+                      &pin_d5_dev,
+                      SPI_MODE_MASTER,
+                      SPI_SPEED_125KBPS,
+                      0,
+                      0) == 0);
+
+    BTASSERT(spi_start(&spi) == 0);
+
+    return (0);
+}
+
+static int test_transfer(struct harness_t *harness_p)
 {
     int i;
-
-    sys_start();
-    spi_module_init();
-
-    spi_init(&spi,
-             &spi_device[0],
-             &pin_d5_dev,
-             SPI_MODE_MASTER,
-             SPI_SPEED_1MBPS,
-             0,
-             0);
-
-    std_printf(sys_get_info());
 
     for (i = 0; i < membersof(txbuf); i++) {
         txbuf[i] = i;
         rxbuf[i] = 1;
     }
 
-    spi_transfer(&spi, &rxbuf[4], &txbuf[4], sizeof(rxbuf) - 8);
+    BTASSERT(spi_take_bus(&spi) == 0);
+    BTASSERT(spi_select(&spi) == 0);
+
+    BTASSERT(spi_transfer(&spi,
+                          &rxbuf[4],
+                          &txbuf[4],
+                          sizeof(rxbuf) - 8) == sizeof(rxbuf) - 8);
+
+    BTASSERT(spi_deselect(&spi) == 0);
+    BTASSERT(spi_give_bus(&spi) == 0);
 
     for (i = 0; i < membersof(txbuf); i++) {
         std_printf(FSTR("[%d]: tx = 0x%x, rx = 0x%x\r\n"),
@@ -56,6 +67,23 @@ int main()
                    txbuf[i],
                    rxbuf[i]);
     }
+
+    return (0);
+}
+
+int main()
+{
+    struct harness_t harness;
+    struct harness_testcase_t harness_testcases[] = {
+        { test_init, "test_init" },
+        { test_transfer, "test_transfer" },
+        { NULL, NULL }
+    };
+
+    sys_start();
+
+    harness_init(&harness);
+    harness_run(&harness, harness_testcases);
 
     return (0);
 }

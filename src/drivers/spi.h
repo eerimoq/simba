@@ -67,6 +67,64 @@ int spi_init(struct spi_driver_t *self_p,
              int cpha);
 
 /**
+ * Start given SPI driver. Configures the SPI hardware.
+ *
+ * @param[in] self_p Initialized driver object.
+ *
+ * @return zero(0) or negative error code.
+ */
+int spi_start(struct spi_driver_t *self_p);
+
+/**
+ * Stop given SPI driver. Deconfigures the SPI hardware if given
+ * driver currently ownes the bus.
+ *
+ * @param[in] self_p Initialized driver object.
+ *
+ * @return zero(0) or negative error code.
+ */
+int spi_stop(struct spi_driver_t *self_p);
+
+/**
+ * In multi master application the driver must take ownership of the
+ * SPI bus before performing data transfers. Will re-configure the SPI
+ * hardware if configured by another driver.
+ *
+ * @param[in] self_p Initialized driver object.
+ *
+ * @return zero(0) or negative error code.
+ */
+int spi_take_bus(struct spi_driver_t *self_p);
+
+/**
+ * In multi master application the driver must give ownership of the
+ * SPI bus to let other masters take it.
+ *
+ * @param[in] self_p Initialized driver object.
+ *
+ * @return zero(0) or negative error code.
+ */
+int spi_give_bus(struct spi_driver_t *self_p);
+
+/**
+ * Select the slave by asserting the chip select pin.
+ *
+ * @param[in] self_p Initialized driver object.
+ *
+ * @return zero(0) or negative error code.
+ */
+int spi_select(struct spi_driver_t *self_p);
+
+/**
+ * Deselect the slave by de-asserting the chip select pin.
+ *
+ * @param[in] self_p Initialized driver object.
+ *
+ * @return zero(0) or negative error code.
+ */
+int spi_deselect(struct spi_driver_t *self_p);
+
+/**
  * Simultaniuos read/write operation over the SPI bus.
  *
  * @param[in] self_p Initialized driver object.

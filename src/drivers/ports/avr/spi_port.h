@@ -39,15 +39,17 @@ struct spi_device_t {
     struct pin_device_t *mosi_p;
     struct pin_device_t *miso_p;
     struct pin_device_t *sck_p;
+    struct pin_device_t *ss_p;
     struct sem_t sem;
 };
 
 struct spi_driver_t {
     struct spi_device_t *dev_p;
-    struct pin_driver_t ss;
+    struct pin_driver_t hw_ss;
     struct pin_driver_t mosi;
     struct pin_driver_t miso;
     struct pin_driver_t sck;
+    struct pin_driver_t ss;
     int mode;
     int speed;
     int cpol;

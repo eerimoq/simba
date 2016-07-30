@@ -48,6 +48,67 @@ int spi_init(struct spi_driver_t *self_p,
     return (spi_port_init(self_p, dev_p, ss_pin_p, mode, speed, cpol, cpha));
 }
 
+int spi_start(struct spi_driver_t *self_p)
+{
+    ASSERTN(self_p != NULL, EINVAL);
+
+    spi_take_bus(self_p);
+    sem_give(&self_p->dev_p->sem, 1);
+
+    return (0);
+}
+
+int spi_stop(struct spi_driver_t *self_p)
+{
+    ASSERTN(self_p != NULL, EINVAL);
+
+    /* Stop SPI hardware with driver configuration. */
+    if (self_p->dev_p->drv_p == self_p) {
+        self_p->dev_p->drv_p = NULL;
+        spi_port_stop(self_p);
+    }
+
+    return (0);
+}
+
+int spi_take_bus(struct spi_driver_t *self_p)
+{
+    ASSERTN(self_p != NULL, EINVAL);
+
+    sem_take(&self_p->dev_p->sem, NULL);
+
+    /* Configure and start SPI hardware with driver configuration. */
+    if (self_p->dev_p->drv_p != self_p) {
+        self_p->dev_p->drv_p = self_p;
+        spi_port_start(self_p);
+    }
+
+    return (0);
+}
+
+int spi_give_bus(struct spi_driver_t *self_p)
+{
+    ASSERTN(self_p != NULL, EINVAL);
+
+    sem_give(&self_p->dev_p->sem, 1);
+
+    return (0);
+}
+
+int spi_select(struct spi_driver_t *self_p)
+{
+    ASSERTN(self_p != NULL, EINVAL);
+
+    return (pin_write(&self_p->ss, 0));
+}
+
+int spi_deselect(struct spi_driver_t *self_p)
+{
+    ASSERTN(self_p != NULL, EINVAL);
+
+    return (pin_write(&self_p->ss, 1));
+}
+
 ssize_t spi_transfer(struct spi_driver_t *self_p,
                      void *rxbuf_p,
                      const void *txbuf_p,
@@ -57,31 +118,7 @@ ssize_t spi_transfer(struct spi_driver_t *self_p,
     ASSERTN((rxbuf_p != NULL) || (txbuf_p != NULL), EINVAL);
     ASSERTN(size > 0, EINVAL);
 
-    sem_take(&self_p->dev_p->sem, NULL);
-
-    /* Configure and start SPI hardware with driver configuration. */
-    if (self_p->dev_p->drv_p != self_p) {
-        if (self_p->dev_p->drv_p != NULL) {
-            spi_port_stop(self_p->dev_p->drv_p);
-        }
-
-        self_p->dev_p->drv_p = self_p;
-        spi_port_start(self_p);
-    }
-
-    if (self_p->mode == SPI_MODE_MASTER) {
-        pin_write(&self_p->ss, 0);
-    }
-
-    size = spi_port_transfer(self_p, rxbuf_p, txbuf_p, size);
-
-    if (self_p->mode == SPI_MODE_MASTER) {
-        pin_write(&self_p->ss, 1);
-    }
-
-    sem_give(&self_p->dev_p->sem, 1);
-
-    return (size);
+    return(spi_port_transfer(self_p, rxbuf_p, txbuf_p, size));
 }
 
 ssize_t spi_read(struct spi_driver_t *self_p,
