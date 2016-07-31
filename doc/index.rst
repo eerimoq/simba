@@ -42,9 +42,7 @@ Features
 * A simple shell.
 * Logging.
 * Internet protocols (TCP, UDP, HTTP, ...).
-* JSON.
-* Regular expressions.
-* CRC.
+* File systems (FAT16, SPIFFS).
 
 See the :doc:`api-reference` for a full list of features.
 
