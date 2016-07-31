@@ -89,7 +89,11 @@ static int storage_init(fat16_read_t *read_p,
              1);
 
     sd_init(&sd, &spi);
-    sd_start(&sd);
+
+    if (sd_start(&sd) != 0) {
+        return (-1);
+    }
+
     std_printf(FSTR("sd card started\r\n"));
 
     *read_p = (fat16_read_t)sd_read_block;
@@ -545,9 +549,15 @@ static void init(void)
 
     std_printf(FSTR("initializing fat16\r\n"));
     fat16_init(&fs, read, write, arg_p, 0);
+
     std_printf(FSTR("fat16 initialized\r\n"));
-    fat16_start(&fs);
-    std_printf(FSTR("fat16 started\r\n"));
+
+    if (fat16_mount(&fs) != 0) {
+        std_printf(FSTR("failed to mount fat16\r\n"));
+        return;
+    }
+
+    std_printf(FSTR("fat16 mounted\r\n"));
 
     event_init(&event);
 
