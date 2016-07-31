@@ -109,7 +109,10 @@ static int cmd_ls_cb(int argc,
     path_p = argv[1];
 
     /* Re-open the directory with read option set. */
-    fat16_dir_open(&fs, &dir, path_p, O_READ);
+    if (fat16_dir_open(&fs, &dir, path_p, O_READ) != 0) {
+        std_fprintf(out_p, FSTR("%s: directory not found\r\n"), path_p);
+        return (-1);
+    }
 
     while (fat16_dir_read(&dir, &entry) == 1) {
         format_entry(out_p, &entry);
@@ -269,7 +272,7 @@ static int cmd_write_cb(int argc,
     return (0);
 }
 
-static void init(void)
+static int init(void)
 {
     sys_start();
 
@@ -303,32 +306,45 @@ static void init(void)
                     NULL);
     fs_command_register(&cmd_write);
 
-
     std_printf(sys_get_info());
 
     spi_init(&spi,
              &spi_device[0],
-             &pin_d53_dev,
+             &pin_d6_dev,
              SPI_MODE_MASTER,
              SPI_SPEED_1MBPS,
              0,
-             1);
+             0);
 
     sd_init(&sd, &spi);
-    sd_start(&sd);
-    std_printf(FSTR("sd card started\r\n"));
+
+    if (sd_start(&sd) != 0) {
+        std_printf(FSTR("Failed to start the SD card.\r\n"));
+        return (-1);
+    }
+
+    std_printf(FSTR("SD card started.\r\n"));
     fat16_init(&fs,
                (fat16_read_t)sd_read_block,
                (fat16_write_t)sd_write_block,
                &sd,
                0);
-    fat16_start(&fs);
-    std_printf(FSTR("fat16 started\r\n"));
+
+    if (fat16_mount(&fs) != 0) {
+        std_printf(FSTR("Failed to mount FAT16 file system.\r\n"));
+        return (-1);
+    }
+
+    std_printf(FSTR("fat16 file system mounted\r\n"));
+
+    return (0);
 }
 
 int main()
 {
-    init();
+    if (init() != 0) {
+        return (-1);
+    }
 
     shell_init(&shell,
                console_get_input_channel(),

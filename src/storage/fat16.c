@@ -131,7 +131,7 @@ static int make_83_name(const char* str_p,
     uint8_t i;
     uint8_t b;
     int pos;
-    FAR const char *invalid_p;
+    const char *invalid_p;
 
     memset(name_p, ' ', 11);
 
@@ -208,22 +208,19 @@ static int cache_flush(struct fat16_t *self_p)
     if (cache_p->dirty) {
         if (self_p->write(self_p->arg_p,
                           cache_p->block_number,
-                          cache_p->buffer.data) != BLOCK_SIZE)
-            {
+                          cache_p->buffer.data) != BLOCK_SIZE) {
+            return (-1);
+        }
+
+        if (cache_p->mirror_block) {
+            if (self_p->write(self_p->arg_p,
+                              cache_p->mirror_block,
+                              cache_p->buffer.data) != BLOCK_SIZE) {
                 return (-1);
             }
 
-        if (cache_p->mirror_block)
-            {
-                if (self_p->write(self_p->arg_p,
-                                  cache_p->mirror_block,
-                                  cache_p->buffer.data) != BLOCK_SIZE)
-                    {
-                        return (-1);
-                    }
-
-                cache_p->mirror_block = 0;
-            }
+            cache_p->mirror_block = 0;
+        }
 
         cache_p->dirty = 0;
     }
@@ -263,17 +260,15 @@ static int cache_raw_block(struct fat16_t *self_p,
     struct fat16_cache_t *cache_p = &self_p->cache;
 
     if (cache_p->block_number != block_number) {
-        if (cache_flush(self_p) != 0)
-            {
-                return (-1);
-            }
+        if (cache_flush(self_p) != 0) {
+            return (-1);
+        }
 
         if (self_p->read(self_p->arg_p,
                          cache_p->buffer.data,
-                         block_number) != BLOCK_SIZE)
-            {
-                return (-1);
-            }
+                         block_number) != BLOCK_SIZE) {
+            return (-1);
+        }
 
         cache_p->block_number = block_number;
     }
@@ -289,20 +284,17 @@ static int fat_get(struct fat16_t *self_p,
 {
     uint32_t lba;
 
-    if (cluster > (self_p->cluster_count + 1))
-        {
-            return (-1);
-        }
+    if (cluster > (self_p->cluster_count + 1)) {
+        return (-1);
+    }
 
     lba = self_p->fat_start_block + (cluster >> 8);
 
-    if (lba != self_p->cache.block_number)
-        {
-            if (cache_raw_block(self_p, lba, CACHE_FOR_READ))
-                {
-                    return (-1);
-                }
+    if (lba != self_p->cache.block_number) {
+        if (cache_raw_block(self_p, lba, CACHE_FOR_READ)) {
+            return (-1);
         }
+    }
 
     *value = self_p->cache.buffer.fat[cluster & 0xff];
 
@@ -372,6 +364,76 @@ static int free_chain(struct fat16_t *self_p, fat_t cluster)
     }
 }
 
+/**
+ * Write the volume start block to disk.
+ */
+static int write_volume_block(struct fat16_t *self_p,
+                              uint32_t volume_start_block,
+                              struct fbs_t *fbs_p)
+{
+    /* Cache volume start block. */
+    if (cache_raw_block(self_p, volume_start_block, CACHE_FOR_WRITE) != 0) {
+        return (-1);
+    }
+
+    /* Write the boot sector to the start block. */
+    self_p->cache.buffer.fbs = *fbs_p;
+
+    return (cache_flush(self_p));
+}
+
+static int format_fat_blocks(struct fat16_t *self_p,
+                             uint32_t fat_start_block,
+                             uint32_t fat_end_block)
+{
+    uint32_t block;
+
+    for (block = fat_start_block; block < fat_end_block; block++) {
+        /* Cache the next block within the fat. */
+        if (cache_raw_block(self_p, block, CACHE_FOR_WRITE) != 0) {
+            return (-1);
+
+        }
+        /* Format the block. */
+        memset(&self_p->cache.buffer, 0, sizeof(self_p->cache.buffer));
+
+        if (block == fat_start_block) {
+            self_p->cache.buffer.fat[0] = 0xfff8;
+            self_p->cache.buffer.fat[1] = 0xffff;
+        }
+
+        if (cache_flush(self_p) != 0) {
+            return (-1);
+        }
+    }
+
+    return (0);
+}
+
+static int format_root_dir_blocks(struct fat16_t *self_p,
+                                  uint32_t root_dir_start_block,
+                                  uint32_t root_dir_end_block)
+{
+    uint32_t block;
+
+    for (block = root_dir_start_block; block < root_dir_end_block; block++) {
+        /* Cache the next block within the root directory. */
+        if (cache_raw_block(self_p, block, CACHE_FOR_WRITE) != 0) {
+            return (-1);
+        }
+
+        /* Clear the block. */
+        memset(&self_p->cache.buffer, 0, sizeof(self_p->cache.buffer));
+
+        /* The flush function writes to the mirrored fat block as well. */
+        if (cache_flush(self_p) != 0) {
+            return (-1);
+        }
+    }
+
+    return (0);
+}
+
 int fat16_init(struct fat16_t *self_p,
                fat16_read_t read,
                fat16_write_t write,
@@ -388,31 +450,36 @@ int fat16_init(struct fat16_t *self_p,
     self_p->write = write;
     self_p->arg_p = arg_p;
     self_p->partition = partition;
-    self_p->cache.block_number = 0xffffffff;
-    self_p->cache.dirty = 0;
-    self_p->cache.mirror_block = 0;
 
     return (0);
 }
 
-int fat16_start(struct fat16_t *self_p)
+int fat16_mount(struct fat16_t *self_p)
 {
-    uint32_t volume_start_block = 0;
     uint32_t total_blocks;
     struct bpb_t* bpb_p;
 
-    /* If part == 0 assume super floppy with FAT16 boot sector in block zero. */
+    /* Initialize the cache. */
+    self_p->cache.block_number = 0xffffffff;
+    self_p->cache.dirty = 0;
+    self_p->cache.mirror_block = 0;
+    self_p->volume_start_block = 0;
+
+    /* If part == 0 assume super floppy with FAT16 boot sector in
+       block zero. */
     /* If part > 0 assume mbr volume with partition table. */
     if (self_p->partition > 0) {
-        if (cache_raw_block(self_p, volume_start_block, CACHE_FOR_READ) != 0) {
+        if (cache_raw_block(self_p,
+                            self_p->volume_start_block,
+                            CACHE_FOR_READ) != 0) {
             return (-1);
         }
 
-        volume_start_block =
+        self_p->volume_start_block =
             self_p->cache.buffer.mbr.part[self_p->partition - 1].first_sector;
     }
 
-    if (cache_raw_block(self_p, volume_start_block, CACHE_FOR_READ) != 0) {
+    if (cache_raw_block(self_p, self_p->volume_start_block, CACHE_FOR_READ) != 0) {
         return (-1);
     }
 
@@ -426,47 +493,62 @@ int fat16_start(struct fat16_t *self_p)
     self_p->blocks_per_cluster = bpb_p->sectors_per_cluster;
     self_p->blocks_per_fat = bpb_p->sectors_per_fat;
     self_p->root_dir_entry_count = bpb_p->root_dir_entry_count;
-    self_p->fat_start_block = volume_start_block + bpb_p->reserved_sector_count;
-    self_p->root_dir_start_block = (self_p->fat_start_block
-                                    + bpb_p->fat_count * bpb_p->sectors_per_fat);
-    self_p->data_start_block = (self_p->root_dir_start_block
-                                + ((32 * bpb_p->root_dir_entry_count + 511) / 512));
+    self_p->fat_start_block = (self_p->volume_start_block
+                               + bpb_p->reserved_sector_count);
+    self_p->root_dir_start_block =
+        (self_p->fat_start_block
+         + bpb_p->fat_count * bpb_p->sectors_per_fat);
+    self_p->data_start_block =
+        (self_p->root_dir_start_block
+         + ((32 * bpb_p->root_dir_entry_count + 511) / 512));
     total_blocks = (bpb_p->total_sectors_small
                     ? bpb_p->total_sectors_small
                     : bpb_p->total_sectors_large);
-    self_p->cluster_count = ((total_blocks
-                              - (self_p->data_start_block - volume_start_block))
-                             / bpb_p->sectors_per_cluster);
+    self_p->cluster_count =
+        ((total_blocks - (self_p->data_start_block - self_p->volume_start_block))
+         / bpb_p->sectors_per_cluster);
 
     /* Check valid FAT16 volume. */
-    if ((bpb_p->bytes_per_sector != 512)       /* Only allow 512 byte blocks. */
+    if ((bpb_p->bytes_per_sector != 512)       /* Only allow 512 byte
+                                                  blocks. */
         || (bpb_p->sectors_per_fat == 0)       /* Zero for FAT32. */
-        || (self_p->cluster_count < 4085)     /* FAT12 if true. */
-        || (total_blocks > 0x800000)           /* Max size for FAT16 volume. */
+        || (self_p->cluster_count < 4085)      /* FAT12 if true. */
+        || (total_blocks > 0x800000)           /* Max size for FAT16
+                                                  volume. */
         || (bpb_p->reserved_sector_count == 0) /* Invalid volume. */
         || (bpb_p->fat_count == 0)             /* Invalid volume. */
         || (bpb_p->sectors_per_fat < (self_p->cluster_count >> 8))
         || (bpb_p->sectors_per_cluster == 0)
-        || (bpb_p->sectors_per_cluster & (bpb_p->sectors_per_cluster - 1))) {
+        || (bpb_p->sectors_per_cluster
+            & (bpb_p->sectors_per_cluster - 1))) {
         return (-1);
     }
 
     return (0);
 }
 
-int fat16_stop(struct fat16_t *self_p)
+int fat16_unmount(struct fat16_t *self_p)
 {
-    return (0);
+    return (cache_flush(self_p));
 }
 
 int fat16_format(struct fat16_t *self_p)
 {
     struct fbs_t fbs;
-    uint32_t volume_start_block = 0;
+    uint32_t volume_start_block;
     uint32_t fat_start_block;
     uint32_t blocks_per_fat;
     uint32_t root_dir_start_block;
+    uint32_t root_dir_block_count;
 
+    /* Initialize the cache. */
+    self_p->cache.block_number = 0xffffffff;
+    self_p->cache.dirty = 0;
+    self_p->cache.mirror_block = 0;
+
+    volume_start_block = 0;
+
+    /* Initiate the boot sector. */
     fbs.jmp_to_boot_code[0] = 0xeb;
     fbs.jmp_to_boot_code[1] = 0x3c;
     fbs.jmp_to_boot_code[2] = 0x90;
@@ -498,46 +580,36 @@ int fat16_format(struct fat16_t *self_p)
     blocks_per_fat = fbs.bpb.sectors_per_fat;
     root_dir_start_block = (fat_start_block
                             + fbs.bpb.fat_count * fbs.bpb.sectors_per_fat);
+    root_dir_block_count = (fbs.bpb.root_dir_entry_count
+                            / (512 / sizeof(struct dir_t)));
 
-    /* Cache volume start block. */
-    if (cache_raw_block(self_p, volume_start_block, CACHE_FOR_WRITE) != 0) {
+    if (write_volume_block(self_p,
+                           volume_start_block,
+                           &fbs) != 0) {
         return (-1);
     }
 
-    self_p->cache.buffer.fbs = fbs;
-
-    /* Clear first fat block. */
-    if (cache_raw_block(self_p,
-                        fat_start_block,
-                        CACHE_FOR_WRITE) != 0) {
+    if (format_fat_blocks(self_p,
+                          fat_start_block,
+                          fat_start_block + blocks_per_fat) != 0) {
         return (-1);
     }
 
-    memset(&self_p->cache.buffer, 0, sizeof(self_p->cache.buffer));
-    self_p->cache.buffer.fat[0] = 0xfff8;
-    self_p->cache.buffer.fat[1] = 0xffff;
+    if (fbs.bpb.fat_count > 1) {
+        if (format_fat_blocks(self_p,
+                              fat_start_block + blocks_per_fat,
+                              fat_start_block + 2 * blocks_per_fat) != 0) {
+            return (-1);
+        }
+    }
 
-    /* Clear mirrored fat block. */
-    if (cache_raw_block(self_p,
-                        fat_start_block + blocks_per_fat,
-                        CACHE_FOR_WRITE) != 0) {
+    if (format_root_dir_blocks(self_p,
+                               root_dir_start_block,
+                               root_dir_start_block + root_dir_block_count) != 0) {
         return (-1);
     }
 
-    memset(&self_p->cache.buffer, 0, sizeof(self_p->cache.buffer));
-    self_p->cache.buffer.fat[0] = 0xfff8;
-    self_p->cache.buffer.fat[1] = 0xffff;
-
-    /* Clear root directory block. */
-    if (cache_raw_block(self_p,
-                        root_dir_start_block,
-                        CACHE_FOR_WRITE) != 0) {
-        return (-1);
-    }
-
-    memset(&self_p->cache.buffer, 0, sizeof(self_p->cache.buffer));
-
-    return (cache_flush(self_p));
+    return (0);
 }
 
 int fat16_print(struct fat16_t *self_p, chan_t *chan_p)
@@ -548,6 +620,7 @@ int fat16_print(struct fat16_t *self_p, chan_t *chan_p)
                      "root_dir_entry_count = %u\r\n"
                      "blocks_per_fat = %u\r\n"
                      "cluster_count = %u\r\n"
+                     "volume_start_block = %lu\r\n"
                      "fat_start_block = %lu\r\n"
                      "root_dir_start_block = %lu\r\n"
                      "data_start_block = %lu\r\n"),
@@ -556,6 +629,7 @@ int fat16_print(struct fat16_t *self_p, chan_t *chan_p)
                 (unsigned int)self_p->root_dir_entry_count,
                 (unsigned int)self_p->blocks_per_fat,
                 (unsigned int)self_p->cluster_count,
+                (unsigned long)self_p->volume_start_block,
                 (unsigned long)self_p->fat_start_block,
                 (unsigned long)self_p->root_dir_start_block,
                 (unsigned long)self_p->data_start_block);
@@ -571,28 +645,27 @@ static int add_cluster(struct fat16_file_t *file_p)
     fat_t i;
     fat_t cluster_count = file_p->fat16_p->cluster_count;
 
-    for (i = 0; ; i++)
-        {
-            /* Return no free clusters. */
-            if (i >= cluster_count) {
-                return (-1);
-            }
-
-            /* Fat has cluster_count + 2 entries. */
-            if (free_cluster > cluster_count) {
-                free_cluster = 1;
-            }
-
-            free_cluster++;
-
-            if (fat_get(file_p->fat16_p, free_cluster, &value) != 0) {
-                return (-1);
-            }
-
-            if (value == 0) {
-                break;
-            }
+    for (i = 0; ; i++) {
+        /* Return no free clusters. */
+        if (i >= cluster_count) {
+            return (-1);
         }
+
+        /* Fat has cluster_count + 2 entries. */
+        if (free_cluster > cluster_count) {
+            free_cluster = 1;
+        }
+
+        free_cluster++;
+
+        if (fat_get(file_p->fat16_p, free_cluster, &value) != 0) {
+            return (-1);
+        }
+
+        if (value == 0) {
+            break;
+        }
+    }
 
     /* Mark cluster allocated. */
     if (fat_put(file_p->fat16_p, free_cluster, EOC16) != 0) {
@@ -716,7 +789,7 @@ static int dir_open_in_blocks(struct fat16_t *self_p,
                 if (dir_p->name[0] == DIR_NAME_FREE) {
                     return (0);
                 }
-            } else if (!memcmp(name_p, dir_p->name, 11)) {
+            } else if (memcmp(name_p, dir_p->name, 11) == 0) {
                 /* Existing file. */
                 *block_p = block;
                 *index_p = index;
@@ -733,7 +806,7 @@ static int dir_open_in_blocks(struct fat16_t *self_p,
  *
  * @param[out] index_p If true(1) is returned this is the index of an
  *                     existing file. If false(0) is returned this is
- *                     the index of the filst empty directory
+ *                     the index of the first empty directory
  *                     entry. Otherwise ignore this value.
  *
  * @return zero(0) or negative error code.
@@ -760,11 +833,11 @@ static int dir_open_in_root(struct fat16_t *self_p,
 }
 
 /**
- * Open directory with given name in geven sub folder.
+ * Open directory with given name in given sub folder.
  *
  * @param[out] index_p If true(1) is returned this is the index of an
  *                     existing file. If false(0) is returned this is
- *                     the index of the filst empty directory
+ *                     the index of the first empty directory
  *                     entry. Otherwise ignore this value.
  *
  * @return zero(0) or negative error code.
@@ -994,6 +1067,9 @@ static int get_block(struct fat16_file_t *file_p,
         }
 
         file_p->fat16_p->cache.block_number = lba;
+        memset(&file_p->fat16_p->cache.buffer,
+               0,
+               sizeof(file_p->fat16_p->cache.buffer));
         cache_set_dirty(&file_p->fat16_p->cache);
     } else {
         /* Rewrite part of block. */
@@ -1409,12 +1485,18 @@ int fat16_dir_open(struct fat16_t *self_p,
         memset(dname, ' ', sizeof(dname));
         dname[0] = '.';
         dir_init(&dir, dname, DIR_ATTR_DIRECTORY);
-        fat16_file_write(file_p, &dir, sizeof(dir));
+
+        if (fat16_file_write(file_p, &dir, sizeof(dir)) != sizeof(dir)) {
+            return (-1);
+        }
 
         /* Add '..'. */
         dname[1] = '.';
         dir_init(&dir, dname, DIR_ATTR_DIRECTORY);
-        fat16_file_write(file_p, &dir, sizeof(dir));
+
+        if (fat16_file_write(file_p, &dir, sizeof(dir)) != sizeof(dir)) {
+            return (-1);
+        }
     }
 
     return (0);

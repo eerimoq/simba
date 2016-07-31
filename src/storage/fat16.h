@@ -63,9 +63,9 @@
 #define O_READ             0x01
 
 /**
- * Same as O_READ. 
+ * Same as O_READ.
  */
-#define O_RDONLY           O_READ              
+#define O_RDONLY           O_READ
 
 /**
  * Open for write.
@@ -524,6 +524,7 @@ struct fat16_t {
     uint16_t root_dir_entry_count; /* should be 512 for FAT16 */
     fat_t blocks_per_fat;          /* number of blocks in one FAT */
     fat_t cluster_count;           /* total clusters in volume */
+    uint32_t volume_start_block;   /* start of volume */
     uint32_t fat_start_block;      /* start of first FAT */
     uint32_t root_dir_start_block; /* start of root dir */
     uint32_t data_start_block;     /* start of data clusters */
@@ -580,26 +581,25 @@ int fat16_init(struct fat16_t *self_p,
                unsigned int partition);
 
 /**
- * Start given FAT16 volume. Starts the SD device and reads driver
- * information
+ * Mount given FAT16 volume.
  *
  * @param[in] self_p FAT16 object.
  *
  * @return zero(0) or negative error code.
  */
-int fat16_start(struct fat16_t *self_p);
+int fat16_mount(struct fat16_t *self_p);
 
 /**
- * Stop given FAT16 volume.
+ * Unmount given FAT16 volume.
  *
  * @param[in] self_p FAT16 object.
  *
  * @return zero(0) or negative error code.
  */
-int fat16_stop(struct fat16_t *self_p);
+int fat16_unmount(struct fat16_t *self_p);
 
 /**
- * Crate an empty FAT16 file system on device.
+ * Create an empty FAT16 file system on the device.
  *
  * @param[in] self_p FAT16 object.
  */

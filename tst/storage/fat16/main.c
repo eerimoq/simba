@@ -69,7 +69,7 @@ static ssize_t linux_write_block(void *arg_p,
 }
 #endif
 
-int test_start(struct harness_t *harness_p)
+int test_init(struct harness_t *harness_p)
 {
 #if defined(ARCH_LINUX)
     /* Create an empty sd card file. */
@@ -85,19 +85,17 @@ int test_start(struct harness_t *harness_p)
                       &spi_device[0],
                       &pin_d6_dev,
                       SPI_MODE_MASTER,
-                      SPI_SPEED_2MBPS,
+                      SPI_SPEED_500KBPS,
                       0,
-                      1) == 0);
+                      0) == 0);
     BTASSERT(sd_init(&sd, &spi) == 0);
     BTASSERT(sd_start(&sd) == 0);
     BTASSERT(fat16_init(&fs,
-                        sd_read_block,
-                        sd_write_block,
+                        (fat16_read_t)sd_read_block,
+                        (fat16_write_t)sd_write_block,
                         &sd,
                         0) == 0);
 #endif
-
-    BTASSERT(fat16_start(&fs) == 0);
 
     return (0);
 }
@@ -105,6 +103,13 @@ int test_start(struct harness_t *harness_p)
 static int test_format(struct harness_t *harness_p)
 {
     BTASSERT(fat16_format(&fs) == 0);
+
+    return (0);
+}
+
+static int test_mount(struct harness_t *harness_p)
+{
+    BTASSERT(fat16_mount(&fs) == 0);
 
     return (0);
 }
@@ -123,7 +128,8 @@ static int test_file_operations(struct harness_t *harness_p)
     char buf[16];
 
     /* Create an empty file and operate on it. */
-    BTASSERT(fat16_file_open(&fs, &foo, "FOO.TXT", O_CREAT | O_RDWR | O_SYNC) == 0);
+    BTASSERT(fat16_file_open(&fs, &foo, "FOO.TXT",
+                             O_CREAT | O_RDWR | O_SYNC) == 0);
     BTASSERT(fat16_file_write(&foo, "foobar\n", 7) == 7);
     BTASSERT(fat16_file_seek(&foo, 0, SEEK_SET) == 0);
     BTASSERT(fat16_file_read(&foo, buf, sizeof(buf)) == 7);
@@ -290,13 +296,13 @@ static int test_truncate(struct harness_t *harness_p)
     BTASSERT(fat16_file_open(&fs, &bar, "BAR.TXT", O_WRITE | O_SYNC) == 0);
     BTASSERT(fat16_file_truncate(&bar, 7) == 0);
     BTASSERT(fat16_file_size(&bar) == 7);
-    BTASSERT(fat16_file_close(&bar) == 0); 
+    BTASSERT(fat16_file_close(&bar) == 0);
 
     /* Truncate to a longer size. */
     BTASSERT(fat16_file_open(&fs, &bar, "BAR.TXT", O_WRITE | O_SYNC) == 0);
     BTASSERT(fat16_file_truncate(&bar, 10) == 0);
     BTASSERT(fat16_file_size(&bar) == 10);
-    BTASSERT(fat16_file_close(&bar) == 0); 
+    BTASSERT(fat16_file_close(&bar) == 0);
 
     /* Read the file. */
     BTASSERT(fat16_file_open(&fs, &bar, "BAR.TXT", O_READ) == 0);
@@ -351,7 +357,7 @@ static int test_append(struct harness_t *harness_p)
 static int test_seek(struct harness_t *harness_p)
 {
     struct fat16_file_t bar;
-    char buf[32];
+    char buf[128];
     int i;
 
     /* Append 2048 bytes to make the seek function get a new
@@ -361,9 +367,11 @@ static int test_seek(struct harness_t *harness_p)
                              "BAR.TXT",
                              O_WRITE | O_APPEND | O_SYNC) == 0);
 
-    for (i = 0; i < 2048; i++) {
-        buf[0] = (char)i;
-        BTASSERT(fat16_file_write(&bar, buf, 1) == 1);
+    for (i = 0; i < 2048; i += sizeof(buf)) {
+        memset(&buf[0], (char)i, sizeof(buf));
+        BTASSERT(fat16_file_write(&bar,
+                                  &buf[0],
+                                  sizeof(buf)) == sizeof(buf));
     }
 
     BTASSERT(fat16_file_close(&bar) == 0);
@@ -375,8 +383,8 @@ static int test_seek(struct harness_t *harness_p)
 
     /* Seek one from beginning. */
     BTASSERT(fat16_file_seek(&bar, 1, FAT16_SEEK_CUR) == 0);
-    BTASSERT(fat16_file_read(&bar, buf, 1) == 1);
-    BTASSERT(memcmp(buf, "5", 1) == 0);
+    BTASSERT(fat16_file_read(&bar, &buf[0], 1) == 1);
+    BTASSERT(memcmp(&buf[0], "5", 1) == 0);
 
     /* Seek the end of the file. */
     BTASSERT(fat16_file_seek(&bar, 0, FAT16_SEEK_END) == 0);
@@ -394,9 +402,9 @@ static int test_seek(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_stop(struct harness_t *harness_p)
+static int test_unmount(struct harness_t *harness_p)
 {
-    BTASSERT(fat16_stop(&fs) == 0);
+    BTASSERT(fat16_unmount(&fs) == 0);
 
 #if !defined(ARCH_LINUX)
     BTASSERT(sd_stop(&sd) == 0);
@@ -409,8 +417,9 @@ int main()
 {
     struct harness_t harness;
     struct harness_testcase_t harness_testcases[] = {
-        { test_start, "test_start" },
+        { test_init, "test_init" },
         { test_format, "test_format" },
+        { test_mount, "test_mount" },
         { test_print, "test_print" },
         { test_file_operations, "test_file_operations" },
         { test_create_multiple_files, "test_create_multiple_files" },
@@ -420,7 +429,7 @@ int main()
         { test_truncate, "test_truncate" },
         { test_append, "test_append" },
         { test_seek, "test_seek" },
-        { test_stop, "test_stop" },
+        { test_unmount, "test_unmount" },
         { NULL, NULL }
     };
 

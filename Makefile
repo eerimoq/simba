@@ -121,7 +121,8 @@ ifeq ($(BOARD), arduino_mega)
     TESTS += $(addprefix tst/debug/, log)
     TESTS += $(addprefix tst/oam/, fs \
 	        		   shell)
-    TESTS += $(addprefix tst/storage/, setting)
+    TESTS += $(addprefix tst/storage/, fat16 \
+				       setting)
     TESTS += $(addprefix tst/encode/, base64 \
                                       json)
     TESTS += $(addprefix tst/hash/, crc \

@@ -27,6 +27,7 @@ BOARD_DESC = "Arduino Mega"
 
 MCU = atmega2560
 SERIAL_PORT ?= /dev/arduino
+TIMEOUT ?= 10
 
 upload:
 	@echo "Uploading $(EXE)"
@@ -36,6 +37,7 @@ upload:
 run:
 	@echo "Running $(EXE)"
 	python -u $(RUN_PY) --port $(SERIAL_PORT) \
+			    --timeout $(TIMEOUT) \
 			    --baudrate $(BAUDRATE) \
 	 		    --pattern $(RUN_END_PATTERN)\
 			    --pattern-success $(RUN_END_PATTERN_SUCCESS) \

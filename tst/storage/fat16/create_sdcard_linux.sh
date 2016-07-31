@@ -7,6 +7,9 @@ FILENAME=sdcard
 
 rm -f ${FILENAME}
 dd bs=1M count=16 if=/dev/zero of=${FILENAME}
-parted ${FILENAME} mklabel msdos
-mkdosfs -F 16 ${FILENAME}
-parted ${FILENAME} print
+
+# The test suite will format the disk.
+
+# parted ${FILENAME} mklabel msdos
+# mkdosfs -F 16 ${FILENAME}
+# parted ${FILENAME} print
