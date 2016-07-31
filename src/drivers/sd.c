@@ -162,7 +162,9 @@ static int wait_not_busy(struct sd_driver_t *self_p,
             return (0);
         }
 
-        thrd_sleep_us(1000);
+        if (i >= 10) {
+            thrd_sleep_us(1000);
+        }
     }
 
     return (-1);
@@ -219,8 +221,10 @@ static int command_call(struct sd_driver_t *self_p,
         if ((*response_p & R1_RESERVED) == 0) {
             return (0);
         }
-
-        thrd_sleep_us(100);
+        
+        if (i >= 10) {
+            thrd_sleep_us(100);
+        }
     }
 
     return (-1);
@@ -505,7 +509,11 @@ ssize_t sd_read_block(struct sd_driver_t *self_p,
         src_block <<= 9;
     }
 
-    return (read(self_p, CMD_READ_SINGLE_BLOCK, src_block, dst_p, SD_BLOCK_SIZE));
+    return (read(self_p,
+                 CMD_READ_SINGLE_BLOCK,
+                 src_block,
+                 dst_p,
+                 SD_BLOCK_SIZE));
 }
 
 ssize_t sd_write_block(struct sd_driver_t *self_p,
