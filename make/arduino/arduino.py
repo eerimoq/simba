@@ -1014,6 +1014,41 @@ def generate_variants(family, database):
                                               mcu=config["mcu"]))
 
 
+def generate_examples():
+    """Generate the examples directory.
+
+    libraries/Simba/examples/<example folder>
+
+    """
+
+    simba_root = os.environ["SIMBA_ROOT"]
+    simba_examples_path = os.path.join(simba_root, 'examples')
+    arduino_simba_path = os.path.join('libraries', 'Simba')
+    arduino_examples_path = os.path.join(arduino_simba_path, 'examples')
+
+    os.makedirs(arduino_examples_path)
+    
+    with open(os.path.join(arduino_simba_path, "Simba.h"), "w") as fout:
+        fout.write("/* Generated file required by Arduino IDE. */")
+
+    examples = [
+        # example folder, sketch file
+        ('blink', 'main.c'),
+        ('hello_world', 'main.c'),
+        ('shell', 'main.c')
+    ]
+
+    # Create the .ino-file.
+    for example in examples:
+        simba_example_path = os.path.join(simba_examples_path, example[0])
+        arduino_example_path = os.path.join(arduino_examples_path, example[0])
+        os.makedirs(arduino_example_path)
+        shutil.copy(os.path.join(simba_example_path, example[1]),
+                    os.path.join(arduino_example_path, example[0] + ".ino"))
+            
+    
+
+
 def get_extra_flags(board, database):
     """Get include path and defines.
 
@@ -1114,14 +1149,14 @@ def generate_files_and_folders(family, database, outdir):
 
     generate_cores(family)
     generate_variants(family, database)
+    generate_examples()
     generate_configuration_files(family, database)
 
     os.chdir(cwd)
 
 
 def main():
-    """Unpack given Simba release archive and modify files and folders as
-    required by the Arduino build system.
+    """Package Simba for the Arduino IDE.
 
     """
 

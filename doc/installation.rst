@@ -20,22 +20,35 @@ Install `Simba` in the `Arduino IDE`_ as a third party board using the
 Boards Manager.
 
 1. Open `"File"` -> `"Preferences"`.
+
 2. Append
    https://sourceforge.net/projects/simba-arduino/files/avr/package_simba_avr_index.json,https://sourceforge.net/projects/simba-arduino/files/sam/package_simba_sam_index.json
    to `"Additional Boards Manager URLs"`.
+
 3. Press `"OK"`.
+
 4. Open `"Tools"` -> `"Board: ..."` -> `"Boards Manager..."`.
+
 5. Type `"simba"` in the search box.
-6. Click on `"Simba by Erik Moqivst version 3.1.1"` and click `"Install"`.
+
+6. Click on `"Simba by Erik Moqivst version 3.1.1"` and click
+   `"Install"`.
+
 7. Press `"Close"`.
-8. Open `"Tools"` -> `"Board: ..."` -> `"Boards Manager..."` and select one
-   of the Simba boards in the list.
+
+8. Open `"Tools"` -> `"Board: ..."` -> `"Boards Manager..."` and
+   select one of the Simba boards in the list.
+
 9. Copy the :github-blob:`Hello World <examples/hello_world/main.c>`
    example into a sketch.
+
 10. Select the Arduino serial port at `"Tools"` -> `"Port: ..."`.
+
 11. Open `"Tools"` -> `"Serial Monitor"` and change the baudrate to
     38400 in the bottom right corner.
+
 12. Verify and upload the sketch to your device.
+
 13. Done!
 
 |simba| Simba build system
