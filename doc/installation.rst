@@ -31,7 +31,7 @@ Boards Manager.
 
 5. Type `"simba"` in the search box.
 
-6. Click on `"Simba by Erik Moqivst version 3.1.1"` and click
+6. Click on `"Simba by Erik Moqivst version 4.0.0"` and click
    `"Install"`.
 
 7. Press `"Close"`.
@@ -39,8 +39,7 @@ Boards Manager.
 8. Open `"Tools"` -> `"Board: ..."` -> `"Boards Manager..."` and
    select one of the Simba boards in the list.
 
-9. Copy the :github-blob:`Hello World <examples/hello_world/main.c>`
-   example into a sketch.
+9. Open `File` -> `Examples` -> `Simba` -> `hello_world`.
 
 10. Select the Arduino serial port at `"Tools"` -> `"Port: ..."`.
 

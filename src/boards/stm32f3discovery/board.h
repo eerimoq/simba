@@ -1,6 +1,6 @@
 /**
  * @file boards/stm32f3discovery/board.h
- * @version 3.1.1
+ * @version 4.0.0
  *
  * @section License
  * Copyright (C) 2014-2016, Erik Moqvist

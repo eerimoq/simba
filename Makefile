@@ -1,6 +1,6 @@
 #
 # @file Makefile
-# @version 3.1.1
+# @version 4.0.0
 #
 # @section License
 # Copyright (C) 2014-2016, Erik Moqvist
@@ -133,15 +133,15 @@ ifeq ($(BOARD), arduino_mega)
 				    inet \
 				    mqtt_client)
     TESTS += $(addprefix tst/drivers/, adc \
-				       ds3231)
+				       ds3231 \
+				       sd)
 endif
 
 ifeq ($(BOARD), arduino_nano)
     TESTS = $(addprefix tst/drivers/, ds18b20 \
 				      exti \
 				      owi \
-				      pin \
-				      sd)
+				      pin)
     APPS = $(addprefix tst/drivers/, uart)
 endif
 
