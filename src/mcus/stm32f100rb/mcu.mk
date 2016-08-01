@@ -33,7 +33,6 @@ MCU_NAME = "ST STM32F100RB ARM Cortex-M3"
 MCU_DESC = "ST STM32F100RB ARM Cortex-M3 @ 24MHz, 8k sram, 128k flash"
 
 LIBPATH += "$(SIMBA_ROOT)/src/mcus/$(MCU)"
-LINKER_SCRIPT_FILE ?= script.ld
-LINKER_SCRIPT ?= $(SIMBA_ROOT)/src/mcus/$(MCU)/$(LINKER_SCRIPT_FILE)
+LINKER_SCRIPT ?= script.ld
 
 include $(SIMBA_ROOT)/make/$(TOOLCHAIN)/arm.mk

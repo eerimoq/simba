@@ -22,7 +22,7 @@ NAME = test_application
 BOARD ?= linux
 
 ifeq ($(BOARD),arduino_due)
-    LINKER_SCRIPT_FILE = script.application.ld
+    LINKER_SCRIPT = script.application.ld
 endif
 
 BOOTLOADER_SRC = common.c

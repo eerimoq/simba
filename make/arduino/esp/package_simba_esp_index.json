@@ -1,0 +1,89 @@
+{
+    "packages": [
+        {
+            "name": "Simba",
+            "maintainer": "Erik Moqvist",
+            "websiteURL": "https://github.com/eerimoq/simba",
+            "email": "erik.moqvist@gmail.com",
+            "help": {
+                "online": "https://simba-os.readthedocs.org"
+            },
+            "platforms": [
+                {
+                    "name": "Simba",
+                    "architecture": "esp",
+                    "version": "4.0.0",
+                    "category": "Simba",
+                    "help": {
+                        "online": "https://simba-os.readthedocs.org"
+                    },
+                    "url": "http://localhost:8000/simba-arduino-esp-master.zip",
+                    "archiveFileName": "simba-arduino-esp-master.zip",
+                    "checksum": "SHA-256:92e761cff3899067e929b41d9ca62493159971557b0a4f43a14bd36e0d1a09ba",
+                    "size": "23432",
+                    "boards": [
+                        {"name" : "ESP-01"},
+                        {"name" : "ESP-12E"}
+                    ],
+                    "toolsDependencies": [
+                        {
+                            "packager": "Simba",
+                            "version": "1.20.0-26-gb404fb9-2",
+                            "name": "xtensa-lx106-elf-gcc"
+                        }
+                    ]
+                }
+            ],
+            "tools": [
+                {
+                    "version": "1.20.0-26-gb404fb9-2",
+                    "name": "xtensa-lx106-elf-gcc",
+                    "systems": [
+                        {
+                            "url": "http://arduino.esp8266.com/win32-xtensa-lx106-elf-gb404fb9-2.tar.gz",
+                            "checksum": "SHA-256:10476b9c11a7a90f40883413ddfb409f505b20692e316c4e597c4c175b4be09c",
+                            "host": "i686-mingw32",
+                            "archiveFileName": "win32-xtensa-lx106-elf-gb404fb9-2.tar.gz",
+                            "size": "153527527"
+                        },
+                        {
+                            "url": "http://arduino.esp8266.com/osx-xtensa-lx106-elf-gb404fb9-2.tar.gz",
+                            "checksum": "SHA-256:0cf150193997bd1355e0f49d3d49711730035257bc1aee1eaaad619e56b9e4e6",
+                            "host": "x86_64-apple-darwin",
+                            "archiveFileName": "osx-xtensa-lx106-elf-gb404fb9-2.tar.gz",
+                            "size": "35385382"
+                        },
+                        {
+                            "url": "http://arduino.esp8266.com/osx-xtensa-lx106-elf-gb404fb9-2.tar.gz",
+                            "checksum": "SHA-256:0cf150193997bd1355e0f49d3d49711730035257bc1aee1eaaad619e56b9e4e6",
+                            "host": "i386-apple-darwin",
+                            "archiveFileName": "osx-xtensa-lx106-elf-gb404fb9-2.tar.gz",
+                            "size": "35385382"
+                        },
+                        {
+                            "url": "http://arduino.esp8266.com/linux64-xtensa-lx106-elf-gb404fb9.tar.gz",
+                            "checksum": "SHA-256:46f057fbd8b320889a26167daf325038912096d09940b2a95489db92431473b7",
+                            "host": "x86_64-pc-linux-gnu",
+                            "archiveFileName": "linux64-xtensa-lx106-elf-gb404fb9.tar.gz",
+                            "size": "30262903"
+                        },
+                        {
+                            "url": "http://arduino.esp8266.com/linux32-xtensa-lx106-elf.tar.gz",
+                            "checksum": "SHA-256:b24817819f0078fb05895a640e806e0aca9aa96b47b80d2390ac8e2d9ddc955a",
+                            "host": "i686-pc-linux-gnu",
+                            "archiveFileName": "linux32-xtensa-lx106-elf.tar.gz",
+                            "size": "32734156"
+                        },
+                        {
+                            "url": "http://arduino.esp8266.com/linuxarm-xtensa-lx106-elf-g46f160f-2.tar.gz",
+                            "checksum": "SHA-256:f693946288f2ffa17288ef75ae16fa08573993f2b0a2a5e6bc35a68dc6087443",
+                            "host": "arm-linux-gnueabihf",
+                            "archiveFileName": "linuxarm-xtensa-lx106-elf-g46f160f-2.tar.gz",
+                            "size": "34938475"
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

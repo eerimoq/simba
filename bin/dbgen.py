@@ -98,6 +98,14 @@ def main():
         ldflags = get_make_variable(board, "LDFLAGS").split()
         database["boards"][board]["ldflags"] = ldflags
 
+        # Get LDFLAGS_AFTER.
+        ldflags_after = get_make_variable(board, "LDFLAGS_AFTER").split()
+        database["boards"][board]["ldflags_after"] = ldflags_after
+
+        # Get LIB.
+        lib = get_make_variable(board, "LIB").split()
+        database["boards"][board]["lib"] = lib
+
         # Get LIBPATH.
         libpath = get_make_variable(board, "LIBPATH").split()
         libpath = [l.replace(simba_root, "") for l in libpath]
@@ -107,7 +115,6 @@ def main():
         try:
             linker_script = get_make_variable(board,
                                               "LINKER_SCRIPT").strip()
-            linker_script = linker_script.replace(simba_root, "")
         except:
             linker_script = ""
 

@@ -3,7 +3,6 @@
 from __future__ import print_function
 
 import subprocess
-import sys
 import argparse
 import json
 import errno
@@ -935,6 +934,11 @@ def generate_cores(family):
             fout.write(SAM_SETTINGS_H)
         with open(os.path.join(cores_dir, "settings.c"), "w") as fout:
             fout.write(SAM_SETTINGS_C)
+    elif family == "esp":
+        with open(os.path.join(cores_dir, "settings.h"), "w") as fout:
+            fout.write(SAM_SETTINGS_H)
+        with open(os.path.join(cores_dir, "settings.c"), "w") as fout:
+            fout.write(SAM_SETTINGS_C)
     else:
         raise
 
@@ -985,15 +989,6 @@ def generate_variants(family, database):
                     mkdir_p(os.path.join(variant_dir, variant_file_dir))
                     shutil.copy(file_path,
                                 os.path.join(variant_dir, variant_file_dir))
-
-        # Copy linker script file.
-        linker_script = config["linker_script"]
-
-        if linker_script:
-            dst_dir = os.path.join(variant_dir,
-                                   os.path.dirname(linker_script))
-            mkdir_p(dst_dir)
-            shutil.copy(os.path.join(simba_root, linker_script), dst_dir)
 
         # Copy all linker script files.
         for libpath in config["libpath"]:
@@ -1049,33 +1044,44 @@ def generate_examples():
     
 
 
-def get_extra_flags(board, database):
-    """Get include path and defines.
+def get_c_extra_flags(board, database):
+    """Get include path, defines and flags to the compiler.
 
     """
 
-    inc = database["boards"][board]["inc"]
+    incs = database["boards"][board]["inc"]
     cdefs = database["boards"][board]["cdefs"]
+    cflags = database["boards"][board]["cflags"]
 
-    # Remove F_CPU since it is already set in the arduino build
-    # system.
-    cdefs = [cdef for cdef in cdefs if "F_CPU" not in cdef]
-
-    return " ".join(["\"-I{runtime.platform.path}/variants/" + board + "/" + i + "\""
-                     for i in inc]
+    return " ".join(cflags
+                    + ["\"-I{runtime.platform.path}/variants/" + board + "/" + inc + "\""
+                       for inc in incs]
                     + ["-D" + d for d in cdefs])
 
 
-def get_libpath(board, database):
-    """Get library path.
+def get_c_elf_extra_flags(board, database):
+    """Get library path, defines and flags to the linker.
 
     """
 
-    libpath = database["boards"][board]["libpath"]
+    libpaths = database["boards"][board]["libpath"]
+    ldflags = database["boards"][board]["ldflags"]
 
-    return " ".join(["\"-L{runtime.platform.path}/variants/"
-                     + board + "/" + l + "\""
-                     for l in libpath])
+    ldflags = [ldflag for ldflag in ldflags if "-Wl,-Map" not in ldflag]
+
+    return " ".join(ldflags
+                    + ["\"-L{runtime.platform.path}/variants/" + board + "/" + libpath + "\""
+                       for libpath in libpaths])
+
+
+def get_c_elf_extra_flags_after(board, database):
+    """Get library path, defines and flags to the linker.
+
+    """
+
+    ldflags_after = database["boards"][board]["ldflags_after"]
+
+    return " ".join(ldflags_after)
 
 
 def generate_boards_txt_avr(database, boards_txt_fmt):
@@ -1084,13 +1090,13 @@ def generate_boards_txt_avr(database, boards_txt_fmt):
     """
 
     return boards_txt_fmt.format(
-        mega2560_compiler_c_extra_flags=get_extra_flags("arduino_mega",
-                                                        database),
-        nano_compiler_c_extra_flags=get_extra_flags("arduino_nano",
+        mega2560_compiler_c_extra_flags=get_c_extra_flags("arduino_mega",
+                                                          database),
+        nano_compiler_c_extra_flags=get_c_extra_flags("arduino_nano",
                                                    database),
-        uno_compiler_c_extra_flags=get_extra_flags("arduino_uno",
+        uno_compiler_c_extra_flags=get_c_extra_flags("arduino_uno",
                                                    database),
-        pro_micro_compiler_c_extra_flags=get_extra_flags("arduino_pro_micro",
+        pro_micro_compiler_c_extra_flags=get_c_extra_flags("arduino_pro_micro",
                                                          database))
 
 
@@ -1100,13 +1106,37 @@ def generate_boards_txt_sam(database, boards_txt_fmt):
     """
 
     return boards_txt_fmt.format(
-        arduino_due_x_dbg_build_ldscript=database["boards"]["arduino_due"]["linker_script"],
-        arduino_due_x_dbg_compiler_c_extra_flags=get_extra_flags(
+        arduino_due_x_dbg_compiler_c_extra_flags=get_c_extra_flags(
             "arduino_due",
             database),
-        arduino_due_x_dbg_compiler_c_elf_extra_flags=get_libpath(
+        arduino_due_x_dbg_compiler_c_elf_extra_flags=get_c_elf_extra_flags(
             "arduino_due",
             database))
+
+
+def generate_boards_txt_esp(database, boards_txt_fmt):
+    """Generate boards.txt for ESP.
+
+    """
+
+    # ESP SDK libraries are copied to this location.
+    libpath = "-L{runtime.platform.path}/lib"
+
+    esp01_compiler_c_elf_extra_flags = get_c_elf_extra_flags("esp01", database)
+    esp01_compiler_c_elf_extra_flags += " "
+    esp01_compiler_c_elf_extra_flags += libpath
+
+    esp12e_compiler_c_elf_extra_flags = get_c_elf_extra_flags("esp12e", database)
+    esp12e_compiler_c_elf_extra_flags += " "
+    esp12e_compiler_c_elf_extra_flags += libpath
+
+    return boards_txt_fmt.format(
+        esp01_compiler_c_extra_flags=get_c_extra_flags("esp01", database),
+        esp01_compiler_c_elf_extra_flags=esp01_compiler_c_elf_extra_flags,
+        esp01_compiler_c_elf_extra_flags_after=get_c_elf_extra_flags_after("esp01", database),
+        esp12e_compiler_c_extra_flags=get_c_extra_flags("esp12e", database),
+        esp12e_compiler_c_elf_extra_flags=esp12e_compiler_c_elf_extra_flags,
+        esp12e_compiler_c_elf_extra_flags_after=get_c_elf_extra_flags_after("esp12e", database))
 
 
 def generate_configuration_files(family, database):
@@ -1132,10 +1162,37 @@ def generate_configuration_files(family, database):
                 boards_txt = generate_boards_txt_avr(database, fin.read())
             elif family == "sam":
                 boards_txt = generate_boards_txt_sam(database, fin.read())
+            elif family == "esp":
+                boards_txt = generate_boards_txt_esp(database, fin.read())
             else:
                 raise ValueError("Unsupported family {}.".format(family))
 
             fout.write(boards_txt)
+
+
+def generate_extra(family, database):
+    """Generate extra files that do not fit into any other generation
+    function.
+
+    """
+
+    simba_root = os.environ["SIMBA_ROOT"]
+
+    # Copy all libraries.
+    if family == "esp":
+        libpaths = database["boards"]["esp01"]["libpath"]
+        mkdir_p("lib")
+
+        for lib in database["boards"]["esp01"]["lib"]:
+            for libpath in libpaths:
+                libpath_dir = os.path.join(simba_root, libpath)
+                for root, _, filenames in os.walk(libpath_dir):
+                    for filename in filenames:
+                        if filename != "lib" + lib + ".a":
+                            continue
+                        file_path = os.path.join(root, filename)
+                        shutil.copy(file_path, "lib")
+                        break
 
 
 def generate_files_and_folders(family, database, outdir):
@@ -1151,6 +1208,7 @@ def generate_files_and_folders(family, database, outdir):
     generate_variants(family, database)
     generate_examples()
     generate_configuration_files(family, database)
+    generate_extra(family, database)
 
     os.chdir(cwd)
 
@@ -1176,7 +1234,7 @@ def main():
 
     print("Writing to " + args.outdir + ".")
 
-    for family in ["avr", "sam"]:
+    for family in ["avr", "sam", "esp"]:
         packages_family_dir = os.path.join(args.outdir,
                                            "packages",
                                            "Simba",

@@ -1,0 +1,72 @@
+# @file boards.txt
+# @version 4.0.0
+#
+# @section License
+# Copyright (C) 2016, Erik Moqvist
+#
+# This library is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Lesser General Public
+# License as published by the Free Software Foundation; either
+# version 2.1 of the License, or (at your option) any later version.
+#
+# This library is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# Lesser General Public License for more details.
+#
+# This file is part of the Simba project.
+
+##################################################################
+
+esp01.name=ESP01
+esp01.upload.tool=avrdude
+esp01.upload.protocol=wiring
+esp01.upload.maximum_size=253952
+esp01.upload.maximum_data_size=8192
+esp01.upload.maximum_eeprom_size=4096
+esp01.upload.speed=115200
+
+esp01.bootloader.tool=avrdude
+esp01.bootloader.low_fuses=0xff
+esp01.bootloader.high_fuses=0xd8
+esp01.bootloader.extended_fuses=0xfd
+
+esp01.build.mcu=esp8266
+esp01.build.f_cpu=80000000L
+esp01.build.board=ESP01
+esp01.build.variant=esp01
+esp01.build.core=Simba:simba
+esp01.build.ldscript=simba.flash.1m.ld
+
+esp01.compiler.c.extra_flags={esp01_compiler_c_extra_flags}
+esp01.compiler.cpp.extra_flags={{c.extra_flags}}
+esp01.compiler.c.elf.extra_flags={esp01_compiler_c_elf_extra_flags}
+esp01.compiler.c.elf.extra_flags_after={esp01_compiler_c_elf_extra_flags_after}
+
+##################################################################
+
+esp12e.name=ESP12E
+esp12e.upload.tool=avrdude
+esp12e.upload.protocol=wiring
+esp12e.upload.maximum_size=253952
+esp12e.upload.maximum_data_size=8192
+esp12e.upload.maximum_eeprom_size=4096
+esp12e.upload.speed=115200
+
+esp12e.bootloader.tool=avrdude
+esp12e.bootloader.low_fuses=0xff
+esp12e.bootloader.high_fuses=0xd8
+esp12e.bootloader.extended_fuses=0xfd
+
+esp12e.build.mcu=esp8266
+esp12e.build.f_cpu=80000000L
+esp12e.build.board=ESP12E
+esp12e.build.variant=esp12e
+esp12e.build.core=Simba:simba
+
+esp12e.compiler.c.extra_flags={esp12e_compiler_c_extra_flags}
+esp12e.compiler.cpp.extra_flags={{c.extra_flags}}
+esp12e.compiler.c.elf.extra_flags={esp12e_compiler_c_elf_extra_flags}
+esp12e.compiler.c.elf.extra_flags_after={esp12e_compiler_c_elf_extra_flags_after}
+
+##################################################################

@@ -33,7 +33,6 @@ ifeq ($(RUST),yes)
 else
     SRC += main.c
 endif
-LIBPATH ?=
 SRC_FILTERED = $(filter-out $(SRC_IGNORE),$(SRC))
 CSRC += $(filter %.c,$(SRC_FILTERED))
 RUST_SRC += $(filter %.rs,$(SRC_FILTERED))
@@ -96,6 +95,9 @@ SIMBA.mk ?= $(SIMBA_ROOT)/src/simba.mk
 
 include $(MCU.mk)
 include $(SIMBA.mk)
+
+LIB ?=
+LIBPATH ?=
 
 UPPER_ARCH := $(shell python -c "import sys; sys.stdout.write(sys.argv[1].upper())" $(ARCH))
 UPPER_FAMILY := $(shell python -c "import sys; sys.stdout.write(sys.argv[1].upper())" $(FAMILY))

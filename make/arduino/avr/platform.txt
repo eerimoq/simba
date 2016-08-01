@@ -27,12 +27,12 @@ version=4.0.0
 # compiler.path={runtime.ide.path}/hardware/tools/avr/bin/
 compiler.path={runtime.tools.avr-gcc.path}/bin/
 compiler.c.cmd=avr-gcc
-compiler.c.flags=-c -g -O2 -Wall -ffunction-sections -fdata-sections -MMD -mmcu={build.mcu} -DF_CPU={build.f_cpu} -DARDUINO={runtime.ide.version} -x c
+compiler.c.flags=-c -g -O2 -Wall -ffunction-sections -fdata-sections -MMD -mmcu={build.mcu} -DARDUINO={runtime.ide.version} -x c
 compiler.c.elf.flags=-O2 -mmcu={build.mcu} -Wl,--gc-sections -Wl,--defsym=__main_stack_end={build.main_stack_end}
 compiler.c.elf.cmd=avr-gcc
-compiler.S.flags=-c -g -assembler-with-cpp -mmcu={build.mcu} -DF_CPU={build.f_cpu} -DARDUINO={runtime.ide.version}
+compiler.S.flags=-c -g -assembler-with-cpp -mmcu={build.mcu} -DARDUINO={runtime.ide.version}
 compiler.cpp.cmd=avr-g++
-compiler.cpp.flags=-c -g -O2 -Wall -fno-exceptions -ffunction-sections -fdata-sections -MMD -mmcu={build.mcu} -DF_CPU={build.f_cpu} -DARDUINO={runtime.ide.version}
+compiler.cpp.flags=-c -g -O2 -Wall -fno-exceptions -ffunction-sections -fdata-sections -MMD -mmcu={build.mcu} -DARDUINO={runtime.ide.version}
 compiler.ar.cmd=avr-ar
 compiler.ar.flags=rcs
 compiler.objcopy.cmd=avr-objcopy

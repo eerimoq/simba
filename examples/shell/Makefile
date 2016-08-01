@@ -22,7 +22,7 @@ NAME = shell
 BOARD = arduino_nano
 
 ifeq ($(USE_BOOTLOADER),yes)
-    LINKER_SCRIPT_FILE = script.application.ld
+    LINKER_SCRIPT = script.application.ld
 endif
 
 SIMBA_ROOT ?= ../..

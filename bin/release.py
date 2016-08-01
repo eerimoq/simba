@@ -65,7 +65,10 @@ def test():
     for family, board in [("avr", "nano"),
                           ("avr", "uno"),
                           ("avr", "mega2560"),
-                          ("sam", "arduino_due_x_dbg")]:
+                          ("avr", "pro-micro"),
+                          ("sam", "arduino_due_x_dbg"),
+                          ("esp", "esp01"),
+                          ("esp", "esp12e")]:
         command = [
             "make",
             "all",

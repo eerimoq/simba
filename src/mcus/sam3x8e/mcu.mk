@@ -22,7 +22,6 @@ MCU_NAME = "Atmel SAM3X8E Cortex-M3"
 MCU_DESC = "Atmel SAM3X8E Cortex-M3 @ 84MHz, 96k sram, 512k flash"
 
 LIBPATH += "$(SIMBA_ROOT)/src/mcus/$(MCU)"
-LINKER_SCRIPT_FILE ?= script.ld
-LINKER_SCRIPT ?= $(SIMBA_ROOT)/src/mcus/$(MCU)/$(LINKER_SCRIPT_FILE)
+LINKER_SCRIPT ?= script.ld
 
 include $(SIMBA_ROOT)/src/mcus/sam/sam3.mk

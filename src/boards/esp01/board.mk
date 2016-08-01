@@ -19,6 +19,7 @@
 #
 
 INC += $(SIMBA_ROOT)/src/boards/esp01
+SRC += $(SIMBA_ROOT)/src/boards/esp01/board.c
 
 LINKER_SCRIPT = simba.flash.1m.ld
 ESP_FLASH_SIZE_MAP = 2

@@ -8,8 +8,6 @@ ifeq ($(BOARD),)
     $(error "BOARD must be given.")
 endif
 
-#	-hardware /home/erik/.arduino15/packages \
-
 all:
 	mkdir -p $(BUILD_DIR)
 	$(ARDUINO_ROOT)/arduino-builder \

@@ -57,6 +57,9 @@ ESPLIBS += \
 ESPLIBS_AFTER += \
  gcc
 
+# Used by arduino script to find the libraries.
+LIB ?= $(ESPLIBS) $(ESPLIBS_AFTER)
+
 F_CPU = 80000000
 
 ARCH = esp

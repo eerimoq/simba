@@ -33,8 +33,7 @@ BOARD_PINOUT = "photon-pinout.png"
 BOARD_DESC = "Particle IO Photon"
 
 LIBPATH += "$(SIMBA_ROOT)/src/boards/$(BOARD)"
-LINKER_SCRIPT_FILE ?= script.ld
-LINKER_SCRIPT ?= $(SIMBA_ROOT)/src/boards/$(BOARD)/$(LINKER_SCRIPT_FILE)
+LINKER_SCRIPT ?= script.ld
 
 MCU = stm32f205rg
 SERIAL_PORT ?= /dev/arduino
