@@ -33,7 +33,7 @@ AVR_SETTINGS_H = """
 SAM_SETTINGS_H = """
 /**
  * @file settings.h
- * @version 4.0.0
+ * @version 4.1.0
  *
  * @section License
  * Copyright (C) 2014-2016, Erik Moqvist
@@ -68,7 +68,7 @@ SAM_SETTINGS_H = """
 SAM_SETTINGS_C = """
 /**
  * @file settings.c
- * @version 4.0.0
+ * @version 4.1.0
  *
  * @section License
  * Copyright (C) 2014-2016, Erik Moqvist

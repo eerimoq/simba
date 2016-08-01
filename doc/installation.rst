@@ -21,34 +21,34 @@ Boards Manager.
 
 1. Open `"File"` -> `"Preferences"`.
 
-2. Append
-   ``https://sourceforge.net/projects/simba-arduino/files/avr/package_simba_avr_index.json,https://sourceforge.net/projects/simba-arduino/files/sam/package_simba_sam_index.json``
-   to `"Additional Boards Manager URLs"`.
+2. Add these URL:s to `"Additional Boards Manager URLs"` (click on the
+   icon to the right of the text field) and press `"OK"`.
 
-3. Press `"OK"`.
+   .. code-block:: text
 
-4. Open `"Tools"` -> `"Board: ..."` -> `"Boards Manager..."`.
+      https://sourceforge.net/projects/simba-arduino/files/avr/package_simba_avr_index.json
+      https://sourceforge.net/projects/simba-arduino/files/sam/package_simba_sam_index.json
+      https://sourceforge.net/projects/simba-arduino/files/esp/package_simba_esp_index.json
 
-5. Type `"simba"` in the search box.
+3. Open `"Tools"` -> `"Board: ..."` -> `"Boards Manager..."` and type
+   `"simba"` in the search box.
 
-6. Click on `"Simba by Erik Moqivst version 4.0.0"` and click
-   `"Install"`.
+4. Click on `"Simba by Erik Moqivst version 4.1.0"` and click
+   `"Install"` and press `"Close"`.
 
-7. Press `"Close"`.
-
-8. Open `"Tools"` -> `"Board: ..."` -> `"Boards Manager..."` and
+5. Open `"Tools"` -> `"Board: ..."` -> `"Boards Manager..."` and
    select one of the Simba boards in the list.
 
-9. Open `File` -> `Examples` -> `Simba` -> `hello_world`.
+6. Open `File` -> `Examples` -> `Simba` -> `hello_world`.
 
-10. Select the Arduino serial port at `"Tools"` -> `"Port: ..."`.
+7. Select the Arduino serial port at `"Tools"` -> `"Port: ..."`.
 
-11. Open `"Tools"` -> `"Serial Monitor"` and change the baudrate to
-    38400 in the bottom right corner.
+8. Open `"Tools"` -> `"Serial Monitor"` and change the baudrate to
+   38400 in the bottom right corner.
 
-12. Verify and upload the sketch to your device.
+9. Verify and upload the sketch to your device.
 
-13. Done!
+10. Done!
 
 |simba| Simba build system
 --------------------------

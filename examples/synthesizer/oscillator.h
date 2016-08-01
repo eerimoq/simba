@@ -1,6 +1,6 @@
 /**
  * @file oscillator.h
- * @version 4.0.0
+ * @version 4.1.0
  *
  * @section License
  * Copyright (C) 2015-2016, Erik Moqvist

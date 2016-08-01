@@ -12,15 +12,15 @@
                 {
                     "name": "Simba",
                     "architecture": "esp",
-                    "version": "4.0.0",
+                    "version": "4.1.0",
                     "category": "Simba",
                     "help": {
                         "online": "https://simba-os.readthedocs.org"
                     },
-                    "url": "http://localhost:8000/simba-arduino-esp-master.zip",
-                    "archiveFileName": "simba-arduino-esp-master.zip",
-                    "checksum": "SHA-256:1b11aeb4c8a00e2042a212570386a459e79d9c2556a57ac7f22ccbea0ab946cf",
-                    "size": "23432",
+                    "url": "https://sourceforge.net/projects/simba-arduino/files/esp/simba-arduino-esp-4.1.0.zip",
+                    "archiveFileName": "simba-arduino-esp-4.1.0.zip",
+                    "checksum": "SHA-256:e4e9ce17f4b1e6d9758ce7b63d1c752e7957b8f9ea059b3a8d8d75384a609808",
+                    "size": "2589972",
                     "boards": [
                         {"name" : "ESP-01"},
                         {"name" : "ESP-12E"}

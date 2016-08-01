@@ -45,7 +45,9 @@ Follow these steps to create a new release:
 
       scp simba-arduino/simba-arduino-avr-*.zip <user>@frs.sourceforge.net:/home/frs/project/simba-arduino/avr
       scp simba-arduino/simba-arduino-sam-*.zip <user>@frs.sourceforge.net:/home/frs/project/simba-arduino/sam
+      scp simba-arduino/simba-arduino-esp-*.zip <user>@frs.sourceforge.net:/home/frs/project/simba-arduino/esp
       scp make/arduino/avr/package_simba_avr_index.json <user>@frs.sourceforge.net:/home/frs/project/simba-arduino/avr
       scp make/arduino/sam/package_simba_sam_index.json <user>@frs.sourceforge.net:/home/frs/project/simba-arduino/sam
+      scp make/arduino/esp/package_simba_esp_index.json <user>@frs.sourceforge.net:/home/frs/project/simba-arduino/esp
       
 8. Done.
