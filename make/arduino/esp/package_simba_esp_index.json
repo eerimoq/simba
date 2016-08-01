@@ -82,6 +82,54 @@
                             "size": "34938475"
                         }
                     ]
+                }, 
+                {
+                    "version": "0.4.9", 
+                    "name": "esptool", 
+                    "systems": [
+                        {
+                            "url": "https://github.com/igrr/esptool-ck/releases/download/0.4.9/esptool-0.4.9-win32.zip", 
+                            "checksum": "SHA-256:9c4162cedf05fcb09fd829bfb90e34ae12458365980d79525a072ff5ca44751c", 
+                            "host": "i686-mingw32", 
+                            "archiveFileName": "esptool-0.4.9-win32.zip", 
+                            "size": "32436"
+                        }, 
+                        {
+                            "url": "https://github.com/igrr/esptool-ck/releases/download/0.4.9/esptool-0.4.9-osx.tar.gz", 
+                            "checksum": "SHA-256:57938b473765723a7e6602d55973017b7719bda69bdcff4250b24fcbf7a399f5", 
+                            "host": "x86_64-apple-darwin", 
+                            "archiveFileName": "esptool-0.4.9-osx.tar.gz", 
+                            "size": "29310"
+                        }, 
+                        {
+                            "url": "https://github.com/igrr/esptool-ck/releases/download/0.4.9/esptool-0.4.9-osx.tar.gz", 
+                            "checksum": "SHA-256:57938b473765723a7e6602d55973017b7719bda69bdcff4250b24fcbf7a399f5", 
+                            "host": "i386-apple-darwin", 
+                            "archiveFileName": "esptool-0.4.9-osx.tar.gz", 
+                            "size": "29310"
+                        }, 
+                        {
+                            "url": "https://github.com/igrr/esptool-ck/releases/download/0.4.9/esptool-0.4.9-linux64.tar.gz", 
+                            "checksum": "SHA-256:fab9d1be8a648bea6728ad5c9d18ce972508187700cf90baf1897ac9cdf4db15", 
+                            "host": "x86_64-pc-linux-gnu", 
+                            "archiveFileName": "esptool-0.4.9-linux64.tar.gz", 
+                            "size": "15564"
+                        }, 
+                        {
+                            "url": "https://github.com/igrr/esptool-ck/releases/download/0.4.9/esptool-0.4.9-linux32.tar.gz", 
+                            "checksum": "SHA-256:bc4444d73d59be74608be5e1431353a0a9ae9e308e99c76a271d68a6ae145b7b", 
+                            "host": "i686-pc-linux-gnu", 
+                            "archiveFileName": "esptool-0.4.9-linux32.tar.gz", 
+                            "size": "15984"
+                        }, 
+                        {
+                            "url": "https://github.com/igrr/esptool-ck/releases/download/0.4.9/esptool-0.4.9-linux-armhf.tar.gz", 
+                            "checksum": "SHA-256:d0364492599d90b8305125f8212de5be05397e4efde2fc7d0ed3676bb7018164", 
+                            "host": "arm-linux-gnueabihf", 
+                            "archiveFileName": "esptool-0.4.9-linux-armhf.tar.gz", 
+                            "size": "13763"
+                        }
+                    ]
                 }
             ]
         }

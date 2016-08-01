@@ -22,7 +22,7 @@ Boards Manager.
 1. Open `"File"` -> `"Preferences"`.
 
 2. Append
-   https://sourceforge.net/projects/simba-arduino/files/avr/package_simba_avr_index.json,https://sourceforge.net/projects/simba-arduino/files/sam/package_simba_sam_index.json
+   ``https://sourceforge.net/projects/simba-arduino/files/avr/package_simba_avr_index.json,https://sourceforge.net/projects/simba-arduino/files/sam/package_simba_sam_index.json``
    to `"Additional Boards Manager URLs"`.
 
 3. Press `"OK"`.
