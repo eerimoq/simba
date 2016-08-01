@@ -39,14 +39,14 @@ compiler.warning_flags.all=-Wall -Wextra
 
 compiler.path={runtime.tools.xtensa-lx106-elf-gcc.path}/bin/
 compiler.c.cmd=xtensa-lx106-elf-gcc
-compiler.c.flags=
+compiler.c.flags=-MMD
 
 compiler.c.elf.cmd=xtensa-lx106-elf-gcc
 compiler.c.elf.flags=
 compiler.S.cmd=xtensa-lx106-elf-gcc
-compiler.S.flags=
+compiler.S.flags=-MMD
 compiler.cpp.cmd=xtensa-lx106-elf-gcc
-compiler.cpp.flags=-x c
+compiler.cpp.flags=-x c -MMD
 compiler.ar.cmd=xtensa-lx106-elf-ar
 compiler.ar.flags=rcs
 compiler.objcopy.cmd=xtensa-lx106-elf-objcopy
