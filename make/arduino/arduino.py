@@ -1178,8 +1178,8 @@ def generate_extra(family, database):
 
     simba_root = os.environ["SIMBA_ROOT"]
 
-    # Copy all libraries.
     if family == "esp":
+        # Copy all libraries.
         libpaths = database["boards"]["esp01"]["libpath"]
         mkdir_p("lib")
 
@@ -1193,6 +1193,18 @@ def generate_extra(family, database):
                         file_path = os.path.join(root, filename)
                         shutil.copy(file_path, "lib")
                         break
+
+        # Copt eboot (bootloader).
+        eboot_dir = os.path.join("bootloaders", "eboot")
+        mkdir_p(eboot_dir)
+        shutil.copy(os.path.join(simba_root,
+                                 "3pp",
+                                 "esp8266Arduino",
+                                 "2.3.0",
+                                 "bootloaders",
+                                 "eboot",
+                                 "eboot.elf"),
+                    eboot_dir)
 
 
 def generate_files_and_folders(family, database, outdir):

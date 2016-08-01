@@ -25,6 +25,9 @@ version=4.0.0
 name=Simba ESP Boards
 version=1.6.8
 
+runtime.tools.xtensa-lx106-elf-gcc.path={runtime.platform.path}/tools/xtensa-lx106-elf
+runtime.tools.esptool.path={runtime.platform.path}/tools/esptool
+
 # ESP compile variables
 # ----------------------
 
@@ -49,11 +52,13 @@ compiler.ar.flags=rcs
 compiler.objcopy.cmd=xtensa-lx106-elf-objcopy
 compiler.objcopy.eep.flags=-O ihex -j .eeprom --set-section-flags=.eeprom=alloc,load --no-change-warnings --change-section-lma .eeprom=0
 compiler.elf2hex.flags=-O binary
-compiler.elf2hex.cmd=xtensa-lx106-elf-objcopy
+compiler.elf2hex.cmd=
 compiler.ldflags=
 compiler.size.cmd=xtensa-lx106-elf-size
 compiler.define=-DARDUINO=
 compiler.combine.flags=
+compiler.esptool.cmd=esptool
+compiler.esptool.cmd.windows=esptool.exe
 
 # This can be overridden in boards.txt
 build.extra_flags=
@@ -88,7 +93,7 @@ recipe.ar.pattern="{compiler.path}{compiler.ar.cmd}" {compiler.ar.flags} {compil
 recipe.c.combine.pattern="{compiler.path}{compiler.c.elf.cmd}" {compiler.c.elf.flags} {compiler.c.elf.extra_flags} -o "{build.path}/{build.project_name}.elf" "-L{build.path}" "-Wl,-Map,{build.path}/{build.project_name}.map" {compiler.combine.flags} {object_files} "{build.path}/{archive_file}" {compiler.c.elf.extra_flags_after}
 
 ## Create output (.bin file)
-recipe.objcopy.bin.pattern="{compiler.path}{compiler.elf2hex.cmd}" {compiler.elf2hex.flags} {compiler.elf2hex.extra_flags} "{build.path}/{build.project_name}.elf" "{build.path}/{build.project_name}.bin"
+recipe.objcopy.hex.pattern="{runtime.tools.esptool.path}/{compiler.esptool.cmd}" -eo "{runtime.platform.path}/bootloaders/eboot/eboot.elf" -bo "{build.path}/{build.project_name}.bin" -bm {build.flash_mode} -bf {build.flash_freq} -bz {build.flash_size} -bs .text -bp 4096 -ec -eo "{build.path}/{build.project_name}.elf" -bs .irom0.text -bs .text -bs .data -bs .rodata -bc -ec
 
 ## Save hex
 recipe.output.tmp_file={build.project_name}.bin
@@ -101,3 +106,11 @@ recipe.size.regex=\.text\s+([0-9]+).*
 
 # ESP Uploader tools
 # -------------------
+
+tools.esptool.cmd=esptool
+tools.esptool.cmd.windows=esptool.exe
+
+tools.esptool.upload.protocol=esp
+tools.esptool.upload.params.verbose=-vv
+tools.esptool.upload.params.quiet=
+tools.esptool.upload.pattern="{runtime.tools.esptool.path}/{cmd}" {upload.verbose} -cd {upload.resetmethod} -cb {upload.speed} -cp "{serial.port}" -ca 0x00000 -cf "{build.path}/{build.project_name}.bin"

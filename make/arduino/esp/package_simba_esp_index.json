@@ -19,7 +19,7 @@
                     },
                     "url": "http://localhost:8000/simba-arduino-esp-master.zip",
                     "archiveFileName": "simba-arduino-esp-master.zip",
-                    "checksum": "SHA-256:92e761cff3899067e929b41d9ca62493159971557b0a4f43a14bd36e0d1a09ba",
+                    "checksum": "SHA-256:1b11aeb4c8a00e2042a212570386a459e79d9c2556a57ac7f22ccbea0ab946cf",
                     "size": "23432",
                     "boards": [
                         {"name" : "ESP-01"},
@@ -30,6 +30,11 @@
                             "packager": "Simba",
                             "version": "1.20.0-26-gb404fb9-2",
                             "name": "xtensa-lx106-elf-gcc"
+                        },
+                        {
+                            "packager": "Simba",
+                            "version": "0.4.9",
+                            "name": "esptool"
                         }
                     ]
                 }
