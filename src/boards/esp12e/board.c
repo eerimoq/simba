@@ -22,5 +22,39 @@
 
 int board_pin_string_to_device_index(const char *str_p)
 {
-    return (-1);
+    long pin;
+
+    if (strncmp(&str_p[0], "gpio", 4) == 0) {
+        if (std_strtol(&str_p[4], &pin) == NULL) {
+            return (-1);
+        }
+        
+        switch (pin) {
+
+        case 0:
+        case 2:
+        case 12:
+        case 13:
+        case 14:
+        case 15:
+            break;
+
+        case 4:
+            pin = 5;
+            break;
+            
+        case 5:
+            pin = 4;
+            break;
+            
+        default:
+            return (-1);
+        }
+    } else if (strcmp(str_p, "led") == 0) {
+        pin = 2;
+    } else {
+        return (-1);
+    }
+
+    return (pin);
 }

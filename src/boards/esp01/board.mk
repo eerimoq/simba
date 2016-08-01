@@ -32,10 +32,11 @@ MCU = esp8266
 SERIAL_PORT ?= /dev/arduino
 BOARD_PY = $(SIMBA_ROOT)/src/boards/esp12e/board.py
 RUN_PY ?= $(SIMBA_ROOT)/src/boards/esp12e/run.py
+CONSOLE_RESET_TYPE ?= 0
 
 upload:
 	@echo "Uploading $(EXE)"
-	python -u $(BOARD_PY) upload --port $(SERIAL_PORT) $(NAME).bin
+	python -u $(BOARD_PY) upload --port $(SERIAL_PORT) $(BIN)
 
 run:
 	@echo "Running '$(EXE)'."

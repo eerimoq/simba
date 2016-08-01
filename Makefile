@@ -151,6 +151,12 @@ ifeq ($(BOARD), arduino_pro_micro)
                                      timer)
 endif
 
+ifeq ($(BOARD), esp01)
+    TESTS = $(addprefix tst/kernel/, sys \
+                                     thrd \
+                                     timer)
+endif
+
 ifeq ($(BOARD), esp12e)
     TESTS = $(addprefix tst/kernel/, sys \
                                      thrd \
@@ -292,6 +298,9 @@ clean-arduino-nano:
 clean-arduino-pro-micro:
 	$(MAKE) BOARD=arduino_pro_micro SERIAL_PORT=/dev/simba-arduino_pro_micro clean
 
+clean-esp01:
+	$(MAKE) BOARD=esp01 SERIAL_PORT=/dev/simba-esp01 clean
+
 clean-esp12e:
 	$(MAKE) BOARD=esp12e SERIAL_PORT=/dev/simba-esp12e clean
 
@@ -317,6 +326,10 @@ test-arduino-pro-micro:
 	@echo "Arduino Pro Micro"
 	$(MAKE) BOARD=arduino_pro_micro SERIAL_PORT=/dev/simba-arduino_pro_micro test
 
+test-esp01:
+	@echo "ESP-01"
+	$(MAKE) BOARD=esp01 SERIAL_PORT=/dev/simba-esp01 test
+
 test-esp12e:
 	@echo "ESP12-E"
 	$(MAKE) BOARD=esp12e SERIAL_PORT=/dev/simba-esp12e test
@@ -334,6 +347,7 @@ test-all-boards:
 	$(MAKE) test-arduino-mega
 	$(MAKE) test-arduino-nano
 	$(MAKE) test-arduino-pro-micro
+	$(MAKE) test-esp01
 	$(MAKE) test-esp12e
 	$(MAKE) test-stm32vldiscovery
 	$(MAKE) test-photon
@@ -343,6 +357,7 @@ clean-all-boards:
 	$(MAKE) clean-arduino-mega
 	$(MAKE) clean-arduino-nano
 	$(MAKE) clean-arduino-pro-micro
+	$(MAKE) clean-esp01
 	$(MAKE) clean-esp12e
 	$(MAKE) clean-stm32vldiscovery
 	$(MAKE) clean-photon

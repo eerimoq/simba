@@ -44,9 +44,11 @@ static int pin_port_write(struct pin_driver_t *drv_p, int value)
     const struct pin_device_t *dev_p = drv_p->dev_p;
 
     if (value == 1) {
-        ESP8266_GPIO->ENABLE_DATA_W1TS = dev_p->mask;
-    } else {
+        /* Clear the bit for high output. */
         ESP8266_GPIO->ENABLE_DATA_W1TC = dev_p->mask;
+    } else {
+        /* Set the bit for low output. */
+        ESP8266_GPIO->ENABLE_DATA_W1TS = dev_p->mask;
     }
 
     return (0);

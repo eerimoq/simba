@@ -21,9 +21,13 @@
 #ifndef __BOARD_H__
 #define __BOARD_H__
 
+#define pin_gpio0_dev pin_device[0]
+#define pin_gpio1_dev pin_device[1]
+#define pin_gpio2_dev pin_device[2]
+
 #define pin_d0_dev pin_device[0]
+#define pin_d1_dev pin_device[1]
 #define pin_d2_dev pin_device[2]
-#define pin_d16_dev pin_device[15]
 
 #define pin_led_dev pin_device[1]
 

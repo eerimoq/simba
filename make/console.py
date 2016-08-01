@@ -5,6 +5,7 @@ import threading
 import argparse
 import readchar
 import serial
+import time
 
 def serial_reader_main(dev_serial):
     """Serial reader main function.
@@ -23,6 +24,7 @@ def main():
 
     parser = argparse.ArgumentParser()
     parser.add_argument("--port", default="/dev/arduino")
+    parser.add_argument("--reset-type", type=int, default=-1)
     parser.add_argument("--baudrate", "-b",
                         type=int,
                         required=True)
@@ -33,7 +35,13 @@ def main():
     print
 
     dev_serial = serial.Serial(args.port, baudrate=args.baudrate)
-    dev_serial.dtr = False
+
+    if args.reset_type == 0:
+        dev_serial.rts = 0
+        dev_serial.dtr = 1
+        time.sleep(0.5)
+        # Let go of the reset.
+        dev_serial.dtr = 0
 
     # Start the serial reader thread.
     serial_reader_thread = threading.Thread(target=serial_reader_main,

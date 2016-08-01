@@ -132,6 +132,7 @@ upload: all
 
 console:
 	python -u $(CONSOLESCRIPT) --port $(SERIAL_PORT) \
+				   $(CONSOLE_RESET_TYPE:%=--reset-type %) \
 			           --baudrate $(BAUDRATE)
 
 report:
