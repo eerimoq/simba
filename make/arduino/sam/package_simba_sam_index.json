@@ -243,8 +243,8 @@
           },
           "url": "https://sourceforge.net/projects/simba-arduino/files/sam/simba-arduino-sam-4.1.0.zip",
 	  "archiveFileName": "simba-arduino-sam-4.1.0.zip",
-	  "checksum": "SHA-256:f9a655bd949b69f6311e58fc156c376f6336e398abd72b2ce963f76bf99b5fd7",
-	  "size": "802479",
+	  "checksum": "SHA-256:f91c9aea7ae7a23a097935c4b48c427ce9b8e43280acd81d692b260ebbac0a97",
+	  "size": "802430",
           "boards": [
 	      {"name" : "Arduino Due"}
           ],
