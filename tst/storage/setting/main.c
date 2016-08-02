@@ -20,12 +20,140 @@
 
 #include "simba.h"
 
+static char qbuf[512];
+static struct queue_t queue;
+
+static int test_reset(struct harness_t *harness_p)
+{
+    BTASSERT(setting_reset() == 0);
+
+    return (0);
+}
+
+static int test_cmd_list(struct harness_t *harness_p)
+{
+#if CONFIG_FS_CMD_SETTING_LIST == 1
+
+    char buf[512];
+    size_t size;
+    FAR const char *response_p;
+
+    /* Call the list command and validate the output. */
+    strcpy(buf, "storage/setting/list");
+    BTASSERT(fs_call(buf, NULL, &queue, NULL) == 0);
+    response_p = FSTR("NAME                  VALUE\r\n"
+                      "int8                  -4\r\n"
+                      "int16                 -3\r\n"
+                      "int32                 -2\r\n"
+                      "string                y\r\n");
+    size = std_strlen(response_p);
+    BTASSERT(chan_read(&queue, buf, size) == size);
+    buf[size] = '\0';
+    BTASSERT(std_strcmp(buf, response_p) == 0);
+
+    return (0);
+
+#else
+
+    return (1);
+
+#endif
+}
+
+static int test_cmd_read_write_read(struct harness_t *harness_p)
+{
+#if CONFIG_FS_CMD_SETTING_READ == 1
+
+    int i;
+    char buf[128];
+    char response[64];
+    size_t size;
+    char *names_p[] = {
+        "int8", "int16", "int32", "string"
+    };
+    char *values_before_p[] = {
+        "-4", "-3", "-2", "y"
+    };
+    char *values_after_p[] = {
+        "78", "543", "12345678", "hi"
+    };
+
+    for (i = 0; i < membersof(names_p); i++) {
+        /* Read the value. */
+        std_sprintf(buf, FSTR("storage/setting/read %s"), names_p[i]);
+        BTASSERT(fs_call(buf, NULL, &queue, NULL) == 0);
+        std_sprintf(response, FSTR("%s\r\n"), values_before_p[i]);
+        size = strlen(response);
+        BTASSERT(chan_read(&queue, buf, size) == size);
+        buf[size] = '\0';
+        BTASSERT(strcmp(buf, response) == 0);
+
+        /* Write a new value. */
+        std_sprintf(buf,
+                    FSTR("storage/setting/write %s %s"),
+                    names_p[i],
+                    values_after_p[i]);
+        BTASSERT(fs_call(buf, NULL, &queue, NULL) == 0);
+
+        /* Read the value again to verify that the write command
+           works. */
+        std_sprintf(buf, FSTR("storage/setting/read %s"), names_p[i]);
+        BTASSERT(fs_call(buf, NULL, &queue, NULL) == 0);
+        std_sprintf(response, FSTR("%s\r\n"), values_after_p[i]);
+        size = strlen(response);
+        BTASSERT(chan_read(&queue, buf, size) == size);
+        buf[size] = '\0';
+        BTASSERT(strcmp(buf, response) == 0);
+    }
+
+    return (0);
+
+#else
+
+    return (1);
+
+#endif
+}
+
+static int test_cmd_reset(struct harness_t *harness_p)
+{
+#if CONFIG_FS_CMD_SETTING_RESET == 1
+
+    char buf[512];
+    size_t size;
+    FAR const char *response_p;
+
+    /* Call the list command and validate the output. */
+    strcpy(buf, "storage/setting/reset");
+    BTASSERT(fs_call(buf, NULL, &queue, NULL) == 0);
+
+    /* Check the list output. */
+    strcpy(buf, "storage/setting/list");
+    BTASSERT(fs_call(buf, NULL, &queue, NULL) == 0);
+    response_p = FSTR("NAME                  VALUE\r\n"
+                      "int8                  -4\r\n"
+                      "int16                 -3\r\n"
+                      "int32                 -2\r\n"
+                      "string                y\r\n");
+    size = std_strlen(response_p);
+    BTASSERT(chan_read(&queue, buf, size) == size);
+    buf[size] = '\0';
+    BTASSERT(std_strcmp(buf, response_p) == 0);
+
+    return (0);
+
+#else
+
+    return (1);
+
+#endif
+}
+
 static int test_integer(struct harness_t *harness_p)
 {
     int8_t int8;
     int16_t int16;
     int32_t int32;
-    int64_t int64;
 
     BTASSERT(setting_read(&int8,
                           SETTING_INT8_ADDR,
@@ -42,50 +170,16 @@ static int test_integer(struct harness_t *harness_p)
                           SETTING_INT32_SIZE) == SETTING_INT32_SIZE);
     BTASSERT(int32 == SETTING_INT32_VALUE);
 
-    int64 = 46;
-    BTASSERT(setting_write(SETTING_INT64_ADDR,
-                           &int64,
-                           SETTING_INT64_SIZE) == SETTING_INT64_SIZE);
+    int32 = 46;
+    BTASSERT(setting_write(SETTING_INT32_ADDR,
+                           &int32,
+                           SETTING_INT32_SIZE) == SETTING_INT32_SIZE);
 
-    BTASSERT(setting_read(&int64,
-                          SETTING_INT64_ADDR,
-                          SETTING_INT64_SIZE) == SETTING_INT64_SIZE);
-    BTASSERT(int64 == 46);
-
-    return (0);
-}
-
-static int test_unsigned_integer(struct harness_t *harness_p)
-{
-    uint8_t uint8;
-    uint16_t uint16;
-    uint32_t uint32;
-    uint64_t uint64;
-
-    BTASSERT(setting_read(&uint8,
-                          SETTING_UINT8_ADDR,
-                          SETTING_UINT8_SIZE) == SETTING_UINT8_SIZE);
-    BTASSERT(uint8 == SETTING_UINT8_VALUE);
-
-    BTASSERT(setting_read(&uint16,
-                          SETTING_UINT16_ADDR,
-                          SETTING_UINT16_SIZE) == SETTING_UINT16_SIZE);
-    BTASSERT(uint16 == SETTING_UINT16_VALUE);
-
-    BTASSERT(setting_read(&uint32,
-                          SETTING_UINT32_ADDR,
-                          SETTING_UINT32_SIZE) == SETTING_UINT32_SIZE);
-    BTASSERT(uint32 == SETTING_UINT32_VALUE);
-
-    uint64 = 46;
-    BTASSERT(setting_write(SETTING_UINT64_ADDR,
-                           &uint64,
-                           SETTING_UINT64_SIZE) == SETTING_UINT64_SIZE);
-
-    BTASSERT(setting_read(&uint64,
-                          SETTING_UINT64_ADDR,
-                          SETTING_UINT64_SIZE) == SETTING_UINT64_SIZE);
-    BTASSERT(uint64 == 46);
+    int32 = 0;
+    BTASSERT(setting_read(&int32,
+                          SETTING_INT32_ADDR,
+                          SETTING_INT32_SIZE) == SETTING_INT32_SIZE);
+    BTASSERT(int32 == 46);
 
     return (0);
 }
@@ -122,13 +216,18 @@ int main()
 {
     struct harness_t harness;
     struct harness_testcase_t harness_testcases[] = {
+        { test_reset, "test_reset" },
+        { test_cmd_list, "test_cmd_list" },
+        { test_cmd_read_write_read, "test_cmd_read_write_read" },
+        { test_cmd_reset, "test_cmd_reset" },
         { test_integer, "test_integer" },
-        { test_unsigned_integer, "test_unsigned_integer" },
         { test_string, "test_string" },
         { NULL, NULL }
     };
 
     sys_start();
+
+    queue_init(&queue, qbuf, sizeof(qbuf));
 
     harness_init(&harness);
     harness_run(&harness, harness_testcases);

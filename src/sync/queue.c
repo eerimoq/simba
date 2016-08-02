@@ -142,6 +142,7 @@ ssize_t queue_read(struct queue_t *self_p, void *buf_p, size_t size)
     if (self_p->buffer.begin_p != NULL) {
         buffer_used = get_buffer_used(&self_p->buffer);
 
+        /* Number of bytes to read from the buffer. */
         if (left < buffer_used) {
             n = left;
         } else {
@@ -151,9 +152,11 @@ ssize_t queue_read(struct queue_t *self_p, void *buf_p, size_t size)
         buffer_used_until_end = BUFFER_USED_UNTIL_END(&self_p->buffer);
 
         if (n <= buffer_used_until_end) {
+            /* Read one chunk. */
             memcpy(cbuf_p, self_p->buffer.read_p, n);
             self_p->buffer.read_p += n;
         } else {
+            /* Read two chunks, to end and then from beginning. */
             memcpy(cbuf_p, self_p->buffer.read_p, buffer_used_until_end);
             memcpy(cbuf_p + buffer_used_until_end,
                    self_p->buffer.begin_p,
@@ -305,9 +308,13 @@ ssize_t queue_write_isr(struct queue_t *self_p,
         buffer_unused_until_end = BUFFER_UNUSED_UNTIL_END(&self_p->buffer);
 
         if (n <= buffer_unused_until_end) {
+            /* Data fits before the end of the buffer. */
             memcpy(self_p->buffer.write_p, cbuf_p, n);
             self_p->buffer.write_p += n;
         } else {
+            /* The data does not fit begore the end of the
+             * buffer. Write until end and then start from the
+             * beginning. */
             memcpy(self_p->buffer.write_p, cbuf_p, buffer_unused_until_end);
             memcpy(self_p->buffer.begin_p,
                    cbuf_p + buffer_unused_until_end,

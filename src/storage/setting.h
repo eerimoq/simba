@@ -22,6 +22,24 @@
 #define __STORAGE_SETTING_H__
 
 #include "simba.h"
+
+/**
+ * Setting types. Each setting must have be one of these types.
+ */
+enum setting_type_t {
+    setting_type_int8_t = 0,
+    setting_type_int16_t,
+    setting_type_int32_t,
+    setting_type_string_t
+};
+
+struct setting_t {
+    FAR const char *name_p;
+    enum setting_type_t type;
+    uint32_t address;
+    size_t size;
+};
+
 #include "setting_port.h"
 
 /**
@@ -52,5 +70,12 @@ ssize_t setting_read(void *dst_p, size_t src, size_t size);
  * @return Number of words written or negative error code.
  */
 ssize_t setting_write(size_t dst, const void *src_p, size_t size);
+
+/**
+ * Overwrite all settings with their default values.
+ *
+ * @return zero(0) or negative error code.
+ */
+int setting_reset(void);
 
 #endif

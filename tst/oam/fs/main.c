@@ -212,6 +212,7 @@ static int test_list(struct harness_t *harness_p)
                "logout\r\n"
                "my/\r\n"
                "our/\r\n"
+               "storage/\r\n"
                "tmp/\r\n"
                "your/\r\n");
 

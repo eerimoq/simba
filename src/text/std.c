@@ -88,7 +88,7 @@ static void formats(void (*std_putc)(char c, void *arg),
                     void *arg,
                     char *str,
                     char flags,
-                    signed char width,
+                    int width,
                     char negative_sign)
 {
     char *s = str;
@@ -224,7 +224,7 @@ static void vcprintf(void (*std_putc)(char c, void *arg_p),
                      va_list *ap_p)
 {
     char c, flags, length, negative_sign, buf[VALUE_BUF_MAX], *s_p;
-    signed char width;
+    int width;
 
     buf[sizeof(buf) - 1] = '\0';
 

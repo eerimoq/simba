@@ -148,3 +148,8 @@ static ssize_t setting_port_write(size_t dst, const void *src_p, size_t size)
 
     return (size);
 }
+
+static ssize_t setting_port_reset()
+{
+    return (copy_area(&setting_area[PRIMARY][0], &setting_default_area[0]));
+}

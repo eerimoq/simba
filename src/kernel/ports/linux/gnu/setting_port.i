@@ -27,11 +27,11 @@ static int setting_port_module_init(void)
     setting_p = fopen(SETTINGS_FILENAME, "r+");
 
     if (setting_p == NULL) {
-        fprintf(stderr, "%s: settings file missing", SETTINGS_FILENAME);
+        fprintf(stderr, "%s: settings file missing\n", SETTINGS_FILENAME);
         sys_stop(1);
     }
 
-    return (setting_p == NULL);
+    return (0);
 }
 
 static ssize_t setting_port_read(void *dst_p, size_t src, size_t size)
@@ -46,4 +46,15 @@ static ssize_t setting_port_write(size_t dst, const void *src_p, size_t size)
     fseek(setting_p, dst, SEEK_SET);
 
     return (fwrite(src_p, 1, size, setting_p));
+}
+
+static ssize_t setting_port_reset()
+{
+    fseek(setting_p, 0, SEEK_SET);
+    fwrite(setting_default_area,
+           sizeof(setting_default_area),
+           1,
+           setting_p);
+
+    return (0);
 }

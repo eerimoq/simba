@@ -39,9 +39,12 @@ typedef unsigned long off_t;
 #include "board.h"
 #include "mcu.h"
 
-#include "settings.h"
 #include "kernel/errno.h"
 #include "kernel/types.h"
+
+#include "storage/setting.h"
+
+#include "settings.h"
 
 #include "collections/binary_tree.h"
 #include "collections/bits.h"
@@ -68,7 +71,6 @@ typedef unsigned long off_t;
 #include "oam/fs.h"
 #include "oam/shell.h"
 
-#include "storage/setting.h"
 #include "storage/fat16.h"
 #include "storage/spiffs.h"
 

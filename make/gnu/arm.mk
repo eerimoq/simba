@@ -45,7 +45,6 @@ LDFLAGS += -mcpu=$(MCPU) \
 SETTING_MEMORY = flash
 SETTING_OFFSET = 0
 SETTING_SIZE = 4096
-SRC += $(SETTINGS_C)
 
 build: $(BIN)
 $(BIN): $(EXE)

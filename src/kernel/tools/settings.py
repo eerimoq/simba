@@ -46,6 +46,8 @@ HEADER_FMT = """/**
 #ifndef __SETTINGS_H__
 #define __SETTINGS_H__
 
+#include "simba.h"
+
 #define SETTING_AREA_OFFSET     {setting_offset}
 #define SETTING_AREA_SIZE       {setting_size}
 #define SETTING_AREA_CRC_OFFSET (SETTING_AREA_SIZE - 4)
@@ -57,6 +59,22 @@ HEADER_FMT = """/**
 {types}
 
 {values}
+
+#if defined(SETTING_MEMORY_EEPROM)
+
+extern FAR const uint8_t setting_default_area[SETTING_AREA_SIZE];
+
+#elif defined(SETTING_MEMORY_FLASH)
+
+extern uint8_t setting_default_area[SETTING_AREA_SIZE] __attribute__ ((section (".setting")));
+
+#else
+
+extern const uint8_t setting_default_area[SETTING_AREA_SIZE];
+
+#endif
+
+extern FAR const struct setting_t settings[];
 
 #endif
 """
@@ -87,15 +105,26 @@ SOURCE_FMT = """/**
 
 #include "simba.h"
 
+{settings_names}
+
+FAR const struct setting_t settings[] = {{
+{settings}
+    {{ NULL, 0, 0, 0 }}
+}};
+
 #if defined(SETTING_MEMORY_EEPROM)
 
-uint8_t setting_area[SETTING_AREA_OFFSET + SETTING_AREA_SIZE] __attribute__ ((section (".eeprom"))) = {{
+FAR const uint8_t setting_default_area[SETTING_AREA_SIZE] = {{
     {content}
 }};
 
-#else
+uint8_t setting_area[SETTING_AREA_OFFSET + SETTING_AREA_SIZE] __attribute__ ((section (".eeprom"))) = {{
+    {content_with_offset_padding}
+}};
 
-uint8_t setting_area[2][SETTING_AREA_OFFSET + SETTING_AREA_SIZE] __attribute__ ((section (".setting"))) = {{
+#elif defined(SETTING_MEMORY_FLASH)
+
+uint8_t setting_area[2][SETTING_AREA_SIZE] __attribute__ ((section (".setting"))) = {{
     {{
         {content}
     }},
@@ -104,11 +133,21 @@ uint8_t setting_area[2][SETTING_AREA_OFFSET + SETTING_AREA_SIZE] __attribute__ (
     }}
 }};
 
+uint8_t setting_default_area[SETTING_AREA_SIZE] __attribute__ ((section (".setting"))) = {{
+    {content}
+}};
+
+#else
+
+const uint8_t setting_default_area[SETTING_AREA_SIZE] = {{
+    {content}
+}};
+
 #endif
 
 """
 
-re_integer = re.compile(r"(?P<sign>[u]?)int(?P<bits>\d+)_t")
+re_integer = re.compile(r"(?P<sign>)int(?P<bits>\d+)_t")
 
 
 def parse_setting_file(filename):
@@ -174,7 +213,7 @@ def create_binary_content(setting, setting_memory, setting_size, endianess):
         # add padding between previous setting and this one
         content += "\xff" * (item["address"] - len(content))
         # add the value
-        if item["type"] == "string":
+        if item["type"] == "string_t":
             if item["size"] <= len(item["value"]):
                 sys.stderr.write("{}: value does not fit in size {}\n".format(item["value"],
                                                                               item["size"]))
@@ -186,13 +225,12 @@ def create_binary_content(setting, setting_memory, setting_size, endianess):
             bits_to_fmt = {
                 8: "b",
                 16: "h",
-                32: "i",
-                64: "q"
+                32: "i"
             }
             mo = re_integer.match(item["type"])
             sign = mo.group("sign")
             bits = int(mo.group("bits"))
-            if bits not in [8, 16, 32, 64]:
+            if bits not in [8, 16, 32]:
                 sys.stderr.write("{}: bad type\n".format(item["type"]))
                 sys.exit(1)
             if bits / 8 != item["size"]:
@@ -238,7 +276,7 @@ def create_header_file(outdir,
                          .format(name=name.upper(), value=item["address"]))
         sizes.append("#define SETTING_{name}_SIZE {value}"
                      .format(name=name.upper(), value=item["size"]))
-        types.append("#define SETTING_{name}_TYPE {value}"
+        types.append("#define SETTING_{name}_TYPE setting_type_{value}_t"
                      .format(name=name.upper(), value=item["type"]))
         values.append("#define SETTING_{name}_VALUE {value}"
                       .format(name=name.upper(), value=item["value"]))
@@ -270,11 +308,30 @@ def create_source_file(outdir,
                        setting_memory,
                        setting_offset,
                        setting_size,
-                       content):
+                       content,
+                       setting):
     now = time.strftime("%Y-%m-%d %H:%M %Z")
 
-    content = ("\xff" * setting_offset + content)
+    settings_names = []
+    settings = []
+
+    for name, item in setting.items():
+        settings_names.append("static FAR const char {name}_name[] = \"{name}\";".format(
+            name=name))
+        settings.append(
+            "    {{ .name_p = {name}_name, .type = setting_type_{type}, "
+            ".address = (SETTING_AREA_OFFSET + {address}), "
+            ".size = {size} }},".format(
+                name=name,
+                type=item["type"],
+                address=item["address"],
+                size=item["size"]))
+
     content_bytes = ['{:#04x}'.format(ord(byte)) for byte in content]
+
+    content_with_offset_padding = ("\xff" * setting_offset + content)
+    content_with_offset_padding_bytes = ['{:#04x}'.format(ord(byte))
+                                         for byte in content_with_offset_padding]
 
     # write to setting source file
     with open(os.path.join(outdir, SETTINGS_C_FILENAME), "w") as fout:
@@ -287,10 +344,14 @@ def create_source_file(outdir,
                                      minor=MINOR,
                                      section=section,
                                      setting_size=(setting_offset + setting_size),
-                                     content=', '.join(content_bytes)))
-    
+                                     settings_names='\n'.join(settings_names),
+                                     settings='\n'.join(settings),
+                                     content=', '.join(content_bytes),
+                                     content_with_offset_padding=', '.join(
+                                         content_with_offset_padding_bytes)))
 
-if __name__ == "__main__":
+
+def main():
     parser = argparse.ArgumentParser()
 
     parser.add_argument("--header", action="store_true")
@@ -333,4 +394,8 @@ if __name__ == "__main__":
                            args.setting_memory,
                            setting_offset,
                            setting_size,
-                           content)
+                           content,
+                           setting)
+
+if __name__ == "__main__":
+    main()

@@ -41,3 +41,15 @@ static int setting_port_write(size_t dst, const void *src_p, size_t size)
 
     return (size);
 }
+
+static ssize_t setting_port_reset()
+{
+    int i;
+
+    for (i = 0; i < sizeof(setting_default_area); i++) {
+        eeprom_update_byte(&setting_area[SETTING_AREA_OFFSET + i],
+                           setting_default_area[i]);
+    }
+
+    return (0);
+}

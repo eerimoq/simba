@@ -32,3 +32,8 @@ static int setting_port_write(size_t dst, const void *src_p, size_t size)
 {
     return (-1);
 }
+
+static ssize_t setting_port_reset()
+{
+    return (-1);
+}

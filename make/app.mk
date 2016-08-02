@@ -33,6 +33,7 @@ ifeq ($(RUST),yes)
 else
     SRC += main.c
 endif
+SRC += $(SETTINGS_C)
 SRC_FILTERED = $(filter-out $(SRC_IGNORE),$(SRC))
 CSRC += $(filter %.c,$(SRC_FILTERED))
 RUST_SRC += $(filter %.rs,$(SRC_FILTERED))

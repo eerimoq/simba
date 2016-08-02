@@ -277,6 +277,50 @@
 #endif
 
 /**
+ * File system command to list all settings.
+ */
+#ifndef CONFIG_FS_CMD_SETTING_LIST
+#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO)
+#        define CONFIG_FS_CMD_SETTING_LIST                  0
+#    else
+#        define CONFIG_FS_CMD_SETTING_LIST                  1
+#    endif
+#endif
+
+/**
+ * File system command to reset the settings to their original values.
+ */
+#ifndef CONFIG_FS_CMD_SETTING_RESET
+#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO)
+#        define CONFIG_FS_CMD_SETTING_RESET                 0
+#    else
+#        define CONFIG_FS_CMD_SETTING_RESET                 1
+#    endif
+#endif
+
+/**
+ * File system command to read a setting.
+ */
+#ifndef CONFIG_FS_CMD_SETTING_READ
+#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO)
+#        define CONFIG_FS_CMD_SETTING_READ                  0
+#    else
+#        define CONFIG_FS_CMD_SETTING_READ                  1
+#    endif
+#endif
+
+/**
+ * File system command to write a setting.
+ */
+#ifndef CONFIG_FS_CMD_SETTING_WRITE
+#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO)
+#        define CONFIG_FS_CMD_SETTING_WRITE                 0
+#    else
+#        define CONFIG_FS_CMD_SETTING_WRITE                 1
+#    endif
+#endif
+
+/**
  * Default console device (UART/USB CDC).
  */
 #define CONFIG_CONSOLE_NONE                                 0
