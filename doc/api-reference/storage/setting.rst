@@ -78,7 +78,8 @@ error handling has been left out to make the example easier to read.
 File system commands
 --------------------
 
-Four file system commands are available:
+Four file system commands are available, all located in the directory
+``storage/setting/``:
 
 - ``list`` Print the current settings.
 
