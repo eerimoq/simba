@@ -262,8 +262,8 @@
           },
           "url": "https://sourceforge.net/projects/simba-arduino/files/avr/simba-arduino-avr-4.1.0.zip",
 	  "archiveFileName": "simba-arduino-avr-4.1.0.zip",
-	  "checksum": "SHA-256:09915113da03cbe8451983b72e2f9cd3f2b2685410842df1f07017b24146f28b",
-	  "size": "3128967",
+	  "checksum": "SHA-256:c52744883f5de62c49f9932fbfefff51a5fcda523b8d032aeef2c2bdcbd76f75",
+	  "size": "1794252",
           "boards": [
 	    {"name" : "Arduino Mega 2560"},
 	    {"name" : "Arduino Nano"},
