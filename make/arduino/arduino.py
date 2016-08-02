@@ -908,14 +908,32 @@ def create_database():
     return json.loads(subprocess.check_output(["dbgen.py"]))
 
 
-def generate_cores(family):
+def is_cores_src(src):
+    """Returns true is given source file shall be copied to the cores
+    directory. Otherwise it should be copied to the variants
+    directory.
+
+    """
+
+    variant_patterns = [
+        "src/boards",
+        "src/mcus"
+    ]
+
+    for variant_pattern in variant_patterns:
+        if src.startswith(variant_pattern):
+            return False
+    return True
+
+
+def generate_cores(family, database):
     """Generate the cores directory, shared among all boards.
 
     """
 
     cores_dir = os.path.join("cores", "simba")
 
-    # Create the variant directory.
+    # Create the cores directory.
     mkdir_p(cores_dir)
 
     with open(os.path.join(cores_dir, "Arduino.h"), "w") as fout:
@@ -925,22 +943,44 @@ def generate_cores(family):
 
     # Generate a dummy settings files.
     if family == "avr":
+        board = "arduino_nano"
         with open(os.path.join(cores_dir, "settings.h"), "w") as fout:
             fout.write(AVR_SETTINGS_H)
-        with open(os.path.join(cores_dir, "dummy.c"), "w") as fout:
-            fout.write("/* Generated dummy file to create core.a. */")
     elif family == "sam":
+        board = "arduino_due"
         with open(os.path.join(cores_dir, "settings.h"), "w") as fout:
             fout.write(SAM_SETTINGS_H)
         with open(os.path.join(cores_dir, "settings.c"), "w") as fout:
             fout.write(SAM_SETTINGS_C)
     elif family == "esp":
+        board = "esp01"
         with open(os.path.join(cores_dir, "settings.h"), "w") as fout:
             fout.write(SAM_SETTINGS_H)
         with open(os.path.join(cores_dir, "settings.c"), "w") as fout:
             fout.write(SAM_SETTINGS_C)
     else:
-        raise
+        raise ValueError("{}: bad family".format(family))
+
+    # Copy all source files, except those in boards and mcus that are
+    # variant specific. Use any board in given family
+    for src in database["boards"][board]["src"]:
+        if not is_cores_src(src):
+            continue
+        dst_dir = os.path.join(cores_dir, os.path.dirname(src))
+        mkdir_p(dst_dir)
+        shutil.copy(os.path.join(simba_root, src), dst_dir)
+
+    # Copy all header files.
+    for inc in database["boards"][board]["inc"]:
+        inc_dir = os.path.join(simba_root, inc)
+        for root, _, filenames in os.walk(inc_dir):
+            for filename in fnmatch.filter(filenames, '*.[hi]'):
+                file_path = os.path.join(root, filename)
+                file_dir = os.path.dirname(file_path)
+                cores_file_dir = file_dir.replace(simba_root + "/", "")
+                mkdir_p(os.path.join(cores_dir, cores_file_dir))
+                shutil.copy(file_path,
+                            os.path.join(cores_dir, cores_file_dir))
 
     # Various files.
     root_files = [
@@ -971,24 +1011,14 @@ def generate_variants(family, database):
         # Create the variant directory.
         mkdir_p(variant_dir)
 
-        # Copy all source files.
+        # Copy variant specific source files; those in "boards" and
+        # "mcus". Other source files are copies in cores.
         for src in config["src"]:
+            if is_cores_src(src):
+                continue
             dst_dir = os.path.join(variant_dir, os.path.dirname(src))
             mkdir_p(dst_dir)
             shutil.copy(os.path.join(simba_root, src), dst_dir)
-
-        # Copy all header files.
-        for inc in config["inc"]:
-            inc_dir = os.path.join(simba_root, inc)
-            for root, _, filenames in os.walk(inc_dir):
-                for filename in fnmatch.filter(filenames, '*.[hi]'):
-                    file_path = os.path.join(root, filename)
-                    file_dir = os.path.dirname(file_path)
-                    variant_file_dir = file_dir.replace(simba_root + "/",
-                                                        "")
-                    mkdir_p(os.path.join(variant_dir, variant_file_dir))
-                    shutil.copy(file_path,
-                                os.path.join(variant_dir, variant_file_dir))
 
         # Copy all linker script files.
         for libpath in config["libpath"]:
@@ -1022,7 +1052,7 @@ def generate_examples():
     arduino_examples_path = os.path.join(arduino_simba_path, 'examples')
 
     os.makedirs(arduino_examples_path)
-    
+
     with open(os.path.join(arduino_simba_path, "Simba.h"), "w") as fout:
         fout.write("/* Generated file required by Arduino IDE. */")
 
@@ -1040,8 +1070,8 @@ def generate_examples():
         os.makedirs(arduino_example_path)
         shutil.copy(os.path.join(simba_example_path, example[1]),
                     os.path.join(arduino_example_path, example[0] + ".ino"))
-            
-    
+
+
 
 
 def get_c_extra_flags(board, database):
@@ -1054,7 +1084,7 @@ def get_c_extra_flags(board, database):
     cflags = database["boards"][board]["cflags"]
 
     return " ".join(cflags
-                    + ["\"-I{runtime.platform.path}/variants/" + board + "/" + inc + "\""
+                    + ["\"-I{runtime.platform.path}/cores/simba/" + inc + "\""
                        for inc in incs]
                     + ["-D" + d for d in cdefs])
 
@@ -1216,7 +1246,7 @@ def generate_files_and_folders(family, database, outdir):
     cwd = os.getcwd()
     os.chdir(outdir)
 
-    generate_cores(family)
+    generate_cores(family, database)
     generate_variants(family, database)
     generate_examples()
     generate_configuration_files(family, database)
