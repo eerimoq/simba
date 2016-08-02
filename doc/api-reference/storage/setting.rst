@@ -80,14 +80,14 @@ File system commands
 
 Four fs commands are available:
 
-- list: Print the current settings.
+- ``list``: Print the current settings.
 
-- reset: Overwrite the current settings with the default values
+- ``reset``: Overwrite the current settings with the default values
   (ini-file values).
 
-- read: Read a setting.
+- ``read``: Read a setting.
 
-- write: Write a setting.
+- ``write``: Write a setting.
 
 Example output from the shell:
 

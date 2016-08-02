@@ -41,14 +41,15 @@ static int test_cmd_list(struct harness_t *harness_p)
     /* Call the list command and validate the output. */
     strcpy(buf, "storage/setting/list");
     BTASSERT(fs_call(buf, NULL, &queue, NULL) == 0);
-    response_p = FSTR("NAME                  VALUE\r\n"
-                      "int8                  -4\r\n"
-                      "int16                 -3\r\n"
-                      "int32                 -2\r\n"
-                      "string                y\r\n");
+    response_p = FSTR("NAME                  TYPE     SIZE  VALUE\r\n"
+                      "int8                  int8_t      1  -4\r\n"
+                      "int16                 int16_t     2  -3\r\n"
+                      "int32                 int32_t     4  -2\r\n"
+                      "string                string      4  y\r\n");
     size = std_strlen(response_p);
     BTASSERT(chan_read(&queue, buf, size) == size);
     buf[size] = '\0';
+    std_printf(FSTR("%s\r\n"), buf);
     BTASSERT(std_strcmp(buf, response_p) == 0);
 
     return (0);
@@ -130,11 +131,11 @@ static int test_cmd_reset(struct harness_t *harness_p)
     /* Check the list output. */
     strcpy(buf, "storage/setting/list");
     BTASSERT(fs_call(buf, NULL, &queue, NULL) == 0);
-    response_p = FSTR("NAME                  VALUE\r\n"
-                      "int8                  -4\r\n"
-                      "int16                 -3\r\n"
-                      "int32                 -2\r\n"
-                      "string                y\r\n");
+    response_p = FSTR("NAME                  TYPE     SIZE  VALUE\r\n"
+                      "int8                  int8_t      1  -4\r\n"
+                      "int16                 int16_t     2  -3\r\n"
+                      "int32                 int32_t     4  -2\r\n"
+                      "string                string      4  y\r\n");
     size = std_strlen(response_p);
     BTASSERT(chan_read(&queue, buf, size) == size);
     buf[size] = '\0';
