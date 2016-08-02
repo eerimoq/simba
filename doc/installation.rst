@@ -16,7 +16,7 @@ Install `Simba` in `PlatformIO`_.
 |arduino| Arduino IDE
 ---------------------
 
-Install `Simba` in the `Arduino IDE`_ as a third party board using the
+Install `Simba` in the `Arduino IDE 1.6.10`_ as a third party board using the
 Boards Manager.
 
 1. Open `"File"` -> `"Preferences"`.
@@ -125,7 +125,7 @@ installation was successful.
 
 .. _Cygwin: https://cygwin.com/setup-x86.exe
 .. _PlatformIO: http://platformio.org
-.. _Arduino IDE: https://www.arduino.cc/en/Main/Software
+.. _Arduino IDE 1.6.10: https://www.arduino.cc/en/Main/Software
 
 .. |arduino| image:: images/Arduino_Logo.png
              :width: 40 px
