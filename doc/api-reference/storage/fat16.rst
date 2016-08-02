@@ -15,7 +15,7 @@ personal computers and many mobile devices and embedded systems, and
 thus is a well-suited format for data exchange between computers and
 devices of almost any type and age from 1981 up to the present.
 
-Exmaple
+Example
 -------
 
 Here is the pseudo-code for mounting a file system, performing file

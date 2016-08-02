@@ -14,13 +14,13 @@ source files needed by this module.
 
 Supported types are:
 
-- ``int8_t``
+- ``int8_t`` 8 bits signed integer.
 
-- ``int16_t``
+- ``int16_t`` 16 bits signed integer.
 
-- ``int32_t``
+- ``int32_t`` 32 bits signed integer.
 
-- ``string``
+- ``string`` ASCII string.
 
 The size is the number of bytes of given type. For the standard
 integer types the size must be the value returned by `sizeof()`. For
@@ -78,16 +78,16 @@ error handling has been left out to make the example easier to read.
 File system commands
 --------------------
 
-Four fs commands are available:
+Four file system commands are available:
 
-- ``list``: Print the current settings.
+- ``list`` Print the current settings.
 
-- ``reset``: Overwrite the current settings with the default values
+- ``reset`` Overwrite the current settings with the default values
   (ini-file values).
 
-- ``read``: Read a setting.
+- ``read`` Read a setting.
 
-- ``write``: Write a setting.
+- ``write`` Write a setting.
 
 Example output from the shell:
 

@@ -1,7 +1,7 @@
 storage
 =======
 
-Data storage in volatile and persistent memories.
+Data storage in non-volatile, persistent, memories.
 
 The storage package on :github-tree:`Github<src/storage>`.
 
