@@ -14,29 +14,29 @@ registers, without using the pin driver object.
 +-------------------------------+-----------------------------------------------------------------+
 |  Command                      | Description                                                     |
 +===============================+=================================================================+
-|  ``set_mode <pin> <mode>``    | Set the mode of the pin `<pin>` to `<mode>`, where `<mode>` |br||
-|                               | is one of ``output`` and ``input``.                             |
+|  ``set_mode <pin> <mode>``    | Set the mode of the pin ``<pin>`` to ``<mode>``, where |br|     |
+|                               | ``<mode>`` is one of ``output`` and ``input``.                  |
 +-------------------------------+-----------------------------------------------------------------+
-|  ``read <pin>``               | Read current input or output value of the pin `<pin>`. |br|     |
+|  ``read <pin>``               | Read current input or output value of the pin ``<pin>``. |br|   |
 |                               | ``high`` or ``low`` is printed.                                 |
 +-------------------------------+-----------------------------------------------------------------+
-|  ``write <pin> <value>``      | Write the value `<value>` to pin `<pin>`, where `<value>` |br|  |
-|                               | is one of ``high`` and ``low``.                                 |
+|  ``write <pin> <value>``      | Write the value ``<value>`` to pin ``<pin>``, where  |br|       |
+|                               | ``<value>`` is one of ``high`` and ``low``.                     |
 +-------------------------------+-----------------------------------------------------------------+
 
 Example output from the shell:
 
 .. code-block:: text
 
-    $ drivers/pin/set_mode d2 output
-    $ drivers/pin/read d2
-    low
-    $ drivers/pin/write d2 high
-    $ drivers/pin/read d2
-    high
-    $ drivers/pin/set_mode d3 input
-    $ drivers/pin/read d3
-    low
+   $ drivers/pin/set_mode d2 output
+   $ drivers/pin/read d2
+   low
+   $ drivers/pin/write d2 high
+   $ drivers/pin/read d2
+   high
+   $ drivers/pin/set_mode d3 input
+   $ drivers/pin/read d3
+   low
 
 ----------------------------------------------
 

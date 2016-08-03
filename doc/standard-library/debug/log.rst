@@ -37,6 +37,39 @@ be seen in the third field in the entries.
    37:debug:main:bar: A bar debug message.
    56:error:main:default: A main error message.
 
+File system commands
+--------------------
+
+Three file system commands are available, all located in the directory
+``debug/log/``.
+
++-----------------------------------+-----------------------------------------------------------------+
+|  Command                          | Description                                                     |
++===================================+=================================================================+
+|  ``list``                         | Print a list of all log objects.                                |
++-----------------------------------+-----------------------------------------------------------------+
+|  ``print <string>``               | Print a log entry using the default log object and log |br|     |
+|                                   | level ``LOG_INFO``. This command has no use except to test |br| |
+|                                   | that the log module works.                                      |
++-----------------------------------+-----------------------------------------------------------------+
+|  ``set_log_mask <obejct> <mask>`` | Set the log mask to ``<mask>`` for log object ``<object>``.     |
++-----------------------------------+-----------------------------------------------------------------+
+
+Example output from the shell:
+
+.. code-block:: text
+
+    $ debug/log/list
+         OBJECT NAME  MASK
+             default  0x3f
+    $ debug/log/print Hello!
+    $ debug/log/set_log_mask default 0xff
+    $ debug/log/list
+         OBJECT NAME  MASK
+             default  0xff
+    $ debug/log/print Hello!!!
+    56:info:main:default: Hello!!!
+
 ----------------------------------------------
 
 Source code: :github-blob:`src/debug/log.h`
@@ -49,3 +82,7 @@ Test coverage: :codecov:`src/debug/log.c`
 
 .. doxygenfile:: debug/log.h
    :project: simba
+
+.. |br| raw:: html
+
+   <br />
