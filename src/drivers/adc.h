@@ -25,6 +25,9 @@
 
 #include "adc_port.h"
 
+/**
+ * Use VCC as reference for convertions.
+ */
 #define ADC_REFERENCE_VCC ADC_PORT_REFERENCE_VCC
 
 extern struct adc_device_t adc_device[ADC_DEVICE_MAX];

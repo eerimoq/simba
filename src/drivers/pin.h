@@ -23,7 +23,14 @@
 
 #include "simba.h"
 
+/**
+ * Configure the pin as an output pin.
+ */
 #define PIN_OUTPUT 0
+
+/**
+ * Configure the pin as an input pin.
+ */
 #define PIN_INPUT  1
 
 #include "pin_port.h"
@@ -36,7 +43,7 @@ extern struct pin_device_t pin_device[PIN_DEVICE_MAX];
 int pin_module_init(void);
 
 /**
- * Initialize given driver object from given configuration.
+ * Initialize given driver object with given device and mode.
  *
  * @param[out] self_p Driver object to be initialized.
  * @param[in] dev_p Device to use.
@@ -52,7 +59,7 @@ int pin_init(struct pin_driver_t *self_p,
  * Write given value to given pin.
  *
  * @param[in] self_p Driver object.
- * @param[in] value Value to vrite
+ * @param[in] value ``1`` for high and ``0`` for low output.
  *
  * @return zero(0) or negative error code.
  */
@@ -63,12 +70,13 @@ int pin_write(struct pin_driver_t *self_p, int value);
  *
  * @param[in] self_p Driver object.
  *
- * @return Value or negative error code.
+ * @return ``1`` for high and ``0`` for low input, otherwise negative
+ *         error code.
  */
 int pin_read(struct pin_driver_t *self_p);
 
 /**
- * Toggle the pin state (high/low).
+ * Toggle the pin output value (high/low).
  *
  * @param[in] self_p Driver object.
  *
@@ -77,7 +85,7 @@ int pin_read(struct pin_driver_t *self_p);
 int pin_toggle(struct pin_driver_t *self_p);
 
 /**
- * Set the pin mode.
+ * Set the pin mode of given pin.
  *
  * @param[in] self_p Driver object.
  * @param[in] mode New pin mode.

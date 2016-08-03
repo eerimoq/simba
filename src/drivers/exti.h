@@ -27,8 +27,19 @@ struct exti_driver_t;
 
 #include "exti_port.h"
 
+/**
+ * Trigger an interrupt on both rising and falling edges.
+ */
 #define EXTI_TRIGGER_BOTH_EDGES   EXTI_PORT_TRIGGER_BOTH_EDGES   
+
+/**
+ * Trigger an interrupt on falling edges.
+ */
 #define EXTI_TRIGGER_FALLING_EDGE EXTI_PORT_TRIGGER_FALLING_EDGE 
+
+/**
+ * Trigger an interrupt on both rising edges.
+ */
 #define EXTI_TRIGGER_RISING_EDGE  EXTI_PORT_TRIGGER_RISING_EDGE  
 
 extern struct exti_device_t exti_device[EXTI_DEVICE_MAX];
@@ -48,7 +59,7 @@ int exti_module_init(void);
  *                    ``EXTI_TRIGGER_RISING_EDGE``.
  * @param[in] on_interrupt Function callback called when an interrupt
  *                         occurs.
- * @param[in] on_interrupt Fucntion callback argument.
+ * @param[in] arg_p Fucntion callback argument.
  *
  * @return zero(0) or negative error code.
  */
