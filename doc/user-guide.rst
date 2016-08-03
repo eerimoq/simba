@@ -2,7 +2,9 @@ User Guide
 ==========
 
 This guide is intended for users of the Simba Embedded Programming
-Platform.
+Platform and the `Simba build system`. Parts of the guide is
+applicable to other build systems as well, in particular the
+configuration section.
 
 The Simba installation guide can be found on the :doc:`installation`
 page.

@@ -1,13 +1,20 @@
 Configuration
 =============
 
-Here is a list of selected compile time configuration variables in
- `Simba`. These are used to customize `Simba` for your application
- needs. All configuration variables and their default values are
- defined in :github-blob:`src/config_default.h`.
+Standard Library
+----------------
+
+The :doc:`../standard-library` is configured at compile time using
+defines named ``CONFIG_*``. The default configuration includes most
+functionality, as most application wants that . If an application has
+special requirements, for example memory constraints, it has to be
+configured to remove unnecessaray functionality.
+
+All configuration variables and their default values are defined in
+:github-blob:`src/config_default.h`.
 
 Search order
-------------
+^^^^^^^^^^^^
 
 Highest priority first.
 
@@ -18,7 +25,11 @@ Highest priority first.
 3. The default configuration, :github-blob:`src/config_default.h`.
 
 Variables
----------
+^^^^^^^^^
+
+Here is a list of a few of the configuration variables. Ther are many
+more in the default confgiuration file
+:github-blob:`src/config_default.h`.
 
 +-------------------------------+-----------------------------------------------------------------+
 |  Name                         | Description                                                     |
@@ -39,11 +50,8 @@ Variables
 |  CONFIG_SYSTEM_TICK_FREQUENCY | System tick frequency in Hertz.                                 |
 +-------------------------------+-----------------------------------------------------------------+
 
-See :github-blob:`src/config_default.h` for a list of all
-configuration variables.
-
 lwIP
-^^^^
+----
 
 Use ``config.h`` to fully configure lwIP and all of its modules. You
 do not need to define every option that lwIP provides; if you do not
@@ -54,7 +62,7 @@ By default `Simba` overrides a few of the variables in
 :github-blob:`src/inet/lwipopts.h`.
 
 Module support (Code size)
-~~~~~~~~~~~~~~~~~~~~~~~~~~
+^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Enabling and disabling modules
 """"""""""""""""""""""""""""""
@@ -93,7 +101,7 @@ and enable DHCP, the following ``config.h`` file would do it:
    #define LWIP_DHCP 1
 
 Memory management (RAM usage)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Memory pools
 """"""""""""
@@ -189,7 +197,7 @@ many entries of each pool are used (or have a look at the global
 variable ``lwip_stats`` instead).
 
 Fine-tuning even more
-~~~~~~~~~~~~~~~~~~~~~
+^^^^^^^^^^^^^^^^^^^^^
 
 To see the options that you can set, open
 :github-blob:`3pp/lwip-1.4.1/src/include/lwip/opt.h`. This file is
