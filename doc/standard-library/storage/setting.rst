@@ -32,6 +32,48 @@ address 0 and increasing from there.
 The build system variable ``SETTINGS_INI`` contains the path to the
 ini-file. Set this variable to the path of the application ini-file.
 
+File system commands
+--------------------
+
+Four file system commands are available, all located in the directory
+``storage/setting/``.
+
++-------------------------------+-----------------------------------------------------------------+
+|  Command                      | Description                                                     |
++===============================+=================================================================+
+|  ``list``                     | Print a list of the current settings.                           |
++-------------------------------+-----------------------------------------------------------------+
+|  ``reset``                    | Overwrite the current settings values with their default |br|   |
+|                               | values (the values defined in the ini-file values).             |
++-------------------------------+-----------------------------------------------------------------+
+|  ``read <name>``              | Read the value of setting ``<name>``.                           |
++-------------------------------+-----------------------------------------------------------------+
+|  ``write <name> <value>``     | Write ``<value>`` to setting ``<name>``.                        |
++-------------------------------+-----------------------------------------------------------------+
+
+Example output from the shell:
+
+.. code-block:: text
+
+   $ storage/setting/list 
+   NAME                  TYPE     SIZE  VALUE
+   version               int8_t      1  1
+   value_1               int16_t     2  24567
+   value_2               int32_t     4  -57
+   value_3               string     16  foobar
+   $ storage/setting/read value_1
+   24567
+   $ storage/setting/write value_1 -5
+   $ storage/setting/read value_1
+   -5
+   $ storage/setting/reset
+   $ storage/setting/list 
+   NAME                  TYPE     SIZE  VALUE
+   version               int8_t      1  1
+   value_1               int16_t     2  24567
+   value_2               int32_t     4  -57
+   value_3               string     16  foobar
+
 Example
 -------
 
@@ -82,48 +124,6 @@ functions.
 
        return (0);
    }
-
-File system commands
---------------------
-
-Four file system commands are available, all located in the directory
-``storage/setting/``.
-
-+-------------------------------+-----------------------------------------------------------------+
-|  Command                      | Description                                                     |
-+===============================+=================================================================+
-|  ``list``                     | Print a list of the current settings.                           |
-+-------------------------------+-----------------------------------------------------------------+
-|  ``reset``                    | Overwrite the current settings values with their default |br|   |
-|                               | values (the values defined in the ini-file values).             |
-+-------------------------------+-----------------------------------------------------------------+
-|  ``read <name>``              | Read the value of setting ``<name>``.                           |
-+-------------------------------+-----------------------------------------------------------------+
-|  ``write <name> <value>``     | Write ``<value>`` to setting ``<name>``.                        |
-+-------------------------------+-----------------------------------------------------------------+
-
-Example output from the shell:
-
-.. code-block:: text
-
-   $ storage/setting/list 
-   NAME                  TYPE     SIZE  VALUE
-   version               int8_t      1  1
-   value_1               int16_t     2  24567
-   value_2               int32_t     4  -57
-   value_3               string     16  foobar
-   $ storage/setting/read value_1
-   24567
-   $ storage/setting/write value_1 -5
-   $ storage/setting/read value_1
-   -5
-   $ storage/setting/reset
-   $ storage/setting/list 
-   NAME                  TYPE     SIZE  VALUE
-   version               int8_t      1  1
-   value_1               int16_t     2  24567
-   value_2               int32_t     4  -57
-   value_3               string     16  foobar
 
 ----------------------------------------------
 
