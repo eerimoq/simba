@@ -198,6 +198,8 @@ static int cmd_read_cb(int argc,
 
         setting_p++;
     }
+
+    std_fprintf(chout_p, FSTR("%s: setting not found\r\n"), argv[1]);
     
     return (-1);
 }
@@ -308,6 +310,8 @@ static int cmd_write_cb(int argc,
 
         setting_p++;
     }
+
+    std_fprintf(chout_p, FSTR("%s: setting not found\r\n"), argv[1]);
 
     return (-1);
 }

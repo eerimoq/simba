@@ -61,6 +61,107 @@ static int test_cmd_list(struct harness_t *harness_p)
 #endif
 }
 
+static int test_cmd_read(struct harness_t *harness_p)
+{
+#if CONFIG_FS_CMD_SETTING_READ == 1
+
+    char buf[128];
+    char response[64];
+    size_t size;
+
+    /* Bad number of arguments. */
+    std_sprintf(buf, FSTR("storage/setting/read"));
+    BTASSERT(fs_call(buf, NULL, &queue, NULL) == -1);
+    std_sprintf(response, FSTR("Usage: storage/setting/read <name>\r\n"));
+    size = strlen(response);
+    BTASSERT(chan_read(&queue, buf, size) == size);
+    buf[size] = '\0';
+    BTASSERT(strcmp(buf, response) == 0);
+
+    /* Bad setting name. */
+    std_sprintf(buf, FSTR("storage/setting/read missing"));
+    BTASSERT(fs_call(buf, NULL, &queue, NULL) == -1);
+    std_sprintf(response, FSTR("missing: setting not found\r\n"));
+    size = strlen(response);
+    BTASSERT(chan_read(&queue, buf, size) == size);
+    buf[size] = '\0';
+    BTASSERT(strcmp(buf, response) == 0);
+
+    return (0);
+
+#else
+
+    return (1);
+
+#endif
+}
+
+static int test_cmd_write(struct harness_t *harness_p)
+{
+#if CONFIG_FS_CMD_SETTING_READ == 1
+
+    int i;
+    char buf[128];
+    char response[64];
+    size_t size;
+    char *names_p[] = {
+        "int8", "int8", "int16", "int16"
+    };
+    char *out_of_range_values_p[] = {
+        "128", "-129", "32768", "-32769"
+    };
+
+    /* Write a value that is outside the allowed range. */
+    for (i = 0; i < membersof(names_p); i++) {
+        std_sprintf(buf,
+                    FSTR("storage/setting/write %s %s"),
+                    names_p[i],
+                    out_of_range_values_p[i]);
+        BTASSERT(fs_call(buf, NULL, &queue, NULL) == -1);
+        std_sprintf(response, FSTR("%s: value out of range\r\n"), out_of_range_values_p[i]);
+        size = strlen(response);
+        BTASSERT(chan_read(&queue, buf, size) == size);
+        buf[size] = '\0';
+        BTASSERT(strcmp(buf, response) == 0);
+    }
+
+    /* Write a string that is too long. */
+    std_sprintf(buf,
+                FSTR("storage/setting/write string ThisStringIsTooLong"));
+    BTASSERT(fs_call(buf, NULL, &queue, NULL) == -1);
+    std_sprintf(response, FSTR("ThisStringIsTooLong: string too long\r\n"));
+    size = strlen(response);
+    BTASSERT(chan_read(&queue, buf, size) == size);
+    buf[size] = '\0';
+    BTASSERT(strcmp(buf, response) == 0);
+
+    /* Bad number of arguments. */
+    std_sprintf(buf, FSTR("storage/setting/write"));
+    BTASSERT(fs_call(buf, NULL, &queue, NULL) == -1);
+    std_sprintf(response, FSTR("Usage: storage/setting/write <name> <value>\r\n"));
+    size = strlen(response);
+    BTASSERT(chan_read(&queue, buf, size) == size);
+    buf[size] = '\0';
+    BTASSERT(strcmp(buf, response) == 0);
+
+    /* Bad setting name. */
+    std_sprintf(buf, FSTR("storage/setting/write missing 1"));
+    BTASSERT(fs_call(buf, NULL, &queue, NULL) == -1);
+    std_sprintf(response, FSTR("missing: setting not found\r\n"));
+    size = strlen(response);
+    BTASSERT(chan_read(&queue, buf, size) == size);
+    buf[size] = '\0';
+    BTASSERT(strcmp(buf, response) == 0);
+
+    return (0);
+
+#else
+
+    return (1);
+
+#endif
+}
+
 static int test_cmd_read_write_read(struct harness_t *harness_p)
 {
 #if CONFIG_FS_CMD_SETTING_READ == 1
@@ -219,6 +320,8 @@ int main()
     struct harness_testcase_t harness_testcases[] = {
         { test_reset, "test_reset" },
         { test_cmd_list, "test_cmd_list" },
+        { test_cmd_read, "test_cmd_read" },
+        { test_cmd_write, "test_cmd_write" },
         { test_cmd_read_write_read, "test_cmd_read_write_read" },
         { test_cmd_reset, "test_cmd_reset" },
         { test_integer, "test_integer" },
