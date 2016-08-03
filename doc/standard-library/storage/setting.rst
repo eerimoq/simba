@@ -87,16 +87,20 @@ File system commands
 --------------------
 
 Four file system commands are available, all located in the directory
-``storage/setting/``:
+``storage/setting/``.
 
-- ``list`` Print a list of the current settings.
-
-- ``reset`` Overwrite the current settings values with their default
-  values (the values defined in the ini-file values).
-
-- ``read <name>`` Read the value of setting `<name>`.
-
-- ``write <name> <value>`` Write `<value>` to setting `<name>`.
++-------------------------------+-----------------------------------------------------------------+
+|  Command                      | Description                                                     |
++===============================+=================================================================+
+|  ``list``                     | Print a list of the current settings.                           |
++-------------------------------+-----------------------------------------------------------------+
+|  ``reset``                    | Overwrite the current settings values with their default |br|   |
+|                               | values (the values defined in the ini-file values).             |
++-------------------------------+-----------------------------------------------------------------+
+|  ``read <name>``              | Read the value of setting `<name>`..                            |
++-------------------------------+-----------------------------------------------------------------+
+|  ``write <name> <value>``     | Write `<value>` to setting `<name>`.                            |
++-------------------------------+-----------------------------------------------------------------+
 
 Example output from the shell:
 
@@ -133,3 +137,7 @@ Test coverage: :codecov:`src/storage/setting.c`
 
 .. doxygenfile:: storage/setting.h
    :project: simba
+
+.. |br| raw:: html
+
+   <br />

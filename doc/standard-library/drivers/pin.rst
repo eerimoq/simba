@@ -11,14 +11,18 @@ Three file system commands are available, all located in the directory
 ``drivers/pin/``. These commands directly access the pin device
 registers, without using the pin driver object.
 
-- ``set_mode <pin> <mode>`` Set the mode of the pin `<pin>` to
-  `<mode>`, where `<mode>` is one of ``output`` and ``input``.
-
-- ``read <pin>`` Read current input or output value of the pin
-  `<pin>`. ``high`` or ``low`` is printed.
-
-- ``write <pin> <value>`` Write the value `<value>` to pin `<pin>`,
-  where `<value>` is one of ``high`` and ``low``.
++-------------------------------+-----------------------------------------------------------------+
+|  Command                      | Description                                                     |
++===============================+=================================================================+
+|  ``set_mode <pin> <mode>``    | Set the mode of the pin `<pin>` to `<mode>`, where `<mode>` |br||
+|                               | is one of ``output`` and ``input``.                             |
++-------------------------------+-----------------------------------------------------------------+
+|  ``read <pin>``               | Read current input or output value of the pin `<pin>`. |br|     |
+|                               | ``high`` or ``low`` is printed.                                 |
++-------------------------------+-----------------------------------------------------------------+
+|  ``write <pin> <value>``      | Write the value `<value>` to pin `<pin>`, where `<value>` |br|  |
+|                               | is one of ``high`` and ``low``.                                 |
++-------------------------------+-----------------------------------------------------------------+
 
 Example output from the shell:
 
@@ -44,3 +48,7 @@ Test code: :github-blob:`tst/drivers/pin/main.c`
 
 .. doxygenfile:: drivers/pin.h
    :project: simba
+
+.. |br| raw:: html
+
+   <br />
