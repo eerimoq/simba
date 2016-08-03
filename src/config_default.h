@@ -22,6 +22,17 @@
 #define __CONFIG_DEFAULT_H__
 
 /**
+ * Include the system configuration string in the sys module.
+ */
+#ifndef CONFIG_SYS_CONFIG
+#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO)
+#        define CONFIG_SYS_CONFIG                           0
+#    else
+#        define CONFIG_SYS_CONFIG                           1
+#    endif
+#endif
+
+/**
  * Build with assert.
  */
 #ifndef CONFIG_ASSERT

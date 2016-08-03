@@ -31,24 +31,58 @@ struct sys_t sys = {
 };
 
 static const FAR char config[] = 
-    "config: assert=" STRINGIFY(CONFIG_ASSERT) "\r\n"
+    "config: sys-config=" STRINGIFY(CONFIG_SYS_CONFIG) "\r\n"
+
+#if CONFIG_SYS_CONFIG == 1
+
+    "        assert=" STRINGIFY(CONFIG_ASSERT) "\r\n"
     "        debug=" STRINGIFY(CONFIG_DEBUG) "\r\n"
     "        profile-stack=" STRINGIFY(CONFIG_PROFILE_STACK) "\r\n"
     "        preemptive-scheduler=" STRINGIFY(CONFIG_PREEMPTIVE_SCHEDULER) "\r\n"
+    "        monitor-thread=" STRINGIFY(CONFIG_MONITOR_THREAD) "\r\n"
     "        system-tick-frequency=" STRINGIFY(CONFIG_SYSTEM_TICK_FREQUENCY) "\r\n"
-    "        console="
-#if CONFIG_CONSOLE == CONFIG_CONSOLE_UART
-    "uart"
-#elif CONFIG_CONSOLE == CONFIG_CONSOLE_USB_CDC
-    "usb_cdc"
-#else
-    "none"
-#endif
-    "\r\n"
+    "        std-output-buffer-max=" STRINGIFY(CONFIG_STD_OUTPUT_BUFFER_MAX) "\r\n"
+    "        fs-cmd-usb-device-list=" STRINGIFY(CONFIG_FS_CMD_USB_DEVICE_LIST) "\r\n"
+    "        fs-cmd-usb-host-list=" STRINGIFY(CONFIG_FS_CMD_USB_HOST_LIST) "\r\n"
+    "        fs-cmd-pin-set-mode=" STRINGIFY(CONFIG_FS_CMD_PIN_SET_MODE) "\r\n"
+    "        fs-cmd-pin-read=" STRINGIFY(CONFIG_FS_CMD_PIN_READ) "\r\n"
+    "        fs-cmd-pin-write=" STRINGIFY(CONFIG_FS_CMD_PIN_WRITE) "\r\n"
+    "        fs-cmd-ds18b20-list=" STRINGIFY(CONFIG_FS_CMD_DS18B20_LIST) "\r\n"
+    "        fs-cmd-i2c-read=" STRINGIFY(CONFIG_FS_CMD_I2C_READ) "\r\n"
+    "        fs-cmd-i2c-write=" STRINGIFY(CONFIG_FS_CMD_I2C_WRITE) "\r\n"
+    "        fs-cmd-thrd-list=" STRINGIFY(CONFIG_FS_CMD_THRD_LIST) "\r\n"
+    "        fs-cmd-thrd-set-log-mask=" STRINGIFY(CONFIG_FS_CMD_THRD_SET_LOG_MASK) "\r\n"
+    "        fs-cmd-sys-info=" STRINGIFY(CONFIG_FS_CMD_SYS_INFO) "\r\n"
+    "        fs-cmd-sys-uptime=" STRINGIFY(CONFIG_FS_CMD_SYS_UPTIME) "\r\n"
+    "        fs-cmd-fs-counters-list=" STRINGIFY(CONFIG_FS_CMD_FS_COUNTERS_LIST) "\r\n"
+    "        fs-cmd-fs-counters-reset=" STRINGIFY(CONFIG_FS_CMD_FS_COUNTERS_RESET) "\r\n"
+    "        fs-cmd-fs-parameters-list=" STRINGIFY(CONFIG_FS_CMD_FS_PARAMETERS_LIST) "\r\n"
+    "        fs-cmd-log-print=" STRINGIFY(CONFIG_FS_CMD_LOG_PRINT) "\r\n"
+    "        fs-cmd-log-list=" STRINGIFY(CONFIG_FS_CMD_LOG_LIST) "\r\n"
+    "        fs-cmd-log-set-log-mask=" STRINGIFY(CONFIG_FS_CMD_LOG_SET_LOG_MASK) "\r\n"
+    "        fs-cmd-network-interface-list=" STRINGIFY(CONFIG_FS_CMD_NETWORK_INTERFACE_LIST) "\r\n"
+    "        fs-cmd-setting-list=" STRINGIFY(CONFIG_FS_CMD_SETTING_LIST) "\r\n"
+    "        fs-cmd-setting-reset=" STRINGIFY(CONFIG_FS_CMD_SETTING_RESET) "\r\n"
+    "        fs-cmd-setting-read=" STRINGIFY(CONFIG_FS_CMD_SETTING_READ) "\r\n"
+    "        fs-cmd-setting-write=" STRINGIFY(CONFIG_FS_CMD_SETTING_WRITE) "\r\n"
+    "        console=" STRINGIFY(CONFIG_CONSOLE) "\r\n"
     "        console-device=" STRINGIFY(CONFIG_CONSOLE_DEVICE) "\r\n"
     "        console-uart-baudrate=" STRINGIFY(CONFIG_CONSOLE_UART_BAUDRATE) "\r\n"
-    "        monitor-thread=" STRINGIFY(CONFIG_MONITOR_THREAD) "\r\n"
-    "        shell-minimal=" STRINGIFY(CONFIG_SHELL_MINIMAL) "\r\n";
+    "        console-usb-cdc-control-interface=" STRINGIFY(CONFIG_CONSOLE_USB_CDC_CONTROL_INTERFACE) "\r\n"
+    "        console-usb-cdc-endpoint-in=" STRINGIFY(CONFIG_CONSOLE_USB_CDC_ENDPOINT_IN) "\r\n"
+    "        console-usb-cdc-endpoint-out=" STRINGIFY(CONFIG_CONSOLE_USB_CDC_ENDPOINT_OUT) "\r\n"
+    "        console-usb-cdc-wait-for-connetion=" STRINGIFY(CONFIG_CONSOLE_USB_CDC_WAIT_FOR_CONNETION) "\r\n"
+    "        shell-minimal=" STRINGIFY(CONFIG_SHELL_MINIMAL) "\r\n"
+    "        shell-prompt=" STRINGIFY(CONFIG_SHELL_PROMPT) "\r\n"
+    "        shell-command-max=" STRINGIFY(CONFIG_SHELL_COMMAND_MAX) "\r\n"
+    "        shell-history-size=" STRINGIFY(CONFIG_SHELL_HISTORY_SIZE) "\r\n"
+    "        usb-device-cdc=" STRINGIFY(CONFIG_USB_DEVICE_CDC) "\r\n"
+    "        usb-device-vid=" STRINGIFY(CONFIG_USB_DEVICE_VID) "\r\n"
+    "        usb-device-pid=" STRINGIFY(CONFIG_USB_DEVICE_PID) "\r\n"
+
+#endif
+
+    "";
 
 extern void time_tick_isr(void);
 extern void timer_tick_isr(void);
