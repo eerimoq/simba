@@ -8,23 +8,23 @@ Settings are stored in a non-volatile memory (NVM). In other words,
 settings are perserved even if the board is power cycled.
 
 Application settings are defined in an ini-file. A setting has a type,
-size, address and default value, all defined in the ini-file. The
-build system takes this file as input and generates the header and
-source files needed by this module.
+a size, an address and a default value, all defined in the
+ini-file. The build system takes this file as input and generates c
+header and source files needed by this module.
 
 Supported types are:
 
-- ``int8_t`` 8 bits signed integer.
+- ``int8_t`` An 8 bits signed integer.
 
-- ``int16_t`` 16 bits signed integer.
+- ``int16_t`` A 16 bits signed integer.
 
-- ``int32_t`` 32 bits signed integer.
+- ``int32_t`` A 32 bits signed integer.
 
-- ``string`` ASCII string.
+- ``string`` An ASCII string.
 
-The size is the number of bytes of given type. For the standard
-integer types the size must be the value returned by `sizeof()`. For
-strings it is the length of the string, including null termination.
+The size is the number of bytes of the value. For the standard integer
+types the size must be the value returned by `sizeof()`. For strings
+it is the length of the string, including null termination.
 
 The address for each setting is defined by the user, starting at
 address 0 and increasing from there.
@@ -35,12 +35,11 @@ ini-file. Set this variable to the path of the application ini-file.
 Example
 -------
 
-In this example the ini-file has one setting defined, foo.
+In this example the ini-file has one setting defined, ``foo``. The
+type is ``int8_t``, the address is ``0x00``, the size is ``1`` and the
+default value is ``-4``.
 
 .. code-block:: ini
-
-   [values]
-   foo = -4
 
    [types]
    foo = int8_t
@@ -51,26 +50,35 @@ In this example the ini-file has one setting defined, foo.
    [sizes]
    foo = 1
 
-The settings can be read and written from the application code. The
-error handling has been left out to make the example easier to read.
+   [values]
+   foo = -4
+
+The settings can be read and written with the functions
+`setting_read()` and `setting_write()`. Give the generated defines
+``SETTING_FOO_ADDR`` and ``SETTING_FOO_SIZE`` as arguments to those
+functions.
 
 .. code-block:: c
 
-   int bar()
+   int my_read_write_foo()
    {
        int8_t foo;
 
-       /* Read the setting. */
-       setting_read(&foo,
-                    SETTING_FOO_ADDR,
-                    SETTING_FOO_SIZE);
+       /* Read the foo setting. */
+       if (setting_read(&foo,
+                        SETTING_FOO_ADDR,
+                        SETTING_FOO_SIZE) != 0) {
+           return (-1);
+       }
 
        foo -= 1;
 
-       /* Write the setting. */
-       setting_write(SETTING_FOO_ADDR,
-                     &foo,
-                     SETTING_FOO_SIZE);
+       /* Write the foo setting. */
+       if (setting_write(SETTING_FOO_ADDR,
+                         &foo,
+                         SETTING_FOO_SIZE) != 0) {
+           return (-1);
+       }
 
        return (0);
    }
@@ -81,14 +89,14 @@ File system commands
 Four file system commands are available, all located in the directory
 ``storage/setting/``:
 
-- ``list`` Print the current settings.
+- ``list`` Print a list of the current settings.
 
-- ``reset`` Overwrite the current settings with the default values
-  (ini-file values).
+- ``reset`` Overwrite the current settings values with their default
+  values (the values defined in the ini-file values).
 
-- ``read`` Read a setting.
+- ``read <name>`` Read the value of setting `<name>`.
 
-- ``write`` Write a setting.
+- ``write <name> <value>`` Write `<value>` to setting `<name>`.
 
 Example output from the shell:
 
