@@ -26,9 +26,8 @@ Project homepage: https://github.com/eerimoq/simba
    developer-guide
    boards
    mcus
-   examples
    standard-library
-   platformio
+   examples
 
 Features
 --------
