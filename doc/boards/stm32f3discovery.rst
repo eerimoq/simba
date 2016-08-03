@@ -16,18 +16,22 @@ Pinout
 Drivers
 -------
 
-- :doc:`../api-reference/drivers/flash`
-- :doc:`../api-reference/drivers/pin`
-- :doc:`../api-reference/drivers/uart`
+A list of supported drivers for this board:
+
+- :doc:`../standard-library/drivers/flash`
+- :doc:`../standard-library/drivers/pin`
+- :doc:`../standard-library/drivers/uart`
 
 Mcu
 ---
 
 :doc:`../mcus/stm32f303vc`
 
-API Reference
--------------
+Standard Library
+----------------
 
-:doc:`STM32F3DISCOVERY <../api-reference/boards/stm32f3discovery>`
+Read more about board specific functionality in the :doc:`STM32F3DISCOVERY
+<../standard-library/boards/stm32f3discovery>` module documentation in the
+standard library.
 
 .. include:: extra/stm32f3discovery.rst

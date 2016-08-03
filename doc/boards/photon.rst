@@ -16,20 +16,24 @@ Pinout
 Drivers
 -------
 
-- :doc:`../api-reference/drivers/bcm43362`
-- :doc:`../api-reference/drivers/flash`
-- :doc:`../api-reference/drivers/pin`
-- :doc:`../api-reference/drivers/sdio`
-- :doc:`../api-reference/drivers/uart`
+A list of supported drivers for this board:
+
+- :doc:`../standard-library/drivers/bcm43362`
+- :doc:`../standard-library/drivers/flash`
+- :doc:`../standard-library/drivers/pin`
+- :doc:`../standard-library/drivers/sdio`
+- :doc:`../standard-library/drivers/uart`
 
 Mcu
 ---
 
 :doc:`../mcus/stm32f205rg`
 
-API Reference
--------------
+Standard Library
+----------------
 
-:doc:`Particle IO Photon <../api-reference/boards/photon>`
+Read more about board specific functionality in the :doc:`Particle IO Photon
+<../standard-library/boards/photon>` module documentation in the
+standard library.
 
 .. include:: extra/photon.rst

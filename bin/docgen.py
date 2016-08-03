@@ -26,6 +26,8 @@ Pinout
 Drivers
 -------
 
+A list of supported drivers for this board:
+
 {drivers}
 
 Mcu
@@ -33,10 +35,12 @@ Mcu
 
 :doc:`../mcus/{mcu}`
 
-API Reference
--------------
+Standard Library
+----------------
 
-:doc:`{desc} <../api-reference/boards/{name}>`
+Read more about board specific functionality in the :doc:`{desc}
+<../standard-library/boards/{name}>` module documentation in the
+standard library.
 
 {include_extra}
 """
@@ -79,7 +83,7 @@ def boards_generate(database):
     for board, data in database["boards"].items():
         drivers = []
         for driver in sorted(data["drivers"]):
-            drivers.append("- :doc:`../api-reference/drivers/{}`".format(
+            drivers.append("- :doc:`../standard-library/drivers/{}`".format(
                 driver))
 
         if os.path.exists(os.path.join("doc", "boards", "extra", board + ".rst")):

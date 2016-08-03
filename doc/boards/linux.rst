@@ -16,22 +16,26 @@ Pinout
 Drivers
 -------
 
-- :doc:`../api-reference/drivers/adc`
-- :doc:`../api-reference/drivers/flash`
-- :doc:`../api-reference/drivers/pin`
-- :doc:`../api-reference/drivers/pwm`
-- :doc:`../api-reference/drivers/sd`
-- :doc:`../api-reference/drivers/spi`
-- :doc:`../api-reference/drivers/uart`
+A list of supported drivers for this board:
+
+- :doc:`../standard-library/drivers/adc`
+- :doc:`../standard-library/drivers/flash`
+- :doc:`../standard-library/drivers/pin`
+- :doc:`../standard-library/drivers/pwm`
+- :doc:`../standard-library/drivers/sd`
+- :doc:`../standard-library/drivers/spi`
+- :doc:`../standard-library/drivers/uart`
 
 Mcu
 ---
 
 :doc:`../mcus/linux`
 
-API Reference
--------------
+Standard Library
+----------------
 
-:doc:`Linux <../api-reference/boards/linux>`
+Read more about board specific functionality in the :doc:`Linux
+<../standard-library/boards/linux>` module documentation in the
+standard library.
 
 

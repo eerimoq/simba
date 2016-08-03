@@ -16,32 +16,36 @@ Pinout
 Drivers
 -------
 
-- :doc:`../api-reference/drivers/adc`
-- :doc:`../api-reference/drivers/ds18b20`
-- :doc:`../api-reference/drivers/ds3231`
-- :doc:`../api-reference/drivers/exti`
-- :doc:`../api-reference/drivers/i2c`
-- :doc:`../api-reference/drivers/mcp2515`
-- :doc:`../api-reference/drivers/nrf24l01`
-- :doc:`../api-reference/drivers/owi`
-- :doc:`../api-reference/drivers/pin`
-- :doc:`../api-reference/drivers/pwm`
-- :doc:`../api-reference/drivers/sd`
-- :doc:`../api-reference/drivers/spi`
-- :doc:`../api-reference/drivers/uart`
-- :doc:`../api-reference/drivers/uart_soft`
-- :doc:`../api-reference/drivers/usb`
-- :doc:`../api-reference/drivers/usb_device`
-- :doc:`../api-reference/drivers/watchdog`
+A list of supported drivers for this board:
+
+- :doc:`../standard-library/drivers/adc`
+- :doc:`../standard-library/drivers/ds18b20`
+- :doc:`../standard-library/drivers/ds3231`
+- :doc:`../standard-library/drivers/exti`
+- :doc:`../standard-library/drivers/i2c`
+- :doc:`../standard-library/drivers/mcp2515`
+- :doc:`../standard-library/drivers/nrf24l01`
+- :doc:`../standard-library/drivers/owi`
+- :doc:`../standard-library/drivers/pin`
+- :doc:`../standard-library/drivers/pwm`
+- :doc:`../standard-library/drivers/sd`
+- :doc:`../standard-library/drivers/spi`
+- :doc:`../standard-library/drivers/uart`
+- :doc:`../standard-library/drivers/uart_soft`
+- :doc:`../standard-library/drivers/usb`
+- :doc:`../standard-library/drivers/usb_device`
+- :doc:`../standard-library/drivers/watchdog`
 
 Mcu
 ---
 
 :doc:`../mcus/atmega32u4`
 
-API Reference
--------------
+Standard Library
+----------------
 
-:doc:`Arduino Pro Micro <../api-reference/boards/arduino_pro_micro>`
+Read more about board specific functionality in the :doc:`Arduino Pro Micro
+<../standard-library/boards/arduino_pro_micro>` module documentation in the
+standard library.
 
 .. include:: extra/arduino_pro_micro.rst

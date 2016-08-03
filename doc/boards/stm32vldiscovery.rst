@@ -16,18 +16,22 @@ Pinout
 Drivers
 -------
 
-- :doc:`../api-reference/drivers/flash`
-- :doc:`../api-reference/drivers/pin`
-- :doc:`../api-reference/drivers/uart`
+A list of supported drivers for this board:
+
+- :doc:`../standard-library/drivers/flash`
+- :doc:`../standard-library/drivers/pin`
+- :doc:`../standard-library/drivers/uart`
 
 Mcu
 ---
 
 :doc:`../mcus/stm32f100rb`
 
-API Reference
--------------
+Standard Library
+----------------
 
-:doc:`STM32VLDISCOVERY <../api-reference/boards/stm32vldiscovery>`
+Read more about board specific functionality in the :doc:`STM32VLDISCOVERY
+<../standard-library/boards/stm32vldiscovery>` module documentation in the
+standard library.
 
 .. include:: extra/stm32vldiscovery.rst

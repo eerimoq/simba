@@ -27,7 +27,7 @@ Project homepage: https://github.com/eerimoq/simba
    boards
    mcus
    examples
-   api-reference
+   standard-library
    platformio
 
 Features
@@ -44,7 +44,7 @@ Features
 * Internet protocols (TCP, UDP, HTTP, ...).
 * File systems (FAT16, SPIFFS).
 
-See the :doc:`api-reference` for a full list of features.
+See the :doc:`standard-library` for a full list of features.
 
 Design goals
 ------------
