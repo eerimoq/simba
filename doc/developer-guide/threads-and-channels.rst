@@ -16,7 +16,7 @@ A simple thread that waits to be resumed by another thread.
 
         while (1) {
             thrd_suspend(NULL);
-            printf("Thread resumed.\n");
+            std_printf(FSTR("Thread resumed.\r\n"));
         }
 
         return (NULL);
@@ -24,10 +24,9 @@ A simple thread that waits to be resumed by another thread.
 
 Threads usually communicates over channels. There are two kinds of
 channels; queue and event. Both implementing the same abstract channel
-interface (see :github-blob:`src/kernel/kernel/chan.h`).  This
-abstraction makes channel very powerful as a synchronization
-primitive. They can be seen as limited functionality file descriptors
-in linux.
+interface (see :github-blob:`src/kernel/chan.h`).  This abstraction
+makes channel very powerful as a synchronization primitive. They can
+be seen as limited functionality file descriptors in linux.
 
 The most common channel is the queue. It can be either synchronous or
 semi-asynchronous. In the synchronous version the writing thread will
