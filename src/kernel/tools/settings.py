@@ -115,32 +115,32 @@ FAR const struct setting_t settings[] = {{
 #if defined(SETTING_MEMORY_EEPROM)
 
 FAR const uint8_t setting_default_area[SETTING_AREA_SIZE] = {{
-    {content}
+{content}
 }};
 
 uint8_t setting_area[SETTING_AREA_OFFSET + SETTING_AREA_SIZE] __attribute__ ((section (".eeprom"))) = {{
-    {content_with_offset_padding}
+{content_with_offset_padding}
 }};
 
 #elif defined(SETTING_MEMORY_FLASH)
 
 uint8_t setting_area[2][SETTING_AREA_SIZE] __attribute__ ((section (".setting"))) = {{
     {{
-        {content}
+    {content}
     }},
     {{
-        {content}
+    {content}
     }}
 }};
 
 uint8_t setting_default_area[SETTING_AREA_SIZE] __attribute__ ((section (".setting"))) = {{
-    {content}
+{content}
 }};
 
 #else
 
 const uint8_t setting_default_area[SETTING_AREA_SIZE] = {{
-    {content}
+{content}
 }};
 
 #endif
@@ -346,9 +346,11 @@ def create_source_file(outdir,
                                      setting_size=(setting_offset + setting_size),
                                      settings_names='\n'.join(settings_names),
                                      settings='\n'.join(settings),
-                                     content=', '.join(content_bytes),
-                                     content_with_offset_padding=', '.join(
-                                         content_with_offset_padding_bytes)))
+                                     content=',\n'.join(['    ' + ', '.join(content_bytes[i:i+8])
+                                                         for i in range(0, len(content_bytes), 8)]),
+                                     content_with_offset_padding=',\n'.join([
+                                         '    ' + ', '.join(content_with_offset_padding_bytes[i:i+8])
+                                         for i in range(0, len(content_with_offset_padding_bytes), 8)])))
 
 
 def main():

@@ -18,10 +18,6 @@
  * This file is part of the Simba project.
  */
 
-#define PIN(sfr) ((sfr) + 0)
-#define DDR(sfr) ((sfr) + 1)
-#define PORT(sfr) ((sfr) + 2)
-
 static int pin_port_module_init(void)
 {
     return (0);
@@ -36,15 +32,15 @@ static int pin_port_init(struct pin_driver_t *self_p,
 
 static int pin_port_read(struct pin_driver_t *self_p)
 {
-    return ((*PIN(self_p->dev_p->sfr_p) & self_p->dev_p->mask) != 0);
+    return (pin_port_device_read(self_p->dev_p));
 }
 
 static int pin_port_write(struct pin_driver_t *self_p, int value)
 {
     if (value != 0) {
-        *PORT(self_p->dev_p->sfr_p) |= self_p->dev_p->mask;
+        pin_device_write_high(self_p->dev_p);
     } else {
-        *PORT(self_p->dev_p->sfr_p) &= ~(self_p->dev_p->mask);
+        pin_device_write_low(self_p->dev_p);
     }
 
     return (0);
@@ -59,11 +55,5 @@ static int pin_port_toggle(struct pin_driver_t *self_p)
 
 static int pin_port_set_mode(struct pin_driver_t *self_p, int mode)
 {
-    if (mode == PIN_OUTPUT) {
-        *DDR(self_p->dev_p->sfr_p) |= self_p->dev_p->mask;
-    } else {
-        *DDR(self_p->dev_p->sfr_p) &= ~(self_p->dev_p->mask);
-    }
-
-    return (0);
+    return (pin_device_set_mode(self_p->dev_p, mode));
 }

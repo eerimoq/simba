@@ -53,7 +53,11 @@ def main():
         variables = [
             "BOARD_DESC",
             "BOARD_HOMEPAGE",
-            "BOARD_PINOUT"
+            "BOARD_PINOUT",
+            "SETTING_MEMORY",
+            "SETTING_OFFSET",
+            "SETTING_SIZE",
+            "ENDIANESS"
         ]
         for variable in variables:
             value = get_make_variable(board, variable)

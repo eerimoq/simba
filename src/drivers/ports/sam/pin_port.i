@@ -40,9 +40,7 @@ static int pin_port_init(struct pin_driver_t *self_p,
 
 static int pin_port_read(struct pin_driver_t *self_p)
 {
-    const struct pin_device_t *dev_p = self_p->dev_p;
-
-    return ((dev_p->pio_p->PDSR & dev_p->mask) != 0);
+    return (pin_device_read(self_p->dev_p));
 }
 
 static int pin_port_write(struct pin_driver_t *self_p, int value)
@@ -50,9 +48,9 @@ static int pin_port_write(struct pin_driver_t *self_p, int value)
     const struct pin_device_t *dev_p = self_p->dev_p;
 
     if (value == 1) {
-        dev_p->pio_p->SODR = dev_p->mask;
+        pin_device_write_high(dev_p);
     } else {
-        dev_p->pio_p->CODR = dev_p->mask;
+        pin_device_write_low(dev_p);
     }
 
     return (0);
@@ -63,9 +61,9 @@ static int pin_port_toggle(struct pin_driver_t *self_p)
     const struct pin_device_t *dev_p = self_p->dev_p;
 
     if (dev_p->pio_p->ODSR & dev_p->mask) {
-        dev_p->pio_p->CODR = dev_p->mask;
+        pin_device_write_low(dev_p);
     } else {
-        dev_p->pio_p->SODR = dev_p->mask;
+        pin_device_write_high(dev_p);
     }
 
     return (0);
@@ -73,13 +71,5 @@ static int pin_port_toggle(struct pin_driver_t *self_p)
 
 static int pin_port_set_mode(struct pin_driver_t *self_p, int mode)
 {
-    const struct pin_device_t *dev_p = self_p->dev_p;
-
-    if (mode == PIN_OUTPUT) {
-        dev_p->pio_p->OER = dev_p->mask;
-    } else {
-        dev_p->pio_p->ODR = dev_p->mask;
-    }
-
-    return (0);
+    return (pin_device_set_mode(self_p->dev_p, mode));
 }

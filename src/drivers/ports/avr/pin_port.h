@@ -32,4 +32,39 @@ struct pin_driver_t {
     const struct pin_device_t *dev_p;
 };
 
+#define PIN(sfr) ((sfr) + 0)
+#define DDR(sfr) ((sfr) + 1)
+#define PORT(sfr) ((sfr) + 2)
+
+static inline int pin_port_device_set_mode(const struct pin_device_t *dev_p,
+                                           int mode)           
+{
+    if (mode == PIN_OUTPUT) {                           
+        *DDR((dev_p)->sfr_p) |= (dev_p)->mask;         
+    } else {                                            
+        *DDR((dev_p)->sfr_p) &= ~((dev_p)->mask);       
+    }
+ 
+    return (0);
+}
+
+static inline int pin_port_device_read(const struct pin_device_t *dev_p)
+{
+    return ((*PIN((dev_p)->sfr_p) & (dev_p)->mask) != 0);
+}
+
+static inline int pin_port_device_write_high(const struct pin_device_t *dev_p)
+{
+    *PORT((dev_p)->sfr_p) |= (dev_p)->mask;
+    
+    return (0);
+}
+
+static inline int pin_port_device_write_low(const struct pin_device_t *dev_p) 
+{
+    *PORT((dev_p)->sfr_p) &= ~((dev_p)->mask);
+
+    return (0);
+}
+
 #endif

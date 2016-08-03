@@ -101,18 +101,29 @@
 #endif
 
 /**
- * File system command.
+ * File system command to set the mode of a pin.
  */
-#ifndef CONFIG_FS_CMD_PIN_INIT
+#ifndef CONFIG_FS_CMD_PIN_SET_MODE
 #    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO)
-#        define CONFIG_FS_CMD_PIN_INIT                      0
+#        define CONFIG_FS_CMD_PIN_SET_MODE                  0
 #    else
-#        define CONFIG_FS_CMD_PIN_INIT                      1
+#        define CONFIG_FS_CMD_PIN_SET_MODE                  1
 #    endif
 #endif
 
 /**
- * File system command.
+ * File system command to read the current value of a pin.
+ */
+#ifndef CONFIG_FS_CMD_PIN_READ
+#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO)
+#        define CONFIG_FS_CMD_PIN_READ                      0
+#    else
+#        define CONFIG_FS_CMD_PIN_READ                      1
+#    endif
+#endif
+
+/**
+ * File system command to write a value to a pin.
  */
 #ifndef CONFIG_FS_CMD_PIN_WRITE
 #    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO)

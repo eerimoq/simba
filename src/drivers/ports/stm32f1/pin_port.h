@@ -30,4 +30,46 @@ struct pin_driver_t {
     struct pin_device_t *dev_p;
 };
 
+static inline int pin_port_device_set_mode(const struct pin_device_t *dev_p,
+                                           int mode)           
+{
+    int shift;
+    volatile uint32_t *cr_p;
+
+    shift = (4 * dev_p->bit);
+    cr_p = &dev_p->regs_p->CRL;
+
+    if (dev_p->bit >= 8) {
+        shift -= 32;
+        cr_p++;
+    }
+
+    if (mode == PIN_OUTPUT) {
+        *cr_p = bits_insert_32(*cr_p, shift, 4, 0x1);
+    } else {
+        *cr_p = bits_insert_32(*cr_p, shift, 4, 0x4);
+    }
+
+    return (0);
+}
+
+static inline int pin_port_device_read(const struct pin_device_t *dev_p)
+{
+    return (-1);
+}
+
+static inline int pin_port_device_write_high(const struct pin_device_t *dev_p)
+{
+    dev_p->regs_p->BSRR = (1 << dev_p->bit);
+    
+    return (0);
+}
+
+static inline int pin_port_device_write_low(const struct pin_device_t *dev_p) 
+{
+    dev_p->regs_p->BSRR = (1 << (16 + dev_p->bit));
+    
+    return (0);
+}
+
 #endif

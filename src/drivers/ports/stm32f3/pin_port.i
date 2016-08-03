@@ -27,25 +27,25 @@ static int pin_port_init(struct pin_driver_t *drv,
                          const struct pin_device_t *dev,
                          int mode)
 {
-    return (0);
+    return (-1);
 }
 
 static int pin_port_read(struct pin_driver_t *drv)
 {
-    return (0);
+    return (-1);
 }
 
 static int pin_port_write(struct pin_driver_t *drv, int value)
 {
-    return (0);
+    return (-1);
 }
 
 static int pin_port_toggle(struct pin_driver_t *drv)
 {
-    return (0);
+    return (-1);
 }
 
 static int pin_port_set_mode(struct pin_driver_t *drv, int mode)
 {
-    return (0);
+    return (-1);
 }

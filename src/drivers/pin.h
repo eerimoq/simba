@@ -94,4 +94,55 @@ int pin_toggle(struct pin_driver_t *self_p);
  */
 int pin_set_mode(struct pin_driver_t *self_p, int mode);
 
+/**
+ * Pin device mode to set. One of ``PIN_INPUT`` or ``PIN_OUTPUT``.
+ *
+ * @param[in] self_p Pin device.
+ * @param[in] mode New pin mode.
+ *
+ * @return zero(0) or negative error code.
+ */
+static inline int pin_device_set_mode(const struct pin_device_t *dev_p,
+                                      int mode)
+{
+    return (pin_port_device_set_mode(dev_p, mode));
+}
+
+/**
+ * Read the value of given pin device.
+ *
+ * @param[in] self_p Pin device.
+ *
+ * @return ``1`` for high and ``0`` for low input, otherwise negative
+ *         error code.
+ */
+static inline int pin_device_read(const struct pin_device_t *dev_p)
+{
+    return (pin_port_device_read(dev_p));
+}
+
+/**
+ * Write high to given pin device.
+ *
+ * @param[in] self_p Pin device.
+ *
+ * @return zero(0) or negative error code.
+ */
+static inline int pin_device_write_high(const struct pin_device_t *dev_p)
+{
+    return (pin_port_device_write_high(dev_p));
+}
+
+/**
+ * Write low to given pin device.
+ *
+ * @param[in] self_p Pin device.
+ *
+ * @return zero(0) or negative error code.
+ */
+static inline int pin_device_write_low(const struct pin_device_t *dev_p)
+{
+    return (pin_port_device_write_low(dev_p));
+}
+
 #endif

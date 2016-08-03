@@ -96,7 +96,8 @@ ifeq ($(BOARD), arduino_due)
 				    mqtt_client)
     TESTS += $(addprefix tst/drivers/, chipid \
 				       can \
-				       flash)
+				       flash \
+				       pin)
 endif
 
 ifeq ($(BOARD), arduino_mega)
@@ -134,15 +135,14 @@ ifeq ($(BOARD), arduino_mega)
 				    mqtt_client)
     TESTS += $(addprefix tst/drivers/, adc \
 				       ds3231 \
-				       sd)
+				       sd \
+				       pin)
 endif
 
 ifeq ($(BOARD), arduino_nano)
     TESTS = $(addprefix tst/drivers/, ds18b20 \
 				      exti \
-				      owi \
-				      pin)
-    APPS = $(addprefix tst/drivers/, uart)
+				      owi)
 endif
 
 ifeq ($(BOARD), arduino_pro_micro)
@@ -185,6 +185,7 @@ ifeq ($(BOARD), esp12e)
 				    inet \
 				    mqtt_client \
 				    network_interface/wifi_station_espressif)
+    TESTS += $(addprefix tst/drivers/, pin)
 endif
 
 ifeq ($(BOARD), stm32vldiscovery)
@@ -214,6 +215,7 @@ ifeq ($(BOARD), stm32vldiscovery)
 				    http_websocket_server \
 				    inet \
 				    mqtt_client)
+    TESTS += $(addprefix tst/drivers/, pin)
 endif
 
 ifeq ($(BOARD), photon)

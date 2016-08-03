@@ -30,8 +30,8 @@
 #define pin_d8_dev pin_device[8]
 #define pin_d9_dev pin_device[9]
 #define pin_d10_dev pin_device[10]
-#define pin_d11_dev pin_device[12]
-#define pin_d12_dev pin_device[11]
+#define pin_d11_dev pin_device[11]
+#define pin_d12_dev pin_device[12]
 #define pin_d13_dev pin_device[13]
 
 #define pin_a0_dev pin_device[14]

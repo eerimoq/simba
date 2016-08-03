@@ -38,9 +38,9 @@ static int pin_port_read(struct pin_driver_t *self_p)
 static int pin_port_write(struct pin_driver_t *self_p, int value)
 {
     if (value != 0) {
-        self_p->dev_p->regs_p->BSRR = (1 << self_p->dev_p->bit);
+        pin_device_write_high(self_p->dev_p);
     } else {
-        self_p->dev_p->regs_p->BSRR = (1 << (16 + self_p->dev_p->bit));
+        pin_device_write_low(self_p->dev_p);
     }
 
     return (0);
@@ -57,19 +57,5 @@ static int pin_port_toggle(struct pin_driver_t *self_p)
 
 static int pin_port_set_mode(struct pin_driver_t *self_p, int mode)
 {
-    if (mode == PIN_OUTPUT) {
-        self_p->dev_p->regs_p->MODER =
-            bits_insert_32(self_p->dev_p->regs_p->MODER,
-                           2 * self_p->dev_p->bit,
-                           2,
-                           0x1);
-    } else {
-        self_p->dev_p->regs_p->MODER =
-            bits_insert_32(self_p->dev_p->regs_p->MODER,
-                           2 * self_p->dev_p->bit,
-                           2,
-                           0x0);
-    }
-
-    return (0);
+    return (pin_device_set_mode(self_p->dev_p, mode));
 }

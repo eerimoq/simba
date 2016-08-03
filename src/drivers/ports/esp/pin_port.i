@@ -23,61 +23,44 @@ static int pin_port_module_init(void)
     return (0);
 }
 
-static int pin_port_init(struct pin_driver_t *drv_p,
+static int pin_port_init(struct pin_driver_t *self_p,
                          const struct pin_device_t *dev_p,
                          int mode)
 {
     ESP8266_GPIO->CONF[dev_p->id] = 0;
 
-    return (pin_set_mode(drv_p, mode));
+    return (pin_set_mode(self_p, mode));
 }
 
-static int pin_port_read(struct pin_driver_t *drv_p)
+static int pin_port_read(struct pin_driver_t *self_p)
 {
-    const struct pin_device_t *dev_p = drv_p->dev_p;
-
-    return ((ESP8266_GPIO->IN & dev_p->mask) >> dev_p->id);
+    return (pin_device_read(self_p->dev_p));
 }
 
-static int pin_port_write(struct pin_driver_t *drv_p, int value)
+static int pin_port_write(struct pin_driver_t *self_p, int value)
 {
-    const struct pin_device_t *dev_p = drv_p->dev_p;
+    const struct pin_device_t *dev_p = self_p->dev_p;
 
     if (value == 1) {
-        ESP8266_GPIO->OUT_W1TS = dev_p->mask;
+        pin_device_write_high(dev_p);
     } else {
-        ESP8266_GPIO->OUT_W1TC = dev_p->mask;
+        pin_device_write_low(dev_p);
     }
 
     return (0);
 }
 
-static int pin_port_toggle(struct pin_driver_t *drv_p)
+static int pin_port_toggle(struct pin_driver_t *self_p)
 {
-    const struct pin_device_t *dev_p = drv_p->dev_p;
+    const struct pin_device_t *dev_p = self_p->dev_p;
     int value;
 
     value = ((ESP8266_GPIO->OUT & dev_p->mask) == 0);
 
-    return (pin_port_write(drv_p, value));
+    return (pin_port_write(self_p, value));
 }
 
-static int pin_port_set_mode(struct pin_driver_t *drv_p, int mode)
+static int pin_port_set_mode(struct pin_driver_t *self_p, int mode)
 {
-    const struct pin_device_t *dev_p = drv_p->dev_p;
-
-    if (mode == PIN_OUTPUT) {
-        ESP8266_IOMUX->PIN[dev_p->iomux] =
-            (ESP8266_IOMUX_PIN_FUNC_GPIO(dev_p->iomux)
-             | ESP8266_IOMUX_PIN_OUTPUT_ENABLE);
-        ESP8266_GPIO->CONF[dev_p->id] = 0;
-        ESP8266_GPIO->ENABLE_DATA_W1TS = dev_p->mask;
-    } else {
-        ESP8266_IOMUX->PIN[dev_p->iomux] =
-            (ESP8266_IOMUX_PIN_FUNC_GPIO(dev_p->iomux));
-        ESP8266_GPIO->CONF[dev_p->id] = ESP8266_GPIO_CONF_DRIVER;
-        ESP8266_GPIO->ENABLE_DATA_W1TC = dev_p->mask;
-    }
-
-    return (0);
+    return (pin_device_set_mode(self_p->dev_p, mode));
 }
