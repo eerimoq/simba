@@ -1,5 +1,5 @@
 /**
- * @file storage/setting.h
+ * @file oam/setting.h
  * @version 4.1.0
  *
  * @section License
@@ -18,8 +18,8 @@
  * This file is part of the Simba project.
  */
 
-#ifndef __STORAGE_SETTING_H__
-#define __STORAGE_SETTING_H__
+#ifndef __OAM_SETTING_H__
+#define __OAM_SETTING_H__
 
 #include "simba.h"
 

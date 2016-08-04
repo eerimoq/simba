@@ -44,11 +44,11 @@ ifeq ($(BOARD), linux)
 				    std \
                                     re)
     TESTS += $(addprefix tst/debug/, log)
-    TESTS += $(addprefix tst/oam/, fs \
-	        		   shell)
-    TESTS += $(addprefix tst/storage/, fat16 \
-				       setting \
-                                       spiffs)
+    TESTS += $(addprefix tst/oam/, setting \
+				   shell)
+    TESTS += $(addprefix tst/filesystems/, fat16 \
+				          fs \
+                                          spiffs)
     TESTS += $(addprefix tst/encode/, base64 \
                                       json)
     TESTS += $(addprefix tst/hash/, crc \
@@ -81,10 +81,10 @@ ifeq ($(BOARD), arduino_due)
 				    std \
                                     re)
     TESTS += $(addprefix tst/debug/, log)
-    TESTS += $(addprefix tst/oam/, fs \
+    TESTS += $(addprefix tst/oam/, setting \
 	        		   shell)
-    TESTS += $(addprefix tst/storage/, setting \
-                                       spiffs)
+    TESTS += $(addprefix tst/filesystems/, fs \
+					  spiffs)
     TESTS += $(addprefix tst/encode/, base64 \
                                       json)
     TESTS += $(addprefix tst/hash/, crc \
@@ -120,10 +120,10 @@ ifeq ($(BOARD), arduino_mega)
 				    std \
                                     re)
     TESTS += $(addprefix tst/debug/, log)
-    TESTS += $(addprefix tst/oam/, fs \
+    TESTS += $(addprefix tst/oam/, setting \
 	        		   shell)
-    TESTS += $(addprefix tst/storage/, fat16 \
-				       setting)
+    TESTS += $(addprefix tst/filesystems/, fat16 \
+					  fs)
     TESTS += $(addprefix tst/encode/, base64 \
                                       json)
     TESTS += $(addprefix tst/hash/, crc \

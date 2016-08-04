@@ -321,7 +321,6 @@ static int test_list(struct harness_t *harness_p)
                "my/\r\n"
                "oam/\r\n"
                "our/\r\n"
-               "storage/\r\n"
                "tmp/\r\n"
                "your/\r\n");
 

@@ -20,13 +20,13 @@ File tree
     │   ├── debug            - debug package
     │   ├── drivers          - drivers package
     │   ├── encode           - encode package
+    │   ├── filesystems      - filesystems package
     │   ├── hash             - hash package
     │   ├── inet             - inet package
     │   ├── kernel           - kernel package
     │   ├── mcus             - mcu configurations
     │   ├── multimedia       - multimedia package
     │   ├── oam              - oam package
-    │   ├── storage          - storage package
     │   ├── sync             - sync package
     │   ├── text             - text package
     │   ├── simba.h          - includes all package headers
@@ -37,12 +37,12 @@ File tree
     │   ├── debug            - debug package test suite
     │   ├── drivers          - drivers package test suite
     │   ├── encode           - encode package test suite
+    │   ├── filesystems      - filesystems package test suite
     │   ├── hash             - hash package test suite
     │   ├── inet             - inet package test suite
     │   ├── kernel           - kernel package test suite
     │   ├── multimedia       - multimedia package test suite
     │   ├── oam              - oam package test suite
-    │   ├── storage          - storage package test suite
     │   ├── sync             - sync package test suite
     │   └── text             - text package test suite
     └── VERSION.txt          - `Simba` version

@@ -24,11 +24,11 @@ Spiffs is designed with following characteristics in mind:
 
 ---------------------------------------------------
 
-Source code: :github-blob:`src/storage/spiffs.h`
+Source code: :github-blob:`src/filesystems/spiffs.h`
 
-Test code: :github-blob:`tst/storage/spiffs/main.c`
+Test code: :github-blob:`tst/filesystems/spiffs/main.c`
 
 ---------------------------------------------------
 
-.. doxygenfile:: storage/spiffs.h
+.. doxygenfile:: filesystems/spiffs.h
    :project: simba

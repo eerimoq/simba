@@ -45,15 +45,15 @@ All function arguments are omitted in this example.
 
 ---------------------------------------------------
 
-Source code: :github-blob:`src/storage/fat16.h`
+Source code: :github-blob:`src/filesystems/fat16.h`
 
-Test code: :github-blob:`tst/storage/fat16/main.c`
+Test code: :github-blob:`tst/filesystems/fat16/main.c`
 
-Test coverage: :codecov:`src/storage/fat16.c`
+Test coverage: :codecov:`src/filesystems/fat16.c`
 
 Example code: :github-blob:`examples/fat16/main.c`
 
 ---------------------------------------------------
 
-.. doxygenfile:: storage/fat16.h
+.. doxygenfile:: filesystems/fat16.h
    :project: simba

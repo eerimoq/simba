@@ -42,7 +42,7 @@ typedef unsigned long off_t;
 #include "kernel/errno.h"
 #include "kernel/types.h"
 
-#include "storage/setting.h"
+#include "oam/setting.h"
 
 #include "settings.h"
 
@@ -67,11 +67,11 @@ typedef unsigned long off_t;
 #include "alloc/heap.h"
 #include "alloc/circular_heap.h"
 
-#include "storage/fat16.h"
-#include "storage/spiffs.h"
+#include "filesystems/fat16.h"
+#include "filesystems/spiffs.h"
 
 #include "oam/console.h"
-#include "oam/fs.h"
+#include "filesystems/fs.h"
 #include "oam/shell.h"
 
 #include "debug/log.h"

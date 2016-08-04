@@ -36,7 +36,7 @@ File system commands
 --------------------
 
 Four file system commands are available, all located in the directory
-``storage/setting/``.
+``oam/setting/``.
 
 +-------------------------------+-----------------------------------------------------------------+
 |  Command                      | Description                                                     |
@@ -55,19 +55,19 @@ Example output from the shell:
 
 .. code-block:: text
 
-   $ storage/setting/list 
+   $ oam/setting/list 
    NAME                  TYPE     SIZE  VALUE
    version               int8_t      1  1
    value_1               int16_t     2  24567
    value_2               int32_t     4  -57
    value_3               string     16  foobar
-   $ storage/setting/read value_1
+   $ oam/setting/read value_1
    24567
-   $ storage/setting/write value_1 -5
-   $ storage/setting/read value_1
+   $ oam/setting/write value_1 -5
+   $ oam/setting/read value_1
    -5
-   $ storage/setting/reset
-   $ storage/setting/list 
+   $ oam/setting/reset
+   $ oam/setting/list 
    NAME                  TYPE     SIZE  VALUE
    version               int8_t      1  1
    value_1               int16_t     2  24567
@@ -127,15 +127,15 @@ functions.
 
 ----------------------------------------------
 
-Source code: :github-blob:`src/storage/setting.h`
+Source code: :github-blob:`src/oam/setting.h`
 
-Test code: :github-blob:`tst/storage/setting/main.c`
+Test code: :github-blob:`tst/oam/setting/main.c`
 
-Test coverage: :codecov:`src/storage/setting.c`
+Test coverage: :codecov:`src/oam/setting.c`
 
 ----------------------------------------------
 
-.. doxygenfile:: storage/setting.h
+.. doxygenfile:: oam/setting.h
    :project: simba
 
 .. |br| raw:: html

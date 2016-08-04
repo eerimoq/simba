@@ -5,8 +5,8 @@
  *      Author: petera
  */
 
-#ifndef __STORAGE_SPIFFS_CONFIG_H__
-#define __STORAGE_SPIFFS_CONFIG_H__
+#ifndef __FILESYSTEMS_SPIFFS_CONFIG_H__
+#define __FILESYSTEMS_SPIFFS_CONFIG_H__
 
 #include "simba.h"
 

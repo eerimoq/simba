@@ -220,19 +220,19 @@ SRC += $(MULTIMEDIA_SRC:%=$(SIMBA_ROOT)/src/multimedia/%)
 
 # Oam package.
 OAM_SRC ?= console.c \
-	   fs.c \
+	   setting.c \
 	   shell.c
 
 SRC += $(OAM_SRC:%=$(SIMBA_ROOT)/src/oam/%)
 
-# Storage package.
+# Filesystems package.
 INC += $(SIMBA_ROOT)/3pp/spiffs-0.3.5/src
 
-STORAGE_SRC ?= setting.c \
-               fat16.c \
+FILESYSTEMS_SRC ?= fat16.c \
+	       fs.c \
 	       spiffs.c
 
-SRC += $(STORAGE_SRC:%=$(SIMBA_ROOT)/src/storage/%)
+SRC += $(FILESYSTEMS_SRC:%=$(SIMBA_ROOT)/src/filesystems/%)
 
 SPIFFS_SRC ?= \
 	3pp/spiffs-0.3.5/src/spiffs_nucleus.c \

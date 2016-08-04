@@ -1,5 +1,5 @@
 /**
- * @file storage/spiffs.h
+ * @file filesystems/spiffs.h
  * @version 4.1.0
  *
  * @section License
@@ -25,12 +25,12 @@
  *      Author: petera
  */
 
-#ifndef __STORAGE_SPIFFS_H__
-#define __STORAGE_SPIFFS_H__
+#ifndef __FILESYSTEMS_SPIFFS_H__
+#define __FILESYSTEMS_SPIFFS_H__
 
 #include "simba.h"
 
-#include "storage/spiffs/config.h"
+#include "filesystems/spiffs/config.h"
 
 #define SPIFFS_OK                       0
 #define SPIFFS_ERR_NOT_MOUNTED          -10000

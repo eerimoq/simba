@@ -21,7 +21,7 @@ and their implementatins are available on :github-tree:`Github <src>`.
    standard-library/text
    standard-library/debug
    standard-library/oam
-   standard-library/storage
+   standard-library/filesystems
    standard-library/drivers
    standard-library/encode
    standard-library/hash

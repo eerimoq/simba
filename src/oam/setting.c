@@ -323,7 +323,7 @@ int setting_module_init(void)
 #if CONFIG_FS_CMD_SETTING_LIST == 1
     
     fs_command_init(&cmd_list,
-                    FSTR("/storage/setting/list"), 
+                    FSTR("/oam/setting/list"), 
                     cmd_list_cb,
                     NULL);
     fs_command_register(&cmd_list);
@@ -333,7 +333,7 @@ int setting_module_init(void)
 #if CONFIG_FS_CMD_SETTING_RESET == 1
     
     fs_command_init(&cmd_reset,
-                    FSTR("/storage/setting/reset"), 
+                    FSTR("/oam/setting/reset"), 
                     cmd_reset_cb,
                     NULL);
     fs_command_register(&cmd_reset);
@@ -343,7 +343,7 @@ int setting_module_init(void)
 #if CONFIG_FS_CMD_SETTING_READ == 1
     
     fs_command_init(&cmd_read,
-                    FSTR("/storage/setting/read"), 
+                    FSTR("/oam/setting/read"), 
                     cmd_read_cb,
                     NULL);
     fs_command_register(&cmd_read);
@@ -353,7 +353,7 @@ int setting_module_init(void)
 #if CONFIG_FS_CMD_SETTING_WRITE == 1
     
     fs_command_init(&cmd_write,
-                    FSTR("/storage/setting/write"), 
+                    FSTR("/oam/setting/write"), 
                     cmd_write_cb,
                     NULL);
     fs_command_register(&cmd_write);

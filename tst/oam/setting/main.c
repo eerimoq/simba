@@ -39,7 +39,7 @@ static int test_cmd_list(struct harness_t *harness_p)
     FAR const char *response_p;
 
     /* Call the list command and validate the output. */
-    strcpy(buf, "storage/setting/list");
+    strcpy(buf, "oam/setting/list");
     BTASSERT(fs_call(buf, NULL, &queue, NULL) == 0);
     response_p = FSTR("NAME                  TYPE     SIZE  VALUE\r\n"
                       "int8                  int8_t      1  -4\r\n"
@@ -70,16 +70,16 @@ static int test_cmd_read(struct harness_t *harness_p)
     size_t size;
 
     /* Bad number of arguments. */
-    std_sprintf(buf, FSTR("storage/setting/read"));
+    std_sprintf(buf, FSTR("oam/setting/read"));
     BTASSERT(fs_call(buf, NULL, &queue, NULL) == -1);
-    std_sprintf(response, FSTR("Usage: storage/setting/read <name>\r\n"));
+    std_sprintf(response, FSTR("Usage: oam/setting/read <name>\r\n"));
     size = strlen(response);
     BTASSERT(chan_read(&queue, buf, size) == size);
     buf[size] = '\0';
     BTASSERT(strcmp(buf, response) == 0);
 
     /* Bad setting name. */
-    std_sprintf(buf, FSTR("storage/setting/read missing"));
+    std_sprintf(buf, FSTR("oam/setting/read missing"));
     BTASSERT(fs_call(buf, NULL, &queue, NULL) == -1);
     std_sprintf(response, FSTR("missing: setting not found\r\n"));
     size = strlen(response);
@@ -114,7 +114,7 @@ static int test_cmd_write(struct harness_t *harness_p)
     /* Write a value that is outside the allowed range. */
     for (i = 0; i < membersof(names_p); i++) {
         std_sprintf(buf,
-                    FSTR("storage/setting/write %s %s"),
+                    FSTR("oam/setting/write %s %s"),
                     names_p[i],
                     out_of_range_values_p[i]);
         BTASSERT(fs_call(buf, NULL, &queue, NULL) == -1);
@@ -127,7 +127,7 @@ static int test_cmd_write(struct harness_t *harness_p)
 
     /* Write a string that is too long. */
     std_sprintf(buf,
-                FSTR("storage/setting/write string ThisStringIsTooLong"));
+                FSTR("oam/setting/write string ThisStringIsTooLong"));
     BTASSERT(fs_call(buf, NULL, &queue, NULL) == -1);
     std_sprintf(response, FSTR("ThisStringIsTooLong: string too long\r\n"));
     size = strlen(response);
@@ -136,16 +136,16 @@ static int test_cmd_write(struct harness_t *harness_p)
     BTASSERT(strcmp(buf, response) == 0);
 
     /* Bad number of arguments. */
-    std_sprintf(buf, FSTR("storage/setting/write"));
+    std_sprintf(buf, FSTR("oam/setting/write"));
     BTASSERT(fs_call(buf, NULL, &queue, NULL) == -1);
-    std_sprintf(response, FSTR("Usage: storage/setting/write <name> <value>\r\n"));
+    std_sprintf(response, FSTR("Usage: oam/setting/write <name> <value>\r\n"));
     size = strlen(response);
     BTASSERT(chan_read(&queue, buf, size) == size);
     buf[size] = '\0';
     BTASSERT(strcmp(buf, response) == 0);
 
     /* Bad setting name. */
-    std_sprintf(buf, FSTR("storage/setting/write missing 1"));
+    std_sprintf(buf, FSTR("oam/setting/write missing 1"));
     BTASSERT(fs_call(buf, NULL, &queue, NULL) == -1);
     std_sprintf(response, FSTR("missing: setting not found\r\n"));
     size = strlen(response);
@@ -182,7 +182,7 @@ static int test_cmd_read_write_read(struct harness_t *harness_p)
 
     for (i = 0; i < membersof(names_p); i++) {
         /* Read the value. */
-        std_sprintf(buf, FSTR("storage/setting/read %s"), names_p[i]);
+        std_sprintf(buf, FSTR("oam/setting/read %s"), names_p[i]);
         BTASSERT(fs_call(buf, NULL, &queue, NULL) == 0);
         std_sprintf(response, FSTR("%s\r\n"), values_before_p[i]);
         size = strlen(response);
@@ -192,14 +192,14 @@ static int test_cmd_read_write_read(struct harness_t *harness_p)
 
         /* Write a new value. */
         std_sprintf(buf,
-                    FSTR("storage/setting/write %s %s"),
+                    FSTR("oam/setting/write %s %s"),
                     names_p[i],
                     values_after_p[i]);
         BTASSERT(fs_call(buf, NULL, &queue, NULL) == 0);
 
         /* Read the value again to verify that the write command
            works. */
-        std_sprintf(buf, FSTR("storage/setting/read %s"), names_p[i]);
+        std_sprintf(buf, FSTR("oam/setting/read %s"), names_p[i]);
         BTASSERT(fs_call(buf, NULL, &queue, NULL) == 0);
         std_sprintf(response, FSTR("%s\r\n"), values_after_p[i]);
         size = strlen(response);
@@ -226,11 +226,11 @@ static int test_cmd_reset(struct harness_t *harness_p)
     FAR const char *response_p;
 
     /* Call the list command and validate the output. */
-    strcpy(buf, "storage/setting/reset");
+    strcpy(buf, "oam/setting/reset");
     BTASSERT(fs_call(buf, NULL, &queue, NULL) == 0);
 
     /* Check the list output. */
-    strcpy(buf, "storage/setting/list");
+    strcpy(buf, "oam/setting/list");
     BTASSERT(fs_call(buf, NULL, &queue, NULL) == 0);
     response_p = FSTR("NAME                  TYPE     SIZE  VALUE\r\n"
                       "int8                  int8_t      1  -4\r\n"

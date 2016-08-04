@@ -4,12 +4,36 @@
 .. module:: fs
    :synopsis: Debug file system.
 
+The debug file system is not really a file system, but rather a file
+system like tree of commands, counters, parameters, and "real" file
+systems.
 
-File system commands
---------------------
+- A command is a file path mapped to a function callback. The callback
+  is invoked when its path is passed to the ``fs_call()``
+  function. Commands are registered into the debug file system by a
+  call to ``fs_command_register()``.
 
-Four file system commands are available, all located in the directory
-``oam/fs/``.
+- A counter is a file path mapped to a 64 bit value. The value can be
+  incremented and read by the application. Counters are registered
+  into the debug file system by a call to ``fs_counter_register()``.
+
+- A parameter is file path mapped to a value stored in ram that can be
+  easily read and modified by the user from a shell. Parameters are
+  registered into the debug file system by a call to
+  ``fs_parameter_register()``.
+
+- A "real" file system is a file path, or mount point, mapped to a
+  file system instance. The debug file system has a file access
+  interface. The purpose of this interface is to have a common file
+  access interface, independent of the underlying file systems
+  interface. File systems are registered into the debug file system by
+  a call to ``fs_file_system_register()``.
+
+Debug file system commands
+--------------------------
+
+The debug file system module itself registers four commands, all
+located in the directory ``filesystems/fs/``.
 
 +-------------------------------+-----------------------------------------------------------------+
 |  Command                      | Description                                                     |
@@ -27,33 +51,33 @@ Example output from the shell:
 
 .. code-block:: text
 
-   $ oam/fs/file_systems/list
+   $ filesystems/fs/file_systems/list
    MOUNT POINT                    MEDIUM   TYPE     AVAILABLE  SIZE  USAGE
    /tmp                           ram      fat16          54K   64K    14%
    /home/erik                     sd       fat16         1.9G    2G     5%
    /etc                           flash    spiffs        124K  128K     3%
-   $ oam/fs/counters/list
+   $ filesystems/fs/counters/list
    NAME                                                 VALUE
    /your/counter                                        0000000000000034
    /my/counter                                          0000000000000002
-   $ oam/fs/counters/reset
-   $ oam/fs/counters/list
+   $ filesystems/fs/counters/reset
+   $ filesystems/fs/counters/list
    NAME                                                 VALUE
    /your/counter                                        0000000000000000
    /my/counter                                          0000000000000000
-   $ oam/fs/parameters/list
+   $ filesystems/fs/parameters/list
    NAME                                                 VALUE
    /foo/bar                                             -2
 
 ----------------------------------------------
 
-Source code: :github-blob:`src/oam/fs.h`
+Source code: :github-blob:`src/filesystems/fs.h`
 
-Test code: :github-blob:`tst/oam/fs/main.c`
+Test code: :github-blob:`tst/filesystems/fs/main.c`
 
-Test coverage: :codecov:`src/oam/fs.c`
+Test coverage: :codecov:`src/filesystems/fs.c`
 
 ----------------------------------------------
 
-.. doxygenfile:: oam/fs.h
+.. doxygenfile:: filesystems/fs.h
    :project: simba

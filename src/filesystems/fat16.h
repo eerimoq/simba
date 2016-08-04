@@ -1,5 +1,5 @@
 /**
- * @file storage/fat16.h
+ * @file filesystems/fat16.h
  * @version 4.1.0
  *
  * @section License
@@ -20,8 +20,8 @@
  * This file is part of the Simba project.
  */
 
-#ifndef __STORAGE_FAT16_H__
-#define __STORAGE_FAT16_H__
+#ifndef __FILESYSTEMS_FAT16_H__
+#define __FILESYSTEMS_FAT16_H__
 
 #include "simba.h"
 
