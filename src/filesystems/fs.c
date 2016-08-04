@@ -28,7 +28,7 @@
 
 struct state_t {
     struct fs_command_t *commands_p;
-    struct fs_file_system_t *file_systems_p;
+    struct fs_filesystem_t *filesystems_p;
     struct fs_counter_t *counters_p;
     struct fs_parameter_t *parameters_p;
 };
@@ -76,30 +76,30 @@ static int cmd_parameter_cb(int argc,
     return (res);
 }
 
-#if CONFIG_FS_CMD_FS_FILE_SYSTEMS_LIST == 1
+#if CONFIG_FS_CMD_FS_FILESYSTEMS_LIST == 1
 
-static struct fs_command_t cmd_file_systems_list;
+static struct fs_command_t cmd_filesystems_list;
 
-static int cmd_file_systems_list_cb(int argc,
+static int cmd_filesystems_list_cb(int argc,
                                     const char *argv[],
                                     chan_t *chout_p,
                                     chan_t *chin_p,
                                     void *arg_p,
                                     void *call_arg_p)
 {
-    struct fs_file_system_t *file_system_p;
+    struct fs_filesystem_t *filesystem_p;
     char buf[FS_NAME_MAX];
     char *type_p;
 
     std_fprintf(chout_p,
                 FSTR("MOUNT-POINT                    MEDIUM   TYPE     AVAILABLE  SIZE  USAGE\r\n"));
 
-    file_system_p = state.file_systems_p;
+    filesystem_p = state.filesystems_p;
 
-    while (file_system_p != NULL) {
-        strcpy(buf, file_system_p->name_p);
+    while (filesystem_p != NULL) {
+        strcpy(buf, filesystem_p->name_p);
 
-        switch (file_system_p->type) {
+        switch (filesystem_p->type) {
         case fs_type_fat16_t: type_p = "fat16"; break;
         case fs_type_spiffs_t: type_p = "spiffs"; break;
         default: type_p = "-"; break;
@@ -114,7 +114,7 @@ static int cmd_file_systems_list_cb(int argc,
                     "-",
                     "-%");
 
-        file_system_p = file_system_p->next_p;
+        filesystem_p = filesystem_p->next_p;
     }
 
     return (0);
@@ -306,17 +306,17 @@ static int cmd_counter_cb(int argc,
 int fs_module_init()
 {
     state.commands_p = NULL;
-    state.file_systems_p = NULL;
+    state.filesystems_p = NULL;
     state.counters_p = NULL;
     state.parameters_p = NULL;
 
-#if CONFIG_FS_CMD_FS_FILE_SYSTEMS_LIST == 1
+#if CONFIG_FS_CMD_FS_FILESYSTEMS_LIST == 1
 
-    fs_command_init(&cmd_file_systems_list,
-                    FSTR("/filesystems/fs/file_systems/list"),
-                    cmd_file_systems_list_cb,
+    fs_command_init(&cmd_filesystems_list,
+                    FSTR("/filesystems/fs/filesystems/list"),
+                    cmd_filesystems_list_cb,
                     NULL);
-    fs_command_register(&cmd_file_systems_list);
+    fs_command_register(&cmd_filesystems_list);
 
 #endif
 
@@ -392,11 +392,11 @@ int fs_call(char *command_p,
     return (-ENOENT);
 }
 
-static int get_file_system_path_from_path(struct fs_file_system_t **file_system_pp,
+static int get_filesystem_path_from_path(struct fs_filesystem_t **filesystem_pp,
                                           const char **path_pp,
                                           const char *path_p)
 {
-    struct fs_file_system_t *file_system_p;
+    struct fs_filesystem_t *filesystem_p;
     const char *name_p;
     int name_length;
 
@@ -405,11 +405,11 @@ static int get_file_system_path_from_path(struct fs_file_system_t **file_system_
         path_p++;
     }
     
-    file_system_p = state.file_systems_p;
+    filesystem_p = state.filesystems_p;
     
     /* Find the file system registered on given path. */
-    while (file_system_p != NULL) {
-        name_p = file_system_p->name_p;
+    while (filesystem_p != NULL) {
+        name_p = filesystem_p->name_p;
 
         /* Skip leading slash. */
         if (name_p[0] == '/') {
@@ -420,11 +420,11 @@ static int get_file_system_path_from_path(struct fs_file_system_t **file_system_
 
         if (strncmp(name_p, path_p, name_length) == 0) {
             *path_pp = (path_p + name_length + 1);
-            *file_system_pp = file_system_p;
+            *filesystem_pp = filesystem_p;
             return (0);
         }
 
-        file_system_p = file_system_p->next_p;
+        filesystem_p = filesystem_p->next_p;
     }
 
     return (-1);
@@ -435,24 +435,24 @@ int fs_open(struct fs_file_t *self_p, const char *path_p, int flags)
     ASSERTN(self_p != NULL, -EINVAL);
     ASSERTN(path_p != NULL, -EINVAL);
 
-    struct fs_file_system_t *file_system_p;
+    struct fs_filesystem_t *filesystem_p;
 
-    if (get_file_system_path_from_path(&file_system_p, &path_p, path_p) != 0) {
+    if (get_filesystem_path_from_path(&filesystem_p, &path_p, path_p) != 0) {
         return (-1);
     }
 
-    self_p->file_system_p = file_system_p;
+    self_p->filesystem_p = filesystem_p;
 
-    switch (file_system_p->type) {
+    switch (filesystem_p->type) {
 
     case fs_type_fat16_t:
-        return (fat16_file_open(file_system_p->fs_p,
+        return (fat16_file_open(filesystem_p->fs_p,
                                 &self_p->u.fat16,
                                 path_p,
                                 flags));
         
     case fs_type_spiffs_t:
-        self_p->u.spiffs = spiffs_open(file_system_p->fs_p, path_p, flags, 0);
+        self_p->u.spiffs = spiffs_open(filesystem_p->fs_p, path_p, flags, 0);
         return (self_p->u.spiffs > 0 ? 0 : -1);
 
     default:
@@ -464,13 +464,13 @@ int fs_close(struct fs_file_t *self_p)
 {
     ASSERTN(self_p != NULL, -EINVAL);
 
-    switch (self_p->file_system_p->type) {
+    switch (self_p->filesystem_p->type) {
 
     case fs_type_fat16_t:
         return (fat16_file_close(&self_p->u.fat16));
 
     case fs_type_spiffs_t:
-        return (spiffs_close(self_p->file_system_p->fs_p, self_p->u.spiffs));
+        return (spiffs_close(self_p->filesystem_p->fs_p, self_p->u.spiffs));
 
     default:
         return (-1);
@@ -482,13 +482,13 @@ ssize_t fs_read(struct fs_file_t *self_p, void *dst_p, size_t size)
     ASSERTN(self_p != NULL, -EINVAL);
     ASSERTN(dst_p != NULL, -EINVAL);
 
-    switch (self_p->file_system_p->type) {
+    switch (self_p->filesystem_p->type) {
 
     case fs_type_fat16_t:
         return (fat16_file_read(&self_p->u.fat16, dst_p, size));
 
     case fs_type_spiffs_t:
-        return (spiffs_read(self_p->file_system_p->fs_p, self_p->u.spiffs, dst_p, size));
+        return (spiffs_read(self_p->filesystem_p->fs_p, self_p->u.spiffs, dst_p, size));
 
     default:
         return (-1);
@@ -500,13 +500,13 @@ ssize_t fs_write(struct fs_file_t *self_p, const void *src_p, size_t size)
     ASSERTN(self_p != NULL, -EINVAL);
     ASSERTN(src_p != NULL, -EINVAL);
 
-    switch (self_p->file_system_p->type) {
+    switch (self_p->filesystem_p->type) {
 
     case fs_type_fat16_t:
         return (fat16_file_write(&self_p->u.fat16, src_p, size));
 
     case fs_type_spiffs_t:
-        return (spiffs_write(self_p->file_system_p->fs_p, self_p->u.spiffs, (void *)src_p, size));
+        return (spiffs_write(self_p->filesystem_p->fs_p, self_p->u.spiffs, (void *)src_p, size));
 
     default:
         return (-1);
@@ -517,13 +517,13 @@ int fs_seek(struct fs_file_t *self_p, int offset, int whence)
 {
     ASSERTN(self_p != NULL, -EINVAL);
 
-    switch (self_p->file_system_p->type) {
+    switch (self_p->filesystem_p->type) {
 
     case fs_type_fat16_t:
         return (fat16_file_seek(&self_p->u.fat16, offset, whence));
 
     case fs_type_spiffs_t:
-        return (spiffs_lseek(self_p->file_system_p->fs_p, self_p->u.spiffs, offset, whence));
+        return (spiffs_lseek(self_p->filesystem_p->fs_p, self_p->u.spiffs, offset, whence));
 
     default:
         return (-1);
@@ -534,13 +534,13 @@ ssize_t fs_tell(struct fs_file_t *self_p)
 {
     ASSERTN(self_p != NULL, -EINVAL);
 
-    switch (self_p->file_system_p->type) {
+    switch (self_p->filesystem_p->type) {
 
     case fs_type_fat16_t:
         return (fat16_file_tell(&self_p->u.fat16));
 
     case fs_type_spiffs_t:
-        return (spiffs_tell(self_p->file_system_p->fs_p, self_p->u.spiffs));
+        return (spiffs_tell(self_p->filesystem_p->fs_p, self_p->u.spiffs));
 
     default:
         return (-1);
@@ -743,7 +743,7 @@ void fs_merge(char *path_p, char *cmd_p)
     }
 }
 
-int fs_file_system_init(struct fs_file_system_t *self_p,
+int fs_filesystem_init(struct fs_filesystem_t *self_p,
                         const char *name_p,
                         enum fs_type_t type,
                         void *fs_p)
@@ -760,17 +760,17 @@ int fs_file_system_init(struct fs_file_system_t *self_p,
     return (0);
 }
 
-int fs_file_system_register(struct fs_file_system_t *file_system_p)
+int fs_filesystem_register(struct fs_filesystem_t *filesystem_p)
 {
-    ASSERTN(file_system_p != NULL, -EINVAL);
+    ASSERTN(filesystem_p != NULL, -EINVAL);
 
-    file_system_p->next_p = state.file_systems_p;
-    state.file_systems_p = file_system_p;
+    filesystem_p->next_p = state.filesystems_p;
+    state.filesystems_p = filesystem_p;
 
     return (0);
 }
 
-int fs_file_system_deregister(struct fs_file_system_t *self_p)
+int fs_filesystem_deregister(struct fs_filesystem_t *self_p)
 {
     ASSERTN(0, -ENOSYS);
 

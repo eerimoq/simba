@@ -250,6 +250,7 @@ static int test_auto_completion(struct harness_t *harness_p)
                              "drivers/\r\n"
 #endif
                              "fie\r\n"
+                             "filesystems/\r\n"
                              "foo\r\n"
                              "help\r\n"
                              "history\r\n"
@@ -367,10 +368,10 @@ static int test_fs_counters_list(struct harness_t *harness_p)
     fs_counter_increment(&foo, 2);
     fs_counter_increment(&bar, 339283982393);
     fs_counter_increment(&fie, 1);
-    chan_write(&qin, "/oam/fs/counters/list\r\n", 23);
+    chan_write(&qin, "/filesystems/fs/counters/list\r\n", 31);
     BTASSERT(chout_read_until_prompt(buf) == 1);
     BTASSERT(std_strcmp(buf,
-                        FSTR("/oam/fs/counters/list\r\n"
+                        FSTR("/filesystems/fs/counters/list\r\n"
                              "NAME                                                 VALUE\r\n"
                              "/foo                                                 "
                              "0000000000000004\r\n"

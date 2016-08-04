@@ -27,7 +27,7 @@ systems.
   interface. The purpose of this interface is to have a common file
   access interface, independent of the underlying file systems
   interface. File systems are registered into the debug file system by
-  a call to ``fs_file_system_register()``.
+  a call to ``fs_filesystem_register()``.
 
 Debug file system commands
 --------------------------
@@ -38,7 +38,7 @@ located in the directory ``filesystems/fs/``.
 +-------------------------------+-----------------------------------------------------------------+
 |  Command                      | Description                                                     |
 +===============================+=================================================================+
-|  ``file_systems/list``        | Print a list of all registered file systems.                    |
+|  ``filesystems/list``         | Print a list of all registered file systems.                    |
 +-------------------------------+-----------------------------------------------------------------+
 |  ``counters/list``            | Print a list of all registered counters.                        |
 +-------------------------------+-----------------------------------------------------------------+
@@ -51,7 +51,7 @@ Example output from the shell:
 
 .. code-block:: text
 
-   $ filesystems/fs/file_systems/list
+   $ filesystems/fs/filesystems/list
    MOUNT POINT                    MEDIUM   TYPE     AVAILABLE  SIZE  USAGE
    /tmp                           ram      fat16          54K   64K    14%
    /home/erik                     sd       fat16         1.9G    2G     5%

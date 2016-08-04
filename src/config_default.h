@@ -224,11 +224,11 @@
 /**
  * File system command to list all registered file systems.
  */
-#ifndef CONFIG_FS_CMD_FS_FILE_SYSTEMS_LIST
+#ifndef CONFIG_FS_CMD_FS_FILESYSTEMS_LIST
 #    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO)
-#        define CONFIG_FS_CMD_FS_FILE_SYSTEMS_LIST          0
+#        define CONFIG_FS_CMD_FS_FILESYSTEMS_LIST           0
 #    else
-#        define CONFIG_FS_CMD_FS_FILE_SYSTEMS_LIST          1
+#        define CONFIG_FS_CMD_FS_FILESYSTEMS_LIST           1
 #    endif
 #endif
 

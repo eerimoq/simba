@@ -124,10 +124,10 @@ enum fs_type_t {
     fs_type_spiffs_t
 };
 
-struct fs_file_system_t;
+struct fs_filesystem_t;
 
 struct fs_file_t {
-    struct fs_file_system_t *file_system_p;
+    struct fs_filesystem_t *filesystem_p;
     union {
         struct fat16_file_t fat16;
         spiffs_file_t spiffs;
@@ -135,11 +135,11 @@ struct fs_file_t {
 };
 
 /* File system. */
-struct fs_file_system_t {
+struct fs_filesystem_t {
     const char *name_p;
     enum fs_type_t type;
     void *fs_p;
-    struct fs_file_system_t *next_p;
+    struct fs_filesystem_t *next_p;
 };
 
 /* Command. */
@@ -306,7 +306,7 @@ void fs_merge(char *path_p, char *cmd_p);
  *
  * @return zero(0) or negative error code.
  */
-int fs_file_system_init(struct fs_file_system_t *self_p,
+int fs_filesystem_init(struct fs_filesystem_t *self_p,
                         const char *name_p,
                         enum fs_type_t type,
                         void *fs_p);
@@ -318,7 +318,7 @@ int fs_file_system_init(struct fs_file_system_t *self_p,
  *
  * @return zero(0) or negative error code.
  */
-int fs_file_system_register(struct fs_file_system_t *self_p);
+int fs_filesystem_register(struct fs_filesystem_t *self_p);
 
 /**
  * Deregister given file system.
@@ -327,7 +327,7 @@ int fs_file_system_register(struct fs_file_system_t *self_p);
  *
  * @return zero(0) or negative error code.
  */
-int fs_file_system_deregister(struct fs_file_system_t *self_p);
+int fs_filesystem_deregister(struct fs_filesystem_t *self_p);
 
 /**
  * Initialize given command.
