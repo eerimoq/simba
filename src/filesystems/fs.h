@@ -1,5 +1,5 @@
 /**
- * @file oam/fs.h
+ * @file filesystems/fs.h
  * @version 4.1.0
  *
  * @section License
@@ -18,8 +18,8 @@
  * This file is part of the Simba project.
  */
 
-#ifndef __OAM_FS_H__
-#define __OAM_FS_H__
+#ifndef __FILESYSTEMS_FS_H__
+#define __FILESYSTEMS_FS_H__
 
 #include "simba.h"
 

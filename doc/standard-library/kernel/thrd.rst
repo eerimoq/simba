@@ -4,11 +4,11 @@
 .. module:: thrd
    :synopsis: Threads.
 
-File system commands
---------------------
+Debug file system commands
+--------------------------
 
-Four file system commands are available, all located in the directory
-``kernel/thrd/``.
+Four debug file system commands are available, all located in the
+directory ``kernel/thrd/``.
 
 +----------------------------------------+----------------------------------------------------------------+
 |  Command                               | Description                                                    |

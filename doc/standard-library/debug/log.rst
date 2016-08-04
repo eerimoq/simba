@@ -37,11 +37,11 @@ be seen in the third field in the entries.
    37:debug:main:bar: A bar debug message.
    56:error:main:default: A main error message.
 
-File system commands
---------------------
+Debug file system commands
+--------------------------
 
-Three file system commands are available, all located in the directory
-``debug/log/``.
+Three debug file system commands are available, all located in the
+directory ``debug/log/``.
 
 +-----------------------------------+-----------------------------------------------------------------+
 |  Command                          | Description                                                     |

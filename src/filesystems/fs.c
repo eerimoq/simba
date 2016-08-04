@@ -313,7 +313,7 @@ int fs_module_init()
 #if CONFIG_FS_CMD_FS_FILE_SYSTEMS_LIST == 1
 
     fs_command_init(&cmd_file_systems_list,
-                    FSTR("/oam/fs/file_systems/list"),
+                    FSTR("/filesystems/fs/file_systems/list"),
                     cmd_file_systems_list_cb,
                     NULL);
     fs_command_register(&cmd_file_systems_list);
@@ -323,7 +323,7 @@ int fs_module_init()
 #if CONFIG_FS_CMD_FS_COUNTERS_LIST == 1
 
     fs_command_init(&cmd_counters_list,
-                    FSTR("/oam/fs/counters/list"),
+                    FSTR("/filesystems/fs/counters/list"),
                     cmd_counters_list_cb,
                     NULL);
     fs_command_register(&cmd_counters_list);
@@ -333,7 +333,7 @@ int fs_module_init()
 #if CONFIG_FS_CMD_FS_COUNTERS_RESET == 1
 
     fs_command_init(&cmd_counters_reset,
-                    FSTR("/oam/fs/counters/reset"),
+                    FSTR("/filesystems/fs/counters/reset"),
                     cmd_counters_reset_cb,
                     NULL);
     fs_command_register(&cmd_counters_reset);
@@ -343,7 +343,7 @@ int fs_module_init()
 #if CONFIG_FS_CMD_FS_PARAMETERS_LIST == 1
 
     fs_command_init(&cmd_parameters_list,
-                    FSTR("/oam/fs/parameters/list"),
+                    FSTR("/filesystems/fs/parameters/list"),
                     cmd_parameters_list_cb,
                     NULL);
     fs_command_register(&cmd_parameters_list);

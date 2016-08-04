@@ -4,12 +4,12 @@
 .. module:: pin
    :synopsis: Digital pins.
 
-File system commands
---------------------
+Debug file system commands
+--------------------------
 
-Three file system commands are available, all located in the directory
-``drivers/pin/``. These commands directly access the pin device
-registers, without using the pin driver object.
+Three debug file system commands are available, all located in the
+directory ``drivers/pin/``. These commands directly access the pin
+device registers, without using the pin driver object.
 
 +-------------------------------+-----------------------------------------------------------------+
 |  Command                      | Description                                                     |

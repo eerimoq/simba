@@ -32,11 +32,11 @@ address 0 and increasing from there.
 The build system variable ``SETTINGS_INI`` contains the path to the
 ini-file. Set this variable to the path of the application ini-file.
 
-File system commands
---------------------
+Debug file system commands
+--------------------------
 
-Four file system commands are available, all located in the directory
-``oam/setting/``.
+Four debug file system commands are available, all located in the
+directory ``oam/setting/``.
 
 +-------------------------------+-----------------------------------------------------------------+
 |  Command                      | Description                                                     |
