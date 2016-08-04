@@ -32,6 +32,113 @@ static struct fs_counter_t your_counter;
 static int our_parameter_value = OUR_PARAMETER_DEFAULT;
 static struct fs_parameter_t our_parameter;
 
+#if defined(ARCH_LINUX)
+
+#define BLOCK_SIZE 512
+
+static uint8_t fat16_buffer[65536] = { 0 };
+
+/* SPIFFS configuration. */
+
+#define PHY_SIZE         2048
+#define PHY_ADDR            0
+#define PHYS_ERASE_BLOCK  128
+
+#define LOG_BLOCK_SIZE    128
+#define LOG_PAGE_SIZE      64
+
+#define FILE_SIZE_MAX     256
+#define CHUNK_SIZE_MAX    128
+
+static uint8_t spiffs_buffer[PHY_SIZE];
+
+struct fat16_t fat16_fs;
+struct fs_file_system_t fat16fs;
+
+struct spiffs_t spiffs_fs;
+struct fs_file_system_t spiffsfs;
+struct spiffs_config_t config;
+static uint8_t workspace[2 * LOG_PAGE_SIZE];
+static uint8_t fdworkspace[128];
+static uint8_t cache[256];
+
+/**
+ * FAT16 read block callback.
+ */
+static ssize_t file_system_fat16_read_block(void *arg_p,
+                                            void *dst_p,
+                                            uint32_t src_block)
+{
+    ASSERT(src_block < sizeof(fat16_buffer) / 512);
+
+    memcpy(dst_p, &fat16_buffer[BLOCK_SIZE * src_block], BLOCK_SIZE);
+
+    return (BLOCK_SIZE);
+}
+
+/**
+ * FAT16 write block callback.
+ */
+static ssize_t file_system_fat16_write_block(void *arg_p,
+                                             uint32_t dst_block,
+                                             const void *src_p)
+{
+    ASSERT(dst_block < sizeof(fat16_buffer) / 512);
+
+    memcpy(&fat16_buffer[BLOCK_SIZE * dst_block], src_p, BLOCK_SIZE);
+
+    return (BLOCK_SIZE);
+}
+
+/**
+ * SPIFFS read callback.
+ */
+static int32_t file_system_spiffs_read(struct spiffs_t *fs_p,
+                                       uint32_t addr,
+                                       uint32_t size,
+                                       uint8_t *dst_p)
+{
+    BTASSERT(addr >= 0);
+    BTASSERT(addr + size < sizeof(spiffs_buffer));
+    
+    memcpy(dst_p, &spiffs_buffer[addr], size);
+    
+    return (0);
+}
+
+/**
+ * SPIFFS write callback.
+ */
+static int32_t file_system_spiffs_write(struct spiffs_t *fs_p,
+                                        uint32_t addr,
+                                        uint32_t size,
+                                        uint8_t *src_p)
+{
+    BTASSERT(addr >= 0);
+    BTASSERT(addr + size < sizeof(spiffs_buffer));
+
+    memcpy(&spiffs_buffer[addr], src_p, size);
+
+    return (0);
+}
+
+/**
+ * SPIFFS erase callback.
+ */
+static int32_t file_system_spiffs_erase(struct spiffs_t *fs_p,
+                                        uint32_t addr,
+                                        uint32_t size)
+{
+    BTASSERT(addr >= 0);
+    BTASSERT(addr + size <= sizeof(spiffs_buffer));
+
+    memset(&spiffs_buffer[addr], -1, size);
+
+    return (0);
+}
+
+#endif
+
 static int tmp_foo_bar(int argc,
                        const char *argv[],
                        chan_t *out_p,
@@ -142,7 +249,7 @@ static int test_counter(struct harness_t *harness_p)
 {
     char buf[384];
 
-    strcpy(buf, "kernel/fs/counters_list");
+    strcpy(buf, "oam/fs/counters/list");
     BTASSERT(fs_call(buf, NULL, &qout, NULL) == 0);
     read_until(buf, "/your/counter                                        0000000000000000\r\n");
 
@@ -152,7 +259,7 @@ static int test_counter(struct harness_t *harness_p)
     BTASSERT(fs_call(buf, NULL, &qout, NULL) == 0);
     read_until(buf, "0000000000000003\r\n");
 
-    strcpy(buf, "kernel/fs/counters_reset");
+    strcpy(buf, "oam/fs/counters/reset");
     BTASSERT(fs_call(buf, NULL, &qout, NULL) == 0);
 
     strcpy(buf, "my/counter");
@@ -166,9 +273,11 @@ static int test_parameter(struct harness_t *harness_p)
 {
     char buf[256];
 
-    strcpy(buf, "kernel/fs/parameters_list");
+    strcpy(buf, "oam/fs/parameters/list");
     BTASSERT(fs_call(buf, NULL, &qout, NULL) == 0);
-    read_until(buf, "/our/parameter 5\r\n");
+    read_until(buf,
+               "NAME                                                 VALUE\r\n"
+               "/our/parameter                                       5\r\n");
 
     BTASSERT(our_parameter_value == OUR_PARAMETER_DEFAULT);
     our_parameter_value = 1;
@@ -195,7 +304,6 @@ static int test_list(struct harness_t *harness_p)
     strcpy(buf, "kernel");
     BTASSERT(fs_list(buf, NULL, &qout) == 0);
     read_until(buf,
-               "fs/\r\n"
                "log/\r\n"
                "sys/\r\n"
                "thrd/\r\n");
@@ -211,6 +319,7 @@ static int test_list(struct harness_t *harness_p)
                "kernel/\r\n"
                "logout\r\n"
                "my/\r\n"
+               "oam/\r\n"
                "our/\r\n"
                "storage/\r\n"
                "tmp/\r\n"
@@ -268,6 +377,136 @@ static int test_split_merge(struct harness_t *harness_p)
     return (0);
 }
 
+static int test_file_system_fat16(struct harness_t *harness_p)
+{
+#if defined(ARCH_LINUX)
+
+    char buf[32];
+    struct fs_file_t file;
+
+    /* Initialize a FAT16 file system in RAM, format and mount it. */
+    BTASSERT(fat16_init(&fat16_fs,
+                        file_system_fat16_read_block,
+                        file_system_fat16_write_block,
+                        NULL,
+                        0) == 0);
+    BTASSERT(fat16_format(&fat16_fs) == 0);
+    BTASSERT(fat16_mount(&fat16_fs) == 0);
+
+    /* Register the FAT16 file system in the fs module. */
+    BTASSERT(fs_file_system_init(&fat16fs,
+                                 FSTR("/fat16fs"),
+                                 fs_type_fat16_t,
+                                 &fat16_fs) == 0);
+    BTASSERT(fs_file_system_register(&fat16fs) == 0);
+
+    /* Perform file operations. */
+    BTASSERT(fs_open(&file, "/fat16fs/foo.txt", FS_CREAT | FS_RDWR | FS_SYNC) == 0);
+    BTASSERT(fs_write(&file, "hello!", 6) == 6);
+    BTASSERT(fs_seek(&file, 0, FS_SEEK_SET) == 0);
+    BTASSERT(fs_read(&file, buf, 6) == 6);
+    BTASSERT(memcmp(buf, "hello!", 6) == 0);
+    BTASSERT(fs_tell(&file) == 6);
+    BTASSERT(fs_close(&file) == 0);
+
+    /* Try to open a file outside the file system. */
+    BTASSERT(fs_open(&file, "/foo.txt", FS_CREAT | FS_RDWR | FS_SYNC) == -1);
+
+    return (0);
+
+#else
+
+    return (1);
+
+#endif
+}
+
+static int test_file_system_spiffs(struct harness_t *harness_p)
+{
+#if defined(ARCH_LINUX)
+
+    char buf[32];
+    struct fs_file_t file;
+
+    /* Initiate the config struct. */
+    config.hal_read_f = file_system_spiffs_read;
+    config.hal_write_f = file_system_spiffs_write;
+    config.hal_erase_f = file_system_spiffs_erase;
+    config.phys_size = PHY_SIZE;
+    config.phys_addr = PHY_ADDR;
+    config.phys_erase_block = PHYS_ERASE_BLOCK;
+    config.log_block_size = LOG_BLOCK_SIZE;
+    config.log_page_size = LOG_PAGE_SIZE;
+
+    /* Mount the file system to initialize the runtime variables. */
+    BTASSERT(spiffs_mount(&spiffs_fs,
+                          &config,
+                          workspace,
+                          fdworkspace,
+                          sizeof(fdworkspace),
+                          cache,
+                          sizeof(cache),
+                          NULL) == 0);
+    spiffs_unmount(&spiffs_fs);
+
+    /* Format and mount the file system again. */
+    BTASSERT(spiffs_format(&spiffs_fs) == 0);
+    BTASSERT(spiffs_mount(&spiffs_fs,
+                          &config,
+                          workspace,
+                          fdworkspace,
+                          sizeof(fdworkspace),
+                          cache,
+                          sizeof(cache),
+                          NULL) == 0);
+
+    /* Register the SPIFFS file system in the fs module. */
+    BTASSERT(fs_file_system_init(&spiffsfs,
+                                 FSTR("/spiffsfs"),
+                                 fs_type_spiffs_t,
+                                 &spiffs_fs) == 0);
+    BTASSERT(fs_file_system_register(&spiffsfs) == 0);
+
+    /* Perform file operations. */
+    BTASSERT(fs_open(&file, "/spiffsfs/foo.txt", FS_CREAT | FS_RDWR | FS_SYNC) == 0);
+    BTASSERT(fs_write(&file, "hello!", 6) == 6);
+    BTASSERT(fs_seek(&file, 0, FS_SEEK_SET) == 0);
+    BTASSERT(fs_read(&file, buf, 6) == 6);
+    BTASSERT(memcmp(buf, "hello!", 6) == 0);
+    BTASSERT(fs_tell(&file) == 6);
+    BTASSERT(fs_close(&file) == 0);
+
+    return (0);
+
+#else
+
+    return (1);
+
+#endif
+}
+
+static int test_file_system_list(struct harness_t *harness_p)
+{
+#if defined(ARCH_LINUX)
+
+    char buf[256];
+
+    strcpy(buf, "/oam/fs/file_systems/list");
+    BTASSERT(fs_call(buf, NULL, &qout, NULL) == 0);
+    read_until(buf,
+               "MOUNT-POINT                    MEDIUM   TYPE     AVAILABLE  SIZE  USAGE\r\n"
+               "/spiffsfs                      -        spiffs           -     -     -%\r\n"
+               "/fat16fs                       -        fat16            -     -     -%\r\n");
+
+    return (0);
+
+#else
+
+    return (1);
+
+#endif
+}
+
 int main()
 {
     struct harness_t harness;
@@ -277,6 +516,9 @@ int main()
         { test_parameter, "test_parameter" },
         { test_list, "test_list" },
         { test_split_merge, "test_split_merge" },
+        { test_file_system_fat16, "test_file_system_fat16" },
+        { test_file_system_spiffs, "test_file_system_spiffs" },
+        { test_file_system_list, "test_file_system_list" },
         { NULL, NULL }
     };
 
@@ -297,7 +539,8 @@ int main()
     /* Setup the parameter. */
     fs_parameter_init(&our_parameter,
                       FSTR("/our/parameter"),
-                      fs_cmd_parameter_int,
+                      fs_parameter_int_set,
+                      fs_parameter_int_print,
                       &our_parameter_value);
     fs_parameter_register(&our_parameter);
 

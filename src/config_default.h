@@ -222,7 +222,18 @@
 #endif
 
 /**
- * File system command.
+ * File system command to list all registered file systems.
+ */
+#ifndef CONFIG_FS_CMD_FS_FILE_SYSTEMS_LIST
+#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO)
+#        define CONFIG_FS_CMD_FS_FILE_SYSTEMS_LIST          0
+#    else
+#        define CONFIG_FS_CMD_FS_FILE_SYSTEMS_LIST          1
+#    endif
+#endif
+
+/**
+ * File system command to list all counters.
  */
 #ifndef CONFIG_FS_CMD_FS_COUNTERS_LIST
 #    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO)
@@ -233,7 +244,7 @@
 #endif
 
 /**
- * File system command.
+ * File system command to set all counters to zero.
  */
 #ifndef CONFIG_FS_CMD_FS_COUNTERS_RESET
 #    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO)
@@ -244,7 +255,7 @@
 #endif
 
 /**
- * File system command.
+ * File system command to list all parameters.
  */
 #ifndef CONFIG_FS_CMD_FS_PARAMETERS_LIST
 #    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO)

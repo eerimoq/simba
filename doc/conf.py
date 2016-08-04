@@ -97,7 +97,8 @@ exclude_patterns = [
     "examples/*/source-code.rst",
     "boards/extra",
     "mcus/extra",
-    "about"
+    "about",
+    "README.rst"
 ]
 
 # The reST default role (used for this markup: `text`) to use for all

@@ -28,6 +28,7 @@
 
 struct state_t {
     struct fs_command_t *commands_p;
+    struct fs_file_system_t *file_systems_p;
     struct fs_counter_t *counters_p;
     struct fs_parameter_t *parameters_p;
 };
@@ -42,7 +43,7 @@ static int counter_get(struct fs_counter_t *counter_p,
                 FSTR("%08lx%08lx\r\n"),
                 (long)(counter_p->value >> 32),
                 (long)(counter_p->value & 0xffffffff));
-    
+
     return (0);
 }
 
@@ -52,6 +53,74 @@ static int counter_set(struct fs_counter_t *counter_p)
 
     return (0);
 }
+
+static int cmd_parameter_cb(int argc,
+                            const char *argv[],
+                            chan_t *chout_p,
+                            chan_t *chin_p,
+                            void *arg_p,
+                            void *call_arg_p)
+{
+    int res = -1;
+    struct fs_parameter_t *parameter_p;
+
+    parameter_p = arg_p;
+
+    if (argc > 1) {
+        res = parameter_p->set_cb(parameter_p->value_p, argv[1]);
+    } else {
+        res = parameter_p->print_cb(chout_p, parameter_p->value_p);
+        std_fprintf(chout_p, FSTR("\r\n"));
+    }
+
+    return (res);
+}
+
+#if CONFIG_FS_CMD_FS_FILE_SYSTEMS_LIST == 1
+
+static struct fs_command_t cmd_file_systems_list;
+
+static int cmd_file_systems_list_cb(int argc,
+                                    const char *argv[],
+                                    chan_t *chout_p,
+                                    chan_t *chin_p,
+                                    void *arg_p,
+                                    void *call_arg_p)
+{
+    struct fs_file_system_t *file_system_p;
+    char buf[FS_NAME_MAX];
+    char *type_p;
+
+    std_fprintf(chout_p,
+                FSTR("MOUNT-POINT                    MEDIUM   TYPE     AVAILABLE  SIZE  USAGE\r\n"));
+
+    file_system_p = state.file_systems_p;
+
+    while (file_system_p != NULL) {
+        strcpy(buf, file_system_p->name_p);
+
+        switch (file_system_p->type) {
+        case fs_type_fat16_t: type_p = "fat16"; break;
+        case fs_type_spiffs_t: type_p = "spiffs"; break;
+        default: type_p = "-"; break;
+        }
+
+        std_fprintf(chout_p,
+                    FSTR("%-29s  %-7s  %-7s  %9s  %4s  %5s\r\n"),
+                    buf,
+                    "-",
+                    type_p,
+                    "-",
+                    "-",
+                    "-%");
+
+        file_system_p = file_system_p->next_p;
+    }
+
+    return (0);
+}
+
+#endif
 
 #if CONFIG_FS_CMD_FS_COUNTERS_LIST == 1
 
@@ -71,11 +140,11 @@ static int cmd_counters_list_cb(int argc,
                 FSTR("NAME                                                 VALUE\r\n"));
 
     counter_p = state.counters_p;
-    
+
     while (counter_p != NULL) {
         std_strcpy(buf, counter_p->command.path_p);
         std_fprintf(chout_p, FSTR("%-53s"), buf);
-        counter_p->command.callback(FS_ARGC_GET,
+        counter_p->command.callback(1,
                                     NULL,
                                     chout_p,
                                     NULL,
@@ -104,7 +173,7 @@ static int cmd_counters_reset_cb(int argc,
     struct fs_counter_t *counter_p;
 
     counter_p = state.counters_p;
-    
+
     while (counter_p != NULL) {
         counter_p->command.callback(0,
                                     NULL,
@@ -133,13 +202,17 @@ static int cmd_parameters_list_cb(int argc,
                                   void *call_arg_p)
 {
     struct fs_parameter_t *parameter_p;
- 
+    char buf[FS_NAME_MAX];
+
+    std_fprintf(chout_p,
+                FSTR("NAME                                                 VALUE\r\n"));
+
     parameter_p = state.parameters_p;
-    
+
     while (parameter_p != NULL) {
-        std_fprintf(chout_p, parameter_p->command.path_p);
-        std_fprintf(chout_p, FSTR(" "));
-        parameter_p->command.callback(FS_ARGC_GET,
+        std_strcpy(buf, parameter_p->command.path_p);
+        std_fprintf(chout_p, FSTR("%-53s"), buf);
+        parameter_p->command.callback(1,
                                       NULL,
                                       chout_p,
                                       NULL,
@@ -223,7 +296,7 @@ static int cmd_counter_cb(int argc,
                           void *cmd_arg_p,
                           void *arg_p)
 {
-    if (argc == FS_ARGC_GET) {
+    if (argc == 1) {
         return (counter_get(cmd_arg_p, chout_p));
     } else {
         return (counter_set(cmd_arg_p));
@@ -233,13 +306,24 @@ static int cmd_counter_cb(int argc,
 int fs_module_init()
 {
     state.commands_p = NULL;
+    state.file_systems_p = NULL;
     state.counters_p = NULL;
     state.parameters_p = NULL;
+
+#if CONFIG_FS_CMD_FS_FILE_SYSTEMS_LIST == 1
+
+    fs_command_init(&cmd_file_systems_list,
+                    FSTR("/oam/fs/file_systems/list"),
+                    cmd_file_systems_list_cb,
+                    NULL);
+    fs_command_register(&cmd_file_systems_list);
+
+#endif
 
 #if CONFIG_FS_CMD_FS_COUNTERS_LIST == 1
 
     fs_command_init(&cmd_counters_list,
-                    FSTR("/kernel/fs/counters_list"),
+                    FSTR("/oam/fs/counters/list"),
                     cmd_counters_list_cb,
                     NULL);
     fs_command_register(&cmd_counters_list);
@@ -249,7 +333,7 @@ int fs_module_init()
 #if CONFIG_FS_CMD_FS_COUNTERS_RESET == 1
 
     fs_command_init(&cmd_counters_reset,
-                    FSTR("/kernel/fs/counters_reset"), 
+                    FSTR("/oam/fs/counters/reset"),
                     cmd_counters_reset_cb,
                     NULL);
     fs_command_register(&cmd_counters_reset);
@@ -259,7 +343,7 @@ int fs_module_init()
 #if CONFIG_FS_CMD_FS_PARAMETERS_LIST == 1
 
     fs_command_init(&cmd_parameters_list,
-                    FSTR("/kernel/fs/parameters_list"), 
+                    FSTR("/oam/fs/parameters/list"),
                     cmd_parameters_list_cb,
                     NULL);
     fs_command_register(&cmd_parameters_list);
@@ -274,7 +358,7 @@ int fs_call(char *command_p,
             chan_t *chout_p,
             void *arg_p)
 {
-    ASSERTN(command_p != NULL, EINVAL);
+    ASSERTN(command_p != NULL, -EINVAL);
 
     int argc, skip_slash;
     const char *argv[FS_COMMAND_ARGS_MAX];
@@ -308,12 +392,167 @@ int fs_call(char *command_p,
     return (-ENOENT);
 }
 
+static int get_file_system_path_from_path(struct fs_file_system_t **file_system_pp,
+                                          const char **path_pp,
+                                          const char *path_p)
+{
+    struct fs_file_system_t *file_system_p;
+    const char *name_p;
+    int name_length;
+
+    /* Skip leading slash. */
+    if (path_p[0] == '/') {
+        path_p++;
+    }
+    
+    file_system_p = state.file_systems_p;
+    
+    /* Find the file system registered on given path. */
+    while (file_system_p != NULL) {
+        name_p = file_system_p->name_p;
+
+        /* Skip leading slash. */
+        if (name_p[0] == '/') {
+            name_p++;
+        }
+
+        name_length = strlen(name_p);
+
+        if (strncmp(name_p, path_p, name_length) == 0) {
+            *path_pp = (path_p + name_length + 1);
+            *file_system_pp = file_system_p;
+            return (0);
+        }
+
+        file_system_p = file_system_p->next_p;
+    }
+
+    return (-1);
+}
+
+int fs_open(struct fs_file_t *self_p, const char *path_p, int flags)
+{
+    ASSERTN(self_p != NULL, -EINVAL);
+    ASSERTN(path_p != NULL, -EINVAL);
+
+    struct fs_file_system_t *file_system_p;
+
+    if (get_file_system_path_from_path(&file_system_p, &path_p, path_p) != 0) {
+        return (-1);
+    }
+
+    self_p->file_system_p = file_system_p;
+
+    switch (file_system_p->type) {
+
+    case fs_type_fat16_t:
+        return (fat16_file_open(file_system_p->fs_p,
+                                &self_p->u.fat16,
+                                path_p,
+                                flags));
+        
+    case fs_type_spiffs_t:
+        self_p->u.spiffs = spiffs_open(file_system_p->fs_p, path_p, flags, 0);
+        return (self_p->u.spiffs > 0 ? 0 : -1);
+
+    default:
+        return (-1);
+    }
+}
+
+int fs_close(struct fs_file_t *self_p)
+{
+    ASSERTN(self_p != NULL, -EINVAL);
+
+    switch (self_p->file_system_p->type) {
+
+    case fs_type_fat16_t:
+        return (fat16_file_close(&self_p->u.fat16));
+
+    case fs_type_spiffs_t:
+        return (spiffs_close(self_p->file_system_p->fs_p, self_p->u.spiffs));
+
+    default:
+        return (-1);
+    }
+}
+
+ssize_t fs_read(struct fs_file_t *self_p, void *dst_p, size_t size)
+{
+    ASSERTN(self_p != NULL, -EINVAL);
+    ASSERTN(dst_p != NULL, -EINVAL);
+
+    switch (self_p->file_system_p->type) {
+
+    case fs_type_fat16_t:
+        return (fat16_file_read(&self_p->u.fat16, dst_p, size));
+
+    case fs_type_spiffs_t:
+        return (spiffs_read(self_p->file_system_p->fs_p, self_p->u.spiffs, dst_p, size));
+
+    default:
+        return (-1);
+    }
+}
+
+ssize_t fs_write(struct fs_file_t *self_p, const void *src_p, size_t size)
+{
+    ASSERTN(self_p != NULL, -EINVAL);
+    ASSERTN(src_p != NULL, -EINVAL);
+
+    switch (self_p->file_system_p->type) {
+
+    case fs_type_fat16_t:
+        return (fat16_file_write(&self_p->u.fat16, src_p, size));
+
+    case fs_type_spiffs_t:
+        return (spiffs_write(self_p->file_system_p->fs_p, self_p->u.spiffs, (void *)src_p, size));
+
+    default:
+        return (-1);
+    }
+}
+
+int fs_seek(struct fs_file_t *self_p, int offset, int whence)
+{
+    ASSERTN(self_p != NULL, -EINVAL);
+
+    switch (self_p->file_system_p->type) {
+
+    case fs_type_fat16_t:
+        return (fat16_file_seek(&self_p->u.fat16, offset, whence));
+
+    case fs_type_spiffs_t:
+        return (spiffs_lseek(self_p->file_system_p->fs_p, self_p->u.spiffs, offset, whence));
+
+    default:
+        return (-1);
+    }
+}
+
+ssize_t fs_tell(struct fs_file_t *self_p)
+{
+    ASSERTN(self_p != NULL, -EINVAL);
+
+    switch (self_p->file_system_p->type) {
+
+    case fs_type_fat16_t:
+        return (fat16_file_tell(&self_p->u.fat16));
+
+    case fs_type_spiffs_t:
+        return (spiffs_tell(self_p->file_system_p->fs_p, self_p->u.spiffs));
+
+    default:
+        return (-1);
+    }
+}
+
 int fs_list(const char *path_p,
             const char *filter_p,
             chan_t *chout_p)
 {
-    ASSERTN(path_p != NULL, EINVAL);
-    ASSERTN(chout_p != NULL, EINVAL);
+    ASSERTN(path_p != NULL, -EINVAL);
+    ASSERTN(chout_p != NULL, -EINVAL);
 
     int buf_length, path_offset, filter_offset, path_length;
     struct fs_command_t *command_p;
@@ -361,7 +600,7 @@ int fs_list(const char *path_p,
 
                     do {
                         next_char = command_p->path_p[filter_offset + buf_length];
-                        
+
                         buf[buf_length] = next_char;
                         buf_length++;
                     } while ((next_char != '\0') && (next_char != '/'));
@@ -381,7 +620,7 @@ int fs_list(const char *path_p,
 
 int fs_auto_complete(char *path_p)
 {
-    ASSERTN(path_p != NULL, EINVAL);
+    ASSERTN(path_p != NULL, -EINVAL);
 
     char next_char;
     int mismatch, path_length, offset, size;
@@ -468,9 +707,9 @@ int fs_auto_complete(char *path_p)
 
 void fs_split(char *buf_p, char **path_pp, char **cmd_pp)
 {
-    ASSERTN(buf_p != NULL, EINVAL);
-    ASSERTN(path_pp != NULL, EINVAL);
-    ASSERTN(cmd_pp != NULL, EINVAL);
+    ASSERTN(buf_p != NULL, -EINVAL);
+    ASSERTN(path_pp != NULL, -EINVAL);
+    ASSERTN(cmd_pp != NULL, -EINVAL);
 
     char *last_slash_p = NULL;
 
@@ -496,12 +735,46 @@ void fs_split(char *buf_p, char **path_pp, char **cmd_pp)
 
 void fs_merge(char *path_p, char *cmd_p)
 {
-    ASSERTN(path_p != NULL, EINVAL);
-    ASSERTN(cmd_p != NULL, EINVAL);
+    ASSERTN(path_p != NULL, -EINVAL);
+    ASSERTN(cmd_p != NULL, -EINVAL);
 
     if (path_p != empty_path) {
         cmd_p[-1] = '/';
     }
+}
+
+int fs_file_system_init(struct fs_file_system_t *self_p,
+                        const char *name_p,
+                        enum fs_type_t type,
+                        void *fs_p)
+{
+    ASSERTN(self_p != NULL, -EINVAL);
+    ASSERTN(name_p != NULL, -EINVAL);
+    ASSERTN((type >= fs_type_fat16_t) && (type <= fs_type_spiffs_t), -EINVAL);
+    ASSERTN(fs_p != NULL, -EINVAL);
+
+    self_p->name_p = name_p;
+    self_p->type = type;
+    self_p->fs_p = fs_p;
+
+    return (0);
+}
+
+int fs_file_system_register(struct fs_file_system_t *file_system_p)
+{
+    ASSERTN(file_system_p != NULL, -EINVAL);
+
+    file_system_p->next_p = state.file_systems_p;
+    state.file_systems_p = file_system_p;
+
+    return (0);
+}
+
+int fs_file_system_deregister(struct fs_file_system_t *self_p)
+{
+    ASSERTN(0, -ENOSYS);
+
+    return (-1);
 }
 
 int fs_command_init(struct fs_command_t *self_p,
@@ -509,9 +782,9 @@ int fs_command_init(struct fs_command_t *self_p,
                     fs_callback_t callback,
                     void *arg_p)
 {
-    ASSERTN(self_p != NULL, EINVAL);
-    ASSERTN(path_p != NULL, EINVAL);
-    ASSERTN(callback != NULL, EINVAL);
+    ASSERTN(self_p != NULL, -EINVAL);
+    ASSERTN(path_p != NULL, -EINVAL);
+    ASSERTN(callback != NULL, -EINVAL);
 
     self_p->next_p = NULL;
     self_p->path_p = path_p;
@@ -523,7 +796,7 @@ int fs_command_init(struct fs_command_t *self_p,
 
 int fs_command_register(struct fs_command_t *command_p)
 {
-    ASSERTN(command_p != NULL, EINVAL);
+    ASSERTN(command_p != NULL, -EINVAL);
 
     int res = -1;
     struct fs_command_t *current_p, *prev_p;
@@ -564,8 +837,8 @@ int fs_counter_init(struct fs_counter_t *self_p,
                     const FAR char *path_p,
                     uint64_t value)
 {
-    ASSERTN(self_p != NULL, EINVAL);
-    ASSERTN(path_p != NULL, EINVAL);
+    ASSERTN(self_p != NULL, -EINVAL);
+    ASSERTN(path_p != NULL, -EINVAL);
 
     fs_command_init(&self_p->command,
                     path_p,
@@ -581,7 +854,7 @@ int fs_counter_init(struct fs_counter_t *self_p,
 int fs_counter_increment(struct fs_counter_t *self_p,
                          uint64_t value)
 {
-    ASSERTN(self_p != NULL, EINVAL);
+    ASSERTN(self_p != NULL, -EINVAL);
 
     self_p->value += value;
 
@@ -590,7 +863,7 @@ int fs_counter_increment(struct fs_counter_t *self_p,
 
 int fs_counter_register(struct fs_counter_t *counter_p)
 {
-    ASSERTN(counter_p != NULL, EINVAL);
+    ASSERTN(counter_p != NULL, -EINVAL);
 
     /* Insert counter into the command list and the counter list. */
     fs_command_register(&counter_p->command);
@@ -610,18 +883,24 @@ int fs_counter_deregister(struct fs_counter_t *counter_p)
 
 int fs_parameter_init(struct fs_parameter_t *self_p,
                       const FAR char *path_p,
-                      fs_callback_t callback,
+                      fs_parameter_set_callback_t set_cb,
+                      fs_parameter_print_callback_t print_cb,
                       void *value_p)
 {
-    ASSERTN(self_p != NULL, EINVAL);
-    ASSERTN(path_p != NULL, EINVAL);
-    ASSERTN(callback != NULL, EINVAL);
+    ASSERTN(self_p != NULL, -EINVAL);
+    ASSERTN(path_p != NULL, -EINVAL);
+    ASSERTN(set_cb != NULL, -EINVAL);
+    ASSERTN(print_cb != NULL, -EINVAL);
+    ASSERTN(value_p != NULL, -EINVAL);
 
     fs_command_init(&self_p->command,
                     path_p,
-                    callback,
-                    value_p);
+                    cmd_parameter_cb,
+                    self_p);
 
+    self_p->set_cb = set_cb;
+    self_p->print_cb = print_cb;
+    self_p->value_p = value_p;
     self_p->next_p = NULL;
 
     return (0);
@@ -629,7 +908,7 @@ int fs_parameter_init(struct fs_parameter_t *self_p,
 
 int fs_parameter_register(struct fs_parameter_t *parameter_p)
 {
-    ASSERTN(parameter_p != NULL, EINVAL);
+    ASSERTN(parameter_p != NULL, -EINVAL);
 
     /* Insert counter into the command list and the counter list. */
     fs_command_register(&parameter_p->command);
@@ -647,26 +926,27 @@ int fs_parameter_deregister(struct fs_parameter_t *parameter_p)
     return (0);
 }
 
-int fs_cmd_parameter_int(int argc,
-                         const char *argv[],
-                         chan_t *chout_p,
-                         chan_t *chin_p,
-                         void *arg_p,
-                         void *call_arg_p)
+int fs_remove(void)
 {
-    int *value_p = arg_p;
+    return (-1);
+}
+
+int fs_parameter_int_set(void *value_p, const char *src_p)
+{
     long value;
 
-    if (argc == FS_ARGC_GET) {
-        std_fprintf(chout_p, FSTR("%d\r\n"), *value_p);
-    } else {
-        if (std_strtol(argv[1], &value) == NULL) {
-            std_fprintf(chout_p, FSTR("bad value '%s'\r\n"), argv[1]);
-            return (1);
-        }
-        
-        *value_p = value;
+    if (std_strtol(src_p, &value) == NULL) {
+        return (-1);
     }
-    
+
+    *(int *)value_p = value;
+
+    return (0);
+}
+
+int fs_parameter_int_print(chan_t *chout_p, void *value_p)
+{
+    std_fprintf(chout_p, FSTR("%d"), *(int *)value_p);
+
     return (0);
 }

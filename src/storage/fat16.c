@@ -440,6 +440,10 @@ int fat16_init(struct fat16_t *self_p,
                void *arg_p,
                unsigned int partition)
 {
+    ASSERTN(self_p != NULL, -EINVAL);
+    ASSERTN(read != NULL, -EINVAL);
+    ASSERTN(write != NULL, -EINVAL);
+
     /* Error if invalid partition. */
     if (partition > 4) {
         return (-EINVAL);
@@ -456,6 +460,8 @@ int fat16_init(struct fat16_t *self_p,
 
 int fat16_mount(struct fat16_t *self_p)
 {
+    ASSERTN(self_p != NULL, -EINVAL);
+
     uint32_t total_blocks;
     struct bpb_t* bpb_p;
 
@@ -529,11 +535,15 @@ int fat16_mount(struct fat16_t *self_p)
 
 int fat16_unmount(struct fat16_t *self_p)
 {
+    ASSERTN(self_p != NULL, -EINVAL);
+
     return (cache_flush(self_p));
 }
 
 int fat16_format(struct fat16_t *self_p)
 {
+    ASSERTN(self_p != NULL, -EINVAL);
+
     struct fbs_t fbs;
     uint32_t volume_start_block;
     uint32_t fat_start_block;
@@ -614,6 +624,9 @@ int fat16_format(struct fat16_t *self_p)
 
 int fat16_print(struct fat16_t *self_p, chan_t *chan_p)
 {
+    ASSERTN(self_p != NULL, -EINVAL);
+    ASSERTN(chan_p != NULL, -EINVAL);
+
     std_fprintf(chan_p,
                 FSTR("fat_count = %u\r\n"
                      "blocks_per_cluster = %u\r\n"
@@ -1141,11 +1154,17 @@ int fat16_file_open(struct fat16_t *self_p,
                     const char* path_p,
                     int oflag)
 {
+    ASSERTN(self_p != NULL, -EINVAL);
+    ASSERTN(file_p != NULL, -EINVAL);
+    ASSERTN(path_p != NULL, -EINVAL);
+
     return (file_open(self_p, file_p, path_p, oflag, 0));
 }
 
 int fat16_file_close(struct fat16_file_t *file_p)
 {
+    ASSERTN(file_p != NULL, -EINVAL);
+
     return (0);
 }
 
@@ -1153,6 +1172,9 @@ ssize_t fat16_file_read(struct fat16_file_t *file_p,
                         void* buf_p,
                         size_t size)
 {
+    ASSERTN(file_p != NULL, -EINVAL);
+    ASSERTN(buf_p != NULL, -EINVAL);
+
     size_t left;
     uint8_t blk_of_cluster;
     uint16_t block_offset;
@@ -1228,6 +1250,9 @@ ssize_t fat16_file_write(struct fat16_file_t *file_p,
                          const void *src_p,
                          size_t size)
 {
+    ASSERTN(file_p != NULL, -EINVAL);
+    ASSERTN(src_p != NULL, -EINVAL);
+
     size_t left = size;
     uint16_t block_offset;
     uint8_t* dst_p;
@@ -1291,6 +1316,8 @@ int fat16_file_seek(struct fat16_file_t *file_p,
                     size_t pos,
                     int whence)
 {
+    ASSERTN(file_p != NULL, -EINVAL);
+
     fat_t n;
     uint8_t blocks_per_cluster = file_p->fat16_p->blocks_per_cluster;
 
@@ -1340,12 +1367,16 @@ int fat16_file_seek(struct fat16_file_t *file_p,
 
 ssize_t fat16_file_tell(struct fat16_file_t *file_p)
 {
+    ASSERTN(file_p != NULL, -EINVAL);
+
     return (file_p->cur_position);
 }
 
 int fat16_file_truncate(struct fat16_file_t *file_p,
                         size_t size)
 {
+    ASSERTN(file_p != NULL, -EINVAL);
+
     uint32_t new_pos;
     fat_t to_free;
     size_t n;
@@ -1423,11 +1454,15 @@ int fat16_file_truncate(struct fat16_file_t *file_p,
 
 ssize_t fat16_file_size(struct fat16_file_t *file_p)
 {
+    ASSERTN(file_p != NULL, -EINVAL);
+
     return (file_p->file_size);
 }
 
 int fat16_file_sync(struct fat16_file_t *file_p)
 {
+    ASSERTN(file_p != NULL, -EINVAL);
+
     struct dir_t* dir_p;
 
     if (file_p->flags & F_FILE_DIR_DIRTY) {
@@ -1462,6 +1497,9 @@ int fat16_dir_open(struct fat16_t *self_p,
                    const char *path_p,
                    int oflag)
 {
+    ASSERTN(dir_p != NULL, -EINVAL);
+    ASSERTN(path_p != NULL, -EINVAL);
+
     struct fat16_file_t *file_p = &dir_p->file;
     uint8_t dname[11];
     struct dir_t dir;
@@ -1504,12 +1542,17 @@ int fat16_dir_open(struct fat16_t *self_p,
 
 int fat16_dir_close(struct fat16_dir_t *dir_p)
 {
+    ASSERTN(dir_p != NULL, -EINVAL);
+
     return (0);
 }
 
 int fat16_dir_read(struct fat16_dir_t *dir_p,
                    struct fat16_dir_entry_t *entry_p)
 {
+    ASSERTN(dir_p != NULL, -EINVAL);
+    ASSERTN(entry_p != NULL, -EINVAL);
+
     struct fat16_file_t *file_p = &dir_p->file;
     struct dir_t dir;
     union fat16_date_t date;

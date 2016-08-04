@@ -67,12 +67,12 @@ typedef unsigned long off_t;
 #include "alloc/heap.h"
 #include "alloc/circular_heap.h"
 
+#include "storage/fat16.h"
+#include "storage/spiffs.h"
+
 #include "oam/console.h"
 #include "oam/fs.h"
 #include "oam/shell.h"
-
-#include "storage/fat16.h"
-#include "storage/spiffs.h"
 
 #include "debug/log.h"
 

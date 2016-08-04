@@ -185,32 +185,32 @@ typedef void (*spiffs_file_callback_t)(struct spiffs_t *fs_p,
 #endif
 
 /** Any write to the filehandle is appended to end of the file. */
-#define SPIFFS_APPEND                   (1<<0)
+#define SPIFFS_APPEND                   0x04 //(1<<0)
 #define SPIFFS_O_APPEND                 SPIFFS_APPEND
 /** If the opened file exists, it will be truncated to zero length
     before opened. */
-#define SPIFFS_TRUNC                    (1<<1)
+#define SPIFFS_TRUNC                    0x40 //(1<<1)
 #define SPIFFS_O_TRUNC                  SPIFFS_TRUNC
 /** If the opened file does not exist, it will be created before
     opened. */
-#define SPIFFS_CREAT                    (1<<2)
+#define SPIFFS_CREAT                    0x10 //(1<<2)
 #define SPIFFS_O_CREAT                  SPIFFS_CREAT
 /** The opened file may only be read. */
-#define SPIFFS_RDONLY                   (1<<3)
+#define SPIFFS_RDONLY                   0x01 //(1<<3)
 #define SPIFFS_O_RDONLY                 SPIFFS_RDONLY
 /** The opened file may only be written. */
-#define SPIFFS_WRONLY                   (1<<4)
+#define SPIFFS_WRONLY                   0x02 //(1<<4)
 #define SPIFFS_O_WRONLY                 SPIFFS_WRONLY
 /** The opened file may be both read and written. */
 #define SPIFFS_RDWR                     (SPIFFS_RDONLY | SPIFFS_WRONLY)
 #define SPIFFS_O_RDWR                   SPIFFS_RDWR
 /** Any writes to the filehandle will never be cached but flushed
     directly. */
-#define SPIFFS_DIRECT                   (1<<5)
+#define SPIFFS_DIRECT                   0x08 //(1<<5)
 #define SPIFFS_O_DIRECT                 SPIFFS_DIRECT
 /** If SPIFFS_O_CREAT and SPIFFS_O_EXCL are set, SPIFFS_open() shall
     fail if the file exists. */
-#define SPIFFS_EXCL                     (1<<6)
+#define SPIFFS_EXCL                     0x20 //(1<<6)
 #define SPIFFS_O_EXCL                   SPIFFS_EXCL
 
 #define SPIFFS_SEEK_SET                 (0)
