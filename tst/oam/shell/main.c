@@ -255,6 +255,7 @@ static int test_auto_completion(struct harness_t *harness_p)
                              "history\r\n"
                              "kernel/\r\n"
                              "logout\r\n"
+                             "oam/\r\n"
                              "storage/\r\n"
                              "tmp/\r\n"
                              "$ ")) == 0);
@@ -367,10 +368,10 @@ static int test_fs_counters_list(struct harness_t *harness_p)
     fs_counter_increment(&foo, 2);
     fs_counter_increment(&bar, 339283982393);
     fs_counter_increment(&fie, 1);
-    chan_write(&qin, "/kernel/fs/counters_list\r\n", 26);
+    chan_write(&qin, "/oam/fs/counters/list\r\n", 23);
     BTASSERT(chout_read_until_prompt(buf) == 1);
     BTASSERT(std_strcmp(buf,
-                        FSTR("/kernel/fs/counters_list\r\n"
+                        FSTR("/oam/fs/counters/list\r\n"
                              "NAME                                                 VALUE\r\n"
                              "/foo                                                 "
                              "0000000000000004\r\n"
@@ -379,7 +380,9 @@ static int test_fs_counters_list(struct harness_t *harness_p)
                              "/fie                                                 "
                              "0000000000000001\r\n"
                              "$ ")) == 0, "%s", buf);
+    PRINT_FILE_LINE();
 #endif
+    PRINT_FILE_LINE();
 
     std_printf(FSTR("\r\n"));
 
@@ -872,7 +875,8 @@ int main()
     /* Setup the parameter. */
     fs_parameter_init(&tmp_fie,
                       FSTR("/tmp/fie"),
-                      fs_cmd_parameter_int,
+                      fs_parameter_int_set,
+                      fs_parameter_int_print,
                       &tmp_fie_value);
     fs_parameter_register(&tmp_fie);
 
