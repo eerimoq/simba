@@ -153,8 +153,6 @@ static uint8_t cache[256];
 
 static int test_init(struct harness_t *harness_p)
 {
-    int res;
-
     BTASSERT(hal_init() == 0);
 
     /* Initiate the config struct. */
@@ -168,18 +166,14 @@ static int test_init(struct harness_t *harness_p)
     config.log_page_size = LOG_PAGE_SIZE;
 
     /* Mount the file system to initialize the runtime variables. */
-    res = spiffs_mount(&fs,
-                       &config,
-                       workspace,
-                       fdworkspace,
-                       sizeof(fdworkspace),
-                       cache,
-                       sizeof(cache),
-                       NULL);
-
-    if (res != SPIFFS_ERR_NOT_A_FS) {
-        spiffs_unmount(&fs);
-    }
+    BTASSERT(spiffs_mount(&fs,
+                          &config,
+                          workspace,
+                          fdworkspace,
+                          sizeof(fdworkspace),
+                          cache,
+                          sizeof(cache),
+                          NULL) != 0);
 
     return (0);
 }

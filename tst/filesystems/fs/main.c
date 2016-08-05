@@ -473,8 +473,7 @@ static int test_filesystem_spiffs(struct harness_t *harness_p)
                           sizeof(fdworkspace),
                           cache,
                           sizeof(cache),
-                          NULL) == 0);
-    spiffs_unmount(&spiffs_fs);
+                          NULL) != 0);
 
     /* Format and mount the file system again. */
     BTASSERT(spiffs_format(&spiffs_fs) == 0);

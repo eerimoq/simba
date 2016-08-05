@@ -32,20 +32,26 @@ systems.
 Debug file system commands
 --------------------------
 
-The debug file system module itself registers four commands, all
+The debug file system module itself registers seven commands, all
 located in the directory ``filesystems/fs/``.
 
-+-------------------------------+-----------------------------------------------------------------+
-|  Command                      | Description                                                     |
-+===============================+=================================================================+
-|  ``filesystems/list``         | Print a list of all registered file systems.                    |
-+-------------------------------+-----------------------------------------------------------------+
-|  ``counters/list``            | Print a list of all registered counters.                        |
-+-------------------------------+-----------------------------------------------------------------+
-|  ``counters/reset``           | Rest all counters to zero.                                      |
-+-------------------------------+-----------------------------------------------------------------+
-|  ``parameters/list``          | Print a list of all registered parameters.                      |
-+-------------------------------+-----------------------------------------------------------------+
++---------------------------------------+---------------------------------------------------------+
+|  Command                              | Description                                             |
++=======================================+=========================================================+
+|  ``filesystems/list``                 | Print a list of all registered file systems.            |
++---------------------------------------+---------------------------------------------------------+
+|  ``filesystems/read <file>``          | Read from given file.                                   |
++---------------------------------------+---------------------------------------------------------+
+|  ``filesystems/write <file> <data>``  | Create and write to a file. Overwrites existing files.  |
++---------------------------------------+---------------------------------------------------------+
+|  ``filesystems/append <file> <data>`` | Append data to an existing file.                        |
++---------------------------------------+---------------------------------------------------------+
+|  ``counters/list``                    | Print a list of all registered counters.                |
++---------------------------------------+---------------------------------------------------------+
+|  ``counters/reset``                   | Rest all counters to zero.                              |
++---------------------------------------+---------------------------------------------------------+
+|  ``parameters/list``                  | Print a list of all registered parameters.              |
++---------------------------------------+---------------------------------------------------------+
 
 Example output from the shell:
 
