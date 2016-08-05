@@ -177,8 +177,8 @@ int fs_module_init(void);
  * Call given file system command with given input and output
  * channels. Quote an argument if it contains spaces, otherwise it is
  * parsed as multiple arguments. Any quotation mark in an argument
- * string must be escaped with ``\``, otherwise it is interpreted as a
- * string quotation.
+ * string must be escaped with a backslash (``\``), otherwise it is
+ * interpreted as a string quotation mask.
  *
  * @param[in,out] command_p Command string to call. The command string
  *                          will be modified by this function, so
