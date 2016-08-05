@@ -94,10 +94,10 @@ Execute the one-liner below to install `Simba`.
 
    $ mkdir simba && \
      cd simba && \
-     sudo apt-get install ckermit valgrind cppcheck cloc python python-pip doxygen git && \
-     sudo apt-get install avrdude gcc-avr binutils-avr gdb-avr avr-libc && \
-     sudo apt-get install bossa-cli gcc-arm-none-eabi && \
-     sudo apt-get install make unrar autoconf automake libtool gcc g++ gperf \
+     sudo apt install ckermit valgrind cppcheck cloc python python-pip doxygen git && \
+     sudo apt install avrdude gcc-avr binutils-avr gdb-avr avr-libc && \
+     sudo apt install bossa-cli gcc-arm-none-eabi && \
+     sudo apt install make unrar autoconf automake libtool gcc g++ gperf \
                           flex bison texinfo gawk ncurses-dev libexpat-dev \
                           python-serial sed libtool-bin && \
      pip install pyserial xpect readchar sphinx breathe && \
