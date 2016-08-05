@@ -1,3 +1,0 @@
-[submodule "rust/rust"]
-	path = rost/rust
-	url = https://github.com/eerimoq/rust.git

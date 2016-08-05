@@ -104,10 +104,6 @@ Execute the one-liner below to install `Simba`.
      (git clone --recursive https://github.com/eerimoq/esp-open-sdk.git && \
       cd esp-open-sdk && \
       make STANDALONE=n) && \
-     (git clone https://github.com/eerimoq/rust-bindgen.git && \
-      cd rust-bindgen && \
-      cargo build) && \
-     git clone https://github.com/eerimoq/rust.git && \
      git clone https://github.com/eerimoq/simba
 
 Post-install
