@@ -99,7 +99,7 @@ Execute the one-liner below to install `Simba`.
      sudo apt-get install bossa-cli gcc-arm-none-eabi && \
      sudo apt-get install make unrar autoconf automake libtool gcc g++ gperf \
                           flex bison texinfo gawk ncurses-dev libexpat-dev \
-                          python-serial sed && \
+                          python-serial sed libtool-bin && \
      pip install pyserial xpect readchar sphinx breathe && \
      (git clone --recursive https://github.com/eerimoq/esp-open-sdk.git && \
       cd esp-open-sdk && \
