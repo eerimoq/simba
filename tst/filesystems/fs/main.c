@@ -511,7 +511,7 @@ static int test_filesystem_spiffs(struct harness_t *harness_p)
 #endif
 }
 
-static int test_filesystem_list(struct harness_t *harness_p)
+static int test_filesystem_commands(struct harness_t *harness_p)
 {
 #if defined(ARCH_LINUX)
 
@@ -523,6 +523,47 @@ static int test_filesystem_list(struct harness_t *harness_p)
                "MOUNT-POINT                    MEDIUM   TYPE     AVAILABLE  SIZE  USAGE\r\n"
                "/spiffsfs                      -        spiffs           -     -     -%\r\n"
                "/fat16fs                       -        fat16            -     -     -%\r\n");
+
+    /* Bad arguments. */
+    strcpy(buf, "/filesystems/fs/filesystems/read");
+    BTASSERT(fs_call(buf, NULL, &qout, NULL) == -1);
+    read_until(buf, "Usage: /filesystems/fs/filesystems/read <file>\r\n");
+
+    strcpy(buf, "/filesystems/fs/filesystems/write");
+    BTASSERT(fs_call(buf, NULL, &qout, NULL) == -1);
+    read_until(buf, "Usage: /filesystems/fs/filesystems/write <file> <data>\r\n");
+
+    strcpy(buf, "/filesystems/fs/filesystems/append");
+    BTASSERT(fs_call(buf, NULL, &qout, NULL) == -1);
+    read_until(buf, "Usage: /filesystems/fs/filesystems/append <file> <data>\r\n");
+
+    /* Non-existing file. */
+    strcpy(buf, "/filesystems/fs/filesystems/read spiffsfs/cmd.txt");
+    BTASSERT(fs_call(buf, NULL, &qout, NULL) == -1);
+    read_until(buf, "Failed to open spiffsfs/cmd.txt.\r\n");
+
+    strcpy(buf, "/filesystems/fs/filesystems/append spiffsfs/cmd.txt a");
+    BTASSERT(fs_call(buf, NULL, &qout, NULL) == -1);
+    read_until(buf, "Failed to open spiffsfs/cmd.txt.\r\n");
+
+    /* Write, append and read. */
+    strcpy(buf, "/filesystems/fs/filesystems/write spiffsfs/cmd.txt 1");
+    BTASSERT(fs_call(buf, NULL, &qout, NULL) == 0);
+
+    strcpy(buf, "/filesystems/fs/filesystems/append spiffsfs/cmd.txt 2");
+    BTASSERT(fs_call(buf, NULL, &qout, NULL) == 0);
+
+    strcpy(buf, "/filesystems/fs/filesystems/read spiffsfs/cmd.txt");
+    BTASSERT(fs_call(buf, NULL, &qout, NULL) == 0);
+    read_until(buf, "12\r\n");
+
+    /* Truncate existing file. */
+    strcpy(buf, "/filesystems/fs/filesystems/write spiffsfs/cmd.txt 1");
+    BTASSERT(fs_call(buf, NULL, &qout, NULL) == 0);
+
+    strcpy(buf, "/filesystems/fs/filesystems/read spiffsfs/cmd.txt");
+    BTASSERT(fs_call(buf, NULL, &qout, NULL) == 0);
+    read_until(buf, "1\r\n");
 
     return (0);
 
@@ -546,7 +587,7 @@ int main()
         { test_escape, "test_escape" },
         { test_filesystem_fat16, "test_filesystem_fat16" },
         { test_filesystem_spiffs, "test_filesystem_spiffs" },
-        { test_filesystem_list, "test_filesystem_list" },
+        { test_filesystem_commands, "test_filesystem_commands" },
         { NULL, NULL }
     };
 

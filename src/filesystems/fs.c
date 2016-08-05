@@ -143,7 +143,7 @@ static int cmd_filesystems_read_cb(int argc,
     }
 
     if (fs_open(&file, argv[1], FS_READ) != 0) {
-        std_printf(FSTR("Failed to open %s.\r\n"), argv[1]);
+        std_fprintf(chout_p, FSTR("Failed to open %s.\r\n"), argv[1]);
         return (-1);
     }
 
@@ -180,14 +180,14 @@ static int cmd_filesystems_write_cb(int argc,
     }
 
     if (fs_open(&file, argv[1], FS_CREAT | FS_TRUNC | FS_RDWR) != 0) {
-        std_printf(FSTR("Failed to open %s.\r\n"), argv[1]);
+        std_fprintf(chout_p, FSTR("Failed to open %s.\r\n"), argv[1]);
         return (-1);
     }
 
     size = strlen(argv[2]);
 
     if (fs_write(&file, argv[2], size) != size) {
-        std_printf(FSTR("Failed to write %s to the file.\r\n"), argv[2]);
+        std_fprintf(chout_p, FSTR("Failed to write %s to the file.\r\n"), argv[2]);
         return (-1);
     }
 
@@ -218,14 +218,14 @@ static int cmd_filesystems_append_cb(int argc,
     }
 
     if (fs_open(&file, argv[1], FS_RDWR | FS_APPEND) != 0) {
-        std_printf(FSTR("Failed to open %s.\r\n"), argv[1]);
+        std_fprintf(chout_p, FSTR("Failed to open %s.\r\n"), argv[1]);
         return (-1);
     }
 
     size = strlen(argv[2]);
 
     if (fs_write(&file, argv[2], size) != size) {
-        std_printf(FSTR("Failed to append %s to the file.\r\n"), argv[2]);
+        std_fprintf(chout_p, FSTR("Failed to append %s to the file.\r\n"), argv[2]);
         return (-1);
     }
 
