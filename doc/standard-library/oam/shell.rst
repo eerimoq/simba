@@ -24,7 +24,7 @@ configuration variables.
 
 ----------------------------------------------
 
-Source code: :github-blob:`src/oam/shell.h`
+Source code: :github-blob:`src/oam/shell.h`, :github-blob:`src/oam/shell.c`
 
 Test code: :github-blob:`tst/oam/shell/main.c`
 

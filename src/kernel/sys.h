@@ -87,9 +87,12 @@ int sys_start(void);
 void sys_stop(int error);
 
 /**
- * Set on fatal callback.
+ * Set the on-fatal-callback function to given callback.
  *
- * @param[in] callback Called on fatal error.
+ * The on-fatal-callback is called when a fatal error occurs. The
+ * default on-fatal-callback is ``sys_stop()``.
+ *
+ * @param[in] callback Callback called when a fatal error occurs.
  *
  * @return void
  */
@@ -144,12 +147,18 @@ void sys_unlock_isr(void);
 /**
  * Get a pointer to the application information buffer.
  *
+ * The buffer contains various information about the application; for
+ * example the application name and the build date.
+ *
  * @return The pointer to the application information buffer.
  */
 const FAR char *sys_get_info(void);
 
 /**
  * Get a pointer to the application configuration buffer.
+ *
+ * The buffer contains a string of all configuration variables and
+ * their values.
  *
  * @return The pointer to the application configuration buffer.
  */

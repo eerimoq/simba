@@ -29,7 +29,7 @@ Class driver modules:
 
 ----------------------------------------------
 
-Source code: :github-blob:`src/drivers/usb_device.h`
+Source code: :github-blob:`src/drivers/usb_device.h`, :github-blob:`src/drivers/usb_device.c`
 
 Test code: :github-blob:`tst/drivers/usb_device/main.c`
 

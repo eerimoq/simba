@@ -4,7 +4,7 @@
 .. module:: hash_map
    :synopsis: Hash map.
 
-Source code: :github-blob:`src/collections/hash_map.h`
+Source code: :github-blob:`src/collections/hash_map.h`, :github-blob:`src/collections/hash_map.c`
 
 Test code: :github-blob:`tst/collections/hash_map/main.c`
 

@@ -72,7 +72,7 @@ Example output from the shell:
 
 ----------------------------------------------
 
-Source code: :github-blob:`src/debug/log.h`
+Source code: :github-blob:`src/debug/log.h`, :github-blob:`src/debug/log.c`
 
 Test code: :github-blob:`tst/debug/log/main.c`
 

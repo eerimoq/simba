@@ -12,7 +12,7 @@ More information on Wikipedia_.
 .. module:: usb_device_class_cdc
    :synopsis: CDC ACM (serial port over USB).
 
-Source code: :github-blob:`src/drivers/usb/device/class/cdc.h`
+Source code: :github-blob:`src/drivers/usb/device/class/cdc.h`, :github-blob:`src/drivers/usb/device/class/cdc.c`
 
 Test code: :github-blob:`tst/drivers/usb_device/main.c`
 

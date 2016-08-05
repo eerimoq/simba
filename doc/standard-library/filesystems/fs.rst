@@ -52,7 +52,7 @@ Example output from the shell:
 .. code-block:: text
 
    $ filesystems/fs/filesystems/list
-   MOUNT POINT                    MEDIUM   TYPE     AVAILABLE  SIZE  USAGE
+   MOUNT-POINT                    MEDIUM   TYPE     AVAILABLE  SIZE  USAGE
    /tmp                           ram      fat16          54K   64K    14%
    /home/erik                     sd       fat16         1.9G    2G     5%
    /etc                           flash    spiffs        124K  128K     3%
@@ -71,7 +71,7 @@ Example output from the shell:
 
 ----------------------------------------------
 
-Source code: :github-blob:`src/filesystems/fs.h`
+Source code: :github-blob:`src/filesystems/fs.h`, :github-blob:`src/filesystems/fs.c`
 
 Test code: :github-blob:`tst/filesystems/fs/main.c`
 

@@ -4,7 +4,11 @@
 .. module:: sys
    :synopsis: System.
 
-Source code: :github-blob:`src/kernel/sys.h`
+System level functionality and definitions.
+
+----------------------------------------------
+
+Source code: :github-blob:`src/kernel/sys.h`, :github-blob:`src/kernel/sys.c`
 
 Test code: :github-blob:`tst/kernel/sys/main.c`
 

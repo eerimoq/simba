@@ -4,6 +4,9 @@
 .. module:: thrd
    :synopsis: Threads.
 
+A thread is the basic execution entity in the OS. A pre-emptive or
+cooperative scheduler controls the execution of threads.
+
 Debug file system commands
 --------------------------
 
@@ -36,7 +39,7 @@ Example output from the shell:
 
 ----------------------------------------------
 
-Source code: :github-blob:`src/kernel/thrd.h`
+Source code: :github-blob:`src/kernel/thrd.h`, :github-blob:`src/kernel/thrd.c`
 
 Test code: :github-blob:`tst/kernel/thrd/main.c`
 

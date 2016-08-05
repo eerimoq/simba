@@ -24,7 +24,7 @@ Spiffs is designed with following characteristics in mind:
 
 ---------------------------------------------------
 
-Source code: :github-blob:`src/filesystems/spiffs.h`
+Source code: :github-blob:`src/filesystems/spiffs.h`, :github-blob:`src/filesystems/spiffs.c`
 
 Test code: :github-blob:`tst/filesystems/spiffs/main.c`
 

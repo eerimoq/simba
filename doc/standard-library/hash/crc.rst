@@ -4,7 +4,7 @@
 .. module:: crc
    :synopsis: Cyclic Redundancy Checks.
 
-Source code: :github-blob:`src/hash/crc.h`
+Source code: :github-blob:`src/hash/crc.h`, :github-blob:`src/hash/crc.c`
 
 Test code: :github-blob:`tst/hash/crc/main.c`
 

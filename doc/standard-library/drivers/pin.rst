@@ -40,7 +40,7 @@ Example output from the shell:
 
 ----------------------------------------------
 
-Source code: :github-blob:`src/drivers/pin.h`
+Source code: :github-blob:`src/drivers/pin.h`, :github-blob:`src/drivers/pin.c`
 
 Test code: :github-blob:`tst/drivers/pin/main.c`
 

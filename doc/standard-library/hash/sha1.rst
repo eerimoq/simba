@@ -4,7 +4,7 @@
 .. module:: sha1
    :synopsis: SHA1.
 
-Source code: :github-blob:`src/hash/sha1.h`
+Source code: :github-blob:`src/hash/sha1.h`, :github-blob:`src/hash/sha1.c`
 
 Test code: :github-blob:`tst/hash/main.c`
 

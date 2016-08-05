@@ -15,7 +15,7 @@ More information on Wikipedia_.
 .. module:: usb_host_class_mass_storage
    :synopsis: Mass Storage.
 
-Source code: :github-blob:`src/drivers/usb/host/class/mass_storage.h`
+Source code: :github-blob:`src/drivers/usb/host/class/mass_storage.h`, :github-blob:`src/drivers/usb/host/class/mass_storage.c`
 
 ----------------------------------------------
 

@@ -14,7 +14,7 @@ Network interface modules:
 
 ----------------------------------------------
 
-Source code: :github-blob:`src/inet/network_interface.h`
+Source code: :github-blob:`src/inet/network_interface.h`, :github-blob:`src/inet/network_interface.c`
 
 Test coverage: :codecov:`src/inet/network_interface.c`
 

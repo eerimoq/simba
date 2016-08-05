@@ -17,7 +17,7 @@ count will remain at zero(0) until `sem_take()` is called.
 
 ----------------------------------------------
 
-Source code: :github-blob:`src/sync/sem.h`
+Source code: :github-blob:`src/sync/sem.h`, :github-blob:`src/sync/sem.c`
 
 Test code: :github-blob:`tst/sync/sem/main.c`
 

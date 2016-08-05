@@ -43,7 +43,7 @@ Example file
 
 ----------------------------------------------
 
-Source code: :github-blob:`src/text/configfile.h`
+Source code: :github-blob:`src/text/configfile.h`, :github-blob:`src/text/configfile.c`
 
 Test code: :github-blob:`tst/text/configfile/main.c`
 

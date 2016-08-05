@@ -14,7 +14,7 @@ variables<../../user-guide/configuration>` called ``CONFIG_CONSOLE*``.
 
 ----------------------------------------------
 
-Source code: :github-blob:`src/oam/console.h`
+Source code: :github-blob:`src/oam/console.h`, :github-blob:`src/oam/console.c`
 
 Test coverage: :codecov:`src/oam/console.c`
 

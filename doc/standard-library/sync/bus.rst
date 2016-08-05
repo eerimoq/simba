@@ -41,7 +41,7 @@ the listener.
 
 ----------------------------------------------
 
-Source code: :github-blob:`src/sync/bus.h`
+Source code: :github-blob:`src/sync/bus.h`, :github-blob:`src/sync/bus.c`
 
 Test code: :github-blob:`tst/sync/bus/main.c`
 

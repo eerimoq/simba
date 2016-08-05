@@ -17,7 +17,7 @@ pulling SCL low until it is ready for the transmission.
 
 --------------------------------------------------
 
-Source code: :github-blob:`src/drivers/i2c.h`
+Source code: :github-blob:`src/drivers/i2c.h`, :github-blob:`src/drivers/i2c.c`
 
 Test code: :github-blob:`tst/drivers/i2c/main.c`
 

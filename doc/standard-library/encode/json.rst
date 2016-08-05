@@ -4,7 +4,7 @@
 .. module:: json
    :synopsis: JSON encoding and decoding.
 
-Source code: :github-blob:`src/encode/json.h`
+Source code: :github-blob:`src/encode/json.h`, :github-blob:`src/encode/json.c`
 
 Test code: :github-blob:`tst/encode/json/main.c`
 

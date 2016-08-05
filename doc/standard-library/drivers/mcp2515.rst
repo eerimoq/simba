@@ -4,7 +4,7 @@
 .. module:: mcp2515
    :synopsis: CAN BUS chipset.
 
-Source code: :github-blob:`src/drivers/mcp2515.h`
+Source code: :github-blob:`src/drivers/mcp2515.h`, :github-blob:`src/drivers/mcp2515.c`
 
 Test code: :github-blob:`tst/drivers/mcp2515/main.c`
 

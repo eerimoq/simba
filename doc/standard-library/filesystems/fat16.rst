@@ -45,7 +45,7 @@ All function arguments are omitted in this example.
 
 ---------------------------------------------------
 
-Source code: :github-blob:`src/filesystems/fat16.h`
+Source code: :github-blob:`src/filesystems/fat16.h`, :github-blob:`src/filesystems/fat16.c`
 
 Test code: :github-blob:`tst/filesystems/fat16/main.c`
 

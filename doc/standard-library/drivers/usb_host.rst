@@ -17,7 +17,7 @@ Class driver modules:
 
 ----------------------------------------------
 
-Source code: :github-blob:`src/drivers/usb_host.h`
+Source code: :github-blob:`src/drivers/usb_host.h`, :github-blob:`src/drivers/usb_host.c`
 
 ----------------------------------------------
 

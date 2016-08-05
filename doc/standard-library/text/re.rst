@@ -4,7 +4,7 @@
 .. module:: re
    :synopsis: Regular expressions.
 
-Source code: :github-blob:`src/text/re.h`
+Source code: :github-blob:`src/text/re.h`, :github-blob:`src/text/re.c`
 
 Test code: :github-blob:`tst/text/re/main.c`
 

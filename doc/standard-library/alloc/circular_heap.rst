@@ -77,7 +77,7 @@ buffers are allocated and freed.
 
 ----------------------------------------------
 
-Source code: :github-blob:`src/alloc/circular_heap.h`
+Source code: :github-blob:`src/alloc/circular_heap.h`, :github-blob:`src/alloc/circular_heap.c`
 
 Test code: :github-blob:`tst/alloc/circular_heap/main.c`
 

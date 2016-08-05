@@ -17,7 +17,7 @@ O(log n).
 
 ----------------------------------------------
 
-Source code: :github-blob:`src/collections/binary_tree.h`
+Source code: :github-blob:`src/collections/binary_tree.h`, :github-blob:`src/collections/binary_tree.c`
 
 Test code: :github-blob:`tst/collections/binary_tree/main.c`
 

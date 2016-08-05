@@ -17,7 +17,7 @@ tick must use the hardware timers.
 
 ----------------------------------------------
 
-Source code: :github-blob:`src/kernel/timer.h`
+Source code: :github-blob:`src/kernel/timer.h`, :github-blob:`src/kernel/timer.c`
 
 Test code: :github-blob:`tst/kernel/timer/main.c`
 

@@ -4,7 +4,7 @@
 .. module:: linux
    :synopsis: Linux.
 
-Source code: :github-blob:`src/boards/linux/board.h`
+Source code: :github-blob:`src/boards/linux/board.h`, :github-blob:`src/boards/linux/board.c`
 
 ----------------------------------------------
 

@@ -4,7 +4,7 @@
 .. module:: http_server
    :synopsis: HTTP server.
 
-Source code: :github-blob:`src/inet/http_server.h`
+Source code: :github-blob:`src/inet/http_server.h`, :github-blob:`src/inet/http_server.c`
 
 Test code: :github-blob:`tst/inet/http_server/main.c`
 

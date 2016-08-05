@@ -127,7 +127,7 @@ functions.
 
 ----------------------------------------------
 
-Source code: :github-blob:`src/oam/setting.h`
+Source code: :github-blob:`src/oam/setting.h`, :github-blob:`src/oam/setting.c`
 
 Test code: :github-blob:`tst/oam/setting/main.c`
 

@@ -4,7 +4,7 @@
 .. module:: usb
    :synopsis: Universal Serial Bus.
 
-Source code: :github-blob:`src/drivers/usb.h`
+Source code: :github-blob:`src/drivers/usb.h`, :github-blob:`src/drivers/usb.c`
 
 ----------------------------------------------
 

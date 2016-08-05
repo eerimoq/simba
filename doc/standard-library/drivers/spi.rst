@@ -4,7 +4,7 @@
 .. module:: spi
    :synopsis: Serial Peripheral Interface.
 
-Source code: :github-blob:`src/drivers/spi.h`
+Source code: :github-blob:`src/drivers/spi.h`, :github-blob:`src/drivers/spi.c`
 
 ----------------------------------------------
 

@@ -14,7 +14,7 @@ More information on Wikipedia_.
 .. module:: usb_host_class_hid
    :synopsis: Human Interface Device (HID).
 
-Source code: :github-blob:`src/drivers/usb/host/class/hid.h`
+Source code: :github-blob:`src/drivers/usb/host/class/hid.h`, :github-blob:`src/drivers/usb/host/class/hid.c`
 
 ----------------------------------------------
 

@@ -62,7 +62,7 @@ And below is the same scenario for UDP.
 
 ----------------------------------------------
 
-Source code: :github-blob:`src/inet/socket.h`
+Source code: :github-blob:`src/inet/socket.h`, :github-blob:`src/inet/socket.c`
  
 ----------------------------------------------
 

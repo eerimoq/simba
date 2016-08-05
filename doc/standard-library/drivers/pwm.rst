@@ -4,7 +4,7 @@
 .. module:: pwm
    :synopsis: Pulse width modulation.
 
-Source code: :github-blob:`src/drivers/pwm.h`
+Source code: :github-blob:`src/drivers/pwm.h`, :github-blob:`src/drivers/pwm.c`
 
 ----------------------------------------------
 

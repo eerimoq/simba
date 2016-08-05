@@ -4,7 +4,7 @@
 .. module:: sdio
    :synopsis: Secure Digital Input Output.
 
-Source code: :github-blob:`src/drivers/sdio.h`
+Source code: :github-blob:`src/drivers/sdio.h`, :github-blob:`src/drivers/sdio.c`
 
 ----------------------------------------------
 

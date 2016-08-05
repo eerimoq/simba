@@ -4,7 +4,7 @@
 .. module:: heap
    :synopsis: Heap.
 
-Source code: :github-blob:`src/alloc/heap.h`
+Source code: :github-blob:`src/alloc/heap.h`, :github-blob:`src/alloc/heap.c`
 
 Test code: :github-blob:`tst/alloc/heap/main.c`
 

@@ -24,10 +24,10 @@ Project homepage: https://github.com/eerimoq/simba
    installation
    user-guide
    developer-guide
+   examples
+   standard-library
    boards
    mcus
-   standard-library
-   examples
 
 Features
 --------

@@ -15,7 +15,7 @@ not be read by another thread) until the update is complete.
 
 ----------------------------------------------
 
-Source code: :github-blob:`src/sync/rwlock.h`
+Source code: :github-blob:`src/sync/rwlock.h`, :github-blob:`src/sync/rwlock.c`
 
 Test code: :github-blob:`tst/sync/rwlock/main.c`
 

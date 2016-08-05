@@ -13,7 +13,7 @@ size is selected by the application when initializing the queue.
 
 ----------------------------------------------
 
-Source code: :github-blob:`src/sync/queue.h`
+Source code: :github-blob:`src/sync/queue.h`, :github-blob:`src/sync/queue.c`
 
 Test code: :github-blob:`tst/sync/queue/main.c`
 

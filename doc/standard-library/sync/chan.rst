@@ -35,7 +35,7 @@ the written data.
 
 ----------------------------------------------
 
-Source code: :github-blob:`src/sync/chan.h`
+Source code: :github-blob:`src/sync/chan.h`, :github-blob:`src/sync/chan.c`
 
 Test coverage: :codecov:`src/sync/chan.c`
 

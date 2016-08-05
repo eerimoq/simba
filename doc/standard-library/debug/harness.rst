@@ -96,7 +96,7 @@ on Github.
 
 ---------------------------------------------------
 
-Source code: :github-blob:`src/debug/harness.h`
+Source code: :github-blob:`src/debug/harness.h`, :github-blob:`src/debug/harness.c`
 
 ---------------------------------------------------
 

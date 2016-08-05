@@ -13,7 +13,7 @@ is, it's simply active or inactive.
 
 ----------------------------------------------
 
-Source code: :github-blob:`src/sync/event.h`
+Source code: :github-blob:`src/sync/event.h`, :github-blob:`src/sync/event.c`
 
 Test code: :github-blob:`tst/sync/event/main.c`
 
