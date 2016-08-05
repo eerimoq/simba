@@ -20,22 +20,26 @@ Sometimes it's useful to write log entries to multiple channels. This
 is possible by creating and adding another log handler to the log
 module.
 
-The log entry format is:
+Log levels
+----------
+
+There are five log levels defined; fatal, error, warning, info and
+debug. The log levels are defined as ``LOG_<upper case level>`` in the
+log module header file.
+
+Log entry format
+----------------
+
+A log entry consists of a timestamp, log level, thread name, log
+object name and the message. The timestamp is the log entry creation
+time and the log level is one of fatal, error, warning, info and
+debug. The thread name is the name of the thread that created the log
+entry and the log object name is the name of the log object the entry
+was printed on. The message is a user defined string.
 
 .. code:: text
 
    <timestamp>:<log level>:<thread name>:<log object name>: <message>
-
-A few example outputs using three log objects; `foo`, `bar` and the
-default log object `default`. All logs are from the main thread as can
-be seen in the third field in the entries.
-
-.. code:: text
-
-   23:info:main:foo: A foo info message.
-   24:info:main:bar: A bar info message.
-   37:debug:main:bar: A bar debug message.
-   56:error:main:default: A main error message.
 
 Debug file system commands
 --------------------------
@@ -69,6 +73,20 @@ Example output from the shell:
              default  0xff
     $ debug/log/print "Hello World!!!"
     56:info:main:default: Hello World!!!
+
+Example
+-------
+
+Here are a few example outputs using three log objects; `foo`, `bar`
+and the default log object `default`. All logs are from the main
+thread as can be seen in the third field in the entries.
+
+.. code:: text
+
+   23:info:main:foo: A foo info message.
+   24:info:main:bar: A bar info message.
+   37:debug:main:bar: A bar debug message.
+   56:error:main:default: A main error message.
 
 ----------------------------------------------
 
