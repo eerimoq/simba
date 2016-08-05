@@ -313,16 +313,16 @@ void fs_merge(char *path_p, char *cmd_p);
  * Initialize given file system.
  *
  * @param[in] self_p File system to initialize.
- * @param[in] path_p Path to register.
+ * @param[in] name_p Path to register.
  * @param[in] type File system type.
  * @param[in] fs_p File system pointer.
  *
  * @return zero(0) or negative error code.
  */
 int fs_filesystem_init(struct fs_filesystem_t *self_p,
-                        const char *name_p,
-                        enum fs_type_t type,
-                        void *fs_p);
+                       const char *name_p,
+                       enum fs_type_t type,
+                       void *fs_p);
 
 /**
  * Register given file system.
@@ -360,7 +360,7 @@ int fs_command_init(struct fs_command_t *self_p,
 /**
  * Register given command.
  *
- * @param[in] self_p Command to register.
+ * @param[in] command_p Command to register.
  *
  * @return zero(0) or negative error code.
  */
@@ -369,7 +369,7 @@ int fs_command_register(struct fs_command_t *command_p);
 /**
  * Deregister given command.
  *
- * @param[in] self_p Command to deregister.
+ * @param[in] command_p Command to deregister.
  *
  * @return zero(0) or negative error code.
  */
@@ -402,7 +402,7 @@ int fs_counter_increment(struct fs_counter_t *self_p,
 /**
  * Register given counter.
  *
- * @param[in] self_p Counter to register.
+ * @param[in] counter_p Counter to register.
  *
  * @return zero(0) or negative error code.
  */
@@ -411,7 +411,7 @@ int fs_counter_register(struct fs_counter_t *counter_p);
 /**
  * Deregister given counter.
  *
- * @param[in] self_p Counter to deregister.
+ * @param[in] counter_p Counter to deregister.
  *
  * @return zero(0) or negative error code.
  */
@@ -438,7 +438,7 @@ int fs_parameter_init(struct fs_parameter_t *self_p,
 /**
  * Register given parameter.
  *
- * @param[in] self_p Parameter to register.
+ * @param[in] parameter_p Parameter to register.
  *
  * @return zero(0) or negative error code.
  */
@@ -447,7 +447,7 @@ int fs_parameter_register(struct fs_parameter_t *parameter_p);
 /**
  * Deregister given parameter.
  *
- * @param[in] self_p Parameter to deregister.
+ * @param[in] parameter_p Parameter to deregister.
  *
  * @return zero(0) or negative error code.
  */
