@@ -62,6 +62,10 @@ Example output from the shell:
    /tmp                           ram      fat16          54K   64K    14%
    /home/erik                     sd       fat16         1.9G    2G     5%
    /etc                           flash    spiffs        124K  128K     3%
+   $ filesystems/fs/filesystems/write tmp/foo.txt "Hello "
+   $ filesystems/fs/filesystems/append tmp/foo.txt world!
+   $ filesystems/fs/filesystems/read tmp/foo.txt
+   Hello world!
    $ filesystems/fs/counters/list
    NAME                                                 VALUE
    /your/counter                                        0000000000000034
