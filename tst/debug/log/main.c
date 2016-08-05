@@ -49,7 +49,7 @@ int test_print(struct harness_t *harness_p)
     /* Write using the thread log mask instead of the log object
        mask. */
     BTASSERT(log_object_print(NULL, LOG_DEBUG, FSTR("k = %d\r\n"), 5) == 0);
-    BTASSERT(log_object_print(NULL, LOG_ERR, FSTR("l = %d\r\n"), 6) == 1);
+    BTASSERT(log_object_print(NULL, LOG_ERROR, FSTR("l = %d\r\n"), 6) == 1);
 
     return (0);
 }

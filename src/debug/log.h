@@ -25,28 +25,28 @@
 
 /* Severity levels' log masks. */
 
-/** System unusable. */
-#define LOG_EMERG   0
-/** Immediate action required. */
-#define LOG_ALERT   1
-/** Critical condition. */
-#define LOG_CRIT    2
-/** Error conditions. */
-#define LOG_ERR     3
-/** Warning conditions. */
-#define LOG_WARNING 4
-/** Normal but significant conditions. */
-#define LOG_NOTICE  5
-/** Informational messages. */
-#define LOG_INFO    6
-/** Debugging messages. */
-#define LOG_DEBUG   7
+/** An unhandleable error that results in a program crash. */
+#define LOG_FATAL     0
+/** A handable error conditions. */
+#define LOG_ERROR     1
+/** A warning. */
+#define LOG_WARNING   2
+/** Generic (useful) information about system operation. */
+#define LOG_INFO      3
+/** Developer debugging messages. */
+#define LOG_DEBUG     4
 
 /** Craete a log mask with given level set. */
 #define LOG_MASK(level) (1 << (LOG_ ## level))
 
 /** Set all levels up to and including given level. */
 #define LOG_UPTO(level) ((1 << (LOG_ ## level + 1)) - 1)
+
+/** Set all levels. */
+#define LOG_ALL    LOG_UPTO(DEBUG)
+
+/** Clear all levels. */
+#define LOG_NONE   0x00
 
 struct log_handler_t {
     chan_t *chout_p;

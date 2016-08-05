@@ -62,13 +62,13 @@ Example output from the shell:
     $ debug/log/list
          OBJECT NAME  MASK
              default  0x3f
-    $ debug/log/print Hello!
+    $ debug/log/print "Hello World!"
     $ debug/log/set_log_mask default 0xff
     $ debug/log/list
          OBJECT NAME  MASK
              default  0xff
-    $ debug/log/print Hello!!!
-    56:info:main:default: Hello!!!
+    $ debug/log/print "Hello World!!!"
+    56:info:main:default: Hello World!!!
 
 ----------------------------------------------
 

@@ -27,23 +27,17 @@ struct state_t {
     struct sem_t sem;
 };
 
-static FAR const char level_emergency[] = "emergency";
-static FAR const char level_alert[] = "alert";
-static FAR const char level_critical[] = "critical";
+static FAR const char level_fatal[] = "fatal";
 static FAR const char level_error[] = "error";
 static FAR const char level_warning[] = "warning";
-static FAR const char level_notice[] = "notice";
 static FAR const char level_info[] = "info";
 static FAR const char level_debug[] = "debug";
 
 /* Level strings array. */
 static const char FAR *level_as_string[] = {
-    level_emergency,
-    level_alert,
-    level_critical,
+    level_fatal,
     level_error,
     level_warning,
-    level_notice,
     level_info,
     level_debug
 };
@@ -103,13 +97,13 @@ static int cmd_list_cb(int argc,
 
     sem_take(&state.sem, NULL);
 
-    std_fprintf(out_p, FSTR("     OBJECT NAME  MASK\r\n"));
+    std_fprintf(out_p, FSTR("OBJECT-NAME       MASK\r\n"));
 
     object_p = &state.object;
 
     while (object_p != NULL) {
         std_fprintf(out_p,
-                    FSTR("%16s  0x%02x\r\n"),
+                    FSTR("%-16s  0x%02x\r\n"),
                     object_p->name_p,
                     (int)object_p->mask);
 
