@@ -33,9 +33,9 @@ Example output from the shell:
 
    $ kenel/thrd/list
                NAME           PARENT        STATE  PRIO   CPU  LOGMASK
-               main                       current     0    0%     0x3f
-                                main        ready   127    0%     0x3f
-                                main        ready   -80    0%     0x3f
+               main                       current     0    0%     0x0f
+                                main        ready   127    0%     0x0f
+                                main        ready   -80    0%     0x0f
 
 ----------------------------------------------
 

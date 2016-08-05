@@ -157,7 +157,7 @@ static int cmd_set_log_mask_cb(int argc,
 
     while (object_p != NULL) {
         if (strcmp(object_p->name_p, name_p) == 0) {
-            object_p->mask = mask;
+            log_object_set_log_mask(object_p, mask);
             found = 1;
 
             break;
@@ -342,6 +342,19 @@ int log_object_init(struct log_object_t *self_p,
     self_p->mask = mask;
 
     return (0);
+}
+
+int log_object_set_log_mask(struct log_object_t *self_p,
+                            char mask)
+{
+    self_p->mask = (mask & LOG_ALL);
+
+    return (0);
+}
+
+char log_object_get_log_mask(struct log_object_t *self_p)
+{
+    return (self_p->mask);
 }
 
 int log_object_print(struct log_object_t *self_p,

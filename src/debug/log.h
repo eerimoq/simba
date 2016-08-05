@@ -80,6 +80,26 @@ int log_object_init(struct log_object_t *self_p,
                     char mask);
 
 /**
+ * Set given log mask for given log object.
+ *
+ * @param[in] self_p Log object.
+ * @param[in] mask Log object mask.
+ *
+ * @return zero(0) or negative error code.
+ */
+int log_object_set_log_mask(struct log_object_t *self_p,
+                            char mask);
+
+/**
+ * Get the log mask of given log object.
+ *
+ * @param[in] self_p Log object.
+ *
+ * @return Log mask.
+ */
+char log_object_get_log_mask(struct log_object_t *self_p);
+
+/**
  * Check if given log level is set in the log object mask. If so,
  * format a log entry and write it to all log handlers.
  *

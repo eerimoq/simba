@@ -108,6 +108,35 @@ int test_handler(struct harness_t *harness_p)
     return (0);
 }
 
+int test_log_mask(struct harness_t *harness_p)
+{
+    struct log_object_t foo;
+
+    /* Initialize the log objects. */
+    BTASSERT(log_object_init(&foo,
+                             "foo",
+                             LOG_UPTO(INFO)) == 0);
+    BTASSERT(log_object_get_log_mask(&foo) == 0x0f);
+
+    /* Log all. */
+    BTASSERT(log_object_set_log_mask(&foo, LOG_ALL) == 0);
+    BTASSERT(log_object_get_log_mask(&foo) == 0x1f);
+
+    /* Log none. */
+    BTASSERT(log_object_set_log_mask(&foo, LOG_NONE) == 0);
+    BTASSERT(log_object_get_log_mask(&foo) == 0x00);
+
+    /* Log error. */
+    BTASSERT(log_object_set_log_mask(&foo, LOG_MASK(ERROR)) == 0);
+    BTASSERT(log_object_get_log_mask(&foo) == 0x02);
+
+    /* Invalid levels are discarded. */
+    BTASSERT(log_object_set_log_mask(&foo, 0xf0) == 0);
+    BTASSERT(log_object_get_log_mask(&foo) == 0x10);
+
+    return (0);
+}
+
 int test_fs(struct harness_t *harness_p)
 {
     char command[64];
@@ -147,6 +176,7 @@ int main()
         { test_print, "test_print" },
         { test_object, "test_object" },
         { test_handler, "test_handler" },
+        { test_log_mask, "test_log_mask" },
         { test_fs, "test_fs" },
         { NULL, NULL }
     };

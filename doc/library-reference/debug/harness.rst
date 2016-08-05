@@ -87,8 +87,8 @@ The output from the test suite is:
    exit: test_skipped: SKIPPED
 
                NAME           PARENT        STATE  PRIO   CPU  LOGMASK
-               main                       current     0    0%     0x3f
-                                main        ready   127    0%     0x3f
+               main                       current     0    0%     0x0f
+                                main        ready   127    0%     0x0f
    harness report: total(3), passed(1), failed(1), skipped(1)
 
 There are plenty of test suites in the :github-tree:`tst<tst>` folder
