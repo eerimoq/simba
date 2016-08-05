@@ -196,16 +196,23 @@ int fs_call(char *command_p,
             void *arg_p);
 
 /**
- * Open file on given path with given mode.
+ * Open a file by file path and mode flags. File operations are
+ * permitted after the file has been opened.
  *
  * @param[out] self_p Initialized file object.
+ * @param[in] path_p Path of the file to open.
+ * @param[in] flags Mode of file open. A combination of ``FS_READ``,
+ *                  ``FS_RDONLY``, ``FS_WRITE``, ``FS_WRONLY``,
+ *                  ``FS_RDWR``, ``FS_APPEND``, ``FS_SYNC``,
+ *                  ``FS_CREAT``, ``FS_EXCL`` and ``FS_TRUNC``.
  *
  * @return zero(0) or negative error code.
  */
-int fs_open(struct fs_file_t *self_p, const char *path_p, int mode);
+int fs_open(struct fs_file_t *self_p, const char *path_p, int flags);
 
 /**
- * Close given file.
+ * Close given file. No file operations are permitted on a closed
+ * file.
  *
  * @param[in] self_p Initialized file object.
  *
@@ -214,7 +221,7 @@ int fs_open(struct fs_file_t *self_p, const char *path_p, int mode);
 int fs_close(struct fs_file_t *self_p);
 
 /**
- * Read from given file.
+ * Read into given buffer from given file.
  *
  * @param[in] self_p Initialized file object.
  * @param[out] dst_p Buffer to read data into.
@@ -225,7 +232,7 @@ int fs_close(struct fs_file_t *self_p);
 ssize_t fs_read(struct fs_file_t *self_p, void *dst_p, size_t size);
 
 /**
- * Write to given file.
+ * Write from given buffer into given file.
  *
  * @param[in] self_p Initialized file object.
  * @param[in] dst_p Buffer to write.
@@ -236,22 +243,23 @@ ssize_t fs_read(struct fs_file_t *self_p, void *dst_p, size_t size);
 ssize_t fs_write(struct fs_file_t *self_p, const void *src_p, size_t size);
 
 /**
- * Set the file position cursor to given location.
+ * Sets the file's read/write position relative to whence.
  *
  * @param[in] self_p Initialized file object.
- * @param[in] offset Offset.
- * @param[in] whence .
+ * @param[in] offset New position in bytes from given whence.
+ * @param[in] whence Absolute (``FS_SEEK_SET``), relative
+ *                   (``FS_SEEK_CUR``) or from end (``FS_SEEK_END``).
  *
  * @return zero(0) or negative error code.
  */
 int fs_seek(struct fs_file_t *self_p, int offset, int whence);
 
 /**
- * Get the file position cursor location.
+ * Return current position in the file.
  *
  * @param[in] self_p Initialized file object.
  *
- * @return Cursor location or negative error code.
+ * @return Current position or negative error code.
  */
 ssize_t fs_tell(struct fs_file_t *self_p);
 

@@ -632,7 +632,7 @@ int fat16_file_open(struct fat16_t *self_p,
 
 /**
  * Close a file and force cached data and directory information to be
- * written to the storage device.
+ * written to the media.
  *
  * @param[in] file_p File object.
  *
