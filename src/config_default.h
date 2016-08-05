@@ -233,6 +233,39 @@
 #endif
 
 /**
+ * File system command to read from a file.
+ */
+#ifndef CONFIG_FS_CMD_FS_FILESYSTEMS_READ
+#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO)
+#        define CONFIG_FS_CMD_FS_FILESYSTEMS_READ           0
+#    else
+#        define CONFIG_FS_CMD_FS_FILESYSTEMS_READ           1
+#    endif
+#endif
+
+/**
+ * File system command to write to a file.
+ */
+#ifndef CONFIG_FS_CMD_FS_FILESYSTEMS_WRITE
+#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO)
+#        define CONFIG_FS_CMD_FS_FILESYSTEMS_WRITE          0
+#    else
+#        define CONFIG_FS_CMD_FS_FILESYSTEMS_WRITE          1
+#    endif
+#endif
+
+/**
+ * File system command to append to a file.
+ */
+#ifndef CONFIG_FS_CMD_FS_FILESYSTEMS_APPEND
+#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO)
+#        define CONFIG_FS_CMD_FS_FILESYSTEMS_APPEND         0
+#    else
+#        define CONFIG_FS_CMD_FS_FILESYSTEMS_APPEND         1
+#    endif
+#endif
+
+/**
  * File system command to list all counters.
  */
 #ifndef CONFIG_FS_CMD_FS_COUNTERS_LIST

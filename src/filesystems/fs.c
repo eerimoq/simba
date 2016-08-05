@@ -122,6 +122,120 @@ static int cmd_filesystems_list_cb(int argc,
 
 #endif
 
+#if CONFIG_FS_CMD_FS_FILESYSTEMS_READ == 1
+
+static struct fs_command_t cmd_filesystems_read;
+
+static int cmd_filesystems_read_cb(int argc,
+                                   const char *argv[],
+                                   chan_t *chout_p,
+                                   chan_t *chin_p,
+                                   void *arg_p,
+                                   void *call_arg_p)
+{
+    struct fs_file_t file;
+    ssize_t size;
+    char buf[32];
+
+    if (argc != 2) {
+        std_fprintf(chout_p, FSTR("Usage: %s <file>\r\n"), argv[0]);
+        return (-1);
+    }
+
+    if (fs_open(&file, argv[1], FS_READ) != 0) {
+        std_printf(FSTR("Failed to open %s.\r\n"), argv[1]);
+        return (-1);
+    }
+
+    while ((size = fs_read(&file, buf, sizeof(buf))) > 0) {
+        chan_write(chout_p, buf, size);
+    }
+
+    std_fprintf(chout_p, FSTR("\r\n"));
+
+    fs_close(&file);
+
+    return (0);
+}
+
+#endif
+
+#if CONFIG_FS_CMD_FS_FILESYSTEMS_WRITE == 1
+
+static struct fs_command_t cmd_filesystems_write;
+
+static int cmd_filesystems_write_cb(int argc,
+                                    const char *argv[],
+                                    chan_t *chout_p,
+                                    chan_t *chin_p,
+                                    void *arg_p,
+                                    void *call_arg_p)
+{
+    struct fs_file_t file;
+    size_t size;
+
+    if (argc != 3) {
+        std_fprintf(chout_p, FSTR("Usage: %s <file> <data>\r\n"), argv[0]);
+        return (-1);
+    }
+
+    if (fs_open(&file, argv[1], FS_CREAT | FS_TRUNC | FS_RDWR) != 0) {
+        std_printf(FSTR("Failed to open %s.\r\n"), argv[1]);
+        return (-1);
+    }
+
+    size = strlen(argv[2]);
+
+    if (fs_write(&file, argv[2], size) != size) {
+        std_printf(FSTR("Failed to write %s to the file.\r\n"), argv[2]);
+        return (-1);
+    }
+
+    fs_close(&file);
+
+    return (0);
+}
+
+#endif
+
+#if CONFIG_FS_CMD_FS_FILESYSTEMS_APPEND == 1
+
+static struct fs_command_t cmd_filesystems_append;
+
+static int cmd_filesystems_append_cb(int argc,
+                                     const char *argv[],
+                                     chan_t *chout_p,
+                                     chan_t *chin_p,
+                                     void *arg_p,
+                                     void *call_arg_p)
+{
+    struct fs_file_t file;
+    size_t size;
+
+    if (argc != 3) {
+        std_fprintf(chout_p, FSTR("Usage: %s <file> <data>\r\n"), argv[0]);
+        return (-1);
+    }
+
+    if (fs_open(&file, argv[1], FS_RDWR | FS_APPEND) != 0) {
+        std_printf(FSTR("Failed to open %s.\r\n"), argv[1]);
+        return (-1);
+    }
+
+    size = strlen(argv[2]);
+
+    if (fs_write(&file, argv[2], size) != size) {
+        std_printf(FSTR("Failed to append %s to the file.\r\n"), argv[2]);
+        return (-1);
+    }
+
+    fs_close(&file);
+
+    return (0);
+}
+
+#endif
+
 #if CONFIG_FS_CMD_FS_COUNTERS_LIST == 1
 
 static struct fs_command_t cmd_counters_list;
@@ -234,7 +348,7 @@ static int cmd_parameters_list_cb(int argc,
 static char *argument_parse(char *command_p, const char **begin_pp)
 {
     int in_quote;
-    
+
     in_quote = 0;
     *begin_pp = command_p;
 
@@ -268,7 +382,7 @@ static char *argument_parse(char *command_p, const char **begin_pp)
 
         command_p++;
     }
-    
+
     return (command_p);
 }
 
@@ -335,6 +449,36 @@ int fs_module_init()
                     cmd_filesystems_list_cb,
                     NULL);
     fs_command_register(&cmd_filesystems_list);
+
+#endif
+
+#if CONFIG_FS_CMD_FS_FILESYSTEMS_READ == 1
+
+    fs_command_init(&cmd_filesystems_read,
+                    FSTR("/filesystems/fs/filesystems/read"),
+                    cmd_filesystems_read_cb,
+                    NULL);
+    fs_command_register(&cmd_filesystems_read);
+
+#endif
+
+#if CONFIG_FS_CMD_FS_FILESYSTEMS_WRITE == 1
+
+    fs_command_init(&cmd_filesystems_write,
+                    FSTR("/filesystems/fs/filesystems/write"),
+                    cmd_filesystems_write_cb,
+                    NULL);
+    fs_command_register(&cmd_filesystems_write);
+
+#endif
+
+#if CONFIG_FS_CMD_FS_FILESYSTEMS_APPEND == 1
+
+    fs_command_init(&cmd_filesystems_append,
+                    FSTR("/filesystems/fs/filesystems/append"),
+                    cmd_filesystems_append_cb,
+                    NULL);
+    fs_command_register(&cmd_filesystems_append);
 
 #endif
 
@@ -422,9 +566,9 @@ static int get_filesystem_path_from_path(struct fs_filesystem_t **filesystem_pp,
     if (path_p[0] == '/') {
         path_p++;
     }
-    
+
     filesystem_p = state.filesystems_p;
-    
+
     /* Find the file system registered on given path. */
     while (filesystem_p != NULL) {
         name_p = filesystem_p->name_p;
@@ -468,7 +612,7 @@ int fs_open(struct fs_file_t *self_p, const char *path_p, int flags)
                                 &self_p->u.fat16,
                                 path_p,
                                 flags));
-        
+
     case fs_type_spiffs_t:
         self_p->u.spiffs = spiffs_open(filesystem_p->fs_p, path_p, flags, 0);
         return (self_p->u.spiffs > 0 ? 0 : -1);
