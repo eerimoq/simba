@@ -1,0 +1,8 @@
+set line /dev/arduino
+set speed 38400
+set carrier-watch off
+set handshake none
+set flow-control none
+set terminal newline-mode on
+set terminal cr-display normal
+;;set terminal echo local
