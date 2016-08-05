@@ -1,9 +1,0 @@
-Espressif ESP8266
-=================
-
-Homepage
----------
-
-http://www.espressif.com
-
-.. include:: extra/esp8266.rst

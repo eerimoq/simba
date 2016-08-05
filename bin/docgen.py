@@ -33,25 +33,14 @@ A list of supported drivers for this board:
 Mcu
 ---
 
-:doc:`../mcus/{mcu}`
+:doc:`{mcu}<../library-reference/mcus/{mcu}>`
 
-Standard Library
+Library Reference
 ----------------
 
 Read more about board specific functionality in the :doc:`{desc}
-<../standard-library/boards/{name}>` module documentation in the
-standard library.
-
-{include_extra}
-"""
-
-MCU_FMT = """{desc}
-{desc_underline}
-
-Homepage
----------
-
-{homepage}
+<../library-reference/boards/{name}>` module documentation in the
+Library Reference.
 
 {include_extra}
 """
@@ -83,7 +72,7 @@ def boards_generate(database):
     for board, data in database["boards"].items():
         drivers = []
         for driver in sorted(data["drivers"]):
-            drivers.append("- :doc:`../standard-library/drivers/{}`".format(
+            drivers.append("- :doc:`../library-reference/drivers/{}`".format(
                 driver))
 
         if os.path.exists(os.path.join("doc", "boards", "extra", board + ".rst")):
@@ -101,29 +90,6 @@ def boards_generate(database):
                                include_extra=include_extra)
 
         rst_path = os.path.join("doc", "boards", board + ".rst")
-        print "Writing to ", rst_path
-        with open(rst_path, "w") as fout:
-            fout.write(rst)
-
-
-def mcus_generate(database):
-    """Generate MCU.
-
-    """
-
-    for mcu, data in database["mcus"].items():
-        if os.path.exists(os.path.join("doc", "mcus", "extra", mcu + ".rst")):
-            include_extra = ".. include:: extra/{name}.rst".format(name=mcu)
-        else:
-            include_extra = ""
-
-        rst = MCU_FMT.format(name=mcu,
-                             desc=data["mcu_name"],
-                             desc_underline="=" * len(data["mcu_name"]),
-                             homepage=data["mcu_homepage"],
-                             include_extra=include_extra)
-
-        rst_path = os.path.join("doc", "mcus", mcu + ".rst")
         print "Writing to ", rst_path
         with open(rst_path, "w") as fout:
             fout.write(rst)
@@ -162,7 +128,6 @@ def main():
         database = json.load(fin)
 
     boards_generate(database)
-    mcus_generate(database)
     examples_generate(database)
 
 

@@ -1,9 +1,9 @@
-Mcus
-======
+mcus
+====
 
 The Micro Controller Units (MCU:s) supported by `Simba`.
 
-Mcus:
+The MCU:s on :github-tree:`Github<src/mcus>`.
 
 .. toctree::
    :glob:   

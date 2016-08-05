@@ -18,32 +18,32 @@ Drivers
 
 A list of supported drivers for this board:
 
-- :doc:`../standard-library/drivers/adc`
-- :doc:`../standard-library/drivers/ds18b20`
-- :doc:`../standard-library/drivers/ds3231`
-- :doc:`../standard-library/drivers/exti`
-- :doc:`../standard-library/drivers/i2c`
-- :doc:`../standard-library/drivers/mcp2515`
-- :doc:`../standard-library/drivers/nrf24l01`
-- :doc:`../standard-library/drivers/owi`
-- :doc:`../standard-library/drivers/pin`
-- :doc:`../standard-library/drivers/pwm`
-- :doc:`../standard-library/drivers/sd`
-- :doc:`../standard-library/drivers/spi`
-- :doc:`../standard-library/drivers/uart`
-- :doc:`../standard-library/drivers/uart_soft`
-- :doc:`../standard-library/drivers/watchdog`
+- :doc:`../library-reference/drivers/adc`
+- :doc:`../library-reference/drivers/ds18b20`
+- :doc:`../library-reference/drivers/ds3231`
+- :doc:`../library-reference/drivers/exti`
+- :doc:`../library-reference/drivers/i2c`
+- :doc:`../library-reference/drivers/mcp2515`
+- :doc:`../library-reference/drivers/nrf24l01`
+- :doc:`../library-reference/drivers/owi`
+- :doc:`../library-reference/drivers/pin`
+- :doc:`../library-reference/drivers/pwm`
+- :doc:`../library-reference/drivers/sd`
+- :doc:`../library-reference/drivers/spi`
+- :doc:`../library-reference/drivers/uart`
+- :doc:`../library-reference/drivers/uart_soft`
+- :doc:`../library-reference/drivers/watchdog`
 
 Mcu
 ---
 
-:doc:`../mcus/atmega2560`
+:doc:`atmega2560<../library-reference/mcus/atmega2560>`
 
-Standard Library
+Library Reference
 ----------------
 
 Read more about board specific functionality in the :doc:`Arduino Mega
-<../standard-library/boards/arduino_mega>` module documentation in the
-standard library.
+<../library-reference/boards/arduino_mega>` module documentation in the
+Library Reference.
 
 

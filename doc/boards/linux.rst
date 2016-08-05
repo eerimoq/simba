@@ -18,24 +18,24 @@ Drivers
 
 A list of supported drivers for this board:
 
-- :doc:`../standard-library/drivers/adc`
-- :doc:`../standard-library/drivers/flash`
-- :doc:`../standard-library/drivers/pin`
-- :doc:`../standard-library/drivers/pwm`
-- :doc:`../standard-library/drivers/sd`
-- :doc:`../standard-library/drivers/spi`
-- :doc:`../standard-library/drivers/uart`
+- :doc:`../library-reference/drivers/adc`
+- :doc:`../library-reference/drivers/flash`
+- :doc:`../library-reference/drivers/pin`
+- :doc:`../library-reference/drivers/pwm`
+- :doc:`../library-reference/drivers/sd`
+- :doc:`../library-reference/drivers/spi`
+- :doc:`../library-reference/drivers/uart`
 
 Mcu
 ---
 
-:doc:`../mcus/linux`
+:doc:`linux<../library-reference/mcus/linux>`
 
-Standard Library
+Library Reference
 ----------------
 
 Read more about board specific functionality in the :doc:`Linux
-<../standard-library/boards/linux>` module documentation in the
-standard library.
+<../library-reference/boards/linux>` module documentation in the
+Library Reference.
 
 

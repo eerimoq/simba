@@ -18,21 +18,21 @@ Drivers
 
 A list of supported drivers for this board:
 
-- :doc:`../standard-library/drivers/adc`
-- :doc:`../standard-library/drivers/pin`
-- :doc:`../standard-library/drivers/spi`
-- :doc:`../standard-library/drivers/uart`
+- :doc:`../library-reference/drivers/adc`
+- :doc:`../library-reference/drivers/pin`
+- :doc:`../library-reference/drivers/spi`
+- :doc:`../library-reference/drivers/uart`
 
 Mcu
 ---
 
-:doc:`../mcus/esp8266`
+:doc:`esp8266<../library-reference/mcus/esp8266>`
 
-Standard Library
+Library Reference
 ----------------
 
 Read more about board specific functionality in the :doc:`ESP-01
-<../standard-library/boards/esp01>` module documentation in the
-standard library.
+<../library-reference/boards/esp01>` module documentation in the
+Library Reference.
 
 .. include:: extra/esp01.rst

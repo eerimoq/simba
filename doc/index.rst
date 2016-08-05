@@ -24,10 +24,9 @@ Project homepage: https://github.com/eerimoq/simba
    installation
    user-guide
    developer-guide
-   examples
-   standard-library
    boards
-   mcus
+   examples
+   library-reference
 
 Features
 --------
@@ -43,7 +42,7 @@ Features
 * Internet protocols (TCP, UDP, HTTP, ...).
 * File systems (FAT16, SPIFFS).
 
-See the :doc:`standard-library` for a full list of features.
+See the :doc:`library-reference` for a full list of features.
 
 Design goals
 ------------

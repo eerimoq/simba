@@ -18,22 +18,22 @@ Drivers
 
 A list of supported drivers for this board:
 
-- :doc:`../standard-library/drivers/bcm43362`
-- :doc:`../standard-library/drivers/flash`
-- :doc:`../standard-library/drivers/pin`
-- :doc:`../standard-library/drivers/sdio`
-- :doc:`../standard-library/drivers/uart`
+- :doc:`../library-reference/drivers/bcm43362`
+- :doc:`../library-reference/drivers/flash`
+- :doc:`../library-reference/drivers/pin`
+- :doc:`../library-reference/drivers/sdio`
+- :doc:`../library-reference/drivers/uart`
 
 Mcu
 ---
 
-:doc:`../mcus/stm32f205rg`
+:doc:`stm32f205rg<../library-reference/mcus/stm32f205rg>`
 
-Standard Library
+Library Reference
 ----------------
 
 Read more about board specific functionality in the :doc:`Particle IO Photon
-<../standard-library/boards/photon>` module documentation in the
-standard library.
+<../library-reference/boards/photon>` module documentation in the
+Library Reference.
 
 .. include:: extra/photon.rst

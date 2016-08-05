@@ -18,20 +18,20 @@ Drivers
 
 A list of supported drivers for this board:
 
-- :doc:`../standard-library/drivers/flash`
-- :doc:`../standard-library/drivers/pin`
-- :doc:`../standard-library/drivers/uart`
+- :doc:`../library-reference/drivers/flash`
+- :doc:`../library-reference/drivers/pin`
+- :doc:`../library-reference/drivers/uart`
 
 Mcu
 ---
 
-:doc:`../mcus/stm32f100rb`
+:doc:`stm32f100rb<../library-reference/mcus/stm32f100rb>`
 
-Standard Library
+Library Reference
 ----------------
 
 Read more about board specific functionality in the :doc:`STM32VLDISCOVERY
-<../standard-library/boards/stm32vldiscovery>` module documentation in the
-standard library.
+<../library-reference/boards/stm32vldiscovery>` module documentation in the
+Library Reference.
 
 .. include:: extra/stm32vldiscovery.rst

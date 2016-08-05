@@ -4,7 +4,7 @@ Configuration
 Standard Library
 ----------------
 
-The :doc:`../standard-library` is configured at compile time using
+The :doc:`../library-reference` is configured at compile time using
 defines named ``CONFIG_*``. The default configuration includes most
 functionality, as most application wants that . If an application has
 special requirements, for example memory constraints, it has to be

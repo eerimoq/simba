@@ -1,0 +1,12 @@
+:mod:`esp8266` --- Esp8266
+==========================
+
+.. module:: esp8266
+   :synopsis: Esp8266.
+
+Source code: :github-blob:`src/mcus/esp8266/mcu.h`
+
+----------------------------------------------
+
+.. doxygenfile:: mcus/esp8266/mcu.h
+   :project: simba
