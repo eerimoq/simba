@@ -228,62 +228,80 @@ static int cmd_parameters_list_cb(int argc,
 #endif
 
 /**
- * Remove whitespaces from beginning and end of string. Replace sequence
- * of whitespaces within the string with a single space.
+ * Parse one argument from given string. An argument must be in quotes
+ * if it contains spaces.
  */
-static void pack(char *string_p)
+static char *argument_parse(char *command_p, const char **begin_pp)
 {
-    char *write_p;
-    char *read_p;
+    int in_quote;
+    
+    in_quote = 0;
+    *begin_pp = command_p;
 
-    write_p = string_p;
-    read_p = string_p;
-
-    if (*read_p == '\0') {
-        return;
-    }
-
-    /* Remove beginning whitespaces.*/
-    while (isspace((int)*read_p)) {
-        read_p++;
-    }
-
-    /* Merge internal whitespaces.*/
-    while (*read_p != '\0') {
-        *write_p++ = *read_p++;
-        while (isspace((int)*read_p) && isspace((int)read_p[1])) {
-            read_p++;
+    while (*command_p != '\0') {
+        if (*command_p == '\\') {
+            if (command_p[1] == '\"') {
+                /* Remove the \. */
+                memmove(command_p, &command_p[1], strlen(&command_p[1]) + 1);
+            }
+        } else {
+            if (in_quote == 1) {
+                if (*command_p == '\"') {
+                    /* Remove the ". */
+                    memmove(command_p, &command_p[1], strlen(&command_p[1]) + 1);
+                    in_quote = 0;
+                    command_p--;
+                }
+            } else {
+                if (*command_p == '\"') {
+                    /* Remove the ". */
+                    memmove(command_p, &command_p[1], strlen(&command_p[1]) + 1);
+                    in_quote = 1;
+                    command_p--;
+                } else if (*command_p == ' ') {
+                    *command_p = '\0';
+                    command_p++;
+                    break;
+                }
+            }
         }
-    }
 
-    /* Remove trailing whitespace.*/
-    if (isspace((int)write_p[-1])) {
-        write_p--;
+        command_p++;
     }
-
-    *write_p = '\0';
+    
+    return (command_p);
 }
 
+/**
+ * Split given command into argv strings.
+ */
 static int command_parse(char *command_p, const char *argv[])
 {
     int argc;
 
-    pack(command_p);
+    command_p = std_strip(command_p, NULL);
     argc = 0;
-    argv[argc++] = command_p;
+
+    /* Command string missing. */
+    if (strlen(command_p) == 0) {
+        return (-1);
+    }
 
     while (*command_p != '\0') {
-        if (*command_p == ' ') {
-            *command_p = '\0';
-            command_p++;
+        /* Remove white spaces before the next argument. */
+        command_p = std_strip(command_p, NULL);
 
-            if (argc == FS_COMMAND_ARGS_MAX) {
-                return (-E2BIG);
-            }
-
-            argv[argc++] = command_p;
+        if (argc == FS_COMMAND_ARGS_MAX) {
+            return (-E2BIG);
         }
-        command_p++;
+
+        if (strlen(command_p) == 0) {
+            break;
+        }
+
+        if ((command_p = argument_parse(command_p, &argv[argc++])) == NULL) {
+            return (-1);
+        }
     }
 
     return (argc);
@@ -366,7 +384,7 @@ int fs_call(char *command_p,
 
     argc = command_parse(command_p, argv);
 
-    if (argc < 0) {
+    if (argc <= 0) {
         return (argc);
     }
 

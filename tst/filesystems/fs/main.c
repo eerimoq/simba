@@ -220,8 +220,7 @@ static int test_command(struct harness_t *harness_p)
     read_until(buf, "\n");
 
     strcpy(buf, "");
-    BTASSERT(fs_call(buf, NULL, &qout, NULL) == -ENOENT);
-    read_until(buf, "\n");
+    BTASSERT(fs_call(buf, NULL, &qout, NULL) == -1);
 
     strcpy(buf, "/tmp/q");
     BTASSERT(fs_auto_complete(buf) == -ENOENT);
@@ -376,6 +375,35 @@ static int test_split_merge(struct harness_t *harness_p)
     return (0);
 }
 
+static int test_quotes(struct harness_t *harness_p)
+{
+    char buf[BUFFER_SIZE];
+
+    /* "1 2" is parsed as one argument. */
+    strcpy(buf, "tmp/foo/bar \"1 2\" 3");
+    BTASSERT(fs_call(buf, NULL, &qout, NULL) == 0);
+    read_until(buf, "argv[1] = 1 2, argv[2] = 3\n");
+
+    /* "1""" is parsed as one argument. */
+    strcpy(buf, "tmp/foo/bar \"1\"\"\" 2");
+    BTASSERT(fs_call(buf, NULL, &qout, NULL) == 0);
+    read_until(buf, "argv[1] = 1, argv[2] = 2\n");
+
+    return (0);
+}
+
+static int test_escape(struct harness_t *harness_p)
+{
+    char buf[BUFFER_SIZE];
+
+    /* \"2\" parsed as "2". */
+    strcpy(buf, "tmp/foo/bar 1 \\\"2\\\"");
+    BTASSERT(fs_call(buf, NULL, &qout, NULL) == 0);
+    read_until(buf, "argv[1] = 1, argv[2] = \"2\"\n");
+
+    return (0);
+}
+
 static int test_filesystem_fat16(struct harness_t *harness_p)
 {
 #if defined(ARCH_LINUX)
@@ -515,6 +543,8 @@ int main()
         { test_parameter, "test_parameter" },
         { test_list, "test_list" },
         { test_split_merge, "test_split_merge" },
+        { test_quotes, "test_quotes" },
+        { test_escape, "test_escape" },
         { test_filesystem_fat16, "test_filesystem_fat16" },
         { test_filesystem_spiffs, "test_filesystem_spiffs" },
         { test_filesystem_list, "test_filesystem_list" },

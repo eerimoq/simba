@@ -175,13 +175,18 @@ int fs_module_init(void);
 
 /**
  * Call given file system command with given input and output
- * channels.
+ * channels. Quote an argument if it contains spaces, otherwise it is
+ * parsed as multiple arguments. Any quotation mark in an argument
+ * string must be escaped with ``\``, otherwise it is interpreted as a
+ * string quotation.
  *
- * @param[in] command_p Command string to call. May be modified by
- *                      this function.
+ * @param[in,out] command_p Command string to call. The command string
+ *                          will be modified by this function, so
+ *                          don't use it after this function returns.
  * @param[in] chin_p Input channel.
  * @param[in] chout_p Output channel.
- * @param[in] arg_p User argument.
+ * @param[in] arg_p User argument passed to the command callback
+ *                  function.
  *
  * @return zero(0) or negative error code.
  */
