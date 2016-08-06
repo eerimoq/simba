@@ -50,9 +50,9 @@ struct setting_t {
 int setting_module_init(void);
 
 /**
- * Read setting at given address to given buffer.
+ * Read the value of given setting by address.
  *
- * @param[out] dst_p Destination buffer.
+ * @param[out] dst_p The read value.
  * @param[in] src Setting source address.
  * @param[in] size Number of words to read.
  *
@@ -61,15 +61,41 @@ int setting_module_init(void);
 ssize_t setting_read(void *dst_p, size_t src, size_t size);
 
 /**
- * Write setting from given buffer to given address.
+ * Write given value to given setting by address.
  *
  * @param[in] dst Destination setting address.
- * @param[in] src_p Source buffer.
- * @param[in] size Number of words to write.
+ * @param[in] src_p Value to write.
+ * @param[in] size Number of bytes to write.
  *
  * @return Number of words written or negative error code.
  */
 ssize_t setting_write(size_t dst, const void *src_p, size_t size);
+
+/**
+ * Read the value of given setting by name.
+ *
+ * @param[in] name_p Setting name.
+ * @param[out] dst_p The read value.
+ * @param[in] size Size of the destination buffer.
+ *
+ * @return Number of words read or negative error code.
+ */
+ssize_t setting_read_by_name(const char *name_p,
+                             void *dst_p,
+                             size_t size);
+
+/**
+ * Write given value to given setting by name.
+ *
+ * @param[in] name_p Setting name.
+ * @param[in] src_p Value to write.
+ * @param[in] size Number of bytes to write.
+ *
+ * @return Number of words read or negative error code.
+ */
+ssize_t setting_write_by_name(const char *name_p,
+                              const void *src_p,
+                              size_t size);
 
 /**
  * Overwrite all settings with their default values.

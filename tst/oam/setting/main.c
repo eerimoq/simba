@@ -314,6 +314,24 @@ static int test_string(struct harness_t *harness_p)
     return (0);
 }
 
+static int test_read_write_by_name(struct harness_t *harness_p)
+{
+    int32_t int32;
+
+    int32 = 10;
+    BTASSERT(setting_write_by_name("int32",
+                                   &int32,
+                                   sizeof(int32)) == sizeof(int32));
+
+    int32 = 0;
+    BTASSERT(setting_read_by_name("int32",
+                                  &int32,
+                                  sizeof(int32)) == sizeof(int32));
+    BTASSERT(int32 == 10);
+
+    return (0);
+}
+
 int main()
 {
     struct harness_t harness;
@@ -326,6 +344,7 @@ int main()
         { test_cmd_reset, "test_cmd_reset" },
         { test_integer, "test_integer" },
         { test_string, "test_string" },
+        { test_read_write_by_name, "test_read_write_by_name" },
         { NULL, NULL }
     };
 
