@@ -72,7 +72,7 @@ int harness_run(struct harness_t *self_p,
     char buf[17];
 
     strcpy(buf, "kernel/thrd/list");
-    fs_call(buf, NULL, console_get_output_channel(), NULL);
+    fs_call(buf, NULL, sys_get_stdout(), NULL);
 
 #endif
 

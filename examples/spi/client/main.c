@@ -100,8 +100,8 @@ int main()
     ds18b20_init(&ds, &owi);
 
     shell_init(&shell,
-               console_get_input_channel(),
-               console_get_output_channel(),
+               sys_get_stdin(),
+               sys_get_stdout(),
                NULL,
                NULL,
                NULL,

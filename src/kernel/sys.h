@@ -51,7 +51,8 @@ static inline void st2t(sys_tick_t tick, struct time_t *time_p)
 struct sys_t {
     sys_tick_t tick;
     void (*on_fatal_callback)(int error);
-    chan_t *std_out_p;
+    chan_t *stdin_p;
+    chan_t *stdout_p;
     struct {
         uint32_t start;
         uint32_t time;
@@ -99,10 +100,25 @@ void sys_stop(int error);
 void sys_set_on_fatal_callback(void (*callback)(int error));
 
 /**
- * Set standard output to given channel. For example, `std_printf()`
- * writes to the standard output channel.
+ * Set the standard input channel.
  *
- * @param[in] chan Standard output channel to set.
+ * @param[in] chan_p New standard input channel.
+ *
+ * @return void.
+ */
+void sys_set_stdin(chan_t *chan_p);
+
+/**
+ * Get the standard input channel.
+ *
+ * @return Standard input channel or NULL.
+ */
+chan_t *sys_get_stdin(void);
+
+/**
+ * Set the standard output channel.
+ *
+ * @param[in] chan_p New standard output channel.
  *
  * @return void.
  */

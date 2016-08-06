@@ -294,8 +294,8 @@ int main()
 
     /* Call the shell main function. */
     shell_init(&shell,
-               console_get_input_channel(),
-               console_get_output_channel(),
+               sys_get_stdin(),
+               sys_get_stdout(),
                NULL,
                NULL,
                NULL,

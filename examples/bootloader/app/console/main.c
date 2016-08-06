@@ -50,8 +50,8 @@ int main()
     std_printf(sys_get_info());
 
     /* Initialize the bootloader object and enter the main loop. */
-    bootloader_console_init(console_get_input_channel(),
-                            console_get_output_channel(),
+    bootloader_console_init(sys_get_stdin(),
+                            sys_get_stdout(),
                             APPLICATION_ADDRESS,
                             APPLICATION_SIZE,
                             &flash);

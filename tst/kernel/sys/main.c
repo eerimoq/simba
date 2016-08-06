@@ -31,7 +31,7 @@ static void on_fatal(int error)
     std_printf(FSTR("on_fatal: error: %d\r\n"), error);
 }
 
-int test_set_on_fatal_callback(struct harness_t *harness_p)
+static int test_set_on_fatal_callback(struct harness_t *harness_p)
 {
     sys_set_on_fatal_callback(on_fatal);
     ASSERT(0 == 1, "intentional fatal assert");
@@ -39,7 +39,7 @@ int test_set_on_fatal_callback(struct harness_t *harness_p)
     return (0);
 }
 
-int test_info(struct harness_t *harness_p)
+static int test_info(struct harness_t *harness_p)
 {
     std_printf(sys_get_info());
 
@@ -55,7 +55,7 @@ int test_info(struct harness_t *harness_p)
     return (0);
 }
 
-int test_uptime(struct harness_t *harness_p)
+static int test_uptime(struct harness_t *harness_p)
 {
 #if CONFIG_FS_CMD_SYS_UPTIME == 1
 
@@ -73,7 +73,7 @@ int test_uptime(struct harness_t *harness_p)
 #endif
 }
 
-int test_time(struct harness_t *harness_p)
+static int test_time(struct harness_t *harness_p)
 {
     int i;
     struct time_t time;
@@ -148,6 +148,42 @@ int test_time(struct harness_t *harness_p)
     return (0);
 }
 
+static int test_stdin(struct harness_t *harness_p)
+{
+    chan_t *original_stdin_p;
+    chan_t *stdin_p;
+    struct chan_t chan;
+
+    original_stdin_p = sys_get_stdin();
+
+    sys_set_stdin(&chan);
+    stdin_p = sys_get_stdin();
+
+    sys_set_stdin(original_stdin_p);
+
+    BTASSERT(stdin_p == &chan);
+
+    return (0);
+}
+
+static int test_stdout(struct harness_t *harness_p)
+{
+    chan_t *original_stdout_p;
+    chan_t *stdout_p;
+    struct chan_t chan;
+
+    original_stdout_p = sys_get_stdout();
+
+    sys_set_stdout(&chan);
+    stdout_p = sys_get_stdout();
+
+    sys_set_stdout(original_stdout_p);
+
+    BTASSERT(stdout_p == &chan);
+
+    return (0);
+}
+
 int main()
 {
     struct harness_t harness;
@@ -156,6 +192,8 @@ int main()
         { test_info, "test_info" },
         { test_uptime, "test_uptime" },
         { test_time, "test_time" },
+        { test_stdin, "test_stdin" },
+        { test_stdout, "test_stdout" },
         { NULL, NULL }
     };
 

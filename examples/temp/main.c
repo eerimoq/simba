@@ -94,8 +94,8 @@ int main()
     pin_init(&pin[2], &pin_d9_dev, PIN_OUTPUT);
 
     shell_init(&shell,
-               console_get_input_channel(),
-               console_get_output_channel(),
+               sys_get_stdin(),
+               sys_get_stdout(),
                NULL,
                NULL,
                NULL,

@@ -23,7 +23,8 @@
 struct sys_t sys = {
     .tick = 0,
     .on_fatal_callback = sys_stop,
-    .std_out_p = NULL,
+    .stdin_p = NULL,
+    .stdout_p = NULL,
     .interrupt = {
         .start = 0,
         .time = 0
@@ -187,6 +188,7 @@ int sys_start(void)
     console_init();
     console_start();
 
+    sys_set_stdin(console_get_input_channel());
     sys_set_stdout(console_get_output_channel());
     log_set_default_handler_output_channel(console_get_output_channel());
 
@@ -200,52 +202,62 @@ void sys_set_on_fatal_callback(void (*callback)(int error))
     sys.on_fatal_callback = callback;
 }
 
+void sys_set_stdin(chan_t *chan_p)
+{
+    sys.stdin_p = chan_p;
+}
+
+chan_t *sys_get_stdin()
+{
+    return (sys.stdin_p);
+}
+
 void sys_set_stdout(chan_t *chan_p)
 {
-    sys.std_out_p = chan_p;
+    sys.stdout_p = chan_p;
 }
 
-chan_t *sys_get_stdout(void)
+chan_t *sys_get_stdout()
 {
-    return (sys.std_out_p);
+    return (sys.stdout_p);
 }
 
-void sys_lock(void)
+void sys_lock()
 {
     sys_port_lock();
 }
 
-void sys_unlock(void)
+void sys_unlock()
 {
     sys_port_unlock();
 }
 
-void sys_lock_isr(void)
+void sys_lock_isr()
 {
     sys_port_lock_isr();
 }
 
-void sys_unlock_isr(void)
+void sys_unlock_isr()
 {
     sys_port_unlock_isr();
 }
 
-const FAR char *sys_get_info(void)
+const FAR char *sys_get_info()
 {
     return (sysinfo);
 }
 
-const FAR char *sys_get_config(void)
+const FAR char *sys_get_config()
 {
     return (config);
 }
 
-float sys_interrupt_cpu_usage_get(void)
+float sys_interrupt_cpu_usage_get()
 {
     return (sys_port_interrupt_cpu_usage_get());
 }
 
-void sys_interrupt_cpu_usage_reset(void)
+void sys_interrupt_cpu_usage_reset()
 {
     sys_port_interrupt_cpu_usage_reset();
 }

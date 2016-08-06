@@ -50,8 +50,8 @@ int main()
 
     /* Initialize the bootloader object and enter the main loop. */
     bootloader_uds_init(&uds,
-                        console_get_input_channel(),
-                        console_get_output_channel(),
+                        sys_get_stdin(),
+                        sys_get_stdout(),
                         APPLICATION_ADDRESS,
                         APPLICATION_SIZE,
                         &flash);
