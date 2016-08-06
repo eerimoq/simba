@@ -40,7 +40,6 @@ int harness_run(struct harness_t *self_p,
 
     /* Print a header. */
     std_printf(sys_get_info());
-    std_printf(sys_get_config());
 
     while (testcase_p->callback != NULL) {
         if (testcase_p->name_p != NULL) {
