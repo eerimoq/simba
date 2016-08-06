@@ -6,12 +6,9 @@ Standard Library
 
 The :doc:`../library-reference` is configured at compile time using
 defines named ``CONFIG_*``. The default configuration includes most
-functionality, as most application wants that . If an application has
+functionality, as most application wants that. If an application has
 special requirements, for example memory constraints, it has to be
 configured to remove unnecessaray functionality.
-
-All configuration variables and their default values are defined in
-:github-blob:`src/config_default.h`.
 
 Search order
 ^^^^^^^^^^^^
@@ -22,33 +19,16 @@ Highest priority first.
 
 2. A file named ``config.h`` in the application root folder.
 
-3. The default configuration, :github-blob:`src/config_default.h`.
+3. The default configuration file, :github-blob:`src/config_default.h`.
 
 Variables
 ^^^^^^^^^
 
-Here is a list of a few of the configuration variables. Ther are many
-more in the default confgiuration file
-:github-blob:`src/config_default.h`.
+All configuration variables are listed below. Their default values are
+defined in :github-blob:`src/config_default.h`.
 
-+-------------------------------+-----------------------------------------------------------------+
-|  Name                         | Description                                                     |
-+===============================+=================================================================+
-|  CONFIG_ASSERT                | Build with assert.                                              |
-+-------------------------------+-----------------------------------------------------------------+
-|  CONFIG_DEBUG                 | Build with debug.                                               |
-+-------------------------------+-----------------------------------------------------------------+
-|  CONFIG_PROFILE_STACK         | Stack profiling.                                                |
-+-------------------------------+-----------------------------------------------------------------+
-|  CONFIG_MONITOR_THREAD        | Start the monitor thread.                                       |
-+-------------------------------+-----------------------------------------------------------------+
-|  CONFIG_PREEMPTIVE_SCHEDULER  | Use a preemptive scheduler.                                     |
-+-------------------------------+-----------------------------------------------------------------+
-|  CONFIG_SHELL_MINIMAL         | Minimal shell functionality. Do not use command history or |br| |
-|                               | ANSI escape sequences.                                          |
-+-------------------------------+-----------------------------------------------------------------+
-|  CONFIG_SYSTEM_TICK_FREQUENCY | System tick frequency in Hertz.                                 |
-+-------------------------------+-----------------------------------------------------------------+
+.. doxygenfile:: config_default.h
+   :project: simba
 
 lwIP
 ----
@@ -67,7 +47,7 @@ Module support (Code size)
 Enabling and disabling modules
 """"""""""""""""""""""""""""""
 
-You can tune your codeg size by only compiling the features you really
+You can tune your code size by only compiling the features you really
 need. The following is a list of what gets compiled in "out of the
 box" with lwIP.
 

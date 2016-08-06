@@ -319,3 +319,9 @@ help:
 
 print-%:
 	@echo $($*)
+
+default-configuration:
+	gcc -E -dM $(CDEFS:%=-D%) $(SIMBA_ROOT)/src/config_default.h \
+		| grep "#define CONFIG"_ \
+		| grep -v "#define __CONFIG" \
+		| grep -v -P "#define CONFIG_CONSOLE_NONE|#define CONFIG_CONSOLE_UART|#define CONFIG_CONSOLE_USB_CDC"

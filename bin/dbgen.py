@@ -5,6 +5,7 @@ import os
 import subprocess
 import glob
 import json
+import re
 
 
 def get_boards():
@@ -38,6 +39,18 @@ def get_make_variable(board, variable):
                                    cwd="tst/kernel/sys")
 
 
+def get_default_configuration(board):
+    """Get the default configratuion for given board.
+
+    """
+
+    return subprocess.check_output(["make",
+                                    "-s",
+                                    "BOARD=" + board,
+                                    "default-configuration"],
+                                   cwd="tst/kernel/sys")
+
+
 def main():
     """Main.
 
@@ -66,6 +79,15 @@ def main():
         simba_root = get_make_variable(board, "SIMBA_ROOT").strip()
         simba_root += '/'
 
+        # Get the board default configuration.
+        re_default_config = re.compile(r"#define (\w+) (.*)")
+        default_config = []
+        for line in get_default_configuration(board).splitlines():
+            mo = re_default_config.match(line)
+            default_config.append((mo.group(1), mo.group(2)))
+        default_config.sort()
+        database["boards"][board]["default-configuration"] = default_config
+        
         # Get board drivers.
         drivers_dir = simba_root + "src/drivers/"
         drivers_src = get_make_variable(board, "DRIVERS_SRC").split()

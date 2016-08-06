@@ -35,6 +35,14 @@ Mcu
 
 :doc:`{mcu}<../library-reference/mcus/{mcu}>`
 
+Default configuration
+---------------------
+
++------------------------------------------------------+-----------------------------------------------------+
+|  Name                                                |  Value                                              |
++======================================================+=====================================================+
+{default_configuration}
+
 Library Reference
 ----------------
 
@@ -43,7 +51,15 @@ Read more about board specific functionality in the :doc:`{desc}
 Library Reference.
 
 {include_extra}
+
+{default_configuration_targets}
 """
+
+
+CONFIG_FMT = """|  {:51} |  {:50} |
++------------------------------------------------------+-----------------------------------------------------+
+"""
+
 
 SOURCE_CODE_FMT = """.. code-block:: c
 
@@ -75,6 +91,14 @@ def boards_generate(database):
             drivers.append("- :doc:`../library-reference/drivers/{}`".format(
                 driver))
 
+        default_configuration = ""
+        default_configuration_targets = []
+        for config in data["default-configuration"]:
+            default_configuration += CONFIG_FMT.format(config[0] + "_", config[1])
+            target = ".. _{name}: ../user-guide/configuration.html#c.{name}".format(
+                name=config[0])
+            default_configuration_targets.append(target)
+            
         if os.path.exists(os.path.join("doc", "boards", "extra", board + ".rst")):
             include_extra = ".. include:: extra/{name}.rst".format(name=board)
         else:
@@ -87,7 +111,10 @@ def boards_generate(database):
                                pinout=data["board_pinout"],
                                mcu=data["mcu"].replace("/", ""),
                                drivers='\n'.join(drivers),
-                               include_extra=include_extra)
+                               default_configuration=default_configuration,
+                               include_extra=include_extra,
+                               default_configuration_targets='\n\n'.join(
+                                   default_configuration_targets))
 
         rst_path = os.path.join("doc", "boards", board + ".rst")
         print "Writing to ", rst_path

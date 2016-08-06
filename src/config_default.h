@@ -386,13 +386,13 @@
 #    endif
 #endif
 
-/**
- * Default console device (UART/USB CDC).
- */
 #define CONFIG_CONSOLE_NONE                                 0
 #define CONFIG_CONSOLE_UART                                 1
 #define CONFIG_CONSOLE_USB_CDC                              2
 
+/**
+ * Default console device (UART/USB CDC).
+ */
 #ifndef CONFIG_CONSOLE
 #    if defined(BOARD_ARDUINO_PRO_MICRO)
 #        define CONFIG_CONSOLE         CONFIG_CONSOLE_USB_CDC
@@ -472,7 +472,7 @@
  * Size of the shell history buffer.
  */
 #ifndef CONFIG_SHELL_HISTORY_SIZE
-#    define CONFIG_SHELL_HISTORY_SIZE   (10 * CONFIG_SHELL_COMMAND_MAX)
+#    define CONFIG_SHELL_HISTORY_SIZE                     768
 #endif
 
 /**
