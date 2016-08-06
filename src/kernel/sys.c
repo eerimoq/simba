@@ -32,9 +32,9 @@ struct sys_t sys = {
 };
 
 static const FAR char config[] = 
-    "config: sys-config=" STRINGIFY(CONFIG_SYS_CONFIG) "\r\n"
+    "config: sys-config-string=" STRINGIFY(CONFIG_SYS_CONFIG_STRING) "\r\n"
 
-#if CONFIG_SYS_CONFIG == 1
+#if CONFIG_SYS_CONFIG_STRING == 1
 
     "        assert=" STRINGIFY(CONFIG_ASSERT) "\r\n"
     "        debug=" STRINGIFY(CONFIG_DEBUG) "\r\n"
@@ -67,7 +67,7 @@ static const FAR char config[] =
     "        fs-cmd-setting-read=" STRINGIFY(CONFIG_FS_CMD_SETTING_READ) "\r\n"
     "        fs-cmd-setting-write=" STRINGIFY(CONFIG_FS_CMD_SETTING_WRITE) "\r\n"
     "        console=" STRINGIFY(CONFIG_CONSOLE) "\r\n"
-    "        console-device=" STRINGIFY(CONFIG_CONSOLE_DEVICE) "\r\n"
+    "        console-device-index=" STRINGIFY(CONFIG_CONSOLE_DEVICE_INDEX) "\r\n"
     "        console-uart-baudrate=" STRINGIFY(CONFIG_CONSOLE_UART_BAUDRATE) "\r\n"
     "        console-usb-cdc-control-interface=" STRINGIFY(CONFIG_CONSOLE_USB_CDC_CONTROL_INTERFACE) "\r\n"
     "        console-usb-cdc-endpoint-in=" STRINGIFY(CONFIG_CONSOLE_USB_CDC_ENDPOINT_IN) "\r\n"

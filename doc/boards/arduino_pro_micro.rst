@@ -16,7 +16,7 @@ Pinout
 Drivers
 -------
 
-A list of supported drivers for this board:
+Supported drivers.
 
 - :doc:`../library-reference/drivers/adc`
 - :doc:`../library-reference/drivers/ds18b20`
@@ -44,6 +44,8 @@ Mcu
 Default configuration
 ---------------------
 
+Default Standard Library configuration.
+
 +------------------------------------------------------+-----------------------------------------------------+
 |  Name                                                |  Value                                              |
 +======================================================+=====================================================+
@@ -51,7 +53,7 @@ Default configuration
 +------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_CONSOLE_                                     |  CONFIG_CONSOLE_USB_CDC                             |
 +------------------------------------------------------+-----------------------------------------------------+
-|  CONFIG_CONSOLE_DEVICE_                              |  0                                                  |
+|  CONFIG_CONSOLE_DEVICE_INDEX_                        |  0                                                  |
 +------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_DEBUG_                                       |  1                                                  |
 +------------------------------------------------------+-----------------------------------------------------+
@@ -127,9 +129,7 @@ Default configuration
 +------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_SYSTEM_TICK_FREQUENCY_                       |  100                                                |
 +------------------------------------------------------+-----------------------------------------------------+
-|  CONFIG_SYS_CONFIG_                                  |  0                                                  |
-+------------------------------------------------------+-----------------------------------------------------+
-|  CONFIG_USB_DEVICE_CDC_                              |  1                                                  |
+|  CONFIG_SYS_CONFIG_STRING_                           |  0                                                  |
 +------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_USB_DEVICE_PID_                              |  0x8037                                             |
 +------------------------------------------------------+-----------------------------------------------------+
@@ -150,7 +150,7 @@ Library Reference.
 
 .. _CONFIG_CONSOLE: ../user-guide/configuration.html#c.CONFIG_CONSOLE
 
-.. _CONFIG_CONSOLE_DEVICE: ../user-guide/configuration.html#c.CONFIG_CONSOLE_DEVICE
+.. _CONFIG_CONSOLE_DEVICE_INDEX: ../user-guide/configuration.html#c.CONFIG_CONSOLE_DEVICE_INDEX
 
 .. _CONFIG_DEBUG: ../user-guide/configuration.html#c.CONFIG_DEBUG
 
@@ -226,9 +226,7 @@ Library Reference.
 
 .. _CONFIG_SYSTEM_TICK_FREQUENCY: ../user-guide/configuration.html#c.CONFIG_SYSTEM_TICK_FREQUENCY
 
-.. _CONFIG_SYS_CONFIG: ../user-guide/configuration.html#c.CONFIG_SYS_CONFIG
-
-.. _CONFIG_USB_DEVICE_CDC: ../user-guide/configuration.html#c.CONFIG_USB_DEVICE_CDC
+.. _CONFIG_SYS_CONFIG_STRING: ../user-guide/configuration.html#c.CONFIG_SYS_CONFIG_STRING
 
 .. _CONFIG_USB_DEVICE_PID: ../user-guide/configuration.html#c.CONFIG_USB_DEVICE_PID
 

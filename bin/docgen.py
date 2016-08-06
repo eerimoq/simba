@@ -26,7 +26,7 @@ Pinout
 Drivers
 -------
 
-A list of supported drivers for this board:
+Supported drivers.
 
 {drivers}
 
@@ -38,13 +38,15 @@ Mcu
 Default configuration
 ---------------------
 
+Default Standard Library configuration.
+
 +------------------------------------------------------+-----------------------------------------------------+
 |  Name                                                |  Value                                              |
 +======================================================+=====================================================+
 {default_configuration}
 
 Library Reference
-----------------
+-----------------
 
 Read more about board specific functionality in the :doc:`{desc}
 <../library-reference/boards/{name}>` module documentation in the

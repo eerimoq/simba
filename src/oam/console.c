@@ -37,7 +37,7 @@ int console_module_init(void)
 int console_init(void)
 {
     return (uart_init(&console.uart,
-                      &uart_device[CONFIG_CONSOLE_DEVICE],
+                      &uart_device[CONFIG_CONSOLE_DEVICE_INDEX],
                       CONFIG_CONSOLE_UART_BAUDRATE,
                       console.rxbuf,
                       sizeof(console.rxbuf)));
