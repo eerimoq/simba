@@ -39,7 +39,9 @@ int harness_run(struct harness_t *self_p,
     testcase_p = testcases_p;
 
     /* Print a header. */
+    std_printf(FSTR("\r\n"));
     std_printf(sys_get_info());
+    std_printf(FSTR("\r\n"));
 
     while (testcase_p->callback != NULL) {
         if (testcase_p->name_p != NULL) {
@@ -73,10 +75,12 @@ int harness_run(struct harness_t *self_p,
     strcpy(buf, "kernel/thrd/list");
     fs_call(buf, NULL, sys_get_stdout(), NULL);
 
+    std_printf(FSTR("\r\n"));
+
 #endif
 
     std_printf(FSTR("harness report: total(%d), passed(%d), "
-                    "failed(%d), skipped(%d)\r\n"),
+                    "failed(%d), skipped(%d)\r\n\r\n"),
                total, passed, failed, skipped);
 
     sys_stop(failed);

@@ -27,13 +27,13 @@ conditions.
 
    #include "simba.h"
 
-   int test_passed(struct harness_t *harness_p)
+   static int test_passed(struct harness_t *harness_p)
    {
        /* Return zero(0) when a test case passes. */
        return (0);
    }
 
-   int test_failed(struct harness_t *harness_p)
+   static int test_failed(struct harness_t *harness_p)
    {
        /* Return a negative integer when a test case fails. BTASSERT
           will return -1 when the condition is false. */
@@ -42,7 +42,7 @@ conditions.
        return (0);
    }
 
-   int test_skipped(struct harness_t *harness_p)
+   static int test_skipped(struct harness_t *harness_p)
    {
        /* Return a positive integer when a test case is skipped. */
        return (1);
@@ -74,9 +74,7 @@ The output from the test suite is:
    app:    test_suite-4.1.0 built 2016-07-25 17:38 CEST by erik.
    board:  Linux
    mcu:    Linux
-   config: assert=1
-           debug=1
-           profile-stack=0
+
    enter: test_passed
    exit: test_passed: PASSED
 
