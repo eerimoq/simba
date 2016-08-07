@@ -29,6 +29,7 @@ MCU = atmega32u4
 
 SERIAL_PORT ?= /dev/arduino
 BOARD_PY = $(SIMBA_ROOT)/src/boards/arduino_pro_micro/board.py
+RUN_PY = $(SIMBA_ROOT)/src/boards/arduino_pro_micro/run.py
 TIMEOUT ?= 10
 
 upload:
@@ -38,10 +39,7 @@ upload:
 run:
 	@echo "Running $(EXE)"
 	python -u $(RUN_PY) --port $(SERIAL_PORT) \
-			    --baudrate $(BAUDRATE) \
 			    --timeout $(TIMEOUT) \
 	 		    --pattern $(RUN_END_PATTERN)\
 			    --pattern-success $(RUN_END_PATTERN_SUCCESS) \
-			    --dtr 1 \
-			    --rts 1 \
 			    | tee $(RUNLOG) ; test $${PIPESTATUS[0]} -eq 0

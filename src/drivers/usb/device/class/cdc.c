@@ -68,8 +68,7 @@ static int check_reset_to_bootloader(struct usb_device_class_cdc_driver_t *self_
     /* We check DTR state to determine if host port is open (bit 0 of
        line state). */
     if ((self_p->line_state & LINE_STATE_DTR) == 0) {
-        *(uint16_t*)0x0800 = STAY_IN_BOOT_LOADER_MAGIC;
-        usb_device_stop(self_p->drv_p);
+        *(uint16_t *)0x0800 = STAY_IN_BOOT_LOADER_MAGIC;
         watchdog_start_ms(100);
     } else {
         *(uint16_t *)0x0800 = 0x0;

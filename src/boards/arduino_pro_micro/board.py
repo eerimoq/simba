@@ -15,9 +15,9 @@ def _upload(args):
     print ("Setting {} to 1200 baud and setting DTR to "
            "reset the board.".format(args.port))
     ser = serial.Serial(args.port, baudrate=1200)
-    ser.setDTR(1)
+    ser.setDTR(False)
     ser.close()
-    time.sleep(2)
+    time.sleep(1)
 
     command = [
         "avrdude",
