@@ -19,4 +19,4 @@ before_install:
 script: make -s travis
 
 after_success:
-  - pwd && ${GCOV} -v && bash <(curl -s https://codecov.io/bash) -x $(GCOV}
+  - pwd && ${GCOV} -v && bash <(curl -s https://codecov.io/bash) -x ${GCOV}
