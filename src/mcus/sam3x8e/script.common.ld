@@ -44,6 +44,7 @@
 OUTPUT_FORMAT("elf32-littlearm")
 OUTPUT_ARCH(arm)
 SEARCH_DIR(.)
+EXTERN(vector_table)
 
 __rom_begin = ORIGIN(rom);
 __rom_end = ORIGIN(rom) + LENGTH(rom);

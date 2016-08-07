@@ -21,7 +21,7 @@ SETTINGS_BIN_FILENAME = "settings.bin"
 
 HEADER_FMT = """/**
  * @file {filename}
- * @version 4.1.0
+ * @version 5.0.0
  *
  * @section License
  * Copyright (C) 2014-2016, Erik Moqvist
@@ -81,7 +81,7 @@ extern FAR const struct setting_t settings[];
 
 SOURCE_FMT = """/**
  * @file {filename}
- * @version 4.1.0
+ * @version 5.0.0
  *
  * @section License
  * Copyright (C) 2014-2016, Erik Moqvist

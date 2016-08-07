@@ -1,6 +1,6 @@
 #
 # @file mcus/sam/sam3.mk
-# @version 4.1.0
+# @version 5.0.0
 #
 # @section License
 # Copyright (C) 2014-2016, Erik Moqvist
