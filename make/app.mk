@@ -152,7 +152,7 @@ release:
 
 $(EXE): $(OBJ) $(GENOBJ)
 	@echo "Linking $@"
-	$(LD) -o $@ $(LIBPATH:%=-L%) $(LDFLAGS) $^ $(LDFLAGS_AFTER)
+	$(CC) -o $@ $(LIBPATH:%=-L%) $(LDFLAGS) $^ $(LDFLAGS_AFTER)
 
 $(SETTINGS_H): $(SETTINGS_INI)
 	@echo "Generating $@ from $<"

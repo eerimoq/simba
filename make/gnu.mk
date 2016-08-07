@@ -23,7 +23,6 @@ SIZECMD = $(CROSS_COMPILE)size $(SIZEARGS) ${EXE} ; \
           $(CROSS_COMPILE)size $(OBJ) -t
 
 CC = $(CROSS_COMPILE)gcc
-LD = $(CROSS_COMPILE)gcc
 
 CFLAGS += -c \
           -Wall \

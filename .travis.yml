@@ -16,7 +16,7 @@ before_install:
   - sudo apt-get update -qq
   - sudo apt-get install -qq parted -y
 
-script: make travis -j $(cat /proc/cpuinfo | grep processor | wc -l)
+script: env CC=${CC} make travis -j $(cat /proc/cpuinfo | grep processor | wc -l)
 
 after_success:
   - pwd && ${GCOV} -v && bash <(curl -s https://codecov.io/bash) -x ${GCOV}
