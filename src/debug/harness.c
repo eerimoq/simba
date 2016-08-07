@@ -40,6 +40,8 @@ int harness_run(struct harness_t *self_p,
 
     /* Print a header. */
     std_printf(FSTR("\r\n"));
+
+    std_printf(FSTR("================================== TEST BEGIN ==================================\r\n\r\n"));
     std_printf(sys_get_info());
     std_printf(FSTR("\r\n"));
 
@@ -82,6 +84,8 @@ int harness_run(struct harness_t *self_p,
     std_printf(FSTR("harness report: total(%d), passed(%d), "
                     "failed(%d), skipped(%d)\r\n\r\n"),
                total, passed, failed, skipped);
+
+    std_printf(FSTR("=================================== TEST END ===================================\r\n\r\n"));
 
     sys_stop(failed);
 
