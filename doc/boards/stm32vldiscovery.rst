@@ -124,7 +124,7 @@ Default Standard Library configuration.
 
 
 Library Reference
-----------------
+-----------------
 
 Read more about board specific functionality in the :doc:`STM32VLDISCOVERY
 <../library-reference/boards/stm32vldiscovery>` module documentation in the

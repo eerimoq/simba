@@ -124,7 +124,7 @@ Default Standard Library configuration.
 
 
 Library Reference
-----------------
+-----------------
 
 Read more about board specific functionality in the :doc:`STM32F3DISCOVERY
 <../library-reference/boards/stm32f3discovery>` module documentation in the

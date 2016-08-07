@@ -138,7 +138,7 @@ Default Standard Library configuration.
 
 
 Library Reference
-----------------
+-----------------
 
 Read more about board specific functionality in the :doc:`Arduino Pro Micro
 <../library-reference/boards/arduino_pro_micro>` module documentation in the

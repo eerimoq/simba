@@ -125,7 +125,7 @@ Default Standard Library configuration.
 
 
 Library Reference
-----------------
+-----------------
 
 Read more about board specific functionality in the :doc:`ESP-12E Development Board
 <../library-reference/boards/esp12e>` module documentation in the

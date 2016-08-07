@@ -128,7 +128,7 @@ Default Standard Library configuration.
 
 
 Library Reference
-----------------
+-----------------
 
 Read more about board specific functionality in the :doc:`Linux
 <../library-reference/boards/linux>` module documentation in the

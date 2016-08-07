@@ -136,7 +136,7 @@ Default Standard Library configuration.
 
 
 Library Reference
-----------------
+-----------------
 
 Read more about board specific functionality in the :doc:`Arduino Uno
 <../library-reference/boards/arduino_uno>` module documentation in the

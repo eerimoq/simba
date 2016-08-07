@@ -134,7 +134,7 @@ Default Standard Library configuration.
 
 
 Library Reference
-----------------
+-----------------
 
 Read more about board specific functionality in the :doc:`Arduino Due
 <../library-reference/boards/arduino_due>` module documentation in the

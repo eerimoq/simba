@@ -126,7 +126,7 @@ Default Standard Library configuration.
 
 
 Library Reference
-----------------
+-----------------
 
 Read more about board specific functionality in the :doc:`Particle IO Photon
 <../library-reference/boards/photon>` module documentation in the

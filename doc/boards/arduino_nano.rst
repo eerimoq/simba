@@ -136,7 +136,7 @@ Default Standard Library configuration.
 
 
 Library Reference
-----------------
+-----------------
 
 Read more about board specific functionality in the :doc:`Arduino Nano
 <../library-reference/boards/arduino_nano>` module documentation in the
