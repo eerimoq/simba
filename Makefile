@@ -280,6 +280,8 @@ coverage: $(TESTS:%=%.cov)
 	@echo "Run 'firefox index.html' to open the coverage report in a web browser."
 	@echo
 
+codecov-coverage: $(TESTS:%=%.ccc)
+
 jenkins-coverage: $(TESTS:%=%.jc)
 
 travis:
@@ -389,6 +391,9 @@ $(TESTS:%=%.report):
 
 $(TESTS:%=%.cov):
 	$(MAKE) -C $(basename $@) coverage
+
+$(TESTS:%=%.ccc):
+	$(MAKE) -C $(basename $@) codecov-coverage
 
 $(TESTS:%=%.jc):
 	$(MAKE) -C $(basename $@) jenkins-coverage

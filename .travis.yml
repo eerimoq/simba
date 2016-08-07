@@ -12,10 +12,11 @@ env:
 before_install:
   - sudo apt-get update -qq
   - sudo apt-get install -qq parted -y
+  - sudo apt-get install -qq lcov -y
   - source setup.sh
 
 script: env CCVERSION=4.8 make -s travis -j $(cat /proc/cpuinfo | grep processor | wc -l)
 
 after_success:
-  - make coverage
+  - make codecov-coverage
   - bash <(curl -s https://codecov.io/bash) -x ${GCOV} -X gcov -X coveragepy

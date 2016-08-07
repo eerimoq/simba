@@ -44,5 +44,8 @@ coverage:
 	geninfo . -o coverage.info
 	genhtml coverage.info
 
+codecov-coverage:
+	geninfo . -o coverage.info
+
 jenkins-coverage:
 	gcovr -r $(readlink -f ../../..) -x -e ".*main.c"
