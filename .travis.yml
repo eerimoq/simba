@@ -6,12 +6,13 @@ addons:
     - gcc-4.8
     - g++-4.8
 
-language: c
-
 env:
   - CC=gcc-4.8 GCOV=gcov-4.8
 
 before_install:
+  - gcc-4.8 --version
+  - gcov-4.8 --version
+  - ${CC} --version
   - sudo apt-get update -qq
   - sudo apt-get install -qq parted -y
 
