@@ -27,6 +27,8 @@ BOARD_DESC = "Linux"
 
 MCU = linux
 
+GCOV ?= gcov
+
 upload:
 
 run:
@@ -45,7 +47,7 @@ coverage:
 	genhtml coverage.info
 
 codecov-coverage:
-	geninfo . -o coverage.info
+	geninfo . --gcov-tool $(GCOV) -o coverage.info
 
 jenkins-coverage:
 	gcovr -r $(readlink -f ../../..) -x -e ".*main.c"
