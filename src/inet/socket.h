@@ -23,15 +23,6 @@
 
 #include "simba.h"
 
-/** Internet address family. */
-#define SOCKET_DOMAIN_AF_INET  2
-
-/** TCP socket type. */
-#define SOCKET_TYPE_STREAM     1
-
-/** UDP socket type. */
-#define SOCKET_TYPE_DGRAM      2
-
 struct socket_t {
     struct chan_t base;
     int type;
@@ -61,21 +52,22 @@ struct socket_t {
 int socket_module_init(void);
 
 /**
- * Initialize given socket with given domain, type and protocol.
+ * Initialize given TCP socket.
  *
  * @param[out] self_p Socket to initialize.
- * @param[in] domain ``SOCKET_AF_INET`` is the only supported
- *                   domain. It is used by internet sockets.
- * @param[in] type Socket type one of ``SOCK_TYPE_DGRAM`` (UDP)
- *                 and ``SOCK_TYPE_STREAM`` (TCP).
- * @param[in] protocol Unused.
  *
  * @return zero(0) or negative error code.
  */
-int socket_open(struct socket_t *self_p,
-                int domain,
-                int type,
-                int protocol);
+int socket_open_tcp(struct socket_t *self_p);
+
+/**
+ * Initialize given UDP socket.
+ *
+ * @param[out] self_p Socket to initialize.
+ *
+ * @return zero(0) or negative error code.
+ */
+int socket_open_udp(struct socket_t *self_p);
 
 /**
  * Close given socket.
@@ -91,13 +83,11 @@ int socket_close(struct socket_t *self_p);
  *
  * @param[in] self_p Socket.
  * @param[in] local_addr_p Local address.
- * @param[in] addrlen Local address length.
  *
  * @return zero(0) or negative error code.
  */
 int socket_bind(struct socket_t *self_p,
-                const struct inet_addr_t *local_addr_p,
-                size_t addrlen);
+                const struct inet_addr_t *local_addr_p);
 
 /**
  * Listen for connections. Only used by TCP sockets.
@@ -116,28 +106,43 @@ int socket_listen(struct socket_t *self_p, int backlog);
  *
  * @param[in] self_p Socket.
  * @param[in] remote_addr_p Remote address.
- * @param[in] addrlen Remote address length.
  *
  * @return zero(0) or negative error code.
  */
 int socket_connect(struct socket_t *self_p,
-                   const struct inet_addr_t *remote_addr_p,
-                   size_t addrlen);
+                   const struct inet_addr_t *remote_addr_p);
 
 /**
+ * Connect to the remote device with given hostname.
+ *
+ * In computer networking, a hostname (archaically nodename) is a
+ * label that is assigned to a device connected to a computer network
+ * and that is used to identify the device in various forms of
+ * electronic communication, such as the World Wide Web.
+ *
+ * @param[in] self_p Socket.
+ * @param[in] hostname_p The hostname of the remote device to connect
+ *                       to.
+ * @param[in] port Remote device port to connect to.
+ *
+ * @return zero(0) or negative error code.
+ */
+int socket_connect_by_hostname(struct socket_t *self_p,
+                               const char *hostname_p,
+                               uint16_t port);
+
+    /**
  * Accept a client connect attempt.
  *
  * @param[in] self_p Socket.
  * @param[out] accepted_p New client socket.
  * @param[out] remote_addr_p Remote address.
- * @param[out] addrlen_p Remote address length.
  *
  * @return zero(0) or negative error code.
  */
 int socket_accept(struct socket_t *self_p,
                   struct socket_t *accepted_p,
-                  struct inet_addr_t *remote_addr_p,
-                  size_t *addrlen_p);
+                  struct inet_addr_t *remote_addr_p);
 
 /**
  * Write data to given socket.
@@ -147,7 +152,6 @@ int socket_accept(struct socket_t *self_p,
  * @param[in] size Size of buffer to send.
  * @param[in] flags Unused.
  * @param[in] remote_addr_p Remote address to send the data to.
- * @param[in] addrlen Size of remote_addr.
  *
  * @return Number of sent bytes or negative error code.
  */
@@ -155,8 +159,7 @@ ssize_t socket_sendto(struct socket_t *self_p,
                       const void *buf_p,
                       size_t size,
                       int flags,
-                      const struct inet_addr_t *remote_addr_p,
-                      size_t addrlen);
+                      const struct inet_addr_t *remote_addr_p);
 
 /**
  * Read data from given socket.
@@ -166,7 +169,6 @@ ssize_t socket_sendto(struct socket_t *self_p,
  * @param[in] size Size of buffer to read.
  * @param[in] flags Unused.
  * @param[in] remote_addr_p Remote address to receive data from.
- * @param[in] addrlen Length of remote_addr.
  *
  * @return Number of received bytes or negative error code.
  */
@@ -174,8 +176,7 @@ ssize_t socket_recvfrom(struct socket_t *self_p,
                         void *buf_p,
                         size_t size,
                         int flags,
-                        struct inet_addr_t *remote_addr_p,
-                        size_t addrlen);
+                        struct inet_addr_t *remote_addr_p);
 
 /**
  * Write data to given socket.

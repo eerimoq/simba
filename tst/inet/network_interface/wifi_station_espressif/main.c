@@ -84,7 +84,7 @@ static int test_udp(struct harness_t *harness_p)
     std_printf(FSTR("UDP test\r\n"));
 
     std_printf(FSTR("opening socket\r\n"));
-    socket_open(&sock, SOCKET_DOMAIN_AF_INET, SOCKET_TYPE_DGRAM, 0);
+    socket_open_udp(&sock);
 
     std_printf(FSTR("binding to %d\r\n"), UDP_PORT);
     inet_aton(STRINGIFY(ESP8266_IP), &addr.ip);
@@ -135,7 +135,7 @@ static int test_tcp(struct harness_t *harness_p)
     std_printf(FSTR("TCP test\r\n"));
 
     std_printf(FSTR("opening listener socket\r\n"));
-    socket_open(&listener, SOCKET_DOMAIN_AF_INET, SOCKET_TYPE_STREAM, 0);
+    socket_open_tcp(&listener);
 
     std_printf(FSTR("binding to %d\r\n"), TCP_PORT);
     inet_aton(STRINGIFY(ESP8266_IP), &addr.ip);

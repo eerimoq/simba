@@ -47,12 +47,14 @@ static size_t size(chan_t *self_p)
     return (0);
 }
 
-int socket_open(struct socket_t *self_p,
-                int domain,
-                int type,
-                int protocol)
+int socket_open_tcp(struct socket_t *self_p)
 {
     return (chan_init(&self_p->base, read, write, size));
+}
+
+int socket_open_udp(struct socket_t *self_p)
+{
+    return (-1);
 }
 
 int socket_close(struct socket_t *self_p)
@@ -61,8 +63,7 @@ int socket_close(struct socket_t *self_p)
 }
 
 int socket_bind(struct socket_t *self_p,
-                const struct inet_addr_t *local_addr_p,
-                size_t addrlen)
+                const struct inet_addr_t *local_addr_p)
 {
     return (0);
 }
@@ -73,16 +74,14 @@ int socket_listen(struct socket_t *self_p, int backlog)
 }
 
 int socket_connect(struct socket_t *self_p,
-                   const struct inet_addr_t *addr_p,
-                   size_t addrlen)
+                   const struct inet_addr_t *addr_p)
 {
     return (0);
 }
 
 int socket_accept(struct socket_t *self_p,
                   struct socket_t *accepted_p,
-                  struct inet_addr_t *addr_p,
-                  size_t *addrlen_p)
+                  struct inet_addr_t *addr_p)
 {
     uint32_t mask;
 
@@ -96,8 +95,7 @@ ssize_t socket_sendto(struct socket_t *self_p,
                       const void *buf_p,
                       size_t size,
                       int flags,
-                      const struct inet_addr_t *remote_addr_p,
-                      size_t addrlen)
+                      const struct inet_addr_t *remote_addr_p)
 {
     return (write(NULL, buf_p, size));
 }
@@ -106,8 +104,7 @@ ssize_t socket_recvfrom(struct socket_t *self_p,
                         void *buf_p,
                         size_t size,
                         int flags,
-                        struct inet_addr_t *remote_addr,
-                        size_t addrlen)
+                        struct inet_addr_t *remote_addr)
 {
     return (read(NULL, buf_p, size));
 }

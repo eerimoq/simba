@@ -322,13 +322,10 @@ static void *listener_main(void *arg_p)
 
     listener_p = self_p->listener_p;
 
-    socket_open(&listener_p->socket,
-                SOCKET_DOMAIN_AF_INET,
-                SOCKET_TYPE_STREAM,
-                0);
+    socket_open_tcp(&listener_p->socket);
     addr.ip.number = htonl(0xa9fe0102);
     addr.port = listener_p->port;
-    socket_bind(&listener_p->socket, &addr, sizeof(addr));
+    socket_bind(&listener_p->socket, &addr);
     socket_listen(&listener_p->socket, 3);
 
     /* Wait for clients to connect. */
@@ -339,8 +336,7 @@ static void *listener_main(void *arg_p)
         /* Wait for a client to connect. */
         socket_accept(&listener_p->socket,
                       &connection_p->socket,
-                      &addr,
-                      NULL);
+                      &addr);
 
         handle_accept(self_p, connection_p);
     }

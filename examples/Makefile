@@ -24,6 +24,8 @@ EXAMPLES = \
 	fat16 \
 	hc0x \
 	hello_world \
+	http_client \
+	http_server \
 	inet \
 	midi_player \
 	music_player \

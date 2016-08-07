@@ -92,14 +92,9 @@ int http_websocket_client_connect(struct http_websocket_client_t *self_p)
     struct inet_addr_t server_addr;
 
     /* Open a TCP socket and connect to the server. */
-    socket_open(&self_p->server.socket,
-                SOCKET_DOMAIN_AF_INET,
-                SOCKET_TYPE_STREAM,
-                0);
+    socket_open_tcp(&self_p->server.socket);
 
-    socket_connect(&self_p->server.socket,
-                   &server_addr,
-                   sizeof(server_addr));
+    socket_connect(&self_p->server.socket, &server_addr);
 
     /* Perform the handshake with the server. */
     std_fprintf(&self_p->server.socket,

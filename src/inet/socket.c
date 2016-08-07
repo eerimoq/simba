@@ -20,6 +20,12 @@
 
 #include "simba.h"
 
+/** TCP socket type. */
+#define SOCKET_TYPE_STREAM     1
+
+/** UDP socket type. */
+#define SOCKET_TYPE_DGRAM      2
+
 #if !defined(ARCH_LINUX)
 
 #include "lwip/tcp.h"
@@ -80,38 +86,6 @@ static void resume(struct socket_t *socket_p)
  */
 
 /**
- * An UDP packet has been received.
- */
-static void on_udp_recv(void *arg_p,
-                        struct udp_pcb *pcb_p,
-                        struct pbuf *pbuf_p,
-                        ip_addr_t *addr_p,
-                        uint16_t port)
-{
-    struct socket_t *socket_p = arg_p;
-
-    if (socket_p->io.recv.pbuf.size == -1) {
-        /* Save the new buffer. */
-        socket_p->io.recv.pbuf.buf_p = pbuf_p;
-
-        if (pbuf_p == NULL) {
-            socket_p->io.recv.pbuf.size = 0;
-        } else {
-            socket_p->io.recv.pbuf.size = pbuf_p->tot_len;
-        }
-
-        /* Copy the remote address and port to the receiver. */
-        socket_p->io.remote_addr.ip.number = addr_p->addr;
-        socket_p->io.remote_addr.port = port;
-
-        /* Resume any waiting thread. */
-        if (socket_p->io.thrd_p != NULL) {
-            resume(socket_p);
-        }
-    }
-}
-
-/**
  * TCP data is available in the lwip stack.
  */
 static err_t on_tcp_recv(void *arg_p,
@@ -147,48 +121,6 @@ static err_t on_tcp_recv(void *arg_p,
 }
 
 /**
- * A TCP client is trying to connect.
- */
-static err_t on_tcp_accept(void *arg_p,
-                           struct tcp_pcb *new_pcb_p,
-                           err_t err)
-{
-    struct socket_t *socket_p = arg_p;
-    struct socket_t *accepted_p = socket_p->io.buf_p;
-
-    if (socket_p->io.thrd_p != NULL) {
-        /* Initialize the new socket and accpet the client. */
-        tcp_arg(new_pcb_p, accepted_p);
-        tcp_recv(new_pcb_p, on_tcp_recv);
-        init(accepted_p, SOCKET_TYPE_STREAM, new_pcb_p);
-        tcp_accepted(((struct tcp_pcb *)socket_p->pcb_p));
-        resume(socket_p);
-    }
-
-    return (0);
-}
-
-/**
- * Write TCP data from the lwip thread.
- */
-static void tcp_write_cb(void *ctx_p)
-{
-    struct socket_t *self_p = ctx_p;
-    err_t res;
-
-    res = tcp_write(self_p->pcb_p,
-                    self_p->io.buf_p,
-                    self_p->io.size,
-                    TCP_WRITE_FLAG_COPY);
-
-    if (res != ERR_OK) {
-        self_p->io.size = -1;
-    }
-
-    resume(self_p);
-}
-
-/**
  * Open a TCP socket from the lwip thread.
  */
 static void tcp_open_cb(void *ctx_p)
@@ -215,12 +147,100 @@ static void tcp_close_cb(void *ctx_p)
     resume(self_p);
 }
 
+/**
+ * A TCP connection has been established using `connect()`.
+ */
+static err_t on_tcp_connected(void *arg_p,
+                              struct tcp_pcb *pcb_p,
+                              err_t err)
+{
+    struct socket_t *self_p = arg_p;
+
+    self_p->io.size = err;
+    resume(self_p);
+
+    return (ERR_OK);
+}
+
+/**
+ * A TCP client is trying to connect.
+ */
+static err_t on_tcp_accept(void *arg_p,
+                           struct tcp_pcb *new_pcb_p,
+                           err_t err)
+{
+    struct socket_t *socket_p = arg_p;
+    struct socket_t *accepted_p = socket_p->io.buf_p;
+
+    if (socket_p->io.thrd_p != NULL) {
+        /* Initialize the new socket and accpet the client. */
+        tcp_arg(new_pcb_p, accepted_p);
+        tcp_recv(new_pcb_p, on_tcp_recv);
+        init(accepted_p, SOCKET_TYPE_STREAM, new_pcb_p);
+        tcp_accepted(((struct tcp_pcb *)socket_p->pcb_p));
+        resume(socket_p);
+    }
+
+    return (ERR_OK);
+}
+
+/**
+ * Write TCP data from the lwip thread.
+ */
+static void tcp_write_cb(void *ctx_p)
+{
+    struct socket_t *self_p = ctx_p;
+    err_t res;
+
+    res = tcp_write(self_p->pcb_p,
+                    self_p->io.buf_p,
+                    self_p->io.size,
+                    TCP_WRITE_FLAG_COPY);
+
+    if (res != ERR_OK) {
+        self_p->io.size = -1;
+    }
+
+    resume(self_p);
+}
+
+/**
+ * An UDP packet has been received.
+ */
+static void on_udp_recv(void *arg_p,
+                        struct udp_pcb *pcb_p,
+                        struct pbuf *pbuf_p,
+                        ip_addr_t *addr_p,
+                        uint16_t port)
+{
+    struct socket_t *socket_p = arg_p;
+
+    if (socket_p->io.recv.pbuf.size == -1) {
+        /* Save the new buffer. */
+        socket_p->io.recv.pbuf.buf_p = pbuf_p;
+
+        if (pbuf_p == NULL) {
+            socket_p->io.recv.pbuf.size = 0;
+        } else {
+            socket_p->io.recv.pbuf.size = pbuf_p->tot_len;
+        }
+
+        /* Copy the remote address and port to the receiver. */
+        socket_p->io.remote_addr.ip.number = addr_p->addr;
+        socket_p->io.remote_addr.port = port;
+
+        /* Resume any waiting thread. */
+        if (socket_p->io.thrd_p != NULL) {
+            resume(socket_p);
+        }
+    }
+}
+
 static ssize_t udp_send_to(struct socket_t *self_p,
                            const void *buf_p,
                            size_t size,
                            int flags,
-                           const struct inet_addr_t *remote_addr_p,
-                           size_t addrlen)
+                           const struct inet_addr_t *remote_addr_p)
 {
     ssize_t res = size;
     struct pbuf *pbuf_p;
@@ -249,8 +269,7 @@ static ssize_t tcp_send_to(struct socket_t *self_p,
                            const void *buf_p,
                            size_t size,
                            int flags,
-                           const struct inet_addr_t *remote_addr_p,
-                           size_t addrlen)
+                           const struct inet_addr_t *remote_addr_p)
 {
     self_p->io.buf_p = (void *)buf_p;
     self_p->io.size = size;
@@ -270,8 +289,7 @@ static ssize_t udp_recv_from(struct socket_t *self_p,
                              void *buf_p,
                              size_t size,
                              int flags,
-                             struct inet_addr_t *remote_addr_p,
-                             size_t addrlen)
+                             struct inet_addr_t *remote_addr_p)
 {
     struct pbuf *pbuf_p;
 
@@ -308,8 +326,7 @@ static ssize_t tcp_recv_from(struct socket_t *self_p,
                              void *buf_p,
                              size_t size,
                              int flags,
-                             struct inet_addr_t *remote_addr_p,
-                             size_t addrlen)
+                             struct inet_addr_t *remote_addr_p)
 {
     size_t left = size, pbuf_len, chunk_size;
     volatile struct pbuf *pbuf_p;
@@ -370,7 +387,7 @@ int socket_module_init(void)
                     FSTR("/inet/socket/udp/rx_bytes"),
                     0);
     fs_counter_register(&udp_rx_bytes);
-    
+
     fs_counter_init(&udp_tx_bytes,
                     FSTR("/inet/socket/udp/tx_bytes"),
                     0);
@@ -397,36 +414,30 @@ int socket_module_init(void)
     tcpip_init(NULL, NULL);
 #endif
 
-    return (0);    
+    return (0);
 }
 
-int socket_open(struct socket_t *self_p,
-                int domain,
-                int type,
-                int protocol)
+int socket_open_tcp(struct socket_t *self_p)
+{
+    ASSERTN(self_p != NULL, EINVAL);
+
+    self_p->io.thrd_p = thrd_self();
+    tcpip_callback_with_block(tcp_open_cb, self_p, 0);
+    thrd_suspend(NULL);
+
+    return (0);
+}
+
+int socket_open_udp(struct socket_t *self_p)
 {
     ASSERTN(self_p != NULL, EINVAL);
 
     void *pcb_p = NULL;
 
-    switch (type) {
-
-    case SOCKET_TYPE_STREAM:
-        self_p->io.thrd_p = thrd_self();
-        tcpip_callback_with_block(tcp_open_cb, self_p, 0);
-        thrd_suspend(NULL);
-        break;
-
-    case SOCKET_TYPE_DGRAM:
-        /* Create and initiate the UDP pcb. */
-        pcb_p = udp_new();
-        udp_recv(pcb_p, on_udp_recv, self_p);
-        init(self_p, SOCKET_TYPE_DGRAM, pcb_p);
-        break;
-
-    default:
-        return (-1);
-    }
+    /* Create and initiate the UDP pcb. */
+    pcb_p = udp_new();
+    udp_recv(pcb_p, on_udp_recv, self_p);
+    init(self_p, SOCKET_TYPE_DGRAM, pcb_p);
 
     return (0);
 }
@@ -456,8 +467,7 @@ int socket_close(struct socket_t *self_p)
 }
 
 int socket_bind(struct socket_t *self_p,
-                const struct inet_addr_t *local_addr_p,
-                size_t addrlen)
+                const struct inet_addr_t *local_addr_p)
 {
     ASSERTN(self_p != NULL, EINVAL);
     ASSERTN(local_addr_p != NULL, EINVAL);
@@ -499,23 +509,32 @@ int socket_listen(struct socket_t *self_p, int backlog)
 }
 
 int socket_connect(struct socket_t *self_p,
-                   const struct inet_addr_t *addr_p,
-                   size_t addrlen)
+                   const struct inet_addr_t *remote_addr_p)
 {
     ASSERTN(self_p != NULL, EINVAL);
-    ASSERTN(addr_p != NULL, EINVAL);
+    ASSERTN(remote_addr_p != NULL, EINVAL);
 
     ip_addr_t ip;
 
-    ip.addr = addr_p->ip.number;
+    ip.addr = remote_addr_p->ip.number;
 
     switch (self_p->type) {
 
     case SOCKET_TYPE_STREAM:
-        return (tcp_connect(self_p->pcb_p, &ip, addr_p->port, NULL));
-
+        if (tcp_connect(self_p->pcb_p,
+                        &ip,
+                        remote_addr_p->port,
+                        on_tcp_connected) != ERR_OK) {
+            return (-1);
+        }
+        
+        self_p->io.thrd_p = thrd_self();
+        thrd_suspend(NULL);
+        
+        return (self_p->io.size == ERR_OK ? 0 : -1);
+        
     case SOCKET_TYPE_DGRAM:
-        return (udp_connect(self_p->pcb_p, &ip, addr_p->port));
+        return (udp_connect(self_p->pcb_p, &ip, remote_addr_p->port));
 
     default:
         return (-1);
@@ -523,10 +542,36 @@ int socket_connect(struct socket_t *self_p,
 
 }
 
+int socket_connect_by_hostname(struct socket_t *self_p,
+                               const char *hostname_p,
+                               uint16_t port)
+{
+    ASSERTN(self_p != NULL, EINVAL);
+    ASSERTN(hostname_p != NULL, EINVAL);
+    ASSERTN(self_p->type == SOCKET_TYPE_STREAM, EINVAL);
+
+    struct inet_ip_addr_t ip2;
+    ip_addr_t ip;
+
+    if (inet_aton("216.58.211.142", &ip2) != 0) {
+        return (-1);
+    }
+
+    ip.addr = ip2.number;
+
+    if (tcp_connect(self_p->pcb_p, &ip, port, on_tcp_connected) != ERR_OK) {
+        return (-1);
+    }
+    
+    self_p->io.thrd_p = thrd_self();
+    thrd_suspend(NULL);
+        
+    return (self_p->io.size == ERR_OK ? 0 : -1);
+}
+
 int socket_accept(struct socket_t *self_p,
                   struct socket_t *accepted_p,
-                  struct inet_addr_t *addr_p,
-                  size_t *addrlen_p)
+                  struct inet_addr_t *addr_p)
 {
     ASSERTN(self_p != NULL, EINVAL);
     ASSERTN(accepted_p != NULL, EINVAL);
@@ -543,8 +588,7 @@ ssize_t socket_sendto(struct socket_t *self_p,
                       const void *buf_p,
                       size_t size,
                       int flags,
-                      const struct inet_addr_t *remote_addr_p,
-                      size_t addrlen)
+                      const struct inet_addr_t *remote_addr_p)
 {
     ASSERTN(self_p != NULL, EINVAL);
     ASSERTN(buf_p != NULL, EINVAL);
@@ -557,16 +601,14 @@ ssize_t socket_sendto(struct socket_t *self_p,
                             buf_p,
                             size,
                             flags,
-                            remote_addr_p,
-                            addrlen));
+                            remote_addr_p));
 
     case SOCKET_TYPE_DGRAM:
         return (udp_send_to(self_p,
                             buf_p,
                             size,
                             flags,
-                            remote_addr_p,
-                            addrlen));
+                            remote_addr_p));
 
     default:
         return (-1);
@@ -577,8 +619,7 @@ ssize_t socket_recvfrom(struct socket_t *self_p,
                         void *buf_p,
                         size_t size,
                         int flags,
-                        struct inet_addr_t *remote_addr_p,
-                        size_t addrlen)
+                        struct inet_addr_t *remote_addr_p)
 {
     ASSERTN(self_p != NULL, EINVAL);
     ASSERTN(buf_p != NULL, EINVAL);
@@ -591,16 +632,14 @@ ssize_t socket_recvfrom(struct socket_t *self_p,
                               buf_p,
                               size,
                               flags,
-                              remote_addr_p,
-                              addrlen));
+                              remote_addr_p));
 
     case SOCKET_TYPE_DGRAM:
         return (udp_recv_from(self_p,
                               buf_p,
                               size,
                               flags,
-                              remote_addr_p,
-                              addrlen));
+                              remote_addr_p));
 
     default:
         return (-1);
@@ -615,7 +654,7 @@ ssize_t socket_write(struct socket_t *self_p,
     ASSERTN(buf_p != NULL, EINVAL);
     ASSERTN(size > 0, EINVAL);
 
-    return (socket_sendto(self_p, buf_p, size, 0, NULL, 0));
+    return (socket_sendto(self_p, buf_p, size, 0, NULL));
 }
 
 ssize_t socket_read(struct socket_t *self_p,
@@ -626,20 +665,22 @@ ssize_t socket_read(struct socket_t *self_p,
     ASSERTN(buf_p != NULL, EINVAL);
     ASSERTN(size > 0, EINVAL);
 
-    return (socket_recvfrom(self_p, buf_p, size, 0, NULL, 0));
+    return (socket_recvfrom(self_p, buf_p, size, 0, NULL));
 }
 
 #else
 
 int socket_module_init(void)
 {
-    return (0);    
+    return (0);
 }
 
-int socket_open(struct socket_t *self_p,
-                int domain,
-                int type,
-                int protocol)
+int socket_open_tcp(struct socket_t *self_p)
+{
+    return (-1);
+}
+
+int socket_open_udp(struct socket_t *self_p)
 {
     return (-1);
 }
@@ -650,8 +691,7 @@ int socket_close(struct socket_t *self_p)
 }
 
 int socket_bind(struct socket_t *self_p,
-                const struct inet_addr_t *local_addr_p,
-                size_t addrlen)
+                const struct inet_addr_t *local_addr_p)
 {
     return (-1);
 }
@@ -662,16 +702,14 @@ int socket_listen(struct socket_t *self_p, int backlog)
 }
 
 int socket_connect(struct socket_t *self_p,
-                   const struct inet_addr_t *addr_p,
-                   size_t addrlen)
+                   const struct inet_addr_t *addr_p)
 {
     return (-1);
 }
 
 int socket_accept(struct socket_t *self_p,
                   struct socket_t *accepted_p,
-                  struct inet_addr_t *addr_p,
-                  size_t *addrlen_p)
+                  struct inet_addr_t *addr_p)
 {
     return (-1);
 }
@@ -680,8 +718,7 @@ ssize_t socket_sendto(struct socket_t *self_p,
                       const void *buf_p,
                       size_t size,
                       int flags,
-                      const struct inet_addr_t *remote_addr_p,
-                      size_t addrlen)
+                      const struct inet_addr_t *remote_addr_p)
 {
     return (-1);
 }
@@ -690,8 +727,7 @@ ssize_t socket_recvfrom(struct socket_t *self_p,
                         void *buf_p,
                         size_t size,
                         int flags,
-                        struct inet_addr_t *remote_addr_p,
-                        size_t addrlen)
+                        struct inet_addr_t *remote_addr_p)
 {
     return (-1);
 }
@@ -704,7 +740,7 @@ ssize_t socket_write(struct socket_t *self_p,
     ASSERTN(buf_p != NULL, EINVAL);
     ASSERTN(size > 0, EINVAL);
 
-    return (socket_sendto(self_p, buf_p, size, 0, NULL, 0));
+    return (socket_sendto(self_p, buf_p, size, 0, NULL));
 }
 
 ssize_t socket_read(struct socket_t *self_p,
@@ -715,7 +751,7 @@ ssize_t socket_read(struct socket_t *self_p,
     ASSERTN(buf_p != NULL, EINVAL);
     ASSERTN(size > 0, EINVAL);
 
-    return (socket_recvfrom(self_p, buf_p, size, 0, NULL, 0));
+    return (socket_recvfrom(self_p, buf_p, size, 0, NULL));
 }
 
 #endif
