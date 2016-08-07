@@ -76,10 +76,10 @@ char *inet_ntoa(const struct inet_ip_addr_t *src_p,
 
     std_sprintf(dst_p,
                 FSTR("%u.%u.%u.%u"),
-                (number >> 24) & 0xff,
-                (number >> 16) & 0xff,
-                (number >>  8) & 0xff,
-                (number >>  0) & 0xff);
+                (int)(number >> 24) & 0xff,
+                (int)(number >> 16) & 0xff,
+                (int)(number >>  8) & 0xff,
+                (int)(number >>  0) & 0xff);
 
     return (dst_p);
 }
