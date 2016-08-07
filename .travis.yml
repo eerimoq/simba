@@ -8,7 +8,8 @@ addons:
 
 language: c
 
-compiler: gcc
+env:
+  - CC=gcc-4.8 GCOV=gcov-4.8
 
 before_install:
   - sudo apt-get update -qq
