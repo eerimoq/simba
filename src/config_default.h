@@ -497,4 +497,16 @@
 #    define CONFIG_USB_DEVICE_PID                      0x8037
 #endif
 
+/**
+ * SPIFFS is a flash file system applicable for boards that has a
+ * reasonably big modifiable flash.
+ */
+#ifndef CONFIG_SPIFFS
+#    if defined(BOARD_ARDUINO_DUE)
+#        define CONFIG_SPIFFS                               1
+#    else
+#        define CONFIG_SPIFFS                               0
+#    endif
+#endif
+
 #endif

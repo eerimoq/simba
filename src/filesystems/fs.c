@@ -411,7 +411,7 @@ static int command_parse(char *command_p, const char *argv[])
         if (argc == FS_COMMAND_ARGS_MAX) {
             return (-E2BIG);
         }
-        
+
         /* Remove white spaces before the next argument. */
         command_p = std_strip(command_p, NULL);
 
@@ -615,10 +615,14 @@ int fs_open(struct fs_file_t *self_p, const char *path_p, int flags)
                                 path_p,
                                 flags));
 
+#if CONFIG_SPIFFS == 1
+
     case fs_type_spiffs_t:
         self_p->u.spiffs = spiffs_open(filesystem_p->fs_p, path_p, flags, 0);
         return (self_p->u.spiffs > 0 ? 0 : -1);
 
+#endif
+        
     default:
         return (-1);
     }
@@ -633,8 +637,12 @@ int fs_close(struct fs_file_t *self_p)
     case fs_type_fat16_t:
         return (fat16_file_close(&self_p->u.fat16));
 
+#if CONFIG_SPIFFS == 1
+
     case fs_type_spiffs_t:
         return (spiffs_close(self_p->filesystem_p->fs_p, self_p->u.spiffs));
+
+#endif
 
     default:
         return (-1);
@@ -651,8 +659,12 @@ ssize_t fs_read(struct fs_file_t *self_p, void *dst_p, size_t size)
     case fs_type_fat16_t:
         return (fat16_file_read(&self_p->u.fat16, dst_p, size));
 
+#if CONFIG_SPIFFS == 1
+
     case fs_type_spiffs_t:
         return (spiffs_read(self_p->filesystem_p->fs_p, self_p->u.spiffs, dst_p, size));
+
+#endif
 
     default:
         return (-1);
@@ -669,8 +681,12 @@ ssize_t fs_write(struct fs_file_t *self_p, const void *src_p, size_t size)
     case fs_type_fat16_t:
         return (fat16_file_write(&self_p->u.fat16, src_p, size));
 
+#if CONFIG_SPIFFS == 1
+
     case fs_type_spiffs_t:
         return (spiffs_write(self_p->filesystem_p->fs_p, self_p->u.spiffs, (void *)src_p, size));
+
+#endif
 
     default:
         return (-1);
@@ -686,8 +702,12 @@ int fs_seek(struct fs_file_t *self_p, int offset, int whence)
     case fs_type_fat16_t:
         return (fat16_file_seek(&self_p->u.fat16, offset, whence));
 
+#if CONFIG_SPIFFS == 1
+
     case fs_type_spiffs_t:
         return (spiffs_lseek(self_p->filesystem_p->fs_p, self_p->u.spiffs, offset, whence));
+
+#endif
 
     default:
         return (-1);
@@ -703,8 +723,12 @@ ssize_t fs_tell(struct fs_file_t *self_p)
     case fs_type_fat16_t:
         return (fat16_file_tell(&self_p->u.fat16));
 
+#if CONFIG_SPIFFS == 1
+
     case fs_type_spiffs_t:
         return (spiffs_tell(self_p->filesystem_p->fs_p, self_p->u.spiffs));
+
+#endif
 
     default:
         return (-1);
