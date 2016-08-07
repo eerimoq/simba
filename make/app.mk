@@ -75,6 +75,7 @@ SHELL = /bin/bash
 BAUDRATE ?= 38400
 
 all:
+	@echo -e "\n>>> $(NAME) <<<\n"
 	$(MAKE) prepare
 	$(MAKE) generate
 	$(MAKE) build
