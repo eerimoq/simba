@@ -15,7 +15,7 @@ before_install:
   - sudo apt-get install -qq lcov -y
   - source setup.sh
 
-script: env CCVERSION=4.8 make -s travis -j $(cat /proc/cpuinfo | grep processor | wc -l)
+script: env CCVERSION=4.8 make travis -j $(cat /proc/cpuinfo | grep processor | wc -l)
 
 after_success:
   - make codecov-coverage
