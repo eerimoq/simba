@@ -23,9 +23,9 @@ data.
    remote_addr.port = 5000;
 
    /* Initialize the socket and connect to the server. */
-   socket_init(&tcp, SOCKET_DOMAIN_AF_INET, SOCKET_TYPE_STREAM);
-   socket_bind(&tcp, &local_addr, sizeof(local_addr));
-   socket_connect(&tcp, &remote_addr, sizeof(remote_addr));
+   socket_open_tcp(&tcp);
+   socket_bind(&tcp, &local_addr);
+   socket_connect(&tcp, &remote_addr);
 
    /* Send the data. */
    memset(buf, 0, sizeof(buf));
@@ -49,9 +49,9 @@ And below is the same scenario for UDP.
    remote_addr.port = 5000;
 
    /* Initialize the socket and connect to the server. */
-   socket_init(&udp, SOCKET_DOMAIN_AF_INET, SOCKET_TYPE_STREAM);
-   socket_bind(&udp, &local_addr, sizeof(local_addr));
-   socket_connect(&udp, &remote_addr, sizeof(remote_addr));
+   socket_open_udp(&udp);
+   socket_bind(&udp, &local_addr);
+   socket_connect(&udp, &remote_addr);
 
    /* Send the data. */
    memset(buf, 0, sizeof(buf));

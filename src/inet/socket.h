@@ -70,7 +70,8 @@ int socket_open_tcp(struct socket_t *self_p);
 int socket_open_udp(struct socket_t *self_p);
 
 /**
- * Close given socket.
+ * Close given socket. No data transfers are allowed on after the
+ * socket has been closed.
  *
  * @param[in] self_p Socket to close.
  *
@@ -90,9 +91,10 @@ int socket_bind(struct socket_t *self_p,
                 const struct inet_addr_t *local_addr_p);
 
 /**
- * Listen for connections. Only used by TCP sockets.
+ * Listen for connections from remote clients. Only applicable for TCP
+ * sockets.
  *
- * @param[in] self_p Socket.
+ * @param[in] self_p Socket to listen on.
  * @param[in] backlog Unused.
  *
  * @return zero(0) or negative error code.
@@ -131,12 +133,13 @@ int socket_connect_by_hostname(struct socket_t *self_p,
                                const char *hostname_p,
                                uint16_t port);
 
-    /**
- * Accept a client connect attempt.
+/**
+ * Accept a client connect attempt. Only applicable for TCP sockets
+ * that are listening for connections.
  *
- * @param[in] self_p Socket.
- * @param[out] accepted_p New client socket.
- * @param[out] remote_addr_p Remote address.
+ * @param[in] self_p TCP socket.
+ * @param[out] accepted_p New client socket of the accepted client.
+ * @param[out] remote_addr_p Address of the client.
  *
  * @return zero(0) or negative error code.
  */
@@ -145,9 +148,9 @@ int socket_accept(struct socket_t *self_p,
                   struct inet_addr_t *remote_addr_p);
 
 /**
- * Write data to given socket.
+ * Write data to given socket. Only used by UDP sockets.
  *
- * @param[in] self_p Socket.
+ * @param[in] self_p Socket to send data on.
  * @param[in] buf_p Buffer to send.
  * @param[in] size Size of buffer to send.
  * @param[in] flags Unused.
@@ -162,9 +165,9 @@ ssize_t socket_sendto(struct socket_t *self_p,
                       const struct inet_addr_t *remote_addr_p);
 
 /**
- * Read data from given socket.
+ * Read data from given socket. Only used by UDP sockets.
  *
- * @param[in] self_p Socket.
+ * @param[in] self_p Socket to receive data on.
  * @param[in] buf_p Buffer to read into.
  * @param[in] size Size of buffer to read.
  * @param[in] flags Unused.
@@ -179,7 +182,9 @@ ssize_t socket_recvfrom(struct socket_t *self_p,
                         struct inet_addr_t *remote_addr_p);
 
 /**
- * Write data to given socket.
+ * Write data to given TCP or UDP socket. For UDP sockets,
+ * ``socket_connect()`` must have been called prior to calling this
+ * function.
  *
  * @param[in] self_p Socket.
  * @param[in] buf_p Buffer to send.
