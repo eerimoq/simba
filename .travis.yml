@@ -6,5 +6,4 @@ before_install:
   - sudo apt-get install -qq parted
 script: make -s travis
 after_success:
-  - coveralls -b tst/kernel/sys
   - bash <(curl -s https://codecov.io/bash) -X gcov
