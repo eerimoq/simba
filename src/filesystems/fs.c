@@ -383,7 +383,11 @@ static char *argument_parse(char *command_p, const char **begin_pp)
         command_p++;
     }
 
-    return (command_p);
+    if (in_quote == 0) {
+        return (command_p);
+    } else {
+        return (NULL);
+    }
 }
 
 /**
@@ -393,6 +397,7 @@ static int command_parse(char *command_p, const char *argv[])
 {
     int argc;
 
+    /* Remove white spaces at the beginning and end of the string. */
     command_p = std_strip(command_p, NULL);
     argc = 0;
 
@@ -402,16 +407,13 @@ static int command_parse(char *command_p, const char *argv[])
     }
 
     while (*command_p != '\0') {
-        /* Remove white spaces before the next argument. */
-        command_p = std_strip(command_p, NULL);
-
+        /* Too many arguemnts? */
         if (argc == FS_COMMAND_ARGS_MAX) {
             return (-E2BIG);
         }
-
-        if (strlen(command_p) == 0) {
-            break;
-        }
+        
+        /* Remove white spaces before the next argument. */
+        command_p = std_strip(command_p, NULL);
 
         if ((command_p = argument_parse(command_p, &argv[argc++])) == NULL) {
             return (-1);
@@ -960,7 +962,6 @@ int fs_command_register(struct fs_command_t *command_p)
 {
     ASSERTN(command_p != NULL, -EINVAL);
 
-    int res = -1;
     struct fs_command_t *current_p, *prev_p;
 
     /* Insert in alphabetical order. */
@@ -985,7 +986,7 @@ int fs_command_register(struct fs_command_t *command_p)
         prev_p->next_p = command_p;
     }
 
-    return (res);
+    return (0);
 }
 
 int fs_command_deregister(struct fs_command_t *command_p)

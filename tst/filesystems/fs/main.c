@@ -204,6 +204,31 @@ static int read_until(char *buf_p, const char *pattern)
     return (0);
 }
 
+static int test_init(struct harness_t *harness_p)
+{
+    /* Setup the commands. */
+    BTASSERT(fs_command_init(&foo_bar, FSTR("/tmp/foo/bar"), tmp_foo_bar, NULL) == 0);
+    BTASSERT(fs_command_register(&foo_bar) == 0);
+    BTASSERT(fs_command_init(&bar, FSTR("/tmp/bar"), tmp_bar, NULL) == 0);
+    BTASSERT(fs_command_register(&bar) == 0);
+
+    /* Setup the counters. */
+    BTASSERT(fs_counter_init(&my_counter, FSTR("/my/counter"), 0) == 0);
+    BTASSERT(fs_counter_register(&my_counter) == 0);
+    BTASSERT(fs_counter_init(&your_counter, FSTR("/your/counter"), 0) == 0);
+    BTASSERT(fs_counter_register(&your_counter) == 0);
+
+    /* Setup the parameter. */
+    BTASSERT(fs_parameter_init(&our_parameter,
+                               FSTR("/our/parameter"),
+                               fs_parameter_int_set,
+                               fs_parameter_int_print,
+                               &our_parameter_value) == 0);
+    BTASSERT(fs_parameter_register(&our_parameter) == 0);
+
+    return (0);
+}
+
 static int test_command(struct harness_t *harness_p)
 {
     char buf[BUFFER_SIZE];
@@ -388,6 +413,10 @@ static int test_quotes(struct harness_t *harness_p)
     strcpy(buf, "tmp/foo/bar \"1\"\"\" 2");
     BTASSERT(fs_call(buf, NULL, &qout, NULL) == 0);
     read_until(buf, "argv[1] = 1, argv[2] = 2\n");
+
+    /* "1 fails because the end " is missing. */
+    strcpy(buf, "tmp/foo/bar \"1 2");
+    BTASSERT(fs_call(buf, NULL, &qout, NULL) == -1);
 
     return (0);
 }
@@ -578,6 +607,7 @@ int main()
 {
     struct harness_t harness;
     struct harness_testcase_t harness_testcases[] = {
+        { test_init, "test_init" },
         { test_command, "test_command" },
         { test_counter, "test_counter" },
         { test_parameter, "test_parameter" },
@@ -592,26 +622,6 @@ int main()
     };
 
     sys_start();
-
-    /* Setup the commands. */
-    fs_command_init(&foo_bar, FSTR("/tmp/foo/bar"), tmp_foo_bar, NULL);
-    fs_command_register(&foo_bar);
-    fs_command_init(&bar, FSTR("/tmp/bar"), tmp_bar, NULL);
-    fs_command_register(&bar);
-
-    /* Setup the counters. */
-    fs_counter_init(&my_counter, FSTR("/my/counter"), 0);
-    fs_counter_register(&my_counter);
-    fs_counter_init(&your_counter, FSTR("/your/counter"), 0);
-    fs_counter_register(&your_counter);
-
-    /* Setup the parameter. */
-    fs_parameter_init(&our_parameter,
-                      FSTR("/our/parameter"),
-                      fs_parameter_int_set,
-                      fs_parameter_int_print,
-                      &our_parameter_value);
-    fs_parameter_register(&our_parameter);
 
     harness_init(&harness);
     harness_run(&harness, harness_testcases);
