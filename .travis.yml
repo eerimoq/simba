@@ -3,8 +3,8 @@ compiler: gcc
 before_install:
   - pip install --user cpp-coveralls
   - sudo apt-get update -qq
-  - sudo apt-get install -qq parted
+  - sudo apt-get install -qq parted -y
+  - sudo apt-get install -qq gcc-4.8 -y
 script: make -s travis
 after_success:
-  - gcov tst/kernel/sys/build/linux/obj/home/erik/workspace/simba/src/kernel/sys.gcno
   - pwd && gcov -v && bash <(curl -s https://codecov.io/bash)
