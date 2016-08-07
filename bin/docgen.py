@@ -129,7 +129,7 @@ def examples_generate(_):
 
     """
 
-    for example in ["blink", "hello_world", "shell"]:
+    for example in ["blink", "hello_world", "shell", "http_client"]:
         c_path = os.path.join("examples", example, "main.c")
 
         source = []
