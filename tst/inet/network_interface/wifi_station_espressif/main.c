@@ -89,7 +89,7 @@ static int test_udp(struct harness_t *harness_p)
     std_printf(FSTR("binding to %d\r\n"), UDP_PORT);
     inet_aton(STRINGIFY(ESP8266_IP), &addr.ip);
     addr.port = UDP_PORT;
-    socket_bind(&sock, &addr, sizeof(addr));
+    socket_bind(&sock, &addr);
 
     std_printf(FSTR("recvfrom\r\n"));
 
@@ -97,8 +97,7 @@ static int test_udp(struct harness_t *harness_p)
                            buf,
                            sizeof(buf),
                            0,
-                           &addr,
-                           sizeof(addr));
+                           &addr);
     BTASSERT(size == 9);
     buf[size] = '\0';
     std_printf(FSTR("received '%s' from %s:%d\r\n"),
@@ -114,8 +113,7 @@ static int test_udp(struct harness_t *harness_p)
                   buf,
                   size,
                   0,
-                  &addr,
-                  sizeof(addr));
+                  &addr);
 
     std_printf(FSTR("closing socket\r\n"));
     socket_close(&sock);
@@ -140,13 +138,13 @@ static int test_tcp(struct harness_t *harness_p)
     std_printf(FSTR("binding to %d\r\n"), TCP_PORT);
     inet_aton(STRINGIFY(ESP8266_IP), &addr.ip);
     addr.port = TCP_PORT;
-    socket_bind(&listener, &addr, sizeof(addr));
+    socket_bind(&listener, &addr);
 
     socket_listen(&listener, 5);
 
     std_printf(FSTR("listening on %d\r\n"), TCP_PORT);
 
-    socket_accept(&listener, &client, &addr, NULL);
+    socket_accept(&listener, &client, &addr);
     std_printf(FSTR("accepted client %s:%d\r\n"),
                inet_ntoa(&addr.ip, addrbuf),
                addr.port);

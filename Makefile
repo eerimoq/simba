@@ -174,8 +174,7 @@ ifeq ($(BOARD), esp12e)
     TESTS += $(addprefix tst/text/, std \
                                     re)
     TESTS += $(addprefix tst/debug/, log)
-    TESTS += $(addprefix tst/oam/, fs \
-	        		   shell)
+    TESTS += $(addprefix tst/oam/, shell)
     TESTS += $(addprefix tst/encode/, base64 \
                                       json)
     TESTS += $(addprefix tst/hash/, crc \
@@ -186,6 +185,8 @@ ifeq ($(BOARD), esp12e)
 				    mqtt_client \
 				    network_interface/wifi_station_espressif)
     TESTS += $(addprefix tst/drivers/, pin)
+    TESTS += $(addprefix tst/filesystems/, fs \
+                                          spiffs)
 endif
 
 ifeq ($(BOARD), stm32vldiscovery)
@@ -205,8 +206,7 @@ ifeq ($(BOARD), stm32vldiscovery)
     TESTS += $(addprefix tst/text/, std \
                                     re)
     TESTS += $(addprefix tst/debug/, log)
-    TESTS += $(addprefix tst/oam/, fs \
-	        		   shell)
+    TESTS += $(addprefix tst/oam/, shell)
     TESTS += $(addprefix tst/encode/, base64 \
                                       json)
     TESTS += $(addprefix tst/hash/, crc \
@@ -236,8 +236,7 @@ ifeq ($(BOARD), photon)
     TESTS += $(addprefix tst/text/, std \
                                     re)
     TESTS += $(addprefix tst/debug/, log)
-    TESTS += $(addprefix tst/oam/, fs \
-	        		   shell)
+    TESTS += $(addprefix tst/oam/, shell)
     TESTS += $(addprefix tst/encode/, base64 \
                                       json)
     TESTS += $(addprefix tst/hash/, crc \
