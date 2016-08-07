@@ -502,7 +502,7 @@
  * reasonably big modifiable flash.
  */
 #ifndef CONFIG_SPIFFS
-#    if defined(BOARD_ARDUINO_DUE)
+#    if defined(BOARD_ARDUINO_DUE) || defined(ARCH_LINUX)
 #        define CONFIG_SPIFFS                               1
 #    else
 #        define CONFIG_SPIFFS                               0
