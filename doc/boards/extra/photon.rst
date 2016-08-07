@@ -38,6 +38,9 @@ Install the dfu-utility.
    sudo make install
    cd ..
 
+   # Give users access to the device.
+   sudo cp simba/environment/udev/49-photon.rules /etc/udec/rules.d
+   
 Flashing
 --------
 

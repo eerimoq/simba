@@ -49,7 +49,7 @@ static int test_init(struct harness_t *harness_p)
     network_interface_module_init();
     socket_module_init();
 
-    std_printf(FSTR("Connectiong to SSID=%s\r\n"), STRINGIFY(SSID));
+    std_printf(FSTR("Connecting to SSID=%s\r\n"), STRINGIFY(SSID));
 
     /* Initialize WiFi in station mode with given SSID and
        password. */

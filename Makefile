@@ -352,7 +352,6 @@ test-all-boards:
 	$(MAKE) test-arduino-pro-micro
 	$(MAKE) test-esp01
 	$(MAKE) test-esp12e
-	$(MAKE) test-stm32vldiscovery
 	$(MAKE) test-photon
 
 clean-all-boards:
@@ -362,7 +361,6 @@ clean-all-boards:
 	$(MAKE) clean-arduino-pro-micro
 	$(MAKE) clean-esp01
 	$(MAKE) clean-esp12e
-	$(MAKE) clean-stm32vldiscovery
 	$(MAKE) clean-photon
 
 doc:

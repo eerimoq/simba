@@ -3,9 +3,10 @@ st-link
 
 .. code:: text
 
+   sudo apt install libusb-1.0-0-dev
    git clone https://github.com/eerimoq/stlink
    ./autogen.sh
-   ./configure --gtk-
+   ./configure
    make
    sudo cp etc/udev/rules.d/49* /etc/udev/rules.d
    udevadm control --reload-rules
