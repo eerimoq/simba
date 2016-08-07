@@ -17,4 +17,5 @@ before_install:
 script: env CCVERSION=4.8 make -s travis -j $(cat /proc/cpuinfo | grep processor | wc -l)
 
 after_success:
-  - pwd && ${GCOV} -v && bash <(curl -s https://codecov.io/bash) -x ${GCOV}
+  - make coverage
+  - bash <(curl -s https://codecov.io/bash) -x ${GCOV} -X gcov -X coveragepy
