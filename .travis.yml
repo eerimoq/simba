@@ -6,4 +6,5 @@ before_install:
   - sudo apt-get install -qq parted
 script: make -s travis
 after_success:
-  - bash <(curl -s https://codecov.io/bash)
+  - gcov tst/kernel/sys/build/linux/obj/home/erik/workspace/simba/src/kernel/sys.gcno
+  - pwd && gcov -v && bash <(curl -s https://codecov.io/bash)
