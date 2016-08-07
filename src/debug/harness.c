@@ -85,7 +85,8 @@ int harness_run(struct harness_t *self_p,
                     "failed(%d), skipped(%d)\r\n\r\n"),
                total, passed, failed, skipped);
 
-    std_printf(FSTR("=================================== TEST END ===================================\r\n\r\n"));
+    std_printf(FSTR("=============================== TEST END (%s) ==============================\r\n\r\n"),
+               ((passed + skipped) == total ? "PASSED" : "FAILED"));
 
     sys_stop(failed);
 

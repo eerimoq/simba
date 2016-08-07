@@ -107,8 +107,8 @@ UPPER_MCU := $(shell python -c "import sys; sys.stdout.write(sys.argv[1].upper()
 UPPER_BOARD := $(shell python -c "import sys; sys.stdout.write(sys.argv[1].upper())" $(BOARD))
 
 RUN_PY ?= $(SIMBA_ROOT)/make/run.py
-RUN_END_PATTERN ?= "harness report: total\(\d+\), passed\(\d+\), failed\(\d+\), skipped\(\d+\)"
-RUN_END_PATTERN_SUCCESS ?= "harness report: total\(\d+\), passed\(\d+\), failed\(0\), skipped\(\d+\)"
+RUN_END_PATTERN ?= "=============================== TEST END \(\w+\) ==============================\r\n\r\n"
+RUN_END_PATTERN_SUCCESS ?= "=============================== TEST END \(PASSED\) ==============================\r\n\r\n"
 
 CONSOLESCRIPT = $(SIMBA_ROOT)/make/console.py
 
