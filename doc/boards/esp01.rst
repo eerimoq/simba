@@ -42,6 +42,16 @@ Default Standard Library configuration.
 +------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_CONSOLE_DEVICE_INDEX_                        |  0                                                  |
 +------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_CONSOLE_UART_BAUDRATE_                       |  38400                                              |
++------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_CONSOLE_USB_CDC_CONTROL_INTERFACE_           |  0                                                  |
++------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_CONSOLE_USB_CDC_ENDPOINT_IN_                 |  2                                                  |
++------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_CONSOLE_USB_CDC_ENDPOINT_OUT_                |  3                                                  |
++------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_CONSOLE_USB_CDC_WAIT_FOR_CONNETION_          |  1                                                  |
++------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_DEBUG_                                       |  1                                                  |
 +------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_FS_CMD_DS18B20_LIST_                         |  1                                                  |
@@ -112,6 +122,8 @@ Default Standard Library configuration.
 +------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_SHELL_PROMPT_                                |  "$ "                                               |
 +------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_SPIFFS_                                      |  0                                                  |
++------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_STD_OUTPUT_BUFFER_MAX_                       |  16                                                 |
 +------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_SYSTEM_TICK_FREQUENCY_                       |  100                                                |
@@ -138,6 +150,16 @@ Library Reference.
 .. _CONFIG_CONSOLE: ../user-guide/configuration.html#c.CONFIG_CONSOLE
 
 .. _CONFIG_CONSOLE_DEVICE_INDEX: ../user-guide/configuration.html#c.CONFIG_CONSOLE_DEVICE_INDEX
+
+.. _CONFIG_CONSOLE_UART_BAUDRATE: ../user-guide/configuration.html#c.CONFIG_CONSOLE_UART_BAUDRATE
+
+.. _CONFIG_CONSOLE_USB_CDC_CONTROL_INTERFACE: ../user-guide/configuration.html#c.CONFIG_CONSOLE_USB_CDC_CONTROL_INTERFACE
+
+.. _CONFIG_CONSOLE_USB_CDC_ENDPOINT_IN: ../user-guide/configuration.html#c.CONFIG_CONSOLE_USB_CDC_ENDPOINT_IN
+
+.. _CONFIG_CONSOLE_USB_CDC_ENDPOINT_OUT: ../user-guide/configuration.html#c.CONFIG_CONSOLE_USB_CDC_ENDPOINT_OUT
+
+.. _CONFIG_CONSOLE_USB_CDC_WAIT_FOR_CONNETION: ../user-guide/configuration.html#c.CONFIG_CONSOLE_USB_CDC_WAIT_FOR_CONNETION
 
 .. _CONFIG_DEBUG: ../user-guide/configuration.html#c.CONFIG_DEBUG
 
@@ -208,6 +230,8 @@ Library Reference.
 .. _CONFIG_SHELL_MINIMAL: ../user-guide/configuration.html#c.CONFIG_SHELL_MINIMAL
 
 .. _CONFIG_SHELL_PROMPT: ../user-guide/configuration.html#c.CONFIG_SHELL_PROMPT
+
+.. _CONFIG_SPIFFS: ../user-guide/configuration.html#c.CONFIG_SPIFFS
 
 .. _CONFIG_STD_OUTPUT_BUFFER_MAX: ../user-guide/configuration.html#c.CONFIG_STD_OUTPUT_BUFFER_MAX
 
