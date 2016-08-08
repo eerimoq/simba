@@ -7,10 +7,9 @@
 Settings are stored in a non-volatile memory (NVM). In other words,
 settings are perserved even if the board is power cycled.
 
-Application settings are defined in an ini-file. A setting has a type,
-a size, an address and a default value, all defined in the
-ini-file. The build system takes this file as input and generates c
-header and source files needed by this module.
+Application settings are defined in an ini-file that is used to
+generate the c source code. A setting has a type, a size, an address
+and a default value, all defined in the ini-file.
 
 Supported types are:
 
@@ -30,7 +29,13 @@ The address for each setting is defined by the user, starting at
 address 0 and increasing from there.
 
 The build system variable ``SETTINGS_INI`` contains the path to the
-ini-file. Set this variable to the path of the application ini-file.
+ini-file used by the build system. Set this variable to the path of
+yours application ini-file and run ``make settings-generate`` to
+generate four files; settings.h, settings.c,
+settings.little-endian.bin and settings.big-endian.bin.
+
+Also add this to the Makefile: ``SRC += settings.c`` and include
+``settings.h`` in the source files that accesses the settings.
 
 Debug file system commands
 --------------------------

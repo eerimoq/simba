@@ -20,6 +20,8 @@
 
 #define SETTINGS_FILENAME "settings.bin"
 
+extern const uint8_t setting_default_area[CONFIG_SETTING_AREA_SIZE];
+
 static FILE *setting_p = NULL;
 
 static int setting_port_module_init(void)
@@ -27,8 +29,8 @@ static int setting_port_module_init(void)
     setting_p = fopen(SETTINGS_FILENAME, "r+");
 
     if (setting_p == NULL) {
-        fprintf(stderr, "%s: settings file missing\n", SETTINGS_FILENAME);
-        sys_stop(1);
+        setting_p = fopen(SETTINGS_FILENAME, "w+");
+        setting_reset();
     }
 
     return (0);

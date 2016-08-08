@@ -21,7 +21,12 @@
 #define PRIMARY 0
 #define SECONDARY  1
 
-extern uint8_t setting_area[2][SETTING_AREA_SIZE];
+extern uint8_t setting_area[2][CONFIG_SETTING_AREA_SIZE]
+__attribute__ ((section (".setting")));
+
+extern uint8_t setting_default_area[CONFIG_SETTING_AREA_SIZE]
+__attribute__ ((section (".setting")));
+
 static struct flash_driver_t drv;
 
 static uint32_t calculate_area_crc(const uint8_t *area_p)
@@ -34,7 +39,7 @@ static uint32_t calculate_area_crc(const uint8_t *area_p)
     /* Calculate the crc. */
     crc = 0;
 
-    for (i = 0; i < SETTING_AREA_SIZE / sizeof(buf); i++) {
+    for (i = 0; i < CONFIG_SETTING_AREA_SIZE / sizeof(buf); i++) {
         flash_read(&drv,
                    buf,
                    (size_t)&area_p[i * sizeof(buf)],
@@ -43,7 +48,7 @@ static uint32_t calculate_area_crc(const uint8_t *area_p)
         size = sizeof(buf);
 
         /* Don't include the crc at the end of the area. */
-        if (i == (SETTING_AREA_SIZE / sizeof(buf)) - 1) {
+        if (i == (CONFIG_SETTING_AREA_SIZE / sizeof(buf)) - 1) {
             size -= 4;
         }
 
@@ -79,7 +84,7 @@ static int copy_area(uint8_t *dst_p, const uint8_t *src_p)
     uint8_t buf[256];
     int i;
 
-    for (i = 0; i < SETTING_AREA_SIZE / sizeof(buf); i++) {
+    for (i = 0; i < CONFIG_SETTING_AREA_SIZE / sizeof(buf); i++) {
         if (flash_read(&drv,
                        buf,
                        (size_t)&src_p[i * sizeof(buf)],

@@ -22,6 +22,8 @@
 
 #include "setting_port.i"
 
+extern const FAR struct setting_t settings[];
+
 #if CONFIG_FS_CMD_SETTING_LIST == 1
 
 static struct fs_command_t cmd_list;

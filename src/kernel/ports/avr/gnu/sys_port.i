@@ -66,10 +66,6 @@ static int sys_port_module_init(void)
     /* Enable interrupts. */
     asm volatile ("sei");
 
-    /* System status area in EEPROM. */
-    eeprom_write_dword((uint32_t *)0x0, -1);
-    eeprom_write_dword((uint32_t *)0x4, MCUSR);
-
     return (0);
 }
 
@@ -93,8 +89,6 @@ static void sys_port_unlock_isr(void)
 
 void sys_stop(int error)
 {
-    eeprom_write_dword(0x0, error);
-
 #if defined(BOARD_ARDUINO_PRO_MICRO)
 
     /* Handle USB device driver interrupts to reset the baord and

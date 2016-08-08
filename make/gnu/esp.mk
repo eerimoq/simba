@@ -42,12 +42,6 @@ LDFLAGS += -u call_user_start \
            -mtext-section-literals \
            -Wl,--gc-sections
 
-ENDIANESS = little
-
-SETTING_MEMORY = flash
-SETTING_OFFSET = 128
-SETTING_SIZE = 256
-
 RUNARGS = $(BIN)
 
 build: $(BIN)

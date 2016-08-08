@@ -44,8 +44,6 @@ typedef unsigned long off_t;
 
 #include "oam/setting.h"
 
-#include "settings.h"
-
 #include "collections/binary_tree.h"
 #include "collections/bits.h"
 #include "collections/fifo.h"

@@ -20,6 +20,8 @@
 
 #include "simba.h"
 
+#include "settings.h"
+
 static char qbuf[512];
 static struct queue_t queue;
 
@@ -183,6 +185,7 @@ static int test_cmd_read_write_read(struct harness_t *harness_p)
     for (i = 0; i < membersof(names_p); i++) {
         /* Read the value. */
         std_sprintf(buf, FSTR("oam/setting/read %s"), names_p[i]);
+        std_printf(FSTR("%s\r\n"), buf);
         BTASSERT(fs_call(buf, NULL, &queue, NULL) == 0);
         std_sprintf(response, FSTR("%s\r\n"), values_before_p[i]);
         size = strlen(response);
@@ -195,11 +198,13 @@ static int test_cmd_read_write_read(struct harness_t *harness_p)
                     FSTR("oam/setting/write %s %s"),
                     names_p[i],
                     values_after_p[i]);
+        std_printf(FSTR("%s\r\n"), buf);
         BTASSERT(fs_call(buf, NULL, &queue, NULL) == 0);
 
         /* Read the value again to verify that the write command
            works. */
         std_sprintf(buf, FSTR("oam/setting/read %s"), names_p[i]);
+        std_printf(FSTR("%s\r\n"), buf);
         BTASSERT(fs_call(buf, NULL, &queue, NULL) == 0);
         std_sprintf(response, FSTR("%s\r\n"), values_after_p[i]);
         size = strlen(response);

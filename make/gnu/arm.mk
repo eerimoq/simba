@@ -27,8 +27,6 @@ else
 CFLAGS += -g
 endif
 
-ENDIANESS = little
-
 CDEFS += F_CPU=$(F_CPU)UL
 
 CFLAGS += -mthumb \
@@ -41,10 +39,6 @@ LDFLAGS += -mcpu=$(MCPU) \
            -Wl,--cref \
            -T$(LINKER_SCRIPT) \
            -mthumb
-
-SETTING_MEMORY = flash
-SETTING_OFFSET = 0
-SETTING_SIZE = 4096
 
 build: $(BIN)
 $(BIN): $(EXE)

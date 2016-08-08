@@ -23,6 +23,8 @@
 
 #include "simba.h"
 
+#define SETTING_AREA_CRC_OFFSET (CONFIG_SETTING_AREA_SIZE - 4)
+
 /**
  * Setting types. Each setting must have be one of these types.
  */

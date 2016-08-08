@@ -36,12 +36,6 @@ LDFLAGS += -mmcu=$(CPU) \
            -Wl,--cref \
            -Wl,--defsym=__main_stack_end=$(MAIN_STACK_END)
 
-ENDIANESS = little
-
-SETTING_MEMORY = eeprom
-SETTING_OFFSET = 128
-SETTING_SIZE = 256
-
 # Use the environment variable AVRDUDE_PORT as default
 AVRDUDE_PORT ?= $(shell python -c "import os, sys; sys.stdout.write(os.environ['AVRDUDE_PORT'] if 'AVRDUDE_PORT' in os.environ else '/dev/arduino')")
 AVRDUDE_NO_VERIFY ?= -V

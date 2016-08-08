@@ -22,11 +22,6 @@ CROSS_COMPILE =
 CFLAGS += -Werror -Wno-error=unused-variable -DCONFIG_PROFILE_STACK=0
 LDFLAGS_AFTER += -lpthread -lrt
 
-SETTING_MEMORY = file
-SETTING_OFFSET = 0
-SETTING_SIZE = 4096
-ENDIANESS = little
-
 CFLAGS += -pg -fprofile-arcs -ftest-coverage
 LDFLAGS += -pg -fprofile-arcs -ftest-coverage -lgcov
 

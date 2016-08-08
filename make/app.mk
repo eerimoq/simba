@@ -22,6 +22,8 @@
 
 VERSION ?= $(shell cat $(SIMBA_ROOT)/VERSION.txt)
 
+CONFIG_SETTING_SIZE ?= 256
+
 # files and folders
 BUILDDIR ?= build/$(BOARD)
 OBJDIR = $(BUILDDIR)/obj
@@ -33,7 +35,9 @@ ifeq ($(RUST),yes)
 else
     SRC += main.c
 endif
-SRC += $(SETTINGS_C)
+SRC += $(SIMBA_ROOT)/src/settings.c
+SETTINGS_BIN ?= $(SIMBA_ROOT)/src/settings.bin
+SETTTNGS_OUTPUT_DIRECTORY ?= .
 SRC_FILTERED = $(filter-out $(SRC_IGNORE),$(SRC))
 CSRC += $(filter %.c,$(SRC_FILTERED))
 RUST_SRC += $(filter %.rs,$(SRC_FILTERED))
@@ -54,7 +58,7 @@ MAP = $(BUILDDIR)/$(NAME).map
 RUNLOG = $(BUILDDIR)/run.log
 CLEAN = $(BUILDDIR) $(EXE) $(RUNLOG) size.log \
         coverage.log coverage.xml gmon.out *.gcov profile.log \
-	index.*html $(SETTINGS_H) $(SETTINGS_BIN) $(SETTINGS_C) \
+	index.*html \
 	$(RUST_SIMBA_RS) $(RUST_LIBSIMBA) $(RUST_LIBCORE)
 
 # configuration
@@ -84,7 +88,7 @@ all:
 
 prepare:
 
-generate: $(SETTINGS_BIN) $(SETTINGS_H) $(SETTINGS_C)
+generate:
 
 build: $(EXE)
 
@@ -165,42 +169,17 @@ $(EXE): $(OBJ) $(GENOBJ)
 	@echo "Linking $@"
 	$(CC) -o $@ $(LIBPATH:%=-L%) $(LDFLAGS) $^ $(LDFLAGS_AFTER)
 
-$(SETTINGS_H): $(SETTINGS_INI)
-	@echo "Generating $@ from $<"
-	mkdir -p $(BUILDDIR)
-	$(SIMBA_ROOT)/src/kernel/tools/settings.py \
-	    --header \
-	    --output-directory $(dir $@)\
-            --setting-memory $(SETTING_MEMORY) \
-	    --setting-offset $(SETTING_OFFSET) \
-            --setting-size $(SETTING_SIZE) \
-	    $^ $(ENDIANESS)
-
-$(SETTINGS_C): $(SETTINGS_INI)
-	@echo "Generating $@ from $<"
-	mkdir -p $(BUILDDIR)
-	$(SIMBA_ROOT)/src/kernel/tools/settings.py \
-	    --source \
-	    --output-directory $(dir $@)\
-            --setting-memory $(SETTING_MEMORY) \
-	    --setting-offset $(SETTING_OFFSET) \
-            --setting-size $(SETTING_SIZE) \
-	    $^ $(ENDIANESS)
-
-$(SETTINGS_BIN): $(SETTINGS_INI)
-	@echo "Generating $@ from $<"
-	mkdir -p $(BUILDDIR)
-	$(SIMBA_ROOT)/src/kernel/tools/settings.py \
-	    --binary \
-	    --output-directory $(dir $@)\
-            --setting-memory $(SETTING_MEMORY) \
-            --setting-offset $(SETTING_OFFSET) \
-            --setting-size $(SETTING_SIZE) \
-	    $^ $(ENDIANESS)
+settings-generate: $(SETTINGS_INI)
+	@echo "Generating settings from $<"
+	mkdir -p $(SETTTNGS_OUTPUT_DIRECTORY)
+	$(SIMBA_ROOT)/bin/settings.py \
+	    --output-directory $(SETTTNGS_OUTPUT_DIRECTORY) \
+            --setting-size $(CONFIG_SETTING_SIZE) \
+	    $^
 
 define COMPILE_template
 -include $(patsubst %.c,$(DEPSDIR)%.o.dep,$(abspath $1))
-$(patsubst %.c,$(OBJDIR)%.o,$(abspath $1)): $1 $(SETTINGS_H)
+$(patsubst %.c,$(OBJDIR)%.o,$(abspath $1)): $1
 	@echo "Compiling $1"
 	mkdir -p $(OBJDIR)$(abspath $(dir $1))
 	mkdir -p $(DEPSDIR)$(abspath $(dir $1))

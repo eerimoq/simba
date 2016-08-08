@@ -22,19 +22,11 @@ NAME = setting_suite
 VERSION = 0.3.0
 BOARD ?= linux
 
-# Remove the settings.bin file on linux and cygwin to force it to be
-# regenerated
-rm_settings_bin:
-	rm -f settings.bin
-
-ifeq ($(BOARD), linux)
-all: rm_settings_bin
-endif
-ifeq ($(BOARD), cygwin)
-all: rm_settings_bin
-endif
+SRC += settings.c
+SRC_IGNORE += $(SIMBA_ROOT)/src/settings.c
 
 SETTINGS_INI = settings.ini
+SETTINGS_BIN = settings.little-endian.bin
 
 SIMBA_ROOT ?= ../../..
 include $(SIMBA_ROOT)/make/app.mk

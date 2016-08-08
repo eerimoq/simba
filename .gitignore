@@ -14,8 +14,6 @@ profile.log
 coverage.*
 size.log
 *.hex
-settings.[hc]
-settings.bin
 
 doc/_build
 doc/xml

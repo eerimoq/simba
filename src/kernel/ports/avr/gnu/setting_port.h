@@ -21,6 +21,4 @@
 #ifndef __KERNEL_SETTING_PORT_H__
 #define __KERNEL_SETTING_PORT_H__
 
-#define SETTING_MEMORY_EEPROM
-
 #endif
