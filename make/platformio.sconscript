@@ -39,7 +39,7 @@ def add_include_paths(env, paths):
     """Add given list of include paths.
 
     """
-        
+
     for path in paths:
         env.VariantDirWrap(
             join("$BUILD_DIR", "SimbaFramework", path),
@@ -93,7 +93,7 @@ def set_default_values(env):
     if "VERSION" not in env:
         with open(env.subst(join("$PLATFORMFW_DIR", "VERSION.txt"))) as f:
             env.Append(VERSION=f.read().strip())
-        
+
     if "NAME" not in env:
         env.Append(NAME="app_name")
 
@@ -137,7 +137,7 @@ def setup_mcu_avr(env):
         "-Wl,--defsym=__main_stack_end=$MAIN_STACK_END",
         "-Wl,-Map=$BUILD_DIR/firmware.map", # This should be added to PlatformIO
     ])
-    
+
 
 def setup_mcu_sam(env):
     """Setup the SAM MCU environment.
@@ -243,23 +243,23 @@ def setup_mcu_esp(env, linker_script, flash_size_map):
             builders[key] = value
 
     def build_function(target, source, env):
-	subprocess.check_call(
+        subprocess.check_call(
             "xtensa-lx106-elf-objcopy --only-section .text -O binary "
             + str(source[0]) + " eagle.app.v6.text.bin",
             shell=True)
-	subprocess.check_call(
+        subprocess.check_call(
             "xtensa-lx106-elf-objcopy --only-section .data -O binary "
             + str(source[0]) + " eagle.app.v6.data.bin",
             shell=True)
-	subprocess.check_call(
+        subprocess.check_call(
             "xtensa-lx106-elf-objcopy --only-section .rodata -O binary "
             + str(source[0]) + " eagle.app.v6.rodata.bin",
             shell=True)
-	subprocess.check_call(
+        subprocess.check_call(
             "xtensa-lx106-elf-objcopy --only-section .irom0.text -O binary "
             + str(source[0]) + " eagle.app.v6.irom0text.bin",
             shell=True)
-	subprocess.check_call(
+        subprocess.check_call(
             env.subst('$PYTHONEXE $PLATFORMFW_DIR/3pp/ESP8266_RTOS_SDK/tools/gen_appbin.py') + " " + str(source[0]) + " 2 0 0 " + flash_size_map,
             shell=True)
         shutil.copy("eagle.app.flash.bin", str(target[0]))
@@ -326,8 +326,8 @@ def setup_board_esp01(env):
     """
 
     setup_mcu_esp(env, "simba.flash.1m.ld", "2")
-    
-    
+
+
 def create_src_filter(env):
     """Create the source filter string.
     """
