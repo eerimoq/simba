@@ -23,7 +23,7 @@
 VERSION ?= $(shell cat $(SIMBA_ROOT)/VERSION.txt)
 
 # files and folders
-BUILDDIR = build/$(BOARD)
+BUILDDIR ?= build/$(BOARD)
 OBJDIR = $(BUILDDIR)/obj
 DEPSDIR = $(BUILDDIR)/deps
 GENDIR = $(BUILDDIR)/gen
@@ -46,7 +46,8 @@ SETTINGS_INI ?= $(SIMBA_ROOT)/make/settings.ini
 SETTINGS_H = $(BUILDDIR)/settings.h
 SETTINGS_C = $(BUILDDIR)/settings.c
 SETTINGS_BIN = $(BUILDDIR)/settings.bin
-EXE = $(BUILDDIR)/$(NAME).out
+EXE_SUFFIX ?= out
+EXE = $(BUILDDIR)/$(NAME).$(EXE_SUFFIX)
 BIN = $(BUILDDIR)/$(NAME).bin
 HEX = $(BUILDDIR)/$(NAME).hex
 MAP = $(BUILDDIR)/$(NAME).map
@@ -128,9 +129,19 @@ new:
 	$(MAKE) clean
 	$(MAKE) all
 
-run: upload
-
 upload: all
+
+# Check that the executable exists.
+exe-exists:
+	if [ ! -e $(EXE) ] ; then \
+	    echo "The executable $(EXE) does not exist. Please build it before running it." ; \
+	    exit 1 ; \
+	fi
+
+run: exe-exists
+
+upload-run: upload
+	$(MAKE) run
 
 console:
 	python -u $(CONSOLESCRIPT) --port $(SERIAL_PORT) \
@@ -297,12 +308,13 @@ help:
 	@echo "  clean                       Remove all generated files and folders."
 	@echo "  new                         clean + all"
 	@echo "  upload                      all + Upload the application to the device."
-	@echo "  console                     Open a serial console on /dev/arduino with"
-	@echo "                              baudrate BAUDRATE."
 	@echo "  run                         Run the application."
 	@echo "  run-debugger                Run the application in the debugger, break at main."
+	@echo "  upload-run                  upload + run."
 	@echo "  report                      Print the test report."
 	@echo "  test                        run + report"
+	@echo "  console                     Open a serial console on /dev/arduino with"
+	@echo "                              baudrate BAUDRATE."
 	@echo "  release                     Compile with NASSERT=yes and NDEBUG=yes."
 	@echo "  size                        Print application size information."
 	@IFS=$$'\n' ; for h in $(HELP_TARGETS) ; do \

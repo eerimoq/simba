@@ -256,9 +256,16 @@ release: $(APPS:%=%.release)
 
 clean: $(APPS:%=%.clean)
 
-run: all
+run:
 	for test in $(TESTS) ; do \
 	    $(MAKE) -C $$test run || exit 1 ; \
+	done
+
+# Depend on 'all' to build all applications (optinally with -j) before
+# uploading and running them one at a time.
+upload-run: all
+	for test in $(TESTS) ; do \
+	    $(MAKE) -C $$test upload-run || exit 1 ; \
 	done
 
 size: $(TESTS:%=%.size)
@@ -270,6 +277,9 @@ report:
 	done
 
 test: run
+	$(MAKE) report
+
+upload-test: upload-run
 	$(MAKE) report
 
 coverage: $(TESTS:%=%.cov)
@@ -284,7 +294,7 @@ codecov-coverage: $(TESTS:%=%.ccc)
 jenkins-coverage: $(TESTS:%=%.jc)
 
 travis:
-	$(MAKE) test
+	$(MAKE) upload-test
 
 release-test:
 	+bin/release.py
@@ -345,6 +355,38 @@ test-photon:
 	@echo "Photon"
 	$(MAKE) BOARD=photon SERIAL_PORT=/dev/simba-photon test
 
+upload-test-arduino-due:
+	@echo "Arduino Due"
+	$(MAKE) BOARD=arduino_due SERIAL_PORT=/dev/simba-arduino_due upload-test
+
+upload-test-arduino-mega:
+	@echo "Arduino Mega"
+	$(MAKE) BOARD=arduino_mega SERIAL_PORT=/dev/simba-arduino_mega upload-test
+
+upload-test-arduino-nano:
+	@echo "Arduino Nano"
+	$(MAKE) BOARD=arduino_nano SERIAL_PORT=/dev/simba-arduino_nano upload-test
+
+upload-test-arduino-pro-micro:
+	@echo "Arduino Pro Micro"
+	$(MAKE) BOARD=arduino_pro_micro SERIAL_PORT=/dev/simba-arduino_pro_micro upload-test
+
+upload-test-esp01:
+	@echo "ESP-01"
+	$(MAKE) BOARD=esp01 SERIAL_PORT=/dev/simba-esp01 upload-test
+
+upload-test-esp12e:
+	@echo "ESP12-E"
+	$(MAKE) BOARD=esp12e SERIAL_PORT=/dev/simba-esp12e upload-test
+
+upload-test-stm32vldiscovery:
+	@echo "STM32VLDISCOVERY"
+	$(MAKE) BOARD=stm32vldiscovery SERIAL_PORT=/dev/simba-stm32vldiscovery upload-test
+
+upload-test-photon:
+	@echo "Photon"
+	$(MAKE) BOARD=photon SERIAL_PORT=/dev/simba-photon upload-test
+
 test-all-boards:
 	$(MAKE) test-arduino-due
 	$(MAKE) test-arduino-mega
@@ -353,6 +395,15 @@ test-all-boards:
 	$(MAKE) test-esp01
 	$(MAKE) test-esp12e
 	$(MAKE) test-photon
+
+upload-test-all-boards:
+	$(MAKE) upload-test-arduino-due
+	$(MAKE) upload-test-arduino-mega
+	$(MAKE) upload-test-arduino-nano
+	$(MAKE) upload-test-arduino-pro-micro
+	$(MAKE) upload-test-esp01
+	$(MAKE) upload-test-esp12e
+	$(MAKE) upload-test-photon
 
 clean-all-boards:
 	$(MAKE) clean-arduino-due
