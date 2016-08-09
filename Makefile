@@ -185,8 +185,7 @@ ifeq ($(BOARD), esp12e)
 				    mqtt_client \
 				    network_interface/wifi_station_espressif)
     TESTS += $(addprefix tst/drivers/, pin)
-    TESTS += $(addprefix tst/filesystems/, fs \
-                                          spiffs)
+    TESTS += $(addprefix tst/filesystems/, fs)
 endif
 
 ifeq ($(BOARD), stm32vldiscovery)
@@ -265,7 +264,32 @@ run:
 # uploading and running them one at a time.
 upload-run: all
 	for test in $(TESTS) ; do \
-	    $(MAKE) -C $$test upload-run || exit 1 ; \
+	    if [ ! -e $$test/.$(BOARD).passed ] ; then \
+	        $(MAKE) -C $$test upload-run || exit 1 ; \
+	        touch $$test/.$(BOARD).passed ; \
+	    else \
+	        echo ; \
+	        echo "$$test already passed." ; \
+	        echo ; \
+	    fi \
+	done
+
+upload-run-platformio:
+	for test in $(PLATFORMIO_TESTS) ; do \
+	    if [ ! -e $$test/.$(BOARD).passed ] ; then \
+	        $(MAKE) -C $$test upload-run || exit 1 ; \
+	        touch $$test/.$(BOARD).passed ; \
+	    else \
+	        echo ; \
+	        echo "$$test already passed." ; \
+	        echo ; \
+	    fi \
+	done
+
+report-platformio:
+	for test in $(PLATFORMIO_TESTS) ; do \
+	    $(MAKE) -C $(basename $$test) report ; \
+	    echo ; \
 	done
 
 size: $(TESTS:%=%.size)
@@ -325,67 +349,59 @@ clean-photon:
 
 test-arduino-due:
 	@echo "Arduino Due"
-	$(MAKE) BOARD=arduino_due SERIAL_PORT=/dev/simba-arduino_due test
+	$(MAKE) BOARD=arduino_due SERIAL_PORT=/dev/simba-arduino_due upload-test
 
 test-arduino-mega:
 	@echo "Arduino Mega"
-	$(MAKE) BOARD=arduino_mega SERIAL_PORT=/dev/simba-arduino_mega test
+	$(MAKE) BOARD=arduino_mega SERIAL_PORT=/dev/simba-arduino_mega upload-test
 
 test-arduino-nano:
 	@echo "Arduino Nano"
-	$(MAKE) BOARD=arduino_nano SERIAL_PORT=/dev/simba-arduino_nano test
+	$(MAKE) BOARD=arduino_nano SERIAL_PORT=/dev/simba-arduino_nano upload-test
 
 test-arduino-pro-micro:
 	@echo "Arduino Pro Micro"
-	$(MAKE) BOARD=arduino_pro_micro SERIAL_PORT=/dev/simba-arduino_pro_micro test
+	$(MAKE) BOARD=arduino_pro_micro SERIAL_PORT=/dev/simba-arduino_pro_micro upload-test
 
 test-esp01:
 	@echo "ESP-01"
-	$(MAKE) BOARD=esp01 SERIAL_PORT=/dev/simba-esp01 test
+	$(MAKE) BOARD=esp01 SERIAL_PORT=/dev/simba-esp01 upload-test
 
 test-esp12e:
 	@echo "ESP12-E"
-	$(MAKE) BOARD=esp12e SERIAL_PORT=/dev/simba-esp12e test
+	$(MAKE) BOARD=esp12e SERIAL_PORT=/dev/simba-esp12e upload-test
 
 test-stm32vldiscovery:
 	@echo "STM32VLDISCOVERY"
-	$(MAKE) BOARD=stm32vldiscovery SERIAL_PORT=/dev/simba-stm32vldiscovery test
+	$(MAKE) BOARD=stm32vldiscovery SERIAL_PORT=/dev/simba-stm32vldiscovery upload-test
 
 test-photon:
 	@echo "Photon"
-	$(MAKE) BOARD=photon SERIAL_PORT=/dev/simba-photon test
-
-upload-test-arduino-due:
-	@echo "Arduino Due"
-	$(MAKE) BOARD=arduino_due SERIAL_PORT=/dev/simba-arduino_due upload-test
-
-upload-test-arduino-mega:
-	@echo "Arduino Mega"
-	$(MAKE) BOARD=arduino_mega SERIAL_PORT=/dev/simba-arduino_mega upload-test
-
-upload-test-arduino-nano:
-	@echo "Arduino Nano"
-	$(MAKE) BOARD=arduino_nano SERIAL_PORT=/dev/simba-arduino_nano upload-test
-
-upload-test-arduino-pro-micro:
-	@echo "Arduino Pro Micro"
-	$(MAKE) BOARD=arduino_pro_micro SERIAL_PORT=/dev/simba-arduino_pro_micro upload-test
-
-upload-test-esp01:
-	@echo "ESP-01"
-	$(MAKE) BOARD=esp01 SERIAL_PORT=/dev/simba-esp01 upload-test
-
-upload-test-esp12e:
-	@echo "ESP12-E"
-	$(MAKE) BOARD=esp12e SERIAL_PORT=/dev/simba-esp12e upload-test
-
-upload-test-stm32vldiscovery:
-	@echo "STM32VLDISCOVERY"
-	$(MAKE) BOARD=stm32vldiscovery SERIAL_PORT=/dev/simba-stm32vldiscovery upload-test
-
-upload-test-photon:
-	@echo "Photon"
 	$(MAKE) BOARD=photon SERIAL_PORT=/dev/simba-photon upload-test
+
+clean-arduino-due-platformio:
+	@echo "Arduino Due"
+	$(MAKE) -C examples/platformio BOARD=arduino_due SERIAL_PORT=/dev/simba-arduino_due clean
+
+clean-arduino-mega-platformio:
+	@echo "Arduino Mega"
+	$(MAKE) -C examples/platformio BOARD=arduino_mega SERIAL_PORT=/dev/simba-arduino_mega clean
+
+clean-esp12e-platformio:
+	@echo "ESP12-E"
+	$(MAKE) -C examples/platformio BOARD=esp12e SERIAL_PORT=/dev/simba-esp12e clean
+
+test-arduino-due-platformio:
+	@echo "Arduino Due"
+	$(MAKE) -C examples/platformio BOARD=arduino_due SERIAL_PORT=/dev/simba-arduino_due upload-test
+
+test-arduino-mega-platformio:
+	@echo "Arduino Mega"
+	$(MAKE) -C examples/platformio BOARD=arduino_mega SERIAL_PORT=/dev/simba-arduino_mega upload-test
+
+test-esp12e-platformio:
+	@echo "ESP12-E"
+	$(MAKE) -C examples/platformio BOARD=esp12e SERIAL_PORT=/dev/simba-esp12e upload-test-prompt-after-upload
 
 test-all-boards:
 	$(MAKE) test-arduino-due
@@ -395,15 +411,9 @@ test-all-boards:
 	$(MAKE) test-esp01
 	$(MAKE) test-esp12e
 	$(MAKE) test-photon
-
-upload-test-all-boards:
-	$(MAKE) upload-test-arduino-due
-	$(MAKE) upload-test-arduino-mega
-	$(MAKE) upload-test-arduino-nano
-	$(MAKE) upload-test-arduino-pro-micro
-	$(MAKE) upload-test-esp01
-	$(MAKE) upload-test-esp12e
-	$(MAKE) upload-test-photon
+	$(MAKE) test-arduino-due-platformio
+	$(MAKE) test-arduino-mega-platformio
+	$(MAKE) test-esp12e-platformio
 
 clean-all-boards:
 	$(MAKE) clean-arduino-due
@@ -413,6 +423,9 @@ clean-all-boards:
 	$(MAKE) clean-esp01
 	$(MAKE) clean-esp12e
 	$(MAKE) clean-photon
+	$(MAKE) clean-arduino-due-platformio
+	$(MAKE) clean-arduino-mega-platformio
+	$(MAKE) clean-esp12e-platformio
 
 doc:
 	+bin/dbgen.py > database.json
@@ -433,6 +446,7 @@ $(APPS:%=%.release):
 
 $(APPS:%=%.clean):
 	$(MAKE) -C $(basename $@) clean
+	rm -f $(basename $@)/.$(BOARD).passed
 
 $(APPS:%=%.size):
 	$(MAKE) -C $(basename $@) size

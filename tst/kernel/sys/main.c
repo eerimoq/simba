@@ -50,9 +50,13 @@ static int test_info(struct harness_t *harness_p)
     strcpy(buf, "/kernel/sys/info");
     BTASSERT(fs_call(buf, chan_null(), sys_get_stdout(), NULL) == 0);
 
-#endif
-
     return (0);
+
+#else
+
+    return (1);
+
+#endif
 }
 
 static int test_uptime(struct harness_t *harness_p)

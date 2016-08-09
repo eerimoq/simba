@@ -24,6 +24,7 @@ Follow these steps to create a new release:
 
    .. code:: text
 
+      make test-all-boards
       make release-test
 
 4. Generate files for Arduino and add the new releases to
@@ -35,11 +36,13 @@ Follow these steps to create a new release:
 
       make arduino
 
-5. Commit the changes, and tag the commit with the new version.
+5. Make sure that the blink exmaple works in the Arduino IDE.
+      
+6. Commit the changes, and tag the commit with the new version.
 
-6. Push the new commit and tag.
+7. Push the new commit and tag.
 
-7. Copy the Simba Arduino releases to SourceForge.
+8. Copy the Simba Arduino releases to SourceForge.
 
    .. code:: text
 
@@ -50,4 +53,4 @@ Follow these steps to create a new release:
       scp make/arduino/sam/package_simba_sam_index.json <user>@frs.sourceforge.net:/home/frs/project/simba-arduino/sam
       scp make/arduino/esp/package_simba_esp_index.json <user>@frs.sourceforge.net:/home/frs/project/simba-arduino/esp
       
-8. Done.
+9. Done.

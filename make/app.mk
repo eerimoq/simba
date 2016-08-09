@@ -47,9 +47,6 @@ OBJ = $(COBJ) $(RUST_OBJ)
 GENCSRC = $(GENDIR)/simba_gen.c
 GENOBJ = $(patsubst %,$(OBJDIR)/%,$(notdir $(GENCSRC:%.c=%.o)))
 SETTINGS_INI ?= $(SIMBA_ROOT)/make/settings.ini
-SETTINGS_H = $(BUILDDIR)/settings.h
-SETTINGS_C = $(BUILDDIR)/settings.c
-SETTINGS_BIN = $(BUILDDIR)/settings.bin
 EXE_SUFFIX ?= out
 EXE = $(BUILDDIR)/$(NAME).$(EXE_SUFFIX)
 BIN = $(BUILDDIR)/$(NAME).bin

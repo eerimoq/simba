@@ -61,3 +61,5 @@ examples/*/*/*/updown.png
 
 simba-arduino
 build
+
+.*.passed
