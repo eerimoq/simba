@@ -12,13 +12,6 @@ import fnmatch
 import hashlib
 
 
-ARDUINO_H = """/**
- * This is a generated file required by the Arduino build system."
- */
-
-#include "simba.h"
-"""
-
 SIMBA_GEN_C_FMT = """
 #include "simba.h"
 
@@ -63,6 +56,18 @@ BOARD_MAP = {{
     "uno": "arduino_uno"
 }}
 
+# Map the PlatformIO board name to the Simba board name
+SUPPORTED_BOARDS = [
+    "arduino_due",
+    "arduino_mega",
+    "arduino_nano",
+    "arduino_uno",
+    "esp12e",
+    "esp01"
+]
+
+
+BOARDS = {boards}
 
 def add_include_paths(env, paths):
     \"\"\"Add given list of include paths.
@@ -75,43 +80,6 @@ def add_include_paths(env, paths):
             join("$PLATFORMFW_DIR", path)
         )
         env.Append(CPPPATH=[join("$BUILD_DIR", "SimbaFramework", path)])
-
-
-def add_common_include_paths(env):
-    \"\"\"Add the common include paths.
-
-    \"\"\"
-
-    env.Append(CPPPATH=[join("$BUILD_DIR", "SimbaFramework")])
-    env.Append(CPPPATH=[join("$BUILD_DIR", "SimbaFramework", "src")])
-
-    paths = [
-        "src",
-        "gen",
-        join("src", "boards", "$BOARD"),
-        join("src", "mcus", "$BOARD_MCU"),
-        join("src", "kernel", "ports", "$ARCH", "gnu"),
-        join("src", "drivers", "ports", "$FAMILY"),
-        join("src", "inet")
-    ]
-
-    add_include_paths(env, paths)
-
-
-def add_common_defines(env):
-    \"\"\"Add common defines.
-
-    \"\"\"
-
-    env.Append(
-        CPPDEFINES=[
-            "ARCH_$ARCH_UPPER",
-            "FAMILY_$FAMILY_UPPER",
-            "MCU_$MCU_UPPER",
-            "BOARD_$BOARD_UPPER",
-            "VERSION=$VERSION"
-        ]
-    )
 
 
 def set_default_values(env):
@@ -127,143 +95,10 @@ def set_default_values(env):
         env.Append(NAME="app_name")
 
 
-def setup_mcu_avr(env):
-    \"\"\"Setup the AVR MCU environment.
-
-    \"\"\"
-
-    if env.subst(env["BOARD_MCU"]) == "atmega2560":
-        env.Replace(MCU_DESC="Atmel ATMega25600 AVR @ 16MHz, 8k sram, 256k flash",
-                    MAIN_STACK_END="0x802200")
-    elif env.subst(env["BOARD_MCU"]) == "atmega328p":
-        env.Replace(MCU_DESC="Atmel ATMega328p AVR @ 16MHz, 2k sram, 32k flash",
-                    MAIN_STACK_END="0x800900")
-    else:
-        env.Replace(MCU_DESC="Not found")
-
-    env.Replace(ARCH="avr",
-                FAMILY="avr",
-                SETTING_MEMORY="eeprom",
-                SETTING_OFFSET="128",
-                SETTING_SIZE="256",
-                ENDIANESS="little")
-
-    add_include_paths(env, [
-        join("3pp", "lwip-1.4.1", "src", "include"),
-        join("3pp", "lwip-1.4.1", "src", "include", "ipv4")
-    ])
-
-    env.Append(CCFLAGS=[
-        "-funsigned-bitfields",
-        "-std=gnu99",
-        "-Wno-error=unused-variable",
-        "-Werror",
-        "-O2",
-        "-fpack-struct"
-    ])
-
-    env.Append(LINKFLAGS=[
-        "-Wl,--defsym=__main_stack_end=$MAIN_STACK_END",
-        "-Wl,-Map=$BUILD_DIR/firmware.map", # This should be added to PlatformIO
-    ])
-
-
-def setup_mcu_sam(env):
-    \"\"\"Setup the SAM MCU environment.
-
-    \"\"\"
-
-    if env.subst(env["BOARD_MCU"]).endswith("/3x8e"):
-        env.Replace(MCU_DESC="Atmel SAM3X8E Cortex-M3 @ 84MHz, 96k sram, 512k flash")
-    else:
-        env.Replace(MCU_DESC="Not found")
-
-    env.Replace(ARCH="arm",
-                FAMILY="sam",
-                SETTING_MEMORY="flash",
-                SETTING_OFFSET="0",
-                SETTING_SIZE="4096",
-                ENDIANESS="little")
-
-    add_include_paths(env, [
-        join("3pp", "lwip-1.4.1", "src", "include"),
-        join("3pp", "lwip-1.4.1", "src", "include", "ipv4")
-    ])
-
-    env.Append(CCFLAGS=[
-        "-funsigned-bitfields",
-        "-std=gnu99",
-        "-Wno-error=unused-variable",
-        "-Werror",
-        "-O2",
-        "-fpack-struct"
-    ])
-
-    linkflags = []
-
-    for flag in env["LINKFLAGS"]:
-        if "-Wl,--entry" not in flag:
-            linkflags.append(flag)
-
-    env.Replace(LINKFLAGS=linkflags + [
-        "-Wl,-T$PLATFORMFW_DIR/src/mcus/$BOARD_MCU/script.ld",
-        "-Wl,-Map=$BUILD_DIR/firmware.map" # This should be added to PlatformIO
-    ])
-
-    env.Append(LIBPATH=["$PLATFORMFW_DIR/src/mcus/$BOARD_MCU"])
-
-
 def setup_mcu_esp(env, linker_script, flash_size_map):
     \"\"\"Setup the ESP environment.
 
     \"\"\"
-
-    env.Replace(ARCH="esp",
-                FAMILY="esp",
-                SETTING_MEMORY="flash",
-                SETTING_OFFSET="128",
-                SETTING_SIZE="256",
-                ENDIANESS="little")
-
-    add_include_paths(env, [
-        "src/mcus/esp8266",
-        "3pp/ESP8266_RTOS_SDK/extra_include",
-        "3pp/ESP8266_RTOS_SDK/include",
-        "3pp/ESP8266_RTOS_SDK/include/espressif",
-        "3pp/ESP8266_RTOS_SDK/include/espressif/esp8266",
-        "3pp/ESP8266_RTOS_SDK/include/lwip",
-        "3pp/ESP8266_RTOS_SDK/include/lwip/ipv4",
-        "3pp/ESP8266_RTOS_SDK/include/lwip/ipv6"
-    ])
-
-    linkflags = []
-
-    for flag in env["LINKFLAGS"]:
-        if ("-Wl,-T" not in flag
-            and "-Wl,-wrap,register_chipv6_phy" not in flag):
-            linkflags.append(flag)
-
-    env.Replace(LINKFLAGS=linkflags + [
-        "-Wl,--start-group",
-        "-lminic",
-        "-lgcc",
-        "-lhal",
-        "-lphy",
-        "-lpp",
-        "-lnet80211",
-        "-lwpa",
-        "-lcrypto",
-        "-lmain",
-        "-lfreertos",
-        "-llwip",
-        "-Wl,--end-group",
-        "-Wl,-T" + linker_script
-    ])
-
-    env.Append(LIBPATH=[
-        "$PLATFORMFW_DIR/src/mcus/$BOARD_MCU/ld",
-        "$PLATFORMFW_DIR/3pp/ESP8266_RTOS_SDK/lib"
-    ])
 
     builders = {{}}
 
@@ -308,37 +143,84 @@ def setup_mcu_esp(env, linker_script, flash_size_map):
         '0x01000 $BUILD_DIR/firmware.bin']))
 
 
-def setup_board_arduino_due(env):
-    \"\"\"Setup the Arduino Due environment.
+
+def create_src_filter(srcs):
+    \"\"\"Create the source filter string.
+    \"\"\"
+
+    src_filter = [
+        "-<3pp/>",
+        "-<src/>",
+        "-<tst/>"
+    ]
+
+    for src in srcs:
+        src_filter.append("+<{{}}>".format(src))
+
+    return SRC_DEFAULT_FILTER + " " + " ".join(src_filter)
+
+
+def setup_mcu_esp(env, linker_script, flash_size_map):
+    \"\"\"Setup the ESP environment.
 
     \"\"\"
 
-    add_include_paths(env, ["src/mcus/sam"])
-    setup_mcu_sam(env)
+    linkflags = []
 
+    for flag in env["LINKFLAGS"]:
+        if "-Wl,-wrap,register_chipv6_phy" in flag:
+            continue
+        linkflags.append(flag)
+    env.Replace(LINKFLAGS=linkflags)
 
-def setup_board_arduino_mega(env):
-    \"\"\"Setup the Arduino Mega environment.
+    ccflags = []
 
-    \"\"\"
+    for flag in env["CCFLAGS"]:
+        if "-Werror" in flag:
+            continue
+        ccflags.append(flag)
+    env.Replace(CCFLAGS=ccflags)
 
-    setup_mcu_avr(env)
+    env.Append(LIBS=[
+        "-lminic",
+        "-lgcc",
+        "-lhal",
+        "-lphy",
+        "-lpp",
+        "-lnet80211",
+        "-lwpa",
+        "-lcrypto",
+        "-lmain",
+        "-lfreertos",
+        "-llwip"
+    ])
 
-
-def setup_board_arduino_uno(env):
-    \"\"\"Setup the Arduino Uno environment.
-
-    \"\"\"
-
-    setup_mcu_avr(env)
-
-
-def setup_board_arduino_nano(env):
-    \"\"\"Setup the Arduino Nano environment.
-
-    \"\"\"
-
-    setup_mcu_avr(env)
+    env.Append(
+        BUILDERS=dict(
+            ElfToBin=Builder(
+                action=" ".join([
+                    '"$OBJCOPY"',
+                    "-eo",
+                    '"%s"' % join("$PLATFORMFW_DIR", "3pp", "esp8266Arduino",
+                                  "2.3.0", "bootloaders", "eboot", "eboot.elf"),
+                    "-bo", "$TARGET",
+                    "-bm", "$BOARD_FLASH_MODE",
+                    "-bf", "${{__get_board_f_flash(__env__)}}",
+                    "-bz", "${{__get_flash_size(__env__)}}",
+                    "-bs", ".text",
+                    "-bp", "4096",
+                    "-ec",
+                    "-eo", "$SOURCES",
+                    "-bs", ".irom0.text",
+                    "-bs", ".text",
+                    "-bs", ".data",
+                    "-bs", ".rodata",
+                    "-bc", "-ec"
+                ]),
+                suffix=".bin"
+            )
+        )
+    )
 
 
 def setup_board_esp12e(env):
@@ -357,120 +239,6 @@ def setup_board_esp01(env):
     setup_mcu_esp(env, "simba.flash.1m.ld", "2")
 
 
-def create_src_filter(env):
-    \"\"\"Create the source filter string.
-    \"\"\"
-
-    src_filter_patterns = []
-
-    # Add the board files.
-    src_filter_patterns.append("-<src/boards>")
-    src_filter_patterns.append(env.subst("+<src/boards/$BOARD>"))
-
-    # Add the mcu files.
-    src_filter_patterns.append("-<src/mcus>")
-    src_filter_patterns.append(env.subst("+<src/mcus/$BOARD_MCU>"))
-
-    if env.subst("$BOARD_MCU") == "sam3x8e":
-        src_filter_patterns.append("+<src/mcus/sam>")
-
-    # Add the drivers files.
-    src_filter_patterns.append("-<src/drivers>")
-
-    src_filter_patterns.append("-<3pp/>")
-
-    src_filter_patterns.append("-<rost/>")
-
-    src_filter_patterns.append("-<tst/>")
-
-    arch = env.subst("$ARCH")
-
-    if arch == "arm":
-        files = [
-            "adc.c",
-            "can.c",
-            "chipid.c",
-            "dac.c",
-            "exti.c",
-            "flash.c",
-            "mcp2515.c",
-            "pin.c",
-            "sd.c",
-            "spi.c",
-            "uart.c",
-            "usb.c",
-            "usb_host.c",
-            "usb/host/class/usb_host_class_hid.c",
-            "usb/host/class/usb_host_class_mass_storage.c"
-        ]
-
-    elif arch == "avr":
-        files = [
-            "adc.c",
-            "ds18b20.c",
-            "ds3231.c",
-            "exti.c",
-            "i2c.c",
-            "mcp2515.c",
-            "nrf24l01.c",
-            "spi.c",
-            "owi.c",
-            "pin.c",
-            "pwm.c",
-            "sd.c",
-            "uart.c",
-            "uart_soft.c"
-        ]
-
-    elif arch == "esp":
-        files = [
-            "adc.c",
-            "pin.c",
-            "spi.c",
-            "uart.c"
-        ]
-
-    else:
-        raise ValueError("bad architecture {{}}".format())
-
-    for src in files:
-        src_filter_patterns.append("+<src/drivers/" + src + ">")
-
-    if arch != "esp":
-        files = [
-            "core/stats.c",
-            "core/tcp_out.c",
-            "core/udp.c",
-            "core/timers.c",
-            "core/netif.c",
-            "core/def.c",
-            "core/raw.c",
-            "core/dns.c",
-            "core/tcp_in.c",
-            "core/memp.c",
-            "core/pbuf.c",
-            "core/tcp.c",
-            "core/init.c",
-            "core/dhcp.c",
-            "core/ipv4/ip_frag.c",
-            "core/ipv4/ip.c",
-            "core/ipv4/ip_addr.c",
-            "core/ipv4/icmp.c",
-            "core/ipv4/igmp.c",
-            "core/ipv4/inet.c",
-            "core/ipv4/inet_chksum.c",
-            "core/mem.c",
-            "netif/etharp.c",
-            "netif/ethernetif.c",
-            "api/tcpip.c"
-        ]
-
-        for src in files:
-            src_filter_patterns.append("+<3pp/lwip-1.4.1/src/" + src + ">")
-
-    return SRC_DEFAULT_FILTER + " " + " ".join(src_filter_patterns)
-
-
 env = DefaultEnvironment()
 
 set_default_values(env)
@@ -482,63 +250,56 @@ if env["BOARD"] in BOARD_MAP:
 
 board = env.subst(env["BOARD"])
 
-add_common_include_paths(env)
-add_common_defines(env)
+if board not in SUPPORTED_BOARDS:
+   raise ValueError("BOARD {{}} is not supported by Simba.".format(board))
 
+# Add the default configuration for the board.
+add_include_paths(env, BOARDS[board]["inc"])
+env.Replace(CPPDEFINES=BOARDS[board]["cdefs"])
+src_filter = create_src_filter(BOARDS[board]["src"])
+env.Replace(CCFLAGS=BOARDS[board]["cflags"])
+env.Replace(LINKFLAGS=BOARDS[board]["ldflags"])
+env.Replace(LIBPATH=[os.path.join("$PLATFORMFW_DIR", path)
+                     for path in BOARDS[board]["libpath"]])
+board_options = env["BOARD_OPTIONS"]
+board_options['build']['ldscript'] = "script.ld"
+env.Replace(BOARD_OPTIONS=board_options)
+env.Replace(MCU_DESC=BOARDS[board]["mcu_desc"])
+env.Replace(BOARD_DESC=BOARDS[board]["board_desc"])
+
+# Always replace the map file path.
+linkflags = []
+
+for flag in env["LINKFLAGS"]:
+    if flag.startswith("-Wl,-Map="):
+        flag = "-Wl,-Map=$BUILD_DIR/firmware.map"
+    linkflags.append(flag)
+env.Replace(LINKFLAGS=linkflags)
+
+# For some boards the configuration has to be modified.
 if board == "arduino_due":
-    setup_board_arduino_due(env)
-elif board == "arduino_mega":
-    setup_board_arduino_mega(env)
-elif board == "arduino_uno":
-    setup_board_arduino_uno(env)
-elif board == "arduino_nano":
-    setup_board_arduino_nano(env)
+    linkflags = []
+
+    for flag in env["LINKFLAGS"]:
+        if flag.startswith("-T"):
+            continue
+        linkflags.append(flag)
+    env.Replace(LINKFLAGS=linkflags)
 elif board == "esp12e":
     setup_board_esp12e(env)
 elif board == "esp01":
     setup_board_esp01(env)
-else:
-    raise ValueError("BOARD {{}} is not supported by Simba.".format(board))
-
-# variables in upper case for defines
-env.Append(ARCH_UPPER=env.subst(env["ARCH"]).upper().replace("/", "_"),
-           FAMILY_UPPER=env.subst(env["FAMILY"]).upper().replace("/", "_"),
-           MCU_UPPER=env.subst(env["BOARD_MCU"]).upper().replace("/", "_"),
-           BOARD_UPPER=env.subst(env["BOARD"]).upper().replace("/", "_"))
-
-if "SETTINGS_INI" not in env:
-    env.Append(SETTINGS_INI=[join("$BUILD_DIR", "SimbaFramework", "make", "settings.ini")])
-    env.VariantDirWrap(
-        join("$BUILD_DIR", "SimbaFramework", "make"),
-        join("$PLATFORMFW_DIR", "make")
-    )
 
 # generated files
-SETTINGS_H = "$BUILD_DIR/SimbaFramework/gen/settings.h"
-SETTINGS_C = env.subst("$BUILD_DIR/SimbaFramework/gen/settings.c")
-SETTINGS_BIN = env.subst("$BUILD_DIR/SimbaFramework/gen/settings.bin")
-SIMBA_GEN_C = "$BUILD_DIR/SimbaFramework/gen/simba_gen.c"
-
-# generate settings
-fmt = ('"$PYTHONEXE" "$PLATFORMFW_DIR/src/kernel/tools/settings.py" --{{filetype}} '
-       "--output-directory $BUILD_DIR/SimbaFramework/gen --setting-memory $SETTING_MEMORY "
-       "--setting-offset $SETTING_OFFSET --setting-size $SETTING_SIZE "
-       "$SOURCE $ENDIANESS")
-env.Command(SETTINGS_H, env["SETTINGS_INI"], fmt.format(filetype="header"))
-env.Command(SETTINGS_C, env["SETTINGS_INI"], fmt.format(filetype="source"))
-env.Command(SETTINGS_BIN, env["SETTINGS_INI"], fmt.format(filetype="binary"))
+SIMBA_GEN_C = "$BUILD_DIR/SimbaFramework/simba_gen.c"
 
 # create a list of all sources
 variant_dir = join("$BUILD_DIR", "SimbaFramework")
 src_dir = join("$PLATFORMFW_DIR")
-src_filter = create_src_filter(env)
-
-#print src_filter
 
 source_files = []
 
 for src in env.LookupSources(variant_dir, src_dir, True, src_filter):
-#    print src
     source_files.append(env.Object(src))
 
 # Command to generate simba_gen.c
@@ -547,10 +308,8 @@ env.Command(SIMBA_GEN_C,
             ('"$PYTHONEXE" "$PLATFORMFW_DIR/src/kernel/tools/gen.py" "$NAME" "$VERSION" '
              '"$BOARD_DESC" "$MCU_DESC" "$TARGET" $SOURCES'))
 source_files.append(SIMBA_GEN_C)
-source_files.append(SETTINGS_C)
 
 lib = env.Library(target=join("$BUILD_DIR", "SimbaFramework"), source=source_files)
-Depends(lib, SETTINGS_BIN)
 
 env.Append(LIBS=[lib])
 """
@@ -564,361 +323,36 @@ def create_database():
     return json.loads(subprocess.check_output(["dbgen.py"]))
 
 
-def generate_cores(family, database):
-    """Generate the cores directory, shared among all boards.
-
-    """
-
-    cores_dir = os.path.join("cores", "simba")
-
-    # Create the cores directory.
-    mkdir_p(cores_dir)
-
-    with open(os.path.join(cores_dir, "Arduino.h"), "w") as fout:
-        fout.write(ARDUINO_H)
-
-    simba_root = os.environ["SIMBA_ROOT"]
-    cores_srcs = None
-
-    # Generate a dummy settings files.
-    for board in database["boards"].values():
-        mcu = board["mcu"]
-
-        if database["mcus"][mcu]["family"] != family:
-            continue
-
-        if cores_srcs is None:
-            cores_srcs = set(board["src"])
-        else:
-            cores_srcs = cores_srcs & set(board["src"])
-
-    if family == "avr":
-        board = "arduino_pro_micro"
-    elif family == "sam":
-        board = "arduino_due"
-    elif family == "esp":
-        board = "esp01"
-    else:
-        raise ValueError("{}: bad family".format(family))
-
-    # Copy all source files, except those in boards and mcus that are
-    # variant specific. Use any board in given family
-    for src in cores_srcs:
-        dst_dir = os.path.join(cores_dir, os.path.dirname(src))
-        mkdir_p(dst_dir)
-        shutil.copy(os.path.join(simba_root, src), dst_dir)
-
-    # Copy all header files.
-    for inc in database["boards"][board]["inc"]:
-        inc_dir = os.path.join(simba_root, inc)
-        for root, _, filenames in os.walk(inc_dir):
-            for filename in fnmatch.filter(filenames, '*.[hi]'):
-                file_path = os.path.join(root, filename)
-                file_dir = os.path.dirname(file_path)
-                cores_file_dir = file_dir.replace(simba_root + "/", "")
-                mkdir_p(os.path.join(cores_dir, cores_file_dir))
-                shutil.copy(file_path,
-                            os.path.join(cores_dir, cores_file_dir))
-
-    # Various files.
-    root_files = [
-        "LICENSE",
-        "README.rst",
-        "VERSION.txt"
-    ]
-
-    for root_file in root_files:
-        shutil.copy(os.path.join(simba_root, root_file), ".")
-
-    return cores_srcs
-
-
-def generate_variants(family, database, cores_srcs):
-    """Generate the variants directory with board unique information.
-
-    """
-
-    simba_root = os.environ["SIMBA_ROOT"]
-
-    print("Generating variants for family", family)
-
-    for board_name, config in database['boards'].items():
-        if database["mcus"][config["mcu"]]["family"] != family:
-            continue
-
-        variant_dir = os.path.join("variants", board_name)
-
-        # Create the variant directory.
-        mkdir_p(variant_dir)
-
-        # Copy variant specific source files; those in "boards" and
-        # "mcus". Other source files are copies in cores.
-        for src in config["src"]:
-            if src in cores_srcs:
-                continue
-            dst_dir = os.path.join(variant_dir, os.path.dirname(src))
-            mkdir_p(dst_dir)
-            shutil.copy(os.path.join(simba_root, src), dst_dir)
-
-        setting_memory = config["setting_memory"]
-        setting_offset = config["setting_offset"]
-        setting_size = config["setting_size"]
-        endianess = config["endianess"]
-
-        subprocess.check_call([
-            os.path.join(simba_root, "src/kernel/tools/settings.py"),
-            "--header",
-            "--output-directory", variant_dir,
-            "--setting-memory", setting_memory,
-            "--setting-offset", setting_offset,
-            "--setting-size", setting_size,
-            os.path.join(simba_root, "make/settings.ini"),
-            endianess])
-
-        subprocess.check_call([
-            os.path.join(simba_root, "src/kernel/tools/settings.py"),
-            "--source",
-            "--output-directory", variant_dir,
-            "--setting-memory", setting_memory,
-            "--setting-offset", setting_offset,
-            "--setting-size", setting_size,
-            os.path.join(simba_root, "make/settings.ini"),
-            endianess])
-
-        # Copy all linker script files.
-        for libpath in config["libpath"]:
-            libpath_dir = os.path.join(simba_root, libpath)
-            for root, _, filenames in os.walk(libpath_dir):
-                for filename in fnmatch.filter(filenames, '*.ld'):
-                    file_path = os.path.join(root, filename)
-                    file_dir = os.path.dirname(file_path)
-                    variant_file_dir = file_dir.replace(simba_root + "/",
-                                                        "")
-                    mkdir_p(os.path.join(variant_dir, variant_file_dir))
-                    shutil.copy(file_path,
-                                os.path.join(variant_dir, variant_file_dir))
-
-        with open(os.path.join(variant_dir, "simba_gen.c"), "w") as fout:
-            fout.write(SIMBA_GEN_C_FMT.format(name="my_app",
-                                              board=board_name,
-                                              mcu=config["mcu"]))
-
-
-def generate_examples():
-    """Generate the examples directory.
-
-    libraries/Simba/examples/<example folder>
-
-    """
-
-    simba_root = os.environ["SIMBA_ROOT"]
-    simba_examples_path = os.path.join(simba_root, 'examples')
-    arduino_simba_path = os.path.join('libraries', 'Simba')
-    arduino_examples_path = os.path.join(arduino_simba_path, 'examples')
-
-    os.makedirs(arduino_examples_path)
-
-    with open(os.path.join(arduino_simba_path, "Simba.h"), "w") as fout:
-        fout.write("/* Generated file required by Arduino IDE. */")
-
-    examples = [
-        # example folder, sketch file
-        ('blink', 'main.c'),
-        ('hello_world', 'main.c'),
-        ('shell', 'main.c')
-    ]
-
-    # Create the .ino-file.
-    for example in examples:
-        simba_example_path = os.path.join(simba_examples_path, example[0])
-        arduino_example_path = os.path.join(arduino_examples_path, example[0])
-        os.makedirs(arduino_example_path)
-        shutil.copy(os.path.join(simba_example_path, example[1]),
-                    os.path.join(arduino_example_path, example[0] + ".ino"))
-
-
-
-
-def get_c_extra_flags(board, database):
-    """Get include path, defines and flags to the compiler.
-
-    """
-
-    incs = database["boards"][board]["inc"]
-    cdefs = database["boards"][board]["cdefs"]
-    cflags = database["boards"][board]["cflags"]
-
-    return " ".join(cflags
-                    + ["\"-I{runtime.platform.path}/cores/simba/" + inc + "\""
-                       for inc in incs]
-                    + ["-D" + d for d in cdefs])
-
-
-def get_c_elf_extra_flags(board, database):
-    """Get library path, defines and flags to the linker.
-
-    """
-
-    libpaths = database["boards"][board]["libpath"]
-    ldflags = database["boards"][board]["ldflags"]
-
-    ldflags = [ldflag for ldflag in ldflags if "-Wl,-Map" not in ldflag]
-
-    return " ".join(ldflags
-                    + ["\"-L{runtime.platform.path}/variants/" + board + "/" + libpath + "\""
-                       for libpath in libpaths])
-
-
-def get_c_elf_extra_flags_after(board, database):
-    """Get library path, defines and flags to the linker.
-
-    """
-
-    ldflags_after = database["boards"][board]["ldflags_after"]
-
-    return " ".join(ldflags_after)
-
-
-def generate_boards_txt_avr(database, boards_txt_fmt):
-    """Generate boards.txt for AVR.
-
-    """
-
-    return boards_txt_fmt.format(
-        mega2560_compiler_c_extra_flags=get_c_extra_flags("arduino_mega",
-                                                          database),
-        nano_compiler_c_extra_flags=get_c_extra_flags("arduino_nano",
-                                                   database),
-        uno_compiler_c_extra_flags=get_c_extra_flags("arduino_uno",
-                                                   database),
-        pro_micro_compiler_c_extra_flags=get_c_extra_flags("arduino_pro_micro",
-                                                         database))
-
-
-def generate_boards_txt_sam(database, boards_txt_fmt):
-    """Generate boards.txt for SAM.
-
-    """
-
-    return boards_txt_fmt.format(
-        arduino_due_x_dbg_compiler_c_extra_flags=get_c_extra_flags(
-            "arduino_due",
-            database),
-        arduino_due_x_dbg_compiler_c_elf_extra_flags=get_c_elf_extra_flags(
-            "arduino_due",
-            database))
-
-
-def generate_boards_txt_esp(database, boards_txt_fmt):
-    """Generate boards.txt for ESP.
-
-    """
-
-    # ESP SDK libraries are copied to this location.
-    libpath = "-L{runtime.platform.path}/lib"
-
-    esp01_compiler_c_elf_extra_flags = get_c_elf_extra_flags("esp01", database)
-    esp01_compiler_c_elf_extra_flags += " "
-    esp01_compiler_c_elf_extra_flags += libpath
-
-    esp12e_compiler_c_elf_extra_flags = get_c_elf_extra_flags("esp12e", database)
-    esp12e_compiler_c_elf_extra_flags += " "
-    esp12e_compiler_c_elf_extra_flags += libpath
-
-    return boards_txt_fmt.format(
-        esp01_compiler_c_extra_flags=get_c_extra_flags("esp01", database),
-        esp01_compiler_c_elf_extra_flags=esp01_compiler_c_elf_extra_flags,
-        esp01_compiler_c_elf_extra_flags_after=get_c_elf_extra_flags_after("esp01", database),
-        esp12e_compiler_c_extra_flags=get_c_extra_flags("esp12e", database),
-        esp12e_compiler_c_elf_extra_flags=esp12e_compiler_c_elf_extra_flags,
-        esp12e_compiler_c_elf_extra_flags_after=get_c_elf_extra_flags_after("esp12e", database))
-
-
-def generate_configuration_files(family, database):
-    """Generate copy configuration files.
-
-    """
-
-    simba_root = os.environ["SIMBA_ROOT"]
-    family_dir = os.path.join(simba_root,
-                            "make",
-                            "arduino",
-                            family)
-    configuration_files = [
-        "platform.txt"
-    ]
-
-    for configuration_file in configuration_files:
-        shutil.copy(os.path.join(family_dir, configuration_file), ".")
-
-    with open("boards.txt", "w") as fout:
-        with open(os.path.join(family_dir, "boards.txt"), "r") as fin:
-            if family == "avr":
-                boards_txt = generate_boards_txt_avr(database, fin.read())
-            elif family == "sam":
-                boards_txt = generate_boards_txt_sam(database, fin.read())
-            elif family == "esp":
-                boards_txt = generate_boards_txt_esp(database, fin.read())
-            else:
-                raise ValueError("Unsupported family {}.".format(family))
-
-            fout.write(boards_txt)
-
-
-def generate_extra(family, database):
-    """Generate extra files that do not fit into any other generation
-    function.
-
-    """
-
-    simba_root = os.environ["SIMBA_ROOT"]
-
-    if family == "esp":
-        # Copy all libraries.
-        libpaths = database["boards"]["esp01"]["libpath"]
-        mkdir_p("lib")
-
-        for lib in database["boards"]["esp01"]["lib"]:
-            for libpath in libpaths:
-                libpath_dir = os.path.join(simba_root, libpath)
-                for root, _, filenames in os.walk(libpath_dir):
-                    for filename in filenames:
-                        if filename != "lib" + lib + ".a":
-                            continue
-                        file_path = os.path.join(root, filename)
-                        shutil.copy(file_path, "lib")
-                        break
-
-        # Copt eboot (bootloader).
-        eboot_dir = os.path.join("bootloaders", "eboot")
-        mkdir_p(eboot_dir)
-        shutil.copy(os.path.join(simba_root,
-                                 "3pp",
-                                 "esp8266Arduino",
-                                 "2.3.0",
-                                 "bootloaders",
-                                 "eboot",
-                                 "eboot.elf"),
-                    eboot_dir)
-
-
 def generate_platformio_sconsscript(database, version):
     """Generate the platformio scons script.
 
     """
 
     simba_root = os.environ["SIMBA_ROOT"]
+    boards = {}
 
-    #    for family in ["avr", "sam", "esp"]:
-    #
-    #        cores_srcs = generate_cores(family, database)
-    #        generate_variants(family, database, cores_srcs)
-    #        generate_examples()
-    #        generate_configuration_files(family, database)
-    #        generate_extra(family, database)
+    # Only add selceted parts the database to the scons script for
+    # less unnecessary information.
+    for board, data in database["boards"].items():
+        # Add everything we need, and a bit more.
+        selected_data = {
+            'inc': data['inc'],
+            'cdefs': data['cdefs'],
+            'src': data['src'],
+            'cflags': data['cflags'],
+            'libpath': data['libpath'],
+            'ldflags': data['ldflags'],
+            'linker_script': data['linker_script'],
+            'board_desc': data['board_desc'],
+            'mcu_desc': database['mcus'][data['mcu']]['mcu_desc']
+        }
+        boards[board] = selected_data
+        
     outfile = os.path.join(simba_root, "make", "platformio.sconscript")
     with open(outfile, "w") as fout:
-        fout.write(PLATFORMIO_SCONSSCRIPT_FMT.format(version=version))
+        fout.write(PLATFORMIO_SCONSSCRIPT_FMT.format(
+            version=version,
+            boards=json.dumps(boards, indent=4)))
 
 
 def main():

@@ -154,7 +154,7 @@ def main():
         if mcu not in database["mcus"]:
             database["mcus"][mcu] = {}
             # Get the descriptive name and homepage
-            for variable in ["MCU_NAME", "MCU_HOMEPAGE", "ARCH", "FAMILY"]:
+            for variable in ["MCU_NAME", "MCU_HOMEPAGE", "ARCH", "FAMILY", "MCU_DESC"]:
                 value = get_make_variable(board, variable)
                 database["mcus"][mcu][variable.lower()] = value.strip()
 

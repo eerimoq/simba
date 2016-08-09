@@ -21,23 +21,12 @@ all:
 	-built-in-libraries $(ARDUINO_ROOT)/libraries \
 	-libraries /home/erik/Arduino/libraries \
 	-fqbn=Simba:$(FAMILY):$(BOARD) \
-	-ide-version=10609 \
+	-ide-version=10610 \
 	-build-path $(BUILD_DIR) \
 	-warnings=none \
 	-prefs=build.warn_data_percentage=75 \
 	-verbose \
 	$(BUILD_DIR)/../blink/main.ino
-
-	@echo "Check that the file size is not too small."
-	file=$(BUILD_DIR)/main.ino.bin ; \
-	minimumsize=5000 ; \
-	actualsize=$$(wc -c <"$$file") ; \
-	if [ $$actualsize -ge $$minimumsize ]; then \
-	    echo "Size is over $$minimumsize bytes." ; \
-	else \
-	    echo "Size is under $$minimumsize bytes." ; \
-	    exit 1 ; \
-	fi
 
 upload: all
 

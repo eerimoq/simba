@@ -115,6 +115,8 @@ Default Standard Library configuration.
 +------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_PROFILE_STACK_                               |  1                                                  |
 +------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_SETTING_AREA_SIZE_                           |  256                                                |
++------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_SHELL_COMMAND_MAX_                           |  64                                                 |
 +------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_SHELL_HISTORY_SIZE_                          |  768                                                |
@@ -223,6 +225,8 @@ Library Reference.
 .. _CONFIG_PREEMPTIVE_SCHEDULER: ../user-guide/configuration.html#c.CONFIG_PREEMPTIVE_SCHEDULER
 
 .. _CONFIG_PROFILE_STACK: ../user-guide/configuration.html#c.CONFIG_PROFILE_STACK
+
+.. _CONFIG_SETTING_AREA_SIZE: ../user-guide/configuration.html#c.CONFIG_SETTING_AREA_SIZE
 
 .. _CONFIG_SHELL_COMMAND_MAX: ../user-guide/configuration.html#c.CONFIG_SHELL_COMMAND_MAX
 

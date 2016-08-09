@@ -66,7 +66,6 @@ def generate_cores(family, database):
     simba_root = os.environ["SIMBA_ROOT"]
     cores_srcs = None
 
-    # Generate a dummy settings files.
     for board in database["boards"].values():
         mcu = board["mcu"]
 
@@ -150,26 +149,6 @@ def generate_variants(family, database, cores_srcs):
         setting_offset = config["setting_offset"]
         setting_size = config["setting_size"]
         endianess = config["endianess"]
-
-        subprocess.check_call([
-            os.path.join(simba_root, "src/kernel/tools/settings.py"),
-            "--header",
-            "--output-directory", variant_dir,
-            "--setting-memory", setting_memory,
-            "--setting-offset", setting_offset,
-            "--setting-size", setting_size,
-            os.path.join(simba_root, "make/settings.ini"),
-            endianess])
-
-        subprocess.check_call([
-            os.path.join(simba_root, "src/kernel/tools/settings.py"),
-            "--source",
-            "--output-directory", variant_dir,
-            "--setting-memory", setting_memory,
-            "--setting-offset", setting_offset,
-            "--setting-size", setting_size,
-            os.path.join(simba_root, "make/settings.ini"),
-            endianess])
 
         # Copy all linker script files.
         for libpath in config["libpath"]:
