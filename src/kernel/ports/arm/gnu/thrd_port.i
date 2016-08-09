@@ -1,6 +1,6 @@
 /**
  * @file arm/gnu/thrd_port.i
- * @version 5.0.0
+ * @version 6.0.0
  *
  * @section License
  * Copyright (C) 2014-2016, Erik Moqvist

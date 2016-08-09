@@ -33,7 +33,7 @@ Boards Manager.
 3. Open `"Tools"` -> `"Board: ..."` -> `"Boards Manager..."` and type
    `"simba"` in the search box.
 
-4. Click on `"Simba by Erik Moqivst version 5.0.0"` and click
+4. Click on `"Simba by Erik Moqivst version 6.0.0"` and click
    `"Install"` and press `"Close"`.
 
 5. Open `"Tools"` -> `"Board: ..."` -> `"Boards Manager..."` and

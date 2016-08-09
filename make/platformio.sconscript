@@ -1,6 +1,6 @@
 #
 # @file make/platformio.sconscript
-# @version 5.0.0
+# @version 6.0.0
 #
 # @section License
 # Copyright (C) 2014-2016, Erik Moqvist
@@ -122,7 +122,7 @@ BOARDS = {
             "FAMILY_ESP", 
             "MCU_ESP8266", 
             "BOARD_ESP01", 
-            "VERSION=5.0.0", 
+            "VERSION=6.0.0", 
             "F_CPU=80000000UL", 
             "ICACHE_FLASH", 
             "__STRICT_ANSI__", 
@@ -285,7 +285,7 @@ BOARDS = {
             "FAMILY_AVR", 
             "MCU_ATMEGA2560", 
             "BOARD_ARDUINO_MEGA", 
-            "VERSION=5.0.0", 
+            "VERSION=6.0.0", 
             "F_CPU=16000000UL", 
             "__DELAY_BACKWARD_COMPATIBLE__"
         ], 
@@ -421,7 +421,7 @@ BOARDS = {
             "FAMILY_AVR", 
             "MCU_ATMEGA328P", 
             "BOARD_ARDUINO_UNO", 
-            "VERSION=5.0.0", 
+            "VERSION=6.0.0", 
             "F_CPU=16000000UL", 
             "__DELAY_BACKWARD_COMPATIBLE__"
         ], 
@@ -547,7 +547,7 @@ BOARDS = {
             "FAMILY_STM32F1", 
             "MCU_STM32F100RB", 
             "BOARD_STM32VLDISCOVERY", 
-            "VERSION=5.0.0", 
+            "VERSION=6.0.0", 
             "F_CPU=24000000UL"
         ], 
         "mcu_desc": "ST STM32F100RB ARM Cortex-M3 @ 24MHz, 8k sram, 128k flash", 
@@ -651,7 +651,7 @@ BOARDS = {
             "FAMILY_ESP", 
             "MCU_ESP8266", 
             "BOARD_ESP12E", 
-            "VERSION=5.0.0", 
+            "VERSION=6.0.0", 
             "F_CPU=80000000UL", 
             "ICACHE_FLASH", 
             "__STRICT_ANSI__", 
@@ -813,7 +813,7 @@ BOARDS = {
             "FAMILY_STM32F2", 
             "MCU_STM32F205RG", 
             "BOARD_PHOTON", 
-            "VERSION=5.0.0", 
+            "VERSION=6.0.0", 
             "F_CPU=120000000UL"
         ], 
         "mcu_desc": "ST STM32F205RG ARM Cortex-M3 @ 120MHz, 128k sram, 1M flash", 
@@ -959,7 +959,7 @@ BOARDS = {
             "FAMILY_AVR", 
             "MCU_ATMEGA32U4", 
             "BOARD_ARDUINO_PRO_MICRO", 
-            "VERSION=5.0.0", 
+            "VERSION=6.0.0", 
             "F_CPU=16000000UL", 
             "__DELAY_BACKWARD_COMPATIBLE__"
         ], 
@@ -1095,7 +1095,7 @@ BOARDS = {
             "FAMILY_AVR", 
             "MCU_ATMEGA328P", 
             "BOARD_ARDUINO_NANO", 
-            "VERSION=5.0.0", 
+            "VERSION=6.0.0", 
             "F_CPU=16000000UL", 
             "__DELAY_BACKWARD_COMPATIBLE__"
         ], 
@@ -1233,7 +1233,7 @@ BOARDS = {
             "FAMILY_SAM", 
             "MCU_SAM3X8E", 
             "BOARD_ARDUINO_DUE", 
-            "VERSION=5.0.0", 
+            "VERSION=6.0.0", 
             "F_CPU=84000000UL"
         ], 
         "mcu_desc": "Atmel SAM3X8E Cortex-M3 @ 84MHz, 96k sram, 512k flash", 
@@ -1338,7 +1338,7 @@ BOARDS = {
             "FAMILY_LINUX", 
             "MCU_LINUX", 
             "BOARD_CYGWIN", 
-            "VERSION=5.0.0"
+            "VERSION=6.0.0"
         ], 
         "mcu_desc": "Linux", 
         "libpath": [], 
@@ -1441,7 +1441,7 @@ BOARDS = {
             "FAMILY_LINUX", 
             "MCU_LINUX", 
             "BOARD_LINUX", 
-            "VERSION=5.0.0"
+            "VERSION=6.0.0"
         ], 
         "mcu_desc": "Linux", 
         "libpath": [], 
@@ -1567,7 +1567,7 @@ BOARDS = {
             "FAMILY_STM32F3", 
             "MCU_STM32F303VC", 
             "BOARD_STM32F3DISCOVERY", 
-            "VERSION=5.0.0", 
+            "VERSION=6.0.0", 
             "F_CPU=72000000UL"
         ], 
         "mcu_desc": "ST STM32F303VC ARM Cortex-M4 @ 72MHz, 40k sram, 256k flash", 
