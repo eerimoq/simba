@@ -1,6 +1,6 @@
 #
 # @file make/app.mk
-# @version 5.0.0
+# @version 6.0.0
 #
 # @section License
 # Copyright (C) 2014-2016, Erik Moqvist
@@ -18,7 +18,7 @@
 # This file is part of the Simba project.
 #
 
-.PHONY: all generate build clean new run run-debugger help
+.PHONY: all generate build clean new run rerun run-debugger help
 
 VERSION ?= $(shell cat $(SIMBA_ROOT)/VERSION.txt)
 
@@ -139,10 +139,10 @@ exe-exists:
 	    exit 1 ; \
 	fi
 
-run: exe-exists
+rerun: exe-exists
 
-upload-run: upload
-	$(MAKE) run
+run: upload
+	$(MAKE) rerun
 
 console:
 	python -u $(CONSOLESCRIPT) --port $(SERIAL_PORT) \
@@ -284,9 +284,9 @@ help:
 	@echo "  clean                       Remove all generated files and folders."
 	@echo "  new                         clean + all"
 	@echo "  upload                      all + Upload the application to the device."
-	@echo "  run                         Run the application."
+	@echo "  run                         upload + Run the application."
 	@echo "  run-debugger                Run the application in the debugger, break at main."
-	@echo "  upload-run                  upload + run."
+	@echo "  rerun                       Run the application wihtout uploading it."
 	@echo "  report                      Print the test report."
 	@echo "  test                        run + report"
 	@echo "  console                     Open a serial console on /dev/arduino with"

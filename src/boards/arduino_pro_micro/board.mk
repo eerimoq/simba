@@ -36,7 +36,7 @@ upload:
 	@echo "Uploading $(EXE)"
 	python -u $(BOARD_PY) upload --port $(SERIAL_PORT) $(HEX)
 
-run:
+rerun:
 	@echo "Running $(EXE)"
 	python -u $(RUN_PY) --port $(SERIAL_PORT) \
 			    --timeout $(TIMEOUT) \

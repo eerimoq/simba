@@ -25,12 +25,12 @@ TESTS = sys
 
 SERIAL_PORT ?= /dev/arduino
 
-upload-test:
+test:
 	for test in $(TESTS); do \
 	    cd $$test ; \
 	    if [ ! -e .$(BOARD).passed ] ; then \
 	        platformio run -e $(BOARD) -t upload --upload-port $(SERIAL_PORT) || exit 1 ; \
-	        $(MAKE) run SERIAL_PORT=$(SERIAL_PORT) || exit 1 ; \
+	        $(MAKE) SERIAL_PORT=$(SERIAL_PORT) rerun || exit 1 ; \
 	        touch .$(BOARD).passed ; \
 	    else \
 	        echo ; \
@@ -39,7 +39,7 @@ upload-test:
 	    fi \
 	done
 
-upload-test-prompt-after-upload:
+test-prompt-after-upload:
 	for test in $(TESTS); do \
 	    cd $$test ; \
 	    if [ ! -e .$(BOARD).passed ] ; then \
@@ -52,7 +52,7 @@ upload-test-prompt-after-upload:
 	        echo "Remove any switches for forced bootloader state and press enter." ; \
 	        echo ; \
 	        read tmp ; \
-	        $(MAKE) run SERIAL_PORT=$(SERIAL_PORT) || exit 1 ; \
+	        $(MAKE) SERIAL_PORT=$(SERIAL_PORT) rerun || exit 1 ; \
 	        touch .$(BOARD).passed ; \
 	    else \
 	        echo ; \

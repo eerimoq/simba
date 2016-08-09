@@ -34,7 +34,7 @@ upload:
 	avrdude -p atmega2560 -D -P $(SERIAL_PORT) -c wiring -V -b 115200 -U eeprom:w:$(SETTINGS_BIN):r
 	avrdude -p atmega2560 -D -P $(SERIAL_PORT) -c wiring -V -b 115200 -U flash:w:$(HEX)
 
-run:
+rerun:
 	@echo "Running $(EXE)"
 	python -u $(RUN_PY) --port $(SERIAL_PORT) \
 			    --timeout $(TIMEOUT) \

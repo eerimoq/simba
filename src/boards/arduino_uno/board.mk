@@ -32,7 +32,7 @@ upload:
 	avrdude -p atmega328p -D -P $(SERIAL_PORT) -c arduino -V -b 115200 -U eeprom:w:$(SETTINGS_BIN):r
 	avrdude -p atmega328p -D -P $(SERIAL_PORT) -c arduino -V -b 115200 -U flash:w:$(HEX)
 
-run:
+rerun:
 	@echo "Running $(EXE)"
 	python -u $(RUN_PY) --port $(SERIAL_PORT) \
 			    --baudrate $(BAUDRATE) \

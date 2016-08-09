@@ -255,41 +255,23 @@ release: $(APPS:%=%.release)
 
 clean: $(APPS:%=%.clean)
 
-run:
+rerun:
 	for test in $(TESTS) ; do \
 	    $(MAKE) -C $$test run || exit 1 ; \
 	done
 
 # Depend on 'all' to build all applications (optinally with -j) before
 # uploading and running them one at a time.
-upload-run: all
+run: all
 	for test in $(TESTS) ; do \
 	    if [ ! -e $$test/.$(BOARD).passed ] ; then \
-	        $(MAKE) -C $$test upload-run || exit 1 ; \
+	        $(MAKE) -C $$test run || exit 1 ; \
 	        touch $$test/.$(BOARD).passed ; \
 	    else \
 	        echo ; \
 	        echo "$$test already passed." ; \
 	        echo ; \
 	    fi \
-	done
-
-upload-run-platformio:
-	for test in $(PLATFORMIO_TESTS) ; do \
-	    if [ ! -e $$test/.$(BOARD).passed ] ; then \
-	        $(MAKE) -C $$test upload-run || exit 1 ; \
-	        touch $$test/.$(BOARD).passed ; \
-	    else \
-	        echo ; \
-	        echo "$$test already passed." ; \
-	        echo ; \
-	    fi \
-	done
-
-report-platformio:
-	for test in $(PLATFORMIO_TESTS) ; do \
-	    $(MAKE) -C $(basename $$test) report ; \
-	    echo ; \
 	done
 
 size: $(TESTS:%=%.size)
@@ -301,9 +283,6 @@ report:
 	done
 
 test: run
-	$(MAKE) report
-
-upload-test: upload-run
 	$(MAKE) report
 
 coverage: $(TESTS:%=%.cov)
@@ -318,7 +297,7 @@ codecov-coverage: $(TESTS:%=%.ccc)
 jenkins-coverage: $(TESTS:%=%.jc)
 
 travis:
-	$(MAKE) upload-test
+	$(MAKE) test
 
 release-test:
 	+bin/release.py
@@ -349,35 +328,35 @@ clean-photon:
 
 test-arduino-due:
 	@echo "Arduino Due"
-	$(MAKE) BOARD=arduino_due SERIAL_PORT=/dev/simba-arduino_due upload-test
+	$(MAKE) BOARD=arduino_due SERIAL_PORT=/dev/simba-arduino_due test
 
 test-arduino-mega:
 	@echo "Arduino Mega"
-	$(MAKE) BOARD=arduino_mega SERIAL_PORT=/dev/simba-arduino_mega upload-test
+	$(MAKE) BOARD=arduino_mega SERIAL_PORT=/dev/simba-arduino_mega test
 
 test-arduino-nano:
 	@echo "Arduino Nano"
-	$(MAKE) BOARD=arduino_nano SERIAL_PORT=/dev/simba-arduino_nano upload-test
+	$(MAKE) BOARD=arduino_nano SERIAL_PORT=/dev/simba-arduino_nano test
 
 test-arduino-pro-micro:
 	@echo "Arduino Pro Micro"
-	$(MAKE) BOARD=arduino_pro_micro SERIAL_PORT=/dev/simba-arduino_pro_micro upload-test
+	$(MAKE) BOARD=arduino_pro_micro SERIAL_PORT=/dev/simba-arduino_pro_micro test
 
 test-esp01:
 	@echo "ESP-01"
-	$(MAKE) BOARD=esp01 SERIAL_PORT=/dev/simba-esp01 upload-test
+	$(MAKE) BOARD=esp01 SERIAL_PORT=/dev/simba-esp01 test
 
 test-esp12e:
 	@echo "ESP12-E"
-	$(MAKE) BOARD=esp12e SERIAL_PORT=/dev/simba-esp12e upload-test
+	$(MAKE) BOARD=esp12e SERIAL_PORT=/dev/simba-esp12e test
 
 test-stm32vldiscovery:
 	@echo "STM32VLDISCOVERY"
-	$(MAKE) BOARD=stm32vldiscovery SERIAL_PORT=/dev/simba-stm32vldiscovery upload-test
+	$(MAKE) BOARD=stm32vldiscovery SERIAL_PORT=/dev/simba-stm32vldiscovery test
 
 test-photon:
 	@echo "Photon"
-	$(MAKE) BOARD=photon SERIAL_PORT=/dev/simba-photon upload-test
+	$(MAKE) BOARD=photon SERIAL_PORT=/dev/simba-photon test
 
 clean-arduino-due-platformio:
 	@echo "Arduino Due"
@@ -393,15 +372,15 @@ clean-esp12e-platformio:
 
 test-arduino-due-platformio:
 	@echo "Arduino Due"
-	$(MAKE) -C examples/platformio BOARD=arduino_due SERIAL_PORT=/dev/simba-arduino_due upload-test
+	$(MAKE) -C examples/platformio BOARD=arduino_due SERIAL_PORT=/dev/simba-arduino_due test
 
 test-arduino-mega-platformio:
 	@echo "Arduino Mega"
-	$(MAKE) -C examples/platformio BOARD=arduino_mega SERIAL_PORT=/dev/simba-arduino_mega upload-test
+	$(MAKE) -C examples/platformio BOARD=arduino_mega SERIAL_PORT=/dev/simba-arduino_mega test
 
 test-esp12e-platformio:
 	@echo "ESP12-E"
-	$(MAKE) -C examples/platformio BOARD=esp12e SERIAL_PORT=/dev/simba-esp12e upload-test-prompt-after-upload
+	$(MAKE) -C examples/platformio BOARD=esp12e SERIAL_PORT=/dev/simba-esp12e test-prompt-after-upload
 
 test-all-boards:
 	$(MAKE) test-arduino-due

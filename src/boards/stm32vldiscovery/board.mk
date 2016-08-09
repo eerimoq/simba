@@ -33,7 +33,7 @@ upload:
 	@echo "Uploading $(NAME).bin"
 	python -u $(BOARD_PY) upload --port $(SERIAL_PORT) $(BIN)
 
-run:
+rerun:
 	@echo "Running $(EXE)"
 	python -u $(RUN_PY) --port $(SERIAL_PORT) \
 			    --baudrate $(BAUDRATE) \

@@ -29,7 +29,7 @@ MCU = linux
 
 upload:
 
-run:
+rerun:
 	@echo "Running $(EXE)"
 	./$(EXE) | tee $(RUNLOG) ; test $${PIPESTATUS[0]} -eq 0
 

@@ -31,7 +31,7 @@ GCOV ?= gcov
 
 upload:
 
-run:
+rerun:
 	@echo "Running $(EXE)"
 	(cd $(BUILDDIR) && ./$(notdir $(EXE))) 2>&1 | tee $(RUNLOG) ; \
 	test $${PIPESTATUS[0]} -eq 0

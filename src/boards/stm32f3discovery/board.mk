@@ -31,7 +31,7 @@ upload:
 	@echo "Uploading $(NAME).bin"
 	st-flash write $(NAME).bin 0x8000000
 
-run:
+rerun:
 	@echo "Running $(NAME).bin"
 	@python -u $(SIMBA_ROOT)/make/run.py \
 	     $(RUN_END_PATTERN) \
