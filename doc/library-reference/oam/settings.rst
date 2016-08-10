@@ -1,11 +1,11 @@
-:mod:`setting` --- Persistent application settings
+:mod:`settings` --- Persistent application settings
 ==================================================
 
-.. module:: setting
+.. module:: settings
    :synopsis: Persistent application settings.
 
 Settings are stored in a non-volatile memory (NVM). In other words,
-settings are perserved even if the board is power cycled.
+settings are perserved after a board reset or power cycle.
 
 Application settings are defined in an ini-file that is used to
 generate the c source code. A setting has a type, a size, an address
@@ -31,8 +31,8 @@ address 0 and increasing from there.
 The build system variable ``SETTINGS_INI`` contains the path to the
 ini-file used by the build system. Set this variable to the path of
 yours application ini-file and run ``make settings-generate`` to
-generate four files; settings.h, settings.c,
-settings.little-endian.bin and settings.big-endian.bin.
+generate four files; ``settings.h``, ``settings.c``,
+``settings.little-endian.bin`` and ``settings.big-endian.bin``.
 
 Also add this to the Makefile: ``SRC += settings.c`` and include
 ``settings.h`` in the source files that accesses the settings.
@@ -41,7 +41,7 @@ Debug file system commands
 --------------------------
 
 Four debug file system commands are available, all located in the
-directory ``oam/setting/``.
+directory ``oam/settings/``.
 
 +-------------------------------+-----------------------------------------------------------------+
 |  Command                      | Description                                                     |
@@ -60,19 +60,19 @@ Example output from the shell:
 
 .. code-block:: text
 
-   $ oam/setting/list 
+   $ oam/settings/list 
    NAME                  TYPE     SIZE  VALUE
    version               int8_t      1  1
    value_1               int16_t     2  24567
    value_2               int32_t     4  -57
    value_3               string     16  foobar
-   $ oam/setting/read value_1
+   $ oam/settings/read value_1
    24567
-   $ oam/setting/write value_1 -5
-   $ oam/setting/read value_1
+   $ oam/settings/write value_1 -5
+   $ oam/settings/read value_1
    -5
-   $ oam/setting/reset
-   $ oam/setting/list 
+   $ oam/settings/reset
+   $ oam/settings/list 
    NAME                  TYPE     SIZE  VALUE
    version               int8_t      1  1
    value_1               int16_t     2  24567
@@ -101,7 +101,7 @@ default value is ``-4``.
    foo = -4
 
 The settings can be read and written with the functions
-`setting_read()` and `setting_write()`. Give the generated defines
+`settings_read()` and `settings_write()`. Give the generated defines
 ``SETTING_FOO_ADDR`` and ``SETTING_FOO_SIZE`` as arguments to those
 functions.
 
@@ -112,18 +112,18 @@ functions.
        int8_t foo;
 
        /* Read the foo setting. */
-       if (setting_read(&foo,
-                        SETTING_FOO_ADDR,
-                        SETTING_FOO_SIZE) != 0) {
+       if (settings_read(&foo,
+                         SETTING_FOO_ADDR,
+                         SETTING_FOO_SIZE) != 0) {
            return (-1);
        }
 
        foo -= 1;
 
        /* Write the foo setting. */
-       if (setting_write(SETTING_FOO_ADDR,
-                         &foo,
-                         SETTING_FOO_SIZE) != 0) {
+       if (settings_write(SETTING_FOO_ADDR,
+                          &foo,
+                          SETTING_FOO_SIZE) != 0) {
            return (-1);
        }
 
@@ -132,15 +132,15 @@ functions.
 
 ----------------------------------------------
 
-Source code: :github-blob:`src/oam/setting.h`, :github-blob:`src/oam/setting.c`
+Source code: :github-blob:`src/oam/settings.h`, :github-blob:`src/oam/settings.c`
 
-Test code: :github-blob:`tst/oam/setting/main.c`
+Test code: :github-blob:`tst/oam/settings/main.c`
 
-Test coverage: :codecov:`src/oam/setting.c`
+Test coverage: :codecov:`src/oam/settings.c`
 
 ----------------------------------------------
 
-.. doxygenfile:: oam/setting.h
+.. doxygenfile:: oam/settings.h
    :project: simba
 
 .. |br| raw:: html

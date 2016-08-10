@@ -127,7 +127,7 @@ SECTIONS
     PROVIDE_HIDDEN (__exidx_end = .);
 
     /* Settings area. */
-    .setting :
+    .settings :
     {
         . = ALIGN(256);
     } > rom

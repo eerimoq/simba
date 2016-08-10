@@ -22,7 +22,7 @@
 
 VERSION ?= $(shell cat $(SIMBA_ROOT)/VERSION.txt)
 
-CONFIG_SETTING_SIZE ?= 256
+CONFIG_SETTINGS_SIZE ?= 256
 
 # files and folders
 BUILDDIR ?= build/$(BOARD)
@@ -35,8 +35,9 @@ ifeq ($(RUST),yes)
 else
     SRC += main.c
 endif
-SRC += $(SIMBA_ROOT)/src/settings.c
-SETTINGS_BIN ?= $(SIMBA_ROOT)/src/settings.bin
+SETTINGS_C ?= $(SIMBA_ROOT)/src/settings_default.c
+SRC += $(SETTINGS_C)
+SETTINGS_BIN ?= $(SIMBA_ROOT)/src/settings_default.bin
 SETTTNGS_OUTPUT_DIRECTORY ?= .
 SRC_FILTERED = $(filter-out $(SRC_IGNORE),$(SRC))
 CSRC += $(filter %.c,$(SRC_FILTERED))
@@ -171,7 +172,7 @@ settings-generate: $(SETTINGS_INI)
 	mkdir -p $(SETTTNGS_OUTPUT_DIRECTORY)
 	$(SIMBA_ROOT)/bin/settings.py \
 	    --output-directory $(SETTTNGS_OUTPUT_DIRECTORY) \
-            --setting-size $(CONFIG_SETTING_SIZE) \
+            --settings-size $(CONFIG_SETTINGS_SIZE) \
 	    $^
 
 define COMPILE_template

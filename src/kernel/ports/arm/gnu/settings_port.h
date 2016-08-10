@@ -1,5 +1,5 @@
 /**
- * @file arm/gnu/setting_port.h
+ * @file arm/gnu/settings_port.h
  * @version 6.0.0
  *
  * @section License

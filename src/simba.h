@@ -42,7 +42,7 @@ typedef unsigned long off_t;
 #include "kernel/errno.h"
 #include "kernel/types.h"
 
-#include "oam/setting.h"
+#include "oam/settings.h"
 
 #include "collections/binary_tree.h"
 #include "collections/bits.h"

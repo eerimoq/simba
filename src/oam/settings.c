@@ -1,5 +1,5 @@
 /**
- * @file setting.c
+ * @file settings.c
  * @version 6.0.0
  *
  * @section License
@@ -20,11 +20,11 @@
 
 #include "simba.h"
 
-#include "setting_port.i"
+#include "settings_port.i"
 
 extern const FAR struct setting_t settings[];
 
-#if CONFIG_FS_CMD_SETTING_LIST == 1
+#if CONFIG_FS_CMD_SETTINGS_LIST == 1
 
 static struct fs_command_t cmd_list;
 
@@ -63,21 +63,21 @@ static int cmd_list_cb(int argc,
         switch (setting_p->type) {
 
         case setting_type_int8_t:
-            setting_read(&int8, setting_p->address, size);
+            settings_read(&int8, setting_p->address, size);
             std_fprintf(chout_p,
                         FSTR("int8_t      1  %d\r\n"),
                         (int)int8);
             break;
 
         case setting_type_int16_t:
-            setting_read(&int16, setting_p->address, size);
+            settings_read(&int16, setting_p->address, size);
             std_fprintf(chout_p,
                         FSTR("int16_t     2  %d\r\n"),
                         (int)int16);
             break;
 
         case setting_type_int32_t:
-            setting_read(&int32, setting_p->address, size);
+            settings_read(&int32, setting_p->address, size);
             std_fprintf(chout_p,
                         FSTR("int32_t     4  %ld\r\n"),
                         (long)int32);
@@ -87,7 +87,7 @@ static int cmd_list_cb(int argc,
             std_fprintf(chout_p, FSTR("string   %4u  "), (int)size);
 
             for (i = 0; i < size; i++) {
-                setting_read(&buf[0], setting_p->address + i, 1);
+                settings_read(&buf[0], setting_p->address + i, 1);
 
                 if (buf[0] == '\0') {
                     break;
@@ -113,23 +113,23 @@ static int cmd_list_cb(int argc,
 
 #endif
 
-#if CONFIG_FS_CMD_SETTING_RESET == 1
+#if CONFIG_FS_CMD_SETTINGS_RESET == 1
 
 static struct fs_command_t cmd_reset;
 
 static int cmd_reset_cb(int argc,
-                       const char *argv[],
-                       chan_t *chout_p,
-                       chan_t *chin_p,
-                       void *arg_p,
-                       void *call_arg_p)
+                        const char *argv[],
+                        chan_t *chout_p,
+                        chan_t *chin_p,
+                        void *arg_p,
+                        void *call_arg_p)
 {
-    return (setting_reset());
+    return (settings_reset());
 }
 
 #endif
 
-#if CONFIG_FS_CMD_SETTING_READ == 1
+#if CONFIG_FS_CMD_SETTINGS_READ == 1
 
 static struct fs_command_t cmd_read;
 
@@ -161,23 +161,23 @@ static int cmd_read_cb(int argc,
             switch (setting_p->type) {
 
             case setting_type_int8_t:
-                setting_read(&int8, setting_p->address, setting_p->size);
+                settings_read(&int8, setting_p->address, setting_p->size);
                 std_fprintf(chout_p, FSTR("%d\r\n"), (int)int8);
                 break;
 
             case setting_type_int16_t:
-                setting_read(&int16, setting_p->address, setting_p->size);
+                settings_read(&int16, setting_p->address, setting_p->size);
                 std_fprintf(chout_p, FSTR("%d\r\n"), (int)int16);
                 break;
 
             case setting_type_int32_t:
-                setting_read(&int32, setting_p->address, setting_p->size);
+                settings_read(&int32, setting_p->address, setting_p->size);
                 std_fprintf(chout_p, FSTR("%ld\r\n"), (long)int32);
                 break;
 
             case setting_type_string_t:
                 for (i = 0; i < setting_p->size; i++) {
-                    setting_read(&buf[0], setting_p->address + i, 1);
+                    settings_read(&buf[0], setting_p->address + i, 1);
 
                     if (buf[0] == '\0') {
                         break;
@@ -208,16 +208,16 @@ static int cmd_read_cb(int argc,
 
 #endif
 
-#if CONFIG_FS_CMD_SETTING_WRITE == 1
+#if CONFIG_FS_CMD_SETTINGS_WRITE == 1
 
 static struct fs_command_t cmd_write;
 
 static int cmd_write_cb(int argc,
-                       const char *argv[],
-                       chan_t *chout_p,
-                       chan_t *chin_p,
-                       void *arg_p,
-                       void *call_arg_p)
+                        const char *argv[],
+                        chan_t *chout_p,
+                        chan_t *chin_p,
+                        void *arg_p,
+                        void *call_arg_p)
 {
     const FAR struct setting_t *setting_p;
     long value;
@@ -252,7 +252,7 @@ static int cmd_write_cb(int argc,
                 }
 
                 int8 = (int8_t)value;
-                setting_write(setting_p->address, &int8, setting_p->size);
+                settings_write(setting_p->address, &int8, setting_p->size);
                 break;
 
             case setting_type_int16_t:
@@ -269,7 +269,7 @@ static int cmd_write_cb(int argc,
                 }
 
                 int16 = (int16_t)value;
-                setting_write(setting_p->address, &int16, setting_p->size);
+                settings_write(setting_p->address, &int16, setting_p->size);
                 break;
 
             case setting_type_int32_t:
@@ -286,7 +286,7 @@ static int cmd_write_cb(int argc,
                 }
 
                 int32 = (int32_t)value;
-                setting_write(setting_p->address, &int32, setting_p->size);
+                settings_write(setting_p->address, &int32, setting_p->size);
                 break;
 
             case setting_type_string_t:
@@ -298,7 +298,7 @@ static int cmd_write_cb(int argc,
                     return (-1);
                 }
 
-                setting_write(setting_p->address, argv[2], setting_p->size);
+                settings_write(setting_p->address, argv[2], setting_p->size);
                 break;
 
             default:
@@ -320,72 +320,72 @@ static int cmd_write_cb(int argc,
 
 #endif
 
-int setting_module_init(void)
+int settings_module_init(void)
 {
-#if CONFIG_FS_CMD_SETTING_LIST == 1
+#if CONFIG_FS_CMD_SETTINGS_LIST == 1
 
     fs_command_init(&cmd_list,
-                    FSTR("/oam/setting/list"),
+                    FSTR("/oam/settings/list"),
                     cmd_list_cb,
                     NULL);
     fs_command_register(&cmd_list);
 
 #endif
 
-#if CONFIG_FS_CMD_SETTING_RESET == 1
+#if CONFIG_FS_CMD_SETTINGS_RESET == 1
 
     fs_command_init(&cmd_reset,
-                    FSTR("/oam/setting/reset"),
+                    FSTR("/oam/settings/reset"),
                     cmd_reset_cb,
                     NULL);
     fs_command_register(&cmd_reset);
 
 #endif
 
-#if CONFIG_FS_CMD_SETTING_READ == 1
+#if CONFIG_FS_CMD_SETTINGS_READ == 1
 
     fs_command_init(&cmd_read,
-                    FSTR("/oam/setting/read"),
+                    FSTR("/oam/settings/read"),
                     cmd_read_cb,
                     NULL);
     fs_command_register(&cmd_read);
 
 #endif
 
-#if CONFIG_FS_CMD_SETTING_WRITE == 1
+#if CONFIG_FS_CMD_SETTINGS_WRITE == 1
 
     fs_command_init(&cmd_write,
-                    FSTR("/oam/setting/write"),
+                    FSTR("/oam/settings/write"),
                     cmd_write_cb,
                     NULL);
     fs_command_register(&cmd_write);
 
 #endif
 
-    return (setting_port_module_init());
+    return (settings_port_module_init());
 }
 
-ssize_t setting_read(void *dst_p, size_t src, size_t size)
+ssize_t settings_read(void *dst_p, size_t src, size_t size)
 {
     ASSERTN(dst_p != NULL, EINVAL);
     ASSERTN(src >= 0, EINVAL);
     ASSERTN(size > 0, EINVAL);
 
-    return (setting_port_read(dst_p, src, size));
+    return (settings_port_read(dst_p, src, size));
 }
 
-ssize_t setting_write(size_t dst, const void *src_p, size_t size)
+ssize_t settings_write(size_t dst, const void *src_p, size_t size)
 {
     ASSERTN(dst >= 0, EINVAL);
     ASSERTN(src_p != NULL, EINVAL);
     ASSERTN(size > 0, EINVAL);
 
-    return (setting_port_write(dst, src_p, size));
+    return (settings_port_write(dst, src_p, size));
 }
 
-ssize_t setting_read_by_name(const char *name_p,
-                             void *dst_p,
-                             size_t size)
+ssize_t settings_read_by_name(const char *name_p,
+                              void *dst_p,
+                              size_t size)
 {
     ASSERTN(name_p != NULL, EINVAL);
     ASSERTN(dst_p  != NULL, EINVAL);
@@ -402,7 +402,7 @@ ssize_t setting_read_by_name(const char *name_p,
                 return (-1);
             }
 
-            return (setting_read(dst_p, setting_p->address, size));
+            return (settings_read(dst_p, setting_p->address, size));
         }
 
         setting_p++;
@@ -411,9 +411,9 @@ ssize_t setting_read_by_name(const char *name_p,
     return (-1);
 }
 
-ssize_t setting_write_by_name(const char *name_p,
-                              const void *src_p,
-                              size_t size)
+ssize_t settings_write_by_name(const char *name_p,
+                               const void *src_p,
+                               size_t size)
 {
     ASSERTN(name_p != NULL, EINVAL);
     ASSERTN(src_p != NULL, EINVAL);
@@ -430,7 +430,7 @@ ssize_t setting_write_by_name(const char *name_p,
                 return (-1);
             }
 
-            return (setting_write(setting_p->address, src_p, size));
+            return (settings_write(setting_p->address, src_p, size));
         }
 
         setting_p++;
@@ -439,7 +439,7 @@ ssize_t setting_write_by_name(const char *name_p,
     return (-1);
 }
 
-int setting_reset()
+int settings_reset()
 {
-    return (setting_port_reset());
+    return (settings_port_reset());
 }

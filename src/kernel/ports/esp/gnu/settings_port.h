@@ -1,5 +1,5 @@
 /**
- * @file avr/gnu/setting_port.h
+ * @file avr/gnu/settings_port.h
  * @version 6.0.0
  *
  * @section License
@@ -18,7 +18,9 @@
  * This file is part of the Simba project.
  */
 
-#ifndef __KERNEL_SETTINGS_PORT_H__
-#define __KERNEL_SETTINGS_PORT_H__
+#ifndef __KERNEL_SETTING_PORT_H__
+#define __KERNEL_SETTING_PORT_H__
+
+#define SETTING_MEMORY_EEPROM
 
 #endif

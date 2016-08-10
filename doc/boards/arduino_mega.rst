@@ -94,13 +94,13 @@ Default Standard Library configuration.
 +------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_FS_CMD_PIN_WRITE_                            |  1                                                  |
 +------------------------------------------------------+-----------------------------------------------------+
-|  CONFIG_FS_CMD_SETTING_LIST_                         |  1                                                  |
+|  CONFIG_FS_CMD_SETTINGS_LIST_                        |  1                                                  |
 +------------------------------------------------------+-----------------------------------------------------+
-|  CONFIG_FS_CMD_SETTING_READ_                         |  1                                                  |
+|  CONFIG_FS_CMD_SETTINGS_READ_                        |  1                                                  |
 +------------------------------------------------------+-----------------------------------------------------+
-|  CONFIG_FS_CMD_SETTING_RESET_                        |  1                                                  |
+|  CONFIG_FS_CMD_SETTINGS_RESET_                       |  1                                                  |
 +------------------------------------------------------+-----------------------------------------------------+
-|  CONFIG_FS_CMD_SETTING_WRITE_                        |  1                                                  |
+|  CONFIG_FS_CMD_SETTINGS_WRITE_                       |  1                                                  |
 +------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_FS_CMD_SYS_INFO_                             |  1                                                  |
 +------------------------------------------------------+-----------------------------------------------------+
@@ -120,7 +120,7 @@ Default Standard Library configuration.
 +------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_PROFILE_STACK_                               |  1                                                  |
 +------------------------------------------------------+-----------------------------------------------------+
-|  CONFIG_SETTING_AREA_SIZE_                           |  256                                                |
+|  CONFIG_SETTINGS_AREA_SIZE_                          |  256                                                |
 +------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_SHELL_COMMAND_MAX_                           |  64                                                 |
 +------------------------------------------------------+-----------------------------------------------------+
@@ -219,13 +219,13 @@ Library Reference.
 
 .. _CONFIG_FS_CMD_PIN_WRITE: ../user-guide/configuration.html#c.CONFIG_FS_CMD_PIN_WRITE
 
-.. _CONFIG_FS_CMD_SETTING_LIST: ../user-guide/configuration.html#c.CONFIG_FS_CMD_SETTING_LIST
+.. _CONFIG_FS_CMD_SETTINGS_LIST: ../user-guide/configuration.html#c.CONFIG_FS_CMD_SETTINGS_LIST
 
-.. _CONFIG_FS_CMD_SETTING_READ: ../user-guide/configuration.html#c.CONFIG_FS_CMD_SETTING_READ
+.. _CONFIG_FS_CMD_SETTINGS_READ: ../user-guide/configuration.html#c.CONFIG_FS_CMD_SETTINGS_READ
 
-.. _CONFIG_FS_CMD_SETTING_RESET: ../user-guide/configuration.html#c.CONFIG_FS_CMD_SETTING_RESET
+.. _CONFIG_FS_CMD_SETTINGS_RESET: ../user-guide/configuration.html#c.CONFIG_FS_CMD_SETTINGS_RESET
 
-.. _CONFIG_FS_CMD_SETTING_WRITE: ../user-guide/configuration.html#c.CONFIG_FS_CMD_SETTING_WRITE
+.. _CONFIG_FS_CMD_SETTINGS_WRITE: ../user-guide/configuration.html#c.CONFIG_FS_CMD_SETTINGS_WRITE
 
 .. _CONFIG_FS_CMD_SYS_INFO: ../user-guide/configuration.html#c.CONFIG_FS_CMD_SYS_INFO
 
@@ -245,7 +245,7 @@ Library Reference.
 
 .. _CONFIG_PROFILE_STACK: ../user-guide/configuration.html#c.CONFIG_PROFILE_STACK
 
-.. _CONFIG_SETTING_AREA_SIZE: ../user-guide/configuration.html#c.CONFIG_SETTING_AREA_SIZE
+.. _CONFIG_SETTINGS_AREA_SIZE: ../user-guide/configuration.html#c.CONFIG_SETTINGS_AREA_SIZE
 
 .. _CONFIG_SHELL_COMMAND_MAX: ../user-guide/configuration.html#c.CONFIG_SHELL_COMMAND_MAX
 

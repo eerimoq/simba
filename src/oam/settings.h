@@ -1,5 +1,5 @@
 /**
- * @file oam/setting.h
+ * @file oam/settings.h
  * @version 6.0.0
  *
  * @section License
@@ -18,15 +18,15 @@
  * This file is part of the Simba project.
  */
 
-#ifndef __OAM_SETTING_H__
-#define __OAM_SETTING_H__
+#ifndef __OAM_SETTINGS_H__
+#define __OAM_SETTINGS_H__
 
 #include "simba.h"
 
-#define SETTING_AREA_CRC_OFFSET (CONFIG_SETTING_AREA_SIZE - 4)
+#define SETTINGS_AREA_CRC_OFFSET (CONFIG_SETTINGS_AREA_SIZE - 4)
 
 /**
- * Setting types. Each setting must have be one of these types.
+ * Settings types. Each setting must have be one of these types.
  */
 enum setting_type_t {
     setting_type_int8_t = 0,
@@ -42,14 +42,14 @@ struct setting_t {
     size_t size;
 };
 
-#include "setting_port.h"
+#include "settings_port.h"
 
 /**
- * Initialize the setting module.
+ * Initialize the settings module.
  *
  * @return zero(0) or negative error code.
  */
-int setting_module_init(void);
+int settings_module_init(void);
 
 /**
  * Read the value of given setting by address.
@@ -60,7 +60,7 @@ int setting_module_init(void);
  *
  * @return Number of words read or negative error code.
  */
-ssize_t setting_read(void *dst_p, size_t src, size_t size);
+ssize_t settings_read(void *dst_p, size_t src, size_t size);
 
 /**
  * Write given value to given setting by address.
@@ -71,7 +71,7 @@ ssize_t setting_read(void *dst_p, size_t src, size_t size);
  *
  * @return Number of words written or negative error code.
  */
-ssize_t setting_write(size_t dst, const void *src_p, size_t size);
+ssize_t settings_write(size_t dst, const void *src_p, size_t size);
 
 /**
  * Read the value of given setting by name.
@@ -82,9 +82,9 @@ ssize_t setting_write(size_t dst, const void *src_p, size_t size);
  *
  * @return Number of words read or negative error code.
  */
-ssize_t setting_read_by_name(const char *name_p,
-                             void *dst_p,
-                             size_t size);
+ssize_t settings_read_by_name(const char *name_p,
+                              void *dst_p,
+                              size_t size);
 
 /**
  * Write given value to given setting by name.
@@ -95,15 +95,15 @@ ssize_t setting_read_by_name(const char *name_p,
  *
  * @return Number of words read or negative error code.
  */
-ssize_t setting_write_by_name(const char *name_p,
-                              const void *src_p,
-                              size_t size);
+ssize_t settings_write_by_name(const char *name_p,
+                               const void *src_p,
+                               size_t size);
 
 /**
  * Overwrite all settings with their default values.
  *
  * @return zero(0) or negative error code.
  */
-int setting_reset(void);
+int settings_reset(void);
 
 #endif

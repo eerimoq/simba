@@ -1,5 +1,5 @@
 /**
- * @file avr/gnu/setting_port.h
+ * @file avr/gnu/settings_port.h
  * @version 6.0.0
  *
  * @section License
@@ -20,7 +20,5 @@
 
 #ifndef __KERNEL_SETTING_PORT_H__
 #define __KERNEL_SETTING_PORT_H__
-
-#define SETTING_MEMORY_EEPROM
 
 #endif

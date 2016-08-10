@@ -1,5 +1,5 @@
 /**
- * @file avr/gnu/setting_port.i
+ * @file avr/gnu/settings_port.i
  * @version 6.0.0
  *
  * @section License
@@ -18,22 +18,22 @@
  * This file is part of the Simba project.
  */
 
-static int setting_port_module_init(void)
+static int settings_port_module_init(void)
 {
     return (0);
 }
 
-static int setting_port_read(void *dst_p, size_t src, size_t size)
+static int settings_port_read(void *dst_p, size_t src, size_t size)
 {
     return (-1);
 }
 
-static int setting_port_write(size_t dst, const void *src_p, size_t size)
+static int settings_port_write(size_t dst, const void *src_p, size_t size)
 {
     return (-1);
 }
 
-static ssize_t setting_port_reset()
+static ssize_t settings_port_reset()
 {
     return (-1);
 }

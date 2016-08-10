@@ -51,6 +51,8 @@ def test():
 
     subprocess.check_call(command)
 
+    generate_platformio()
+
     # Build a PlatformIO application.
     command = [
         "platformio",
@@ -104,6 +106,19 @@ def build_examples():
     ]
 
     subprocess.check_call(command, cwd="examples")
+
+
+def generate_platformio():
+    """Generate the platformio files.
+
+    """
+
+    command = [
+        "make",
+        "platformio"
+    ]
+
+    subprocess.check_call(command)
 
 
 def generate_arduino():

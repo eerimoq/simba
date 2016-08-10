@@ -220,7 +220,7 @@ SRC += $(MULTIMEDIA_SRC:%=$(SIMBA_ROOT)/src/multimedia/%)
 
 # Oam package.
 OAM_SRC ?= console.c \
-	   setting.c \
+	   settings.c \
 	   shell.c
 
 SRC += $(OAM_SRC:%=$(SIMBA_ROOT)/src/oam/%)

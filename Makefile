@@ -44,7 +44,7 @@ ifeq ($(BOARD), linux)
 				    std \
                                     re)
     TESTS += $(addprefix tst/debug/, log)
-    TESTS += $(addprefix tst/oam/, setting \
+    TESTS += $(addprefix tst/oam/, settings \
 				   shell)
     TESTS += $(addprefix tst/filesystems/, fat16 \
 				          fs \
@@ -81,7 +81,7 @@ ifeq ($(BOARD), arduino_due)
 				    std \
                                     re)
     TESTS += $(addprefix tst/debug/, log)
-    TESTS += $(addprefix tst/oam/, setting \
+    TESTS += $(addprefix tst/oam/, settings \
 	        		   shell)
     TESTS += $(addprefix tst/filesystems/, fs \
 					  spiffs)
@@ -120,7 +120,7 @@ ifeq ($(BOARD), arduino_mega)
 				    std \
                                     re)
     TESTS += $(addprefix tst/debug/, log)
-    TESTS += $(addprefix tst/oam/, setting \
+    TESTS += $(addprefix tst/oam/, settings \
 	        		   shell)
     TESTS += $(addprefix tst/filesystems/, fat16 \
 					  fs)

@@ -1,5 +1,5 @@
 /**
- * @file arm/gnu/setting_port.i
+ * @file arm/gnu/settings_port.i
  * @version 6.0.0
  *
  * @section License
@@ -21,11 +21,11 @@
 #define PRIMARY 0
 #define SECONDARY  1
 
-extern uint8_t setting_area[2][CONFIG_SETTING_AREA_SIZE]
-__attribute__ ((section (".setting")));
+extern uint8_t settings_area[2][CONFIG_SETTINGS_AREA_SIZE]
+__attribute__ ((section (".settings")));
 
-extern uint8_t setting_default_area[CONFIG_SETTING_AREA_SIZE]
-__attribute__ ((section (".setting")));
+extern uint8_t settings_default_area[CONFIG_SETTINGS_AREA_SIZE]
+__attribute__ ((section (".settings")));
 
 static struct flash_driver_t drv;
 
@@ -39,7 +39,7 @@ static uint32_t calculate_area_crc(const uint8_t *area_p)
     /* Calculate the crc. */
     crc = 0;
 
-    for (i = 0; i < CONFIG_SETTING_AREA_SIZE / sizeof(buf); i++) {
+    for (i = 0; i < CONFIG_SETTINGS_AREA_SIZE / sizeof(buf); i++) {
         flash_read(&drv,
                    buf,
                    (size_t)&area_p[i * sizeof(buf)],
@@ -48,7 +48,7 @@ static uint32_t calculate_area_crc(const uint8_t *area_p)
         size = sizeof(buf);
 
         /* Don't include the crc at the end of the area. */
-        if (i == (CONFIG_SETTING_AREA_SIZE / sizeof(buf)) - 1) {
+        if (i == (CONFIG_SETTINGS_AREA_SIZE / sizeof(buf)) - 1) {
             size -= 4;
         }
 
@@ -71,7 +71,7 @@ static int is_area_ok(const uint8_t *area_p)
     /* Read the expected crc.*/
     flash_read(&drv,
                &expected_crc,
-               (size_t)&area_p[SETTING_AREA_CRC_OFFSET],
+               (size_t)&area_p[SETTINGS_AREA_CRC_OFFSET],
                sizeof(expected_crc));
 
     real_crc = calculate_area_crc(area_p);
@@ -84,7 +84,7 @@ static int copy_area(uint8_t *dst_p, const uint8_t *src_p)
     uint8_t buf[256];
     int i;
 
-    for (i = 0; i < CONFIG_SETTING_AREA_SIZE / sizeof(buf); i++) {
+    for (i = 0; i < CONFIG_SETTINGS_AREA_SIZE / sizeof(buf); i++) {
         if (flash_read(&drv,
                        buf,
                        (size_t)&src_p[i * sizeof(buf)],
@@ -103,18 +103,18 @@ static int copy_area(uint8_t *dst_p, const uint8_t *src_p)
     return (0);
 }
 
-static int setting_port_module_init(void)
+static int settings_port_module_init(void)
 {
     flash_init(&drv, &flash_0_dev);
 
     /* Is the primary area ok? */
-    if (!is_area_ok(&setting_area[PRIMARY][0])) {
+    if (!is_area_ok(&settings_area[PRIMARY][0])) {
         /* Is the backup area ok? */
-        if (!is_area_ok(&setting_area[SECONDARY][0])) {
+        if (!is_area_ok(&settings_area[SECONDARY][0])) {
             return (-1);
         }
 
-        if (copy_area(&setting_area[PRIMARY][0], &setting_area[SECONDARY][0]) != 0) {
+        if (copy_area(&settings_area[PRIMARY][0], &settings_area[SECONDARY][0]) != 0) {
             return (-1);
         }
     }
@@ -122,30 +122,30 @@ static int setting_port_module_init(void)
     return (0);
 }
 
-static ssize_t setting_port_read(void *dst_p, size_t src, size_t size)
+static ssize_t settings_port_read(void *dst_p, size_t src, size_t size)
 {
-    return (flash_read(&drv, dst_p, (size_t)&setting_area[PRIMARY][src], size));
+    return (flash_read(&drv, dst_p, (size_t)&settings_area[PRIMARY][src], size));
 }
 
-static ssize_t setting_port_write(size_t dst, const void *src_p, size_t size)
+static ssize_t settings_port_write(size_t dst, const void *src_p, size_t size)
 {
     uint32_t crc;
 
     /* Copy the primary area to the secondary area. */
-    if (copy_area(&setting_area[SECONDARY][0], &setting_area[PRIMARY][0]) != 0) {
+    if (copy_area(&settings_area[SECONDARY][0], &settings_area[PRIMARY][0]) != 0) {
         return (-1);
     }
 
     /* Update the primary area. */
-    if (flash_write(&drv, (size_t)&setting_area[PRIMARY][dst], src_p, size) != size) {
+    if (flash_write(&drv, (size_t)&settings_area[PRIMARY][dst], src_p, size) != size) {
         return (-1);
     }
 
     /* Update the crc. */
-    crc = calculate_area_crc(&setting_area[PRIMARY][0]);
+    crc = calculate_area_crc(&settings_area[PRIMARY][0]);
 
     if (flash_write(&drv,
-                    (size_t)&setting_area[PRIMARY][SETTING_AREA_CRC_OFFSET],
+                    (size_t)&settings_area[PRIMARY][SETTINGS_AREA_CRC_OFFSET],
                     &crc,
                     sizeof(crc)) != sizeof(crc)) {
         return (-1);
@@ -154,7 +154,7 @@ static ssize_t setting_port_write(size_t dst, const void *src_p, size_t size)
     return (size);
 }
 
-static ssize_t setting_port_reset()
+static ssize_t settings_port_reset()
 {
-    return (copy_area(&setting_area[PRIMARY][0], &setting_default_area[0]));
+    return (copy_area(&settings_area[PRIMARY][0], &settings_default_area[0]));
 }

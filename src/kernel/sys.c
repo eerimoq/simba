@@ -55,10 +55,10 @@ static const FAR char config[] =
     "        fs-cmd-pin-read=" STRINGIFY(CONFIG_FS_CMD_PIN_READ) "\r\n"
     "        fs-cmd-pin-set-mode=" STRINGIFY(CONFIG_FS_CMD_PIN_SET_MODE) "\r\n"
     "        fs-cmd-pin-write=" STRINGIFY(CONFIG_FS_CMD_PIN_WRITE) "\r\n"
-    "        fs-cmd-setting-list=" STRINGIFY(CONFIG_FS_CMD_SETTING_LIST) "\r\n"
-    "        fs-cmd-setting-read=" STRINGIFY(CONFIG_FS_CMD_SETTING_READ) "\r\n"
-    "        fs-cmd-setting-reset=" STRINGIFY(CONFIG_FS_CMD_SETTING_RESET) "\r\n"
-    "        fs-cmd-setting-write=" STRINGIFY(CONFIG_FS_CMD_SETTING_WRITE) "\r\n"
+    "        fs-cmd-settings-list=" STRINGIFY(CONFIG_FS_CMD_SETTINGS_LIST) "\r\n"
+    "        fs-cmd-settings-read=" STRINGIFY(CONFIG_FS_CMD_SETTINGS_READ) "\r\n"
+    "        fs-cmd-settings-reset=" STRINGIFY(CONFIG_FS_CMD_SETTINGS_RESET) "\r\n"
+    "        fs-cmd-settings-write=" STRINGIFY(CONFIG_FS_CMD_SETTINGS_WRITE) "\r\n"
     "        fs-cmd-sys-info=" STRINGIFY(CONFIG_FS_CMD_SYS_INFO) "\r\n"
     "        fs-cmd-sys-uptime=" STRINGIFY(CONFIG_FS_CMD_SYS_UPTIME) "\r\n"
     "        fs-cmd-thrd-list=" STRINGIFY(CONFIG_FS_CMD_THRD_LIST) "\r\n"
@@ -68,7 +68,7 @@ static const FAR char config[] =
     "        monitor-thread=" STRINGIFY(CONFIG_MONITOR_THREAD) "\r\n"
     "        preemptive-scheduler=" STRINGIFY(CONFIG_PREEMPTIVE_SCHEDULER) "\r\n"
     "        profile-stack=" STRINGIFY(CONFIG_PROFILE_STACK) "\r\n"
-    "        setting-area-size=" STRINGIFY(CONFIG_SETTING_AREA_SIZE) "\r\n"
+    "        settings-area-size=" STRINGIFY(CONFIG_SETTINGS_AREA_SIZE) "\r\n"
     "        shell-command-max=" STRINGIFY(CONFIG_SHELL_COMMAND_MAX) "\r\n"
     "        shell-history-size=" STRINGIFY(CONFIG_SHELL_HISTORY_SIZE) "\r\n"
     "        shell-minimal=" STRINGIFY(CONFIG_SHELL_MINIMAL) "\r\n"
@@ -344,7 +344,7 @@ int sys_start(void)
 {
     rwlock_module_init();
     fs_module_init();
-    setting_module_init();
+    settings_module_init();
     std_module_init();
     sem_module_init();
     timer_module_init();

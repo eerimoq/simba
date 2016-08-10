@@ -18,12 +18,11 @@
 # This file is part of the Simba project.
 #
 
-NAME = setting_suite
+NAME = settings_suite
 VERSION = 0.3.0
 BOARD ?= linux
 
-SRC += settings.c
-SRC_IGNORE += $(SIMBA_ROOT)/src/settings.c
+SETTINGS_C = settings.c
 
 SETTINGS_INI = settings.ini
 SETTINGS_BIN = settings.little-endian.bin
