@@ -554,53 +554,53 @@ static int test_filesystem_commands(struct harness_t *harness_p)
                "/fat16fs                       -        fat16            -     -     -%\r\n");
 
     /* Bad arguments. */
-    strcpy(buf, "/filesystems/fs/filesystems/read");
+    strcpy(buf, "/filesystems/fs/read");
     BTASSERT(fs_call(buf, NULL, &qout, NULL) == -1);
-    read_until(buf, "Usage: /filesystems/fs/filesystems/read <file>\r\n");
+    read_until(buf, "Usage: /filesystems/fs/read <file>\r\n");
 
-    strcpy(buf, "/filesystems/fs/filesystems/write");
+    strcpy(buf, "/filesystems/fs/write");
     BTASSERT(fs_call(buf, NULL, &qout, NULL) == -1);
-    read_until(buf, "Usage: /filesystems/fs/filesystems/write <file> <data>\r\n");
+    read_until(buf, "Usage: /filesystems/fs/write <file> <data>\r\n");
 
-    strcpy(buf, "/filesystems/fs/filesystems/append");
+    strcpy(buf, "/filesystems/fs/append");
     BTASSERT(fs_call(buf, NULL, &qout, NULL) == -1);
-    read_until(buf, "Usage: /filesystems/fs/filesystems/append <file> <data>\r\n");
+    read_until(buf, "Usage: /filesystems/fs/append <file> <data>\r\n");
 
     /* Non-existing file. */
-    strcpy(buf, "/filesystems/fs/filesystems/read spiffsfs/cmd.txt");
+    strcpy(buf, "/filesystems/fs/read spiffsfs/cmd.txt");
     BTASSERT(fs_call(buf, NULL, &qout, NULL) == -1);
     read_until(buf, "Failed to open spiffsfs/cmd.txt.\r\n");
 
-    strcpy(buf, "/filesystems/fs/filesystems/append spiffsfs/cmd.txt a");
+    strcpy(buf, "/filesystems/fs/append spiffsfs/cmd.txt a");
     BTASSERT(fs_call(buf, NULL, &qout, NULL) == -1);
     read_until(buf, "Failed to open spiffsfs/cmd.txt.\r\n");
 
     /* Write, append and read. */
-    strcpy(buf, "/filesystems/fs/filesystems/write spiffsfs/cmd.txt 1");
+    strcpy(buf, "/filesystems/fs/write spiffsfs/cmd.txt 1");
     BTASSERT(fs_call(buf, NULL, &qout, NULL) == 0);
 
-    strcpy(buf, "/filesystems/fs/filesystems/append spiffsfs/cmd.txt 2");
+    strcpy(buf, "/filesystems/fs/append spiffsfs/cmd.txt 2");
     BTASSERT(fs_call(buf, NULL, &qout, NULL) == 0);
 
-    strcpy(buf, "/filesystems/fs/filesystems/read spiffsfs/cmd.txt");
+    strcpy(buf, "/filesystems/fs/read spiffsfs/cmd.txt");
     BTASSERT(fs_call(buf, NULL, &qout, NULL) == 0);
     read_until(buf, "12\r\n");
 
     /* Truncate existing file. */
-    strcpy(buf, "/filesystems/fs/filesystems/write spiffsfs/cmd.txt 1");
+    strcpy(buf, "/filesystems/fs/write spiffsfs/cmd.txt 1");
     BTASSERT(fs_call(buf, NULL, &qout, NULL) == 0);
 
-    strcpy(buf, "/filesystems/fs/filesystems/read spiffsfs/cmd.txt");
+    strcpy(buf, "/filesystems/fs/read spiffsfs/cmd.txt");
     BTASSERT(fs_call(buf, NULL, &qout, NULL) == 0);
     read_until(buf, "1\r\n");
 
     /* List all files in the FAT16 file system. */
-    strcpy(buf, "/filesystems/fs/filesystems/ls fat16fs");
+    strcpy(buf, "/filesystems/fs/list fat16fs");
     BTASSERT(fs_call(buf, NULL, &qout, NULL) == 0);
     read_until(buf, "2000-01-01 01:00        6 FOO.TXT\r\n");
 
     /* List all files in the SPIFFS file system. */
-    strcpy(buf, "/filesystems/fs/filesystems/ls spiffsfs");
+    strcpy(buf, "/filesystems/fs/list spiffsfs");
     BTASSERT(fs_call(buf, NULL, &qout, NULL) == 0);
     read_until(buf,
                "xxxx-xx-xx xx-xx        6 foo.txt\r\n"
