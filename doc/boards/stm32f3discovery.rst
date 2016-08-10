@@ -13,6 +13,15 @@ Pinout
    :width: 50%
    :target: ../_images/stm32f3discovery.jpg
 
+Default system features
+-----------------------
+
+Here is a list of enabled higher level features for this board, all
+initialized in ``sys_start()``:
+
+- :doc:`Console.<../library-reference/oam/console>`
+- :doc:`Debug shell.<../library-reference/oam/shell>`
+
 Drivers
 -------
 
@@ -52,6 +61,8 @@ Default Standard Library configuration.
 |  CONFIG_CONSOLE_USB_CDC_WAIT_FOR_CONNETION_          |  1                                                  |
 +------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_DEBUG_                                       |  1                                                  |
++------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_FILESYSTEM_                                  |  0                                                  |
 +------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_FS_CMD_DS18B20_LIST_                         |  1                                                  |
 +------------------------------------------------------+-----------------------------------------------------+
@@ -109,11 +120,15 @@ Default Standard Library configuration.
 +------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_MONITOR_THREAD_                              |  1                                                  |
 +------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_NETWORK_MANAGER_                             |  0                                                  |
++------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_PREEMPTIVE_SCHEDULER_                        |  0                                                  |
 +------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_PROFILE_STACK_                               |  1                                                  |
 +------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_SETTING_AREA_SIZE_                           |  256                                                |
++------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_SHELL_                                       |  1                                                  |
 +------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_SHELL_COMMAND_MAX_                           |  64                                                 |
 +------------------------------------------------------+-----------------------------------------------------+
@@ -163,6 +178,8 @@ Library Reference.
 .. _CONFIG_CONSOLE_USB_CDC_WAIT_FOR_CONNETION: ../user-guide/configuration.html#c.CONFIG_CONSOLE_USB_CDC_WAIT_FOR_CONNETION
 
 .. _CONFIG_DEBUG: ../user-guide/configuration.html#c.CONFIG_DEBUG
+
+.. _CONFIG_FILESYSTEM: ../user-guide/configuration.html#c.CONFIG_FILESYSTEM
 
 .. _CONFIG_FS_CMD_DS18B20_LIST: ../user-guide/configuration.html#c.CONFIG_FS_CMD_DS18B20_LIST
 
@@ -220,11 +237,15 @@ Library Reference.
 
 .. _CONFIG_MONITOR_THREAD: ../user-guide/configuration.html#c.CONFIG_MONITOR_THREAD
 
+.. _CONFIG_NETWORK_MANAGER: ../user-guide/configuration.html#c.CONFIG_NETWORK_MANAGER
+
 .. _CONFIG_PREEMPTIVE_SCHEDULER: ../user-guide/configuration.html#c.CONFIG_PREEMPTIVE_SCHEDULER
 
 .. _CONFIG_PROFILE_STACK: ../user-guide/configuration.html#c.CONFIG_PROFILE_STACK
 
 .. _CONFIG_SETTING_AREA_SIZE: ../user-guide/configuration.html#c.CONFIG_SETTING_AREA_SIZE
+
+.. _CONFIG_SHELL: ../user-guide/configuration.html#c.CONFIG_SHELL
 
 .. _CONFIG_SHELL_COMMAND_MAX: ../user-guide/configuration.html#c.CONFIG_SHELL_COMMAND_MAX
 

@@ -71,8 +71,12 @@ extern struct sys_t sys;
 int sys_module_init(void);
 
 /**
- * Start the system. This initializes all kernel modules and converts
- * the current context to the main thread.
+ * Start the system and convert this context to the main thread.
+ *
+ * This function initializes a bunch of enabled features in the simba
+ * platform. Many low level features (scheduling, timers, ...) are
+ * always enabled, but higher level features are only enabled if
+ * configured.
  *
  * This function **must** be the first function call in main().
  *

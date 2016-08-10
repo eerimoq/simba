@@ -31,7 +31,7 @@ struct sys_t sys = {
     }
 };
 
-static const FAR char config[] = 
+static const FAR char config[] =
     "config: sys-config-string=" STRINGIFY(CONFIG_SYS_CONFIG_STRING) "\r\n"
 
 #if CONFIG_SYS_CONFIG_STRING == 1
@@ -76,11 +76,12 @@ static const FAR char config[] =
     "        preemptive-scheduler=" STRINGIFY(CONFIG_PREEMPTIVE_SCHEDULER) "\r\n"
     "        profile-stack=" STRINGIFY(CONFIG_PROFILE_STACK) "\r\n"
     "        setting-area-size=" STRINGIFY(CONFIG_SETTING_AREA_SIZE) "\r\n"
+    "        shell=" STRINGIFY(CONFIG_SHELL) "\r\n"
     "        shell-command-max=" STRINGIFY(CONFIG_SHELL_COMMAND_MAX) "\r\n"
     "        shell-history-size=" STRINGIFY(CONFIG_SHELL_HISTORY_SIZE) "\r\n"
     "        shell-minimal=" STRINGIFY(CONFIG_SHELL_MINIMAL) "\r\n"
+    "        shell-prio=" STRINGIFY(CONFIG_SHELL_PRIO) "\r\n"
     "        shell-prompt=" STRINGIFY(CONFIG_SHELL_PROMPT) "\r\n"
-    "        spiffs=" STRINGIFY(CONFIG_SPIFFS) "\r\n"
     "        std-output-buffer-max=" STRINGIFY(CONFIG_STD_OUTPUT_BUFFER_MAX) "\r\n"
     "        system-tick-frequency=" STRINGIFY(CONFIG_SYSTEM_TICK_FREQUENCY) "\r\n"
     "        usb-device-vid=" STRINGIFY(CONFIG_USB_DEVICE_VID) "\r\n"
@@ -89,6 +90,13 @@ static const FAR char config[] =
 #endif
 
     "";
+
+#if CONFIG_SHELL == 1
+
+static struct shell_t shell;
+static THRD_STACK(shell_stack, CONFIG_SHELL_STACK_SIZE);
+
+#endif
 
 extern void time_tick_isr(void);
 extern void timer_tick_isr(void);
@@ -197,6 +205,23 @@ int sys_start(void)
     sys_set_stdout(console_get_output_channel());
     log_set_default_handler_output_channel(console_get_output_channel());
 
+#endif
+
+#if CONFIG_SHELL == 1
+
+    shell_init(&shell,
+               sys_get_stdin(),
+               sys_get_stdout(),
+               NULL,
+               NULL,
+               NULL,
+               NULL);
+
+    thrd_spawn(shell_main,
+               &shell,
+               CONFIG_SHELL_PRIO,
+               shell_stack,
+               sizeof(shell_stack));
 #endif
 
     return (0);

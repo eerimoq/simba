@@ -23,6 +23,14 @@ Pinout
    :width: 50%
    :target: ../_images/{pinout}
 
+Default system features
+-----------------------
+
+Here is a list of enabled higher level features for this board, all
+initialized in ``sys_start()``:
+
+{enabled_features}
+
 Drivers
 -------
 
@@ -88,11 +96,13 @@ def boards_generate(database):
     """
 
     for board, data in database["boards"].items():
+        # Board drivers.
         drivers = []
         for driver in sorted(data["drivers"]):
             drivers.append("- :doc:`../library-reference/drivers/{}`".format(
                 driver))
 
+        # Default configuration.
         default_configuration = ""
         default_configuration_targets = []
         for config in data["default-configuration"]:
@@ -106,11 +116,24 @@ def boards_generate(database):
         else:
             include_extra = ""
 
+        # Enabled features.
+        enabled_features = []
+        for [name, value] in data["default-configuration"]:
+            if name == "CONFIG_NETWORK_MANAGER" and value == "1":
+                enabled_features.append("- Network manager.")
+            if name == "CONFIG_FILESYSTEM" and value == "1":
+                enabled_features.append("- File system.")
+            if name == "CONFIG_CONSOLE" and value != "CONFIG_CONSOLE_NONE":
+                enabled_features.append("- :doc:`Console.<../library-reference/oam/console>`")
+            if name == "CONFIG_SHELL" and value == "1":
+                enabled_features.append("- :doc:`Debug shell.<../library-reference/oam/shell>`")
+
         rst = BOARD_FMT.format(name=board,
                                desc=data["board_desc"],
                                desc_underline="=" * len(data["board_desc"]),
                                homepage=data["board_homepage"],
                                pinout=data["board_pinout"],
+                               enabled_features='\n'.join(enabled_features),
                                mcu=data["mcu"].replace("/", ""),
                                drivers='\n'.join(drivers),
                                default_configuration=default_configuration,
