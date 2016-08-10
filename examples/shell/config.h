@@ -24,6 +24,6 @@
 /**
  * The shell is manually started in this example.
  */
-#define CONFIG_SHELL                                        0
+#define CONFIG_START_SHELL                                  0
 
 #endif

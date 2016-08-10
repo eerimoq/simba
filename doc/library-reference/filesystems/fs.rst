@@ -40,11 +40,13 @@ located in the directory ``filesystems/fs/``.
 +=======================================+=========================================================+
 |  ``filesystems/list``                 | Print a list of all registered file systems.            |
 +---------------------------------------+---------------------------------------------------------+
-|  ``filesystems/read <file>``          | Read from given file.                                   |
+|  ``list [<folder>]``                  | Print a list of all files and folders in given folder.  |
 +---------------------------------------+---------------------------------------------------------+
-|  ``filesystems/write <file> <data>``  | Create and write to a file. Overwrites existing files.  |
+|  ``read <file>``                      | Read from given file.                                   |
 +---------------------------------------+---------------------------------------------------------+
-|  ``filesystems/append <file> <data>`` | Append data to an existing file.                        |
+|  ``write <file> <data>``              | Create and write to a file. Overwrites existing files.  |
++---------------------------------------+---------------------------------------------------------+
+|  ``append <file> <data>``             | Append data to an existing file.                        |
 +---------------------------------------+---------------------------------------------------------+
 |  ``counters/list``                    | Print a list of all registered counters.                |
 +---------------------------------------+---------------------------------------------------------+
@@ -62,10 +64,12 @@ Example output from the shell:
    /tmp                           ram      fat16          54K   64K    14%
    /home/erik                     sd       fat16         1.9G    2G     5%
    /etc                           flash    spiffs        124K  128K     3%
-   $ filesystems/fs/filesystems/write tmp/foo.txt "Hello "
-   $ filesystems/fs/filesystems/append tmp/foo.txt world!
-   $ filesystems/fs/filesystems/read tmp/foo.txt
+   $ filesystems/fs/write tmp/foo.txt "Hello "
+   $ filesystems/fs/append tmp/foo.txt world!
+   $ filesystems/fs/read tmp/foo.txt
    Hello world!
+   $ filesystems/fs/list tmp
+   xxxx-xx-xx xx-xx       12 foo.txt
    $ filesystems/fs/counters/list
    NAME                                                 VALUE
    /your/counter                                        0000000000000034

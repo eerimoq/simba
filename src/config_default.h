@@ -65,6 +65,17 @@
 #endif
 
 /**
+ * Debug file system command to append to a file.
+ */
+#ifndef CONFIG_FS_CMD_FS_APPEND
+#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO)
+#        define CONFIG_FS_CMD_FS_APPEND                     0
+#    else
+#        define CONFIG_FS_CMD_FS_APPEND                     1
+#    endif
+#endif
+
+/**
  * Debug file system command to list all counters.
  */
 #ifndef CONFIG_FS_CMD_FS_COUNTERS_LIST
@@ -87,17 +98,6 @@
 #endif
 
 /**
- * Debug file system command to append to a file.
- */
-#ifndef CONFIG_FS_CMD_FS_FILESYSTEMS_APPEND
-#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO)
-#        define CONFIG_FS_CMD_FS_FILESYSTEMS_APPEND         0
-#    else
-#        define CONFIG_FS_CMD_FS_FILESYSTEMS_APPEND         1
-#    endif
-#endif
-
-/**
  * Debug file system command to list all registered file systems.
  */
 #ifndef CONFIG_FS_CMD_FS_FILESYSTEMS_LIST
@@ -111,33 +111,11 @@
 /**
  * Debug file system command to list all registered file systems.
  */
-#ifndef CONFIG_FS_CMD_FS_FILESYSTEMS_LS
+#ifndef CONFIG_FS_CMD_FS_LIST
 #    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO)
-#        define CONFIG_FS_CMD_FS_FILESYSTEMS_LS             0
+#        define CONFIG_FS_CMD_FS_LIST                       0
 #    else
-#        define CONFIG_FS_CMD_FS_FILESYSTEMS_LS             1
-#    endif
-#endif
-
-/**
- * Debug file system command to read from a file.
- */
-#ifndef CONFIG_FS_CMD_FS_FILESYSTEMS_READ
-#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO)
-#        define CONFIG_FS_CMD_FS_FILESYSTEMS_READ           0
-#    else
-#        define CONFIG_FS_CMD_FS_FILESYSTEMS_READ           1
-#    endif
-#endif
-
-/**
- * Debug file system command to write to a file.
- */
-#ifndef CONFIG_FS_CMD_FS_FILESYSTEMS_WRITE
-#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO)
-#        define CONFIG_FS_CMD_FS_FILESYSTEMS_WRITE          0
-#    else
-#        define CONFIG_FS_CMD_FS_FILESYSTEMS_WRITE          1
+#        define CONFIG_FS_CMD_FS_LIST                       1
 #    endif
 #endif
 
@@ -149,6 +127,28 @@
 #        define CONFIG_FS_CMD_FS_PARAMETERS_LIST            0
 #    else
 #        define CONFIG_FS_CMD_FS_PARAMETERS_LIST            1
+#    endif
+#endif
+
+/**
+ * Debug file system command to read from a file.
+ */
+#ifndef CONFIG_FS_CMD_FS_READ
+#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO)
+#        define CONFIG_FS_CMD_FS_READ                       0
+#    else
+#        define CONFIG_FS_CMD_FS_READ                       1
+#    endif
+#endif
+
+/**
+ * Debug file system command to write to a file.
+ */
+#ifndef CONFIG_FS_CMD_FS_WRITE
+#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO)
+#        define CONFIG_FS_CMD_FS_WRITE                      0
+#    else
+#        define CONFIG_FS_CMD_FS_WRITE                      1
 #    endif
 #endif
 

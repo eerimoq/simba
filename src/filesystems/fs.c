@@ -81,11 +81,11 @@ static int cmd_parameter_cb(int argc,
 static struct fs_command_t cmd_filesystems_list;
 
 static int cmd_filesystems_list_cb(int argc,
-                                    const char *argv[],
-                                    chan_t *chout_p,
-                                    chan_t *chin_p,
-                                    void *arg_p,
-                                    void *call_arg_p)
+                                   const char *argv[],
+                                   chan_t *chout_p,
+                                   chan_t *chin_p,
+                                   void *arg_p,
+                                   void *call_arg_p)
 {
     struct fs_filesystem_t *filesystem_p;
     char buf[FS_NAME_MAX];
@@ -122,16 +122,16 @@ static int cmd_filesystems_list_cb(int argc,
 
 #endif
 
-#if CONFIG_FS_CMD_FS_FILESYSTEMS_READ == 1
+#if CONFIG_FS_CMD_FS_READ == 1
 
-static struct fs_command_t cmd_filesystems_read;
+static struct fs_command_t cmd_read;
 
-static int cmd_filesystems_read_cb(int argc,
-                                   const char *argv[],
-                                   chan_t *chout_p,
-                                   chan_t *chin_p,
-                                   void *arg_p,
-                                   void *call_arg_p)
+static int cmd_read_cb(int argc,
+                       const char *argv[],
+                       chan_t *chout_p,
+                       chan_t *chin_p,
+                       void *arg_p,
+                       void *call_arg_p)
 {
     struct fs_file_t file;
     ssize_t size;
@@ -160,16 +160,16 @@ static int cmd_filesystems_read_cb(int argc,
 
 #endif
 
-#if CONFIG_FS_CMD_FS_FILESYSTEMS_WRITE == 1
+#if CONFIG_FS_CMD_FS_WRITE == 1
 
-static struct fs_command_t cmd_filesystems_write;
+static struct fs_command_t cmd_write;
 
-static int cmd_filesystems_write_cb(int argc,
-                                    const char *argv[],
-                                    chan_t *chout_p,
-                                    chan_t *chin_p,
-                                    void *arg_p,
-                                    void *call_arg_p)
+static int cmd_write_cb(int argc,
+                        const char *argv[],
+                        chan_t *chout_p,
+                        chan_t *chin_p,
+                        void *arg_p,
+                        void *call_arg_p)
 {
     struct fs_file_t file;
     size_t size;
@@ -198,16 +198,16 @@ static int cmd_filesystems_write_cb(int argc,
 
 #endif
 
-#if CONFIG_FS_CMD_FS_FILESYSTEMS_APPEND == 1
+#if CONFIG_FS_CMD_FS_APPEND == 1
 
-static struct fs_command_t cmd_filesystems_append;
+static struct fs_command_t cmd_append;
 
-static int cmd_filesystems_append_cb(int argc,
-                                     const char *argv[],
-                                     chan_t *chout_p,
-                                     chan_t *chin_p,
-                                     void *arg_p,
-                                     void *call_arg_p)
+static int cmd_append_cb(int argc,
+                         const char *argv[],
+                         chan_t *chout_p,
+                         chan_t *chin_p,
+                         void *arg_p,
+                         void *call_arg_p)
 {
     struct fs_file_t file;
     size_t size;
@@ -236,19 +236,19 @@ static int cmd_filesystems_append_cb(int argc,
 
 #endif
 
-#if CONFIG_FS_CMD_FS_FILESYSTEMS_LS == 1
+#if CONFIG_FS_CMD_FS_LIST == 1
 
-static struct fs_command_t cmd_filesystems_ls;
+static struct fs_command_t cmd_list;
 
-static int cmd_filesystems_ls_cb(int argc,
-                                 const char *argv[],
-                                 chan_t *chout_p,
-                                 chan_t *chin_p,
-                                 void *arg_p,
-                                 void *call_arg_p)
+static int cmd_list_cb(int argc,
+                       const char *argv[],
+                       chan_t *chout_p,
+                       chan_t *chin_p,
+                       void *arg_p,
+                       void *call_arg_p)
 {
     if (argc != 2) {
-        std_fprintf(chout_p, FSTR("Usage: %s <file> <data>\r\n"), argv[0]);
+        std_fprintf(chout_p, FSTR("Usage: %s <path>\r\n"), argv[0]);
         return (-1);
     }
 
@@ -475,43 +475,43 @@ int fs_module_init()
 
 #endif
 
-#if CONFIG_FS_CMD_FS_FILESYSTEMS_READ == 1
+#if CONFIG_FS_CMD_FS_READ == 1
 
-    fs_command_init(&cmd_filesystems_read,
-                    FSTR("/filesystems/fs/filesystems/read"),
-                    cmd_filesystems_read_cb,
+    fs_command_init(&cmd_read,
+                    FSTR("/filesystems/fs/read"),
+                    cmd_read_cb,
                     NULL);
-    fs_command_register(&cmd_filesystems_read);
+    fs_command_register(&cmd_read);
 
 #endif
 
-#if CONFIG_FS_CMD_FS_FILESYSTEMS_WRITE == 1
+#if CONFIG_FS_CMD_FS_WRITE == 1
 
-    fs_command_init(&cmd_filesystems_write,
-                    FSTR("/filesystems/fs/filesystems/write"),
-                    cmd_filesystems_write_cb,
+    fs_command_init(&cmd_write,
+                    FSTR("/filesystems/fs/write"),
+                    cmd_write_cb,
                     NULL);
-    fs_command_register(&cmd_filesystems_write);
+    fs_command_register(&cmd_write);
 
 #endif
 
-#if CONFIG_FS_CMD_FS_FILESYSTEMS_APPEND == 1
+#if CONFIG_FS_CMD_FS_APPEND == 1
 
-    fs_command_init(&cmd_filesystems_append,
-                    FSTR("/filesystems/fs/filesystems/append"),
-                    cmd_filesystems_append_cb,
+    fs_command_init(&cmd_append,
+                    FSTR("/filesystems/fs/append"),
+                    cmd_append_cb,
                     NULL);
-    fs_command_register(&cmd_filesystems_append);
+    fs_command_register(&cmd_append);
 
 #endif
 
-#if CONFIG_FS_CMD_FS_FILESYSTEMS_LS == 1
+#if CONFIG_FS_CMD_FS_LIST == 1
 
-    fs_command_init(&cmd_filesystems_ls,
-                    FSTR("/filesystems/fs/filesystems/ls"),
-                    cmd_filesystems_ls_cb,
+    fs_command_init(&cmd_list,
+                    FSTR("/filesystems/fs/list"),
+                    cmd_list_cb,
                     NULL);
-    fs_command_register(&cmd_filesystems_ls);
+    fs_command_register(&cmd_list);
 
 #endif
 
@@ -591,8 +591,8 @@ int fs_call(char *command_p,
  * Find the file system for given path.
  */
 static int get_filesystem_path_from_path(struct fs_filesystem_t **filesystem_pp,
-                                          const char **path_pp,
-                                          const char *path_p)
+                                         const char **path_pp,
+                                         const char *path_p)
 {
     struct fs_filesystem_t *filesystem_p;
     const char *name_p;
@@ -648,7 +648,7 @@ static int format_entry_fat16(chan_t *chout_p,
 
     /* Print size if requested */
     std_fprintf(chout_p, FSTR("%8lu "), (unsigned long)entry_p->size);
-    
+
     /* Print file name with possible blank fill */
     std_fprintf(chout_p, FSTR("%s"), entry_p->name);
 
@@ -663,7 +663,7 @@ static int format_entry_fat16(chan_t *chout_p,
 
 /**
  * List all files in given fat16 directory.
- */        
+ */
 static int ls_fat16(struct fat16_t *fs_p,
                     const char *path_p,
                     chan_t *chout_p)
@@ -702,7 +702,7 @@ static int format_entry_spiffs(chan_t *chout_p,
 
 /**
  * List all files in given fat16 directory.
- */        
+ */
 static int ls_spiffs(struct spiffs_t *fs_p,
                      const char *path_p,
                      chan_t *chout_p)
@@ -755,7 +755,7 @@ int fs_open(struct fs_file_t *self_p, const char *path_p, int flags)
         return (self_p->u.spiffs > 0 ? 0 : -1);
 
 #endif
-        
+
     default:
         return (-1);
     }
@@ -896,7 +896,7 @@ int fs_ls(const char *path_p,
         return (ls_spiffs(filesystem_p->fs_p, path_p, chout_p));
 
 #endif
-        
+
     default:
         return (-1);
     }
@@ -1099,9 +1099,9 @@ void fs_merge(char *path_p, char *cmd_p)
 }
 
 int fs_filesystem_init(struct fs_filesystem_t *self_p,
-                        const char *name_p,
-                        enum fs_type_t type,
-                        void *fs_p)
+                       const char *name_p,
+                       enum fs_type_t type,
+                       void *fs_p)
 {
     ASSERTN(self_p != NULL, -EINVAL);
     ASSERTN(name_p != NULL, -EINVAL);
