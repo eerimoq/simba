@@ -264,6 +264,20 @@ int fs_seek(struct fs_file_t *self_p, int offset, int whence);
 ssize_t fs_tell(struct fs_file_t *self_p);
 
 /**
+ * List files and folders in given path. Optionally
+ * with given filter. The list is written to the output channel.
+ *
+ * @param[in] path_p Directory to list.
+ * @param[in] filter_p Filter out files and folders.
+ * @param[in] chout_p Output chan.
+ *
+ * @return zero(0) or negative error code.
+ */
+int fs_ls(const char *path_p,
+          const char *filter_p,
+          chan_t *chout_p);
+
+/**
  * List files (callbacks) and directories in given path. Optionally
  * with given filter. The list is written to the output channel.
  *

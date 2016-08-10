@@ -236,6 +236,27 @@ static int cmd_filesystems_append_cb(int argc,
 
 #endif
 
+#if CONFIG_FS_CMD_FS_FILESYSTEMS_LS == 1
+
+static struct fs_command_t cmd_filesystems_ls;
+
+static int cmd_filesystems_ls_cb(int argc,
+                                 const char *argv[],
+                                 chan_t *chout_p,
+                                 chan_t *chin_p,
+                                 void *arg_p,
+                                 void *call_arg_p)
+{
+    if (argc != 2) {
+        std_fprintf(chout_p, FSTR("Usage: %s <file> <data>\r\n"), argv[0]);
+        return (-1);
+    }
+
+    return (fs_ls(argv[1], NULL, chout_p));
+}
+
+#endif
+
 #if CONFIG_FS_CMD_FS_COUNTERS_LIST == 1
 
 static struct fs_command_t cmd_counters_list;
@@ -484,6 +505,16 @@ int fs_module_init()
 
 #endif
 
+#if CONFIG_FS_CMD_FS_FILESYSTEMS_LS == 1
+
+    fs_command_init(&cmd_filesystems_ls,
+                    FSTR("/filesystems/fs/filesystems/ls"),
+                    cmd_filesystems_ls_cb,
+                    NULL);
+    fs_command_register(&cmd_filesystems_ls);
+
+#endif
+
 #if CONFIG_FS_CMD_FS_COUNTERS_LIST == 1
 
     fs_command_init(&cmd_counters_list,
@@ -556,6 +587,9 @@ int fs_call(char *command_p,
     return (-ENOENT);
 }
 
+/**
+ * Find the file system for given path.
+ */
 static int get_filesystem_path_from_path(struct fs_filesystem_t **filesystem_pp,
                                           const char **path_pp,
                                           const char *path_p)
@@ -583,8 +617,14 @@ static int get_filesystem_path_from_path(struct fs_filesystem_t **filesystem_pp,
         name_length = strlen(name_p);
 
         if (strncmp(name_p, path_p, name_length) == 0) {
-            *path_pp = (path_p + name_length + 1);
+            if (path_p[name_length] != '\0') {
+                *path_pp = (path_p + name_length + 1);
+            } else {
+                *path_pp = "";
+            }
+
             *filesystem_pp = filesystem_p;
+
             return (0);
         }
 
@@ -593,6 +633,99 @@ static int get_filesystem_path_from_path(struct fs_filesystem_t **filesystem_pp,
 
     return (-1);
 }
+
+static int format_entry_fat16(chan_t *chout_p,
+                              const struct fat16_dir_entry_t *entry_p)
+{
+    /* Print modify date/time if requested */
+    std_fprintf(chout_p,
+                FSTR("%04u-%02u-%02u %02u:%02u "),
+                entry_p->latest_mod_date.year,
+                entry_p->latest_mod_date.month,
+                entry_p->latest_mod_date.day,
+                entry_p->latest_mod_date.hour,
+                entry_p->latest_mod_date.minute);
+
+    /* Print size if requested */
+    std_fprintf(chout_p, FSTR("%8lu "), (unsigned long)entry_p->size);
+    
+    /* Print file name with possible blank fill */
+    std_fprintf(chout_p, FSTR("%s"), entry_p->name);
+
+    if (entry_p->is_dir == 1) {
+        chan_write(chout_p, "/", 1);
+    }
+
+    std_fprintf(chout_p, FSTR("\r\n"));
+
+    return (0);
+}
+
+/**
+ * List all files in given fat16 directory.
+ */        
+static int ls_fat16(struct fat16_t *fs_p,
+                    const char *path_p,
+                    chan_t *chout_p)
+{
+    struct fat16_dir_t dir;
+    struct fat16_dir_entry_t entry;
+
+    /* Re-open the directory with read option set. */
+    if (fat16_dir_open(fs_p, &dir, path_p, O_READ) != 0) {
+        std_fprintf(chout_p, FSTR("%s: directory not found\r\n"), path_p);
+        return (-1);
+    }
+
+    while (fat16_dir_read(&dir, &entry) == 1) {
+        format_entry_fat16(chout_p, &entry);
+    }
+
+    fat16_dir_close(&dir);
+
+    return (0);
+}
+
+#if CONFIG_SPIFFS == 1
+
+static int format_entry_spiffs(chan_t *chout_p,
+                               const struct spiffs_dirent_t *entry_p)
+{
+    /* Print file name with possible blank fill */
+    std_fprintf(chout_p,
+                FSTR("xxxx-xx-xx xx-xx %8lu %s\r\n"),
+                (unsigned long)entry_p->size,
+                entry_p->name);
+
+    return (0);
+}
+
+/**
+ * List all files in given fat16 directory.
+ */        
+static int ls_spiffs(struct spiffs_t *fs_p,
+                     const char *path_p,
+                     chan_t *chout_p)
+{
+    struct spiffs_dir_t dir;
+    struct spiffs_dirent_t entry;
+
+    /* Open the directory. */
+    if (spiffs_opendir(fs_p, path_p, &dir) == NULL) {
+        std_fprintf(chout_p, FSTR("%s: directory not found\r\n"), path_p);
+        return (-1);
+    }
+
+    while (spiffs_readdir(&dir, &entry) != NULL) {
+        format_entry_spiffs(chout_p, &entry);
+    }
+
+    spiffs_closedir(&dir);
+
+    return (0);
+}
+
+#endif
 
 int fs_open(struct fs_file_t *self_p, const char *path_p, int flags)
 {
@@ -730,6 +863,40 @@ ssize_t fs_tell(struct fs_file_t *self_p)
 
 #endif
 
+    default:
+        return (-1);
+    }
+}
+
+int fs_ls(const char *path_p,
+          const char *filter_p,
+          chan_t *chout_p)
+{
+    ASSERTN(path_p != NULL, -EINVAL);
+    ASSERTN(chout_p != NULL, -EINVAL);
+
+    struct fs_filesystem_t *filesystem_p;
+
+    if (get_filesystem_path_from_path(&filesystem_p, &path_p, path_p) != 0) {
+        return (-1);
+    }
+
+    if (*path_p == '\0') {
+        path_p = ".";
+    }
+
+    switch (filesystem_p->type) {
+
+    case fs_type_fat16_t:
+        return (ls_fat16(filesystem_p->fs_p, path_p, chout_p));
+
+#if CONFIG_SPIFFS == 1
+
+    case fs_type_spiffs_t:
+        return (ls_spiffs(filesystem_p->fs_p, path_p, chout_p));
+
+#endif
+        
     default:
         return (-1);
     }

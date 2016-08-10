@@ -109,6 +109,17 @@
 #endif
 
 /**
+ * Debug file system command to list all registered file systems.
+ */
+#ifndef CONFIG_FS_CMD_FS_FILESYSTEMS_LS
+#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO)
+#        define CONFIG_FS_CMD_FS_FILESYSTEMS_LS             0
+#    else
+#        define CONFIG_FS_CMD_FS_FILESYSTEMS_LS             1
+#    endif
+#endif
+
+/**
  * Debug file system command to read from a file.
  */
 #ifndef CONFIG_FS_CMD_FS_FILESYSTEMS_READ

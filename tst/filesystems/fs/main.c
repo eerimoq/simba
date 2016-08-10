@@ -594,6 +594,18 @@ static int test_filesystem_commands(struct harness_t *harness_p)
     BTASSERT(fs_call(buf, NULL, &qout, NULL) == 0);
     read_until(buf, "1\r\n");
 
+    /* List all files in the FAT16 file system. */
+    strcpy(buf, "/filesystems/fs/filesystems/ls fat16fs");
+    BTASSERT(fs_call(buf, NULL, &qout, NULL) == 0);
+    read_until(buf, "2000-01-01 01:00        6 FOO.TXT\r\n");
+
+    /* List all files in the SPIFFS file system. */
+    strcpy(buf, "/filesystems/fs/filesystems/ls spiffsfs");
+    BTASSERT(fs_call(buf, NULL, &qout, NULL) == 0);
+    read_until(buf,
+               "xxxx-xx-xx xx-xx        6 foo.txt\r\n"
+               "xxxx-xx-xx xx-xx        1 cmd.txt\r\n");
+
     return (0);
 
 #else
