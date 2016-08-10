@@ -22,5 +22,6 @@
 #define __CONFIG_H__
 
 #define CONFIG_START_CONSOLE  CONFIG_START_CONSOLE_NONE
+#define CONFIG_START_SHELL                            0
 
 #endif
