@@ -537,10 +537,14 @@
 #endif
 
 /**
- * Shell thread priority.
+ * Shell thread stack size in words.
  */
 #ifndef CONFIG_START_SHELL_STACK_SIZE
-#    define CONFIG_START_SHELL_STACK_SIZE                 768
+#    if defined(BOARD_ARDUINO_DUE)
+#        define CONFIG_START_SHELL_STACK_SIZE            1536
+#    else
+#        define CONFIG_START_SHELL_STACK_SIZE             768
+#    endif
 #endif
 
 /**
@@ -564,6 +568,20 @@
 #    else
 #        define CONFIG_START_FILESYSTEM                     0
 #    endif
+#endif
+
+/**
+ * Configure a default file system start address.
+ */
+#ifndef CONFIG_START_FILESYSTEM_ADDRESS
+#    define CONFIG_START_FILESYSTEM_ADDRESS        0x000c0000
+#endif
+
+/**
+ * Configure a default file system size.
+ */
+#ifndef CONFIG_START_FILESYSTEM_SIZE
+#    define CONFIG_START_FILESYSTEM_SIZE                32768
 #endif
 
 /* Configuration validation. */

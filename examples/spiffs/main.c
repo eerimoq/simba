@@ -24,156 +24,6 @@
 #    error "This example can only be built for Arduino Due."
 #endif
 
-#define PHY_SIZE               32768
-#define PHY_ADDR          0x000c0000
-#define PHYS_ERASE_BLOCK       0x100
-
-#define LOG_BLOCK_SIZE           256
-#define LOG_PAGE_SIZE            128
-
-#define FILE_SIZE_MAX           8192
-#define CHUNK_SIZE_MAX          1024
-
-static struct flash_driver_t flash;
-
-static struct spiffs_t fs;
-static struct spiffs_config_t config;
-static uint8_t workspace[2 * LOG_PAGE_SIZE];
-static uint8_t fdworkspace[128];
-static uint8_t cache[256];
-
-struct fs_filesystem_t spiffsfs;
-
-static struct shell_t shell;
-
-static int hal_init(void)
-{
-    if (flash_module_init() != 0) {
-        std_printf(FSTR("Failed to initialize the flash module.\r\n"));
-        return (-1);
-    }
-    
-    if (flash_init(&flash, &flash_0_dev) != 0) {
-        std_printf(FSTR("Failed to initialize the flash driver.\r\n"));
-        return (-1);
-    }
-
-    return (0);
-}
-
-
-static int32_t hal_read(struct spiffs_t *fs_p,
-                        uint32_t addr,
-                        uint32_t size,
-                        uint8_t *dst_p)
-{
-    if (flash_read(&flash, dst_p, addr, size) != size) {
-        return (-1);
-    }
-
-    return (0);
-}
-
-static int32_t hal_write(struct spiffs_t *fs_p,
-                         uint32_t addr,
-                         uint32_t size,
-                         uint8_t *src_p)
-{
-    if (flash_write(&flash, addr, src_p, size) != size) {
-        return (-1);
-    }
-
-    return (0);
-}
-
-static int32_t hal_erase(struct spiffs_t *fs_p,
-                         uint32_t addr,
-                         uint32_t size)
-{
-    char buf[PHYS_ERASE_BLOCK];
-
-    if (size != PHYS_ERASE_BLOCK) {
-        sys_stop(1);
-    }
-
-    memset(buf, -1, sizeof(buf));
-
-    if (flash_write(&flash, addr, buf, size) != size) {
-        return (-1);
-    }
-
-    return (0);
-}
-
-static void init_filesystem()
-{
-    int res;
-
-    if (hal_init() != 0) {
-        sys_stop(1);
-    }
-    
-    std_printf(FSTR("Trying to mount the file system.\r\n"));
-
-    /* Initiate the config struct. */
-    config.hal_read_f = hal_read;
-    config.hal_write_f = hal_write;
-    config.hal_erase_f = hal_erase;
-    config.phys_size = PHY_SIZE;
-    config.phys_addr = PHY_ADDR;
-    config.phys_erase_block = PHYS_ERASE_BLOCK;
-    config.log_block_size = LOG_BLOCK_SIZE;
-    config.log_page_size = LOG_PAGE_SIZE;
-    
-    /* Mount the file system to initialize the runtime variables. */
-    res = spiffs_mount(&fs,
-                       &config,
-                       workspace,
-                       fdworkspace,
-                       sizeof(fdworkspace),
-                       cache,
-                       sizeof(cache),
-                       NULL);
-
-    if (res != 0) {
-        std_printf(FSTR("Failed to mount the file system. Formatting it.\r\n"));
-
-        res = spiffs_format(&fs);
-
-        if (res != 0) {
-            std_printf(FSTR("Failed to mount the file system. Formatting it.\r\n"));
-            sys_stop(1);
-        }
-    
-        std_printf(FSTR("Trying to mount the file system after formatting it.\r\n"));
-        
-        res = spiffs_mount(&fs,
-                           &config,
-                           workspace,
-                           fdworkspace,
-                           sizeof(fdworkspace),
-                           cache,
-                           sizeof(cache),
-                           NULL);
-        
-        if (res != 0) {
-            std_printf(FSTR("Failed to mount the file system.\r\n"));
-            sys_stop(1);
-        }
-    }
-
-    /* Register the SPIFFS file system in the fs module. */
-    fs_filesystem_init(&spiffsfs,
-                       FSTR("/fs"),
-                       fs_type_spiffs_t,
-                       &fs);
-
-    if (fs_filesystem_register(&spiffsfs) != 0) {
-        std_printf(FSTR("Failed to register the file system into the debug file system.\r\n"));
-        sys_stop(1);
-    }
-}
-
 static int write_story(void)
 {
     struct fs_file_t file;
@@ -278,10 +128,6 @@ int main()
     /* Print the system information. */
     std_printf(sys_get_info());
 
-    /* Try to mount the file system. Format it on failure and
-       remount. */
-    init_filesystem();
-
     /* Perform a few file operations. */
     if (write_story() != 0) {
         sys_stop(1);
@@ -292,15 +138,8 @@ int main()
         sys_stop(1);
     }
 
-    /* Call the shell main function. */
-    shell_init(&shell,
-               sys_get_stdin(),
-               sys_get_stdout(),
-               NULL,
-               NULL,
-               NULL,
-               NULL);
-    shell_main(&shell);
-
+    /* The shell thread is started in sys_start(). */
+    thrd_suspend(NULL);
+    
     return (0);
 }
