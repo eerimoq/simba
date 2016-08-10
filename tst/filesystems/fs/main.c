@@ -566,6 +566,10 @@ static int test_filesystem_commands(struct harness_t *harness_p)
     BTASSERT(fs_call(buf, NULL, &qout, NULL) == -1);
     read_until(buf, "Usage: /filesystems/fs/append <file> <data>\r\n");
 
+    strcpy(buf, "/filesystems/fs/list");
+    BTASSERT(fs_call(buf, NULL, &qout, NULL) == -1);
+    read_until(buf, "Usage: /filesystems/fs/list <path>\r\n");
+
     /* Non-existing file. */
     strcpy(buf, "/filesystems/fs/read spiffsfs/cmd.txt");
     BTASSERT(fs_call(buf, NULL, &qout, NULL) == -1);
