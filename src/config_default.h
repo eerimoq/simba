@@ -54,102 +54,6 @@
 #endif
 
 /**
- * Profile the stack usage in runtime. It's a cheap operation and is
- * recommended to have enabled.
- */
-#ifndef CONFIG_PROFILE_STACK
-#    define CONFIG_PROFILE_STACK                            1
-#endif
-
-/**
- * Use a preemptive scheduler.
- */
-#ifndef CONFIG_PREEMPTIVE_SCHEDULER
-#    define CONFIG_PREEMPTIVE_SCHEDULER                     0
-#endif
-
-/**
- * Start the monitor thread to gather statistics of the scheulder.
- */
-#ifndef CONFIG_MONITOR_THREAD
-#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(BOARD_ESP12E) || defined(BOARD_ESP01)
-#        define CONFIG_MONITOR_THREAD                       0
-#    else
-#        define CONFIG_MONITOR_THREAD                       1
-#    endif
-#endif
-
-/**
- * System tick frequency in Hertz.
- */
-#ifndef CONFIG_SYSTEM_TICK_FREQUENCY
-#    define CONFIG_SYSTEM_TICK_FREQUENCY                  100
-#endif
-
-/**
- * Maximum number of bytes in the print output buffer.
- */
-#ifndef CONFIG_STD_OUTPUT_BUFFER_MAX
-#    define CONFIG_STD_OUTPUT_BUFFER_MAX                   16
-#endif
-
-/**
- * Debug file system command to list all USB devices.
- */
-#ifndef CONFIG_FS_CMD_USB_DEVICE_LIST
-#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO)
-#        define CONFIG_FS_CMD_USB_DEVICE_LIST               0
-#    else
-#        define CONFIG_FS_CMD_USB_DEVICE_LIST               1
-#    endif
-#endif
-
-/**
- * Debug file system command to list all USB devices connected to the
- * USB host.
- */
-#ifndef CONFIG_FS_CMD_USB_HOST_LIST
-#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO)
-#        define CONFIG_FS_CMD_USB_HOST_LIST                 0
-#    else
-#        define CONFIG_FS_CMD_USB_HOST_LIST                 1
-#    endif
-#endif
-
-/**
- * Debug file system command to set the mode of a pin.
- */
-#ifndef CONFIG_FS_CMD_PIN_SET_MODE
-#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO)
-#        define CONFIG_FS_CMD_PIN_SET_MODE                  0
-#    else
-#        define CONFIG_FS_CMD_PIN_SET_MODE                  1
-#    endif
-#endif
-
-/**
- * Debug file system command to read the current value of a pin.
- */
-#ifndef CONFIG_FS_CMD_PIN_READ
-#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO)
-#        define CONFIG_FS_CMD_PIN_READ                      0
-#    else
-#        define CONFIG_FS_CMD_PIN_READ                      1
-#    endif
-#endif
-
-/**
- * Debug file system command to write a value to a pin.
- */
-#ifndef CONFIG_FS_CMD_PIN_WRITE
-#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO)
-#        define CONFIG_FS_CMD_PIN_WRITE                     0
-#    else
-#        define CONFIG_FS_CMD_PIN_WRITE                     1
-#    endif
-#endif
-
-/**
  * Debug file system command to list all DS18B20 sensors on the bus.
  */
 #ifndef CONFIG_FS_CMD_DS18B20_LIST
@@ -161,68 +65,35 @@
 #endif
 
 /**
- * Debug file system command to read from a i2c bus.
+ * Debug file system command to list all counters.
  */
-#ifndef CONFIG_FS_CMD_I2C_READ
+#ifndef CONFIG_FS_CMD_FS_COUNTERS_LIST
 #    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO)
-#        define CONFIG_FS_CMD_I2C_READ                      0
+#        define CONFIG_FS_CMD_FS_COUNTERS_LIST              0
 #    else
-#        define CONFIG_FS_CMD_I2C_READ                      1
+#        define CONFIG_FS_CMD_FS_COUNTERS_LIST              1
 #    endif
 #endif
 
 /**
- * Debug file system command to write to a i2c bus.
+ * Debug file system command to set all counters to zero.
  */
-#ifndef CONFIG_FS_CMD_I2C_WRITE
+#ifndef CONFIG_FS_CMD_FS_COUNTERS_RESET
 #    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO)
-#        define CONFIG_FS_CMD_I2C_WRITE                     0
+#        define CONFIG_FS_CMD_FS_COUNTERS_RESET             0
 #    else
-#        define CONFIG_FS_CMD_I2C_WRITE                     1
+#        define CONFIG_FS_CMD_FS_COUNTERS_RESET             1
 #    endif
 #endif
 
 /**
- * Debug file system command to list threads' information.
+ * Debug file system command to append to a file.
  */
-#ifndef CONFIG_FS_CMD_THRD_LIST
+#ifndef CONFIG_FS_CMD_FS_FILESYSTEMS_APPEND
 #    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO)
-#        define CONFIG_FS_CMD_THRD_LIST                     0
+#        define CONFIG_FS_CMD_FS_FILESYSTEMS_APPEND         0
 #    else
-#        define CONFIG_FS_CMD_THRD_LIST                     1
-#    endif
-#endif
-
-/**
- * Debug file system command to set the log mask of a thread.
- */
-#ifndef CONFIG_FS_CMD_THRD_SET_LOG_MASK
-#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO)
-#        define CONFIG_FS_CMD_THRD_SET_LOG_MASK             0
-#    else
-#        define CONFIG_FS_CMD_THRD_SET_LOG_MASK             1
-#    endif
-#endif
-
-/**
- * Debug file system command to print the system information.
- */
-#ifndef CONFIG_FS_CMD_SYS_INFO
-#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO)
-#        define CONFIG_FS_CMD_SYS_INFO                      0
-#    else
-#        define CONFIG_FS_CMD_SYS_INFO                      1
-#    endif
-#endif
-
-/**
- * Debug file system command to print the system uptime.
- */
-#ifndef CONFIG_FS_CMD_SYS_UPTIME
-#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO)
-#        define CONFIG_FS_CMD_SYS_UPTIME                    0
-#    else
-#        define CONFIG_FS_CMD_SYS_UPTIME                    1
+#        define CONFIG_FS_CMD_FS_FILESYSTEMS_APPEND         1
 #    endif
 #endif
 
@@ -260,39 +131,6 @@
 #endif
 
 /**
- * Debug file system command to append to a file.
- */
-#ifndef CONFIG_FS_CMD_FS_FILESYSTEMS_APPEND
-#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO)
-#        define CONFIG_FS_CMD_FS_FILESYSTEMS_APPEND         0
-#    else
-#        define CONFIG_FS_CMD_FS_FILESYSTEMS_APPEND         1
-#    endif
-#endif
-
-/**
- * Debug file system command to list all counters.
- */
-#ifndef CONFIG_FS_CMD_FS_COUNTERS_LIST
-#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO)
-#        define CONFIG_FS_CMD_FS_COUNTERS_LIST              0
-#    else
-#        define CONFIG_FS_CMD_FS_COUNTERS_LIST              1
-#    endif
-#endif
-
-/**
- * Debug file system command to set all counters to zero.
- */
-#ifndef CONFIG_FS_CMD_FS_COUNTERS_RESET
-#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO)
-#        define CONFIG_FS_CMD_FS_COUNTERS_RESET             0
-#    else
-#        define CONFIG_FS_CMD_FS_COUNTERS_RESET             1
-#    endif
-#endif
-
-/**
  * Debug file system command to list all parameters.
  */
 #ifndef CONFIG_FS_CMD_FS_PARAMETERS_LIST
@@ -300,6 +138,39 @@
 #        define CONFIG_FS_CMD_FS_PARAMETERS_LIST            0
 #    else
 #        define CONFIG_FS_CMD_FS_PARAMETERS_LIST            1
+#    endif
+#endif
+
+/**
+ * Debug file system command to read from a i2c bus.
+ */
+#ifndef CONFIG_FS_CMD_I2C_READ
+#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO)
+#        define CONFIG_FS_CMD_I2C_READ                      0
+#    else
+#        define CONFIG_FS_CMD_I2C_READ                      1
+#    endif
+#endif
+
+/**
+ * Debug file system command to write to a i2c bus.
+ */
+#ifndef CONFIG_FS_CMD_I2C_WRITE
+#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO)
+#        define CONFIG_FS_CMD_I2C_WRITE                     0
+#    else
+#        define CONFIG_FS_CMD_I2C_WRITE                     1
+#    endif
+#endif
+
+/**
+ * Debug file system command to list all log objects.
+ */
+#ifndef CONFIG_FS_CMD_LOG_LIST
+#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO)
+#        define CONFIG_FS_CMD_LOG_LIST                      0
+#    else
+#        define CONFIG_FS_CMD_LOG_LIST                      1
 #    endif
 #endif
 
@@ -312,17 +183,6 @@
 #        define CONFIG_FS_CMD_LOG_PRINT                     0
 #    else
 #        define CONFIG_FS_CMD_LOG_PRINT                     1
-#    endif
-#endif
-
-/**
- * Debug file system command to list all log objects.
- */
-#ifndef CONFIG_FS_CMD_LOG_LIST
-#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO)
-#        define CONFIG_FS_CMD_LOG_LIST                      0
-#    else
-#        define CONFIG_FS_CMD_LOG_LIST                      1
 #    endif
 #endif
 
@@ -349,6 +209,39 @@
 #endif
 
 /**
+ * Debug file system command to read the current value of a pin.
+ */
+#ifndef CONFIG_FS_CMD_PIN_READ
+#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO)
+#        define CONFIG_FS_CMD_PIN_READ                      0
+#    else
+#        define CONFIG_FS_CMD_PIN_READ                      1
+#    endif
+#endif
+
+/**
+ * Debug file system command to set the mode of a pin.
+ */
+#ifndef CONFIG_FS_CMD_PIN_SET_MODE
+#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO)
+#        define CONFIG_FS_CMD_PIN_SET_MODE                  0
+#    else
+#        define CONFIG_FS_CMD_PIN_SET_MODE                  1
+#    endif
+#endif
+
+/**
+ * Debug file system command to write a value to a pin.
+ */
+#ifndef CONFIG_FS_CMD_PIN_WRITE
+#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO)
+#        define CONFIG_FS_CMD_PIN_WRITE                     0
+#    else
+#        define CONFIG_FS_CMD_PIN_WRITE                     1
+#    endif
+#endif
+
+/**
  * Debug file system command to list all settings.
  */
 #ifndef CONFIG_FS_CMD_SETTING_LIST
@@ -356,6 +249,17 @@
 #        define CONFIG_FS_CMD_SETTING_LIST                  0
 #    else
 #        define CONFIG_FS_CMD_SETTING_LIST                  1
+#    endif
+#endif
+
+/**
+ * Debug file system command to read the value of a setting.
+ */
+#ifndef CONFIG_FS_CMD_SETTING_READ
+#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO)
+#        define CONFIG_FS_CMD_SETTING_READ                  0
+#    else
+#        define CONFIG_FS_CMD_SETTING_READ                  1
 #    endif
 #endif
 
@@ -372,17 +276,6 @@
 #endif
 
 /**
- * Debug file system command to read the value of a setting.
- */
-#ifndef CONFIG_FS_CMD_SETTING_READ
-#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO)
-#        define CONFIG_FS_CMD_SETTING_READ                  0
-#    else
-#        define CONFIG_FS_CMD_SETTING_READ                  1
-#    endif
-#endif
-
-/**
  * Debug file system command to write a value to a setting.
  */
 #ifndef CONFIG_FS_CMD_SETTING_WRITE
@@ -390,6 +283,152 @@
 #        define CONFIG_FS_CMD_SETTING_WRITE                 0
 #    else
 #        define CONFIG_FS_CMD_SETTING_WRITE                 1
+#    endif
+#endif
+
+/**
+ * Debug file system command to print the system information.
+ */
+#ifndef CONFIG_FS_CMD_SYS_INFO
+#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO)
+#        define CONFIG_FS_CMD_SYS_INFO                      0
+#    else
+#        define CONFIG_FS_CMD_SYS_INFO                      1
+#    endif
+#endif
+
+/**
+ * Debug file system command to print the system uptime.
+ */
+#ifndef CONFIG_FS_CMD_SYS_UPTIME
+#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO)
+#        define CONFIG_FS_CMD_SYS_UPTIME                    0
+#    else
+#        define CONFIG_FS_CMD_SYS_UPTIME                    1
+#    endif
+#endif
+
+/**
+ * Debug file system command to list threads' information.
+ */
+#ifndef CONFIG_FS_CMD_THRD_LIST
+#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO)
+#        define CONFIG_FS_CMD_THRD_LIST                     0
+#    else
+#        define CONFIG_FS_CMD_THRD_LIST                     1
+#    endif
+#endif
+
+/**
+ * Debug file system command to set the log mask of a thread.
+ */
+#ifndef CONFIG_FS_CMD_THRD_SET_LOG_MASK
+#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO)
+#        define CONFIG_FS_CMD_THRD_SET_LOG_MASK             0
+#    else
+#        define CONFIG_FS_CMD_THRD_SET_LOG_MASK             1
+#    endif
+#endif
+
+/**
+ * Debug file system command to list all USB devices.
+ */
+#ifndef CONFIG_FS_CMD_USB_DEVICE_LIST
+#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO)
+#        define CONFIG_FS_CMD_USB_DEVICE_LIST               0
+#    else
+#        define CONFIG_FS_CMD_USB_DEVICE_LIST               1
+#    endif
+#endif
+
+/**
+ * Debug file system command to list all USB devices connected to the
+ * USB host.
+ */
+#ifndef CONFIG_FS_CMD_USB_HOST_LIST
+#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO)
+#        define CONFIG_FS_CMD_USB_HOST_LIST                 0
+#    else
+#        define CONFIG_FS_CMD_USB_HOST_LIST                 1
+#    endif
+#endif
+
+/**
+ * Start the monitor thread to gather statistics of the scheulder.
+ */
+#ifndef CONFIG_MONITOR_THREAD
+#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(BOARD_ESP12E) || defined(BOARD_ESP01)
+#        define CONFIG_MONITOR_THREAD                       0
+#    else
+#        define CONFIG_MONITOR_THREAD                       1
+#    endif
+#endif
+
+/**
+ * Use a preemptive scheduler.
+ */
+#ifndef CONFIG_PREEMPTIVE_SCHEDULER
+#    define CONFIG_PREEMPTIVE_SCHEDULER                     0
+#endif
+
+/**
+ * Profile the stack usage in runtime. It's a cheap operation and is
+ * recommended to have enabled.
+ */
+#ifndef CONFIG_PROFILE_STACK
+#    define CONFIG_PROFILE_STACK                            1
+#endif
+
+/**
+ * Size of the settings area. This size *MUST* have the same size as
+ * the settings generated by the settings.py script.
+ */
+#ifndef CONFIG_SETTING_AREA_SIZE
+#    define CONFIG_SETTING_AREA_SIZE                      256
+#endif
+
+/**
+ * Maximum number of characters in a shell command.
+ */
+#ifndef CONFIG_SHELL_COMMAND_MAX
+#    define CONFIG_SHELL_COMMAND_MAX                       64
+#endif
+
+/**
+ * Size of the shell history buffer.
+ */
+#ifndef CONFIG_SHELL_HISTORY_SIZE
+#    define CONFIG_SHELL_HISTORY_SIZE                     768
+#endif
+
+/**
+ * Minimal shell functionality to minimize the code size of the shell
+ * module.
+ */
+#ifndef CONFIG_SHELL_MINIMAL
+#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO)
+#        define CONFIG_SHELL_MINIMAL                        1
+#    else
+#        define CONFIG_SHELL_MINIMAL                        0
+#    endif
+#endif
+
+/**
+ * The shell prompt string.
+ */
+#ifndef CONFIG_SHELL_PROMPT
+#    define CONFIG_SHELL_PROMPT "$ "
+#endif
+
+/**
+ * SPIFFS is a flash file system applicable for boards that has a
+ * reasonably big modifiable flash.
+ */
+#ifndef CONFIG_SPIFFS
+#    if defined(BOARD_ARDUINO_DUE) || defined(ARCH_LINUX)
+#        define CONFIG_SPIFFS                               1
+#    else
+#        define CONFIG_SPIFFS                               0
 #    endif
 #endif
 
@@ -451,71 +490,40 @@
 #endif
 
 /**
- * Minimal shell functionality to minimize the code size of the shell
- * module.
+ * Configure a default file system.
  */
-#ifndef CONFIG_SHELL_MINIMAL
-#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO)
-#        define CONFIG_SHELL_MINIMAL                        1
+#ifndef CONFIG_START_FILESYSTEM
+#    if defined(BOARD_ARDUINO_DUE)
+#        define CONFIG_START_FILESYSTEM                     1
 #    else
-#        define CONFIG_SHELL_MINIMAL                        0
+#        define CONFIG_START_FILESYSTEM                     0
 #    endif
 #endif
 
 /**
- * The shell prompt string.
+ * Configure a default file system start address.
  */
-#ifndef CONFIG_SHELL_PROMPT
-#    define CONFIG_SHELL_PROMPT "$ "
+#ifndef CONFIG_START_FILESYSTEM_ADDRESS
+#    define CONFIG_START_FILESYSTEM_ADDRESS        0x000c0000
 #endif
 
 /**
- * Maximum number of characters in a shell command.
+ * Configure a default file system size.
  */
-#ifndef CONFIG_SHELL_COMMAND_MAX
-#    define CONFIG_SHELL_COMMAND_MAX                       64
+#ifndef CONFIG_START_FILESYSTEM_SIZE
+#    define CONFIG_START_FILESYSTEM_SIZE                32768
 #endif
 
 /**
- * Size of the shell history buffer.
+ * Start the network manager configuring and monitoring network
+ * interfaces.
  */
-#ifndef CONFIG_SHELL_HISTORY_SIZE
-#    define CONFIG_SHELL_HISTORY_SIZE                     768
-#endif
-
-/**
- * USB device vendor id.
- */
-#ifndef CONFIG_USB_DEVICE_VID
-#    define CONFIG_USB_DEVICE_VID                      0x2341
-#endif
-
-/**
- * USB device product id.
- */
-#ifndef CONFIG_USB_DEVICE_PID
-#    define CONFIG_USB_DEVICE_PID                      0x8037
-#endif
-
-/**
- * SPIFFS is a flash file system applicable for boards that has a
- * reasonably big modifiable flash.
- */
-#ifndef CONFIG_SPIFFS
-#    if defined(BOARD_ARDUINO_DUE) || defined(ARCH_LINUX)
-#        define CONFIG_SPIFFS                               1
+#ifndef CONFIG_START_NETWORK_MANAGER
+#    if defined(ARCH_ESP)
+#        define CONFIG_START_NETWORK_MANAGER                0
 #    else
-#        define CONFIG_SPIFFS                               0
+#        define CONFIG_START_NETWORK_MANAGER                0
 #    endif
-#endif
-
-
-/**
- * Size of the settings area. This size *MUST* have the same size as
- * the settings generated by the settings.py script.
- */
-#ifndef CONFIG_SETTING_AREA_SIZE
-#    define CONFIG_SETTING_AREA_SIZE                      256
 #endif
 
 /**
@@ -548,40 +556,31 @@
 #endif
 
 /**
- * Start the network manager configuring and monitoring network
- * interfaces.
+ * Maximum number of bytes in the print output buffer.
  */
-#ifndef CONFIG_START_NETWORK_MANAGER
-#    if defined(ARCH_ESP)
-#        define CONFIG_START_NETWORK_MANAGER                0
-#    else
-#        define CONFIG_START_NETWORK_MANAGER                0
-#    endif
+#ifndef CONFIG_STD_OUTPUT_BUFFER_MAX
+#    define CONFIG_STD_OUTPUT_BUFFER_MAX                   16
 #endif
 
 /**
- * Configure a default file system.
+ * System tick frequency in Hertz.
  */
-#ifndef CONFIG_START_FILESYSTEM
-#    if defined(BOARD_ARDUINO_DUE)
-#        define CONFIG_START_FILESYSTEM                     1
-#    else
-#        define CONFIG_START_FILESYSTEM                     0
-#    endif
+#ifndef CONFIG_SYSTEM_TICK_FREQUENCY
+#    define CONFIG_SYSTEM_TICK_FREQUENCY                  100
 #endif
 
 /**
- * Configure a default file system start address.
+ * USB device vendor id.
  */
-#ifndef CONFIG_START_FILESYSTEM_ADDRESS
-#    define CONFIG_START_FILESYSTEM_ADDRESS        0x000c0000
+#ifndef CONFIG_USB_DEVICE_VID
+#    define CONFIG_USB_DEVICE_VID                      0x2341
 #endif
 
 /**
- * Configure a default file system size.
+ * USB device product id.
  */
-#ifndef CONFIG_START_FILESYSTEM_SIZE
-#    define CONFIG_START_FILESYSTEM_SIZE                32768
+#ifndef CONFIG_USB_DEVICE_PID
+#    define CONFIG_USB_DEVICE_PID                      0x8037
 #endif
 
 /* Configuration validation. */
