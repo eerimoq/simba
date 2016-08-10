@@ -620,7 +620,7 @@ static int test_nonstrict(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_encode_keys(struct harness_t *harness_p)
+static int test_encode(struct harness_t *harness_p)
 {
     ssize_t status;
     struct json_t p;
@@ -628,6 +628,14 @@ static int test_encode_keys(struct harness_t *harness_p)
     char buf[128];
 
     json_init(&p);
+
+    /* Empty object. */
+    tokens[0] = json_token_object(0);
+    memset(buf, -1, sizeof(buf));
+    status = json_encode(&p, tokens, 1, buf);
+    BTASSERT(status == 2);
+    BTASSERT(strlen(buf) == 2);
+    BTASSERT(memcmp(buf, "{}", status) == 0);
 
     /* Test all valid types as keys. */
     tokens[0] = json_token_object(10);
@@ -655,6 +663,69 @@ static int test_encode_keys(struct harness_t *harness_p)
                     "}", status) == 0);
     BTASSERT(json_decode(&p, buf, status, NULL, 0) == 11);
 
+    /* Test an array as top object token. */
+    tokens[0] = json_token_array(1);
+    tokens[1] = json_token_true();
+    memset(buf, -1, sizeof(buf));
+    status = json_encode(&p, tokens, 2, buf);
+    BTASSERT(status == 6);
+    BTASSERT(strlen(buf) == 6);
+    BTASSERT(memcmp(buf, "[true]", status) == 0);
+
+    /* Empty array. */
+    tokens[0] = json_token_array(0);
+    memset(buf, -1, sizeof(buf));
+    status = json_encode(&p, tokens, 1, buf);
+    BTASSERT(status == 2);
+    BTASSERT(strlen(buf) == 2);
+    BTASSERT(memcmp(buf, "[]", status) == 0);
+
+    return (0);
+}
+
+static int test_encode_fail(struct harness_t *harness_p)
+{
+    struct json_t p;
+    struct json_tok_t tokens[32];
+    char buf[128];
+
+    json_init(&p);
+
+    /* Test all invalid types as keys in an object. */
+    tokens[0] = json_token_object(1);
+    tokens[1] = json_token_array(0);
+    BTASSERT(json_encode(&p, tokens, 2, buf) == -1);
+
+    /* Test all invalid types as keys in an object. */
+    tokens[0] = json_token_object(1);
+    tokens[1] = json_token_object(0);
+    BTASSERT(json_encode(&p, tokens, 2, buf) == -1);
+
+    /* Only array and object are allowed as the top level token. */
+    tokens[0] = json_token_null();
+    BTASSERT(json_encode(&p, tokens, 1, buf) == -1);
+    tokens[0] = json_token_true();
+    BTASSERT(json_encode(&p, tokens, 1, buf) == -1);
+    tokens[0] = json_token_false();
+    BTASSERT(json_encode(&p, tokens, 1, buf) == -1);
+    tokens[0] = json_token_number("1", 1);
+    BTASSERT(json_encode(&p, tokens, 1, buf) == -1);
+    tokens[0] = json_token_string("a", 1);
+    BTASSERT(json_encode(&p, tokens, 1, buf) == -1);
+
+    /* Too few tokens for object. Both key and value missing. */
+    tokens[0] = json_token_object(1);
+    BTASSERT(json_encode(&p, tokens, 1, buf) == -1);
+
+    /* Too few tokens for object. Key given, but value is missing. */
+    tokens[0] = json_token_object(1);
+    tokens[1] = json_token_string("foo", 3);
+    BTASSERT(json_encode(&p, tokens, 2, buf) == -1);
+
+    /* Too few tokens for array. */
+    tokens[0] = json_token_array(1);
+    BTASSERT(json_encode(&p, tokens, 1, buf) == -1);
+
     return (0);
 }
 
@@ -676,7 +747,8 @@ int main()
         { test_issue_27, "test_issue_27" },
         { test_count, "test_count" },
         { test_nonstrict, "test_nonstrict" },
-        { test_encode_keys, "test_encode_keys" },
+        { test_encode, "test_encode" },
+        { test_encode_fail, "test_encode_fail" },
         { NULL, NULL }
     };
 
