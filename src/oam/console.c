@@ -20,7 +20,7 @@
 
 #include "simba.h"
 
-#if CONFIG_CONSOLE == CONFIG_CONSOLE_UART
+#if CONFIG_START_CONSOLE == CONFIG_START_CONSOLE_UART
 
 struct console_t {
     struct uart_driver_t uart;
@@ -37,8 +37,8 @@ int console_module_init(void)
 int console_init(void)
 {
     return (uart_init(&console.uart,
-                      &uart_device[CONFIG_CONSOLE_DEVICE_INDEX],
-                      CONFIG_CONSOLE_UART_BAUDRATE,
+                      &uart_device[CONFIG_START_CONSOLE_DEVICE_INDEX],
+                      CONFIG_START_CONSOLE_UART_BAUDRATE,
                       console.rxbuf,
                       sizeof(console.rxbuf)));
 }
@@ -73,7 +73,7 @@ chan_t *console_get_output_channel()
     return (&console.uart.chout);
 }
 
-#elif CONFIG_CONSOLE == CONFIG_CONSOLE_USB_CDC
+#elif CONFIG_START_CONSOLE == CONFIG_START_CONSOLE_USB_CDC
 
 struct console_t {
     struct usb_device_driver_t usb;
@@ -117,7 +117,7 @@ int console_start(void)
 {
     usb_device_start(&console.usb);
 
-#if CONFIG_CONSOLE_USB_CDC_WAIT_FOR_CONNETION == 1
+#if CONFIG_START_CONSOLE_USB_CDC_WAIT_FOR_CONNETION == 1
 
     /* Wait for the host to connect. */
     while (usb_device_class_cdc_is_connected(&console.cdc) == 0) {
@@ -156,7 +156,7 @@ chan_t *console_get_output_channel(void)
     return (&console.cdc.chout);
 }
 
-#elif CONFIG_CONSOLE == CONFIG_CONSOLE_NONE
+#elif CONFIG_START_CONSOLE == CONFIG_START_CONSOLE_NONE
 
 struct console_t {
     chan_t *chin_p;

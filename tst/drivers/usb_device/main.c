@@ -43,9 +43,9 @@ static int test_start(struct harness_t *harness_p)
 
     /* Initialize the first CDC driver object. */
     BTASSERT(usb_device_class_cdc_init(&console,
-                                       CONFIG_CONSOLE_USB_CDC_CONTROL_INTERFACE,
-                                       CONFIG_CONSOLE_USB_CDC_ENDPOINT_IN,
-                                       CONFIG_CONSOLE_USB_CDC_ENDPOINT_OUT,
+                                       CONFIG_START_CONSOLE_USB_CDC_CONTROL_INTERFACE,
+                                       CONFIG_START_CONSOLE_USB_CDC_ENDPOINT_IN,
+                                       CONFIG_START_CONSOLE_USB_CDC_ENDPOINT_OUT,
                                        &console_rxbuf[0],
                                        sizeof(console_rxbuf)) == 0);
     drivers[0] = &console.base;

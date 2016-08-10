@@ -21,6 +21,6 @@
 #ifndef __CONFIG_H__
 #define __CONFIG_H__
 
-#define CONFIG_CONSOLE_BAUDRATE  115200
+#define CONFIG_START_CONSOLE_BAUDRATE  115200
 
 #endif

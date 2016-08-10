@@ -393,61 +393,61 @@
 #    endif
 #endif
 
-#define CONFIG_CONSOLE_NONE                                 0
-#define CONFIG_CONSOLE_UART                                 1
-#define CONFIG_CONSOLE_USB_CDC                              2
+#define CONFIG_START_CONSOLE_NONE                           0
+#define CONFIG_START_CONSOLE_UART                           1
+#define CONFIG_START_CONSOLE_USB_CDC                        2
 
 /**
- * Console device (UART/USB CDC).
+ * Start the console device (UART/USB CDC) on system startup.
  */
-#ifndef CONFIG_CONSOLE
+#ifndef CONFIG_START_CONSOLE
 #    if defined(BOARD_ARDUINO_PRO_MICRO)
-#        define CONFIG_CONSOLE         CONFIG_CONSOLE_USB_CDC
+#        define CONFIG_START_CONSOLE   CONFIG_START_CONSOLE_USB_CDC
 #    else
-#        define CONFIG_CONSOLE            CONFIG_CONSOLE_UART
+#        define CONFIG_START_CONSOLE      CONFIG_START_CONSOLE_UART
 #    endif
 #endif
 
 /**
  * Console device index.
  */
-#ifndef CONFIG_CONSOLE_DEVICE_INDEX
-#    define CONFIG_CONSOLE_DEVICE_INDEX                     0
+#ifndef CONFIG_START_CONSOLE_DEVICE_INDEX
+#    define CONFIG_START_CONSOLE_DEVICE_INDEX               0
 #endif
 
 /**
  * Console UART baudrate.
  */
-#ifndef CONFIG_CONSOLE_UART_BAUDRATE
-#    define CONFIG_CONSOLE_UART_BAUDRATE                38400
+#ifndef CONFIG_START_CONSOLE_UART_BAUDRATE
+#    define CONFIG_START_CONSOLE_UART_BAUDRATE          38400
 #endif
 
 /**
  * Console USB CDC control interface number.
  */
-#ifndef CONFIG_CONSOLE_USB_CDC_CONTROL_INTERFACE
-#    define CONFIG_CONSOLE_USB_CDC_CONTROL_INTERFACE        0
+#ifndef CONFIG_START_CONSOLE_USB_CDC_CONTROL_INTERFACE
+#    define CONFIG_START_CONSOLE_USB_CDC_CONTROL_INTERFACE  0
 #endif
 
 /**
  * Console USB CDC input endpoint.
  */
-#ifndef CONFIG_CONSOLE_USB_CDC_ENDPOINT_IN
-#    define CONFIG_CONSOLE_USB_CDC_ENDPOINT_IN              2
+#ifndef CONFIG_START_CONSOLE_USB_CDC_ENDPOINT_IN
+#    define CONFIG_START_CONSOLE_USB_CDC_ENDPOINT_IN        2
 #endif
 
 /**
  * Console USB CDC output endpoint.
  */
-#ifndef CONFIG_CONSOLE_USB_CDC_ENDPOINT_OUT
-#    define CONFIG_CONSOLE_USB_CDC_ENDPOINT_OUT             3
+#ifndef CONFIG_START_CONSOLE_USB_CDC_ENDPOINT_OUT
+#    define CONFIG_START_CONSOLE_USB_CDC_ENDPOINT_OUT       3
 #endif
 
 /**
  * Wait for the host to connect after starting the console.
  */
-#ifndef CONFIG_CONSOLE_USB_CDC_WAIT_FOR_CONNETION
-#    define CONFIG_CONSOLE_USB_CDC_WAIT_FOR_CONNETION       1
+#ifndef CONFIG_START_CONSOLE_USB_CDC_WAIT_FOR_CONNETION
+#    define CONFIG_START_CONSOLE_USB_CDC_WAIT_FOR_CONNETION 1
 #endif
 
 /**
@@ -521,54 +521,54 @@
 /**
  * Start a shell thread communication over the console channels.
  */
-#ifndef CONFIG_SHELL
+#ifndef CONFIG_START_SHELL
 #    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO)
-#        define CONFIG_SHELL                                0
+#        define CONFIG_START_SHELL                          0
 #    else
-#        define CONFIG_SHELL                                1
+#        define CONFIG_START_SHELL                          1
 #    endif
 #endif
 
 /**
  * Shell thread priority.
  */
-#ifndef CONFIG_SHELL_PRIO
-#    define CONFIG_SHELL_PRIO                              30
+#ifndef CONFIG_START_SHELL_PRIO
+#    define CONFIG_START_SHELL_PRIO                        30
 #endif
 
 /**
  * Shell thread priority.
  */
-#ifndef CONFIG_SHELL_STACK_SIZE
-#    define CONFIG_SHELL_STACK_SIZE                       768
+#ifndef CONFIG_START_SHELL_STACK_SIZE
+#    define CONFIG_START_SHELL_STACK_SIZE                 768
 #endif
 
 /**
  * Start the network manager configuring and monitoring network
  * interfaces.
  */
-#ifndef CONFIG_NETWORK_MANAGER
+#ifndef CONFIG_START_NETWORK_MANAGER
 #    if defined(ARCH_ESP)
-#        define CONFIG_NETWORK_MANAGER                      0
+#        define CONFIG_START_NETWORK_MANAGER                0
 #    else
-#        define CONFIG_NETWORK_MANAGER                      0
+#        define CONFIG_START_NETWORK_MANAGER                0
 #    endif
 #endif
 
 /**
  * Configure a default file system.
  */
-#ifndef CONFIG_FILESYSTEM
+#ifndef CONFIG_START_FILESYSTEM
 #    if defined(BOARD_ARDUINO_DUE)
-#        define CONFIG_FILESYSTEM                           1
+#        define CONFIG_START_FILESYSTEM                     1
 #    else
-#        define CONFIG_FILESYSTEM                           0
+#        define CONFIG_START_FILESYSTEM                     0
 #    endif
 #endif
 
 /* Configuration validation. */
-#if (CONFIG_SHELL == 1) &&  (CONFIG_CONSOLE == CONFIG_CONSOLE_NONE)
-#    error "CONFIG_SHELL == 1 requires CONFIG_CONSOLE != CONFIG_CONSOLE_NONE. Please change the configuration."
+#if (CONFIG_START_SHELL == 1) &&  (CONFIG_START_CONSOLE == CONFIG_START_CONSOLE_NONE)
+#    error "CONFIG_START_SHELL == 1 requires CONFIG_START_CONSOLE != CONFIG_START_CONSOLE_NONE. Please change the configuration."
 #endif
 
 #endif

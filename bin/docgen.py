@@ -119,13 +119,13 @@ def boards_generate(database):
         # Enabled features.
         enabled_features = []
         for [name, value] in data["default-configuration"]:
-            if name == "CONFIG_NETWORK_MANAGER" and value == "1":
+            if name == "CONFIG_START_NETWORK_MANAGER" and value == "1":
                 enabled_features.append("- Network manager.")
-            if name == "CONFIG_FILESYSTEM" and value == "1":
+            if name == "CONFIG_START_FILESYSTEM" and value == "1":
                 enabled_features.append("- File system.")
-            if name == "CONFIG_CONSOLE" and value != "CONFIG_CONSOLE_NONE":
+            if name == "CONFIG_START_CONSOLE" and value != "CONFIG_START_CONSOLE_NONE":
                 enabled_features.append("- :doc:`Console.<../library-reference/oam/console>`")
-            if name == "CONFIG_SHELL" and value == "1":
+            if name == "CONFIG_START_SHELL" and value == "1":
                 enabled_features.append("- :doc:`Debug shell.<../library-reference/oam/shell>`")
 
         rst = BOARD_FMT.format(name=board,

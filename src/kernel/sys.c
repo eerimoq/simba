@@ -37,13 +37,6 @@ static const FAR char config[] =
 #if CONFIG_SYS_CONFIG_STRING == 1
 
     "        assert=" STRINGIFY(CONFIG_ASSERT) "\r\n"
-    "        console=" STRINGIFY(CONFIG_CONSOLE) "\r\n"
-    "        console-device-index=" STRINGIFY(CONFIG_CONSOLE_DEVICE_INDEX) "\r\n"
-    "        console-uart-baudrate=" STRINGIFY(CONFIG_CONSOLE_UART_BAUDRATE) "\r\n"
-    "        console-usb-cdc-control-interface=" STRINGIFY(CONFIG_CONSOLE_USB_CDC_CONTROL_INTERFACE) "\r\n"
-    "        console-usb-cdc-endpoint-in=" STRINGIFY(CONFIG_CONSOLE_USB_CDC_ENDPOINT_IN) "\r\n"
-    "        console-usb-cdc-endpoint-out=" STRINGIFY(CONFIG_CONSOLE_USB_CDC_ENDPOINT_OUT) "\r\n"
-    "        console-usb-cdc-wait-for-connetion=" STRINGIFY(CONFIG_CONSOLE_USB_CDC_WAIT_FOR_CONNETION) "\r\n"
     "        debug=" STRINGIFY(CONFIG_DEBUG) "\r\n"
     "        fs-cmd-ds18b20-list=" STRINGIFY(CONFIG_FS_CMD_DS18B20_LIST) "\r\n"
     "        fs-cmd-fs-counters-list=" STRINGIFY(CONFIG_FS_CMD_FS_COUNTERS_LIST) "\r\n"
@@ -76,12 +69,22 @@ static const FAR char config[] =
     "        preemptive-scheduler=" STRINGIFY(CONFIG_PREEMPTIVE_SCHEDULER) "\r\n"
     "        profile-stack=" STRINGIFY(CONFIG_PROFILE_STACK) "\r\n"
     "        setting-area-size=" STRINGIFY(CONFIG_SETTING_AREA_SIZE) "\r\n"
-    "        shell=" STRINGIFY(CONFIG_SHELL) "\r\n"
     "        shell-command-max=" STRINGIFY(CONFIG_SHELL_COMMAND_MAX) "\r\n"
     "        shell-history-size=" STRINGIFY(CONFIG_SHELL_HISTORY_SIZE) "\r\n"
     "        shell-minimal=" STRINGIFY(CONFIG_SHELL_MINIMAL) "\r\n"
-    "        shell-prio=" STRINGIFY(CONFIG_SHELL_PRIO) "\r\n"
     "        shell-prompt=" STRINGIFY(CONFIG_SHELL_PROMPT) "\r\n"
+    "        start-console=" STRINGIFY(CONFIG_START_CONSOLE) "\r\n"
+    "        start-console-device-index=" STRINGIFY(CONFIG_START_CONSOLE_DEVICE_INDEX) "\r\n"
+    "        start-console-uart-baudrate=" STRINGIFY(CONFIG_START_CONSOLE_UART_BAUDRATE) "\r\n"
+    "        start-console-usb-cdc-control-interface=" STRINGIFY(CONFIG_START_CONSOLE_USB_CDC_CONTROL_INTERFACE) "\r\n"
+    "        start-console-usb-cdc-endpoint-in=" STRINGIFY(CONFIG_START_CONSOLE_USB_CDC_ENDPOINT_IN) "\r\n"
+    "        start-console-usb-cdc-endpoint-out=" STRINGIFY(CONFIG_START_CONSOLE_USB_CDC_ENDPOINT_OUT) "\r\n"
+    "        start-console-usb-cdc-wait-for-connetion=" STRINGIFY(CONFIG_START_CONSOLE_USB_CDC_WAIT_FOR_CONNETION) "\r\n"
+    "        start-filesystem=" STRINGIFY(CONFIG_START_FILESYSTEM) "\r\n"
+    "        start-network-manager=" STRINGIFY(CONFIG_START_NETWORK_MANAGER) "\r\n"
+    "        start-shell=" STRINGIFY(CONFIG_START_SHELL) "\r\n"
+    "        start-shell-prio=" STRINGIFY(CONFIG_START_SHELL_PRIO) "\r\n"
+    "        start-shell-stack-size=" STRINGIFY(CONFIG_START_SHELL_STACK_SIZE) "\r\n"
     "        std-output-buffer-max=" STRINGIFY(CONFIG_STD_OUTPUT_BUFFER_MAX) "\r\n"
     "        system-tick-frequency=" STRINGIFY(CONFIG_SYSTEM_TICK_FREQUENCY) "\r\n"
     "        usb-device-vid=" STRINGIFY(CONFIG_USB_DEVICE_VID) "\r\n"
@@ -91,10 +94,10 @@ static const FAR char config[] =
 
     "";
 
-#if CONFIG_SHELL == 1
+#if CONFIG_START_SHELL == 1
 
 static struct shell_t shell;
-static THRD_STACK(shell_stack, CONFIG_SHELL_STACK_SIZE);
+static THRD_STACK(shell_stack, CONFIG_START_SHELL_STACK_SIZE);
 
 #endif
 
@@ -195,7 +198,7 @@ int sys_start(void)
     shell_module_init();
     sys_module_init();
 
-#if CONFIG_CONSOLE != CONFIG_CONSOLE_NONE
+#if CONFIG_START_CONSOLE != CONFIG_START_CONSOLE_NONE
 
     console_module_init();
     console_init();
@@ -207,7 +210,7 @@ int sys_start(void)
 
 #endif
 
-#if CONFIG_SHELL == 1
+#if CONFIG_START_SHELL == 1
 
     shell_init(&shell,
                sys_get_stdin(),
@@ -219,7 +222,7 @@ int sys_start(void)
 
     thrd_spawn(shell_main,
                &shell,
-               CONFIG_SHELL_PRIO,
+               CONFIG_START_SHELL_PRIO,
                shell_stack,
                sizeof(shell_stack));
 #endif
