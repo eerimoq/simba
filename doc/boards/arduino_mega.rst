@@ -1,11 +1,6 @@
 Arduino Mega
 ============
 
-Homepage
---------
-
-https://www.arduino.cc/en/Main/ArduinoBoardMega
-
 Pinout
 ------
 
@@ -16,8 +11,8 @@ Pinout
 Default system features
 -----------------------
 
-Here is a list of enabled higher level features for this board, all
-initialized in ``sys_start()``:
+The default configuration includes those major features. They are all
+initialized by ``sys_start()`` at the startup of the application.
 
 - :doc:`Console.<../library-reference/oam/console>`
 - :doc:`Debug shell.<../library-reference/oam/shell>`
@@ -25,7 +20,7 @@ initialized in ``sys_start()``:
 Drivers
 -------
 
-Supported drivers.
+Supported drivers for this board.
 
 - :doc:`../library-reference/drivers/adc`
 - :doc:`../library-reference/drivers/ds18b20`
@@ -43,10 +38,37 @@ Supported drivers.
 - :doc:`../library-reference/drivers/uart_soft`
 - :doc:`../library-reference/drivers/watchdog`
 
-Mcu
----
+Library Reference
+-----------------
 
-:doc:`atmega2560<../library-reference/mcus/atmega2560>`
+Read more about board specific functionality in the :doc:`Arduino Mega
+<../library-reference/boards/arduino_mega>` module documentation in the
+Library Reference.
+
+Memory usage
+------------
+
+Below is the memory usage of two applications:
+
+- The
+  :github-tree:`minimal-configuration<examples/minimal-configuration>`
+  application is configured to only include the bare minimum of
+  functionality for the low level kernel to run. That is, the
+  thread scheduler and system tick.
+
+- The
+  :github-tree:`default-configuration<examples/default-configuration>`
+  application is built with the default configuration, including a lot
+  more functionality. See the list of `Default system features`_ above
+  for a summary.
+
++--------------------------+-----------+-----------+
+| Application              | Flash     | RAM       |
++==========================+===========+===========+
+| minimal-configuration    |     10084 |       951 |
++--------------------------+-----------+-----------+
+| default-configuration    |     55306 |      3605 |
++--------------------------+-----------+-----------+
 
 Default configuration
 ---------------------
@@ -178,37 +200,15 @@ Default Standard Library configuration.
 +------------------------------------------------------+-----------------------------------------------------+
 
 
-Library Reference
------------------
+Homepage
+--------
 
-Read more about board specific functionality in the :doc:`Arduino Mega
-<../library-reference/boards/arduino_mega>` module documentation in the
-Library Reference.
+https://www.arduino.cc/en/Main/ArduinoBoardMega
 
-Memory usage
-------------
+Mcu
+---
 
-Below is the memory usage of two applications.
-
-The
-:github-tree:`minimal-configuration<examples/minimal-configuration>`
-application is configured to only include the bare minimum of
-functionality for the low level kernel to run. That is, the scheduler,
-interrupts and timers.
-
-The
-:github-tree:`default-configuration<examples/default-configuration>`
-application is built with the default configuration, including a lot
-more functionality. See the list of default system features above for
-a summary.
-
-+--------------------------+-----------+-----------+
-| Application              | Flash     | RAM       |
-+==========================+===========+===========+
-| minimal-configuration    |     10084 |       951 |
-+--------------------------+-----------+-----------+
-| default-configuration    |     55306 |      3605 |
-+--------------------------+-----------+-----------+
+:doc:`atmega2560<../library-reference/mcus/atmega2560>`
 
 
 

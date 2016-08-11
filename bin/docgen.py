@@ -12,11 +12,6 @@ import subprocess
 BOARD_FMT = """{desc}
 {desc_underline}
 
-Homepage
---------
-
-{homepage}
-
 Pinout
 ------
 
@@ -27,32 +22,17 @@ Pinout
 Default system features
 -----------------------
 
-Here is a list of enabled higher level features for this board, all
-initialized in ``sys_start()``:
+The default configuration includes those major features. They are all
+initialized by ``sys_start()`` at the startup of the application.
 
-{enabled_features}
+{major_features}
 
 Drivers
 -------
 
-Supported drivers.
+Supported drivers for this board.
 
 {drivers}
-
-Mcu
----
-
-:doc:`{mcu}<../library-reference/mcus/{mcu}>`
-
-Default configuration
----------------------
-
-Default Standard Library configuration.
-
-+------------------------------------------------------+-----------------------------------------------------+
-|  Name                                                |  Value                                              |
-+======================================================+=====================================================+
-{default_configuration}
 
 Library Reference
 -----------------
@@ -64,25 +44,45 @@ Library Reference.
 Memory usage
 ------------
 
-Below is the memory usage of two applications.
+Below is the memory usage of two applications:
 
-The
-:github-tree:`minimal-configuration<examples/minimal-configuration>`
-application is configured to only include the bare minimum of
-functionality for the low level kernel to run. That is, the scheduler,
-interrupts and timers.
+- The
+  :github-tree:`minimal-configuration<examples/minimal-configuration>`
+  application is configured to only include the bare minimum of
+  functionality for the low level kernel to run. That is, the
+  thread scheduler and system tick.
 
-The
-:github-tree:`default-configuration<examples/default-configuration>`
-application is built with the default configuration, including a lot
-more functionality. See the list of default system features above for
-a summary.
+- The
+  :github-tree:`default-configuration<examples/default-configuration>`
+  application is built with the default configuration, including a lot
+  more functionality. See the list of `Default system features`_ above
+  for a summary.
 
 +--------------------------+-----------+-----------+
 | Application              | Flash     | RAM       |
 +==========================+===========+===========+
 {memory_usage}
 +--------------------------+-----------+-----------+
+
+Default configuration
+---------------------
+
+Default Standard Library configuration.
+
++------------------------------------------------------+-----------------------------------------------------+
+|  Name                                                |  Value                                              |
++======================================================+=====================================================+
+{default_configuration}
+
+Homepage
+--------
+
+{homepage}
+
+Mcu
+---
+
+:doc:`{mcu}<../library-reference/mcus/{mcu}>`
 
 {include_extra}
 
@@ -142,16 +142,16 @@ def boards_generate(database):
             include_extra = ""
 
         # Enabled features.
-        enabled_features = []
+        major_features = []
         for [name, value] in data["default-configuration"]:
             if name == "CONFIG_START_NETWORK" and value == "1":
-                enabled_features.append("- Networking.")
+                major_features.append("- Networking.")
             if name == "CONFIG_START_FILESYSTEM" and value == "1":
-                enabled_features.append("- File system.")
+                major_features.append("- File system.")
             if name == "CONFIG_START_CONSOLE" and value != "CONFIG_START_CONSOLE_NONE":
-                enabled_features.append("- :doc:`Console.<../library-reference/oam/console>`")
+                major_features.append("- :doc:`Console.<../library-reference/oam/console>`")
             if name == "CONFIG_START_SHELL" and value == "1":
-                enabled_features.append("- :doc:`Debug shell.<../library-reference/oam/shell>`")
+                major_features.append("- :doc:`Debug shell.<../library-reference/oam/shell>`")
 
         # Memory usage.
         applications = [
@@ -181,7 +181,7 @@ def boards_generate(database):
                                desc_underline="=" * len(data["board_desc"]),
                                homepage=data["board_homepage"],
                                pinout=data["board_pinout"],
-                               enabled_features='\n'.join(enabled_features),
+                               major_features='\n'.join(major_features),
                                mcu=data["mcu"].replace("/", ""),
                                drivers='\n'.join(drivers),
                                default_configuration=default_configuration,

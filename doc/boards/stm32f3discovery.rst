@@ -1,11 +1,6 @@
 STM32F3DISCOVERY
 ================
 
-Homepage
---------
-
-http://www.st.com/content/st_com/en/products/evaluation-tools/product-evaluation-tools/mcu-eval-tools/stm32-mcu-eval-tools/stm32-mcu-discovery-kits/stm32f3discovery.html
-
 Pinout
 ------
 
@@ -16,8 +11,8 @@ Pinout
 Default system features
 -----------------------
 
-Here is a list of enabled higher level features for this board, all
-initialized in ``sys_start()``:
+The default configuration includes those major features. They are all
+initialized by ``sys_start()`` at the startup of the application.
 
 - :doc:`Console.<../library-reference/oam/console>`
 - :doc:`Debug shell.<../library-reference/oam/shell>`
@@ -25,16 +20,43 @@ initialized in ``sys_start()``:
 Drivers
 -------
 
-Supported drivers.
+Supported drivers for this board.
 
 - :doc:`../library-reference/drivers/flash`
 - :doc:`../library-reference/drivers/pin`
 - :doc:`../library-reference/drivers/uart`
 
-Mcu
----
+Library Reference
+-----------------
 
-:doc:`stm32f303vc<../library-reference/mcus/stm32f303vc>`
+Read more about board specific functionality in the :doc:`STM32F3DISCOVERY
+<../library-reference/boards/stm32f3discovery>` module documentation in the
+Library Reference.
+
+Memory usage
+------------
+
+Below is the memory usage of two applications:
+
+- The
+  :github-tree:`minimal-configuration<examples/minimal-configuration>`
+  application is configured to only include the bare minimum of
+  functionality for the low level kernel to run. That is, the
+  thread scheduler and system tick.
+
+- The
+  :github-tree:`default-configuration<examples/default-configuration>`
+  application is built with the default configuration, including a lot
+  more functionality. See the list of `Default system features`_ above
+  for a summary.
+
++--------------------------+-----------+-----------+
+| Application              | Flash     | RAM       |
++==========================+===========+===========+
+| minimal-configuration    |     12748 |      2720 |
++--------------------------+-----------+-----------+
+| default-configuration    |     55928 |      5994 |
++--------------------------+-----------+-----------+
 
 Default configuration
 ---------------------
@@ -166,37 +188,15 @@ Default Standard Library configuration.
 +------------------------------------------------------+-----------------------------------------------------+
 
 
-Library Reference
------------------
+Homepage
+--------
 
-Read more about board specific functionality in the :doc:`STM32F3DISCOVERY
-<../library-reference/boards/stm32f3discovery>` module documentation in the
-Library Reference.
+http://www.st.com/content/st_com/en/products/evaluation-tools/product-evaluation-tools/mcu-eval-tools/stm32-mcu-eval-tools/stm32-mcu-discovery-kits/stm32f3discovery.html
 
-Memory usage
-------------
+Mcu
+---
 
-Below is the memory usage of two applications.
-
-The
-:github-tree:`minimal-configuration<examples/minimal-configuration>`
-application is configured to only include the bare minimum of
-functionality for the low level kernel to run. That is, the scheduler,
-interrupts and timers.
-
-The
-:github-tree:`default-configuration<examples/default-configuration>`
-application is built with the default configuration, including a lot
-more functionality. See the list of default system features above for
-a summary.
-
-+--------------------------+-----------+-----------+
-| Application              | Flash     | RAM       |
-+==========================+===========+===========+
-| minimal-configuration    |     12748 |      2720 |
-+--------------------------+-----------+-----------+
-| default-configuration    |     55928 |      5994 |
-+--------------------------+-----------+-----------+
+:doc:`stm32f303vc<../library-reference/mcus/stm32f303vc>`
 
 .. include:: extra/stm32f3discovery.rst
 

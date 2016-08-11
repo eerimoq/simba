@@ -31,7 +31,8 @@
 int watchdog_module_init(void);
 
 /**
- * Start the watchdog.
+ * Start the watchdog with given timeout. Use `watchdog_kick()` to
+ * periodically restart the timer.
  *
  * @param[in] timeout Watchdog timeout in milliseconds.
  *
@@ -47,7 +48,9 @@ int watchdog_start_ms(int timeout);
 int watchdog_stop(void);
 
 /**
- * Kick the watchdog.
+ * Kick the watchdog. Restarts the watchdog timer with its original
+ * timeout given to `watchdog_start_ms()`. The board will be reset if
+ * this function is not called before the watchdog timer expires.
  *
  * @return zero(0) or negative error code.
  */

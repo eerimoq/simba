@@ -1,11 +1,6 @@
 Arduino Due
 ===========
 
-Homepage
---------
-
-https://www.arduino.cc/en/Main/ArduinoBoardDue
-
 Pinout
 ------
 
@@ -16,8 +11,8 @@ Pinout
 Default system features
 -----------------------
 
-Here is a list of enabled higher level features for this board, all
-initialized in ``sys_start()``:
+The default configuration includes those major features. They are all
+initialized by ``sys_start()`` at the startup of the application.
 
 - :doc:`Console.<../library-reference/oam/console>`
 - File system.
@@ -26,7 +21,7 @@ initialized in ``sys_start()``:
 Drivers
 -------
 
-Supported drivers.
+Supported drivers for this board.
 
 - :doc:`../library-reference/drivers/adc`
 - :doc:`../library-reference/drivers/can`
@@ -42,10 +37,37 @@ Supported drivers.
 - :doc:`../library-reference/drivers/usb`
 - :doc:`../library-reference/drivers/usb_host`
 
-Mcu
----
+Library Reference
+-----------------
 
-:doc:`sam3x8e<../library-reference/mcus/sam3x8e>`
+Read more about board specific functionality in the :doc:`Arduino Due
+<../library-reference/boards/arduino_due>` module documentation in the
+Library Reference.
+
+Memory usage
+------------
+
+Below is the memory usage of two applications:
+
+- The
+  :github-tree:`minimal-configuration<examples/minimal-configuration>`
+  application is configured to only include the bare minimum of
+  functionality for the low level kernel to run. That is, the
+  thread scheduler and system tick.
+
+- The
+  :github-tree:`default-configuration<examples/default-configuration>`
+  application is built with the default configuration, including a lot
+  more functionality. See the list of `Default system features`_ above
+  for a summary.
+
++--------------------------+-----------+-----------+
+| Application              | Flash     | RAM       |
++==========================+===========+===========+
+| minimal-configuration    |     18948 |      5308 |
++--------------------------+-----------+-----------+
+| default-configuration    |     89892 |     10062 |
++--------------------------+-----------+-----------+
 
 Default configuration
 ---------------------
@@ -177,37 +199,15 @@ Default Standard Library configuration.
 +------------------------------------------------------+-----------------------------------------------------+
 
 
-Library Reference
------------------
+Homepage
+--------
 
-Read more about board specific functionality in the :doc:`Arduino Due
-<../library-reference/boards/arduino_due>` module documentation in the
-Library Reference.
+https://www.arduino.cc/en/Main/ArduinoBoardDue
 
-Memory usage
-------------
+Mcu
+---
 
-Below is the memory usage of two applications.
-
-The
-:github-tree:`minimal-configuration<examples/minimal-configuration>`
-application is configured to only include the bare minimum of
-functionality for the low level kernel to run. That is, the scheduler,
-interrupts and timers.
-
-The
-:github-tree:`default-configuration<examples/default-configuration>`
-application is built with the default configuration, including a lot
-more functionality. See the list of default system features above for
-a summary.
-
-+--------------------------+-----------+-----------+
-| Application              | Flash     | RAM       |
-+==========================+===========+===========+
-| minimal-configuration    |     18948 |      5308 |
-+--------------------------+-----------+-----------+
-| default-configuration    |     89892 |     10062 |
-+--------------------------+-----------+-----------+
+:doc:`sam3x8e<../library-reference/mcus/sam3x8e>`
 
 
 
