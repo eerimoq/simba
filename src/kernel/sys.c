@@ -97,17 +97,62 @@ static const FAR char config[] =
 
     "";
 
+extern void time_tick_isr(void);
+extern void timer_tick_isr(void);
+extern void thrd_tick_isr(void);
+extern const FAR char sysinfo[];
+
+static void sys_tick(void) {
+    sys.tick++;
+    time_tick_isr();
+    timer_tick_isr();
+    thrd_tick_isr();
+}
+
+#include "sys_port.i"
+
+#if CONFIG_START_CONSOLE == 1
+
+static int start_console(void)
+{
+    console_module_init();
+    console_init();
+    console_start();
+
+    sys_set_stdin(console_get_input_channel());
+    sys_set_stdout(console_get_output_channel());
+    log_set_default_handler_output_channel(console_get_output_channel());
+
+    return (0);
+}
+
+#endif
+
 #if CONFIG_START_SHELL == 1
 
 static struct shell_t shell;
 static THRD_STACK(shell_stack, CONFIG_START_SHELL_STACK_SIZE);
 
-#endif
+static int start_shell(void)
+{
+    shell_init(&shell,
+               sys_get_stdin(),
+               sys_get_stdout(),
+               NULL,
+               NULL,
+               NULL,
+               NULL);
 
-extern void time_tick_isr(void);
-extern void timer_tick_isr(void);
-extern void thrd_tick_isr(void);
-extern const FAR char sysinfo[];
+    thrd_spawn(shell_main,
+               &shell,
+               CONFIG_START_SHELL_PRIO,
+               shell_stack,
+               sizeof(shell_stack));
+
+    return (0);
+}
+
+#endif
 
 #if CONFIG_START_FILESYSTEM == 1
 
@@ -130,22 +175,6 @@ struct filesystem_t {
 };
 
 static struct filesystem_t filesystem;
-
-static int hal_init(void)
-{
-    if (flash_module_init() != 0) {
-        std_printf(FSTR("Failed to initialize the flash module.\r\n"));
-        return (-1);
-    }
-    
-    if (flash_init(&filesystem.flash, &flash_0_dev) != 0) {
-        std_printf(FSTR("Failed to initialize the flash driver.\r\n"));
-        return (-1);
-    }
-
-    return (0);
-}
-
 
 static int32_t hal_read(struct spiffs_t *fs_p,
                         uint32_t addr,
@@ -193,7 +222,13 @@ static int start_filesystem(void)
 {
     int res;
 
-    if (hal_init() != 0) {
+    if (flash_module_init() != 0) {
+        std_printf(FSTR("Failed to initialize the flash module.\r\n"));
+        return (-1);
+    }
+    
+    if (flash_init(&filesystem.flash, &flash_0_dev) != 0) {
+        std_printf(FSTR("Failed to initialize the flash driver.\r\n"));
         return (-1);
     }
     
@@ -262,14 +297,51 @@ static int start_filesystem(void)
 
 #endif
 
-static void sys_tick(void) {
-    sys.tick++;
-    time_tick_isr();
-    timer_tick_isr();
-    thrd_tick_isr();
+#if CONFIG_START_NETWORK == 1
+
+#    if defined(ARCH_ESP)
+
+static struct network_interface_wifi_station_espressif_t wifi;
+
+/**
+ * Start the ip stack.
+ */
+static int start_network(void)
+{
+    struct inet_ip_addr_t addr;
+    char buf[20];
+    const char ssid[] = STRINGIFY(CONFIG_START_NETWORK_INTERFACE_WIFI_SSID);
+    const char password[] = STRINGIFY(CONFIG_START_NETWORK_INTERFACE_WIFI_PASSWORD);
+
+    inet_module_init();
+    socket_module_init();
+    network_interface_module_init();
+
+    std_printf(FSTR("Connecting to WiFi with SSID '%s'.\r\n"), ssid);
+
+    /* Initialize WiFi in station mode with given SSID and
+       password. */
+    network_interface_wifi_station_espressif_module_init();
+    network_interface_wifi_station_espressif_init(&wifi,
+                                                  (uint8_t *)&ssid[0],
+                                                  (uint8_t *)&password[0]);
+    network_interface_add(&wifi.network_interface);
+
+    /* Start WiFi and connect to the Access Point with given SSID and
+       password and wait for a connection. */
+    network_interface_start(&wifi.network_interface);
+    network_interface_get_ip_address(&wifi.network_interface, &addr);
+
+    std_printf(FSTR("Connected to WiFi with SSID '%s'. Got IP address '%s'.\r\n"),
+               ssid,
+               inet_ntoa(&addr, buf));
+
+    return (0);
 }
 
-#include "sys_port.i"
+#    endif
+
+#endif
 
 #if CONFIG_FS_CMD_SYS_INFO == 1
 
@@ -356,36 +428,25 @@ int sys_start(void)
 
 #if CONFIG_START_CONSOLE != CONFIG_START_CONSOLE_NONE
 
-    console_module_init();
-    console_init();
-    console_start();
-
-    sys_set_stdin(console_get_input_channel());
-    sys_set_stdout(console_get_output_channel());
-    log_set_default_handler_output_channel(console_get_output_channel());
+    start_console();
 
 #endif
 
 #if CONFIG_START_SHELL == 1
 
-    shell_init(&shell,
-               sys_get_stdin(),
-               sys_get_stdout(),
-               NULL,
-               NULL,
-               NULL,
-               NULL);
+    start_shell();
 
-    thrd_spawn(shell_main,
-               &shell,
-               CONFIG_START_SHELL_PRIO,
-               shell_stack,
-               sizeof(shell_stack));
 #endif
 
 # if CONFIG_START_FILESYSTEM == 1
 
     start_filesystem();
+
+#endif
+
+# if CONFIG_START_NETWORK == 1
+
+    start_network();
 
 #endif
 

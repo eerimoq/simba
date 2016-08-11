@@ -4,6 +4,9 @@
 .. module:: network_interface
    :synopsis: Network interface configuration.
 
+The network interface module has a list of all network interfaces and
+their states.
+
 Network interface modules:
 
 .. toctree::

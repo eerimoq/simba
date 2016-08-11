@@ -526,15 +526,28 @@
 #endif
 
 /**
- * Start the network manager configuring and monitoring network
- * interfaces.
+ * Setup the ip stack and connect to all configured networks.
  */
-#ifndef CONFIG_START_NETWORK_MANAGER
+#ifndef CONFIG_START_NETWORK
 #    if defined(ARCH_ESP)
-#        define CONFIG_START_NETWORK_MANAGER                0
+#        define CONFIG_START_NETWORK                        1
 #    else
-#        define CONFIG_START_NETWORK_MANAGER                0
+#        define CONFIG_START_NETWORK                        0
 #    endif
+#endif
+
+/**
+ * SSID of the WiFi to connect to.
+ */
+#ifndef CONFIG_START_NETWORK_INTERFACE_WIFI_SSID
+#    define CONFIG_START_NETWORK_INTERFACE_WIFI_SSID   MyWiFiSSID
+#endif
+
+/**
+ * Password of the WiFi to connect to.
+ */
+#ifndef CONFIG_START_NETWORK_INTERFACE_WIFI_PASSWORD
+#    define CONFIG_START_NETWORK_INTERFACE_WIFI_PASSWORD MyWiFiPassword
 #endif
 
 /**
