@@ -51,7 +51,7 @@ Features
 
 * Internet protocols (:doc:`TCP<library-reference/inet/socket>`, 
   :doc:`UDP<library-reference/inet/socket>`, 
-  :doc:`HTTP<library-reference/inet/http_server>`).
+  :doc:`HTTP<library-reference/inet/http_server>`, ...).
 
 * :doc:`Debug file system<library-reference/filesystems/fs>`.
 
