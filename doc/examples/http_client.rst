@@ -28,4 +28,14 @@ since those are the only boards with a network connection (WiFi).
 .. code-block:: text
 
    $ cd examples/http_client
-   $ make -s BOARD=<board> run
+   $ make -s BOARD=esp12e CDEFS_EXTRA="CONFIG_START_NETWORK_INTERFACE_WIFI_SSID=Qvist CONFIG_START_NETWORK_INTERFACE_WIFI_PASSWORD=FooBar" run
+   ...
+   Connecting to WiFi with SSID 'Qvist'.
+   Connected to WiFi with SSID 'Qvist'. Got IP address '192.168.1.103'.
+   Connecting to '216.58.211.142'.
+   First 64 bytes of the response:
+   HTTP/1.1 301 Moved Permanently
+   Location: http://www.google.com/GET / HTTP/1.1
+   Host: 216.58.211.142
+   ...
+   $
