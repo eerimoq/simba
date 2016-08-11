@@ -31,16 +31,32 @@ Project homepage: https://github.com/eerimoq/simba
 Features
 --------
 
-* Threads scheduled by a priority based cooperative or preemptive
-  scheduler.
-* Channels for inter-thread communication.
-* Timers.
-* Counting semaphores.
-* Device drivers (spi, uart, ...)
-* A simple shell.
-* Logging.
-* Internet protocols (TCP, UDP, HTTP, ...).
-* File systems (FAT16, SPIFFS).
+* :doc:`Threads<library-reference/kernel/thrd>` scheduled by a
+  priority based cooperative or preemptive scheduler.
+
+* Channels for inter-thread communication
+  (:doc:`Queue<library-reference/sync/queue>`, 
+  :doc:`Event<library-reference/sync/event>`).
+
+* :doc:`Timers<library-reference/kernel/timer>`.
+
+* :doc:`Counting semaphores<library-reference/sync/sem>`.
+
+* Device drivers (:doc:`SPI<library-reference/drivers/spi>`,
+  :doc:`UART<library-reference/drivers/uart>`, ...)
+
+* A simple :doc:`shell<library-reference/oam/shell>`.
+
+* :doc:`Logging<library-reference/debug/log>`.
+
+* Internet protocols (:doc:`TCP<library-reference/inet/socket>`, 
+  :doc:`UDP<library-reference/inet/socket>`, 
+  :doc:`HTTP<library-reference/inet/http_server>`).
+
+* :doc:`Debug file system<library-reference/filesystems/fs>`.
+
+* File systems (:doc:`FAT16<library-reference/filesystems/fat16>`,
+  :doc:`SPIFFS<library-reference/filesystems/spiffs>`).
 
 See the :doc:`library-reference` for a full list of features.
 
