@@ -20,54 +20,8 @@
 
 #include "simba.h"
 
-#if !defined(SSID)
-#    pragma message "WiFi connection variable SSID is not set. Using default value MySSID"
-#    define SSID MySSID
-#endif
-
-#if !defined(PASSWORD)
-#    pragma message "WiFi connection variable PASSWORD is not set. Using default value MyPassword"
-#    define PASSWORD MyPassword
-#endif
-
 /* The ip address of the host to connect to. */
 #define REMOTE_HOST_IP 216.58.211.142
-
-static struct network_interface_wifi_station_espressif_t wifi;
-
-static int init()
-{
-    struct inet_ip_addr_t addr;
-    char buf[20];
-
-    inet_module_init();
-    socket_module_init();
-    network_interface_module_init();
-
-    std_printf(FSTR("Connecting to WiFi with SSID '%s'.\r\n"), STRINGIFY(SSID));
-
-    /* Initialize WiFi in station mode with given SSID and
-       password. */
-    network_interface_wifi_station_espressif_module_init();
-    network_interface_wifi_station_espressif_init(&wifi,
-                                                  (uint8_t *)STRINGIFY(SSID),
-                                                  (uint8_t *)STRINGIFY(PASSWORD));
-
-    network_interface_add(&wifi.network_interface);
-
-    /* Start WiFi and connect to the Access Point with given SSID and
-       password. */
-    network_interface_start(&wifi.network_interface);
-
-    network_interface_get_ip_address(&wifi.network_interface,
-                                     &addr);
-
-    std_printf(FSTR("Connected to WiFi with SSID '%s'. Got IP '%s'.\r\n"),
-               STRINGIFY(SSID),
-               inet_ntoa(&addr, buf));
-    
-    return (0);
-}
 
 int main()
 {
@@ -83,10 +37,6 @@ int main()
     /* Start the system. Brings up the configured network interfaces
        and starts the TCP/IP-stack. */
     sys_start();
-
-    /* Initialize the network stack. This should be moved to the
-       network managar when it is implemented. */
-    init();
 
     /* Open the tcp socket. */
     socket_open_tcp(&socket);

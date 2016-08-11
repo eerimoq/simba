@@ -61,19 +61,21 @@ Default Standard Library configuration.
 +------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_FS_CMD_DS18B20_LIST_                         |  0                                                  |
 +------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_FS_CMD_FS_APPEND_                            |  0                                                  |
++------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_FS_CMD_FS_COUNTERS_LIST_                     |  0                                                  |
 +------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_FS_CMD_FS_COUNTERS_RESET_                    |  0                                                  |
 +------------------------------------------------------+-----------------------------------------------------+
-|  CONFIG_FS_CMD_FS_FILESYSTEMS_APPEND_                |  0                                                  |
-+------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_FS_CMD_FS_FILESYSTEMS_LIST_                  |  0                                                  |
 +------------------------------------------------------+-----------------------------------------------------+
-|  CONFIG_FS_CMD_FS_FILESYSTEMS_READ_                  |  0                                                  |
-+------------------------------------------------------+-----------------------------------------------------+
-|  CONFIG_FS_CMD_FS_FILESYSTEMS_WRITE_                 |  0                                                  |
+|  CONFIG_FS_CMD_FS_LIST_                              |  0                                                  |
 +------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_FS_CMD_FS_PARAMETERS_LIST_                   |  0                                                  |
++------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_FS_CMD_FS_READ_                              |  0                                                  |
++------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_FS_CMD_FS_WRITE_                             |  0                                                  |
 +------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_FS_CMD_I2C_READ_                             |  0                                                  |
 +------------------------------------------------------+-----------------------------------------------------+
@@ -151,7 +153,11 @@ Default Standard Library configuration.
 +------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_START_FILESYSTEM_SIZE_                       |  32768                                              |
 +------------------------------------------------------+-----------------------------------------------------+
-|  CONFIG_START_NETWORK_MANAGER_                       |  0                                                  |
+|  CONFIG_START_NETWORK_                               |  0                                                  |
++------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_START_NETWORK_INTERFACE_WIFI_PASSWORD_       |  MyWiFiPassword                                     |
++------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_START_NETWORK_INTERFACE_WIFI_SSID_           |  MyWiFiSSID                                         |
 +------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_START_SHELL_                                 |  0                                                  |
 +------------------------------------------------------+-----------------------------------------------------+
@@ -186,19 +192,21 @@ Library Reference.
 
 .. _CONFIG_FS_CMD_DS18B20_LIST: ../user-guide/configuration.html#c.CONFIG_FS_CMD_DS18B20_LIST
 
+.. _CONFIG_FS_CMD_FS_APPEND: ../user-guide/configuration.html#c.CONFIG_FS_CMD_FS_APPEND
+
 .. _CONFIG_FS_CMD_FS_COUNTERS_LIST: ../user-guide/configuration.html#c.CONFIG_FS_CMD_FS_COUNTERS_LIST
 
 .. _CONFIG_FS_CMD_FS_COUNTERS_RESET: ../user-guide/configuration.html#c.CONFIG_FS_CMD_FS_COUNTERS_RESET
 
-.. _CONFIG_FS_CMD_FS_FILESYSTEMS_APPEND: ../user-guide/configuration.html#c.CONFIG_FS_CMD_FS_FILESYSTEMS_APPEND
-
 .. _CONFIG_FS_CMD_FS_FILESYSTEMS_LIST: ../user-guide/configuration.html#c.CONFIG_FS_CMD_FS_FILESYSTEMS_LIST
 
-.. _CONFIG_FS_CMD_FS_FILESYSTEMS_READ: ../user-guide/configuration.html#c.CONFIG_FS_CMD_FS_FILESYSTEMS_READ
-
-.. _CONFIG_FS_CMD_FS_FILESYSTEMS_WRITE: ../user-guide/configuration.html#c.CONFIG_FS_CMD_FS_FILESYSTEMS_WRITE
+.. _CONFIG_FS_CMD_FS_LIST: ../user-guide/configuration.html#c.CONFIG_FS_CMD_FS_LIST
 
 .. _CONFIG_FS_CMD_FS_PARAMETERS_LIST: ../user-guide/configuration.html#c.CONFIG_FS_CMD_FS_PARAMETERS_LIST
+
+.. _CONFIG_FS_CMD_FS_READ: ../user-guide/configuration.html#c.CONFIG_FS_CMD_FS_READ
+
+.. _CONFIG_FS_CMD_FS_WRITE: ../user-guide/configuration.html#c.CONFIG_FS_CMD_FS_WRITE
 
 .. _CONFIG_FS_CMD_I2C_READ: ../user-guide/configuration.html#c.CONFIG_FS_CMD_I2C_READ
 
@@ -276,7 +284,11 @@ Library Reference.
 
 .. _CONFIG_START_FILESYSTEM_SIZE: ../user-guide/configuration.html#c.CONFIG_START_FILESYSTEM_SIZE
 
-.. _CONFIG_START_NETWORK_MANAGER: ../user-guide/configuration.html#c.CONFIG_START_NETWORK_MANAGER
+.. _CONFIG_START_NETWORK: ../user-guide/configuration.html#c.CONFIG_START_NETWORK
+
+.. _CONFIG_START_NETWORK_INTERFACE_WIFI_PASSWORD: ../user-guide/configuration.html#c.CONFIG_START_NETWORK_INTERFACE_WIFI_PASSWORD
+
+.. _CONFIG_START_NETWORK_INTERFACE_WIFI_SSID: ../user-guide/configuration.html#c.CONFIG_START_NETWORK_INTERFACE_WIFI_SSID
 
 .. _CONFIG_START_SHELL: ../user-guide/configuration.html#c.CONFIG_START_SHELL
 
