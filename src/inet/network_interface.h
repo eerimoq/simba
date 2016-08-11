@@ -30,15 +30,19 @@ struct network_interface_t;
 
 typedef int (*network_interface_start_t)(struct network_interface_t *netif_p);
 typedef int (*network_interface_stop_t)(struct network_interface_t *netif_p);
+typedef int (*network_interface_is_up_t)(struct network_interface_t *netif_p);
 
 struct network_interface_t {
     struct netif netif;
+    const char *name_p;
     struct inet_ip_addr_t ipaddr;
     struct inet_ip_addr_t netmask;
     struct inet_ip_addr_t gw;
     netif_init_fn init;
     network_interface_start_t start;
     network_interface_stop_t stop;
+    network_interface_is_up_t is_up;
+    struct network_interface_t *next_p;
 };
 
 /**

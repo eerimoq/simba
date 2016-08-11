@@ -43,6 +43,11 @@ static int stop(struct network_interface_t *netif_p)
     return (0);
 }
 
+static int is_up(struct network_interface_t *netif_p)
+{
+    return (wifi_station_get_connect_status() == STATION_GOT_IP);
+}
+
 int network_interface_wifi_station_espressif_module_init(void)
 {
     return (0);
@@ -52,9 +57,11 @@ int network_interface_wifi_station_espressif_init(struct network_interface_wifi_
                                                   const uint8_t *ssid_p,
                                                   const uint8_t *password_p)
 {
+    self_p->network_interface.name_p = "esp-wlan";
     self_p->network_interface.init = init;
     self_p->network_interface.start = start;
     self_p->network_interface.stop = stop;
+    self_p->network_interface.is_up = is_up;
 
     wifi_set_opmode_current(STATION_MODE);
 

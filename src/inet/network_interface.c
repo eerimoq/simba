@@ -20,6 +20,9 @@
 
 #include "simba.h"
 
+/* A linked list of all network interfaces. */
+static struct network_interface_t *network_interfaces_p = NULL;
+
 #if CONFIG_FS_CMD_NETWORK_INTERFACE_LIST == 1
 
 static struct fs_command_t cmd_list;
@@ -31,11 +34,33 @@ static int cmd_list_cb(int argc,
                        void *arg_p,
                        void *call_arg_p)
 {
-    std_fprintf(out_p, FSTR("            NAME   STATE             "
-                            "ADDRESS       TX BYTES       RX BYTES\r\n"));
-    std_fprintf(out_p, FSTR(" not-implemented      up    "
-                            "192.168.1.103/24        2343224             43\r\n"));
-    
+    struct network_interface_t *network_interface_p;
+    char buf[16];
+
+    /* Print the title. */
+    std_fprintf(out_p, FSTR("NAME            "
+                            "STATE  "
+                            "ADDRESS          "
+                            "  TX BYTES  "
+                            "  RX BYTES\r\n"));
+
+    /* Print a list of all network interfaces. */
+    network_interface_p = network_interfaces_p;
+
+    while (network_interface_p != NULL) {
+        std_fprintf(out_p,
+                    FSTR("%-14s  %-5s  %-15s  %10s  %10s\r\n"),
+                    network_interface_p->name_p,
+                    (network_interface_p->is_up(network_interface_p)
+                     ? "up"
+                     : "down"),
+                    inet_ntoa(&network_interface_p->ipaddr, buf),
+                    "-",
+                    "-");
+
+        network_interface_p = network_interface_p->next_p;
+    }
+
     return (0);
 }
 
@@ -44,13 +69,13 @@ static int cmd_list_cb(int argc,
 int network_interface_module_init(void)
 {
 #if CONFIG_FS_CMD_NETWORK_INTERFACE_LIST == 1
-    
+
     fs_command_init(&cmd_list,
                     FSTR("/inet/network_interface/list"),
                     cmd_list_cb,
                     NULL);
     fs_command_register(&cmd_list);
-    
+
 #endif
 
     return (0);
@@ -60,6 +85,9 @@ int network_interface_module_init(void)
 
 int network_interface_add(struct network_interface_t *netif_p)
 {
+    netif_p->next_p = network_interfaces_p;
+    network_interfaces_p = netif_p;
+
     return (0);
 }
 
@@ -86,6 +114,9 @@ int network_interface_add(struct network_interface_t *netif_p)
               netif_p->init,
               NULL);
 
+    netif_p->next_p = network_interfaces_p;
+    network_interfaces_p = netif_p;
+
     return (0);
 }
 
@@ -108,6 +139,9 @@ int network_interface_start(struct network_interface_t *netif_p)
 
 int network_interface_add(struct network_interface_t *netif_p)
 {
+    netif_p->next_p = network_interfaces_p;
+    network_interfaces_p = netif_p;
+
     return (0);
 }
 
