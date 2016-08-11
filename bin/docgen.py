@@ -119,8 +119,8 @@ def boards_generate(database):
         # Enabled features.
         enabled_features = []
         for [name, value] in data["default-configuration"]:
-            if name == "CONFIG_START_NETWORK_MANAGER" and value == "1":
-                enabled_features.append("- Network manager.")
+            if name == "CONFIG_START_NETWORK" and value == "1":
+                enabled_features.append("- Networking.")
             if name == "CONFIG_START_FILESYSTEM" and value == "1":
                 enabled_features.append("- File system.")
             if name == "CONFIG_START_CONSOLE" and value != "CONFIG_START_CONSOLE_NONE":

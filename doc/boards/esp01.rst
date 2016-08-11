@@ -20,6 +20,7 @@ Here is a list of enabled higher level features for this board, all
 initialized in ``sys_start()``:
 
 - :doc:`Console.<../library-reference/oam/console>`
+- Networking.
 - :doc:`Debug shell.<../library-reference/oam/shell>`
 
 Drivers
