@@ -186,6 +186,31 @@ Read more about board specific functionality in the :doc:`Arduino Pro Micro
 <../library-reference/boards/arduino_pro_micro>` module documentation in the
 Library Reference.
 
+Memory usage
+------------
+
+Below is the memory usage of two applications.
+
+The
+:github-tree:`minimal-configuration<examples/minimal-configuration>`
+application is configured to only include the bare minimum of
+functionality for the low level kernel to run. That is, the scheduler,
+interrupts and timers.
+
+The
+:github-tree:`default-configuration<examples/default-configuration>`
+application is built with the default configuration, including a lot
+more functionality. See the list of default system features above for
+a summary.
+
++--------------------------+-----------+-----------+
+| Application              | Flash     | RAM       |
++==========================+===========+===========+
+| minimal-configuration    |      6070 |       815 |
++--------------------------+-----------+-----------+
+| default-configuration    |      9540 |       955 |
++--------------------------+-----------+-----------+
+
 .. include:: extra/arduino_pro_micro.rst
 
 .. _CONFIG_ASSERT: ../user-guide/configuration.html#c.CONFIG_ASSERT

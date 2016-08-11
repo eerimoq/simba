@@ -6,6 +6,7 @@
 import os
 import argparse
 import json
+import subprocess
 
 
 BOARD_FMT = """{desc}
@@ -60,9 +61,32 @@ Read more about board specific functionality in the :doc:`{desc}
 <../library-reference/boards/{name}>` module documentation in the
 Library Reference.
 
+Memory usage
+------------
+
+Below is the memory usage of two applications.
+
+The
+:github-tree:`minimal-configuration<examples/minimal-configuration>`
+application is configured to only include the bare minimum of
+functionality for the low level kernel to run. That is, the scheduler,
+interrupts and timers.
+
+The
+:github-tree:`default-configuration<examples/default-configuration>`
+application is built with the default configuration, including a lot
+more functionality. See the list of default system features above for
+a summary.
+
++--------------------------+-----------+-----------+
+| Application              | Flash     | RAM       |
++==========================+===========+===========+
+{memory_usage}
++--------------------------+-----------+-----------+
+
 {include_extra}
 
-{default_configuration_targets}
+{targets}
 """
 
 
@@ -102,14 +126,15 @@ def boards_generate(database):
             drivers.append("- :doc:`../library-reference/drivers/{}`".format(
                 driver))
 
+        targets = []
+
         # Default configuration.
         default_configuration = ""
-        default_configuration_targets = []
         for config in data["default-configuration"]:
             default_configuration += CONFIG_FMT.format(config[0] + "_", config[1])
             target = ".. _{name}: ../user-guide/configuration.html#c.{name}".format(
                 name=config[0])
-            default_configuration_targets.append(target)
+            targets.append(target)
             
         if os.path.exists(os.path.join("doc", "boards", "extra", board + ".rst")):
             include_extra = ".. include:: extra/{name}.rst".format(name=board)
@@ -128,6 +153,29 @@ def boards_generate(database):
             if name == "CONFIG_START_SHELL" and value == "1":
                 enabled_features.append("- :doc:`Debug shell.<../library-reference/oam/shell>`")
 
+        # Memory usage.
+        applications = [
+            "minimal-configuration",
+            "default-configuration"
+        ]
+        memory_usage = []
+        for application in applications:
+            subprocess.check_call(['make',
+                                   '-s',
+                                   '-C', os.path.join('examples', application),
+                                   'BOARD=' + board,
+                                   'all'])
+            sizes_json = subprocess.check_output(['make',
+                                                  '-s',
+                                                  '-C', os.path.join('examples', application),
+                                                  'BOARD=' + board,
+                                                  'size-json'])
+            sizes = json.loads(sizes_json)
+            memory_usage.append('| {application:24} | {program:9} | {data:9} |'.format(
+                application=application,
+                program=sizes['program'],
+                data=sizes['data']))
+
         rst = BOARD_FMT.format(name=board,
                                desc=data["board_desc"],
                                desc_underline="=" * len(data["board_desc"]),
@@ -138,8 +186,9 @@ def boards_generate(database):
                                drivers='\n'.join(drivers),
                                default_configuration=default_configuration,
                                include_extra=include_extra,
-                               default_configuration_targets='\n\n'.join(
-                                   default_configuration_targets))
+                               targets='\n\n'.join(targets),
+                               memory_usage='\n+-{}-+-----------+-----------+\n'.format(
+                                   24 * '-').join(memory_usage))
 
         rst_path = os.path.join("doc", "boards", board + ".rst")
         print "Writing to ", rst_path

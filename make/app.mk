@@ -78,7 +78,7 @@ SHELL = /bin/bash
 BAUDRATE ?= 38400
 
 all:
-	@echo -e "\n>>> $(NAME) <<<\n"
+	@echo -e "\n>>> app: $(NAME), board: $(BOARD) <<<\n"
 	$(MAKE) prepare
 	$(MAKE) generate
 	$(MAKE) build
@@ -159,6 +159,9 @@ test: run
 
 size:
 	set -o pipefail ; $(SIZECMD) | tee $(BUILDDIR)/size.log
+
+size-json:
+	set -o pipefail ; $(SIZE_SUMMARY_CMD) | tee $(BUILDDIR)/size-summary.log
 
 release:
 	env NASSERT=yes NDEBUG=yes $(MAKE)

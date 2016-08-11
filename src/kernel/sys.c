@@ -113,7 +113,7 @@ static void sys_tick(void) {
 
 #include "sys_port.i"
 
-#if CONFIG_START_CONSOLE == 1
+#if CONFIG_START_CONSOLE != CONFIG_START_CONSOLE_NONE
 
 static int start_console(void)
 {

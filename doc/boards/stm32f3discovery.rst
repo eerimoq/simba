@@ -173,6 +173,31 @@ Read more about board specific functionality in the :doc:`STM32F3DISCOVERY
 <../library-reference/boards/stm32f3discovery>` module documentation in the
 Library Reference.
 
+Memory usage
+------------
+
+Below is the memory usage of two applications.
+
+The
+:github-tree:`minimal-configuration<examples/minimal-configuration>`
+application is configured to only include the bare minimum of
+functionality for the low level kernel to run. That is, the scheduler,
+interrupts and timers.
+
+The
+:github-tree:`default-configuration<examples/default-configuration>`
+application is built with the default configuration, including a lot
+more functionality. See the list of default system features above for
+a summary.
+
++--------------------------+-----------+-----------+
+| Application              | Flash     | RAM       |
++==========================+===========+===========+
+| minimal-configuration    |     12748 |      2720 |
++--------------------------+-----------+-----------+
+| default-configuration    |     55928 |      5994 |
++--------------------------+-----------+-----------+
+
 .. include:: extra/stm32f3discovery.rst
 
 .. _CONFIG_ASSERT: ../user-guide/configuration.html#c.CONFIG_ASSERT

@@ -433,11 +433,15 @@ err:
 
 int usb_host_module_init(void)
 {
+#if CONFIG_FS_CMD_USB_HOST_LIST == 1
+
     fs_command_init(&cmd_list,
                     FSTR("/drivers/usb_host/list"),
                     cmd_list_cb,
                     NULL);
     fs_command_register(&cmd_list);
+
+#endif
 
     return (0);
 }

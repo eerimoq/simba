@@ -175,6 +175,31 @@ Read more about board specific functionality in the :doc:`ESP-12E Development Bo
 <../library-reference/boards/esp12e>` module documentation in the
 Library Reference.
 
+Memory usage
+------------
+
+Below is the memory usage of two applications.
+
+The
+:github-tree:`minimal-configuration<examples/minimal-configuration>`
+application is configured to only include the bare minimum of
+functionality for the low level kernel to run. That is, the scheduler,
+interrupts and timers.
+
+The
+:github-tree:`default-configuration<examples/default-configuration>`
+application is built with the default configuration, including a lot
+more functionality. See the list of default system features above for
+a summary.
+
++--------------------------+-----------+-----------+
+| Application              | Flash     | RAM       |
++==========================+===========+===========+
+| minimal-configuration    |    269168 |     33560 |
++--------------------------+-----------+-----------+
+| default-configuration    |    301756 |     36640 |
++--------------------------+-----------+-----------+
+
 .. include:: extra/esp12e.rst
 
 .. _CONFIG_ASSERT: ../user-guide/configuration.html#c.CONFIG_ASSERT

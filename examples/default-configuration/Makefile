@@ -1,5 +1,5 @@
 #
-# @file make/gnu.mk
+# @file Makefile
 # @version 6.0.0
 #
 # @section License
@@ -18,20 +18,8 @@
 # This file is part of the Simba project.
 #
 
-SIZECMD = $(CROSS_COMPILE)size $(SIZEARGS) ${EXE} ; \
-          echo ; \
-          $(CROSS_COMPILE)size $(OBJ) -t
+NAME = default_configuration
+BOARD = arduino_due
 
-SIZE_SUMMARY_CMD = $(CROSS_COMPILE)size ${EXE} | python -c "import sys; text, data, bss = sys.stdin.readlines()[1].split()[0:3]; print '{{\"program\": {}, \"data\": {}}}'.format(text, int(data) + int(bss))"
-
-
-CC = $(CROSS_COMPILE)gcc$(CCVERSION:%=-%)
-
-CFLAGS += -c \
-          -Wall \
-          -funsigned-bitfields \
-          -std=gnu99 \
-          -Wno-error=unused-variable
-
-LDFLAGS += -Wl,-Map=$(MAP) \
-           -Wl,--gc-sections
+SIMBA_ROOT ?= ../..
+include $(SIMBA_ROOT)/make/app.mk
