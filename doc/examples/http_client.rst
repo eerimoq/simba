@@ -11,8 +11,11 @@ About
 Conenct to a remote host perform a HTTP GET action to fetch the root
 page '/' from the remote host.
 
-Define SSID and PASSWORD to the SSID and password of your WiFi,
-otherwise the board will fail to connect to a network.
+Define ``CONFIG_START_NETWORK_INTERFACE_WIFI_SSID`` and
+``CONFIG_START_NETWORK_INTERFACE_WIFI_PASSWORD`` in ``config.h`` to
+the SSID and password of your WiFi, otherwise the board will fail to
+connect to the WiFi network. Alternatively, the defines can be given
+as defines on the make command line as seen in the example below.
 
 Source code
 -----------
