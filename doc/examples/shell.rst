@@ -26,21 +26,29 @@ Build and run the application.
    $ make -s BOARD=<board> upload
 
 Communicate with the board using a serial terminal emulator, for
-example TeraTerm. The baudrate is 38400.
+example `TeraTerm`. The baudrate is 38400.
 
-The shell line terminator is ``\r\n``.
+Type ``hello_world`` in the terminal emulator and press Enter. ``Hello
+World!`` is printed.
+
+Press Tab to print a list of all registered commands and try them if
+you want to.
 
 .. code-block:: text
 
-   # print the coutner values in hexadecimal form
-   $ foo
-   000000000000ffff
-   $ fie
-   0000000000000001
-   $ bar
-   0000004efee6b839
-
-   # run the command "/tmp/foo" with arguments
-   $ tmp/foo first second third
-   argc = 4, argv[0] = tmp/foo, argv[1] = first, argv[2] = second
-   $
+   $ hello_world
+   Hello World!
+   $ <tab>
+   drivers/
+   filesystems/
+   hello_world
+   help
+   history
+   kernel/
+   logout
+   oam/
+   $ kernel/thrd/list 
+               NAME           PARENT        STATE  PRIO   CPU  MAX-STACK-USAGE  LOGMASK
+              shell                       current     0    0%       358/  5575     0x0f
+               idle            shell        ready   127    0%        57/   156     0x0f
+   $ 
