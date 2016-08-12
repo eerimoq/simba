@@ -638,7 +638,7 @@ int thrd_get_log_mask(void)
     return (scheduler.current_p->log_mask);
 }
 
-int thrd_env_init(struct thrd_environment_variable_t *variables_p,
+int thrd_init_env(struct thrd_environment_variable_t *variables_p,
                   int length)
 {
 #if CONFIG_THRD_ENV == 1
@@ -656,7 +656,7 @@ int thrd_env_init(struct thrd_environment_variable_t *variables_p,
 #endif
 }
 
-int thrd_env_set(const char *name_p, const char *value_p)
+int thrd_set_env(const char *name_p, const char *value_p)
 {
     ASSERTN(name_p != NULL, -EINVAL);
 
@@ -706,7 +706,7 @@ int thrd_env_set(const char *name_p, const char *value_p)
 #endif
 }
 
-const char *thrd_env_get(const char *name_p)
+const char *thrd_get_env(const char *name_p)
 {
     ASSERTN(name_p != NULL, -EINVAL);
 

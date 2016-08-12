@@ -232,8 +232,8 @@ static void *connection_main(void *arg_p)
     struct http_server_t *self_p = connection_p->self_p;
     uint32_t mask;
 
-    /* thrd_env_init(buf, sizeof(buf)); */
-    /* thrd_env_set("CWD", self_p->root_path_p); */
+    /* thrd_init_env(buf, sizeof(buf)); */
+    /* thrd_set_env("CWD", self_p->root_path_p); */
     thrd_set_name(connection_p->thrd.name_p);
 
     /* Wait for a connection from the listener. */

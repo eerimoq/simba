@@ -116,49 +116,49 @@ static int test_env(struct harness_t *harness_p)
 
     /* Set and get are not possible for a thread without an
        environment. */
-    BTASSERT(thrd_env_set("CWD", "/") == -1);
-    BTASSERT(thrd_env_get("CWD") == NULL);
+    BTASSERT(thrd_set_env("CWD", "/") == -1);
+    BTASSERT(thrd_get_env("CWD") == NULL);
 
     /* Initialize the environment for the current thread. */
-    BTASSERT(thrd_env_init(variables, membersof(variables)) == 0);
+    BTASSERT(thrd_init_env(variables, membersof(variables)) == 0);
 
     /* Set and get variables. */
-    BTASSERT(thrd_env_set("N1", "V1") == 0);
-    BTASSERT(thrd_env_get("N1") != NULL);
-    BTASSERT(strcmp(thrd_env_get("N1"), "V1") == 0);
+    BTASSERT(thrd_set_env("N1", "V1") == 0);
+    BTASSERT(thrd_get_env("N1") != NULL);
+    BTASSERT(strcmp(thrd_get_env("N1"), "V1") == 0);
 
-    BTASSERT(thrd_env_set("N2", "V2") == 0);
-    BTASSERT(thrd_env_get("N2") != NULL);
-    BTASSERT(strcmp(thrd_env_get("N2"), "V2") == 0);
+    BTASSERT(thrd_set_env("N2", "V2") == 0);
+    BTASSERT(thrd_get_env("N2") != NULL);
+    BTASSERT(strcmp(thrd_get_env("N2"), "V2") == 0);
 
-    BTASSERT(thrd_env_set("N3", "V3") == 0);
-    BTASSERT(thrd_env_get("N3") != NULL);
-    BTASSERT(strcmp(thrd_env_get("N3"), "V3") == 0);
+    BTASSERT(thrd_set_env("N3", "V3") == 0);
+    BTASSERT(thrd_get_env("N3") != NULL);
+    BTASSERT(strcmp(thrd_get_env("N3"), "V3") == 0);
 
-    BTASSERT(thrd_env_set("N4", "V4") == 0);
-    BTASSERT(thrd_env_get("N4") != NULL);
-    BTASSERT(strcmp(thrd_env_get("N4"), "V4") == 0);
+    BTASSERT(thrd_set_env("N4", "V4") == 0);
+    BTASSERT(thrd_get_env("N4") != NULL);
+    BTASSERT(strcmp(thrd_get_env("N4"), "V4") == 0);
 
     /* Overwrite a value. */
-    BTASSERT(thrd_env_set("N4", "V44") == 0);
-    BTASSERT(thrd_env_get("N4") != NULL);
-    BTASSERT(strcmp(thrd_env_get("N4"), "V44") == 0);
+    BTASSERT(thrd_set_env("N4", "V44") == 0);
+    BTASSERT(thrd_get_env("N4") != NULL);
+    BTASSERT(strcmp(thrd_get_env("N4"), "V44") == 0);
 
     /* No free space. */
-    BTASSERT(thrd_env_set("N5", "V5") == -1);
+    BTASSERT(thrd_set_env("N5", "V5") == -1);
 
     /* Remove a variable. */
-    BTASSERT(thrd_env_set("N2", NULL) == 0);
+    BTASSERT(thrd_set_env("N2", NULL) == 0);
 
     /* Set and get another variable. */
-    BTASSERT(thrd_env_set("N6", "V6") == 0);
-    BTASSERT(thrd_env_get("N6") != NULL);
-    BTASSERT(strcmp(thrd_env_get("N6"), "V6") == 0);
+    BTASSERT(thrd_set_env("N6", "V6") == 0);
+    BTASSERT(thrd_get_env("N6") != NULL);
+    BTASSERT(strcmp(thrd_get_env("N6"), "V6") == 0);
 
     /* Get a non-existing variable. */
-    BTASSERT(thrd_env_get("N7") == NULL);
+    BTASSERT(thrd_get_env("N7") == NULL);
 
-    BTASSERT(thrd_env_init(NULL, 0) == 0);
+    BTASSERT(thrd_init_env(NULL, 0) == 0);
 
     return (0);
 }

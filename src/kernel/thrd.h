@@ -229,7 +229,7 @@ int thrd_get_log_mask(void);
  *
  * @return zero(0) or negative error code.
  */
-int thrd_env_init(struct thrd_environment_variable_t *variables_p,
+int thrd_init_env(struct thrd_environment_variable_t *variables_p,
                   int length);
 
 /**
@@ -243,7 +243,7 @@ int thrd_env_init(struct thrd_environment_variable_t *variables_p,
  *
  * @return zero(0) or negative error code.
  */
-int thrd_env_set(const char *name_p, const char *value_p);
+int thrd_set_env(const char *name_p, const char *value_p);
 
 /**
  * Get the value of the environment variable with given name.
@@ -252,7 +252,7 @@ int thrd_env_set(const char *name_p, const char *value_p);
  *
  * @return Value of the environment variable or NULL on error.
  */
-const char *thrd_env_get(const char *name_p);
+const char *thrd_get_env(const char *name_p);
 
 /**
  * Suspend current thread with the system lock taken (see
