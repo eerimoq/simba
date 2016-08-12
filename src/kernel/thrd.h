@@ -52,7 +52,18 @@
         THRD_CONTEXT_STORE_ISR;                 \
         thrd_yield_isr();                       \
         THRD_CONTEXT_LOAD_ISR;                  \
-    } while (0)    
+    } while (0)
+
+struct thrd_environment_variable_t {
+    const char *name_p;
+    const char *value_p;
+};
+
+struct thrd_environment_t {
+    struct thrd_environment_variable_t *variables_p;
+    size_t number_of_variables;
+    size_t max_number_of_variables;
+};
 
 struct thrd_parent_t {
     struct thrd_t *next_p;
@@ -74,6 +85,9 @@ struct thrd_t {
     struct {
         float usage;
     } cpu;
+#if CONFIG_THRD_ENV == 1
+    struct thrd_environment_t env;
+#endif
 #if CONFIG_PROFILE_STACK == 1
     size_t stack_size;
 #endif
@@ -206,6 +220,39 @@ int thrd_set_log_mask(struct thrd_t *thrd_p, int mask);
  * @return Log mask of current thread.
  */
 int thrd_get_log_mask(void);
+
+/**
+ * Initialize the current threads' environment variables storage.
+ *
+ * @param[in] variables_p Variables are to be used by this therad.
+ * @param[in] length Length of the variables array.
+ *
+ * @return zero(0) or negative error code.
+ */
+int thrd_env_init(struct thrd_environment_variable_t *variables_p,
+                  int length);
+
+/**
+ * Set the value of given environment variable. The pointers to given
+ * name and value are stored in the current threads' environment
+ * array.
+ *
+ * @param[in] name_p Name of the environment variable to set.
+ * @param[in] value_p Value of the environment variable. Set to NULL
+ *                    to remove the variable with given name.
+ *
+ * @return zero(0) or negative error code.
+ */
+int thrd_env_set(const char *name_p, const char *value_p);
+
+/**
+ * Get the value of the environment variable with given name.
+ *
+ * @param[in] name_p Name of the environment variable to get.
+ *
+ * @return Value of the environment variable or NULL on error.
+ */
+const char *thrd_env_get(const char *name_p);
 
 /**
  * Suspend current thread with the system lock taken (see

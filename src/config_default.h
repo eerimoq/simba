@@ -594,6 +594,19 @@
 #endif
 
 /**
+ * Each thread has a list of environment variables associated with
+ * it. A typical example of an environment variable is "CWD" - Current
+ * Working Directory.
+ */
+#ifndef CONFIG_THRD_ENV
+#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO)
+#        define CONFIG_THRD_ENV                             0
+#    else
+#        define CONFIG_THRD_ENV                             1
+#    endif
+#endif
+
+/**
  * USB device vendor id.
  */
 #ifndef CONFIG_USB_DEVICE_VID

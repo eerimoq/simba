@@ -110,6 +110,59 @@ static int test_preemptive(struct harness_t *harness_p)
 
 #endif
 
+static int test_env(struct harness_t *harness_p)
+{
+    struct thrd_environment_variable_t variables[4];
+
+    /* Set and get are not possible for a thread without an
+       environment. */
+    BTASSERT(thrd_env_set("CWD", "/") == -1);
+    BTASSERT(thrd_env_get("CWD") == NULL);
+
+    /* Initialize the environment for the current thread. */
+    BTASSERT(thrd_env_init(variables, membersof(variables)) == 0);
+
+    /* Set and get variables. */
+    BTASSERT(thrd_env_set("N1", "V1") == 0);
+    BTASSERT(thrd_env_get("N1") != NULL);
+    BTASSERT(strcmp(thrd_env_get("N1"), "V1") == 0);
+
+    BTASSERT(thrd_env_set("N2", "V2") == 0);
+    BTASSERT(thrd_env_get("N2") != NULL);
+    BTASSERT(strcmp(thrd_env_get("N2"), "V2") == 0);
+
+    BTASSERT(thrd_env_set("N3", "V3") == 0);
+    BTASSERT(thrd_env_get("N3") != NULL);
+    BTASSERT(strcmp(thrd_env_get("N3"), "V3") == 0);
+
+    BTASSERT(thrd_env_set("N4", "V4") == 0);
+    BTASSERT(thrd_env_get("N4") != NULL);
+    BTASSERT(strcmp(thrd_env_get("N4"), "V4") == 0);
+
+    /* Overwrite a value. */
+    BTASSERT(thrd_env_set("N4", "V44") == 0);
+    BTASSERT(thrd_env_get("N4") != NULL);
+    BTASSERT(strcmp(thrd_env_get("N4"), "V44") == 0);
+
+    /* No free space. */
+    BTASSERT(thrd_env_set("N5", "V5") == -1);
+
+    /* Remove a variable. */
+    BTASSERT(thrd_env_set("N2", NULL) == 0);
+
+    /* Set and get another variable. */
+    BTASSERT(thrd_env_set("N6", "V6") == 0);
+    BTASSERT(thrd_env_get("N6") != NULL);
+    BTASSERT(strcmp(thrd_env_get("N6"), "V6") == 0);
+
+    /* Get a non-existing variable. */
+    BTASSERT(thrd_env_get("N7") == NULL);
+
+    BTASSERT(thrd_env_init(NULL, 0) == 0);
+
+    return (0);
+}
+
 int main()
 {
     struct harness_t harness;
@@ -117,6 +170,7 @@ int main()
         { test_suspend_resume, "test_suspend_resume" },
         { test_yield, "test_yield" },
         { test_preemptive, "test_preemptive" },
+        { test_env, "test_env" },
         { NULL, NULL }
     };
 

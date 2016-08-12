@@ -418,18 +418,18 @@ int thrd_module_init(void)
     LIST_SL_INIT(&main_thrd.children);
     main_thrd.cpu.usage = 0;
 
+#if CONFIG_THRD_ENV == 1
+    main_thrd.env.variables_p = NULL;
+#endif
+
 #if CONFIG_ASSERT == 1
-
     main_thrd.stack_low_magic = THRD_STACK_LOW_MAGIC;
-
 #endif
 
 #if CONFIG_PROFILE_STACK == 1
-
     main_thrd.stack_size = (&__main_stack_end - (char *)(&main_thrd + 1));
     thrd_fill_pattern((char *)(&main_thrd + 1),
                       &dummy - (char *)(&main_thrd + 2));
-
 #endif
 
     thrd_port_init_main(&main_thrd.port);
@@ -512,13 +512,20 @@ struct thrd_t *thrd_spawn(void *(*main)(void *),
     thrd_p->parent.thrd_p = thrd_self();
     LIST_SL_INIT(&thrd_p->children);
     thrd_p->cpu.usage = 0.0f;
+
+#if CONFIG_THRD_ENV == 1
+    thrd_p->env.variables_p = NULL;
+#endif
+
 #if CONFIG_ASSERT == 1
     thrd_p->stack_low_magic = THRD_STACK_LOW_MAGIC;
 #endif
+
 #if CONFIG_PROFILE_STACK == 1
     thrd_p->stack_size = (stack_size - sizeof(*thrd_p));
     thrd_fill_pattern((char *)(thrd_p + 1), thrd_p->stack_size);
 #endif
+
     LIST_SL_ADD_TAIL(&thrd_p->parent.thrd_p->children, &thrd_p->parent);
 
     err = thrd_port_spawn(thrd_p, main, arg_p, stack_p, stack_size);
@@ -629,6 +636,107 @@ int thrd_set_log_mask(struct thrd_t *thrd_p, int mask)
 int thrd_get_log_mask(void)
 {
     return (scheduler.current_p->log_mask);
+}
+
+int thrd_env_init(struct thrd_environment_variable_t *variables_p,
+                  int length)
+{
+#if CONFIG_THRD_ENV == 1
+
+    scheduler.current_p->env.variables_p = variables_p;
+    scheduler.current_p->env.number_of_variables = 0;
+    scheduler.current_p->env.max_number_of_variables = length;
+
+    return (0);
+
+#else
+
+    return (-1);
+
+#endif
+}
+
+int thrd_env_set(const char *name_p, const char *value_p)
+{
+    ASSERTN(name_p != NULL, -EINVAL);
+
+#if CONFIG_THRD_ENV == 1
+
+    int i;
+    struct thrd_environment_t *env_p;
+    struct thrd_environment_variable_t *variable_p;
+
+    env_p = &scheduler.current_p->env;
+    variable_p = &env_p->variables_p[0];
+
+    /* Does the variable already exist in the list? */
+    for (i = 0; i < env_p->number_of_variables; i++) {
+        if (strcmp(variable_p->name_p, name_p) == 0) {
+            if (value_p != NULL) {
+                /* Replace the value. */
+                variable_p->value_p = value_p;
+            } else {
+                /* Remove the variable. */
+                env_p->number_of_variables--;
+                *variable_p = env_p->variables_p[env_p->number_of_variables];
+            }
+
+            return (0);
+        }
+
+        variable_p++;
+    }
+
+    /* New variable. Is there free space? */
+    if (env_p->number_of_variables == env_p->max_number_of_variables) {
+        return (-1);
+    }
+
+    /* Set the new variable. */
+    variable_p->name_p = name_p;
+    variable_p->value_p = value_p;
+    env_p->number_of_variables++;
+
+    return (0);
+
+#else
+
+    return (-1);
+
+#endif
+}
+
+const char *thrd_env_get(const char *name_p)
+{
+    ASSERTN(name_p != NULL, -EINVAL);
+
+#if CONFIG_THRD_ENV == 1
+
+    int i;
+    struct thrd_environment_t *env_p;
+    struct thrd_environment_variable_t *variable_p;
+
+    env_p = &scheduler.current_p->env;
+
+    if (env_p->max_number_of_variables == 0) {
+        return (NULL);
+    }
+
+    env_p = &scheduler.current_p->env;
+    variable_p = &env_p->variables_p[0];
+
+    /* Search for the variable. */
+    for (i = 0; i < env_p->number_of_variables; i++) {
+        if (strcmp(variable_p->name_p, name_p) == 0) {
+            return (variable_p->value_p);
+        }
+
+        variable_p++;
+    }
+
+#endif
+
+    return (NULL);
 }
 
 void thrd_tick_isr(void)
