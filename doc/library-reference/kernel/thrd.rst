@@ -7,15 +7,33 @@
 A thread is the basic execution entity in the OS. A pre-emptive or
 cooperative scheduler controls the execution of threads.
 
-The diagram below shows how three threads; ``shell``, ``main`` and
-``idle`` are scheduled over time by the thread scheduler.
+Scheduler
+---------
+
+The single core scheduler is configured as cooperative or preemptive
+at compile time. The cooperative scheduler is implemented for all
+boards, but the preemptive scheduler is only implemented for a few
+boards.
+
+There are two threads that are always present; the main thread and the
+idle thread. The main thread is the root thread in the system, created
+in the ``main()`` function by calling ``sys_start()``. The idle thread
+is running when no other thread is ready to run. It simply waits for
+an interrupt to occur and then reschedules to run other ready threads.
+
+The diagram below is an example of how three threads; ``shell``,
+``main`` and ``idle`` are scheduled over time.
 
 .. image:: ../../images/thread-scheduling.jpg
    :width: 100%
    :target: ../../_images/thread-scheduling.jpg
 
-The idle thread has the lowest priority of all threads in the system
-and is scheduled when no other thread is ready.
+As it is a single core scheduler only one thread is runnng at a
+time. In the beginning the system is idle and the ``idle`` thread is
+running. After a while the ``main`` and ``shell`` threads have some
+work to do, and since they have higher priority than the ``idle``
+thread they are scheduled. At the end the ``idle`` thread is running
+again.
 
 Debug file system commands
 --------------------------
