@@ -25,35 +25,17 @@
 #include "thrd_port.h"
 
 /**
- * Macro that shall be used to declare a thread stack.
+ * Macro to declare a thread stack with given name and size.
+ *
+ * @param[in] name The name of the stack. A variable is declared with
+ *                 this name that should be passed to `thrd_spawn()`.
+ * @param[in] size Size of the stack in bytes.
  */
 #define THRD_STACK(name, size) THRD_PORT_STACK(name, size)
 
 /**
- * Push all callee-save registers not part of the context struct. The
- * preemptive scheduler requires this macro before the
- * thrd_yield_isr() function is called from interrupt context.
+ * A thread environment variable.
  */
-#define THRD_CONTEXT_STORE_ISR THRD_PORT_CONTEXT_STORE_ISR
-
-/**
- * Pop all callee-save registers not part of the context struct. The
- * preemptive scheduler requires this macro after the thrd_yield_isr()
- * function is called from interrupt context.
- */
-#define THRD_CONTEXT_LOAD_ISR THRD_PORT_CONTEXT_LOAD_ISR
-
-/**
- * Reschuedule from isr. Used by preemptive systems to interrupt low
- * priority threads in favour of high priority threads.
- */
-#define THRD_RESCHEDULE_ISR                     \
-    do {                                        \
-        THRD_CONTEXT_STORE_ISR;                 \
-        thrd_yield_isr();                       \
-        THRD_CONTEXT_LOAD_ISR;                  \
-    } while (0)
-
 struct thrd_environment_variable_t {
     const char *name_p;
     const char *value_p;
@@ -239,18 +221,18 @@ int thrd_init_env(struct thrd_environment_variable_t *variables_p,
  *
  * @param[in] name_p Name of the environment variable to set.
  * @param[in] value_p Value of the environment variable. Set to NULL
- *                    to remove the variable with given name.
+ *                    to remove the variable.
  *
  * @return zero(0) or negative error code.
  */
 int thrd_set_env(const char *name_p, const char *value_p);
 
 /**
- * Get the value of the environment variable with given name.
+ * Get the value of given environment variable.
  *
  * @param[in] name_p Name of the environment variable to get.
  *
- * @return Value of the environment variable or NULL on error.
+ * @return Value of given environment variable or NULL on error.
  */
 const char *thrd_get_env(const char *name_p);
 
