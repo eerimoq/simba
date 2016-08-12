@@ -8,9 +8,8 @@ convert -density 150 Simba.pdf -quality 85 Simba.jpg
 
 # crop exported slides
 convert Simba-0.jpg -crop 690x320+500+460 logo.jpg
-
-# crop exported slides
 convert Simba-2.jpg -crop 1300x530+200+430 thread-scheduling.jpg
+convert Simba-3.jpg -crop 1360x580+150+430 queue.jpg
 
 rm -f Simba.pdf
 rm Simba-*.jpg
