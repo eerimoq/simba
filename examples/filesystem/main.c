@@ -24,34 +24,9 @@
 #    error "This example can only be built for Arduino Due."
 #endif
 
-static int write_story(void)
-{
-    struct fs_file_t file;
-
-    std_printf(FSTR("Writing 'The big bad wolf.' to 'fs/story.txt'.\r\n"));
-        
-    /* Create a file, delete previous if it already exists, and open
-       it for reading and writing. */
-    if (fs_open(&file, "fs/story.txt", FS_CREAT | FS_TRUNC | FS_RDWR) != 0) {
-        std_printf(FSTR("Failed to open file.\r\n"));
-        return (-1);
-    }
-
-    /* Write to it. */
-    if (fs_write(&file, "The big bad wolf.", 16) != 16) {
-        std_printf(FSTR("Failed to write to the file.\r\n"));
-        return (-1);
-    }
-
-    /* Close it. */
-    if (fs_close(&file) != 0) {
-        std_printf(FSTR("Failed to close the file.\r\n"));
-        return (-1);
-    }
-    
-    return (0);
-}
-
+/**
+ * Increment the counter in 'fs/counter.txt'.
+ */
 static int increment_counter(void)
 {
     char buf[32];
@@ -62,6 +37,7 @@ static int increment_counter(void)
     std_printf(FSTR("Incrementing the counter in 'fs/counter.txt'.\r\n"));
         
     if (fs_open(&file, "fs/counter.txt", FS_RDWR) != 0) {
+        /* Create the file is missing. */
         if (fs_open(&file,
                     "fs/counter.txt",
                     FS_CREAT | FS_TRUNC | FS_RDWR) != 0) {
@@ -70,21 +46,21 @@ static int increment_counter(void)
         }
 
         /* Initialize the file by writing 0 to it. */
-        if (fs_write(&file, "0\0", 2) != 2) {
+        if (fs_write(&file, "0", 2) != 2) {
             std_printf(FSTR("Failed to write to the file.\r\n"));
             return (-1);
         }
 
-        /* Rewind the file position. */
+        /* Set the cursor position to the beginning of the file. */
         if (fs_seek(&file, 0, FS_SEEK_SET) != 0) {
             std_printf(FSTR("Failed to seek to beginning of the file.\r\n"));
             return (-1);
         }
     }
 
-    /* Read the value from it. */
+    /* Read the counter value from the file. */
     if (fs_read(&file, buf, 16) <= 0) {
-        std_printf(FSTR("Failed to write to the file.\r\n"));
+        std_printf(FSTR("Failed to read from the file.\r\n"));
         return (-1);
     }
 
@@ -93,23 +69,24 @@ static int increment_counter(void)
         return (-1);
     }
 
+    /* Increment the counter. */
     counter++;
     std_sprintf(buf, FSTR("%lu"), counter);
     size = strlen(buf) + 1;
 
-    /* Rewind the file position. */
+    /* Set the cursor position to the beginning of the file. */
     if (fs_seek(&file, 0, FS_SEEK_SET) != 0) {
         std_printf(FSTR("Failed to seek to beginning of the file.\r\n"));
         return (-1);
     }
 
-    /* Write the incremented value. */
+    /* Write the incremented counter value. */
     if (fs_write(&file, buf, size) != size) {
         std_printf(FSTR("Failed to write to the file.\r\n"));
         return (-1);
     }
 
-    /* Close it. */
+    /* Close the file. */
     if (fs_close(&file) != 0) {
         std_printf(FSTR("Failed to close the file.\r\n"));
         return (-1);
@@ -128,17 +105,13 @@ int main()
     /* Print the system information. */
     std_printf(sys_get_info());
 
-    /* Perform a few file operations. */
-    if (write_story() != 0) {
-        sys_stop(1);
-    }
-
-    /* Increment a counter in a file. */
+    /* Increment the counter. */
     if (increment_counter() != 0) {
         sys_stop(1);
     }
 
-    /* The shell thread is started in sys_start(). */
+    /* The shell thread is started in sys_start() so just suspend this
+       thread. */
     thrd_suspend(NULL);
     
     return (0);

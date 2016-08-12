@@ -18,8 +18,8 @@
 # This file is part of the Simba project.
 #
 
-NAME = spiffs
-BOARD = arduino_due
+NAME = filesystem
+BOARD ?= arduino_due
 
 SIMBA_ROOT ?= ../..
 include $(SIMBA_ROOT)/make/app.mk

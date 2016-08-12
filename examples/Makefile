@@ -22,6 +22,7 @@ EXAMPLES = \
 	blink \
 	bootloader \
 	fat16 \
+	filesystem \
 	hc0x \
 	hello_world \
 	http_client \
