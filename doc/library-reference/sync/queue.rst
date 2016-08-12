@@ -16,19 +16,19 @@ queue. The writer thread writes from its source buffer to the
 queue. The reader thread reads from the queue to its destination
 buffer.
 
+.. image:: ../../images/queue.jpg
+   :width: 100%
+   :target: ../../_images/queue.jpg
+
 The data is either copied directly from the source to the destination
 buffer (1), or via the internal queue buffer (2).
 
 1. The reader thread is waiting for data. The writer writes from its
    source buffer directly to the readers' destination buffer.
 
-2. The reader thread is not waiting for data. The writer writes from
+2. The reader thread is *not* waiting for data. The writer writes from
    its source buffer into the queue buffer. Later, the reader reads
    data from the queue buffer to its destination buffer.
-
-.. image:: ../../images/queue.jpg
-   :width: 100%
-   :target: ../../_images/queue.jpg
 
 ----------------------------------------------
 
