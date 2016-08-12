@@ -32,6 +32,7 @@ EXAMPLES = \
 	music_player \
 	nrf24l01 \
 	owi \
+	queue \
 	shell \
 	spi \
 	synthesizer \
