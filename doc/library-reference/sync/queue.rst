@@ -38,6 +38,8 @@ Test code: :github-blob:`tst/sync/queue/main.c`
 
 Test coverage: :codecov:`src/sync/queue.c`
 
+Example code: :github-blob:`examples/queue/main.c`
+
 ----------------------------------------------
 
 .. doxygenfile:: sync/queue.h

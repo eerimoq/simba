@@ -206,7 +206,8 @@ def examples_generate(_):
         "hello_world",
         "shell",
         "http_client",
-        "filesystem"
+        "filesystem",
+        "queue"
     ]
 
     for example in examples:
