@@ -701,7 +701,7 @@ static int format_entry_spiffs(chan_t *chout_p,
 }
 
 /**
- * List all files in given fat16 directory.
+ * List all files in given spiffs directory.
  */
 static int ls_spiffs(struct spiffs_t *fs_p,
                      const char *path_p,
@@ -802,6 +802,36 @@ ssize_t fs_read(struct fs_file_t *self_p, void *dst_p, size_t size)
     default:
         return (-1);
     }
+}
+
+ssize_t fs_read_line(struct fs_file_t *self_p, void *dst_p, size_t size)
+{
+    ASSERTN(self_p != NULL, -EINVAL);
+    ASSERTN(dst_p != NULL, -EINVAL);
+
+    ssize_t i;
+    char *d_p;
+
+    d_p = dst_p;
+    i = 0;
+
+    /* Read one byte at a time until a newline is found, the
+       destination buffer is full, or end of file is reached. */
+    while (i < size) {
+        if (fs_read(self_p, &d_p[i], 1) != 1) {
+            d_p[i] = '\0';
+            return (i > 0 ? i : -1);
+        }
+
+        if (d_p[i] == '\n') {
+            d_p[i] = '\0';
+            return (i);
+        }
+
+        i++;
+    }
+
+    return (i == size ? size : -1);
 }
 
 ssize_t fs_write(struct fs_file_t *self_p, const void *src_p, size_t size)

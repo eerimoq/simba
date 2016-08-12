@@ -232,6 +232,25 @@ int fs_close(struct fs_file_t *self_p);
 ssize_t fs_read(struct fs_file_t *self_p, void *dst_p, size_t size);
 
 /**
+ * Read one line into given buffer from given file. The function reads
+ *  one character at a time from given file until the destination
+ *  buffer is full, a newline ``\n`` is found or end of file is
+ *  reached.
+ *
+ * @param[in] self_p Initialized file object.
+ * @param[out] dst_p Buffer to read data into. Should fit the whole
+ *                   line and null-termination.
+ * @param[in] size Size of the destination buffer.
+ *
+ * @return If a line was found the number of bytes read not including
+ *         the null-termination is returned. If the destination buffer
+ *         becomes full before a newline character, the destination
+ *         buffer size is returned. Otherwise a negative error code is
+ *         returned.
+ */
+ssize_t fs_read_line(struct fs_file_t *self_p, void *dst_p, size_t size);
+
+/**
  * Write from given buffer into given file.
  *
  * @param[in] self_p Initialized file object.

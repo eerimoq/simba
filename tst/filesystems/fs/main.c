@@ -99,7 +99,7 @@ static int32_t filesystem_spiffs_read(struct spiffs_t *fs_p,
                                        uint8_t *dst_p)
 {
     BTASSERT(addr >= 0);
-    BTASSERT(addr + size < sizeof(spiffs_buffer));
+    BTASSERT(addr + size <= sizeof(spiffs_buffer));
     
     memcpy(dst_p, &spiffs_buffer[addr], size);
     
@@ -115,7 +115,7 @@ static int32_t filesystem_spiffs_write(struct spiffs_t *fs_p,
                                         uint8_t *src_p)
 {
     BTASSERT(addr >= 0);
-    BTASSERT(addr + size < sizeof(spiffs_buffer));
+    BTASSERT(addr + size <= sizeof(spiffs_buffer));
 
     memcpy(&spiffs_buffer[addr], src_p, size);
 
@@ -619,6 +619,64 @@ static int test_filesystem_commands(struct harness_t *harness_p)
 #endif
 }
 
+static int test_read_line(struct harness_t *harness_p)
+{
+#if defined(ARCH_LINUX)
+
+    struct fs_file_t file;
+    char line[16];
+
+    /* Write a few lines to a file. */
+    BTASSERT(fs_open(&file, "/spiffsfs/lines.txt", FS_CREAT | FS_RDWR | FS_SYNC) == 0);
+
+    BTASSERT(fs_write(&file, "line\n", 5) == 5);
+    BTASSERT(fs_write(&file, "\x22\0\n", 3) == 3);
+    BTASSERT(fs_write(&file, "12345678901234567890\n", 21) == 21);
+    BTASSERT(fs_write(&file, "\n", 1) == 1);
+    BTASSERT(fs_write(&file, "no newline", 10) == 10);
+
+    BTASSERT(fs_close(&file) == 0);
+
+    /* Re-open the file and read one line at a time. */
+    BTASSERT(fs_open(&file, "/spiffsfs/lines.txt", FS_READ) == 0);
+
+    /* A human readable string. */
+    BTASSERT(fs_read_line(&file, line, sizeof(line)) == 4);
+    BTASSERT(strcmp(line, "line") == 0);
+
+    /* Non-printable data. */
+    BTASSERT(fs_read_line(&file, line, sizeof(line)) == 2);
+    BTASSERT(memcmp(line, "\x22\0\0", 3) == 0);
+
+    /* Destination buffer too small. */
+    BTASSERT(fs_read_line(&file, line, sizeof(line)) == sizeof(line));
+
+    /* Read remaining part of the line. */
+    BTASSERT(fs_read_line(&file, line, sizeof(line)) == 4);
+    BTASSERT(strcmp(line, "7890") == 0);
+
+    /* Empty line. */
+    BTASSERT(fs_read_line(&file, line, sizeof(line)) == 0);
+    BTASSERT(strcmp(line, "") == 0);
+
+    /* No newline at end of file. */
+    BTASSERT(fs_read_line(&file, line, sizeof(line)) == 10);
+    BTASSERT(strcmp(line, "no newline") == 0);
+
+    /* End of file reached. */
+    BTASSERT(fs_read_line(&file, line, sizeof(line)) == -1);
+
+    BTASSERT(fs_close(&file) == 0);
+
+    return (0);
+
+#else
+
+    return (1);
+
+#endif
+}
+
 int main()
 {
     struct harness_t harness;
@@ -634,6 +692,7 @@ int main()
         { test_filesystem_fat16, "test_filesystem_fat16" },
         { test_filesystem_spiffs, "test_filesystem_spiffs" },
         { test_filesystem_commands, "test_filesystem_commands" },
+        { test_read_line, "test_read_line" },
         { NULL, NULL }
     };
 
