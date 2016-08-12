@@ -55,9 +55,9 @@ Below is the memory usage of two applications:
 +--------------------------+-----------+-----------+
 | Application              | Flash     | RAM       |
 +==========================+===========+===========+
-| minimal-configuration    |    269168 |     33560 |
+| minimal-configuration    |    269172 |     33592 |
 +--------------------------+-----------+-----------+
-| default-configuration    |    301756 |     36640 |
+| default-configuration    |    301768 |     36688 |
 +--------------------------+-----------+-----------+
 
 Default configuration
@@ -183,6 +183,8 @@ Default Standard Library configuration.
 |  CONFIG_SYSTEM_TICK_FREQUENCY_                       |  100                                                |
 +------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_SYS_CONFIG_STRING_                           |  1                                                  |
++------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_THRD_ENV_                                    |  1                                                  |
 +------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_USB_DEVICE_PID_                              |  0x8037                                             |
 +------------------------------------------------------+-----------------------------------------------------+
@@ -317,6 +319,8 @@ Mcu
 .. _CONFIG_SYSTEM_TICK_FREQUENCY: ../user-guide/configuration.html#c.CONFIG_SYSTEM_TICK_FREQUENCY
 
 .. _CONFIG_SYS_CONFIG_STRING: ../user-guide/configuration.html#c.CONFIG_SYS_CONFIG_STRING
+
+.. _CONFIG_THRD_ENV: ../user-guide/configuration.html#c.CONFIG_THRD_ENV
 
 .. _CONFIG_USB_DEVICE_PID: ../user-guide/configuration.html#c.CONFIG_USB_DEVICE_PID
 

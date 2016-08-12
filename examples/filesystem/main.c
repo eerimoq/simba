@@ -87,10 +87,7 @@ int main()
 {
     int res;
 
-    /* Start the system. */
     sys_start();
-
-    /* Print the system information. */
     std_printf(sys_get_info());
 
     /* Increment the counter. */

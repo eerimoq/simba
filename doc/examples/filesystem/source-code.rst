@@ -39,36 +39,28 @@
        std_printf(FSTR("Incrementing the counter in 'fs/counter.txt'.\r\n"));
            
        if (fs_open(&file, "fs/counter.txt", FS_RDWR) != 0) {
-           /* Create the file is missing. */
+           /* Create the file if missing. */
            if (fs_open(&file,
                        "fs/counter.txt",
                        FS_CREAT | FS_TRUNC | FS_RDWR) != 0) {
-               std_printf(FSTR("Failed to open file.\r\n"));
                return (-1);
            }
    
-           /* Initialize the file by writing 0 to it. */
            if (fs_write(&file, "0", 2) != 2) {
-               std_printf(FSTR("Failed to write to the file.\r\n"));
-               return (-1);
+               return (-2);
            }
    
-           /* Set the cursor position to the beginning of the file. */
            if (fs_seek(&file, 0, FS_SEEK_SET) != 0) {
-               std_printf(FSTR("Failed to seek to beginning of the file.\r\n"));
-               return (-1);
+               return (-3);
            }
        }
    
-       /* Read the counter value from the file. */
        if (fs_read(&file, buf, 16) <= 0) {
-           std_printf(FSTR("Failed to read from the file.\r\n"));
-           return (-1);
+           return (-4);
        }
    
        if (std_strtol(buf, &counter) == NULL) {
-           std_printf(FSTR("Failed to parse the counter value.\r\n"));
-           return (-1);
+           return (-5);
        }
    
        /* Increment the counter. */
@@ -76,22 +68,16 @@
        std_sprintf(buf, FSTR("%lu"), counter);
        size = strlen(buf) + 1;
    
-       /* Set the cursor position to the beginning of the file. */
        if (fs_seek(&file, 0, FS_SEEK_SET) != 0) {
-           std_printf(FSTR("Failed to seek to beginning of the file.\r\n"));
-           return (-1);
+           return (-6);
        }
    
-       /* Write the incremented counter value. */
        if (fs_write(&file, buf, size) != size) {
-           std_printf(FSTR("Failed to write to the file.\r\n"));
-           return (-1);
+           return (-7);
        }
    
-       /* Close the file. */
        if (fs_close(&file) != 0) {
-           std_printf(FSTR("Failed to close the file.\r\n"));
-           return (-1);
+           return (-8);
        }
    
        std_printf(FSTR("Counter incremented to %lu\r\n"), counter);
@@ -101,15 +87,17 @@
    
    int main()
    {
-       /* Start the system. */
-       sys_start();
+       int res;
    
-       /* Print the system information. */
+       sys_start();
        std_printf(sys_get_info());
    
        /* Increment the counter. */
-       if (increment_counter() != 0) {
-           sys_stop(1);
+       res = increment_counter();
+   
+       if (res != 0) {
+           std_printf(FSTR("Failed to increment the counter with error %d.\r\n"),
+                      res);
        }
    
        /* The shell thread is started in sys_start() so just suspend this
