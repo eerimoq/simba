@@ -7,6 +7,16 @@
 A thread is the basic execution entity in the OS. A pre-emptive or
 cooperative scheduler controls the execution of threads.
 
+The diagram below shows how three threads; ``shell``, ``main`` and
+``idle`` are scheduled over time by the thread scheduler.
+
+.. image:: ../../images/thread-scheduling.jpg
+   :width: 100%
+   :target: ../../_images/thread-scheduling.jpg
+
+The idle thread has the lowest priority of all threads in the system
+and is scheduled when no other thread is ready.
+
 Debug file system commands
 --------------------------
 
