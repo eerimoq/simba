@@ -352,7 +352,7 @@ def generate_platformio_sconsscript(database, version):
     with open(outfile, "w") as fout:
         fout.write(PLATFORMIO_SCONSSCRIPT_FMT.format(
             version=version,
-            boards=json.dumps(boards, indent=4)))
+            boards=json.dumps(boards, indent=4, sort_keys=True)))
 
 
 def main():
