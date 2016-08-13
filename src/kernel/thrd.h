@@ -228,7 +228,9 @@ int thrd_init_env(struct thrd_environment_variable_t *variables_p,
 int thrd_set_env(const char *name_p, const char *value_p);
 
 /**
- * Get the value of given environment variable.
+ * Get the value of given environment variable. If given variable is
+ * not found in the current threads' environment storage it will
+ * recursively serach in its partens' envionments.
  *
  * @param[in] name_p Name of the environment variable to get.
  *

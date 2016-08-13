@@ -116,6 +116,7 @@ static int test_env(struct harness_t *harness_p)
 
     /* Set and get are not possible for a thread without an
        environment. */
+    BTASSERT(thrd_init_env(NULL, 0) == 0);
     BTASSERT(thrd_set_env("CWD", "/") == -1);
     BTASSERT(thrd_get_env("CWD") == NULL);
 

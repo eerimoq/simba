@@ -51,6 +51,85 @@ static volatile struct thrd_scheduler_t scheduler = {
 #if CONFIG_THRD_ENV == 1
 
 static struct thrd_environment_variable_t main_variables[4];
+static struct sem_t env_sem;
+
+static int init_env(struct thrd_environment_variable_t *variables_p,
+                    int length)
+{
+    scheduler.current_p->env.variables_p = variables_p;
+    scheduler.current_p->env.number_of_variables = 0;
+    scheduler.current_p->env.max_number_of_variables = length;
+
+    return (0);
+}
+
+static int set_env(const char *name_p, const char *value_p)
+{
+    int i;
+    struct thrd_environment_t *env_p;
+    struct thrd_environment_variable_t *variable_p;
+
+    env_p = &scheduler.current_p->env;
+    variable_p = &env_p->variables_p[0];
+
+    /* Does the variable already exist in the list? */
+    for (i = 0; i < env_p->number_of_variables; i++) {
+        if (strcmp(variable_p->name_p, name_p) == 0) {
+            if (value_p != NULL) {
+                /* Replace the value. */
+                variable_p->value_p = value_p;
+            } else {
+                /* Remove the variable. */
+                env_p->number_of_variables--;
+                *variable_p = env_p->variables_p[env_p->number_of_variables];
+            }
+
+            return (0);
+        }
+
+        variable_p++;
+    }
+
+    /* New variable. Is there free space? */
+    if (env_p->number_of_variables == env_p->max_number_of_variables) {
+        return (-1);
+    }
+
+    /* Set the new variable. */
+    variable_p->name_p = name_p;
+    variable_p->value_p = value_p;
+    env_p->number_of_variables++;
+
+    return (0);
+}
+
+static const char *get_env(const char *name_p)
+{
+    int i;
+    struct thrd_environment_t *env_p;
+    struct thrd_environment_variable_t *variable_p;
+    struct thrd_t *thrd_p;
+
+    thrd_p = scheduler.current_p;
+
+    while (thrd_p != NULL) {
+        env_p = &thrd_p->env;
+        variable_p = &env_p->variables_p[0];
+
+        /* Search for the variable. */
+        for (i = 0; i < env_p->number_of_variables; i++) {
+            if (strcmp(variable_p->name_p, name_p) == 0) {
+                return (variable_p->value_p);
+            }
+            
+            variable_p++;
+        }
+
+        thrd_p = thrd_p->parent.thrd_p;
+    }
+
+    return (NULL);
+}
 
 #endif
 
@@ -428,6 +507,7 @@ int thrd_module_init(void)
     main_thrd.env.variables_p = main_variables;
     main_thrd.env.number_of_variables = 0;
     main_thrd.env.max_number_of_variables = membersof(main_variables);
+    sem_init(&env_sem, 0, 1);
 #endif
 
 #if CONFIG_ASSERT == 1
@@ -653,11 +733,13 @@ int thrd_init_env(struct thrd_environment_variable_t *variables_p,
 {
 #if CONFIG_THRD_ENV == 1
 
-    scheduler.current_p->env.variables_p = variables_p;
-    scheduler.current_p->env.number_of_variables = 0;
-    scheduler.current_p->env.max_number_of_variables = length;
+    int res;
 
-    return (0);
+    sem_take(&env_sem, NULL);
+    res = init_env(variables_p, length);
+    sem_give(&env_sem, 1);
+
+    return (res);
 
 #else
 
@@ -672,42 +754,13 @@ int thrd_set_env(const char *name_p, const char *value_p)
 
 #if CONFIG_THRD_ENV == 1
 
-    int i;
-    struct thrd_environment_t *env_p;
-    struct thrd_environment_variable_t *variable_p;
+    int res;
 
-    env_p = &scheduler.current_p->env;
-    variable_p = &env_p->variables_p[0];
+    sem_take(&env_sem, NULL);
+    res = set_env(name_p, value_p);
+    sem_give(&env_sem, 1);
 
-    /* Does the variable already exist in the list? */
-    for (i = 0; i < env_p->number_of_variables; i++) {
-        if (strcmp(variable_p->name_p, name_p) == 0) {
-            if (value_p != NULL) {
-                /* Replace the value. */
-                variable_p->value_p = value_p;
-            } else {
-                /* Remove the variable. */
-                env_p->number_of_variables--;
-                *variable_p = env_p->variables_p[env_p->number_of_variables];
-            }
-
-            return (0);
-        }
-
-        variable_p++;
-    }
-
-    /* New variable. Is there free space? */
-    if (env_p->number_of_variables == env_p->max_number_of_variables) {
-        return (-1);
-    }
-
-    /* Set the new variable. */
-    variable_p->name_p = name_p;
-    variable_p->value_p = value_p;
-    env_p->number_of_variables++;
-
-    return (0);
+    return (res);
 
 #else
 
@@ -722,31 +775,15 @@ const char *thrd_get_env(const char *name_p)
 
 #if CONFIG_THRD_ENV == 1
 
-    int i;
-    struct thrd_environment_t *env_p;
-    struct thrd_environment_variable_t *variable_p;
+    const char *value_p;
 
-    env_p = &scheduler.current_p->env;
-
-    if (env_p->max_number_of_variables == 0) {
-        return (NULL);
-    }
-
-    env_p = &scheduler.current_p->env;
-    variable_p = &env_p->variables_p[0];
-
-    /* Search for the variable. */
-    for (i = 0; i < env_p->number_of_variables; i++) {
-        if (strcmp(variable_p->name_p, name_p) == 0) {
-            return (variable_p->value_p);
-        }
-
-        variable_p++;
-    }
+    sem_take(&env_sem, NULL);
+    value_p = get_env(name_p);
+    sem_give(&env_sem, 1);
 
 #endif
 
-    return (NULL);
+    return (value_p);
 }
 
 void thrd_tick_isr(void)
