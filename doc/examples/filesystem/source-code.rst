@@ -38,7 +38,7 @@
        
        std_printf(FSTR("Incrementing the counter in 'fs/counter.txt'.\r\n"));
            
-       if (fs_open(&file, "fs/counter.txt", FS_RDWR) != 0) {
+       if (fs_open(&file, "counter.txt", FS_RDWR) != 0) {
            /* Create the file if missing. */
            if (fs_open(&file,
                        "fs/counter.txt",
