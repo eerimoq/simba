@@ -229,9 +229,39 @@ static int test_init(struct harness_t *harness_p)
     return (0);
 }
 
+static int test_auto_complete(struct harness_t *harness_p)
+{
+    char buf[CONFIG_FS_PATH_MAX];
+
+    strcpy(buf, "/tmp/q");
+    BTASSERT(fs_auto_complete(buf) == -ENOENT);
+
+    strcpy(buf, "/tm");
+    BTASSERT(fs_auto_complete(buf) == 2);
+    BTASSERT(strcmp(buf, "/tmp/") == 0);
+
+    strcpy(buf, "tm");
+    BTASSERT(fs_auto_complete(buf) == 2);
+    BTASSERT(strcmp(buf, "tmp/") == 0);
+
+    strcpy(buf, "/tmp/f");
+    BTASSERT(fs_auto_complete(buf) == 3);
+    BTASSERT(strcmp(buf, "/tmp/foo/") == 0);
+
+    strcpy(buf, "/tmp/foo/");
+    BTASSERT(fs_auto_complete(buf) == 4);
+    BTASSERT(strcmp(buf, "/tmp/foo/bar ") == 0);
+
+    strcpy(buf, "");
+    BTASSERT(fs_auto_complete(buf) == 0);
+    BTASSERT(strcmp(buf, "") == 0);
+
+    return (0);
+}
+
 static int test_command(struct harness_t *harness_p)
 {
-    char buf[BUFFER_SIZE];
+    char buf[CONFIG_FS_PATH_MAX];
 
     strcpy(buf, "  /tmp/foo/bar     foo1 foo2  ");
     BTASSERT(fs_call(buf, NULL, &qout, NULL) == 0);
@@ -246,25 +276,6 @@ static int test_command(struct harness_t *harness_p)
 
     strcpy(buf, "");
     BTASSERT(fs_call(buf, NULL, &qout, NULL) == -1);
-
-    strcpy(buf, "/tmp/q");
-    BTASSERT(fs_auto_complete(buf) == -ENOENT);
-
-    strcpy(buf, "/tm");
-    BTASSERT(fs_auto_complete(buf) == 2);
-    BTASSERT(strcmp(buf, "/tmp/") == 0);
-
-    strcpy(buf, "/tmp/f");
-    BTASSERT(fs_auto_complete(buf) == 3);
-    BTASSERT(strcmp(buf, "/tmp/foo/") == 0);
-
-    strcpy(buf, "/tmp/foo/");
-    BTASSERT(fs_auto_complete(buf) == 4);
-    BTASSERT(strcmp(buf, "/tmp/foo/bar ") == 0);
-
-    strcpy(buf, "");
-    BTASSERT(fs_auto_complete(buf) == 0);
-    BTASSERT(strcmp(buf, "") == 0);
 
     return (0);
 }
@@ -325,20 +336,20 @@ static int test_list(struct harness_t *harness_p)
 {
     char buf[256];
 
-    strcpy(buf, "kernel");
-    BTASSERT(fs_list(buf, NULL, &qout) == 0);
+    BTASSERT(fs_list("kernel", NULL, &qout) == 0);
     read_until(buf,
                "log/\r\n"
                "sys/\r\n"
                "thrd/\r\n");
 
-    strcpy(buf, "tmp/foo");
-    BTASSERT(fs_list(buf, NULL, &qout) == 0);
+    BTASSERT(fs_list("/kernel", "lo", &qout) == 0);
+    read_until(buf, "log/\r\n");
+
+    BTASSERT(fs_list("tmp/foo", NULL, &qout) == 0);
     read_until(buf,
                "bar\r\n");
 
-    strcpy(buf, "");
-    BTASSERT(fs_list(buf, NULL, &qout) == 0);
+    BTASSERT(fs_list("", NULL, &qout) == 0);
     read_until(buf,
                "kernel/\r\n"
                "logout\r\n"
@@ -347,6 +358,11 @@ static int test_list(struct harness_t *harness_p)
                "our/\r\n"
                "tmp/\r\n"
                "your/\r\n");
+
+    BTASSERT(fs_list("", "o", &qout) == 0);
+    read_until(buf,
+               "oam/\r\n"
+               "our/\r\n");
 
     return (0);
 }
@@ -677,11 +693,49 @@ static int test_read_line(struct harness_t *harness_p)
 #endif
 }
 
+static int test_cwd(struct harness_t *harness_p)
+{
+    struct fs_file_t file;
+    struct thrd_environment_variable_t variables[2];
+
+    BTASSERT(thrd_init_env(variables, membersof(variables)) == 0);
+
+    /* CWD without terminating slash. */
+    BTASSERT(thrd_set_env("CWD", "/spiffsfs") == 0);
+    BTASSERT(fs_open(&file, "lines.txt", FS_CREAT | FS_RDWR | FS_SYNC) == 0);
+    BTASSERT(fs_close(&file) == 0);
+
+    /* CWD with terminating slash. */
+    BTASSERT(thrd_set_env("CWD", "/spiffsfs/") == 0);
+    BTASSERT(fs_open(&file, "lines.txt", FS_CREAT | FS_RDWR | FS_SYNC) == 0);
+    BTASSERT(fs_close(&file) == 0);
+
+    /* CWD set but absolute path given. */
+    BTASSERT(thrd_set_env("CWD", "/spiffsfs") == 0);
+    BTASSERT(fs_open(&file, "/spiffsfs/lines.txt", FS_CREAT | FS_RDWR | FS_SYNC) == 0);
+    BTASSERT(fs_close(&file) == 0);
+
+    /* CWD as empty string. */
+    BTASSERT(thrd_set_env("CWD", "") == 0);
+    BTASSERT(fs_open(&file, "spiffsfs/lines.txt", FS_CREAT | FS_RDWR | FS_SYNC) == 0);
+
+    /* Bad CWD. */
+    BTASSERT(thrd_set_env("CWD", "/foo") == 0);
+    BTASSERT(fs_open(&file, "lines.txt", FS_CREAT | FS_RDWR | FS_SYNC) == -1);
+
+    /* Too long cwd. */
+    BTASSERT(thrd_set_env("CWD", "/12345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890") == 0);
+    BTASSERT(fs_open(&file, "lines.txt", FS_CREAT | FS_RDWR | FS_SYNC) == -1);
+
+    return (0);
+}
+
 int main()
 {
     struct harness_t harness;
     struct harness_testcase_t harness_testcases[] = {
         { test_init, "test_init" },
+        { test_auto_complete, "test_auto_complete" },
         { test_command, "test_command" },
         { test_counter, "test_counter" },
         { test_parameter, "test_parameter" },
@@ -693,6 +747,7 @@ int main()
         { test_filesystem_spiffs, "test_filesystem_spiffs" },
         { test_filesystem_commands, "test_filesystem_commands" },
         { test_read_line, "test_read_line" },
+        { test_cwd, "test_cwd" },
         { NULL, NULL }
     };
 

@@ -365,6 +365,13 @@
 #endif
 
 /**
+ * The maximum length of an absolute path in the file system.
+ */
+#ifndef CONFIG_FS_PATH_MAX
+#    define CONFIG_FS_PATH_MAX                             64
+#endif
+
+/**
  * Start the monitor thread to gather statistics of the scheulder.
  */
 #ifndef CONFIG_MONITOR_THREAD

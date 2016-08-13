@@ -313,9 +313,10 @@ int fs_list(const char *path_p,
 /**
  * Auto-complete given path.
  *
- * @param[in,out] path_p Path to auto-complete.
+ * @param[in,out] path_p Absolute or relative path to auto-complete.
  *
- * @return >=1 if completion happened. Match length.
+ * @return >=1 if completion happened. Number of autocompleted characters
+ *         added to the path.
  *         0 if no completion happend,
  *         or negative error code.
  */

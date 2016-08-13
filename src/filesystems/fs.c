@@ -727,14 +727,56 @@ static int ls_spiffs(struct spiffs_t *fs_p,
 
 #endif
 
+/**
+ * Create an absolute path of given path by prepending the CWD
+ * environment variable.
+ */
+static int create_absolute_path(char *dst_p,
+                                const char *path_p)
+{
+    int size;
+    const char *cwd_p;
+    const char *slash_p;
+
+    cwd_p = "";
+    slash_p = "";
+
+    /* Prepend CWD if given path is relative. */
+    if (path_p[0] != '/') {
+        cwd_p = thrd_get_env("CWD");
+
+        if ((cwd_p == NULL) || (cwd_p[0] == '\0')) {
+            cwd_p = "/";
+        }
+
+        if (cwd_p[strlen(cwd_p) - 1] != '/') {
+            slash_p = "/";
+        }
+    }
+
+    size = std_snprintf(dst_p,
+                        CONFIG_FS_PATH_MAX,
+                        FSTR("%s%s%s"),
+                        cwd_p,
+                        slash_p,
+                        path_p);
+
+    return (size < CONFIG_FS_PATH_MAX ? 0 : -1);
+}
+
 int fs_open(struct fs_file_t *self_p, const char *path_p, int flags)
 {
     ASSERTN(self_p != NULL, -EINVAL);
     ASSERTN(path_p != NULL, -EINVAL);
 
     struct fs_filesystem_t *filesystem_p;
+    char path[CONFIG_FS_PATH_MAX];
 
-    if (get_filesystem_path_from_path(&filesystem_p, &path_p, path_p) != 0) {
+    if (create_absolute_path(path, path_p) != 0) {
+        return (-1);
+    }
+
+    if (get_filesystem_path_from_path(&filesystem_p, &path_p, &path[0]) != 0) {
         return (-1);
     }
 
@@ -906,8 +948,13 @@ int fs_ls(const char *path_p,
     ASSERTN(chout_p != NULL, -EINVAL);
 
     struct fs_filesystem_t *filesystem_p;
+    char path[CONFIG_FS_PATH_MAX];
 
-    if (get_filesystem_path_from_path(&filesystem_p, &path_p, path_p) != 0) {
+    if (create_absolute_path(path, path_p) != 0) {
+        return (-1);
+    }
+
+    if (get_filesystem_path_from_path(&filesystem_p, &path_p, &path[0]) != 0) {
         return (-1);
     }
 
@@ -942,21 +989,19 @@ int fs_list(const char *path_p,
     int buf_length, path_offset, filter_offset, path_length;
     struct fs_command_t *command_p;
     char buf[64], next_char;
+    char path[CONFIG_FS_PATH_MAX];
 
-    filter_offset = path_length = strlen(path_p);
-    path_offset = 0;
-
-    if (path_p[0] != '/') {
-        path_offset = 1;
-        filter_offset++;
+    if (create_absolute_path(path, path_p) != 0) {
+        return (-1);
     }
 
-    if (path_length > 0) {
-        if (path_p[path_length - 1] == '/') {
-            path_length--;
-        } else {
-            filter_offset++;
-        }
+    filter_offset = path_length = strlen(path);
+    path_offset = 0;
+
+    if (path[path_length - 1] == '/') {
+        path_length--;
+    } else {
+        filter_offset++;
     }
 
     buf_length = -1;
@@ -968,7 +1013,7 @@ int fs_list(const char *path_p,
     while (command_p != NULL) {
         /* Path match? */
         if (std_strncmp(&command_p->path_p[path_offset],
-                        path_p,
+                        path,
                         path_length) == 0) {
             /* Filter match? */
             if ((filter_p == NULL)
@@ -1008,25 +1053,24 @@ int fs_auto_complete(char *path_p)
     ASSERTN(path_p != NULL, -EINVAL);
 
     char next_char;
-    int mismatch, path_length, offset, size;
+    int mismatch, absolute_path_length, path_length, original_path_length;
     struct fs_command_t *command_p, *next_p;
+    char path[CONFIG_FS_PATH_MAX];
 
-    offset = 0;
-    size = path_length = strlen(path_p);
-
-    /* Skip the leading slash in the registered commands if it is
-       missing in the input path. */
-    if (path_p[0] != '/') {
-        offset = 1;
+    if (create_absolute_path(path, path_p) != 0) {
+        return (-1);
     }
+
+    absolute_path_length = strlen(path);
+    path_length = original_path_length = strlen(path_p);
 
     /* Find the first command matching given path. */
     command_p = state.commands_p;
 
     while (command_p != NULL) {
-        if (std_strncmp(&command_p->path_p[offset],
-                        path_p,
-                        size) == 0) {
+        if (std_strncmp(&command_p->path_p[0],
+                        path,
+                        absolute_path_length) == 0) {
             break;
         }
 
@@ -1048,17 +1092,17 @@ int fs_auto_complete(char *path_p)
     */
     while (1) {
         mismatch = 0;
-        next_char = command_p->path_p[offset + size];
+        next_char = command_p->path_p[absolute_path_length];
 
         /* It's a match if all commands matching path has the same
            next character. */
         next_p = command_p;
 
         while ((next_p != NULL)
-               && (std_strncmp(&next_p->path_p[offset],
-                               path_p,
-                               size) == 0)) {
-            if (next_p->path_p[offset + size] != next_char) {
+               && (std_strncmp(&next_p->path_p[0],
+                               path,
+                               absolute_path_length) == 0)) {
+            if (next_p->path_p[absolute_path_length] != next_char) {
                 mismatch = 1;
                 break;
             }
@@ -1068,16 +1112,17 @@ int fs_auto_complete(char *path_p)
 
         /* Completion happend? */
         if (mismatch == 0) {
-            path_p[size] = next_char;
-            size++;
+            path_p[path_length] = next_char;
+            path_length++;
+            absolute_path_length++;
 
             /* Auto-complete one directory at a time. */
             if (next_char == '/') {
                 break;
             } else if (next_char == '\0') {
                 /* Append a space on commands. */
-                path_p[size - 1] = ' ';
-                path_p[size] = '\0';
+                path_p[path_length - 1] = ' ';
+                path_p[path_length] = '\0';
                 break;
             }
         } else {
@@ -1085,9 +1130,9 @@ int fs_auto_complete(char *path_p)
         }
     }
 
-    path_p[size] = '\0';
+    path_p[path_length] = '\0';
 
-    return (size - path_length);
+    return (path_length - original_path_length);
 }
 
 void fs_split(char *buf_p, char **path_pp, char **cmd_pp)
