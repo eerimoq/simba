@@ -255,12 +255,14 @@ int thrd_set_env(const char *name_p, const char *value_p);
 
 /**
  * Get the value of given environment variable. If given variable is
- * not found in the current threads' environment storage it will
- * recursively serach in its partens' envionments.
+ * not found in the current threads' environment array, the
+ * environment of its parent is searched. This continues until the
+ * variable is found or no parent exists.
  *
  * @param[in] name_p Name of the environment variable to get.
  *
- * @return Value of given environment variable or NULL on error.
+ * @return Value of given environment variable or NULL if it is not
+ *         found.
  */
 const char *thrd_get_env(const char *name_p);
 
