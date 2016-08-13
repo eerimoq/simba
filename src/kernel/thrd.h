@@ -23,7 +23,7 @@
 
 #include "simba.h"
 #include "thrd_port.h"
-
+ 
 /**
  * Macro to declare a thread stack with given name and size.
  *
@@ -32,6 +32,32 @@
  * @param[in] size Size of the stack in bytes.
  */
 #define THRD_STACK(name, size) THRD_PORT_STACK(name, size)
+
+/**
+ * Push all callee-save registers not part of the context struct. The
+ * preemptive scheduler requires this macro before the
+ * `thrd_yield_isr()` function is called from interrupt context.
+ */
+#define THRD_CONTEXT_STORE_ISR THRD_PORT_CONTEXT_STORE_ISR
+
+/**
+ * Pop all callee-save registers not part of the context struct. The
+ * preemptive scheduler requires this macro after the thrd_yield_isr()
+ * function is called from interrupt context.
+ */
+#define THRD_CONTEXT_LOAD_ISR THRD_PORT_CONTEXT_LOAD_ISR
+
+/**
+ * Reschuedule from isr. Used by preemptive systems to interrupt low
+ * priority threads in favour of high priority threads.
+ */
+#define THRD_RESCHEDULE_ISR                     \
+    do {                                        \
+        THRD_CONTEXT_STORE_ISR;                 \
+        thrd_yield_isr();                       \
+        THRD_CONTEXT_LOAD_ISR;                  \
+    } while (0)
+
 
 /**
  * A thread environment variable.
