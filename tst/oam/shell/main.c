@@ -246,6 +246,9 @@ static int test_auto_completion(struct harness_t *harness_p)
     BTASSERT(std_strcmp(buf,
                         FSTR("\r\n"
                              "bar\r\n"
+#if !defined(ARCH_LINUX)
+                             "drivers/\r\n"
+#endif
                              "fie\r\n"
                              "filesystems/\r\n"
                              "foo\r\n"

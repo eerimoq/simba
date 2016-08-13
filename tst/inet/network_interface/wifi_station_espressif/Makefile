@@ -21,18 +21,20 @@
 NAME = wifi_station_espressif_suite
 
 ifneq ($(SSID),)
-CDEFS_EXTRA += SSID=$(SSID)
+CDEFS += SSID=$(SSID)
 endif
 
 ifneq ($(PASSWORD),)
-CDEFS_EXTRA += PASSWORD=$(PASSWORD)
+CDEFS += PASSWORD=$(PASSWORD)
 endif
 
 ifneq ($(ESP8266_IP),)
-CDEFS_EXTRA += ESP8266_IP=$(ESP8266_IP)
+CDEFS += ESP8266_IP=$(ESP8266_IP)
 endif
 
 RUN_PY = run.py
+
+CDEFS += CONFIG_MINIMAL_SYSTEM=1
 
 SIMBA_ROOT ?= ../../../..
 include $(SIMBA_ROOT)/make/app.mk

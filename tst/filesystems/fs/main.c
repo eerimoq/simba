@@ -261,8 +261,8 @@ static int test_auto_complete(struct harness_t *harness_p)
 
 static int test_command(struct harness_t *harness_p)
 {
-    char buf[CONFIG_FS_PATH_MAX];
-
+    char buf[256];
+    
     strcpy(buf, "  /tmp/foo/bar     foo1 foo2  ");
     BTASSERT(fs_call(buf, NULL, &qout, NULL) == 0);
     read_until(buf, "\n");
@@ -346,8 +346,6 @@ static int test_list(struct harness_t *harness_p)
     BTASSERT(fs_list("tmp/foo", NULL, &qout) == 0);
     read_until(buf,
                "bar\r\n");
-
-    PRINT_FILE_LINE();
 
     BTASSERT(fs_list("", NULL, &qout) == 0);
     read_until(buf,
@@ -692,6 +690,8 @@ static int test_read_line(struct harness_t *harness_p)
 
 static int test_cwd(struct harness_t *harness_p)
 {
+#if defined(ARCH_LINUX)
+
     struct fs_file_t file;
     struct thrd_environment_variable_t variables[2];
 
@@ -725,6 +725,12 @@ static int test_cwd(struct harness_t *harness_p)
     BTASSERT(fs_open(&file, "lines.txt", FS_CREAT | FS_RDWR | FS_SYNC) == -1);
 
     return (0);
+
+#else
+
+    return (1);
+
+#endif
 }
 
 int main()
