@@ -335,34 +335,31 @@ static int test_parameter(struct harness_t *harness_p)
 static int test_list(struct harness_t *harness_p)
 {
     char buf[256];
-
-    BTASSERT(fs_list("kernel", NULL, &qout) == 0);
+    
+    BTASSERT(fs_list("filesystems", NULL, &qout) == 0);
     read_until(buf,
-               "log/\r\n"
-               "sys/\r\n"
-               "thrd/\r\n");
+               "fs/\r\n");
 
-    BTASSERT(fs_list("/kernel", "lo", &qout) == 0);
-    read_until(buf, "log/\r\n");
+    BTASSERT(fs_list("/filesystems", "f", &qout) == 0);
+    read_until(buf, "fs/\r\n");
 
     BTASSERT(fs_list("tmp/foo", NULL, &qout) == 0);
     read_until(buf,
                "bar\r\n");
 
+    PRINT_FILE_LINE();
+
     BTASSERT(fs_list("", NULL, &qout) == 0);
     read_until(buf,
-               "kernel/\r\n"
+               "filesystems/\r\n"
                "logout\r\n"
                "my/\r\n"
-               "oam/\r\n"
                "our/\r\n"
                "tmp/\r\n"
                "your/\r\n");
 
     BTASSERT(fs_list("", "o", &qout) == 0);
-    read_until(buf,
-               "oam/\r\n"
-               "our/\r\n");
+    read_until(buf, "our/\r\n");
 
     return (0);
 }

@@ -246,17 +246,12 @@ static int test_auto_completion(struct harness_t *harness_p)
     BTASSERT(std_strcmp(buf,
                         FSTR("\r\n"
                              "bar\r\n"
-#if !defined(ARCH_LINUX)
-                             "drivers/\r\n"
-#endif
                              "fie\r\n"
                              "filesystems/\r\n"
                              "foo\r\n"
                              "help\r\n"
                              "history\r\n"
-                             "kernel/\r\n"
                              "logout\r\n"
-                             "oam/\r\n"
                              "tmp/\r\n"
                              "$ ")) == 0);
 
@@ -380,9 +375,7 @@ static int test_fs_counters_list(struct harness_t *harness_p)
                              "/fie                                                 "
                              "0000000000000001\r\n"
                              "$ ")) == 0, "%s", buf);
-    PRINT_FILE_LINE();
 #endif
-    PRINT_FILE_LINE();
 
     std_printf(FSTR("\r\n"));
 

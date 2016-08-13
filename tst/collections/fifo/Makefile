@@ -21,5 +21,7 @@
 NAME = fifo_suite
 BOARD ?= linux
 
+CDEFS += CONFIG_MINIMAL_SYSTEM=1
+
 SIMBA_ROOT ?= ../../..
 include $(SIMBA_ROOT)/make/app.mk

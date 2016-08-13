@@ -23,5 +23,7 @@ BOARD ?= linux
 SLIB_SRC = harness.c
 DRIVERS_SRC = ds18b20.c uart.c owi.c pin.c
 
+CDEFS += CONFIG_MINIMAL_SYSTEM=1
+
 SIMBA_ROOT ?= ../../..
 include $(SIMBA_ROOT)/make/app.mk

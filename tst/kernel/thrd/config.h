@@ -32,11 +32,6 @@
 #    endif
 #endif
 
-/**
- * Start the monitor thread.
- */
-#ifndef CONFIG_MONITOR_THREAD
-#    define CONFIG_MONITOR_THREAD       0
-#endif
+#define CONFIG_THRD_ENV                     1
 
 #endif

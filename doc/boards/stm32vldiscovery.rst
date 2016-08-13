@@ -53,9 +53,9 @@ Below is the memory usage of two applications:
 +--------------------------+-----------+-----------+
 | Application              | Flash     | RAM       |
 +==========================+===========+===========+
-| minimal-configuration    |     13836 |      3012 |
+| minimal-configuration    |     14032 |      2880 |
 +--------------------------+-----------+-----------+
-| default-configuration    |     56948 |      6122 |
+| default-configuration    |     57844 |      6058 |
 +--------------------------+-----------+-----------+
 
 Default configuration
@@ -114,6 +114,8 @@ Default Standard Library configuration.
 +------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_FS_CMD_SETTINGS_WRITE_                       |  1                                                  |
 +------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_FS_CMD_SYS_CONFIG_                           |  1                                                  |
++------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_FS_CMD_SYS_INFO_                             |  1                                                  |
 +------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_FS_CMD_SYS_UPTIME_                           |  1                                                  |
@@ -125,6 +127,8 @@ Default Standard Library configuration.
 |  CONFIG_FS_CMD_USB_DEVICE_LIST_                      |  1                                                  |
 +------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_FS_CMD_USB_HOST_LIST_                        |  1                                                  |
++------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_FS_PATH_MAX_                                 |  64                                                 |
 +------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_MONITOR_THREAD_                              |  1                                                  |
 +------------------------------------------------------+-----------------------------------------------------+
@@ -250,6 +254,8 @@ Mcu
 
 .. _CONFIG_FS_CMD_SETTINGS_WRITE: ../user-guide/configuration.html#c.CONFIG_FS_CMD_SETTINGS_WRITE
 
+.. _CONFIG_FS_CMD_SYS_CONFIG: ../user-guide/configuration.html#c.CONFIG_FS_CMD_SYS_CONFIG
+
 .. _CONFIG_FS_CMD_SYS_INFO: ../user-guide/configuration.html#c.CONFIG_FS_CMD_SYS_INFO
 
 .. _CONFIG_FS_CMD_SYS_UPTIME: ../user-guide/configuration.html#c.CONFIG_FS_CMD_SYS_UPTIME
@@ -261,6 +267,8 @@ Mcu
 .. _CONFIG_FS_CMD_USB_DEVICE_LIST: ../user-guide/configuration.html#c.CONFIG_FS_CMD_USB_DEVICE_LIST
 
 .. _CONFIG_FS_CMD_USB_HOST_LIST: ../user-guide/configuration.html#c.CONFIG_FS_CMD_USB_HOST_LIST
+
+.. _CONFIG_FS_PATH_MAX: ../user-guide/configuration.html#c.CONFIG_FS_PATH_MAX
 
 .. _CONFIG_MONITOR_THREAD: ../user-guide/configuration.html#c.CONFIG_MONITOR_THREAD
 

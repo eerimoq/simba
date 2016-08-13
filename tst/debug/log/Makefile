@@ -21,5 +21,10 @@
 NAME = log_suite
 BOARD ?= linux
 
+CDEFS += CONFIG_MINIMAL_SYSTEM=1 \
+	CONFIG_FS_CMD_LOG_LIST=1 \
+	CONFIG_FS_CMD_LOG_PRINT=1 \
+	CONFIG_FS_CMD_LOG_SET_LOG_MASK=1
+
 SIMBA_ROOT ?= ../../..
 include $(SIMBA_ROOT)/make/app.mk

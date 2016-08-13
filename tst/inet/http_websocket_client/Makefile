@@ -23,6 +23,8 @@ VERSION = 0.0.1
 BOARD ?= linux
 
 SRC += socket_stub.c
+CDEFS += CONFIG_MINIMAL_SYSTEM=1
+
 SRC_IGNORE = $(SIMBA_ROOT)/src/inet/socket.c
 
 INET_SRC = \

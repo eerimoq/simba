@@ -780,10 +780,14 @@ const char *thrd_get_env(const char *name_p)
     sem_take(&env_sem, NULL);
     value_p = get_env(name_p);
     sem_give(&env_sem, 1);
+    
+    return (value_p);
+
+#else
+    
+    return (NULL);
 
 #endif
-
-    return (value_p);
 }
 
 void thrd_tick_isr(void)

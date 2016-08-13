@@ -26,7 +26,7 @@
  * varialbes and their values.
  */
 #ifndef CONFIG_SYS_CONFIG_STRING
-#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO)
+#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(CONFIG_MINIMAL_SYSTEM)
 #        define CONFIG_SYS_CONFIG_STRING                    0
 #    else
 #        define CONFIG_SYS_CONFIG_STRING                    1
@@ -39,7 +39,7 @@
  * input arguments.
  */
 #ifndef CONFIG_ASSERT
-#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO)
+#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(CONFIG_MINIMAL_SYSTEM)
 #        define CONFIG_ASSERT                               0
 #    else
 #        define CONFIG_ASSERT                               1
@@ -50,14 +50,18 @@
  * Include more debug information.
  */
 #ifndef CONFIG_DEBUG
-#    define CONFIG_DEBUG                                    1
+#    if defined(CONFIG_MINIMAL_SYSTEM)
+#        define CONFIG_DEBUG                                0
+#    else
+#        define CONFIG_DEBUG                                1
+#    endif
 #endif
 
 /**
  * Debug file system command to list all DS18B20 sensors on the bus.
  */
 #ifndef CONFIG_FS_CMD_DS18B20_LIST
-#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO)
+#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(CONFIG_MINIMAL_SYSTEM)
 #        define CONFIG_FS_CMD_DS18B20_LIST                  0
 #    else
 #        define CONFIG_FS_CMD_DS18B20_LIST                  1
@@ -68,7 +72,7 @@
  * Debug file system command to append to a file.
  */
 #ifndef CONFIG_FS_CMD_FS_APPEND
-#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO)
+#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(CONFIG_MINIMAL_SYSTEM)
 #        define CONFIG_FS_CMD_FS_APPEND                     0
 #    else
 #        define CONFIG_FS_CMD_FS_APPEND                     1
@@ -79,7 +83,7 @@
  * Debug file system command to list all counters.
  */
 #ifndef CONFIG_FS_CMD_FS_COUNTERS_LIST
-#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO)
+#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(CONFIG_MINIMAL_SYSTEM)
 #        define CONFIG_FS_CMD_FS_COUNTERS_LIST              0
 #    else
 #        define CONFIG_FS_CMD_FS_COUNTERS_LIST              1
@@ -90,7 +94,7 @@
  * Debug file system command to set all counters to zero.
  */
 #ifndef CONFIG_FS_CMD_FS_COUNTERS_RESET
-#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO)
+#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(CONFIG_MINIMAL_SYSTEM)
 #        define CONFIG_FS_CMD_FS_COUNTERS_RESET             0
 #    else
 #        define CONFIG_FS_CMD_FS_COUNTERS_RESET             1
@@ -101,7 +105,7 @@
  * Debug file system command to list all registered file systems.
  */
 #ifndef CONFIG_FS_CMD_FS_FILESYSTEMS_LIST
-#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO)
+#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(CONFIG_MINIMAL_SYSTEM)
 #        define CONFIG_FS_CMD_FS_FILESYSTEMS_LIST           0
 #    else
 #        define CONFIG_FS_CMD_FS_FILESYSTEMS_LIST           1
@@ -112,7 +116,7 @@
  * Debug file system command to list all registered file systems.
  */
 #ifndef CONFIG_FS_CMD_FS_LIST
-#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO)
+#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(CONFIG_MINIMAL_SYSTEM)
 #        define CONFIG_FS_CMD_FS_LIST                       0
 #    else
 #        define CONFIG_FS_CMD_FS_LIST                       1
@@ -123,7 +127,7 @@
  * Debug file system command to list all parameters.
  */
 #ifndef CONFIG_FS_CMD_FS_PARAMETERS_LIST
-#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO)
+#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(CONFIG_MINIMAL_SYSTEM)
 #        define CONFIG_FS_CMD_FS_PARAMETERS_LIST            0
 #    else
 #        define CONFIG_FS_CMD_FS_PARAMETERS_LIST            1
@@ -134,7 +138,7 @@
  * Debug file system command to read from a file.
  */
 #ifndef CONFIG_FS_CMD_FS_READ
-#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO)
+#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(CONFIG_MINIMAL_SYSTEM)
 #        define CONFIG_FS_CMD_FS_READ                       0
 #    else
 #        define CONFIG_FS_CMD_FS_READ                       1
@@ -145,7 +149,7 @@
  * Debug file system command to write to a file.
  */
 #ifndef CONFIG_FS_CMD_FS_WRITE
-#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO)
+#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(CONFIG_MINIMAL_SYSTEM)
 #        define CONFIG_FS_CMD_FS_WRITE                      0
 #    else
 #        define CONFIG_FS_CMD_FS_WRITE                      1
@@ -156,7 +160,7 @@
  * Debug file system command to read from a i2c bus.
  */
 #ifndef CONFIG_FS_CMD_I2C_READ
-#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO)
+#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(CONFIG_MINIMAL_SYSTEM)
 #        define CONFIG_FS_CMD_I2C_READ                      0
 #    else
 #        define CONFIG_FS_CMD_I2C_READ                      1
@@ -167,7 +171,7 @@
  * Debug file system command to write to a i2c bus.
  */
 #ifndef CONFIG_FS_CMD_I2C_WRITE
-#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO)
+#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(CONFIG_MINIMAL_SYSTEM)
 #        define CONFIG_FS_CMD_I2C_WRITE                     0
 #    else
 #        define CONFIG_FS_CMD_I2C_WRITE                     1
@@ -178,7 +182,7 @@
  * Debug file system command to list all log objects.
  */
 #ifndef CONFIG_FS_CMD_LOG_LIST
-#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO)
+#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(CONFIG_MINIMAL_SYSTEM)
 #        define CONFIG_FS_CMD_LOG_LIST                      0
 #    else
 #        define CONFIG_FS_CMD_LOG_LIST                      1
@@ -190,7 +194,7 @@
  * it. Mainly used for debugging.
  */
 #ifndef CONFIG_FS_CMD_LOG_PRINT
-#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO)
+#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(CONFIG_MINIMAL_SYSTEM)
 #        define CONFIG_FS_CMD_LOG_PRINT                     0
 #    else
 #        define CONFIG_FS_CMD_LOG_PRINT                     1
@@ -201,7 +205,7 @@
  * Debug file system command to set the log mask of a log object.
  */
 #ifndef CONFIG_FS_CMD_LOG_SET_LOG_MASK
-#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO)
+#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(CONFIG_MINIMAL_SYSTEM)
 #        define CONFIG_FS_CMD_LOG_SET_LOG_MASK              0
 #    else
 #        define CONFIG_FS_CMD_LOG_SET_LOG_MASK              1
@@ -212,7 +216,7 @@
  * Debug file system command to list all network interfaces.
  */
 #ifndef CONFIG_FS_CMD_NETWORK_INTERFACE_LIST
-#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO)
+#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(CONFIG_MINIMAL_SYSTEM)
 #        define CONFIG_FS_CMD_NETWORK_INTERFACE_LIST        0
 #    else
 #        define CONFIG_FS_CMD_NETWORK_INTERFACE_LIST        1
@@ -223,7 +227,7 @@
  * Debug file system command to read the current value of a pin.
  */
 #ifndef CONFIG_FS_CMD_PIN_READ
-#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO)
+#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(CONFIG_MINIMAL_SYSTEM)
 #        define CONFIG_FS_CMD_PIN_READ                      0
 #    else
 #        define CONFIG_FS_CMD_PIN_READ                      1
@@ -234,7 +238,7 @@
  * Debug file system command to set the mode of a pin.
  */
 #ifndef CONFIG_FS_CMD_PIN_SET_MODE
-#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO)
+#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(CONFIG_MINIMAL_SYSTEM)
 #        define CONFIG_FS_CMD_PIN_SET_MODE                  0
 #    else
 #        define CONFIG_FS_CMD_PIN_SET_MODE                  1
@@ -245,7 +249,7 @@
  * Debug file system command to write a value to a pin.
  */
 #ifndef CONFIG_FS_CMD_PIN_WRITE
-#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO)
+#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(CONFIG_MINIMAL_SYSTEM)
 #        define CONFIG_FS_CMD_PIN_WRITE                     0
 #    else
 #        define CONFIG_FS_CMD_PIN_WRITE                     1
@@ -256,7 +260,7 @@
  * Debug file system command to list all settings.
  */
 #ifndef CONFIG_FS_CMD_SETTINGS_LIST
-#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO)
+#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(CONFIG_MINIMAL_SYSTEM)
 #        define CONFIG_FS_CMD_SETTINGS_LIST                 0
 #    else
 #        define CONFIG_FS_CMD_SETTINGS_LIST                 1
@@ -267,7 +271,7 @@
  * Debug file system command to read the value of a setting.
  */
 #ifndef CONFIG_FS_CMD_SETTINGS_READ
-#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO)
+#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(CONFIG_MINIMAL_SYSTEM)
 #        define CONFIG_FS_CMD_SETTINGS_READ                 0
 #    else
 #        define CONFIG_FS_CMD_SETTINGS_READ                 1
@@ -279,7 +283,7 @@
  * values.
  */
 #ifndef CONFIG_FS_CMD_SETTINGS_RESET
-#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO)
+#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(CONFIG_MINIMAL_SYSTEM)
 #        define CONFIG_FS_CMD_SETTINGS_RESET                0
 #    else
 #        define CONFIG_FS_CMD_SETTINGS_RESET                1
@@ -290,7 +294,7 @@
  * Debug file system command to write a value to a setting.
  */
 #ifndef CONFIG_FS_CMD_SETTINGS_WRITE
-#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO)
+#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(CONFIG_MINIMAL_SYSTEM)
 #        define CONFIG_FS_CMD_SETTINGS_WRITE                0
 #    else
 #        define CONFIG_FS_CMD_SETTINGS_WRITE                1
@@ -301,7 +305,7 @@
  * Debug file system command to print the system configuration.
  */
 #ifndef CONFIG_FS_CMD_SYS_CONFIG
-#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO)
+#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(CONFIG_MINIMAL_SYSTEM)
 #        define CONFIG_FS_CMD_SYS_CONFIG                    0
 #    else
 #        define CONFIG_FS_CMD_SYS_CONFIG                    1
@@ -312,7 +316,7 @@
  * Debug file system command to print the system information.
  */
 #ifndef CONFIG_FS_CMD_SYS_INFO
-#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO)
+#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(CONFIG_MINIMAL_SYSTEM)
 #        define CONFIG_FS_CMD_SYS_INFO                      0
 #    else
 #        define CONFIG_FS_CMD_SYS_INFO                      1
@@ -323,7 +327,7 @@
  * Debug file system command to print the system uptime.
  */
 #ifndef CONFIG_FS_CMD_SYS_UPTIME
-#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO)
+#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(CONFIG_MINIMAL_SYSTEM)
 #        define CONFIG_FS_CMD_SYS_UPTIME                    0
 #    else
 #        define CONFIG_FS_CMD_SYS_UPTIME                    1
@@ -334,7 +338,7 @@
  * Debug file system command to list threads' information.
  */
 #ifndef CONFIG_FS_CMD_THRD_LIST
-#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO)
+#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(CONFIG_MINIMAL_SYSTEM)
 #        define CONFIG_FS_CMD_THRD_LIST                     0
 #    else
 #        define CONFIG_FS_CMD_THRD_LIST                     1
@@ -345,7 +349,7 @@
  * Debug file system command to set the log mask of a thread.
  */
 #ifndef CONFIG_FS_CMD_THRD_SET_LOG_MASK
-#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO)
+#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(CONFIG_MINIMAL_SYSTEM)
 #        define CONFIG_FS_CMD_THRD_SET_LOG_MASK             0
 #    else
 #        define CONFIG_FS_CMD_THRD_SET_LOG_MASK             1
@@ -356,7 +360,7 @@
  * Debug file system command to list all USB devices.
  */
 #ifndef CONFIG_FS_CMD_USB_DEVICE_LIST
-#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO)
+#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(CONFIG_MINIMAL_SYSTEM)
 #        define CONFIG_FS_CMD_USB_DEVICE_LIST               0
 #    else
 #        define CONFIG_FS_CMD_USB_DEVICE_LIST               1
@@ -368,7 +372,7 @@
  * USB host.
  */
 #ifndef CONFIG_FS_CMD_USB_HOST_LIST
-#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO)
+#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(CONFIG_MINIMAL_SYSTEM)
 #        define CONFIG_FS_CMD_USB_HOST_LIST                 0
 #    else
 #        define CONFIG_FS_CMD_USB_HOST_LIST                 1
@@ -386,7 +390,7 @@
  * Start the monitor thread to gather statistics of the scheulder.
  */
 #ifndef CONFIG_MONITOR_THREAD
-#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(BOARD_ESP12E) || defined(BOARD_ESP01)
+#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(BOARD_ESP12E) || defined(BOARD_ESP01) || defined(CONFIG_MINIMAL_SYSTEM)
 #        define CONFIG_MONITOR_THREAD                       0
 #    else
 #        define CONFIG_MONITOR_THREAD                       1
@@ -435,7 +439,7 @@
  * module.
  */
 #ifndef CONFIG_SHELL_MINIMAL
-#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO)
+#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(CONFIG_MINIMAL_SYSTEM)
 #        define CONFIG_SHELL_MINIMAL                        1
 #    else
 #        define CONFIG_SHELL_MINIMAL                        0
@@ -454,7 +458,9 @@
  * reasonably big modifiable flash.
  */
 #ifndef CONFIG_SPIFFS
-#    if defined(BOARD_ARDUINO_DUE) || defined(ARCH_LINUX)
+#    if defined(CONFIG_MINIMAL_SYSTEM)
+#        define CONFIG_SPIFFS                               0
+#    elif defined(BOARD_ARDUINO_DUE) || defined(ARCH_LINUX)
 #        define CONFIG_SPIFFS                               1
 #    else
 #        define CONFIG_SPIFFS                               0
@@ -522,7 +528,9 @@
  * Configure a default file system.
  */
 #ifndef CONFIG_START_FILESYSTEM
-#    if defined(BOARD_ARDUINO_DUE)
+#    if defined(CONFIG_MINIMAL_SYSTEM)
+#        define CONFIG_START_FILESYSTEM                     0
+#    elif defined(BOARD_ARDUINO_DUE)
 #        define CONFIG_START_FILESYSTEM                     1
 #    else
 #        define CONFIG_START_FILESYSTEM                     0
@@ -547,7 +555,9 @@
  * Setup the ip stack and connect to all configured networks.
  */
 #ifndef CONFIG_START_NETWORK
-#    if defined(ARCH_ESP)
+#    if defined(CONFIG_MINIMAL_SYSTEM)
+#        define CONFIG_START_NETWORK                        0
+#    elif defined(ARCH_ESP)
 #        define CONFIG_START_NETWORK                        1
 #    else
 #        define CONFIG_START_NETWORK                        0
@@ -572,7 +582,7 @@
  * Start a shell thread communication over the console channels.
  */
 #ifndef CONFIG_START_SHELL
-#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO)
+#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(CONFIG_MINIMAL_SYSTEM)
 #        define CONFIG_START_SHELL                          0
 #    else
 #        define CONFIG_START_SHELL                          1
@@ -617,7 +627,7 @@
  * Working Directory.
  */
 #ifndef CONFIG_THRD_ENV
-#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO)
+#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(CONFIG_MINIMAL_SYSTEM)
 #        define CONFIG_THRD_ENV                             0
 #    else
 #        define CONFIG_THRD_ENV                             1

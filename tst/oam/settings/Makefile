@@ -27,5 +27,7 @@ SETTINGS_C = settings.c
 SETTINGS_INI = settings.ini
 SETTINGS_BIN = settings.little-endian.bin
 
+CDEFS += CONFIG_MINIMAL_SYSTEM=1
+
 SIMBA_ROOT ?= ../../..
 include $(SIMBA_ROOT)/make/app.mk
