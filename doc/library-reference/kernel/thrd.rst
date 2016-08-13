@@ -25,7 +25,8 @@ The diagram below is an example of how three threads; ``shell``,
 ``main`` and ``idle`` are scheduled over time.
 
 .. image:: ../../images/thread-scheduling.jpg
-   :width: 100%
+   :width: 90%
+   :align: center    
    :target: ../../_images/thread-scheduling.jpg
 
 As it is a single core scheduler only one thread is runnng at a

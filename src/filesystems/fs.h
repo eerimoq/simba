@@ -199,8 +199,14 @@ int fs_call(char *command_p,
  * Open a file by file path and mode flags. File operations are
  * permitted after the file has been opened.
  *
- * @param[out] self_p Initialized file object.
- * @param[in] path_p Path of the file to open.
+ * The path can be either absolute or relative. It's an absolute path
+ * if it starts with a forward slash ``/``, and relative
+ * otherwise. Relative paths are are relative to the current working
+ * directory, given by the thread environment variable ``CWD``.
+ *
+ * @param[out] self_p File object to be initialized.
+ * @param[in] path_p Path of the file to open. The path can be
+ *                   absolute or relative.
  * @param[in] flags Mode of file open. A combination of ``FS_READ``,
  *                  ``FS_RDONLY``, ``FS_WRITE``, ``FS_WRONLY``,
  *                  ``FS_RDWR``, ``FS_APPEND``, ``FS_SYNC``,
@@ -221,7 +227,7 @@ int fs_open(struct fs_file_t *self_p, const char *path_p, int flags);
 int fs_close(struct fs_file_t *self_p);
 
 /**
- * Read into given buffer from given file.
+ * Read from given file into given buffer.
  *
  * @param[in] self_p Initialized file object.
  * @param[out] dst_p Buffer to read data into.
@@ -232,10 +238,10 @@ int fs_close(struct fs_file_t *self_p);
 ssize_t fs_read(struct fs_file_t *self_p, void *dst_p, size_t size);
 
 /**
- * Read one line into given buffer from given file. The function reads
- *  one character at a time from given file until the destination
- *  buffer is full, a newline ``\n`` is found or end of file is
- *  reached.
+ * Read one line from given file into given buffer. The function reads
+ * one character at a time from given file until the destination
+ * buffer is full, a newline ``\n`` is found or end of file is
+ * reached.
  *
  * @param[in] self_p Initialized file object.
  * @param[out] dst_p Buffer to read data into. Should fit the whole
@@ -359,7 +365,9 @@ int fs_filesystem_init(struct fs_filesystem_t *self_p,
                        void *fs_p);
 
 /**
- * Register given file system.
+ * Register given file system. Use the functions `fs_open()`,
+ * `fs_read()`, `fs_write()`, `fs_close()`, `fs_seek()`, fs_tell() and
+ * `fs_read_line()` to access files in a registerd file system.
  *
  * @param[in] self_p File system to register.
  *
@@ -392,7 +400,8 @@ int fs_command_init(struct fs_command_t *self_p,
                     void *arg_p);
 
 /**
- * Register given command.
+ * Register given command. Registered commands are called by the
+ * function `fs_call()`.
  *
  * @param[in] command_p Command to register.
  *

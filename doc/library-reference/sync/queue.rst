@@ -17,11 +17,13 @@ queue. The reader thread reads from the queue to its destination
 buffer.
 
 .. image:: ../../images/queue.jpg
-   :width: 100%
+   :width: 90%
+   :align: center    
    :target: ../../_images/queue.jpg
 
 The data is either copied directly from the source to the destination
-buffer (1), or via the internal queue buffer (2).
+buffer (1. in the figure), or via the internal queue buffer (2. in the
+figure).
 
 1. The reader thread is waiting for data. The writer writes from its
    source buffer directly to the readers' destination buffer.
