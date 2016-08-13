@@ -48,6 +48,12 @@ static volatile struct thrd_scheduler_t scheduler = {
     .ready_p = NULL
 };
 
+#if CONFIG_THRD_ENV == 1
+
+static struct thrd_environment_variable_t main_variables[4];
+
+#endif
+
 /* Forward declarations for thrd_port. */
 static void scheduler_ready_push(struct thrd_t *thrd_p);
 
@@ -419,7 +425,9 @@ int thrd_module_init(void)
     main_thrd.cpu.usage = 0;
 
 #if CONFIG_THRD_ENV == 1
-    main_thrd.env.variables_p = NULL;
+    main_thrd.env.variables_p = main_variables;
+    main_thrd.env.number_of_variables = 0;
+    main_thrd.env.max_number_of_variables = membersof(main_variables);
 #endif
 
 #if CONFIG_ASSERT == 1
@@ -515,6 +523,8 @@ struct thrd_t *thrd_spawn(void *(*main)(void *),
 
 #if CONFIG_THRD_ENV == 1
     thrd_p->env.variables_p = NULL;
+    thrd_p->env.number_of_variables = 0;
+    thrd_p->env.max_number_of_variables = 0;
 #endif
 
 #if CONFIG_ASSERT == 1
