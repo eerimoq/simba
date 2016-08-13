@@ -8,8 +8,8 @@ Source code: :github-blob:`examples/filesystem/main.c`
 About
 -----
 
-Create the file ``fs/counter.txt`` and write ``0`` to it. Everytime
-the application is restarted the counter is incremented by one.
+Create the file ``counter.txt`` and write ``0`` to it. Everytime the
+application is restarted the counter is incremented by one.
 
 Source code
 -----------
@@ -30,11 +30,11 @@ The output in the terminal emulator:
 
 .. code-block:: text
 
-    Incrementing the counter in 'fs/counter.txt'.
+    Incrementing the counter in 'counter.txt'.
     Counter incremented to 1.
     <manually reset the board>
-    Incrementing the counter in 'fs/counter.txt'.
+    Incrementing the counter in 'counter.txt'.
     Counter incremented to 2.
     <manually reset the board>
-    Incrementing the counter in 'fs/counter.txt'.
+    Incrementing the counter in 'counter.txt'.
     Counter incremented to 3.

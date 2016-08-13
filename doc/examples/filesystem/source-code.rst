@@ -27,7 +27,7 @@
    #endif
    
    /**
-    * Increment the counter in 'fs/counter.txt'.
+    * Increment the counter in 'counter.txt'.
     */
    static int increment_counter(void)
    {
@@ -36,12 +36,12 @@
        long counter;
        size_t size;
        
-       std_printf(FSTR("Incrementing the counter in 'fs/counter.txt'.\r\n"));
+       std_printf(FSTR("Incrementing the counter in 'counter.txt'.\r\n"));
            
        if (fs_open(&file, "counter.txt", FS_RDWR) != 0) {
            /* Create the file if missing. */
            if (fs_open(&file,
-                       "fs/counter.txt",
+                       "counter.txt",
                        FS_CREAT | FS_TRUNC | FS_RDWR) != 0) {
                return (-1);
            }
