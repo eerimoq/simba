@@ -57,6 +57,23 @@ int std_module_init(void);
 ssize_t std_sprintf(char *dst_p, FAR const char *fmt_p, ...);
 
 /**
+ * Format and write data to given buffer.
+ *
+ * @param[out] dst_p Destination buffer. The formatted string is
+ *                   written to this buffer.
+ * @param[in] size Size of the destination buffer.
+ * @param[in] fmt_p Format string.
+ * @param[in] ... Variable arguments list.
+ *
+ * @return Length of the string written to the destination buffer, or
+ *         negative error code.
+ */
+ssize_t std_snprintf(char *dst_p,
+                     size_t size,
+                     FAR const char *fmt_p,
+                     ...);
+
+/**
  * Format and print data to standard output.
  *
  * See `std_sprintf()` for the the format string specification.

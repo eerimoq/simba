@@ -40,7 +40,7 @@ static void test_vfprintf_wrapper(chan_t *chan_p,
     va_end(ap);
 }
 
-int test_sprintf(struct harness_t *harness_p)
+static int test_sprintf(struct harness_t *harness_p)
 {
     char buf[128];
     ssize_t size;
@@ -83,14 +83,29 @@ int test_sprintf(struct harness_t *harness_p)
     return (0);
 }
 
-int test_vprintf(struct harness_t *harness_p)
+static int test_snprintf(struct harness_t *harness_p)
+{
+    char buf[128];
+
+    BTASSERT(std_snprintf(buf, sizeof(buf), FSTR("foo")) == 3);
+    BTASSERT(strcmp(buf, "foo") == 0);
+
+    /* Destination buffer too small. */
+    memset(buf, -1, sizeof(buf));
+    BTASSERT(std_snprintf(buf, 2, FSTR("foo")) == 3);
+    BTASSERT(memcmp(buf, "fo\xff", 3) == 0);
+
+    return (0);
+}
+
+static int test_vprintf(struct harness_t *harness_p)
 {
     test_vprintf_wrapper(FSTR("vprintf: %d\r\n"), 1);
 
     return (0);
 }
 
-int test_vfprintf(struct harness_t *harness_p)
+static int test_vfprintf(struct harness_t *harness_p)
 {
     test_vfprintf_wrapper(sys_get_stdout(),
                           FSTR("vprintf: %d\r\n"),
@@ -99,7 +114,7 @@ int test_vfprintf(struct harness_t *harness_p)
     return (0);
 }
 
-int test_sprintf_double(struct harness_t *harness_p)
+static int test_sprintf_double(struct harness_t *harness_p)
 {
     char buf[128];
     ssize_t size;
@@ -127,7 +142,7 @@ int test_sprintf_double(struct harness_t *harness_p)
     return (0);
 }
 
-int test_strtol(struct harness_t *harness_p)
+static int test_strtol(struct harness_t *harness_p)
 {
     long value;
     const char *next_p;
@@ -185,7 +200,7 @@ int test_strtol(struct harness_t *harness_p)
     return (0);
 }
 
-int test_strcpy(struct harness_t *harness_p)
+static int test_strcpy(struct harness_t *harness_p)
 {
     char buf[16];
     
@@ -201,7 +216,7 @@ int test_strcpy(struct harness_t *harness_p)
     return (0);
 }
 
-int test_strcmp(struct harness_t *harness_p)
+static int test_strcmp(struct harness_t *harness_p)
 {
     /* Far + local. */
     BTASSERT(std_strncmp(FSTR("foo"), "foo", 3) == 0);
@@ -218,7 +233,7 @@ int test_strcmp(struct harness_t *harness_p)
     return (0);
 }
 
-int test_strlen(struct harness_t *harness_p)
+static int test_strlen(struct harness_t *harness_p)
 {
     BTASSERT(std_strlen(FSTR("foo")) == 3);
     BTASSERT(std_strlen(FSTR("")) == 0);
@@ -226,7 +241,7 @@ int test_strlen(struct harness_t *harness_p)
     return (0);
 }
 
-int test_strip(struct harness_t *harness_p)
+static int test_strip(struct harness_t *harness_p)
 {
     char leading_whitespace[] = "\t hej";
     char trailing_whitespace[] = "hej \r\n";
@@ -266,6 +281,7 @@ int main()
     struct harness_t harness;
     struct harness_testcase_t harness_testcases[] = {
         { test_sprintf, "test_sprintf" },
+        { test_snprintf, "test_snprintf" },
         { test_vprintf, "test_vprintf" },
         { test_vfprintf, "test_vfprintf" },
         { test_strtol, "test_strtol" },
