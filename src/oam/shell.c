@@ -61,6 +61,10 @@ static int shell_command_compare(const char *line_p,
  */
 static int is_shell_command(const char *line_p)
 {
+    if (*line_p == '/') {
+        line_p++;
+    }
+    
     return (shell_command_compare(line_p, FSTR("logout"), 6)
             || shell_command_compare(line_p, FSTR("history"), 7)
             || shell_command_compare(line_p, FSTR("help"), 4));

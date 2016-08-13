@@ -698,6 +698,10 @@ static int test_history(struct harness_t *harness_p)
     chan_write(&qin, "history\n", 8);
     chout_read_until_prompt(buf);
 
+    /* Print the history. */
+    chan_write(&qin, "/history\n", 9);
+    chout_read_until_prompt(buf);
+
     std_printf(FSTR("\r\n"));
 
     return (0);
@@ -706,6 +710,14 @@ static int test_history(struct harness_t *harness_p)
 static int test_history_up_down(struct harness_t *harness_p)
 {
     char buf[BUFFER_SIZE];
+
+    /* Clear the history. */
+    chan_write(&qin, "history -c\n", 11);
+    chout_read_until_prompt(buf);
+
+    /* Print the history. */
+    chan_write(&qin, "history\n", 8);
+    chout_read_until_prompt(buf);
 
     /* Go to the previous command. */
     chan_write(&qin, "\x1b[A", 3);

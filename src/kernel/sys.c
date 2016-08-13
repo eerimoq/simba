@@ -361,6 +361,23 @@ static int cmd_info_cb(int argc,
                        void *call_arg_p)
 {
     std_fprintf(out_p, sysinfo);
+
+    return (0);
+}
+
+#endif
+
+#if CONFIG_FS_CMD_SYS_CONFIG == 1
+
+static struct fs_command_t cmd_config;
+
+static int cmd_config_cb(int argc,
+                         const char *argv[],
+                         chan_t *out_p,
+                         chan_t *in_p,
+                         void *arg_p,
+                         void *call_arg_p)
+{
     std_fprintf(out_p, config);
 
     return (0);
@@ -402,6 +419,16 @@ int sys_module_init(void)
                     cmd_info_cb,
                     NULL);
     fs_command_register(&cmd_info);
+
+#endif
+
+#if CONFIG_FS_CMD_SYS_CONFIG == 1
+
+    fs_command_init(&cmd_config,
+                    FSTR("/kernel/sys/config"),
+                    cmd_config_cb,
+                    NULL);
+    fs_command_register(&cmd_config);
 
 #endif
 
