@@ -53,7 +53,7 @@ BOARDS = {
             "FAMILY_SAM", 
             "MCU_SAM3X8E", 
             "BOARD_ARDUINO_DUE", 
-            "VERSION=6.0.0", 
+            "VERSION=master", 
             "F_CPU=84000000UL"
         ], 
         "cflags": [
@@ -87,7 +87,7 @@ BOARDS = {
             "-Wl,--cref", 
             "-Tscript.ld", 
             "-mthumb", 
-            "-Wl,-Map=build/arduino_due/sys_suite.map", 
+            "-Wl,-Map=build/arduino_due/default_configuration.map", 
             "-Wl,--gc-sections"
         ], 
         "libpath": [
@@ -193,7 +193,7 @@ BOARDS = {
             "FAMILY_AVR", 
             "MCU_ATMEGA2560", 
             "BOARD_ARDUINO_MEGA", 
-            "VERSION=6.0.0", 
+            "VERSION=master", 
             "F_CPU=16000000UL", 
             "__DELAY_BACKWARD_COMPATIBLE__"
         ], 
@@ -226,7 +226,7 @@ BOARDS = {
             "-mmcu=atmega2560", 
             "-Wl,--cref", 
             "-Wl,--defsym=__main_stack_end=0x802200", 
-            "-Wl,-Map=build/arduino_mega/sys_suite.map", 
+            "-Wl,-Map=build/arduino_mega/default_configuration.map", 
             "-Wl,--gc-sections"
         ], 
         "libpath": [], 
@@ -329,7 +329,7 @@ BOARDS = {
             "FAMILY_AVR", 
             "MCU_ATMEGA328P", 
             "BOARD_ARDUINO_NANO", 
-            "VERSION=6.0.0", 
+            "VERSION=master", 
             "F_CPU=16000000UL", 
             "__DELAY_BACKWARD_COMPATIBLE__"
         ], 
@@ -362,7 +362,7 @@ BOARDS = {
             "-mmcu=atmega328p", 
             "-Wl,--cref", 
             "-Wl,--defsym=__main_stack_end=0x800900", 
-            "-Wl,-Map=build/arduino_nano/sys_suite.map", 
+            "-Wl,-Map=build/arduino_nano/default_configuration.map", 
             "-Wl,--gc-sections"
         ], 
         "libpath": [], 
@@ -465,7 +465,7 @@ BOARDS = {
             "FAMILY_AVR", 
             "MCU_ATMEGA32U4", 
             "BOARD_ARDUINO_PRO_MICRO", 
-            "VERSION=6.0.0", 
+            "VERSION=master", 
             "F_CPU=16000000UL", 
             "__DELAY_BACKWARD_COMPATIBLE__"
         ], 
@@ -498,7 +498,7 @@ BOARDS = {
             "-mmcu=atmega32u4", 
             "-Wl,--cref", 
             "-Wl,--defsym=__main_stack_end=0x800900", 
-            "-Wl,-Map=build/arduino_pro_micro/sys_suite.map", 
+            "-Wl,-Map=build/arduino_pro_micro/default_configuration.map", 
             "-Wl,--gc-sections"
         ], 
         "libpath": [], 
@@ -605,7 +605,7 @@ BOARDS = {
             "FAMILY_AVR", 
             "MCU_ATMEGA328P", 
             "BOARD_ARDUINO_UNO", 
-            "VERSION=6.0.0", 
+            "VERSION=master", 
             "F_CPU=16000000UL", 
             "__DELAY_BACKWARD_COMPATIBLE__"
         ], 
@@ -638,7 +638,7 @@ BOARDS = {
             "-mmcu=atmega328p", 
             "-Wl,--cref", 
             "-Wl,--defsym=__main_stack_end=0x800900", 
-            "-Wl,-Map=build/arduino_uno/sys_suite.map", 
+            "-Wl,-Map=build/arduino_uno/default_configuration.map", 
             "-Wl,--gc-sections"
         ], 
         "libpath": [], 
@@ -741,7 +741,7 @@ BOARDS = {
             "FAMILY_LINUX", 
             "MCU_LINUX", 
             "BOARD_CYGWIN", 
-            "VERSION=6.0.0"
+            "VERSION=master"
         ], 
         "cflags": [
             "-Werror", 
@@ -775,7 +775,7 @@ BOARDS = {
             "-ftest-coverage", 
             "-lgcov", 
             "-g", 
-            "-Wl,-Map=build/cygwin/sys_suite.map", 
+            "-Wl,-Map=build/cygwin/default_configuration.map", 
             "-Wl,--gc-sections"
         ], 
         "libpath": [], 
@@ -844,7 +844,7 @@ BOARDS = {
             "FAMILY_ESP", 
             "MCU_ESP8266", 
             "BOARD_ESP01", 
-            "VERSION=6.0.0", 
+            "VERSION=master", 
             "F_CPU=80000000UL", 
             "ICACHE_FLASH", 
             "__STRICT_ANSI__", 
@@ -902,7 +902,7 @@ BOARDS = {
             "-Wl,-EL", 
             "-mtext-section-literals", 
             "-Wl,--gc-sections", 
-            "-Wl,-Map=build/esp01/sys_suite.map", 
+            "-Wl,-Map=build/esp01/default_configuration.map", 
             "-Wl,--gc-sections"
         ], 
         "libpath": [
@@ -973,7 +973,7 @@ BOARDS = {
             "FAMILY_ESP", 
             "MCU_ESP8266", 
             "BOARD_ESP12E", 
-            "VERSION=6.0.0", 
+            "VERSION=master", 
             "F_CPU=80000000UL", 
             "ICACHE_FLASH", 
             "__STRICT_ANSI__", 
@@ -1031,7 +1031,7 @@ BOARDS = {
             "-Wl,-EL", 
             "-mtext-section-literals", 
             "-Wl,--gc-sections", 
-            "-Wl,-Map=build/esp12e/sys_suite.map", 
+            "-Wl,-Map=build/esp12e/default_configuration.map", 
             "-Wl,--gc-sections"
         ], 
         "libpath": [
@@ -1102,7 +1102,7 @@ BOARDS = {
             "FAMILY_LINUX", 
             "MCU_LINUX", 
             "BOARD_LINUX", 
-            "VERSION=6.0.0"
+            "VERSION=master"
         ], 
         "cflags": [
             "-Werror", 
@@ -1136,7 +1136,7 @@ BOARDS = {
             "-ftest-coverage", 
             "-lgcov", 
             "-g", 
-            "-Wl,-Map=build/linux/sys_suite.map", 
+            "-Wl,-Map=build/linux/default_configuration.map", 
             "-Wl,--gc-sections"
         ], 
         "libpath": [], 
@@ -1205,7 +1205,7 @@ BOARDS = {
             "FAMILY_STM32F2", 
             "MCU_STM32F205RG", 
             "BOARD_PHOTON", 
-            "VERSION=6.0.0", 
+            "VERSION=master", 
             "F_CPU=120000000UL"
         ], 
         "cflags": [
@@ -1242,7 +1242,7 @@ BOARDS = {
             "-Wl,--cref", 
             "-Tscript.ld", 
             "-mthumb", 
-            "-Wl,-Map=build/photon/sys_suite.map", 
+            "-Wl,-Map=build/photon/default_configuration.map", 
             "-Wl,--gc-sections"
         ], 
         "libpath": [
@@ -1346,7 +1346,7 @@ BOARDS = {
             "FAMILY_STM32F3", 
             "MCU_STM32F303VC", 
             "BOARD_STM32F3DISCOVERY", 
-            "VERSION=6.0.0", 
+            "VERSION=master", 
             "F_CPU=72000000UL"
         ], 
         "cflags": [
@@ -1380,7 +1380,7 @@ BOARDS = {
             "-Wl,--cref", 
             "-Tscript.ld", 
             "-mthumb", 
-            "-Wl,-Map=build/stm32f3discovery/sys_suite.map", 
+            "-Wl,-Map=build/stm32f3discovery/default_configuration.map", 
             "-Wl,--gc-sections"
         ], 
         "libpath": [
@@ -1474,7 +1474,7 @@ BOARDS = {
             "FAMILY_STM32F1", 
             "MCU_STM32F100RB", 
             "BOARD_STM32VLDISCOVERY", 
-            "VERSION=6.0.0", 
+            "VERSION=master", 
             "F_CPU=24000000UL"
         ], 
         "cflags": [
@@ -1508,7 +1508,7 @@ BOARDS = {
             "-Wl,--cref", 
             "-Tscript.ld", 
             "-mthumb", 
-            "-Wl,-Map=build/stm32vldiscovery/sys_suite.map", 
+            "-Wl,-Map=build/stm32vldiscovery/default_configuration.map", 
             "-Wl,--gc-sections"
         ], 
         "libpath": [

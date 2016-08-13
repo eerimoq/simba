@@ -30,17 +30,18 @@ def get_mcus():
 
 def get_make_variable(board, variable):
     """Get the value of given make variable.
+
     """
 
     return subprocess.check_output(["make",
                                     "-s",
                                     "BOARD=" + board,
                                     "print-" + variable],
-                                   cwd="tst/kernel/sys")
+                                   cwd="examples/default-configuration")
 
 
 def get_default_configuration(board):
-    """Get the default configratuion for given board.
+    """Get the default configuration for given board.
 
     """
 
@@ -48,7 +49,7 @@ def get_default_configuration(board):
                                     "-s",
                                     "BOARD=" + board,
                                     "default-configuration"],
-                                   cwd="tst/kernel/sys")
+                                   cwd="examples/default-configuration")
 
 
 def main():
