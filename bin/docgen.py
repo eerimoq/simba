@@ -207,7 +207,8 @@ def examples_generate(_):
         "shell",
         "http_client",
         "filesystem",
-        "queue"
+        "queue",
+        "timer"
     ]
 
     for example in examples:

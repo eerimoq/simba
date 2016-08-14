@@ -37,6 +37,7 @@ EXAMPLES = \
 	spi \
 	synthesizer \
 	temp \
+	timer \
 	usb
 
 all: $(EXAMPLES:%=%.all)
