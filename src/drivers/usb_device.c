@@ -20,13 +20,19 @@
 
 #include "simba.h"
 
+struct module_t {
+    int initialized;
+    struct usb_device_driver_t *driver_p;
+#if CONFIG_FS_CMD_USB_DEVICE_LIST == 1
+    struct fs_command_t cmd_list;
+#endif
+};
+
 #include "usb_device_port.i"
 
-static struct usb_device_driver_t *driver_p = NULL;
+static struct module_t module;
 
 #if CONFIG_FS_CMD_USB_DEVICE_LIST == 1
-
-static struct fs_command_t cmd_list;
 
 static int cmd_list_cb(int argc,
                        const char *argv[],
@@ -37,13 +43,13 @@ static int cmd_list_cb(int argc,
 {
     int i;
 
-    if (driver_p == NULL) {
+    if (module.driver_p == NULL) {
         return (0);
     }
 
-    for (i = 0; i < driver_p->drivers_max; i++) {
-        driver_p->drivers_pp[i]->print(driver_p->drivers_pp[i],
-                                       out_p);
+    for (i = 0; i < module.driver_p->drivers_max; i++) {
+        module.driver_p->drivers_pp[i]->print(module.driver_p->drivers_pp[i],
+                                              out_p);
     }
 
     return (0);
@@ -53,6 +59,13 @@ static int cmd_list_cb(int argc,
 
 int usb_device_module_init(void)
 {
+    /* Return immediately if the module is already initialized. */
+    if (module.initialized == 1) {
+        return (0);
+    }
+
+    module.initialized = 1;
+
 #if CONFIG_FS_CMD_USB_DEVICE_LIST == 1
 
     fs_command_init(&cmd_list,
@@ -91,7 +104,7 @@ int usb_device_start(struct usb_device_driver_t *self_p)
 {
     ASSERTN(self_p != NULL, INVAL);
 
-    driver_p = self_p;
+    module.driver_p = self_p;
 
     return (usb_device_port_start(self_p));
 }

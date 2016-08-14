@@ -33,9 +33,28 @@ enum thrd_state_t {
 #define THRD_STACK_LOW_MAGIC      0x1337
 #define THRD_FILL_PATTERN           0x19
 
-struct thrd_scheduler_t {
-    struct thrd_t *current_p;
-    struct thrd_t *ready_p;
+struct module_t {
+    int initialized;
+    struct {
+        struct thrd_t *current_p;
+        struct thrd_t *ready_p;
+    } scheduler;
+#if CONFIG_THRD_ENV == 1
+    struct {
+        struct thrd_environment_variable_t main_variables[4];
+        struct sem_t sem;
+    } env;
+#endif
+#if CONFIG_FS_CMD_THRD_LIST == 1
+    struct fs_command_t cmd_list;
+#endif
+#if CONFIG_FS_CMD_THRD_SET_LOG_MASK == 1
+    struct fs_command_t cmd_set_log_mask;
+#endif
+#if CONFIG_MONITOR_THREAD == 1
+    struct fs_command_t cmd_monitor_set_period_ms;
+    struct fs_command_t cmd_monitor_set_print;
+#endif
 };
 
 struct get_by_name_t {
@@ -43,22 +62,17 @@ struct get_by_name_t {
     struct thrd_t *thrd_p;
 };
 
-static volatile struct thrd_scheduler_t scheduler = {
-    .current_p = NULL,
-    .ready_p = NULL
-};
+
+static struct module_t module;
 
 #if CONFIG_THRD_ENV == 1
-
-static struct thrd_environment_variable_t main_variables[4];
-static struct sem_t env_sem;
 
 static int init_env(struct thrd_environment_variable_t *variables_p,
                     int length)
 {
-    scheduler.current_p->env.variables_p = variables_p;
-    scheduler.current_p->env.number_of_variables = 0;
-    scheduler.current_p->env.max_number_of_variables = length;
+    module.scheduler.current_p->env.variables_p = variables_p;
+    module.scheduler.current_p->env.number_of_variables = 0;
+    module.scheduler.current_p->env.max_number_of_variables = length;
 
     return (0);
 }
@@ -69,7 +83,7 @@ static int set_env(const char *name_p, const char *value_p)
     struct thrd_environment_t *env_p;
     struct thrd_environment_variable_t *variable_p;
 
-    env_p = &scheduler.current_p->env;
+    env_p = &module.scheduler.current_p->env;
     variable_p = &env_p->variables_p[0];
 
     /* Does the variable already exist in the list? */
@@ -110,7 +124,7 @@ static const char *get_env(const char *name_p)
     struct thrd_environment_variable_t *variable_p;
     struct thrd_t *thrd_p;
 
-    thrd_p = scheduler.current_p;
+    thrd_p = module.scheduler.current_p;
 
     while (thrd_p != NULL) {
         env_p = &thrd_p->env;
@@ -184,7 +198,7 @@ static void scheduler_ready_push(struct thrd_t *thrd_p)
     struct thrd_t *ready_p;
 
     /* Add in prio order, with highest prio first. */
-    ready_p = scheduler.ready_p;
+    ready_p = module.scheduler.ready_p;
 
     while (ready_p != NULL) {
         if (thrd_p->prio < ready_p->prio) {
@@ -192,7 +206,7 @@ static void scheduler_ready_push(struct thrd_t *thrd_p)
             if (ready_p->prev_p != NULL) {
                 ready_p->prev_p->next_p = thrd_p;
             } else {
-                scheduler.ready_p = thrd_p;
+                module.scheduler.ready_p = thrd_p;
             }
 
             thrd_p->prev_p = ready_p->prev_p;
@@ -213,7 +227,7 @@ static void scheduler_ready_push(struct thrd_t *thrd_p)
     }
 
     /* Empty list. */
-    scheduler.ready_p = thrd_p;
+    module.scheduler.ready_p = thrd_p;
     thrd_p->prev_p = NULL;
     thrd_p->next_p = NULL;
 }
@@ -225,11 +239,11 @@ static struct thrd_t *scheduler_ready_pop(void)
 {
     struct thrd_t *thrd_p;
 
-    thrd_p = scheduler.ready_p;
-    scheduler.ready_p = thrd_p->next_p;
+    thrd_p = module.scheduler.ready_p;
+    module.scheduler.ready_p = thrd_p->next_p;
 
-    if (scheduler.ready_p != NULL) {
-        scheduler.ready_p->prev_p = NULL;
+    if (module.scheduler.ready_p != NULL) {
+        module.scheduler.ready_p->prev_p = NULL;
     }
 
     thrd_p->prev_p = NULL;
@@ -259,7 +273,7 @@ static void thrd_reschedule(void)
     in_p->state = THRD_STATE_CURRENT;
 
     if (in_p != out_p) {
-        scheduler.current_p = in_p;
+        module.scheduler.current_p = in_p;
         thrd_port_cpu_usage_stop(out_p);
         thrd_port_swap(in_p, out_p);
         thrd_port_cpu_usage_start(out_p);
@@ -362,8 +376,6 @@ static char *state_fmt[] = {
     "terminated"
 };
 
-static struct fs_command_t cmd_list;
-
 static int cmd_list_thrd_print(chan_t *chout_p,
                                struct thrd_t *thrd_p)
 {
@@ -407,8 +419,6 @@ static int cmd_list_cb(int argc,
 #endif
 
 #if CONFIG_FS_CMD_THRD_SET_LOG_MASK == 1
-
-static struct fs_command_t cmd_set_log_mask;
 
 static int get_by_name(void *arg_p,
                        struct thrd_t *thrd_p)
@@ -486,6 +496,13 @@ static void *idle_thrd(void *arg_p)
 
 int thrd_module_init(void)
 {
+    /* Return immediately if the module is already initialized. */
+    if (module.initialized == 1) {
+        return (0);
+    }
+
+    module.initialized = 1;
+
 #if CONFIG_PROFILE_STACK == 1
     char dummy = 0;
 #endif
@@ -504,10 +521,10 @@ int thrd_module_init(void)
     main_thrd.cpu.usage = 0;
 
 #if CONFIG_THRD_ENV == 1
-    main_thrd.env.variables_p = main_variables;
+    main_thrd.env.variables_p = module.env.main_variables;
     main_thrd.env.number_of_variables = 0;
-    main_thrd.env.max_number_of_variables = membersof(main_variables);
-    sem_init(&env_sem, 0, 1);
+    main_thrd.env.max_number_of_variables = membersof(module.env.main_variables);
+    sem_init(&module.env.sem, 0, 1);
 #endif
 
 #if CONFIG_ASSERT == 1
@@ -521,7 +538,7 @@ int thrd_module_init(void)
 #endif
 
     thrd_port_init_main(&main_thrd.port);
-    scheduler.current_p = &main_thrd;
+    module.scheduler.current_p = &main_thrd;
 
     thrd_spawn(idle_thrd, NULL, 127, idle_thrd_stack, sizeof(idle_thrd_stack));
 
@@ -537,37 +554,37 @@ int thrd_module_init(void)
 
 #if CONFIG_FS_CMD_THRD_LIST == 1
 
-    fs_command_init(&cmd_list,
+    fs_command_init(&module.cmd_list,
                     FSTR("/kernel/thrd/list"),
                     cmd_list_cb,
                     NULL);
-    fs_command_register(&cmd_list);
+    fs_command_register(&module.cmd_list);
 
 #endif
 
 #if CONFIG_FS_CMD_THRD_SET_LOG_MASK == 1
 
-    fs_command_init(&cmd_set_log_mask,
+    fs_command_init(&module.cmd_set_log_mask,
                     FSTR("/kernel/thrd/set_log_mask"),
                     cmd_set_log_mask_cb,
                     NULL);
-    fs_command_register(&cmd_set_log_mask);
+    fs_command_register(&module.cmd_set_log_mask);
 
 #endif
 
 #if CONFIG_MONITOR_THREAD == 1
 
-    fs_command_init(&cmd_monitor_set_period_ms,
+    fs_command_init(&module.cmd_monitor_set_period_ms,
                     FSTR("/kernel/thrd/monitor/set_period_ms"),
                     cmd_monitor_set_period_ms_cb,
                     NULL);
-    fs_command_register(&cmd_monitor_set_period_ms);
+    fs_command_register(&module.cmd_monitor_set_period_ms);
 
-    fs_command_init(&cmd_monitor_set_print,
+    fs_command_init(&module.cmd_monitor_set_print,
                     FSTR("/kernel/thrd/monitor/set_print"),
                     cmd_monitor_set_print_cb,
                     NULL);
-    fs_command_register(&cmd_monitor_set_print);
+    fs_command_register(&module.cmd_monitor_set_print);
 
 #endif
 
@@ -696,7 +713,7 @@ int thrd_sleep_us(long microseconds)
 
 struct thrd_t *thrd_self(void)
 {
-    return (scheduler.current_p);
+    return (module.scheduler.current_p);
 }
 
 int thrd_set_name(const char *name_p)
@@ -725,7 +742,7 @@ int thrd_set_log_mask(struct thrd_t *thrd_p, int mask)
 
 int thrd_get_log_mask(void)
 {
-    return (scheduler.current_p->log_mask);
+    return (module.scheduler.current_p->log_mask);
 }
 
 int thrd_init_env(struct thrd_environment_variable_t *variables_p,
@@ -735,9 +752,9 @@ int thrd_init_env(struct thrd_environment_variable_t *variables_p,
 
     int res;
 
-    sem_take(&env_sem, NULL);
+    sem_take(&module.env.sem, NULL);
     res = init_env(variables_p, length);
-    sem_give(&env_sem, 1);
+    sem_give(&module.env.sem, 1);
 
     return (res);
 
@@ -756,9 +773,9 @@ int thrd_set_env(const char *name_p, const char *value_p)
 
     int res;
 
-    sem_take(&env_sem, NULL);
+    sem_take(&module.env.sem, NULL);
     res = set_env(name_p, value_p);
-    sem_give(&env_sem, 1);
+    sem_give(&module.env.sem, 1);
 
     return (res);
 
@@ -777,9 +794,9 @@ const char *thrd_get_env(const char *name_p)
 
     const char *value_p;
 
-    sem_take(&env_sem, NULL);
+    sem_take(&module.env.sem, NULL);
     value_p = get_env(name_p);
-    sem_give(&env_sem, 1);
+    sem_give(&module.env.sem, 1);
     
     return (value_p);
 
@@ -859,8 +876,8 @@ int thrd_resume_isr(struct thrd_t *thrd_p, int err)
 
 int thrd_yield_isr(void)
 {
-    scheduler.current_p->state = THRD_STATE_READY;
-    scheduler_ready_push(scheduler.current_p);
+    module.scheduler.current_p->state = THRD_STATE_READY;
+    scheduler_ready_push(module.scheduler.current_p);
     thrd_reschedule();
 
     return (0);

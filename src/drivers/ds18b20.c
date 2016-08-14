@@ -40,11 +40,17 @@ struct ds18b20_scratchpad_t {
     uint8_t crc;
 };
 
-static struct ds18b20_driver_t *list_p = NULL;
+struct module_t {
+    int initialized;
+    struct ds18b20_driver_t *list_p;
+#if CONFIG_FS_CMD_DS18B20_LIST == 1
+    struct fs_command_t cmd_list;
+#endif
+};
+
+static struct module_t module;
 
 #if CONFIG_FS_CMD_DS18B20_LIST == 1
-
-static struct fs_command_t cmd_list;
 
 static int cmd_list_cb(int argc,
                        const char *argv[],
@@ -60,7 +66,7 @@ static int cmd_list_cb(int argc,
 
     std_fprintf(chout_p, FSTR("              ID      TEMP\r\n"));
 
-    self_p = list_p;
+    self_p = module.list_p;
 
     while (self_p != NULL) {
         owi_search(self_p->owi_p);
@@ -119,13 +125,20 @@ static int ds18b20_read_scratchpad(struct ds18b20_driver_t *self_p,
 
 int ds18b20_module_init()
 {
+    /* Return immediately if the module is already initialized. */
+    if (module.initialized == 1) {
+        return (0);
+    }
+
+    module.initialized = 1;
+
 #if CONFIG_FS_CMD_DS18B20_LIST == 1
 
-    fs_command_init(&cmd_list,
+    fs_command_init(&module.cmd_list,
                     FSTR("/drivers/ds18b20/list"),
                     cmd_list_cb,
                     NULL);
-    fs_command_register(&cmd_list);
+    fs_command_register(&module.cmd_list);
 
 #endif
 
@@ -139,8 +152,8 @@ int ds18b20_init(struct ds18b20_driver_t *self_p,
     ASSERTN(owi_p != NULL, EINVAL);
 
     self_p->owi_p = owi_p;
-    self_p->next_p = list_p;
-    list_p = self_p;
+    self_p->next_p = module.list_p;
+    module.list_p = self_p;
 
     return (0);
 }

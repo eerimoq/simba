@@ -27,9 +27,6 @@ struct monitor_t {
     int print;
 };
 
-static struct fs_command_t cmd_monitor_set_period_ms;
-static struct fs_command_t cmd_monitor_set_print;
-
 static struct monitor_t monitor = {
     .period_us = 2000000,
     .print = 0

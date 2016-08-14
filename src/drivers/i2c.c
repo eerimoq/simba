@@ -20,11 +20,21 @@
 
 #include "simba.h"
 
+struct module_t {
+    int initialized;
+#if CONFIG_FS_CMD_I2C_READ == 1
+    struct fs_command_t cmd_read;
+#endif
+#if CONFIG_FS_CMD_I2C_WRITE == 1
+    struct fs_command_t cmd_write;
+#endif
+};
+
 #include "i2c_port.i"
 
-#if CONFIG_FS_CMD_I2C_READ == 1
+static struct module_t module;
 
-static struct fs_command_t cmd_read;
+#if CONFIG_FS_CMD_I2C_READ == 1
 
 static int cmd_read_cb(int argc,
                        const char *argv[],
@@ -72,8 +82,6 @@ static int cmd_read_cb(int argc,
 #endif
 
 #if CONFIG_FS_CMD_I2C_WRITE == 1
-
-static struct fs_command_t cmd_write;
 
 static int cmd_write_cb(int argc,
                         const char *argv[],
@@ -135,23 +143,30 @@ static int cmd_write_cb(int argc,
 
 int i2c_module_init()
 {
+    /* Return immediately if the module is already initialized. */
+    if (module.initialized == 1) {
+        return (0);
+    }
+
+    module.initialized = 1;
+
 #if CONFIG_FS_CMD_I2C_READ == 1
 
-    fs_command_init(&cmd_read,
+    fs_command_init(&module.cmd_read,
                     FSTR("/drivers/i2c/read"),
                     cmd_read_cb,
                     NULL);
-    fs_command_register(&cmd_read);
+    fs_command_register(&module.cmd_read);
 
 #endif
 
 #if CONFIG_FS_CMD_I2C_WRITE == 1
 
-    fs_command_init(&cmd_write,
+    fs_command_init(&module.cmd_write,
                     FSTR("/drivers/i2c/write"),
                     cmd_write_cb,
                     NULL);
-    fs_command_register(&cmd_write);
+    fs_command_register(&module.cmd_write);
 
 #endif
 

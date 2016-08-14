@@ -21,10 +21,20 @@
 #include "simba.h"
 #include <stdarg.h>
 
-struct state_t {
+struct module_t {
+    int initialized;
     struct log_handler_t handler;
     struct log_object_t object;
     struct sem_t sem;
+#if CONFIG_FS_CMD_LOG_PRINT == 1
+    struct fs_command_t cmd_print;
+#endif
+#if CONFIG_FS_CMD_LOG_LIST == 1
+    struct fs_command_t cmd_list;
+#endif
+#if CONFIG_FS_CMD_LOG_SET_LOG_MASK == 1
+    struct fs_command_t cmd_set_log_mask;
+#endif
 };
 
 static FAR const char level_fatal[] = "fatal";
@@ -43,11 +53,9 @@ static const char FAR *level_as_string[] = {
 };
 
 /* The module state. */
-static struct state_t state;
+static struct module_t module;
 
 #if CONFIG_FS_CMD_LOG_PRINT == 1
-
-static struct fs_command_t cmd_print;
 
 /**
  * The shell command callback for "/kernel/log/print".
@@ -66,7 +74,7 @@ static int cmd_print_cb(int argc,
     }
 
     /* Write the argument to the log. */
-    log_object_print(&state.object, LOG_INFO, FSTR("%s\r\n"), argv[1]);
+    log_object_print(&module.object, LOG_INFO, FSTR("%s\r\n"), argv[1]);
 
     return (0);
 }
@@ -74,8 +82,6 @@ static int cmd_print_cb(int argc,
 #endif
 
 #if CONFIG_FS_CMD_LOG_LIST == 1
-
-static struct fs_command_t cmd_list;
 
 /**
  * The shell command callback for "/kernel/log/print".
@@ -95,11 +101,11 @@ static int cmd_list_cb(int argc,
         return (-EINVAL);
     }
 
-    sem_take(&state.sem, NULL);
+    sem_take(&module.sem, NULL);
 
     std_fprintf(out_p, FSTR("OBJECT-NAME       MASK\r\n"));
 
-    object_p = &state.object;
+    object_p = &module.object;
 
     while (object_p != NULL) {
         std_fprintf(out_p,
@@ -110,7 +116,7 @@ static int cmd_list_cb(int argc,
         object_p = object_p->next_p;
     }
 
-    sem_give(&state.sem, 1);
+    sem_give(&module.sem, 1);
 
     return (0);
 }
@@ -118,8 +124,6 @@ static int cmd_list_cb(int argc,
 #endif
 
 #if CONFIG_FS_CMD_LOG_SET_LOG_MASK == 1
-
-static struct fs_command_t cmd_set_log_mask;
 
 /**
  * The shell command callback for "/kernel/log/set_log_mask".
@@ -151,9 +155,9 @@ static int cmd_set_log_mask_cb(int argc,
     name_p = argv[1];
     found = 0;
 
-    sem_take(&state.sem, NULL);
+    sem_take(&module.sem, NULL);
 
-    object_p = &state.object;
+    object_p = &module.object;
 
     while (object_p != NULL) {
         if (strcmp(object_p->name_p, name_p) == 0) {
@@ -166,7 +170,7 @@ static int cmd_set_log_mask_cb(int argc,
         object_p = object_p->next_p;
     }
 
-    sem_give(&state.sem, 1);
+    sem_give(&module.sem, 1);
 
     if (found == 0) {
         std_fprintf(out_p,
@@ -183,43 +187,50 @@ static int cmd_set_log_mask_cb(int argc,
 
 int log_module_init()
 {
-    sem_init(&state.sem, 0, 1);
+    /* Return immediately if the module is already initialized. */
+    if (module.initialized == 1) {
+        return (0);
+    }
 
-    state.handler.chout_p = sys_get_stdout();
-    state.handler.next_p = NULL;
+    module.initialized = 1;
 
-    state.object.name_p = "log";
-    state.object.mask = LOG_UPTO(INFO);
-    state.object.next_p = NULL;
+    sem_init(&module.sem, 0, 1);
+
+    module.handler.chout_p = sys_get_stdout();
+    module.handler.next_p = NULL;
+
+    module.object.name_p = "log";
+    module.object.mask = LOG_UPTO(INFO);
+    module.object.next_p = NULL;
 
 #if CONFIG_FS_CMD_LOG_PRINT == 1
 
     /* Setup shell commands. */
-    fs_command_init(&cmd_print,
+    fs_command_init(&module.cmd_print,
                     FSTR("/kernel/log/print"),
                     cmd_print_cb,
                     NULL);
-    fs_command_register(&cmd_print);
+    fs_command_register(&module.cmd_print);
 
 #endif
 
 #if CONFIG_FS_CMD_LOG_LIST == 1
 
-    fs_command_init(&cmd_list,
+    fs_command_init(&module.cmd_list,
                     FSTR("/kernel/log/list"),
                     cmd_list_cb,
                     NULL);
-    fs_command_register(&cmd_list);
+    fs_command_register(&module.cmd_list);
 
 #endif
 
 #if CONFIG_FS_CMD_LOG_SET_LOG_MASK == 1
 
-    fs_command_init(&cmd_set_log_mask,
+    fs_command_init(&module.cmd_set_log_mask,
                     FSTR("/kernel/log/set_log_mask"),
                     cmd_set_log_mask_cb,
                     NULL);
-    fs_command_register(&cmd_set_log_mask);
+    fs_command_register(&module.cmd_set_log_mask);
 
 #endif
 
@@ -230,12 +241,12 @@ int log_add_handler(struct log_handler_t *handler_p)
 {
     ASSERTN(handler_p != NULL, EINVAL);
 
-    sem_take(&state.sem, NULL);
+    sem_take(&module.sem, NULL);
 
-    handler_p->next_p = state.handler.next_p;
-    state.handler.next_p = handler_p;
+    handler_p->next_p = module.handler.next_p;
+    module.handler.next_p = handler_p;
 
-    sem_give(&state.sem, 1);
+    sem_give(&module.sem, 1);
 
     return (0);
 }
@@ -246,10 +257,10 @@ int log_remove_handler(struct log_handler_t *handler_p)
 
     struct log_handler_t *curr_p, *prev_p;
 
-    sem_take(&state.sem, NULL);
+    sem_take(&module.sem, NULL);
 
-    curr_p = state.handler.next_p;
-    prev_p = &state.handler;
+    curr_p = module.handler.next_p;
+    prev_p = &module.handler;
 
     while (curr_p != NULL) {
         if (curr_p == handler_p) {
@@ -258,13 +269,13 @@ int log_remove_handler(struct log_handler_t *handler_p)
             }
 
             curr_p->next_p = NULL;
-            sem_give(&state.sem, 1);
+            sem_give(&module.sem, 1);
 
             return (0);
         }
     }
 
-    sem_give(&state.sem, 1);
+    sem_give(&module.sem, 1);
 
     return (1);
 }
@@ -273,12 +284,12 @@ int log_add_object(struct log_object_t *object_p)
 {
     ASSERTN(object_p != NULL, EINVAL);
 
-    sem_take(&state.sem, NULL);
+    sem_take(&module.sem, NULL);
 
-    object_p->next_p = state.object.next_p;
-    state.object.next_p = object_p;
+    object_p->next_p = module.object.next_p;
+    module.object.next_p = object_p;
 
-    sem_give(&state.sem, 1);
+    sem_give(&module.sem, 1);
 
     return (0);
 }
@@ -289,10 +300,10 @@ int log_remove_object(struct log_object_t *object_p)
 
     struct log_object_t *curr_p, *prev_p;
 
-    sem_take(&state.sem, NULL);
+    sem_take(&module.sem, NULL);
 
-    curr_p = state.object.next_p;
-    prev_p = &state.object;
+    curr_p = module.object.next_p;
+    prev_p = &module.object;
 
     while (curr_p != NULL) {
         if (curr_p == object_p) {
@@ -301,20 +312,20 @@ int log_remove_object(struct log_object_t *object_p)
             }
 
             curr_p->next_p = NULL;
-            sem_give(&state.sem, 1);
+            sem_give(&module.sem, 1);
 
             return (0);
         }
     }
 
-    sem_give(&state.sem, 1);
+    sem_give(&module.sem, 1);
 
     return (1);
 }
 
 int log_set_default_handler_output_channel(chan_t *chout_p)
 {
-    state.handler.chout_p = chout_p;
+    module.handler.chout_p = chout_p;
 
     return (0);
 }
@@ -389,9 +400,9 @@ int log_object_print(struct log_object_t *self_p,
 
     /* Print the formatted log entry to all handlers. */
     count = 0;
-    handler_p = &state.handler;
+    handler_p = &module.handler;
 
-    sem_take(&state.sem, NULL);
+    sem_take(&module.sem, NULL);
 
     time_get(&now);
 
@@ -418,7 +429,7 @@ int log_object_print(struct log_object_t *self_p,
         handler_p = handler_p->next_p;
     }
 
-    sem_give(&state.sem, 1);
+    sem_give(&module.sem, 1);
 
     return (count);
 }

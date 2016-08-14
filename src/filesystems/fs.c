@@ -26,14 +26,39 @@
 
 #define FS_NAME_MAX 64
 
-struct state_t {
+struct module_t {
+    int initialized;
     struct fs_command_t *commands_p;
     struct fs_filesystem_t *filesystems_p;
     struct fs_counter_t *counters_p;
     struct fs_parameter_t *parameters_p;
+#if CONFIG_FS_CMD_FS_FILESYSTEMS_LIST == 1
+    struct fs_command_t cmd_filesystems_list;
+#endif
+#if CONFIG_FS_CMD_FS_READ == 1
+    struct fs_command_t cmd_read;
+#endif
+#if CONFIG_FS_CMD_FS_WRITE == 1
+    struct fs_command_t cmd_write;
+#endif
+#if CONFIG_FS_CMD_FS_APPEND == 1
+    struct fs_command_t cmd_append;
+#endif
+#if CONFIG_FS_CMD_FS_LIST == 1
+    struct fs_command_t cmd_list;
+#endif
+#if CONFIG_FS_CMD_FS_COUNTERS_LIST == 1
+    struct fs_command_t cmd_counters_list;
+#endif
+#if CONFIG_FS_CMD_FS_COUNTERS_RESET == 1
+    struct fs_command_t cmd_counters_reset;
+#endif
+#if CONFIG_FS_CMD_FS_PARAMETERS_LIST == 1
+    struct fs_command_t cmd_parameters_list;
+#endif
 };
 
-static struct state_t state;
+static struct module_t module;
 static char empty_path[] = "";
 
 static int counter_get(struct fs_counter_t *counter_p,
@@ -78,8 +103,6 @@ static int cmd_parameter_cb(int argc,
 
 #if CONFIG_FS_CMD_FS_FILESYSTEMS_LIST == 1
 
-static struct fs_command_t cmd_filesystems_list;
-
 static int cmd_filesystems_list_cb(int argc,
                                    const char *argv[],
                                    chan_t *chout_p,
@@ -94,7 +117,7 @@ static int cmd_filesystems_list_cb(int argc,
     std_fprintf(chout_p,
                 FSTR("MOUNT-POINT                    MEDIUM   TYPE     AVAILABLE  SIZE  USAGE\r\n"));
 
-    filesystem_p = state.filesystems_p;
+    filesystem_p = module.filesystems_p;
 
     while (filesystem_p != NULL) {
         strcpy(buf, filesystem_p->name_p);
@@ -123,8 +146,6 @@ static int cmd_filesystems_list_cb(int argc,
 #endif
 
 #if CONFIG_FS_CMD_FS_READ == 1
-
-static struct fs_command_t cmd_read;
 
 static int cmd_read_cb(int argc,
                        const char *argv[],
@@ -162,8 +183,6 @@ static int cmd_read_cb(int argc,
 
 #if CONFIG_FS_CMD_FS_WRITE == 1
 
-static struct fs_command_t cmd_write;
-
 static int cmd_write_cb(int argc,
                         const char *argv[],
                         chan_t *chout_p,
@@ -199,8 +218,6 @@ static int cmd_write_cb(int argc,
 #endif
 
 #if CONFIG_FS_CMD_FS_APPEND == 1
-
-static struct fs_command_t cmd_append;
 
 static int cmd_append_cb(int argc,
                          const char *argv[],
@@ -238,8 +255,6 @@ static int cmd_append_cb(int argc,
 
 #if CONFIG_FS_CMD_FS_LIST == 1
 
-static struct fs_command_t cmd_list;
-
 static int cmd_list_cb(int argc,
                        const char *argv[],
                        chan_t *chout_p,
@@ -259,8 +274,6 @@ static int cmd_list_cb(int argc,
 
 #if CONFIG_FS_CMD_FS_COUNTERS_LIST == 1
 
-static struct fs_command_t cmd_counters_list;
-
 static int cmd_counters_list_cb(int argc,
                                 const char *argv[],
                                 chan_t *chout_p,
@@ -274,7 +287,7 @@ static int cmd_counters_list_cb(int argc,
     std_fprintf(chout_p,
                 FSTR("NAME                                                 VALUE\r\n"));
 
-    counter_p = state.counters_p;
+    counter_p = module.counters_p;
 
     while (counter_p != NULL) {
         std_strcpy(buf, counter_p->command.path_p);
@@ -296,8 +309,6 @@ static int cmd_counters_list_cb(int argc,
 
 #if CONFIG_FS_CMD_FS_COUNTERS_RESET == 1
 
-static struct fs_command_t cmd_counters_reset;
-
 static int cmd_counters_reset_cb(int argc,
                                  const char *argv[],
                                  chan_t *chout_p,
@@ -307,7 +318,7 @@ static int cmd_counters_reset_cb(int argc,
 {
     struct fs_counter_t *counter_p;
 
-    counter_p = state.counters_p;
+    counter_p = module.counters_p;
 
     while (counter_p != NULL) {
         counter_p->command.callback(0,
@@ -327,8 +338,6 @@ static int cmd_counters_reset_cb(int argc,
 
 #if CONFIG_FS_CMD_FS_PARAMETERS_LIST == 1
 
-static struct fs_command_t cmd_parameters_list;
-
 static int cmd_parameters_list_cb(int argc,
                                   const char *argv[],
                                   chan_t *chout_p,
@@ -342,7 +351,7 @@ static int cmd_parameters_list_cb(int argc,
     std_fprintf(chout_p,
                 FSTR("NAME                                                 VALUE\r\n"));
 
-    parameter_p = state.parameters_p;
+    parameter_p = module.parameters_p;
 
     while (parameter_p != NULL) {
         std_strcpy(buf, parameter_p->command.path_p);
@@ -460,88 +469,94 @@ static int cmd_counter_cb(int argc,
 
 int fs_module_init()
 {
-    state.commands_p = NULL;
-    state.filesystems_p = NULL;
-    state.counters_p = NULL;
-    state.parameters_p = NULL;
+    /* Return immediately if the module is already initialized. */
+    if (module.initialized == 1) {
+        return (0);
+    }
+
+    module.initialized = 1;
+    module.commands_p = NULL;
+    module.filesystems_p = NULL;
+    module.counters_p = NULL;
+    module.parameters_p = NULL;
 
 #if CONFIG_FS_CMD_FS_FILESYSTEMS_LIST == 1
 
-    fs_command_init(&cmd_filesystems_list,
+    fs_command_init(&module.cmd_filesystems_list,
                     FSTR("/filesystems/fs/filesystems/list"),
                     cmd_filesystems_list_cb,
                     NULL);
-    fs_command_register(&cmd_filesystems_list);
+    fs_command_register(&module.cmd_filesystems_list);
 
 #endif
 
 #if CONFIG_FS_CMD_FS_READ == 1
 
-    fs_command_init(&cmd_read,
+    fs_command_init(&module.cmd_read,
                     FSTR("/filesystems/fs/read"),
                     cmd_read_cb,
                     NULL);
-    fs_command_register(&cmd_read);
+    fs_command_register(&module.cmd_read);
 
 #endif
 
 #if CONFIG_FS_CMD_FS_WRITE == 1
 
-    fs_command_init(&cmd_write,
+    fs_command_init(&module.cmd_write,
                     FSTR("/filesystems/fs/write"),
                     cmd_write_cb,
                     NULL);
-    fs_command_register(&cmd_write);
+    fs_command_register(&module.cmd_write);
 
 #endif
 
 #if CONFIG_FS_CMD_FS_APPEND == 1
 
-    fs_command_init(&cmd_append,
+    fs_command_init(&module.cmd_append,
                     FSTR("/filesystems/fs/append"),
                     cmd_append_cb,
                     NULL);
-    fs_command_register(&cmd_append);
+    fs_command_register(&module.cmd_append);
 
 #endif
 
 #if CONFIG_FS_CMD_FS_LIST == 1
 
-    fs_command_init(&cmd_list,
+    fs_command_init(&module.cmd_list,
                     FSTR("/filesystems/fs/list"),
                     cmd_list_cb,
                     NULL);
-    fs_command_register(&cmd_list);
+    fs_command_register(&module.cmd_list);
 
 #endif
 
 #if CONFIG_FS_CMD_FS_COUNTERS_LIST == 1
 
-    fs_command_init(&cmd_counters_list,
+    fs_command_init(&module.cmd_counters_list,
                     FSTR("/filesystems/fs/counters/list"),
                     cmd_counters_list_cb,
                     NULL);
-    fs_command_register(&cmd_counters_list);
+    fs_command_register(&module.cmd_counters_list);
 
 #endif
 
 #if CONFIG_FS_CMD_FS_COUNTERS_RESET == 1
 
-    fs_command_init(&cmd_counters_reset,
+    fs_command_init(&module.cmd_counters_reset,
                     FSTR("/filesystems/fs/counters/reset"),
                     cmd_counters_reset_cb,
                     NULL);
-    fs_command_register(&cmd_counters_reset);
+    fs_command_register(&module.cmd_counters_reset);
 
 #endif
 
 #if CONFIG_FS_CMD_FS_PARAMETERS_LIST == 1
 
-    fs_command_init(&cmd_parameters_list,
+    fs_command_init(&module.cmd_parameters_list,
                     FSTR("/filesystems/fs/parameters/list"),
                     cmd_parameters_list_cb,
                     NULL);
-    fs_command_register(&cmd_parameters_list);
+    fs_command_register(&module.cmd_parameters_list);
 
 #endif
 
@@ -566,7 +581,7 @@ int fs_call(char *command_p,
     }
 
     /* Find given command. */
-    current_p = state.commands_p;
+    current_p = module.commands_p;
     skip_slash = (argv[0][0] != '/');
 
     while (current_p != NULL) {
@@ -603,7 +618,7 @@ static int get_filesystem_path_from_path(struct fs_filesystem_t **filesystem_pp,
         path_p++;
     }
 
-    filesystem_p = state.filesystems_p;
+    filesystem_p = module.filesystems_p;
 
     /* Find the file system registered on given path. */
     while (filesystem_p != NULL) {
@@ -1010,7 +1025,7 @@ int fs_list(const char *path_p,
 
     /* Find all paths matching given path and filter and output the
        file or folder matching the filter. */
-    command_p = state.commands_p;
+    command_p = module.commands_p;
 
     while (command_p != NULL) {
         /* Path match? */
@@ -1068,7 +1083,7 @@ int fs_auto_complete(char *path_p)
     }
 
     /* Find the first command matching given path. */
-    command_p = state.commands_p;
+    command_p = module.commands_p;
 
     while (command_p != NULL) {
         if (std_strncmp(&command_p->path_p[offset],
@@ -1196,8 +1211,8 @@ int fs_filesystem_register(struct fs_filesystem_t *filesystem_p)
 {
     ASSERTN(filesystem_p != NULL, -EINVAL);
 
-    filesystem_p->next_p = state.filesystems_p;
-    state.filesystems_p = filesystem_p;
+    filesystem_p->next_p = module.filesystems_p;
+    module.filesystems_p = filesystem_p;
 
     return (0);
 }
@@ -1234,7 +1249,7 @@ int fs_command_register(struct fs_command_t *command_p)
 
     /* Insert in alphabetical order. */
     prev_p = NULL;
-    current_p = state.commands_p;
+    current_p = module.commands_p;
 
     while (current_p != NULL) {
         if (std_strcmp_f(command_p->path_p, current_p->path_p) < 0) {
@@ -1249,7 +1264,7 @@ int fs_command_register(struct fs_command_t *command_p)
     command_p->next_p = current_p;
 
     if (prev_p == NULL) {
-        state.commands_p = command_p;
+        module.commands_p = command_p;
     } else {
         prev_p->next_p = command_p;
     }
@@ -1299,8 +1314,8 @@ int fs_counter_register(struct fs_counter_t *counter_p)
     /* Insert counter into the command list and the counter list. */
     fs_command_register(&counter_p->command);
 
-    counter_p->next_p = state.counters_p;
-    state.counters_p = counter_p;
+    counter_p->next_p = module.counters_p;
+    module.counters_p = counter_p;
 
     return (0);
 }
@@ -1344,8 +1359,8 @@ int fs_parameter_register(struct fs_parameter_t *parameter_p)
     /* Insert counter into the command list and the counter list. */
     fs_command_register(&parameter_p->command);
 
-    parameter_p->next_p = state.parameters_p;
-    state.parameters_p = parameter_p;
+    parameter_p->next_p = module.parameters_p;
+    module.parameters_p = parameter_p;
 
     return (0);
 }

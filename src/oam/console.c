@@ -22,12 +22,15 @@
 
 #if CONFIG_START_CONSOLE == CONFIG_START_CONSOLE_UART
 
-struct console_t {
-    struct uart_driver_t uart;
-    char rxbuf[32];
+struct module_t {
+    int initialized;
+    struct {
+        struct uart_driver_t uart;
+        char rxbuf[32];
+    } console;
 };
 
-static struct console_t console;
+static struct module_t module;
 
 int console_module_init(void)
 {
@@ -36,21 +39,21 @@ int console_module_init(void)
 
 int console_init(void)
 {
-    return (uart_init(&console.uart,
+    return (uart_init(&module.console.uart,
                       &uart_device[CONFIG_START_CONSOLE_DEVICE_INDEX],
                       CONFIG_START_CONSOLE_UART_BAUDRATE,
-                      console.rxbuf,
-                      sizeof(console.rxbuf)));
+                      module.console.rxbuf,
+                      sizeof(module.console.rxbuf)));
 }
 
 int console_start(void)
 {
-    return (uart_start(&console.uart));
+    return (uart_start(&module.console.uart));
 }
 
 int console_stop(void)
 {
-    return (uart_stop(&console.uart));
+    return (uart_stop(&module.console.uart));
 }
 
 int console_set_input_channel(chan_t *chan_p)
@@ -60,7 +63,7 @@ int console_set_input_channel(chan_t *chan_p)
 
 chan_t *console_get_input_channel(void)
 {
-    return (&console.uart.chin);
+    return (&module.console.uart.chin);
 }
 
 chan_t *console_set_output_channel(chan_t *chan_p)
@@ -70,19 +73,22 @@ chan_t *console_set_output_channel(chan_t *chan_p)
 
 chan_t *console_get_output_channel()
 {
-    return (&console.uart.chout);
+    return (&module.console.uart.chout);
 }
 
 #elif CONFIG_START_CONSOLE == CONFIG_START_CONSOLE_USB_CDC
 
-struct console_t {
-    struct usb_device_driver_t usb;
-    struct usb_device_driver_base_t *drivers[1];
-    struct usb_device_class_cdc_driver_t cdc;
-    uint8_t rxbuf[32];
+struct module_t {
+    int initialized;
+    struct {
+        struct usb_device_driver_t usb;
+        struct usb_device_driver_base_t *drivers[1];
+        struct usb_device_class_cdc_driver_t cdc;
+        uint8_t rxbuf[32];
+    } console;
 };
 
-static struct console_t console;
+static struct module_t module;
 
 int console_module_init(void)
 {
@@ -95,19 +101,19 @@ int console_module_init(void)
 int console_init(void)
 {
     /* Initialize the CDC driver object. */
-    usb_device_class_cdc_init(&console.cdc,
+    usb_device_class_cdc_init(&module.console.cdc,
                               0,
                               2,
                               3,
-                              console.rxbuf,
-                              sizeof(console.rxbuf));
-    console.drivers[0] = &console.cdc.base;
+                              module.console.rxbuf,
+                              sizeof(module.console.rxbuf));
+    module.console.drivers[0] = &module.console.cdc.base;
 
     /* Initialize the USB device driver. */
-    usb_device_init(&console.usb,
+    usb_device_init(&module.console.usb,
                     &usb_device[0],
-                    console.drivers,
-                    membersof(console.drivers),
+                    module.console.drivers,
+                    membersof(module.console.drivers),
                     usb_device_descriptors);
 
     return (0);
@@ -115,12 +121,12 @@ int console_init(void)
 
 int console_start(void)
 {
-    usb_device_start(&console.usb);
+    usb_device_start(&module.console.usb);
 
 #if CONFIG_START_CONSOLE_USB_CDC_WAIT_FOR_CONNETION == 1
 
     /* Wait for the host to connect. */
-    while (usb_device_class_cdc_is_connected(&console.cdc) == 0) {
+    while (usb_device_class_cdc_is_connected(&module.console.cdc) == 0) {
         thrd_sleep_us(100000);
     }
 
@@ -133,7 +139,7 @@ int console_start(void)
 
 int console_stop(void)
 {
-    return (usb_device_stop(&console.usb));
+    return (usb_device_stop(&module.console.usb));
 }
 
 int console_set_input_channel(chan_t *chan_p)
@@ -143,7 +149,7 @@ int console_set_input_channel(chan_t *chan_p)
 
 chan_t *console_get_input_channel(void)
 {
-    return (&console.cdc.chin);
+    return (&module.console.cdc.chin);
 }
 
 chan_t *console_set_output_channel(chan_t *chan_p)
@@ -153,22 +159,31 @@ chan_t *console_set_output_channel(chan_t *chan_p)
 
 chan_t *console_get_output_channel(void)
 {
-    return (&console.cdc.chout);
+    return (&module.console.cdc.chout);
 }
 
 #elif CONFIG_START_CONSOLE == CONFIG_START_CONSOLE_NONE
 
-struct console_t {
-    chan_t *chin_p;
-    chan_t *chout_p;
+struct module_t {
+    int initialized;
+    struct {
+        chan_t *chin_p;
+        chan_t *chout_p;
+    } console;
 };
 
-static struct console_t console;
+static struct module_t module;
 
 int console_module_init(void)
 {
-    console.chin_p = NULL;
-    console.chout_p = NULL;
+    /* Return immediately if the module is already initialized. */
+    if (module.initialized == 1) {
+        return (0);
+    }
+
+    module.initialized = 1;
+    module.console.chin_p = NULL;
+    module.console.chout_p = NULL;
 
     return (0);
 }
@@ -190,26 +205,26 @@ int console_stop(void)
 
 int console_set_input_channel(chan_t *chan_p)
 {
-    console.chin_p = chan_p;
+    module.console.chin_p = chan_p;
 
     return (0);
 }
 
 chan_t *console_get_input_channel(void)
 {
-    return (console.chin_p);
+    return (module.console.chin_p);
 }
 
 chan_t *console_set_output_channel(chan_t *chan_p)
 {
-    console.chout_p = chan_p;
+    module.console.chout_p = chan_p;
 
     return (0);
 }
 
 chan_t *console_get_output_channel(void)
 {
-    return (console.chout_p);
+    return (module.console.chout_p);
 }
 
 #else

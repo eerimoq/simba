@@ -23,18 +23,23 @@
 /* Only one device supported for now. */
 #define DEVICE_ADDRESS    1
 
+struct module_t {
+    int initialized;
+    /* A list of all drivers. */
+    struct usb_host_driver_t *drivers_p;
+    struct usb_host_device_driver_t *device_drivers_p;
+#if CONFIG_FS_CMD_USB_HOST_LIST == 1
+    struct fs_command_t cmd_list;
+#endif
+};
+
 static int device_enumerate(struct usb_host_device_t *device_p);
 
 #include "usb_host_port.i"
 
-/* A list of all drivers. */
-static struct usb_host_driver_t *drivers_p = NULL;
-
-static struct usb_host_device_driver_t *device_drivers_p = NULL;
+static struct module_t module;
 
 #if CONFIG_FS_CMD_USB_HOST_LIST == 1
-
-static struct fs_command_t cmd_list;
 
 static int cmd_list_cb(int argc,
                        const char *argv[],
@@ -56,7 +61,7 @@ static int cmd_list_cb(int argc,
 
     std_fprintf(out_p, FSTR("BUS  ADDRESS   VID   PID  DESCRIPTION\r\n"));
 
-    self_p = drivers_p;
+    self_p = module.drivers_p;
 
     while (self_p != NULL) {
         device_p = &self_p->devices_p[0];
@@ -325,7 +330,7 @@ find_device_driver(struct usb_host_device_t *device_p)
 {
     struct usb_host_device_driver_t *driver_p;
 
-    driver_p = device_drivers_p;
+    driver_p = module.device_drivers_p;
 
     while (driver_p != NULL) {
         if (driver_p->supports(device_p)) {
@@ -433,13 +438,20 @@ err:
 
 int usb_host_module_init(void)
 {
+    /* Return immediately if the module is already initialized. */
+    if (module.initialized == 1) {
+        return (0);
+    }
+
+    module.initialized = 1;
+
 #if CONFIG_FS_CMD_USB_HOST_LIST == 1
 
-    fs_command_init(&cmd_list,
+    fs_command_init(&module.cmd_list,
                     FSTR("/drivers/usb_host/list"),
                     cmd_list_cb,
                     NULL);
-    fs_command_register(&cmd_list);
+    fs_command_register(&module.cmd_list);
 
 #endif
 
@@ -482,8 +494,8 @@ int usb_host_start(struct usb_host_driver_t *self_p)
     }
 
     /* Add the driver to the list. */
-    self_p->next_p = drivers_p;
-    drivers_p = self_p;
+    self_p->next_p = module.drivers_p;
+    module.drivers_p = self_p;
 
     return (0);
 }
@@ -502,8 +514,8 @@ int usb_host_driver_add(struct usb_host_driver_t *self_p,
     ASSERTN(self_p != NULL, EINVAL);
     ASSERTN(driver_p != NULL, EINVAL);
 
-    driver_p->next_p = device_drivers_p;
-    device_drivers_p = driver_p;
+    driver_p->next_p = module.device_drivers_p;
+    module.device_drivers_p = driver_p;
 
     return (0);
 }

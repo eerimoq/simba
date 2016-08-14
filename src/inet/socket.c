@@ -41,12 +41,16 @@ extern xSemaphoreHandle thrd_idle_sem;
 
 #endif
 
-struct fs_counter_t udp_rx_bytes;
-struct fs_counter_t udp_tx_bytes;
+struct module_t {
+    int initialized;
+    struct fs_counter_t udp_rx_bytes;
+    struct fs_counter_t udp_tx_bytes;
+    struct fs_counter_t tcp_accepts;
+    struct fs_counter_t tcp_rx_bytes;
+    struct fs_counter_t tcp_tx_bytes;
+};
 
-struct fs_counter_t tcp_accepts;
-struct fs_counter_t tcp_rx_bytes;
-struct fs_counter_t tcp_tx_bytes;
+static struct module_t module;
 
 static void init(struct socket_t *self_p,
                  int type,
@@ -251,7 +255,7 @@ static ssize_t udp_send_to(struct socket_t *self_p,
     pbuf_p = pbuf_alloc(PBUF_TRANSPORT, size, PBUF_RAM);
     memcpy(pbuf_p->payload, buf_p, size);
 
-    fs_counter_increment(&udp_tx_bytes, size);
+    fs_counter_increment(&module.udp_tx_bytes, size);
 
     if (udp_sendto(self_p->pcb_p,
                    pbuf_p,
@@ -279,7 +283,7 @@ static ssize_t tcp_send_to(struct socket_t *self_p,
     thrd_suspend(NULL);
 
     if (self_p->io.size >= 0) {
-        fs_counter_increment(&tcp_tx_bytes, self_p->io.size);
+        fs_counter_increment(&module.tcp_tx_bytes, self_p->io.size);
     }
 
     return (self_p->io.size);
@@ -317,7 +321,7 @@ static ssize_t udp_recv_from(struct socket_t *self_p,
     self_p->io.recv.pbuf.size = -1;
     pbuf_free(pbuf_p);
 
-    fs_counter_increment(&udp_rx_bytes, size);
+    fs_counter_increment(&module.udp_rx_bytes, size);
 
     return (size);
 }
@@ -375,39 +379,46 @@ static ssize_t tcp_recv_from(struct socket_t *self_p,
         }
     }
 
-    fs_counter_increment(&tcp_rx_bytes, size - left);
+    fs_counter_increment(&module.tcp_rx_bytes, size - left);
 
     return (size - left);
 }
 
 int socket_module_init(void)
 {
+    /* Return immediately if the module is already initialized. */
+    if (module.initialized == 1) {
+        return (0);
+    }
+
+    module.initialized = 1;
+
     /* UDP counters. */
-    fs_counter_init(&udp_rx_bytes,
+    fs_counter_init(&module.udp_rx_bytes,
                     FSTR("/inet/socket/udp/rx_bytes"),
                     0);
-    fs_counter_register(&udp_rx_bytes);
+    fs_counter_register(&module.udp_rx_bytes);
 
-    fs_counter_init(&udp_tx_bytes,
+    fs_counter_init(&module.udp_tx_bytes,
                     FSTR("/inet/socket/udp/tx_bytes"),
                     0);
-    fs_counter_register(&udp_tx_bytes);
+    fs_counter_register(&module.udp_tx_bytes);
 
     /* TCP counters. */
-    fs_counter_init(&tcp_accepts,
+    fs_counter_init(&module.tcp_accepts,
                     FSTR("/inet/socket/tcp/accepts"),
                     0);
-    fs_counter_register(&tcp_accepts);
+    fs_counter_register(&module.tcp_accepts);
 
-    fs_counter_init(&tcp_rx_bytes,
+    fs_counter_init(&module.tcp_rx_bytes,
                     FSTR("/inet/socket/tcp/rx_bytes"),
                     0);
-    fs_counter_register(&tcp_rx_bytes);
+    fs_counter_register(&module.tcp_rx_bytes);
 
-    fs_counter_init(&tcp_tx_bytes,
+    fs_counter_init(&module.tcp_tx_bytes,
                     FSTR("/inet/socket/tcp/tx_bytes"),
                     0);
-    fs_counter_register(&tcp_tx_bytes);
+    fs_counter_register(&module.tcp_tx_bytes);
 
 #if !defined(ARCH_ESP)
     /* Initialize the LwIP stack. */
@@ -579,7 +590,7 @@ int socket_accept(struct socket_t *self_p,
     self_p->io.buf_p = accepted_p;
     self_p->io.thrd_p = thrd_self();
     thrd_suspend(NULL);
-    fs_counter_increment(&tcp_accepts, 1);
+    fs_counter_increment(&module.tcp_accepts, 1);
 
     return (0);
 }

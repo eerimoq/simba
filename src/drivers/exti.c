@@ -20,10 +20,23 @@
 
 #include "simba.h"
 
+struct module_t {
+    int initialized;
+};
+
 #include "exti_port.i"
+
+static struct module_t module;
 
 int exti_module_init()
 {
+    /* Return immediately if the module is already initialized. */
+    if (module.initialized == 1) {
+        return (0);
+    }
+
+    module.initialized = 1;
+
     return (exti_port_module_init());
 }
 

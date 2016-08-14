@@ -20,11 +20,24 @@
 
 #include "simba.h"
 
+struct module_t {
+    int initialized;
+#if CONFIG_FS_CMD_PIN_SET_MODE == 1
+    struct fs_command_t cmd_set_mode;
+#endif
+#if CONFIG_FS_CMD_PIN_READ == 1
+    struct fs_command_t cmd_read;
+#endif
+#if CONFIG_FS_CMD_PIN_WRITE == 1
+    struct fs_command_t cmd_write;
+#endif
+};
+
 #include "pin_port.i"
 
-#if CONFIG_FS_CMD_PIN_SET_MODE == 1
+struct module_t module;
 
-static struct fs_command_t cmd_set_mode;
+#if CONFIG_FS_CMD_PIN_SET_MODE == 1
 
 static int cmd_set_mode_cb(int argc,
                            const char *argv[],
@@ -72,8 +85,6 @@ static int cmd_set_mode_cb(int argc,
 
 #if CONFIG_FS_CMD_PIN_READ == 1
 
-static struct fs_command_t cmd_read;
-
 static int cmd_read_cb(int argc,
                        const char *argv[],
                        chan_t *out_p,
@@ -113,8 +124,6 @@ static int cmd_read_cb(int argc,
 #endif
 
 #if CONFIG_FS_CMD_PIN_WRITE == 1
-
-static struct fs_command_t cmd_write;
 
 static int cmd_write_cb(int argc,
                         const char *argv[],
@@ -158,33 +167,40 @@ static int cmd_write_cb(int argc,
 
 int pin_module_init(void)
 {
+    /* Return immediately if the module is already initialized. */
+    if (module.initialized == 1) {
+        return (0);
+    }
+
+    module.initialized = 1;
+
 #if CONFIG_FS_CMD_PIN_SET_MODE == 1
     
-    fs_command_init(&cmd_set_mode,
+    fs_command_init(&module.cmd_set_mode,
                     FSTR("/drivers/pin/set_mode"),
                     cmd_set_mode_cb,
                     NULL);
-    fs_command_register(&cmd_set_mode);
+    fs_command_register(&module.cmd_set_mode);
     
 #endif
 
 #if CONFIG_FS_CMD_PIN_READ == 1
 
-    fs_command_init(&cmd_read,
+    fs_command_init(&module.cmd_read,
                     FSTR("/drivers/pin/read"),
                     cmd_read_cb,
                     NULL);
-    fs_command_register(&cmd_read);
+    fs_command_register(&module.cmd_read);
 
 #endif
 
 #if CONFIG_FS_CMD_PIN_WRITE == 1
 
-    fs_command_init(&cmd_write,
+    fs_command_init(&module.cmd_write,
                     FSTR("/drivers/pin/write"),
                     cmd_write_cb,
                     NULL);
-    fs_command_register(&cmd_write);
+    fs_command_register(&module.cmd_write);
 
 #endif
 

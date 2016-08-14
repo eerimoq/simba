@@ -20,10 +20,23 @@
 
 #include "simba.h"
 
+struct module_t {
+    int initialized;
+};
+
 #include "adc_port.i"
+
+static struct module_t module;
 
 int adc_module_init(void)
 {
+    /* Return immediately if the module is already initialized. */
+    if (module.initialized == 1) {
+        return (0);
+    }
+
+    module.initialized = 1;
+
     return (adc_port_module_init());
 }
 
@@ -38,7 +51,7 @@ int adc_init(struct adc_driver_t *self_p,
     ASSERTN(pin_dev_p != NULL, EINVAL);
     ASSERTN(reference == ADC_REFERENCE_VCC, EINVAL);
     ASSERTN(sampling_rate > 0, EINVAL);
-    
+
     return (adc_port_init(self_p,
                           dev_p,
                           pin_dev_p,
@@ -70,7 +83,7 @@ int adc_convert(struct adc_driver_t *self_p,
 {
     adc_port_async_convert(self_p, samples_p, length);
     adc_port_async_wait(self_p);
-    
+
     return (0);
 }
 

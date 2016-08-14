@@ -31,6 +31,21 @@ struct sys_t sys = {
     }
 };
 
+struct module_t {
+    int initialized;
+#if CONFIG_FS_CMD_SYS_INFO == 1
+    struct fs_command_t cmd_info;
+#endif
+#if CONFIG_FS_CMD_SYS_CONFIG == 1
+    struct fs_command_t cmd_config;
+#endif
+#if CONFIG_FS_CMD_SYS_UPTIME == 1
+    struct fs_command_t cmd_uptime;
+#endif
+};
+
+static struct module_t module;
+
 static const FAR char config[] =
     "config: sys-config-string=" STRINGIFY(CONFIG_SYS_CONFIG_STRING) "\r\n"
 
@@ -228,12 +243,12 @@ static int start_filesystem(void)
         std_printf(FSTR("Failed to initialize the flash module.\r\n"));
         return (-1);
     }
-    
+
     if (flash_init(&filesystem.flash, &flash_0_dev) != 0) {
         std_printf(FSTR("Failed to initialize the flash driver.\r\n"));
         return (-1);
     }
-    
+
     std_printf(FSTR("Trying to mount the file system.\r\n"));
 
     /* Initiate the config struct. */
@@ -245,7 +260,7 @@ static int start_filesystem(void)
     filesystem.config.phys_erase_block = PHYS_ERASE_BLOCK;
     filesystem.config.log_block_size = LOG_BLOCK_SIZE;
     filesystem.config.log_page_size = LOG_PAGE_SIZE;
-    
+
     /* Mount the file system to initialize the runtime variables. */
     res = spiffs_mount(&filesystem.fs,
                        &filesystem.config,
@@ -265,9 +280,9 @@ static int start_filesystem(void)
             std_printf(FSTR("Failed to mount the file system. Formatting it.\r\n"));
             return (-1);
         }
-    
+
         std_printf(FSTR("Trying to mount the file system after formatting it.\r\n"));
-        
+
         res = spiffs_mount(&filesystem.fs,
                            &filesystem.config,
                            filesystem.workspace,
@@ -276,7 +291,7 @@ static int start_filesystem(void)
                            filesystem.cache,
                            sizeof(filesystem.cache),
                            NULL);
-        
+
         if (res != 0) {
             std_printf(FSTR("Failed to mount the file system.\r\n"));
             return (-1);
@@ -351,8 +366,6 @@ static int start_network(void)
 
 #if CONFIG_FS_CMD_SYS_INFO == 1
 
-static struct fs_command_t cmd_info;
-
 static int cmd_info_cb(int argc,
                        const char *argv[],
                        chan_t *out_p,
@@ -369,8 +382,6 @@ static int cmd_info_cb(int argc,
 
 #if CONFIG_FS_CMD_SYS_CONFIG == 1
 
-static struct fs_command_t cmd_config;
-
 static int cmd_config_cb(int argc,
                          const char *argv[],
                          chan_t *out_p,
@@ -386,8 +397,6 @@ static int cmd_config_cb(int argc,
 #endif
 
 #if CONFIG_FS_CMD_SYS_UPTIME == 1
-
-static struct fs_command_t cmd_uptime;
 
 static int cmd_uptime_cb(int argc,
                          const char *argv[],
@@ -412,33 +421,40 @@ static int cmd_uptime_cb(int argc,
 
 int sys_module_init(void)
 {
+    /* Return immediately if the module is already initialized. */
+    if (module.initialized == 1) {
+        return (0);
+    }
+
+    module.initialized = 1;
+
 #if CONFIG_FS_CMD_SYS_INFO == 1
 
-    fs_command_init(&cmd_info,
+    fs_command_init(&module.cmd_info,
                     FSTR("/kernel/sys/info"),
                     cmd_info_cb,
                     NULL);
-    fs_command_register(&cmd_info);
+    fs_command_register(&module.cmd_info);
 
 #endif
 
 #if CONFIG_FS_CMD_SYS_CONFIG == 1
 
-    fs_command_init(&cmd_config,
+    fs_command_init(&module.cmd_config,
                     FSTR("/kernel/sys/config"),
                     cmd_config_cb,
                     NULL);
-    fs_command_register(&cmd_config);
+    fs_command_register(&module.cmd_config);
 
 #endif
 
 #if CONFIG_FS_CMD_SYS_UPTIME == 1
 
-    fs_command_init(&cmd_uptime,
+    fs_command_init(&module.cmd_uptime,
                     FSTR("/kernel/sys/uptime"),
                     cmd_uptime_cb,
                     NULL);
-    fs_command_register(&cmd_uptime);
+    fs_command_register(&module.cmd_uptime);
 
 #endif
 
