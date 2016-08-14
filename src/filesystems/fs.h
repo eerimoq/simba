@@ -44,19 +44,9 @@
 #define FS_READ             0x01
 
 /**
- * Same as FS_READ.
- */
-#define FS_RDONLY           FS_READ
-
-/**
  * Open for write.
  */
 #define FS_WRITE            0x02
-
-/**
- * Same as FS_WRITE.
- */
-#define FS_WRONLY           FS_WRITE
 
 /**
  * Open for reading and writing.
@@ -90,6 +80,11 @@
  */
 #define FS_TRUNC            0x40
 
+/**
+ * Command callback prototype.
+ *
+ * @return zero(0) or negative error code.
+ */
 typedef int (*fs_callback_t)(int argc,
                              const char *argv[],
                              chan_t *out_p,
@@ -124,22 +119,21 @@ enum fs_type_t {
     fs_type_spiffs_t
 };
 
-struct fs_filesystem_t;
-
-struct fs_file_t {
-    struct fs_filesystem_t *filesystem_p;
-    union {
-        struct fat16_file_t fat16;
-        spiffs_file_t spiffs;
-    } u;
-};
-
 /* File system. */
 struct fs_filesystem_t {
     const char *name_p;
     enum fs_type_t type;
     void *fs_p;
     struct fs_filesystem_t *next_p;
+};
+
+/* A file. */
+struct fs_file_t {
+    struct fs_filesystem_t *filesystem_p;
+    union {
+        struct fat16_file_t fat16;
+        spiffs_file_t spiffs;
+    } u;
 };
 
 /* Command. */
