@@ -1,10 +1,6 @@
 Filesystem
 ==========
 
-Source code: :github-blob:`examples/filesystem/main.c`
-
-------------------------------------------------
-
 About
 -----
 
@@ -15,6 +11,9 @@ Source code
 -----------
 
 .. include:: filesystem/source-code.rst
+
+The source code can also be found on Github in the
+:github-tree:`examples/filesystem` folder.
 
 Build and run
 -------------

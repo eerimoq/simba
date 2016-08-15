@@ -1,10 +1,6 @@
 Blink
 =====
 
-Source code: :github-blob:`examples/blink/main.c`
-
-------------------------------------------------
-
 About
 -----
 
@@ -14,6 +10,9 @@ Source code
 -----------
 
 .. include:: blink/source-code.rst
+
+The source code can also be found on Github in the
+:github-tree:`examples/blink` folder.
 
 Build and run
 -------------

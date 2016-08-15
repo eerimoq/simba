@@ -1,10 +1,6 @@
 Queue
 =====
 
-Source code: :github-blob:`examples/queue/main.c`
-
-------------------------------------------------
-
 About
 -----
 
@@ -14,6 +10,9 @@ Source code
 -----------
 
 .. include:: queue/source-code.rst
+
+The source code can also be found on Github in the
+:github-tree:`examples/queue` folder.
 
 Build and run
 -------------

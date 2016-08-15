@@ -1,10 +1,6 @@
 Analog Read
 ===========
 
-Source code: :github-blob:`examples/analog_read/main.c`
-
-------------------------------------------------
-
 About
 -----
 
@@ -15,6 +11,9 @@ Source code
 -----------
 
 .. include:: analog_read/source-code.rst
+
+The source code can also be found on Github in the
+:github-tree:`examples/analog_read` folder.
 
 Build and run
 -------------

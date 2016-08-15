@@ -1,10 +1,6 @@
 Shell
 =====
 
-Source code: :github-blob:`examples/shell/main.c`
-
-------------------------------------------------
-
 About
 -----
 
@@ -14,6 +10,9 @@ Source code
 -----------
 
 .. include:: shell/source-code.rst
+
+The source code can also be found on Github in the
+:github-tree:`examples/shell` folder.
 
 Build and run
 -------------

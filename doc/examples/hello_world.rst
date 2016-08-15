@@ -1,10 +1,6 @@
 Hello World
 ===========
 
-Source code: :github-blob:`examples/hello_world/main.c`
-
-------------------------------------------------
-
 About
 -----
 
@@ -14,6 +10,9 @@ Source code
 -----------
 
 .. include:: hello_world/source-code.rst
+
+The source code can also be found on Github in the
+:github-tree:`examples/hello_world` folder.
 
 Build and run
 -------------

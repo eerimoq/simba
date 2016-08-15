@@ -1,10 +1,6 @@
 HTTP Client
 ===========
 
-Source code: :github-blob:`examples/http_client/main.c`
-
-------------------------------------------------
-
 About
 -----
 
@@ -21,6 +17,9 @@ Source code
 -----------
 
 .. include:: http_client/source-code.rst
+
+The source code can also be found on Github in the
+:github-tree:`examples/http_client` folder.
 
 Build and run
 -------------

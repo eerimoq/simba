@@ -1,10 +1,6 @@
 Timer
 =====
 
-Source code: :github-blob:`examples/timer/main.c`
-
-------------------------------------------------
-
 About
 -----
 
@@ -16,6 +12,9 @@ Source code
 -----------
 
 .. include:: timer/source-code.rst
+
+The source code can also be found on Github in the
+:github-tree:`examples/timer` folder.
 
 Build and run
 -------------
