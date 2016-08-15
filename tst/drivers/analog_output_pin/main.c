@@ -24,7 +24,10 @@ static struct analog_output_pin_t pin;
 
 static int test_init(struct harness_t *harness_p)
 {
-    BTASSERT(analog_output_pin_init(&pin, &pin_d2_dev) == 0);
+    BTASSERT(analog_output_pin_init(&pin, &pin_d10_dev) == 0);
+
+    /* Bad pwm pin. */
+    BTASSERT(analog_output_pin_init(&pin, &pin_d5_dev) == -1);
 
     return (0);
 }

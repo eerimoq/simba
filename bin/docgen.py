@@ -209,7 +209,8 @@ def examples_generate(_):
         "filesystem",
         "queue",
         "timer",
-        "analog_read"
+        "analog_read",
+        "analog_write"
     ]
 
     for example in examples:

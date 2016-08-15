@@ -23,6 +23,7 @@ Supported drivers for this board.
 
 - :doc:`../library-reference/drivers/adc`
 - :doc:`../library-reference/drivers/analog_input_pin`
+- :doc:`../library-reference/drivers/analog_output_pin`
 - :doc:`../library-reference/drivers/ds18b20`
 - :doc:`../library-reference/drivers/ds3231`
 - :doc:`../library-reference/drivers/exti`

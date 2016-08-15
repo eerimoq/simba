@@ -29,7 +29,7 @@ int main()
     analog_output_pin_module_init();
 
     /* Initialize the analog output pin. */
-    analog_output_pin_init(&pin, &pin_d2_dev);
+    analog_output_pin_init(&pin, &pin_d10_dev);
 
     value = 0;
     

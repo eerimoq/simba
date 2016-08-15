@@ -28,7 +28,15 @@ int analog_output_pin_module_init(void)
 int analog_output_pin_init(struct analog_output_pin_t *self_p,
                           struct pin_device_t *pin_p)
 {
-    return (pwm_init(&self_p->pwm, pwm_pin_to_device(pin_p)));
+    struct pwm_device_t *pwm_p;
+    
+    pwm_p = pwm_pin_to_device(pin_p);
+
+    if (pwm_p == NULL) {
+        return (-1);
+    }
+    
+    return (pwm_init(&self_p->pwm, pwm_p));
 }
 
 int analog_output_pin_write(struct analog_output_pin_t *self_p,

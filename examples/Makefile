@@ -20,6 +20,7 @@
 
 EXAMPLES = \
 	analog_read \
+	analog_write \
 	blink \
 	bootloader \
 	fat16 \

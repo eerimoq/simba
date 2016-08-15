@@ -29,3 +29,13 @@ static int pwm_port_set_duty(struct pwm_driver_t *self_p,
 {
     return (0);
 }
+
+static int pwm_port_get_duty(struct pwm_driver_t *self_p)
+{
+    return (-1);
+}
+
+static struct pwm_device_t *pwm_port_pin_to_device(struct pin_device_t *pin_p)
+{
+    return (NULL);
+}

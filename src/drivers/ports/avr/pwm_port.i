@@ -74,6 +74,32 @@ static int pwm_port_set_duty(struct pwm_driver_t *self_p,
     return (0);
 }
 
+static int pwm_port_get_duty(struct pwm_driver_t *self_p)
+{
+    int value;
+
+    value = -1;
+    
+    switch (self_p->dev_p->index) {
+    case 0:
+        value = OCR1A;
+        break;
+    case 1:
+        value = OCR1B;
+        break;
+    case 2:
+        value = OCR2A;
+        break;
+    case 3:
+        value = OCR2B;
+        break;
+    default:
+        break;
+    }
+
+    return (value);
+}
+
 #elif defined(MCU_ATMEGA2560)
 
 static int pwm_port_init(struct pwm_driver_t *self_p,
@@ -239,6 +265,6 @@ static struct pwm_device_t *pwm_port_pin_to_device(struct pin_device_t *pin_p)
             return (&pwm_device[i]);
         }
     }
-
+    
     return (NULL);
 }

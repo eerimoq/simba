@@ -27,7 +27,7 @@ int pwm_init(struct pwm_driver_t *self_p,
 {
     ASSERTN(self_p != NULL, -EINVAL);
     ASSERTN(dev_p != NULL, -EINVAL);
-
+    
     return (pwm_port_init(self_p, dev_p));
 }
 

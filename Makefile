@@ -142,6 +142,7 @@ endif
 
 ifeq ($(BOARD), arduino_nano)
     TESTS = $(addprefix tst/drivers/, ds18b20 \
+				      analog_output_pin \
 				      exti \
 				      owi)
 endif
