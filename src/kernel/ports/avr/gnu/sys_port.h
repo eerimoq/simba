@@ -34,28 +34,6 @@
                    }                                                    \
                                                                         ))
 
-#define _ASSERTFMT(fmt, ...) std_printf(FSTR(fmt "\n"), ##__VA_ARGS__);
-
-#define BTASSERT(cond, ...)                                             \
-    if (!(cond)) {                                                      \
-        std_printf(FSTR(__FILE__ ":%d: BTASSERT: " #cond), __LINE__); \
-        _ASSERTFMT(__VA_ARGS__);                                        \
-        exit(EBTASSERT);                                                \
-    }
-
-#if CONFIG_ASSERT == 1
-#  define ASSERTN(cond, n, ...)                                         \
-    if (!(cond)) {                                                      \
-        std_printf(FSTR(__FILE__ ":%d: ASSERT: (" #cond ") " #__VA_ARGS__ "\r\n"), \
-                   __LINE__);                                           \
-        sys.on_fatal_callback(n);                                       \
-    }
-#else
-#  define ASSERTN(cond, n, ...)
-#endif
-
-#define ASSERT(cond, ...) ASSERTN(cond, 1, __VA_ARGS__)
-
 #define SYS_SETTINGS_APP_BASE 0x100
 
 #define PACKED __attribute__((packed))

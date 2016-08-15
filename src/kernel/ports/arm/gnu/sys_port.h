@@ -25,13 +25,6 @@
 
 #define _ASSERTFMT(fmt, ...) std_printf(FSTR(fmt "\n"), ##__VA_ARGS__);
 
-#define BTASSERT(cond, ...)                                             \
-    if (!(cond)) {                                                      \
-        std_printf(FSTR(__FILE__ ":%d: BTASSERT: " #cond), __LINE__); \
-        _ASSERTFMT(__VA_ARGS__);                                        \
-        exit(EBTASSERT);                                                \
-    }
-
 #if CONFIG_ASSERT == 1
 #  define ASSERTN(cond, n, ...)                                         \
     if (!(cond)) {                                                      \

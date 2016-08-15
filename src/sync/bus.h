@@ -36,8 +36,11 @@ struct bus_listener_t {
 };
 
 /**
- * Initialize the bus module. This function must be called once before
- * any other function calls to this module.
+ * Initialize the bus module. This function must be called before
+ * calling any other function in this module.
+ *
+ * The module will only be initialized once even if this function is
+ * called multiple times.
  *
  * @return zero(0) or negative error code
  */

@@ -38,7 +38,13 @@
 extern struct pin_device_t pin_device[PIN_DEVICE_MAX];
 
 /**
- * Initialize the pin module.
+ * Initialize the pin module. This function must be called before
+ * calling any other function in this module.
+ *
+ * The module will only be initialized once even if this function is
+ * called multiple times.
+ *
+ * @return zero(0) or negative error code.
  */
 int pin_module_init(void);
 

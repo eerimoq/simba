@@ -25,7 +25,11 @@
 #include <stdarg.h>
 
 /**
- * Initialize module.
+ * Initialize the std module. This function must be called before
+ * calling any other function in this module.
+ *
+ * The module will only be initialized once even if this function is
+ * called multiple times.
  *
  * @return zero(0) or negative error code.
  */

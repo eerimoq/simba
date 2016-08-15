@@ -21,28 +21,6 @@
 #ifndef __KERNEL_SYS_PORT_H__
 #define __KERNEL_SYS_PORT_H__
 
-#define _ASSERTFMT(fmt, ...) fprintf(stderr, fmt "\n", ##__VA_ARGS__)
-
-#define BTASSERT(cond, ...)                                             \
-    if (!(cond)) {                                                      \
-        fprintf(stderr, __FILE__ ":%d: BTASSERT: %s ", __LINE__, #cond); \
-        _ASSERTFMT(__VA_ARGS__);                                        \
-        exit(1);                                                        \
-    }
-
-#if CONFIG_ASSERT == 1
-#  define ASSERTN(cond, n, ...)                                         \
-    if (!(cond)) {                                                      \
-        fprintf(stderr, __FILE__ ":%d: ASSERT: %s ", __LINE__, #cond);  \
-        _ASSERTFMT(__VA_ARGS__);                                        \
-        sys.on_fatal_callback(n);                                       \
-    }
-#else
-#  define ASSERTN(cond, n, ...)
-#endif
-
-#define ASSERT(cond, ...) ASSERTN(cond, 1, __VA_ARGS__)
-
 static inline uint32_t htonl(uint32_t v)
 {
     return (((v) << 24)

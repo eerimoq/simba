@@ -41,7 +41,13 @@
 extern struct spi_device_t spi_device[SPI_DEVICE_MAX];
 
 /**
- * Initialize SPI module.
+ * Initialize SPI module. This function must be called before calling
+ * any other function in this module.
+ *
+ * The module will only be initialized once even if this function is
+ * called multiple times.
+ *
+ * @return zero(0) or negative error code.
  */
 int spi_module_init(void);
 

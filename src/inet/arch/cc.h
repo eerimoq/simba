@@ -22,6 +22,7 @@
 #define __INET_ARCH_CC_H__
 
 #include <stdint.h>
+#include "kernel/types.h"
 #include "sys_port.h"
 
 /* Types based on stdint.h */

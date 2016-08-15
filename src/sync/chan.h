@@ -86,8 +86,11 @@ struct chan_t {
 };
 
 /**
- * Initialize the channel module. This function should only be called
- * from `sys_start()`.
+ * Initialize the channel module. This function must be called before
+ * calling any other function in this module.
+ *
+ * The module will only be initialized once even if this function is
+ * called multiple times.
  *
  * @return zero(0) or negative error code.
  */

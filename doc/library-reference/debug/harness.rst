@@ -18,7 +18,7 @@ Example test suite
 ------------------
 
 Below is an example of a test suite using the harness. It has three
-test cases; test_passed, test_failed and test_skipped.
+test cases; ``test_passed``, ``test_failed`` and ``test_skipped``.
 
 The test macro ``BTASSERT(condition)`` should be used to validate
 conditions.

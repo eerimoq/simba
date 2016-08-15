@@ -31,7 +31,11 @@ struct rwlock_t {
 };
 
 /**
- * Initialize the reader-writer lock module.
+ * Initialize the reader-writer lock module. This function must be
+ * called before calling any other function in this module.
+ *
+ * The module will only be initialized once even if this function is
+ * called multiple times.
  *
  * @return zero(0) or negative error code
  */

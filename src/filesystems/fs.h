@@ -83,6 +83,14 @@
 /**
  * Command callback prototype.
  *
+ * @param[in] argc Number of arguements in argv.
+ * @param[in] argv An array of agruments.
+ * @param[in] out_p Output channel.
+ * @param[in] in_p Input channel.
+ * @param[in] arg_p Argument passed to the init function of given
+ *                  command.
+ * @param[in] call_arg_p Argument passed to the ``fs_call`` function.
+ *
  * @return zero(0) or negative error code.
  */
 typedef int (*fs_callback_t)(int argc,
@@ -161,7 +169,11 @@ struct fs_parameter_t {
 };
 
 /**
- * Initialize the file system module.
+ * Initialize the file system module. This function must be called
+ * before calling any other function in this module.
+ *
+ * The module will only be initialized once even if this function is
+ * called multiple times.
  *
  * @return zero(0) or negative error code.
  */
@@ -180,7 +192,7 @@ int fs_module_init(void);
  * @param[in] chin_p Input channel.
  * @param[in] chout_p Output channel.
  * @param[in] arg_p User argument passed to the command callback
- *                  function.
+ *                  function as ``call_arg_p``.
  *
  * @return zero(0) or negative error code.
  */

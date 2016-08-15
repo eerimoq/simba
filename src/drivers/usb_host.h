@@ -72,7 +72,13 @@ struct usb_host_device_driver_t {
 #include "usb_host_port.h"
 
 /**
- * Initialize the USB host module.
+ * Initialize the USB host module. This function must be called before
+ * calling any other function in this module.
+ *
+ * The module will only be initialized once even if this function is
+ * called multiple times.
+ *
+ * @return zero(0) or negative error code.
  */
 int usb_host_module_init(void);
 

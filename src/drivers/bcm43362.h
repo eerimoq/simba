@@ -30,7 +30,13 @@ struct bcm43362_driver_t {
 };
 
 /**
- * Initialize the BCM43362 module.
+ * Initialize the BCM43362 module. This function must be called before
+ * calling any other function in this module.
+ *
+ * The module will only be initialized once even if this function is
+ * called multiple times.
+ *
+ * @return zero(0) or negative error code.
  */
 int bcm43362_module_init(void);
 

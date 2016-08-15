@@ -26,7 +26,13 @@
 #include "usb_device_port.h"
 
 /**
- * Initialize the USB device module.
+ * Initialize the USB device module. This function must be called
+ * before calling any other function in this module.
+ *
+ * The module will only be initialized once even if this function is
+ * called multiple times.
+ *
+ * @return zero(0) or negative error code.
  */
 int usb_device_module_init(void);
 

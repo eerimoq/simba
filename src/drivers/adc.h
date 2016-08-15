@@ -33,7 +33,13 @@
 extern struct adc_device_t adc_device[ADC_DEVICE_MAX];
 
 /**
- * Initialize the ADC driver module.
+ * Initialize the ADC driver module. This function must be called
+ * before calling any other function in this module.
+ *
+ * The module will only be initialized once even if this function is
+ * called multiple times.
+ *
+ * @return zero(0) or negative error code.
  */
 int adc_module_init(void);
 

@@ -457,13 +457,13 @@ static int cmd_counter_cb(int argc,
                           const char *argv[],
                           chan_t *chout_p,
                           chan_t *chin_p,
-                          void *cmd_arg_p,
-                          void *arg_p)
+                          void *arg_p,
+                          void *call_arg_p)
 {
     if (argc == 1) {
-        return (counter_get(cmd_arg_p, chout_p));
+        return (counter_get(arg_p, chout_p));
     } else {
-        return (counter_set(cmd_arg_p));
+        return (counter_set(arg_p));
     }
 }
 

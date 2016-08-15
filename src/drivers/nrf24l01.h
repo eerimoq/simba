@@ -37,7 +37,13 @@ struct nrf24l01_driver_t {
 };
 
 /**
- * Initialize NRF24L01 module.
+ * Initialize NRF24L01 module. This function must be called before
+ * calling any other function in this module.
+ *
+ * The module will only be initialized once even if this function is
+ * called multiple times.
+ *
+ * @return zero(0) or negative error code.
  */
 int nrf24l01_module_init(void);
 

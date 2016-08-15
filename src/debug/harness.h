@@ -23,6 +23,28 @@
 
 #include "simba.h"
 
+/**
+ * Assert given condition. Print an error message and return given
+ * value ``res`` on error.
+ */
+#define BTASSERTN(cond, res, ...)                                       \
+    if (!(cond)) {                                                      \
+        std_printf(FSTR(__FILE__ ":%d: BTASSERT: %s "), __LINE__, #cond); \
+        _ASSERTFMT(__VA_ARGS__);                                        \
+        return (res);                                                   \
+    }
+
+/**
+ * Assert given condition in a testcase. Print an error message and
+ * return -1 on error.
+ */
+#define BTASSERT(cond, ...)                                             \
+    if (!(cond)) {                                                      \
+        std_printf(FSTR(__FILE__ ":%d: BTASSERT: %s "), __LINE__, #cond); \
+        _ASSERTFMT(__VA_ARGS__);                                        \
+        return (-1);                                                    \
+    }
+
 struct harness_t;
 
 /**
@@ -55,10 +77,12 @@ struct harness_t {
 int harness_init(struct harness_t *self_p);
 
 /**
- * Run testcases in given test harness.
+ * Run given testcases in given test harness.
  *
  * @param[in] self_p Test harness.
- * @param[in] testcases_p Testcases to run.
+ * @param[in] testcases_p An array of testcases to run. The last
+ *                        element in the array must have ``callback``
+ *                        and ``name_p`` set to NULL.
  *
  * @return zero(0) or negative error code.
  */

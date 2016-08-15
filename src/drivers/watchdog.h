@@ -26,7 +26,13 @@
 #include "watchdog_port.h"
 
 /**
- * Initialize the watchdog driver module.
+ * Initialize the watchdog driver module. This function must be called
+ * before calling any other function in this module.
+ *
+ * The module will only be initialized once even if this function is
+ * called multiple times.
+ *
+ * @return zero(0) or negative error code.
  */
 int watchdog_module_init(void);
 

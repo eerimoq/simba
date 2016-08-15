@@ -24,39 +24,6 @@
 /* Put far data in RAM for now. */
 #define FAR const
 
-/**
- * @brief Stores string literal in FAR memory.
- */
-#define FSTR(s)                                 \
-    (__extension__(                             \
-        {                                       \
-            static FAR char __c[] = (s);        \
-            __c;                                \
-        }                                       \
-        ))
-
-#define _ASSERTFMT(fmt, ...) std_printf(FSTR(fmt "\n"), ##__VA_ARGS__);
-
-#define BTASSERT(cond, ...)                                             \
-    if (!(cond)) {                                                      \
-        std_printf(FSTR(__FILE__ ":%d: BTASSERT: " #cond), __LINE__);   \
-        _ASSERTFMT(__VA_ARGS__);                                        \
-        sys_stop(EBTASSERT);                                                \
-    }
-
-#if CONFIG_ASSERT == 1
-#  define ASSERTN(cond, n, ...)                                         \
-    if (!(cond)) {                                                      \
-        std_printf(FSTR(__FILE__ ":%d: ASSERT: (" #cond ") " #__VA_ARGS__ "\r\n"), \
-                   __LINE__);                                           \
-        sys.on_fatal_callback(n);                                       \
-    }
-#else
-#  define ASSERTN(cond, n, ...)
-#endif
-
-#define ASSERT(cond, ...) ASSERTN(cond, 1, __VA_ARGS__)
-
 #define SYS_SETTINGS_APP_BASE 0x100
 
 static inline uint32_t htonl(uint32_t v)

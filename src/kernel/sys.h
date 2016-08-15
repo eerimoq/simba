@@ -64,7 +64,11 @@ extern struct sys_t sys;
 #define SYS_TICK_MAX (~0ULL)
 
 /**
- * Initialize the sys module.
+ * Initialize the sys module. This function must be called before
+ * calling any other function in this module.
+ *
+ * The module will only be initialized once even if this function is
+ * called multiple times.
  *
  * @return zero(0) or negative error code.
  */

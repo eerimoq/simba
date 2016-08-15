@@ -29,7 +29,11 @@ struct ds18b20_driver_t {
 };
 
 /**
- * Initialize the DS18B20 driver module.
+ * Initialize the DS18B20 driver module. This function must be called
+ * before calling any other function in this module.
+ *
+ * The module will only be initialized once even if this function is
+ * called multiple times.
  *
  * @return zero(0) or negative error code.
  */

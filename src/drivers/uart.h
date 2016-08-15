@@ -28,7 +28,13 @@
 extern struct uart_device_t uart_device[UART_DEVICE_MAX];
 
 /**
- * Initialize UART module.
+ * Initialize UART module. This function must be called before calling
+ * any other function in this module.
+ *
+ * The module will only be initialized once even if this function is
+ * called multiple times.
+ *
+ * @return zero(0) or negative error code.
  */
 int uart_module_init(void);
 

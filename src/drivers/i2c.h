@@ -34,7 +34,11 @@
 extern struct i2c_device_t i2c_device[I2C_DEVICE_MAX];
 
 /**
- * Initialize the i2c module.
+ * Initialize the i2c module. This function must be called before
+ * calling any other function in this module.
+ *
+ * The module will only be initialized once even if this function is
+ * called multiple times.
  *
  * @return zero(0) or negative error code.
  */

@@ -28,7 +28,13 @@
 extern struct flash_device_t flash_device[FLASH_DEVICE_MAX];
 
 /**
- * Initialize the flash module.
+ * Initialize the flash module. This function must be called before
+ * calling any other function in this module.
+ *
+ * The module will only be initialized once even if this function is
+ * called multiple times.
+ *
+ * @return zero(0) or negative error code.
  */
 int flash_module_init(void);
 

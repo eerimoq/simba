@@ -45,7 +45,13 @@ struct exti_driver_t;
 extern struct exti_device_t exti_device[EXTI_DEVICE_MAX];
 
 /**
- * Initialize the external interrupt (EXTI) module.
+ * Initialize the external interrupt (EXTI) module. This function must
+ * be called before calling any other function in this module.
+ *
+ * The module will only be initialized once even if this function is
+ * called multiple times.
+ *
+ * @return zero(0) or negative error code.
  */
 int exti_module_init(void);
 

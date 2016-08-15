@@ -30,28 +30,28 @@ static void *t0_main(void *arg_p)
 
     /* Test: test_read_write. */
     b = 1;
-    BTASSERT(chan_write(&queue_p[0], &b, sizeof(b)) == sizeof(b));
-    BTASSERT(b == 1);
+    BTASSERTN(chan_write(&queue_p[0], &b, sizeof(b)) == sizeof(b), NULL);
+    BTASSERTN(b == 1, NULL);
     b = 2;
-    BTASSERT(chan_write(&queue_p[0], &b, sizeof(b)) == sizeof(b));
-    BTASSERT(b == 2);
+    BTASSERTN(chan_write(&queue_p[0], &b, sizeof(b)) == sizeof(b), NULL);
+    BTASSERTN(b == 2, NULL);
     b = 3;
-    BTASSERT(chan_write(&queue_p[0], &b, sizeof(b)) == sizeof(b));
-    BTASSERT(b == 3);
+    BTASSERTN(chan_write(&queue_p[0], &b, sizeof(b)) == sizeof(b), NULL);
+    BTASSERTN(b == 3, NULL);
     c[0] = 4;
     c[1] = 5;
     c[2] = 6;
     c[3] = 7;
-    BTASSERT(chan_write(&queue_p[0], c, sizeof(c)) == sizeof(c));
-    BTASSERT(c[0] == 4);
-    BTASSERT(c[1] == 5);
-    BTASSERT(c[2] == 6);
-    BTASSERT(c[3] == 7);
-    BTASSERT(chan_write(&queue_p[0], c, sizeof(c)) == sizeof(c));
-    BTASSERT(c[0] == 4);
-    BTASSERT(c[1] == 5);
-    BTASSERT(c[2] == 6);
-    BTASSERT(c[3] == 7);
+    BTASSERTN(chan_write(&queue_p[0], c, sizeof(c)) == sizeof(c), NULL);
+    BTASSERTN(c[0] == 4, NULL);
+    BTASSERTN(c[1] == 5, NULL);
+    BTASSERTN(c[2] == 6, NULL);
+    BTASSERTN(c[3] == 7, NULL);
+    BTASSERTN(chan_write(&queue_p[0], c, sizeof(c)) == sizeof(c), NULL);
+    BTASSERTN(c[0] == 4, NULL);
+    BTASSERTN(c[1] == 5, NULL);
+    BTASSERTN(c[2] == 6, NULL);
+    BTASSERTN(c[3] == 7, NULL);
 
     thrd_sleep_us(50000);
 
@@ -60,16 +60,16 @@ static void *t0_main(void *arg_p)
     c[1] = 9;
     c[2] = 10;
     c[3] = 11;
-    BTASSERT(chan_write(&queue_p[1], c, sizeof(c)) == sizeof(c));
+    BTASSERTN(chan_write(&queue_p[1], c, sizeof(c)) == sizeof(c), NULL);
 
     /* Write to chan that was polled but not read.*/
     b = 12;
-    BTASSERT(chan_write(&queue_p[0], &b, sizeof(b)) == sizeof(b));
+    BTASSERTN(chan_write(&queue_p[0], &b, sizeof(b)) == sizeof(b), NULL);
 
     /* Test: test_size. */
     b = 0;
-    BTASSERT(chan_read(&queue_p[0], &b, sizeof(b)) == sizeof(b));
-    BTASSERT(b == 1);
+    BTASSERTN(chan_read(&queue_p[0], &b, sizeof(b)) == sizeof(b), NULL);
+    BTASSERTN(b == 1, NULL);
 
     /* Test: test_stopped. */
     while (queue_unused_size(&queue_p[1]) == 0) {
@@ -77,8 +77,8 @@ static void *t0_main(void *arg_p)
     }
 
     b = 13;
-    BTASSERT(chan_write(&queue_p[1], &b, sizeof(b)) == sizeof(b));
-    BTASSERT(queue_stop(&queue_p[1]) == 1);
+    BTASSERTN(chan_write(&queue_p[1], &b, sizeof(b)) == sizeof(b), NULL);
+    BTASSERTN(queue_stop(&queue_p[1]) == 1, NULL);
 
     thrd_suspend(NULL);
     
