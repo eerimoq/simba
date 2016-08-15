@@ -208,7 +208,8 @@ def examples_generate(_):
         "http_client",
         "filesystem",
         "queue",
-        "timer"
+        "timer",
+        "analog_read"
     ]
 
     for example in examples:

@@ -32,10 +32,10 @@ int main()
     analog_input_pin_init(&pin, &pin_a0_dev);
 
     while (1) {
-        /* Wait half a second. */
-        thrd_sleep_us(500000);
+        /* Wait one second. */
+        thrd_sleep_us(1000000);
 
-        /* Read the analog pin value. */
+        /* Read the analog pin value and print it. */
         value = analog_input_pin_read(&pin);
         std_printf(FSTR("value = %d\r\n"), value);
     }

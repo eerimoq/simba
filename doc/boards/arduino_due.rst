@@ -24,6 +24,7 @@ Drivers
 Supported drivers for this board.
 
 - :doc:`../library-reference/drivers/adc`
+- :doc:`../library-reference/drivers/analog_input_pin`
 - :doc:`../library-reference/drivers/can`
 - :doc:`../library-reference/drivers/chipid`
 - :doc:`../library-reference/drivers/dac`
