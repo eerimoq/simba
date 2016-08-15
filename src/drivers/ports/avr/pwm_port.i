@@ -168,6 +168,50 @@ static int pwm_port_set_duty(struct pwm_driver_t *self_p,
     return (0);
 }
 
+static int pwm_port_get_duty(struct pwm_driver_t *self_p)
+{
+    int value;
+
+    value = -1;
+    
+    switch (self_p->dev_p->index) {
+    case 0:
+        value = OCR3B;
+        break;
+    case 1:
+        value = OCR3C;
+        break;
+    case 2:
+        value = OCR3A;
+        break;
+    case 3:
+        value = OCR4A;
+        break;
+    case 4:
+        value = OCR4B;
+        break;
+    case 5:
+        value = OCR4C;
+        break;
+    case 6:
+        value = OCR2B;
+        break;
+    case 7:
+        value = OCR2A;
+        break;
+    case 8:
+        value = OCR1A;
+        break;
+    case 9:
+        value = OCR1B;
+        break;
+    default:
+        break;
+    }
+
+    return (value);
+}
+
 #elif defined(MCU_ATMEGA32U4)
 
 static int pwm_port_init(struct pwm_driver_t *self_p,
@@ -185,3 +229,16 @@ static int pwm_port_set_duty(struct pwm_driver_t *self_p,
 #else
 #    error "PWM not implemented for this MCU"
 #endif
+
+static struct pwm_device_t *pwm_port_pin_to_device(struct pin_device_t *pin_p)
+{
+    int i;
+    
+    for (i = 0; i < PWM_DEVICE_MAX; i++) {
+        if (pwm_device[i].pin_dev_p == pin_p) {
+            return (&pwm_device[i]);
+        }
+    }
+
+    return (NULL);
+}

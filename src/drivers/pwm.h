@@ -39,14 +39,32 @@ int pwm_init(struct pwm_driver_t *self_p,
              struct pwm_device_t *dev_p);
 
 /**
- * Set duty cycle.
+ * Set the duty cycle.
  *
  * @param[in] self_p Driver object.
- * @param[in] value Value to set [0..255]
+ * @param[in] value Value to set [0..255].
  *
  * @return zero(0) or negative error code.
  */
 int pwm_set_duty(struct pwm_driver_t *self_p,
                  uint8_t value);
+
+/**
+ * Get current duty cycle.
+ *
+ * @param[in] self_p Driver object.
+ *
+ * @return Value in the range [0..255], or negative error code.
+ */
+int pwm_get_duty(struct pwm_driver_t *self_p);
+
+/**
+ * Get the PWM device for given pin.
+ *
+ * @param[in] pin_p The pin device to get the pwm device for.
+ *
+ * @return PWM device, or NULL on error.
+ */
+struct pwm_device_t *pwm_pin_to_device(struct pin_device_t *pin_p);
 
 #endif

@@ -96,6 +96,7 @@ typedef unsigned long off_t;
 #    include "drivers/sd.h"
 #    include "drivers/flash.h"
 #    include "drivers/analog_input_pin.h"
+#    include "drivers/analog_output_pin.h"
 #endif
 
 #if defined(FAMILY_AVR)
@@ -115,6 +116,7 @@ typedef unsigned long off_t;
 #    include "drivers/sd.h"
 #    include "drivers/watchdog.h"
 #    include "drivers/analog_input_pin.h"
+#    include "drivers/analog_output_pin.h"
 #
 #    if defined(MCU_ATMEGA32U4)
 #        include "drivers/usb.h"

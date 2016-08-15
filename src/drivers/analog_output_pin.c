@@ -1,5 +1,5 @@
 /**
- * @file pwm.c
+ * @file pin.c
  * @version 6.0.0
  *
  * @section License
@@ -20,35 +20,24 @@
 
 #include "simba.h"
 
-#include "pwm_port.i"
-
-int pwm_init(struct pwm_driver_t *self_p,
-             struct pwm_device_t *dev_p)
+int analog_output_pin_module_init(void)
 {
-    ASSERTN(self_p != NULL, -EINVAL);
-    ASSERTN(dev_p != NULL, -EINVAL);
-
-    return (pwm_port_init(self_p, dev_p));
+    return (0);
 }
 
-int pwm_set_duty(struct pwm_driver_t *self_p,
-                 uint8_t value)
+int analog_output_pin_init(struct analog_output_pin_t *self_p,
+                          struct pin_device_t *pin_p)
 {
-    ASSERTN(self_p != NULL, -EINVAL);
-
-    return (pwm_port_set_duty(self_p, value));
+    return (pwm_init(&self_p->pwm, pwm_pin_to_device(pin_p)));
 }
 
-int pwm_get_duty(struct pwm_driver_t *self_p)
+int analog_output_pin_write(struct analog_output_pin_t *self_p,
+                            int value)
 {
-    ASSERTN(self_p != NULL, -EINVAL);
-
-    return (pwm_port_get_duty(self_p));
+    return (pwm_set_duty(&self_p->pwm, value / 4));
 }
 
-struct pwm_device_t *pwm_pin_to_device(struct pin_device_t *pin_p)
+int analog_output_pin_read(struct analog_output_pin_t *self_p)
 {
-    ASSERTN(pin_p != NULL, -EINVAL);
-    
-    return (pwm_port_pin_to_device(pin_p));
+    return (pwm_get_duty(&self_p->pwm) * 4);
 }
