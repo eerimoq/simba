@@ -43,6 +43,7 @@ INC += $(SIMBA_ROOT)/src/drivers/ports/$(FAMILY)
 
 ifeq ($(FAMILY),linux)
 DRIVERS_SRC ?= adc.c \
+               analog_input_pin.c \
                flash.c \
                pin.c \
                pwm.c \
@@ -53,6 +54,7 @@ endif
 
 ifeq ($(FAMILY),avr)
 DRIVERS_SRC_TMP = adc.c \
+                  analog_input_pin.c \
                   ds18b20.c \
                   ds3231.c \
                   exti.c \
@@ -81,6 +83,7 @@ endif
 
 ifeq ($(FAMILY),sam)
 DRIVERS_SRC ?= adc.c \
+               analog_input_pin.c \
                can.c \
                chipid.c \
                dac.c \
@@ -99,6 +102,7 @@ endif
 
 ifeq ($(FAMILY),esp)
 DRIVERS_SRC ?= adc.c \
+               analog_input_pin.c \
                pin.c \
                spi.c \
                uart.c

@@ -1,8 +1,8 @@
 Examples
 ========
 
-Below is a short list of simple examples that are useful to understand
-the basics of `Simba`.
+Below is a list of simple examples that are useful to understand the
+basics of `Simba`.
 
 There are a lot more :github-tree:`examples<examples>` and
 :github-tree:`unit tests<tst>` on Github that shows how to use most of

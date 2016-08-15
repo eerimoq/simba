@@ -9,7 +9,7 @@ About
 -----
 
 Start a periodic timer that writes an event to the main thread. The
-main thread reads the event it prints "timeout" to the standard
+main thread reads the event and prints "timeout" to the standard
 output.
 
 Source code

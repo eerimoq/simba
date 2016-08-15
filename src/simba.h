@@ -95,6 +95,7 @@ typedef unsigned long off_t;
 #    include "drivers/can.h"
 #    include "drivers/sd.h"
 #    include "drivers/flash.h"
+#    include "drivers/analog_input_pin.h"
 #endif
 
 #if defined(FAMILY_AVR)
@@ -113,6 +114,7 @@ typedef unsigned long off_t;
 #    include "drivers/nrf24l01.h"
 #    include "drivers/sd.h"
 #    include "drivers/watchdog.h"
+#    include "drivers/analog_input_pin.h"
 #
 #    if defined(MCU_ATMEGA32U4)
 #        include "drivers/usb.h"
@@ -138,6 +140,7 @@ typedef unsigned long off_t;
 #    include "drivers/usb_host.h"
 #    include "drivers/usb/host/class/hid.h"
 #    include "drivers/usb/host/class/mass_storage.h"
+#    include "drivers/analog_input_pin.h"
 #endif
 
 #if defined(FAMILY_ESP)
@@ -145,6 +148,7 @@ typedef unsigned long off_t;
 #    include "drivers/spi.h"
 #    include "drivers/uart.h"
 #    include "drivers/adc.h"
+#    include "drivers/analog_input_pin.h"
 #endif
 
 #if defined(FAMILY_STM32F1)
