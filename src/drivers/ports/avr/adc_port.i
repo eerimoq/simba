@@ -30,10 +30,6 @@
 #define SAMPLING_RATE_TO_INTERRUPT_MAX(rate) \
     ((SAMPLING_RATE_HZ + rate - 1) / rate)
 
-#if defined(ADC_DEBUG_PIN)
-struct pin_driver_t pin;
-#endif
-
 ISR(ADC_vect)
 {
     struct adc_device_t *dev_p = &adc_device[0];
@@ -47,10 +43,6 @@ ISR(ADC_vect)
     }
 
     self_p->interrupt_count = 0;
-
-#if defined(ADC_DEBUG_PIN)
-    pin_toggle(&pin);
-#endif
 
     /* Read the sample from the output register. */
     self_p->samples_p[self_p->pos++] = ADC;
@@ -106,11 +98,6 @@ static int adc_port_init(struct adc_driver_t *self_p,
         SAMPLING_RATE_TO_INTERRUPT_MAX((long)sampling_rate);
     self_p->admux = (reference | (channel & 0x07));
     pin_init(&self_p->pin_drv, pin_dev_p, PIN_INPUT);
-
-#if defined(ADC_DEBUG_PIN)
-    pin_init(&pin, &pin_d12_dev, PIN_OUTPUT);
-    pin_write(&pin, 0);
-#endif
 
     return (0);
 }
