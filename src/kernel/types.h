@@ -40,19 +40,29 @@
  */
 #define UNUSED(v) (void)(v)
 
-/** Create a string of an identifier using the pre-processor. */
+/**
+ * Create a string of an identifier using the pre-processor.
+ */
 #define STRINGIFY(x) STRINGIFY2(x)
 
-/** Used by `STRINGIFY()`. */
+/**
+ * Used internally by `STRINGIFY()`.
+ */
 #define STRINGIFY2(x) #x
 
-/** Concatenate two tokens. */
+/**
+ * Concatenate two tokens.
+ */
 #define TOKENPASTE(x, y) TOKENPASTE2(x, y)
 
-/** Used by `TOKENPASTE()`. */
+/**
+ * Used internally by `TOKENPASTE()`.
+ */
 #define TOKENPASTE2(x, y) x ## y
 
-/** Create a unique token. */
+/**
+ * Create a unique token.
+ */
 #define UNIQUE(x)  TOKENPASTE(x, TOKENPASTE(___, __LINE__))
 
 /**
@@ -77,16 +87,24 @@
         const typeof( ((type *)0)->member ) *__mptr = (ptr);    \
         (type *)( (char *)__mptr - offsetof(type,member) );})
 
-/** Integer division that rounds the result up. */
+/**
+ * Integer division that rounds the result up.
+ */
 #define DIV_CEIL(n, d) (((n) + (d) - 1) / d)
 
+/**
+ * Get the minimum value of the two.
+ */
 #define MIN(a, b) (((a) < (b)) ? (a) : (b))
+
+/**
+ * Get the maximum value of the two.
+ */
 #define MAX(a, b) (((a) > (b)) ? (a) : (b))
 
-#define BCD_ENCODE(decoded) (decoded)
-#define BCD_DECODE(encoded) (encoded)
-
-/** Debug print of file and line. */
+/**
+ * Debug print of file and line.
+ */
 #define PRINT_FILE_LINE() std_printf(FSTR("%s:%d:\r\n"), __FILE__, __LINE__);
 
 #if CONFIG_DEBUG == 1
@@ -97,6 +115,10 @@
 
 #define _ASSERTFMT(fmt, ...) std_printf(FSTR(fmt "\n"), ##__VA_ARGS__);
 
+/**
+ * Assert given condition and call the system on fatal callback with
+ * given value ``n`` on error.
+ */
 #if CONFIG_ASSERT == 1
 #  define ASSERTN(cond, n, ...)                                         \
     if (!(cond)) {                                                      \
@@ -108,6 +130,10 @@
 #  define ASSERTN(cond, n, ...)
 #endif
 
+/**
+ * Assert given condition and call the system on fatal callback with
+ * value ``1`` on error.
+ */
 #define ASSERT(cond, ...) ASSERTN(cond, 1, __VA_ARGS__)
 
 #endif
