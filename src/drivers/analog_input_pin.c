@@ -45,3 +45,14 @@ int analog_input_pin_read(struct analog_input_pin_t *self_p)
 
     return (-1);
 }
+
+int analog_input_pin_read_isr(struct analog_input_pin_t *self_p)
+{
+    uint16_t sample;
+    
+    if (adc_convert_isr(&self_p->adc, &sample) == 0) {
+        return (sample);
+    }
+
+    return (-1);
+}

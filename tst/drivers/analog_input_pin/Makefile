@@ -1,9 +1,9 @@
 #
-# @file Makefile
+# @file hello_world/Makefile
 # @version 6.0.0
 #
 # @section License
-# Copyright (C) 2016, Erik Moqvist
+# Copyright (C) 2014-2016, Erik Moqvist
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
@@ -18,14 +18,11 @@
 # This file is part of the Simba project.
 #
 
-NAME = mqtt_client_suite
+NAME = analog_input_pin_suite
 BOARD ?= linux
 
-SRC += socket_stub.c
 CDEFS += CONFIG_MINIMAL_SYSTEM=1 \
 	CONFIG_FS_CMD_THRD_LIST=1
-
-SRC_IGNORE = $(SIMBA_ROOT)/src/inet/socket.c
 
 SIMBA_ROOT ?= ../../..
 include $(SIMBA_ROOT)/make/app.mk

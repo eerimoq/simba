@@ -134,6 +134,7 @@ ifeq ($(BOARD), arduino_mega)
 				    inet \
 				    mqtt_client)
     TESTS += $(addprefix tst/drivers/, adc \
+				       analog_input_pin \
 				       ds3231 \
 				       sd \
 				       pin)

@@ -56,7 +56,7 @@ static int vtokeq(const char *s_p,
     int i, start, end, size;
     int type;
     char *value_p;
-    
+
     size = -1;
     value_p = NULL;
 
@@ -173,7 +173,7 @@ static int encode(const char *r_p,
             ok = 0;
 
             std_printf(FSTR("encoded data is '"));
-            
+
             for (i = 0; i < status; i++) {
                 std_printf(FSTR("%c"), r_p[i]);
             }
@@ -191,7 +191,7 @@ static int encode(const char *r_p,
     return (ok);
 }
 
-static int decode(const char *s_p,
+static int decode(const FAR char *s_p,
                   int status,
                   int numtok,
                   ...)
@@ -201,13 +201,16 @@ static int decode(const char *s_p,
     va_list args;
     struct json_t p;
     struct json_tok_t t[128];
+    char buf[512];
 
     if (numtok > 128) {
         return (0);
     }
 
+    std_strcpy(buf, s_p);
+
     json_init(&p);
-    r = json_decode(&p, s_p, strlen(s_p), t, numtok);
+    r = json_decode(&p, buf, strlen(buf), t, numtok);
 
     if (r != status) {
         std_printf(FSTR("status is %d, not %d\r\n"), r, status);
@@ -216,22 +219,32 @@ static int decode(const char *s_p,
 
     if (status >= 0) {
         va_start(args, numtok);
-        ok = vtokeq(s_p, t, numtok, args);
+        ok = vtokeq(buf, t, numtok, args);
         va_end(args);
     }
 
     return (ok);
 }
 
+static int decode_no_check(const FAR char *s_p)
+{
+    struct json_t p;
+    struct json_tok_t t[128];
+    char buf[512];
+
+    std_strcpy(buf, s_p);
+    json_init(&p);
+
+    return (json_decode(&p, buf, strlen(buf), t, 128));
+}
+
 static int test_empty(struct harness_t *harness_p)
 {
-    /* struct json_tok_t tokens[3]; */
-
-    BTASSERT(decode("{}", 1, 1,
+    BTASSERT(decode(FSTR("{}"), 1, 1,
                     JSON_OBJECT, 0, 2, 0));
-    BTASSERT(decode("[]", 1, 1,
+    BTASSERT(decode(FSTR("[]"), 1, 1,
                     JSON_ARRAY, 0, 2, 0));
-    BTASSERT(decode("[{},{}]", 3, 3,
+    BTASSERT(decode(FSTR("[{},{}]"), 3, 3,
                     JSON_ARRAY, 0, 7, 2,
                     JSON_OBJECT, 1, 3, 0,
                     JSON_OBJECT, 4, 6, 0));
@@ -244,21 +257,21 @@ static int test_empty(struct harness_t *harness_p)
 
 static int test_object(struct harness_t *harness_p)
 {
-    BTASSERT(decode("{\"a\":0}", 3, 3,
+    BTASSERT(decode(FSTR("{\"a\":0}"), 3, 3,
                     JSON_OBJECT, 0, 7, 1,
                     JSON_STRING, "a", 1,
                     JSON_PRIMITIVE, "0"));
-    BTASSERT(decode("{\"a\":[]}", 3, 3,
+    BTASSERT(decode(FSTR("{\"a\":[]}"), 3, 3,
                     JSON_OBJECT, 0, 8, 1,
                     JSON_STRING, "a", 1,
                     JSON_ARRAY, 5, 7, 0));
-    BTASSERT(decode("{\"a\":{},\"b\":{}}", 5, 5,
+    BTASSERT(decode(FSTR("{\"a\":{},\"b\":{}}"), 5, 5,
                     JSON_OBJECT, -1, -1, 2,
                     JSON_STRING, "a", 1,
                     JSON_OBJECT, -1, -1, 0,
                     JSON_STRING, "b", 1,
                     JSON_OBJECT, -1, -1, 0));
-    BTASSERT(decode("{\n \"Day\": 26,\n \"Month\": 9,\n \"Year\": 12\n }",
+    BTASSERT(decode(FSTR("{\n \"Day\":26,\n \"Month\":9,\n \"Year\":12\n }"),
                     7, 7,
                     JSON_OBJECT, -1, -1, 3,
                     JSON_STRING, "Day", 1,
@@ -267,7 +280,7 @@ static int test_object(struct harness_t *harness_p)
                     JSON_PRIMITIVE, "9",
                     JSON_STRING, "Year", 1,
                     JSON_PRIMITIVE, "12"));
-    BTASSERT(decode("{\"a\": 0, \"b\": \"c\"}", 5, 5,
+    BTASSERT(decode(FSTR("{\"a\":0,\"b\":\"c\"}"), 5, 5,
                     JSON_OBJECT, -1, -1, 2,
                     JSON_STRING, "a", 1,
                     JSON_PRIMITIVE, "0",
@@ -275,14 +288,14 @@ static int test_object(struct harness_t *harness_p)
                     JSON_STRING, "c", 0));
 
 #ifdef JSON_STRICT
-    BTASSERT(decode("{\"a\"\n0}", JSON_ERROR_INVAL, 3));
-    BTASSERT(decode("{\"a\", 0}", JSON_ERROR_INVAL, 3));
-    BTASSERT(decode("{\"a\": {2}}", JSON_ERROR_INVAL, 3));
-    BTASSERT(decode("{\"a\": {2: 3}}", JSON_ERROR_INVAL, 3));
-    BTASSERT(decode("{\"a\": {\"a\": 2 3}}", JSON_ERROR_INVAL, 5));
+    BTASSERT(decode(FSTR("{\"a\"\n0}"), JSON_ERROR_INVAL, 3));
+    BTASSERT(decode(FSTR("{\"a\",0}"), JSON_ERROR_INVAL, 3));
+    BTASSERT(decode(FSTR("{\"a\":{2}}"), JSON_ERROR_INVAL, 3));
+    BTASSERT(decode(FSTR("{\"a\":{2:3}}"), JSON_ERROR_INVAL, 3));
+    BTASSERT(decode(FSTR("{\"a\":{\"a\":2 3}}"), JSON_ERROR_INVAL, 5));
     /* FIXME */
     /*BTASSERT(decode("{\"a\"}", JSON_ERROR_INVAL, 2));*/
-    /*BTASSERT(decode("{\"a\": 1, \"b\"}", JSON_ERROR_INVAL, 4));*/
+    /*BTASSERT(decode("{\"a\":1, \"b\"}", JSON_ERROR_INVAL, 4));*/
     /*BTASSERT(decode("{\"a\",\"b\":1}", JSON_ERROR_INVAL, 4));*/
     /*BTASSERT(decode("{\"a\":1,}", JSON_ERROR_INVAL, 4));*/
     /*BTASSERT(decode("{\"a\":\"b\":\"c\"}", JSON_ERROR_INVAL, 4));*/
@@ -297,35 +310,35 @@ static int test_array(struct harness_t *harness_p)
     /* FIXME */
     /*BTASSERT(decode("[10}", JSON_ERROR_INVAL, 3));*/
     /*BTASSERT(decode("[1,,3]", JSON_ERROR_INVAL, 3)*/
-    BTASSERT(decode("[10]", 2, 2,
+    BTASSERT(decode(FSTR("[10]"), 2, 2,
                     JSON_ARRAY, -1, -1, 1,
                     JSON_PRIMITIVE, "10"));
-    BTASSERT(decode("{\"a\": 1]", JSON_ERROR_INVAL, 3));
+    BTASSERT(decode(FSTR("{\"a\":1]"), JSON_ERROR_INVAL, 3));
     /* FIXME */
-    /*BTASSERT(decode("[\"a\": 1]", JSON_ERROR_INVAL, 3));*/
+    /*BTASSERT(decode("[\"a\":1]", JSON_ERROR_INVAL, 3));*/
 
     return (0);
 }
 
 static int test_primitive(struct harness_t *harness_p)
 {
-    BTASSERT(decode("{\"boolVar\" : true }", 3, 3,
+    BTASSERT(decode(FSTR("{\"boolVar\":true }"), 3, 3,
                     JSON_OBJECT, -1, -1, 1,
                     JSON_STRING, "boolVar", 1,
                     JSON_PRIMITIVE, "true"));
-    BTASSERT(decode("{\"boolVar\" : false }", 3, 3,
+    BTASSERT(decode(FSTR("{\"boolVar\":false }"), 3, 3,
                     JSON_OBJECT, -1, -1, 1,
                     JSON_STRING, "boolVar", 1,
                     JSON_PRIMITIVE, "false"));
-    BTASSERT(decode("{\"nullVar\" : null }", 3, 3,
+    BTASSERT(decode(FSTR("{\"nullVar\":null }"), 3, 3,
                     JSON_OBJECT, -1, -1, 1,
                     JSON_STRING, "nullVar", 1,
                     JSON_PRIMITIVE, "null"));
-    BTASSERT(decode("{\"intVar\" : 12}", 3, 3,
+    BTASSERT(decode(FSTR("{\"intVar\":12}"), 3, 3,
                     JSON_OBJECT, -1, -1, 1,
                     JSON_STRING, "intVar", 1,
                     JSON_PRIMITIVE, "12"));
-    BTASSERT(decode("{\"floatVar\" : 12.345}", 3, 3,
+    BTASSERT(decode(FSTR("{\"floatVar\":12.345}"), 3, 3,
                     JSON_OBJECT, -1, -1, 1,
                     JSON_STRING, "floatVar", 1,
                     JSON_PRIMITIVE, "12.345"));
@@ -335,40 +348,40 @@ static int test_primitive(struct harness_t *harness_p)
 
 static int test_string(struct harness_t *harness_p)
 {
-    BTASSERT(decode("{\"strVar\" : \"hello world\"}", 3, 3,
+    BTASSERT(decode(FSTR("{\"strVar\":\"hello world\"}"), 3, 3,
                     JSON_OBJECT, -1, -1, 1,
                     JSON_STRING, "strVar", 1,
                     JSON_STRING, "hello world", 0));
-    BTASSERT(decode("{\"strVar\" : \"escapes: \\/\\r\\n\\t\\b\\f\\\"\\\\\"}",
+    BTASSERT(decode(FSTR("{\"strVar\":\"escapes:\\/\\r\\n\\t\\b\\f\\\"\\\\\"}"),
                     3, 3,
                     JSON_OBJECT, -1, -1, 1,
                     JSON_STRING, "strVar", 1,
-                    JSON_STRING, "escapes: \\/\\r\\n\\t\\b\\f\\\"\\\\", 0));
-    BTASSERT(decode("{\"strVar\": \"\"}", 3, 3,
+                    JSON_STRING, "escapes:\\/\\r\\n\\t\\b\\f\\\"\\\\", 0));
+    BTASSERT(decode(FSTR("{\"strVar\":\"\"}"), 3, 3,
                     JSON_OBJECT, -1, -1, 1,
                     JSON_STRING, "strVar", 1,
                     JSON_STRING, "", 0));
-    BTASSERT(decode("{\"a\":\"\\uAbcD\"}", 3, 3,
+    BTASSERT(decode(FSTR("{\"a\":\"\\uAbcD\"}"), 3, 3,
                     JSON_OBJECT, -1, -1, 1,
                     JSON_STRING, "a", 1,
                     JSON_STRING, "\\uAbcD", 0));
-    BTASSERT(decode("{\"a\":\"str\\u0000\"}", 3, 3,
+    BTASSERT(decode(FSTR("{\"a\":\"str\\u0000\"}"), 3, 3,
                     JSON_OBJECT, -1, -1, 1,
                     JSON_STRING, "a", 1,
                     JSON_STRING, "str\\u0000", 0));
-    BTASSERT(decode("{\"a\":\"\\uFFFFstr\"}", 3, 3,
+    BTASSERT(decode(FSTR("{\"a\":\"\\uFFFFstr\"}"), 3, 3,
                     JSON_OBJECT, -1, -1, 1,
                     JSON_STRING, "a", 1,
                     JSON_STRING, "\\uFFFFstr", 0));
-    BTASSERT(decode("{\"a\":[\"\\u0280\"]}", 4, 4,
+    BTASSERT(decode(FSTR("{\"a\":[\"\\u0280\"]}"), 4, 4,
                     JSON_OBJECT, -1, -1, 1,
                     JSON_STRING, "a", 1,
                     JSON_ARRAY, -1, -1, 1,
                     JSON_STRING, "\\u0280", 0));
 
-    BTASSERT(decode("{\"a\":\"str\\uFFGFstr\"}", JSON_ERROR_INVAL, 3));
-    BTASSERT(decode("{\"a\":\"str\\u@FfF\"}", JSON_ERROR_INVAL, 3));
-    BTASSERT(decode("{{\"a\":[\"\\u028\"]}", JSON_ERROR_INVAL, 4));
+    BTASSERT(decode(FSTR("{\"a\":\"str\\uFFGFstr\"}"), JSON_ERROR_INVAL, 3));
+    BTASSERT(decode(FSTR("{\"a\":\"str\\u@FfF\"}"), JSON_ERROR_INVAL, 3));
+    BTASSERT(decode(FSTR("{{\"a\":[\"\\u028\"]}"), JSON_ERROR_INVAL, 4));
 
     return (0);
 }
@@ -379,7 +392,7 @@ static int test_partial_string(struct harness_t *harness_p)
     int r;
     struct json_t p;
     struct json_tok_t tok[5];
-    const char *js_p = "{\"x\": \"va\\\\ue\", \"y\": \"value y\"}";
+    const char *js_p = "{\"x\":\"va\\\\ue\",\"y\":\"value y\"}";
 
     json_init(&p);
 
@@ -411,7 +424,7 @@ static int test_partial_array(struct harness_t *harness_p)
     jsontok_t tok[10];
     const char *js_p;
 
-    js_p = "[ 1, true, [123, \"hello\"]]";
+    js_p = "[ 1,true,[123,\"hello\"]]";
 
     json_init(&p);
 
@@ -444,7 +457,7 @@ static int test_array_nomem(struct harness_t *harness_p)
     struct json_tok_t toksmall[10], toklarge[10];
     const char *js_p;
 
-    js_p = "  [ 1, true, [123, \"hello\"]]";
+    js_p = "  [ 1,true,[123,\"hello\"]]";
 
     for (i = 0; i < 6; i++) {
         json_init(&p);
@@ -477,7 +490,7 @@ static int test_unquoted_keys(struct harness_t *harness_p)
     struct json_tok_t tok[10];
     const char *js_p;
 
-    js_p = "key1: \"value\"\nkey2 : 123";
+    js_p = "key1:\"value\"\nkey2:123";
 
     json_init(&p);
     r = json_decode(&p, js_p, strlen(js_p), tok, 10);
@@ -495,34 +508,28 @@ static int test_unquoted_keys(struct harness_t *harness_p)
 
 static int test_issue_22(struct harness_t *harness_p)
 {
-    int r;
-    struct json_t p;
-    struct json_tok_t tokens[128];
-    const char *js_p;
+    const FAR char *js_p;
 
     js_p =
-        "{ \"height\":10, \"layers\":[ { \"data\":[6,6], \"height\":10, "
-        "\"name\":\"Calque de Tile 1\", \"opacity\":1, \"type\":\"tilelayer\", "
-        "\"visible\":true, \"width\":10, \"x\":0, \"y\":0 }], "
-        "\"orientation\":\"orthogonal\", \"properties\": { }, \"tileheight\":32, "
-        "\"tilesets\":[ { \"firstgid\":1, \"image\":\"..\\/images\\/tiles.png\", "
-        "\"imageheight\":64, \"imagewidth\":160, \"margin\":0, \"name\":\"Tiles\", "
-        "\"properties\":{}, \"spacing\":0, \"tileheight\":32, \"tilewidth\":32 }], "
-        "\"tilewidth\":32, \"version\":1, \"width\":10 }";
+        FSTR("{ \"height\":10,\"layers\":[ { \"data\":[6,6],\"height\":10,"
+             "\"name\":\"Calque de Tile 1\",\"opacity\":1,\"type\":\"tilelayer\","
+             "\"visible\":true,\"width\":10,\"x\":0,\"y\":0 }],"
+             "\"orientation\":\"orthogonal\",\"properties\":{ },\"tileheight\":32,"
+             "\"tilesets\":[ { \"firstgid\":1,\"image\":\"..\\/images\\/tiles.png\","
+             "\"imageheight\":64,\"imagewidth\":160,\"margin\":0,\"name\":\"Tiles\","
+             "\"properties\":{},\"spacing\":0,\"tileheight\":32,\"tilewidth\":32 }],"
+             "\"tilewidth\":32,\"version\":1,\"width\":10 }");
 
-    json_init(&p);
-    r = json_decode(&p, js_p, strlen(js_p), tokens, 128);
-
-    BTASSERT(r >= 0);
+    BTASSERT(decode_no_check(js_p) >= 0);
 
     return (0);
 }
 
 static int test_issue_27(struct harness_t *harness_p)
 {
-    const char *js_p;
+    const FAR char *js_p;
 
-    js_p = "{ \"name\" : \"Jack\", \"age\" : 27 } { \"name\" : \"Anna\", ";
+    js_p = FSTR("{ \"name\":\"Jack\",\"age\":27 } { \"name\":\"Anna\",");
 
     BTASSERT(decode(js_p, JSON_ERROR_PART, 8));
 
@@ -536,10 +543,10 @@ static int test_input_length(struct harness_t *harness_p)
     struct json_t p;
     struct json_tok_t tokens[10];
 
-    js_p = "{\"a\": 0}garbage";
+    js_p = "{\"a\":0}garbage";
 
     json_init(&p);
-    r = json_decode(&p, js_p, 8, tokens, 10);
+    r = json_decode(&p, js_p, 7, tokens, 10);
     BTASSERT(r == 3);
     BTASSERT(tokeq(js_p, tokens, 3,
                    JSON_OBJECT, -1, -1, 1,
@@ -550,48 +557,16 @@ static int test_input_length(struct harness_t *harness_p)
 
 static int test_count(struct harness_t *harness_p)
 {
-    struct json_t p;
-    const char *js_p;
-
-    js_p = "{}";
-    json_init(&p);
-    BTASSERT(json_decode(&p, js_p, strlen(js_p), NULL, 0) == 1);
-
-    js_p = "[]";
-    json_init(&p);
-    BTASSERT(json_decode(&p, js_p, strlen(js_p), NULL, 0) == 1);
-
-    js_p = "[[]]";
-    json_init(&p);
-    BTASSERT(json_decode(&p, js_p, strlen(js_p), NULL, 0) == 2);
-
-    js_p = "[[], []]";
-    json_init(&p);
-    BTASSERT(json_decode(&p, js_p, strlen(js_p), NULL, 0) == 3);
-
-    js_p = "[{}, {}]";
-    json_init(&p);
-    BTASSERT(json_decode(&p, js_p, strlen(js_p), NULL, 0) == 3);
-
-    js_p = "[[], [[]], [[], []]]";
-    json_init(&p);
-    BTASSERT(json_decode(&p, js_p, strlen(js_p), NULL, 0) == 7);
-
-    js_p = "[\"a\", [[], []]]";
-    json_init(&p);
-    BTASSERT(json_decode(&p, js_p, strlen(js_p), NULL, 0) == 5);
-
-    js_p = "[[], \"[], [[]]\", [[]]]";
-    json_init(&p);
-    BTASSERT(json_decode(&p, js_p, strlen(js_p), NULL, 0) == 5);
-
-    js_p = "[1, 2, 3]";
-    json_init(&p);
-    BTASSERT(json_decode(&p, js_p, strlen(js_p), NULL, 0) == 4);
-
-    js_p = "[1, 2, [3, \"a\"], null]";
-    json_init(&p);
-    BTASSERT(json_decode(&p, js_p, strlen(js_p), NULL, 0) == 7);
+    BTASSERT(decode_no_check(FSTR("{}")) == 1);
+    BTASSERT(decode_no_check("[]") == 1);
+    BTASSERT(decode_no_check(FSTR("[[]]")) == 2);
+    BTASSERT(decode_no_check(FSTR("[[],[]]")) == 3);
+    BTASSERT(decode_no_check(FSTR("[{},{}]")) == 3);
+    BTASSERT(decode_no_check(FSTR("[[],[[]],[[],[]]]")) == 7);
+    BTASSERT(decode_no_check(FSTR("[\"a\",[[],[]]]")) == 5);
+    BTASSERT(decode_no_check(FSTR("[[],\"[],[[]]\",[[]]]")) == 5);
+    BTASSERT(decode_no_check(FSTR("[1,2,3]")) == 4);
+    BTASSERT(decode_no_check(FSTR("[1,2,[3,\"a\"],null]")) == 7);
 
     return (0);
 }
@@ -599,16 +574,11 @@ static int test_count(struct harness_t *harness_p)
 static int test_nonstrict(struct harness_t *harness_p)
 {
 #ifndef JSON_STRICT
-    const char *js_p;
-
-    js_p = "a: 0garbage";
-
-    BTASSERT(decode(js_p, 2, 2,
+    BTASSERT(decode(FSTR("a:0garbage"), 2, 2,
                     JSON_PRIMITIVE, "a",
                     JSON_PRIMITIVE, "0garbage"));
 
-    js_p = "Day : 26\nMonth : Sep\n\nYear: 12";
-    BTASSERT(decode(js_p, 6, 6,
+    BTASSERT(decode(FSTR("Day:26\nMonth:Sep\n\nYear:12"), 6, 6,
                     JSON_PRIMITIVE, "Day",
                     JSON_PRIMITIVE, "26",
                     JSON_PRIMITIVE, "Month",
@@ -653,14 +623,14 @@ static int test_encode(struct harness_t *harness_p)
     status = json_encode(&p, tokens, 11, buf);
     BTASSERT(status == 55);
     BTASSERT(strlen(buf) == 55);
-    BTASSERT(memcmp(buf,
-                    "{"
-                    "true:null,"
-                    "false:null,"
-                    "null:null,"
-                    "12.345:null,"
-                    "\"foo\":null"
-                    "}", status) == 0);
+    BTASSERT(std_strcmp(buf,
+                        FSTR("{"
+                             "true:null,"
+                             "false:null,"
+                             "null:null,"
+                             "12.345:null,"
+                             "\"foo\":null"
+                             "}")) == 0);
     BTASSERT(json_decode(&p, buf, status, NULL, 0) == 11);
 
     /* Test an array as top object token. */
@@ -670,7 +640,7 @@ static int test_encode(struct harness_t *harness_p)
     status = json_encode(&p, tokens, 2, buf);
     BTASSERT(status == 6);
     BTASSERT(strlen(buf) == 6);
-    BTASSERT(memcmp(buf, "[true]", status) == 0);
+    BTASSERT(std_strcmp(buf, FSTR("[true]")) == 0);
 
     /* Empty array. */
     tokens[0] = json_token_array(0);
@@ -678,7 +648,7 @@ static int test_encode(struct harness_t *harness_p)
     status = json_encode(&p, tokens, 1, buf);
     BTASSERT(status == 2);
     BTASSERT(strlen(buf) == 2);
-    BTASSERT(memcmp(buf, "[]", status) == 0);
+    BTASSERT(std_strcmp(buf, FSTR("[]")) == 0);
 
     return (0);
 }

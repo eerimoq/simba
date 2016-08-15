@@ -22,7 +22,8 @@ NAME = dac_suite
 BOARD ?= linux
 TIMEOUT=60
 
-CDEFS += CONFIG_MINIMAL_SYSTEM=1
+CDEFS += CONFIG_MINIMAL_SYSTEM=1 \
+	CONFIG_FS_CMD_THRD_LIST=1
 
 SIMBA_ROOT ?= ../../..
 include $(SIMBA_ROOT)/make/app.mk

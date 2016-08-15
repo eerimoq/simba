@@ -58,4 +58,14 @@ int analog_input_pin_init(struct analog_input_pin_t *self_p,
  */
 int analog_input_pin_read(struct analog_input_pin_t *self_p);
 
+/**
+ * Read the current value of given pin from an isr or with the system
+ * lock taken.
+ *
+ * @param[in] self_p Driver object.
+ *
+ * @return Analog pin value, otherwise negative error code.
+ */
+int analog_input_pin_read_isr(struct analog_input_pin_t *self_p);
+
 #endif

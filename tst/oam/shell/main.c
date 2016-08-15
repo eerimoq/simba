@@ -254,6 +254,7 @@ static int test_auto_completion(struct harness_t *harness_p)
                              "foo\r\n"
                              "help\r\n"
                              "history\r\n"
+                             "kernel/\r\n"
                              "logout\r\n"
                              "tmp/\r\n"
                              "$ ")) == 0);

@@ -350,6 +350,7 @@ static int test_list(struct harness_t *harness_p)
     BTASSERT(fs_list("", NULL, &qout) == 0);
     read_until(buf,
                "filesystems/\r\n"
+               "kernel/\r\n"
                "logout\r\n"
                "my/\r\n"
                "our/\r\n"
