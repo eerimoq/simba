@@ -49,12 +49,33 @@ static int test_ntoa(struct harness_t *harness_p)
     return (0);
 }
 
+static int test_inet_checksum(struct harness_t *harness_p)
+{
+    char buf[8] = { 1, 5, 3, 9, 7, 13, 11, 17 };
+
+    BTASSERT(inet_checksum(&buf, sizeof(buf)) == 0xe9d3);
+    BTASSERT(inet_checksum(&buf, sizeof(buf) - 1) == 0xe9e4);
+
+    /* One of the higher 16 bits in combined value in
+       inet_checksum_end() is set. */
+    buf[0] = 0xff;
+    buf[1] = 0xff;
+    buf[2] = 0xff;
+    buf[3] = 0xff;
+    buf[4] = 0x00;
+    buf[5] = 0x01;
+    BTASSERT(inet_checksum(&buf, 6) == 0xfffe);
+
+    return (0);
+}
+
 int main()
 {
     struct harness_t harness;
     struct harness_testcase_t harness_testcases[] = {
         { test_aton, "test_aton" },
         { test_ntoa, "test_ntoa" },
+        { test_inet_checksum, "test_inet_checksum" },
         { NULL, NULL }
     };
 

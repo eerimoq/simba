@@ -83,7 +83,7 @@ int inet_aton(const char *src_p,
     }
 
     number_p = std_strtol(number_p, &number);
-    
+
     if ((number_p == NULL)
         || (*number_p != '\0')
         || (number < 0)
@@ -93,7 +93,7 @@ int inet_aton(const char *src_p,
 
     dst_p->number <<= 8;
     dst_p->number += number;
-    
+
     dst_p->number = htonl(dst_p->number);
 
     return (0);
