@@ -20,12 +20,22 @@
 
 #include "simba.h"
 
+int socket_module_init()
+{
+    return (0);
+}
+
 int socket_open_tcp(struct socket_t *self_p)
 {
     return (0);
 }
 
 int socket_open_udp(struct socket_t *self_p)
+{
+    return (0);
+}
+
+int socket_open_raw(struct socket_t *self_p)
 {
     return (0);
 }

@@ -52,6 +52,11 @@ static size_t size(chan_t *self_p)
     return (0);
 }
 
+int socket_module_init()
+{
+    return (0);
+}
+
 int socket_open_tcp(struct socket_t *self_p)
 {
     return (chan_init(&self_p->base, read, write, size));
@@ -60,6 +65,11 @@ int socket_open_tcp(struct socket_t *self_p)
 int socket_open_udp(struct socket_t *self_p)
 {
     return (-1);
+}
+
+int socket_open_raw(struct socket_t *self_p)
+{
+    return (0);
 }
 
 int socket_close(struct socket_t *self_p)
