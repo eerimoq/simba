@@ -202,15 +202,16 @@ def examples_generate(_):
     """
 
     examples = [
-        "blink",
-        "hello_world",
-        "shell",
-        "http_client",
-        "filesystem",
-        "queue",
-        "timer",
         "analog_read",
-        "analog_write"
+        "analog_write",
+        "blink",
+        "filesystem",
+        "hello_world",
+        "http_client",
+        "ping",
+        "queue",
+        "shell",
+        "timer"
     ]
 
     for example in examples:

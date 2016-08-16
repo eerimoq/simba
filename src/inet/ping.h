@@ -36,19 +36,21 @@ int ping_module_init(void);
 
 /**
  * Ping host by given ip address. Send an echo request packet to given
- * host and wait for the echo reply packet.
+ * host and wait for the echo reply packet. No extra payload data is
+ * transmitted, only the ICMP header.
  *
  * @param[in] address_p IP address of the host to ping.
  * @param[in] timeout_p Number of seconds to wait for the echo reply
  *                      packet.
- * @param[out] rtt_p Ping round trip time. The time it took from
- *                   sending the echo request packet to receiving the
- *                   echo reply packet.
+ * @param[out] round_trip_time_p The time it took from sending the
+ *                               echo request packet to receiving the
+ *                               echo reply packet. Only valid if this
+ *                               functions returns zero(0).
  *
  * @return zero(0) or negative error code.
  */
 int ping_host_by_ip_address(struct inet_ip_addr_t *address_p,
                             struct time_t *timeout_p,
-                            struct time_t *rtt_p);
+                            struct time_t *round_trip_time_p);
 
 #endif

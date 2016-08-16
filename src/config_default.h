@@ -257,6 +257,13 @@
 #endif
 
 /**
+ * Debug file system command to ping a host.
+ */
+#ifndef CONFIG_FS_CMD_PING_PING
+#    define CONFIG_FS_CMD_PING_PING                         1
+#endif
+
+/**
  * Debug file system command to list all settings.
  */
 #ifndef CONFIG_FS_CMD_SETTINGS_LIST

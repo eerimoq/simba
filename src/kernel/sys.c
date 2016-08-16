@@ -337,7 +337,8 @@ static int start_network(void)
     inet_module_init();
     socket_module_init();
     network_interface_module_init();
-
+    ping_module_init();
+    
     std_printf(FSTR("Connecting to WiFi with SSID '%s'.\r\n"), ssid);
 
     /* Initialize WiFi in station mode with given SSID and

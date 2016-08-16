@@ -34,14 +34,87 @@ struct echo_header_t {
     uint16_t seqno;
 };
 
+struct module_t {
+    int initialized;
+#if CONFIG_FS_CMD_PING_PING == 1
+    struct fs_command_t cmd_ping;
+#endif
+};
+
+static struct module_t module;
+
+#if CONFIG_FS_CMD_PING_PING == 1
+
+static int cmd_ping_cb(int argc,
+                       const char *argv[],
+                       chan_t *out_p,
+                       chan_t *in_p,
+                       void *arg_p,
+                       void *call_arg_p)
+{
+    int res;
+    int round_trip_time_ms;
+    struct inet_ip_addr_t address;
+    struct time_t round_trip_time, timeout;
+    const char *remote_host_p;
+    
+    if (argc != 2) {
+        std_fprintf(out_p, FSTR("Usage: %s <remote host>\r\n"), argv[0]);
+        return (-1);
+    }
+
+    remote_host_p = argv[1];
+    
+    if (inet_aton(remote_host_p, &address) != 0) {
+        std_printf(FSTR("Bad ip address '%s'.\r\n"), remote_host_p);
+        return (-1);
+    }
+
+    timeout.seconds = 3;
+    timeout.nanoseconds = 0;
+
+    res = ping_host_by_ip_address(&address, &timeout, &round_trip_time);
+
+    if (res == 0) {
+        round_trip_time_ms = (round_trip_time.seconds * 1000
+                              + round_trip_time.nanoseconds / 1000000);
+        std_printf(FSTR("Successfully pinged '%s' in %d ms.\r\n"),
+                   remote_host_p,
+                   round_trip_time_ms);
+    } else {
+        std_printf(FSTR("Failed to ping '%s'.\r\n"), remote_host_p);
+    }
+    
+    return (0);
+}
+
+#endif
+
 int ping_module_init(void)
 {
+    /* Return immediately if the module is already initialized. */
+    if (module.initialized == 1) {
+        return (0);
+    }
+
+    module.initialized = 1;
+
+#if CONFIG_FS_CMD_PING_PING == 1
+
+    fs_command_init(&module.cmd_ping,
+                    FSTR("/inet/ping/ping"),
+                    cmd_ping_cb,
+                    NULL);
+    fs_command_register(&module.cmd_ping);
+
+#endif
+
     return (socket_module_init());
 }
 
 int ping_host_by_ip_address(struct inet_ip_addr_t *address_p,
                             struct time_t *timeout_p,
-                            struct time_t *rtt_p)
+                            struct time_t *round_trip_time_p)
 {
     ssize_t reply_size;
     struct socket_t socket;
@@ -59,13 +132,15 @@ int ping_host_by_ip_address(struct inet_ip_addr_t *address_p,
     request.code = 0;
     request.checksum = 0;
     request.id = htons(PING_ID);
-    request.seqno = 0;
+    request.seqno = htons(1);
     request.checksum = htons(inet_checksum(&request, sizeof(request)));
     
     /* Use a raw socket to send and receive ICMP packets. */
-    socket_open_raw(&socket);
+    if (socket_open_raw(&socket) != 0) {
+        return (-1);
+    }
+    
     time_get(&start);
-
     socket_sendto(&socket, &request, sizeof(request), 0, &address);
 
     if (chan_poll(&socket, timeout_p) != NULL) {
@@ -95,7 +170,7 @@ int ping_host_by_ip_address(struct inet_ip_addr_t *address_p,
     }
 
     /* Calculate the round trip time (RTT). */
-    time_diff(rtt_p, &stop, &start);
+    time_diff(round_trip_time_p, &stop, &start);
 
     return (0);
 }

@@ -102,6 +102,8 @@ Default Standard Library configuration.
 +------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_FS_CMD_NETWORK_INTERFACE_LIST_               |  1                                                  |
 +------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_FS_CMD_PING_PING_                            |  1                                                  |
++------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_FS_CMD_PIN_READ_                             |  1                                                  |
 +------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_FS_CMD_PIN_SET_MODE_                         |  1                                                  |
@@ -241,6 +243,8 @@ Mcu
 .. _CONFIG_FS_CMD_LOG_SET_LOG_MASK: ../user-guide/configuration.html#c.CONFIG_FS_CMD_LOG_SET_LOG_MASK
 
 .. _CONFIG_FS_CMD_NETWORK_INTERFACE_LIST: ../user-guide/configuration.html#c.CONFIG_FS_CMD_NETWORK_INTERFACE_LIST
+
+.. _CONFIG_FS_CMD_PING_PING: ../user-guide/configuration.html#c.CONFIG_FS_CMD_PING_PING
 
 .. _CONFIG_FS_CMD_PIN_READ: ../user-guide/configuration.html#c.CONFIG_FS_CMD_PIN_READ
 

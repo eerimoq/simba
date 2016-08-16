@@ -35,11 +35,11 @@ static int test_host_by_ip_address(struct harness_t *harness_p)
     reply[20] = 0;
     reply[21] = 0;
     reply[22] = 0xff;
-    reply[23] = 0xff;
+    reply[23] = 0xfe;
     reply[24] = 0;
     reply[25] = 0;
     reply[26] = 0;
-    reply[27] = 0;
+    reply[27] = 1;
     socket_stub_input(reply, sizeof(reply));
 
     /* Perform the ping. */
@@ -51,11 +51,11 @@ static int test_host_by_ip_address(struct harness_t *harness_p)
     BTASSERT(request[0] == 8);
     BTASSERT(request[1] == 0);
     BTASSERT(request[2] == 0xf7);
-    BTASSERT(request[3] == 0xff);
+    BTASSERT(request[3] == 0xfe);
     BTASSERT(request[4] == 0);
     BTASSERT(request[5] == 0);
     BTASSERT(request[6] == 0);
-    BTASSERT(request[7] == 0);
+    BTASSERT(request[7] == 1);
 
     std_printf(FSTR("round trip time: %lu s %lu ns\r\n"),
                round_trip_time.seconds,
@@ -76,11 +76,11 @@ static int test_bad_reply_crc(struct harness_t *harness_p)
     reply[20] = 0;
     reply[21] = 0;
     reply[22] = 0xfe;
-    reply[23] = 0x02;
+    reply[23] = 0xff;
     reply[24] = 0;
     reply[25] = 0;
     reply[26] = 0;
-    reply[27] = 0;
+    reply[27] = 1;
     socket_stub_input(reply, sizeof(reply));
 
     /* Perform the ping. */
@@ -92,11 +92,11 @@ static int test_bad_reply_crc(struct harness_t *harness_p)
     BTASSERT(request[0] == 8);
     BTASSERT(request[1] == 0);
     BTASSERT(request[2] == 0xf7);
-    BTASSERT(request[3] == 0xff);
+    BTASSERT(request[3] == 0xfe);
     BTASSERT(request[4] == 0);
     BTASSERT(request[5] == 0);
     BTASSERT(request[6] == 0);
-    BTASSERT(request[7] == 0);
+    BTASSERT(request[7] == 1);
 
     return (0);
 }

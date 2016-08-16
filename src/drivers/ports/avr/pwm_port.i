@@ -252,6 +252,11 @@ static int pwm_port_set_duty(struct pwm_driver_t *self_p,
     return (-1);
 }
 
+static int pwm_port_get_duty(struct pwm_driver_t *self_p)
+{
+    return (-1);
+}
+
 #else
 #    error "PWM not implemented for this MCU"
 #endif
