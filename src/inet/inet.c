@@ -20,6 +20,36 @@
 
 #include "simba.h"
 
+static uint32_t inet_checksum_begin(void)
+{
+  return (0);
+}
+
+static uint32_t inet_checksum_acc(uint32_t acc, uint16_t *buf_p, size_t size)
+{
+    while (size > 1) {
+        acc += htons(*buf_p++);
+        size -= 2;
+    }
+
+    if (size > 0) {
+        acc += (htons(*buf_p) & 0xff00);
+    }
+
+    return (acc);
+}
+
+static uint16_t inet_checksum_end(uint32_t acc)
+{
+    acc = (acc >> 16) + (acc & 0xffffUL);
+
+    if ((acc & 0xffff0000UL) != 0) {
+        acc = (acc >> 16) + (acc & 0xffffUL);
+    }
+
+    return (~acc);
+}
+
 int inet_module_init()
 {
     return (0);
@@ -82,4 +112,14 @@ char *inet_ntoa(const struct inet_ip_addr_t *src_p,
                 (int)(number >>  0) & 0xff);
 
     return (dst_p);
+}
+
+uint16_t inet_checksum(void *buf_p, size_t size)
+{
+    uint32_t acc;
+
+    acc = inet_checksum_begin();
+    acc = inet_checksum_acc(acc, buf_p, size);
+
+    return (inet_checksum_end(acc));
 }

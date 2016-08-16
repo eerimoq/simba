@@ -78,4 +78,14 @@ int inet_aton(const char *src_p,
 char *inet_ntoa(const struct inet_ip_addr_t *src_p,
                 char *dst_p);
 
+/**
+ * Calculate the internet checksum of given buffer.
+ *
+ * @param[in] buf_p Buffer to calculate the chechsum of.
+ * @param[in] size Size of the buffer.
+ *
+ * @return Calculated checksum.
+ */
+uint16_t inet_checksum(void *buf_p, size_t size);
+
 #endif
