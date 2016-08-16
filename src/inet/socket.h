@@ -74,6 +74,15 @@ int socket_open_tcp(struct socket_t *self_p);
 int socket_open_udp(struct socket_t *self_p);
 
 /**
+ * Initialize given RAW socket.
+ *
+ * @param[out] self_p Socket to initialize.
+ *
+ * @return zero(0) or negative error code.
+ */
+int socket_open_raw(struct socket_t *self_p);
+
+/**
  * Close given socket. No data transfers are allowed on after the
  * socket has been closed.
  *

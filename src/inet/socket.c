@@ -26,11 +26,15 @@
 /** UDP socket type. */
 #define SOCKET_TYPE_DGRAM      2
 
+/** RAW socket type. */
+#define SOCKET_TYPE_RAW        3
+
 #if !defined(ARCH_LINUX)
 
 #include "lwip/tcp.h"
 #include "lwip/udp.h"
 #include "lwip/tcpip.h"
+#include "lwip/raw.h"
 
 #if defined(ARCH_ESP)
 
@@ -48,6 +52,7 @@ struct module_t {
     struct fs_counter_t tcp_accepts;
     struct fs_counter_t tcp_rx_bytes;
     struct fs_counter_t tcp_tx_bytes;
+    struct fs_counter_t raw_tx_bytes;
 };
 
 static struct module_t module;
@@ -384,6 +389,43 @@ static ssize_t tcp_recv_from(struct socket_t *self_p,
     return (size - left);
 }
 
+/**
+ * An RAW packet has been received.
+ */
+static uint8_t on_raw_recv(void *arg_p,
+                           struct raw_pcb *pcb_p,
+                           struct pbuf *pbuf_p,
+                           ip_addr_t *addr_p)
+{
+    return (0);
+}
+
+static ssize_t raw_send_to(struct socket_t *self_p,
+                           const void *buf_p,
+                           size_t size,
+                           int flags,
+                           const struct inet_addr_t *remote_addr_p)
+{
+    ssize_t res = size;
+    struct pbuf *pbuf_p;
+    ip_addr_t ip;
+
+    /* Copy the data to a pbuf.*/
+    ip.addr = remote_addr_p->ip.number;
+    pbuf_p = pbuf_alloc(PBUF_TRANSPORT, size, PBUF_RAM);
+    memcpy(pbuf_p->payload, buf_p, size);
+
+    fs_counter_increment(&module.raw_tx_bytes, size);
+
+    if (raw_sendto(self_p->pcb_p, pbuf_p, &ip) != 0) {
+        res = -1;
+    }
+
+    pbuf_free(pbuf_p);
+
+    return (res);
+}
+
 int socket_module_init(void)
 {
     /* Return immediately if the module is already initialized. */
@@ -420,6 +462,11 @@ int socket_module_init(void)
                     0);
     fs_counter_register(&module.tcp_tx_bytes);
 
+    fs_counter_init(&module.raw_tx_bytes,
+                    FSTR("/inet/socket/raw/tx_bytes"),
+                    0);
+    fs_counter_register(&module.raw_tx_bytes);
+
 #if !defined(ARCH_ESP)
     /* Initialize the LwIP stack. */
     tcpip_init(NULL, NULL);
@@ -449,6 +496,20 @@ int socket_open_udp(struct socket_t *self_p)
     pcb_p = udp_new();
     udp_recv(pcb_p, on_udp_recv, self_p);
     init(self_p, SOCKET_TYPE_DGRAM, pcb_p);
+
+    return (0);
+}
+
+int socket_open_raw(struct socket_t *self_p)
+{
+    ASSERTN(self_p != NULL, EINVAL);
+
+    void *pcb_p = NULL;
+
+    /* Create and initiate the UDP pcb. */
+    pcb_p = raw_new(IP_PROTO_ICMP);
+    raw_recv(pcb_p, on_raw_recv, self_p);
+    init(self_p, SOCKET_TYPE_RAW, pcb_p);
 
     return (0);
 }
@@ -621,6 +682,13 @@ ssize_t socket_sendto(struct socket_t *self_p,
                             flags,
                             remote_addr_p));
 
+    case SOCKET_TYPE_RAW:
+        return (raw_send_to(self_p,
+                            buf_p,
+                            size,
+                            flags,
+                            remote_addr_p));
+
     default:
         return (-1);
     }
@@ -692,6 +760,11 @@ int socket_open_tcp(struct socket_t *self_p)
 }
 
 int socket_open_udp(struct socket_t *self_p)
+{
+    return (-1);
+}
+
+int socket_open_raw(struct socket_t *self_p)
 {
     return (-1);
 }
