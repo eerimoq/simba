@@ -217,16 +217,29 @@ int chan_list_remove(struct chan_list_t *list_p, chan_t *chan_p);
 
 /**
  * Poll given list of channels for events. Blocks until at least one
- * of the channels in the list has data ready to be read.
+ * of the channels in the list has data ready to be read or an timeout
+ * occurs.
  *
  * @param[in] list_p List of channels to poll.
  * @param[in] timeout_p Time to wait for data on any channel before a
  *                      timeout occurs. Set to NULL to wait forever.
  *
- * @return Channel with data or NULL.
+ * @return Channel with data or NULL on timeout.
  */
 chan_t *chan_list_poll(struct chan_list_t *list_p,
                        struct time_t *timeout_p);
+
+/**
+ * Poll given channel for events. Blocks until the channel has data
+ * ready to be read or an timeout occurs.
+ *
+ * @param[in] chan_p Channel to poll.
+ * @param[in] timeout_p Time to wait for data on the channel before a
+ *                      timeout occurs. Set to NULL to wait forever.
+ *
+ * @return The channel or NULL on timeout.
+ */
+chan_t *chan_poll(chan_t *chan_p, struct time_t *timeout_p);
 
 /**
  * Get a reference to the null channel. This channel will ignore all

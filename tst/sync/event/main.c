@@ -75,6 +75,40 @@ static int test_poll(struct harness_t *harness)
 {
     uint32_t mask;
     struct event_t event;
+
+    BTASSERT(event_init(&event) == 0);
+
+    mask = (EVENT_BIT_0);
+    BTASSERT(chan_write(&event, &mask, sizeof(mask)) == 4);
+
+    /* Poll the channel and make sure the event channel has an event
+       set.*/
+    BTASSERT(chan_poll(&event, NULL) == &event);
+    BTASSERT(chan_size(&event) == 1);
+
+    return (0);
+}
+
+static int test_poll_timeout(struct harness_t *harness)
+{
+    struct event_t event;
+    struct time_t timeout;
+
+    BTASSERT(event_init(&event) == 0);
+
+    /* Poll the channel and make sure a timeout occured.*/
+    timeout.seconds = 0;
+    timeout.nanoseconds = 10000;
+    BTASSERT(chan_poll(&event, &timeout) == NULL);
+    BTASSERT(chan_size(&event) == 0);
+
+    return (0);
+}
+
+static int test_poll_list(struct harness_t *harness)
+{
+    uint32_t mask;
+    struct event_t event;
     struct event_t event_dummy;
     struct chan_list_t list;
     char workspace[64];
@@ -111,7 +145,7 @@ static int test_poll(struct harness_t *harness)
     return (0);
 }
 
-static int test_poll_timeout(struct harness_t *harness)
+static int test_poll_list_timeout(struct harness_t *harness)
 {
     struct event_t event;
     struct chan_list_t list;
@@ -124,14 +158,12 @@ static int test_poll_timeout(struct harness_t *harness)
     BTASSERT(chan_list_init(&list, workspace, sizeof(workspace)) == 0);
     BTASSERT(chan_list_add(&list, &event) == 0);
 
-    /* Poll the list of channels and make sure the event channel has
-       events set.*/
+    /* Poll the list of channels and make sure an timeout occured. */
     timeout.seconds = 0;
     timeout.nanoseconds = 10000;
     BTASSERT(chan_list_poll(&list, &timeout) == NULL);
 
-    /* Poll the list of channels and make sure the event channel has
-       events set.*/
+    /* Poll the list of channels and make sure an timeout occured. */
     timeout.seconds = 0;
     timeout.nanoseconds = 0;
     BTASSERT(chan_list_poll(&list, &timeout) == NULL);
@@ -146,6 +178,8 @@ int main()
         { test_read_write, "test_read_write" },
         { test_poll, "test_poll" },
         { test_poll_timeout, "test_poll_timeout" },
+        { test_poll_list, "test_poll_list" },
+        { test_poll_list_timeout, "test_poll_list_timeout" },
         { NULL, NULL }
     };
 
