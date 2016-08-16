@@ -52,21 +52,21 @@ int ping_host_by_ip_address(struct inet_ip_addr_t *address_p,
 
     reply_size = -1;
     address.ip = *address_p;
-    
+
     /* Initiate the ping echo packet. */
     request.type = ECHO_REQUEST;
     request.code = 0;
     request.checksum = 0;
-    request.id = PING_ID;
+    request.id = htons(PING_ID);
     request.seqno = 0;
-    request.checksum = -1;
-    
+    request.checksum = htons(inet_checksum(&request, sizeof(request)));
+
     /* Use a raw socket to send and receive ICMP packets. */
     socket_open_raw(&socket);
     time_get(&start);
 
     socket_sendto(&socket, &request, sizeof(request), 0, &address);
-    
+
     if (chan_poll(&socket, timeout_p) != NULL) {
         time_get(&stop);
         reply_size = socket_recvfrom(&socket,
@@ -86,12 +86,13 @@ int ping_host_by_ip_address(struct inet_ip_addr_t *address_p,
     if ((reply.type != ECHO_REPLY)
         || (reply.code != request.code)
         || (reply.id != request.id)
-        || (reply.seqno != request.seqno)) {
+        || (reply.seqno != request.seqno)
+        || (inet_checksum(&reply, sizeof(reply)) != 0)) {
         return (-1);
     }
 
     /* Calculate the round trip time (RTT). */
     time_diff(rtt_p, &stop, &start);
-    
+
     return (0);
 }
