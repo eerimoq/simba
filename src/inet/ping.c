@@ -20,8 +20,6 @@
 
 #include "simba.h"
 
-#include "lwip/inet_chksum.h"
-
 /* Packet types. */
 #define ECHO_REPLY   0
 #define ECHO_REQUEST 8
@@ -61,7 +59,7 @@ int ping_host_by_ip_address(struct inet_ip_addr_t *address_p,
     request.checksum = 0;
     request.id = PING_ID;
     request.seqno = 0;
-    request.checksum = inet_chksum(&request, sizeof(request));
+    request.checksum = -1;
     
     /* Use a raw socket to send and receive ICMP packets. */
     socket_open_raw(&socket);

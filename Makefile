@@ -57,7 +57,8 @@ ifeq ($(BOARD), linux)
 				    http_websocket_client \
 				    http_websocket_server \
 				    inet \
-				    mqtt_client)
+				    mqtt_client \
+				    ping)
     TESTS += $(addprefix tst/multimedia/, midi)
 endif
 
@@ -93,7 +94,8 @@ ifeq ($(BOARD), arduino_due)
 				    http_websocket_client \
 				    http_websocket_server \
 				    inet \
-				    mqtt_client)
+				    mqtt_client \
+				    ping)
     TESTS += $(addprefix tst/drivers/, chipid \
 				       can \
 				       flash \
@@ -132,7 +134,8 @@ ifeq ($(BOARD), arduino_mega)
 				    http_websocket_client \
 				    http_websocket_server \
 				    inet \
-				    mqtt_client)
+				    mqtt_client \
+				    ping)
     TESTS += $(addprefix tst/drivers/, adc \
 				       analog_input_pin \
 				       ds3231 \
@@ -185,7 +188,8 @@ ifeq ($(BOARD), esp12e)
 				    http_websocket_server \
 				    inet \
 				    mqtt_client \
-				    network_interface/wifi_station_espressif)
+				    network_interface/wifi_station_espressif \
+				    ping)
     TESTS += $(addprefix tst/drivers/, pin)
     TESTS += $(addprefix tst/filesystems/, fs)
 endif
@@ -215,7 +219,8 @@ ifeq ($(BOARD), stm32vldiscovery)
     TESTS += $(addprefix tst/inet/, http_websocket_client \
 				    http_websocket_server \
 				    inet \
-				    mqtt_client)
+				    mqtt_client \
+				    ping)
     TESTS += $(addprefix tst/drivers/, pin)
 endif
 
@@ -245,7 +250,8 @@ ifeq ($(BOARD), photon)
     TESTS += $(addprefix tst/inet/, http_websocket_client \
 				    http_websocket_server \
 				    inet \
-				    mqtt_client)
+				    mqtt_client \
+				    ping)
 endif
 
 # List of all application to build

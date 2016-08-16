@@ -167,11 +167,11 @@ INET_SRC_TMP ?= \
 	mqtt_client.c \
 	network_interface.c \
 	network_interface/slip.c \
-	socket.c
+	socket.c \
+	ping.c
 
 ifeq ($(ARCH), esp)
-INET_SRC_TMP += network_interface/wifi_station_espressif.c \
-	ping.c
+INET_SRC_TMP += network_interface/wifi_station_espressif.c
 endif
 
 INET_SRC ?= $(INET_SRC_TMP)

@@ -222,4 +222,14 @@ ssize_t socket_read(struct socket_t *self_p,
                     void *buf_p,
                     size_t size);
 
+/**
+ * Get the number of input bytes currently stored in the socket. May
+ * return less bytes than number of bytes stored in the channel.
+ *
+ * @param[in] self_p Socket.
+ *
+ * @return Number of input bytes in the socket.
+ */
+ssize_t socket_size(struct socket_t *self_p);
+
 #endif
