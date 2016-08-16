@@ -66,7 +66,7 @@ static int cmd_ping_cb(int argc,
     remote_host_p = argv[1];
     
     if (inet_aton(remote_host_p, &address) != 0) {
-        std_printf(FSTR("Bad ip address '%s'.\r\n"), remote_host_p);
+        std_fprintf(out_p, FSTR("Bad ip address '%s'.\r\n"), remote_host_p);
         return (-1);
     }
 
@@ -78,11 +78,12 @@ static int cmd_ping_cb(int argc,
     if (res == 0) {
         round_trip_time_ms = (round_trip_time.seconds * 1000
                               + round_trip_time.nanoseconds / 1000000);
-        std_printf(FSTR("Successfully pinged '%s' in %d ms.\r\n"),
-                   remote_host_p,
-                   round_trip_time_ms);
+        std_fprintf(out_p,
+                    FSTR("Successfully pinged '%s' in %d ms.\r\n"),
+                    remote_host_p,
+                    round_trip_time_ms);
     } else {
-        std_printf(FSTR("Failed to ping '%s'.\r\n"), remote_host_p);
+        std_fprintf(out_p, FSTR("Failed to ping '%s'.\r\n"), remote_host_p);
     }
     
     return (0);

@@ -260,7 +260,11 @@
  * Debug file system command to ping a host.
  */
 #ifndef CONFIG_FS_CMD_PING_PING
-#    define CONFIG_FS_CMD_PING_PING                         1
+#    if defined(CONFIG_MINIMAL_SYSTEM)
+#        define CONFIG_FS_CMD_PING_PING                         0
+#    else
+#        define CONFIG_FS_CMD_PING_PING                         1
+#    endif
 #endif
 
 /**
