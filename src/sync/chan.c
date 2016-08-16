@@ -160,7 +160,7 @@ chan_t *chan_list_poll(struct chan_list_t *list_p,
 
     struct chan_t *chan_p = NULL;
     size_t i;
-
+    
     sys_lock();
 
     while (1) {
@@ -192,7 +192,7 @@ chan_t *chan_list_poll(struct chan_list_t *list_p,
 
  out:
     sys_unlock();
-
+    
     return (chan_p);
 }
 
@@ -201,7 +201,7 @@ chan_t *chan_poll(chan_t *chan_p, struct time_t *timeout_p)
     chan_t *res_p;
     struct chan_list_t list;
     struct chan_t *workspace_p;
-
+    
     chan_list_init(&list, &workspace_p, sizeof(workspace_p));
     chan_list_add(&list, chan_p);
     res_p = chan_list_poll(&list, timeout_p);

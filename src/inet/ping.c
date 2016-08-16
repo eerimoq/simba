@@ -47,7 +47,8 @@ int ping_host_by_ip_address(struct inet_ip_addr_t *address_p,
     struct socket_t socket;
     struct time_t start, stop;
     struct echo_header_t request;
-    struct echo_header_t reply;
+    struct echo_header_t *reply_p;
+    uint8_t reply[28]; /* IP header and icmp packet. */
     struct inet_addr_t address;
 
     reply_size = -1;
@@ -60,7 +61,7 @@ int ping_host_by_ip_address(struct inet_ip_addr_t *address_p,
     request.id = htons(PING_ID);
     request.seqno = 0;
     request.checksum = htons(inet_checksum(&request, sizeof(request)));
-
+    
     /* Use a raw socket to send and receive ICMP packets. */
     socket_open_raw(&socket);
     time_get(&start);
@@ -82,12 +83,14 @@ int ping_host_by_ip_address(struct inet_ip_addr_t *address_p,
         return (-1);
     }
 
+    reply_p = (struct echo_header_t *)&reply[20];
+    
     /* Check the reply. */
-    if ((reply.type != ECHO_REPLY)
-        || (reply.code != request.code)
-        || (reply.id != request.id)
-        || (reply.seqno != request.seqno)
-        || (inet_checksum(&reply, sizeof(reply)) != 0)) {
+    if ((reply_p->type != ECHO_REPLY)
+        || (reply_p->code != request.code)
+        || (reply_p->id != request.id)
+        || (reply_p->seqno != request.seqno)
+        || (inet_checksum(reply_p, sizeof(*reply_p)) != 0)) {
         return (-1);
     }
 

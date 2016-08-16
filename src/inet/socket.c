@@ -64,7 +64,7 @@ static void init(struct socket_t *self_p,
     /* Channel functions. */
     self_p->base.read = (thrd_read_fn_t)socket_read;
     self_p->base.write = (thrd_write_fn_t)socket_write;
-    self_p->base.size = (thrd_size_fn_t)NULL;
+    self_p->base.size = (thrd_size_fn_t)socket_size;
 
     self_p->type = type;
     self_p->pcb_p = pcb_p;
@@ -74,18 +74,16 @@ static void init(struct socket_t *self_p,
     self_p->io.recv.pbuf.offset = 0;
 }
 
-static void resume(struct socket_t *socket_p)
+static void resume_thrd(struct socket_t *socket_p)
 {
-#if defined(ARCH_ESP)
     /* Resume the reading thread. */
-    thrd_resume_isr((struct thrd_t *)socket_p->io.thrd_p, 0);
-    socket_p->io.thrd_p = NULL;
-    xSemaphoreGive(thrd_idle_sem);
-#else
     sys_lock();
     thrd_resume_isr((struct thrd_t *)socket_p->io.thrd_p, 0);
     socket_p->io.thrd_p = NULL;
     sys_unlock();
+
+#if defined(ARCH_ESP)
+    xSemaphoreGive(thrd_idle_sem);
 #endif
 }
 
@@ -123,7 +121,7 @@ static err_t on_tcp_recv(void *arg_p,
     if ((socket_p->io.thrd_p != NULL)
         && (socket_p->io.recv.reading == 1)) {
         socket_p->io.recv.reading = 0;
-        resume(socket_p);
+        resume_thrd(socket_p);
     }
 
     return (ERR_OK);
@@ -142,7 +140,7 @@ static void tcp_open_cb(void *ctx_p)
     tcp_arg(pcb_p, self_p);
     tcp_recv(pcb_p, on_tcp_recv);
     init(self_p, SOCKET_TYPE_STREAM, pcb_p);
-    resume(self_p);
+    resume_thrd(self_p);
 }
 
 /**
@@ -153,7 +151,7 @@ static void tcp_close_cb(void *ctx_p)
     struct socket_t *self_p = ctx_p;
 
     tcp_close(self_p->pcb_p);
-    resume(self_p);
+    resume_thrd(self_p);
 }
 
 /**
@@ -166,7 +164,7 @@ static err_t on_tcp_connected(void *arg_p,
     struct socket_t *self_p = arg_p;
 
     self_p->io.size = err;
-    resume(self_p);
+    resume_thrd(self_p);
 
     return (ERR_OK);
 }
@@ -187,7 +185,7 @@ static err_t on_tcp_accept(void *arg_p,
         tcp_recv(new_pcb_p, on_tcp_recv);
         init(accepted_p, SOCKET_TYPE_STREAM, new_pcb_p);
         tcp_accepted(((struct tcp_pcb *)socket_p->pcb_p));
-        resume(socket_p);
+        resume_thrd(socket_p);
     }
 
     return (ERR_OK);
@@ -210,7 +208,7 @@ static void tcp_write_cb(void *ctx_p)
         self_p->io.size = -1;
     }
 
-    resume(self_p);
+    resume_thrd(self_p);
 }
 
 /**
@@ -240,7 +238,7 @@ static void on_udp_recv(void *arg_p,
 
         /* Resume any waiting thread. */
         if (socket_p->io.thrd_p != NULL) {
-            resume(socket_p);
+            resume_thrd(socket_p);
         }
     }
 }
@@ -389,6 +387,45 @@ static ssize_t tcp_recv_from(struct socket_t *self_p,
     return (size - left);
 }
 
+static ssize_t raw_recv_from(struct socket_t *self_p,
+                             void *buf_p,
+                             size_t size,
+                             int flags,
+                             struct inet_addr_t *remote_addr_p)
+{
+    struct pbuf *pbuf_p;
+    
+    /* Wait for data if none is available. */
+    sys_lock();
+    
+    if (self_p->io.recv.pbuf.size == -1) {
+        self_p->io.thrd_p = thrd_self();
+        thrd_suspend_isr(NULL);
+    }
+    
+    sys_unlock();
+
+    /* Socket closed. */
+    if (self_p->io.recv.pbuf.size <= 0) {
+        return (self_p->io.recv.pbuf.size);
+    }
+    
+    pbuf_p = (struct pbuf *)self_p->io.recv.pbuf.buf_p;
+
+    /* Copy data from the pbuf to the local buffer. */
+    if (size > pbuf_p->tot_len) {
+        size = pbuf_p->tot_len;
+    }
+
+    *remote_addr_p = self_p->io.remote_addr;
+    
+    pbuf_copy_partial(pbuf_p, buf_p, size, 0);
+    self_p->io.recv.pbuf.size = -1;
+    pbuf_free(pbuf_p);
+
+    return (size);
+}
+
 /**
  * An RAW packet has been received.
  */
@@ -397,7 +434,61 @@ static uint8_t on_raw_recv(void *arg_p,
                            struct pbuf *pbuf_p,
                            ip_addr_t *addr_p)
 {
-    return (0);
+    struct socket_t *socket_p = arg_p;
+
+    if (socket_p->io.recv.pbuf.size == -1) {
+        /* Resume any polling thread. */
+        sys_lock();
+        
+        if (chan_is_polled_isr(&socket_p->base)) {
+            thrd_resume_isr(socket_p->base.reader_p, 0);
+            socket_p->base.reader_p = NULL;
+        }
+        
+        /* Save the new buffer. */
+        socket_p->io.recv.pbuf.buf_p = pbuf_p;
+
+        if (pbuf_p == NULL) {
+            socket_p->io.recv.pbuf.size = 0;
+        } else {
+            socket_p->io.recv.pbuf.size = pbuf_p->tot_len;
+        }
+
+        /* Copy the remote address to the receiver. */
+        socket_p->io.remote_addr.ip.number = addr_p->addr;
+
+        sys_unlock();
+
+        /* Resume any waiting thread. */
+        if (socket_p->io.thrd_p != NULL) {
+            resume_thrd(socket_p);
+        }
+    }
+    
+    return (1);
+}
+
+static void raw_write_cb(void *ctx_p)
+{
+    struct socket_t *self_p = ctx_p;
+    err_t res = ERR_MEM;
+    struct pbuf *pbuf_p;
+    ip_addr_t ip;
+
+    ip.addr = self_p->io.remote_addr.ip.number;
+    pbuf_p = pbuf_alloc(PBUF_IP, self_p->io.size, PBUF_RAM);
+
+    if (pbuf_p != NULL) {
+        memcpy(pbuf_p->payload, self_p->io.buf_p, self_p->io.size);
+        res = raw_sendto(self_p->pcb_p, pbuf_p, &ip);
+        pbuf_free(pbuf_p);
+    }
+    
+    if (res != ERR_OK) {
+        self_p->io.size = -1;
+    }
+
+    resume_thrd(self_p);
 }
 
 static ssize_t raw_send_to(struct socket_t *self_p,
@@ -406,24 +497,19 @@ static ssize_t raw_send_to(struct socket_t *self_p,
                            int flags,
                            const struct inet_addr_t *remote_addr_p)
 {
-    ssize_t res = size;
-    struct pbuf *pbuf_p;
-    ip_addr_t ip;
+    self_p->io.buf_p = (void *)buf_p;
+    self_p->io.size = size;
+    self_p->io.remote_addr = *remote_addr_p;
+    self_p->io.thrd_p = thrd_self();
 
-    /* Copy the data to a pbuf.*/
-    ip.addr = remote_addr_p->ip.number;
-    pbuf_p = pbuf_alloc(PBUF_TRANSPORT, size, PBUF_RAM);
-    memcpy(pbuf_p->payload, buf_p, size);
+    tcpip_callback_with_block(raw_write_cb, self_p, 0);
+    thrd_suspend(NULL);
 
-    fs_counter_increment(&module.raw_tx_bytes, size);
-
-    if (raw_sendto(self_p->pcb_p, pbuf_p, &ip) != 0) {
-        res = -1;
+    if (self_p->io.size >= 0) {
+        fs_counter_increment(&module.raw_tx_bytes, self_p->io.size);
     }
 
-    pbuf_free(pbuf_p);
-
-    return (res);
+    return (self_p->io.size);
 }
 
 int socket_module_init(void)
@@ -494,6 +580,11 @@ int socket_open_udp(struct socket_t *self_p)
 
     /* Create and initiate the UDP pcb. */
     pcb_p = udp_new();
+
+    if (pcb_p == NULL) {
+        return (-1);
+    }
+
     udp_recv(pcb_p, on_udp_recv, self_p);
     init(self_p, SOCKET_TYPE_DGRAM, pcb_p);
 
@@ -508,9 +599,14 @@ int socket_open_raw(struct socket_t *self_p)
 
     /* Create and initiate the UDP pcb. */
     pcb_p = raw_new(IP_PROTO_ICMP);
+
+    if (pcb_p == NULL) {
+        return (-1);
+    }
+
     raw_recv(pcb_p, on_raw_recv, self_p);
     init(self_p, SOCKET_TYPE_RAW, pcb_p);
-
+    
     return (0);
 }
 
@@ -529,6 +625,11 @@ int socket_close(struct socket_t *self_p)
     case SOCKET_TYPE_DGRAM:
         udp_recv(self_p->pcb_p, NULL, NULL);
         udp_remove(self_p->pcb_p);
+        break;
+
+    case SOCKET_TYPE_RAW:
+        raw_recv(self_p->pcb_p, NULL, NULL);
+        raw_remove(self_p->pcb_p);
         break;
 
     default:
@@ -703,7 +804,7 @@ ssize_t socket_recvfrom(struct socket_t *self_p,
     ASSERTN(self_p != NULL, EINVAL);
     ASSERTN(buf_p != NULL, EINVAL);
     ASSERTN(size > 0, EINVAL);
-
+    
     switch (self_p->type) {
 
     case SOCKET_TYPE_STREAM:
@@ -715,6 +816,13 @@ ssize_t socket_recvfrom(struct socket_t *self_p,
 
     case SOCKET_TYPE_DGRAM:
         return (udp_recv_from(self_p,
+                              buf_p,
+                              size,
+                              flags,
+                              remote_addr_p));
+
+    case SOCKET_TYPE_RAW:
+        return (raw_recv_from(self_p,
                               buf_p,
                               size,
                               flags,
@@ -745,6 +853,13 @@ ssize_t socket_read(struct socket_t *self_p,
     ASSERTN(size > 0, EINVAL);
 
     return (socket_recvfrom(self_p, buf_p, size, 0, NULL));
+}
+
+ssize_t socket_size(struct socket_t *self_p)
+{
+    ASSERTN(self_p != NULL, EINVAL);
+    
+    return (self_p->io.recv.pbuf.size > -1);
 }
 
 #else
@@ -836,6 +951,13 @@ ssize_t socket_read(struct socket_t *self_p,
     ASSERTN(size > 0, EINVAL);
 
     return (socket_recvfrom(self_p, buf_p, size, 0, NULL));
+}
+
+ssize_t socket_size(struct socket_t *self_p)
+{
+    ASSERTN(self_p != NULL, EINVAL);
+
+    return (-1);
 }
 
 #endif

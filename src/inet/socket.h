@@ -31,7 +31,7 @@ struct socket_t {
             volatile int reading;
             struct {
                 void * volatile buf_p;
-                volatile size_t size;
+                volatile ssize_t size;
                 volatile size_t offset;
             } pbuf;
         } recv;

@@ -28,7 +28,8 @@ static uint32_t inet_checksum_begin(void)
 static uint32_t inet_checksum_acc(uint32_t acc, uint16_t *buf_p, size_t size)
 {
     while (size > 1) {
-        acc += htons(*buf_p++);
+        acc += htons(*buf_p);
+        buf_p++;
         size -= 2;
     }
 

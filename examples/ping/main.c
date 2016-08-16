@@ -21,37 +21,47 @@
 #include "simba.h"
 
 /* The ip address of the host to ping. */
-#define REMOTE_HOST_IP 216.58.211.142
+#define REMOTE_HOST_IP 192.168.1.100
 
 int main()
 {
     int res;
+    int attempt;
     char remote_host_ip[] = STRINGIFY(REMOTE_HOST_IP);
     struct inet_ip_addr_t remote_host_ip_address;
     struct time_t round_trip_time, timeout;
     
     sys_start();
-
+    
     if (inet_aton(remote_host_ip, &remote_host_ip_address) != 0) {
         std_printf(FSTR("Bad ip address '%s'.\r\n"), remote_host_ip);
         return (-1);
     }
 
-    /* Ping the remote host. */
     timeout.seconds = 3;
     timeout.nanoseconds = 0;
-    res = ping_host_by_ip_address(&remote_host_ip_address,
-                                  &timeout,
-                                  &round_trip_time);
-    
-    if (res != 0) {
-        std_printf(FSTR("Failed to ping '%s'.\r\n"), remote_host_ip);
-        return (-1);
-    }
 
-    std_printf(FSTR("Successfully pinged '%s' in %lu s %lu ns.\r\n"),
-               round_trip_time.seconds,
-               round_trip_time.nanoseconds);
+    attempt = 1;
     
+    /* Ping the remote host once every second. */
+    while (1) {
+        res = ping_host_by_ip_address(&remote_host_ip_address,
+                                      &timeout,
+                                      &round_trip_time);
+        
+        if (res == 0) {
+            std_printf(FSTR("Successfully pinged '%s' in %lu ms. Attempt %d.\r\n"),
+                       remote_host_ip,
+                       (unsigned long)(round_trip_time.seconds * 1000
+                                       + round_trip_time.nanoseconds / 1000000),
+                       attempt);
+        } else {
+            std_printf(FSTR("Failed to ping '%s'.\r\n"), remote_host_ip);
+        }
+
+        attempt++;
+        thrd_sleep_us(1000000);
+    }
+        
     return (0);
 }
