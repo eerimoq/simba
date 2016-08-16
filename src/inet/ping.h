@@ -35,15 +35,20 @@
 int ping_module_init(void);
 
 /**
- * Ping host by given ip address. Send given buffer.
+ * Ping host by given ip address. Send an echo request packet to given
+ * host and wait for the echo reply packet.
  *
- * @param[in] address_p Address of the remote node to ping.
- * @param[out] rtt_p Round trip time.
+ * @param[in] address_p IP address of the host to ping.
+ * @param[in] timeout_p Number of seconds to wait for the echo reply
+ *                      packet.
+ * @param[out] rtt_p Ping round trip time. The time it took from
+ *                   sending the echo request packet to receiving the
+ *                   echo reply packet.
  *
  * @return zero(0) or negative error code.
  */
 int ping_host_by_ip_address(struct inet_ip_addr_t *address_p,
-                            struct time_t *rtt_p,
-                            struct time_t *timeout_p);
+                            struct time_t *timeout_p,
+                            struct time_t *rtt_p);
 
 #endif

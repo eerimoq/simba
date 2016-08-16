@@ -42,8 +42,8 @@ int ping_module_init(void)
 }
 
 int ping_host_by_ip_address(struct inet_ip_addr_t *address_p,
-                            struct time_t *rtt_p,
-                            struct time_t *timeout_p)
+                            struct time_t *timeout_p,
+                            struct time_t *rtt_p)
 {
     ssize_t reply_size;
     struct socket_t socket;

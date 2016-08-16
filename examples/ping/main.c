@@ -28,7 +28,7 @@ int main()
     int res;
     char remote_host_ip[] = STRINGIFY(REMOTE_HOST_IP);
     struct inet_ip_addr_t remote_host_ip_address;
-    struct time_t rtt, timeout;
+    struct time_t round_trip_time, timeout;
     
     sys_start();
 
@@ -41,8 +41,8 @@ int main()
     timeout.seconds = 3;
     timeout.nanoseconds = 0;
     res = ping_host_by_ip_address(&remote_host_ip_address,
-                                  &rtt,
-                                  &timeout);
+                                  &timeout,
+                                  &round_trip_time);
     
     if (res != 0) {
         std_printf(FSTR("Failed to ping '%s'.\r\n"), remote_host_ip);
@@ -50,8 +50,8 @@ int main()
     }
 
     std_printf(FSTR("Successfully pinged '%s' in %lu s %lu ns.\r\n"),
-               rtt.seconds,
-               rtt.nanoseconds);
+               round_trip_time.seconds,
+               round_trip_time.nanoseconds);
     
     return (0);
 }
