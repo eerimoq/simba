@@ -62,7 +62,7 @@
 /* TCP/IP stack configuration. */
 
 #ifndef LWIP_RAW
-#    define LWIP_RAW                    0
+#    define LWIP_RAW                    1
 #endif
 
 #ifndef DEFAULT_TCP_RECVMBOX_SIZE

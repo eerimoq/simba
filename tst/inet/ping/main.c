@@ -28,17 +28,18 @@ static int test_host_by_ip_address(struct harness_t *harness_p)
     struct inet_ip_addr_t address;
     struct time_t round_trip_time;
     uint8_t request[8];
-    uint8_t reply[8];
+    uint8_t reply[28];
 
-    /* Prepare the socket stub with the reply packet. */
-    reply[0] = 0;
-    reply[1] = 0;
-    reply[2] = 0xff;
-    reply[3] = 0xff;
-    reply[4] = 0;
-    reply[5] = 0;
-    reply[6] = 0;
-    reply[7] = 0;
+    /* Prepare the socket stub with the reply packet. The first 20
+       bytes in the reply are the IP header. */
+    reply[20] = 0;
+    reply[21] = 0;
+    reply[22] = 0xff;
+    reply[23] = 0xff;
+    reply[24] = 0;
+    reply[25] = 0;
+    reply[26] = 0;
+    reply[27] = 0;
     socket_stub_input(reply, sizeof(reply));
 
     /* Perform the ping. */
@@ -68,17 +69,18 @@ static int test_bad_reply_crc(struct harness_t *harness_p)
     struct inet_ip_addr_t address;
     struct time_t round_trip_time;
     uint8_t request[8];
-    uint8_t reply[8];
+    uint8_t reply[28];
 
-    /* Prepare the socket stub with the reply packet. */
-    reply[0] = 0;
-    reply[1] = 0;
-    reply[2] = 0xfe;
-    reply[3] = 0x02;
-    reply[4] = 0;
-    reply[5] = 0;
-    reply[6] = 0;
-    reply[7] = 0;
+    /* Prepare the socket stub with the reply packet. The first 20
+       bytes in the reply are the IP header. */
+    reply[20] = 0;
+    reply[21] = 0;
+    reply[22] = 0xfe;
+    reply[23] = 0x02;
+    reply[24] = 0;
+    reply[25] = 0;
+    reply[26] = 0;
+    reply[27] = 0;
     socket_stub_input(reply, sizeof(reply));
 
     /* Perform the ping. */
