@@ -186,6 +186,7 @@ typedef unsigned long off_t;
 #include "inet/mqtt_client.h"
 #include "inet/network_interface.h"
 #include "inet/network_interface/slip.h"
+#include "inet/ping.h"
 
 #if defined(FAMILY_ESP)
 #    include "inet/network_interface/wifi_station_espressif.h"
