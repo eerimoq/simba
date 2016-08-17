@@ -29,6 +29,7 @@ struct buffered_output_t {
     chan_t *chan_p;
     int pos;
     char buffer[CONFIG_STD_OUTPUT_BUFFER_MAX];
+    size_t size;
 };
 
 struct snprintf_output_t {
@@ -88,6 +89,7 @@ static void fprintf_putc(char c, void *arg_p)
     struct buffered_output_t *output_p = arg_p;
 
     output_p->buffer[output_p->pos++] = c;
+    output_p->size++;
 
     if (output_p->pos == membersof(output_p->buffer)) {
         chan_write(output_p->chan_p, output_p->buffer, output_p->pos);
@@ -361,8 +363,8 @@ ssize_t std_snprintf(char *dst_p,
 
     return (output.size - 1);
 }
-
-void std_printf(FAR const char *fmt_p, ...)
+ 
+ssize_t std_printf(FAR const char *fmt_p, ...)
 {
     ASSERTN(fmt_p != NULL, -EINVAL);
 
@@ -370,6 +372,7 @@ void std_printf(FAR const char *fmt_p, ...)
     struct buffered_output_t output;
 
     output.pos = 0;
+    output.size = 0;
     output.chan_p = sys_get_stdout();
 
     if (output.chan_p != NULL) {
@@ -378,9 +381,11 @@ void std_printf(FAR const char *fmt_p, ...)
         va_end(ap);
         output_flush(&output);
     }
+
+    return (output.size);
 }
 
-void std_vprintf(FAR const char *fmt_p, va_list *ap_p)
+ssize_t std_vprintf(FAR const char *fmt_p, va_list *ap_p)
 {
     ASSERTN(fmt_p != NULL, -EINVAL);
     ASSERTN(ap_p != NULL, -EINVAL);
@@ -388,15 +393,18 @@ void std_vprintf(FAR const char *fmt_p, va_list *ap_p)
     struct buffered_output_t output;
 
     output.pos = 0;
+    output.size = 0;
     output.chan_p = sys_get_stdout();
 
     if (output.chan_p != NULL) {
         vcprintf(fprintf_putc, &output, fmt_p, ap_p);
         output_flush(&output);
     }
+
+    return (output.size);
 }
 
-void std_fprintf(chan_t *chan_p, FAR const char *fmt_p, ...)
+ssize_t std_fprintf(chan_t *chan_p, FAR const char *fmt_p, ...)
 {
     ASSERTN(chan_p != NULL, -EINVAL);
     ASSERTN(fmt_p != NULL, -EINVAL);
@@ -405,15 +413,18 @@ void std_fprintf(chan_t *chan_p, FAR const char *fmt_p, ...)
     struct buffered_output_t output;
 
     output.pos = 0;
+    output.size = 0;
     output.chan_p = chan_p;
 
     va_start(ap, fmt_p);
     vcprintf(fprintf_putc, &output, fmt_p, &ap);
     va_end(ap);
     output_flush(&output);
+
+    return (output.size);
 }
 
-void std_vfprintf(chan_t *chan_p, FAR const char *fmt_p, va_list *ap_p)
+ssize_t std_vfprintf(chan_t *chan_p, FAR const char *fmt_p, va_list *ap_p)
 {
     ASSERTN(chan_p != NULL, -EINVAL);
     ASSERTN(fmt_p != NULL, -EINVAL);
@@ -422,10 +433,13 @@ void std_vfprintf(chan_t *chan_p, FAR const char *fmt_p, va_list *ap_p)
     struct buffered_output_t output;
 
     output.pos = 0;
+    output.size = 0;
     output.chan_p = chan_p;
 
     vcprintf(fprintf_putc, &output, fmt_p, ap_p);
     output_flush(&output);
+
+    return (output.size);
 }
 
 const char *std_strtol(const char *str_p, long *value_p)

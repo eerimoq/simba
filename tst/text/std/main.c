@@ -20,24 +20,32 @@
 
 #include "simba.h"
 
-static void test_vprintf_wrapper(FAR const char *fmt_p, ...)
+static ssize_t test_vprintf_wrapper(FAR const char *fmt_p, ...)
 {
+    ssize_t res;
     va_list ap;
 
     va_start(ap, fmt_p);
-    std_vprintf(fmt_p, &ap);
+    res = std_vprintf(fmt_p, &ap);
     va_end(ap);
+
+    return (res);
 }
 
-static void test_vfprintf_wrapper(chan_t *chan_p,
-                                  FAR const char *fmt_p,
-                                  ...)
+static ssize_t test_vfprintf_wrapper(chan_t *chan_p,
+                                     FAR const char *fmt_p,
+                                     ...)
 {
+    ssize_t res;
     va_list ap;
 
     va_start(ap, fmt_p);
-    std_vfprintf(chan_p, fmt_p, &ap);
+    res = std_vfprintf(chan_p, fmt_p, &ap);
     va_end(ap);
+
+    std_printf(FSTR("res = %d\r\n"), res);
+    
+    return (res);
 }
 
 static int test_sprintf(struct harness_t *harness_p)
@@ -100,16 +108,16 @@ static int test_snprintf(struct harness_t *harness_p)
 
 static int test_vprintf(struct harness_t *harness_p)
 {
-    test_vprintf_wrapper(FSTR("vprintf: %d\r\n"), 1);
+    BTASSERT(test_vprintf_wrapper(FSTR("vprintf: %d\r\n"), 1) == 12);
 
     return (0);
 }
 
 static int test_vfprintf(struct harness_t *harness_p)
 {
-    test_vfprintf_wrapper(sys_get_stdout(),
-                          FSTR("vprintf: %d\r\n"),
-                          1);
+    BTASSERT(test_vfprintf_wrapper(sys_get_stdout(),
+                                   FSTR("vprintf: %d\r\n"),
+                                   1) == 12);
 
     return (0);
 }

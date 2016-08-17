@@ -37,7 +37,7 @@ int std_module_init(void);
 
 /**
  * Format and write data to destination buffer. The buffer must be big
- * enough to fit the formatted string.
+ * enough to fit the formatted string. The output is null terminated.
  *
  * A format specifier has this format:
  *
@@ -55,13 +55,14 @@ int std_module_init(void);
  * @param[in] fmt_p Format string.
  * @param[in] ... Variable arguments list.
  *
- * @return Length of the string written to the destination buffer, or
- *         negative error code.
+ * @return Length of the string written to the destination buffer, not
+ *         inclusing the null termination, or negative error code.
  */
 ssize_t std_sprintf(char *dst_p, FAR const char *fmt_p, ...);
 
 /**
- * Format and write data to given buffer.
+ * Format and write data to given buffer. The output is null
+ * terminated.
  *
  * @param[out] dst_p Destination buffer. The formatted string is
  *                   written to this buffer.
@@ -69,8 +70,8 @@ ssize_t std_sprintf(char *dst_p, FAR const char *fmt_p, ...);
  * @param[in] fmt_p Format string.
  * @param[in] ... Variable arguments list.
  *
- * @return Length of the string written to the destination buffer, or
- *         negative error code.
+ * @return Length of the string written to the destination buffer, not
+ *         inclusing the null termination, or negative error code.
  */
 ssize_t std_snprintf(char *dst_p,
                      size_t size,
@@ -78,31 +79,33 @@ ssize_t std_snprintf(char *dst_p,
                      ...);
 
 /**
- * Format and print data to standard output.
+ * Format and print data to standard output. The output is not null terminated.
  *
  * See `std_sprintf()` for the the format string specification.
  *
  * @param[in] fmt_p Format string.
  * @param[in] ... Variable arguemnts list.
  *
- * @return void.
+ * @return Number of characters written to standard output, or
+ *         negative error code.
  */
-void std_printf(FAR const char *fmt_p, ...);
+ssize_t std_printf(FAR const char *fmt_p, ...);
 
 /**
- * Format and print data to standard output.
+ * Format and print data to standard output. The output is not null terminated.
  *
  * See `std_sprintf()` for the the format string specification.
  *
  * @param[in] fmt_p Format string.
  * @param[in] ap_p Variable arguemnts list.
  *
- * @return void.
+ * @return Number of characters written to standard output, or
+ *         negative error code.
  */
-void std_vprintf(FAR const char *fmt_p, va_list *ap_p);
+ssize_t std_vprintf(FAR const char *fmt_p, va_list *ap_p);
 
 /**
- * Format and print data to channel.
+ * Format and print data to channel. The output is not null terminated.
  *
  * See `std_sprintf()` for the the format string specification.
  *
@@ -110,12 +113,13 @@ void std_vprintf(FAR const char *fmt_p, va_list *ap_p);
  * @param[in] fmt_p Format string.
  * @param[in] ... Variable arguemnts list.
  *
- * @return void.
+ * @return Number of characters written to given channel, or negative
+ *         error code.
  */
-void std_fprintf(chan_t *chan_p, FAR const char *fmt_p, ...);
+ssize_t std_fprintf(chan_t *chan_p, FAR const char *fmt_p, ...);
 
 /**
- * Format and print data to channel.
+ * Format and print data to channel. The output is not null terminated.
  *
  * See `std_sprintf()` for the the format string specification.
  *
@@ -123,9 +127,10 @@ void std_fprintf(chan_t *chan_p, FAR const char *fmt_p, ...);
  * @param[in] fmt_p Format string.
  * @param[in] ... Variable arguemnts list.
  *
- * @return void.
+ * @return Number of characters written to given channel, or negative
+ *         error code.
  */
-void std_vfprintf(chan_t *chan_p, FAR const char *fmt_p, va_list *ap_p);
+ssize_t std_vfprintf(chan_t *chan_p, FAR const char *fmt_p, va_list *ap_p);
 
 /**
  * Convert string to integer.
