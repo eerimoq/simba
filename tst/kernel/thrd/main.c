@@ -112,6 +112,8 @@ static int test_preemptive(struct harness_t *harness_p)
 
 static int test_env(struct harness_t *harness_p)
 {
+#if CONFIG_THRD_ENV == 1
+    
     struct thrd_environment_variable_t variables[4];
 
     /* Set and get are not possible for a thread without an
@@ -162,6 +164,12 @@ static int test_env(struct harness_t *harness_p)
     BTASSERT(thrd_init_env(NULL, 0) == 0);
 
     return (0);
+
+#else
+
+    return (1);
+    
+#endif
 }
 
 int main()

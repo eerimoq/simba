@@ -32,6 +32,12 @@
 #    endif
 #endif
 
-#define CONFIG_THRD_ENV                     1
+#ifndef CONFIG_THRD_ENV
+#    if defined(BOARD_ARDUINO_PRO_MICRO)
+#        define CONFIG_THRD_ENV                     0
+#    else
+#        define CONFIG_THRD_ENV                     1
+#    endif
+#endif
 
 #endif
