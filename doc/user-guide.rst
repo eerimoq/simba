@@ -13,10 +13,10 @@ interface that other packages and the user application can use. The
 user application on the right can use any package, and in rare cases
 directly access the hardware registers.
 
-.. image:: ../../images/packages.jpg
+.. image:: images/packages.jpg
    :width: 90%
    :align: center    
-   :target: ../../_images/packages.jpg
+   :target: _images/packages.jpg
 
 The Simba installation guide can be found on the :doc:`installation`
 page.
