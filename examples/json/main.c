@@ -31,31 +31,33 @@ static const char text[] =
 
 int main()
 {
-    int number_of_tokens;
+    struct json_t json;
     struct json_tok_t tokens[64];
     
     sys_start();
 
-    number_of_tokens = json_parse(text,
-                                  strlen(text),
-                                  tokens,
-                                  membersof(tokens));
-    
-    if (number_of_tokens <= 0) {
-        std_printf(FSTR("Failed to decode JSON text with error %d.\r\n"),
-                   number_of_tokens);
-        return (-1);
-    }
-    
-    /* Dump all. */
-    std_printf(FSTR("all = "));
-    json_dump(sys_get_stdout(), tokens, number_of_tokens);
+    json_init(&json, tokens, membersof(tokens));
+    json_parse(&json, text, strlen(text));
+        
+    /* Dump 'root'. */
+    std_printf(FSTR("root             = "));
+    json_dump(&json, NULL, sys_get_stdout());
     std_printf(FSTR("\r\n"));
     
-    /* Dump the array. */
-    std_printf(FSTR("array = "));
-    json_dump(sys_get_stdout(), &tokens[8], number_of_tokens - 8);
+    /* Dump 'root["array"]'. */
+    std_printf(FSTR("root[\"array\"]    = "));
+    json_dump(&json,
+              json_object_get(&json, "array", json_root(&json)),
+              sys_get_stdout());
     std_printf(FSTR("\r\n"));
+
+    /* Dump 'root["array"][1]'. */
+    std_printf(FSTR("root[\"array\"][1] = "));
+    json_dump(&json,
+              json_array_get(&json,
+                             1,
+                             json_object_get(&json, "array", json_root(&json))),
+              sys_get_stdout());
     
     return (0);
 }

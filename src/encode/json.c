@@ -49,7 +49,7 @@
 #include "simba.h"
 
 struct dump_t {
-    struct json_t json;
+    struct json_t *self_p;
     struct json_tok_t *tokens_p;
     int num_tokens;
     chan_t *out_p;
@@ -69,28 +69,26 @@ static ssize_t dump(struct dump_t *state_p);
 static ssize_t string_write(void *chan_p, const void *buf_p, size_t size)
 {
     struct string_t *string_p;
-    
+
     string_p = chan_p;
     memcpy(&string_p->buf_p[string_p->pos], buf_p, size);
     string_p->pos += size;
-    
+
     return (size);
 }
 
 /**
  * Allocates a fresh unused token from the token pull.
  */
-static struct json_tok_t *alloc_token(struct json_t *self_p,
-                                      struct json_tok_t *tokens_p,
-                                      size_t num_tokens)
+static struct json_tok_t *alloc_token(struct json_t *self_p)
 {
     struct json_tok_t *tok_p;
 
-    if (self_p->toknext >= num_tokens) {
+    if (self_p->toknext >= self_p->num_tokens) {
         return NULL;
     }
 
-    tok_p = &tokens_p[self_p->toknext++];
+    tok_p = &self_p->tokens_p[self_p->toknext++];
     tok_p->buf_p = NULL;
     tok_p->size = -1;
     tok_p->num_tokens = 0;
@@ -127,7 +125,7 @@ static ssize_t dump_object(struct dump_t *state_p,
     std_fprintf(state_p->out_p, FSTR("{"));
     size = 2;
     delim_p = FSTR("");
-    
+
     for (i = 0; i < token_p->num_tokens; i++) {
         /* Delimiter. */
         res = std_fprintf(state_p->out_p, delim_p);
@@ -181,7 +179,7 @@ static ssize_t dump_array(struct dump_t *state_p,
     std_fprintf(state_p->out_p, FSTR("["));
     size = 2;
     delim_p = FSTR("");
-    
+
     for (i = 0; i < token_p->num_tokens; i++) {
         /* Delimiter. */
         res = std_fprintf(state_p->out_p, delim_p);
@@ -283,9 +281,7 @@ static ssize_t dump(struct dump_t *state_p)
  */
 static int parse_primitive(struct json_t *self_p,
                            const char *js_p,
-                           size_t len,
-                           struct json_tok_t *tokens_p,
-                           size_t num_tokens)
+                           size_t len)
 {
     struct json_tok_t *token_p;
     int start;
@@ -328,12 +324,12 @@ static int parse_primitive(struct json_t *self_p,
 
  found:
 
-    if (tokens_p == NULL) {
+    if (self_p->tokens_p == NULL) {
         self_p->pos--;
         return (0);
     }
 
-    token_p = alloc_token(self_p, tokens_p, num_tokens);
+    token_p = alloc_token(self_p);
 
     if (token_p == NULL) {
         self_p->pos = start;
@@ -357,9 +353,7 @@ static int parse_primitive(struct json_t *self_p,
  */
 static int parse_string(struct json_t *self_p,
                         const char *js_p,
-                        size_t len,
-                        struct json_tok_t *tokens_p,
-                        size_t num_tokens)
+                        size_t len)
 {
     struct json_tok_t *token_p;
 
@@ -374,11 +368,11 @@ static int parse_string(struct json_t *self_p,
 
         /* Quote: end of string */
         if (c == '\"') {
-            if (tokens_p == NULL) {
+            if (self_p->tokens_p == NULL) {
                 return (0);
             }
 
-            token_p = alloc_token(self_p, tokens_p, num_tokens);
+            token_p = alloc_token(self_p);
 
             if (token_p == NULL) {
                 self_p->pos = start;
@@ -457,42 +451,44 @@ static int parse_string(struct json_t *self_p,
     return (JSON_ERROR_PART);
 }
 
-int json_init(struct json_t *self_p)
+int json_init(struct json_t *self_p,
+              struct json_tok_t *tokens_p,
+              int num_tokens)
 {
-    ASSERTN(self_p != NULL, EINVAL);
+    ASSERTN(self_p != NULL, -EINVAL);
+    ASSERTN(((tokens_p != NULL) && (num_tokens > 0))
+            || (num_tokens == 0), -EINVAL);
 
     self_p->pos = 0;
     self_p->toknext = 0;
     self_p->toksuper = -1;
+    self_p->tokens_p = tokens_p;
+    self_p->num_tokens = num_tokens;
 
     return (0);
 }
 
-int json_parse(const char *js_p,
-               size_t len,
-               struct json_tok_t *tokens_p,
-               unsigned int num_tokens)
+int json_parse(struct json_t *self_p,
+               const char *js_p,
+               size_t len)
 {
-    ASSERTN(js_p != NULL, EINVAL);
-    ASSERTN(len > 0, EINVAL);
-    ASSERTN(((tokens_p != NULL) && (num_tokens > 0))
-            || (num_tokens == 0), EINVAL);
+    ASSERTN(self_p != NULL, -EINVAL);
+    ASSERTN(js_p != NULL, -EINVAL);
+    ASSERTN(len > 0, -EINVAL);
 
     int r;
     int i;
     struct json_tok_t *token_p;
-    struct json_t json;
     int count;
 
-    json_init(&json);
-    count = json.toknext;
+    count = self_p->toknext;
 
-    for (; ((json.pos < len)
-            && (js_p[json.pos] != '\0')); json.pos++) {
+    for (; ((self_p->pos < len)
+            && (js_p[self_p->pos] != '\0')); self_p->pos++) {
         char c;
         enum json_type_t type;
 
-        c = js_p[json.pos];
+        c = js_p[self_p->pos];
 
         switch (c) {
 
@@ -500,42 +496,42 @@ int json_parse(const char *js_p,
         case '[':
             count++;
 
-            if (tokens_p == NULL) {
+            if (self_p->tokens_p == NULL) {
                 break;
             }
 
-            token_p = alloc_token(&json, tokens_p, num_tokens);
+            token_p = alloc_token(self_p);
 
             if (token_p == NULL) {
                 return (JSON_ERROR_NOMEM);
             }
 
-            if (json.toksuper != -1) {
-                tokens_p[json.toksuper].num_tokens++;
+            if (self_p->toksuper != -1) {
+                self_p->tokens_p[self_p->toksuper].num_tokens++;
 #ifdef JSON_PARENT_LINKS
-                token_p->parent = json.toksuper;
+                token_p->parent = self_p->toksuper;
 #endif
             }
 
             token_p->type = (c == '{' ? JSON_OBJECT : JSON_ARRAY);
-            token_p->buf_p = js_p + json.pos;
-            json.toksuper = json.toknext - 1;
+            token_p->buf_p = js_p + self_p->pos;
+            self_p->toksuper = self_p->toknext - 1;
             break;
 
         case '}':
         case ']':
-            if (tokens_p == NULL) {
+            if (self_p->tokens_p == NULL) {
                 break;
             }
 
             type = (c == '}' ? JSON_OBJECT : JSON_ARRAY);
 
 #ifdef JSON_PARENT_LINKS
-            if (json.toknext < 1) {
+            if (self_p->toknext < 1) {
                 return (JSON_ERROR_INVAL);
             }
 
-            token = &tokens_p[json.toknext - 1];
+            token = &tokens_p[self_p->toknext - 1];
 
             for (;;) {
                 if ((token_p->start != -1) && (token_p->end == -1)) {
@@ -543,9 +539,9 @@ int json_parse(const char *js_p,
                         return (JSON_ERROR_INVAL);
                     }
 
-                    token_p->size = (&js_p[json.pos]
-                                     - json.buf_p + 1);
-                    json.toksuper = token_p->parent;
+                    token_p->size = (&js_p[self_p->pos]
+                                     - self_p->buf_p + 1);
+                    self_p->toksuper = token_p->parent;
                     break;
                 }
 
@@ -556,16 +552,16 @@ int json_parse(const char *js_p,
                 token = &tokens_p[token_p->parent];
             }
 #else
-            for (i = json.toknext - 1; i >= 0; i--) {
-                token_p = &tokens_p[i];
+            for (i = self_p->toknext - 1; i >= 0; i--) {
+                token_p = &self_p->tokens_p[i];
 
                 if ((token_p->buf_p != NULL) && (token_p->size == -1)) {
                     if (token_p->type != type) {
                         return (JSON_ERROR_INVAL);
                     }
 
-                    json.toksuper = -1;
-                    token_p->size = (&js_p[json.pos]
+                    self_p->toksuper = -1;
+                    token_p->size = (&js_p[self_p->pos]
                                      - token_p->buf_p + 1);
                     break;
                 }
@@ -577,17 +573,17 @@ int json_parse(const char *js_p,
             }
 
             for (; i >= 0; i--) {
-                token_p = &tokens_p[i];
+                token_p = &self_p->tokens_p[i];
 
                 if ((token_p->buf_p != NULL) && (token_p->size == -1)) {
-                    json.toksuper = i;
+                    self_p->toksuper = i;
                     break;
                 }
             }
 #endif
             break;
         case '\"':
-            r = parse_string(&json, js_p, len, tokens_p, num_tokens);
+            r = parse_string(self_p, js_p, len);
 
             if (r < 0) {
                 return (r);
@@ -595,8 +591,8 @@ int json_parse(const char *js_p,
 
             count++;
 
-            if ((json.toksuper != -1) && (tokens_p != NULL)) {
-                tokens_p[json.toksuper].num_tokens++;
+            if ((self_p->toksuper != -1) && (self_p->tokens_p != NULL)) {
+                self_p->tokens_p[self_p->toksuper].num_tokens++;
             }
 
             break;
@@ -608,23 +604,23 @@ int json_parse(const char *js_p,
             break;
 
         case ':':
-            json.toksuper = json.toknext - 1;
+            self_p->toksuper = self_p->toknext - 1;
             break;
 
         case ',':
-            if ((tokens_p != NULL)
-                && (json.toksuper != -1)
-                && (tokens_p[json.toksuper].type != JSON_ARRAY)
-                && (tokens_p[json.toksuper].type != JSON_OBJECT)) {
+            if ((self_p->tokens_p != NULL)
+                && (self_p->toksuper != -1)
+                && (self_p->tokens_p[self_p->toksuper].type != JSON_ARRAY)
+                && (self_p->tokens_p[self_p->toksuper].type != JSON_OBJECT)) {
 #ifdef JSON_PARENT_LINKS
-                json.toksuper = tokens_p[json.toksuper].parent;
+                self_p->toksuper = tokens_p[self_p->toksuper].parent;
 #else
-                for (i = json.toknext - 1; i >= 0; i--) {
-                    if ((tokens_p[i].type == JSON_ARRAY)
-                        || (tokens_p[i].type == JSON_OBJECT)) {
-                        if ((tokens_p[i].buf_p != NULL)
-                            && (tokens_p[i].size == -1)) {
-                            json.toksuper = i;
+                for (i = self_p->toknext - 1; i >= 0; i--) {
+                    if ((self_p->tokens_p[i].type == JSON_ARRAY)
+                        || (self_p->tokens_p[i].type == JSON_OBJECT)) {
+                        if ((self_p->tokens_p[i].buf_p != NULL)
+                            && (self_p->tokens_p[i].size == -1)) {
+                            self_p->toksuper = i;
                             break;
                         }
                     }
@@ -650,8 +646,8 @@ int json_parse(const char *js_p,
         case 'f':
         case 'n':
             /* And they must not be keys of the object */
-            if ((tokens != NULL) && (json.toksuper != -1)) {
-                struct json_tok_t *t = &tokens_p[json.toksuper];
+            if ((tokens != NULL) && (self_p->toksuper != -1)) {
+                struct json_tok_t *t = &tokens_p[self_p->toksuper];
 
                 if ((t_p->type == JSON_OBJECT)
                     || ((t_p->type == JSON_STRING)
@@ -664,7 +660,7 @@ int json_parse(const char *js_p,
             /* In non-strict mode every unquoted value is a primitive */
         default:
 #endif
-            r = parse_primitive(&json, js_p, len, tokens_p, num_tokens);
+            r = parse_primitive(self_p, js_p, len);
 
             if (r < 0) {
                 return (r);
@@ -672,8 +668,8 @@ int json_parse(const char *js_p,
 
             count++;
 
-            if ((json.toksuper != -1) && (tokens_p != NULL)) {
-                tokens_p[json.toksuper].num_tokens++;
+            if ((self_p->toksuper != -1) && (self_p->tokens_p != NULL)) {
+                self_p->tokens_p[self_p->toksuper].num_tokens++;
             }
 
             break;
@@ -687,10 +683,10 @@ int json_parse(const char *js_p,
         }
     }
 
-    if (tokens_p != NULL) {
-        for (i = json.toknext - 1; i >= 0; i--) {
+    if (self_p->tokens_p != NULL) {
+        for (i = self_p->toknext - 1; i >= 0; i--) {
             /* Unmatched opened object or array */
-            if ((tokens_p[i].buf_p != NULL) && (tokens_p[i].size == -1)) {
+            if ((self_p->tokens_p[i].buf_p != NULL) && (self_p->tokens_p[i].size == -1)) {
                 return (JSON_ERROR_PART);
             }
         }
@@ -699,12 +695,12 @@ int json_parse(const char *js_p,
     return (count);
 }
 
-ssize_t json_dumps(char *js_p,
+ssize_t json_dumps(struct json_t *self_p,
                    struct json_tok_t *tokens_p,
-                   unsigned int num_tokens)
+                   char *js_p)
 {
-    ASSERTN(js_p != NULL, EINVAL);
-    ASSERTN(tokens_p != NULL, EINVAL);
+    ASSERTN(self_p != NULL, -EINVAL);
+    ASSERTN(js_p != NULL, -EINVAL);
 
     ssize_t res;
     struct string_t string;
@@ -712,8 +708,8 @@ ssize_t json_dumps(char *js_p,
     chan_init(&string.base, NULL, string_write, NULL);
     string.buf_p = js_p;
     string.pos = 0;
-    
-    res = json_dump(&string, tokens_p, num_tokens);
+
+    res = json_dump(self_p, tokens_p, &string);
 
     if (res < 0) {
         return (res);
@@ -722,27 +718,128 @@ ssize_t json_dumps(char *js_p,
     return (chan_write(&string, "\0", 1) == 1 ? res : -1);
 }
 
-ssize_t json_dump(chan_t *out_p,
+ssize_t json_dump(struct json_t *self_p,
                   struct json_tok_t *tokens_p,
-                  unsigned int num_tokens)
+                  chan_t *out_p)
 {
-    ASSERTN(out_p != NULL, EINVAL);
-    ASSERTN(tokens_p != NULL, EINVAL);
+    ASSERTN(self_p != NULL, -EINVAL);
+    ASSERTN(out_p != NULL, -EINVAL);
 
     struct dump_t state;
 
+    if (tokens_p == NULL) {
+        tokens_p = self_p->tokens_p;
+    }
+    
     /* The first token must be an object or an array. */
     if (!((tokens_p->type == JSON_OBJECT)
           || (tokens_p->type == JSON_ARRAY))) {
         return (-1);
     }
 
-    json_init(&state.json);
     state.tokens_p = tokens_p;
-    state.num_tokens = num_tokens;
+    state.num_tokens = self_p->num_tokens;
     state.out_p = out_p;
 
     return (dump(&state));
+}
+
+struct json_tok_t *json_root(struct json_t *self_p)
+{
+    return (self_p->tokens_p);
+}
+
+/**
+ * Recursively get the number of child tokens of given token.
+ */
+static int get_number_of_children(struct json_tok_t *token_p)
+{
+    int i;
+    int number_of_children;
+    struct json_tok_t *child_p;
+
+    number_of_children = 0;
+    
+    for (i = 0; i < token_p->num_tokens; i++) {
+        child_p = &token_p[number_of_children + 1 + i];
+        
+        if (child_p->num_tokens > 0) {
+            number_of_children += get_number_of_children(child_p);
+        }
+    }
+
+    number_of_children += token_p->num_tokens;
+
+    return (number_of_children);
+}
+
+struct json_tok_t *json_object_get(struct json_t *self_p,
+                                   const char *key_p,
+                                   struct json_tok_t *object_p)
+{
+    ASSERTN(self_p != NULL, -EINVAL);
+    ASSERTN(key_p != NULL, -EINVAL);
+
+    int i;
+    int key_length;
+    int number_of_children;
+    struct json_tok_t *token_p;
+
+    /* Return immediatly if no object is found. */
+    if (object_p == NULL) {
+        return (NULL);
+    }
+
+    key_length = strlen(key_p);
+
+    /* The first child token. */
+    token_p = (object_p + 1);
+
+    /* Find given key in the object. */
+    for (i = 0; i < object_p->num_tokens; i++) {
+        if (strncmp(key_p, token_p->buf_p, key_length) == 0) {
+            return (token_p + 1);
+        }
+
+        /* Get the next child token. */
+        number_of_children = get_number_of_children(token_p);
+        token_p += (number_of_children + 1);
+    }
+
+    return (NULL);
+}
+
+struct json_tok_t *json_array_get(struct json_t *self_p,
+                                  int index,
+                                  struct json_tok_t *array_p)
+{
+    ASSERTN(self_p != NULL, -EINVAL);
+    ASSERTN(index >= 0, -EINVAL);
+
+    int i;
+    int number_of_children;
+    struct json_tok_t *token_p;
+
+    /* Return immediatly if no array is found. */
+    if (array_p == NULL) {
+        return (NULL);
+    }
+
+    /* The first child token. */
+    token_p = (array_p + 1);
+    
+    /* Find given key in the object. */
+    for (i = 0; i < array_p->num_tokens; i++) {
+        if (i == index) {
+            return (token_p);
+        }
+
+        /* Get the next child token. */
+        number_of_children = get_number_of_children(token_p);
+        token_p += (number_of_children + 1);
+    }
+
+    return (NULL);
 }
 
 void json_token_object(struct json_tok_t *token_p,

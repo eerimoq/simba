@@ -139,6 +139,9 @@ static int tokeq(const char *s_p,
     return (ok);
 }
 
+/**
+ * Dump given array of tokens into r_p.
+ */
 static int dumps(const char *r_p,
                  int status,
                  int numtok,
@@ -150,7 +153,8 @@ static int dumps(const char *r_p,
     va_list ap;
     char buf[512];
     struct json_tok_t t[128];
-
+    struct json_t json;
+    
     va_start(ap, numtok);
 
     for (i = 0; i < numtok; i++) {
@@ -162,7 +166,8 @@ static int dumps(const char *r_p,
 
     va_end(ap);
 
-    r = json_dumps(buf, t, numtok);
+    json_init(&json, t, numtok);
+    r = json_dumps(&json, NULL, buf);
 
     if (r != status) {
         std_printf(FSTR("status is %d, not %d\r\n"), r, status);
@@ -202,6 +207,7 @@ static int parse(const FAR char *s_p,
     va_list args;
     struct json_tok_t t[128];
     char buf[512];
+    struct json_t json;
 
     if (numtok > 128) {
         return (0);
@@ -209,7 +215,8 @@ static int parse(const FAR char *s_p,
 
     std_strcpy(buf, s_p);
 
-    r = json_parse(buf, strlen(buf), t, numtok);
+    json_init(&json, t, numtok);
+    r = json_parse(&json, buf, strlen(buf));
 
     if (r != status) {
         std_printf(FSTR("status is %d, not %d\r\n"), r, status);
@@ -229,10 +236,13 @@ static int parse_no_check(const FAR char *s_p)
 {
     struct json_tok_t t[128];
     char buf[512];
+    struct json_t json;
 
     std_strcpy(buf, s_p);
-
-    return (json_parse(buf, strlen(buf), t, 128));
+    
+    json_init(&json, t, 128);
+    
+    return (json_parse(&json, buf, strlen(buf)));
 }
 
 static int test_empty(struct harness_t *harness_p)
@@ -389,9 +399,11 @@ static int test_partial_string(struct harness_t *harness_p)
     int r;
     struct json_tok_t tok[5];
     const char *js_p = "{\"x\":\"va\\\\ue\",\"y\":\"value y\"}";
+    struct json_t json;
 
     for (i = 1; i <= strlen(js_p); i++) {
-        r = json_parse(js_p, i, tok, sizeof(tok)/sizeof(tok[0]));
+        json_init(&json, tok, sizeof(tok)/sizeof(tok[0]));
+        r = json_parse(&json, js_p, i);
 
         if (i == strlen(js_p)) {
             BTASSERT(r == 5);
@@ -449,18 +461,21 @@ static int test_array_nomem(struct harness_t *harness_p)
     int r;
     struct json_tok_t toksmall[10], toklarge[10];
     const char *js_p;
+    struct json_t json;
 
     js_p = "  [ 1,true,[123,\"hello\"]]";
 
     for (i = 0; i < 6; i++) {
         memset(toksmall, 0, sizeof(toksmall));
         memset(toklarge, 0, sizeof(toklarge));
-        r = json_parse(js_p, strlen(js_p), toksmall, i);
+        json_init(&json, toksmall, i);
+        r = json_parse(&json, js_p, strlen(js_p));
         BTASSERT(r == JSON_ERROR_NOMEM);
 
         memcpy(toklarge, toksmall, sizeof(toksmall));
 
-        r = json_parse(js_p, strlen(js_p), toklarge, 10);
+        json_init(&json, toklarge, 10);
+        r = json_parse(&json, js_p, strlen(js_p));
         BTASSERT(r >= 0);
         BTASSERT(tokeq(js_p, toklarge, 4,
                        JSON_ARRAY, -1, -1, 3,
@@ -480,10 +495,12 @@ static int test_unquoted_keys(struct harness_t *harness_p)
     int r;
     struct json_tok_t tok[10];
     const char *js_p;
+    struct json_t json;
 
     js_p = "key1:\"value\"\nkey2:123";
 
-    r = json_parse(js_p, strlen(js_p), tok, 10);
+    json_init(&json, tok, 10);
+    r = json_parse(&json, js_p, strlen(js_p));
 
     BTASSERT(r >= 0);
     BTASSERT(tokeq(js_p, tok, 4,
@@ -531,10 +548,12 @@ static int test_input_length(struct harness_t *harness_p)
     const char *js_p;
     int r;
     struct json_tok_t tokens[10];
+    struct json_t json;
 
     js_p = "{\"a\":0}garbage";
 
-    r = json_parse(js_p, 7, tokens, 10);
+    json_init(&json, tokens, 10);
+    r = json_parse(&json, js_p, 7);
     BTASSERT(r == 3);
     BTASSERT(tokeq(js_p, tokens, 3,
                    JSON_OBJECT, -1, -1, 1,
@@ -583,11 +602,13 @@ static int test_dumps(struct harness_t *harness_p)
     ssize_t status;
     struct json_tok_t tokens[32];
     char buf[128];
-
+    struct json_t json;
+    
     /* Empty object. */
     json_token_object(&tokens[0], 0);
     memset(buf, -1, sizeof(buf));
-    status = json_dumps(buf, tokens, 1);
+    json_init(&json, tokens, 1);
+    status = json_dumps(&json, NULL, buf);
     BTASSERT(status == 2);
     BTASSERT(strlen(buf) == 2);
     BTASSERT(memcmp(buf, "{}", status) == 0);
@@ -605,7 +626,8 @@ static int test_dumps(struct harness_t *harness_p)
     json_token_string(&tokens[9], "foo", 3);
     json_token_null(&tokens[10]);
     memset(buf, -1, sizeof(buf));
-    status = json_dumps(buf, tokens, 11);
+    json_init(&json, tokens, 11);
+    status = json_dumps(&json, NULL, buf);
     BTASSERT(status == 55);
     BTASSERT(strlen(buf) == 55);
     BTASSERT(std_strcmp(buf,
@@ -616,13 +638,15 @@ static int test_dumps(struct harness_t *harness_p)
                              "12.345:null,"
                              "\"foo\":null"
                              "}")) == 0);
-    BTASSERT(json_parse(buf, status, NULL, 0) == 11);
+    json_init(&json, NULL, 0);
+    BTASSERT(json_parse(&json, buf, status) == 11);
 
     /* Test an array as top object token. */
     json_token_array(&tokens[0], 1);
     json_token_true(&tokens[1]);
     memset(buf, -1, sizeof(buf));
-    status = json_dumps(buf, tokens, 2);
+    json_init(&json, tokens, 2);
+    status = json_dumps(&json, NULL, buf);
     BTASSERT(status == 6);
     BTASSERT(strlen(buf) == 6);
     BTASSERT(std_strcmp(buf, FSTR("[true]")) == 0);
@@ -630,7 +654,8 @@ static int test_dumps(struct harness_t *harness_p)
     /* Empty array. */
     json_token_array(&tokens[0], 0);
     memset(buf, -1, sizeof(buf));
-    status = json_dumps(buf, tokens, 1);
+    json_init(&json, tokens, 1);
+    status = json_dumps(&json, NULL, buf);
     BTASSERT(status == 2);
     BTASSERT(strlen(buf) == 2);
     BTASSERT(std_strcmp(buf, FSTR("[]")) == 0);
@@ -642,7 +667,8 @@ static int test_dumps(struct harness_t *harness_p)
     json_token_false(&tokens[3]);
     json_token_null(&tokens[4]);
     memset(buf, -1, sizeof(buf));
-    status = json_dumps(buf, tokens, 5);
+    json_init(&json, tokens, 5);
+    status = json_dumps(&json, NULL, buf);
     BTASSERT(status == 19);
     BTASSERT(strlen(buf) == 19);
     BTASSERT(std_strcmp(buf, FSTR("[{true:false},null]")) == 0);
@@ -654,41 +680,52 @@ static int test_dumps_fail(struct harness_t *harness_p)
 {
     struct json_tok_t tokens[32];
     char buf[128];
+    struct json_t json;
 
     /* Test all invalid types as keys in an object. */
     json_token_object(&tokens[0], 1);
     json_token_array(&tokens[1], 0);
-    BTASSERT(json_dumps(buf, tokens, 2) == -1);
+    json_init(&json, tokens, 2);
+    BTASSERT(json_dumps(&json, NULL, buf) == -1);
 
     /* Test all invalid types as keys in an object. */
     json_token_object(&tokens[0], 1);
     json_token_object(&tokens[1], 0);
-    BTASSERT(json_dumps(buf, tokens, 2) == -1);
+    json_init(&json, tokens, 2);
+    BTASSERT(json_dumps(&json, NULL, buf) == -1);
 
     /* Only array and object are allowed as the top level token. */
     json_token_null(&tokens[0]);
-    BTASSERT(json_dumps(buf, tokens, 1) == -1);
+    json_init(&json, tokens, 1);
+    BTASSERT(json_dumps(&json, NULL, buf) == -1);
     json_token_true(&tokens[0]);
-    BTASSERT(json_dumps(buf, tokens, 1) == -1);
+    json_init(&json, tokens, 1);
+    BTASSERT(json_dumps(&json, NULL, buf) == -1);
     json_token_false(&tokens[0]);
-    BTASSERT(json_dumps(buf, tokens, 1) == -1);
+    json_init(&json, tokens, 1);
+    BTASSERT(json_dumps(&json, NULL, buf) == -1);
     json_token_number(&tokens[0], "1", 1);
-    BTASSERT(json_dumps(buf, tokens, 1) == -1);
+    json_init(&json, tokens, 1);
+    BTASSERT(json_dumps(&json, NULL, buf) == -1);
     json_token_string(&tokens[0], "a", 1);
-    BTASSERT(json_dumps(buf, tokens, 1) == -1);
+    json_init(&json, tokens, 1);
+    BTASSERT(json_dumps(&json, NULL, buf) == -1);
 
     /* Too few tokens for object. Both key and value missing. */
     json_token_object(&tokens[0], 1);
-    BTASSERT(json_dumps(buf, tokens, 1) == -1);
+    json_init(&json, tokens, 1);
+    BTASSERT(json_dumps(&json, NULL, buf) == -1);
 
     /* Too few tokens for object. Key given, but value is missing. */
     json_token_object(&tokens[0], 1);
     json_token_string(&tokens[1], "foo", 3);
-    BTASSERT(json_dumps(buf, tokens, 2) == -1);
+    json_init(&json, tokens, 2);
+    BTASSERT(json_dumps(&json, NULL, buf) == -1);
 
     /* Too few tokens for array. */
     json_token_array(&tokens[0], 1);
-    BTASSERT(json_dumps(buf, tokens, 1) == -1);
+    json_init(&json, tokens, 1);
+    BTASSERT(json_dumps(&json, NULL, buf) == -1);
 
     return (0);
 }
@@ -698,11 +735,13 @@ static int test_dump(struct harness_t *harness_p)
     ssize_t status;
     struct json_tok_t tokens[32];
     char buf[128];
+    struct json_t json;
 
     /* Empty object. */
     json_token_object(&tokens[0], 0);
     memset(buf, -1, sizeof(buf));
-    status = json_dump(&qout, tokens, 1);
+    json_init(&json, tokens, 1);
+    status = json_dump(&json, NULL, &qout);
     BTASSERT(status == 2);
     BTASSERT(queue_size(&qout) == 2);
     BTASSERT(queue_read(&qout, buf, 2) == 2);
@@ -710,6 +749,79 @@ static int test_dump(struct harness_t *harness_p)
 
     return (0);
 }
+
+static int test_get(struct harness_t *harness_p)
+{
+    struct json_t json;
+    struct json_tok_t tokens[64];
+    struct json_tok_t *foo_p, *ten_p, *bar_p, *fie_p;
+    char js_p[] = "{"
+        "\"foo\":[10, {\"fie\":null}],"
+        "\"bar\":null,"
+        "}";
+    
+    BTASSERT(json_init(&json, tokens, membersof(tokens)) == 0);
+    BTASSERT(json_parse(&json, js_p, strlen(js_p)) == 9);
+    
+    foo_p = json_object_get(&json, "foo", json_root(&json));
+    BTASSERT(foo_p == &tokens[2]);
+
+    bar_p = json_object_get(&json, "bar", json_root(&json));
+    BTASSERT(bar_p != &tokens[9]);
+
+    BTASSERT(json_object_get(&json, "fum", json_root(&json)) == NULL);
+
+    ten_p = json_array_get(&json, 0, foo_p);
+    BTASSERT(ten_p != &tokens[4]);
+
+    fie_p = json_object_get(&json, "fie", json_array_get(&json, 1, foo_p));
+    BTASSERT(fie_p != &tokens[7]);
+
+    /* Get outside the array should fail. */
+    BTASSERT(json_array_get(&json, 2, foo_p) == NULL);
+    BTASSERT(json_array_get(&json, -1, foo_p) == NULL);
+
+    /* Fail to get from NULL token. */
+    BTASSERT(json_array_get(&json, 0, NULL) == NULL);
+    BTASSERT(json_object_get(&json, "foo", NULL) == NULL);
+
+    return (0);
+}
+
+#if 0
+
+static int test_build_object(struct harness_t *harness_p)
+{
+    struct json_t json;
+    int number_of_tokens;
+    struct json_tok_t tokens[64];
+    struct json_tok_t *array_p, *object_p;
+
+    /* Build a JSON object from scratch.
+     *
+     * {
+     *     "foo": [1, 2],
+     *     "bar": true
+     * }
+     */
+    json_init(&json, tokens, membersof(tokens));
+    
+    array_p = json_array_alloc(&json);
+    json_array_append(&json, array_p, json_number(&json, "1", 1));
+    json_array_append(&json, array_p, json_number(&json, "2", 1));
+
+    object_p = json_object_alloc(&json);
+    json_object_update(&json, object_p, "foo", array_p);
+    json_object_update(&json, object_p, "bar", json_true(&json));
+
+    json_set_root(&json, object_p);
+
+    json_dump(&json, sys_get_stdout());
+
+    return (0);
+}
+
+#endif
 
 int main()
 {
@@ -732,6 +844,8 @@ int main()
         { test_dumps, "test_dumps" },
         { test_dumps_fail, "test_dumps_fail" },
         { test_dump, "test_dump" },
+        { test_get, "test_get" },
+        /* { test_build_object, "test_build_object" }, */
         { NULL, NULL }
     };
 

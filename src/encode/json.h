@@ -86,9 +86,13 @@ enum json_err_t {
  * JSON token description.
  */
 struct json_tok_t {
+    /* Token type. */
     enum json_type_t type;
+    /* Token value buffer. */
     const char *buf_p;
+    /* Size of the token buffer. */
     size_t size;
+    /* Number of children of this token. Not recursive. */
     int num_tokens;
 #ifdef JSON_PARENT_LINKS
     int parent;
@@ -107,51 +111,103 @@ struct json_t {
     unsigned int toknext;
     /** Superior token node, e.g parent object or array. */
     int toksuper;
+    /** Array of tokens. */
+    struct json_tok_t *tokens_p;
+    /** Number of tokens in the tokens array. */
+    int num_tokens;
 };
+
+ /**
+ * Initialize given JSON object.
+  *
+  * @param[out] self_p JSON object to initialize.
+  * @param[in] tokens_p Array of tokens.
+  * @param[in] num_tokens Number of tokens.
+ *
+  * @return zero(0) or negative error code.
+  */
+int json_init(struct json_t *self_p,
+              struct json_tok_t *tokens_p,
+              int num_tokens);
 
 /**
  * Parse given JSON data string into and array of tokens, each
  * describing a single JSON object.
  *
+ * @param[in] self_p JSON object.
  * @param[in] js_p JSON string to parse.
  * @param[in] len JSON string length in bytes.
- * @param[out] tokens_p Array of parsed tokens.
- * @param[in] num_tokens Number of tokens.
  *
  * @return Number of decoded tokens or negative error code.
  */
-int json_parse(const char *js_p,
-               size_t len,
-               struct json_tok_t *tokens_p,
-               unsigned int num_tokens);
+int json_parse(struct json_t *self_p,
+               const char *js_p,
+               size_t len);
 
 /**
  * Format and write given JSON tokens into a string.
  *
+ * @param[in] self_p JSON object.
+ * @param[in] tokens_p Root token to dump. Set to NULL to dump the
+ *                     whole object.
  * @param[out] js_p Dumped null terminated JSON string.
- * @param[in] tokens_p Array of tokens to dump.
- * @param[in] num_tokens Number of tokens.
  *
  * @return Dumped string length (not including termination) or
  *         negative error code.
  */
-ssize_t json_dumps(char *js_p,
+ssize_t json_dumps(struct json_t *self_p,
                    struct json_tok_t *tokens_p,
-                   unsigned int num_tokens);
+                   char *js_p);
 
 /**
  * Format and write given JSON tokens to given channel.
  *
+ * @param[in] self_p JSON object.
+ * @param[in] tokens_p Root token to dump. Set to NULL to dump the
+ *                     whole object.
  * @param[in] out_p Channel to dump the null terminated JSON string to.
- * @param[in] tokens_p Array of tokens to dump.
- * @param[in] num_tokens Number of tokens.
  *
  * @return Dumped string length (not including termination) or
  *         negative error code.
  */
-ssize_t json_dump(chan_t *out_p,
+ssize_t json_dump(struct json_t *self_p,
                   struct json_tok_t *tokens_p,
-                  unsigned int num_tokens);
+                  chan_t *out_p);
+
+/**
+ * Get the root token.
+ *
+ * @param[in] self_p JSON object.
+ *
+ * @return The root token or NULL on failure.
+ */
+struct json_tok_t *json_root(struct json_t *self_p);
+
+/**
+ * Get the value token of given key.
+ *
+ * @param[in] self_p JSON object.
+ * @param[in] key_p Ket of the value to get.
+ * @param[in] object_p The object to get the value from.
+ *
+ * @return Token or NULL on error.
+ */
+struct json_tok_t *json_object_get(struct json_t *self_p,
+                                   const char *key_p,
+                                   struct json_tok_t *object_p);
+
+/**
+ * Get the token of given array index.
+ *
+ * @param[in] self_p JSON object.
+ * @param[in] index Index to get.
+ * @param[in] array_p The array to get the element from.
+ *
+ * @return Token or NULL on error.
+ */
+struct json_tok_t *json_array_get(struct json_t *self_p,
+                                  int index,
+                                  struct json_tok_t *array_p);
 
 /**
  * Initialize a JSON object token.
