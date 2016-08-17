@@ -48,14 +48,34 @@
 
 #include "simba.h"
 
-struct encode_t {
-    struct json_t *self_p;
+struct dump_t {
+    struct json_t json;
     struct json_tok_t *tokens_p;
     int num_tokens;
-    char *js_p;
+    chan_t *out_p;
 };
 
-static ssize_t encode(struct encode_t *state_p);
+struct string_t {
+    struct chan_t base;
+    ssize_t pos;
+    char *buf_p;
+};
+
+static ssize_t dump(struct dump_t *state_p);
+
+/**
+ * Copy given buffer to the output buffer. It is not null terminated.
+ */
+static ssize_t string_write(void *chan_p, const void *buf_p, size_t size)
+{
+    struct string_t *string_p;
+    
+    string_p = chan_p;
+    memcpy(&string_p->buf_p[string_p->pos], buf_p, size);
+    string_p->pos += size;
+    
+    return (size);
+}
 
 /**
  * Allocates a fresh unused token from the token pull.
@@ -96,28 +116,22 @@ static void fill_token(struct json_tok_t *token_p,
 }
 
 /**
- * Recursively encode given object token and its children.
+ * Recursively dump given object token and its children.
  */
-static ssize_t encode_object(struct encode_t *state_p,
-                             struct json_tok_t *token_p)
+static ssize_t dump_object(struct dump_t *state_p,
+                           struct json_tok_t *token_p)
 {
-    ssize_t size, res;
+    ssize_t size, res, i;
     const char *delim_p;
-    int num_tokens_end;
 
-    state_p->js_p += std_sprintf(state_p->js_p, FSTR("{"));
+    std_fprintf(state_p->out_p, FSTR("{"));
     size = 2;
+    delim_p = FSTR("");
     
-    /* The first token not part of this object. */
-    num_tokens_end = (state_p->num_tokens - token_p->num_tokens);
-
-    for (delim_p = FSTR("");
-         state_p->num_tokens > num_tokens_end;
-         delim_p = FSTR(",")) {
+    for (i = 0; i < token_p->num_tokens; i++) {
         /* Delimiter. */
-        res = std_sprintf(state_p->js_p, delim_p);
+        res = std_fprintf(state_p->out_p, delim_p);
         size += res;
-        state_p->js_p += res;
 
         /* Key. */
 
@@ -127,7 +141,7 @@ static ssize_t encode_object(struct encode_t *state_p,
             return (-1);
         }
 
-        res = encode(state_p);
+        res = dump(state_p);
 
         if (res < 0) {
             return (-1);
@@ -136,102 +150,96 @@ static ssize_t encode_object(struct encode_t *state_p,
         size += res;
 
         /* Key-value pair colon. */
-        state_p->js_p += std_sprintf(state_p->js_p, FSTR(":"));
+        std_fprintf(state_p->out_p, FSTR(":"));
         size++;
 
         /* Value. */
-        res = encode(state_p);
+        res = dump(state_p);
 
         if (res < 0) {
             return (-1);
         }
 
         size += res;
+        delim_p = FSTR(",");
     }
 
-    state_p->js_p += std_sprintf(state_p->js_p, FSTR("}"));
+    std_fprintf(state_p->out_p, FSTR("}"));
 
     return (size);
 }
 
 /**
- * Recursively encode given array token and its children.
+ * Recursively dump given array token and its children.
  */
-static ssize_t encode_array(struct encode_t *state_p,
-                            struct json_tok_t *token_p)
+static ssize_t dump_array(struct dump_t *state_p,
+                          struct json_tok_t *token_p)
 {
-    ssize_t size, res;
+    ssize_t size, res, i;
     const char *delim_p;
-    int num_tokens_end;
 
-    state_p->js_p += std_sprintf(state_p->js_p, FSTR("["));
+    std_fprintf(state_p->out_p, FSTR("["));
     size = 2;
-
-    /* The first token not part of this array. */
-    num_tokens_end = (state_p->num_tokens - token_p->num_tokens);
-
-    for (delim_p = FSTR("");
-         state_p->num_tokens > num_tokens_end;
-         delim_p = FSTR(",")) {
+    delim_p = FSTR("");
+    
+    for (i = 0; i < token_p->num_tokens; i++) {
         /* Delimiter. */
-        res = std_sprintf(state_p->js_p, delim_p);
+        res = std_fprintf(state_p->out_p, delim_p);
         size += res;
-        state_p->js_p += res;
 
-        res = encode(state_p);
+        res = dump(state_p);
 
         if (res < 0) {
             return (-1);
         }
 
         size += res;
+        delim_p = FSTR(",");
     }
 
-    state_p->js_p += std_sprintf(state_p->js_p, FSTR("]"));
+    std_fprintf(state_p->out_p, FSTR("]"));
 
     return (size);
 }
 
 /**
- * Encode given string token.
+ * Dump given string token.
  */
-static ssize_t encode_string(struct encode_t *state_p,
-                             struct json_tok_t *token_p)
+static ssize_t dump_string(struct dump_t *state_p,
+                           struct json_tok_t *token_p)
 {
     int i;
 
-    state_p->js_p += std_sprintf(state_p->js_p, FSTR("\""));
+    std_fprintf(state_p->out_p, FSTR("\""));
 
     for (i = 0; i < token_p->size; i++) {
-        state_p->js_p += std_sprintf(state_p->js_p,
-                                     FSTR("%c"), token_p->buf_p[i]);
+        std_fprintf(state_p->out_p, FSTR("%c"), token_p->buf_p[i]);
     }
 
-    state_p->js_p += std_sprintf(state_p->js_p, FSTR("\""));
+    std_fprintf(state_p->out_p, FSTR("\""));
 
     return (token_p->size + 2);
 }
 
 /**
- * Encode given primitive token.
+ * Dump given primitive token.
  */
-static ssize_t encode_primitive(struct encode_t *state_p,
-                                struct json_tok_t *token_p)
+static ssize_t dump_primitive(struct dump_t *state_p,
+                              struct json_tok_t *token_p)
 {
     int i;
 
     for (i = 0; i < token_p->size; i++) {
-        state_p->js_p += std_sprintf(state_p->js_p,
-                                     FSTR("%c"), token_p->buf_p[i]);
+        std_fprintf(state_p->out_p, FSTR("%c"), token_p->buf_p[i]);
     }
 
     return (token_p->size);
 }
 
 /**
- * Recursively encodes one token and it's children.
+ * Recursively dumps one token and it's children.
  */
-static ssize_t encode(struct encode_t *state_p)
+static ssize_t dump(struct dump_t *state_p)
 {
     ssize_t size;
     struct json_tok_t *token_p;
@@ -247,19 +255,19 @@ static ssize_t encode(struct encode_t *state_p)
     switch (token_p->type) {
 
     case JSON_OBJECT:
-        size = encode_object(state_p, token_p);
+        size = dump_object(state_p, token_p);
         break;
 
     case JSON_ARRAY:
-        size = encode_array(state_p, token_p);
+        size = dump_array(state_p, token_p);
         break;
 
     case JSON_STRING:
-        size = encode_string(state_p, token_p);
+        size = dump_string(state_p, token_p);
         break;
 
     case JSON_PRIMITIVE:
-        size = encode_primitive(state_p, token_p);
+        size = dump_primitive(state_p, token_p);
         break;
 
     default:
@@ -273,11 +281,11 @@ static ssize_t encode(struct encode_t *state_p)
 /**
  * Fills next available token with JSON primitive.
  */
-static int decode_primitive(struct json_t *self_p,
-                            const char *js_p,
-                            size_t len,
-                            struct json_tok_t *tokens_p,
-                            size_t num_tokens)
+static int parse_primitive(struct json_t *self_p,
+                           const char *js_p,
+                           size_t len,
+                           struct json_tok_t *tokens_p,
+                           size_t num_tokens)
 {
     struct json_tok_t *token_p;
     int start;
@@ -347,11 +355,11 @@ static int decode_primitive(struct json_t *self_p,
 /**
  * Fills next token with JSON string.
  */
-static int decode_string(struct json_t *self_p,
-                         const char *js_p,
-                         size_t len,
-                         struct json_tok_t *tokens_p,
-                         size_t num_tokens)
+static int parse_string(struct json_t *self_p,
+                        const char *js_p,
+                        size_t len,
+                        struct json_tok_t *tokens_p,
+                        size_t num_tokens)
 {
     struct json_tok_t *token_p;
 
@@ -460,38 +468,11 @@ int json_init(struct json_t *self_p)
     return (0);
 }
 
-ssize_t json_encode(struct json_t *self_p,
-                    struct json_tok_t *tokens_p,
-                    unsigned int num_tokens,
-                    char *js_p)
+int json_parse(const char *js_p,
+               size_t len,
+               struct json_tok_t *tokens_p,
+               unsigned int num_tokens)
 {
-    ASSERTN(self_p != NULL, EINVAL);
-    ASSERTN(tokens_p != NULL, EINVAL);
-    ASSERTN(js_p != NULL, EINVAL);
-
-    struct encode_t state;
-
-    /* The first token must be an object or an array. */
-    if (!((tokens_p->type == JSON_OBJECT)
-          || (tokens_p->type == JSON_ARRAY))) {
-        return (-1);
-    }
-
-    state.self_p = self_p;
-    state.tokens_p = tokens_p;
-    state.num_tokens = num_tokens;
-    state.js_p = js_p;
-
-    return (encode(&state));
-}
-
-int json_decode(struct json_t *self_p,
-                const char *js_p,
-                size_t len,
-                struct json_tok_t *tokens_p,
-                unsigned int num_tokens)
-{
-    ASSERTN(self_p != NULL, EINVAL);
     ASSERTN(js_p != NULL, EINVAL);
     ASSERTN(len > 0, EINVAL);
     ASSERTN(((tokens_p != NULL) && (num_tokens > 0))
@@ -500,14 +481,18 @@ int json_decode(struct json_t *self_p,
     int r;
     int i;
     struct json_tok_t *token_p;
-    int count = self_p->toknext;
+    struct json_t json;
+    int count;
 
-    for (; ((self_p->pos < len)
-            && (js_p[self_p->pos] != '\0')); self_p->pos++) {
+    json_init(&json);
+    count = json.toknext;
+
+    for (; ((json.pos < len)
+            && (js_p[json.pos] != '\0')); json.pos++) {
         char c;
         enum json_type_t type;
 
-        c = js_p[self_p->pos];
+        c = js_p[json.pos];
 
         switch (c) {
 
@@ -519,22 +504,22 @@ int json_decode(struct json_t *self_p,
                 break;
             }
 
-            token_p = alloc_token(self_p, tokens_p, num_tokens);
+            token_p = alloc_token(&json, tokens_p, num_tokens);
 
             if (token_p == NULL) {
                 return (JSON_ERROR_NOMEM);
             }
 
-            if (self_p->toksuper != -1) {
-                tokens_p[self_p->toksuper].num_tokens++;
+            if (json.toksuper != -1) {
+                tokens_p[json.toksuper].num_tokens++;
 #ifdef JSON_PARENT_LINKS
-                token_p->parent = self_p->toksuper;
+                token_p->parent = json.toksuper;
 #endif
             }
 
             token_p->type = (c == '{' ? JSON_OBJECT : JSON_ARRAY);
-            token_p->buf_p = js_p + self_p->pos;
-            self_p->toksuper = self_p->toknext - 1;
+            token_p->buf_p = js_p + json.pos;
+            json.toksuper = json.toknext - 1;
             break;
 
         case '}':
@@ -546,11 +531,11 @@ int json_decode(struct json_t *self_p,
             type = (c == '}' ? JSON_OBJECT : JSON_ARRAY);
 
 #ifdef JSON_PARENT_LINKS
-            if (self_p->toknext < 1) {
+            if (json.toknext < 1) {
                 return (JSON_ERROR_INVAL);
             }
 
-            token = &tokens_p[self_p->toknext - 1];
+            token = &tokens_p[json.toknext - 1];
 
             for (;;) {
                 if ((token_p->start != -1) && (token_p->end == -1)) {
@@ -558,9 +543,9 @@ int json_decode(struct json_t *self_p,
                         return (JSON_ERROR_INVAL);
                     }
 
-                    token_p->size = (&js_p[self_p->pos]
-                                     - self_p->buf_p + 1);
-                    self_p->toksuper = token_p->parent;
+                    token_p->size = (&js_p[json.pos]
+                                     - json.buf_p + 1);
+                    json.toksuper = token_p->parent;
                     break;
                 }
 
@@ -571,7 +556,7 @@ int json_decode(struct json_t *self_p,
                 token = &tokens_p[token_p->parent];
             }
 #else
-            for (i = self_p->toknext - 1; i >= 0; i--) {
+            for (i = json.toknext - 1; i >= 0; i--) {
                 token_p = &tokens_p[i];
 
                 if ((token_p->buf_p != NULL) && (token_p->size == -1)) {
@@ -579,8 +564,8 @@ int json_decode(struct json_t *self_p,
                         return (JSON_ERROR_INVAL);
                     }
 
-                    self_p->toksuper = -1;
-                    token_p->size = (&js_p[self_p->pos]
+                    json.toksuper = -1;
+                    token_p->size = (&js_p[json.pos]
                                      - token_p->buf_p + 1);
                     break;
                 }
@@ -595,14 +580,14 @@ int json_decode(struct json_t *self_p,
                 token_p = &tokens_p[i];
 
                 if ((token_p->buf_p != NULL) && (token_p->size == -1)) {
-                    self_p->toksuper = i;
+                    json.toksuper = i;
                     break;
                 }
             }
 #endif
             break;
         case '\"':
-            r = decode_string(self_p, js_p, len, tokens_p, num_tokens);
+            r = parse_string(&json, js_p, len, tokens_p, num_tokens);
 
             if (r < 0) {
                 return (r);
@@ -610,8 +595,8 @@ int json_decode(struct json_t *self_p,
 
             count++;
 
-            if ((self_p->toksuper != -1) && (tokens_p != NULL)) {
-                tokens_p[self_p->toksuper].num_tokens++;
+            if ((json.toksuper != -1) && (tokens_p != NULL)) {
+                tokens_p[json.toksuper].num_tokens++;
             }
 
             break;
@@ -623,23 +608,23 @@ int json_decode(struct json_t *self_p,
             break;
 
         case ':':
-            self_p->toksuper = self_p->toknext - 1;
+            json.toksuper = json.toknext - 1;
             break;
 
         case ',':
             if ((tokens_p != NULL)
-                && (self_p->toksuper != -1)
-                && (tokens_p[self_p->toksuper].type != JSON_ARRAY)
-                && (tokens_p[self_p->toksuper].type != JSON_OBJECT)) {
+                && (json.toksuper != -1)
+                && (tokens_p[json.toksuper].type != JSON_ARRAY)
+                && (tokens_p[json.toksuper].type != JSON_OBJECT)) {
 #ifdef JSON_PARENT_LINKS
-                self_p->toksuper = tokens_p[self_p->toksuper].parent;
+                json.toksuper = tokens_p[json.toksuper].parent;
 #else
-                for (i = self_p->toknext - 1; i >= 0; i--) {
+                for (i = json.toknext - 1; i >= 0; i--) {
                     if ((tokens_p[i].type == JSON_ARRAY)
                         || (tokens_p[i].type == JSON_OBJECT)) {
                         if ((tokens_p[i].buf_p != NULL)
                             && (tokens_p[i].size == -1)) {
-                            self_p->toksuper = i;
+                            json.toksuper = i;
                             break;
                         }
                     }
@@ -665,8 +650,8 @@ int json_decode(struct json_t *self_p,
         case 'f':
         case 'n':
             /* And they must not be keys of the object */
-            if ((tokens != NULL) && (self_p->toksuper != -1)) {
-                struct json_tok_t *t = &tokens_p[self_p->toksuper];
+            if ((tokens != NULL) && (json.toksuper != -1)) {
+                struct json_tok_t *t = &tokens_p[json.toksuper];
 
                 if ((t_p->type == JSON_OBJECT)
                     || ((t_p->type == JSON_STRING)
@@ -679,7 +664,7 @@ int json_decode(struct json_t *self_p,
             /* In non-strict mode every unquoted value is a primitive */
         default:
 #endif
-            r = decode_primitive(self_p, js_p, len, tokens_p, num_tokens);
+            r = parse_primitive(&json, js_p, len, tokens_p, num_tokens);
 
             if (r < 0) {
                 return (r);
@@ -687,8 +672,8 @@ int json_decode(struct json_t *self_p,
 
             count++;
 
-            if ((self_p->toksuper != -1) && (tokens_p != NULL)) {
-                tokens_p[self_p->toksuper].num_tokens++;
+            if ((json.toksuper != -1) && (tokens_p != NULL)) {
+                tokens_p[json.toksuper].num_tokens++;
             }
 
             break;
@@ -703,7 +688,7 @@ int json_decode(struct json_t *self_p,
     }
 
     if (tokens_p != NULL) {
-        for (i = self_p->toknext - 1; i >= 0; i--) {
+        for (i = json.toknext - 1; i >= 0; i--) {
             /* Unmatched opened object or array */
             if ((tokens_p[i].buf_p != NULL) && (tokens_p[i].size == -1)) {
                 return (JSON_ERROR_PART);
@@ -714,88 +699,110 @@ int json_decode(struct json_t *self_p,
     return (count);
 }
 
-struct json_tok_t json_token_object(int num_tokens)
+ssize_t json_dumps(char *js_p,
+                   struct json_tok_t *tokens_p,
+                   unsigned int num_tokens)
 {
-    struct json_tok_t token;
+    ASSERTN(js_p != NULL, EINVAL);
+    ASSERTN(tokens_p != NULL, EINVAL);
 
-    token.type = JSON_OBJECT;
-    token.buf_p = NULL;
-    token.size = -1;
-    token.num_tokens = num_tokens;
+    ssize_t res;
+    struct string_t string;
 
-    return (token);
+    chan_init(&string.base, NULL, string_write, NULL);
+    string.buf_p = js_p;
+    string.pos = 0;
+    
+    res = json_dump(&string, tokens_p, num_tokens);
+
+    if (res < 0) {
+        return (res);
+    }
+
+    return (chan_write(&string, "\0", 1) == 1 ? res : -1);
 }
 
-struct json_tok_t json_token_array(int num_tokens)
+ssize_t json_dump(chan_t *out_p,
+                  struct json_tok_t *tokens_p,
+                  unsigned int num_tokens)
 {
-    struct json_tok_t token;
+    ASSERTN(out_p != NULL, EINVAL);
+    ASSERTN(tokens_p != NULL, EINVAL);
 
-    token.type = JSON_ARRAY;
-    token.buf_p = NULL;
-    token.size = -1;
-    token.num_tokens = num_tokens;
+    struct dump_t state;
 
-    return (token);
+    /* The first token must be an object or an array. */
+    if (!((tokens_p->type == JSON_OBJECT)
+          || (tokens_p->type == JSON_ARRAY))) {
+        return (-1);
+    }
+
+    json_init(&state.json);
+    state.tokens_p = tokens_p;
+    state.num_tokens = num_tokens;
+    state.out_p = out_p;
+
+    return (dump(&state));
 }
 
-struct json_tok_t json_token_true()
+void json_token_object(struct json_tok_t *token_p,
+                       int num_keys)
 {
-    struct json_tok_t token;
-
-    token.type = JSON_PRIMITIVE;
-    token.buf_p = "true";
-    token.size = 4;
-    token.num_tokens = -1;
-
-    return (token);
+    token_p->type = JSON_OBJECT;
+    token_p->buf_p = NULL;
+    token_p->size = -1;
+    token_p->num_tokens = num_keys;
 }
 
-struct json_tok_t json_token_false()
+void json_token_array(struct json_tok_t *token_p,
+                      int num_elements)
 {
-    struct json_tok_t token;
-
-    token.type = JSON_PRIMITIVE;
-    token.buf_p = "false";
-    token.size = 5;
-    token.num_tokens = -1;
-
-    return (token);
+    token_p->type = JSON_ARRAY;
+    token_p->buf_p = NULL;
+    token_p->size = -1;
+    token_p->num_tokens = num_elements;
 }
 
-struct json_tok_t json_token_null()
+void json_token_true(struct json_tok_t *token_p)
 {
-    struct json_tok_t token;
-
-    token.type = JSON_PRIMITIVE;
-    token.buf_p = "null";
-    token.size = 4;
-    token.num_tokens = -1;
-
-    return (token);
+    token_p->type = JSON_PRIMITIVE;
+    token_p->buf_p = "true";
+    token_p->size = 4;
+    token_p->num_tokens = -1;
 }
 
-struct json_tok_t json_token_number(const char *buf_p,
-                                    size_t size)
+void json_token_false(struct json_tok_t *token_p)
 {
-    struct json_tok_t token;
-
-    token.type = JSON_PRIMITIVE;
-    token.buf_p = buf_p;
-    token.size = size;
-    token.num_tokens = -1;
-
-    return (token);
+    token_p->type = JSON_PRIMITIVE;
+    token_p->buf_p = "false";
+    token_p->size = 5;
+    token_p->num_tokens = -1;
 }
 
-struct json_tok_t json_token_string(const char *buf_p,
-                                    size_t size)
+void json_token_null(struct json_tok_t *token_p)
 {
-    struct json_tok_t token;
+    token_p->type = JSON_PRIMITIVE;
+    token_p->buf_p = "null";
+    token_p->size = 4;
+    token_p->num_tokens = -1;
+}
 
-    token.type = JSON_STRING;
-    token.buf_p = buf_p;
-    token.size = size;
-    token.num_tokens = -1;
+void json_token_number(struct json_tok_t *token_p,
+                       const char *buf_p,
+                       size_t size)
+{
+    token_p->type = JSON_PRIMITIVE;
+    token_p->buf_p = buf_p;
+    token_p->size = size;
+    token_p->num_tokens = -1;
+}
 
-    return (token);
+void json_token_string(struct json_tok_t *token_p,
+                       const char *buf_p,
+                       size_t size)
+{
+    token_p->type = JSON_STRING;
+    token_p->buf_p = buf_p;
+    token_p->size = size;
+    token_p->num_tokens = -1;
 }

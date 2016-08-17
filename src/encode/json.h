@@ -110,35 +110,9 @@ struct json_t {
 };
 
 /**
- * Initialize given JSON object.
- *
- * @param[in,out] parser_p Object to initialize.
- *
- * @return zero(0) or negative error code.
- */
-int json_init(struct json_t *self_p);
-
-/**
- * Encode given JSON tokens into a string.
- *
- * @param[in] parser_p Initialized parser.
- * @param[in] tokens_p Array of tokens to encode.
- * @param[in] num_tokens Number of tokens.
- * @param[out] js_p Encoded null terminated JSON string.
- *
- * @return Encoded string length (not including termination) or
- *         negative error code.
- */
-ssize_t json_encode(struct json_t *self_p,
-                    struct json_tok_t *tokens_p,
-                    unsigned int num_tokens,
-                    char *js_p);
-
-/**
- * Decode given JSON data string into and array of tokens, each
+ * Parse given JSON data string into and array of tokens, each
  * describing a single JSON object.
  *
- * @param[in] parser_p Initialized parser.
  * @param[in] js_p JSON string to parse.
  * @param[in] len JSON string length in bytes.
  * @param[out] tokens_p Array of parsed tokens.
@@ -146,71 +120,98 @@ ssize_t json_encode(struct json_t *self_p,
  *
  * @return Number of decoded tokens or negative error code.
  */
-int json_decode(struct json_t *self_p,
-                const char *js_p,
-                size_t len,
-                struct json_tok_t *tokens_p,
-                unsigned int num_tokens);
+int json_parse(const char *js_p,
+               size_t len,
+               struct json_tok_t *tokens_p,
+               unsigned int num_tokens);
+
+/**
+ * Format and write given JSON tokens into a string.
+ *
+ * @param[out] js_p Dumped null terminated JSON string.
+ * @param[in] tokens_p Array of tokens to dump.
+ * @param[in] num_tokens Number of tokens.
+ *
+ * @return Dumped string length (not including termination) or
+ *         negative error code.
+ */
+ssize_t json_dumps(char *js_p,
+                   struct json_tok_t *tokens_p,
+                   unsigned int num_tokens);
+
+/**
+ * Format and write given JSON tokens to given channel.
+ *
+ * @param[in] out_p Channel to dump the null terminated JSON string to.
+ * @param[in] tokens_p Array of tokens to dump.
+ * @param[in] num_tokens Number of tokens.
+ *
+ * @return Dumped string length (not including termination) or
+ *         negative error code.
+ */
+ssize_t json_dump(chan_t *out_p,
+                  struct json_tok_t *tokens_p,
+                  unsigned int num_tokens);
 
 /**
  * Initialize a JSON object token.
  *
- * @param[in] num_tokens Number of tokens.
- *
- * @return Initialized object token.
+ * @param[out] token_p Initialized token.
+ * @param[in] num_keys Number of keys in the object.
  */
-struct json_tok_t json_token_object(int num_tokens);
+void json_token_object(struct json_tok_t *token_p,
+                       int num_keys);
 
 /**
  * Initialize a JSON array token.
  *
- * @param[in] num_tokens Number of tokens.
- *
- * @return Initialized array token.
+ * @param[out] token_p Initialized token.
+ * @param[in] num_elements Number of array elements.
  */
-struct json_tok_t json_token_array(int num_tokens);
+void json_token_array(struct json_tok_t *token_p,
+                      int num_elements);
 
 /**
  * Initialize a JSON boolean true token.
  *
- * @return Initialized boolean true token.
+ * @param[out] token_p Initialized token.
  */
-struct json_tok_t json_token_true(void);
+void json_token_true(struct json_tok_t *token_p);
 
 /**
  * Initialize a JSON boolean false token.
  *
- * @return Initialized boolean false token.
+ * @param[out] token_p Initialized token.
  */
-struct json_tok_t json_token_false(void);
+void json_token_false(struct json_tok_t *token_p);
 
 /**
  * Initialize a JSON null token.
  *
- * @return Initialized null token.
+ * @param[out] token_p Initialized token.
  */
-struct json_tok_t json_token_null(void);
+void json_token_null(struct json_tok_t *token_p);
 
 /**
  * Initialize a JSON number (integer/float) token.
  *
+ * @param[out] token_p Initialized token.
  * @param[in] buf_p Number as a string.
  * @param[in] size String length.
- *
- * @return Initialized number token.
  */
-struct json_tok_t json_token_number(const char *buf_p,
-                                    size_t size);
+void json_token_number(struct json_tok_t *token_p,
+                       const char *buf_p,
+                       size_t size);
 
 /**
  * Initialize a JSON string token.
  *
+ * @param[out] token_p Initialized token.
  * @param[in] buf_p String.
  * @param[in] size String length.
- *
- * @return Initialized string token.
  */
-struct json_tok_t json_token_string(const char *buf_p,
-                                    size_t size);
+void json_token_string(struct json_tok_t *token_p,
+                       const char *buf_p,
+                       size_t size);
 
 #endif
