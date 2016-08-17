@@ -1,0 +1,9 @@
+{
+    "framework-simba": [
+        {
+            "url": "https://github.com/eerimoq/simba/archive/6.0.0.zip",
+            "sha1": "",
+            "version": "6.0.0"
+        }
+    ]
+}
