@@ -118,12 +118,18 @@ struct json_t {
 };
 
  /**
- * Initialize given JSON object.
+  * Initialize given JSON object. The JSON object must be initialized
+  * before it can be used to parse and dump JSON data.
   *
   * @param[out] self_p JSON object to initialize.
-  * @param[in] tokens_p Array of tokens.
-  * @param[in] num_tokens Number of tokens.
- *
+  * @param[in] tokens_p Array of tokens. The tokens are either filled
+  *                     by the parsing function `json_parse()`, or
+  *                     already filled by the user when calling this
+  *                     function. The latter can be used to dump the
+  *                     tokens as a string by calling `json_dump()` or
+  *                     `json_dumps()`.
+  * @param[in] num_tokens Number of tokens in the array.
+  *
   * @return zero(0) or negative error code.
   */
 int json_init(struct json_t *self_p,
