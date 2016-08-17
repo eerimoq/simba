@@ -493,6 +493,11 @@ static struct json_tok_t *object_get(struct json_t *self_p,
         return (NULL);
     }
 
+    /* Check that the token is an object. */
+    if (object_p->type != JSON_OBJECT) {
+        return (NULL);
+    }
+    
     key_length = strlen(key_p);
 
     /* The first child token. */
@@ -839,6 +844,11 @@ struct json_tok_t *json_array_get(struct json_t *self_p,
 
     /* Return immediatly if no array is found. */
     if (array_p == NULL) {
+        return (NULL);
+    }
+
+    /* Check that the token is an array. */
+    if (array_p->type != JSON_ARRAY) {
         return (NULL);
     }
 

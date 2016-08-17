@@ -795,6 +795,14 @@ static int test_get(struct harness_t *harness_p)
     /* Fail to get from NULL token. */
     BTASSERT(json_array_get(&json, 0, NULL) == NULL);
     BTASSERT(json_object_get(&json, "foo", NULL) == NULL);
+
+    /* Using the object get function on a non-object token should
+       fail. */
+    BTASSERT(json_object_get(&json, "foo", ten_p) == NULL);
+    
+    /* Using the array get function on a non-array token should
+       fail. */
+    BTASSERT(json_array_get(&json, 0, json_root(&json)) == NULL);
     
     return (0);
 }
