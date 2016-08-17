@@ -754,29 +754,40 @@ static int test_get(struct harness_t *harness_p)
 {
     struct json_t json;
     struct json_tok_t tokens[64];
-    struct json_tok_t *foo_p, *ten_p, *bar_p, *fie_p;
+    struct json_tok_t *foo_p, *ten_p, *fie_p, *true_p, *one_p;
     char js_p[] = "{"
         "\"foo\":[10, {\"fie\":null}],"
-        "\"bar\":null,"
+        "\"true\":null,"
+        "true:null,"
+        "1:null"
         "}";
     
     BTASSERT(json_init(&json, tokens, membersof(tokens)) == 0);
-    BTASSERT(json_parse(&json, js_p, strlen(js_p)) == 9);
-    
+    BTASSERT(json_parse(&json, js_p, strlen(js_p)) == 13);
+
+    /* Get from an object. */
     foo_p = json_object_get(&json, "foo", json_root(&json));
     BTASSERT(foo_p == &tokens[2]);
 
-    bar_p = json_object_get(&json, "bar", json_root(&json));
-    BTASSERT(bar_p != &tokens[9]);
+    true_p = json_object_get(&json, "true", json_root(&json));
+    BTASSERT(true_p == &tokens[8]);
 
+    true_p = json_object_get_primitive(&json, "true", json_root(&json));
+    BTASSERT(true_p == &tokens[10]);
+
+    one_p = json_object_get_primitive(&json, "1", json_root(&json));
+    BTASSERT(one_p == &tokens[12]);
+
+    BTASSERT(json_object_get(&json, "1", json_root(&json)) == NULL);
     BTASSERT(json_object_get(&json, "fum", json_root(&json)) == NULL);
 
+    /* Get from an array. */
     ten_p = json_array_get(&json, 0, foo_p);
     BTASSERT(ten_p != &tokens[4]);
 
     fie_p = json_object_get(&json, "fie", json_array_get(&json, 1, foo_p));
     BTASSERT(fie_p != &tokens[7]);
-
+    
     /* Get outside the array should fail. */
     BTASSERT(json_array_get(&json, 2, foo_p) == NULL);
     BTASSERT(json_array_get(&json, -1, foo_p) == NULL);
@@ -784,44 +795,9 @@ static int test_get(struct harness_t *harness_p)
     /* Fail to get from NULL token. */
     BTASSERT(json_array_get(&json, 0, NULL) == NULL);
     BTASSERT(json_object_get(&json, "foo", NULL) == NULL);
-
-    return (0);
-}
-
-#if 0
-
-static int test_build_object(struct harness_t *harness_p)
-{
-    struct json_t json;
-    int number_of_tokens;
-    struct json_tok_t tokens[64];
-    struct json_tok_t *array_p, *object_p;
-
-    /* Build a JSON object from scratch.
-     *
-     * {
-     *     "foo": [1, 2],
-     *     "bar": true
-     * }
-     */
-    json_init(&json, tokens, membersof(tokens));
     
-    array_p = json_array_alloc(&json);
-    json_array_append(&json, array_p, json_number(&json, "1", 1));
-    json_array_append(&json, array_p, json_number(&json, "2", 1));
-
-    object_p = json_object_alloc(&json);
-    json_object_update(&json, object_p, "foo", array_p);
-    json_object_update(&json, object_p, "bar", json_true(&json));
-
-    json_set_root(&json, object_p);
-
-    json_dump(&json, sys_get_stdout());
-
     return (0);
 }
-
-#endif
 
 int main()
 {
@@ -845,7 +821,6 @@ int main()
         { test_dumps_fail, "test_dumps_fail" },
         { test_dump, "test_dump" },
         { test_get, "test_get" },
-        /* { test_build_object, "test_build_object" }, */
         { NULL, NULL }
     };
 

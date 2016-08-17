@@ -451,6 +451,69 @@ static int parse_string(struct json_t *self_p,
     return (JSON_ERROR_PART);
 }
 
+/**
+ * Recursively get the number of child tokens of given token.
+ */
+static int get_number_of_children(struct json_tok_t *token_p)
+{
+    int i;
+    int number_of_children;
+    struct json_tok_t *child_p;
+
+    number_of_children = 0;
+
+    for (i = 0; i < token_p->num_tokens; i++) {
+        child_p = &token_p[number_of_children + 1 + i];
+
+        if (child_p->num_tokens > 0) {
+            number_of_children += get_number_of_children(child_p);
+        }
+    }
+
+    number_of_children += token_p->num_tokens;
+
+    return (number_of_children);
+}
+
+static struct json_tok_t *object_get(struct json_t *self_p,
+                                     const char *key_p,
+                                     struct json_tok_t *object_p,
+                                     int type)
+{
+    ASSERTN(self_p != NULL, -EINVAL);
+    ASSERTN(key_p != NULL, -EINVAL);
+
+    int i;
+    int key_length;
+    int number_of_children;
+    struct json_tok_t *token_p;
+
+    /* Return immediatly if no object is found. */
+    if (object_p == NULL) {
+        return (NULL);
+    }
+
+    key_length = strlen(key_p);
+
+    /* The first child token. */
+    token_p = (object_p + 1);
+
+    /* Find given key in the object. */
+    for (i = 0; i < object_p->num_tokens; i++) {
+        if (token_p->type == type) {
+            if (strncmp(key_p, token_p->buf_p, key_length) == 0) {
+                return (token_p + 1);
+            }
+        }
+
+        /* Get the next child token. */
+        number_of_children = get_number_of_children(token_p);
+        token_p += (number_of_children + 1);
+    }
+
+    return (NULL);
+}
+
 int json_init(struct json_t *self_p,
               struct json_tok_t *tokens_p,
               int num_tokens)
@@ -730,7 +793,7 @@ ssize_t json_dump(struct json_t *self_p,
     if (tokens_p == NULL) {
         tokens_p = self_p->tokens_p;
     }
-    
+
     /* The first token must be an object or an array. */
     if (!((tokens_p->type == JSON_OBJECT)
           || (tokens_p->type == JSON_ARRAY))) {
@@ -749,64 +812,18 @@ struct json_tok_t *json_root(struct json_t *self_p)
     return (self_p->tokens_p);
 }
 
-/**
- * Recursively get the number of child tokens of given token.
- */
-static int get_number_of_children(struct json_tok_t *token_p)
-{
-    int i;
-    int number_of_children;
-    struct json_tok_t *child_p;
-
-    number_of_children = 0;
-    
-    for (i = 0; i < token_p->num_tokens; i++) {
-        child_p = &token_p[number_of_children + 1 + i];
-        
-        if (child_p->num_tokens > 0) {
-            number_of_children += get_number_of_children(child_p);
-        }
-    }
-
-    number_of_children += token_p->num_tokens;
-
-    return (number_of_children);
-}
-
 struct json_tok_t *json_object_get(struct json_t *self_p,
                                    const char *key_p,
                                    struct json_tok_t *object_p)
 {
-    ASSERTN(self_p != NULL, -EINVAL);
-    ASSERTN(key_p != NULL, -EINVAL);
+    return (object_get(self_p, key_p, object_p, JSON_STRING));
+}
 
-    int i;
-    int key_length;
-    int number_of_children;
-    struct json_tok_t *token_p;
-
-    /* Return immediatly if no object is found. */
-    if (object_p == NULL) {
-        return (NULL);
-    }
-
-    key_length = strlen(key_p);
-
-    /* The first child token. */
-    token_p = (object_p + 1);
-
-    /* Find given key in the object. */
-    for (i = 0; i < object_p->num_tokens; i++) {
-        if (strncmp(key_p, token_p->buf_p, key_length) == 0) {
-            return (token_p + 1);
-        }
-
-        /* Get the next child token. */
-        number_of_children = get_number_of_children(token_p);
-        token_p += (number_of_children + 1);
-    }
-
-    return (NULL);
+struct json_tok_t *json_object_get_primitive(struct json_t *self_p,
+                                             const char *key_p,
+                                             struct json_tok_t *object_p)
+{
+    return (object_get(self_p, key_p, object_p, JSON_PRIMITIVE));
 }
 
 struct json_tok_t *json_array_get(struct json_t *self_p,
@@ -827,7 +844,7 @@ struct json_tok_t *json_array_get(struct json_t *self_p,
 
     /* The first child token. */
     token_p = (array_p + 1);
-    
+
     /* Find given key in the object. */
     for (i = 0; i < array_p->num_tokens; i++) {
         if (i == index) {

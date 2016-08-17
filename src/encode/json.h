@@ -184,10 +184,10 @@ ssize_t json_dump(struct json_t *self_p,
 struct json_tok_t *json_root(struct json_t *self_p);
 
 /**
- * Get the value token of given key.
+ * Get the value the string token with given key.
  *
  * @param[in] self_p JSON object.
- * @param[in] key_p Ket of the value to get.
+ * @param[in] key_p Key of the value to get.
  * @param[in] object_p The object to get the value from.
  *
  * @return Token or NULL on error.
@@ -195,6 +195,19 @@ struct json_tok_t *json_root(struct json_t *self_p);
 struct json_tok_t *json_object_get(struct json_t *self_p,
                                    const char *key_p,
                                    struct json_tok_t *object_p);
+
+/**
+ * Get the value of the primitive token with given key.
+ *
+ * @param[in] self_p JSON object.
+ * @param[in] key_p Key of the value to get.
+ * @param[in] object_p The object to get the value from.
+ *
+ * @return Token or NULL on error.
+ */
+struct json_tok_t *json_object_get_primitive(struct json_t *self_p,
+                                             const char *key_p,
+                                             struct json_tok_t *object_p);
 
 /**
  * Get the token of given array index.
