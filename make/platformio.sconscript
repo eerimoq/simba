@@ -1,6 +1,6 @@
 #
 # @file make/platformio.sconscript
-# @version master
+# @version 7.0.0
 #
 # @section License
 # Copyright (C) 2014-2016, Erik Moqvist
@@ -53,8 +53,7 @@ BOARDS = {
             "FAMILY_SAM", 
             "MCU_SAM3X8E", 
             "BOARD_ARDUINO_DUE", 
-            "VERSION=master", 
-            "F_CPU=84000000UL"
+            "VERSION=7.0.0"
         ], 
         "cflags": [
             "-Werror", 
@@ -195,8 +194,7 @@ BOARDS = {
             "FAMILY_AVR", 
             "MCU_ATMEGA2560", 
             "BOARD_ARDUINO_MEGA", 
-            "VERSION=master", 
-            "F_CPU=16000000UL", 
+            "VERSION=7.0.0", 
             "__DELAY_BACKWARD_COMPATIBLE__"
         ], 
         "cflags": [
@@ -334,8 +332,7 @@ BOARDS = {
             "FAMILY_AVR", 
             "MCU_ATMEGA328P", 
             "BOARD_ARDUINO_NANO", 
-            "VERSION=master", 
-            "F_CPU=16000000UL", 
+            "VERSION=7.0.0", 
             "__DELAY_BACKWARD_COMPATIBLE__"
         ], 
         "cflags": [
@@ -473,8 +470,7 @@ BOARDS = {
             "FAMILY_AVR", 
             "MCU_ATMEGA32U4", 
             "BOARD_ARDUINO_PRO_MICRO", 
-            "VERSION=master", 
-            "F_CPU=16000000UL", 
+            "VERSION=7.0.0", 
             "__DELAY_BACKWARD_COMPATIBLE__"
         ], 
         "cflags": [
@@ -616,8 +612,7 @@ BOARDS = {
             "FAMILY_AVR", 
             "MCU_ATMEGA328P", 
             "BOARD_ARDUINO_UNO", 
-            "VERSION=master", 
-            "F_CPU=16000000UL", 
+            "VERSION=7.0.0", 
             "__DELAY_BACKWARD_COMPATIBLE__"
         ], 
         "cflags": [
@@ -755,7 +750,7 @@ BOARDS = {
             "FAMILY_LINUX", 
             "MCU_LINUX", 
             "BOARD_CYGWIN", 
-            "VERSION=master"
+            "VERSION=7.0.0"
         ], 
         "cflags": [
             "-Werror", 
@@ -861,8 +856,7 @@ BOARDS = {
             "FAMILY_ESP", 
             "MCU_ESP8266", 
             "BOARD_ESP01", 
-            "VERSION=master", 
-            "F_CPU=80000000UL", 
+            "VERSION=7.0.0", 
             "ICACHE_FLASH", 
             "__STRICT_ANSI__", 
             "CONFIG_MONITOR_THREAD=0"
@@ -992,8 +986,7 @@ BOARDS = {
             "FAMILY_ESP", 
             "MCU_ESP8266", 
             "BOARD_ESP12E", 
-            "VERSION=master", 
-            "F_CPU=80000000UL", 
+            "VERSION=7.0.0", 
             "ICACHE_FLASH", 
             "__STRICT_ANSI__", 
             "CONFIG_MONITOR_THREAD=0"
@@ -1123,7 +1116,7 @@ BOARDS = {
             "FAMILY_LINUX", 
             "MCU_LINUX", 
             "BOARD_LINUX", 
-            "VERSION=master"
+            "VERSION=7.0.0"
         ], 
         "cflags": [
             "-Werror", 
@@ -1229,8 +1222,7 @@ BOARDS = {
             "FAMILY_STM32F2", 
             "MCU_STM32F205RG", 
             "BOARD_PHOTON", 
-            "VERSION=master", 
-            "F_CPU=120000000UL"
+            "VERSION=7.0.0"
         ], 
         "cflags": [
             "-Werror", 
@@ -1371,8 +1363,7 @@ BOARDS = {
             "FAMILY_STM32F3", 
             "MCU_STM32F303VC", 
             "BOARD_STM32F3DISCOVERY", 
-            "VERSION=master", 
-            "F_CPU=72000000UL"
+            "VERSION=7.0.0"
         ], 
         "cflags": [
             "-Werror", 
@@ -1500,8 +1491,7 @@ BOARDS = {
             "FAMILY_STM32F1", 
             "MCU_STM32F100RB", 
             "BOARD_STM32VLDISCOVERY", 
-            "VERSION=master", 
-            "F_CPU=24000000UL"
+            "VERSION=7.0.0"
         ], 
         "cflags": [
             "-Werror", 
@@ -1810,7 +1800,7 @@ if board not in SUPPORTED_BOARDS:
 
 # Add the default configuration for the board.
 add_include_paths(env, BOARDS[board]["inc"])
-env.Replace(CPPDEFINES=BOARDS[board]["cdefs"])
+env.Append(CPPDEFINES=BOARDS[board]["cdefs"])
 src_filter = create_src_filter(BOARDS[board]["src"])
 env.Replace(CCFLAGS=BOARDS[board]["cflags"])
 env.Replace(LINKFLAGS=BOARDS[board]["ldflags"])

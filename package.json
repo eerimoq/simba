@@ -2,7 +2,7 @@
   "name":"framework-simba",
   "description":"Simba Embedded Programming Platform",
   "url":"https://github.com/eerimoq/simba",
-  "version":"6.0.0",
+  "version":"7.0.0",
   "repository": {
     "type": "git",
     "url": "https://github.com/eerimoq/simba.git"

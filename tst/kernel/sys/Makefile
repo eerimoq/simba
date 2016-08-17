@@ -1,6 +1,6 @@
 #
 # @file Makefile
-# @version 6.0.0
+# @version 7.0.0
 #
 # @section License
 # Copyright (C) 2014-2016, Erik Moqvist
@@ -19,7 +19,7 @@
 #
 
 NAME = sys_suite
-VERSION = 6.0.0
+VERSION = 7.0.0
 BOARD ?= linux
 
 CDEFS += CONFIG_MINIMAL_SYSTEM=1 \

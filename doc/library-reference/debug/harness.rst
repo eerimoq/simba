@@ -71,7 +71,7 @@ The output from the test suite is:
 
 .. code-block:: text
 
-   app:    test_suite-6.0.0 built 2016-07-25 17:38 CEST by erik.
+   app:    test_suite-7.0.0 built 2016-07-25 17:38 CEST by erik.
    board:  Linux
    mcu:    Linux
 

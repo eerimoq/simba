@@ -5,11 +5,7 @@ from __future__ import print_function
 import subprocess
 import argparse
 import json
-import errno
 import os
-import shutil
-import fnmatch
-import hashlib
 
 
 SIMBA_GEN_C_FMT = """
@@ -255,7 +251,7 @@ if board not in SUPPORTED_BOARDS:
 
 # Add the default configuration for the board.
 add_include_paths(env, BOARDS[board]["inc"])
-env.Replace(CPPDEFINES=BOARDS[board]["cdefs"])
+env.Append(CPPDEFINES=BOARDS[board]["cdefs"])
 src_filter = create_src_filter(BOARDS[board]["src"])
 env.Replace(CCFLAGS=BOARDS[board]["cflags"])
 env.Replace(LINKFLAGS=BOARDS[board]["ldflags"])
@@ -337,7 +333,7 @@ def generate_platformio_sconsscript(database, version):
         # Add everything we need, and a bit more.
         selected_data = {
             'inc': data['inc'],
-            'cdefs': data['cdefs'],
+            'cdefs': [cdef for cdef in data['cdefs'] if not cdef.startswith("F_CPU")],
             'src': data['src'],
             'cflags': data['cflags'],
             'libpath': data['libpath'],

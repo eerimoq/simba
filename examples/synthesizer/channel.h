@@ -1,6 +1,6 @@
 /**
  * @file channel.h
- * @version 6.0.0
+ * @version 7.0.0
  *
  * @section License
  * Copyright (C) 2015-2016, Erik Moqvist
