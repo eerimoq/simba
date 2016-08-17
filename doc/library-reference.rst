@@ -15,17 +15,17 @@ and their implementatins are available on :github-tree:`Github <src>`.
    :titlesonly:
 
    library-reference/kernel
+   library-reference/drivers
    library-reference/sync
+   library-reference/filesystems
+   library-reference/inet
+   library-reference/oam
+   library-reference/debug
    library-reference/collections
    library-reference/alloc
    library-reference/text
-   library-reference/debug
-   library-reference/oam
-   library-reference/filesystems
-   library-reference/drivers
    library-reference/encode
    library-reference/hash
-   library-reference/inet
    library-reference/multimedia
    library-reference/boards
    library-reference/mcus

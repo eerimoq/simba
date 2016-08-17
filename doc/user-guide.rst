@@ -6,6 +6,18 @@ Platform and the `Simba build system`. Parts of the guide is
 applicable to other build systems as well, in particular the
 configuration section.
 
+Below is a picture of all packages and their relation to the
+hardware. At the bottom is the hardware. On top of the hardware is the
+kernel and drivers packages, which exports a hardware independent
+interface that other packages and the user application can use. The
+user application on the right can use any package, and in rare cases
+directly access the hardware registers.
+
+.. image:: ../../images/packages.jpg
+   :width: 90%
+   :align: center    
+   :target: ../../_images/packages.jpg
+
 The Simba installation guide can be found on the :doc:`installation`
 page.
 
