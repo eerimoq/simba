@@ -126,8 +126,7 @@ ifeq ($(BOARD), arduino_mega)
 	        		   shell)
     TESTS += $(addprefix tst/filesystems/, fat16 \
 					  fs)
-    TESTS += $(addprefix tst/encode/, base64 \
-                                      json)
+    TESTS += $(addprefix tst/encode/, base64)
     TESTS += $(addprefix tst/hash/, crc \
                                     sha1)
     TESTS += $(addprefix tst/inet/, http_server \
