@@ -18,7 +18,7 @@ const FAR char sysinfo[] = "app:    myapp built - by -.\\r\\n"
 
 PLATFORMIO_SCONSSCRIPT_FMT = """#
 # @file make/platformio.sconscript
-# @version {version}
+# @version 7.0.0
 #
 # @section License
 # Copyright (C) 2014-2016, Erik Moqvist
@@ -168,6 +168,7 @@ def setup_mcu_esp(env, linker_script, flash_size_map):
             continue
         linkflags.append(flag)
     env.Replace(LINKFLAGS=linkflags)
+    env.Replace(LDSCRIPT_PATH="script.ld")
 
     ccflags = []
 
@@ -257,9 +258,6 @@ env.Replace(CCFLAGS=BOARDS[board]["cflags"])
 env.Replace(LINKFLAGS=BOARDS[board]["ldflags"])
 env.Replace(LIBPATH=[os.path.join("$PLATFORMFW_DIR", path)
                      for path in BOARDS[board]["libpath"]])
-board_options = env["BOARD_OPTIONS"]
-board_options['build']['ldscript'] = "script.ld"
-env.Replace(BOARD_OPTIONS=board_options)
 env.Replace(MCU_DESC=BOARDS[board]["mcu_desc"])
 env.Replace(BOARD_DESC=BOARDS[board]["board_desc"])
 
@@ -281,6 +279,7 @@ if board == "arduino_due":
             continue
         linkflags.append(flag)
     env.Replace(LINKFLAGS=linkflags)
+    env.Replace(LDSCRIPT_PATH="script.ld")
 elif board == "esp12e":
     setup_board_esp12e(env)
 elif board == "esp01":
@@ -347,7 +346,6 @@ def generate_platformio_sconsscript(database, version):
     outfile = os.path.join(simba_root, "make", "platformio.sconscript")
     with open(outfile, "w") as fout:
         fout.write(PLATFORMIO_SCONSSCRIPT_FMT.format(
-            version=version,
             boards=json.dumps(boards, indent=4, sort_keys=True)))
 
 

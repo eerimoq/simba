@@ -53,7 +53,7 @@ BOARDS = {
             "FAMILY_SAM", 
             "MCU_SAM3X8E", 
             "BOARD_ARDUINO_DUE", 
-            "VERSION=7.0.0"
+            "VERSION=7.0.1"
         ], 
         "cflags": [
             "-Werror", 
@@ -194,7 +194,7 @@ BOARDS = {
             "FAMILY_AVR", 
             "MCU_ATMEGA2560", 
             "BOARD_ARDUINO_MEGA", 
-            "VERSION=7.0.0", 
+            "VERSION=7.0.1", 
             "__DELAY_BACKWARD_COMPATIBLE__"
         ], 
         "cflags": [
@@ -332,7 +332,7 @@ BOARDS = {
             "FAMILY_AVR", 
             "MCU_ATMEGA328P", 
             "BOARD_ARDUINO_NANO", 
-            "VERSION=7.0.0", 
+            "VERSION=7.0.1", 
             "__DELAY_BACKWARD_COMPATIBLE__"
         ], 
         "cflags": [
@@ -470,7 +470,7 @@ BOARDS = {
             "FAMILY_AVR", 
             "MCU_ATMEGA32U4", 
             "BOARD_ARDUINO_PRO_MICRO", 
-            "VERSION=7.0.0", 
+            "VERSION=7.0.1", 
             "__DELAY_BACKWARD_COMPATIBLE__"
         ], 
         "cflags": [
@@ -612,7 +612,7 @@ BOARDS = {
             "FAMILY_AVR", 
             "MCU_ATMEGA328P", 
             "BOARD_ARDUINO_UNO", 
-            "VERSION=7.0.0", 
+            "VERSION=7.0.1", 
             "__DELAY_BACKWARD_COMPATIBLE__"
         ], 
         "cflags": [
@@ -750,7 +750,7 @@ BOARDS = {
             "FAMILY_LINUX", 
             "MCU_LINUX", 
             "BOARD_CYGWIN", 
-            "VERSION=7.0.0"
+            "VERSION=7.0.1"
         ], 
         "cflags": [
             "-Werror", 
@@ -856,7 +856,7 @@ BOARDS = {
             "FAMILY_ESP", 
             "MCU_ESP8266", 
             "BOARD_ESP01", 
-            "VERSION=7.0.0", 
+            "VERSION=7.0.1", 
             "ICACHE_FLASH", 
             "__STRICT_ANSI__", 
             "CONFIG_MONITOR_THREAD=0"
@@ -986,7 +986,7 @@ BOARDS = {
             "FAMILY_ESP", 
             "MCU_ESP8266", 
             "BOARD_ESP12E", 
-            "VERSION=7.0.0", 
+            "VERSION=7.0.1", 
             "ICACHE_FLASH", 
             "__STRICT_ANSI__", 
             "CONFIG_MONITOR_THREAD=0"
@@ -1116,7 +1116,7 @@ BOARDS = {
             "FAMILY_LINUX", 
             "MCU_LINUX", 
             "BOARD_LINUX", 
-            "VERSION=7.0.0"
+            "VERSION=7.0.1"
         ], 
         "cflags": [
             "-Werror", 
@@ -1222,7 +1222,7 @@ BOARDS = {
             "FAMILY_STM32F2", 
             "MCU_STM32F205RG", 
             "BOARD_PHOTON", 
-            "VERSION=7.0.0"
+            "VERSION=7.0.1"
         ], 
         "cflags": [
             "-Werror", 
@@ -1363,7 +1363,7 @@ BOARDS = {
             "FAMILY_STM32F3", 
             "MCU_STM32F303VC", 
             "BOARD_STM32F3DISCOVERY", 
-            "VERSION=7.0.0"
+            "VERSION=7.0.1"
         ], 
         "cflags": [
             "-Werror", 
@@ -1491,7 +1491,7 @@ BOARDS = {
             "FAMILY_STM32F1", 
             "MCU_STM32F100RB", 
             "BOARD_STM32VLDISCOVERY", 
-            "VERSION=7.0.0"
+            "VERSION=7.0.1"
         ], 
         "cflags": [
             "-Werror", 
@@ -1717,6 +1717,7 @@ def setup_mcu_esp(env, linker_script, flash_size_map):
             continue
         linkflags.append(flag)
     env.Replace(LINKFLAGS=linkflags)
+    env.Replace(LDSCRIPT_PATH="script.ld")
 
     ccflags = []
 
@@ -1806,9 +1807,6 @@ env.Replace(CCFLAGS=BOARDS[board]["cflags"])
 env.Replace(LINKFLAGS=BOARDS[board]["ldflags"])
 env.Replace(LIBPATH=[os.path.join("$PLATFORMFW_DIR", path)
                      for path in BOARDS[board]["libpath"]])
-board_options = env["BOARD_OPTIONS"]
-board_options['build']['ldscript'] = "script.ld"
-env.Replace(BOARD_OPTIONS=board_options)
 env.Replace(MCU_DESC=BOARDS[board]["mcu_desc"])
 env.Replace(BOARD_DESC=BOARDS[board]["board_desc"])
 
@@ -1830,6 +1828,7 @@ if board == "arduino_due":
             continue
         linkflags.append(flag)
     env.Replace(LINKFLAGS=linkflags)
+    env.Replace(LDSCRIPT_PATH="script.ld")
 elif board == "esp12e":
     setup_board_esp12e(env)
 elif board == "esp01":
