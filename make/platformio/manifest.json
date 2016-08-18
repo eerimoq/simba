@@ -1,6 +1,11 @@
 {
     "framework-simba": [
         {
+            "url": "https://github.com/eerimoq/simba/archive/7.0.1.zip",
+            "sha1": "82fe03e251101f17abc79ab9a007a079054f7400",
+            "version": "7.0.1"
+        },
+        {
             "url": "https://github.com/eerimoq/simba/archive/7.0.0.zip",
             "sha1": "1775e43370d7adec36714d485e22323fa48d24b3",
             "version": "7.0.0"
