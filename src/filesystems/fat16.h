@@ -1,6 +1,5 @@
 /**
  * @file filesystems/fat16.h
- * @version 7.0.0
  *
  * @section License
  * Copyright (C) 2009, William Greiman (Arduino Fat16 Library)

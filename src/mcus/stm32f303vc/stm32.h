@@ -1,6 +1,5 @@
 /**
  * @file mcus/stm32f303vc/stm32.h
- * @version 7.0.0
  *
  * @section License
  * Copyright (C) 2015-2016, Erik Moqvist

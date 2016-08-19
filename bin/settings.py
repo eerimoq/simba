@@ -22,7 +22,6 @@ SETTINGS_BIN_BIG_FILENAME = "settings.big-endian.bin"
 
 HEADER_FMT = """/**
  * @file {filename}
- * @version 7.0.0
  *
  * @section License
  * Copyright (C) 2014-2016, Erik Moqvist
@@ -62,7 +61,6 @@ HEADER_FMT = """/**
 
 SOURCE_FMT = """/**
  * @file {filename}
- * @version 7.0.0
  *
  * @section License
  * Copyright (C) 2014-2016, Erik Moqvist

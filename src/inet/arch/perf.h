@@ -1,6 +1,5 @@
 /**
  * @file inet/arch/perf.h
- * @version 7.0.0
  *
  * @section License
  * Copyright (C) 2016, Erik Moqvist

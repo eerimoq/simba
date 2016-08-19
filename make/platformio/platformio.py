@@ -18,7 +18,6 @@ const FAR char sysinfo[] = "app:    myapp built - by -.\\r\\n"
 
 PLATFORMIO_SCONSSCRIPT_FMT = """#
 # @file make/platformio.sconscript
-# @version 7.0.0
 #
 # @section License
 # Copyright (C) 2014-2016, Erik Moqvist

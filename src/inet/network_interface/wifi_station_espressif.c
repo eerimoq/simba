@@ -1,6 +1,5 @@
 /**
  * @file network_interface_wifi_espressif.c
- * @version 7.0.0
  *
  * @section License
  * Copyright (C) 2016, Erik Moqvist
