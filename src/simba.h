@@ -106,6 +106,7 @@ typedef unsigned long off_t;
 #    include "drivers/spi.h"
 #    include "drivers/uart.h"
 #    include "drivers/i2c.h"
+#    include "drivers/i2c_soft.h"
 #    include "drivers/uart_soft.h"
 #    include "drivers/owi.h"
 #    include "drivers/ds18b20.h"

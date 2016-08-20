@@ -60,6 +60,7 @@ DRIVERS_SRC_TMP = adc.c \
                   ds3231.c \
                   exti.c \
                   i2c.c \
+                  i2c_soft.c \
                   mcp2515.c \
                   nrf24l01.c \
                   spi.c \

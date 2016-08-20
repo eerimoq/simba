@@ -22,12 +22,15 @@
 #define SLAVE_ADDRESS          0x01
 #define BAD_SLAVE_ADDRESS      0x02
 
-struct i2c_driver_t i2c;
+#define SCL &pin_d4_dev
+#define SDA &pin_d5_dev
+
+struct i2c_soft_driver_t i2c_soft;
 
 static int test_init(struct harness_t *harness_p)
 {
-    BTASSERT(i2c_init(&i2c, &i2c_0_dev, I2C_BAUDRATE_100KBPS, -1) == 0);
-    BTASSERT(i2c_start(&i2c) == 0);
+    BTASSERT(i2c_soft_init(&i2c_soft, SCL, SDA, 100, 1000000, 1000) == 0);
+    BTASSERT(i2c_soft_start(&i2c_soft) == 0);
 
     return (0);
 }
@@ -37,18 +40,18 @@ static int test_bad_slave(struct harness_t *harness_p)
     uint8_t buf[3];
 
     /* Try to read three bytes from the bad slave device. Is should
-       fail. */
+       fail since the slave does not exist. */
     memset(buf, 0, sizeof(buf));
 
-    BTASSERT(i2c_read(&i2c,
-                      BAD_SLAVE_ADDRESS,
-                      buf,
-                      3) == 0);
+    BTASSERT(i2c_soft_read(&i2c_soft,
+                           BAD_SLAVE_ADDRESS,
+                           buf,
+                           3) == 0);
 
-    BTASSERT(i2c_write(&i2c,
-                       BAD_SLAVE_ADDRESS,
-                       buf,
-                       3) == 0);
+    BTASSERT(i2c_soft_write(&i2c_soft,
+                            BAD_SLAVE_ADDRESS,
+                            buf,
+                            3) == 0);
 
     return (0);
 }
@@ -60,10 +63,10 @@ static int test_read(struct harness_t *harness_p)
     /* Read three bytes from the slave device. */
     memset(buf, 0, sizeof(buf));
 
-    BTASSERT(i2c_read(&i2c,
-                      SLAVE_ADDRESS,
-                      buf,
-                      3) == 3);
+    BTASSERT(i2c_soft_read(&i2c_soft,
+                           SLAVE_ADDRESS,
+                           buf,
+                           3) == 3);
 
     BTASSERT(buf[0] == 5);
     BTASSERT(buf[1] == 3);
@@ -82,11 +85,11 @@ static int test_write(struct harness_t *harness_p)
     buf[3] = 7;
     buf[4] = 9;
 
-    /* Write 5 bytes to the slave. */
-    BTASSERT(i2c_write(&i2c,
-                       SLAVE_ADDRESS,
-                       buf,
-                       5) == 5);
+    /* Write 5 bytes to the slave device. */
+    BTASSERT(i2c_soft_write(&i2c_soft,
+                            SLAVE_ADDRESS,
+                            buf,
+                            5) == 5);
 
     return (0);
 }
@@ -98,18 +101,18 @@ static int test_echo(struct harness_t *harness_p)
     /* Write ping value. */
     value = 0x35;
 
-    BTASSERT(i2c_write(&i2c,
-                       SLAVE_ADDRESS,
-                       &value,
-                       1) == 1);
+    BTASSERT(i2c_soft_write(&i2c_soft,
+                            SLAVE_ADDRESS,
+                            &value,
+                            1) == 1);
 
     /* Read pong value (ping + 1). */
     value = 0;
 
-    BTASSERT(i2c_read(&i2c,
-                      SLAVE_ADDRESS,
-                      &value,
-                      1) == 1);
+    BTASSERT(i2c_soft_read(&i2c_soft,
+                           SLAVE_ADDRESS,
+                           &value,
+                           1) == 1);
 
     BTASSERT(value == 0x36);
 
@@ -123,15 +126,15 @@ static int test_mem_read(struct harness_t *harness_p)
 
     address = 0x34;
 
-    BTASSERT(i2c_write(&i2c,
-                       SLAVE_ADDRESS,
-                       &address,
-                       1) == 1);
+    BTASSERT(i2c_soft_write(&i2c_soft,
+                            SLAVE_ADDRESS,
+                            &address,
+                            1) == 1);
 
-    BTASSERT(i2c_read(&i2c,
-                      SLAVE_ADDRESS,
-                      &value,
-                      1) == 1);
+    BTASSERT(i2c_soft_read(&i2c_soft,
+                           SLAVE_ADDRESS,
+                           &value,
+                           1) == 1);
 
     BTASSERT(value == 0x54);
 
@@ -140,29 +143,7 @@ static int test_mem_read(struct harness_t *harness_p)
 
 static int test_stop(struct harness_t *harness_p)
 {
-    BTASSERT(i2c_stop(&i2c) == 0);
-
-    return (0);
-}
-
-static int test_baudrates(struct harness_t *harness_p)
-{
-    uint8_t value;
-    int i;
-    int baudrates[2] = {
-        I2C_BAUDRATE_100KBPS,
-        I2C_BAUDRATE_400KBPS
-    };
-
-    for (i = 0; i < membersof(baudrates); i++) {
-        BTASSERT(i2c_init(&i2c, &i2c_0_dev, baudrates[i], -1) == 0);
-        BTASSERT(i2c_start(&i2c) == 0);
-        BTASSERT(i2c_read(&i2c,
-                          BAD_SLAVE_ADDRESS,
-                          &value,
-                          1) == 0);
-        BTASSERT(i2c_stop(&i2c) == 0);
-    }
+    BTASSERT(i2c_soft_stop(&i2c_soft) == 0);
 
     return (0);
 }
@@ -178,12 +159,11 @@ int main()
         { test_echo, "test_echo" },
         { test_mem_read, "test_mem_read" },
         { test_stop, "test_stop" },
-        { test_baudrates, "test_baudrates" },
         { NULL, NULL }
     };
 
     sys_start();
-    i2c_module_init();
+    i2c_soft_module_init();
 
     harness_init(&harness);
     harness_run(&harness, harness_testcases);
