@@ -388,6 +388,16 @@ test-esp12e-platformio:
 	@echo "ESP12-E"
 	$(MAKE) -C examples/platformio BOARD=esp12e SERIAL_PORT=/dev/simba-esp12e test-prompt-after-upload
 
+test-i2c-nano-mega:
+	@echo "I2C Nano Mega"
+	$(MAKE) -C tst/drivers/i2c/slave BOARD=arduino_nano SERIAL_PORT=/dev/simba-arduino_nano upload
+	$(MAKE) -C tst/drivers/i2c/master_soft BOARD=arduino_mega SERIAL_PORT=/dev/simba-arduino_mega run
+
+clean-i2c-nano-mega:
+	@echo "I2C Nano Mega"
+	$(MAKE) -C tst/drivers/i2c/slave BOARD=arduino_nano clean
+	$(MAKE) -C tst/drivers/i2c/master_soft BOARD=arduino_mega clean
+
 test-all-boards:
 	$(MAKE) test-arduino-due
 	$(MAKE) test-arduino-mega
@@ -399,6 +409,7 @@ test-all-boards:
 	$(MAKE) test-arduino-due-platformio
 	$(MAKE) test-arduino-mega-platformio
 	$(MAKE) test-esp12e-platformio
+	$(MAKE) test-i2c-nano-mega
 
 clean-all-boards:
 	$(MAKE) clean-arduino-due
@@ -411,6 +422,7 @@ clean-all-boards:
 	$(MAKE) clean-arduino-due-platformio
 	$(MAKE) clean-arduino-mega-platformio
 	$(MAKE) clean-esp12e-platformio
+	$(MAKE) clean-i2c-nano-mega
 
 doc:
 	+bin/dbgen.py > database.json
