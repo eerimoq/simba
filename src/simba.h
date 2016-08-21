@@ -87,6 +87,7 @@ typedef unsigned long off_t;
 #if defined(FAMILY_LINUX)
 #    include "drivers/exti.h"
 #    include "drivers/pin.h"
+#    include "drivers/i2c_soft.h"
 #    include "drivers/pwm.h"
 #    include "drivers/adc.h"
 #    include "drivers/spi.h"
@@ -131,6 +132,7 @@ typedef unsigned long off_t;
 #    include "drivers/exti.h"
 #    include "drivers/flash.h"
 #    include "drivers/pin.h"
+#    include "drivers/i2c_soft.h"
 #    include "drivers/spi.h"
 #    include "drivers/uart.h"
 #    include "drivers/sd.h"
@@ -147,6 +149,7 @@ typedef unsigned long off_t;
 
 #if defined(FAMILY_ESP)
 #    include "drivers/pin.h"
+#    include "drivers/i2c_soft.h"
 #    include "drivers/spi.h"
 #    include "drivers/uart.h"
 #    include "drivers/adc.h"
@@ -155,12 +158,14 @@ typedef unsigned long off_t;
 
 #if defined(FAMILY_STM32F1)
 #    include "drivers/pin.h"
+#    include "drivers/i2c_soft.h"
 #    include "drivers/uart.h"
 #    include "drivers/flash.h"
 #endif
 
 #if defined(FAMILY_STM32F2)
 #    include "drivers/pin.h"
+#    include "drivers/i2c_soft.h"
 #    include "drivers/uart.h"
 #    include "drivers/flash.h"
 #    include "drivers/sdio.h"
@@ -169,6 +174,7 @@ typedef unsigned long off_t;
 
 #if defined(FAMILY_STM32F3)
 #    include "drivers/pin.h"
+#    include "drivers/i2c_soft.h"
 #    include "drivers/uart.h"
 #    include "drivers/flash.h"
 #endif

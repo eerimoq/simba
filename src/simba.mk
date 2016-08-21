@@ -46,6 +46,7 @@ DRIVERS_SRC ?= adc.c \
                analog_output_pin.c \
                flash.c \
                pin.c \
+               i2c_soft.c \
                pwm.c \
                sd.c \
                spi.c \
@@ -93,6 +94,7 @@ DRIVERS_SRC ?= adc.c \
                flash.c \
                mcp2515.c \
                pin.c \
+               i2c_soft.c \
                sd.c \
                spi.c \
                uart.c \
@@ -106,6 +108,7 @@ ifeq ($(FAMILY),esp)
 DRIVERS_SRC ?= adc.c \
                analog_input_pin.c \
                pin.c \
+               i2c_soft.c \
                spi.c \
                uart.c
 endif
@@ -113,6 +116,7 @@ endif
 ifeq ($(FAMILY),stm32f1)
 DRIVERS_SRC ?= flash.c \
                pin.c \
+               i2c_soft.c \
 	       uart.c
 endif
 
@@ -127,6 +131,7 @@ DRIVERS_SRC ?= bcm43362.c \
 	       bcm43362/wwd_sdio.c \
 	       flash.c \
                pin.c \
+               i2c_soft.c \
 	       sdio.c \
 	       uart.c
 endif
@@ -134,6 +139,7 @@ endif
 ifeq ($(FAMILY),stm32f3)
 DRIVERS_SRC ?= flash.c \
                pin.c \
+               i2c_soft.c \
                uart.c
 endif
 

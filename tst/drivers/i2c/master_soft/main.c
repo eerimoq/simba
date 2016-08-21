@@ -22,14 +22,14 @@
 #define SLAVE_ADDRESS          0x01
 #define BAD_SLAVE_ADDRESS      0x02
 
-#define SCL &pin_d4_dev
-#define SDA &pin_d5_dev
+#define SCL &pin_d11_dev
+#define SDA &pin_d12_dev
 
 struct i2c_soft_driver_t i2c_soft;
 
 static int test_init(struct harness_t *harness_p)
 {
-    BTASSERT(i2c_soft_init(&i2c_soft, SCL, SDA, 100, 1000000, 1000) == 0);
+    BTASSERT(i2c_soft_init(&i2c_soft, SCL, SDA, 10000, 1000000, 1000) == 0);
     BTASSERT(i2c_soft_start(&i2c_soft) == 0);
 
     return (0);
@@ -46,12 +46,12 @@ static int test_bad_slave(struct harness_t *harness_p)
     BTASSERT(i2c_soft_read(&i2c_soft,
                            BAD_SLAVE_ADDRESS,
                            buf,
-                           3) == 0);
+                           3) == -1);
 
     BTASSERT(i2c_soft_write(&i2c_soft,
                             BAD_SLAVE_ADDRESS,
                             buf,
-                            3) == 0);
+                            3) == -1);
 
     return (0);
 }
@@ -78,7 +78,7 @@ static int test_read(struct harness_t *harness_p)
 static int test_write(struct harness_t *harness_p)
 {
     uint8_t buf[5];
-
+    
     buf[0] = 1;
     buf[1] = 3;
     buf[2] = 5;
@@ -100,6 +100,7 @@ static int test_echo(struct harness_t *harness_p)
 
     /* Write ping value. */
     value = 0x35;
+    thrd_sleep_us(100000);
 
     BTASSERT(i2c_soft_write(&i2c_soft,
                             SLAVE_ADDRESS,
@@ -108,6 +109,7 @@ static int test_echo(struct harness_t *harness_p)
 
     /* Read pong value (ping + 1). */
     value = 0;
+    thrd_sleep_us(100000);
 
     BTASSERT(i2c_soft_read(&i2c_soft,
                            SLAVE_ADDRESS,
@@ -148,6 +150,33 @@ static int test_stop(struct harness_t *harness_p)
     return (0);
 }
 
+static int test_baudrates(struct harness_t *harness_p)
+{
+    uint8_t value;
+    int i;
+    long baudrates[2] = {
+        50000,
+        400000
+    };
+
+    for (i = 0; i < membersof(baudrates); i++) {
+        BTASSERT(i2c_soft_init(&i2c_soft,
+                               SCL,
+                               SDA,
+                               baudrates[i],
+                               1000000,
+                               1000) == 0);
+        BTASSERT(i2c_soft_start(&i2c_soft) == 0);
+        BTASSERT(i2c_soft_read(&i2c_soft,
+                               BAD_SLAVE_ADDRESS,
+                               &value,
+                               1) == -1);
+        BTASSERT(i2c_soft_stop(&i2c_soft) == 0);
+    }
+
+    return (0);
+}
+
 int main()
 {
     struct harness_t harness;
@@ -159,6 +188,7 @@ int main()
         { test_echo, "test_echo" },
         { test_mem_read, "test_mem_read" },
         { test_stop, "test_stop" },
+        { test_baudrates, "test_baudrates" },
         { NULL, NULL }
     };
 

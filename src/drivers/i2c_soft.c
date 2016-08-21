@@ -60,7 +60,7 @@ static int start_cond(struct i2c_soft_driver_t *self_p)
 
     /* SCL is high, set SDA from 1 to 0. */
     pin_device_set_mode(self_p->sda_p, PIN_OUTPUT);
-    time_busy_wait_us(4);
+    time_busy_wait_us(self_p->baudrate_us);
 
     /* Set SCL low as preparation for the first transfer. */
     pin_device_set_mode(self_p->scl_p, PIN_OUTPUT);
@@ -78,7 +78,7 @@ static int stop_cond(struct i2c_soft_driver_t *self_p)
 {
     /* Set SDA to 0. */
     pin_device_set_mode(self_p->sda_p, PIN_OUTPUT);
-    time_busy_wait_us(4);
+    time_busy_wait_us(self_p->baudrate_us);
 
     /* SDA to 1. */
     pin_device_set_mode(self_p->scl_p, PIN_INPUT);
@@ -89,18 +89,18 @@ static int stop_cond(struct i2c_soft_driver_t *self_p)
     }
     
     /* Stop bit setup time, minimum 4us. */
-    time_busy_wait_us(4);
+    time_busy_wait_us(self_p->baudrate_us);
     
     /* SCL is high, set SDA from 0 to 1. */
     pin_device_set_mode(self_p->sda_p, PIN_INPUT);
-    time_busy_wait_us(4);
+    time_busy_wait_us(self_p->baudrate_us);
 
     /* Make sure no device is pulling SDA low. */
     if (pin_device_read(self_p->sda_p) == 0) {
         return (-1);
     }
     
-    time_busy_wait_us(4);
+    time_busy_wait_us(self_p->baudrate_us);
 
     return (0);
 }
@@ -121,24 +121,17 @@ static int write_bit(struct i2c_soft_driver_t *self_p,
     }
 
     /* SDA change propagation delay. */
-    time_busy_wait_us(4);
+    time_busy_wait_us(self_p->baudrate_us);
 
     /* Set SCL high to indicate a new valid SDA value is available */
     pin_device_set_mode(self_p->scl_p, PIN_INPUT);
 
-    /* Wait for SDA value to be read by slave, minimum of 4us for standard mode */
-    time_busy_wait_us(4);
+    /* Wait for SDA value to be read by slave, minimum of 4us for
+       standard mode. */
+    time_busy_wait_us(self_p->baudrate_us);
 
     /* Clock stretching */
     if (wait_for_clock_stretching_end(self_p) != 0) {
-        return (-1);
-    }
-
-    /* SCL is high, now data is valid. If SDA is high, check that nobody
-       else is driving SDA. */
-    pin_device_set_mode(self_p->sda_p, PIN_INPUT);
-    
-    if ((value == 1) && (pin_device_read(self_p->sda_p) == 0)) {
         return (-1);
     }
 
@@ -162,7 +155,7 @@ static int read_bit(struct i2c_soft_driver_t *self_p,
     
     /* Wait for SDA value to be written by slave, minimum of 4us for
        standard mode. */
-    time_busy_wait_us(4);
+    time_busy_wait_us(self_p->baudrate_us);
 
     /* Set SCL high to indicate a new valid SDA value is available. */
     pin_device_set_mode(self_p->scl_p, PIN_INPUT);
@@ -174,7 +167,7 @@ static int read_bit(struct i2c_soft_driver_t *self_p,
   
     /* Wait for SDA value to be written by slave, minimum of 4us for
        standard mode. */
-    time_busy_wait_us(4);
+    time_busy_wait_us(self_p->baudrate_us);
 
     /* SCL is high, read out bit. */
     *value_p = pin_device_read(self_p->sda_p);
@@ -193,7 +186,7 @@ static int write_byte(struct i2c_soft_driver_t *self_p,
 {
     int i;
     uint8_t nack;
-
+    
     for (i = 0; i < 8; i++) {
         if (write_bit(self_p, (byte & 0x80) != 0) != 0) {
             return (-1);
@@ -229,7 +222,8 @@ static int read_byte(struct i2c_soft_driver_t *self_p,
         *byte_p = ((*byte_p << 1 ) | bit);
     }
 
-    if (write_bit(self_p, 1) != 0) {
+    /* Acknowledge that the byte was successfully received. */
+    if (write_bit(self_p, 0) != 0) {
         return (-1);
     }
   
@@ -244,13 +238,14 @@ int i2c_soft_module_init()
 int i2c_soft_init(struct i2c_soft_driver_t *self_p,
                   struct pin_device_t *scl_dev_p,
                   struct pin_device_t *sda_dev_p,
-                  int baudrate,
+                  long baudrate,
                   long max_clock_stretching_us,
                   long clock_stretching_sleep_us)
 {
     self_p->scl_p = scl_dev_p;
     self_p->sda_p = sda_dev_p;
     self_p->baudrate = baudrate;
+    self_p->baudrate_us = (1000000L / 2L / baudrate);
     self_p->max_clock_stretching_us = max_clock_stretching_us;
     self_p->clock_stretching_sleep_us = clock_stretching_sleep_us;
     
@@ -263,7 +258,7 @@ int i2c_soft_init(struct i2c_soft_driver_t *self_p,
     pin_device_write_low(self_p->scl_p);
     pin_device_write_low(self_p->sda_p);
 
-    return (-1);
+    return (0);
 }
 
 int i2c_soft_start(struct i2c_soft_driver_t *self_p)
@@ -288,6 +283,12 @@ ssize_t i2c_soft_read(struct i2c_soft_driver_t *self_p,
     
     /* Send the start condition. */
     if (start_cond(self_p) != 0) {
+        return (-1);
+    }
+
+    /* Write the address iwth the direction bit set to 1. */
+    if (write_byte(self_p, ((address << 1) | 0x1)) != 0) {
+        stop_cond(self_p);
         return (-1);
     }
     
@@ -319,6 +320,12 @@ ssize_t i2c_soft_write(struct i2c_soft_driver_t *self_p,
 
     /* Send the start condition. */
     if (start_cond(self_p) != 0) {
+        return (-1);
+    }
+
+    /* Write the address with the direction bit set to 0. */
+    if (write_byte(self_p, ((address << 1) | 0x0)) != 0) {
+        stop_cond(self_p);
         return (-1);
     }
 

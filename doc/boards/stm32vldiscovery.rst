@@ -23,6 +23,7 @@ Drivers
 Supported drivers for this board.
 
 - :doc:`../library-reference/drivers/flash`
+- :doc:`../library-reference/drivers/i2c_soft`
 - :doc:`../library-reference/drivers/pin`
 - :doc:`../library-reference/drivers/uart`
 

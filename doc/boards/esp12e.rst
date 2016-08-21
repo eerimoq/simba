@@ -25,6 +25,7 @@ Supported drivers for this board.
 
 - :doc:`../library-reference/drivers/adc`
 - :doc:`../library-reference/drivers/analog_input_pin`
+- :doc:`../library-reference/drivers/i2c_soft`
 - :doc:`../library-reference/drivers/pin`
 - :doc:`../library-reference/drivers/spi`
 - :doc:`../library-reference/drivers/uart`

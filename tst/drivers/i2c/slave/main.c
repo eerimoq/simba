@@ -27,8 +27,8 @@ static int test_init(struct harness_t *harness_p)
 {
     BTASSERT(i2c_init(&i2c,
                       &i2c_0_dev,
-                      I2C_SLAVE_ADDRESS,
-                      -1) == 0);
+                      -1,
+                      I2C_SLAVE_ADDRESS) == 0);
     BTASSERT(i2c_slave_start(&i2c) == 0);
 
     return (0);

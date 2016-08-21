@@ -26,6 +26,7 @@ Supported drivers for this board.
 - :doc:`../library-reference/drivers/analog_input_pin`
 - :doc:`../library-reference/drivers/analog_output_pin`
 - :doc:`../library-reference/drivers/flash`
+- :doc:`../library-reference/drivers/i2c_soft`
 - :doc:`../library-reference/drivers/pin`
 - :doc:`../library-reference/drivers/pwm`
 - :doc:`../library-reference/drivers/sd`
@@ -59,9 +60,9 @@ Below is the memory usage of two applications:
 +--------------------------+-----------+-----------+
 | Application              | Flash     | RAM       |
 +==========================+===========+===========+
-| minimal-configuration    |    285954 |    106224 |
+| minimal-configuration    |    290658 |    108632 |
 +--------------------------+-----------+-----------+
-| default-configuration    |    361538 |    128400 |
+| default-configuration    |    366258 |    130808 |
 +--------------------------+-----------+-----------+
 
 Default configuration

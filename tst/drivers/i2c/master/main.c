@@ -97,7 +97,8 @@ static int test_echo(struct harness_t *harness_p)
 
     /* Write ping value. */
     value = 0x35;
-
+    thrd_sleep_us(100000);
+   
     BTASSERT(i2c_write(&i2c,
                        SLAVE_ADDRESS,
                        &value,
@@ -105,6 +106,7 @@ static int test_echo(struct harness_t *harness_p)
 
     /* Read pong value (ping + 1). */
     value = 0;
+    thrd_sleep_us(100000);
 
     BTASSERT(i2c_read(&i2c,
                       SLAVE_ADDRESS,

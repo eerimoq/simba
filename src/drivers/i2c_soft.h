@@ -25,7 +25,8 @@
 struct i2c_soft_driver_t {
     struct pin_device_t *scl_p;
     struct pin_device_t *sda_p;
-    int baudrate;
+    long baudrate;
+    long baudrate_us;
     long max_clock_stretching_us;
     long clock_stretching_sleep_us;
 };
@@ -39,12 +40,10 @@ struct i2c_soft_driver_t {
  *
  * @return zero(0) or negative error code.
  */
-int i2c_soft_module_init();
+int i2c_soft_module_init(void);
 
 /**
- * Initialize given driver object. The same driver object is used for
- * both master and slave modes. Use `i2c_soft_start()` to start the device
- * as a master, and `i2c_soft_slave_start()` to start it as a slave.
+ * Initialize given driver object.
  *
  * @param[out] self_p Driver object to initialize.
  * @param[in] scl_dev_p The I2C clock pin (SCL).
@@ -62,7 +61,7 @@ int i2c_soft_module_init();
 int i2c_soft_init(struct i2c_soft_driver_t *self_p,
                   struct pin_device_t *scl_dev_p,
                   struct pin_device_t *sda_dev_p,
-                  int baudrate,
+                  long baudrate,
                   long max_clock_stretching_us,
                   long clock_stretching_sleep_us);
 
