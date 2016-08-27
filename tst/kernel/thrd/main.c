@@ -130,7 +130,8 @@ static int test_preemptive(struct harness_t *harness_p)
 static int test_env(struct harness_t *harness_p)
 {
 #if CONFIG_THRD_ENV == 1
-    
+
+    struct thrd_environment_variable_t global_variables[2];
     struct thrd_environment_variable_t variables[4];
 
     /* Set and get are not possible for a thread without an
@@ -139,53 +140,75 @@ static int test_env(struct harness_t *harness_p)
     BTASSERT(thrd_set_env("CWD", "/") == -1);
     BTASSERT(thrd_get_env("CWD") == NULL);
 
+    /* Initialize the global environment. */
+    BTASSERT(thrd_init_global_env(global_variables,
+                                  membersof(global_variables)) == 0);
+
+    /* Set and get global variables. */
+    BTASSERT(thrd_set_global_env("N1", "G1") == 0);
+    BTASSERT(thrd_get_global_env("N1") != NULL);
+    BTASSERT(strcmp(thrd_get_global_env("N1"), "G1") == 0);
+
+    BTASSERT(thrd_set_global_env("N2", "G2") == 0);
+    BTASSERT(thrd_get_global_env("N2") != NULL);
+    BTASSERT(strcmp(thrd_get_env("N2"), "G2") == 0);
+
+    /* Get from global environment using the thread local get
+       function. */
+    BTASSERT(thrd_get_env("N1") != NULL);
+    BTASSERT(strcmp(thrd_get_env("N1"), "G1") == 0);
+
     /* Initialize the environment for the current thread. */
     BTASSERT(thrd_init_env(variables, membersof(variables)) == 0);
 
-    /* Set and get variables. */
-    BTASSERT(thrd_set_env("N1", "V1") == 0);
+    /* Set and get variables. The global N1 is overridden. */
+    BTASSERT(thrd_set_env("N1", "L1") == 0);
     BTASSERT(thrd_get_env("N1") != NULL);
-    BTASSERT(strcmp(thrd_get_env("N1"), "V1") == 0);
+    BTASSERT(strcmp(thrd_get_env("N1"), "L1") == 0);
 
-    BTASSERT(thrd_set_env("N2", "V2") == 0);
+    BTASSERT(thrd_set_env("N2", "L2") == 0);
     BTASSERT(thrd_get_env("N2") != NULL);
-    BTASSERT(strcmp(thrd_get_env("N2"), "V2") == 0);
+    BTASSERT(strcmp(thrd_get_env("N2"), "L2") == 0);
 
-    BTASSERT(thrd_set_env("N3", "V3") == 0);
+    BTASSERT(thrd_set_env("N3", "L3") == 0);
     BTASSERT(thrd_get_env("N3") != NULL);
-    BTASSERT(strcmp(thrd_get_env("N3"), "V3") == 0);
+    BTASSERT(strcmp(thrd_get_env("N3"), "L3") == 0);
 
-    BTASSERT(thrd_set_env("N4", "V4") == 0);
+    BTASSERT(thrd_set_env("N4", "L4") == 0);
     BTASSERT(thrd_get_env("N4") != NULL);
-    BTASSERT(strcmp(thrd_get_env("N4"), "V4") == 0);
+    BTASSERT(strcmp(thrd_get_env("N4"), "L4") == 0);
 
     /* Overwrite a value. */
-    BTASSERT(thrd_set_env("N4", "V44") == 0);
+    BTASSERT(thrd_set_env("N4", "L44") == 0);
     BTASSERT(thrd_get_env("N4") != NULL);
-    BTASSERT(strcmp(thrd_get_env("N4"), "V44") == 0);
+    BTASSERT(strcmp(thrd_get_env("N4"), "L44") == 0);
 
     /* No free space. */
-    BTASSERT(thrd_set_env("N5", "V5") == -1);
+    BTASSERT(thrd_set_env("N5", "L5") == -1);
 
     /* Remove a variable. */
     BTASSERT(thrd_set_env("N2", NULL) == 0);
 
     /* Set and get another variable. */
-    BTASSERT(thrd_set_env("N6", "V6") == 0);
+    BTASSERT(thrd_set_env("N6", "L6") == 0);
     BTASSERT(thrd_get_env("N6") != NULL);
-    BTASSERT(strcmp(thrd_get_env("N6"), "V6") == 0);
+    BTASSERT(strcmp(thrd_get_env("N6"), "L6") == 0);
 
     /* Get a non-existing variable. */
     BTASSERT(thrd_get_env("N7") == NULL);
 
+    /* Remove the local environment. */
     BTASSERT(thrd_init_env(NULL, 0) == 0);
+
+    /* Remove the global environment. */
+    BTASSERT(thrd_init_global_env(NULL, 0) == 0);
 
     return (0);
 
 #else
 
     return (1);
-    
+
 #endif
 }
 

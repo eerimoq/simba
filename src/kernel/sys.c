@@ -310,7 +310,7 @@ static int start_filesystem(void)
 
     /* Set current working directory to the mount point of the file
        system. */
-    thrd_set_env("CWD", "/fs");
+    thrd_set_global_env("CWD", "/fs");
 
     return (0);
 }

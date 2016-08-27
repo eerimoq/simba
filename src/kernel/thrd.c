@@ -22,10 +22,10 @@
 /* Thread states. */
 enum thrd_state_t {
     THRD_STATE_CURRENT = 0,
-    THRD_STATE_READY,        
-    THRD_STATE_SUSPENDED,       
-    THRD_STATE_RESUMED,      
-    THRD_STATE_TERMINATED          
+    THRD_STATE_READY,
+    THRD_STATE_SUSPENDED,
+    THRD_STATE_RESUMED,
+    THRD_STATE_TERMINATED
 };
 
 /* Stack usage and debugging. */
@@ -40,7 +40,8 @@ struct module_t {
     } scheduler;
 #if CONFIG_THRD_ENV == 1
     struct {
-        struct thrd_environment_variable_t main_variables[4];
+        struct thrd_environment_variable_t global_variables[4];
+        struct thrd_environment_t global;
         struct sem_t sem;
     } env;
 #endif
@@ -66,23 +67,13 @@ static struct module_t module;
 
 #if CONFIG_THRD_ENV == 1
 
-static int init_env(struct thrd_environment_variable_t *variables_p,
-                    int length)
-{
-    module.scheduler.current_p->env.variables_p = variables_p;
-    module.scheduler.current_p->env.number_of_variables = 0;
-    module.scheduler.current_p->env.max_number_of_variables = length;
-
-    return (0);
-}
-
-static int set_env(const char *name_p, const char *value_p)
+static int set_env(struct thrd_environment_t *env_p,
+                   const char *name_p,
+                   const char *value_p)
 {
     int i;
-    struct thrd_environment_t *env_p;
     struct thrd_environment_variable_t *variable_p;
 
-    env_p = &module.scheduler.current_p->env;
     variable_p = &env_p->variables_p[0];
 
     /* Does the variable already exist in the list? */
@@ -116,29 +107,20 @@ static int set_env(const char *name_p, const char *value_p)
     return (0);
 }
 
-static const char *get_env(const char *name_p)
+static const char *get_env(struct thrd_environment_t *env_p,
+                           const char *name_p)
 {
     int i;
-    struct thrd_environment_t *env_p;
     struct thrd_environment_variable_t *variable_p;
-    struct thrd_t *thrd_p;
 
-    thrd_p = module.scheduler.current_p;
+    variable_p = &env_p->variables_p[0];
 
-    while (thrd_p != NULL) {
-        env_p = &thrd_p->env;
-        variable_p = &env_p->variables_p[0];
-
-        /* Search for the variable. */
-        for (i = 0; i < env_p->number_of_variables; i++) {
-            if (strcmp(variable_p->name_p, name_p) == 0) {
-                return (variable_p->value_p);
-            }
-            
-            variable_p++;
+    for (i = 0; i < env_p->number_of_variables; i++) {
+        if (strcmp(variable_p->name_p, name_p) == 0) {
+            return (variable_p->value_p);
         }
 
-        thrd_p = thrd_p->parent.thrd_p;
+        variable_p++;
     }
 
     return (NULL);
@@ -326,7 +308,7 @@ static int iterate_thread_children(struct thrd_t *thrd_p,
     int res = 0;
     struct thrd_parent_t *child_p;
     struct list_sl_iterator_t iter;
-    
+
     /* Call the callback. */
     res = callback(arg_p, thrd_p);
 
@@ -502,6 +484,13 @@ int thrd_module_init(void)
 
     module.initialized = 1;
 
+#if CONFIG_THRD_ENV == 1
+    module.env.global.variables_p = module.env.global_variables;
+    module.env.global.number_of_variables = 0;
+    module.env.global.max_number_of_variables = membersof(module.env.global_variables);
+    sem_init(&module.env.sem, 0, 1);
+#endif
+
 #if CONFIG_PROFILE_STACK == 1
     char dummy = 0;
 #endif
@@ -518,13 +507,6 @@ int thrd_module_init(void)
     main_thrd.parent.thrd_p = NULL;
     LIST_SL_INIT(&main_thrd.children);
     main_thrd.cpu.usage = 0;
-
-#if CONFIG_THRD_ENV == 1
-    main_thrd.env.variables_p = module.env.main_variables;
-    main_thrd.env.number_of_variables = 0;
-    main_thrd.env.max_number_of_variables = membersof(module.env.main_variables);
-    sem_init(&module.env.sem, 0, 1);
-#endif
 
 #if CONFIG_ASSERT == 1
     main_thrd.stack_low_magic = THRD_STACK_LOW_MAGIC;
@@ -768,18 +750,78 @@ int thrd_get_prio(void)
     return (module.scheduler.current_p->prio);
 }
 
-int thrd_init_env(struct thrd_environment_variable_t *variables_p,
-                  int length)
+int thrd_init_global_env(struct thrd_environment_variable_t *variables_p,
+                         int length)
 {
+#if CONFIG_THRD_ENV == 1
+
+    sem_take(&module.env.sem, NULL);
+    module.env.global.variables_p = variables_p;
+    module.env.global.number_of_variables = 0;
+    module.env.global.max_number_of_variables = length;
+    sem_give(&module.env.sem, 1);
+
+    return (0);
+
+#else
+
+    return (-1);
+
+#endif
+}
+
+int thrd_set_global_env(const char *name_p, const char *value_p)
+{
+    ASSERTN(name_p != NULL, -EINVAL);
+
 #if CONFIG_THRD_ENV == 1
 
     int res;
 
     sem_take(&module.env.sem, NULL);
-    res = init_env(variables_p, length);
+    res = set_env(&module.env.global, name_p, value_p);
     sem_give(&module.env.sem, 1);
 
     return (res);
+
+#else
+
+    return (-1);
+
+#endif
+}
+
+const char *thrd_get_global_env(const char *name_p)
+{
+    ASSERTN(name_p != NULL, -EINVAL);
+
+#if CONFIG_THRD_ENV == 1
+
+    const char *value_p;
+
+    sem_take(&module.env.sem, NULL);
+    value_p  = get_env(&module.env.global, name_p);
+    sem_give(&module.env.sem, 1);
+
+    return (value_p);
+
+#else
+
+    return (NULL);
+
+#endif
+}
+
+int thrd_init_env(struct thrd_environment_variable_t *variables_p,
+                  int length)
+{
+#if CONFIG_THRD_ENV == 1
+
+    module.scheduler.current_p->env.variables_p = variables_p;
+    module.scheduler.current_p->env.number_of_variables = 0;
+    module.scheduler.current_p->env.max_number_of_variables = length;
+
+    return (0);
 
 #else
 
@@ -794,13 +836,7 @@ int thrd_set_env(const char *name_p, const char *value_p)
 
 #if CONFIG_THRD_ENV == 1
 
-    int res;
-
-    sem_take(&module.env.sem, NULL);
-    res = set_env(name_p, value_p);
-    sem_give(&module.env.sem, 1);
-
-    return (res);
+    return (set_env(&module.scheduler.current_p->env, name_p, value_p));
 
 #else
 
@@ -817,14 +853,16 @@ const char *thrd_get_env(const char *name_p)
 
     const char *value_p;
 
-    sem_take(&module.env.sem, NULL);
-    value_p = get_env(name_p);
-    sem_give(&module.env.sem, 1);
-    
-    return (value_p);
+    value_p = get_env(&module.scheduler.current_p->env, name_p);
+
+    if (value_p != NULL) {
+        return (value_p);
+    }
+
+    return (thrd_get_global_env(name_p));
 
 #else
-    
+
     return (NULL);
 
 #endif

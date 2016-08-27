@@ -268,6 +268,41 @@ int thrd_set_prio(struct thrd_t *thrd_p, int prio);
 int thrd_get_prio(void);
 
 /**
+ * Initialize the global environment variables storage. These
+ * variables are shared among all threads.
+ *
+ * @param[in] variables_p Variables array.
+ * @param[in] length Length of the variables array.
+ *
+ * @return zero(0) or negative error code.
+ */
+int thrd_init_global_env(struct thrd_environment_variable_t *variables_p,
+                         int length);
+
+/**
+ * Set the value of given environment variable. The pointers to given
+ * name and value are stored in the current global environment array.
+ *
+ * @param[in] name_p Name of the environment variable to set.
+ * @param[in] value_p Value of the environment variable. Set to NULL
+ *                    to remove the variable.
+ *
+ * @return zero(0) or negative error code.
+ */
+int thrd_set_global_env(const char *name_p, const char *value_p);
+
+/**
+ * Get the value of given environment variable in the global
+ * environment array.
+ *
+ * @param[in] name_p Name of the environment variable to get.
+ *
+ * @return Value of given environment variable or NULL if it is not
+ *         found.
+ */
+const char *thrd_get_global_env(const char *name_p);
+
+/**
  * Initialize the current threads' environment variables storage.
  *
  * @param[in] variables_p Variables are to be used by this therad.
@@ -280,8 +315,7 @@ int thrd_init_env(struct thrd_environment_variable_t *variables_p,
 
 /**
  * Set the value of given environment variable. The pointers to given
- * name and value are stored in the current threads' environment
- * array.
+ * name and value are stored in the current global environment array.
  *
  * @param[in] name_p Name of the environment variable to set.
  * @param[in] value_p Value of the environment variable. Set to NULL
@@ -294,8 +328,7 @@ int thrd_set_env(const char *name_p, const char *value_p);
 /**
  * Get the value of given environment variable. If given variable is
  * not found in the current threads' environment array, the
- * environment of its parent is searched. This continues until the
- * variable is found or no parent exists.
+ * global environment array is searched.
  *
  * @param[in] name_p Name of the environment variable to get.
  *
