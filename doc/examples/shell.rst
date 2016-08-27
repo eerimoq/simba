@@ -47,7 +47,7 @@ you want to.
    logout
    oam/
    $ kernel/thrd/list 
-               NAME           PARENT        STATE  PRIO   CPU  MAX-STACK-USAGE  LOGMASK
-              shell                       current     0    0%       358/  5575     0x0f
-               idle            shell        ready   127    0%        57/   156     0x0f
+               NAME        STATE  PRIO   CPU  MAX-STACK-USAGE  LOGMASK
+              shell      current     0    0%       358/  5575     0x0f
+               idle        ready   127    0%        57/   156     0x0f
    $ 
