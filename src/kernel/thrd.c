@@ -703,9 +703,9 @@ int thrd_sleep(float seconds)
     return (thrd_sleep_us(1000000 * seconds));
 }
 
-int thrd_sleep_ms(long ms)
+int thrd_sleep_ms(int ms)
 {
-    return (thrd_sleep_us(1000 * ms));
+    return (thrd_sleep_us(1000L * ms));
 }
 
 int thrd_sleep_us(long us)

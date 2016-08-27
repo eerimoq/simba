@@ -199,7 +199,7 @@ int thrd_sleep(float seconds);
  *
  * @return zero(0) or negative error code.
  */
-int thrd_sleep_ms(long ms);
+int thrd_sleep_ms(int ms);
 
 /**
  * Pauses the current thread for given number of microseconds.
