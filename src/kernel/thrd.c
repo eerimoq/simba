@@ -754,6 +754,20 @@ int thrd_get_log_mask(void)
     return (module.scheduler.current_p->log_mask);
 }
 
+int thrd_set_prio(struct thrd_t *thrd_p, int prio)
+{
+    ASSERTN(thrd_p != NULL, EINVAL);
+
+    thrd_p->prio = prio;
+
+    return (0);
+}
+
+int thrd_get_prio(void)
+{
+    return (module.scheduler.current_p->prio);
+}
+
 int thrd_init_env(struct thrd_environment_variable_t *variables_p,
                   int length)
 {

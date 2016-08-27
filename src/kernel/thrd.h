@@ -251,6 +251,23 @@ int thrd_set_log_mask(struct thrd_t *thrd_p, int mask);
 int thrd_get_log_mask(void);
 
 /**
+ * Set the priority of given thread.
+ *
+ * @param[in] thrd_p Thread to set the priority for.
+ * @param[in] prio Priority.
+ *
+ * @return zero(0) or negative error code.
+ */
+int thrd_set_prio(struct thrd_t *thrd_p, int prio);
+
+/**
+ * Get the priority of the current thread.
+ *
+ * @return Priority of current thread.
+ */
+int thrd_get_prio(void);
+
+/**
  * Initialize the current threads' environment variables storage.
  *
  * @param[in] variables_p Variables are to be used by this therad.

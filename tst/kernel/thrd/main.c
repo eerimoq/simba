@@ -65,6 +65,15 @@ static int test_sleep(struct harness_t *harness_p)
     return (0);
 }
 
+static int test_priority(struct harness_t *harness_p)
+{
+    BTASSERT(thrd_get_prio() == 0);
+    BTASSERT(thrd_set_prio(thrd_self(), 1) == 0);
+    BTASSERT(thrd_get_prio() == 1);
+
+    return (0);
+}
+
 #if CONFIG_PREEMPTIVE_SCHEDULER == 1
 
 static THRD_STACK(preemptive_stack, 256);
@@ -187,6 +196,7 @@ int main()
         { test_suspend_resume, "test_suspend_resume" },
         { test_yield, "test_yield" },
         { test_sleep, "test_sleep" },
+        { test_priority, "test_priority" },
         { test_preemptive, "test_preemptive" },
         { test_env, "test_env" },
         { NULL, NULL }
