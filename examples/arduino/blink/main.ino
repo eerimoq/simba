@@ -32,7 +32,7 @@ int main()
     
     while (1) {
         /* Wait for a seconds. */
-        thrd_sleep_us(1000000);
+        thrd_sleep_ms(1000);
         
         /* Toggle the LED on/off. */
         pin_toggle(&led);

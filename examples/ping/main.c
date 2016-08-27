@@ -53,7 +53,7 @@ int main()
         }
 
         attempt++;
-        thrd_sleep_us(1000000);
+        thrd_sleep_ms(1000);
     }
         
     return (0);

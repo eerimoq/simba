@@ -168,7 +168,7 @@ int ds18b20_convert(struct ds18b20_driver_t *self_p)
     owi_write(self_p->owi_p, &b, 8);
     b = CONVERT_T;
     owi_write(self_p->owi_p, &b, 8);
-    thrd_sleep_us(750000);
+    thrd_sleep_ms(750);
 
     return (0);
 }

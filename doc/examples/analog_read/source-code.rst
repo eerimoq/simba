@@ -34,7 +34,7 @@
    
        while (1) {
            /* Wait one second. */
-           thrd_sleep_us(1000000);
+           thrd_sleep_ms(1000);
    
            /* Read the analog pin value and print it. */
            value = analog_input_pin_read(&pin);

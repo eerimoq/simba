@@ -698,13 +698,23 @@ int thrd_join(struct thrd_t *thrd_p)
     return (0);
 }
 
-int thrd_sleep_us(long microseconds)
+int thrd_sleep(float seconds)
+{
+    return (thrd_sleep_us(1000000 * seconds));
+}
+
+int thrd_sleep_ms(long ms)
+{
+    return (thrd_sleep_us(1000 * ms));
+}
+
+int thrd_sleep_us(long us)
 {
     struct time_t timeout;
     int err;
 
-    timeout.seconds = (microseconds / 1000000);
-    timeout.nanoseconds = 1000 * (microseconds % 1000000);
+    timeout.seconds = (us / 1000000);
+    timeout.nanoseconds = 1000 * (us % 1000000);
     err = thrd_suspend(&timeout);
 
     return (err == -ETIMEDOUT ? 0 : -1);

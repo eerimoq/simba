@@ -41,7 +41,7 @@
            value %= 1024;
    
            /* Wait ten milliseconds. */
-           thrd_sleep_us(10000);
+           thrd_sleep_ms(10);
        }
    
        return (0);

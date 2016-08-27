@@ -56,6 +56,15 @@ static int test_yield(struct harness_t *harness_p)
     return (0);
 }
 
+static int test_sleep(struct harness_t *harness_p)
+{
+    BTASSERT(thrd_sleep(0.001) == 0);
+    BTASSERT(thrd_sleep_ms(1) == 0);
+    BTASSERT(thrd_sleep_us(1000) == 0);
+
+    return (0);
+}
+
 #if CONFIG_PREEMPTIVE_SCHEDULER == 1
 
 static THRD_STACK(preemptive_stack, 256);
@@ -177,6 +186,7 @@ int main()
     struct harness_testcase_t harness_testcases[] = {
         { test_suspend_resume, "test_suspend_resume" },
         { test_yield, "test_yield" },
+        { test_sleep, "test_sleep" },
         { test_preemptive, "test_preemptive" },
         { test_env, "test_env" },
         { NULL, NULL }
