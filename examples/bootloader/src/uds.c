@@ -190,6 +190,29 @@ static int ignore_and_write_response_no_data(struct bootloader_uds_t *self_p,
 }
 
 /**
+ * Ignore given number of bytes and then write an negative UDS
+ * response on the output channel.
+ *
+ * @param[in] self_p Bootloader object.
+ * @param[in] length Number of bytes to ignore on the input channel.
+ * @param[in] buf_p Two bytes of negative response data after 0x7f.
+ *
+ * @returns zero(0) or negative error code.
+ */
+static int ignore_and_write_negative_response(struct bootloader_uds_t *self_p,
+                                              size_t length,
+                                              uint8_t service_id,
+                                              uint8_t code)
+{
+    ignore(self_p, length);
+    write_response(self_p, 2, 0x7f);
+    chan_write(self_p->chout_p, &service_id, 1);
+    chan_write(self_p->chout_p, &code, 1);
+
+    return (0);
+}
+
+/**
  * Write a DID response on the output channel.
  *
  * @param[in] self_p Bootloader object.
@@ -278,9 +301,10 @@ static int handle_diagnostic_session_control_default(struct bootloader_uds_t *se
 # if !defined(BOOTLOADER_TEST)
     if (bootloader_is_application_valid(self_p->swdl.address,
                                         self_p->swdl.size) == 0) {
-        ignore_and_write_response_no_data(self_p,
-                                          0,
-                                          CONDITIONS_NOT_CORRECT);
+        ignore_and_write_negative_response(self_p,
+                                           0,
+                                           DIAGNOSTIC_SESSION_CONTROL,
+                                           CONDITIONS_NOT_CORRECT);
 
         return (-1);
     }
@@ -354,9 +378,10 @@ static int handle_diagnostic_session_control(struct bootloader_uds_t *self_p,
 
     /* Length check. */
     if (length < 1) {
-        ignore_and_write_response_no_data(self_p,
-                                          0,
-                                          INCORRECT_MESSAGE_LENGTH_OR_INVALID_FORMAT);
+        ignore_and_write_negative_response(self_p,
+                                           0,
+                                           DIAGNOSTIC_SESSION_CONTROL,
+                                           INCORRECT_MESSAGE_LENGTH_OR_INVALID_FORMAT);
 
         return (-1);
     }
@@ -373,7 +398,10 @@ static int handle_diagnostic_session_control(struct bootloader_uds_t *self_p,
         break;
 
     default:
-        ignore_and_write_response_no_data(self_p, 0, REQUEST_OUT_OF_RANGE);
+        ignore_and_write_negative_response(self_p,
+                                           0,
+                                           DIAGNOSTIC_SESSION_CONTROL,
+                                           REQUEST_OUT_OF_RANGE);
         res = -1;
         break;
     }
@@ -401,9 +429,10 @@ static int handle_read_data_by_identifier(struct bootloader_uds_t *self_p,
     int res;
 
     if (length < 2) {
-        ignore_and_write_response_no_data(self_p,
-                                          length,
-                                          INCORRECT_MESSAGE_LENGTH_OR_INVALID_FORMAT);
+        ignore_and_write_negative_response(self_p,
+                                           length,
+                                           READ_DATA_BY_IDENTIFIER,
+                                           INCORRECT_MESSAGE_LENGTH_OR_INVALID_FORMAT);
 
         return (-1);
     }
@@ -424,9 +453,10 @@ static int handle_read_data_by_identifier(struct bootloader_uds_t *self_p,
         break;
 
     default:
-        ignore_and_write_response_no_data(self_p,
-                                          length,
-                                          SERVICE_NOT_SUPPORTED);
+        ignore_and_write_negative_response(self_p,
+                                           length,
+                                           READ_DATA_BY_IDENTIFIER,
+                                           SERVICE_NOT_SUPPORTED);
         res = -1;
         break;
     }
@@ -449,9 +479,10 @@ static int handle_read_memory_by_address(struct bootloader_uds_t *self_p,
     uint8_t value;
 
     if (length < 4) {
-        ignore_and_write_response_no_data(self_p,
-                                          length,
-                                          INCORRECT_MESSAGE_LENGTH_OR_INVALID_FORMAT);
+        ignore_and_write_negative_response(self_p,
+                                           length,
+                                           READ_MEMORY_BY_ADDRESS,
+                                           INCORRECT_MESSAGE_LENGTH_OR_INVALID_FORMAT);
 
         return (-1);
     }
@@ -504,9 +535,10 @@ static int handle_routine_control(struct bootloader_uds_t *self_p,
 
     /* Length check. */
     if (length < 3) {
-        ignore_and_write_response_no_data(self_p,
-                                          length,
-                                          INCORRECT_MESSAGE_LENGTH_OR_INVALID_FORMAT);
+        ignore_and_write_negative_response(self_p,
+                                           length,
+                                           ROUTINE_CONTROL,
+                                           INCORRECT_MESSAGE_LENGTH_OR_INVALID_FORMAT);
 
         return (-1);
     }
@@ -526,9 +558,10 @@ static int handle_routine_control(struct bootloader_uds_t *self_p,
         break;
 
     default:
-        ignore_and_write_response_no_data(self_p,
-                                          length,
-                                          SERVICE_NOT_SUPPORTED);
+        ignore_and_write_negative_response(self_p,
+                                           length,
+                                           ROUTINE_CONTROL,
+                                           SERVICE_NOT_SUPPORTED);
         res = -1;
         break;
     }
@@ -557,9 +590,10 @@ static int handle_request_download(struct bootloader_uds_t *self_p,
 
     /* Length check. */
     if (length < 3) {
-        ignore_and_write_response_no_data(self_p,
-                                          length,
-                                          INCORRECT_MESSAGE_LENGTH_OR_INVALID_FORMAT);
+        ignore_and_write_negative_response(self_p,
+                                           length,
+                                           REQUEST_DOWNLOAD,
+                                           INCORRECT_MESSAGE_LENGTH_OR_INVALID_FORMAT);
 
         return (-1);
     }
@@ -569,18 +603,20 @@ static int handle_request_download(struct bootloader_uds_t *self_p,
 
     /* The address and size should be 4 bytes each. */
     if ((buf[1] != sizeof(address)) || (buf[2] != sizeof(size))) {
-        ignore_and_write_response_no_data(self_p,
-                                          length,
-                                          REQUEST_OUT_OF_RANGE);
+        ignore_and_write_negative_response(self_p,
+                                           length,
+                                           REQUEST_DOWNLOAD,
+                                           REQUEST_OUT_OF_RANGE);
 
         return (-1);
     }
 
     /* Length check. */
     if (length < 8) {
-        ignore_and_write_response_no_data(self_p,
-                                          length,
-                                          INCORRECT_MESSAGE_LENGTH_OR_INVALID_FORMAT);
+        ignore_and_write_negative_response(self_p,
+                                           length,
+                                           REQUEST_DOWNLOAD,
+                                           INCORRECT_MESSAGE_LENGTH_OR_INVALID_FORMAT);
 
         return (-1);
     }
@@ -600,9 +636,10 @@ static int handle_request_download(struct bootloader_uds_t *self_p,
     if ((self_p->swdl.address < self_p->application_address)
         || (swdl_end > (self_p->application_address
                         + self_p->application_size))) {
-        ignore_and_write_response_no_data(self_p,
-                                          length,
-                                          REQUEST_OUT_OF_RANGE);
+        ignore_and_write_negative_response(self_p,
+                                           length,
+                                           REQUEST_DOWNLOAD,
+                                           REQUEST_OUT_OF_RANGE);
 
         return (-1);
     }
@@ -649,18 +686,20 @@ static int handle_transfer_data(struct bootloader_uds_t *self_p,
     /* A request download request must be sent before data can be
        transferred. */
     if (self_p->state != STATE_SWDL) {
-        ignore_and_write_response_no_data(self_p,
-                                          length,
-                                          CONDITIONS_NOT_CORRECT);
+        ignore_and_write_negative_response(self_p,
+                                           length,
+                                           TRANSFER_DATA,
+                                           CONDITIONS_NOT_CORRECT);
 
         return (-1);
     }
 
     /* Length check. */
     if (length < 1) {
-        ignore_and_write_response_no_data(self_p,
-                                          0,
-                                          INCORRECT_MESSAGE_LENGTH_OR_INVALID_FORMAT);
+        ignore_and_write_negative_response(self_p,
+                                           0,
+                                           TRANSFER_DATA,
+                                           INCORRECT_MESSAGE_LENGTH_OR_INVALID_FORMAT);
 
         return (-1);
     }
@@ -671,18 +710,20 @@ static int handle_transfer_data(struct bootloader_uds_t *self_p,
 
     /* Only accept the expected sequence counter. */
     if (block_sequence_counter != self_p->swdl.next_block_sequence_counter) {
-        ignore_and_write_response_no_data(self_p,
-                                          length,
-                                          WRONG_BLOCK_SEQUENCE_NUMBER);
+        ignore_and_write_negative_response(self_p,
+                                           length,
+                                           TRANSFER_DATA,
+                                           WRONG_BLOCK_SEQUENCE_NUMBER);
 
         return (-1);
     }
 
     /* Don't write outside the allowed memory region. */
     if (length > (self_p->swdl.size - self_p->swdl.offset)) {
-        ignore_and_write_response_no_data(self_p,
-                                          length,
-                                          REQUEST_OUT_OF_RANGE);
+        ignore_and_write_negative_response(self_p,
+                                           length,
+                                           TRANSFER_DATA,
+                                           REQUEST_OUT_OF_RANGE);
 
         return (-1);
     }
@@ -699,9 +740,10 @@ static int handle_transfer_data(struct bootloader_uds_t *self_p,
                    sizeof(block_sequence_counter));
         res = 0;
     } else {
-        ignore_and_write_response_no_data(self_p,
-                                          length,
-                                          GENERAL_PROGRAMMING_FAILURE);
+        ignore_and_write_negative_response(self_p,
+                                           length,
+                                           TRANSFER_DATA,
+                                           GENERAL_PROGRAMMING_FAILURE);
         res = -1;
     }
 
@@ -726,18 +768,20 @@ static int handle_request_transfer_exit(struct bootloader_uds_t *self_p,
 {
     /* Sanity check. */
     if (length != 0) {
-        ignore_and_write_response_no_data(self_p,
-                                          length,
-                                          INCORRECT_MESSAGE_LENGTH_OR_INVALID_FORMAT);
+        ignore_and_write_negative_response(self_p,
+                                           length,
+                                           REQUEST_TRANSFER_EXIT,
+                                           INCORRECT_MESSAGE_LENGTH_OR_INVALID_FORMAT);
 
         return (-1);
     }
 
     /* Can only exit if swdl is active. */
     if (self_p->state != STATE_SWDL) {
-        ignore_and_write_response_no_data(self_p,
-                                          0,
-                                          CONDITIONS_NOT_CORRECT);
+        ignore_and_write_negative_response(self_p,
+                                           0,
+                                           REQUEST_TRANSFER_EXIT,
+                                           CONDITIONS_NOT_CORRECT);
 
         return (-1);
     }
@@ -768,11 +812,13 @@ static int handle_request_transfer_exit(struct bootloader_uds_t *self_p,
  * @returns zero(0) or negative error code.
  */
 static int handle_unknown_service_id(struct bootloader_uds_t *self_p,
-                                     int length)
+                                     int length,
+                                     uint8_t service_id)
 {
-    ignore_and_write_response_no_data(self_p,
-                                      length,
-                                      SERVICE_NOT_SUPPORTED);
+    ignore_and_write_negative_response(self_p,
+                                       length,
+                                       service_id,
+                                       SERVICE_NOT_SUPPORTED);
 
     return (0);
 }
@@ -846,7 +892,7 @@ int bootloader_uds_handle_service(struct bootloader_uds_t *self_p)
         break;
 
     default:
-        res = handle_unknown_service_id(self_p, length);
+        res = handle_unknown_service_id(self_p, length, service_id);
         break;
     }
 
