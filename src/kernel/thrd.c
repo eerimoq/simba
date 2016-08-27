@@ -38,6 +38,7 @@ struct module_t {
         struct thrd_t *current_p;
         struct thrd_t *ready_p;
     } scheduler;
+    struct thrd_t *threads_p;
 #if CONFIG_THRD_ENV == 1
     struct {
         struct thrd_environment_variable_t global_variables[4];
@@ -55,11 +56,6 @@ struct module_t {
     struct fs_command_t cmd_monitor_set_period_ms;
     struct fs_command_t cmd_monitor_set_print;
 #endif
-};
-
-struct get_by_name_t {
-    const char *name_p;
-    struct thrd_t *thrd_p;
 };
 
 
@@ -135,19 +131,6 @@ static void thrd_reschedule(void);
 
 static void terminate(void);
 
-#if (CONFIG_MONITOR_THREAD == 1) || (CONFIG_FS_CMD_THRD_LIST == 1) || (CONFIG_FS_CMD_THRD_SET_LOG_MASK == 1)
-
-static int iterate_thread_children(struct thrd_t *thrd_p,
-                                   int (*callback)(void *arg_p,
-                                                   struct thrd_t *thrd_p),
-                                   void *arg_p);
-
-static int iterate_threads(int (*callback)(void *arg_p,
-                                           struct thrd_t *thrd_p),
-                           void *arg_p);
-
-#endif
-
 #include "thrd_port.i"
 
 #if CONFIG_MONITOR_THREAD == 1
@@ -184,33 +167,33 @@ static void scheduler_ready_push(struct thrd_t *thrd_p)
     while (ready_p != NULL) {
         if (thrd_p->prio < ready_p->prio) {
             /* Insert before the 'ready_p' thrd. */
-            if (ready_p->prev_p != NULL) {
-                ready_p->prev_p->next_p = thrd_p;
+            if (ready_p->scheduler.prev_p != NULL) {
+                ready_p->scheduler.prev_p->scheduler.next_p = thrd_p;
             } else {
                 module.scheduler.ready_p = thrd_p;
             }
 
-            thrd_p->prev_p = ready_p->prev_p;
-            thrd_p->next_p = ready_p;
-            ready_p->prev_p = thrd_p;
+            thrd_p->scheduler.prev_p = ready_p->scheduler.prev_p;
+            thrd_p->scheduler.next_p = ready_p;
+            ready_p->scheduler.prev_p = thrd_p;
             return;
         }
 
         /* End of ready list. */
-        if (ready_p->next_p == NULL) {
-            ready_p->next_p = thrd_p;
-            thrd_p->prev_p = ready_p;
-            thrd_p->next_p = NULL;
+        if (ready_p->scheduler.next_p == NULL) {
+            ready_p->scheduler.next_p = thrd_p;
+            thrd_p->scheduler.prev_p = ready_p;
+            thrd_p->scheduler.next_p = NULL;
             return;
         }
 
-        ready_p = ready_p->next_p;
+        ready_p = ready_p->scheduler.next_p;
     }
 
     /* Empty list. */
     module.scheduler.ready_p = thrd_p;
-    thrd_p->prev_p = NULL;
-    thrd_p->next_p = NULL;
+    thrd_p->scheduler.prev_p = NULL;
+    thrd_p->scheduler.next_p = NULL;
 }
 
 /**
@@ -221,14 +204,14 @@ static struct thrd_t *scheduler_ready_pop(void)
     struct thrd_t *thrd_p;
 
     thrd_p = module.scheduler.ready_p;
-    module.scheduler.ready_p = thrd_p->next_p;
+    module.scheduler.ready_p = thrd_p->scheduler.next_p;
 
     if (module.scheduler.ready_p != NULL) {
-        module.scheduler.ready_p->prev_p = NULL;
+        module.scheduler.ready_p->scheduler.prev_p = NULL;
     }
 
-    thrd_p->prev_p = NULL;
-    thrd_p->next_p = NULL;
+    thrd_p->scheduler.prev_p = NULL;
+    thrd_p->scheduler.next_p = NULL;
 
     return (thrd_p);
 }
@@ -298,55 +281,6 @@ static int thrd_get_used_stack(struct thrd_t *thrd_p)
 
 #endif
 
-#if (CONFIG_MONITOR_THREAD == 1) || (CONFIG_FS_CMD_THRD_LIST == 1) || (CONFIG_FS_CMD_THRD_SET_LOG_MASK == 1)
-
-static int iterate_thread_children(struct thrd_t *thrd_p,
-                                   int (*callback)(void *arg_p,
-                                                   struct thrd_t *thrd_p),
-                                   void *arg_p)
-{
-    int res = 0;
-    struct thrd_parent_t *child_p;
-    struct list_sl_iterator_t iter;
-
-    /* Call the callback. */
-    res = callback(arg_p, thrd_p);
-
-    if (res != 0) {
-        return (res);
-    }
-
-    /* Iterate over all children. */
-    LIST_SL_ITERATOR_INIT(&iter, &thrd_p->children);
-
-    while (res == 0) {
-        LIST_SL_ITERATOR_NEXT(&iter, &child_p);
-
-        if (child_p == NULL) {
-            break;
-        }
-
-        res = iterate_thread_children(container_of(child_p, struct thrd_t, parent),
-                                      callback,
-                                      arg_p);
-    }
-
-    return (res);
-}
-
-/**
- * Recursively call given callback for all threads, starting with the
- * main thread.
- */
-static int iterate_threads(int (*callback)(void *arg_p,
-                                           struct thrd_t *thrd_p),
-                           void *arg_p)
-{
-    return (iterate_thread_children(&main_thrd, callback, arg_p));
-}
-
-#endif
-
 #if CONFIG_FS_CMD_THRD_LIST == 1
 
 static char *state_fmt[] = {
@@ -357,29 +291,6 @@ static char *state_fmt[] = {
     "terminated"
 };
 
-static int cmd_list_thrd_print(chan_t *chout_p,
-                               struct thrd_t *thrd_p)
-{
-    std_fprintf(chout_p,
-                FSTR("%16s %16s %12s %5d %4u%%"
-#if CONFIG_PROFILE_STACK == 1
-                     "    %6d/%6d"
-#endif
-                     "     0x%02x\r\n"),
-                thrd_p->name_p,
-                thrd_p->parent.thrd_p != NULL ?
-                thrd_p->parent.thrd_p->name_p : "",
-                state_fmt[thrd_p->state], thrd_p->prio,
-                (unsigned int)thrd_p->cpu.usage,
-#if CONFIG_PROFILE_STACK == 1
-                thrd_get_used_stack(thrd_p),
-                (int)thrd_p->stack_size,
-#endif
-                thrd_p->log_mask);
-
-    return (0);
-}
-
 static int cmd_list_cb(int argc,
                        const char *argv[],
                        chan_t *chout_p,
@@ -387,45 +298,58 @@ static int cmd_list_cb(int argc,
                        void *arg_p,
                        void *call_arg_p)
 {
+    struct thrd_t *thrd_p;
+    
     std_fprintf(chout_p,
-                FSTR("            NAME           PARENT        STATE  PRIO   CPU"
+                FSTR("            NAME        STATE  PRIO   CPU"
 #if CONFIG_PROFILE_STACK == 1
                      "  MAX-STACK-USAGE"
 #endif
                      "  LOGMASK\r\n"));
 
-    return (iterate_threads(cmd_list_thrd_print, chout_p));
+    thrd_p = module.threads_p;
+    
+    while (thrd_p != NULL) {
+        std_fprintf(chout_p,
+                    FSTR("%16s %12s %5d %4u%%"
+#if CONFIG_PROFILE_STACK == 1
+                         "    %6d/%6d"
+#endif
+                         "     0x%02x\r\n"),
+                    thrd_p->name_p,
+                    state_fmt[thrd_p->state], thrd_p->prio,
+                    (unsigned int)thrd_p->cpu.usage,
+#if CONFIG_PROFILE_STACK == 1
+                    thrd_get_used_stack(thrd_p),
+                    (int)thrd_p->stack_size,
+#endif
+                    thrd_p->log_mask);
+
+        thrd_p = thrd_p->next_p;
+    }
+    
+    return (0);
 }
 
 #endif
 
 #if CONFIG_FS_CMD_THRD_SET_LOG_MASK == 1
 
-static int get_by_name(void *arg_p,
-                       struct thrd_t *thrd_p)
-{
-    struct get_by_name_t *data_p = arg_p;
-
-    /* Thread found? */
-    if (strcmp(thrd_p->name_p, data_p->name_p) == 0) {
-        data_p->thrd_p = thrd_p;
-
-        return (1);
-    }
-
-    return (0);
-}
-
 static struct thrd_t *thrd_get_by_name(const char *name_p)
 {
-    struct get_by_name_t data;
+    struct thrd_t *thrd_p;
 
-    data.name_p = name_p;
-    data.thrd_p = NULL;
+    thrd_p = module.threads_p;
 
-    iterate_threads(get_by_name, &data);
+    while (thrd_p != NULL) {
+        if (strcmp(thrd_p->name_p, name_p) == 0) {
+            return (thrd_p);
+        }
 
-    return (data.thrd_p);
+        thrd_p = thrd_p->next_p;
+    }
+    
+    return (NULL);
 }
 
 static int cmd_set_log_mask_cb(int argc,
@@ -496,16 +420,15 @@ int thrd_module_init(void)
 #endif
 
     /* Main function becomes a thrd. */
-    main_thrd.prev_p = NULL;
-    main_thrd.next_p = NULL;
+    main_thrd.scheduler.prev_p = NULL;
+    main_thrd.scheduler.next_p = NULL;
     main_thrd.prio = 0;
     main_thrd.state = THRD_STATE_CURRENT;
     main_thrd.err = 0;
     main_thrd.log_mask = LOG_UPTO(INFO);
     main_thrd.timer_p = NULL;
     main_thrd.name_p = "main";
-    main_thrd.parent.thrd_p = NULL;
-    LIST_SL_INIT(&main_thrd.children);
+    main_thrd.next_p = NULL;
     main_thrd.cpu.usage = 0;
 
 #if CONFIG_ASSERT == 1
@@ -520,6 +443,7 @@ int thrd_module_init(void)
 
     thrd_port_init_main(&main_thrd.port);
     module.scheduler.current_p = &main_thrd;
+    module.threads_p = &main_thrd;
 
     thrd_spawn(idle_thrd, NULL, 127, idle_thrd_stack, sizeof(idle_thrd_stack));
 
@@ -587,16 +511,14 @@ struct thrd_t *thrd_spawn(void *(*main)(void *),
 
     /* Initialize thrd structure in the beginning of the stack. */
     thrd_p = stack_p;
-    thrd_p->prev_p = NULL;
-    thrd_p->next_p = NULL;
+    thrd_p->scheduler.prev_p = NULL;
+    thrd_p->scheduler.next_p = NULL;
     thrd_p->prio = prio;
     thrd_p->state = THRD_STATE_READY;
     thrd_p->err = 0;
     thrd_p->log_mask = LOG_UPTO(INFO);
     thrd_p->timer_p = NULL;
     thrd_p->name_p = "";
-    thrd_p->parent.thrd_p = thrd_self();
-    LIST_SL_INIT(&thrd_p->children);
     thrd_p->cpu.usage = 0.0f;
 
 #if CONFIG_THRD_ENV == 1
@@ -614,7 +536,8 @@ struct thrd_t *thrd_spawn(void *(*main)(void *),
     thrd_fill_pattern((char *)(thrd_p + 1), thrd_p->stack_size);
 #endif
 
-    LIST_SL_ADD_TAIL(&thrd_p->parent.thrd_p->children, &thrd_p->parent);
+    thrd_p->next_p = module.threads_p;
+    module.threads_p = thrd_p;
 
     err = thrd_port_spawn(thrd_p, main, arg_p, stack_p, stack_size);
 

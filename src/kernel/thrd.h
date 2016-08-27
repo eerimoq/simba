@@ -72,14 +72,11 @@ struct thrd_environment_t {
     size_t max_number_of_variables;
 };
 
-struct thrd_parent_t {
-    struct thrd_t *next_p;
-    struct thrd_t *thrd_p;
-};
-
 struct thrd_t {
-    struct thrd_t *prev_p;
-    struct thrd_t *next_p;
+    struct {
+        struct thrd_t *prev_p;
+        struct thrd_t *next_p;
+    } scheduler;
     struct thrd_port_t port;
     int prio;
     int state;
@@ -87,8 +84,7 @@ struct thrd_t {
     int log_mask;
     struct timer_t *timer_p;
     const char *name_p;
-    struct thrd_parent_t parent;
-    struct list_singly_linked_t children;
+    struct thrd_t *next_p;
     struct {
         float usage;
     } cpu;

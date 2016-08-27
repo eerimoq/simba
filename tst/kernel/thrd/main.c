@@ -74,6 +74,21 @@ static int test_priority(struct harness_t *harness_p)
     return (0);
 }
 
+static int test_log_mask(struct harness_t *harness_p)
+{
+    char command[64];
+    
+    BTASSERT(thrd_get_log_mask() == 0x0f);
+    BTASSERT(thrd_set_log_mask(thrd_self(), 0x00) == 0x0f);
+    BTASSERT(thrd_get_log_mask() == 0x00);
+
+    strcpy(command, "/kernel/thrd/set_log_mask main 0xff");
+    BTASSERT(fs_call(command, NULL, chan_null(), NULL) == 0);
+    BTASSERT(thrd_get_log_mask() == 0xff);
+    
+    return (0);
+}
+
 #if CONFIG_PREEMPTIVE_SCHEDULER == 1
 
 static THRD_STACK(preemptive_stack, 256);
@@ -220,6 +235,7 @@ int main()
         { test_yield, "test_yield" },
         { test_sleep, "test_sleep" },
         { test_priority, "test_priority" },
+        { test_log_mask, "test_log_mask" },
         { test_preemptive, "test_preemptive" },
         { test_env, "test_env" },
         { NULL, NULL }
