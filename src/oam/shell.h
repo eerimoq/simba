@@ -121,10 +121,10 @@ int shell_init(struct shell_t *self_p,
  *    sys/
  *    thrd/
  *    $ kernel/thrd/list
- *                NAME           PARENT        STATE  PRIO   CPU  LOGMASK
- *                main                       current     0    0%     0x0f
- *                idle             main        ready   127    0%     0x0f
- *             monitor             main        ready   -80    0%     0x0f
+ *                NAME        STATE  PRIO   CPU  LOGMASK
+ *                main      current     0    0%     0x0f
+ *                idle        ready   127    0%     0x0f
+ *             monitor        ready   -80    0%     0x0f
  *    $
  * @endrst
  *
