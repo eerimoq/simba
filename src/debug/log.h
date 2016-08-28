@@ -112,8 +112,8 @@ char log_object_get_log_mask(struct log_object_t *self_p);
  * @return true(1) if given log level is enabled, false(0) if given
  *         log level is disabled, otherwise negative error code.
  */
-char log_object_is_enabled_for(struct log_object_t *self_p,
-                               int level);
+int log_object_is_enabled_for(struct log_object_t *self_p,
+                              int level);
 
 /**
  * Check if given log level is set in the log object mask. If so,
