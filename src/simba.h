@@ -50,12 +50,14 @@ typedef unsigned long off_t;
 #include "collections/hash_map.h"
 
 #include "kernel/time.h"
+
+#include "sync/sem.h"
+
 #include "sync/chan.h"
 #include "kernel/sys.h"
 #include "kernel/timer.h"
 #include "kernel/thrd.h"
 
-#include "sync/sem.h"
 #include "sync/queue.h"
 #include "sync/event.h"
 #include "sync/rwlock.h"

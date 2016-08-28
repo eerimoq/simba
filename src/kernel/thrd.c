@@ -133,20 +133,57 @@ static void terminate(void);
 
 #include "thrd_port.i"
 
-#if CONFIG_MONITOR_THREAD == 1
+#if CONFIG_MONITOR_THREAD == 1 && CONFIG_THRD_CPU_USAGE == 1
 #    include "thrd/thrd_monitor.i"
 #endif
 
 /* Stacks. */
 static THRD_STACK(idle_thrd_stack, THRD_IDLE_STACK_MAX);
 
+/**
+ * The thread is terminated.
+ */
 static void terminate(void)
 {
-    /* The thread is terminated. */
+#if CONFIG_THRD_TERMINATE == 1
+
+    struct thrd_t *thrd_p, *prev_p;
+
+    /* Remove the thread from the global list of threads. */
+    sys_lock();
+
+    thrd_p = module.threads_p;
+    prev_p = NULL;
+
+    while (thrd_p != NULL) {
+        if (thrd_p == thrd_self()) {
+            if (prev_p != NULL) {
+                prev_p->next_p = thrd_p->next_p;
+            } else {
+                module.threads_p = thrd_p->next_p;
+            }
+
+            break;
+        }
+
+        prev_p = thrd_p;
+        thrd_p = thrd_p->next_p;
+    }
+
+    sys_unlock();
+
+    sem_give(&thrd_self()->join_sem, 1);
+
     sys_lock();
     thrd_self()->state = THRD_STATE_TERMINATED;
     thrd_reschedule();
     sys_unlock();
+
+#else
+
+    sys_stop(1);
+
+#endif
 }
 
 /**
@@ -299,26 +336,34 @@ static int cmd_list_cb(int argc,
                        void *call_arg_p)
 {
     struct thrd_t *thrd_p;
-    
+
     std_fprintf(chout_p,
-                FSTR("            NAME        STATE  PRIO   CPU"
+                FSTR("            NAME        STATE  PRIO"
+#if CONFIG_THRD_CPU_USAGE == 1
+                     "   CPU"
+#endif
 #if CONFIG_PROFILE_STACK == 1
                      "  MAX-STACK-USAGE"
 #endif
                      "  LOGMASK\r\n"));
 
     thrd_p = module.threads_p;
-    
+
     while (thrd_p != NULL) {
         std_fprintf(chout_p,
-                    FSTR("%16s %12s %5d %4u%%"
+                    FSTR("%16s %12s %5d"
+#if CONFIG_THRD_CPU_USAGE == 1
+                         " %4u%%"
+#endif
 #if CONFIG_PROFILE_STACK == 1
                          "    %6d/%6d"
 #endif
                          "     0x%02x\r\n"),
                     thrd_p->name_p,
                     state_fmt[thrd_p->state], thrd_p->prio,
+#if CONFIG_THRD_CPU_USAGE == 1
                     (unsigned int)thrd_p->cpu.usage,
+#endif
 #if CONFIG_PROFILE_STACK == 1
                     thrd_get_used_stack(thrd_p),
                     (int)thrd_p->stack_size,
@@ -327,30 +372,13 @@ static int cmd_list_cb(int argc,
 
         thrd_p = thrd_p->next_p;
     }
-    
+
     return (0);
 }
 
 #endif
 
 #if CONFIG_FS_CMD_THRD_SET_LOG_MASK == 1
-
-static struct thrd_t *thrd_get_by_name(const char *name_p)
-{
-    struct thrd_t *thrd_p;
-
-    thrd_p = module.threads_p;
-
-    while (thrd_p != NULL) {
-        if (strcmp(thrd_p->name_p, name_p) == 0) {
-            return (thrd_p);
-        }
-
-        thrd_p = thrd_p->next_p;
-    }
-    
-    return (NULL);
-}
 
 static int cmd_set_log_mask_cb(int argc,
                                const char *argv[],
@@ -429,7 +457,14 @@ int thrd_module_init(void)
     main_thrd.timer_p = NULL;
     main_thrd.name_p = "main";
     main_thrd.next_p = NULL;
-    main_thrd.cpu.usage = 0;
+
+#if CONFIG_THRD_TERMINATE == 1
+    sem_init(&main_thrd.join_sem, 1, 1);
+#endif
+
+#if CONFIG_THRD_CPU_USAGE == 1
+    main_thrd.cpu.usage = 0.0f;
+#endif
 
 #if CONFIG_ASSERT == 1
     main_thrd.stack_low_magic = THRD_STACK_LOW_MAGIC;
@@ -441,9 +476,10 @@ int thrd_module_init(void)
                       &dummy - (char *)(&main_thrd + 2));
 #endif
 
-    thrd_port_init_main(&main_thrd.port);
     module.scheduler.current_p = &main_thrd;
     module.threads_p = &main_thrd;
+
+    thrd_port_init_main(&main_thrd.port);
 
     thrd_spawn(idle_thrd, NULL, 127, idle_thrd_stack, sizeof(idle_thrd_stack));
 
@@ -519,7 +555,14 @@ struct thrd_t *thrd_spawn(void *(*main)(void *),
     thrd_p->log_mask = LOG_UPTO(INFO);
     thrd_p->timer_p = NULL;
     thrd_p->name_p = "";
+
+#if CONFIG_THRD_TERMINATE == 1
+    sem_init(&thrd_p->join_sem, 1, 1);
+#endif
+
+#if CONFIG_THRD_CPU_USAGE == 1
     thrd_p->cpu.usage = 0.0f;
+#endif
 
 #if CONFIG_THRD_ENV == 1
     thrd_p->env.variables_p = NULL;
@@ -587,20 +630,18 @@ int thrd_join(struct thrd_t *thrd_p)
 {
     ASSERTN(thrd_p != NULL, EINVAL);
 
-    while (1) {
-        sys_lock();
+#if CONFIG_THRD_TERMINATE == 1
 
-        if (thrd_p->state == THRD_STATE_TERMINATED) {
-            sys_unlock();
-            break;
-        }
-
-        sys_unlock();
-
-        thrd_sleep_us(50000);
-    }
+    sem_take(&thrd_p->join_sem, NULL);
+    sem_give(&thrd_p->join_sem, 1);
 
     return (0);
+
+#else
+
+    return (-1);
+
+#endif
 }
 
 int thrd_sleep(float seconds)
@@ -640,6 +681,23 @@ int thrd_set_name(const char *name_p)
 const char *thrd_get_name()
 {
     return (thrd_self()->name_p);
+}
+
+struct thrd_t *thrd_get_by_name(const char *name_p)
+{
+    struct thrd_t *thrd_p;
+
+    thrd_p = module.threads_p;
+
+    while (thrd_p != NULL) {
+        if (strcmp(thrd_p->name_p, name_p) == 0) {
+            return (thrd_p);
+        }
+
+        thrd_p = thrd_p->next_p;
+    }
+
+    return (NULL);
 }
 
 int thrd_set_log_mask(struct thrd_t *thrd_p, int mask)

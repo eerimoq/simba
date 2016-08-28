@@ -85,9 +85,14 @@ struct thrd_t {
     struct timer_t *timer_p;
     const char *name_p;
     struct thrd_t *next_p;
+# if CONFIG_THRD_TERMINATE == 1
+    struct sem_t join_sem;
+#endif
+#if CONFIG_THRD_CPU_USAGE == 1
     struct {
         float usage;
     } cpu;
+#endif
 #if CONFIG_THRD_ENV == 1
     struct thrd_environment_t env;
 #endif
@@ -228,6 +233,13 @@ int thrd_set_name(const char *name_p);
  * @return Current thread name.
  */
 const char *thrd_get_name(void);
+
+/**
+ * Get the pointer to given thread.
+ *
+ * @return Thraed pointer or NULL if the thread was not found.
+ */
+struct thrd_t *thrd_get_by_name(const char *name_p);
 
 /**
  * Set the log mask of given thread.

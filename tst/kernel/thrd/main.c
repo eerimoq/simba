@@ -41,9 +41,10 @@ static int test_suspend_resume(struct harness_t *harness_p)
                         sizeof(suspend_resume_stack));
 
     err = thrd_suspend(NULL);
-    BTASSERT(err == 3, "err = %d", err);
+    BTASSERT(err == 3);
 
-    /* Wait for the spawned thread to terminate. */
+    /* Wait for the spawned thread to terminate, twice. */
+    BTASSERT(thrd_join(thrd_p) == 0);
     BTASSERT(thrd_join(thrd_p) == 0);
 
     return (0);
@@ -77,7 +78,7 @@ static int test_priority(struct harness_t *harness_p)
 static int test_log_mask(struct harness_t *harness_p)
 {
     char command[64];
-    
+
     BTASSERT(thrd_get_log_mask() == 0x0f);
     BTASSERT(thrd_set_log_mask(thrd_self(), 0x00) == 0x0f);
     BTASSERT(thrd_get_log_mask() == 0x00);
@@ -85,7 +86,7 @@ static int test_log_mask(struct harness_t *harness_p)
     strcpy(command, "/kernel/thrd/set_log_mask main 0xff");
     BTASSERT(fs_call(command, NULL, chan_null(), NULL) == 0);
     BTASSERT(thrd_get_log_mask() == 0xff);
-    
+
     return (0);
 }
 
@@ -227,6 +228,14 @@ static int test_env(struct harness_t *harness_p)
 #endif
 }
 
+static int test_get_by_name(struct harness_t *harness_p)
+{
+    BTASSERT(thrd_get_by_name("main") == thrd_self());
+    BTASSERT(thrd_get_by_name("none") == NULL);
+
+    return (0);
+}
+
 int main()
 {
     struct harness_t harness;
@@ -238,6 +247,7 @@ int main()
         { test_log_mask, "test_log_mask" },
         { test_preemptive, "test_preemptive" },
         { test_env, "test_env" },
+        { test_get_by_name, "test_get_by_name" },
         { NULL, NULL }
     };
 

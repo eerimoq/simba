@@ -632,6 +632,17 @@
 #endif
 
 /**
+ * Calculate thread CPU usage.
+ */
+#ifndef CONFIG_THRD_CPU_USAGE
+#    if defined(CONFIG_MINIMAL_SYSTEM)
+#        define CONFIG_THRD_CPU_USAGE                       0
+#    else
+#        define CONFIG_THRD_CPU_USAGE                       1
+#    endif
+#endif
+
+/**
  * Each thread has a list of environment variables associated with
  * it. A typical example of an environment variable is "CWD" - Current
  * Working Directory.
@@ -641,6 +652,17 @@
 #        define CONFIG_THRD_ENV                             0
 #    else
 #        define CONFIG_THRD_ENV                             1
+#    endif
+#endif
+
+/**
+ * Threads are allowed to terminate.
+ */
+#ifndef CONFIG_THRD_TERMINATE
+#    if defined(CONFIG_MINIMAL_SYSTEM)
+#        define CONFIG_THRD_TERMINATE                       0
+#    else
+#        define CONFIG_THRD_TERMINATE                       1
 #    endif
 #endif
 
