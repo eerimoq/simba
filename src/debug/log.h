@@ -105,11 +105,12 @@ char log_object_get_log_mask(struct log_object_t *self_p);
 /**
  * Check if given log level is enabled in given log object.
  *
- * @param[in] self_p Log object or NULL to check the thread log mask.
+ * @param[in] self_p Log object, or NULL to check the level in the
+ *                   thread log mask.
  * @param[in] level Log level to check.
  *
- * @return true(1) if given log level is enabled, otherwise false(0)
- *         or negative error code.
+ * @return true(1) if given log level is enabled, false(0) if given
+ *         log level is disabled, otherwise negative error code.
  */
 char log_object_is_enabled_for(struct log_object_t *self_p,
                                int level);
