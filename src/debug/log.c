@@ -367,6 +367,17 @@ char log_object_get_log_mask(struct log_object_t *self_p)
     return (self_p->mask);
 }
 
+char log_object_is_enabled_for(struct log_object_t *self_p,
+                               int level)
+{
+    if (self_p == NULL) {
+        /* Use the thread log mask if no log object is given. */
+        return ((thrd_get_log_mask() & (1 << level)) != 0);
+    } else {
+        return ((self_p->mask & (1 << level)) != 0);
+    }
+}
+
 int log_object_print(struct log_object_t *self_p,
                      int level,
                      const char *fmt_p,

@@ -133,6 +133,13 @@ int test_log_mask(struct harness_t *harness_p)
     BTASSERT(log_object_set_log_mask(&foo, 0xf0) == 0);
     BTASSERT(log_object_get_log_mask(&foo) == 0x10);
 
+    /* Is enabled for. */
+    BTASSERT(log_object_set_log_mask(&foo, LOG_MASK(ERROR)) == 0);
+    BTASSERT(log_object_is_enabled_for(&foo, LOG_INFO) == 0);
+    BTASSERT(log_object_is_enabled_for(&foo, LOG_ERROR) == 1);
+    thrd_set_log_mask(thrd_self(), 0x00);
+    BTASSERT(log_object_is_enabled_for(NULL, LOG_ERROR) == 0);
+
     return (0);
 }
 
