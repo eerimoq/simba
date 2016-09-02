@@ -33,7 +33,7 @@ static struct monitor_t monitor = {
 
 /* Stacks. */
 static THRD_STACK(monitor_thrd_stack, THRD_MONITOR_STACK_MAX);
- 
+
 static int cmd_monitor_set_period_ms_cb(int argc,
                                         const char *argv[],
                                         chan_t *out_p,
@@ -92,17 +92,24 @@ err_inval:
 /**
  * Called for each thread when iterating over all threads.
  */
-static int update_cpu_usage(void *arg_p,
-                            struct thrd_t *thrd_p)
+static int update_cpu_usage(int print)
 {
-    int *print_p = arg_p;
+    struct thrd_t *thrd_p;
 
-    /* Get and reset the thread cpu usage. */
-    thrd_p->cpu.usage = thrd_port_cpu_usage_get(thrd_p);
-    thrd_port_cpu_usage_reset(thrd_p);
+    thrd_p = module.threads_p;
 
-    if (*print_p == 1) {
-        std_printf(FSTR("%20s %10f%%\r\n"), thrd_p->name_p, thrd_p->cpu.usage);
+    while (thrd_p != NULL) {
+        /* Get and reset the thread cpu usage. */
+        thrd_p->cpu.usage = thrd_port_cpu_usage_get(thrd_p);
+        thrd_port_cpu_usage_reset(thrd_p);
+
+        if (print == 1) {
+            std_printf(FSTR("%20s %10f%%\r\n"),
+                       thrd_p->name_p,
+                       thrd_p->cpu.usage);
+        }
+
+        thrd_p = thrd_p->next_p;
     }
 
     return (0);
@@ -132,7 +139,7 @@ static void *monitor_thrd(void *arg_p)
                        irq_usage);
         }
 
-        iterate_threads(update_cpu_usage, &print);
+        update_cpu_usage(print);
     }
 
     return (NULL);
