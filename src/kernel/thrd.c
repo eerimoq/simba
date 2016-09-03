@@ -466,6 +466,12 @@ int thrd_module_init(void)
     main_thrd.cpu.usage = 0.0f;
 #endif
 
+#if CONFIG_THRD_ENV == 1
+    main_thrd.env.variables_p = NULL;
+    main_thrd.env.number_of_variables = 0;
+    main_thrd.env.max_number_of_variables = 0;
+#endif
+
 #if CONFIG_ASSERT == 1
     main_thrd.stack_low_magic = THRD_STACK_LOW_MAGIC;
 #endif

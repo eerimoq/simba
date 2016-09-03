@@ -150,6 +150,9 @@ static int test_env(struct harness_t *harness_p)
     struct thrd_environment_variable_t global_variables[2];
     struct thrd_environment_variable_t variables[4];
 
+    /* Default thread environment is setup correctly. */
+    BTASSERT(thrd_get_env("FOO") == NULL);
+
     /* Set and get are not possible for a thread without an
        environment. */
     BTASSERT(thrd_init_env(NULL, 0) == 0);
