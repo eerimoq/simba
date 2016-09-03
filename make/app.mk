@@ -29,10 +29,11 @@ OBJDIR = $(BUILDDIR)/obj
 DEPSDIR = $(BUILDDIR)/deps
 GENDIR = $(BUILDDIR)/gen
 INC += . $(SIMBA_ROOT)/src $(BUILDDIR)
+MAIN_C ?= main.c
 ifeq ($(RUST),yes)
     SRC += main.rs
 else
-    SRC += main.c
+    SRC += $(MAIN_C)
 endif
 SETTINGS_C ?= $(SIMBA_ROOT)/src/settings_default.c
 SRC += $(SETTINGS_C)
