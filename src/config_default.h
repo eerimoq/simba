@@ -551,7 +551,7 @@
  * Configure a default file system start address.
  */
 #ifndef CONFIG_START_FILESYSTEM_ADDRESS
-#    define CONFIG_START_FILESYSTEM_ADDRESS        0x000c0000
+#    define CONFIG_START_FILESYSTEM_ADDRESS        0x000e0000
 #endif
 
 /**
