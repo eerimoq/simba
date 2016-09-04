@@ -41,10 +41,12 @@ SETTINGS_BIN ?= $(SIMBA_ROOT)/src/settings_default.bin
 SETTTNGS_OUTPUT_DIRECTORY ?= .
 SRC_FILTERED = $(filter-out $(SRC_IGNORE),$(SRC))
 CSRC += $(filter %.c,$(SRC_FILTERED))
+ASMSRC += $(filter %.S,$(SRC_FILTERED))
+ASMOBJ = $(patsubst %,$(OBJDIR)%,$(abspath $(ASMSRC:%.S=%.obj)))
 RUST_SRC += $(filter %.rs,$(SRC_FILTERED))
 COBJ = $(patsubst %,$(OBJDIR)%,$(abspath $(CSRC:%.c=%.o)))
 RUST_OBJ = $(patsubst %,$(OBJDIR)%,$(abspath $(RUST_SRC:%.rs=%.o)))
-OBJ = $(COBJ) $(RUST_OBJ)
+OBJ = $(COBJ) $(RUST_OBJ) $(ASMOBJ)
 GENCSRC = $(GENDIR)/simba_gen.c
 GENOBJ = $(patsubst %,$(OBJDIR)/%,$(notdir $(GENCSRC:%.c=%.o)))
 SETTINGS_INI ?= $(SIMBA_ROOT)/make/settings.ini
@@ -189,6 +191,18 @@ $(patsubst %.c,$(OBJDIR)%.o,$(abspath $1)): $1
 	gcc -MM -MT $$@ $$(INC:%=-I%) $$(CDEFS:%=-D%) -o $(patsubst %.c,$(DEPSDIR)%.o.dep,$(abspath $1)) $$<
 endef
 $(foreach file,$(CSRC),$(eval $(call COMPILE_template,$(file))))
+
+define COMPILE_ASM_template
+-include $(patsubst %.S,$(DEPSDIR)%.obj.dep,$(abspath $1))
+$(patsubst %.S,$(OBJDIR)%.obj,$(abspath $1)): $1
+	@echo "Compiling $1"
+	mkdir -p $(OBJDIR)$(abspath $(dir $1))
+	mkdir -p $(DEPSDIR)$(abspath $(dir $1))
+	mkdir -p $(GENDIR)
+	$$(CC) $$(INC:%=-I%) $$(CDEFS:%=-D%) $$(CFLAGS) -o $$@ $$<
+	gcc -MM -MT $$@ $$(INC:%=-I%) $$(CDEFS:%=-D%) -o $(patsubst %.S,$(DEPSDIR)%.obj.dep,$(abspath $1)) $$<
+endef
+$(foreach file,$(ASMSRC),$(eval $(call COMPILE_ASM_template,$(file))))
 
 RUSTLIB = rustlib
 RUST_ROOT ?= $(SIMBA_ROOT)/rost/rust
