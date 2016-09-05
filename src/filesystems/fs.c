@@ -924,7 +924,14 @@ int fs_seek(struct fs_file_t *self_p, int offset, int whence)
 #if CONFIG_SPIFFS == 1
 
     case fs_type_spiffs_t:
-        return (spiffs_lseek(self_p->filesystem_p->fs_p, self_p->u.spiffs, offset, whence));
+        if (spiffs_lseek(self_p->filesystem_p->fs_p,
+                         self_p->u.spiffs,
+                         offset,
+                         whence) >= 0) {
+            return (0);
+        } else {
+            return (-1);
+        }
 
 #endif
 
