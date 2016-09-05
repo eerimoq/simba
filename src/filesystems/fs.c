@@ -843,6 +843,8 @@ ssize_t fs_read(struct fs_file_t *self_p, void *dst_p, size_t size)
     ASSERTN(self_p != NULL, -EINVAL);
     ASSERTN(dst_p != NULL, -EINVAL);
 
+    ssize_t res;
+    
     switch (self_p->filesystem_p->type) {
 
     case fs_type_fat16_t:
@@ -851,8 +853,16 @@ ssize_t fs_read(struct fs_file_t *self_p, void *dst_p, size_t size)
 #if CONFIG_SPIFFS == 1
 
     case fs_type_spiffs_t:
-        return (spiffs_read(self_p->filesystem_p->fs_p, self_p->u.spiffs, dst_p, size));
+        res = spiffs_read(self_p->filesystem_p->fs_p,
+                          self_p->u.spiffs,
+                          dst_p,
+                          size);
 
+        if (res == SPIFFS_ERR_END_OF_OBJECT) {
+            return (0);
+        } else {
+            return (res);
+        }
 #endif
 
     default:
