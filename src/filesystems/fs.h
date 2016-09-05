@@ -79,6 +79,11 @@
  */
 #define FS_TRUNC            0x40
 
+#define FS_TYPE_FILE                1
+#define FS_TYPE_DIR                 2
+#define FS_TYPE_HARD_LINK           3
+#define FS_TYPE_SOFT_LINK           4
+
 /**
  * Command callback prototype.
  *
@@ -141,6 +146,12 @@ struct fs_file_t {
         struct fat16_file_t fat16;
         spiffs_file_t spiffs;
     } u;
+};
+
+/** Path stats. */
+struct fs_stat_t {
+    uint32_t size;
+    spiffs_obj_type_t type;
 };
 
 /* Command. */
@@ -292,6 +303,16 @@ int fs_seek(struct fs_file_t *self_p, int offset, int whence);
  * @return Current position or negative error code.
  */
 ssize_t fs_tell(struct fs_file_t *self_p);
+
+/**
+ * Gets file status by path.
+ *
+ * @param[in] path_p The path of the file to stat.
+ * @param[in] stat_p The stat struct to populate.
+ *
+ * @return zero(0) or negative error code.
+ */
+int fs_stat(const char *path_p, struct fs_stat_t *stat_p);
 
 /**
  * List files and folders in given path. Optionally

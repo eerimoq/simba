@@ -954,6 +954,49 @@ ssize_t fs_tell(struct fs_file_t *self_p)
     }
 }
 
+int fs_stat(const char *path_p, struct fs_stat_t *stat_p)
+{
+    ASSERTN(path_p != NULL, -EINVAL);
+    ASSERTN(stat_p != NULL, -EINVAL);
+
+    struct fs_filesystem_t *filesystem_p;
+    char path[CONFIG_FS_PATH_MAX];
+
+    if (create_absolute_path(path, path_p) != 0) {
+        return (-1);
+    }
+
+    if (get_filesystem_path_from_path(&filesystem_p, &path_p, &path[0]) != 0) {
+        return (-1);
+    }
+
+    switch (filesystem_p->type) {
+
+    case fs_type_fat16_t:
+        return (-1);
+
+#if CONFIG_SPIFFS == 1
+
+    case fs_type_spiffs_t:
+        {
+            struct spiffs_stat_t stat;
+
+            if (spiffs_stat(filesystem_p->fs_p, path_p, &stat) != 0) {
+                return (-1);
+            }
+
+            stat_p->size = stat.size;
+            stat_p->type = stat.type;
+
+            return (0);
+        }
+#endif
+
+    default:
+        return (-1);
+    }
+}
+
 int fs_ls(const char *path_p,
           const char *filter_p,
           chan_t *chout_p)
