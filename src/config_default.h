@@ -540,7 +540,7 @@
 #ifndef CONFIG_START_FILESYSTEM
 #    if defined(CONFIG_MINIMAL_SYSTEM)
 #        define CONFIG_START_FILESYSTEM                     0
-#    elif defined(BOARD_ARDUINO_DUE)
+#    elif defined(BOARD_ARDUINO_DUE) || defined(ARCH_LINUX)
 #        define CONFIG_START_FILESYSTEM                     1
 #    else
 #        define CONFIG_START_FILESYSTEM                     0
@@ -551,14 +551,22 @@
  * Configure a default file system start address.
  */
 #ifndef CONFIG_START_FILESYSTEM_ADDRESS
-#    define CONFIG_START_FILESYSTEM_ADDRESS        0x000e0000
+#    if defined(BOARD_ARDUINO_DUE)
+#        define CONFIG_START_FILESYSTEM_ADDRESS    0x000e0000
+#    else
+#        define CONFIG_START_FILESYSTEM_ADDRESS             0
+#    endif
 #endif
 
 /**
  * Configure a default file system size.
  */
 #ifndef CONFIG_START_FILESYSTEM_SIZE
-#    define CONFIG_START_FILESYSTEM_SIZE                32768
+#    if defined(BOARD_ARDUINO_DUE)
+#        define CONFIG_START_FILESYSTEM_SIZE            32768
+#    else
+#        define CONFIG_START_FILESYSTEM_SIZE            65536
+#    endif
 #endif
 
 /**

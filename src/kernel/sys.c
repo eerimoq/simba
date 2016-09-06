@@ -55,10 +55,10 @@ static const FAR char config[] =
     "        fs-cmd-ds18b20-list=" STRINGIFY(CONFIG_FS_CMD_DS18B20_LIST) "\r\n"
     "        fs-cmd-fs-counters-list=" STRINGIFY(CONFIG_FS_CMD_FS_COUNTERS_LIST) "\r\n"
     "        fs-cmd-fs-counters-reset=" STRINGIFY(CONFIG_FS_CMD_FS_COUNTERS_RESET) "\r\n"
-    "        fs-cmd-fs-filesystems-append=" STRINGIFY(CONFIG_FS_CMD_FS_FILESYSTEMS_APPEND) "\r\n"
-    "        fs-cmd-fs-filesystems-list=" STRINGIFY(CONFIG_FS_CMD_FS_FILESYSTEMS_LIST) "\r\n"
-    "        fs-cmd-fs-filesystems-read=" STRINGIFY(CONFIG_FS_CMD_FS_FILESYSTEMS_READ) "\r\n"
-    "        fs-cmd-fs-filesystems-write=" STRINGIFY(CONFIG_FS_CMD_FS_FILESYSTEMS_WRITE) "\r\n"
+    "        fs-cmd-fs-filesystems-append=" STRINGIFY(CONFIG_FS_CMD_FS_APPEND) "\r\n"
+    "        fs-cmd-fs-filesystems-list=" STRINGIFY(CONFIG_FS_CMD_FS_LIST) "\r\n"
+    "        fs-cmd-fs-filesystems-read=" STRINGIFY(CONFIG_FS_CMD_FS_READ) "\r\n"
+    "        fs-cmd-fs-filesystems-write=" STRINGIFY(CONFIG_FS_CMD_FS_WRITE) "\r\n"
     "        fs-cmd-fs-parameters-list=" STRINGIFY(CONFIG_FS_CMD_FS_PARAMETERS_LIST) "\r\n"
     "        fs-cmd-i2c-read=" STRINGIFY(CONFIG_FS_CMD_I2C_READ) "\r\n"
     "        fs-cmd-i2c-write=" STRINGIFY(CONFIG_FS_CMD_I2C_WRITE) "\r\n"
@@ -172,6 +172,86 @@ static int start_shell(void)
 
 #if CONFIG_START_FILESYSTEM == 1
 
+#    if defined(ARCH_LINUX)
+
+#define BLOCK_SIZE 512
+
+static uint8_t fat16_buffer[CONFIG_START_FILESYSTEM_SIZE] = { 0 };
+static struct fat16_t fat16_fs;
+static struct fs_filesystem_t fat16fs;
+
+/**
+ * FAT16 read block callback.
+ */
+static ssize_t filesystem_fat16_read_block(void *arg_p,
+                                            void *dst_p,
+                                            uint32_t src_block)
+{
+    ASSERT(src_block < sizeof(fat16_buffer) / 512);
+
+    memcpy(dst_p, &fat16_buffer[BLOCK_SIZE * src_block], BLOCK_SIZE);
+
+    return (BLOCK_SIZE);
+}
+
+/**
+ * FAT16 write block callback.
+ */
+static ssize_t filesystem_fat16_write_block(void *arg_p,
+                                             uint32_t dst_block,
+                                             const void *src_p)
+{
+    ASSERT(dst_block < sizeof(fat16_buffer) / 512);
+
+    memcpy(&fat16_buffer[BLOCK_SIZE * dst_block], src_p, BLOCK_SIZE);
+
+    return (BLOCK_SIZE);
+}
+
+/**
+ * Start the file system.
+ */
+static int start_filesystem(void)
+{
+    /* Initialize a FAT16 file system in RAM, format and mount it. */
+    if (fat16_init(&fat16_fs,
+                   filesystem_fat16_read_block,
+                   filesystem_fat16_write_block,
+                   NULL,
+                   0) != 0) {
+        return (-1);
+    }
+    
+    if (fat16_format(&fat16_fs) != 0) {
+        return (-1);
+    }
+    
+    if (fat16_mount(&fat16_fs) != 0) {
+        return (-1);
+    }
+    
+    /* Register the FAT16 file system in the fs module. */
+    if (fs_filesystem_init(&fat16fs,
+                           FSTR("/fs"),
+                           fs_type_fat16_t,
+                           &fat16_fs) != 0) {
+        return (-1);
+    }
+
+    if (fs_filesystem_register(&fat16fs) != 0) {
+        std_printf(FSTR("Failed to register the file system into the debug file system.\r\n"));
+        return (-1);
+    }
+
+    /* Set current working directory to the mount point of the file
+       system. */
+    thrd_set_global_env("CWD", "/fs");
+
+    return (0);
+}
+
+#    else
+
 #define PHYS_ERASE_BLOCK       0x100
 
 #define LOG_BLOCK_SIZE           256
@@ -237,7 +317,7 @@ static int32_t hal_erase(struct spiffs_t *fs_p,
 static int start_filesystem(void)
 {
     int res;
-
+    
     if (flash_module_init() != 0) {
         std_printf(FSTR("Failed to initialize the flash module.\r\n"));
         return (-1);
@@ -247,7 +327,7 @@ static int start_filesystem(void)
         std_printf(FSTR("Failed to initialize the flash driver.\r\n"));
         return (-1);
     }
-
+    
     std_printf(FSTR("Trying to mount the file system.\r\n"));
 
     /* Initiate the config struct. */
@@ -314,6 +394,8 @@ static int start_filesystem(void)
 
     return (0);
 }
+
+#    endif
 
 #endif
 
