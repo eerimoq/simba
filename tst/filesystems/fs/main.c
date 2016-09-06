@@ -472,6 +472,7 @@ static int test_filesystem_fat16(struct harness_t *harness_p)
     BTASSERT(fs_write(&file, "hello!", 6) == 6);
     BTASSERT(fs_seek(&file, 0, FS_SEEK_SET) == 0);
     BTASSERT(fs_read(&file, buf, 6) == 6);
+    BTASSERT(fs_read(&file, buf, 1) == 0);
     BTASSERT(memcmp(buf, "hello!", 6) == 0);
     BTASSERT(fs_tell(&file) == 6);
     BTASSERT(fs_close(&file) == 0);
@@ -538,6 +539,7 @@ static int test_filesystem_spiffs(struct harness_t *harness_p)
     BTASSERT(fs_write(&file, "hello!", 6) == 6);
     BTASSERT(fs_seek(&file, 0, FS_SEEK_SET) == 0);
     BTASSERT(fs_read(&file, buf, 6) == 6);
+    BTASSERT(fs_read(&file, buf, 1) == 0);
     BTASSERT(memcmp(buf, "hello!", 6) == 0);
     BTASSERT(fs_tell(&file) == 6);
     BTASSERT(fs_close(&file) == 0);
