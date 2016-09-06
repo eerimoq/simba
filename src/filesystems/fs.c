@@ -848,7 +848,9 @@ ssize_t fs_read(struct fs_file_t *self_p, void *dst_p, size_t size)
     switch (self_p->filesystem_p->type) {
 
     case fs_type_fat16_t:
-        return (fat16_file_read(&self_p->u.fat16, dst_p, size));
+        res = fat16_file_read(&self_p->u.fat16, dst_p, size);
+
+        return (res);
 
 #if CONFIG_SPIFFS == 1
 
@@ -966,6 +968,41 @@ ssize_t fs_tell(struct fs_file_t *self_p)
 
 #endif
 
+    default:
+        return (-1);
+    }
+}
+
+int fs_mkdir(const char *path_p)
+{
+    ASSERTN(path_p != NULL, -EINVAL);
+
+    struct fs_filesystem_t *filesystem_p;
+    char path[CONFIG_FS_PATH_MAX];
+    struct fat16_dir_t dir;
+
+    if (create_absolute_path(path, path_p) != 0) {
+        return (-1);
+    }
+    
+    if (get_filesystem_path_from_path(&filesystem_p, &path_p, &path[0]) != 0) {
+        return (-1);
+    }
+
+    switch (filesystem_p->type) {
+
+    case fs_type_fat16_t:
+        if (fat16_dir_open(filesystem_p->fs_p,
+                           &dir,
+                           path_p,
+                           O_CREAT | O_WRITE | O_SYNC) != 0) {
+            return (-1);
+        }
+        
+        fat16_dir_close(&dir);
+        
+        return (0);
+        
     default:
         return (-1);
     }

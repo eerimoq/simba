@@ -480,6 +480,9 @@ static int test_filesystem_fat16(struct harness_t *harness_p)
     /* Try to open a file outside the file system. */
     BTASSERT(fs_open(&file, "/foo.txt", FS_CREAT | FS_RDWR | FS_SYNC) == -1);
 
+    /* Create an empty directory called mkdir and read it's contents. */
+    BTASSERT(fs_mkdir("/fat16fs/mkdir") == 0);
+
     return (0);
 
 #else
@@ -543,6 +546,9 @@ static int test_filesystem_spiffs(struct harness_t *harness_p)
     BTASSERT(memcmp(buf, "hello!", 6) == 0);
     BTASSERT(fs_tell(&file) == 6);
     BTASSERT(fs_close(&file) == 0);
+
+    /* Create an empty directory called USER and read it's contents. */
+    BTASSERT(fs_mkdir("/spiffsfs/mkdir") == -1);
 
     return (0);
 

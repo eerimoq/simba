@@ -315,6 +315,15 @@ ssize_t fs_tell(struct fs_file_t *self_p);
 int fs_stat(const char *path_p, struct fs_stat_t *stat_p);
 
 /**
+ * Craete a directory with given path.
+ *
+ * @param[in] path_p The path of the directoy to create.
+ *
+ * @return zero(0) or negative error code.
+ */
+int fs_mkdir(const char *path_p);
+
+/**
  * List files and folders in given path. Optionally
  * with given filter. The list is written to the output channel.
  *
