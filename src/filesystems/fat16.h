@@ -646,7 +646,7 @@ int fat16_file_close(struct fat16_file_t *file_p);
  * @param[in] buf_p Buffer to read into.
  * @param[in] size number of bytes to read.
  *
- * @return number of bytes read or EOF(-1).
+ * @return Number of bytes read or EOF(-1).
  */
 ssize_t fat16_file_read(struct fat16_file_t *file_p,
                         void *buf_p,

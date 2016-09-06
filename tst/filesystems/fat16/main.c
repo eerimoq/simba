@@ -165,7 +165,7 @@ static int test_reopen(struct harness_t *harness_p)
     char buf[16];
 
     /* Create an empty file and write to it. */
-    BTASSERT(fat16_file_open(&fs, &bar, "BAR.TXT", O_CREAT | O_WRITE | O_SYNC) == 0);
+    BTASSERT(fat16_file_open(&fs, &bar, "BAR.TXT", O_CREAT | O_WRITE) == 0);
     BTASSERT(fat16_file_write(&bar, "First open.\n", 12) == 12);
     BTASSERT(fat16_file_close(&bar) == 0);
 
@@ -193,7 +193,7 @@ static int test_directory(struct harness_t *harness_p)
     BTASSERT(fat16_dir_open(&fs,
                             &dir,
                             "HOME/ERIK",
-                            O_CREAT | O_WRITE | O_SYNC) == 0);
+                            O_CREAT | O_WRITE) == 0);
     BTASSERT(fat16_dir_close(&dir) == 0);
 
     /* Create a file in HOME/ERIK. */

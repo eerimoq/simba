@@ -1164,6 +1164,10 @@ int fat16_file_close(struct fat16_file_t *file_p)
 {
     ASSERTN(file_p != NULL, -EINVAL);
 
+    if (fat16_file_sync(file_p) != 0) {
+        return (FAT16_EOF);
+    }
+
     return (0);
 }
 
@@ -1542,6 +1546,10 @@ int fat16_dir_open(struct fat16_t *self_p,
 int fat16_dir_close(struct fat16_dir_t *dir_p)
 {
     ASSERTN(dir_p != NULL, -EINVAL);
+
+    if (fat16_file_sync(&dir_p->file) != 0) {
+        return (FAT16_EOF);
+    }
 
     return (0);
 }
