@@ -844,7 +844,7 @@ ssize_t fs_read(struct fs_file_t *self_p, void *dst_p, size_t size)
     ASSERTN(dst_p != NULL, -EINVAL);
 
     ssize_t res;
-    
+
     switch (self_p->filesystem_p->type) {
 
     case fs_type_fat16_t:
@@ -984,7 +984,7 @@ int fs_mkdir(const char *path_p)
     if (create_absolute_path(path, path_p) != 0) {
         return (-1);
     }
-    
+
     if (get_filesystem_path_from_path(&filesystem_p, &path_p, &path[0]) != 0) {
         return (-1);
     }
@@ -998,11 +998,11 @@ int fs_mkdir(const char *path_p)
                            O_CREAT | O_WRITE | O_SYNC) != 0) {
             return (-1);
         }
-        
+
         fat16_dir_close(&dir);
-        
+
         return (0);
-        
+
     default:
         return (-1);
     }
