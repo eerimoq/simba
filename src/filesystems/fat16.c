@@ -1547,8 +1547,10 @@ int fat16_dir_close(struct fat16_dir_t *dir_p)
 {
     ASSERTN(dir_p != NULL, -EINVAL);
 
-    if (fat16_file_sync(&dir_p->file) != 0) {
-        return (FAT16_EOF);
+    if (dir_p->root_index == -1) {
+        if (fat16_file_sync(&dir_p->file) != 0) {
+            return (FAT16_EOF);
+        }
     }
 
     return (0);

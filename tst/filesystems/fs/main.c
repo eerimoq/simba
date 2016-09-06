@@ -68,7 +68,7 @@ static ssize_t filesystem_fat16_read_block(void *arg_p,
                                             void *dst_p,
                                             uint32_t src_block)
 {
-    ASSERT(src_block < sizeof(fat16_buffer) / 512);
+    ASSERT(src_block < sizeof(fat16_buffer) / BLOCK_SIZE);
 
     memcpy(dst_p, &fat16_buffer[BLOCK_SIZE * src_block], BLOCK_SIZE);
 
@@ -99,9 +99,9 @@ static int32_t filesystem_spiffs_read(struct spiffs_t *fs_p,
 {
     BTASSERT(addr >= 0);
     BTASSERT(addr + size <= sizeof(spiffs_buffer));
-    
+
     memcpy(dst_p, &spiffs_buffer[addr], size);
-    
+
     return (0);
 }
 
@@ -261,7 +261,7 @@ static int test_auto_complete(struct harness_t *harness_p)
 static int test_command(struct harness_t *harness_p)
 {
     char buf[256];
-    
+
     strcpy(buf, "  /tmp/foo/bar     foo1 foo2  ");
     BTASSERT(fs_call(buf, NULL, &qout, NULL) == 0);
     read_until(buf, "\n");
@@ -334,7 +334,7 @@ static int test_parameter(struct harness_t *harness_p)
 static int test_list(struct harness_t *harness_p)
 {
     char buf[256];
-    
+
     BTASSERT(fs_list("filesystems", NULL, &qout) == 0);
     read_until(buf,
                "fs/\r\n");
