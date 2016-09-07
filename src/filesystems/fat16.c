@@ -1316,7 +1316,7 @@ ssize_t fat16_file_write(struct fat16_file_t *file_p,
 }
 
 int fat16_file_seek(struct fat16_file_t *file_p,
-                    size_t pos,
+                    int pos,
                     int whence)
 {
     ASSERTN(file_p != NULL, -EINVAL);
@@ -1327,13 +1327,18 @@ int fat16_file_seek(struct fat16_file_t *file_p,
     if (whence == FAT16_SEEK_CUR) {
         pos += file_p->cur_position;
     } else if (whence == FAT16_SEEK_END) {
-        pos = file_p->file_size;
+        pos += file_p->file_size;
     } else if (whence != FAT16_SEEK_SET) {
         return (-1);
     }
 
     /* Error if file not open or seek past end of file. */
     if (pos > file_p->file_size) {
+        return (-1);
+    }
+
+    /* Error if seek before beginning of file. */
+    if (pos < 0) {
         return (-1);
     }
 

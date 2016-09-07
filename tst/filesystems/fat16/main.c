@@ -386,15 +386,22 @@ static int test_seek(struct harness_t *harness_p)
     BTASSERT(memcmp(&buf[0], "5", 1) == 0);
 
     /* Seek the end of the file. */
-    BTASSERT(fat16_file_seek(&bar, 0, FAT16_SEEK_END) == 0);
+    BTASSERT(fat16_file_seek(&bar, -1, FAT16_SEEK_END) == 0);
+    BTASSERT(fat16_file_tell(&bar) == fat16_file_size(&bar) - 1);
 
     /* Seek the beginning of the file. */
-    BTASSERT(fat16_file_seek(&bar, 0, FAT16_SEEK_SET) == 0);
+    BTASSERT(fat16_file_seek(&bar, 1, FAT16_SEEK_SET) == 0);
+    BTASSERT(fat16_file_tell(&bar) == 1);
 
     /* Seek beyond the end of the file. */
     BTASSERT(fat16_file_seek(&bar,
                              fat16_file_size(&bar) + 1,
                              FAT16_SEEK_CUR) == -1);
+    BTASSERT(fat16_file_tell(&bar) == 1);
+
+    /* Seek before beginning of file. */
+    BTASSERT(fat16_file_seek(&bar, -1, FAT16_SEEK_SET) == -1);
+    BTASSERT(fat16_file_tell(&bar) == 1);
 
     BTASSERT(fat16_file_close(&bar) == 0);
 

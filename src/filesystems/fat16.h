@@ -675,7 +675,7 @@ ssize_t fat16_file_write(struct fat16_file_t *file_p,
  * @return zero(0) or negative error code.
  */
 int fat16_file_seek(struct fat16_file_t *file_p,
-                    size_t pos,
+                    int pos,
                     int whence);
 
 /**
