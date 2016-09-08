@@ -485,7 +485,9 @@ static int test_filesystem_fat16(struct harness_t *harness_p)
     BTASSERT(fs_mkdir("/fat16fs/mkdir") == 0);
 
     /* Stat the empty directory. */
-    BTASSERT(fs_stat("/fat16fs/mkdir", &stat) == -1);
+    BTASSERT(fs_stat("/fat16fs/mkdir", &stat) == 0);
+    BTASSERT(stat.size == 64);
+    BTASSERT(stat.type == 2);
 
     return (0);
 

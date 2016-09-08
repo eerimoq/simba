@@ -184,7 +184,8 @@ static int test_directory(struct harness_t *harness_p)
     struct fat16_file_t foo;
     struct fat16_dir_entry_t entry;
     char buf[32];
-
+    struct fat16_stat_t stat;
+    
     /* Create an empty directory called HOME and read it's contents. */
     BTASSERT(fat16_dir_open(&fs, &dir, "HOME", O_CREAT | O_WRITE | O_SYNC) == 0);
     BTASSERT(fat16_dir_close(&dir) == 0);
@@ -250,6 +251,19 @@ static int test_directory(struct harness_t *harness_p)
     BTASSERT(memcmp(buf, "Write in subfolder.\n", 20) == 0);
     BTASSERT(fat16_file_close(&foo) == 0);
 
+    /* Stat the HOME folder. */
+    BTASSERT(fat16_stat(&fs, "HOME", &stat) == 0);
+    BTASSERT(stat.is_dir == 1);
+    BTASSERT(stat.size == 128);
+    
+    /* Stat the file HOME/FOO.TXT. */
+    BTASSERT(fat16_stat(&fs, "HOME/FOO.TXT", &stat) == 0);
+    BTASSERT(stat.is_dir == 0);
+    BTASSERT(stat.size == 20);
+    
+    /* Stat non-existing file. */
+    BTASSERT(fat16_stat(&fs, "HOME/FOO2.TXT", &stat) == -1);
+    
     return (0);
 }
 
@@ -261,6 +275,12 @@ static int test_bad_file(struct harness_t *harness_p)
     BTASSERT(fat16_file_open(&fs,
                              &foo,
                              "APA/BAR.TXT",
+                             O_CREAT | O_WRITE | O_SYNC) == -1);
+
+    /* Trying to open a directory as a file. */
+    BTASSERT(fat16_file_open(&fs,
+                             &foo,
+                             "HOME",
                              O_CREAT | O_WRITE | O_SYNC) == -1);
 
     /* Invalid 8.3 file name. */

@@ -1027,7 +1027,18 @@ int fs_stat(const char *path_p, struct fs_stat_t *stat_p)
     switch (filesystem_p->type) {
 
     case fs_type_fat16_t:
-        return (-1);
+        {
+            struct fat16_stat_t stat;
+            
+            if (fat16_stat(filesystem_p->fs_p, path_p, &stat) != 0) {
+                return (-1);
+            }
+
+            stat_p->size = stat.size;
+            stat_p->type = (stat.is_dir == 1 ? 2 : 1);
+
+            return (0);
+        }
 
 #if CONFIG_SPIFFS == 1
 

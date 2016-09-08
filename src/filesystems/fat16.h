@@ -556,6 +556,11 @@ struct fat16_dir_entry_t {
     struct date_t latest_mod_date;
 };
 
+struct fat16_stat_t {
+    size_t size;
+    int is_dir;
+};
+
 /**
  * Initialize a FAT16 volume.
  *
@@ -756,5 +761,18 @@ int fat16_dir_close(struct fat16_dir_t *dir_p);
  */
 int fat16_dir_read(struct fat16_dir_t *dir_p,
                    struct fat16_dir_entry_t *entry_p);
+
+/**
+ * Gets file status by path.
+ *
+ * @param[in] self_p The file system struct.
+ * @param[in] path_p The path of the file to stat.
+ * @param[in] stat_p The stat struct to populate.
+ *
+ * @return zero(0) or negative error code.
+ */
+int fat16_stat(struct fat16_t *self_p,
+               const char *path_p,
+               struct fat16_stat_t *stat_p);
 
 #endif

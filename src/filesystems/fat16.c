@@ -1624,3 +1624,31 @@ int fat16_dir_read(struct fat16_dir_t *dir_p,
 
     return (1);
 }
+
+int fat16_stat(struct fat16_t *self_p,
+               const char *path_p,
+               struct fat16_stat_t *stat_p)
+{
+    struct fat16_file_t file;
+    struct fat16_dir_t dir;
+
+    /* Try to open given path as a file. */
+    if (fat16_file_open(self_p, &file, path_p, O_READ) == 0) {
+        stat_p->size = file.file_size;
+        stat_p->is_dir = 0;
+        fat16_file_close(&file);
+
+        return (0);
+    }
+
+    /* Try to open given path as a directory. */
+    if (fat16_dir_open(self_p, &dir, path_p, O_READ) == 0) {
+        stat_p->size = dir.file.file_size;
+        stat_p->is_dir = 1;
+        fat16_dir_close(&dir);
+        
+        return (0);
+    }
+    
+    return (-1);
+}
