@@ -450,7 +450,8 @@ static int test_filesystem_fat16(struct harness_t *harness_p)
 
     char buf[32];
     struct fs_file_t file;
-
+    struct fs_stat_t stat;
+    
     /* Initialize a FAT16 file system in RAM, format and mount it. */
     BTASSERT(fat16_init(&fat16_fs,
                         filesystem_fat16_read_block,
@@ -480,8 +481,11 @@ static int test_filesystem_fat16(struct harness_t *harness_p)
     /* Try to open a file outside the file system. */
     BTASSERT(fs_open(&file, "/foo.txt", FS_CREAT | FS_RDWR | FS_SYNC) == -1);
 
-    /* Create an empty directory called mkdir and read it's contents. */
+    /* Create an empty directory called mkdir. */
     BTASSERT(fs_mkdir("/fat16fs/mkdir") == 0);
+
+    /* Stat the empty directory. */
+    BTASSERT(fs_stat("/fat16fs/mkdir", &stat) == -1);
 
     return (0);
 
@@ -498,6 +502,7 @@ static int test_filesystem_spiffs(struct harness_t *harness_p)
 
     char buf[32];
     struct fs_file_t file;
+    struct fs_stat_t stat;
 
     /* Initiate the config struct. */
     config.hal_read_f = filesystem_spiffs_read;
@@ -547,9 +552,34 @@ static int test_filesystem_spiffs(struct harness_t *harness_p)
     BTASSERT(fs_tell(&file) == 6);
     BTASSERT(fs_close(&file) == 0);
 
-    /* Create an empty directory called USER and read it's contents. */
-    BTASSERT(fs_mkdir("/spiffsfs/mkdir") == -1);
+    /* Stat the file foo.txt. */
+    BTASSERT(fs_stat("/spiffsfs/foo.txt", &stat) == 0);
+    BTASSERT(stat.size == 6);
+    BTASSERT(stat.type == 1);
 
+    /* Fail to create an empty directory called mkdir. */
+    BTASSERT(fs_mkdir("/spiffsfs/mkdir") == -1);
+    
+    return (0);
+
+#else
+
+    return (1);
+
+#endif
+}
+
+static int test_filesystem(struct harness_t *harness_p)
+{
+#if defined(ARCH_LINUX)
+
+    struct fs_stat_t stat;
+
+    /* Stat a file that does not exist. */
+    BTASSERT(fs_stat("/apa", &stat) == -1);
+    BTASSERT(fs_stat("/fat16fs/apa", &stat) == -1);
+    BTASSERT(fs_stat("/spiffsfs/apa", &stat) == -1);
+    
     return (0);
 
 #else
@@ -756,6 +786,7 @@ int main()
         { test_escape, "test_escape" },
         { test_filesystem_fat16, "test_filesystem_fat16" },
         { test_filesystem_spiffs, "test_filesystem_spiffs" },
+        { test_filesystem, "test_filesystem" },
         { test_filesystem_commands, "test_filesystem_commands" },
         { test_read_line, "test_read_line" },
         { test_cwd, "test_cwd" },
