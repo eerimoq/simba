@@ -34,7 +34,7 @@ static struct http_server_route_t routes[] = {
 };
 
 static struct http_server_listener_t listener = {
-    .address_p = "169.254.1.2",
+    .address_p = "192.168.1.103",
     .port = 8000,
     .thrd = {
         .name_p = "http_listener",

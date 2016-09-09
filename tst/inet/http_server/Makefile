@@ -31,6 +31,7 @@ SIMBA_ROOT ?= ../../..
 
 INET_SRC = \
 	http_server.c \
-	http_websocket_server.c
+	http_websocket_server.c \
+	inet.c
 
 include $(SIMBA_ROOT)/make/app.mk

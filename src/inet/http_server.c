@@ -209,7 +209,7 @@ static int handle_request(struct http_server_t *self_p,
     if (res != 0) {
         return (res);
     }
-    
+
     /* Find the callback for given path. */
     callback = find_route_callback(self_p, request.path);
 
@@ -321,11 +321,34 @@ static void *listener_main(void *arg_p)
 
     listener_p = self_p->listener_p;
 
-    socket_open_tcp(&listener_p->socket);
-    addr.ip.number = htonl(0xa9fe0102);
+    if (socket_open_tcp(&listener_p->socket) != 0) {
+        log_object_print(NULL,
+                         LOG_ERROR,
+                         FSTR("Failed to open socket."));
+        return (NULL);
+    }
+
+    if (inet_aton(listener_p->address_p, &addr.ip) != 0) {
+        return (NULL);
+    }
+
     addr.port = listener_p->port;
-    socket_bind(&listener_p->socket, &addr);
-    socket_listen(&listener_p->socket, 3);
+
+    if (socket_bind(&listener_p->socket, &addr) != 0) {
+        log_object_print(NULL,
+                         LOG_ERROR,
+                         FSTR("Failed to bind socket."));
+        return (NULL);
+
+    }
+
+    if (socket_listen(&listener_p->socket, 3) != 0) {
+        log_object_print(NULL,
+                         LOG_ERROR,
+                         FSTR("Failed to listen on socket."));
+        return (NULL);
+
+    }
 
     /* Wait for clients to connect. */
     while (1) {
@@ -465,13 +488,13 @@ http_server_response_write(struct http_server_connection_t *connection_p,
         res = socket_write(&connection_p->socket,
                            response_p->content.buf_p,
                            response_p->content.size);
-            
+
         if (res != response_p->content.size) {
             return (-1);
         }
     } else {
         res = 0;
     }
-    
+
     return (res);
 }

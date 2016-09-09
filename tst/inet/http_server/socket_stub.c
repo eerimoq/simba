@@ -72,6 +72,10 @@ int socket_close(struct socket_t *self_p)
 int socket_bind(struct socket_t *self_p,
                 const struct inet_addr_t *local_addr_p)
 {
+    char buf[16];
+
+    BTASSERT(strcmp(inet_ntoa(&local_addr_p->ip, &buf[0]), "127.0.0.1") == 0);
+
     return (0);
 }
 

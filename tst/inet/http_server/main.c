@@ -173,7 +173,7 @@ static int test_start(struct harness_t *harness_p)
 
     thrd_set_log_mask(listener.thrd.id_p, LOG_UPTO(DEBUG));
     thrd_set_log_mask(connections[0].thrd.id_p, LOG_UPTO(DEBUG));
-    
+
     /* Less log clobbering. */
     thrd_sleep_us(100000);
 
