@@ -21,6 +21,7 @@
 #define __DRIVERS_PIN_PORT_H__
 
 struct pin_device_t {
+    const struct pin_driver_t *drv_p;
 };
 
 struct pin_driver_t {

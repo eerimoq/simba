@@ -53,6 +53,9 @@
 
 #define adc_0_dev adc_device[0]
 
+#define pin_dac0_dev pin_device[10]
+#define pin_dac1_dev pin_device[11]
+
 /**
  * Convert given pin string to the pin number.
  *

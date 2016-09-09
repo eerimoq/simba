@@ -1,5 +1,5 @@
 /**
- * @file drivers/ports/linux/adc_port.h
+ * @file drivers/ports/linux/dac_port.h
  *
  * @section License
  * Copyright (C) 2014-2016, Erik Moqvist
@@ -17,18 +17,17 @@
  * This file is part of the Simba project.
  */
 
-#ifndef __DRIVERS_ADC_PORT_H__
-#define __DRIVERS_ADC_PORT_H__
+#ifndef __DRIVERS_DAC_PORT_H__
+#define __DRIVERS_DAC_PORT_H__
 
+struct dac_driver_t;
 
-#define ADC_PORT_REFERENCE_VCC 0
-
-struct adc_device_t {
-    struct adc_driver_t *drv_p;
+struct dac_device_t {
+    struct dac_driver_t *drv_p;
 };
 
-struct adc_driver_t {
-    struct adc_device_t *dev_p;
+struct dac_driver_t {
+    struct dac_device_t *dev_p;
 };
 
 #endif

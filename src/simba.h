@@ -92,6 +92,7 @@ typedef unsigned long off_t;
 #    include "drivers/i2c_soft.h"
 #    include "drivers/pwm.h"
 #    include "drivers/adc.h"
+#    include "drivers/dac.h"
 #    include "drivers/spi.h"
 #    include "drivers/uart.h"
 #    include "drivers/can.h"
