@@ -164,6 +164,28 @@ int network_interface_start(struct network_interface_t *netif_p)
 
 #endif
 
+int network_interface_is_up(struct network_interface_t *netif_p)
+{
+    return (netif_p->is_up(netif_p));
+}
+
+struct network_interface_t *network_interface_get_by_name(const char *name_p)
+{
+    struct network_interface_t *netif_p;
+
+    netif_p = module.network_interfaces_p;
+
+    while (netif_p != NULL) {
+        if (strcmp(name_p, netif_p->name_p) == 0) {
+            return (netif_p);
+        }
+
+        netif_p = netif_p->next_p;
+    }
+
+    return (NULL);
+}
+
 int network_interface_set_ip_address(struct network_interface_t *netif_p,
                                      struct inet_ip_addr_t *addr_p)
 {
@@ -175,6 +197,10 @@ int network_interface_set_ip_address(struct network_interface_t *netif_p,
 int network_interface_get_ip_address(struct network_interface_t *netif_p,
                                      struct inet_ip_addr_t *addr_p)
 {
+    if (netif_p->get_ip_address(netif_p, &netif_p->ipaddr) != 0) {
+        return (-1);
+    }
+
     *addr_p = netif_p->ipaddr;
 
     return (0);

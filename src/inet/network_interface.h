@@ -30,6 +30,8 @@ struct network_interface_t;
 typedef int (*network_interface_start_t)(struct network_interface_t *netif_p);
 typedef int (*network_interface_stop_t)(struct network_interface_t *netif_p);
 typedef int (*network_interface_is_up_t)(struct network_interface_t *netif_p);
+typedef int (*network_interface_get_ip_address_t)(struct network_interface_t *netif_p,
+                                                  struct inet_ip_addr_t *addr_p);
 
 struct network_interface_t {
     struct netif netif;
@@ -41,6 +43,7 @@ struct network_interface_t {
     network_interface_start_t start;
     network_interface_stop_t stop;
     network_interface_is_up_t is_up;
+    network_interface_get_ip_address_t get_ip_address;
     struct network_interface_t *next_p;
 };
 
@@ -65,13 +68,35 @@ int network_interface_module_init(void);
 int network_interface_add(struct network_interface_t *netif_p);
 
 /**
- * Enable given network interface.
+ * Enable given network interface. Use `network_interface_is_up()` to
+ * check if the interface is connected.
  *
  * @param[in] netif_p Network interface to enable.
  *
  * @return zero(0) or negative error code.
  */
 int network_interface_start(struct network_interface_t *netif_p);
+
+/**
+ * Get the connection status of given network interface.
+ *
+ * @param[in] netif_p Network interface to get the connection status
+ *                    of.
+ *
+ * @return true(1) if the network interface is up, false(0) is it is
+ *         down, and otherwise negative error code.
+ */
+int network_interface_is_up(struct network_interface_t *netif_p);
+
+/**
+ * Search the list of network interfaces for an interface with given
+ * name and return it.
+ *
+ * @param[in] name_p Name of the network interface to find.
+ *
+ * @return Found network interface or NULL if it was not found.
+ */
+struct network_interface_t *network_interface_get_by_name(const char *name_p);
 
 /**
  * Get the ip address of given network interface.

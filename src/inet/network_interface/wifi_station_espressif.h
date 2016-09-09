@@ -64,4 +64,29 @@ int network_interface_wifi_station_espressif_start(struct network_interface_wifi
  */
 int network_interface_wifi_station_espressif_stop(struct network_interface_wifi_station_espressif_t *self_p);
 
+/**
+ * Get the connection status of given network interface.
+ *
+ * @param[in] self_p Network interface to get the connection status
+ *                   of.
+ *
+ * @return true(1) if the network interface is up, false(0) is it is
+ *         down, and otherwise negative error code.
+ */
+int network_interface_wifi_station_espressif_is_up(struct network_interface_wifi_station_espressif_t *self_p);
+
+/**
+ * Get the ip address of given network interface.
+ *
+ * @param[in] self_p Network interface to get the connection status
+ *                   of.
+ * @param[out] addr_p IP address of the interface. Only valid if this
+ *                    function returns zero(0).
+ *
+ * @return zero(0) if the interface has a valid IP address, otherwise
+ *         negative error code.
+ */
+int network_interface_wifi_station_espressif_get_ip_address(struct network_interface_wifi_station_espressif_t *self_p,
+                                                            struct inet_ip_addr_t *addr_p);
+
 #endif

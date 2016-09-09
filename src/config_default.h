@@ -583,6 +583,13 @@
 #endif
 
 /**
+ * WiFi connect timeout is seconds.
+ */
+#ifndef CONFIG_START_NETWORK_INTERFACE_WIFI_CONNECT_TIMEOUT
+#    define CONFIG_START_NETWORK_INTERFACE_WIFI_CONNECT_TIMEOUT 30
+#endif
+
+/**
  * SSID of the WiFi to connect to.
  */
 #ifndef CONFIG_START_NETWORK_INTERFACE_WIFI_SSID

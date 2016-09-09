@@ -19,21 +19,6 @@
 
 #include "simba.h"
 
-#if defined(ARCH_ESP)
-#    include "esp_wifi.h"
-#    include "esp_sta.h"
-#endif
-
-#if !defined(SSID)
-#    pragma message "WiFi connection variable SSID is not set. Using default value MySSID"
-#    define SSID MySSID
-#endif
-
-#if !defined(PASSWORD)
-#    pragma message "WiFi connection variable PASSWORD is not set. Using default value MyPassword"
-#    define PASSWORD MyPassword
-#endif
-
 static struct http_server_t server;
 static struct shell_t shell;
 
@@ -129,32 +114,7 @@ static int no_route(struct http_server_connection_t *connection_p,
 
 static int init()
 {
-    struct station_config sta_config;
-    struct ip_info ip_config;
-
-    /* Start WiFi in station mode. */
-    wifi_set_opmode_current(STATION_MODE);
-
-    memset(&sta_config, 0, sizeof(sta_config));
-    std_sprintf((char *)sta_config.ssid, FSTR("%s"), STRINGIFY(SSID));
-    std_sprintf((char *)sta_config.password, FSTR("%s"), STRINGIFY(PASSWORD));
-
-    wifi_station_set_config(&sta_config);
-
-    wifi_get_ip_info(STATION_IF, &ip_config);
-
-    while (ip_config.ip.addr == 0) {
-        wifi_get_ip_info(STATION_IF, &ip_config);
-    }
-
     sys_start();
-
-    std_printf(FSTR("Connected to AP. Got IP 0x%x\r\n"),
-               ip_config.ip.addr);
-
-    log_set_default_handler_output_channel(sys_get_stdout());
-
-    socket_module_init();
 
     http_server_init(&server,
                      &listener,

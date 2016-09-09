@@ -63,12 +63,20 @@ static int test_init(struct harness_t *harness_p)
        password. */
     network_interface_start(&wifi.network_interface);
 
+    /* Wait for a connection to the WiFi access point. */
+    while (network_interface_is_up(&wifi.network_interface) == 0) {
+        thrd_sleep(1);
+    }
+
     network_interface_get_ip_address(&wifi.network_interface,
                                      &addr);
 
     std_printf(FSTR("Connected to Access Point (AP). Got IP %s.\r\n"),
                inet_ntoa(&addr, buf));
-    
+
+    BTASSERT(network_interface_get_by_name("esp-wlan") == &wifi.network_interface);
+    BTASSERT(network_interface_get_by_name("none") == NULL);
+
     return (0);
 }
 

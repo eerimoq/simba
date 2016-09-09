@@ -47,6 +47,18 @@ static int is_up(struct network_interface_t *netif_p)
     return (wifi_station_get_connect_status() == STATION_GOT_IP);
 }
 
+static int get_ip_address(struct network_interface_t *netif_p,
+                          struct inet_ip_addr_t *addr_p)
+{
+    struct network_interface_wifi_station_espressif_t *self_p;
+
+    self_p = container_of(netif_p,
+                          struct network_interface_wifi_station_espressif_t,
+                          network_interface);
+
+    return (network_interface_wifi_station_espressif_get_ip_address(self_p, addr_p));
+}
+
 int network_interface_wifi_station_espressif_module_init(void)
 {
     return (0);
@@ -56,11 +68,16 @@ int network_interface_wifi_station_espressif_init(struct network_interface_wifi_
                                                   const uint8_t *ssid_p,
                                                   const uint8_t *password_p)
 {
+    ASSERTN(self_p != NULL, -EINVAL);
+    ASSERTN(ssid_p != NULL, -EINVAL);
+    ASSERTN(password_p != NULL, -EINVAL);
+
     self_p->network_interface.name_p = "esp-wlan";
     self_p->network_interface.init = init;
     self_p->network_interface.start = start;
     self_p->network_interface.stop = stop;
     self_p->network_interface.is_up = is_up;
+    self_p->network_interface.get_ip_address = get_ip_address;
 
     wifi_set_opmode_current(STATION_MODE);
 
@@ -68,24 +85,15 @@ int network_interface_wifi_station_espressif_init(struct network_interface_wifi_
     std_sprintf((char *)self_p->station_config.ssid, FSTR("%s"), ssid_p);
     std_sprintf((char *)self_p->station_config.password,
                 FSTR("%s"), password_p);
-    
+
     return (0);
 }
 
 int network_interface_wifi_station_espressif_start(struct network_interface_wifi_station_espressif_t *self_p)
 {
-    struct inet_ip_addr_t addr;
+    ASSERTN(self_p != NULL, -EINVAL);
 
     wifi_station_set_config(&self_p->station_config);
-
-    /* Wait for a connection. */
-    do {
-        wifi_get_ip_info(STATION_IF, &self_p->ip_config);
-    } while (self_p->ip_config.ip.addr == 0);
-
-    addr.number = self_p->ip_config.ip.addr;
-    network_interface_set_ip_address(&self_p->network_interface,
-                                     &addr);
 
     return (0);
 }
@@ -93,6 +101,26 @@ int network_interface_wifi_station_espressif_start(struct network_interface_wifi
 int network_interface_wifi_station_espressif_stop(struct network_interface_wifi_station_espressif_t *self_p)
 {
     return (-1);
+}
+
+int network_interface_wifi_station_espressif_is_up(struct network_interface_wifi_station_espressif_t *self_p)
+{
+    ASSERTN(self_p != NULL, -EINVAL);
+
+    return (is_up(&self_p->network_interface));
+}
+
+int network_interface_wifi_station_espressif_get_ip_address(struct network_interface_wifi_station_espressif_t *self_p,
+                                                            struct inet_ip_addr_t *addr_p)
+{
+    ASSERTN(self_p != NULL, -EINVAL);
+    ASSERTN(addr_p != NULL, -EINVAL);
+
+    wifi_get_ip_info(STATION_IF, &self_p->ip_config);
+
+    addr_p->number = self_p->ip_config.ip.addr;
+
+    return (self_p->ip_config.ip.addr != 0 ? 0 : -1);
 }
 
 #endif
