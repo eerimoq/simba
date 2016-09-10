@@ -178,6 +178,21 @@ struct fs_parameter_t {
     struct fs_parameter_t *next_p;
 };
 
+struct fs_dir_t {
+    struct fs_filesystem_t *filesystem_p;
+    union {
+        struct fat16_dir_t fat16;
+        struct spiffs_dir_t spiffs;
+    } u;
+};
+
+struct fs_dir_entry_t {
+    char name[256];
+    int type;
+    size_t size;
+    struct date_t latest_mod_date;
+};
+
 /**
  * Initialize the file system module. This function must be called
  * before calling any other function in this module.
@@ -303,6 +318,40 @@ int fs_seek(struct fs_file_t *self_p, int offset, int whence);
  * @return Current position or negative error code.
  */
 ssize_t fs_tell(struct fs_file_t *self_p);
+
+/**
+ * Open a directory by directory path and mode flags.
+ *
+ * @param[out] dir_p Directory object to be initialized.
+ * @param[in] path_p A valid path name for a directory path.
+ * @param[in] oflag mode of the directory to open (create, read, etc).
+ *
+ * @return zero(0) or negative error code.
+ */
+int fs_dir_open(struct fs_dir_t *dir_p,
+                const char *path_p,
+                int oflag);
+
+/**
+ * Close given directory.
+ *
+ * @param[in] dir_p Directory object.
+ *
+ * @return zero(0) or negative error code.
+ */
+int fs_dir_close(struct fs_dir_t *dir_p);
+
+/**
+ * Read the next file or directory within the opened directory.
+ *
+ * @param[in] dir_p Directory object.
+ * @param[out] entry_p Read entry.
+ *
+ * @return true(1) if an entry was read or false(0) if no entry could
+ *         be read, otherwise negative error code.
+ */
+int fs_dir_read(struct fs_dir_t *dir_p,
+                struct fs_dir_entry_t *entry_p);
 
 /**
  * Gets file status by path.

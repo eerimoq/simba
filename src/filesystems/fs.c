@@ -1008,6 +1008,123 @@ int fs_mkdir(const char *path_p)
     }
 }
 
+int fs_dir_open(struct fs_dir_t *dir_p,
+                const char *path_p,
+                int oflag)
+{
+    ASSERTN(dir_p != NULL, -EINVAL);
+    ASSERTN(path_p != NULL, -EINVAL);
+
+    struct fs_filesystem_t *filesystem_p;
+    char path[CONFIG_FS_PATH_MAX];
+
+    if (create_absolute_path(path, path_p) != 0) {
+        return (-1);
+    }
+
+    if (get_filesystem_path_from_path(&filesystem_p, &path_p, &path[0]) != 0) {
+        return (-1);
+    }
+
+    if (*path_p == '\0') {
+        path_p = ".";
+    }
+
+    dir_p->filesystem_p = filesystem_p;
+
+    switch (filesystem_p->type) {
+
+    case fs_type_fat16_t:
+        return (fat16_dir_open(filesystem_p->fs_p, &dir_p->u.fat16, path_p, O_READ));
+
+#if CONFIG_SPIFFS == 1
+
+    case fs_type_spiffs_t:
+        return (spiffs_opendir(filesystem_p->fs_p, path_p, &dir_p->u.spiffs) != NULL
+                ? 0
+                : -1);
+
+#endif
+
+    default:
+        return (-1);
+    }
+}
+
+int fs_dir_close(struct fs_dir_t *dir_p)
+{
+    ASSERTN(dir_p != NULL, -EINVAL);
+
+    switch (dir_p->filesystem_p->type) {
+
+    case fs_type_fat16_t:
+        return (fat16_dir_close(&dir_p->u.fat16));
+
+#if CONFIG_SPIFFS == 1
+
+    case fs_type_spiffs_t:
+        return (spiffs_closedir(&dir_p->u.spiffs));
+
+#endif
+
+    default:
+        return (-1);
+    }
+}
+
+int fs_dir_read(struct fs_dir_t *dir_p,
+                struct fs_dir_entry_t *entry_p)
+{
+    ASSERTN(dir_p != NULL, -EINVAL);
+
+    int res;
+    
+    switch (dir_p->filesystem_p->type) {
+
+    case fs_type_fat16_t:
+        {
+            struct fat16_dir_entry_t entry;
+            
+            res = fat16_dir_read(&dir_p->u.fat16, &entry);
+            strncpy(&entry_p->name[0],
+                    &entry.name[0],
+                    membersof(entry_p->name));
+            entry_p->name[membersof(entry_p->name)] = '\0';
+            entry_p->type = (entry.is_dir == 1 ? FS_TYPE_DIR : FS_TYPE_FILE);
+            entry_p->size = entry.size;
+            entry_p->latest_mod_date = entry.latest_mod_date;
+        }
+        break;
+
+#if CONFIG_SPIFFS == 1
+
+    case fs_type_spiffs_t:
+        {
+            struct spiffs_dirent_t entry;
+            
+            if (spiffs_readdir(&dir_p->u.spiffs, &entry) != NULL) {
+                res = 1;
+                strncpy(&entry_p->name[0],
+                        (const char *)&entry.name[0],
+                        membersof(entry_p->name));
+                entry_p->name[membersof(entry_p->name)] = '\0';
+                entry_p->type = entry.type;
+                entry_p->size = entry.size;
+            } else {
+                res = 0;
+            }
+        }
+        break;
+
+#endif
+
+    default:
+        res = -1;
+    }
+
+    return (res);
+}
+
 int fs_stat(const char *path_p, struct fs_stat_t *stat_p)
 {
     ASSERTN(path_p != NULL, -EINVAL);
@@ -1035,7 +1152,7 @@ int fs_stat(const char *path_p, struct fs_stat_t *stat_p)
             }
 
             stat_p->size = stat.size;
-            stat_p->type = (stat.is_dir == 1 ? 2 : 1);
+            stat_p->type = (stat.is_dir == 1 ? FS_TYPE_DIR : FS_TYPE_FILE);
 
             return (0);
         }
