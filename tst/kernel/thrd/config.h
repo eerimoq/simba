@@ -24,7 +24,7 @@
  * Use a preemptive scheduler.
  */
 #ifndef CONFIG_PREEMPTIVE_SCHEDULER
-#    if defined(ARCH_AVR)
+#    if defined(ARCH_AVR) && !defined(BOARD_ARDUINO_PRO_MICRO)
 #        define CONFIG_PREEMPTIVE_SCHEDULER 1
 #    else
 #        define CONFIG_PREEMPTIVE_SCHEDULER 0

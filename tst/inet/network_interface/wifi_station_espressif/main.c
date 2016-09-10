@@ -30,8 +30,8 @@
 #endif
 
 #if !defined(ESP8266_IP)
-#    pragma message "WiFi connection variable ESP8266_IP is not set. Using default value 192.168.1.103"
-#    define ESP8266_IP 192.168.1.103
+#    pragma message "WiFi connection variable ESP8266_IP is not set. Using default value 192.168.1.100"
+#    define ESP8266_IP 192.168.1.100
 #endif
 
 /* Ports. */

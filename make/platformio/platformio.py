@@ -242,9 +242,9 @@ set_default_values(env)
 # Rename the name of boards that have different name in PlatformIO and
 # Simba.
 if env["BOARD"] in BOARD_MAP:
-    env["BOARD"] = BOARD_MAP[env["BOARD"]]
-
-board = env.subst(env["BOARD"])
+    board = BOARD_MAP[env["BOARD"]]
+else:
+    board = env.subst(env["BOARD"])
 
 if board not in SUPPORTED_BOARDS:
    raise ValueError("BOARD {{}} is not supported by Simba.".format(board))

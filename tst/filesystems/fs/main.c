@@ -282,7 +282,7 @@ static int test_command(struct harness_t *harness_p)
 static int test_counter(struct harness_t *harness_p)
 {
     char buf[384];
-
+    
     strcpy(buf, "filesystems/fs/counters/list");
     BTASSERT(fs_call(buf, NULL, &qout, NULL) == 0);
     read_until(buf, "/your/counter                                        0000000000000000\r\n");

@@ -12,14 +12,9 @@ Follow these steps to create a new release:
 
    Increment ``<revision>`` for bug fixes.
 
-2. Update file headers.
-
-   .. code:: text
-
-      for f in $(git ls-files | grep -v "package_simba_*" | xargs) ; do
-          sed -i 's/<version>/<new version>/g' $f
-      done
-
+2. Write the new version in ``package.json``. This file is used by
+   `PlatformIO 3` to find the current `Simba` release.
+   
 3. Run the test suites and generate the documentation.
 
    .. code:: text

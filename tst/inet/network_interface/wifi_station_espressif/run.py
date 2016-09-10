@@ -94,7 +94,7 @@ def main():
     parser.add_argument("--rts", type=int, default=0)
 
     parser.add_argument('--server-ip-address',
-                        default='192.168.1.103',
+                        default='192.168.1.100',
                         help='Server ip address.')
     args = parser.parse_args()
 
