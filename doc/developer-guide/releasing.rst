@@ -14,7 +14,7 @@ Follow these steps to create a new release:
 
 2. Write the new version in ``package.json``. This file is used by
    `PlatformIO 3` to find the current `Simba` release.
-   
+
 3. Run the test suites and generate the documentation.
 
    .. code:: text
@@ -22,17 +22,19 @@ Follow these steps to create a new release:
       make test-all-boards
       make release-test
 
-4. Generate files for Arduino and add the new releases to
-   ``make/arduino/<family>/package_simba_<family>_index.json``. The
-   sha256 sums of the zip-archives are calculated by ``make arduino``
-   and written to ``simba-arduino/*.sha256``.
+4. Generate files for Arduino.
 
    .. code:: text
 
       make arduino
 
-5. Make sure that the blink exmaple works in the Arduino IDE.
-      
+5. Add the new releases to
+   ``make/arduino/<family>/package_simba_<family>_index.json``. The
+   sha256 sums of the zip-archives are calculated by ``make arduino``
+   and written to ``simba-arduino/*.sha256``.
+
+6. Make sure that the blink exmaple works in the Arduino IDE.
+
 6. Commit the changes, and tag the commit with the new version.
 
 7. Push the new commit and tag.
@@ -47,5 +49,16 @@ Follow these steps to create a new release:
       scp make/arduino/avr/package_simba_avr_index.json <user>@frs.sourceforge.net:/home/frs/project/simba-arduino/avr
       scp make/arduino/sam/package_simba_sam_index.json <user>@frs.sourceforge.net:/home/frs/project/simba-arduino/sam
       scp make/arduino/esp/package_simba_esp_index.json <user>@frs.sourceforge.net:/home/frs/project/simba-arduino/esp
-      
-9. Done.
+
+9. Download the release zip-file from Github and calculate its SHA1
+   checksum. Add the new releases to
+   ``make/platformio/manifest.json``.
+
+   .. code:: text
+
+      wget https://github.com/eerimoq/simba/archive/<version>.zip
+      sha1sum <version>.zip
+
+10. Commit and push.
+
+11. Done.
