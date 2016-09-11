@@ -1,10 +1,16 @@
+sudo: required
+
+dist: trusty
+
 before_install:
   - sudo apt-get update -qq
   - sudo apt-get install -qq parted -y
   - sudo apt-get install -qq lcov -y
   - source setup.sh
+  - gcc --version
+  - g++ --version
 
-script: make travis -j $(cat /proc/cpuinfo | grep processor | wc -l)
+script: make -s travis -j $(cat /proc/cpuinfo | grep processor | wc -l)
 
 after_success:
   - make codecov-coverage
