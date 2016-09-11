@@ -90,7 +90,7 @@ int chan_list_destroy(struct chan_list_t *list_p)
     return (0);
 }
 
-ssize_t chan_read(chan_t *self_p,
+ssize_t chan_read(void *self_p,
                   void *buf_p,
                   size_t size)
 {
@@ -101,7 +101,7 @@ ssize_t chan_read(chan_t *self_p,
     return (((struct chan_t *)self_p)->read(self_p, buf_p, size));
 }
 
-ssize_t chan_write(chan_t *self_p,
+ssize_t chan_write(void *self_p,
                    const void *buf_p,
                    size_t size)
 {
@@ -112,14 +112,14 @@ ssize_t chan_write(chan_t *self_p,
     return (((struct chan_t *)self_p)->write(self_p, buf_p, size));
 }
 
-size_t chan_size(chan_t *self_p)
+size_t chan_size(void *self_p)
 {
     ASSERTN(self_p != NULL, EINVAL);
 
     return (((struct chan_t *)self_p)->size(self_p));
 }
 
-int chan_list_add(struct chan_list_t *list_p, chan_t *chan_p)
+int chan_list_add(struct chan_list_t *list_p, void *chan_p)
 {
     ASSERTN(list_p != NULL, EINVAL);
     ASSERTN(chan_p != NULL, EINVAL);
@@ -134,7 +134,7 @@ int chan_list_add(struct chan_list_t *list_p, chan_t *chan_p)
     return (0);
 }
 
-int chan_list_remove(struct chan_list_t *list_p, chan_t *chan_p)
+int chan_list_remove(struct chan_list_t *list_p, void *chan_p)
 {
     ASSERTN(list_p != NULL, EINVAL);
     ASSERTN(chan_p != NULL, EINVAL);
@@ -152,7 +152,7 @@ int chan_list_remove(struct chan_list_t *list_p, chan_t *chan_p)
     return (-1);
 }
 
-chan_t *chan_list_poll(struct chan_list_t *list_p,
+void *chan_list_poll(struct chan_list_t *list_p,
                        struct time_t *timeout_p)
 {
     ASSERTN(list_p != NULL, EINVAL);
@@ -195,9 +195,9 @@ chan_t *chan_list_poll(struct chan_list_t *list_p,
     return (chan_p);
 }
 
-chan_t *chan_poll(chan_t *chan_p, struct time_t *timeout_p)
+void *chan_poll(void *chan_p, struct time_t *timeout_p)
 {
-    chan_t *res_p;
+    void *res_p;
     struct chan_list_t list;
     struct chan_t *workspace_p;
     
@@ -209,26 +209,26 @@ chan_t *chan_poll(chan_t *chan_p, struct time_t *timeout_p)
     return (res_p);
 }
 
-chan_t *chan_null(void)
+void *chan_null(void)
 {
     return (&null);
 }
 
-ssize_t chan_read_null(chan_t *self_p,
+ssize_t chan_read_null(void *self_p,
                        void *buf_p,
                        size_t size)
 {
     return (-1);
 }
 
-ssize_t chan_write_null(chan_t *self_p,
+ssize_t chan_write_null(void *self_p,
                         const void *buf_p,
                         size_t size)
 {
     return (size);
 }
 
-size_t chan_size_null(chan_t *self_p)
+size_t chan_size_null(void *self_p)
 {
     return (0);
 }

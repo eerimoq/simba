@@ -36,7 +36,7 @@ struct network_interface_slip_t {
         uint8_t *buf_p;
         size_t size;
     } frame;
-    chan_t *chout_p;
+    void *chout_p;
     struct network_interface_t network_interface;
 };
 
@@ -63,7 +63,7 @@ int network_interface_slip_init(struct network_interface_slip_t *self_p,
                                 struct inet_ip_addr_t *ipaddr_p,
                                 struct inet_ip_addr_t *netmask_p,
                                 struct inet_ip_addr_t *gateway_p,
-                                chan_t *chout_p);
+                                void *chout_p);
 
 /**
  * Input a byte into the SLIP IP stack. Normally a user thread reads

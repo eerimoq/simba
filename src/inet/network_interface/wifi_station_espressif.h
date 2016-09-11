@@ -22,13 +22,8 @@
 
 #include "simba.h"
 
-#include "esp_wifi.h"
-#include "esp_sta.h"
-
 struct network_interface_wifi_station_espressif_t {
     struct network_interface_t network_interface;
-    struct station_config station_config;
-    struct ip_info ip_config;
 };
 
 /**

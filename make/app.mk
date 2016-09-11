@@ -41,12 +41,14 @@ SETTINGS_BIN ?= $(SIMBA_ROOT)/src/settings_default.bin
 SETTTNGS_OUTPUT_DIRECTORY ?= .
 SRC_FILTERED = $(filter-out $(SRC_IGNORE),$(SRC))
 CSRC += $(filter %.c,$(SRC_FILTERED))
+CPPSRC += $(filter %.cpp,$(SRC_FILTERED))
 ASMSRC += $(filter %.S,$(SRC_FILTERED))
 ASMOBJ = $(patsubst %,$(OBJDIR)%,$(abspath $(ASMSRC:%.S=%.obj)))
 RUST_SRC += $(filter %.rs,$(SRC_FILTERED))
 COBJ = $(patsubst %,$(OBJDIR)%,$(abspath $(CSRC:%.c=%.o)))
+CPPOBJ = $(patsubst %,$(OBJDIR)%,$(abspath $(CPPSRC:%.cpp=%.o)))
 RUST_OBJ = $(patsubst %,$(OBJDIR)%,$(abspath $(RUST_SRC:%.rs=%.o)))
-OBJ = $(COBJ) $(RUST_OBJ) $(ASMOBJ)
+OBJ = $(COBJ) $(CPPOBJ) $(RUST_OBJ) $(ASMOBJ)
 GENCSRC = $(GENDIR)/simba_gen.c
 GENOBJ = $(patsubst %,$(OBJDIR)/%,$(notdir $(GENCSRC:%.c=%.o)))
 SETTINGS_INI ?= $(SIMBA_ROOT)/make/settings.ini
@@ -64,6 +66,7 @@ CLEAN = $(BUILDDIR) $(EXE) $(RUNLOG) size.log \
 # configuration
 TOOLCHAIN ?= gnu
 CFLAGS += $(CFLAGS_EXTRA)
+CXXFLAGS += $(CXXFLAGS_EXTRA)
 ifeq ($(NASSERT),yes)
   CDEFS += CONFIG_ASSERT=0
 endif
@@ -169,8 +172,8 @@ release:
 	env NASSERT=yes NDEBUG=yes $(MAKE)
 
 $(EXE): $(OBJ) $(GENOBJ)
-	@echo "Linking $@"
-	$(CC) -o $@ $(LIBPATH:%=-L%) $(LDFLAGS) $^ $(LDFLAGS_AFTER)
+	@echo "LD $@"
+	$(CXX) -o $@ $(LIBPATH:%=-L%) $(LDFLAGS) $^ $(LDFLAGS_AFTER)
 
 settings-generate: $(SETTINGS_INI)
 	@echo "Generating settings from $<"
@@ -183,7 +186,7 @@ settings-generate: $(SETTINGS_INI)
 define COMPILE_template
 -include $(patsubst %.c,$(DEPSDIR)%.o.dep,$(abspath $1))
 $(patsubst %.c,$(OBJDIR)%.o,$(abspath $1)): $1
-	@echo "Compiling $1"
+	@echo "CC $1"
 	mkdir -p $(OBJDIR)$(abspath $(dir $1))
 	mkdir -p $(DEPSDIR)$(abspath $(dir $1))
 	mkdir -p $(GENDIR)
@@ -192,10 +195,22 @@ $(patsubst %.c,$(OBJDIR)%.o,$(abspath $1)): $1
 endef
 $(foreach file,$(CSRC),$(eval $(call COMPILE_template,$(file))))
 
+define COMPILE_CPP_template
+-include $(patsubst %.cpp,$(DEPSDIR)%.o.dep,$(abspath $1))
+$(patsubst %.cpp,$(OBJDIR)%.o,$(abspath $1)): $1
+	@echo "CXX $1"
+	mkdir -p $(OBJDIR)$(abspath $(dir $1))
+	mkdir -p $(DEPSDIR)$(abspath $(dir $1))
+	mkdir -p $(GENDIR)
+	$$(CXX) $$(INC:%=-I%) $$(CDEFS:%=-D%) $$(CXXFLAGS) -o $$@ $$<
+	$$(CXX) -MM -MT $$@ $$(INC:%=-I%) $$(CDEFS:%=-D%) -std=c++11 -o $(patsubst %.cpp,$(DEPSDIR)%.o.dep,$(abspath $1)) $$<
+endef
+$(foreach file,$(CPPSRC),$(eval $(call COMPILE_CPP_template,$(file))))
+
 define COMPILE_ASM_template
 -include $(patsubst %.S,$(DEPSDIR)%.obj.dep,$(abspath $1))
 $(patsubst %.S,$(OBJDIR)%.obj,$(abspath $1)): $1
-	@echo "Compiling $1"
+	@echo "LD $1"
 	mkdir -p $(OBJDIR)$(abspath $(dir $1))
 	mkdir -p $(DEPSDIR)$(abspath $(dir $1))
 	mkdir -p $(GENDIR)
@@ -278,7 +293,7 @@ $(foreach file,$(RUST_SRC),$(eval $(call RUST_COMPILE_template,$(file))))
 $(GENOBJ): $(OBJ)
 	$(SIMBA_ROOT)/src/kernel/tools/gen.py $(NAME) $(VERSION) $(BOARD_DESC) $(MCU_DESC) \
 	    $(GENCSRC)
-	@echo "Compiling $(GENCSRC)"
+	@echo "CC $(GENCSRC)"
 	$(CC) $(INC:%=-I%) $(CDEFS:%=-D%) $(CFLAGS) -o $@ $(GENCSRC)
 
 -include local.mk

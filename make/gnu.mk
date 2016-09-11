@@ -25,11 +25,18 @@ SIZE_SUMMARY_CMD = $(CROSS_COMPILE)size ${EXE} | python -c "import sys; text, da
 
 
 CC = $(CROSS_COMPILE)gcc$(CCVERSION:%=-%)
+CXX = $(CROSS_COMPILE)g++$(CCVERSION:%=-%)
 
 CFLAGS += -c \
           -Wall \
           -funsigned-bitfields \
           -std=gnu99 \
+          -Wno-error=unused-variable
+
+CXXFLAGS += -c \
+          -Wall \
+          -funsigned-bitfields \
+          -std=c++11 \
           -Wno-error=unused-variable
 
 LDFLAGS += -Wl,-Map=$(MAP) \

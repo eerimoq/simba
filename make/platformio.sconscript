@@ -68,6 +68,20 @@ BOARDS = {
             "-std=gnu99", 
             "-Wno-error=unused-variable"
         ], 
+        "cxxflags": [
+            "-Werror", 
+            "-g", 
+            "-mthumb", 
+            "-mcpu=cortex-m3", 
+            "-ffunction-sections", 
+            "-fdata-sections", 
+            "-fpack-struct", 
+            "-c", 
+            "-Wall", 
+            "-funsigned-bitfields", 
+            "-std=c++11", 
+            "-Wno-error=unused-variable"
+        ], 
         "inc": [
             "src", 
             "src/drivers/ports/sam", 
@@ -210,6 +224,19 @@ BOARDS = {
             "-std=gnu99", 
             "-Wno-error=unused-variable"
         ], 
+        "cxxflags": [
+            "-mmcu=atmega2560", 
+            "-O2", 
+            "-ffunction-sections", 
+            "-fdata-sections", 
+            "-fpack-struct", 
+            "-fshort-enums", 
+            "-c", 
+            "-Wall", 
+            "-funsigned-bitfields", 
+            "-std=c++11", 
+            "-Wno-error=unused-variable"
+        ], 
         "inc": [
             "src", 
             "src/mcus/atmega2560", 
@@ -349,6 +376,19 @@ BOARDS = {
             "-std=gnu99", 
             "-Wno-error=unused-variable"
         ], 
+        "cxxflags": [
+            "-mmcu=atmega328p", 
+            "-O2", 
+            "-ffunction-sections", 
+            "-fdata-sections", 
+            "-fpack-struct", 
+            "-fshort-enums", 
+            "-c", 
+            "-Wall", 
+            "-funsigned-bitfields", 
+            "-std=c++11", 
+            "-Wno-error=unused-variable"
+        ], 
         "inc": [
             "src", 
             "src/boards/arduino_nano", 
@@ -486,6 +526,19 @@ BOARDS = {
             "-Wall", 
             "-funsigned-bitfields", 
             "-std=gnu99", 
+            "-Wno-error=unused-variable"
+        ], 
+        "cxxflags": [
+            "-mmcu=atmega32u4", 
+            "-O2", 
+            "-ffunction-sections", 
+            "-fdata-sections", 
+            "-fpack-struct", 
+            "-fshort-enums", 
+            "-c", 
+            "-Wall", 
+            "-funsigned-bitfields", 
+            "-std=c++11", 
             "-Wno-error=unused-variable"
         ], 
         "inc": [
@@ -631,6 +684,19 @@ BOARDS = {
             "-std=gnu99", 
             "-Wno-error=unused-variable"
         ], 
+        "cxxflags": [
+            "-mmcu=atmega328p", 
+            "-O2", 
+            "-ffunction-sections", 
+            "-fdata-sections", 
+            "-fpack-struct", 
+            "-fshort-enums", 
+            "-c", 
+            "-Wall", 
+            "-funsigned-bitfields", 
+            "-std=c++11", 
+            "-Wno-error=unused-variable"
+        ], 
         "inc": [
             "src/boards/arduino_uno", 
             "src", 
@@ -770,6 +836,20 @@ BOARDS = {
             "-std=gnu99", 
             "-Wno-error=unused-variable"
         ], 
+        "cxxflags": [
+            "-Werror", 
+            "-Wno-error=unused-variable", 
+            "-DCONFIG_PROFILE_STACK=0", 
+            "-pg", 
+            "-fprofile-arcs", 
+            "-ftest-coverage", 
+            "-g", 
+            "-c", 
+            "-Wall", 
+            "-funsigned-bitfields", 
+            "-std=c++11", 
+            "-Wno-error=unused-variable"
+        ], 
         "inc": [
             "src/mcus/linux", 
             "src", 
@@ -879,6 +959,20 @@ BOARDS = {
             "-Wall", 
             "-funsigned-bitfields", 
             "-std=gnu99", 
+            "-Wno-error=unused-variable"
+        ], 
+        "cxxflags": [
+            "-Os", 
+            "-Werror", 
+            "-nostdlib", 
+            "-mlongcalls", 
+            "-mtext-section-literals", 
+            "-ffunction-sections", 
+            "-fdata-sections", 
+            "-c", 
+            "-Wall", 
+            "-funsigned-bitfields", 
+            "-std=c++11", 
             "-Wno-error=unused-variable"
         ], 
         "inc": [
@@ -1012,6 +1106,20 @@ BOARDS = {
             "-std=gnu99", 
             "-Wno-error=unused-variable"
         ], 
+        "cxxflags": [
+            "-Os", 
+            "-Werror", 
+            "-nostdlib", 
+            "-mlongcalls", 
+            "-mtext-section-literals", 
+            "-ffunction-sections", 
+            "-fdata-sections", 
+            "-c", 
+            "-Wall", 
+            "-funsigned-bitfields", 
+            "-std=c++11", 
+            "-Wno-error=unused-variable"
+        ], 
         "inc": [
             "src", 
             "3pp/ESP8266_RTOS_SDK/include", 
@@ -1140,6 +1248,20 @@ BOARDS = {
             "-std=gnu99", 
             "-Wno-error=unused-variable"
         ], 
+        "cxxflags": [
+            "-Werror", 
+            "-Wno-error=unused-variable", 
+            "-DCONFIG_PROFILE_STACK=0", 
+            "-pg", 
+            "-fprofile-arcs", 
+            "-ftest-coverage", 
+            "-g", 
+            "-c", 
+            "-Wall", 
+            "-funsigned-bitfields", 
+            "-std=c++11", 
+            "-Wno-error=unused-variable"
+        ], 
         "inc": [
             "src/mcus/linux", 
             "src", 
@@ -1246,6 +1368,20 @@ BOARDS = {
             "-Wall", 
             "-funsigned-bitfields", 
             "-std=gnu99", 
+            "-Wno-error=unused-variable"
+        ], 
+        "cxxflags": [
+            "-Werror", 
+            "-g", 
+            "-mthumb", 
+            "-mcpu=cortex-m3", 
+            "-ffunction-sections", 
+            "-fdata-sections", 
+            "-fpack-struct", 
+            "-c", 
+            "-Wall", 
+            "-funsigned-bitfields", 
+            "-std=c++11", 
             "-Wno-error=unused-variable"
         ], 
         "inc": [
@@ -1390,6 +1526,20 @@ BOARDS = {
             "-std=gnu99", 
             "-Wno-error=unused-variable"
         ], 
+        "cxxflags": [
+            "-Werror", 
+            "-g", 
+            "-mthumb", 
+            "-mcpu=cortex-m4", 
+            "-ffunction-sections", 
+            "-fdata-sections", 
+            "-fpack-struct", 
+            "-c", 
+            "-Wall", 
+            "-funsigned-bitfields", 
+            "-std=c++11", 
+            "-Wno-error=unused-variable"
+        ], 
         "inc": [
             "src", 
             "src/drivers/ports/stm32f3", 
@@ -1517,6 +1667,20 @@ BOARDS = {
             "-Wall", 
             "-funsigned-bitfields", 
             "-std=gnu99", 
+            "-Wno-error=unused-variable"
+        ], 
+        "cxxflags": [
+            "-Werror", 
+            "-g", 
+            "-mthumb", 
+            "-mcpu=cortex-m3", 
+            "-ffunction-sections", 
+            "-fdata-sections", 
+            "-fpack-struct", 
+            "-c", 
+            "-Wall", 
+            "-funsigned-bitfields", 
+            "-std=c++11", 
             "-Wno-error=unused-variable"
         ], 
         "inc": [
@@ -1732,13 +1896,21 @@ def setup_mcu_esp(env, linker_script, flash_size_map):
     env.Replace(LINKFLAGS=linkflags)
     env.Replace(LDSCRIPT_PATH="script.ld")
 
-    ccflags = []
+    cflags = []
 
-    for flag in env["CCFLAGS"]:
+    for flag in env["CFLAGS"]:
         if "-Werror" in flag:
             continue
-        ccflags.append(flag)
-    env.Replace(CCFLAGS=ccflags)
+        cflags.append(flag)
+    env.Replace(CFLAGS=cflags)
+
+    cxxflags = []
+
+    for flag in env["CXXFLAGS"]:
+        if "-Werror" in flag:
+            continue
+        cxxflags.append(flag)
+    env.Replace(CXXFLAGS=cxxflags)
 
     env.Append(LIBS=[
         "-lminic",
@@ -1816,7 +1988,8 @@ if board not in SUPPORTED_BOARDS:
 add_include_paths(env, BOARDS[board]["inc"])
 env.Append(CPPDEFINES=BOARDS[board]["cdefs"])
 src_filter = create_src_filter(BOARDS[board]["src"])
-env.Replace(CCFLAGS=BOARDS[board]["cflags"])
+env.Replace(CFLAGS=BOARDS[board]["cflags"])
+env.Replace(CXXFLAGS=BOARDS[board]["cxxflags"])
 env.Replace(LINKFLAGS=BOARDS[board]["ldflags"])
 env.Replace(LIBPATH=[os.path.join("$PLATFORMFW_DIR", path)
                      for path in BOARDS[board]["libpath"]])

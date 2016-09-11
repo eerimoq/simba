@@ -48,7 +48,7 @@
 #define LOG_NONE   0x00
 
 struct log_handler_t {
-    chan_t *chout_p;
+    void *chout_p;
     struct log_handler_t *next_p;
 };
 
@@ -143,7 +143,7 @@ int log_object_print(struct log_object_t *self_p,
  * @return zero(0) or negative error code.
  */
 int log_handler_init(struct log_handler_t *self_p,
-                     chan_t *chout_p);
+                     void *chout_p);
 
 /**
  * Add given log handler to the list of log handlers. Log entries will
@@ -193,6 +193,6 @@ int log_remove_object(struct log_object_t *object_p);
  *
  * @return zero(0) or negative error code.
  */
-int log_set_default_handler_output_channel(chan_t *chout_p);
+int log_set_default_handler_output_channel(void *chout_p);
 
 #endif

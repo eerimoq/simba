@@ -137,8 +137,8 @@ static int note_on(struct channel_t *channel_p,
 
 static int cmd_status_cb(int argc,
                          const char *argv[],
-                         chan_t *out_p,
-                         chan_t *in_p,
+                         void *out_p,
+                         void *in_p,
                          void *arg_p,
                          void *call_arg_p)
 {
@@ -177,8 +177,8 @@ static int cmd_status_cb(int argc,
 
 static int cmd_set_waveform_cb(int argc,
                                const char *argv[],
-                               chan_t *out_p,
-                               chan_t *in_p,
+                               void *out_p,
+                               void *in_p,
                                void *arg_p,
                                void *call_arg_p)
 {
@@ -222,8 +222,8 @@ static int cmd_set_waveform_cb(int argc,
 
 static int cmd_set_vibrato_cb(int argc,
                               const char *argv[],
-                              chan_t *out_p,
-                              chan_t *in_p,
+                              void *out_p,
+                              void *in_p,
                               void *arg_p,
                               void *call_arg_p)
 {
@@ -248,8 +248,8 @@ static int cmd_set_vibrato_cb(int argc,
 
 static int cmd_set_envelope_cb(int argc,
                                const char *argv[],
-                               chan_t *out_p,
-                               chan_t *in_p,
+                               void *out_p,
+                               void *in_p,
                                void *arg_p,
                                void *call_arg_p)
 {
@@ -286,8 +286,8 @@ static int cmd_set_envelope_cb(int argc,
 
 static int cmd_note_on_cb(int argc,
                           const char *argv[],
-                          chan_t *out_p,
-                          chan_t *in_p,
+                          void *out_p,
+                          void *in_p,
                           void *arg_p,
                           void *call_arg_p)
 {
@@ -321,8 +321,8 @@ static int cmd_note_on_cb(int argc,
 
 static int cmd_note_off_cb(int argc,
                            const char *argv[],
-                           chan_t *out_p,
-                           chan_t *in_p,
+                           void *out_p,
+                           void *in_p,
                            void *arg_p,
                            void *call_arg_p)
 {
@@ -349,8 +349,8 @@ static int cmd_note_off_cb(int argc,
 
 static int cmd_channel_on_cb(int argc,
                              const char *argv[],
-                             chan_t *out_p,
-                             chan_t *in_p,
+                             void *out_p,
+                             void *in_p,
                              void *arg_p,
                              void *call_arg_p)
 {
@@ -375,8 +375,8 @@ static int cmd_channel_on_cb(int argc,
 
 static int cmd_channel_off_cb(int argc,
                               const char *argv[],
-                              chan_t *out_p,
-                              chan_t *in_p,
+                              void *out_p,
+                              void *in_p,
                               void *arg_p,
                               void *call_arg_p)
 {

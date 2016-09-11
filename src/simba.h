@@ -20,9 +20,32 @@
 #ifndef __SIMBA_H__
 #define __SIMBA_H__
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #if defined(ARCH_ESP)
 typedef unsigned long off_t;
 #endif
+
+#if !defined(ARCH_AVR) && defined(__cplusplus)
+
+#define __CORRECT_ISO_CPP_STDLIB_H_PROTO
+#define __time_t_defined  1
+#define __timer_t_defined 1
+
+#if defined(ARCH_ARM)
+    typedef long ssize_t;
+#else
+#    include <cstdio>
+#endif
+
+#include <cstdlib>
+#include <cstring>
+#include <cstddef>
+#include <cstdint>
+
+#else
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -31,6 +54,8 @@ typedef unsigned long off_t;
 #include <stdint.h>
 #include <sys/types.h>
 #include <ctype.h>
+
+#endif
 
 #include "compiler.h"
 #include <config.h>
@@ -199,6 +224,10 @@ typedef unsigned long off_t;
 
 #if defined(FAMILY_ESP)
 #    include "inet/network_interface/wifi_station_espressif.h"
+#endif
+
+#ifdef __cplusplus
+}
 #endif
 
 #endif

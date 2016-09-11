@@ -107,7 +107,7 @@ int uart_soft_init(struct uart_soft_driver_t *self_p,
 
     chan_init(&self_p->chout,
               NULL,
-              (ssize_t (*)(chan_t *, const void *, size_t))uart_soft_write_cb,
+              (ssize_t (*)(void *, const void *, size_t))uart_soft_write_cb,
               NULL);
 
     pin_init(&self_p->tx_pin, tx_dev_p, PIN_OUTPUT);

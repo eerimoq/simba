@@ -35,7 +35,7 @@ static struct fat16_t fs;
 static int is_file_open = 0;
 static struct fat16_file_t file;
 
-static int print_dir_name(chan_t *chan_p,
+static int print_dir_name(void *chan_p,
                           const struct fat16_dir_entry_t *entry_p,
                           int width)
 {
@@ -60,7 +60,7 @@ static int print_dir_name(chan_t *chan_p,
     return (0);
 }
 
-static int format_entry(chan_t *chan_p,
+static int format_entry(void *chan_p,
                         const struct fat16_dir_entry_t *entry_p)
 {
 
@@ -89,8 +89,8 @@ static int format_entry(chan_t *chan_p,
 
 static int cmd_ls_cb(int argc,
                      const char *argv[],
-                     chan_t *out_p,
-                     chan_t *in_p,
+                     void *out_p,
+                     void *in_p,
                      void *arg_p,
                      void *call_arg_p)
 {
@@ -124,8 +124,8 @@ static int cmd_ls_cb(int argc,
 
 static int cmd_open_cb(int argc,
                        const char *argv[],
-                       chan_t *out_p,
-                       chan_t *in_p,
+                       void *out_p,
+                       void *in_p,
                        void *arg_p,
                        void *call_arg_p)
 {
@@ -167,8 +167,8 @@ static int cmd_open_cb(int argc,
 
 static int cmd_close_cb(int argc,
                         const char *argv[],
-                        chan_t *out_p,
-                        chan_t *in_p,
+                        void *out_p,
+                        void *in_p,
                         void *arg_p,
                         void *call_arg_p)
 {
@@ -193,8 +193,8 @@ static int cmd_close_cb(int argc,
 
 static int cmd_read_cb(int argc,
                        const char *argv[],
-                       chan_t *out_p,
-                       chan_t *in_p,
+                       void *out_p,
+                       void *in_p,
                        void *arg_p,
                        void *call_arg_p)
 {
@@ -247,8 +247,8 @@ static int cmd_read_cb(int argc,
 
 static int cmd_write_cb(int argc,
                         const char *argv[],
-                        chan_t *out_p,
-                        chan_t *in_p,
+                        void *out_p,
+                        void *in_p,
                         void *arg_p,
                         void *call_arg_p)
 {

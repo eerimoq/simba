@@ -617,7 +617,7 @@ int fat16_format(struct fat16_t *self_p);
  *
  * @return zero(0) or negative error code.
  */
-int fat16_print(struct fat16_t *self_p, chan_t *chan_p);
+int fat16_print(struct fat16_t *self_p, void *chan_p);
 
 /**
  * Open a file by file path and mode flags.

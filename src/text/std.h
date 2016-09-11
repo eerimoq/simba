@@ -88,7 +88,7 @@ ssize_t std_snprintf(char *dst_p,
  * @return Number of characters written to standard output, or
  *         negative error code.
  */
-ssize_t std_printf(FAR const char *fmt_p, ...);
+ssize_t std_printf(far_string_t fmt_p, ...);
 
 /**
  * Format and print data to standard output. The output is not null terminated.
@@ -115,7 +115,7 @@ ssize_t std_vprintf(FAR const char *fmt_p, va_list *ap_p);
  * @return Number of characters written to given channel, or negative
  *         error code.
  */
-ssize_t std_fprintf(chan_t *chan_p, FAR const char *fmt_p, ...);
+ssize_t std_fprintf(void *chan_p, FAR const char *fmt_p, ...);
 
 /**
  * Format and print data to channel. The output is not null terminated.
@@ -129,7 +129,7 @@ ssize_t std_fprintf(chan_t *chan_p, FAR const char *fmt_p, ...);
  * @return Number of characters written to given channel, or negative
  *         error code.
  */
-ssize_t std_vfprintf(chan_t *chan_p, FAR const char *fmt_p, va_list *ap_p);
+ssize_t std_vfprintf(void *chan_p, FAR const char *fmt_p, va_list *ap_p);
 
 /**
  * Convert string to integer.

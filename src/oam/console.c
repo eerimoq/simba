@@ -55,22 +55,22 @@ int console_stop(void)
     return (uart_stop(&module.console.uart));
 }
 
-int console_set_input_channel(chan_t *chan_p)
+int console_set_input_channel(void *chan_p)
 {
     return (-1);
 }
 
-chan_t *console_get_input_channel(void)
+void *console_get_input_channel(void)
 {
     return (&module.console.uart.chin);
 }
 
-chan_t *console_set_output_channel(chan_t *chan_p)
+void *console_set_output_channel(void *chan_p)
 {
     return (NULL);
 }
 
-chan_t *console_get_output_channel()
+void *console_get_output_channel()
 {
     return (&module.console.uart.chout);
 }
@@ -141,22 +141,22 @@ int console_stop(void)
     return (usb_device_stop(&module.console.usb));
 }
 
-int console_set_input_channel(chan_t *chan_p)
+int console_set_input_channel(void *chan_p)
 {
     return (-1);
 }
 
-chan_t *console_get_input_channel(void)
+void *console_get_input_channel(void)
 {
     return (&module.console.cdc.chin);
 }
 
-chan_t *console_set_output_channel(chan_t *chan_p)
+void *console_set_output_channel(void *chan_p)
 {
     return (NULL);
 }
 
-chan_t *console_get_output_channel(void)
+void *console_get_output_channel(void)
 {
     return (&module.console.cdc.chout);
 }
@@ -166,8 +166,8 @@ chan_t *console_get_output_channel(void)
 struct module_t {
     int initialized;
     struct {
-        chan_t *chin_p;
-        chan_t *chout_p;
+        void *chin_p;
+        void *chout_p;
     } console;
 };
 
@@ -202,26 +202,26 @@ int console_stop(void)
     return (0);
 }
 
-int console_set_input_channel(chan_t *chan_p)
+int console_set_input_channel(void *chan_p)
 {
     module.console.chin_p = chan_p;
 
     return (0);
 }
 
-chan_t *console_get_input_channel(void)
+void *console_get_input_channel(void)
 {
     return (module.console.chin_p);
 }
 
-chan_t *console_set_output_channel(chan_t *chan_p)
+void *console_set_output_channel(void *chan_p)
 {
     module.console.chout_p = chan_p;
 
     return (0);
 }
 
-chan_t *console_get_output_channel(void)
+void *console_get_output_channel(void)
 {
     return (module.console.chout_p);
 }

@@ -219,6 +219,21 @@ def get_c_extra_flags(board, database):
                     + ["-D" + d for d in cdefs])
 
 
+def get_cxx_extra_flags(board, database):
+    """Get include path, defines and flags to the compiler.
+
+    """
+
+    incs = database["boards"][board]["inc"]
+    cdefs = database["boards"][board]["cdefs"]
+    cxxflags = database["boards"][board]["cxxflags"]
+
+    return " ".join(cxxflags
+                    + ["\"-I{runtime.platform.path}/cores/simba/" + inc + "\""
+                       for inc in incs]
+                    + ["-D" + d for d in cdefs])
+
+
 def get_c_elf_extra_flags(board, database):
     """Get library path, defines and flags to the linker.
 
@@ -253,11 +268,19 @@ def generate_boards_txt_avr(database, boards_txt_fmt):
         mega2560_compiler_c_extra_flags=get_c_extra_flags("arduino_mega",
                                                           database),
         nano_compiler_c_extra_flags=get_c_extra_flags("arduino_nano",
-                                                   database),
+                                                      database),
         uno_compiler_c_extra_flags=get_c_extra_flags("arduino_uno",
-                                                   database),
+                                                     database),
         pro_micro_compiler_c_extra_flags=get_c_extra_flags("arduino_pro_micro",
-                                                         database))
+                                                           database), 
+        mega2560_compiler_cxx_extra_flags=get_cxx_extra_flags("arduino_mega",
+                                                              database),
+        nano_compiler_cxx_extra_flags=get_cxx_extra_flags("arduino_nano",
+                                                          database),
+        uno_compiler_cxx_extra_flags=get_cxx_extra_flags("arduino_uno",
+                                                         database),
+        pro_micro_compiler_cxx_extra_flags=get_cxx_extra_flags("arduino_pro_micro",
+                                                               database))
 
 
 def generate_boards_txt_sam(database, boards_txt_fmt):
@@ -267,6 +290,9 @@ def generate_boards_txt_sam(database, boards_txt_fmt):
 
     return boards_txt_fmt.format(
         arduino_due_x_dbg_compiler_c_extra_flags=get_c_extra_flags(
+            "arduino_due",
+            database),
+        arduino_due_x_dbg_compiler_cxx_extra_flags=get_cxx_extra_flags(
             "arduino_due",
             database),
         arduino_due_x_dbg_compiler_c_elf_extra_flags=get_c_elf_extra_flags(
@@ -292,9 +318,11 @@ def generate_boards_txt_esp(database, boards_txt_fmt):
 
     return boards_txt_fmt.format(
         esp01_compiler_c_extra_flags=get_c_extra_flags("esp01", database),
+        esp01_compiler_cxx_extra_flags=get_cxx_extra_flags("esp01", database),
         esp01_compiler_c_elf_extra_flags=esp01_compiler_c_elf_extra_flags,
         esp01_compiler_c_elf_extra_flags_after=get_c_elf_extra_flags_after("esp01", database),
         esp12e_compiler_c_extra_flags=get_c_extra_flags("esp12e", database),
+        esp12e_compiler_cxx_extra_flags=get_cxx_extra_flags("esp12e", database),
         esp12e_compiler_c_elf_extra_flags=esp12e_compiler_c_elf_extra_flags,
         esp12e_compiler_c_elf_extra_flags_after=get_c_elf_extra_flags_after("esp12e", database))
 

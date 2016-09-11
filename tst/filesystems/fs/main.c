@@ -140,8 +140,8 @@ static int32_t filesystem_spiffs_erase(struct spiffs_t *fs_p,
 
 static int tmp_foo_bar(int argc,
                        const char *argv[],
-                       chan_t *out_p,
-                       chan_t *in_p,
+                       void *out_p,
+                       void *in_p,
                        void *arg_p,
                        void *call_arg_p)
 {
@@ -161,8 +161,8 @@ static int tmp_foo_bar(int argc,
 
 static int tmp_bar(int argc,
                    const char *argv[],
-                   chan_t *out_p,
-                   chan_t *in_p,
+                   void *out_p,
+                   void *in_p,
                    void *arg_p,
                    void *call_arg_p)
 {

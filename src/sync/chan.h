@@ -23,11 +23,6 @@
 #include "simba.h"
 
 /**
- * Abstract channel type.
- */
-typedef void chan_t;
-
-/**
  * Channel read function callback type.
  *
  * @param[in] self_p Channel to read from.
@@ -36,7 +31,7 @@ typedef void chan_t;
  *
  * @return Number of read bytes or negative error code.
  */
-typedef ssize_t (*thrd_read_fn_t)(chan_t *self_p,
+typedef ssize_t (*thrd_read_fn_t)(void *self_p,
                                   void *buf_p,
                                   size_t size);
 
@@ -49,7 +44,7 @@ typedef ssize_t (*thrd_read_fn_t)(chan_t *self_p,
  *
  * @return Number of written bytes or negative error code.
  */
-typedef ssize_t (*thrd_write_fn_t)(chan_t *self_p,
+typedef ssize_t (*thrd_write_fn_t)(void *self_p,
                                    const void *buf_p,
                                    size_t size);
 
@@ -60,7 +55,7 @@ typedef ssize_t (*thrd_write_fn_t)(chan_t *self_p,
  *
  * @return Number of bytes available.
  */
-typedef size_t (*thrd_size_fn_t)(chan_t *self_p);
+typedef size_t (*thrd_size_fn_t)(void *self_p);
 
 struct chan_list_t {
     struct chan_t **chans_pp;
@@ -131,7 +126,7 @@ int chan_init(struct chan_t *self_p,
  *
  * @return Number of read bytes or negative error code.
  */
-ssize_t chan_read(chan_t *self_p,
+ssize_t chan_read(void *self_p,
                   void *buf_p,
                   size_t size);
 
@@ -146,7 +141,7 @@ ssize_t chan_read(chan_t *self_p,
  *
  * @return Number of written bytes or negative error code.
  */
-ssize_t chan_write(chan_t *self_p,
+ssize_t chan_write(void *self_p,
                    const void *buf_p,
                    size_t size);
 
@@ -157,7 +152,7 @@ ssize_t chan_write(chan_t *self_p,
  *
  * @return Number of bytes available.
  */
-size_t chan_size(chan_t *self_p);
+size_t chan_size(void *self_p);
 
 /**
  * Check if a channel is polled. May only be called from isr or with
@@ -202,7 +197,7 @@ int chan_list_destroy(struct chan_list_t *list_p);
  *
  * @return zero(0) or negative error code.
  */
-int chan_list_add(struct chan_list_t *list_p, chan_t *chan_p);
+int chan_list_add(struct chan_list_t *list_p, void *chan_p);
 
 /**
  * Remove given channel from list of channels.
@@ -212,7 +207,7 @@ int chan_list_add(struct chan_list_t *list_p, chan_t *chan_p);
  *
  * @return zero(0) or negative error code.
  */
-int chan_list_remove(struct chan_list_t *list_p, chan_t *chan_p);
+int chan_list_remove(struct chan_list_t *list_p, void *chan_p);
 
 /**
  * Poll given list of channels for events. Blocks until at least one
@@ -225,7 +220,7 @@ int chan_list_remove(struct chan_list_t *list_p, chan_t *chan_p);
  *
  * @return Channel with data or NULL on timeout.
  */
-chan_t *chan_list_poll(struct chan_list_t *list_p,
+void *chan_list_poll(struct chan_list_t *list_p,
                        struct time_t *timeout_p);
 
 /**
@@ -238,7 +233,7 @@ chan_t *chan_list_poll(struct chan_list_t *list_p,
  *
  * @return The channel or NULL on timeout.
  */
-chan_t *chan_poll(chan_t *chan_p, struct time_t *timeout_p);
+void *chan_poll(void *chan_p, struct time_t *timeout_p);
 
 /**
  * Get a reference to the null channel. This channel will ignore all
@@ -246,7 +241,7 @@ chan_t *chan_poll(chan_t *chan_p, struct time_t *timeout_p);
  *
  * @return The null channel.
  */
-chan_t *chan_null(void);
+void *chan_null(void);
 
 /**
  * Null channel read function callback. Pass to ``chan_init()`` if no
@@ -254,7 +249,7 @@ chan_t *chan_null(void);
  *
  * @return Always returns -1.
  */
-ssize_t chan_read_null(chan_t *self_p,
+ssize_t chan_read_null(void *self_p,
                        void *buf_p,
                        size_t size);
 
@@ -264,7 +259,7 @@ ssize_t chan_read_null(chan_t *self_p,
  *
  * @return Always returns ``size``.
  */
-ssize_t chan_write_null(chan_t *self_p,
+ssize_t chan_write_null(void *self_p,
                         const void *buf_p,
                         size_t size);
 
@@ -274,6 +269,6 @@ ssize_t chan_write_null(chan_t *self_p,
  *
  * @return Always returns zero(0).
  */
-size_t chan_size_null(chan_t *self_p);
+size_t chan_size_null(void *self_p);
 
 #endif

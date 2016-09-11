@@ -23,8 +23,8 @@
 #include "simba.h"
 
 struct bootloader_console_t {
-    chan_t *chin_p;
-    chan_t *chout_p;
+    void *chin_p;
+    void *chout_p;
     uint32_t application_address;
     uint32_t application_size;
     struct flash_driver_t *flash_p;
@@ -60,8 +60,8 @@ int bootloader_console_module_init(void);
  *
  * @returns zero(0) or negative error code.
  */
-int bootloader_console_init(chan_t *chin_p,
-                            chan_t *chout_p,
+int bootloader_console_init(void *chin_p,
+                            void *chout_p,
                             uint32_t application_address,
                             uint32_t application_size,
                             struct flash_driver_t *flash_p);

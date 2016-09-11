@@ -720,8 +720,8 @@ static int read_server_message(struct mqtt_client_t *self_p)
 int mqtt_client_init(struct mqtt_client_t *self_p,
                      const char *name_p,
                      struct log_object_t *log_object_p,
-                     chan_t *transport_out_p,
-                     chan_t *transport_in_p,
+                     void *transport_out_p,
+                     void *transport_in_p,
                      mqtt_on_publish_t on_publish,
                      mqtt_on_error_t on_error)
 {
@@ -819,7 +819,7 @@ void *mqtt_client_main(void *arg_p)
     struct mqtt_client_t *self_p = arg_p;
     struct chan_list_t list;
     int buf[32];
-    chan_t *chan_p;
+    void *chan_p;
     int res;
 
     thrd_set_name(self_p->name_p);

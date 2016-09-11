@@ -18,7 +18,7 @@
 // This file is part of the Pumba project.
 //
 
-pub fn set_stdout(chout: &mut ::Struct_chan_t)
+pub fn set_stdout(chout: &mut ::Struct_void *)
 {
     unsafe {
         ::sys_set_stdout(chout as *mut _ as *mut ::std::os::raw::CVoid);

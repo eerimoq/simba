@@ -308,8 +308,8 @@ static int handle_packet(void)
  */
 static int cmd_application_erase_cb(int argc,
                                     const char *argv[],
-                                    chan_t *out_p,
-                                    chan_t *in_p,
+                                    void *out_p,
+                                    void *in_p,
                                     void *arg_p,
                                     void *call_arg_p)
 {
@@ -326,8 +326,8 @@ static int cmd_application_erase_cb(int argc,
  */
 static int cmd_application_is_valid_cb(int argc,
                                        const char *argv[],
-                                       chan_t *out_p,
-                                       chan_t *in_p,
+                                       void *out_p,
+                                       void *in_p,
                                        void *arg_p,
                                        void *call_arg_p)
 {
@@ -346,8 +346,8 @@ static int cmd_application_is_valid_cb(int argc,
  */
 static int cmd_application_load_kermit_cb(int argc,
                                           const char *argv[],
-                                          chan_t *out_p,
-                                          chan_t *in_p,
+                                          void *out_p,
+                                          void *in_p,
                                           void *arg_p,
                                           void *call_arg_p)
 {
@@ -388,8 +388,8 @@ static int cmd_application_load_kermit_cb(int argc,
  */
 static int cmd_application_start_cb(int argc,
                                     const char *argv[],
-                                    chan_t *out_p,
-                                    chan_t *in_p,
+                                    void *out_p,
+                                    void *in_p,
                                     void *arg_p,
                                     void *call_arg_p)
 {
@@ -441,8 +441,8 @@ int bootloader_console_module_init()
     return (0);
 }
 
-int bootloader_console_init(chan_t *chin_p,
-                            chan_t *chout_p,
+int bootloader_console_init(void *chin_p,
+                            void *chout_p,
                             uint32_t application_address,
                             uint32_t application_size,
                             struct flash_driver_t *flash_p)

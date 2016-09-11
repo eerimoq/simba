@@ -621,7 +621,7 @@ int fat16_format(struct fat16_t *self_p)
     return (0);
 }
 
-int fat16_print(struct fat16_t *self_p, chan_t *chan_p)
+int fat16_print(struct fat16_t *self_p, void *chan_p)
 {
     ASSERTN(self_p != NULL, -EINVAL);
     ASSERTN(chan_p != NULL, -EINVAL);

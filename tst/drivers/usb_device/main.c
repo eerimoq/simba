@@ -90,7 +90,7 @@ static int test_echo(struct harness_t *harness_p)
     char c;
     struct chan_list_t list;
     int workspace[16];
-    chan_t *chan_p;
+    void *chan_p;
     struct time_t timeout;
 
     chan_list_init(&list, workspace, sizeof(workspace));

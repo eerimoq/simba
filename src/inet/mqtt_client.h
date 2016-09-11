@@ -50,7 +50,7 @@ struct mqtt_client_t;
  */
 typedef size_t (*mqtt_on_publish_t)(struct mqtt_client_t *client_p,
                                     const char *topic_p,
-                                    chan_t *chin_p,
+                                    void *chin_p,
                                     size_t size);
 
 /**
@@ -76,8 +76,8 @@ struct mqtt_client_t {
         void *data_p;
     } message;
     struct {
-        chan_t *out_p;
-        chan_t *in_p;
+        void *out_p;
+        void *in_p;
     } transport;
     struct {
         struct queue_t out;
@@ -120,8 +120,8 @@ struct mqtt_application_message_t {
 int mqtt_client_init(struct mqtt_client_t *self_p,
                      const char *name_p,
                      struct log_object_t *log_object_p,
-                     chan_t *chout_p,
-                     chan_t *chin_p,
+                     void *chout_p,
+                     void *chin_p,
                      mqtt_on_publish_t on_publish,
                      mqtt_on_error_t on_error);
 

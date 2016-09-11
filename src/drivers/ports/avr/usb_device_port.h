@@ -28,7 +28,7 @@ typedef int (*usb_device_start_of_frame_cb_t)(struct usb_device_driver_base_t *s
 typedef int (*usb_device_setup_cb_t)(struct usb_device_driver_base_t *self_p,
                                      struct usb_setup_t *setup_p);
 typedef int (*usb_device_print_cb_t)(struct usb_device_driver_base_t *self_p,
-                                     chan_t *chout_p);
+                                     void *chout_p);
 
 struct usb_device_driver_base_t {
     struct usb_device_driver_base_t *next_p;

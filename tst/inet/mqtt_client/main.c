@@ -68,7 +68,7 @@ static void *server_main(void *arg_p)
 
 static size_t on_publish(struct mqtt_client_t *client_p,
                          const char *topic_p,
-                         chan_t *chin_p,
+                         void *chin_p,
                          size_t size)
 {
     uint8_t buf[16];

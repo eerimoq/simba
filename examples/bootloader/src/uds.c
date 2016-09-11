@@ -223,7 +223,7 @@ static int ignore_and_write_negative_response(struct bootloader_uds_t *self_p,
  *
  * @returns zero(0) or negative error code.
  */
-static int write_did_response(chan_t *chout_p,
+static int write_did_response(void *chout_p,
                               uint8_t response_code,
                               uint16_t did,
                               const void *data_p,
@@ -824,8 +824,8 @@ static int handle_unknown_service_id(struct bootloader_uds_t *self_p,
 }
 
 int bootloader_uds_init(struct bootloader_uds_t *self_p,
-                        chan_t *chin_p,
-                        chan_t *chout_p,
+                        void *chin_p,
+                        void *chout_p,
                         uint32_t application_address,
                         uint32_t application_size,
                         struct flash_driver_t *flash_p)

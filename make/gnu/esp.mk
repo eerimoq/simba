@@ -32,6 +32,14 @@ CFLAGS += -Os \
           -ffunction-sections \
           -fdata-sections
 
+CXXFLAGS += -Os \
+          -Werror \
+          -nostdlib \
+          -mlongcalls \
+          -mtext-section-literals \
+          -ffunction-sections \
+          -fdata-sections
+
 LIBPATH += $(ESP8266_RTOS_SDK_ROOT)/lib
 
 LDFLAGS += -u call_user_start \

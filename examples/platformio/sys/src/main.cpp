@@ -1,7 +1,5 @@
-
 /**
- * @file main.c
- * @version 4.1.0
+ * @file main.cpp
  *
  * @section License
  * Copyright (C) 2014-2016, Erik Moqvist

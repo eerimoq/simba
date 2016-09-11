@@ -20,9 +20,6 @@
 #ifndef __KERNEL_SYS_PORT_H__
 #define __KERNEL_SYS_PORT_H__
 
-/* Put far data in RAM for now. */
-#define FAR const
-
 #define SYS_SETTINGS_APP_BASE 0x100
 
 static inline uint32_t htonl(uint32_t v)

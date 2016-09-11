@@ -39,7 +39,7 @@ esp01.build.flash_mode=dio
 esp01.build.flash_freq=40
 
 esp01.compiler.c.extra_flags={esp01_compiler_c_extra_flags}
-esp01.compiler.cpp.extra_flags={{c.extra_flags}}
+esp01.compiler.cpp.extra_flags={esp01_compiler_cxx_extra_flags}
 esp01.compiler.c.elf.extra_flags={esp01_compiler_c_elf_extra_flags}
 esp01.compiler.c.elf.extra_flags_after={esp01_compiler_c_elf_extra_flags_after}
 
@@ -66,7 +66,7 @@ esp12e.build.flash_mode=dio
 esp12e.build.flash_freq=40
 
 esp12e.compiler.c.extra_flags={esp12e_compiler_c_extra_flags}
-esp12e.compiler.cpp.extra_flags={{c.extra_flags}}
+esp12e.compiler.cpp.extra_flags={esp12e_compiler_cxx_extra_flags}
 esp12e.compiler.c.elf.extra_flags={esp12e_compiler_c_elf_extra_flags}
 esp12e.compiler.c.elf.extra_flags_after={esp12e_compiler_c_elf_extra_flags_after}
 

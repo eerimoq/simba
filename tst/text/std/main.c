@@ -31,7 +31,7 @@ static ssize_t test_vprintf_wrapper(FAR const char *fmt_p, ...)
     return (res);
 }
 
-static ssize_t test_vfprintf_wrapper(chan_t *chan_p,
+static ssize_t test_vfprintf_wrapper(void *chan_p,
                                      FAR const char *fmt_p,
                                      ...)
 {

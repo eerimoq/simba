@@ -28,7 +28,7 @@ compiler.path={runtime.tools.avr-gcc.path}/bin/
 compiler.c.cmd=avr-gcc
 compiler.c.flags=-MMD -DARDUINO={runtime.ide.version} -x c
 compiler.c.elf.flags=-O2 -mmcu={build.mcu} -Wl,--gc-sections -Wl,--defsym=__main_stack_end={build.main_stack_end}
-compiler.c.elf.cmd=avr-gcc
+compiler.c.elf.cmd=avr-g++
 compiler.S.flags=-c -g -assembler-with-cpp -mmcu={build.mcu} -DARDUINO={runtime.ide.version}
 compiler.cpp.cmd=avr-g++
 compiler.cpp.flags=-fno-exceptions -MMD -DARDUINO={runtime.ide.version}
@@ -61,7 +61,7 @@ compiler.elf2hex.extra_flags=
 recipe.c.o.pattern="{compiler.path}{compiler.c.cmd}" {compiler.c.flags} {compiler.c.extra_flags} {build.extra_flags} {includes} "{source_file}" -o "{object_file}"
 
 ## Compile c++ files
-recipe.cpp.o.pattern="{compiler.path}{compiler.c.cmd}" {compiler.c.flags} {compiler.c.extra_flags} {build.extra_flags} {includes} "{source_file}" -o "{object_file}"
+recipe.cpp.o.pattern="{compiler.path}{compiler.cpp.cmd}" {compiler.cpp.flags} {compiler.cpp.extra_flags} {build.extra_flags} {includes} "{source_file}" -o "{object_file}"
 
 ## Compile S files
 recipe.S.o.pattern="{compiler.path}{compiler.c.cmd}" {compiler.S.flags} {compiler.S.extra_flags} {build.extra_flags} {includes} "{source_file}" -o "{object_file}"

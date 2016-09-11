@@ -79,7 +79,7 @@
  *               membersof(foo));
  * @endrst
  */
-#define membersof(a) (sizeof(a) / sizeof((a)[0]))
+#define membersof(a) ((ssize_t)(sizeof(a) / sizeof((a)[0])))
 
 #define container_of(ptr, type, member)                         \
     ({                                                          \

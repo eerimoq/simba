@@ -22,6 +22,8 @@
 
 #define FAR
 
+typedef const FAR char *far_string_t;
+
 #define FSTR(s) s
 
 #define PACKED __attribute__((packed))

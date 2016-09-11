@@ -286,7 +286,7 @@ extern struct usb_device_t usb_device[USB_DEVICE_MAX];
  *
  * @return zero(0) or negative error code.
  */
-int usb_format_descriptors(chan_t *out_p,
+int usb_format_descriptors(void *out_p,
                            uint8_t *buf_p,
                            size_t size);
 

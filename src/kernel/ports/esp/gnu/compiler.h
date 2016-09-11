@@ -21,7 +21,9 @@
 #define __KERNEL_COMPILER_H__
 
 /* Put far data in RAM for now. */
-#define FAR const
+#define FAR
+
+typedef const FAR char *far_string_t;
 
 /**
  * @brief Stores string literal in FAR memory.

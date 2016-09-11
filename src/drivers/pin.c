@@ -40,8 +40,8 @@ struct module_t module;
 
 static int cmd_set_mode_cb(int argc,
                            const char *argv[],
-                           chan_t *out_p,
-                           chan_t *in_p,
+                           void *out_p,
+                           void *in_p,
                            void *arg_p,
                            void *call_arg_p)
 {
@@ -86,8 +86,8 @@ static int cmd_set_mode_cb(int argc,
 
 static int cmd_read_cb(int argc,
                        const char *argv[],
-                       chan_t *out_p,
-                       chan_t *in_p,
+                       void *out_p,
+                       void *in_p,
                        void *arg_p,
                        void *call_arg_p)
 {
@@ -126,8 +126,8 @@ static int cmd_read_cb(int argc,
 
 static int cmd_write_cb(int argc,
                         const char *argv[],
-                        chan_t *out_p,
-                        chan_t *in_p,
+                        void *out_p,
+                        void *in_p,
                         void *arg_p,
                         void *call_arg_p)
 {

@@ -30,7 +30,7 @@ struct bus_t {
 struct bus_listener_t {
     struct binary_tree_node_t base;
     int id;
-    chan_t *chan_p;
+    void *chan_p;
     struct bus_listener_t *next_p;
 };
 
@@ -68,7 +68,7 @@ int bus_init(struct bus_t *self_p);
  */
 int bus_listener_init(struct bus_listener_t *self_p,
                       int id,
-                      chan_t *chan_p);
+                      void *chan_p);
 
 /**
  * Attach given listener to given bus. Messages written to the bus

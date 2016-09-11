@@ -29,6 +29,7 @@
 #define THRD_PORT_STACK(name, size) char name[sizeof(struct thrd_t) + (size)]
 
 struct thrd_port_t {
+    void *arg_p;
     pthread_t thrd;
     pthread_mutex_t mutex;
     pthread_cond_t cond;

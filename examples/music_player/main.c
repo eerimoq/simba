@@ -312,8 +312,8 @@ static const char *get_next_song_path(void *arg_p)
 
 static int cmd_list_cb(int argc,
                        const char *argv[],
-                       chan_t *out_p,
-                       chan_t *in_p,
+                       void *out_p,
+                       void *in_p,
                        void *arg_p,
                        void *call_arg_p)
 {
@@ -347,8 +347,8 @@ static int cmd_list_cb(int argc,
 
 static int cmd_play_cb(int argc,
                        const char *argv[],
-                       chan_t *out_p,
-                       chan_t *in_p,
+                       void *out_p,
+                       void *in_p,
                        void *arg_p,
                        void *call_arg_p)
 {
@@ -386,8 +386,8 @@ static int cmd_play_cb(int argc,
 
 static int cmd_pause_cb(int argc,
                         const char *argv[],
-                        chan_t *out_p,
-                        chan_t *in_p,
+                        void *out_p,
+                        void *in_p,
                         void *arg_p,
                         void *call_arg_p)
 {
@@ -402,8 +402,8 @@ static int cmd_pause_cb(int argc,
 
 static int cmd_next_cb(int argc,
                        const char *argv[],
-                       chan_t *out_p,
-                       chan_t *in_p,
+                       void *out_p,
+                       void *in_p,
                        void *arg_p,
                        void *call_arg_p)
 {
@@ -418,8 +418,8 @@ static int cmd_next_cb(int argc,
 
 static int cmd_prev_cb(int argc,
                        const char *argv[],
-                       chan_t *out_p,
-                       chan_t *in_p,
+                       void *out_p,
+                       void *in_p,
                        void *arg_p,
                        void *call_arg_p)
 {
@@ -434,8 +434,8 @@ static int cmd_prev_cb(int argc,
 
 static int cmd_stop_cb(int argc,
                        const char *argv[],
-                       chan_t *out_p,
-                       chan_t *in_p,
+                       void *out_p,
+                       void *in_p,
                        void *arg_p,
                        void *call_arg_p)
 {
@@ -450,8 +450,8 @@ static int cmd_stop_cb(int argc,
 
 static int cmd_repeat_cb(int argc,
                          const char *argv[],
-                         chan_t *out_p,
-                         chan_t *in_p,
+                         void *out_p,
+                         void *in_p,
                          void *arg_p,
                          void *call_arg_p)
 {
@@ -468,8 +468,8 @@ static int cmd_repeat_cb(int argc,
 
 static int cmd_set_bits_per_sample_cb(int argc,
                                       const char *argv[],
-                                      chan_t *out_p,
-                                      chan_t *in_p,
+                                      void *out_p,
+                                      void *in_p,
                                       void *arg_p,
                                       void *call_arg_p)
 {

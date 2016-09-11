@@ -59,27 +59,27 @@ int console_stop(void);
  *
  * @return zero(0) or negative error code.
  */
-int console_set_input_channel(chan_t *chan_p);
+int console_set_input_channel(void *chan_p);
 
 /**
  * Get the pointer to the input channel.
  *
  * @return Input channel or NULL.
  */
-chan_t *console_get_input_channel(void);
+void *console_get_input_channel(void);
 
 /**
  * Set the pointer to the output channel.
  *
  * @return zero(0) or negative error code.
  */
-chan_t *console_set_output_channel(chan_t *chan_p);
+void *console_set_output_channel(void *chan_p);
 
 /**
  * Get the pointer to the output channel.
  *
  * @return Output channel or NULL.
  */
-chan_t *console_get_output_channel(void);
+void *console_get_output_channel(void);
 
 #endif

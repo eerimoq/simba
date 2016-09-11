@@ -50,8 +50,8 @@ static inline void st2t(sys_tick_t tick, struct time_t *time_p)
 struct sys_t {
     sys_tick_t tick;
     void (*on_fatal_callback)(int error);
-    chan_t *stdin_p;
-    chan_t *stdout_p;
+    void *stdin_p;
+    void *stdout_p;
     struct {
         uint32_t start;
         uint32_t time;
@@ -113,14 +113,14 @@ void sys_set_on_fatal_callback(void (*callback)(int error));
  *
  * @return void.
  */
-void sys_set_stdin(chan_t *chan_p);
+void sys_set_stdin(void *chan_p);
 
 /**
  * Get the standard input channel.
  *
  * @return Standard input channel or NULL.
  */
-chan_t *sys_get_stdin(void);
+void *sys_get_stdin(void);
 
 /**
  * Set the standard output channel.
@@ -129,14 +129,14 @@ chan_t *sys_get_stdin(void);
  *
  * @return void.
  */
-void sys_set_stdout(chan_t *chan_p);
+void sys_set_stdout(void *chan_p);
 
 /**
  * Get the standard output channel.
  *
  * @return Standard output channel or NULL.
  */
-chan_t *sys_get_stdout(void);
+void *sys_get_stdout(void);
 
 /**
  * Take the system lock. Turns off interrupts.
@@ -175,7 +175,7 @@ void sys_unlock_isr(void);
  *
  * @return The pointer to the application information buffer.
  */
-const FAR char *sys_get_info(void);
+far_string_t sys_get_info(void);
 
 /**
  * Get a pointer to the application configuration buffer.
@@ -185,7 +185,7 @@ const FAR char *sys_get_info(void);
  *
  * @return The pointer to the application configuration buffer.
  */
-const FAR char *sys_get_config(void);
+far_string_t sys_get_config(void);
 
 /**
  * Get the current interrupt cpu usage counter.

@@ -177,7 +177,7 @@ ssize_t json_dumps(struct json_t *self_p,
  */
 ssize_t json_dump(struct json_t *self_p,
                   struct json_tok_t *tokens_p,
-                  chan_t *out_p);
+                  void *out_p);
 
 /**
  * Get the root token.

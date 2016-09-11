@@ -35,8 +35,8 @@ struct shell_line_t {
 };
 
 struct shell_t {
-    chan_t *chin_p;
-    chan_t *chout_p;
+    void *chin_p;
+    void *chout_p;
     void *arg_p;
     const char *name_p;
     const char *username_p;
@@ -94,8 +94,8 @@ int shell_module_init(void);
  *                       `username_p` is NULL.
  */
 int shell_init(struct shell_t *self_p,
-               chan_t *chin_p,
-               chan_t *chout_p,
+               void *chin_p,
+               void *chout_p,
                void *arg_p,
                const char *name_p,
                const char *username_p,

@@ -61,8 +61,8 @@ static struct module_t module;
  */
 static int cmd_print_cb(int argc,
                         const char *argv[],
-                        chan_t *out_p,
-                        chan_t *in_p,
+                        void *out_p,
+                        void *in_p,
                         void *arg_p,
                         void *call_arg_p)
 {
@@ -87,8 +87,8 @@ static int cmd_print_cb(int argc,
  */
 static int cmd_list_cb(int argc,
                        const char *argv[],
-                       chan_t *out_p,
-                       chan_t *in_p,
+                       void *out_p,
+                       void *in_p,
                        void *arg_p,
                        void *call_arg_p)
 {
@@ -129,8 +129,8 @@ static int cmd_list_cb(int argc,
  */
 static int cmd_set_log_mask_cb(int argc,
                                const char *argv[],
-                               chan_t *out_p,
-                               chan_t *in_p,
+                               void *out_p,
+                               void *in_p,
                                void *arg_p,
                                void *call_arg_p)
 {
@@ -322,7 +322,7 @@ int log_remove_object(struct log_object_t *object_p)
     return (1);
 }
 
-int log_set_default_handler_output_channel(chan_t *chout_p)
+int log_set_default_handler_output_channel(void *chout_p)
 {
     module.handler.chout_p = chout_p;
 
@@ -330,7 +330,7 @@ int log_set_default_handler_output_channel(chan_t *chout_p)
 }
 
 int log_handler_init(struct log_handler_t *self_p,
-                     chan_t *chout_p)
+                     void *chout_p)
 {
     ASSERTN(self_p != NULL, EINVAL);
     ASSERTN(chout_p != NULL, EINVAL);
@@ -388,7 +388,7 @@ int log_object_print(struct log_object_t *self_p,
     va_list ap;
     struct time_t now;
     struct log_handler_t *handler_p;
-    chan_t *chout_p;
+    void *chout_p;
     int count;
     const char *name_p;
 

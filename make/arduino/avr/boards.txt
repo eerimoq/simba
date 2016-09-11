@@ -39,7 +39,7 @@ mega2560.build.main_stack_end=0x802200
 
 mega2560.compiler.c.extra_flags={mega2560_compiler_c_extra_flags}
 
-mega2560.compiler.cpp.extra_flags={{c.extra_flags}}
+mega2560.compiler.cpp.extra_flags={mega2560_compiler_cxx_extra_flags}
 
 ##################################################################
 
@@ -65,7 +65,7 @@ nano.build.main_stack_end=0x800900
 
 nano.compiler.c.extra_flags={nano_compiler_c_extra_flags}
 
-nano.compiler.cpp.extra_flags={{c.extra_flags}}
+nano.compiler.cpp.extra_flags={nano_compiler_cxx_extra_flags}
 
 ##################################################################
 
@@ -91,7 +91,7 @@ uno.build.main_stack_end=0x800900
 
 uno.compiler.c.extra_flags={uno_compiler_c_extra_flags}
 
-uno.compiler.cpp.extra_flags={{c.extra_flags}}
+uno.compiler.cpp.extra_flags={uno_compiler_cxx_extra_flags}
 
 ##################################################################
 
@@ -121,6 +121,6 @@ pro-micro.build.main_stack_end=0x800900
 
 pro-micro.compiler.c.extra_flags={pro_micro_compiler_c_extra_flags}
 
-pro-micro.compiler.cpp.extra_flags={{c.extra_flags}}
+pro-micro.compiler.cpp.extra_flags={pro_micro_compiler_cxx_extra_flags}
 
 ##################################################################

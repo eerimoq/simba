@@ -117,6 +117,10 @@ def main():
         cflags = get_make_variable(board, "CFLAGS").split()
         database["boards"][board]["cflags"] = cflags
 
+        # Get CXXFLAGS.
+        cxxflags = get_make_variable(board, "CXXFLAGS").split()
+        database["boards"][board]["cxxflags"] = cxxflags
+
         # Get CDEFS.
         cdefs = get_make_variable(board, "CDEFS").split()
         database["boards"][board]["cdefs"] = cdefs

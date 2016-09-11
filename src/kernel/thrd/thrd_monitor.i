@@ -36,8 +36,8 @@ static THRD_STACK(monitor_thrd_stack, THRD_MONITOR_STACK_MAX);
 
 static int cmd_monitor_set_period_ms_cb(int argc,
                                         const char *argv[],
-                                        chan_t *out_p,
-                                        chan_t *in_p,
+                                        void *out_p,
+                                        void *in_p,
                                         void *arg_p,
                                         void *call_arg_p)
 {
@@ -60,8 +60,8 @@ static int cmd_monitor_set_period_ms_cb(int argc,
 
 static int cmd_monitor_set_print_cb(int argc,
                                     const char *argv[],
-                                    chan_t *out_p,
-                                    chan_t *in_p,
+                                    void *out_p,
+                                    void *in_p,
                                     void *arg_p,
                                     void *call_arg_p)
 {

@@ -26,14 +26,14 @@ static struct queue_t qoutput;
 static char qinputbuf[256];
 static char qoutputbuf[256];
 
-static ssize_t read(chan_t *self_p,
+static ssize_t read(void *self_p,
                     void *buf_p,
                     size_t size)
 {
     return (queue_read(&qinput, buf_p, size));
 }
 
-static ssize_t write(chan_t *self_p,
+static ssize_t write(void *self_p,
                      const void *buf_p,
                      size_t size)
 {

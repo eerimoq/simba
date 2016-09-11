@@ -20,7 +20,28 @@
 #ifndef __KERNEL_COMPILER_H__
 #define __KERNEL_COMPILER_H__
 
+#if __cplusplus
+
+#include <avr/pgmspace.h>
+
+#define FAR
+
+#define __PROGMEM PROGMEM
+
+typedef const PROGMEM class prog_str *far_string_t;
+
+#define FSTR(s)                                                         \
+    (__extension__(							\
+                   {                                                    \
+                       static const char __c[] __PROGMEM = (s);         \
+                       (far_string_t) &__c[0];                        \
+                   }                                                    \
+                                                                        ))  
+#else
+
 #define FAR __flash
+
+typedef const FAR char *far_string_t;
 
 /**
  * @brief Stores string literal in FAR memory.
@@ -32,6 +53,8 @@
                        __c;                                             \
                    }                                                    \
                                                                         ))
+
+#endif
 
 #define PACKED __attribute__((packed))
 

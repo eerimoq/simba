@@ -26,7 +26,7 @@
  * Output channel callback. Called when the user writes dat ato the
  * driver.
  */
-static ssize_t write_cb(chan_t *chan_p,
+static ssize_t write_cb(void *chan_p,
                         const void *buf_p,
                         size_t size)
 {
@@ -199,7 +199,7 @@ static int setup_isr(struct usb_device_driver_base_t *base_p,
 #if CONFIG_FS_CMD_USB_DEVICE_LIST == 1
 
 static int print(struct usb_device_driver_base_t *base_p,
-                 chan_t *chout_p)
+                 void *chout_p)
 {
     struct usb_device_class_cdc_driver_t *self_p;
 

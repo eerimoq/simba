@@ -28,8 +28,8 @@
 
 struct bootloader_uds_t {
     int state;
-    chan_t *chin_p;
-    chan_t *chout_p;
+    void *chin_p;
+    void *chout_p;
     uint32_t application_address;
     uint32_t application_size;
     struct flash_driver_t *flash_p;
@@ -59,8 +59,8 @@ struct bootloader_uds_t {
  * @returns zero(0) or negative error code.
  */
 int bootloader_uds_init(struct bootloader_uds_t *self_p,
-                        chan_t *chin_p,
-                        chan_t *chout_p,
+                        void *chin_p,
+                        void *chout_p,
                         uint32_t application_address,
                         uint32_t application_size,
                         struct flash_driver_t *flash_p);

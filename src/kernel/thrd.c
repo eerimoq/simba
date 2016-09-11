@@ -330,8 +330,8 @@ static char *state_fmt[] = {
 
 static int cmd_list_cb(int argc,
                        const char *argv[],
-                       chan_t *chout_p,
-                       chan_t *chin_p,
+                       void *chout_p,
+                       void *chin_p,
                        void *arg_p,
                        void *call_arg_p)
 {
@@ -382,8 +382,8 @@ static int cmd_list_cb(int argc,
 
 static int cmd_set_log_mask_cb(int argc,
                                const char *argv[],
-                               chan_t *chout_p,
-                               chan_t *chin_p,
+                               void *chout_p,
+                               void *chin_p,
                                void *arg_p,
                                void *call_arg_p)
 {

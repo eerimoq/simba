@@ -51,7 +51,7 @@ struct dump_t {
     struct json_t *self_p;
     struct json_tok_t *tokens_p;
     int num_tokens;
-    chan_t *out_p;
+    void *out_p;
 };
 
 struct string_t {
@@ -787,7 +787,7 @@ ssize_t json_dumps(struct json_t *self_p,
 
 ssize_t json_dump(struct json_t *self_p,
                   struct json_tok_t *tokens_p,
-                  chan_t *out_p)
+                  void *out_p)
 {
     ASSERTN(self_p != NULL, -EINVAL);
     ASSERTN(out_p != NULL, -EINVAL);

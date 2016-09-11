@@ -107,7 +107,7 @@ static const char *get_str_by_id(const struct id_str_t *id_str_map_p,
     return (NULL);
 }
 
-int usb_format_descriptors(chan_t *out_p,
+int usb_format_descriptors(void *out_p,
                            uint8_t *buf_p,
                            size_t size)
 {

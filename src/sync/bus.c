@@ -36,7 +36,7 @@ int bus_init(struct bus_t *self_p)
 
 int bus_listener_init(struct bus_listener_t *self_p,
                       int id,
-                      chan_t *chan_p)
+                      void *chan_p)
 {
     ASSERTN(self_p != NULL, EINVAL);
     ASSERTN(chan_p != NULL, EINVAL);

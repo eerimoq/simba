@@ -61,7 +61,7 @@ static struct module_t module;
 static char empty_path[] = "";
 
 static int counter_get(struct fs_counter_t *counter_p,
-                       chan_t *chout_p)
+                       void *chout_p)
 {
     std_fprintf(chout_p,
                 FSTR("%08lx%08lx\r\n"),
@@ -80,8 +80,8 @@ static int counter_set(struct fs_counter_t *counter_p)
 
 static int cmd_parameter_cb(int argc,
                             const char *argv[],
-                            chan_t *chout_p,
-                            chan_t *chin_p,
+                            void *chout_p,
+                            void *chin_p,
                             void *arg_p,
                             void *call_arg_p)
 {
@@ -104,8 +104,8 @@ static int cmd_parameter_cb(int argc,
 
 static int cmd_filesystems_list_cb(int argc,
                                    const char *argv[],
-                                   chan_t *chout_p,
-                                   chan_t *chin_p,
+                                   void *chout_p,
+                                   void *chin_p,
                                    void *arg_p,
                                    void *call_arg_p)
 {
@@ -148,8 +148,8 @@ static int cmd_filesystems_list_cb(int argc,
 
 static int cmd_read_cb(int argc,
                        const char *argv[],
-                       chan_t *chout_p,
-                       chan_t *chin_p,
+                       void *chout_p,
+                       void *chin_p,
                        void *arg_p,
                        void *call_arg_p)
 {
@@ -184,8 +184,8 @@ static int cmd_read_cb(int argc,
 
 static int cmd_write_cb(int argc,
                         const char *argv[],
-                        chan_t *chout_p,
-                        chan_t *chin_p,
+                        void *chout_p,
+                        void *chin_p,
                         void *arg_p,
                         void *call_arg_p)
 {
@@ -220,8 +220,8 @@ static int cmd_write_cb(int argc,
 
 static int cmd_append_cb(int argc,
                          const char *argv[],
-                         chan_t *chout_p,
-                         chan_t *chin_p,
+                         void *chout_p,
+                         void *chin_p,
                          void *arg_p,
                          void *call_arg_p)
 {
@@ -256,8 +256,8 @@ static int cmd_append_cb(int argc,
 
 static int cmd_list_cb(int argc,
                        const char *argv[],
-                       chan_t *chout_p,
-                       chan_t *chin_p,
+                       void *chout_p,
+                       void *chin_p,
                        void *arg_p,
                        void *call_arg_p)
 {
@@ -275,8 +275,8 @@ static int cmd_list_cb(int argc,
 
 static int cmd_counters_list_cb(int argc,
                                 const char *argv[],
-                                chan_t *chout_p,
-                                chan_t *chin_p,
+                                void *chout_p,
+                                void *chin_p,
                                 void *arg_p,
                                 void *call_arg_p)
 {
@@ -310,8 +310,8 @@ static int cmd_counters_list_cb(int argc,
 
 static int cmd_counters_reset_cb(int argc,
                                  const char *argv[],
-                                 chan_t *chout_p,
-                                 chan_t *chin_p,
+                                 void *chout_p,
+                                 void *chin_p,
                                  void *arg_p,
                                  void *call_arg_p)
 {
@@ -339,8 +339,8 @@ static int cmd_counters_reset_cb(int argc,
 
 static int cmd_parameters_list_cb(int argc,
                                   const char *argv[],
-                                  chan_t *chout_p,
-                                  chan_t *chin_p,
+                                  void *chout_p,
+                                  void *chin_p,
                                   void *arg_p,
                                   void *call_arg_p)
 {
@@ -454,8 +454,8 @@ static int command_parse(char *command_p, const char *argv[])
 
 static int cmd_counter_cb(int argc,
                           const char *argv[],
-                          chan_t *chout_p,
-                          chan_t *chin_p,
+                          void *chout_p,
+                          void *chin_p,
                           void *arg_p,
                           void *call_arg_p)
 {
@@ -563,8 +563,8 @@ int fs_module_init()
 }
 
 int fs_call(char *command_p,
-            chan_t *chin_p,
-            chan_t *chout_p,
+            void *chin_p,
+            void *chout_p,
             void *arg_p)
 {
     ASSERTN(command_p != NULL, -EINVAL);
@@ -648,7 +648,7 @@ static int get_filesystem_path_from_path(struct fs_filesystem_t **filesystem_pp,
     return (-1);
 }
 
-static int format_entry_fat16(chan_t *chout_p,
+static int format_entry_fat16(void *chout_p,
                               const struct fat16_dir_entry_t *entry_p)
 {
     /* Print modify date/time if requested */
@@ -680,7 +680,7 @@ static int format_entry_fat16(chan_t *chout_p,
  */
 static int ls_fat16(struct fat16_t *fs_p,
                     const char *path_p,
-                    chan_t *chout_p)
+                    void *chout_p)
 {
     struct fat16_dir_t dir;
     struct fat16_dir_entry_t entry;
@@ -702,7 +702,7 @@ static int ls_fat16(struct fat16_t *fs_p,
 
 #if CONFIG_SPIFFS == 1
 
-static int format_entry_spiffs(chan_t *chout_p,
+static int format_entry_spiffs(void *chout_p,
                                const struct spiffs_dirent_t *entry_p)
 {
     /* Print file name with possible blank fill */
@@ -719,7 +719,7 @@ static int format_entry_spiffs(chan_t *chout_p,
  */
 static int ls_spiffs(struct spiffs_t *fs_p,
                      const char *path_p,
-                     chan_t *chout_p)
+                     void *chout_p)
 {
     struct spiffs_dir_t dir;
     struct spiffs_dirent_t entry;
@@ -1089,7 +1089,7 @@ int fs_dir_read(struct fs_dir_t *dir_p,
             strncpy(&entry_p->name[0],
                     &entry.name[0],
                     membersof(entry_p->name));
-            entry_p->name[membersof(entry_p->name)] = '\0';
+            entry_p->name[membersof(entry_p->name) - 1] = '\0';
             entry_p->type = (entry.is_dir == 1 ? FS_TYPE_DIR : FS_TYPE_FILE);
             entry_p->size = entry.size;
             entry_p->latest_mod_date = entry.latest_mod_date;
@@ -1107,7 +1107,7 @@ int fs_dir_read(struct fs_dir_t *dir_p,
                 strncpy(&entry_p->name[0],
                         (const char *)&entry.name[0],
                         membersof(entry_p->name));
-                entry_p->name[membersof(entry_p->name)] = '\0';
+                entry_p->name[membersof(entry_p->name) - 1] = '\0';
                 entry_p->type = entry.type;
                 entry_p->size = entry.size;
             } else {
@@ -1181,7 +1181,7 @@ int fs_stat(const char *path_p, struct fs_stat_t *stat_p)
 
 int fs_ls(const char *path_p,
           const char *filter_p,
-          chan_t *chout_p)
+          void *chout_p)
 {
     ASSERTN(path_p != NULL, -EINVAL);
     ASSERTN(chout_p != NULL, -EINVAL);
@@ -1220,7 +1220,7 @@ int fs_ls(const char *path_p,
 
 int fs_list(const char *path_p,
             const char *filter_p,
-            chan_t *chout_p)
+            void *chout_p)
 {
     ASSERTN(path_p != NULL, -EINVAL);
     ASSERTN(chout_p != NULL, -EINVAL);
@@ -1614,7 +1614,7 @@ int fs_parameter_int_set(void *value_p, const char *src_p)
     return (0);
 }
 
-int fs_parameter_int_print(chan_t *chout_p, void *value_p)
+int fs_parameter_int_print(void *chout_p, void *value_p)
 {
     std_fprintf(chout_p, FSTR("%d"), *(int *)value_p);
 

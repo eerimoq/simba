@@ -31,8 +31,8 @@ static struct shell_t shell;
 
 static int cmd_bootloader_start(int argc,
                                 const char *argv[],
-                                chan_t *out_p,
-                                chan_t *in_p,
+                                void *out_p,
+                                void *in_p,
                                 void *arg_p,
                                 void *call_arg_p)
 {

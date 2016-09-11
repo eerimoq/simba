@@ -31,6 +31,13 @@ CFLAGS += -mmcu=$(CPU) \
           -fpack-struct \
           -fshort-enums
 
+CXXFLAGS += -mmcu=$(CPU) \
+          -O2 \
+          -ffunction-sections \
+          -fdata-sections \
+          -fpack-struct \
+          -fshort-enums
+
 LDFLAGS += -mmcu=$(CPU) \
            -Wl,--cref \
            -Wl,--defsym=__main_stack_end=$(MAIN_STACK_END)

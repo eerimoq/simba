@@ -31,8 +31,8 @@ static struct fs_parameter_t tmp_fie;
 
 static int tmp_foo(int argc,
                    const char *argv[],
-                   chan_t *out_p,
-                   chan_t *in_p,
+                   void *out_p,
+                   void *in_p,
                    void *arg_p,
                    void *call_arg_p)
 {
@@ -49,8 +49,8 @@ static int tmp_foo(int argc,
 
 static int tmp_bar(int argc,
                    const char *argv[],
-                   chan_t *out_p,
-                   chan_t *in_p,
+                   void *out_p,
+                   void *in_p,
                    void *arg_p,
                    void *call_arg_p)
 {

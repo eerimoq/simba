@@ -99,8 +99,8 @@
  */
 typedef int (*fs_callback_t)(int argc,
                              const char *argv[],
-                             chan_t *out_p,
-                             chan_t *in_p,
+                             void *out_p,
+                             void *in_p,
                              void *arg_p,
                              void *call_arg_p);
 
@@ -123,7 +123,7 @@ typedef int (*fs_parameter_set_callback_t)(void *value_p,
  *
  * @return zero(0) or negative error code.
  */
-typedef int (*fs_parameter_print_callback_t)(chan_t *chout_p,
+typedef int (*fs_parameter_print_callback_t)(void *chout_p,
                                              void *value_p);
 
 enum fs_type_t {
@@ -222,8 +222,8 @@ int fs_module_init(void);
  * @return zero(0) or negative error code.
  */
 int fs_call(char *command_p,
-            chan_t *chin_p,
-            chan_t *chout_p,
+            void *chin_p,
+            void *chout_p,
             void *arg_p);
 
 /**
@@ -384,7 +384,7 @@ int fs_mkdir(const char *path_p);
  */
 int fs_ls(const char *path_p,
           const char *filter_p,
-          chan_t *chout_p);
+          void *chout_p);
 
 /**
  * List files (callbacks) and directories in given path. Optionally
@@ -398,7 +398,7 @@ int fs_ls(const char *path_p,
  */
 int fs_list(const char *path_p,
             const char *filter_p,
-            chan_t *chout_p);
+            void *chout_p);
 
 /**
  * Auto-complete given path.
@@ -598,6 +598,6 @@ int fs_parameter_int_set(void *value_p, const char *src_p);
  *
  * @return zero(0) or negative error code.
  */
-int fs_parameter_int_print(chan_t *chout_p, void *value_p);
+int fs_parameter_int_print(void *chout_p, void *value_p);
 
 #endif

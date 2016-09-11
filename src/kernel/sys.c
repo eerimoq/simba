@@ -474,8 +474,8 @@ static int start_network(void)
 
 static int cmd_info_cb(int argc,
                        const char *argv[],
-                       chan_t *out_p,
-                       chan_t *in_p,
+                       void *out_p,
+                       void *in_p,
                        void *arg_p,
                        void *call_arg_p)
 {
@@ -490,8 +490,8 @@ static int cmd_info_cb(int argc,
 
 static int cmd_config_cb(int argc,
                          const char *argv[],
-                         chan_t *out_p,
-                         chan_t *in_p,
+                         void *out_p,
+                         void *in_p,
                          void *arg_p,
                          void *call_arg_p)
 {
@@ -506,8 +506,8 @@ static int cmd_config_cb(int argc,
 
 static int cmd_uptime_cb(int argc,
                          const char *argv[],
-                         chan_t *out_p,
-                         chan_t *in_p,
+                         void *out_p,
+                         void *in_p,
                          void *arg_p,
                          void *call_arg_p)
 {
@@ -613,22 +613,22 @@ void sys_set_on_fatal_callback(void (*callback)(int error))
     sys.on_fatal_callback = callback;
 }
 
-void sys_set_stdin(chan_t *chan_p)
+void sys_set_stdin(void *chan_p)
 {
     sys.stdin_p = chan_p;
 }
 
-chan_t *sys_get_stdin()
+void *sys_get_stdin()
 {
     return (sys.stdin_p);
 }
 
-void sys_set_stdout(chan_t *chan_p)
+void sys_set_stdout(void *chan_p)
 {
     sys.stdout_p = chan_p;
 }
 
-chan_t *sys_get_stdout()
+void *sys_get_stdout()
 {
     return (sys.stdout_p);
 }
@@ -653,12 +653,12 @@ void sys_unlock_isr()
     sys_port_unlock_isr();
 }
 
-const FAR char *sys_get_info()
+far_string_t sys_get_info()
 {
     return (sysinfo);
 }
 
-const FAR char *sys_get_config()
+far_string_t sys_get_config()
 {
     return (config);
 }

@@ -21,6 +21,12 @@
 
 #if defined(ARCH_ESP)
 
+#include "esp_wifi.h"
+#include "esp_sta.h"
+
+static struct station_config station_config;
+static struct ip_info ip_config;
+
 static err_t init()
 {
     return (ERR_OK);
@@ -81,9 +87,9 @@ int network_interface_wifi_station_espressif_init(struct network_interface_wifi_
 
     wifi_set_opmode_current(STATION_MODE);
 
-    memset(&self_p->station_config, 0, sizeof(self_p->station_config));
-    std_sprintf((char *)self_p->station_config.ssid, FSTR("%s"), ssid_p);
-    std_sprintf((char *)self_p->station_config.password,
+    memset(&station_config, 0, sizeof(station_config));
+    std_sprintf((char *)station_config.ssid, FSTR("%s"), ssid_p);
+    std_sprintf((char *)station_config.password,
                 FSTR("%s"), password_p);
 
     return (0);
@@ -93,7 +99,7 @@ int network_interface_wifi_station_espressif_start(struct network_interface_wifi
 {
     ASSERTN(self_p != NULL, -EINVAL);
 
-    wifi_station_set_config(&self_p->station_config);
+    wifi_station_set_config(&station_config);
 
     return (0);
 }
@@ -116,11 +122,11 @@ int network_interface_wifi_station_espressif_get_ip_address(struct network_inter
     ASSERTN(self_p != NULL, -EINVAL);
     ASSERTN(addr_p != NULL, -EINVAL);
 
-    wifi_get_ip_info(STATION_IF, &self_p->ip_config);
+    wifi_get_ip_info(STATION_IF, &ip_config);
 
-    addr_p->number = self_p->ip_config.ip.addr;
+    addr_p->number = ip_config.ip.addr;
 
-    return (self_p->ip_config.ip.addr != 0 ? 0 : -1);
+    return (ip_config.ip.addr != 0 ? 0 : -1);
 }
 
 #endif

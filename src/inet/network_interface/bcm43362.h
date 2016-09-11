@@ -36,7 +36,7 @@ struct network_interface_bcm43362_t {
         uint8_t *buf_p;
         size_t size;
     } frame;
-    chan_t *chout_p;
+    void *chout_p;
     struct network_interface_t network_interface;
 };
 
@@ -63,6 +63,6 @@ int network_interface_bcm43362_init(struct network_interface_bcm43362_t *self_p,
                                 struct inet_ip_addr_t *ipaddr_p,
                                 struct inet_ip_addr_t *netmask_p,
                                 struct inet_ip_addr_t *gw_p,
-                                chan_t *chout_p);
+                                void *chout_p);
 
 #endif

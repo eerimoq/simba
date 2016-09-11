@@ -74,8 +74,8 @@ static int is_shell_command(const char *line_p)
  */
 static int cmd_logout_cb(int argc,
                          const char *argv[],
-                         chan_t *chout_p,
-                         chan_t *chin_p,
+                         void *chout_p,
+                         void *chin_p,
                          void *arg_p,
                          void *call_arg_p)
 {
@@ -219,8 +219,8 @@ static int line_seek_end(struct shell_line_t *self_p)
 
 static int cmd_help_cb(int argc,
                        const char *argv[],
-                       chan_t *chout_p,
-                       chan_t *chin_p,
+                       void *chout_p,
+                       void *chin_p,
                        void *arg_p,
                        void *call_arg_p)
 {
@@ -263,8 +263,8 @@ static int cmd_help_cb(int argc,
 
 static int cmd_history_cb(int argc,
                           const char *argv[],
-                          chan_t *chout_p,
-                          chan_t *chin_p,
+                          void *chout_p,
+                          void *chin_p,
                           void *arg_p,
                           void *call_arg_p)
 {
@@ -1150,8 +1150,8 @@ int shell_module_init()
 }
 
 int shell_init(struct shell_t *self_p,
-               chan_t *chin_p,
-               chan_t *chout_p,
+               void *chin_p,
+               void *chout_p,
                void *arg_p,
                const char *name_p,
                const char *username_p,

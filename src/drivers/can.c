@@ -41,7 +41,7 @@ int can_init(struct can_driver_t *self_p,
 
     chan_init(&self_p->chout,
               chan_read_null,
-              (ssize_t (*)(chan_t *, const void *, size_t))write_cb,
+              (ssize_t (*)(void *, const void *, size_t))write_cb,
               chan_size_null);
 
     queue_init(&self_p->chin, rxbuf_p, size);

@@ -20,19 +20,6 @@
 #ifndef __KERNEL_SYS_PORT_H__
 #define __KERNEL_SYS_PORT_H__
 
-#define FAR __flash
-
-/**
- * @brief Stores string literal in FAR memory.
- */
-#define FSTR(s)                                                         \
-    (__extension__(							\
-                   {                                                    \
-                       static FAR const char __c[] = (s);               \
-                       __c;                                             \
-                   }                                                    \
-                                                                        ))
-
 #define SYS_SETTINGS_APP_BASE 0x100
 
 #define PACKED __attribute__((packed))

@@ -32,21 +32,21 @@ static char qinputbuf[256];
 static char qoutputbuf[256];
 #endif
 
-static ssize_t read(chan_t *self_p,
+static ssize_t read(void *self_p,
                     void *buf_p,
                     size_t size)
 {
     return (queue_read(&qinput, buf_p, size));
 }
 
-static ssize_t write(chan_t *self_p,
+static ssize_t write(void *self_p,
                      const void *buf_p,
                      size_t size)
 {
     return (chan_write(&qoutput, buf_p, size));
 }
 
-static size_t size(chan_t *self_p)
+static size_t size(void *self_p)
 {
     return (0);
 }

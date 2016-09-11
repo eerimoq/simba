@@ -25,7 +25,7 @@
 #define VALUE_BUF_MAX (3 * sizeof(long) + 7)
 
 struct buffered_output_t {
-    chan_t *chan_p;
+    void *chan_p;
     int pos;
     char buffer[CONFIG_STD_OUTPUT_BUFFER_MAX];
     size_t size;
@@ -363,7 +363,7 @@ ssize_t std_snprintf(char *dst_p,
     return (output.size - 1);
 }
  
-ssize_t std_printf(FAR const char *fmt_p, ...)
+ssize_t std_printf(far_string_t fmt_p, ...)
 {
     ASSERTN(fmt_p != NULL, -EINVAL);
 
@@ -403,7 +403,7 @@ ssize_t std_vprintf(FAR const char *fmt_p, va_list *ap_p)
     return (output.size);
 }
 
-ssize_t std_fprintf(chan_t *chan_p, FAR const char *fmt_p, ...)
+ssize_t std_fprintf(void *chan_p, FAR const char *fmt_p, ...)
 {
     ASSERTN(chan_p != NULL, -EINVAL);
     ASSERTN(fmt_p != NULL, -EINVAL);
@@ -423,7 +423,7 @@ ssize_t std_fprintf(chan_t *chan_p, FAR const char *fmt_p, ...)
     return (output.size);
 }
 
-ssize_t std_vfprintf(chan_t *chan_p, FAR const char *fmt_p, va_list *ap_p)
+ssize_t std_vfprintf(void *chan_p, FAR const char *fmt_p, va_list *ap_p)
 {
     ASSERTN(chan_p != NULL, -EINVAL);
     ASSERTN(fmt_p != NULL, -EINVAL);

@@ -169,13 +169,21 @@ def setup_mcu_esp(env, linker_script, flash_size_map):
     env.Replace(LINKFLAGS=linkflags)
     env.Replace(LDSCRIPT_PATH="script.ld")
 
-    ccflags = []
+    cflags = []
 
-    for flag in env["CCFLAGS"]:
+    for flag in env["CFLAGS"]:
         if "-Werror" in flag:
             continue
-        ccflags.append(flag)
-    env.Replace(CCFLAGS=ccflags)
+        cflags.append(flag)
+    env.Replace(CFLAGS=cflags)
+
+    cxxflags = []
+
+    for flag in env["CXXFLAGS"]:
+        if "-Werror" in flag:
+            continue
+        cxxflags.append(flag)
+    env.Replace(CXXFLAGS=cxxflags)
 
     env.Append(LIBS=[
         "-lminic",
@@ -253,7 +261,8 @@ if board not in SUPPORTED_BOARDS:
 add_include_paths(env, BOARDS[board]["inc"])
 env.Append(CPPDEFINES=BOARDS[board]["cdefs"])
 src_filter = create_src_filter(BOARDS[board]["src"])
-env.Replace(CCFLAGS=BOARDS[board]["cflags"])
+env.Replace(CFLAGS=BOARDS[board]["cflags"])
+env.Replace(CXXFLAGS=BOARDS[board]["cxxflags"])
 env.Replace(LINKFLAGS=BOARDS[board]["ldflags"])
 env.Replace(LIBPATH=[os.path.join("$PLATFORMFW_DIR", path)
                      for path in BOARDS[board]["libpath"]])
@@ -334,6 +343,7 @@ def generate_platformio_sconsscript(database, version):
             'cdefs': [cdef for cdef in data['cdefs'] if not cdef.startswith("F_CPU")],
             'src': data['src'],
             'cflags': data['cflags'],
+            'cxxflags': data['cxxflags'],
             'libpath': data['libpath'],
             'ldflags': data['ldflags'],
             'linker_script': data['linker_script'],

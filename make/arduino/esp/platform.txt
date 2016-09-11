@@ -44,8 +44,8 @@ compiler.c.elf.cmd=xtensa-lx106-elf-gcc
 compiler.c.elf.flags=
 compiler.S.cmd=xtensa-lx106-elf-gcc
 compiler.S.flags=-MMD
-compiler.cpp.cmd=xtensa-lx106-elf-gcc
-compiler.cpp.flags=-x c -MMD
+compiler.cpp.cmd=xtensa-lx106-elf-g++
+compiler.cpp.flags=-MMD
 compiler.ar.cmd=xtensa-lx106-elf-ar
 compiler.ar.flags=rcs
 compiler.objcopy.cmd=xtensa-lx106-elf-objcopy
@@ -78,7 +78,7 @@ compiler.elf2hex.extra_flags=
 recipe.c.o.pattern="{compiler.path}{compiler.c.cmd}" {compiler.c.flags} -DARDUINO_{build.board} -DARDUINO_ARCH_{build.arch} {compiler.c.extra_flags} {build.extra_flags} {includes} "{source_file}" -o "{object_file}"
 
 ## Compile c++ files
-recipe.cpp.o.pattern="{compiler.path}{compiler.c.cmd}" {compiler.c.flags} -x c -DARDUINO_{build.board} -DARDUINO_ARCH_{build.arch} {compiler.c.extra_flags} {build.extra_flags} {includes} "{source_file}" -o "{object_file}"
+recipe.cpp.o.pattern="{compiler.path}{compiler.cpp.cmd}" {compiler.cpp.flags} -DARDUINO_{build.board} -DARDUINO_ARCH_{build.arch} {compiler.cpp.extra_flags} {build.extra_flags} {includes} "{source_file}" -o "{object_file}"
 
 ## Compile S files
 recipe.S.o.pattern="{compiler.path}{compiler.S.cmd}" {compiler.S.flags} -DARDUINO_{build.board} -DARDUINO_ARCH_{build.arch} {compiler.S.extra_flags} {build.extra_flags} {includes} "{source_file}" -o "{object_file}"

@@ -19,16 +19,25 @@
 
 CROSS_COMPILE = arm-none-eabi-
 CFLAGS += -Werror
+CXXFLAGS += -Werror
 
 ifeq ($(NDEBUG),yes)
 CFLAGS += -O2
+CXXFLAGS += -O2
 else
 CFLAGS += -g
+CXXFLAGS += -g
 endif
 
 CDEFS += F_CPU=$(F_CPU)UL
 
 CFLAGS += -mthumb \
+          -mcpu=$(MCPU) \
+          -ffunction-sections \
+          -fdata-sections \
+          -fpack-struct
+
+CXXFLAGS += -mthumb \
           -mcpu=$(MCPU) \
           -ffunction-sections \
           -fdata-sections \

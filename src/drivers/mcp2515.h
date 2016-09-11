@@ -70,7 +70,7 @@ int mcp2515_init(struct mcp2515_driver_t *self_p,
                  struct spi_device_t *spi_p,
                  struct pin_device_t *cs_p,
                  struct exti_device_t *exti_p,
-                 chan_t *chin_p,
+                 void *chin_p,
                  int mode,
                  int speed);
 

@@ -37,8 +37,8 @@ static struct module_t module;
 
 static int cmd_read_cb(int argc,
                        const char *argv[],
-                       chan_t *chout_p,
-                       chan_t *chin_p,
+                       void *chout_p,
+                       void *chin_p,
                        void *arg_p,
                        void *call_arg_p)
 {
@@ -84,8 +84,8 @@ static int cmd_read_cb(int argc,
 
 static int cmd_write_cb(int argc,
                         const char *argv[],
-                        chan_t *chout_p,
-                        chan_t *chin_p,
+                        void *chout_p,
+                        void *chin_p,
                         void *arg_p,
                         void *call_arg_p)
 {

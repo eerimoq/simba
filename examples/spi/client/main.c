@@ -28,8 +28,8 @@ static volatile long temp_max = 290000;
 
 static int cmd_set_min_max_cb(int argc,
                               const char *argv[],
-                              chan_t *out_p,
-                              chan_t *in_p,
+                              void *out_p,
+                              void *in_p,
                               void *arg_p,
                               void *call_arg_p)
 {
