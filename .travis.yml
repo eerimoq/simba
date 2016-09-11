@@ -4,7 +4,7 @@ before_install:
   - sudo apt-get install -qq lcov -y
   - source setup.sh
 
-script: make -s travis -j $(cat /proc/cpuinfo | grep processor | wc -l)
+script: make travis -j $(cat /proc/cpuinfo | grep processor | wc -l)
 
 after_success:
   - make codecov-coverage
