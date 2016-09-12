@@ -282,7 +282,7 @@ static int test_command(struct harness_t *harness_p)
 static int test_counter(struct harness_t *harness_p)
 {
     char buf[384];
-    
+
     strcpy(buf, "filesystems/fs/counters/list");
     BTASSERT(fs_call(buf, NULL, &qout, NULL) == 0);
     read_until(buf, "/your/counter                                        0000000000000000\r\n");
@@ -451,7 +451,9 @@ static int test_filesystem_fat16(struct harness_t *harness_p)
     char buf[32];
     struct fs_file_t file;
     struct fs_stat_t stat;
-    
+    struct fs_dir_t dir;
+    struct fs_dir_entry_t entry;
+
     /* Initialize a FAT16 file system in RAM, format and mount it. */
     BTASSERT(fat16_init(&fat16_fs,
                         filesystem_fat16_read_block,
@@ -489,6 +491,21 @@ static int test_filesystem_fat16(struct harness_t *harness_p)
     BTASSERT(stat.size == 64);
     BTASSERT(stat.type == 2);
 
+    /* List all files in the root directory. */
+    BTASSERT(fs_dir_open(&dir, "/fat16fs", FS_READ) == 0);
+
+    BTASSERT(fs_dir_read(&dir, &entry) == 1);
+    BTASSERT(strcmp(entry.name, "FOO.TXT") == 0);
+    BTASSERT(entry.type == FS_TYPE_FILE);
+
+    BTASSERT(fs_dir_read(&dir, &entry) == 1);
+    BTASSERT(strcmp(entry.name, "MKDIR") == 0);
+    BTASSERT(entry.type == FS_TYPE_DIR);
+
+    BTASSERT(fs_dir_read(&dir, &entry) == 0);
+
+    BTASSERT(fs_dir_close(&dir) == 0);
+
     return (0);
 
 #else
@@ -505,6 +522,8 @@ static int test_filesystem_spiffs(struct harness_t *harness_p)
     char buf[32];
     struct fs_file_t file;
     struct fs_stat_t stat;
+    struct fs_dir_t dir;
+    struct fs_dir_entry_t entry;
 
     /* Initiate the config struct. */
     config.hal_read_f = filesystem_spiffs_read;
@@ -561,7 +580,18 @@ static int test_filesystem_spiffs(struct harness_t *harness_p)
 
     /* Fail to create an empty directory called mkdir. */
     BTASSERT(fs_mkdir("/spiffsfs/mkdir") == -1);
-    
+
+    /* List all files in the root directory. */
+    BTASSERT(fs_dir_open(&dir, "/spiffsfs", FS_READ) == 0);
+
+    BTASSERT(fs_dir_read(&dir, &entry) == 1);
+    BTASSERT(strcmp(entry.name, "foo.txt") == 0);
+    BTASSERT(entry.type == FS_TYPE_FILE);
+
+    BTASSERT(fs_dir_read(&dir, &entry) == 0);
+
+    BTASSERT(fs_dir_close(&dir) == 0);
+
     return (0);
 
 #else
@@ -581,7 +611,7 @@ static int test_filesystem(struct harness_t *harness_p)
     BTASSERT(fs_stat("/apa", &stat) == -1);
     BTASSERT(fs_stat("/fat16fs/apa", &stat) == -1);
     BTASSERT(fs_stat("/spiffsfs/apa", &stat) == -1);
-    
+
     return (0);
 
 #else
