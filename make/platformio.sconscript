@@ -1208,6 +1208,7 @@ BOARDS = {
             "src/inet/http_server.c", 
             "src/multimedia/midi.c", 
             "src/kernel/sys.c", 
+            "src/drivers/exti.c",
             "src/drivers/spi.c", 
             "src/inet/network_interface.c", 
             "src/inet/http_websocket_server.c", 
