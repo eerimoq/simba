@@ -36,20 +36,22 @@ void gpio_pin_intr_state_set(uint32 i, uint32 intr_state)
     portEXIT_CRITICAL();
 }
 
-extern int count;
+extern volatile int count;
 
 void on_d4_click(void *arg)
 {
     portENTER_CRITICAL();
     gpio_pin_intr_state_set(GPIO_ID_PIN(2), 0);
+    GPIO_REG_WRITE(GPIO_STATUS_W1TC_ADDRESS, 0x0000FFFF);
+    //std_printf("hhhh\r\n");
     count++;
-    gpio_pin_intr_state_set(GPIO_ID_PIN(2), 1);
+    gpio_pin_intr_state_set(GPIO_ID_PIN(2), 3);
     portEXIT_CRITICAL();
 }
 
 static int exti_port_module_init()
 {
-    count++;
+    std_printf("exti_port_module_init");
     _xt_isr_attach(ETS_GPIO_INUM, on_d4_click, &count);
     _xt_isr_unmask(1<<ETS_GPIO_INUM);
     return (0);
@@ -64,8 +66,8 @@ int exti_port_init(struct exti_driver_t *drv,
 
 int exti_port_start(struct exti_driver_t *drv)
 {
-    count++;
-    gpio_pin_intr_state_set(drv->dev_p, 1);
+    std_printf("exti_port_start");
+    gpio_pin_intr_state_set(GPIO_ID_PIN(2), 3);
     return (0);
 }
 
