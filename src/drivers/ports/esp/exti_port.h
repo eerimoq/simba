@@ -1,5 +1,5 @@
 /**
- * @file drivers/ports/linux/exti_port.h
+ * @file drivers/ports/esp/exti_port.h
  *
  * @section License
  * Copyright (C) 2014-2016, Erik Moqvist

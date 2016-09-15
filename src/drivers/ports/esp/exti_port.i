@@ -31,13 +31,11 @@ void gpio_pin_intr_state_set(uint32 i, uint32 intr_state)
     portEXIT_CRITICAL();
 }
 
-extern volatile int count;
-
-static void isr(void *arg)
+static void isr(void *arg_p)
 {
     portENTER_CRITICAL();
     for (int i = 0; i < EXTI_DEVICE_MAX; i++) {
-        if ((ESP8266_GPIO->STATUS & BIT(i)) >> i) {
+        if ((ESP8266_GPIO->STATUS & BIT(i)) != 0) {
             //gpio_pin_intr_state_set(i, 0);
             ESP8266_GPIO->STATUS_W1TC = BIT(i);
             exti_device[i].drv_p->on_interrupt(exti_device[i].drv_p->arg_p);
@@ -54,28 +52,21 @@ static int exti_port_module_init()
     return (0);
 }
 
-int exti_port_init(struct exti_driver_t *drv,
-                   struct exti_device_t *dev,
-                   void (*on_interrupt)(struct exti_driver_t *drv))
+int exti_port_start(struct exti_driver_t *self_p)
 {
+    self_p->dev_p->drv_p = self_p;
+    gpio_pin_intr_state_set(self_p->dev_p->pin_p->id, self_p->trigger);
     return (0);
 }
 
-int exti_port_start(struct exti_driver_t *drv)
+int exti_port_stop(struct exti_driver_t *self_p)
 {
-    drv->dev_p->drv_p = drv;
-    gpio_pin_intr_state_set(drv->dev_p->pin_p->id, drv->trigger);
-    return (0);
-}
-
-int exti_port_stop(struct exti_driver_t *drv)
-{
-    gpio_pin_intr_state_set(drv->dev_p->pin_p->id, 0);
+    gpio_pin_intr_state_set(self_p->dev_p->pin_p->id, 0);
     return (0);
 }
 
 static int exti_port_clear(struct exti_driver_t *self_p)
 {
-    ESP8266_GPIO->STATUS_W1TC = 0x0000FFFF;
+    ESP8266_GPIO->STATUS_W1TC = BIT(self_p->dev_p->pin_p->id);
     return (0);
 }
