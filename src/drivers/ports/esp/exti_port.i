@@ -16,44 +16,41 @@
  *
  * This file is part of the Simba project.
  */
-#include "esp8266/ets_sys.h"
-#include "gpio_register.h"
-#include "eagle_soc.h"
-
-#define GPIO_PIN_ADDR(i)        (GPIO_PIN0_ADDRESS + i*4)
 
 void gpio_pin_intr_state_set(uint32 i, uint32 intr_state)
 {
     uint32 pin_reg;
 
     portENTER_CRITICAL();
-    
-    pin_reg = GPIO_REG_READ(GPIO_PIN_ADDR(i));
-    pin_reg &= (~GPIO_PIN_INT_TYPE_MASK);
-    pin_reg |= (intr_state << GPIO_PIN_INT_TYPE_LSB);
-    GPIO_REG_WRITE(GPIO_PIN_ADDR(i), pin_reg);
+
+    pin_reg = ESP8266_GPIO->CONF[i];
+    pin_reg &= (~ESP8266_GPIO_CONF_INT_TYPE_MASK);
+    pin_reg |= (intr_state << ESP8266_GPIO_CONF_INT_TYPE_POS);
+    ESP8266_GPIO->CONF[i] = pin_reg;
 
     portEXIT_CRITICAL();
 }
 
 extern volatile int count;
 
-void on_d4_click(void *arg)
+static void isr(void *arg)
 {
     portENTER_CRITICAL();
-    gpio_pin_intr_state_set(GPIO_ID_PIN(2), 0);
-    GPIO_REG_WRITE(GPIO_STATUS_W1TC_ADDRESS, 0x0000FFFF);
-    //std_printf("hhhh\r\n");
-    count++;
-    gpio_pin_intr_state_set(GPIO_ID_PIN(2), 3);
+    for (int i = 0; i < EXTI_DEVICE_MAX; i++) {
+        if ((ESP8266_GPIO->STATUS & BIT(i)) >> i) {
+            gpio_pin_intr_state_set(i, 0);
+            ESP8266_GPIO->STATUS_W1TC = BIT(i);
+            exti_device[i].drv_p->on_interrupt(exti_device[i].drv_p->arg_p);
+            gpio_pin_intr_state_set(i, exti_device[i].drv_p->trigger);
+        }
+    }
     portEXIT_CRITICAL();
 }
 
 static int exti_port_module_init()
 {
-    std_printf("exti_port_module_init");
-    _xt_isr_attach(ETS_GPIO_INUM, on_d4_click, &count);
-    _xt_isr_unmask(1<<ETS_GPIO_INUM);
+    _xt_isr_attach(ESP8266_IRQ_NUM_GPIO, isr, NULL);
+    _xt_isr_unmask(1<<ESP8266_IRQ_NUM_GPIO);
     return (0);
 }
 
@@ -66,19 +63,19 @@ int exti_port_init(struct exti_driver_t *drv,
 
 int exti_port_start(struct exti_driver_t *drv)
 {
-    std_printf("exti_port_start");
-    gpio_pin_intr_state_set(GPIO_ID_PIN(2), 3);
+    drv->dev_p->drv_p = drv;
+    gpio_pin_intr_state_set(drv->dev_p->pin_p->id, drv->trigger);
     return (0);
 }
 
 int exti_port_stop(struct exti_driver_t *drv)
 {
-    gpio_pin_intr_state_set(GPIO_ID_PIN(2), 0);
+    gpio_pin_intr_state_set(drv->dev_p->pin_p->id, 0);
     return (0);
 }
 
 static int exti_port_clear(struct exti_driver_t *self_p)
 {
-    GPIO_REG_WRITE(GPIO_STATUS_W1TC_ADDRESS, 0x0000FFFF);
+    ESP8266_GPIO->STATUS_W1TC = 0x0000FFFF;
     return (0);
 }
