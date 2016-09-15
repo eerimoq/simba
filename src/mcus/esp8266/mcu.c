@@ -38,6 +38,25 @@ struct pin_device_t pin_device[PIN_DEVICE_MAX] = {
     { .id = 15, .mask = BIT(15), .iomux =  3 }
 };
 
+struct exti_device_t exti_device[EXTI_DEVICE_MAX] = {
+    { .drv_p = NULL, .pin_p = &pin_device[0] },
+    { .drv_p = NULL, .pin_p = &pin_device[1] },
+    { .drv_p = NULL, .pin_p = &pin_device[2] },
+    { .drv_p = NULL, .pin_p = &pin_device[3] },
+    { .drv_p = NULL, .pin_p = &pin_device[4] },
+    { .drv_p = NULL, .pin_p = &pin_device[5] },
+    { .drv_p = NULL, .pin_p = &pin_device[6] },
+    { .drv_p = NULL, .pin_p = &pin_device[7] },
+    { .drv_p = NULL, .pin_p = &pin_device[8] },
+    { .drv_p = NULL, .pin_p = &pin_device[9] },
+    { .drv_p = NULL, .pin_p = &pin_device[10] },
+    { .drv_p = NULL, .pin_p = &pin_device[11] },
+    { .drv_p = NULL, .pin_p = &pin_device[12] },
+    { .drv_p = NULL, .pin_p = &pin_device[13] },
+    { .drv_p = NULL, .pin_p = &pin_device[14] },
+    { .drv_p = NULL, .pin_p = &pin_device[15] }
+};
+
 struct uart_device_t uart_device[UART_DEVICE_MAX] = {
     { .regs_p = ESP8266_UART0 },
     { .regs_p = ESP8266_UART1 }

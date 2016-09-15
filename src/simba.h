@@ -176,6 +176,7 @@ typedef unsigned long off_t;
 #endif
 
 #if defined(FAMILY_ESP)
+#    include "drivers/exti.h"
 #    include "drivers/pin.h"
 #    include "drivers/i2c_soft.h"
 #    include "drivers/spi.h"
