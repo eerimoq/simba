@@ -38,10 +38,10 @@ static void isr(void *arg)
     portENTER_CRITICAL();
     for (int i = 0; i < EXTI_DEVICE_MAX; i++) {
         if ((ESP8266_GPIO->STATUS & BIT(i)) >> i) {
-            gpio_pin_intr_state_set(i, 0);
+            //gpio_pin_intr_state_set(i, 0);
             ESP8266_GPIO->STATUS_W1TC = BIT(i);
             exti_device[i].drv_p->on_interrupt(exti_device[i].drv_p->arg_p);
-            gpio_pin_intr_state_set(i, exti_device[i].drv_p->trigger);
+            //gpio_pin_intr_state_set(i, exti_device[i].drv_p->trigger);
         }
     }
     portEXIT_CRITICAL();
