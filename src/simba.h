@@ -181,6 +181,7 @@ typedef unsigned long off_t;
 #    include "drivers/i2c_soft.h"
 #    include "drivers/spi.h"
 #    include "drivers/uart.h"
+#    include "drivers/uart_soft.h"
 #    include "drivers/adc.h"
 #    include "drivers/analog_input_pin.h"
 #endif
