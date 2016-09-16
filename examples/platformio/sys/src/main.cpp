@@ -149,8 +149,8 @@ static int test_time(struct harness_t *harness_p)
 
 static int test_stdin(struct harness_t *harness_p)
 {
-    chan_t *original_stdin_p;
-    chan_t *stdin_p;
+    void *original_stdin_p;
+    void *stdin_p;
     struct chan_t chan;
 
     original_stdin_p = sys_get_stdin();
@@ -167,8 +167,8 @@ static int test_stdin(struct harness_t *harness_p)
 
 static int test_stdout(struct harness_t *harness_p)
 {
-    chan_t *original_stdout_p;
-    chan_t *stdout_p;
+    void *original_stdout_p;
+    void *stdout_p;
     struct chan_t chan;
 
     original_stdout_p = sys_get_stdout();
