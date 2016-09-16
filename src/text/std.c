@@ -161,7 +161,7 @@ static char *formati(char c,
         value = (unsigned long)va_arg(*ap_p, long);
     }
 
-    if ((c == 'd') && (value & (1UL << (sizeof(value) * CHAR_BIT - 1)))) {
+    if ((c != 'u') && (value & (1UL << (sizeof(value) * CHAR_BIT - 1)))) {
         value *= -1;
         *negative_sign_p = 1;
     }
@@ -299,6 +299,7 @@ static void vcprintf(void (*std_putc)(char c, void *arg_p),
             buf[sizeof(buf) - 2] = (char)va_arg(*ap_p, int);
             s_p = &buf[sizeof(buf) - 2];
             break;
+        case 'i':
         case 'd':
         case 'u':
             s_p = formati(c, &buf[sizeof(buf) - 1], 10, ap_p, length, &negative_sign);
