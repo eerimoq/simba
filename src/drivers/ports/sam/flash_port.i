@@ -155,15 +155,15 @@ static ssize_t bank_page_write(struct flash_device_bank_t *bank_p,
     return (0);
 }
 
-int flash_port_module_init(void)
+static int flash_port_module_init(void)
 {
     return (0);
 }
 
-ssize_t flash_port_read(struct flash_driver_t *self_p,
-                        void *dst_p,
-                        size_t src,
-                        size_t size)
+static ssize_t flash_port_read(struct flash_driver_t *self_p,
+                               void *dst_p,
+                               size_t src,
+                               size_t size)
 {
     struct flash_device_t *dev_p = self_p->dev_p;
 
@@ -174,10 +174,10 @@ ssize_t flash_port_read(struct flash_driver_t *self_p,
     return (size);
 }
 
-ssize_t flash_port_write(struct flash_driver_t *self_p,
-                         size_t dst,
-                         const void *src_p,
-                         size_t size)
+static ssize_t flash_port_write(struct flash_driver_t *self_p,
+                                size_t dst,
+                                const void *src_p,
+                                size_t size)
 {
     ssize_t res = size;
     struct flash_device_t *dev_p;
@@ -212,4 +212,11 @@ ssize_t flash_port_write(struct flash_driver_t *self_p,
     sem_give(&dev_p->sem, 1);
 
     return (res);
+}
+
+static int flash_port_erase(struct flash_driver_t *self_p,
+                            uintptr_t addr,
+                            uint32_t size)
+{
+    return (-1);
 }

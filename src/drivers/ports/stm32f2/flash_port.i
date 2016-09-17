@@ -17,23 +17,30 @@
  * This file is part of the Simba project.
  */
 
-int flash_port_module_init(void)
+static int flash_port_module_init(void)
 {
     return (0);
 }
 
-ssize_t flash_port_read(struct flash_driver_t *self_p,
-                        void *dst_p,
-                        size_t src,
-                        size_t size)
+static ssize_t flash_port_read(struct flash_driver_t *self_p,
+                               void *dst_p,
+                               size_t src,
+                               size_t size)
 {
     return (size);
 }
 
-ssize_t flash_port_write(struct flash_driver_t *self_p,
-                         size_t dst,
-                         const void *src_p,
-                         size_t size)
+static ssize_t flash_port_write(struct flash_driver_t *self_p,
+                                size_t dst,
+                                const void *src_p,
+                                size_t size)
 {
     return (0);
+}
+
+static int flash_port_erase(struct flash_driver_t *self_p,
+                            uintptr_t addr,
+                            uint32_t size)
+{
+    return (-1);
 }
