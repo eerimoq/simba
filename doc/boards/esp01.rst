@@ -31,6 +31,7 @@ Supported drivers for this board.
 - :doc:`../library-reference/drivers/pin`
 - :doc:`../library-reference/drivers/spi`
 - :doc:`../library-reference/drivers/uart`
+- :doc:`../library-reference/drivers/uart_soft`
 
 Library Reference
 -----------------

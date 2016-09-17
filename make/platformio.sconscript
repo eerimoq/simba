@@ -1080,7 +1080,8 @@ BOARDS = {
             "src/inet/http_websocket_client.c", 
             "src/alloc/heap.c", 
             "src/filesystems/fat16.c", 
-            "src/mcus/esp8266/mcu.c"
+            "src/mcus/esp8266/mcu.c", 
+            "src/drivers/uart_soft.c"
         ]
     }, 
     "esp12e": {
@@ -1185,7 +1186,6 @@ BOARDS = {
             "src/filesystems/spiffs.c", 
             "src/hash/sha1.c", 
             "src/drivers/uart.c", 
-            "src/drivers/uart_soft.c",
             "src/inet/mqtt_client.c", 
             "src/sync/queue.c", 
             "src/oam/shell.c", 
@@ -1229,7 +1229,8 @@ BOARDS = {
             "src/inet/http_websocket_client.c", 
             "src/alloc/heap.c", 
             "src/filesystems/fat16.c", 
-            "src/mcus/esp8266/mcu.c"
+            "src/mcus/esp8266/mcu.c", 
+            "src/drivers/uart_soft.c"
         ]
     }, 
     "linux": {

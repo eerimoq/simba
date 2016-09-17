@@ -69,7 +69,7 @@ Below is the memory usage of two applications:
 +==========================+===========+===========+
 | minimal-configuration    |      5526 |       741 |
 +--------------------------+-----------+-----------+
-| default-configuration    |     10774 |       842 |
+| default-configuration    |     10820 |       842 |
 +--------------------------+-----------+-----------+
 
 Default configuration
