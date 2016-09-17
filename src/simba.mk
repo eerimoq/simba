@@ -109,6 +109,7 @@ ifeq ($(FAMILY),esp)
 DRIVERS_SRC ?= adc.c \
                analog_input_pin.c \
                exti.c \
+               flash.c \
                pin.c \
                i2c_soft.c \
                spi.c \

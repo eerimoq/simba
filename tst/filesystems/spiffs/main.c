@@ -85,6 +85,64 @@ static int32_t hal_erase(struct spiffs_t *fs_p,
     return (0);
 }
 
+#elif defined(BOARD_ESP12E) || defined(BOARD_ESP01)
+
+extern char __rom_size;
+
+#define PHY_SIZE                                             0x20000
+#define PHY_ADDR          (uint32_t)((char *)&__rom_size - PHY_SIZE)
+#define PHYS_ERASE_BLOCK                                        4096
+
+#define LOG_BLOCK_SIZE                                          4096
+#define LOG_PAGE_SIZE                                            128
+
+#define FILE_SIZE_MAX                                           4096
+#define CHUNK_SIZE_MAX                                           512
+
+static struct flash_driver_t flash;
+
+static int hal_init(void)
+{
+    BTASSERT(flash_module_init() == 0);
+    BTASSERT(flash_init(&flash, &flash_0_dev) == 0);
+
+    BTASSERT(flash_erase(&flash, PHY_ADDR, PHY_SIZE) == 0);
+    
+    return (0);
+}
+
+
+static int32_t hal_read(struct spiffs_t *fs_p,
+                        uint32_t addr,
+                        uint32_t size,
+                        uint8_t *dst_p)
+{
+    if (flash_read(&flash, dst_p, addr, size) != size) {
+        return (-1);
+    }
+
+    return (0);
+}
+
+static int32_t hal_write(struct spiffs_t *fs_p,
+                         uint32_t addr,
+                         uint32_t size,
+                         uint8_t *src_p)
+{
+    if (flash_write(&flash, addr, src_p, size) != size) {
+        return (-1);
+    }
+
+    return (0);
+}
+
+static int32_t hal_erase(struct spiffs_t *fs_p,
+                         uint32_t addr,
+                         uint32_t size)
+{
+    return (flash_erase(&flash, addr, size));
+}
+
 #else
 
 #define PHY_SIZE         2048
@@ -147,8 +205,8 @@ static int32_t hal_erase(struct spiffs_t *fs_p,
 static struct spiffs_t fs;
 static struct spiffs_config_t config;
 static uint8_t workspace[2 * LOG_PAGE_SIZE];
-static uint8_t fdworkspace[128];
-static uint8_t cache[256];
+static uint8_t fdworkspace[512];
+static uint8_t cache[512];
 
 static int test_init(struct harness_t *harness_p)
 {
