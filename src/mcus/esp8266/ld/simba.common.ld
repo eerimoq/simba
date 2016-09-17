@@ -20,6 +20,10 @@
  *
  */
 
+__rom_begin = ORIGIN(irom0_0_seg);
+__rom_end = ORIGIN(irom0_0_seg) + LENGTH(irom0_0_seg);
+__rom_size = LENGTH(irom0_0_seg);
+
 PHDRS
 {
   dport0_0_phdr PT_LOAD;

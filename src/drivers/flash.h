@@ -60,11 +60,12 @@ int flash_init(struct flash_driver_t *self_p,
  */
 ssize_t flash_read(struct flash_driver_t *self_p,
                    void *dst_p,
-                   size_t src,
+                   uintptr_t src,
                    size_t size);
 
 /**
- * Write data to given flash memory.
+ * Write data to given flash memory. Only erased parts of the memory
+ * can be written to.
  *
  * @param[in] self_p Initialized driver object.
  * @param[in] dst Address in flash memory to write to.
@@ -74,8 +75,21 @@ ssize_t flash_read(struct flash_driver_t *self_p,
  * @return Number of written bytes or negative error code.
  */
 ssize_t flash_write(struct flash_driver_t *self_p,
-                    size_t dst,
+                    uintptr_t dst,
                     const void *src_p,
                     size_t size);
+
+/**
+ * Erase all sectors part of given memory range.
+ *
+ * @param[in] self_p Initialized driver object.
+ * @param[in] dst Address in flash memory to erase from.
+ * @param[in] size Number of bytes to erase.
+ *
+ * @return zero(0) or negative error code.
+ */
+int flash_erase(struct flash_driver_t *self_p,
+                uintptr_t addr,
+                size_t size);
 
 #endif

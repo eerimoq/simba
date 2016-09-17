@@ -71,3 +71,5 @@ struct spi_device_t spi_device[SPI_DEVICE_MAX] = {
         .sem = { .count = 0, .count_max = 1, .head_p = NULL }
     }
 };
+
+struct flash_device_t flash_device[FLASH_DEVICE_MAX];

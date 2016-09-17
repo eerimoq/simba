@@ -183,6 +183,7 @@ typedef unsigned long off_t;
 #    include "drivers/uart.h"
 #    include "drivers/adc.h"
 #    include "drivers/analog_input_pin.h"
+#    include "drivers/flash.h"
 #endif
 
 #if defined(FAMILY_STM32F1)

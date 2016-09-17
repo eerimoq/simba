@@ -44,6 +44,8 @@
 
 #define adc_0_dev adc_device[0]
 
+#define flash_0_dev flash_device[0]
+
 /**
  * Convert given pin string to the pin number.
  *

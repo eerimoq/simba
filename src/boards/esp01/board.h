@@ -30,6 +30,8 @@
 
 #define pin_led_dev pin_device[1]
 
+#define flash_0_dev flash_device[0]
+
 /**
  * Convert given pin string to the pin number.
  *

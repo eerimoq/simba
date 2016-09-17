@@ -75,3 +75,14 @@ ssize_t flash_write(struct flash_driver_t *self_p,
 
     return (flash_port_write(self_p, dst, src_p, size));
 }
+
+int flash_erase(struct flash_driver_t *self_p,
+                size_t addr,
+                size_t size)
+{
+    ASSERTN(self_p != NULL, EINVAL);
+    ASSERTN(addr >= 0, EINVAL);
+    ASSERTN(size > 0, EINVAL);
+
+    return (flash_port_erase(self_p, addr, size));
+}

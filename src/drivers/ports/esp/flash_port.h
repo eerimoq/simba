@@ -1,5 +1,5 @@
 /**
- * @file mcus/esp8266/mcu.h
+ * @file drivers/ports/esp/flash_port.h
  *
  * @section License
  * Copyright (C) 2014-2016, Erik Moqvist
@@ -17,19 +17,14 @@
  * This file is part of the Simba project.
  */
 
-#ifndef __MCU_H__
-#define __MCU_H__
+#ifndef __DRIVERS_FLASH_PORT_H__
+#define __DRIVERS_FLASH_PORT_H__
 
-#include "esp8266.h"
+struct flash_device_t {
+};
 
-#define PIN_DEVICE_MAX  16
-#define EXTI_DEVICE_MAX 16
-
-#define SPI_DEVICE_MAX  1
-#define UART_DEVICE_MAX 2
-/* Timer0 is used for system tick, so two of the PWM pins cannot be used.*/
-#define PWM_DEVICE_MAX  4
-#define ADC_DEVICE_MAX  1
-#define FLASH_DEVICE_MAX 1
+struct flash_driver_t {
+    struct flash_device_t *dev_p;
+};
 
 #endif
