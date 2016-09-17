@@ -1185,6 +1185,7 @@ BOARDS = {
             "src/filesystems/spiffs.c", 
             "src/hash/sha1.c", 
             "src/drivers/uart.c", 
+            "src/drivers/uart_soft.c",
             "src/inet/mqtt_client.c", 
             "src/sync/queue.c", 
             "src/oam/shell.c", 
