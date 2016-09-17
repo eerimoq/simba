@@ -106,9 +106,9 @@ int uart_soft_init(struct uart_soft_driver_t *self_p,
     self_p->sample_time = BAUDRATE2US(baudrate);
 
     chan_init(&self_p->chout,
-              NULL,
+              chan_read_null,
               (ssize_t (*)(void *, const void *, size_t))uart_soft_write_cb,
-              NULL);
+              chan_size_null);
 
     pin_init(&self_p->tx_pin, tx_dev_p, PIN_OUTPUT);
     pin_init(&self_p->rx_pin, rx_dev_p, PIN_INPUT);

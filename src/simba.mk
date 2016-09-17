@@ -112,7 +112,8 @@ DRIVERS_SRC ?= adc.c \
                pin.c \
                i2c_soft.c \
                spi.c \
-               uart.c
+               uart.c \
+               uart_soft.c
 endif
 
 ifeq ($(FAMILY),stm32f1)
