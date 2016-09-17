@@ -19,10 +19,10 @@ Install `Simba` in `PlatformIO`_.
 Install `Simba` in the `Arduino IDE 1.6.10`_ as a third party board using the
 Boards Manager.
 
-1. Open `"File"` -> `"Preferences"`.
+1. Open `File` -> `Preferences`.
 
-2. Add these URL:s to `"Additional Boards Manager URLs"` (click on the
-   icon to the right of the text field) and press `"OK"`.
+2. Add these URL:s to `Additional Boards Manager URLs` (click on the
+   icon to the right of the text field) and press `OK`.
 
    .. code-block:: text
 
@@ -30,20 +30,20 @@ Boards Manager.
       https://sourceforge.net/projects/simba-arduino/files/sam/package_simba_sam_index.json
       https://sourceforge.net/projects/simba-arduino/files/esp/package_simba_esp_index.json
 
-3. Open `"Tools"` -> `"Board: ..."` -> `"Boards Manager..."` and type
-   `"simba"` in the search box.
+3. Open `Tools` -> `Board: ...` -> `Boards Manager...` and type
+   `simba` in the search box.
 
-4. Click on `"Simba by Erik Moqivst version x.y.z"` and click
-   `"Install"` and press `"Close"`.
+4. Click on `Simba by Erik Moqivst version x.y.z` and click
+   `Install` and press `Close`.
 
-5. Open `"Tools"` -> `"Board: ..."` -> `"Boards Manager..."` and
+5. Open `Tools` -> `Board: ...` -> `Boards Manager...` and
    select one of the Simba boards in the list.
 
 6. Open `File` -> `Examples` -> `Simba` -> `hello_world`.
 
-7. Select the Arduino serial port at `"Tools"` -> `"Port: ..."`.
+7. Select the Arduino serial port at `Tools` -> `Port: ...`.
 
-8. Open `"Tools"` -> `"Serial Monitor"` and change the baudrate to
+8. Open `Tools` -> `Serial Monitor` and change the baudrate to
    38400 in the bottom right corner.
 
 9. Verify and upload the sketch to your device.
