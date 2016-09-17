@@ -189,7 +189,8 @@ ifeq ($(BOARD), esp12e)
 				    network_interface/wifi_station_espressif \
 				    ping)
     TESTS += $(addprefix tst/drivers/, pin)
-    TESTS += $(addprefix tst/filesystems/, fs)
+    TESTS += $(addprefix tst/filesystems/, fs \
+                                          spiffs)
 endif
 
 ifeq ($(BOARD), stm32vldiscovery)

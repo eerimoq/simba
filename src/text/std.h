@@ -47,7 +47,7 @@ int std_module_init(void);
  * * flags: ``0`` or ``-``
  * * width: ``0``..``127``
  * * length: ``l`` for long or nothing
- * * specifier: ``c``, ``s``, ``d``, ``u``, ``x`` or ``f``
+ * * specifier: ``c``, ``s``, ``d``, ``i``, ``u``, ``x`` or ``f``
  *
  * @param[out] dst_p Destination buffer. The formatted string is
  *                   written to this buffer.

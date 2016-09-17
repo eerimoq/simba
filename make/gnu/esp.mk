@@ -28,6 +28,7 @@ CFLAGS += -Os \
           -Werror \
           -nostdlib \
           -mlongcalls \
+          -falign-functions=4 \
           -mtext-section-literals \
           -ffunction-sections \
           -fdata-sections

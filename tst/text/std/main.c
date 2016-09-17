@@ -107,7 +107,7 @@ static int test_snprintf(struct harness_t *harness_p)
 
 static int test_vprintf(struct harness_t *harness_p)
 {
-    BTASSERT(test_vprintf_wrapper(FSTR("vprintf: %d\r\n"), 1) == 12);
+    BTASSERT(test_vprintf_wrapper(FSTR("vprintf: %i\r\n"), 1) == 12);
 
     return (0);
 }
