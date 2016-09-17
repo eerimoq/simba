@@ -55,25 +55,53 @@ static int test_read_write(struct harness_t *harness_p)
 
 #elif defined(ARCH_ESP)
 
-extern char __rom_end;
+extern char __rom_size;
+
+#include "espressif/spi_flash.h"
 
 static int test_read_write(struct harness_t *harness_p)
 {
     struct flash_driver_t drv;
-    char name[] = "Kalle kula";
-    char buf[16];
-    uint32_t address;
+    char buf[32];
+    uintptr_t flash_address;
+    uintptr_t ram_address;
 
-    address = ((uintptr_t)&__rom_end - 0x10000);
+    /* Aligned start address*/
+    flash_address = ((uintptr_t)&__rom_size - 0x10000);
+    ram_address = (uintptr_t)&buf[0];
+    ram_address &= 0xfffffffc;
 
     BTASSERT(flash_init(&drv, &flash_0_dev) == 0);
-    BTASSERT(flash_erase(&drv, address, sizeof(name)) == 0);
-    BTASSERT(flash_write(&drv, address, name, sizeof(name)) == sizeof(name));
+    BTASSERT(flash_erase(&drv, flash_address, 0x10000) == 0);
 
+    /* Read and write aligned in ROM and RAM. */
+    strcpy((void *)ram_address, "1234");
+    BTASSERT(flash_write(&drv, flash_address, (void *)ram_address, 5) == 5);
     memset(buf, 0, sizeof(buf));
-    BTASSERT(flash_read(&drv, buf, address, sizeof(buf)) == sizeof(buf));
+    BTASSERT(flash_read(&drv, buf, flash_address, 5) == 5);
+    BTASSERT(strcmp(buf, "1234") == 0);
 
-    BTASSERT(strcmp(name, buf) == 0);
+    /* Read and write non-aligned in ROM and aligned RAM. One is added
+       to the ram address to align the chunk reads. */
+    strcpy((void *)ram_address, "67890123");
+    flash_address += 5;
+    BTASSERT(flash_write(&drv, flash_address, (void *)ram_address, 9) == 9);
+    memset(buf, 0, sizeof(buf));
+    BTASSERT(flash_read(&drv,
+                        (uint32_t *)(ram_address + 1),
+                        flash_address, 9) == 9);
+    BTASSERT(strcmp((void *)(ram_address + 1), "67890123") == 0);
+
+    /* Read and write aligned in ROM and non-aligned RAM. */
+    ram_address++;
+    strcpy((void *)ram_address, "abcdefghij");
+    flash_address += 19; /* 5 + 19 = 24. */
+    BTASSERT(flash_write(&drv, flash_address, (void *)ram_address, 11) == 11);
+    memset(buf, 0, sizeof(buf));
+    BTASSERT(flash_read(&drv,
+                        (uint32_t *)ram_address,
+                        flash_address, 11) == 11);
+    BTASSERT(strcmp((void *)ram_address, "abcdefghij") == 0);
 
     return (0);
 }

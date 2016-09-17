@@ -41,9 +41,13 @@ ssize_t flash_port_read(struct flash_driver_t *self_p,
     uintptr_t aligned_src_end;
     uint32_t alignment_data;
     uint32_t n;
+    uint32_t left;
+    uintptr_t dst;
+    uint32_t buf[64];
 
     aligned_src_begin = (src + 3) & 0xfffffffc;
     aligned_src_end = (src + size) & 0xfffffffc;
+    dst = (uintptr_t)dst_p;
 
     if (aligned_src_end < aligned_src_begin) {
         aligned_src_end = aligned_src_begin;
@@ -59,24 +63,48 @@ ssize_t flash_port_read(struct flash_driver_t *self_p,
             return (-1);
         }
 
-        memcpy(dst_p, &alignment_data + 4 - n, n);
+        memcpy(dst_p, ((char *)&alignment_data) + 4 - n, n);
+        dst += n;
     }
 
     /* Read the aligned data. */
     if (aligned_src_end > aligned_src_begin) {
-        if (spi_flash_read(aligned_src_begin,
-                           (uint32_t*) (dst_p + aligned_src_begin - src),
-                           aligned_src_end - aligned_src_begin)
-            != SPI_FLASH_RESULT_OK) {
-            return (-1);
+        if ((dst & 0x3) == 0) {
+            n = (aligned_src_end - aligned_src_begin);
+
+            if (spi_flash_read(aligned_src_begin,
+                               (uint32_t *)dst,
+                               n) != SPI_FLASH_RESULT_OK) {
+                return (-1);
+            }
+
+            dst += n;
+        } else {
+            /* The data in RAM is not aligned to a 4b boundary. */
+            left = (aligned_src_end - aligned_src_begin);
+
+            while (left > 0) {
+                n = MIN(left, sizeof(buf));
+
+                if (spi_flash_read(aligned_src_begin,
+                                   &buf[0],
+                                   n) != SPI_FLASH_RESULT_OK) {
+                    return (-1);
+                }
+
+                memcpy((void *)dst, buf, n);
+                left -= n;
+                dst += n;
+                aligned_src_begin += n;
+            }
         }
     }
 
     /* Read up to 3 bytes after the flash alignment end address. */
-    if (src + size > aligned_src_end) {
-        n = src + size - aligned_src_end;
+    if ((src + size) > aligned_src_end) {
+        n = (src + size - aligned_src_end);
 
-        if (spi_flash_read(aligned_src_begin - 4,
+        if (spi_flash_read(aligned_src_end,
                            &alignment_data,
                            4) != SPI_FLASH_RESULT_OK) {
             return (-1);
@@ -166,7 +194,7 @@ ssize_t flash_port_write(struct flash_driver_t *self_p,
 
     if (left > 0) {
         alignment_data = 0xffffffff;
-        memcpy(&alignment_data, (uint32_t *)src, left);
+        memcpy(&alignment_data, (void *)src, left);
 
         if (spi_flash_write(aligned_dst_end,
                             &alignment_data,
