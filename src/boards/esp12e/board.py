@@ -6,6 +6,8 @@ import sys
 import subprocess
 import argparse
 import os
+import serial
+import time
 
 
 def subcommand_upload(args):
@@ -16,12 +18,7 @@ def subcommand_upload(args):
     esptool_path = os.path.join(os.environ["SIMBA_ROOT"],
                                 "3pp",
                                 "esptool",
-                                "esptool.py")
-    bootloader_path = os.path.join(os.environ["SIMBA_ROOT"],
-                                   "3pp",
-                                   "ESP8266_RTOS_SDK",
-                                   "bin",
-                                   "boot_v1.4.bin")
+                                "esptool")
 
     attempt = 1
     attempts_max = 5
@@ -30,13 +27,18 @@ def subcommand_upload(args):
         print("Attempt {}/{}.".format(attempt, attempts_max))
 
         try:
+            port = serial.Serial(args.port)
+            port.setRTS(True)
+            port.setDTR(True)
+            time.sleep(0.1)
+            port.setDTR(False)
+
             subprocess.check_call([
-                "python", "-u", esptool_path,
-                "--port", args.port,
-                "--baud", "230400",
-                "write_flash",
-                "0x00000", bootloader_path,
-                "0x01000", args.binary
+                esptool_path,
+                "-cd", "none",
+                "-cb", "230400",
+                "-cp", args.port,
+                "-cf", args.binary
             ])
 
             break

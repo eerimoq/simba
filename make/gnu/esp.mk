@@ -52,16 +52,14 @@ LDFLAGS += -u call_user_start \
 
 RUNARGS = $(BIN)
 
+ESPTOOL = $(SIMBA_ROOT)/3pp/esptool/esptool
+EBOOT_ELF = $(SIMBA_ROOT)/3pp/esp8266Arduino/2.3.0/bootloaders/eboot/eboot.elf
+
 build: $(BIN)
 $(BIN): $(EXE)
-	rm -f eagle.app.flash.bin eagle.app.v6.text.bin eagle.app.v6.data.bin eagle.app.v6.rodata.bin eagle.app.v6.irom0text.bin
-	$(CROSS_COMPILE)objcopy --only-section .text -O binary $< eagle.app.v6.text.bin
-	$(CROSS_COMPILE)objcopy --only-section .data -O binary $< eagle.app.v6.data.bin
-	$(CROSS_COMPILE)objcopy --only-section .rodata -O binary $< eagle.app.v6.rodata.bin
-	$(CROSS_COMPILE)objcopy --only-section .irom0.text -O binary $< eagle.app.v6.irom0text.bin
-	python $(ESP8266_RTOS_SDK_ROOT)/tools/gen_appbin.py $< 2 0 0 $(ESP_FLASH_SIZE_MAP)
-	mv eagle.app.flash.bin $(BIN)
-	rm eagle.app.v6.text.bin eagle.app.v6.data.bin eagle.app.v6.rodata.bin eagle.app.v6.irom0text.bin
-
+	$(ESPTOOL) -eo $(EBOOT_ELF) -bo $@ -bm dio -bf 40 -bz \
+		$(ESP_FLASH_SIZE) -bs .text -bp 4096 -ec \
+		-eo $^ -bs .irom0.text -bs .text -bs .data -bs \
+		.rodata -bc -ec
 
 include $(SIMBA_ROOT)/make/gnu.mk
