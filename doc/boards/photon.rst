@@ -56,9 +56,9 @@ Below is the memory usage of two applications:
 +--------------------------+-----------+-----------+
 | Application              | Flash     | RAM       |
 +==========================+===========+===========+
-| minimal-configuration    |     14668 |      3448 |
+| minimal-configuration    |     15028 |      3360 |
 +--------------------------+-----------+-----------+
-| default-configuration    |     58260 |      6594 |
+| default-configuration    |     59124 |      6770 |
 +--------------------------+-----------+-----------+
 
 Default configuration
@@ -82,6 +82,8 @@ Default Standard Library configuration.
 |  CONFIG_FS_CMD_FS_COUNTERS_RESET_                      |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_FS_CMD_FS_FILESYSTEMS_LIST_                    |  1                                                  |
++--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_FS_CMD_FS_FORMAT_                              |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_FS_CMD_FS_LIST_                                |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
@@ -230,6 +232,8 @@ Mcu
 .. _CONFIG_FS_CMD_FS_COUNTERS_RESET: ../user-guide/configuration.html#c.CONFIG_FS_CMD_FS_COUNTERS_RESET
 
 .. _CONFIG_FS_CMD_FS_FILESYSTEMS_LIST: ../user-guide/configuration.html#c.CONFIG_FS_CMD_FS_FILESYSTEMS_LIST
+
+.. _CONFIG_FS_CMD_FS_FORMAT: ../user-guide/configuration.html#c.CONFIG_FS_CMD_FS_FORMAT
 
 .. _CONFIG_FS_CMD_FS_LIST: ../user-guide/configuration.html#c.CONFIG_FS_CMD_FS_LIST
 

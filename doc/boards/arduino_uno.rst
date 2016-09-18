@@ -94,6 +94,8 @@ Default Standard Library configuration.
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_FS_CMD_FS_FILESYSTEMS_LIST_                    |  0                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_FS_CMD_FS_FORMAT_                              |  0                                                  |
++--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_FS_CMD_FS_LIST_                                |  0                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_FS_CMD_FS_PARAMETERS_LIST_                     |  0                                                  |
@@ -241,6 +243,8 @@ Mcu
 .. _CONFIG_FS_CMD_FS_COUNTERS_RESET: ../user-guide/configuration.html#c.CONFIG_FS_CMD_FS_COUNTERS_RESET
 
 .. _CONFIG_FS_CMD_FS_FILESYSTEMS_LIST: ../user-guide/configuration.html#c.CONFIG_FS_CMD_FS_FILESYSTEMS_LIST
+
+.. _CONFIG_FS_CMD_FS_FORMAT: ../user-guide/configuration.html#c.CONFIG_FS_CMD_FS_FORMAT
 
 .. _CONFIG_FS_CMD_FS_LIST: ../user-guide/configuration.html#c.CONFIG_FS_CMD_FS_LIST
 
