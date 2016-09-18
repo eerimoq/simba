@@ -470,7 +470,7 @@
 #ifndef CONFIG_SPIFFS
 #    if defined(CONFIG_MINIMAL_SYSTEM)
 #        define CONFIG_SPIFFS                               0
-#    elif defined(BOARD_ARDUINO_DUE) || defined(ARCH_LINUX)
+#    elif defined(BOARD_ARDUINO_DUE) || defined(ARCH_LINUX) || defined(ARCH_ESP)
 #        define CONFIG_SPIFFS                               1
 #    else
 #        define CONFIG_SPIFFS                               0
@@ -540,7 +540,7 @@
 #ifndef CONFIG_START_FILESYSTEM
 #    if defined(CONFIG_MINIMAL_SYSTEM)
 #        define CONFIG_START_FILESYSTEM                     0
-#    elif defined(BOARD_ARDUINO_DUE) || defined(ARCH_LINUX)
+#    elif defined(BOARD_ARDUINO_DUE) || defined(ARCH_LINUX) || defined(ARCH_ESP)
 #        define CONFIG_START_FILESYSTEM                     1
 #    else
 #        define CONFIG_START_FILESYSTEM                     0
@@ -553,6 +553,10 @@
 #ifndef CONFIG_START_FILESYSTEM_ADDRESS
 #    if defined(BOARD_ARDUINO_DUE)
 #        define CONFIG_START_FILESYSTEM_ADDRESS    0x000e0000
+#    elif defined(BOARD_ESP01)
+#        define CONFIG_START_FILESYSTEM_ADDRESS    0x0006b000
+#    elif defined(BOARD_ESP12E)
+#        define CONFIG_START_FILESYSTEM_ADDRESS    0x00300000
 #    else
 #        define CONFIG_START_FILESYSTEM_ADDRESS             0
 #    endif
@@ -564,6 +568,10 @@
 #ifndef CONFIG_START_FILESYSTEM_SIZE
 #    if defined(BOARD_ARDUINO_DUE)
 #        define CONFIG_START_FILESYSTEM_SIZE            32768
+#    elif defined(BOARD_ESP01)
+#        define CONFIG_START_FILESYSTEM_SIZE          0x10000
+#    elif defined(BOARD_ESP12E)
+#        define CONFIG_START_FILESYSTEM_SIZE         0x100000
 #    else
 #        define CONFIG_START_FILESYSTEM_SIZE            65536
 #    endif
