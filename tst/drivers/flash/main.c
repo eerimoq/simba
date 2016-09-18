@@ -103,6 +103,17 @@ static int test_read_write(struct harness_t *harness_p)
                         flash_address, 11) == 11);
     BTASSERT(strcmp((void *)ram_address, "abcdefghij") == 0);
 
+    /* Read and write 1 byte at non-aligned ROM address. */
+    ram_address = (uintptr_t)&buf[0];
+    strcpy((void *)ram_address, "");
+    flash_address++;
+    BTASSERT(flash_write(&drv, flash_address, (void *)ram_address, 1) == 1);
+    memset(buf, 0, sizeof(buf));
+    BTASSERT(flash_read(&drv,
+                        (uint32_t *)ram_address,
+                        flash_address, 1) == 1);
+    BTASSERT(strcmp((void *)ram_address, "") == 0);
+
     return (0);
 }
 

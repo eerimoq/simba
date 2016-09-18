@@ -22,7 +22,7 @@
 #define FLASH_SECTOR_SIZE  SPI_FLASH_SEC_SIZE
 #define FLASH_SECTOR_ALIGN 0xfffff000
 
-extern char __rom_end;
+extern char __rom_size;
 
 int flash_port_module_init(void)
 {
@@ -34,8 +34,8 @@ ssize_t flash_port_read(struct flash_driver_t *self_p,
                         uintptr_t src,
                         size_t size)
 {
-    ASSERTN(src < (uintptr_t)&__rom_end, -EINVAL);
-    ASSERTN(size <= ((uintptr_t)&__rom_end - src), -EINVAL);
+    ASSERTN(src < (uintptr_t)&__rom_size, -EINVAL);
+    ASSERTN(size <= ((uintptr_t)&__rom_size - src), -EINVAL);
 
     uintptr_t aligned_src_begin;
     uintptr_t aligned_src_end;
@@ -121,8 +121,8 @@ ssize_t flash_port_write(struct flash_driver_t *self_p,
                          const void *src_p,
                          size_t size)
 {
-    ASSERTN(dst < (uintptr_t)&__rom_end, -EINVAL);
-    ASSERTN(size <= ((uintptr_t)&__rom_end - dst), -EINVAL);
+    ASSERTN(dst < (uintptr_t)&__rom_size, -EINVAL);
+    ASSERTN(size <= ((uintptr_t)&__rom_size - dst), -EINVAL);
 
     uintptr_t aligned_dst_begin;
     uintptr_t aligned_dst_end;
@@ -190,11 +190,9 @@ ssize_t flash_port_write(struct flash_driver_t *self_p,
     }
 
     /* Write up to 3 bytes after flash alignment end address. */
-    left = (dst + size - aligned_dst_end);
-
-    if (left > 0) {
+    if ((dst + size) > aligned_dst_end) {
         alignment_data = 0xffffffff;
-        memcpy(&alignment_data, (void *)src, left);
+        memcpy(&alignment_data, (void *)src, (dst + size - aligned_dst_end));
 
         if (spi_flash_write(aligned_dst_end,
                             &alignment_data,
@@ -210,8 +208,8 @@ int flash_port_erase(struct flash_driver_t *self_p,
                      uintptr_t addr,
                      uint32_t size)
 {
-    ASSERTN(addr < (uintptr_t)&__rom_end, -EINVAL);
-    ASSERTN(size <= ((uintptr_t)&__rom_end - addr), -EINVAL);
+    ASSERTN(addr < (uintptr_t)&__rom_size, -EINVAL);
+    ASSERTN(size <= ((uintptr_t)&__rom_size - addr), -EINVAL);
 
     uintptr_t aligned_addr;
     int first_sector;
