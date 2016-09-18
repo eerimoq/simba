@@ -32,6 +32,7 @@ SERIAL_PORT ?= /dev/arduino
 BOARD_PY = $(SIMBA_ROOT)/src/boards/esp12e/board.py
 RUN_PY ?= $(SIMBA_ROOT)/src/boards/esp12e/run.py
 CONSOLE_RESET_TYPE ?= 0
+TIMEOUT ?= 10
 
 upload:
 	@echo "Uploading $(EXE)"
@@ -40,6 +41,7 @@ upload:
 rerun:
 	@echo "Running '$(EXE)'."
 	python -u $(RUN_PY) --port $(SERIAL_PORT) \
+			    --timeout $(TIMEOUT) \
 			    --baudrate $(BAUDRATE) \
 	 		    --pattern $(RUN_END_PATTERN)\
 			    --pattern-success $(RUN_END_PATTERN_SUCCESS) \
