@@ -19,8 +19,8 @@
 
 #include "simba.h"
 
-#if !defined(BOARD_ARDUINO_DUE)
-#    error "This example can only be built for Arduino Due."
+#if !defined(BOARD_ARDUINO_DUE) && !defined(ARCH_ESP)
+#    error "This example can only be built for Arduino Due or ESP."
 #endif
 
 /**
@@ -32,9 +32,9 @@ static int increment_counter(void)
     struct fs_file_t file;
     long counter;
     size_t size;
-    
+
     std_printf(FSTR("Incrementing the counter in 'counter.txt'.\r\n"));
-        
+
     if (fs_open(&file, "counter.txt", FS_RDWR) != 0) {
         /* Create the file if missing. */
         if (fs_open(&file,
@@ -78,7 +78,7 @@ static int increment_counter(void)
     }
 
     std_printf(FSTR("Counter incremented to %lu\r\n"), counter);
-    
+
     return (0);
 }
 
@@ -100,6 +100,6 @@ int main()
     /* The shell thread is started in sys_start() so just suspend this
        thread. */
     thrd_suspend(NULL);
-    
+
     return (0);
 }
