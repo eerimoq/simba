@@ -15,6 +15,7 @@ The default configuration includes those major features. They are all
 initialized by ``sys_start()`` at the startup of the application.
 
 - :doc:`Console.<../library-reference/oam/console>`
+- File system.
 - Networking.
 - :doc:`Debug shell.<../library-reference/oam/shell>`
 
@@ -62,7 +63,7 @@ Below is the memory usage of two applications:
 +==========================+===========+===========+
 | minimal-configuration    |    268876 |     34556 |
 +--------------------------+-----------+-----------+
-| default-configuration    |    294004 |     53067 |
+| default-configuration    |    313752 |     57789 |
 +--------------------------+-----------+-----------+
 
 Default configuration
@@ -155,7 +156,7 @@ Default Standard Library configuration.
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_SHELL_PROMPT_                                  |  "$ "                                               |
 +--------------------------------------------------------+-----------------------------------------------------+
-|  CONFIG_SPIFFS_                                        |  0                                                  |
+|  CONFIG_SPIFFS_                                        |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_START_CONSOLE_                                 |  CONFIG_START_CONSOLE_UART                          |
 +--------------------------------------------------------+-----------------------------------------------------+
@@ -171,11 +172,11 @@ Default Standard Library configuration.
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_START_CONSOLE_USB_CDC_WAIT_FOR_CONNETION_      |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
-|  CONFIG_START_FILESYSTEM_                              |  0                                                  |
+|  CONFIG_START_FILESYSTEM_                              |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
-|  CONFIG_START_FILESYSTEM_ADDRESS_                      |  0                                                  |
+|  CONFIG_START_FILESYSTEM_ADDRESS_                      |  0x00300000                                         |
 +--------------------------------------------------------+-----------------------------------------------------+
-|  CONFIG_START_FILESYSTEM_SIZE_                         |  65536                                              |
+|  CONFIG_START_FILESYSTEM_SIZE_                         |  0x100000                                           |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_START_NETWORK_                                 |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+

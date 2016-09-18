@@ -57,8 +57,8 @@ typedef uintptr_t          mem_ptr_t;
 /* Used with IP headers only */
 #define LWIP_CHKSUM_ALGORITHM   1
 
-#define LWIP_PLATFORM_DIAG(msg) { std_printf msg; }
-#define LWIP_PLATFORM_ASSERT(flag) { ASSERT(flag); }
+#define LWIP_PLATFORM_DIAG(msg)
+#define LWIP_PLATFORM_ASSERT(flag)
 
 #define LWIP_PLATFORM_HTONS(x)      htons(x)
 #define LWIP_PLATFORM_HTONL(x)      htonl(x)

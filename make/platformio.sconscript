@@ -1006,7 +1006,7 @@ BOARDS = {
             "-lfreertos", 
             "-llwip", 
             "-Wl,--end-group", 
-            "-Wl,-Tsimba.flash.1m.ld", 
+            "-Wl,-Tsimba.flash.512k.ld", 
             "-u", 
             "call_user_start", 
             "-Wl,--cref", 
@@ -1021,7 +1021,7 @@ BOARDS = {
             "src/mcus/esp8266/ld", 
             "3pp/ESP8266_RTOS_SDK/lib"
         ], 
-        "linker_script": "simba.flash.1m.ld", 
+        "linker_script": "simba.flash.512k.ld", 
         "mcu_desc": "Espressif ESP8266 @ 80 MHz, 82 kB dram, 4 MB flash", 
         "src": [
             "src/encode/base64.c", 

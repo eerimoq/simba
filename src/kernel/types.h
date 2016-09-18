@@ -119,14 +119,14 @@
  * given value ``n`` on error.
  */
 #if CONFIG_ASSERT == 1
-#  define ASSERTN(cond, n, ...)                                         \
+#    define ASSERTN(cond, n, ...)                                         \
     if (!(cond)) {                                                      \
         std_printf(FSTR(__FILE__ ":%d: ASSERT: (" #cond ") " #__VA_ARGS__ "\r\n"), \
                    __LINE__);                                           \
         sys.on_fatal_callback(n);                                       \
     }
 #else
-#  define ASSERTN(cond, n, ...)
+#    define ASSERTN(cond, n, ...)
 #endif
 
 /**
