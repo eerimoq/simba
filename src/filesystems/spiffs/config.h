@@ -31,7 +31,7 @@
 // for filedescriptor and cache buffers. Once decided for a configuration,
 // this can be disabled to reduce flash.
 #ifndef SPIFFS_BUFFER_HELP
-#define SPIFFS_BUFFER_HELP              0
+#define SPIFFS_BUFFER_HELP              1
 #endif
 
 // Enables/disable memory read caching of nucleus file system operations.

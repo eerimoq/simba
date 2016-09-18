@@ -21,17 +21,19 @@
 
 #if defined(BOARD_ARDUINO_DUE)
 
-#define PHY_SIZE               32768
-#define PHY_ADDR          0x000c0000
-#define PHYS_ERASE_BLOCK       0x100
+#define PHY_SIZE                                    32768
+#define PHY_ADDR          CONFIG_START_FILESYSTEM_ADDRESS
+#define PHYS_ERASE_BLOCK                            0x100
 
-#define LOG_BLOCK_SIZE           256
-#define LOG_PAGE_SIZE            128
+#define LOG_BLOCK_SIZE                                256
+#define LOG_PAGE_SIZE                                 128
 
-#define FILE_SIZE_MAX           8192
-#define CHUNK_SIZE_MAX          1024
+#define FILE_SIZE_MAX                                8192
+#define CHUNK_SIZE_MAX                               1024
 
 static struct flash_driver_t flash;
+static uint8_t fdworkspace[192];
+static uint8_t cache[1400];
 
 static int hal_init(void)
 {
@@ -87,19 +89,19 @@ static int32_t hal_erase(struct spiffs_t *fs_p,
 
 #elif defined(BOARD_ESP12E) || defined(BOARD_ESP01)
 
-extern char __rom_size;
-
-#define PHY_SIZE                                             0x20000
-#define PHY_ADDR          (uint32_t)((char *)&__rom_size - PHY_SIZE)
+#define PHY_SIZE                                             0x10000
+#define PHY_ADDR                     CONFIG_START_FILESYSTEM_ADDRESS
 #define PHYS_ERASE_BLOCK                                        4096
 
 #define LOG_BLOCK_SIZE                                          4096
-#define LOG_PAGE_SIZE                                            128
+#define LOG_PAGE_SIZE                                            256
 
 #define FILE_SIZE_MAX                                           4096
 #define CHUNK_SIZE_MAX                                           512
 
 static struct flash_driver_t flash;
+static uint8_t fdworkspace[192];
+static uint8_t cache[1400];
 
 static int hal_init(void)
 {
@@ -145,20 +147,23 @@ static int32_t hal_erase(struct spiffs_t *fs_p,
 
 #else
 
-#define PHY_SIZE         2048
-#define PHY_ADDR            0
-#define PHYS_ERASE_BLOCK  128
+#define PHY_SIZE        0x10000
+#define PHY_ADDR              0
+#define PHYS_ERASE_BLOCK   4096
 
-#define LOG_BLOCK_SIZE    128
-#define LOG_PAGE_SIZE      64
+#define LOG_BLOCK_SIZE     4096
+#define LOG_PAGE_SIZE       256
 
-#define FILE_SIZE_MAX     256
-#define CHUNK_SIZE_MAX    128
+#define FILE_SIZE_MAX       256
+#define CHUNK_SIZE_MAX      128
 
 static uint8_t fs_storage[PHY_SIZE];
+static uint8_t fdworkspace[240];
+static uint8_t cache[1408];
 
 static int hal_init(void)
 {
+    memset(&fs_storage[0], -1, sizeof(fs_storage));
     return (0);
 }
 
@@ -205,8 +210,6 @@ static int32_t hal_erase(struct spiffs_t *fs_p,
 static struct spiffs_t fs;
 static struct spiffs_config_t config;
 static uint8_t workspace[2 * LOG_PAGE_SIZE];
-static uint8_t fdworkspace[512];
-static uint8_t cache[512];
 
 static int test_init(struct harness_t *harness_p)
 {
@@ -247,6 +250,12 @@ static int test_format(struct harness_t *harness_p)
                           cache,
                           sizeof(cache),
                           NULL) == 0);
+
+    std_printf(FSTR("buffer_bytes_for_filedescs = %d\r\n"),
+               spiffs_buffer_bytes_for_filedescs(&fs, 5));
+
+    std_printf(FSTR("buffer_bytes_for_cache = %d\r\n"),
+               spiffs_buffer_bytes_for_cache(&fs, 5));
 
     return (0);
 }

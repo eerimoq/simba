@@ -172,7 +172,7 @@ static int start_shell(void)
 
 #if CONFIG_START_FILESYSTEM == 1
 
-#    if defined(ARCH_LINUX)
+#if defined(ARCH_LINUX)
 
 #define BLOCK_SIZE 512
 
@@ -250,25 +250,41 @@ static int start_filesystem(void)
     return (0);
 }
 
-#    else
+#else
 
-#define PHYS_ERASE_BLOCK       0x100
+#if defined(ARCH_ESP) || defined(ARDUINO_DUE)
 
-#define LOG_BLOCK_SIZE           256
-#define LOG_PAGE_SIZE            128
-
-#define FILE_SIZE_MAX           8192
-#define CHUNK_SIZE_MAX          1024
+#    define PHYS_ERASE_BLOCK    4096
+#    define LOG_BLOCK_SIZE      4096
+#    define LOG_PAGE_SIZE        256
 
 struct filesystem_t {
     struct flash_driver_t flash;
     struct spiffs_t fs;
     struct spiffs_config_t config;
     uint8_t workspace[2 * LOG_PAGE_SIZE];
-    uint8_t fdworkspace[128];
-    uint8_t cache[256];
+    uint8_t fdworkspace[192];
+    uint8_t cache[1400];
     struct fs_filesystem_t spiffsfs;
 };
+
+#else
+
+#    define PHYS_ERASE_BLOCK       0x100
+#    define LOG_BLOCK_SIZE           256
+#    define LOG_PAGE_SIZE            128
+
+struct filesystem_t {
+    struct flash_driver_t flash;
+    struct spiffs_t fs;
+    struct spiffs_config_t config;
+    uint8_t workspace[2 * LOG_PAGE_SIZE];
+    uint8_t fdworkspace[160];
+    uint8_t cache[728];
+    struct fs_filesystem_t spiffsfs;
+};
+
+#endif
 
 static struct filesystem_t filesystem;
 
@@ -300,15 +316,7 @@ static int32_t hal_erase(struct spiffs_t *fs_p,
                          uint32_t addr,
                          uint32_t size)
 {
-    char buf[PHYS_ERASE_BLOCK];
-
-    memset(buf, -1, sizeof(buf));
-
-    if (flash_write(&filesystem.flash, addr, buf, size) != size) {
-        return (-1);
-    }
-
-    return (0);
+    return (flash_erase(&filesystem.flash, addr, size));
 }
 
 /**
@@ -377,6 +385,8 @@ static int start_filesystem(void)
         }
     }
 
+    std_printf(FSTR("File system mounted.\r\n"));
+
     /* Register the SPIFFS file system in the fs module. */
     fs_filesystem_init(&filesystem.spiffsfs,
                        FSTR("/fs"),
@@ -395,7 +405,7 @@ static int start_filesystem(void)
     return (0);
 }
 
-#    endif
+#endif
 
 #endif
 
