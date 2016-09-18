@@ -102,6 +102,18 @@ SECTIONS
     _data_end = ABSOLUTE(.);
   } >dram0_0_seg :dram0_0_phdr
 
+  .irom0.text : ALIGN(4)
+  {
+    _irom0_text_start = ABSOLUTE(.);
+    *(.irom0.literal .irom.literal .irom.text.literal .irom0.text .irom.text)
+    *(.literal.* .text.*)
+    *py/qstr.o(.rodata.const_pool)
+    *.o(.rodata.mp_type_*) /* catches type: mp_obj_type_t */
+    *.o(.rodata.*_locals_dict*) /* catches types: mp_obj_dict_t, mp_map_elem_t */
+    *.o(.rodata.mp_module_*) /* catches types: mp_obj_module_t, mp_obj_dict_t, mp_map_elem_t */
+    _irom0_text_end = ABSOLUTE(.);
+  } >irom0_0_seg :irom0_0_phdr
+
   .rodata : ALIGN(4)
   {
     _rodata_start = ABSOLUTE(.);
@@ -228,14 +240,6 @@ SECTIONS
     *(.gnu.linkonce.lit4.*)
     _lit4_end = ABSOLUTE(.);
   } >iram1_0_seg :iram1_0_phdr
-
-  .irom0.text : ALIGN(4)
-  {
-    _irom0_text_start = ABSOLUTE(.);
-    *(.irom0.literal .irom.literal .irom.text.literal .irom0.text .irom.text)
-    *(.literal.* .text.*)
-    _irom0_text_end = ABSOLUTE(.);
-  } >irom0_0_seg :irom0_0_phdr
 }
 
 __simba_stack_size = __simba_stack_end - __simba_stack_begin;

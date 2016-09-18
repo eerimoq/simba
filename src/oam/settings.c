@@ -78,6 +78,7 @@ static int cmd_list_cb(int argc,
         switch (setting_p->type) {
 
         case setting_type_int8_t:
+            int8 = 0;
             settings_read(&int8, setting_p->address, size);
             std_fprintf(chout_p,
                         FSTR("int8_t      1  %d\r\n"),
@@ -85,6 +86,7 @@ static int cmd_list_cb(int argc,
             break;
 
         case setting_type_int16_t:
+            int16 = 0;
             settings_read(&int16, setting_p->address, size);
             std_fprintf(chout_p,
                         FSTR("int16_t     2  %d\r\n"),
@@ -92,6 +94,7 @@ static int cmd_list_cb(int argc,
             break;
 
         case setting_type_int32_t:
+            int32 = 0;
             settings_read(&int32, setting_p->address, size);
             std_fprintf(chout_p,
                         FSTR("int32_t     4  %ld\r\n"),
@@ -172,22 +175,26 @@ static int cmd_read_cb(int argc,
             switch (setting_p->type) {
 
             case setting_type_int8_t:
+                int8 = 0;
                 settings_read(&int8, setting_p->address, setting_p->size);
                 std_fprintf(chout_p, FSTR("%d\r\n"), (int)int8);
                 break;
 
             case setting_type_int16_t:
+                int16 = 0;
                 settings_read(&int16, setting_p->address, setting_p->size);
                 std_fprintf(chout_p, FSTR("%d\r\n"), (int)int16);
                 break;
 
             case setting_type_int32_t:
+                int32 = 0;
                 settings_read(&int32, setting_p->address, setting_p->size);
                 std_fprintf(chout_p, FSTR("%ld\r\n"), (long)int32);
                 break;
 
             case setting_type_string_t:
                 for (i = 0; i < setting_p->size; i++) {
+                    buf[0] = '\0';
                     settings_read(&buf[0], setting_p->address + i, 1);
 
                     if (buf[0] == '\0') {
