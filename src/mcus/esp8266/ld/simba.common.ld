@@ -107,7 +107,7 @@ SECTIONS
     _irom0_text_start = ABSOLUTE(.);
     *(.irom0.literal .irom.literal .irom.text.literal .irom0.text .irom.text)
     *(.literal.* .text.*)
-    *py/qstr.o(.rodata.const_pool)
+    *py/qstr.o(.rodata.mp_qstr_const_pool)
     *.o(.rodata.mp_type_*) /* catches type: mp_obj_type_t */
     *.o(.rodata.*_locals_dict*) /* catches types: mp_obj_dict_t, mp_map_elem_t */
     *.o(.rodata.mp_module_*) /* catches types: mp_obj_module_t, mp_obj_dict_t, mp_map_elem_t */
