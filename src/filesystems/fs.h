@@ -131,11 +131,40 @@ enum fs_type_t {
     fs_type_spiffs_t
 };
 
+/**
+ * A SPIFFS file system.
+ */
+struct fs_filesystem_spiffs_config_t {
+    struct spiffs_config_t *config_p;
+    uint8_t *workspace_p;
+    struct {
+        uint8_t *buf_p;
+        size_t size;
+    } fdworkspace;
+    struct {
+        uint8_t *buf_p;
+        size_t size;
+    } cache;
+};
+
+/**
+ * A FAT16 file system.
+ */
+struct fs_filesystem_fat16_t {
+    struct fat16_t *fat16_p;
+};
+
 /* File system. */
 struct fs_filesystem_t {
     const char *name_p;
     enum fs_type_t type;
-    void *fs_p;
+    union {
+        struct fat16_t *fat16_p;
+        struct spiffs_t *spiffs_p;
+    } fs;
+    union {
+        struct fs_filesystem_spiffs_config_t *spiffs_p;
+    } config;
     struct fs_filesystem_t *next_p;
 };
 
@@ -373,6 +402,17 @@ int fs_stat(const char *path_p, struct fs_stat_t *stat_p);
 int fs_mkdir(const char *path_p);
 
 /**
+ * Format file system at given path.
+ *
+ * @param[in] path_p The path to the root of the file system to
+ *                   format. All data in the file system will be
+ *                   deleted.
+ *
+ * @return zero(0) or negative error code.
+ */
+int fs_format(const char *path_p);
+
+/**
  * List files and folders in given path. Optionally
  * with given filter. The list is written to the output channel.
  *
@@ -434,19 +474,32 @@ void fs_split(char *buf_p, char **path_pp, char **cmd_pp);
 void fs_merge(char *path_p, char *cmd_p);
 
 /**
- * Initialize given file system.
+ * Initialize given FAT16 file system.
  *
  * @param[in] self_p File system to initialize.
  * @param[in] name_p Path to register.
- * @param[in] type File system type.
- * @param[in] fs_p File system pointer.
+ * @param[in] fat16_p File system pointer.
  *
  * @return zero(0) or negative error code.
  */
-int fs_filesystem_init(struct fs_filesystem_t *self_p,
-                       const char *name_p,
-                       enum fs_type_t type,
-                       void *fs_p);
+int fs_filesystem_init_fat16(struct fs_filesystem_t *self_p,
+                             const char *name_p,
+                             struct fat16_t *fat16_p);
+
+/**
+ * Initialize given SPIFFS file system.
+ *
+ * @param[in] self_p File system to initialize.
+ * @param[in] name_p Path to register.
+ * @param[in] spiffs_p File system pointer.
+ * @param[in] config_p File system configuration.
+ *
+ * @return zero(0) or negative error code.
+ */
+int fs_filesystem_init_spiffs(struct fs_filesystem_t *self_p,
+                              const char *name_p,
+                              struct spiffs_t *spiffs_p,
+                              struct fs_filesystem_spiffs_config_t *config_p);
 
 /**
  * Register given file system. Use the functions `fs_open()`,

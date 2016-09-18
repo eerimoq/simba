@@ -46,6 +46,9 @@ struct module_t {
 #if CONFIG_FS_CMD_FS_LIST == 1
     struct fs_command_t cmd_list;
 #endif
+#if CONFIG_FS_CMD_FS_FORMAT == 1
+    struct fs_command_t cmd_format;
+#endif
 #if CONFIG_FS_CMD_FS_COUNTERS_LIST == 1
     struct fs_command_t cmd_counters_list;
 #endif
@@ -267,6 +270,25 @@ static int cmd_list_cb(int argc,
     }
 
     return (fs_ls(argv[1], NULL, chout_p));
+}
+
+#endif
+
+#if CONFIG_FS_CMD_FS_FORMAT == 1
+
+static int cmd_format_cb(int argc,
+                         const char *argv[],
+                         void *chout_p,
+                         void *chin_p,
+                         void *arg_p,
+                         void *call_arg_p)
+{
+    if (argc != 2) {
+        std_fprintf(chout_p, FSTR("Usage: %s <path>\r\n"), argv[0]);
+        return (-1);
+    }
+
+    return (fs_format(argv[1]));
 }
 
 #endif
@@ -526,6 +548,16 @@ int fs_module_init()
                     cmd_list_cb,
                     NULL);
     fs_command_register(&module.cmd_list);
+
+#endif
+
+#if CONFIG_FS_CMD_FS_FORMAT == 1
+
+    fs_command_init(&module.cmd_format,
+                    FSTR("/filesystems/fs/format"),
+                    cmd_format_cb,
+                    NULL);
+    fs_command_register(&module.cmd_format);
 
 #endif
 
@@ -799,7 +831,7 @@ int fs_open(struct fs_file_t *self_p, const char *path_p, int flags)
     switch (filesystem_p->type) {
 
     case fs_type_fat16_t:
-        return (fat16_file_open(filesystem_p->fs_p,
+        return (fat16_file_open(filesystem_p->fs.fat16_p,
                                 &self_p->u.fat16,
                                 path_p,
                                 flags));
@@ -807,7 +839,10 @@ int fs_open(struct fs_file_t *self_p, const char *path_p, int flags)
 #if CONFIG_SPIFFS == 1
 
     case fs_type_spiffs_t:
-        self_p->u.spiffs = spiffs_open(filesystem_p->fs_p, path_p, flags, 0);
+        self_p->u.spiffs = spiffs_open(filesystem_p->fs.spiffs_p,
+                                       path_p,
+                                       flags,
+                                       0);
         return (self_p->u.spiffs > 0 ? 0 : -1);
 
 #endif
@@ -829,7 +864,8 @@ int fs_close(struct fs_file_t *self_p)
 #if CONFIG_SPIFFS == 1
 
     case fs_type_spiffs_t:
-        return (spiffs_close(self_p->filesystem_p->fs_p, self_p->u.spiffs));
+        return (spiffs_close(self_p->filesystem_p->fs.spiffs_p,
+                             self_p->u.spiffs));
 
 #endif
 
@@ -855,7 +891,7 @@ ssize_t fs_read(struct fs_file_t *self_p, void *dst_p, size_t size)
 #if CONFIG_SPIFFS == 1
 
     case fs_type_spiffs_t:
-        res = spiffs_read(self_p->filesystem_p->fs_p,
+        res = spiffs_read(self_p->filesystem_p->fs.spiffs_p,
                           self_p->u.spiffs,
                           dst_p,
                           size);
@@ -915,7 +951,10 @@ ssize_t fs_write(struct fs_file_t *self_p, const void *src_p, size_t size)
 #if CONFIG_SPIFFS == 1
 
     case fs_type_spiffs_t:
-        return (spiffs_write(self_p->filesystem_p->fs_p, self_p->u.spiffs, (void *)src_p, size));
+        return (spiffs_write(self_p->filesystem_p->fs.spiffs_p,
+                             self_p->u.spiffs,
+                             (void *)src_p,
+                             size));
 
 #endif
 
@@ -936,7 +975,7 @@ int fs_seek(struct fs_file_t *self_p, int offset, int whence)
 #if CONFIG_SPIFFS == 1
 
     case fs_type_spiffs_t:
-        if (spiffs_lseek(self_p->filesystem_p->fs_p,
+        if (spiffs_lseek(self_p->filesystem_p->fs.spiffs_p,
                          self_p->u.spiffs,
                          offset,
                          whence) >= 0) {
@@ -964,7 +1003,8 @@ ssize_t fs_tell(struct fs_file_t *self_p)
 #if CONFIG_SPIFFS == 1
 
     case fs_type_spiffs_t:
-        return (spiffs_tell(self_p->filesystem_p->fs_p, self_p->u.spiffs));
+        return (spiffs_tell(self_p->filesystem_p->fs.spiffs_p,
+                            self_p->u.spiffs));
 
 #endif
 
@@ -992,7 +1032,7 @@ int fs_mkdir(const char *path_p)
     switch (filesystem_p->type) {
 
     case fs_type_fat16_t:
-        if (fat16_dir_open(filesystem_p->fs_p,
+        if (fat16_dir_open(filesystem_p->fs.fat16_p,
                            &dir,
                            path_p,
                            O_CREAT | O_WRITE | O_SYNC) != 0) {
@@ -1035,14 +1075,17 @@ int fs_dir_open(struct fs_dir_t *dir_p,
     switch (filesystem_p->type) {
 
     case fs_type_fat16_t:
-        return (fat16_dir_open(filesystem_p->fs_p, &dir_p->u.fat16, path_p, O_READ));
+        return (fat16_dir_open(filesystem_p->fs.fat16_p,
+                               &dir_p->u.fat16,
+                               path_p,
+                               O_READ));
 
 #if CONFIG_SPIFFS == 1
 
     case fs_type_spiffs_t:
-        return (spiffs_opendir(filesystem_p->fs_p, path_p, &dir_p->u.spiffs) != NULL
-                ? 0
-                : -1);
+        return (spiffs_opendir(filesystem_p->fs.spiffs_p,
+                               path_p,
+                               &dir_p->u.spiffs) != NULL ? 0 : -1);
 
 #endif
 
@@ -1078,13 +1121,13 @@ int fs_dir_read(struct fs_dir_t *dir_p,
     ASSERTN(dir_p != NULL, -EINVAL);
 
     int res;
-    
+
     switch (dir_p->filesystem_p->type) {
 
     case fs_type_fat16_t:
         {
             struct fat16_dir_entry_t entry;
-            
+
             res = fat16_dir_read(&dir_p->u.fat16, &entry);
             strncpy(&entry_p->name[0],
                     &entry.name[0],
@@ -1101,7 +1144,7 @@ int fs_dir_read(struct fs_dir_t *dir_p,
     case fs_type_spiffs_t:
         {
             struct spiffs_dirent_t entry;
-            
+
             if (spiffs_readdir(&dir_p->u.spiffs, &entry) != NULL) {
                 res = 1;
                 strncpy(&entry_p->name[0],
@@ -1146,8 +1189,8 @@ int fs_stat(const char *path_p, struct fs_stat_t *stat_p)
     case fs_type_fat16_t:
         {
             struct fat16_stat_t stat;
-            
-            if (fat16_stat(filesystem_p->fs_p, path_p, &stat) != 0) {
+
+            if (fat16_stat(filesystem_p->fs.fat16_p, path_p, &stat) != 0) {
                 return (-1);
             }
 
@@ -1163,7 +1206,7 @@ int fs_stat(const char *path_p, struct fs_stat_t *stat_p)
         {
             struct spiffs_stat_t stat;
 
-            if (spiffs_stat(filesystem_p->fs_p, path_p, &stat) != 0) {
+            if (spiffs_stat(filesystem_p->fs.spiffs_p, path_p, &stat) != 0) {
                 return (-1);
             }
 
@@ -1172,6 +1215,60 @@ int fs_stat(const char *path_p, struct fs_stat_t *stat_p)
 
             return (0);
         }
+#endif
+
+    default:
+        return (-1);
+    }
+}
+
+int fs_format(const char *path_p)
+{
+    ASSERTN(path_p != NULL, -EINVAL);
+
+    struct fs_filesystem_t *filesystem_p;
+
+    filesystem_p = module.filesystems_p;
+
+    /* Find the file system registered on given path. */
+    while (filesystem_p != NULL) {
+        if (strcmp(filesystem_p->name_p, path_p) == 0) {
+            break;
+        }
+
+        filesystem_p = filesystem_p->next_p;
+    }
+
+    if (filesystem_p == NULL) {
+        return (-1);
+    }
+    
+    switch (filesystem_p->type) {
+
+#if CONFIG_SPIFFS == 1
+
+    case fs_type_spiffs_t:
+        if (spiffs_mounted(filesystem_p->fs.spiffs_p)) {
+            spiffs_unmount(filesystem_p->fs.spiffs_p);
+        }
+
+        if (spiffs_format(filesystem_p->fs.spiffs_p) != 0) {
+            return (-1);
+        }
+        
+        if (spiffs_mount(filesystem_p->fs.spiffs_p,
+                         filesystem_p->config.spiffs_p->config_p,
+                         filesystem_p->config.spiffs_p->workspace_p,
+                         filesystem_p->config.spiffs_p->fdworkspace.buf_p,
+                         filesystem_p->config.spiffs_p->fdworkspace.size,
+                         filesystem_p->config.spiffs_p->cache.buf_p,
+                         filesystem_p->config.spiffs_p->cache.size,
+                         NULL) != 0) {
+            return (-1);
+        }
+
+        return (0);
+        
 #endif
 
     default:
@@ -1204,12 +1301,12 @@ int fs_ls(const char *path_p,
     switch (filesystem_p->type) {
 
     case fs_type_fat16_t:
-        return (ls_fat16(filesystem_p->fs_p, path_p, chout_p));
+        return (ls_fat16(filesystem_p->fs.fat16_p, path_p, chout_p));
 
 #if CONFIG_SPIFFS == 1
 
     case fs_type_spiffs_t:
-        return (ls_spiffs(filesystem_p->fs_p, path_p, chout_p));
+        return (ls_spiffs(filesystem_p->fs.spiffs_p, path_p, chout_p));
 
 #endif
 
@@ -1414,19 +1511,41 @@ void fs_merge(char *path_p, char *cmd_p)
     }
 }
 
-int fs_filesystem_init(struct fs_filesystem_t *self_p,
-                       const char *name_p,
-                       enum fs_type_t type,
-                       void *fs_p)
+int fs_filesystem_init_fat16(struct fs_filesystem_t *self_p,
+                             const char *name_p,
+                             struct fat16_t *fat16_p)
 {
     ASSERTN(self_p != NULL, -EINVAL);
     ASSERTN(name_p != NULL, -EINVAL);
-    ASSERTN((type >= fs_type_fat16_t) && (type <= fs_type_spiffs_t), -EINVAL);
-    ASSERTN(fs_p != NULL, -EINVAL);
+    ASSERTN(fat16_p != NULL, -EINVAL);
 
     self_p->name_p = name_p;
-    self_p->type = type;
-    self_p->fs_p = fs_p;
+    self_p->type = fs_type_fat16_t;
+    self_p->fs.fat16_p = fat16_p;
+
+    return (0);
+}
+
+int fs_filesystem_init_spiffs(struct fs_filesystem_t *self_p,
+                              const char *name_p,
+                              struct spiffs_t *spiffs_p,
+                              struct fs_filesystem_spiffs_config_t *config_p)
+{
+    ASSERTN(self_p != NULL, -EINVAL);
+    ASSERTN(name_p != NULL, -EINVAL);
+    ASSERTN(spiffs_p != NULL, -EINVAL);
+    ASSERTN(config_p != NULL, -EINVAL);
+    ASSERTN(config_p->config_p != NULL, -EINVAL);
+    ASSERTN(config_p->workspace_p != NULL, -EINVAL);
+    ASSERTN(config_p->fdworkspace.buf_p != NULL, -EINVAL);
+    ASSERTN(config_p->fdworkspace.size > 0, -EINVAL);
+    ASSERTN(config_p->cache.buf_p != NULL, -EINVAL);
+    ASSERTN(config_p->cache.size > 0, -EINVAL);
+
+    self_p->name_p = name_p;
+    self_p->type = fs_type_spiffs_t;
+    self_p->fs.spiffs_p = spiffs_p;
+    self_p->config.spiffs_p = config_p;
 
     return (0);
 }

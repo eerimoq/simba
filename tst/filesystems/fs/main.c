@@ -56,6 +56,7 @@ struct fs_filesystem_t fat16fs;
 
 struct spiffs_t spiffs_fs;
 struct fs_filesystem_t spiffsfs;
+struct fs_filesystem_spiffs_config_t configfs;
 struct spiffs_config_t config;
 static uint8_t workspace[2 * LOG_PAGE_SIZE];
 static uint8_t fdworkspace[128];
@@ -464,10 +465,9 @@ static int test_filesystem_fat16(struct harness_t *harness_p)
     BTASSERT(fat16_mount(&fat16_fs) == 0);
 
     /* Register the FAT16 file system in the fs module. */
-    BTASSERT(fs_filesystem_init(&fat16fs,
-                                 FSTR("/fat16fs"),
-                                 fs_type_fat16_t,
-                                 &fat16_fs) == 0);
+    BTASSERT(fs_filesystem_init_fat16(&fat16fs,
+                                      "/fat16fs",
+                                      &fat16_fs) == 0);
     BTASSERT(fs_filesystem_register(&fat16fs) == 0);
 
     /* Perform file operations. */
@@ -557,10 +557,16 @@ static int test_filesystem_spiffs(struct harness_t *harness_p)
                           NULL) == 0);
 
     /* Register the SPIFFS file system in the fs module. */
-    BTASSERT(fs_filesystem_init(&spiffsfs,
-                                 FSTR("/spiffsfs"),
-                                 fs_type_spiffs_t,
-                                 &spiffs_fs) == 0);
+    configfs.config_p = &config;
+    configfs.workspace_p = workspace;
+    configfs.fdworkspace.buf_p = fdworkspace;
+    configfs.fdworkspace.size = sizeof(fdworkspace);
+    configfs.cache.buf_p = cache;
+    configfs.cache.size = sizeof(cache);
+    BTASSERT(fs_filesystem_init_spiffs(&spiffsfs,
+                                       "/spiffsfs",
+                                       &spiffs_fs,
+                                       &configfs) == 0);
     BTASSERT(fs_filesystem_register(&spiffsfs) == 0);
 
     /* Perform file operations. */

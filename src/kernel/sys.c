@@ -260,12 +260,17 @@ static int start_filesystem(void)
 
 struct filesystem_t {
     struct flash_driver_t flash;
-    struct spiffs_t fs;
-    struct spiffs_config_t config;
-    uint8_t workspace[2 * LOG_PAGE_SIZE];
-    uint8_t fdworkspace[192];
-    uint8_t cache[1400];
-    struct fs_filesystem_t spiffsfs;
+    struct {
+        struct spiffs_t fs;
+        struct spiffs_config_t config;
+        uint8_t workspace[2 * LOG_PAGE_SIZE];
+        uint8_t fdworkspace[192];
+        uint8_t cache[1400];
+    } spiffs;
+    struct {
+        struct fs_filesystem_t fs;
+        struct fs_filesystem_spiffs_config_t config;
+    } fs;
 };
 
 #else
@@ -276,24 +281,29 @@ struct filesystem_t {
 
 struct filesystem_t {
     struct flash_driver_t flash;
-    struct spiffs_t fs;
-    struct spiffs_config_t config;
-    uint8_t workspace[2 * LOG_PAGE_SIZE];
-    uint8_t fdworkspace[160];
-    uint8_t cache[728];
-    struct fs_filesystem_t spiffsfs;
+    struct {
+        struct spiffs_t fs;
+        struct spiffs_config_t config;
+        uint8_t workspace[2 * LOG_PAGE_SIZE];
+        uint8_t fdworkspace[160];
+        uint8_t cache[728];
+    } spiffs;
+    struct {
+        struct fs_filesystem_t fs;
+        struct fs_filesystem_spiffs_config_t config;
+    } fs;
 };
 
 #endif
 
-static struct filesystem_t filesystem;
+static struct filesystem_t fs;
 
 static int32_t hal_read(struct spiffs_t *fs_p,
                         uint32_t addr,
                         uint32_t size,
                         uint8_t *dst_p)
 {
-    if (flash_read(&filesystem.flash, dst_p, addr, size) != size) {
+    if (flash_read(&fs.flash, dst_p, addr, size) != size) {
         return (-1);
     }
 
@@ -305,7 +315,7 @@ static int32_t hal_write(struct spiffs_t *fs_p,
                          uint32_t size,
                          uint8_t *src_p)
 {
-    if (flash_write(&filesystem.flash, addr, src_p, size) != size) {
+    if (flash_write(&fs.flash, addr, src_p, size) != size) {
         return (-1);
     }
 
@@ -316,7 +326,7 @@ static int32_t hal_erase(struct spiffs_t *fs_p,
                          uint32_t addr,
                          uint32_t size)
 {
-    return (flash_erase(&filesystem.flash, addr, size));
+    return (flash_erase(&fs.flash, addr, size));
 }
 
 /**
@@ -331,7 +341,7 @@ static int start_filesystem(void)
         return (-1);
     }
 
-    if (flash_init(&filesystem.flash, &flash_0_dev) != 0) {
+    if (flash_init(&fs.flash, &flash_0_dev) != 0) {
         std_printf(FSTR("Failed to initialize the flash driver.\r\n"));
         return (-1);
     }
@@ -339,29 +349,29 @@ static int start_filesystem(void)
     std_printf(FSTR("Trying to mount the file system.\r\n"));
 
     /* Initiate the config struct. */
-    filesystem.config.hal_read_f = hal_read;
-    filesystem.config.hal_write_f = hal_write;
-    filesystem.config.hal_erase_f = hal_erase;
-    filesystem.config.phys_size = CONFIG_START_FILESYSTEM_SIZE;
-    filesystem.config.phys_addr = CONFIG_START_FILESYSTEM_ADDRESS;
-    filesystem.config.phys_erase_block = PHYS_ERASE_BLOCK;
-    filesystem.config.log_block_size = LOG_BLOCK_SIZE;
-    filesystem.config.log_page_size = LOG_PAGE_SIZE;
+    fs.spiffs.config.hal_read_f = hal_read;
+    fs.spiffs.config.hal_write_f = hal_write;
+    fs.spiffs.config.hal_erase_f = hal_erase;
+    fs.spiffs.config.phys_size = CONFIG_START_FILESYSTEM_SIZE;
+    fs.spiffs.config.phys_addr = CONFIG_START_FILESYSTEM_ADDRESS;
+    fs.spiffs.config.phys_erase_block = PHYS_ERASE_BLOCK;
+    fs.spiffs.config.log_block_size = LOG_BLOCK_SIZE;
+    fs.spiffs.config.log_page_size = LOG_PAGE_SIZE;
 
     /* Mount the file system to initialize the runtime variables. */
-    res = spiffs_mount(&filesystem.fs,
-                       &filesystem.config,
-                       filesystem.workspace,
-                       filesystem.fdworkspace,
-                       sizeof(filesystem.fdworkspace),
-                       filesystem.cache,
-                       sizeof(filesystem.cache),
+    res = spiffs_mount(&fs.spiffs.fs,
+                       &fs.spiffs.config,
+                       fs.spiffs.workspace,
+                       fs.spiffs.fdworkspace,
+                       sizeof(fs.spiffs.fdworkspace),
+                       fs.spiffs.cache,
+                       sizeof(fs.spiffs.cache),
                        NULL);
 
     if (res != 0) {
         std_printf(FSTR("Failed to mount the file system. Formatting it.\r\n"));
 
-        res = spiffs_format(&filesystem.fs);
+        res = spiffs_format(&fs.spiffs.fs);
 
         if (res != 0) {
             std_printf(FSTR("Failed to mount the file system. Formatting it.\r\n"));
@@ -370,13 +380,13 @@ static int start_filesystem(void)
 
         std_printf(FSTR("Trying to mount the file system after formatting it.\r\n"));
 
-        res = spiffs_mount(&filesystem.fs,
-                           &filesystem.config,
-                           filesystem.workspace,
-                           filesystem.fdworkspace,
-                           sizeof(filesystem.fdworkspace),
-                           filesystem.cache,
-                           sizeof(filesystem.cache),
+        res = spiffs_mount(&fs.spiffs.fs,
+                           &fs.spiffs.config,
+                           fs.spiffs.workspace,
+                           fs.spiffs.fdworkspace,
+                           sizeof(fs.spiffs.fdworkspace),
+                           fs.spiffs.cache,
+                           sizeof(fs.spiffs.cache),
                            NULL);
 
         if (res != 0) {
@@ -388,13 +398,21 @@ static int start_filesystem(void)
     std_printf(FSTR("File system mounted.\r\n"));
 
     /* Register the SPIFFS file system in the fs module. */
-    fs_filesystem_init(&filesystem.spiffsfs,
-                       FSTR("/fs"),
-                       fs_type_spiffs_t,
-                       &filesystem.fs);
+    fs.fs.config.config_p = &fs.spiffs.config;
+    fs.fs.config.workspace_p = fs.spiffs.workspace;
+    fs.fs.config.fdworkspace.buf_p = fs.spiffs.fdworkspace;
+    fs.fs.config.fdworkspace.size = sizeof(fs.spiffs.fdworkspace);
+    fs.fs.config.cache.buf_p = fs.spiffs.cache;
+    fs.fs.config.cache.size = sizeof(fs.spiffs.cache);
+    
+    fs_filesystem_init_spiffs(&fs.fs.fs,
+                              FSTR("/fs"),
+                              &fs.spiffs.fs,
+                              &fs.fs.config);
 
-    if (fs_filesystem_register(&filesystem.spiffsfs) != 0) {
-        std_printf(FSTR("Failed to register the file system into the debug file system.\r\n"));
+    if (fs_filesystem_register(&fs.fs.fs) != 0) {
+        std_printf(FSTR("Failed to register the file system into the "
+                        "debug file system.\r\n"));
         return (-1);
     }
 
