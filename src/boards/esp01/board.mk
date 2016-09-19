@@ -20,7 +20,7 @@
 INC += $(SIMBA_ROOT)/src/boards/esp01
 SRC += $(SIMBA_ROOT)/src/boards/esp01/board.c
 
-LINKER_SCRIPT = simba.flash.512k.ld
+LINKER_SCRIPT ?= simba.flash.512k.ld
 ESP_FLASH_SIZE = 512K
 
 BOARD_HOMEPAGE = "http://espressif.com"
