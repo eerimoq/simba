@@ -22,21 +22,24 @@ CROSS_COMPILE = xtensa-lx106-elf-
 CDEFS += F_CPU=$(F_CPU)UL \
 	ICACHE_FLASH \
 	__STRICT_ANSI__ \
-	CONFIG_MONITOR_THREAD=0
+	__ets__
 
 CFLAGS += -Os \
           -Werror \
           -nostdlib \
           -mlongcalls \
-          -falign-functions=4 \
+	  -mforce-l32 \
           -mtext-section-literals \
           -ffunction-sections \
+	  -fno-inline-functions \
+	  -fsingle-precision-constant \
           -fdata-sections
 
 CXXFLAGS += -Os \
           -Werror \
           -nostdlib \
           -mlongcalls \
+	  -mforce-l32 \
           -mtext-section-literals \
           -ffunction-sections \
           -fdata-sections
@@ -54,6 +57,8 @@ RUNARGS = $(BIN)
 
 ESPTOOL = $(SIMBA_ROOT)/3pp/esptool/esptool
 EBOOT_ELF = $(SIMBA_ROOT)/3pp/esp8266Arduino/2.3.0/bootloaders/eboot/eboot.elf
+
+SRC += $(SIMBA_ROOT)/3pp/libc/string0.c
 
 build: $(BIN)
 $(BIN): $(EXE)

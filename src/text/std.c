@@ -206,12 +206,15 @@ static char *formatf(char c,
     /* This will not work in all cases when the number is close to
      * zero. */
     if ((int)value < 0) {
-#else
-    if (value < 0.0) {
-#endif
         value *= -1.0;
         *negative_sign_p = 1;
     }
+#else
+    if (value < 0.0) {
+        value *= -1.0;
+        *negative_sign_p = 1;
+    }
+#endif
 
     /* Values bigger than 'unsigned long max' are not supported. */
     whole_number = (unsigned long)value;
@@ -240,7 +243,7 @@ static char *formatf(char c,
 
     return (str_p);
 }
-    
+
 static void vcprintf(void (*std_putc)(char c, void *arg_p),
                      void *arg_p,
                      FAR const char *fmt_p,
@@ -326,18 +329,14 @@ int std_module_init(void)
 
 ssize_t std_sprintf(char *dst_p, FAR const char *fmt_p, ...)
 {
-    ASSERTN(dst_p != NULL, -EINVAL);
-    ASSERTN(fmt_p != NULL, -EINVAL);
-
     va_list ap;
-    char *d_p = dst_p;
+    ssize_t res;
 
     va_start(ap, fmt_p);
-    vcprintf(sprintf_putc, &d_p, fmt_p, &ap);
+    res = std_vsprintf(dst_p, fmt_p, &ap);
     va_end(ap);
-    sprintf_putc('\0', &d_p);
 
-    return (d_p - dst_p - 1);
+    return (res);
 }
 
 ssize_t std_snprintf(char *dst_p,
@@ -345,25 +344,50 @@ ssize_t std_snprintf(char *dst_p,
                      FAR const char *fmt_p,
                      ...)
 {
+    va_list ap;
+    ssize_t res;
+
+    va_start(ap, fmt_p);
+    res = std_vsnprintf(dst_p, size, fmt_p, &ap);
+    va_end(ap);
+
+    return (res);
+}
+
+ssize_t std_vsprintf(char *dst_p, FAR const char *fmt_p, va_list *ap_p)
+{
+    ASSERTN(dst_p != NULL, -EINVAL);
+    ASSERTN(fmt_p != NULL, -EINVAL);
+
+    char *d_p = dst_p;
+
+    vcprintf(sprintf_putc, &d_p, fmt_p, ap_p);
+    sprintf_putc('\0', &d_p);
+
+    return (d_p - dst_p - 1);
+}
+
+ssize_t std_vsnprintf(char *dst_p,
+                      size_t size,
+                      FAR const char *fmt_p,
+                      va_list *ap_p)
+{
     ASSERTN(dst_p != NULL, -EINVAL);
     ASSERTN(size > 0, -EINVAL);
     ASSERTN(fmt_p != NULL, -EINVAL);
 
-    va_list ap;
     struct snprintf_output_t output;
 
     output.dst_p = dst_p;
     output.size = 0;
     output.size_max = size;
 
-    va_start(ap, fmt_p);
-    vcprintf(snprintf_putc, &output, fmt_p, &ap);
-    va_end(ap);
+    vcprintf(snprintf_putc, &output, fmt_p, ap_p);
     snprintf_putc('\0', &output);
 
     return (output.size - 1);
 }
- 
+
 ssize_t std_printf(far_string_t fmt_p, ...)
 {
     ASSERTN(fmt_p != NULL, -EINVAL);

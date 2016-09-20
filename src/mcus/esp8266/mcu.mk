@@ -42,7 +42,6 @@ LDFLAGS_AFTER += \
 	$(ESPLIBS_AFTER:%=-l%)
 
 ESPLIBS += \
- minic \
  hal \
  phy \
  pp \
