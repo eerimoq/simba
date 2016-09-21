@@ -28,6 +28,50 @@
 
 #define likely(x) __builtin_expect((x), 1)
 
+#define _CTYPE_DATA_0_127 \
+        _C,	_C,	_C,	_C,	_C,	_C,	_C,	_C, \
+        _C,	_C|_S, _C|_S, _C|_S,	_C|_S,	_C|_S,	_C,	_C, \
+        _C,	_C,	_C,	_C,	_C,	_C,	_C,	_C, \
+        _C,	_C,	_C,	_C,	_C,	_C,	_C,	_C, \
+        _S|_B,	_P,	_P,	_P,	_P,	_P,	_P,	_P, \
+        _P,	_P,	_P,	_P,	_P,	_P,	_P,	_P, \
+        _N,	_N,	_N,	_N,	_N,	_N,	_N,	_N, \
+        _N,	_N,	_P,	_P,	_P,	_P,	_P,	_P, \
+        _P,	_U|_X,	_U|_X,	_U|_X,	_U|_X,	_U|_X,	_U|_X,	_U, \
+        _U,	_U,	_U,	_U,	_U,	_U,	_U,	_U, \
+        _U,	_U,	_U,	_U,	_U,	_U,	_U,	_U, \
+        _U,	_U,	_U,	_P,	_P,	_P,	_P,	_P, \
+        _P,	_L|_X,	_L|_X,	_L|_X,	_L|_X,	_L|_X,	_L|_X,	_L, \
+        _L,	_L,	_L,	_L,	_L,	_L,	_L,	_L, \
+        _L,	_L,	_L,	_L,	_L,	_L,	_L,	_L, \
+        _L,	_L,	_L,	_P,	_P,	_P,	_P,	_C
+
+#define _CTYPE_DATA_128_255 \
+        0,	0,	0,	0,	0,	0,	0,	0, \
+        0,	0,	0,	0,	0,	0,	0,	0, \
+        0,	0,	0,	0,	0,	0,	0,	0, \
+        0,	0,	0,	0,	0,	0,	0,	0, \
+        0,	0,	0,	0,	0,	0,	0,	0, \
+        0,	0,	0,	0,	0,	0,	0,	0, \
+        0,	0,	0,	0,	0,	0,	0,	0, \
+        0,	0,	0,	0,	0,	0,	0,	0, \
+        0,	0,	0,	0,	0,	0,	0,	0, \
+        0,	0,	0,	0,	0,	0,	0,	0, \
+        0,	0,	0,	0,	0,	0,	0,	0, \
+        0,	0,	0,	0,	0,	0,	0,	0, \
+        0,	0,	0,	0,	0,	0,	0,	0, \
+        0,	0,	0,	0,	0,	0,	0,	0, \
+        0,	0,	0,	0,	0,	0,	0,	0, \
+        0,	0,	0,	0,	0,	0,	0,	0
+
+const char _ctype_[1 + 256] = {
+    0,
+    _CTYPE_DATA_0_127,
+    _CTYPE_DATA_128_255
+};
+
+const char * __ctype_ptr__ = _ctype_;
+
 void *memcpy(void *dst, const void *src, size_t n) {
     if (likely(!(((uintptr_t)dst) & 3) && !(((uintptr_t)src) & 3))) {
         // pointers aligned

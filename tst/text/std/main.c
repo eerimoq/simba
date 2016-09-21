@@ -43,7 +43,7 @@ static ssize_t test_vfprintf_wrapper(void *chan_p,
     va_end(ap);
 
     std_printf(FSTR("res = %d\r\n"), res);
-    
+
     return (res);
 }
 
@@ -203,14 +203,14 @@ static int test_strtol(struct harness_t *harness_p)
     BTASSERT(next_p != NULL);
     BTASSERT(value == 0x101);
     BTASSERT(*next_p == '.');
-    
+
     return (0);
 }
 
 static int test_strcpy(struct harness_t *harness_p)
 {
     char buf[16];
-    
+
     BTASSERT(std_strcpy(buf, FSTR("foo")) == 3);
     BTASSERT(buf[0] == 'f');
     BTASSERT(buf[1] == 'o');
@@ -283,6 +283,30 @@ static int test_strip(struct harness_t *harness_p)
     return (0);
 }
 
+static int test_libc(struct harness_t *harness_p)
+{
+    int c;
+    char *c_p;
+
+    /* Blank. */
+    c_p = " \t";
+
+    while (*c_p != '\0') {
+        c = *c_p++;
+        BTASSERT(isblank(c) != 0);
+    }
+
+    /* Alpha-numeric. */
+    c_p = "1aB";
+
+    while (*c_p != '\0') {
+        c = *c_p++;
+        BTASSERT(isalnum(c) != 0);
+    }
+
+    return (0);
+}
+
 int main()
 {
     struct harness_t harness;
@@ -297,6 +321,7 @@ int main()
         { test_strlen, "test_strlen" },
         { test_sprintf_double, "test_sprintf_double" },
         { test_strip, "test_strip" },
+        { test_libc, "test_libc" },
         { NULL, NULL }
     };
 
@@ -304,6 +329,6 @@ int main()
 
     harness_init(&harness);
     harness_run(&harness, harness_testcases);
-   
+
     return (0);
 }
