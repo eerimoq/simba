@@ -210,7 +210,7 @@ $(foreach file,$(CPPSRC),$(eval $(call COMPILE_CPP_template,$(file))))
 define COMPILE_ASM_template
 -include $(patsubst %.S,$(DEPSDIR)%.obj.dep,$(abspath $1))
 $(patsubst %.S,$(OBJDIR)%.obj,$(abspath $1)): $1
-	@echo "LD $1"
+	@echo "CC $1"
 	mkdir -p $(OBJDIR)$(abspath $(dir $1))
 	mkdir -p $(DEPSDIR)$(abspath $(dir $1))
 	mkdir -p $(GENDIR)
