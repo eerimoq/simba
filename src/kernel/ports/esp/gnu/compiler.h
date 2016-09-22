@@ -26,15 +26,9 @@
 typedef const FAR char *far_string_t;
 
 /**
- * @brief Stores string literal in FAR memory.
+ * @brief No special storage for string literals.
  */
-#define FSTR(s)                                 \
-    (__extension__(                             \
-        {                                       \
-            static FAR char __c[] = (s);        \
-            __c;                                \
-        }                                       \
-        ))
+#define FSTR(s) s
 
 #define PACKED __attribute__((packed))
 
