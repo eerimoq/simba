@@ -182,7 +182,11 @@ int http_server_stop(struct http_server_t *self_p);
  *
  * @param[in] connection_p Current connection.
  * @param[in] request_p Current request.
- * @param[in] response_p Current response.
+ * @param[in] response_p Current response. If ``buf_p`` in the
+ *                       response to NULL this function will only
+ *                       write the HTTP header, including the size, to
+ *                       the socket. After this function returns write
+ *                       the payload by calling `socket_write()`.
  *
  * @return zero(0) or negative error code.
  */
