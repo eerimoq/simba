@@ -582,7 +582,7 @@
 #    elif defined(BOARD_ESP01)
 #        define CONFIG_START_FILESYSTEM_SIZE          0x10000
 #    elif defined(BOARD_ESP12E)
-#        define CONFIG_START_FILESYSTEM_SIZE         0x100000
+#        define CONFIG_START_FILESYSTEM_SIZE         0xFB000
 #    else
 #        define CONFIG_START_FILESYSTEM_SIZE            65536
 #    endif
