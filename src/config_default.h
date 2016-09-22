@@ -33,6 +33,14 @@
 #endif
 
 /**
+ * Main thread stack size for ports with a fixed size main thread
+ * stack.
+ */
+#ifndef CONFIG_SYS_SIMBA_MAIN_STACK_MAX
+#    define CONFIG_SYS_SIMBA_MAIN_STACK_MAX              4096
+#endif
+
+/**
  * Assertions are used to check various conditions during the
  * application execution. A typical usage is to validate function
  * input arguments.

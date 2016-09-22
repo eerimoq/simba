@@ -33,8 +33,6 @@
 #define SYS_TICK_TIMER_PRESCALE ESP8266_TIMER_CTRL_PRESCALE_256
 #define SYS_TICK_TIMER_LOAD 3125
 
-#define SYS_SIMBA_MAIN_STACK_MAX 4096
-
 /* The main function is defined by the user in main.c. */
 extern int main();
 
@@ -48,7 +46,7 @@ __attribute__ ((section (".simba_stack_free")));
 
 /* The main stack is placed before all other stacks in the memory. */
 uint32_t main_stack[DIV_CEIL(sizeof(struct thrd_t)
-                             + (SYS_SIMBA_MAIN_STACK_MAX),
+                             + (CONFIG_SYS_SIMBA_MAIN_STACK_MAX),
                              sizeof(uint32_t))]
 __attribute__ ((section (".simba_main_stack")));
 
