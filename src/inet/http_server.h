@@ -26,7 +26,8 @@
  * Request action types.
  */
 enum http_server_request_action_t {
-    http_server_request_action_get_t = 0
+    http_server_request_action_get_t = 0,
+    http_server_request_action_post_t = 1
 };
 
 /**
@@ -64,6 +65,14 @@ struct http_server_request_t {
             int present;
             char value[32];
         } sec_websocket_key;
+        struct {
+            int present;
+            char value[52];
+        } content_type;
+        struct {
+            int present;
+            long value;
+        } content_length;
     } headers;
 };
 

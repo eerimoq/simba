@@ -83,6 +83,8 @@ static int read_initial_request_line(struct socket_t *socket_p,
 
     if (strcmp(action_p, "GET") == 0) {
         request_p->action = http_server_request_action_get_t;
+    } else if (strcmp(action_p, "POST") == 0) {
+        request_p->action = http_server_request_action_post_t;
     } else {
         return (-1);
     }
@@ -167,7 +169,18 @@ static int read_request(struct http_server_t *self_p,
         /* Save the header field in the request object. */
         if (strcmp(header_p, "Sec-WebSocket-Key") == 0) {
             request_p->headers.sec_websocket_key.present = 1;
-            strcpy(request_p->headers.sec_websocket_key.value, value_p);
+            strncpy(request_p->headers.sec_websocket_key.value,
+                    value_p,
+                    sizeof(request_p->headers.sec_websocket_key.value));
+        } else if (strcmp(header_p, "Content-Type") == 0) {
+            request_p->headers.content_type.present = 1;
+            strncpy(request_p->headers.content_type.value,
+                    value_p,
+                    sizeof(request_p->headers.content_type.value));
+        } else if (strcmp(header_p, "Content-Length") == 0) {
+            if (std_strtol(value_p, &request_p->headers.content_length.value) != NULL) {
+                request_p->headers.content_length.present = 1;
+            }
         }
     }
 

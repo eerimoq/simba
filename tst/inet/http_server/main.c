@@ -52,6 +52,36 @@ static int request_index(struct http_server_connection_t *connection_p,
 }
 
 /**
+ * Handler for the form request.
+ */
+static int request_form(struct http_server_connection_t *connection_p,
+                        struct http_server_request_t *request_p)
+{
+    struct http_server_response_t response;
+    char buf[16];
+
+    /* Verify the request. */
+    BTASSERT(request_p->action == http_server_request_action_post_t);
+    BTASSERT(request_p->headers.content_length.present == 1);
+    BTASSERT(request_p->headers.content_length.value == 9);
+    BTASSERT(request_p->headers.content_type.present == 1);
+    BTASSERT(strcmp(request_p->headers.content_type.value,
+                    "application/x-www-form-urlencoded") == 0);
+    BTASSERT(socket_read(&connection_p->socket,
+                         buf,
+                         request_p->headers.content_length.value) == 9);
+    BTASSERT(strncmp("key=value", buf, 9) == 0);
+
+    /* Create the response. */
+    response.code = http_server_response_code_200_ok_t;
+    response.content.type = http_server_content_type_text_html_t;
+    response.content.buf_p = "Form!";
+    response.content.size = strlen(response.content.buf_p);
+
+    return (http_server_response_write(connection_p, request_p, &response));
+}
+
+/**
  * Handler for the websocket echo request. Echo all websocket messages
  * the client sends on the socket.
  */
@@ -126,6 +156,7 @@ static int test_start(struct harness_t *harness_p)
 {
     static struct http_server_route_t routes[] = {
         { .path_p = "/index.html", .callback = request_index },
+        { .path_p = "/form.html", .callback = request_form },
         { .path_p = "/websocket/echo", .callback = request_websocket_echo },
         { .path_p = NULL, .callback = NULL }
     };
@@ -204,6 +235,44 @@ static int test_request_index(struct harness_t *harness_p)
         "Content-Length: 8\r\n"
         "\r\n"
         "Welcome!";
+
+    socket_stub_output(buf, strlen(str_p));
+    buf[strlen(str_p)] = '\0';
+    BTASSERT(strcmp(buf, str_p) == 0);
+
+    /* Less log clobbering. */
+    thrd_sleep_us(100000);
+
+    return (0);
+}
+
+static int test_request_form(struct harness_t *harness_p)
+{
+    char *str_p;
+    char buf[256];
+
+    /* Input the accept answer. */
+    socket_stub_accept();
+
+    /* Input POST /form.html on the connection socket. */
+    str_p =
+        "POST /form.html HTTP/1.1\r\n"
+        "User-Agent: TestcaseRequestIndex\r\n"
+        "Connection: keep-alive\r\n"
+        "Content-Type: application/x-www-form-urlencoded\r\n"
+        "Content-Length: 9\r\n"
+        "\r\n"
+        "key=value";
+
+    socket_stub_input(str_p, strlen(str_p));
+
+    /* Read the POST response and verify it. */
+    str_p =
+        "HTTP/1.1 200 OK\r\n"
+        "Content-Type: text/html\r\n"
+        "Content-Length: 5\r\n"
+        "\r\n"
+        "Form!";
 
     socket_stub_output(buf, strlen(str_p));
     buf[strlen(str_p)] = '\0';
@@ -320,6 +389,7 @@ int main()
     struct harness_testcase_t harness_testcases[] = {
         { test_start, "test_start" },
         { test_request_index, "test_request_index" },
+        { test_request_form, "test_request_form" },
         { test_request_no_route, "test_request_no_route" },
         { test_request_websocket, "test_request_websocket" },
         { test_stop, "test_stop" },
