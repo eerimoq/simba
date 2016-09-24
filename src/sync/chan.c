@@ -31,9 +31,9 @@ int chan_module_init(void)
 }
 
 int chan_init(struct chan_t *self_p,
-              thrd_read_fn_t read,
-              thrd_write_fn_t write,
-              thrd_size_fn_t size)
+              chan_read_fn_t read,
+              chan_write_fn_t write,
+              chan_size_fn_t size)
 {
     ASSERTN(self_p != NULL, EINVAL);
     ASSERTN(read != NULL, EINVAL);

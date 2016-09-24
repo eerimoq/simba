@@ -31,7 +31,7 @@
  *
  * @return Number of read bytes or negative error code.
  */
-typedef ssize_t (*thrd_read_fn_t)(void *self_p,
+typedef ssize_t (*chan_read_fn_t)(void *self_p,
                                   void *buf_p,
                                   size_t size);
 
@@ -44,7 +44,7 @@ typedef ssize_t (*thrd_read_fn_t)(void *self_p,
  *
  * @return Number of written bytes or negative error code.
  */
-typedef ssize_t (*thrd_write_fn_t)(void *self_p,
+typedef ssize_t (*chan_write_fn_t)(void *self_p,
                                    const void *buf_p,
                                    size_t size);
 
@@ -55,7 +55,7 @@ typedef ssize_t (*thrd_write_fn_t)(void *self_p,
  *
  * @return Number of bytes available.
  */
-typedef size_t (*thrd_size_fn_t)(void *self_p);
+typedef size_t (*chan_size_fn_t)(void *self_p);
 
 struct chan_list_t {
     struct chan_t **chans_pp;
@@ -68,9 +68,9 @@ struct chan_list_t {
  * Channel datastructure.
  */
 struct chan_t {
-    thrd_read_fn_t read;
-    thrd_write_fn_t write;
-    thrd_size_fn_t size;
+    chan_read_fn_t read;
+    chan_write_fn_t write;
+    chan_size_fn_t size;
     /* Reader thread waiting for data or writer thread waiting for a
        reader. */
     struct thrd_t *writer_p;
@@ -111,9 +111,9 @@ int chan_module_init(void);
  * @return zero(0) or negative error code.
  */
 int chan_init(struct chan_t *self_p,
-              thrd_read_fn_t read,
-              thrd_write_fn_t write,
-              thrd_size_fn_t size);
+              chan_read_fn_t read,
+              chan_write_fn_t write,
+              chan_size_fn_t size);
 
 /**
  * Read data from given channel. The behaviour of this function

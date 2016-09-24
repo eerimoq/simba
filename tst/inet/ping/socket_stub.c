@@ -61,9 +61,9 @@ int socket_open_udp(struct socket_t *self_p)
 int socket_open_raw(struct socket_t *self_p)
 {
     /* Channel functions. */
-    self_p->base.read = (thrd_read_fn_t)socket_read;
-    self_p->base.write = (thrd_write_fn_t)socket_write;
-    self_p->base.size = (thrd_size_fn_t)socket_size;
+    self_p->base.read = (chan_read_fn_t)socket_read;
+    self_p->base.write = (chan_write_fn_t)socket_write;
+    self_p->base.size = (chan_size_fn_t)socket_size;
 
     return (0);
 }
