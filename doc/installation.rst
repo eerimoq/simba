@@ -101,7 +101,7 @@ Execute the one-liner below to install `Simba`.
                           flex bison texinfo gawk ncurses-dev libexpat-dev \
                           python-serial sed libtool-bin cargo && \
      sudo pip install pyserial xpect readchar sphinx breathe sphinx_rtd_theme && \
-     (git clone --recursive https://github.com/eerimoq/esp-open-sdk.git && \
+     (git clone --recursive https://github.com/pfalcon/esp-open-sdk.git && \
       cd esp-open-sdk && \
       make STANDALONE=n) && \
      git clone https://github.com/eerimoq/simba
