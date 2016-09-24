@@ -174,6 +174,8 @@ def setup_mcu_esp(env, linker_script, flash_size_map):
     for flag in env["CFLAGS"]:
         if "-Werror" in flag:
             continue
+        if "-mforce-l32" in flag:
+            continue
         cflags.append(flag)
     env.Replace(CFLAGS=cflags)
 
@@ -182,11 +184,12 @@ def setup_mcu_esp(env, linker_script, flash_size_map):
     for flag in env["CXXFLAGS"]:
         if "-Werror" in flag:
             continue
+        if "-mforce-l32" in flag:
+            continue
         cxxflags.append(flag)
     env.Replace(CXXFLAGS=cxxflags)
 
     env.Append(LIBS=[
-        "-lminic",
         "-lgcc",
         "-lhal",
         "-lphy",
@@ -337,7 +340,7 @@ def generate_platformio_sconsscript(database, version):
     # Only add selceted parts the database to the scons script for
     # less unnecessary information.
     for board, data in database["boards"].items():
-        # Add everything we need, and a bit more.
+        # Add everything we need, and a little more.
         selected_data = {
             'inc': data['inc'],
             'cdefs': [cdef for cdef in data['cdefs'] if not cdef.startswith("F_CPU")],

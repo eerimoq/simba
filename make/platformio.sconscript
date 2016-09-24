@@ -945,16 +945,18 @@ BOARDS = {
             "VERSION=8.0.0", 
             "ICACHE_FLASH", 
             "__STRICT_ANSI__", 
-            "CONFIG_MONITOR_THREAD=0"
+            "__ets__"
         ], 
         "cflags": [
             "-Os", 
             "-Werror", 
             "-nostdlib", 
             "-mlongcalls", 
-            "-falign-functions=4", 
+            "-mforce-l32", 
             "-mtext-section-literals", 
             "-ffunction-sections", 
+            "-fno-inline-functions", 
+            "-fsingle-precision-constant", 
             "-fdata-sections", 
             "-c", 
             "-Wall", 
@@ -967,6 +969,7 @@ BOARDS = {
             "-Werror", 
             "-nostdlib", 
             "-mlongcalls", 
+            "-mforce-l32", 
             "-mtext-section-literals", 
             "-ffunction-sections", 
             "-fdata-sections", 
@@ -995,7 +998,6 @@ BOARDS = {
         ], 
         "ldflags": [
             "-Wl,--start-group", 
-            "-lminic", 
             "-lhal", 
             "-lphy", 
             "-lpp", 
@@ -1032,7 +1034,7 @@ BOARDS = {
             "src/text/std.c", 
             "src/encode/json.c", 
             "src/sync/rwlock.c", 
-            "src/filesystems/fs.c", 
+            "3pp/libc/string0.c", 
             "src/drivers/flash.c", 
             "src/filesystems/spiffs.c", 
             "src/hash/sha1.c", 
@@ -1073,6 +1075,7 @@ BOARDS = {
             "src/inet/inet.c", 
             "src/collections/hash_map.c", 
             "src/drivers/i2c_soft.c", 
+            "src/drivers/uart_soft.c", 
             "src/inet/ping.c", 
             "3pp/spiffs-0.3.5/src/spiffs_cache.c", 
             "src/settings_default.c", 
@@ -1081,7 +1084,7 @@ BOARDS = {
             "src/alloc/heap.c", 
             "src/filesystems/fat16.c", 
             "src/mcus/esp8266/mcu.c", 
-            "src/drivers/uart_soft.c"
+            "src/filesystems/fs.c"
         ]
     }, 
     "esp12e": {
@@ -1094,16 +1097,18 @@ BOARDS = {
             "VERSION=8.0.0", 
             "ICACHE_FLASH", 
             "__STRICT_ANSI__", 
-            "CONFIG_MONITOR_THREAD=0"
+            "__ets__"
         ], 
         "cflags": [
             "-Os", 
             "-Werror", 
             "-nostdlib", 
             "-mlongcalls", 
-            "-falign-functions=4", 
+            "-mforce-l32", 
             "-mtext-section-literals", 
             "-ffunction-sections", 
+            "-fno-inline-functions", 
+            "-fsingle-precision-constant", 
             "-fdata-sections", 
             "-c", 
             "-Wall", 
@@ -1116,6 +1121,7 @@ BOARDS = {
             "-Werror", 
             "-nostdlib", 
             "-mlongcalls", 
+            "-mforce-l32", 
             "-mtext-section-literals", 
             "-ffunction-sections", 
             "-fdata-sections", 
@@ -1144,7 +1150,6 @@ BOARDS = {
         ], 
         "ldflags": [
             "-Wl,--start-group", 
-            "-lminic", 
             "-lhal", 
             "-lphy", 
             "-lpp", 
@@ -1177,11 +1182,11 @@ BOARDS = {
             "src/collections/binary_tree.c", 
             "src/debug/harness.c", 
             "src/boards/esp12e/board.c", 
-            "src/inet/socket.c", 
+            "src/inet/network_interface/slip.c", 
             "src/text/std.c", 
             "src/encode/json.c", 
             "src/sync/rwlock.c", 
-            "src/filesystems/fs.c", 
+            "3pp/libc/string0.c", 
             "src/drivers/flash.c", 
             "src/filesystems/spiffs.c", 
             "src/hash/sha1.c", 
@@ -1195,7 +1200,7 @@ BOARDS = {
             "src/kernel/timer.c", 
             "src/sync/sem.c", 
             "3pp/spiffs-0.3.5/src/spiffs_check.c", 
-            "src/inet/network_interface/slip.c", 
+            "src/inet/socket.c", 
             "src/debug/log.c", 
             "src/drivers/exti.c", 
             "src/text/re.c", 
@@ -1222,6 +1227,7 @@ BOARDS = {
             "src/inet/inet.c", 
             "src/collections/hash_map.c", 
             "src/drivers/i2c_soft.c", 
+            "src/drivers/uart_soft.c", 
             "src/inet/ping.c", 
             "3pp/spiffs-0.3.5/src/spiffs_cache.c", 
             "src/settings_default.c", 
@@ -1230,7 +1236,7 @@ BOARDS = {
             "src/alloc/heap.c", 
             "src/filesystems/fat16.c", 
             "src/mcus/esp8266/mcu.c", 
-            "src/drivers/uart_soft.c"
+            "src/filesystems/fs.c"
         ]
     }, 
     "linux": {
@@ -1909,6 +1915,8 @@ def setup_mcu_esp(env, linker_script, flash_size_map):
     for flag in env["CFLAGS"]:
         if "-Werror" in flag:
             continue
+        if "-mforce-l32" in flag:
+            continue
         cflags.append(flag)
     env.Replace(CFLAGS=cflags)
 
@@ -1917,11 +1925,12 @@ def setup_mcu_esp(env, linker_script, flash_size_map):
     for flag in env["CXXFLAGS"]:
         if "-Werror" in flag:
             continue
+        if "-mforce-l32" in flag:
+            continue
         cxxflags.append(flag)
     env.Replace(CXXFLAGS=cxxflags)
 
     env.Append(LIBS=[
-        "-lminic",
         "-lgcc",
         "-lhal",
         "-lphy",
