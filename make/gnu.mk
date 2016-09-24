@@ -21,8 +21,7 @@ SIZECMD = $(CROSS_COMPILE)size $(SIZEARGS) ${EXE} ; \
           echo ; \
           $(CROSS_COMPILE)size $(OBJ) -t
 
-SIZE_SUMMARY_CMD = $(CROSS_COMPILE)size ${EXE} | python -c "import sys; text, data, bss = sys.stdin.readlines()[1].split()[0:3]; print '{{\"program\": {}, \"data\": {}}}'.format(text, int(data) + int(bss))"
-
+SIZE_SUMMARY_CMD ?= $(CROSS_COMPILE)size ${EXE} | python -c "import sys; text, data, bss = sys.stdin.readlines()[1].split()[0:3]; print '{{\"program\": {}, \"data\": {}}}'.format(text, int(data) + int(bss))"
 
 CC = $(CROSS_COMPILE)gcc$(CCVERSION:%=-%)
 CXX = $(CROSS_COMPILE)g++$(CCVERSION:%=-%)
