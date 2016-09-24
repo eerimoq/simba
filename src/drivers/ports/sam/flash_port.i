@@ -84,14 +84,14 @@ static ssize_t bank_execute_command(struct flash_device_bank_t *bank_p,
     iap_fn = *((iap_fn_t *)(FLASH_IAP_ADDRESS));
 
     sys_lock();
-    
+
     status = iap_fn(bank_p->index,
                     (EEFC_FCR_FKEY(0x5a)
                      | EEFC_FCR_FARG(argument)
                      | EEFC_FCR_FCMD(command)));
 
     sys_unlock();
-    
+
     return ((status & (EEFC_FSR_FLOCKE | EEFC_FSR_FCMDE)) == 0 ? 0 : -1);
 }
 
@@ -218,5 +218,25 @@ static int flash_port_erase(struct flash_driver_t *self_p,
                             uintptr_t addr,
                             uint32_t size)
 {
-    return (-1);
+    uint32_t chunk_size;
+    static uint32_t buffer[PAGE_BUFFER_SIZE_32];
+
+    memset(buffer, -1, sizeof(buffer));
+
+    while (size > 0) {
+        if (size > sizeof(buffer)) {
+            chunk_size = sizeof(buffer);
+        } else {
+            chunk_size = size;
+        }
+
+        if (flash_port_write(self_p, addr, buffer, chunk_size) != chunk_size) {
+            return (-1);
+        }
+
+        addr += chunk_size;
+        size -= chunk_size;
+    }
+
+    return (0);
 }
