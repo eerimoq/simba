@@ -28,7 +28,7 @@ typedef const FAR char *far_string_t;
 /**
  * @brief No special storage for string literals.
  */
-#define FSTR(s) s
+#define FSTR(s) (__extension__({static const char __c[] ICACHE_RODATA_ATTR = (s); &__c[0];}))
 
 #define PACKED __attribute__((packed))
 
