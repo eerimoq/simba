@@ -17,6 +17,12 @@
  * This file is part of the Simba project.
  */
 
+#if defined(FAMILY_SAM)
+#    define SYSTEM_TIMER_LOAD_RELOAD_NOM 10000000
+#else
+#    define SYSTEM_TIMER_LOAD_RELOAD_NOM 20000000
+#endif
+
 ISR(sys_tick)
 {
 #if defined(FAMILY_STM32F2)
@@ -30,7 +36,7 @@ ISR(sys_tick)
 static int sys_port_module_init(void)
 {
     /* Setup the system tick timer. */
-    ARM_ST->LOAD = SYSTEM_TIMER_LOAD_RELOAD(20000000
+    ARM_ST->LOAD = SYSTEM_TIMER_LOAD_RELOAD(SYSTEM_TIMER_LOAD_RELOAD_NOM
                                             / CONFIG_SYSTEM_TICK_FREQUENCY);
     ARM_ST->CTRL = (SYSTEM_TIMER_CTRL_TICKINT
                     | SYSTEM_TIMER_CTRL_ENABLE);
