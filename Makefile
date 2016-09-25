@@ -128,8 +128,7 @@ ifeq ($(BOARD), arduino_mega)
     TESTS += $(addprefix tst/encode/, base64)
     TESTS += $(addprefix tst/hash/, crc \
                                     sha1)
-    TESTS += $(addprefix tst/inet/, http_server \
-				    http_websocket_client \
+    TESTS += $(addprefix tst/inet/, http_websocket_client \
 				    http_websocket_server \
 				    inet \
 				    mqtt_client \

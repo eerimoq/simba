@@ -61,9 +61,9 @@ Below is the memory usage of two applications:
 +--------------------------+-----------+-----------+
 | Application              | Flash     | RAM       |
 +==========================+===========+===========+
-| minimal-configuration    |    269016 |     34614 |
+| minimal-configuration    |    265528 |     35328 |
 +--------------------------+-----------+-----------+
-| default-configuration    |    314300 |     58485 |
+| default-configuration    |    317528 |     57352 |
 +--------------------------+-----------+-----------+
 
 Default configuration
@@ -199,6 +199,8 @@ Default Standard Library configuration.
 |  CONFIG_SYSTEM_TICK_FREQUENCY_                         |  100                                                |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_SYS_CONFIG_STRING_                             |  1                                                  |
++--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_SYS_SIMBA_MAIN_STACK_MAX_                      |  4096                                               |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_THRD_CPU_USAGE_                                |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
@@ -349,6 +351,8 @@ Mcu
 .. _CONFIG_SYSTEM_TICK_FREQUENCY: ../user-guide/configuration.html#c.CONFIG_SYSTEM_TICK_FREQUENCY
 
 .. _CONFIG_SYS_CONFIG_STRING: ../user-guide/configuration.html#c.CONFIG_SYS_CONFIG_STRING
+
+.. _CONFIG_SYS_SIMBA_MAIN_STACK_MAX: ../user-guide/configuration.html#c.CONFIG_SYS_SIMBA_MAIN_STACK_MAX
 
 .. _CONFIG_THRD_CPU_USAGE: ../user-guide/configuration.html#c.CONFIG_THRD_CPU_USAGE
 

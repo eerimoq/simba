@@ -211,8 +211,13 @@ def get_c_extra_flags(board, database):
 
     incs = database["boards"][board]["inc"]
     cdefs = database["boards"][board]["cdefs"]
-    cflags = database["boards"][board]["cflags"]
+    cflags = []
 
+    for flag in database["boards"][board]["cflags"]:
+        if "-mforce-l32" in flag:
+            continue
+        cflags.append(flag)
+    
     return " ".join(cflags
                     + ["\"-I{runtime.platform.path}/cores/simba/" + inc + "\""
                        for inc in incs]
@@ -226,7 +231,12 @@ def get_cxx_extra_flags(board, database):
 
     incs = database["boards"][board]["inc"]
     cdefs = database["boards"][board]["cdefs"]
-    cxxflags = database["boards"][board]["cxxflags"]
+    cxxflags = []
+
+    for flag in database["boards"][board]["cxxflags"]:
+        if "-mforce-l32" in flag:
+            continue
+        cxxflags.append(flag)
 
     return " ".join(cxxflags
                     + ["\"-I{runtime.platform.path}/cores/simba/" + inc + "\""

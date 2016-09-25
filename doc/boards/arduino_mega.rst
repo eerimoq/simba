@@ -70,7 +70,7 @@ Below is the memory usage of two applications:
 +==========================+===========+===========+
 | minimal-configuration    |     11126 |      1015 |
 +--------------------------+-----------+-----------+
-| default-configuration    |     57410 |      3687 |
+| default-configuration    |     57506 |      3687 |
 +--------------------------+-----------+-----------+
 
 Default configuration
@@ -206,6 +206,8 @@ Default Standard Library configuration.
 |  CONFIG_SYSTEM_TICK_FREQUENCY_                         |  100                                                |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_SYS_CONFIG_STRING_                             |  1                                                  |
++--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_SYS_SIMBA_MAIN_STACK_MAX_                      |  4096                                               |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_THRD_CPU_USAGE_                                |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
@@ -356,6 +358,8 @@ Mcu
 .. _CONFIG_SYSTEM_TICK_FREQUENCY: ../user-guide/configuration.html#c.CONFIG_SYSTEM_TICK_FREQUENCY
 
 .. _CONFIG_SYS_CONFIG_STRING: ../user-guide/configuration.html#c.CONFIG_SYS_CONFIG_STRING
+
+.. _CONFIG_SYS_SIMBA_MAIN_STACK_MAX: ../user-guide/configuration.html#c.CONFIG_SYS_SIMBA_MAIN_STACK_MAX
 
 .. _CONFIG_THRD_CPU_USAGE: ../user-guide/configuration.html#c.CONFIG_THRD_CPU_USAGE
 

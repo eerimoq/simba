@@ -190,6 +190,7 @@ def setup_mcu_esp(env, linker_script, flash_size_map):
     env.Replace(CXXFLAGS=cxxflags)
 
     env.Append(LIBS=[
+        "-lminic",
         "-lgcc",
         "-lhal",
         "-lphy",
@@ -260,6 +261,14 @@ else:
 if board not in SUPPORTED_BOARDS:
    raise ValueError("BOARD {{}} is not supported by Simba.".format(board))
 
+# Seems to be an alignment issue. Works with -mforce-l32.
+if board in ["esp12e", "esp01"]:
+    srcs = []
+    for s in BOARDS[board]["src"]:
+        if s != "3pp/libc/string0.c":
+            srcs.append(s)
+    BOARDS[board]["src"] = srcs
+
 # Add the default configuration for the board.
 add_include_paths(env, BOARDS[board]["inc"])
 env.Append(CPPDEFINES=BOARDS[board]["cdefs"])
@@ -312,7 +321,7 @@ for src in env.LookupSources(variant_dir, src_dir, True, src_filter):
 env.Command(SIMBA_GEN_C,
             source_files,
             ('"$PYTHONEXE" "$PLATFORMFW_DIR/src/kernel/tools/gen.py" "$NAME" "$VERSION" '
-             '"$BOARD_DESC" "$MCU_DESC" "$TARGET" $SOURCES'))
+             '"$BOARD_DESC" "$MCU_DESC" "$TARGET"'))
 source_files.append(SIMBA_GEN_C)
 
 lib = env.Library(target=join("$BUILD_DIR", "SimbaFramework"), source=source_files)
