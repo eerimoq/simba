@@ -51,13 +51,14 @@ Follow these steps to create a new release:
       scp make/arduino/esp/package_simba_esp_index.json <user>@frs.sourceforge.net:/home/frs/project/simba-arduino/esp
 
 9. Download the release zip-file from Github and calculate its SHA1
-   checksum. Add the new releases to
-   ``make/platformio/manifest.json``.
+   checksum. Upload the zip-file to sourceforge and add the new
+   releases to ``make/platformio/manifest.json``.
 
    .. code:: text
 
       wget https://github.com/eerimoq/simba/archive/<version>.zip
       sha1sum <version>.zip
+      scp <version>.zip <user>@frs.sourceforge.net:/home/frs/project/simba-platformio/
 
 10. Commit and push.
 

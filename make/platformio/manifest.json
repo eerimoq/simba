@@ -1,7 +1,7 @@
 {
     "framework-simba": [
         {
-            "url": "https://github.com/eerimoq/simba/archive/8.0.0.zip",
+            "url": "https://sourceforge.net/projects/simba-platformio/files/8.0.0.zip",
             "sha1": "b9568641e5e91c08221f2ccd7d4698e7936643d0",
             "version": "8.0.0"
         },
