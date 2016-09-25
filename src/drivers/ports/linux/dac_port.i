@@ -28,7 +28,7 @@ static int dac_port_init(struct dac_driver_t *self_p,
                          struct pin_device_t *pin1_dev_p,
                          long sampling_rate)
 {
-    return (-1);
+    return (0);
 }
 
 static int dac_port_async_convert(struct dac_driver_t *self_p,
