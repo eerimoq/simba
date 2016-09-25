@@ -72,6 +72,9 @@ def generate_cores(family, database):
         if database["mcus"][mcu]["family"] != family:
             continue
 
+        # For ESP...
+        board["src"] = list(set(board["src"]) - set(["3pp/libc/string0.c"]))
+        
         if cores_srcs is None:
             cores_srcs = set(board["src"])
         else:

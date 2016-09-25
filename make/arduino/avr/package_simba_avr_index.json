@@ -448,7 +448,7 @@
                     },
                     "url": "https://sourceforge.net/projects/simba-arduino/files/avr/simba-arduino-avr-9.0.1.zip",
 	            "archiveFileName": "simba-arduino-avr-9.0.1.zip",
-	            "checksum": "SHA-256:5c0ba78adac57f725056c87bab3910b628b61c2e6d8a9793b0d8ccdc158522e3",
+	            "checksum": "SHA-256:7dcf9e7c982da9fb25496f3c3c85bf4dfd88d9c451a73d7ad16f46269015eff2",
 	            "size": "859856",
                     "boards": [
 	                {"name" : "Arduino Mega 2560"},

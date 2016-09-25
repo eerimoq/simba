@@ -193,8 +193,8 @@
                     },
                     "url": "https://sourceforge.net/projects/simba-arduino/files/esp/simba-arduino-esp-9.0.1.zip",
                     "archiveFileName": "simba-arduino-esp-9.0.1.zip",
-                    "checksum": "SHA-256:9c3190f40b715f10275db3ade87815bb9f20c8f97855febc8f437f5f38bbfb5e",
-                    "size": "1730598",
+                    "checksum": "SHA-256:f0a52819459704fe591eaa14598a3a1b1eae3d19bf65bc35839f0be3986bbd95",
+                    "size": "1727818",
                     "boards": [
                         {"name" : "ESP-01"},
                         {"name" : "ESP-12E"}
