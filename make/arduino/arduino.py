@@ -386,7 +386,7 @@ def generate_extra(family, database):
         libpaths = database["boards"]["esp01"]["libpath"]
         mkdir_p("lib")
 
-        for lib in database["boards"]["esp01"]["lib"]:
+        for lib in database["boards"]["esp01"]["lib"] + ["minic"]:
             for libpath in libpaths:
                 libpath_dir = os.path.join(simba_root, libpath)
                 for root, _, filenames in os.walk(libpath_dir):
