@@ -250,9 +250,14 @@ def get_c_elf_extra_flags(board, database):
     """
 
     libpaths = database["boards"][board]["libpath"]
-    ldflags = database["boards"][board]["ldflags"]
-
-    ldflags = [ldflag for ldflag in ldflags if "-Wl,-Map" not in ldflag]
+    ldflags = []
+    
+    for ldflag in database["boards"][board]["ldflags"]:
+        if "-Wl,-Map" in ldflag:
+            continue
+        ldflags.append(ldflag)
+        if "-Wl,--start-group" == ldflag:
+            ldflags.append("-lminic")
 
     return " ".join(ldflags
                     + ["\"-L{runtime.platform.path}/variants/" + board + "/" + libpath + "\""

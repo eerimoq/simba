@@ -169,26 +169,6 @@ def setup_mcu_esp(env, linker_script, flash_size_map):
     env.Replace(LINKFLAGS=linkflags)
     env.Replace(LDSCRIPT_PATH="script.ld")
 
-    cflags = []
-
-    for flag in env["CFLAGS"]:
-        if "-Werror" in flag:
-            continue
-        if "-mforce-l32" in flag:
-            continue
-        cflags.append(flag)
-    env.Replace(CFLAGS=cflags)
-
-    cxxflags = []
-
-    for flag in env["CXXFLAGS"]:
-        if "-Werror" in flag:
-            continue
-        if "-mforce-l32" in flag:
-            continue
-        cxxflags.append(flag)
-    env.Replace(CXXFLAGS=cxxflags)
-
     env.Append(LIBS=[
         "-lminic",
         "-lgcc",
@@ -260,14 +240,6 @@ else:
 
 if board not in SUPPORTED_BOARDS:
    raise ValueError("BOARD {{}} is not supported by Simba.".format(board))
-
-# Seems to be an alignment issue. Works with -mforce-l32.
-if board in ["esp12e", "esp01"]:
-    srcs = []
-    for s in BOARDS[board]["src"]:
-        if s != "3pp/libc/string0.c":
-            srcs.append(s)
-    BOARDS[board]["src"] = srcs
 
 # Add the default configuration for the board.
 add_include_paths(env, BOARDS[board]["inc"])
@@ -353,9 +325,9 @@ def generate_platformio_sconsscript(database, version):
         selected_data = {
             'inc': data['inc'],
             'cdefs': [cdef for cdef in data['cdefs'] if not cdef.startswith("F_CPU")],
-            'src': data['src'],
-            'cflags': data['cflags'],
-            'cxxflags': data['cxxflags'],
+            'src': list(set(data['src']) - set(["3pp/libc/string0.c"])),
+            'cflags': list(set(data['cflags']) - set(["-mforce-l32"])),
+            'cxxflags': list(set(data['cxxflags']) - set(["-mforce-l32"])),
             'libpath': data['libpath'],
             'ldflags': data['ldflags'],
             'linker_script': data['linker_script'],
