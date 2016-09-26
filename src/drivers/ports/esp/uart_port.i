@@ -89,7 +89,7 @@ static inline void rx_isr(struct uart_driver_t *drv_p,
     /* Error frames are discarded. */
     if (error == 0) {
         /* Write data to input queue. */
-        if (queue_write_isr(&drv_p->chin, &c, 1) != 1) {
+        if (chan_write_isr(&drv_p->chin, &c, 1) != 1) {
             fs_counter_increment(&rx_channel_overflow, 1);
         }
         

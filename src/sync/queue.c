@@ -60,6 +60,7 @@ int queue_init(struct queue_t *self_p,
               (ssize_t (*)(void *, void *, size_t))queue_read,
               (ssize_t (*)(void *, const void *, size_t))queue_write,
               (size_t (*)(void *))queue_size);
+    chan_set_write_isr_cb(&self_p->base, (chan_write_fn_t)queue_write_isr);
 
     self_p->buffer.begin_p = buf_p;
     self_p->buffer.read_p = buf_p;

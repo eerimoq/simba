@@ -52,7 +52,7 @@ int uart_init(struct uart_driver_t *self_p,
               chan_read_null,
               (ssize_t (*)(void *, const void *, size_t))uart_port_write_cb,
               chan_size_null);
-
+    
     if (size > 0) {
         queue_init(&self_p->chin, rxbuf_p, size);
     }

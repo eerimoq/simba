@@ -49,6 +49,20 @@ typedef ssize_t (*chan_write_fn_t)(void *self_p,
                                    size_t size);
 
 /**
+ * Channel write filter function callback type.
+ *
+ * @param[in] self_p Channel to write to.
+ * @param[in] buf_p Buffer to write.
+ * @param[in] size Number of bytes in buffer.
+ *
+ * @return true(1) if the buffer shall be written to the channel,
+ *         otherwise false(0).
+ */
+typedef int (*chan_write_filter_fn_t)(void *self_p,
+                                      const void *buf_p,
+                                      size_t size);
+
+/**
  * Channel size function callback type.
  *
  * @param[in] self_p Channel to get the size of.
@@ -71,6 +85,9 @@ struct chan_t {
     chan_read_fn_t read;
     chan_write_fn_t write;
     chan_size_fn_t size;
+    chan_write_filter_fn_t write_filter_cb;
+    chan_write_fn_t write_isr;
+    chan_write_filter_fn_t write_filter_isr_cb;
     /* Reader thread waiting for data or writer thread waiting for a
        reader. */
     struct thrd_t *writer_p;
@@ -116,6 +133,45 @@ int chan_init(struct chan_t *self_p,
               chan_size_fn_t size);
 
 /**
+ * Set the write isr function callback.
+ *
+ * @param[in] self_p Initialized driver object.
+ * @param[in] filter Write isr function to set.
+ *
+ * @return zero(0) or negative error code.
+ */
+int chan_set_write_isr_cb(struct chan_t *self_p,
+                          chan_write_fn_t write_isr_cb);
+
+/**
+ * Set the write filter callback function. The write filter function
+ * is called when data is written to the channel, and its return value
+ * determines is the data shall be written to the underlying channel
+ * implementation, or discarded.
+ *
+ * @param[in] self_p Initialized driver object.
+ * @param[in] write_filter_cb filter Write filter function to set.
+ *
+ * @return zero(0) or negative error code.
+ */
+int chan_set_write_filter_cb(struct chan_t *self_p,
+                             chan_write_filter_fn_t write_filter_cb);
+
+/**
+ * Set the write isr filter callback function. The write filter
+ * function is called when data is written to the channel, and its
+ * return value determines is the data shall be written to the
+ * underlying channel implementation, or discarded.
+ *
+ * @param[in] self_p Initialized driver object.
+ * @param[in] write_filter_isr_cb filter Write filter function to set.
+ *
+ * @return zero(0) or negative error code.
+ */
+int chan_set_write_filter_isr_cb(struct chan_t *self_p,
+                                 chan_write_filter_fn_t write_filter_isr_cb);
+
+/**
  * Read data from given channel. The behaviour of this function
  * depends on the channel implementation. Often, the calling thread
  * will be blocked until all data has been read or an error occurs.
@@ -153,6 +209,22 @@ ssize_t chan_write(void *self_p,
  * @return Number of bytes available.
  */
 size_t chan_size(void *self_p);
+
+/**
+ * Write data to given channel from interrupt context or with the
+ * system lock taken. The behaviour of this function depends on the
+ * channel implementation. Some channel implementations blocks until
+ * the receiver has read the data, and some returns immediately.
+ *
+ * @param[in] self_p Channel to write to.
+ * @param[in] buf_p Buffer to write.
+ * @param[in] size Number of bytes to write.
+ *
+ * @return Number of written bytes or negative error code.
+ */
+ssize_t chan_write_isr(void *self_p,
+                       const void *buf_p,
+                       size_t size);
 
 /**
  * Check if a channel is polled. May only be called from isr or with

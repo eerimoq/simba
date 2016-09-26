@@ -22,6 +22,8 @@
 
 #include "simba.h"
 
+typedef int (*uart_rx_filter_cb_t)(char c);
+
 #include "uart_port.h"
 
 extern struct uart_device_t uart_device[UART_DEVICE_MAX];
@@ -53,6 +55,17 @@ int uart_init(struct uart_driver_t *self_p,
               long baudrate,
               void *rxbuf_p,
               size_t size);
+
+/**
+ * Set the reception filter callback function.
+ *
+ * @param[in] self_p Initialized driver object.
+ * @param[in] rx_filter_cb Callback to set.
+ *
+ * @return zero(0) or negative error code.
+ */
+int uart_set_rx_filter_cb(struct uart_driver_t *self_p,
+                          uart_rx_filter_cb_t rx_filter_cb);
 
 /**
  * Starts the UART device using given driver object.

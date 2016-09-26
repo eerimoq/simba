@@ -42,10 +42,37 @@ int chan_init(struct chan_t *self_p,
 
     self_p->read = read;
     self_p->write = write;
+    self_p->write_isr = chan_write_null;
     self_p->size = size;
+    self_p->write_filter_cb = NULL;
+    self_p->write_filter_isr_cb = NULL;
     self_p->writer_p = NULL;
     self_p->reader_p = NULL;
     self_p->list_p = NULL;
+
+    return (0);
+}
+
+int chan_set_write_filter_cb(struct chan_t *self_p,
+                             chan_write_filter_fn_t write_filter_cb)
+{
+    self_p->write_filter_cb = write_filter_cb;
+
+    return (0);
+}
+
+int chan_set_write_filter_isr_cb(struct chan_t *self_p,
+                                 chan_write_filter_fn_t write_filter_isr_cb)
+{
+    self_p->write_filter_isr_cb = write_filter_isr_cb;
+
+    return (0);
+}
+
+int chan_set_write_isr_cb(struct chan_t *self_p,
+                          chan_write_fn_t write_isr_cb)
+{
+    self_p->write_isr = write_isr_cb;
 
     return (0);
 }
@@ -101,7 +128,7 @@ ssize_t chan_read(void *self_p,
     return (((struct chan_t *)self_p)->read(self_p, buf_p, size));
 }
 
-ssize_t chan_write(void *self_p,
+ssize_t chan_write(void *self_in_p,
                    const void *buf_p,
                    size_t size)
 {
@@ -109,7 +136,34 @@ ssize_t chan_write(void *self_p,
     ASSERTN(buf_p != NULL, EINVAL);
     ASSERTN(size > 0, EINVAL);
 
-    return (((struct chan_t *)self_p)->write(self_p, buf_p, size));
+    struct chan_t *self_p;
+
+    self_p = self_in_p;
+
+    if (self_p->write_filter_cb != NULL) {
+        if (self_p->write_filter_cb(self_p, buf_p, size) == 1) {
+            return (size);
+        }
+    }
+
+    return (self_p->write(self_p, buf_p, size));
+}
+
+ssize_t chan_write_isr(void *self_in_p,
+                       const void *buf_p,
+                       size_t size)
+{
+    struct chan_t *self_p;
+
+    self_p = self_in_p;
+
+    if (self_p->write_filter_isr_cb != NULL) {
+        if (self_p->write_filter_isr_cb(self_p, buf_p, size) == 1) {
+            return (size);
+        }
+    }
+
+    return (self_p->write_isr(self_p, buf_p, size));
 }
 
 size_t chan_size(void *self_p)
@@ -140,7 +194,7 @@ int chan_list_remove(struct chan_list_t *list_p, void *chan_p)
     ASSERTN(chan_p != NULL, EINVAL);
 
     int i;
-    
+
     for (i = 0; i < list_p->max; i++) {
         if (list_p->chans_pp[i] == chan_p) {
             list_p->max--;
@@ -148,7 +202,7 @@ int chan_list_remove(struct chan_list_t *list_p, void *chan_p)
             return (0);
         }
     }
-    
+
     return (-1);
 }
 
@@ -159,7 +213,7 @@ void *chan_list_poll(struct chan_list_t *list_p,
 
     struct chan_t *chan_p = NULL;
     size_t i;
-    
+
     sys_lock();
 
     while (1) {
@@ -191,7 +245,7 @@ void *chan_list_poll(struct chan_list_t *list_p,
 
  out:
     sys_unlock();
-    
+
     return (chan_p);
 }
 
@@ -200,12 +254,12 @@ void *chan_poll(void *chan_p, struct time_t *timeout_p)
     void *res_p;
     struct chan_list_t list;
     struct chan_t *workspace_p;
-    
+
     chan_list_init(&list, &workspace_p, sizeof(workspace_p));
     chan_list_add(&list, chan_p);
     res_p = chan_list_poll(&list, timeout_p);
     chan_list_remove(&list, chan_p);
-    
+
     return (res_p);
 }
 
@@ -241,6 +295,6 @@ int chan_is_polled_isr(struct chan_t *self_p)
             return (1);
         }
     }
-    
+
     return (0);
 }
