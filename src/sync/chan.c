@@ -132,7 +132,7 @@ ssize_t chan_write(void *self_in_p,
                    const void *buf_p,
                    size_t size)
 {
-    ASSERTN(self_p != NULL, EINVAL);
+    ASSERTN(self_in_p != NULL, EINVAL);
     ASSERTN(buf_p != NULL, EINVAL);
     ASSERTN(size > 0, EINVAL);
 
