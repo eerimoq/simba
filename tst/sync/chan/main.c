@@ -27,7 +27,7 @@ static ssize_t write_cb(void *self_p,
                         size_t size)
 {
     memcpy(buffer, buf_p, size);
-    
+
     return (size);
 }
 
@@ -40,7 +40,7 @@ static int test_filter(struct harness_t *harness_p)
 {
     struct chan_t chan;
     char buf[2];
-    
+
     BTASSERT(chan_init(&chan,
                        chan_read_null,
                        write_cb,
@@ -86,11 +86,29 @@ static int test_filter(struct harness_t *harness_p)
     return (0);
 }
 
+static int test_null_channels(struct harness_t *harness_p)
+{
+    struct chan_t chan;
+    char value;
+
+    BTASSERT(chan_init(&chan,
+                       chan_read_null,
+                       chan_write_null,
+                       chan_size_null) == 0);
+
+    BTASSERT(chan_read(&chan, &value, 1) == -1);
+    BTASSERT(chan_write(&chan, &value, 1) == 1);
+    BTASSERT(chan_size(&chan) == 0);
+
+    return (0);
+}
+
 int main()
 {
     struct harness_t harness;
     struct harness_testcase_t harness_testcases[] = {
         { test_filter, "test_filter" },
+        { test_null_channels, "test_null_channels" },
         { NULL, NULL }
     };
 
