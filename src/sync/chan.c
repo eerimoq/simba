@@ -195,10 +195,10 @@ int chan_list_remove(struct chan_list_t *list_p, void *chan_p)
 
     int i;
 
-    for (i = 0; i < list_p->max; i++) {
+    for (i = 0; i < list_p->len; i++) {
         if (list_p->chans_pp[i] == chan_p) {
-            list_p->max--;
-            list_p->chans_pp[i] = list_p->chans_pp[list_p->max];
+            list_p->len--;
+            list_p->chans_pp[i] = list_p->chans_pp[list_p->len];
             return (0);
         }
     }
