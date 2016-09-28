@@ -64,6 +64,7 @@ int main()
     };
 
     sys_start();
+    exti_module_init();
 
     harness_init(&harness);
     harness_run(&harness, harness_testcases);

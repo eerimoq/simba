@@ -118,7 +118,7 @@ static int exti_port_start(struct exti_driver_t *self_p)
     dev_p->pio_p->ESR |= dev_p->mask;
 
     /* Trigger on both edges is not implemented yet. It's very little
-     * work.*/
+       work. */
     if (self_p->trigger == EXTI_TRIGGER_FALLING_EDGE) {
         dev_p->pio_p->FELLSR |= dev_p->mask;
     } else if (self_p->trigger == EXTI_TRIGGER_RISING_EDGE) {
@@ -128,9 +128,7 @@ static int exti_port_start(struct exti_driver_t *self_p)
     }
 
     dev_p->pio_p->ISR |= dev_p->mask;
-
     dev_p->pio_p->ISR;
-
     dev_p->pio_p->IER |= dev_p->mask;
     
     return (0);
