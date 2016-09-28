@@ -45,6 +45,7 @@ DRIVERS_SRC ?= adc.c \
                analog_input_pin.c \
                analog_output_pin.c \
                dac.c \
+	       exti.c \
                flash.c \
                pin.c \
                i2c_soft.c \

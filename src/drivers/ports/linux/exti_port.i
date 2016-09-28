@@ -17,19 +17,22 @@
  * This file is part of the Simba project.
  */
 
-int exti_port_init(struct exti_driver_t *drv,
-                   struct exti_device_t *dev,
-                   void (*on_interrupt)(struct exti_driver_t *drv))
+static int exti_port_module_init()
 {
     return (0);
 }
 
-int exti_port_start(struct exti_driver_t *drv)
+static int exti_port_start(struct exti_driver_t *self_p)
 {
     return (0);
 }
 
-int exti_port_stop(struct exti_driver_t *drv)
+static int exti_port_stop(struct exti_driver_t *self_p)
+{
+    return (0);
+}
+
+static int exti_port_clear(struct exti_driver_t *self_p)
 {
     return (0);
 }

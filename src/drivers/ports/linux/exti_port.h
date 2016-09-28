@@ -17,11 +17,16 @@
  * This file is part of the Simba project.
  */
 
+#define EXTI_PORT_TRIGGER_BOTH_EDGES   0
+#define EXTI_PORT_TRIGGER_FALLING_EDGE 1
+#define EXTI_PORT_TRIGGER_RISING_EDGE  2
+
 struct exti_device_t {
 };
 
 struct exti_driver_t {
     struct exti_device_t *dev_p;
+    uint8_t trigger;
     void (*on_interrupt)(void *arg_p);
     void *arg_p;
 };
