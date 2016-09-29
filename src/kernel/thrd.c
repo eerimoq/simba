@@ -138,7 +138,7 @@ static void terminate(void);
 #endif
 
 /* Stacks. */
-static THRD_STACK(idle_thrd_stack, THRD_IDLE_STACK_MAX);
+static THRD_STACK(idle_thrd_stack, CONFIG_THRD_IDLE_STACK_SIZE);
 
 /**
  * The thread is terminated.

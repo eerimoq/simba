@@ -698,6 +698,21 @@
 #endif
 
 /**
+ * Stack size of the idle thread.
+ */
+#ifndef CONFIG_THRD_IDLE_STACK_SIZE
+#    if defined(ARCH_ARM)
+#        define CONFIG_THRD_IDLE_STACK_SIZE               384
+#    elif defined(ARCH_AVR)
+#        define CONFIG_THRD_IDLE_STACK_SIZE               156
+#    elif defined(ARCH_ESP)
+#        define CONFIG_THRD_IDLE_STACK_SIZE               768
+#    else
+#        define CONFIG_THRD_IDLE_STACK_SIZE              1024
+#    endif
+#endif
+
+/**
  * Threads are allowed to terminate.
  */
 #ifndef CONFIG_THRD_TERMINATE

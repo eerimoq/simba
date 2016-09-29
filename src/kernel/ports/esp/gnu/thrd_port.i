@@ -17,7 +17,6 @@
  * This file is part of the Simba project.
  */
 
-#define THRD_IDLE_STACK_MAX    768
 #define THRD_MONITOR_STACK_MAX 256
 
 #include "freertos/FreeRTOS.h"
