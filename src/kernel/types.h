@@ -94,12 +94,16 @@
 /**
  * Get the minimum value of the two.
  */
-#define MIN(a, b) (((a) < (b)) ? (a) : (b))
+#ifndef MIN
+#    define MIN(a, b) (((a) < (b)) ? (a) : (b))
+#endif
 
 /**
  * Get the maximum value of the two.
  */
-#define MAX(a, b) (((a) > (b)) ? (a) : (b))
+#ifndef MAX
+#    define MAX(a, b) (((a) > (b)) ? (a) : (b))
+#endif
 
 /**
  * Debug print of file and line.
