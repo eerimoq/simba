@@ -323,7 +323,8 @@ int thrd_init_env(struct thrd_environment_variable_t *variables_p,
 
 /**
  * Set the value of given environment variable. The pointers to given
- * name and value are stored in the current global environment array.
+ * name and value are stored in the current threads' environment
+ * array.
  *
  * @param[in] name_p Name of the environment variable to set.
  * @param[in] value_p Value of the environment variable. Set to NULL
