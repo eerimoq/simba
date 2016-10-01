@@ -302,11 +302,17 @@ static ssize_t tcp_send_to(struct socket_t *self_p,
     while(size - sent_size > 0) {
         self_p->io.thrd_p = thrd_self();
         self_p->io.buf_p = (void *)buf_p + sent_size;
-        if (size - sent_size > TCP_MSS / 2) {
-            self_p->io.size = TCP_MSS / 2;
-        } else {
-            self_p->io.size = size - sent_size;
+
+        size_t can_send = tcp_sndbuf(((struct tcp_pcb *)self_p->pcb_p));
+        if (can_send == ERR_MEM) {
+            can_send = 0;
         }
+        if (((struct tcp_pcb *)self_p->pcb_p)->snd_queuelen >= TCP_SND_QUEUELEN) {
+            can_send = 0;
+        }
+
+        self_p->io.size = MIN(size - sent_size, can_send);
+
         tcpip_callback_with_block(tcp_write_cb, self_p, 0);
         thrd_suspend(&timeout);
         fs_counter_increment(&module.tcp_tx_bytes, self_p->io.size);
