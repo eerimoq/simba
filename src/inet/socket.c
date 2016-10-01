@@ -190,6 +190,18 @@ static err_t on_tcp_accept(void *arg_p,
     return (ERR_OK);
 }
 
+static err_t on_tcp_sent(void *arg_p,
+                        struct tcp_pcb *pcb_p,
+                        u16_t len) {
+    struct socket_t *socket_p = arg_p;
+
+    if (socket_p->io.thrd_p != NULL) {
+        resume_thrd(socket_p);
+    }
+
+    return (ERR_OK);
+}
+
 /**
  * Write TCP data from the lwip thread.
  */
@@ -198,6 +210,8 @@ static void tcp_write_cb(void *ctx_p)
     struct socket_t *self_p = ctx_p;
     err_t res;
 
+    tcp_sent(self_p->pcb_p, on_tcp_sent);
+
     res = tcp_write(self_p->pcb_p,
                     self_p->io.buf_p,
                     self_p->io.size,
@@ -205,9 +219,11 @@ static void tcp_write_cb(void *ctx_p)
 
     if (res != ERR_OK) {
         self_p->io.size = -1;
+        resume_thrd(self_p);
+    } else {
+        tcp_output(self_p->pcb_p);
     }
 
-    resume_thrd(self_p);
 }
 
 /**
@@ -277,18 +293,30 @@ static ssize_t tcp_send_to(struct socket_t *self_p,
                            int flags,
                            const struct inet_addr_t *remote_addr_p)
 {
-    self_p->io.buf_p = (void *)buf_p;
-    self_p->io.size = size;
-    self_p->io.thrd_p = thrd_self();
+    struct time_t timeout;
+    timeout.seconds = 2;
+    timeout.nanoseconds = 0;
 
-    tcpip_callback_with_block(tcp_write_cb, self_p, 0);
-    thrd_suspend(NULL);
+    size_t sent_size = 0;
 
-    if (self_p->io.size >= 0) {
+    while(size - sent_size > 0) {
+        self_p->io.thrd_p = thrd_self();
+        self_p->io.buf_p = (void *)buf_p + sent_size;
+        if (size - sent_size > TCP_MSS / 2) {
+            self_p->io.size = TCP_MSS / 2;
+        } else {
+            self_p->io.size = size - sent_size;
+        }
+        tcpip_callback_with_block(tcp_write_cb, self_p, 0);
+        thrd_suspend(&timeout);
         fs_counter_increment(&module.tcp_tx_bytes, self_p->io.size);
+        if (self_p->io.size == -1) {
+            return self_p->io.size;
+        }
+        sent_size += self_p->io.size;
     }
 
-    return (self_p->io.size);
+    return size;
 }
 
 static ssize_t udp_recv_from(struct socket_t *self_p,
