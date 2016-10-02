@@ -112,7 +112,7 @@ int spi_take_bus(struct spi_driver_t *self_p);
 int spi_give_bus(struct spi_driver_t *self_p);
 
 /**
- * Select the slave by asserting the chip select pin.
+ * Select the slave by asserting the slave select pin.
  *
  * @param[in] self_p Initialized driver object.
  *
@@ -121,7 +121,7 @@ int spi_give_bus(struct spi_driver_t *self_p);
 int spi_select(struct spi_driver_t *self_p);
 
 /**
- * Deselect the slave by de-asserting the chip select pin.
+ * Deselect the slave by de-asserting the slave select pin.
  *
  * @param[in] self_p Initialized driver object.
  *
