@@ -27,6 +27,7 @@ Supported drivers for this board.
 - :doc:`../library-reference/drivers/analog_input_pin`
 - :doc:`../library-reference/drivers/analog_output_pin`
 - :doc:`../library-reference/drivers/dac`
+- :doc:`../library-reference/drivers/exti`
 - :doc:`../library-reference/drivers/flash`
 - :doc:`../library-reference/drivers/i2c_soft`
 - :doc:`../library-reference/drivers/pin`
@@ -62,9 +63,9 @@ Below is the memory usage of two applications:
 +--------------------------+-----------+-----------+
 | Application              | Flash     | RAM       |
 +==========================+===========+===========+
-| minimal-configuration    |    297968 |    112920 |
+| minimal-configuration    |    299904 |    114208 |
 +--------------------------+-----------+-----------+
-| default-configuration    |    378912 |    202136 |
+| default-configuration    |    381712 |    203776 |
 +--------------------------+-----------+-----------+
 
 Default configuration
@@ -206,6 +207,8 @@ Default Standard Library configuration.
 |  CONFIG_THRD_CPU_USAGE_                                |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_THRD_ENV_                                      |  1                                                  |
++--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_THRD_IDLE_STACK_SIZE_                          |  1024                                               |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_THRD_TERMINATE_                                |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
@@ -358,6 +361,8 @@ Mcu
 .. _CONFIG_THRD_CPU_USAGE: ../user-guide/configuration.html#c.CONFIG_THRD_CPU_USAGE
 
 .. _CONFIG_THRD_ENV: ../user-guide/configuration.html#c.CONFIG_THRD_ENV
+
+.. _CONFIG_THRD_IDLE_STACK_SIZE: ../user-guide/configuration.html#c.CONFIG_THRD_IDLE_STACK_SIZE
 
 .. _CONFIG_THRD_TERMINATE: ../user-guide/configuration.html#c.CONFIG_THRD_TERMINATE
 
