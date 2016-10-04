@@ -13,6 +13,7 @@ import time
 
 UDP_PORT = 30303
 TCP_PORT = 40404
+TCP_PORT_SIZES = 40405
 
 UDP_STRING = "hello udp"
 TCP_STRING = "hello tcp"
@@ -47,6 +48,7 @@ def test_udp(server_ip_address,
     print("run.py: closing socket")
     sock.close()
 
+
 def test_tcp(server_ip_address,
              dev,
              timeout):
@@ -77,6 +79,43 @@ def test_tcp(server_ip_address,
     sock.close()
 
 
+def test_tcp_sizes(server_ip_address,
+                   dev,
+                   timeout):
+    """Perform the TCP stress test.
+
+    """
+
+    print("run.py: opening socket")
+    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+    # Wait for the TCP test to start.
+    dev.expect("listening on {}\r\n".format(TCP_PORT_SIZES),
+               timeout=timeout)
+
+    print("run.py: connecting to {}:{}".format(server_ip_address,
+                                       TCP_PORT_SIZES))
+    sock.connect((server_ip_address, TCP_PORT_SIZES))
+
+    for i in range(1, 5000, 128):
+        request = ''.join([chr(i % 256) for i in range(i)])
+        print("run.py: sending {} bytes".format(len(request)))
+        sock.sendall(request)
+        response = ''
+        while len(response) < len(request):
+            data = sock.recv(len(request) - len(response))
+            print("run.py: received {} bytes".format(len(data)))
+            response += data
+        if request != response:
+            print("run.py: sent: '{}', received: '{}'".format(request,
+                                                              response))
+            sys.exit(1)
+            
+
+    print("run.py: closing socket")
+    sock.close()
+
+
 def main():
     """Main function.
 
@@ -94,7 +133,7 @@ def main():
     parser.add_argument("--rts", type=int, default=0)
 
     parser.add_argument('--server-ip-address',
-                        default='192.168.1.100',
+                        default='192.168.1.103',
                         help='Server ip address.')
     args = parser.parse_args()
 
@@ -124,6 +163,10 @@ def main():
     test_tcp(args.server_ip_address,
              dev,
              args.timeout)
+
+    test_tcp_sizes(args.server_ip_address,
+                   dev,
+                   args.timeout)
 
     try:
         report = dev.expect(args.pattern, timeout=args.timeout)
