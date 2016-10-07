@@ -52,7 +52,7 @@ BOARDS = {
             "FAMILY_SAM", 
             "MCU_SAM3X8E", 
             "BOARD_ARDUINO_DUE", 
-            "VERSION=9.0.0"
+            "VERSION=9.0.1"
         ], 
         "cflags": [
             "-fdata-sections", 
@@ -208,7 +208,7 @@ BOARDS = {
             "FAMILY_AVR", 
             "MCU_ATMEGA2560", 
             "BOARD_ARDUINO_MEGA", 
-            "VERSION=9.0.0", 
+            "VERSION=9.0.1", 
             "__DELAY_BACKWARD_COMPATIBLE__"
         ], 
         "cflags": [
@@ -360,7 +360,7 @@ BOARDS = {
             "FAMILY_AVR", 
             "MCU_ATMEGA328P", 
             "BOARD_ARDUINO_NANO", 
-            "VERSION=9.0.0", 
+            "VERSION=9.0.1", 
             "__DELAY_BACKWARD_COMPATIBLE__"
         ], 
         "cflags": [
@@ -512,7 +512,7 @@ BOARDS = {
             "FAMILY_AVR", 
             "MCU_ATMEGA32U4", 
             "BOARD_ARDUINO_PRO_MICRO", 
-            "VERSION=9.0.0", 
+            "VERSION=9.0.1", 
             "__DELAY_BACKWARD_COMPATIBLE__"
         ], 
         "cflags": [
@@ -668,7 +668,7 @@ BOARDS = {
             "FAMILY_AVR", 
             "MCU_ATMEGA328P", 
             "BOARD_ARDUINO_UNO", 
-            "VERSION=9.0.0", 
+            "VERSION=9.0.1", 
             "__DELAY_BACKWARD_COMPATIBLE__"
         ], 
         "cflags": [
@@ -820,7 +820,7 @@ BOARDS = {
             "FAMILY_LINUX", 
             "MCU_LINUX", 
             "BOARD_CYGWIN", 
-            "VERSION=9.0.0"
+            "VERSION=9.0.1"
         ], 
         "cflags": [
             "-fprofile-arcs", 
@@ -880,17 +880,17 @@ BOARDS = {
             "src/inet/http_websocket_client.c", 
             "src/debug/log.c", 
             "src/sync/rwlock.c", 
+            "src/alloc/heap.c", 
             "src/inet/http_websocket_server.c", 
             "src/drivers/pwm.c", 
             "src/debug/harness.c", 
             "src/oam/shell.c", 
-            "src/alloc/heap.c", 
+            "3pp/spiffs-0.3.5/src/spiffs_cache.c", 
             "src/encode/base64.c", 
             "src/drivers/analog_input_pin.c", 
             "src/drivers/spi.c", 
             "3pp/spiffs-0.3.5/src/spiffs_check.c", 
             "src/hash/sha1.c", 
-            "3pp/spiffs-0.3.5/src/spiffs_cache.c", 
             "src/boards/linux/board.c", 
             "src/alloc/circular_heap.c", 
             "src/inet/http_server.c", 
@@ -901,12 +901,13 @@ BOARDS = {
             "src/drivers/pin.c", 
             "3pp/spiffs-0.3.5/src/spiffs_nucleus.c", 
             "3pp/spiffs-0.3.5/src/spiffs_hydrogen.c", 
+            "src/drivers/exti.c", 
             "src/drivers/uart.c", 
             "src/inet/mqtt_client.c", 
             "src/collections/binary_tree.c", 
             "src/inet/network_interface/slip.c", 
             "src/oam/console.c", 
-            "src/oam/settings.c", 
+            "src/drivers/analog_output_pin.c", 
             "src/kernel/thrd.c", 
             "src/filesystems/fat16.c", 
             "src/filesystems/spiffs.c", 
@@ -918,7 +919,7 @@ BOARDS = {
             "src/drivers/adc.c", 
             "src/settings_default.c", 
             "src/sync/event.c", 
-            "src/drivers/analog_output_pin.c", 
+            "src/oam/settings.c", 
             "src/text/re.c", 
             "3pp/spiffs-0.3.5/src/spiffs_gc.c", 
             "src/text/std.c", 
@@ -940,7 +941,7 @@ BOARDS = {
             "FAMILY_ESP", 
             "MCU_ESP8266", 
             "BOARD_ESP01", 
-            "VERSION=9.0.0", 
+            "VERSION=9.0.1", 
             "ICACHE_FLASH", 
             "__STRICT_ANSI__", 
             "__ets__"
@@ -1089,7 +1090,7 @@ BOARDS = {
             "FAMILY_ESP", 
             "MCU_ESP8266", 
             "BOARD_ESP12E", 
-            "VERSION=9.0.0", 
+            "VERSION=9.0.1", 
             "ICACHE_FLASH", 
             "__STRICT_ANSI__", 
             "__ets__"
@@ -1238,7 +1239,7 @@ BOARDS = {
             "FAMILY_LINUX", 
             "MCU_LINUX", 
             "BOARD_LINUX", 
-            "VERSION=9.0.0"
+            "VERSION=9.0.1"
         ], 
         "cflags": [
             "-fprofile-arcs", 
@@ -1298,17 +1299,17 @@ BOARDS = {
             "src/inet/http_websocket_client.c", 
             "src/debug/log.c", 
             "src/sync/rwlock.c", 
+            "src/alloc/heap.c", 
             "src/inet/http_websocket_server.c", 
             "src/drivers/pwm.c", 
             "src/debug/harness.c", 
             "src/oam/shell.c", 
-            "src/alloc/heap.c", 
+            "3pp/spiffs-0.3.5/src/spiffs_cache.c", 
             "src/encode/base64.c", 
             "src/drivers/analog_input_pin.c", 
             "src/drivers/spi.c", 
             "3pp/spiffs-0.3.5/src/spiffs_check.c", 
             "src/hash/sha1.c", 
-            "3pp/spiffs-0.3.5/src/spiffs_cache.c", 
             "src/boards/linux/board.c", 
             "src/alloc/circular_heap.c", 
             "src/inet/http_server.c", 
@@ -1319,12 +1320,13 @@ BOARDS = {
             "src/drivers/pin.c", 
             "3pp/spiffs-0.3.5/src/spiffs_nucleus.c", 
             "3pp/spiffs-0.3.5/src/spiffs_hydrogen.c", 
+            "src/drivers/exti.c", 
             "src/drivers/uart.c", 
             "src/inet/mqtt_client.c", 
             "src/collections/binary_tree.c", 
             "src/inet/network_interface/slip.c", 
             "src/oam/console.c", 
-            "src/oam/settings.c", 
+            "src/drivers/analog_output_pin.c", 
             "src/kernel/thrd.c", 
             "src/filesystems/fat16.c", 
             "src/filesystems/spiffs.c", 
@@ -1336,7 +1338,7 @@ BOARDS = {
             "src/drivers/adc.c", 
             "src/settings_default.c", 
             "src/sync/event.c", 
-            "src/drivers/analog_output_pin.c", 
+            "src/oam/settings.c", 
             "src/text/re.c", 
             "3pp/spiffs-0.3.5/src/spiffs_gc.c", 
             "src/text/std.c", 
@@ -1358,7 +1360,7 @@ BOARDS = {
             "FAMILY_STM32F2", 
             "MCU_STM32F205RG", 
             "BOARD_PHOTON", 
-            "VERSION=9.0.0"
+            "VERSION=9.0.1"
         ], 
         "cflags": [
             "-fdata-sections", 
@@ -1514,7 +1516,7 @@ BOARDS = {
             "FAMILY_STM32F3", 
             "MCU_STM32F303VC", 
             "BOARD_STM32F3DISCOVERY", 
-            "VERSION=9.0.0"
+            "VERSION=9.0.1"
         ], 
         "cflags": [
             "-fdata-sections", 
@@ -1657,7 +1659,7 @@ BOARDS = {
             "FAMILY_STM32F1", 
             "MCU_STM32F100RB", 
             "BOARD_STM32VLDISCOVERY", 
-            "VERSION=9.0.0"
+            "VERSION=9.0.1"
         ], 
         "cflags": [
             "-fdata-sections", 
