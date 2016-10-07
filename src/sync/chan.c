@@ -207,7 +207,7 @@ int chan_list_remove(struct chan_list_t *list_p, void *chan_p)
 }
 
 void *chan_list_poll(struct chan_list_t *list_p,
-                       struct time_t *timeout_p)
+                     struct time_t *timeout_p)
 {
     ASSERTN(list_p != NULL, EINVAL);
 

@@ -25,20 +25,26 @@
 struct socket_t {
     struct chan_t base;
     int type;
-    struct {
+    union {
         struct {
-            volatile int reading;
-            struct {
-                void * volatile buf_p;
-                volatile ssize_t size;
-                volatile size_t offset;
-            } pbuf;
-        } recv;
-        void *buf_p;
-        size_t size;
-        struct inet_addr_t remote_addr;
-        struct thrd_t * volatile thrd_p;
-    } io;
+            ssize_t left;
+        } common;
+        struct {
+            ssize_t left; /* Number of bytes left to read or -1 if the
+                             connection is closed. */
+            struct pbuf *pbuf_p;
+            struct inet_addr_t remote_addr;
+        } recvfrom;
+        struct {
+            ssize_t left;
+            struct tcp_pcb *pcb_p;
+        } accept;
+    } input;
+    struct {
+        int state;
+        void *args_p;
+        struct thrd_t *thrd_p;
+    } cb;
     void *pcb_p;
 };
 

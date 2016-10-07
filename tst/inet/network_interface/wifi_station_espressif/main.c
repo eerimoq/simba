@@ -21,17 +21,17 @@
 
 #if !defined(SSID)
 #    pragma message "WiFi connection variable SSID is not set. Using default value MySSID"
-#    define SSID MySSID
+#    define SSID Qvist
 #endif
 
 #if !defined(PASSWORD)
 #    pragma message "WiFi connection variable PASSWORD is not set. Using default value MyPassword"
-#    define PASSWORD MyPassword
+#    define PASSWORD Recmyng8
 #endif
 
 #if !defined(ESP8266_IP)
 #    pragma message "WiFi connection variable ESP8266_IP is not set. Using default value 192.168.1.100"
-#    define ESP8266_IP 192.168.1.100
+#    define ESP8266_IP 192.168.1.103
 #endif
 
 /* Ports. */
@@ -89,24 +89,26 @@ static int test_udp(struct harness_t *harness_p)
     char buf[16];
     char addrbuf[20];
     size_t size;
+    struct chan_list_t list;
+    int workspace[16];
 
+    BTASSERT(chan_list_init(&list, workspace, sizeof(workspace)) == 0);
+    
     std_printf(FSTR("UDP test\r\n"));
 
     std_printf(FSTR("opening socket\r\n"));
-    socket_open_udp(&sock);
+    BTASSERT(socket_open_udp(&sock) == 0);
 
+    BTASSERT(chan_list_add(&list, &sock) == 0);
+    
     std_printf(FSTR("binding to %d\r\n"), UDP_PORT);
     inet_aton(STRINGIFY(ESP8266_IP), &addr.ip);
     addr.port = UDP_PORT;
-    socket_bind(&sock, &addr);
+    BTASSERT(socket_bind(&sock, &addr) == 0);
 
     std_printf(FSTR("recvfrom\r\n"));
 
-    size = socket_recvfrom(&sock,
-                           buf,
-                           sizeof(buf),
-                           0,
-                           &addr);
+    size = socket_recvfrom(&sock, buf, sizeof(buf), 0, &addr);
     BTASSERT(size == 9);
     buf[size] = '\0';
     std_printf(FSTR("received '%s' from %s:%d\r\n"),
@@ -118,14 +120,26 @@ static int test_udp(struct harness_t *harness_p)
                buf,
                inet_ntoa(&addr.ip, addrbuf),
                addr.port);
-    socket_sendto(&sock,
-                  buf,
-                  size,
-                  0,
-                  &addr);
+    BTASSERT(socket_sendto(&sock, buf, size, 0, &addr) == size);
 
+    BTASSERT(chan_list_poll(&list, NULL) == &sock);
+    
+    size = socket_recvfrom(&sock, buf, sizeof(buf), 0, &addr);
+    BTASSERT(size == 9);
+    buf[size] = '\0';
+    std_printf(FSTR("received '%s' from %s:%d\r\n"),
+               buf,
+               inet_ntoa(&addr.ip, addrbuf),
+               addr.port);
+
+    std_printf(FSTR("sending '%s' to %s:%d\r\n"),
+               buf,
+               inet_ntoa(&addr.ip, addrbuf),
+               addr.port);
+    BTASSERT(socket_sendto(&sock, buf, size, 0, &addr) == size);
+    
     std_printf(FSTR("closing socket\r\n"));
-    socket_close(&sock);
+    BTASSERT(socket_close(&sock) == 0);
 
     return (0);
 }
@@ -138,40 +152,59 @@ static int test_tcp(struct harness_t *harness_p)
     char buf[16];
     char addrbuf[20];
     size_t size;
+    struct chan_list_t list;
+    int workspace[16];
+
+    BTASSERT(chan_list_init(&list, workspace, sizeof(workspace)) == 0);
 
     std_printf(FSTR("TCP test\r\n"));
 
     std_printf(FSTR("opening listener socket\r\n"));
-    socket_open_tcp(&listener);
+    BTASSERT(socket_open_tcp(&listener) == 0);
 
     std_printf(FSTR("binding to %d\r\n"), TCP_PORT);
     inet_aton(STRINGIFY(ESP8266_IP), &addr.ip);
     addr.port = TCP_PORT;
-    socket_bind(&listener, &addr);
+    BTASSERT(socket_bind(&listener, &addr) == 0);
 
-    socket_listen(&listener, 5);
+    BTASSERT(socket_listen(&listener, 5) == 0);
 
     std_printf(FSTR("listening on %d\r\n"), TCP_PORT);
 
-    socket_accept(&listener, &client, &addr);
+    BTASSERT(socket_accept(&listener, &client, &addr) == 0);
     std_printf(FSTR("accepted client %s:%d\r\n"),
                inet_ntoa(&addr.ip, addrbuf),
                addr.port);
 
+    BTASSERT(chan_list_add(&list, &client) == 0);
+
     size = socket_read(&client, buf, 5);
+    BTASSERT(size == 5);
     size += socket_read(&client, &buf[5], 4);
     BTASSERT(size == 9);
     buf[size] = '\0';
-    std_printf(FSTR("read '%s'\r\n"), buf);
+    std_printf(FSTR("read %d bytes: '%s'\r\n"), size, buf);
 
     std_printf(FSTR("writing '%s'\r\n"), buf);
-    socket_write(&client, buf, size);
+    BTASSERT(socket_write(&client, buf, size) == size);
 
+    BTASSERT(chan_list_poll(&list, NULL) == &client);
+
+    size = socket_read(&client, buf, 5);
+    BTASSERT(size == 5);
+    size += socket_read(&client, &buf[5], 4);
+    BTASSERT(size == 9);
+    buf[size] = '\0';
+    std_printf(FSTR("read %d bytes: '%s'\r\n"), size, buf);
+
+    std_printf(FSTR("writing '%s'\r\n"), buf);
+    BTASSERT(socket_write(&client, buf, size) == size);
+    
     std_printf(FSTR("closing client socket\r\n"));
-    socket_close(&client);
-
+    BTASSERT(socket_close(&client) == 0);
+    
     std_printf(FSTR("closing listener socket\r\n"));
-    socket_close(&listener);
+    BTASSERT(socket_close(&listener) == 0);
 
     return (0);
 }
@@ -183,22 +216,30 @@ static int test_tcp_sizes(struct harness_t *harness_p)
     struct inet_addr_t addr;
     char addrbuf[20];
     size_t size;
+    struct chan_list_t list;
+    int workspace[16];
 
     std_printf(FSTR("TCP test\r\n"));
 
+    BTASSERT(chan_list_init(&list, workspace, sizeof(workspace)) == 0);
+
     std_printf(FSTR("opening listener socket\r\n"));
-    socket_open_tcp(&listener);
+    BTASSERT(socket_open_tcp(&listener) == 0);
+
+    BTASSERT(chan_list_add(&list, &listener) == 0);
 
     std_printf(FSTR("binding to %d\r\n"), TCP_PORT_SIZES);
     inet_aton(STRINGIFY(ESP8266_IP), &addr.ip);
     addr.port = TCP_PORT_SIZES;
-    socket_bind(&listener, &addr);
+    BTASSERT(socket_bind(&listener, &addr) == 0);
 
-    socket_listen(&listener, 5);
+    BTASSERT(socket_listen(&listener, 5) == 0);
 
     std_printf(FSTR("listening on %d\r\n"), TCP_PORT_SIZES);
 
-    socket_accept(&listener, &client, &addr);
+    BTASSERT(chan_list_poll(&list, NULL) == &listener);
+
+    BTASSERT(socket_accept(&listener, &client, &addr) == 0);
     std_printf(FSTR("accepted client %s:%d\r\n"),
                inet_ntoa(&addr.ip, addrbuf),
                addr.port);
@@ -210,11 +251,11 @@ static int test_tcp_sizes(struct harness_t *harness_p)
     }
     
     std_printf(FSTR("closing client socket\r\n"));
-    socket_close(&client);
+    BTASSERT(socket_close(&client) == 0);
 
     std_printf(FSTR("closing listener socket\r\n"));
-    socket_close(&listener);
-
+    BTASSERT(socket_close(&listener) == 0);
+    
     return (0);
 }
 

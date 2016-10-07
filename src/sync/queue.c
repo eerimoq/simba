@@ -57,9 +57,9 @@ int queue_init(struct queue_t *self_p,
             || ((buf_p != NULL) && (size > 0)), EINVAL);
 
     chan_init(&self_p->base,
-              (ssize_t (*)(void *, void *, size_t))queue_read,
-              (ssize_t (*)(void *, const void *, size_t))queue_write,
-              (size_t (*)(void *))queue_size);
+              (chan_read_fn_t)queue_read,
+              (chan_write_fn_t)queue_write,
+              (chan_size_fn_t)queue_size);
     chan_set_write_isr_cb(&self_p->base, (chan_write_fn_t)queue_write_isr);
 
     self_p->buffer.begin_p = buf_p;

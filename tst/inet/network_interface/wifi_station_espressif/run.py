@@ -36,14 +36,25 @@ def test_udp(server_ip_address,
     sock.bind(('', UDP_PORT))
 
     print("run.py: sending '{}' to ('{}', {})".format(UDP_STRING,
-                                              server_ip_address,
-                                              UDP_PORT))
+                                                      server_ip_address,
+                                                      UDP_PORT))
     sock.sendto(UDP_STRING, (server_ip_address, UDP_PORT))
 
     string, address = sock.recvfrom(1024)
     print("run.py: received '{}' from {}".format(string, address))
 
     assert string == UDP_STRING
+    
+    # Polled receive.
+    print("run.py: sending '{}' to ('{}', {})".format(UDP_STRING[::-1],
+                                                      server_ip_address,
+                                                      UDP_PORT))
+    sock.sendto(UDP_STRING[::-1], (server_ip_address, UDP_PORT))
+
+    string, address = sock.recvfrom(1024)
+    print("run.py: received '{}' from {}".format(string, address))
+
+    assert string == UDP_STRING[::-1]
 
     print("run.py: closing socket")
     sock.close()
@@ -72,8 +83,16 @@ def test_tcp(server_ip_address,
 
     string = sock.recv(len(TCP_STRING))
     print("run.py: received '{}'".format(string))
+    
+    # Polled receive.
+    time.sleep(0.5)
+    print("run.py: sending '{}'".format(TCP_STRING[::-1]))
+    sock.sendall(TCP_STRING[::-1])
 
-    assert string == TCP_STRING
+    string = sock.recv(len(TCP_STRING))
+    print("run.py: received '{}'".format(string))
+
+    assert string == TCP_STRING[::-1]
 
     print("run.py: closing socket")
     sock.close()
@@ -93,10 +112,13 @@ def test_tcp_sizes(server_ip_address,
     dev.expect("listening on {}\r\n".format(TCP_PORT_SIZES),
                timeout=timeout)
 
+    # Polled listen.
+    time.sleep(0.5)
+    
     print("run.py: connecting to {}:{}".format(server_ip_address,
                                        TCP_PORT_SIZES))
     sock.connect((server_ip_address, TCP_PORT_SIZES))
-
+    
     for i in range(1, 5000, 128):
         request = ''.join([chr(i % 256) for i in range(i)])
         print("run.py: sending {} bytes".format(len(request)))
