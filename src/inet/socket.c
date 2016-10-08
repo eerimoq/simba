@@ -133,19 +133,19 @@ static void resume_thrd(struct thrd_t *thrd_p, int res)
 static void resume_if_polled(struct socket_t *socket_p)
 {
     int polled;
-    
+
     /* Resume any polling thread. */
     sys_lock();
-        
+
     polled = chan_is_polled_isr(&socket_p->base);
 
     if (polled == 1) {
         thrd_resume_isr(socket_p->base.reader_p, 0);
         socket_p->base.reader_p = NULL;
     }
-        
+
     sys_unlock();
-        
+
 #if defined(ARCH_ESP)
     if (polled == 1) {
         xSemaphoreGive(thrd_idle_sem);
@@ -176,7 +176,11 @@ static void udp_recv_from_copy_resume(struct socket_t *socket_p,
 
     pbuf_copy_partial(pbuf_p, args_p->buf_p, size, 0);
     pbuf_free(pbuf_p);
-    *args_p->remote_addr_p = socket_p->input.recvfrom.remote_addr;
+
+    if (args_p->remote_addr_p != NULL) {
+        *args_p->remote_addr_p = socket_p->input.recvfrom.remote_addr;
+    }
+
     resume_thrd(socket_p->cb.thrd_p, size);
 }
 
@@ -444,7 +448,7 @@ static err_t on_tcp_recv(void *arg_p,
     if (socket_p == NULL) {
         return (ERR_MEM);
     }
-    
+
     /* Ready for the next buffer? */
     if (socket_p->input.recvfrom.pbuf_p != NULL) {
         return (ERR_MEM);
