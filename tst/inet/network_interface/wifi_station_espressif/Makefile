@@ -33,7 +33,8 @@ endif
 
 RUN_PY = run.py
 
-CDEFS += CONFIG_MINIMAL_SYSTEM=1
+CDEFS += CONFIG_MINIMAL_SYSTEM=1 \
+	CONFIG_FS_CMD_FS_COUNTERS_LIST=1
 
 SIMBA_ROOT ?= ../../../..
 include $(SIMBA_ROOT)/make/app.mk
