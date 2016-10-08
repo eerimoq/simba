@@ -397,6 +397,17 @@ static void tcp_recv_buffer(struct socket_t *socket_p)
         tcp_recved(socket_p->pcb_p, pbuf_p->tot_len);
         pbuf_free(pbuf_p);
         socket_p->input.recvfrom.pbuf_p = NULL;
+
+        /* Resume the thread is the socket is closed since there is no
+           more data to read. */
+        if (socket_p->input.recvfrom.closed == 1) {
+            socket_p->cb.state = STATE_IDLE;
+            fs_counter_increment(&module.tcp_rx_bytes,
+                                 args_p->size - args_p->extra.left);
+            resume_thrd(socket_p->cb.thrd_p,
+                        args_p->size - args_p->extra.left);
+            return;
+        }
     }
 
     /* Resume the reader when the receive buffer is full. */
