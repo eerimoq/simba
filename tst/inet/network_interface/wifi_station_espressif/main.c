@@ -93,14 +93,14 @@ static int test_udp(struct harness_t *harness_p)
     int workspace[16];
 
     BTASSERT(chan_list_init(&list, workspace, sizeof(workspace)) == 0);
-    
+
     std_printf(FSTR("UDP test\r\n"));
 
     std_printf(FSTR("opening socket\r\n"));
     BTASSERT(socket_open_udp(&sock) == 0);
 
     BTASSERT(chan_list_add(&list, &sock) == 0);
-    
+
     std_printf(FSTR("binding to %d\r\n"), UDP_PORT);
     inet_aton(STRINGIFY(ESP8266_IP), &addr.ip);
     addr.port = UDP_PORT;
@@ -123,7 +123,7 @@ static int test_udp(struct harness_t *harness_p)
     BTASSERT(socket_sendto(&sock, buf, size, 0, &addr) == size);
 
     BTASSERT(chan_list_poll(&list, NULL) == &sock);
-    
+
     size = socket_recvfrom(&sock, buf, sizeof(buf), 0, &addr);
     BTASSERT(size == 9);
     buf[size] = '\0';
@@ -137,7 +137,7 @@ static int test_udp(struct harness_t *harness_p)
                inet_ntoa(&addr.ip, addrbuf),
                addr.port);
     BTASSERT(socket_sendto(&sock, buf, size, 0, &addr) == size);
-    
+
     std_printf(FSTR("closing socket\r\n"));
     BTASSERT(socket_close(&sock) == 0);
 
@@ -199,10 +199,10 @@ static int test_tcp(struct harness_t *harness_p)
 
     std_printf(FSTR("writing '%s'\r\n"), buf);
     BTASSERT(socket_write(&client, buf, size) == size);
-    
+
     std_printf(FSTR("closing client socket\r\n"));
     BTASSERT(socket_close(&client) == 0);
-    
+
     std_printf(FSTR("closing listener socket\r\n"));
     BTASSERT(socket_close(&listener) == 0);
 
@@ -249,13 +249,23 @@ static int test_tcp_sizes(struct harness_t *harness_p)
         BTASSERT(socket_read(&client, buffer, size) == size);
         BTASSERT(socket_write(&client, buffer, size) == size);
     }
-    
+
     std_printf(FSTR("closing client socket\r\n"));
     BTASSERT(socket_close(&client) == 0);
 
     std_printf(FSTR("closing listener socket\r\n"));
     BTASSERT(socket_close(&listener) == 0);
-    
+
+    return (0);
+}
+
+static int test_print_counters(struct harness_t *harness_p)
+{
+    char command[64];
+
+    strcpy(command, "filesystems/fs/counters/list");
+    BTASSERT(fs_call(command, NULL, sys_get_stdout(), NULL) == 0);
+
     return (0);
 }
 
@@ -267,6 +277,7 @@ int main()
         { test_udp, "test_udp" },
         { test_tcp, "test_tcp" },
         { test_tcp_sizes, "test_tcp_sizes" },
+        { test_print_counters, "test_print_counters" },
         { NULL, NULL }
     };
 

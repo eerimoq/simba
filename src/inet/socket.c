@@ -56,6 +56,7 @@ struct module_t {
     struct fs_counter_t tcp_accepts;
     struct fs_counter_t tcp_rx_bytes;
     struct fs_counter_t tcp_tx_bytes;
+    struct fs_counter_t raw_rx_bytes;
     struct fs_counter_t raw_tx_bytes;
 };
 
@@ -133,19 +134,19 @@ static void resume_thrd(struct thrd_t *thrd_p, int res)
 static void resume_if_polled(struct socket_t *socket_p)
 {
     int polled;
-    
+
     /* Resume any polling thread. */
     sys_lock();
-        
+
     polled = chan_is_polled_isr(&socket_p->base);
 
     if (polled == 1) {
         thrd_resume_isr(socket_p->base.reader_p, 0);
         socket_p->base.reader_p = NULL;
     }
-        
+
     sys_unlock();
-        
+
 #if defined(ARCH_ESP)
     if (polled == 1) {
         xSemaphoreGive(thrd_idle_sem);
@@ -174,6 +175,7 @@ static void udp_recv_from_copy_resume(struct socket_t *socket_p,
         size = pbuf_p->tot_len;
     }
 
+    fs_counter_increment(&module.udp_rx_bytes, size);
     pbuf_copy_partial(pbuf_p, args_p->buf_p, size, 0);
     pbuf_free(pbuf_p);
     *args_p->remote_addr_p = socket_p->input.recvfrom.remote_addr;
@@ -209,7 +211,6 @@ static void on_udp_recv(void *arg_p,
     } else {
         socket_p->input.recvfrom.pbuf_p = pbuf_p;
         socket_p->input.recvfrom.left = pbuf_p->tot_len;
-
         resume_if_polled(socket_p);
     }
 }
@@ -283,28 +284,34 @@ static void udp_send_to_cb(void *ctx_p)
 
     /* Copy the data to a pbuf.*/
     pbuf_p = pbuf_alloc(PBUF_TRANSPORT, args_p->size, PBUF_RAM);
-    memcpy(pbuf_p->payload, args_p->buf_p, args_p->size);
+    res = -1;
 
-    res = args_p->size;
+    if (pbuf_p != NULL) {
+        memcpy(pbuf_p->payload, args_p->buf_p, args_p->size);
+        res = args_p->size;
 
-    if (args_p->remote_addr_p != NULL) {
-        ip.addr = args_p->remote_addr_p->ip.number;
+        if (args_p->remote_addr_p != NULL) {
+            ip.addr = args_p->remote_addr_p->ip.number;
 
-        if (udp_sendto(socket_p->pcb_p,
-                       pbuf_p,
-                       &ip,
-                       args_p->remote_addr_p->port) != ERR_OK) {
-            res = -1;
+            if (udp_sendto(socket_p->pcb_p,
+                           pbuf_p,
+                           &ip,
+                           args_p->remote_addr_p->port) != ERR_OK) {
+                res = -1;
+            }
+        } else {
+            if (udp_send(socket_p->pcb_p, pbuf_p) != ERR_OK) {
+                res = -1;
+            }
         }
-    } else {
-        if (udp_send(socket_p->pcb_p, pbuf_p) != ERR_OK) {
-            res = -1;
-        }
+
+        pbuf_free(pbuf_p);
     }
 
-    fs_counter_increment(&module.udp_tx_bytes, args_p->size);
+    if (res > 0) {
+        fs_counter_increment(&module.udp_tx_bytes, args_p->size);
+    }
 
-    pbuf_free(pbuf_p);
     resume_thrd(socket_p->cb.thrd_p, res);
 }
 
@@ -387,9 +394,10 @@ static void tcp_recv_buffer(struct socket_t *socket_p)
         socket_p->input.recvfrom.pbuf_p = NULL;
     }
 
-    /* Resume the reader when the reaceive buffer is full. */
+    /* Resume the reader when the receive buffer is full. */
     if (args_p->extra.left == 0) {
         socket_p->cb.state = STATE_IDLE;
+        fs_counter_increment(&module.tcp_rx_bytes, args_p->size);
         resume_thrd(socket_p->cb.thrd_p, args_p->size);
     }
 }
@@ -418,6 +426,7 @@ static err_t on_tcp_sent(void *arg_p,
             if (args_p->extra.left == 0) {
                 tcp_output(socket_p->pcb_p);
                 socket_p->cb.state = STATE_IDLE;
+                fs_counter_increment(&module.tcp_tx_bytes, args_p->size);
                 resume_thrd(socket_p->cb.thrd_p, args_p->size);
             } else {
                 socket_p->cb.state = STATE_SENDTO;
@@ -444,7 +453,7 @@ static err_t on_tcp_recv(void *arg_p,
     if (socket_p == NULL) {
         return (ERR_MEM);
     }
-    
+
     /* Ready for the next buffer? */
     if (socket_p->input.recvfrom.pbuf_p != NULL) {
         return (ERR_MEM);
@@ -480,6 +489,8 @@ static void tcp_accept_resume(struct socket_t *socket_p)
 {
     struct tcp_accept_args_t *args_p;
     struct tcp_pcb *pcb_p;
+
+    fs_counter_increment(&module.tcp_accepts, 1);
 
     pcb_p = socket_p->input.accept.pcb_p;
     socket_p->input.accept.left = 0;
@@ -654,6 +665,7 @@ static void tcp_send_to_cb(void *ctx_p)
            callback will send the rest of the data and resume. */
         if (args_p->extra.left == 0) {
             tcp_output(socket_p->pcb_p);
+            fs_counter_increment(&module.tcp_tx_bytes, args_p->size);
             resume_thrd(socket_p->cb.thrd_p, args_p->size);
         } else {
             socket_p->cb.state = STATE_SENDTO;
@@ -696,130 +708,161 @@ static ssize_t tcp_recv_from(struct socket_t *self_p,
     return (tcpip_call(self_p, tcp_recv_from_cb, &args));
 }
 
-/* static ssize_t raw_recv_from(struct socket_t *self_p, */
-/*                              void *buf_p, */
-/*                              size_t size, */
-/*                              int flags, */
-/*                              struct inet_addr_t *remote_addr_p) */
-/* { */
-/*     struct pbuf *pbuf_p; */
+/**
+ * Copy data to the reading threads' buffer and resume the thread.
+ */
+static void raw_recv_from_copy_resume(struct socket_t *socket_p,
+                                      struct pbuf *pbuf_p)
+{
+    struct recv_from_args_t *args_p;
+    ssize_t size;
 
-/*     /\* Wait for data if none is available. *\/ */
-/*     sys_lock(); */
+    args_p = socket_p->cb.args_p;
+    size = args_p->size;
 
-/*     if (self_p->io.recv.pbuf.size == -1) { */
-/*         self_p->io.thrd_p = thrd_self(); */
-/*         thrd_suspend_isr(NULL); */
-/*     } */
+    if (size > pbuf_p->tot_len) {
+        size = pbuf_p->tot_len;
+    }
 
-/*     sys_unlock(); */
+    fs_counter_increment(&module.raw_rx_bytes, size);
+    pbuf_copy_partial(pbuf_p, args_p->buf_p, size, 0);
+    pbuf_free(pbuf_p);
+    *args_p->remote_addr_p = socket_p->input.recvfrom.remote_addr;
+    resume_thrd(socket_p->cb.thrd_p, size);
+}
 
-/*     /\* Socket closed. *\/ */
-/*     if (self_p->io.recv.pbuf.size <= 0) { */
-/*         return (self_p->io.recv.pbuf.size); */
-/*     } */
+/**
+ * An RAW packet has been received.
+ */
+static uint8_t on_raw_recv(void *arg_p,
+                           struct raw_pcb *pcb_p,
+                           struct pbuf *pbuf_p,
+                           ip_addr_t *addr_p)
+{
+    struct socket_t *socket_p = arg_p;
 
-/*     pbuf_p = (struct pbuf *)self_p->io.recv.pbuf.buf_p; */
+    /* Discard the packet if there is already a packed waiting. */
+    if (socket_p->input.recvfrom.pbuf_p != NULL) {
+        pbuf_free(pbuf_p);
+        return (1);
+    }
 
-/*     /\* Copy data from the pbuf to the local buffer. *\/ */
-/*     if (size > pbuf_p->tot_len) { */
-/*         size = pbuf_p->tot_len; */
-/*     } */
+    /* Save the remote address and port. */
+    socket_p->input.recvfrom.remote_addr.ip.number = addr_p->addr;
 
-/*     *remote_addr_p = self_p->io.remote_addr; */
+    /* Copy the data to the receive buffer if there is one. */
+    if (socket_p->cb.state == STATE_RECVFROM) {
+        socket_p->cb.state = STATE_IDLE;
+        socket_p->input.recvfrom.pbuf_p = NULL;
+        raw_recv_from_copy_resume(socket_p, pbuf_p);
+    } else {
+        socket_p->input.recvfrom.pbuf_p = pbuf_p;
+        socket_p->input.recvfrom.left = pbuf_p->tot_len;
+        resume_if_polled(socket_p);
+    }
 
-/*     pbuf_copy_partial(pbuf_p, buf_p, size, 0); */
-/*     self_p->io.recv.pbuf.size = -1; */
-/*     pbuf_free(pbuf_p); */
+    return (1);
+}
 
-/*     return (size); */
-/* } */
+static void raw_send_to_cb(void *ctx_p)
+{
+    struct socket_t *socket_p = ctx_p;
+    struct send_to_args_t *args_p;
+    ssize_t res;
+    struct pbuf *pbuf_p;
+    ip_addr_t ip;
 
-/* /\** */
-/*  * An RAW packet has been received. */
-/*  *\/ */
-/* static uint8_t on_raw_recv(void *arg_p, */
-/*                            struct raw_pcb *pcb_p, */
-/*                            struct pbuf *pbuf_p, */
-/*                            ip_addr_t *addr_p) */
-/* { */
-/*     struct socket_t *socket_p = arg_p; */
+    args_p = socket_p->cb.args_p;
 
-/*     if (socket_p->io.recv.pbuf.size == -1) { */
-/*         /\* Resume any polling thread. *\/ */
-/*         sys_lock(); */
+    /* Allocate a buffer.*/
+    pbuf_p = pbuf_alloc(PBUF_IP, args_p->size, PBUF_RAM);
+    res = -1;
 
-/*         if (chan_is_polled_isr(&socket_p->base)) { */
-/*             thrd_resume_isr(socket_p->base.reader_p, 0); */
-/*             socket_p->base.reader_p = NULL; */
-/*         } */
+    if (pbuf_p != NULL) {
+        memcpy(pbuf_p->payload, args_p->buf_p, args_p->size);
+        ip.addr = args_p->remote_addr_p->ip.number;
+        res = raw_sendto(socket_p->pcb_p, pbuf_p, &ip);
+        pbuf_free(pbuf_p);
+    }
 
-/*         /\* Save the new buffer. *\/ */
-/*         socket_p->io.recv.pbuf.buf_p = pbuf_p; */
+    resume_thrd(socket_p->cb.thrd_p, res);
+}
 
-/*         if (pbuf_p == NULL) { */
-/*             socket_p->io.recv.pbuf.size = 0; */
-/*         } else { */
-/*             socket_p->io.recv.pbuf.size = pbuf_p->tot_len; */
-/*         } */
+static void raw_recv_from_cb(void *ctx_p)
+{
+    struct socket_t *socket_p = ctx_p;
+    struct pbuf *pbuf_p;
 
-/*         /\* Copy the remote address to the receiver. *\/ */
-/*         socket_p->io.remote_addr.ip.number = addr_p->addr; */
+    pbuf_p = socket_p->input.recvfrom.pbuf_p;
 
-/*         sys_unlock(); */
+    /* Return if no buffer is available. The reading thread is resumed
+       when data is received. */
+    if (pbuf_p != NULL) {
+        socket_p->input.recvfrom.pbuf_p = NULL;
+        raw_recv_from_copy_resume(socket_p, pbuf_p);
+    } else {
+        socket_p->cb.state = STATE_RECVFROM;
+    }
+}
 
-/*         /\* Resume any waiting thread. *\/ */
-/*         if (socket_p->io.thrd_p != NULL) { */
-/*             resume_thrd(socket_p, 0); */
-/*         } */
-/*     } */
+static void raw_open_cb(void *ctx_p)
+{
+    struct socket_t *socket_p = ctx_p;
+    void *pcb_p;
 
-/*     return (1); */
-/* } */
+    /* Create and initiate the UDP pcb. */
+    pcb_p = raw_new(IP_PROTO_ICMP);
 
-/* static void raw_write_cb(void *ctx_p) */
-/* { */
-/*     struct socket_t *self_p = ctx_p; */
-/*     err_t res = ERR_MEM; */
-/*     struct pbuf *pbuf_p; */
-/*     ip_addr_t ip; */
+    if (pcb_p != NULL) {
+        raw_recv(pcb_p, on_raw_recv, socket_p);
+        init(socket_p, SOCKET_TYPE_RAW, pcb_p);
+        resume_thrd(socket_p->cb.thrd_p, 0);
+    } else {
+        resume_thrd(socket_p->cb.thrd_p, -1);
+    }
+}
 
-/*     ip.addr = self_p->io.remote_addr.ip.number; */
-/*     pbuf_p = pbuf_alloc(PBUF_IP, self_p->io.size, PBUF_RAM); */
+static void raw_close_cb(void *ctx_p)
+{
+    struct socket_t *socket_p = ctx_p;
 
-/*     if (pbuf_p != NULL) { */
-/*         memcpy(pbuf_p->payload, self_p->io.buf_p, self_p->io.size); */
-/*         res = raw_sendto(self_p->pcb_p, pbuf_p, &ip); */
-/*         pbuf_free(pbuf_p); */
-/*     } */
+    raw_recv(socket_p->pcb_p, NULL, NULL);
+    raw_remove(socket_p->pcb_p);
+    resume_thrd(socket_p->cb.thrd_p, 0);
+}
 
-/*     if (res != ERR_OK) { */
-/*         self_p->io.size = -1; */
-/*     } */
+static ssize_t raw_send_to(struct socket_t *self_p,
+                           const void *buf_p,
+                           size_t size,
+                           int flags,
+                           const struct inet_addr_t *remote_addr_p)
+{
+    struct send_to_args_t args;
 
-/*     resume_thrd(self_p, 0); */
-/* } */
+    args.buf_p = buf_p;
+    args.size = size;
+    args.flags = flags;
+    args.remote_addr_p = remote_addr_p;
 
-/* static ssize_t raw_send_to(struct socket_t *self_p, */
-/*                            const void *buf_p, */
-/*                            size_t size, */
-/*                            int flags, */
-/*                            const struct inet_addr_t *remote_addr_p) */
-/* { */
-/*     self_p->io.buf_p = (void *)buf_p; */
-/*     self_p->io.size = size; */
-/*     self_p->io.remote_addr = *remote_addr_p; */
-/*     self_p->io.thrd_p = thrd_self(); */
+    return (tcpip_call(self_p, raw_send_to_cb, &args));
+}
 
-/*     tcpip_callback_with_block(raw_write_cb, self_p, 0); */
-/*     thrd_suspend(NULL); */
+static ssize_t raw_recv_from(struct socket_t *self_p,
+                             void *buf_p,
+                             size_t size,
+                             int flags,
+                             struct inet_addr_t *remote_addr_p)
+{
+    struct recv_from_args_t args;
 
-/*     if (self_p->io.size >= 0) { */
-/*         fs_counter_increment(&module.raw_tx_bytes, self_p->io.size); */
-/*     } */
+    args.buf_p = buf_p;
+    args.size = size;
+    args.flags = flags;
+    args.remote_addr_p = remote_addr_p;
+    args.extra.left = size;
 
-/*     return (self_p->io.size); */
-/* } */
+    return (tcpip_call(self_p, raw_recv_from_cb, &args));
+}
 
 int socket_module_init(void)
 {
@@ -857,6 +900,11 @@ int socket_module_init(void)
                     0);
     fs_counter_register(&module.tcp_tx_bytes);
 
+    fs_counter_init(&module.raw_rx_bytes,
+                    FSTR("/inet/socket/raw/rx_bytes"),
+                    0);
+    fs_counter_register(&module.raw_rx_bytes);
+
     fs_counter_init(&module.raw_tx_bytes,
                     FSTR("/inet/socket/raw/tx_bytes"),
                     0);
@@ -888,19 +936,7 @@ int socket_open_raw(struct socket_t *self_p)
 {
     ASSERTN(self_p != NULL, EINVAL);
 
-    /* void *pcb_p = NULL; */
-
-    /* /\* Create and initiate the UDP pcb. *\/ */
-    /* pcb_p = raw_new(IP_PROTO_ICMP); */
-
-    /* if (pcb_p == NULL) { */
-    /*     return (-1); */
-    /* } */
-
-    /* raw_recv(pcb_p, on_raw_recv, self_p); */
-    /* init(self_p, SOCKET_TYPE_RAW, pcb_p); */
-
-    return (0);
+    return (tcpip_call(self_p, raw_open_cb, NULL));
 }
 
 int socket_close(struct socket_t *self_p)
@@ -915,10 +951,8 @@ int socket_close(struct socket_t *self_p)
     case SOCKET_TYPE_DGRAM:
         return (tcpip_call(self_p, udp_close_cb, NULL));
 
-    /* case SOCKET_TYPE_RAW: */
-    /*     raw_recv(self_p->pcb_p, NULL, NULL); */
-    /*     raw_remove(self_p->pcb_p); */
-    /*     break; */
+    case SOCKET_TYPE_RAW:
+        return (tcpip_call(self_p, raw_close_cb, NULL));
 
     default:
         return (-1);
@@ -1018,7 +1052,7 @@ int socket_connect_by_hostname(struct socket_t *self_p,
     /* thrd_suspend(NULL); */
 
     /* return (self_p->io.size == ERR_OK ? 0 : -1); */
-    return (0);
+    return (-1);
 }
 
 int socket_accept(struct socket_t *self_p,
@@ -1062,12 +1096,12 @@ ssize_t socket_sendto(struct socket_t *self_p,
                             flags,
                             remote_addr_p));
 
-    /* case SOCKET_TYPE_RAW: */
-    /*     return (raw_send_to(self_p, */
-    /*                         buf_p, */
-    /*                         size, */
-    /*                         flags, */
-    /*                         remote_addr_p)); */
+    case SOCKET_TYPE_RAW:
+        return (raw_send_to(self_p,
+                            buf_p,
+                            size,
+                            flags,
+                            remote_addr_p));
 
     default:
         return (-1);
@@ -1100,12 +1134,12 @@ ssize_t socket_recvfrom(struct socket_t *self_p,
                               flags,
                               remote_addr_p));
 
-    /* case SOCKET_TYPE_RAW: */
-    /*     return (raw_recv_from(self_p, */
-    /*                           buf_p, */
-    /*                           size, */
-    /*                           flags, */
-    /*                           remote_addr_p)); */
+    case SOCKET_TYPE_RAW:
+        return (raw_recv_from(self_p,
+                              buf_p,
+                              size,
+                              flags,
+                              remote_addr_p));
 
     default:
         return (-1);
