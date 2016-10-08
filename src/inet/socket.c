@@ -102,6 +102,7 @@ static void init(struct socket_t *self_p,
     self_p->cb.state = STATE_IDLE;
     self_p->input.recvfrom.pbuf_p = NULL;
     self_p->input.recvfrom.left = 0;
+    self_p->input.recvfrom.closed = 0;
 }
 
 /**
@@ -454,10 +455,18 @@ static err_t on_tcp_recv(void *arg_p,
                          err_t err)
 {
     struct socket_t *socket_p = arg_p;
+    struct recv_from_args_t *args_p;
 
     /* In the process of being accepted. */
     if (socket_p == NULL) {
         return (ERR_MEM);
+    }
+
+    /* Save the close flag. There can still be data in
+       recvfrom.pbuf_p, and that data shall be read before the reading
+       less than requested bytes. */
+    if (pbuf_p == NULL) {
+        socket_p->input.recvfrom.closed = 1;
     }
 
     /* Ready for the next buffer? */
@@ -476,10 +485,10 @@ static err_t on_tcp_recv(void *arg_p,
         }
     } else {
         /* Socket closed. */
-        socket_p->input.recvfrom.left = -1;
-
         if (socket_p->cb.state == STATE_RECVFROM) {
-            resume_thrd(socket_p->cb.thrd_p, 0);
+            args_p = socket_p->cb.args_p;
+            resume_thrd(socket_p->cb.thrd_p,
+                        args_p->size - args_p->extra.left);
         } else {
             resume_if_polled(socket_p);
         }
@@ -639,12 +648,16 @@ static void tcp_connect_cb(void *ctx_p)
 static void tcp_recv_from_cb(void *ctx_p)
 {
     struct socket_t *socket_p = ctx_p;
+    struct recv_from_args_t *args_p;
 
-    if (socket_p->input.recvfrom.left == -1) {
-        /* Socket closed. */
-        resume_thrd(socket_p->cb.thrd_p, 0);
-    } else if (socket_p->input.recvfrom.pbuf_p != NULL) {
+    if (socket_p->input.recvfrom.pbuf_p != NULL) {
+        /* Data available. */
         tcp_recv_buffer(socket_p);
+    } else if (socket_p->input.recvfrom.closed == 1) {
+        /* Socket closed. */
+        args_p = socket_p->cb.args_p;
+        resume_thrd(socket_p->cb.thrd_p,
+                    args_p->size - args_p->extra.left);
     } else {
         socket_p->cb.state = STATE_RECVFROM;
     }

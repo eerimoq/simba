@@ -35,9 +35,10 @@
 #endif
 
 /* Ports. */
-#define UDP_PORT         30303
-#define TCP_PORT         40404
-#define TCP_PORT_SIZES   40405
+#define UDP_PORT               30303
+#define TCP_PORT               40404
+#define TCP_PORT_WRITE_CLOSE   40405
+#define TCP_PORT_SIZES         40406
 
 static struct network_interface_wifi_station_espressif_t wifi;
 static uint8_t buffer[5000];
@@ -209,6 +210,49 @@ static int test_tcp(struct harness_t *harness_p)
     return (0);
 }
 
+static int test_tcp_write_close(struct harness_t *harness_p)
+{
+    struct socket_t listener;
+    struct socket_t client;
+    struct inet_addr_t addr;
+    char addrbuf[20];
+
+    std_printf(FSTR("TCP test\r\n"));
+
+    std_printf(FSTR("opening listener socket\r\n"));
+    BTASSERT(socket_open_tcp(&listener) == 0);
+
+    std_printf(FSTR("binding to %d\r\n"), TCP_PORT_WRITE_CLOSE);
+    inet_aton(STRINGIFY(ESP8266_IP), &addr.ip);
+    addr.port = TCP_PORT_WRITE_CLOSE;
+    BTASSERT(socket_bind(&listener, &addr) == 0);
+
+    BTASSERT(socket_listen(&listener, 5) == 0);
+
+    std_printf(FSTR("listening on %d\r\n"), TCP_PORT_WRITE_CLOSE);
+
+    BTASSERT(socket_accept(&listener, &client, &addr) == 0);
+    std_printf(FSTR("accepted client %s:%d\r\n"),
+               inet_ntoa(&addr.ip, addrbuf),
+               addr.port);
+
+    thrd_sleep(1);
+
+    BTASSERT(socket_read(&client, &buffer[0], 533) == 533);
+
+    /* The socket is closed by the peer. */
+    std_printf(FSTR("reading from closed socket\r\n"));
+    BTASSERT(socket_read(&client, &buffer[533], 1) == 0);
+
+    std_printf(FSTR("closing client socket\r\n"));
+    BTASSERT(socket_close(&client) == 0);
+
+    std_printf(FSTR("closing listener socket\r\n"));
+    BTASSERT(socket_close(&listener) == 0);
+
+    return (0);
+}
+
 static int test_tcp_sizes(struct harness_t *harness_p)
 {
     struct socket_t listener;
@@ -296,6 +340,7 @@ int main()
         { test_init, "test_init" },
         { test_udp, "test_udp" },
         { test_tcp, "test_tcp" },
+        { test_tcp_write_close, "test_tcp_write_close" },
         { test_tcp_sizes, "test_tcp_sizes" },
         { test_print_counters, "test_print_counters" },
         { NULL, NULL }

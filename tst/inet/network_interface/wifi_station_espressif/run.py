@@ -13,7 +13,8 @@ import time
 
 UDP_PORT = 30303
 TCP_PORT = 40404
-TCP_PORT_SIZES = 40405
+TCP_PORT_WRITE_CLOSE = 40405
+TCP_PORT_SIZES = 40406
 
 UDP_STRING = "hello udp"
 TCP_STRING = "hello tcp"
@@ -95,6 +96,33 @@ def test_tcp(server_ip_address,
     assert string == TCP_STRING[::-1]
 
     print("run.py: closing socket")
+    sock.close()
+
+
+def test_tcp_write_close(server_ip_address,
+                         dev,
+                         timeout):
+    """Perform the TCP stress test.
+
+    """
+
+    print("run.py: opening socket")
+    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+    # Wait for the TCP test to start.
+    dev.expect("listening on {}\r\n".format(TCP_PORT_WRITE_CLOSE),
+               timeout=timeout)
+
+    print("run.py: connecting to {}:{}".format(server_ip_address,
+                                               TCP_PORT_WRITE_CLOSE))
+    sock.connect((server_ip_address, TCP_PORT_WRITE_CLOSE))
+    sock.settimeout(5)
+
+    # Send a 1800 bytes packet and close the socket before the data
+    # has been read by the peer.
+    request = 533 * ' '
+    print("run.py: sending {} bytes".format(len(request)))
+    sock.sendall(request)
     sock.close()
 
 
@@ -201,6 +229,10 @@ def main():
         test_tcp(args.server_ip_address,
                  dev,
                  args.timeout)
+
+        test_tcp_write_close(args.server_ip_address,
+                             dev,
+                             args.timeout)
 
         test_tcp_sizes(args.server_ip_address,
                        dev,

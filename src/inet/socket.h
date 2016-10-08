@@ -34,6 +34,7 @@ struct socket_t {
                              connection is closed. */
             struct pbuf *pbuf_p;
             struct inet_addr_t remote_addr;
+            int closed;
         } recvfrom;
         struct {
             ssize_t left;
