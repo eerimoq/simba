@@ -403,6 +403,8 @@ static void tcp_recv_buffer(struct socket_t *socket_p)
         socket_p->cb.state = STATE_IDLE;
         fs_counter_increment(&module.tcp_rx_bytes, args_p->size);
         resume_thrd(socket_p->cb.thrd_p, args_p->size);
+    } else {
+        socket_p->cb.state = STATE_RECVFROM;
     }
 }
 

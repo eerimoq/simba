@@ -44,7 +44,7 @@ def test_udp(server_ip_address,
     print("run.py: received '{}' from {}".format(string, address))
 
     assert string == UDP_STRING
-    
+
     # Polled receive.
     print("run.py: sending '{}' to ('{}', {})".format(UDP_STRING[::-1],
                                                       server_ip_address,
@@ -83,7 +83,7 @@ def test_tcp(server_ip_address,
 
     string = sock.recv(len(TCP_STRING))
     print("run.py: received '{}'".format(string))
-    
+
     # Polled receive.
     time.sleep(0.5)
     print("run.py: sending '{}'".format(TCP_STRING[::-1]))
@@ -114,11 +114,13 @@ def test_tcp_sizes(server_ip_address,
 
     # Polled listen.
     time.sleep(0.5)
-    
+
     print("run.py: connecting to {}:{}".format(server_ip_address,
                                        TCP_PORT_SIZES))
     sock.connect((server_ip_address, TCP_PORT_SIZES))
-    
+    sock.settimeout(5)
+
+    # Send a packet and wait for the echo. Test many sizes.
     for i in range(1, 5000, 128):
         request = ''.join([chr(i % 256) for i in range(i)])
         print("run.py: sending {} bytes".format(len(request)))
@@ -132,7 +134,20 @@ def test_tcp_sizes(server_ip_address,
             print("run.py: sent: '{}', received: '{}'".format(request,
                                                               response))
             sys.exit(1)
-            
+
+    # Send a 1800 bytes packet and recieve small chunks of it.
+    request = 1800 * ' '
+    print("run.py: sending {} bytes".format(len(request)))
+    sock.sendall(request)
+    response = ''
+    while len(response) < len(request):
+        data = sock.recv(128)
+        print("run.py: received {} bytes".format(len(data)))
+        response += data
+    if request != response:
+        print("run.py: sent: '{}', received: '{}'".format(request,
+                                                          response))
+        sys.exit(1)
 
     print("run.py: closing socket")
     sock.close()
@@ -155,7 +170,7 @@ def main():
     parser.add_argument("--rts", type=int, default=0)
 
     parser.add_argument('--server-ip-address',
-                        default='192.168.1.103',
+                        default='192.168.0.5',
                         help='Server ip address.')
     args = parser.parse_args()
 
@@ -178,17 +193,20 @@ def main():
     print("INFO: TIMEOUT = {}".format(args.timeout))
     print()
 
-    test_udp(args.server_ip_address,
-             dev,
-             args.timeout)
+    try:
+        test_udp(args.server_ip_address,
+                 dev,
+                 args.timeout)
 
-    test_tcp(args.server_ip_address,
-             dev,
-             args.timeout)
+        test_tcp(args.server_ip_address,
+                 dev,
+                 args.timeout)
 
-    test_tcp_sizes(args.server_ip_address,
-                   dev,
-                   args.timeout)
+        test_tcp_sizes(args.server_ip_address,
+                       dev,
+                       args.timeout)
+    finally:
+        print(dev.iostream.read(dev.iostream.in_waiting))
 
     try:
         report = dev.expect(args.pattern, timeout=args.timeout)

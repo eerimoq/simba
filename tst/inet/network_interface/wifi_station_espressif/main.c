@@ -21,17 +21,17 @@
 
 #if !defined(SSID)
 #    pragma message "WiFi connection variable SSID is not set. Using default value MySSID"
-#    define SSID Qvist
+#    define SSID ssid
 #endif
 
 #if !defined(PASSWORD)
 #    pragma message "WiFi connection variable PASSWORD is not set. Using default value MyPassword"
-#    define PASSWORD Recmyng8
+#    define PASSWORD password
 #endif
 
 #if !defined(ESP8266_IP)
-#    pragma message "WiFi connection variable ESP8266_IP is not set. Using default value 192.168.1.100"
-#    define ESP8266_IP 192.168.1.103
+#    pragma message "WiFi connection variable ESP8266_IP is not set. Using default value 192.168.0.5"
+#    define ESP8266_IP 192.168.0.5
 #endif
 
 /* Ports. */
@@ -215,7 +215,8 @@ static int test_tcp_sizes(struct harness_t *harness_p)
     struct socket_t client;
     struct inet_addr_t addr;
     char addrbuf[20];
-    size_t size;
+    ssize_t size;
+    size_t offset;
     struct chan_list_t list;
     int workspace[16];
 
@@ -249,6 +250,25 @@ static int test_tcp_sizes(struct harness_t *harness_p)
         BTASSERT(socket_read(&client, buffer, size) == size);
         BTASSERT(socket_write(&client, buffer, size) == size);
     }
+
+    /* Send a 1800 bytes packet and recieve small chunks of it. */
+    size = 0;
+    offset = 0;
+
+    while (offset < 1800) {
+        size = (1800 - offset);
+
+        if (size > 128) {
+            size = 128;
+        }
+
+        size = socket_read(&client, &buffer[offset], size);
+        std_printf(FSTR("read %d bytes at offset %d\r\n"), size, offset);
+        BTASSERT((size > 0) && (size <= 128));
+        offset += size;
+    }
+
+    BTASSERT(socket_write(&client, buffer, offset) == offset);
 
     std_printf(FSTR("closing client socket\r\n"));
     BTASSERT(socket_close(&client) == 0);
