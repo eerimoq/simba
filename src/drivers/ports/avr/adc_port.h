@@ -37,6 +37,9 @@ struct adc_driver_t {
     struct adc_device_t *dev_p;
     struct pin_driver_t pin_drv;
     uint8_t admux;
+#if defined(MUX5)
+    uint8_t adcsrb;
+#endif
     long interrupt_count;
     long interrupt_max;
     size_t pos;

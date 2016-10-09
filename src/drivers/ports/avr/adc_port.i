@@ -54,6 +54,9 @@ ISR(ADC_vect)
         /* Disable ADC hardware if there are no more queued jobs. */
         if (self_p->next_p != NULL) {
             ADMUX = self_p->next_p->admux;
+#if defined(MUX5)
+            ADCSRB = self_p->next_p->adcsrb;
+#endif
         } else {
             ADCSRA &= ~_BV(ADEN);
         }
@@ -69,7 +72,11 @@ static void start_adc_hw(struct adc_driver_t *self_p)
 {
     /* Start AD Converter in free running mode. */
     ADMUX = self_p->admux;
+#if defined(MUX5)
+    ADCSRB = self_p->adcsrb;
+#else
     ADCSRB = 0;
+#endif
     /* clock div 32. */
     ADCSRA = (_BV(ADEN) | _BV(ADSC) | _BV(ADATE) | _BV(ADIE)
               | _BV(ADPS2) /*| _BV(ADPS1) */| _BV(ADPS0));
@@ -96,6 +103,9 @@ static int adc_port_init(struct adc_driver_t *self_p,
     self_p->interrupt_max =
         SAMPLING_RATE_TO_INTERRUPT_MAX((long)sampling_rate);
     self_p->admux = (reference | (channel & 0x07));
+#if defined(MUX5)
+    self_p->adcsrb = channel > 7 ? _BV(MUX5) : 0;
+#endif
     pin_init(&self_p->pin_drv, pin_dev_p, PIN_INPUT);
 
     return (0);
@@ -164,9 +174,13 @@ int adc_port_convert_isr(struct adc_driver_t *self_p,
 
     /* Start the convertion. */
     ADMUX = self_p->admux;
+#if defined(MUX5)
+    ADCSRB = self_p->adcsrb;
+#else
     ADCSRB = 0;
+#endif
     ADCSRA = (_BV(ADEN) | _BV(ADSC) | _BV(ADPS2) | _BV(ADPS0));
-    
+
     /* Poll until the convertion is completed. */
     while (ADCSRA & _BV(ADSC));
 
