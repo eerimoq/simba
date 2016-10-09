@@ -15,6 +15,26 @@ Network interface modules:
 
    network_interface/*
 
+Debug file system commands
+--------------------------
+
+One debug file system command is available, located in the directory
+``inet/network_interface/``.
+
++----------------------------------------+----------------------------------------------------------------+
+|  Command                               | Description                                                    |
++========================================+================================================================+
+|  ``list``                              | Print a list of all registered network interfaces.             |
++----------------------------------------+----------------------------------------------------------------+
+
+Example output from the shell:
+
+.. code-block:: text
+
+   $ inet/network_interface/list
+   NAME            STATE  ADDRESS            TX BYTES    RX BYTES
+   esp-wlan        up     192.168.0.5               -           -
+
 ----------------------------------------------
 
 Source code: :github-blob:`src/inet/network_interface.h`, :github-blob:`src/inet/network_interface.c`
