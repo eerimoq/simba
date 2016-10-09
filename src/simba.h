@@ -227,6 +227,7 @@ typedef unsigned long off_t;
 
 #if defined(FAMILY_ESP)
 #    include "inet/network_interface/wifi_station_espressif.h"
+#    include "inet/network_interface/wifi_softap_espressif.h"
 #endif
 
 #ifdef __cplusplus
