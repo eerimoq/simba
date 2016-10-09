@@ -251,7 +251,7 @@ ssize_t sd_read_block(struct sd_driver_t *self_p,
                       uint32_t src_block);
 
 /**
- * Write data to the SD bus.
+ * Write data to the SD card.
  *
  * @param[in] self_p Initialized driver object.
  * @param[in] dst_block Block to write to.
