@@ -109,8 +109,9 @@ static int spi_port_start(struct spi_driver_t *self_p)
     pmc_peripheral_clock_enable(dev_p->id);
     nvic_enable_interrupt(dev_p->id);
 
+    /* On ARM the phase is inverted. */
     dev_p->regs_p->CSR[0] = (SPI_CSR_SCBR(self_p->speed)
-                             | (SPI_CSR_NCPHA * self_p->cpha)
+                             | (SPI_CSR_NCPHA * (!self_p->cpha))
                              | (SPI_CSR_CPOL * self_p->cpol));
 
     /* Set mode. */

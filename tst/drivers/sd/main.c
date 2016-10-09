@@ -19,6 +19,12 @@
 
 #include "simba.h"
 
+#if defined(BOARD_ARDUINO_DUE)
+#    define SPI_DEVICE &pin_d8_dev
+#else
+#    define SPI_DEVICE &pin_d6_dev
+#endif
+
 static struct spi_driver_t spi;
 static struct sd_driver_t sd;
 
@@ -34,7 +40,7 @@ static int test_init(struct harness_t *harness_p)
 
     BTASSERT(spi_init(&spi,
                       &spi_device[0],
-                      &pin_d6_dev,
+                      SPI_DEVICE,
                       SPI_MODE_MASTER,
                       SPI_SPEED_250KBPS,
                       0,

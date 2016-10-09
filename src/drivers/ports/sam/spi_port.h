@@ -28,6 +28,8 @@
 #define SPI_PORT_SPEED_2MBPS    (F_CPU / 2000000)
 #define SPI_PORT_SPEED_1MBPS    (F_CPU / 1000000)
 #define SPI_PORT_SPEED_500KBPS  (F_CPU /  500000)
+#define SPI_PORT_SPEED_250KBPS  (F_CPU /  250000)
+#define SPI_PORT_SPEED_125KBPS  (F_CPU /  120000)
 
 struct spi_driver_t;
 
