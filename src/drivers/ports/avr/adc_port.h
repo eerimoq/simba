@@ -37,6 +37,7 @@ struct adc_driver_t {
     struct adc_device_t *dev_p;
     struct pin_driver_t pin_drv;
     uint8_t admux;
+    uint8_t adcsrb;
     long interrupt_count;
     long interrupt_max;
     size_t pos;
