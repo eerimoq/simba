@@ -344,3 +344,25 @@ ssize_t i2c_soft_write(struct i2c_soft_driver_t *self_p,
     
     return (size);
 }
+
+int i2c_soft_scan(struct i2c_soft_driver_t *self_p,
+                  int address)
+{
+    int res;
+
+    /* Send the start condition. */
+    if (start_cond(self_p) != 0) {
+        return (-1);
+    }
+
+    /* Write the address with the direction bit set to 0. */
+    res = (write_byte(self_p, ((address << 1) | 0x0)) == 0);
+
+    /* Send the stop condition. */
+    if (stop_cond(self_p) != 0) {
+        return (-1);
+    }
+    
+    return (res);
+}
+

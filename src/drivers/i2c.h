@@ -99,7 +99,7 @@ ssize_t i2c_read(struct i2c_driver_t *self_p,
                  size_t size);
 
 /**
- * Write given numbe rof bytes from given buffer to given slave.
+ * Write given number of bytes from given buffer to given slave.
  *
  * @param[in] self_p Driver object.
  * @param[in] address Slave address to write to.

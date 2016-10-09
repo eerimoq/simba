@@ -86,7 +86,7 @@ int i2c_soft_start(struct i2c_soft_driver_t *self_p);
 int i2c_soft_stop(struct i2c_soft_driver_t *self_p);
 
 /**
- * Read into given buffer from given slave address.
+ * Read given number of bytes into given buffer from given slave.
  *
  * @param[in] self_p Driver object.
  * @param[in] address Slave address to read from.
@@ -101,7 +101,7 @@ ssize_t i2c_soft_read(struct i2c_soft_driver_t *self_p,
                       size_t size);
 
 /**
- * Write given buffer to given slave address.
+ * Write given number of bytes from given buffer to given slave.
  *
  * @param[in] self_p Driver object.
  * @param[in] address Slave address to write to.
@@ -114,5 +114,17 @@ ssize_t i2c_soft_write(struct i2c_soft_driver_t *self_p,
                        int address,
                        const void *buf_p,
                        size_t size);
+
+/**
+ * Scan the i2c bus for a slave with given address.
+ *
+ * @param[in] self_p Driver object.
+ * @param[in] address Address of the slave to scan for.
+ *
+ * @return true(1) if a slave responded to given address, otherwise
+ *         false(0) or negative error code.
+ */
+int i2c_soft_scan(struct i2c_soft_driver_t *self_p,
+                  int address);
 
 #endif
