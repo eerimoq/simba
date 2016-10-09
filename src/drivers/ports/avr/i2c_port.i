@@ -71,6 +71,11 @@
 #define I2C_MISC_NO_INFO                   0xf8
 #define I2C_MISC_ERROR                     0x00
 
+/**
+ * Transfer data to and from a slave.
+ *
+ * @return Number of bytes transferred or negative error code.
+ */
 static ssize_t transfer(struct i2c_driver_t *self_p,
                         int address,
                         void *buf_p,
@@ -124,7 +129,7 @@ ISR(TWI_vect)
             TWCR = (_BV(TWINT) | _BV(TWSTO) | _BV(TWEN));
             thrd_resume_isr(drv_p->thrd_p, 0);
         }
-        
+
         break;
 
     case I2C_M_RX_SLA_R_ACK:
@@ -140,7 +145,7 @@ ISR(TWI_vect)
     case I2C_M_RX_DATA_ACK:
         *drv_p->buf_p++ = TWDR;
         drv_p->size--;
-            
+
         if (drv_p->size > 1) {
             TWCR = (_BV(TWINT) | _BV(TWEA) | _BV(TWEN) | _BV(TWIE));
         } else {
@@ -158,7 +163,7 @@ ISR(TWI_vect)
     case I2C_M_TX_DATA_NACK:
     case I2C_M_RX_SLA_R_NACK:
         TWCR = (_BV(TWINT) | _BV(TWSTO) | _BV(TWEN));
-        thrd_resume_isr(drv_p->thrd_p, 0);
+        thrd_resume_isr(drv_p->thrd_p, -1);
         break;
 
         /* Slave transmit. */
@@ -197,7 +202,7 @@ ISR(TWI_vect)
             drv_p->size = -1;
             break;
         }
-        
+
         TWCR = (_BV(TWINT) | _BV(TWEA) | _BV(TWEN) | _BV(TWIE));
         break;
 
@@ -220,7 +225,7 @@ ISR(TWI_vect)
         thrd_resume_isr(drv_p->thrd_p, 0);
         drv_p->thrd_p = NULL;
         break;
-        
+
     default:
         /* ToDo: Handle error cases. */
         break;
@@ -267,13 +272,32 @@ ssize_t i2c_port_read(struct i2c_driver_t *self_p,
 {
     return (transfer(self_p, address, buf_p, size, I2C_READ));
 }
- 
+
 ssize_t i2c_port_write(struct i2c_driver_t *self_p,
                        int address,
                        const void *buf_p,
                        size_t size)
 {
     return (transfer(self_p, address, (void *)buf_p, size, I2C_WRITE));
+}
+
+int i2c_port_scan(struct i2c_driver_t *self_p,
+                  int address)
+{
+    int res;
+
+    self_p->address = ((address << 1) | I2C_WRITE);
+    self_p->size = 0;
+    self_p->thrd_p = thrd_self();
+
+    /* Start the transfer by sending the START condition, and then
+       wait for the transfer to complete. */
+    sys_lock();
+    TWCR = (_BV(TWINT) | _BV(TWSTA) | _BV(TWEN) | _BV(TWIE));
+    res = thrd_suspend_isr(NULL);
+    sys_unlock();
+
+    return (res == 0);
 }
 
 int i2c_port_slave_start(struct i2c_driver_t *self_p)

@@ -64,9 +64,8 @@ int i2c_init(struct i2c_driver_t *self_p,
 
 /**
  * Start given driver object in master mode. Enables data reception
- * and transmission, but does not start any transmission. Data
- * tarnsfers are started by calling the `i2c_read()` and
- * `i2c_write()`.
+ * and transmission, but does not start any transmission. Use
+ * `i2c_read()` and `i2c_write()` to exchange data with the peer.
  *
  * @param[in] self_p Driver object to initialize.
  *
@@ -85,7 +84,7 @@ int i2c_start(struct i2c_driver_t *self_p);
 int i2c_stop(struct i2c_driver_t *self_p);
 
 /**
- * Read into given buffer to given slave address.
+ * Read given number of bytes into given buffer from given slave.
  *
  * @param[in] self_p Driver object.
  * @param[in] address Slave address to read from.
@@ -100,7 +99,7 @@ ssize_t i2c_read(struct i2c_driver_t *self_p,
                  size_t size);
 
 /**
- * Write given buffer to given slave address.
+ * Write given numbe rof bytes from given buffer to given slave.
  *
  * @param[in] self_p Driver object.
  * @param[in] address Slave address to write to.
@@ -113,6 +112,17 @@ ssize_t i2c_write(struct i2c_driver_t *self_p,
                   int address,
                   const void *buf_p,
                   size_t size);
+
+/**
+ * Scan the i2c bus for a slave with given address.
+ *
+ * @param[in] self_p Driver object.
+ * @param[in] address Address of the slave to scan for.
+ *
+ * @return true(1) if a slave responded to given address, otherwise
+ *         false(0) or negative error code.
+ */
+int i2c_scan(struct i2c_driver_t *self_p, int address);
 
 /**
  * Start given driver object in slave mode. Enables data reception and
