@@ -19,8 +19,6 @@
 
 #include "simba.h"
 
-#if defined(ARCH_ESP)
-
 #include "esp_misc.h"
 #include "esp_wifi.h"
 #include "esp_softap.h"
@@ -46,7 +44,13 @@ static int start(struct network_interface_t *netif_p)
 
 static int stop(struct network_interface_t *netif_p)
 {
-    return (0);
+    struct network_interface_wifi_softap_espressif_t *self_p;
+
+    self_p = container_of(netif_p,
+                          struct network_interface_wifi_softap_espressif_t,
+                          network_interface);
+
+    return (network_interface_wifi_softap_espressif_stop(self_p));
 }
 
 static int is_up(struct network_interface_t *netif_p)
@@ -86,8 +90,6 @@ int network_interface_wifi_softap_espressif_init(struct network_interface_wifi_s
     self_p->network_interface.is_up = is_up;
     self_p->network_interface.get_ip_address = get_ip_address;
 
-    wifi_set_opmode_current(SOFTAP_MODE | wifi_get_opmode());
-
     memset(&softap_config, 0, sizeof(softap_config));
     wifi_softap_get_config(&softap_config);
     softap_config.authmode = AUTH_WPA2_PSK;
@@ -101,24 +103,30 @@ int network_interface_wifi_softap_espressif_init(struct network_interface_wifi_s
 }
 
 int network_interface_wifi_softap_espressif_start(struct network_interface_wifi_softap_espressif_t *self_p)
-{   
+{
     ASSERTN(self_p != NULL, -EINVAL);
 
+    wifi_set_opmode_current(SOFTAP_MODE | wifi_get_opmode());
     wifi_softap_set_config(&softap_config);
     wifi_softap_dhcps_start();
-    
+
     return (0);
 }
 
 int network_interface_wifi_softap_espressif_stop(struct network_interface_wifi_softap_espressif_t *self_p)
 {
-    return (-1);
+    ASSERTN(self_p != NULL, -EINVAL);
+
+    wifi_softap_dhcps_stop();
+    wifi_set_opmode_current(~SOFTAP_MODE & wifi_get_opmode());
+
+    return (0);
 }
 
 int network_interface_wifi_softap_espressif_is_up(struct network_interface_wifi_softap_espressif_t *self_p)
 {
     ASSERTN(self_p != NULL, -EINVAL);
-    
+
     return (is_up(&self_p->network_interface));
 }
 
@@ -134,5 +142,3 @@ int network_interface_wifi_softap_espressif_get_ip_address(struct network_interf
 
     return (ip_config.ip.addr != 0 ? 0 : -1);
 }
-
-#endif
