@@ -24,14 +24,11 @@
 extern "C" {
 #endif
 
-#if defined(ARCH_ESP)
-typedef unsigned long off_t;
-#endif
-
 #if !defined(ARCH_AVR) && defined(__cplusplus)
 
 #define __CORRECT_ISO_CPP_STDLIB_H_PROTO
 #define __time_t_defined  1
+#define time_t int
 #define __timer_t_defined 1
 
 #if defined(ARCH_ARM)
@@ -44,6 +41,8 @@ typedef unsigned long off_t;
 #include <cstring>
 #include <cstddef>
 #include <cstdint>
+
+#undef time_t
 
 #else
 
