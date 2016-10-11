@@ -199,7 +199,11 @@ find_route_callback(struct http_server_t *self_p,
     route_p = self_p->routes_p;
 
     while (route_p->path_p != NULL) {
-        if (strcmp(route_p->path_p, path_p) == 0) {
+        if (strstr(path_p, "?")) {
+            if (strncmp(route_p->path_p, path_p, strstr(path_p, "?") - path_p) == 0) {
+                return (route_p->callback);
+            }
+        } else if (strcmp(route_p->path_p, path_p) == 0) {
             return (route_p->callback);
         }
 
