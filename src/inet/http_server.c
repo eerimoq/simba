@@ -195,7 +195,6 @@ find_route_callback(struct http_server_t *self_p,
                     const char *path_p)
 {
     const struct http_server_route_t *route_p;
-
     int path_length;
     char *query_string_p;
 
@@ -203,7 +202,7 @@ find_route_callback(struct http_server_t *self_p,
     query_string_p = strstr(path_p, "?");
 
     if (query_string_p != NULL) {
-        path_length = query_string_p - path_p;
+        path_length = (query_string_p - path_p);
     } else {
         path_length = strlen(path_p);
     }
