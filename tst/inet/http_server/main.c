@@ -324,7 +324,7 @@ static int test_request_auth(struct harness_t *harness_p)
     str_p =
         "HTTP/1.1 401 Unauthorized\r\n"
         "WWW-Authenticate: Basic realm=\"\"\r\n"
-        "Content-Type: text/plain\r\n"
+        "Content-Type: text/html\r\n"
         "Content-Length: 0\r\n"
         "\r\n";
 
