@@ -52,6 +52,26 @@ static int request_index(struct http_server_connection_t *connection_p,
 }
 
 /**
+ * Handler for the auth request.
+ */
+static int request_auth(struct http_server_connection_t *connection_p,
+                         struct http_server_request_t *request_p)
+{
+    struct http_server_response_t response;
+
+    BTASSERT(strcmp(request_p->headers.authorization.value,
+                    "Basic YWRtaW46YWRtaW4=") == 0);
+
+    /* Create the response. */
+    response.code = http_server_response_code_401_unauthorized_t;
+    response.content.type = http_server_content_type_text_html_t;
+    response.content.buf_p = "";
+    response.content.size = strlen(response.content.buf_p);
+
+    return (http_server_response_write(connection_p, request_p, &response));
+}
+
+/**
  * Handler for the form request.
  */
 static int request_form(struct http_server_connection_t *connection_p,
@@ -156,6 +176,7 @@ static int test_start(struct harness_t *harness_p)
 {
     static struct http_server_route_t routes[] = {
         { .path_p = "/index.html", .callback = request_index },
+        { .path_p = "/auth.html", .callback = request_auth },
         { .path_p = "/form.html", .callback = request_form },
         { .path_p = "/websocket/echo", .callback = request_websocket_echo },
         { .path_p = NULL, .callback = NULL }
@@ -235,6 +256,42 @@ static int test_request_index(struct harness_t *harness_p)
         "Content-Length: 8\r\n"
         "\r\n"
         "Welcome!";
+
+    socket_stub_output(buf, strlen(str_p));
+    buf[strlen(str_p)] = '\0';
+    BTASSERT(strcmp(buf, str_p) == 0);
+
+    /* Less log clobbering. */
+    thrd_sleep_us(100000);
+
+    return (0);
+}
+
+static int test_request_auth(struct harness_t *harness_p)
+{
+    char *str_p;
+    char buf[256];
+
+    /* Input the accept answer. */
+    socket_stub_accept();
+
+    /* Input GET /missing.html on the connection socket. */
+    str_p =
+        "GET /auth.html HTTP/1.1\r\n"
+        "Authorization: Basic YWRtaW46YWRtaW4=\r\n"
+        "User-Agent: TestcaseRequestIndex\r\n"
+        "Connection: keep-alive\r\n"
+        "\r\n";
+
+    socket_stub_input(str_p, strlen(str_p));
+
+    /* Read the GET response and verify it. */
+    str_p =
+        "HTTP/1.1 401 Unauthorized\r\n"
+        "WWW-Authenticate: Basic realm=\"\"\r\n"
+        "Content-Type: text/plain\r\n"
+        "Content-Length: 0\r\n"
+        "\r\n";
 
     socket_stub_output(buf, strlen(str_p));
     buf[strlen(str_p)] = '\0';
@@ -389,6 +446,7 @@ int main()
     struct harness_testcase_t harness_testcases[] = {
         { test_start, "test_start" },
         { test_request_index, "test_request_index" },
+        { test_request_auth, "test_request_auth" },
         { test_request_form, "test_request_form" },
         { test_request_no_route, "test_request_no_route" },
         { test_request_websocket, "test_request_websocket" },
