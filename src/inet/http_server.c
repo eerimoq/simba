@@ -196,10 +196,16 @@ find_route_callback(struct http_server_t *self_p,
 {
     const struct http_server_route_t *route_p;
 
-    int path_length = strlen(path_p);
-    char *query_string = strstr(path_p, "?");
-    if (query_string != NULL) {
-        path_length = query_string - path_p;
+    int path_length;
+    char *query_string_p;
+
+    /* The query string is not part of the route. */
+    query_string_p = strstr(path_p, "?");
+
+    if (query_string_p != NULL) {
+        path_length = query_string_p - path_p;
+    } else {
+        path_length = strlen(path_p);
     }
 
     route_p = self_p->routes_p;
