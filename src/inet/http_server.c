@@ -25,6 +25,13 @@ static const FAR char ok_fmt[] =
     "Content-Length: %d\r\n"
     "\r\n";
 
+static const FAR char unauthorized_fmt[] =
+    "HTTP/1.1 401 Unauthorized\r\n"
+    "WWW-Authenticate: Basic realm=\"\"\r\n"
+    "Content-Type: %s\r\n"
+    "Content-Length: %d\r\n"
+    "\r\n";
+
 static const FAR char not_found_fmt[] =
     "HTTP/1.1 404 Not Found\r\n"
     "Content-Type: %s\r\n"
@@ -181,6 +188,11 @@ static int read_request(struct http_server_t *self_p,
             if (std_strtol(value_p, &request_p->headers.content_length.value) != NULL) {
                 request_p->headers.content_length.present = 1;
             }
+        } else if (strcmp(header_p, "Authorization") == 0) {
+            request_p->headers.authorization.present = 1;
+            strncpy(request_p->headers.authorization.value,
+                    value_p,
+                    sizeof(request_p->headers.authorization.value));
         }
     }
 
@@ -492,6 +504,11 @@ http_server_response_write(struct http_server_connection_t *connection_p,
     if (response_p->code == http_server_response_code_200_ok_t) {
         size = std_sprintf(buf,
                            ok_fmt,
+                           content_type_p,
+                           response_p->content.size);
+    } else if (response_p->code == http_server_response_code_401_unauthorized_t) {
+        size = std_sprintf(buf,
+                           unauthorized_fmt,
                            content_type_p,
                            response_p->content.size);
     } else {
