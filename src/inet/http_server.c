@@ -145,7 +145,7 @@ static int read_request(struct http_server_t *self_p,
                         struct http_server_request_t *request_p)
 {
     int res;
-    char buf[1024];
+    char buf[128];
     char *header_p;
     char *value_p;
 
