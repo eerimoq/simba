@@ -207,11 +207,22 @@ find_route_callback(struct http_server_t *self_p,
                     const char *path_p)
 {
     const struct http_server_route_t *route_p;
+    int path_length;
+    char *query_string_p;
+
+    /* The query string is not part of the route. */
+    query_string_p = strstr(path_p, "?");
+
+    if (query_string_p != NULL) {
+        path_length = (query_string_p - path_p);
+    } else {
+        path_length = strlen(path_p);
+    }
 
     route_p = self_p->routes_p;
 
     while (route_p->path_p != NULL) {
-        if (strcmp(route_p->path_p, path_p) == 0) {
+        if (strncmp(route_p->path_p, path_p, path_length) == 0) {
             return (route_p->callback);
         }
 

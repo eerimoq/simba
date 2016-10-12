@@ -267,6 +267,41 @@ static int test_request_index(struct harness_t *harness_p)
     return (0);
 }
 
+static int test_request_index_with_query_string(struct harness_t *harness_p)
+{
+    char *str_p;
+    char buf[256];
+
+    /* Input the accept answer. */
+    socket_stub_accept();
+
+    /* Input GET /index.html?hello=world on the connection socket. */
+    str_p =
+        "GET /index.html?hello=world HTTP/1.1\r\n"
+        "User-Agent: TestcaseRequestIndex\r\n"
+        "Connection: keep-alive\r\n"
+        "\r\n";
+
+    socket_stub_input(str_p, strlen(str_p));
+
+    /* Read the GET response and verify it. */
+    str_p =
+        "HTTP/1.1 200 OK\r\n"
+        "Content-Type: text/html\r\n"
+        "Content-Length: 8\r\n"
+        "\r\n"
+        "Welcome!";
+
+    socket_stub_output(buf, strlen(str_p));
+    buf[strlen(str_p)] = '\0';
+    BTASSERT(strcmp(buf, str_p) == 0);
+
+    /* Less log clobbering. */
+    thrd_sleep_us(100000);
+
+    return (0);
+}
+
 static int test_request_auth(struct harness_t *harness_p)
 {
     char *str_p;
@@ -446,6 +481,7 @@ int main()
     struct harness_testcase_t harness_testcases[] = {
         { test_start, "test_start" },
         { test_request_index, "test_request_index" },
+        { test_request_index_with_query_string, "test_request_index_with_query_string" },
         { test_request_auth, "test_request_auth" },
         { test_request_form, "test_request_form" },
         { test_request_no_route, "test_request_no_route" },
