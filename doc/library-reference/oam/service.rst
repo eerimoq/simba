@@ -48,8 +48,6 @@ Test code: :github-blob:`tst/oam/service/main.c`
 
 Test coverage: :codecov:`src/oam/service.c`
 
-Example code: :github-blob:`examples/service/main.c`
-
 ----------------------------------------------
 
 .. doxygenfile:: oam/service.h
