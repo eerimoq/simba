@@ -33,8 +33,7 @@ ifeq ($(BOARD), linux)
                                     event \
                                     queue \
                                     rwlock \
-                                    sem \
-                                    service)
+                                    sem)
     TESTS += $(addprefix tst/collections/, binary_tree \
                                            bits \
                                            fifo \
@@ -45,7 +44,8 @@ ifeq ($(BOARD), linux)
 				    std \
                                     re)
     TESTS += $(addprefix tst/debug/, log)
-    TESTS += $(addprefix tst/oam/, settings \
+    TESTS += $(addprefix tst/oam/, service \
+				   settings \
 				   shell)
     TESTS += $(addprefix tst/filesystems/, fat16 \
 				          fs \

@@ -297,6 +297,28 @@
 #endif
 
 /**
+ * Debug file system command to start a service.
+ */
+#ifndef CONFIG_FS_CMD_SERVICE_START
+#    if defined(CONFIG_MINIMAL_SYSTEM)
+#        define CONFIG_FS_CMD_SERVICE_START                     0
+#    else
+#        define CONFIG_FS_CMD_SERVICE_START                     1
+#    endif
+#endif
+
+/**
+ * Debug file system command to stop a services.
+ */
+#ifndef CONFIG_FS_CMD_SERVICE_STOP
+#    if defined(CONFIG_MINIMAL_SYSTEM)
+#        define CONFIG_FS_CMD_SERVICE_STOP                      0
+#    else
+#        define CONFIG_FS_CMD_SERVICE_STOP                      1
+#    endif
+#endif
+
+/**
  * Debug file system command to list all settings.
  */
 #ifndef CONFIG_FS_CMD_SETTINGS_LIST

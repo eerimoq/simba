@@ -238,6 +238,7 @@ SRC += $(MULTIMEDIA_SRC:%=$(SIMBA_ROOT)/src/multimedia/%)
 
 # Oam package.
 OAM_SRC ?= console.c \
+	   service.c \
 	   settings.c \
 	   shell.c
 
@@ -267,8 +268,7 @@ SYNC_SRC ?= bus.c \
             event.c \
             queue.c \
             rwlock.c \
-            sem.c \
-	    service.c
+            sem.c
 
 SRC += $(SYNC_SRC:%=$(SIMBA_ROOT)/src/sync/%)
 
