@@ -63,7 +63,7 @@ struct service_t {
 int service_module_init(void);
 
 /**
- * Initialize a service with given name.
+ * Initialize a service with given name and status callback.
  *
  * @param[in] self_p Service to initialize.
  * @param[in] name_p Name of the service.
@@ -79,6 +79,10 @@ int service_init(struct service_t *self_p,
 /**
  * Start given service.
  *
+ * The event ``SERVICE_CONTROL_EVENT_START`` will be written to the
+ * control channel of given service and it's up to the service to act
+ * on this event. All services should act on all control events.
+ *
  * @param[in] self_p Service to start.
  *
  * @return zero(0) or negative error code.
@@ -88,6 +92,10 @@ int service_start(struct service_t *self_p);
 /**
  * Stop given service.
  *
+ * The event ``SERVICE_CONTROL_EVENT_STOP`` will be written to the
+ * control channel of given service and it's up to the service to act
+ * on this event. All services should act on all control events.
+ *
  * @param[in] self_p Service to stop.
  *
  * @return zero(0) or negative error code.
@@ -95,7 +103,7 @@ int service_start(struct service_t *self_p);
 int service_stop(struct service_t *self_p);
 
 /**
- * Register given service.
+ * Register given service to the global list of services.
  *
  * @param[in] service_p Service to register.
  *
@@ -104,7 +112,7 @@ int service_stop(struct service_t *self_p);
 int service_register(struct service_t *service_p);
 
 /**
- * Deregister given service.
+ * Deregister given service from the global list of services.
  *
  * @param[in] service_p Service to deregister.
  *
