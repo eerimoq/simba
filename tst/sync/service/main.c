@@ -107,9 +107,8 @@ static int test_init(struct harness_t *harness_p)
 
     BTASSERT(service_module_init() == 0);
 
-    /* Initialize the service server. */
+    /* Initialize and spawn the service server. */
     BTASSERT(service_server_init(&server,
-                                 "my_server",
                                  &services[0],
                                  &workspace[0],
                                  sizeof(workspace)) == 0);

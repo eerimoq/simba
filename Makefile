@@ -33,7 +33,8 @@ ifeq ($(BOARD), linux)
                                     event \
                                     queue \
                                     rwlock \
-                                    sem)
+                                    sem \
+                                    service)
     TESTS += $(addprefix tst/collections/, binary_tree \
                                            bits \
                                            fifo \

@@ -40,7 +40,6 @@ struct service_t {
  * and calls the service callback.
  */
 struct service_server_t {
-    const char *name_p;
     struct service_t *services_p;
     struct chan_list_t list;
     struct service_server_t *next_p;
@@ -59,16 +58,26 @@ int service_module_init(void);
 
 /**
  * Initialize a service server.
+ *
+ * @param[in] self_p Service server to initialize.
+ * @param[in] services_p An array of services. The name of the last
+ *                       entry in the array must be NULL.
+ * @param[in] workspace_p Memory used for a channel list.
+ * @param[in] workspace_size Size of workspace_p.
+ *
+ * @return zero(0) or negative error code.
  */
 int service_server_init(struct service_server_t *self_p,
-                        const char *name_p,
                         struct service_t *services_p,
                         void *workspace_p,
                         size_t workspace_size);
 
 /**
  * The service main function that listens for events on all registered
- * channels.
+ * channels. This function is normally a thread entry function passed
+ * to `thrd_spawn()`.
+ *
+ * @param[in] arg_p A pointer to an initialized service server.
  *
  * @return Never returns.
  */

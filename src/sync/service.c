@@ -41,7 +41,7 @@ static int cmd_list_cb(int argc,
     struct service_server_t *server_p;
     struct service_t *service_p;
 
-    std_fprintf(chout_p, FSTR("NAME            SERVER\r\n"));
+    std_fprintf(chout_p, FSTR("NAME\r\n"));
 
     server_p = module.servers_p;
 
@@ -49,10 +49,7 @@ static int cmd_list_cb(int argc,
         service_p = server_p->services_p;
 
         while (service_p->name_p != NULL) {
-            std_fprintf(chout_p,
-                        FSTR("%-16s%s\r\n"),
-                        service_p->name_p,
-                        server_p->name_p);
+            std_fprintf(chout_p, FSTR("%s\r\n"), service_p->name_p);
             service_p++;
         }
 
@@ -87,7 +84,6 @@ int service_module_init(void)
 }
 
 int service_server_init(struct service_server_t *self_p,
-                        const char *name_p,
                         struct service_t *services_p,
                         void *workspace_p,
                         size_t workspace_size)
@@ -99,7 +95,6 @@ int service_server_init(struct service_server_t *self_p,
     void **chan_pp;
 
     self_p->services_p = services_p;
-    self_p->name_p = (name_p != NULL ? name_p : "");
 
     if (chan_list_init(&self_p->list, workspace_p, workspace_size) != 0) {
         return (-1);
