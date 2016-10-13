@@ -15,7 +15,7 @@ Debug file system commands
 --------------------------
 
 One debug file system commands is available, located in the directory
-``oam/service/``.
+``sync/service/``.
 
 +-------------------------------+-----------------------------------------------------------------+
 |  Command                      | Description                                                     |
@@ -27,23 +27,22 @@ Example output from the shell:
 
 .. code-block:: text
 
-   $ oam/service/list
-   NAME                  SERVER
-   http_server           service_server
-   ftp_server            service_server
-   shell                 shell_server
+   $ sync/service/list
+   NAME
+   http_server
+   ftp_server
 
 ----------------------------------------------
 
-Source code: :github-blob:`src/oam/service.h`, :github-blob:`src/oam/service.c`
+Source code: :github-blob:`src/sync/service.h`, :github-blob:`src/sync/service.c`
 
-Test code: :github-blob:`tst/oam/service/main.c`
+Test code: :github-blob:`tst/sync/service/main.c`
 
-Test coverage: :codecov:`src/oam/service.c`
+Test coverage: :codecov:`src/sync/service.c`
 
 Example code: :github-blob:`examples/service/main.c`
 
 ----------------------------------------------
 
-.. doxygenfile:: oam/service.h
+.. doxygenfile:: sync/service.h
    :project: simba
