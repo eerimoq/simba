@@ -267,7 +267,8 @@ SYNC_SRC ?= bus.c \
             event.c \
             queue.c \
             rwlock.c \
-            sem.c
+            sem.c \
+	    service.c
 
 SRC += $(SYNC_SRC:%=$(SIMBA_ROOT)/src/sync/%)
 

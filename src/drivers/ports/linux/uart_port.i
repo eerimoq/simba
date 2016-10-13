@@ -40,6 +40,7 @@ static ssize_t uart_port_write_cb(void *arg,
 
     while (size > 0) {
         putc(*c++, stdout);
+        fflush(stdout);
         size--;
     }
 

@@ -86,6 +86,7 @@ extern "C" {
 #include "sync/event.h"
 #include "sync/rwlock.h"
 #include "sync/bus.h"
+#include "sync/service.h"
 
 #include "alloc/heap.h"
 #include "alloc/circular_heap.h"

@@ -286,6 +286,17 @@
 #endif
 
 /**
+ * Debug file system command to list all services.
+ */
+#ifndef CONFIG_FS_CMD_SERVICE_LIST
+#    if defined(CONFIG_MINIMAL_SYSTEM)
+#        define CONFIG_FS_CMD_SERVICE_LIST                      0
+#    else
+#        define CONFIG_FS_CMD_SERVICE_LIST                      1
+#    endif
+#endif
+
+/**
  * Debug file system command to list all settings.
  */
 #ifndef CONFIG_FS_CMD_SETTINGS_LIST

@@ -58,7 +58,6 @@ struct module_t {
 #endif
 };
 
-
 static struct module_t module;
 
 #if CONFIG_THRD_ENV == 1
