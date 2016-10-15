@@ -26,6 +26,7 @@ Supported drivers for this board.
 
 - :doc:`../library-reference/drivers/adc`
 - :doc:`../library-reference/drivers/analog_input_pin`
+- :doc:`../library-reference/drivers/espressif_wifi`
 - :doc:`../library-reference/drivers/exti`
 - :doc:`../library-reference/drivers/flash`
 - :doc:`../library-reference/drivers/i2c_soft`
@@ -61,9 +62,9 @@ Below is the memory usage of two applications:
 +--------------------------+-----------+-----------+
 | Application              | Flash     | RAM       |
 +==========================+===========+===========+
-| minimal-configuration    |    265580 |     35344 |
+| minimal-configuration    |    265556 |     35344 |
 +--------------------------+-----------+-----------+
-| default-configuration    |    317052 |     57444 |
+| default-configuration    |    317912 |     57512 |
 +--------------------------+-----------+-----------+
 
 Default configuration
@@ -117,6 +118,12 @@ Default Standard Library configuration.
 |  CONFIG_FS_CMD_PIN_SET_MODE_                           |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_FS_CMD_PIN_WRITE_                              |  1                                                  |
++--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_FS_CMD_SERVICE_LIST_                           |  1                                                  |
++--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_FS_CMD_SERVICE_START_                          |  1                                                  |
++--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_FS_CMD_SERVICE_STOP_                           |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_FS_CMD_SETTINGS_LIST_                          |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
@@ -271,6 +278,12 @@ Mcu
 .. _CONFIG_FS_CMD_PIN_SET_MODE: ../user-guide/configuration.html#c.CONFIG_FS_CMD_PIN_SET_MODE
 
 .. _CONFIG_FS_CMD_PIN_WRITE: ../user-guide/configuration.html#c.CONFIG_FS_CMD_PIN_WRITE
+
+.. _CONFIG_FS_CMD_SERVICE_LIST: ../user-guide/configuration.html#c.CONFIG_FS_CMD_SERVICE_LIST
+
+.. _CONFIG_FS_CMD_SERVICE_START: ../user-guide/configuration.html#c.CONFIG_FS_CMD_SERVICE_START
+
+.. _CONFIG_FS_CMD_SERVICE_STOP: ../user-guide/configuration.html#c.CONFIG_FS_CMD_SERVICE_STOP
 
 .. _CONFIG_FS_CMD_SETTINGS_LIST: ../user-guide/configuration.html#c.CONFIG_FS_CMD_SETTINGS_LIST
 

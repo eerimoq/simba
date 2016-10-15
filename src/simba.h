@@ -111,6 +111,9 @@ extern "C" {
 #include "hash/crc.h"
 #include "hash/sha1.h"
 
+#include "inet/types.h"
+#include "inet/inet.h"
+
 #if defined(FAMILY_LINUX)
 #    include "drivers/exti.h"
 #    include "drivers/pin.h"
@@ -185,6 +188,9 @@ extern "C" {
 #    include "drivers/adc.h"
 #    include "drivers/analog_input_pin.h"
 #    include "drivers/flash.h"
+#    include "drivers/espressif_wifi.h"
+#    include "drivers/espressif_wifi/station.h"
+#    include "drivers/espressif_wifi/softap.h"
 #endif
 
 #if defined(FAMILY_STM32F1)
@@ -214,8 +220,6 @@ extern "C" {
 
 #include "multimedia/midi.h"
 
-#include "inet/types.h"
-#include "inet/inet.h"
 #include "inet/socket.h"
 #include "inet/http_server.h"
 #include "inet/http_websocket_server.h"

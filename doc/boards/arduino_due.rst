@@ -123,6 +123,12 @@ Default Standard Library configuration.
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_FS_CMD_PIN_WRITE_                              |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_FS_CMD_SERVICE_LIST_                           |  1                                                  |
++--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_FS_CMD_SERVICE_START_                          |  1                                                  |
++--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_FS_CMD_SERVICE_STOP_                           |  1                                                  |
++--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_FS_CMD_SETTINGS_LIST_                          |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_FS_CMD_SETTINGS_READ_                          |  1                                                  |
@@ -276,6 +282,12 @@ Mcu
 .. _CONFIG_FS_CMD_PIN_SET_MODE: ../user-guide/configuration.html#c.CONFIG_FS_CMD_PIN_SET_MODE
 
 .. _CONFIG_FS_CMD_PIN_WRITE: ../user-guide/configuration.html#c.CONFIG_FS_CMD_PIN_WRITE
+
+.. _CONFIG_FS_CMD_SERVICE_LIST: ../user-guide/configuration.html#c.CONFIG_FS_CMD_SERVICE_LIST
+
+.. _CONFIG_FS_CMD_SERVICE_START: ../user-guide/configuration.html#c.CONFIG_FS_CMD_SERVICE_START
+
+.. _CONFIG_FS_CMD_SERVICE_STOP: ../user-guide/configuration.html#c.CONFIG_FS_CMD_SERVICE_STOP
 
 .. _CONFIG_FS_CMD_SETTINGS_LIST: ../user-guide/configuration.html#c.CONFIG_FS_CMD_SETTINGS_LIST
 

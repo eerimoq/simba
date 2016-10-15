@@ -68,9 +68,9 @@ Below is the memory usage of two applications:
 +--------------------------+-----------+-----------+
 | Application              | Flash     | RAM       |
 +==========================+===========+===========+
-| minimal-configuration    |     11198 |      1021 |
+| minimal-configuration    |     11216 |      1021 |
 +--------------------------+-----------+-----------+
-| default-configuration    |     57534 |      3705 |
+| default-configuration    |     57554 |      3705 |
 +--------------------------+-----------+-----------+
 
 Default configuration
@@ -124,6 +124,12 @@ Default Standard Library configuration.
 |  CONFIG_FS_CMD_PIN_SET_MODE_                           |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_FS_CMD_PIN_WRITE_                              |  1                                                  |
++--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_FS_CMD_SERVICE_LIST_                           |  1                                                  |
++--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_FS_CMD_SERVICE_START_                          |  1                                                  |
++--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_FS_CMD_SERVICE_STOP_                           |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_FS_CMD_SETTINGS_LIST_                          |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
@@ -278,6 +284,12 @@ Mcu
 .. _CONFIG_FS_CMD_PIN_SET_MODE: ../user-guide/configuration.html#c.CONFIG_FS_CMD_PIN_SET_MODE
 
 .. _CONFIG_FS_CMD_PIN_WRITE: ../user-guide/configuration.html#c.CONFIG_FS_CMD_PIN_WRITE
+
+.. _CONFIG_FS_CMD_SERVICE_LIST: ../user-guide/configuration.html#c.CONFIG_FS_CMD_SERVICE_LIST
+
+.. _CONFIG_FS_CMD_SERVICE_START: ../user-guide/configuration.html#c.CONFIG_FS_CMD_SERVICE_START
+
+.. _CONFIG_FS_CMD_SERVICE_STOP: ../user-guide/configuration.html#c.CONFIG_FS_CMD_SERVICE_STOP
 
 .. _CONFIG_FS_CMD_SETTINGS_LIST: ../user-guide/configuration.html#c.CONFIG_FS_CMD_SETTINGS_LIST
 
