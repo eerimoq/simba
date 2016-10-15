@@ -1,5 +1,5 @@
 /**
- * @file drivers/espressif_wifi/station.h
+ * @file drivers/esp_wifi/station.h
  *
  * @section License
  * Copyright (C) 2014-2016, Erik Moqvist
@@ -17,21 +17,21 @@
  * This file is part of the Simba project.
  */
 
-#ifndef __DRIVERS_ESPRESSIF_WIFI_STATION_H__
-#define __DRIVERS_ESPRESSIF_WIFI_STATION_H__
+#ifndef __DRIVERS_ESP_WIFI_STATION_H__
+#define __DRIVERS_ESP_WIFI_STATION_H__
 
 #include "simba.h"
 
 /**
  * WiFi station connection status.
  */
-enum espressif_wifi_station_status_t {
-    espressif_wifi_station_status_idle_t = 0,
-    espressif_wifi_station_status_connecting_t,
-    espressif_wifi_station_status_wrong_password_t,
-    espressif_wifi_station_status_no_ap_found_t,
-    espressif_wifi_station_status_connect_fail_t,
-    espressif_wifi_station_status_got_ip_t
+enum esp_wifi_station_status_t {
+    esp_wifi_station_status_idle_t = 0,
+    esp_wifi_station_status_connecting_t,
+    esp_wifi_station_status_wrong_password_t,
+    esp_wifi_station_status_no_ap_found_t,
+    esp_wifi_station_status_connect_fail_t,
+    esp_wifi_station_status_got_ip_t
 };
 
 /**
@@ -43,37 +43,37 @@ enum espressif_wifi_station_status_t {
  *
  * @return zero(0) or negative error code.
  */
-int espressif_wifi_station_init(const char *ssid_p,
+int esp_wifi_station_init(const char *ssid_p,
                                 const char *password_p,
-                                struct espressif_wifi_ip_info_t *info_p);
+                                struct esp_wifi_ip_info_t *info_p);
 
 /**
  * Connect the WiFi station to the Access Point (AP).
  *
  * @return zero(0) or negative error code.
  */
-int espressif_wifi_station_connect(void);
+int esp_wifi_station_connect(void);
 
 /**
  * Disconnect the WiFi station from the AP.
  *
  * @return zero(0) or negative error code.
  */
-int espressif_wifi_station_disconnect(void);
+int esp_wifi_station_disconnect(void);
 
 /**
  * Set the ip address, netmask and gateway of the WiFi station.
  *
  * @return zero(0) or negative error code.
  */
-int espressif_wifi_station_set_ip_info(struct espressif_wifi_ip_info_t *info_p);
+int esp_wifi_station_set_ip_info(struct esp_wifi_ip_info_t *info_p);
 
 /**
  * Get the station ip address, netmask and gateway.
  *
  * @return zero(0) or negative error code.
  */
-int espressif_wifi_station_get_ip_info(struct espressif_wifi_ip_info_t *info_p);
+int esp_wifi_station_get_ip_info(struct esp_wifi_ip_info_t *info_p);
 
 /**
  * Set whether the station will reconnect to the AP after
@@ -84,7 +84,7 @@ int espressif_wifi_station_get_ip_info(struct espressif_wifi_ip_info_t *info_p);
  *
  * @return zero(0) or negative error code.
  */
-int espressif_wifi_station_set_reconnect_policy(int policy);
+int esp_wifi_station_set_reconnect_policy(int policy);
 
 /**
  * Check whether the station will reconnect to the AP after
@@ -92,34 +92,34 @@ int espressif_wifi_station_set_reconnect_policy(int policy);
  *
  * @return true(1) or false(0).
  */
-int espressif_wifi_station_get_reconnect_policy(void);
+int esp_wifi_station_get_reconnect_policy(void);
 
 /**
  * Get the connection status of the WiFi station.
  *
  * @return The connection status.
  */
-enum espressif_wifi_station_status_t espressif_wifi_station_get_connect_status(void);
+enum esp_wifi_station_status_t esp_wifi_station_get_connect_status(void);
 
 /**
  * Enable the station DHCP client.
  *
  * @return zero(0) or negative error code.
  */
-int espressif_wifi_station_dhcp_client_start(void);
+int esp_wifi_station_dhcp_client_start(void);
 
 /**
  * Disable the station DHCP client.
  *
  * @return zero(0) or negative error code.
  */
-int espressif_wifi_station_dhcp_client_stop(void);
+int esp_wifi_station_dhcp_client_stop(void);
 
 /**
  * Get the station DHCP client status.
  *
  * @return Station DHCP client status.
  */
-enum espressif_wifi_dhcp_status_t espressif_wifi_station_dhcp_client_status(void);
+enum esp_wifi_dhcp_status_t esp_wifi_station_dhcp_client_status(void);
 
 #endif

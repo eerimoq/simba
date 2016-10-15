@@ -1,5 +1,5 @@
 /**
- * @file drivers/espressif_wifi/softap.h
+ * @file drivers/esp_wifi/softap.h
  *
  * @section License
  * Copyright (C) 2014-2016, Erik Moqvist
@@ -17,15 +17,15 @@
  * This file is part of the Simba project.
  */
 
-#ifndef __DRIVERS_ESPRESSIF_WIFI_SOFTAP_H__
-#define __DRIVERS_ESPRESSIF_WIFI_SOFTAP_H__
+#ifndef __DRIVERS_ESP_WIFI_SOFTAP_H__
+#define __DRIVERS_ESP_WIFI_SOFTAP_H__
 
 #include "simba.h"
 
 /**
  * Information about a connected station.
  */
-struct espressif_wifi_softap_station_info_t {
+struct esp_wifi_softap_station_info_t {
     uint8 bssid[6];
     struct inet_ip_addr_t ip_address;
 };
@@ -38,15 +38,15 @@ struct espressif_wifi_softap_station_info_t {
  *
  * @return zero(0) or negative error code.
  */
-int espressif_wifi_softap_init(const char *ssid_p,
-                               const char *password_p);
+int esp_wifi_softap_init(const char *ssid_p,
+                         const char *password_p);
 
 /**
  * Set the ip address, netmask and gateway of the WiFi SoftAP.
  *
  * @return zero(0) or negative error code.
  */
-int espressif_wifi_softap_set_ip_info(struct espressif_wifi_ip_info_t *info_p);
+int esp_wifi_softap_set_ip_info(struct esp_wifi_ip_info_t *info_p);
 
 /**
  * Get the SoftAP ip address, netmask and gateway.
@@ -55,14 +55,14 @@ int espressif_wifi_softap_set_ip_info(struct espressif_wifi_ip_info_t *info_p);
  *
  * @return zero(0) or negative error code.
  */
-int espressif_wifi_softap_get_ip_info(struct espressif_wifi_ip_info_t *info_p);
+int esp_wifi_softap_get_ip_info(struct esp_wifi_ip_info_t *info_p);
 
 /**
  * Get the number of stations connected to the SoftAP.
  *
  * @return Number of conencted stations.
  */
-int espressif_wifi_softap_get_number_of_connected_stations(void);
+int esp_wifi_softap_get_number_of_connected_stations(void);
 
 /**
  * Get the information of stations connected to the SoftAP, including
@@ -74,15 +74,15 @@ int espressif_wifi_softap_get_number_of_connected_stations(void);
  * @return Number of valid station information entries or negative
  *         error code.
  */
-int espressif_wifi_softap_get_station_info(struct espressif_wifi_softap_station_info_t *info_p,
-                                           int length);
+int esp_wifi_softap_get_station_info(struct esp_wifi_softap_station_info_t *info_p,
+                                     int length);
 
 /**
  * Enable the SoftAP DHCP server.
  *
  * @return zero(0) or negative error code.
  */
-int espressif_wifi_softap_dhcp_server_start(void);
+int esp_wifi_softap_dhcp_server_start(void);
 
 /**
  * Disable the SoftAP DHCP server. The DHCP server is enabled by
@@ -90,13 +90,13 @@ int espressif_wifi_softap_dhcp_server_start(void);
  *
  * @return zero(0) or negative error code.
  */
-int espressif_wifi_softap_dhcp_server_stop(void);
+int esp_wifi_softap_dhcp_server_stop(void);
 
 /**
  * Get the SoftAP DHCP server status.
  *
  * @return DHCP server status.
  */
-enum espressif_wifi_dhcp_status_t espressif_wifi_softap_dhcp_server_status(void);
+enum esp_wifi_dhcp_status_t esp_wifi_softap_dhcp_server_status(void);
 
 #endif

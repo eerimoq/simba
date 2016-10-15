@@ -17,7 +17,7 @@
 # This file is part of the Simba project.
 #
 
-NAME = espressif_wifi_softap
+NAME = esp_wifi_station
 BOARD ?= esp12e
 
 SIMBA_ROOT ?= ../../..

@@ -188,9 +188,9 @@ extern "C" {
 #    include "drivers/adc.h"
 #    include "drivers/analog_input_pin.h"
 #    include "drivers/flash.h"
-#    include "drivers/espressif_wifi.h"
-#    include "drivers/espressif_wifi/station.h"
-#    include "drivers/espressif_wifi/softap.h"
+#    include "drivers/esp_wifi.h"
+#    include "drivers/esp_wifi/station.h"
+#    include "drivers/esp_wifi/softap.h"
 #endif
 
 #if defined(FAMILY_STM32F1)

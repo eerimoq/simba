@@ -1,5 +1,5 @@
 /**
- * @file espressif_wifi/softap.c
+ * @file esp_wifi/softap.c
  *
  * @section License
  * Copyright (C) 2014-2016, Erik Moqvist
@@ -25,8 +25,8 @@
 
 static struct softap_config config;
 
-int espressif_wifi_softap_init(const char *ssid_p,
-                               const char *password_p)
+int esp_wifi_softap_init(const char *ssid_p,
+                         const char *password_p)
 {
     ASSERTN(ssid_p != NULL, -EINVAL);
 
@@ -52,12 +52,12 @@ int espressif_wifi_softap_init(const char *ssid_p,
     return (!wifi_softap_set_config_current(&config));
 }
 
-int espressif_wifi_softap_set_ip_info(struct espressif_wifi_ip_info_t *info_p)
+int esp_wifi_softap_set_ip_info(struct esp_wifi_ip_info_t *info_p)
 {
     return (-1);
 }
 
-int espressif_wifi_softap_get_ip_info(struct espressif_wifi_ip_info_t *info_p)
+int esp_wifi_softap_get_ip_info(struct esp_wifi_ip_info_t *info_p)
 {
     ASSERTN(info_p != NULL, -EINVAL);
 
@@ -74,13 +74,13 @@ int espressif_wifi_softap_get_ip_info(struct espressif_wifi_ip_info_t *info_p)
     return (0);
 }
 
-int espressif_wifi_softap_get_number_of_connected_stations()
+int esp_wifi_softap_get_number_of_connected_stations()
 {
     return (wifi_softap_get_station_num());
 }
 
-int espressif_wifi_softap_get_station_info(struct espressif_wifi_softap_station_info_t *info_p,
-                                           int length)
+int esp_wifi_softap_get_station_info(struct esp_wifi_softap_station_info_t *info_p,
+                                     int length)
 {
     int i;
     struct station_info *elem_p;
@@ -105,17 +105,17 @@ int espressif_wifi_softap_get_station_info(struct espressif_wifi_softap_station_
     return (i);
 }
 
-int espressif_wifi_softap_dhcp_server_start()
+int esp_wifi_softap_dhcp_server_start()
 {
     return (!wifi_softap_dhcps_start());
 }
 
-int espressif_wifi_softap_dhcp_server_stop()
+int esp_wifi_softap_dhcp_server_stop()
 {
     return (!wifi_softap_dhcps_stop());
 }
 
-enum espressif_wifi_dhcp_status_t espressif_wifi_softap_dhcp_server_status()
+enum esp_wifi_dhcp_status_t esp_wifi_softap_dhcp_server_status()
 {
     return (wifi_softap_dhcps_status());
 }

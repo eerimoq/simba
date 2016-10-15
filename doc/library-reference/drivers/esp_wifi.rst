@@ -1,7 +1,7 @@
-:mod:`espressif_wifi` --- Espressif WiFi
+:mod:`esp_wifi` --- Espressif WiFi
 =======================================
 
-.. module:: espressif_wifi
+.. module:: esp_wifi
    :synopsis: Espressif WiFi.
 
 This module is a wrapper for the Espressif WiFi interface.
@@ -12,25 +12,25 @@ will accept connections to the SSID `Simba`.
 
 .. code-block:: c
 
-   espressif_wifi_set_op_mode(espressif_wifi_op_mode_station_softap_t);
-   espressif_wifi_softap_init("Simba", NULL);
-   espressif_wifi_station_init("ssid", "password", NULL);
+   esp_wifi_set_op_mode(esp_wifi_op_mode_station_softap_t);
+   esp_wifi_softap_init("Simba", NULL);
+   esp_wifi_station_init("ssid", "password", NULL);
 
 Configure the WiFi as an Access Point. The application will accept
 connections to the SSID `Simba`.
 
 .. code-block:: c
 
-   espressif_wifi_set_op_mode(espressif_wifi_op_mode_softap_t);
-   espressif_wifi_softap_init("Simba", NULL);
+   esp_wifi_set_op_mode(esp_wifi_op_mode_softap_t);
+   esp_wifi_softap_init("Simba", NULL);
 
 Configure the WiFi as a Station. The application tries to connect to a
 Wifi with SSID `ssid`.
 
 .. code-block:: c
 
-   espressif_wifi_set_op_mode(espressif_wifi_op_mode_station_t);
-   espressif_wifi_station_init("ssid", "password", NULL);
+   esp_wifi_set_op_mode(esp_wifi_op_mode_station_t);
+   esp_wifi_station_init("ssid", "password", NULL);
 
 ----------------------------------------------
 
@@ -39,15 +39,15 @@ Submodules:
 .. toctree::
    :glob:
 
-   espressif_wifi/*
+   esp_wifi/*
 
 ----------------------------------------------
 
-Source code: :github-blob:`src/drivers/espressif_wifi.h`, :github-blob:`src/drivers/espressif_wifi.c`
+Source code: :github-blob:`src/drivers/esp_wifi.h`, :github-blob:`src/drivers/esp_wifi.c`
 
-Test code: :github-blob:`tst/drivers/espressif_wifi/main.c`
+Test code: :github-blob:`tst/drivers/esp_wifi/main.c`
 
 ----------------------------------------------
 
-.. doxygenfile:: drivers/espressif_wifi.h
+.. doxygenfile:: drivers/esp_wifi.h
    :project: simba

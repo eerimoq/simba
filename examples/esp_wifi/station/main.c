@@ -21,22 +21,23 @@
 
 int main()
 {
+    struct esp_wifi_ip_info_t info;
+
     sys_start();
 
-    /* Configure and start the the WiFi module as a Station and
-       SoftAP. */
-    espressif_wifi_set_op_mode(espressif_wifi_op_mode_station_softap_t);
+    /* Configure and start the WiFi module as a Station.*/
+    esp_wifi_set_op_mode(esp_wifi_op_mode_station_t);
 
-    if (espressif_wifi_softap_init("Simba", NULL) != 0) {
-        std_printf(FSTR("Failed to configure the Soft AP.\r\n"));
-    }
+    inet_aton("192.168.0.200", &info.address);
+    inet_aton("255.255.255.0", &info.netmask);
+    inet_aton("192.168.0.1", &info.gateway);
 
-    if (espressif_wifi_station_init("Qvist2", "maxierik", NULL) != 0) {
+    if (esp_wifi_station_init("Qvist2", "maxierik", &info) != 0) {
         std_printf(FSTR("Failed to configure the Station.\r\n"));
     }
 
     while (1) {
-        espressif_wifi_print();
+        esp_wifi_print();
         thrd_sleep(2);
     }
 

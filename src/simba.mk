@@ -109,9 +109,9 @@ endif
 ifeq ($(FAMILY),esp)
 DRIVERS_SRC ?= adc.c \
                analog_input_pin.c \
-               espressif_wifi.c \
-               espressif_wifi/station.c \
-               espressif_wifi/softap.c \
+               esp_wifi.c \
+               esp_wifi/station.c \
+               esp_wifi/softap.c \
                exti.c \
                flash.c \
                pin.c \

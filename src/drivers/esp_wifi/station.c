@@ -1,5 +1,5 @@
 /**
- * @file espressif_wifi/station.c
+ * @file esp_wifi/station.c
  *
  * @section License
  * Copyright (C) 2014-2016, Erik Moqvist
@@ -25,9 +25,9 @@
 
 static struct station_config config;
 
-int espressif_wifi_station_init(const char *ssid_p,
-                                const char *password_p,
-                                struct espressif_wifi_ip_info_t *info_p)
+int esp_wifi_station_init(const char *ssid_p,
+                          const char *password_p,
+                          struct esp_wifi_ip_info_t *info_p)
 {
     ASSERTN(ssid_p != NULL, -EINVAL);
 
@@ -46,25 +46,25 @@ int espressif_wifi_station_init(const char *ssid_p,
 
     /* Static or dynamic ip. */
     if (info_p != NULL) {
-        espressif_wifi_station_set_ip_info(info_p);
+        esp_wifi_station_set_ip_info(info_p);
     } else {
-        espressif_wifi_station_dhcp_client_start();
+        esp_wifi_station_dhcp_client_start();
     }
 
     return (!wifi_station_set_config_current(&config));
 }
 
-int espressif_wifi_station_connect(void)
+int esp_wifi_station_connect(void)
 {
     return (!wifi_station_connect());
 }
 
-int espressif_wifi_station_disconnect(void)
+int esp_wifi_station_disconnect(void)
 {
     return (!wifi_station_disconnect());
 }
 
-int espressif_wifi_station_set_ip_info(struct espressif_wifi_ip_info_t *info_p)
+int esp_wifi_station_set_ip_info(struct esp_wifi_ip_info_t *info_p)
 {
     ASSERTN(info_p != NULL, -EINVAL);
 
@@ -74,7 +74,7 @@ int espressif_wifi_station_set_ip_info(struct espressif_wifi_ip_info_t *info_p)
     info.netmask.addr = info_p->netmask.number;
     info.gw.addr = info_p->gateway.number;
 
-    espressif_wifi_station_dhcp_client_stop();
+    esp_wifi_station_dhcp_client_stop();
 
     if (wifi_set_ip_info(STATION_IF, &info) != 1) {
         return (-1);
@@ -83,7 +83,7 @@ int espressif_wifi_station_set_ip_info(struct espressif_wifi_ip_info_t *info_p)
     return (0);
 }
 
-int espressif_wifi_station_get_ip_info(struct espressif_wifi_ip_info_t *info_p)
+int esp_wifi_station_get_ip_info(struct esp_wifi_ip_info_t *info_p)
 {
     ASSERTN(info_p != NULL, -EINVAL);
 
@@ -100,32 +100,32 @@ int espressif_wifi_station_get_ip_info(struct espressif_wifi_ip_info_t *info_p)
     return (0);
 }
 
-int espressif_wifi_station_set_reconnect_policy(int policy)
+int esp_wifi_station_set_reconnect_policy(int policy)
 {
     return (!wifi_station_set_reconnect_policy(policy));
 }
 
-int espressif_wifi_station_get_reconnect_policy(void)
+int esp_wifi_station_get_reconnect_policy(void)
 {
     return (wifi_station_get_reconnect_policy());
 }
 
-enum espressif_wifi_station_status_t espressif_wifi_station_get_connect_status(void)
+enum esp_wifi_station_status_t esp_wifi_station_get_connect_status(void)
 {
     return (wifi_station_get_connect_status());
 }
 
-int espressif_wifi_station_dhcp_client_start(void)
+int esp_wifi_station_dhcp_client_start(void)
 {
     return (!wifi_station_dhcpc_start());
 }
 
-int espressif_wifi_station_dhcp_client_stop(void)
+int esp_wifi_station_dhcp_client_stop(void)
 {
     return (!wifi_station_dhcpc_stop());
 }
 
-enum espressif_wifi_dhcp_status_t espressif_wifi_station_dhcp_client_status(void)
+enum esp_wifi_dhcp_status_t esp_wifi_station_dhcp_client_status(void)
 {
     return (wifi_station_dhcpc_status());
 }

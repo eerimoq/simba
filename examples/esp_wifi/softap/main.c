@@ -24,14 +24,14 @@ int main()
     sys_start();
 
     /* Configure and start the WiFi module as a SoftAP. */
-    espressif_wifi_set_op_mode(espressif_wifi_op_mode_softap_t);
+    esp_wifi_set_op_mode(esp_wifi_op_mode_softap_t);
 
-    if (espressif_wifi_softap_init("Simba", NULL) != 0) {
+    if (esp_wifi_softap_init("Simba", NULL) != 0) {
         std_printf(FSTR("Failed to configure the Soft AP.\r\n"));
     }
 
     while (1) {
-        espressif_wifi_print();
+        esp_wifi_print();
         thrd_sleep(2);
     }
 

@@ -1,5 +1,5 @@
 /**
- * @file espressif_wifi.c
+ * @file esp_wifi.c
  *
  * @section License
  * Copyright (C) 2014-2016, Erik Moqvist
@@ -21,32 +21,32 @@
 
 #include "espressif/esp_wifi.h"
 
-int espressif_wifi_set_op_mode(enum espressif_wifi_op_mode_t mode)
+int esp_wifi_set_op_mode(enum esp_wifi_op_mode_t mode)
 {
     return (!wifi_set_opmode_current(mode));
 }
 
-enum espressif_wifi_op_mode_t espressif_wifi_get_op_mode()
+enum esp_wifi_op_mode_t esp_wifi_get_op_mode()
 {
     return (wifi_get_opmode());
 }
 
-int espressif_wifi_set_phy_mode(enum espressif_wifi_phy_mode_t mode)
+int esp_wifi_set_phy_mode(enum esp_wifi_phy_mode_t mode)
 {
     return (!wifi_set_phy_mode(mode));
 }
 
-enum espressif_wifi_phy_mode_t espressif_wifi_get_phy_mode()
+enum esp_wifi_phy_mode_t esp_wifi_get_phy_mode()
 {
     return (wifi_get_phy_mode());
 }
 
-void espressif_wifi_print(void)
+void esp_wifi_print(void)
 {
     int i;
     int number_of_infos;
-    struct espressif_wifi_softap_station_info_t info[4];
-    struct espressif_wifi_ip_info_t ip_info;
+    struct esp_wifi_softap_station_info_t info[4];
+    struct esp_wifi_ip_info_t ip_info;
     char buf[16];
     char *op_mode_p;
     char *phy_mode_p;
@@ -54,21 +54,21 @@ void espressif_wifi_print(void)
     char *dhcp_status_p;
 
     /* Get the operating mode. */
-    switch (espressif_wifi_get_op_mode()) {
+    switch (esp_wifi_get_op_mode()) {
 
-    case espressif_wifi_op_mode_null_t:
+    case esp_wifi_op_mode_null_t:
         op_mode_p = "NULL";
         break;
 
-    case espressif_wifi_op_mode_station_t:
+    case esp_wifi_op_mode_station_t:
         op_mode_p = "STA";
         break;
 
-    case espressif_wifi_op_mode_softap_t:
+    case esp_wifi_op_mode_softap_t:
         op_mode_p = "AP";
         break;
 
-    case espressif_wifi_op_mode_station_softap_t:
+    case esp_wifi_op_mode_station_softap_t:
         op_mode_p = "STA-AP";
         break;
 
@@ -78,17 +78,17 @@ void espressif_wifi_print(void)
     }
 
     /* Get the physical mode. */
-    switch (espressif_wifi_get_phy_mode()) {
+    switch (esp_wifi_get_phy_mode()) {
 
-    case espressif_wifi_phy_mode_11b_t:
+    case esp_wifi_phy_mode_11b_t:
         phy_mode_p = "b";
         break;
 
-    case espressif_wifi_phy_mode_11g_t:
+    case esp_wifi_phy_mode_11g_t:
         phy_mode_p = "g";
         break;
 
-    case espressif_wifi_phy_mode_11n_t:
+    case esp_wifi_phy_mode_11n_t:
         phy_mode_p = "n";
         break;
 
@@ -98,13 +98,13 @@ void espressif_wifi_print(void)
     }
 
     /* Get the DHCP server status. */
-    switch (espressif_wifi_softap_dhcp_server_status()) {
+    switch (esp_wifi_softap_dhcp_server_status()) {
 
-    case espressif_wifi_dhcp_status_running_t:
+    case esp_wifi_dhcp_status_running_t:
         dhcp_status_p = "running";
         break;
 
-    case espressif_wifi_dhcp_status_stopped_t:
+    case esp_wifi_dhcp_status_stopped_t:
         dhcp_status_p = "stopped";
         break;
 
@@ -120,9 +120,9 @@ void espressif_wifi_print(void)
                op_mode_p,
                phy_mode_p);
 
-    espressif_wifi_softap_get_ip_info(&ip_info);
-    number_of_infos = espressif_wifi_softap_get_station_info(info,
-                                                             membersof(info));
+    esp_wifi_softap_get_ip_info(&ip_info);
+    number_of_infos = esp_wifi_softap_get_station_info(info,
+                                                       membersof(info));
 
     std_printf(FSTR("SoftAP:\r\n"
                     "  DHCP server status: %s\r\n"
@@ -152,29 +152,29 @@ void espressif_wifi_print(void)
     }
 
     /* Get the station connection status. */
-    switch (espressif_wifi_station_get_connect_status()) {
+    switch (esp_wifi_station_get_connect_status()) {
 
-    case espressif_wifi_station_status_idle_t:
+    case esp_wifi_station_status_idle_t:
         connection_status_p = "idle";
         break;
 
-    case espressif_wifi_station_status_connecting_t:
+    case esp_wifi_station_status_connecting_t:
         connection_status_p = "connecting";
         break;
 
-    case espressif_wifi_station_status_wrong_password_t:
+    case esp_wifi_station_status_wrong_password_t:
         connection_status_p = "wrong-password";
         break;
 
-    case espressif_wifi_station_status_no_ap_found_t:
+    case esp_wifi_station_status_no_ap_found_t:
         connection_status_p = "no-ap";
         break;
 
-    case espressif_wifi_station_status_connect_fail_t:
+    case esp_wifi_station_status_connect_fail_t:
         connection_status_p = "connect-fail";
         break;
 
-    case espressif_wifi_station_status_got_ip_t:
+    case esp_wifi_station_status_got_ip_t:
         connection_status_p = "got-ip";
         break;
 
@@ -184,13 +184,13 @@ void espressif_wifi_print(void)
     }
 
     /* Get the DHCP client status. */
-    switch (espressif_wifi_station_dhcp_client_status()) {
+    switch (esp_wifi_station_dhcp_client_status()) {
 
-    case espressif_wifi_dhcp_status_running_t:
+    case esp_wifi_dhcp_status_running_t:
         dhcp_status_p = "running";
         break;
 
-    case espressif_wifi_dhcp_status_stopped_t:
+    case esp_wifi_dhcp_status_stopped_t:
         dhcp_status_p = "stopped";
         break;
 
@@ -199,7 +199,7 @@ void espressif_wifi_print(void)
         break;
     }
 
-    espressif_wifi_station_get_ip_info(&ip_info);
+    esp_wifi_station_get_ip_info(&ip_info);
 
     std_printf(FSTR("\r\n"
                     "Station:\r\n"
