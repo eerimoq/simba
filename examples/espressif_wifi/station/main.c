@@ -25,7 +25,7 @@ int main()
 
     sys_start();
 
-    /* Configure and start the Soft AP.*/
+    /* Configure and start the WiFi module as a Station.*/
     espressif_wifi_set_op_mode(espressif_wifi_op_mode_station_t);
 
     inet_aton("192.168.0.200", &info.address);

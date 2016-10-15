@@ -23,7 +23,7 @@ int main()
 {
     sys_start();
 
-    /* Configure and start the Soft AP.*/
+    /* Configure and start the WiFi module as a SoftAP. */
     espressif_wifi_set_op_mode(espressif_wifi_op_mode_softap_t);
 
     if (espressif_wifi_softap_init("Simba", NULL) != 0) {
