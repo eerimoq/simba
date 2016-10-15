@@ -31,7 +31,7 @@ struct espressif_wifi_softap_station_info_t {
 };
 
 /**
- * Get the current configuration of the WiFi SoftAP.
+ * Initialize the WiFi SoftAP interface.
  *
  * @param[in] ssid_p SSID of the SoftAP.
  * @param[in] password_p Password of SoftAP.
@@ -42,7 +42,7 @@ int espressif_wifi_softap_init(const char *ssid_p,
                                const char *password_p);
 
 /**
- * Set the ip address, netmask and gatwway of the WiFi SoftAP.
+ * Set the ip address, netmask and gateway of the WiFi SoftAP.
  *
  * @return zero(0) or negative error code.
  */
