@@ -188,6 +188,7 @@ ifeq ($(BOARD), esp12e)
 				    inet \
 				    mqtt_client \
 				    network_interface/wifi_station_espressif \
+				    network_interface/wifi_softap_espressif \
 				    ping)
     TESTS += $(addprefix tst/drivers/, pin)
     TESTS += $(addprefix tst/filesystems/, fs \

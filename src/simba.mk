@@ -185,7 +185,8 @@ INET_SRC_TMP ?= \
 	ping.c
 
 ifeq ($(ARCH), esp)
-INET_SRC_TMP += network_interface/wifi_station_espressif.c
+INET_SRC_TMP += network_interface/wifi_station_espressif.c \
+                network_interface/wifi_softap_espressif.c
 endif
 
 INET_SRC ?= $(INET_SRC_TMP)
