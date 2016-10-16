@@ -43,6 +43,49 @@
 static struct network_interface_wifi_t wifi_sta;
 static struct network_interface_wifi_t wifi_ap;
 static uint8_t buffer[5000];
+static struct event_t event;
+
+static THRD_STACK(udp_reader_stack, 2048);
+
+/**
+ * The UDP reader thread reads a packet and writes it back on the same
+ * socket.
+ */
+static void *udp_reader(void *arg_p)
+{
+    struct socket_t *socket_p;
+    struct inet_addr_t addr;
+    char buf[16];
+    ssize_t size;
+    char addrbuf[20];
+    uint32_t mask;
+
+    socket_p = arg_p;
+
+    std_printf(FSTR("reader recvfrom\r\n"));
+
+    size = socket_recvfrom(socket_p, buf, sizeof(buf), 0, &addr);
+    BTASSERTN(size == 9, NULL);
+    buf[size] = '\0';
+    std_printf(FSTR("reader received '%s' from %s:%d\r\n"),
+               buf,
+               inet_ntoa(&addr.ip, addrbuf),
+               addr.port);
+
+    std_printf(FSTR("reader sending '%s' to %s:%d\r\n"),
+               buf,
+               inet_ntoa(&addr.ip, addrbuf),
+               addr.port);
+    BTASSERTN(socket_sendto(socket_p, buf, size, 0, &addr) == size, NULL);
+
+    mask = 0x1;
+    event_write(&event, &mask, sizeof(mask));
+
+    thrd_suspend(NULL);
+
+    return (NULL);
+}
+
 
 static int test_init(struct harness_t *harness_p)
 {
@@ -92,7 +135,7 @@ static int test_init(struct harness_t *harness_p)
     BTASSERT(network_interface_get_by_name("esp-wlan-ap")
              == &wifi_ap.network_interface);
     BTASSERT(network_interface_get_by_name("none") == NULL);
-    
+
     return (0);
 }
 
@@ -105,6 +148,9 @@ static int test_udp(struct harness_t *harness_p)
     size_t size;
     struct chan_list_t list;
     int workspace[16];
+    uint32_t mask;
+
+    event_init(&event);
 
     BTASSERT(chan_list_init(&list, workspace, sizeof(workspace)) == 0);
 
@@ -130,13 +176,31 @@ static int test_udp(struct harness_t *harness_p)
                inet_ntoa(&addr.ip, addrbuf),
                addr.port);
 
+    /* Spawn a thread that read a packet and resumes this thread. This
+       tests that it's possible to send a UDP packet when another
+       thread is reading from the same socket. */
+    thrd_spawn(udp_reader,
+               &sock,
+               0,
+               udp_reader_stack,
+               sizeof(udp_reader_stack));
+
+    thrd_sleep(0.3);
+
     std_printf(FSTR("sending '%s' to %s:%d\r\n"),
                buf,
                inet_ntoa(&addr.ip, addrbuf),
                addr.port);
     BTASSERT(socket_sendto(&sock, buf, size, 0, &addr) == size);
 
+    mask = 0x1;
+    event_read(&event, &mask, sizeof(mask));
+
+    std_printf(FSTR("read event\r\n"));
+
     BTASSERT(chan_list_poll(&list, NULL) == &sock);
+
+    std_printf(FSTR("packet available\r\n"));
 
     size = socket_recvfrom(&sock, buf, sizeof(buf), 0, &addr);
     BTASSERT(size == 9);

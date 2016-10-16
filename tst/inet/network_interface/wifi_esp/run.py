@@ -46,16 +46,29 @@ def test_udp(server_ip_address,
 
     assert string == UDP_STRING
 
+    # Send to reader thread.
+    print("run.py: sending to reader '{}' to ('{}', {})".format(UDP_STRING[::-1],
+                                                                server_ip_address,
+                                                                UDP_PORT))
+    sock.sendto(UDP_STRING[::-1], (server_ip_address, UDP_PORT))
+
+    string, address = sock.recvfrom(1024)
+    print("run.py: received from reader '{}' from {}".format(string, address))
+
+    assert string == UDP_STRING[::-1]
+
+    time.sleep(0.5)
+
     # Polled receive.
-    print("run.py: sending '{}' to ('{}', {})".format(UDP_STRING[::-1],
+    print("run.py: sending '{}' to ('{}', {})".format(UDP_STRING,
                                                       server_ip_address,
                                                       UDP_PORT))
-    sock.sendto(UDP_STRING[::-1], (server_ip_address, UDP_PORT))
+    sock.sendto(UDP_STRING, (server_ip_address, UDP_PORT))
 
     string, address = sock.recvfrom(1024)
     print("run.py: received '{}' from {}".format(string, address))
 
-    assert string == UDP_STRING[::-1]
+    assert string == UDP_STRING
 
     print("run.py: closing socket")
     sock.close()

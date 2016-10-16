@@ -25,27 +25,36 @@
 struct socket_t {
     struct chan_t base;
     int type;
-    union {
+    struct {
+        union {
+            struct {
+                ssize_t left;
+            } common;
+            struct {
+                ssize_t left; /* Number of bytes left to read or -1 if the
+                                 connection is closed. */
+                struct pbuf *pbuf_p;
+                struct inet_addr_t remote_addr;
+                int closed;
+            } recvfrom;
+            struct {
+                ssize_t left;
+                struct tcp_pcb *pcb_p;
+            } accept;
+        } u;
         struct {
-            ssize_t left;
-        } common;
-        struct {
-            ssize_t left; /* Number of bytes left to read or -1 if the
-                             connection is closed. */
-            struct pbuf *pbuf_p;
-            struct inet_addr_t remote_addr;
-            int closed;
-        } recvfrom;
-        struct {
-            ssize_t left;
-            struct tcp_pcb *pcb_p;
-        } accept;
+            int state;
+            void *args_p;
+            struct thrd_t *thrd_p;
+        } cb;
     } input;
     struct {
-        int state;
-        void *args_p;
-        struct thrd_t *thrd_p;
-    } cb;
+        struct {
+            int state;
+            void *args_p;
+            struct thrd_t *thrd_p;
+        } cb;
+    } output;
     void *pcb_p;
 };
 
