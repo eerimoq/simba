@@ -17,7 +17,7 @@
 # This file is part of the Simba project.
 #
 
-NAME = wifi_station_esp_suite
+NAME = wifi_esp_suite
 
 ifneq ($(SSID),)
 CDEFS += SSID=$(SSID)

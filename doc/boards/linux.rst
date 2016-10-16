@@ -63,9 +63,9 @@ Below is the memory usage of two applications:
 +--------------------------+-----------+-----------+
 | Application              | Flash     | RAM       |
 +==========================+===========+===========+
-| minimal-configuration    |    303175 |    115736 |
+| minimal-configuration    |    304527 |    116608 |
 +--------------------------+-----------+-----------+
-| default-configuration    |    385671 |    205400 |
+| default-configuration    |    389519 |    206816 |
 +--------------------------+-----------+-----------+
 
 Default configuration
@@ -81,6 +81,8 @@ Default Standard Library configuration.
 |  CONFIG_DEBUG_                                         |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_FS_CMD_DS18B20_LIST_                           |  1                                                  |
++--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_FS_CMD_ESP_WIFI_STATUS_                        |  0                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_FS_CMD_FS_APPEND_                              |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
@@ -241,6 +243,8 @@ Mcu
 .. _CONFIG_DEBUG: ../user-guide/configuration.html#c.CONFIG_DEBUG
 
 .. _CONFIG_FS_CMD_DS18B20_LIST: ../user-guide/configuration.html#c.CONFIG_FS_CMD_DS18B20_LIST
+
+.. _CONFIG_FS_CMD_ESP_WIFI_STATUS: ../user-guide/configuration.html#c.CONFIG_FS_CMD_ESP_WIFI_STATUS
 
 .. _CONFIG_FS_CMD_FS_APPEND: ../user-guide/configuration.html#c.CONFIG_FS_CMD_FS_APPEND
 

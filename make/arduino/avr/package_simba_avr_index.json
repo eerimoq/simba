@@ -468,6 +468,37 @@
                             "version": "6.0.1-arduino5"
                         }
                     ]
+                },
+                {
+                    "name": "Simba",
+                    "architecture": "avr",
+                    "version": "10.0.0",
+                    "category": "Simba",
+                    "help": {
+                        "online": "https://simba-os.readthedocs.org"
+                    },
+                    "url": "https://sourceforge.net/projects/simba-arduino/files/avr/simba-arduino-avr-10.0.0.zip",
+	            "archiveFileName": "simba-arduino-avr-10.0.0.zip",
+	            "checksum": "SHA-256:e056fb948b1aa4e5305da33437065bff96b2b3ce00b6876988ad619d94a7695b",
+	            "size": "870419",
+                    "boards": [
+	                {"name" : "Arduino Mega 2560"},
+	                {"name" : "Arduino Nano"},
+	                {"name" : "Arduino Pro Micro"},
+	                {"name" : "Arduino Uno"}
+                    ],
+                    "toolsDependencies": [
+                        {
+                            "packager": "arduino",
+                            "name": "avr-gcc",
+                            "version": "4.9.2-atmel3.5.3-arduino2"
+                        },
+                        {
+                            "packager": "arduino",
+                            "name": "avrdude",
+                            "version": "6.0.1-arduino5"
+                        }
+                    ]
                 }
             ],
             "tools": [

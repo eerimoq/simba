@@ -33,7 +33,7 @@ Follow these steps to create a new release:
    sha256 sums of the zip-archives are calculated by ``make arduino``
    and written to ``simba-arduino/*.sha256``.
 
-6. Make sure that the blink exmaple works in the Arduino IDE.
+6. Make sure that the blink example works in the Arduino IDE.
 
 7. Commit the changes, and tag the commit with the new version.
 

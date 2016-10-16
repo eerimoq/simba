@@ -26,7 +26,7 @@ Supported drivers for this board.
 
 - :doc:`../library-reference/drivers/adc`
 - :doc:`../library-reference/drivers/analog_input_pin`
-- :doc:`../library-reference/drivers/espressif_wifi`
+- :doc:`../library-reference/drivers/esp_wifi`
 - :doc:`../library-reference/drivers/exti`
 - :doc:`../library-reference/drivers/flash`
 - :doc:`../library-reference/drivers/i2c_soft`
@@ -64,7 +64,7 @@ Below is the memory usage of two applications:
 +==========================+===========+===========+
 | minimal-configuration    |    265556 |     35344 |
 +--------------------------+-----------+-----------+
-| default-configuration    |    317912 |     57512 |
+| default-configuration    |    319636 |     58840 |
 +--------------------------+-----------+-----------+
 
 Default configuration
@@ -80,6 +80,8 @@ Default Standard Library configuration.
 |  CONFIG_DEBUG_                                         |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_FS_CMD_DS18B20_LIST_                           |  1                                                  |
++--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_FS_CMD_ESP_WIFI_STATUS_                        |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_FS_CMD_FS_APPEND_                              |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
@@ -240,6 +242,8 @@ Mcu
 .. _CONFIG_DEBUG: ../user-guide/configuration.html#c.CONFIG_DEBUG
 
 .. _CONFIG_FS_CMD_DS18B20_LIST: ../user-guide/configuration.html#c.CONFIG_FS_CMD_DS18B20_LIST
+
+.. _CONFIG_FS_CMD_ESP_WIFI_STATUS: ../user-guide/configuration.html#c.CONFIG_FS_CMD_ESP_WIFI_STATUS
 
 .. _CONFIG_FS_CMD_FS_APPEND: ../user-guide/configuration.html#c.CONFIG_FS_CMD_FS_APPEND
 

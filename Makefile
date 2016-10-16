@@ -187,7 +187,7 @@ ifeq ($(BOARD), esp12e)
 				    http_websocket_server \
 				    inet \
 				    mqtt_client \
-				    network_interface/wifi_station_esp \
+				    network_interface/wifi_esp \
 				    ping)
     TESTS += $(addprefix tst/drivers/, pin)
     TESTS += $(addprefix tst/filesystems/, fs \

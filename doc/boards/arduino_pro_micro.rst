@@ -88,6 +88,8 @@ Default Standard Library configuration.
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_FS_CMD_DS18B20_LIST_                           |  0                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_FS_CMD_ESP_WIFI_STATUS_                        |  0                                                  |
++--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_FS_CMD_FS_APPEND_                              |  0                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_FS_CMD_FS_COUNTERS_LIST_                       |  0                                                  |
@@ -247,6 +249,8 @@ Mcu
 .. _CONFIG_DEBUG: ../user-guide/configuration.html#c.CONFIG_DEBUG
 
 .. _CONFIG_FS_CMD_DS18B20_LIST: ../user-guide/configuration.html#c.CONFIG_FS_CMD_DS18B20_LIST
+
+.. _CONFIG_FS_CMD_ESP_WIFI_STATUS: ../user-guide/configuration.html#c.CONFIG_FS_CMD_ESP_WIFI_STATUS
 
 .. _CONFIG_FS_CMD_FS_APPEND: ../user-guide/configuration.html#c.CONFIG_FS_CMD_FS_APPEND
 
