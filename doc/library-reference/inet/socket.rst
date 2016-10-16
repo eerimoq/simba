@@ -7,6 +7,13 @@
 Sockets are used to communicate over IP networks. TCP and UDP are the
 most common transport protocols.
 
+No more than one thread may read from a socket at any given
+moment. The same applies when writing to a socket. The reader and
+writer may be different threads, though. The behaviour is undefined if
+more threads use the same socket simultaneously. The application will
+likely crash. Add a semaphore to protect the socket if more threads
+need access to a socket.
+
 Below is a TCP client example that connects to a server and sends
 data.
 
