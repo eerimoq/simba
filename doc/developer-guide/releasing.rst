@@ -35,11 +35,11 @@ Follow these steps to create a new release:
 
 6. Make sure that the blink exmaple works in the Arduino IDE.
 
-6. Commit the changes, and tag the commit with the new version.
+7. Commit the changes, and tag the commit with the new version.
 
-7. Push the new commit and tag.
+8. Push the new commit and tag.
 
-8. Copy the Simba Arduino releases to SourceForge.
+9. Copy the Simba Arduino releases to SourceForge.
 
    .. code:: text
 
@@ -50,7 +50,7 @@ Follow these steps to create a new release:
       scp make/arduino/sam/package_simba_sam_index.json <user>@frs.sourceforge.net:/home/frs/project/simba-arduino/sam
       scp make/arduino/esp/package_simba_esp_index.json <user>@frs.sourceforge.net:/home/frs/project/simba-arduino/esp
 
-9. Download the release zip-file from Github and calculate its SHA1
+10. Download the release zip-file from Github and calculate its SHA1
    checksum. Upload the zip-file to sourceforge and add the new
    releases to ``make/platformio/manifest.json``.
 
@@ -60,6 +60,6 @@ Follow these steps to create a new release:
       sha1sum <version>.zip
       scp <version>.zip <user>@frs.sourceforge.net:/home/frs/project/simba-platformio/
 
-10. Commit and push.
+11. Commit and push.
 
-11. Done.
+12. Done.
