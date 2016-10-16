@@ -227,10 +227,11 @@ extern "C" {
 #include "inet/mqtt_client.h"
 #include "inet/network_interface.h"
 #include "inet/network_interface/slip.h"
+#include "inet/network_interface/wifi.h"
 #include "inet/ping.h"
 
 #if defined(FAMILY_ESP)
-#    include "inet/network_interface/wifi_station_espressif.h"
+#    include "inet/network_interface/driver/esp.h"
 #endif
 
 #ifdef __cplusplus

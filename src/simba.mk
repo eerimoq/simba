@@ -173,7 +173,7 @@ endif
 # Inet package.
 INC += $(SIMBA_ROOT)/src/inet
 
-INET_SRC_TMP ?= \
+INET_SRC_TMP = \
 	http_server.c \
 	http_websocket_server.c \
 	http_websocket_client.c \
@@ -181,11 +181,12 @@ INET_SRC_TMP ?= \
 	mqtt_client.c \
 	network_interface.c \
 	network_interface/slip.c \
+	network_interface/wifi.c \
 	socket.c \
 	ping.c
 
-ifeq ($(ARCH), esp)
-INET_SRC_TMP += network_interface/wifi_station_espressif.c
+ifeq ($(FAMILY),esp)
+    INET_SRC_TMP += network_interface/driver/esp.c
 endif
 
 INET_SRC ?= $(INET_SRC_TMP)

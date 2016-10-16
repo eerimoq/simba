@@ -21,6 +21,46 @@
 
 #include "espressif/esp_wifi.h"
 
+struct module_t {
+    int initialized;
+#if CONFIG_FS_CMD_ESP_WIFI_STATUS == 1
+    struct fs_command_t cmd_status;
+#endif
+};
+
+struct module_t module;
+
+#if CONFIG_FS_CMD_ESP_WIFI_STATUS == 1
+
+static int cmd_status_cb(int argc,
+                         const char *argv[],
+                         void *out_p,
+                         void *in_p,
+                         void *arg_p,
+                         void *call_arg_p)
+{
+    esp_wifi_print(out_p);
+
+    return (0);
+}
+
+#endif
+
+int esp_wifi_module_init(void)
+{
+#if CONFIG_FS_CMD_ESP_WIFI_STATUS == 1
+
+    fs_command_init(&module.cmd_status,
+                    FSTR("/drivers/esp_wifi/status"),
+                    cmd_status_cb,
+                    NULL);
+    fs_command_register(&module.cmd_status);
+
+#endif
+
+    return (0);
+}
+
 int esp_wifi_set_op_mode(enum esp_wifi_op_mode_t mode)
 {
     return (!wifi_set_opmode_current(mode));
@@ -41,12 +81,14 @@ enum esp_wifi_phy_mode_t esp_wifi_get_phy_mode()
     return (wifi_get_phy_mode());
 }
 
-void esp_wifi_print(void)
+void esp_wifi_print(void *chout_p)
 {
+    ASSERTN(chout_p != NULL, -EINVAL);
+
     int i;
     int number_of_infos;
     struct esp_wifi_softap_station_info_t info[4];
-    struct esp_wifi_ip_info_t ip_info;
+    struct inet_if_ip_info_t ip_info;
     char buf[16];
     char *op_mode_p;
     char *phy_mode_p;
@@ -113,42 +155,47 @@ void esp_wifi_print(void)
         break;
     }
 
-    std_printf(FSTR("General information:\r\n"
-                    "  Operating mode: %s\r\n"
-                    "  Physical mode: 11%s\r\n"
-                    "\r\n"),
-               op_mode_p,
-               phy_mode_p);
+    std_fprintf(chout_p,
+                FSTR("General information:\r\n"
+                     "  Operating mode: %s\r\n"
+                     "  Physical mode: 11%s\r\n"
+                     "\r\n"),
+                op_mode_p,
+                phy_mode_p);
 
     esp_wifi_softap_get_ip_info(&ip_info);
     number_of_infos = esp_wifi_softap_get_station_info(info,
                                                        membersof(info));
 
-    std_printf(FSTR("SoftAP:\r\n"
-                    "  DHCP server status: %s\r\n"
-                    "  Address: %s\r\n"),
-               dhcp_status_p,
-               inet_ntoa(&ip_info.address, &buf[0]));
+    std_fprintf(chout_p,
+                FSTR("SoftAP:\r\n"
+                     "  DHCP server status: %s\r\n"
+                     "  Address: %s\r\n"),
+                dhcp_status_p,
+                inet_ntoa(&ip_info.address, &buf[0]));
 
-    std_printf(FSTR("  Netmask: %s\r\n"),
-               inet_ntoa(&ip_info.netmask, &buf[0]));
+    std_fprintf(chout_p,
+                FSTR("  Netmask: %s\r\n"),
+                inet_ntoa(&ip_info.netmask, &buf[0]));
 
-    std_printf(FSTR("  Gateway: %s\r\n"
-                    "  Number of connections: %d\r\n"),
-               inet_ntoa(&ip_info.gateway, &buf[0]),
-               number_of_infos);
+    std_fprintf(chout_p,
+                FSTR("  Gateway: %s\r\n"
+                     "  Number of connections: %d\r\n"),
+                inet_ntoa(&ip_info.gateway, &buf[0]),
+                number_of_infos);
 
     for (i = 0; i < number_of_infos; i++) {
-        std_printf(FSTR("    [%d]: BSSID: %02x:%02x:%02x:%02x:%02x:%02x,"
-                        " IP: %s\r\n"),
-                   i,
-                   (int)info[i].bssid[0],
-                   (int)info[i].bssid[1],
-                   (int)info[i].bssid[2],
-                   (int)info[i].bssid[3],
-                   (int)info[i].bssid[4],
-                   (int)info[i].bssid[5],
-                   inet_ntoa(&info[i].ip_address, &buf[0]));
+        std_fprintf(chout_p,
+                    FSTR("    [%d]: BSSID: %02x:%02x:%02x:%02x:%02x:%02x,"
+                         " IP: %s\r\n"),
+                    i,
+                    (int)info[i].bssid[0],
+                    (int)info[i].bssid[1],
+                    (int)info[i].bssid[2],
+                    (int)info[i].bssid[3],
+                    (int)info[i].bssid[4],
+                    (int)info[i].bssid[5],
+                    inet_ntoa(&info[i].ip_address, &buf[0]));
     }
 
     /* Get the station connection status. */
@@ -201,19 +248,22 @@ void esp_wifi_print(void)
 
     esp_wifi_station_get_ip_info(&ip_info);
 
-    std_printf(FSTR("\r\n"
-                    "Station:\r\n"
-                    "  DHCP client status: %s\r\n"
-                    "  Conenction status: %s\r\n"
-                    "  Address: %s\r\n"),
-               dhcp_status_p,
-               connection_status_p,
-               inet_ntoa(&ip_info.address, &buf[0]));
+    std_fprintf(chout_p,
+                FSTR("\r\n"
+                     "Station:\r\n"
+                     "  DHCP client status: %s\r\n"
+                     "  Conenction status: %s\r\n"
+                     "  Address: %s\r\n"),
+                dhcp_status_p,
+                connection_status_p,
+                inet_ntoa(&ip_info.address, &buf[0]));
 
-    std_printf(FSTR("  Netmask: %s\r\n"),
-               inet_ntoa(&ip_info.netmask, &buf[0]));
+    std_fprintf(chout_p,
+                FSTR("  Netmask: %s\r\n"),
+                inet_ntoa(&ip_info.netmask, &buf[0]));
 
-    std_printf(FSTR("  Gateway: %s\r\n"
-                    "\r\n"),
-               inet_ntoa(&ip_info.gateway, &buf[0]));
+    std_fprintf(chout_p,
+                FSTR("  Gateway: %s\r\n"
+                     "\r\n"),
+                inet_ntoa(&ip_info.gateway, &buf[0]));
 }

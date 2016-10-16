@@ -1,5 +1,5 @@
 /**
- * @file main.c
+ * @file inet/network_interface/drivers/esp.h
  *
  * @section License
  * Copyright (C) 2016, Erik Moqvist
@@ -11,29 +11,18 @@
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * MERSOCKTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
  *
  * This file is part of the Simba project.
  */
 
+#ifndef __INET_NETWORK_INTERFACE_DRIVER_ESP_H__
+#define __INET_NETWORK_INTERFACE_DRIVER_ESP_H__
+
 #include "simba.h"
 
-int main()
-{
-    sys_start();
+extern struct network_interface_wifi_driver_t network_interface_wifi_driver_esp_station;
+extern struct network_interface_wifi_driver_t network_interface_wifi_driver_esp_softap;
 
-    /* Configure and start the WiFi module as a SoftAP. */
-    esp_wifi_set_op_mode(esp_wifi_op_mode_softap_t);
-
-    if (esp_wifi_softap_init("Simba", NULL) != 0) {
-        std_printf(FSTR("Failed to configure the Soft AP.\r\n"));
-    }
-
-    while (1) {
-        esp_wifi_print(sys_get_stdout());
-        thrd_sleep(2);
-    }
-
-    return (0);
-}
+#endif

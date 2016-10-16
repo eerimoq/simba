@@ -35,6 +35,15 @@ struct inet_addr_t {
 };
 
 /**
+ * Interface IP information.
+ */
+struct inet_if_ip_info_t {
+    struct inet_ip_addr_t address;
+    struct inet_ip_addr_t netmask;
+    struct inet_ip_addr_t gateway;
+};
+
+/**
  * Initialize the inet module. This function must be called before
  * calling any other function in this module.
  *

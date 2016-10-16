@@ -19,19 +19,20 @@
 
 #if defined(ARCH_ESP)
 
-static struct network_interface_wifi_station_espressif_t wifi;
+static struct network_interface_wifi_t wifi;
 
 /**
  * Start the ip stack.
  */
 static int start_network(void)
 {
-    struct inet_ip_addr_t addr;
+    struct inet_if_ip_info_t info;
     char buf[20];
     const char ssid[] = STRINGIFY(CONFIG_START_NETWORK_INTERFACE_WIFI_SSID);
     const char password[] = STRINGIFY(CONFIG_START_NETWORK_INTERFACE_WIFI_PASSWORD);
     int i;
 
+    esp_wifi_module_init();
     inet_module_init();
     socket_module_init();
     network_interface_module_init();
@@ -41,10 +42,12 @@ static int start_network(void)
 
     /* Initialize WiFi in station mode with given SSID and
        password. */
-    network_interface_wifi_station_espressif_module_init();
-    network_interface_wifi_station_espressif_init(&wifi,
-                                                  (uint8_t *)&ssid[0],
-                                                  (uint8_t *)&password[0]);
+    network_interface_wifi_init(&wifi,
+                                "esp-wlan-sta",
+                                &network_interface_wifi_driver_esp_station,
+                                NULL,
+                                &ssid[0],
+                                &password[0]);
     network_interface_add(&wifi.network_interface);
 
     /* Start WiFi and connect to the Access Point with given SSID and
@@ -57,7 +60,8 @@ static int start_network(void)
             break;
         }
 
-        std_printf(FSTR("Waiting for a connection to WiFi with SSID '%s'.\r\n"), ssid);
+        std_printf(FSTR("Waiting for a connection to WiFi with SSID '%s'.\r\n"),
+                   ssid);
         thrd_sleep(1);
     }
 
@@ -69,7 +73,7 @@ static int start_network(void)
     }
 
     /* Get the IP address of the interface*/
-    if (network_interface_get_ip_address(&wifi.network_interface, &addr) != 0) {
+    if (network_interface_get_ip_info(&wifi.network_interface, &info) != 0) {
         std_printf(FSTR("No IP address for WiFi with SSID '%s'.\r\n"), ssid);
 
         return (-1);
@@ -77,7 +81,7 @@ static int start_network(void)
 
     std_printf(FSTR("Connected to WiFi with SSID '%s'. Got IP address '%s'.\r\n"),
                ssid,
-               inet_ntoa(&addr, buf));
+               inet_ntoa(&info.address, buf));
 
     return (0);
 }

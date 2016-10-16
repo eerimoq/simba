@@ -76,6 +76,19 @@
 #endif
 
 /**
+ * Debug file system command to print the Espressif WiFi status.
+ */
+#ifndef CONFIG_FS_CMD_ESP_WIFI_STATUS
+#    if defined(CONFIG_MINIMAL_SYSTEM)
+#        define CONFIG_FS_CMD_ESP_WIFI_STATUS               0
+#    elif defined(BOARD_ESP12E) || defined(BOARD_ESP01)
+#        define CONFIG_FS_CMD_ESP_WIFI_STATUS               1
+#    else
+#        define CONFIG_FS_CMD_ESP_WIFI_STATUS               0
+#    endif
+#endif
+
+/**
  * Debug file system command to append to a file.
  */
 #ifndef CONFIG_FS_CMD_FS_APPEND

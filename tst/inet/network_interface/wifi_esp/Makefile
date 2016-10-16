@@ -17,7 +17,7 @@
 # This file is part of the Simba project.
 #
 
-NAME = wifi_station_espressif_suite
+NAME = wifi_station_esp_suite
 
 ifneq ($(SSID),)
 CDEFS += SSID=$(SSID)
@@ -34,7 +34,9 @@ endif
 RUN_PY = run.py
 
 CDEFS += CONFIG_MINIMAL_SYSTEM=1 \
-	CONFIG_FS_CMD_FS_COUNTERS_LIST=1
+	CONFIG_FS_CMD_FS_COUNTERS_LIST=1 \
+	CONFIG_FS_CMD_NETWORK_INTERFACE_LIST=1 \
+	CONFIG_FS_CMD_ESP_WIFI_STATUS=1
 
 SIMBA_ROOT ?= ../../../..
 include $(SIMBA_ROOT)/make/app.mk

@@ -43,21 +43,23 @@ enum esp_wifi_phy_mode_t {
 };
 
 /**
- * Interface IP information.
- */
-struct esp_wifi_ip_info_t {
-    struct inet_ip_addr_t address;
-    struct inet_ip_addr_t netmask;
-    struct inet_ip_addr_t gateway;
-};
-
-/**
  * DHCP status.
  */
 enum esp_wifi_dhcp_status_t {
     esp_wifi_dhcp_status_stopped_t = 0,
     esp_wifi_dhcp_status_running_t
 };
+
+/**
+ * Initialize the Espressif WiFi module. This function must be called
+ * before calling any other function in this module.
+ *
+ * The module will only be initialized once even if this function is
+ * called multiple times.
+ *
+ * @return zero(0) or negative error code.
+ */
+int esp_wifi_module_init(void);
 
 /**
   * Set the WiFi operating mode to Station, SoftAP or Station +
@@ -97,6 +99,6 @@ enum esp_wifi_phy_mode_t esp_wifi_get_phy_mode(void);
 /**
   * Print information about the WiFi.
   */
-void esp_wifi_print(void);
+void esp_wifi_print(void *chout_p);
 
 #endif

@@ -44,8 +44,8 @@ enum esp_wifi_station_status_t {
  * @return zero(0) or negative error code.
  */
 int esp_wifi_station_init(const char *ssid_p,
-                                const char *password_p,
-                                struct esp_wifi_ip_info_t *info_p);
+                          const char *password_p,
+                          struct inet_if_ip_info_t *info_p);
 
 /**
  * Connect the WiFi station to the Access Point (AP).
@@ -66,14 +66,14 @@ int esp_wifi_station_disconnect(void);
  *
  * @return zero(0) or negative error code.
  */
-int esp_wifi_station_set_ip_info(struct esp_wifi_ip_info_t *info_p);
+int esp_wifi_station_set_ip_info(const struct inet_if_ip_info_t *info_p);
 
 /**
  * Get the station ip address, netmask and gateway.
  *
  * @return zero(0) or negative error code.
  */
-int esp_wifi_station_get_ip_info(struct esp_wifi_ip_info_t *info_p);
+int esp_wifi_station_get_ip_info(struct inet_if_ip_info_t *info_p);
 
 /**
  * Set whether the station will reconnect to the AP after

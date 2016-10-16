@@ -181,9 +181,9 @@ int network_interface_slip_init(struct network_interface_slip_t *self_p,
     self_p->frame.buf_p = self_p->frame.pbuf_p->payload;
     self_p->frame.size = 0;
 
-    self_p->network_interface.ipaddr = *ipaddr_p;
-    self_p->network_interface.netmask = *netmask_p;
-    self_p->network_interface.gw = *gateway_p;
+    self_p->network_interface.info.address = *ipaddr_p;
+    self_p->network_interface.info.netmask = *netmask_p;
+    self_p->network_interface.info.gateway = *gateway_p;
     self_p->network_interface.init = init;
 
     self_p->network_interface.netif.name[0] = 's';

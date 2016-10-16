@@ -30,20 +30,21 @@ struct network_interface_t;
 typedef int (*network_interface_start_t)(struct network_interface_t *netif_p);
 typedef int (*network_interface_stop_t)(struct network_interface_t *netif_p);
 typedef int (*network_interface_is_up_t)(struct network_interface_t *netif_p);
-typedef int (*network_interface_get_ip_address_t)(struct network_interface_t *netif_p,
-                                                  struct inet_ip_addr_t *addr_p);
+typedef int (*network_interface_set_ip_info_t)(struct network_interface_t *netif_p,
+                                               const struct inet_if_ip_info_t *info_p);
+typedef int (*network_interface_get_ip_info_t)(struct network_interface_t *netif_p,
+                                               struct inet_if_ip_info_t *info_p);
 
 struct network_interface_t {
     struct netif netif;
     const char *name_p;
-    struct inet_ip_addr_t ipaddr;
-    struct inet_ip_addr_t netmask;
-    struct inet_ip_addr_t gw;
+    struct inet_if_ip_info_t info;
     netif_init_fn init;
     network_interface_start_t start;
     network_interface_stop_t stop;
     network_interface_is_up_t is_up;
-    network_interface_get_ip_address_t get_ip_address;
+    network_interface_set_ip_info_t set_ip_info;
+    network_interface_get_ip_info_t get_ip_info;
     struct network_interface_t *next_p;
 };
 
@@ -105,8 +106,8 @@ struct network_interface_t *network_interface_get_by_name(const char *name_p);
  *
  * @return zero(0) or negative error code.
  */
-int network_interface_set_ip_address(struct network_interface_t *netif_p,
-                                     struct inet_ip_addr_t *addr_p);
+int network_interface_set_ip_info(struct network_interface_t *netif_p,
+                                  const struct inet_if_ip_info_t *info_p);
 
 /**
  * Get the ip address of given network interface.
@@ -115,7 +116,7 @@ int network_interface_set_ip_address(struct network_interface_t *netif_p,
  *
  * @return zero(0) or negative error code.
  */
-int network_interface_get_ip_address(struct network_interface_t *netif_p,
-                                     struct inet_ip_addr_t *addr_p);
+int network_interface_get_ip_info(struct network_interface_t *netif_p,
+                                  struct inet_if_ip_info_t *info_p);
 
 #endif

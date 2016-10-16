@@ -52,12 +52,12 @@ int esp_wifi_softap_init(const char *ssid_p,
     return (!wifi_softap_set_config_current(&config));
 }
 
-int esp_wifi_softap_set_ip_info(struct esp_wifi_ip_info_t *info_p)
+int esp_wifi_softap_set_ip_info(const struct inet_if_ip_info_t *info_p)
 {
     return (-1);
 }
 
-int esp_wifi_softap_get_ip_info(struct esp_wifi_ip_info_t *info_p)
+int esp_wifi_softap_get_ip_info(struct inet_if_ip_info_t *info_p)
 {
     ASSERTN(info_p != NULL, -EINVAL);
 

@@ -21,7 +21,7 @@
 
 int main()
 {
-    struct esp_wifi_ip_info_t info;
+    struct inet_if_ip_info_t info;
 
     sys_start();
 
@@ -37,7 +37,7 @@ int main()
     }
 
     while (1) {
-        esp_wifi_print();
+        esp_wifi_print(sys_get_stdout());
         thrd_sleep(2);
     }
 

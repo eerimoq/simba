@@ -46,7 +46,7 @@ int esp_wifi_softap_init(const char *ssid_p,
  *
  * @return zero(0) or negative error code.
  */
-int esp_wifi_softap_set_ip_info(struct esp_wifi_ip_info_t *info_p);
+int esp_wifi_softap_set_ip_info(const struct inet_if_ip_info_t *info_p);
 
 /**
  * Get the SoftAP ip address, netmask and gateway.
@@ -55,7 +55,7 @@ int esp_wifi_softap_set_ip_info(struct esp_wifi_ip_info_t *info_p);
  *
  * @return zero(0) or negative error code.
  */
-int esp_wifi_softap_get_ip_info(struct esp_wifi_ip_info_t *info_p);
+int esp_wifi_softap_get_ip_info(struct inet_if_ip_info_t *info_p);
 
 /**
  * Get the number of stations connected to the SoftAP.

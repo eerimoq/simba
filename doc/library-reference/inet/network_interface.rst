@@ -33,7 +33,8 @@ Example output from the shell:
 
    $ inet/network_interface/list
    NAME            STATE  ADDRESS            TX BYTES    RX BYTES
-   esp-wlan        up     192.168.0.5               -           -
+   esp-wlan-ap     up     192.168.4.1               -           -
+   esp-wlan-sta    up     192.168.0.5               -           -
 
 ----------------------------------------------
 

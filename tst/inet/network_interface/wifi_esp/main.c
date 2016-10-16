@@ -40,46 +40,59 @@
 #define TCP_PORT_WRITE_CLOSE   40405
 #define TCP_PORT_SIZES         40406
 
-static struct network_interface_wifi_station_espressif_t wifi;
+static struct network_interface_wifi_t wifi_sta;
+static struct network_interface_wifi_t wifi_ap;
 static uint8_t buffer[5000];
 
 static int test_init(struct harness_t *harness_p)
 {
-    struct inet_ip_addr_t addr;
+    struct inet_if_ip_info_t info;
     char buf[20];
 
-    network_interface_module_init();
-    socket_module_init();
+    BTASSERT(esp_wifi_module_init() == 0);
+    BTASSERT(network_interface_module_init() == 0);
+    BTASSERT(socket_module_init() == 0);
+
+    /* Initialize a WiFi in station mode with given SSID and
+       password. */
+    BTASSERT(network_interface_wifi_init(&wifi_sta,
+                                         "esp-wlan-sta",
+                                         &network_interface_wifi_driver_esp_station,
+                                         NULL,
+                                         STRINGIFY(SSID),
+                                         STRINGIFY(PASSWORD)) == 0);
+    BTASSERT(network_interface_add(&wifi_sta.network_interface) == 0);
+    BTASSERT(network_interface_start(&wifi_sta.network_interface) == 0);
+
+    /* Setup a SoftAP as well. */
+    BTASSERT(network_interface_wifi_init(&wifi_ap,
+                                         "esp-wlan-ap",
+                                         &network_interface_wifi_driver_esp_softap,
+                                         NULL,
+                                         "Simba",
+                                         "password") == 0);
+    BTASSERT(network_interface_add(&wifi_ap.network_interface) == 0);
+    BTASSERT(network_interface_start(&wifi_ap.network_interface) == 0);
 
     std_printf(FSTR("Connecting to SSID=%s\r\n"), STRINGIFY(SSID));
 
-    /* Initialize WiFi in station mode with given SSID and
-       password. */
-    network_interface_wifi_station_espressif_module_init();
-    network_interface_wifi_station_espressif_init(&wifi,
-                                                  (uint8_t *)STRINGIFY(SSID),
-                                                  (uint8_t *)STRINGIFY(PASSWORD));
-
-    network_interface_add(&wifi.network_interface);
-
-    /* Start WiFi and connect to the Access Point with given SSID and
-       password. */
-    network_interface_start(&wifi.network_interface);
-
     /* Wait for a connection to the WiFi access point. */
-    while (network_interface_is_up(&wifi.network_interface) == 0) {
+    while (network_interface_is_up(&wifi_sta.network_interface) == 0) {
         thrd_sleep(1);
     }
 
-    network_interface_get_ip_address(&wifi.network_interface,
-                                     &addr);
+    BTASSERT(network_interface_get_ip_info(&wifi_sta.network_interface,
+                                           &info) == 0);
 
     std_printf(FSTR("Connected to Access Point (AP). Got IP %s.\r\n"),
-               inet_ntoa(&addr, buf));
+               inet_ntoa(&info.address, buf));
 
-    BTASSERT(network_interface_get_by_name("esp-wlan") == &wifi.network_interface);
+    BTASSERT(network_interface_get_by_name("esp-wlan-sta")
+             == &wifi_sta.network_interface);
+    BTASSERT(network_interface_get_by_name("esp-wlan-ap")
+             == &wifi_ap.network_interface);
     BTASSERT(network_interface_get_by_name("none") == NULL);
-
+    
     return (0);
 }
 
@@ -323,11 +336,17 @@ static int test_tcp_sizes(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_print_counters(struct harness_t *harness_p)
+static int test_print(struct harness_t *harness_p)
 {
     char command[64];
 
     strcpy(command, "filesystems/fs/counters/list");
+    BTASSERT(fs_call(command, NULL, sys_get_stdout(), NULL) == 0);
+
+    strcpy(command, "drivers/esp_wifi/status");
+    BTASSERT(fs_call(command, NULL, sys_get_stdout(), NULL) == 0);
+
+    strcpy(command, "inet/network_interface/list");
     BTASSERT(fs_call(command, NULL, sys_get_stdout(), NULL) == 0);
 
     return (0);
@@ -342,7 +361,7 @@ int main()
         { test_tcp, "test_tcp" },
         { test_tcp_write_close, "test_tcp_write_close" },
         { test_tcp_sizes, "test_tcp_sizes" },
-        { test_print_counters, "test_print_counters" },
+        { test_print, "test_print" },
         { NULL, NULL }
     };
 

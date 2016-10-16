@@ -36,7 +36,7 @@ int main()
     }
 
     while (1) {
-        esp_wifi_print();
+        esp_wifi_print(sys_get_stdout());
         thrd_sleep(2);
     }
 
