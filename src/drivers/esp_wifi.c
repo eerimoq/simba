@@ -48,6 +48,13 @@ static int cmd_status_cb(int argc,
 
 int esp_wifi_module_init(void)
 {
+    /* Return immediately if the module is already initialized. */
+    if (module.initialized == 1) {
+        return (0);
+    }
+
+    module.initialized = 1;
+
 #if CONFIG_FS_CMD_ESP_WIFI_STATUS == 1
 
     fs_command_init(&module.cmd_status,
