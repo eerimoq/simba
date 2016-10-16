@@ -23,7 +23,8 @@
 #include "simba.h"
 
 /**
- * Driver virtualization callbacks.
+ * Driver virtualization callbacks. See the driver/ subfolder for
+ * available drivers.
  */
 struct network_interface_wifi_driver_t {
     int (*init)(void *arg_p,
@@ -56,6 +57,10 @@ int network_interface_wifi_module_init(void);
 /**
  * Initialize given WiFi network interface with given configuration.
  *
+ * @param[in] self_p The WiFi network interface to initialize.
+ * @param[in] name_p Name to assign the to interface.
+ * @param[in] driver_p Driver virtualization callbacks to use.
+ * @param[in] arg_p Argument passed to the driver callbacks.
  * @param[in] ssid_p Access Point SSID.
  * @param[in] password_p Access Point password.
  *
@@ -71,12 +76,16 @@ int network_interface_wifi_init(struct network_interface_wifi_t *self_p,
 /**
  * Start given WiFi network interface.
  *
+ * @param[in] self_p WiFi network interface to start.
+ *
  * @return zero(0) or negative error code.
  */
 int network_interface_wifi_start(struct network_interface_wifi_t *self_p);
 
 /**
  * Stop given WiFi network interface.
+ *
+ * @param[in] self_p WiFi network interface to stop.
  *
  * @return zero(0) or negative error code.
  */

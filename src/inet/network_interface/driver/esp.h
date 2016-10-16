@@ -22,7 +22,16 @@
 
 #include "simba.h"
 
+/**
+ * Esressif WiFi Station driver callbacks. To be used as driver in the
+ * wifi network interface.
+ */
 extern struct network_interface_wifi_driver_t network_interface_wifi_driver_esp_station;
+
+/**
+ * Esressif WiFi SoftAP driver callbacks. To be used as driver in the
+ * wifi network interface.
+ */
 extern struct network_interface_wifi_driver_t network_interface_wifi_driver_esp_softap;
 
 #endif
