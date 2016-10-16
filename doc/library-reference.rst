@@ -10,7 +10,7 @@ Besides the generated documentation, the source code of the interfaces
 and their implementatins are available on :github-tree:`Github <src>`.
 
 .. toctree::
-   :maxdepth: 3
+   :maxdepth: 4
    :numbered:
    :titlesonly:
 
