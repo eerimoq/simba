@@ -193,6 +193,10 @@ extern "C" {
 #    include "drivers/esp_wifi/softap.h"
 #endif
 
+#if defined(FAMILY_ESP32)
+#    include "drivers/uart.h"
+#endif
+
 #if defined(FAMILY_STM32F1)
 #    include "drivers/pin.h"
 #    include "drivers/i2c_soft.h"

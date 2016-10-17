@@ -1,0 +1,3 @@
+[submodule "3pp/esp-idf"]
+	path = 3pp/esp-idf
+	url = https://github.com/eerimoq/esp-idf
