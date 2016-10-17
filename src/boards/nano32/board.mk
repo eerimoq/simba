@@ -25,7 +25,7 @@ ESP_FLASH_SIZE = 4M
 
 BOARD_HOMEPAGE = ""
 BOARD_PINOUT = "nano32-pinout.jpg"
-BOARD_DESC = "nano32"
+BOARD_DESC = "NANO32"
 
 MCU = esp32
 SERIAL_PORT ?= /dev/arduino

@@ -57,11 +57,4 @@ ESPTOOL = $(SIMBA_ROOT)/3pp/esptool/esptool
 
 SRC += $(SIMBA_ROOT)/3pp/libc/string0.c
 
-build: $(BIN)
-$(BIN): $(EXE)
-	$(ESPTOOL) -eo $(EBOOT_ELF) -bo $@ -bm dio -bf 40 -bz \
-		$(ESP_FLASH_SIZE) -bs .text -bp 4096 -ec \
-		-eo $^ -bs .irom0.text -bs .text -bs .data -bs \
-		.rodata -bc -ec
-
 include $(SIMBA_ROOT)/make/gnu.mk

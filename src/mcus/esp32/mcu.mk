@@ -61,12 +61,12 @@ MCU_HOMEPAGE = "http://www.espressif.com"
 MCU_NAME = "Espressif ESP32"
 MCU_DESC = "Espressif ESP32 @ 80 MHz, 82 kB dram, 4 MB flash"
 
-SIZE_SUMMARY_CMD ?= $(SIMBA_ROOT)/bin/memory_usage.py \
-			--ram-section .data \
-			--ram-section .rodata \
-			--ram-section .bss \
-			--rom-section .text \
-			--rom-section .irom0.text \
-			${EXE}
+#SIZE_SUMMARY_CMD ?= $(SIMBA_ROOT)/bin/memory_usage.py \
+#			--ram-section .data \
+#			--ram-section .rodata \
+#			--ram-section .bss \
+#			--rom-section .text \
+#			--rom-section .irom0.text \
+#			${EXE}
 
 include $(SIMBA_ROOT)/make/$(TOOLCHAIN)/esp32.mk
