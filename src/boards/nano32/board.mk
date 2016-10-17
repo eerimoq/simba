@@ -23,7 +23,7 @@ SRC += $(SIMBA_ROOT)/src/boards/nano32/board.c
 LINKER_SCRIPT ?= simba.flash.ld
 ESP_FLASH_SIZE = 4M
 
-BOARD_HOMEPAGE = ""
+BOARD_HOMEPAGE = "http://esp32.de"
 BOARD_PINOUT = "nano32-pinout.jpg"
 BOARD_DESC = "NANO32"
 
