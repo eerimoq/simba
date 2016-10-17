@@ -1,5 +1,5 @@
 /**
- * @file boards/esp32_dev/board.h
+ * @file boards/nano32/board.h
  *
  * @section License
  * Copyright (C) 2014-2016, Erik Moqvist

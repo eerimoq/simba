@@ -1,5 +1,5 @@
 #
-# @file src/boards/esp32_dev/board.mk
+# @file src/boards/nano32/board.mk
 #
 # @section License
 # Copyright (C) 2014-2016, Erik Moqvist
@@ -17,20 +17,20 @@
 # This file is part of the Simba project.
 #
 
-INC += $(SIMBA_ROOT)/src/boards/esp32_dev
-SRC += $(SIMBA_ROOT)/src/boards/esp32_dev/board.c
+INC += $(SIMBA_ROOT)/src/boards/nano32
+SRC += $(SIMBA_ROOT)/src/boards/nano32/board.c
 
 LINKER_SCRIPT ?= simba.flash.ld
 ESP_FLASH_SIZE = 4M
 
-BOARD_HOMEPAGE = "http://espressif.com"
-BOARD_PINOUT = "esp32_dev-pinout.jpg"
-BOARD_DESC = "ESP-12E Development Board"
+BOARD_HOMEPAGE = ""
+BOARD_PINOUT = "nano32-pinout.jpg"
+BOARD_DESC = "nano32"
 
 MCU = esp32
 SERIAL_PORT ?= /dev/arduino
-BOARD_PY = $(SIMBA_ROOT)/src/boards/esp32_dev/board.py
-RUN_PY ?= $(SIMBA_ROOT)/src/boards/esp32_dev/run.py
+BOARD_PY = $(SIMBA_ROOT)/src/boards/nano32/board.py
+RUN_PY ?= $(SIMBA_ROOT)/src/boards/nano32/run.py
 CONSOLE_RESET_TYPE ?= 0
 TIMEOUT ?= 10
 
