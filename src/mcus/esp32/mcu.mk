@@ -17,7 +17,8 @@
 # This file is part of the Simba project.
 #
 
-ESP_IDF_ROOT ?= $(SIMBA_ROOT)/3pp/esp-idf
+ESP32_ROOT ?= $(SIMBA_ROOT)/3pp/esp32
+ESP_IDF_ROOT ?= $(ESP32_ROOT)/esp-idf
 
 INC += $(SIMBA_ROOT)/src/mcus/esp32 \
        $(ESP_IDF_ROOT)/components/esp32/include \
@@ -28,7 +29,9 @@ SRC += $(SIMBA_ROOT)/src/mcus/esp32/mcu.c \
 
 LIBPATH += "$(SIMBA_ROOT)/src/mcus/esp32/ld" \
 	$(ESP_IDF_ROOT)/components/esp32/ld \
-	$(ESP_IDF_ROOT)/components/esp32
+	$(ESP_IDF_ROOT)/components/esp32 \
+	$(ESP_IDF_ROOT)/components/newlib/lib \
+	$(ESP32_ROOT)/lib
 
 LDFLAGS += -Wl,--start-group \
             $(ESPLIBS:%=-l%) \
@@ -40,11 +43,31 @@ LDFLAGS_AFTER += \
 
 ESPLIBS += \
  hal \
+ g \
+ c_rom \
+ m \
+ core \
+ crypto \
+ net80211 \
  phy \
  pp \
- net80211 \
+ rtc \
+ smartconfig \
  wpa \
- crypto
+ crypto \
+ bt \
+ driver \
+ esp32 \
+ expat \
+ freertos \
+ log \
+ lwip \
+ main \
+ mbedtls \
+ nghttp \
+ nvs_flash \
+ spi_flash \
+ tcpip_adapter
 
 ESPLIBS_AFTER += \
  gcc

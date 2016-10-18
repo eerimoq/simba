@@ -51,9 +51,9 @@ Below is the memory usage of two applications:
 +--------------------------+-----------+-----------+
 | Application              | Flash     | RAM       |
 +==========================+===========+===========+
-| minimal-configuration    |       266 |      1120 |
+| minimal-configuration    |    266133 |     87536 |
 +--------------------------+-----------+-----------+
-| default-configuration    |       266 |      1128 |
+| default-configuration    |    266133 |     87544 |
 +--------------------------+-----------+-----------+
 
 Default configuration
@@ -217,7 +217,7 @@ Default Standard Library configuration.
 Homepage
 --------
 
-
+http://esp32.de
 
 Mcu
 ---

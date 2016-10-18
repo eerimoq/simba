@@ -191,7 +191,7 @@ endif
 
 INET_SRC ?= $(INET_SRC_TMP)
 
-ifneq ($(ARCH),$(filter $(ARCH), esp linux))
+ifneq ($(ARCH),$(filter $(ARCH), esp esp32 linux))
     LWIP_SRC ?= \
 	3pp/lwip-1.4.1/src/core/stats.c \
 	3pp/lwip-1.4.1/src/core/tcp_out.c \

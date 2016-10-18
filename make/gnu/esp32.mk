@@ -55,6 +55,4 @@ RUNARGS = $(BIN)
 
 ESPTOOL = $(SIMBA_ROOT)/3pp/esptool/esptool
 
-SRC += $(SIMBA_ROOT)/3pp/libc/string0.c
-
 include $(SIMBA_ROOT)/make/gnu.mk
