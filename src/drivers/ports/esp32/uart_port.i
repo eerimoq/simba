@@ -17,6 +17,7 @@
  * This file is part of the Simba project.
  */
 
+#include <stdio.h>
 #include "freertos/FreeRTOS.h"
 #include "freertos/semphr.h"
 
@@ -31,12 +32,12 @@ static int uart_port_module_init()
                     FSTR("/drivers/uart/rx_channel_overflow"),
                     0);
     fs_counter_register(&rx_channel_overflow);
-    
+
     fs_counter_init(&rx_errors,
                     FSTR("/drivers/uart/rx_errors"),
                     0);
     fs_counter_register(&rx_errors);
-    
+
     return (0);
 }
 
@@ -54,5 +55,14 @@ static ssize_t uart_port_write_cb(void *arg_p,
                                   const void *txbuf_p,
                                   size_t size)
 {
+    size_t i;
+    const uint8_t *buf_p;
+
+    buf_p = txbuf_p;
+
+    for (i = 0; i < size; i++) {
+        putchar(*buf_p++);
+    }
+
     return (size);
 }

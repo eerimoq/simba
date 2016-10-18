@@ -34,3 +34,5 @@ export ARDUINO_ROOT=$(readlink -f ../../arduino-1.6.10)
 if [ -f ~/.simbarc ]; then
     source ~/.simbarc
 fi
+
+export IDF_PATH=${SIMBA_ROOT}/3pp/esp32/esp-idf

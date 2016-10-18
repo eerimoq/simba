@@ -22,66 +22,24 @@
 #include "freertos/task.h"
 #include "esp_system.h"
 
-/* #include "esp_libc.h" */
-/* #include "esp_misc.h" */
-/* #include "esp_wifi.h" */
-/* #include "esp_system.h" */
-/* #include "esp_timer.h" */
-/* #include "esp_ssc.h" */
-
-/* #include "esp8266/esp8266.h" */
-/* #include "freertos/FreeRTOS.h" */
-
-/* #include "eagle_soc.h" */
-
-/* #define SYS_TICK_TIMER_PRESCALE ESP8266_TIMER_CTRL_PRESCALE_256 */
-/* #define SYS_TICK_TIMER_LOAD 3125 */
-
-/* /\* The main function is defined by the user in main.c. *\/ */
-/* extern int main(); */
-
-/* /\* Defined in the linker script. *\/ */
-/* extern char __simba_stack_begin; */
-/* extern char __simba_stack_size; */
-
-/* /\* The main stack is placed before all other stacks in the memory. *\/ */
-/* static uint32_t always_free_stack[8] */
-/* __attribute__ ((section (".simba_stack_free"))); */
-
-/* /\* The main stack is placed before all other stacks in the memory. *\/ */
-/* uint32_t main_stack[DIV_CEIL(sizeof(struct thrd_t) */
-/*                              + (CONFIG_SYS_SIMBA_MAIN_STACK_MAX), */
-/*                              sizeof(uint32_t))] */
-/* __attribute__ ((section (".simba_main_stack"))); */
+/* The main function is defined by the user in main.c. */
+extern int main();
 
 static int sys_port_module_init(void)
 {
-    /* /\* Configure and start the system tick timer. *\/ */
-    /* ESP8266_TIMER0->CTRL = (ESP8266_TIMER_CTRL_ENABLE */
-    /*                         | ESP8266_TIMER_CTRL_AUTO_LOAD */
-    /*                         | SYS_TICK_TIMER_PRESCALE */
-    /*                         | ESP8266_TIMER_CTRL_INT_TRIGGER_EDGE); */
-    
-    /* _xt_isr_attach(ESP8266_IRQ_NUM_TIMER1, */
-    /*                (_xt_isr)sys_tick, */
-    /*                NULL); */
-    /* TM1_EDGE_INT_ENABLE(); */
-    /* _xt_isr_unmask(1 << ESP8266_IRQ_NUM_TIMER1); */
-    /* ESP8266_TIMER0->LOAD = SYS_TICK_TIMER_LOAD; */
+    (void)sys_tick;
 
-    sys_tick();
-    
     return (0);
 }
 
 static void sys_port_lock(void)
 {
-    /* portDISABLE_INTERRUPTS(); */
+    portDISABLE_INTERRUPTS();
 }
 
 static void sys_port_unlock(void)
 {
-    /* portENABLE_INTERRUPTS(); */
+    portENABLE_INTERRUPTS();
 }
 
 static void sys_port_lock_isr(void)
@@ -111,6 +69,8 @@ int app_main()
     system_init();
 
     std_printf(FSTR("Hello!\r\n"));
-    
+
+    main();
+
     return (0);
 }

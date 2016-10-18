@@ -121,6 +121,10 @@ DRIVERS_SRC ?= adc.c \
                uart_soft.c
 endif
 
+ifeq ($(FAMILY),esp32)
+DRIVERS_SRC ?= uart.c
+endif
+
 ifeq ($(FAMILY),stm32f1)
 DRIVERS_SRC ?= flash.c \
                pin.c \

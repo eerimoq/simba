@@ -51,6 +51,6 @@ MEMORY
 /* Heap ends at top of dram0_0_seg */
 _heap_end = 0x40000000 - 0x0;
 
-INCLUDE "esp32.common.ld"
+INCLUDE "simba.common.ld"
 INCLUDE "esp32.rom.ld"
 INCLUDE "esp32.peripherals.ld"

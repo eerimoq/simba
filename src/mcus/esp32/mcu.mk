@@ -22,6 +22,7 @@ ESP_IDF_ROOT ?= $(ESP32_ROOT)/esp-idf
 
 INC += $(SIMBA_ROOT)/src/mcus/esp32 \
        $(ESP_IDF_ROOT)/components/esp32/include \
+       $(ESP_IDF_ROOT)/components/newlib/include \
        $(ESP_IDF_ROOT)/components/freertos/include
 
 SRC += $(SIMBA_ROOT)/src/mcus/esp32/mcu.c \
@@ -43,9 +44,6 @@ LDFLAGS_AFTER += \
 
 ESPLIBS += \
 	hal \
-	g \
-	c_rom \
-	m \
 	core \
 	crypto \
 	net80211 \
@@ -69,7 +67,10 @@ ESPLIBS += \
 	tcpip_adapter
 
 ESPLIBS_AFTER += \
-	gcc
+	gcc \
+	g \
+	c_rom \
+	m \
 
 # Used by arduino script to find the libraries.
 LIB ?= $(ESPLIBS) $(ESPLIBS_AFTER)
