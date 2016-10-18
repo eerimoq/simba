@@ -22,7 +22,7 @@ Drivers
 
 Supported drivers for this board.
 
-
+- :doc:`../library-reference/drivers/uart`
 
 Library Reference
 -----------------
@@ -51,9 +51,9 @@ Below is the memory usage of two applications:
 +--------------------------+-----------+-----------+
 | Application              | Flash     | RAM       |
 +==========================+===========+===========+
-| minimal-configuration    |    266133 |     87536 |
+| minimal-configuration    |    124877 |     32556 |
 +--------------------------+-----------+-----------+
-| default-configuration    |    266133 |     87544 |
+| default-configuration    |    140341 |     48044 |
 +--------------------------+-----------+-----------+
 
 Default configuration
