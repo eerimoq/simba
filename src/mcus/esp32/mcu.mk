@@ -33,7 +33,7 @@ LIBPATH += "$(SIMBA_ROOT)/src/mcus/esp32/ld" \
 	$(ESP_IDF_ROOT)/components/newlib/lib \
 	$(ESP32_ROOT)/lib
 
-LDFLAGS += -Wl,--start-group \
+LDFLAGS_AFTER += -Wl,--start-group \
             $(ESPLIBS:%=-l%) \
             -Wl,--end-group \
             -Wl,-T$(LINKER_SCRIPT)
@@ -42,35 +42,34 @@ LDFLAGS_AFTER += \
 	$(ESPLIBS_AFTER:%=-l%)
 
 ESPLIBS += \
- hal \
- g \
- c_rom \
- m \
- core \
- crypto \
- net80211 \
- phy \
- pp \
- rtc \
- smartconfig \
- wpa \
- crypto \
- bt \
- driver \
- esp32 \
- expat \
- freertos \
- log \
- lwip \
- main \
- mbedtls \
- nghttp \
- nvs_flash \
- spi_flash \
- tcpip_adapter
+	hal \
+	g \
+	c_rom \
+	m \
+	core \
+	crypto \
+	net80211 \
+	phy \
+	pp \
+	rtc \
+	smartconfig \
+	wpa \
+	crypto \
+	bt \
+	driver \
+	esp32 \
+	expat \
+	freertos \
+	log \
+	lwip \
+	mbedtls \
+	nghttp \
+	nvs_flash \
+	spi_flash \
+	tcpip_adapter
 
 ESPLIBS_AFTER += \
- gcc
+	gcc
 
 # Used by arduino script to find the libraries.
 LIB ?= $(ESPLIBS) $(ESPLIBS_AFTER)

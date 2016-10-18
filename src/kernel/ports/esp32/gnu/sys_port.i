@@ -17,6 +17,11 @@
  * This file is part of the Simba project.
  */
 
+#include <stdio.h>
+#include "freertos/FreeRTOS.h"
+#include "freertos/task.h"
+#include "esp_system.h"
+
 /* #include "esp_libc.h" */
 /* #include "esp_misc.h" */
 /* #include "esp_wifi.h" */
@@ -101,40 +106,11 @@ static void sys_port_interrupt_cpu_usage_reset(void)
 {
 }
 
-/* static void putc_null(char c) */
-/* { */
-/* } */
+int app_main()
+{
+    system_init();
 
-/* /\** */
-/*  * Simba runs in this FreeRTOS task. */
-/*  *\/ */
-/* static void main_task(void *events) */
-/* { */
-/*     /\* /\\* Ignore all output from the SDK. *\\/ *\/ */
-/*     /\* os_install_putc1(putc_null); *\/ */
-
-/*     /\* Call the Simba application main function. *\/ */
-/*     /\* main(); *\/ */
-
-/*     thrd_suspend(NULL); */
-/* } */
-
-/* /\** */
-/*  * This function is called by Espressif FreeRTOS when the system */
-/*  * initialized. */
-/*  *\/ */
-/* void user_init() */
-/* { */
-/*     /\* /\\* The linker garbage collects there if they are unused. *\\/ *\/ */
-/*     /\* main_stack[0] = 0; *\/ */
-/*     /\* always_free_stack[0] = 0; *\/ */
-
-/*     /\* xTaskGenericCreate(main_task, *\/ */
-/*     /\*                    (const signed char *)"simba", *\/ */
-/*     /\*                    ((size_t)&__simba_stack_size) / sizeof(int), *\/ */
-/*     /\*                    NULL, *\/ */
-/*     /\*                    4, *\/ */
-/*     /\*                    NULL, *\/ */
-/*     /\*                    (long unsigned int *)(&__simba_stack_begin), *\/ */
-/*     /\*                    NULL); *\/ */
-/* } */
+    std_printf(FSTR("Hello!\r\n"));
+    
+    return (0);
+}
