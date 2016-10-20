@@ -53,6 +53,10 @@ LDFLAGS += -u call_user_start \
 
 RUNARGS = $(BIN)
 
-ESPTOOL = $(SIMBA_ROOT)/3pp/esptool/esptool
+ESPTOOL_PY = $(SIMBA_ROOT)/3pp/esp32/esp-idf/components/esptool_py/esptool/esptool.py
+
+build: $(BIN)
+$(BIN): $(EXE)
+	$(ESPTOOL_PY) --chip esp32 elf2image --flash_mode dio --flash_freq 40m -o $@ $<
 
 include $(SIMBA_ROOT)/make/gnu.mk

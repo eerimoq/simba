@@ -36,13 +36,7 @@ TIMEOUT ?= 10
 
 upload:
 	@echo "Uploading $(EXE)"
-	python -u $(BOARD_PY) upload --port $(SERIAL_PORT) $(BIN)
-
-rerun:
-	@echo "Running '$(EXE)'."
-	python -u $(RUN_PY) --port $(SERIAL_PORT) \
-			    --timeout $(TIMEOUT) \
-			    --baudrate $(BAUDRATE) \
-	 		    --pattern $(RUN_END_PATTERN)\
-			    --pattern-success $(RUN_END_PATTERN_SUCCESS) \
-			    | tee $(RUNLOG) ; test $${PIPESTATUS[0]} -eq 0
+	python -u $(SIMBA_ROOT)/3pp/esp32/esp-idf/components/esptool_py/esptool/esptool.py \
+	--chip esp32 --port $(SERIAL_PORT) --baud 115200 write_flash --flash_mode dio \
+	--flash_freq 40m 0x1000 $(SIMBA_ROOT)/3pp/esp32/bin/bootloader.bin \
+	0x10000 $(BIN) 0x4000 $(SIMBA_ROOT)/3pp/esp32/bin/partitions_singleapp.bin
