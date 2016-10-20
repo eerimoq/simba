@@ -1,8 +1,19 @@
 Testing
 =======
 
-Hardware
---------
+To ensure high code quility each module is tested extensively by many
+test suites. The test suites are executed both on native Linux and on
+many of the supported boards. See `Test suites`_ for a list of all
+test suites that are executed before each release.
+
+The native Linux test suites are executed automatically on each commit.
+
+Test result: https://travis-ci.org/eerimoq/simba
+
+Code coverage: https://codecov.io/gh/eerimoq/simba
+
+Hardware setup
+--------------
 
 Below is a picture of all supported boards connected to a USB hub. The
 USB hub is connected to a linux PC (not in the picture) that executes
@@ -31,3 +42,11 @@ A short description of the setup:
 - The :doc:`../boards/esp12e` also has a serial to USB adaptor
   connected. RTS is used to set the board in flashing mode (GPIO0) and
   DTR is used to reset the board (REST).
+
+Test suites
+-----------
+
+Below is a list of all test suites that are executed before every
+release. They are listed per board.
+
+.. include:: testing-suites.rst

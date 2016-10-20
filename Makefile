@@ -472,6 +472,9 @@ cloc:
 pmccabe:
 	pmccabe $$(git ls-files "*.[hic]") | sort -n
 
+print-%:
+	@echo $($*)
+
 help:
 	@echo "--------------------------------------------------------------------------------"
 	@echo "  target                      description"
