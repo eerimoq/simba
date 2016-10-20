@@ -3,6 +3,8 @@
 """Generate documentation.
 """
 
+from __future__ import print_function
+
 import os
 import argparse
 import json
@@ -135,7 +137,7 @@ def boards_generate(database):
             target = ".. _{name}: ../user-guide/configuration.html#c.{name}".format(
                 name=config[0])
             targets.append(target)
-            
+
         if os.path.exists(os.path.join("doc", "boards", "extra", board + ".rst")):
             include_extra = ".. include:: extra/{name}.rst".format(name=board)
         else:
@@ -191,7 +193,7 @@ def boards_generate(database):
                                    24 * '-').join(memory_usage))
 
         rst_path = os.path.join("doc", "boards", board + ".rst")
-        print "Writing to ", rst_path
+        print("Writing to ", rst_path)
         with open(rst_path, "w") as fout:
             fout.write(rst)
 
@@ -226,9 +228,35 @@ def examples_generate(_):
 
         rst_path = os.path.join("doc", "examples", example, "source-code.rst")
 
-        print "Writing to ", rst_path
+        print("Writing to ", rst_path)
         with open(rst_path, "w") as fout:
             fout.write(rst)
+
+
+def testing_generate(database):
+    """Generate the list of test suites.
+
+    """
+
+    testing_suites_path = os.path.join("doc", "developer-guide", "testing-suites.rst")
+
+    with open(testing_suites_path, "w") as fout:
+        boards = database["boards"].keys()
+        boards.sort()
+        for board in boards:
+            suites = subprocess.check_output(['make',
+                                              '-s',
+                                              'BOARD=' + board,
+                                              'print-TESTS'])
+            print(database["boards"][board]["board_desc"], file=fout)
+            print('-' * len(board), file=fout)
+            print(file=fout)
+            for suite in suites.split(" "):
+                suite = suite[4:].strip()
+                if suite:
+                    print("- :github-blob:`{suite}<tst/{suite}/main.c>`".format(suite=suite),
+                          file=fout)
+            print(file=fout)
 
 
 def main():
@@ -243,6 +271,7 @@ def main():
 
     boards_generate(database)
     examples_generate(database)
+    testing_generate(database)
 
 
 if __name__ == "__main__":

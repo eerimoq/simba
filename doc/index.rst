@@ -61,6 +61,12 @@ Features
 
 See the :doc:`library-reference` for a full list of features.
 
+Testing
+-------
+
+To ensure high code quility each module is tested extensively by many
+test suites. See :doc:`developer-guide/testing` for details.
+
 Design goals
 ------------
 
