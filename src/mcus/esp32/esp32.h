@@ -31,15 +31,298 @@
 #define BITFIELD_GET(name, value)               \
     (((value) & name ## _MASK) >> name ## _POS)
 
+/**
+ * CPU interrupts are numbered from 0 to 31. Peripheral interrupts can
+ * only be mapped to the defines starting with PERIPHERAL_.
+ */
+#define PERIPHERAL_0_PRIO_1        0
+#define PERIPHERAL_1_PRIO_1        1
+#define PERIPHERAL_2_PRIO_1        2
+#define PERIPHERAL_3_PRIO_1        3
+#define PERIPHERAL_4_PRIO_1        4
+#define PERIPHERAL_5_PRIO_1        5
+#define INTERNAL_6_PRIO_1          6
+#define INTERNAL_7_PRIO_1          7
+#define PERIPHERAL_8_PRIO_1        8
+#define PERIPHERAL_9_PRIO_1        9
+#define PERIPHERAL_10_PRIO_1      10
+#define INTERNAL_11_PRIO_3        11
+#define PERIPHERAL_12_PRIO_1      12
+#define PERIPHERAL_13_PRIO_1      13
+#define PERIPHERAL_14_PRIO_I      14
+#define INTERNAL_15_PRIO_3        15
+#define INTERNAL_16_PRIO_5        16
+#define PERIPHERAL_17_PRIO_1      17
+#define PERIPHERAL_18_PRIO_1      18
+#define PERIPHERAL_19_PRIO_2      19
+#define PERIPHERAL_20_PRIO_2      20
+#define PERIPHERAL_21_PRIO_2      21
+#define PERIPHERAL_22_PRIO_3      22
+#define PERIPHERAL_23_PRIO_3      23
+#define PERIPHERAL_24_PRIO_4      24
+#define PERIPHERAL_25_PRIO_4      25
+#define PERIPHERAL_26_PRIO_5      26
+#define PERIPHERAL_27_PRIO_3      27
+#define PERIPHERAL_28_PRIO_4      28
+#define INTERNAL_29_PRIO_3        29
+#define PERIPHERAL_30_PRIO_4      30
+#define PERIPHERAL_31_PRIO_5      31
+
+/* Mapping to an internal interrupt will disable the peripheral. */
+#define PERIPHERAL_DISABLED       INTERNAL_6_PRIO_1
+
+/**
+ * Interrupt matrix configration.
+ *
+ * Map UART0 events to Protocol CPU interrupt number 12:
+ * PRO.UART_INTR_MAP_REG = PERIPHERAL_12_PRIO_1;
+ *
+ * Map SPI0 events to Application CPU interrupt number 12:
+ * APP.SPI_INTR_0_MAP_REG = PERIPHERAL_13_PRIO_1;
+ *
+ * The default mapping in Simba is:
+ *
+ * Peripheral  CPU interrupt
+ * =======================================================
+ * UART0       PERIPHERAL_12_PRIO_1
+ * UART1       PERIPHERAL_12_PRIO_1
+ * UART2       PERIPHERAL_12_PRIO_1
+ * SPI0        PERIPHERAL_13_PRIO_1
+ * SPI1        PERIPHERAL_13_PRIO_1
+ * SPI2        PERIPHERAL_13_PRIO_1
+ */
+
+#define ESP32_CPU_INTR_UART_NUM PERIPHERAL_12_PRIO_1
+
+struct esp32_dport_map_t {
+    uint32_t MAC_INTR_MAP_REG;
+    uint32_t MAC_NMI_MAP_REG;
+    uint32_t BB_INT_MAP_REG;
+    uint32_t BT_MAC_INT_MAP_REG;
+    uint32_t BT_BB_INT_MAP_REG;
+    uint32_t BT_BB_NMI_MAP_REG;
+    uint32_t RWBT_IRQ_MAP_REG;
+    uint32_t RWBLE_IRQ_MAP_REG;
+    uint32_t RWBT_NMI_MAP_REG;
+    uint32_t RWBLE_NMI_MAP_REG;
+    uint32_t SLC0_INTR_MAP_REG;
+    uint32_t SLC1_INTR_MAP_REG;
+    uint32_t UHCI0_INTR_MAP_REG;
+    uint32_t UHCI1_INTR_MAP_REG;
+    uint32_t TG_T0_LEVEL_INT_MAP_REG;
+    uint32_t TG_T1_LEVEL_INT_MAP_REG;
+    uint32_t TG_WDT_LEVEL_INT_MAP_REG;
+    uint32_t TG_LACT_LEVEL_INT_MAP_REG;
+    uint32_t TG1_T0_LEVEL_INT_MAP_REG;
+    uint32_t TG1_T1_LEVEL_INT_MAP_REG;
+    uint32_t TG1_WDT_LEVEL_INT_MAP_REG;
+    uint32_t TG1_LACT_LEVEL_INT_MAP_REG;
+    uint32_t GPIO_INTERRUPT_MAP_REG;
+    uint32_t GPIO_INTERRUPT_NMI_MAP_REG;
+    uint32_t CPU_INTR_FROM_CPU_0_MAP_REG;
+    uint32_t CPU_INTR_FROM_CPU_1_MAP_REG;
+    uint32_t CPU_INTR_FROM_CPU_2_MAP_REG;
+    uint32_t CPU_INTR_FROM_CPU_3_MAP_REG;
+    uint32_t SPI_INTR_0_MAP_REG;
+    uint32_t SPI_INTR_1_MAP_REG;
+    uint32_t SPI_INTR_2_MAP_REG;
+    uint32_t SPI_INTR_3_MAP_REG;
+    uint32_t I2S0_INT_MAP_REG;
+    uint32_t I2S1_INT_MAP_REG;
+    uint32_t UART_INTR_MAP_REG;
+    uint32_t UART1_INTR_MAP_REG;
+    uint32_t UART2_INTR_MAP_REG;
+    uint32_t SDIO_HOST_INTERRUPT_MAP_REG;
+    uint32_t EMAC_INT_MAP_REG;
+    uint32_t PWM0_INTR_MAP_REG;
+    uint32_t PWM1_INTR_MAP_REG;
+    uint32_t PWM2_INTR_MAP_REG;
+    uint32_t PWM3_INTR_MAP_REG;
+    uint32_t LEDC_INT_MAP_REG;
+    uint32_t EFUSE_INT_MAP_REG;
+    uint32_t CAN_INT_MAP_REG;
+    uint32_t RTC_CORE_INTR_MAP_REG;
+    uint32_t RMT_INTR_MAP_REG;
+    uint32_t PCNT_INTR_MAP_REG;
+    uint32_t I2C_EXT0_INTR_MAP_REG;
+    uint32_t I2C_EXT1_INTR_MAP_REG;
+    uint32_t RSA_INTR_MAP_REG;
+    uint32_t SPI1_DMA_INT_MAP_REG;
+    uint32_t SPI2_DMA_INT_MAP_REG;
+    uint32_t SPI3_DMA_INT_MAP_REG;
+    uint32_t WDG_INT_MAP_REG;
+    uint32_t TIMER_INT1_MAP_REG;
+    uint32_t TIMER_INT2_MAP_REG;
+    uint32_t TG_T0_EDGE_INT_MAP_REG;
+    uint32_t TG_T1_EDGE_INT_MAP_REG;
+    uint32_t TG_WDT_EDGE_INT_MAP_REG;
+    uint32_t TG_LACT_EDGE_INT_MAP_REG;
+    uint32_t TG1_T0_EDGE_INT_MAP_REG;
+    uint32_t TG1_T1_EDGE_INT_MAP_REG;
+    uint32_t TG1_WDT_EDGE_INT_MAP_REG;
+    uint32_t TG1_LACT_EDGE_INT_MAP_REG;
+    uint32_t MMU_IA_INT_MAP_REG;
+    uint32_t MPU_IA_INT_MAP_REG;
+    uint32_t CACHE_IA_INT_MAP_REG;
+};
+
+struct esp32_dport_t {
+    uint32_t PRO_BOOT_REMAP_CTRL_REG;
+    uint32_t APP_BOOT_REMAP_CTRL_REG;
+    uint32_t DPORT_ACCESS_CHECK;
+    uint32_t PRO_DPORT_APB_MASK0;
+    uint32_t PRO_DPORT_APB_MASK1;
+    uint32_t APP_DPORT_APB_MASK0;
+    uint32_t APP_DPORT_APB_MASK1;
+    uint32_t PERI_CLK_EN;
+    uint32_t PERI_RST_EN;
+    uint32_t WIFI_BB_CFG;
+    uint32_t WIFI_BB_CFG_2;
+    uint32_t APPCPU_CTRL_REG_A;
+    uint32_t APPCPU_CTRL_REG_B;
+    uint32_t APPCPU_CTRL_REG_C;
+    uint32_t APPCPU_CTRL_REG_D;
+    uint32_t CPU_PER_CONF_REG;
+    uint32_t PRO_CACHE_CTRL_REG;
+    uint32_t PRO_CACHE_CTRL1_REG;
+    uint32_t PRO_CACHE_LOCK_0_ADDR_REG;
+    uint32_t PRO_CACHE_LOCK_1_ADDR_REG;
+    uint32_t PRO_CACHE_LOCK_2_ADDR_REG;
+    uint32_t PRO_CACHE_LOCK_3_ADDR_REG;
+    uint32_t APP_CACHE_CTRL_REG;
+    uint32_t APP_CACHE_CTRL1_REG;
+    uint32_t APP_CACHE_LOCK_0_ADDR_REG;
+    uint32_t APP_CACHE_LOCK_1_ADDR_REG;
+    uint32_t APP_CACHE_LOCK_2_ADDR_REG;
+    uint32_t APP_CACHE_LOCK_3_ADDR_REG;
+    uint32_t TRACEMEM_MUX_MODE;
+    uint32_t PRO_TRACEMEM_ENA;
+    uint32_t APP_TRACEMEM_ENA;
+    uint32_t CACHE_MUX_MODE;
+    uint32_t IMMU_PAGE_MODE;
+    uint32_t DMMU_PAGE_MODE;
+    uint32_t ROM_MPU_ENA;
+    uint32_t MEM_PD_MASK_REG;
+    uint32_t ROM_PD_CTRL_REG;
+    uint32_t ROM_FO_CTRL_REG;
+    uint32_t SRAM_PD_CTRL_REG_0;
+    uint32_t SRAM_PD_CTRL_REG_1;
+    uint32_t SRAM_FO_CTRL_REG_0;
+    uint32_t SRAM_FO_CTRL_REG_1;
+    uint32_t IRAM_DRAM_AHB_SEL;
+    uint32_t TAG_FO_CTRL_REG;
+    uint32_t AHB_LITE_MASK_REG;
+    uint32_t AHB_MPU_TABLE_0;
+    uint32_t AHB_MPU_TABLE_1;
+    uint32_t HOST_INF_SEL;
+    uint32_t PERIP_CLK_EN;
+    uint32_t DPORT_PWM3_CLK_EN;
+    uint32_t WIFI_CLK_EN;
+    uint32_t WIFI_RST_EN;
+    uint32_t BT_LPCK_DIV_INT;
+    uint32_t BT_LPCK_DIV_FRAC;
+    uint32_t CPU_INTR_FROM_CPU_0_REG;
+    uint32_t CPU_INTR_FROM_CPU_1_REG;
+    uint32_t CPU_INTR_FROM_CPU_2_REG;
+    uint32_t CPU_INTR_FROM_CPU_3_REG;
+    uint32_t PRO_INTR_STATUS_REG[3];
+    uint32_t APP_INTR_STATUS_REG[3];
+    struct esp32_dport_map_t PRO;
+    struct esp32_dport_map_t APP;
+    uint32_t AHBLITE_MPU_TABLE_UART;
+    uint32_t AHBLITE_MPU_TABLE_SPI1;
+    uint32_t AHBLITE_MPU_TABLE_SPI0;
+    uint32_t AHBLITE_MPU_TABLE_GPIO;
+    uint32_t AHBLITE_MPU_TABLE_FE2;
+    uint32_t AHBLITE_MPU_TABLE_FE;
+    uint32_t AHBLITE_MPU_TABLE_TIMER;
+    uint32_t AHBLITE_MPU_TABLE_RTC;
+    uint32_t AHBLITE_MPU_TABLE_IO_MUX;
+    uint32_t AHBLITE_MPU_TABLE_WDG;
+    uint32_t AHBLITE_MPU_TABLE_HINF;
+    uint32_t AHBLITE_MPU_TABLE_UHCI1;
+    uint32_t AHBLITE_MPU_TABLE_MISC;
+    uint32_t AHBLITE_MPU_TABLE_I2C;
+    uint32_t AHBLITE_MPU_TABLE_I2S0;
+    uint32_t AHBLITE_MPU_TABLE_UART1;
+    uint32_t AHBLITE_MPU_TABLE_BT;
+    uint32_t AHBLITE_MPU_TABLE_BT_BUFFER;
+    uint32_t AHBLITE_MPU_TABLE_I2C_EXT0;
+    uint32_t AHBLITE_MPU_TABLE_UHCI0;
+    uint32_t AHBLITE_MPU_TABLE_SLCHOST;
+    uint32_t AHBLITE_MPU_TABLE_RMT;
+    uint32_t AHBLITE_MPU_TABLE_PCNT;
+    uint32_t AHBLITE_MPU_TABLE_SLC;
+    uint32_t AHBLITE_MPU_TABLE_LEDC;
+    uint32_t AHBLITE_MPU_TABLE_EFUSE;
+    uint32_t AHBLITE_MPU_TABLE_SPI_ENCRYPT;
+    uint32_t AHBLITE_MPU_TABLE_BB;
+    uint32_t AHBLITE_MPU_TABLE_PWM0;
+    uint32_t AHBLITE_MPU_TABLE_TIMERGROUP;
+    uint32_t AHBLITE_MPU_TABLE_TIMERGROUP1;
+    uint32_t AHBLITE_MPU_TABLE_SPI2;
+    uint32_t AHBLITE_MPU_TABLE_SPI3;
+    uint32_t AHBLITE_MPU_TABLE_APB_CTRL;
+    uint32_t AHBLITE_MPU_TABLE_I2C_EXT1;
+    uint32_t AHBLITE_MPU_TABLE_SDIO_HOST;
+    uint32_t AHBLITE_MPU_TABLE_EMAC;
+    uint32_t AHBLITE_MPU_TABLE_CAN;
+    uint32_t AHBLITE_MPU_TABLE_PWM1;
+    uint32_t AHBLITE_MPU_TABLE_I2S1;
+    uint32_t AHBLITE_MPU_TABLE_UART2;
+    uint32_t AHBLITE_MPU_TABLE_PWM2;
+    uint32_t AHBLITE_MPU_TABLE_PWM3;
+    uint32_t AHBLITE_MPU_TABLE_RWBT;
+    uint32_t AHBLITE_MPU_TABLE_BTMAC;
+    uint32_t AHBLITE_MPU_TABLE_WIFIMAC;
+    uint32_t AHBLITE_MPU_TABLE_PWR;
+    uint32_t MEM_ACCESS_DBUG[2];
+    uint32_t PRO_DCACHE_DBUG_REG[10];
+    uint32_t APP_DCACHE_DBUG_REG[10];
+    uint32_t PRO_CPU_RECORD_CTRL;
+    uint32_t PRO_CPU_RECORD_STATUS;
+    uint32_t PRO_CPU_RECORD_PID;
+    uint32_t PRO_CPU_RECORD_PDEBUGINST;
+    uint32_t PRO_CPU_RECORD_PDEBUGSTATUS;
+    uint32_t PRO_CPU_RECORD_PDEBUGDATA;
+    uint32_t PRO_CPU_RECORD_PDEBUGPC;
+    uint32_t PRO_CPU_RECORD_PDEBUGLS0STAT;
+    uint32_t PRO_CPU_RECORD_PDEBUGLS0ADDR;
+    uint32_t PRO_CPU_RECORD_PDEBUGLS0DATA;
+    uint32_t APP_CPU_RECORD_CTRL;
+    uint32_t APP_CPU_RECORD_STATUS;
+    uint32_t APP_CPU_RECORD_PID;
+    uint32_t APP_CPU_RECORD_PDEBUGINST;
+    uint32_t APP_CPU_RECORD_PDEBUGSTATUS;
+    uint32_t APP_CPU_RECORD_PDEBUGDATA;
+    uint32_t APP_CPU_RECORD_PDEBUGPC;
+    uint32_t APP_CPU_RECORD_PDEBUGLS0STAT;
+    uint32_t APP_CPU_RECORD_PDEBUGLS0ADDR;
+    uint32_t APP_CPU_RECORD_PDEBUGLS0DATA;
+    uint32_t RSA_PD_CTRL_REG;
+    uint32_t ROM_MPU_TABLE[4];
+    uint32_t SHROM_MPU_TABLE[24];
+    uint32_t IMMU_TABLE[16];
+    uint32_t DMMU_TABLE[16];
+    uint32_t PRO_INTRUSION_CTRL;
+    uint32_t PRO_INTRUSION_STATUS;
+    uint32_t APP_INTRUSION_CTRL;
+    uint32_t APP_INTRUSION_STATUS;
+    uint32_t FRONT_END_MEM_PD;
+    uint32_t MMU_IA_INT_EN;
+    uint32_t MPU_IA_INT_EN;
+    uint32_t CACHE_IA_INT_EN;
+    uint32_t SECURE_BOOT_CTRL;
+    uint32_t SPI_DMA_CHAN_SEL;
+    uint32_t PRO_VECBASE_CTRL;
+    uint32_t PRO_VECBASE_SET;
+    uint32_t APP_VECBASE_CTRL;
+    uint32_t APP_VECBASE_SET;
+    uint32_t DPORT_REG_DATE;
+};
+
 /* Interrupt numbering. */
-#define ESP32_IRQ_NUM_ETS_SLC    1
-#define ESP32_IRQ_NUM_SPI        2
-#define ESP32_IRQ_NUM_GPIO       4
 #define ESP32_IRQ_NUM_UART       5
-#define ESP32_IRQ_NUM_MAX        6
-#define ESP32_IRQ_NUM_SOFT       7
-#define ESP32_IRQ_NUM_WDT        8
-#define ESP32_IRQ_NUM_TIMER1     9
 
 /**
  * Universal Asynchronous Receive Transmit.
@@ -184,328 +467,48 @@ struct esp32_uart_t {
 #define ESP32_UART_ID         [31:0]
 
 /**
- * Serial Peripheral Interface.
- */
-    struct esp32_spi_t {
-        uint32_t CMD;
-        uint32_t ADDR;
-        uint32_t CTRL;
-        uint32_t RESERVED0;
-        uint32_t RD_STATUS;
-        uint32_t CTRL2;
-        uint32_t CLOCK;
-        uint32_t USER;
-        uint32_t USER1;
-        uint32_t USER2;
-        uint32_t WR_STATUS;
-        uint32_t PIN;
-        uint32_t SLAVE;
-        uint32_t SLAVE1;
-        uint32_t SLAVE2;
-        uint32_t SLAVE3;
-        uint32_t W_0_15[16];
-        uint32_t RESERVED1[0xa0];
-        uint32_t EXT3;
-    };
-
-/* CMD. */
-#define ESP32_SPI_CMD_USR BIT(18)
-
-/* ADDR. */
-#define ESP32_SPI_ADDR_IODATA_START_ADDR 0
-
-/* CTRL. */
-#define ESP32_SPI_CTRL_WR_BIT_ORDER BIT(26)
-#define ESP32_SPI_CTRL_RD_BIT_ORDER BIT(25)
-#define ESP32_SPI_CTRL_QIO_MODE     BIT(24)
-#define ESP32_SPI_CTRL_DIO_MODE     BIT(23)
-#define ESP32_SPI_CTRL_QOUT_MODE    BIT(20)
-#define ESP32_SPI_CTRL_DOUT_MODE    BIT(14)
-#define ESP32_SPI_CTRL_FASTRD_MODE  BIT(13)
-
-/* RD_STATUS. */
-#define ESP32_SPI_RD_STATUS_SLV_RD_STATUS 0
-
-/* CTRL2. */
-#define ESP32_SPI_CTRL2_CS_DELAY_NUM
-#define ESP32_SPI_CTRL2_CS_DELAY_MODE
-#define ESP32_SPI_CTRL2_MOSI_DELAY_NUM
-#define ESP32_SPI_CTRL2_MOSI_DELAY_MODE
-#define ESP32_SPI_CTRL2_MISO_DELAY_NUM
-#define ESP32_SPI_CTRL2_MISO_DELAY_MODE
-
-/* CLOCK. */
-#define ESP32_SPI_CLOCK_EQU_SYSCLK BIT(31)
-#define ESP32_SPI_CLOCK_DIV_PRE
-#define ESP32_SPI_CLOCK_CNT_N
-#define ESP32_SPI_CLOCK_CNT_H
-#define ESP32_SPI_CLOCK_CNT_L
-
-/* USER. */
-#define ESP32_SPI_USER_COMMAND       BIT(31)
-#define ESP32_SPI_USER_ADDR          BIT(30)
-#define ESP32_SPI_USER_DUMMY         BIT(29)
-#define ESP32_SPI_USER_MISO          BIT(28)
-#define ESP32_SPI_USER_MOSI          BIT(27)
-#define ESP32_SPI_USER_MOSI_HIGHPART BIT(25)
-#define ESP32_SPI_USER_MISO_HIGHPART BIT(24)
-#define ESP32_SPI_USER_SIO           BIT(16)
-#define ESP32_SPI_USER_FWRITE_QIO    BIT(15)
-#define ESP32_SPI_USER_FWRITE_DIO    BIT(14)
-#define ESP32_SPI_USER_FWRITE_QUAD   BIT(13)
-#define ESP32_SPI_USER_FWRITE_DUAL   BIT(12)
-#define ESP32_SPI_USER_WR_BYTE_ORDER BIT(11)
-#define ESP32_SPI_USER_RD_BYTE_ORDER BIT(10)
-#define ESP32_SPI_USER_CK_I_EDGE     BIT(6)
-
-/* USER1. */
-#define ESP32_SPI_USER1_ADDR_BITLEN
-#define ESP32_SPI_USER1_MOSI_BITLEN(value) ((value) << 17)
-#define ESP32_SPI_USER1_MISO_BITLEN(value) ((value) << 8)
-#define ESP32_SPI_USER1_DUMMY_CYCLELEN
-
-/* USER2. */
-#define ESP32_SPI_USER2_COMMAND_BITLEN
-#define ESP32_SPI_USER2_COMMAND_VALUE
-
-/* WR_STATUS. */
-#define ESP32_SPI_WR_STATUS_SLV
-
-/* PIN. */
-#define ESP32_SPI_PIN_CS2_DIS
-#define ESP32_SPI_PIN_CS1_DIS
-#define ESP32_SPI_PIN_CS0_DIS
-
-/* SLAVE. */
-#define ESP32_SPI_SLAVE_SYNC_RESET
-#define ESP32_SPI_SLAVE_MODE
-#define ESP32_SPI_SLAVE_CMD_DEFINE
-#define ESP32_SPI_SLAVE_TRANS_CNT
-#define ESP32_SPI_SLAVE_INT_EN_TRANS_DONE (1 << 9)
-#define ESP32_SPI_SLAVE_TRANS_DONE
-#define ESP32_SPI_SLAVE_WR_STA_DONE
-#define ESP32_SPI_SLAVE_RD_STA_DONE
-#define ESP32_SPI_SLAVE_WR_BUF_DONE
-#define ESP32_SPI_SLAVE_RD_BUF_DONE
-
-/* SLAVE1. */
-#define ESP32_SPI_SLAVE1_STATUS_BITLEN
-#define ESP32_SPI_SLAVE1_BUF_BITLEN
-#define ESP32_SPI_SLAVE1_RD_ADDR_BITLEN
-#define ESP32_SPI_SLAVE1_WR_ADDR_BITLEN
-#define ESP32_SPI_SLAVE1_WRSTA_DUMMY_EN
-#define ESP32_SPI_SLAVE1_RDSTA_DUMMY_EN
-#define ESP32_SPI_SLAVE1_WRBUF_DUMMY_EN
-#define ESP32_SPI_SLAVE1_RDBUF_DUMMY_EN
-
-/* SLAVE2. */
-#define ESP32_SPI_SLAVE2_WRBUF_DUMMY_CYCLELEN
-#define ESP32_SPI_SLAVE2_RDBUF_DUMMY_CYCLELEN
-#define ESP32_SPI_SLAVE2_WRSTA_DUMMY_CYCLELEN
-#define ESP32_SPI_SLAVE2_RDSTA_DUMMY_CYCLELEN
-
-/* SLAVE3. */
-#define ESP32_SPI_SLAVE3_WRSTA_CMD_VALUE
-#define ESP32_SPI_SLAVE3_RDSTA_CMD_VALUE
-#define ESP32_SPI_SLAVE3_WRBUF_CMD_VALUE
-#define ESP32_SPI_SLAVE3_RDBUF_CMD_VALUE
-
-/* EXT3. */
-#define ESP32_SPI_EXT3_INT_HOLD_ENA
-
-/**
- * General Purpose Input Output registers.
- */
-struct esp32_gpio_t {
-    uint32_t OUT;
-    uint32_t OUT_W1TS;
-    uint32_t OUT_W1TC;
-    uint32_t ENABLE;
-    uint32_t ENABLE_DATA_W1TS;
-    uint32_t ENABLE_DATA_W1TC;
-    uint32_t IN;
-    uint32_t STATUS;
-    uint32_t STATUS_W1TS;
-    uint32_t STATUS_W1TC;
-    uint32_t CONF[16];
-    uint32_t SIGMA_DELTA;
-    uint32_t RTC;
-    uint32_t RTC_CALIB;
-};
-
-/* Output register. */
-#define ESP32_GPIO_BT_SEL             0x0000ffff
-#define ESP32_GPIO_BT_SEL_POS         16
-#define ESP32_GPIO_OUT_DATA           0x0000ffff
-#define ESP32_GPIO_OUT_DATA_POS       0
-
-/* Output register set. */
-#define ESP32_GPIO_OUT_DATA_W1TS      0x0000ffff
-#define ESP32_GPIO_OUT_DATA_W1TS_POS  0
-
-/* Output register clear. */
-#define ESP32_GPIO_OUT_DATA_W1TC      0x0000ffff
-#define ESP32_GPIO_OUT_DATA_W1TC_POS  0
-
-/* Enable register. */
-#define ESP32_GPIO_SDIO_SEL           0x0000003f
-#define ESP32_GPIO_SDIO_SEL_POS       16
-#define ESP32_GPIO_ENABLE_DATA        0x0000ffff
-#define ESP32_GPIO_ENABLE_DATA_POS    0
-
-/* Enable register set. */
-#define ESP32_GPIO_ENABLE_DATA_W1TS     0x0000ffff
-#define ESP32_GPIO_ENABLE_DATA_W1TS_POS 0
-
-/* Enable register clear. */
-#define ESP32_GPIO_ENABLE_DATA_W1TC      0x0000ffff
-#define ESP32_GPIO_ENABLE_DATA_W1TC_POS  0
-
-/* Input register. */
-#define ESP32_GPIO_STRAPPING             0x0000ffff
-#define ESP32_GPIO_STRAPPING_POS         16
-#define ESP32_GPIO_IN_DATA               0x0000ffff
-#define ESP32_GPIO_IN_DATA_POS           0
-
-/* Status register. */
-#define ESP32_GPIO_STATUS_INTERRUPT      0x0000ffff
-#define ESP32_GPIO_STATUS_INTERRUPT_POS  0
-
-/* Status register set. */
-#define ESP32_GPIO_STATUS_INTERRUPT_W1TS     0x0000ffff
-#define ESP32_GPIO_STATUS_INTERRUPT_W1TS_POS 0
-
-/* Status register clear. */
-#define ESP32_GPIO_STATUS_INTERRUPT_W1TC      0x0000ffff
-#define ESP32_GPIO_STATUS_INTERRUPT_W1TC_POS  0
-
-/* Configuration register. */
-#define ESP32_GPIO_CONF_WAKEUP_ENABLE    BIT(10)
-#define ESP32_GPIO_CONF_INT_TYPE_POS     (7)
-#define ESP32_GPIO_CONF_INT_TYPE_MASK         \
-    (0x7 << ESP32_GPIO_CONF_INT_TYPE_POS)
-#define ESP32_GPIO_CONF_INT_TYPE(value)               \
-    BITFIELD_SET(ESP32_GPIO_CONF_INT_TYPE, value)
-#define ESP32_GPIO_CONF_DRIVER           BIT(2)
-#define ESP32_GPIO_CONF_SOURCE           BIT(0)
-
-/* Sigma delta register. */
-#define SIGMA_DELTA_ENABLE                      BIT(16)
-#define ESP32_GPIO_SIGMA_DELTA_PRESCALAR_POS       (8)
-#define ESP32_GPIO_SIGMA_DELTA_PRESCALAR_MASK         \
-    (0xff << ESP32_GPIO_SIGMA_DELTA_PRESCALAR_POS)
-#define ESP32_GPIO_SIGMA_DELTA_PRESCALAR(value)               \
-    BITFIELD_SET(ESP32_GPIO_SIGMA_DELTA_PRESCALAR, value)
-#define ESP32_GPIO_SIGMA_DELTA_TARGET_POS          (0)
-#define ESP32_GPIO_SIGMA_DELTA_TARGET_MASK            \
-    (0xff << ESP32_GPIO_SIGMA_DELTA_TARGET_POS)
-#define ESP32_GPIO_SIGMA_DELTA_TARGET(value)                  \
-    BITFIELD_SET(ESP32_GPIO_SIGMA_DELTA_TARGET, value)
-
-/* RTC register. */
-#define RTC_CALIB_START                      BIT(31)
-#define ESP32_GPIO_RTC_PERIOD_NUM_POS      (0)
-#define ESP32_GPIO_RTC_PERIOD_NUM_MASK        \
-    (0x3ff << ESP32_GPIO_RTC_PERIOD_NUM_POS)
-#define ESP32_GPIO_RTC_PERIOD_NUM(value)              \
-    BITFIELD_SET(ESP32_GPIO_RTC_PERIOD_NUM, value)
-
-/* RTC calibration value register. */
-#define ESP32_GPIO_RTC_CALIB_RDY           BIT(31)
-#define ESP32_GPIO_RTC_CALIB_RDY_REAL      BIT(30)
-#define ESP32_GPIO_RTC_CALIB_VALUE_POS     (0)
-#define ESP32_GPIO_RTC_CALIB_VALUE_MASK               \
-    (0xfffff << ESP32_GPIO_RTC_CALIB_VALUE_POS)
-#define ESP32_GPIO_RTC_CALIB_VALUE(value)             \
-    BITFIELD_SET(ESP32_GPIO_RTC_CALIB_VALUE, value)
-
-/**
- * Timer.
- */
-struct esp32_timer_t {
-    uint32_t LOAD;
-    uint32_t COUNT;
-    uint32_t CTRL;
-    uint32_t INT;
-    union {
-        uint32_t reserved0[4];
-        uint32_t ALARM;
-    } U;
-};
-
-/* Control register.*/
-#define ESP32_TIMER_CTRL_INT           BIT(8)
-#define ESP32_TIMER_CTRL_ENABLE        BIT(7)
-#define ESP32_TIMER_CTRL_AUTO_LOAD     BIT(6)
-#define ESP32_TIMER_CTRL_PRESCALE_POS  (1)
-#define ESP32_TIMER_CTRL_PRESCALE_MASK        \
-    (0x1f << ESP32_TIMER_CTRL_PRESCALE_POS)
-#define ESP32_TIMER_CTRL_PRESCALE(value)              \
-    BITFIELD_SET(ESP32_TIMER_CTRL_PRESCALE, value)
-#define ESP32_TIMER_CTRL_PRESCALE_1    ESP32_TIMER_CTRL_PRESCALE(0)
-#define ESP32_TIMER_CTRL_PRESCALE_16   ESP32_TIMER_CTRL_PRESCALE(2)
-#define ESP32_TIMER_CTRL_PRESCALE_256  ESP32_TIMER_CTRL_PRESCALE(4)
-#define ESP32_TIMER_CTRL_INT_TRIGGER       BIT(0)
-#define ESP32_TIMER_CTRL_INT_TRIGGER_EDGE  (0)
-#define ESP32_TIMER_CTRL_INT_TRIGGER_LEVEL (1)
-
-/* Interrupt clear register. */
-#define ESP32_TIMER_INT_CLR                BIT(0)
-
-/* Alarm register. */
-#define ESP32_TIMER_FRC2_ALARM_MASK        0xffffffff
-#define ESP32_TIMER_FRC2_ALARM_POS         0
-
-/**
- * Input Output Multiplexing.
- */
-    struct esp32_iomux_t {
-        uint32_t CONF;
-        uint32_t PIN[16];
-    };
-
-/* Details for the CONF register. */
-#define ESP32_IOMUX_CONF_SPI0_CLK_EQU_SYS_CLK  BIT(9)
-#define ESP32_IOMUX_CONF_SPI1_CLK_EQU_SYS_CLK  BIT(8)
-
-/* Details for the PIN registers. */
-#define ESP32_IOMUX_PIN_FUNC_HIGH_POS        (8)
-#define ESP32_IOMUX_PIN_FUNC_HIGH_MASK        \
-    (0x1 << ESP32_IOMUX_PIN_FUNC_HIGH_POS)
-#define ESP32_IOMUX_PIN_PULLUP               BIT(7)
-#define ESP32_IOMUX_PIN_PULLDOWN             BIT(6)
-#define ESP32_IOMUX_PIN_FUNC_LOW_POS         (4)
-#define ESP32_IOMUX_PIN_FUNC_LOW_MASK         \
-    (0x3 << ESP32_IOMUX_PIN_FUNC_LOW_POS)
-#define ESP32_IOMUX_PIN_SLEEP_PULLUP         BIT(3)
-#define ESP32_IOMUX_PIN_SLEEP_PULLDOWN       BIT(2)
-#define ESP32_IOMUX_PIN_SLEEP_OUTPUT_ENABLE  BIT(1)
-#define ESP32_IOMUX_PIN_OUTPUT_ENABLE        BIT(0)
-
-#define ESP32_IOMUX_PIN_FUNC(value)                           \
-    (BITFIELD_SET(ESP32_IOMUX_PIN_FUNC_LOW, value)            \
-     | BITFIELD_SET(ESP32_IOMUX_PIN_FUNC_HIGH, (value) >> 2))
-
-#define ESP32_IOMUX_PIN_FUNC_GPIO(iomux)      \
-    ((iomux) > 11                               \
-     ? ESP32_IOMUX_PIN_FUNC(0)                \
-     : ESP32_IOMUX_PIN_FUNC(3))
-
-/**
  * Devices.
  */
-#define ESP32_UART0  ((volatile struct esp32_uart_t    *)0x60000000)
-#define ESP32_SPI0   ((volatile struct esp32_spi_t     *)0x60000100)
-#define ESP32_SPI1   ((volatile struct esp32_spi_t     *)0x60000200)
-#define ESP32_GPIO   ((volatile struct esp32_gpio_t    *)0x60000300)
-#define ESP32_TIMER0 ((volatile struct esp32_timer_t   *)0x60000600)
-#define ESP32_TIMER1 ((volatile struct esp32_timer_t   *)0x60000620)
-#define ESP32_RTC    ((volatile struct esp32_rtc_t     *)0x60000700)
-#define ESP32_IOMUX  ((volatile struct esp32_iomux_t   *)0x60000800)
-#define ESP32_WDT    ((volatile struct esp32_wdt_t     *)0x60000900)
-#define ESP32_SCL    ((volatile struct esp32_scl_t     *)0x60000b00)
-#define ESP32_SAR    ((volatile struct esp32_sar_t     *)0x60000d00)
-#define ESP32_I2S    ((volatile struct esp32_i2s_t     *)0x60000e00)
-#define ESP32_UART1  ((volatile struct esp32_uart_t    *)0x60000f00)
+#define ESP32_DPORT_REGISTER   ((volatile struct esp32_dport_t *)0x3ff00000)
+#define ESP32_AES_ACCELERATOR  ((volatile struct esp32__t *)0x3ff01000)
+#define ESP32_RSA_ACCELERATOR  ((volatile struct esp32__t *)0x3ff02000)
+#define ESP32_SHA_ACCELERATOR  ((volatile struct esp32__t *)0x3ff03000)
+#define ESP32_SECURE_BOOT      ((volatile struct esp32__t *)0x3ff04000)
+#define ESP32_CACHE_MMU_TABLE  ((volatile struct esp32__t *)0x3ff10000)
+#define ESP32_PID_CONTROLLER   ((volatile struct esp32__t *)0x3ff1f000)
+#define ESP32_UART0            ((volatile struct esp32_uart_t *)0x3ff40000)
+#define ESP32_SPI1             ((volatile struct esp32_spi_t  *)0x3ff42000)
+#define ESP32_SPI0             ((volatile struct esp32_spi_t  *)0x3ff43000)
+#define ESP32_GPIO             ((volatile struct esp32__t *)0x3ff44000)
+#define ESP32_RTC              ((volatile struct esp32__t *)0x3ff48000)
+#define ESP32_IO_MUX           ((volatile struct esp32__t *)0x3ff49000)
+#define ESP32_SDIO_SLAVE_0     ((volatile struct esp32__t *)0x3ff4b000)
+#define ESP32_UDMA1            ((volatile struct esp32__t *)0x3ff4c000)
+#define ESP32_I2S0             ((volatile struct esp32__t *)0x3ff4f000)
+#define ESP32_UART1            ((volatile struct esp32_uart_t *)0x3ff50000)
+#define ESP32_I2C0             ((volatile struct esp32_i2c_t *)0x3ff53000)
+#define ESP32_UDMA0            ((volatile struct esp32__t *)0x3ff54000)
+#define ESP32_SDIO_SLAVE_1     ((volatile struct esp32__t *)0x3ff55000)
+#define ESP32_RMT              ((volatile struct esp32__t *)0x3ff56000)
+#define ESP32_PCNT             ((volatile struct esp32__t *)0x3ff57000)
+#define ESP32_SDIO_SLAVE_2     ((volatile struct esp32__t *)0x3ff58000)
+#define ESP32_LED_PWM          ((volatile struct esp32__t *)0x3ff59000)
+#define ESP32_EFUSE_CONTROLLER ((volatile struct esp32__t *)0x3ff5a000)
+#define ESP32_FLASH_ENCRYPTION ((volatile struct esp32__t *)0x3ff5b000)
+#define ESP32_PWM0             ((volatile struct esp32__t *)0x3ff5e000)
+#define ESP32_TIMG0            ((volatile struct esp32__t *)0x3ff5f000)
+#define ESP32_TIMG1            ((volatile struct esp32__t *)0x3ff60000)
+#define ESP32_SPI2             ((volatile struct esp32_spi_t  *)0x3ff64000)
+#define ESP32_SPI3             ((volatile struct esp32_spi_t  *)0x3ff65000)
+#define ESP32_SYSCON           ((volatile struct esp32__t *)0x3ff66000)
+#define ESP32_I2C1             ((volatile struct esp32_i2c_t *)0x3ff67000)
+#define ESP32_SDMMC            ((volatile struct esp32__t *)0x3ff68000)
+#define ESP32_EMAC             ((volatile struct esp32__t *)0x3ff69000)
+#define ESP32_PWM1             ((volatile struct esp32__t *)0x3ff6c000)
+#define ESP32_I2S1             ((volatile struct esp32__t *)0x3ff6d000)
+#define ESP32_UART2            ((volatile struct esp32_uart_t *)0x3ff6e000)
+#define ESP32_PWM2             ((volatile struct esp32__t *)0x3ff6f000)
+#define ESP32_PWM3             ((volatile struct esp32__t *)0x3ff70000)
+#define ESP32_RNG              ((volatile struct esp32__t *)0x3ff75000)
 
 #endif

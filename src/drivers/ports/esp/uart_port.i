@@ -28,7 +28,7 @@ extern xSemaphoreHandle thrd_idle_sem;
 /**
  * Fill the tx fifo with data from given uart driver.
  */
-void fill_tx_fifo(struct uart_driver_t *drv_p)
+static void fill_tx_fifo(struct uart_driver_t *drv_p)
 {
     while ((drv_p->txsize > 0)
            && ((drv_p->dev_p->regs_p->STATUS
@@ -37,21 +37,6 @@ void fill_tx_fifo(struct uart_driver_t *drv_p)
         drv_p->dev_p->regs_p->FIFO = *drv_p->txbuf_p++;
         drv_p->txsize--;
     }
-}
-
-static int uart_port_module_init()
-{
-    fs_counter_init(&rx_channel_overflow,
-                    FSTR("/drivers/uart/rx_channel_overflow"),
-                    0);
-    fs_counter_register(&rx_channel_overflow);
-    
-    fs_counter_init(&rx_errors,
-                    FSTR("/drivers/uart/rx_errors"),
-                    0);
-    fs_counter_register(&rx_errors);
-    
-    return (0);
 }
 
 static inline void tx_isr(struct uart_driver_t *drv_p,
@@ -92,7 +77,7 @@ static inline void rx_isr(struct uart_driver_t *drv_p,
         if (chan_write_isr(&drv_p->chin, &c, 1) != 1) {
             fs_counter_increment(&rx_channel_overflow, 1);
         }
-        
+
         xSemaphoreGiveFromISR(thrd_idle_sem, NULL);
     } else {
         fs_counter_increment(&rx_errors, 1);
@@ -114,6 +99,21 @@ static void isr(void *arg_p)
     if (dev_p->regs_p->INT_ST & ESP8266_UART_INT_ST_RXFIFO_FULL) {
         rx_isr(drv_p, dev_p);
     }
+}
+
+static int uart_port_module_init()
+{
+    fs_counter_init(&rx_channel_overflow,
+                    FSTR("/drivers/uart/rx_channel_overflow"),
+                    0);
+    fs_counter_register(&rx_channel_overflow);
+
+    fs_counter_init(&rx_errors,
+                    FSTR("/drivers/uart/rx_errors"),
+                    0);
+    fs_counter_register(&rx_errors);
+
+    return (0);
 }
 
 static int uart_port_start(struct uart_driver_t *drv_p)

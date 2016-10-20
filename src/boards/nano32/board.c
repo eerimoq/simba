@@ -27,30 +27,22 @@ int board_pin_string_to_device_index(const char *str_p)
         if (std_strtol(&str_p[4], &pin) == NULL) {
             return (-1);
         }
-        
-        switch (pin) {
 
-        case 0:
-        case 2:
-        case 12:
-        case 13:
-        case 14:
-        case 15:
-            break;
-
-        case 4:
-            pin = 5;
-            break;
-            
-        case 5:
-            pin = 4;
-            break;
-            
-        default:
+        if ((pin >= 0) && (pin <= 19)) {
+            /* Correct pin number. */
+        } else if ((pin >= 21) && (pin <= 23)) {
+            pin -= 1;
+        } else if ((pin >= 25) && (pin <= 27)) {
+            pin -= 2;
+        } else if ((pin >= 32) && (pin <= 36)) {
+            pin -= 6;
+        } else if (pin == 39) {
+            pin -= 6;
+        } else {
             return (-1);
         }
     } else if (strcmp(str_p, "led") == 0) {
-        pin = 2;
+        pin = 16;
     } else {
         return (-1);
     }

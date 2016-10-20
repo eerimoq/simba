@@ -194,6 +194,7 @@ extern "C" {
 #endif
 
 #if defined(FAMILY_ESP32)
+#    include "drivers/pin.h"
 #    include "drivers/uart.h"
 #endif
 

@@ -24,6 +24,11 @@
 
 struct uart_device_t {
     struct uart_driver_t *drv_p;         /* Current started driver. */
+    volatile struct esp32_uart_t *regs_p;
+    struct {
+        int source;
+        int cpu;
+    } interrupt;
 };
 
 struct uart_driver_t {

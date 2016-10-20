@@ -22,14 +22,12 @@
 
 #include "esp32.h"
 
-#define PIN_DEVICE_MAX  16
-#define EXTI_DEVICE_MAX 16
+#define PIN_DEVICE_MAX  34
+#define EXTI_DEVICE_MAX 1
 
-#define SPI_DEVICE_MAX  1
-#define UART_DEVICE_MAX 2
-/* Timer0 is used for system tick, so two of the PWM pins cannot be used.*/
-#define PWM_DEVICE_MAX  4
-#define ADC_DEVICE_MAX  1
-#define FLASH_DEVICE_MAX 1
+#define SPI_DEVICE_MAX  3
+#define UART_DEVICE_MAX 3
+#define ADC_DEVICE_MAX  2
+#define I2C_DEVICE_MAX  1
 
 #endif
