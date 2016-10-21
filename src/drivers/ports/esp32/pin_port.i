@@ -26,7 +26,7 @@ static int pin_port_init(struct pin_driver_t *self_p,
                          const struct pin_device_t *dev_p,
                          int mode)
 {
-    /* ESP32_GPIO->CONF[dev_p->id] = 0; */
+    ESP32_GPIO->PIN[dev_p->id] = 0;
 
     return (pin_set_mode(self_p, mode));
 }
@@ -51,10 +51,14 @@ static int pin_port_write(struct pin_driver_t *self_p, int value)
 
 static int pin_port_toggle(struct pin_driver_t *self_p)
 {
-    /* const struct pin_device_t *dev_p = self_p->dev_p; */
+    const struct pin_device_t *dev_p = self_p->dev_p;
     int value;
 
-    value = 0;//((ESP32_GPIO->OUT & dev_p->mask) == 0);
+    if (dev_p->id < 32) {
+        value = ((ESP32_GPIO->OUT[0].VALUE & (1 << dev_p->id)) == 0);
+    } else {
+        value = ((ESP32_GPIO->OUT[1].VALUE & (1 << (dev_p->id - 32))) == 0);
+    }
 
     return (pin_port_write(self_p, value));
 }

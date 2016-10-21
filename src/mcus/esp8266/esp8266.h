@@ -461,10 +461,10 @@ struct esp8266_timer_t {
 /**
  * Input Output Multiplexing.
  */
-    struct esp8266_iomux_t {
-        uint32_t CONF;
-        uint32_t PIN[16];
-    };
+struct esp8266_iomux_t {
+    uint32_t CONF;
+    uint32_t PIN[16];
+};
 
 /* Details for the CONF register. */
 #define ESP8266_IOMUX_CONF_SPI0_CLK_EQU_SYS_CLK  BIT(9)

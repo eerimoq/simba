@@ -22,7 +22,7 @@
 
 #include "esp32.h"
 
-#define PIN_DEVICE_MAX  34
+#define PIN_DEVICE_MAX  36
 #define EXTI_DEVICE_MAX 1
 
 #define SPI_DEVICE_MAX  3

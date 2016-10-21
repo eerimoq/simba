@@ -21,46 +21,52 @@
 
 struct pin_device_t pin_device[PIN_DEVICE_MAX] = {
     /* 0-9. */
-    { .index = 23 },
-    { .index = 41 },
-    { .index = 22 },
-    { .index = 40 },
-    { .index = 24 },
-    { .index = 34 },
-    { .index = 31 },
-    { .index = 32 },
-    { .index = 33 },
-    { .index = 28 },
+    { .id =  0, .iomux = 16 },
+    { .id =  1, .iomux = 33 },
+    { .id =  2, .iomux = 15 },
+    { .id =  3, .iomux = 32 },
+    { .id =  4, .iomux = 17 },
+    { .id =  5, .iomux = 26 },
+    { .id =  6, .iomux = 23 },
+    { .id =  7, .iomux = 24 },
+    { .id =  8, .iomux = 25 },
+    { .id =  9, .iomux = 20 },
 
     /* 10-19. */
-    { .index = 29 },
-    { .index = 30 },
-    { .index = 18 },
-    { .index = 20 },
-    { .index = 17 },
-    { .index = 21 },
-    { .index = 25 },
-    { .index = 27 },
-    { .index = 35 },
-    { .index = 38 },
+    { .id = 10, .iomux = 21 },
+    { .id = 11, .iomux = 22 },
+    { .id = 12, .iomux = 12 },
+    { .id = 13, .iomux = 13 },
+    { .id = 14, .iomux = 11 },
+    { .id = 15, .iomux = 14 },
+    { .id = 16, .iomux = 18 },
+    { .id = 17, .iomux = 19 },
+    { .id = 18, .iomux = 27 },
+    { .id = 19, .iomux = 28 },
 
     /* 20-29. */
-    { .index = 42 },
-    { .index = 39 },
-    { .index = 36 },
-    { .index = 14 },
-    { .index = 15 },
-    { .index = 16 },
-    { .index = 12 },
-    { .index = 13 },
-    { .index = 10 },
-    { .index = 11 },
+    { .id = 20, .iomux = 29 },
+    { .id = 21, .iomux = 30 },
+    { .id = 22, .iomux = 31 },
+    { .id = 23, .iomux = 34 },
+    { .id = 24, .iomux = 35 },
+    { .id = 25, .iomux =  8 },
+    { .id = 26, .iomux =  9 },
+    { .id = 27, .iomux = 10 },
+    /* { .id = 28, .iomux = -1 }, */
+    /* { .id = 29, .iomux = -1 }, */
 
-    /* 30-33. */
-    { .index = 5 },
-    { .index = 6 },
-    { .index = 7 },
-    { .index = 8 },
+    /* 30-39. */
+    /* { .id = 30, .iomux = -1 }, */
+    /* { .id = 31, .iomux = -1 }, */
+    { .id = 32, .iomux =  6 },
+    { .id = 33, .iomux =  7 },
+    { .id = 34, .iomux =  4 },
+    { .id = 35, .iomux =  5 },
+    { .id = 36, .iomux =  0 },
+    { .id = 37, .iomux =  1 },
+    { .id = 38, .iomux =  2 },
+    { .id = 39, .iomux =  3 }
 };
 
 struct uart_device_t uart_device[UART_DEVICE_MAX] = {

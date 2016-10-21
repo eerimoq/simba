@@ -21,7 +21,8 @@
 #define __DRIVERS_PIN_PORT_H__
 
 struct pin_device_t {
-    int index;
+    int id;    /* GPIO number. */
+    int iomux; /* IO_MUX index. */
 };
 
 struct pin_driver_t {
@@ -29,40 +30,60 @@ struct pin_driver_t {
 };
 
 static inline int pin_port_device_set_mode(const struct pin_device_t *dev_p,
-                                           int mode)           
+                                           int mode)
 {
-    /* if (mode == PIN_OUTPUT) { */
-    /*     ESP32_IOMUX->PIN[dev_p->iomux] = */
-    /*         (ESP32_IOMUX_PIN_FUNC_GPIO(dev_p->iomux) */
-    /*          | ESP32_IOMUX_PIN_OUTPUT_ENABLE); */
-    /*     ESP32_GPIO->CONF[dev_p->id] = 0; */
-    /*     ESP32_GPIO->ENABLE_DATA_W1TS = dev_p->mask; */
-    /* } else { */
-    /*     ESP32_IOMUX->PIN[dev_p->iomux] = */
-    /*         (ESP32_IOMUX_PIN_FUNC_GPIO(dev_p->iomux)); */
-    /*     ESP32_GPIO->CONF[dev_p->id] = ESP32_GPIO_CONF_DRIVER; */
-    /*     ESP32_GPIO->ENABLE_DATA_W1TC = dev_p->mask; */
-    /* } */
-    
+    if (mode == PIN_OUTPUT) {
+        /* Do not use GPIO matrix for this pin. */
+        ESP32_GPIO->FUNC_OUT_SEL_CFG[dev_p->id] = 0x100;
+
+        if (dev_p->id < 32) {
+            ESP32_GPIO->ENABLE[0].W1TS = (1 << dev_p->id);
+        } else {
+            ESP32_GPIO->ENABLE[1].W1TS = (1 << (dev_p->id - 32));
+        }
+    } else {
+        if (dev_p->id < 32) {
+            ESP32_GPIO->ENABLE[0].W1TC = (1 << dev_p->id);
+        } else {
+            ESP32_GPIO->ENABLE[1].W1TC = (1 << (dev_p->id - 32));
+        }
+    }
+
+    ESP32_IO_MUX->PIN[dev_p->iomux] = (ESP32_IO_MUX_PIN_FUNC_GPIO
+                                       | ESP32_IO_MUX_PIN_FUNC_IE);
+    ESP32_GPIO->PIN[dev_p->id] = 0;
+
     return (0);
 }
 
 static inline int pin_port_device_read(const struct pin_device_t *dev_p)
 {
-    return (-1/*(ESP32_GPIO->IN & dev_p->mask) >> dev_p->id*/);
+    if (dev_p->id < 32) {
+        return ((ESP32_GPIO->IN_VALUE[0] >> dev_p->id) & 0x1);
+    } else {
+        return ((ESP32_GPIO->IN_VALUE[1] >> (dev_p->id - 32)) & 0x1);
+    }
 }
 
 static inline int pin_port_device_write_high(const struct pin_device_t *dev_p)
 {
-    /* ESP32_GPIO->OUT_W1TS = dev_p->mask; */
-    
+    if (dev_p->id < 32) {
+        ESP32_GPIO->OUT[0].W1TS = (1 << dev_p->id);
+    } else {
+        ESP32_GPIO->OUT[1].W1TS = (1 << (dev_p->id - 32));
+    }
+
     return (0);
 }
 
-static inline int pin_port_device_write_low(const struct pin_device_t *dev_p) 
+static inline int pin_port_device_write_low(const struct pin_device_t *dev_p)
 {
-    /* ESP32_GPIO->OUT_W1TC = dev_p->mask; */
-    
+    if (dev_p->id < 32) {
+        ESP32_GPIO->OUT[0].W1TC = (1 << dev_p->id);
+    } else {
+        ESP32_GPIO->OUT[1].W1TC = (1 << (dev_p->id - 32));
+    }
+
     return (0);
 }
 

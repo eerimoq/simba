@@ -467,6 +467,55 @@ struct esp32_uart_t {
 #define ESP32_UART_ID         [31:0]
 
 /**
+ * General Purpose Input Output registers.
+ */
+struct esp32_gpio_t {
+    uint32_t BT_SELECT;
+    struct {
+        uint32_t VALUE;
+        uint32_t W1TS;
+        uint32_t W1TC;
+    } OUT[2];
+    uint32_t SDIO_SELECT;
+    struct {
+        uint32_t VALUE;
+        uint32_t W1TS;
+        uint32_t W1TC;
+    } ENABLE[2];
+    uint32_t STRAP;
+    uint32_t IN_VALUE[2];
+    struct {
+        uint32_t VALUE;
+        uint32_t W1TS;
+        uint32_t W1TC;
+    } STATUS[2];
+    uint32_t RESERVED0;
+    struct {
+        uint32_t APP;
+        uint32_t APP_NMI;
+        uint32_t PRO;
+        uint32_t PRO_NMI;
+        uint32_t SDIO;
+    } INT[2];
+    uint32_t PIN[40];
+    uint32_t CALI_CONF;
+    uint32_t CALI_DATA;
+    uint32_t FUNC_IN_SEL_CFG[256];
+    uint32_t FUNC_OUT_SEL_CFG[40];
+};
+
+/**
+ * Input Output Multiplexing.
+ */
+struct esp32_io_mux_t {
+    uint32_t CTRL;
+    uint32_t PIN[40];
+};
+
+#define ESP32_IO_MUX_PIN_FUNC_IE   (1 << 9)
+#define ESP32_IO_MUX_PIN_FUNC_GPIO (2 << 12)
+
+/**
  * Devices.
  */
 #define ESP32_DPORT_REGISTER   ((volatile struct esp32_dport_t *)0x3ff00000)
@@ -479,9 +528,9 @@ struct esp32_uart_t {
 #define ESP32_UART0            ((volatile struct esp32_uart_t *)0x3ff40000)
 #define ESP32_SPI1             ((volatile struct esp32_spi_t  *)0x3ff42000)
 #define ESP32_SPI0             ((volatile struct esp32_spi_t  *)0x3ff43000)
-#define ESP32_GPIO             ((volatile struct esp32__t *)0x3ff44000)
+#define ESP32_GPIO             ((volatile struct esp32_gpio_t *)0x3ff44000)
 #define ESP32_RTC              ((volatile struct esp32__t *)0x3ff48000)
-#define ESP32_IO_MUX           ((volatile struct esp32__t *)0x3ff49000)
+#define ESP32_IO_MUX           ((volatile struct esp32_io_mux_t *)0x3ff49000)
 #define ESP32_SDIO_SLAVE_0     ((volatile struct esp32__t *)0x3ff4b000)
 #define ESP32_UDMA1            ((volatile struct esp32__t *)0x3ff4c000)
 #define ESP32_I2S0             ((volatile struct esp32__t *)0x3ff4f000)
