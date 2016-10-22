@@ -29,6 +29,7 @@ Boards Manager.
       https://sourceforge.net/projects/simba-arduino/files/avr/package_simba_avr_index.json
       https://sourceforge.net/projects/simba-arduino/files/sam/package_simba_sam_index.json
       https://sourceforge.net/projects/simba-arduino/files/esp/package_simba_esp_index.json
+      https://sourceforge.net/projects/simba-arduino/files/esp32/package_simba_esp32_index.json
 
 3. Open `Tools` -> `Board: ...` -> `Boards Manager...` and type
    `simba` in the search box.
@@ -104,7 +105,7 @@ Execute the one-liner below to install `Simba`.
      (git clone --recursive https://github.com/pfalcon/esp-open-sdk && \
       cd esp-open-sdk && \
       make) && \
-     wget https://dl.espressif.com/dl/xtensa-esp32-elf-linux32-1.22.0-59.tar.gz && \
+     wget https://sourceforge.net/projects/simba-arduino/files/esp32/tools/xtensa-esp32-elf-linux32-1.22.0-59.tar.gz && \
      tar xf xtensa-esp32-elf-linux32-1.22.0-59.tar.gz && \
      rm xtensa-esp32-elf-linux32-1.22.0-59.tar.gz && \
      git clone --recursive https://github.com/eerimoq/simba
