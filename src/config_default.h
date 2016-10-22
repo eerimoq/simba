@@ -529,6 +529,17 @@
 #endif
 
 /**
+ * Raw socket support.
+ */
+#ifndef CONFIG_SOCKET_RAW
+#    if defined(ARCH_ESP32)
+#        define CONFIG_SOCKET_RAW                           0
+#    else
+#        define CONFIG_SOCKET_RAW                           1
+#    endif
+#endif
+
+/**
  * SPIFFS is a flash file system applicable for boards that has a
  * reasonably big modifiable flash.
  */

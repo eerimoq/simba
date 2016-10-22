@@ -56,8 +56,10 @@ struct module_t {
     struct fs_counter_t tcp_accepts;
     struct fs_counter_t tcp_rx_bytes;
     struct fs_counter_t tcp_tx_bytes;
+#if CONFIG_SOCKET_RAW == 1
     struct fs_counter_t raw_rx_bytes;
     struct fs_counter_t raw_tx_bytes;
+#endif
 };
 
 struct send_to_args_t {
@@ -754,6 +756,8 @@ static ssize_t tcp_recv_from(struct socket_t *self_p,
     return (tcpip_call_input(self_p, tcp_recv_from_cb, &args));
 }
 
+#if CONFIG_SOCKET_RAW == 1
+
 /**
  * Copy data to the reading threads' buffer and resume the thread.
  */
@@ -910,6 +914,8 @@ static ssize_t raw_recv_from(struct socket_t *self_p,
     return (tcpip_call_input(self_p, raw_recv_from_cb, &args));
 }
 
+#endif
+
 int socket_module_init(void)
 {
     /* Return immediately if the module is already initialized. */
@@ -946,6 +952,8 @@ int socket_module_init(void)
                     0);
     fs_counter_register(&module.tcp_tx_bytes);
 
+#if CONFIG_SOCKET_RAW == 1
+
     fs_counter_init(&module.raw_rx_bytes,
                     FSTR("/inet/socket/raw/rx_bytes"),
                     0);
@@ -955,6 +963,8 @@ int socket_module_init(void)
                     FSTR("/inet/socket/raw/tx_bytes"),
                     0);
     fs_counter_register(&module.raw_tx_bytes);
+
+#endif
 
 #if !defined(ARCH_ESP)
     /* Initialize the LwIP stack. */
@@ -982,7 +992,11 @@ int socket_open_raw(struct socket_t *self_p)
 {
     ASSERTN(self_p != NULL, EINVAL);
 
+#if CONFIG_SOCKET_RAW == 1
     return (tcpip_call_input(self_p, raw_open_cb, NULL));
+#else
+    return (-1);
+#endif
 }
 
 int socket_close(struct socket_t *self_p)
@@ -997,8 +1011,12 @@ int socket_close(struct socket_t *self_p)
     case SOCKET_TYPE_DGRAM:
         return (tcpip_call_input(self_p, udp_close_cb, NULL));
 
+#if CONFIG_SOCKET_RAW == 1
+
     case SOCKET_TYPE_RAW:
         return (tcpip_call_input(self_p, raw_close_cb, NULL));
+
+#endif
 
     default:
         return (-1);
@@ -1142,12 +1160,16 @@ ssize_t socket_sendto(struct socket_t *self_p,
                             flags,
                             remote_addr_p));
 
+#if CONFIG_SOCKET_RAW == 1
+
     case SOCKET_TYPE_RAW:
         return (raw_send_to(self_p,
                             buf_p,
                             size,
                             flags,
                             remote_addr_p));
+
+#endif
 
     default:
         return (-1);
@@ -1180,12 +1202,16 @@ ssize_t socket_recvfrom(struct socket_t *self_p,
                               flags,
                               remote_addr_p));
 
+#if CONFIG_SOCKET_RAW == 1
+
     case SOCKET_TYPE_RAW:
         return (raw_recv_from(self_p,
                               buf_p,
                               size,
                               flags,
                               remote_addr_p));
+
+#endif
 
     default:
         return (-1);
