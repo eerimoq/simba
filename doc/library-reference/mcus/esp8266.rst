@@ -4,6 +4,8 @@
 .. module:: esp8266
    :synopsis: Esp8266.
 
+Hardware reference: https://github.com/eerimoq/hardware-reference/tree/master/esp8266
+
 Source code: :github-blob:`src/mcus/esp8266/mcu.h`
 
 ----------------------------------------------
