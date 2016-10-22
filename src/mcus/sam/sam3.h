@@ -23,13 +23,6 @@
 /* See "SAM3X / SAM3A Series, Atmel | SMART ARM-based MCU, DATASHEET"
    for details. */
 
-#define BIT(n) (0x1 << (n))
-
-#define BITFIELD_SET(name, value) \
-    (((value) << name ## _POS) & name ## _MASK)
-#define BITFIELD_GET(name, value) \
-    (((value) & name ## _MASK) >> name ## _POS)
-
 /* Peripheral identifiers. */
 #define PERIPHERAL_ID_SUPC              0 /* Supply Controller */
 #define PERIPHERAL_ID_RSTC              1 /* Reset Controller */

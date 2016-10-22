@@ -17,6 +17,8 @@
  * This file is part of the Simba project.
  */
 
+#undef BIT
+
 #include <stdio.h>
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"

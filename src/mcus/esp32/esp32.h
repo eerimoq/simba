@@ -25,74 +25,145 @@
 #ifndef __ESP32_H__
 #define __ESP32_H__
 
-#define BITFIELD_SET(name, value)               \
-    (((value) << name ## _POS) & name ## _MASK)
-
-#define BITFIELD_GET(name, value)               \
-    (((value) & name ## _MASK) >> name ## _POS)
+/**
+ * Peripheral interrupt sources.
+ *
+ * The interrupt matrix maps each peripheral interrupt to a CPU
+ * interrupt.
+ */
+#define ESP32_INTR_SOURCE_MAC                         0
+#define ESP32_INTR_SOURCE_MAC_NMI                     1
+#define ESP32_INTR_SOURCE_BB                          2
+#define ESP32_INTR_SOURCE_BT_MAC                      3
+#define ESP32_INTR_SOURCE_BT_BB                       4
+#define ESP32_INTR_SOURCE_BT_BB_NMI                   5
+#define ESP32_INTR_SOURCE_RWBT                        6
+#define ESP32_INTR_SOURCE_RWBLE                       7
+#define ESP32_INTR_SOURCE_RWBT_NMI                    8
+#define ESP32_INTR_SOURCE_RWBLE_NMI                   9
+#define ESP32_INTR_SOURCE_SLC0                       10
+#define ESP32_INTR_SOURCE_SLC1                       11
+#define ESP32_INTR_SOURCE_UHCI0                      12
+#define ESP32_INTR_SOURCE_UHCI1                      13
+#define ESP32_INTR_SOURCE_TG0_T0_LEVEL               14
+#define ESP32_INTR_SOURCE_TG0_T1_LEVEL               15
+#define ESP32_INTR_SOURCE_TG0_WDT_LEVEL              16
+#define ESP32_INTR_SOURCE_TG0_LACT_LEVEL             17
+#define ESP32_INTR_SOURCE_TG1_T0_LEVEL               18
+#define ESP32_INTR_SOURCE_TG1_T1_LEVEL               19
+#define ESP32_INTR_SOURCE_TG1_WDT_LEVEL              20
+#define ESP32_INTR_SOURCE_TG1_LACT_LEVEL             21
+#define ESP32_INTR_SOURCE_GPIO                       22
+#define ESP32_INTR_SOURCE_GPIO_NMI                   23
+#define ESP32_INTR_SOURCE_FROM_CPU_0                 24
+#define ESP32_INTR_SOURCE_FROM_CPU_1                 25
+#define ESP32_INTR_SOURCE_FROM_CPU_2                 26
+#define ESP32_INTR_SOURCE_FROM_CPU_3                 27
+#define ESP32_INTR_SOURCE_SPI0                       28
+#define ESP32_INTR_SOURCE_SPI1                       29
+#define ESP32_INTR_SOURCE_SPI2                       30
+#define ESP32_INTR_SOURCE_SPI3                       31
+#define ESP32_INTR_SOURCE_I2S0                       32
+#define ESP32_INTR_SOURCE_I2S1                       33
+#define ESP32_INTR_SOURCE_UART0                      34
+#define ESP32_INTR_SOURCE_UART1                      35
+#define ESP32_INTR_SOURCE_UART2                      36
+#define ESP32_INTR_SOURCE_SDIO_HOST                  37
+#define ESP32_INTR_SOURCE_ETH_MAC                    38
+#define ESP32_INTR_SOURCE_PWM0                       39
+#define ESP32_INTR_SOURCE_PWM1                       40
+#define ESP32_INTR_SOURCE_PWM2                       41
+#define ESP32_INTR_SOURCE_PWM3                       42
+#define ESP32_INTR_SOURCE_LEDC                       43
+#define ESP32_INTR_SOURCE_EFUSE                      44
+#define ESP32_INTR_SOURCE_CAN                        45
+#define ESP32_INTR_SOURCE_RTC_CORE                   46
+#define ESP32_INTR_SOURCE_RMT                        47
+#define ESP32_INTR_SOURCE_PCNT                       48
+#define ESP32_INTR_SOURCE_I2C_EXT0                   49
+#define ESP32_INTR_SOURCE_I2C_EXT1                   50
+#define ESP32_INTR_SOURCE_RSA                        51
+#define ESP32_INTR_SOURCE_SPI1_DMA                   52
+#define ESP32_INTR_SOURCE_SPI2_DMA                   53
+#define ESP32_INTR_SOURCE_SPI3_DMA                   54
+#define ESP32_INTR_SOURCE_WDT                        55
+#define ESP32_INTR_SOURCE_TIMER1                     56
+#define ESP32_INTR_SOURCE_TIMER2                     57
+#define ESP32_INTR_SOURCE_TG0_T0_EDGE                58
+#define ESP32_INTR_SOURCE_TG0_T1_EDGE                59
+#define ESP32_INTR_SOURCE_TG0_WDT_EDGE               60
+#define ESP32_INTR_SOURCE_TG0_LACT_EDGE              61
+#define ESP32_INTR_SOURCE_TG1_T0_EDGE                62
+#define ESP32_INTR_SOURCE_TG1_T1_EDGE                63
+#define ESP32_INTR_SOURCE_TG1_WDT_EDGE               64
+#define ESP32_INTR_SOURCE_TG1_LACT_EDGE              65
+#define ESP32_INTR_SOURCE_MMU_IA                     66
+#define ESP32_INTR_SOURCE_MPU_IA                     67
+#define ESP32_INTR_SOURCE_CACHE_IA                   68
 
 /**
  * CPU interrupts are numbered from 0 to 31. Peripheral interrupts can
  * only be mapped to the defines starting with PERIPHERAL_.
  */
-#define PERIPHERAL_0_PRIO_1        0
-#define PERIPHERAL_1_PRIO_1        1
-#define PERIPHERAL_2_PRIO_1        2
-#define PERIPHERAL_3_PRIO_1        3
-#define PERIPHERAL_4_PRIO_1        4
-#define PERIPHERAL_5_PRIO_1        5
-#define INTERNAL_6_PRIO_1          6
-#define INTERNAL_7_PRIO_1          7
-#define PERIPHERAL_8_PRIO_1        8
-#define PERIPHERAL_9_PRIO_1        9
-#define PERIPHERAL_10_PRIO_1      10
-#define INTERNAL_11_PRIO_3        11
-#define PERIPHERAL_12_PRIO_1      12
-#define PERIPHERAL_13_PRIO_1      13
-#define PERIPHERAL_14_PRIO_I      14
-#define INTERNAL_15_PRIO_3        15
-#define INTERNAL_16_PRIO_5        16
-#define PERIPHERAL_17_PRIO_1      17
-#define PERIPHERAL_18_PRIO_1      18
-#define PERIPHERAL_19_PRIO_2      19
-#define PERIPHERAL_20_PRIO_2      20
-#define PERIPHERAL_21_PRIO_2      21
-#define PERIPHERAL_22_PRIO_3      22
-#define PERIPHERAL_23_PRIO_3      23
-#define PERIPHERAL_24_PRIO_4      24
-#define PERIPHERAL_25_PRIO_4      25
-#define PERIPHERAL_26_PRIO_5      26
-#define PERIPHERAL_27_PRIO_3      27
-#define PERIPHERAL_28_PRIO_4      28
-#define INTERNAL_29_PRIO_3        29
-#define PERIPHERAL_30_PRIO_4      30
-#define PERIPHERAL_31_PRIO_5      31
+#define ESP32_CPU_INTR_PERIPHERAL_0_PRIO_1            0
+#define ESP32_CPU_INTR_PERIPHERAL_1_PRIO_1            1
+#define ESP32_CPU_INTR_PERIPHERAL_2_PRIO_1            2
+#define ESP32_CPU_INTR_PERIPHERAL_3_PRIO_1            3
+#define ESP32_CPU_INTR_PERIPHERAL_4_PRIO_1            4
+#define ESP32_CPU_INTR_PERIPHERAL_5_PRIO_1            5
+#define ESP32_CPU_INTR_INTERNAL_6_PRIO_1              6
+#define ESP32_CPU_INTR_INTERNAL_7_PRIO_1              7
+#define ESP32_CPU_INTR_PERIPHERAL_8_PRIO_1            8
+#define ESP32_CPU_INTR_PERIPHERAL_9_PRIO_1            9
+#define ESP32_CPU_INTR_PERIPHERAL_10_PRIO_1          10
+#define ESP32_CPU_INTR_INTERNAL_11_PRIO_3            11
+#define ESP32_CPU_INTR_PERIPHERAL_12_PRIO_1          12
+#define ESP32_CPU_INTR_PERIPHERAL_13_PRIO_1          13
+#define ESP32_CPU_INTR_PERIPHERAL_14_PRIO_I          14
+#define ESP32_CPU_INTR_INTERNAL_15_PRIO_3            15
+#define ESP32_CPU_INTR_INTERNAL_16_PRIO_5            16
+#define ESP32_CPU_INTR_PERIPHERAL_17_PRIO_1          17
+#define ESP32_CPU_INTR_PERIPHERAL_18_PRIO_1          18
+#define ESP32_CPU_INTR_PERIPHERAL_19_PRIO_2          19
+#define ESP32_CPU_INTR_PERIPHERAL_20_PRIO_2          20
+#define ESP32_CPU_INTR_PERIPHERAL_21_PRIO_2          21
+#define ESP32_CPU_INTR_PERIPHERAL_22_PRIO_3          22
+#define ESP32_CPU_INTR_PERIPHERAL_23_PRIO_3          23
+#define ESP32_CPU_INTR_PERIPHERAL_24_PRIO_4          24
+#define ESP32_CPU_INTR_PERIPHERAL_25_PRIO_4          25
+#define ESP32_CPU_INTR_PERIPHERAL_26_PRIO_5          26
+#define ESP32_CPU_INTR_PERIPHERAL_27_PRIO_3          27
+#define ESP32_CPU_INTR_PERIPHERAL_28_PRIO_4          28
+#define ESP32_CPU_INTR_INTERNAL_29_PRIO_3            29
+#define ESP32_CPU_INTR_PERIPHERAL_30_PRIO_4          30
+#define ESP32_CPU_INTR_PERIPHERAL_31_PRIO_5          31
 
 /* Mapping to an internal interrupt will disable the peripheral. */
-#define PERIPHERAL_DISABLED       INTERNAL_6_PRIO_1
+#define PERIPHERAL_DISABLED  ESP32_CPU_INTR_INTERNAL_6_PRIO_1
 
 /**
  * Interrupt matrix configration.
  *
  * Map UART0 events to Protocol CPU interrupt number 12:
- * PRO.UART_INTR_MAP_REG = PERIPHERAL_12_PRIO_1;
+ * PRO.UART_INTR_MAP_REG = ESP32_CPU_INTR_PERIPHERAL_12_PRIO_1;
  *
  * Map SPI0 events to Application CPU interrupt number 12:
- * APP.SPI_INTR_0_MAP_REG = PERIPHERAL_13_PRIO_1;
+ * APP.SPI_INTR_0_MAP_REG = ESP32_CPU_INTR_PERIPHERAL_13_PRIO_1;
  *
  * The default mapping in Simba is:
  *
  * Peripheral  CPU interrupt
  * =======================================================
- * UART0       PERIPHERAL_12_PRIO_1
- * UART1       PERIPHERAL_12_PRIO_1
- * UART2       PERIPHERAL_12_PRIO_1
- * SPI0        PERIPHERAL_13_PRIO_1
- * SPI1        PERIPHERAL_13_PRIO_1
- * SPI2        PERIPHERAL_13_PRIO_1
+ * UART0       ESP32_CPU_INTR_PERIPHERAL_12_PRIO_1
+ * UART1       ESP32_CPU_INTR_PERIPHERAL_12_PRIO_1
+ * UART2       ESP32_CPU_INTR_PERIPHERAL_12_PRIO_1
+ * SPI0        ESP32_CPU_INTR_PERIPHERAL_13_PRIO_1
+ * SPI1        ESP32_CPU_INTR_PERIPHERAL_13_PRIO_1
+ * SPI2        ESP32_CPU_INTR_PERIPHERAL_13_PRIO_1
  */
 
-#define ESP32_CPU_INTR_UART_NUM PERIPHERAL_12_PRIO_1
+#define ESP32_CPU_INTR_UART_NUM ESP32_CPU_INTR_PERIPHERAL_12_PRIO_1
+#define ESP32_CPU_INTR_SPI_NUM  ESP32_CPU_INTR_PERIPHERAL_13_PRIO_1
 
 struct esp32_dport_map_t {
     uint32_t MAC_INTR_MAP_REG;
@@ -321,9 +392,6 @@ struct esp32_dport_t {
     uint32_t DPORT_REG_DATE;
 };
 
-/* Interrupt numbering. */
-#define ESP32_IRQ_NUM_UART       5
-
 /**
  * Universal Asynchronous Receive Transmit.
  */
@@ -443,29 +511,6 @@ struct esp32_uart_t {
 #define ESP32_UART_CONF0_PARITY_EN       BIT(1)
 #define ESP32_UART_CONF0_PARITY          BIT(0)
 
-/* UART_CONF1. */
-#define ESP32_UART_CONF1_RX_TOUT_EN      BIT(31)
-#define ESP32_UART_CONF1_RX_TOUT_THRHD   [30:24]
-#define ESP32_UART_CONF1_RX_FLOW_EN      [23]
-#define ESP32_UART_CONF1_RX_FLOW_THRHD   [22:16]
-#define ESP32_UART_CONF1_TXFIFO_EMPTY_THRHD [14:8]
-#define ESP32_UART_CONF1_RXFIFO_FULL_THRHD  [6:0]
-
-/* LOWPULSE */
-#define ESP32_UART_LOWPULSE_MIN_CNT [19:0]
-
-/* HIGHPULSE */
-#define ESP32_UART_HIGHPULSE_MIN_CNT [19:0]
-
-/* RXD_CNT */
-#define ESP32_UART_RXD_CNT_EDGE    [9:0]
-
-/* UART_DATE */
-#define ESP32_UART_DATE       [31:0]
-
-/* UART_ID */
-#define ESP32_UART_ID         [31:0]
-
 /**
  * General Purpose Input Output registers.
  */
@@ -512,8 +557,8 @@ struct esp32_io_mux_t {
     uint32_t PIN[40];
 };
 
-#define ESP32_IO_MUX_PIN_FUNC_IE   (1 << 9)
-#define ESP32_IO_MUX_PIN_FUNC_GPIO (2 << 12)
+#define ESP32_IO_MUX_PIN_FUNC_IE                        BIT(9)
+#define ESP32_IO_MUX_PIN_MCU_SEL_GPIO                (2 << 12)
 
 /**
  * Devices.

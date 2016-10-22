@@ -17,15 +17,17 @@
  * This file is part of the Simba project.
  */
 
+#undef BIT
+
 #include <stdio.h>
 #include "freertos/FreeRTOS.h"
 #include "freertos/semphr.h"
 #include "esp_intr.h"
 
+extern xSemaphoreHandle thrd_idle_sem;
+
 static struct fs_counter_t rx_channel_overflow;
 static struct fs_counter_t rx_errors;
-
-extern xSemaphoreHandle thrd_idle_sem;
 
 /**
  * Fill the tx fifo with data from given uart driver.
@@ -124,7 +126,7 @@ static int uart_port_module_init()
 
     /* The CPU interrupt is shared among all UART devices. */
     xt_set_interrupt_handler(ESP32_CPU_INTR_UART_NUM, isr, NULL);
-    /* xt_ints_on(BIT(ESP32_CPU_INTR_UART_NUM)); */
+    xt_ints_on(BIT(ESP32_CPU_INTR_UART_NUM));
 
     return (0);
 }

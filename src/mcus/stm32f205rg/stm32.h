@@ -20,13 +20,6 @@
 #ifndef __STM32_H__
 #define __STM32_H__
 
-#define BIT(n) (0x1 << (n))
-
-#define BITFIELD_SET(name, value) \
-    (((value) << name ## _POS) & name ## _MASK)
-#define BITFIELD_GET(name, value) \
-    (((value) & name ## _MASK) >> name ## _POS)
-
 /* Uart. */
 struct stm32_usart_t {
     uint32_t SR;

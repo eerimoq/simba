@@ -72,15 +72,27 @@ struct pin_device_t pin_device[PIN_DEVICE_MAX] = {
 struct uart_device_t uart_device[UART_DEVICE_MAX] = {
     {
         .drv_p = NULL,
-        .regs_p = ESP32_UART0
+        .regs_p = ESP32_UART0,
+        .interrupt = {
+            .source = ESP32_INTR_SOURCE_UART0,
+            .cpu = ESP32_CPU_INTR_UART_NUM
+        }
     },
     {
         .drv_p = NULL,
-        .regs_p = ESP32_UART1
+        .regs_p = ESP32_UART1,
+        .interrupt = {
+            .source = ESP32_INTR_SOURCE_UART1,
+            .cpu = ESP32_CPU_INTR_UART_NUM
+        }
     },
     {
         .drv_p = NULL,
-        .regs_p = ESP32_UART2
+        .regs_p = ESP32_UART2,
+        .interrupt = {
+            .source = ESP32_INTR_SOURCE_UART2,
+            .cpu = ESP32_CPU_INTR_UART_NUM
+        }
     }
 };
 

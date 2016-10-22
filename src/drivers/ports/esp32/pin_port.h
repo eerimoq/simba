@@ -49,7 +49,7 @@ static inline int pin_port_device_set_mode(const struct pin_device_t *dev_p,
         }
     }
 
-    ESP32_IO_MUX->PIN[dev_p->iomux] = (ESP32_IO_MUX_PIN_FUNC_GPIO
+    ESP32_IO_MUX->PIN[dev_p->iomux] = (ESP32_IO_MUX_PIN_MCU_SEL_GPIO
                                        | ESP32_IO_MUX_PIN_FUNC_IE);
     ESP32_GPIO->PIN[dev_p->id] = 0;
 

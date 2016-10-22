@@ -19,6 +19,8 @@
 
 #define THRD_MONITOR_STACK_MAX 256
 
+#undef BIT
+
 #include "freertos/FreeRTOS.h"
 #include "freertos/semphr.h"
 
