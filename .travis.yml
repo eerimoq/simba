@@ -11,6 +11,7 @@ before_install:
   - source setup.sh
   - gcc --version
   - g++ --version
+  - ld --version
 
 script: make -s travis -j $(cat /proc/cpuinfo | grep processor | wc -l)
 
