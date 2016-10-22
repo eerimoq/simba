@@ -99,12 +99,12 @@ Execute the one-liner below to install `Simba`.
      sudo apt install bossa-cli gcc-arm-none-eabi && \
      sudo apt install make unrar autoconf automake libtool gcc g++ gperf \
                           flex bison texinfo gawk ncurses-dev libexpat-dev \
-                          python-serial sed libtool-bin cargo && \
+                          python-serial sed libtool-bin && \
      sudo pip install pyserial xpect readchar sphinx breathe sphinx_rtd_theme && \
-     (git clone --recursive https://github.com/pfalcon/esp-open-sdk.git && \
+     (git clone --recursive https://github.com/pfalcon/esp-open-sdk && \
       cd esp-open-sdk && \
-      make STANDALONE=n) && \
-     git clone https://github.com/eerimoq/simba
+      make) && \
+     git clone --recursive https://github.com/eerimoq/simba
 
 Post-install
 ^^^^^^^^^^^^
