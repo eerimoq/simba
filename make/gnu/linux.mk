@@ -27,11 +27,10 @@ LDFLAGS += -pg -fprofile-arcs -ftest-coverage
 
 CFLAGS += -g
 CXXFLAGS += -g
-LDFLAGS += -g
+LDFLAGS += -g -pthread
 
 LIB += \
 	gcov \
-	pthread \
 	rt
 
 include $(SIMBA_ROOT)/make/gnu.mk
