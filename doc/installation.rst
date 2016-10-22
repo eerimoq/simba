@@ -106,6 +106,7 @@ Execute the one-liner below to install `Simba`.
       make) && \
      wget https://dl.espressif.com/dl/xtensa-esp32-elf-linux32-1.22.0-59.tar.gz && \
      tar xf xtensa-esp32-elf-linux32-1.22.0-59.tar.gz && \
+     rm xtensa-esp32-elf-linux32-1.22.0-59.tar.gz && \
      git clone --recursive https://github.com/eerimoq/simba
 
 Post-install
