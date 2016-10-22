@@ -129,10 +129,6 @@ def main():
         ldflags = get_make_variable(board, "LDFLAGS").split()
         database["boards"][board]["ldflags"] = ldflags
 
-        # Get LDFLAGS_AFTER.
-        ldflags_after = get_make_variable(board, "LDFLAGS_AFTER").split()
-        database["boards"][board]["ldflags_after"] = ldflags_after
-
         # Get LIB.
         lib = get_make_variable(board, "LIB").split()
         database["boards"][board]["lib"] = lib

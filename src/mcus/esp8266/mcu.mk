@@ -33,30 +33,19 @@ SRC += $(SIMBA_ROOT)/src/mcus/esp8266/mcu.c \
 
 LIBPATH += "$(SIMBA_ROOT)/src/mcus/esp8266/ld"
 
-LDFLAGS += -Wl,--start-group \
-            $(ESPLIBS:%=-l%) \
-            -Wl,--end-group \
-            -Wl,-T$(LINKER_SCRIPT)
+LDFLAGS += -Wl,-T$(LINKER_SCRIPT)
 
-LDFLAGS_AFTER += \
-	$(ESPLIBS_AFTER:%=-l%)
-
-ESPLIBS += \
- hal \
- phy \
- pp \
- net80211 \
- wpa \
- crypto \
- main \
- freertos \
- lwip
-
-ESPLIBS_AFTER += \
- gcc
-
-# Used by arduino script to find the libraries.
-LIB ?= $(ESPLIBS) $(ESPLIBS_AFTER)
+LIB += \
+	hal \
+	gcc \
+	phy \
+	pp \
+	net80211 \
+	wpa \
+	crypto \
+	main \
+	freertos \
+	lwip
 
 F_CPU = 80000000
 

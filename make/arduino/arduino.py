@@ -71,9 +71,6 @@ def generate_cores(family, database):
 
         if database["mcus"][mcu]["family"] != family:
             continue
-
-        # For ESP...
-        board["src"] = list(set(board["src"]) - set(["3pp/libc/string0.c"]))
         
         if cores_srcs is None:
             cores_srcs = set(board["src"])
@@ -269,14 +266,14 @@ def get_c_elf_extra_flags(board, database):
                        for libpath in libpaths])
 
 
-def get_c_elf_extra_flags_after(board, database):
-    """Get library path, defines and flags to the linker.
+def get_c_elf_libs(board, database):
+    """Get libraries.
 
     """
 
-    ldflags_after = database["boards"][board]["ldflags_after"]
+    libs = database["boards"][board]["lib"]
 
-    return " ".join(ldflags_after)
+    return " ".join(["-l" + lib for lib in libs])
 
 
 def generate_boards_txt_avr(database, boards_txt_fmt):
@@ -340,11 +337,11 @@ def generate_boards_txt_esp(database, boards_txt_fmt):
         esp01_compiler_c_extra_flags=get_c_extra_flags("esp01", database),
         esp01_compiler_cxx_extra_flags=get_cxx_extra_flags("esp01", database),
         esp01_compiler_c_elf_extra_flags=esp01_compiler_c_elf_extra_flags,
-        esp01_compiler_c_elf_extra_flags_after=get_c_elf_extra_flags_after("esp01", database),
+        esp01_compiler_c_elf_libs=get_c_elf_libs("esp01", database),
         esp12e_compiler_c_extra_flags=get_c_extra_flags("esp12e", database),
         esp12e_compiler_cxx_extra_flags=get_cxx_extra_flags("esp12e", database),
         esp12e_compiler_c_elf_extra_flags=esp12e_compiler_c_elf_extra_flags,
-        esp12e_compiler_c_elf_extra_flags_after=get_c_elf_extra_flags_after("esp12e", database))
+        esp12e_compiler_c_elf_libs=get_c_elf_libs("esp12e", database))
 
 def generate_boards_txt_esp32(database, boards_txt_fmt):
     """Generate boards.txt for ESP32.
@@ -362,7 +359,7 @@ def generate_boards_txt_esp32(database, boards_txt_fmt):
         nano32_compiler_c_extra_flags=get_c_extra_flags("nano32", database),
         nano32_compiler_cxx_extra_flags=get_cxx_extra_flags("nano32", database),
         nano32_compiler_c_elf_extra_flags=nano32_compiler_c_elf_extra_flags,
-        nano32_compiler_c_elf_extra_flags_after=get_c_elf_extra_flags_after("nano32", database))
+        nano32_compiler_c_elf_libs=get_c_elf_libs("nano32", database))
 
 
 def generate_configuration_files(family, database):

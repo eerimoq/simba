@@ -173,7 +173,7 @@ release:
 
 $(EXE): $(OBJ) $(GENOBJ)
 	@echo "LD $@"
-	$(CXX) -o $@ $(LIBPATH:%=-L%) $(LDFLAGS) $^ $(LDFLAGS_AFTER)
+	$(CXX) $(LIBPATH:%=-L%) $(LDFLAGS) -Wl,--start-group $(LIB:%=-l%) $^ -Wl,--end-group -o $@
 
 settings-generate: $(SETTINGS_INI)
 	@echo "Generating settings from $<"
@@ -251,7 +251,8 @@ RSFLAGS = \
 	$(RSFLAGS_EXTRA)
 
 ifeq ($(RUST), yes)
-    LDFLAGS_AFTER += -lsimba $(RUST_LIBRARIES:%=-l%) -L $(RUSTLIB)
+    LIB += simba $(RUST_LIBRARIES)
+    LDFLAGS += -L $(RUSTLIB)
 
 generate: $(RUST_LIBRARIES:%=$(RUSTLIB)/lib%.a) $(RUSTLIB)/$(RUST_LIBSIMBA)
 endif

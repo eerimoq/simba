@@ -874,7 +874,6 @@ BOARDS = {
             "-pg", 
             "-fprofile-arcs", 
             "-ftest-coverage", 
-            "-lgcov", 
             "-g", 
             "-Wl,-Map=build/cygwin/default_configuration.map", 
             "-Wl,--gc-sections"
@@ -1006,17 +1005,6 @@ BOARDS = {
             "src/mcus/esp8266"
         ], 
         "ldflags": [
-            "-Wl,--start-group", 
-            "-lhal", 
-            "-lphy", 
-            "-lpp", 
-            "-lnet80211", 
-            "-lwpa", 
-            "-lcrypto", 
-            "-lmain", 
-            "-lfreertos", 
-            "-llwip", 
-            "-Wl,--end-group", 
             "-Wl,-Tsimba.flash.512k.ld", 
             "-u", 
             "call_user_start", 
@@ -1160,17 +1148,6 @@ BOARDS = {
             "src/mcus/esp8266"
         ], 
         "ldflags": [
-            "-Wl,--start-group", 
-            "-lhal", 
-            "-lphy", 
-            "-lpp", 
-            "-lnet80211", 
-            "-lwpa", 
-            "-lcrypto", 
-            "-lmain", 
-            "-lfreertos", 
-            "-llwip", 
-            "-Wl,--end-group", 
             "-Wl,-Tsimba.flash.4m.ld", 
             "-u", 
             "call_user_start", 
@@ -1305,7 +1282,6 @@ BOARDS = {
             "-pg", 
             "-fprofile-arcs", 
             "-ftest-coverage", 
-            "-lgcov", 
             "-g", 
             "-Wl,-Map=build/linux/default_configuration.map", 
             "-Wl,--gc-sections"
@@ -1434,6 +1410,7 @@ BOARDS = {
             "src/drivers/ports/esp32"
         ], 
         "ldflags": [
+            "-Wl,-Tsimba.flash.ld", 
             "-Wl,--cref", 
             "-nostdlib", 
             "-Wl,-EL", 

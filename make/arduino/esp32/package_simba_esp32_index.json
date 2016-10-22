@@ -19,7 +19,7 @@
                     },
                     "url": "https://sourceforge.net/projects/simba-arduino/files/esp32/simba-arduino-esp32-esp32.zip",
                     "archiveFileName": "simba-arduino-esp32-esp32.zip",
-                    "checksum": "SHA-256:60c45b7feb37dc19cf5a922215aa5a018aa1e0737e8bfe339c005d0b8527f0cf",
+                    "checksum": "SHA-256:fe28fd07d5a877e55d495fc8b076c07aaa4ae439408ec7401d6a8757d71b1862",
                     "size": "17456828",
                     "boards": [
                         {"name" : "NANO32"}

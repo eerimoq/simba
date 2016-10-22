@@ -34,15 +34,9 @@ LIBPATH += "$(SIMBA_ROOT)/src/mcus/esp32/ld" \
 	$(ESP_IDF_ROOT)/components/newlib/lib \
 	$(ESP32_ROOT)/lib
 
-LDFLAGS_AFTER += -Wl,--start-group \
-            $(ESPLIBS:%=-l%) \
-            -Wl,--end-group \
-            -Wl,-T$(LINKER_SCRIPT)
+LDFLAGS += -Wl,-T$(LINKER_SCRIPT)
 
-LDFLAGS_AFTER += \
-	$(ESPLIBS_AFTER:%=-l%)
-
-ESPLIBS += \
+LIB += \
 	hal \
 	core \
 	crypto \
@@ -64,16 +58,11 @@ ESPLIBS += \
 	nghttp \
 	nvs_flash \
 	spi_flash \
-	tcpip_adapter
-
-ESPLIBS_AFTER += \
+	tcpip_adapter \
 	gcc \
 	g \
 	c_rom \
-	m \
-
-# Used by arduino script to find the libraries.
-LIB ?= $(ESPLIBS) $(ESPLIBS_AFTER)
+	m
 
 F_CPU = 240000000
 
@@ -83,13 +72,5 @@ FAMILY = esp32
 MCU_HOMEPAGE = "http://www.espressif.com"
 MCU_NAME = "Espressif ESP32"
 MCU_DESC = "Espressif ESP32 @ 80 MHz, 82 kB dram, 4 MB flash"
-
-#SIZE_SUMMARY_CMD ?= $(SIMBA_ROOT)/bin/memory_usage.py \
-#			--ram-section .data \
-#			--ram-section .rodata \
-#			--ram-section .bss \
-#			--rom-section .text \
-#			--rom-section .irom0.text \
-#			${EXE}
 
 include $(SIMBA_ROOT)/make/$(TOOLCHAIN)/esp32.mk

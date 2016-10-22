@@ -24,7 +24,7 @@ SRC += $(SIMBA_ROOT)/src/boards/photon/board.c
 INC += $(SIMBA_ROOT)/3pp/wiced/WWD/include
 INC += $(SIMBA_ROOT)/3pp/wiced/WWD/internal/bus_protocols/SDIO
 INC += $(SIMBA_ROOT)/3pp/wiced/WWD/internal/chips/43362A2
-LDFLAGS_AFTER += -lwwdsdio
+LIB += wwdsdio
 LIBPATH += "$(SIMBA_ROOT)/3pp/wiced/WWD/lib"
 
 BOARD_HOMEPAGE = "https://docs.particle.io/datasheets/photon-datasheet/"

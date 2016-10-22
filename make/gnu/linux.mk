@@ -20,14 +20,18 @@
 CROSS_COMPILE =
 CFLAGS += -Werror -Wno-error=unused-variable -DCONFIG_PROFILE_STACK=0
 CXXFLAGS += -Werror -Wno-error=unused-variable -DCONFIG_PROFILE_STACK=0
-LDFLAGS_AFTER += -lpthread -lrt
 
 CFLAGS += -pg -fprofile-arcs -ftest-coverage
 CXXFLAGS += -pg -fprofile-arcs -ftest-coverage
-LDFLAGS += -pg -fprofile-arcs -ftest-coverage -lgcov
+LDFLAGS += -pg -fprofile-arcs -ftest-coverage
 
 CFLAGS += -g
 CXXFLAGS += -g
 LDFLAGS += -g
+
+LIB += \
+	gcov \
+	pthread \
+	rt
 
 include $(SIMBA_ROOT)/make/gnu.mk

@@ -33,14 +33,14 @@ nano32.build.f_cpu=80000000L
 nano32.build.board=NANO32
 nano32.build.variant=nano32
 nano32.build.core=Simba:simba
-nano32.build.ldscript=simba.flash.1m.ld
-nano32.build.flash_size=512K
+nano32.build.ldscript=simba.flash.ld
+nano32.build.flash_size=4M
 nano32.build.flash_mode=dio
 nano32.build.flash_freq=40
 
 nano32.compiler.c.extra_flags={nano32_compiler_c_extra_flags}
 nano32.compiler.cpp.extra_flags={nano32_compiler_cxx_extra_flags}
 nano32.compiler.c.elf.extra_flags={nano32_compiler_c_elf_extra_flags}
-nano32.compiler.c.elf.extra_flags_after={nano32_compiler_c_elf_extra_flags_after}
+nano32.compiler.c.elf.libs={nano32_compiler_c_elf_libs}
 
 ##################################################################

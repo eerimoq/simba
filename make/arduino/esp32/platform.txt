@@ -64,7 +64,6 @@ build.extra_flags=
 # These can be overridden in platform.local.txt
 compiler.c.extra_flags=
 compiler.c.elf.extra_flags=
-compiler.c.elf.extra_flags_after=
 compiler.S.extra_flags=
 compiler.ar.extra_flags=
 compiler.elf2hex.extra_flags=
@@ -90,7 +89,7 @@ archive_file_path={build.path}/{archive_file}
 recipe.ar.pattern="{compiler.path}{compiler.ar.cmd}" {compiler.ar.flags} {compiler.ar.extra_flags} "{archive_file_path}" "{object_file}"
 
 ## Combine gc-sections, archives, and objects
-recipe.c.combine.pattern="{compiler.path}{compiler.c.elf.cmd}" {compiler.c.elf.flags} {compiler.c.elf.extra_flags} -o "{build.path}/{build.project_name}.elf" "-L{build.path}" "-Wl,-Map,{build.path}/{build.project_name}.map" {compiler.combine.flags} {object_files} "{build.path}/{archive_file}" {compiler.c.elf.extra_flags_after}
+recipe.c.combine.pattern="{compiler.path}{compiler.c.elf.cmd}" {compiler.c.elf.flags} {compiler.c.elf.extra_flags} -o "{build.path}/{build.project_name}.elf" "-L{build.path}" "-Wl,-Map,{build.path}/{build.project_name}.map" {compiler.combine.flags} -Wl,--start-group {object_files} "{build.path}/{archive_file}" {compiler.c.elf.libs} -Wl,--end-group
 
 ## Create output (.bin file)
 recipe.objcopy.hex.pattern="{compiler.python.cmd}" "{runtime.platform.path}/tools/esptool.py" --chip esp32 elf2image --flash_mode dio --flash_freq 40m -o "{build.path}/{build.project_name}.bin" "{build.path}/{build.project_name}.elf"

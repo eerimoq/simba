@@ -70,7 +70,8 @@ def test():
                           ("avr", "pro-micro"),
                           ("sam", "arduino_due_x_dbg"),
                           ("esp", "esp01"),
-                          ("esp", "esp12e")]:
+                          ("esp", "esp12e"),
+                          ("esp32", "nano32")]:
         command = [
             "make",
             "all",
