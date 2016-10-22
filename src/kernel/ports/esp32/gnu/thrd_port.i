@@ -22,7 +22,7 @@
 #include "freertos/FreeRTOS.h"
 #include "freertos/semphr.h"
 
-static struct thrd_t main_thrd __attribute__ ((section (".simba_main_thrd")));
+static struct thrd_t main_thrd __attribute__ ((section (".main_thrd")));
 
 xSemaphoreHandle thrd_idle_sem;
 
@@ -105,8 +105,8 @@ static int thrd_port_spawn(struct thrd_t *thrd_p,
 static void thrd_port_idle_wait(struct thrd_t *thrd_p)
 {
     /* Yield the Simba FreeRTOS thread and wait for an interrupt to
-     * occur. The interrupt handlers signals on this semaphore when a
-     * thread has been resumed and should be scheduled. */
+       occur. The interrupt handlers signals on this semaphore when a
+       thread has been resumed and should be scheduled. */
     xSemaphoreTake(thrd_idle_sem, portMAX_DELAY);
 
     /* Add this thread to the ready list and reschedule. */

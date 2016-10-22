@@ -25,6 +25,9 @@
 /* The main function is defined by the user in main.c. */
 extern int main();
 
+static THRD_STACK(main_stack, CONFIG_SYS_SIMBA_MAIN_STACK_MAX)
+     __attribute__ ((section (".main_stack")));
+
 static int sys_port_module_init(void)
 {
     (void)sys_tick;
@@ -64,13 +67,29 @@ static void sys_port_interrupt_cpu_usage_reset(void)
 {
 }
 
+/**
+ * Simba runs in this FreeRTOS task.
+ */
+static void main_task(void *events)
+{
+    /* Call the Simba application main function. */
+    main();
+
+    thrd_suspend(NULL);
+}
+
 int app_main()
 {
     system_init();
-
-    std_printf(FSTR("Hello!\r\n"));
-
-    main();
+    xTaskGenericCreate(&main_task,
+                       "simba",
+                       sizeof(main_stack) / sizeof(int),
+                       NULL,
+                       5,
+                       NULL,
+                       (StackType_t *const)main_stack,
+                       NULL,
+                       0);
 
     return (0);
 }

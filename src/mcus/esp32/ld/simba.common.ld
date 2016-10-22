@@ -73,13 +73,6 @@ SECTIONS
     *(.share.mem)
     *(.gnu.linkonce.b.*)
     *(COMMON)
-    __simba_stack_begin = ABSOLUTE(.);
-    *(.simba_stack_free)
-    *(.simba_other_stacks)
-    *(.simba_main_thrd)
-    *(.simba_main_stack)
-    __main_stack_end = ABSOLUTE(.);
-    __simba_stack_end = ABSOLUTE(.);
     . = ALIGN (8);
     _bss_end = ABSOLUTE(.);
   } >dram0_0_seg
@@ -99,6 +92,9 @@ SECTIONS
     KEEP(*(.gnu.linkonce.s2.*))
     KEEP(*(.jcr))
     *(.dram1 .dram1.*)
+    *(.main_thrd)
+    *(.main_stack)
+    __main_stack_end = ABSOLUTE(.);
     _data_end = ABSOLUTE(.);
     . = ALIGN(4);
     _heap_start = ABSOLUTE(.);

@@ -28,16 +28,12 @@ int board_pin_string_to_device_index(const char *str_p)
             return (-1);
         }
 
-        if ((pin >= 0) && (pin <= 19)) {
+        if ((pin >= 0) && (pin <= 27)) {
             /* Correct pin number. */
-        } else if ((pin >= 21) && (pin <= 23)) {
-            pin -= 1;
-        } else if ((pin >= 25) && (pin <= 27)) {
-            pin -= 2;
         } else if ((pin >= 32) && (pin <= 36)) {
-            pin -= 6;
+            pin -= 4;
         } else if (pin == 39) {
-            pin -= 6;
+            pin -= 4;
         } else {
             return (-1);
         }

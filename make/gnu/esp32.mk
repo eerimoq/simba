@@ -21,8 +21,7 @@ CROSS_COMPILE = xtensa-esp32-elf-
 
 CDEFS += F_CPU=$(F_CPU)UL \
 	ICACHE_FLASH \
-	__STRICT_ANSI__ \
-	__ets__
+	__STRICT_ANSI__
 
 CFLAGS += -Os \
           -Werror \
@@ -44,8 +43,7 @@ CXXFLAGS += -Os \
 
 LIBPATH += $(ESP_IDF_ROOT)/components/esp32/lib
 
-LDFLAGS += -u call_user_start \
-           -Wl,--cref \
+LDFLAGS += -Wl,--cref \
            -nostdlib \
            -Wl,-EL \
            -mtext-section-literals \

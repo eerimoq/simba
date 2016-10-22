@@ -25,7 +25,7 @@
 #endif
 
 #define THRD_PORT_STACK(name, size)             \
-    uint32_t name[DIV_CEIL(sizeof(struct thrd_t) + (size), sizeof(uint32_t))] __attribute__ ((section (".simba_other_stacks")))
+    uint32_t name[DIV_CEIL(sizeof(struct thrd_t) + (size), sizeof(uint32_t))]
 
 struct thrd_port_context_t {
     uint32_t a0;           /* Return addess from the swap function. */

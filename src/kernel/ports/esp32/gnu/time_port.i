@@ -17,6 +17,9 @@
  * This file is part of the Simba project.
  */
 
+#include "rom/ets_sys.h"
+
 static void time_port_busy_wait_us(int microseconds)
 {
+    ets_delay_us(microseconds);
 }

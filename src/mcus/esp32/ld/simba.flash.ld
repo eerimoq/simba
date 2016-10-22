@@ -22,9 +22,11 @@
  */
 MEMORY
 {
-  /* All these values assume the flash cache is on, and have the blocks this uses subtracted from the length
-  of the various regions. The 'data access port' dram/drom regions map to the same iram/irom regions but
-  are connected to the data port of the CPU and eg allow bytewise access. */
+  /* All these values assume the flash cache is on, and have the
+  blocks this uses subtracted from the length of the various
+  regions. The 'data access port' dram/drom regions map to the same
+  iram/irom regions but are connected to the data port of the CPU and
+  eg allow bytewise access. */
   /* IRAM for PRO cpu. Not sure if happy with this, this is MMU area... */
   iram0_0_seg (RX) : org = 0x40080000, len = 0x20000
   /* Even though the segment name is iram, it is actually mapped to flash */
@@ -48,6 +50,7 @@ MEMORY
   rtc_slow_seg(RW) : org = 0x50000000 + 0,
                                      len = 0x1000 - 0
 }
+
 /* Heap ends at top of dram0_0_seg */
 _heap_end = 0x40000000 - 0x0;
 
