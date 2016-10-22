@@ -9,7 +9,7 @@ export PATH=$PATH:$(readlink -f bin)
 export PATH=$PATH:$(readlink -f ../esp-open-sdk/xtensa-lx106-elf/bin)
 
 # ESP32 toolchain
-export PATH=$PATH:$(readlink -f ../esp/xtensa-esp32-elf/bin)
+export PATH=$PATH:$(readlink -f ../xtensa-esp32-elf/bin)
 
 # RUST bindgen
 export PATH=$PATH:$(readlink -f ../rust-bindgen/target/debug)

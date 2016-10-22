@@ -104,6 +104,8 @@ Execute the one-liner below to install `Simba`.
      (git clone --recursive https://github.com/pfalcon/esp-open-sdk.git && \
       cd esp-open-sdk && \
       make STANDALONE=n) && \
+     wget https://dl.espressif.com/dl/xtensa-esp32-elf-linux32-1.22.0-59.tar.gz && \
+     tar xf xtensa-esp32-elf-linux32-1.22.0-59.tar.gz && \
      git clone https://github.com/eerimoq/simba
 
 Post-install
