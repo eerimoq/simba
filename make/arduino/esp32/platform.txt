@@ -1,0 +1,119 @@
+# @file platform.txt
+#
+# @section License
+# Copyright (C) 2016, Erik Moqvist
+#
+# This library is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Lesser General Public
+# License as published by the Free Software Foundation; either
+# version 2.1 of the License, or (at your option) any later version.
+#
+# This library is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# Lesser General Public License for more details.
+#
+# This file is part of the Simba project.
+
+name=Simba ESP32 Boards
+version=7.0.0
+
+# Simba ESP32 Core and platform.
+# ------------------------------
+
+name=Simba ESP32 Boards
+version=1.6.8
+
+runtime.tools.xtensa-esp32-elf-gcc.path={runtime.platform.path}/tools/xtensa-esp32-elf-gcc
+
+# ESP compile variables
+# ----------------------
+
+compiler.warning_flags=-w
+compiler.warning_flags.none=-w
+compiler.warning_flags.default=
+compiler.warning_flags.more=-Wall
+compiler.warning_flags.all=-Wall -Wextra
+
+compiler.path={runtime.tools.xtensa-esp32-elf-gcc.path}/bin/
+compiler.c.cmd=xtensa-esp32-elf-gcc
+compiler.c.flags=-MMD
+
+compiler.c.elf.cmd=xtensa-esp32-elf-gcc
+compiler.c.elf.flags=
+compiler.S.cmd=xtensa-esp32-elf-gcc
+compiler.S.flags=-MMD
+compiler.cpp.cmd=xtensa-esp32-elf-g++
+compiler.cpp.flags=-MMD
+compiler.ar.cmd=xtensa-esp32-elf-ar
+compiler.ar.flags=rcs
+compiler.objcopy.cmd=xtensa-esp32-elf-objcopy
+compiler.objcopy.eep.flags=-O ihex -j .eeprom --set-section-flags=.eeprom=alloc,load --no-change-warnings --change-section-lma .eeprom=0
+compiler.elf2hex.flags=-O binary
+compiler.elf2hex.cmd=
+compiler.ldflags=
+compiler.size.cmd=xtensa-esp32-elf-size
+compiler.define=-DARDUINO=
+compiler.combine.flags=
+compiler.esptool.cmd=esptool
+compiler.esptool.cmd.windows=esptool.exe
+
+# This can be overridden in boards.txt
+build.extra_flags=
+
+# These can be overridden in platform.local.txt
+compiler.c.extra_flags=
+compiler.c.elf.extra_flags=
+compiler.c.elf.extra_flags_after=
+compiler.S.extra_flags=
+compiler.ar.extra_flags=
+compiler.elf2hex.extra_flags=
+
+compiler.python.cmd=python
+compiler.python.cmd.windows=python.exe
+
+# ESP compile patterns
+# ---------------------
+
+## Compile c files
+recipe.c.o.pattern="{compiler.path}{compiler.c.cmd}" {compiler.c.flags} -DARDUINO_{build.board} -DARDUINO_ARCH_{build.arch} {compiler.c.extra_flags} {build.extra_flags} {includes} "{source_file}" -o "{object_file}"
+
+## Compile c++ files
+recipe.cpp.o.pattern="{compiler.path}{compiler.cpp.cmd}" {compiler.cpp.flags} -DARDUINO_{build.board} -DARDUINO_ARCH_{build.arch} {compiler.cpp.extra_flags} {build.extra_flags} {includes} "{source_file}" -o "{object_file}"
+
+## Compile S files
+recipe.S.o.pattern="{compiler.path}{compiler.S.cmd}" {compiler.S.flags} -DARDUINO_{build.board} -DARDUINO_ARCH_{build.arch} {compiler.S.extra_flags} {build.extra_flags} {includes} "{source_file}" -o "{object_file}"
+
+## Create archives
+# archive_file_path is needed for backwards compatibility with IDE 1.6.5 or older, IDE 1.6.6 or newer overrides this value
+archive_file_path={build.path}/{archive_file}
+recipe.ar.pattern="{compiler.path}{compiler.ar.cmd}" {compiler.ar.flags} {compiler.ar.extra_flags} "{archive_file_path}" "{object_file}"
+
+## Combine gc-sections, archives, and objects
+recipe.c.combine.pattern="{compiler.path}{compiler.c.elf.cmd}" {compiler.c.elf.flags} {compiler.c.elf.extra_flags} -o "{build.path}/{build.project_name}.elf" "-L{build.path}" "-Wl,-Map,{build.path}/{build.project_name}.map" {compiler.combine.flags} {object_files} "{build.path}/{archive_file}" {compiler.c.elf.extra_flags_after}
+
+## Create output (.bin file)
+recipe.objcopy.hex.pattern="{compiler.python.cmd}" "{runtime.platform.path}/tools/esptool.py" --chip esp32 elf2image --flash_mode dio --flash_freq 40m -o "{build.path}/{build.project_name}.bin" "{build.path}/{build.project_name}.elf"
+
+## Save bin
+recipe.output.tmp_file={build.project_name}.bin
+recipe.output.save_file={build.project_name}.{build.variant}.bin
+
+## Compute size
+recipe.size.pattern="{compiler.path}{compiler.size.cmd}" -A "{build.path}/{build.project_name}.elf"
+recipe.size.regex=^(?:\.iram0\.text|\.dram0\.text|\.flash\.text|\.dram0\.data|\.flash\.rodata|)\s+([0-9]+).*
+recipe.size.regex.data=^(?:\.dram0\.data|\.dram0\.bss)\s+([0-9]+).*
+
+# ESP32 Uploader tools
+# --------------------
+
+tools.esptool.cmd=python
+tools.esptool.cmd.windows=python.exe
+tools.esptool.path={runtime.platform.path}/tools/esptool.py
+tools.esptool.network_cmd=python
+tools.esptool.network_cmd.windows=python.exe
+
+tools.esptool.upload.protocol=esp32
+tools.esptool.upload.params.verbose=
+tools.esptool.upload.params.quiet=
+tools.esptool.upload.pattern="{cmd}" "{path}" --chip esp32 --port "{serial.port}" --baud 115200 write_flash --flash_freq 40m --flash_mode dio 0x1000 "{runtime.platform.path}/bin/bootloader.bin" 0x4000 "{runtime.platform.path}/bin/partitions_singleapp.bin" 0x10000 "{build.path}/{build.project_name}.bin"

@@ -1,0 +1,46 @@
+# @file boards.txt
+#
+# @section License
+# Copyright (C) 2016, Erik Moqvist
+#
+# This library is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Lesser General Public
+# License as published by the Free Software Foundation; either
+# version 2.1 of the License, or (at your option) any later version.
+#
+# This library is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# Lesser General Public License for more details.
+#
+# This file is part of the Simba project.
+
+##################################################################
+
+nano32.name=NANO32
+
+nano32.upload.tool=esptool
+nano32.upload.speed=115200
+nano32.upload.resetmethod=ck
+nano32.upload.maximum_size=434160
+nano32.upload.maximum_data_size=81920
+nano32.upload.wait_for_upload_port=true
+nano32.serial.disableDTR=true
+nano32.serial.disableRTS=true
+
+nano32.build.mcu=esp32
+nano32.build.f_cpu=80000000L
+nano32.build.board=NANO32
+nano32.build.variant=nano32
+nano32.build.core=Simba:simba
+nano32.build.ldscript=simba.flash.1m.ld
+nano32.build.flash_size=512K
+nano32.build.flash_mode=dio
+nano32.build.flash_freq=40
+
+nano32.compiler.c.extra_flags={nano32_compiler_c_extra_flags}
+nano32.compiler.cpp.extra_flags={nano32_compiler_cxx_extra_flags}
+nano32.compiler.c.elf.extra_flags={nano32_compiler_c_elf_extra_flags}
+nano32.compiler.c.elf.extra_flags_after={nano32_compiler_c_elf_extra_flags_after}
+
+##################################################################

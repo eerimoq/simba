@@ -52,7 +52,7 @@ BOARDS = {
             "FAMILY_SAM", 
             "MCU_SAM3X8E", 
             "BOARD_ARDUINO_DUE", 
-            "VERSION=10.0.0"
+            "VERSION=esp32"
         ], 
         "cflags": [
             "-fdata-sections", 
@@ -210,7 +210,7 @@ BOARDS = {
             "FAMILY_AVR", 
             "MCU_ATMEGA2560", 
             "BOARD_ARDUINO_MEGA", 
-            "VERSION=10.0.0", 
+            "VERSION=esp32", 
             "__DELAY_BACKWARD_COMPATIBLE__"
         ], 
         "cflags": [
@@ -364,7 +364,7 @@ BOARDS = {
             "FAMILY_AVR", 
             "MCU_ATMEGA328P", 
             "BOARD_ARDUINO_NANO", 
-            "VERSION=10.0.0", 
+            "VERSION=esp32", 
             "__DELAY_BACKWARD_COMPATIBLE__"
         ], 
         "cflags": [
@@ -518,7 +518,7 @@ BOARDS = {
             "FAMILY_AVR", 
             "MCU_ATMEGA32U4", 
             "BOARD_ARDUINO_PRO_MICRO", 
-            "VERSION=10.0.0", 
+            "VERSION=esp32", 
             "__DELAY_BACKWARD_COMPATIBLE__"
         ], 
         "cflags": [
@@ -676,7 +676,7 @@ BOARDS = {
             "FAMILY_AVR", 
             "MCU_ATMEGA328P", 
             "BOARD_ARDUINO_UNO", 
-            "VERSION=10.0.0", 
+            "VERSION=esp32", 
             "__DELAY_BACKWARD_COMPATIBLE__"
         ], 
         "cflags": [
@@ -830,7 +830,7 @@ BOARDS = {
             "FAMILY_LINUX", 
             "MCU_LINUX", 
             "BOARD_CYGWIN", 
-            "VERSION=10.0.0"
+            "VERSION=esp32"
         ], 
         "cflags": [
             "-fprofile-arcs", 
@@ -953,7 +953,7 @@ BOARDS = {
             "FAMILY_ESP", 
             "MCU_ESP8266", 
             "BOARD_ESP01", 
-            "VERSION=10.0.0", 
+            "VERSION=esp32", 
             "ICACHE_FLASH", 
             "__STRICT_ANSI__", 
             "__ets__"
@@ -1107,7 +1107,7 @@ BOARDS = {
             "FAMILY_ESP", 
             "MCU_ESP8266", 
             "BOARD_ESP12E", 
-            "VERSION=10.0.0", 
+            "VERSION=esp32", 
             "ICACHE_FLASH", 
             "__STRICT_ANSI__", 
             "__ets__"
@@ -1261,7 +1261,7 @@ BOARDS = {
             "FAMILY_LINUX", 
             "MCU_LINUX", 
             "BOARD_LINUX", 
-            "VERSION=10.0.0"
+            "VERSION=esp32"
         ], 
         "cflags": [
             "-fprofile-arcs", 
@@ -1377,6 +1377,136 @@ BOARDS = {
             "src/drivers/sd.c"
         ]
     }, 
+    "nano32": {
+        "board_desc": "NANO32", 
+        "cdefs": [
+            "ARCH_ESP32", 
+            "FAMILY_ESP32", 
+            "MCU_ESP32", 
+            "BOARD_NANO32", 
+            "VERSION=esp32", 
+            "ICACHE_FLASH", 
+            "__STRICT_ANSI__"
+        ], 
+        "cflags": [
+            "-fdata-sections", 
+            "-fno-inline-functions", 
+            "-ffunction-sections", 
+            "-c", 
+            "-Os", 
+            "-std=gnu99", 
+            "-funsigned-bitfields", 
+            "-mlongcalls", 
+            "-mtext-section-literals", 
+            "-Wall", 
+            "-nostdlib", 
+            "-fsingle-precision-constant", 
+            "-Wno-error=unused-variable", 
+            "-Werror"
+        ], 
+        "cxxflags": [
+            "-fdata-sections", 
+            "-ffunction-sections", 
+            "-c", 
+            "-Os", 
+            "-funsigned-bitfields", 
+            "-mlongcalls", 
+            "-mtext-section-literals", 
+            "-Wall", 
+            "-nostdlib", 
+            "-Wno-error=unused-variable", 
+            "-std=c++11", 
+            "-Werror"
+        ], 
+        "inc": [
+            "src", 
+            "3pp/esp32/esp-idf/components/newlib/include", 
+            "src/kernel/ports/esp32/gnu", 
+            "3pp/lwip-1.4.1/src/include", 
+            "3pp/esp32/esp-idf/components/freertos/include", 
+            "3pp/spiffs-0.3.5/src", 
+            "3pp/lwip-1.4.1/src/include/ipv4", 
+            "3pp/esp32/esp-idf/components/esp32/include", 
+            "build/nano32", 
+            "src/mcus/esp32", 
+            "src/inet", 
+            "src/boards/nano32", 
+            "src/drivers/ports/esp32"
+        ], 
+        "ldflags": [
+            "-Wl,--cref", 
+            "-nostdlib", 
+            "-Wl,-EL", 
+            "-mtext-section-literals", 
+            "-Wl,--gc-sections", 
+            "-Wl,-Map=build/nano32/default_configuration.map", 
+            "-Wl,--gc-sections"
+        ], 
+        "libpath": [
+            "src/mcus/esp32/ld", 
+            "3pp/esp32/esp-idf/components/esp32/ld", 
+            "3pp/esp32/esp-idf/components/esp32", 
+            "3pp/esp32/esp-idf/components/newlib/lib", 
+            "3pp/esp32/lib", 
+            "3pp/esp32/esp-idf/components/esp32/lib"
+        ], 
+        "linker_script": "simba.flash.ld", 
+        "mcu_desc": "Espressif ESP32 @ 80 MHz, 82 kB dram, 4 MB flash", 
+        "src": [
+            "src/multimedia/midi.c", 
+            "src/filesystems/fs.c", 
+            "src/inet/socket.c", 
+            "src/sync/bus.c", 
+            "src/inet/http_websocket_client.c", 
+            "src/debug/log.c", 
+            "src/sync/rwlock.c", 
+            "src/alloc/heap.c", 
+            "src/inet/http_websocket_server.c", 
+            "src/debug/harness.c", 
+            "src/mcus/esp32/esp32.c", 
+            "src/oam/shell.c", 
+            "3pp/spiffs-0.3.5/src/spiffs_cache.c", 
+            "src/encode/base64.c", 
+            "3pp/spiffs-0.3.5/src/spiffs_check.c", 
+            "src/hash/sha1.c", 
+            "src/alloc/circular_heap.c", 
+            "src/oam/service.c", 
+            "src/inet/http_server.c", 
+            "src/sync/queue.c", 
+            "src/inet/ping.c", 
+            "src/hash/crc.c", 
+            "src/inet/inet.c", 
+            "src/drivers/pin.c", 
+            "3pp/spiffs-0.3.5/src/spiffs_nucleus.c", 
+            "3pp/spiffs-0.3.5/src/spiffs_hydrogen.c", 
+            "src/drivers/uart.c", 
+            "src/inet/mqtt_client.c", 
+            "src/collections/binary_tree.c", 
+            "src/inet/network_interface/slip.c", 
+            "src/oam/console.c", 
+            "src/oam/settings.c", 
+            "src/kernel/thrd.c", 
+            "src/filesystems/fat16.c", 
+            "src/filesystems/spiffs.c", 
+            "src/text/configfile.c", 
+            "src/boards/nano32/board.c", 
+            "src/kernel/time.c", 
+            "src/sync/chan.c", 
+            "src/collections/hash_map.c", 
+            "src/inet/network_interface/wifi.c", 
+            "src/settings_default.c", 
+            "src/sync/event.c", 
+            "src/mcus/esp32/mcu.c", 
+            "src/text/re.c", 
+            "3pp/spiffs-0.3.5/src/spiffs_gc.c", 
+            "src/text/std.c", 
+            "src/kernel/sys.c", 
+            "src/sync/sem.c", 
+            "src/encode/json.c", 
+            "src/kernel/timer.c", 
+            "src/inet/network_interface.c"
+        ]
+    }, 
     "photon": {
         "board_desc": "Particle IO Photon", 
         "cdefs": [
@@ -1384,7 +1514,7 @@ BOARDS = {
             "FAMILY_STM32F2", 
             "MCU_STM32F205RG", 
             "BOARD_PHOTON", 
-            "VERSION=10.0.0"
+            "VERSION=esp32"
         ], 
         "cflags": [
             "-fdata-sections", 
@@ -1542,7 +1672,7 @@ BOARDS = {
             "FAMILY_STM32F3", 
             "MCU_STM32F303VC", 
             "BOARD_STM32F3DISCOVERY", 
-            "VERSION=10.0.0"
+            "VERSION=esp32"
         ], 
         "cflags": [
             "-fdata-sections", 
@@ -1687,7 +1817,7 @@ BOARDS = {
             "FAMILY_STM32F1", 
             "MCU_STM32F100RB", 
             "BOARD_STM32VLDISCOVERY", 
-            "VERSION=10.0.0"
+            "VERSION=esp32"
         ], 
         "cflags": [
             "-fdata-sections", 

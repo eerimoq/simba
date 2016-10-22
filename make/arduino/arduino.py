@@ -86,6 +86,8 @@ def generate_cores(family, database):
         board = "arduino_due"
     elif family == "esp":
         board = "esp01"
+    elif family == "esp32":
+        board = "nano32"
     else:
         raise ValueError("{}: bad family".format(family))
 
@@ -344,6 +346,24 @@ def generate_boards_txt_esp(database, boards_txt_fmt):
         esp12e_compiler_c_elf_extra_flags=esp12e_compiler_c_elf_extra_flags,
         esp12e_compiler_c_elf_extra_flags_after=get_c_elf_extra_flags_after("esp12e", database))
 
+def generate_boards_txt_esp32(database, boards_txt_fmt):
+    """Generate boards.txt for ESP32.
+
+    """
+
+    # ESP SDK libraries are copied to this location.
+    libpath = "-L{runtime.platform.path}/lib"
+
+    nano32_compiler_c_elf_extra_flags = get_c_elf_extra_flags("nano32", database)
+    nano32_compiler_c_elf_extra_flags += " "
+    nano32_compiler_c_elf_extra_flags += libpath
+
+    return boards_txt_fmt.format(
+        nano32_compiler_c_extra_flags=get_c_extra_flags("nano32", database),
+        nano32_compiler_cxx_extra_flags=get_cxx_extra_flags("nano32", database),
+        nano32_compiler_c_elf_extra_flags=nano32_compiler_c_elf_extra_flags,
+        nano32_compiler_c_elf_extra_flags_after=get_c_elf_extra_flags_after("nano32", database))
+
 
 def generate_configuration_files(family, database):
     """Generate copy configuration files.
@@ -370,6 +390,8 @@ def generate_configuration_files(family, database):
                 boards_txt = generate_boards_txt_sam(database, fin.read())
             elif family == "esp":
                 boards_txt = generate_boards_txt_esp(database, fin.read())
+            elif family == "esp32":
+                boards_txt = generate_boards_txt_esp32(database, fin.read())
             else:
                 raise ValueError("Unsupported family {}.".format(family))
 
@@ -400,7 +422,7 @@ def generate_extra(family, database):
                         shutil.copy(file_path, "lib")
                         break
 
-        # Copt eboot (bootloader).
+        # Copy eboot (bootloader).
         eboot_dir = os.path.join("bootloaders", "eboot")
         mkdir_p(eboot_dir)
         shutil.copy(os.path.join(simba_root,
@@ -411,7 +433,44 @@ def generate_extra(family, database):
                                  "eboot",
                                  "eboot.elf"),
                     eboot_dir)
+    elif family == "esp32":
+        # Copy all libraries.
+        libpaths = database["boards"]["nano32"]["libpath"]
+        mkdir_p("lib")
 
+        for lib in database["boards"]["nano32"]["lib"]:
+            for libpath in libpaths:
+                libpath_dir = os.path.join(simba_root, libpath)
+                for root, _, filenames in os.walk(libpath_dir):
+                    for filename in filenames:
+                        if filename != "lib" + lib + ".a":
+                            continue
+                        file_path = os.path.join(root, filename)
+                        shutil.copy(file_path, "lib")
+                        break
+
+        # Copy bootloader and partition table.
+        mkdir_p("bin")
+        for filename in ["bootloader.bin", "partitions_singleapp.bin"]:
+            shutil.copy(os.path.join(simba_root,
+                                     "3pp",
+                                     "esp32",
+                                     "bin",
+                                     filename),
+                        "bin")
+
+        # Copy esptool.
+        mkdir_p("tools")
+        shutil.copy(os.path.join(simba_root,
+                                 "3pp",
+                                 "esp32",
+                                 "esp-idf",
+                                 "components",
+                                 "esptool_py",
+                                 "esptool",
+                                 "esptool.py"),
+                    "tools")
+        
 
 def generate_files_and_folders(family, database, outdir):
     """Generate files and folders.
@@ -452,7 +511,7 @@ def main():
 
     print("Writing to " + args.outdir + ".")
 
-    for family in ["avr", "sam", "esp"]:
+    for family in ["avr", "sam", "esp", "esp32"]:
         packages_family_dir = os.path.join(args.outdir,
                                            "packages",
                                            "Simba",

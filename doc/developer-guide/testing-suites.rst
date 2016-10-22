@@ -184,6 +184,11 @@ Linux
 - :github-blob:`inet/ping<tst/inet/ping/main.c>`
 - :github-blob:`multimedia/midi<tst/multimedia/midi/main.c>`
 
+NANO32
+------
+
+- :github-blob:`kernel/sys<tst/kernel/sys/main.c>`
+
 Particle IO Photon
 ------
 

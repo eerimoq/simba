@@ -168,6 +168,8 @@ Default Standard Library configuration.
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_SHELL_PROMPT_                                  |  "$ "                                               |
 +--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_SOCKET_RAW_                                    |  1                                                  |
++--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_SPIFFS_                                        |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_START_CONSOLE_                                 |  CONFIG_START_CONSOLE_UART                          |
@@ -329,6 +331,8 @@ Mcu
 .. _CONFIG_SHELL_MINIMAL: ../user-guide/configuration.html#c.CONFIG_SHELL_MINIMAL
 
 .. _CONFIG_SHELL_PROMPT: ../user-guide/configuration.html#c.CONFIG_SHELL_PROMPT
+
+.. _CONFIG_SOCKET_RAW: ../user-guide/configuration.html#c.CONFIG_SOCKET_RAW
 
 .. _CONFIG_SPIFFS: ../user-guide/configuration.html#c.CONFIG_SPIFFS
 
