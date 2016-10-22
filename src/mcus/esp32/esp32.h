@@ -418,98 +418,115 @@ struct esp32_uart_t {
 /* R/W share the same address. This register contains the next byte in
  * the fifo. */
 #define ESP32_UART_FIFO_RXFIFO_RD_BYTE_POS  (0)
-#define ESP32_UART_FIFO_RXFIFO_RD_BYTE_MASK           \
+#define ESP32_UART_FIFO_RXFIFO_RD_BYTE_MASK             \
     (0xff << ESP32_UART_FIFO_RXFIFO_RD_BYTE_POS)
 
 /* UART INTERRUPT RAW STATE */
-#define ESP32_UART_INT_RAW_RXFIFO_TOUT  BIT(8)
-#define ESP32_UART_INT_RAW_BRK_DET      BIT(7)
-#define ESP32_UART_INT_RAW_CTS_CHG      BIT(6)
-#define ESP32_UART_INT_RAW_DSR_CHG      BIT(5)
-#define ESP32_UART_INT_RAW_RXFIFO_OVF   BIT(4)
-#define ESP32_UART_INT_RAW_FRM_ERR      BIT(3)
-#define ESP32_UART_INT_RAW_PARITY_ERR   BIT(2)
-#define ESP32_UART_INT_RAW_TXFIFO_EMPTY BIT(1)
-#define ESP32_UART_INT_RAW_RXFIFO_FULL  BIT(0)
+#define ESP32_UART_INT_RAW_RXFIFO_FULL              BIT(0)
+#define ESP32_UART_INT_RAW_TXFIFO_EMPTY             BIT(1)
+#define ESP32_UART_INT_RAW_PARITY_ERR               BIT(2)
+#define ESP32_UART_INT_RAW_FRM_ERR                  BIT(3)
+#define ESP32_UART_INT_RAW_RXFIFO_OVF               BIT(4)
+#define ESP32_UART_INT_RAW_DSR_CHG                  BIT(5)
+#define ESP32_UART_INT_RAW_CTS_CHG                  BIT(6)
+#define ESP32_UART_INT_RAW_BRK_DET                  BIT(7)
+#define ESP32_UART_INT_RAW_RXFIFO_TOUT              BIT(8)
 
 /* UART INTERRUPT STATE REGISTER（UART_INT_RAW&UART_INT_ENA） */
-#define ESP32_UART_INT_ST_RXFIFO_TOUT   BIT(8)
-#define ESP32_UART_INT_ST_BRK_DET       BIT(7)
-#define ESP32_UART_INT_ST_CTS_CHG       BIT(6)
-#define ESP32_UART_INT_ST_DSR_CHG       BIT(5)
-#define ESP32_UART_INT_ST_RXFIFO_OVF    BIT(4)
-#define ESP32_UART_INT_ST_FRM_ERR       BIT(3)
-#define ESP32_UART_INT_ST_PARITY_ERR    BIT(2)
-#define ESP32_UART_INT_ST_TXFIFO_EMPTY  BIT(1)
-#define ESP32_UART_INT_ST_RXFIFO_FULL   BIT(0)
+#define ESP32_UART_INT_ST_RXFIFO_FULL               BIT(0)
+#define ESP32_UART_INT_ST_TXFIFO_EMPTY              BIT(1)
+#define ESP32_UART_INT_ST_PARITY_ERR                BIT(2)
+#define ESP32_UART_INT_ST_FRM_ERR                   BIT(3)
+#define ESP32_UART_INT_ST_RXFIFO_OVF                BIT(4)
+#define ESP32_UART_INT_ST_DSR_CHG                   BIT(5)
+#define ESP32_UART_INT_ST_CTS_CHG                   BIT(6)
+#define ESP32_UART_INT_ST_BRK_DET                   BIT(7)
+#define ESP32_UART_INT_ST_RXFIFO_TOUT               BIT(8)
 
 /* UART INTERRUPT ENABLE REGISTER */
-#define ESP32_UART_INT_ENA_RXFIFO_TOUT  BIT(8)
-#define ESP32_UART_INT_ENA_BRK_DET      BIT(7)
-#define ESP32_UART_INT_ENA_CTS_CHG      BIT(6)
-#define ESP32_UART_INT_ENA_DSR_CHG      BIT(5)
-#define ESP32_UART_INT_ENA_RXFIFO_OVF   BIT(4)
-#define ESP32_UART_INT_ENA_FRM_ERR      BIT(3)
-#define ESP32_UART_INT_ENA_PARITY_ERR   BIT(2)
-#define ESP32_UART_INT_ENA_TXFIFO_EMPTY BIT(1)
-#define ESP32_UART_INT_ENA_RXFIFO_FULL  BIT(0)
+#define ESP32_UART_INT_ENA_RXFIFO_FULL              BIT(0)
+#define ESP32_UART_INT_ENA_TXFIFO_EMPTY             BIT(1)
+#define ESP32_UART_INT_ENA_PARITY_ERR               BIT(2)
+#define ESP32_UART_INT_ENA_FRM_ERR                  BIT(3)
+#define ESP32_UART_INT_ENA_RXFIFO_OVF               BIT(4)
+#define ESP32_UART_INT_ENA_DSR_CHG                  BIT(5)
+#define ESP32_UART_INT_ENA_CTS_CHG                  BIT(6)
+#define ESP32_UART_INT_ENA_BRK_DET                  BIT(7)
+#define ESP32_UART_INT_ENA_RXFIFO_TOUT              BIT(8)
 
 /* UART INTERRUPT CLEAR REGISTER */
-#define ESP32_UART_INT_CLR_RXFIFO_TOUT  BIT(8)
-#define ESP32_UART_INT_CLR_BRK_DET      BIT(7)
-#define ESP32_UART_INT_CLR_CTS_CHG      BIT(6)
-#define ESP32_UART_INT_CLR_DSR_CHG      BIT(5)
-#define ESP32_UART_INT_CLR_RXFIFO_OVF   BIT(4)
-#define ESP32_UART_INT_CLR_FRM_ERR      BIT(3)
-#define ESP32_UART_INT_CLR_PARITY_ERR   BIT(2)
-#define ESP32_UART_INT_CLR_TXFIFO_EMPTY BIT(1)
-#define ESP32_UART_INT_CLR_RXFIFO_FULL  BIT(0)
+#define ESP32_UART_INT_CLR_RXFIFO_FULL              BIT(0)
+#define ESP32_UART_INT_CLR_TXFIFO_EMPTY             BIT(1)
+#define ESP32_UART_INT_CLR_PARITY_ERR               BIT(2)
+#define ESP32_UART_INT_CLR_FRM_ERR                  BIT(3)
+#define ESP32_UART_INT_CLR_RXFIFO_OVF               BIT(4)
+#define ESP32_UART_INT_CLR_DSR_CHG                  BIT(5)
+#define ESP32_UART_INT_CLR_CTS_CHG                  BIT(6)
+#define ESP32_UART_INT_CLR_BRK_DET                  BIT(7)
+#define ESP32_UART_INT_CLR_RXFIFO_TOUT              BIT(8)
 
 /* UART CLK DIV REGISTER */
-#define ESP32_UART_CLKDIV_POS           0
-#define ESP32_UART_CLKDIV_MASK          0xfffff
+#define ESP32_UART_CLKDIV_POS                       0
+#define ESP32_UART_CLKDIV_MASK                      0xfffff
 
 /* UART BAUDRATE DETECT REGISTER */
-#define ESP32_UART_GLITCH_FILT_POS  (8)
 #define ESP32_UART_GLITCH_FILT_MASK (0xff << ESP32_UART_GLITCH_FILT_POS)
-#define ESP32_UART_AUTOBAUD_EN      BIT(0)
+#define ESP32_UART_AUTOBAUD_EN                      BIT(0)
+#define ESP32_UART_GLITCH_FILT_POS                     (8)
 
 /* UART STATUS REGISTER */
-#define ESP32_UART_STATUS_TXD             BIT(31)
-#define ESP32_UART_STATUS_RTSN            BIT(30)
-#define ESP32_UART_STATUS_DTRN            BIT(29)
-#define ESP32_UART_STATUS_TXFIFO_CNT_POS  (16)
-#define ESP32_UART_STATUS_TXFIFO_CNT_MASK             \
-    (0xff << ESP32_UART_STATUS_TXFIFO_CNT_POS)
-#define ESP32_UART_STATUS_RXD             BIT(15)
-#define ESP32_UART_STATUS_CTSN            BIT(14)
-#define ESP32_UART_STATUS_DSRN            BIT(13)
-#define ESP32_UART_STATUS_RXFIFO_CNT_POS  (0)
-#define ESP32_UART_STATUS_RXFIFO_CNT_MASK             \
+#define ESP32_UART_STATUS_RXFIFO_CNT_POS               (0)
+#define ESP32_UART_STATUS_RXFIFO_CNT_MASK       \
     (0xff << ESP32_UART_STATUS_RXFIFO_CNT_POS)
+#define ESP32_UART_STATUS_DSRN                     BIT(13)
+#define ESP32_UART_STATUS_CTSN                     BIT(14)
+#define ESP32_UART_STATUS_RXD                      BIT(15)
+#define ESP32_UART_STATUS_TXFIFO_CNT_POS              (16)
+#define ESP32_UART_STATUS_TXFIFO_CNT_MASK       \
+    (0xff << ESP32_UART_STATUS_TXFIFO_CNT_POS)
+#define ESP32_UART_STATUS_DTRN                     BIT(29)
+#define ESP32_UART_STATUS_RTSN                     BIT(30)
+#define ESP32_UART_STATUS_TXD                      BIT(31)
 
 /* UART CONF0. */
-#define ESP32_UART_CONF0_UART_DTR_INV    BIT(24)
-#define ESP32_UART_CONF0_UART_RTS_INV    BIT(23)
-#define ESP32_UART_CONF0_UART_TXD_INV    BIT(22)
-#define ESP32_UART_CONF0_UART_DSR_INV    BIT(21)
-#define ESP32_UART_CONF0_UART_CTS_INV    BIT(20)
-#define ESP32_UART_CONF0_UART_RXD_INV    BIT(19)
-#define ESP32_UART_CONF0_TXFIFO_RST      BIT(18)
-#define ESP32_UART_CONF0_RXFIFO_RST      BIT(17)
-#define ESP32_UART_CONF0_TX_FLOW_EN      BIT(15)
-#define ESP32_UART_CONF0_UART_LOOPBACK   BIT(14)
-#define ESP32_UART_CONF0_TXD_BRK         BIT(8)
-#define ESP32_UART_CONF0_SW_DTR          BIT(7)
-#define ESP32_UART_CONF0_SW_RTS          BIT(6)
-#define ESP32_UART_CONF0_STOP_BIT_NUM_POS (4)
-#define ESP32_UART_CONF0_STOP_BIT_NUM_MASK            \
-    (0x3 << ESP32_UART_CONF0_STOP_BIT_NUM_POS)
-#define ESP32_UART_CONF0_BIT_NUM_POS     (2)
-#define ESP32_UART_CONF0_BIT_NUM_MASK         \
+#define ESP32_UART_CONF0_PARITY                     BIT(0)
+#define ESP32_UART_CONF0_PARITY_EN                  BIT(1)
+#define ESP32_UART_CONF0_BIT_NUM_POS                   (2)
+#define ESP32_UART_CONF0_BIT_NUM_MASK           \
     (0x3 << ESP32_UART_CONF0_BIT_NUM_POS)
-#define ESP32_UART_CONF0_PARITY_EN       BIT(1)
-#define ESP32_UART_CONF0_PARITY          BIT(0)
+#define ESP32_UART_CONF0_STOP_BIT_NUM_POS              (4)
+#define ESP32_UART_CONF0_STOP_BIT_NUM_MASK      \
+    (0x3 << ESP32_UART_CONF0_STOP_BIT_NUM_POS)
+#define ESP32_UART_CONF0_SW_RTS                     BIT(6)
+#define ESP32_UART_CONF0_SW_DTR                     BIT(7)
+#define ESP32_UART_CONF0_TXD_BRK                    BIT(8)
+#define ESP32_UART_CONF0_UART_LOOPBACK             BIT(14)
+#define ESP32_UART_CONF0_TX_FLOW_EN                BIT(15)
+#define ESP32_UART_CONF0_RXFIFO_RST                BIT(17)
+#define ESP32_UART_CONF0_TXFIFO_RST                BIT(18)
+#define ESP32_UART_CONF0_UART_RXD_INV              BIT(19)
+#define ESP32_UART_CONF0_UART_CTS_INV              BIT(20)
+#define ESP32_UART_CONF0_UART_DSR_INV              BIT(21)
+#define ESP32_UART_CONF0_UART_TXD_INV              BIT(22)
+#define ESP32_UART_CONF0_UART_RTS_INV              BIT(23)
+#define ESP32_UART_CONF0_UART_DTR_INV              BIT(24)
+
+/* UART_CONF1. */
+#define ESP32_UART_CONF1_RX_TOUT_EN                BIT(31)
+#define ESP32_UART_CONF1_RX_TOUT_THRHD             [30:24]
+#define ESP32_UART_CONF1_RX_FLOW_EN                   [23]
+#define ESP32_UART_CONF1_RX_FLOW_THRHD             [22:16]
+#define ESP32_UART_CONF1_TXFIFO_EMPTY_THRHD         [14:8]
+#define ESP32_UART_CONF1_RXFIFO_FULL_THRHD           [6:0]
+
+/* LOWPULSE */
+#define ESP32_UART_LOWPULSE_MIN_CNT                 [19:0]
+
+/* HIGHPULSE */
+#define ESP32_UART_HIGHPULSE_MIN_CNT                [19:0]
+
+/* RXD_CNT */
+#define ESP32_UART_RXD_CNT_EDGE                      [9:0]
 
 /**
  * General Purpose Input Output registers.
@@ -563,46 +580,46 @@ struct esp32_io_mux_t {
 /**
  * Devices.
  */
-#define ESP32_DPORT_REGISTER   ((volatile struct esp32_dport_t *)0x3ff00000)
-#define ESP32_AES_ACCELERATOR  ((volatile struct esp32__t *)0x3ff01000)
-#define ESP32_RSA_ACCELERATOR  ((volatile struct esp32__t *)0x3ff02000)
-#define ESP32_SHA_ACCELERATOR  ((volatile struct esp32__t *)0x3ff03000)
-#define ESP32_SECURE_BOOT      ((volatile struct esp32__t *)0x3ff04000)
-#define ESP32_CACHE_MMU_TABLE  ((volatile struct esp32__t *)0x3ff10000)
-#define ESP32_PID_CONTROLLER   ((volatile struct esp32__t *)0x3ff1f000)
-#define ESP32_UART0            ((volatile struct esp32_uart_t *)0x3ff40000)
-#define ESP32_SPI1             ((volatile struct esp32_spi_t  *)0x3ff42000)
-#define ESP32_SPI0             ((volatile struct esp32_spi_t  *)0x3ff43000)
-#define ESP32_GPIO             ((volatile struct esp32_gpio_t *)0x3ff44000)
-#define ESP32_RTC              ((volatile struct esp32__t *)0x3ff48000)
+#define ESP32_DPORT_REGISTER   ((volatile struct esp32_dport_t  *)0x3ff00000)
+#define ESP32_AES_ACCELERATOR  ((volatile struct esp32__t       *)0x3ff01000)
+#define ESP32_RSA_ACCELERATOR  ((volatile struct esp32__t       *)0x3ff02000)
+#define ESP32_SHA_ACCELERATOR  ((volatile struct esp32__t       *)0x3ff03000)
+#define ESP32_SECURE_BOOT      ((volatile struct esp32__t       *)0x3ff04000)
+#define ESP32_CACHE_MMU_TABLE  ((volatile struct esp32__t       *)0x3ff10000)
+#define ESP32_PID_CONTROLLER   ((volatile struct esp32__t       *)0x3ff1f000)
+#define ESP32_UART0            ((volatile struct esp32_uart_t   *)0x3ff40000)
+#define ESP32_SPI1             ((volatile struct esp32_spi_t    *)0x3ff42000)
+#define ESP32_SPI0             ((volatile struct esp32_spi_t    *)0x3ff43000)
+#define ESP32_GPIO             ((volatile struct esp32_gpio_t   *)0x3ff44000)
+#define ESP32_RTC              ((volatile struct esp32__t       *)0x3ff48000)
 #define ESP32_IO_MUX           ((volatile struct esp32_io_mux_t *)0x3ff49000)
-#define ESP32_SDIO_SLAVE_0     ((volatile struct esp32__t *)0x3ff4b000)
-#define ESP32_UDMA1            ((volatile struct esp32__t *)0x3ff4c000)
-#define ESP32_I2S0             ((volatile struct esp32__t *)0x3ff4f000)
-#define ESP32_UART1            ((volatile struct esp32_uart_t *)0x3ff50000)
-#define ESP32_I2C0             ((volatile struct esp32_i2c_t *)0x3ff53000)
-#define ESP32_UDMA0            ((volatile struct esp32__t *)0x3ff54000)
-#define ESP32_SDIO_SLAVE_1     ((volatile struct esp32__t *)0x3ff55000)
-#define ESP32_RMT              ((volatile struct esp32__t *)0x3ff56000)
-#define ESP32_PCNT             ((volatile struct esp32__t *)0x3ff57000)
-#define ESP32_SDIO_SLAVE_2     ((volatile struct esp32__t *)0x3ff58000)
-#define ESP32_LED_PWM          ((volatile struct esp32__t *)0x3ff59000)
-#define ESP32_EFUSE_CONTROLLER ((volatile struct esp32__t *)0x3ff5a000)
-#define ESP32_FLASH_ENCRYPTION ((volatile struct esp32__t *)0x3ff5b000)
-#define ESP32_PWM0             ((volatile struct esp32__t *)0x3ff5e000)
-#define ESP32_TIMG0            ((volatile struct esp32__t *)0x3ff5f000)
-#define ESP32_TIMG1            ((volatile struct esp32__t *)0x3ff60000)
-#define ESP32_SPI2             ((volatile struct esp32_spi_t  *)0x3ff64000)
-#define ESP32_SPI3             ((volatile struct esp32_spi_t  *)0x3ff65000)
-#define ESP32_SYSCON           ((volatile struct esp32__t *)0x3ff66000)
-#define ESP32_I2C1             ((volatile struct esp32_i2c_t *)0x3ff67000)
-#define ESP32_SDMMC            ((volatile struct esp32__t *)0x3ff68000)
-#define ESP32_EMAC             ((volatile struct esp32__t *)0x3ff69000)
-#define ESP32_PWM1             ((volatile struct esp32__t *)0x3ff6c000)
-#define ESP32_I2S1             ((volatile struct esp32__t *)0x3ff6d000)
-#define ESP32_UART2            ((volatile struct esp32_uart_t *)0x3ff6e000)
-#define ESP32_PWM2             ((volatile struct esp32__t *)0x3ff6f000)
-#define ESP32_PWM3             ((volatile struct esp32__t *)0x3ff70000)
-#define ESP32_RNG              ((volatile struct esp32__t *)0x3ff75000)
+#define ESP32_SDIO_SLAVE_0     ((volatile struct esp32__t       *)0x3ff4b000)
+#define ESP32_UDMA1            ((volatile struct esp32__t       *)0x3ff4c000)
+#define ESP32_I2S0             ((volatile struct esp32__t       *)0x3ff4f000)
+#define ESP32_UART1            ((volatile struct esp32_uart_t   *)0x3ff50000)
+#define ESP32_I2C0             ((volatile struct esp32_i2c_t    *)0x3ff53000)
+#define ESP32_UDMA0            ((volatile struct esp32__t       *)0x3ff54000)
+#define ESP32_SDIO_SLAVE_1     ((volatile struct esp32__t       *)0x3ff55000)
+#define ESP32_RMT              ((volatile struct esp32__t       *)0x3ff56000)
+#define ESP32_PCNT             ((volatile struct esp32__t       *)0x3ff57000)
+#define ESP32_SDIO_SLAVE_2     ((volatile struct esp32__t       *)0x3ff58000)
+#define ESP32_LED_PWM          ((volatile struct esp32__t       *)0x3ff59000)
+#define ESP32_EFUSE_CONTROLLER ((volatile struct esp32__t       *)0x3ff5a000)
+#define ESP32_FLASH_ENCRYPTION ((volatile struct esp32__t       *)0x3ff5b000)
+#define ESP32_PWM0             ((volatile struct esp32__t       *)0x3ff5e000)
+#define ESP32_TIMG0            ((volatile struct esp32__t       *)0x3ff5f000)
+#define ESP32_TIMG1            ((volatile struct esp32__t       *)0x3ff60000)
+#define ESP32_SPI2             ((volatile struct esp32_spi_t    *)0x3ff64000)
+#define ESP32_SPI3             ((volatile struct esp32_spi_t    *)0x3ff65000)
+#define ESP32_SYSCON           ((volatile struct esp32__t       *)0x3ff66000)
+#define ESP32_I2C1             ((volatile struct esp32_i2c_t    *)0x3ff67000)
+#define ESP32_SDMMC            ((volatile struct esp32__t       *)0x3ff68000)
+#define ESP32_EMAC             ((volatile struct esp32__t       *)0x3ff69000)
+#define ESP32_PWM1             ((volatile struct esp32__t       *)0x3ff6c000)
+#define ESP32_I2S1             ((volatile struct esp32__t       *)0x3ff6d000)
+#define ESP32_UART2            ((volatile struct esp32_uart_t   *)0x3ff6e000)
+#define ESP32_PWM2             ((volatile struct esp32__t       *)0x3ff6f000)
+#define ESP32_PWM3             ((volatile struct esp32__t       *)0x3ff70000)
+#define ESP32_RNG              ((volatile struct esp32__t       *)0x3ff75000)
 
 #endif

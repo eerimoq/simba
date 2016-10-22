@@ -139,7 +139,9 @@
  */
 #define ASSERT(cond, ...) ASSERTN(cond, 1, __VA_ARGS__)
 
-#define BIT(pos) (1 << (pos))
+#ifndef BIT
+#    define BIT(pos) (1 << (pos))
+#endif
 
 #define BITFIELD_SET(name, value)               \
     (((value) << name ## _POS) & name ## _MASK)
