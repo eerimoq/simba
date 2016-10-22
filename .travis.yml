@@ -6,6 +6,8 @@ before_install:
   - sudo apt-get update -qq
   - sudo apt-get install -qq parted -y
   - sudo apt-get install -qq lcov -y
+  - sudo apt-get install -qq cloc -y
+  - sudo apt-get install -qq pmccabe -y
   - source setup.sh
   - gcc --version
   - g++ --version

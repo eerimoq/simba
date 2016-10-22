@@ -305,6 +305,8 @@ codecov-coverage: $(TESTS:%=%.ccc)
 jenkins-coverage: $(TESTS:%=%.jc)
 
 travis:
+	$(MAKE) cloc
+	$(MAKE) pmccabe
 	$(MAKE) test
 
 release-test:
@@ -467,10 +469,10 @@ tags:
 	etags -o .TAGS --declarations $$(git ls-files *.[hci] | xargs)
 
 cloc:
-	cloc $$(git ls-files | xargs)
+	cloc $$(git ls-files | grep -v 3pp | xargs)
 
 pmccabe:
-	pmccabe $$(git ls-files "*.[hic]") | sort -n
+	pmccabe $$(git ls-files "src/*.[hic]") | sort -n
 
 print-%:
 	@echo $($*)
