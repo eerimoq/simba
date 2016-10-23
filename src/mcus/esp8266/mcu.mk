@@ -37,6 +37,7 @@ LDFLAGS += -Wl,-T$(LINKER_SCRIPT)
 
 LIB += \
 	hal \
+	minic \
 	gcc \
 	phy \
 	pp \

@@ -56,7 +56,8 @@ def test():
     # Build a PlatformIO application.
     command = [
         "platformio",
-        "run"
+        "run",
+        "-v"
     ]
 
     subprocess.check_call(command, cwd="examples/platformio/blink")

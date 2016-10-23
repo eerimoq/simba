@@ -28,7 +28,6 @@ CFLAGS += -Os \
           -Werror \
           -nostdlib \
           -mlongcalls \
-	  -mforce-l32 \
           -mtext-section-literals \
           -ffunction-sections \
 	  -fno-inline-functions \
@@ -39,7 +38,6 @@ CXXFLAGS += -Os \
           -Werror \
           -nostdlib \
           -mlongcalls \
-	  -mforce-l32 \
           -mtext-section-literals \
           -ffunction-sections \
           -fdata-sections
@@ -57,8 +55,6 @@ RUNARGS = $(BIN)
 
 ESPTOOL = $(SIMBA_ROOT)/3pp/esptool/esptool
 EBOOT_ELF = $(SIMBA_ROOT)/3pp/esp8266Arduino/2.3.0/bootloaders/eboot/eboot.elf
-
-SRC += $(SIMBA_ROOT)/3pp/libc/string0.c
 
 build: $(BIN)
 $(BIN): $(EXE)

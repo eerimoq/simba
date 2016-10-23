@@ -29,7 +29,7 @@ test:
 	for test in $(TESTS); do \
 	    cd $$test ; \
 	    if [ ! -e .$(BOARD).passed ] ; then \
-	        platformio run -e $(BOARD) -t upload --upload-port $(SERIAL_PORT) || exit 1 ; \
+	        platformio run -e $(BOARD) -v -t upload --upload-port $(SERIAL_PORT) || exit 1 ; \
 	        $(MAKE) SERIAL_PORT=$(SERIAL_PORT) rerun || exit 1 ; \
 	        touch .$(BOARD).passed ; \
 	    else \
@@ -47,7 +47,7 @@ test-prompt-after-upload:
 	        echo "Add any switches to force the board into the bootloader and press enter." ; \
 	        echo ; \
 	        read tmp ; \
-	        platformio run -e $(BOARD) -t upload --upload-port $(SERIAL_PORT) || exit 1 ; \
+	        platformio run -e $(BOARD) -v -t upload --upload-port $(SERIAL_PORT) || exit 1 ; \
 	        echo ; \
 	        echo "Remove any switches for forced bootloader state and press enter." ; \
 	        echo ; \
@@ -64,6 +64,6 @@ test-prompt-after-upload:
 clean:
 	for test in $(TESTS); do \
 	    cd $$test ; \
-	    platformio run -e $(BOARD) -t clean || exit 1 ; \
+	    platformio run -v -e $(BOARD) -t clean || exit 1 ; \
 	    rm -f .$(BOARD).passed ; \
 	done

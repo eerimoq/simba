@@ -147,11 +147,6 @@ def generate_variants(family, database, cores_srcs):
             mkdir_p(dst_dir)
             shutil.copy(os.path.join(simba_root, src), dst_dir)
 
-        setting_memory = config["setting_memory"]
-        setting_offset = config["setting_offset"]
-        setting_size = config["setting_size"]
-        endianess = config["endianess"]
-
         # Copy all linker script files.
         for libpath in config["libpath"]:
             libpath_dir = os.path.join(simba_root, libpath)
@@ -258,8 +253,6 @@ def get_c_elf_extra_flags(board, database):
         if "-Wl,-Map" in ldflag:
             continue
         ldflags.append(ldflag)
-        if "-Wl,--start-group" == ldflag:
-            ldflags.append("-lminic")
 
     return " ".join(ldflags
                     + ["\"-L{runtime.platform.path}/variants/" + board + "/" + libpath + "\""
@@ -408,7 +401,7 @@ def generate_extra(family, database):
         libpaths = database["boards"]["esp01"]["libpath"]
         mkdir_p("lib")
 
-        for lib in database["boards"]["esp01"]["lib"] + ["minic"]:
+        for lib in database["boards"]["esp01"]["lib"]:
             for libpath in libpaths:
                 libpath_dir = os.path.join(simba_root, libpath)
                 for root, _, filenames in os.walk(libpath_dir):

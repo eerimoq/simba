@@ -169,20 +169,6 @@ def setup_mcu_esp(env, linker_script, flash_size_map):
     env.Replace(LINKFLAGS=linkflags)
     env.Replace(LDSCRIPT_PATH="script.ld")
 
-    env.Append(LIBS=[
-        "-lminic",
-        "-lgcc",
-        "-lhal",
-        "-lphy",
-        "-lpp",
-        "-lnet80211",
-        "-lwpa",
-        "-lcrypto",
-        "-lmain",
-        "-lfreertos",
-        "-llwip"
-    ])
-
     env.Append(
         BUILDERS=dict(
             ElfToBin=Builder(
@@ -252,6 +238,7 @@ env.Replace(LIBPATH=[os.path.join("$PLATFORMFW_DIR", path)
                      for path in BOARDS[board]["libpath"]])
 env.Replace(MCU_DESC=BOARDS[board]["mcu_desc"])
 env.Replace(BOARD_DESC=BOARDS[board]["board_desc"])
+env.Append(LIBS=BOARDS[board]["lib"])
 
 # Always replace the map file path.
 linkflags = []
@@ -325,12 +312,13 @@ def generate_platformio_sconsscript(database, version):
         selected_data = {
             'inc': data['inc'],
             'cdefs': [cdef for cdef in data['cdefs'] if not cdef.startswith("F_CPU")],
-            'src': list(set(data['src']) - set(["3pp/libc/string0.c"])),
-            'cflags': list(set(data['cflags']) - set(["-mforce-l32"])),
-            'cxxflags': list(set(data['cxxflags']) - set(["-mforce-l32"])),
+            'src': data['src'],
+            'cflags': data['cflags'],
+            'cxxflags': data['cxxflags'],
             'libpath': data['libpath'],
             'ldflags': data['ldflags'],
             'linker_script': data['linker_script'],
+            'lib': data['lib'],
             'board_desc': data['board_desc'],
             'mcu_desc': database['mcus'][data['mcu']]['mcu_desc']
         }
