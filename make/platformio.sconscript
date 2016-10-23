@@ -1030,7 +1030,6 @@ BOARDS = {
         ], 
         "lib": [
             "hal", 
-            "minic", 
             "gcc", 
             "phy", 
             "pp", 
@@ -1039,7 +1038,8 @@ BOARDS = {
             "crypto", 
             "main", 
             "freertos", 
-            "lwip"
+            "lwip", 
+            "minic"
         ], 
         "libpath": [
             "src/mcus/esp8266/ld", 
@@ -1186,7 +1186,6 @@ BOARDS = {
         ], 
         "lib": [
             "hal", 
-            "minic", 
             "gcc", 
             "phy", 
             "pp", 
@@ -1195,7 +1194,8 @@ BOARDS = {
             "crypto", 
             "main", 
             "freertos", 
-            "lwip"
+            "lwip", 
+            "minic"
         ], 
         "libpath": [
             "src/mcus/esp8266/ld", 

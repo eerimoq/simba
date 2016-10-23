@@ -39,7 +39,6 @@ LIB_MINIC ?= minic
 
 LIB += \
 	hal \
-	$(LIB_MINIC) \
 	gcc \
 	phy \
 	pp \
@@ -48,7 +47,8 @@ LIB += \
 	crypto \
 	main \
 	freertos \
-	lwip
+	lwip \
+	$(LIB_MINIC)
 
 F_CPU = 80000000
 

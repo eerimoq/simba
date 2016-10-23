@@ -304,6 +304,9 @@ static int test_libc(struct harness_t *harness_p)
         BTASSERT(isalnum(c) != 0);
     }
 
+    /* atoi. */
+    BTASSERT(atoi("1") == 1);
+
     return (0);
 }
 
