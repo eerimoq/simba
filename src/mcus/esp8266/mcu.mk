@@ -35,9 +35,11 @@ LIBPATH += "$(SIMBA_ROOT)/src/mcus/esp8266/ld"
 
 LDFLAGS += -Wl,-T$(LINKER_SCRIPT)
 
+LIB_MINIC ?= minic
+
 LIB += \
 	hal \
-	minic \
+	$(LIB_MINIC) \
 	gcc \
 	phy \
 	pp \
