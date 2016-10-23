@@ -105,9 +105,9 @@ Execute the one-liner below to install `Simba`.
      (git clone --recursive https://github.com/pfalcon/esp-open-sdk && \
       cd esp-open-sdk && \
       make) && \
-     wget https://sourceforge.net/projects/simba-arduino/files/esp32/tools/xtensa-esp32-elf-linux32-1.22.0-59.tar.gz && \
-     tar xf xtensa-esp32-elf-linux32-1.22.0-59.tar.gz && \
-     rm xtensa-esp32-elf-linux32-1.22.0-59.tar.gz && \
+     wget https://sourceforge.net/projects/simba-arduino/files/esp32/tools/xtensa-esp32-elf-linux$(getconf LONG_BIT)-1.22.0-59.tar.gz && \
+     tar xf xtensa-esp32-elf-linux$(getconf LONG_BIT)-1.22.0-59.tar.gz && \
+     rm xtensa-esp32-elf-linux$(getconf LONG_BIT)-1.22.0-59.tar.gz && \
      git clone --recursive https://github.com/eerimoq/simba
 
 Post-install

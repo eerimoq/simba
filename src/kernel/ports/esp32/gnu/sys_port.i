@@ -23,6 +23,7 @@
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #include "esp_system.h"
+#include "esp_intr.h"
 
 /* The main function is defined by the user in main.c. */
 extern int main();
@@ -32,7 +33,24 @@ static THRD_STACK(main_stack, CONFIG_SYS_SIMBA_MAIN_STACK_MAX)
 
 static int sys_port_module_init(void)
 {
-    (void)sys_tick;
+    /* Setup interrupt handler. */
+    xt_set_interrupt_handler(ESP32_CPU_INTR_SYS_TICK_NUM,
+                             (xt_handler)sys_tick,
+                             NULL);
+    xt_ints_on(BIT(ESP32_CPU_INTR_SYS_TICK_NUM));
+    intr_matrix_set(xPortGetCoreID(),
+                    ESP32_INTR_SOURCE_TG0_T0_EDGE,
+                    ESP32_CPU_INTR_SYS_TICK_NUM);
+
+    /* Configure and start the system tick timer. */
+    ESP32_TIMG0->TIMER[0].ALARMLO = 10000;
+    ESP32_TIMG0->TIMER[0].ALARMHI = 0;
+    ESP32_TIMG0->TIMER[0].UPDATE = 1;
+    ESP32_TIMG0->TIMER[0].CONFIG = (ESP32_TIMG_TIMER_CONFIG_ALARM_EN
+                                    | ESP32_TIMG_TIMER_CONFIG_EDGE_INT_EN
+                                    | ESP32_TIMG_TIMER_CONFIG_AUTORELOAD
+                                    | ESP32_TIMG_TIMER_CONFIG_INCREASE
+                                    | ESP32_TIMG_TIMER_CONFIG_EN);
 
     return (0);
 }

@@ -154,16 +154,17 @@
  *
  * Peripheral  CPU interrupt
  * =======================================================
- * UART0       ESP32_CPU_INTR_PERIPHERAL_12_PRIO_1
- * UART1       ESP32_CPU_INTR_PERIPHERAL_12_PRIO_1
- * UART2       ESP32_CPU_INTR_PERIPHERAL_12_PRIO_1
- * SPI0        ESP32_CPU_INTR_PERIPHERAL_13_PRIO_1
- * SPI1        ESP32_CPU_INTR_PERIPHERAL_13_PRIO_1
- * SPI2        ESP32_CPU_INTR_PERIPHERAL_13_PRIO_1
+ * UART0       ESP32_CPU_INTR_PERIPHERAL_13_PRIO_1
+ * UART1       ESP32_CPU_INTR_PERIPHERAL_13_PRIO_1
+ * UART2       ESP32_CPU_INTR_PERIPHERAL_13_PRIO_1
+ * SPI0        ESP32_CPU_INTR_PERIPHERAL_14_PRIO_1
+ * SPI1        ESP32_CPU_INTR_PERIPHERAL_14_PRIO_1
+ * SPI2        ESP32_CPU_INTR_PERIPHERAL_14_PRIO_1
  */
 
-#define ESP32_CPU_INTR_UART_NUM ESP32_CPU_INTR_PERIPHERAL_12_PRIO_1
-#define ESP32_CPU_INTR_SPI_NUM  ESP32_CPU_INTR_PERIPHERAL_13_PRIO_1
+#define ESP32_CPU_INTR_SYS_TICK_NUM  ESP32_CPU_INTR_PERIPHERAL_12_PRIO_1
+#define ESP32_CPU_INTR_UART_NUM      ESP32_CPU_INTR_PERIPHERAL_13_PRIO_1
+#define ESP32_CPU_INTR_SPI_NUM       ESP32_CPU_INTR_PERIPHERAL_14_PRIO_1
 
 struct esp32_dport_map_t {
     uint32_t MAC_INTR_MAP_REG;
@@ -578,6 +579,54 @@ struct esp32_io_mux_t {
 #define ESP32_IO_MUX_PIN_MCU_SEL_GPIO                (2 << 12)
 
 /**
+ * Timer groups. Each timer group has two hardware timers and ont
+ * watchdog.
+ */
+struct esp32_timg_t {
+    struct {
+        uint32_t CONFIG;
+        uint32_t LO;
+        uint32_t HI;
+        uint32_t UPDATE;
+        uint32_t ALARMLO;
+        uint32_t ALARMHI;
+        uint32_t LOADLO;
+        uint32_t LOADHI;
+        uint32_t LOAD;
+    } TIMER[2];
+    struct {
+        uint32_t CONFIG0;
+        uint32_t CONFIG1;
+        uint32_t CONFIG2;
+        uint32_t CONFIG3;
+        uint32_t CONFIG4;
+        uint32_t CONFIG5;
+        uint32_t FEED;
+        uint32_t WPROTECT;
+    } WDT;
+    uint32_t RESERVED0[13];
+    struct {
+        uint32_t RAW;
+        uint32_t ST;
+        uint32_t ENA;
+        uint32_t CLR;
+    } INT;
+};
+
+/* Timer configuration. */
+#define ESP32_TIMG_TIMER_CONFIG_ALARM_EN             BIT(10)
+#define ESP32_TIMG_TIMER_CONFIG_LEVEL_INT_EN         BIT(11)
+#define ESP32_TIMG_TIMER_CONFIG_EDGE_INT_EN          BIT(12)
+#define ESP32_TIMG_TIMER_CONFIG_DIVIDER_POS             (13)
+#define ESP32_TIMG_TIMER_CONFIG_DIVIDER_MASK            \
+    (0xffff << ESP32_TIMG_TIMER_CONFIG_DIVIDER_POS)
+#define ESP32_TIMG_TIMER_CONFIG_DIVIDER(value)             \
+    BITFIELD_SET(ESP32_TIMG_TIMER_CONFIG_DIVIDER, value)
+#define ESP32_TIMG_TIMER_CONFIG_AUTORELOAD           BIT(29)
+#define ESP32_TIMG_TIMER_CONFIG_INCREASE             BIT(30)
+#define ESP32_TIMG_TIMER_CONFIG_EN                   BIT(31)
+
+/**
  * Devices.
  */
 #define ESP32_DPORT_REGISTER   ((volatile struct esp32_dport_t  *)0x3ff00000)
@@ -607,8 +656,8 @@ struct esp32_io_mux_t {
 #define ESP32_EFUSE_CONTROLLER ((volatile struct esp32__t       *)0x3ff5a000)
 #define ESP32_FLASH_ENCRYPTION ((volatile struct esp32__t       *)0x3ff5b000)
 #define ESP32_PWM0             ((volatile struct esp32__t       *)0x3ff5e000)
-#define ESP32_TIMG0            ((volatile struct esp32__t       *)0x3ff5f000)
-#define ESP32_TIMG1            ((volatile struct esp32__t       *)0x3ff60000)
+#define ESP32_TIMG0            ((volatile struct esp32_timg_t   *)0x3ff5f000)
+#define ESP32_TIMG1            ((volatile struct esp32_timg_t   *)0x3ff60000)
 #define ESP32_SPI2             ((volatile struct esp32_spi_t    *)0x3ff64000)
 #define ESP32_SPI3             ((volatile struct esp32_spi_t    *)0x3ff65000)
 #define ESP32_SYSCON           ((volatile struct esp32__t       *)0x3ff66000)
