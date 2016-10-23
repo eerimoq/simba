@@ -2108,7 +2108,22 @@ def setup_mcu_esp(env, linker_script, flash_size_map):
 
     """
 
-    linkflags = []
+    # Without those some applicaions do not start.
+    linkflags = [
+        "-Wl,--start-group",
+        "-lhal",
+        "-lgcc",
+        "-lphy",
+        "-lpp",
+        "-lnet80211",
+        "-lwpa",
+        "-lcrypto",
+        "-lmain",
+        "-lfreertos",
+        "-llwip",
+        "-lminic",
+        "-Wl,--end-group"
+    ]
 
     for flag in env["LINKFLAGS"]:
         if "-Wl,-wrap,register_chipv6_phy" in flag:

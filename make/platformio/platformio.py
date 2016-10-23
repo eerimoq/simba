@@ -160,7 +160,22 @@ def setup_mcu_esp(env, linker_script, flash_size_map):
 
     \"\"\"
 
-    linkflags = []
+    # Without those some applicaions do not start.
+    linkflags = [
+        "-Wl,--start-group",
+        "-lhal",
+        "-lgcc",
+        "-lphy",
+        "-lpp",
+        "-lnet80211",
+        "-lwpa",
+        "-lcrypto",
+        "-lmain",
+        "-lfreertos",
+        "-llwip",
+        "-lminic",
+        "-Wl,--end-group"
+    ]
 
     for flag in env["LINKFLAGS"]:
         if "-Wl,-wrap,register_chipv6_phy" in flag:
@@ -323,7 +338,7 @@ def generate_platformio_sconsscript(database, version):
             'mcu_desc': database['mcus'][data['mcu']]['mcu_desc']
         }
         boards[board] = selected_data
-        
+
     outfile = os.path.join(simba_root, "make", "platformio.sconscript")
     with open(outfile, "w") as fout:
         fout.write(PLATFORMIO_SCONSSCRIPT_FMT.format(
