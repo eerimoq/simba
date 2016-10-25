@@ -23,7 +23,8 @@ ESP_IDF_ROOT ?= $(ESP32_ROOT)/esp-idf
 INC += $(SIMBA_ROOT)/src/mcus/esp32 \
        $(ESP_IDF_ROOT)/components/esp32/include \
        $(ESP_IDF_ROOT)/components/newlib/include \
-       $(ESP_IDF_ROOT)/components/freertos/include
+       $(ESP_IDF_ROOT)/components/freertos/include \
+       $(ESP_IDF_ROOT)/components/nvs_flash/include
 
 SRC += $(SIMBA_ROOT)/src/mcus/esp32/mcu.c \
        $(SIMBA_ROOT)/src/mcus/esp32/esp32.c
@@ -71,6 +72,6 @@ FAMILY = esp32
 
 MCU_HOMEPAGE = "http://www.espressif.com"
 MCU_NAME = "Espressif ESP32"
-MCU_DESC = "Espressif ESP32 @ 80 MHz, 82 kB dram, 4 MB flash"
+MCU_DESC = "Espressif ESP32 @ 240 MHz, 512 kB sram, 4 MB flash"
 
 include $(SIMBA_ROOT)/make/$(TOOLCHAIN)/esp32.mk

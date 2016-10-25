@@ -1,8 +1,8 @@
-:mod:`nano32` --- NANO32
+:mod:`nano32` --- Nano32
 ========================
 
 .. module:: nano32
-   :synopsis: NANO32.
+   :synopsis: Nano32.
 
 Source code: :github-blob:`src/boards/nano32/board.h`, :github-blob:`src/boards/nano32/board.c`
 
