@@ -153,7 +153,7 @@ static int uart_port_start(struct uart_driver_t *drv_p)
     while ((regs_p->STATUS & ESP32_UART_STATUS_TXFIFO_CNT_MASK) != 0);
 
     /* Configure the hardware and reset the fifos. */
-    //regs_p->CLKDIV = (F_CPU / drv_p->baudrate);
+    regs_p->CLKDIV = (80000000 / drv_p->baudrate);
     regs_p->CONF0 |= (ESP32_UART_CONF0_TXFIFO_RST
                       | ESP32_UART_CONF0_RXFIFO_RST);
     regs_p->CONF0 &= (~(ESP32_UART_CONF0_TXFIFO_RST
