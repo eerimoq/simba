@@ -28,10 +28,6 @@
 extern int main();
 
 /* The main stack is placed before all other stacks in the memory. */
-static uint32_t always_free_stack[8]
-__attribute__ ((section (".simba_stack_free")));
-
-/* The main stack is placed before all other stacks in the memory. */
 uint32_t main_stack[DIV_CEIL(sizeof(struct thrd_t)
                              + (CONFIG_SYS_SIMBA_MAIN_STACK_MAX),
                              sizeof(uint32_t))]
@@ -121,8 +117,6 @@ int app_main()
 {
     nvs_flash_init();
     system_init();
-
-    always_free_stack[0] = 0;
 
     xTaskGenericCreate(&main_task,
                        "simba",

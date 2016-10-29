@@ -92,7 +92,6 @@ SECTIONS
     KEEP(*(.gnu.linkonce.s2.*))
     KEEP(*(.jcr))
     *(.dram1 .dram1.*)
-    *(.simba_stack_free)
     *(.main_thrd)
     *(.main_stack)
     __main_stack_end = ABSOLUTE(.);
