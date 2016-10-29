@@ -107,7 +107,7 @@ static void main_task(void *events)
 {
     /* Call the Simba application main function. */
     main();
-    while(1);
+
     thrd_suspend(NULL);
 }
 

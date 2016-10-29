@@ -709,7 +709,7 @@
  * Shell thread stack size in words.
  */
 #ifndef CONFIG_START_SHELL_STACK_SIZE
-#    if defined(BOARD_ARDUINO_DUE) || defined(ARCH_ESP)
+#    if defined(BOARD_ARDUINO_DUE) || defined(ARCH_ESP) || defined(ARCH_ESP32)
 #        define CONFIG_START_SHELL_STACK_SIZE            1536
 #    else
 #        define CONFIG_START_SHELL_STACK_SIZE             768
