@@ -12,17 +12,17 @@
                 {
                     "name": "Simba",
                     "architecture": "esp32",
-                    "version": "0.0.1",
+                    "version": "10.1.0",
                     "category": "Simba",
                     "help": {
                         "online": "https://simba-os.readthedocs.org"
                     },
-                    "url": "https://sourceforge.net/projects/simba-arduino/files/esp32/simba-arduino-esp32-esp32.zip",
-                    "archiveFileName": "simba-arduino-esp32-esp32.zip",
-                    "checksum": "SHA-256:fe28fd07d5a877e55d495fc8b076c07aaa4ae439408ec7401d6a8757d71b1862",
-                    "size": "17456828",
+                    "url": "https://sourceforge.net/projects/simba-arduino/files/esp32/simba-arduino-esp32-10.1.0.zip",
+                    "archiveFileName": "simba-arduino-esp32-10.1.0.zip",
+                    "checksum": "SHA-256:92a43307e6dee9122b4ad5b70ad65c231ae91a9019ff5af149445d3d57d95e69",
+                    "size": "8063931",
                     "boards": [
-                        {"name" : "NANO32"}
+                        {"name" : "Nano32"}
                     ],
                     "toolsDependencies": [
                         {

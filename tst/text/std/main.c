@@ -88,13 +88,13 @@ static int test_sprintf(struct harness_t *harness_p)
     std_printf(FSTR("%s\r\n"), buf);
     BTASSERT(size == 14);
 
-    size = std_sprintf(buf, FSTR("INT_MAX %%u: %u"), 0xffffffffL);
+    size = std_sprintf(buf, FSTR("INT_MAX %%lu: %lu"), 0xffffffffL);
     std_printf(FSTR("%s\r\n"), buf);
-    BTASSERT(size == 22);
+    BTASSERT(size == 23);
 
-    size = std_sprintf(buf, FSTR("INT_MAX %%x: %x"), 0xffffffffL);
+    size = std_sprintf(buf, FSTR("INT_MAX %%lx: %lx"), 0xffffffffL);
     std_printf(FSTR("%s\r\n"), buf);
-    BTASSERT(size == 20);
+    BTASSERT(size == 21);
 
 #ifdef ARCH_LINUX
     BTASSERT((size = std_sprintf(buf,

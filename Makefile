@@ -392,7 +392,7 @@ test-esp12e:
 	$(MAKE) BOARD=esp12e SERIAL_PORT=/dev/simba-esp12e test
 
 test-nano32:
-	@echo "NANO32"
+	@echo "Nano32"
 	$(MAKE) BOARD=nano32 SERIAL_PORT=/dev/simba-nano32 test
 
 test-stm32vldiscovery:
