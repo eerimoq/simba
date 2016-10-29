@@ -17,7 +17,7 @@
 
 ##################################################################
 
-nano32.name=NANO32
+nano32.name=Nano32
 
 nano32.upload.tool=esptool
 nano32.upload.speed=115200
@@ -30,7 +30,7 @@ nano32.serial.disableRTS=true
 
 nano32.build.mcu=esp32
 nano32.build.f_cpu=80000000L
-nano32.build.board=NANO32
+nano32.build.board=Nano32
 nano32.build.variant=nano32
 nano32.build.core=Simba:simba
 nano32.build.ldscript=simba.flash.ld
