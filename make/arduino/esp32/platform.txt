@@ -115,4 +115,4 @@ tools.esptool.network_cmd.windows=python.exe
 tools.esptool.upload.protocol=esp32
 tools.esptool.upload.params.verbose=
 tools.esptool.upload.params.quiet=
-tools.esptool.upload.pattern="{cmd}" "{path}" --chip esp32 --port "{serial.port}" --baud 115200 write_flash --flash_freq 40m --flash_mode dio 0x1000 "{runtime.platform.path}/bin/bootloader.bin" 0x4000 "{runtime.platform.path}/bin/partitions_singleapp.bin" 0x10000 "{build.path}/{build.project_name}.bin"
+tools.esptool.upload.pattern="{cmd}" "{path}" --chip esp32 --port "{serial.port}" --baud 921600 write_flash --flash_freq 40m --flash_mode dio 0x1000 "{runtime.platform.path}/bin/bootloader.bin" 0x4000 "{runtime.platform.path}/bin/partitions_singleapp.bin" 0x10000 "{build.path}/{build.project_name}.bin"
