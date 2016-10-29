@@ -33,13 +33,7 @@ Follow these steps to create a new release:
    sha256 sums of the zip-archives are calculated by ``make arduino``
    and written to ``simba-arduino/*.sha256``.
 
-6. Make sure that the blink example works in the Arduino IDE.
-
-7. Commit the changes, and tag the commit with the new version.
-
-8. Push the new commit and tag.
-
-9. Copy the Simba Arduino releases to SourceForge.
+6. Copy the Simba Arduino releases to SourceForge.
 
    .. code:: text
 
@@ -47,12 +41,39 @@ Follow these steps to create a new release:
       scp simba-arduino/simba-arduino-sam-*.zip <user>@frs.sourceforge.net:/home/frs/project/simba-arduino/sam
       scp simba-arduino/simba-arduino-esp-*.zip <user>@frs.sourceforge.net:/home/frs/project/simba-arduino/esp
       scp simba-arduino/simba-arduino-esp32-*.zip <user>@frs.sourceforge.net:/home/frs/project/simba-arduino/esp32
+
+7. Start a http server used to download package manifests in the Arduino IDE.
+
+   .. code:: text
+
+      (cd make/arduino && python -m SimpleHTTPServer)
+
+8. Start the Arduino IDE and add these URL:s in Preferences.
+
+   .. code:: text
+
+      http://localhost:8000/avr/package_simba_avr_index.json
+      http://localhost:8000/esp/package_simba_esp_index.json
+      http://localhost:8000/esp32/package_simba_esp32_index.json
+      http://localhost:8000/sam/package_simba_sam_index.json
+
+9. Install all four packages and run the blink example for each one of
+   them.
+      
+10. Commit the changes, and tag the commit with the new version.
+
+11. Push the new commit and tag.
+
+12. Copy the Simba Arduino package manifests SourceForge.
+
+   .. code:: text
+
       scp make/arduino/avr/package_simba_avr_index.json <user>@frs.sourceforge.net:/home/frs/project/simba-arduino/avr
       scp make/arduino/sam/package_simba_sam_index.json <user>@frs.sourceforge.net:/home/frs/project/simba-arduino/sam
       scp make/arduino/esp/package_simba_esp_index.json <user>@frs.sourceforge.net:/home/frs/project/simba-arduino/esp
       scp make/arduino/esp32/package_simba_esp32_index.json <user>@frs.sourceforge.net:/home/frs/project/simba-arduino/esp32
 
-10. Download the release zip-file from Github and calculate its SHA1
+13. Download the release zip-file from Github and calculate its SHA1
    checksum. Upload the zip-file to sourceforge and add the new
    releases to ``make/platformio/manifest.json``.
 
