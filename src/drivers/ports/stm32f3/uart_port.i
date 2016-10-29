@@ -69,3 +69,10 @@ static ssize_t uart_port_write_cb(void *arg_p,
 {
     return (0);
 }
+
+static ssize_t uart_port_write_cb_isr(void *arg_p,
+                                      const void *txbuf_p,
+                                      size_t size)
+{
+    return (-1);
+}

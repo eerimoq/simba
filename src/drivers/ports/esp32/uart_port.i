@@ -212,3 +212,22 @@ static ssize_t uart_port_write_cb(void *arg_p,
 
     return (size);
 }
+
+static ssize_t uart_port_write_cb_isr(void *arg_p,
+                                      const void *txbuf_p,
+                                      size_t size)
+{
+    struct uart_driver_t *self_p;
+
+    self_p = container_of(arg_p, struct uart_driver_t, chout);
+
+    /* Initiate transfer by writing to the fifo. */
+    self_p->txbuf_p = txbuf_p;
+    self_p->txsize = size;
+
+    while (self_p->txsize > 0) {
+        fill_tx_fifo(self_p);
+    }
+
+    return (size);
+}

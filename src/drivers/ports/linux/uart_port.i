@@ -32,17 +32,24 @@ static int uart_port_stop(struct uart_driver_t *drv)
     return (0);
 }
 
-static ssize_t uart_port_write_cb(void *arg,
-                                  const void *txbuf,
+static ssize_t uart_port_write_cb(void *arg_p,
+                                  const void *txbuf_p,
                                   size_t size)
 {
-    const char *c = txbuf;
+    const char *c_p = txbuf_p;
 
     while (size > 0) {
-        putc(*c++, stdout);
+        putc(*c_p++, stdout);
         fflush(stdout);
         size--;
     }
 
     return (size);
+}
+
+static ssize_t uart_port_write_cb_isr(void *arg_p,
+                                      const void *txbuf_p,
+                                      size_t size)
+{
+    return (uart_port_write_cb(arg_p, txbuf_p, size));
 }

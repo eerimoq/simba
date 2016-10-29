@@ -52,7 +52,9 @@ int uart_init(struct uart_driver_t *self_p,
               chan_read_null,
               (ssize_t (*)(void *, const void *, size_t))uart_port_write_cb,
               chan_size_null);
-    
+
+    chan_set_write_isr_cb(&self_p->chout, uart_port_write_cb_isr);
+
     if (size > 0) {
         queue_init(&self_p->chin, rxbuf_p, size);
     }

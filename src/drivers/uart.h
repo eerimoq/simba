@@ -104,7 +104,7 @@ int uart_stop(struct uart_driver_t *self_p);
  * @param[in] buf_p Buffer to write.
  * @param[in] size Number of bytes to write.
  *
- * @return number of sent bytes or negative error code.
+ * @return Number of written bytes or negative error code.
  */
 #define uart_write(self_p, buf_p, size)                  \
     (self_p)->chout.write(&(self_p)->chout, buf_p, size)
