@@ -1,4 +1,4 @@
-NANO32
+Nano32
 ======
 
 Pinout
@@ -28,7 +28,7 @@ Supported drivers for this board.
 Library Reference
 -----------------
 
-Read more about board specific functionality in the :doc:`NANO32
+Read more about board specific functionality in the :doc:`Nano32
 <../library-reference/boards/nano32>` module documentation in the
 Library Reference.
 
@@ -52,9 +52,9 @@ Below is the memory usage of two applications:
 +--------------------------+-----------+-----------+
 | Application              | Flash     | RAM       |
 +==========================+===========+===========+
-| minimal-configuration    |    125221 |     37052 |
+| minimal-configuration    |    128609 |     37452 |
 +--------------------------+-----------+-----------+
-| default-configuration    |    140625 |     52540 |
+| default-configuration    |    143673 |     53116 |
 +--------------------------+-----------+-----------+
 
 Default configuration
@@ -141,7 +141,7 @@ Default Standard Library configuration.
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_FS_PATH_MAX_                                   |  64                                                 |
 +--------------------------------------------------------+-----------------------------------------------------+
-|  CONFIG_MONITOR_THREAD_                                |  1                                                  |
+|  CONFIG_MONITOR_THREAD_                                |  0                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_PREEMPTIVE_SCHEDULER_                          |  0                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
@@ -193,7 +193,7 @@ Default Standard Library configuration.
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_START_SHELL_PRIO_                              |  30                                                 |
 +--------------------------------------------------------+-----------------------------------------------------+
-|  CONFIG_START_SHELL_STACK_SIZE_                        |  768                                                |
+|  CONFIG_START_SHELL_STACK_SIZE_                        |  1536                                               |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_STD_OUTPUT_BUFFER_MAX_                         |  16                                                 |
 +--------------------------------------------------------+-----------------------------------------------------+
