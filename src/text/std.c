@@ -161,9 +161,11 @@ static char *formati(char c,
         value = (unsigned long)va_arg(*ap_p, long);
     }
 
-    if ((c != 'u') && (value & (1UL << (sizeof(value) * CHAR_BIT - 1)))) {
-        value *= -1;
-        *negative_sign_p = 1;
+    if ((c == 'i') || (c == 'd')) {
+        if (value & (1UL << (sizeof(value) * CHAR_BIT - 1))) {
+            value *= -1;
+            *negative_sign_p = 1;
+        }
     }
 
     if (length == 0) {

@@ -52,29 +52,49 @@ static int test_sprintf(struct harness_t *harness_p)
     char buf[128];
     ssize_t size;
 
-    BTASSERT((size = std_sprintf(buf,
-                                 FSTR("Normal:                '%c' '%d' '%lu' '%s'"),
-                                 'b', -43, 0xffffffffUL, "foo")) == 51);
+    size = std_sprintf(buf,
+                       FSTR("Normal:                '%c' '%d' '%lu' '%s'"),
+                       'b', -43, 0xffffffffUL, "foo");
     std_printf(FSTR("%s\r\n"), buf);
+    BTASSERT(size == 51);
 
-    BTASSERT((size = std_sprintf(buf,
-                                 FSTR("Left justification:    '%-10c' '%-10d' '%-10lu' '%-10s'"),
-                                 'b', -43, 0xffffffffUL, "foo")) == 74);
+    size = std_sprintf(buf,
+                       FSTR("Left justification:    '%-10c' '%-10d' '%-10lu' '%-10s'"),
+                       'b', -43, 0xffffffffUL, "foo");
     std_printf(FSTR("%s\r\n"), buf);
+    BTASSERT(size == 74);
 
-    BTASSERT((size = std_sprintf(buf,
-                                 FSTR("Preceding with blanks: '%10c' '%10d' '%10lu' '%10s'"),
-                                 'b', -43, 0xffffffffUL, "foo")) == 74);
+    size = std_sprintf(buf,
+                       FSTR("Preceding with blanks: '%10c' '%10d' '%10lu' '%10s'"),
+                       'b', -43, 0xffffffffUL, "foo");
     std_printf(FSTR("%s\r\n"), buf);
+    BTASSERT(size == 74);
 
-    BTASSERT((size = std_sprintf(buf,
-                                 FSTR("Preceding with zeros:  '%010c' '%010d' '%010lu' '%010s'"),
-                                 'b', -43, 0xffffffffUL, "foo")) == 74);
+    size = std_sprintf(buf,
+                       FSTR("Preceding with zeros:  '%010c' '%010d' '%010lu' '%010s'"),
+                       'b', -43, 0xffffffffUL, "foo");
     std_printf(FSTR("%s\r\n"), buf);
+    BTASSERT(size == 74);
 
-    BTASSERT((size = std_sprintf(buf,
-                                 FSTR("Bad format: %g %"))) == 14);
+    size = std_sprintf(buf, FSTR("Bad format: %g %"));
     std_printf(FSTR("%s\r\n"), buf);
+    BTASSERT(size == 14);
+
+    size = std_sprintf(buf, FSTR("INT_MAX %%i: %i"), 0xffffffffL);
+    std_printf(FSTR("%s\r\n"), buf);
+    BTASSERT(size == 14);
+
+    size = std_sprintf(buf, FSTR("INT_MAX %%d: %d"), 0xffffffffL);
+    std_printf(FSTR("%s\r\n"), buf);
+    BTASSERT(size == 14);
+
+    size = std_sprintf(buf, FSTR("INT_MAX %%u: %u"), 0xffffffffL);
+    std_printf(FSTR("%s\r\n"), buf);
+    BTASSERT(size == 22);
+
+    size = std_sprintf(buf, FSTR("INT_MAX %%x: %x"), 0xffffffffL);
+    std_printf(FSTR("%s\r\n"), buf);
+    BTASSERT(size == 20);
 
 #ifdef ARCH_LINUX
     BTASSERT((size = std_sprintf(buf,
