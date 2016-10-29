@@ -19,7 +19,11 @@
 
 #include "simba.h"
 
+#if defined(ARCH_ESP32)
+static THRD_STACK(suspend_resume_stack, 512);
+#else
 static THRD_STACK(suspend_resume_stack, 256);
+#endif
 
 static void *suspend_resume_main(void *arg_p)
 {

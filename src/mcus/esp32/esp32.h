@@ -993,11 +993,11 @@ struct esp32_timg_t {
         uint32_t FEED;
         uint32_t WPROTECT;
     } WDT;
-    uint32_t RESERVED0[13];
+    uint32_t RESERVED0[12];
     struct {
+        uint32_t ENA;
         uint32_t RAW;
         uint32_t ST;
-        uint32_t ENA;
         uint32_t CLR;
     } INT;
 };

@@ -128,7 +128,7 @@ static void scheduler_ready_push(struct thrd_t *thrd_p);
 
 static void thrd_reschedule(void);
 
-static void terminate(void);
+void terminate(void);
 
 #include "thrd_port.i"
 
@@ -142,7 +142,7 @@ static THRD_STACK(idle_thrd_stack, CONFIG_THRD_IDLE_STACK_SIZE);
 /**
  * The thread is terminated.
  */
-static void terminate(void)
+void terminate(void)
 {
 #if CONFIG_THRD_TERMINATE == 1
 

@@ -24,61 +24,16 @@
 #include "freertos/FreeRTOS.h"
 #include "freertos/semphr.h"
 
+extern void thrd_port_main();
+
 static struct thrd_t main_thrd __attribute__ ((section (".main_thrd")));
 
 xSemaphoreHandle thrd_idle_sem;
-
-/**
- * @param[in] in_p Thread to swap in (a2).
- * @param[in] out_p Thread to swap out (a3).
- */
-void thrd_port_swap(struct thrd_t *in_p,
-                    struct thrd_t *out_p)
-{
-    /* Use 32 bytes on the stack. */
-    asm volatile("addi	a1, a1, -32");
-
-    /* Store the out-threads' registers on its stack. */
-    asm volatile("s32i.n a15, a1, 16");
-    asm volatile("s32i.n a14, a1, 12");
-    asm volatile("s32i.n a13, a1,  8");
-    asm volatile("s32i.n a12, a1,  4");
-    asm volatile("s32i.n  a0, a1,  0");
-
-    /* Save 'out_p' stack pointer. */
-    asm volatile ("s32i.n a1, %0, 8" : "=r" (out_p));
-
-    /* Restore 'in_p' stack pointer. */
-    asm volatile ("l32i.n a1, %0, 8" : : "r" (in_p));
-
-    /* Load the in-threads' registers from its stack. */
-    asm volatile("l32i.n  a0, a1,  0");
-    asm volatile("l32i.n a12, a1,  4");
-    asm volatile("l32i.n a13, a1,  8");
-    asm volatile("l32i.n a14, a1, 12");
-    asm volatile("l32i.n a15, a1, 16");
-
-    /* Restore the stack. */
-    asm volatile("addi	a1, a1, 32");
-}
 
 static void thrd_port_init_main(struct thrd_port_t *port)
 {
     vSemaphoreCreateBinary(thrd_idle_sem);
     xSemaphoreTake(thrd_idle_sem, portMAX_DELAY);
-}
-
-static void thrd_port_main(void)
-{
-    sys_unlock();
-
-    /* Call main function with argument. */
-    asm volatile ("mov a3, a12");
-    asm volatile ("mov a2, a13");
-    asm volatile ("callx0 a3");
-
-    /* Thread termination. */
-    terminate();
 }
 
 static int thrd_port_spawn(struct thrd_t *thrd_p,
@@ -91,10 +46,18 @@ static int thrd_port_spawn(struct thrd_t *thrd_p,
 
     /* Put the context at the top of the stack. */
     context_p = (struct thrd_port_context_t *)
-        (((char *)stack_p) + stack_size - sizeof(*context_p) - 32);
+        ((((uintptr_t)stack_p) + stack_size - sizeof(*context_p) - 32) & 0xfffffff0);
+
+    context_p->ps = (PS_WOE | PS_UM | PS_CALLINC(1) | PS_INTLEVEL(3));
     context_p->a0 = (uint32_t)thrd_port_main;
-    context_p->a12 = (uint32_t)main;
-    context_p->a13 = (uint32_t)arg_p;
+    /* The window underflow handler will load those values from the
+       stack into a0-a3 and then call thrd_port_main(). */
+    ((uint32_t *)context_p)[-1] = (uint32_t)main;      // a3
+    ((uint32_t *)context_p)[-2] = (uint32_t)arg_p;     // a2
+    ((uint32_t *)context_p)[-3] = (uint32_t)context_p; // a1
+    ((uint32_t *)context_p)[-4] = 0; /* a0, thrd_port_main() will not
+                                        return so the return address
+                                        may have any value. */
 
     thrd_p->port.context_p = context_p;
 

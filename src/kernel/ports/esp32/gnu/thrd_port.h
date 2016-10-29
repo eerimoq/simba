@@ -29,14 +29,14 @@
 
 struct thrd_port_context_t {
     uint32_t a0;           /* Return addess from the swap function. */
-    uint32_t a12;
-    uint32_t a13;
-    uint32_t a14;
-    uint32_t a15;
+    uint32_t ps;
 };
 
 struct thrd_port_t {
     struct thrd_port_context_t *context_p;
 };
+
+extern void thrd_port_swap(struct thrd_t *in_p,
+                           struct thrd_t *out_p);
 
 #endif

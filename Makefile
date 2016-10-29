@@ -195,7 +195,31 @@ ifeq ($(BOARD), esp12e)
 endif
 
 ifeq ($(BOARD), nano32)
-    TESTS = $(addprefix tst/kernel/, sys)
+    TESTS = $(addprefix tst/kernel/, sys \
+                                     thrd \
+                                     timer)
+    TESTS += $(addprefix tst/sync/, bus \
+                                    event \
+                                    queue \
+                                    rwlock \
+                                    sem)
+    TESTS += $(addprefix tst/collections/, binary_tree \
+                                           bits \
+                                           fifo \
+                                           hash_map)
+    TESTS += $(addprefix tst/alloc/, circular_heap)
+    TESTS += $(addprefix tst/text/, std \
+                                    re)
+    TESTS += $(addprefix tst/debug/, log)
+    TESTS += $(addprefix tst/oam/, shell)
+    TESTS += $(addprefix tst/encode/, base64 \
+                                      json)
+    TESTS += $(addprefix tst/hash/, crc \
+                                    sha1)
+    TESTS += $(addprefix tst/inet/, http_websocket_client \
+				    http_websocket_server \
+				    inet \
+				    ping)
 endif
 
 ifeq ($(BOARD), stm32vldiscovery)

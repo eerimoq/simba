@@ -27,29 +27,47 @@
 /* The main function is defined by the user in main.c. */
 extern int main();
 
-static THRD_STACK(main_stack, CONFIG_SYS_SIMBA_MAIN_STACK_MAX)
-     __attribute__ ((section (".main_stack")));
+/* The main stack is placed before all other stacks in the memory. */
+static uint32_t always_free_stack[8]
+__attribute__ ((section (".simba_stack_free")));
+
+/* The main stack is placed before all other stacks in the memory. */
+uint32_t main_stack[DIV_CEIL(sizeof(struct thrd_t)
+                             + (CONFIG_SYS_SIMBA_MAIN_STACK_MAX),
+                             sizeof(uint32_t))]
+__attribute__ ((section (".main_stack")));
+
+static void sys_port_tick()
+{
+    /* Clear the interrupt flag and configure the timer to raise an
+       alarm on the next timeout. */
+    ESP32_TIMG0->INT.CLR = 1;
+    ESP32_TIMG0->TIMER[0].CONFIG |= (ESP32_TIMG_TIMER_CONFIG_ALARM_EN);
+
+    sys_tick();
+}
 
 static int sys_port_module_init(void)
 {
     /* Setup interrupt handler. */
     xt_set_interrupt_handler(ESP32_CPU_INTR_SYS_TICK_NUM,
-                             (xt_handler)sys_tick,
+                             (xt_handler)sys_port_tick,
                              NULL);
     xt_ints_on(BIT(ESP32_CPU_INTR_SYS_TICK_NUM));
     intr_matrix_set(xPortGetCoreID(),
-                    ESP32_INTR_SOURCE_TG0_T0_EDGE,
+                    ESP32_INTR_SOURCE_TG0_T0_LEVEL,
                     ESP32_CPU_INTR_SYS_TICK_NUM);
 
     /* Configure and start the system tick timer. */
-    ESP32_TIMG0->TIMER[0].ALARMLO = 10000;
+    ESP32_TIMG0->TIMER[0].ALARMLO = (40000000 / CONFIG_SYSTEM_TICK_FREQUENCY);
     ESP32_TIMG0->TIMER[0].ALARMHI = 0;
-    ESP32_TIMG0->TIMER[0].UPDATE = 1;
     ESP32_TIMG0->TIMER[0].CONFIG = (ESP32_TIMG_TIMER_CONFIG_ALARM_EN
-                                    | ESP32_TIMG_TIMER_CONFIG_EDGE_INT_EN
+                                    | ESP32_TIMG_TIMER_CONFIG_LEVEL_INT_EN
+                                    | ESP32_TIMG_TIMER_CONFIG_DIVIDER(1)
                                     | ESP32_TIMG_TIMER_CONFIG_AUTORELOAD
                                     | ESP32_TIMG_TIMER_CONFIG_INCREASE
                                     | ESP32_TIMG_TIMER_CONFIG_EN);
+    ESP32_TIMG0->INT.ENA |= 1;
 
     return (0);
 }
@@ -104,9 +122,11 @@ int app_main()
     nvs_flash_init();
     system_init();
 
+    always_free_stack[0] = 0;
+
     xTaskGenericCreate(&main_task,
                        "simba",
-                       sizeof(main_stack) / sizeof(int),
+                       sizeof(main_stack),
                        NULL,
                        5,
                        NULL,

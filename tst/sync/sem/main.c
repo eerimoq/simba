@@ -22,8 +22,13 @@
 static struct sem_t sem;
 static struct sem_t sem2;
 
+#if defined(ARCH_ESP32)
+static THRD_STACK(t0_stack, 512);
+static THRD_STACK(t1_stack, 512);
+#else
 static THRD_STACK(t0_stack, 224);
 static THRD_STACK(t1_stack, 224);
+#endif
 
 /* Defined in the linker script. */
 extern char __simba_stack_begin;

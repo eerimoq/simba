@@ -1399,7 +1399,7 @@ BOARDS = {
         ]
     }, 
     "nano32": {
-        "board_desc": "NANO32", 
+        "board_desc": "Nano32", 
         "cdefs": [
             "ARCH_ESP32", 
             "FAMILY_ESP32", 
@@ -1448,6 +1448,7 @@ BOARDS = {
             "3pp/spiffs-0.3.5/src", 
             "3pp/lwip-1.4.1/src/include/ipv4", 
             "3pp/esp32/esp-idf/components/esp32/include", 
+            "3pp/esp32/esp-idf/components/nvs_flash/include", 
             "build/nano32", 
             "src/mcus/esp32", 
             "src/inet", 
@@ -1501,7 +1502,7 @@ BOARDS = {
             "3pp/esp32/esp-idf/components/esp32/lib"
         ], 
         "linker_script": "simba.flash.ld", 
-        "mcu_desc": "Espressif ESP32 @ 80 MHz, 82 kB dram, 4 MB flash", 
+        "mcu_desc": "Espressif ESP32 @ 240 MHz, 512 kB sram, 4 MB flash", 
         "src": [
             "src/encode/base64.c", 
             "src/inet/network_interface/wifi.c", 
@@ -1538,6 +1539,7 @@ BOARDS = {
             "src/text/configfile.c", 
             "src/oam/settings.c", 
             "3pp/spiffs-0.3.5/src/spiffs_hydrogen.c", 
+            "src/kernel/ports/esp32/gnu/thrd_port.S", 
             "3pp/spiffs-0.3.5/src/spiffs_nucleus.c", 
             "src/inet/http_server.c", 
             "src/multimedia/midi.c", 

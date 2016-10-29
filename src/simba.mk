@@ -233,10 +233,16 @@ SRC += $(INET_SRC:%=$(SIMBA_ROOT)/src/inet/%)
 #Kernel package.
 INC += $(SIMBA_ROOT)/src/kernel/ports/$(ARCH)/$(TOOLCHAIN)
 
-KERNEL_SRC ?= sys.c \
+KERNEL_SRC_TMP = sys.c \
               thrd.c \
               time.c \
               timer.c
+
+ifeq ($(FAMILY),esp32)
+    KERNEL_SRC_TMP += ports/esp32/gnu/thrd_port.S
+endif
+
+KERNEL_SRC ?= $(KERNEL_SRC_TMP)
 
 SRC += $(KERNEL_SRC:%=$(SIMBA_ROOT)/src/kernel/%)
 
