@@ -40,6 +40,7 @@ nano32.build.flash_freq=40
 
 nano32.compiler.c.extra_flags={nano32_compiler_c_extra_flags}
 nano32.compiler.cpp.extra_flags={nano32_compiler_cxx_extra_flags}
+nano32.compiler.S.extra_flags={nano32_compiler_c_extra_flags}
 nano32.compiler.c.elf.extra_flags={nano32_compiler_c_elf_extra_flags}
 nano32.compiler.c.elf.libs={nano32_compiler_c_elf_libs}
 
