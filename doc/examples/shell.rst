@@ -25,7 +25,7 @@ Build and run the application.
    $ make -s BOARD=<board> upload
 
 Communicate with the board using a serial terminal emulator, for
-example `TeraTerm`. The baudrate is 38400.
+example `TeraTerm`.
 
 Type ``hello_world`` in the terminal emulator and press Enter. ``Hello
 World!`` is printed.

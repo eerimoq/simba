@@ -580,7 +580,7 @@
  */
 #ifndef CONFIG_START_CONSOLE_UART_BAUDRATE
 #    if defined(BOARD_ESP01) || defined(BOARD_ESP12E)
-#        define CONFIG_START_CONSOLE_UART_BAUDRATE      77440
+#        define CONFIG_START_CONSOLE_UART_BAUDRATE      76800
 #    elif defined(BOARD_NANO32)
 #        define CONFIG_START_CONSOLE_UART_BAUDRATE     115200
 #    else

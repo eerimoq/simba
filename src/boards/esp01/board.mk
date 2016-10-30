@@ -33,7 +33,7 @@ BOARD_PY = $(SIMBA_ROOT)/src/boards/esp12e/board.py
 RUN_PY ?= $(SIMBA_ROOT)/src/boards/esp12e/run.py
 CONSOLE_RESET_TYPE ?= 0
 TIMEOUT ?= 10
-BAUDRATE ?= 77440
+BAUDRATE ?= 76800
 
 upload:
 	@echo "Uploading $(EXE)"

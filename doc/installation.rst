@@ -42,14 +42,9 @@ Boards Manager.
 
 6. Open `File` -> `Examples` -> `Simba` -> `hello_world`.
 
-7. Select the Arduino serial port at `Tools` -> `Port: ...`.
+7. Verify and upload the sketch to your device.
 
-8. Open `Tools` -> `Serial Monitor` and change the baudrate to
-   38400 in the bottom right corner.
-
-9. Verify and upload the sketch to your device.
-
-10. Done!
+8. Done!
 
 |simba| Simba build system
 --------------------------

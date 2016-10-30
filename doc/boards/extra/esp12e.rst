@@ -18,7 +18,7 @@ Hardware
 --------
 
 - 3.3 V power supply and logical level voltage.
-- Boot message at 77400 buad on a virgin board. Blue, red and RGB LEDs
+- Boot message at 76800 buad on a virgin board. Blue, red and RGB LEDs
   turned on.
 - 4 MB Flash.
 
