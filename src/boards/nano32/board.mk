@@ -31,6 +31,7 @@ MCU = esp32
 SERIAL_PORT ?= /dev/arduino
 CONSOLE_RESET_TYPE ?= 0
 TIMEOUT ?= 10
+BAUDRATE ?= 115200
 
 upload:
 	@echo "Uploading $(EXE)"

@@ -80,8 +80,6 @@ CDEFS += $(CDEFS_EXTRA)
 LDFLAGS += $(LDFLAGS_EXTRA)
 SHELL = /bin/bash
 
-BAUDRATE ?= 38400
-
 all:
 	@echo -e "\n>>> app: $(NAME), board: $(BOARD) <<<\n"
 	$(MAKE) prepare
@@ -105,6 +103,8 @@ SIMBA.mk ?= $(SIMBA_ROOT)/src/simba.mk
 
 include $(MCU.mk)
 include $(SIMBA.mk)
+
+BAUDRATE ?= 38400
 
 LIB ?=
 LIBPATH ?=

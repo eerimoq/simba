@@ -579,7 +579,13 @@
  * Console UART baudrate.
  */
 #ifndef CONFIG_START_CONSOLE_UART_BAUDRATE
-#    define CONFIG_START_CONSOLE_UART_BAUDRATE          38400
+#    if defined(BOARD_ESP01) || defined(BOARD_ESP12E)
+#        define CONFIG_START_CONSOLE_UART_BAUDRATE      77440
+#    elif defined(BOARD_NANO32)
+#        define CONFIG_START_CONSOLE_UART_BAUDRATE     115200
+#    else
+#        define CONFIG_START_CONSOLE_UART_BAUDRATE      38400
+#    endif
 #endif
 
 /**
