@@ -1,6 +1,11 @@
 {
     "framework-simba": [
         {
+            "url": "https://sourceforge.net/projects/simba-platformio/files/10.1.1.zip",
+            "sha1": "10127193623381c2df694c0a01e7b797b8ccbf5b",
+            "version": "10.1.1"
+        },
+        {
             "url": "https://sourceforge.net/projects/simba-platformio/files/10.1.0.zip",
             "sha1": "ef64c46c5d9868e4b23ae8bd2dcff471314dc2e2",
             "version": "10.1.0"
