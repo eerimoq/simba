@@ -29,7 +29,7 @@ nano32.serial.disableDTR=true
 nano32.serial.disableRTS=true
 
 nano32.build.mcu=esp32
-nano32.build.f_cpu=80000000L
+nano32.build.f_cpu=240000000L
 nano32.build.board=Nano32
 nano32.build.variant=nano32
 nano32.build.core=Simba:simba
