@@ -64,7 +64,7 @@ Follow these steps to create a new release:
 
 11. Push the new commit and tag.
 
-12. Copy the Simba Arduino package manifests SourceForge.
+12. Copy the Simba Arduino package manifests to SourceForge.
 
    .. code:: text
 
@@ -74,8 +74,8 @@ Follow these steps to create a new release:
       scp make/arduino/esp32/package_simba_esp32_index.json <user>@frs.sourceforge.net:/home/frs/project/simba-arduino/esp32
 
 13. Download the release zip-file from Github and calculate its SHA1
-   checksum. Upload the zip-file to sourceforge and add the new
-   releases to ``make/platformio/manifest.json``.
+    checksum. Upload the zip-file to sourceforge and add the new
+    releases to ``make/platformio/manifest.json``.
 
    .. code:: text
 
@@ -83,6 +83,6 @@ Follow these steps to create a new release:
       sha1sum <version>.zip
       scp <version>.zip <user>@frs.sourceforge.net:/home/frs/project/simba-platformio/
 
-11. Commit and push.
+14. Commit and push.
 
-12. Done.
+15. Done.

@@ -18,15 +18,6 @@
 name=Simba SAM Boards
 version=7.0.0
 
-# Arduino SAM Core and platform.
-# ------------------------------
-#
-# For more info:
-# https://github.com/arduino/Arduino/wiki/Arduino-IDE-1.5-3rd-party-Hardware-specification
-
-name=Arduino ARM (32-bits) Boards
-version=1.6.8
-
 # SAM3 compile variables
 # ----------------------
 

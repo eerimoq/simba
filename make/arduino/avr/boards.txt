@@ -17,7 +17,7 @@
 
 ##################################################################
 
-mega2560.name=Simba Arduino Mega
+mega2560.name=Arduino Mega
 mega2560.upload.tool=avrdude
 mega2560.upload.protocol=wiring
 mega2560.upload.maximum_size=253952
@@ -43,7 +43,7 @@ mega2560.compiler.cpp.extra_flags={mega2560_compiler_cxx_extra_flags}
 
 ##################################################################
 
-nano.name=Simba Arduino Nano
+nano.name=Arduino Nano
 nano.upload.tool=avrdude
 nano.upload.protocol=arduino
 nano.upload.maximum_size=30720
@@ -69,7 +69,7 @@ nano.compiler.cpp.extra_flags={nano_compiler_cxx_extra_flags}
 
 ##################################################################
 
-uno.name=Simba Arduino Uno
+uno.name=Arduino Uno
 uno.upload.tool=avrdude
 uno.upload.protocol=arduino
 uno.upload.maximum_size=30720
@@ -95,7 +95,7 @@ uno.compiler.cpp.extra_flags={uno_compiler_cxx_extra_flags}
 
 ##################################################################
 
-pro-micro.name=Simba Arduino Pro Micro
+pro-micro.name=Arduino Pro Micro
 pro-micro.upload.tool=avrdude
 pro-micro.upload.protocol=avr109
 pro-micro.upload.maximum_size=28672

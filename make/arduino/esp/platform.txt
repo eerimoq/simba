@@ -18,12 +18,6 @@
 name=Simba ESP Boards
 version=7.0.0
 
-# Simba ESP Core and platform.
-# ------------------------------
-
-name=Simba ESP Boards
-version=1.6.8
-
 runtime.tools.xtensa-lx106-elf-gcc.path={runtime.platform.path}/tools/xtensa-lx106-elf
 runtime.tools.esptool.path={runtime.platform.path}/tools/esptool
 
