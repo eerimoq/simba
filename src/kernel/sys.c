@@ -41,6 +41,9 @@ struct module_t {
 #if CONFIG_FS_CMD_SYS_UPTIME == 1
     struct fs_command_t cmd_uptime;
 #endif
+#if CONFIG_FS_CMD_SYS_REBOOT == 1
+    struct fs_command_t cmd_reboot;
+#endif
 };
 
 static struct module_t module;
@@ -233,6 +236,22 @@ static int cmd_uptime_cb(int argc,
 
 #endif
 
+#if CONFIG_FS_CMD_SYS_REBOOT == 1
+
+static int cmd_reboot_cb(int argc,
+                         const char *argv[],
+                         void *out_p,
+                         void *in_p,
+                         void *arg_p,
+                         void *call_arg_p)
+{
+    sys_reboot();
+
+    return (0);
+}
+
+#endif
+
 int sys_module_init(void)
 {
     /* Return immediately if the module is already initialized. */
@@ -269,6 +288,16 @@ int sys_module_init(void)
                     cmd_uptime_cb,
                     NULL);
     fs_command_register(&module.cmd_uptime);
+
+#endif
+
+#if CONFIG_FS_CMD_SYS_REBOOT == 1
+
+    fs_command_init(&module.cmd_reboot,
+                    FSTR("/kernel/sys/reboot"),
+                    cmd_reboot_cb,
+                    NULL);
+    fs_command_register(&module.cmd_reboot);
 
 #endif
 
@@ -314,6 +343,16 @@ int sys_start(void)
 #endif
 
     return (0);
+}
+
+void sys_stop(int error)
+{
+    sys_port_stop(error);
+}
+
+void sys_reboot(void)
+{
+    sys_port_reboot();
 }
 
 void sys_set_on_fatal_callback(void (*callback)(int error))

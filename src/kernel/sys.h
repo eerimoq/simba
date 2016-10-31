@@ -95,6 +95,14 @@ int sys_start(void);
 void sys_stop(int error);
 
 /**
+ * Reboot the system. Sets all registers to their known, default
+ * values and restarts the application. Also known as a soft reset.
+ *
+ * @return Never returns.
+ */
+void sys_reboot(void);
+
+/**
  * Set the on-fatal-callback function to given callback.
  *
  * The on-fatal-callback is called when a fatal error occurs. The

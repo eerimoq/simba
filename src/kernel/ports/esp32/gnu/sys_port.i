@@ -68,6 +68,16 @@ static int sys_port_module_init(void)
     return (0);
 }
 
+static void sys_port_stop(int error)
+{
+    while (1);
+}
+
+static void sys_port_reboot()
+{
+    system_restart();
+}
+
 static void sys_port_lock(void)
 {
     portDISABLE_INTERRUPTS();
@@ -84,11 +94,6 @@ static void sys_port_lock_isr(void)
 
 static void sys_port_unlock_isr(void)
 {
-}
-
-void sys_stop(int error)
-{
-    while (1);
 }
 
 static float sys_port_interrupt_cpu_usage_get(void)

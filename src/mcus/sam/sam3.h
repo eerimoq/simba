@@ -113,6 +113,20 @@
 #define PID_CAN0                        (43)
 #define PID_CAN1                        (44)
 
+/* 12. Reset controller. */
+struct sam_rstc_t {
+    uint32_t CR;
+    uint32_t SR;
+    uint32_t MR;
+};
+
+#define RSTC_CR_PROCRST                               BIT(0)
+#define RSTC_CR_PERRST                                BIT(2)
+#define RSTC_CR_EXTRST                                BIT(3)
+#define RSTC_CR_KEY_POS                                 (24)
+#define RSTC_CR_KEY_MASK           (0xff << RSTC_CR_KEY_POS)
+#define RSTC_CR_KEY(value)  BITFIELD_SET(RSTC_CR_KEY, value)
+
 /* 15. Watchdog Timer. */
 struct sam_wdt_t {
     uint32_t CR;

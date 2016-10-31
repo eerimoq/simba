@@ -57,7 +57,7 @@ static int sys_port_module_init(void)
                             | ESP8266_TIMER_CTRL_AUTO_LOAD
                             | SYS_TICK_TIMER_PRESCALE
                             | ESP8266_TIMER_CTRL_INT_TRIGGER_EDGE);
-    
+
     _xt_isr_attach(ESP8266_IRQ_NUM_TIMER1,
                    (_xt_isr)sys_tick,
                    NULL);
@@ -66,6 +66,16 @@ static int sys_port_module_init(void)
     ESP8266_TIMER0->LOAD = SYS_TICK_TIMER_LOAD;
 
     return (0);
+}
+
+static void sys_port_stop(int error)
+{
+    while (1);
+}
+
+static void sys_port_reboot()
+{
+    system_restart();
 }
 
 static void sys_port_lock(void)
@@ -84,11 +94,6 @@ static void sys_port_lock_isr(void)
 
 static void sys_port_unlock_isr(void)
 {
-}
-
-void sys_stop(int error)
-{
-    while (1);
 }
 
 static float sys_port_interrupt_cpu_usage_get(void)

@@ -52,6 +52,16 @@ static void *sys_port_ticker(void *arg)
     return (NULL);
 }
 
+static void sys_port_stop(int error)
+{
+    exit(error);
+}
+
+static void sys_port_reboot()
+{
+    exit(1);
+}
+
 static void sys_port_lock(void)
 {
     pthread_mutex_lock(&mutex);
@@ -75,7 +85,7 @@ static void sys_port_unlock_isr(void)
 int sys_port_module_init(void)
 {
     pthread_mutex_init(&mutex, NULL);
-    
+
     /* Start sys tick thrd.*/
     if (pthread_create(&sys_port.thrd, NULL, sys_port_ticker, NULL)) {
         fprintf(stderr, "Error creating ticker thrd\n");
@@ -83,11 +93,6 @@ int sys_port_module_init(void)
     }
 
     return (0);
-}
-
-void sys_stop(int error)
-{
-    return (exit(error));
 }
 
 static float sys_port_interrupt_cpu_usage_get(void)

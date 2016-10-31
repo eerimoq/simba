@@ -47,6 +47,18 @@ static int sys_port_module_init(void)
     return (0);
 }
 
+static void sys_port_stop(int error)
+{
+    return (exit(error));
+}
+
+static void sys_port_reboot()
+{
+    SAM_RSTC->CR = (RSTC_CR_KEY(0xa5)
+                    | RSTC_CR_PERRST
+                    | RSTC_CR_PROCRST);
+}
+
 static void sys_port_lock(void)
 {
     asm volatile("cpsid i" : : : "memory");
@@ -63,11 +75,6 @@ static void sys_port_lock_isr(void)
 
 static void sys_port_unlock_isr(void)
 {
-}
-
-void sys_stop(int error)
-{
-    return (exit(error));
 }
 
 /* Newlib stub functions. */

@@ -19,6 +19,7 @@
 
 #include <avr/interrupt.h>
 #include <avr/eeprom.h>
+#include <avr/wdt.h>
 
 /**
  * Calculate system tick timer configuration parameters from cpu
@@ -68,6 +69,29 @@ static int sys_port_module_init(void)
     return (0);
 }
 
+static void sys_port_stop(int error)
+{
+#if defined(BOARD_ARDUINO_PRO_MICRO)
+
+    /* Handle USB device driver interrupts to reset the baord and
+       enter the bootloader. */
+    while (1);
+
+#endif
+
+    exit(error);
+}
+
+static void sys_port_reboot()
+{
+    sys_lock();
+
+    /* Use the watchdog to reboot the system. */
+    wdt_enable(1);
+
+    while (1);
+}
+
 static void sys_port_lock(void)
 {
     asm volatile ("cli" ::: "memory");
@@ -84,19 +108,6 @@ static void sys_port_lock_isr(void)
 
 static void sys_port_unlock_isr(void)
 {
-}
-
-void sys_stop(int error)
-{
-#if defined(BOARD_ARDUINO_PRO_MICRO)
-
-    /* Handle USB device driver interrupts to reset the baord and
-       enter the bootloader. */
-    while (1);
-
-#endif
-
-    exit(error);
 }
 
 static float sys_port_interrupt_cpu_usage_get(void)
