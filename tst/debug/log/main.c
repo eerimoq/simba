@@ -148,15 +148,15 @@ int test_fs(struct harness_t *harness_p)
     char command[64];
     struct command_t *command_p;
     struct command_t commands[] = {
-        { "/kernel/log/list", 0 },
-        { "/kernel/log/print foo", 0 },
-        { "/kernel/log/set_log_mask log 0xff", 0 },
+        { "/debug/log/list", 0 },
+        { "/debug/log/print foo", 0 },
+        { "/debug/log/set_log_mask log 0xff", 0 },
         
-        { "/kernel/log/list d", -EINVAL },
-        { "/kernel/log/print d d", -EINVAL },
-        { "/kernel/log/set_log_mask invalid_object 0xff", -EINVAL },
-        { "/kernel/log/set_log_mask missing_mask", -EINVAL },
-        { "/kernel/log/set_log_mask bad_mask ds", -EINVAL },
+        { "/debug/log/list d", -EINVAL },
+        { "/debug/log/print d d", -EINVAL },
+        { "/debug/log/set_log_mask invalid_object 0xff", -EINVAL },
+        { "/debug/log/set_log_mask missing_mask", -EINVAL },
+        { "/debug/log/set_log_mask bad_mask ds", -EINVAL },
         { NULL, 0 }
     };
 

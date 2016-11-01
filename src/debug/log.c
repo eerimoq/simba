@@ -57,7 +57,7 @@ static struct module_t module;
 #if CONFIG_FS_CMD_LOG_PRINT == 1
 
 /**
- * The shell command callback for "/kernel/log/print".
+ * The shell command callback for "/debug/log/print".
  */
 static int cmd_print_cb(int argc,
                         const char *argv[],
@@ -83,7 +83,7 @@ static int cmd_print_cb(int argc,
 #if CONFIG_FS_CMD_LOG_LIST == 1
 
 /**
- * The shell command callback for "/kernel/log/print".
+ * The shell command callback for "/debug/log/print".
  */
 static int cmd_list_cb(int argc,
                        const char *argv[],
@@ -125,7 +125,7 @@ static int cmd_list_cb(int argc,
 #if CONFIG_FS_CMD_LOG_SET_LOG_MASK == 1
 
 /**
- * The shell command callback for "/kernel/log/set_log_mask".
+ * The shell command callback for "/debug/log/set_log_mask".
  */
 static int cmd_set_log_mask_cb(int argc,
                                const char *argv[],
@@ -206,7 +206,7 @@ int log_module_init()
 
     /* Setup shell commands. */
     fs_command_init(&module.cmd_print,
-                    FSTR("/kernel/log/print"),
+                    FSTR("/debug/log/print"),
                     cmd_print_cb,
                     NULL);
     fs_command_register(&module.cmd_print);
@@ -216,7 +216,7 @@ int log_module_init()
 #if CONFIG_FS_CMD_LOG_LIST == 1
 
     fs_command_init(&module.cmd_list,
-                    FSTR("/kernel/log/list"),
+                    FSTR("/debug/log/list"),
                     cmd_list_cb,
                     NULL);
     fs_command_register(&module.cmd_list);
@@ -226,7 +226,7 @@ int log_module_init()
 #if CONFIG_FS_CMD_LOG_SET_LOG_MASK == 1
 
     fs_command_init(&module.cmd_set_log_mask,
-                    FSTR("/kernel/log/set_log_mask"),
+                    FSTR("/debug/log/set_log_mask"),
                     cmd_set_log_mask_cb,
                     NULL);
     fs_command_register(&module.cmd_set_log_mask);
