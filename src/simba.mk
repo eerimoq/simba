@@ -122,7 +122,8 @@ DRIVERS_SRC ?= adc.c \
 endif
 
 ifeq ($(FAMILY),esp32)
-DRIVERS_SRC ?= pin.c \
+DRIVERS_SRC ?= flash.c \
+	       pin.c \
 	       uart.c
 endif
 

@@ -1,5 +1,5 @@
 /**
- * @file mcus/esp32/mcu.h
+ * @file drivers/ports/esp32/flash_port.h
  *
  * @section License
  * Copyright (C) 2014-2016, Erik Moqvist
@@ -17,18 +17,14 @@
  * This file is part of the Simba project.
  */
 
-#ifndef __MCU_H__
-#define __MCU_H__
+#ifndef __DRIVERS_FLASH_PORT_H__
+#define __DRIVERS_FLASH_PORT_H__
 
-#include "esp32.h"
+struct flash_device_t {
+};
 
-#define PIN_DEVICE_MAX   36
-#define EXTI_DEVICE_MAX   1
-
-#define SPI_DEVICE_MAX    3
-#define UART_DEVICE_MAX   3
-#define ADC_DEVICE_MAX    2
-#define I2C_DEVICE_MAX    1
-#define FLASH_DEVICE_MAX  1
+struct flash_driver_t {
+    struct flash_device_t *dev_p;
+};
 
 #endif

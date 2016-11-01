@@ -23,17 +23,14 @@
 #include "freertos/task.h"
 #include "esp_system.h"
 #include "esp_intr.h"
+#include "esp_attr.h"
+
+#include "nvs_flash.h"
 
 /* The main function is defined by the user in main.c. */
 extern int main();
 
-/* The main stack is placed before all other stacks in the memory. */
-uint32_t main_stack[DIV_CEIL(sizeof(struct thrd_t)
-                             + (CONFIG_SYS_SIMBA_MAIN_STACK_MAX),
-                             sizeof(uint32_t))]
-__attribute__ ((section (".main_stack")));
-
-static void sys_port_tick()
+static void RAM_CODE sys_port_tick()
 {
     /* Clear the interrupt flag and configure the timer to raise an
        alarm on the next timeout. */
@@ -46,10 +43,10 @@ static void sys_port_tick()
 static int sys_port_module_init(void)
 {
     /* Setup interrupt handler. */
+    ESP_INTR_DISABLE(ESP32_CPU_INTR_SYS_TICK_NUM);
     xt_set_interrupt_handler(ESP32_CPU_INTR_SYS_TICK_NUM,
                              (xt_handler)sys_port_tick,
                              NULL);
-    xt_ints_on(BIT(ESP32_CPU_INTR_SYS_TICK_NUM));
     intr_matrix_set(xPortGetCoreID(),
                     ESP32_INTR_SOURCE_TG0_T0_LEVEL,
                     ESP32_CPU_INTR_SYS_TICK_NUM);
@@ -63,7 +60,8 @@ static int sys_port_module_init(void)
                                     | ESP32_TIMG_TIMER_CONFIG_AUTORELOAD
                                     | ESP32_TIMG_TIMER_CONFIG_INCREASE
                                     | ESP32_TIMG_TIMER_CONFIG_EN);
-    ESP32_TIMG0->INT.ENA |= 1;
+    ESP32_TIMG0->INT.ENA = 1;
+    ESP_INTR_ENABLE(ESP32_CPU_INTR_SYS_TICK_NUM);
 
     return (0);
 }
@@ -78,12 +76,12 @@ static void sys_port_reboot()
     system_restart();
 }
 
-static void sys_port_lock(void)
+static void RAM_CODE sys_port_lock(void)
 {
     portDISABLE_INTERRUPTS();
 }
 
-static void sys_port_unlock(void)
+static void RAM_CODE sys_port_unlock(void)
 {
     portENABLE_INTERRUPTS();
 }
@@ -116,22 +114,17 @@ static void main_task(void *events)
     thrd_suspend(NULL);
 }
 
-#include "nvs_flash.h"
-
 int app_main()
 {
     nvs_flash_init();
     system_init();
 
-    xTaskGenericCreate(&main_task,
-                       "simba",
-                       sizeof(main_stack),
-                       NULL,
-                       5,
-                       NULL,
-                       (StackType_t *const)main_stack,
-                       NULL,
-                       0);
+    xTaskCreate(&main_task,
+                "simba",
+                CONFIG_SYS_SIMBA_MAIN_STACK_MAX,
+                NULL,
+                5,
+                NULL);
 
     return (0);
 }

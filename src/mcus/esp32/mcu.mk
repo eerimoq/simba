@@ -24,7 +24,8 @@ INC += $(SIMBA_ROOT)/src/mcus/esp32 \
        $(ESP_IDF_ROOT)/components/esp32/include \
        $(ESP_IDF_ROOT)/components/newlib/include \
        $(ESP_IDF_ROOT)/components/freertos/include \
-       $(ESP_IDF_ROOT)/components/nvs_flash/include
+       $(ESP_IDF_ROOT)/components/nvs_flash/include \
+       $(ESP_IDF_ROOT)/components/spi_flash/include
 
 SRC += $(SIMBA_ROOT)/src/mcus/esp32/mcu.c \
        $(SIMBA_ROOT)/src/mcus/esp32/esp32.c
@@ -56,10 +57,12 @@ LIB += \
 	log \
 	lwip \
 	mbedtls \
+	newlib \
 	nghttp \
 	nvs_flash \
 	spi_flash \
 	tcpip_adapter \
+	vfs \
 	gcc \
 	g \
 	c_rom \

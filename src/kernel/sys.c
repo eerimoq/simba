@@ -121,7 +121,8 @@ extern void timer_tick_isr(void);
 extern void thrd_tick_isr(void);
 extern const FAR char sysinfo[];
 
-static void sys_tick(void) {
+static void RAM_CODE sys_tick(void)
+{
     sys.tick++;
     time_tick_isr();
     timer_tick_isr();
@@ -262,43 +263,35 @@ int sys_module_init(void)
     module.initialized = 1;
 
 #if CONFIG_FS_CMD_SYS_INFO == 1
-
     fs_command_init(&module.cmd_info,
                     FSTR("/kernel/sys/info"),
                     cmd_info_cb,
                     NULL);
     fs_command_register(&module.cmd_info);
-
 #endif
 
 #if CONFIG_FS_CMD_SYS_CONFIG == 1
-
     fs_command_init(&module.cmd_config,
                     FSTR("/kernel/sys/config"),
                     cmd_config_cb,
                     NULL);
     fs_command_register(&module.cmd_config);
-
 #endif
 
 #if CONFIG_FS_CMD_SYS_UPTIME == 1
-
     fs_command_init(&module.cmd_uptime,
                     FSTR("/kernel/sys/uptime"),
                     cmd_uptime_cb,
                     NULL);
     fs_command_register(&module.cmd_uptime);
-
 #endif
 
 #if CONFIG_FS_CMD_SYS_REBOOT == 1
-
     fs_command_init(&module.cmd_reboot,
                     FSTR("/kernel/sys/reboot"),
                     cmd_reboot_cb,
                     NULL);
     fs_command_register(&module.cmd_reboot);
-
 #endif
 
     return (sys_port_module_init());
@@ -319,27 +312,19 @@ int sys_start(void)
     sys_module_init();
 
 #if CONFIG_START_CONSOLE != CONFIG_START_CONSOLE_NONE
-
     start_console();
-
 #endif
 
 #if CONFIG_START_SHELL == 1
-
     start_shell();
-
 #endif
 
 # if CONFIG_START_FILESYSTEM == 1
-
     start_filesystem();
-
 #endif
 
 # if CONFIG_START_NETWORK == 1
-
     start_network();
-
 #endif
 
     return (0);
@@ -390,12 +375,12 @@ void sys_unlock()
     sys_port_unlock();
 }
 
-void sys_lock_isr()
+void RAM_CODE sys_lock_isr()
 {
     sys_port_lock_isr();
 }
 
-void sys_unlock_isr()
+void RAM_CODE sys_unlock_isr()
 {
     sys_port_unlock_isr();
 }

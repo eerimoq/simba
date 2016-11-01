@@ -119,7 +119,7 @@
 #define ESP32_CPU_INTR_INTERNAL_11_PRIO_3            11
 #define ESP32_CPU_INTR_PERIPHERAL_12_PRIO_1          12
 #define ESP32_CPU_INTR_PERIPHERAL_13_PRIO_1          13
-#define ESP32_CPU_INTR_PERIPHERAL_14_PRIO_I          14
+#define ESP32_CPU_INTR_PERIPHERAL_14_PRIO_1          14
 #define ESP32_CPU_INTR_INTERNAL_15_PRIO_3            15
 #define ESP32_CPU_INTR_INTERNAL_16_PRIO_5            16
 #define ESP32_CPU_INTR_PERIPHERAL_17_PRIO_1          17
@@ -164,7 +164,6 @@
 
 #define ESP32_CPU_INTR_SYS_TICK_NUM  ESP32_CPU_INTR_PERIPHERAL_12_PRIO_1
 #define ESP32_CPU_INTR_UART_NUM      ESP32_CPU_INTR_PERIPHERAL_13_PRIO_1
-#define ESP32_CPU_INTR_SPI_NUM       ESP32_CPU_INTR_PERIPHERAL_14_PRIO_1
 
 /**
  * Interrupt matrix mapping registers.
@@ -291,7 +290,8 @@ struct esp32_dport_t {
     uint32_t AHB_MPU_TABLE_1;
     uint32_t HOST_INF_SEL;
     uint32_t PERIP_CLK_EN;
-    uint32_t DPORT_PWM3_CLK_EN;
+    uint32_t PERIP_RST_EN;
+    uint32_t SLAVE_SPI_CONFIG;
     uint32_t WIFI_CLK_EN;
     uint32_t WIFI_RST_EN;
     uint32_t BT_LPCK_DIV_INT;

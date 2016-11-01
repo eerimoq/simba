@@ -52,7 +52,7 @@ BOARDS = {
             "FAMILY_SAM", 
             "MCU_SAM3X8E", 
             "BOARD_ARDUINO_DUE", 
-            "VERSION=10.2.0"
+            "VERSION=master"
         ], 
         "cflags": [
             "-Werror", 
@@ -212,7 +212,7 @@ BOARDS = {
             "FAMILY_AVR", 
             "MCU_ATMEGA2560", 
             "BOARD_ARDUINO_MEGA", 
-            "VERSION=10.2.0", 
+            "VERSION=master", 
             "__DELAY_BACKWARD_COMPATIBLE__"
         ], 
         "cflags": [
@@ -368,7 +368,7 @@ BOARDS = {
             "FAMILY_AVR", 
             "MCU_ATMEGA328P", 
             "BOARD_ARDUINO_NANO", 
-            "VERSION=10.2.0", 
+            "VERSION=master", 
             "__DELAY_BACKWARD_COMPATIBLE__"
         ], 
         "cflags": [
@@ -524,7 +524,7 @@ BOARDS = {
             "FAMILY_AVR", 
             "MCU_ATMEGA32U4", 
             "BOARD_ARDUINO_PRO_MICRO", 
-            "VERSION=10.2.0", 
+            "VERSION=master", 
             "__DELAY_BACKWARD_COMPATIBLE__"
         ], 
         "cflags": [
@@ -684,7 +684,7 @@ BOARDS = {
             "FAMILY_AVR", 
             "MCU_ATMEGA328P", 
             "BOARD_ARDUINO_UNO", 
-            "VERSION=10.2.0", 
+            "VERSION=master", 
             "__DELAY_BACKWARD_COMPATIBLE__"
         ], 
         "cflags": [
@@ -840,7 +840,7 @@ BOARDS = {
             "FAMILY_LINUX", 
             "MCU_LINUX", 
             "BOARD_CYGWIN", 
-            "VERSION=10.2.0"
+            "VERSION=master"
         ], 
         "cflags": [
             "-Werror", 
@@ -970,7 +970,7 @@ BOARDS = {
             "FAMILY_ESP", 
             "MCU_ESP8266", 
             "BOARD_ESP01", 
-            "VERSION=10.2.0", 
+            "VERSION=master", 
             "ICACHE_FLASH", 
             "__STRICT_ANSI__", 
             "__ets__"
@@ -1127,7 +1127,7 @@ BOARDS = {
             "FAMILY_ESP", 
             "MCU_ESP8266", 
             "BOARD_ESP12E", 
-            "VERSION=10.2.0", 
+            "VERSION=master", 
             "ICACHE_FLASH", 
             "__STRICT_ANSI__", 
             "__ets__"
@@ -1284,7 +1284,7 @@ BOARDS = {
             "FAMILY_LINUX", 
             "MCU_LINUX", 
             "BOARD_LINUX", 
-            "VERSION=10.2.0"
+            "VERSION=master"
         ], 
         "cflags": [
             "-Werror", 
@@ -1414,7 +1414,7 @@ BOARDS = {
             "FAMILY_ESP32", 
             "MCU_ESP32", 
             "BOARD_NANO32", 
-            "VERSION=10.2.0", 
+            "VERSION=master", 
             "ICACHE_FLASH", 
             "__STRICT_ANSI__"
         ], 
@@ -1457,6 +1457,7 @@ BOARDS = {
             "3pp/esp32/esp-idf/components/newlib/include", 
             "3pp/esp32/esp-idf/components/freertos/include", 
             "3pp/esp32/esp-idf/components/nvs_flash/include", 
+            "3pp/esp32/esp-idf/components/spi_flash/include", 
             "src", 
             "src/drivers/ports/esp32", 
             "3pp/lwip-1.4.1/src/include", 
@@ -1494,10 +1495,12 @@ BOARDS = {
             "log", 
             "lwip", 
             "mbedtls", 
+            "newlib", 
             "nghttp", 
             "nvs_flash", 
             "spi_flash", 
             "tcpip_adapter", 
+            "vfs", 
             "gcc", 
             "g", 
             "c_rom", 
@@ -1524,6 +1527,7 @@ BOARDS = {
             "src/collections/hash_map.c", 
             "src/debug/log.c", 
             "src/debug/harness.c", 
+            "src/drivers/flash.c", 
             "src/drivers/pin.c", 
             "src/drivers/uart.c", 
             "src/encode/base64.c", 
@@ -1576,7 +1580,7 @@ BOARDS = {
             "FAMILY_STM32F2", 
             "MCU_STM32F205RG", 
             "BOARD_PHOTON", 
-            "VERSION=10.2.0"
+            "VERSION=master"
         ], 
         "cflags": [
             "-Werror", 
@@ -1738,7 +1742,7 @@ BOARDS = {
             "FAMILY_STM32F3", 
             "MCU_STM32F303VC", 
             "BOARD_STM32F3DISCOVERY", 
-            "VERSION=10.2.0"
+            "VERSION=master"
         ], 
         "cflags": [
             "-Werror", 
@@ -1885,7 +1889,7 @@ BOARDS = {
             "FAMILY_STM32F1", 
             "MCU_STM32F100RB", 
             "BOARD_STM32VLDISCOVERY", 
-            "VERSION=10.2.0"
+            "VERSION=master"
         ], 
         "cflags": [
             "-Werror", 

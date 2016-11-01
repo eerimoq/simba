@@ -54,9 +54,9 @@ Below is the memory usage of two applications:
 +--------------------------+-----------+-----------+
 | Application              | Flash     | RAM       |
 +==========================+===========+===========+
-| minimal-configuration    |     14800 |      2940 |
+| minimal-configuration    |     14916 |      3096 |
 +--------------------------+-----------+-----------+
-| default-configuration    |     59072 |      6198 |
+| default-configuration    |     59188 |      6354 |
 +--------------------------+-----------+-----------+
 
 Default configuration
@@ -130,6 +130,8 @@ Default Standard Library configuration.
 |  CONFIG_FS_CMD_SYS_CONFIG_                             |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_FS_CMD_SYS_INFO_                               |  1                                                  |
++--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_FS_CMD_SYS_REBOOT_                             |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_FS_CMD_SYS_UPTIME_                             |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
@@ -294,6 +296,8 @@ Mcu
 .. _CONFIG_FS_CMD_SYS_CONFIG: ../user-guide/configuration.html#c.CONFIG_FS_CMD_SYS_CONFIG
 
 .. _CONFIG_FS_CMD_SYS_INFO: ../user-guide/configuration.html#c.CONFIG_FS_CMD_SYS_INFO
+
+.. _CONFIG_FS_CMD_SYS_REBOOT: ../user-guide/configuration.html#c.CONFIG_FS_CMD_SYS_REBOOT
 
 .. _CONFIG_FS_CMD_SYS_UPTIME: ../user-guide/configuration.html#c.CONFIG_FS_CMD_SYS_UPTIME
 

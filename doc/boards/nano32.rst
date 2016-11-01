@@ -15,6 +15,7 @@ The default configuration includes those major features. They are all
 initialized by ``sys_start()`` at the startup of the application.
 
 - :doc:`Console.<../library-reference/oam/console>`
+- File system.
 - :doc:`Debug shell.<../library-reference/oam/shell>`
 
 Drivers
@@ -22,6 +23,7 @@ Drivers
 
 Supported drivers for this board.
 
+- :doc:`../library-reference/drivers/flash`
 - :doc:`../library-reference/drivers/pin`
 - :doc:`../library-reference/drivers/uart`
 
@@ -52,9 +54,9 @@ Below is the memory usage of two applications:
 +--------------------------+-----------+-----------+
 | Application              | Flash     | RAM       |
 +==========================+===========+===========+
-| minimal-configuration    |    128609 |     37452 |
+| minimal-configuration    |    167321 |     35132 |
 +--------------------------+-----------+-----------+
-| default-configuration    |    143673 |     53116 |
+| default-configuration    |    198305 |     56404 |
 +--------------------------+-----------+-----------+
 
 Default configuration
@@ -129,6 +131,8 @@ Default Standard Library configuration.
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_FS_CMD_SYS_INFO_                               |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_FS_CMD_SYS_REBOOT_                             |  1                                                  |
++--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_FS_CMD_SYS_UPTIME_                             |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_FS_CMD_THRD_LIST_                              |  1                                                  |
@@ -145,7 +149,7 @@ Default Standard Library configuration.
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_PREEMPTIVE_SCHEDULER_                          |  0                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
-|  CONFIG_PROFILE_STACK_                                 |  1                                                  |
+|  CONFIG_PROFILE_STACK_                                 |  0                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_SETTINGS_AREA_SIZE_                            |  256                                                |
 +--------------------------------------------------------+-----------------------------------------------------+
@@ -159,7 +163,7 @@ Default Standard Library configuration.
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_SOCKET_RAW_                                    |  0                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
-|  CONFIG_SPIFFS_                                        |  0                                                  |
+|  CONFIG_SPIFFS_                                        |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_START_CONSOLE_                                 |  CONFIG_START_CONSOLE_UART                          |
 +--------------------------------------------------------+-----------------------------------------------------+
@@ -175,11 +179,11 @@ Default Standard Library configuration.
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_START_CONSOLE_USB_CDC_WAIT_FOR_CONNETION_      |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
-|  CONFIG_START_FILESYSTEM_                              |  0                                                  |
+|  CONFIG_START_FILESYSTEM_                              |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
-|  CONFIG_START_FILESYSTEM_ADDRESS_                      |  0                                                  |
+|  CONFIG_START_FILESYSTEM_ADDRESS_                      |  0x00300000                                         |
 +--------------------------------------------------------+-----------------------------------------------------+
-|  CONFIG_START_FILESYSTEM_SIZE_                         |  65536                                              |
+|  CONFIG_START_FILESYSTEM_SIZE_                         |  0xFB000                                            |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_START_NETWORK_                                 |  0                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
@@ -193,7 +197,7 @@ Default Standard Library configuration.
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_START_SHELL_PRIO_                              |  30                                                 |
 +--------------------------------------------------------+-----------------------------------------------------+
-|  CONFIG_START_SHELL_STACK_SIZE_                        |  1536                                               |
+|  CONFIG_START_SHELL_STACK_SIZE_                        |  4096                                               |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_STD_OUTPUT_BUFFER_MAX_                         |  16                                                 |
 +--------------------------------------------------------+-----------------------------------------------------+
@@ -292,6 +296,8 @@ Mcu
 .. _CONFIG_FS_CMD_SYS_CONFIG: ../user-guide/configuration.html#c.CONFIG_FS_CMD_SYS_CONFIG
 
 .. _CONFIG_FS_CMD_SYS_INFO: ../user-guide/configuration.html#c.CONFIG_FS_CMD_SYS_INFO
+
+.. _CONFIG_FS_CMD_SYS_REBOOT: ../user-guide/configuration.html#c.CONFIG_FS_CMD_SYS_REBOOT
 
 .. _CONFIG_FS_CMD_SYS_UPTIME: ../user-guide/configuration.html#c.CONFIG_FS_CMD_SYS_UPTIME
 

@@ -47,6 +47,8 @@
        /* Start the system. */
        sys_start();
    
+       std_printf(sys_get_info());
+   
    #if defined(__DRIVERS_I2C_H__)
        i2c_module_init();
    #endif

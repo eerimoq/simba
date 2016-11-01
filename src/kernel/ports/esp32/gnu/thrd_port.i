@@ -92,7 +92,7 @@ static void thrd_port_suspend_timer_callback(void *arg_p)
     scheduler_ready_push(thrd_p);
 }
 
-static void thrd_port_tick(void)
+static void RAM_CODE thrd_port_tick(void)
 {
     xSemaphoreGiveFromISR(thrd_idle_sem, NULL);
 }

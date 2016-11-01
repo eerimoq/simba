@@ -136,3 +136,5 @@ struct uart_device_t uart_device[UART_DEVICE_MAX] = {
 /*         .regs_p = ESP32_I2C1 */
 /*     } */
 /* }; */
+
+struct flash_device_t flash_device[FLASH_DEVICE_MAX];

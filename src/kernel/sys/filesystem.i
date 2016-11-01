@@ -96,7 +96,7 @@ static int start_filesystem(void)
 
 #else
 
-#if defined(ARCH_ESP) || defined(ARDUINO_DUE)
+#if defined(ARCH_ESP) || defined(ARDUINO_DUE) || defined(ARCH_ESP32)
 
 #    define PHYS_ERASE_BLOCK    4096
 #    define LOG_BLOCK_SIZE      4096

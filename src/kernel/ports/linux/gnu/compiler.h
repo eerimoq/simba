@@ -26,6 +26,8 @@ typedef const FAR char *far_string_t;
 
 #define FSTR(s) s
 
+#define RAM_CODE
+
 #define PACKED __attribute__((packed))
 
 #endif

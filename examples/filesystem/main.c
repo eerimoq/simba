@@ -19,8 +19,8 @@
 
 #include "simba.h"
 
-#if !defined(BOARD_ARDUINO_DUE) && !defined(ARCH_ESP)
-#    error "This example can only be built for Arduino Due or ESP."
+#if !defined(BOARD_ARDUINO_DUE) && !defined(ARCH_ESP) && !defined(ARCH_ESP32)
+#    error "This example can only be built for Arduino Due, ESP and ESP32."
 #endif
 
 /**

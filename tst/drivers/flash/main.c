@@ -53,11 +53,9 @@ static int test_read_write(struct harness_t *harness_p)
     return (0);
 }
 
-#elif defined(ARCH_ESP)
+#elif defined(ARCH_ESP) || defined(ARCH_ESP32)
 
 extern char __rom_size;
-
-#include "espressif/spi_flash.h"
 
 static int test_read_write(struct harness_t *harness_p)
 {
@@ -70,7 +68,7 @@ static int test_read_write(struct harness_t *harness_p)
     flash_address = ((uintptr_t)&__rom_size - 0x10000);
     ram_address = (uintptr_t)&buf[0];
     ram_address &= 0xfffffffc;
-
+    
     BTASSERT(flash_init(&drv, &flash_0_dev) == 0);
     BTASSERT(flash_erase(&drv, flash_address, 0x10000) == 0);
 

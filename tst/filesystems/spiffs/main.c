@@ -87,7 +87,7 @@ static int32_t hal_erase(struct spiffs_t *fs_p,
     return (0);
 }
 
-#elif defined(BOARD_ESP12E) || defined(BOARD_ESP01)
+#elif defined(BOARD_ESP12E) || defined(BOARD_ESP01) || defined(BOARD_NANO32)
 
 #define PHY_SIZE                                             0x10000
 #define PHY_ADDR                     CONFIG_START_FILESYSTEM_ADDRESS
@@ -109,7 +109,7 @@ static int hal_init(void)
     BTASSERT(flash_init(&flash, &flash_0_dev) == 0);
 
     BTASSERT(flash_erase(&flash, PHY_ADDR, PHY_SIZE) == 0);
-    
+
     return (0);
 }
 

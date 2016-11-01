@@ -495,7 +495,11 @@
  * recommended to have enabled.
  */
 #ifndef CONFIG_PROFILE_STACK
-#    define CONFIG_PROFILE_STACK                            1
+#    if defined(ARCH_ESP32)
+#        define CONFIG_PROFILE_STACK                        0
+#    else
+#        define CONFIG_PROFILE_STACK                        1
+#    endif
 #endif
 
 /**
@@ -557,7 +561,7 @@
 #ifndef CONFIG_SPIFFS
 #    if defined(CONFIG_MINIMAL_SYSTEM)
 #        define CONFIG_SPIFFS                               0
-#    elif defined(BOARD_ARDUINO_DUE) || defined(ARCH_LINUX) || defined(ARCH_ESP)
+#    elif defined(BOARD_ARDUINO_DUE) || defined(ARCH_LINUX) || defined(ARCH_ESP) || defined(ARCH_ESP32)
 #        define CONFIG_SPIFFS                               1
 #    else
 #        define CONFIG_SPIFFS                               0
@@ -633,7 +637,7 @@
 #ifndef CONFIG_START_FILESYSTEM
 #    if defined(CONFIG_MINIMAL_SYSTEM)
 #        define CONFIG_START_FILESYSTEM                     0
-#    elif defined(BOARD_ARDUINO_DUE) || defined(ARCH_LINUX) || defined(ARCH_ESP)
+#    elif defined(BOARD_ARDUINO_DUE) || defined(ARCH_LINUX) || defined(ARCH_ESP) || defined(ARCH_ESP32)
 #        define CONFIG_START_FILESYSTEM                     1
 #    else
 #        define CONFIG_START_FILESYSTEM                     0
@@ -650,6 +654,8 @@
 #        define CONFIG_START_FILESYSTEM_ADDRESS    0x0006b000
 #    elif defined(BOARD_ESP12E)
 #        define CONFIG_START_FILESYSTEM_ADDRESS    0x00300000
+#    elif defined(BOARD_NANO32)
+#        define CONFIG_START_FILESYSTEM_ADDRESS    0x00300000
 #    else
 #        define CONFIG_START_FILESYSTEM_ADDRESS             0
 #    endif
@@ -663,8 +669,8 @@
 #        define CONFIG_START_FILESYSTEM_SIZE            32768
 #    elif defined(BOARD_ESP01)
 #        define CONFIG_START_FILESYSTEM_SIZE          0x10000
-#    elif defined(BOARD_ESP12E)
-#        define CONFIG_START_FILESYSTEM_SIZE         0xFB000
+#    elif defined(BOARD_ESP12E) || defined(ARCH_ESP32)
+#        define CONFIG_START_FILESYSTEM_SIZE          0xFB000
 #    else
 #        define CONFIG_START_FILESYSTEM_SIZE            65536
 #    endif
@@ -726,8 +732,10 @@
  * Shell thread stack size in words.
  */
 #ifndef CONFIG_START_SHELL_STACK_SIZE
-#    if defined(BOARD_ARDUINO_DUE) || defined(ARCH_ESP) || defined(ARCH_ESP32)
+#    if defined(BOARD_ARDUINO_DUE) || defined(ARCH_ESP)
 #        define CONFIG_START_SHELL_STACK_SIZE            1536
+#    elif defined(ARCH_ESP32)
+#        define CONFIG_START_SHELL_STACK_SIZE            4096
 #    else
 #        define CONFIG_START_SHELL_STACK_SIZE             768
 #    endif

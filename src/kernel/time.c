@@ -77,7 +77,7 @@ static inline void tick_to_time(uint64_t tick,
 /**
  * Update the current time every system tick.
  */
-void time_tick_isr(void)
+void RAM_CODE time_tick_isr(void)
 {
     state.tick += 1;
 }

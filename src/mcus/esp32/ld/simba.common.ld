@@ -1,6 +1,10 @@
 /*  Default entry point:  */
 ENTRY(call_start_cpu0);
 
+__rom_begin = ORIGIN(iram0_2_seg);
+__rom_end = ORIGIN(iram0_2_seg) + LENGTH(iram0_2_seg);
+__rom_size = LENGTH(iram0_2_seg);
+
 SECTIONS
 {
   /* Send .iram0 code to iram */

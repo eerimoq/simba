@@ -37,7 +37,7 @@ static struct timer_list_t list = {
 /**
  * Insert given timer in the list of active timers.
  */
-static void timer_insert_isr(struct timer_t *timer_p)
+static void RAM_CODE timer_insert_isr(struct timer_t *timer_p)
 {
     struct timer_t *elem_p, *prev_p;
 
@@ -100,7 +100,7 @@ int timer_module_init(void)
     return (0);
 }
 
-void timer_tick_isr(void)
+void RAM_CODE timer_tick_isr(void)
 {
     struct timer_t *timer_p;
 
@@ -165,7 +165,7 @@ int timer_start(struct timer_t *self_p)
     return (0);
 }
 
-int timer_start_isr(struct timer_t *self_p)
+int RAM_CODE timer_start_isr(struct timer_t *self_p)
 {
     timer_insert_isr(self_p);
 

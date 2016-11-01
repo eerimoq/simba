@@ -20,6 +20,8 @@
 #ifndef __KERNEL_COMPILER_H__
 #define __KERNEL_COMPILER_H__
 
+#include "esp_attr.h"
+
 /* Put far data in RAM for now. */
 #define FAR
 
@@ -29,6 +31,9 @@ typedef const FAR char *far_string_t;
  * @brief No special storage for string literals.
  */
 #define FSTR(s) s
+
+/* Put code in RAM. */
+#define RAM_CODE                              IRAM_ATTR
 
 #define PACKED __attribute__((packed))
 

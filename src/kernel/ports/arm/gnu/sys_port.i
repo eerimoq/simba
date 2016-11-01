@@ -54,9 +54,13 @@ static void sys_port_stop(int error)
 
 static void sys_port_reboot()
 {
+#if defined(FAMILY_SAM)
     SAM_RSTC->CR = (RSTC_CR_KEY(0xa5)
                     | RSTC_CR_PERRST
                     | RSTC_CR_PROCRST);
+#else
+    while(1);
+#endif
 }
 
 static void sys_port_lock(void)

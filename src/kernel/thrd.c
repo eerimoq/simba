@@ -266,7 +266,7 @@ static void thrd_reschedule(void)
     out_p = thrd_self();
 
     ASSERTN(out_p->stack_low_magic == THRD_STACK_LOW_MAGIC, ESTACK);
-
+    
     in_p = scheduler_ready_pop();
 
     /* Swap threads. */
@@ -854,7 +854,7 @@ const char *thrd_get_env(const char *name_p)
 #endif
 }
 
-void thrd_tick_isr(void)
+void RAM_CODE thrd_tick_isr(void)
 {
     thrd_port_tick();
 
