@@ -2,9 +2,9 @@
  * @section License
  *
  * The MIT License (MIT)
- * 
+ *
  * Copyright (c) 2014-2016, Erik Moqvist
- * 
+ *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
  * files (the "Software"), to deal in the Software without
@@ -394,6 +394,15 @@ int fs_dir_read(struct fs_dir_t *dir_p,
                 struct fs_dir_entry_t *entry_p);
 
 /**
+ * Remove file by given path.
+ *
+ * @param[in] path_p The path of the file to remove.
+ *
+ * @return zero(0) or negative error code.
+ */
+int fs_remove(const char *path_p);
+
+/**
  * Gets file status by path.
  *
  * @param[in] path_p The path of the file to stat.
@@ -645,7 +654,7 @@ int fs_parameter_register(struct fs_parameter_t *parameter_p);
 int fs_parameter_deregister(struct fs_parameter_t *parameter_p);
 
 /**
- * Integer parameter setter function callback 
+ * Integer parameter setter function callback
  *
  * @param[out] value_p Buffer the new value should be written to.
  * @param[in] src_p Value to set as a string.
@@ -655,7 +664,7 @@ int fs_parameter_deregister(struct fs_parameter_t *parameter_p);
 int fs_parameter_int_set(void *value_p, const char *src_p);
 
 /**
- * Integer parameter printer function callback 
+ * Integer parameter printer function callback
  *
  * @param[in] chout_p Channel to write the formatted value to.
  * @param[in] value_p Value to format and print to the output channel.

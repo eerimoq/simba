@@ -62,9 +62,9 @@ Below is the memory usage of two applications:
 +--------------------------+-----------+-----------+
 | Application              | Flash     | RAM       |
 +==========================+===========+===========+
-| minimal-configuration    |    268428 |     35656 |
+| minimal-configuration    |    269288 |     35732 |
 +--------------------------+-----------+-----------+
-| default-configuration    |    313188 |     58936 |
+| default-configuration    |    313584 |     59000 |
 +--------------------------+-----------+-----------+
 
 Default configuration
@@ -98,6 +98,8 @@ Default Standard Library configuration.
 |  CONFIG_FS_CMD_FS_PARAMETERS_LIST_                     |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_FS_CMD_FS_READ_                                |  1                                                  |
++--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_FS_CMD_FS_REMOVE_                              |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_FS_CMD_FS_WRITE_                               |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
@@ -266,6 +268,8 @@ Mcu
 .. _CONFIG_FS_CMD_FS_PARAMETERS_LIST: ../user-guide/configuration.html#c.CONFIG_FS_CMD_FS_PARAMETERS_LIST
 
 .. _CONFIG_FS_CMD_FS_READ: ../user-guide/configuration.html#c.CONFIG_FS_CMD_FS_READ
+
+.. _CONFIG_FS_CMD_FS_REMOVE: ../user-guide/configuration.html#c.CONFIG_FS_CMD_FS_REMOVE
 
 .. _CONFIG_FS_CMD_FS_WRITE: ../user-guide/configuration.html#c.CONFIG_FS_CMD_FS_WRITE
 

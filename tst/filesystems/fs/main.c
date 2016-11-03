@@ -2,9 +2,9 @@
  * @section License
  *
  * The MIT License (MIT)
- * 
+ *
  * Copyright (c) 2014-2016, Erik Moqvist
- * 
+ *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
  * files (the "Software"), to deal in the Software without
@@ -609,6 +609,9 @@ static int test_filesystem_spiffs(struct harness_t *harness_p)
 
     BTASSERT(fs_dir_close(&dir) == 0);
 
+    /* Remove the file 'foo.txt'. */
+    BTASSERT(fs_remove("/spiffsfs/foo.txt") == 0);
+
     return (0);
 
 #else
@@ -705,8 +708,20 @@ static int test_filesystem_commands(struct harness_t *harness_p)
     strcpy(buf, "/filesystems/fs/list spiffsfs");
     BTASSERT(fs_call(buf, NULL, &qout, NULL) == 0);
     read_until(buf,
-               "xxxx-xx-xx xx-xx        6 foo.txt\r\n"
                "xxxx-xx-xx xx-xx        1 cmd.txt\r\n");
+
+    /* Remove a file. */
+    strcpy(buf, "/filesystems/fs/remove spiffsfs/cmd.txt");
+    BTASSERT(fs_call(buf, NULL, &qout, NULL) == 0);
+
+    /* Remove a non-existing file. */
+    strcpy(buf, "/filesystems/fs/remove spiffsfs/cmd.txt");
+    BTASSERT(fs_call(buf, NULL, &qout, NULL) == -1);
+
+    /* Bad arguments. */
+    strcpy(buf, "/filesystems/fs/remove");
+    BTASSERT(fs_call(buf, NULL, &qout, NULL) == -1);
+    read_until(buf, "Usage: /filesystems/fs/remove <file>\r\n");
 
     return (0);
 

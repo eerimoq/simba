@@ -188,6 +188,17 @@
 #endif
 
 /**
+ * Debug file system command to remove a file.
+ */
+#ifndef CONFIG_FS_CMD_FS_REMOVE
+#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(CONFIG_MINIMAL_SYSTEM)
+#        define CONFIG_FS_CMD_FS_REMOVE                     0
+#    else
+#        define CONFIG_FS_CMD_FS_REMOVE                     1
+#    endif
+#endif
+
+/**
  * Debug file system command to write to a file.
  */
 #ifndef CONFIG_FS_CMD_FS_WRITE

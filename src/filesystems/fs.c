@@ -2,9 +2,9 @@
  * @section License
  *
  * The MIT License (MIT)
- * 
+ *
  * Copyright (c) 2014-2016, Erik Moqvist
- * 
+ *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
  * files (the "Software"), to deal in the Software without
@@ -53,6 +53,9 @@ struct module_t {
 #endif
 #if CONFIG_FS_CMD_FS_APPEND == 1
     struct fs_command_t cmd_append;
+#endif
+#if CONFIG_FS_CMD_FS_REMOVE == 1
+    struct fs_command_t cmd_remove;
 #endif
 #if CONFIG_FS_CMD_FS_LIST == 1
     struct fs_command_t cmd_list;
@@ -260,6 +263,30 @@ static int cmd_append_cb(int argc,
     }
 
     fs_close(&file);
+
+    return (0);
+}
+
+#endif
+
+#if CONFIG_FS_CMD_FS_REMOVE == 1
+
+static int cmd_remove_cb(int argc,
+                         const char *argv[],
+                         void *chout_p,
+                         void *chin_p,
+                         void *arg_p,
+                         void *call_arg_p)
+{
+    if (argc != 2) {
+        std_fprintf(chout_p, FSTR("Usage: %s <file>\r\n"), argv[0]);
+        return (-1);
+    }
+
+    if (fs_remove(argv[1]) != 0) {
+        std_fprintf(chout_p, FSTR("Failed to remove %s.\r\n"), argv[1]);
+        return (-1);
+    }
 
     return (0);
 }
@@ -549,6 +576,16 @@ int fs_module_init()
                     cmd_append_cb,
                     NULL);
     fs_command_register(&module.cmd_append);
+
+#endif
+
+#if CONFIG_FS_CMD_FS_REMOVE == 1
+
+    fs_command_init(&module.cmd_remove,
+                    FSTR("/filesystems/fs/remove"),
+                    cmd_remove_cb,
+                    NULL);
+    fs_command_register(&module.cmd_remove);
 
 #endif
 
@@ -1179,6 +1216,35 @@ int fs_dir_read(struct fs_dir_t *dir_p,
     return (res);
 }
 
+int fs_remove(const char *path_p)
+{
+    ASSERTN(path_p != NULL, -EINVAL);
+
+    struct fs_filesystem_t *filesystem_p;
+    char path[CONFIG_FS_PATH_MAX];
+
+    if (create_absolute_path(path, path_p) != 0) {
+        return (-1);
+    }
+
+    if (get_filesystem_path_from_path(&filesystem_p, &path_p, &path[0]) != 0) {
+        return (-1);
+    }
+
+    switch (filesystem_p->type) {
+
+#if CONFIG_SPIFFS == 1
+
+    case fs_type_spiffs_t:
+        return (spiffs_remove(filesystem_p->fs.spiffs_p, path_p));
+
+#endif
+
+    default:
+        return (-1);
+    }
+}
+
 int fs_stat(const char *path_p, struct fs_stat_t *stat_p)
 {
     ASSERTN(path_p != NULL, -EINVAL);
@@ -1253,7 +1319,7 @@ int fs_format(const char *path_p)
     if (filesystem_p == NULL) {
         return (-1);
     }
-    
+
     switch (filesystem_p->type) {
 
 #if CONFIG_SPIFFS == 1
@@ -1266,7 +1332,7 @@ int fs_format(const char *path_p)
         if (spiffs_format(filesystem_p->fs.spiffs_p) != 0) {
             return (-1);
         }
-        
+
         if (spiffs_mount(filesystem_p->fs.spiffs_p,
                          filesystem_p->config.spiffs_p->config_p,
                          filesystem_p->config.spiffs_p->workspace_p,
@@ -1279,7 +1345,7 @@ int fs_format(const char *path_p)
         }
 
         return (0);
-        
+
 #endif
 
     default:
@@ -1724,11 +1790,6 @@ int fs_parameter_deregister(struct fs_parameter_t *parameter_p)
     ASSERTN(0, ENOSYS);
 
     return (0);
-}
-
-int fs_remove(void)
-{
-    return (-1);
 }
 
 int fs_parameter_int_set(void *value_p, const char *src_p)

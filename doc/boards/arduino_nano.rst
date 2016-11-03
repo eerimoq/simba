@@ -104,6 +104,8 @@ Default Standard Library configuration.
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_FS_CMD_FS_READ_                                |  0                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_FS_CMD_FS_REMOVE_                              |  0                                                  |
++--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_FS_CMD_FS_WRITE_                               |  0                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_FS_CMD_I2C_READ_                               |  0                                                  |
@@ -271,6 +273,8 @@ Mcu
 .. _CONFIG_FS_CMD_FS_PARAMETERS_LIST: ../user-guide/configuration.html#c.CONFIG_FS_CMD_FS_PARAMETERS_LIST
 
 .. _CONFIG_FS_CMD_FS_READ: ../user-guide/configuration.html#c.CONFIG_FS_CMD_FS_READ
+
+.. _CONFIG_FS_CMD_FS_REMOVE: ../user-guide/configuration.html#c.CONFIG_FS_CMD_FS_REMOVE
 
 .. _CONFIG_FS_CMD_FS_WRITE: ../user-guide/configuration.html#c.CONFIG_FS_CMD_FS_WRITE
 
