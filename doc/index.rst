@@ -27,6 +27,7 @@ Project homepage: https://github.com/eerimoq/simba
    boards
    examples
    library-reference
+   license
    links
 
 Features
