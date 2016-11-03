@@ -54,9 +54,9 @@ Below is the memory usage of two applications:
 +--------------------------+-----------+-----------+
 | Application              | Flash     | RAM       |
 +==========================+===========+===========+
-| minimal-configuration    |     14916 |      3096 |
+| minimal-configuration    |     14956 |      3068 |
 +--------------------------+-----------+-----------+
-| default-configuration    |     59180 |      6362 |
+| default-configuration    |     59240 |      6330 |
 +--------------------------+-----------+-----------+
 
 Default configuration
@@ -212,6 +212,8 @@ Default Standard Library configuration.
 |  CONFIG_THRD_ENV_                                      |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_THRD_IDLE_STACK_SIZE_                          |  384                                                |
++--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_THRD_SCHEDULED_                                |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_THRD_TERMINATE_                                |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
@@ -378,6 +380,8 @@ Mcu
 .. _CONFIG_THRD_ENV: ../user-guide/configuration.html#c.CONFIG_THRD_ENV
 
 .. _CONFIG_THRD_IDLE_STACK_SIZE: ../user-guide/configuration.html#c.CONFIG_THRD_IDLE_STACK_SIZE
+
+.. _CONFIG_THRD_SCHEDULED: ../user-guide/configuration.html#c.CONFIG_THRD_SCHEDULED
 
 .. _CONFIG_THRD_TERMINATE: ../user-guide/configuration.html#c.CONFIG_THRD_TERMINATE
 

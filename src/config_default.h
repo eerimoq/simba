@@ -2,9 +2,9 @@
  * @section License
  *
  * The MIT License (MIT)
- * 
+ *
  * Copyright (c) 2014-2016, Erik Moqvist
- * 
+ *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
  * files (the "Software"), to deal in the Software without
@@ -802,6 +802,17 @@
 #        define CONFIG_THRD_IDLE_STACK_SIZE               768
 #    else
 #        define CONFIG_THRD_IDLE_STACK_SIZE              1024
+#    endif
+#endif
+
+/**
+ * Count the number of times each thread has been scheduled.
+ */
+#ifndef CONFIG_THRD_SCHEDULED
+#    if defined(CONFIG_MINIMAL_SYSTEM)
+#        define CONFIG_THRD_SCHEDULED                       0
+#    else
+#        define CONFIG_THRD_SCHEDULED                       1
 #    endif
 #endif
 

@@ -99,11 +99,16 @@ struct thrd_t {
 # if CONFIG_THRD_TERMINATE == 1
     struct sem_t join_sem;
 #endif
-#if CONFIG_THRD_CPU_USAGE == 1
     struct {
-        float usage;
-    } cpu;
+#if CONFIG_THRD_CPU_USAGE == 1
+        struct {
+            float usage;
+        } cpu;
 #endif
+#if CONFIG_THRD_SCHEDULED == 1
+        uint32_t scheduled;
+#endif
+    } statistics;
 #if CONFIG_THRD_ENV == 1
     struct thrd_environment_t env;
 #endif

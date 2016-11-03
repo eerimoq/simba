@@ -288,6 +288,9 @@ static void thrd_reschedule(void)
         thrd_port_cpu_usage_stop(out_p);
         thrd_port_swap(in_p, out_p);
         thrd_port_cpu_usage_start(out_p);
+# if CONFIG_THRD_SCHEDULED == 1
+        out_p->statistics.scheduled++;
+#endif
     }
 }
 
@@ -352,6 +355,9 @@ static int cmd_list_cb(int argc,
 #if CONFIG_THRD_CPU_USAGE == 1
                      "   CPU"
 #endif
+#if CONFIG_THRD_SCHEDULED == 1
+                     "   SCHEDULED"
+#endif
 #if CONFIG_PROFILE_STACK == 1
                      "  MAX-STACK-USAGE"
 #endif
@@ -365,6 +371,9 @@ static int cmd_list_cb(int argc,
 #if CONFIG_THRD_CPU_USAGE == 1
                          " %4u%%"
 #endif
+#if CONFIG_THRD_SCHEDULED == 1
+                         " %11u"
+#endif
 #if CONFIG_PROFILE_STACK == 1
                          "    %6d/%6d"
 #endif
@@ -372,7 +381,10 @@ static int cmd_list_cb(int argc,
                     thrd_p->name_p,
                     state_fmt[thrd_p->state], thrd_p->prio,
 #if CONFIG_THRD_CPU_USAGE == 1
-                    (unsigned int)thrd_p->cpu.usage,
+                    (unsigned int)thrd_p->statistics.cpu.usage,
+#endif
+#if CONFIG_THRD_SCHEDULED == 1
+                    (unsigned int)thrd_p->statistics.scheduled,
 #endif
 #if CONFIG_PROFILE_STACK == 1
                     thrd_get_used_stack(thrd_p),
@@ -473,7 +485,7 @@ int thrd_module_init(void)
 #endif
 
 #if CONFIG_THRD_CPU_USAGE == 1
-    main_thrd.cpu.usage = 0.0f;
+    main_thrd.statistics.cpu.usage = 0.0f;
 #endif
 
 #if CONFIG_THRD_ENV == 1
@@ -577,7 +589,11 @@ struct thrd_t *thrd_spawn(void *(*main)(void *),
 #endif
 
 #if CONFIG_THRD_CPU_USAGE == 1
-    thrd_p->cpu.usage = 0.0f;
+    thrd_p->statistics.cpu.usage = 0.0f;
+#endif
+
+#if CONFIG_THRD_SCHEDULED == 1
+    thrd_p->statistics.scheduled = 0;
 #endif
 
 #if CONFIG_THRD_ENV == 1

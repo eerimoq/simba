@@ -61,10 +61,10 @@ Example output from the shell:
 .. code-block:: text
 
    $ kenel/thrd/list
-               NAME        STATE  PRIO   CPU  LOGMASK
-               main      current     0    0%     0x0f
-                           ready   127    0%     0x0f
-                           ready   -80    0%     0x0f
+               NAME        STATE  PRIO   CPU   SCHEDULED  LOGMASK
+               main      current     0    0%           1     0x0f
+                           ready   127    0%           0     0x0f
+                           ready   -80    0%           0     0x0f
 
 ----------------------------------------------
 
