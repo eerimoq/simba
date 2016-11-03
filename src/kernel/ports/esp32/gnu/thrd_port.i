@@ -2,9 +2,9 @@
  * @section License
  *
  * The MIT License (MIT)
- * 
+ *
  * Copyright (c) 2014-2016, Erik Moqvist
- * 
+ *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
  * files (the "Software"), to deal in the Software without
@@ -35,6 +35,16 @@
 #include "freertos/FreeRTOS.h"
 #include "freertos/semphr.h"
 
+/**
+ * Registers are spilled to the save area on the stack.
+ */
+struct save_area_t {
+    uint32_t a0;
+    uint32_t a1;
+    uint32_t a2;
+    uint32_t a3;
+};
+
 extern void thrd_port_main();
 
 static struct thrd_t main_thrd __attribute__ ((section (".main_thrd")));
@@ -54,6 +64,7 @@ static int thrd_port_spawn(struct thrd_t *thrd_p,
                            size_t stack_size)
 {
     struct thrd_port_context_t *context_p;
+    struct save_area_t *save_area_p;
 
     /* Put the context at the top of the stack. */
     context_p = (struct thrd_port_context_t *)
@@ -61,22 +72,21 @@ static int thrd_port_spawn(struct thrd_t *thrd_p,
 
     context_p->ps = (PS_WOE | PS_UM | PS_CALLINC(1) | PS_INTLEVEL(3));
     context_p->a0 = (uint32_t)thrd_port_main;
+
     /* The window underflow handler will load those values from the
        stack into a0-a3 and then call thrd_port_main(). */
-    ((uint32_t *)context_p)[-1] = (uint32_t)main;      // a3
-    ((uint32_t *)context_p)[-2] = (uint32_t)arg_p;     // a2
-    ((uint32_t *)context_p)[-3] = (uint32_t)context_p; // a1
-    ((uint32_t *)context_p)[-4] = 0; /* a0, thrd_port_main() will not
-                                        return so the return address
-                                        may have any value. */
+    save_area_p = (struct save_area_t *)context_p;
+    save_area_p--;
+    save_area_p->a0 = 0; /* thrd_port_main() will not return so the
+                            return address may have any value. */
+    save_area_p->a1 = (uint32_t)context_p;
+    save_area_p->a2 = (uint32_t)arg_p;
+    save_area_p->a3 = (uint32_t)main;
 
     thrd_p->port.context_p = context_p;
 
     return (0);
 }
-
-#include "freertos/FreeRTOS.h"
-#include "freertos/task.h"
 
 static void thrd_port_idle_wait(struct thrd_t *thrd_p)
 {
