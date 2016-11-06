@@ -31,5 +31,7 @@
 NAME = blink
 BOARD = arduino_due
 
+CDEFS += CONFIG_MINIMAL_SYSTEM=1
+
 SIMBA_ROOT ?= ../..
 include $(SIMBA_ROOT)/make/app.mk
