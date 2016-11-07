@@ -16,6 +16,20 @@ programming easy and portable.
 
 Project homepage: https://github.com/eerimoq/simba
 
+Videos
+------
+
+The latest Simba video is the classic :doc:`blink
+example<examples/blink>`. More videos are available on the
+:doc:`videos` page.
+
+
+.. raw:: html
+
+   <iframe width="560" height="315" src="https://www.youtube.com/embed/pOVqSn5QyYw" frameborder="0" allowfullscreen></iframe>
+   </br>
+   </br>
+   
 .. toctree::
    :maxdepth: 1
    :titlesonly:
@@ -28,6 +42,7 @@ Project homepage: https://github.com/eerimoq/simba
    examples
    library-reference
    license
+   videos
    links
 
 Features
