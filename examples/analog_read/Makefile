@@ -31,5 +31,7 @@
 NAME = analog_read
 BOARD = arduino_mega
 
+TIMEOUT = 30
+
 SIMBA_ROOT ?= ../..
 include $(SIMBA_ROOT)/make/app.mk

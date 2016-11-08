@@ -42,12 +42,12 @@ int main()
     analog_input_pin_init(&pin, &pin_a0_dev);
 
     while (1) {
-        /* Wait one second. */
-        thrd_sleep_ms(1000);
-
         /* Read the analog pin value and print it. */
         value = analog_input_pin_read(&pin);
         std_printf(FSTR("value = %d\r\n"), value);
+
+        /* Wait 100 ms. */
+        thrd_sleep_ms(100);
     }
 
     return (0);

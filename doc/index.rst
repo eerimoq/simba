@@ -19,14 +19,14 @@ Project homepage: https://github.com/eerimoq/simba
 Videos
 ------
 
-The latest Simba video is the classic :doc:`blink
-example<examples/blink>`. More videos are available on the
+The latest Simba video is the :doc:`analog read
+example<examples/analog_read>`. More videos are available on the
 :doc:`videos` page.
 
 
 .. raw:: html
 
-   <iframe width="560" height="315" src="https://www.youtube.com/embed/pOVqSn5QyYw" frameborder="0" allowfullscreen></iframe>
+   <iframe width="560" height="315" src="https://www.youtube.com/embed/6zJDbjuoWYw" frameborder="0" allowfullscreen></iframe>
    </br>
    </br>
    

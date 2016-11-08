@@ -1,6 +1,18 @@
 Videos
 ======
 
+#3 Simba: Analog read.
+------------------------
+
+Read the value of an analog pin periodically once every second and
+print the read value to standard output.
+
+.. raw:: html
+
+   <iframe width="560" height="315" src="https://www.youtube.com/embed/6zJDbjuoWYw" frameborder="0" allowfullscreen></iframe>
+   </br>
+   </br>
+
 #2 Simba: Blink example.
 ------------------------
 
