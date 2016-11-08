@@ -1,6 +1,17 @@
 Videos
 ======
 
+#4 Simba: Hello world.
+------------------------
+
+This application prints "Hello world!" to standard output.
+
+.. raw:: html
+
+   <iframe width="560" height="315" src="https://www.youtube.com/embed/m_8_47eeNdE" frameborder="0" allowfullscreen></iframe>
+   </br>
+   </br>
+
 #3 Simba: Analog read.
 ------------------------
 
@@ -9,7 +20,7 @@ print the read value to standard output.
 
 .. raw:: html
 
-   <iframe width="560" height="315" src="https://www.youtube.com/embed/6zJDbjuoWYw" frameborder="0" allowfullscreen></iframe>
+   <iframe width="560" height="315" src="https://www.youtube.com/embed/tEwoxvMdL0c" frameborder="0" allowfullscreen></iframe>
    </br>
    </br>
 
