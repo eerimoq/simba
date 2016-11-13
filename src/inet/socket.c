@@ -842,7 +842,12 @@ static void raw_recv_from_copy_resume(struct socket_t *socket_p,
 static uint8_t on_raw_recv(void *arg_p,
                            struct raw_pcb *pcb_p,
                            struct pbuf *pbuf_p,
-                           ip_addr_t *addr_p)
+#if LWIP_VERSION_MINOR <= 4
+                           ip_addr_t *addr_p
+#else
+                           const ip_addr_t *addr_p
+#endif
+                           )
 {
     struct socket_t *socket_p = arg_p;
 
@@ -853,7 +858,7 @@ static uint8_t on_raw_recv(void *arg_p,
     }
 
     /* Save the remote address and port. */
-    socket_p->input.u.recvfrom.remote_addr.ip.number = addr_p->addr;
+    socket_p->input.u.recvfrom.remote_addr.ip.number = ip_addr_get_ip4_u32(addr_p);
 
     /* Copy the data to the receive buffer if there is one. */
     if (socket_p->input.cb.state == STATE_RECVFROM) {
@@ -885,7 +890,7 @@ static void raw_send_to_cb(void *ctx_p)
 
     if (pbuf_p != NULL) {
         memcpy(pbuf_p->payload, args_p->buf_p, args_p->size);
-        ip.addr = args_p->remote_addr_p->ip.number;
+        inet_ip_to_lwip_ip(&ip, &args_p->remote_addr_p->ip);
         res = raw_sendto(socket_p->pcb_p, pbuf_p, &ip);
         pbuf_free(pbuf_p);
     }
