@@ -31,7 +31,6 @@
 #include "simba.h"
 
 static struct http_server_t server;
-static struct shell_t shell;
 
 THRD_STACK(listener_stack, 1024);
 THRD_STACK(connection_stack, 1500);
@@ -211,14 +210,7 @@ int main()
 {
     init();
 
-    shell_init(&shell,
-               sys_get_stdin(),
-               sys_get_stdout(),
-               NULL,
-               NULL,
-               NULL,
-               NULL);
-    shell_main(&shell);
-
+    thrd_suspend(NULL);
+    
     return (0);
 }
