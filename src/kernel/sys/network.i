@@ -28,7 +28,7 @@
  * This file is part of the Simba project.
  */
 
-#if defined(ARCH_ESP)
+#if defined(ARCH_ESP) || defined(ARCH_ESP32)
 
 static struct network_interface_wifi_t wifi;
 

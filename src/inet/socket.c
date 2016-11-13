@@ -569,6 +569,7 @@ static err_t on_tcp_recv(void *arg_p,
     } else {
         /* Socket closed. */
         if (socket_p->input.cb.state == STATE_RECVFROM) {
+            socket_p->input.cb.state = STATE_IDLE;
             args_p = socket_p->input.cb.args_p;
             resume_thrd(socket_p->input.cb.thrd_p,
                         args_p->size - args_p->extra.left);

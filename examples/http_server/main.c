@@ -121,7 +121,7 @@ static int no_route(struct http_server_connection_t *connection_p,
                                        &response));
 }
 
-#if defined(ARCH_ESP)
+#if defined(ARCH_ESP) || defined(ARCH_ESP32)
 
 static int init()
 {
@@ -185,7 +185,7 @@ static int init()
                                 &gw,
                                 &ipuart.chout);
     network_interface_add(&slip.network_interface);
-    network_interface_enable(&slip.network_interface);
+    network_interface_start(&slip.network_interface);
 
     thrd_spawn(slip_reader,
                NULL,
