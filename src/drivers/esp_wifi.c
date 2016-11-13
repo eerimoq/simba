@@ -2,9 +2,9 @@
  * @section License
  *
  * The MIT License (MIT)
- * 
+ *
  * Copyright (c) 2014-2016, Erik Moqvist
- * 
+ *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
  * files (the "Software"), to deal in the Software without
@@ -30,7 +30,7 @@
 
 #include "simba.h"
 
-#include "espressif/esp_wifi.h"
+#include "esp_wifi_port.i"
 
 struct module_t {
     int initialized;
@@ -39,7 +39,7 @@ struct module_t {
 #endif
 };
 
-struct module_t module;
+static struct module_t module;
 
 #if CONFIG_FS_CMD_ESP_WIFI_STATUS == 1
 
@@ -76,27 +76,27 @@ int esp_wifi_module_init(void)
 
 #endif
 
-    return (0);
+    return (esp_wifi_port_module_init());
 }
 
 int esp_wifi_set_op_mode(enum esp_wifi_op_mode_t mode)
 {
-    return (!wifi_set_opmode_current(mode));
+    return (esp_wifi_port_set_op_mode(mode));
 }
 
 enum esp_wifi_op_mode_t esp_wifi_get_op_mode()
 {
-    return (wifi_get_opmode());
+    return (esp_wifi_port_get_op_mode());
 }
 
 int esp_wifi_set_phy_mode(enum esp_wifi_phy_mode_t mode)
 {
-    return (!wifi_set_phy_mode(mode));
+    return (esp_wifi_port_set_phy_mode(mode));
 }
 
 enum esp_wifi_phy_mode_t esp_wifi_get_phy_mode()
 {
-    return (wifi_get_phy_mode());
+    return (esp_wifi_port_get_phy_mode());
 }
 
 void esp_wifi_print(void *chout_p)
@@ -105,6 +105,7 @@ void esp_wifi_print(void *chout_p)
 
     int i;
     int number_of_infos;
+    int number_of_connections;
     struct esp_wifi_softap_station_info_t info[4];
     struct inet_if_ip_info_t ip_info;
     char buf[16];
@@ -181,7 +182,9 @@ void esp_wifi_print(void *chout_p)
                 op_mode_p,
                 phy_mode_p);
 
+    memset(&ip_info, 0, sizeof(ip_info));
     esp_wifi_softap_get_ip_info(&ip_info);
+    number_of_connections = esp_wifi_softap_get_number_of_connected_stations();
     number_of_infos = esp_wifi_softap_get_station_info(info,
                                                        membersof(info));
 
@@ -200,7 +203,7 @@ void esp_wifi_print(void *chout_p)
                 FSTR("  Gateway: %s\r\n"
                      "  Number of connections: %d\r\n"),
                 inet_ntoa(&ip_info.gateway, &buf[0]),
-                number_of_infos);
+                number_of_connections);
 
     for (i = 0; i < number_of_infos; i++) {
         std_fprintf(chout_p,
@@ -264,6 +267,7 @@ void esp_wifi_print(void *chout_p)
         break;
     }
 
+    memset(&ip_info, 0, sizeof(ip_info));
     esp_wifi_station_get_ip_info(&ip_info);
 
     std_fprintf(chout_p,

@@ -208,6 +208,9 @@ extern "C" {
 #    include "drivers/flash.h"
 #    include "drivers/pin.h"
 #    include "drivers/uart.h"
+#    include "drivers/esp_wifi.h"
+#    include "drivers/esp_wifi/station.h"
+#    include "drivers/esp_wifi/softap.h"
 #endif
 
 #if defined(FAMILY_STM32F1)
@@ -247,7 +250,7 @@ extern "C" {
 #include "inet/network_interface/wifi.h"
 #include "inet/ping.h"
 
-#if defined(FAMILY_ESP)
+#if defined(FAMILY_ESP) || defined(FAMILY_ESP32)
 #    include "inet/network_interface/driver/esp.h"
 #endif
 

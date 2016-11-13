@@ -128,7 +128,6 @@ static void main_task(void *events)
 int app_main()
 {
     nvs_flash_init();
-    system_init();
 
     xTaskCreate(&main_task,
                 "simba",

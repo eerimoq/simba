@@ -30,8 +30,6 @@
 
 #include "simba.h"
 
-#include "inet.h"
-
 static struct queue_t qinput;
 static struct queue_t qoutput;
 

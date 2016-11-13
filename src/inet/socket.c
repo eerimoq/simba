@@ -46,12 +46,23 @@
 
 #if !defined(ARCH_LINUX)
 
+#undef BIT
+#undef O_RDONLY
+#undef O_WRONLY
+#undef O_RDWR
+#undef O_APPEND
+#undef O_CREAT
+#undef O_TRUNC
+#undef O_EXCL
+#undef O_SYNC
+
+#include "lwip/init.h"
 #include "lwip/tcp.h"
 #include "lwip/udp.h"
 #include "lwip/tcpip.h"
 #include "lwip/raw.h"
 
-#if defined(ARCH_ESP)
+#if defined(ARCH_ESP) || defined(ARCH_ESP32)
 
 #include "freertos/FreeRTOS.h"
 #include "freertos/semphr.h"
@@ -99,6 +110,33 @@ struct tcp_accept_args_t {
 };
 
 static struct module_t module;
+
+#if defined(ARCH_ESP32)
+
+/**
+ * Convert the Simba inet ip address to a lwip ip address.
+ */
+static inline void inet_ip_to_lwip_ip(ip_addr_t *dst_p,
+                                      const struct inet_ip_addr_t *src_p)
+{
+    ip4_addr_set_u32(ip_2_ip4(dst_p), src_p->number);
+    IP_SET_TYPE_VAL(*dst_p, IPADDR_TYPE_V4);
+}
+
+#else
+
+#define ip_addr_get_ip4_u32(ip_p) ((ip_p)->addr)
+
+/**
+ * Convert the Simba inet ip address to a lwip ip address.
+ */
+static inline void inet_ip_to_lwip_ip(ip_addr_t *dst_p,
+                                      const struct inet_ip_addr_t *src_p)
+{
+    dst_p->addr = src_p->number;
+}
+
+#endif
 
 static void init(struct socket_t *self_p,
                  int type,
@@ -156,7 +194,7 @@ static void resume_thrd(struct thrd_t *thrd_p, int res)
     thrd_resume_isr(thrd_p, res);
     sys_unlock();
 
-#if defined(ARCH_ESP)
+#if defined(ARCH_ESP) || defined(ARCH_ESP32)
     xSemaphoreGive(thrd_idle_sem);
 #endif
 }
@@ -177,7 +215,7 @@ static void resume_if_polled(struct socket_t *socket_p)
 
     sys_unlock();
 
-#if defined(ARCH_ESP)
+#if defined(ARCH_ESP) || defined(ARCH_ESP32)
     if (polled == 1) {
         xSemaphoreGive(thrd_idle_sem);
     }
@@ -222,7 +260,11 @@ static void udp_recv_from_copy_resume(struct socket_t *socket_p,
 static void on_udp_recv(void *arg_p,
                         struct udp_pcb *pcb_p,
                         struct pbuf *pbuf_p,
+#if LWIP_VERSION_MINOR <= 4
                         ip_addr_t *addr_p,
+#else
+                        const ip_addr_t *addr_p,
+#endif
                         uint16_t port)
 {
     struct socket_t *socket_p = arg_p;
@@ -234,7 +276,8 @@ static void on_udp_recv(void *arg_p,
     }
 
     /* Save the remote address and port. */
-    socket_p->input.u.recvfrom.remote_addr.ip.number = addr_p->addr;
+    socket_p->input.u.recvfrom.remote_addr.ip.number = ip_addr_get_ip4_u32(addr_p);
+    socket_p->input.u.recvfrom.remote_addr.ip.number = ip_addr_get_ip4_u32(addr_p);
     socket_p->input.u.recvfrom.remote_addr.port = port;
 
     /* Copy the data to the receive buffer if there is one. */
@@ -258,7 +301,7 @@ static void udp_open_cb(void *ctx_p)
     /* Create and initiate the UDP pinput.cb. */
     res = -1;
     pcb_p = udp_new();
-
+    
     if (pcb_p != NULL) {
         udp_recv(pcb_p, on_udp_recv, socket_p);
         init(socket_p, SOCKET_TYPE_DGRAM, pcb_p);
@@ -286,7 +329,7 @@ static void udp_bind_cb(void *ctx_p)
     ip_addr_t ip;
 
     local_addr_p = socket_p->input.cb.args_p;
-    ip.addr = local_addr_p->ip.number;
+    inet_ip_to_lwip_ip(&ip, &local_addr_p->ip);
     res = udp_bind(socket_p->pcb_p, &ip, local_addr_p->port);
 
     resume_thrd(socket_p->input.cb.thrd_p, res);
@@ -300,7 +343,7 @@ static void udp_connect_cb(void *ctx_p)
     ip_addr_t ip;
 
     remote_addr_p = socket_p->input.cb.args_p;
-    ip.addr = remote_addr_p->ip.number;
+    inet_ip_to_lwip_ip(&ip, &remote_addr_p->ip);
     res = udp_connect(socket_p->pcb_p, &ip, remote_addr_p->port);
 
     resume_thrd(socket_p->input.cb.thrd_p, res);
@@ -325,7 +368,7 @@ static void udp_send_to_cb(void *ctx_p)
         res = args_p->size;
 
         if (args_p->remote_addr_p != NULL) {
-            ip.addr = args_p->remote_addr_p->ip.number;
+            inet_ip_to_lwip_ip(&ip, &args_p->remote_addr_p->ip);
 
             if (udp_sendto(socket_p->pcb_p,
                            pbuf_p,
@@ -597,7 +640,7 @@ static void tcp_bind_cb(void *ctx_p)
     ip_addr_t ip;
 
     local_addr_p = socket_p->input.cb.args_p;
-    ip.addr = local_addr_p->ip.number;
+    inet_ip_to_lwip_ip(&ip, &local_addr_p->ip);
     res = tcp_bind(socket_p->pcb_p, &ip, local_addr_p->port);
 
     resume_thrd(socket_p->input.cb.thrd_p, res);
@@ -675,7 +718,7 @@ static void tcp_connect_cb(void *ctx_p)
     ip_addr_t ip;
 
     remote_addr_p = socket_p->input.cb.args_p;
-    ip.addr = remote_addr_p->ip.number;
+    inet_ip_to_lwip_ip(&ip, &remote_addr_p->ip);
 
     if (tcp_connect(socket_p->pcb_p,
                     &ip,
@@ -977,7 +1020,7 @@ int socket_module_init(void)
 
 #endif
 
-#if !defined(ARCH_ESP)
+#if !defined(ARCH_ESP) && !defined(ARCH_ESP32)
     /* Initialize the LwIP stack. */
     tcpip_init(NULL, NULL);
 #endif

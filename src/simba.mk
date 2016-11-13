@@ -134,6 +134,9 @@ endif
 
 ifeq ($(FAMILY),esp32)
 DRIVERS_SRC ?= flash.c \
+               esp_wifi.c \
+               esp_wifi/station.c \
+               esp_wifi/softap.c \
 	       pin.c \
 	       uart.c
 endif
@@ -182,13 +185,15 @@ HASH_SRC ?= crc.c \
 
 SRC += $(HASH_SRC:%=$(SIMBA_ROOT)/src/hash/%)
 
-ifneq ($(ARCH),$(filter $(ARCH), esp))
+ifneq ($(ARCH),$(filter $(ARCH), esp esp32))
     INC += $(SIMBA_ROOT)/3pp/lwip-1.4.1/src/include \
            $(SIMBA_ROOT)/3pp/lwip-1.4.1/src/include/ipv4
 endif
 
 # Inet package.
+ifneq ($(FAMILY),$(filter $(FAMILY), esp32))
 INC += $(SIMBA_ROOT)/src/inet
+endif
 
 INET_SRC_TMP = \
 	http_server.c \
@@ -202,7 +207,7 @@ INET_SRC_TMP = \
 	socket.c \
 	ping.c
 
-ifeq ($(FAMILY),esp)
+ifeq ($(FAMILY),$(filter $(FAMILY), esp esp32))
     INET_SRC_TMP += network_interface/driver/esp.c
 endif
 

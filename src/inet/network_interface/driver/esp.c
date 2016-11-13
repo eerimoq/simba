@@ -30,34 +30,39 @@
 
 #include "simba.h"
 
-static int esp_station_start(void *arg_p)
+static int esp_station_init(void *arg_p)
+{
+    return (0);
+}
+
+static int esp_station_start(void *arg_p,
+                             const char *ssid_p,
+                             const char *password_p,
+                             const struct inet_if_ip_info_t *info_p)
 {
     int mode;
 
     mode = esp_wifi_get_op_mode();
     mode |= esp_wifi_op_mode_station_t;
+
+    if (esp_wifi_set_op_mode(mode) != 0) {
+        return (-1);
+    }
     
-    return (esp_wifi_set_op_mode(mode));
+    esp_wifi_station_init(ssid_p, password_p, info_p);
+    esp_wifi_station_connect();
+
+    return (0);
 }
 
 static int esp_station_stop(void *arg_p)
 {
     int mode;
-
+    
     mode = esp_wifi_get_op_mode();
     mode &= ~esp_wifi_op_mode_station_t;
     
     return (esp_wifi_set_op_mode(mode));
-}
-
-static int esp_station_init(void *arg_p,
-                            const char *ssid_p,
-                            const char *password_p,
-                            struct inet_if_ip_info_t *info_p)
-{
-    esp_station_start(arg_p);
-    
-    return (esp_wifi_station_init(ssid_p, password_p, info_p));
 }
 
 static int esp_station_is_up(void *arg_p)
@@ -86,14 +91,26 @@ struct network_interface_wifi_driver_t network_interface_wifi_driver_esp_station
     .get_ip_info = esp_station_get_ip_info
 };
 
-static int esp_softap_start(void *arg_p)
+static int esp_softap_init(void *arg_p)
+{
+    return (0);
+}
+
+static int esp_softap_start(void *arg_p,
+                            const char *ssid_p,
+                            const char *password_p,
+                            const struct inet_if_ip_info_t *info_p)
 {
     int mode;
 
     mode = esp_wifi_get_op_mode();
     mode |= esp_wifi_op_mode_softap_t;
     
-    return (esp_wifi_set_op_mode(mode));
+    if (esp_wifi_set_op_mode(mode) != 0) {
+        return (-1);
+    }
+
+    return (esp_wifi_softap_init(ssid_p, password_p));
 }
 
 static int esp_softap_stop(void *arg_p)
@@ -104,16 +121,6 @@ static int esp_softap_stop(void *arg_p)
     mode &= ~esp_wifi_op_mode_softap_t;
     
     return (esp_wifi_set_op_mode(mode));
-}
-
-static int esp_softap_init(void *arg_p,
-                           const char *ssid_p,
-                           const char *password_p,
-                           struct inet_if_ip_info_t *info_p)
-{
-    esp_softap_start(arg_p);
-
-    return (esp_wifi_softap_init(ssid_p, password_p));
 }
 
 static int esp_softap_is_up(void *arg_p)

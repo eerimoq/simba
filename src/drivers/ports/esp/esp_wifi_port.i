@@ -28,9 +28,37 @@
  * This file is part of the Simba project.
  */
 
-#ifndef __CONFIG_H__
-#define __CONFIG_H__
+#include "simba.h"
 
-#define CONFIG_START_NETWORK               0
+#include "lwip/init.h"
+#include "lwip/tcp.h"
+#include "lwip/udp.h"
+#include "lwip/tcpip.h"
+#include "lwip/raw.h"
+#include "espressif/esp_wifi.h"
+    
 
-#endif
+static int esp_wifi_port_module_init(void)
+{
+    return (0);
+}
+
+static int esp_wifi_port_set_op_mode(enum esp_wifi_op_mode_t mode)
+{
+    return (!wifi_set_opmode_current(mode));
+}
+
+static enum esp_wifi_op_mode_t esp_wifi_port_get_op_mode()
+{
+    return (wifi_get_opmode());
+}
+
+static int esp_wifi_port_set_phy_mode(enum esp_wifi_phy_mode_t mode)
+{
+    return (!wifi_set_phy_mode(mode));
+}
+
+static enum esp_wifi_phy_mode_t esp_wifi_port_get_phy_mode()
+{
+    return (wifi_get_phy_mode());
+}

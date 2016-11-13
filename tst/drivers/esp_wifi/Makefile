@@ -30,28 +30,10 @@
 
 NAME = wifi_esp_suite
 
-ifneq ($(SSID),)
-CDEFS += SSID=$(SSID)
-endif
-
-ifneq ($(PASSWORD),)
-CDEFS += PASSWORD=$(PASSWORD)
-endif
-
-ifneq ($(ESP8266_IP),)
-CDEFS += ESP8266_IP=$(ESP8266_IP)
-endif
-
-ifeq ($(BOARD), nano32)
-RUN_PY = run_esp32.py
-else
-RUN_PY = run_esp.py
-endif
-
 CDEFS += CONFIG_MINIMAL_SYSTEM=1 \
-	CONFIG_FS_CMD_FS_COUNTERS_LIST=1 \
-	CONFIG_FS_CMD_NETWORK_INTERFACE_LIST=1 \
 	CONFIG_FS_CMD_ESP_WIFI_STATUS=1
 
-SIMBA_ROOT ?= ../../../..
+TIMEOUT = 120
+
+SIMBA_ROOT ?= ../../..
 include $(SIMBA_ROOT)/make/app.mk

@@ -65,6 +65,7 @@ static int cmd_list_cb(int argc,
     network_interface_p = module.network_interfaces_p;
 
     while (network_interface_p != NULL) {
+        memset(&info, 0, sizeof(info));
         network_interface_get_ip_info(network_interface_p, &info);
         
         std_fprintf(out_p,
@@ -107,12 +108,11 @@ int network_interface_module_init()
     return (0);
 }
 
-#if defined(ARCH_ESP)
+#if defined(ARCH_ESP) || defined(ARCH_ESP32)
 
 int network_interface_add(struct network_interface_t *netif_p)
 {
     ASSERTN(netif_p != NULL, -EINVAL);
-
     netif_p->next_p = module.network_interfaces_p;
     module.network_interfaces_p = netif_p;
 
@@ -128,6 +128,12 @@ int network_interface_start(struct network_interface_t *netif_p)
 
 #elif !defined(ARCH_LINUX)
 
+#include "lwip/init.h"
+#include "lwip/tcp.h"
+#include "lwip/udp.h"
+#include "lwip/tcpip.h"
+#include "lwip/raw.h"
+
 int network_interface_add(struct network_interface_t *netif_p)
 {
     ASSERTN(netif_p != NULL, -EINVAL);
@@ -138,12 +144,12 @@ int network_interface_add(struct network_interface_t *netif_p)
     netmask.addr = netif_p->info.netmask.number;
     gw.addr = netif_p->info.gateway.number;
 
-    netif_add(&netif_p->netif,
+    netif_add(netif_p->netif_p,
               &ipaddr,
               &netmask,
               &gw,
               NULL,
-              netif_p->init,
+              NULL,
               NULL);
 
     netif_p->next_p = module.network_interfaces_p;
@@ -163,7 +169,7 @@ int network_interface_start(struct network_interface_t *netif_p)
     }
 
     if (res == 0) {
-        netif_set_up(&netif_p->netif);
+        netif_set_up(netif_p->netif_p);
     }
 
     return (res);

@@ -8,6 +8,7 @@ run.log
 .TAGS
 TAGS
 \#*
+*.pyc
 
 tst/*/*/sdcard
 

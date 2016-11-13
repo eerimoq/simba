@@ -29,6 +29,12 @@
  */
 
 #include "simba.h"
+
+#include "lwip/init.h"
+#include "lwip/tcp.h"
+#include "lwip/udp.h"
+#include "lwip/tcpip.h"
+#include "lwip/raw.h"
 #include "arch/sys_arch.h"
 
 static THRD_STACK(tcpip_stack, TCPIP_THREAD_STACKSIZE);

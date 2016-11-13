@@ -23,6 +23,7 @@ Drivers
 
 Supported drivers for this board.
 
+- :doc:`../library-reference/drivers/esp_wifi`
 - :doc:`../library-reference/drivers/flash`
 - :doc:`../library-reference/drivers/pin`
 - :doc:`../library-reference/drivers/uart`
@@ -54,9 +55,9 @@ Below is the memory usage of two applications:
 +--------------------------+-----------+-----------+
 | Application              | Flash     | RAM       |
 +==========================+===========+===========+
-| minimal-configuration    |    167997 |     35220 |
+| minimal-configuration    |    187397 |     38480 |
 +--------------------------+-----------+-----------+
-| default-configuration    |    198661 |     56496 |
+| default-configuration    |    218189 |     60972 |
 +--------------------------+-----------+-----------+
 
 Default configuration

@@ -30,6 +30,17 @@
 
 #include "simba.h"
 
+#undef BIT
+#undef O_RDONLY
+#undef O_WRONLY
+#undef O_RDWR
+#undef O_APPEND
+#undef O_CREAT
+#undef O_TRUNC
+#undef O_EXCL
+#undef O_SYNC
+
+#include "lwip/init.h"
 #include "lwip/stats.h"
 #include "lwip/tcpip.h"
 
@@ -41,25 +52,28 @@
 #define SLIP_ESC_END      0xdc
 #define SLIP_ESC_ESC      0xdd
 
-static err_t init()
-{
-    return (ERR_OK);
-}
+static int netif_allocated = 0;
+static struct netif netif;
 
 /**
  * Encapsulate given packet and write it to the output channel.
  */
 static err_t output(struct netif *netif_p,
                     struct pbuf *pbuf_p,
-                    ip_addr_t *ip_addr_p)
+#if LWIP_VERSION_MINOR <= 4
+                    ip_addr_t *ip_addr_p
+#else
+                    const ip4_addr_t *ip_addr_p
+#endif
+                    )
 {
     int i;
     uint8_t data;
     struct network_interface_slip_t *self_p;
 
-    self_p = container_of(netif_p,
+    self_p = container_of((void *)netif_p,
                           struct network_interface_slip_t,
-                          network_interface.netif);
+                          network_interface.netif_p);
 
     data = SLIP_END;
     chan_write(self_p->chout_p, &data, 1);
@@ -110,7 +124,7 @@ static int state_normal_input(struct network_interface_slip_t *self_p,
         /* Input complete frames to the ip layer. */
         if (self_p->frame.size > 0) {
             tcpip_input(self_p->frame.pbuf_p,
-                        &self_p->network_interface.netif);
+                        self_p->network_interface.netif_p);
 
             /* Allocate a new buffer. */
             self_p->frame.pbuf_p = pbuf_alloc(PBUF_LINK,
@@ -183,6 +197,13 @@ int network_interface_slip_init(struct network_interface_slip_t *self_p,
     ASSERTN(gateway_p != NULL, EINVAL);
     ASSERTN(chout_p != NULL, EINVAL);
 
+    /* Only one netif available for now. */
+    if (netif_allocated != 0) {
+        return (-1);
+    }
+    
+    netif_allocated = 1;
+
     self_p->state = NETWORK_INTERFACE_SLIP_STATE_NORMAL;
     self_p->chout_p = chout_p;
     self_p->frame.pbuf_p = pbuf_alloc(PBUF_LINK,
@@ -195,14 +216,15 @@ int network_interface_slip_init(struct network_interface_slip_t *self_p,
     self_p->network_interface.info.address = *ipaddr_p;
     self_p->network_interface.info.netmask = *netmask_p;
     self_p->network_interface.info.gateway = *gateway_p;
-    self_p->network_interface.init = init;
 
-    self_p->network_interface.netif.name[0] = 's';
-    self_p->network_interface.netif.name[1] = 'l';
-    self_p->network_interface.netif.output = output;
-    self_p->network_interface.netif.mtu =
-        NETWORK_INTERFACE_SLIP_FRAME_SIZE_MAX;
-    self_p->network_interface.netif.flags |= NETIF_FLAG_POINTTOPOINT;
+    netif.name[0] = 's';
+    netif.name[1] = 'l';
+    netif.output = output;
+    netif.mtu = NETWORK_INTERFACE_SLIP_FRAME_SIZE_MAX;
+#if LWIP_VERSION_MINOR <= 4
+    netif.flags |= NETIF_FLAG_POINTTOPOINT;
+#endif
+    self_p->network_interface.netif_p = &netif;
     
     return (0);
 }
@@ -254,7 +276,6 @@ int network_interface_slip_init(struct network_interface_slip_t *self_p,
                                 struct inet_ip_addr_t *gateway_p,
                                 void *chout_p)
 {
-    self_p->network_interface.init = NULL;
     self_p->network_interface.start = NULL;
     self_p->network_interface.stop = NULL;
 

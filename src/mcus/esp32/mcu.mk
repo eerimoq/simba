@@ -36,7 +36,10 @@ INC += $(SIMBA_ROOT)/src/mcus/esp32 \
        $(ESP_IDF_ROOT)/components/newlib/include \
        $(ESP_IDF_ROOT)/components/freertos/include \
        $(ESP_IDF_ROOT)/components/nvs_flash/include \
-       $(ESP_IDF_ROOT)/components/spi_flash/include
+       $(ESP_IDF_ROOT)/components/spi_flash/include \
+       $(ESP_IDF_ROOT)/components/tcpip_adapter/include \
+       $(ESP_IDF_ROOT)/components/lwip/include/lwip \
+       $(ESP_IDF_ROOT)/components/lwip/include/lwip/port
 
 SRC += $(SIMBA_ROOT)/src/mcus/esp32/mcu.c \
        $(SIMBA_ROOT)/src/mcus/esp32/esp32.c
@@ -52,14 +55,12 @@ LDFLAGS += -Wl,-T$(LINKER_SCRIPT)
 LIB += \
 	hal \
 	core \
-	crypto \
 	net80211 \
 	phy \
 	pp \
 	rtc \
 	smartconfig \
 	wpa \
-	crypto \
 	bt \
 	driver \
 	esp32 \
@@ -70,10 +71,12 @@ LIB += \
 	mbedtls \
 	newlib \
 	nghttp \
+	openssl \
 	nvs_flash \
 	spi_flash \
 	tcpip_adapter \
 	vfs \
+	wpa_supplicant \
 	gcc \
 	g \
 	c_rom \

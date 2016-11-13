@@ -37,7 +37,7 @@
  * Information about a connected station.
  */
 struct esp_wifi_softap_station_info_t {
-    uint8 bssid[6];
+    uint8_t bssid[6];
     struct inet_ip_addr_t ip_address;
 };
 

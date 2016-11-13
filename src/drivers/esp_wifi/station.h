@@ -56,7 +56,7 @@ enum esp_wifi_station_status_t {
  */
 int esp_wifi_station_init(const char *ssid_p,
                           const char *password_p,
-                          struct inet_if_ip_info_t *info_p);
+                          const struct inet_if_ip_info_t *info_p);
 
 /**
  * Connect the WiFi station to the Access Point (AP).

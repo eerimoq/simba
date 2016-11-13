@@ -30,11 +30,6 @@
 
 #include "simba.h"
 
-static err_t init(struct netif *netif)
-{
-    return (ERR_OK);
-}
-
 int network_interface_wifi_module_init(void)
 {
     return (0);
@@ -53,7 +48,6 @@ int network_interface_wifi_init(struct network_interface_wifi_t *self_p,
     ASSERTN(ssid_p != NULL, -EINVAL);
 
     self_p->network_interface.name_p = name_p;
-    self_p->network_interface.init = init;
     self_p->network_interface.start =
         (network_interface_start_t)network_interface_wifi_start;
     self_p->network_interface.stop =
@@ -66,7 +60,14 @@ int network_interface_wifi_init(struct network_interface_wifi_t *self_p,
         (network_interface_get_ip_info_t)network_interface_wifi_get_ip_info;
 
     self_p->driver_p = driver_p;
+    self_p->arg_p = arg_p;
+    self_p->ssid_p = ssid_p;
+    self_p->password_p = password_p;
+    self_p->info_p = NULL;
 
+    /* Initialize the driver. */
+    driver_p->init(arg_p);
+    
     return (0);
 }
 
@@ -74,7 +75,10 @@ int network_interface_wifi_start(struct network_interface_wifi_t *self_p)
 {
     ASSERTN(self_p != NULL, -EINVAL);
 
-    return (self_p->driver_p->start(self_p->arg_p));
+    return (self_p->driver_p->start(self_p->arg_p,
+                                    self_p->ssid_p,
+                                    self_p->password_p,
+                                    self_p->info_p));
 }
 
 int network_interface_wifi_stop(struct network_interface_wifi_t *self_p)
@@ -97,6 +101,8 @@ int network_interface_wifi_set_ip_info(struct network_interface_wifi_t *self_p,
     ASSERTN(self_p != NULL, -EINVAL);
     ASSERTN(info_p != NULL, -EINVAL);
 
+    self_p->info_p = info_p;
+    
     return (self_p->driver_p->set_ip_info(self_p->arg_p, info_p));
 }
 

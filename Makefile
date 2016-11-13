@@ -230,6 +230,7 @@ ifeq ($(BOARD), nano32)
     TESTS += $(addprefix tst/inet/, http_websocket_client \
 				    http_websocket_server \
 				    inet \
+				    network_interface/wifi_esp \
 				    ping)
 endif
 

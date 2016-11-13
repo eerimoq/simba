@@ -40,9 +40,14 @@
 #    define PASSWORD password
 #endif
 
-#if !defined(ESP8266_IP)
-#    pragma message "WiFi connection variable ESP8266_IP is not set. Using default value 192.168.0.5"
-#    define ESP8266_IP 192.168.0.5
+#if !defined(ESP_IP)
+#    if defined(ARCH_ESP)
+#        pragma message "WiFi connection variable ESP_IP is not set. Using default value 192.168.0.5"
+#        define ESP_IP 192.168.0.5
+#    else
+#        pragma message "WiFi connection variable ESP_IP is not set. Using default value 192.168.0.7"
+#        define ESP_IP 192.168.0.7
+#    endif
 #endif
 
 /* Ports. */
@@ -129,11 +134,14 @@ static int test_init(struct harness_t *harness_p)
     BTASSERT(network_interface_start(&wifi_ap.network_interface) == 0);
 
     std_printf(FSTR("Connecting to SSID=%s\r\n"), STRINGIFY(SSID));
-
+    
     /* Wait for a connection to the WiFi access point. */
     while (network_interface_is_up(&wifi_sta.network_interface) == 0) {
+        std_printf(FSTR("."));
         thrd_sleep(1);
     }
+
+    std_printf(FSTR("\r\n"));
 
     BTASSERT(network_interface_get_ip_info(&wifi_sta.network_interface,
                                            &info) == 0);
@@ -173,7 +181,7 @@ static int test_udp(struct harness_t *harness_p)
     BTASSERT(chan_list_add(&list, &sock) == 0);
 
     std_printf(FSTR("binding to %d\r\n"), UDP_PORT);
-    inet_aton(STRINGIFY(ESP8266_IP), &addr.ip);
+    inet_aton(STRINGIFY(ESP_IP), &addr.ip);
     addr.port = UDP_PORT;
     BTASSERT(socket_bind(&sock, &addr) == 0);
 
@@ -252,7 +260,7 @@ static int test_tcp(struct harness_t *harness_p)
     BTASSERT(socket_open_tcp(&listener) == 0);
 
     std_printf(FSTR("binding to %d\r\n"), TCP_PORT);
-    inet_aton(STRINGIFY(ESP8266_IP), &addr.ip);
+    inet_aton(STRINGIFY(ESP_IP), &addr.ip);
     addr.port = TCP_PORT;
     BTASSERT(socket_bind(&listener, &addr) == 0);
 
@@ -311,7 +319,7 @@ static int test_tcp_write_close(struct harness_t *harness_p)
     BTASSERT(socket_open_tcp(&listener) == 0);
 
     std_printf(FSTR("binding to %d\r\n"), TCP_PORT_WRITE_CLOSE);
-    inet_aton(STRINGIFY(ESP8266_IP), &addr.ip);
+    inet_aton(STRINGIFY(ESP_IP), &addr.ip);
     addr.port = TCP_PORT_WRITE_CLOSE;
     BTASSERT(socket_bind(&listener, &addr) == 0);
 
@@ -362,7 +370,7 @@ static int test_tcp_sizes(struct harness_t *harness_p)
     BTASSERT(chan_list_add(&list, &listener) == 0);
 
     std_printf(FSTR("binding to %d\r\n"), TCP_PORT_SIZES);
-    inet_aton(STRINGIFY(ESP8266_IP), &addr.ip);
+    inet_aton(STRINGIFY(ESP_IP), &addr.ip);
     addr.port = TCP_PORT_SIZES;
     BTASSERT(socket_bind(&listener, &addr) == 0);
 

@@ -34,28 +34,31 @@
 #include "simba.h"
 
 /**
- * Driver virtualization callbacks. See the driver/ subfolder for
- * available drivers.
- */
-struct network_interface_wifi_driver_t {
-    int (*init)(void *arg_p,
-                const char *ssid_p,
-                const char *password_p,
-                struct inet_if_ip_info_t *info_p);
-    int (*start)(void *arg_p);
-    int (*stop)(void *arg_p);
-    int (*is_up)(void *arg_p);
-    int (*set_ip_info)(void *arg_p, const struct inet_if_ip_info_t *info_p);
-    int (*get_ip_info)(void *arg_p, struct inet_if_ip_info_t *info_p);
-};
-
-/**
  * A WiFi network interface.
  */
 struct network_interface_wifi_t {
     struct network_interface_t network_interface;
     struct network_interface_wifi_driver_t *driver_p;
     void *arg_p;
+    const char *ssid_p;
+    const char *password_p;
+    const struct inet_if_ip_info_t *info_p;
+};
+
+/**
+ * Driver virtualization callbacks. See the `driver/` subfolder for
+ * available drivers.
+ */
+struct network_interface_wifi_driver_t {
+    int (*init)(void *arg_p);
+    int (*start)(void *arg_p,
+                 const char *ssid_p,
+                 const char *password_p,
+                 const struct inet_if_ip_info_t *info_p);
+    int (*stop)(void *arg_p);
+    int (*is_up)(void *arg_p);
+    int (*set_ip_info)(void *arg_p, const struct inet_if_ip_info_t *info_p);
+    int (*get_ip_info)(void *arg_p, struct inet_if_ip_info_t *info_p);
 };
 
 /**

@@ -33,9 +33,6 @@
 
 #include "simba.h"
 
-#include "lwip/sys.h"
-#include "lwip/ip.h"
-
 struct network_interface_t;
 
 typedef int (*network_interface_start_t)(struct network_interface_t *netif_p);
@@ -47,15 +44,14 @@ typedef int (*network_interface_get_ip_info_t)(struct network_interface_t *netif
                                                struct inet_if_ip_info_t *info_p);
 
 struct network_interface_t {
-    struct netif netif;
     const char *name_p;
     struct inet_if_ip_info_t info;
-    netif_init_fn init;
     network_interface_start_t start;
     network_interface_stop_t stop;
     network_interface_is_up_t is_up;
     network_interface_set_ip_info_t set_ip_info;
     network_interface_get_ip_info_t get_ip_info;
+    void *netif_p;
     struct network_interface_t *next_p;
 };
 
@@ -71,26 +67,44 @@ struct network_interface_t {
 int network_interface_module_init(void);
 
 /**
- * Add given network interface to the IP stack.
+ * Add given network interface to the global list of network
+ * interfaces. Call `network_interface_start()` to enable the
+ * interface.
  *
- * @param[in] netif_p Network interface to add.
+ * @param[in] netif_p Network interface to register.
  *
  * @return zero(0) or negative error code.
  */
 int network_interface_add(struct network_interface_t *netif_p);
 
 /**
- * Enable given network interface. Use `network_interface_is_up()` to
- * check if the interface is connected.
+ * Start given network interface. Enables the interface in the IP
+ * stack to allow packets to be sent and received. If the interface is
+ * a WiFi station interface it will try initiate the connection to its
+ * configured access point. Use `network_interface_is_up()` to check
+ * if the interface is connected to its access point.
  *
- * @param[in] netif_p Network interface to enable.
+ * @param[in] netif_p Network interface to start.
  *
  * @return zero(0) or negative error code.
  */
 int network_interface_start(struct network_interface_t *netif_p);
 
 /**
- * Get the connection status of given network interface.
+ * Stop given network interface. Disconnects from any WiFi access
+ * points and disables the interface in the IP stack. No packets can
+ * be sent or received on this interface after this function is
+ * called.
+ *
+ * @param[in] netif_p Network interface to stop.
+ *
+ * @return zero(0) or negative error code.
+ */
+int network_interface_stop(struct network_interface_t *netif_p);
+
+/**
+ * Get the connection status of given network interface. PAckets can
+ * only be sent and received when the interface in up.
  *
  * @param[in] netif_p Network interface to get the connection status
  *                    of.
@@ -101,8 +115,8 @@ int network_interface_start(struct network_interface_t *netif_p);
 int network_interface_is_up(struct network_interface_t *netif_p);
 
 /**
- * Search the list of network interfaces for an interface with given
- * name and return it.
+ * Search the global list of network interfaces for an interface with
+ * given name and return it.
  *
  * @param[in] name_p Name of the network interface to find.
  *
@@ -111,9 +125,10 @@ int network_interface_is_up(struct network_interface_t *netif_p);
 struct network_interface_t *network_interface_get_by_name(const char *name_p);
 
 /**
- * Get the ip address of given network interface.
+ * Set the IP information of given network interface.
  *
- * @param[in] netif_p Network interface to get the ip address of.
+ * @param[in] netif_p Network interface to get the IP information of.
+ * @param[in] info_p IP information to set.
  *
  * @return zero(0) or negative error code.
  */
@@ -121,9 +136,10 @@ int network_interface_set_ip_info(struct network_interface_t *netif_p,
                                   const struct inet_if_ip_info_t *info_p);
 
 /**
- * Get the ip address of given network interface.
+ * Get the IP information of given network interface.
  *
- * @param[in] netif_p Network interface to get the ip address of.
+ * @param[in] netif_p Network interface to get the IP information of.
+ * @param[out] info_p Read IP information.
  *
  * @return zero(0) or negative error code.
  */

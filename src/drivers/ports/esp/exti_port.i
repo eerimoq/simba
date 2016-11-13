@@ -28,6 +28,9 @@
  * This file is part of the Simba project.
  */
 
+#include "freertos/FreeRTOS.h"
+#include "freertos/semphr.h"
+
 void gpio_pin_intr_state_set(uint32 i, uint32 intr_state)
 {
     uint32 pin_reg;

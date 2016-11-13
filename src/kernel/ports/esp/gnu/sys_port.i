@@ -38,6 +38,7 @@
 
 #include "esp8266/esp8266.h"
 #include "freertos/FreeRTOS.h"
+#include "freertos/task.h"
 
 #include "eagle_soc.h"
 

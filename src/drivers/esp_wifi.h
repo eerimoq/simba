@@ -73,7 +73,7 @@ enum esp_wifi_dhcp_status_t {
 int esp_wifi_module_init(void);
 
 /**
-  * Set the WiFi operating mode to Station, SoftAP or Station +
+  * Set the WiFi operating mode to None, Station, SoftAP or Station +
   * SoftAP. The default mode is SoftAP.
   *
   * @param[in] mode Operating mode to set.
@@ -83,9 +83,10 @@ int esp_wifi_module_init(void);
 int esp_wifi_set_op_mode(enum esp_wifi_op_mode_t mode);
 
 /**
-  * Get the current WiFi operating mode.
+  * Get the current WiFi operating mode. The operating mode can be
+  * None, Station, SoftAP, or Station + SoftAP.
   *
-  * @return Operating mode.
+  * @return Current operating mode.
   */
 enum esp_wifi_op_mode_t esp_wifi_get_op_mode(void);
 
