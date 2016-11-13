@@ -36,6 +36,21 @@ struct thrd_port_idle_t {
 };
 
 static struct thrd_t main_thrd;
+extern char __main_stack_end;
+
+static struct thrd_t *thrd_port_get_main_thrd(void)
+{
+    return (&main_thrd);
+}
+
+#if CONFIG_PROFILE_STACK == 1
+
+static char *thrd_port_get_main_thrd_stack_top(void)
+{
+    return (&__main_stack_end);
+}
+
+#endif
 
 static struct thrd_port_idle_t idle = {
     .mutex = PTHREAD_MUTEX_INITIALIZER,

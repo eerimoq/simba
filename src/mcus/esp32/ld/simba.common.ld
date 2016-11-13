@@ -126,9 +126,6 @@ SECTIONS
     KEEP(*(.gnu.linkonce.s2.*))
     KEEP(*(.jcr))
     *(.dram1 .dram1.*)
-    *(.main_thrd)
-    *(.main_stack)
-    __main_stack_end = ABSOLUTE(.);
     _data_end = ABSOLUTE(.);
     . = ALIGN(4);
     _heap_start = ABSOLUTE(.);

@@ -119,6 +119,18 @@ static void sys_port_interrupt_cpu_usage_reset(void)
  */
 static void main_task(void *events)
 {
+    char dummy = 0;
+    struct thrd_t *thrd_p;
+
+    /* Setup the stack pointers. Needed bacuase the stack is allocated
+       on the heap. */
+    thrd_p = (struct thrd_t *)(&dummy - CONFIG_SYS_SIMBA_MAIN_STACK_MAX + 128);
+    thrd_port_set_main_thrd(thrd_p);
+
+#if CONFIG_PROFILE_STACK == 1
+    thrd_port_set_main_thrd_stack_top(&dummy);
+#endif
+    
     /* Call the Simba application main function. */
     main();
 
@@ -131,7 +143,7 @@ int app_main()
 
     xTaskCreate(&main_task,
                 "simba",
-                CONFIG_SYS_SIMBA_MAIN_STACK_MAX,
+                CONFIG_SYS_SIMBA_MAIN_STACK_MAX / sizeof(StackType_t),
                 NULL,
                 5,
                 NULL);

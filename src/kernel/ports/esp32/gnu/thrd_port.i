@@ -47,9 +47,34 @@ struct save_area_t {
 
 extern void thrd_port_main();
 
-static struct thrd_t main_thrd __attribute__ ((section (".main_thrd")));
-
 xSemaphoreHandle thrd_idle_sem;
+
+static struct thrd_t *main_thrd_p = NULL;
+static char *main_stack_top_p = NULL;
+
+void thrd_port_set_main_thrd(struct thrd_t *thrd_p)
+{
+    main_thrd_p = thrd_p;
+}
+
+static struct thrd_t *thrd_port_get_main_thrd(void)
+{
+    return (main_thrd_p);
+}
+
+#if CONFIG_PROFILE_STACK == 1
+
+void thrd_port_set_main_thrd_stack_top(void *top_p)
+{
+    main_stack_top_p = top_p;
+}
+
+static char *thrd_port_get_main_thrd_stack_top(void)
+{
+    return (main_stack_top_p);
+}
+
+#endif
 
 static void thrd_port_init_main(struct thrd_port_t *port)
 {

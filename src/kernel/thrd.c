@@ -2,9 +2,9 @@
  * @section License
  *
  * The MIT License (MIT)
- * 
+ *
  * Copyright (c) 2014-2016, Erik Moqvist
- * 
+ *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
  * files (the "Software"), to deal in the Software without
@@ -277,7 +277,7 @@ static void thrd_reschedule(void)
     out_p = thrd_self();
 
     ASSERTN(out_p->stack_low_magic == THRD_STACK_LOW_MAGIC, ESTACK);
-    
+
     in_p = scheduler_ready_pop();
 
     /* Swap threads. */
@@ -295,8 +295,6 @@ static void thrd_reschedule(void)
 }
 
 #if CONFIG_PROFILE_STACK == 1
-
-extern char __main_stack_end;
 
 static void thrd_fill_pattern(char *from_p, size_t size)
 {
@@ -451,6 +449,8 @@ static void *idle_thrd(void *arg_p)
 
 int thrd_module_init(void)
 {
+    struct thrd_t *thrd_p;
+
     /* Return immediately if the module is already initialized. */
     if (module.initialized == 1) {
         return (0);
@@ -461,7 +461,8 @@ int thrd_module_init(void)
 #if CONFIG_THRD_ENV == 1
     module.env.global.variables_p = module.env.global_variables;
     module.env.global.number_of_variables = 0;
-    module.env.global.max_number_of_variables = membersof(module.env.global_variables);
+    module.env.global.max_number_of_variables =
+        membersof(module.env.global_variables);
     sem_init(&module.env.sem, 0, 1);
 #endif
 
@@ -470,79 +471,76 @@ int thrd_module_init(void)
 #endif
 
     /* Main function becomes a thrd. */
-    main_thrd.scheduler.prev_p = NULL;
-    main_thrd.scheduler.next_p = NULL;
-    main_thrd.prio = 0;
-    main_thrd.state = THRD_STATE_CURRENT;
-    main_thrd.err = 0;
-    main_thrd.log_mask = LOG_UPTO(INFO);
-    main_thrd.timer_p = NULL;
-    main_thrd.name_p = "main";
-    main_thrd.next_p = NULL;
+    thrd_p = thrd_port_get_main_thrd();
+    thrd_p->scheduler.prev_p = NULL;
+    thrd_p->scheduler.next_p = NULL;
+    thrd_p->prio = 0;
+    thrd_p->state = THRD_STATE_CURRENT;
+    thrd_p->err = 0;
+    thrd_p->log_mask = LOG_UPTO(INFO);
+    thrd_p->timer_p = NULL;
+    thrd_p->name_p = "main";
+    thrd_p->next_p = NULL;
 
 #if CONFIG_THRD_TERMINATE == 1
-    sem_init(&main_thrd.join_sem, 1, 1);
+    sem_init(&thrd_p->join_sem, 1, 1);
 #endif
 
 #if CONFIG_THRD_CPU_USAGE == 1
-    main_thrd.statistics.cpu.usage = 0.0f;
+    thrd_p->statistics.cpu.usage = 0.0f;
+#endif
+
+#if CONFIG_THRD_SCHEDULED == 1
+    thrd_p->statistics.scheduled = 0;
 #endif
 
 #if CONFIG_THRD_ENV == 1
-    main_thrd.env.variables_p = NULL;
-    main_thrd.env.number_of_variables = 0;
-    main_thrd.env.max_number_of_variables = 0;
+    thrd_p->env.variables_p = NULL;
+    thrd_p->env.number_of_variables = 0;
+    thrd_p->env.max_number_of_variables = 0;
 #endif
 
 #if CONFIG_ASSERT == 1
-    main_thrd.stack_low_magic = THRD_STACK_LOW_MAGIC;
+    thrd_p->stack_low_magic = THRD_STACK_LOW_MAGIC;
 #endif
 
 #if CONFIG_PROFILE_STACK == 1
-    main_thrd.stack_size = (&__main_stack_end - (char *)(&main_thrd + 1));
-    thrd_fill_pattern((char *)(&main_thrd + 1),
-                      &dummy - (char *)(&main_thrd + 2));
+    thrd_p->stack_size = (thrd_port_get_main_thrd_stack_top() - (char *)(thrd_p + 1));
+    thrd_fill_pattern((char *)(thrd_p + 1), &dummy - (char *)(thrd_p + 2));
 #endif
 
-    module.scheduler.current_p = &main_thrd;
-    module.threads_p = &main_thrd;
+    module.scheduler.current_p = thrd_p;
+    module.threads_p = thrd_p;
 
-    thrd_port_init_main(&main_thrd.port);
+    thrd_port_init_main(&thrd_p->port);
 
     thrd_spawn(idle_thrd, NULL, 127, idle_thrd_stack, sizeof(idle_thrd_stack));
 
 #if CONFIG_MONITOR_THREAD == 1
-
     thrd_spawn(monitor_thrd,
                NULL,
                THRD_MONITOR_PRIO,
                monitor_thrd_stack,
                sizeof(monitor_thrd_stack));
-
 #endif
 
 #if CONFIG_FS_CMD_THRD_LIST == 1
-
     fs_command_init(&module.cmd_list,
                     FSTR("/kernel/thrd/list"),
                     cmd_list_cb,
                     NULL);
     fs_command_register(&module.cmd_list);
-
 #endif
 
 #if CONFIG_FS_CMD_THRD_SET_LOG_MASK == 1
-
     fs_command_init(&module.cmd_set_log_mask,
                     FSTR("/kernel/thrd/set_log_mask"),
                     cmd_set_log_mask_cb,
                     NULL);
     fs_command_register(&module.cmd_set_log_mask);
-
 #endif
 
 #if CONFIG_MONITOR_THREAD == 1
-
     fs_command_init(&module.cmd_monitor_set_period_ms,
                     FSTR("/kernel/thrd/monitor/set_period_ms"),
                     cmd_monitor_set_period_ms_cb,
@@ -554,7 +552,6 @@ int thrd_module_init(void)
                     cmd_monitor_set_print_cb,
                     NULL);
     fs_command_register(&module.cmd_monitor_set_print);
-
 #endif
 
     return (0);

@@ -34,6 +34,21 @@
 #include "freertos/semphr.h"
 
 static struct thrd_t main_thrd __attribute__ ((section (".simba_main_thrd")));
+extern char __main_stack_end;
+
+static struct thrd_t *thrd_port_get_main_thrd(void)
+{
+    return (&main_thrd);
+}
+
+#if CONFIG_PROFILE_STACK == 1
+
+static char *thrd_port_get_main_thrd_stack_top(void)
+{
+    return (&__main_stack_end);
+}
+
+#endif
 
 xSemaphoreHandle thrd_idle_sem;
 

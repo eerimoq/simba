@@ -16,6 +16,7 @@ initialized by ``sys_start()`` at the startup of the application.
 
 - :doc:`Console.<../library-reference/oam/console>`
 - File system.
+- Networking.
 - :doc:`Debug shell.<../library-reference/oam/shell>`
 
 Drivers
@@ -57,7 +58,7 @@ Below is the memory usage of two applications:
 +==========================+===========+===========+
 | minimal-configuration    |    187397 |     38480 |
 +--------------------------+-----------+-----------+
-| default-configuration    |    218189 |     60972 |
+| default-configuration    |    312931 |    116224 |
 +--------------------------+-----------+-----------+
 
 Default configuration
@@ -188,7 +189,7 @@ Default Standard Library configuration.
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_START_FILESYSTEM_SIZE_                         |  0xFB000                                            |
 +--------------------------------------------------------+-----------------------------------------------------+
-|  CONFIG_START_NETWORK_                                 |  0                                                  |
+|  CONFIG_START_NETWORK_                                 |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_START_NETWORK_INTERFACE_WIFI_CONNECT_TIMEOUT_  |  30                                                 |
 +--------------------------------------------------------+-----------------------------------------------------+

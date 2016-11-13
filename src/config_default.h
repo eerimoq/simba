@@ -517,11 +517,7 @@
  * recommended to have enabled.
  */
 #ifndef CONFIG_PROFILE_STACK
-#    if defined(ARCH_ESP32)
-#        define CONFIG_PROFILE_STACK                        0
-#    else
-#        define CONFIG_PROFILE_STACK                        1
-#    endif
+#    define CONFIG_PROFILE_STACK                            1
 #endif
 
 /**

@@ -33,6 +33,21 @@
 #define THRD_MONITOR_STACK_MAX 256
 
 static struct thrd_t main_thrd __attribute__ ((section (".noinit")));
+extern char __main_stack_end;
+
+static struct thrd_t *thrd_port_get_main_thrd(void)
+{
+    return (&main_thrd);
+}
+
+#if CONFIG_PROFILE_STACK == 1
+
+static char *thrd_port_get_main_thrd_stack_top(void)
+{
+    return (&__main_stack_end);
+}
+
+#endif
 
 /**
  * @param[in] in Thread to swap in (r24).
