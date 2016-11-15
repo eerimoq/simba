@@ -2,9 +2,9 @@
  * @section License
  *
  * The MIT License (MIT)
- * 
+ *
  * Copyright (c) 2014-2016, Erik Moqvist
- * 
+ *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
  * files (the "Software"), to deal in the Software without
@@ -29,15 +29,6 @@
  */
 
 #include "simba.h"
-
-/** TCP socket type. */
-#define SOCKET_TYPE_STREAM     1
-
-/** UDP socket type. */
-#define SOCKET_TYPE_DGRAM      2
-
-/** RAW socket type. */
-#define SOCKET_TYPE_RAW        3
 
 #define STATE_IDLE             0
 #define STATE_RECVFROM         1
@@ -284,6 +275,7 @@ static void on_udp_recv(void *arg_p,
     if (socket_p->input.cb.state == STATE_RECVFROM) {
         socket_p->input.cb.state = STATE_IDLE;
         socket_p->input.u.recvfrom.pbuf_p = NULL;
+        socket_p->input.u.recvfrom.left = 0;
         udp_recv_from_copy_resume(socket_p, pbuf_p);
     } else {
         socket_p->input.u.recvfrom.pbuf_p = pbuf_p;
@@ -301,7 +293,7 @@ static void udp_open_cb(void *ctx_p)
     /* Create and initiate the UDP pinput.cb. */
     res = -1;
     pcb_p = udp_new();
-    
+
     if (pcb_p != NULL) {
         udp_recv(pcb_p, on_udp_recv, socket_p);
         init(socket_p, SOCKET_TYPE_DGRAM, pcb_p);
@@ -403,6 +395,7 @@ static void udp_recv_from_cb(void *ctx_p)
        when data is received. */
     if (pbuf_p != NULL) {
         socket_p->input.u.recvfrom.pbuf_p = NULL;
+        socket_p->input.u.recvfrom.left = 0;
         udp_recv_from_copy_resume(socket_p, pbuf_p);
     } else {
         socket_p->input.cb.state = STATE_RECVFROM;
@@ -469,6 +462,7 @@ static void tcp_recv_buffer(struct socket_t *socket_p)
         tcp_recved(socket_p->pcb_p, pbuf_p->tot_len);
         pbuf_free(pbuf_p);
         socket_p->input.u.recvfrom.pbuf_p = NULL;
+        socket_p->input.u.recvfrom.left = 0;
 
         /* Resume the thread is the socket is closed since there is no
            more data to read. */
@@ -850,28 +844,44 @@ static uint8_t on_raw_recv(void *arg_p,
                            )
 {
     struct socket_t *socket_p = arg_p;
+    struct pbuf *pbuf_duplicated_p;
 
-    /* Discard the packet if there is already a packed waiting. */
+    /* Discard the packet if there is already a packet waiting. */
     if (socket_p->input.u.recvfrom.pbuf_p != NULL) {
-        pbuf_free(pbuf_p);
-        return (1);
+        return (0);
     }
 
     /* Save the remote address and port. */
-    socket_p->input.u.recvfrom.remote_addr.ip.number = ip_addr_get_ip4_u32(addr_p);
+    socket_p->input.u.recvfrom.remote_addr.ip.number =
+        ip_addr_get_ip4_u32(addr_p);
+
+    /* Duplicate the packet since the input packet will be freed by
+       the IP stack. . */
+    pbuf_duplicated_p = pbuf_alloc(PBUF_TRANSPORT, pbuf_p->tot_len, PBUF_RAM);
+
+    if (pbuf_duplicated_p == NULL) {
+        return (0);
+    }
+
+    if (pbuf_copy(pbuf_duplicated_p, pbuf_p) != ERR_OK) {
+        pbuf_free(pbuf_duplicated_p);
+
+        return (0);
+    }
 
     /* Copy the data to the receive buffer if there is one. */
     if (socket_p->input.cb.state == STATE_RECVFROM) {
         socket_p->input.cb.state = STATE_IDLE;
         socket_p->input.u.recvfrom.pbuf_p = NULL;
-        raw_recv_from_copy_resume(socket_p, pbuf_p);
+        socket_p->input.u.recvfrom.left = 0;
+        raw_recv_from_copy_resume(socket_p, pbuf_duplicated_p);
     } else {
-        socket_p->input.u.recvfrom.pbuf_p = pbuf_p;
-        socket_p->input.u.recvfrom.left = pbuf_p->tot_len;
+        socket_p->input.u.recvfrom.pbuf_p = pbuf_duplicated_p;
+        socket_p->input.u.recvfrom.left = pbuf_duplicated_p->tot_len;
         resume_if_polled(socket_p);
     }
 
-    return (1);
+    return (0);
 }
 
 static void raw_send_to_cb(void *ctx_p)
@@ -895,6 +905,11 @@ static void raw_send_to_cb(void *ctx_p)
         pbuf_free(pbuf_p);
     }
 
+    if (res == ERR_OK) {
+        fs_counter_increment(&module.raw_tx_bytes, args_p->size);
+        res = args_p->size;
+    }
+
     resume_thrd(socket_p->output.cb.thrd_p, res);
 }
 
@@ -909,6 +924,7 @@ static void raw_recv_from_cb(void *ctx_p)
        when data is received. */
     if (pbuf_p != NULL) {
         socket_p->input.u.recvfrom.pbuf_p = NULL;
+        socket_p->input.u.recvfrom.left = 0;
         raw_recv_from_copy_resume(socket_p, pbuf_p);
     } else {
         socket_p->input.cb.state = STATE_RECVFROM;
@@ -1057,6 +1073,37 @@ int socket_open_raw(struct socket_t *self_p)
 #else
     return (-1);
 #endif
+}
+
+int socket_open(struct socket_t *self_p,
+                int domain,
+                int type,
+                int protocol)
+{
+    ASSERTN(self_p != NULL, -EINVAL);
+
+    int res = -1;
+
+    switch (type) {
+
+    case SOCKET_TYPE_STREAM:
+        res = socket_open_tcp(self_p);
+        break;
+
+    case SOCKET_TYPE_DGRAM:
+        res = socket_open_udp(self_p);
+        break;
+
+    case SOCKET_TYPE_RAW:
+        /* TODO: Use protocol argument. */
+        res = socket_open_raw(self_p);
+        break;
+
+    default:
+        break;
+    }
+
+    return (res);
 }
 
 int socket_close(struct socket_t *self_p)
