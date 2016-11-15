@@ -67,10 +67,13 @@ static int read_until(char *buf_p, const char *pattern)
 static int test_host_by_ip_address(struct harness_t *harness_p)
 {
     struct inet_ip_addr_t address;
-    struct time_t round_trip_time;
+    struct time_t round_trip_time, timeout;
     uint8_t request[8];
     uint8_t reply[28];
 
+    timeout.seconds = 1;
+    timeout.nanoseconds = 0;
+    
     /* Prepare the socket stub with the reply packet. The first 20
        bytes in the reply are the IP header. */
     reply[20] = 0;
@@ -85,7 +88,9 @@ static int test_host_by_ip_address(struct harness_t *harness_p)
 
     /* Perform the ping. */
     address.number = 0x1;
-    BTASSERT(ping_host_by_ip_address(&address, NULL, &round_trip_time) == 0);
+    BTASSERT(ping_host_by_ip_address(&address,
+                                     &timeout,
+                                     &round_trip_time) == 0);
 
     /* Check the request send by the ping module. */
     socket_stub_output(request, sizeof(request));
@@ -108,34 +113,39 @@ static int test_host_by_ip_address(struct harness_t *harness_p)
 static int test_bad_reply_crc(struct harness_t *harness_p)
 {
     struct inet_ip_addr_t address;
-    struct time_t round_trip_time;
+    struct time_t round_trip_time, timeout;
     uint8_t request[8];
     uint8_t reply[28];
 
+    timeout.seconds = 1;
+    timeout.nanoseconds = 0;
+    
     /* Prepare the socket stub with the reply packet. The first 20
        bytes in the reply are the IP header. */
     reply[20] = 0;
     reply[21] = 0;
-    reply[22] = 0xfe;
-    reply[23] = 0xff;
+    reply[22] = 0xff;
+    reply[23] = 0xfe;
     reply[24] = 0;
-    reply[25] = 0;
+    reply[25] = 1;
     reply[26] = 0;
     reply[27] = 1;
     socket_stub_input(reply, sizeof(reply));
 
     /* Perform the ping. */
     address.number = 0x1;
-    BTASSERT(ping_host_by_ip_address(&address, NULL, &round_trip_time) == -1);
+    BTASSERT(ping_host_by_ip_address(&address,
+                                     &timeout,
+                                     &round_trip_time) == -1);
 
     /* Check the request send by the ping module. */
     socket_stub_output(request, sizeof(request));
     BTASSERT(request[0] == 8);
     BTASSERT(request[1] == 0);
     BTASSERT(request[2] == 0xf7);
-    BTASSERT(request[3] == 0xfe);
+    BTASSERT(request[3] == 0xfd);
     BTASSERT(request[4] == 0);
-    BTASSERT(request[5] == 0);
+    BTASSERT(request[5] == 1);
     BTASSERT(request[6] == 0);
     BTASSERT(request[7] == 1);
 
@@ -153,9 +163,9 @@ static int test_cmd_ping(struct harness_t *harness_p)
     reply[20] = 0;
     reply[21] = 0;
     reply[22] = 0xff;
-    reply[23] = 0xfe;
+    reply[23] = 0xfc;
     reply[24] = 0;
-    reply[25] = 0;
+    reply[25] = 2;
     reply[26] = 0;
     reply[27] = 1;
     socket_stub_input(reply, sizeof(reply));
@@ -170,9 +180,9 @@ static int test_cmd_ping(struct harness_t *harness_p)
     BTASSERT(request[0] == 8);
     BTASSERT(request[1] == 0);
     BTASSERT(request[2] == 0xf7);
-    BTASSERT(request[3] == 0xfe);
+    BTASSERT(request[3] == 0xfc);
     BTASSERT(request[4] == 0);
-    BTASSERT(request[5] == 0);
+    BTASSERT(request[5] == 2);
     BTASSERT(request[6] == 0);
     BTASSERT(request[7] == 1);
         
@@ -191,7 +201,7 @@ static int test_cmd_ping_bad_reply(struct harness_t *harness_p)
     reply[22] = 0xff;
     reply[23] = 0xfe;
     reply[24] = 0;
-    reply[25] = 0;
+    reply[25] = 2;
     reply[26] = 0;
     reply[27] = 2;
     socket_stub_input(reply, sizeof(reply));

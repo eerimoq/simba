@@ -34,8 +34,6 @@
 #define ECHO_REPLY   0
 #define ECHO_REQUEST 8
 
-#define PING_ID      0
-
 struct echo_header_t {
     uint8_t type;
     uint8_t code;
@@ -46,6 +44,7 @@ struct echo_header_t {
 
 struct module_t {
     int initialized;
+    short ping_id;
 #if CONFIG_FS_CMD_PING_PING == 1
     struct fs_command_t cmd_ping;
 #endif
@@ -127,9 +126,14 @@ int ping_host_by_ip_address(struct inet_ip_addr_t *address_p,
                             struct time_t *timeout_p,
                             struct time_t *round_trip_time_p)
 {
+    ASSERTN(address_p != NULL, -EINVAL);
+    ASSERTN(timeout_p != NULL, -EINVAL);
+    ASSERTN(round_trip_time_p != NULL, -EINVAL);
+    
+    int res = -1;
     ssize_t reply_size;
     struct socket_t socket;
-    struct time_t start, stop;
+    struct time_t start, stop, timeout;
     struct echo_header_t request;
     struct echo_header_t *reply_p;
     uint8_t reply[28]; /* IP header and icmp packet. */
@@ -137,12 +141,13 @@ int ping_host_by_ip_address(struct inet_ip_addr_t *address_p,
 
     reply_size = -1;
     address.ip = *address_p;
+    timeout = *timeout_p;
 
     /* Initiate the ping echo packet. */
     request.type = ECHO_REQUEST;
     request.code = 0;
     request.checksum = 0;
-    request.id = htons(PING_ID);
+    request.id = htons(module.ping_id++);
     request.seqno = htons(1);
     request.checksum = htons(inet_checksum(&request, sizeof(request)));
     
@@ -152,36 +157,64 @@ int ping_host_by_ip_address(struct inet_ip_addr_t *address_p,
     }
     
     time_get(&start);
-    socket_sendto(&socket, &request, sizeof(request), 0, &address);
+     
+    if (socket_sendto(&socket,
+                      &request,
+                      sizeof(request),
+                      0,
+                      &address) == sizeof(request)) {
+        /* Packets for _all_ raw sockets with IMCP and received. */
+        while (1) {
+            if (chan_poll(&socket, &timeout) == NULL) {
+                res = -ETIMEDOUT;
+                break;
+            }
 
-    if (chan_poll(&socket, timeout_p) != NULL) {
-        time_get(&stop);
-        reply_size = socket_recvfrom(&socket,
-                                     &reply,
-                                     sizeof(reply),
-                                     0,
-                                     &address);
+            time_get(&stop);
+            
+            reply_size = socket_recvfrom(&socket,
+                                         &reply,
+                                         sizeof(reply),
+                                         0,
+                                         &address); 
+           
+            /* Calculate the round trip time (RTT). */
+            time_diff(round_trip_time_p, &stop, &start);
+            
+            /* Decrement the timeout by the elapsed time waiting for a
+               packet. */
+            if ((round_trip_time_p->seconds < 0)
+                || (round_trip_time_p->nanoseconds < 0)) {
+                timeout.seconds = 0;
+                timeout.nanoseconds = -1;
+            } else {
+                time_diff(&timeout, timeout_p, round_trip_time_p);
+            }
+            
+            if (reply_size != sizeof(reply)) {
+                continue;
+            }
+                
+            reply_p = (struct echo_header_t *)&reply[20];
+            
+            /* Check the reply. */
+            if ((reply_p->type != ECHO_REPLY)
+                || (reply_p->code != request.code)
+                || (reply_p->id != request.id)
+                || (reply_p->seqno != request.seqno)) {
+                continue;
+            }
+
+            if (inet_checksum(reply_p, sizeof(*reply_p)) == 0) {
+                /* A valid reply was received. */
+                res = 0;
+            }
+
+            break;
+        }
     }
 
     socket_close(&socket);
 
-    if (reply_size != sizeof(reply)) {
-        return (-1);
-    }
-
-    reply_p = (struct echo_header_t *)&reply[20];
-    
-    /* Check the reply. */
-    if ((reply_p->type != ECHO_REPLY)
-        || (reply_p->code != request.code)
-        || (reply_p->id != request.id)
-        || (reply_p->seqno != request.seqno)
-        || (inet_checksum(reply_p, sizeof(*reply_p)) != 0)) {
-        return (-1);
-    }
-
-    /* Calculate the round trip time (RTT). */
-    time_diff(round_trip_time_p, &stop, &start);
-
-    return (0);
+    return (res);
 }
