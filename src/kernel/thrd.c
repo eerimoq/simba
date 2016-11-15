@@ -902,7 +902,7 @@ int thrd_suspend_isr(struct time_t *timeout_p)
         thrd_p->state = THRD_STATE_SUSPENDED;
 
         if (timeout_p != NULL) {
-            if ((timeout_p->seconds == 0) && (timeout_p->nanoseconds == 0)) {
+            if ((timeout_p->seconds <= 0) && (timeout_p->nanoseconds <= 0)) {
                 return (-ETIMEDOUT);
             } else {
                 thrd_p->timer_p = &timer;
