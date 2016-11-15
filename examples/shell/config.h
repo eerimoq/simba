@@ -36,4 +36,6 @@
  */
 #define CONFIG_START_SHELL                                  0
 
+#define CONFIG_START_NETWORK                                0
+
 #endif
