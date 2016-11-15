@@ -136,13 +136,24 @@ int time_diff(struct time_t *diff_p,
     diff_p->seconds = (left_p->seconds - right_p->seconds);
     diff_p->nanoseconds = (left_p->nanoseconds - right_p->nanoseconds);
 
-    if (diff_p->nanoseconds < 0) {
-        if (diff_p->seconds > 0) {
-            diff_p->seconds--;
-            diff_p->nanoseconds += 1000000000;
-        }
+    /* abs(nanosecons) must be less than 1000000000. */
+    if (diff_p->nanoseconds < -999999999L) {
+        diff_p->seconds--;
+        diff_p->nanoseconds += 1000000000L;
+    } else if (diff_p->nanoseconds > 999999999L) {
+        diff_p->seconds++;
+        diff_p->nanoseconds -= 1000000000L;
     }
 
+    /* `seconds` and `nanoseconds` must have the same sign. */
+    if ((diff_p->seconds > 0) && (diff_p->nanoseconds < 0)) {
+        diff_p->seconds--;
+        diff_p->nanoseconds += 1000000000L;
+    } else if ((diff_p->seconds < 0) && (diff_p->nanoseconds > 0)) {
+        diff_p->seconds++;
+        diff_p->nanoseconds -= 1000000000L;
+    }
+    
     return (0);
 }
 
