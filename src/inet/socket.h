@@ -33,6 +33,19 @@
 
 #include "simba.h"
 
+#define SOCKET_DOMAIN_INET     0
+
+/** TCP socket type. */
+#define SOCKET_TYPE_STREAM     1
+
+/** UDP socket type. */
+#define SOCKET_TYPE_DGRAM      2
+
+/** RAW socket type. */
+#define SOCKET_TYPE_RAW        3
+
+#define SOCKET_PROTO_ICMP      0
+
 struct socket_t {
     struct chan_t base;
     int type;
@@ -107,6 +120,21 @@ int socket_open_udp(struct socket_t *self_p);
  * @return zero(0) or negative error code.
  */
 int socket_open_raw(struct socket_t *self_p);
+
+/**
+ * Initialize given socket.
+ *
+ * @param[out] self_p Socket to initialize.
+ * @param[in] domain Socket domain.
+ * @param[in] type Socket type.
+ * @param[in] protocol Socket protocol.
+ *
+ * @return zero(0) or negative error code.
+ */
+int socket_open(struct socket_t *self_p,
+                int domain,
+                int type,
+                int protocol);
 
 /**
  * Close given socket. No data transfers are allowed on after the
