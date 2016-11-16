@@ -33,14 +33,15 @@ Follow these steps to create a new release:
    sha256 sums of the zip-archives are calculated by ``make arduino``
    and written to ``simba-arduino/*.sha256``.
 
-6. Copy the Simba Arduino releases to SourceForge.
+6. Copy the Simba Arduino releases to the release repository, add,
+   commit and push in the release repository.
 
    .. code:: text
 
-      scp simba-arduino/simba-arduino-avr-*.zip <user>@frs.sourceforge.net:/home/frs/project/simba-arduino/avr
-      scp simba-arduino/simba-arduino-sam-*.zip <user>@frs.sourceforge.net:/home/frs/project/simba-arduino/sam
-      scp simba-arduino/simba-arduino-esp-*.zip <user>@frs.sourceforge.net:/home/frs/project/simba-arduino/esp
-      scp simba-arduino/simba-arduino-esp32-*.zip <user>@frs.sourceforge.net:/home/frs/project/simba-arduino/esp32
+      cp simba-arduino/simba-arduino-avr-*.zip ../simba-releases/arduino/avr
+      cp simba-arduino/simba-arduino-sam-*.zip ../simba-releases/arduino/sam
+      cp simba-arduino/simba-arduino-esp-*.zip ../simba-releases/arduino/esp
+      cp simba-arduino/simba-arduino-esp32-*.zip ../simba-releases/arduino/esp32
 
 7. Start a http server used to download package manifests in the Arduino IDE.
 
@@ -64,24 +65,25 @@ Follow these steps to create a new release:
 
 11. Push the new commit and tag.
 
-12. Copy the Simba Arduino package manifests to SourceForge.
+12. Copy the Simba Arduino package manifests the release repository,
+   add, commit and push in the release repository.
 
    .. code:: text
 
-      scp make/arduino/avr/package_simba_avr_index.json <user>@frs.sourceforge.net:/home/frs/project/simba-arduino/avr
-      scp make/arduino/sam/package_simba_sam_index.json <user>@frs.sourceforge.net:/home/frs/project/simba-arduino/sam
-      scp make/arduino/esp/package_simba_esp_index.json <user>@frs.sourceforge.net:/home/frs/project/simba-arduino/esp
-      scp make/arduino/esp32/package_simba_esp32_index.json <user>@frs.sourceforge.net:/home/frs/project/simba-arduino/esp32
+      cp make/arduino/avr/package_simba_avr_index.json ../simba-releases/arduino/avr
+      cp make/arduino/sam/package_simba_sam_index.json ../simba-releases/arduino/sam
+      cp make/arduino/esp/package_simba_esp_index.json ../simba-releases/arduino/esp
+      cp make/arduino/esp32/package_simba_esp32_index.json ../simba-releases/arduino/esp32
 
 13. Download the release zip-file from Github and calculate its SHA1
-    checksum. Upload the zip-file to sourceforge and add the new
-    releases to ``make/platformio/manifest.json``.
+    checksum. Add the zip-file to the release repository and add the
+    new releases to ``make/platformio/manifest.json``.
 
    .. code:: text
 
       wget https://github.com/eerimoq/simba/archive/<version>.zip
       sha1sum <version>.zip
-      scp <version>.zip <user>@frs.sourceforge.net:/home/frs/project/simba-platformio/
+      cp <version>.zip ../simba-releases/platformio
 
 14. Commit and push.
 
