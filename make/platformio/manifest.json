@@ -1,37 +1,37 @@
 {
     "framework-simba": [
         {
-            "url": "https://sourceforge.net/projects/simba-platformio/files/10.2.0.zip",
+            "url": "https://github.com/eerimoq/simba-releases/raw/master/platformio/10.2.0.zip",
             "sha1": "a5c44342b4b8d939f35eb4128825e54eb73f0c38",
             "version": "10.2.0"
         },
         {
-            "url": "https://sourceforge.net/projects/simba-platformio/files/10.1.1.zip",
+            "url": "https://github.com/eerimoq/simba-releases/raw/master/platformio/10.1.1.zip",
             "sha1": "10127193623381c2df694c0a01e7b797b8ccbf5b",
             "version": "10.1.1"
         },
         {
-            "url": "https://sourceforge.net/projects/simba-platformio/files/10.1.0.zip",
+            "url": "https://github.com/eerimoq/simba-releases/raw/master/platformio/10.1.0.zip",
             "sha1": "ef64c46c5d9868e4b23ae8bd2dcff471314dc2e2",
             "version": "10.1.0"
         },
         {
-            "url": "https://sourceforge.net/projects/simba-platformio/files/10.0.0.zip",
+            "url": "https://github.com/eerimoq/simba-releases/raw/master/platformio/10.0.0.zip",
             "sha1": "74447ff9be8a853cf8ec632b65d651638305f344",
             "version": "10.0.0"
         },
         {
-            "url": "https://sourceforge.net/projects/simba-platformio/files/9.0.1.zip",
+            "url": "https://github.com/eerimoq/simba-releases/raw/master/platformio/9.0.1.zip",
             "sha1": "280da695f08f42747b0bd528e63af317e06e539a",
             "version": "9.0.1"
         },
         {
-            "url": "https://sourceforge.net/projects/simba-platformio/files/9.0.0.zip",
+            "url": "https://github.com/eerimoq/simba-releases/raw/master/platformio/9.0.0.zip",
             "sha1": "166fda890e026d73d59c3f583bf9737b86dea085",
             "version": "9.0.0"
         },
         {
-            "url": "https://sourceforge.net/projects/simba-platformio/files/8.0.0.zip",
+            "url": "https://github.com/eerimoq/simba-releases/raw/master/platformio/8.0.0.zip",
             "sha1": "b9568641e5e91c08221f2ccd7d4698e7936643d0",
             "version": "8.0.0"
         },
