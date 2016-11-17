@@ -202,7 +202,7 @@ ifeq ($(BOARD), esp12e)
 				    ping)
     TESTS += $(addprefix tst/drivers/, pin)
     TESTS += $(addprefix tst/filesystems/, fs \
-                                          spiffs)
+                                           spiffs)
 endif
 
 ifeq ($(BOARD), nano32)
@@ -232,6 +232,8 @@ ifeq ($(BOARD), nano32)
 				    inet \
 				    network_interface/wifi_esp \
 				    ping)
+    TESTS += $(addprefix tst/filesystems/, fs \
+                                           spiffs)
 endif
 
 ifeq ($(BOARD), stm32vldiscovery)

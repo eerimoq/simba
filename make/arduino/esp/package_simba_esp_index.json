@@ -17,7 +17,7 @@
                     "help": {
                         "online": "https://simba-os.readthedocs.org"
                     },
-                    "url": "https://sourceforge.net/projects/simba-arduino/files/esp/simba-arduino-esp-4.1.0.zip",
+                    "url": "https://github.com/eerimoq/simba-releases/raw/master/arduino/esp/simba-arduino-esp-4.1.0.zip",
                     "archiveFileName": "simba-arduino-esp-4.1.0.zip",
                     "checksum": "SHA-256:0160ed0a9efd583adb6501aa4015175eee8b8b748a97a90e49cf32d1b754de89",
                     "size": "1796469",
@@ -46,7 +46,7 @@
                     "help": {
                         "online": "https://simba-os.readthedocs.org"
                     },
-                    "url": "https://sourceforge.net/projects/simba-arduino/files/esp/simba-arduino-esp-5.0.0.zip",
+                    "url": "https://github.com/eerimoq/simba-releases/raw/master/arduino/esp/simba-arduino-esp-5.0.0.zip",
                     "archiveFileName": "simba-arduino-esp-5.0.0.zip",
                     "checksum": "SHA-256:8db47df14c3faa5328cb44e87e774820edb6ab6fd72cb6f740e1b36f477e6409",
                     "size": "1697028",
@@ -75,7 +75,7 @@
                     "help": {
                         "online": "https://simba-os.readthedocs.org"
                     },
-                    "url": "https://sourceforge.net/projects/simba-arduino/files/esp/simba-arduino-esp-6.0.0.zip",
+                    "url": "https://github.com/eerimoq/simba-releases/raw/master/arduino/esp/simba-arduino-esp-6.0.0.zip",
                     "archiveFileName": "simba-arduino-esp-6.0.0.zip",
                     "checksum": "SHA-256:9e91da3895178be73c5d9ce81aeb87bce0a9fd4c007d7ef3addbe7c5a72d2e56",
                     "size": "1694382",
@@ -104,7 +104,7 @@
                     "help": {
                         "online": "https://simba-os.readthedocs.org"
                     },
-                    "url": "https://sourceforge.net/projects/simba-arduino/files/esp/simba-arduino-esp-7.0.0.zip",
+                    "url": "https://github.com/eerimoq/simba-releases/raw/master/arduino/esp/simba-arduino-esp-7.0.0.zip",
                     "archiveFileName": "simba-arduino-esp-7.0.0.zip",
                     "checksum": "SHA-256:48f950a7d0c0872fe4ba10c339ced27d917b2c7ea2be4a8b476332345c2318e1",
                     "size": "1710510",
@@ -133,7 +133,7 @@
                     "help": {
                         "online": "https://simba-os.readthedocs.org"
                     },
-                    "url": "https://sourceforge.net/projects/simba-arduino/files/esp/simba-arduino-esp-8.0.0.zip",
+                    "url": "https://github.com/eerimoq/simba-releases/raw/master/arduino/esp/simba-arduino-esp-8.0.0.zip",
                     "archiveFileName": "simba-arduino-esp-8.0.0.zip",
                     "checksum": "SHA-256:84cce7722222631f8d6b879e7d8a1887416b667c3ba387842245d1803971056d",
                     "size": "1715871",
@@ -162,7 +162,7 @@
                     "help": {
                         "online": "https://simba-os.readthedocs.org"
                     },
-                    "url": "https://sourceforge.net/projects/simba-arduino/files/esp/simba-arduino-esp-9.0.0.zip",
+                    "url": "https://github.com/eerimoq/simba-releases/raw/master/arduino/esp/simba-arduino-esp-9.0.0.zip",
                     "archiveFileName": "simba-arduino-esp-9.0.0.zip",
                     "checksum": "SHA-256:579c338e8e2566f9ceb6e047c2f3ff5105240d2689ed0b0756024abcffe82f45",
                     "size": "1724093",
@@ -191,7 +191,7 @@
                     "help": {
                         "online": "https://simba-os.readthedocs.org"
                     },
-                    "url": "https://sourceforge.net/projects/simba-arduino/files/esp/simba-arduino-esp-9.0.1.zip",
+                    "url": "https://github.com/eerimoq/simba-releases/raw/master/arduino/esp/simba-arduino-esp-9.0.1.zip",
                     "archiveFileName": "simba-arduino-esp-9.0.1.zip",
                     "checksum": "SHA-256:f0a52819459704fe591eaa14598a3a1b1eae3d19bf65bc35839f0be3986bbd95",
                     "size": "1727818",
@@ -220,7 +220,7 @@
                     "help": {
                         "online": "https://simba-os.readthedocs.org"
                     },
-                    "url": "https://sourceforge.net/projects/simba-arduino/files/esp/simba-arduino-esp-10.0.0.zip",
+                    "url": "https://github.com/eerimoq/simba-releases/raw/master/arduino/esp/simba-arduino-esp-10.0.0.zip",
                     "archiveFileName": "simba-arduino-esp-10.0.0.zip",
                     "checksum": "SHA-256:5578b65b7ad236b3633647b228261c65e6f28e3bd746c67ec6db90012009ee6b",
                     "size": "1742410",
@@ -249,7 +249,7 @@
                     "help": {
                         "online": "https://simba-os.readthedocs.org"
                     },
-                    "url": "https://sourceforge.net/projects/simba-arduino/files/esp/simba-arduino-esp-10.1.0.zip",
+                    "url": "https://github.com/eerimoq/simba-releases/raw/master/arduino/esp/simba-arduino-esp-10.1.0.zip",
                     "archiveFileName": "simba-arduino-esp-10.1.0.zip",
                     "checksum": "SHA-256:73560a17d235fe2a1d33713900156450665de4c2cf33b79615ad25cc0c0a86ee",
                     "size": "1767288",
@@ -278,7 +278,7 @@
                     "help": {
                         "online": "https://simba-os.readthedocs.org"
                     },
-                    "url": "https://sourceforge.net/projects/simba-arduino/files/esp/simba-arduino-esp-10.1.1.zip",
+                    "url": "https://github.com/eerimoq/simba-releases/raw/master/arduino/esp/simba-arduino-esp-10.1.1.zip",
                     "archiveFileName": "simba-arduino-esp-10.1.1.zip",
                     "checksum": "SHA-256:bc8ff688b38a3bc0b5cf9a44c22cb15395936d52936f54c68f4562bad7d8ee2e",
                     "size": "1767260",
@@ -307,7 +307,7 @@
                     "help": {
                         "online": "https://simba-os.readthedocs.org"
                     },
-                    "url": "https://sourceforge.net/projects/simba-arduino/files/esp/simba-arduino-esp-10.2.0.zip",
+                    "url": "https://github.com/eerimoq/simba-releases/raw/master/arduino/esp/simba-arduino-esp-10.2.0.zip",
                     "archiveFileName": "simba-arduino-esp-10.2.0.zip",
                     "checksum": "SHA-256:ad680d2a431daa9bda66b00d2d4c3b7362b375f050cbc076170c603bc05f24fc",
                     "size": "1767294",
