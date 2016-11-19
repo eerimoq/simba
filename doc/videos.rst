@@ -1,6 +1,17 @@
 Videos
 ======
 
+#5 Simba: Room temperature (DS18B20).
+-------------------------------------
+
+Read and print the room temperature measured with a DS18B20 sensor.
+
+.. raw:: html
+
+   <iframe width="560" height="315" src="https://www.youtube.com/embed/nK4cmATEWUQ" frameborder="0" allowfullscreen></iframe>
+   </br>
+   </br>
+
 #4 Simba: Hello world.
 ------------------------
 
