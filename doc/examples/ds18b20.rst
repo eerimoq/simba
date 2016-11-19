@@ -1,0 +1,29 @@
+DS18B20
+=======
+
+About
+-----
+
+Read and print the temperature measured with one or more DS18B20
+sensors.
+
+Source code
+-----------
+
+.. include:: ds18b20/source-code.rst
+
+The source code can also be found on Github in the
+:github-tree:`examples/ds18b20` folder.
+
+Build and run
+-------------
+
+Build and run the application.
+
+.. code-block:: text
+
+   $ cd examples/ds18b20
+   $ make -s BOARD=<board> run
+   Number of sensors: 2
+   Device id: 28 9c 1d 5d 05 00 00 32, Temperature: 22.6250
+   Device id: 28 95 32 5d 05 00 00 33, Temperature: 22.6875

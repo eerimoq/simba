@@ -213,6 +213,8 @@ Nano32
 - :github-blob:`inet/inet<tst/inet/inet/main.c>`
 - :github-blob:`inet/network_interface/wifi_esp<tst/inet/network_interface/wifi_esp/main.c>`
 - :github-blob:`inet/ping<tst/inet/ping/main.c>`
+- :github-blob:`filesystems/fs<tst/filesystems/fs/main.c>`
+- :github-blob:`filesystems/spiffs<tst/filesystems/spiffs/main.c>`
 
 Particle IO Photon
 ------

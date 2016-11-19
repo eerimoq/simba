@@ -207,6 +207,7 @@ def examples_generate(_):
         "analog_read",
         "analog_write",
         "blink",
+        "ds18b20",
         "filesystem",
         "hello_world",
         "http_client",

@@ -49,7 +49,7 @@ int main()
 
     /* Search for devices on the OWI bus. */
     number_of_sensors = owi_search(&owi);
-    std_printf(FSTR("number_of_sensors: %d\r\n"), number_of_sensors);
+    std_printf(FSTR("Number of sensors: %d\r\n"), number_of_sensors);
 
     while (1) {
         /* Take a new temperature sample. */
@@ -64,8 +64,8 @@ int main()
                                                         devices[i].id,
                                                         temperature);
 
-            std_printf(FSTR("device id: %02x %02x %02x %02x %02x %02x %02x %02x,"
-                            " temperature: %s\r\n"),
+            std_printf(FSTR("Device id: %02x %02x %02x %02x %02x %02x %02x %02x,"
+                            " Temperature: %s\r\n"),
                        (unsigned int)devices[i].id[0],
                        (unsigned int)devices[i].id[1],
                        (unsigned int)devices[i].id[2],
