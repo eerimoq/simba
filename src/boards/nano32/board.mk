@@ -45,7 +45,7 @@ TIMEOUT ?= 10
 BAUDRATE ?= 115200
 
 upload:
-	@echo "Uploading $(EXE)"
+	@echo "Uploading $(EXE)."
 	python -u $(SIMBA_ROOT)/3pp/esp32/esp-idf/components/esptool_py/esptool/esptool.py \
 	--chip esp32 --port $(SERIAL_PORT) --baud 921600 write_flash -z \
 	--flash_mode dio --flash_freq 40m --flash_size 2MB \
@@ -61,3 +61,8 @@ rerun:
 			    --pattern $(RUN_END_PATTERN)\
 			    --pattern-success $(RUN_END_PATTERN_SUCCESS) \
 			    | tee $(RUNLOG) ; test $${PIPESTATUS[0]} -eq 0
+
+erase:
+	@echo "Erasing."
+	python -u $(ESPTOOL_PY) \
+	--chip esp32 --port $(SERIAL_PORT) --baud 921600 erase_flash
