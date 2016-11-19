@@ -34,6 +34,7 @@ SRC += $(SIMBA_ROOT)/src/boards/arduino_nano/board.c
 BOARD_HOMEPAGE = "https://www.arduino.cc/en/Main/ArduinoBoardNano"
 BOARD_PINOUT = "arduino-nano-pinout.png"
 BOARD_DESC = "Arduino Nano"
+TIMEOUT ?= 10
 
 MCU = atmega328p
 SERIAL_PORT ?= /dev/arduino
@@ -46,6 +47,7 @@ upload:
 rerun:
 	@echo "Running $(EXE)"
 	python -u $(RUN_PY) --port $(SERIAL_PORT) \
+			    --timeout $(TIMEOUT) \
 			    --baudrate $(BAUDRATE) \
 	 		    --pattern $(RUN_END_PATTERN)\
 			    --pattern-success $(RUN_END_PATTERN_SUCCESS) \

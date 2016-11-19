@@ -30,6 +30,7 @@
 
 NAME = ds18b20
 BOARD = arduino_nano
+TIMEOUT ?= 30
 
 SIMBA_ROOT ?= ../..
 include $(SIMBA_ROOT)/make/app.mk
