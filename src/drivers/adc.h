@@ -102,7 +102,7 @@ int adc_async_convert(struct adc_driver_t *self_p,
 int adc_async_wait(struct adc_driver_t *self_p);
 
 /**
- * Start a synchronous convertion of analog signal to digital
+ * Start a synchronous convertion of an analog signal to digital
  * samples. This is equivalent to `adc_async_convert()` +
  * `adc_async_wait()`, but in a single function call.
  *
