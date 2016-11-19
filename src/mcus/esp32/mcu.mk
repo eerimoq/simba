@@ -78,9 +78,9 @@ LIB += \
 	vfs \
 	wpa_supplicant \
 	gcc \
-	g \
-	c_rom \
-	m
+	c \
+	m \
+	xtensa-debug-module
 
 F_CPU = 240000000
 

@@ -30,34 +30,27 @@
 
 CROSS_COMPILE = xtensa-esp32-elf-
 
-CDEFS += F_CPU=$(F_CPU)UL \
-	ICACHE_FLASH \
-	__STRICT_ANSI__
+CDEFS += F_CPU=$(F_CPU)UL
 
 CFLAGS += -Os \
           -Werror \
           -nostdlib \
           -mlongcalls \
-          -mtext-section-literals \
           -ffunction-sections \
-	  -fno-inline-functions \
-	  -fsingle-precision-constant \
           -fdata-sections
 
 CXXFLAGS += -Os \
           -Werror \
           -nostdlib \
           -mlongcalls \
-          -mtext-section-literals \
           -ffunction-sections \
           -fdata-sections
 
 LIBPATH += $(ESP_IDF_ROOT)/components/esp32/lib
 
-LDFLAGS += -Wl,--cref \
+LDFLAGS += -Wl,-static \
            -nostdlib \
            -Wl,-EL \
-           -mtext-section-literals \
            -Wl,--gc-sections
 
 RUNARGS = $(BIN)
@@ -66,6 +59,6 @@ ESPTOOL_PY = $(SIMBA_ROOT)/3pp/esp32/esp-idf/components/esptool_py/esptool/espto
 
 build: $(BIN)
 $(BIN): $(EXE)
-	$(ESPTOOL_PY) --chip esp32 elf2image --flash_mode dio --flash_freq 40m -o $@ $<
+	$(ESPTOOL_PY) --chip esp32 elf2image --flash_mode dio --flash_freq 40m --flash_size 2MB -o $@ $<
 
 include $(SIMBA_ROOT)/make/gnu.mk

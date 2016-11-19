@@ -141,12 +141,13 @@ int app_main()
 {
     nvs_flash_init();
 
-    xTaskCreate(&main_task,
-                "simba",
-                CONFIG_SYS_SIMBA_MAIN_STACK_MAX / sizeof(StackType_t),
-                NULL,
-                5,
-                NULL);
+    xTaskCreatePinnedToCore(&main_task,
+                            "simba",
+                            CONFIG_SYS_SIMBA_MAIN_STACK_MAX / sizeof(StackType_t),
+                            NULL,
+                            5,
+                            NULL,
+                            0);
 
     return (0);
 }

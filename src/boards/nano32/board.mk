@@ -47,9 +47,11 @@ BAUDRATE ?= 115200
 upload:
 	@echo "Uploading $(EXE)"
 	python -u $(SIMBA_ROOT)/3pp/esp32/esp-idf/components/esptool_py/esptool/esptool.py \
-	--chip esp32 --port $(SERIAL_PORT) --baud 921600 write_flash --flash_mode dio \
-	--flash_freq 40m 0x1000 $(SIMBA_ROOT)/3pp/esp32/bin/bootloader.bin \
-	0x10000 $(BIN) 0x4000 $(SIMBA_ROOT)/3pp/esp32/bin/partitions_singleapp.bin
+	--chip esp32 --port $(SERIAL_PORT) --baud 921600 write_flash -z \
+	--flash_mode dio --flash_freq 40m --flash_size 2MB \
+	0x1000 $(SIMBA_ROOT)/3pp/esp32/bin/bootloader.bin \
+	0x10000 $(BIN) \
+	0x4000 $(SIMBA_ROOT)/3pp/esp32/bin/partitions_singleapp.bin
 
 rerun:
 	@echo "Running '$(EXE)'."

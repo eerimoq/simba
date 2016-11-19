@@ -1,10 +1,6 @@
 /*  Default entry point:  */
 ENTRY(call_start_cpu0);
 
-__rom_begin = ORIGIN(iram0_2_seg);
-__rom_end = ORIGIN(iram0_2_seg) + LENGTH(iram0_2_seg);
-__rom_size = LENGTH(iram0_2_seg);
-
 SECTIONS
 {
   /* RTC fast memory holds RTC wake stub code,
@@ -38,7 +34,7 @@ SECTIONS
   } > rtc_slow_seg
 
   /* Send .iram0 code to iram */
-  .iram0.vectors : 
+  .iram0.vectors :
   {
     /* Vectors go to IRAM */
     _init_start = ABSOLUTE(.);
@@ -81,6 +77,7 @@ SECTIONS
     _iram_text_start = ABSOLUTE(.);
     *(.iram1 .iram1.*)
     *libfreertos.a:(.literal .text .literal.* .text.*)
+    *libesp32.a:panic.o(.literal .text .literal.* .text.*)
     *libphy.a:(.literal .text .literal.* .text.*)
     *librtc.a:(.literal .text .literal.* .text.*)
     *libpp.a:(.literal .text .literal.* .text.*)
@@ -126,6 +123,7 @@ SECTIONS
     KEEP(*(.gnu.linkonce.s2.*))
     KEEP(*(.jcr))
     *(.dram1 .dram1.*)
+    *libesp32.a:panic.o(.rodata .rodata.*)
     _data_end = ABSOLUTE(.);
     . = ALIGN(4);
     _heap_start = ABSOLUTE(.);
@@ -187,16 +185,4 @@ SECTIONS
     _text_end = ABSOLUTE(.);
     _etext = .;
   } >iram0_2_seg
-
-  .rtc.text :
-  {
-    . = ALIGN(4);
-    *(.rtc.literal .rtc.text)
-  } >rtc_iram_seg
-
-  .rtc.data :
-  {
-    *(.rtc.data)
-    *(.rtc.rodata)
-  } > rtc_slow_seg
 }
