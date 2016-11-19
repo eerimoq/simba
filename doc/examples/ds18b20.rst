@@ -7,6 +7,12 @@ About
 Read and print the temperature measured with one or more DS18B20
 sensors.
 
+.. raw:: html
+
+   <iframe width="560" height="315" src="https://www.youtube.com/embed/nK4cmATEWUQ" frameborder="0" allowfullscreen></iframe>
+   </br>
+   </br>
+
 Source code
 -----------
 
