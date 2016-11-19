@@ -33,6 +33,7 @@ EXAMPLES = \
 	analog_write \
 	blink \
 	bootloader \
+	ds18b20 \
 	fat16 \
 	filesystem \
 	hc0x \
@@ -48,7 +49,6 @@ EXAMPLES = \
 	shell \
 	spi \
 	synthesizer \
-	temp \
 	timer \
 	usb
 

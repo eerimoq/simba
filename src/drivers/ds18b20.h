@@ -33,6 +33,9 @@
 
 #include "simba.h"
 
+/* DS18B20 one wire family code. */
+#define DS18B20_FAMILY_CODE 0x28
+
 struct ds18b20_driver_t {
     struct owi_driver_t *owi_p;
     struct ds18b20_driver_t *next_p;
@@ -50,7 +53,8 @@ struct ds18b20_driver_t {
 int ds18b20_module_init(void);
 
 /**
- * Initialize given driver object.
+ * Initialize given driver object. The driver object will communicate
+ * with all DS18B20 devices on given OWI bus.
  *
  * @param[out] self_p Driver object to be initialized.
  * @param[in] owi_p One-Wire (OWI) driver.
@@ -80,21 +84,20 @@ int ds18b20_convert(struct ds18b20_driver_t *self_p);
  * @return zero(0) or negative error code.
  */
 int ds18b20_get_temperature(struct ds18b20_driver_t *self_p,
-                            uint8_t *id_p,
+                            const uint8_t *id_p,
                             int *temp_p);
 
 /**
- * Get temperature for given device identity returned formatted as a
- * string.
+ * Get temperature for given device identity formatted as a string.
  *
  * @param[in] self_p Driver object to be initialized.
  * @param[in] id_p Device identity.
- * @param[in] buf_p Buffer.
+ * @param[out] temp_p Measured formatted temperature.
  *
- * @return Buffer or NULL.
+ * @return ``temp_p`` on success, NULL otherwise.
  */
 char *ds18b20_get_temperature_str(struct ds18b20_driver_t *self_p,
-                                  uint8_t *id_p,
-                                  char *buf_p);
+                                  const uint8_t *id_p,
+                                  char *temp_p);
 
 #endif

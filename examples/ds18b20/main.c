@@ -30,46 +30,53 @@
 
 #include "simba.h"
 
-int test_get_temp(struct harness_t *harness_p)
+int main()
 {
     struct owi_driver_t owi;
     struct ds18b20_driver_t ds;
     struct owi_device_t devices[4];
-    char buf[24];
+    char temperature[16], *temperature_p;
     int number_of_sensors;
+    int i;
 
-    BTASSERT(owi_init(&owi, &pin_d7_dev, devices, membersof(devices)) == 0);
-    BTASSERT(ds18b20_init(&ds, &owi) == 0);
-
-    time_busy_wait_us(50000);
-
-    number_of_sensors = owi_search(&owi);
-
-    std_printf(FSTR("number_of_sensors = %d\r\n"), number_of_sensors);
-
-    BTASSERT(number_of_sensors == 2);
-
-    strcpy(buf, "drivers/ds18b20/list");
-    BTASSERT(fs_call(buf, NULL, sys_get_stdout(), NULL) == 0);
-
-    time_busy_wait_us(50000);
-
-    return (0);
-}
-
-int main()
-{
-    struct harness_t harness;
-    struct harness_testcase_t harness_testcases[] = {
-        { test_get_temp, "test_get_temp" },
-        { NULL, NULL }
-    };
-
+    /* Initialization. */
     sys_start();
     ds18b20_module_init();
+    owi_init(&owi, &pin_d7_dev, devices, membersof(devices));
+    ds18b20_init(&ds, &owi);
 
-    harness_init(&harness);
-    harness_run(&harness, harness_testcases);
+    time_busy_wait_us(50000);
+
+    /* Search for devices on the OWI bus. */
+    number_of_sensors = owi_search(&owi);
+    std_printf(FSTR("number_of_sensors: %d\r\n"), number_of_sensors);
+
+    while (1) {
+        /* Take a new temperature sample. */
+        ds18b20_convert(&ds);
+
+        for (i = 0; i < owi.len; i++) {
+            if (devices[i].id[0] != DS18B20_FAMILY_CODE) {
+                continue;
+            }
+
+            temperature_p = ds18b20_get_temperature_str(&ds,
+                                                        devices[i].id,
+                                                        temperature);
+
+            std_printf(FSTR("device id: %02x %02x %02x %02x %02x %02x %02x %02x,"
+                            " temperature: %s\r\n"),
+                       (unsigned int)devices[i].id[0],
+                       (unsigned int)devices[i].id[1],
+                       (unsigned int)devices[i].id[2],
+                       (unsigned int)devices[i].id[3],
+                       (unsigned int)devices[i].id[4],
+                       (unsigned int)devices[i].id[5],
+                       (unsigned int)devices[i].id[6],
+                       (unsigned int)devices[i].id[7],
+                       temperature_p);
+        }
+    }
 
     return (0);
 }

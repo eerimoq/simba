@@ -30,9 +30,6 @@
 
 #include "simba.h"
 
-/* DS18B20 one wire family code. */
-#define FAMILY_CODE 0x28
-
 /* Commands. */
 #define CONVERT_T         0x44
 #define READ_SCRATCHPAD   0xbe
@@ -84,7 +81,7 @@ static int cmd_list_cb(int argc,
         dev_p = self_p->owi_p->devices_p;
 
         for (i = 0; i < self_p->owi_p->len; i++, dev_p++) {
-            if (dev_p->id[0] != FAMILY_CODE) {
+            if (dev_p->id[0] != DS18B20_FAMILY_CODE) {
                 continue;
             }
 
@@ -118,7 +115,7 @@ static int cmd_list_cb(int argc,
  */
 static int ds18b20_read_scratchpad(struct ds18b20_driver_t *self_p,
                                    struct ds18b20_scratchpad_t *scratchpad_p,
-                                   uint8_t *id_p)
+                                   const uint8_t *id_p)
 {
     uint8_t b;
 
@@ -185,7 +182,7 @@ int ds18b20_convert(struct ds18b20_driver_t *self_p)
 }
 
 int ds18b20_get_temperature(struct ds18b20_driver_t *self_p,
-                            uint8_t *id_p,
+                            const uint8_t *id_p,
                             int *temp_p)
 {
     ASSERTN(self_p != NULL, EINVAL);
@@ -201,20 +198,20 @@ int ds18b20_get_temperature(struct ds18b20_driver_t *self_p,
 }
 
 char *ds18b20_get_temperature_str(struct ds18b20_driver_t *self_p,
-                                  uint8_t *id_p,
-                                  char *buf_p)
+                                  const uint8_t *id_p,
+                                  char *temp_p)
 {
     ASSERTN(self_p != NULL, EINVAL);
     ASSERTN(id_p != NULL, EINVAL);
-    ASSERTN(buf_p != NULL, EINVAL);
+    ASSERTN(temp_p != NULL, EINVAL);
 
     int temp;
 
     ds18b20_get_temperature(self_p, id_p, &temp);
-    std_sprintf(buf_p,
+    std_sprintf(temp_p,
                 FSTR("%d.%d"),
                 (temp >> 4),
                 (temp & 0xf) * 625);
 
-    return (buf_p);
+    return (temp_p);
 }

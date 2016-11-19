@@ -30,8 +30,6 @@
 
 NAME = ds18b20_suite
 BOARD ?= linux
-SLIB_SRC = harness.c
-DRIVERS_SRC = ds18b20.c uart.c owi.c pin.c
 
 CDEFS += CONFIG_MINIMAL_SYSTEM=1 \
 	CONFIG_FS_CMD_THRD_LIST=1
