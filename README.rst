@@ -22,10 +22,10 @@ Try it out!
 
    .. code-block:: text
 
-      https://sourceforge.net/projects/simba-arduino/files/avr/package_simba_avr_index.json
-      https://sourceforge.net/projects/simba-arduino/files/sam/package_simba_sam_index.json
-      https://sourceforge.net/projects/simba-arduino/files/esp/package_simba_esp_index.json
-      https://sourceforge.net/projects/simba-arduino/files/esp32/package_simba_esp32_index.json
+      https://raw.githubusercontent.com/eerimoq/simba-releases/master/arduino/avr/package_simba_avr_index.json
+      https://raw.githubusercontent.com/eerimoq/simba-releases/master/arduino/sam/package_simba_sam_index.json
+      https://raw.githubusercontent.com/eerimoq/simba-releases/master/arduino/esp/package_simba_esp_index.json
+      https://raw.githubusercontent.com/eerimoq/simba-releases/master/arduino/esp32/package_simba_esp32_index.json
 
 2. Select a Simba board.
 3. Open the blink example.
