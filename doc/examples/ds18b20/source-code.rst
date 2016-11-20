@@ -46,7 +46,6 @@
        ds18b20_module_init();
        owi_init(&owi, &pin_d7_dev, devices, membersof(devices));
        ds18b20_init(&ds, &owi);
-   
        time_busy_wait_us(50000);
    
        /* Search for devices on the OWI bus. */

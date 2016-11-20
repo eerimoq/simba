@@ -1426,19 +1426,14 @@ BOARDS = {
             "FAMILY_ESP32", 
             "MCU_ESP32", 
             "BOARD_NANO32", 
-            "VERSION=master", 
-            "ICACHE_FLASH", 
-            "__STRICT_ANSI__"
+            "VERSION=master"
         ], 
         "cflags": [
             "-Os", 
             "-Werror", 
             "-nostdlib", 
             "-mlongcalls", 
-            "-mtext-section-literals", 
             "-ffunction-sections", 
-            "-fno-inline-functions", 
-            "-fsingle-precision-constant", 
             "-fdata-sections", 
             "-c", 
             "-Wall", 
@@ -1451,7 +1446,6 @@ BOARDS = {
             "-Werror", 
             "-nostdlib", 
             "-mlongcalls", 
-            "-mtext-section-literals", 
             "-ffunction-sections", 
             "-fdata-sections", 
             "-c", 
@@ -1480,10 +1474,9 @@ BOARDS = {
         ], 
         "ldflags": [
             "-Wl,-Tsimba.flash.ld", 
-            "-Wl,--cref", 
+            "-Wl,-static", 
             "-nostdlib", 
             "-Wl,-EL", 
-            "-mtext-section-literals", 
             "-Wl,--gc-sections", 
             "-Wl,-Map=build/nano32/default_configuration.map", 
             "-Wl,--gc-sections"
@@ -1514,9 +1507,9 @@ BOARDS = {
             "vfs", 
             "wpa_supplicant", 
             "gcc", 
-            "g", 
-            "c_rom", 
-            "m"
+            "c", 
+            "m", 
+            "xtensa-debug-module"
         ], 
         "libpath": [
             "src/mcus/esp32/ld", 
