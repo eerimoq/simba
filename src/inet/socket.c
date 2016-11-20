@@ -34,6 +34,8 @@
 #define STATE_RECVFROM         1
 #define STATE_ACCEPT           2
 #define STATE_SENDTO           3
+#define STATE_CONNECT          4
+#define STATE_CLOSED           5
 
 #if !defined(ARCH_LINUX)
 
@@ -486,6 +488,10 @@ static void tcp_recv_buffer(struct socket_t *socket_p)
     }
 }
 
+/**
+ * This function is called when data has been acknowledged by the
+ * remote endpoint.
+ */
 static err_t on_tcp_sent(void *arg_p,
                          struct tcp_pcb *pcb_p,
                          u16_t len)
@@ -521,6 +527,19 @@ static err_t on_tcp_sent(void *arg_p,
     }
 
     return (ERR_OK);
+}
+
+/**
+ * Called on connect timeout and more...
+ */
+static void on_tcp_err(void *arg_p, err_t err)
+{
+    struct socket_t *socket_p = arg_p;
+
+    if (socket_p->output.cb.state == STATE_CONNECT) {
+        socket_p->output.cb.state = STATE_CLOSED;
+        resume_thrd(socket_p->input.cb.thrd_p, -1);
+    }
 }
 
 /**
@@ -593,6 +612,7 @@ static void tcp_accept_resume(struct socket_t *socket_p)
     tcp_arg(pcb_p, args_p->accepted_p);
     tcp_recv(pcb_p, on_tcp_recv);
     tcp_sent(pcb_p, on_tcp_sent);
+    tcp_err(pcb_p, on_tcp_err);
     init(args_p->accepted_p, SOCKET_TYPE_STREAM, pcb_p);
     tcp_accepted(((struct tcp_pcb *)socket_p->pcb_p));
     resume_thrd(socket_p->input.cb.thrd_p, 0);
@@ -611,6 +631,7 @@ static void tcp_open_cb(void *ctx_p)
     tcp_arg(pcb_p, socket_p);
     tcp_recv(pcb_p, on_tcp_recv);
     tcp_sent(pcb_p, on_tcp_sent);
+    tcp_err(pcb_p, on_tcp_err);
     init(socket_p, SOCKET_TYPE_STREAM, pcb_p);
 
     resume_thrd(socket_p->input.cb.thrd_p, 0);
@@ -623,7 +644,15 @@ static void tcp_close_cb(void *ctx_p)
 {
     struct socket_t *socket_p = ctx_p;
 
-    tcp_close(socket_p->pcb_p);
+    /* The socket is already closed in the LwIP stack if for example a
+       connection attempt fails. */
+    if (socket_p->output.cb.state != STATE_CLOSED) {
+        tcp_arg(socket_p->pcb_p, NULL);
+        tcp_recv(socket_p->pcb_p, NULL);
+        tcp_sent(socket_p->pcb_p, NULL);
+        tcp_close(socket_p->pcb_p);
+    }
+
     resume_thrd(socket_p->input.cb.thrd_p, 0);
 }
 
@@ -701,6 +730,7 @@ static err_t on_tcp_connected(void *arg_p,
 {
     struct socket_t *socket_p = arg_p;
 
+    socket_p->output.cb.state = STATE_IDLE;
     resume_thrd(socket_p->input.cb.thrd_p, err);
 
     return (ERR_OK);
@@ -714,11 +744,13 @@ static void tcp_connect_cb(void *ctx_p)
 
     remote_addr_p = socket_p->input.cb.args_p;
     inet_ip_to_lwip_ip(&ip, &remote_addr_p->ip);
+    socket_p->output.cb.state = STATE_CONNECT;
 
     if (tcp_connect(socket_p->pcb_p,
                     &ip,
                     remote_addr_p->port,
                     on_tcp_connected) != ERR_OK) {
+        socket_p->output.cb.state = STATE_IDLE;
         resume_thrd(socket_p->input.cb.thrd_p, -1);
     }
 }

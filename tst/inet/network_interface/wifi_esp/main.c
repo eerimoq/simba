@@ -2,9 +2,9 @@
  * @section License
  *
  * The MIT License (MIT)
- * 
+ *
  * Copyright (c) 2014-2016, Erik Moqvist
- * 
+ *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
  * files (the "Software"), to deal in the Software without
@@ -50,11 +50,17 @@
 #    endif
 #endif
 
+#if !defined(SERVER_IP)
+#    pragma message "WiFi connection variable SERVER_IP is not set. Using default value 192.168.0.4"
+#    define SERVER_IP 192.168.0.4
+#endif
+
 /* Ports. */
 #define UDP_PORT               30303
 #define TCP_PORT               40404
 #define TCP_PORT_WRITE_CLOSE   40405
 #define TCP_PORT_SIZES         40406
+#define TCP_PORT_NOT_USED      40407
 
 static struct network_interface_wifi_t wifi_sta;
 static struct network_interface_wifi_t wifi_ap;
@@ -134,7 +140,7 @@ static int test_init(struct harness_t *harness_p)
     BTASSERT(network_interface_start(&wifi_ap.network_interface) == 0);
 
     std_printf(FSTR("Connecting to SSID=%s\r\n"), STRINGIFY(SSID));
-    
+
     /* Wait for a connection to the WiFi access point. */
     while (network_interface_is_up(&wifi_sta.network_interface) == 0) {
         std_printf(FSTR("."));
@@ -419,6 +425,24 @@ static int test_tcp_sizes(struct harness_t *harness_p)
     return (0);
 }
 
+static int test_tcp_connect(struct harness_t *harness_p)
+{
+    struct socket_t socket;
+    struct inet_addr_t addr;
+
+    BTASSERT(socket_open_tcp(&socket) == 0);
+
+    std_printf(FSTR("connecting to %d\r\n"), TCP_PORT_NOT_USED);
+    inet_aton(STRINGIFY(SERVER_IP), &addr.ip);
+    addr.port = TCP_PORT_NOT_USED;
+    BTASSERT(socket_connect(&socket, &addr) == -1);
+
+    std_printf(FSTR("closing socket\r\n"));
+    BTASSERT(socket_close(&socket) == 0);
+
+    return (0);
+}
+
 static int test_print(struct harness_t *harness_p)
 {
     char command[64];
@@ -444,6 +468,7 @@ int main()
         { test_tcp, "test_tcp" },
         { test_tcp_write_close, "test_tcp_write_close" },
         { test_tcp_sizes, "test_tcp_sizes" },
+        { test_tcp_connect, "test_tcp_connect" },
         { test_print, "test_print" },
         { NULL, NULL }
     };
