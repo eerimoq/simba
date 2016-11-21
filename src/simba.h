@@ -180,6 +180,8 @@ extern "C" {
 #    include "drivers/sd.h"
 #    include "drivers/can.h"
 #    include "drivers/mcp2515.h"
+#    include "drivers/owi.h"
+#    include "drivers/ds18b20.h"
 #    include "drivers/adc.h"
 #    include "drivers/dac.h"
 #    include "drivers/usb.h"
@@ -207,6 +209,8 @@ extern "C" {
 #if defined(FAMILY_ESP32)
 #    include "drivers/flash.h"
 #    include "drivers/pin.h"
+#    include "drivers/owi.h"
+#    include "drivers/ds18b20.h"
 #    include "drivers/uart.h"
 #    include "drivers/esp_wifi.h"
 #    include "drivers/esp_wifi/station.h"
