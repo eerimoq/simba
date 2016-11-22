@@ -78,7 +78,9 @@ int owi_init(struct owi_driver_t *self_p,
 int owi_reset(struct owi_driver_t *self_p);
 
 /**
- * Search network for devices.
+ * Search for devices on given one wire bus. The device id of all
+ * found devices are stored in the devices array passed to
+ * `owi_init()`.
  *
  * @param[in] self_p Driver object.
  *
