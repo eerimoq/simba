@@ -56,10 +56,12 @@ DRIVERS_SRC ?= adc.c \
                analog_input_pin.c \
                analog_output_pin.c \
                dac.c \
+               ds18b20.c \
 	       exti.c \
                flash.c \
                pin.c \
                i2c_soft.c \
+               owi.c \
                pwm.c \
                sd.c \
                spi.c \

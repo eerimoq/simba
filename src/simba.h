@@ -136,6 +136,8 @@ extern "C" {
 #    include "drivers/uart.h"
 #    include "drivers/can.h"
 #    include "drivers/sd.h"
+#    include "drivers/ds18b20.h"
+#    include "drivers/owi.h"
 #    include "drivers/flash.h"
 #    include "drivers/analog_input_pin.h"
 #    include "drivers/analog_output_pin.h"
