@@ -19,14 +19,12 @@ Project homepage: https://github.com/eerimoq/simba
 Videos
 ------
 
-The latest Simba video is the :doc:`room
-temperature<examples/ds18b20>` example. More videos are available on
-the :doc:`videos` page.
-
+Transmit CAN frames between a Nano32 and an Arduino Due. More videos
+are available on the :doc:`videos` page.
 
 .. raw:: html
 
-      <iframe width="560" height="315" src="https://www.youtube.com/embed/nK4cmATEWUQ" frameborder="0" allowfullscreen></iframe>
+   <iframe width="560" height="315" src="https://www.youtube.com/embed/kf5QFNgVe5E" frameborder="0" allowfullscreen></iframe>
    </br>
    </br>
    

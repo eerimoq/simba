@@ -1,6 +1,17 @@
 Videos
 ======
 
+#6 Simba: CAN client-server test suite on Nano32 (ESP32) and Arduino Due.
+-------------------------------------------------------------------------
+
+Transmit CAN frames between a Nano32 and an Arduino Due.
+
+.. raw:: html
+
+   <iframe width="560" height="315" src="https://www.youtube.com/embed/kf5QFNgVe5E" frameborder="0" allowfullscreen></iframe>
+   </br>
+   </br>
+
 #5 Simba: Room temperature (DS18B20).
 -------------------------------------
 
