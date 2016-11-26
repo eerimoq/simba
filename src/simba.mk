@@ -56,10 +56,12 @@ DRIVERS_SRC ?= adc.c \
                analog_input_pin.c \
                analog_output_pin.c \
                dac.c \
+               ds18b20.c \
 	       exti.c \
                flash.c \
                pin.c \
                i2c_soft.c \
+               owi.c \
                pwm.c \
                sd.c \
                spi.c \
@@ -103,9 +105,11 @@ DRIVERS_SRC ?= adc.c \
                can.c \
                chipid.c \
                dac.c \
+               ds18b20.c \
                exti.c \
                flash.c \
                mcp2515.c \
+               owi.c \
                pin.c \
                i2c_soft.c \
                sd.c \
@@ -134,10 +138,12 @@ endif
 
 ifeq ($(FAMILY),esp32)
 DRIVERS_SRC ?= can.c \
-	       flash.c \
+	       ds18b20.c \
+               flash.c \
                esp_wifi.c \
                esp_wifi/station.c \
                esp_wifi/softap.c \
+	       owi.c \
 	       pin.c \
 	       uart.c
 endif
