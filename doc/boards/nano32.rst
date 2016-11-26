@@ -24,6 +24,7 @@ Drivers
 
 Supported drivers for this board.
 
+- :doc:`../library-reference/drivers/can`
 - :doc:`../library-reference/drivers/esp_wifi`
 - :doc:`../library-reference/drivers/flash`
 - :doc:`../library-reference/drivers/pin`
@@ -56,9 +57,9 @@ Below is the memory usage of two applications:
 +--------------------------+-----------+-----------+
 | Application              | Flash     | RAM       |
 +==========================+===========+===========+
-| minimal-configuration    |    179049 |     37860 |
+| minimal-configuration    |    179049 |     37876 |
 +--------------------------+-----------+-----------+
-| default-configuration    |    307379 |    115084 |
+| default-configuration    |    307435 |    115100 |
 +--------------------------+-----------+-----------+
 
 Default configuration

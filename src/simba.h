@@ -211,6 +211,7 @@ extern "C" {
 #    include "drivers/esp_wifi.h"
 #    include "drivers/esp_wifi/station.h"
 #    include "drivers/esp_wifi/softap.h"
+#    include "drivers/can.h"
 #endif
 
 #if defined(FAMILY_STM32F1)

@@ -149,3 +149,12 @@ struct uart_device_t uart_device[UART_DEVICE_MAX] = {
 /* }; */
 
 struct flash_device_t flash_device[FLASH_DEVICE_MAX];
+
+struct can_device_t can_device[CAN_DEVICE_MAX] = {
+    {
+        .drv_p = NULL,
+        .regs_p = ESP32_CAN,
+        .tx_pin_device_p = &pin_gpio32_dev,
+        .rx_pin_device_p = &pin_gpio33_dev
+    }
+};

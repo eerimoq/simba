@@ -2,9 +2,9 @@
  * @section License
  *
  * The MIT License (MIT)
- * 
+ *
  * Copyright (c) 2014-2016, Erik Moqvist
- * 
+ *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
  * files (the "Software"), to deal in the Software without
@@ -175,6 +175,7 @@
 
 #define ESP32_CPU_INTR_SYS_TICK_NUM  ESP32_CPU_INTR_PERIPHERAL_12_PRIO_1
 #define ESP32_CPU_INTR_UART_NUM      ESP32_CPU_INTR_PERIPHERAL_13_PRIO_1
+#define ESP32_CPU_INTR_CAN_NUM       ESP32_CPU_INTR_PERIPHERAL_17_PRIO_1
 
 /**
  * Interrupt matrix mapping registers.
@@ -763,6 +764,7 @@ struct esp32_gpio_t {
 #define ESP32_PERIPHERAL_SIGNAL_RMT_SIG_OUT4                91
 #define ESP32_PERIPHERAL_SIGNAL_RMT_SIG_OUT5                92
 #define ESP32_PERIPHERAL_SIGNAL_RMT_SIG_OUT6                93
+#define ESP32_PERIPHERAL_SIGNAL_CAN_RX                      94
 #define ESP32_PERIPHERAL_SIGNAL_RMT_SIG_OUT7                94
 #define ESP32_PERIPHERAL_SIGNAL_I2CEXT1_SCL_IN              95
 #define ESP32_PERIPHERAL_SIGNAL_I2CEXT1_SCL_OUT             95
@@ -820,6 +822,7 @@ struct esp32_gpio_t {
 #define ESP32_PERIPHERAL_SIGNAL_PWM2_OUT4L                 121
 #define ESP32_PERIPHERAL_SIGNAL_PWM3_CAP1_IN               122
 #define ESP32_PERIPHERAL_SIGNAL_PWM3_CAP2_IN               123
+#define ESP32_PERIPHERAL_SIGNAL_CAN_TX                     123
 #define ESP32_PERIPHERAL_SIGNAL_PWM3_CAP3_IN               124
 #define ESP32_PERIPHERAL_SIGNAL_I2S0I_DATA_IN0             140
 #define ESP32_PERIPHERAL_SIGNAL_I2S0O_DATA_OUT0            140
@@ -1027,6 +1030,100 @@ struct esp32_timg_t {
 #define ESP32_TIMG_TIMER_CONFIG_EN                   BIT(31)
 
 /**
+ * CAN controller (SJA1000).
+ */
+struct esp32_can_t {
+    uint32_t MODE;
+    uint32_t COMMAND;
+    uint32_t STATUS;
+    uint32_t INT;
+    uint32_t INTE;
+    uint32_t RESERVED0;
+    uint32_t BTIM0;
+    uint32_t BTIM1;
+    uint32_t OCTRL;
+    uint32_t RESERVED1[2];
+    uint32_t ALC;
+    uint32_t ECC;
+    uint32_t EWL;
+    uint32_t RXERR;
+    uint32_t TXERR;
+    union {
+        struct {
+            uint32_t CODE[4];
+            uint32_t MASK[4];
+            uint32_t RESERVED2[5];
+        } ACC;
+        struct {
+            uint32_t FRAME_INFO;
+            uint32_t ID_DATA[12];
+        } TX_RX;
+    } U;
+    uint32_t RMC;
+    uint32_t RBSA;
+    uint32_t CDIV;
+    uint32_t IRAM[2];
+};
+
+/* Mode register. */
+#define ESP32_CAN_MODE_RESET                            BIT(0)
+#define ESP32_CAN_MODE_LISTEN_ONLY                      BIT(1)
+#define ESP32_CAN_MODE_SELF_TEST                        BIT(2)
+#define ESP32_CAN_MODE_ACCEPTANCE_FILTER                BIT(3)
+#define ESP32_CAN_MODE_SLEEP_MODE                       BIT(4)
+
+/* Command register. */
+#define ESP32_CAN_COMMAND_TX                            BIT(0)
+#define ESP32_CAN_COMMAND_TX_ABORT                      BIT(1)
+#define ESP32_CAN_COMMAND_RELEASE_RECV_BUF              BIT(2)
+#define ESP32_CAN_COMMAND_CLEAR_DATA_OVERRUN            BIT(3)
+#define ESP32_CAN_COMMAND_SELF_RECEPTION_REQUEST        BIT(4)
+
+/* Interrupt status register. */
+#define ESP32_CAN_INT_RX                                BIT(0)
+#define ESP32_CAN_INT_TX                                BIT(1)
+#define ESP32_CAN_INT_ERR                               BIT(2)
+#define ESP32_CAN_INT_DATA_OVERRUN                      BIT(3)
+#define ESP32_CAN_INT_WAKEUP                            BIT(4)
+#define ESP32_CAN_INT_ERR_PASSIVE                       BIT(5)
+#define ESP32_CAN_INT_ARB_LOST                          BIT(6)
+#define ESP32_CAN_INT_BUS_ERR                           BIT(7)
+
+/* Bus timing register 0. */
+#define ESP32_CAN_BTIM0_BRP_POS                            (0)
+#define ESP32_CAN_BTIM0_BRP_MASK          (0x3f << ESP32_CAN_BTIM0_BRP_POS)
+#define ESP32_CAN_BTIM0_BRP(value) BITFIELD_SET(ESP32_CAN_BTIM0_BRP, value)
+#define ESP32_CAN_BTIM0_SJW_POS                            (6)
+#define ESP32_CAN_BTIM0_SJW_MASK           (0x3 << ESP32_CAN_BTIM0_SJW_POS)
+#define ESP32_CAN_BTIM0_SJW(value) BITFIELD_SET(ESP32_CAN_BTIM0_SJW, value)
+
+/* Bus timing register 1. */
+#define ESP32_CAN_BTIM1_TSEG1_POS                          (0)
+#define ESP32_CAN_BTIM1_TSEG1_MASK (0xf << ESP32_CAN_BTIM1_TSEG1_POS)
+#define ESP32_CAN_BTIM1_TSEG1(value) BITFIELD_SET(ESP32_CAN_BTIM1_TSEG1, value)
+#define ESP32_CAN_BTIM1_TSEG2_POS                          (4)
+#define ESP32_CAN_BTIM1_TSEG2_MASK           (0x7 << ESP32_CAN_BTIM1_TSEG2_POS)
+#define ESP32_CAN_BTIM1_TSEG2(value) BITFIELD_SET(ESP32_CAN_BTIM1_TSEG2, value)
+#define ESP32_CAN_BTIM1_SAM                             BIT(7)
+
+/* Output control register. */
+#define ESP32_CAN_OCTRL_MODE_NORMAL                     BIT(1)
+
+/* Frame info register. */
+#define ESP32_CAN_FRAME_INFO_DLC_POS                       (0)
+#define ESP32_CAN_FRAME_INFO_DLC_MASK           \
+    (0xf << ESP32_CAN_FRAME_INFO_DLC_POS)
+#define ESP32_CAN_FRAME_INFO_DLC(value)                 \
+    BITFIELD_SET(ESP32_CAN_FRAME_INFO_DLC, value)
+#define ESP32_CAN_FRAME_INFO_DLC_GET(reg)       \
+    BITFIELD_GET(ESP32_CAN_FRAME_INFO_DLC, reg)
+#define ESP32_CAN_FRAME_INFO_RTR                        BIT(6)
+#define ESP32_CAN_FRAME_INFO_FF                         BIT(7)
+
+/* Clock divisor register. */
+#define ESP32_CAN_CDIV_PELICAN                          BIT(7)
+
+/**
  * Devices.
  */
 #define ESP32_DPORT_REGISTER   ((volatile struct esp32_dport_t  *)0x3ff00000)
@@ -1064,6 +1161,7 @@ struct esp32_timg_t {
 #define ESP32_I2C1             ((volatile struct esp32_i2c_t    *)0x3ff67000)
 #define ESP32_SDMMC            ((volatile struct esp32__t       *)0x3ff68000)
 #define ESP32_EMAC             ((volatile struct esp32__t       *)0x3ff69000)
+#define ESP32_CAN              ((volatile struct esp32_can_t    *)0x3ff6b000)
 #define ESP32_PWM1             ((volatile struct esp32__t       *)0x3ff6c000)
 #define ESP32_I2S1             ((volatile struct esp32__t       *)0x3ff6d000)
 #define ESP32_UART2            ((volatile struct esp32_uart_t   *)0x3ff6e000)

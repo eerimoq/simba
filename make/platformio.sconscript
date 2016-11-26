@@ -1532,6 +1532,7 @@ BOARDS = {
             "src/collections/hash_map.c", 
             "src/debug/log.c", 
             "src/debug/harness.c", 
+            "src/drivers/can.c", 
             "src/drivers/flash.c", 
             "src/drivers/esp_wifi.c", 
             "src/drivers/esp_wifi/station.c", 
