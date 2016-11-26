@@ -32,6 +32,8 @@ NAME = can_server
 VERSION = 0.3.0
 BOARD = arduino_due
 
+TIMEOUT ?= 60
+
 CDEFS += CONFIG_MINIMAL_SYSTEM=1
 
 SIMBA_ROOT ?= ../../..

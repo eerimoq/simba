@@ -88,29 +88,33 @@ int can_start(struct can_driver_t *self_p);
 int can_stop(struct can_driver_t *self_p);
 
 /**
- * Read one or more CAN frames.
+ * Read one or more CAN frames from the CAN bus.
  *
  * @param[in] self_p Initialized driver object.
  * @param[out] frame_p Array of read frames.
- * @param[in] size Size of frames buffer in words.
+ * @param[in] size Size of frames buffer in bytes. Give as
+ *                 ``sizeof(struct can_frame_t)`` to read one CAN
+ *                 frame.
  *
- * @return zero(0) or negative error code.
+ * @return Number of bytes read or negative error code.
  */
-int can_read(struct can_driver_t *self_p,
-             struct can_frame_t *frame_p,
-             size_t size);
+ssize_t can_read(struct can_driver_t *self_p,
+                 struct can_frame_t *frame_p,
+                 size_t size);
 
 /**
- * Write one or more CAN frames.
+ * Write one or more CAN frames to the CAN bus.
  *
  * @param[in] self_p Initialized driver object.
  * @param[in] frame_p Array of frames to write.
- * @param[in] size Size of frames buffer in words.
+ * @param[in] size Size of frames buffer in bytes. Give as
+ *                 ``sizeof(struct can_frame_t)`` to write one CAN
+ *                 frame.
  *
- * @return zero(0) or negative error code.
+ * @return Number of bytes written or negative error code.
  */
-int can_write(struct can_driver_t *self_p,
-              const struct can_frame_t *frame_p,
-              size_t size);
+ssize_t can_write(struct can_driver_t *self_p,
+                  const struct can_frame_t *frame_p,
+                  size_t size);
 
 #endif

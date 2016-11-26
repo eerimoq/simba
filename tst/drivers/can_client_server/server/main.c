@@ -50,6 +50,8 @@ int main()
              sizeof(can_rx_buf));
     can_start(&can);
 
+    std_printf(FSTR("CAN server started.\r\n"));
+
     while (1) {
         /* Read a frame from the CAN bus. */
         memset(&frame, 0, sizeof(frame));
