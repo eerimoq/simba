@@ -25,8 +25,10 @@ Drivers
 Supported drivers for this board.
 
 - :doc:`../library-reference/drivers/can`
+- :doc:`../library-reference/drivers/ds18b20`
 - :doc:`../library-reference/drivers/esp_wifi`
 - :doc:`../library-reference/drivers/flash`
+- :doc:`../library-reference/drivers/owi`
 - :doc:`../library-reference/drivers/pin`
 - :doc:`../library-reference/drivers/uart`
 

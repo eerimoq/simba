@@ -28,10 +28,12 @@ Supported drivers for this board.
 - :doc:`../library-reference/drivers/can`
 - :doc:`../library-reference/drivers/chipid`
 - :doc:`../library-reference/drivers/dac`
+- :doc:`../library-reference/drivers/ds18b20`
 - :doc:`../library-reference/drivers/exti`
 - :doc:`../library-reference/drivers/flash`
 - :doc:`../library-reference/drivers/i2c_soft`
 - :doc:`../library-reference/drivers/mcp2515`
+- :doc:`../library-reference/drivers/owi`
 - :doc:`../library-reference/drivers/pin`
 - :doc:`../library-reference/drivers/sd`
 - :doc:`../library-reference/drivers/spi`

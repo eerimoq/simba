@@ -27,9 +27,11 @@ Supported drivers for this board.
 - :doc:`../library-reference/drivers/analog_input_pin`
 - :doc:`../library-reference/drivers/analog_output_pin`
 - :doc:`../library-reference/drivers/dac`
+- :doc:`../library-reference/drivers/ds18b20`
 - :doc:`../library-reference/drivers/exti`
 - :doc:`../library-reference/drivers/flash`
 - :doc:`../library-reference/drivers/i2c_soft`
+- :doc:`../library-reference/drivers/owi`
 - :doc:`../library-reference/drivers/pin`
 - :doc:`../library-reference/drivers/pwm`
 - :doc:`../library-reference/drivers/sd`
@@ -63,9 +65,9 @@ Below is the memory usage of two applications:
 +--------------------------+-----------+-----------+
 | Application              | Flash     | RAM       |
 +==========================+===========+===========+
-| minimal-configuration    |    306431 |    117440 |
+| minimal-configuration    |    310743 |    119312 |
 +--------------------------+-----------+-----------+
-| default-configuration    |    392159 |    207712 |
+| default-configuration    |    400071 |    210256 |
 +--------------------------+-----------+-----------+
 
 Default configuration
