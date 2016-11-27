@@ -70,7 +70,7 @@ int can_init(struct can_driver_t *self_p,
              size_t size);
 
 /**
- * Starts the CAN device using given driver object.
+ * Starts the CAN device using configuration in given driver object.
  *
  * @param[in] self_p Initialized driver object.
  *
@@ -79,7 +79,7 @@ int can_init(struct can_driver_t *self_p,
 int can_start(struct can_driver_t *self_p);
 
 /**
- * Stops the CAN device referenced by driver object.
+ * Stops the CAN device referenced by given driver object.
  *
  * @param[in] self_p Initialized driver object.
  *

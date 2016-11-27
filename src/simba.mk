@@ -55,6 +55,7 @@ ifeq ($(FAMILY),linux)
 DRIVERS_SRC ?= adc.c \
                analog_input_pin.c \
                analog_output_pin.c \
+	       can.c \
                dac.c \
                ds18b20.c \
 	       exti.c \

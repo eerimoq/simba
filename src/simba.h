@@ -141,6 +141,7 @@ extern "C" {
 #    include "drivers/flash.h"
 #    include "drivers/analog_input_pin.h"
 #    include "drivers/analog_output_pin.h"
+#    include "drivers/can.h"
 #endif
 
 #if defined(FAMILY_AVR)

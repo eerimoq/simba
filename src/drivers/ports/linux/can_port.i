@@ -2,9 +2,9 @@
  * @section License
  *
  * The MIT License (MIT)
- * 
+ *
  * Copyright (c) 2014-2016, Erik Moqvist
- * 
+ *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
  * files (the "Software"), to deal in the Software without
@@ -28,20 +28,33 @@
  * This file is part of the Simba project.
  */
 
-#ifndef __DRIVERS_CAN_PORT_H__
-#define __DRIVERS_CAN_PORT_H__
+#include "simba.h"
 
-#define CAN_PORT_SPEED_1000KBPS (0)
-#define CAN_PORT_SPEED_500KBPS  (1)
-#define CAN_PORT_SPEED_250KBPS  (2)
+static ssize_t write_cb(void *arg_p,
+                        const void *buf_p,
+                        size_t size)
+{
+    return (size);
+}
 
-struct can_device_t {
-};
+int can_port_module_init()
+{
+    return (0);
+}
 
-struct can_driver_t {
-    struct can_device_t *dev_p;
-    struct chan_t chout;
-    struct queue_t chin;
-};
+int can_port_init(struct can_driver_t *self_p,
+                  struct can_device_t *dev_p,
+                  uint32_t speed)
+{
+    return (0);
+}
 
-#endif
+int can_port_start(struct can_driver_t *self_p)
+{
+    return (0);
+}
+
+int can_port_stop(struct can_driver_t *self_p)
+{
+    return (0);
+}
