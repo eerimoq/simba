@@ -155,7 +155,7 @@ static int test_connect(struct harness_t *harness_p)
 
     BTASSERT(queue_read(&qserverout, buf, 2) == 2);
     BTASSERT(buf[0] == 0x10);
-    BTASSERT(buf[1] == 10);
+    BTASSERT(buf[1] == 12);
 
     BTASSERT(queue_read(&qserverout, buf, 12) == 12);
     BTASSERT(buf[0] == 0);
