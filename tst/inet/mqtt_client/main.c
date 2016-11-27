@@ -138,7 +138,7 @@ static int test_connect(struct harness_t *harness_p)
 
     /* Prepare the server to receive the connection message. */
     message.buf_p = NULL;
-    message.size = 12;
+    message.size = 14;
     BTASSERT(queue_write(&qserverin, &message, sizeof(message)) == sizeof(message));
 
     /* Prepare the server to send the connection ack message. */
