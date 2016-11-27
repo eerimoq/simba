@@ -138,7 +138,7 @@ static int test_connect(struct harness_t *harness_p)
 
     /* Prepare the server to receive the connection message. */
     message.buf_p = NULL;
-    message.size = 12;
+    message.size = 14;
     BTASSERT(queue_write(&qserverin, &message, sizeof(message)) == sizeof(message));
 
     /* Prepare the server to send the connection ack message. */
@@ -155,9 +155,9 @@ static int test_connect(struct harness_t *harness_p)
 
     BTASSERT(queue_read(&qserverout, buf, 2) == 2);
     BTASSERT(buf[0] == 0x10);
-    BTASSERT(buf[1] == 10);
+    BTASSERT(buf[1] == 12);
 
-    BTASSERT(queue_read(&qserverout, buf, 10) == 10);
+    BTASSERT(queue_read(&qserverout, buf, 12) == 12);
     BTASSERT(buf[0] == 0);
     BTASSERT(buf[1] == 4);
     BTASSERT(buf[2] == 'M');
@@ -165,9 +165,11 @@ static int test_connect(struct harness_t *harness_p)
     BTASSERT(buf[4] == 'T');
     BTASSERT(buf[5] == 'T');
     BTASSERT(buf[6] == 4);
-    BTASSERT(buf[7] == 0);
-    BTASSERT(buf[8] == 0x02);
+    BTASSERT(buf[7] == 0x02);
+    BTASSERT(buf[8] == 0);
     BTASSERT(buf[9] == 10);
+    BTASSERT(buf[10] == 0);
+    BTASSERT(buf[11] == 0);
 
     return (0);
 }
