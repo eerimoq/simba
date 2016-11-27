@@ -157,7 +157,7 @@ static int test_connect(struct harness_t *harness_p)
     BTASSERT(buf[0] == 0x10);
     BTASSERT(buf[1] == 10);
 
-    BTASSERT(queue_read(&qserverout, buf, 10) == 10);
+    BTASSERT(queue_read(&qserverout, buf, 12) == 12);
     BTASSERT(buf[0] == 0);
     BTASSERT(buf[1] == 4);
     BTASSERT(buf[2] == 'M');
@@ -165,9 +165,11 @@ static int test_connect(struct harness_t *harness_p)
     BTASSERT(buf[4] == 'T');
     BTASSERT(buf[5] == 'T');
     BTASSERT(buf[6] == 4);
-    BTASSERT(buf[7] == 0);
-    BTASSERT(buf[8] == 0x02);
+    BTASSERT(buf[7] == 0x02);
+    BTASSERT(buf[8] == 0);
     BTASSERT(buf[9] == 10);
+    BTASSERT(buf[10] == 0);
+    BTASSERT(buf[11] == 0);
 
     return (0);
 }

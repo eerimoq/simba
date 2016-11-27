@@ -161,10 +161,10 @@ static int read_fixed_header(struct mqtt_client_t *self_p,
 static int handle_control_connect(struct mqtt_client_t *self_p)
 {
     int res = 0;
-    uint8_t buf[10];
+    uint8_t buf[12];
 
     /* Write the fixed header. */
-    res = write_fixed_header(self_p, MQTT_CONNECT, 10);
+    res = write_fixed_header(self_p, MQTT_CONNECT, 12);
 
     if (res != 0) {
         return (res);
@@ -178,11 +178,13 @@ static int handle_control_connect(struct mqtt_client_t *self_p)
     buf[4] = 'T';
     buf[5] = 'T';
     buf[6] = 4;
-    buf[7] = 0;
-    buf[8] = (CLEAN_SESSION);
+    buf[7] = (CLEAN_SESSION);
+    buf[8] = 0;
     buf[9] = 10;
+    buf[10] = 0;
+    buf[11] = 0;
 
-    if (chan_write(self_p->transport.out_p, &buf[0], 10) != 10) {
+    if (chan_write(self_p->transport.out_p, &buf[0], 12) != 12) {
         return (-EIO);
     }
 
