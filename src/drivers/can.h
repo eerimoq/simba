@@ -53,13 +53,14 @@ struct can_frame_t {
 extern struct can_device_t can_device[CAN_DEVICE_MAX];
 
 /**
- * Initialize given driver object.
+ * Initialize given driver object from given configuration.
  *
  * @param[in] self_p Driver object to initialize.
- * @param[in] dev_p Device to use.
- * @param[in] speed Can bus speed.
- * @param[in] rxbuf_p Reception buffer.
- * @param[in] size Size of the reception buffer.
+ * @param[in] dev_p CAN device to use.
+ * @param[in] speed Can bus speed. One of the defines with the
+ *                  prefix``CAN_SPEED_``.
+ * @param[in] rxbuf_p CAN frame reception buffer.
+ * @param[in] size Size of the reception buffer in bytes.
  *
  * @return zero(0) or negative error code.
  */
