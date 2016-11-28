@@ -161,7 +161,8 @@ static int test_poll_list_timeout(struct harness_t *harness)
     struct chan_list_t list;
     char workspace[64];
     struct time_t timeout;
-
+    int is_polled;
+    
     BTASSERT(event_init(&event) == 0);
 
     /* Use a list with one chan.*/
@@ -172,6 +173,12 @@ static int test_poll_list_timeout(struct harness_t *harness)
     timeout.seconds = 0;
     timeout.nanoseconds = 10000;
     BTASSERT(chan_list_poll(&list, &timeout) == NULL);
+
+    sys_lock();
+    is_polled = chan_is_polled_isr(&event.base);
+    sys_unlock();
+    
+    BTASSERT(is_polled == 0);
 
     /* Poll the list of channels and make sure an timeout occured. */
     timeout.seconds = 0;

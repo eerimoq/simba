@@ -250,6 +250,7 @@ void *chan_list_poll(struct chan_list_t *list_p,
            of the channels. */
         if (thrd_suspend_isr(timeout_p) == -ETIMEDOUT) {
             chan_p = NULL;
+            list_p->flags = 0;
             goto out;
         }
     }
