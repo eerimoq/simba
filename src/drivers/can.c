@@ -2,9 +2,9 @@
  * @section License
  *
  * The MIT License (MIT)
- * 
+ *
  * Copyright (c) 2014-2016, Erik Moqvist
- * 
+ *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
  * files (the "Software"), to deal in the Software without
@@ -32,6 +32,24 @@
 
 #include "can_port.i"
 
+static ssize_t base_chan_read(void *base_p, void *buf_p, size_t size)
+{
+    struct can_driver_t *self_p;
+
+    self_p = base_p;
+
+    return (queue_read(&self_p->chin, buf_p, size));
+}
+
+static size_t base_chan_size(void *base_p)
+{
+    struct can_driver_t *self_p;
+
+    self_p = base_p;
+
+    return (queue_size(&self_p->chin));
+}
+
 int can_module_init(void)
 {
     return (0);
@@ -50,10 +68,10 @@ int can_init(struct can_driver_t *self_p,
 
     self_p->dev_p = dev_p;
 
-    chan_init(&self_p->chout,
-              chan_read_null,
+    chan_init(&self_p->base,
+              base_chan_read,
               (ssize_t (*)(void *, const void *, size_t))write_cb,
-              chan_size_null);
+              base_chan_size);
 
     queue_init(&self_p->chin, rxbuf_p, size);
 
@@ -93,5 +111,5 @@ ssize_t can_write(struct can_driver_t *self_p,
     ASSERTN(frame_p != NULL, EINVAL);
     ASSERTN(size > 0, EINVAL);
 
-    return (chan_write(&self_p->chout, frame_p, size));
+    return (chan_write(&self_p->base, frame_p, size));
 }

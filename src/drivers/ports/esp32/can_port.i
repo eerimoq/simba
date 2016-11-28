@@ -81,6 +81,12 @@ static void read_frame_from_hw(struct can_driver_t *self_p,
         queue_write_isr(&self_p->chin,
                         &frame,
                         sizeof(frame));
+
+        /* Resume any polling thread. */
+        if (chan_is_polled_isr(&self_p->base)) {
+            thrd_resume_isr(self_p->base.reader_p, 0);
+            self_p->base.reader_p = NULL;
+        }
     } else {
         fs_counter_increment(&rx_channel_overflow, 1);
     }
@@ -171,7 +177,7 @@ static ssize_t write_cb(void *arg_p,
     struct can_device_t *dev_p;
     const struct can_frame_t *frame_p = (struct can_frame_t *)buf_p;
 
-    self_p = container_of(arg_p, struct can_driver_t, chout);
+    self_p = arg_p;
     dev_p = self_p->dev_p;
 
     self_p->txframe_p = (frame_p + 1);

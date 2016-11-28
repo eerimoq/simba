@@ -39,8 +39,8 @@ struct can_device_t {
 };
 
 struct can_driver_t {
+    struct chan_t base; /* Used as output channel. */
     struct can_device_t *dev_p;
-    struct chan_t chout;
     struct queue_t chin;
 };
 
