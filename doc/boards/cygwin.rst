@@ -26,6 +26,7 @@ Supported drivers for this board.
 - :doc:`../library-reference/drivers/adc`
 - :doc:`../library-reference/drivers/analog_input_pin`
 - :doc:`../library-reference/drivers/analog_output_pin`
+- :doc:`../library-reference/drivers/can`
 - :doc:`../library-reference/drivers/dac`
 - :doc:`../library-reference/drivers/ds18b20`
 - :doc:`../library-reference/drivers/exti`
@@ -65,9 +66,9 @@ Below is the memory usage of two applications:
 +--------------------------+-----------+-----------+
 | Application              | Flash     | RAM       |
 +==========================+===========+===========+
-| minimal-configuration    |    310839 |    119312 |
+| minimal-configuration    |    312535 |    120632 |
 +--------------------------+-----------+-----------+
-| default-configuration    |    400103 |    210256 |
+| default-configuration    |    403367 |    211896 |
 +--------------------------+-----------+-----------+
 
 Default configuration
