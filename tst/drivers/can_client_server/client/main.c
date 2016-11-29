@@ -50,7 +50,7 @@ static int test_ping_pong_500k(struct harness_t *harness_p)
         /* Write a frame to the server ... */
         memset(&frame, 0, sizeof(frame));
         frame.id = 0x7a0 + 2 * i;
-        frame.extended_id = 0;
+        frame.extended_frame = 0;
         frame.size = i;
 
         for (j = 0; j < i; j++) {
@@ -82,7 +82,7 @@ static int test_ping_pong_500k(struct harness_t *harness_p)
         }
 
         BTASSERT(frame.id == 0x7a0 + 2 * i + 1);
-        BTASSERT(frame.extended_id == 0);
+        BTASSERT(frame.extended_frame == 0);
         BTASSERT(frame.size == i);
 
         for (j = 0; j < i; j++) {

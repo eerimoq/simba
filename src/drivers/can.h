@@ -40,7 +40,7 @@
 
 struct can_frame_t {
     uint32_t id;          /* Frame ID. */
-    int extended_id;      /* Extended frame id flag (29 bits). */
+    int extended_frame;   /* Extended frame. Id is (29 bits). */
     int size;             /* Number of bytes in data array. */
     int rtr;              /* Remote transmission request. */
     uint32_t timestamp;   /* Receive timestamp. */

@@ -46,7 +46,7 @@ static void read_frame_from_hw(struct can_driver_t *self_p,
     mid = mailbox_p->MID;
     frame.id = (((mid & CAN_MID_MIDVA_MASK) >> CAN_MID_MIDVA_POS)
                 | ((mid & CAN_MID_MIDVB_MASK) << 11));
-    frame.extended_id = ((mid & CAN_MID_MIDE) != 0);
+    frame.extended_frame = ((mid & CAN_MID_MIDE) != 0);
     msr = mailbox_p->MSR;
     frame.size = ((msr & CAN_MSR_MDLC_MASK) >> CAN_MSR_MDLC_POS);
     frame.rtr = ((msr & CAN_MSR_MRTR) != 0);
@@ -77,7 +77,7 @@ static void write_frame_to_hw(volatile struct sam_can_mailbox_t *mailbox_p,
                               const struct can_frame_t *frame_p)
 {
     /* Write the frame to the hardware. */
-    if (frame_p->extended_id == 0) {
+    if (frame_p->extended_frame == 0) {
         mailbox_p->MID = CAN_MID_MIDVA(frame_p->id);
     } else {
         mailbox_p->MID = (CAN_MID_MIDE

@@ -140,10 +140,10 @@ static void *rx_thrd(void *arg_p)
  *
  * @param[in] speed Badrate to use.
  *
- * @param[in] extended_id Use extendend CAN frame id if true(1),
- *                        otherwise use standard CAN id.
+ * @param[in] extended_frame Use extendend CAN frame id if true(1),
+ *                           otherwise use standard CAN id.
  */
-static int test_ping_pong(uint32_t speed, int extended_id)
+static int test_ping_pong(uint32_t speed, int extended_frame)
 {
     struct can_frame_t frame;
 
@@ -153,8 +153,8 @@ static int test_ping_pong(uint32_t speed, int extended_id)
 
     /* Write ping. */
     frame.id = PING_ID;
-    frame.id <<= (10 * extended_id);
-    frame.extended_id = extended_id;
+    frame.id <<= (10 * extended_frame);
+    frame.extended_frame = extended_frame;
     frame.size = 1;
     frame.data.u8[0] = 0xfe;
     BTASSERT(can_write(&can0, &frame, sizeof(frame)) == sizeof(frame));
@@ -162,9 +162,9 @@ static int test_ping_pong(uint32_t speed, int extended_id)
     /* Read ping. */
     memset(&frame, 0, sizeof(frame));
     BTASSERT(can_read(&can1, &frame, sizeof(frame)) == sizeof(frame));
-    frame.id >>= (10 * extended_id);
+    frame.id >>= (10 * extended_frame);
     BTASSERT(frame.id == PING_ID);
-    BTASSERT(frame.extended_id == extended_id);
+    BTASSERT(frame.extended_frame == extended_frame);
     BTASSERT(frame.size == 1);
     BTASSERT(frame.data.u8[0] == 0xfe);
 
@@ -172,17 +172,17 @@ static int test_ping_pong(uint32_t speed, int extended_id)
 
     /* Write pong. */
     frame.id = PONG_ID;
-    frame.id <<= (10 * extended_id);
-    frame.extended_id = extended_id;
+    frame.id <<= (10 * extended_frame);
+    frame.extended_frame = extended_frame;
     frame.size = 0;
     BTASSERT(can_write(&can1, &frame, sizeof(frame)) == sizeof(frame));
 
     /* Read pong. */
     memset(&frame, 0, sizeof(frame));
     BTASSERT(can_read(&can0, &frame, sizeof(frame)) == sizeof(frame));
-    frame.id >>= (10 * extended_id);
+    frame.id >>= (10 * extended_frame);
     BTASSERT(frame.id == PONG_ID);
-    BTASSERT(frame.extended_id == extended_id);
+    BTASSERT(frame.extended_frame == extended_frame);
     BTASSERT(frame.size == 0);
 
     stop();
@@ -208,7 +208,7 @@ static int test_ping_pong_1000k(struct harness_t *harness_p)
     return (test_ping_pong(CAN_SPEED_1000KBPS, 0));
 }
 
-static int test_ping_pong_1000k_extended_id(struct harness_t *harness_p)
+static int test_ping_pong_1000k_extended_frame(struct harness_t *harness_p)
 {
     return (test_ping_pong(CAN_SPEED_1000KBPS, 1));
 }
@@ -243,7 +243,7 @@ static int test_max_throughput(struct harness_t *harness_p)
 
         /* Prepare the array of frames. */
         for (k = 0; k < membersof(frames); k++) {
-            frames[k].extended_id = 0;
+            frames[k].extended_frame = 0;
             frames[k].size = sizes[i];
             memset(frames[k].data.u8, 0xaa, frames[k].size);
         }
@@ -292,7 +292,7 @@ int main()
         { test_ping_pong_250k, "test_ping_pong_250k" },
         { test_ping_pong_500k, "test_ping_pong_500k" },
         { test_ping_pong_1000k, "test_ping_pong_1000k" },
-        { test_ping_pong_1000k_extended_id, "test_ping_pong_1000k_extended_id" },
+        { test_ping_pong_1000k_extended_frame, "test_ping_pong_1000k_extended_frame" },
         { test_max_throughput, "test_max_throughput" },
         { NULL, NULL }
     };

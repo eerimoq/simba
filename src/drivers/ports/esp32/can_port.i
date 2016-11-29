@@ -53,14 +53,14 @@ static void read_frame_from_hw(struct can_driver_t *self_p,
     frame_info = regs_p->U.TX_RX.FRAME_INFO;
 
     if (frame_info & ESP32_CAN_FRAME_INFO_FF) {
-        frame.extended_id = 1;
+        frame.extended_frame = 1;
         frame.id = (((uint32_t)regs_p->U.TX_RX.ID_DATA[0] << 21)
                     | ((uint32_t)regs_p->U.TX_RX.ID_DATA[1] << 13)
                     | ((uint32_t)regs_p->U.TX_RX.ID_DATA[2] << 5)
                     | (regs_p->U.TX_RX.ID_DATA[3] >> 3));
         data_p = &regs_p->U.TX_RX.ID_DATA[4];
     } else {
-        frame.extended_id = 0;
+        frame.extended_frame = 0;
         frame.id = (((uint32_t)regs_p->U.TX_RX.ID_DATA[0] << 3)
                     | (regs_p->U.TX_RX.ID_DATA[1] >> 5));
         data_p = &regs_p->U.TX_RX.ID_DATA[2];
@@ -102,7 +102,7 @@ static void write_frame_to_hw(volatile struct esp32_can_t *regs_p,
     volatile uint32_t *data_p;
 
     /* Write the frame to the hardware. */
-    if (frame_p->extended_id == 1) {
+    if (frame_p->extended_frame == 1) {
         regs_p->U.TX_RX.FRAME_INFO = (ESP32_CAN_FRAME_INFO_FF | frame_p->size);
         regs_p->U.TX_RX.ID_DATA[0] = ((frame_p->id & 0x1fe00000) >> 21);
         regs_p->U.TX_RX.ID_DATA[1] = ((frame_p->id & 0x001fe000) >> 13);
