@@ -89,7 +89,8 @@ int can_start(struct can_driver_t *self_p);
 int can_stop(struct can_driver_t *self_p);
 
 /**
- * Read one or more CAN frames from the CAN bus.
+ * Read one or more CAN frames from the CAN bus. Blocks until the
+ * frame(s) are received.
  *
  * @param[in] self_p Initialized driver object.
  * @param[out] frame_p Array of read frames.
@@ -104,7 +105,8 @@ ssize_t can_read(struct can_driver_t *self_p,
                  size_t size);
 
 /**
- * Write one or more CAN frames to the CAN bus.
+ * Write one or more CAN frames to the CAN bus. Blocks until the
+ * frame(s) have been transmitted.
  *
  * @param[in] self_p Initialized driver object.
  * @param[in] frame_p Array of frames to write.
