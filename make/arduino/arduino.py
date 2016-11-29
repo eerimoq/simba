@@ -185,9 +185,9 @@ def generate_examples():
 
     examples = [
         # example folder, sketch file
-        ('blink', 'main.c'),
-        ('hello_world', 'main.c'),
-        ('shell', 'main.c')
+        ('blink', 'main.c', ['config.h']),
+        ('hello_world', 'main.c', ['config.h']),
+        ('shell', 'main.c', ['config.h'])
     ]
 
     # Create the .ino-file.
@@ -197,6 +197,9 @@ def generate_examples():
         os.makedirs(arduino_example_path)
         shutil.copy(os.path.join(simba_example_path, example[1]),
                     os.path.join(arduino_example_path, example[0] + ".ino"))
+        for tab in example[2]:
+            shutil.copy(os.path.join(simba_example_path, tab),
+                        os.path.join(arduino_example_path, tab))
 
 
 

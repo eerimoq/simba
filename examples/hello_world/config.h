@@ -31,9 +31,6 @@
 #ifndef __CONFIG_H__
 #define __CONFIG_H__
 
-/**
- * The shell is manually started in this example.
- */
 #define CONFIG_START_SHELL                                  0
 #define CONFIG_START_FILESYSTEM                             0
 #define CONFIG_START_NETWORK                                0

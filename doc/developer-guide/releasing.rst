@@ -19,18 +19,18 @@ Follow these steps to create a new release:
 
    .. code:: text
 
-      make test-all-boards
-      make release-test
+      make -s test-all-boards
+      make -s release-test
 
 4. Generate files for Arduino.
 
    .. code:: text
 
-      make arduino
+      make -s arduino
 
 5. Add the new releases to
    ``make/arduino/<family>/package_simba_<family>_index.json``. The
-   sha256 sums of the zip-archives are calculated by ``make arduino``
+   sha256 sums of the zip-archives are calculated by ``make -s arduino``
    and written to ``simba-arduino/*.sha256``.
 
 6. Copy the Simba Arduino releases to the release repository, add,
@@ -66,7 +66,7 @@ Follow these steps to create a new release:
 11. Push the new commit and tag.
 
 12. Copy the Simba Arduino package manifests the release repository,
-   add, commit and push in the release repository.
+    add, commit and push in the release repository.
 
    .. code:: text
 
