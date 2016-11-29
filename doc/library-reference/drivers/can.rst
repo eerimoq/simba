@@ -15,6 +15,9 @@ is left out for readability.
 
 .. code-block:: c
 
+   struct can_frame_t can_rx_buf[8];
+   struct can_frame_t frame;
+
    /* Initialize and start the CAN conroller. */
    can_init(&can,
             &can_device[0],
