@@ -94,9 +94,8 @@ int can_stop(struct can_driver_t *self_p);
  *
  * @param[in] self_p Initialized driver object.
  * @param[out] frame_p Array of read frames.
- * @param[in] size Size of frames buffer in bytes. Give as
- *                 ``sizeof(struct can_frame_t)`` to read one CAN
- *                 frame.
+ * @param[in] size Size of frames buffer in bytes. Must be a multiple
+ *                 of ``sizeof(struct can_frame_t)``.
  *
  * @return Number of bytes read or negative error code.
  */
@@ -110,9 +109,8 @@ ssize_t can_read(struct can_driver_t *self_p,
  *
  * @param[in] self_p Initialized driver object.
  * @param[in] frame_p Array of frames to write.
- * @param[in] size Size of frames buffer in bytes. Give as
- *                 ``sizeof(struct can_frame_t)`` to write one CAN
- *                 frame.
+ * @param[in] size Size of frames buffer in bytes. Must be a multiple
+ *                 of ``sizeof(struct can_frame_t)``.
  *
  * @return Number of bytes written or negative error code.
  */
