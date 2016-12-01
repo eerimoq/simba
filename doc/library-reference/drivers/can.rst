@@ -1,8 +1,8 @@
-:mod:`can` --- CAN bus
-======================
+:mod:`can` --- Controller Area Network
+======================================
 
 .. module:: can
-   :synopsis: CAN bus.
+   :synopsis: Controller Area Network.
 
 A Controller Area Network (CAN bus) is a vehicle bus standard designed
 to allow microcontrollers and devices to communicate with each other
