@@ -33,9 +33,12 @@
 
 #include "simba.h"
 
-struct ssl_t {
+struct ssl_context_t {
+};
+
+struct ssl_socket_t {
     struct chan_t base;
-    struct socket_t socket;
+    chan_t *socket_p; /* Often a TCP socket. */
 };
 
 /**
@@ -50,69 +53,85 @@ struct ssl_t {
 int ssl_module_init(void);
 
 /**
- * Initialize given SSL instance.
+ * Initialize given SSL context. A SSL context contains security
+ * settings.
  *
- * @param[out] self_p Ssl to initialize.
- *
- * @return zero(0) or negative error code.
- */
-int ssl_init(struct ssl_t *self_p);
-
-/**
- * Close given ssl. No data transfers are allowed on after the
- * ssl has been closed.
- *
- * @param[in] self_p Ssl to close.
+ * @param[out] self_p SSL context to initialize.
  *
  * @return zero(0) or negative error code.
  */
-int ssl_start(struct ssl_t *self_p);
+int ssl_context_init(struct ssl_context_t *self_p);
 
 /**
- * Close given ssl. No data transfers are allowed on after the
- * ssl has been closed.
+ * Initialize given SSL socket with given socket in given SSL context.
  *
- * @param[in] self_p Ssl to close.
+ * @param[out] self_p SSL socket to initialize.
+ * @param[in] context_p SSL context to execute in.
+ * @param[in] socket_p Socket to wrap in the SSL socket.
+ * @param[in] is_server Server side socket if ture(1), otherwise
+ *                      client.
  *
  * @return zero(0) or negative error code.
  */
-int ssl_stop(struct ssl_t *self_p);
+int ssl_socket_init(struct ssl_socket_t *self_p,
+                    struct ssl_context_t *context_p,
+                    chan_t *socket_p,
+                    int is_server);
 
 /**
- * Write data to given SSL instalce.
+ * Start given SSL socket. Starting a SSL socket will perform a
+ * handshake with the client/server to setup the secure connection.
  *
- * @param[in] self_p SSL instance.
+ * @param[in] self_p SSL socket to initialize.
+ *
+ * @return zero(0) or negative error code.
+ */
+int ssl_socket_start(struct ssl_socket_t *self_p);
+
+/**
+ * Stop given SSL socket. Stopping a SSL socket will close the
+ * connection to the remote peer.
+ *
+ * @param[in] self_p SSL socket stop.
+ *
+ * @return zero(0) or negative error code.
+ */
+int ssl_socket_stop(struct ssl_socket_t *self_p);
+
+/**
+ * Write data to given SSL socket.
+ *
+ * @param[in] self_p SSL socket.
  * @param[in] buf_p Buffer to send.
  * @param[in] size Numer of bytes to send.
  *
  * @return Number of written bytes or negative error code.
  */
-ssize_t ssl_write(struct ssl_t *self_p,
-                  const void *buf_p,
-                  size_t size);
+ssize_t ssl_socket_write(struct ssl_socket_t *self_p,
+                         const void *buf_p,
+                         size_t size);
 
 /**
- * Read data from given SSL instance.
+ * Read data from given SSL socket.
  *
- * @param[in] self_p Ssl.
+ * @param[in] self_p SSL socket.
  * @param[in] buf_p Buffer to read into.
  * @param[in] size Number of bytes to read.
  *
  * @return Number of read bytes or negative error code.
  */
-ssize_t ssl_read(struct ssl_t *self_p,
-                 void *buf_p,
-                 size_t size);
+ssize_t ssl_socket_read(struct ssl_socket_t *self_p,
+                        void *buf_p,
+                        size_t size);
 
 /**
  * Get the number of input bytes currently stored in the SSL
- * instance. May return less bytes than number of bytes stored in the
- * channel.
+ * socket.
  *
- * @param[in] self_p SSL instance.
+ * @param[in] self_p SSL socket.
  *
- * @return Number of input bytes in the SSL instance.
+ * @return Number of input bytes in the SSL socket.
  */
-ssize_t ssl_size(struct ssl_t *self_p);
+ssize_t ssl_socket_size(struct ssl_socket_t *self_p);
 
 #endif
