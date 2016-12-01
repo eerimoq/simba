@@ -246,7 +246,7 @@ void *chan_list_poll(struct chan_list_t *list_p,
             chan_p->list_p = list_p;
         }
 
-        /* Not data was available, wait for data to be written to one
+        /* No data was available, wait for data to be written to one
            of the channels. */
         if (thrd_suspend_isr(timeout_p) == -ETIMEDOUT) {
             chan_p = NULL;
