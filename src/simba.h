@@ -257,6 +257,7 @@ extern "C" {
 #include "inet/network_interface/slip.h"
 #include "inet/network_interface/wifi.h"
 #include "inet/ping.h"
+#include "inet/ssl.h"
 
 #if defined(FAMILY_ESP) || defined(FAMILY_ESP32)
 #    include "inet/network_interface/driver/esp.h"

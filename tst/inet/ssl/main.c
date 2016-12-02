@@ -35,6 +35,7 @@ static int test_client(struct harness_t *harness_p)
     struct ssl_context_t context;
     struct ssl_socket_t ssl_socket;
     struct socket_t socket;
+    struct inet_addr_t addr;
     char buf[8];
 
     /* Create a context with default settings. */
@@ -42,14 +43,17 @@ static int test_client(struct harness_t *harness_p)
 
     /* Create a socket and connect to the server. */
     BTASSERT(socket_open_tcp(&socket) == 0);
-    BTASSERT(socket_connect(&socket) == 0);
+
+    inet_aton("1.2.3.4", &addr.ip);
+    addr.port = 1234;
+    BTASSERT(socket_connect(&socket, &addr) == 0);
 
     /* Wrap the socket in SSL. */
     BTASSERT(ssl_socket_init(&ssl_socket,
                              &context,
                              &socket,
-                             SSL_SOCKET_MODE_CLIENT) == 0);
-    BTASSERT(ssl_socket_start(&ssl_socket) == 0);
+                             ssl_socket_mode_client_t) == 0);
+    BTASSERT(ssl_socket_handshake(&ssl_socket) == 0);
 
     /* Transfer data to and from the server. */
     BTASSERT(ssl_socket_write(&ssl_socket, "hello", 6) == 6);
@@ -57,7 +61,7 @@ static int test_client(struct harness_t *harness_p)
     BTASSERT(strcmp("goodbye", buf) == 0);
 
     /* Close the connection. */
-    BTASSERT(ssl_socket_stop(&ssl_socket) == 0);
+    BTASSERT(socket_close(&socket) == 0);
 
     return (0);
 }
@@ -67,6 +71,7 @@ static int test_server(struct harness_t *harness_p)
     struct ssl_context_t context;
     struct ssl_socket_t ssl_socket;
     struct socket_t listener, socket;
+    struct inet_addr_t addr;
     char buf[8];
 
     /* Create a context with default settings. */
@@ -74,15 +79,15 @@ static int test_server(struct harness_t *harness_p)
 
     /* Create a socket and connect to the server. */
     BTASSERT(socket_open_tcp(&listener) == 0);
-    BTASSERT(socket_listen(&listener) == 0);
-    BTASSERT(socket_accept(&listener, &socket) == 0);
+    BTASSERT(socket_listen(&listener, 5) == 0);
+    BTASSERT(socket_accept(&listener, &socket, &addr) == 0);
 
     /* Wrap the socket in SSL. */
     BTASSERT(ssl_socket_init(&ssl_socket,
                              &context,
                              &socket,
-                             SSL_SOCKET_MODE_CLIENT) == 0);
-    BTASSERT(ssl_socket_start(&ssl_socket) == 0);
+                             ssl_socket_mode_server_t) == 0);
+    BTASSERT(ssl_socket_handshake(&ssl_socket) == 0);
 
     /* Transfer data to and from the server. */
     BTASSERT(ssl_socket_read(&ssl_socket, &buf[0], 6) == 6);
@@ -90,7 +95,7 @@ static int test_server(struct harness_t *harness_p)
     BTASSERT(ssl_socket_write(&ssl_socket, "goodbye", 8) == 8);
 
     /* Close the connection. */
-    BTASSERT(ssl_socket_stop(&ssl_socket) == 0);
+    BTASSERT(socket_close(&socket) == 0);
 
     return (0);
 }

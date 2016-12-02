@@ -33,16 +33,22 @@
 
 #include "simba.h"
 
+enum ssl_socket_mode_t {
+    ssl_socket_mode_client_t = 0,
+    ssl_socket_mode_server_t
+};
+
 struct ssl_context_t {
+    int dummy;
 };
 
 struct ssl_socket_t {
     struct chan_t base;
-    chan_t *socket_p; /* Often a TCP socket. */
+    void *socket_p; /* Often a TCP socket. */
 };
 
 /**
- * Initialize the ssl module. This function must be called before
+ * Initialize the SSL module. This function must be called before
  * calling any other function in this module.
  *
  * The module will only be initialized once even if this function is
@@ -53,8 +59,8 @@ struct ssl_socket_t {
 int ssl_module_init(void);
 
 /**
- * Initialize given SSL context. A SSL context contains security
- * settings.
+ * Initialize given SSL context. A SSL context contains settings that
+ * lives longer than a socket.
  *
  * @param[out] self_p SSL context to initialize.
  *
@@ -68,35 +74,23 @@ int ssl_context_init(struct ssl_context_t *self_p);
  * @param[out] self_p SSL socket to initialize.
  * @param[in] context_p SSL context to execute in.
  * @param[in] socket_p Socket to wrap in the SSL socket.
- * @param[in] is_server Server side socket if ture(1), otherwise
- *                      client.
+ * @param[in] mode Server or client side socket.
  *
  * @return zero(0) or negative error code.
  */
 int ssl_socket_init(struct ssl_socket_t *self_p,
                     struct ssl_context_t *context_p,
-                    chan_t *socket_p,
-                    int is_server);
+                    void *socket_p,
+                    enum ssl_socket_mode_t mode);
 
 /**
- * Start given SSL socket. Starting a SSL socket will perform a
- * handshake with the client/server to setup the secure connection.
+ * Perform the handshake for given SSL socket.
  *
  * @param[in] self_p SSL socket to initialize.
  *
  * @return zero(0) or negative error code.
  */
-int ssl_socket_start(struct ssl_socket_t *self_p);
-
-/**
- * Stop given SSL socket. Stopping a SSL socket will close the
- * connection to the remote peer.
- *
- * @param[in] self_p SSL socket stop.
- *
- * @return zero(0) or negative error code.
- */
-int ssl_socket_stop(struct ssl_socket_t *self_p);
+int ssl_socket_handshake(struct ssl_socket_t *self_p);
 
 /**
  * Write data to given SSL socket.

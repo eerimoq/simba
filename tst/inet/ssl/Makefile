@@ -34,9 +34,9 @@ BOARD ?= linux
 CDEFS += CONFIG_MINIMAL_SYSTEM=1 \
 	CONFIG_FS_CMD_THRD_LIST=1
 
+SRC_IGNORE = $(SIMBA_ROOT)/src/inet/socket.c
+SRC += mbed_tls_stub.c \
+	socket_stub.c
+
 SIMBA_ROOT ?= ../../..
-
-INET_SRC = \
-	ssl.c
-
 include $(SIMBA_ROOT)/make/app.mk

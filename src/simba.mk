@@ -193,12 +193,14 @@ HASH_SRC ?= crc.c \
 
 SRC += $(HASH_SRC:%=$(SIMBA_ROOT)/src/hash/%)
 
+# Inet package.
 ifneq ($(ARCH),$(filter $(ARCH), esp esp32))
     INC += $(SIMBA_ROOT)/3pp/lwip-1.4.1/src/include \
            $(SIMBA_ROOT)/3pp/lwip-1.4.1/src/include/ipv4
 endif
 
-# Inet package.
+INC += $(SIMBA_ROOT)/3pp/mbedtls/include
+
 ifneq ($(FAMILY),$(filter $(FAMILY), esp32))
 INC += $(SIMBA_ROOT)/src/inet
 endif
@@ -213,6 +215,7 @@ INET_SRC_TMP = \
 	network_interface/slip.c \
 	network_interface/wifi.c \
 	socket.c \
+	ssl.c \
 	ping.c
 
 ifeq ($(FAMILY),$(filter $(FAMILY), esp esp32))
