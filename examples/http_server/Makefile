@@ -31,5 +31,7 @@
 NAME = http_server
 BOARD ?= esp12e
 
+CDEFS_EXTRA += CONFIG_START_NETWORK=1
+
 SIMBA_ROOT ?= ../..
 include $(SIMBA_ROOT)/make/app.mk

@@ -696,13 +696,7 @@
  * Setup the ip stack and connect to all configured networks.
  */
 #ifndef CONFIG_START_NETWORK
-#    if defined(CONFIG_MINIMAL_SYSTEM)
-#        define CONFIG_START_NETWORK                        0
-#    elif defined(ARCH_ESP) || defined(ARCH_ESP32)
-#        define CONFIG_START_NETWORK                        1
-#    else
-#        define CONFIG_START_NETWORK                        0
-#    endif
+#    define CONFIG_START_NETWORK                            0
 #endif
 
 /**
