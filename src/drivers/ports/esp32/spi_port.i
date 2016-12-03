@@ -85,7 +85,7 @@ static void isr(void *arg_p)
     struct spi_driver_t *drv_p;
     volatile struct esp32_spi_t *regs_p;
     uint8_t *buf_p;
-    int i;
+    int i, j;
     int cpu_interrupt;
 
     cpu_interrupt = *(int *)arg_p;
@@ -113,7 +113,7 @@ static void isr(void *arg_p)
         if (drv_p->rxbuf_p != NULL) {
             buf_p = (uint8_t *)(&regs_p->DATA[0]);
 
-            for (i = 0; i < drv_p->block_size; i++) {
+            for (j = 0; j < drv_p->block_size; j++) {
                 *drv_p->rxbuf_p++ = *buf_p++;
             }
         }
