@@ -81,6 +81,8 @@ def add_include_paths(env, paths):
 
     \"\"\"
 
+    env.Append(CPPPATH=["$PROJECTSRC_DIR"])
+
     for path in paths:
         env.VariantDirWrap(
             join("$BUILD_DIR", "SimbaFramework", path),
