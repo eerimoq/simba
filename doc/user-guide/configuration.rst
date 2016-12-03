@@ -28,7 +28,7 @@ PlatformIO
 """"""""""
 
 1. The variable ``build_flags`` in ``platformio.ini`` as
-   ``build_flags=-D"<configuration variable>=<value>"``.
+   ``build_flags = -D<configuration variable>=<value>``.
 
 2. A file named ``config.h`` in the application source folder ``src``.
 
