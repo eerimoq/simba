@@ -15,11 +15,31 @@ Search order
 
 Highest priority first.
 
+Simba build system
+""""""""""""""""""
+
 1. Command line as ``CDEFS_EXTRA="<configuration variable>=<value>"``.
 
 2. A file named ``config.h`` in the application root folder.
 
 3. The default configuration file, :github-blob:`src/config_default.h`.
+
+PlatformIO
+""""""""""
+
+1. The variable ``build_flags`` in ``platformio.ini`` as
+   ``build_flags=-D"<configuration variable>=<value>"``.
+
+2. A file named ``config.h`` in the application source folder ``src``.
+
+3. The default configuration file, :github-blob:`src/config_default.h`.
+
+Arduino IDE
+"""""""""""
+
+1. A file (also called a `tab`) named ``config.h`` in the sketch.
+
+2. The default configuration file, :github-blob:`src/config_default.h`.
 
 Variables
 ^^^^^^^^^
