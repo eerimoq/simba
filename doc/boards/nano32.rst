@@ -30,6 +30,7 @@ Supported drivers for this board.
 - :doc:`../library-reference/drivers/flash`
 - :doc:`../library-reference/drivers/owi`
 - :doc:`../library-reference/drivers/pin`
+- :doc:`../library-reference/drivers/spi`
 - :doc:`../library-reference/drivers/uart`
 
 Library Reference
@@ -59,9 +60,9 @@ Below is the memory usage of two applications:
 +--------------------------+-----------+-----------+
 | Application              | Flash     | RAM       |
 +==========================+===========+===========+
-| minimal-configuration    |    179049 |     37876 |
+| minimal-configuration    |    179049 |     38060 |
 +--------------------------+-----------+-----------+
-| default-configuration    |    307439 |    115100 |
+| default-configuration    |    307439 |    115284 |
 +--------------------------+-----------+-----------+
 
 Default configuration

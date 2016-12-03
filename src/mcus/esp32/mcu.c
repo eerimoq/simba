@@ -30,6 +30,9 @@
 
 #include "simba.h"
 
+#undef BIT
+#include "soc/dport_reg.h"
+
 struct pin_device_t pin_device[PIN_DEVICE_MAX] = {
     /* 0-9. */
     { .id =  0, .iomux = 16 },
@@ -107,35 +110,64 @@ struct uart_device_t uart_device[UART_DEVICE_MAX] = {
     }
 };
 
-/* struct spi_device_t spi_device[SPI_DEVICE_MAX] = { */
-/*     { */
-/*         .drv_p = NULL, */
-/*         .regs_p = ESP32_SPI1, */
-/*         .ss_p = NULL, */
-/*         .mosi_p = &pin_device[8], */
-/*         .miso_p = &pin_device[7], */
-/*         .sck_p = &pin_device[6], */
-/*         .sem = { .count = 0, .count_max = 1, .head_p = NULL } */
-/*     }, */
-/*     { */
-/*         .drv_p = NULL, */
-/*         .regs_p = ESP32_SPI2, */
-/*         .ss_p = NULL, */
-/*         .mosi_p = &pin_device[13], */
-/*         .miso_p = &pin_device[12], */
-/*         .sck_p = &pin_device[14], */
-/*         .sem = { .count = 0, .count_max = 1, .head_p = NULL } */
-/*     }, */
-/*     { */
-/*         .drv_p = NULL, */
-/*         .regs_p = ESP32_SPI3, */
-/*         .ss_p = NULL, */
-/*         .mosi_p = &pin_device[23], */
-/*         .miso_p = &pin_device[19], */
-/*         .sck_p = &pin_device[18], */
-/*         .sem = { .count = 0, .count_max = 1, .head_p = NULL } */
-/*     } */
-/* }; */
+struct spi_device_t spi_device[SPI_DEVICE_MAX] = {
+    {
+        .drv_p = NULL,
+        .regs_p = ESP32_SPI1,
+        .dport_mask = DPORT_SPI_CLK_EN,
+        .gpio = {
+            .miso_func_in_sel = ESP32_PERIPHERAL_SIGNAL_SPIQ_IN,
+            .mosi_func_in_sel = ESP32_PERIPHERAL_SIGNAL_SPID_IN,
+            .sck_func_in_sel = ESP32_PERIPHERAL_SIGNAL_SPICLK_IN
+        },
+        .ss_p = NULL,
+        .mosi_p = &pin_device[8],
+        .miso_p = &pin_device[7],
+        .sck_p = &pin_device[6],
+        .interrupt = {
+            .source = ESP32_INTR_SOURCE_SPI1,
+            .cpu = ESP32_CPU_INTR_SPI_NUM
+        },
+        .sem = { .count = 0, .count_max = 1, .head_p = NULL }
+    },
+    {
+        .drv_p = NULL,
+        .regs_p = ESP32_SPI2,
+        .dport_mask = DPORT_SPI_CLK_EN_1,
+        .gpio = {
+            .miso_func_in_sel = ESP32_PERIPHERAL_SIGNAL_HSPIQ_IN,
+            .mosi_func_in_sel = ESP32_PERIPHERAL_SIGNAL_HSPID_IN,
+            .sck_func_in_sel = ESP32_PERIPHERAL_SIGNAL_HSPICLK_IN
+        },
+        .mosi_p = &pin_device[13],
+        .miso_p = &pin_device[12],
+        .sck_p = &pin_device[14],
+        .interrupt = {
+            .source = ESP32_INTR_SOURCE_SPI2,
+            .cpu = ESP32_CPU_INTR_SPI_NUM
+        },
+        .sem = { .count = 0, .count_max = 1, .head_p = NULL }
+    },
+    {
+        .drv_p = NULL,
+        .regs_p = ESP32_SPI3,
+        .dport_mask = DPORT_SPI_CLK_EN_2,
+        .gpio = {
+            .miso_func_in_sel = ESP32_PERIPHERAL_SIGNAL_VSPIQ_IN,
+            .mosi_func_in_sel = ESP32_PERIPHERAL_SIGNAL_VSPID_IN,
+            .sck_func_in_sel = ESP32_PERIPHERAL_SIGNAL_VSPICLK_IN
+        },
+        .ss_p = NULL,
+        .mosi_p = &pin_device[23],
+        .miso_p = &pin_device[19],
+        .sck_p = &pin_device[18],
+        .interrupt = {
+            .source = ESP32_INTR_SOURCE_SPI3,
+            .cpu = ESP32_CPU_INTR_SPI_NUM
+        },
+        .sem = { .count = 0, .count_max = 1, .head_p = NULL }
+    }
+};
 
 /* struct i2c_device_t i2c_device[I2C_DEVICE_MAX] = { */
 /*     { */

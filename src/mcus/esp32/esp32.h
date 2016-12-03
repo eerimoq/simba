@@ -168,14 +168,15 @@
  * UART0       ESP32_CPU_INTR_PERIPHERAL_13_PRIO_1
  * UART1       ESP32_CPU_INTR_PERIPHERAL_13_PRIO_1
  * UART2       ESP32_CPU_INTR_PERIPHERAL_13_PRIO_1
- * SPI0        ESP32_CPU_INTR_PERIPHERAL_14_PRIO_1
- * SPI1        ESP32_CPU_INTR_PERIPHERAL_14_PRIO_1
- * SPI2        ESP32_CPU_INTR_PERIPHERAL_14_PRIO_1
+ * SPI0        ESP32_CPU_INTR_PERIPHERAL_17_PRIO_1
+ * SPI1        ESP32_CPU_INTR_PERIPHERAL_17_PRIO_1
+ * SPI2        ESP32_CPU_INTR_PERIPHERAL_17_PRIO_1
  */
 
 #define ESP32_CPU_INTR_SYS_TICK_NUM  ESP32_CPU_INTR_PERIPHERAL_12_PRIO_1
 #define ESP32_CPU_INTR_UART_NUM      ESP32_CPU_INTR_PERIPHERAL_13_PRIO_1
 #define ESP32_CPU_INTR_CAN_NUM       ESP32_CPU_INTR_PERIPHERAL_17_PRIO_1
+#define ESP32_CPU_INTR_SPI_NUM       ESP32_CPU_INTR_PERIPHERAL_18_PRIO_1
 
 /**
  * Interrupt matrix mapping registers.
@@ -974,12 +975,10 @@ struct esp32_io_mux_t {
 #define ESP32_IO_MUX_PIN_FUNC_IE                        BIT(9)
 #define ESP32_IO_MUX_PIN_FUNC_DRV_POS                     (10)
 #define ESP32_IO_MUX_PIN_MCU_SEL_POS                      (12)
-#define ESP32_IO_MUX_PIN_MCU_SEL_MASK           \
-    (0x7 << ESP32_IO_MUX_PIN_MCU_SEL_POS)
-#define ESP32_IO_MUX_PIN_MCU_SEL(value)                 \
-    BITFIELD_SET(ESP32_IO_MUX_PIN_MCU_SEL, value)
-#define ESP32_IO_MUX_PIN_MCU_SEL_GPIO           \
-    ESP32_IO_MUX_PIN_MCU_SEL(2)
+#define ESP32_IO_MUX_PIN_MCU_SEL_MASK (0x7 << ESP32_IO_MUX_PIN_MCU_SEL_POS)
+#define ESP32_IO_MUX_PIN_MCU_SEL(value) BITFIELD_SET(ESP32_IO_MUX_PIN_MCU_SEL, value)
+#define ESP32_IO_MUX_PIN_MCU_SEL_FUNC2 ESP32_IO_MUX_PIN_MCU_SEL(1)
+#define ESP32_IO_MUX_PIN_MCU_SEL_GPIO ESP32_IO_MUX_PIN_MCU_SEL(2)
 
 /**
  * Timer groups. Each timer group has two hardware timers and ont
@@ -1052,7 +1051,7 @@ struct esp32_can_t {
         struct {
             uint32_t CODE[4];
             uint32_t MASK[4];
-            uint32_t RESERVED2[5];
+            uint32_t RESERVED0[5];
         } ACC;
         struct {
             uint32_t FRAME_INFO;
@@ -1122,6 +1121,86 @@ struct esp32_can_t {
 
 /* Clock divisor register. */
 #define ESP32_CAN_CDIV_PELICAN                          BIT(7)
+
+/**
+ * Serial Peripheral Interface.
+ */
+struct esp32_spi_t {
+    uint32_t COMMAND;
+    uint32_t ADDR;
+    uint32_t CTRL;
+    uint32_t CTRL1;
+    uint32_t RD_STATUS;
+    uint32_t CTRL2;
+    uint32_t CLOCK;
+    uint32_t USER;
+    uint32_t USER1;
+    uint32_t USER2;
+    uint32_t MOSI_DLEN;
+    uint32_t MISO_DLEN;
+    uint32_t SLV_WR_STATUS;
+    uint32_t PIN;
+    uint32_t SLAVE;
+    uint32_t SLAVE1;
+    uint32_t SLAVE2;
+    uint32_t SLAVE3;
+    uint32_t SLV_WRBUF_DLEN;
+    uint32_t SLV_RDBUF_DLEN;
+    uint32_t CACHE_FCTRL;
+    uint32_t CACHE_SCTRL;
+    uint32_t SRAM_CMD;
+    uint32_t SRAM_DRD_CMD;
+    uint32_t SRAM_DWR_CMD;
+    uint32_t SLV_RD_BIT;
+    uint32_t RESERVED0[6];
+    uint32_t DATA[16];
+    uint32_t TX_CRC;
+    uint32_t RESERVED1[11];
+    uint32_t EXT0;
+    uint32_t EXT1;
+    uint32_t EXT2;
+    uint32_t EXT3;
+    struct {
+        uint32_t CONFIG;
+        uint32_t OUT_LINK;
+        uint32_t IN_LINK;
+        uint32_t STATUS;
+        uint32_t INT_ENA;
+        uint32_t INT_RAW;
+        uint32_t INT_ST;
+        uint32_t INT_CLR;
+        uint32_t IN_ERR_EOF_DES_ADDR;
+        uint32_t IN_SUC_EOF_DES_ADDR;
+        uint32_t INLINK_DSCR;
+        uint32_t INLINK_DSCR_BF0;
+        uint32_t INLINK_DSCR_BF1;
+        uint32_t OUT_EOF_BFR_DES_ADDR;
+        uint32_t OUT_EOF_DES_ADDR;
+        uint32_t OUTLINK_DSCR;
+        uint32_t OUTLINK_DSCR_BF0;
+        uint32_t OUTLINK_DSCR_BF1;
+        uint32_t RX_STATUS;
+        uint32_t TX_STATUS;
+    } DMA;
+    uint32_t RESERVED2[170];
+    uint32_t DATE;
+};
+
+#define ESP32_SPI_COMMAND_USR                          BIT(18)
+
+#define ESP32_SPI_SLAVE_TRANS_DONE                      BIT(4)
+#define ESP32_SPI_SLAVE_SLAVE_MODE                     BIT(30)
+#define ESP32_SPI_SLAVE_INT_EN_POS                         (5)
+#define ESP32_SPI_SLAVE_INT_EN_MASK (0x1f << ESP32_SPI_SLAVE_INT_EN_POS)
+#define ESP32_SPI_SLAVE_INT_EN(value) BITFIELD_SET(ESP32_SPI_SLAVE_INT_EN, value)
+#define ESP32_SPI_SLAVE_INT_EN_TRANS_DONE ESP32_SPI_SLAVE_INT_EN(0x10)
+
+#define ESP32_SPI_PIN_CK_IDLE_EDGE                     BIT(29)
+
+#define ESP32_SPI_USER_DOUTDIN                          BIT(0)
+#define ESP32_SPI_USER_CK_OUT_EDGE                      BIT(7)
+#define ESP32_SPI_USER_USR_MOSI                        BIT(27)
+#define ESP32_SPI_USER_USR_MISO                        BIT(28)
 
 /**
  * Devices.

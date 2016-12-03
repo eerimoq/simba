@@ -146,6 +146,7 @@ DRIVERS_SRC ?= can.c \
                esp_wifi/softap.c \
 	       owi.c \
 	       pin.c \
+               spi.c \
 	       uart.c
 endif
 
@@ -317,7 +318,7 @@ SRC += $(SYNC_SRC:%=$(SIMBA_ROOT)/src/sync/%)
 
 # Text package.
 TEXT_SRC ?= configfile.c \
-	    std.c \
+            std.c \
             re.c
 
 SRC += $(TEXT_SRC:%=$(SIMBA_ROOT)/src/text/%)

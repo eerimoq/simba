@@ -34,13 +34,21 @@ static struct spi_driver_t spi;
 static uint8_t txbuf[128];
 static uint8_t rxbuf[128];
 
+#if defined(ARCH_ESP32)
+#    define PIN_SS_DEV pin_gpio17_dev
+#    define SPI_DEVICE spi_v_dev
+#else
+#    define PIN_SS_DEV pin_d5_dev
+#    define SPI_DEVICE spi_device[0]
+#endif
+
 static int test_init(struct harness_t *harness_p)
 {
     BTASSERT(spi_module_init() == 0);
 
     BTASSERT(spi_init(&spi,
-                      &spi_device[0],
-                      &pin_d5_dev,
+                      &SPI_DEVICE,
+                      &PIN_SS_DEV,
                       SPI_MODE_MASTER,
                       SPI_SPEED_125KBPS,
                       0,
@@ -66,7 +74,7 @@ static int test_transfer(struct harness_t *harness_p)
     BTASSERT(spi_transfer(&spi,
                           &rxbuf[4],
                           &txbuf[4],
-                          sizeof(rxbuf) - 8) == sizeof(rxbuf) - 8);
+                          sizeof(rxbuf) - 7) == sizeof(rxbuf) - 7);
 
     BTASSERT(spi_deselect(&spi) == 0);
     BTASSERT(spi_give_bus(&spi) == 0);
