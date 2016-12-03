@@ -86,21 +86,13 @@ static void isr(void *arg_p)
     volatile struct esp32_spi_t *regs_p;
     uint8_t *buf_p;
     int i, j;
-    int cpu_interrupt;
-
-    cpu_interrupt = *(int *)arg_p;
 
     for (i = 0; i < membersof(spi_device); i++) {
         dev_p = &spi_device[i];
-
-        /* Only handle the devices assigned to this CPU interrupt. */
-        if (dev_p->interrupt.cpu != cpu_interrupt) {
-            continue;
-        }
-
         drv_p = dev_p->drv_p;
 
-        if (drv_p == NULL) {
+        /* Skip devices without active transfers. */
+        if ((drv_p == NULL) || (drv_p->thrd_p == NULL)) {
             continue;
         }
 
@@ -121,6 +113,7 @@ static void isr(void *arg_p)
         /* Resume on complete transfer. */
         if (drv_p->size == 0) {
             thrd_resume_isr(drv_p->thrd_p, 0);
+            drv_p->thrd_p = NULL;
         } else {
             start_block_transfer_isr(drv_p);
         }
@@ -203,9 +196,7 @@ static int spi_port_start(struct spi_driver_t *self_p)
                      | ESP32_SPI_USER_DOUTDIN);
 
     /* Install the interrupt handler. */
-    xt_set_interrupt_handler(dev_p->interrupt.cpu,
-                             isr,
-                             &dev_p->interrupt.cpu);
+    xt_set_interrupt_handler(dev_p->interrupt.cpu, isr, NULL);
     xt_ints_on(BIT(dev_p->interrupt.cpu));
 
     /* Map the SPI peripheral interrupt to the SPI CPU interrupt. */

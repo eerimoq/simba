@@ -101,18 +101,16 @@ static inline void rx_isr(struct uart_driver_t *drv_p,
 
 static void isr(void *arg_p)
 {
-    int cpu_interrupt;
     struct uart_device_t *dev_p;
     struct uart_driver_t *drv_p;
     int i;
 
-    cpu_interrupt = *(int *)arg_p;
-
     for (i = 0; i < membersof(uart_device); i++) {
         dev_p = &uart_device[i];
+        drv_p = dev_p->drv_p;
 
-        /* Only handle the devices assigned to this CPU interrupt. */
-        if (dev_p->interrupt.cpu != cpu_interrupt) {
+        /* Skip devices without active transfers. */
+        if ((drv_p == NULL) || (drv_p->thrd_p == NULL)) {
             continue;
         }
 
@@ -130,8 +128,6 @@ static void isr(void *arg_p)
 
 static int uart_port_module_init()
 {
-    int i;
-
     fs_counter_init(&rx_channel_overflow,
                     FSTR("/drivers/uart/rx_channel_overflow"),
                     0);
@@ -141,15 +137,6 @@ static int uart_port_module_init()
                     FSTR("/drivers/uart/rx_errors"),
                     0);
     fs_counter_register(&rx_errors);
-
-    /* The CPU interrupts. A CPU interrupt may be shared among
-       multiple UART devices. */
-    for (i = 0; i < UART_DEVICE_MAX; i++) {
-        xt_set_interrupt_handler(uart_device[i].interrupt.cpu,
-                                 isr,
-                                 &uart_device[i].interrupt.cpu);
-        xt_ints_on(BIT(uart_device[i].interrupt.cpu));
-    }
 
     return (0);
 }
@@ -173,6 +160,10 @@ static int uart_port_start(struct uart_driver_t *drv_p)
     regs_p->INT_ENA = (ESP32_UART_INT_ST_RXFIFO_FULL);
 
     drv_p->dev_p->drv_p = drv_p;
+
+    /* Install interrupt handler. */
+    xt_set_interrupt_handler(drv_p->dev_p->interrupt.cpu, isr, NULL);
+    xt_ints_on(BIT(drv_p->dev_p->interrupt.cpu));
 
     /* Map given peripheral interrupts to given CPU interrupt. */
     intr_matrix_set(xPortGetCoreID(),
@@ -207,16 +198,9 @@ static ssize_t uart_port_write_cb(void *arg_p,
     self_p->thrd_p = thrd_self();
 
     sys_lock();
-
-    /* fill_tx_fifo(self_p); */
-    /* self_p->dev_p->regs_p->INT_ENA |= ESP32_UART_INT_ENA_TXFIFO_EMPTY; */
-
-    while (self_p->txsize > 0) {
-        fill_tx_fifo(self_p);
-    }
-
-    /* thrd_suspend_isr(NULL); */
-
+    fill_tx_fifo(self_p);
+    self_p->dev_p->regs_p->INT_ENA |= ESP32_UART_INT_ENA_TXFIFO_EMPTY;
+    thrd_suspend_isr(NULL);
     sys_unlock();
 
     sem_give(&self_p->sem, 1);
