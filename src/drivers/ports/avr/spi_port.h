@@ -2,9 +2,9 @@
  * @section License
  *
  * The MIT License (MIT)
- * 
+ *
  * Copyright (c) 2014-2016, Erik Moqvist
- * 
+ *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
  * files (the "Software"), to deal in the Software without
@@ -62,8 +62,8 @@ struct spi_driver_t {
     struct pin_driver_t ss;
     int mode;
     int speed;
-    int cpol;
-    int cpha;
+    int polarity;
+    int phase;
     uint8_t spcr;
     uint8_t spsr;
     uint8_t *rxbuf_p;                        /* Transfer receive buffer or NULL. */

@@ -59,10 +59,8 @@ struct spi_driver_t {
     struct pin_driver_t ss;
     int mode;
     int speed;
-    int cpol;
-    int cpha;
-    uint8_t spcr;
-    uint8_t spsr;
+    int polarity;
+    int phase;
     uint8_t *rxbuf_p;                        /* Transfer receive buffer or NULL. */
     const uint8_t *txbuf_p;                  /* Transfer transmit buffer or NULL. */
     size_t size;                             /* Number of bytes left to transfer. */

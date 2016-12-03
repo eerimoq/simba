@@ -80,8 +80,8 @@ static int spi_port_init(struct spi_driver_t *self_p,
                          struct pin_device_t *ss_pin_p,
                          int mode,
                          int speed,
-                         int cpol,
-                         int cpha)
+                         int polarity,
+                         int phase)
 {
     if (mode == SPI_MODE_MASTER) {
         pin_init(&self_p->ss, ss_pin_p, PIN_OUTPUT);
@@ -122,8 +122,8 @@ static int spi_port_start(struct spi_driver_t *self_p)
 
     /* On ARM the phase is inverted. */
     dev_p->regs_p->CSR[0] = (SPI_CSR_SCBR(self_p->speed)
-                             | (SPI_CSR_NCPHA * (!self_p->cpha))
-                             | (SPI_CSR_CPOL * self_p->cpol));
+                             | (SPI_CSR_NCPHA * (!self_p->phase))
+                             | (SPI_CSR_CPOL * self_p->polarity));
 
     /* Set mode. */
     if (self_p->mode == SPI_MODE_MASTER) {

@@ -55,8 +55,8 @@ int spi_init(struct spi_driver_t *self_p,
              struct pin_device_t *ss_pin_p,
              int mode,
              int speed,
-             int cpol,
-             int cpha)
+             int polarity,
+             int phase)
 {
     ASSERTN(self_p != NULL, EINVAL);
     ASSERTN(dev_p != NULL, EINVAL);
@@ -65,10 +65,16 @@ int spi_init(struct spi_driver_t *self_p,
     self_p->dev_p = dev_p;
     self_p->mode = mode;
     self_p->speed = speed;
-    self_p->cpol = cpol;
-    self_p->cpha = cpha;
+    self_p->polarity = polarity;
+    self_p->phase = phase;
 
-    return (spi_port_init(self_p, dev_p, ss_pin_p, mode, speed, cpol, cpha));
+    return (spi_port_init(self_p,
+                          dev_p,
+                          ss_pin_p,
+                          mode,
+                          speed,
+                          polarity,
+                          phase));
 }
 
 int spi_start(struct spi_driver_t *self_p)

@@ -69,8 +69,8 @@ int spi_module_init(void);
  * @param[in] ss_pin_p Slave select pin device.
  * @param[in] mode Master or slave mode.
  * @param[in] speed Speed in kbps.
- * @param[in] cpol Polarity, 0 or 1.
- * @param[in] cpha Phase, 0 or 1.
+ * @param[in] polarity Set to 0 or 1.
+ * @param[in] phase Set to 0 or 1.
  *
  * @return zero(0) or negative error code.
  */
@@ -79,8 +79,8 @@ int spi_init(struct spi_driver_t *self_p,
              struct pin_device_t *ss_pin_p,
              int mode,
              int speed,
-             int cpol,
-             int cpha);
+             int polarity,
+             int phase);
 
 /**
  * Start given SPI driver. Configures the SPI hardware.

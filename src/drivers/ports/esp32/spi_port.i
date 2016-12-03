@@ -137,8 +137,8 @@ static int spi_port_init(struct spi_driver_t *self_p,
                          struct pin_device_t *ss_pin_p,
                          int mode,
                          int speed,
-                         int cpol,
-                         int cpha)
+                         int polarity,
+                         int phase)
 {
     if (mode == SPI_MODE_MASTER) {
         pin_init(&self_p->ss, ss_pin_p, PIN_OUTPUT);
@@ -191,8 +191,8 @@ static int spi_port_start(struct spi_driver_t *self_p)
     }
 
     /* Phase and polarity. */
-    regs_p->PIN = (ESP32_SPI_PIN_CK_IDLE_EDGE * self_p->cpol);
-    regs_p->USER = (ESP32_SPI_USER_CK_OUT_EDGE * self_p->cpha);
+    regs_p->PIN = (ESP32_SPI_PIN_CK_IDLE_EDGE * self_p->polarity);
+    regs_p->USER = (ESP32_SPI_USER_CK_OUT_EDGE * self_p->phase);
 
     /* Speed. */
     regs_p->CLOCK = self_p->speed;

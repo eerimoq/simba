@@ -122,8 +122,8 @@ static int spi_port_init(struct spi_driver_t *self_p,
                          struct pin_device_t *ss_pin_p,
                          int mode,
                          int speed,
-                         int cpol,
-                         int cpha)
+                         int polarity,
+                         int phase)
 {
     /* Configure the SPI pins (12, 13 and 14). */
     ESP8266_IOMUX->PIN[0] = ESP8266_IOMUX_PIN_FUNC(2);

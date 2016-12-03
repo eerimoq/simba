@@ -2,9 +2,9 @@
  * @section License
  *
  * The MIT License (MIT)
- * 
+ *
  * Copyright (c) 2014-2016, Erik Moqvist
- * 
+ *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
  * files (the "Software"), to deal in the Software without
@@ -71,15 +71,15 @@ static int spi_port_init(struct spi_driver_t *self_p,
                          struct pin_device_t *ss_pin_p,
                          int mode,
                          int speed,
-                         int cpol,
-                         int cpha)
+                         int polarity,
+                         int phase)
 {
-    self_p->spcr = (_BV(SPIE) |
-                    _BV(SPE) |
-                    (mode << 4) |
-                    (cpol << 3) |
-                    (cpha << 2) |
-                    (speed & 0x3));
+    self_p->spcr = (_BV(SPIE)
+                    | _BV(SPE)
+                    | (mode << 4)
+                    | (polarity << 3)
+                    | (phase << 2)
+                    | (speed & 0x3));
     self_p->spsr = (speed >> 2);
 
     /* Pin initialization. */
