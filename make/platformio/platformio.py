@@ -60,7 +60,8 @@ BOARD_MAP = {{
     "due": "arduino_due",
     "megaatmega2560": "arduino_mega",
     "nanoatmega328": "arduino_nano",
-    "uno": "arduino_uno"
+    "uno": "arduino_uno",
+    "nodemcuv2": "nodemcu"
 }}
 
 # Map the PlatformIO board name to the Simba board name
@@ -70,7 +71,8 @@ SUPPORTED_BOARDS = [
     "arduino_nano",
     "arduino_uno",
     "esp12e",
-    "esp01"
+    "esp01",
+    "nodemcu"
 ]
 
 
@@ -242,6 +244,14 @@ def setup_board_esp01(env):
     setup_mcu_esp(env, "simba.flash.1m.ld", "2")
 
 
+def setup_board_nodemcu(env):
+    \"\"\"Setup the NodeMCU environment.
+
+    \"\"\"
+
+    setup_mcu_esp(env, "simba.flash.4m.ld", "6")
+
+
 env = DefaultEnvironment()
 
 set_default_values(env)
@@ -292,6 +302,8 @@ elif board == "esp12e":
     setup_board_esp12e(env)
 elif board == "esp01":
     setup_board_esp01(env)
+elif board == "nodemcu":
+    setup_board_nodemcu(env)
 
 # generated files
 SIMBA_GEN_C = "$BUILD_DIR/SimbaFramework/simba_gen.c"
