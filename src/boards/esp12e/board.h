@@ -39,6 +39,7 @@
 #define pin_gpio13_dev pin_device[13]
 #define pin_gpio14_dev pin_device[14]
 #define pin_gpio15_dev pin_device[15]
+#define pin_gpio16_dev pin_device[16]
 
 #define pin_d0_dev pin_device[0]
 #define pin_d2_dev pin_device[2]
@@ -48,6 +49,7 @@
 #define pin_d13_dev pin_device[13]
 #define pin_d14_dev pin_device[14]
 #define pin_d15_dev pin_device[15]
+#define pin_d16_dev pin_device[16]
 
 #define pin_led_dev pin_d2_dev
 

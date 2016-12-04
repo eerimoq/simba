@@ -47,6 +47,7 @@ int board_pin_string_to_device_index(const char *str_p)
         case 13:
         case 14:
         case 15:
+        case 16:
             break;
 
         case 4:

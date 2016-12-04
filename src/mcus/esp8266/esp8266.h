@@ -38,6 +38,8 @@
 
 #include "c_types.h"
 
+#define ESP8266_REG(value) (*((volatile uint32_t *)(0x60000000 + value)))
+
 /* Interrupt numbering. */
 #define ESP8266_IRQ_NUM_ETS_SLC                          1
 #define ESP8266_IRQ_NUM_SPI                              2
@@ -419,6 +421,13 @@ struct esp8266_gpio_t {
     BITFIELD_SET(ESP8266_GPIO_RTC_CALIB_VALUE, value)
 #define ESP8266_GPIO_RTC_CALIB_RDY_REAL            BIT(30)
 #define ESP8266_GPIO_RTC_CALIB_RDY                 BIT(31)
+
+/* GPIO 16 is special. */
+#define ESP8266_GPIO_16_OUT             ESP8266_REG(0x768)
+#define ESP8266_GPIO_16_EN              ESP8266_REG(0x774)
+#define ESP8266_GPIO_16_IN              ESP8266_REG(0x78c)
+#define ESP8266_IOMUX_16_CONTROL        ESP8266_REG(0x790)
+#define ESP8266_IOMUX_16_PIN            ESP8266_REG(0x7a0)
 
 /**
  * Timer.

@@ -2,9 +2,9 @@
  * @section License
  *
  * The MIT License (MIT)
- * 
+ *
  * Copyright (c) 2014-2016, Erik Moqvist
- * 
+ *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
  * files (the "Software"), to deal in the Software without
@@ -37,7 +37,9 @@ static int pin_port_init(struct pin_driver_t *self_p,
                          const struct pin_device_t *dev_p,
                          int mode)
 {
-    ESP8266_GPIO->CONF[dev_p->id] = 0;
+    if (dev_p->id < 16) {
+        ESP8266_GPIO->CONF[dev_p->id] = 0;
+    }
 
     return (pin_set_mode(self_p, mode));
 }
@@ -65,7 +67,11 @@ static int pin_port_toggle(struct pin_driver_t *self_p)
     const struct pin_device_t *dev_p = self_p->dev_p;
     int value;
 
-    value = ((ESP8266_GPIO->OUT & dev_p->mask) == 0);
+    if (dev_p->id < 16) {
+        value = ((ESP8266_GPIO->OUT & dev_p->mask) == 0);
+    } else {
+        value = ((ESP8266_GPIO_16_OUT & 1) == 0);
+    }
 
     return (pin_port_write(self_p, value));
 }

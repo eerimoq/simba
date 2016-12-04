@@ -46,7 +46,8 @@ struct pin_device_t pin_device[PIN_DEVICE_MAX] = {
     { .id = 12, .mask = BIT(12), .iomux =  0 },
     { .id = 13, .mask = BIT(13), .iomux =  1 },
     { .id = 14, .mask = BIT(14), .iomux =  2 },
-    { .id = 15, .mask = BIT(15), .iomux =  3 }
+    { .id = 15, .mask = BIT(15), .iomux =  3 },
+    { .id = 16, .mask =  BIT(1), .iomux = -1 }
 };
 
 struct exti_device_t exti_device[EXTI_DEVICE_MAX] = {

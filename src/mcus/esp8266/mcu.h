@@ -33,7 +33,7 @@
 
 #include "esp8266.h"
 
-#define PIN_DEVICE_MAX  16
+#define PIN_DEVICE_MAX  17
 #define EXTI_DEVICE_MAX 16
 
 #define SPI_DEVICE_MAX  1
