@@ -64,7 +64,7 @@ BOARDS = {
             "FAMILY_SAM", 
             "MCU_SAM3X8E", 
             "BOARD_ARDUINO_DUE", 
-            "VERSION=12.0.0"
+            "VERSION=master"
         ], 
         "cflags": [
             "-Werror", 
@@ -228,7 +228,7 @@ BOARDS = {
             "FAMILY_AVR", 
             "MCU_ATMEGA2560", 
             "BOARD_ARDUINO_MEGA", 
-            "VERSION=12.0.0", 
+            "VERSION=master", 
             "__DELAY_BACKWARD_COMPATIBLE__"
         ], 
         "cflags": [
@@ -386,7 +386,7 @@ BOARDS = {
             "FAMILY_AVR", 
             "MCU_ATMEGA328P", 
             "BOARD_ARDUINO_NANO", 
-            "VERSION=12.0.0", 
+            "VERSION=master", 
             "__DELAY_BACKWARD_COMPATIBLE__"
         ], 
         "cflags": [
@@ -544,7 +544,7 @@ BOARDS = {
             "FAMILY_AVR", 
             "MCU_ATMEGA32U4", 
             "BOARD_ARDUINO_PRO_MICRO", 
-            "VERSION=12.0.0", 
+            "VERSION=master", 
             "__DELAY_BACKWARD_COMPATIBLE__"
         ], 
         "cflags": [
@@ -706,7 +706,7 @@ BOARDS = {
             "FAMILY_AVR", 
             "MCU_ATMEGA328P", 
             "BOARD_ARDUINO_UNO", 
-            "VERSION=12.0.0", 
+            "VERSION=master", 
             "__DELAY_BACKWARD_COMPATIBLE__"
         ], 
         "cflags": [
@@ -864,7 +864,7 @@ BOARDS = {
             "FAMILY_LINUX", 
             "MCU_LINUX", 
             "BOARD_CYGWIN", 
-            "VERSION=12.0.0"
+            "VERSION=master"
         ], 
         "cflags": [
             "-Werror", 
@@ -999,7 +999,7 @@ BOARDS = {
             "FAMILY_ESP", 
             "MCU_ESP8266", 
             "BOARD_ESP01", 
-            "VERSION=12.0.0", 
+            "VERSION=master", 
             "ICACHE_FLASH", 
             "__STRICT_ANSI__", 
             "__ets__"
@@ -1158,7 +1158,7 @@ BOARDS = {
             "FAMILY_ESP", 
             "MCU_ESP8266", 
             "BOARD_ESP12E", 
-            "VERSION=12.0.0", 
+            "VERSION=master", 
             "ICACHE_FLASH", 
             "__STRICT_ANSI__", 
             "__ets__"
@@ -1317,7 +1317,7 @@ BOARDS = {
             "FAMILY_LINUX", 
             "MCU_LINUX", 
             "BOARD_LINUX", 
-            "VERSION=12.0.0"
+            "VERSION=master"
         ], 
         "cflags": [
             "-Werror", 
@@ -1452,7 +1452,7 @@ BOARDS = {
             "FAMILY_ESP32", 
             "MCU_ESP32", 
             "BOARD_NANO32", 
-            "VERSION=12.0.0"
+            "VERSION=master"
         ], 
         "cflags": [
             "-Os", 
@@ -1614,6 +1614,165 @@ BOARDS = {
             "src/text/re.c"
         ]
     }, 
+    "nodemcu": {
+        "board_desc": "NodeMCU", 
+        "cdefs": [
+            "ARCH_ESP", 
+            "FAMILY_ESP", 
+            "MCU_ESP8266", 
+            "BOARD_NODEMCU", 
+            "VERSION=master", 
+            "ICACHE_FLASH", 
+            "__STRICT_ANSI__", 
+            "__ets__"
+        ], 
+        "cflags": [
+            "-Os", 
+            "-Werror", 
+            "-nostdlib", 
+            "-mlongcalls", 
+            "-mtext-section-literals", 
+            "-ffunction-sections", 
+            "-fno-inline-functions", 
+            "-fsingle-precision-constant", 
+            "-fdata-sections", 
+            "-c", 
+            "-Wall", 
+            "-funsigned-bitfields", 
+            "-std=gnu99", 
+            "-Wno-error=unused-variable"
+        ], 
+        "cxxflags": [
+            "-Os", 
+            "-Werror", 
+            "-nostdlib", 
+            "-mlongcalls", 
+            "-mtext-section-literals", 
+            "-ffunction-sections", 
+            "-fdata-sections", 
+            "-c", 
+            "-Wall", 
+            "-funsigned-bitfields", 
+            "-std=c++11", 
+            "-Wno-error=unused-variable"
+        ], 
+        "inc": [
+            "src", 
+            "build/nodemcu", 
+            "src/boards/nodemcu", 
+            "src/mcus/esp8266", 
+            "3pp/ESP8266_RTOS_SDK/extra_include", 
+            "3pp/ESP8266_RTOS_SDK/include", 
+            "3pp/ESP8266_RTOS_SDK/include/espressif", 
+            "3pp/ESP8266_RTOS_SDK/include/espressif/esp8266", 
+            "3pp/ESP8266_RTOS_SDK/include/lwip", 
+            "3pp/ESP8266_RTOS_SDK/include/lwip/ipv4", 
+            "3pp/ESP8266_RTOS_SDK/include/lwip/ipv6", 
+            "src", 
+            "src/drivers/ports/esp", 
+            "3pp/mbedtls/include", 
+            "src/inet", 
+            "src/kernel/ports/esp/gnu", 
+            "3pp/spiffs-0.3.5/src"
+        ], 
+        "ldflags": [
+            "-Wl,-Tsimba.flash.4m.ld", 
+            "-u", 
+            "call_user_start", 
+            "-Wl,--cref", 
+            "-nostdlib", 
+            "-Wl,-EL", 
+            "-mtext-section-literals", 
+            "-Wl,--gc-sections", 
+            "-Wl,-Map=build/nodemcu/default_configuration.map", 
+            "-Wl,--gc-sections"
+        ], 
+        "lib": [
+            "hal", 
+            "gcc", 
+            "phy", 
+            "pp", 
+            "net80211", 
+            "wpa", 
+            "crypto", 
+            "main", 
+            "freertos", 
+            "lwip", 
+            "minic"
+        ], 
+        "libpath": [
+            "src/mcus/esp8266/ld", 
+            "3pp/ESP8266_RTOS_SDK/lib"
+        ], 
+        "linker_script": "simba.flash.4m.ld", 
+        "mcu_desc": "Espressif ESP8266 @ 80 MHz, 82 kB dram, 4 MB flash", 
+        "src": [
+            "src/settings_default.c", 
+            "src/boards/nodemcu/board.c", 
+            "src/mcus/esp8266/mcu.c", 
+            "src/mcus/esp8266/esp8266.c", 
+            "src/alloc/circular_heap.c", 
+            "src/alloc/heap.c", 
+            "src/collections/binary_tree.c", 
+            "src/collections/hash_map.c", 
+            "src/debug/log.c", 
+            "src/debug/harness.c", 
+            "src/drivers/adc.c", 
+            "src/drivers/analog_input_pin.c", 
+            "src/drivers/esp_wifi.c", 
+            "src/drivers/esp_wifi/station.c", 
+            "src/drivers/esp_wifi/softap.c", 
+            "src/drivers/exti.c", 
+            "src/drivers/flash.c", 
+            "src/drivers/pin.c", 
+            "src/drivers/i2c_soft.c", 
+            "src/drivers/spi.c", 
+            "src/drivers/uart.c", 
+            "src/drivers/uart_soft.c", 
+            "src/encode/base64.c", 
+            "src/encode/json.c", 
+            "src/hash/crc.c", 
+            "src/hash/sha1.c", 
+            "src/inet/http_server.c", 
+            "src/inet/http_websocket_server.c", 
+            "src/inet/http_websocket_client.c", 
+            "src/inet/inet.c", 
+            "src/inet/mqtt_client.c", 
+            "src/inet/network_interface.c", 
+            "src/inet/network_interface/slip.c", 
+            "src/inet/network_interface/wifi.c", 
+            "src/inet/socket.c", 
+            "src/inet/ssl.c", 
+            "src/inet/ping.c", 
+            "src/inet/network_interface/driver/esp.c", 
+            "src/kernel/sys.c", 
+            "src/kernel/thrd.c", 
+            "src/kernel/time.c", 
+            "src/kernel/timer.c", 
+            "src/multimedia/midi.c", 
+            "src/oam/console.c", 
+            "src/oam/service.c", 
+            "src/oam/settings.c", 
+            "src/oam/shell.c", 
+            "src/filesystems/fat16.c", 
+            "src/filesystems/fs.c", 
+            "src/filesystems/spiffs.c", 
+            "3pp/spiffs-0.3.5/src/spiffs_nucleus.c", 
+            "3pp/spiffs-0.3.5/src/spiffs_gc.c", 
+            "3pp/spiffs-0.3.5/src/spiffs_hydrogen.c", 
+            "3pp/spiffs-0.3.5/src/spiffs_cache.c", 
+            "3pp/spiffs-0.3.5/src/spiffs_check.c", 
+            "src/sync/bus.c", 
+            "src/sync/chan.c", 
+            "src/sync/event.c", 
+            "src/sync/queue.c", 
+            "src/sync/rwlock.c", 
+            "src/sync/sem.c", 
+            "src/text/configfile.c", 
+            "src/text/std.c", 
+            "src/text/re.c"
+        ]
+    }, 
     "photon": {
         "board_desc": "Particle IO Photon", 
         "cdefs": [
@@ -1621,7 +1780,7 @@ BOARDS = {
             "FAMILY_STM32F2", 
             "MCU_STM32F205RG", 
             "BOARD_PHOTON", 
-            "VERSION=12.0.0"
+            "VERSION=master"
         ], 
         "cflags": [
             "-Werror", 
@@ -1785,7 +1944,7 @@ BOARDS = {
             "FAMILY_STM32F3", 
             "MCU_STM32F303VC", 
             "BOARD_STM32F3DISCOVERY", 
-            "VERSION=12.0.0"
+            "VERSION=master"
         ], 
         "cflags": [
             "-Werror", 
@@ -1934,7 +2093,7 @@ BOARDS = {
             "FAMILY_STM32F1", 
             "MCU_STM32F100RB", 
             "BOARD_STM32VLDISCOVERY", 
-            "VERSION=12.0.0"
+            "VERSION=master"
         ], 
         "cflags": [
             "-Werror", 
