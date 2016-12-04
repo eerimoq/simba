@@ -33,6 +33,15 @@ Try it out!
 
 See the `Simba documentation`_ for detailed step-by-step instructions.
 
+Need help?
+==========
+
+1. Have a look at the `Simba documentation`_. It's actually pretty good. =)
+
+2. Visit the `Simba forum`_.
+
+3. Write an issue here on GitHub.
+
 License
 =======
 
@@ -54,3 +63,4 @@ placed in the ``3pp`` folder.
 
 .. _Arduino IDE: https://www.arduino.cc/en/Main/Software
 .. _Simba documentation: http://simba-os.readthedocs.io/en/latest/installation.html#arduino-arduino-ide
+.. _Simba forum: http://83.252.226.148/
