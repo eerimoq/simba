@@ -98,7 +98,7 @@ static int32_t hal_erase(struct spiffs_t *fs_p,
     return (0);
 }
 
-#elif defined(BOARD_ESP12E) || defined(BOARD_ESP01) || defined(BOARD_NANO32)
+#elif defined(BOARD_ESP12E) || defined(BOARD_ESP01) || defined(BOARD_NANO32) || defined(BOARD_NODEMCU)
 
 #define PHY_SIZE                                             0x10000
 #define PHY_ADDR                     CONFIG_START_FILESYSTEM_ADDRESS

@@ -92,7 +92,7 @@
 #ifndef CONFIG_FS_CMD_ESP_WIFI_STATUS
 #    if defined(CONFIG_MINIMAL_SYSTEM)
 #        define CONFIG_FS_CMD_ESP_WIFI_STATUS               0
-#    elif defined(BOARD_ESP12E) || defined(BOARD_ESP01)
+#    elif defined(BOARD_ESP12E) || defined(BOARD_ESP01) || defined(BOARD_NODEMCU)
 #        define CONFIG_FS_CMD_ESP_WIFI_STATUS               1
 #    else
 #        define CONFIG_FS_CMD_ESP_WIFI_STATUS               0
@@ -498,7 +498,7 @@
  * Start the monitor thread to gather statistics of the scheulder.
  */
 #ifndef CONFIG_MONITOR_THREAD
-#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(BOARD_ESP12E) || defined(BOARD_ESP01) || defined(BOARD_NANO32) || defined(CONFIG_MINIMAL_SYSTEM)
+#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(BOARD_ESP12E) || defined(BOARD_ESP01) || defined(BOARD_NODEMCU) || defined(BOARD_NANO32) || defined(CONFIG_MINIMAL_SYSTEM)
 #        define CONFIG_MONITOR_THREAD                       0
 #    else
 #        define CONFIG_MONITOR_THREAD                       1
@@ -608,7 +608,7 @@
  * Console UART baudrate.
  */
 #ifndef CONFIG_START_CONSOLE_UART_BAUDRATE
-#    if defined(BOARD_ESP01) || defined(BOARD_ESP12E)
+#    if defined(BOARD_ESP01) || defined(BOARD_ESP12E) || defined(BOARD_NODEMCU)
 #        define CONFIG_START_CONSOLE_UART_BAUDRATE      76800
 #    elif defined(BOARD_NANO32)
 #        define CONFIG_START_CONSOLE_UART_BAUDRATE     115200
@@ -666,7 +666,7 @@
 #        define CONFIG_START_FILESYSTEM_ADDRESS    0x000e0000
 #    elif defined(BOARD_ESP01)
 #        define CONFIG_START_FILESYSTEM_ADDRESS    0x0006b000
-#    elif defined(BOARD_ESP12E)
+#    elif defined(BOARD_ESP12E) || defined(BOARD_NODEMCU)
 #        define CONFIG_START_FILESYSTEM_ADDRESS    0x00300000
 #    elif defined(BOARD_NANO32)
 #        define CONFIG_START_FILESYSTEM_ADDRESS    0x00300000
@@ -683,7 +683,7 @@
 #        define CONFIG_START_FILESYSTEM_SIZE            32768
 #    elif defined(BOARD_ESP01)
 #        define CONFIG_START_FILESYSTEM_SIZE          0x10000
-#    elif defined(BOARD_ESP12E)
+#    elif defined(BOARD_ESP12E) || defined(BOARD_NODEMCU)
 #        define CONFIG_START_FILESYSTEM_SIZE          0xFB000
 #    elif defined(ARCH_ESP32)
 #        define CONFIG_START_FILESYSTEM_SIZE            32768
