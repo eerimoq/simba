@@ -31,7 +31,16 @@ Try it out!
 3. Open the blink example.
 4. Upload!
 
-See the `Simba documentation`_ for detailed step-by-step instructions.
+See the `Simba installation documentation`_ for detailed step-by-step instructions.
+
+Need help?
+==========
+
+1. Have a look at the `Simba documentation`_. It's actually pretty good. =)
+
+2. Visit the `Simba forum`_.
+
+3. Write an issue here on GitHub.
 
 License
 =======
@@ -53,4 +62,6 @@ placed in the ``3pp`` folder.
 .. _donate: https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=X2NWV6RHV58GC&lc=SE&item_name=Simba%20OS%20and%20Build%20Framework&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donateCC_LG%2egif%3aNonHosted
 
 .. _Arduino IDE: https://www.arduino.cc/en/Main/Software
-.. _Simba documentation: http://simba-os.readthedocs.io/en/latest/installation.html#arduino-arduino-ide
+.. _Simba installation documentation: http://simba-os.readthedocs.io/en/latest/installation.html#arduino-arduino-ide
+.. _Simba documentation: http://simba-os.readthedocs.io/en/latest
+.. _Simba forum: http://83.252.226.148/

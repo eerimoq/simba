@@ -41,6 +41,7 @@ are available on the :doc:`videos` page.
    library-reference
    license
    videos
+   Forum <http://83.252.226.148/>
    links
 
 Features
