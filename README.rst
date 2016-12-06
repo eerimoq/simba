@@ -64,4 +64,4 @@ placed in the ``3pp`` folder.
 .. _Arduino IDE: https://www.arduino.cc/en/Main/Software
 .. _Simba installation documentation: http://simba-os.readthedocs.io/en/latest/installation.html#arduino-arduino-ide
 .. _Simba documentation: http://simba-os.readthedocs.io/en/latest
-.. _Simba forum: http://83.252.226.148/
+.. _Simba forum: http://forum.simbaos.org
