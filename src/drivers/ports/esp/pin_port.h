@@ -58,13 +58,13 @@ static inline int pin_port_device_set_mode(const struct pin_device_t *dev_p,
             ESP8266_GPIO->ENABLE_DATA_W1TC = dev_p->mask;
         }
     } else {
-        ESP8266_IOMUX_16_PIN = 1;
-        ESP8266_IOMUX_16_CONTROL = 0;
+        ESP8266_RTC->GPIO.PIN = 1;
+        ESP8266_RTC->GPIO.CONTROL = 0;
 
         if (mode == PIN_OUTPUT) {
-            ESP8266_GPIO_16_EN |= 1;
+            ESP8266_RTC->GPIO.EN |= 1;
         } else {
-            ESP8266_GPIO_16_EN &= ~1;
+            ESP8266_RTC->GPIO.EN &= ~1;
         }
     }
 
@@ -76,7 +76,7 @@ static inline int pin_port_device_read(const struct pin_device_t *dev_p)
     if (dev_p->id < 16){
         return ((ESP8266_GPIO->IN & dev_p->mask) >> dev_p->id);
     } else {
-        return (ESP8266_GPIO_16_IN & 0x01);
+        return (ESP8266_RTC->GPIO.IN & 0x01);
     }
 }
 
@@ -85,7 +85,7 @@ static inline int pin_port_device_write_high(const struct pin_device_t *dev_p)
     if (dev_p->id < 16){
         ESP8266_GPIO->OUT_W1TS = dev_p->mask;
     } else {
-        ESP8266_GPIO_16_OUT |= 1;
+        ESP8266_RTC->GPIO.OUT |= 1;
     }
 
     return (0);
@@ -96,7 +96,7 @@ static inline int pin_port_device_write_low(const struct pin_device_t *dev_p)
     if (dev_p->id < 16){
         ESP8266_GPIO->OUT_W1TC = dev_p->mask;
     } else {
-        ESP8266_GPIO_16_OUT &= ~1;
+        ESP8266_RTC->GPIO.OUT &= ~1;
     }
 
     return (0);

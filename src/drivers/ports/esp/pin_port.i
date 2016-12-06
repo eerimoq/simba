@@ -70,7 +70,7 @@ static int pin_port_toggle(struct pin_driver_t *self_p)
     if (dev_p->id < 16) {
         value = ((ESP8266_GPIO->OUT & dev_p->mask) == 0);
     } else {
-        value = ((ESP8266_GPIO_16_OUT & 1) == 0);
+        value = ((ESP8266_RTC->GPIO.OUT & 1) == 0);
     }
 
     return (pin_port_write(self_p, value));

@@ -422,12 +422,22 @@ struct esp8266_gpio_t {
 #define ESP8266_GPIO_RTC_CALIB_RDY_REAL            BIT(30)
 #define ESP8266_GPIO_RTC_CALIB_RDY                 BIT(31)
 
-/* GPIO 16 is special. */
-#define ESP8266_GPIO_16_OUT             ESP8266_REG(0x768)
-#define ESP8266_GPIO_16_EN              ESP8266_REG(0x774)
-#define ESP8266_GPIO_16_IN              ESP8266_REG(0x78c)
-#define ESP8266_IOMUX_16_CONTROL        ESP8266_REG(0x790)
-#define ESP8266_IOMUX_16_PIN            ESP8266_REG(0x7a0)
+/**
+ * RTC.
+ */
+struct esp8266_rtc_t {
+    uint32_t RESERVED0[26];
+    struct {
+        uint32_t OUT;
+        uint32_t RESERVED0[2];
+        uint32_t EN;
+        uint32_t RESERVED1[5];
+        uint32_t IN;
+        uint32_t CONTROL;
+        uint32_t RESERVED2[3];
+        uint32_t PIN;
+    } GPIO;
+};
 
 /**
  * Timer.
