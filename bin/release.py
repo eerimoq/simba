@@ -393,6 +393,7 @@ def package(version):
             f.write(json.dumps(data, indent=4, separators=(',', ': ')))
 
         shutil.copy(package_name, '../simba-releases/arduino/' + family)
+        shutil.copy(manifest_name, '../simba-releases/arduino/' + family)
 
     
 def main():
