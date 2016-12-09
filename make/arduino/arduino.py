@@ -528,10 +528,6 @@ def main():
                             "simba-arduino-" + family)
         shutil.rmtree(temporary_family_dir)
 
-        with open(archive_path_no_suffix + ".zip.sha256", "w") as fout:
-            with open(archive_path_no_suffix + ".zip", "rb") as fin:
-                fout.write(hashlib.sha256(fin.read()).hexdigest())
-
 
 if __name__ == "__main__":
     main()

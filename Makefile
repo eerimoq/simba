@@ -301,8 +301,6 @@ APPS += $(TESTS)
 
 all: $(APPS:%=%.all)
 
-release: $(APPS:%=%.release)
-
 clean: $(APPS:%=%.clean)
 
 rerun:
@@ -352,7 +350,10 @@ travis:
 	$(MAKE) test
 
 release-test:
-	+bin/release.py
+	+bin/release.py --test --version $(SIMBA_VERSION)
+
+release:
+	+bin/release.py --package --version $(SIMBA_VERSION)
 
 clean-arduino-due:
 	$(MAKE) BOARD=arduino_due SERIAL_PORT=/dev/simba-arduino_due clean
@@ -493,9 +494,6 @@ platformio:
 $(APPS:%=%.all):
 	$(MAKE) -C $(basename $@) all
 
-$(APPS:%=%.release):
-	$(MAKE) -C $(basename $@) release
-
 $(APPS:%=%.clean):
 	$(MAKE) -C $(basename $@) clean
 	rm -f $(basename $@)/.$(BOARD).passed
@@ -537,7 +535,6 @@ help:
 	@echo "  run                         run the application"
 	@echo "  report                      print test report"
 	@echo "  test                        run + report"
-	@echo "  release                     compile with NASSERT=yes"
 	@echo "  size                        print executable size information"
 	@echo "  cloc                        print source code line statistics"
 	@echo "  pmccabe                     print source code complexity statistics"

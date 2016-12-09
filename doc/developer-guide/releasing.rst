@@ -15,33 +15,33 @@ Follow these steps to create a new release:
 2. Write the new version in ``package.json``. This file is used by
    `PlatformIO 3` to find the current `Simba` release.
 
-3. Run the test suites and generate the documentation.
+3. Run the test suites and generate the documentation and other files.
 
    .. code:: text
 
-      make -s test-all-boards
-      make -s release-test
+      make -s -j8 test-all-boards
+      make -s -j8 release-test
 
-4. Generate files for Arduino.
+4. Commit the generated files and tag the commit with
+   ``<major>.<minor>.<revision>``.
 
-   .. code:: text
-
-      make -s arduino
-
-5. Add the new releases to
-   ``make/arduino/<family>/package_simba_<family>_index.json``. The
-   sha256 sums of the zip-archives are calculated by ``make -s arduino``
-   and written to ``simba-arduino/*.sha256``.
-
-6. Copy the Simba Arduino releases to the release repository, add,
-   commit and push in the release repository.
+5. Generate files for Arduino and PlatformIO releases. The generated
+   archives and Arduino manifests are copied to the release
+   repository.
 
    .. code:: text
 
-      cp simba-arduino/simba-arduino-avr-*.zip ../simba-releases/arduino/avr
-      cp simba-arduino/simba-arduino-sam-*.zip ../simba-releases/arduino/sam
-      cp simba-arduino/simba-arduino-esp-*.zip ../simba-releases/arduino/esp
-      cp simba-arduino/simba-arduino-esp32-*.zip ../simba-releases/arduino/esp32
+      make -s release
+
+6. Add, commit and push the Simba Arduino releases in the release
+   repository.
+
+   .. code:: text
+
+      (cd ../simba-releases && \
+       git add arduino/*/*.zip platformio/*.zip && \
+       git commit && \
+       git push origin master)
 
 7. Start a http server used to download package manifests in the Arduino IDE.
 
@@ -60,31 +60,17 @@ Follow these steps to create a new release:
 
 9. Install all four packages and run the blink example for each one of
    them.
-      
-10. Commit the changes, and tag the commit with the new version.
 
-11. Push the new commit and tag.
+10. Commit and push.
 
-12. Copy the Simba Arduino package manifests the release repository,
-    add, commit and push in the release repository.
+11. Add, commit and push the Simba Arduino package manifests in the
+    release repository.
 
    .. code:: text
 
-      cp make/arduino/avr/package_simba_avr_index.json ../simba-releases/arduino/avr
-      cp make/arduino/sam/package_simba_sam_index.json ../simba-releases/arduino/sam
-      cp make/arduino/esp/package_simba_esp_index.json ../simba-releases/arduino/esp
-      cp make/arduino/esp32/package_simba_esp32_index.json ../simba-releases/arduino/esp32
+      (cd ../simba-releases && \
+       git add arduino/*/*.json && \
+       git commit && \
+       git push origin master)
 
-13. Download the release zip-file from Github and calculate its SHA1
-    checksum. Add the zip-file to the release repository and add the
-    new releases to ``make/platformio/manifest.json``.
-
-   .. code:: text
-
-      wget https://github.com/eerimoq/simba/archive/<version>.zip
-      sha1sum <version>.zip
-      cp <version>.zip ../simba-releases/platformio
-
-14. Commit and push.
-
-15. Done.
+12. Done.
