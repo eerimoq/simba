@@ -72,7 +72,8 @@ SUPPORTED_BOARDS = [
     "arduino_uno",
     "esp12e",
     "esp01",
-    "nodemcu"
+    "nodemcu",
+    "nano32"
 ]
 
 
@@ -252,6 +253,20 @@ def setup_board_nodemcu(env):
     setup_mcu_esp(env, "simba.flash.4m.ld", "6")
 
 
+def setup_board_nano32(env):
+    \"\"\"Setup the Nano32 environment.
+
+    \"\"\"
+
+    ccflags = []
+
+    for flag in env["CCFLAGS"]:
+        if "-Wpointer-arith" in flag:
+            continue
+        ccflags.append(flag)
+    env.Replace(CCFLAGS=ccflags)
+
+
 env = DefaultEnvironment()
 
 set_default_values(env)
@@ -304,6 +319,8 @@ elif board == "esp01":
     setup_board_esp01(env)
 elif board == "nodemcu":
     setup_board_nodemcu(env)
+elif board == "nano32":
+    setup_board_nano32(env)
 
 # generated files
 SIMBA_GEN_C = "$BUILD_DIR/SimbaFramework/simba_gen.c"

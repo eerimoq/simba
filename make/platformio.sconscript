@@ -54,7 +54,8 @@ SUPPORTED_BOARDS = [
     "arduino_uno",
     "esp12e",
     "esp01",
-    "nodemcu"
+    "nodemcu",
+    "nano32"
 ]
 
 
@@ -66,7 +67,7 @@ BOARDS = {
             "FAMILY_SAM", 
             "MCU_SAM3X8E", 
             "BOARD_ARDUINO_DUE", 
-            "VERSION=12.1.0"
+            "VERSION=master"
         ], 
         "cflags": [
             "-Werror", 
@@ -230,7 +231,7 @@ BOARDS = {
             "FAMILY_AVR", 
             "MCU_ATMEGA2560", 
             "BOARD_ARDUINO_MEGA", 
-            "VERSION=12.1.0", 
+            "VERSION=master", 
             "__DELAY_BACKWARD_COMPATIBLE__"
         ], 
         "cflags": [
@@ -388,7 +389,7 @@ BOARDS = {
             "FAMILY_AVR", 
             "MCU_ATMEGA328P", 
             "BOARD_ARDUINO_NANO", 
-            "VERSION=12.1.0", 
+            "VERSION=master", 
             "__DELAY_BACKWARD_COMPATIBLE__"
         ], 
         "cflags": [
@@ -546,7 +547,7 @@ BOARDS = {
             "FAMILY_AVR", 
             "MCU_ATMEGA32U4", 
             "BOARD_ARDUINO_PRO_MICRO", 
-            "VERSION=12.1.0", 
+            "VERSION=master", 
             "__DELAY_BACKWARD_COMPATIBLE__"
         ], 
         "cflags": [
@@ -708,7 +709,7 @@ BOARDS = {
             "FAMILY_AVR", 
             "MCU_ATMEGA328P", 
             "BOARD_ARDUINO_UNO", 
-            "VERSION=12.1.0", 
+            "VERSION=master", 
             "__DELAY_BACKWARD_COMPATIBLE__"
         ], 
         "cflags": [
@@ -866,7 +867,7 @@ BOARDS = {
             "FAMILY_LINUX", 
             "MCU_LINUX", 
             "BOARD_CYGWIN", 
-            "VERSION=12.1.0"
+            "VERSION=master"
         ], 
         "cflags": [
             "-Werror", 
@@ -1001,7 +1002,7 @@ BOARDS = {
             "FAMILY_ESP", 
             "MCU_ESP8266", 
             "BOARD_ESP01", 
-            "VERSION=12.1.0", 
+            "VERSION=master", 
             "ICACHE_FLASH", 
             "__STRICT_ANSI__", 
             "__ets__"
@@ -1160,7 +1161,7 @@ BOARDS = {
             "FAMILY_ESP", 
             "MCU_ESP8266", 
             "BOARD_ESP12E", 
-            "VERSION=12.1.0", 
+            "VERSION=master", 
             "ICACHE_FLASH", 
             "__STRICT_ANSI__", 
             "__ets__"
@@ -1319,7 +1320,7 @@ BOARDS = {
             "FAMILY_LINUX", 
             "MCU_LINUX", 
             "BOARD_LINUX", 
-            "VERSION=12.1.0"
+            "VERSION=master"
         ], 
         "cflags": [
             "-Werror", 
@@ -1454,7 +1455,7 @@ BOARDS = {
             "FAMILY_ESP32", 
             "MCU_ESP32", 
             "BOARD_NANO32", 
-            "VERSION=12.1.0"
+            "VERSION=master"
         ], 
         "cflags": [
             "-Os", 
@@ -1623,7 +1624,7 @@ BOARDS = {
             "FAMILY_ESP", 
             "MCU_ESP8266", 
             "BOARD_NODEMCU", 
-            "VERSION=12.1.0", 
+            "VERSION=master", 
             "ICACHE_FLASH", 
             "__STRICT_ANSI__", 
             "__ets__"
@@ -1782,7 +1783,7 @@ BOARDS = {
             "FAMILY_STM32F2", 
             "MCU_STM32F205RG", 
             "BOARD_PHOTON", 
-            "VERSION=12.1.0"
+            "VERSION=master"
         ], 
         "cflags": [
             "-Werror", 
@@ -1946,7 +1947,7 @@ BOARDS = {
             "FAMILY_STM32F3", 
             "MCU_STM32F303VC", 
             "BOARD_STM32F3DISCOVERY", 
-            "VERSION=12.1.0"
+            "VERSION=master"
         ], 
         "cflags": [
             "-Werror", 
@@ -2095,7 +2096,7 @@ BOARDS = {
             "FAMILY_STM32F1", 
             "MCU_STM32F100RB", 
             "BOARD_STM32VLDISCOVERY", 
-            "VERSION=12.1.0"
+            "VERSION=master"
         ], 
         "cflags": [
             "-Werror", 
@@ -2413,6 +2414,20 @@ def setup_board_nodemcu(env):
     setup_mcu_esp(env, "simba.flash.4m.ld", "6")
 
 
+def setup_board_nano32(env):
+    """Setup the Nano32 environment.
+
+    """
+
+    ccflags = []
+
+    for flag in env["CCFLAGS"]:
+        if "-Wpointer-arith" in flag:
+            continue
+        ccflags.append(flag)
+    env.Replace(CCFLAGS=ccflags)
+
+
 env = DefaultEnvironment()
 
 set_default_values(env)
@@ -2465,6 +2480,8 @@ elif board == "esp01":
     setup_board_esp01(env)
 elif board == "nodemcu":
     setup_board_nodemcu(env)
+elif board == "nano32":
+    setup_board_nano32(env)
 
 # generated files
 SIMBA_GEN_C = "$BUILD_DIR/SimbaFramework/simba_gen.c"
