@@ -36,7 +36,7 @@
 #define SPI_DEVICE_MAX      1
 #define UART_DEVICE_MAX     4
 /* Timer0 is used for system tick, so two of the PWM pins cannot be used.*/
-#define PWM_DEVICE_MAX     12
+#define PWM_DEVICE_MAX     10
 #define ADC_DEVICE_MAX      1
 #define I2C_DEVICE_MAX      1
 

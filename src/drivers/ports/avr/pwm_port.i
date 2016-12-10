@@ -40,13 +40,11 @@ static int pwm_port_init(struct pwm_driver_t *self_p,
     switch (dev_p->index) {
     case 0:
     case 1:
-        /* pin d9 and d10. Timer 1. */
         TCCR1A |= _BV(WGM10);
         TCCR1B |= _BV(CS11) | _BV(CS10);
         break;
     case 2:
     case 3:
-        /* pin d11 and d3. Timer 2. */
         TCCR2A |= _BV(WGM20);
         TCCR2B |= _BV(CS22);
         break;
@@ -57,8 +55,8 @@ static int pwm_port_init(struct pwm_driver_t *self_p,
     return (0);
 }
 
-static int pwm_port_set_duty(struct pwm_driver_t *self_p,
-                             uint8_t value)
+static int pwm_port_set_duty_cycle(struct pwm_driver_t *self_p,
+                                   int value)
 {
     switch (self_p->dev_p->index) {
     case 0:
@@ -84,7 +82,7 @@ static int pwm_port_set_duty(struct pwm_driver_t *self_p,
     return (0);
 }
 
-static int pwm_port_get_duty(struct pwm_driver_t *self_p)
+static int pwm_port_get_duty_cycle(struct pwm_driver_t *self_p)
 {
     int value;
 
@@ -153,16 +151,16 @@ static int pwm_port_init(struct pwm_driver_t *self_p,
     return (0);
 }
 
-static int pwm_port_set_duty(struct pwm_driver_t *self_p,
-                             uint8_t value)
+static int pwm_port_set_duty_cycle(struct pwm_driver_t *self_p,
+                                   int value)
 {
     switch (self_p->dev_p->index) {
     case 0:
-        TCCR3B |= _BV(COM3B1);
+        TCCR3A |= _BV(COM3B1);
         OCR3B = value;
         break;
     case 1:
-        TCCR3C |= _BV(COM3C1);
+        TCCR3A |= _BV(COM3C1);
         OCR3C = value;
         break;
     case 2:
@@ -174,15 +172,15 @@ static int pwm_port_set_duty(struct pwm_driver_t *self_p,
         OCR4A = value;
         break;
     case 4:
-        TCCR4B |= _BV(COM4B1);
+        TCCR4A |= _BV(COM4B1);
         OCR4B = value;
         break;
     case 5:
-        TCCR4C |= _BV(COM4C1);
+        TCCR4A |= _BV(COM4C1);
         OCR4C = value;
         break;
     case 6:
-        TCCR2B |= _BV(COM2B1);
+        TCCR2A |= _BV(COM2B1);
         OCR2B = value;
         break;
     case 7:
@@ -194,7 +192,7 @@ static int pwm_port_set_duty(struct pwm_driver_t *self_p,
         OCR1A = value;
         break;
     case 9:
-        TCCR1B |= _BV(COM1B1);
+        TCCR1A |= _BV(COM1B1);
         OCR1B = value;
         break;
     default:
@@ -204,7 +202,7 @@ static int pwm_port_set_duty(struct pwm_driver_t *self_p,
     return (0);
 }
 
-static int pwm_port_get_duty(struct pwm_driver_t *self_p)
+static int pwm_port_get_duty_cycle(struct pwm_driver_t *self_p)
 {
     int value;
 
@@ -270,6 +268,16 @@ static int pwm_port_get_duty(struct pwm_driver_t *self_p)
 #else
 #    error "PWM not implemented for this MCU"
 #endif
+
+static int pwm_port_duty_cycle(int percentage)
+{
+    return ((255 * percentage) / 100);
+}
+
+static int pwm_port_duty_cycle_as_percent(int value)
+{
+    return ((100 * value) / 255);
+}
 
 static struct pwm_device_t *pwm_port_pin_to_device(struct pin_device_t *pin_p)
 {

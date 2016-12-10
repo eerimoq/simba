@@ -34,13 +34,23 @@ static int pwm_port_init(struct pwm_driver_t *self_p,
     return (0);
 }
 
-static int pwm_port_set_duty(struct pwm_driver_t *self_p,
-                             uint8_t value)
+static int pwm_port_set_duty_cycle(struct pwm_driver_t *self_p,
+                                   int value)
 {
     return (0);
 }
 
-static int pwm_port_get_duty(struct pwm_driver_t *self_p)
+static int pwm_port_get_duty_cycle(struct pwm_driver_t *self_p)
+{
+    return (-1);
+}
+
+static int pwm_port_duty_cycle(int percentage)
+{
+    return (-1);
+}
+
+static int pwm_port_duty_cycle_as_percent(int value)
 {
     return (-1);
 }

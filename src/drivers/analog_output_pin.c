@@ -36,7 +36,7 @@ int analog_output_pin_module_init(void)
 }
 
 int analog_output_pin_init(struct analog_output_pin_t *self_p,
-                          struct pin_device_t *pin_p)
+                           struct pin_device_t *pin_p)
 {
     struct pwm_device_t *pwm_p;
     
@@ -52,10 +52,10 @@ int analog_output_pin_init(struct analog_output_pin_t *self_p,
 int analog_output_pin_write(struct analog_output_pin_t *self_p,
                             int value)
 {
-    return (pwm_set_duty(&self_p->pwm, value / 4));
+    return (pwm_set_duty_cycle(&self_p->pwm, value / 4));
 }
 
 int analog_output_pin_read(struct analog_output_pin_t *self_p)
 {
-    return (pwm_get_duty(&self_p->pwm) * 4);
+    return (pwm_get_duty_cycle(&self_p->pwm) * 4);
 }

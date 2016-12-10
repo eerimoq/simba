@@ -38,10 +38,21 @@
 extern struct pwm_device_t pwm_device[PWM_DEVICE_MAX];
 
 /**
- * Initialize driver object.
+ * Initialize the pwm module. This function must be called before
+ * calling any other function in this module.
+ *
+ * The module will only be initialized once even if this function is
+ * called multiple times.
+ *
+ * @return zero(0) or negative error code.
+ */
+int pwm_module_init(void);
+
+/**
+ * Initialize given PWM driver object.
  *
  * @param[out] self_p Driver object to be initialized.
- * @param[in] dev_p Device to use.
+ * @param[in] dev_p PWM device to use.
  *
  * @return zero(0) or negative error code.
  */
@@ -52,21 +63,43 @@ int pwm_init(struct pwm_driver_t *self_p,
  * Set the duty cycle.
  *
  * @param[in] self_p Driver object.
- * @param[in] value Value to set [0..255].
+ * @param[in] value Duty cycle. Use `pwm_duty_cycle()` to convert a
+ *                  duty cycle percentage to a value expected by this
+ *                  function.
  *
  * @return zero(0) or negative error code.
  */
-int pwm_set_duty(struct pwm_driver_t *self_p,
-                 uint8_t value);
+int pwm_set_duty_cycle(struct pwm_driver_t *self_p,
+                       int value);
 
 /**
  * Get current duty cycle.
  *
  * @param[in] self_p Driver object.
  *
- * @return Value in the range [0..255], or negative error code.
+ * @return Current duty cycle.
  */
-int pwm_get_duty(struct pwm_driver_t *self_p);
+int pwm_get_duty_cycle(struct pwm_driver_t *self_p);
+
+/**
+ * Convert a duty cycle percentage to a value for `pwm_init()` and
+ * `pwm_set_duty_cycle()`.
+ *
+ * @param[in] percentage Duty cycle percentage.
+ *
+ * @return Duty cycle.
+ */
+int pwm_duty_cycle(int percentage);
+
+/**
+ * Convert a duty cycle value for `pwm_init()` and
+ * `pwm_set_duty_cycle()` to a percentage.
+ *
+ * @param[in] value Duty cycle.
+ *
+ * @return Duty cycle percentage.
+ */
+int pwm_duty_cycle_as_percent(int value);
 
 /**
  * Get the PWM device for given pin.

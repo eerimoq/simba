@@ -79,10 +79,10 @@ struct uart_device_t uart_device[UART_DEVICE_MAX] = {
 };
 
 struct pwm_device_t pwm_device[PWM_DEVICE_MAX] = {
-    { .index = 0, .pin_dev_p = &pin_device[9] },  /* timer1 */
-    { .index = 1, .pin_dev_p = &pin_device[10] }, /* timer1 */
-    { .index = 2, .pin_dev_p = &pin_device[11] }, /* timer2 */
-    { .index = 3, .pin_dev_p = &pin_device[3] }   /* timer2 */
+    { .index = 0, .pin_dev_p = &pin_device[9] },  /* timer 1 */
+    { .index = 1, .pin_dev_p = &pin_device[10] }, /* timer 1 */
+    { .index = 2, .pin_dev_p = &pin_device[11] }, /* timer 2 */
+    { .index = 3, .pin_dev_p = &pin_device[3] }   /* timer 2 */
 };
 
 struct adc_device_t adc_device[ADC_DEVICE_MAX] = {

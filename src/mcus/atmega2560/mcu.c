@@ -131,16 +131,16 @@ struct uart_device_t uart_device[UART_DEVICE_MAX] = {
 };
 
 struct pwm_device_t pwm_device[PWM_DEVICE_MAX] = {
-    { .index = 0, .pin_dev_p = &pin_device[2] }, /* timerx, pin  */
-    { .index = 1, .pin_dev_p = &pin_device[3] }, /* timerx, pin  */
-    { .index = 2, .pin_dev_p = &pin_device[5] }, /* timerx, pin  */
-    { .index = 3, .pin_dev_p = &pin_device[6] }, /* timerx, pin  */
-    { .index = 4, .pin_dev_p = &pin_device[7] }, /* timerx, pin  */
-    { .index = 5, .pin_dev_p = &pin_device[8] }, /* timerx, pin  */
-    { .index = 6, .pin_dev_p = &pin_device[9] }, /* timerx, pin  */
-    { .index = 7, .pin_dev_p = &pin_device[10] }, /* timerx, pin  */
-    { .index = 8, .pin_dev_p = &pin_device[11] }, /* timerx, pin  */
-    { .index = 9, .pin_dev_p = &pin_device[12] }, /* timerx, pin  */
+    { .index = 0, .pin_dev_p = &pin_device[2] }, /* timer 3 */
+    { .index = 1, .pin_dev_p = &pin_device[3] }, /* timer 3 */
+    { .index = 2, .pin_dev_p = &pin_device[5] }, /* timer 3 */
+    { .index = 3, .pin_dev_p = &pin_device[6] }, /* timer 4 */
+    { .index = 4, .pin_dev_p = &pin_device[7] }, /* timer 4 */
+    { .index = 5, .pin_dev_p = &pin_device[8] }, /* timer 4 */
+    { .index = 6, .pin_dev_p = &pin_device[9] }, /* timer 2 */
+    { .index = 7, .pin_dev_p = &pin_device[10] }, /* timer 2 */
+    { .index = 8, .pin_dev_p = &pin_device[11] }, /* timer 1 */
+    { .index = 9, .pin_dev_p = &pin_device[12] }, /* timer 1 */
 };
 
 struct adc_device_t adc_device[ADC_DEVICE_MAX] = {
