@@ -40,4 +40,5 @@
 #define ADC_DEVICE_MAX   4
 #define FLASH_DEVICE_MAX 4
 #define DAC_DEVICE_MAX   1
+
 #endif

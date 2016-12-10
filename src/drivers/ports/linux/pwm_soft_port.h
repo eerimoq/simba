@@ -2,9 +2,9 @@
  * @section License
  *
  * The MIT License (MIT)
- *
+ * 
  * Copyright (c) 2014-2016, Erik Moqvist
- *
+ * 
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
  * files (the "Software"), to deal in the Software without
@@ -28,16 +28,10 @@
  * This file is part of the Simba project.
  */
 
-#ifndef __MCU_H__
-#define __MCU_H__
+#ifndef __DRIVERS_PWM_SOFT_PORT_H__
+#define __DRIVERS_PWM_SOFT_PORT_H__
 
-#include "esp8266.h"
-
-#define PIN_DEVICE_MAX              17
-#define EXTI_DEVICE_MAX             16
-#define SPI_DEVICE_MAX               1
-#define UART_DEVICE_MAX              2
-#define ADC_DEVICE_MAX               1
-#define FLASH_DEVICE_MAX             1
+struct pwm_soft_port_module_t {
+};
 
 #endif

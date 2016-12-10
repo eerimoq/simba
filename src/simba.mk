@@ -64,6 +64,7 @@ DRIVERS_SRC ?= adc.c \
                i2c_soft.c \
                owi.c \
                pwm.c \
+               pwm_soft.c \
                sd.c \
                spi.c \
                uart.c
@@ -84,6 +85,7 @@ DRIVERS_SRC_TMP = adc.c \
                   owi.c \
                   pin.c \
                   pwm.c \
+                  pwm_soft.c \
                   sd.c \
                   uart.c \
                   uart_soft.c \

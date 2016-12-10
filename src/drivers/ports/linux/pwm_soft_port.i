@@ -28,16 +28,12 @@
  * This file is part of the Simba project.
  */
 
-#ifndef __MCU_H__
-#define __MCU_H__
+static int pwm_soft_port_module_init()
+{
+    return (0);
+}
 
-#include "esp8266.h"
-
-#define PIN_DEVICE_MAX              17
-#define EXTI_DEVICE_MAX             16
-#define SPI_DEVICE_MAX               1
-#define UART_DEVICE_MAX              2
-#define ADC_DEVICE_MAX               1
-#define FLASH_DEVICE_MAX             1
-
-#endif
+static int pwm_soft_port_set_frequency(long value)
+{
+    return (0);
+}
