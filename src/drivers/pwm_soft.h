@@ -52,7 +52,9 @@ struct pwm_soft_driver_t {
  * called multiple times.
  *
  * @param[in] frequency PWM module frequency in Hertz. All software
- *                      PWM:s will run at this frequency.
+ *                      PWM:s will run at this frequency. The
+ *                      frequency can later be changed by calling
+ *                      `pwm_soft_set_frequency()`.
  *
  * @return zero(0) or negative error code.
  */
@@ -82,6 +84,7 @@ long pwm_soft_get_frequency(void);
  *
  * @param[out] self_p Driver object to be initialized.
  * @param[in] pin_dev_p Pin device to use.
+ * @param[in] duty_cycle Initial duty cycle.
  *
  * @return zero(0) or negative error code.
  */
