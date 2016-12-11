@@ -15,6 +15,8 @@ If an accurate and/or high frequency PWM signal is required, a
 
 Source code: :github-blob:`src/drivers/pwm_soft.h`, :github-blob:`src/drivers/pwm_soft.c`
 
+Test code: :github-blob:`tst/drivers/pwm_soft/main.c`
+
 ----------------------------------------------
 
 .. doxygenfile:: drivers/pwm_soft.h
