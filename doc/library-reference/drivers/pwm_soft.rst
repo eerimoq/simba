@@ -4,10 +4,12 @@
 .. module:: pwm_soft
    :synopsis: Software pulse width modulation.
 
-This module implements software PWM, often using a hardware timer and
-pin devices. The properties of software PWM depends on the
-application, and are often inaccurate. Use a :doc:`hardware PWM<pwm>`
-if an accurate and/or high frequency PWM signal is required.
+This module implements software PWM on all digital pins. In general,
+software PWM outputs an inaccurate, low frequency signal. Keep that in
+mind designing your application.
+
+If an accurate and/or high frequency PWM signal is required, a
+:doc:`hardware PWM<pwm>` should be used instead.
 
 ----------------------------------------------
 

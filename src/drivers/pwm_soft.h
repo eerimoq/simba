@@ -51,7 +51,8 @@ struct pwm_soft_driver_t {
  * The module will only be initialized once even if this function is
  * called multiple times.
  *
- * @param[in] frequency PWM module base frequency.
+ * @param[in] frequency PWM module frequency in Hertz. All software
+ *                      PWM:s will run at this frequency.
  *
  * @return zero(0) or negative error code.
  */
@@ -59,10 +60,11 @@ int pwm_soft_module_init(long frequency);
 
 /**
  * Set the frequency. The frequency is the same for all software
- * PWM:s. All software PWM drivers must be stopped before calling this
- * function.
+ * PWM:s. All software PWM:s must be stopped before calling this
+ * function, otherwize a negative error code will be returned.
  *
- * @param[in] value Frequency to set.
+ * @param[in] value Frequency to set in Hertz. All software PWM:s will
+ *                  run at this frequency.
  *
  * @return zero(0) or negative error code.
  */
@@ -71,7 +73,7 @@ int pwm_soft_set_frequency(long value);
 /**
  * Get current frequency.
  *
- * @return Current frequency.
+ * @return Current frequency in Hertz.
  */
 long pwm_soft_get_frequency(void);
 
@@ -88,16 +90,18 @@ int pwm_soft_init(struct pwm_soft_driver_t *self_p,
                   long duty_cycle);
 
 /**
- * Start given software PWM.
+ * Start outputting the PWM signal on the pin given to
+ * `pwm_soft_init()`.
  *
- * @param[in] self_p Driver object to be start.
+ * @param[in] self_p Driver object to start.
  *
  * @return zero(0) or negative error code.
  */
 int pwm_soft_start(struct pwm_soft_driver_t *self_p);
 
 /**
- * Stop given software PWM.
+ * Stop outputting the PWM signal on the pin given to
+ * `pwm_soft_init()`.
  *
  * @param[in] self_p Driver object to stop.
  *
@@ -106,7 +110,8 @@ int pwm_soft_start(struct pwm_soft_driver_t *self_p);
 int pwm_soft_stop(struct pwm_soft_driver_t *self_p);
 
 /**
- * Set the duty cycle.
+ * Set the duty cycle. Calls `pwm_soft_stop()` and `pwm_soft_start()`
+ * to restart outputting the PWM signal with the new duty cycle.
  *
  * @param[in] self_p Driver object.
  * @param[in] value Duty cycle. Use `pwm_soft_duty_cycle()` to convert
@@ -119,7 +124,8 @@ int pwm_soft_set_duty_cycle(struct pwm_soft_driver_t *self_p,
                             long value);
 
 /**
- * Get current duty cycle.
+ * Get current duty cycle. Use `pwm_soft_duty_cycle_as_percent()` to
+ * convert a duty cycle to a percentage.
  *
  * @param[in] self_p Driver object.
  *
