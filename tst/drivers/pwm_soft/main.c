@@ -37,11 +37,11 @@ static int test_init(struct harness_t *harness_p)
     BTASSERT(pwm_soft_module_init(1000) == 0);
 
     BTASSERT(pwm_soft_init(&pwm_soft[0],
-                           &pin_d3_dev,
+                           &pin_d2_dev,
                            pwm_soft_duty_cycle(10)) == 0);
 
     BTASSERT(pwm_soft_init(&pwm_soft[1],
-                           &pin_d9_dev,
+                           &pin_d5_dev,
                            pwm_soft_duty_cycle(95)) == 0);
 
     return (0);

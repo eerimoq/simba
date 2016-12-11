@@ -29,6 +29,7 @@
  */
 
 #include <avr/interrupt.h>
+#include "drivers/internal.h"
 
 /**
  * Calculate timer configuration parameters from cpu frequency and
@@ -37,7 +38,7 @@
  */
 static int frequency_to_hw_config(long frequency,
                                   uint8_t *clock_select_p,
-                                  long *count_max_p)
+                                  long *duty_cycle_max_p)
 {
     long cpu_cycles_per_sys_tick;
 
@@ -47,19 +48,19 @@ static int frequency_to_hw_config(long frequency,
         return (-1);
     } else if (cpu_cycles_per_sys_tick < 65536L) {
         *clock_select_p = _BV(CS10);
-        *count_max_p = (cpu_cycles_per_sys_tick - 1);
+        *duty_cycle_max_p = (cpu_cycles_per_sys_tick - 1);
     } else if (cpu_cycles_per_sys_tick < (8L * 65536L)) {
         *clock_select_p = _BV(CS11);
-        *count_max_p = (DIV_CEIL(cpu_cycles_per_sys_tick, 8) - 1);
+        *duty_cycle_max_p = (DIV_CEIL(cpu_cycles_per_sys_tick, 8) - 1);
     } else if (cpu_cycles_per_sys_tick < (64L * 65536L)) {
         *clock_select_p = (_BV(CS11) | _BV(CS10));
-        *count_max_p = (DIV_CEIL(cpu_cycles_per_sys_tick, 64) - 1);
+        *duty_cycle_max_p = (DIV_CEIL(cpu_cycles_per_sys_tick, 64) - 1);
     } else if (cpu_cycles_per_sys_tick < (256L * 65536L)) {
         *clock_select_p = _BV(CS12);
-        *count_max_p = (DIV_CEIL(cpu_cycles_per_sys_tick, 256) - 1);
+        *duty_cycle_max_p = (DIV_CEIL(cpu_cycles_per_sys_tick, 256) - 1);
     } else if (cpu_cycles_per_sys_tick < (1024L * 65536L)) {
         *clock_select_p = (_BV(CS12) | _BV(CS10));
-        *count_max_p = (DIV_CEIL(cpu_cycles_per_sys_tick, 1024) - 1);
+        *duty_cycle_max_p = (DIV_CEIL(cpu_cycles_per_sys_tick, 1024) - 1);
     } else {
         return (-1);
     }
@@ -80,48 +81,14 @@ static void reset_timer_isr(uint16_t count)
     TCCR1B = module.port.clock_select;
 }
 
+/**
+ * Hardware timer interrput handler.
+ */
 ISR(TIMER1_COMPA_vect)
 {
-    struct pwm_soft_driver_t *elem_p;
-
-    /* Set the next timeout timer count early for better accuracy. */
-    elem_p = module.current_p->next_p;
-
-    while (elem_p->delta == 0) {
-        elem_p = elem_p->next_p;
-    }
-    
+    PWM_SOFT_ISR_PROLOGUE;
     reset_timer_isr(elem_p->delta);
-
-    /* Update pin values. */
-    elem_p = module.current_p;
-
-    if (elem_p != &module.tail_pwm_soft) {
-        do {
-            pin_device_write_low(elem_p->pin_dev_p);
-            elem_p = elem_p->next_p;
-        } while (elem_p->delta == 0);
-    } else {
-        /* One period has elapsed. Set all PWM:s high. */
-        elem_p = module.head_p;
-
-        while (elem_p != &module.tail_pwm_soft) {
-            pin_device_write_high(elem_p->pin_dev_p);
-            elem_p = elem_p->next_p;
-        }
-
-        elem_p = module.tail_pwm_soft.next_p;
-    }            
-
-    /* Unlink stopped elements. */
-    if (module.current_p->thrd_p != NULL) {
-        unlink_pwm_soft_isr(module.current_p);
-        thrd_resume_isr(module.current_p->thrd_p, 0);
-        module.current_p->thrd_p = NULL;
-    }
-
-    /* Save current element. */
-    module.current_p = elem_p;
+    PWM_SOFT_ISR_EPILOGUE;
 }
 
 static int pwm_soft_port_module_init(long frequency)

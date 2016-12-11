@@ -199,6 +199,7 @@ extern "C" {
 #if defined(FAMILY_ESP)
 #    include "drivers/exti.h"
 #    include "drivers/pin.h"
+#    include "drivers/pwm_soft.h"
 #    include "drivers/i2c_soft.h"
 #    include "drivers/spi.h"
 #    include "drivers/uart.h"

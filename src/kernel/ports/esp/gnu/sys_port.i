@@ -62,6 +62,8 @@ uint32_t main_stack[DIV_CEIL(sizeof(struct thrd_t)
                              sizeof(uint32_t))]
 __attribute__ ((section (".simba_main_stack")));
 
+#if CONFIG_SYSTEM_TICK_SOFTWARE == 0
+
 static int sys_port_module_init(void)
 {
     /* Configure and start the system tick timer. */
@@ -70,15 +72,37 @@ static int sys_port_module_init(void)
                             | SYS_TICK_TIMER_PRESCALE
                             | ESP8266_TIMER_CTRL_INT_TRIGGER_EDGE);
 
-    _xt_isr_attach(ESP8266_IRQ_NUM_TIMER1,
-                   (_xt_isr)sys_tick,
-                   NULL);
+    _xt_isr_attach(ESP8266_IRQ_NUM_TIMER1, (_xt_isr)sys_tick_isr, NULL);
     TM1_EDGE_INT_ENABLE();
     _xt_isr_unmask(1 << ESP8266_IRQ_NUM_TIMER1);
     ESP8266_TIMER0->LOAD = SYS_TICK_TIMER_LOAD;
 
     return (0);
 }
+
+#else
+
+static os_timer_t sys_tick_timer;
+
+/**
+ * System tick software timer callback.
+ */
+static void sys_tick_sw(void *arg_p)
+{
+    sys_lock();
+    sys_tick_isr();
+    sys_unlock();
+}
+
+static int sys_port_module_init(void)
+{
+    os_timer_setfn(&sys_tick_timer, sys_tick_sw, NULL);
+    os_timer_arm(&sys_tick_timer, 1, 1);
+
+    return (0);
+}
+
+#endif
 
 static void sys_port_stop(int error)
 {

@@ -133,6 +133,7 @@ DRIVERS_SRC ?= adc.c \
                exti.c \
                flash.c \
                pin.c \
+               pwm_soft.c \
                i2c_soft.c \
                spi.c \
                uart.c \

@@ -132,7 +132,7 @@ extern void timer_tick_isr(void);
 extern void thrd_tick_isr(void);
 extern const FAR char sysinfo[];
 
-static void RAM_CODE sys_tick(void)
+static void RAM_CODE sys_tick_isr(void)
 {
     sys.tick++;
     time_tick_isr();

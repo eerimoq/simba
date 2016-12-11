@@ -61,7 +61,7 @@
 
 ISR(TIMER0_COMPA_vect)
 {
-    sys_tick();
+    sys_tick_isr();
 }
 
 static int sys_port_module_init(void)
