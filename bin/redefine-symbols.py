@@ -6,11 +6,10 @@ import os
 import argparse
 import re
 import subprocess
-import time
 
 
 def compile_re_redefine(symbols):
-    return re.compile(r'([^\w"/])(' + "|".join(symbols) + ')([^\w/"])',
+    return re.compile(r'([^\w"/])(' + r"|".join(symbols) + r')([^\w/"])',
                       flags=re.DOTALL)
 
 

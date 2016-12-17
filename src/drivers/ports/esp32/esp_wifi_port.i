@@ -111,25 +111,25 @@ static int esp_wifi_port_module_init(void)
 {
     wifi_init_config_t config = WIFI_INIT_CONFIG_DEFAULT();
 
-    tcpip_adapter_init();
-    esp_event_loop_init(event_handler, NULL);
-    esp_wifi_init(&config);
-    esp_wifi_set_storage(WIFI_STORAGE_RAM);
-    esp_wifi_start();
+    esp_tcpip_adapter_init();
+    esp_esp_event_loop_init(event_handler, NULL);
+    esp_esp_wifi_init(&config);
+    esp_esp_wifi_set_storage(WIFI_STORAGE_RAM);
+    esp_esp_wifi_start();
 
     return (0);
 }
 
 static int esp_wifi_port_set_op_mode(enum esp_wifi_op_mode_t mode)
 {
-    return (esp_wifi_set_mode(mode));
+    return (esp_esp_wifi_set_mode(mode));
 }
 
 static enum esp_wifi_op_mode_t esp_wifi_port_get_op_mode()
 {
     wifi_mode_t mode;
     
-    if (esp_wifi_get_mode(&mode) != ESP_OK) {
+    if (esp_esp_wifi_get_mode(&mode) != ESP_OK) {
         return (-1);
     }
 

@@ -69,9 +69,9 @@ static ssize_t flash_port_read(struct flash_driver_t *self_p,
     if (src < aligned_src_begin) {
         n = (aligned_src_begin - src);
 
-        if (spi_flash_read(aligned_src_begin - 4,
-                           &alignment_data,
-                           4) != ESP_OK) {
+        if (esp_spi_flash_read(aligned_src_begin - 4,
+                               &alignment_data,
+                               4) != ESP_OK) {
             return (-1);
         }
 
@@ -84,9 +84,9 @@ static ssize_t flash_port_read(struct flash_driver_t *self_p,
         if ((dst & 0x3) == 0) {
             n = (aligned_src_end - aligned_src_begin);
 
-            if (spi_flash_read(aligned_src_begin,
-                               (uint32_t *)dst,
-                               n) != ESP_OK) {
+            if (esp_spi_flash_read(aligned_src_begin,
+                                   (uint32_t *)dst,
+                                   n) != ESP_OK) {
                 return (-1);
             }
 
@@ -98,9 +98,9 @@ static ssize_t flash_port_read(struct flash_driver_t *self_p,
             while (left > 0) {
                 n = MIN(left, sizeof(buf));
 
-                if (spi_flash_read(aligned_src_begin,
-                                   &buf[0],
-                                   n) != ESP_OK) {
+                if (esp_spi_flash_read(aligned_src_begin,
+                                       &buf[0],
+                                       n) != ESP_OK) {
                     return (-1);
                 }
 
@@ -116,9 +116,9 @@ static ssize_t flash_port_read(struct flash_driver_t *self_p,
     if ((src + size) > aligned_src_end) {
         n = (src + size - aligned_src_end);
 
-        if (spi_flash_read(aligned_src_end,
-                           &alignment_data,
-                           4) != ESP_OK) {
+        if (esp_spi_flash_read(aligned_src_end,
+                               &alignment_data,
+                               4) != ESP_OK) {
             return (-1);
         }
 
@@ -155,9 +155,9 @@ static ssize_t flash_port_write(struct flash_driver_t *self_p,
         alignment_data = 0xffffffff;
         memcpy((void *)((uintptr_t)&alignment_data + 4 - n), src_p, n);
 
-        if (spi_flash_write(aligned_dst_begin - 4,
-                            &alignment_data,
-                            sizeof(alignment_data)) != ESP_OK) {
+        if (esp_spi_flash_write(aligned_dst_begin - 4,
+                                &alignment_data,
+                                sizeof(alignment_data)) != ESP_OK) {
             return (-1);
         }
 
@@ -170,9 +170,9 @@ static ssize_t flash_port_write(struct flash_driver_t *self_p,
             /* The data in RAM is aligned to a 4b boundary. */
             n = (aligned_dst_end - aligned_dst_begin);
 
-            if (spi_flash_write(aligned_dst_begin,
-                                (uint32_t *)src,
-                                n) != ESP_OK) {
+            if (esp_spi_flash_write(aligned_dst_begin,
+                                    (uint32_t *)src,
+                                    n) != ESP_OK) {
                 return (-1);
             }
 
@@ -185,9 +185,9 @@ static ssize_t flash_port_write(struct flash_driver_t *self_p,
                 n = MIN(left, sizeof(buf));
                 memcpy(buf, (uint32_t *)src, n);
 
-                if (spi_flash_write(aligned_dst_begin,
-                                    &buf[0],
-                                    n) != ESP_OK) {
+                if (esp_spi_flash_write(aligned_dst_begin,
+                                        &buf[0],
+                                        n) != ESP_OK) {
                     return (-1);
                 }
 
@@ -203,9 +203,9 @@ static ssize_t flash_port_write(struct flash_driver_t *self_p,
         alignment_data = 0xffffffff;
         memcpy(&alignment_data, (void *)src, (dst + size - aligned_dst_end));
 
-        if (spi_flash_write(aligned_dst_end,
-                            &alignment_data,
-                            sizeof(alignment_data)) != ESP_OK) {
+        if (esp_spi_flash_write(aligned_dst_end,
+                                &alignment_data,
+                                sizeof(alignment_data)) != ESP_OK) {
             return (-1);
         }
     }
@@ -228,11 +228,11 @@ static int flash_port_erase(struct flash_driver_t *self_p,
                                  FLASH_SECTOR_SIZE);
     
     for (i = 0; i < number_of_sectors; i++) {
-        if (spi_flash_erase_sector(first_sector + i) != ESP_OK) {
+        if (esp_spi_flash_erase_sector(first_sector + i) != ESP_OK) {
             return (-1);
         }
 
-        vTaskDelay(1);
+        esp_vTaskDelay(1);
     }
 
     return (0);

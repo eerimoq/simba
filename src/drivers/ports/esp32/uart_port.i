@@ -162,8 +162,8 @@ static int uart_port_start(struct uart_driver_t *drv_p)
     drv_p->dev_p->drv_p = drv_p;
 
     /* Install interrupt handler. */
-    xt_set_interrupt_handler(drv_p->dev_p->interrupt.cpu, isr, NULL);
-    xt_ints_on(BIT(drv_p->dev_p->interrupt.cpu));
+    esp_xt_set_interrupt_handler(drv_p->dev_p->interrupt.cpu, isr, NULL);
+    esp_xt_ints_on(BIT(drv_p->dev_p->interrupt.cpu));
 
     /* Map given peripheral interrupts to given CPU interrupt. */
     intr_matrix_set(xPortGetCoreID(),

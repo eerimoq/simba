@@ -55,9 +55,9 @@ static int sys_port_module_init(void)
 {
     /* Setup interrupt handler. */
     ESP_INTR_DISABLE(ESP32_CPU_INTR_SYS_TICK_NUM);
-    xt_set_interrupt_handler(ESP32_CPU_INTR_SYS_TICK_NUM,
-                             (xt_handler)sys_port_tick,
-                             NULL);
+    esp_xt_set_interrupt_handler(ESP32_CPU_INTR_SYS_TICK_NUM,
+                                 (xt_handler)sys_port_tick,
+                                 NULL);
     intr_matrix_set(xPortGetCoreID(),
                     ESP32_INTR_SOURCE_TG0_T0_LEVEL,
                     ESP32_CPU_INTR_SYS_TICK_NUM);
@@ -84,7 +84,7 @@ static void sys_port_stop(int error)
 
 static void sys_port_reboot()
 {
-    system_restart();
+    esp_esp_restart();
 }
 
 static void RAM_CODE sys_port_lock(void)
@@ -139,15 +139,15 @@ static void main_task(void *events)
 
 int app_main()
 {
-    nvs_flash_init();
+    esp_nvs_flash_init();
 
-    xTaskCreatePinnedToCore(&main_task,
-                            "simba",
-                            CONFIG_SYS_SIMBA_MAIN_STACK_MAX / sizeof(StackType_t),
-                            NULL,
-                            5,
-                            NULL,
-                            0);
+    esp_xTaskCreatePinnedToCore(&main_task,
+                                "simba",
+                                CONFIG_SYS_SIMBA_MAIN_STACK_MAX / sizeof(StackType_t),
+                                NULL,
+                                5,
+                                NULL,
+                                0);
 
     return (0);
 }

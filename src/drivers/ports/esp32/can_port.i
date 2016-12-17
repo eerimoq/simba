@@ -281,10 +281,10 @@ int can_port_start(struct can_driver_t *self_p)
     (void)regs_p->INT;
 
     /* Install the interrupt handler. */
-    xt_set_interrupt_handler(ESP32_CPU_INTR_CAN_NUM,
-                             isr,
-                             NULL);
-    xt_ints_on(BIT(ESP32_CPU_INTR_CAN_NUM));
+    esp_xt_set_interrupt_handler(ESP32_CPU_INTR_CAN_NUM,
+                                 isr,
+                                 NULL);
+    esp_xt_ints_on(BIT(ESP32_CPU_INTR_CAN_NUM));
 
     /* Map the CAN peripheral interrupt to the CAN CPU interrupt. */
     intr_matrix_set(xPortGetCoreID(),

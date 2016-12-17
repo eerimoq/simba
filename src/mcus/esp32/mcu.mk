@@ -32,22 +32,21 @@ ESP32_ROOT ?= $(SIMBA_ROOT)/3pp/esp32
 ESP_IDF_ROOT ?= $(ESP32_ROOT)/esp-idf
 
 INC += $(SIMBA_ROOT)/src/mcus/esp32 \
-       $(ESP_IDF_ROOT)/components/esp32/include \
-       $(ESP_IDF_ROOT)/components/newlib/include \
-       $(ESP_IDF_ROOT)/components/freertos/include \
-       $(ESP_IDF_ROOT)/components/nvs_flash/include \
-       $(ESP_IDF_ROOT)/components/spi_flash/include \
-       $(ESP_IDF_ROOT)/components/tcpip_adapter/include \
-       $(ESP_IDF_ROOT)/components/lwip/include/lwip \
-       $(ESP_IDF_ROOT)/components/lwip/include/lwip/port
+       $(ESP32_ROOT)/inc/driver/include \
+       $(ESP32_ROOT)/inc/esp32/include \
+       $(ESP32_ROOT)/inc/newlib/include \
+       $(ESP32_ROOT)/inc/freertos/include \
+       $(ESP32_ROOT)/inc/nvs_flash/include \
+       $(ESP32_ROOT)/inc/spi_flash/include \
+       $(ESP32_ROOT)/inc/tcpip_adapter/include \
+       $(ESP32_ROOT)/inc/lwip/include/lwip \
+       $(ESP32_ROOT)/inc/lwip/include/lwip/port
 
 SRC += $(SIMBA_ROOT)/src/mcus/esp32/mcu.c \
        $(SIMBA_ROOT)/src/mcus/esp32/esp32.c
 
 LIBPATH += "$(SIMBA_ROOT)/src/mcus/esp32/ld" \
 	$(ESP_IDF_ROOT)/components/esp32/ld \
-	$(ESP_IDF_ROOT)/components/esp32 \
-	$(ESP_IDF_ROOT)/components/newlib/lib \
 	$(ESP32_ROOT)/lib
 
 LDFLAGS += -Wl,-T$(LINKER_SCRIPT)
@@ -58,6 +57,7 @@ LIB += \
 	net80211 \
 	phy \
 	pp \
+	coexist \
 	rtc \
 	smartconfig \
 	wpa \
@@ -77,6 +77,8 @@ LIB += \
 	tcpip_adapter \
 	vfs \
 	wpa_supplicant \
+	ethernet \
+	ulp \
 	gcc \
 	c \
 	m \

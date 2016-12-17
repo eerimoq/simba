@@ -71,12 +71,12 @@ static int esp_wifi_station_port_init(const char *ssid_p,
         esp_wifi_station_dhcp_client_start();
     }
 
-    return (esp_wifi_set_config(WIFI_IF_STA, (wifi_config_t *)&config));
+    return (esp_esp_wifi_set_config(WIFI_IF_STA, (wifi_config_t *)&config));
 }
 
 static int esp_wifi_station_port_connect(void)
 {
-    return (esp_wifi_connect());
+    return (esp_esp_wifi_connect());
 }
 
 static int esp_wifi_station_port_disconnect(void)
@@ -96,7 +96,7 @@ static int esp_wifi_station_port_set_ip_info(const struct inet_if_ip_info_t *inf
 
     esp_wifi_station_dhcp_client_stop();
 
-    if (tcpip_adapter_set_ip_info(WIFI_IF_STA, &info) != ESP_OK) {
+    if (esp_tcpip_adapter_set_ip_info(WIFI_IF_STA, &info) != ESP_OK) {
         return (-1);
     }
 
@@ -109,7 +109,7 @@ static int esp_wifi_station_port_get_ip_info(struct inet_if_ip_info_t *info_p)
 
     tcpip_adapter_ip_info_t info;
 
-    if (tcpip_adapter_get_ip_info(WIFI_IF_STA, &info) != ESP_OK) {
+    if (esp_tcpip_adapter_get_ip_info(WIFI_IF_STA, &info) != ESP_OK) {
         return (-1);
     }
 
@@ -122,14 +122,14 @@ static int esp_wifi_station_port_get_ip_info(struct inet_if_ip_info_t *info_p)
 
 static int esp_wifi_station_port_set_reconnect_policy(int policy)
 {
-    return (esp_wifi_set_auto_connect(policy));
+    return (esp_esp_wifi_set_auto_connect(policy));
 }
 
 static int esp_wifi_station_port_get_reconnect_policy(void)
 {
     bool auto_reconnect;
 
-    esp_wifi_get_auto_connect(&auto_reconnect);
+    esp_esp_wifi_get_auto_connect(&auto_reconnect);
 
     return (auto_reconnect);
 }
@@ -148,20 +148,20 @@ static enum esp_wifi_station_status_t esp_wifi_station_port_get_connect_status(v
 
 static int esp_wifi_station_port_dhcp_client_start(void)
 {
-    return (tcpip_adapter_dhcpc_start(TCPIP_ADAPTER_IF_STA));
+    return (esp_tcpip_adapter_dhcpc_start(TCPIP_ADAPTER_IF_STA));
 }
 
 static int esp_wifi_station_port_dhcp_client_stop(void)
 {
-    return (tcpip_adapter_dhcpc_stop(TCPIP_ADAPTER_IF_STA));
+    return (esp_tcpip_adapter_dhcpc_stop(TCPIP_ADAPTER_IF_STA));
 }
 
 enum esp_wifi_dhcp_status_t esp_wifi_station_port_dhcp_client_status(void)
 {
     tcpip_adapter_dhcp_status_t status;
 
-    if (tcpip_adapter_dhcpc_get_status(TCPIP_ADAPTER_IF_STA,
-                                       &status) != ESP_OK) {
+    if (esp_tcpip_adapter_dhcpc_get_status(TCPIP_ADAPTER_IF_STA,
+                                           &status) != ESP_OK) {
         return (-1);
     }
 

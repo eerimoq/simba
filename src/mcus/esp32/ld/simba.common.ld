@@ -1,5 +1,5 @@
 /*  Default entry point:  */
-ENTRY(call_start_cpu0);
+ENTRY(esp_call_start_cpu0);
 
 SECTIONS
 {

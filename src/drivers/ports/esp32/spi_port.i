@@ -196,8 +196,8 @@ static int spi_port_start(struct spi_driver_t *self_p)
                      | ESP32_SPI_USER_DOUTDIN);
 
     /* Install the interrupt handler. */
-    xt_set_interrupt_handler(dev_p->interrupt.cpu, isr, NULL);
-    xt_ints_on(BIT(dev_p->interrupt.cpu));
+    esp_xt_set_interrupt_handler(dev_p->interrupt.cpu, isr, NULL);
+    esp_xt_ints_on(BIT(dev_p->interrupt.cpu));
 
     /* Map the SPI peripheral interrupt to the SPI CPU interrupt. */
     intr_matrix_set(xPortGetCoreID(),

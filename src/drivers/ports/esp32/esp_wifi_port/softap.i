@@ -71,7 +71,7 @@ static int esp_wifi_softap_port_init(const char *ssid_p,
         config.authmode = WIFI_AUTH_WPA2_PSK;
     }
 
-    res = esp_wifi_set_config(WIFI_IF_AP, (wifi_config_t *)&config);
+    res = esp_esp_wifi_set_config(WIFI_IF_AP, (wifi_config_t *)&config);
     
     return (res == ESP_OK ? 0 : -1);
 }
@@ -87,7 +87,7 @@ static int esp_wifi_softap_port_get_ip_info(struct inet_if_ip_info_t *info_p)
 
     tcpip_adapter_ip_info_t info;
 
-    if (tcpip_adapter_get_ip_info(WIFI_IF_AP, &info) != 1) {
+    if (esp_tcpip_adapter_get_ip_info(WIFI_IF_AP, &info) != 1) {
         return (-1);
     }
 
@@ -104,27 +104,27 @@ static int esp_wifi_softap_port_get_number_of_connected_stations()
 }
 
 static int esp_wifi_softap_port_get_station_info(struct esp_wifi_softap_station_info_t *info_p,
-                                     int length)
+                                                 int length)
 {
     return (-1);
 }
 
 static int esp_wifi_softap_port_dhcp_server_start()
 {
-    return (!tcpip_adapter_dhcps_start(TCPIP_ADAPTER_IF_AP));
+    return (!esp_tcpip_adapter_dhcps_start(TCPIP_ADAPTER_IF_AP));
 }
 
 static int esp_wifi_softap_port_dhcp_server_stop()
 {
-    return (!tcpip_adapter_dhcps_stop(TCPIP_ADAPTER_IF_AP));
+    return (!esp_tcpip_adapter_dhcps_stop(TCPIP_ADAPTER_IF_AP));
 }
 
 static enum esp_wifi_dhcp_status_t esp_wifi_softap_port_dhcp_server_status()
 {
     tcpip_adapter_dhcp_status_t status;
     
-    if (tcpip_adapter_dhcps_get_status(TCPIP_ADAPTER_IF_AP,
-                                       &status) != ESP_OK) {
+    if (esp_tcpip_adapter_dhcps_get_status(TCPIP_ADAPTER_IF_AP,
+                                           &status) != ESP_OK) {
         return (-1);
     }
     
