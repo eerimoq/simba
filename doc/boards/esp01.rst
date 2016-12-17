@@ -30,6 +30,7 @@ Supported drivers for this board.
 - :doc:`../library-reference/drivers/flash`
 - :doc:`../library-reference/drivers/i2c_soft`
 - :doc:`../library-reference/drivers/pin`
+- :doc:`../library-reference/drivers/pwm_soft`
 - :doc:`../library-reference/drivers/spi`
 - :doc:`../library-reference/drivers/uart`
 - :doc:`../library-reference/drivers/uart_soft`
@@ -212,6 +213,8 @@ Default Standard Library configuration.
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_SYSTEM_TICK_FREQUENCY_                         |  100                                                |
 +--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_SYSTEM_TICK_SOFTWARE_                          |  0                                                  |
++--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_SYS_CONFIG_STRING_                             |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_SYS_SIMBA_MAIN_STACK_MAX_                      |  4096                                               |
@@ -381,6 +384,8 @@ Mcu
 .. _CONFIG_STD_OUTPUT_BUFFER_MAX: ../user-guide/configuration.html#c.CONFIG_STD_OUTPUT_BUFFER_MAX
 
 .. _CONFIG_SYSTEM_TICK_FREQUENCY: ../user-guide/configuration.html#c.CONFIG_SYSTEM_TICK_FREQUENCY
+
+.. _CONFIG_SYSTEM_TICK_SOFTWARE: ../user-guide/configuration.html#c.CONFIG_SYSTEM_TICK_SOFTWARE
 
 .. _CONFIG_SYS_CONFIG_STRING: ../user-guide/configuration.html#c.CONFIG_SYS_CONFIG_STRING
 
