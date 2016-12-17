@@ -192,3 +192,5 @@ struct can_device_t can_device[CAN_DEVICE_MAX] = {
 };
 
 struct adc_device_t adc_device[ADC_DEVICE_MAX];
+
+struct dac_device_t dac_device[DAC_DEVICE_MAX];

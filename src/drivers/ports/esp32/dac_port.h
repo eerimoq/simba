@@ -28,20 +28,19 @@
  * This file is part of the Simba project.
  */
 
-#ifndef __MCU_H__
-#define __MCU_H__
+#ifndef __DRIVERS_DAC_PORT_H__
+#define __DRIVERS_DAC_PORT_H__
 
-#include "esp32.h"
+struct dac_driver_t;
 
-#define PIN_DEVICE_MAX              36
-#define EXTI_DEVICE_MAX              1
+struct dac_device_t {
+    int dummy;
+};
 
-#define SPI_DEVICE_MAX               3
-#define UART_DEVICE_MAX              3
-#define ADC_DEVICE_MAX               2
-#define I2C_DEVICE_MAX               1
-#define FLASH_DEVICE_MAX             1
-#define CAN_DEVICE_MAX               1
-#define DAC_DEVICE_MAX               1
+struct dac_driver_t {
+    struct dac_device_t *dev_p;
+    int pin0_channel;
+    int pin1_channel;
+};
 
 #endif

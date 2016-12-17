@@ -31,13 +31,59 @@
 #include "simba.h"
 #include "dac_gen.i"
 
+#if defined(ARCH_ESP32)
+
+#define SKIP_TEST_SINE_440_HZ
+#define SKIP_TEST_PCM1611S
+
+#    define pin_0_dev pin_dac1_dev
+#    define pin_1_dev pin_dac2_dev
+
+/* 8 bits resolution. */
+#    define AMPLITUDE_MAX 0xff
+
+static uint8_t samples[4096];
+
+#else
+
+#    define pin_0_dev pin_dac0_dev
+#    define pin_1_dev pin_dac1_dev
+
 /* 12 bits resolution on SAM3. */
-#define AMPLITUDE_MAX 0xfff
+#    define AMPLITUDE_MAX 0xfff
 
 static uint16_t samples[4096];
 
+#endif
+
+static int test_ramp(struct harness_t *harness_p)
+{
+    int i;
+    struct dac_driver_t dac;
+
+    BTASSERT(dac_init(&dac,
+                      &dac_0_dev,
+                      &pin_0_dev,
+                      &pin_1_dev,
+                      1) == 0);
+
+    for (i = 0; i < AMPLITUDE_MAX + 1; i++) {
+        samples[0] = i;
+        samples[1] = (AMPLITUDE_MAX - i);
+        std_printf(FSTR("samples[0]: %5d, samples[1]: %5d\r\n"),
+                   samples[0],
+                   samples[1]);
+        BTASSERT(dac_convert(&dac, samples, 2) == 0);
+        thrd_sleep(10.0f / (AMPLITUDE_MAX + 1));
+    }
+
+    return (0);
+}
+
 static int test_sine_440_hz(struct harness_t *harness_p)
 {
+#if !defined(SKIP_TEST_SINE_440_HZ)
+    
     int i;
     float sample;
     int samples_per_second = (membersof(dac_gen_sine) * 440);
@@ -46,7 +92,7 @@ static int test_sine_440_hz(struct harness_t *harness_p)
 
     BTASSERT(dac_init(&dac,
                       &dac_0_dev,
-                      &pin_dac0_dev,
+                      &pin_0_dev,
                       NULL,
                       samples_per_second) == 0);
 
@@ -75,20 +121,30 @@ static int test_sine_440_hz(struct harness_t *harness_p)
     std_printf(FSTR("Waiting for last samples to be converted\r\n"));
 
     BTASSERT(dac_async_wait(&dac) == 0);
-
+    
     return (0);
+
+#else
+
+    (void)dac_gen_sine;
+    
+    return (1);
+    
+#endif
 }
 
 static int test_pcm1611s(struct harness_t *harness_p)
 {
+#if !defined(SKIP_TEST_PCM1611S)
+
     int i;
     int samples_per_second = 2 * 11025;
     struct dac_driver_t dac;
 
     BTASSERT(dac_init(&dac,
                       &dac_0_dev,
-                      &pin_dac0_dev,
-                      &pin_dac1_dev,
+                      &pin_0_dev,
+                      &pin_1_dev,
                       samples_per_second) == 0);
 
     for (i = 0; i < membersof(dac_gen_pcm1611s); i += 4096) {
@@ -101,12 +157,19 @@ static int test_pcm1611s(struct harness_t *harness_p)
     BTASSERT(dac_async_wait(&dac) == 0);
 
     return (0);
+
+#else
+    
+    return (1);
+    
+#endif
 }
 
 int main()
 {
     struct harness_t harness;
     struct harness_testcase_t testcases[] = {
+        { test_ramp, "test_ramp" },
         { test_sine_440_hz, "test_sine_440_hz" },
         { test_pcm1611s, "test_pcm1611s" },
         { NULL, NULL }

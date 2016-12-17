@@ -75,7 +75,7 @@ int dac_init(struct dac_driver_t *self_p,
  * @return zero(0) or negative error code.
  */
 int dac_async_convert(struct dac_driver_t *self_p,
-                      uint32_t *samples_p,
+                      void *samples_p,
                       size_t length);
 
 /**
@@ -97,7 +97,7 @@ int dac_async_wait(struct dac_driver_t *self_p);
  * @return zero(0) or negative error code.
  */
 int dac_convert(struct dac_driver_t *self_p,
-                uint32_t *samples_p,
+                void *samples_p,
                 size_t length);
 
 #endif

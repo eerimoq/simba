@@ -142,6 +142,7 @@ endif
 ifeq ($(FAMILY),esp32)
 DRIVERS_SRC ?= adc.c \
                can.c \
+               dac.c \
 	       ds18b20.c \
                flash.c \
                esp_wifi.c \

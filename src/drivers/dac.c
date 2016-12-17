@@ -57,7 +57,10 @@ int dac_init(struct dac_driver_t *self_p,
              int sampling_rate)
 {
     ASSERTN(self_p != NULL, EINVAL);
+    ASSERTN(dev_p != NULL, EINVAL);
     ASSERTN(sampling_rate > 0, EINVAL);
+    ASSERTN(pin0_dev_p != NULL, EINVAL);
+    ASSERTN(pin0_dev_p != pin1_dev_p, EINVAL);
 
     return (dac_port_init(self_p,
                           dev_p,
@@ -67,7 +70,7 @@ int dac_init(struct dac_driver_t *self_p,
 }
 
 int dac_async_convert(struct dac_driver_t *self_p,
-                      uint32_t *samples_p,
+                      void *samples_p,
                       size_t length)
 {
     ASSERTN(self_p != NULL, EINVAL);
@@ -85,7 +88,7 @@ int dac_async_wait(struct dac_driver_t *self_p)
 }
 
 int dac_convert(struct dac_driver_t *self_p,
-                uint32_t *samples_p,
+                void *samples_p,
                 size_t length)
 {
     ASSERTN(self_p != NULL, EINVAL);

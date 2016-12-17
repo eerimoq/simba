@@ -79,6 +79,8 @@
 
 #define flash_0_dev                            flash_device[0]
 
+#define dac_0_dev                                dac_device[0]
+
 #define ADC_PINS_MAX                                        16
 
 /**
