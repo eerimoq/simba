@@ -1571,6 +1571,7 @@ BOARDS = {
             "src/debug/harness.c", 
             "src/drivers/adc.c", 
             "src/drivers/can.c", 
+            "src/drivers/dac.c", 
             "src/drivers/ds18b20.c", 
             "src/drivers/flash.c", 
             "src/drivers/esp_wifi.c", 

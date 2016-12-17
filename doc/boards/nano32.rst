@@ -25,6 +25,7 @@ Supported drivers for this board.
 
 - :doc:`../library-reference/drivers/adc`
 - :doc:`../library-reference/drivers/can`
+- :doc:`../library-reference/drivers/dac`
 - :doc:`../library-reference/drivers/ds18b20`
 - :doc:`../library-reference/drivers/esp_wifi`
 - :doc:`../library-reference/drivers/flash`
