@@ -36,7 +36,7 @@
 static int frequency_to_hw_config(long frequency,
                                   long *duty_cycle_max_p)
 {
-    *duty_cycle_max_p = 10000;
+    *duty_cycle_max_p = (F_CPU / frequency);
 
     return (0);
 }
@@ -65,7 +65,7 @@ static int pwm_soft_port_module_init(long frequency)
 
     /* Configure and start the software PWM timer. */
     ESP8266_TIMER0->CTRL = (ESP8266_TIMER_CTRL_ENABLE
-                            | ESP8266_TIMER_CTRL_PRESCALE_256
+                            | ESP8266_TIMER_CTRL_PRESCALE_1
                             | ESP8266_TIMER_CTRL_INT_TRIGGER_EDGE);
 
     _xt_isr_attach(ESP8266_IRQ_NUM_TIMER1, isr, NULL);
