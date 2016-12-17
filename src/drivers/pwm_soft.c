@@ -30,6 +30,8 @@
 
 #include "simba.h"
 
+#define DUTY_CYCLE_MAX module.duty_cycle_max
+
 struct module_t {
     struct pwm_soft_port_module_t port;
     int initialized;
@@ -43,8 +45,6 @@ struct module_t {
 };
 
 static struct module_t module;
-
-#define DUTY_CYCLE_MAX module.duty_cycle_max
 
 static void unlink_pwm_soft_isr(struct pwm_soft_driver_t *self_p);
 
@@ -82,6 +82,9 @@ static void insert_pwm_soft(struct pwm_soft_driver_t *self_p)
     sys_unlock();
 }
 
+/**
+ * Unlink given software PWM from the list of started software PWM:s.
+ */
 static void unlink_pwm_soft_isr(struct pwm_soft_driver_t *self_p)
 {
     struct pwm_soft_driver_t *prev_p;

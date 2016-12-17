@@ -41,7 +41,7 @@ ISR(sys_tick)
     STM32_IWDG->KR = 0xaaaa;
 #endif
 
-    sys_tick();
+    sys_tick_isr();
 }
 
 static int sys_port_module_init(void)

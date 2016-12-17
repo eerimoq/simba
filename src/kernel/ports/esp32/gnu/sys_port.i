@@ -48,7 +48,7 @@ static void RAM_CODE sys_port_tick()
     ESP32_TIMG0->INT.CLR = 1;
     ESP32_TIMG0->TIMER[0].CONFIG |= (ESP32_TIMG_TIMER_CONFIG_ALARM_EN);
 
-    sys_tick();
+    sys_tick_isr();
 }
 
 static int sys_port_module_init(void)

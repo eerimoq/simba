@@ -57,7 +57,7 @@ static void *sys_port_ticker(void *arg)
         }
         abstimeout.tv_nsec = ((now.tv_nsec + 10000000L) % 1000000000L);
         pthread_cond_timedwait(&sys_port.cond, &sys_port.mutex, &abstimeout);
-        sys_tick();
+        sys_tick_isr();
     }
 
     return (NULL);

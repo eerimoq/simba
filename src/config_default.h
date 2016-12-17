@@ -766,6 +766,14 @@
 #endif
 
 /**
+ * System tick using a software timer instead of a hardware
+ * timer. Suitable for ESP8266 to enable software PWM.
+ */
+#ifndef CONFIG_SYSTEM_TICK_SOFTWARE
+#    define CONFIG_SYSTEM_TICK_SOFTWARE                     0
+#endif
+
+/**
  * Calculate thread CPU usage.
  */
 #ifndef CONFIG_THRD_CPU_USAGE
