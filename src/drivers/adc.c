@@ -57,8 +57,8 @@ int adc_init(struct adc_driver_t *self_p,
              long sampling_rate)
 {
     ASSERTN(self_p != NULL, EINVAL);
-    ASSERTN(dev_p != NULL, EINVAL);
-    ASSERTN(pin_dev_p != NULL, EINVAL);
+    ASSERTN(adc_is_valid_device(dev_p), -EINVAL);
+    ASSERTN(pin_is_valid_device(pin_dev_p), -EINVAL);
     ASSERTN(reference == ADC_REFERENCE_VCC, EINVAL);
     ASSERTN(sampling_rate > 0, EINVAL);
 
@@ -104,4 +104,10 @@ int adc_convert_isr(struct adc_driver_t *self_p,
     ASSERTN(sample_p != NULL, EINVAL);
 
     return (adc_port_convert_isr(self_p, sample_p));
+}
+
+int adc_is_valid_device(struct adc_device_t *dev_p)
+{
+    return ((dev_p >= &adc_device[0])
+            && (dev_p < &adc_device[ADC_DEVICE_MAX]));
 }

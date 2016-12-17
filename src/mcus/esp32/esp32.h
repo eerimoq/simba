@@ -1202,50 +1202,189 @@ struct esp32_spi_t {
 #define ESP32_SPI_USER_USR_MOSI                        BIT(27)
 #define ESP32_SPI_USER_USR_MISO                        BIT(28)
 
+struct esp32_rtc_control_t {
+};
+
+struct esp32_rtc_io_t {
+    uint32_t GPIO_OUT;
+    uint32_t GPIO_OUT_W1TS;
+    uint32_t GPIO_OUT_W1TC;
+    uint32_t GPIO_ENABLE;
+    uint32_t GPIO_ENABLE_W1TS;
+    uint32_t GPIO_ENABLE_W1TC;
+    uint32_t GPIO_STATUS;
+    uint32_t GPIO_STATUS_W1TS;
+    uint32_t GPIO_STATUS_W1TC;
+    uint32_t GPIO_IN;
+    uint32_t GPIO_PIN[18];
+    uint32_t RESERVED0;
+    uint32_t DIG_PAD_HOLD;
+    uint32_t HALL_SENS;
+    uint32_t SENSOR_PADS;
+    uint32_t ADC_PADS;
+    uint32_t DAC1_PAD;
+    uint32_t DAC2_PAD;
+    uint32_t XTAL_32K_PAD;
+    uint32_t TOUCH_CFG;
+    uint32_t TOUCH_PADS[10];
+    uint32_t EXT_WAKEUP0;
+    uint32_t XTL_EXT_CTR;
+    uint32_t SAR_I2C_IO;
+};
+
+/* Configure the sensor (ADC) pads. */
+#define ESP32_RTC_IO_SENSOR_PADS_1_HOLD                    BIT(31)
+#define ESP32_RTC_IO_SENSOR_PADS_2_HOLD                    BIT(30)
+#define ESP32_RTC_IO_SENSOR_PADS_3_HOLD                    BIT(29)
+#define ESP32_RTC_IO_SENSOR_PADS_4_HOLD                    BIT(28)
+#define ESP32_RTC_IO_SENSOR_PADS_1_MUX_SEL                 BIT(27)
+#define ESP32_RTC_IO_SENSOR_PADS_2_MUX_SEL                 BIT(26)
+#define ESP32_RTC_IO_SENSOR_PADS_3_MUX_SEL                 BIT(25)
+#define ESP32_RTC_IO_SENSOR_PADS_4_MUX_SEL                 BIT(24)
+#define ESP32_RTC_IO_SENSOR_PADS_1_FUN_SEL_POS                (22)
+#define ESP32_RTC_IO_SENSOR_PADS_1_FUN_SEL_MASK (0x3 << ESP32_RTC_IO_SENSOR_PADS_1_FUN_SEL_POS)
+#define ESP32_RTC_IO_SENSOR_PADS_1_FUN_SEL(value) BITFIELD_SET(ESP32_RTC_IO_SENSOR_PADS_1_FUN_SEL, value)
+#define ESP32_RTC_IO_SENSOR_PADS_1_SLP_SEL                 BIT(21)
+#define ESP32_RTC_IO_SENSOR_PADS_1_SLP_IE                  BIT(20)
+#define ESP32_RTC_IO_SENSOR_PADS_1_FUN_IE                  BIT(19)
+#define ESP32_RTC_IO_SENSOR_PADS_2_FUN_SEL_POS                (17)
+#define ESP32_RTC_IO_SENSOR_PADS_2_FUN_SEL_MASK (0x3 << ESP32_RTC_IO_SENSOR_PADS_2_FUN_SEL_POS)
+#define ESP32_RTC_IO_SENSOR_PADS_2_FUN_SEL(value) BITFIELD_SET(ESP32_RTC_IO_SENSOR_PADS_2_FUN_SEL, value)
+#define ESP32_RTC_IO_SENSOR_PADS_2_SLP_SEL                 BIT(16)
+#define ESP32_RTC_IO_SENSOR_PADS_2_SLP_IE                  BIT(15)
+#define ESP32_RTC_IO_SENSOR_PADS_2_FUN_IE                  BIT(14)
+#define ESP32_RTC_IO_SENSOR_PADS_3_FUN_SEL_POS                (12)
+#define ESP32_RTC_IO_SENSOR_PADS_3_FUN_SEL_MASK (0x3 << ESP32_RTC_IO_SENSOR_PADS_3_FUN_SEL_POS)
+#define ESP32_RTC_IO_SENSOR_PADS_3_FUN_SEL(value) BITFIELD_SET(ESP32_RTC_IO_SENSOR_PADS_3_FUN_SEL, value)
+#define ESP32_RTC_IO_SENSOR_PADS_3_SLP_SEL                 BIT(11)
+#define ESP32_RTC_IO_SENSOR_PADS_3_SLP_IE                  BIT(10)
+#define ESP32_RTC_IO_SENSOR_PADS_3_FUN_IE                  BIT(9)
+#define ESP32_RTC_IO_SENSOR_PADS_4_FUN_SEL_POS                (7)
+#define ESP32_RTC_IO_SENSOR_PADS_4_FUN_SEL_MASK (0x3 << ESP32_RTC_IO_SENSOR_PADS_4_FUN_SEL_POS)
+#define ESP32_RTC_IO_SENSOR_PADS_4_FUN_SEL(value) BITFIELD_SET(ESP32_RTC_IO_SENSOR_PADS_4_FUN_SEL, value)
+#define ESP32_RTC_IO_SENSOR_PADS_4_SLP_SEL                 BIT(6)
+#define ESP32_RTC_IO_SENSOR_PADS_4_SLP_IE                  BIT(5)
+#define ESP32_RTC_IO_SENSOR_PADS_4_FUN_IE                  BIT(4)
+
+/* Configure the adc (ADC) pads. */
+#define ESP32_RTC_IO_ADC_PAD_1_HOLD                    BIT(31)
+#define ESP32_RTC_IO_ADC_PAD_2_HOLD                    BIT(30)
+#define ESP32_RTC_IO_ADC_PAD_1_MUX_SEL                 BIT(29)
+#define ESP32_RTC_IO_ADC_PAD_2_MUX_SEL                 BIT(28)
+#define ESP32_RTC_IO_ADC_PAD_1_FUN_SEL_POS                (26)
+#define ESP32_RTC_IO_ADC_PAD_1_FUN_SEL_MASK (0x3 << ESP32_RTC_IO_ADC_PAD_1_FUN_SEL_POS)
+#define ESP32_RTC_IO_ADC_PAD_1_FUN_SEL(value) BITFIELD_SET(ESP32_RTC_IO_ADC_PAD_1_FUN_SEL, value)
+#define ESP32_RTC_IO_ADC_PAD_1_SLP_SEL                 BIT(25)
+#define ESP32_RTC_IO_ADC_PAD_1_SLP_IE                  BIT(24)
+#define ESP32_RTC_IO_ADC_PAD_1_FUN_IE                  BIT(23)
+#define ESP32_RTC_IO_ADC_PAD_2_FUN_SEL_POS                (22)
+#define ESP32_RTC_IO_ADC_PAD_2_FUN_SEL_MASK (0x3 << ESP32_RTC_IO_ADC_PAD_2_FUN_SEL_POS)
+#define ESP32_RTC_IO_ADC_PAD_2_FUN_SEL(value) BITFIELD_SET(ESP32_RTC_IO_ADC_PAD_2_FUN_SEL, value)
+#define ESP32_RTC_IO_ADC_PAD_2_SLP_SEL                 BIT(20)
+#define ESP32_RTC_IO_ADC_PAD_2_SLP_IE                  BIT(19)
+#define ESP32_RTC_IO_ADC_PAD_2_FUN_IE                  BIT(18)
+
+/* Configure the touch (ADC) pads. */
+#define ESP32_RTC_IO_TOUCH_PADS_HOLD                   BIT(31)
+#define ESP32_RTC_IO_TOUCH_PADS_DRV_POS                   (29)
+#define ESP32_RTC_IO_TOUCH_PADS_DRV_MASK (0x3 << ESP32_RTC_IO_TOUCH_PADS_DRV_POS)
+#define ESP32_RTC_IO_TOUCH_PADS_DRV(value) BITFIELD_SET(ESP32_RTC_IO_TOUCH_PADS_DRV, value)
+#define ESP32_RTC_IO_TOUCH_PADS_RDE                    BIT(28)
+#define ESP32_RTC_IO_TOUCH_PADS_RUE                    BIT(27)
+#define ESP32_RTC_IO_TOUCH_PADS_MUX_SEL                BIT(19)
+#define ESP32_RTC_IO_TOUCH_PADS_FUN_SEL_POS               (17)
+#define ESP32_RTC_IO_TOUCH_PADS_FUN_SEL_MASK (0x3 << ESP32_RTC_IO_TOUCH_PADS_FUN_SEL_POS)
+#define ESP32_RTC_IO_TOUCH_PADS_FUN_SEL(value) BITFIELD_SET(ESP32_RTC_IO_TOUCH_PADS_FUN_SEL, value)
+#define ESP32_RTC_IO_TOUCH_PADS_FUN_IE                 BIT(13)
+#define ESP32_RTC_IO_TOUCH_PADS_TO_GPIO                BIT(12)
+
+struct esp32_sar_adc_t {
+    uint32_t READ_CTRL;
+    uint32_t READ_STATUS1;
+    uint32_t MEAS_WAIT1;
+    uint32_t MEAS_WAIT2;
+    uint32_t MEAS_CTRL;
+    uint32_t READ_STATUS2;
+    uint32_t ULP_CP_SLEEP_CYC[5];
+    uint32_t START_FORCE;
+    uint32_t MEM_WR_CTRL;
+    uint32_t ATTEN1;
+    uint32_t ATTEN2;
+    uint32_t SLAVE_ADDR[4];
+    uint32_t TSENS_CTRL;
+    uint32_t I2C_CTRL;
+    uint32_t MEAS_1;
+    uint32_t TOUCH_CTRL1;
+    uint32_t TOUCH_THRES[5];
+    uint32_t TOUCH_OUT[5];
+    uint32_t TOUCH_CTRL2;
+    uint32_t RESERVED0;
+    uint32_t TOUCH_ENABLE;
+    uint32_t READ_CTRL2;
+    uint32_t MEAS_2;
+    uint32_t DAC_CTRL1;
+    uint32_t DAC_CTRL2;
+    uint32_t MEAS_CTRL2;
+};
+
+/* ADC convertion. */
+#define ESP32_SAR_ADC_MEAS_EN_PAD_FORCE                BIT(31)
+#define ESP32_SAR_ADC_MEAS_EN_PAD_POS                     (19)
+#define ESP32_SAR_ADC_MEAS_EN_PAD_MASK (0xfff << ESP32_SAR_ADC_MEAS_EN_PAD_POS)
+#define ESP32_SAR_ADC_MEAS_EN_PAD(value) BITFIELD_SET(ESP32_SAR_ADC_MEAS_EN_PAD, value)
+#define ESP32_SAR_ADC_MEAS_START_FORCE                 BIT(18)
+#define ESP32_SAR_ADC_MEAS_START                       BIT(17)
+#define ESP32_SAR_ADC_MEAS_DONE                        BIT(16)
+#define ESP32_SAR_ADC_MEAS_DATA_POS                        (0)
+#define ESP32_SAR_ADC_MEAS_DATA_MASK                    0xffff
+#define ESP32_SAR_ADC_MEAS_DATA_GET(reg) BITFIELD_GET(ESP32_SAR_ADC_MEAS_DATA, reg)
+
 /**
  * Devices.
  */
-#define ESP32_DPORT_REGISTER   ((volatile struct esp32_dport_t  *)0x3ff00000)
-#define ESP32_AES_ACCELERATOR  ((volatile struct esp32__t       *)0x3ff01000)
-#define ESP32_RSA_ACCELERATOR  ((volatile struct esp32__t       *)0x3ff02000)
-#define ESP32_SHA_ACCELERATOR  ((volatile struct esp32__t       *)0x3ff03000)
-#define ESP32_SECURE_BOOT      ((volatile struct esp32__t       *)0x3ff04000)
-#define ESP32_CACHE_MMU_TABLE  ((volatile struct esp32__t       *)0x3ff10000)
-#define ESP32_PID_CONTROLLER   ((volatile struct esp32__t       *)0x3ff1f000)
-#define ESP32_UART0            ((volatile struct esp32_uart_t   *)0x3ff40000)
-#define ESP32_SPI1             ((volatile struct esp32_spi_t    *)0x3ff42000)
-#define ESP32_SPI0             ((volatile struct esp32_spi_t    *)0x3ff43000)
-#define ESP32_GPIO             ((volatile struct esp32_gpio_t   *)0x3ff44000)
-#define ESP32_RTC              ((volatile struct esp32__t       *)0x3ff48000)
-#define ESP32_IO_MUX           ((volatile struct esp32_io_mux_t *)0x3ff49000)
-#define ESP32_SDIO_SLAVE_0     ((volatile struct esp32__t       *)0x3ff4b000)
-#define ESP32_UDMA1            ((volatile struct esp32__t       *)0x3ff4c000)
-#define ESP32_I2S0             ((volatile struct esp32__t       *)0x3ff4f000)
-#define ESP32_UART1            ((volatile struct esp32_uart_t   *)0x3ff50000)
-#define ESP32_I2C0             ((volatile struct esp32_i2c_t    *)0x3ff53000)
-#define ESP32_UDMA0            ((volatile struct esp32__t       *)0x3ff54000)
-#define ESP32_SDIO_SLAVE_1     ((volatile struct esp32__t       *)0x3ff55000)
-#define ESP32_RMT              ((volatile struct esp32__t       *)0x3ff56000)
-#define ESP32_PCNT             ((volatile struct esp32__t       *)0x3ff57000)
-#define ESP32_SDIO_SLAVE_2     ((volatile struct esp32__t       *)0x3ff58000)
-#define ESP32_LED_PWM          ((volatile struct esp32__t       *)0x3ff59000)
-#define ESP32_EFUSE_CONTROLLER ((volatile struct esp32__t       *)0x3ff5a000)
-#define ESP32_FLASH_ENCRYPTION ((volatile struct esp32__t       *)0x3ff5b000)
-#define ESP32_PWM0             ((volatile struct esp32__t       *)0x3ff5e000)
-#define ESP32_TIMG0            ((volatile struct esp32_timg_t   *)0x3ff5f000)
-#define ESP32_TIMG1            ((volatile struct esp32_timg_t   *)0x3ff60000)
-#define ESP32_SPI2             ((volatile struct esp32_spi_t    *)0x3ff64000)
-#define ESP32_SPI3             ((volatile struct esp32_spi_t    *)0x3ff65000)
-#define ESP32_SYSCON           ((volatile struct esp32__t       *)0x3ff66000)
-#define ESP32_I2C1             ((volatile struct esp32_i2c_t    *)0x3ff67000)
-#define ESP32_SDMMC            ((volatile struct esp32__t       *)0x3ff68000)
-#define ESP32_EMAC             ((volatile struct esp32__t       *)0x3ff69000)
-#define ESP32_CAN              ((volatile struct esp32_can_t    *)0x3ff6b000)
-#define ESP32_PWM1             ((volatile struct esp32__t       *)0x3ff6c000)
-#define ESP32_I2S1             ((volatile struct esp32__t       *)0x3ff6d000)
-#define ESP32_UART2            ((volatile struct esp32_uart_t   *)0x3ff6e000)
-#define ESP32_PWM2             ((volatile struct esp32__t       *)0x3ff6f000)
-#define ESP32_PWM3             ((volatile struct esp32__t       *)0x3ff70000)
-#define ESP32_RNG              ((volatile struct esp32__t       *)0x3ff75000)
+#define ESP32_DPORT_REGISTER   ((volatile struct esp32_dport_t    *)0x3ff00000)
+#define ESP32_AES_ACCELERATOR  ((volatile struct esp32__t         *)0x3ff01000)
+#define ESP32_RSA_ACCELERATOR  ((volatile struct esp32__t         *)0x3ff02000)
+#define ESP32_SHA_ACCELERATOR  ((volatile struct esp32__t         *)0x3ff03000)
+#define ESP32_SECURE_BOOT      ((volatile struct esp32__t         *)0x3ff04000)
+#define ESP32_CACHE_MMU_TABLE  ((volatile struct esp32__t         *)0x3ff10000)
+#define ESP32_PID_CONTROLLER   ((volatile struct esp32__t         *)0x3ff1f000)
+#define ESP32_UART0            ((volatile struct esp32_uart_t     *)0x3ff40000)
+#define ESP32_SPI1             ((volatile struct esp32_spi_t      *)0x3ff42000)
+#define ESP32_SPI0             ((volatile struct esp32_spi_t      *)0x3ff43000)
+#define ESP32_GPIO             ((volatile struct esp32_gpio_t     *)0x3ff44000)
+#define ESP32_RTC_CTRL         ((volatile struct esp32_rtc_ctrl_t *)0x3ff48000)
+#define ESP32_RTC_IO           ((volatile struct esp32_rtc_io_t   *)0x3ff48400)
+#define ESP32_SAR_ADC          ((volatile struct esp32_sar_adc_t  *)0x3ff48800)
+#define ESP32_IO_MUX           ((volatile struct esp32_io_mux_t   *)0x3ff49000)
+#define ESP32_SDIO_SLAVE_0     ((volatile struct esp32__t         *)0x3ff4b000)
+#define ESP32_UDMA1            ((volatile struct esp32__t         *)0x3ff4c000)
+#define ESP32_I2S0             ((volatile struct esp32__t         *)0x3ff4f000)
+#define ESP32_UART1            ((volatile struct esp32_uart_t     *)0x3ff50000)
+#define ESP32_I2C0             ((volatile struct esp32_i2c_t      *)0x3ff53000)
+#define ESP32_UDMA0            ((volatile struct esp32__t         *)0x3ff54000)
+#define ESP32_SDIO_SLAVE_1     ((volatile struct esp32__t         *)0x3ff55000)
+#define ESP32_RMT              ((volatile struct esp32__t         *)0x3ff56000)
+#define ESP32_PCNT             ((volatile struct esp32__t         *)0x3ff57000)
+#define ESP32_SDIO_SLAVE_2     ((volatile struct esp32__t         *)0x3ff58000)
+#define ESP32_LED_PWM          ((volatile struct esp32__t         *)0x3ff59000)
+#define ESP32_EFUSE_CONTROLLER ((volatile struct esp32__t         *)0x3ff5a000)
+#define ESP32_FLASH_ENCRYPTION ((volatile struct esp32__t         *)0x3ff5b000)
+#define ESP32_PWM0             ((volatile struct esp32__t         *)0x3ff5e000)
+#define ESP32_TIMG0            ((volatile struct esp32_timg_t     *)0x3ff5f000)
+#define ESP32_TIMG1            ((volatile struct esp32_timg_t     *)0x3ff60000)
+#define ESP32_SPI2             ((volatile struct esp32_spi_t      *)0x3ff64000)
+#define ESP32_SPI3             ((volatile struct esp32_spi_t      *)0x3ff65000)
+#define ESP32_SYSCON           ((volatile struct esp32__t         *)0x3ff66000)
+#define ESP32_I2C1             ((volatile struct esp32_i2c_t      *)0x3ff67000)
+#define ESP32_SDMMC            ((volatile struct esp32__t         *)0x3ff68000)
+#define ESP32_EMAC             ((volatile struct esp32__t         *)0x3ff69000)
+#define ESP32_CAN              ((volatile struct esp32_can_t      *)0x3ff6b000)
+#define ESP32_PWM1             ((volatile struct esp32__t         *)0x3ff6c000)
+#define ESP32_I2S1             ((volatile struct esp32__t         *)0x3ff6d000)
+#define ESP32_UART2            ((volatile struct esp32_uart_t     *)0x3ff6e000)
+#define ESP32_PWM2             ((volatile struct esp32__t         *)0x3ff6f000)
+#define ESP32_PWM3             ((volatile struct esp32__t         *)0x3ff70000)
+#define ESP32_RNG              ((volatile struct esp32__t         *)0x3ff75000)
 
 #endif

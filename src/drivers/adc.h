@@ -129,4 +129,13 @@ int adc_convert(struct adc_driver_t *self_p,
 int adc_convert_isr(struct adc_driver_t *self_p,
                     uint16_t *sample_p);
 
+/**
+ * Check if given ADC device is valid.
+ *
+ * @param[in] dev_p ADC device to validate.
+ *
+ * @return true(1) if the pin device is valid, otherwise false(0).
+ */
+int adc_is_valid_device(struct adc_device_t *dev_p);
+
 #endif

@@ -218,6 +218,7 @@ extern "C" {
 #    include "drivers/ds18b20.h"
 #    include "drivers/spi.h"
 #    include "drivers/uart.h"
+#    include "drivers/adc.h"
 #    include "drivers/esp_wifi.h"
 #    include "drivers/esp_wifi/station.h"
 #    include "drivers/esp_wifi/softap.h"

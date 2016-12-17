@@ -257,3 +257,10 @@ int pin_set_mode(struct pin_driver_t *self_p, int mode)
 
     return (pin_port_set_mode(self_p, mode));
 }
+
+int pin_is_valid_device(struct pin_device_t *dev_p)
+{
+    return ((dev_p != NULL)
+            && (dev_p >= &pin_device[0])
+            && (dev_p < &pin_device[PIN_DEVICE_MAX]));
+}

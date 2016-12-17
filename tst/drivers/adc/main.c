@@ -37,11 +37,11 @@ static int test_init(struct harness_t *harness_p)
 {
     BTASSERT(adc_init(&adc,
                       &adc_0_dev,
-                      &pin_a0_dev,
+                      &pin_adc0_dev,
                       ADC_REFERENCE_VCC,
                       10) == 0);
 
-    BTASSERT(pin_init(&pin, &pin_d2_dev, PIN_OUTPUT) == 0);
+    BTASSERT(pin_init(&pin, &pin_gpio02_dev, PIN_OUTPUT) == 0);
     BTASSERT(pin_write(&pin, 1) == 0);
 
     return (0);

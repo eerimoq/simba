@@ -34,7 +34,7 @@
 #include "soc/dport_reg.h"
 
 struct pin_device_t pin_device[PIN_DEVICE_MAX] = {
-    /* 0-9. */
+    /* GPIO 0-9. */
     { .id =  0, .iomux = 16 },
     { .id =  1, .iomux = 33 },
     { .id =  2, .iomux = 15 },
@@ -46,7 +46,7 @@ struct pin_device_t pin_device[PIN_DEVICE_MAX] = {
     { .id =  8, .iomux = 25 },
     { .id =  9, .iomux = 20 },
 
-    /* 10-19. */
+    /* GPIO 10-19. */
     { .id = 10, .iomux = 21 },
     { .id = 11, .iomux = 22 },
     { .id = 12, .iomux = 12 },
@@ -58,7 +58,7 @@ struct pin_device_t pin_device[PIN_DEVICE_MAX] = {
     { .id = 18, .iomux = 27 },
     { .id = 19, .iomux = 28 },
 
-    /* 20-29. */
+    /* GPIO 20-29. */
     { .id = 20, .iomux = 29 },
     { .id = 21, .iomux = 30 },
     { .id = 22, .iomux = 31 },
@@ -70,7 +70,7 @@ struct pin_device_t pin_device[PIN_DEVICE_MAX] = {
     /* { .id = 28, .iomux = -1 }, */
     /* { .id = 29, .iomux = -1 }, */
 
-    /* 30-39. */
+    /* GPIO 30-39. */
     /* { .id = 30, .iomux = -1 }, */
     /* { .id = 31, .iomux = -1 }, */
     { .id = 32, .iomux =  6 },
@@ -190,3 +190,5 @@ struct can_device_t can_device[CAN_DEVICE_MAX] = {
         .rx_pin_device_p = &pin_gpio33_dev
     }
 };
+
+struct adc_device_t adc_device[ADC_DEVICE_MAX];

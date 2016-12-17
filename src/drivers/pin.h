@@ -161,4 +161,13 @@ static inline int pin_device_write_low(const struct pin_device_t *dev_p)
     return (pin_port_device_write_low(dev_p));
 }
 
+/**
+ * Check if given pin device is valid.
+ *
+ * @param[in] dev_p Pin device to validate.
+ *
+ * @return true(1) if the pin device is valid, otherwise false(0).
+ */
+int pin_is_valid_device(struct pin_device_t *dev_p);
+
 #endif
