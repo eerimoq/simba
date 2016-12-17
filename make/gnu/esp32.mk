@@ -46,8 +46,6 @@ CXXFLAGS += -Os \
           -ffunction-sections \
           -fdata-sections
 
-LIBPATH += $(ESP_IDF_ROOT)/components/esp32/lib
-
 LDFLAGS += -Wl,-static \
            -nostdlib \
            -Wl,-EL \

@@ -67,7 +67,7 @@ BOARDS = {
             "FAMILY_SAM", 
             "MCU_SAM3X8E", 
             "BOARD_ARDUINO_DUE", 
-            "VERSION=12.2.1"
+            "VERSION=master"
         ], 
         "cflags": [
             "-Werror", 
@@ -231,7 +231,7 @@ BOARDS = {
             "FAMILY_AVR", 
             "MCU_ATMEGA2560", 
             "BOARD_ARDUINO_MEGA", 
-            "VERSION=12.2.1", 
+            "VERSION=master", 
             "__DELAY_BACKWARD_COMPATIBLE__"
         ], 
         "cflags": [
@@ -390,7 +390,7 @@ BOARDS = {
             "FAMILY_AVR", 
             "MCU_ATMEGA328P", 
             "BOARD_ARDUINO_NANO", 
-            "VERSION=12.2.1", 
+            "VERSION=master", 
             "__DELAY_BACKWARD_COMPATIBLE__"
         ], 
         "cflags": [
@@ -549,7 +549,7 @@ BOARDS = {
             "FAMILY_AVR", 
             "MCU_ATMEGA32U4", 
             "BOARD_ARDUINO_PRO_MICRO", 
-            "VERSION=12.2.1", 
+            "VERSION=master", 
             "__DELAY_BACKWARD_COMPATIBLE__"
         ], 
         "cflags": [
@@ -712,7 +712,7 @@ BOARDS = {
             "FAMILY_AVR", 
             "MCU_ATMEGA328P", 
             "BOARD_ARDUINO_UNO", 
-            "VERSION=12.2.1", 
+            "VERSION=master", 
             "__DELAY_BACKWARD_COMPATIBLE__"
         ], 
         "cflags": [
@@ -871,7 +871,7 @@ BOARDS = {
             "FAMILY_LINUX", 
             "MCU_LINUX", 
             "BOARD_CYGWIN", 
-            "VERSION=12.2.1"
+            "VERSION=master"
         ], 
         "cflags": [
             "-Werror", 
@@ -1007,7 +1007,7 @@ BOARDS = {
             "FAMILY_ESP", 
             "MCU_ESP8266", 
             "BOARD_ESP01", 
-            "VERSION=12.2.1", 
+            "VERSION=master", 
             "ICACHE_FLASH", 
             "__STRICT_ANSI__", 
             "__ets__"
@@ -1166,7 +1166,7 @@ BOARDS = {
             "FAMILY_ESP", 
             "MCU_ESP8266", 
             "BOARD_ESP12E", 
-            "VERSION=12.2.1", 
+            "VERSION=master", 
             "ICACHE_FLASH", 
             "__STRICT_ANSI__", 
             "__ets__"
@@ -1325,7 +1325,7 @@ BOARDS = {
             "FAMILY_LINUX", 
             "MCU_LINUX", 
             "BOARD_LINUX", 
-            "VERSION=12.2.1"
+            "VERSION=master"
         ], 
         "cflags": [
             "-Werror", 
@@ -1461,7 +1461,7 @@ BOARDS = {
             "FAMILY_ESP32", 
             "MCU_ESP32", 
             "BOARD_NANO32", 
-            "VERSION=12.2.1"
+            "VERSION=master"
         ], 
         "cflags": [
             "-Os", 
@@ -1494,14 +1494,15 @@ BOARDS = {
             "build/nano32", 
             "src/boards/nano32", 
             "src/mcus/esp32", 
-            "3pp/esp32/esp-idf/components/esp32/include", 
-            "3pp/esp32/esp-idf/components/newlib/include", 
-            "3pp/esp32/esp-idf/components/freertos/include", 
-            "3pp/esp32/esp-idf/components/nvs_flash/include", 
-            "3pp/esp32/esp-idf/components/spi_flash/include", 
-            "3pp/esp32/esp-idf/components/tcpip_adapter/include", 
-            "3pp/esp32/esp-idf/components/lwip/include/lwip", 
-            "3pp/esp32/esp-idf/components/lwip/include/lwip/port", 
+            "3pp/esp32/inc/driver/include", 
+            "3pp/esp32/inc/esp32/include", 
+            "3pp/esp32/inc/newlib/include", 
+            "3pp/esp32/inc/freertos/include", 
+            "3pp/esp32/inc/nvs_flash/include", 
+            "3pp/esp32/inc/spi_flash/include", 
+            "3pp/esp32/inc/tcpip_adapter/include", 
+            "3pp/esp32/inc/lwip/include/lwip", 
+            "3pp/esp32/inc/lwip/include/lwip/port", 
             "src", 
             "src/drivers/ports/esp32", 
             "3pp/mbedtls/include", 
@@ -1523,6 +1524,7 @@ BOARDS = {
             "net80211", 
             "phy", 
             "pp", 
+            "coexist", 
             "rtc", 
             "smartconfig", 
             "wpa", 
@@ -1542,6 +1544,8 @@ BOARDS = {
             "tcpip_adapter", 
             "vfs", 
             "wpa_supplicant", 
+            "ethernet", 
+            "ulp", 
             "gcc", 
             "c", 
             "m", 
@@ -1550,10 +1554,7 @@ BOARDS = {
         "libpath": [
             "src/mcus/esp32/ld", 
             "3pp/esp32/esp-idf/components/esp32/ld", 
-            "3pp/esp32/esp-idf/components/esp32", 
-            "3pp/esp32/esp-idf/components/newlib/lib", 
-            "3pp/esp32/lib", 
-            "3pp/esp32/esp-idf/components/esp32/lib"
+            "3pp/esp32/lib"
         ], 
         "linker_script": "simba.flash.ld", 
         "mcu_desc": "Espressif ESP32 @ 240 MHz, 512 kB sram, 4 MB flash", 
@@ -1568,6 +1569,7 @@ BOARDS = {
             "src/collections/hash_map.c", 
             "src/debug/log.c", 
             "src/debug/harness.c", 
+            "src/drivers/adc.c", 
             "src/drivers/can.c", 
             "src/drivers/ds18b20.c", 
             "src/drivers/flash.c", 
@@ -1630,7 +1632,7 @@ BOARDS = {
             "FAMILY_ESP", 
             "MCU_ESP8266", 
             "BOARD_NODEMCU", 
-            "VERSION=12.2.1", 
+            "VERSION=master", 
             "ICACHE_FLASH", 
             "__STRICT_ANSI__", 
             "__ets__"
@@ -1789,7 +1791,7 @@ BOARDS = {
             "FAMILY_STM32F2", 
             "MCU_STM32F205RG", 
             "BOARD_PHOTON", 
-            "VERSION=12.2.1"
+            "VERSION=master"
         ], 
         "cflags": [
             "-Werror", 
@@ -1953,7 +1955,7 @@ BOARDS = {
             "FAMILY_STM32F3", 
             "MCU_STM32F303VC", 
             "BOARD_STM32F3DISCOVERY", 
-            "VERSION=12.2.1"
+            "VERSION=master"
         ], 
         "cflags": [
             "-Werror", 
@@ -2102,7 +2104,7 @@ BOARDS = {
             "FAMILY_STM32F1", 
             "MCU_STM32F100RB", 
             "BOARD_STM32VLDISCOVERY", 
-            "VERSION=12.2.1"
+            "VERSION=master"
         ], 
         "cflags": [
             "-Werror", 

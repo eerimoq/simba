@@ -23,6 +23,7 @@ Drivers
 
 Supported drivers for this board.
 
+- :doc:`../library-reference/drivers/adc`
 - :doc:`../library-reference/drivers/can`
 - :doc:`../library-reference/drivers/ds18b20`
 - :doc:`../library-reference/drivers/esp_wifi`
@@ -59,9 +60,9 @@ Below is the memory usage of two applications:
 +--------------------------+-----------+-----------+
 | Application              | Flash     | RAM       |
 +==========================+===========+===========+
-| minimal-configuration    |    179049 |     38060 |
+| minimal-configuration    |    233669 |     48896 |
 +--------------------------+-----------+-----------+
-| default-configuration    |    210097 |     59792 |
+| default-configuration    |    265253 |     70636 |
 +--------------------------+-----------+-----------+
 
 Default configuration
