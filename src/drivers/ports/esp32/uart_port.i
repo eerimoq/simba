@@ -2,9 +2,9 @@
  * @section License
  *
  * The MIT License (MIT)
- * 
+ *
  * Copyright (c) 2014-2016, Erik Moqvist
- * 
+ *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
  * files (the "Software"), to deal in the Software without
@@ -42,8 +42,10 @@ static struct fs_counter_t rx_errors;
 
 /**
  * Fill the tx fifo with data from given uart driver.
+ *
+ * @return Number of bytes not yet added to the transmit fifo.
  */
-static void fill_tx_fifo(struct uart_driver_t *drv_p)
+static size_t fill_tx_fifo(struct uart_driver_t *drv_p)
 {
     while ((drv_p->txsize > 0)
            && ((drv_p->dev_p->regs_p->STATUS
@@ -52,6 +54,8 @@ static void fill_tx_fifo(struct uart_driver_t *drv_p)
         drv_p->dev_p->regs_p->FIFO = *drv_p->txbuf_p++;
         drv_p->txsize--;
     }
+
+    return (drv_p->txsize);
 }
 
 static inline void tx_isr(struct uart_driver_t *drv_p,
@@ -60,12 +64,9 @@ static inline void tx_isr(struct uart_driver_t *drv_p,
     /* Clear the interrupt. */
     dev_p->regs_p->INT_CLR = ESP32_UART_INT_CLR_TXFIFO_EMPTY;
 
-    /* Fill the fifo (if there is more data to send). */
-    fill_tx_fifo(drv_p);
-
-    /* Resume the writing thread when all data has been written to the
-       fifo. */
-    if (drv_p->txsize == 0) {
+    /* Fill the fifo (if there is more data to send). Resume the
+       writing thread when all data has been written to the fifo. */
+    if (fill_tx_fifo(drv_p) == 0) {
         dev_p->regs_p->INT_ENA &= ~ESP32_UART_INT_ENA_TXFIFO_EMPTY;
         thrd_resume_isr(drv_p->thrd_p, 0);
 
@@ -198,9 +199,12 @@ static ssize_t uart_port_write_cb(void *arg_p,
     self_p->thrd_p = thrd_self();
 
     sys_lock();
-    fill_tx_fifo(self_p);
-    self_p->dev_p->regs_p->INT_ENA |= ESP32_UART_INT_ENA_TXFIFO_EMPTY;
-    thrd_suspend_isr(NULL);
+
+    if (fill_tx_fifo(self_p) > 0) {
+        self_p->dev_p->regs_p->INT_ENA |= ESP32_UART_INT_ENA_TXFIFO_EMPTY;
+        thrd_suspend_isr(NULL);
+    }
+
     sys_unlock();
 
     sem_give(&self_p->sem, 1);
@@ -220,9 +224,7 @@ static ssize_t uart_port_write_cb_isr(void *arg_p,
     self_p->txbuf_p = txbuf_p;
     self_p->txsize = size;
 
-    while (self_p->txsize > 0) {
-        fill_tx_fifo(self_p);
-    }
+    while (fill_tx_fifo(self_p) > 0);
 
     return (size);
 }
