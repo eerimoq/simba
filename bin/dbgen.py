@@ -123,7 +123,7 @@ def main():
         cxxflags = get_make_variable(board, "CXXFLAGS").split()
         database["boards"][board]["cxxflags"] = cxxflags
 
-        # Get CDEFS.
+        # Get CDEFS. Escape quoted strings.
         cdefs = get_make_variable(board, "CDEFS").split()
         database["boards"][board]["cdefs"] = cdefs
 

@@ -515,7 +515,8 @@ $(TESTS:%=%.jc):
 
 tags:
 	echo "Creating tags file .TAGS"
-	etags -o .TAGS --declarations $$(git ls-files *.[hci] | xargs)
+	etags -o .TAGS --declarations $$(git ls-files *.[hci] | xargs) \
+	$$(find 3pp/mbedtls -name "*.[hc]" -o -name "*.cpp" | xargs)
 
 cloc:
 	cloc $$(git ls-files | grep -v 3pp | xargs)

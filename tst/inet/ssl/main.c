@@ -39,7 +39,7 @@ static int test_client(struct harness_t *harness_p)
     char buf[8];
 
     /* Create a context with default settings. */
-    BTASSERT(ssl_context_init(&context) == 0);
+    BTASSERT(ssl_context_init(&context, ssl_protocol_tls_v1_0) == 0);
 
     /* Create a socket and connect to the server. */
     BTASSERT(socket_open_tcp(&socket) == 0);
@@ -49,11 +49,10 @@ static int test_client(struct harness_t *harness_p)
     BTASSERT(socket_connect(&socket, &addr) == 0);
 
     /* Wrap the socket in SSL. */
-    BTASSERT(ssl_socket_init(&ssl_socket,
+    BTASSERT(ssl_socket_open(&ssl_socket,
                              &context,
                              &socket,
                              ssl_socket_mode_client_t) == 0);
-    BTASSERT(ssl_socket_handshake(&ssl_socket) == 0);
 
     /* Transfer data to and from the server. */
     BTASSERT(ssl_socket_write(&ssl_socket, "hello", 6) == 6);
@@ -73,9 +72,14 @@ static int test_server(struct harness_t *harness_p)
     struct socket_t listener, socket;
     struct inet_addr_t addr;
     char buf[8];
-
+    static char certificate[] = "";
+    static char key[] = "";
+    
     /* Create a context with default settings. */
-    BTASSERT(ssl_context_init(&context) == 0);
+    BTASSERT(ssl_context_init(&context, ssl_protocol_tls_v1_0) == 0);
+    BTASSERT(ssl_context_load_cert_chain(&context,
+                                         &certificate[0],
+                                         &key[0]) == 0);
 
     /* Create a socket and connect to the server. */
     BTASSERT(socket_open_tcp(&listener) == 0);
@@ -83,11 +87,10 @@ static int test_server(struct harness_t *harness_p)
     BTASSERT(socket_accept(&listener, &socket, &addr) == 0);
 
     /* Wrap the socket in SSL. */
-    BTASSERT(ssl_socket_init(&ssl_socket,
+    BTASSERT(ssl_socket_open(&ssl_socket,
                              &context,
                              &socket,
                              ssl_socket_mode_server_t) == 0);
-    BTASSERT(ssl_socket_handshake(&ssl_socket) == 0);
 
     /* Transfer data to and from the server. */
     BTASSERT(ssl_socket_read(&ssl_socket, &buf[0], 6) == 6);

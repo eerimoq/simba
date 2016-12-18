@@ -40,7 +40,7 @@
 
 #include "simba.h"
 
-#include "filesystems/spiffs/config.h"
+#include "spiffs/config.h"
 
 #define SPIFFS_OK                       0
 #define SPIFFS_ERR_NOT_MOUNTED          -10000

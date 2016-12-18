@@ -2,9 +2,9 @@
  * @section License
  *
  * The MIT License (MIT)
- *
+ * 
  * Copyright (c) 2014-2016, Erik Moqvist
- *
+ * 
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
  * files (the "Software"), to deal in the Software without
@@ -28,4 +28,12 @@
  * This file is part of the Simba project.
  */
 
-#include "simba.h"
+#ifndef __MBEDTLS_USER_CONFIG_H__
+#define __MBEDTLS_USER_CONFIG_H__
+
+#define MBEDTLS_NO_PLATFORM_ENTROPY
+#undef MBEDTLS_NET_C
+#undef MBEDTLS_TIMING_C
+#undef MBEDTLS_FS_IO
+
+#endif

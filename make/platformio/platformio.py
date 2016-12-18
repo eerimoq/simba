@@ -6,6 +6,7 @@ import subprocess
 import argparse
 import json
 import os
+import re
 
 
 SIMBA_GEN_C_FMT = """
@@ -266,6 +267,17 @@ def setup_board_nano32(env):
         ccflags.append(flag)
     env.Replace(CCFLAGS=ccflags)
 
+    cppdefines = []
+
+    for cppdefine in env["CPPDEFINES"]:
+        try:
+            if "MBEDTLS" in cppdefine[0]:
+                continue
+        except:
+            pass
+        cppdefines.append(cppdefine)
+    env.Replace(CPPDEFINES=cppdefines)
+
 
 env = DefaultEnvironment()
 
@@ -369,7 +381,9 @@ def generate_platformio_sconsscript(database, version):
         # Add everything we need, and a little more.
         selected_data = {
             'inc': data['inc'],
-            'cdefs': [cdef for cdef in data['cdefs'] if not cdef.startswith("F_CPU")],
+            'cdefs': [re.sub(r'"(.*)"', r'"\"\1\""', cdef)
+                      for cdef in data['cdefs']
+                      if not cdef.startswith("F_CPU")],
             'src': data['src'],
             'cflags': data['cflags'],
             'cxxflags': data['cxxflags'],

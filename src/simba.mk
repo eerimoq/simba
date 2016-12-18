@@ -29,6 +29,7 @@
 #
 
 INC += $(SIMBA_ROOT)/src
+INC += $(SIMBA_ROOT)/3pp/compat
 
 # Alloc package.
 ALLOC_SRC ?= circular_heap.c \
@@ -207,10 +208,6 @@ endif
 
 INC += $(SIMBA_ROOT)/3pp/mbedtls/include
 
-ifneq ($(FAMILY),$(filter $(FAMILY), esp32))
-INC += $(SIMBA_ROOT)/src/inet
-endif
-
 INET_SRC_TMP = \
 	http_server.c \
 	http_websocket_server.c \
@@ -221,14 +218,11 @@ INET_SRC_TMP = \
 	network_interface/slip.c \
 	network_interface/wifi.c \
 	socket.c \
-	ssl.c \
 	ping.c
 
 ifeq ($(FAMILY),$(filter $(FAMILY), esp esp32))
     INET_SRC_TMP += network_interface/driver/esp.c
 endif
-
-INET_SRC ?= $(INET_SRC_TMP)
 
 ifneq ($(ARCH),$(filter $(ARCH), esp esp32 linux))
     LWIP_SRC ?= \
@@ -257,10 +251,92 @@ ifneq ($(ARCH),$(filter $(ARCH), esp esp32 linux))
 	3pp/lwip-1.4.1/src/netif/etharp.c \
 	3pp/lwip-1.4.1/src/netif/ethernetif.c \
 	3pp/lwip-1.4.1/src/api/tcpip.c \
-	src/inet/arch/sys_arch.c
+	3pp/compat/arch/sys_arch.c
 
     SRC += $(LWIP_SRC:%=$(SIMBA_ROOT)/%)
 endif
+
+ifeq ($(ARCH),$(filter $(ARCH), esp esp32 linux))
+MBED_TLS_SRC ?= \
+	3pp/mbedtls/library/aes.c \
+	3pp/mbedtls/library/aesni.c \
+	3pp/mbedtls/library/arc4.c \
+	3pp/mbedtls/library/asn1parse.c \
+	3pp/mbedtls/library/asn1write.c \
+	3pp/mbedtls/library/base64.c \
+	3pp/mbedtls/library/bignum.c \
+	3pp/mbedtls/library/blowfish.c \
+	3pp/mbedtls/library/camellia.c \
+	3pp/mbedtls/library/ccm.c \
+	3pp/mbedtls/library/certs.c \
+	3pp/mbedtls/library/cipher.c \
+	3pp/mbedtls/library/cipher_wrap.c \
+	3pp/mbedtls/library/cmac.c \
+	3pp/mbedtls/library/ctr_drbg.c \
+	3pp/mbedtls/library/debug.c \
+	3pp/mbedtls/library/des.c \
+	3pp/mbedtls/library/dhm.c \
+	3pp/mbedtls/library/ecdh.c \
+	3pp/mbedtls/library/ecdsa.c \
+	3pp/mbedtls/library/ecjpake.c \
+	3pp/mbedtls/library/ecp.c \
+	3pp/mbedtls/library/ecp_curves.c \
+	3pp/mbedtls/library/entropy.c \
+	3pp/mbedtls/library/entropy_poll.c \
+	3pp/mbedtls/library/error.c \
+	3pp/mbedtls/library/gcm.c \
+	3pp/mbedtls/library/havege.c \
+	3pp/mbedtls/library/hmac_drbg.c \
+	3pp/mbedtls/library/Makefile \
+	3pp/mbedtls/library/md2.c \
+	3pp/mbedtls/library/md4.c \
+	3pp/mbedtls/library/md5.c \
+	3pp/mbedtls/library/md.c \
+	3pp/mbedtls/library/md_wrap.c \
+	3pp/mbedtls/library/memory_buffer_alloc.c \
+	3pp/mbedtls/library/net_sockets.c \
+	3pp/mbedtls/library/oid.c \
+	3pp/mbedtls/library/padlock.c \
+	3pp/mbedtls/library/pem.c \
+	3pp/mbedtls/library/pk.c \
+	3pp/mbedtls/library/pkcs11.c \
+	3pp/mbedtls/library/pkcs12.c \
+	3pp/mbedtls/library/pkcs5.c \
+	3pp/mbedtls/library/pkparse.c \
+	3pp/mbedtls/library/pk_wrap.c \
+	3pp/mbedtls/library/pkwrite.c \
+	3pp/mbedtls/library/platform.c \
+	3pp/mbedtls/library/ripemd160.c \
+	3pp/mbedtls/library/rsa.c \
+	3pp/mbedtls/library/sha1.c \
+	3pp/mbedtls/library/sha256.c \
+	3pp/mbedtls/library/sha512.c \
+	3pp/mbedtls/library/ssl_cache.c \
+	3pp/mbedtls/library/ssl_ciphersuites.c \
+	3pp/mbedtls/library/ssl_cli.c \
+	3pp/mbedtls/library/ssl_cookie.c \
+	3pp/mbedtls/library/ssl_srv.c \
+	3pp/mbedtls/library/ssl_ticket.c \
+	3pp/mbedtls/library/ssl_tls.c \
+	3pp/mbedtls/library/threading.c \
+	3pp/mbedtls/library/timing.c \
+	3pp/mbedtls/library/version.c \
+	3pp/mbedtls/library/version_features.c \
+	3pp/mbedtls/library/x509.c \
+	3pp/mbedtls/library/x509_create.c \
+	3pp/mbedtls/library/x509_crl.c \
+	3pp/mbedtls/library/x509_crt.c \
+	3pp/mbedtls/library/x509_csr.c \
+	3pp/mbedtls/library/x509write_crt.c \
+	3pp/mbedtls/library/x509write_csr.c \
+	3pp/mbedtls/library/xtea.c
+
+    SRC += $(MBED_TLS_SRC:%=$(SIMBA_ROOT)/%)
+
+    INET_SRC_TMP += ssl.c
+endif
+
+INET_SRC ?= $(INET_SRC_TMP)
 
 SRC += $(INET_SRC:%=$(SIMBA_ROOT)/src/inet/%)
 

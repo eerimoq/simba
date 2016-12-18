@@ -33,13 +33,17 @@
 
 #include "simba.h"
 
+enum ssl_protocol_t {
+    ssl_protocol_tls_v1_0
+};
+
 enum ssl_socket_mode_t {
     ssl_socket_mode_client_t = 0,
     ssl_socket_mode_server_t
 };
 
 struct ssl_context_t {
-    int dummy;
+    enum ssl_protocol_t protocol;
 };
 
 struct ssl_socket_t {
@@ -66,31 +70,46 @@ int ssl_module_init(void);
  *
  * @return zero(0) or negative error code.
  */
-int ssl_context_init(struct ssl_context_t *self_p);
+int ssl_context_init(struct ssl_context_t *self_p,
+                     enum ssl_protocol_t protocol);
 
 /**
- * Initialize given SSL socket with given socket in given SSL context.
+ * Load given certificate chain.
+ *
+ * @param[in] self_p SSL context.
+ * @param[in] self_p Certificate to load.
+ * @param[in] self_p Optional key to load.
+ *
+ * @return zero(0) or negative error code.
+ */
+int ssl_context_load_cert_chain(struct ssl_context_t *self_p,
+                                const char *cert_p,
+                                const char *key_p);
+
+/**
+ * Initialize given SSL socket with given socket and SSL
+ * context. Performs the SSL handshake.
  *
  * @param[out] self_p SSL socket to initialize.
  * @param[in] context_p SSL context to execute in.
  * @param[in] socket_p Socket to wrap in the SSL socket.
- * @param[in] mode Server or client side socket.
+ * @param[in] mode Server or client side socket mode.
  *
  * @return zero(0) or negative error code.
  */
-int ssl_socket_init(struct ssl_socket_t *self_p,
+int ssl_socket_open(struct ssl_socket_t *self_p,
                     struct ssl_context_t *context_p,
                     void *socket_p,
                     enum ssl_socket_mode_t mode);
 
 /**
- * Perform the handshake for given SSL socket.
+ * Close given SSL socket.
  *
- * @param[in] self_p SSL socket to initialize.
+ * @param[in] self_p Opened SSL socket.
  *
  * @return zero(0) or negative error code.
  */
-int ssl_socket_handshake(struct ssl_socket_t *self_p);
+int ssl_socket_close(struct ssl_socket_t *self_p);
 
 /**
  * Write data to given SSL socket.
