@@ -1,6 +1,13 @@
 License
 =======
 
+Simba is licensed under MIT. Third party source code and libraries
+that Simba depends on may have other licenses. Most third party code
+is placed in the ``3pp`` folder.
+
+MIT License
+-----------
+
 The MIT License (MIT)
 
 Copyright (c) 2014-2016, Erik Moqvist
