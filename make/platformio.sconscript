@@ -3,9 +3,9 @@
 # @section License
 #
 # The MIT License (MIT)
-# 
+#
 # Copyright (c) 2014-2016, Erik Moqvist
-# 
+#
 # Permission is hereby granted, free of charge, to any person
 # obtaining a copy of this software and associated documentation
 # files (the "Software"), to deal in the Software without
@@ -3032,6 +3032,26 @@ def setup_board_nano32(env):
             pass
         cppdefines.append(cppdefine)
     env.Replace(CPPDEFINES=cppdefines)
+
+    # Backwards compatibility for uploader flags still in platformio
+    # repository.
+    uploaderflags = []
+
+    for value in env["UPLOADERFLAGS"]:
+        if value.startswith('0x'):
+            break
+        uploaderflags.append(value)
+    env.Replace(UPLOADERFLAGS=uploaderflags)
+
+    env.Append(
+        UPLOADERFLAGS=[
+            "0x1000", join("$PLATFORMFW_DIR", "3pp", "esp32",
+                           "bin", "bootloader.bin"),
+            "0x8000", join("$PLATFORMFW_DIR", "3pp", "esp32",
+                           "bin", "partitions_singleapp.bin"),
+            "0x10000"
+        ]
+    )
 
 
 env = DefaultEnvironment()
