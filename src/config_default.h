@@ -848,6 +848,27 @@
 #    define CONFIG_USB_DEVICE_PID                      0x8037
 #endif
 
+/**
+ * Number of colums in Emacs text editor.
+ */
+#ifndef CONFIG_EMACS_COLUMNS_MAX
+#    define CONFIG_EMACS_COLUMNS_MAX                       80
+#endif
+
+/**
+ * Number of rows in Emacs text editor.
+ */
+#ifndef CONFIG_EMACS_ROWS_MAX
+#    define CONFIG_EMACS_ROWS_MAX                          24
+#endif
+
+/**
+ * Heap size of the emacs  text editor.
+ */
+#ifndef CONFIG_EMACS_HEAP_SIZE
+#    define CONFIG_EMACS_HEAP_SIZE                      32768
+#endif
+
 /* Configuration validation. */
 #if (CONFIG_START_SHELL == 1) &&  (CONFIG_START_CONSOLE == CONFIG_START_CONSOLE_NONE)
 #    error "CONFIG_START_SHELL == 1 requires CONFIG_START_CONSOLE != CONFIG_START_CONSOLE_NONE. Please change the configuration."

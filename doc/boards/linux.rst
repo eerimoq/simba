@@ -67,9 +67,9 @@ Below is the memory usage of two applications:
 +--------------------------+-----------+-----------+
 | Application              | Flash     | RAM       |
 +==========================+===========+===========+
-| minimal-configuration    |   1130823 |    328416 |
+| minimal-configuration    |   1175659 |    385880 |
 +--------------------------+-----------+-----------+
-| default-configuration    |   1225415 |    420320 |
+| default-configuration    |   1270251 |    477784 |
 +--------------------------+-----------+-----------+
 
 Default configuration
@@ -83,6 +83,12 @@ Default Standard Library configuration.
 |  CONFIG_ASSERT_                                        |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_DEBUG_                                         |  1                                                  |
++--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_EMACS_COLUMNS_MAX_                             |  80                                                 |
++--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_EMACS_HEAP_SIZE_                               |  32768                                              |
++--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_EMACS_ROWS_MAX_                                |  24                                                 |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_FS_CMD_DS18B20_LIST_                           |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
@@ -255,6 +261,12 @@ Mcu
 .. _CONFIG_ASSERT: ../user-guide/configuration.html#c.CONFIG_ASSERT
 
 .. _CONFIG_DEBUG: ../user-guide/configuration.html#c.CONFIG_DEBUG
+
+.. _CONFIG_EMACS_COLUMNS_MAX: ../user-guide/configuration.html#c.CONFIG_EMACS_COLUMNS_MAX
+
+.. _CONFIG_EMACS_HEAP_SIZE: ../user-guide/configuration.html#c.CONFIG_EMACS_HEAP_SIZE
+
+.. _CONFIG_EMACS_ROWS_MAX: ../user-guide/configuration.html#c.CONFIG_EMACS_ROWS_MAX
 
 .. _CONFIG_FS_CMD_DS18B20_LIST: ../user-guide/configuration.html#c.CONFIG_FS_CMD_DS18B20_LIST
 

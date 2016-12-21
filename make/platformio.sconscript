@@ -110,7 +110,9 @@ BOARDS = {
             "3pp/lwip-1.4.1/src/include/ipv4", 
             "3pp/mbedtls/include", 
             "src/kernel/ports/arm/gnu", 
-            "3pp/spiffs-0.3.5/src"
+            "3pp/spiffs-0.3.5/src", 
+            "3pp/atto", 
+            "3pp/atto/curses"
         ], 
         "ldflags": [
             "-mcpu=cortex-m3", 
@@ -219,7 +221,19 @@ BOARDS = {
             "src/sync/queue.c", 
             "src/sync/rwlock.c", 
             "src/sync/sem.c", 
+            "3pp/atto/buffer.c", 
+            "3pp/atto/command.c", 
+            "3pp/atto/complete.c", 
+            "3pp/atto/display.c", 
+            "3pp/atto/gap.c", 
+            "3pp/atto/key.c", 
+            "3pp/atto/main.c", 
+            "3pp/atto/replace.c", 
+            "3pp/atto/search.c", 
+            "3pp/atto/window.c", 
+            "3pp/atto/curses/curses.c", 
             "src/text/configfile.c", 
+            "src/text/emacs.c", 
             "src/text/std.c", 
             "src/text/re.c"
         ]
@@ -379,6 +393,7 @@ BOARDS = {
             "src/sync/rwlock.c", 
             "src/sync/sem.c", 
             "src/text/configfile.c", 
+            "src/text/emacs.c", 
             "src/text/std.c", 
             "src/text/re.c"
         ]
@@ -538,6 +553,7 @@ BOARDS = {
             "src/sync/rwlock.c", 
             "src/sync/sem.c", 
             "src/text/configfile.c", 
+            "src/text/emacs.c", 
             "src/text/std.c", 
             "src/text/re.c"
         ]
@@ -701,6 +717,7 @@ BOARDS = {
             "src/sync/rwlock.c", 
             "src/sync/sem.c", 
             "src/text/configfile.c", 
+            "src/text/emacs.c", 
             "src/text/std.c", 
             "src/text/re.c"
         ]
@@ -860,6 +877,7 @@ BOARDS = {
             "src/sync/rwlock.c", 
             "src/sync/sem.c", 
             "src/text/configfile.c", 
+            "src/text/emacs.c", 
             "src/text/std.c", 
             "src/text/re.c"
         ]
@@ -914,7 +932,9 @@ BOARDS = {
             "3pp/lwip-1.4.1/src/include/ipv4", 
             "3pp/mbedtls/include", 
             "src/kernel/ports/linux/gnu", 
-            "3pp/spiffs-0.3.5/src"
+            "3pp/spiffs-0.3.5/src", 
+            "3pp/atto", 
+            "3pp/atto/curses"
         ], 
         "ldflags": [
             "-pg", 
@@ -1068,7 +1088,19 @@ BOARDS = {
             "src/sync/queue.c", 
             "src/sync/rwlock.c", 
             "src/sync/sem.c", 
+            "3pp/atto/buffer.c", 
+            "3pp/atto/command.c", 
+            "3pp/atto/complete.c", 
+            "3pp/atto/display.c", 
+            "3pp/atto/gap.c", 
+            "3pp/atto/key.c", 
+            "3pp/atto/main.c", 
+            "3pp/atto/replace.c", 
+            "3pp/atto/search.c", 
+            "3pp/atto/window.c", 
+            "3pp/atto/curses/curses.c", 
             "src/text/configfile.c", 
+            "src/text/emacs.c", 
             "src/text/std.c", 
             "src/text/re.c"
         ]
@@ -1133,7 +1165,9 @@ BOARDS = {
             "src/drivers/ports/esp", 
             "3pp/mbedtls/include", 
             "src/kernel/ports/esp/gnu", 
-            "3pp/spiffs-0.3.5/src"
+            "3pp/spiffs-0.3.5/src", 
+            "3pp/atto", 
+            "3pp/atto/curses"
         ], 
         "ldflags": [
             "-Wl,-Tsimba.flash.512k.ld", 
@@ -1301,7 +1335,19 @@ BOARDS = {
             "src/sync/queue.c", 
             "src/sync/rwlock.c", 
             "src/sync/sem.c", 
+            "3pp/atto/buffer.c", 
+            "3pp/atto/command.c", 
+            "3pp/atto/complete.c", 
+            "3pp/atto/display.c", 
+            "3pp/atto/gap.c", 
+            "3pp/atto/key.c", 
+            "3pp/atto/main.c", 
+            "3pp/atto/replace.c", 
+            "3pp/atto/search.c", 
+            "3pp/atto/window.c", 
+            "3pp/atto/curses/curses.c", 
             "src/text/configfile.c", 
+            "src/text/emacs.c", 
             "src/text/std.c", 
             "src/text/re.c"
         ]
@@ -1366,7 +1412,9 @@ BOARDS = {
             "src/drivers/ports/esp", 
             "3pp/mbedtls/include", 
             "src/kernel/ports/esp/gnu", 
-            "3pp/spiffs-0.3.5/src"
+            "3pp/spiffs-0.3.5/src", 
+            "3pp/atto", 
+            "3pp/atto/curses"
         ], 
         "ldflags": [
             "-Wl,-Tsimba.flash.4m.ld", 
@@ -1534,7 +1582,19 @@ BOARDS = {
             "src/sync/queue.c", 
             "src/sync/rwlock.c", 
             "src/sync/sem.c", 
+            "3pp/atto/buffer.c", 
+            "3pp/atto/command.c", 
+            "3pp/atto/complete.c", 
+            "3pp/atto/display.c", 
+            "3pp/atto/gap.c", 
+            "3pp/atto/key.c", 
+            "3pp/atto/main.c", 
+            "3pp/atto/replace.c", 
+            "3pp/atto/search.c", 
+            "3pp/atto/window.c", 
+            "3pp/atto/curses/curses.c", 
             "src/text/configfile.c", 
+            "src/text/emacs.c", 
             "src/text/std.c", 
             "src/text/re.c"
         ]
@@ -1589,7 +1649,9 @@ BOARDS = {
             "3pp/lwip-1.4.1/src/include/ipv4", 
             "3pp/mbedtls/include", 
             "src/kernel/ports/linux/gnu", 
-            "3pp/spiffs-0.3.5/src"
+            "3pp/spiffs-0.3.5/src", 
+            "3pp/atto", 
+            "3pp/atto/curses"
         ], 
         "ldflags": [
             "-pg", 
@@ -1743,7 +1805,19 @@ BOARDS = {
             "src/sync/queue.c", 
             "src/sync/rwlock.c", 
             "src/sync/sem.c", 
+            "3pp/atto/buffer.c", 
+            "3pp/atto/command.c", 
+            "3pp/atto/complete.c", 
+            "3pp/atto/display.c", 
+            "3pp/atto/gap.c", 
+            "3pp/atto/key.c", 
+            "3pp/atto/main.c", 
+            "3pp/atto/replace.c", 
+            "3pp/atto/search.c", 
+            "3pp/atto/window.c", 
+            "3pp/atto/curses/curses.c", 
             "src/text/configfile.c", 
+            "src/text/emacs.c", 
             "src/text/std.c", 
             "src/text/re.c"
         ]
@@ -1803,7 +1877,9 @@ BOARDS = {
             "src/drivers/ports/esp32", 
             "3pp/mbedtls/include", 
             "src/kernel/ports/esp32/gnu", 
-            "3pp/spiffs-0.3.5/src"
+            "3pp/spiffs-0.3.5/src", 
+            "3pp/atto", 
+            "3pp/atto/curses"
         ], 
         "ldflags": [
             "-Wl,-Tsimba.flash.ld", 
@@ -1989,7 +2065,19 @@ BOARDS = {
             "src/sync/queue.c", 
             "src/sync/rwlock.c", 
             "src/sync/sem.c", 
+            "3pp/atto/buffer.c", 
+            "3pp/atto/command.c", 
+            "3pp/atto/complete.c", 
+            "3pp/atto/display.c", 
+            "3pp/atto/gap.c", 
+            "3pp/atto/key.c", 
+            "3pp/atto/main.c", 
+            "3pp/atto/replace.c", 
+            "3pp/atto/search.c", 
+            "3pp/atto/window.c", 
+            "3pp/atto/curses/curses.c", 
             "src/text/configfile.c", 
+            "src/text/emacs.c", 
             "src/text/std.c", 
             "src/text/re.c"
         ]
@@ -2054,7 +2142,9 @@ BOARDS = {
             "src/drivers/ports/esp", 
             "3pp/mbedtls/include", 
             "src/kernel/ports/esp/gnu", 
-            "3pp/spiffs-0.3.5/src"
+            "3pp/spiffs-0.3.5/src", 
+            "3pp/atto", 
+            "3pp/atto/curses"
         ], 
         "ldflags": [
             "-Wl,-Tsimba.flash.4m.ld", 
@@ -2222,7 +2312,19 @@ BOARDS = {
             "src/sync/queue.c", 
             "src/sync/rwlock.c", 
             "src/sync/sem.c", 
+            "3pp/atto/buffer.c", 
+            "3pp/atto/command.c", 
+            "3pp/atto/complete.c", 
+            "3pp/atto/display.c", 
+            "3pp/atto/gap.c", 
+            "3pp/atto/key.c", 
+            "3pp/atto/main.c", 
+            "3pp/atto/replace.c", 
+            "3pp/atto/search.c", 
+            "3pp/atto/window.c", 
+            "3pp/atto/curses/curses.c", 
             "src/text/configfile.c", 
+            "src/text/emacs.c", 
             "src/text/std.c", 
             "src/text/re.c"
         ]
@@ -2280,7 +2382,9 @@ BOARDS = {
             "3pp/lwip-1.4.1/src/include/ipv4", 
             "3pp/mbedtls/include", 
             "src/kernel/ports/arm/gnu", 
-            "3pp/spiffs-0.3.5/src"
+            "3pp/spiffs-0.3.5/src", 
+            "3pp/atto", 
+            "3pp/atto/curses"
         ], 
         "ldflags": [
             "-mcpu=cortex-m3", 
@@ -2386,7 +2490,19 @@ BOARDS = {
             "src/sync/queue.c", 
             "src/sync/rwlock.c", 
             "src/sync/sem.c", 
+            "3pp/atto/buffer.c", 
+            "3pp/atto/command.c", 
+            "3pp/atto/complete.c", 
+            "3pp/atto/display.c", 
+            "3pp/atto/gap.c", 
+            "3pp/atto/key.c", 
+            "3pp/atto/main.c", 
+            "3pp/atto/replace.c", 
+            "3pp/atto/search.c", 
+            "3pp/atto/window.c", 
+            "3pp/atto/curses/curses.c", 
             "src/text/configfile.c", 
+            "src/text/emacs.c", 
             "src/text/std.c", 
             "src/text/re.c"
         ]
@@ -2441,7 +2557,9 @@ BOARDS = {
             "3pp/lwip-1.4.1/src/include/ipv4", 
             "3pp/mbedtls/include", 
             "src/kernel/ports/arm/gnu", 
-            "3pp/spiffs-0.3.5/src"
+            "3pp/spiffs-0.3.5/src", 
+            "3pp/atto", 
+            "3pp/atto/curses"
         ], 
         "ldflags": [
             "-mcpu=cortex-m4", 
@@ -2535,7 +2653,19 @@ BOARDS = {
             "src/sync/queue.c", 
             "src/sync/rwlock.c", 
             "src/sync/sem.c", 
+            "3pp/atto/buffer.c", 
+            "3pp/atto/command.c", 
+            "3pp/atto/complete.c", 
+            "3pp/atto/display.c", 
+            "3pp/atto/gap.c", 
+            "3pp/atto/key.c", 
+            "3pp/atto/main.c", 
+            "3pp/atto/replace.c", 
+            "3pp/atto/search.c", 
+            "3pp/atto/window.c", 
+            "3pp/atto/curses/curses.c", 
             "src/text/configfile.c", 
+            "src/text/emacs.c", 
             "src/text/std.c", 
             "src/text/re.c"
         ]
@@ -2590,7 +2720,9 @@ BOARDS = {
             "3pp/lwip-1.4.1/src/include/ipv4", 
             "3pp/mbedtls/include", 
             "src/kernel/ports/arm/gnu", 
-            "3pp/spiffs-0.3.5/src"
+            "3pp/spiffs-0.3.5/src", 
+            "3pp/atto", 
+            "3pp/atto/curses"
         ], 
         "ldflags": [
             "-mcpu=cortex-m3", 
@@ -2684,7 +2816,19 @@ BOARDS = {
             "src/sync/queue.c", 
             "src/sync/rwlock.c", 
             "src/sync/sem.c", 
+            "3pp/atto/buffer.c", 
+            "3pp/atto/command.c", 
+            "3pp/atto/complete.c", 
+            "3pp/atto/display.c", 
+            "3pp/atto/gap.c", 
+            "3pp/atto/key.c", 
+            "3pp/atto/main.c", 
+            "3pp/atto/replace.c", 
+            "3pp/atto/search.c", 
+            "3pp/atto/window.c", 
+            "3pp/atto/curses/curses.c", 
             "src/text/configfile.c", 
+            "src/text/emacs.c", 
             "src/text/std.c", 
             "src/text/re.c"
         ]

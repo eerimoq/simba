@@ -399,7 +399,29 @@ SRC += $(SYNC_SRC:%=$(SIMBA_ROOT)/src/sync/%)
 
 # Text package.
 TEXT_SRC ?= configfile.c \
+            emacs.c \
             std.c \
             re.c
+
+ifneq ($(ARCH),$(filter $(ARCH), avr))
+INC += \
+	$(SIMBA_ROOT)/3pp/atto \
+	$(SIMBA_ROOT)/3pp/atto/curses
+
+ATTO_SRC +=  \
+	3pp/atto/buffer.c \
+	3pp/atto/command.c \
+	3pp/atto/complete.c \
+	3pp/atto/display.c \
+	3pp/atto/gap.c \
+	3pp/atto/key.c \
+	3pp/atto/main.c \
+	3pp/atto/replace.c \
+	3pp/atto/search.c \
+	3pp/atto/window.c \
+	3pp/atto/curses/curses.c
+
+SRC += $(ATTO_SRC:%=$(SIMBA_ROOT)/%)
+endif
 
 SRC += $(TEXT_SRC:%=$(SIMBA_ROOT)/src/text/%)
