@@ -65,7 +65,7 @@ Boards Manager.
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 The `Simba` development environment can be installed on `Linux (Ubuntu
-14)`_.
+14)`.
 
 1. Execute the one-liner below to install `Simba`.
 
