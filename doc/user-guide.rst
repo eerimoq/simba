@@ -6,8 +6,8 @@ Platform and the `Simba build system`. Parts of the guide is
 applicable to other build systems as well, in particular the
 configuration section.
 
-The Simba installation guide can be found on the :doc:`installation`
-page.
+The Simba installation guide can be found on the
+:doc:`getting-started` page.
 
 Software architecture
 ---------------------

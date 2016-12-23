@@ -62,6 +62,6 @@ is placed in the ``3pp`` folder.
 .. _donate: https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=X2NWV6RHV58GC&lc=SE&item_name=Simba%20OS%20and%20Build%20Framework&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donateCC_LG%2egif%3aNonHosted
 
 .. _Arduino IDE: https://www.arduino.cc/en/Main/Software
-.. _Simba installation documentation: http://simba-os.readthedocs.io/en/latest/installation.html#arduino-arduino-ide
+.. _Simba installation documentation: http://simba-os.readthedocs.io/en/latest/getting-started.html#arduino-arduino-ide
 .. _Simba documentation: http://simba-os.readthedocs.io/en/latest
 .. _Simba forum: http://forum.simbaos.org

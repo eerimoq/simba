@@ -33,7 +33,7 @@ are available on the :doc:`videos` page.
    :titlesonly:
    :hidden:
 
-   installation
+   getting-started
    user-guide
    developer-guide
    boards
