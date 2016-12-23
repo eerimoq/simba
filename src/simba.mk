@@ -415,7 +415,7 @@ ATTO_SRC +=  \
 	3pp/atto/display.c \
 	3pp/atto/gap.c \
 	3pp/atto/key.c \
-	3pp/atto/main.c \
+	3pp/atto/atto_main.c \
 	3pp/atto/replace.c \
 	3pp/atto/search.c \
 	3pp/atto/window.c \
