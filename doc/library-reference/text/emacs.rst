@@ -14,7 +14,7 @@ Atto Emacs project on GitHub: https://github.com/hughbarney/atto
 
 ---------------------------------------------------
 
-Source code: :github-blob:`src/text/emacs.h`
+Source code: :github-blob:`src/text/emacs.h`, :github-blob:`src/text/emacs.c`
 
 ---------------------------------------------------
 
