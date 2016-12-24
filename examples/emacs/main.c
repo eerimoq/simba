@@ -33,10 +33,11 @@
 int main()
 {
     sys_start();
-    
-    std_printf(FSTR("Hello!\r\n"));
-    emacs_main(NULL);
-    std_printf(FSTR("Goodbye!\r\n"));
+
+    while (1) {
+        std_printf(FSTR("$ emacs\r\n"));
+        emacs(NULL);
+    }
     
     return (0);
 }
