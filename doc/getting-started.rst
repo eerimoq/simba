@@ -1,4 +1,4 @@
-Getting started
+Getting Started
 ===============
 
 Installation
@@ -18,9 +18,10 @@ Install `Simba` in `PlatformIO`_.
 
 1. Install the `PlatformIO IDE`_.
 
-2. Open blink example. [TODO]
-   
-3. Click on `Upload` in the top left corner.
+2. Start the `PlatformIO IDE` and open `PlatformIO` -> `Project
+   Examples` and select `simba/blink`.
+
+3. Click on `Upload` (the arrow image) in the top left corner.
 
 4. The built-in LED blinks!
 
