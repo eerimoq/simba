@@ -386,7 +386,6 @@ static void *listener_main(void *arg_p)
                          LOG_ERROR,
                          FSTR("Failed to bind socket."));
         return (NULL);
-
     }
 
     if (socket_listen(&listener_p->socket, 3) != 0) {
@@ -394,7 +393,6 @@ static void *listener_main(void *arg_p)
                          LOG_ERROR,
                          FSTR("Failed to listen on socket."));
         return (NULL);
-
     }
 
     /* Wait for clients to connect. */
