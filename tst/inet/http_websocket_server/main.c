@@ -66,9 +66,10 @@ static int test_handshake(struct harness_t *harness_p)
     /* Perform the handshake. */
     BTASSERT(http_websocket_server_handshake(&server,
                                              &request) == 0);
-    socket_stub_output(buf, 109);
+    socket_stub_output(buf, 129);
     BTASSERT(strcmp((char *)buf,
                     "HTTP/1.1 101 Switching Protocols\r\n"
+                    "Upgrade: websocket\r\n"
                     "Connection: Upgrade\r\n"
                     "Sec-WebSocket-Accept: Kfh9QIsMVZcl6xEPYxPHzW8SZ8w=\r\n"
                     "\r\n") == 0);
@@ -114,13 +115,13 @@ static int test_read(struct harness_t *harness_p)
     /* Prepare socket input with 1 length byte. */
     buf[0] = 0x81; /* FIN & TEXT. */
     buf[1] = 0x83; /* MASK and 1 byte payload length. */
-    buf[2] = 0x00; /* Masking key 0. */
-    buf[3] = 0x00; /* Masking key 1. */
-    buf[4] = 0x00; /* Masking key 2. */
-    buf[5] = 0x00; /* Masking key 3. */
-    buf[6] = 'f'; /* Payload 0. */
-    buf[7] = 'o'; /* Payload 1. */
-    buf[8] = 'o'; /* Payload 2. */
+    buf[2] = 0x01; /* Masking key 0. */
+    buf[3] = 0x02; /* Masking key 1. */
+    buf[4] = 0x03; /* Masking key 2. */
+    buf[5] = 0x04; /* Masking key 3. */
+    buf[6] = 'g'; /* Payload 0. */
+    buf[7] = 'm'; /* Payload 1. */
+    buf[8] = 'l'; /* Payload 2. */
     socket_stub_input(buf, 9);
 
     BTASSERT(http_websocket_server_read(&server,

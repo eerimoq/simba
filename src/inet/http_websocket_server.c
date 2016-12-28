@@ -86,6 +86,7 @@ int http_websocket_server_handshake(struct http_websocket_server_t *self_p,
        client. */
     size = std_sprintf(buf,
                        FSTR("HTTP/1.1 101 Switching Protocols\r\n"
+                            "Upgrade: websocket\r\n"
                             "Connection: Upgrade\r\n"
                             "Sec-WebSocket-Accept: %s\r\n"
                             "\r\n"),
@@ -110,6 +111,9 @@ ssize_t http_websocket_server_read(struct http_websocket_server_t *self_p,
     uint8_t buf[16], *b_p = buf_p;
     size_t payload_left, left = size, n;
     int fin = 0;
+    uint8_t masking_key[4];
+    int pos;
+    int i;
 
     while (fin == 0) {
         /* Read the next frame. */
@@ -139,12 +143,18 @@ ssize_t http_websocket_server_read(struct http_websocket_server_t *self_p,
 
         /* Read the mask. */
         if (buf[1] & INET_HTTP_WEBSOCKET_MASK) {
-            if (socket_read(self_p->socket_p, buf, 4) != 4) {
+            if (socket_read(self_p->socket_p,
+                            &masking_key[0],
+                            sizeof(masking_key)) != sizeof(masking_key)) {
                 return (-EIO);
             }
+        } else {
+            memset(&masking_key[0], 0, sizeof(masking_key));
         }
 
         /* Read the payload. */
+        pos = 0;
+
         while ((payload_left > 0) && (left > 0)) {
             if (payload_left < left) {
                 n = payload_left;
@@ -156,7 +166,11 @@ ssize_t http_websocket_server_read(struct http_websocket_server_t *self_p,
                 return (-1);
             }
 
-            b_p += n;
+            for (i = 0; i < n; i++) {
+                *b_p++ ^= masking_key[pos % 4];
+                pos++;
+            }
+
             left -= n;
             payload_left -= n;
         }
