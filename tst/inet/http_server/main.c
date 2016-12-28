@@ -411,6 +411,7 @@ static int test_request_websocket(struct harness_t *harness_p)
     /* Read the handshake response and verify it. */
     str_p =
         "HTTP/1.1 101 Switching Protocols\r\n"
+        "Upgrade: websocket\r\n"
         "Connection: Upgrade\r\n"
         "Sec-WebSocket-Accept: HSmrc0sMlYUkAGmm5OPpG2HaGWk=\r\n"
         "\r\n";
