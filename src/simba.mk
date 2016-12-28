@@ -143,6 +143,7 @@ endif
 
 ifeq ($(FAMILY),esp32)
 DRIVERS_SRC ?= adc.c \
+               analog_input_pin.c \
                can.c \
                dac.c \
 	       ds18b20.c \

@@ -49,20 +49,20 @@ int analog_input_pin_read(struct analog_input_pin_t *self_p)
 {
     uint16_t sample;
     
-    if (adc_convert(&self_p->adc, &sample, 1) == 0) {
-        return (sample);
+    if (adc_convert(&self_p->adc, &sample, 1) != 0) {
+        return (-1);
     }
 
-    return (-1);
+    return (sample);
 }
 
 int analog_input_pin_read_isr(struct analog_input_pin_t *self_p)
 {
     uint16_t sample;
     
-    if (adc_convert_isr(&self_p->adc, &sample) == 0) {
-        return (sample);
+    if (adc_convert_isr(&self_p->adc, &sample) != 0) {
+        return (-1);
     }
 
-    return (-1);
+    return (sample);
 }

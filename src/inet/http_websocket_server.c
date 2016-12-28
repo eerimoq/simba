@@ -2,9 +2,9 @@
  * @section License
  *
  * The MIT License (MIT)
- * 
+ *
  * Copyright (c) 2014-2016, Erik Moqvist
- * 
+ *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
  * files (the "Software"), to deal in the Software without
@@ -81,7 +81,7 @@ int http_websocket_server_handshake(struct http_websocket_server_t *self_p,
 
     base64_encode(accept_key, hash, sizeof(hash));
     accept_key[sizeof(accept_key) - 1] = '\0';
-    
+
     /* Format and write the websocket handshake response to the
        client. */
     size = std_sprintf(buf,
@@ -119,24 +119,24 @@ ssize_t http_websocket_server_read(struct http_websocket_server_t *self_p,
 
         fin = (buf[0] & INET_HTTP_WEBSOCKET_FIN);
         payload_left = (buf[1] & ~INET_HTTP_WEBSOCKET_MASK);
-        
+
         if (payload_left == 126) {
             if (socket_read(self_p->socket_p, &buf[2], 2) != 2) {
                 return (-EIO);
             }
-            
+
             payload_left = ((uint32_t)(buf[2]) << 8 | buf[3]);
         } else if (payload_left == 127) {
             if (socket_read(self_p->socket_p, &buf[2], 8) != 8) {
                 return (-EIO);
             }
-            
+
             payload_left = ((uint32_t)(buf[6]) << 24
                     | (uint32_t)(buf[7]) << 16
                     | (uint32_t)(buf[8]) << 8
                     | buf[9]);
         }
-        
+
         /* Read the mask. */
         if (buf[1] & INET_HTTP_WEBSOCKET_MASK) {
             if (socket_read(self_p->socket_p, buf, 4) != 4) {
@@ -156,7 +156,7 @@ ssize_t http_websocket_server_read(struct http_websocket_server_t *self_p,
                 return (-1);
             }
 
-            b_p += n;            
+            b_p += n;
             left -= n;
             payload_left -= n;
         }
@@ -186,7 +186,7 @@ ssize_t http_websocket_server_write(struct http_websocket_server_t *self_p,
     const uint8_t masking_key[4] = { 0x00, 0x00, 0x00, 0x00 };
     uint8_t header[16];
     size_t header_size = 2;
-    
+
     header[0] = (INET_HTTP_WEBSOCKET_FIN | type);
 
     if (size < 126) {

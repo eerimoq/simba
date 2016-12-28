@@ -221,6 +221,7 @@ extern "C" {
 #    include "drivers/spi.h"
 #    include "drivers/uart.h"
 #    include "drivers/adc.h"
+#    include "drivers/analog_input_pin.h"
 #    include "drivers/dac.h"
 #    include "drivers/esp_wifi.h"
 #    include "drivers/esp_wifi/station.h"

@@ -69,6 +69,13 @@
 #define pin_dac1_dev                            pin_gpio25_dev
 #define pin_dac2_dev                            pin_gpio26_dev
 
+#define pin_a0_dev                              pin_gpio36_dev
+#define pin_a3_dev                              pin_gpio39_dev
+#define pin_a4_dev                              pin_gpio32_dev
+#define pin_a5_dev                              pin_gpio33_dev
+#define pin_a6_dev                              pin_gpio34_dev
+#define pin_a7_dev                              pin_gpio35_dev
+
 #define i2c_dev                                  i2c_device[0]
 
 #define spi_h_dev                                spi_device[1]
