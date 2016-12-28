@@ -347,7 +347,7 @@ jenkins-coverage: $(TESTS:%=%.jc)
 travis:
 	$(MAKE) cloc
 	$(MAKE) pmccabe
-	$(MAKE) test
+	$(MAKE) test CDEFS_EXTRA="CONFIG_ASSERT=1"
 
 release-test:
 	+bin/release.py --test --version $(SIMBA_VERSION)
