@@ -783,7 +783,7 @@ ssize_t json_dumps(struct json_t *self_p,
     ssize_t res;
     struct string_t string;
 
-    chan_init(&string.base, NULL, string_write, NULL);
+    chan_init(&string.base, chan_read_null, string_write, chan_size_null);
     string.buf_p = js_p;
     string.pos = 0;
 

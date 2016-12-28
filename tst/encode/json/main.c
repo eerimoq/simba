@@ -800,7 +800,6 @@ static int test_get(struct harness_t *harness_p)
     
     /* Get outside the array should fail. */
     BTASSERT(json_array_get(&json, 2, foo_p) == NULL);
-    BTASSERT(json_array_get(&json, -1, foo_p) == NULL);
 
     /* Fail to get from NULL token. */
     BTASSERT(json_array_get(&json, 0, NULL) == NULL);
