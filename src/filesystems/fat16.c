@@ -1185,7 +1185,7 @@ ssize_t fat16_file_read(struct fat16_file_t *file_p,
                         size_t size)
 {
     ASSERTN(file_p != NULL, -EINVAL);
-    ASSERTN(buf_p != NULL, -EINVAL);
+    ASSERTN((buf_p != NULL) || (size == 0), -EINVAL);
 
     size_t left;
     uint8_t blk_of_cluster;
@@ -1263,7 +1263,7 @@ ssize_t fat16_file_write(struct fat16_file_t *file_p,
                          size_t size)
 {
     ASSERTN(file_p != NULL, -EINVAL);
-    ASSERTN(src_p != NULL, -EINVAL);
+    ASSERTN((src_p != NULL) || (size == 0), -EINVAL);
 
     size_t left = size;
     uint16_t block_offset;

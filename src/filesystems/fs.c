@@ -925,7 +925,7 @@ int fs_close(struct fs_file_t *self_p)
 ssize_t fs_read(struct fs_file_t *self_p, void *dst_p, size_t size)
 {
     ASSERTN(self_p != NULL, -EINVAL);
-    ASSERTN(dst_p != NULL, -EINVAL);
+    ASSERTN((dst_p != NULL) || (size == 0), -EINVAL);
 
     ssize_t res;
 
@@ -989,7 +989,7 @@ ssize_t fs_read_line(struct fs_file_t *self_p, void *dst_p, size_t size)
 ssize_t fs_write(struct fs_file_t *self_p, const void *src_p, size_t size)
 {
     ASSERTN(self_p != NULL, -EINVAL);
-    ASSERTN(src_p != NULL, -EINVAL);
+    ASSERTN((src_p != NULL) || (size == 0), -EINVAL);
 
     switch (self_p->filesystem_p->type) {
 

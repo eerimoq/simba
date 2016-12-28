@@ -157,9 +157,9 @@ int heap_init(struct heap_t *self_p,
               size_t size,
               size_t sizes[HEAP_FIXED_SIZES_MAX])
 {
-    ASSERTN(self_p != NULL, EINVAL);
-    ASSERTN(buf_p != NULL, EINVAL);
-    ASSERTN(size > 0, EINVAL);
+    ASSERTN(self_p != NULL, -EINVAL);
+    ASSERTN(buf_p != NULL, -EINVAL);
+    ASSERTN(size > 0, -EINVAL);
 
     int i;
 
@@ -180,8 +180,8 @@ int heap_init(struct heap_t *self_p,
 void *heap_alloc(struct heap_t *self_p,
                  size_t size)
 {
-    ASSERTN(self_p != NULL, EINVAL);
-    ASSERTN(size > 0, EINVAL);
+    ASSERTN(self_p != NULL, -EINVAL);
+    ASSERTN(size > 0, -EINVAL);
 
     void *buf_p = NULL;
 
@@ -201,8 +201,8 @@ void *heap_alloc(struct heap_t *self_p,
 int heap_free(struct heap_t *self_p,
               void *buf_p)
 {
-    ASSERTN(self_p != NULL, EINVAL);
-    ASSERTN(buf_p != NULL, EINVAL);
+    ASSERTN(self_p != NULL, -EINVAL);
+    ASSERTN(buf_p != NULL, -EINVAL);
 
     int count;
     struct heap_buffer_header_t *header_p;
@@ -236,9 +236,9 @@ int heap_share(struct heap_t *self_p,
                const void *buf_p,
                int count)
 {
-    ASSERTN(self_p != NULL, EINVAL);
-    ASSERTN(buf_p != NULL, EINVAL);
-    ASSERTN(count >= 0, EINVAL);
+    ASSERTN(self_p != NULL, -EINVAL);
+    ASSERTN(buf_p != NULL, -EINVAL);
+    ASSERTN(count >= 0, -EINVAL);
 
     struct heap_buffer_header_t *header_p;
 
