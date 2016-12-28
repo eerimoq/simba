@@ -76,8 +76,8 @@ static int request_auth(struct http_server_connection_t *connection_p,
     /* Create the response. */
     response.code = http_server_response_code_401_unauthorized_t;
     response.content.type = http_server_content_type_text_html_t;
-    response.content.buf_p = "";
-    response.content.size = strlen(response.content.buf_p);
+    response.content.buf_p = NULL;
+    response.content.size = 0;
 
     return (http_server_response_write(connection_p, request_p, &response));
 }
