@@ -36,6 +36,8 @@ extern "C" {
 #endif
 
 int atto_main(int argc, char **argv);
+void atto_curses_set_input_channel(void *chin_p);
+void atto_curses_set_output_channel(void *chout_p);
 
 #ifdef __cplusplus
 }

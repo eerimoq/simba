@@ -37,9 +37,11 @@
  * Start emacs.
  *
  * @param[in] path_p File to open or NULL.
+ * @param[in] chin_p Input channel or NULL for standard input.
+ * @param[in] chout_p Output channel or NULL for standard output.
  *
  * @return zero(0) or negative error code.
  */
-int emacs(const char *path_p);
+int emacs(const char *path_p, void *chin_p, void *chout_p);
 
 #endif

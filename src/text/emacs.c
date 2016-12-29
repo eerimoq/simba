@@ -2,9 +2,9 @@
  * @section License
  *
  * The MIT License (MIT)
- * 
+ *
  * Copyright (c) 2014-2016, Erik Moqvist
- * 
+ *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
  * files (the "Software"), to deal in the Software without
@@ -32,11 +32,14 @@
 
 #include "atto.h"
 
-int emacs(const char *path_p)
+int emacs(const char *path_p, void *chin_p, void *chout_p)
 {
     const char *args[2];
 
     args[1] = path_p;
+
+    atto_curses_set_input_channel(chin_p ? chin_p : sys_get_stdin());
+    atto_curses_set_output_channel(chout_p ? chout_p : sys_get_stdout());
 
     if (path_p != NULL) {
         return (atto_main(2, (char **)args));

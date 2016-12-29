@@ -28,10 +28,13 @@
 # This file is part of the Simba project.
 #
 
-NAME = emacs
+NAME = emacs_suite
 BOARD ?= linux
 
-CDEFS += CONFIG_START_SHELL=0
+CDEFS += \
+	CONFIG_MINIMAL_SYSTEM=1 \
+	CONFIG_ASSERT=1 \
+	CONFIG_FS_CMD_THRD_LIST=1
 
-SIMBA_ROOT ?= ../..
+SIMBA_ROOT ?= ../../..
 include $(SIMBA_ROOT)/make/app.mk

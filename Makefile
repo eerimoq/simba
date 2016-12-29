@@ -52,6 +52,7 @@ ifeq ($(BOARD), linux)
     TESTS += $(addprefix tst/alloc/, circular_heap \
                                      heap)
     TESTS += $(addprefix tst/text/, configfile \
+				    emacs \
 				    std \
                                     re)
     TESTS += $(addprefix tst/debug/, log)

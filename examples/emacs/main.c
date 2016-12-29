@@ -36,7 +36,7 @@ int main()
 
     while (1) {
         std_printf(FSTR("$ emacs\r\n"));
-        emacs(NULL);
+        emacs(NULL, NULL, NULL);
     }
     
     return (0);
