@@ -53,6 +53,17 @@ struct can_frame_t {
 extern struct can_device_t can_device[CAN_DEVICE_MAX];
 
 /**
+ * Initialize CAN module. This function must be called before calling
+ * any other function in this module.
+ *
+ * The module will only be initialized once even if this function is
+ * called multiple times.
+ *
+ * @return zero(0) or negative error code.
+ */
+int can_module_init(void);
+
+/**
  * Initialize given driver object from given configuration.
  *
  * @param[in] self_p Driver object to initialize.

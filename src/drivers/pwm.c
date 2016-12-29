@@ -30,6 +30,8 @@
 
 #include "simba.h"
 
+#if CONFIG_PWM == 1
+
 #include "pwm_port.i"
 
 int pwm_module_init()
@@ -79,3 +81,5 @@ struct pwm_device_t *pwm_pin_to_device(struct pin_device_t *pin_p)
     
     return (pwm_port_pin_to_device(pin_p));
 }
+
+#endif

@@ -30,6 +30,13 @@
 
 CROSS_COMPILE = xtensa-esp32-elf-
 
+SIZE_SUMMARY_CMD ?= $(SIMBA_ROOT)/bin/memory_usage.py \
+			--ram-section .dram0.bss \
+			--ram-section .dram0.data \
+			--rom-section .flash.rodata \
+			--rom-section .flash.text \
+			${EXE}
+
 CDEFS += F_CPU=$(F_CPU)UL
 
 CFLAGS += -Os \

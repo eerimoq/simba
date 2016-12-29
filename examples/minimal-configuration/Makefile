@@ -31,5 +31,9 @@
 NAME = minimal_configuration
 BOARD = arduino_due
 
+CDEFS += \
+	CONFIG_MINIMAL_SYSTEM=1 \
+	CONFIG_UART=0
+
 SIMBA_ROOT ?= ../..
 include $(SIMBA_ROOT)/make/app.mk

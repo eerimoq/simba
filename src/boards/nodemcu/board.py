@@ -27,18 +27,13 @@ def subcommand_upload(args):
         print("Attempt {}/{}.".format(attempt, attempts_max))
 
         try:
-            port = serial.Serial(args.port)
-            port.setRTS(True)
-            port.setDTR(True)
-            time.sleep(0.1)
-            port.setDTR(False)
-
             subprocess.check_call([
                 esptool_path,
-                "-cd", "none",
+                "-cd", "nodemcu",
                 "-cb", "230400",
                 "-cp", args.port,
-                "-cf", args.binary
+                "-cf", args.binary,
+                "-cr"
             ])
 
             break

@@ -41,7 +41,10 @@
        analog_input_pin_module_init();
    
        /* Initialize the analog input pin. */
-       analog_input_pin_init(&pin, &pin_a0_dev);
+       if (analog_input_pin_init(&pin, &pin_a0_dev) != 0) {
+           std_printf(FSTR("Failed to initialize the analog input pin.\r\n"));
+           return (-1);
+       }
    
        while (1) {
            /* Read the analog pin value and print it. */

@@ -30,6 +30,8 @@
 
 #include "simba.h"
 
+#if CONFIG_EXTI == 1
+
 struct module_t {
     int initialized;
 };
@@ -88,3 +90,5 @@ int exti_clear(struct exti_driver_t *self_p)
 
     return (exti_port_clear(self_p));
 }
+
+#endif

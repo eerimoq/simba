@@ -30,6 +30,8 @@
 
 #include "simba.h"
 
+#if CONFIG_DAC == 1
+
 struct module_t {
     int initialized;
 };
@@ -97,3 +99,5 @@ int dac_convert(struct dac_driver_t *self_p,
 
     return (dac_port_convert(self_p, samples_p, length));
 }
+
+#endif

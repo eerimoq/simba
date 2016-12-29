@@ -30,6 +30,8 @@
 
 #include "simba.h"
 
+#if CONFIG_ANALOG_OUTPUT_PIN == 1
+
 int analog_output_pin_module_init(void)
 {
     return (0);
@@ -59,3 +61,5 @@ int analog_output_pin_read(struct analog_output_pin_t *self_p)
 {
     return (pwm_get_duty_cycle(&self_p->pwm) * 4);
 }
+
+#endif

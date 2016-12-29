@@ -2,9 +2,9 @@
  * @section License
  *
  * The MIT License (MIT)
- * 
+ *
  * Copyright (c) 2014-2016, Erik Moqvist
- * 
+ *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
  * files (the "Software"), to deal in the Software without
@@ -29,6 +29,8 @@
  */
 
 #include "simba.h"
+
+#if CONFIG_MCP2515 == 1
 
 /* Oscillator frequency. */
 #define F_OSC 16000000
@@ -217,7 +219,7 @@ static int register_read(struct mcp2515_driver_t *self_p,
 
     spi_deselect(&self_p->spi);
     spi_give_bus(&self_p->spi);
-        
+
     *value_p = buf[2];
 
     return (0);
@@ -583,3 +585,5 @@ ssize_t mcp2515_write(struct mcp2515_driver_t *self_p,
 
     return (self_p->chout.write(&self_p->chout, frame_p, sizeof(*frame_p)));
 }
+
+#endif

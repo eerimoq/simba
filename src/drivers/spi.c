@@ -2,9 +2,9 @@
  * @section License
  *
  * The MIT License (MIT)
- * 
+ *
  * Copyright (c) 2014-2016, Erik Moqvist
- * 
+ *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
  * files (the "Software"), to deal in the Software without
@@ -29,6 +29,8 @@
  */
 
 #include "simba.h"
+
+#if CONFIG_SPI == 1
 
 struct module_t {
     int initialized;
@@ -188,3 +190,5 @@ ssize_t spi_put(struct spi_driver_t *self_p,
 
     return (spi_write(self_p, &data, 1));
 }
+
+#endif

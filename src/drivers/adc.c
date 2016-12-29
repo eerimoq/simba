@@ -30,6 +30,8 @@
 
 #include "simba.h"
 
+#if CONFIG_ADC == 1
+
 struct module_t {
     int initialized;
 };
@@ -111,3 +113,5 @@ int adc_is_valid_device(struct adc_device_t *dev_p)
     return ((dev_p >= &adc_device[0])
             && (dev_p < &adc_device[ADC_DEVICE_MAX]));
 }
+
+#endif

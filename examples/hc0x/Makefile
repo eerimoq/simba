@@ -30,8 +30,6 @@
 
 NAME = hc0x
 BOARD = arduino_nano
-DRIVERS_SRC = exti.c pin.c uart.c uart_soft.c
-SLIB_SRC =
 
 SIMBA_ROOT ?= ../..
 include $(SIMBA_ROOT)/make/app.mk

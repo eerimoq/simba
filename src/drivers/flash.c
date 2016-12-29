@@ -30,6 +30,8 @@
 
 #include "simba.h"
 
+#if CONFIG_FLASH == 1
+
 struct module_t {
     int initialized;
 };
@@ -97,3 +99,5 @@ int flash_erase(struct flash_driver_t *self_p,
 
     return (flash_port_erase(self_p, addr, size));
 }
+
+#endif

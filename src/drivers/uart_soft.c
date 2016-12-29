@@ -2,9 +2,9 @@
  * @section License
  *
  * The MIT License (MIT)
- * 
+ *
  * Copyright (c) 2014-2016, Erik Moqvist
- * 
+ *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
  * files (the "Software"), to deal in the Software without
@@ -29,6 +29,8 @@
  */
 
 #include "simba.h"
+
+#if CONFIG_UART_SOFT == 1
 
 /* Convert baud rate to microseconds. */
 #define BAUDRATE2US(baudrate) (1000000L / baudrate)
@@ -137,3 +139,5 @@ int uart_soft_init(struct uart_soft_driver_t *self_p,
 
     return (queue_init(&self_p->chin, rxbuf_p, size));
 }
+
+#endif

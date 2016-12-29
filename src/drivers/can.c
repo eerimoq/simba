@@ -30,6 +30,8 @@
 
 #include "simba.h"
 
+#if CONFIG_CAN == 1
+
 #include "can_port.i"
 
 static ssize_t base_chan_read(void *base_p, void *buf_p, size_t size)
@@ -113,3 +115,5 @@ ssize_t can_write(struct can_driver_t *self_p,
 
     return (chan_write(&self_p->base, frame_p, size));
 }
+
+#endif

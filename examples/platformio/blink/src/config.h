@@ -31,8 +31,7 @@
 #ifndef __CONFIG_H__
 #define __CONFIG_H__
 
-#define CONFIG_MINIMAL_SYSTEM          1
-#define CONFIG_FS_CMD_THRD_LIST        1
-#define CONFIG_SYS_CONFIG_STRING       1
+#define CONFIG_MINIMAL_SYSTEM                               1
+#define CONFIG_PIN                                          1
 
 #endif

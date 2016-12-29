@@ -17,6 +17,7 @@ Arduino Due
 - :github-blob:`alloc/circular_heap<tst/alloc/circular_heap/main.c>`
 - :github-blob:`alloc/heap<tst/alloc/heap/main.c>`
 - :github-blob:`text/configfile<tst/text/configfile/main.c>`
+- :github-blob:`text/emacs<tst/text/emacs/main.c>`
 - :github-blob:`text/std<tst/text/std/main.c>`
 - :github-blob:`text/re<tst/text/re/main.c>`
 - :github-blob:`debug/log<tst/debug/log/main.c>`
@@ -105,9 +106,6 @@ Cygwin
 ESP-01
 -----
 
-- :github-blob:`kernel/sys<tst/kernel/sys/main.c>`
-- :github-blob:`kernel/thrd<tst/kernel/thrd/main.c>`
-- :github-blob:`kernel/timer<tst/kernel/timer/main.c>`
 
 ESP-12E Development Board
 ------
@@ -163,6 +161,7 @@ Linux
 - :github-blob:`alloc/circular_heap<tst/alloc/circular_heap/main.c>`
 - :github-blob:`alloc/heap<tst/alloc/heap/main.c>`
 - :github-blob:`text/configfile<tst/text/configfile/main.c>`
+- :github-blob:`text/emacs<tst/text/emacs/main.c>`
 - :github-blob:`text/std<tst/text/std/main.c>`
 - :github-blob:`text/re<tst/text/re/main.c>`
 - :github-blob:`debug/log<tst/debug/log/main.c>`
@@ -219,6 +218,9 @@ Nano32
 NodeMCU
 -------
 
+- :github-blob:`kernel/sys<tst/kernel/sys/main.c>`
+- :github-blob:`kernel/thrd<tst/kernel/thrd/main.c>`
+- :github-blob:`kernel/timer<tst/kernel/timer/main.c>`
 
 Particle IO Photon
 ------

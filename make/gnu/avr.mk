@@ -30,6 +30,13 @@
 
 CROSS_COMPILE = avr-
 
+SIZE_SUMMARY_CMD ?= $(SIMBA_ROOT)/bin/memory_usage.py \
+			--ram-section .data \
+			--ram-section .bss \
+			--ram-section .noinit \
+			--rom-section .text \
+			${EXE}
+
 SIZEARGS = --mcu=$(MCU) --format=avr
 
 CDEFS += F_CPU=$(F_CPU)UL \

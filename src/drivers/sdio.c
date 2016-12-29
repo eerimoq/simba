@@ -2,9 +2,9 @@
  * @section License
  *
  * The MIT License (MIT)
- * 
+ *
  * Copyright (c) 2014-2016, Erik Moqvist
- * 
+ *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
  * files (the "Software"), to deal in the Software without
@@ -29,6 +29,8 @@
  */
 
 #include "simba.h"
+
+#if CONFIG_SDIO == 1
 
 int sdio_module_init(void)
 {
@@ -128,3 +130,5 @@ ssize_t sdio_io_write_extended(struct sdio_driver_t *self_p,
 
     return (-1);
 }
+
+#endif

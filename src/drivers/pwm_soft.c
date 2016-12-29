@@ -30,6 +30,8 @@
 
 #include "simba.h"
 
+#if CONFIG_PWM_SOFT == 1
+
 #define DUTY_CYCLE_MAX module.duty_cycle_max
 
 struct module_t {
@@ -193,7 +195,7 @@ int pwm_soft_stop(struct pwm_soft_driver_t *self_p)
     if (!((self_p->duty_cycle == DUTY_CYCLE_MAX) ||
           (self_p->duty_cycle == 0))) {
         sys_lock();
-        
+
         /* Is the timer started? */
         if (self_p->next_p != NULL) {
             /* Wait for the PWM to be inactive. */
@@ -204,12 +206,12 @@ int pwm_soft_stop(struct pwm_soft_driver_t *self_p)
                 unlink_pwm_soft_isr(self_p);
             }
         }
-    
+
         sys_unlock();
     }
-    
+
     pin_device_set_mode(self_p->pin_dev_p, PIN_INPUT);
-    
+
     return (0);
 }
 
@@ -248,3 +250,5 @@ int pwm_soft_duty_cycle_as_percent(long value)
 
     return ((100L * value) / DUTY_CYCLE_MAX);
 }
+
+#endif

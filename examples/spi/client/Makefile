@@ -30,8 +30,6 @@
 
 NAME = client
 BOARD = arduino_nano
-DRIVERS_SRC = uart.c spi.c pin.c owi.c ds18b20.c
-SLIB_SRC =
 
 SIMBA_ROOT ?= ../../..
 include $(SIMBA_ROOT)/make/app.mk

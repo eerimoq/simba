@@ -30,6 +30,8 @@
 
 #include "simba.h"
 
+#if CONFIG_USB_DEVICE == 1
+
 struct module_t {
     int initialized;
     struct usb_device_driver_t *driver_p;
@@ -164,3 +166,5 @@ ssize_t usb_device_write_isr(struct usb_device_driver_t *self_p,
 
     return (usb_device_port_write_isr(self_p, endpoint, buf_p, size));
 }
+
+#endif

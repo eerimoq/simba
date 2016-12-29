@@ -30,6 +30,8 @@
 
 #include "simba.h"
 
+#if CONFIG_DS18B20 == 1
+
 /* Commands. */
 #define CONVERT_T         0x44
 #define READ_SCRATCHPAD   0xbe
@@ -215,3 +217,5 @@ char *ds18b20_get_temperature_str(struct ds18b20_driver_t *self_p,
 
     return (temp_p);
 }
+
+#endif

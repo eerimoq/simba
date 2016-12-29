@@ -30,6 +30,8 @@
 
 #include "simba.h"
 
+#if CONFIG_CHIPID == 1
+
 #include "chipid_port.i"
 
 int chipid_read(struct chipid_t *id_p)
@@ -38,3 +40,5 @@ int chipid_read(struct chipid_t *id_p)
 
     return (chipid_port_read(id_p));
 }
+
+#endif

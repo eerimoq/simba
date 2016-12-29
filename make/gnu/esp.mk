@@ -30,6 +30,14 @@
 
 CROSS_COMPILE = xtensa-lx106-elf-
 
+SIZE_SUMMARY_CMD ?= $(SIMBA_ROOT)/bin/memory_usage.py \
+			--ram-section .data \
+			--ram-section .rodata \
+			--ram-section .bss \
+			--rom-section .text \
+			--rom-section .irom0.text \
+			${EXE}
+
 CDEFS += F_CPU=$(F_CPU)UL \
 	ICACHE_FLASH \
 	__STRICT_ANSI__ \

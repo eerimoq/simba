@@ -30,6 +30,8 @@
 
 #include "simba.h"
 
+#if CONFIG_ANALOG_INPUT_PIN == 1
+
 int analog_input_pin_module_init(void)
 {
     return (adc_module_init());
@@ -66,3 +68,5 @@ int analog_input_pin_read_isr(struct analog_input_pin_t *self_p)
 
     return (sample);
 }
+
+#endif

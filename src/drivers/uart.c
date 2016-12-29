@@ -2,9 +2,9 @@
  * @section License
  *
  * The MIT License (MIT)
- * 
+ *
  * Copyright (c) 2014-2016, Erik Moqvist
- * 
+ *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
  * files (the "Software"), to deal in the Software without
@@ -29,6 +29,8 @@
  */
 
 #include "simba.h"
+
+#if CONFIG_UART == 1
 
 #include "uart_port.i"
 
@@ -86,3 +88,5 @@ int uart_stop(struct uart_driver_t *self_p)
 
     return (uart_port_stop(self_p));
 }
+
+#endif

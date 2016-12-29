@@ -67,9 +67,9 @@ Below is the memory usage of two applications:
 +--------------------------+-----------+-----------+
 | Application              | Flash     | RAM       |
 +==========================+===========+===========+
-| minimal-configuration    |   1175659 |    385880 |
+| minimal-configuration    |   1129002 |    360944 |
 +--------------------------+-----------+-----------+
-| default-configuration    |   1270251 |    477784 |
+| default-configuration    |   1276547 |    479608 |
 +--------------------------+-----------+-----------+
 
 Default configuration
@@ -80,15 +80,41 @@ Default Standard Library configuration.
 +--------------------------------------------------------+-----------------------------------------------------+
 |  Name                                                  |  Value                                              |
 +========================================================+=====================================================+
+|  CONFIG_ADC_                                           |  1                                                  |
++--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_ANALOG_INPUT_PIN_                              |  1                                                  |
++--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_ANALOG_OUTPUT_PIN_                             |  1                                                  |
++--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_ASSERT_                                        |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_BCM43362_                                      |  0                                                  |
++--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_CAN_                                           |  1                                                  |
++--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_CHIPID_                                        |  0                                                  |
++--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_DAC_                                           |  1                                                  |
++--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_DEBUG_                                         |  1                                                  |
++--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_DS18B20_                                       |  1                                                  |
++--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_DS3231_                                        |  0                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_EMACS_COLUMNS_MAX_                             |  80                                                 |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_EMACS_HEAP_SIZE_                               |  32768                                              |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_EMACS_ROWS_MAX_                                |  24                                                 |
++--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_ESP_WIFI_                                      |  0                                                  |
++--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_EXTI_                                          |  1                                                  |
++--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_FAT16_                                         |  1                                                  |
++--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_FLASH_                                         |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_FS_CMD_DS18B20_LIST_                           |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
@@ -166,11 +192,89 @@ Default Standard Library configuration.
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_FS_PATH_MAX_                                   |  64                                                 |
 +--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_I2C_                                           |  0                                                  |
++--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_I2C_SOFT_                                      |  1                                                  |
++--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_MCP2515_                                       |  0                                                  |
++--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_MODULE_INIT_ADC_                               |  1                                                  |
++--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_MODULE_INIT_ANALOG_INPUT_PIN_                  |  1                                                  |
++--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_MODULE_INIT_ANALOG_OUTPUT_PIN_                 |  1                                                  |
++--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_MODULE_INIT_BCM43362_                          |  0                                                  |
++--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_MODULE_INIT_CAN_                               |  1                                                  |
++--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_MODULE_INIT_CHIPID_                            |  0                                                  |
++--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_MODULE_INIT_DAC_                               |  1                                                  |
++--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_MODULE_INIT_DS18B20_                           |  1                                                  |
++--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_MODULE_INIT_DS3231_                            |  0                                                  |
++--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_MODULE_INIT_ESP_WIFI_                          |  0                                                  |
++--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_MODULE_INIT_EXTI_                              |  1                                                  |
++--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_MODULE_INIT_FLASH_                             |  1                                                  |
++--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_MODULE_INIT_I2C_                               |  0                                                  |
++--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_MODULE_INIT_I2C_SOFT_                          |  1                                                  |
++--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_MODULE_INIT_MCP2515_                           |  0                                                  |
++--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_MODULE_INIT_NRF24L01_                          |  0                                                  |
++--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_MODULE_INIT_OWI_                               |  1                                                  |
++--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_MODULE_INIT_PIN_                               |  1                                                  |
++--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_MODULE_INIT_PWM_                               |  1                                                  |
++--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_MODULE_INIT_PWM_SOFT_                          |  1                                                  |
++--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_MODULE_INIT_SD_                                |  1                                                  |
++--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_MODULE_INIT_SDIO_                              |  0                                                  |
++--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_MODULE_INIT_SPI_                               |  1                                                  |
++--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_MODULE_INIT_UART_                              |  1                                                  |
++--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_MODULE_INIT_UART_SOFT_                         |  0                                                  |
++--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_MODULE_INIT_USB_                               |  0                                                  |
++--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_MODULE_INIT_USB_DEVICE_                        |  0                                                  |
++--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_MODULE_INIT_USB_HOST_                          |  0                                                  |
++--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_MODULE_INIT_WATCHDOG_                          |  0                                                  |
++--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_MONITOR_THREAD_                                |  1                                                  |
++--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_NRF24L01_                                      |  0                                                  |
++--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_OWI_                                           |  1                                                  |
++--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_PIN_                                           |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_PREEMPTIVE_SCHEDULER_                          |  0                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_PROFILE_STACK_                                 |  1                                                  |
++--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_PWM_                                           |  1                                                  |
++--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_PWM_SOFT_                                      |  1                                                  |
++--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_SD_                                            |  1                                                  |
++--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_SDIO_                                          |  0                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_SETTINGS_AREA_SIZE_                            |  256                                                |
 +--------------------------------------------------------+-----------------------------------------------------+
@@ -183,6 +287,8 @@ Default Standard Library configuration.
 |  CONFIG_SHELL_PROMPT_                                  |  "$ "                                               |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_SOCKET_RAW_                                    |  1                                                  |
++--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_SPI_                                           |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_SPIFFS_                                        |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
@@ -240,9 +346,21 @@ Default Standard Library configuration.
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_THRD_TERMINATE_                                |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_UART_                                          |  1                                                  |
++--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_UART_SOFT_                                     |  0                                                  |
++--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_USB_                                           |  0                                                  |
++--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_USB_DEVICE_                                    |  0                                                  |
++--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_USB_DEVICE_PID_                                |  0x8037                                             |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_USB_DEVICE_VID_                                |  0x2341                                             |
++--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_USB_HOST_                                      |  0                                                  |
++--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_WATCHDOG_                                      |  0                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 
 
@@ -258,15 +376,41 @@ Mcu
 
 
 
+.. _CONFIG_ADC: ../user-guide/configuration.html#c.CONFIG_ADC
+
+.. _CONFIG_ANALOG_INPUT_PIN: ../user-guide/configuration.html#c.CONFIG_ANALOG_INPUT_PIN
+
+.. _CONFIG_ANALOG_OUTPUT_PIN: ../user-guide/configuration.html#c.CONFIG_ANALOG_OUTPUT_PIN
+
 .. _CONFIG_ASSERT: ../user-guide/configuration.html#c.CONFIG_ASSERT
 
+.. _CONFIG_BCM43362: ../user-guide/configuration.html#c.CONFIG_BCM43362
+
+.. _CONFIG_CAN: ../user-guide/configuration.html#c.CONFIG_CAN
+
+.. _CONFIG_CHIPID: ../user-guide/configuration.html#c.CONFIG_CHIPID
+
+.. _CONFIG_DAC: ../user-guide/configuration.html#c.CONFIG_DAC
+
 .. _CONFIG_DEBUG: ../user-guide/configuration.html#c.CONFIG_DEBUG
+
+.. _CONFIG_DS18B20: ../user-guide/configuration.html#c.CONFIG_DS18B20
+
+.. _CONFIG_DS3231: ../user-guide/configuration.html#c.CONFIG_DS3231
 
 .. _CONFIG_EMACS_COLUMNS_MAX: ../user-guide/configuration.html#c.CONFIG_EMACS_COLUMNS_MAX
 
 .. _CONFIG_EMACS_HEAP_SIZE: ../user-guide/configuration.html#c.CONFIG_EMACS_HEAP_SIZE
 
 .. _CONFIG_EMACS_ROWS_MAX: ../user-guide/configuration.html#c.CONFIG_EMACS_ROWS_MAX
+
+.. _CONFIG_ESP_WIFI: ../user-guide/configuration.html#c.CONFIG_ESP_WIFI
+
+.. _CONFIG_EXTI: ../user-guide/configuration.html#c.CONFIG_EXTI
+
+.. _CONFIG_FAT16: ../user-guide/configuration.html#c.CONFIG_FAT16
+
+.. _CONFIG_FLASH: ../user-guide/configuration.html#c.CONFIG_FLASH
 
 .. _CONFIG_FS_CMD_DS18B20_LIST: ../user-guide/configuration.html#c.CONFIG_FS_CMD_DS18B20_LIST
 
@@ -344,11 +488,89 @@ Mcu
 
 .. _CONFIG_FS_PATH_MAX: ../user-guide/configuration.html#c.CONFIG_FS_PATH_MAX
 
+.. _CONFIG_I2C: ../user-guide/configuration.html#c.CONFIG_I2C
+
+.. _CONFIG_I2C_SOFT: ../user-guide/configuration.html#c.CONFIG_I2C_SOFT
+
+.. _CONFIG_MCP2515: ../user-guide/configuration.html#c.CONFIG_MCP2515
+
+.. _CONFIG_MODULE_INIT_ADC: ../user-guide/configuration.html#c.CONFIG_MODULE_INIT_ADC
+
+.. _CONFIG_MODULE_INIT_ANALOG_INPUT_PIN: ../user-guide/configuration.html#c.CONFIG_MODULE_INIT_ANALOG_INPUT_PIN
+
+.. _CONFIG_MODULE_INIT_ANALOG_OUTPUT_PIN: ../user-guide/configuration.html#c.CONFIG_MODULE_INIT_ANALOG_OUTPUT_PIN
+
+.. _CONFIG_MODULE_INIT_BCM43362: ../user-guide/configuration.html#c.CONFIG_MODULE_INIT_BCM43362
+
+.. _CONFIG_MODULE_INIT_CAN: ../user-guide/configuration.html#c.CONFIG_MODULE_INIT_CAN
+
+.. _CONFIG_MODULE_INIT_CHIPID: ../user-guide/configuration.html#c.CONFIG_MODULE_INIT_CHIPID
+
+.. _CONFIG_MODULE_INIT_DAC: ../user-guide/configuration.html#c.CONFIG_MODULE_INIT_DAC
+
+.. _CONFIG_MODULE_INIT_DS18B20: ../user-guide/configuration.html#c.CONFIG_MODULE_INIT_DS18B20
+
+.. _CONFIG_MODULE_INIT_DS3231: ../user-guide/configuration.html#c.CONFIG_MODULE_INIT_DS3231
+
+.. _CONFIG_MODULE_INIT_ESP_WIFI: ../user-guide/configuration.html#c.CONFIG_MODULE_INIT_ESP_WIFI
+
+.. _CONFIG_MODULE_INIT_EXTI: ../user-guide/configuration.html#c.CONFIG_MODULE_INIT_EXTI
+
+.. _CONFIG_MODULE_INIT_FLASH: ../user-guide/configuration.html#c.CONFIG_MODULE_INIT_FLASH
+
+.. _CONFIG_MODULE_INIT_I2C: ../user-guide/configuration.html#c.CONFIG_MODULE_INIT_I2C
+
+.. _CONFIG_MODULE_INIT_I2C_SOFT: ../user-guide/configuration.html#c.CONFIG_MODULE_INIT_I2C_SOFT
+
+.. _CONFIG_MODULE_INIT_MCP2515: ../user-guide/configuration.html#c.CONFIG_MODULE_INIT_MCP2515
+
+.. _CONFIG_MODULE_INIT_NRF24L01: ../user-guide/configuration.html#c.CONFIG_MODULE_INIT_NRF24L01
+
+.. _CONFIG_MODULE_INIT_OWI: ../user-guide/configuration.html#c.CONFIG_MODULE_INIT_OWI
+
+.. _CONFIG_MODULE_INIT_PIN: ../user-guide/configuration.html#c.CONFIG_MODULE_INIT_PIN
+
+.. _CONFIG_MODULE_INIT_PWM: ../user-guide/configuration.html#c.CONFIG_MODULE_INIT_PWM
+
+.. _CONFIG_MODULE_INIT_PWM_SOFT: ../user-guide/configuration.html#c.CONFIG_MODULE_INIT_PWM_SOFT
+
+.. _CONFIG_MODULE_INIT_SD: ../user-guide/configuration.html#c.CONFIG_MODULE_INIT_SD
+
+.. _CONFIG_MODULE_INIT_SDIO: ../user-guide/configuration.html#c.CONFIG_MODULE_INIT_SDIO
+
+.. _CONFIG_MODULE_INIT_SPI: ../user-guide/configuration.html#c.CONFIG_MODULE_INIT_SPI
+
+.. _CONFIG_MODULE_INIT_UART: ../user-guide/configuration.html#c.CONFIG_MODULE_INIT_UART
+
+.. _CONFIG_MODULE_INIT_UART_SOFT: ../user-guide/configuration.html#c.CONFIG_MODULE_INIT_UART_SOFT
+
+.. _CONFIG_MODULE_INIT_USB: ../user-guide/configuration.html#c.CONFIG_MODULE_INIT_USB
+
+.. _CONFIG_MODULE_INIT_USB_DEVICE: ../user-guide/configuration.html#c.CONFIG_MODULE_INIT_USB_DEVICE
+
+.. _CONFIG_MODULE_INIT_USB_HOST: ../user-guide/configuration.html#c.CONFIG_MODULE_INIT_USB_HOST
+
+.. _CONFIG_MODULE_INIT_WATCHDOG: ../user-guide/configuration.html#c.CONFIG_MODULE_INIT_WATCHDOG
+
 .. _CONFIG_MONITOR_THREAD: ../user-guide/configuration.html#c.CONFIG_MONITOR_THREAD
+
+.. _CONFIG_NRF24L01: ../user-guide/configuration.html#c.CONFIG_NRF24L01
+
+.. _CONFIG_OWI: ../user-guide/configuration.html#c.CONFIG_OWI
+
+.. _CONFIG_PIN: ../user-guide/configuration.html#c.CONFIG_PIN
 
 .. _CONFIG_PREEMPTIVE_SCHEDULER: ../user-guide/configuration.html#c.CONFIG_PREEMPTIVE_SCHEDULER
 
 .. _CONFIG_PROFILE_STACK: ../user-guide/configuration.html#c.CONFIG_PROFILE_STACK
+
+.. _CONFIG_PWM: ../user-guide/configuration.html#c.CONFIG_PWM
+
+.. _CONFIG_PWM_SOFT: ../user-guide/configuration.html#c.CONFIG_PWM_SOFT
+
+.. _CONFIG_SD: ../user-guide/configuration.html#c.CONFIG_SD
+
+.. _CONFIG_SDIO: ../user-guide/configuration.html#c.CONFIG_SDIO
 
 .. _CONFIG_SETTINGS_AREA_SIZE: ../user-guide/configuration.html#c.CONFIG_SETTINGS_AREA_SIZE
 
@@ -361,6 +583,8 @@ Mcu
 .. _CONFIG_SHELL_PROMPT: ../user-guide/configuration.html#c.CONFIG_SHELL_PROMPT
 
 .. _CONFIG_SOCKET_RAW: ../user-guide/configuration.html#c.CONFIG_SOCKET_RAW
+
+.. _CONFIG_SPI: ../user-guide/configuration.html#c.CONFIG_SPI
 
 .. _CONFIG_SPIFFS: ../user-guide/configuration.html#c.CONFIG_SPIFFS
 
@@ -418,6 +642,18 @@ Mcu
 
 .. _CONFIG_THRD_TERMINATE: ../user-guide/configuration.html#c.CONFIG_THRD_TERMINATE
 
+.. _CONFIG_UART: ../user-guide/configuration.html#c.CONFIG_UART
+
+.. _CONFIG_UART_SOFT: ../user-guide/configuration.html#c.CONFIG_UART_SOFT
+
+.. _CONFIG_USB: ../user-guide/configuration.html#c.CONFIG_USB
+
+.. _CONFIG_USB_DEVICE: ../user-guide/configuration.html#c.CONFIG_USB_DEVICE
+
 .. _CONFIG_USB_DEVICE_PID: ../user-guide/configuration.html#c.CONFIG_USB_DEVICE_PID
 
 .. _CONFIG_USB_DEVICE_VID: ../user-guide/configuration.html#c.CONFIG_USB_DEVICE_VID
+
+.. _CONFIG_USB_HOST: ../user-guide/configuration.html#c.CONFIG_USB_HOST
+
+.. _CONFIG_WATCHDOG: ../user-guide/configuration.html#c.CONFIG_WATCHDOG

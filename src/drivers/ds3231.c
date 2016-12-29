@@ -30,6 +30,8 @@
 
 #include "simba.h"
 
+#if CONFIG_DS3231 == 1
+
 #define DS3231_I2C_ADDRESS     0x68
 
 static inline uint8_t encode(int value)
@@ -112,3 +114,5 @@ int ds3231_get_date(struct ds3231_driver_t *self_p,
 
     return (0);
 }
+
+#endif

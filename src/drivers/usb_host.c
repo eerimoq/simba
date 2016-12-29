@@ -30,6 +30,8 @@
 
 #include "simba.h"
 
+#if CONFIG_USB_HOST == 1
+
 /* Only one device supported for now. */
 #define DEVICE_ADDRESS    1
 
@@ -632,3 +634,5 @@ ssize_t usb_host_device_control_transfer(struct usb_host_device_t *device_p,
 
     return (size);
 }
+
+#endif

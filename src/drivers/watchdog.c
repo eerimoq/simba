@@ -30,6 +30,8 @@
 
 #include "simba.h"
 
+#if CONFIG_WATCHDOG == 1
+
 #include "watchdog_port.i"
 
 int watchdog_module_init()
@@ -51,3 +53,5 @@ int watchdog_kick(void)
 {
     return (watchdog_port_kick());
 }
+
+#endif

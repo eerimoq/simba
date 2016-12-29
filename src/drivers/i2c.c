@@ -30,6 +30,8 @@
 
 #include "simba.h"
 
+#if CONFIG_I2C == 1
+
 struct module_t {
     int initialized;
 #if CONFIG_FS_CMD_I2C_READ == 1
@@ -277,3 +279,5 @@ ssize_t i2c_slave_write(struct i2c_driver_t *self_p,
 
     return (i2c_port_slave_write(self_p, buf_p, size));
 }
+
+#endif

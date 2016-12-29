@@ -2,9 +2,9 @@
  * @section License
  *
  * The MIT License (MIT)
- * 
+ *
  * Copyright (c) 2014-2016, Erik Moqvist
- * 
+ *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
  * files (the "Software"), to deal in the Software without
@@ -29,6 +29,8 @@
  */
 
 #include "simba.h"
+
+#if CONFIG_SD == 1
 
 /* Command Abbreviations (section 4.7.4 in specification). */
 #define CMD_GO_IDLE_STATE         0    /* Reset the SD Memory Card. */
@@ -231,7 +233,7 @@ static int command_call(struct sd_driver_t *self_p,
         if ((*response_p & R1_RESERVED) == 0) {
             return (0);
         }
-        
+
         if (i >= 10) {
             thrd_sleep_us(100);
         }
@@ -435,7 +437,7 @@ int sd_start(struct sd_driver_t *self_p)
     if (buf[0] & 0xc0) {
         self_p->type = TYPE_SDHC;
     }
- 
+
     res = 0;
 
  out:
@@ -593,3 +595,5 @@ ssize_t sd_write_block(struct sd_driver_t *self_p,
 
     return (res);
 }
+
+#endif

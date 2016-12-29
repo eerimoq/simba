@@ -30,6 +30,8 @@
 
 #include "simba.h"
 
+struct pin_device_t pin_device[PIN_DEVICE_MAX];
+
 struct uart_device_t uart_device[UART_DEVICE_MAX] = {
     {
         .drv_p = NULL,

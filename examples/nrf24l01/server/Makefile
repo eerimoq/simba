@@ -30,8 +30,6 @@
 
 NAME = server
 BOARD = arduino_nano
-DRIVERS_SRC = uart.c spi.c pin.c nrf24l01.c exti.c
-SLIB_SRC =
 
 SIMBA_ROOT ?= ../../..
 include $(SIMBA_ROOT)/make/app.mk

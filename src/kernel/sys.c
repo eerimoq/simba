@@ -2,9 +2,9 @@
  * @section License
  *
  * The MIT License (MIT)
- * 
+ *
  * Copyright (c) 2014-2016, Erik Moqvist
- * 
+ *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
  * files (the "Software"), to deal in the Software without
@@ -141,6 +141,115 @@ static void RAM_CODE sys_tick_isr(void)
 }
 
 #include "sys_port.i"
+
+static void start_drivers(void)
+{
+#if CONFIG_MODULE_INIT_ADC == 1
+    adc_module_init();
+#endif
+
+#if CONFIG_MODULE_INIT_ANALOG_INPUT_PIN == 1
+    analog_input_pin_module_init();
+#endif
+
+#if CONFIG_MODULE_INIT_ANALOG_OUTPUT_PIN == 1
+    analog_output_pin_module_init();
+#endif
+
+#if CONFIG_MODULE_INIT_BCM43362 == 1
+    bcm43362_module_init();
+#endif
+
+#if CONFIG_MODULE_INIT_CAN == 1
+    can_module_init();
+#endif
+
+#if CONFIG_MODULE_INIT_CHIPID == 1
+#endif
+
+#if CONFIG_MODULE_INIT_DAC == 1
+    dac_module_init();
+#endif
+
+#if CONFIG_MODULE_INIT_DS18B20 == 1
+    ds18b20_module_init();
+#endif
+
+#if CONFIG_MODULE_INIT_DS3231 == 1
+#endif
+
+#if CONFIG_MODULE_INIT_ESP_WIFI == 1
+    esp_wifi_module_init();
+#endif
+
+#if CONFIG_MODULE_INIT_EXTI == 1
+    exti_module_init();
+#endif
+
+#if CONFIG_MODULE_INIT_FLASH == 1
+    flash_module_init();
+#endif
+
+#if CONFIG_MODULE_INIT_I2C == 1
+    i2c_module_init();
+#endif
+
+#if CONFIG_MODULE_INIT_I2C_SOFT == 1
+    i2c_soft_module_init();
+#endif
+
+#if CONFIG_MODULE_INIT_MCP2515 == 1
+#endif
+
+#if CONFIG_MODULE_INIT_NRF24L01 == 1
+    nrf24l01_module_init();
+#endif
+
+#if CONFIG_MODULE_INIT_OWI == 1
+#endif
+
+#if CONFIG_MODULE_INIT_PIN == 1
+    pin_module_init();
+#endif
+
+#if CONFIG_MODULE_INIT_PWM == 1
+    pwm_module_init();
+#endif
+
+#if CONFIG_MODULE_INIT_PWM_SOFT == 1
+    pwm_soft_module_init(500);
+#endif
+
+#if CONFIG_MODULE_INIT_SD == 1
+#endif
+
+#if CONFIG_MODULE_INIT_SDIO == 1
+    sdio_module_init();
+#endif
+
+#if CONFIG_MODULE_INIT_SPI == 1
+    spi_module_init();
+#endif
+
+#if CONFIG_MODULE_INIT_UART == 1
+    uart_module_init();
+#endif
+
+#if CONFIG_MODULE_INIT_UART_SOFT == 1
+#endif
+
+#if CONFIG_MODULE_INIT_USB_DEVICE == 1
+    usb_device_module_init();
+#endif
+
+#if CONFIG_MODULE_INIT_USB_HOST == 1
+    usb_host_module_init();
+#endif
+
+#if CONFIG_MODULE_INIT_WATCHDOG == 1
+    watchdog_module_init();
+#endif
+}
 
 #if CONFIG_START_CONSOLE != CONFIG_START_CONSOLE_NONE
 
@@ -319,9 +428,13 @@ int sys_start(void)
     log_module_init();
     chan_module_init();
     thrd_module_init();
+#if CONFIG_MODULE_INIT_SHELL == 1
     shell_module_init();
+#endif
     sys_module_init();
 
+    start_drivers();
+    
 #if CONFIG_START_CONSOLE != CONFIG_START_CONSOLE_NONE
     start_console();
 #endif

@@ -30,6 +30,8 @@
 
 #include "simba.h"
 
+#if CONFIG_ESP_WIFI == 1
+
 #include "esp_wifi_port.i"
 
 struct module_t {
@@ -289,3 +291,5 @@ void esp_wifi_print(void *chout_p)
                      "\r\n"),
                 inet_ntoa(&ip_info.gateway, &buf[0]));
 }
+
+#endif

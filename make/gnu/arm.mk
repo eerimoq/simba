@@ -32,6 +32,14 @@ CROSS_COMPILE = arm-none-eabi-
 CFLAGS += -Werror
 CXXFLAGS += -Werror
 
+SIZE_SUMMARY_CMD ?= $(SIMBA_ROOT)/bin/memory_usage.py \
+			--ram-section .relocate \
+			--ram-section .bss \
+			--ram-section .main_stack \
+			--rom-section .text \
+			--rom-section .settings \
+			${EXE}
+
 ifeq ($(NDEBUG),yes)
 CFLAGS += -O2
 CXXFLAGS += -O2

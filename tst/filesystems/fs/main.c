@@ -362,7 +362,6 @@ static int test_list(struct harness_t *harness_p)
     read_until(buf,
                "filesystems/\r\n"
                "kernel/\r\n"
-               "logout\r\n"
                "my/\r\n"
                "our/\r\n"
                "tmp/\r\n"

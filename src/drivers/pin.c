@@ -2,9 +2,9 @@
  * @section License
  *
  * The MIT License (MIT)
- * 
+ *
  * Copyright (c) 2014-2016, Erik Moqvist
- * 
+ *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
  * files (the "Software"), to deal in the Software without
@@ -29,6 +29,8 @@
  */
 
 #include "simba.h"
+
+#if CONFIG_PIN == 1
 
 struct module_t {
     int initialized;
@@ -71,7 +73,7 @@ static int cmd_set_mode_cb(int argc,
 
     if (pin == -1) {
         std_fprintf(out_p, FSTR("%s: bad pin\r\n"), argv[1]);
-        
+
         return (-EINVAL);
     }
 
@@ -116,7 +118,7 @@ static int cmd_read_cb(int argc,
 
     if (pin == -1) {
         std_fprintf(out_p, FSTR("%s: bad pin\r\n"), argv[1]);
-        
+
         return (-EINVAL);
     }
 
@@ -155,7 +157,7 @@ static int cmd_write_cb(int argc,
 
     if (pin == -1) {
         std_fprintf(out_p, FSTR("%s: bad pin\r\n"), argv[1]);
-        
+
         return (-EINVAL);
     }
 
@@ -185,13 +187,13 @@ int pin_module_init(void)
     module.initialized = 1;
 
 #if CONFIG_FS_CMD_PIN_SET_MODE == 1
-    
+
     fs_command_init(&module.cmd_set_mode,
                     FSTR("/drivers/pin/set_mode"),
                     cmd_set_mode_cb,
                     NULL);
     fs_command_register(&module.cmd_set_mode);
-    
+
 #endif
 
 #if CONFIG_FS_CMD_PIN_READ == 1
@@ -264,3 +266,5 @@ int pin_is_valid_device(struct pin_device_t *dev_p)
             && (dev_p >= &pin_device[0])
             && (dev_p < &pin_device[PIN_DEVICE_MAX]));
 }
+
+#endif
