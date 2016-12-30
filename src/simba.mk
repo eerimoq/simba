@@ -47,13 +47,22 @@ ifeq ($(TYPE),suite)
   TEXT_SRC += std.c
 
   ifeq ($(FAMILY),$(filter $(FAMILY), sam stm32f1 stm32f2 stm32f3))
-    ifneq ($(filter $(HASH_SRC), hash.c), hash.c)
+    ifneq ($(filter crc.c, $(HASH_SRC)), crc.c)
       HASH_SRC += crc.c
     endif
   endif
 
   ifeq ($(FAMILY),esp32)
       KERNEL_SRC += ports/esp32/gnu/thrd_port.S
+  endif
+
+  ifeq ($(MCU),atmega32u4)
+    DRIVERS_SRC += \
+	usb.c \
+	usb_device.c \
+	usb/device/descriptors.c \
+	usb/device/class/cdc.c \
+	watchdog.c
   endif
 endif
 

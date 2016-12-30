@@ -32,8 +32,14 @@ NAME = analog_input_pin_suite
 TYPE = suite
 BOARD ?= linux
 
-CDEFS += CONFIG_MINIMAL_SYSTEM=1 \
+CDEFS += \
+	CONFIG_MINIMAL_SYSTEM=1 \
+	CONFIG_PIN=1 \
+	CONFIG_ADC=1 \
+	CONFIG_ANALOG_INPUT_PIN=1 \
 	CONFIG_FS_CMD_THRD_LIST=1
+
+DRIVERS_SRC = analog_input_pin.c adc.c pin.c
 
 SIMBA_ROOT ?= ../../..
 include $(SIMBA_ROOT)/make/app.mk

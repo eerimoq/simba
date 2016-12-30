@@ -36,9 +36,14 @@ TIMEOUT = 60
 
 CDEFS += \
 	CONFIG_MINIMAL_SYSTEM=1 \
+	CONFIG_SPI=1 \
+	CONFIG_SD=1 \
+	CONFIG_PIN=1 \
 	CONFIG_FS_CMD_THRD_LIST=1
 
-FILESYSTEMS_SRC += fat16.c
+FILESYSTEMS_SRC = fat16.c
+DRIVERS_SRC = spi.c sd.c pin.c
+HASH_SRC = crc.c
 
 SIMBA_ROOT ?= ../../..
 include $(SIMBA_ROOT)/make/app.mk

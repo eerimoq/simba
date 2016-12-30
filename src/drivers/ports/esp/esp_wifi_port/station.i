@@ -126,7 +126,7 @@ static int esp_wifi_station_port_get_reconnect_policy(void)
     return (wifi_station_get_reconnect_policy());
 }
 
-enum esp_wifi_station_status_t esp_wifi_station_port_get_status(void)
+static enum esp_wifi_station_status_t esp_wifi_station_port_get_status(void)
 {
     return (wifi_station_get_connect_status());
 }

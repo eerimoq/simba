@@ -32,8 +32,14 @@ NAME = analog_output_pin_suite
 TYPE = suite
 BOARD ?= linux
 
-CDEFS += CONFIG_MINIMAL_SYSTEM=1 \
+CDEFS += \
+	CONFIG_MINIMAL_SYSTEM=1 \
+	CONFIG_ANALOG_OUTPUT_PIN=1 \
+	CONFIG_PIN=1 \
+	CONFIG_PWM=1 \
 	CONFIG_FS_CMD_THRD_LIST=1
+
+DRIVERS_SRC = analog_output_pin.c pwm.c pin.c
 
 SIMBA_ROOT ?= ../../..
 include $(SIMBA_ROOT)/make/app.mk

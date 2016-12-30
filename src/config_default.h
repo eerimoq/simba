@@ -1727,8 +1727,4 @@
 #    error "CONFIG_SYSTEM_TICK_SOFTWARE must be 1 when CONFIG_MODULE_INIT_PWM_SOFT is 1."
 #endif
 
-#if (CONFIG_SPIFFS == 1) &&  (CONFIG_FLASH == 0)
-#    error "CONFIG_FLASH must be 1 when CONFIG_SPIFFS is 1."
-#endif
-
 #endif

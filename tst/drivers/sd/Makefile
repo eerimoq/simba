@@ -34,8 +34,15 @@ BOARD ?= linux
 
 TIMEOUT = 30
 
-CDEFS += CONFIG_MINIMAL_SYSTEM=1 \
+CDEFS += \
+	CONFIG_MINIMAL_SYSTEM=1 \
+	CONFIG_SD=1 \
+	CONFIG_SPI=1 \
+	CONFIG_PIN=1 \
 	CONFIG_FS_CMD_THRD_LIST=1
+
+DRIVERS_SRC = sd.c spi.c pin.c
+HASH_SRC = crc.c
 
 SIMBA_ROOT ?= ../../..
 include $(SIMBA_ROOT)/make/app.mk

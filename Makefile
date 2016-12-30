@@ -458,29 +458,29 @@ test-all-boards:
 	$(MAKE) test-arduino-due
 	$(MAKE) test-arduino-mega
 	$(MAKE) test-arduino-nano
-	$(MAKE) test-arduino-pro-micro
-	$(MAKE) test-nodemcu
 	$(MAKE) test-esp12e
-	$(MAKE) test-nano32
 	$(MAKE) test-photon
 	$(MAKE) test-arduino-due-platformio
 	$(MAKE) test-arduino-mega-platformio
 	$(MAKE) test-esp12e-platformio
 	$(MAKE) test-i2c-nano-mega
+	$(MAKE) test-arduino-pro-micro
+	$(MAKE) test-nodemcu
+	$(MAKE) test-nano32
 
 clean-all-boards:
 	$(MAKE) clean-arduino-due
 	$(MAKE) clean-arduino-mega
 	$(MAKE) clean-arduino-nano
-	$(MAKE) clean-arduino-pro-micro
-	$(MAKE) clean-nodemcu
 	$(MAKE) clean-esp12e
-	$(MAKE) clean-nano32
 	$(MAKE) clean-photon
 	$(MAKE) clean-arduino-due-platformio
 	$(MAKE) clean-arduino-mega-platformio
 	$(MAKE) clean-esp12e-platformio
 	$(MAKE) clean-i2c-nano-mega
+	$(MAKE) clean-arduino-pro-micro
+	$(MAKE) clean-nodemcu
+	$(MAKE) clean-nano32
 
 doc:
 	+bin/dbgen.py > database.json
