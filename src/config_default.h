@@ -35,119 +35,119 @@
  * Used to include driver header files and the c-file source.
  */
 #if defined(FAMILY_LINUX)
-#    define _BOARD_HAS_EXTI
-#    define _BOARD_HAS_PIN
-#    define _BOARD_HAS_I2C_SOFT
-#    define _BOARD_HAS_PWM
-#    define _BOARD_HAS_PWM_SOFT
-#    define _BOARD_HAS_ADC
-#    define _BOARD_HAS_DAC
-#    define _BOARD_HAS_SPI
-#    define _BOARD_HAS_UART
-#    define _BOARD_HAS_SD
-#    define _BOARD_HAS_DS18B20
-#    define _BOARD_HAS_OWI
-#    define _BOARD_HAS_FLASH
-#    define _BOARD_HAS_ANALOG_INPUT_PIN
-#    define _BOARD_HAS_ANALOG_OUTPUT_PIN
-#    define _BOARD_HAS_CAN
+#    define PORT_HAS_EXTI
+#    define PORT_HAS_PIN
+#    define PORT_HAS_I2C_SOFT
+#    define PORT_HAS_PWM
+#    define PORT_HAS_PWM_SOFT
+#    define PORT_HAS_ADC
+#    define PORT_HAS_DAC
+#    define PORT_HAS_SPI
+#    define PORT_HAS_UART
+#    define PORT_HAS_SD
+#    define PORT_HAS_DS18B20
+#    define PORT_HAS_OWI
+#    define PORT_HAS_FLASH
+#    define PORT_HAS_ANALOG_INPUT_PIN
+#    define PORT_HAS_ANALOG_OUTPUT_PIN
+#    define PORT_HAS_CAN
 #endif
 
 #if defined(FAMILY_AVR)
-#    define _BOARD_HAS_EXTI
-#    define _BOARD_HAS_PIN
-#    define _BOARD_HAS_PWM
-#    define _BOARD_HAS_PWM_SOFT
-#    define _BOARD_HAS_ADC
-#    define _BOARD_HAS_SPI
-#    define _BOARD_HAS_UART
-#    define _BOARD_HAS_I2C
-#    define _BOARD_HAS_I2C_SOFT
-#    define _BOARD_HAS_UART_SOFT
-#    define _BOARD_HAS_OWI
-#    define _BOARD_HAS_DS18B20
-#    define _BOARD_HAS_DS3231
-#    define _BOARD_HAS_MCP2515
-#    define _BOARD_HAS_NRF24L01
-#    define _BOARD_HAS_SD
-#    define _BOARD_HAS_WATCHDOG
-#    define _BOARD_HAS_ANALOG_INPUT_PIN
-#    define _BOARD_HAS_ANALOG_OUTPUT_PIN
+#    define PORT_HAS_EXTI
+#    define PORT_HAS_PIN
+#    define PORT_HAS_PWM
+#    define PORT_HAS_PWM_SOFT
+#    define PORT_HAS_ADC
+#    define PORT_HAS_SPI
+#    define PORT_HAS_UART
+#    define PORT_HAS_I2C
+#    define PORT_HAS_I2C_SOFT
+#    define PORT_HAS_UART_SOFT
+#    define PORT_HAS_OWI
+#    define PORT_HAS_DS18B20
+#    define PORT_HAS_DS3231
+#    define PORT_HAS_MCP2515
+#    define PORT_HAS_NRF24L01
+#    define PORT_HAS_SD
+#    define PORT_HAS_WATCHDOG
+#    define PORT_HAS_ANALOG_INPUT_PIN
+#    define PORT_HAS_ANALOG_OUTPUT_PIN
 #    if defined(MCU_ATMEGA32U4)
-#        define _BOARD_HAS_USB
-#        define _BOARD_HAS_USB_DEVICE
+#        define PORT_HAS_USB
+#        define PORT_HAS_USB_DEVICE
 #    endif
 #endif
 
 #if defined(FAMILY_SAM)
-#    define _BOARD_HAS_CHIPID
-#    define _BOARD_HAS_EXTI
-#    define _BOARD_HAS_FLASH
-#    define _BOARD_HAS_PIN
-#    define _BOARD_HAS_I2C_SOFT
-#    define _BOARD_HAS_SPI
-#    define _BOARD_HAS_UART
-#    define _BOARD_HAS_SD
-#    define _BOARD_HAS_CAN
-#    define _BOARD_HAS_MCP2515
-#    define _BOARD_HAS_OWI
-#    define _BOARD_HAS_DS18B20
-#    define _BOARD_HAS_ADC
-#    define _BOARD_HAS_DAC
-#    define _BOARD_HAS_USB
-#    define _BOARD_HAS_USB_HOST
-#    define _BOARD_HAS_ANALOG_INPUT_PIN
+#    define PORT_HAS_CHIPID
+#    define PORT_HAS_EXTI
+#    define PORT_HAS_FLASH
+#    define PORT_HAS_PIN
+#    define PORT_HAS_I2C_SOFT
+#    define PORT_HAS_SPI
+#    define PORT_HAS_UART
+#    define PORT_HAS_SD
+#    define PORT_HAS_CAN
+#    define PORT_HAS_MCP2515
+#    define PORT_HAS_OWI
+#    define PORT_HAS_DS18B20
+#    define PORT_HAS_ADC
+#    define PORT_HAS_DAC
+#    define PORT_HAS_USB
+#    define PORT_HAS_USB_HOST
+#    define PORT_HAS_ANALOG_INPUT_PIN
 #endif
 
 #if defined(FAMILY_ESP)
-#    define _BOARD_HAS_EXTI
-#    define _BOARD_HAS_PIN
-#    define _BOARD_HAS_PWM_SOFT
-#    define _BOARD_HAS_I2C_SOFT
-#    define _BOARD_HAS_SPI
-#    define _BOARD_HAS_UART
-#    define _BOARD_HAS_UART_SOFT
-#    define _BOARD_HAS_ADC
-#    define _BOARD_HAS_ANALOG_INPUT_PIN
-#    define _BOARD_HAS_FLASH
-#    define _BOARD_HAS_ESP_WIFI
+#    define PORT_HAS_EXTI
+#    define PORT_HAS_PIN
+#    define PORT_HAS_PWM_SOFT
+#    define PORT_HAS_I2C_SOFT
+#    define PORT_HAS_SPI
+#    define PORT_HAS_UART
+#    define PORT_HAS_UART_SOFT
+#    define PORT_HAS_ADC
+#    define PORT_HAS_ANALOG_INPUT_PIN
+#    define PORT_HAS_FLASH
+#    define PORT_HAS_ESP_WIFI
 #endif
 
 #if defined(FAMILY_ESP32)
-#    define _BOARD_HAS_FLASH
-#    define _BOARD_HAS_PIN
-#    define _BOARD_HAS_OWI
-#    define _BOARD_HAS_DS18B20
-#    define _BOARD_HAS_SPI
-#    define _BOARD_HAS_UART
-#    define _BOARD_HAS_ADC
-#    define _BOARD_HAS_ANALOG_INPUT_PIN
-#    define _BOARD_HAS_DAC
-#    define _BOARD_HAS_ESP_WIFI
-#    define _BOARD_HAS_CAN
+#    define PORT_HAS_FLASH
+#    define PORT_HAS_PIN
+#    define PORT_HAS_OWI
+#    define PORT_HAS_DS18B20
+#    define PORT_HAS_SPI
+#    define PORT_HAS_UART
+#    define PORT_HAS_ADC
+#    define PORT_HAS_ANALOG_INPUT_PIN
+#    define PORT_HAS_DAC
+#    define PORT_HAS_ESP_WIFI
+#    define PORT_HAS_CAN
 #endif
 
 #if defined(FAMILY_STM32F1)
-#    define _BOARD_HAS_PIN
-#    define _BOARD_HAS_I2C_SOFT
-#    define _BOARD_HAS_UART
-#    define _BOARD_HAS_FLASH
+#    define PORT_HAS_PIN
+#    define PORT_HAS_I2C_SOFT
+#    define PORT_HAS_UART
+#    define PORT_HAS_FLASH
 #endif
 
 #if defined(FAMILY_STM32F2)
-#    define _BOARD_HAS_PIN
-#    define _BOARD_HAS_I2C_SOFT
-#    define _BOARD_HAS_UART
-#    define _BOARD_HAS_FLASH
-#    define _BOARD_HAS_SDIO
-#    define _BOARD_HAS_BCM43362
+#    define PORT_HAS_PIN
+#    define PORT_HAS_I2C_SOFT
+#    define PORT_HAS_UART
+#    define PORT_HAS_FLASH
+#    define PORT_HAS_SDIO
+#    define PORT_HAS_BCM43362
 #endif
 
 #if defined(FAMILY_STM32F3)
-#    define _BOARD_HAS_PIN
-#    define _BOARD_HAS_I2C_SOFT
-#    define _BOARD_HAS_UART
-#    define _BOARD_HAS_FLASH
+#    define PORT_HAS_PIN
+#    define PORT_HAS_I2C_SOFT
+#    define PORT_HAS_UART
+#    define PORT_HAS_FLASH
 #endif
 
 /**
@@ -198,7 +198,7 @@
  * Enable the adc driver.
  */
 #ifndef CONFIG_ADC
-#    if defined(CONFIG_MINIMAL_SYSTEM) || !defined(_BOARD_HAS_ADC)
+#    if defined(CONFIG_MINIMAL_SYSTEM) || !defined(PORT_HAS_ADC)
 #        define CONFIG_ADC                                  0
 #    else
 #        define CONFIG_ADC                                  1
@@ -209,7 +209,7 @@
  * Enable the analog_input_pin driver.
  */
 #ifndef CONFIG_ANALOG_INPUT_PIN
-#    if defined(CONFIG_MINIMAL_SYSTEM) || !defined(_BOARD_HAS_ANALOG_INPUT_PIN)
+#    if defined(CONFIG_MINIMAL_SYSTEM) || !defined(PORT_HAS_ANALOG_INPUT_PIN)
 #        define CONFIG_ANALOG_INPUT_PIN                     0
 #    else
 #        define CONFIG_ANALOG_INPUT_PIN                     1
@@ -220,7 +220,7 @@
  * Enable the analog_output_pin driver.
  */
 #ifndef CONFIG_ANALOG_OUTPUT_PIN
-#    if defined(CONFIG_MINIMAL_SYSTEM) || !defined(_BOARD_HAS_ANALOG_OUTPUT_PIN)
+#    if defined(CONFIG_MINIMAL_SYSTEM) || !defined(PORT_HAS_ANALOG_OUTPUT_PIN)
 #        define CONFIG_ANALOG_OUTPUT_PIN                    0
 #    else
 #        define CONFIG_ANALOG_OUTPUT_PIN                    1
@@ -231,7 +231,7 @@
  * Enable the bcm43362 driver.
  */
 #ifndef CONFIG_BCM43362
-#    if defined(CONFIG_MINIMAL_SYSTEM) || !defined(_BOARD_HAS_BCM43362)
+#    if defined(CONFIG_MINIMAL_SYSTEM) || !defined(PORT_HAS_BCM43362)
 #        define CONFIG_BCM43362                             0
 #    else
 #        define CONFIG_BCM43362                             1
@@ -242,7 +242,7 @@
  * Enable the can driver.
  */
 #ifndef CONFIG_CAN
-#    if defined(CONFIG_MINIMAL_SYSTEM) || !defined(_BOARD_HAS_CAN)
+#    if defined(CONFIG_MINIMAL_SYSTEM) || !defined(PORT_HAS_CAN)
 #        define CONFIG_CAN                                  0
 #    else
 #        define CONFIG_CAN                                  1
@@ -253,7 +253,7 @@
  * Enable the chipid driver.
  */
 #ifndef CONFIG_CHIPID
-#    if defined(CONFIG_MINIMAL_SYSTEM) || !defined(_BOARD_HAS_CHIPID)
+#    if defined(CONFIG_MINIMAL_SYSTEM) || !defined(PORT_HAS_CHIPID)
 #        define CONFIG_CHIPID                               0
 #    else
 #        define CONFIG_CHIPID                               1
@@ -264,7 +264,7 @@
  * Enable the dac driver.
  */
 #ifndef CONFIG_DAC
-#    if defined(CONFIG_MINIMAL_SYSTEM) || !defined(_BOARD_HAS_DAC)
+#    if defined(CONFIG_MINIMAL_SYSTEM) || !defined(PORT_HAS_DAC)
 #        define CONFIG_DAC                                  0
 #    else
 #        define CONFIG_DAC                                  1
@@ -275,7 +275,7 @@
  * Enable the ds18b20 driver.
  */
 #ifndef CONFIG_DS18B20
-#    if defined(CONFIG_MINIMAL_SYSTEM) || !defined(_BOARD_HAS_DS18B20)
+#    if defined(CONFIG_MINIMAL_SYSTEM) || !defined(PORT_HAS_DS18B20)
 #        define CONFIG_DS18B20                              0
 #    else
 #        define CONFIG_DS18B20                              1
@@ -286,7 +286,7 @@
  * Enable the ds3231 driver.
  */
 #ifndef CONFIG_DS3231
-#    if defined(CONFIG_MINIMAL_SYSTEM) || !defined(_BOARD_HAS_DS3231)
+#    if defined(CONFIG_MINIMAL_SYSTEM) || !defined(PORT_HAS_DS3231)
 #        define CONFIG_DS3231                               0
 #    else
 #        define CONFIG_DS3231                               1
@@ -297,10 +297,10 @@
  * Enable the esp_wifi driver.
  */
 #ifndef CONFIG_ESP_WIFI
-#    if defined(_BOARD_HAS_ESP_WIFI)
-#        define CONFIG_ESP_WIFI                             1
-#    else
+#    if defined(CONFIG_MINIMAL_SYSTEM) || !defined(PORT_HAS_ESP_WIFI)
 #        define CONFIG_ESP_WIFI                             0
+#    else
+#        define CONFIG_ESP_WIFI                             1
 #    endif
 #endif
 
@@ -308,7 +308,7 @@
  * Enable the exti driver.
  */
 #ifndef CONFIG_EXTI
-#    if defined(CONFIG_MINIMAL_SYSTEM) || !defined(_BOARD_HAS_EXTI)
+#    if defined(CONFIG_MINIMAL_SYSTEM) || !defined(PORT_HAS_EXTI)
 #        define CONFIG_EXTI                                 0
 #    else
 #        define CONFIG_EXTI                                 1
@@ -330,7 +330,7 @@
  * Enable the i2c driver.
  */
 #ifndef CONFIG_I2C
-#    if defined(CONFIG_MINIMAL_SYSTEM) || !defined(_BOARD_HAS_I2C)
+#    if defined(CONFIG_MINIMAL_SYSTEM) || !defined(PORT_HAS_I2C)
 #        define CONFIG_I2C                                  0
 #    else
 #        define CONFIG_I2C                                  1
@@ -341,7 +341,7 @@
  * Enable the i2c_soft driver.
  */
 #ifndef CONFIG_I2C_SOFT
-#    if defined(CONFIG_MINIMAL_SYSTEM) || !defined(_BOARD_HAS_I2C_SOFT)
+#    if defined(CONFIG_MINIMAL_SYSTEM) || !defined(PORT_HAS_I2C_SOFT)
 #        define CONFIG_I2C_SOFT                             0
 #    else
 #        define CONFIG_I2C_SOFT                             1
@@ -352,7 +352,7 @@
  * Enable the mcp2515 driver.
  */
 #ifndef CONFIG_MCP2515
-#    if defined(CONFIG_MINIMAL_SYSTEM) || !defined(_BOARD_HAS_MCP2515)
+#    if defined(CONFIG_MINIMAL_SYSTEM) || !defined(PORT_HAS_MCP2515)
 #        define CONFIG_MCP2515                              0
 #    else
 #        define CONFIG_MCP2515                              1
@@ -363,7 +363,7 @@
  * Enable the nrf24l01 driver.
  */
 #ifndef CONFIG_NRF24L01
-#    if defined(CONFIG_MINIMAL_SYSTEM) || !defined(_BOARD_HAS_NRF24L01)
+#    if defined(CONFIG_MINIMAL_SYSTEM) || !defined(PORT_HAS_NRF24L01)
 #        define CONFIG_NRF24L01                             0
 #    else
 #        define CONFIG_NRF24L01                             1
@@ -374,7 +374,7 @@
  * Enable the owi driver.
  */
 #ifndef CONFIG_OWI
-#    if defined(CONFIG_MINIMAL_SYSTEM) || !defined(_BOARD_HAS_OWI)
+#    if defined(CONFIG_MINIMAL_SYSTEM) || !defined(PORT_HAS_OWI)
 #        define CONFIG_OWI                                  0
 #    else
 #        define CONFIG_OWI                                  1
@@ -385,7 +385,7 @@
  * Enable the pin driver.
  */
 #ifndef CONFIG_PIN
-#    if defined(CONFIG_MINIMAL_SYSTEM) || !defined(_BOARD_HAS_PIN)
+#    if defined(CONFIG_MINIMAL_SYSTEM) || !defined(PORT_HAS_PIN)
 #        define CONFIG_PIN                                  0
 #    else
 #        define CONFIG_PIN                                  1
@@ -396,7 +396,7 @@
  * Enable the pwm driver.
  */
 #ifndef CONFIG_PWM
-#    if defined(CONFIG_MINIMAL_SYSTEM) || !defined(_BOARD_HAS_PWM)
+#    if defined(CONFIG_MINIMAL_SYSTEM) || !defined(PORT_HAS_PWM)
 #        define CONFIG_PWM                                  0
 #    else
 #        define CONFIG_PWM                                  1
@@ -407,7 +407,7 @@
  * Enable the pwm_soft driver.
  */
 #ifndef CONFIG_PWM_SOFT
-#    if defined(CONFIG_MINIMAL_SYSTEM) || !defined(_BOARD_HAS_PWM_SOFT)
+#    if defined(CONFIG_MINIMAL_SYSTEM) || !defined(PORT_HAS_PWM_SOFT)
 #        define CONFIG_PWM_SOFT                             0
 #    else
 #        define CONFIG_PWM_SOFT                             1
@@ -418,7 +418,7 @@
  * Enable the sd driver.
  */
 #ifndef CONFIG_SD
-#    if defined(CONFIG_MINIMAL_SYSTEM) || !defined(_BOARD_HAS_SD)
+#    if defined(CONFIG_MINIMAL_SYSTEM) || !defined(PORT_HAS_SD)
 #        define CONFIG_SD                                   0
 #    else
 #        define CONFIG_SD                                   1
@@ -429,7 +429,7 @@
  * Enable the sdio driver.
  */
 #ifndef CONFIG_SDIO
-#    if defined(CONFIG_MINIMAL_SYSTEM) || !defined(_BOARD_HAS_SDIO)
+#    if defined(CONFIG_MINIMAL_SYSTEM) || !defined(PORT_HAS_SDIO)
 #        define CONFIG_SDIO                                 0
 #    else
 #        define CONFIG_SDIO                                 1
@@ -440,7 +440,7 @@
  * Enable the spi driver.
  */
 #ifndef CONFIG_SPI
-#    if defined(CONFIG_MINIMAL_SYSTEM) || !defined(_BOARD_HAS_SPI)
+#    if defined(CONFIG_MINIMAL_SYSTEM) || !defined(PORT_HAS_SPI)
 #        define CONFIG_SPI                                  0
 #    else
 #        define CONFIG_SPI                                  1
@@ -458,7 +458,7 @@
  * Enable the uart_soft driver.
  */
 #ifndef CONFIG_UART_SOFT
-#    if defined(CONFIG_MINIMAL_SYSTEM) || !defined(_BOARD_HAS_UART_SOFT)
+#    if defined(CONFIG_MINIMAL_SYSTEM) || !defined(PORT_HAS_UART_SOFT)
 #        define CONFIG_UART_SOFT                            0
 #    else
 #        define CONFIG_UART_SOFT                            1
@@ -469,7 +469,7 @@
  * Enable the usb driver.
  */
 #ifndef CONFIG_USB
-#    if defined(CONFIG_MINIMAL_SYSTEM) || !defined(_BOARD_HAS_USB)
+#    if defined(CONFIG_MINIMAL_SYSTEM) || !defined(PORT_HAS_USB)
 #        define CONFIG_USB                                  0
 #    elif defined(BOARD_ARDUINO_PRO_MICRO) || defined(BOARD_ARDUINO_DUE)
 #        define CONFIG_USB                                  1
@@ -482,7 +482,7 @@
  * Enable the usb_device driver.
  */
 #ifndef CONFIG_USB_DEVICE
-#    if defined(_BOARD_HAS_USB_DEVICE)
+#    if defined(PORT_HAS_USB_DEVICE)
 #        define CONFIG_USB_DEVICE                           1
 #    else
 #        define CONFIG_USB_DEVICE                           0
@@ -493,7 +493,7 @@
  * Enable the usb_host driver.
  */
 #ifndef CONFIG_USB_HOST
-#    if defined(CONFIG_MINIMAL_SYSTEM) || !defined(_BOARD_HAS_USB_HOST)
+#    if defined(CONFIG_MINIMAL_SYSTEM) || !defined(PORT_HAS_USB_HOST)
 #        define CONFIG_USB_HOST                             0
 #    elif defined(BOARD_ARDUINO_DUE)
 #        define CONFIG_USB_HOST                             1
@@ -518,7 +518,7 @@
 #endif
 
 /**
- * Initialize the adc driver module.
+ * Initialize the adc driver module at system startup.
  */
 #ifndef CONFIG_MODULE_INIT_ADC
 #    if CONFIG_ADC == 1
@@ -529,7 +529,7 @@
 #endif
 
 /**
- * Initialize the analog_input_pin driver module.
+ * Initialize the analog_input_pin driver module at system startup.
  */
 #ifndef CONFIG_MODULE_INIT_ANALOG_INPUT_PIN
 #    if CONFIG_ANALOG_INPUT_PIN == 1
@@ -540,7 +540,7 @@
 #endif
 
 /**
- * Initialize the analog_output_pin driver module.
+ * Initialize the analog_output_pin driver module at system startup.
  */
 #ifndef CONFIG_MODULE_INIT_ANALOG_OUTPUT_PIN
 #    if CONFIG_ANALOG_OUTPUT_PIN == 1
@@ -551,7 +551,7 @@
 #endif
 
 /**
- * Initialize the bcm43362 driver module.
+ * Initialize the bcm43362 driver module at system startup.
  */
 #ifndef CONFIG_MODULE_INIT_BCM43362
 #    if CONFIG_BCM43362 == 1
@@ -562,7 +562,7 @@
 #endif
 
 /**
- * Initialize the can driver module.
+ * Initialize the can driver module at system startup.
  */
 #ifndef CONFIG_MODULE_INIT_CAN
 #    if CONFIG_CAN == 1
@@ -573,7 +573,7 @@
 #endif
 
 /**
- * Initialize the chipid driver module.
+ * Initialize the chipid driver module at system startup.
  */
 #ifndef CONFIG_MODULE_INIT_CHIPID
 #    if CONFIG_CHIPID == 1
@@ -584,7 +584,7 @@
 #endif
 
 /**
- * Initialize the dac driver module.
+ * Initialize the dac driver module at system startup.
  */
 #ifndef CONFIG_MODULE_INIT_DAC
 #    if CONFIG_DAC == 1
@@ -595,7 +595,7 @@
 #endif
 
 /**
- * Initialize the ds18b20 driver module.
+ * Initialize the ds18b20 driver module at system startup.
  */
 #ifndef CONFIG_MODULE_INIT_DS18B20
 #    if CONFIG_DS18B20 == 1
@@ -606,7 +606,7 @@
 #endif
 
 /**
- * Initialize the ds3231 driver module.
+ * Initialize the ds3231 driver module at system startup.
  */
 #ifndef CONFIG_MODULE_INIT_DS3231
 #    if CONFIG_DS3231 == 1
@@ -617,7 +617,7 @@
 #endif
 
 /**
- * Initialize the esp_wifi driver module.
+ * Initialize the esp_wifi driver module at system startup.
  */
 #ifndef CONFIG_MODULE_INIT_ESP_WIFI
 #    if CONFIG_ESP_WIFI == 1
@@ -628,7 +628,7 @@
 #endif
 
 /**
- * Initialize the exti driver module.
+ * Initialize the exti driver module at system startup.
  */
 #ifndef CONFIG_MODULE_INIT_EXTI
 #    if CONFIG_EXTI == 1
@@ -639,7 +639,7 @@
 #endif
 
 /**
- * Initialize the flash driver module.
+ * Initialize the flash driver module at system startup.
  */
 #ifndef CONFIG_MODULE_INIT_FLASH
 #    if CONFIG_FLASH == 1
@@ -650,7 +650,7 @@
 #endif
 
 /**
- * Initialize the i2c driver module.
+ * Initialize the i2c driver module at system startup.
  */
 #ifndef CONFIG_MODULE_INIT_I2C
 #    if CONFIG_I2C == 1
@@ -661,7 +661,7 @@
 #endif
 
 /**
- * Initialize the i2c_soft driver module.
+ * Initialize the i2c_soft driver module at system startup.
  */
 #ifndef CONFIG_MODULE_INIT_I2C_SOFT
 #    if CONFIG_I2C_SOFT == 1
@@ -672,7 +672,7 @@
 #endif
 
 /**
- * Initialize the mcp2515 driver module.
+ * Initialize the mcp2515 driver module at system startup.
  */
 #ifndef CONFIG_MODULE_INIT_MCP2515
 #    if CONFIG_MCP2515 == 1
@@ -683,7 +683,7 @@
 #endif
 
 /**
- * Initialize the nrf24l01 driver module.
+ * Initialize the nrf24l01 driver module at system startup.
  */
 #ifndef CONFIG_MODULE_INIT_NRF24L01
 #    if CONFIG_NRF24L01 == 1
@@ -694,7 +694,7 @@
 #endif
 
 /**
- * Initialize the owi driver module.
+ * Initialize the owi driver module at system startup.
  */
 #ifndef CONFIG_MODULE_INIT_OWI
 #    if CONFIG_OWI == 1
@@ -705,7 +705,7 @@
 #endif
 
 /**
- * Initialize the pin driver module.
+ * Initialize the pin driver module at system startup.
  */
 #ifndef CONFIG_MODULE_INIT_PIN
 #    if CONFIG_PIN == 1
@@ -716,7 +716,7 @@
 #endif
 
 /**
- * Initialize the pwm driver module.
+ * Initialize the pwm driver module at system startup.
  */
 #ifndef CONFIG_MODULE_INIT_PWM
 #    if CONFIG_PWM == 1
@@ -727,7 +727,7 @@
 #endif
 
 /**
- * Initialize the pwm_soft driver module.
+ * Initialize the pwm_soft driver module at system startup.
  */
 #ifndef CONFIG_MODULE_INIT_PWM_SOFT
 #    if CONFIG_PWM_SOFT == 1
@@ -738,7 +738,7 @@
 #endif
 
 /**
- * Initialize the sd driver module.
+ * Initialize the sd driver module at system startup.
  */
 #ifndef CONFIG_MODULE_INIT_SD
 #    if CONFIG_SD == 1
@@ -749,7 +749,7 @@
 #endif
 
 /**
- * Initialize the sdio driver module.
+ * Initialize the sdio driver module at system startup.
  */
 #ifndef CONFIG_MODULE_INIT_SDIO
 #    if CONFIG_SDIO == 1
@@ -760,7 +760,7 @@
 #endif
 
 /**
- * Initialize the spi driver module.
+ * Initialize the spi driver module at system startup.
  */
 #ifndef CONFIG_MODULE_INIT_SPI
 #    if CONFIG_SPI == 1
@@ -771,7 +771,7 @@
 #endif
 
 /**
- * Initialize the uart driver module.
+ * Initialize the uart driver module at system startup.
  */
 #ifndef CONFIG_MODULE_INIT_UART
 #    if CONFIG_UART == 1
@@ -782,7 +782,7 @@
 #endif
 
 /**
- * Initialize the uart_soft driver module.
+ * Initialize the uart_soft driver module at system startup.
  */
 #ifndef CONFIG_MODULE_INIT_UART_SOFT
 #    if CONFIG_UART_SOFT == 1
@@ -793,7 +793,7 @@
 #endif
 
 /**
- * Initialize the usb driver module.
+ * Initialize the usb driver module at system startup.
  */
 #ifndef CONFIG_MODULE_INIT_USB
 #    if CONFIG_USB == 1
@@ -804,7 +804,7 @@
 #endif
 
 /**
- * Initialize the usb_device driver module.
+ * Initialize the usb_device driver module at system startup.
  */
 #ifndef CONFIG_MODULE_INIT_USB_DEVICE
 #    if CONFIG_USB_DEVICE == 1
@@ -815,7 +815,7 @@
 #endif
 
 /**
- * Initialize the usb_host driver module.
+ * Initialize the usb_host driver module at system startup.
  */
 #ifndef CONFIG_MODULE_INIT_USB_HOST
 #    if CONFIG_USB_HOST == 1
@@ -826,13 +826,81 @@
 #endif
 
 /**
- * Initialize the watchdog driver module.
+ * Initialize the watchdog driver module at system startup.
  */
 #ifndef CONFIG_MODULE_INIT_WATCHDOG
 #    if CONFIG_WATCHDOG == 1
 #        define CONFIG_MODULE_INIT_WATCHDOG                 1
 #    else
 #        define CONFIG_MODULE_INIT_WATCHDOG                 0
+#    endif
+#endif
+
+/**
+ * Initialize the bus module at system startup.
+ */
+#ifndef CONFIG_MODULE_INIT_BUS
+#    if defined(CONFIG_MINIMAL_SYSTEM)
+#        define CONFIG_MODULE_INIT_BUS                      0
+#    else
+#        define CONFIG_MODULE_INIT_BUS                      1
+#    endif
+#endif
+
+/**
+ * Initialize the inet module at system startup.
+ */
+#ifndef CONFIG_MODULE_INIT_INET
+#    if defined(CONFIG_MINIMAL_SYSTEM) || defined(ARCH_ARM) || defined(ARCH_AVR)
+#        define CONFIG_MODULE_INIT_INET                     0
+#    else
+#        define CONFIG_MODULE_INIT_INET                     1
+#    endif
+#endif
+
+/**
+ * Initialize the ping module at system startup.
+ */
+#ifndef CONFIG_MODULE_INIT_PING
+#    if defined(CONFIG_MINIMAL_SYSTEM) || defined(ARCH_ARM) || defined(ARCH_AVR)
+#        define CONFIG_MODULE_INIT_PING                     0
+#    else
+#        define CONFIG_MODULE_INIT_PING                     1
+#    endif
+#endif
+
+/**
+ * Initialize the socket module at system startup.
+ */
+#ifndef CONFIG_MODULE_INIT_SOCKET
+#    if defined(CONFIG_MINIMAL_SYSTEM) || defined(ARCH_ARM) || defined(ARCH_AVR)
+#        define CONFIG_MODULE_INIT_SOCKET                   0
+#    else
+#        define CONFIG_MODULE_INIT_SOCKET                   1
+#    endif
+#endif
+
+/**
+ * Initialize the network_interface module at system startup.
+ */
+#ifndef CONFIG_MODULE_INIT_NETWORK_INTERFACE
+#    if defined(CONFIG_MINIMAL_SYSTEM) || defined(ARCH_ARM) || defined(ARCH_AVR)
+#        define CONFIG_MODULE_INIT_NETWORK_INTERFACE        0
+#    else
+#        define CONFIG_MODULE_INIT_NETWORK_INTERFACE        1
+#    endif
+#endif
+
+/**
+ * Initialize the ssl module at system startup.
+ */
+#ifndef CONFIG_MODULE_INIT_SSL
+#    if defined(CONFIG_MINIMAL_SYSTEM)
+#        define CONFIG_MODULE_INIT_SSL                      0
+#    elif defined(ARCH_ESP) || defined(ARCH_ESP32) || defined(ARCH_LINUX)
+#        define CONFIG_MODULE_INIT_SSL                      1
+#    else
+#        define CONFIG_MODULE_INIT_SSL                      0
 #    endif
 #endif
 
@@ -1657,6 +1725,10 @@
 
 #if (CONFIG_MODULE_INIT_PWM_SOFT == 1) &&  (CONFIG_SYSTEM_TICK_SOFTWARE == 0) && (ARCH_ESP)
 #    error "CONFIG_SYSTEM_TICK_SOFTWARE must be 1 when CONFIG_MODULE_INIT_PWM_SOFT is 1."
+#endif
+
+#if (CONFIG_SPIFFS == 1) &&  (CONFIG_FLASH == 0)
+#    error "CONFIG_FLASH must be 1 when CONFIG_SPIFFS is 1."
 #endif
 
 #endif

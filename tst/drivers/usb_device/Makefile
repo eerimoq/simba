@@ -29,6 +29,7 @@
 #
 
 NAME = usb_device_suite
+TYPE = suite
 BOARD ?= linux
 
 TIMEOUT ?= 40

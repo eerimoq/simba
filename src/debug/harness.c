@@ -48,7 +48,9 @@ int harness_run(struct harness_t *self_p,
     skipped = 0;
     testcase_p = testcases_p;
 
+#if !defined(ARCH_LINUX)
     thrd_sleep_us(200000);
+#endif
     
     /* Print a header. */
     std_printf(FSTR("\r\n"));

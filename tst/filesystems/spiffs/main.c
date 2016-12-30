@@ -2,9 +2,9 @@
  * @section License
  *
  * The MIT License (MIT)
- * 
+ *
  * Copyright (c) 2014-2016, Erik Moqvist
- * 
+ *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
  * files (the "Software"), to deal in the Software without
@@ -48,7 +48,6 @@ static uint8_t cache[1400];
 
 static int hal_init(void)
 {
-    BTASSERT(flash_module_init() == 0);
     BTASSERT(flash_init(&flash, &flash_0_dev) == 0);
 
     return (0);
@@ -116,9 +115,7 @@ static uint8_t cache[1400];
 
 static int hal_init(void)
 {
-    BTASSERT(flash_module_init() == 0);
     BTASSERT(flash_init(&flash, &flash_0_dev) == 0);
-
     BTASSERT(flash_erase(&flash, PHY_ADDR, PHY_SIZE) == 0);
 
     return (0);

@@ -70,7 +70,7 @@ Below is the memory usage of two applications:
 +==========================+===========+===========+
 | minimal-configuration    |      2404 |       335 |
 +--------------------------+-----------+-----------+
-| default-configuration    |     12050 |       649 |
+| default-configuration    |     12060 |       649 |
 +--------------------------+-----------+-----------+
 
 Default configuration
@@ -207,6 +207,8 @@ Default Standard Library configuration.
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_MODULE_INIT_BCM43362_                          |  0                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_MODULE_INIT_BUS_                               |  1                                                  |
++--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_MODULE_INIT_CAN_                               |  0                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_MODULE_INIT_CHIPID_                            |  0                                                  |
@@ -227,13 +229,19 @@ Default Standard Library configuration.
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_MODULE_INIT_I2C_SOFT_                          |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_MODULE_INIT_INET_                              |  0                                                  |
++--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_MODULE_INIT_MCP2515_                           |  1                                                  |
++--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_MODULE_INIT_NETWORK_INTERFACE_                 |  0                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_MODULE_INIT_NRF24L01_                          |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_MODULE_INIT_OWI_                               |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_MODULE_INIT_PIN_                               |  1                                                  |
++--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_MODULE_INIT_PING_                              |  0                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_MODULE_INIT_PWM_                               |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
@@ -243,7 +251,11 @@ Default Standard Library configuration.
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_MODULE_INIT_SDIO_                              |  0                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_MODULE_INIT_SOCKET_                            |  0                                                  |
++--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_MODULE_INIT_SPI_                               |  1                                                  |
++--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_MODULE_INIT_SSL_                               |  0                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_MODULE_INIT_UART_                              |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
@@ -503,6 +515,8 @@ Mcu
 
 .. _CONFIG_MODULE_INIT_BCM43362: ../user-guide/configuration.html#c.CONFIG_MODULE_INIT_BCM43362
 
+.. _CONFIG_MODULE_INIT_BUS: ../user-guide/configuration.html#c.CONFIG_MODULE_INIT_BUS
+
 .. _CONFIG_MODULE_INIT_CAN: ../user-guide/configuration.html#c.CONFIG_MODULE_INIT_CAN
 
 .. _CONFIG_MODULE_INIT_CHIPID: ../user-guide/configuration.html#c.CONFIG_MODULE_INIT_CHIPID
@@ -523,13 +537,19 @@ Mcu
 
 .. _CONFIG_MODULE_INIT_I2C_SOFT: ../user-guide/configuration.html#c.CONFIG_MODULE_INIT_I2C_SOFT
 
+.. _CONFIG_MODULE_INIT_INET: ../user-guide/configuration.html#c.CONFIG_MODULE_INIT_INET
+
 .. _CONFIG_MODULE_INIT_MCP2515: ../user-guide/configuration.html#c.CONFIG_MODULE_INIT_MCP2515
+
+.. _CONFIG_MODULE_INIT_NETWORK_INTERFACE: ../user-guide/configuration.html#c.CONFIG_MODULE_INIT_NETWORK_INTERFACE
 
 .. _CONFIG_MODULE_INIT_NRF24L01: ../user-guide/configuration.html#c.CONFIG_MODULE_INIT_NRF24L01
 
 .. _CONFIG_MODULE_INIT_OWI: ../user-guide/configuration.html#c.CONFIG_MODULE_INIT_OWI
 
 .. _CONFIG_MODULE_INIT_PIN: ../user-guide/configuration.html#c.CONFIG_MODULE_INIT_PIN
+
+.. _CONFIG_MODULE_INIT_PING: ../user-guide/configuration.html#c.CONFIG_MODULE_INIT_PING
 
 .. _CONFIG_MODULE_INIT_PWM: ../user-guide/configuration.html#c.CONFIG_MODULE_INIT_PWM
 
@@ -539,7 +559,11 @@ Mcu
 
 .. _CONFIG_MODULE_INIT_SDIO: ../user-guide/configuration.html#c.CONFIG_MODULE_INIT_SDIO
 
+.. _CONFIG_MODULE_INIT_SOCKET: ../user-guide/configuration.html#c.CONFIG_MODULE_INIT_SOCKET
+
 .. _CONFIG_MODULE_INIT_SPI: ../user-guide/configuration.html#c.CONFIG_MODULE_INIT_SPI
+
+.. _CONFIG_MODULE_INIT_SSL: ../user-guide/configuration.html#c.CONFIG_MODULE_INIT_SSL
 
 .. _CONFIG_MODULE_INIT_UART: ../user-guide/configuration.html#c.CONFIG_MODULE_INIT_UART
 

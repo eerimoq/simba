@@ -29,6 +29,7 @@
 #
 
 NAME = std_suite
+TYPE = suite
 BOARD ?= linux
 
 CDEFS += CONFIG_MINIMAL_SYSTEM=1 \

@@ -29,16 +29,18 @@
 #
 
 NAME = ssl_suite
+TYPE = suite
 BOARD ?= linux
 
 CDEFS += CONFIG_MINIMAL_SYSTEM=1 \
 	CONFIG_FS_CMD_THRD_LIST=1
 
-SRC_IGNORE = $(SIMBA_ROOT)/src/inet/socket.c
-MBED_TLS_SRC = 
 SRC += \
 	mbedtls_stub.c \
 	socket_stub.c
+SRC_IGNORE = $(SIMBA_ROOT)/src/inet/socket.c
+INET_SRC += ssl.c
+MBED_TLS_SRC =
 
 SIMBA_ROOT ?= ../../..
 include $(SIMBA_ROOT)/make/app.mk

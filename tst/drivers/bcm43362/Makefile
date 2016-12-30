@@ -29,6 +29,7 @@
 #
 
 NAME = bcm43362_suite
+TYPE = suite
 BOARD ?= linux
 
 CDEFS += CONFIG_MINIMAL_SYSTEM=1 \

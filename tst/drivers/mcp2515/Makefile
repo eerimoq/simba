@@ -29,9 +29,8 @@
 #
 
 NAME = can_suite
+TYPE = suite
 BOARD ?= linux
-SLIB_SRC = harness.c
-DRIVERS_SRC = mcp2515.c spi.c pin.c exti.c uart.c
 
 CDEFS += CONFIG_MINIMAL_SYSTEM=1 \
 	CONFIG_FS_CMD_THRD_LIST=1

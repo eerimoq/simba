@@ -728,6 +728,8 @@ static int get_filesystem_path_from_path(struct fs_filesystem_t **filesystem_pp,
     return (-1);
 }
 
+#if CONFIG_FAT16 == 1
+
 static int format_entry_fat16(void *chout_p,
                               const struct fat16_dir_entry_t *entry_p)
 {
@@ -779,6 +781,8 @@ static int ls_fat16(struct fat16_t *fs_p,
 
     return (0);
 }
+
+#endif
 
 #if CONFIG_SPIFFS == 1
 
@@ -878,11 +882,15 @@ int fs_open(struct fs_file_t *self_p, const char *path_p, int flags)
 
     switch (filesystem_p->type) {
 
+#if CONFIG_FAT16 == 1
+
     case fs_type_fat16_t:
         return (fat16_file_open(filesystem_p->fs.fat16_p,
                                 &self_p->u.fat16,
                                 path_p,
                                 flags));
+
+#endif
 
 #if CONFIG_SPIFFS == 1
 
@@ -906,8 +914,12 @@ int fs_close(struct fs_file_t *self_p)
 
     switch (self_p->filesystem_p->type) {
 
+#if CONFIG_FAT16 == 1
+
     case fs_type_fat16_t:
         return (fat16_file_close(&self_p->u.fat16));
+
+#endif
 
 #if CONFIG_SPIFFS == 1
 
@@ -927,27 +939,31 @@ ssize_t fs_read(struct fs_file_t *self_p, void *dst_p, size_t size)
     ASSERTN(self_p != NULL, -EINVAL);
     ASSERTN((dst_p != NULL) || (size == 0), -EINVAL);
 
-    ssize_t res;
-
     switch (self_p->filesystem_p->type) {
 
-    case fs_type_fat16_t:
-        res = fat16_file_read(&self_p->u.fat16, dst_p, size);
+#if CONFIG_FAT16 == 1
 
-        return (res);
+    case fs_type_fat16_t:
+        return (fat16_file_read(&self_p->u.fat16, dst_p, size));
+
+#endif
 
 #if CONFIG_SPIFFS == 1
 
     case fs_type_spiffs_t:
-        res = spiffs_read(self_p->filesystem_p->fs.spiffs_p,
-                          self_p->u.spiffs,
-                          dst_p,
-                          size);
+        {
+            ssize_t res;
 
-        if (res == SPIFFS_ERR_END_OF_OBJECT) {
-            return (0);
-        } else {
-            return (res);
+            res = spiffs_read(self_p->filesystem_p->fs.spiffs_p,
+                              self_p->u.spiffs,
+                              dst_p,
+                              size);
+
+            if (res == SPIFFS_ERR_END_OF_OBJECT) {
+                return (0);
+            } else {
+                return (res);
+            }
         }
 #endif
 
@@ -993,8 +1009,12 @@ ssize_t fs_write(struct fs_file_t *self_p, const void *src_p, size_t size)
 
     switch (self_p->filesystem_p->type) {
 
+#if CONFIG_FAT16 == 1
+
     case fs_type_fat16_t:
         return (fat16_file_write(&self_p->u.fat16, src_p, size));
+
+#endif
 
 #if CONFIG_SPIFFS == 1
 
@@ -1017,8 +1037,12 @@ int fs_seek(struct fs_file_t *self_p, int offset, int whence)
 
     switch (self_p->filesystem_p->type) {
 
+#if CONFIG_FAT16 == 1
+
     case fs_type_fat16_t:
         return (fat16_file_seek(&self_p->u.fat16, offset, whence));
+
+#endif
 
 #if CONFIG_SPIFFS == 1
 
@@ -1045,8 +1069,12 @@ ssize_t fs_tell(struct fs_file_t *self_p)
 
     switch (self_p->filesystem_p->type) {
 
+#if CONFIG_FAT16 == 1
+
     case fs_type_fat16_t:
         return (fat16_file_tell(&self_p->u.fat16));
+
+#endif
 
 #if CONFIG_SPIFFS == 1
 
@@ -1067,7 +1095,6 @@ int fs_mkdir(const char *path_p)
 
     struct fs_filesystem_t *filesystem_p;
     char path[CONFIG_FS_PATH_MAX];
-    struct fat16_dir_t dir;
 
     if (create_absolute_path(path, path_p) != 0) {
         return (-1);
@@ -1079,17 +1106,24 @@ int fs_mkdir(const char *path_p)
 
     switch (filesystem_p->type) {
 
+#if CONFIG_FAT16 == 1
+
     case fs_type_fat16_t:
-        if (fat16_dir_open(filesystem_p->fs.fat16_p,
-                           &dir,
-                           path_p,
-                           O_CREAT | O_WRITE | O_SYNC) != 0) {
-            return (-1);
+        {
+            struct fat16_dir_t dir;
+
+            if (fat16_dir_open(filesystem_p->fs.fat16_p,
+                               &dir,
+                               path_p,
+                               O_CREAT | O_WRITE | O_SYNC) != 0) {
+                return (-1);
+            }
+
+            fat16_dir_close(&dir);
+
+            return (0);
         }
-
-        fat16_dir_close(&dir);
-
-        return (0);
+#endif
 
     default:
         return (-1);
@@ -1122,11 +1156,15 @@ int fs_dir_open(struct fs_dir_t *dir_p,
 
     switch (filesystem_p->type) {
 
+#if CONFIG_FAT16 == 1
+
     case fs_type_fat16_t:
         return (fat16_dir_open(filesystem_p->fs.fat16_p,
                                &dir_p->u.fat16,
                                path_p,
                                O_READ));
+
+#endif
 
 #if CONFIG_SPIFFS == 1
 
@@ -1148,8 +1186,12 @@ int fs_dir_close(struct fs_dir_t *dir_p)
 
     switch (dir_p->filesystem_p->type) {
 
+#if CONFIG_FAT16 == 1
+
     case fs_type_fat16_t:
         return (fat16_dir_close(&dir_p->u.fat16));
+
+#endif
 
 #if CONFIG_SPIFFS == 1
 
@@ -1172,6 +1214,8 @@ int fs_dir_read(struct fs_dir_t *dir_p,
 
     switch (dir_p->filesystem_p->type) {
 
+#if CONFIG_FAT16 == 1
+
     case fs_type_fat16_t:
         {
             struct fat16_dir_entry_t entry;
@@ -1186,6 +1230,8 @@ int fs_dir_read(struct fs_dir_t *dir_p,
             entry_p->latest_mod_date = entry.latest_mod_date;
         }
         break;
+
+#endif
 
 #if CONFIG_SPIFFS == 1
 
@@ -1263,6 +1309,8 @@ int fs_stat(const char *path_p, struct fs_stat_t *stat_p)
 
     switch (filesystem_p->type) {
 
+#if CONFIG_FAT16 == 1
+
     case fs_type_fat16_t:
         {
             struct fat16_stat_t stat;
@@ -1276,6 +1324,8 @@ int fs_stat(const char *path_p, struct fs_stat_t *stat_p)
 
             return (0);
         }
+
+#endif
 
 #if CONFIG_SPIFFS == 1
 
@@ -1377,8 +1427,12 @@ int fs_ls(const char *path_p,
 
     switch (filesystem_p->type) {
 
+#if CONFIG_FAT16 == 1
+
     case fs_type_fat16_t:
         return (ls_fat16(filesystem_p->fs.fat16_p, path_p, chout_p));
+
+#endif
 
 #if CONFIG_SPIFFS == 1
 

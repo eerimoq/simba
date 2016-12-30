@@ -126,97 +126,97 @@ extern "C" {
 #include "inet/types.h"
 #include "inet/inet.h"
 
-#ifdef _BOARD_HAS_EXTI
+#ifdef PORT_HAS_EXTI
 #    include "drivers/exti.h"
 #endif
-#ifdef _BOARD_HAS_PIN
+#ifdef PORT_HAS_PIN
 #    include "drivers/pin.h"
 #endif
-#ifdef _BOARD_HAS_I2C_SOFT
+#ifdef PORT_HAS_I2C_SOFT
 #    include "drivers/i2c_soft.h"
 #endif
-#ifdef _BOARD_HAS_PWM
+#ifdef PORT_HAS_PWM
 #    include "drivers/pwm.h"
 #endif
-#ifdef _BOARD_HAS_PWM_SOFT
+#ifdef PORT_HAS_PWM_SOFT
 #    include "drivers/pwm_soft.h"
 #endif
-#ifdef _BOARD_HAS_ADC
+#ifdef PORT_HAS_ADC
 #    include "drivers/adc.h"
 #endif
-#ifdef _BOARD_HAS_DAC
+#ifdef PORT_HAS_DAC
 #    include "drivers/dac.h"
 #endif
-#ifdef _BOARD_HAS_SPI
+#ifdef PORT_HAS_SPI
 #    include "drivers/spi.h"
 #endif
-#ifdef _BOARD_HAS_UART
+#ifdef PORT_HAS_UART
 #    include "drivers/uart.h"
 #endif
-#ifdef _BOARD_HAS_SD
+#ifdef PORT_HAS_SD
 #    include "drivers/sd.h"
 #endif
-#ifdef _BOARD_HAS_SDIO
+#ifdef PORT_HAS_SDIO
 #    include "drivers/sdio.h"
 #endif
-#ifdef _BOARD_HAS_DS18B20
+#ifdef PORT_HAS_DS18B20
 #    include "drivers/ds18b20.h"
 #endif
-#ifdef _BOARD_HAS_OWI
+#ifdef PORT_HAS_OWI
 #    include "drivers/owi.h"
 #endif
-#ifdef _BOARD_HAS_FLASH
+#ifdef PORT_HAS_FLASH
 #    include "drivers/flash.h"
 #endif
-#ifdef _BOARD_HAS_ANALOG_INPUT_PIN
+#ifdef PORT_HAS_ANALOG_INPUT_PIN
 #    include "drivers/analog_input_pin.h"
 #endif
-#ifdef _BOARD_HAS_ANALOG_OUTPUT_PIN
+#ifdef PORT_HAS_ANALOG_OUTPUT_PIN
 #    include "drivers/analog_output_pin.h"
 #endif
-#ifdef _BOARD_HAS_CAN
+#ifdef PORT_HAS_CAN
 #    include "drivers/can.h"
 #endif
-#ifdef _BOARD_HAS_I2C
+#ifdef PORT_HAS_I2C
 #    include "drivers/i2c.h"
 #endif
-#ifdef _BOARD_HAS_UART_SOFT
+#ifdef PORT_HAS_UART_SOFT
 #    include "drivers/uart_soft.h"
 #endif
-#ifdef _BOARD_HAS_DS3231
+#ifdef PORT_HAS_DS3231
 #    include "drivers/ds3231.h"
 #endif
-#ifdef _BOARD_HAS_MCP2515
+#ifdef PORT_HAS_MCP2515
 #    include "drivers/mcp2515.h"
 #endif
-#ifdef _BOARD_HAS_NRF24L01
+#ifdef PORT_HAS_NRF24L01
 #    include "drivers/nrf24l01.h"
 #endif
-#ifdef _BOARD_HAS_WATCHDOG
+#ifdef PORT_HAS_WATCHDOG
 #    include "drivers/watchdog.h"
 #endif
-#ifdef _BOARD_HAS_USB
+#ifdef PORT_HAS_USB
 #    include "drivers/usb.h"
 #endif
-#ifdef _BOARD_HAS_USB_DEVICE
+#ifdef PORT_HAS_USB_DEVICE
 #    include "drivers/usb_device.h"
 #    include "drivers/usb/device/descriptors.h"
 #    include "drivers/usb/device/class/cdc.h"
 #endif
-#ifdef _BOARD_HAS_CHIPID
+#ifdef PORT_HAS_CHIPID
 #    include "drivers/chipid.h"
 #endif
-#ifdef _BOARD_HAS_USB_HOST
+#ifdef PORT_HAS_USB_HOST
 #    include "drivers/usb_host.h"
 #    include "drivers/usb/host/class/hid.h"
 #    include "drivers/usb/host/class/mass_storage.h"
 #endif
-#ifdef _BOARD_HAS_ESP_WIFI
+#ifdef PORT_HAS_ESP_WIFI
 #    include "drivers/esp_wifi.h"
 #    include "drivers/esp_wifi/station.h"
 #    include "drivers/esp_wifi/softap.h"
 #endif
-#ifdef _BOARD_HAS_BCM43362
+#ifdef PORT_HAS_BCM43362
 #    include "drivers/bcm43362.h"
 #endif
     

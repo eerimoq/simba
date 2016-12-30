@@ -29,7 +29,7 @@
 #
 
 NAME = http_websocket_server_suite
-VERSION = 0.0.1
+TYPE = suite
 BOARD ?= linux
 
 SRC += socket_stub.c
@@ -38,6 +38,8 @@ CDEFS += CONFIG_MINIMAL_SYSTEM=1 \
 
 SRC_IGNORE = $(SIMBA_ROOT)/src/inet/socket.c
 
+ENCODE_SRC = base64.c
+HASH_SRC = sha1.c
 INET_SRC = \
 	http_websocket_server.c
 

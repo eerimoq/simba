@@ -29,6 +29,7 @@
 #
 
 NAME = shell_suite
+TYPE = suite
 BOARD ?= linux
 
 CDEFS += CONFIG_MINIMAL_SYSTEM=1 \
@@ -37,6 +38,9 @@ CDEFS += CONFIG_MINIMAL_SYSTEM=1 \
 	CONFIG_SHELL_MINIMAL=0 \
 	CONFIG_SHELL_HISTORY_SIZE=128 \
 	CONFIG_FS_CMD_THRD_LIST=1
+
+OAM_SRC += shell.c
+ALLOC_SRC += circular_heap.c
 
 SIMBA_ROOT ?= ../../..
 include $(SIMBA_ROOT)/make/app.mk

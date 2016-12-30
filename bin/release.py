@@ -204,7 +204,7 @@ def test():
         # in src/ compiles.
         command = [
             "make",
-            "APPS=tst/kernel/sys",
+            "APPS=examples/default-configuration",
             "BOARD=" + os.path.basename(board),
             "all"
         ]

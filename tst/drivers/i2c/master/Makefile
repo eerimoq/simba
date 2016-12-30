@@ -29,6 +29,7 @@
 #
 
 NAME = i2c_suite_master
+TYPE = suite
 BOARD ?= arduino_mega
 
 SIMBA_ROOT ?= ../../../..

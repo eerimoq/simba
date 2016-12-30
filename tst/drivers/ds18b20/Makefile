@@ -29,6 +29,7 @@
 #
 
 NAME = ds18b20_suite
+TYPE = suite
 BOARD ?= linux
 
 CDEFS += CONFIG_MINIMAL_SYSTEM=1 \

@@ -29,9 +29,8 @@
 #
 
 NAME = flash_suite
+TYPE = suite
 BOARD ?= linux
-SLIB_SRC = harness.c crc.c
-DRIVERS_SRC = uart.c flash.c
 
 CDEFS += CONFIG_MINIMAL_SYSTEM=1 \
 	CONFIG_FS_CMD_THRD_LIST=1

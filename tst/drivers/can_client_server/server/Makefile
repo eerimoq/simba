@@ -29,7 +29,7 @@
 #
 
 NAME = can_server
-VERSION = 0.3.0
+TYPE = suite
 BOARD = arduino_due
 
 TIMEOUT ?= 60

@@ -30,6 +30,8 @@
 
 #include "simba.h"
 
+#if CONFIG_ESP_WIFI == 1
+
 static int esp_station_init(void *arg_p)
 {
     return (0);
@@ -148,3 +150,5 @@ struct network_interface_wifi_driver_t network_interface_wifi_driver_esp_softap 
     .set_ip_info = esp_softap_set_ip_info,
     .get_ip_info = esp_softap_get_ip_info
 };
+
+#endif

@@ -29,7 +29,7 @@
 #
 
 NAME = http_websocket_client_suite
-VERSION = 0.0.1
+TYPE = suite
 BOARD ?= linux
 
 SRC += socket_stub.c

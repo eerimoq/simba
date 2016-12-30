@@ -29,12 +29,16 @@
 #
 
 NAME = fat16_suite
+TYPE = suite
 BOARD ?= linux
 
 TIMEOUT = 60
 
-CDEFS += CONFIG_MINIMAL_SYSTEM=1 \
+CDEFS += \
+	CONFIG_MINIMAL_SYSTEM=1 \
 	CONFIG_FS_CMD_THRD_LIST=1
+
+FILESYSTEMS_SRC += fat16.c
 
 SIMBA_ROOT ?= ../../..
 include $(SIMBA_ROOT)/make/app.mk

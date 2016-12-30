@@ -29,6 +29,7 @@
 #
 
 NAME = rwlock_suite
+TYPE = suite
 
 BOARD ?= linux
 

@@ -29,6 +29,7 @@
 #
 
 NAME = sd_suite
+TYPE = suite
 BOARD ?= linux
 
 TIMEOUT = 30

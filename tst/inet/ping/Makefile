@@ -29,14 +29,19 @@
 #
 
 NAME = ping_suite
+TYPE = suite
 BOARD ?= linux
 
 SRC += socket_stub.c
-CDEFS += CONFIG_MINIMAL_SYSTEM=1 \
+CDEFS += \
+	CONFIG_MINIMAL_SYSTEM=1 \
+	CONFIG_MODULE_INIT_PING=1 \
 	CONFIG_FS_CMD_THRD_LIST=1 \
 	CONFIG_FS_CMD_PING_PING=1
 
 SRC_IGNORE = $(SIMBA_ROOT)/src/inet/socket.c
+
+INET_SRC = inet.c ping.c
 
 SIMBA_ROOT ?= ../../..
 include $(SIMBA_ROOT)/make/app.mk

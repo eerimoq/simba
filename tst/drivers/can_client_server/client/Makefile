@@ -29,7 +29,7 @@
 #
 
 NAME = can_client_suite
-VERSION = 0.3.0
+TYPE = suite
 BOARD = arduino_due
 
 CDEFS += CONFIG_MINIMAL_SYSTEM=1 \

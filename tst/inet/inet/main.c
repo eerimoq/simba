@@ -90,7 +90,6 @@ int main()
     };
 
     sys_start();
-    inet_module_init();
 
     harness_init(&harness);
     harness_run(&harness, harness_testcases);

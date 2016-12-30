@@ -29,10 +29,14 @@
 #
 
 NAME = json_suite
+TYPE = suite
 BOARD ?= linux
 
-CDEFS += CONFIG_MINIMAL_SYSTEM=1 \
+CDEFS += \
+	CONFIG_MINIMAL_SYSTEM=1 \
 	CONFIG_FS_CMD_THRD_LIST=1
+
+ENCODE_SRC = json.c
 
 SIMBA_ROOT ?= ../../..
 include $(SIMBA_ROOT)/make/app.mk

@@ -29,7 +29,7 @@
 #
 
 NAME = http_server_suite
-VERSION = 0.0.1
+TYPE = suite
 BOARD ?= linux
 
 SRC += socket_stub.c
@@ -38,11 +38,13 @@ CDEFS += CONFIG_MINIMAL_SYSTEM=1 \
 
 SRC_IGNORE = $(SIMBA_ROOT)/src/inet/socket.c
 
-SIMBA_ROOT ?= ../../..
-
+ENCODE_SRC = base64.c
+SYNC_SRC = event.c
+HASH_SRC = sha1.c
 INET_SRC = \
 	http_server.c \
 	http_websocket_server.c \
 	inet.c
 
+SIMBA_ROOT ?= ../../..
 include $(SIMBA_ROOT)/make/app.mk

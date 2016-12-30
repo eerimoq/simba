@@ -142,7 +142,7 @@ static void RAM_CODE sys_tick_isr(void)
 
 #include "sys_port.i"
 
-static void start_drivers(void)
+static void init_drivers(void)
 {
 #if CONFIG_MODULE_INIT_ADC == 1
     adc_module_init();
@@ -251,6 +251,29 @@ static void start_drivers(void)
 #endif
 }
 
+static void init_inet(void)
+{
+#if CONFIG_MODULE_INIT_INET == 1
+    inet_module_init();
+#endif
+
+#if CONFIG_MODULE_INIT_PING == 1
+    ping_module_init();
+#endif
+
+#if CONFIG_MODULE_INIT_SOCKET == 1
+    socket_module_init();
+#endif
+
+#if CONFIG_MODULE_INIT_NETWORK_INTERFACE == 1
+    network_interface_module_init();
+#endif
+
+#if CONFIG_MODULE_INIT_SSL == 1
+    ssl_module_init();
+#endif
+}
+    
 #if CONFIG_START_CONSOLE != CONFIG_START_CONSOLE_NONE
 
 static int start_console(void)
@@ -432,8 +455,12 @@ int sys_start(void)
     shell_module_init();
 #endif
     sys_module_init();
+#if CONFIG_MODULE_INIT_BUS == 1
+    bus_module_init();
+#endif
 
-    start_drivers();
+    init_drivers();
+    init_inet();
     
 #if CONFIG_START_CONSOLE != CONFIG_START_CONSOLE_NONE
     start_console();

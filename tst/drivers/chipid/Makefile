@@ -29,6 +29,7 @@
 #
 
 NAME = chipid_suite
+TYPE = suite
 BOARD = arduino_due
 
 CDEFS += \

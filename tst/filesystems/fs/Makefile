@@ -29,6 +29,7 @@
 #
 
 NAME = fs_suite
+TYPE = suite
 BOARD ?= linux
 
 CDEFS += CONFIG_MINIMAL_SYSTEM=1 \
@@ -41,9 +42,18 @@ CDEFS += CONFIG_MINIMAL_SYSTEM=1 \
 	CONFIG_FS_CMD_FS_REMOVE=1 \
 	CONFIG_FS_CMD_FS_LIST=1 \
 	CONFIG_FS_CMD_FS_WRITE=1 \
+	CONFIG_FAT16=1 \
 	CONFIG_SPIFFS=1 \
 	CONFIG_THRD_ENV=1 \
 	CONFIG_FS_CMD_THRD_LIST=1
+
+FILESYSTEMS_SRC = fat16.c spiffs.c
+SPIFFS_SRC = \
+	3pp/spiffs-0.3.5/src/spiffs_nucleus.c \
+	3pp/spiffs-0.3.5/src/spiffs_gc.c \
+	3pp/spiffs-0.3.5/src/spiffs_hydrogen.c \
+	3pp/spiffs-0.3.5/src/spiffs_cache.c \
+	3pp/spiffs-0.3.5/src/spiffs_check.c
 
 SIMBA_ROOT ?= ../../..
 include $(SIMBA_ROOT)/make/app.mk

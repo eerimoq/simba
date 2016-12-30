@@ -29,7 +29,7 @@
 #
 
 NAME = can_suite
-VERSION = 0.3.0
+TYPE = suite
 BOARD = arduino_due
 
 CDEFS += \

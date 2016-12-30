@@ -29,7 +29,7 @@
 #
 
 NAME = settings_suite
-VERSION = 0.3.0
+TYPE = suite
 BOARD ?= linux
 
 SETTINGS_C = settings.c

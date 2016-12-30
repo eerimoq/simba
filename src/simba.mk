@@ -28,6 +28,35 @@
 # This file is part of the Simba project.
 #
 
+# Minimal set of files for a test suite.
+ifeq ($(TYPE),suite)
+  ALLOC_SRC +=
+  COLLECTIONS_SRC +=
+  DEBUG_SRC += log.c harness.c
+  DRIVERS_SRC += flash.c uart.c
+  ENCODE_SRC +=
+  HASH_SRC +=
+  INET_SRC +=
+  LWIP_SRC +=
+  KERNEL_SRC += sys.c time.c timer.c thrd.c
+  MULTIMEDIA_SRC +=
+  OAM_SRC += console.c settings.c
+  FILESYSTEMS_SRC += fs.c
+  SPIFFS_SRC +=
+  SYNC_SRC += chan.c queue.c rwlock.c sem.c
+  TEXT_SRC += std.c
+
+  ifeq ($(FAMILY),$(filter $(FAMILY), sam stm32f1 stm32f2 stm32f3))
+    ifneq ($(filter $(HASH_SRC), hash.c), hash.c)
+      HASH_SRC += crc.c
+    endif
+  endif
+
+  ifeq ($(FAMILY),esp32)
+      KERNEL_SRC += ports/esp32/gnu/thrd_port.S
+  endif
+endif
+
 INC += $(SIMBA_ROOT)/src
 INC += $(SIMBA_ROOT)/3pp/compat
 
@@ -258,7 +287,15 @@ ifneq ($(ARCH),$(filter $(ARCH), esp esp32 linux))
 endif
 
 ifeq ($(ARCH),$(filter $(ARCH), esp esp32 linux))
-MBED_TLS_SRC ?= \
+    INET_SRC_TMP += ssl.c
+endif
+
+INET_SRC ?= $(INET_SRC_TMP)
+
+SRC += $(INET_SRC:%=$(SIMBA_ROOT)/src/inet/%)
+
+ifeq ($(filter $(INET_SRC), ssl.c), ssl.c)
+  MBED_TLS_SRC ?= \
 	3pp/mbedtls/library/aes.c \
 	3pp/mbedtls/library/aesni.c \
 	3pp/mbedtls/library/arc4.c \
@@ -333,13 +370,7 @@ MBED_TLS_SRC ?= \
 	3pp/mbedtls/library/xtea.c
 
     SRC += $(MBED_TLS_SRC:%=$(SIMBA_ROOT)/%)
-
-    INET_SRC_TMP += ssl.c
 endif
-
-INET_SRC ?= $(INET_SRC_TMP)
-
-SRC += $(INET_SRC:%=$(SIMBA_ROOT)/src/inet/%)
 
 #Kernel package.
 INC += $(SIMBA_ROOT)/src/kernel/ports/$(ARCH)/$(TOOLCHAIN)
@@ -405,11 +436,12 @@ TEXT_SRC ?= configfile.c \
             re.c
 
 ifneq ($(ARCH),$(filter $(ARCH), avr))
-INC += \
+  INC += \
 	$(SIMBA_ROOT)/3pp/atto \
 	$(SIMBA_ROOT)/3pp/atto/curses
 
-ATTO_SRC +=  \
+  ifeq ($(filter $(TEXT_SRC), emacs.c),emacs.c)
+    ATTO_SRC ?=  \
 	3pp/atto/buffer.c \
 	3pp/atto/command.c \
 	3pp/atto/complete.c \
@@ -421,8 +453,9 @@ ATTO_SRC +=  \
 	3pp/atto/search.c \
 	3pp/atto/window.c \
 	3pp/atto/curses/curses.c
+  endif
 
-SRC += $(ATTO_SRC:%=$(SIMBA_ROOT)/%)
+  SRC += $(ATTO_SRC:%=$(SIMBA_ROOT)/%)
 endif
 
 SRC += $(TEXT_SRC:%=$(SIMBA_ROOT)/src/text/%)

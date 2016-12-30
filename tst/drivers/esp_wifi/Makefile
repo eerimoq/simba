@@ -29,6 +29,7 @@
 #
 
 NAME = wifi_esp_suite
+TYPE = suite
 
 CDEFS += CONFIG_MINIMAL_SYSTEM=1 \
 	CONFIG_FS_CMD_ESP_WIFI_STATUS=1

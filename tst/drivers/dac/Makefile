@@ -29,6 +29,7 @@
 #
 
 NAME = dac_suite
+TYPE = suite
 BOARD ?= linux
 TIMEOUT=60
 

@@ -244,7 +244,6 @@ int main()
     };
 
     sys_start();
-    ping_module_init();
 
     harness_init(&harness);
     harness_run(&harness, harness_testcases);

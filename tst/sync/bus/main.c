@@ -167,7 +167,6 @@ int main()
     };
 
     sys_start();
-    bus_module_init();
 
     harness_init(&harness);
     harness_run(&harness, harness_testcases);
