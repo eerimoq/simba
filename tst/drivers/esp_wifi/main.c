@@ -96,7 +96,7 @@ static int test_station(struct harness_t *harness_p)
     status = esp_wifi_station_status_idle_t;
 
     while (status != esp_wifi_station_status_got_ip_t) {
-        status = esp_wifi_station_get_connect_status();
+        status = esp_wifi_station_get_status();
         std_printf(FSTR("status: %d\r\n"), status);
         thrd_sleep(1);
     }

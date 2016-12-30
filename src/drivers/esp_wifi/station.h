@@ -39,11 +39,11 @@
 enum esp_wifi_station_status_t {
     esp_wifi_station_status_idle_t = 0,
     esp_wifi_station_status_connecting_t,
-    esp_wifi_station_status_connected_t,
     esp_wifi_station_status_auth_failure_t,
     esp_wifi_station_status_no_ap_found_t,
     esp_wifi_station_status_connect_fail_t,
-    esp_wifi_station_status_got_ip_t
+    esp_wifi_station_status_got_ip_t,
+    esp_wifi_station_status_connected_t
 };
 
 /**

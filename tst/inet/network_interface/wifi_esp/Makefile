@@ -29,6 +29,7 @@
 #
 
 NAME = wifi_esp_suite
+TYPE = suite
 
 ifneq ($(SSID),)
 CDEFS += SSID=$(SSID)
@@ -48,13 +49,26 @@ else
 RUN_PY = run_esp.py
 endif
 
+TIMEOUT ?= 100
+
 CDEFS += \
 	CONFIG_MINIMAL_SYSTEM=1 \
+	CONFIG_ESP_WIFI=1 \
 	CONFIG_FS_CMD_FS_COUNTERS_LIST=1 \
 	CONFIG_FS_CMD_NETWORK_INTERFACE_LIST=1 \
 	CONFIG_FS_CMD_ESP_WIFI_STATUS=1
 
-TIMEOUT ?= 100
+SYNC_SRC = event.c
+DRIVERS_SRC = \
+	esp_wifi.c \
+	esp_wifi/station.c \
+	esp_wifi/softap.c
+INET_SRC = \
+	socket.c \
+	inet.c \
+	network_interface.c \
+	network_interface/wifi.c \
+	network_interface/driver/esp.c
 
 SIMBA_ROOT ?= ../../../..
 include $(SIMBA_ROOT)/make/app.mk
