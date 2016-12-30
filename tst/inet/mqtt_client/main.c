@@ -233,8 +233,8 @@ static int test_publish(struct harness_t *harness_p)
     BTASSERT(mqtt_client_publish(&client, &foobar) == 0);
 
     BTASSERT(queue_read(&qserverout, buf, 16) == 16);
-    BTASSERT(buf[0] == (3 << 4));
-    BTASSERT(buf[1] == 12);
+    BTASSERT(buf[0] == ((3 << 4) | (1 << 1)));
+    BTASSERT(buf[1] == 14);
     BTASSERT(buf[2] == 0);
     BTASSERT(buf[3] == 7);
     BTASSERT(buf[4] == 'f');
@@ -281,7 +281,7 @@ static int test_subscribe(struct harness_t *harness_p)
     BTASSERT(mqtt_client_subscribe(&client, &foobar) == 0);
 
     BTASSERT(queue_read(&qserverout, buf, 14) == 14);
-    BTASSERT(buf[0] == (8 << 4));
+    BTASSERT(buf[0] == ((8 << 4) | 2));
     BTASSERT(buf[1] == 12);
     BTASSERT(buf[2] == 0);
     BTASSERT(buf[3] == 1);
@@ -329,7 +329,7 @@ static int test_subscribe(struct harness_t *harness_p)
     buf[0] = (11 << 4);
     buf[1] = 2;
     buf[2] = 0;
-    buf[3] = 1;
+    buf[3] = 2;
     message.buf_p = buf;
     message.size = 4;
     BTASSERT(queue_write(&qserverin, &message, sizeof(message)) == sizeof(message));
@@ -340,10 +340,10 @@ static int test_subscribe(struct harness_t *harness_p)
     BTASSERT(mqtt_client_unsubscribe(&client, &foobar) == 0);
 
     BTASSERT(queue_read(&qserverout, buf, 13) == 13);
-    BTASSERT(buf[0] == (10 << 4));
-    BTASSERT(buf[1] == 12);
+    BTASSERT(buf[0] == ((10 << 4) | 2));
+    BTASSERT(buf[1] == 11);
     BTASSERT(buf[2] == 0);
-    BTASSERT(buf[3] == 1);
+    BTASSERT(buf[3] == 2);
     BTASSERT(buf[4] == 0);
     BTASSERT(buf[5] == 7);
     BTASSERT(buf[6] == 'f');

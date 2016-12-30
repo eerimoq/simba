@@ -83,6 +83,7 @@ static const char *message_fmt[] = {
  */
 static int write_fixed_header(struct mqtt_client_t *self_p,
                               int type,
+                              int flags,
                               size_t size)
 {
     uint8_t buf[5];
@@ -94,7 +95,7 @@ static int write_fixed_header(struct mqtt_client_t *self_p,
                      FSTR("Writing MQTT message '%s' to the server.\r\n"),
                      message_fmt[type]);
 
-    buf[0] = (type << 4);
+    buf[0] = (type << 4) | flags;
     pos = 1;
 
     do {
@@ -164,7 +165,7 @@ static int handle_control_connect(struct mqtt_client_t *self_p)
     uint8_t buf[12];
 
     /* Write the fixed header. */
-    res = write_fixed_header(self_p, MQTT_CONNECT, 12);
+    res = write_fixed_header(self_p, MQTT_CONNECT, 0, 12);
 
     if (res != 0) {
         return (res);
@@ -234,7 +235,7 @@ static int handle_response_connack(struct mqtt_client_t *self_p,
 static int handle_control_disconnect(struct mqtt_client_t *self_p)
 {
 
-    if (write_fixed_header(self_p, MQTT_DISCONNECT, 0) != 0) {
+    if (write_fixed_header(self_p, MQTT_DISCONNECT, 0, 0) != 0) {
         return (-1);
     }
 
@@ -251,7 +252,7 @@ static int handle_control_ping(struct mqtt_client_t *self_p)
     int res;
 
     /* Write the ping request packet. */
-    res = write_fixed_header(self_p, MQTT_PINGREQ, 0);
+    res = write_fixed_header(self_p, MQTT_PINGREQ, 0, 0);
 
     if (res != 0) {
         return (res);
@@ -289,17 +290,25 @@ static int handle_control_publish(struct mqtt_client_t *self_p)
     int res = 0;
     uint8_t buf[2];
     struct mqtt_application_message_t *message_p;
-
+    size_t size;
+    
     if (queue_read(&self_p->control.in,
                    &message_p,
                    sizeof(message_p)) != sizeof(message_p)) {
         return (-1);
     }
-
+    
     /* Write the fixed header. */
+    size = (message_p->topic.size + message_p->payload.size + 2);
+
+    if (message_p->qos > 0) {
+        size += 2;
+    }
+       
     res = write_fixed_header(self_p,
                              MQTT_PUBLISH,
-                             message_p->topic.size + message_p->payload.size + 2);
+                             (message_p->qos << 1),
+                             size);
 
     if (res != 0) {
         return (res);
@@ -319,13 +328,15 @@ static int handle_control_publish(struct mqtt_client_t *self_p)
         return (-EIO);
     }
 
-    buf[0] = 0;
-    buf[1] = 1;
-
-    if (chan_write(self_p->transport.out_p, &buf[0], 2) != 2) {
-        return (-EIO);
+    if (message_p->qos > 0) {
+        buf[0] = 0;
+        buf[1] = 1;
+        
+        if (chan_write(self_p->transport.out_p, &buf[0], 2) != 2) {
+            return (-EIO);
+        }
     }
-
+    
     /* Write the payload. */
     if (message_p->payload.size > 0) {
         if (chan_write(self_p->transport.out_p,
@@ -391,6 +402,7 @@ static int handle_control_subscribe(struct mqtt_client_t *self_p)
     /* Write the fixed header to the server. */
     res = write_fixed_header(self_p,
                              MQTT_SUBSCRIBE,
+                             2,
                              message_p->topic.size + 5);
 
     if (res != 0) {
@@ -462,10 +474,10 @@ static int handle_response_suback(struct mqtt_client_t *self_p,
         return (-1);
     }
 
-    if (buf[2] != 0) {
+    if (buf[2] > 2) {
         return (-1);
     }
-
+    
     return (0);
 }
 
@@ -487,7 +499,8 @@ static int handle_control_unsubscribe(struct mqtt_client_t *self_p)
     /* Write the fixed header to the server. */
     res = write_fixed_header(self_p,
                              MQTT_UNSUBSCRIBE,
-                             message_p->topic.size + 5);
+                             2,
+                             message_p->topic.size + 4);
 
     if (res != 0) {
         return (res);
@@ -495,7 +508,7 @@ static int handle_control_unsubscribe(struct mqtt_client_t *self_p)
 
     /* Write the packet identifier. */
     buf[0] = 0;
-    buf[1] = 1;
+    buf[1] = 2;
 
     if (chan_write(self_p->transport.out_p, &buf[0], 2) != 2) {
         return (-EIO);
@@ -547,7 +560,7 @@ static int handle_response_unsuback(struct mqtt_client_t *self_p,
         return (-1);
     }
 
-    if (buf[1] != 1) {
+    if (buf[1] != 2) {
         return (-1);
     }
 

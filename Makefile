@@ -232,6 +232,7 @@ ifeq ($(BOARD), nano32)
     TESTS += $(addprefix tst/inet/, http_websocket_client \
 				    http_websocket_server \
 				    inet \
+				    mqtt_client_network \
 				    network_interface/wifi_esp \
 				    ping)
     TESTS += $(addprefix tst/filesystems/, fs \
