@@ -30,6 +30,10 @@
 
 #include "simba.h"
 
+/**
+ * Implements MQTT version 3.11.
+ */
+
 /** Control packet types. */
 #define MQTT_CONNECT      1
 #define MQTT_CONNACK      2
