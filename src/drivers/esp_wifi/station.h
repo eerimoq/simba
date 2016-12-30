@@ -39,7 +39,8 @@
 enum esp_wifi_station_status_t {
     esp_wifi_station_status_idle_t = 0,
     esp_wifi_station_status_connecting_t,
-    esp_wifi_station_status_wrong_password_t,
+    esp_wifi_station_status_connected_t,
+    esp_wifi_station_status_auth_failure_t,
     esp_wifi_station_status_no_ap_found_t,
     esp_wifi_station_status_connect_fail_t,
     esp_wifi_station_status_got_ip_t
@@ -110,7 +111,7 @@ int esp_wifi_station_get_reconnect_policy(void);
  *
  * @return The connection status.
  */
-enum esp_wifi_station_status_t esp_wifi_station_get_connect_status(void);
+enum esp_wifi_station_status_t esp_wifi_station_get_status(void);
 
 /**
  * Enable the station DHCP client.
@@ -132,5 +133,12 @@ int esp_wifi_station_dhcp_client_stop(void);
  * @return Station DHCP client status.
  */
 enum esp_wifi_dhcp_status_t esp_wifi_station_dhcp_client_status(void);
+
+/**
+ * Convert given status code to a string.
+ *
+ * @return Status code as a string.
+ */
+const char *esp_wifi_station_status_as_string(enum esp_wifi_station_status_t status);
 
 #endif

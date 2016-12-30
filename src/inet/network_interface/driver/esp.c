@@ -69,7 +69,7 @@ static int esp_station_stop(void *arg_p)
 
 static int esp_station_is_up(void *arg_p)
 {
-    return (esp_wifi_station_get_connect_status() == esp_wifi_station_status_got_ip_t);
+    return (esp_wifi_station_get_status() == esp_wifi_station_status_got_ip_t);
 }
 
 static int esp_station_set_ip_info(void *arg_p,

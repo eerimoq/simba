@@ -113,7 +113,7 @@ void esp_wifi_print(void *chout_p)
     char buf[16];
     char *op_mode_p;
     char *phy_mode_p;
-    char *connection_status_p;
+    const char *connection_status_p;
     char *dhcp_status_p;
 
     /* Get the operating mode. */
@@ -222,36 +222,8 @@ void esp_wifi_print(void *chout_p)
     }
 
     /* Get the station connection status. */
-    switch (esp_wifi_station_get_connect_status()) {
-
-    case esp_wifi_station_status_idle_t:
-        connection_status_p = "idle";
-        break;
-
-    case esp_wifi_station_status_connecting_t:
-        connection_status_p = "connecting";
-        break;
-
-    case esp_wifi_station_status_wrong_password_t:
-        connection_status_p = "wrong-password";
-        break;
-
-    case esp_wifi_station_status_no_ap_found_t:
-        connection_status_p = "no-ap";
-        break;
-
-    case esp_wifi_station_status_connect_fail_t:
-        connection_status_p = "connect-fail";
-        break;
-
-    case esp_wifi_station_status_got_ip_t:
-        connection_status_p = "got-ip";
-        break;
-
-    default:
-        connection_status_p = "invalid";
-        break;
-    }
+    connection_status_p =
+        esp_wifi_station_status_as_string(esp_wifi_station_get_status());
 
     /* Get the DHCP client status. */
     switch (esp_wifi_station_dhcp_client_status()) {

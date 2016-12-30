@@ -43,7 +43,7 @@
 #include "esp_wifi.h"
 
 static wifi_sta_config_t config;
-static enum esp_wifi_station_status_t connection_status = -1;
+static enum esp_wifi_station_status_t connection_status = esp_wifi_station_status_idle_t;
 
 static int esp_wifi_station_port_init(const char *ssid_p,
                                       const char *password_p,
@@ -141,7 +141,7 @@ int esp_wifi_station_port_set_connect_status(enum esp_wifi_station_status_t stat
     return (0);
 }
 
-static enum esp_wifi_station_status_t esp_wifi_station_port_get_connect_status(void)
+static enum esp_wifi_station_status_t esp_wifi_station_port_get_status(void)
 {
     return (connection_status);
 }

@@ -71,9 +71,9 @@ int esp_wifi_station_get_reconnect_policy(void)
     return (esp_wifi_station_port_get_reconnect_policy());
 }
 
-enum esp_wifi_station_status_t esp_wifi_station_get_connect_status(void)
+enum esp_wifi_station_status_t esp_wifi_station_get_status(void)
 {
-    return (esp_wifi_station_port_get_connect_status());
+    return (esp_wifi_station_port_get_status());
 }
 
 int esp_wifi_station_dhcp_client_start(void)
@@ -89,4 +89,26 @@ int esp_wifi_station_dhcp_client_stop(void)
 enum esp_wifi_dhcp_status_t esp_wifi_station_dhcp_client_status(void)
 {
     return (esp_wifi_station_port_dhcp_client_status());
+}
+
+const char *esp_wifi_station_status_as_string(enum esp_wifi_station_status_t status)
+{
+    switch (status) {
+    case esp_wifi_station_status_idle_t:
+        return "idle";
+    case esp_wifi_station_status_connecting_t:
+        return "connecting";
+    case esp_wifi_station_status_connected_t:
+        return "connected";
+    case esp_wifi_station_status_auth_failure_t:
+        return "auth-failure";
+    case esp_wifi_station_status_no_ap_found_t:
+        return "no-ap-found";
+    case esp_wifi_station_status_connect_fail_t:
+        return "connect-fail";
+    case esp_wifi_station_status_got_ip_t:
+        return "got-ip";
+    default:
+        return "unknown";
+    }
 }
