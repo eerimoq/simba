@@ -650,6 +650,7 @@ static void tcp_close_cb(void *ctx_p)
         tcp_arg(socket_p->pcb_p, NULL);
         tcp_recv(socket_p->pcb_p, NULL);
         tcp_sent(socket_p->pcb_p, NULL);
+        tcp_err(socket_p->pcb_p, NULL);
         tcp_close(socket_p->pcb_p);
     }
 
