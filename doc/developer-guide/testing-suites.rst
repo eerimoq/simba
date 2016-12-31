@@ -210,6 +210,7 @@ Nano32
 - :github-blob:`inet/http_websocket_client<tst/inet/http_websocket_client/main.c>`
 - :github-blob:`inet/http_websocket_server<tst/inet/http_websocket_server/main.c>`
 - :github-blob:`inet/inet<tst/inet/inet/main.c>`
+- :github-blob:`inet/mqtt_client_network<tst/inet/mqtt_client_network/main.c>`
 - :github-blob:`inet/network_interface/wifi_esp<tst/inet/network_interface/wifi_esp/main.c>`
 - :github-blob:`inet/ping<tst/inet/ping/main.c>`
 - :github-blob:`filesystems/fs<tst/filesystems/fs/main.c>`

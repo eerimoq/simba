@@ -351,6 +351,10 @@ Default Standard Library configuration.
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_THRD_SCHEDULED_                                |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_THRD_STACK_HEAP_                               |  0                                                  |
++--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_THRD_STACK_HEAP_SIZE_                          |  0                                                  |
++--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_THRD_TERMINATE_                                |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_UART_                                          |  1                                                  |
@@ -658,6 +662,10 @@ Mcu
 .. _CONFIG_THRD_IDLE_STACK_SIZE: ../user-guide/configuration.html#c.CONFIG_THRD_IDLE_STACK_SIZE
 
 .. _CONFIG_THRD_SCHEDULED: ../user-guide/configuration.html#c.CONFIG_THRD_SCHEDULED
+
+.. _CONFIG_THRD_STACK_HEAP: ../user-guide/configuration.html#c.CONFIG_THRD_STACK_HEAP
+
+.. _CONFIG_THRD_STACK_HEAP_SIZE: ../user-guide/configuration.html#c.CONFIG_THRD_STACK_HEAP_SIZE
 
 .. _CONFIG_THRD_TERMINATE: ../user-guide/configuration.html#c.CONFIG_THRD_TERMINATE
 
