@@ -43,7 +43,7 @@
 #define pin_d9_dev  pin_device[3]
 #define pin_d10_dev pin_device[1]
 
-#define pin_led_dev pin_d0_dev
+#define pin_led_dev pin_d4_dev
 
 #define pin_a0_dev pin_device[0]
 

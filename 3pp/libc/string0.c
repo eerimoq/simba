@@ -212,6 +212,18 @@ char *strcpy(char *dest, const char *src) {
     return dest;
 }
 
+char *strncpy(char *dest, const char *src, size_t n) {
+    char *d = dest;
+    while (*src && n > 0) {
+        *d++ = *src++;
+        n--;
+    }
+    if (n > 0) {
+        *d = '\0';
+    }
+    return dest;
+}
+
 // needed because gcc optimises strcpy + strcat to this
 char *stpcpy(char *dest, const char *src) {
     while (*src) {
