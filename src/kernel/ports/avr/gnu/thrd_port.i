@@ -2,9 +2,9 @@
  * @section License
  *
  * The MIT License (MIT)
- * 
+ *
  * Copyright (c) 2014-2016, Erik Moqvist
- * 
+ *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
  * files (the "Software"), to deal in the Software without
@@ -160,7 +160,7 @@ static void thrd_port_idle_wait(struct thrd_t *thrd_p)
 }
 
 static void thrd_port_suspend_timer_callback(void *arg_p)
-{    
+{
     struct thrd_t *thrd_p = arg_p;
 
     /* Push thread on scheduler ready queue. */
@@ -196,11 +196,16 @@ static void thrd_port_cpu_usage_reset(struct thrd_t *thrd_p)
 
 static const void *thrd_port_get_bottom_of_stack(struct thrd_t *thrd_p)
 {
+    char dummy;
     const void *bottom_p;
-    
-    sys_lock();
-    bottom_p = thrd_p->port.context_p;
-    sys_unlock();
+
+    if (thrd_p == thrd_self()) {
+        bottom_p = (const void *)&dummy;
+    } else {
+        sys_lock();
+        bottom_p = thrd_p->port.context_p;
+        sys_unlock();
+    }
 
     return (bottom_p);
 }

@@ -2,9 +2,9 @@
  * @section License
  *
  * The MIT License (MIT)
- * 
+ *
  * Copyright (c) 2014-2016, Erik Moqvist
- * 
+ *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
  * files (the "Software"), to deal in the Software without
@@ -142,7 +142,7 @@ static void thrd_port_suspend_timer_callback(void *arg)
     /* Signal idle thrd.*/
     pthread_mutex_lock(&idle.mutex);
     pthread_cond_signal(&idle.cond);
-    pthread_mutex_unlock(&idle.mutex);    
+    pthread_mutex_unlock(&idle.mutex);
 }
 
 static void thrd_port_tick(void)
@@ -150,7 +150,7 @@ static void thrd_port_tick(void)
     /* Signal idle thrd.*/
     pthread_mutex_lock(&idle.mutex);
     pthread_cond_signal(&idle.cond);
-    pthread_mutex_unlock(&idle.mutex);        
+    pthread_mutex_unlock(&idle.mutex);
 }
 
 static void thrd_port_cpu_usage_start(struct thrd_t *thrd_p)
@@ -176,6 +176,13 @@ static void thrd_port_cpu_usage_reset(struct thrd_t *thrd_p)
 
 static const void *thrd_port_get_bottom_of_stack(struct thrd_t *thrd_p)
 {
+    char dummy;
+    const void *bottom_p = (const void *)&dummy;
+
+    if (thrd_p == thrd_self()) {
+        return (bottom_p);
+    }
+
     return (NULL);
 }
 

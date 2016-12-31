@@ -2,9 +2,9 @@
  * @section License
  *
  * The MIT License (MIT)
- * 
+ *
  * Copyright (c) 2014-2016, Erik Moqvist
- * 
+ *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
  * files (the "Software"), to deal in the Software without
@@ -58,13 +58,13 @@ static void thrd_port_swap(struct thrd_t *in_p,
     /* Store registers. lr is the return address. */
     asm volatile ("push {lr}");
     asm volatile ("push {r4-r11}");
- 
+
     /* Save 'out_p' stack pointer. */
     asm volatile ("mov %0, sp" : "=r" (out_p->port.context_p));
-    
+
     /* Restore 'in_p' stack pointer. */
     asm volatile ("mov sp, %0" : : "r" (in_p->port.context_p));
-    
+
     /* Load registers. pop lr to pc and continue execution. */
     asm volatile ("pop {r4-r11}");
     asm volatile ("pop {pc}");
@@ -186,11 +186,16 @@ static void thrd_port_cpu_usage_reset(struct thrd_t *thrd_p)
 
 static const void *thrd_port_get_bottom_of_stack(struct thrd_t *thrd_p)
 {
+    char dummy;
     const void *bottom_p;
-    
-    sys_lock();
-    bottom_p = thrd_p->port.context_p;
-    sys_unlock();
+
+    if (thrd_p == thrd_self()) {
+        bottom_p = (const void *)&dummy;
+    } else {
+        sys_lock();
+        bottom_p = thrd_p->port.context_p;
+        sys_unlock();
+    }
 
     return (bottom_p);
 }

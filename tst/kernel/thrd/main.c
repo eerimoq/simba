@@ -256,7 +256,6 @@ static int test_get_by_name(struct harness_t *harness_p)
 
 static int test_stack_top_bottom(struct harness_t *harness_p)
 {
-#if !defined(ARCH_LINUX)
     const void *top_p;
     const void *bottom_p;
 
@@ -264,15 +263,17 @@ static int test_stack_top_bottom(struct harness_t *harness_p)
     bottom_p = thrd_get_bottom_of_stack(thrd_self());
 
     std_printf(FSTR("top: 0x%x, bottom: 0x%x, size: %d\r\n"),
-               (int)top_p,
-               (int)bottom_p,
+               (int)(intptr_t)top_p,
+               (int)(intptr_t)bottom_p,
                (int)((intptr_t)top_p - (intptr_t)bottom_p));
 
+#if defined(ARCH_LINUX)
+    BTASSERT(top_p == NULL);
+    BTASSERT(bottom_p != NULL);
+#else
     BTASSERT(top_p != NULL);
     BTASSERT(bottom_p != NULL);
     BTASSERT(top_p >= bottom_p);
-#else
-    return (1);
 #endif
 
     return (0);
