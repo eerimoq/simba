@@ -173,3 +173,13 @@ static void thrd_port_cpu_usage_reset(struct thrd_t *thrd_p)
 }
 
 #endif
+
+static const void *thrd_port_get_bottom_of_stack(struct thrd_t *thrd_p)
+{
+    return (NULL);
+}
+
+const void *thrd_port_get_top_of_stack(struct thrd_t *thrd_p)
+{
+    return (NULL);
+}

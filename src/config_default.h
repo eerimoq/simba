@@ -1658,6 +1658,20 @@
 #endif
 
 /**
+ * Enable the thread stack heap allocator.
+ */
+#ifndef CONFIG_THRD_STACK_HEAP
+#    define CONFIG_THRD_STACK_HEAP                          0
+#endif
+
+/**
+ * Size in bytes of the thread stack heap.
+ */
+#ifndef CONFIG_THRD_STACK_HEAP_SIZE
+#    define CONFIG_THRD_STACK_HEAP_SIZE                     0
+#endif
+
+/**
  * Threads are allowed to terminate.
  */
 #ifndef CONFIG_THRD_TERMINATE

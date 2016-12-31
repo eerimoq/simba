@@ -71,6 +71,12 @@ struct module_t {
 
 static struct module_t module;
 
+#if CONFIG_THRD_STACK_HEAP == 1
+static struct heap_t stack_heap;
+static THRD_STACK(stack_heap_buffer, CONFIG_THRD_STACK_HEAP_SIZE);
+static size_t stack_heap_fixed_buffer_sizes[HEAP_FIXED_SIZES_MAX] = { 0, };
+#endif
+
 #if CONFIG_THRD_ENV == 1
 
 static int set_env(struct thrd_environment_t *env_p,
@@ -458,6 +464,13 @@ int thrd_module_init(void)
 
     module.initialized = 1;
 
+#if CONFIG_THRD_STACK_HEAP == 1
+    heap_init(&stack_heap,
+              &stack_heap_buffer[0],
+              sizeof(stack_heap_buffer),
+              &stack_heap_fixed_buffer_sizes[0]);
+#endif
+    
 #if CONFIG_THRD_ENV == 1
     module.env.global.variables_p = module.env.global_variables;
     module.env.global.number_of_variables = 0;
@@ -952,4 +965,32 @@ int thrd_yield_isr(void)
     thrd_reschedule();
 
     return (0);
+}
+
+void *thrd_stack_alloc(size_t size)
+{
+#if CONFIG_THRD_STACK_HEAP == 1
+    return (heap_alloc(&stack_heap, size));
+#else
+    return (NULL);
+#endif
+}
+
+int thrd_stack_free(void *stack_p)
+{
+#if CONFIG_THRD_STACK_HEAP == 1
+    return (heap_free(&stack_heap, stack_p));
+#else
+    return (-1);
+#endif
+}
+
+const void *thrd_get_bottom_of_stack(struct thrd_t *thrd_p)
+{
+    return (thrd_port_get_bottom_of_stack(thrd_p));
+}
+
+const void *thrd_get_top_of_stack(struct thrd_t *thrd_p)
+{
+    return (thrd_port_get_top_of_stack(thrd_p));
 }

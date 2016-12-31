@@ -396,4 +396,34 @@ int thrd_resume_isr(struct thrd_t *thrd_p, int err);
  */
 int thrd_yield_isr(void);
 
+/**
+ * Allocate a thread stack of given size.
+ *
+ * @return The pointer to allocated thread stack, or NULL on error.
+ */
+void *thrd_stack_alloc(size_t size);
+
+/**
+ * Free given thread stack.
+ *
+ * @return zero(0) or negative error code.
+ */
+int thrd_stack_free(void *stack_p);
+
+/**
+ * Get the pointer to given threads' bottom of stack.
+ *
+ * @return The pointer to given threds' bottom of stack, or NULL on
+ * error.
+ */
+const void *thrd_get_bottom_of_stack(struct thrd_t *thrd_p);
+
+/**
+ * Get the pointer to given threads' top of stack.
+ *
+ * @return The pointer to given threds' top of stack, or NULL on
+ * error.
+ */
+const void *thrd_get_top_of_stack(struct thrd_t *thrd_p);
+
 #endif

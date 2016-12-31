@@ -2,9 +2,9 @@
  * @section License
  *
  * The MIT License (MIT)
- * 
+ *
  * Copyright (c) 2014-2016, Erik Moqvist
- * 
+ *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
  * files (the "Software"), to deal in the Software without
@@ -254,6 +254,30 @@ static int test_get_by_name(struct harness_t *harness_p)
     return (0);
 }
 
+static int test_stack_top_bottom(struct harness_t *harness_p)
+{
+#if !defined(ARCH_LINUX)
+    const void *top_p;
+    const void *bottom_p;
+
+    top_p = thrd_get_top_of_stack(thrd_self());
+    bottom_p = thrd_get_bottom_of_stack(thrd_self());
+
+    std_printf(FSTR("top: 0x%x, bottom: 0x%x, size: %d\r\n"),
+               (int)top_p,
+               (int)bottom_p,
+               (int)((intptr_t)top_p - (intptr_t)bottom_p));
+
+    BTASSERT(top_p != NULL);
+    BTASSERT(bottom_p != NULL);
+    BTASSERT(top_p >= bottom_p);
+#else
+    return (1);
+#endif
+
+    return (0);
+}
+
 int main()
 {
     struct harness_t harness;
@@ -266,6 +290,7 @@ int main()
         { test_preemptive, "test_preemptive" },
         { test_env, "test_env" },
         { test_get_by_name, "test_get_by_name" },
+        { test_stack_top_bottom, "test_stack_top_bottom" },
         { NULL, NULL }
     };
 

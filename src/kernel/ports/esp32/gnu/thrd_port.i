@@ -163,3 +163,19 @@ static void thrd_port_cpu_usage_reset(struct thrd_t *thrd_p)
 }
 
 #endif
+
+static const void *thrd_port_get_bottom_of_stack(struct thrd_t *thrd_p)
+{
+    const void *bottom_p;
+    
+    sys_lock();
+    bottom_p = thrd_p->port.context_p;
+    sys_unlock();
+
+    return (bottom_p);
+}
+
+const void *thrd_port_get_top_of_stack(struct thrd_t *thrd_p)
+{
+    return ((void *)((uintptr_t)thrd_p + thrd_p->stack_size));
+}
