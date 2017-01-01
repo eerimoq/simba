@@ -176,7 +176,7 @@
  * input arguments.
  */
 #ifndef CONFIG_ASSERT
-#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(CONFIG_MINIMAL_SYSTEM)
+#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(CONFIG_MINIMAL_SYSTEM) || defined(ARCH_ESP)
 #        define CONFIG_ASSERT                               0
 #    else
 #        define CONFIG_ASSERT                               1

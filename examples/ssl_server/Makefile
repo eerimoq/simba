@@ -28,10 +28,13 @@
 # This file is part of the Simba project.
 #
 
-NAME = ssl_suite
+NAME = ssl_server
 BOARD ?= linux
 
-CDEFS += CONFIG_MINIMAL_SYSTEM=1 \
+CDEFS += \
+	CONFIG_MINIMAL_SYSTEM=1 \
+	CONFIG_ESP_WIFI=1 \
+	CONFIG_START_NETWORK=1 \
 	CONFIG_FS_CMD_THRD_LIST=1
 
 SIMBA_ROOT ?= ../../..

@@ -36,4 +36,9 @@
 #undef MBEDTLS_TIMING_C
 #undef MBEDTLS_FS_IO
 
+/* Uncomment to compile without entropy. */
+//#define MBEDTLS_TEST_NULL_ENTROPY
+//#define MBEDTLS_ENTROPY_C
+//#define MBEDTLS_NO_DEFAULT_ENTROPY_SOURCES
+
 #endif

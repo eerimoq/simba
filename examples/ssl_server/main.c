@@ -30,6 +30,9 @@
 
 #include "simba.h"
 
+#define IP 192.168.0.7
+#define PORT 10023
+
 /**
  * Copied from 'server.crt'.
  */
@@ -96,49 +99,74 @@ int main()
 
     sys_start();
 
+    ssl_module_init();
+
     /* Create a SSL context. */
-    ssl_context_init(&context, ssl_protocol_tls_v1_0);
-    ssl_context_load_cert_chain(&context,
-                                &certificate[0],
-                                &key[0]);
+    if (ssl_context_init(&context, ssl_protocol_tls_v1_0) != 0) {
+        std_printf(FSTR("ssl_context_init() failed\r\n"));
+        return (-1);
+    }
+
+    if (ssl_context_load_cert_chain(&context,
+                                    &certificate[0],
+                                    &key[0]) != 0) {
+        return (-1);
+    }
 
     /* Create a listener socket. */
     if (socket_open_tcp(&listener_sock) != 0) {
-        std_printf(FSTR("open failed\r\n"));
+        std_printf(FSTR("socket_open_tcp() failed\r\n"));
         return (-1);
     }
-    
-    inet_aton("192.168.0.4", &addr.ip);
-    addr.port = 10023;
+
+    inet_aton(STRINGIFY(IP), &addr.ip);
+    addr.port = PORT;
 
     if (socket_bind(&listener_sock, &addr) != 0) {
-        std_printf(FSTR("bind failed\r\n"));
-    }
-    
-    if (socket_listen(&listener_sock, 5) != 0) {
-        std_printf(FSTR("listen failed\r\n"));
+        std_printf(FSTR("socket_bind() failed\r\n"));
+        return (-1);
     }
 
-    /* Wait for a client to connect. */
+    if (socket_listen(&listener_sock, 5) != 0) {
+        std_printf(FSTR("socket_listen() failed\r\n"));
+        return (-1);
+    }
+
     while (1) {
+        std_printf(FSTR("Waiting for a client to connect to "
+                        STRINGIFY(IP) ":" STRINGIFY(PORT) "...\r\n"));
+
         if (socket_accept(&listener_sock, &client_sock, &addr) != 0) {
-            std_printf(FSTR("accept failed\r\n"));
+            std_printf(FSTR("socket_accept() failed\r\n"));
             continue;
         }
+
+        std_printf(FSTR("Client accepted.\r\n"));
 
         /* Wrap the socket in SSL. */
         if (ssl_socket_open(&ssl_client_sock,
                             &context,
                             &client_sock,
                             ssl_socket_mode_server_t) == 0) {
-            /* Read data from the client_sock. */
+            /* Read data from the client socket. */
             if (ssl_socket_read(&ssl_client_sock, &buf[0], 6) == 6) {
                 buf[6] = '\0';
-                std_printf(FSTR("%s\r\n"), buf);
+                std_printf(FSTR("read: '%s'\r\n"), buf);
+
+                /* Write data to the client socket. */
+                if (ssl_socket_write(&ssl_client_sock, &buf[0], 6) != 6) {
+                    std_printf(FSTR("ssl_socket_write() failed\r\n"));
+                }
+            } else {
+                std_printf(FSTR("ssl_socket_read() failed\r\n"));
             }
 
             /* Close the connection. */
-            ssl_socket_close(&ssl_client_sock);
+            if (ssl_socket_close(&ssl_client_sock) != 0) {
+                std_printf(FSTR("ssl_socket_close() failed\r\n"));
+            }
+        } else {
+            std_printf(FSTR("ssl_socket_open() failed\r\n"));
         }
 
         socket_close(&client_sock);

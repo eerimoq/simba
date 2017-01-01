@@ -44,10 +44,12 @@ enum ssl_socket_mode_t {
 
 struct ssl_context_t {
     enum ssl_protocol_t protocol;
+    void *conf_p;
 };
 
 struct ssl_socket_t {
     struct chan_t base;
+    void *ssl_p;
     void *socket_p; /* Often a TCP socket. */
 };
 
