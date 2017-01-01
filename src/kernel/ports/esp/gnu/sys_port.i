@@ -97,7 +97,7 @@ static void sys_tick_sw(void *arg_p)
 static int sys_port_module_init(void)
 {
     os_timer_setfn(&sys_tick_timer, sys_tick_sw, NULL);
-    os_timer_arm(&sys_tick_timer, 1, 1);
+    os_timer_arm(&sys_tick_timer, 10, 1);
 
     return (0);
 }
