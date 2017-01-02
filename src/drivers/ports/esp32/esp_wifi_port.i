@@ -76,11 +76,15 @@ static esp_err_t event_handler(void *ctx_p, system_event_t *event_p)
 
     case SYSTEM_EVENT_STA_DISCONNECTED:
         reason = event_p->event_info.disconnected.reason;
+
+        ets_printf("disconnected reason: %d\r\n", reason);
         
         if (reason == WIFI_REASON_NO_AP_FOUND) {
             esp_wifi_station_port_set_connect_status(esp_wifi_station_status_no_ap_found_t);
         } else if (reason == WIFI_REASON_AUTH_FAIL) {
             esp_wifi_station_port_set_connect_status(esp_wifi_station_status_auth_failure_t);
+        } else if (reason == WIFI_REASON_AUTH_EXPIRE) {
+            esp_esp_wifi_connect();
         } else {
             esp_wifi_station_port_set_connect_status(esp_wifi_station_status_connect_fail_t);
         }
