@@ -539,6 +539,8 @@ static void on_tcp_err(void *arg_p, err_t err)
     if (socket_p->output.cb.state == STATE_CONNECT) {
         socket_p->output.cb.state = STATE_CLOSED;
         resume_thrd(socket_p->input.cb.thrd_p, -1);
+    } else {
+        socket_p->output.cb.state = STATE_CLOSED;
     }
 }
 
@@ -653,7 +655,6 @@ static void tcp_close_cb(void *ctx_p)
         tcp_err(socket_p->pcb_p, NULL);
         tcp_close(socket_p->pcb_p);
     }
-
     resume_thrd(socket_p->input.cb.thrd_p, 0);
 }
 
