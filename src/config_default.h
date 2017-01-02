@@ -51,6 +51,7 @@
 #    define PORT_HAS_ANALOG_INPUT_PIN
 #    define PORT_HAS_ANALOG_OUTPUT_PIN
 #    define PORT_HAS_CAN
+#    define PORT_HAS_RANDOM
 #endif
 
 #if defined(FAMILY_AVR)
@@ -111,6 +112,7 @@
 #    define PORT_HAS_ANALOG_INPUT_PIN
 #    define PORT_HAS_FLASH
 #    define PORT_HAS_ESP_WIFI
+#    define PORT_HAS_RANDOM
 #endif
 
 #if defined(FAMILY_ESP32)

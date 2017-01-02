@@ -104,6 +104,7 @@ DRIVERS_SRC ?= adc.c \
                owi.c \
                pwm.c \
                pwm_soft.c \
+	       random.c \
                sd.c \
                spi.c \
                uart.c
@@ -174,6 +175,7 @@ DRIVERS_SRC ?= adc.c \
                pin.c \
                pwm_soft.c \
                i2c_soft.c \
+	       random.c \
                spi.c \
                uart.c \
                uart_soft.c
