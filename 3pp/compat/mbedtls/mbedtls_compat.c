@@ -28,25 +28,38 @@
  * This file is part of the Simba project.
  */
 
-#ifndef __MBEDTLS_USER_CONFIG_H__
-#define __MBEDTLS_USER_CONFIG_H__
+#include "simba.h"
 
-#define MBEDTLS_NO_PLATFORM_ENTROPY
-#undef MBEDTLS_NET_C
-#undef MBEDTLS_TIMING_C
-#undef MBEDTLS_FS_IO
-#undef MBEDTLS_DEBUG_C
-#undef MBEDTLS_SSL_PROTO_DTLS
-#undef MBEDTLS_SSL_DTLS_HELLO_VERIFY
-#undef MBEDTLS_SSL_DTLS_CLIENT_PORT_REUSE
-#undef MBEDTLS_SSL_DTLS_ANTI_REPLAY
-#undef MBEDTLS_SSL_DTLS_BADMAC_LIMIT
+int mbedtls_hardware_poll(void *data_p,
+                          unsigned char *output_p,
+                          size_t len,
+                          size_t *olen)
+{
+    uint32_t random;
+    uint32_t *u32_output_p;
+    int full;
+    int rest;
+    int i;
+    
+    full = (len / 4);
+    rest = (len % 4);
+    u32_output_p = (uint32_t *)output_p;
+    
+    for (i = 0; i < full; i++) {
+        *u32_output_p++ = random_read();
+    }
 
-#define MBEDTLS_ENTROPY_HARDWARE_ALT
+    if (rest > 0) {
+        output_p = (unsigned char *)u32_output_p;
+        random = random_read();
 
-/* Uncomment to compile without entropy. */
-//#define MBEDTLS_TEST_NULL_ENTROPY
-//#define MBEDTLS_ENTROPY_C
-//#define MBEDTLS_NO_DEFAULT_ENTROPY_SOURCES
+        for (i = 0; i < rest; i++) {
+            *output_p++ = (unsigned char)random;
+            random >>= 8;
+        }
+    }
 
-#endif
+    *olen = len;
+    
+    return (0);    
+}

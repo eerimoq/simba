@@ -222,6 +222,8 @@ int ssl_socket_open(struct ssl_socket_t *self_p,
     ASSERTN(context_p != NULL, -EINVAL);
     ASSERTN(socket_p != NULL, -EINVAL);
 
+    int res;
+    
     /* Allocate the mbedTLS datastructures. */
     self_p->ssl_p = alloc_ssl();
 
@@ -232,8 +234,10 @@ int ssl_socket_open(struct ssl_socket_t *self_p,
     /* Inilialize the SSL session. */
     mbedtls_ssl_init(self_p->ssl_p);
 
-    if (mbedtls_ssl_setup(self_p->ssl_p, &module.conf) != 0) {
-        return (-1);
+    res = mbedtls_ssl_setup(self_p->ssl_p, &module.conf);
+
+    if (res != 0) {
+        goto err;
     }
 
     mbedtls_ssl_set_bio(self_p->ssl_p,
@@ -243,7 +247,19 @@ int ssl_socket_open(struct ssl_socket_t *self_p,
                         NULL);
 
     /* Perform the handshake with the remote peer. */
-    return (mbedtls_ssl_handshake(self_p->ssl_p));
+    res = mbedtls_ssl_handshake(self_p->ssl_p);
+
+    if (res != 0) {
+        mbedtls_ssl_free(self_p->ssl_p);
+        goto err;
+    }
+
+    return (0);
+    
+ err:
+    free_ssl(self_p->ssl_p);
+    
+    return (res);
 }
 
 int ssl_socket_close(struct ssl_socket_t *self_p)

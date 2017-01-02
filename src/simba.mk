@@ -377,7 +377,8 @@ ifeq ($(filter $(INET_SRC), ssl.c), ssl.c)
 	3pp/mbedtls/library/x509_csr.c \
 	3pp/mbedtls/library/x509write_crt.c \
 	3pp/mbedtls/library/x509write_csr.c \
-	3pp/mbedtls/library/xtea.c
+	3pp/mbedtls/library/xtea.c \
+	3pp/compat/mbedtls/mbedtls_compat.c
 
     SRC += $(MBED_TLS_SRC:%=$(SIMBA_ROOT)/%)
 endif
