@@ -249,6 +249,10 @@ static void init_drivers(void)
 #if CONFIG_MODULE_INIT_WATCHDOG == 1
     watchdog_module_init();
 #endif
+
+#if CONFIG_MODULE_INIT_RANDOM == 1
+    random_module_init();
+#endif
 }
 
 static void init_inet(void)

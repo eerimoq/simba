@@ -191,6 +191,7 @@ DRIVERS_SRC ?= adc.c \
                esp_wifi/softap.c \
 	       owi.c \
 	       pin.c \
+	       random.c \
                spi.c \
 	       uart.c
 endif

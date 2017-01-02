@@ -125,6 +125,7 @@
 #    define PORT_HAS_DAC
 #    define PORT_HAS_ESP_WIFI
 #    define PORT_HAS_CAN
+#    define PORT_HAS_RANDOM
 #endif
 
 #if defined(FAMILY_STM32F1)
@@ -257,6 +258,17 @@
 #        define CONFIG_CHIPID                               0
 #    else
 #        define CONFIG_CHIPID                               1
+#    endif
+#endif
+
+/**
+ * Enable the random driver.
+ */
+#ifndef CONFIG_RANDOM
+#    if defined(CONFIG_MINIMAL_SYSTEM) || !defined(PORT_HAS_RANDOM)
+#        define CONFIG_RANDOM                               0
+#    else
+#        define CONFIG_RANDOM                               1
 #    endif
 #endif
 
@@ -580,6 +592,17 @@
 #        define CONFIG_MODULE_INIT_CHIPID                   1
 #    else
 #        define CONFIG_MODULE_INIT_CHIPID                   0
+#    endif
+#endif
+
+/**
+ * Initialize the random driver module at system startup.
+ */
+#ifndef CONFIG_MODULE_INIT_RANDOM
+#    if CONFIG_RANDOM == 1
+#        define CONFIG_MODULE_INIT_RANDOM                   1
+#    else
+#        define CONFIG_MODULE_INIT_RANDOM                   0
 #    endif
 #endif
 

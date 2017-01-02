@@ -1339,6 +1339,10 @@ struct esp32_sar_adc_t {
 #define ESP32_SAR_ADC_MEAS_DATA_MASK                    0xffff
 #define ESP32_SAR_ADC_MEAS_DATA_GET(reg) BITFIELD_GET(ESP32_SAR_ADC_MEAS_DATA, reg)
 
+struct esp32_rnd_t {
+    uint32_t VALUE;
+};
+
 /**
  * Devices.
  */
@@ -1386,5 +1390,6 @@ struct esp32_sar_adc_t {
 #define ESP32_PWM2             ((volatile struct esp32__t         *)0x3ff6f000)
 #define ESP32_PWM3             ((volatile struct esp32__t         *)0x3ff70000)
 #define ESP32_RNG              ((volatile struct esp32__t         *)0x3ff75000)
+#define ESP32_RND              ((volatile struct esp32_rnd_t      *)0x60035144)
 
 #endif
