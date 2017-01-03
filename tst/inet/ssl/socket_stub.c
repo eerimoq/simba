@@ -38,8 +38,8 @@ int socket_module_init()
 int socket_open_tcp(struct socket_t *self_p)
 {
     chan_init(&self_p->base,
-              NULL,
-              NULL,
+              chan_read_null,
+              chan_write_null,
               (chan_size_fn_t)socket_size);
     
     return (0);
