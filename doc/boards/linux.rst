@@ -36,6 +36,7 @@ Supported drivers for this board.
 - :doc:`../library-reference/drivers/pin`
 - :doc:`../library-reference/drivers/pwm`
 - :doc:`../library-reference/drivers/pwm_soft`
+- :doc:`../library-reference/drivers/random`
 - :doc:`../library-reference/drivers/sd`
 - :doc:`../library-reference/drivers/spi`
 - :doc:`../library-reference/drivers/uart`
@@ -67,9 +68,9 @@ Below is the memory usage of two applications:
 +--------------------------+-----------+-----------+
 | Application              | Flash     | RAM       |
 +==========================+===========+===========+
-| minimal-configuration    |   1127522 |    360976 |
+| minimal-configuration    |     96770 |    294304 |
 +--------------------------+-----------+-----------+
-| default-configuration    |   1277787 |    480280 |
+| default-configuration    |    321093 |    425608 |
 +--------------------------+-----------+-----------+
 
 Default configuration
@@ -246,6 +247,8 @@ Default Standard Library configuration.
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_MODULE_INIT_PWM_SOFT_                          |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_MODULE_INIT_RANDOM_                            |  1                                                  |
++--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_MODULE_INIT_SD_                                |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_MODULE_INIT_SDIO_                              |  0                                                  |
@@ -283,6 +286,8 @@ Default Standard Library configuration.
 |  CONFIG_PWM_                                           |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_PWM_SOFT_                                      |  1                                                  |
++--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_RANDOM_                                        |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_SD_                                            |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
@@ -558,6 +563,8 @@ Mcu
 
 .. _CONFIG_MODULE_INIT_PWM_SOFT: ../user-guide/configuration.html#c.CONFIG_MODULE_INIT_PWM_SOFT
 
+.. _CONFIG_MODULE_INIT_RANDOM: ../user-guide/configuration.html#c.CONFIG_MODULE_INIT_RANDOM
+
 .. _CONFIG_MODULE_INIT_SD: ../user-guide/configuration.html#c.CONFIG_MODULE_INIT_SD
 
 .. _CONFIG_MODULE_INIT_SDIO: ../user-guide/configuration.html#c.CONFIG_MODULE_INIT_SDIO
@@ -595,6 +602,8 @@ Mcu
 .. _CONFIG_PWM: ../user-guide/configuration.html#c.CONFIG_PWM
 
 .. _CONFIG_PWM_SOFT: ../user-guide/configuration.html#c.CONFIG_PWM_SOFT
+
+.. _CONFIG_RANDOM: ../user-guide/configuration.html#c.CONFIG_RANDOM
 
 .. _CONFIG_SD: ../user-guide/configuration.html#c.CONFIG_SD
 

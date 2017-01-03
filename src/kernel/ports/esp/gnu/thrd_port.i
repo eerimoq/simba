@@ -41,14 +41,10 @@ static struct thrd_t *thrd_port_get_main_thrd(void)
     return (&main_thrd);
 }
 
-#if CONFIG_PROFILE_STACK == 1
-
 static char *thrd_port_get_main_thrd_stack_top(void)
 {
     return (&__main_stack_end);
 }
-
-#endif
 
 xSemaphoreHandle thrd_idle_sem;
 
@@ -195,7 +191,7 @@ static const void *thrd_port_get_bottom_of_stack(struct thrd_t *thrd_p)
     return (bottom_p);
 }
 
-const void *thrd_port_get_top_of_stack(struct thrd_t *thrd_p)
+static const void *thrd_port_get_top_of_stack(struct thrd_t *thrd_p)
 {
     return ((void *)((uintptr_t)thrd_p + thrd_p->stack_size));
 }

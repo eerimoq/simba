@@ -530,17 +530,20 @@ static err_t on_tcp_sent(void *arg_p,
 }
 
 /**
- * Called on connect timeout and more...
+ * Called on connect timeout and more. The PCB has been released when
+ * this function is called.
  */
 static void on_tcp_err(void *arg_p, err_t err)
 {
     struct socket_t *socket_p = arg_p;
 
+    /* The PCB has already been freed by LwIP before calling this
+       function. */
+    socket_p->pcb_p = NULL;
+    
     if (socket_p->output.cb.state == STATE_CONNECT) {
         socket_p->output.cb.state = STATE_CLOSED;
         resume_thrd(socket_p->input.cb.thrd_p, -1);
-    } else {
-        socket_p->output.cb.state = STATE_CLOSED;
     }
 }
 
@@ -648,13 +651,14 @@ static void tcp_close_cb(void *ctx_p)
 
     /* The socket is already closed in the LwIP stack if for example a
        connection attempt fails. */
-    if (socket_p->output.cb.state != STATE_CLOSED) {
+    if (socket_p->pcb_p != NULL) {
         tcp_arg(socket_p->pcb_p, NULL);
         tcp_recv(socket_p->pcb_p, NULL);
         tcp_sent(socket_p->pcb_p, NULL);
         tcp_err(socket_p->pcb_p, NULL);
         tcp_close(socket_p->pcb_p);
     }
+
     resume_thrd(socket_p->input.cb.thrd_p, 0);
 }
 
@@ -765,7 +769,8 @@ static void tcp_recv_from_cb(void *ctx_p)
     if (socket_p->input.u.recvfrom.pbuf_p != NULL) {
         /* Data available. */
         tcp_recv_buffer(socket_p);
-    } else if (socket_p->input.u.recvfrom.closed == 1) {
+    } else if ((socket_p->input.u.recvfrom.closed == 1)
+               || (socket_p->pcb_p == NULL)) {
         /* Socket closed. */
         args_p = socket_p->input.cb.args_p;
         resume_thrd(socket_p->input.cb.thrd_p,
@@ -781,6 +786,11 @@ static void tcp_send_to_cb(void *ctx_p)
     struct send_to_args_t *args_p;
     size_t size;
 
+    if (socket_p->pcb_p == NULL) {
+        resume_thrd(socket_p->output.cb.thrd_p, 0);
+        return;
+    }
+    
     args_p = socket_p->output.cb.args_p;
     size = MIN(args_p->extra.left,
                tcp_sndbuf(((struct tcp_pcb *)socket_p->pcb_p)));
@@ -1284,7 +1294,7 @@ ssize_t socket_sendto(struct socket_t *self_p,
     ASSERTN(self_p != NULL, EINVAL);
     ASSERTN(buf_p != NULL, EINVAL);
     ASSERTN(size > 0, EINVAL);
-
+    
     switch (self_p->type) {
 
     case SOCKET_TYPE_STREAM:

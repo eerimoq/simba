@@ -43,14 +43,10 @@ static struct thrd_t *thrd_port_get_main_thrd(void)
     return (&main_thrd);
 }
 
-#if CONFIG_PROFILE_STACK == 1
-
 static char *thrd_port_get_main_thrd_stack_top(void)
 {
-    return (&__main_stack_end);
+    return (NULL);
 }
-
-#endif
 
 static struct thrd_port_idle_t idle = {
     .mutex = PTHREAD_MUTEX_INITIALIZER,
@@ -186,7 +182,7 @@ static const void *thrd_port_get_bottom_of_stack(struct thrd_t *thrd_p)
     return (NULL);
 }
 
-const void *thrd_port_get_top_of_stack(struct thrd_t *thrd_p)
+static const void *thrd_port_get_top_of_stack(struct thrd_t *thrd_p)
 {
     return (NULL);
 }

@@ -113,33 +113,6 @@ ESP-12E Development Board
 - :github-blob:`kernel/sys<tst/kernel/sys/main.c>`
 - :github-blob:`kernel/thrd<tst/kernel/thrd/main.c>`
 - :github-blob:`kernel/timer<tst/kernel/timer/main.c>`
-- :github-blob:`sync/bus<tst/sync/bus/main.c>`
-- :github-blob:`sync/event<tst/sync/event/main.c>`
-- :github-blob:`sync/queue<tst/sync/queue/main.c>`
-- :github-blob:`sync/rwlock<tst/sync/rwlock/main.c>`
-- :github-blob:`sync/sem<tst/sync/sem/main.c>`
-- :github-blob:`collections/binary_tree<tst/collections/binary_tree/main.c>`
-- :github-blob:`collections/bits<tst/collections/bits/main.c>`
-- :github-blob:`collections/fifo<tst/collections/fifo/main.c>`
-- :github-blob:`collections/hash_map<tst/collections/hash_map/main.c>`
-- :github-blob:`alloc/circular_heap<tst/alloc/circular_heap/main.c>`
-- :github-blob:`text/std<tst/text/std/main.c>`
-- :github-blob:`text/re<tst/text/re/main.c>`
-- :github-blob:`debug/log<tst/debug/log/main.c>`
-- :github-blob:`oam/shell<tst/oam/shell/main.c>`
-- :github-blob:`encode/base64<tst/encode/base64/main.c>`
-- :github-blob:`encode/json<tst/encode/json/main.c>`
-- :github-blob:`hash/crc<tst/hash/crc/main.c>`
-- :github-blob:`hash/sha1<tst/hash/sha1/main.c>`
-- :github-blob:`inet/http_websocket_client<tst/inet/http_websocket_client/main.c>`
-- :github-blob:`inet/http_websocket_server<tst/inet/http_websocket_server/main.c>`
-- :github-blob:`inet/inet<tst/inet/inet/main.c>`
-- :github-blob:`inet/mqtt_client<tst/inet/mqtt_client/main.c>`
-- :github-blob:`inet/network_interface/wifi_esp<tst/inet/network_interface/wifi_esp/main.c>`
-- :github-blob:`inet/ping<tst/inet/ping/main.c>`
-- :github-blob:`drivers/pin<tst/drivers/pin/main.c>`
-- :github-blob:`filesystems/fs<tst/filesystems/fs/main.c>`
-- :github-blob:`filesystems/spiffs<tst/filesystems/spiffs/main.c>`
 
 Linux
 -----
@@ -181,6 +154,7 @@ Linux
 - :github-blob:`inet/inet<tst/inet/inet/main.c>`
 - :github-blob:`inet/mqtt_client<tst/inet/mqtt_client/main.c>`
 - :github-blob:`inet/ping<tst/inet/ping/main.c>`
+- :github-blob:`inet/ssl<tst/inet/ssl/main.c>`
 - :github-blob:`multimedia/midi<tst/multimedia/midi/main.c>`
 
 Nano32
@@ -222,6 +196,34 @@ NodeMCU
 - :github-blob:`kernel/sys<tst/kernel/sys/main.c>`
 - :github-blob:`kernel/thrd<tst/kernel/thrd/main.c>`
 - :github-blob:`kernel/timer<tst/kernel/timer/main.c>`
+- :github-blob:`sync/bus<tst/sync/bus/main.c>`
+- :github-blob:`sync/event<tst/sync/event/main.c>`
+- :github-blob:`sync/queue<tst/sync/queue/main.c>`
+- :github-blob:`sync/rwlock<tst/sync/rwlock/main.c>`
+- :github-blob:`sync/sem<tst/sync/sem/main.c>`
+- :github-blob:`collections/binary_tree<tst/collections/binary_tree/main.c>`
+- :github-blob:`collections/bits<tst/collections/bits/main.c>`
+- :github-blob:`collections/fifo<tst/collections/fifo/main.c>`
+- :github-blob:`collections/hash_map<tst/collections/hash_map/main.c>`
+- :github-blob:`alloc/circular_heap<tst/alloc/circular_heap/main.c>`
+- :github-blob:`text/std<tst/text/std/main.c>`
+- :github-blob:`text/re<tst/text/re/main.c>`
+- :github-blob:`debug/log<tst/debug/log/main.c>`
+- :github-blob:`oam/shell<tst/oam/shell/main.c>`
+- :github-blob:`encode/base64<tst/encode/base64/main.c>`
+- :github-blob:`encode/json<tst/encode/json/main.c>`
+- :github-blob:`hash/crc<tst/hash/crc/main.c>`
+- :github-blob:`hash/sha1<tst/hash/sha1/main.c>`
+- :github-blob:`inet/http_websocket_client<tst/inet/http_websocket_client/main.c>`
+- :github-blob:`inet/http_websocket_server<tst/inet/http_websocket_server/main.c>`
+- :github-blob:`inet/inet<tst/inet/inet/main.c>`
+- :github-blob:`inet/mqtt_client<tst/inet/mqtt_client/main.c>`
+- :github-blob:`inet/network_interface/wifi_esp<tst/inet/network_interface/wifi_esp/main.c>`
+- :github-blob:`inet/ping<tst/inet/ping/main.c>`
+- :github-blob:`drivers/pin<tst/drivers/pin/main.c>`
+- :github-blob:`drivers/random<tst/drivers/random/main.c>`
+- :github-blob:`filesystems/fs<tst/filesystems/fs/main.c>`
+- :github-blob:`filesystems/spiffs<tst/filesystems/spiffs/main.c>`
 
 Particle IO Photon
 ------
@@ -288,4 +290,5 @@ STM32VLDISCOVERY
 - :github-blob:`inet/mqtt_client<tst/inet/mqtt_client/main.c>`
 - :github-blob:`inet/ping<tst/inet/ping/main.c>`
 - :github-blob:`drivers/pin<tst/drivers/pin/main.c>`
+- :github-blob:`drivers/random<tst/drivers/random/main.c>`
 

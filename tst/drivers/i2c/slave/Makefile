@@ -32,5 +32,12 @@ NAME = i2c_suite_slave
 TYPE = suite
 BOARD ?= arduino_mega
 
+CDEFS += \
+	CONFIG_MINIMAL_SYSTEM=1 \
+	CONFIG_I2C=1 \
+	CONFIG_FS_CMD_THRD_LIST=1
+
+DRIVERS_SRC = i2c.c
+
 SIMBA_ROOT ?= ../../../..
 include $(SIMBA_ROOT)/make/app.mk

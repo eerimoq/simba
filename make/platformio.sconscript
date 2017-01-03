@@ -67,7 +67,7 @@ BOARDS = {
             "FAMILY_SAM", 
             "MCU_SAM3X8E", 
             "BOARD_ARDUINO_DUE", 
-            "VERSION=master", 
+            "VERSION=12.3.0", 
             "MBEDTLS_USER_CONFIG_FILE=\"\\\"mbedtls/user_config.h\\\"\""
         ], 
         "cflags": [
@@ -245,7 +245,7 @@ BOARDS = {
             "FAMILY_AVR", 
             "MCU_ATMEGA2560", 
             "BOARD_ARDUINO_MEGA", 
-            "VERSION=master", 
+            "VERSION=12.3.0", 
             "MBEDTLS_USER_CONFIG_FILE=\"\\\"mbedtls/user_config.h\\\"\"", 
             "__DELAY_BACKWARD_COMPATIBLE__"
         ], 
@@ -405,7 +405,7 @@ BOARDS = {
             "FAMILY_AVR", 
             "MCU_ATMEGA328P", 
             "BOARD_ARDUINO_NANO", 
-            "VERSION=master", 
+            "VERSION=12.3.0", 
             "MBEDTLS_USER_CONFIG_FILE=\"\\\"mbedtls/user_config.h\\\"\"", 
             "__DELAY_BACKWARD_COMPATIBLE__"
         ], 
@@ -565,7 +565,7 @@ BOARDS = {
             "FAMILY_AVR", 
             "MCU_ATMEGA32U4", 
             "BOARD_ARDUINO_PRO_MICRO", 
-            "VERSION=master", 
+            "VERSION=12.3.0", 
             "MBEDTLS_USER_CONFIG_FILE=\"\\\"mbedtls/user_config.h\\\"\"", 
             "__DELAY_BACKWARD_COMPATIBLE__"
         ], 
@@ -612,7 +612,7 @@ BOARDS = {
         "ldflags": [
             "-mmcu=atmega32u4", 
             "-Wl,--cref", 
-            "-Wl,--defsym=__main_stack_end=0x800900", 
+            "-Wl,--defsym=__main_stack_end=0x800b00", 
             "-Wl,-Map=build/arduino_pro_micro/default_configuration.map", 
             "-Wl,--gc-sections"
         ], 
@@ -729,7 +729,7 @@ BOARDS = {
             "FAMILY_AVR", 
             "MCU_ATMEGA328P", 
             "BOARD_ARDUINO_UNO", 
-            "VERSION=master", 
+            "VERSION=12.3.0", 
             "MBEDTLS_USER_CONFIG_FILE=\"\\\"mbedtls/user_config.h\\\"\"", 
             "__DELAY_BACKWARD_COMPATIBLE__"
         ], 
@@ -889,7 +889,7 @@ BOARDS = {
             "FAMILY_LINUX", 
             "MCU_LINUX", 
             "BOARD_CYGWIN", 
-            "VERSION=master", 
+            "VERSION=12.3.0", 
             "MBEDTLS_USER_CONFIG_FILE=\"\\\"mbedtls/user_config.h\\\"\""
         ], 
         "cflags": [
@@ -899,6 +899,8 @@ BOARDS = {
             "-pg", 
             "-fprofile-arcs", 
             "-ftest-coverage", 
+            "-ffunction-sections", 
+            "-fdata-sections", 
             "-g", 
             "-c", 
             "-Wall", 
@@ -913,6 +915,8 @@ BOARDS = {
             "-pg", 
             "-fprofile-arcs", 
             "-ftest-coverage", 
+            "-ffunction-sections", 
+            "-fdata-sections", 
             "-g", 
             "-c", 
             "-Wall", 
@@ -940,6 +944,7 @@ BOARDS = {
             "-pg", 
             "-fprofile-arcs", 
             "-ftest-coverage", 
+            "-Wl,--gc-sections", 
             "-g", 
             "-pthread", 
             "-Wl,-Map=build/cygwin/default_configuration.map", 
@@ -975,6 +980,7 @@ BOARDS = {
             "src/drivers/owi.c", 
             "src/drivers/pwm.c", 
             "src/drivers/pwm_soft.c", 
+            "src/drivers/random.c", 
             "src/drivers/sd.c", 
             "src/drivers/spi.c", 
             "src/drivers/uart.c", 
@@ -1065,6 +1071,7 @@ BOARDS = {
             "3pp/mbedtls/library/x509write_crt.c", 
             "3pp/mbedtls/library/x509write_csr.c", 
             "3pp/mbedtls/library/xtea.c", 
+            "3pp/compat/mbedtls/mbedtls_compat.c", 
             "src/kernel/sys.c", 
             "src/kernel/thrd.c", 
             "src/kernel/time.c", 
@@ -1112,7 +1119,7 @@ BOARDS = {
             "FAMILY_ESP", 
             "MCU_ESP8266", 
             "BOARD_ESP01", 
-            "VERSION=master", 
+            "VERSION=12.3.0", 
             "MBEDTLS_USER_CONFIG_FILE=\"\\\"mbedtls/user_config.h\\\"\"", 
             "ICACHE_FLASH", 
             "__STRICT_ANSI__", 
@@ -1221,6 +1228,7 @@ BOARDS = {
             "src/drivers/pin.c", 
             "src/drivers/pwm_soft.c", 
             "src/drivers/i2c_soft.c", 
+            "src/drivers/random.c", 
             "src/drivers/spi.c", 
             "src/drivers/uart.c", 
             "src/drivers/uart_soft.c", 
@@ -1312,6 +1320,7 @@ BOARDS = {
             "3pp/mbedtls/library/x509write_crt.c", 
             "3pp/mbedtls/library/x509write_csr.c", 
             "3pp/mbedtls/library/xtea.c", 
+            "3pp/compat/mbedtls/mbedtls_compat.c", 
             "src/kernel/sys.c", 
             "src/kernel/thrd.c", 
             "src/kernel/time.c", 
@@ -1359,7 +1368,7 @@ BOARDS = {
             "FAMILY_ESP", 
             "MCU_ESP8266", 
             "BOARD_ESP12E", 
-            "VERSION=master", 
+            "VERSION=12.3.0", 
             "MBEDTLS_USER_CONFIG_FILE=\"\\\"mbedtls/user_config.h\\\"\"", 
             "ICACHE_FLASH", 
             "__STRICT_ANSI__", 
@@ -1468,6 +1477,7 @@ BOARDS = {
             "src/drivers/pin.c", 
             "src/drivers/pwm_soft.c", 
             "src/drivers/i2c_soft.c", 
+            "src/drivers/random.c", 
             "src/drivers/spi.c", 
             "src/drivers/uart.c", 
             "src/drivers/uart_soft.c", 
@@ -1559,6 +1569,7 @@ BOARDS = {
             "3pp/mbedtls/library/x509write_crt.c", 
             "3pp/mbedtls/library/x509write_csr.c", 
             "3pp/mbedtls/library/xtea.c", 
+            "3pp/compat/mbedtls/mbedtls_compat.c", 
             "src/kernel/sys.c", 
             "src/kernel/thrd.c", 
             "src/kernel/time.c", 
@@ -1606,7 +1617,7 @@ BOARDS = {
             "FAMILY_LINUX", 
             "MCU_LINUX", 
             "BOARD_LINUX", 
-            "VERSION=master", 
+            "VERSION=12.3.0", 
             "MBEDTLS_USER_CONFIG_FILE=\"\\\"mbedtls/user_config.h\\\"\""
         ], 
         "cflags": [
@@ -1616,6 +1627,8 @@ BOARDS = {
             "-pg", 
             "-fprofile-arcs", 
             "-ftest-coverage", 
+            "-ffunction-sections", 
+            "-fdata-sections", 
             "-g", 
             "-c", 
             "-Wall", 
@@ -1630,6 +1643,8 @@ BOARDS = {
             "-pg", 
             "-fprofile-arcs", 
             "-ftest-coverage", 
+            "-ffunction-sections", 
+            "-fdata-sections", 
             "-g", 
             "-c", 
             "-Wall", 
@@ -1657,6 +1672,7 @@ BOARDS = {
             "-pg", 
             "-fprofile-arcs", 
             "-ftest-coverage", 
+            "-Wl,--gc-sections", 
             "-g", 
             "-pthread", 
             "-Wl,-Map=build/linux/default_configuration.map", 
@@ -1692,6 +1708,7 @@ BOARDS = {
             "src/drivers/owi.c", 
             "src/drivers/pwm.c", 
             "src/drivers/pwm_soft.c", 
+            "src/drivers/random.c", 
             "src/drivers/sd.c", 
             "src/drivers/spi.c", 
             "src/drivers/uart.c", 
@@ -1782,6 +1799,7 @@ BOARDS = {
             "3pp/mbedtls/library/x509write_crt.c", 
             "3pp/mbedtls/library/x509write_csr.c", 
             "3pp/mbedtls/library/xtea.c", 
+            "3pp/compat/mbedtls/mbedtls_compat.c", 
             "src/kernel/sys.c", 
             "src/kernel/thrd.c", 
             "src/kernel/time.c", 
@@ -1829,7 +1847,7 @@ BOARDS = {
             "FAMILY_ESP32", 
             "MCU_ESP32", 
             "BOARD_NANO32", 
-            "VERSION=master", 
+            "VERSION=12.3.0", 
             "MBEDTLS_USER_CONFIG_FILE=\"\\\"mbedtls/user_config.h\\\"\""
         ], 
         "cflags": [
@@ -1952,6 +1970,7 @@ BOARDS = {
             "src/drivers/esp_wifi/softap.c", 
             "src/drivers/owi.c", 
             "src/drivers/pin.c", 
+            "src/drivers/random.c", 
             "src/drivers/spi.c", 
             "src/drivers/uart.c", 
             "src/encode/base64.c", 
@@ -2042,6 +2061,7 @@ BOARDS = {
             "3pp/mbedtls/library/x509write_crt.c", 
             "3pp/mbedtls/library/x509write_csr.c", 
             "3pp/mbedtls/library/xtea.c", 
+            "3pp/compat/mbedtls/mbedtls_compat.c", 
             "src/kernel/sys.c", 
             "src/kernel/thrd.c", 
             "src/kernel/time.c", 
@@ -2090,7 +2110,7 @@ BOARDS = {
             "FAMILY_ESP", 
             "MCU_ESP8266", 
             "BOARD_NODEMCU", 
-            "VERSION=master", 
+            "VERSION=12.3.0", 
             "MBEDTLS_USER_CONFIG_FILE=\"\\\"mbedtls/user_config.h\\\"\"", 
             "ICACHE_FLASH", 
             "__STRICT_ANSI__", 
@@ -2199,6 +2219,7 @@ BOARDS = {
             "src/drivers/pin.c", 
             "src/drivers/pwm_soft.c", 
             "src/drivers/i2c_soft.c", 
+            "src/drivers/random.c", 
             "src/drivers/spi.c", 
             "src/drivers/uart.c", 
             "src/drivers/uart_soft.c", 
@@ -2290,6 +2311,7 @@ BOARDS = {
             "3pp/mbedtls/library/x509write_crt.c", 
             "3pp/mbedtls/library/x509write_csr.c", 
             "3pp/mbedtls/library/xtea.c", 
+            "3pp/compat/mbedtls/mbedtls_compat.c", 
             "src/kernel/sys.c", 
             "src/kernel/thrd.c", 
             "src/kernel/time.c", 
@@ -2337,7 +2359,7 @@ BOARDS = {
             "FAMILY_STM32F2", 
             "MCU_STM32F205RG", 
             "BOARD_PHOTON", 
-            "VERSION=master", 
+            "VERSION=12.3.0", 
             "MBEDTLS_USER_CONFIG_FILE=\"\\\"mbedtls/user_config.h\\\"\""
         ], 
         "cflags": [
@@ -2515,7 +2537,7 @@ BOARDS = {
             "FAMILY_STM32F3", 
             "MCU_STM32F303VC", 
             "BOARD_STM32F3DISCOVERY", 
-            "VERSION=master", 
+            "VERSION=12.3.0", 
             "MBEDTLS_USER_CONFIG_FILE=\"\\\"mbedtls/user_config.h\\\"\""
         ], 
         "cflags": [
@@ -2678,7 +2700,7 @@ BOARDS = {
             "FAMILY_STM32F1", 
             "MCU_STM32F100RB", 
             "BOARD_STM32VLDISCOVERY", 
-            "VERSION=master", 
+            "VERSION=12.3.0", 
             "MBEDTLS_USER_CONFIG_FILE=\"\\\"mbedtls/user_config.h\\\"\""
         ], 
         "cflags": [
@@ -3109,6 +3131,21 @@ elif board == "nodemcu":
     setup_board_nodemcu(env)
 elif board == "nano32":
     setup_board_nano32(env)
+elif 'ARCH_AVR' in BOARDS[board]['cdefs']:
+    # LTO makes the application crash.
+    linkflags = []
+    for flag in env["LINKFLAGS"]:
+        if flag == "-flto":
+            continue
+        linkflags.append(flag)
+    env.Replace(LINKFLAGS=linkflags)
+
+    ccflags = []
+    for flag in env["CCFLAGS"]:
+        if flag == "-flto":
+            continue
+        ccflags.append(flag)
+    env.Replace(CCFLAGS=ccflags)
 
 # generated files
 SIMBA_GEN_C = "$BUILD_DIR/SimbaFramework/simba_gen.c"

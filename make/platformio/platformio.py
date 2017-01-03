@@ -353,6 +353,21 @@ elif board == "nodemcu":
     setup_board_nodemcu(env)
 elif board == "nano32":
     setup_board_nano32(env)
+elif 'ARCH_AVR' in BOARDS[board]['cdefs']:
+    # LTO makes the application crash.
+    linkflags = []
+    for flag in env["LINKFLAGS"]:
+        if flag == "-flto":
+            continue
+        linkflags.append(flag)
+    env.Replace(LINKFLAGS=linkflags)
+
+    ccflags = []
+    for flag in env["CCFLAGS"]:
+        if flag == "-flto":
+            continue
+        ccflags.append(flag)
+    env.Replace(CCFLAGS=ccflags)
 
 # generated files
 SIMBA_GEN_C = "$BUILD_DIR/SimbaFramework/simba_gen.c"

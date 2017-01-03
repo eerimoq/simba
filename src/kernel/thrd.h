@@ -112,9 +112,7 @@ struct thrd_t {
 #if CONFIG_THRD_ENV == 1
     struct thrd_environment_t env;
 #endif
-#if CONFIG_PROFILE_STACK == 1
     size_t stack_size;
-#endif
 #if CONFIG_ASSERT == 1
     uint16_t stack_low_magic;
 #endif

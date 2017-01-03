@@ -32,6 +32,8 @@ NAME = mqtt_client_network_suite
 TYPE = suite
 BOARD ?= linux
 
+TIMEOUT ?= 30
+
 SSID ?= Qvist2
 PASSWORD ?= maxierik
 

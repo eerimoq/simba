@@ -70,7 +70,7 @@ Below is the memory usage of two applications:
 +==========================+===========+===========+
 | minimal-configuration    |      2404 |       335 |
 +--------------------------+-----------+-----------+
-| default-configuration    |     12060 |       649 |
+| default-configuration    |     12068 |       649 |
 +--------------------------+-----------+-----------+
 
 Default configuration
@@ -247,6 +247,8 @@ Default Standard Library configuration.
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_MODULE_INIT_PWM_SOFT_                          |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_MODULE_INIT_RANDOM_                            |  0                                                  |
++--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_MODULE_INIT_SD_                                |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_MODULE_INIT_SDIO_                              |  0                                                  |
@@ -284,6 +286,8 @@ Default Standard Library configuration.
 |  CONFIG_PWM_                                           |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_PWM_SOFT_                                      |  1                                                  |
++--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_RANDOM_                                        |  0                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_SD_                                            |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
@@ -559,6 +563,8 @@ Mcu
 
 .. _CONFIG_MODULE_INIT_PWM_SOFT: ../user-guide/configuration.html#c.CONFIG_MODULE_INIT_PWM_SOFT
 
+.. _CONFIG_MODULE_INIT_RANDOM: ../user-guide/configuration.html#c.CONFIG_MODULE_INIT_RANDOM
+
 .. _CONFIG_MODULE_INIT_SD: ../user-guide/configuration.html#c.CONFIG_MODULE_INIT_SD
 
 .. _CONFIG_MODULE_INIT_SDIO: ../user-guide/configuration.html#c.CONFIG_MODULE_INIT_SDIO
@@ -596,6 +602,8 @@ Mcu
 .. _CONFIG_PWM: ../user-guide/configuration.html#c.CONFIG_PWM
 
 .. _CONFIG_PWM_SOFT: ../user-guide/configuration.html#c.CONFIG_PWM_SOFT
+
+.. _CONFIG_RANDOM: ../user-guide/configuration.html#c.CONFIG_RANDOM
 
 .. _CONFIG_SD: ../user-guide/configuration.html#c.CONFIG_SD
 

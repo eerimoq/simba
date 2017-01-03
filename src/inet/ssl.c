@@ -163,7 +163,7 @@ int ssl_context_init(struct ssl_context_t *self_p,
     return (0);
 }
 
-int ssl_context_deinit(struct ssl_context_t *self_p)
+int ssl_context_destroy(struct ssl_context_t *self_p)
 {
     ASSERTN(self_p != NULL, -EINVAL);
     ASSERTN(self_p->conf_p != NULL, -EINVAL);
@@ -223,6 +223,8 @@ int ssl_socket_open(struct ssl_socket_t *self_p,
     ASSERTN(socket_p != NULL, -EINVAL);
 
     int res;
+
+    self_p->socket_p = socket_p;
     
     /* Allocate the mbedTLS datastructures. */
     self_p->ssl_p = alloc_ssl();
@@ -231,6 +233,11 @@ int ssl_socket_open(struct ssl_socket_t *self_p,
         return (-1);
     }
 
+    chan_init(&self_p->base,
+              (chan_read_fn_t)ssl_socket_read,
+              (chan_write_fn_t)ssl_socket_write,
+              (chan_size_fn_t)ssl_socket_size);
+    
     /* Inilialize the SSL session. */
     mbedtls_ssl_init(self_p->ssl_p);
 
@@ -299,6 +306,8 @@ ssize_t ssl_socket_read(struct ssl_socket_t *self_p,
 ssize_t ssl_socket_size(struct ssl_socket_t *self_p)
 {
     ASSERTN(self_p != NULL, -EINVAL);
+    ASSERTN(self_p->ssl_p != NULL, -EINVAL);
 
-    return (0);
+    return (mbedtls_ssl_get_bytes_avail(self_p->ssl_p)
+            + chan_size(self_p->socket_p));
 }

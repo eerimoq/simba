@@ -32,9 +32,25 @@ CROSS_COMPILE =
 CFLAGS += -Werror -Wno-error=unused-variable -DCONFIG_PROFILE_STACK=0
 CXXFLAGS += -Werror -Wno-error=unused-variable -DCONFIG_PROFILE_STACK=0
 
-CFLAGS += -pg -fprofile-arcs -ftest-coverage
-CXXFLAGS += -pg -fprofile-arcs -ftest-coverage
-LDFLAGS += -pg -fprofile-arcs -ftest-coverage
+CFLAGS += \
+	-pg \
+	-fprofile-arcs \
+	-ftest-coverage \
+        -ffunction-sections \
+        -fdata-sections
+
+CXXFLAGS += \
+	-pg \
+	-fprofile-arcs \
+	-ftest-coverage \
+        -ffunction-sections \
+        -fdata-sections
+
+LDFLAGS += \
+	-pg \
+	-fprofile-arcs \
+	-ftest-coverage \
+	-Wl,--gc-sections
 
 CFLAGS += -g
 CXXFLAGS += -g

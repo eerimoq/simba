@@ -65,7 +65,8 @@ PACKAGE_ESP_RELEASE_ENTRY_FMT = """
     "size": "{size}",
     "boards": [
         {{"name" : "ESP-01"}},
-        {{"name" : "ESP-12E"}}
+        {{"name" : "ESP-12E"}},
+        {{"name" : "NodeMCU"}}
     ],
     "toolsDependencies": [
         {{

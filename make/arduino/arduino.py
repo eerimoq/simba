@@ -9,7 +9,6 @@ import errno
 import os
 import shutil
 import fnmatch
-import hashlib
 
 
 ARDUINO_H = """/**
@@ -329,6 +328,10 @@ def generate_boards_txt_esp(database, boards_txt_fmt):
     esp12e_compiler_c_elf_extra_flags += " "
     esp12e_compiler_c_elf_extra_flags += libpath
 
+    nodemcu_compiler_c_elf_extra_flags = get_c_elf_extra_flags("nodemcu", database)
+    nodemcu_compiler_c_elf_extra_flags += " "
+    nodemcu_compiler_c_elf_extra_flags += libpath
+
     return boards_txt_fmt.format(
         esp01_compiler_c_extra_flags=get_c_extra_flags("esp01", database),
         esp01_compiler_cxx_extra_flags=get_cxx_extra_flags("esp01", database),
@@ -337,7 +340,11 @@ def generate_boards_txt_esp(database, boards_txt_fmt):
         esp12e_compiler_c_extra_flags=get_c_extra_flags("esp12e", database),
         esp12e_compiler_cxx_extra_flags=get_cxx_extra_flags("esp12e", database),
         esp12e_compiler_c_elf_extra_flags=esp12e_compiler_c_elf_extra_flags,
-        esp12e_compiler_c_elf_libs=get_c_elf_libs("esp12e", database))
+        esp12e_compiler_c_elf_libs=get_c_elf_libs("esp12e", database),
+        nodemcu_compiler_c_extra_flags=get_c_extra_flags("nodemcu", database),
+        nodemcu_compiler_cxx_extra_flags=get_cxx_extra_flags("nodemcu", database),
+        nodemcu_compiler_c_elf_extra_flags=nodemcu_compiler_c_elf_extra_flags,
+        nodemcu_compiler_c_elf_libs=get_c_elf_libs("nodemcu", database))
 
 def generate_boards_txt_esp32(database, boards_txt_fmt):
     """Generate boards.txt for ESP32.

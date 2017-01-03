@@ -76,11 +76,21 @@ int ssl_context_init(struct ssl_context_t *self_p,
                      enum ssl_protocol_t protocol);
 
 /**
- * Load given certificate chain.
+ * Destroy given SSL context. The context may not be used after it has
+ * been destroyed.
+ *
+ * @param[in] self_p SSL context to destroy.
+ *
+ * @return zero(0) or negative error code.
+ */
+int ssl_context_destroy(struct ssl_context_t *self_p);
+
+/**
+ * Load given certificate chain into given contextx.
  *
  * @param[in] self_p SSL context.
  * @param[in] self_p Certificate to load.
- * @param[in] self_p Optional key to load.
+ * @param[in] self_p Optional key to load. May be NULL.
  *
  * @return zero(0) or negative error code.
  */

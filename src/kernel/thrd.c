@@ -494,6 +494,7 @@ int thrd_module_init(void)
     thrd_p->timer_p = NULL;
     thrd_p->name_p = "main";
     thrd_p->next_p = NULL;
+    thrd_p->stack_size = (thrd_port_get_main_thrd_stack_top() - (char *)(thrd_p + 1));
 
 #if CONFIG_THRD_TERMINATE == 1
     sem_init(&thrd_p->join_sem, 1, 1);
@@ -518,7 +519,6 @@ int thrd_module_init(void)
 #endif
 
 #if CONFIG_PROFILE_STACK == 1
-    thrd_p->stack_size = (thrd_port_get_main_thrd_stack_top() - (char *)(thrd_p + 1));
     thrd_fill_pattern((char *)(thrd_p + 1), &dummy - (char *)(thrd_p + 2));
 #endif
 
@@ -593,6 +593,7 @@ struct thrd_t *thrd_spawn(void *(*main)(void *),
     thrd_p->log_mask = LOG_UPTO(INFO);
     thrd_p->timer_p = NULL;
     thrd_p->name_p = "";
+    thrd_p->stack_size = (stack_size - sizeof(*thrd_p));
 
 #if CONFIG_THRD_TERMINATE == 1
     sem_init(&thrd_p->join_sem, 1, 1);
@@ -617,7 +618,6 @@ struct thrd_t *thrd_spawn(void *(*main)(void *),
 #endif
 
 #if CONFIG_PROFILE_STACK == 1
-    thrd_p->stack_size = (stack_size - sizeof(*thrd_p));
     thrd_fill_pattern((char *)(thrd_p + 1), thrd_p->stack_size);
 #endif
 

@@ -31,23 +31,23 @@
 #ifndef __DRIVERS_CAN_PORT_H__
 #define __DRIVERS_CAN_PORT_H__
 
-#define CAN_PORT_SPEED_1000KBPS (ESP32_CAN_BTIM0_BRP(0x4)         \
-                                 | ESP32_CAN_BTIM0_SJW(0x1)       \
-                                 | ((ESP32_CAN_BTIM1_TSEG1(0x4)   \
-                                 | ESP32_CAN_BTIM1_TSEG2(0x1)     \
-                                 | ESP32_CAN_BTIM1_SAM) << 8))
+#define CAN_PORT_SPEED_1000KBPS (ESP32_CAN_BTIM0_BRP(0x4)               \
+                                 | ESP32_CAN_BTIM0_SJW(0x1)             \
+                                 | ((ESP32_CAN_BTIM1_TSEG1(0x4)         \
+                                     | ESP32_CAN_BTIM1_TSEG2(0x1)       \
+                                     | ESP32_CAN_BTIM1_SAM) << 8))
                                    
-#define CAN_PORT_SPEED_500KBPS (ESP32_CAN_BTIM0_BRP(0x4)          \
-                                | ESP32_CAN_BTIM0_SJW(0x1)        \
-                                | ((ESP32_CAN_BTIM1_TSEG1(0xC)    \
-                                | ESP32_CAN_BTIM1_TSEG2(0x1)      \
-                                | ESP32_CAN_BTIM1_SAM) << 8))
+#define CAN_PORT_SPEED_500KBPS (ESP32_CAN_BTIM0_BRP(0x4)                \
+                                | ESP32_CAN_BTIM0_SJW(0x1)              \
+                                | ((ESP32_CAN_BTIM1_TSEG1(0xc)          \
+                                    | ESP32_CAN_BTIM1_TSEG2(0x1)        \
+                                    | ESP32_CAN_BTIM1_SAM) << 8))
 
-#define CAN_PORT_SPEED_250KBPS (ESP32_CAN_BTIM0_BRP(0x9)          \
-                                | ESP32_CAN_BTIM0_SJW(0x1)        \
-                                | ((ESP32_CAN_BTIM1_TSEG1(0xC)    \
-                                | ESP32_CAN_BTIM1_TSEG2(0x1)      \
-                                | ESP32_CAN_BTIM1_SAM) << 8))
+#define CAN_PORT_SPEED_250KBPS (ESP32_CAN_BTIM0_BRP(0x9)                \
+                                | ESP32_CAN_BTIM0_SJW(0x1)              \
+                                | ((ESP32_CAN_BTIM1_TSEG1(0xc)          \
+                                    | ESP32_CAN_BTIM1_TSEG2(0x1)        \
+                                    | ESP32_CAN_BTIM1_SAM) << 8))
 
 struct can_device_t {
     struct can_driver_t *drv_p;

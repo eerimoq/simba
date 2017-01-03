@@ -40,14 +40,10 @@ static struct thrd_t *thrd_port_get_main_thrd(void)
     return (&main_thrd);
 }
 
-#if CONFIG_PROFILE_STACK == 1
-
 static char *thrd_port_get_main_thrd_stack_top(void)
 {
     return (&__main_stack_end);
 }
-
-#endif
 
 /**
  * @param[in] in Thread to swap in (r24).
@@ -125,17 +121,17 @@ static void thrd_port_main(void)
 
 static int thrd_port_spawn(struct thrd_t *thrd,
                            void *(*main)(void *),
-                           void *arg,
-                           void *stack,
+                           void *arg_p,
+                           void *stack_p,
                            size_t stack_size)
 {
     struct thrd_port_context_t *context_p;
 
-    context_p = (stack + stack_size - sizeof(*context_p));
+    context_p = (stack_p + stack_size - sizeof(*context_p));
     context_p->r2  = (int)main;
     context_p->r3  = (int)main >> 8;
-    context_p->r4  = (int)arg;
-    context_p->r5  = (int)arg >> 8;
+    context_p->r4  = (int)arg_p;
+    context_p->r5  = (int)arg_p >> 8;
 #if defined(__AVR_3_BYTE_PC__)
     context_p->pc_3rd_byte = (int)((long)(int)thrd_port_main >> 16);
 #endif
@@ -210,7 +206,7 @@ static const void *thrd_port_get_bottom_of_stack(struct thrd_t *thrd_p)
     return (bottom_p);
 }
 
-const void *thrd_port_get_top_of_stack(struct thrd_t *thrd_p)
+static const void *thrd_port_get_top_of_stack(struct thrd_t *thrd_p)
 {
     return ((void *)((uintptr_t)thrd_p + thrd_p->stack_size));
 }

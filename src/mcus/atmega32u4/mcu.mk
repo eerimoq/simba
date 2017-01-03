@@ -33,7 +33,7 @@ SRC += $(SIMBA_ROOT)/src/mcus/atmega32u4/mcu.c
 
 F_CPU = 16000000
 CPU = atmega32u4
-MAIN_STACK_END = 0x800900
+MAIN_STACK_END = 0x800b00
 
 ARCH = avr
 FAMILY = avr

@@ -186,8 +186,8 @@ struct can_device_t can_device[CAN_DEVICE_MAX] = {
     {
         .drv_p = NULL,
         .regs_p = ESP32_CAN,
-        .tx_pin_device_p = &pin_gpio32_dev,
-        .rx_pin_device_p = &pin_gpio33_dev
+        .tx_pin_device_p = &pin_gpio16_dev,
+        .rx_pin_device_p = &pin_gpio17_dev
     }
 };
 

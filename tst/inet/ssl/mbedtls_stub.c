@@ -85,3 +85,116 @@ int mbedtls_pk_parse_key(mbedtls_pk_context *ctx_p,
 {
     return (0);
 }
+
+int mbedtls_ssl_config_defaults(mbedtls_ssl_config *conf_p,
+                                int endpoint,
+                                int transport,
+                                int preset)
+{
+    return (0);
+}
+
+int mbedtls_ctr_drbg_random(void *rng_p,
+                            unsigned char *output_p,
+                            size_t output_len)
+{
+    return (0);
+}
+
+void mbedtls_ssl_conf_rng(mbedtls_ssl_config *conf,
+                          int (*f_rng)(void *, unsigned char *, size_t),
+                          void *p_rng )
+{
+}
+
+void mbedtls_ssl_conf_ca_chain(mbedtls_ssl_config *conf_p,
+                               mbedtls_x509_crt *ca_chain,
+                               mbedtls_x509_crl *ca_crl)
+{
+}
+
+int mbedtls_ssl_conf_own_cert(mbedtls_ssl_config *conf_p,
+                              mbedtls_x509_crt *own_cert,
+                              mbedtls_pk_context *pk_key)
+{
+    return (0);
+}
+
+int mbedtls_ssl_setup(mbedtls_ssl_context *ssl_p,
+                      const mbedtls_ssl_config *conf_p)
+{
+    return (0);
+}
+
+void mbedtls_ssl_set_bio(mbedtls_ssl_context *ssl_p,
+                         void *p_bio,
+                         mbedtls_ssl_send_t *f_send,
+                         mbedtls_ssl_recv_t *f_recv,
+                         mbedtls_ssl_recv_timeout_t *f_recv_timeout )
+{
+}
+
+int mbedtls_ssl_handshake(mbedtls_ssl_context *ssl_p)
+{
+    return (0);
+}
+
+void mbedtls_ssl_free(mbedtls_ssl_context *ssl_p)
+{
+}
+
+int mbedtls_ssl_write(mbedtls_ssl_context *ssl_p,
+                      const unsigned char *buf_p,
+                      size_t len)
+{
+    if (len == 6) {
+        return (6);
+    }
+
+    if (len == 8) {
+        return (8);
+    }
+
+    return (-1);
+}
+
+int mbedtls_ssl_read(mbedtls_ssl_context *ssl_p,
+                     unsigned char *buf_p,
+                     size_t len)
+{
+    if (len == 8) {
+        strcpy((char *)buf_p, "goodbye");
+        return (8);
+    } else if (len == 6) {
+        strcpy((char *)buf_p, "hello");
+        return (6);
+    }
+    
+    return (-1);
+}
+
+int mbedtls_entropy_func(void *data_p,
+                         unsigned char *output_p,
+                         size_t len)
+{
+    return (0);
+}
+
+int mbedtls_ctr_drbg_seed(mbedtls_ctr_drbg_context *ctx_p,
+                          int (*f_entropy)(void *, unsigned char *, size_t),
+                          void *p_entropy,
+                          const unsigned char *custom,
+                          size_t len)
+{
+    return (0);
+}
+
+int mbedtls_ssl_close_notify(mbedtls_ssl_context *ssl_p)
+{
+    return (0);
+}
+
+size_t mbedtls_ssl_get_bytes_avail(const mbedtls_ssl_context *ssl_p)
+{
+    return (0);
+}

@@ -46,7 +46,7 @@ __attribute__ ((section (".eeprom"), weak)) = {
     0xff,
 };
 
-const FAR uint8_t settings_default_area[]
+const FAR uint8_t settings_default_area[CONFIG_SETTINGS_AREA_SIZE]
 __attribute__ ((weak)) = {
     0xff,
 };

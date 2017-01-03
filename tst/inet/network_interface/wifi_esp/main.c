@@ -43,7 +43,7 @@
 #if !defined(ESP_IP)
 #    if defined(ARCH_ESP)
 #        pragma message "WiFi connection variable ESP_IP is not set. Using default value 192.168.0.5"
-#        define ESP_IP 192.168.0.5
+#        define ESP_IP 192.168.0.8
 #    else
 #        pragma message "WiFi connection variable ESP_IP is not set. Using default value 192.168.0.7"
 #        define ESP_IP 192.168.0.7

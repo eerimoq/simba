@@ -2,9 +2,9 @@
  * @section License
  *
  * The MIT License (MIT)
- * 
+ *
  * Copyright (c) 2014-2016, Erik Moqvist
- * 
+ *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
  * files (the "Software"), to deal in the Software without
@@ -58,6 +58,22 @@ static int test_info(struct harness_t *harness_p)
     char buf[32];
 
     strcpy(buf, "/kernel/sys/info");
+    BTASSERT(fs_call(buf, chan_null(), sys_get_stdout(), NULL) == 0);
+
+#endif
+
+    return (0);
+}
+
+static int test_config(struct harness_t *harness_p)
+{
+    std_printf(sys_get_config());
+
+#if CONFIG_FS_CMD_SYS_CONFIG == 1
+
+    char buf[32];
+
+    strcpy(buf, "/kernel/sys/config");
     BTASSERT(fs_call(buf, chan_null(), sys_get_stdout(), NULL) == 0);
 
 #endif
@@ -200,6 +216,7 @@ int main()
     struct harness_testcase_t harness_testcases[] = {
         { test_set_on_fatal_callback, "test_set_on_fatal_callback" },
         { test_info, "test_info" },
+        { test_config, "test_config" },
         { test_uptime, "test_uptime" },
         { test_time, "test_time" },
         { test_stdin, "test_stdin" },
@@ -211,6 +228,6 @@ int main()
 
     harness_init(&harness);
     harness_run(&harness, harness_testcases);
-
+    
     return (0);
 }

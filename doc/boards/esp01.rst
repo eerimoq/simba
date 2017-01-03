@@ -31,6 +31,7 @@ Supported drivers for this board.
 - :doc:`../library-reference/drivers/i2c_soft`
 - :doc:`../library-reference/drivers/pin`
 - :doc:`../library-reference/drivers/pwm_soft`
+- :doc:`../library-reference/drivers/random`
 - :doc:`../library-reference/drivers/spi`
 - :doc:`../library-reference/drivers/uart`
 - :doc:`../library-reference/drivers/uart_soft`
@@ -64,7 +65,7 @@ Below is the memory usage of two applications:
 +==========================+===========+===========+
 | minimal-configuration    |    266144 |     34116 |
 +--------------------------+-----------+-----------+
-| default-configuration    |    313900 |     59248 |
+| default-configuration    |    318035 |     58932 |
 +--------------------------+-----------+-----------+
 
 Default configuration
@@ -81,7 +82,7 @@ Default Standard Library configuration.
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_ANALOG_OUTPUT_PIN_                             |  0                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
-|  CONFIG_ASSERT_                                        |  1                                                  |
+|  CONFIG_ASSERT_                                        |  0                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_BCM43362_                                      |  0                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
@@ -241,6 +242,8 @@ Default Standard Library configuration.
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_MODULE_INIT_PWM_SOFT_                          |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_MODULE_INIT_RANDOM_                            |  1                                                  |
++--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_MODULE_INIT_SD_                                |  0                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_MODULE_INIT_SDIO_                              |  0                                                  |
@@ -278,6 +281,8 @@ Default Standard Library configuration.
 |  CONFIG_PWM_                                           |  0                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_PWM_SOFT_                                      |  1                                                  |
++--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_RANDOM_                                        |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_SD_                                            |  0                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
@@ -553,6 +558,8 @@ Mcu
 
 .. _CONFIG_MODULE_INIT_PWM_SOFT: ../user-guide/configuration.html#c.CONFIG_MODULE_INIT_PWM_SOFT
 
+.. _CONFIG_MODULE_INIT_RANDOM: ../user-guide/configuration.html#c.CONFIG_MODULE_INIT_RANDOM
+
 .. _CONFIG_MODULE_INIT_SD: ../user-guide/configuration.html#c.CONFIG_MODULE_INIT_SD
 
 .. _CONFIG_MODULE_INIT_SDIO: ../user-guide/configuration.html#c.CONFIG_MODULE_INIT_SDIO
@@ -590,6 +597,8 @@ Mcu
 .. _CONFIG_PWM: ../user-guide/configuration.html#c.CONFIG_PWM
 
 .. _CONFIG_PWM_SOFT: ../user-guide/configuration.html#c.CONFIG_PWM_SOFT
+
+.. _CONFIG_RANDOM: ../user-guide/configuration.html#c.CONFIG_RANDOM
 
 .. _CONFIG_SD: ../user-guide/configuration.html#c.CONFIG_SD
 

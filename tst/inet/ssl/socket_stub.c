@@ -37,6 +37,11 @@ int socket_module_init()
 
 int socket_open_tcp(struct socket_t *self_p)
 {
+    chan_init(&self_p->base,
+              NULL,
+              NULL,
+              (chan_size_fn_t)socket_size);
+    
     return (0);
 }
 
@@ -107,6 +112,11 @@ ssize_t socket_write(struct socket_t *self_p,
 ssize_t socket_read(struct socket_t *self_p,
                     void *buf_p,
                     size_t size)
+{
+    return (0);
+}
+
+ssize_t socket_size(struct socket_t *self_p)
 {
     return (0);
 }

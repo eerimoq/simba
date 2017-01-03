@@ -62,8 +62,6 @@ static struct thrd_t *thrd_port_get_main_thrd(void)
     return (main_thrd_p);
 }
 
-#if CONFIG_PROFILE_STACK == 1
-
 void thrd_port_set_main_thrd_stack_top(void *top_p)
 {
     main_stack_top_p = top_p;
@@ -73,8 +71,6 @@ static char *thrd_port_get_main_thrd_stack_top(void)
 {
     return (main_stack_top_p);
 }
-
-#endif
 
 static void thrd_port_init_main(struct thrd_port_t *port)
 {
@@ -180,7 +176,7 @@ static const void *thrd_port_get_bottom_of_stack(struct thrd_t *thrd_p)
     return (bottom_p);
 }
 
-const void *thrd_port_get_top_of_stack(struct thrd_t *thrd_p)
+static const void *thrd_port_get_top_of_stack(struct thrd_t *thrd_p)
 {
     return ((void *)((uintptr_t)thrd_p + thrd_p->stack_size));
 }

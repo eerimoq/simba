@@ -71,7 +71,8 @@ ifeq ($(BOARD), linux)
 				    http_websocket_server \
 				    inet \
 				    mqtt_client \
-				    ping)
+				    ping \
+				    ssl)
     TESTS += $(addprefix tst/multimedia/, midi)
 endif
 
@@ -168,13 +169,13 @@ ifeq ($(BOARD), arduino_pro_micro)
                                      timer)
 endif
 
-ifeq ($(BOARD), nodemcu)
+ifeq ($(BOARD), esp12e)
     TESTS = $(addprefix tst/kernel/, sys \
                                      thrd \
                                      timer)
 endif
 
-ifeq ($(BOARD), esp12e)
+ifeq ($(BOARD), nodemcu)
     TESTS = $(addprefix tst/kernel/, sys \
                                      thrd \
                                      timer)
@@ -202,7 +203,8 @@ ifeq ($(BOARD), esp12e)
 				    mqtt_client \
 				    network_interface/wifi_esp \
 				    ping)
-    TESTS += $(addprefix tst/drivers/, pin)
+    TESTS += $(addprefix tst/drivers/, pin \
+			            random)
     TESTS += $(addprefix tst/filesystems/, fs \
                                            spiffs)
 endif
@@ -266,7 +268,8 @@ ifeq ($(BOARD), stm32vldiscovery)
 				    inet \
 				    mqtt_client \
 				    ping)
-    TESTS += $(addprefix tst/drivers/, pin)
+    TESTS += $(addprefix tst/drivers/, pin \
+			            random)
 endif
 
 ifeq ($(BOARD), photon)
@@ -429,9 +432,9 @@ clean-arduino-mega-platformio:
 	@echo "Arduino Mega"
 	$(MAKE) -C examples/platformio BOARD=arduino_mega SERIAL_PORT=/dev/simba-arduino_mega clean
 
-clean-esp12e-platformio:
-	@echo "ESP12-E"
-	$(MAKE) -C examples/platformio BOARD=esp12e SERIAL_PORT=/dev/simba-esp12e clean
+clean-nodemcu-platformio:
+	@echo "NodeMCU"
+	$(MAKE) -C examples/platformio BOARD=nodemcu SERIAL_PORT=/dev/simba-nodemcu clean
 
 test-arduino-due-platformio:
 	@echo "Arduino Due"
@@ -441,9 +444,9 @@ test-arduino-mega-platformio:
 	@echo "Arduino Mega"
 	$(MAKE) -C examples/platformio BOARD=arduino_mega SERIAL_PORT=/dev/simba-arduino_mega test
 
-test-esp12e-platformio:
-	@echo "ESP12-E"
-	$(MAKE) -C examples/platformio BOARD=esp12e SERIAL_PORT=/dev/simba-esp12e test-prompt-after-upload
+test-nodemcu-platformio:
+	@echo "NodeMCU"
+	$(MAKE) -C examples/platformio BOARD=nodemcu SERIAL_PORT=/dev/simba-nodemcuv3 test
 
 test-i2c-nano-mega:
 	@echo "I2C Nano Mega"
@@ -460,11 +463,11 @@ test-all-boards:
 	$(MAKE) test-arduino-mega
 	$(MAKE) test-arduino-nano
 	$(MAKE) test-esp12e
-	$(MAKE) test-photon
+#	$(MAKE) test-photon
 	$(MAKE) test-arduino-due-platformio
 	$(MAKE) test-arduino-mega-platformio
-	$(MAKE) test-esp12e-platformio
 	$(MAKE) test-i2c-nano-mega
+	$(MAKE) test-nodemcu-platformio
 	$(MAKE) test-arduino-pro-micro
 	$(MAKE) test-nodemcu
 	$(MAKE) test-nano32
@@ -474,11 +477,11 @@ clean-all-boards:
 	$(MAKE) clean-arduino-mega
 	$(MAKE) clean-arduino-nano
 	$(MAKE) clean-esp12e
-	$(MAKE) clean-photon
+#	$(MAKE) clean-photon
 	$(MAKE) clean-arduino-due-platformio
 	$(MAKE) clean-arduino-mega-platformio
-	$(MAKE) clean-esp12e-platformio
 	$(MAKE) clean-i2c-nano-mega
+	$(MAKE) clean-nodemcu-platformio
 	$(MAKE) clean-arduino-pro-micro
 	$(MAKE) clean-nodemcu
 	$(MAKE) clean-nano32

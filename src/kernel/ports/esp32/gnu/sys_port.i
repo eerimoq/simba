@@ -126,10 +126,7 @@ static void main_task(void *events)
        on the heap. */
     thrd_p = (struct thrd_t *)(&dummy - CONFIG_SYS_SIMBA_MAIN_STACK_MAX + 128);
     thrd_port_set_main_thrd(thrd_p);
-
-#if CONFIG_PROFILE_STACK == 1
     thrd_port_set_main_thrd_stack_top(&dummy);
-#endif
     
     /* Call the Simba application main function. */
     main();

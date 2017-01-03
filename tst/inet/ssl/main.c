@@ -54,13 +54,20 @@ static int test_client(struct harness_t *harness_p)
                              &socket,
                              ssl_socket_mode_client_t) == 0);
 
+    BTASSERT(ssl_socket_size(&ssl_socket) == 0);
+    
     /* Transfer data to and from the server. */
     BTASSERT(ssl_socket_write(&ssl_socket, "hello", 6) == 6);
     BTASSERT(ssl_socket_read(&ssl_socket, &buf[0], 8) == 8);
     BTASSERT(strcmp("goodbye", buf) == 0);
 
+    /* Close the SSL connection. */
+    BTASSERT(ssl_socket_close(&ssl_socket) == 0);
+
     /* Close the connection. */
     BTASSERT(socket_close(&socket) == 0);
+
+    BTASSERT(ssl_context_destroy(&context) == 0);
 
     return (0);
 }
@@ -92,13 +99,17 @@ static int test_server(struct harness_t *harness_p)
                              &socket,
                              ssl_socket_mode_server_t) == 0);
 
+    BTASSERT(chan_size(&ssl_socket) == 0);
+
     /* Transfer data to and from the server. */
-    BTASSERT(ssl_socket_read(&ssl_socket, &buf[0], 6) == 6);
+    BTASSERT(chan_read(&ssl_socket, &buf[0], 6) == 6);
     BTASSERT(strcmp("hello", buf) == 0);
-    BTASSERT(ssl_socket_write(&ssl_socket, "goodbye", 8) == 8);
+    BTASSERT(chan_write(&ssl_socket, "goodbye", 8) == 8);
 
     /* Close the connection. */
     BTASSERT(socket_close(&socket) == 0);
+
+    BTASSERT(ssl_context_destroy(&context) == 0);
 
     return (0);
 }
@@ -113,7 +124,8 @@ int main()
     };
 
     sys_start();
-
+    ssl_module_init();
+    
     harness_init(&harness);
     harness_run(&harness, harness_testcases);
 
