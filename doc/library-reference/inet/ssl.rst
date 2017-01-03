@@ -15,7 +15,7 @@ Test code: :github-blob:`tst/inet/ssl/main.c`,
 
 Test coverage: :codecov:`src/inet/ssl.c`
 
-Example code: :github-blob:`examples/ssl/main.c`
+Example code: :github-blob:`examples/ssl_server/main.c`
 
 ----------------------------------------------
 
