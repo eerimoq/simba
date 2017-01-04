@@ -22,4 +22,4 @@ print(ssl_server_sock.cipher())
 print(pprint.pformat(ssl_server_sock.getpeercert()))
 
 ssl_server_sock.write("Hello!")
-print('read:', ssl_server_sock.read(6))
+print('read:', ssl_server_sock.read(8))

@@ -36,7 +36,7 @@
 /**
  * Copied from 'server.crt'.
  */
-static char certificate[] =
+static const char certificate[] =
     "-----BEGIN CERTIFICATE-----\n"
     "MIIDBjCCAe4CCQDxnqw02a38fDANBgkqhkiG9w0BAQsFADBFMQswCQYDVQQGEwJB\n"
     "VTETMBEGA1UECAwKU29tZS1TdGF0ZTEhMB8GA1UECgwYSW50ZXJuZXQgV2lkZ2l0\n"
@@ -60,7 +60,7 @@ static char certificate[] =
 /**
  * Copied from 'server.key'.
  */
-static char key[] =
+static const char key[] =
     "-----BEGIN RSA PRIVATE KEY-----\n"
     "MIIEpQIBAAKCAQEAtg1j8ZnZA1h1UW/f28zEWRensCiBNh9VKoWgnA+d5pcC3bhq\n"
     "IoPAc7c47dbydh4DAFn0mXXNAoDnBp9zm5pFQfg26rUg2JBlDqBgvvgpoGM2hfxO\n"
@@ -110,6 +110,7 @@ int main()
     if (ssl_context_load_cert_chain(&context,
                                     &certificate[0],
                                     &key[0]) != 0) {
+        std_printf(FSTR("ssl_context_load_cert_chain() failed\r\n"));
         return (-1);
     }
 
@@ -154,7 +155,7 @@ int main()
                 std_printf(FSTR("read: '%s'\r\n"), buf);
 
                 /* Write data to the client socket. */
-                if (ssl_socket_write(&ssl_client_sock, &buf[0], 6) != 6) {
+                if (ssl_socket_write(&ssl_client_sock, "Goodbye!", 8) != 8) {
                     std_printf(FSTR("ssl_socket_write() failed\r\n"));
                 }
             } else {

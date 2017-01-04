@@ -68,10 +68,7 @@ LIB += \
 	freertos \
 	log \
 	lwip \
-	mbedtls \
 	newlib \
-	nghttp \
-	openssl \
 	nvs_flash \
 	spi_flash \
 	tcpip_adapter \

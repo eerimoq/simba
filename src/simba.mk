@@ -315,15 +315,12 @@ ifeq ($(filter $(INET_SRC), ssl.c), ssl.c)
 	3pp/mbedtls/library/asn1write.c \
 	3pp/mbedtls/library/base64.c \
 	3pp/mbedtls/library/bignum.c \
-	3pp/mbedtls/library/blowfish.c \
 	3pp/mbedtls/library/camellia.c \
 	3pp/mbedtls/library/ccm.c \
-	3pp/mbedtls/library/certs.c \
 	3pp/mbedtls/library/cipher.c \
 	3pp/mbedtls/library/cipher_wrap.c \
 	3pp/mbedtls/library/cmac.c \
 	3pp/mbedtls/library/ctr_drbg.c \
-	3pp/mbedtls/library/debug.c \
 	3pp/mbedtls/library/des.c \
 	3pp/mbedtls/library/dhm.c \
 	3pp/mbedtls/library/ecdh.c \
@@ -344,7 +341,6 @@ ifeq ($(filter $(INET_SRC), ssl.c), ssl.c)
 	3pp/mbedtls/library/md.c \
 	3pp/mbedtls/library/md_wrap.c \
 	3pp/mbedtls/library/memory_buffer_alloc.c \
-	3pp/mbedtls/library/net_sockets.c \
 	3pp/mbedtls/library/oid.c \
 	3pp/mbedtls/library/padlock.c \
 	3pp/mbedtls/library/pem.c \
@@ -369,7 +365,6 @@ ifeq ($(filter $(INET_SRC), ssl.c), ssl.c)
 	3pp/mbedtls/library/ssl_ticket.c \
 	3pp/mbedtls/library/ssl_tls.c \
 	3pp/mbedtls/library/threading.c \
-	3pp/mbedtls/library/timing.c \
 	3pp/mbedtls/library/version.c \
 	3pp/mbedtls/library/version_features.c \
 	3pp/mbedtls/library/x509.c \

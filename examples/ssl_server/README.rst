@@ -25,17 +25,41 @@ Terminal 2:
                 (('stateOrProvinceName', u'Some-State'),),
                 (('organizationName', u'Internet Widgits Pty Ltd'),)),
     'version': 1L}
-    $
+   read: Hello!
+   $
 
-Test with Simba server (on NodeMCU) and Python client
-=====================================================
+Test with Simba server (on Nano32) and Firefox
+==============================================
+
+Terminal:
+
+.. code-block:: text
+
+   $ make -s -j4 BOARD=nano32 CDEFS_EXTRA="CONFIG_START_NETWORK_INTERFACE_WIFI_SSID=Qvist2 CONFIG_START_NETWORK_INTERFACE_WIFI_PASSWORD=maxierik" run
+   ...
+   Waiting for a client to connect to 192.168.0.7:10023...
+   Client accepted.
+   read: 'GET / '
+   ...
+
+Firefox:
+
+Enter the URL https://192.168.0.7:10023, accept the non-trusted
+certificate, and 'Goodbye!' should appear on the screen.
+
+Test with Simba server (on Nano32) and Python client
+====================================================
 
 Terminal 1:
 
 .. code-block:: text
 
-   $ make -s BOARD=nodemcu run
-   Hello!
+   $ make -s -j4 BOARD=nano32 CDEFS_EXTRA="CONFIG_START_NETWORK_INTERFACE_WIFI_SSID=Qvist2 CONFIG_START_NETWORK_INTERFACE_WIFI_PASSWORD=maxierik" run
+   ...
+   Waiting for a client to connect to 192.168.0.7:10023...
+   Client accepted.
+   read: 'Hello!'
+   ...
 
 Terminal 2:
 
@@ -54,6 +78,7 @@ Terminal 2:
                 (('stateOrProvinceName', u'Some-State'),),
                 (('organizationName', u'Internet Widgits Pty Ltd'),)),
     'version': 1L}
+   read: Hello!
    $
 
 Create key and certificate
