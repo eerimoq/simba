@@ -99,7 +99,7 @@ SECTIONS
     *(.sbss2.*)
     *(.gnu.linkonce.sb2.*)
     *(.dynbss)
-    KEEP(*(.bss))
+    *(.bss)
     *(.bss.*)
     *(.share.mem)
     *(.gnu.linkonce.b.*)
@@ -111,8 +111,8 @@ SECTIONS
   .dram0.data :
   {
     _data_start = ABSOLUTE(.);
-    KEEP(*(.data))
-    KEEP(*(.data.*))
+    *(.data)
+    *(.data.*)
     KEEP(*(.gnu.linkonce.d.*))
     KEEP(*(.data1))
     KEEP(*(.sdata))

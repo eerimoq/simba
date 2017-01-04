@@ -55,8 +55,7 @@ CXXFLAGS += -Os \
 
 LDFLAGS += -Wl,-static \
            -nostdlib \
-           -Wl,-EL \
-           -Wl,--gc-sections
+           -Wl,-EL
 
 RUNARGS = $(BIN)
 
