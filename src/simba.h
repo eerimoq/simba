@@ -228,6 +228,11 @@ extern "C" {
 #include "multimedia/midi.h"
 
 #include "inet/socket.h"
+
+#if defined(FAMILY_ESP) || defined(FAMILY_ESP32) || defined(FAMILY_LINUX)
+#    include "inet/ssl.h"
+#endif
+
 #include "inet/http_server.h"
 #include "inet/http_websocket_server.h"
 #include "inet/http_websocket_client.h"
@@ -236,10 +241,6 @@ extern "C" {
 #include "inet/network_interface/slip.h"
 #include "inet/network_interface/wifi.h"
 #include "inet/ping.h"
-
-#if defined(FAMILY_ESP) || defined(FAMILY_ESP32) || defined(FAMILY_LINUX)
-#    include "inet/ssl.h"
-#endif
 
 #if defined(FAMILY_ESP) || defined(FAMILY_ESP32)
 #    include "inet/network_interface/driver/esp.h"

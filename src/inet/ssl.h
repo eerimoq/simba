@@ -69,6 +69,7 @@ int ssl_module_init(void);
  * lives longer than a socket.
  *
  * @param[out] self_p SSL context to initialize.
+ * @param[in] protocol SSL protocol to use.
  *
  * @return zero(0) or negative error code.
  */
@@ -117,7 +118,7 @@ int ssl_socket_open(struct ssl_socket_t *self_p,
 /**
  * Close given SSL socket.
  *
- * @param[in] self_p Opened SSL socket.
+ * @param[in] self_p SSL socket to close.
  *
  * @return zero(0) or negative error code.
  */

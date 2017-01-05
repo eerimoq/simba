@@ -35,6 +35,7 @@ static struct queue_t qoutput;
 static char qinputbuf[256];
 static char qoutputbuf[256];
 static struct event_t accept_events;
+static struct event_t closed_events;
 
 static ssize_t read(void *self_p,
                     void *buf_p,
@@ -62,7 +63,7 @@ int socket_module_init()
 
 int socket_open_tcp(struct socket_t *self_p)
 {
-    return (chan_init(&self_p->base, read, write, size));
+     return (chan_init(&self_p->base, read, write, size));
 }
 
 int socket_open_udp(struct socket_t *self_p)
@@ -77,6 +78,11 @@ int socket_open_raw(struct socket_t *self_p)
 
 int socket_close(struct socket_t *self_p)
 {
+    uint32_t mask;
+
+    mask = 0x1;
+    event_write(&closed_events, &mask, sizeof(mask));
+
     return (0);
 }
 
@@ -107,6 +113,8 @@ int socket_accept(struct socket_t *self_p,
 {
     uint32_t mask;
 
+    chan_init(&accepted_p->base, read, write, size);
+    
     mask = 0x1;
     event_read(&accept_events, &mask, sizeof(mask));
 
@@ -150,6 +158,7 @@ void socket_stub_init()
     queue_init(&qinput, qinputbuf, sizeof(qinputbuf));
     queue_init(&qoutput, qoutputbuf, sizeof(qoutputbuf));
     event_init(&accept_events);
+    event_init(&closed_events);
 }
 
 void socket_stub_accept()
@@ -168,4 +177,18 @@ void socket_stub_input(void *buf_p, size_t size)
 void socket_stub_output(void *buf_p, size_t size)
 {
     chan_read(&qoutput, buf_p, size);
+}
+
+void socket_stub_wait_closed()
+{
+    uint32_t mask;
+
+    mask = 0x1;
+    event_read(&closed_events, &mask, sizeof(mask));
+}
+
+void socket_stub_close_connection(void)
+{
+    queue_stop(&qinput);
+    queue_start(&qinput);
 }

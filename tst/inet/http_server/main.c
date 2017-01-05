@@ -2,9 +2,9 @@
  * @section License
  *
  * The MIT License (MIT)
- * 
+ *
  * Copyright (c) 2014-2016, Erik Moqvist
- * 
+ *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
  * files (the "Software"), to deal in the Software without
@@ -30,15 +30,45 @@
 
 #include "simba.h"
 
+extern int ssl_open_counter;
+extern int ssl_close_counter;
+extern int ssl_write_counter;
+extern int ssl_read_counter;
+extern int ssl_size_counter;
+
 extern void socket_stub_init(void);
 extern void socket_stub_accept();
 extern void socket_stub_input(void *buf_p, size_t size);
 extern void socket_stub_output(void *buf_p, size_t size);
+extern void socket_stub_wait_closed(void);
+extern void socket_stub_close_connection(void);
+
+static int request_index(struct http_server_connection_t *connection_p,
+                         struct http_server_request_t *request_p);
+static int request_auth(struct http_server_connection_t *connection_p,
+                        struct http_server_request_t *request_p);
+static int request_form(struct http_server_connection_t *connection_p,
+                        struct http_server_request_t *request_p);
+static int request_websocket_echo(struct http_server_connection_t *connection_p,
+                                  struct http_server_request_t *request_p);
+static int request_404_not_found(struct http_server_connection_t *connection_p,
+                                 struct http_server_request_t *request_p);
 
 static struct http_server_t foo;
 
+static struct http_server_route_t routes[] = {
+    { .path_p = "/index.html", .callback = request_index },
+    { .path_p = "/auth.html", .callback = request_auth },
+    { .path_p = "/form.html", .callback = request_form },
+    { .path_p = "/websocket/echo", .callback = request_websocket_echo },
+    { .path_p = NULL, .callback = NULL }
+};
+
 THRD_STACK(listener_stack, 2048);
 THRD_STACK(connection_stack, 2048);
+
+THRD_STACK(https_listener_stack, 2048);
+THRD_STACK(https_connection_stack, 2048);
 
 /**
  * Handler for the index request.
@@ -98,9 +128,9 @@ static int request_form(struct http_server_connection_t *connection_p,
     BTASSERT(request_p->headers.content_type.present == 1);
     BTASSERT(strcmp(request_p->headers.content_type.value,
                     "application/x-www-form-urlencoded") == 0);
-    BTASSERT(socket_read(&connection_p->socket,
-                         buf,
-                         request_p->headers.content_length.value) == 9);
+    BTASSERT(chan_read(connection_p->chan_p,
+                       buf,
+                       request_p->headers.content_length.value) == 9);
     BTASSERT(strncmp("key=value", buf, 9) == 0);
 
     /* Create the response. */
@@ -124,7 +154,7 @@ static int request_websocket_echo(struct http_server_connection_t *connection_p,
     uint8_t buf[32];
     int type;
 
-    if (http_websocket_server_init(&server, &connection_p->socket) != 0) {
+    if (http_websocket_server_init(&server, connection_p->chan_p) != 0) {
         return (-1);
     }
 
@@ -143,6 +173,7 @@ static int request_websocket_echo(struct http_server_connection_t *connection_p,
         }
 
         if (http_websocket_server_write(&server, type, buf, res) != res) {
+            PRINT_FILE_LINE();
             return (-1);
         }
     }
@@ -176,7 +207,7 @@ static int request_404_not_found(struct http_server_connection_t *connection_p,
         return (res);
     }
 
-    if (socket_write(&connection_p->socket, content, size) != size) {
+    if (chan_write(connection_p->chan_p, content, size) != size) {
         return (-EIO);
     }
 
@@ -185,17 +216,9 @@ static int request_404_not_found(struct http_server_connection_t *connection_p,
 
 static int test_start(struct harness_t *harness_p)
 {
-    static struct http_server_route_t routes[] = {
-        { .path_p = "/index.html", .callback = request_index },
-        { .path_p = "/auth.html", .callback = request_auth },
-        { .path_p = "/form.html", .callback = request_form },
-        { .path_p = "/websocket/echo", .callback = request_websocket_echo },
-        { .path_p = NULL, .callback = NULL }
-    };
-
     static struct http_server_listener_t listener = {
         .address_p = "127.0.0.1",
-        .port = 9000,
+        .port = 80,
         .thrd = {
             .name_p = "http_listener",
             .stack = {
@@ -204,7 +227,6 @@ static int test_start(struct harness_t *harness_p)
             }
         }
     };
-
     static struct http_server_connection_t connections[] = {
         {
             .thrd = {
@@ -215,15 +237,12 @@ static int test_start(struct harness_t *harness_p)
                 }
             }
         },
-
         {
             .thrd = {
                 .name_p = NULL
             }
         }
     };
-
-    socket_stub_init();
 
     BTASSERT(http_server_init(&foo,
                               &listener,
@@ -272,8 +291,7 @@ static int test_request_index(struct harness_t *harness_p)
     buf[strlen(str_p)] = '\0';
     BTASSERT(strcmp(buf, str_p) == 0);
 
-    /* Less log clobbering. */
-    thrd_sleep_us(100000);
+    socket_stub_wait_closed();
 
     return (0);
 }
@@ -307,8 +325,7 @@ static int test_request_index_with_query_string(struct harness_t *harness_p)
     buf[strlen(str_p)] = '\0';
     BTASSERT(strcmp(buf, str_p) == 0);
 
-    /* Less log clobbering. */
-    thrd_sleep_us(100000);
+    socket_stub_wait_closed();
 
     return (0);
 }
@@ -343,8 +360,7 @@ static int test_request_auth(struct harness_t *harness_p)
     buf[strlen(str_p)] = '\0';
     BTASSERT(strcmp(buf, str_p) == 0);
 
-    /* Less log clobbering. */
-    thrd_sleep_us(100000);
+    socket_stub_wait_closed();
 
     return (0);
 }
@@ -381,8 +397,7 @@ static int test_request_form(struct harness_t *harness_p)
     buf[strlen(str_p)] = '\0';
     BTASSERT(strcmp(buf, str_p) == 0);
 
-    /* Less log clobbering. */
-    thrd_sleep_us(100000);
+    socket_stub_wait_closed();
 
     return (0);
 }
@@ -439,8 +454,8 @@ static int test_request_websocket(struct harness_t *harness_p)
         BTASSERT(strcmp(&buf[6], "123") == 0);
     }
 
-    /* Less log clobbering. */
-    thrd_sleep_us(100000);
+    socket_stub_close_connection();
+    socket_stub_wait_closed();
 
     return (0);
 }
@@ -474,8 +489,7 @@ static int test_request_no_route(struct harness_t *harness_p)
     buf[strlen(str_p)] = '\0';
     BTASSERT(strcmp(buf, str_p) == 0);
 
-    /* Less log clobbering. */
-    thrd_sleep_us(100000);
+    socket_stub_wait_closed();
 
     return (0);
 }
@@ -483,6 +497,69 @@ static int test_request_no_route(struct harness_t *harness_p)
 static int test_stop(struct harness_t *harness_p)
 {
     BTASSERT(http_server_stop(&foo) == 0);
+
+    return (0);
+}
+
+static int test_https_start(struct harness_t *harness_p)
+{
+    struct ssl_context_t context;
+    static struct http_server_listener_t listener = {
+        .address_p = "127.0.0.1",
+        .port = 443,
+        .thrd = {
+            .name_p = "https_listener",
+            .stack = {
+                .buf_p = https_listener_stack,
+                .size = sizeof(https_listener_stack)
+            }
+        }
+    };
+    static struct http_server_connection_t connections[] = {
+        {
+            .thrd = {
+                .name_p = "https_conn_0",
+                .stack = {
+                    .buf_p = https_connection_stack,
+                    .size = sizeof(https_connection_stack)
+                }
+            }
+        },
+        {
+            .thrd = {
+                .name_p = NULL
+            }
+        }
+    };
+
+    BTASSERT(http_server_init(&foo,
+                              &listener,
+                              connections,
+                              NULL,
+                              routes,
+                              request_404_not_found) == 0);
+    BTASSERT(http_server_wrap_ssl(&foo, &context) == 0);
+
+    BTASSERT(http_server_start(&foo) == 0);
+
+    thrd_set_log_mask(listener.thrd.id_p, LOG_UPTO(DEBUG));
+    thrd_set_log_mask(connections[0].thrd.id_p, LOG_UPTO(DEBUG));
+
+    /* Less log clobbering. */
+    thrd_sleep_us(100000);
+
+    return (0);
+}
+
+static int test_https_stop(struct harness_t *harness_p)
+{
+    BTASSERT(http_server_stop(&foo) == 0);
+
+    BTASSERT(ssl_open_counter == 6);
+    BTASSERT(ssl_close_counter == 6);
+    BTASSERT(ssl_write_counter == 9);
+    BTASSERT(ssl_read_counter == 730);
+    BTASSERT(ssl_size_counter == 0);
 
     return (0);
 }
@@ -496,13 +573,23 @@ int main()
         { test_request_index_with_query_string, "test_request_index_with_query_string" },
         { test_request_auth, "test_request_auth" },
         { test_request_form, "test_request_form" },
-        { test_request_no_route, "test_request_no_route" },
         { test_request_websocket, "test_request_websocket" },
+        { test_request_no_route, "test_request_no_route" },
         { test_stop, "test_stop" },
+        { test_https_start, "test_https_start" },
+        { test_request_index, "test_https_request_index" },
+        { test_request_index_with_query_string, "test_https_request_index_with_query_string" },
+        { test_request_auth, "test_https_request_auth" },
+        { test_request_form, "test_https_request_form" },
+        { test_request_websocket, "test_https_request_websocket" },
+        { test_request_no_route, "test_https_request_no_route" },
+        { test_https_stop, "test_https_stop" },
         { NULL, NULL }
     };
 
     sys_start();
+
+    socket_stub_init();
 
     harness_init(&harness);
     harness_run(&harness, harness_testcases);

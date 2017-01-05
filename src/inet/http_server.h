@@ -136,6 +136,8 @@ struct http_server_connection_t {
     } thrd;
     struct http_server_t *self_p;
     struct socket_t socket;
+    struct ssl_socket_t ssl_socket;
+    void *chan_p;
     struct event_t events;
 };
 
@@ -153,6 +155,7 @@ struct http_server_t {
     http_server_route_callback_t on_no_route;
     struct http_server_listener_t *listener_p;
     struct http_server_connection_t *connections_p;
+    struct ssl_context_t *ssl_context_p;
     struct event_t events;
 };
 
@@ -176,6 +179,20 @@ int http_server_init(struct http_server_t *self_p,
                      const char *root_path_p,
                      const struct http_server_route_t *routes_p,
                      http_server_route_callback_t on_no_route);
+
+/**
+ * Wrap given HTTP server in SSL, to make it secure.
+ *
+ * This function must be called after `http_server_init()` and before
+ * `http_server_start()`.
+ *
+ * @param[in] self_p Http server to wrap in SSL.
+ * @param[in] context_p SSL context to wrap the server in.
+ *
+ * @return zero(0) or negative error code.
+ */
+int http_server_wrap_ssl(struct http_server_t *self_p,
+                         struct ssl_context_t *context_p);
 
 /**
  * Start given HTTP server.

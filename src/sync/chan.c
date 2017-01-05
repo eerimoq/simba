@@ -132,24 +132,26 @@ ssize_t chan_read(void *self_p,
                   void *buf_p,
                   size_t size)
 {
-    ASSERTN(self_p != NULL, EINVAL);
-    ASSERTN(buf_p != NULL, EINVAL);
-    ASSERTN(size > 0, EINVAL);
+    ASSERTN(self_p != NULL, -EINVAL);
+    ASSERTN(((struct chan_t *)self_p)->read != NULL, -EINVAL);
+    ASSERTN(buf_p != NULL, -EINVAL);
+    ASSERTN(size > 0, -EINVAL);
 
     return (((struct chan_t *)self_p)->read(self_p, buf_p, size));
 }
 
-ssize_t chan_write(void *self_in_p,
+ssize_t chan_write(void *v_self_p,
                    const void *buf_p,
                    size_t size)
 {
-    ASSERTN(self_in_p != NULL, EINVAL);
-    ASSERTN(buf_p != NULL, EINVAL);
-    ASSERTN(size > 0, EINVAL);
+    ASSERTN(v_self_p != NULL, -EINVAL);
+    ASSERTN(((struct chan_t *)v_self_p)->write != NULL, -EINVAL);
+    ASSERTN(buf_p != NULL, -EINVAL);
+    ASSERTN(size > 0, -EINVAL);
 
     struct chan_t *self_p;
 
-    self_p = self_in_p;
+    self_p = v_self_p;
 
     if (self_p->write_filter_cb != NULL) {
         if (self_p->write_filter_cb(self_p, buf_p, size) == 1) {

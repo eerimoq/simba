@@ -28,8 +28,8 @@
 # This file is part of the Simba project.
 #
 
-NAME = http_server
-BOARD ?= esp12e
+NAME = https_server
+BOARD ?= nano32
 
 CDEFS += \
 	CONFIG_START_NETWORK=1

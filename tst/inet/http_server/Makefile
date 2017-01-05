@@ -32,8 +32,9 @@ NAME = http_server_suite
 TYPE = suite
 BOARD ?= linux
 
-SRC += socket_stub.c
-CDEFS += CONFIG_MINIMAL_SYSTEM=1 \
+SRC += socket_stub.c ssl_stub.c
+CDEFS += \
+	CONFIG_MINIMAL_SYSTEM=1 \
 	CONFIG_FS_CMD_THRD_LIST=1
 
 SRC_IGNORE = $(SIMBA_ROOT)/src/inet/socket.c

@@ -2,9 +2,9 @@
  * @section License
  *
  * The MIT License (MIT)
- * 
+ *
  * Copyright (c) 2014-2016, Erik Moqvist
- * 
+ *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
  * files (the "Software"), to deal in the Software without
@@ -49,7 +49,7 @@ static const FAR char not_found_fmt[] =
     "Content-Length: %d\r\n"
     "\r\n";
 
-static int read_initial_request_line(struct socket_t *socket_p,
+static int read_initial_request_line(void *chan_p,
                                      char *buf_p,
                                      struct http_server_request_t *request_p)
 {
@@ -61,9 +61,7 @@ static int read_initial_request_line(struct socket_t *socket_p,
     action_p = buf_p;
 
     while (1) {
-        if (socket_read(socket_p,
-                        buf_p,
-                        sizeof(*buf_p)) != sizeof(*buf_p)) {
+        if (chan_read(chan_p, buf_p, sizeof(*buf_p)) != sizeof(*buf_p)) {
             return (-EIO);
         }
 
@@ -110,7 +108,7 @@ static int read_initial_request_line(struct socket_t *socket_p,
     return (0);
 }
 
-static int read_header_line(struct socket_t *socket_p,
+static int read_header_line(void *chan_p,
                             char *buf_p,
                             char **header_pp,
                             char **value_pp)
@@ -120,9 +118,7 @@ static int read_header_line(struct socket_t *socket_p,
     *value_pp = NULL;
 
     while (1) {
-        if (socket_read(socket_p,
-                        buf_p,
-                        sizeof(*buf_p)) != sizeof(*buf_p)) {
+        if (chan_read(chan_p, buf_p, sizeof(*buf_p)) != sizeof(*buf_p)) {
             return (-EIO);
         }
 
@@ -161,7 +157,7 @@ static int read_request(struct http_server_t *self_p,
     char *value_p;
 
     /* Read the intial line in the request. */
-    if (read_initial_request_line(&connection_p->socket,
+    if (read_initial_request_line(connection_p->chan_p,
                                   buf,
                                   request_p) != 0) {
         return (-EIO);
@@ -171,7 +167,7 @@ static int read_request(struct http_server_t *self_p,
 
     /* Read the header lines. */
     while (1) {
-        res = read_header_line(&connection_p->socket,
+        res = read_header_line(connection_p->chan_p,
                                buf,
                                &header_p,
                                &value_p);
@@ -293,7 +289,19 @@ static void *connection_main(void *arg_p)
         event_read(&connection_p->events, &mask, sizeof(mask));
 
         if (mask & 0x1) {
+            if (self_p->ssl_context_p != NULL) {
+                ssl_socket_open(&connection_p->ssl_socket,
+                                self_p->ssl_context_p,
+                                &connection_p->socket,
+                                ssl_socket_mode_server_t);
+            }
+
             handle_request(self_p, connection_p);
+
+            if (self_p->ssl_context_p != NULL) {
+                ssl_socket_close(&connection_p->ssl_socket);
+            }
+
             socket_close(&connection_p->socket);
 
             /* Add thread to the free list. */
@@ -431,6 +439,7 @@ int http_server_init(struct http_server_t *self_p,
     self_p->root_path_p = root_path_p;
     self_p->routes_p = routes_p;
     self_p->on_no_route = on_no_route;
+    self_p->ssl_context_p = NULL;
 
     connection_p = self_p->connections_p;
 
@@ -443,6 +452,17 @@ int http_server_init(struct http_server_t *self_p,
     }
 
     event_init(&self_p->events);
+
+    return (0);
+}
+
+int http_server_wrap_ssl(struct http_server_t *self_p,
+                         struct ssl_context_t *context_p)
+{
+    ASSERTN(self_p != NULL, -EINVAL);
+    ASSERTN(context_p != NULL, -EINVAL);
+
+    self_p->ssl_context_p = context_p;
 
     return (0);
 }
@@ -465,6 +485,12 @@ int http_server_start(struct http_server_t *self_p)
 
     /* Spawn the connection threads. */
     while (connection_p->thrd.stack.buf_p != NULL) {
+        if (self_p->ssl_context_p == NULL) {
+            connection_p->chan_p = &connection_p->socket;
+        } else {
+            connection_p->chan_p = &connection_p->ssl_socket;
+        }
+
         connection_p->thrd.id_p =
             thrd_spawn(connection_main,
                        connection_p,
@@ -527,7 +553,7 @@ http_server_response_write(struct http_server_connection_t *connection_p,
                            response_p->content.size);
     }
 
-    res = socket_write(&connection_p->socket, buf, size);
+    res = chan_write(connection_p->chan_p, buf, size);
 
     if (res != size) {
         return (-1);
@@ -535,9 +561,9 @@ http_server_response_write(struct http_server_connection_t *connection_p,
 
     /* Write the content. */
     if (response_p->content.buf_p != NULL) {
-        res = socket_write(&connection_p->socket,
-                           response_p->content.buf_p,
-                           response_p->content.size);
+        res = chan_write(connection_p->chan_p,
+                         response_p->content.buf_p,
+                         response_p->content.size);
 
         if (res != response_p->content.size) {
             return (-1);
