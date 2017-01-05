@@ -924,7 +924,7 @@
 #ifndef CONFIG_MODULE_INIT_SSL
 #    if defined(CONFIG_MINIMAL_SYSTEM)
 #        define CONFIG_MODULE_INIT_SSL                      0
-#    elif defined(ARCH_ESP) || defined(ARCH_ESP32) || defined(ARCH_LINUX)
+#    elif defined(ARCH_ESP32) || defined(ARCH_LINUX)
 #        define CONFIG_MODULE_INIT_SSL                      1
 #    else
 #        define CONFIG_MODULE_INIT_SSL                      0
