@@ -1756,6 +1756,20 @@
 #    endif
 #endif
 
+/**
+ * Add support to wrap the HTTP server in SSL, creating a HTTPS
+ * server.
+ */
+#ifndef CONFIG_HTTP_SERVER_SSL
+#    if defined(CONFIG_MINIMAL_SYSTEM)
+#        define CONFIG_HTTP_SERVER_SSL                      0
+#    elif defined(ARCH_ESP32) || defined(ARCH_LINUX)
+#        define CONFIG_HTTP_SERVER_SSL                      1
+#    else
+#        define CONFIG_HTTP_SERVER_SSL                      0
+#    endif
+#endif
+
 
 /**
  * Configuration validation.

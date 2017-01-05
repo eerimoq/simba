@@ -289,18 +289,22 @@ static void *connection_main(void *arg_p)
         event_read(&connection_p->events, &mask, sizeof(mask));
 
         if (mask & 0x1) {
+#if CONFIG_HTTP_SERVER_SSL == 1
             if (self_p->ssl_context_p != NULL) {
                 ssl_socket_open(&connection_p->ssl_socket,
                                 self_p->ssl_context_p,
                                 &connection_p->socket,
                                 ssl_socket_mode_server_t);
             }
+#endif
 
             handle_request(self_p, connection_p);
 
+#if CONFIG_HTTP_SERVER_SSL == 1
             if (self_p->ssl_context_p != NULL) {
                 ssl_socket_close(&connection_p->ssl_socket);
             }
+#endif
 
             socket_close(&connection_p->socket);
 
@@ -456,6 +460,8 @@ int http_server_init(struct http_server_t *self_p,
     return (0);
 }
 
+#if CONFIG_HTTP_SERVER_SSL == 1
+
 int http_server_wrap_ssl(struct http_server_t *self_p,
                          struct ssl_context_t *context_p)
 {
@@ -466,6 +472,8 @@ int http_server_wrap_ssl(struct http_server_t *self_p,
 
     return (0);
 }
+
+#endif
 
 int http_server_start(struct http_server_t *self_p)
 {
@@ -485,11 +493,15 @@ int http_server_start(struct http_server_t *self_p)
 
     /* Spawn the connection threads. */
     while (connection_p->thrd.stack.buf_p != NULL) {
+#if CONFIG_HTTP_SERVER_SSL == 1
         if (self_p->ssl_context_p == NULL) {
             connection_p->chan_p = &connection_p->socket;
         } else {
             connection_p->chan_p = &connection_p->ssl_socket;
         }
+#else
+        connection_p->chan_p = &connection_p->socket;
+#endif
 
         connection_p->thrd.id_p =
             thrd_spawn(connection_main,

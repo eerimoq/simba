@@ -37,6 +37,11 @@ CDEFS += \
 	CONFIG_MINIMAL_SYSTEM=1 \
 	CONFIG_FS_CMD_THRD_LIST=1
 
+ifeq ($(BOARD), linux)
+CDEFS += \
+	CONFIG_HTTP_SERVER_SSL=1
+endif
+
 SRC_IGNORE = $(SIMBA_ROOT)/src/inet/socket.c
 
 ENCODE_SRC = base64.c

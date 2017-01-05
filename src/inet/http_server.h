@@ -136,7 +136,9 @@ struct http_server_connection_t {
     } thrd;
     struct http_server_t *self_p;
     struct socket_t socket;
+#if CONFIG_HTTP_SERVER_SSL == 1
     struct ssl_socket_t ssl_socket;
+#endif
     void *chan_p;
     struct event_t events;
 };

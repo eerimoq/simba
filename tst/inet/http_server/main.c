@@ -503,6 +503,7 @@ static int test_stop(struct harness_t *harness_p)
 
 static int test_https_start(struct harness_t *harness_p)
 {
+#if CONFIG_HTTP_SERVER_SSL == 1
     struct ssl_context_t context;
     static struct http_server_listener_t listener = {
         .address_p = "127.0.0.1",
@@ -549,10 +550,14 @@ static int test_https_start(struct harness_t *harness_p)
     thrd_sleep_us(100000);
 
     return (0);
+#else
+    return (1);
+#endif
 }
 
 static int test_https_stop(struct harness_t *harness_p)
 {
+#if CONFIG_HTTP_SERVER_SSL == 1
     BTASSERT(http_server_stop(&foo) == 0);
 
     BTASSERT(ssl_open_counter == 6);
@@ -562,6 +567,9 @@ static int test_https_stop(struct harness_t *harness_p)
     BTASSERT(ssl_size_counter == 0);
 
     return (0);
+#else
+    return (1);
+#endif
 }
 
 int main()
@@ -577,12 +585,14 @@ int main()
         { test_request_no_route, "test_request_no_route" },
         { test_stop, "test_stop" },
         { test_https_start, "test_https_start" },
+#if CONFIG_HTTP_SERVER_SSL == 1
         { test_request_index, "test_https_request_index" },
         { test_request_index_with_query_string, "test_https_request_index_with_query_string" },
         { test_request_auth, "test_https_request_auth" },
         { test_request_form, "test_https_request_form" },
         { test_request_websocket, "test_https_request_websocket" },
         { test_request_no_route, "test_https_request_no_route" },
+#endif
         { test_https_stop, "test_https_stop" },
         { NULL, NULL }
     };
