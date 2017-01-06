@@ -44,7 +44,6 @@
 
 struct module_t {
     int initialized;
-    mbedtls_ssl_cookie_ctx cookie_ctx;
     mbedtls_entropy_context entropy;
     mbedtls_ctr_drbg_context ctr_drbg;
     mbedtls_ssl_context ssl;
@@ -53,6 +52,7 @@ struct module_t {
     int conf_allocated;
     mbedtls_x509_crt cert;
     mbedtls_pk_context key;
+    mbedtls_x509_crt ca_certs;
     mbedtls_timing_delay_context timer;
 };
 
@@ -120,8 +120,8 @@ int ssl_module_init()
     if (mbedtls_ctr_drbg_seed(&module.ctr_drbg,
                               mbedtls_entropy_func,
                               &module.entropy,
-                              (const unsigned char *)"hej",
-                              3) != 0) {
+                              NULL,
+                              0) != 0) {
         return (-1);
     }
 
@@ -136,7 +136,7 @@ int ssl_context_init(struct ssl_context_t *self_p,
 
     self_p->protocol = protocol;
 
-    /* Allocate the mbedTLS datastructures. */
+    /* Allocate the mbedTLS SSL config datastructure. */
     self_p->conf_p = alloc_conf();
 
     if (self_p->conf_p == NULL) {
@@ -144,21 +144,12 @@ int ssl_context_init(struct ssl_context_t *self_p,
     }
 
     mbedtls_ssl_config_init(self_p->conf_p);
-    mbedtls_ssl_cookie_init(&module.cookie_ctx);
-    mbedtls_x509_crt_init(&module.cert);
-    mbedtls_pk_init(&module.key);
-
-    /* Default SSL server side configration. */
-    if (mbedtls_ssl_config_defaults(self_p->conf_p,
-                                    MBEDTLS_SSL_IS_SERVER,
-                                    MBEDTLS_SSL_TRANSPORT_STREAM,
-                                    MBEDTLS_SSL_PRESET_DEFAULT) != 0) {
-        return (-1);
-    }
-
     mbedtls_ssl_conf_rng(self_p->conf_p,
                          mbedtls_ctr_drbg_random,
                          &module.ctr_drbg);
+
+    self_p->server_side = -1;
+    self_p->verify_mode = -1;
 
     return (0);
 }
@@ -181,6 +172,9 @@ int ssl_context_load_cert_chain(struct ssl_context_t *self_p,
     ASSERTN(self_p->conf_p != NULL, -EINVAL);
     ASSERTN(cert_p != NULL, -EINVAL);
 
+    mbedtls_x509_crt_init(&module.cert);
+    mbedtls_pk_init(&module.key);
+
     /* Parse the certificate. */
     if (mbedtls_x509_crt_parse(&module.cert,
                                (unsigned char *)cert_p,
@@ -199,10 +193,6 @@ int ssl_context_load_cert_chain(struct ssl_context_t *self_p,
         }
     }
 
-    mbedtls_ssl_conf_ca_chain(self_p->conf_p,
-                              module.cert.next,
-                              NULL);
-
     if (mbedtls_ssl_conf_own_cert(self_p->conf_p,
                                   &module.cert,
                                   &module.key) != 0) {
@@ -212,20 +202,75 @@ int ssl_context_load_cert_chain(struct ssl_context_t *self_p,
     return (0);
 }
 
+int ssl_context_load_verify_location(struct ssl_context_t *self_p,
+                                     const char *ca_certs_p)
+{
+    /* Parse the CA certificate(s). */
+    if (mbedtls_x509_crt_parse(&module.ca_certs,
+                               (unsigned char *)ca_certs_p,
+                               strlen(ca_certs_p) + 1) != 0) {
+        return (-1);
+    }
+
+    mbedtls_ssl_conf_ca_chain(self_p->conf_p,
+                              &module.ca_certs,
+                              NULL);
+
+    return (0);
+}
+
+int ssl_context_set_verify_mode(struct ssl_context_t *self_p,
+                                enum ssl_verify_mode_t mode)
+{
+    /* Should be moved to a test case. */
+    ASSERT(MBEDTLS_SSL_VERIFY_NONE == ssl_verify_mode_cert_none_t);
+    ASSERT(MBEDTLS_SSL_VERIFY_REQUIRED == ssl_verify_mode_cert_required_t);
+
+    self_p->verify_mode = mode;
+
+    return (0);
+}
+
 int ssl_socket_open(struct ssl_socket_t *self_p,
                     struct ssl_context_t *context_p,
                     void *socket_p,
-                    enum ssl_socket_mode_t mode)
+                    int server_side)
 {
     ASSERTN(module.initialized == 1, -EINVAL);
     ASSERTN(self_p != NULL, -EINVAL);
     ASSERTN(context_p != NULL, -EINVAL);
+    ASSERTN(context_p->conf_p != NULL, -EINVAL);
     ASSERTN(socket_p != NULL, -EINVAL);
+    ASSERTN((server_side == 0) || (server_side == 1), -EINVAL);
 
     int res;
+    int authmode;
+
+    /* This implementation can only handle a single socket mode,
+       server or client, in a context. Which mode to configure is
+       first known in this function, so the context cannot be
+       configured earlier. */
+    if (context_p->server_side == -1) {
+        if (mbedtls_ssl_config_defaults(context_p->conf_p,
+                                        server_side,
+                                        MBEDTLS_SSL_TRANSPORT_STREAM,
+                                        MBEDTLS_SSL_PRESET_DEFAULT) != 0) {
+            return (-1);
+        }
+
+        /* Use mbedTLS default values (none for servers, required for
+           clients. */
+        if (context_p->verify_mode != -1) {
+            mbedtls_ssl_conf_authmode(context_p->conf_p, context_p->verify_mode);
+        }
+
+        context_p->server_side = server_side;
+    } else if (context_p->server_side != server_side) {
+        return (-1);
+    }
 
     self_p->socket_p = socket_p;
-    
+
     /* Allocate the mbedTLS datastructures. */
     self_p->ssl_p = alloc_ssl();
 
@@ -237,14 +282,14 @@ int ssl_socket_open(struct ssl_socket_t *self_p,
               (chan_read_fn_t)ssl_socket_read,
               (chan_write_fn_t)ssl_socket_write,
               (chan_size_fn_t)ssl_socket_size);
-    
+
     /* Inilialize the SSL session. */
     mbedtls_ssl_init(self_p->ssl_p);
 
     res = mbedtls_ssl_setup(self_p->ssl_p, &module.conf);
 
     if (res != 0) {
-        goto err;
+        goto err1;
     }
 
     mbedtls_ssl_set_bio(self_p->ssl_p,
@@ -257,15 +302,27 @@ int ssl_socket_open(struct ssl_socket_t *self_p,
     res = mbedtls_ssl_handshake(self_p->ssl_p);
 
     if (res != 0) {
-        mbedtls_ssl_free(self_p->ssl_p);
-        goto err;
+        goto err2;
+    }
+
+    /* Verify the peer certificate if optional and present. */
+    authmode = ((mbedtls_ssl_config *)context_p->conf_p)->authmode;
+
+    if (authmode == MBEDTLS_SSL_VERIFY_OPTIONAL) {
+        if (mbedtls_ssl_get_verify_result(self_p->ssl_p) != 0) {
+            std_printf(FSTR("Verification of the peer certificate failed.\r\n"));
+            res = -1;
+            goto err2;
+        }
     }
 
     return (0);
-    
- err:
+
+ err2:
+    mbedtls_ssl_free(self_p->ssl_p);
+ err1:
     free_ssl(self_p->ssl_p);
-    
+
     return (res);
 }
 

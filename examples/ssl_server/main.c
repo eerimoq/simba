@@ -145,10 +145,7 @@ int main()
         std_printf(FSTR("Client accepted.\r\n"));
 
         /* Wrap the socket in SSL. */
-        if (ssl_socket_open(&ssl_client_sock,
-                            &context,
-                            &client_sock,
-                            ssl_socket_mode_server_t) == 0) {
+        if (ssl_socket_open(&ssl_client_sock, &context, &client_sock, 1) == 0) {
             /* Read data from the client socket. */
             if (ssl_socket_read(&ssl_client_sock, &buf[0], 6) == 6) {
                 buf[6] = '\0';

@@ -37,14 +37,16 @@ enum ssl_protocol_t {
     ssl_protocol_tls_v1_0
 };
 
-enum ssl_socket_mode_t {
-    ssl_socket_mode_client_t = 0,
-    ssl_socket_mode_server_t
+enum ssl_verify_mode_t {
+    ssl_verify_mode_cert_none_t = 0,
+    ssl_verify_mode_cert_required_t
 };
 
 struct ssl_context_t {
     enum ssl_protocol_t protocol;
     void *conf_p;
+    int server_side;
+    int verify_mode;
 };
 
 struct ssl_socket_t {
@@ -87,7 +89,7 @@ int ssl_context_init(struct ssl_context_t *self_p,
 int ssl_context_destroy(struct ssl_context_t *self_p);
 
 /**
- * Load given certificate chain into given contextx.
+ * Load given certificate chain into given context.
  *
  * @param[in] self_p SSL context.
  * @param[in] self_p Certificate to load.
@@ -100,20 +102,47 @@ int ssl_context_load_cert_chain(struct ssl_context_t *self_p,
                                 const char *key_p);
 
 /**
+ * Load a set of "certification authority" (CA) certificates used to
+ * validate other peers’ certificates when ``verify_mode`` is other
+ * than `ssl_verify_mode_cert_none_t`.
+ *
+ * @param[in] self_p SSL context.
+ * @param[in] ca_certs_p CA certificates.
+ *
+ * @return zero(0) or negative error code.
+ */
+int ssl_context_load_verify_location(struct ssl_context_t *self_p,
+                                     const char *ca_certs_p);
+
+/**
+ * Whether to try to verify other peers’ certificates.
+ *
+ * Load CA certificates with `ssl_context_load_verify_location()`.
+ *
+ * @param[in] self_p SSL context.
+ * @param[in] mode Mode to set.
+ *
+ * @return zero(0) or negative error code.
+ */
+int ssl_context_set_verify_mode(struct ssl_context_t *self_p,
+                                enum ssl_verify_mode_t mode);
+
+/**
  * Initialize given SSL socket with given socket and SSL
  * context. Performs the SSL handshake.
  *
  * @param[out] self_p SSL socket to initialize.
  * @param[in] context_p SSL context to execute in.
  * @param[in] socket_p Socket to wrap in the SSL socket.
- * @param[in] mode Server or client side socket mode.
+ * @param[in] server_side Set to 1 for server side sockets and 0 for
+ *                        client side sockets.
  *
  * @return zero(0) or negative error code.
  */
 int ssl_socket_open(struct ssl_socket_t *self_p,
                     struct ssl_context_t *context_p,
                     void *socket_p,
-                    enum ssl_socket_mode_t mode);
+                    int server_side);
 
 /**
  * Close given SSL socket.

@@ -49,10 +49,7 @@ static int test_client(struct harness_t *harness_p)
     BTASSERT(socket_connect(&socket, &addr) == 0);
 
     /* Wrap the socket in SSL. */
-    BTASSERT(ssl_socket_open(&ssl_socket,
-                             &context,
-                             &socket,
-                             ssl_socket_mode_client_t) == 0);
+    BTASSERT(ssl_socket_open(&ssl_socket, &context, &socket, 0) == 0);
 
     BTASSERT(ssl_socket_size(&ssl_socket) == 0);
     
@@ -94,10 +91,7 @@ static int test_server(struct harness_t *harness_p)
     BTASSERT(socket_accept(&listener, &socket, &addr) == 0);
 
     /* Wrap the socket in SSL. */
-    BTASSERT(ssl_socket_open(&ssl_socket,
-                             &context,
-                             &socket,
-                             ssl_socket_mode_server_t) == 0);
+    BTASSERT(ssl_socket_open(&ssl_socket, &context, &socket, 1) == 0);
 
     BTASSERT(chan_size(&ssl_socket) == 0);
 
@@ -106,8 +100,37 @@ static int test_server(struct harness_t *harness_p)
     BTASSERT(strcmp("hello", buf) == 0);
     BTASSERT(chan_write(&ssl_socket, "goodbye", 8) == 8);
 
+    /* Close the SSL connection. */
+    BTASSERT(ssl_socket_close(&ssl_socket) == 0);
+
     /* Close the connection. */
     BTASSERT(socket_close(&socket) == 0);
+
+    BTASSERT(ssl_context_destroy(&context) == 0);
+
+    return (0);
+}
+
+static int test_client_server_context(struct harness_t *harness_p)
+{
+    struct ssl_context_t context;
+    struct ssl_socket_t ssl_socket;
+    struct socket_t socket;
+
+    /* Create a context with default settings. */
+    BTASSERT(ssl_context_init(&context, ssl_protocol_tls_v1_0) == 0);
+
+    /* Create a socket and connect to the server. */
+    BTASSERT(socket_open_tcp(&socket) == 0);
+
+    /* Wrap the socket in SSL, as a client. */
+    BTASSERT(ssl_socket_open(&ssl_socket, &context, &socket, 0) == 0);
+
+    /* Wrap the socket in SSL, as a server. Should fail. */
+    BTASSERT(ssl_socket_open(&ssl_socket, &context, &socket, 1) == -1);
+
+    /* Close the SSL connection. */
+    BTASSERT(ssl_socket_close(&ssl_socket) == 0);
 
     BTASSERT(ssl_context_destroy(&context) == 0);
 
@@ -120,6 +143,7 @@ int main()
     struct harness_testcase_t harness_testcases[] = {
         { test_client, "test_client" },
         { test_server, "test_server" },
+        { test_client_server_context, "test_client_server_context" },
         { NULL, NULL }
     };
 
