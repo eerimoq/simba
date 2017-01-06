@@ -170,7 +170,11 @@
  * stack.
  */
 #ifndef CONFIG_SYS_SIMBA_MAIN_STACK_MAX
-#    define CONFIG_SYS_SIMBA_MAIN_STACK_MAX              4096
+#    if defined(ARCH_ESP32)
+#        define CONFIG_SYS_SIMBA_MAIN_STACK_MAX          8192
+#    else
+#        define CONFIG_SYS_SIMBA_MAIN_STACK_MAX          4096
+#    endif
 #endif
 
 /**

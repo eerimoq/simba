@@ -198,3 +198,12 @@ size_t mbedtls_ssl_get_bytes_avail(const mbedtls_ssl_context *ssl_p)
 {
     return (0);
 }
+
+uint32_t mbedtls_ssl_get_verify_result(const mbedtls_ssl_context *ssl_p)
+{
+    return (0);
+}
+
+void mbedtls_ssl_conf_authmode(mbedtls_ssl_config *conf_p, int authmode)
+{
+}

@@ -44,12 +44,12 @@ int ssl_module_init()
 int ssl_socket_open(struct ssl_socket_t *self_p,
                     struct ssl_context_t *context_p,
                     void *socket_p,
-                    enum ssl_socket_mode_t mode)
+                    int server_side)
 {
     BTASSERT(self_p != NULL);
     BTASSERT(context_p != NULL);
     BTASSERT(socket_p != NULL);
-    BTASSERT(mode == ssl_socket_mode_server_t);
+    BTASSERT(server_side == 1);
 
     ssl_open_counter++;
 
