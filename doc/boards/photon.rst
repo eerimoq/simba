@@ -58,7 +58,7 @@ Below is the memory usage of two applications:
 +==========================+===========+===========+
 | minimal-configuration    |      7276 |      1836 |
 +--------------------------+-----------+-----------+
-| default-configuration    |     62560 |      5838 |
+| default-configuration    |     62816 |      5838 |
 +--------------------------+-----------+-----------+
 
 Default configuration
@@ -180,6 +180,8 @@ Default Standard Library configuration.
 |  CONFIG_FS_CMD_USB_HOST_LIST_                          |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_FS_PATH_MAX_                                   |  64                                                 |
++--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_HTTP_SERVER_SSL_                               |  0                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_I2C_                                           |  0                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
@@ -496,6 +498,8 @@ Mcu
 .. _CONFIG_FS_CMD_USB_HOST_LIST: ../user-guide/configuration.html#c.CONFIG_FS_CMD_USB_HOST_LIST
 
 .. _CONFIG_FS_PATH_MAX: ../user-guide/configuration.html#c.CONFIG_FS_PATH_MAX
+
+.. _CONFIG_HTTP_SERVER_SSL: ../user-guide/configuration.html#c.CONFIG_HTTP_SERVER_SSL
 
 .. _CONFIG_I2C: ../user-guide/configuration.html#c.CONFIG_I2C
 

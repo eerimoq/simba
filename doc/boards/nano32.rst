@@ -63,9 +63,9 @@ Below is the memory usage of two applications:
 +--------------------------+-----------+-----------+
 | Application              | Flash     | RAM       |
 +==========================+===========+===========+
-| minimal-configuration    |    143755 |     26680 |
+| minimal-configuration    |     92629 |      8828 |
 +--------------------------+-----------+-----------+
-| default-configuration    |    353585 |     97224 |
+| default-configuration    |    332917 |     82228 |
 +--------------------------+-----------+-----------+
 
 Default configuration
@@ -187,6 +187,8 @@ Default Standard Library configuration.
 |  CONFIG_FS_CMD_USB_HOST_LIST_                          |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_FS_PATH_MAX_                                   |  64                                                 |
++--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_HTTP_SERVER_SSL_                               |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_I2C_                                           |  0                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
@@ -346,7 +348,7 @@ Default Standard Library configuration.
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_SYS_CONFIG_STRING_                             |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
-|  CONFIG_SYS_SIMBA_MAIN_STACK_MAX_                      |  4096                                               |
+|  CONFIG_SYS_SIMBA_MAIN_STACK_MAX_                      |  8192                                               |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_THRD_CPU_USAGE_                                |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
@@ -503,6 +505,8 @@ Mcu
 .. _CONFIG_FS_CMD_USB_HOST_LIST: ../user-guide/configuration.html#c.CONFIG_FS_CMD_USB_HOST_LIST
 
 .. _CONFIG_FS_PATH_MAX: ../user-guide/configuration.html#c.CONFIG_FS_PATH_MAX
+
+.. _CONFIG_HTTP_SERVER_SSL: ../user-guide/configuration.html#c.CONFIG_HTTP_SERVER_SSL
 
 .. _CONFIG_I2C: ../user-guide/configuration.html#c.CONFIG_I2C
 
