@@ -39,7 +39,7 @@ enum ssl_protocol_t {
 
 enum ssl_verify_mode_t {
     ssl_verify_mode_cert_none_t = 0,
-    ssl_verify_mode_cert_required_t
+    ssl_verify_mode_cert_required_t = 2
 };
 
 struct ssl_context_t {

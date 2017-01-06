@@ -40,6 +40,10 @@ static int test_client(struct harness_t *harness_p)
 
     /* Create a context with default settings. */
     BTASSERT(ssl_context_init(&context, ssl_protocol_tls_v1_0) == 0);
+    BTASSERT(ssl_context_set_verify_mode(&context,
+                                         ssl_verify_mode_cert_none_t) == 0);
+    BTASSERT(ssl_context_set_verify_mode(&context,
+                                         ssl_verify_mode_cert_required_t) == 0);
 
     /* Create a socket and connect to the server. */
     BTASSERT(socket_open_tcp(&socket) == 0);
