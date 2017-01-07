@@ -38,23 +38,23 @@
  */
 static const char certificate[] =
     "-----BEGIN CERTIFICATE-----\n"
-    "MIIDBjCCAe4CCQDxnqw02a38fDANBgkqhkiG9w0BAQsFADBFMQswCQYDVQQGEwJB\n"
-    "VTETMBEGA1UECAwKU29tZS1TdGF0ZTEhMB8GA1UECgwYSW50ZXJuZXQgV2lkZ2l0\n"
-    "cyBQdHkgTHRkMB4XDTE2MTIxODA4Mzg1MloXDTE3MTIxODA4Mzg1MlowRTELMAkG\n"
-    "A1UEBhMCQVUxEzARBgNVBAgMClNvbWUtU3RhdGUxITAfBgNVBAoMGEludGVybmV0\n"
-    "IFdpZGdpdHMgUHR5IEx0ZDCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEB\n"
-    "ALYNY/GZ2QNYdVFv39vMxFkXp7AogTYfVSqFoJwPneaXAt24aiKDwHO3OO3W8nYe\n"
-    "AwBZ9Jl1zQKA5wafc5uaRUH4Nuq1INiQZQ6gYL74KaBjNoX8TgLBOjci2Kea8HAZ\n"
-    "Ao/KY88UE1CG7sErJjuZ5SyKYGzdFuPek+jny8OxzqpPqP7ORrDqYKbFOOpUUhHZ\n"
-    "kPeVMhbWR2OSn052RtO63rtDJ49LltFy+8KXV6SaEu7Zuyk4WaBObSXLlMFDZKp9\n"
-    "ZlXYOKSZ2xGcKtgnMOTous1j/XxGTd0Xlbr2TZi/cfq7xFqfWRjfWiTX9w5d/KWd\n"
-    "h1jv9lrNsRfqK86FKFW2SOECAwEAATANBgkqhkiG9w0BAQsFAAOCAQEAD33b4qXN\n"
-    "BA13KsOSba7zCla8Z5dKk8JOwTp0wM7xqTWzR/eN7xkaQ6NFZavsbGACtHbGs2vU\n"
-    "DVRsTzTzn/0RVoCaEqYsELwXoaz7sUBZoc39+kwbC5BCvZlHLPRBkEy9nAehqIg6\n"
-    "bbzbVObZ1gqI1GWXtVONv65n1W8hjhTa2L841EMCVKKeR5sg1Pts0W7F3e9K2r7j\n"
-    "NumMWFa8RxDPvHwfE0zXzJYbXLAbDClvdjNboAq/jZu6f1O71yAJkPNCZKHJKFKO\n"
-    "2p4hsmEigByb2jr0BB6Bsmdcf1RyRwIemJ5fXauUsvJydYcvklo0xcpqQrTkhIzb\n"
-    "UoNMyyG9ikCJjA==\n"
+    "MIIDCjCCAfICCQCoXfSQydXTczANBgkqhkiG9w0BAQsFADBHMQswCQYDVQQGEwJT\n"
+    "RTETMBEGA1UECAwKU29tZS1TdGF0ZTEOMAwGA1UECgwFU2ltYmExEzARBgNVBAMM\n"
+    "CmZvb2Jhci5vcmcwHhcNMTcwMTA3MTgxOTQ3WhcNMTgwMTA3MTgxOTQ3WjBHMQsw\n"
+    "CQYDVQQGEwJTRTETMBEGA1UECAwKU29tZS1TdGF0ZTEOMAwGA1UECgwFU2ltYmEx\n"
+    "EzARBgNVBAMMCmZvb2Jhci5vcmcwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEK\n"
+    "AoIBAQDugoc9amynDB/ODJzh2aqB6cnubSJEPlgB87jNG0akcbmUFt6BhPhMPSoP\n"
+    "esHWl5OWscoga0cKrPURmMVVhfaeZLQGmrv5N4/liVlwae1n0gUEruX4d6MqSSDW\n"
+    "3C/WKjCn647udZwyzCvyrvPOq0qAzaxR4EFRdwjSEPO5sDw2zxeTjGW2WxaH9PEu\n"
+    "C8vaNqTsLYl3YBkR3zVCbuQXTQhStsv3gT4Yhz2wJpY0yyWyDiaBkGKpdxJQiNAd\n"
+    "x5JKSqtRshlYZM3+cdKLywNoYUnezp6Wm4mzz09TCFv+esJ0h7/6pMdVjhxLsAg5\n"
+    "ZbZyrtNIapN07AjIJS4qjkJ/HUC3AgMBAAEwDQYJKoZIhvcNAQELBQADggEBAGHS\n"
+    "U5AvDESzTNoak5HHx166bp5+bvECvJg45GMDGhqKeFoOlR34u2b+wyTm/piz3nYJ\n"
+    "12kn+BbG/PwGfndL0kZYRz46fY8Rf+MxCFfcglweDJhA6ULNpera11OC35Q/lKn5\n"
+    "M6w6eQkZMB4VqwigvDGHGpXRTIhJHHoR2VFBFGoPTLrXilChUpiXi9DmuYXJ/19x\n"
+    "sxOVwvvO/m/6g68G+uZYUoCsQsKllM2fgdNLTzbYvnFtsq5QnZS8m7CoZgEy2c3m\n"
+    "VrrPsfwmyhwejDawjz2epSLNXaaDeSz4g1cQes+oehaA1IwFfKhb9tdiWUm48VuU\n"
+    "oaFZ8e1HofYUy+65pws=\n"
     "-----END CERTIFICATE-----\n";
 
 int main()
@@ -63,8 +63,12 @@ int main()
     struct ssl_socket_t ssl_sock;
     struct socket_t sock;
     struct inet_addr_t addr;
+    const char *cipher_p;
+    const char *protocol_p;
+    int number_of_secret_bits;
     char buf[16];
-
+    int i;
+    
     sys_start();
 
     ssl_module_init();
@@ -105,21 +109,39 @@ int main()
     std_printf(FSTR("Connected.\r\n"));
 
     /* Wrap the socket in SSL. */
-    if (ssl_socket_open(&ssl_sock, &context, &sock, 0) == 0) {
+    if (ssl_socket_open(&ssl_sock,
+                        &context,
+                        &sock,
+                        0,
+                        "foobar.org") == 0) {
+        /* Print connection information. */
+        std_printf(FSTR("Server hostname: %s\r\n"), ssl_socket_get_server_hostname(&ssl_sock));
+        ssl_socket_get_cipher(&ssl_sock,
+                              &cipher_p,
+                              &protocol_p,
+                              &number_of_secret_bits);
+        std_printf(FSTR("Cipher: %s\r\n"), cipher_p);
+        std_printf(FSTR("Protocol: %s\r\n"), protocol_p);
+        std_printf(FSTR("Number of secret bits: %d\r\n"), number_of_secret_bits);
+        
         /* Write data to the socket. */
-        std_printf(FSTR("write: Hello!\r\n"));
-
-        if (ssl_socket_write(&ssl_sock, "Hello!", 6) == 6) {
-            if (ssl_socket_read(&ssl_sock, &buf[0], 8) == 8) {
-                buf[8] = '\0';
-                std_printf(FSTR("read: %s\r\n"), &buf[0]);
+        for (i = 0; i < 50; i++) {
+            std_printf(FSTR("write: Hello!\r\n"));
+            
+            if (ssl_socket_write(&ssl_sock, "Hello!", 6) == 6) {
+                if (ssl_socket_read(&ssl_sock, &buf[0], 8) == 8) {
+                    buf[8] = '\0';
+                    std_printf(FSTR("read: %s\r\n"), &buf[0]);
+                } else {
+                    std_printf(FSTR("ssl_socket_read() failed\r\n"));
+                    break;
+                }
             } else {
-                std_printf(FSTR("ssl_socket_read() failed\r\n"));
+                std_printf(FSTR("ssl_socket_write() failed\r\n"));
+                break;
             }
-        } else {
-            std_printf(FSTR("ssl_socket_write() failed\r\n"));
         }
-
+        
         /* Close the connection. */
         if (ssl_socket_close(&ssl_sock) != 0) {
             std_printf(FSTR("ssl_socket_close() failed\r\n"));
@@ -130,5 +152,7 @@ int main()
 
     socket_close(&sock);
 
+    std_printf(FSTR("Connection closed.\r\n"));
+    
     return (0);
 }

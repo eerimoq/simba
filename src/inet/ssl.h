@@ -33,6 +33,11 @@
 
 #include "simba.h"
 
+/**
+ * Server side socket.
+ */
+#define SSL_SOCKET_SERVER_SIDE                            0x1
+
 enum ssl_protocol_t {
     ssl_protocol_tls_v1_0
 };
@@ -134,15 +139,21 @@ int ssl_context_set_verify_mode(struct ssl_context_t *self_p,
  * @param[out] self_p SSL socket to initialize.
  * @param[in] context_p SSL context to execute in.
  * @param[in] socket_p Socket to wrap in the SSL socket.
- * @param[in] server_side Set to 1 for server side sockets and 0 for
- *                        client side sockets.
+ * @param[in] flags Give as ``SSL_SOCKET_SERVER_SIDE`` for server side
+ *                  sockets. Otherwise 0.
+ * @param[in] server_hostname_p The server hostname used by client
+ *                              side sockets to verify the
+ *                              server. Give as NULL to skip the
+ *                              verification. Must be NULL for server
+ *                              side sockets.
  *
  * @return zero(0) or negative error code.
  */
 int ssl_socket_open(struct ssl_socket_t *self_p,
                     struct ssl_context_t *context_p,
                     void *socket_p,
-                    int server_side);
+                    int flags,
+                    const char *server_hostname_p);
 
 /**
  * Close given SSL socket.
@@ -188,5 +199,29 @@ ssize_t ssl_socket_read(struct ssl_socket_t *self_p,
  * @return Number of input bytes in the SSL socket.
  */
 ssize_t ssl_socket_size(struct ssl_socket_t *self_p);
+
+/**
+ * Get the hostname of the server.
+ *
+ * @param[in] self_p SSL socket.
+ *
+ * @return Server hostname or NULL.
+ */
+const char *ssl_socket_get_server_hostname(struct ssl_socket_t *self_p);
+
+/**
+ * Get the cipher information.
+ *
+ * @param[in] self_p SSL socket.
+ * @param[out] cipher_pp Connection cipher.
+ * @param[out] protocol_pp Connection protocol.
+ * @param[out] number_of_secret_bits_p Number of secret bits.
+ *
+ * @return zero(0) or negative error code.
+ */
+int ssl_socket_get_cipher(struct ssl_socket_t *self_p,
+                          const char **cipher_pp,
+                          const char **protocol_pp,
+                          int *number_of_secret_bits_p);
 
 #endif

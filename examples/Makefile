@@ -48,6 +48,8 @@ EXAMPLES = \
 	queue \
 	shell \
 	spi \
+	ssl_client \
+	ssl_server \
 	synthesizer \
 	timer \
 	usb

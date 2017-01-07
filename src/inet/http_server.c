@@ -294,7 +294,8 @@ static void *connection_main(void *arg_p)
                 ssl_socket_open(&connection_p->ssl_socket,
                                 self_p->ssl_context_p,
                                 &connection_p->socket,
-                                1);
+                                SSL_SOCKET_SERVER_SIDE,
+                                NULL);
             }
 #endif
 

@@ -48,6 +48,7 @@ void mbedtls_ssl_cookie_init(mbedtls_ssl_cookie_ctx *ctx_p)
 
 void mbedtls_ssl_init(mbedtls_ssl_context *ssl_p)
 {
+    ssl_p->hostname = NULL;
 }
 
 void mbedtls_ssl_config_init(mbedtls_ssl_config *conf_p)
@@ -206,4 +207,22 @@ uint32_t mbedtls_ssl_get_verify_result(const mbedtls_ssl_context *ssl_p)
 
 void mbedtls_ssl_conf_authmode(mbedtls_ssl_config *conf_p, int authmode)
 {
+}
+
+const char *mbedtls_ssl_get_ciphersuite( const mbedtls_ssl_context *ssl )
+{
+    return ("TLS-RSA-WITH-AES-256-GCM-SHA384");
+}
+
+const char *mbedtls_ssl_get_version( const mbedtls_ssl_context *ssl )
+{
+    return ("TLSv1.1");
+}
+
+int mbedtls_ssl_set_hostname(mbedtls_ssl_context *ssl_p,
+                             const char *hostname_p)
+{
+    ssl_p->hostname = (char *)hostname_p;
+    
+    return (0);
 }

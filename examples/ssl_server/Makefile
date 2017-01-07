@@ -29,7 +29,7 @@
 #
 
 NAME = ssl_server
-BOARD ?= linux
+BOARD ?= nano32
 
 CDEFS += \
 	CONFIG_MINIMAL_SYSTEM=1 \

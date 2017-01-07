@@ -234,18 +234,21 @@ int ssl_context_set_verify_mode(struct ssl_context_t *self_p,
 int ssl_socket_open(struct ssl_socket_t *self_p,
                     struct ssl_context_t *context_p,
                     void *socket_p,
-                    int server_side)
+                    int flags,
+                    const char *server_hostname_p)
 {
     ASSERTN(module.initialized == 1, -EINVAL);
     ASSERTN(self_p != NULL, -EINVAL);
     ASSERTN(context_p != NULL, -EINVAL);
     ASSERTN(context_p->conf_p != NULL, -EINVAL);
     ASSERTN(socket_p != NULL, -EINVAL);
-    ASSERTN((server_side == 0) || (server_side == 1), -EINVAL);
 
     int res;
     int authmode;
+    int server_side;
 
+    server_side = (flags & SSL_SOCKET_SERVER_SIDE);
+    
     /* This implementation can only handle a single socket mode,
        server or client, in a context. Which mode to configure is
        first known in this function, so the context cannot be
@@ -298,6 +301,16 @@ int ssl_socket_open(struct ssl_socket_t *self_p,
                         ssl_recv,
                         NULL);
 
+    /* Server hostname for client side sockets. */
+    if (server_side == 0) {
+        if (server_hostname_p != NULL) {
+            if (mbedtls_ssl_set_hostname(self_p->ssl_p,
+                                         server_hostname_p) != 0) {
+                goto err2;
+            }
+        }
+    }
+    
     /* Perform the handshake with the remote peer. */
     res = mbedtls_ssl_handshake(self_p->ssl_p);
 
@@ -367,4 +380,21 @@ ssize_t ssl_socket_size(struct ssl_socket_t *self_p)
 
     return (mbedtls_ssl_get_bytes_avail(self_p->ssl_p)
             + chan_size(self_p->socket_p));
+}
+
+const char *ssl_socket_get_server_hostname(struct ssl_socket_t *self_p)
+{
+    return (((mbedtls_ssl_context *)self_p->ssl_p)->hostname);
+}
+
+int ssl_socket_get_cipher(struct ssl_socket_t *self_p,
+                          const char **cipher_pp,
+                          const char **protocol_pp,
+                          int *number_of_secret_bits_p)
+{
+    *cipher_pp = mbedtls_ssl_get_ciphersuite(self_p->ssl_p);
+    *protocol_pp = mbedtls_ssl_get_version(self_p->ssl_p);
+    *number_of_secret_bits_p = -1;
+    
+    return (0);
 }

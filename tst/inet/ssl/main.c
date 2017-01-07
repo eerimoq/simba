@@ -37,6 +37,10 @@ static int test_client(struct harness_t *harness_p)
     struct socket_t socket;
     struct inet_addr_t addr;
     char buf[8];
+    const char *server_hostname_p;
+    const char *cipher_p;
+    const char *protocol_p;
+    int number_of_secret_bits;
 
     /* Create a context with default settings. */
     BTASSERT(ssl_context_init(&context, ssl_protocol_tls_v1_0) == 0);
@@ -53,10 +57,26 @@ static int test_client(struct harness_t *harness_p)
     BTASSERT(socket_connect(&socket, &addr) == 0);
 
     /* Wrap the socket in SSL. */
-    BTASSERT(ssl_socket_open(&ssl_socket, &context, &socket, 0) == 0);
+    BTASSERT(ssl_socket_open(&ssl_socket,
+                             &context,
+                             &socket,
+                             0,
+                             "client_foo") == 0);
 
+    /* Test a few functions. */
     BTASSERT(ssl_socket_size(&ssl_socket) == 0);
-    
+
+    server_hostname_p = ssl_socket_get_server_hostname(&ssl_socket);
+    BTASSERT(strcmp(server_hostname_p, "client_foo") == 0);
+
+    BTASSERT(ssl_socket_get_cipher(&ssl_socket,
+                                   &cipher_p,
+                                   &protocol_p,
+                                   &number_of_secret_bits) == 0);
+    BTASSERT(strcmp(cipher_p, "TLS-RSA-WITH-AES-256-GCM-SHA384") == 0);
+    BTASSERT(strcmp(protocol_p, "TLSv1.1") == 0);
+    BTASSERT(number_of_secret_bits == -1);
+
     /* Transfer data to and from the server. */
     BTASSERT(ssl_socket_write(&ssl_socket, "hello", 6) == 6);
     BTASSERT(ssl_socket_read(&ssl_socket, &buf[0], 8) == 8);
@@ -82,7 +102,11 @@ static int test_server(struct harness_t *harness_p)
     char buf[8];
     static char certificate[] = "";
     static char key[] = "";
-    
+    const char *server_hostname_p;
+    const char *cipher_p;
+    const char *protocol_p;
+    int number_of_secret_bits;
+
     /* Create a context with default settings. */
     BTASSERT(ssl_context_init(&context, ssl_protocol_tls_v1_0) == 0);
     BTASSERT(ssl_context_load_cert_chain(&context,
@@ -95,9 +119,25 @@ static int test_server(struct harness_t *harness_p)
     BTASSERT(socket_accept(&listener, &socket, &addr) == 0);
 
     /* Wrap the socket in SSL. */
-    BTASSERT(ssl_socket_open(&ssl_socket, &context, &socket, 1) == 0);
+    BTASSERT(ssl_socket_open(&ssl_socket,
+                             &context,
+                             &socket,
+                             SSL_SOCKET_SERVER_SIDE,
+                             NULL) == 0);
 
+    /* Test a few functions. */
     BTASSERT(chan_size(&ssl_socket) == 0);
+
+    server_hostname_p = ssl_socket_get_server_hostname(&ssl_socket);
+    BTASSERT(server_hostname_p == NULL);
+
+    BTASSERT(ssl_socket_get_cipher(&ssl_socket,
+                                   &cipher_p,
+                                   &protocol_p,
+                                   &number_of_secret_bits) == 0);
+    BTASSERT(strcmp(cipher_p, "TLS-RSA-WITH-AES-256-GCM-SHA384") == 0);
+    BTASSERT(strcmp(protocol_p, "TLSv1.1") == 0);
+    BTASSERT(number_of_secret_bits == -1);
 
     /* Transfer data to and from the server. */
     BTASSERT(chan_read(&ssl_socket, &buf[0], 6) == 6);
@@ -128,10 +168,14 @@ static int test_client_server_context(struct harness_t *harness_p)
     BTASSERT(socket_open_tcp(&socket) == 0);
 
     /* Wrap the socket in SSL, as a client. */
-    BTASSERT(ssl_socket_open(&ssl_socket, &context, &socket, 0) == 0);
+    BTASSERT(ssl_socket_open(&ssl_socket, &context, &socket, 0, NULL) == 0);
 
     /* Wrap the socket in SSL, as a server. Should fail. */
-    BTASSERT(ssl_socket_open(&ssl_socket, &context, &socket, 1) == -1);
+    BTASSERT(ssl_socket_open(&ssl_socket,
+                             &context,
+                             &socket,
+                             SSL_SOCKET_SERVER_SIDE,
+                             NULL) == -1);
 
     /* Close the SSL connection. */
     BTASSERT(ssl_socket_close(&ssl_socket) == 0);
@@ -153,7 +197,7 @@ int main()
 
     sys_start();
     ssl_module_init();
-    
+
     harness_init(&harness);
     harness_run(&harness, harness_testcases);
 
