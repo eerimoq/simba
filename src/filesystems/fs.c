@@ -208,24 +208,52 @@ static int cmd_write_cb(int argc,
 {
     struct fs_file_t file;
     size_t size;
+    char data;
 
-    if (argc != 3) {
-        std_fprintf(chout_p, FSTR("Usage: %s <file> <data>\r\n"), argv[0]);
+    if (argc < 2) {
+        std_fprintf(chout_p, FSTR("Usage: %s <file> [<data>]\r\n"), argv[0]);
+
         return (-1);
     }
 
     if (fs_open(&file, argv[1], FS_CREAT | FS_TRUNC | FS_RDWR) != 0) {
         std_fprintf(chout_p, FSTR("Failed to open %s.\r\n"), argv[1]);
+
         return (-1);
     }
 
-    size = strlen(argv[2]);
+    if (argc == 3) {
+        size = strlen(argv[2]);
 
-    if (fs_write(&file, argv[2], size) != size) {
-        std_fprintf(chout_p, FSTR("Failed to write %s to the file.\r\n"), argv[2]);
-        return (-1);
+        if (fs_write(&file, argv[2], size) != size) {
+            std_fprintf(chout_p, FSTR("Failed to write to %s.\r\n"), argv[1]);
+        }
+    } else {
+        std_fprintf(chout_p, FSTR("Paste mode. Ctrl-D to finish.\r\n"));
+        size = 0;
+
+        while (1) {
+            if (chan_read(chin_p, &data, sizeof(data)) != sizeof(data)) {
+                break;
+            }
+
+            /* Finish on Ctrl-D. */
+            if (data == 4) {
+                break;
+            }
+
+            if (fs_write(&file, &data, sizeof(data)) != sizeof(data)) {
+                std_fprintf(chout_p, FSTR("Failed to write to %s.\r\n"), argv[1]);
+                goto err;
+            }
+
+            size++;
+        }
+
+        std_fprintf(chout_p, FSTR("Wrote %u bytes to %s.\r\n"), size, argv[1]);
     }
 
+ err:
     fs_close(&file);
 
     return (0);
