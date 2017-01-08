@@ -99,8 +99,14 @@ int test_delete(struct harness_t *harness_p)
     int key;
 
     /* Delete a few nodes. */
-    for (i = 0; i < membersof(nodes) / 2; i++) {
+    for (i = 4; i < membersof(nodes) / 2; i++) {
         key = i;
+        std_printf(FSTR("Deleting node with key %d\r\n"), key);
+        BTASSERT(binary_tree_delete(&foo, key) == 0);
+    }
+
+    for (; i < membersof(nodes) - 4; i++) {
+        key = (2 * membersof(nodes) - i);
         std_printf(FSTR("Deleting node with key %d\r\n"), key);
         BTASSERT(binary_tree_delete(&foo, key) == 0);
     }
@@ -109,11 +115,17 @@ int test_delete(struct harness_t *harness_p)
     binary_tree_print(&foo);
 
     /* Delete a non-existing node. */
-    BTASSERT(binary_tree_delete(&foo, 0) == -1);
+    BTASSERT(binary_tree_delete(&foo, 4) == -1);
 
     /* Delete the rest of the nodes. */
-    for (; i < membersof(nodes); i++) {
+    for (i = membersof(nodes) - 4; i < membersof(nodes); i++) {
         key = (2 * membersof(nodes) - i);
+        std_printf(FSTR("Deleting node with key %d\r\n"), key);
+        BTASSERT(binary_tree_delete(&foo, key) == 0);
+    }
+
+    for (i = 0; i < 4; i++) {
+        key = i;
         std_printf(FSTR("Deleting node with key %d\r\n"), key);
         BTASSERT(binary_tree_delete(&foo, key) == 0);
     }
