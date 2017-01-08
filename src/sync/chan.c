@@ -32,12 +32,15 @@
 
 #define CHAN_LIST_POLLING 0x1
 
-static struct chan_t null;
+static const struct chan_t null = {
+    .read = chan_read_null,
+    .write = chan_write_null,
+    .write_isr = chan_write_null,
+    .size = chan_size_null
+};
 
 int chan_module_init(void)
 {
-    chan_init(&null, chan_read_null, chan_write_null, chan_size_null);
-
     return (0);
 }
 
@@ -279,7 +282,7 @@ void *chan_poll(void *chan_p, struct time_t *timeout_p)
 
 void *chan_null(void)
 {
-    return (&null);
+    return ((void *)&null);
 }
 
 ssize_t chan_read_null(void *self_p,
@@ -298,7 +301,8 @@ ssize_t chan_write_null(void *self_p,
 
 size_t chan_size_null(void *self_p)
 {
-    return (0);
+    /* Set to 1 because read will return immediately. */
+    return (1);
 }
 
 int chan_is_polled_isr(struct chan_t *self_p)
