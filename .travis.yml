@@ -2,6 +2,20 @@ sudo: required
 
 dist: trusty
 
+env:
+  global:
+   - secure: "V6Ti52arZCN522rtfhvmm1Iv7GEt6U41ote4GNT18zAmhytc8F3o1TfHV3sgM1Ml4bi8dmC9dQZFat1D4uDpnBYV/c/DyoRZrUrTX+MJkDGg8h1mBoFis9x9ghvJvhwnUnWZvqxvwB6tEJlevky6tYW/MMJEFXjI3vkWw/IYhf00zpp9S5zAgOXru0JlMVM2aE98P3blEzK9Fq5Zr7UD+lXKKo8vmP0eFDyYWtMOBE5Gsb9w7avblnoheQTk8YLuzwstjsxLRjssQx1p1bK2AugS9WfwCZkOYEtBxCFwWd1X9X2wSDd36QNxJ6O8YeSV2DZHeCpGQXexPTzfjoB6DCv8Qlz3EgF4kGdNhV7vD8jd1xZuSvPKL1qwNt7Z8ExsElIbmNULIYv2iio889ipMVOaf7i6r87n+1sd1E70n0vj6np6Uy/4IfNqrHhPNOBmQVYWBEw+RnGgiE4jfiJPn+XQocdPilnnNIJdZYQj1skwYZKDbwqQ5bkR8BvkSvnII646sk/F/tlDMCIGxGNFCtq2NNDVEuKW/irOsV4yQeuRQp8CTlCmkXToz0sBN0VOcsgJu/LRUxiLGKv06w4RC5J5CeFAGPjjP+moNPMogaTVkixf1VumfHafh/WaoLW3vJZjGL3O9HWo9hxrPhKCjGMyvlg4avRT1th8WtJKtvw="
+
+addons:
+  coverity_scan:
+    project:
+      name: "eerimoq/simba"
+      description: "Build submitted via Travis CI"
+    notification_email: erik.moqvist@gmail.com
+    build_command_prepend: "echo"
+    build_command:   "make -s travis -j $(cat /proc/cpuinfo | grep processor | wc -l)"
+    branch_pattern: coverity_scan
+
 before_install:
   - sudo apt-get update -qq
   - sudo apt-get install -qq parted -y
