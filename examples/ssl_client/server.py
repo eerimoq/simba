@@ -27,9 +27,10 @@ while True:
     client_sock, fromaddr = listener_sock.accept()
     ssl_client_sock = context.wrap_socket(client_sock, server_side=True)
     try:
-        print(recvall(ssl_client_sock, 6))
-        print('write: Goodbye!')
-        ssl_client_sock.send(b'Goodbye!')
+        for i in range(50):
+            print(recvall(ssl_client_sock, 6))
+            print('write: Goodbye!')
+            ssl_client_sock.send(b'Goodbye!')
     finally:
         ssl_client_sock.shutdown(socket.SHUT_RDWR)
         ssl_client_sock.close()
