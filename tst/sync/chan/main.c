@@ -109,7 +109,7 @@ static int test_null_channels(struct harness_t *harness_p)
 
     BTASSERT(chan_read(&chan, &value, 1) == -1);
     BTASSERT(chan_write(&chan, &value, 1) == 1);
-    BTASSERT(chan_size(&chan) == 0);
+    BTASSERT(chan_size(&chan) == 1);
 
     return (0);
 }
