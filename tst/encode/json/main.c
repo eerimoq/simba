@@ -334,6 +334,8 @@ static int test_array(struct harness_t *harness_p)
     /* FIXME */
     /*BTASSERT(parse("[\"a\":1]", JSON_ERROR_INVAL, 3));*/
 
+    BTASSERT(parse("[10]]", JSON_ERROR_INVAL, 3));
+
     return (0);
 }
 
@@ -359,6 +361,8 @@ static int test_primitive(struct harness_t *harness_p)
                    JSON_OBJECT, -1, -1, 1,
                    JSON_STRING, "floatVar", 1,
                    JSON_PRIMITIVE, "12.345"));
+    BTASSERT(parse(FSTR("{\"badVar\":12\x03.34}"), JSON_ERROR_INVAL, 3,
+                   JSON_OBJECT));
 
     return (0);
 }
@@ -399,6 +403,7 @@ static int test_string(struct harness_t *harness_p)
     BTASSERT(parse(FSTR("{\"a\":\"str\\uFFGFstr\"}"), JSON_ERROR_INVAL, 3));
     BTASSERT(parse(FSTR("{\"a\":\"str\\u@FfF\"}"), JSON_ERROR_INVAL, 3));
     BTASSERT(parse(FSTR("{{\"a\":[\"\\u028\"]}"), JSON_ERROR_INVAL, 4));
+    BTASSERT(parse(FSTR("{{\"a\":[\"\\X\"]}"), JSON_ERROR_INVAL, 4));
 
     return (0);
 }
@@ -735,6 +740,18 @@ static int test_dumps_fail(struct harness_t *harness_p)
     /* Too few tokens for array. */
     json_token_array(&tokens[0], 1);
     json_init(&json, tokens, 1);
+    BTASSERT(json_dumps(&json, NULL, buf) == -1);
+
+    /* Bad token type. */
+    json_token_array(&tokens[0], 1);
+    tokens[1].type = 99;
+    BTASSERT(json_init(&json, tokens, 2) == 0);
+    BTASSERT(json_dumps(&json, NULL, buf) == -1);
+    
+    /* Bad token in object key. */
+    json_token_object(&tokens[0], 1);
+    json_token_string(&tokens[1], "\x01", 1);
+    BTASSERT(json_init(&json, tokens, 2) == 0);
     BTASSERT(json_dumps(&json, NULL, buf) == -1);
 
     return (0);

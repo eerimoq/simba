@@ -135,7 +135,7 @@ static ssize_t dump_object(struct dump_t *state_p,
     std_fprintf(state_p->out_p, FSTR("{"));
     size = 2;
     delim_p = FSTR("");
-
+    
     for (i = 0; i < token_p->num_tokens; i++) {
         /* Delimiter. */
         res = std_fprintf(state_p->out_p, delim_p);
@@ -152,7 +152,7 @@ static ssize_t dump_object(struct dump_t *state_p,
         res = dump(state_p);
 
         if (res < 0) {
-            return (-1);
+            return (res);
         }
 
         size += res;
@@ -221,6 +221,10 @@ static ssize_t dump_string(struct dump_t *state_p,
     std_fprintf(state_p->out_p, FSTR("\""));
 
     for (i = 0; i < token_p->size; i++) {
+        if (!isprint((int)token_p->buf_p[i])) {
+            return (-1);
+        }
+        
         std_fprintf(state_p->out_p, FSTR("%c"), token_p->buf_p[i]);
     }
 
