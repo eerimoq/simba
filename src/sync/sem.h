@@ -2,9 +2,9 @@
  * @section License
  *
  * The MIT License (MIT)
- * 
+ *
  * Copyright (c) 2014-2016, Erik Moqvist
- * 
+ *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
  * files (the "Software"), to deal in the Software without
@@ -92,7 +92,7 @@ int sem_init(struct sem_t *self_p,
  * thread will be suspended until count is incremented by
  * `sem_give()`.
  *
- * @param[in] self_p Semaphore to get.
+ * @param[in] self_p Semaphore to take.
  * @param[in] timeout_p Timeout.
  *
  * @return zero(0) or negative error code.

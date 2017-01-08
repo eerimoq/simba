@@ -88,7 +88,7 @@ int main()
         return (-1);
     }
 
-    /* Create a listener socket. */
+    /* Create a socket. */
     if (socket_open_tcp(&sock) != 0) {
         std_printf(FSTR("socket_open_tcp() failed\r\n"));
         return (-1);
