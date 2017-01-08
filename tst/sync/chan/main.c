@@ -2,9 +2,9 @@
  * @section License
  *
  * The MIT License (MIT)
- * 
+ *
  * Copyright (c) 2014-2016, Erik Moqvist
- * 
+ *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
  * files (the "Software"), to deal in the Software without
@@ -114,12 +114,36 @@ static int test_null_channels(struct harness_t *harness_p)
     return (0);
 }
 
+static int test_list(struct harness_t *harness_p)
+{
+    struct chan_list_t list;
+    void *workspace[1];
+    struct chan_t chan[2];
+
+    BTASSERT(chan_init(&chan[0],
+                       chan_read_null,
+                       chan_write_null,
+                       chan_size_null) == 0);
+    BTASSERT(chan_init(&chan[1],
+                       chan_read_null,
+                       chan_write_null,
+                       chan_size_null) == 0);
+
+    BTASSERT(chan_list_init(&list, &workspace[0], sizeof(workspace)) == 0);
+    BTASSERT(chan_list_add(&list, &chan[0]) == 0);
+    BTASSERT(chan_list_add(&list, &chan[1]) == -ENOMEM);
+    BTASSERT(chan_list_remove(&list, &chan[1]) == -1);
+
+    return (0);
+}
+
 int main()
 {
     struct harness_t harness;
     struct harness_testcase_t harness_testcases[] = {
         { test_filter, "test_filter" },
         { test_null_channels, "test_null_channels" },
+        { test_list, "test_list" },
         { NULL, NULL }
     };
 
