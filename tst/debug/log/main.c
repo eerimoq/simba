@@ -35,6 +35,15 @@ struct command_t {
     int res;
 };
 
+int test_init(struct harness_t *harness_p)
+{
+    /* Call init two times. */
+    BTASSERT(log_module_init() == 0);
+    BTASSERT(log_module_init() == 0);
+
+    return (0);
+}
+
 int test_print(struct harness_t *harness_p)
 {
     struct log_object_t foo;
@@ -190,6 +199,7 @@ int main()
 {
     struct harness_t harness;
     struct harness_testcase_t harness_testcases[] = {
+        { test_init, "test_init" },
         { test_print, "test_print" },
         { test_object, "test_object" },
         { test_handler, "test_handler" },
@@ -199,7 +209,7 @@ int main()
     };
 
     sys_start();
-
+    
     harness_init(&harness);
     harness_run(&harness, harness_testcases);
 
