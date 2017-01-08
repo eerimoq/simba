@@ -67,12 +67,12 @@
 #define DAYS_PER_100Y (365L*100L + 24L)
 #define DAYS_PER_4Y   (365L*4L   + 1L)
 
-struct state_t {
+struct module_t {
     uint64_t tick; /* Current tick. 64 bits so it does not wrap around
                       during the system's uptime. */
 };
 
-static struct state_t state = {
+static struct module_t module = {
     .tick = 0
 };
 
@@ -90,7 +90,7 @@ static inline void tick_to_time(uint64_t tick,
  */
 void RAM_CODE time_tick_isr(void)
 {
-    state.tick += 1;
+    module.tick += 1;
 }
 
 int time_get(struct time_t *now_p)
@@ -100,7 +100,7 @@ int time_get(struct time_t *now_p)
     uint64_t tick;
 
     sys_lock();
-    tick = state.tick;
+    tick = module.tick;
     sys_unlock();
 
     tick_to_time(tick, now_p);
@@ -119,7 +119,7 @@ int time_set(struct time_t *new_p)
                       * CONFIG_SYSTEM_TICK_FREQUENCY), 1000000));
 
     sys_lock();
-    state.tick = tick;
+    module.tick = tick;
     sys_unlock();
 
     return (0);
