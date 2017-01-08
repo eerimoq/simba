@@ -38,7 +38,7 @@ struct monitor_t {
 };
 
 static struct monitor_t monitor = {
-    .period_us = 2000000,
+    .period_us = CONFIG_MONITOR_THREAD_PERIOD_US,
     .print = 0
 };
 

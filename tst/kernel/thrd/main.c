@@ -279,6 +279,54 @@ static int test_stack_top_bottom(struct harness_t *harness_p)
     return (0);
 }
 
+static int test_monitor_thread(struct harness_t *harness_p)
+{
+#if CONFIG_MONITOR_THREAD == 1
+    char command[64];
+
+    /* Missing print value. */
+    strcpy(command, "/kernel/thrd/monitor/set_print");
+    BTASSERT(fs_call(command, NULL, sys_get_stdout(), NULL) == -EINVAL);
+
+    /* Bad print integer value. */
+    strcpy(command, "/kernel/thrd/monitor/set_print 2");
+    BTASSERT(fs_call(command, NULL, sys_get_stdout(), NULL) == -EINVAL);
+
+    /* Bad print value. */
+    strcpy(command, "/kernel/thrd/monitor/set_print foo");
+    BTASSERT(fs_call(command, NULL, sys_get_stdout(), NULL) == -EINVAL);
+
+    /* Start printing. */
+    strcpy(command, "/kernel/thrd/monitor/set_print 1");
+    BTASSERT(fs_call(command, NULL, sys_get_stdout(), NULL) == 0);
+
+    /* Wait a while for monitor thread output.*/
+    thrd_sleep_ms(30);
+
+    strcpy(command, "/kernel/thrd/monitor/set_period_ms 10");
+    BTASSERT(fs_call(command, NULL, chan_null(), NULL) == 0);
+
+    /* Wait a while for monitor thread output.*/
+    thrd_sleep_ms(30);
+
+    /* Stop printing. */
+    strcpy(command, "/kernel/thrd/monitor/set_print 0");
+    BTASSERT(fs_call(command, NULL, sys_get_stdout(), NULL) == 0);
+
+    /* Missing period. */
+    strcpy(command, "/kernel/thrd/monitor/set_period_ms");
+    BTASSERT(fs_call(command, NULL, chan_null(), NULL) == -EINVAL);
+
+    /* Bad period. */
+    strcpy(command, "/kernel/thrd/monitor/set_period_ms bar");
+    BTASSERT(fs_call(command, NULL, chan_null(), NULL) == -EINVAL);
+
+    return (0);
+#else
+    return (1);
+#endif
+}
+
 int main()
 {
     struct harness_t harness;
@@ -292,6 +340,7 @@ int main()
         { test_env, "test_env" },
         { test_get_by_name, "test_get_by_name" },
         { test_stack_top_bottom, "test_stack_top_bottom" },
+        { test_monitor_thread, "test_monitor_thread" },
         { NULL, NULL }
     };
 
