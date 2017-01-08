@@ -106,14 +106,30 @@ ssize_t socket_write(struct socket_t *self_p,
                      const void *buf_p,
                      size_t size)
 {
-    return (0);
+    if (size == 6) {
+        return (6);
+    }
+
+    if (size == 8) {
+        return (8);
+    }
+
+    return (-1);
 }
 
 ssize_t socket_read(struct socket_t *self_p,
                     void *buf_p,
                     size_t size)
 {
-    return (0);
+    if (size == 8) {
+        strcpy((char *)buf_p, "goodbye");
+        return (8);
+    } else if (size == 6) {
+        strcpy((char *)buf_p, "hello");
+        return (6);
+    }
+
+    return (-1);
 }
 
 ssize_t socket_size(struct socket_t *self_p)
