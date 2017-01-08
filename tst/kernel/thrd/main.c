@@ -44,6 +44,15 @@ static void *suspend_resume_main(void *arg_p)
     return (NULL);
 }
 
+static int test_init(struct harness_t *harness_p)
+{
+    /* This function may be called multiple times. */
+    BTASSERT(thrd_module_init() == 0);
+    BTASSERT(thrd_module_init() == 0);
+
+    return (0);
+}
+
 static int test_suspend_resume(struct harness_t *harness_p)
 {
     int err;
@@ -99,7 +108,20 @@ static int test_log_mask(struct harness_t *harness_p)
     BTASSERT(thrd_get_log_mask() == 0x00);
 
     strcpy(command, "/kernel/thrd/set_log_mask main 0xff");
-    BTASSERT(fs_call(command, NULL, chan_null(), NULL) == 0);
+    BTASSERT(fs_call(command, NULL, sys_get_stdout(), NULL) == 0);
+    BTASSERT(thrd_get_log_mask() == 0xff);
+
+    /* Invalid arguments. */
+    strcpy(command, "/kernel/thrd/set_log_mask");
+    BTASSERT(fs_call(command, NULL, sys_get_stdout(), NULL) == -EINVAL);
+    BTASSERT(thrd_get_log_mask() == 0xff);
+
+    strcpy(command, "/kernel/thrd/set_log_mask foo bar");
+    BTASSERT(fs_call(command, NULL, sys_get_stdout(), NULL) == -ESRCH);
+    BTASSERT(thrd_get_log_mask() == 0xff);
+
+    strcpy(command, "/kernel/thrd/set_log_mask main foo");
+    BTASSERT(fs_call(command, NULL, sys_get_stdout(), NULL) == -EINVAL);
     BTASSERT(thrd_get_log_mask() == 0xff);
 
     return (0);
@@ -327,10 +349,19 @@ static int test_monitor_thread(struct harness_t *harness_p)
 #endif
 }
 
+static int test_stack_heap(struct harness_t *harness_p)
+{
+    BTASSERT(thrd_stack_alloc(1) == NULL);
+    BTASSERT(thrd_stack_free(NULL) == -1);
+    
+    return (0);
+}
+
 int main()
 {
     struct harness_t harness;
     struct harness_testcase_t harness_testcases[] = {
+        { test_init, "test_init" },
         { test_suspend_resume, "test_suspend_resume" },
         { test_yield, "test_yield" },
         { test_sleep, "test_sleep" },
@@ -341,6 +372,7 @@ int main()
         { test_get_by_name, "test_get_by_name" },
         { test_stack_top_bottom, "test_stack_top_bottom" },
         { test_monitor_thread, "test_monitor_thread" },
+        { test_stack_heap, "test_stack_heap" },
         { NULL, NULL }
     };
 
