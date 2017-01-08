@@ -1491,6 +1491,13 @@
 #endif
 
 /**
+ * Console UART baudrate.
+ */
+#ifndef CONFIG_START_CONSOLE_UART_RX_BUFFER_SIZE
+#    define CONFIG_START_CONSOLE_UART_RX_BUFFER_SIZE       32
+#endif
+
+/**
  * Console USB CDC control interface number.
  */
 #ifndef CONFIG_START_CONSOLE_USB_CDC_CONTROL_INTERFACE

@@ -36,7 +36,7 @@ struct module_t {
     int initialized;
     struct {
         struct uart_driver_t uart;
-        char rxbuf[32];
+        char rxbuf[CONFIG_START_CONSOLE_UART_RX_BUFFER_SIZE];
     } console;
 };
 
