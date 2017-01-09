@@ -114,7 +114,6 @@ static FAR const uint16_t ccitt_tab[256] = {
 uint32_t crc_32(uint32_t crc, const void *buf_p, size_t size)
 {
     ASSERTN(buf_p != NULL, EINVAL);
-    ASSERTN(size >= 0, EINVAL);
 
     const uint8_t *b_p;
 
@@ -131,7 +130,6 @@ uint32_t crc_32(uint32_t crc, const void *buf_p, size_t size)
 uint16_t crc_ccitt(uint16_t crc, const void *buf_p, size_t size)
 {
     ASSERTN(buf_p != NULL, EINVAL);
-    ASSERTN(size >= 0, EINVAL);
 
     size_t i;
     const uint8_t *b_p;

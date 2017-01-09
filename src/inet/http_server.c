@@ -56,6 +56,7 @@ static int read_initial_request_line(void *chan_p,
     char *action_p = NULL;
     char *path_p = NULL;
     char *proto_p = NULL;
+    size_t size;
 
     *buf_p++ = '\0';
     action_p = buf_p;
@@ -95,8 +96,10 @@ static int read_initial_request_line(void *chan_p,
                      FSTR("%s %s %s\r\n"), action_p, path_p, proto_p);
 
     /* Save the action and path in the request struct. */
-    strcpy(request_p->path, path_p);
-
+    size = sizeof(request_p->path);
+    strncpy(request_p->path, path_p, size - 1);
+    request_p->path[size - 1] = '\0';
+    
     if (strcmp(action_p, "GET") == 0) {
         request_p->action = http_server_request_action_get_t;
     } else if (strcmp(action_p, "POST") == 0) {
@@ -155,6 +158,7 @@ static int read_request(struct http_server_t *self_p,
     char buf[128];
     char *header_p;
     char *value_p;
+    size_t size;
 
     /* Read the intial line in the request. */
     if (read_initial_request_line(connection_p->chan_p,
@@ -183,23 +187,23 @@ static int read_request(struct http_server_t *self_p,
         /* Save the header field in the request object. */
         if (strcmp(header_p, "Sec-WebSocket-Key") == 0) {
             request_p->headers.sec_websocket_key.present = 1;
-            strncpy(request_p->headers.sec_websocket_key.value,
-                    value_p,
-                    sizeof(request_p->headers.sec_websocket_key.value));
+            size = sizeof(request_p->headers.sec_websocket_key.value);
+            strncpy(request_p->headers.sec_websocket_key.value, value_p, size - 1);
+            request_p->headers.sec_websocket_key.value[size - 1] = '\0';
         } else if (strcmp(header_p, "Content-Type") == 0) {
             request_p->headers.content_type.present = 1;
-            strncpy(request_p->headers.content_type.value,
-                    value_p,
-                    sizeof(request_p->headers.content_type.value));
+            size = sizeof(request_p->headers.content_type.value);
+            strncpy(request_p->headers.content_type.value, value_p, size - 1);
+            request_p->headers.content_type.value[size - 1] = '\0';
         } else if (strcmp(header_p, "Content-Length") == 0) {
             if (std_strtol(value_p, &request_p->headers.content_length.value) != NULL) {
                 request_p->headers.content_length.present = 1;
             }
         } else if (strcmp(header_p, "Authorization") == 0) {
             request_p->headers.authorization.present = 1;
-            strncpy(request_p->headers.authorization.value,
-                    value_p,
-                    sizeof(request_p->headers.authorization.value));
+            size = sizeof(request_p->headers.authorization.value);
+            strncpy(request_p->headers.authorization.value, value_p, size - 1);
+            request_p->headers.authorization.value[size - 1] = '\0';
         }
     }
 
