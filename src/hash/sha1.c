@@ -123,7 +123,6 @@ int sha1_update(struct sha1_t *self_p,
 {
     ASSERTN(self_p != NULL, EINVAL);
     ASSERTN(buf_p != NULL, EINVAL);
-    ASSERTN(size >= 0, EINVAL);
 
     uint32_t temp;
     uint8_t *b_p = buf_p;

@@ -1251,7 +1251,6 @@ ssize_t fat16_file_read(struct fat16_file_t *file_p,
 
         file_p->cur_position += n;
         dst_p += n;
-        src_p += n;
         left -= n;
     }
 
@@ -1645,18 +1644,16 @@ int fat16_stat(struct fat16_t *self_p,
     if (fat16_file_open(self_p, &file, path_p, O_READ) == 0) {
         stat_p->size = file.file_size;
         stat_p->is_dir = 0;
-        fat16_file_close(&file);
 
-        return (0);
+        return (fat16_file_close(&file));
     }
 
     /* Try to open given path as a directory. */
     if (fat16_dir_open(self_p, &dir, path_p, O_READ) == 0) {
         stat_p->size = dir.file.file_size;
         stat_p->is_dir = 1;
-        fat16_dir_close(&dir);
-        
-        return (0);
+
+        return (fat16_dir_close(&dir));
     }
     
     return (-1);
