@@ -259,6 +259,10 @@ static int compile_repetition(struct compile_t *self_p,
 {
     int code_size;
 
+    if (self_p->current_repetition_op_code_p == NULL) {
+        return (-1);
+    }
+
     if (self_p->pattern_p[1] == '?') {
         op_code += NON_GREEDY_OFFSET;
         self_p->pattern_p++;
@@ -310,6 +314,10 @@ static int compile_zero_or_one(struct compile_t *self_p)
 {
     int op_code = OP_CODE_ZERO_OR_ONE;
     int code_size;
+
+    if (self_p->current_repetition_op_code_p == NULL) {
+        return (-1);
+    }
 
     if (self_p->compiled_left < 2) {
         return (-1);
