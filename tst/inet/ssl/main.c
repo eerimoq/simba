@@ -30,6 +30,15 @@
 
 #include "simba.h"
 
+static int test_init(struct harness_t *harness)
+{
+    /* This function may be called multiple times. */
+    BTASSERT(ssl_module_init() == 0);
+    BTASSERT(ssl_module_init() == 0);
+    
+    return (0);
+}
+
 static int test_client(struct harness_t *harness_p)
 {
     struct ssl_context_t context;
@@ -48,6 +57,7 @@ static int test_client(struct harness_t *harness_p)
                                          ssl_verify_mode_cert_none_t) == 0);
     BTASSERT(ssl_context_set_verify_mode(&context,
                                          ssl_verify_mode_cert_required_t) == 0);
+    BTASSERT(ssl_context_load_verify_location(&context, "foo") == 0);
 
     /* Create a socket and connect to the server. */
     BTASSERT(socket_open_tcp(&socket) == 0);
@@ -185,13 +195,57 @@ static int test_client_server_context(struct harness_t *harness_p)
     return (0);
 }
 
+static int test_errors(struct harness_t *harness_p)
+{
+    struct ssl_context_t context;
+    struct ssl_context_t context2;
+    struct ssl_socket_t ssl_socket;
+    struct ssl_socket_t ssl_socket2;
+    struct socket_t socket;
+
+    /* Out of resources. */
+    BTASSERT(ssl_context_init(&context, ssl_protocol_tls_v1_0) == 0);
+    BTASSERT(ssl_context_init(&context2, ssl_protocol_tls_v1_0) == -1);
+
+    /* Out of resources. */
+    BTASSERT(ssl_socket_open(&ssl_socket,
+                             &context,
+                             &socket,
+                             0,
+                             NULL) == 0);
+    BTASSERT(ssl_socket_open(&ssl_socket2,
+                             &context,
+                             &socket,
+                             0,
+                             NULL) == -1);
+    BTASSERT(ssl_socket_close(&ssl_socket) == 0);
+
+    /* Setup failure in setup. */
+    BTASSERT(ssl_socket_open(&ssl_socket,
+                             &context,
+                             &socket,
+                             0,
+                             NULL) == -1);
+
+    /* Setup failure in handover. */
+    BTASSERT(ssl_socket_open(&ssl_socket,
+                             &context,
+                             &socket,
+                             0,
+                             NULL) == -1);
+    
+    return (0);
+}
+
 int main()
 {
     struct harness_t harness;
     struct harness_testcase_t harness_testcases[] = {
+        { test_init, "test_init" },
         { test_client, "test_client" },
         { test_server, "test_server" },
         { test_client_server_context, "test_client_server_context" },
+        { test_errors, "test_errors" },
         { NULL, NULL }
     };
 

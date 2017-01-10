@@ -152,6 +152,10 @@ int test_repetition(struct harness_t *harness_p)
     BTASSERT(re_match(re, "abb", 3, NULL, NULL) == 3);
     BTASSERT(re_match(re, "abc", 3, NULL, NULL) == -1);
 
+    BTASSERT(re_compile(re, "{1}", 0, sizeof(re)) == NULL);
+    BTASSERT(re_compile(re, "*", 0, sizeof(re)) == NULL);
+    BTASSERT(re_compile(re, "+", 0, sizeof(re)) == NULL);
+
     return (0);
 }
 
@@ -362,6 +366,8 @@ int test_compile(struct harness_t *harness_p)
 
     BTASSERT(re_compile(re, "a", 0, 4) != NULL);
     BTASSERT(re_compile(re, "a", 0, 2) == NULL);
+
+    BTASSERT(re_compile(re, "?", 0, 4) == NULL);
 
     return (0);
 }

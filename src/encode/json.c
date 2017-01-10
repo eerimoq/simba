@@ -2,9 +2,9 @@
  * @section License
  *
  * The MIT License (MIT)
- * 
+ *
  * Copyright (c) 2014-2016, Erik Moqvist
- * 
+ *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
  * files (the "Software"), to deal in the Software without
@@ -152,7 +152,7 @@ static ssize_t dump_object(struct dump_t *state_p,
         res = dump(state_p);
 
         if (res < 0) {
-            return (-1);
+            return (res);
         }
 
         size += res;
@@ -221,6 +221,10 @@ static ssize_t dump_string(struct dump_t *state_p,
     std_fprintf(state_p->out_p, FSTR("\""));
 
     for (i = 0; i < token_p->size; i++) {
+        if (!isprint((int)token_p->buf_p[i])) {
+            return (-1);
+        }
+
         std_fprintf(state_p->out_p, FSTR("%c"), token_p->buf_p[i]);
     }
 
@@ -507,7 +511,7 @@ static struct json_tok_t *object_get(struct json_t *self_p,
     if (object_p->type != JSON_OBJECT) {
         return (NULL);
     }
-    
+
     key_length = strlen(key_p);
 
     /* The first child token. */

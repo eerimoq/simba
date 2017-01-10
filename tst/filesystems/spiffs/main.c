@@ -180,7 +180,6 @@ static int32_t hal_read(struct spiffs_t *fs_p,
                         uint32_t size,
                         uint8_t *dst_p)
 {
-    BTASSERT(addr >= 0);
     BTASSERT(addr + size < sizeof(fs_storage));
 
     memcpy(dst_p, &fs_storage[addr], size);
@@ -193,7 +192,6 @@ static int32_t hal_write(struct spiffs_t *fs_p,
                          uint32_t size,
                          uint8_t *src_p)
 {
-    BTASSERT(addr >= 0);
     BTASSERT(addr + size < sizeof(fs_storage));
 
     memcpy(&fs_storage[addr], src_p, size);
@@ -205,7 +203,6 @@ static int32_t hal_erase(struct spiffs_t *fs_p,
                          uint32_t addr,
                          uint32_t size)
 {
-    BTASSERT(addr >= 0);
     BTASSERT(addr + size <= sizeof(fs_storage));
 
     memset(&fs_storage[addr], -1, size);

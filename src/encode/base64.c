@@ -30,6 +30,9 @@
 
 #include "simba.h"
 
+/**
+ * Index must be a number 0-64.
+ */
 static char index_to_encoded(int index)
 {
     if ((index >= 0) && (index <= 25)) {
@@ -42,11 +45,9 @@ static char index_to_encoded(int index)
         return ('+');
     } else if (index == 63) {
         return ('/');
-    } else if (index == 64) {
+    } else {
         return ('=');
     }
-
-    return (-1);
 }
 
 static int encoded_to_index(char encoded)

@@ -189,6 +189,11 @@ static int tmp_bar(int argc,
 static char qoutbuf[BUFFER_SIZE];
 static QUEUE_INIT_DECL(qout, qoutbuf, sizeof(qoutbuf));
 
+#if defined(ARCH_LINUX)
+static char qinbuf[32];
+static QUEUE_INIT_DECL(qin, qinbuf, sizeof(qinbuf));
+#endif
+
 static int read_until(char *buf_p, const char *pattern)
 {
     char c;
@@ -660,7 +665,7 @@ static int test_filesystem_commands(struct harness_t *harness_p)
 
     strcpy(buf, "/filesystems/fs/write");
     BTASSERT(fs_call(buf, NULL, &qout, NULL) == -1);
-    read_until(buf, "Usage: /filesystems/fs/write <file> <data>\r\n");
+    read_until(buf, "Usage: /filesystems/fs/write <file> [<data>]\r\n");
 
     strcpy(buf, "/filesystems/fs/append");
     BTASSERT(fs_call(buf, NULL, &qout, NULL) == -1);
@@ -689,6 +694,17 @@ static int test_filesystem_commands(struct harness_t *harness_p)
     strcpy(buf, "/filesystems/fs/read spiffsfs/cmd.txt");
     BTASSERT(fs_call(buf, NULL, &qout, NULL) == 0);
     read_until(buf, "12\r\n");
+
+    /* Write in paste mode, and read. */
+    chan_write(&qin, "First\r\nSecond\r\n\x04", 16);
+    strcpy(buf, "/filesystems/fs/write spiffsfs/cmd.txt");
+    BTASSERT(fs_call(buf, &qin, &qout, NULL) == 0);
+    read_until(buf, "Paste mode. Ctrl-D to finish.\r\n");
+    read_until(buf, "Wrote 15 bytes to spiffsfs/cmd.txt.\r\n");
+
+    strcpy(buf, "/filesystems/fs/read spiffsfs/cmd.txt");
+    BTASSERT(fs_call(buf, NULL, &qout, NULL) == 0);
+    read_until(buf, "First\r\nSecond\r\n\r\n");
 
     /* Truncate existing file. */
     strcpy(buf, "/filesystems/fs/write spiffsfs/cmd.txt 1");

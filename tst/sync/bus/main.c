@@ -33,6 +33,15 @@
 #define ID_FOO 0x0
 #define ID_BAR 0x1
 
+static int test_init(struct harness_t *harness)
+{
+    /* This function may be called multiple times. */
+    BTASSERT(bus_module_init() == 0);
+    BTASSERT(bus_module_init() == 0);
+    
+    return (0);
+}
+
 static int test_attach_detach(struct harness_t *harness)
 {
     struct bus_t bus;
@@ -160,6 +169,7 @@ int main()
 {
     struct harness_t harness;
     struct harness_testcase_t harness_testcases[] = {
+        { test_init, "test_init" },
         { test_attach_detach, "test_attach_detach" },
         { test_write_read, "test_write_read" },
         { test_multiple_ids, "test_multiple_ids" },

@@ -44,6 +44,15 @@ static void *suspend_resume_main(void *arg_p)
     return (NULL);
 }
 
+static int test_init(struct harness_t *harness_p)
+{
+    /* This function may be called multiple times. */
+    BTASSERT(thrd_module_init() == 0);
+    BTASSERT(thrd_module_init() == 0);
+
+    return (0);
+}
+
 static int test_suspend_resume(struct harness_t *harness_p)
 {
     int err;
@@ -99,7 +108,20 @@ static int test_log_mask(struct harness_t *harness_p)
     BTASSERT(thrd_get_log_mask() == 0x00);
 
     strcpy(command, "/kernel/thrd/set_log_mask main 0xff");
-    BTASSERT(fs_call(command, NULL, chan_null(), NULL) == 0);
+    BTASSERT(fs_call(command, NULL, sys_get_stdout(), NULL) == 0);
+    BTASSERT(thrd_get_log_mask() == 0xff);
+
+    /* Invalid arguments. */
+    strcpy(command, "/kernel/thrd/set_log_mask");
+    BTASSERT(fs_call(command, NULL, sys_get_stdout(), NULL) == -EINVAL);
+    BTASSERT(thrd_get_log_mask() == 0xff);
+
+    strcpy(command, "/kernel/thrd/set_log_mask foo bar");
+    BTASSERT(fs_call(command, NULL, sys_get_stdout(), NULL) == -ESRCH);
+    BTASSERT(thrd_get_log_mask() == 0xff);
+
+    strcpy(command, "/kernel/thrd/set_log_mask main foo");
+    BTASSERT(fs_call(command, NULL, sys_get_stdout(), NULL) == -EINVAL);
     BTASSERT(thrd_get_log_mask() == 0xff);
 
     return (0);
@@ -279,10 +301,67 @@ static int test_stack_top_bottom(struct harness_t *harness_p)
     return (0);
 }
 
+static int test_monitor_thread(struct harness_t *harness_p)
+{
+#if CONFIG_MONITOR_THREAD == 1
+    char command[64];
+
+    /* Missing print value. */
+    strcpy(command, "/kernel/thrd/monitor/set_print");
+    BTASSERT(fs_call(command, NULL, sys_get_stdout(), NULL) == -EINVAL);
+
+    /* Bad print integer value. */
+    strcpy(command, "/kernel/thrd/monitor/set_print 2");
+    BTASSERT(fs_call(command, NULL, sys_get_stdout(), NULL) == -EINVAL);
+
+    /* Bad print value. */
+    strcpy(command, "/kernel/thrd/monitor/set_print foo");
+    BTASSERT(fs_call(command, NULL, sys_get_stdout(), NULL) == -EINVAL);
+
+    /* Start printing. */
+    strcpy(command, "/kernel/thrd/monitor/set_print 1");
+    BTASSERT(fs_call(command, NULL, sys_get_stdout(), NULL) == 0);
+
+    /* Wait a while for monitor thread output.*/
+    thrd_sleep_ms(30);
+
+    strcpy(command, "/kernel/thrd/monitor/set_period_ms 10");
+    BTASSERT(fs_call(command, NULL, chan_null(), NULL) == 0);
+
+    /* Wait a while for monitor thread output.*/
+    thrd_sleep_ms(30);
+
+    /* Stop printing. */
+    strcpy(command, "/kernel/thrd/monitor/set_print 0");
+    BTASSERT(fs_call(command, NULL, sys_get_stdout(), NULL) == 0);
+
+    /* Missing period. */
+    strcpy(command, "/kernel/thrd/monitor/set_period_ms");
+    BTASSERT(fs_call(command, NULL, chan_null(), NULL) == -EINVAL);
+
+    /* Bad period. */
+    strcpy(command, "/kernel/thrd/monitor/set_period_ms bar");
+    BTASSERT(fs_call(command, NULL, chan_null(), NULL) == -EINVAL);
+
+    return (0);
+#else
+    return (1);
+#endif
+}
+
+static int test_stack_heap(struct harness_t *harness_p)
+{
+    BTASSERT(thrd_stack_alloc(1) == NULL);
+    BTASSERT(thrd_stack_free(NULL) == -1);
+    
+    return (0);
+}
+
 int main()
 {
     struct harness_t harness;
     struct harness_testcase_t harness_testcases[] = {
+        { test_init, "test_init" },
         { test_suspend_resume, "test_suspend_resume" },
         { test_yield, "test_yield" },
         { test_sleep, "test_sleep" },
@@ -292,6 +371,8 @@ int main()
         { test_env, "test_env" },
         { test_get_by_name, "test_get_by_name" },
         { test_stack_top_bottom, "test_stack_top_bottom" },
+        { test_monitor_thread, "test_monitor_thread" },
+        { test_stack_heap, "test_stack_heap" },
         { NULL, NULL }
     };
 

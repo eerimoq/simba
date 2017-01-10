@@ -70,7 +70,6 @@ ssize_t flash_read(struct flash_driver_t *self_p,
 {
     ASSERTN(self_p != NULL, EINVAL);
     ASSERTN(dst_p != NULL, EINVAL);
-    ASSERTN(src >= 0 , EINVAL);
     ASSERTN(size > 0, EINVAL);
 
     return (flash_port_read(self_p, dst_p, src, size));
@@ -82,7 +81,6 @@ ssize_t flash_write(struct flash_driver_t *self_p,
                     size_t size)
 {
     ASSERTN(self_p != NULL, EINVAL);
-    ASSERTN(dst >= 0, EINVAL);
     ASSERTN(src_p != NULL , EINVAL);
     ASSERTN(size > 0, EINVAL);
 
@@ -94,7 +92,6 @@ int flash_erase(struct flash_driver_t *self_p,
                 size_t size)
 {
     ASSERTN(self_p != NULL, EINVAL);
-    ASSERTN(addr >= 0, EINVAL);
     ASSERTN(size > 0, EINVAL);
 
     return (flash_port_erase(self_p, addr, size));

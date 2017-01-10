@@ -2,9 +2,9 @@
  * @section License
  *
  * The MIT License (MIT)
- * 
+ *
  * Copyright (c) 2014-2016, Erik Moqvist
- * 
+ *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
  * files (the "Software"), to deal in the Software without
@@ -30,34 +30,36 @@
 
 #include "simba.h"
 
+static struct queue_t queue[2];
+
 static THRD_STACK(t0_stack, 512);
+
 static void *t0_main(void *arg_p)
 {
     int b, c[4];
-    struct queue_t *queue_p = arg_p;
 
     thrd_set_name("t0");
 
     /* Test: test_read_write. */
     b = 1;
-    BTASSERTN(chan_write(&queue_p[0], &b, sizeof(b)) == sizeof(b), NULL);
+    BTASSERTN(chan_write(&queue[0], &b, sizeof(b)) == sizeof(b), NULL);
     BTASSERTN(b == 1, NULL);
     b = 2;
-    BTASSERTN(chan_write(&queue_p[0], &b, sizeof(b)) == sizeof(b), NULL);
+    BTASSERTN(chan_write(&queue[0], &b, sizeof(b)) == sizeof(b), NULL);
     BTASSERTN(b == 2, NULL);
     b = 3;
-    BTASSERTN(chan_write(&queue_p[0], &b, sizeof(b)) == sizeof(b), NULL);
+    BTASSERTN(chan_write(&queue[0], &b, sizeof(b)) == sizeof(b), NULL);
     BTASSERTN(b == 3, NULL);
     c[0] = 4;
     c[1] = 5;
     c[2] = 6;
     c[3] = 7;
-    BTASSERTN(chan_write(&queue_p[0], c, sizeof(c)) == sizeof(c), NULL);
+    BTASSERTN(chan_write(&queue[0], c, sizeof(c)) == sizeof(c), NULL);
     BTASSERTN(c[0] == 4, NULL);
     BTASSERTN(c[1] == 5, NULL);
     BTASSERTN(c[2] == 6, NULL);
     BTASSERTN(c[3] == 7, NULL);
-    BTASSERTN(chan_write(&queue_p[0], c, sizeof(c)) == sizeof(c), NULL);
+    BTASSERTN(chan_write(&queue[0], c, sizeof(c)) == sizeof(c), NULL);
     BTASSERTN(c[0] == 4, NULL);
     BTASSERTN(c[1] == 5, NULL);
     BTASSERTN(c[2] == 6, NULL);
@@ -70,32 +72,35 @@ static void *t0_main(void *arg_p)
     c[1] = 9;
     c[2] = 10;
     c[3] = 11;
-    BTASSERTN(chan_write(&queue_p[1], c, sizeof(c)) == sizeof(c), NULL);
+    BTASSERTN(chan_write(&queue[1], c, sizeof(c)) == sizeof(c), NULL);
 
     /* Write to chan that was polled but not read.*/
     b = 12;
-    BTASSERTN(chan_write(&queue_p[0], &b, sizeof(b)) == sizeof(b), NULL);
+    BTASSERTN(chan_write(&queue[0], &b, sizeof(b)) == sizeof(b), NULL);
 
     /* Test: test_size. */
     b = 0;
-    BTASSERTN(chan_read(&queue_p[0], &b, sizeof(b)) == sizeof(b), NULL);
+    BTASSERTN(chan_read(&queue[0], &b, sizeof(b)) == sizeof(b), NULL);
     BTASSERTN(b == 1, NULL);
 
     /* Test: test_stopped. */
-    while (queue_unused_size(&queue_p[1]) == 0) {
-        thrd_sleep_us(100);
-    }
 
+    /* Read one of the two integers the other thread writes. Tests
+       resuming the writer when a queue is stopped. */
+    BTASSERTN(chan_read(&queue[0], &b, sizeof(b)) == sizeof(b), NULL);
+    BTASSERTN(b == 2, NULL);
+    BTASSERTN(chan_size(&queue[0]) == sizeof(b), NULL);
+    BTASSERTN(queue_stop(&queue[0]) == 1, NULL);
+
+    /* Tests resuming a reader thread when stopping a queue. */
     b = 13;
-    BTASSERTN(chan_write(&queue_p[1], &b, sizeof(b)) == sizeof(b), NULL);
-    BTASSERTN(queue_stop(&queue_p[1]) == 1, NULL);
+    BTASSERTN(chan_write(&queue[1], &b, sizeof(b)) == sizeof(b), NULL);
+    BTASSERTN(queue_stop(&queue[1]) == 1, NULL);
 
     thrd_suspend(NULL);
-    
+
     return (0);
 }
-
-static struct queue_t queue[2];
 
 static int test_init(struct harness_t *harness)
 {
@@ -103,9 +108,9 @@ static int test_init(struct harness_t *harness)
 
     BTASSERT(queue_init(&queue[0], NULL, 0) == 0);
     BTASSERT(queue_init(&queue[1], NULL, 0) == 0);
-    
+
     BTASSERT((t0 = thrd_spawn(t0_main,
-                              queue,
+                              NULL,
                               1,
                               t0_stack,
                               sizeof(t0_stack))) != NULL);
@@ -188,7 +193,7 @@ static int test_size(struct harness_t *harness_p)
 
     b = 6;
     BTASSERT(queue_write(&foo, &b, sizeof(b)));
-    
+
     BTASSERT(queue_size(&foo) == sizeof(b));
     BTASSERT(queue_unused_size(&foo) == (15 - sizeof(b)));
 
@@ -207,14 +212,25 @@ static int test_stopped(struct harness_t *harness_p)
 {
     int a[2];
 
-    /* The read function returns sizeof(int) because only sizeof(int)
-       bytes were written to the queue before it was stopped by the
-       other thread. */
+    /* Write two integers, the other thread will read one and then
+       stop the queue to test the behaviour of stopping a thread with
+       active writer. */
+    a[0] = 2;
+    a[1] = 1;
+    BTASSERT(queue_write(&queue[0], &a[0], sizeof(a)) == sizeof(int));
+
+    /* The read function returns sizeof(int) because at least
+       sizeof(int) bytes were written to the queue before it was
+       stopped by the other thread. */
     BTASSERT(queue_read(&queue[1], a, sizeof(a)) == sizeof(int));
     BTASSERT(a[0] == 13);
 
-    /* The read function returns -1 because the queue is stopped. */
+    /* The read function returns 0 because the queue is stopped and no
+       data is available. */
     BTASSERT(queue_read(&queue[1], a, sizeof(a)) == 0);
+
+    /* Write to a stopped queue. */
+    BTASSERT(chan_write(&queue[1], &a[0], sizeof(a)) == -1);
 
     BTASSERT(queue_start(&queue[1]) == 0)
 
