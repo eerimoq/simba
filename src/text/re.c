@@ -339,6 +339,10 @@ static int compile_members(struct compile_t *self_p)
     int number_of_members = 0;
     int code_size;
 
+    if (self_p->current_repetition_op_code_p == NULL) {
+        return (-1);
+    }
+
     if (self_p->compiled_left < 5) {
         return (-1);
     }
