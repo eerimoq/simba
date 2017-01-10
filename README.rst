@@ -1,8 +1,8 @@
 |gitter|_
 |buildstatus|_
 |codecov|_
-|donate|_
 |coverity|_
+|donate|_
 
 Simba
 =====
