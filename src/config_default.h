@@ -1366,6 +1366,13 @@
 #endif
 
 /**
+ * Default period of the monitor thread in microseconds.
+ */
+#ifndef CONFIG_MONITOR_THREAD_PERIOD_US
+#    define CONFIG_MONITOR_THREAD_PERIOD_US           2000000
+#endif
+
+/**
  * Use a preemptive scheduler.
  */
 #ifndef CONFIG_PREEMPTIVE_SCHEDULER
