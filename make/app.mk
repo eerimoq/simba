@@ -169,7 +169,7 @@ console:
 
 report:
 	@echo "$(NAME):"
-	cat $(RUNLOG) | tr -cd '[:print:]\t\r\n' | grep "exit: test_" | python $(SIMBA_ROOT)/make/color.py || true
+	cat $(RUNLOG) | tr -cd '[:print:]\t\r\n' | egrep -e "^(exit: test|\w+_suite:)" | python $(SIMBA_ROOT)/make/color.py || true
 
 test: run
 	$(MAKE) report
