@@ -58,12 +58,6 @@ int main()
 
     std_printf(sys_get_info());
 
-#if defined(__DRIVERS_I2C_H__)
-    i2c_module_init();
-#endif
-
-    pin_module_init();
-
     /* Register the hello world command. */
     fs_command_init(&cmd_hello_world,
                     FSTR("/hello_world"),

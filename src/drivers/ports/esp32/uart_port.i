@@ -61,6 +61,8 @@ static size_t fill_tx_fifo(struct uart_driver_t *drv_p)
 static inline void tx_isr(struct uart_driver_t *drv_p,
                           struct uart_device_t *dev_p)
 {
+    portBASE_TYPE higher_prio_task_woken;
+
     /* Clear the interrupt. */
     dev_p->regs_p->INT_CLR = ESP32_UART_INT_CLR_TXFIFO_EMPTY;
 
@@ -70,7 +72,12 @@ static inline void tx_isr(struct uart_driver_t *drv_p,
         dev_p->regs_p->INT_ENA &= ~ESP32_UART_INT_ENA_TXFIFO_EMPTY;
         thrd_resume_isr(drv_p->thrd_p, 0);
 
-        xSemaphoreGiveFromISR(thrd_idle_sem, NULL);
+        higher_prio_task_woken = pdFALSE;
+        xSemaphoreGiveFromISR(thrd_idle_sem, &higher_prio_task_woken);
+
+        if (higher_prio_task_woken == pdTRUE) {
+            portYIELD_FROM_ISR() ;
+        }
     }
 }
 
@@ -78,29 +85,32 @@ static inline void rx_isr(struct uart_driver_t *drv_p,
                           struct uart_device_t *dev_p)
 {
     char c;
-    uint32_t error;
+    portBASE_TYPE higher_prio_task_woken;
 
     /* ToDo: hande errors.*/
-    error = 0;
-    c = dev_p->regs_p->FIFO;
 
-    /* Clear the interrupt. */
-    dev_p->regs_p->INT_CLR = ESP32_UART_INT_CLR_RXFIFO_FULL;
+    /* Drain the RX FIFO. Write data to the input channel. */
+    while (dev_p->regs_p->STATUS & ESP32_UART_STATUS_RXFIFO_CNT_MASK) {
+        c = dev_p->regs_p->FIFO;
 
-    /* Error frames are discarded. */
-    if (error == 0) {
-        /* Write data to the input channel. */
         if (chan_write_isr(&drv_p->chin, &c, 1) != 1) {
             fs_counter_increment(&rx_channel_overflow, 1);
         }
+    }
 
-        xSemaphoreGiveFromISR(thrd_idle_sem, NULL);
-    } else {
-        fs_counter_increment(&rx_errors, 1);
+    /* Clear the interrupt(s). */
+    dev_p->regs_p->INT_CLR = (ESP32_UART_INT_CLR_RXFIFO_TOUT
+                              | ESP32_UART_INT_CLR_RXFIFO_FULL);
+
+    higher_prio_task_woken = pdFALSE;
+    xSemaphoreGiveFromISR(thrd_idle_sem, &higher_prio_task_woken);
+
+    if (higher_prio_task_woken == pdTRUE) {
+        portYIELD_FROM_ISR() ;
     }
 }
 
-static void isr(void *arg_p)
+static RAM_CODE void isr(void *arg_p)
 {
     struct uart_device_t *dev_p;
     struct uart_driver_t *drv_p;
@@ -121,7 +131,8 @@ static void isr(void *arg_p)
             tx_isr(drv_p, dev_p);
         }
 
-        if (dev_p->regs_p->INT_ST & ESP32_UART_INT_ST_RXFIFO_FULL) {
+        if (dev_p->regs_p->INT_ST & (ESP32_UART_INT_ST_RXFIFO_TOUT
+                                     | ESP32_UART_INT_ST_RXFIFO_FULL)) {
             rx_isr(drv_p, dev_p);
         }
     }
@@ -181,9 +192,12 @@ static int uart_port_start(struct uart_driver_t *self_p)
                      | ESP32_UART_CONF0_STOP_BIT_NUM(1)
                      | ESP32_UART_CONF0_UART_ERR_WR_MASK
                      | ESP32_UART_CONF0_UART_TICK_REF_ALWAYS_ON);
-    regs_p->CONF1 = 1;
+    regs_p->CONF1 = (ESP32_UART_CONF1_RX_TOUT_EN
+                     | ESP32_UART_CONF1_RX_TOUT_THRHD(8)
+                     | ESP32_UART_CONF1_RXFIFO_FULL_THRHD(16));
 
-    regs_p->INT_ENA = (ESP32_UART_INT_ST_RXFIFO_FULL);
+    regs_p->INT_ENA = (ESP32_UART_INT_ENA_RXFIFO_TOUT
+                       | ESP32_UART_INT_ST_RXFIFO_FULL);
 
     self_p->dev_p->drv_p = self_p;
 

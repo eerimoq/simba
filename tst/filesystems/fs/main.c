@@ -109,7 +109,6 @@ static int32_t filesystem_spiffs_read(struct spiffs_t *fs_p,
                                        uint32_t size,
                                        uint8_t *dst_p)
 {
-    BTASSERT(addr >= 0);
     BTASSERT(addr + size <= sizeof(spiffs_buffer));
 
     memcpy(dst_p, &spiffs_buffer[addr], size);
@@ -125,7 +124,6 @@ static int32_t filesystem_spiffs_write(struct spiffs_t *fs_p,
                                         uint32_t size,
                                         uint8_t *src_p)
 {
-    BTASSERT(addr >= 0);
     BTASSERT(addr + size <= sizeof(spiffs_buffer));
 
     memcpy(&spiffs_buffer[addr], src_p, size);
@@ -693,7 +691,7 @@ static int test_filesystem_commands(struct harness_t *harness_p)
 
     strcpy(buf, "/filesystems/fs/read spiffsfs/cmd.txt");
     BTASSERT(fs_call(buf, NULL, &qout, NULL) == 0);
-    read_until(buf, "12\r\n");
+    read_until(buf, "12");
 
     /* Write in paste mode, and read. */
     chan_write(&qin, "First\r\nSecond\r\n\x04", 16);
@@ -704,7 +702,7 @@ static int test_filesystem_commands(struct harness_t *harness_p)
 
     strcpy(buf, "/filesystems/fs/read spiffsfs/cmd.txt");
     BTASSERT(fs_call(buf, NULL, &qout, NULL) == 0);
-    read_until(buf, "First\r\nSecond\r\n\r\n");
+    read_until(buf, "First\r\nSecond\r\n");
 
     /* Truncate existing file. */
     strcpy(buf, "/filesystems/fs/write spiffsfs/cmd.txt 1");
@@ -712,7 +710,7 @@ static int test_filesystem_commands(struct harness_t *harness_p)
 
     strcpy(buf, "/filesystems/fs/read spiffsfs/cmd.txt");
     BTASSERT(fs_call(buf, NULL, &qout, NULL) == 0);
-    read_until(buf, "1\r\n");
+    read_until(buf, "1");
 
     /* List all files in the FAT16 file system. */
     strcpy(buf, "/filesystems/fs/list fat16fs");

@@ -188,8 +188,6 @@ static int cmd_read_cb(int argc,
         chan_write(chout_p, buf, size);
     }
 
-    std_fprintf(chout_p, FSTR("\r\n"));
-
     fs_close(&file);
 
     return (0);
@@ -229,7 +227,7 @@ static int cmd_write_cb(int argc,
             std_fprintf(chout_p, FSTR("Failed to write to %s.\r\n"), argv[1]);
         }
     } else {
-        std_fprintf(chout_p, FSTR("Paste mode. Ctrl-D to finish.\r\n"));
+        std_fprintf(chout_p, FSTR("Reading, press Ctrl-D when done.\r\n"));
         size = 0;
 
         while (1) {
@@ -1799,8 +1797,8 @@ int fs_counter_init(struct fs_counter_t *self_p,
     return (0);
 }
 
-int fs_counter_increment(struct fs_counter_t *self_p,
-                         uint64_t value)
+RAM_CODE int fs_counter_increment(struct fs_counter_t *self_p,
+                                  uint64_t value)
 {
     ASSERTN(self_p != NULL, -EINVAL);
 

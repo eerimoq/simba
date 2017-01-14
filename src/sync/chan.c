@@ -2,9 +2,9 @@
  * @section License
  *
  * The MIT License (MIT)
- * 
+ *
  * Copyright (c) 2014-2016, Erik Moqvist
- * 
+ *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
  * files (the "Software"), to deal in the Software without
@@ -161,9 +161,9 @@ ssize_t chan_write(void *v_self_p,
     return (self_p->write(self_p, buf_p, size));
 }
 
-ssize_t chan_write_isr(void *self_in_p,
-                       const void *buf_p,
-                       size_t size)
+RAM_CODE ssize_t chan_write_isr(void *self_in_p,
+                                const void *buf_p,
+                                size_t size)
 {
     struct chan_t *self_p;
 
@@ -178,7 +178,7 @@ ssize_t chan_write_isr(void *self_in_p,
     return (self_p->write_isr(self_p, buf_p, size));
 }
 
-size_t chan_size(void *self_p)
+RAM_CODE size_t chan_size(void *self_p)
 {
     ASSERTN(self_p != NULL, -EINVAL);
 
@@ -301,7 +301,7 @@ size_t chan_size_null(void *self_p)
     return (1);
 }
 
-int chan_is_polled_isr(struct chan_t *self_p)
+RAM_CODE int chan_is_polled_isr(struct chan_t *self_p)
 {
     if (self_p->list_p != NULL) {
         if (self_p->list_p->flags & CHAN_LIST_POLLING) {

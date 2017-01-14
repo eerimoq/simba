@@ -1501,7 +1501,11 @@
  * Console UART baudrate.
  */
 #ifndef CONFIG_START_CONSOLE_UART_RX_BUFFER_SIZE
-#    define CONFIG_START_CONSOLE_UART_RX_BUFFER_SIZE       32
+#    if defined(BOARD_NANO32)
+#        define CONFIG_START_CONSOLE_UART_RX_BUFFER_SIZE  512
+#    else
+#        define CONFIG_START_CONSOLE_UART_RX_BUFFER_SIZE   32
+#    endif
 #endif
 
 /**
