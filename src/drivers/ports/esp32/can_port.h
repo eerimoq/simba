@@ -52,8 +52,8 @@
 struct can_device_t {
     struct can_driver_t *drv_p;
     volatile struct esp32_can_t *regs_p;
-    struct pin_device_t *tx_pin_device_p;
-    struct pin_device_t *rx_pin_device_p;
+    struct pin_device_t *tx_pin_p;
+    struct pin_device_t *rx_pin_p;
 };
 
 struct can_driver_t {

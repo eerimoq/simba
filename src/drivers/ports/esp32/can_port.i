@@ -231,8 +231,8 @@ int can_port_start(struct can_driver_t *self_p)
 
     dev_p = self_p->dev_p;
     regs_p = dev_p->regs_p;
-    tx_pin_p = dev_p->tx_pin_device_p;
-    rx_pin_p = dev_p->rx_pin_device_p;
+    tx_pin_p = dev_p->tx_pin_p;
+    rx_pin_p = dev_p->rx_pin_p;
 
     /* Enable the CAN hardware. */
     SET_PERI_REG_MASK(DPORT_PERIP_CLK_EN_REG, DPORT_CAN_CLK_EN);

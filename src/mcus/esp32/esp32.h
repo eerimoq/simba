@@ -528,9 +528,11 @@ struct esp32_uart_t {
 #define ESP32_UART_CONF0_BIT_NUM_POS                   (2)
 #define ESP32_UART_CONF0_BIT_NUM_MASK           \
     (0x3 << ESP32_UART_CONF0_BIT_NUM_POS)
+#define ESP32_UART_CONF0_BIT_NUM(value) BITFIELD_SET(ESP32_UART_CONF0_BIT_NUM, value)
 #define ESP32_UART_CONF0_STOP_BIT_NUM_POS              (4)
 #define ESP32_UART_CONF0_STOP_BIT_NUM_MASK      \
     (0x3 << ESP32_UART_CONF0_STOP_BIT_NUM_POS)
+#define ESP32_UART_CONF0_STOP_BIT_NUM(value) BITFIELD_SET(ESP32_UART_CONF0_STOP_BIT_NUM, value)
 #define ESP32_UART_CONF0_SW_RTS                     BIT(6)
 #define ESP32_UART_CONF0_SW_DTR                     BIT(7)
 #define ESP32_UART_CONF0_TXD_BRK                    BIT(8)
@@ -544,6 +546,9 @@ struct esp32_uart_t {
 #define ESP32_UART_CONF0_UART_TXD_INV              BIT(22)
 #define ESP32_UART_CONF0_UART_RTS_INV              BIT(23)
 #define ESP32_UART_CONF0_UART_DTR_INV              BIT(24)
+#define ESP32_UART_CONF0_UART_CLK_EN               BIT(25)
+#define ESP32_UART_CONF0_UART_ERR_WR_MASK          BIT(26)
+#define ESP32_UART_CONF0_UART_TICK_REF_ALWAYS_ON   BIT(27)
 
 /* UART_CONF1. */
 #define ESP32_UART_CONF1_RX_TOUT_EN                BIT(31)
@@ -974,6 +979,8 @@ struct esp32_io_mux_t {
 #define ESP32_IO_MUX_PIN_FUNC_WPU                       BIT(8)
 #define ESP32_IO_MUX_PIN_FUNC_IE                        BIT(9)
 #define ESP32_IO_MUX_PIN_FUNC_DRV_POS                     (10)
+#define ESP32_IO_MUX_PIN_FUNC_DRV_MASK (0x3 << ESP32_IO_MUX_PIN_FUNC_DRV_POS)
+#define ESP32_IO_MUX_PIN_FUNC_DRV(value) BITFIELD_SET(ESP32_IO_MUX_PIN_FUNC_DRV, value)
 #define ESP32_IO_MUX_PIN_MCU_SEL_POS                      (12)
 #define ESP32_IO_MUX_PIN_MCU_SEL_MASK (0x7 << ESP32_IO_MUX_PIN_MCU_SEL_POS)
 #define ESP32_IO_MUX_PIN_MCU_SEL(value) BITFIELD_SET(ESP32_IO_MUX_PIN_MCU_SEL, value)
