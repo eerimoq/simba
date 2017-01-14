@@ -697,7 +697,7 @@ static int test_filesystem_commands(struct harness_t *harness_p)
     chan_write(&qin, "First\r\nSecond\r\n\x04", 16);
     strcpy(buf, "/filesystems/fs/write spiffsfs/cmd.txt");
     BTASSERT(fs_call(buf, &qin, &qout, NULL) == 0);
-    read_until(buf, "Paste mode. Ctrl-D to finish.\r\n");
+    read_until(buf, "Reading, press Ctrl-D when done.\r\n");
     read_until(buf, "Wrote 15 bytes to spiffsfs/cmd.txt.\r\n");
 
     strcpy(buf, "/filesystems/fs/read spiffsfs/cmd.txt");
