@@ -8,6 +8,8 @@ Pinout
    :width: 50%
    :target: ../_images/arduino-mega-pinout.png
 
+
+
 Default system features
 -----------------------
 
@@ -69,9 +71,9 @@ Below is the memory usage of two applications:
 +--------------------------+-----------+-----------+
 | Application              | Flash     | RAM       |
 +==========================+===========+===========+
-| minimal-configuration    |      2586 |       335 |
+| minimal-configuration    |      2506 |       317 |
 +--------------------------+-----------+-----------+
-| default-configuration    |     67718 |      3576 |
+| default-configuration    |     67934 |      3558 |
 +--------------------------+-----------+-----------+
 
 Default configuration
@@ -276,6 +278,8 @@ Default Standard Library configuration.
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_MONITOR_THREAD_                                |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_MONITOR_THREAD_PERIOD_US_                      |  2000000                                            |
++--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_NRF24L01_                                      |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_OWI_                                           |  1                                                  |
@@ -317,6 +321,8 @@ Default Standard Library configuration.
 |  CONFIG_START_CONSOLE_DEVICE_INDEX_                    |  0                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_START_CONSOLE_UART_BAUDRATE_                   |  38400                                              |
++--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_START_CONSOLE_UART_RX_BUFFER_SIZE_             |  32                                                 |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_START_CONSOLE_USB_CDC_CONTROL_INTERFACE_       |  0                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
@@ -397,8 +403,6 @@ Mcu
 ---
 
 :doc:`atmega2560<../library-reference/mcus/atmega2560>`
-
-
 
 .. _CONFIG_ADC: ../user-guide/configuration.html#c.CONFIG_ADC
 
@@ -594,6 +598,8 @@ Mcu
 
 .. _CONFIG_MONITOR_THREAD: ../user-guide/configuration.html#c.CONFIG_MONITOR_THREAD
 
+.. _CONFIG_MONITOR_THREAD_PERIOD_US: ../user-guide/configuration.html#c.CONFIG_MONITOR_THREAD_PERIOD_US
+
 .. _CONFIG_NRF24L01: ../user-guide/configuration.html#c.CONFIG_NRF24L01
 
 .. _CONFIG_OWI: ../user-guide/configuration.html#c.CONFIG_OWI
@@ -635,6 +641,8 @@ Mcu
 .. _CONFIG_START_CONSOLE_DEVICE_INDEX: ../user-guide/configuration.html#c.CONFIG_START_CONSOLE_DEVICE_INDEX
 
 .. _CONFIG_START_CONSOLE_UART_BAUDRATE: ../user-guide/configuration.html#c.CONFIG_START_CONSOLE_UART_BAUDRATE
+
+.. _CONFIG_START_CONSOLE_UART_RX_BUFFER_SIZE: ../user-guide/configuration.html#c.CONFIG_START_CONSOLE_UART_RX_BUFFER_SIZE
 
 .. _CONFIG_START_CONSOLE_USB_CDC_CONTROL_INTERFACE: ../user-guide/configuration.html#c.CONFIG_START_CONSOLE_USB_CDC_CONTROL_INTERFACE
 
