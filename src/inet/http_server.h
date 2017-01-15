@@ -54,6 +54,7 @@ enum http_server_content_type_t {
  */
 enum http_server_response_code_t {
     http_server_response_code_200_ok_t = 200,
+    http_server_response_code_400_bad_request_t = 400,
     http_server_response_code_401_unauthorized_t = 401,
     http_server_response_code_404_not_found_t = 404
 };
@@ -89,6 +90,10 @@ struct http_server_request_t {
             int present;
             char value[64];
         } authorization;
+        struct {
+            int present;
+            char value[20];
+        } expect;
     } headers;
 };
 

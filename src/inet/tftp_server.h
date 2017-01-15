@@ -38,6 +38,7 @@ struct tftp_server_t {
     struct socket_t listener;
     int timeout_ms;
     const char *name_p;
+    const char *root_p;
     void *stack_p;
     size_t stack_size;
     struct thrd_t *thrd_p;
@@ -46,17 +47,28 @@ struct tftp_server_t {
 /**
  * Initialize given TFTP server.
  *
+ * @param[in, out] self_p TFTP server to initialize.
+ * @param[in] addr_p Ip address and port of the server.
+ * @param[in] timeout_ms Packet reception timeout.
+ * @param[in] name_p Name of the server thread.
+ * @param[in] root_p File system root path.
+ * @param[in] stack_p Server thread stack.
+ * @param[in] stack_size Server thread stack size.
+ *
  * @return zero(0) or negative error code.
  */
 int tftp_server_init(struct tftp_server_t *self_p,
                      struct inet_addr_t *addr_p,
                      int timeout_ms,
                      const char *name_p,
+                     const char *root_p,
                      void *stack_p,
                      size_t stack_size);
 
 /**
  * Start given TFTP server.
+ *
+ * @param[in] self_p TFTP server to start.
  *
  * @return zero(0) or negative error code.
  */

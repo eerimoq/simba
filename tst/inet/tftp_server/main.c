@@ -53,6 +53,7 @@ static int test_start(struct harness_t *harness_p)
                               &addr,
                               50,
                               "tftp_server",
+                              NULL,
                               listener_stack,
                               sizeof(listener_stack)) == 0);
     BTASSERT(tftp_server_start(&server) == 0);

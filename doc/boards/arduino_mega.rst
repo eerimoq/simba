@@ -73,7 +73,7 @@ Below is the memory usage of two applications:
 +==========================+===========+===========+
 | minimal-configuration    |      2506 |       317 |
 +--------------------------+-----------+-----------+
-| default-configuration    |     67934 |      3558 |
+| default-configuration    |     68134 |      3620 |
 +--------------------------+-----------+-----------+
 
 Default configuration
@@ -117,6 +117,8 @@ Default Standard Library configuration.
 |  CONFIG_EXTI_                                          |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_FAT16_                                         |  1                                                  |
++--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_FILESYSTEM_GENERIC_                            |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_FLASH_                                         |  0                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
@@ -268,6 +270,8 @@ Default Standard Library configuration.
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_MODULE_INIT_UART_SOFT_                         |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_MODULE_INIT_UPGRADE_                           |  0                                                  |
++--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_MODULE_INIT_USB_                               |  0                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_MODULE_INIT_USB_DEVICE_                        |  0                                                  |
@@ -380,6 +384,24 @@ Default Standard Library configuration.
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_UART_SOFT_                                     |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_UPGRADE_APPLICATION_                           |  0                                                  |
++--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_UPGRADE_BOOTLOADER_                            |  0                                                  |
++--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_UPGRADE_HTTP_SERVER_                           |  1                                                  |
++--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_UPGRADE_HTTP_SERVER_IP_                        |  0.0.0.0                                            |
++--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_UPGRADE_HTTP_SERVER_PORT_                      |  80                                                 |
++--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_UPGRADE_TFTP_SERVER_                           |  1                                                  |
++--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_UPGRADE_TFTP_SERVER_IP_                        |  0.0.0.0                                            |
++--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_UPGRADE_TFTP_SERVER_PORT_                      |  69                                                 |
++--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_UPGRADE_TFTP_SERVER_TIMEOUT_MS_                |  3000                                               |
++--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_USB_                                           |  0                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_USB_DEVICE_                                    |  0                                                  |
@@ -437,6 +459,8 @@ Mcu
 .. _CONFIG_EXTI: ../user-guide/configuration.html#c.CONFIG_EXTI
 
 .. _CONFIG_FAT16: ../user-guide/configuration.html#c.CONFIG_FAT16
+
+.. _CONFIG_FILESYSTEM_GENERIC: ../user-guide/configuration.html#c.CONFIG_FILESYSTEM_GENERIC
 
 .. _CONFIG_FLASH: ../user-guide/configuration.html#c.CONFIG_FLASH
 
@@ -588,6 +612,8 @@ Mcu
 
 .. _CONFIG_MODULE_INIT_UART_SOFT: ../user-guide/configuration.html#c.CONFIG_MODULE_INIT_UART_SOFT
 
+.. _CONFIG_MODULE_INIT_UPGRADE: ../user-guide/configuration.html#c.CONFIG_MODULE_INIT_UPGRADE
+
 .. _CONFIG_MODULE_INIT_USB: ../user-guide/configuration.html#c.CONFIG_MODULE_INIT_USB
 
 .. _CONFIG_MODULE_INIT_USB_DEVICE: ../user-guide/configuration.html#c.CONFIG_MODULE_INIT_USB_DEVICE
@@ -699,6 +725,24 @@ Mcu
 .. _CONFIG_UART: ../user-guide/configuration.html#c.CONFIG_UART
 
 .. _CONFIG_UART_SOFT: ../user-guide/configuration.html#c.CONFIG_UART_SOFT
+
+.. _CONFIG_UPGRADE_APPLICATION: ../user-guide/configuration.html#c.CONFIG_UPGRADE_APPLICATION
+
+.. _CONFIG_UPGRADE_BOOTLOADER: ../user-guide/configuration.html#c.CONFIG_UPGRADE_BOOTLOADER
+
+.. _CONFIG_UPGRADE_HTTP_SERVER: ../user-guide/configuration.html#c.CONFIG_UPGRADE_HTTP_SERVER
+
+.. _CONFIG_UPGRADE_HTTP_SERVER_IP: ../user-guide/configuration.html#c.CONFIG_UPGRADE_HTTP_SERVER_IP
+
+.. _CONFIG_UPGRADE_HTTP_SERVER_PORT: ../user-guide/configuration.html#c.CONFIG_UPGRADE_HTTP_SERVER_PORT
+
+.. _CONFIG_UPGRADE_TFTP_SERVER: ../user-guide/configuration.html#c.CONFIG_UPGRADE_TFTP_SERVER
+
+.. _CONFIG_UPGRADE_TFTP_SERVER_IP: ../user-guide/configuration.html#c.CONFIG_UPGRADE_TFTP_SERVER_IP
+
+.. _CONFIG_UPGRADE_TFTP_SERVER_PORT: ../user-guide/configuration.html#c.CONFIG_UPGRADE_TFTP_SERVER_PORT
+
+.. _CONFIG_UPGRADE_TFTP_SERVER_TIMEOUT_MS: ../user-guide/configuration.html#c.CONFIG_UPGRADE_TFTP_SERVER_TIMEOUT_MS
 
 .. _CONFIG_USB: ../user-guide/configuration.html#c.CONFIG_USB
 

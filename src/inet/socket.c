@@ -437,8 +437,8 @@ static ssize_t udp_recv_from(struct socket_t *self_p,
 }
 
 /**
- * Copy data to the reading threads' buffer and resume the thread if
- * all requested data has been read.
+ * Copy data to the reading threads' buffer and resume the thread when
+ * all requested data has been read or the socket is closed.
  */
 static void tcp_recv_buffer(struct socket_t *socket_p)
 {
@@ -459,7 +459,7 @@ static void tcp_recv_buffer(struct socket_t *socket_p)
     args_p->buf_p += size;
     socket_p->input.u.recvfrom.left -= size;
 
-    /* Free pbuf_p if all data has been read. */
+    /* Free the pbuf_p when all data has been read. */
     if (socket_p->input.u.recvfrom.left == 0) {
         tcp_recved(socket_p->pcb_p, pbuf_p->tot_len);
         pbuf_free(pbuf_p);

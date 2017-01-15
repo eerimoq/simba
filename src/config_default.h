@@ -936,6 +936,19 @@
 #endif
 
 /**
+ * Initialize the upgrade module at system startup.
+ */
+#ifndef CONFIG_MODULE_INIT_UPGRADE
+#    if defined(CONFIG_MINIMAL_SYSTEM)
+#        define CONFIG_MODULE_INIT_UPGRADE                  0
+#    elif defined(ARCH_ESP32) || defined(ARCH_LINUX)
+#        define CONFIG_MODULE_INIT_UPGRADE                  1
+#    else
+#        define CONFIG_MODULE_INIT_UPGRADE                  0
+#    endif
+#endif
+
+/**
  * Debug file system command to list all DS18B20 sensors on the bus.
  */
 #ifndef CONFIG_FS_CMD_DS18B20_LIST
@@ -1460,6 +1473,17 @@
 #    endif
 #endif
 
+/**
+ * Generic file system.
+ */
+#ifndef CONFIG_FILESYSTEM_GENERIC
+#    if defined(CONFIG_MINIMAL_SYSTEM)
+#        define CONFIG_FILESYSTEM_GENERIC                   0
+#    else
+#        define CONFIG_FILESYSTEM_GENERIC                   1
+#    endif
+#endif
+
 #define CONFIG_START_CONSOLE_NONE                           0
 #define CONFIG_START_CONSOLE_UART                           1
 #define CONFIG_START_CONSOLE_USB_CDC                        2
@@ -1792,6 +1816,69 @@
 #    endif
 #endif
 
+#ifndef CONFIG_UPGRADE_APPLICATION
+#    define CONFIG_UPGRADE_APPLICATION                      0
+#endif
+
+#ifndef CONFIG_UPGRADE_BOOTLOADER
+#    define CONFIG_UPGRADE_BOOTLOADER                       0
+#endif
+
+/**
+ * Upgrade HTTP server.
+ */
+#ifndef CONFIG_UPGRADE_HTTP_SERVER
+#    define CONFIG_UPGRADE_HTTP_SERVER                      1
+#endif
+
+/**
+ * Upgrade TFTP server.
+ */
+#ifndef CONFIG_UPGRADE_TFTP_SERVER
+#    define CONFIG_UPGRADE_TFTP_SERVER                      1
+#endif
+
+/**
+ * The upgrade HTTP server binds to this IP address.
+ */
+#ifndef CONFIG_UPGRADE_HTTP_SERVER_IP
+#    define CONFIG_UPGRADE_HTTP_SERVER_IP             0.0.0.0
+#endif
+
+/**
+ * The upgrade HTTP server binds to this IP address.
+ */
+#ifndef CONFIG_UPGRADE_HTTP_SERVER_IP
+#    define CONFIG_UPGRADE_HTTP_SERVER_IP             0.0.0.0
+#endif
+
+/**
+ * The upgrade HTTP server binds to this port.
+ */
+#ifndef CONFIG_UPGRADE_HTTP_SERVER_PORT
+#    define CONFIG_UPGRADE_HTTP_SERVER_PORT                80
+#endif
+
+/**
+ * The upgrade TFTP server binds to this IP address.
+ */
+#ifndef CONFIG_UPGRADE_TFTP_SERVER_IP
+#    define CONFIG_UPGRADE_TFTP_SERVER_IP             0.0.0.0
+#endif
+
+/**
+ * The upgrade TFTP server binds to this port.
+ */
+#ifndef CONFIG_UPGRADE_TFTP_SERVER_PORT
+#    define CONFIG_UPGRADE_TFTP_SERVER_PORT                69
+#endif
+
+/**
+ * Packet reception timeout in the upgrade HTTP server.
+ */
+#ifndef CONFIG_UPGRADE_TFTP_SERVER_TIMEOUT_MS
+#    define CONFIG_UPGRADE_TFTP_SERVER_TIMEOUT_MS        3000
+#endif
 
 /**
  * Configuration validation.

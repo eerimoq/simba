@@ -247,6 +247,16 @@ extern "C" {
 #    include "inet/network_interface/driver/esp.h"
 #endif
 
+#if defined(FAMILY_LINUX) || defined(FAMILY_ESP32)
+#    include "oam/upgrade.h"
+#    include "oam/upgrade/application/bootloader.h"
+#    include "oam/upgrade/bootloader/application.h"
+#    include "oam/upgrade/bootloader/kermit.h"
+#    include "oam/upgrade/bootloader/uds.h"
+#    include "oam/upgrade/bootloader/http.h"
+#    include "oam/upgrade/bootloader/tftp.h"
+#endif
+    
 #ifdef __cplusplus
 }
 #endif

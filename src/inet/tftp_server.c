@@ -318,7 +318,7 @@ static int client_read_request_transfer_data(struct client_t *self_p)
             if (self_p->data.size < DATA_SIZE) {
                 log_object_print(NULL,
                                  LOG_INFO,
-                                 FSTR("%u bytes transferred\r\n"),
+                                 FSTR("Sent %u bytes.\r\n"),
                                  self_p->number_of_bytes_transferred);
                 return (0);
             }
@@ -434,7 +434,7 @@ static int client_write_request_transfer_data(struct client_t *self_p)
             if (size < DATA_SIZE) {
                 log_object_print(NULL,
                                  LOG_INFO,
-                                 FSTR("%u bytes transferred\r\n"),
+                                 FSTR("Received %u bytes.\r\n"),
                                  self_p->number_of_bytes_transferred);
                 return (0);
             }
@@ -621,11 +621,18 @@ static void *tftp_server_main(void *arg_p)
     struct inet_addr_t addr;
     ssize_t size;
     char addrbuf[16];
-
+    struct thrd_environment_variable_t env[1];
+    
     self_p = arg_p;
 
     thrd_set_name(self_p->name_p);
 
+    /* Set current working directory if given. */
+    if (self_p->root_p != NULL) {
+        thrd_init_env(&env[0], membersof(env));
+        thrd_set_env("CWD", self_p->root_p);
+    }
+    
     if (socket_open_udp(&self_p->listener) != 0) {
         return (NULL);
     }
@@ -662,6 +669,7 @@ int tftp_server_init(struct tftp_server_t *self_p,
                      struct inet_addr_t *addr_p,
                      int timeout_ms,
                      const char *name_p,
+                     const char *root_p,
                      void *stack_p,
                      size_t stack_size)
 {
@@ -673,6 +681,7 @@ int tftp_server_init(struct tftp_server_t *self_p,
     self_p->addr = *addr_p;
     self_p->timeout_ms = timeout_ms;
     self_p->name_p = name_p;
+    self_p->root_p = root_p;
     self_p->stack_p = stack_p;
     self_p->stack_size = stack_size;
 

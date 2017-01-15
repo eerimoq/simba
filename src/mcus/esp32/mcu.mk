@@ -32,6 +32,7 @@ ESP32_ROOT ?= $(SIMBA_ROOT)/3pp/esp32
 ESP_IDF_ROOT ?= $(ESP32_ROOT)/esp-idf
 
 INC += $(SIMBA_ROOT)/src/mcus/esp32 \
+       $(ESP32_ROOT)/inc/app_update/include \
        $(ESP32_ROOT)/inc/driver/include \
        $(ESP32_ROOT)/inc/esp32/include \
        $(ESP32_ROOT)/inc/newlib/include \
@@ -52,6 +53,7 @@ LIBPATH += "$(SIMBA_ROOT)/src/mcus/esp32/ld" \
 LDFLAGS += -Wl,-T$(LINKER_SCRIPT)
 
 LIB += \
+	app_update \
 	hal \
 	core \
 	net80211 \

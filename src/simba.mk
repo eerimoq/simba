@@ -401,11 +401,25 @@ MULTIMEDIA_SRC ?= midi.c
 
 SRC += $(MULTIMEDIA_SRC:%=$(SIMBA_ROOT)/src/multimedia/%)
 
-# Oam package.
-OAM_SRC ?= console.c \
-	   service.c \
-	   settings.c \
-	   shell.c
+# OAM package.
+OAM_SRC_TMP ?= \
+	console.c \
+	service.c \
+	settings.c \
+	shell.c
+
+ifeq ($(FAMILY), $(filter $(FAMILY), esp32 linux))
+OAM_SRC_TMP += \
+	upgrade.c \
+	upgrade/application/bootloader.c \
+	upgrade/bootloader/application.c \
+	upgrade/bootloader/http.c \
+	upgrade/bootloader/kermit.c \
+	upgrade/bootloader/tftp.c \
+	upgrade/bootloader/uds.c
+endif
+
+OAM_SRC ?= $(OAM_SRC_TMP)
 
 SRC += $(OAM_SRC:%=$(SIMBA_ROOT)/src/oam/%)
 
