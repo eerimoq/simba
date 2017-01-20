@@ -190,14 +190,21 @@ int chan_list_add(struct chan_list_t *list_p, void *chan_p)
     ASSERTN(list_p != NULL, -EINVAL);
     ASSERTN(chan_p != NULL, -EINVAL);
 
+    int res = 0;
+
+    sys_lock();
+
     if (list_p->len == list_p->max) {
-        return (-ENOMEM);
+        res = -ENOMEM;
+    } else {
+        list_p->chans_pp[list_p->len] = chan_p;
+        list_p->len++;
+        ((struct chan_t *)chan_p)->list_p = list_p;
     }
 
-    list_p->chans_pp[list_p->len] = chan_p;
-    list_p->len++;
+    sys_unlock();
 
-    return (0);
+    return (res);
 }
 
 int chan_list_remove(struct chan_list_t *list_p, void *chan_p)
@@ -206,16 +213,23 @@ int chan_list_remove(struct chan_list_t *list_p, void *chan_p)
     ASSERTN(chan_p != NULL, -EINVAL);
 
     int i;
+    int res = -1;
+
+    sys_lock();
 
     for (i = 0; i < list_p->len; i++) {
         if (list_p->chans_pp[i] == chan_p) {
             list_p->len--;
             list_p->chans_pp[i] = list_p->chans_pp[list_p->len];
-            return (0);
+            ((struct chan_t *)chan_p)->list_p = NULL;
+            res = 0;
+            break;
         }
     }
 
-    return (-1);
+    sys_unlock();
+
+    return (res);
 }
 
 void *chan_list_poll(struct chan_list_t *list_p,
@@ -244,7 +258,6 @@ void *chan_list_poll(struct chan_list_t *list_p,
         for (i = 0; i < list_p->len; i++) {
             chan_p = list_p->chans_pp[i];
             chan_p->reader_p = thrd_self();
-            chan_p->list_p = list_p;
         }
 
         /* No data was available, wait for data to be written to one
