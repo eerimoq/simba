@@ -140,7 +140,7 @@ int shell_init(struct shell_t *self_p,
  * @endrst
  *
  * @param[in] arg_p Pointer to the shell arguemnt struct `struct
- *                  shell_args_t`. See the struct definition for a
+ *                  shell_t`. See the struct definition for a
  *                  description of it's content.
  *
  * @return Never returns.

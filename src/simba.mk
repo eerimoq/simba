@@ -256,6 +256,7 @@ INET_SRC_TMP = \
 	http_websocket_client.c \
 	inet.c \
 	mqtt_client.c \
+	tftp_server.c \
 	network_interface.c \
 	network_interface/slip.c \
 	network_interface/wifi.c \
