@@ -18,7 +18,7 @@ File system commands
 .. code-block:: text
 
    /oam/upgrade/application/erase
-   /oam/upgrade/application/load_kermit
+   /oam/upgrade/application/kermit/load
    /oam/upgrade/application/sha1
    /oam/upgrade/bootloader/enter
 
@@ -30,6 +30,7 @@ HTTP requests
    GET /oam/upgrade/application/erase
    POST /oam/upgrade/application/write
    GET /oam/upgrade/application/sha1
+
    GET /oam/upgrade/bootloader/enter
 
 TFTP file transfer
