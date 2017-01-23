@@ -4,10 +4,13 @@
 .. module:: upgrade
    :synopsis: Software upgrade.
 
+The flash memory is partitioned into two partitions; the bootloader
+partition and the application partition. The software in the
+bootloader partition can perform a software upgrade of the application
+partition by using the erase and write commands.
+
 Bootloader
 ----------
-
-The bootloader is used to update and start the application.
 
 Four protocols are available to upload an application to the board;
 HTTP, TFTP, Kermit and UDS.
@@ -15,15 +18,20 @@ HTTP, TFTP, Kermit and UDS.
 File system commands
 ^^^^^^^^^^^^^^^^^^^^
 
+These file system commands are available to perform the application
+software upgrade.
+
 .. code-block:: text
 
    /oam/upgrade/application/erase
    /oam/upgrade/application/kermit/load
    /oam/upgrade/application/sha1
-   /oam/upgrade/bootloader/enter
 
 HTTP requests
 ^^^^^^^^^^^^^
+
+These HTTP requests are available to perform the application software
+upgrade.
 
 .. code-block:: text
 
@@ -31,15 +39,38 @@ HTTP requests
    POST /oam/upgrade/application/write
    GET /oam/upgrade/application/sha1
 
-   GET /oam/upgrade/bootloader/enter
-
 TFTP file transfer
 ^^^^^^^^^^^^^^^^^^
 
 Only write, aka "put", in binary mode is supported.
 
+Application
+-----------
+
+File system commands
+^^^^^^^^^^^^^^^^^^^^
+
+This file system command is available in the application.
+
+.. code-block:: text
+
+   /oam/upgrade/bootloader/enter
+
+HTTP requests
+^^^^^^^^^^^^^
+
+This HTTP request is available in the application; given that the
+application starts a HTTP server with it registered.
+
+.. code-block:: text
+
+   GET /oam/upgrade/bootloader/enter
+
 Examples
 --------
+
+Here are a few examples of how to upgrade the application using the
+different supported protocols.
 
 HTTP
 ^^^^
@@ -74,7 +105,7 @@ application and use curl to upload it to the Nano32. Then start it!
    > tftp 192.168.0.7
    tftp> mode binary
    tftp> put application/build/nano32/application.bin
-   5460544 bytes 
+   5460544 bytes
    tftp> q
    > kermit
    C-Kermit>connect
