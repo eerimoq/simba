@@ -36,20 +36,13 @@
 /**
  * Initialize the kermit module.
  *
- * @return zero(0) or negative error code.
- */
-int upgrade_bootloader_kermit_module_init(void);
-
-/**
- * Initialize the bootloader object.
- *
  * @param[in] chin_p Input channel.
  * @param[in] chout_p Output channel.
  *
- * @returns zero(0) or negative error code.
+ * @return zero(0) or negative error code.
  */
-int upgrade_bootloader_kermit_init(void *chin_p,
-                                   void *chout_p);
+int upgrade_bootloader_kermit_module_init(void *chin_p,
+                                          void *chout_p);
 
 /**
  * Load a file using the kermit file transfer protocol.

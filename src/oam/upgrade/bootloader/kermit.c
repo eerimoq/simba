@@ -329,22 +329,17 @@ static int cmd_application_kermit_load_cb(int argc,
     return (upgrade_bootloader_kermit_load_file());
 }
 
-int upgrade_bootloader_kermit_module_init()
+int upgrade_bootloader_kermit_module_init(void *chin_p,
+                                   void *chout_p)
 {
+    module.chin_p = chin_p;
+    module.chout_p = chout_p;
+
     fs_command_init(&cmd_application_kermit_load,
                     FSTR("/oam/upgrade/application/kermit/load"),
                     cmd_application_kermit_load_cb,
                     NULL);
     fs_command_register(&cmd_application_kermit_load);
-
-    return (0);
-}
-
-int upgrade_bootloader_kermit_init(void *chin_p,
-                                   void *chout_p)
-{
-    module.chin_p = chin_p;
-    module.chout_p = chout_p;
 
     return (0);
 }

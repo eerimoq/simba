@@ -120,6 +120,11 @@ int upgrade_bootloader_application_write_end(void)
     return (upgrade_bootloader_application_port_write_end());
 }
 
+int upgrade_bootloader_application_sha1(uint8_t *dst_p)
+{
+    return (upgrade_bootloader_application_port_sha1(dst_p));
+}
+
 int upgrade_bootloader_application_is_valid()
 {
     return (upgrade_bootloader_application_port_is_valid());
@@ -133,9 +138,4 @@ int upgrade_bootloader_application_write_valid_flag()
 int upgrade_bootloader_application_jump()
 {
     return (upgrade_bootloader_application_port_jump());
-}
-
-int upgrade_bootloader_application_sha1(uint8_t *dst_p)
-{
-    return (upgrade_bootloader_application_port_sha1(dst_p));
 }

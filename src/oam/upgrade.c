@@ -51,7 +51,9 @@ int upgrade_module_init()
 
 #if CONFIG_UPGRADE_BOOTLOADER == 1
     upgrade_bootloader_application_module_init();
-    upgrade_bootloader_kermit_module_init();
+    upgrade_bootloader_http_module_init();
+    upgrade_bootloader_tftp_module_init();
+    upgrade_bootloader_kermit_module_init(sys_get_stdin(), sys_get_stdout());
 #endif
 
     return (0);
@@ -60,16 +62,12 @@ int upgrade_module_init()
 int upgrade_bootloader_start()
 {
 #if CONFIG_UPGRADE_HTTP_SERVER == 1
-    upgrade_bootloader_http_init();
     upgrade_bootloader_http_start();
 #endif
 
 #if CONFIG_UPGRADE_TFTP_SERVER == 1
-    upgrade_bootloader_tftp_init();
     upgrade_bootloader_tftp_start();
 #endif
-
-    upgrade_bootloader_kermit_init(sys_get_stdin(), sys_get_stdout());
 
     return (0);
 }

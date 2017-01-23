@@ -38,7 +38,7 @@
  *
  * @returns zero(0) or negative error code.
  */
-int upgrade_bootloader_http_init(void);
+int upgrade_bootloader_http_module_init(void);
 
 /**
  * Start the HTTP server.

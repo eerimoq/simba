@@ -86,6 +86,7 @@ static ssize_t file_write(struct fs_file_t *self_p,
 int upgrade_bootloader_tftp_init()
 {
     struct inet_addr_t addr;
+    const char *root_p = "/tftp";
 
     if (inet_aton(STRINGIFY(CONFIG_UPGRADE_TFTP_SERVER_IP), &addr.ip) != 0) {
         return (-1);
@@ -95,24 +96,19 @@ int upgrade_bootloader_tftp_init()
 
     /* Create and register the tftp file system used to write received
        software to the application area. */
-    fs_filesystem_init_generic(&fs, "/tftp", &tftp_ops);
+    fs_filesystem_init_generic(&fs, root_p, &tftp_ops);
     fs_filesystem_register(&fs);
 
     return (tftp_server_init(&module.server,
                              &addr,
                              CONFIG_UPGRADE_TFTP_SERVER_TIMEOUT_MS,
                              "tftp_server",
-                             "/tftp",
+                             root_p,
                              tftp_server_stack,
                              sizeof(tftp_server_stack)));
 }
 
 int upgrade_bootloader_tftp_start()
 {
-    /* Start the TFTP server. */
-    tftp_server_start(&module.server);
-
-    thrd_set_log_mask(module.server.thrd_p, LOG_UPTO(DEBUG));
-
-    return (0);
+    return (tftp_server_start(&module.server));
 }

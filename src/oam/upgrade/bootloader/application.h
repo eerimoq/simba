@@ -34,28 +34,31 @@
 #include "simba.h"
 
 /**
- * Initialize the module.
+ * Initialize the application module.
  *
  * @return zero(0) or negative error code.
  */
 int upgrade_bootloader_application_module_init(void);
 
 /**
- * Erase the application memory region.
+ * Erase the application area.
  *
  * @return zero(0) or negative error code.
  */
 int upgrade_bootloader_application_erase(void);
 
 /**
- *
+ *  Begin an application write transaction.
  *
  * @return zero(0) or negative error code.
  */
 int upgrade_bootloader_application_write_begin(void);
 
 /**
+ * Write a chunk of data in an application write transaction.
  *
+ * @param[in] buf_p Buffer to write.
+ * @param[in] size Size of the buffer.
  *
  * @return zero(0) or negative error code.
  */
@@ -63,15 +66,24 @@ int upgrade_bootloader_application_write_chunk(const void *buf_p,
                                                size_t size);
 
 /**
- *
+ * End an application write transaction.
  *
  * @return zero(0) or negative error code.
  */
 int upgrade_bootloader_application_write_end(void);
 
 /**
+ * Calculate a SHA1 hash of the application area.
+ *
+ * @param[in] dst_p Output buffer of 20 bytes (160 bits).
+ *
+ * @return zero(0) or negative error code.
+ */
+int upgrade_bootloader_application_sha1(uint8_t *dst_p);
+
+/**
  * Returns true(1) if there is a valid application in the application
- * memory region.
+ * area.
  *
  * @return true(1) if a valid application exists in the memory
  *          region, otherwise false(0).
@@ -90,13 +102,6 @@ int upgrade_bootloader_application_write_valid_flag(void);
  *
  * @return For most architechtures this function never returns.
  */
-int upgrade_bootloader_application_jump();
-
-/**
- * Calculate a SHA1 hash of the application area.
- *
- * @return zero(0) or negative error code.
- */
-int upgrade_bootloader_application_sha1(uint8_t *dst_p);
+int upgrade_bootloader_application_jump(void);
 
 #endif

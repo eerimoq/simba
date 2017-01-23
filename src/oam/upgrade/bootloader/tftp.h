@@ -34,16 +34,17 @@
 #include "simba.h"
 
 /**
- * Initialize the TFTP server.
+ * Initialize the singleton bootloader TFTP server. The server is used
+ * to write an image to the application area.
  *
- * @returns zero(0) or negative error code.
+ * @return zero(0) or negative error code.
  */
-int upgrade_bootloader_tftp_init(void);
+int upgrade_bootloader_tftp_module_init(void);
 
 /**
- * Start the TFTP server.
+ * Start the bootloader TFTP server.
  *
- * @returns Never returns.
+ * @return zero(0) or negative error code.
  */
 int upgrade_bootloader_tftp_start(void);
 

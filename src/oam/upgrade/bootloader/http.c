@@ -45,6 +45,8 @@ static int http_request_application_erase(struct http_server_connection_t *conne
                                           struct http_server_request_t *request_p);
 static int http_request_application_write(struct http_server_connection_t *connection_p,
                                           struct http_server_request_t *request_p);
+static int http_request_application_sha1(struct http_server_connection_t *connection_p,
+                                         struct http_server_request_t *request_p);
 
 static struct upgrade_bootloader_http_t module;
 static THRD_STACK(listener_stack, 2048);
@@ -55,6 +57,8 @@ static struct http_server_route_t routes[] = {
       .callback = http_request_application_erase },
     { .path_p = "/oam/upgrade/application/write",
       .callback = http_request_application_write },
+    { .path_p = "/oam/upgrade/application/sha1",
+      .callback = http_request_application_sha1 },
     { .path_p = NULL, .callback = NULL }
 };
 
@@ -88,7 +92,7 @@ static struct http_server_connection_t connections[] = {
 };
 
 /**
- * HTTP server request to upload erase the application area.
+ * HTTP server request to erase the application area.
  *
  * @return zero(0) or negative error code.
  */
@@ -102,22 +106,16 @@ static int http_request_application_erase(struct http_server_connection_t *conne
         return (-1);
     }
 
-    if (upgrade_bootloader_application_erase() != 0) {
-        /* Create the error response. */
-        response.code = http_server_response_code_400_bad_request_t;
-        response.content.type = http_server_content_type_text_plain_t;
-        response.content.buf_p = "erase failed";
-        response.content.size = strlen(response.content.buf_p);
-
-        return (http_server_response_write(connection_p,
-                                           request_p,
-                                           &response));
-    }
-
     /* Create the response. */
-    response.code = http_server_response_code_200_ok_t;
+    if (upgrade_bootloader_application_erase() != 0) {
+        response.code = http_server_response_code_400_bad_request_t;
+        response.content.buf_p = "erase failed";
+    } else {
+        response.code = http_server_response_code_200_ok_t;
+        response.content.buf_p = "erase successful";
+    }
+    
     response.content.type = http_server_content_type_text_plain_t;
-    response.content.buf_p = "erase successful";
     response.content.size = strlen(response.content.buf_p);
 
     return (http_server_response_write(connection_p,
@@ -218,6 +216,40 @@ static int http_request_application_write(struct http_server_connection_t *conne
 }
 
 /**
+ * HTTP server request to calculate the SHA1 hash of the application
+ * area.
+ *
+ * @return zero(0) or negative error code.
+ */
+static int http_request_application_sha1(struct http_server_connection_t *connection_p,
+                                         struct http_server_request_t *request_p)
+{
+    struct http_server_response_t response;
+    uint8_t sha1[20];
+    char sha1hex[41];
+    int i;
+
+    if (upgrade_bootloader_application_sha1(&sha1[0]) == 0) {
+        for (i = 0; i < membersof(sha1); i++) {
+            std_sprintf(&sha1hex[2 * i], FSTR("%02x"), sha1[i]);
+        }
+
+        response.code = http_server_response_code_200_ok_t;
+        response.content.buf_p = &sha1hex[0];
+    } else {
+        response.code = http_server_response_code_400_bad_request_t;
+        response.content.buf_p = "sha1 failed";
+    }
+
+    response.content.type = http_server_content_type_text_plain_t;
+    response.content.size = strlen(response.content.buf_p);
+
+    return (http_server_response_write(connection_p,
+                                       request_p,
+                                       &response));
+}
+
+/**
  * Default page handler.
  */
 static int no_route(struct http_server_connection_t *connection_p,
@@ -238,23 +270,15 @@ static int no_route(struct http_server_connection_t *connection_p,
 
 int upgrade_bootloader_http_init()
 {
-    http_server_init(&module.server,
-                     &listener,
-                     connections,
-                     NULL,
-                     routes,
-                     no_route);
-
-    return (0);
+    return (http_server_init(&module.server,
+                             &listener,
+                             connections,
+                             NULL,
+                             routes,
+                             no_route));
 }
 
 int upgrade_bootloader_http_start()
 {
-    /* Start the HTTP server. */
-    http_server_start(&module.server);
-
-    thrd_set_log_mask(listener.thrd.id_p, LOG_UPTO(DEBUG));
-    thrd_set_log_mask(connections[0].thrd.id_p, LOG_UPTO(DEBUG));
-
-    return (0);
+    return (http_server_start(&module.server));
 }
