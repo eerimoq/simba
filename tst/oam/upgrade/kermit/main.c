@@ -62,9 +62,8 @@ static int test_send_file_kermit(struct harness_t *self_p)
     queue_init(&qin, inbuf, sizeof(inbuf));
     queue_init(&qout, outbuf, sizeof(outbuf));
 
-    upgrade_bootloader_kermit_module_init();
+    upgrade_bootloader_kermit_module_init(&qin, &qout);
     upgrade_bootloader_application_module_init();
-    upgrade_bootloader_kermit_init(&qin, &qout);
 
     queue_write(&qin, input, sizeof(input) - 1);
     BTASSERT(upgrade_bootloader_kermit_load_file() == 0);
