@@ -94,13 +94,14 @@ Due over the serial port.
 .. code-block:: text
 
    > make -s -C application BOARD=arduino_due
+   > cd application/build/arduino_due
    > kermit
    C-Kermit>connect
    $ oam/upgrade/application/erase
    $ oam/upgrade/application/load_kermit   # Type '\+c' to return to kermit.
-   C-Kermit> send application/build/arduino_due/application.bin
+   C-Kermit> send application.bin
 
-Then start it using the srial port.
+Then start it using the serial port.
 
 .. code-block:: text
 
