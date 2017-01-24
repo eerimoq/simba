@@ -39,6 +39,97 @@ upgrade.
    POST /oam/upgrade/application/write
    GET /oam/upgrade/application/sha1
 
+Application erase
+%%%%%%%%%%%%%%%%%
+
+Request:
+
+.. code-block:: text
+
+    GET /oam/upgrade/application/erase HTTP/1.1
+    Host: 192.168.0.7
+    User-Agent: curl/7.47.0
+    Accept: */*
+
+Successful response:
+
+.. code-block:: text
+
+   HTTP/1.1 200 OK
+   Content-Type: text/plain
+   Content-Length: 16
+
+   erase successful
+
+Error response:
+
+.. code-block:: text
+
+  HTTP/1.1 400 Bad Request
+  Content-Type: text/plain
+  Content-Length: 16
+
+  erase failed
+
+Application write
+%%%%%%%%%%%%%%%%%
+
+Request:
+
+.. code-block:: text
+
+  POST /oam/upgrade/application/write HTTP/1.1
+  Host: 192.168.0.7
+  User-Agent: curl/7.47.0
+  Accept: */*
+  Content-Type: application/octet-stream
+  Content-Length: 537072
+  Expect: 100-continue
+
+  <application binary data>
+
+Successful response:
+
+.. code-block:: text
+
+  HTTP/1.1 200 OK
+  Content-Type: text/plain
+  Content-Length: 16
+
+  write successful
+
+Error response:
+
+.. code-block:: text
+
+  HTTP/1.1 400 Bad Request
+  Content-Type: text/plain
+  Content-Length: 16
+
+  write failed
+
+Application SHA1 hash
+%%%%%%%%%%%%%%%%%%%%%
+
+Request:
+
+.. code-block:: text
+
+   GET /oam/upgrade/application/sha1 HTTP/1.1
+   Host: 192.168.0.7
+   User-Agent: curl/7.47.0
+   Accept: */*
+
+Response:
+
+.. code-block:: text
+
+   HTTP/1.1 200 OK
+   Content-Type: text/plain
+   Content-Length: 40
+
+   ba59caac5f5a80fc52c507d8a47f322a380aa9a1
+
 TFTP file transfer
 ^^^^^^^^^^^^^^^^^^
 
@@ -82,8 +173,9 @@ application and use curl to upload it to the Nano32. Then start it!
 
    > make -C bootloader -s BOARD=nano32 run
    > make -C application -s BOARD=nano32
+   > cd application/build/nano32
    > curl --header "Content-Type: application/octet-stream" \
-          --data-binary @application/build/nano32/application.bin \
+          --data-binary @application.bin \
           http://192.168.0.7/oam/upgrade/application/write
    > curl http://192.168.0.7/kernel/sys/reboot
    Welcome to the test application!
@@ -98,13 +190,10 @@ application and use curl to upload it to the Nano32. Then start it!
 
    > make -C bootloader -s BOARD=nano32 run
    > make -C application -s BOARD=nano32
-   > kermit
-   C-Kermit>connect
-   $ oam/upgrade/application/erase
-   $                            # Type '\+q' to exit kermit.
+   > cd application/build/nano32
    > tftp 192.168.0.7
    tftp> mode binary
-   tftp> put application/build/nano32/application.bin
+   tftp> put application.bin
    5460544 bytes
    tftp> q
    > kermit
