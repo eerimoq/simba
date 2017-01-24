@@ -9,6 +9,9 @@ partition and the application partition. The software in the
 bootloader partition can perform a software upgrade of the application
 partition by using the erase and write commands.
 
+.. warning:: The WiFi connection is often lost during the erase
+             operation. Unknown why.
+
 Bootloader
 ----------
 
