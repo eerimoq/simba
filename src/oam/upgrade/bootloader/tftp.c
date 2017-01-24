@@ -83,7 +83,7 @@ static ssize_t file_write(struct fs_file_t *self_p,
     return (res == 0 ? size : -1);
 }
 
-int upgrade_bootloader_tftp_init()
+int upgrade_bootloader_tftp_module_init()
 {
     struct inet_addr_t addr;
     const char *root_p = "/tftp";

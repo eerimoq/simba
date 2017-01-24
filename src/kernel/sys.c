@@ -463,13 +463,8 @@ int sys_start(void)
     bus_module_init();
 #endif
 
-#if CONFIG_MODULE_INIT_UPGRADE == 1
-    upgrade_module_init();
-#endif
-
     init_drivers();
     init_inet();
-
     
 #if CONFIG_START_CONSOLE != CONFIG_START_CONSOLE_NONE
     start_console();
@@ -485,6 +480,10 @@ int sys_start(void)
 
 # if CONFIG_START_NETWORK == 1
     start_network();
+#endif
+
+#if CONFIG_MODULE_INIT_UPGRADE == 1
+    upgrade_module_init();
 #endif
 
     return (0);

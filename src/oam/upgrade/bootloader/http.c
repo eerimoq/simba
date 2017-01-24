@@ -268,7 +268,7 @@ static int no_route(struct http_server_connection_t *connection_p,
                                        &response));
 }
 
-int upgrade_bootloader_http_init()
+int upgrade_bootloader_http_module_init()
 {
     return (http_server_init(&module.server,
                              &listener,
