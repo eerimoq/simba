@@ -4,13 +4,109 @@
 .. module:: upgrade
    :synopsis: Software upgrade.
 
+Upgrade/upload an application over the air (OTA) or using a
+cable. HTTP, TFTP, Kermit and UDS protocols are supported.
+
 The flash memory is partitioned into two partitions; the bootloader
 partition and the application partition. The software in the
 bootloader partition can perform a software upgrade of the application
 partition by using the erase and write commands.
 
 .. warning:: The WiFi connection is often lost during the erase
-             operation. Unknown why.
+             operation on ESP32. Troubleshooting ongoing...
+
+Examples
+--------
+
+Here are a few examples of how to upgrade the application using the
+different supported protocols.
+
+HTTP
+^^^^
+
+Build and upload the bootloader to the board over the serial port.
+
+.. code-block:: text
+
+   > make -C bootloader -s BOARD=nano32 run
+
+Build the test application and use curl to upload it to the Nano32
+over HTTP.
+
+.. code-block:: text
+
+   > make -C application -s BOARD=nano32
+   > cd application/build/nano32
+   > curl --header "Content-Type: application/octet-stream" \
+          --data-binary @application.bin \
+          http://192.168.0.7/oam/upgrade/application/write
+
+Then start it using HTTP.
+
+.. code-block:: text
+
+   > curl http://192.168.0.7/kernel/sys/reboot
+   Welcome to the test application!
+
+TFTP
+^^^^
+
+Build and upload the bootloader to the board over the serial port.
+
+.. code-block:: text
+
+   > make -C bootloader -s BOARD=nano32 run
+
+Build the test application and use tftp to upload it to the Nano32
+over TFTP.
+
+.. code-block:: text
+
+   > make -C application -s BOARD=nano32
+   > cd application/build/nano32
+   > tftp 192.168.0.7
+   tftp> mode binary
+   tftp> put application.bin
+   5460544 bytes
+   tftp> q
+
+Then start it using the serial port.
+
+.. code-block:: text
+
+   > kermit
+   C-Kermit>connect
+   $ kernel/sys/reboot
+   Welcome to the test application!
+
+Kermit
+^^^^^^
+
+Build and upload the bootloader to the board over the serial port.
+
+.. code-block:: text
+
+   > make -s -C bootloader BOARD=arduino_due run
+
+Build the test application and use Kermit to upload it to the Arduino
+Due over the serial port.
+
+.. code-block:: text
+
+   > make -s -C application BOARD=arduino_due
+   > kermit
+   C-Kermit>connect
+   $ oam/upgrade/application/erase
+   $ oam/upgrade/application/load_kermit   # Type '\+c' to return to kermit.
+   C-Kermit> send application/build/arduino_due/application.bin
+
+Then start it using the srial port.
+
+.. code-block:: text
+
+   C-Kermit> connect
+   $ kernel/sys/reboot
+   Welcome to the test application!
 
 Bootloader
 ----------
@@ -159,73 +255,6 @@ application starts a HTTP server with it registered.
 .. code-block:: text
 
    GET /oam/upgrade/bootloader/enter
-
-Examples
---------
-
-Here are a few examples of how to upgrade the application using the
-different supported protocols.
-
-HTTP
-^^^^
-
-Build and upload the bootloader to the board. Build the test
-application and use curl to upload it to the Nano32. Then start it!
-
-.. code-block:: text
-
-   > make -C bootloader -s BOARD=nano32 run
-   > make -C application -s BOARD=nano32
-   > cd application/build/nano32
-   > curl --header "Content-Type: application/octet-stream" \
-          --data-binary @application.bin \
-          http://192.168.0.7/oam/upgrade/application/write
-   > curl http://192.168.0.7/kernel/sys/reboot
-   Welcome to the test application!
-
-TFTP
-^^^^
-
-Build and upload the bootloader to the board. Build the test
-application and use curl to upload it to the Nano32. Then start it!
-
-.. code-block:: text
-
-   > make -C bootloader -s BOARD=nano32 run
-   > make -C application -s BOARD=nano32
-   > cd application/build/nano32
-   > tftp 192.168.0.7
-   tftp> mode binary
-   tftp> put application.bin
-   5460544 bytes
-   tftp> q
-   > kermit
-   C-Kermit>connect
-   $ kernel/sys/reboot
-   Welcome to the test application!
-
-Kermit
-^^^^^^
-
-Build and upload the bootloader to the board. Build the test
-application and use Kermit to upload it to the Arduino Due. Then start
-it!
-
-.. code-block:: text
-
-   > make -s -C bootloader BOARD=arduino_due run
-   > make -s -C application BOARD=arduino_due
-   > kermit
-   C-Kermit>connect
-   $ oam/upgrade/application/erase
-   $ oam/upgrade/application/load_kermit   # Type '\+c' to return to kermit.
-   C-Kermit> send application/build/arduino_due/application.bin
-   C-Kermit> connect
-   $ kernel/sys/reboot
-   Welcome to the test application!
-
-See :doc:`../../user-guide/configuration` for a list of all
-configuration variables.
 
 ----------------------------------------------
 
