@@ -268,8 +268,8 @@ Test code: :github-blob:`tst/oam/upgrade/kermit/main.c`,
 :github-blob:`tst/oam/upgrade/uds/main.c`
 
 Test coverage: :codecov:`src/oam/upgrade.c`,
-:codecov:`src/oam/upgrade/application`,
-:codecov:`src/oam/upgrade/bootloader`
+:codecov-tree:`src/oam/upgrade/application`,
+:codecov-tree:`src/oam/upgrade/bootloader`
 
 Example code: :github-blob:`examples/upgrade/bootloader/main.c`,
 :github-blob:`examples/upgrade/application/main.c`

@@ -336,5 +336,7 @@ extlinks = {
     'github-tree':
     ('https://github.com/eerimoq/simba/tree/' + version + '/%s', ''),
     'codecov':
-    ('https://codecov.io/gh/eerimoq/simba/src/' + version + '/%s', '')
+    ('https://codecov.io/gh/eerimoq/simba/src/' + version + '/%s', ''),
+    'codecov-tree':
+    ('https://codecov.io/gh/eerimoq/simba/tree/' + version + '/%s', '')
 }
