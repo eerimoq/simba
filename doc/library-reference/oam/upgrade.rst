@@ -260,30 +260,14 @@ application starts a HTTP server with it registered.
 ----------------------------------------------
 
 Source code: :github-blob:`src/oam/upgrade.h`,
-:github-blob:`src/oam/upgrade.c`,
-:github-blob:`src/oam/application/bootloader.h`,
-:github-blob:`src/oam/application/bootloader.c`,
-:github-blob:`src/oam/bootloader/application.h`,
-:github-blob:`src/oam/bootloader/application.c`,
-:github-blob:`src/oam/bootloader/http.h`,
-:github-blob:`src/oam/bootloader/http.c`,
-:github-blob:`src/oam/bootloader/kermit.h`,
-:github-blob:`src/oam/bootloader/kermit.c`,
-:github-blob:`src/oam/bootloader/tftp.h`,
-:github-blob:`src/oam/bootloader/tftp.c`,
-:github-blob:`src/oam/bootloader/uds.h`,
-:github-blob:`src/oam/bootloader/uds.c`
+:github-blob:`src/oam/upgrade.c`, :github-tree:`src/oam/application`,
+:github-tree:`src/oam/bootloader`
 
 Test code: :github-blob:`tst/oam/upgrade/kermit/main.c`,
 :github-blob:`tst/oam/upgrade/uds/main.c`
 
 Test coverage: :github-blob:`src/oam/upgrade.c`,
-:github-blob:`src/oam/application/bootloader.c`,
-:github-blob:`src/oam/bootloader/application.c`,
-:github-blob:`src/oam/bootloader/http.c`,
-:github-blob:`src/oam/bootloader/kermit.c`,
-:github-blob:`src/oam/bootloader/tftp.c`,
-:github-blob:`src/oam/bootloader/uds.c`
+:github-tree:`src/oam/application`, :github-tree:`src/oam/bootloader`
 
 Example code: :github-blob:`examples/upgrade/bootloader/main.c`,
 :github-blob:`examples/upgrade/application/main.c`
