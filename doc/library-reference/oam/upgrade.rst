@@ -37,9 +37,13 @@ over HTTP.
 
    > make -C application -s BOARD=nano32
    > cd application/build/nano32
+   > curl http://192.168.0.7/oam/upgrade/application/is_valid
+   no
    > curl --header "Content-Type: application/octet-stream" \
-          --data-binary @application.bin \
+          --data-binary @application.ubin \
           http://192.168.0.7/oam/upgrade/application/write
+   > curl http://192.168.0.7/oam/upgrade/application/is_valid
+   yes
 
 Then start it using HTTP.
 
@@ -66,7 +70,7 @@ over TFTP.
    > cd application/build/nano32
    > tftp 192.168.0.7
    tftp> mode binary
-   tftp> put application.bin
+   tftp> put application.ubin
    5460544 bytes
    tftp> q
 
@@ -76,6 +80,8 @@ Then start it using the serial port.
 
    > kermit
    C-Kermit>connect
+   $ oam/upgrade/application/is_valid
+   yes
    $ kernel/sys/reboot
    Welcome to the test application!
 
@@ -97,15 +103,19 @@ Due over the serial port.
    > cd application/build/arduino_due
    > kermit
    C-Kermit>connect
+   $ oam/upgrade/application/is_valid
+   no
    $ oam/upgrade/application/erase
    $ oam/upgrade/application/load_kermit   # Type '\+c' to return to kermit.
-   C-Kermit> send application.bin
+   C-Kermit> send application.ubin
 
 Then start it using the serial port.
 
 .. code-block:: text
 
    C-Kermit> connect
+   $ oam/upgrade/application/is_valid
+   yes
    $ kernel/sys/reboot
    Welcome to the test application!
 
@@ -114,6 +124,22 @@ Bootloader
 
 Four protocols are available to upload an application to the board;
 HTTP, TFTP, Kermit and UDS.
+
+Upgrade binary file (.ubin)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+This is the format of a .ubin file. All fields except `data` are part
+of the header.
+
+.. code-block:: text
+
+   SIZE       TYPE  DESCRIPTION
+      4   uint32_t  header version
+      4   uint32_t  data size in bytes
+     20  uint8_t[]  SHA1 of the data
+     1+   c-string  data description
+      4   uint32_t  CRC32 of the header (not including this field)
+     0+  uint8_t[]  data
 
 File system commands
 ^^^^^^^^^^^^^^^^^^^^
@@ -125,7 +151,7 @@ software upgrade.
 
    /oam/upgrade/application/erase
    /oam/upgrade/application/kermit/load
-   /oam/upgrade/application/sha1
+   /oam/upgrade/application/is_valid
 
 HTTP requests
 ^^^^^^^^^^^^^
@@ -137,7 +163,7 @@ upgrade.
 
    GET /oam/upgrade/application/erase
    POST /oam/upgrade/application/write
-   GET /oam/upgrade/application/sha1
+   GET /oam/upgrade/application/is_valid
 
 Application erase
 %%%%%%%%%%%%%%%%%
@@ -186,7 +212,7 @@ Request:
   Content-Length: 537072
   Expect: 100-continue
 
-  <application binary data>
+  <upgrade binary file (.ubin)>
 
 Successful response:
 
@@ -208,14 +234,14 @@ Error response:
 
   write failed
 
-Application SHA1 hash
-%%%%%%%%%%%%%%%%%%%%%
+Application is valid
+%%%%%%%%%%%%%%%%%%%%
 
 Request:
 
 .. code-block:: text
 
-   GET /oam/upgrade/application/sha1 HTTP/1.1
+   GET /oam/upgrade/application/is_valid HTTP/1.1
    Host: 192.168.0.7
    User-Agent: curl/7.47.0
    Accept: */*
@@ -228,7 +254,7 @@ Response:
    Content-Type: text/plain
    Content-Length: 40
 
-   ba59caac5f5a80fc52c507d8a47f322a380aa9a1
+   {yes, no}
 
 TFTP file transfer
 ^^^^^^^^^^^^^^^^^^
