@@ -930,7 +930,6 @@ int fs_open(struct fs_file_t *self_p, const char *path_p, int flags)
     }
 
     if (get_filesystem_path_from_path(&filesystem_p, &path_p, &path[0]) != 0) {
-        PRINT_FILE_LINE();
         return (-1);
     }
 
@@ -1769,7 +1768,7 @@ int fs_filesystem_init_generic(struct fs_filesystem_t *self_p,
     if (ops_p->file_seek == NULL) {
         ops_p->file_seek = file_seek_null;
     }
-    
+
     self_p->name_p = name_p;
     self_p->type = fs_type_generic_t;
     self_p->fs.generic.ops_p = ops_p;
