@@ -56,7 +56,7 @@ upload:
 	@echo "Uploading $(EXE)."
 	python -u $(SIMBA_ROOT)/3pp/esp32/esp-idf/components/esptool_py/esptool/esptool.py \
 	--chip esp32 --port $(SERIAL_PORT) --baud 921600 write_flash -z \
-	--flash_mode dio --flash_freq 40m --flash_size 2MB \
+	--flash_mode dio --flash_freq 40m --flash_size 4MB \
 	0x1000 $(SIMBA_ROOT)/3pp/esp32/bin/bootloader.bin \
 	0x10000 $(BIN) \
 	0x8000 $(PARTITIONS_BIN)

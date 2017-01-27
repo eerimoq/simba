@@ -60,9 +60,16 @@ LDFLAGS += -Wl,-static \
 RUNARGS = $(BIN)
 
 ESPTOOL_PY = $(SIMBA_ROOT)/3pp/esp32/esp-idf/components/esptool_py/esptool/esptool.py
+UPGRADE_PY = $(SIMBA_ROOT)/bin/upgrade.py
 
-build: $(BIN)
+build: $(BIN) $(UBIN)
+
 $(BIN): $(EXE)
+	@echo "Creating $@"
 	$(ESPTOOL_PY) --chip esp32 elf2image --flash_mode dio --flash_freq 40m --flash_size 2MB -o $@ $<
+
+$(UBIN): $(BIN)
+	@echo "Creating $@"
+	$(UPGRADE_PY) -o $@ $<
 
 include $(SIMBA_ROOT)/make/gnu.mk

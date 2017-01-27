@@ -42,6 +42,9 @@ static struct fs_counter_t your_counter;
 static int our_parameter_value = OUR_PARAMETER_DEFAULT;
 static struct fs_parameter_t our_parameter;
 
+static struct fs_filesystem_operations_t generic_ops;
+static struct fs_filesystem_t genericfs;
+
 #if defined(ARCH_LINUX)
 
 #define BLOCK_SIZE 512
@@ -72,9 +75,6 @@ struct spiffs_config_t config;
 static uint8_t workspace[2 * LOG_PAGE_SIZE];
 static uint8_t fdworkspace[128];
 static uint8_t cache[256];
-
-static struct fs_filesystem_operations_t generic_ops;
-static struct fs_filesystem_t genericfs;
 
 /**
  * FAT16 read block callback.

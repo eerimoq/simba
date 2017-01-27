@@ -33,6 +33,12 @@
 
 #include "simba.h"
 
+struct upgrade_binary_header_t {
+    uint32_t size;
+    uint8_t sha1[20];
+    char description[128];
+};
+
 /**
  * Initialize the upgrade module. This function must be called before
  * calling any other function in this module.
@@ -51,5 +57,14 @@ int upgrade_module_init(void);
  * @return zero(0) or negative error code.
  */
 int upgrade_bootloader_start(void);
+
+/**
+ * Parse the binary header.
+ *
+ * @return zero(0) or negative error code.
+ */
+int upgrade_binary_header_parse(struct upgrade_binary_header_t *header_p,
+                                uint8_t *src_p,
+                                size_t size);
 
 #endif

@@ -325,7 +325,7 @@ static int handle_diagnostic_session_control_default(struct upgrade_bootloader_u
                                       (DIAGNOSTIC_SESSION_CONTROL | POSITIVE_RESPONSE));
 
     /* Call the application. */
-# if !defined(BOOTLOADER_TEST)
+# if !defined(BOOTLOADER_TEST) && defined(ARCH_ARM)
     upgrade_bootloader_application_jump();
 #endif
 

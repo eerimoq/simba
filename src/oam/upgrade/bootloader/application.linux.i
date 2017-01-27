@@ -54,18 +54,3 @@ static int upgrade_bootloader_application_port_is_valid()
 {
     return (0);
 }
-
-static int upgrade_bootloader_application_port_write_valid_flag()
-{
-    return (0);
-}
-
-static int upgrade_bootloader_application_port_jump()
-{
-    return (-1);
-}
-
-static int upgrade_bootloader_application_port_sha1(uint8_t *dst_p)
-{
-    return (-1);
-}

@@ -30,16 +30,24 @@
 
 #include "simba.h"
 
+struct module_t {
+    uint8_t buf[256];
+    ssize_t header_size;
+    size_t offset;
+    struct upgrade_binary_header_t header;
+    struct fs_command_t cmd_application_erase;
+    struct fs_command_t cmd_application_is_valid;
+};
+
+static struct module_t module;
+
 #if defined(ARCH_ESP32)
-#    include "application_esp32.i"
+#    include "application.esp32.i"
 #elif defined(ARCH_LINUX)
-#    include "application_linux.i"
+#    include "application.linux.i"
 #else
 #    error "Unsupported port."
 #endif
-
-static struct fs_command_t cmd_application_erase;
-static struct fs_command_t cmd_application_sha1;
 
 /**
  * Shell command that erases the application from the flash memory.
@@ -55,46 +63,43 @@ static int cmd_application_erase_cb(int argc,
 }
 
 /**
- * Compute the SHA1 hash of the application area.
+ * Check if the application is valid.
  */
-static int cmd_application_sha1_cb(int argc,
-                                   const char *argv[],
-                                   void *out_p,
-                                   void *in_p,
-                                   void *arg_p,
-                                   void *call_arg_p)
+static int cmd_application_is_valid_cb(int argc,
+                                       const char *argv[],
+                                       void *out_p,
+                                       void *in_p,
+                                       void *arg_p,
+                                       void *call_arg_p)
 {
-    uint8_t sha1[20];
-    char sha1hex[41];
-    int i;
+    int res;
 
-    if (upgrade_bootloader_application_sha1(&sha1[0]) != 0) {
+    res = upgrade_bootloader_application_is_valid();
+
+    if (res == 1) {
+        std_fprintf(out_p, FSTR("yes\r\n"));
+    } else if (res == 0) {
+        std_fprintf(out_p, FSTR("no\r\n"));
+    } else {
         std_fprintf(out_p, FSTR("failed\r\n"));
-        return (-1);
     }
-
-    for (i = 0; i < membersof(sha1); i++) {
-        std_sprintf(&sha1hex[2 * i], FSTR("%02x"), sha1[i]);
-    }
-
-    std_fprintf(out_p, FSTR("SHA1: %s\r\n"), &sha1hex[0]);
-
+    
     return (0);
 }
 
 int upgrade_bootloader_application_module_init()
 {
-    fs_command_init(&cmd_application_erase,
+    fs_command_init(&module.cmd_application_erase,
                     FSTR("/oam/upgrade/application/erase"),
                     cmd_application_erase_cb,
                     NULL);
-    fs_command_register(&cmd_application_erase);
+    fs_command_register(&module.cmd_application_erase);
 
-    fs_command_init(&cmd_application_sha1,
-                    FSTR("/oam/upgrade/application/sha1"),
-                    cmd_application_sha1_cb,
+    fs_command_init(&module.cmd_application_is_valid,
+                    FSTR("/oam/upgrade/application/is_valid"),
+                    cmd_application_is_valid_cb,
                     NULL);
-    fs_command_register(&cmd_application_sha1);
+    fs_command_register(&module.cmd_application_is_valid);
 
     return (0);
 }
@@ -104,38 +109,70 @@ int upgrade_bootloader_application_erase()
     return (upgrade_bootloader_application_port_erase());
 }
 
-int upgrade_bootloader_application_write_begin(void)
+int upgrade_bootloader_application_write_begin()
 {
+    module.header_size = -1;
+    module.offset = 0;
+    
     return (upgrade_bootloader_application_port_write_begin());
 }
 
 int upgrade_bootloader_application_write_chunk(const void *buf_p,
                                                size_t size)
 {
+    size_t chunk_size;
+
+    /* Parse the header if not already parsed. */
+    if (module.header_size != 0) {
+        chunk_size = MIN(size, sizeof(module.buf) - module.offset);
+
+        memcpy(&module.buf[module.offset], buf_p, chunk_size);
+        module.offset += chunk_size;
+
+        if (module.header_size == -1) {
+            if (module.offset < 8) {
+                return (0);
+            }
+
+            module.header_size = ((module.buf[4] << 24)
+                                  | (module.buf[5] << 16)
+                                  | (module.buf[6] << 8)
+                                  | module.buf[7]);
+
+            if (module.header_size > sizeof(module.buf)) {
+                return (-1);
+            }
+        }
+
+        if (module.offset < module.header_size) {
+            return (0);
+        }
+
+        if (upgrade_binary_header_parse(&module.header,
+                                        (uint8_t *)&module.buf[0],
+                                        module.header_size) != 0) {
+            return (-1);
+        }
+
+        chunk_size = (module.header_size - (module.offset - chunk_size));
+        size -= chunk_size;
+        buf_p += chunk_size;
+        module.header_size = 0;
+        
+        if (size == 0) {
+            return (0);
+        }
+    }
+
     return (upgrade_bootloader_application_port_write_chunk(buf_p, size));
 }
 
-int upgrade_bootloader_application_write_end(void)
+int upgrade_bootloader_application_write_end()
 {
     return (upgrade_bootloader_application_port_write_end());
-}
-
-int upgrade_bootloader_application_sha1(uint8_t *dst_p)
-{
-    return (upgrade_bootloader_application_port_sha1(dst_p));
 }
 
 int upgrade_bootloader_application_is_valid()
 {
     return (upgrade_bootloader_application_port_is_valid());
-}
-
-int upgrade_bootloader_application_write_valid_flag()
-{
-    return (upgrade_bootloader_application_port_write_valid_flag());
-}
-
-int upgrade_bootloader_application_jump()
-{
-    return (upgrade_bootloader_application_port_jump());
 }

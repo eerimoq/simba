@@ -73,15 +73,6 @@ int upgrade_bootloader_application_write_chunk(const void *buf_p,
 int upgrade_bootloader_application_write_end(void);
 
 /**
- * Calculate a SHA1 hash of the application area.
- *
- * @param[in] dst_p Output buffer of 20 bytes (160 bits).
- *
- * @return zero(0) or negative error code.
- */
-int upgrade_bootloader_application_sha1(uint8_t *dst_p);
-
-/**
  * Returns true(1) if there is a valid application in the application
  * area.
  *
@@ -91,17 +82,8 @@ int upgrade_bootloader_application_sha1(uint8_t *dst_p);
 int upgrade_bootloader_application_is_valid(void);
 
 /**
- * Write the valid applicatin flag to the flash memory.
- *
- * @return zero(0) or negative error code.
- */
-int upgrade_bootloader_application_write_valid_flag(void);
-
-/**
  * Jump to the application.
- *
- * @return For most architechtures this function never returns.
  */
-int upgrade_bootloader_application_jump(void);
+void upgrade_bootloader_application_jump(void);
 
 #endif

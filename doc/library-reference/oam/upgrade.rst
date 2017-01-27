@@ -135,6 +135,7 @@ of the header.
 
    SIZE       TYPE  DESCRIPTION
       4   uint32_t  header version
+      4   uint32_t  header size in bytes
       4   uint32_t  data size in bytes
      20  uint8_t[]  SHA1 of the data
      1+   c-string  data description

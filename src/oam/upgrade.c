@@ -71,3 +71,33 @@ int upgrade_bootloader_start()
 
     return (0);
 }
+
+int upgrade_binary_header_parse(struct upgrade_binary_header_t *header_p,
+                                uint8_t *src_p,
+                                size_t size)
+{
+    uint32_t crc;
+
+    crc = ((src_p[size - 4] << 24)
+           | (src_p[size - 3] << 16)
+           | (src_p[size - 2] << 8)
+           | src_p[size - 1]);
+    
+    if (crc_32(0, src_p, size - 4) != crc) {
+        return (-1);
+    }
+    
+    header_p->size = ((src_p[8] << 24)
+                      | (src_p[9] << 16)
+                      | (src_p[10] << 8)
+                      | src_p[11]);
+    memcpy(&header_p->sha1[0], &src_p[12], sizeof(header_p->sha1));
+
+    if (strlen((char *)&src_p[32]) >= sizeof(header_p->description)) {
+        return (-1);
+    }
+
+    strcpy(&header_p->description[0], (char *)&src_p[32]);
+
+    return (0);
+}

@@ -45,8 +45,8 @@ static int http_request_application_erase(struct http_server_connection_t *conne
                                           struct http_server_request_t *request_p);
 static int http_request_application_write(struct http_server_connection_t *connection_p,
                                           struct http_server_request_t *request_p);
-static int http_request_application_sha1(struct http_server_connection_t *connection_p,
-                                         struct http_server_request_t *request_p);
+static int http_request_application_is_valid(struct http_server_connection_t *connection_p,
+                                             struct http_server_request_t *request_p);
 
 static struct upgrade_bootloader_http_t module;
 static THRD_STACK(listener_stack, 2048);
@@ -57,8 +57,8 @@ static struct http_server_route_t routes[] = {
       .callback = http_request_application_erase },
     { .path_p = "/oam/upgrade/application/write",
       .callback = http_request_application_write },
-    { .path_p = "/oam/upgrade/application/sha1",
-      .callback = http_request_application_sha1 },
+    { .path_p = "/oam/upgrade/application/is_valid",
+      .callback = http_request_application_is_valid },
     { .path_p = NULL, .callback = NULL }
 };
 
@@ -192,10 +192,6 @@ static int http_request_application_write(struct http_server_connection_t *conne
         if (upgrade_bootloader_application_write_end() != 0) {
             res = -1;
         }
-
-        if (res == 0) {
-            res = upgrade_bootloader_application_write_valid_flag();
-        }
     }
 
     /* Create the response. */
@@ -216,29 +212,28 @@ static int http_request_application_write(struct http_server_connection_t *conne
 }
 
 /**
- * HTTP server request to calculate the SHA1 hash of the application
- * area.
+ * HTTP server request to ask if the application area contains a valid
+ * application.
  *
  * @return zero(0) or negative error code.
  */
-static int http_request_application_sha1(struct http_server_connection_t *connection_p,
-                                         struct http_server_request_t *request_p)
+static int http_request_application_is_valid(struct http_server_connection_t *connection_p,
+                                             struct http_server_request_t *request_p)
 {
     struct http_server_response_t response;
-    uint8_t sha1[20];
-    char sha1hex[41];
-    int i;
+    int res;
 
-    if (upgrade_bootloader_application_sha1(&sha1[0]) == 0) {
-        for (i = 0; i < membersof(sha1); i++) {
-            std_sprintf(&sha1hex[2 * i], FSTR("%02x"), sha1[i]);
-        }
-
+    res = upgrade_bootloader_application_is_valid();
+    
+    if (res == 1) {
         response.code = http_server_response_code_200_ok_t;
-        response.content.buf_p = &sha1hex[0];
+        response.content.buf_p = "yes";
+    } else if (res == 0) {
+        response.code = http_server_response_code_200_ok_t;
+        response.content.buf_p = "no";
     } else {
         response.code = http_server_response_code_400_bad_request_t;
-        response.content.buf_p = "sha1 failed";
+        response.content.buf_p = "failed";
     }
 
     response.content.type = http_server_content_type_text_plain_t;

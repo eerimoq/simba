@@ -46,9 +46,9 @@ int main()
         std_printf(FSTR("stay in bootloader pin (d2) low\r\n"));
 
         /* Call the application if it is valid. */
-        if (bootloader_application_is_valid() == 1) {
+        if (upgrade_bootloader_application_is_valid() == 1) {
             std_printf(FSTR("calling application\r\n"));
-            bootloader_application_jump();
+            //upgrade_bootloader_application_jump();
         } else {
             std_printf(FSTR("application invalid\r\n"));
         }
