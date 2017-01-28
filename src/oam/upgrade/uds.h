@@ -49,7 +49,7 @@ struct upgrade_uds_t {
 /**
  * Initialize the UDS object.
  *
- * @param[in,out] self_p Bootloader object.
+ * @param[in,out] self_p UDS object.
  * @param[in] chin_p Input channel.
  * @param[in] chout_p Output channel.
  *
@@ -71,7 +71,7 @@ int upgrade_uds_handle_service(struct upgrade_uds_t *self_p);
 /**
  * Run the main loop of the UDS object.
  *
- * @param[in] self_p Bootloader object.
+ * @param[in] self_p UDS object.
  *
  * @returns Never returns.
  */

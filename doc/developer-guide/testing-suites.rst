@@ -135,6 +135,7 @@ Linux
 - :github-blob:`oam/service<tst/oam/service/main.c>`
 - :github-blob:`oam/settings<tst/oam/settings/main.c>`
 - :github-blob:`oam/shell<tst/oam/shell/main.c>`
+- :github-blob:`oam/upgrade<tst/oam/upgrade/main.c>`
 - :github-blob:`oam/upgrade/kermit<tst/oam/upgrade/kermit/main.c>`
 - :github-blob:`oam/upgrade/uds<tst/oam/upgrade/uds/main.c>`
 - :github-blob:`filesystems/fat16<tst/filesystems/fat16/main.c>`

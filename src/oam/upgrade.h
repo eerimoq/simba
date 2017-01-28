@@ -94,15 +94,18 @@ int upgrade_application_erase(void);
  * Returns true(1) if there is a valid application in the application
  * area.
  *
- * @param[in] quick Perform a quick validation.
+ * @param[in] quick Perform a quick validation. The quick validation
+ *                  is port specific, while the non-quick validation
+ *                  always calculates a checksum of the application
+ *                  and compares it to the expected checksum.
  *
- * @return true(1) if a valid application exists in the memory
- *          region, otherwise false(0).
+ * @return true(1) if a valid application exists in the memory region,
+ *         otherwise false(0).
  */
 int upgrade_application_is_valid(int quick);
 
 /**
- * Begin an upload transaction.
+ * Begin an upload transaction of a .ubin file.
  *
  * @return zero(0) or negative error code.
  */

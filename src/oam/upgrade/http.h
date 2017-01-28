@@ -45,7 +45,7 @@ int upgrade_http_init(int port);
 /**
  * Start the HTTP server.
  *
- * @returns Never returns.
+ * @returns zero(0) or negative error code.
  */
 int upgrade_http_start(void);
 
