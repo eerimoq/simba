@@ -106,7 +106,7 @@ Then start it using HTTP.
 
 .. code-block:: text
 
-   > curl http://192.168.0.7/kernel/sys/reboot
+   > curl http://192.168.0.7/oam/upgrade/application/enter
    Welcome to the test application!
 
 TFTP
@@ -139,7 +139,7 @@ Then start it using the serial port.
    C-Kermit>connect
    $ oam/upgrade/application/is_valid
    yes
-   $ kernel/sys/reboot
+   $ oam/upgrade/application/enter
    Welcome to the test application!
 
 Kermit
@@ -173,7 +173,7 @@ Then start it using the serial port.
    C-Kermit> connect
    $ oam/upgrade/application/is_valid
    yes
-   $ kernel/sys/reboot
+   $ oam/upgrade/application/enter
    Welcome to the test application!
 
 ----------------------------------------------
