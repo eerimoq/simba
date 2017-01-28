@@ -2,9 +2,9 @@
  * @section License
  *
  * The MIT License (MIT)
- * 
+ *
  * Copyright (c) 2014-2016, Erik Moqvist
- * 
+ *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
  * files (the "Software"), to deal in the Software without
@@ -28,24 +28,27 @@
  * This file is part of the Simba project.
  */
 
-#ifndef __OAM_UPGRADE_APPLICATION_BOOTLOADER_H__
-#define __OAM_UPGRADE_APPLICATION_BOOTLOADER_H__
+#ifndef __OAM_UPGRADE_KERMIT_H__
+#define __OAM_UPGRADE_KERMIT_H__
 
 #include "simba.h"
 
 /**
- * Initialize the module.
+ * Initialize the kermit module.
+ *
+ * @param[in] chin_p Input channel.
+ * @param[in] chout_p Output channel.
  *
  * @return zero(0) or negative error code.
  */
-int upgrade_application_bootloader_module_init(void);
+int upgrade_kermit_init(void *chin_p,
+                        void *chout_p);
 
 /**
- * Enter the bootloader from the application. This function dows not
- * return if all preconditions for entering the bootloader are met.
+ * Load a file using the kermit file transfer protocol.
  *
- * @return zero(0) or negative error code.
+ * @returns zero(0) or negative error code.
  */
-int upgrade_application_bootloader_enter(void);
+int upgrade_kermit_load_file(void);
 
 #endif

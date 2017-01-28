@@ -37,7 +37,7 @@
 #define TRANSFER_DATA_SIZE_MAX                             4096
 
 /* Data IDentifiers (DID). */
-#define DID_BOOTLOADER_VERSION                           0xf000
+#define DID_VERSION                                      0xf000
 #define DID_SYSTEM_TIME                                  0xf001
 
 /* Routines. */
@@ -103,12 +103,12 @@
 /**
  * Read and discard given number of bytes from the input channel.
  *
- * @param[in] self_p Bootloader object.
+ * @param[in] self_p UDS object..
  * @param[in] size Number of byte to ignore.
  *
  * @returns zero(0) or negative error code.
  */
-static int ignore(struct upgrade_bootloader_uds_t *self_p,
+static int ignore(struct upgrade_uds_t *self_p,
                   int size)
 {
     uint8_t dummy;
@@ -125,12 +125,12 @@ static int ignore(struct upgrade_bootloader_uds_t *self_p,
  * Read given number of bytes from the input channel and write them to
  * the flash memory.
  *
- * @param[in] self_p Bootloader object.
+ * @param[in] self_p UDS object..
  * @param[in] size Number of byte to write.
  *
  * @returns zero(0) or negative error code.
  */
-static int write_application(struct upgrade_bootloader_uds_t *self_p,
+static int write_application(struct upgrade_uds_t *self_p,
                              size_t size)
 {
     size_t left;
@@ -151,7 +151,7 @@ static int write_application(struct upgrade_bootloader_uds_t *self_p,
             return (-EIO);
         }
 
-        if (upgrade_bootloader_application_write_chunk(buffer, n) != 0) {
+        if (upgrade_binary_upload(buffer, n) != 0) {
             return (-1);
         }
 
@@ -164,13 +164,13 @@ static int write_application(struct upgrade_bootloader_uds_t *self_p,
 /**
  * Write an UDS response on the output channel.
  *
- * @param[in] self_p Bootloader object.
+ * @param[in] self_p UDS object.
  * @param[in] length Number of bytes in the response after the code.
  * @param[in] code Response code.
  *
  * @returns zero(0) or negative error code.
  */
-static int write_response(struct upgrade_bootloader_uds_t *self_p,
+static int write_response(struct upgrade_uds_t *self_p,
                           int32_t length,
                           uint8_t code)
 {
@@ -185,13 +185,13 @@ static int write_response(struct upgrade_bootloader_uds_t *self_p,
  * Ignore given number of bytes and then write an UDS response on the
  * output channel.
  *
- * @param[in] self_p Bootloader object.
+ * @param[in] self_p UDS object..
  * @param[in] length Number of bytes to ignore on the input channel.
  * @param[in] code Response code.
  *
  * @returns zero(0) or negative error code.
  */
-static int ignore_and_write_response_no_data(struct upgrade_bootloader_uds_t *self_p,
+static int ignore_and_write_response_no_data(struct upgrade_uds_t *self_p,
                                              size_t length,
                                              uint8_t code)
 {
@@ -204,13 +204,13 @@ static int ignore_and_write_response_no_data(struct upgrade_bootloader_uds_t *se
  * Ignore given number of bytes and then write an negative UDS
  * response on the output channel.
  *
- * @param[in] self_p Bootloader object.
+ * @param[in] self_p UDS object..
  * @param[in] length Number of bytes to ignore on the input channel.
  * @param[in] buf_p Two bytes of negative response data after 0x7f.
  *
  * @returns zero(0) or negative error code.
  */
-static int ignore_and_write_negative_response(struct upgrade_bootloader_uds_t *self_p,
+static int ignore_and_write_negative_response(struct upgrade_uds_t *self_p,
                                               size_t length,
                                               uint8_t service_id,
                                               uint8_t code)
@@ -226,7 +226,7 @@ static int ignore_and_write_negative_response(struct upgrade_bootloader_uds_t *s
 /**
  * Write a DID response on the output channel.
  *
- * @param[in] self_p Bootloader object.
+ * @param[in] self_p UDS object..
  * @param[in] response_code Response code.
  * @param[in] did DID.
  * @param[in] data_p Response data.
@@ -260,17 +260,17 @@ static int write_did_response(void *chout_p,
 /**
  * Handle the read version DID request.
  *
- * @param[in] self_p Bootloader object.
+ * @param[in] self_p UDS object..
  *
  * @returns zero(0) or negative error code.
  */
-static int handle_read_data_by_identifier_version(struct upgrade_bootloader_uds_t *self_p)
+static int handle_read_data_by_identifier_version(struct upgrade_uds_t *self_p)
 {
     const char version[] = STRINGIFY(VERSION);
 
     return (write_did_response(self_p->chout_p,
                                (READ_DATA_BY_IDENTIFIER | POSITIVE_RESPONSE),
-                               DID_BOOTLOADER_VERSION,
+                               DID_VERSION,
                                version,
                                sizeof(version)));
 }
@@ -278,11 +278,11 @@ static int handle_read_data_by_identifier_version(struct upgrade_bootloader_uds_
 /**
  * Handle the read system time DID request.
  *
- * @param[in] self_p Bootloader object.
+ * @param[in] self_p UDS object..
  *
  * @returns zero(0) or negative error code.
  */
-static int handle_read_data_by_identifier_system_time(struct upgrade_bootloader_uds_t *self_p)
+static int handle_read_data_by_identifier_system_time(struct upgrade_uds_t *self_p)
 {
     char buf[32];
     struct time_t now;
@@ -301,16 +301,16 @@ static int handle_read_data_by_identifier_system_time(struct upgrade_bootloader_
  * Handle the diagnostic session control request to enter the default
  * session (application).
  *
- * @param[in] self_p Bootloader object.
+ * @param[in] self_p UDS object..
  * @param[in] length Number of bytes left on the input channel.
  *
  * @returns zero(0) or negative error code.
  */
-static int handle_diagnostic_session_control_default(struct upgrade_bootloader_uds_t *self_p,
+static int handle_diagnostic_session_control_default(struct upgrade_uds_t *self_p,
                                                      int length)
 {
-# if !defined(BOOTLOADER_TEST)
-    if (upgrade_bootloader_application_is_valid() == 0) {
+# if !defined(UPGRADE_TEST)
+    if (upgrade_application_is_valid(0) == 0) {
         ignore_and_write_negative_response(self_p,
                                            0,
                                            DIAGNOSTIC_SESSION_CONTROL,
@@ -325,8 +325,8 @@ static int handle_diagnostic_session_control_default(struct upgrade_bootloader_u
                                       (DIAGNOSTIC_SESSION_CONTROL | POSITIVE_RESPONSE));
 
     /* Call the application. */
-# if !defined(BOOTLOADER_TEST) && defined(ARCH_ARM)
-    upgrade_bootloader_application_jump();
+# if !defined(UPGRADE_TEST)
+    upgrade_application_enter();
 #endif
 
     return (0);
@@ -335,17 +335,17 @@ static int handle_diagnostic_session_control_default(struct upgrade_bootloader_u
 /**
  * Handle the erase control routine.
  *
- * @param[in] self_p Bootloader object.
+ * @param[in] self_p UDS object..
  * @param[in] sub_function Sub function.
  * @param[in] length Number of bytes left on the input channel.
  *
  * @returns zero(0) or negative error code.
  */
-static int handle_routine_control_erase(struct upgrade_bootloader_uds_t *self_p,
+static int handle_routine_control_erase(struct upgrade_uds_t *self_p,
                                         int sub_function,
                                         int length)
 {
-    upgrade_bootloader_application_erase();
+    upgrade_application_erase();
     ignore_and_write_response_no_data(self_p,
                                       length,
                                       (ROUTINE_CONTROL | POSITIVE_RESPONSE));
@@ -373,12 +373,12 @@ static int handle_routine_control_erase(struct upgrade_bootloader_uds_t *self_p,
  * defined for vehicle manufacturers and vehicle suppliers specific
  * use.
  *
- * @param[in] self_p Bootloader object.
+ * @param[in] self_p UDS object..
  * @param[in] length Number of bytes left on the input channel.
  *
  * @returns zero(0) or negative error code.
  */
-static int handle_diagnostic_session_control(struct upgrade_bootloader_uds_t *self_p,
+static int handle_diagnostic_session_control(struct upgrade_uds_t *self_p,
                                              int length)
 {
     uint8_t session;
@@ -425,12 +425,12 @@ static int handle_diagnostic_session_control(struct upgrade_bootloader_uds_t *se
  * can be queried. Each value is associated to a Data Identifier
  * (DID) between 0 and 65535.
  *
- * @param[in] self_p Bootloader object.
+ * @param[in] self_p UDS object..
  * @param[in] length Number of bytes left on the input channel.
  *
  * @returns zero(0) or negative error code.
  */
-static int handle_read_data_by_identifier(struct upgrade_bootloader_uds_t *self_p,
+static int handle_read_data_by_identifier(struct upgrade_uds_t *self_p,
                                           int length)
 {
     uint16_t did;
@@ -452,7 +452,7 @@ static int handle_read_data_by_identifier(struct upgrade_bootloader_uds_t *self_
 
     switch (did) {
 
-    case DID_BOOTLOADER_VERSION:
+    case DID_VERSION:
         res = handle_read_data_by_identifier_version(self_p);
         break;
 
@@ -475,12 +475,12 @@ static int handle_read_data_by_identifier(struct upgrade_bootloader_uds_t *self_
 /**
  * Read data from the physical memory at the provided address.
  *
- * @param[in] self_p Bootloader object.
+ * @param[in] self_p UDS object..
  * @param[in] length Number of bytes left on the input channel.
  *
  * @returns zero(0) or negative error code.
  */
-static int handle_read_memory_by_address(struct upgrade_bootloader_uds_t *self_p,
+static int handle_read_memory_by_address(struct upgrade_uds_t *self_p,
                                          int length)
 {
     uint32_t address;
@@ -497,7 +497,7 @@ static int handle_read_memory_by_address(struct upgrade_bootloader_uds_t *self_p
 
     chan_read(self_p->chin_p, &address, sizeof(address));
 
-#if defined(BOOTLOADER_TEST)
+#if defined(UPGRADE_TEST)
     value = 0x01;
 #else
     value = *((uint8_t *)(uintptr_t)htonl(address));
@@ -529,12 +529,12 @@ static int handle_read_memory_by_address(struct upgrade_bootloader_uds_t *self_p
  * The start and stop message parameters can be specified. This makes
  * it possible to implement every possible project-specific service.
  *
- * @param[in] self_p Bootloader object.
+ * @param[in] self_p UDS object..
  * @param[in] length Number of bytes left on the input channel.
  *
  * @returns zero(0) or negative error code.
  */
-static int handle_routine_control(struct upgrade_bootloader_uds_t *self_p,
+static int handle_routine_control(struct upgrade_uds_t *self_p,
                                   int length)
 {
     uint8_t sub_function;
@@ -583,12 +583,12 @@ static int handle_routine_control(struct upgrade_bootloader_uds_t *self_p,
  * size of the data is specified. In turn, the controller specifies
  * how large the data packets can be.
  *
- * @param[in] self_p Bootloader object.
+ * @param[in] self_p UDS object..
  * @param[in] length Number of bytes left on the input channel.
  *
  * @returns zero(0) or negative error code.
  */
-static int handle_request_download(struct upgrade_bootloader_uds_t *self_p,
+static int handle_request_download(struct upgrade_uds_t *self_p,
                                    int length)
 {
     uint8_t buf[5];
@@ -635,7 +635,7 @@ static int handle_request_download(struct upgrade_bootloader_uds_t *self_p,
     /* Save the address and size. */
     self_p->swdl.next_block_sequence_counter = 1;
 
-    if (upgrade_bootloader_application_write_begin() != 0) {
+    if (upgrade_binary_upload_begin() != 0) {
         ignore_and_write_negative_response(self_p,
                                            length,
                                            REQUEST_DOWNLOAD,
@@ -672,12 +672,12 @@ static int handle_request_download(struct upgrade_bootloader_uds_t *self_p,
  * Data" service must be used several times in succession until all
  * data has arrived.
  *
- * @param[in] self_p Bootloader object.
+ * @param[in] self_p UDS object..
  * @param[in] length Number of bytes left on the input channel.
  *
  * @returns zero(0) or negative error code.
  */
-static int handle_transfer_data(struct upgrade_bootloader_uds_t *self_p,
+static int handle_transfer_data(struct upgrade_uds_t *self_p,
                                 int length)
 {
     int res;
@@ -747,12 +747,12 @@ static int handle_transfer_data(struct upgrade_bootloader_uds_t *self_p,
  * request. This will be used when the amount of data (set in
  * "Request Download" or "Upload Request") has not been transferred.
  *
- * @param[in] self_p Bootloader object.
+ * @param[in] self_p UDS object..
  * @param[in] length Number of bytes left on the input channel.
  *
  * @returns zero(0) or negative error code.
  */
-static int handle_request_transfer_exit(struct upgrade_bootloader_uds_t *self_p,
+static int handle_request_transfer_exit(struct upgrade_uds_t *self_p,
                                         int length)
 {
     /* Sanity check. */
@@ -775,7 +775,7 @@ static int handle_request_transfer_exit(struct upgrade_bootloader_uds_t *self_p,
         return (-1);
     }
 
-    upgrade_bootloader_application_write_end();
+    upgrade_binary_upload_end();
 
     self_p->state = UDS_STATE_IDLE;
 
@@ -789,12 +789,12 @@ static int handle_request_transfer_exit(struct upgrade_bootloader_uds_t *self_p,
 /**
  * Handle an unknown service id by sending a negative response.
  *
- * @param[in] self_p Bootloader object.
+ * @param[in] self_p UDS object..
  * @param[in] length Number of bytes left on the input channel.
  *
  * @returns zero(0) or negative error code.
  */
-static int handle_unknown_service_id(struct upgrade_bootloader_uds_t *self_p,
+static int handle_unknown_service_id(struct upgrade_uds_t *self_p,
                                      int length,
                                      uint8_t service_id)
 {
@@ -806,7 +806,7 @@ static int handle_unknown_service_id(struct upgrade_bootloader_uds_t *self_p,
     return (0);
 }
 
-int upgrade_bootloader_uds_init(struct upgrade_bootloader_uds_t *self_p,
+int upgrade_uds_init(struct upgrade_uds_t *self_p,
                                 void *chin_p,
                                 void *chout_p)
 {
@@ -817,7 +817,7 @@ int upgrade_bootloader_uds_init(struct upgrade_bootloader_uds_t *self_p,
     return (0);
 }
 
-int upgrade_bootloader_uds_handle_service(struct upgrade_bootloader_uds_t *self_p)
+int upgrade_uds_handle_service(struct upgrade_uds_t *self_p)
 {
     int32_t length;
     int8_t service_id;

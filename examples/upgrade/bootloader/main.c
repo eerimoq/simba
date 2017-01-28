@@ -2,9 +2,9 @@
  * @section License
  *
  * The MIT License (MIT)
- * 
+ *
  * Copyright (c) 2014-2016, Erik Moqvist
- * 
+ *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
  * files (the "Software"), to deal in the Software without
@@ -36,28 +36,25 @@ int main()
 
     sys_start();
 
-#if BOOTLOADER_CONFIG_APP == 0
-    struct pin_driver_t stay_in_bootloader_pin;
-
-    pin_init(&stay_in_bootloader_pin, &pin_d2_dev, PIN_INPUT);
-
-    /* Check the "stay in bootloader" pin. */
-    if (pin_read(&stay_in_bootloader_pin) == 0) {
-        std_printf(FSTR("stay in bootloader pin (d2) low\r\n"));
-
-        /* Call the application if it is valid. */
-        if (upgrade_bootloader_application_is_valid() == 1) {
-            std_printf(FSTR("calling application\r\n"));
-            //upgrade_bootloader_application_jump();
-        } else {
-            std_printf(FSTR("application invalid\r\n"));
-        }
+    if (upgrade_bootloader_stay_get() == 0) {
+        upgrade_application_enter();
+    } else {
+        upgrade_bootloader_stay_clear();
     }
 
-    std_printf(FSTR("staying in the bootloader\r\n"));
-#endif
+    log_object_print(NULL,
+                     LOG_INFO,
+                     FSTR("staying in the bootloader\r\n"));
 
-    upgrade_bootloader_start();
+    upgrade_module_init();
+
+    upgrade_http_init(80);
+    upgrade_tftp_init(69, 3000);
+    upgrade_kermit_init(sys_get_stdin(),
+                        sys_get_stdout());
+
+    upgrade_http_start();
+    upgrade_tftp_start();
 
     shell_init(&shell,
                sys_get_stdin(),

@@ -249,12 +249,10 @@ extern "C" {
 
 #if defined(FAMILY_LINUX) || defined(FAMILY_ESP32)
 #    include "oam/upgrade.h"
-#    include "oam/upgrade/application/bootloader.h"
-#    include "oam/upgrade/bootloader/application.h"
-#    include "oam/upgrade/bootloader/kermit.h"
-#    include "oam/upgrade/bootloader/uds.h"
-#    include "oam/upgrade/bootloader/http.h"
-#    include "oam/upgrade/bootloader/tftp.h"
+#    include "oam/upgrade/kermit.h"
+#    include "oam/upgrade/uds.h"
+#    include "oam/upgrade/http.h"
+#    include "oam/upgrade/tftp.h"
 #endif
     
 #ifdef __cplusplus

@@ -67,6 +67,7 @@ EXE_SUFFIX ?= out
 EXE = $(BUILDDIR)/$(NAME).$(EXE_SUFFIX)
 BIN = $(BUILDDIR)/$(NAME).bin
 UBIN = $(BUILDDIR)/$(NAME).ubin
+UPGRADE_BINARY_DESCRIPTION ?= "$(shell date)"
 HEX = $(BUILDDIR)/$(NAME).hex
 MAP = $(BUILDDIR)/$(NAME).map
 RUNLOG = $(BUILDDIR)/run.log

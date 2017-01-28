@@ -28,29 +28,27 @@
  * This file is part of the Simba project.
  */
 
-static int upgrade_bootloader_application_port_erase()
-{
-    return (0);
-}
+#ifndef __OAM_UPGRADE_TFTP_H__
+#define __OAM_UPGRADE_TFTP_H__
 
-static int upgrade_bootloader_application_port_write_begin(void)
-{
-    return (0);
+#include "simba.h"
 
-}
+/**
+ * Initialize the singleton upgrade TFTP server. The server is used to
+ * upload upgrade binaries.
+ *
+ * @param[in] port Server port.
+ * @param[in] timeout_ms TFTP packet timeout in milliseconds.
+ *
+ * @return zero(0) or negative error code.
+ */
+int upgrade_tftp_init(int port, int timeout_ms);
 
-static int upgrade_bootloader_application_port_write_chunk(const void *buf_p,
-                                                           size_t size)
-{
-    return (0);
-}
+/**
+ * Start the upgrade TFTP server.
+ *
+ * @return zero(0) or negative error code.
+ */
+int upgrade_tftp_start(void);
 
-static int upgrade_bootloader_application_port_write_end()
-{
-    return (0);
-}
-
-static int upgrade_bootloader_application_port_is_valid()
-{
-    return (0);
-}
+#endif

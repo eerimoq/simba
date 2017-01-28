@@ -28,27 +28,53 @@
  * This file is part of the Simba project.
  */
 
-#ifndef __OAM_UPGRADE_BOOTLOADER_KERMIT_H__
-#define __OAM_UPGRADE_BOOTLOADER_KERMIT_H__
+#ifndef __OAM_UPGRADE_UDS_H__
+#define __OAM_UPGRADE_UDS_H__
 
 #include "simba.h"
 
+/* States. */
+#define UDS_STATE_IDLE        1
+#define UDS_STATE_SWDL        2
+
+struct upgrade_uds_t {
+    int state;
+    void *chin_p;
+    void *chout_p;
+    struct {
+        uint8_t next_block_sequence_counter;
+    } swdl;
+};
+
 /**
- * Initialize the kermit module.
+ * Initialize the UDS object.
  *
+ * @param[in,out] self_p Bootloader object.
  * @param[in] chin_p Input channel.
  * @param[in] chout_p Output channel.
  *
- * @return zero(0) or negative error code.
+ * @returns zero(0) or negative error code.
  */
-int upgrade_bootloader_kermit_module_init(void *chin_p,
-                                          void *chout_p);
+int upgrade_uds_init(struct upgrade_uds_t *self_p,
+                     void *chin_p,
+                     void *chout_p);
 
 /**
- * Load a file using the kermit file transfer protocol.
+ * Handle a service.
+ *
+ * @param[in] self_p UDS object.
  *
  * @returns zero(0) or negative error code.
  */
-int upgrade_bootloader_kermit_load_file(void);
+int upgrade_uds_handle_service(struct upgrade_uds_t *self_p);
+
+/**
+ * Run the main loop of the UDS object.
+ *
+ * @param[in] self_p Bootloader object.
+ *
+ * @returns Never returns.
+ */
+void upgrade_uds_main(struct upgrade_uds_t *self_p);
 
 #endif

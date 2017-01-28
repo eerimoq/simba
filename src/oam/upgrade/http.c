@@ -30,7 +30,7 @@
 
 #include "simba.h"
 
-struct upgrade_bootloader_http_t {
+struct upgrade_http_t {
     struct http_server_t server;
     uint32_t application_address;
     uint32_t application_size;
@@ -41,32 +41,39 @@ struct upgrade_bootloader_http_t {
 };
 
 /* Forward declarations. */
-static int http_request_application_erase(struct http_server_connection_t *connection_p,
+static int http_request_application_enter(struct http_server_connection_t *connection_p,
                                           struct http_server_request_t *request_p);
-static int http_request_application_write(struct http_server_connection_t *connection_p,
+static int http_request_application_erase(struct http_server_connection_t *connection_p,
                                           struct http_server_request_t *request_p);
 static int http_request_application_is_valid(struct http_server_connection_t *connection_p,
                                              struct http_server_request_t *request_p);
+static int http_request_upload(struct http_server_connection_t *connection_p,
+                               struct http_server_request_t *request_p);
+static int http_request_sys_reboot(struct http_server_connection_t *connection_p,
+                                   struct http_server_request_t *request_p);
 
-static struct upgrade_bootloader_http_t module;
+static struct upgrade_http_t module;
 static THRD_STACK(listener_stack, 2048);
 static THRD_STACK(connection_stack, 4096);
 
 static struct http_server_route_t routes[] = {
+    { .path_p = "/oam/upgrade/application/enter",
+      .callback = http_request_application_enter },
     { .path_p = "/oam/upgrade/application/erase",
       .callback = http_request_application_erase },
-    { .path_p = "/oam/upgrade/application/write",
-      .callback = http_request_application_write },
     { .path_p = "/oam/upgrade/application/is_valid",
       .callback = http_request_application_is_valid },
+    { .path_p = "/oam/upgrade/upload",
+      .callback = http_request_upload },
+    { .path_p = "/kernel/sys/reboot",
+      .callback = http_request_sys_reboot },
     { .path_p = NULL, .callback = NULL }
 };
 
 static struct http_server_listener_t listener = {
-    .address_p = STRINGIFY(CONFIG_UPGRADE_HTTP_SERVER_IP),
-    .port = CONFIG_UPGRADE_HTTP_SERVER_PORT,
+    .address_p = "0.0.0.0",
     .thrd = {
-        .name_p = "http_listener",
+        .name_p = "upgrade_http_listener",
         .stack = {
             .buf_p = listener_stack,
             .size = sizeof(listener_stack)
@@ -77,7 +84,7 @@ static struct http_server_listener_t listener = {
 static struct http_server_connection_t connections[] = {
     {
         .thrd = {
-            .name_p = "http_conn_0",
+            .name_p = "upgrade_http_conn",
             .stack = {
                 .buf_p = connection_stack,
                 .size = sizeof(connection_stack)
@@ -90,6 +97,36 @@ static struct http_server_connection_t connections[] = {
         }
     }
 };
+
+/**
+ * HTTP server request to enter the application.
+ *
+ * @return zero(0) or negative error code.
+ */
+static int http_request_application_enter(struct http_server_connection_t *connection_p,
+                                          struct http_server_request_t *request_p)
+{
+    struct http_server_response_t response;
+
+    /* Only the GET action is supported. */
+    if (request_p->action != http_server_request_action_get_t) {
+        return (-1);
+    }
+
+    if (upgrade_application_enter() != 0) {
+        /* Create the error response. */
+        response.code = http_server_response_code_400_bad_request_t;
+        response.content.buf_p = "erase failed";
+        response.content.type = http_server_content_type_text_plain_t;
+        response.content.size = strlen(response.content.buf_p);
+
+        return (http_server_response_write(connection_p,
+                                           request_p,
+                                           &response));
+    }
+
+    return (-1);
+}
 
 /**
  * HTTP server request to erase the application area.
@@ -107,14 +144,14 @@ static int http_request_application_erase(struct http_server_connection_t *conne
     }
 
     /* Create the response. */
-    if (upgrade_bootloader_application_erase() != 0) {
+    if (upgrade_application_erase() != 0) {
         response.code = http_server_response_code_400_bad_request_t;
         response.content.buf_p = "erase failed";
     } else {
         response.code = http_server_response_code_200_ok_t;
         response.content.buf_p = "erase successful";
     }
-    
+
     response.content.type = http_server_content_type_text_plain_t;
     response.content.size = strlen(response.content.buf_p);
 
@@ -124,13 +161,45 @@ static int http_request_application_erase(struct http_server_connection_t *conne
 }
 
 /**
- * HTTP server request to upload an application image to the
- * application area.
+ * HTTP server request to ask if the application area contains a valid
+ * application.
  *
  * @return zero(0) or negative error code.
  */
-static int http_request_application_write(struct http_server_connection_t *connection_p,
-                                          struct http_server_request_t *request_p)
+static int http_request_application_is_valid(struct http_server_connection_t *connection_p,
+                                             struct http_server_request_t *request_p)
+{
+    struct http_server_response_t response;
+    int res;
+
+    res = upgrade_application_is_valid(0);
+
+    if (res == 1) {
+        response.code = http_server_response_code_200_ok_t;
+        response.content.buf_p = "yes";
+    } else if (res == 0) {
+        response.code = http_server_response_code_200_ok_t;
+        response.content.buf_p = "no";
+    } else {
+        response.code = http_server_response_code_400_bad_request_t;
+        response.content.buf_p = "failed";
+    }
+
+    response.content.type = http_server_content_type_text_plain_t;
+    response.content.size = strlen(response.content.buf_p);
+
+    return (http_server_response_write(connection_p,
+                                       request_p,
+                                       &response));
+}
+
+/**
+ * HTTP server request to upload an upgrade file.
+ *
+ * @return zero(0) or negative error code.
+ */
+static int http_request_upload(struct http_server_connection_t *connection_p,
+                               struct http_server_request_t *request_p)
 {
     struct http_server_response_t response;
     int res;
@@ -171,7 +240,7 @@ static int http_request_application_write(struct http_server_connection_t *conne
     }
 
     /* Write received octet stream to the application area. */
-    res = upgrade_bootloader_application_write_begin();
+    res = upgrade_binary_upload_begin();
 
     if (res == 0) {
         while ((res == 0) && (left > 0)) {
@@ -182,14 +251,14 @@ static int http_request_application_write(struct http_server_connection_t *conne
             }
 
             if (chan_read(&connection_p->socket, &buf[0], size) == size) {
-                res = upgrade_bootloader_application_write_chunk(&buf[0], size);
+                res = upgrade_binary_upload(&buf[0], size);
                 left -= size;
             } else {
                 res = -1;
             }
         }
 
-        if (upgrade_bootloader_application_write_end() != 0) {
+        if (upgrade_binary_upload_end() != 0) {
             res = -1;
         }
     }
@@ -212,36 +281,26 @@ static int http_request_application_write(struct http_server_connection_t *conne
 }
 
 /**
- * HTTP server request to ask if the application area contains a valid
- * application.
+ * HTTP server request to reboot the system.
  *
  * @return zero(0) or negative error code.
  */
-static int http_request_application_is_valid(struct http_server_connection_t *connection_p,
-                                             struct http_server_request_t *request_p)
+static int http_request_sys_reboot(struct http_server_connection_t *connection_p,
+                                   struct http_server_request_t *request_p)
 {
-    struct http_server_response_t response;
-    int res;
-
-    res = upgrade_bootloader_application_is_valid();
-    
-    if (res == 1) {
-        response.code = http_server_response_code_200_ok_t;
-        response.content.buf_p = "yes";
-    } else if (res == 0) {
-        response.code = http_server_response_code_200_ok_t;
-        response.content.buf_p = "no";
-    } else {
-        response.code = http_server_response_code_400_bad_request_t;
-        response.content.buf_p = "failed";
+    /* Only the GET action is supported. */
+    if (request_p->action != http_server_request_action_get_t) {
+        return (-1);
     }
 
-    response.content.type = http_server_content_type_text_plain_t;
-    response.content.size = strlen(response.content.buf_p);
+    socket_close(&connection_p->socket);
 
-    return (http_server_response_write(connection_p,
-                                       request_p,
-                                       &response));
+    std_printf(FSTR("Rebooting in 3 seconds.\r\n"));
+    thrd_sleep(3);
+
+    sys_reboot();
+
+    return (-1);
 }
 
 /**
@@ -251,7 +310,7 @@ static int no_route(struct http_server_connection_t *connection_p,
                     struct http_server_request_t *request_p)
 {
     struct http_server_response_t response;
-    
+
     /* Create the response. */
     response.code = http_server_response_code_404_not_found_t;
     response.content.type = http_server_content_type_text_plain_t;
@@ -263,8 +322,10 @@ static int no_route(struct http_server_connection_t *connection_p,
                                        &response));
 }
 
-int upgrade_bootloader_http_module_init()
+int upgrade_http_init(int port)
 {
+    listener.port = port;
+
     return (http_server_init(&module.server,
                              &listener,
                              connections,
@@ -273,7 +334,7 @@ int upgrade_bootloader_http_module_init()
                              no_route));
 }
 
-int upgrade_bootloader_http_start()
+int upgrade_http_start()
 {
     return (http_server_start(&module.server));
 }

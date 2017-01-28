@@ -39,7 +39,7 @@ static uint8_t outbuf[128];
 
 static int test_bad_size(struct harness_t *self_p)
 {
-    struct upgrade_bootloader_uds_t uds;
+    struct upgrade_uds_t uds;
     struct queue_t qin;
     struct queue_t qout;
     uint8_t input[] = {
@@ -49,16 +49,16 @@ static int test_bad_size(struct harness_t *self_p)
     queue_init(&qin, inbuf, sizeof(inbuf));
     queue_init(&qout, outbuf, sizeof(outbuf));
     queue_write(&qin, input, sizeof(input));
-    upgrade_bootloader_uds_init(&uds, &qin, &qout);
+    BTASSERT(upgrade_uds_init(&uds, &qin, &qout) == 0);
 
-    BTASSERT(upgrade_bootloader_uds_handle_service(&uds) == -1);
+    BTASSERT(upgrade_uds_handle_service(&uds) == -1);
 
     return (0);
 }
 
 static int test_unknown_service_id(struct harness_t *self_p)
 {
-    struct upgrade_bootloader_uds_t uds;
+    struct upgrade_uds_t uds;
     struct queue_t qin;
     struct queue_t qout;
     uint8_t input[] = {
@@ -70,10 +70,10 @@ static int test_unknown_service_id(struct harness_t *self_p)
     queue_init(&qin, inbuf, sizeof(inbuf));
     queue_init(&qout, outbuf, sizeof(outbuf));
     queue_write(&qin, input, sizeof(input));
-    upgrade_bootloader_uds_init(&uds, &qin, &qout);
+    BTASSERT(upgrade_uds_init(&uds, &qin, &qout) == 0);
 
     /* Service not supported. */
-    BTASSERT(upgrade_bootloader_uds_handle_service(&uds) == 0);
+    BTASSERT(upgrade_uds_handle_service(&uds) == 0);
     BTASSERT(queue_read(&qout, &length, sizeof(length)) == sizeof(length));
     BTASSERT(ntohl(length) == 3);
     BTASSERT(queue_read(&qout, response, 3) == 3);
@@ -86,7 +86,7 @@ static int test_unknown_service_id(struct harness_t *self_p)
 
 static int test_read_data_by_identifier(struct harness_t *self_p)
 {
-    struct upgrade_bootloader_uds_t uds;
+    struct upgrade_uds_t uds;
     struct queue_t qin;
     struct queue_t qout;
     uint8_t input[] = {
@@ -109,10 +109,10 @@ static int test_read_data_by_identifier(struct harness_t *self_p)
     queue_init(&qin, inbuf, sizeof(inbuf));
     queue_init(&qout, outbuf, sizeof(outbuf));
     queue_write(&qin, input, sizeof(input));
-    upgrade_bootloader_uds_init(&uds, &qin, &qout);
+    BTASSERT(upgrade_uds_init(&uds, &qin, &qout) == 0);
 
     /* Bad did. */
-    BTASSERT(upgrade_bootloader_uds_handle_service(&uds) == -1);
+    BTASSERT(upgrade_uds_handle_service(&uds) == -1);
     BTASSERT(queue_read(&qout, &length, sizeof(length)) == sizeof(length));
     BTASSERT(ntohl(length) == 3);
     BTASSERT(queue_read(&qout, response, 3) == 3);
@@ -121,7 +121,7 @@ static int test_read_data_by_identifier(struct harness_t *self_p)
     BTASSERT(response[2] == 0x11);
 
     /* Bad did length. */
-    BTASSERT(upgrade_bootloader_uds_handle_service(&uds) == -1);
+    BTASSERT(upgrade_uds_handle_service(&uds) == -1);
     BTASSERT(queue_read(&qout, &length, sizeof(length)) == sizeof(length));
     BTASSERT(ntohl(length) == 3);
     BTASSERT(queue_read(&qout, response, 3) == 3);
@@ -130,7 +130,7 @@ static int test_read_data_by_identifier(struct harness_t *self_p)
     BTASSERT(response[2] == 0x13);
 
     /* Bootloader version. */
-    BTASSERT(upgrade_bootloader_uds_handle_service(&uds) == 0);
+    BTASSERT(upgrade_uds_handle_service(&uds) == 0);
     BTASSERT(queue_read(&qout, &length, sizeof(length)) == sizeof(length));
     BTASSERT(ntohl(length) == 3 + sizeof(version));
     BTASSERT(queue_read(&qout, &code, sizeof(code)) == sizeof(code));
@@ -141,7 +141,7 @@ static int test_read_data_by_identifier(struct harness_t *self_p)
     BTASSERT(strcmp(STRINGIFY(VERSION), version) == 0);
 
     /* System time. */
-    BTASSERT(upgrade_bootloader_uds_handle_service(&uds) == 0);
+    BTASSERT(upgrade_uds_handle_service(&uds) == 0);
     BTASSERT(queue_read(&qout, &length, sizeof(length)) == sizeof(length));
     length = ntohl(length);
     fprintf(stderr, "%d\n", length);
@@ -158,7 +158,7 @@ static int test_read_data_by_identifier(struct harness_t *self_p)
 
 static int test_read_memory_by_address(struct harness_t *self_p)
 {
-    struct upgrade_bootloader_uds_t uds;
+    struct upgrade_uds_t uds;
     struct queue_t qin;
     struct queue_t qout;
     uint8_t input[] = {
@@ -176,10 +176,10 @@ static int test_read_memory_by_address(struct harness_t *self_p)
     queue_init(&qin, inbuf, sizeof(inbuf));
     queue_init(&qout, outbuf, sizeof(outbuf));
     queue_write(&qin, input, sizeof(input));
-    upgrade_bootloader_uds_init(&uds, &qin, &qout);
+    BTASSERT(upgrade_uds_init(&uds, &qin, &qout) == 0);
 
     /* Bad length. */
-    BTASSERT(upgrade_bootloader_uds_handle_service(&uds) == -1);
+    BTASSERT(upgrade_uds_handle_service(&uds) == -1);
     BTASSERT(queue_read(&qout, &length, sizeof(length)) == sizeof(length));
     BTASSERT(ntohl(length) == 3);
     BTASSERT(queue_read(&qout, response, 3) == 3);
@@ -188,7 +188,7 @@ static int test_read_memory_by_address(struct harness_t *self_p)
     BTASSERT(response[2] == 0x13);
 
     /* Ok. */
-    BTASSERT(upgrade_bootloader_uds_handle_service(&uds) == 0);
+    BTASSERT(upgrade_uds_handle_service(&uds) == 0);
     BTASSERT(queue_read(&qout, &length, sizeof(length)) == sizeof(length));
     BTASSERT(ntohl(length) == 6);
     BTASSERT(queue_read(&qout, &code, sizeof(code)) == sizeof(code));
@@ -203,7 +203,7 @@ static int test_read_memory_by_address(struct harness_t *self_p)
 
 static int test_routine_control(struct harness_t *self_p)
 {
-    struct upgrade_bootloader_uds_t uds;
+    struct upgrade_uds_t uds;
     struct queue_t qin;
     struct queue_t qout;
     uint8_t input[] = {
@@ -221,10 +221,10 @@ static int test_routine_control(struct harness_t *self_p)
     queue_init(&qin, inbuf, sizeof(inbuf));
     queue_init(&qout, outbuf, sizeof(outbuf));
     queue_write(&qin, input, sizeof(input));
-    upgrade_bootloader_uds_init(&uds, &qin, &qout);
+    BTASSERT(upgrade_uds_init(&uds, &qin, &qout) == 0);
 
     /* Bad length. */
-    BTASSERT(upgrade_bootloader_uds_handle_service(&uds) == -1);
+    BTASSERT(upgrade_uds_handle_service(&uds) == -1);
     BTASSERT(queue_read(&qout, &length, sizeof(length)) == sizeof(length));
     BTASSERT(ntohl(length) == 3);
     BTASSERT(queue_read(&qout, response, 3) == 3);
@@ -233,7 +233,7 @@ static int test_routine_control(struct harness_t *self_p)
     BTASSERT(response[2] == 0x13);
 
     /* Bad routine id. */
-    BTASSERT(upgrade_bootloader_uds_handle_service(&uds) == -1);
+    BTASSERT(upgrade_uds_handle_service(&uds) == -1);
     BTASSERT(queue_read(&qout, &length, sizeof(length)) == sizeof(length));
     BTASSERT(ntohl(length) == 3);
     BTASSERT(queue_read(&qout, response, 3) == 3);
@@ -242,7 +242,7 @@ static int test_routine_control(struct harness_t *self_p)
     BTASSERT(response[2] == 0x11);
 
     /* Erase routine. */
-    BTASSERT(upgrade_bootloader_uds_handle_service(&uds) == 0);
+    BTASSERT(upgrade_uds_handle_service(&uds) == 0);
     BTASSERT(queue_read(&qout, &length, sizeof(length)) == sizeof(length));
     BTASSERT(ntohl(length) == 1);
     BTASSERT(queue_read(&qout, &code, 1) == 1);
@@ -253,7 +253,7 @@ static int test_routine_control(struct harness_t *self_p)
 
 static int test_diagnostic_session_control(struct harness_t *self_p)
 {
-    struct upgrade_bootloader_uds_t uds;
+    struct upgrade_uds_t uds;
     struct queue_t qin;
     struct queue_t qout;
     uint8_t input[] = {
@@ -271,10 +271,10 @@ static int test_diagnostic_session_control(struct harness_t *self_p)
     queue_init(&qin, inbuf, sizeof(inbuf));
     queue_init(&qout, outbuf, sizeof(outbuf));
     queue_write(&qin, input, sizeof(input));
-    upgrade_bootloader_uds_init(&uds, &qin, &qout);
+    BTASSERT(upgrade_uds_init(&uds, &qin, &qout) == 0);
 
     /* Bad length. */
-    BTASSERT(upgrade_bootloader_uds_handle_service(&uds) == -1);
+    BTASSERT(upgrade_uds_handle_service(&uds) == -1);
     BTASSERT(queue_read(&qout, &length, sizeof(length)) == sizeof(length));
     BTASSERT(ntohl(length) == 3);
     BTASSERT(queue_read(&qout, response, 3) == 3);
@@ -283,7 +283,7 @@ static int test_diagnostic_session_control(struct harness_t *self_p)
     BTASSERT(response[2] == 0x13);
 
     /* Bad session. */
-    BTASSERT(upgrade_bootloader_uds_handle_service(&uds) == -1);
+    BTASSERT(upgrade_uds_handle_service(&uds) == -1);
     BTASSERT(queue_read(&qout, &length, sizeof(length)) == sizeof(length));
     BTASSERT(ntohl(length) == 3);
     BTASSERT(queue_read(&qout, response, 3) == 3);
@@ -292,7 +292,7 @@ static int test_diagnostic_session_control(struct harness_t *self_p)
     BTASSERT(response[2] == 0x31);
 
     /* Routine CALL: ok */
-    BTASSERT(upgrade_bootloader_uds_handle_service(&uds) == 0);
+    BTASSERT(upgrade_uds_handle_service(&uds) == 0);
     BTASSERT(queue_read(&qout, &length, sizeof(length)) == sizeof(length));
     BTASSERT(ntohl(length) == 1);
     BTASSERT(queue_read(&qout, &code, sizeof(code)) == sizeof(code));
@@ -303,7 +303,7 @@ static int test_diagnostic_session_control(struct harness_t *self_p)
 
 static int test_request_download(struct harness_t *self_p)
 {
-    struct upgrade_bootloader_uds_t uds;
+    struct upgrade_uds_t uds;
     struct queue_t qin;
     struct queue_t qout;
     uint8_t input[] = {
@@ -348,10 +348,10 @@ static int test_request_download(struct harness_t *self_p)
     queue_init(&qin, inbuf, sizeof(inbuf));
     queue_init(&qout, outbuf, sizeof(outbuf));
     queue_write(&qin, input, sizeof(input));
-    upgrade_bootloader_uds_init(&uds, &qin, &qout);
+    BTASSERT(upgrade_uds_init(&uds, &qin, &qout) == 0);
 
     /* Bad length. */
-    BTASSERT(upgrade_bootloader_uds_handle_service(&uds) == -1);
+    BTASSERT(upgrade_uds_handle_service(&uds) == -1);
     BTASSERT(queue_read(&qout, &length, sizeof(length)) == sizeof(length));
     BTASSERT(ntohl(length) == 3);
     BTASSERT(queue_read(&qout, response, 3) == 3);
@@ -360,7 +360,7 @@ static int test_request_download(struct harness_t *self_p)
     BTASSERT(response[2] == 0x13);
 
     /* Bad field sizes. */
-    BTASSERT(upgrade_bootloader_uds_handle_service(&uds) == -1);
+    BTASSERT(upgrade_uds_handle_service(&uds) == -1);
     BTASSERT(queue_read(&qout, &length, sizeof(length)) == sizeof(length));
     BTASSERT(ntohl(length) == 3);
     BTASSERT(queue_read(&qout, response, 3) == 3);
@@ -369,7 +369,7 @@ static int test_request_download(struct harness_t *self_p)
     BTASSERT(response[2] == 0x31);
 
     /* Bad address and size length. */
-    BTASSERT(upgrade_bootloader_uds_handle_service(&uds) == -1);
+    BTASSERT(upgrade_uds_handle_service(&uds) == -1);
     BTASSERT(queue_read(&qout, &length, sizeof(length)) == sizeof(length));
     BTASSERT(ntohl(length) == 3);
     BTASSERT(queue_read(&qout, response, 3) == 3);
@@ -396,7 +396,7 @@ static int test_request_download(struct harness_t *self_p)
     /* BTASSERT(response[2] == 0x31); */
 
     /* Flash ok. */
-    BTASSERT(upgrade_bootloader_uds_handle_service(&uds) == 0);
+    BTASSERT(upgrade_uds_handle_service(&uds) == 0);
     BTASSERT(queue_read(&qout, &length, sizeof(length)) == sizeof(length));
     BTASSERT(ntohl(length) == 6);
     BTASSERT(queue_read(&qout, &code, sizeof(code)) == sizeof(code));
@@ -411,7 +411,7 @@ static int test_request_download(struct harness_t *self_p)
 
 static int test_transfer_data(struct harness_t *self_p)
 {
-    struct upgrade_bootloader_uds_t uds;
+    struct upgrade_uds_t uds;
     struct queue_t qin;
     struct queue_t qout;
     uint8_t input[] = {
@@ -442,10 +442,10 @@ static int test_transfer_data(struct harness_t *self_p)
     queue_init(&qin, inbuf, sizeof(inbuf));
     queue_init(&qout, outbuf, sizeof(outbuf));
     queue_write(&qin, input, sizeof(input));
-    upgrade_bootloader_uds_init(&uds, &qin, &qout);
+    BTASSERT(upgrade_uds_init(&uds, &qin, &qout) == 0);
 
     /* Bad state. */
-    BTASSERT(upgrade_bootloader_uds_handle_service(&uds) == -1);
+    BTASSERT(upgrade_uds_handle_service(&uds) == -1);
     BTASSERT(queue_read(&qout, &length, sizeof(length)) == sizeof(length));
     BTASSERT(ntohl(length) == 3);
     BTASSERT(queue_read(&qout, response, 3) == 3);
@@ -454,7 +454,7 @@ static int test_transfer_data(struct harness_t *self_p)
     BTASSERT(response[2] == 0x22);
 
     /* Flash ok. */
-    BTASSERT(upgrade_bootloader_uds_handle_service(&uds) == 0);
+    BTASSERT(upgrade_uds_handle_service(&uds) == 0);
     BTASSERT(queue_read(&qout, &length, sizeof(length)) == sizeof(length));
     BTASSERT(ntohl(length) == 6);
     BTASSERT(queue_read(&qout, &code, sizeof(code)) == sizeof(code));
@@ -465,7 +465,7 @@ static int test_transfer_data(struct harness_t *self_p)
     BTASSERT(ntohl(max_size) == 4096);
 
     /* Bad length. */
-    BTASSERT(upgrade_bootloader_uds_handle_service(&uds) == -1);
+    BTASSERT(upgrade_uds_handle_service(&uds) == -1);
     BTASSERT(queue_read(&qout, &length, sizeof(length)) == sizeof(length));
     BTASSERT(ntohl(length) == 3);
     BTASSERT(queue_read(&qout, response, 3) == 3);
@@ -474,7 +474,7 @@ static int test_transfer_data(struct harness_t *self_p)
     BTASSERT(response[2] == 0x13);
 
     /* /\* Transfer too much data. *\/ */
-    /* BTASSERT(upgrade_bootloader_uds_handle_service(&uds) == -1); */
+    /* BTASSERT(upgrade_uds_handle_service(&uds) == -1); */
     /* BTASSERT(queue_read(&qout, &length, sizeof(length)) == sizeof(length)); */
     /* BTASSERT(ntohl(length) == 3); */
     /* BTASSERT(queue_read(&qout, response, 3) == 3); */
@@ -483,7 +483,7 @@ static int test_transfer_data(struct harness_t *self_p)
     /* BTASSERT(response[2] == 0x31); */
 
     /* Transfer wrong sequence counter. */
-    BTASSERT(upgrade_bootloader_uds_handle_service(&uds) == -1);
+    BTASSERT(upgrade_uds_handle_service(&uds) == -1);
     BTASSERT(queue_read(&qout, &length, sizeof(length)) == sizeof(length));
     BTASSERT(ntohl(length) == 3);
     BTASSERT(queue_read(&qout, response, 3) == 3);
@@ -492,7 +492,7 @@ static int test_transfer_data(struct harness_t *self_p)
     BTASSERT(response[2] == 0x73);
 
     /* Transfer ok. */
-    BTASSERT(upgrade_bootloader_uds_handle_service(&uds) == 0);
+    BTASSERT(upgrade_uds_handle_service(&uds) == 0);
     BTASSERT(queue_read(&qout, &length, sizeof(length)) == sizeof(length));
     BTASSERT(ntohl(length) == 2);
     BTASSERT(queue_read(&qout, &code, sizeof(code)) == sizeof(code));
@@ -507,7 +507,7 @@ static int test_transfer_data(struct harness_t *self_p)
 
 static int test_request_transfer_exit(struct harness_t *self_p)
 {
-    struct upgrade_bootloader_uds_t uds;
+    struct upgrade_uds_t uds;
     struct queue_t qin;
     struct queue_t qout;
     uint8_t input[] = {
@@ -536,10 +536,10 @@ static int test_request_transfer_exit(struct harness_t *self_p)
     queue_init(&qin, inbuf, sizeof(inbuf));
     queue_init(&qout, outbuf, sizeof(outbuf));
     queue_write(&qin, input, sizeof(input));
-    upgrade_bootloader_uds_init(&uds, &qin, &qout);
+    BTASSERT(upgrade_uds_init(&uds, &qin, &qout) == 0);
 
     /* Bad length. */
-    BTASSERT(upgrade_bootloader_uds_handle_service(&uds) == -1);
+    BTASSERT(upgrade_uds_handle_service(&uds) == -1);
     BTASSERT(queue_read(&qout, &length, sizeof(length)) == sizeof(length));
     BTASSERT(ntohl(length) == 3);
     BTASSERT(queue_read(&qout, response, 3) == 3);
@@ -548,7 +548,7 @@ static int test_request_transfer_exit(struct harness_t *self_p)
     BTASSERT(response[2] == 0x13);
 
     /* Bad state. */
-    BTASSERT(upgrade_bootloader_uds_handle_service(&uds) == -1);
+    BTASSERT(upgrade_uds_handle_service(&uds) == -1);
     BTASSERT(queue_read(&qout, &length, sizeof(length)) == sizeof(length));
     BTASSERT(ntohl(length) == 3);
     BTASSERT(queue_read(&qout, response, 3) == 3);
@@ -557,7 +557,7 @@ static int test_request_transfer_exit(struct harness_t *self_p)
     BTASSERT(response[2] == 0x22);
 
     /* Flash ok. */
-    BTASSERT(upgrade_bootloader_uds_handle_service(&uds) == 0);
+    BTASSERT(upgrade_uds_handle_service(&uds) == 0);
     BTASSERT(queue_read(&qout, &length, sizeof(length)) == sizeof(length));
     BTASSERT(ntohl(length) == 6);
     BTASSERT(queue_read(&qout, &code, sizeof(code)) == sizeof(code));
@@ -568,7 +568,7 @@ static int test_request_transfer_exit(struct harness_t *self_p)
     BTASSERT(ntohl(max_size) == 4096);
 
     /* Transfer ok. */
-    BTASSERT(upgrade_bootloader_uds_handle_service(&uds) == 0);
+    BTASSERT(upgrade_uds_handle_service(&uds) == 0);
     BTASSERT(queue_read(&qout, &length, sizeof(length)) == sizeof(length));
     BTASSERT(ntohl(length) == 2);
     BTASSERT(queue_read(&qout, &code, sizeof(code)) == sizeof(code));
@@ -579,7 +579,7 @@ static int test_request_transfer_exit(struct harness_t *self_p)
     BTASSERT(block_sequence_counter == 0x01);
 
     /* Transfer exit ok. */
-    BTASSERT(upgrade_bootloader_uds_handle_service(&uds) == 0);
+    BTASSERT(upgrade_uds_handle_service(&uds) == 0);
     BTASSERT(queue_read(&qout, &length, sizeof(length)) == sizeof(length));
     BTASSERT(ntohl(length) == 1);
     BTASSERT(queue_read(&qout, &code, sizeof(code)) == sizeof(code));

@@ -59,6 +59,7 @@ ifeq ($(BOARD), linux)
     TESTS += $(addprefix tst/oam/, service \
 				   settings \
 				   shell \
+				   upgrade \
 				   upgrade/kermit \
 				   upgrade/uds)
     TESTS += $(addprefix tst/filesystems/, fat16 \

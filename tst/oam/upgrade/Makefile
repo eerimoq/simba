@@ -28,48 +28,10 @@
 # This file is part of the Simba project.
 #
 
-CROSS_COMPILE = xtensa-esp32-elf-
+NAME = upgrade_suite
+BOARD ?= linux
 
-SIZE_SUMMARY_CMD ?= $(SIMBA_ROOT)/bin/memory_usage.py \
-			--ram-section .dram0.bss \
-			--ram-section .dram0.data \
-			--rom-section .flash.rodata \
-			--rom-section .flash.text \
-			${EXE}
+CFLAGS += -DUPGRADE_TEST
 
-CDEFS += F_CPU=$(F_CPU)UL
-
-CFLAGS += -Os \
-          -Werror \
-          -nostdlib \
-          -mlongcalls \
-          -ffunction-sections \
-          -fdata-sections
-
-CXXFLAGS += -Os \
-          -Werror \
-          -nostdlib \
-          -mlongcalls \
-          -ffunction-sections \
-          -fdata-sections
-
-LDFLAGS += -Wl,-static \
-           -nostdlib \
-           -Wl,-EL
-
-RUNARGS = $(BIN)
-
-ESPTOOL_PY = $(SIMBA_ROOT)/3pp/esp32/esp-idf/components/esptool_py/esptool/esptool.py
-UPGRADE_PY = $(SIMBA_ROOT)/bin/upgrade.py
-
-build: $(BIN) $(UBIN)
-
-$(BIN): $(EXE)
-	@echo "Creating $@"
-	$(ESPTOOL_PY) --chip esp32 elf2image --flash_mode dio --flash_freq 40m --flash_size 2MB -o $@ $<
-
-$(UBIN): $(BIN)
-	@echo "Creating $@"
-	$(UPGRADE_PY) -d $(UPGRADE_BINARY_DESCRIPTION) -o $@ $<
-
-include $(SIMBA_ROOT)/make/gnu.mk
+SIMBA_ROOT ?= ../../..
+include $(SIMBA_ROOT)/make/app.mk

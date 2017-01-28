@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 #
+# Append the upgrade binary header to given binart file.
+#
 
 import argparse
 import hashlib
@@ -22,10 +24,10 @@ def create_header(binary, description):
     """
 
     description += '\0'
-    
+
     if len(description) % 4 != 0:
         description += (4 - (len(description) % 4)) * '\0'
-    
+
     header = struct.pack('>III',
                          1,
                          36 + len(description),
@@ -35,7 +37,7 @@ def create_header(binary, description):
     header += struct.pack('>I', zlib.crc32(header) & 0xffffffff)
 
     return header
-    
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('-o', '--output')
@@ -46,8 +48,10 @@ def main():
     with open(args.binary) as fin:
         binary = fin.read()
 
+    header = create_header(binary, args.description)
+
     with open(args.output, 'wb') as fout:
-        fout.write(create_header(binary, args.description))
+        fout.write(header)
         fout.write(binary)
 
 

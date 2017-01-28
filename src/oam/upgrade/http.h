@@ -28,24 +28,25 @@
  * This file is part of the Simba project.
  */
 
-#ifndef __OAM_UPGRADE_BOOTLOADER_TFTP_H__
-#define __OAM_UPGRADE_BOOTLOADER_TFTP_H__
+#ifndef __OAM_UPGRADE_HTTP_H__
+#define __OAM_UPGRADE_HTTP_H__
 
 #include "simba.h"
 
 /**
- * Initialize the singleton bootloader TFTP server. The server is used
- * to write an image to the application area.
+ * Initialize the HTTP server.
  *
- * @return zero(0) or negative error code.
+ * @param[in] port Server port.
+ *
+ * @returns zero(0) or negative error code.
  */
-int upgrade_bootloader_tftp_module_init(void);
+int upgrade_http_init(int port);
 
 /**
- * Start the bootloader TFTP server.
+ * Start the HTTP server.
  *
- * @return zero(0) or negative error code.
+ * @returns Never returns.
  */
-int upgrade_bootloader_tftp_start(void);
+int upgrade_http_start(void);
 
 #endif

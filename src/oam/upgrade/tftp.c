@@ -30,7 +30,7 @@
 
 #include "simba.h"
 
-struct upgrade_bootloader_tftp_t {
+struct upgrade_tftp_t {
     struct tftp_server_t server;
 };
 
@@ -44,7 +44,7 @@ static ssize_t file_write(struct fs_file_t *self_p,
                           const void *src_p,
                           size_t size);
 
-static struct upgrade_bootloader_tftp_t module;
+static struct upgrade_tftp_t module;
 static THRD_STACK(tftp_server_stack, 2048);
 
 static struct fs_filesystem_operations_t tftp_ops = {
@@ -64,12 +64,12 @@ static int file_open(struct fs_filesystem_t *filesystem_p,
         return (-1);
     }
 
-    return (upgrade_bootloader_application_write_begin());
+    return (upgrade_binary_upload_begin());
 }
 
 static int file_close(struct fs_file_t *self_p)
 {
-    return (upgrade_bootloader_application_write_end());
+    return (upgrade_binary_upload_end());
 }
 
 static ssize_t file_write(struct fs_file_t *self_p,
@@ -78,21 +78,18 @@ static ssize_t file_write(struct fs_file_t *self_p,
 {
     int res;
 
-    res = upgrade_bootloader_application_write_chunk(src_p, size);
+    res = upgrade_binary_upload(src_p, size);
 
     return (res == 0 ? size : -1);
 }
 
-int upgrade_bootloader_tftp_module_init()
+int upgrade_tftp_init(int port, int timeout_ms)
 {
     struct inet_addr_t addr;
-    const char *root_p = "/tftp";
+    const char *root_p = "/upgradetftp";
 
-    if (inet_aton(STRINGIFY(CONFIG_UPGRADE_TFTP_SERVER_IP), &addr.ip) != 0) {
-        return (-1);
-    }
-
-    addr.port = CONFIG_UPGRADE_TFTP_SERVER_PORT;
+    addr.ip.number = 0;
+    addr.port = port;
 
     /* Create and register the tftp file system used to write received
        software to the application area. */
@@ -101,14 +98,14 @@ int upgrade_bootloader_tftp_module_init()
 
     return (tftp_server_init(&module.server,
                              &addr,
-                             CONFIG_UPGRADE_TFTP_SERVER_TIMEOUT_MS,
-                             "tftp_server",
+                             timeout_ms,
+                             "upgrade_tftp_server",
                              root_p,
                              tftp_server_stack,
                              sizeof(tftp_server_stack)));
 }
 
-int upgrade_bootloader_tftp_start()
+int upgrade_tftp_start()
 {
     return (tftp_server_start(&module.server));
 }

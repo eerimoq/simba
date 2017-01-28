@@ -318,7 +318,7 @@ static int client_read_request_transfer_data(struct client_t *self_p)
             if (self_p->data.size < DATA_SIZE) {
                 log_object_print(NULL,
                                  LOG_INFO,
-                                 FSTR("Sent %u bytes.\r\n"),
+                                 FSTR("sent %u bytes\r\n"),
                                  self_p->number_of_bytes_transferred);
                 return (0);
             }
@@ -434,7 +434,7 @@ static int client_write_request_transfer_data(struct client_t *self_p)
             if (size < DATA_SIZE) {
                 log_object_print(NULL,
                                  LOG_INFO,
-                                 FSTR("Received %u bytes.\r\n"),
+                                 FSTR("received %u bytes\r\n"),
                                  self_p->number_of_bytes_transferred);
                 return (0);
             }
@@ -622,7 +622,7 @@ static void *tftp_server_main(void *arg_p)
     ssize_t size;
     char addrbuf[16];
     struct thrd_environment_variable_t env[1];
-    
+
     self_p = arg_p;
 
     thrd_set_name(self_p->name_p);
@@ -632,7 +632,7 @@ static void *tftp_server_main(void *arg_p)
         thrd_init_env(&env[0], membersof(env));
         thrd_set_env("CWD", self_p->root_p);
     }
-    
+
     if (socket_open_udp(&self_p->listener) != 0) {
         return (NULL);
     }
@@ -641,13 +641,14 @@ static void *tftp_server_main(void *arg_p)
         return (NULL);
     }
 
+    log_object_print(NULL,
+                     LOG_INFO,
+                     FSTR("serving TFTP on %s:%u\r\n"),
+                     inet_ntoa(&self_p->addr.ip, &addrbuf[0]),
+                     self_p->addr.port);
+
     /* Wait for a client. */
     while (1) {
-        log_object_print(NULL,
-                         LOG_INFO,
-                         FSTR("listening on %s:%u\r\n"),
-                         inet_ntoa(&self_p->addr.ip, &addrbuf[0]),
-                         self_p->addr.port);
         size = socket_recvfrom(&self_p->listener,
                                &buf[0],
                                sizeof(buf) - 1,

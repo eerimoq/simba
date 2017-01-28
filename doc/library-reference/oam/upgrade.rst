@@ -41,7 +41,7 @@ over HTTP.
    no
    > curl --header "Content-Type: application/octet-stream" \
           --data-binary @application.ubin \
-          http://192.168.0.7/oam/upgrade/application/write
+          http://192.168.0.7/oam/upgrade/upload
    > curl http://192.168.0.7/oam/upgrade/application/is_valid
    yes
 
@@ -106,7 +106,7 @@ Due over the serial port.
    $ oam/upgrade/application/is_valid
    no
    $ oam/upgrade/application/erase
-   $ oam/upgrade/application/load_kermit   # Type '\+c' to return to kermit.
+   $ oam/upgrade/kermit/upload       # Type '\+c' to return to kermit.
    C-Kermit> send application.ubin
 
 Then start it using the serial port.
@@ -151,8 +151,8 @@ software upgrade.
 .. code-block:: text
 
    /oam/upgrade/application/erase
-   /oam/upgrade/application/kermit/load
    /oam/upgrade/application/is_valid
+   /oam/upgrade/kermit/upload
 
 HTTP requests
 ^^^^^^^^^^^^^
@@ -163,8 +163,8 @@ upgrade.
 .. code-block:: text
 
    GET /oam/upgrade/application/erase
-   POST /oam/upgrade/application/write
    GET /oam/upgrade/application/is_valid
+   POST /oam/upgrade/upload
 
 Application erase
 %%%%%%%%%%%%%%%%%
@@ -198,14 +198,14 @@ Error response:
 
   erase failed
 
-Application write
-%%%%%%%%%%%%%%%%%
+Upload
+%%%%%%
 
 Request:
 
 .. code-block:: text
 
-  POST /oam/upgrade/application/write HTTP/1.1
+  POST /oam/upgrade/upload HTTP/1.1
   Host: 192.168.0.7
   User-Agent: curl/7.47.0
   Accept: */*
@@ -223,7 +223,7 @@ Successful response:
   Content-Type: text/plain
   Content-Length: 16
 
-  write successful
+  upload successful
 
 Error response:
 
@@ -233,7 +233,7 @@ Error response:
   Content-Type: text/plain
   Content-Length: 16
 
-  write failed
+  upload failed
 
 Application is valid
 %%%%%%%%%%%%%%%%%%%%
@@ -260,7 +260,7 @@ Response:
 TFTP file transfer
 ^^^^^^^^^^^^^^^^^^
 
-Only write, aka "put", in binary mode is supported.
+Only upload, aka "put", in binary mode is supported.
 
 Application
 -----------

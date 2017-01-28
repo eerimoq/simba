@@ -28,53 +28,31 @@
  * This file is part of the Simba project.
  */
 
-#ifndef __OAM_UPGRADE_BOOTLOADER_UDS_H__
-#define __OAM_UPGRADE_BOOTLOADER_UDS_H__
-
 #include "simba.h"
 
-/* States. */
-#define UDS_STATE_IDLE        1
-#define UDS_STATE_SWDL        2
+static int test_bootloader(struct harness_t *self_p)
+{
+    BTASSERT(upgrade_bootloader_enter() == -1);
+    BTASSERT(upgrade_bootloader_stay_set() == 0);
+    BTASSERT(upgrade_bootloader_stay_get() == 1);
+    BTASSERT(upgrade_bootloader_stay_clear() == 0);
+    BTASSERT(upgrade_bootloader_stay_get() == 0);
 
-struct upgrade_bootloader_uds_t {
-    int state;
-    void *chin_p;
-    void *chout_p;
-    struct {
-        uint8_t next_block_sequence_counter;
-    } swdl;
-};
+    return (0);
+}
 
-/**
- * Initialize the bootloader object.
- *
- * @param[in,out] self_p Bootloader object.
- * @param[in] chin_p Input channel.
- * @param[in] chout_p Output channel.
- *
- * @returns zero(0) or negative error code.
- */
-int upgrade_bootloader_uds_init(struct upgrade_bootloader_uds_t *self_p,
-                                void *chin_p,
-                                void *chout_p);
+int main()
+{
+    struct harness_t harness;
+    struct harness_testcase_t harness_testcases[] = {
+        { test_bootloader, "test_bootloader" },
+        { NULL, NULL }
+    };
 
-/**
- * Handle a service.
- *
- * @param[in] self_p Bootloader object.
- *
- * @returns zero(0) or negative error code.
- */
-int upgrade_bootloader_uds_handle_service(struct upgrade_bootloader_uds_t *self_p);
+    sys_start();
 
-/**
- * Run the main loop of the bootloader.
- *
- * @param[in] self_p Bootloader object.
- *
- * @returns Never returns.
- */
-void upgrade_bootloader_uds_main(struct upgrade_bootloader_uds_t *self_p);
+    harness_init(&harness);
+    harness_run(&harness, harness_testcases);
 
-#endif
+    return (0);
+}

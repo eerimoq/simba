@@ -402,6 +402,8 @@ MULTIMEDIA_SRC ?= midi.c
 SRC += $(MULTIMEDIA_SRC:%=$(SIMBA_ROOT)/src/multimedia/%)
 
 # OAM package.
+INC += $(SIMBA_ROOT)/src/oam/ports/$(FAMILY)
+
 OAM_SRC_TMP ?= \
 	console.c \
 	service.c \
@@ -411,12 +413,10 @@ OAM_SRC_TMP ?= \
 ifeq ($(FAMILY), $(filter $(FAMILY), esp32 linux))
 OAM_SRC_TMP += \
 	upgrade.c \
-	upgrade/application/bootloader.c \
-	upgrade/bootloader/application.c \
-	upgrade/bootloader/http.c \
-	upgrade/bootloader/kermit.c \
-	upgrade/bootloader/tftp.c \
-	upgrade/bootloader/uds.c
+	upgrade/http.c \
+	upgrade/kermit.c \
+	upgrade/tftp.c \
+	upgrade/uds.c
 endif
 
 OAM_SRC ?= $(OAM_SRC_TMP)

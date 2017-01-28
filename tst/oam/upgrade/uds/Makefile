@@ -31,7 +31,7 @@
 NAME = uds_suite
 BOARD ?= linux
 
-CFLAGS += -DBOOTLOADER_TEST
+CFLAGS += -DUPGRADE_TEST
 
 SIMBA_ROOT ?= ../../../..
 include $(SIMBA_ROOT)/make/app.mk

@@ -1338,6 +1338,34 @@
 #endif
 
 /**
+ * Debug file system command to enter the application.
+ */
+#ifndef CONFIG_FS_CMD_UPGRADE_APPLICATION_ENTER
+#    define CONFIG_FS_CMD_UPGRADE_APPLICATION_ENTER         1
+#endif
+
+/**
+ * Debug file system command to erase the application.
+ */
+#ifndef CONFIG_FS_CMD_UPGRADE_APPLICATION_ERASE
+#    define CONFIG_FS_CMD_UPGRADE_APPLICATION_ERASE         1
+#endif
+
+/**
+ * Debug file system command to check if the application is valid.
+ */
+#ifndef CONFIG_FS_CMD_UPGRADE_APPLICATION_IS_VALID
+#    define CONFIG_FS_CMD_UPGRADE_APPLICATION_IS_VALID      1
+#endif
+
+/**
+ * Debug file system command to enter the bootloader.
+ */
+#ifndef CONFIG_FS_CMD_UPGRADE_BOOTLOADER_ENTER
+#    define CONFIG_FS_CMD_UPGRADE_BOOTLOADER_ENTER          1
+#endif
+
+/**
  * Debug file system command to list all USB devices.
  */
 #ifndef CONFIG_FS_CMD_USB_DEVICE_LIST
@@ -1814,70 +1842,6 @@
 #    else
 #        define CONFIG_HTTP_SERVER_SSL                      0
 #    endif
-#endif
-
-#ifndef CONFIG_UPGRADE_APPLICATION
-#    define CONFIG_UPGRADE_APPLICATION                      0
-#endif
-
-#ifndef CONFIG_UPGRADE_BOOTLOADER
-#    define CONFIG_UPGRADE_BOOTLOADER                       0
-#endif
-
-/**
- * Upgrade HTTP server.
- */
-#ifndef CONFIG_UPGRADE_HTTP_SERVER
-#    define CONFIG_UPGRADE_HTTP_SERVER                      1
-#endif
-
-/**
- * Upgrade TFTP server.
- */
-#ifndef CONFIG_UPGRADE_TFTP_SERVER
-#    define CONFIG_UPGRADE_TFTP_SERVER                      1
-#endif
-
-/**
- * The upgrade HTTP server binds to this IP address.
- */
-#ifndef CONFIG_UPGRADE_HTTP_SERVER_IP
-#    define CONFIG_UPGRADE_HTTP_SERVER_IP             0.0.0.0
-#endif
-
-/**
- * The upgrade HTTP server binds to this IP address.
- */
-#ifndef CONFIG_UPGRADE_HTTP_SERVER_IP
-#    define CONFIG_UPGRADE_HTTP_SERVER_IP             0.0.0.0
-#endif
-
-/**
- * The upgrade HTTP server binds to this port.
- */
-#ifndef CONFIG_UPGRADE_HTTP_SERVER_PORT
-#    define CONFIG_UPGRADE_HTTP_SERVER_PORT                80
-#endif
-
-/**
- * The upgrade TFTP server binds to this IP address.
- */
-#ifndef CONFIG_UPGRADE_TFTP_SERVER_IP
-#    define CONFIG_UPGRADE_TFTP_SERVER_IP             0.0.0.0
-#endif
-
-/**
- * The upgrade TFTP server binds to this port.
- */
-#ifndef CONFIG_UPGRADE_TFTP_SERVER_PORT
-#    define CONFIG_UPGRADE_TFTP_SERVER_PORT                69
-#endif
-
-/**
- * Packet reception timeout in the upgrade HTTP server.
- */
-#ifndef CONFIG_UPGRADE_TFTP_SERVER_TIMEOUT_MS
-#    define CONFIG_UPGRADE_TFTP_SERVER_TIMEOUT_MS        3000
 #endif
 
 /**

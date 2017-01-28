@@ -382,7 +382,7 @@ static void *listener_main(void *arg_p)
     if (socket_open_tcp(&listener_p->socket) != 0) {
         log_object_print(NULL,
                          LOG_ERROR,
-                         FSTR("Failed to open socket."));
+                         FSTR("failed to open socket\r\n"));
         return (NULL);
     }
 
@@ -395,16 +395,22 @@ static void *listener_main(void *arg_p)
     if (socket_bind(&listener_p->socket, &addr) != 0) {
         log_object_print(NULL,
                          LOG_ERROR,
-                         FSTR("Failed to bind socket."));
+                         FSTR("failed to bind socket\r\n"));
         return (NULL);
     }
 
     if (socket_listen(&listener_p->socket, 3) != 0) {
         log_object_print(NULL,
                          LOG_ERROR,
-                         FSTR("Failed to listen on socket."));
+                         FSTR("failed to listen on socket\r\n"));
         return (NULL);
     }
+
+    log_object_print(NULL,
+                     LOG_INFO,
+                     FSTR("serving HTTP on %s:%u\r\n"),
+                     listener_p->address_p,
+                     listener_p->port);
 
     /* Wait for clients to connect. */
     while (1) {

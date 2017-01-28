@@ -55,7 +55,7 @@
 #define LONG_PACKETS_LENGTH_MAX_MSB   1
 #define LONG_PACKETS_LENGTH_MAX_LSB  94
 
-struct upgrade_bootloader_kermit_t {
+struct upgrade_kermit_t {
     void *chin_p;
     void *chout_p;
     struct {
@@ -64,7 +64,7 @@ struct upgrade_bootloader_kermit_t {
     } input;
 };
 
-static struct upgrade_bootloader_kermit_t module;
+static struct upgrade_kermit_t module;
 static struct fs_command_t cmd_application_kermit_load;
 
 /**
@@ -179,7 +179,7 @@ static int handle_data(int sequence_number)
         }
     }
 
-    if (upgrade_bootloader_application_write_chunk(module.input.buf, j) != 0) {
+    if (upgrade_binary_upload(module.input.buf, j) != 0) {
         return (-1);
     }
 
@@ -326,17 +326,17 @@ static int cmd_application_kermit_load_cb(int argc,
                                           void *arg_p,
                                           void *call_arg_p)
 {
-    return (upgrade_bootloader_kermit_load_file());
+    return (upgrade_kermit_load_file());
 }
 
-int upgrade_bootloader_kermit_module_init(void *chin_p,
-                                   void *chout_p)
+int upgrade_kermit_init(void *chin_p,
+                        void *chout_p)
 {
     module.chin_p = chin_p;
     module.chout_p = chout_p;
 
     fs_command_init(&cmd_application_kermit_load,
-                    FSTR("/oam/upgrade/application/kermit/load"),
+                    FSTR("/oam/upgrade/kermit/upload"),
                     cmd_application_kermit_load_cb,
                     NULL);
     fs_command_register(&cmd_application_kermit_load);
@@ -344,7 +344,7 @@ int upgrade_bootloader_kermit_module_init(void *chin_p,
     return (0);
 }
 
-int upgrade_bootloader_kermit_load_file()
+int upgrade_kermit_load_file()
 {
     int res;
 
@@ -356,10 +356,10 @@ int upgrade_bootloader_kermit_load_file()
                     "Enter after the file transfer to return to the "
                     "bootloader shell.\r\n"));
 
-    if (upgrade_bootloader_application_write_begin() != 0) {
+    if (upgrade_binary_upload_begin() != 0) {
         return (-1);
     }
-    
+
     while (1) {
         res = handle_packet();
 
@@ -373,7 +373,7 @@ int upgrade_bootloader_kermit_load_file()
         }
     }
 
-    if (upgrade_bootloader_application_write_end() != 0) {
+    if (upgrade_binary_upload_end() != 0) {
         return (-1);
     }
 

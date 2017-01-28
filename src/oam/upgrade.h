@@ -33,12 +33,6 @@
 
 #include "simba.h"
 
-struct upgrade_binary_header_t {
-    uint32_t size;
-    uint8_t sha1[20];
-    char description[128];
-};
-
 /**
  * Initialize the upgrade module. This function must be called before
  * calling any other function in this module.
@@ -51,20 +45,85 @@ struct upgrade_binary_header_t {
 int upgrade_module_init(void);
 
 /**
- * Starts configured TFTP and HTTP servers in the bootloader. This
- * function must only be called from the bootloader.
+ * Enter the bootloader. This function does not return if all
+ * preconditions for entering the bootloader are met.
  *
  * @return zero(0) or negative error code.
  */
-int upgrade_bootloader_start(void);
+int upgrade_bootloader_enter(void);
 
 /**
- * Parse the binary header.
+ * Stay in the bootloader after next system reboot.
  *
  * @return zero(0) or negative error code.
  */
-int upgrade_binary_header_parse(struct upgrade_binary_header_t *header_p,
-                                uint8_t *src_p,
-                                size_t size);
+int upgrade_bootloader_stay_set(void);
+
+/**
+ * Do not stay in the bootloader after next system reboot.
+ *
+ * @return zero(0) or negative error code.
+ */
+int upgrade_bootloader_stay_clear(void);
+
+/**
+ * Check if the bootlaoder is forced to enter its main loop instead of
+ * calling any valid application.
+ *
+ * @return true(1) if the bootloder shall not call the application,
+ *         otherwise false(0).
+ */
+int upgrade_bootloader_stay_get(void);
+
+/**
+ * Enter the application. This function does not return if all
+ * preconditions for entering the application are met.
+ *
+ * @return zero(0) or negative error code.
+ */
+int upgrade_application_enter(void);
+
+/**
+ * Erase the application area.
+ *
+ * @return zero(0) or negative error code.
+ */
+int upgrade_application_erase(void);
+
+/**
+ * Returns true(1) if there is a valid application in the application
+ * area.
+ *
+ * @param[in] quick Perform a quick validation.
+ *
+ * @return true(1) if a valid application exists in the memory
+ *          region, otherwise false(0).
+ */
+int upgrade_application_is_valid(int quick);
+
+/**
+ * Begin an upload transaction.
+ *
+ * @return zero(0) or negative error code.
+ */
+int upgrade_binary_upload_begin(void);
+
+/**
+ * Add data to current upload transaction.
+ *
+ * @param[in] buf_p Buffer to write.
+ * @param[in] size Size of the buffer.
+ *
+ * @return zero(0) or negative error code.
+ */
+int upgrade_binary_upload(const void *buf_p,
+                          size_t size);
+
+/**
+ * End current upload transaction.
+ *
+ * @return zero(0) or negative error code.
+ */
+int upgrade_binary_upload_end(void);
 
 #endif

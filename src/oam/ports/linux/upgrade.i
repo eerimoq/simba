@@ -28,23 +28,63 @@
  * This file is part of the Simba project.
  */
 
-#ifndef __OAM_UPGRADE_BOOTLOADER_HTTP_H__
-#define __OAM_UPGRADE_BOOTLOADER_HTTP_H__
+struct module_port_t {
+    int stay_in_bootloader;
+};
 
-#include "simba.h"
+static struct module_port_t module_port;
 
-/**
- * Initialize the HTTP server.
- *
- * @returns zero(0) or negative error code.
- */
-int upgrade_bootloader_http_module_init(void);
+static int upgrade_port_bootloader_enter()
+{
+    return (-1);
+}
 
-/**
- * Start the HTTP server.
- *
- * @returns Never returns.
- */
-int upgrade_bootloader_http_start(void);
+static int upgrade_port_bootloader_stay_set()
+{
+    module_port.stay_in_bootloader = 1;
 
-#endif
+    return (0);
+}
+
+static int upgrade_port_bootloader_stay_clear()
+{
+    module_port.stay_in_bootloader = 0;
+
+    return (0);
+}
+
+static int upgrade_port_bootloader_stay_get()
+{
+    return (module_port.stay_in_bootloader);
+}
+
+static int upgrade_port_application_enter()
+{
+    return (-1);
+}
+
+static int upgrade_port_application_erase()
+{
+    return (0);
+}
+
+static int upgrade_port_application_is_valid()
+{
+    return (0);
+}
+
+static int upgrade_port_binary_upload_begin()
+{
+    return (0);
+}
+
+static int upgrade_port_binary_upload(const void *buf_p,
+                                      size_t size)
+{
+    return (0);
+}
+
+static int upgrade_port_binary_upload_end()
+{
+    return (0);
+}
