@@ -66,7 +66,7 @@ struct client_t {
     uint32_t number_of_bytes_transferred;
     struct {
         uint16_t block_number;
-        size_t size;
+        ssize_t size;
         int retransmit_counter;
     } data;
 };

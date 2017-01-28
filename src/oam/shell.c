@@ -364,7 +364,7 @@ static int history_append(struct shell_t *self_p,
                 head_p->next_p->prev_p = NULL;
             }
 
-            circular_heap_free(&self_p->history.heap.heap, head_p);
+            (void)circular_heap_free(&self_p->history.heap.heap, head_p);
         }
     }
 
@@ -577,7 +577,7 @@ static int handle_tab(struct shell_t *self_p)
         /* No auto-completion happend. */
         fs_split(buf, &path_p, &filter_p);
         std_fprintf(self_p->chout_p, FSTR("\r\n"));
-        fs_list(path_p, filter_p, self_p->chout_p);
+        (void)fs_list(path_p, filter_p, self_p->chout_p);
         std_fprintf(self_p->chout_p,
                     FSTR(CONFIG_SHELL_PROMPT "%s"),
                     line_get_buf(&self_p->line));
@@ -1239,16 +1239,16 @@ void *shell_main(void *arg_p)
                                         NULL);
             
             if (is_shell_command(stripped_line_p) == 1) {
-                fs_call(stripped_line_p,
-                        self_p->chin_p,
-                        self_p->chout_p,
-                        self_p);
+                (void)fs_call(stripped_line_p,
+                              self_p->chin_p,
+                              self_p->chout_p,
+                              self_p);
                 continue;
             } else {
-                fs_call(stripped_line_p,
-                        self_p->chin_p,
-                        self_p->chout_p,
-                        self_p->arg_p);
+                (void)fs_call(stripped_line_p,
+                              self_p->chin_p,
+                              self_p->chout_p,
+                              self_p->arg_p);
             }
         } else if (res == -EIO) {
             break;

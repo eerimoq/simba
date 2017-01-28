@@ -301,11 +301,11 @@ static void *connection_main(void *arg_p)
 
 #if CONFIG_HTTP_SERVER_SSL == 1
             if (self_p->ssl_context_p != NULL) {
-                ssl_socket_close(&connection_p->ssl_socket);
+                (void)ssl_socket_close(&connection_p->ssl_socket);
             }
 #endif
 
-            socket_close(&connection_p->socket);
+            (void)socket_close(&connection_p->socket);
 
             /* Add thread to the free list. */
             sys_lock();
