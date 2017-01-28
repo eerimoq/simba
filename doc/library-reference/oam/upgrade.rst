@@ -195,3 +195,7 @@ Example code: :github-blob:`examples/upgrade/bootloader/main.c`,
 
 .. doxygenfile:: oam/upgrade.h
    :project: simba
+
+.. |br| raw:: html
+
+   <br />
