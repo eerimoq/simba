@@ -287,16 +287,14 @@ application starts a HTTP server with it registered.
 ----------------------------------------------
 
 Source code: :github-blob:`src/oam/upgrade.h`,
-:github-blob:`src/oam/upgrade.c`,
-:github-tree:`src/oam/upgrade/application`,
-:github-tree:`src/oam/upgrade/bootloader`
+:github-blob:`src/oam/upgrade.c`, :github-tree:`src/oam/upgrade`
 
-Test code: :github-blob:`tst/oam/upgrade/kermit/main.c`,
+Test code: :github-blob:`tst/oam/upgrade/main.c`,
+:github-blob:`tst/oam/upgrade/kermit/main.c`,
 :github-blob:`tst/oam/upgrade/uds/main.c`
 
 Test coverage: :codecov:`src/oam/upgrade.c`,
-:codecov-tree:`src/oam/upgrade/application`,
-:codecov-tree:`src/oam/upgrade/bootloader`
+:codecov-tree:`src/oam/upgrade`
 
 Example code: :github-blob:`examples/upgrade/bootloader/main.c`,
 :github-blob:`examples/upgrade/application/main.c`
