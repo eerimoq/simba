@@ -99,7 +99,7 @@ static int read_initial_request_line(void *chan_p,
     size = sizeof(request_p->path);
     strncpy(request_p->path, path_p, size - 1);
     request_p->path[size - 1] = '\0';
-    
+
     if (strcmp(action_p, "GET") == 0) {
         request_p->action = http_server_request_action_get_t;
     } else if (strcmp(action_p, "POST") == 0) {
@@ -204,6 +204,11 @@ static int read_request(struct http_server_t *self_p,
             size = sizeof(request_p->headers.authorization.value);
             strncpy(request_p->headers.authorization.value, value_p, size - 1);
             request_p->headers.authorization.value[size - 1] = '\0';
+        } else if (strcmp(header_p, "Expect") == 0) {
+            request_p->headers.expect.present = 1;
+            size = sizeof(request_p->headers.expect.value);
+            strncpy(request_p->headers.expect.value, value_p, size - 1);
+            request_p->headers.expect.value[size - 1] = '\0';
         }
     }
 
@@ -218,22 +223,11 @@ find_route_callback(struct http_server_t *self_p,
                     const char *path_p)
 {
     const struct http_server_route_t *route_p;
-    int path_length;
-    char *query_string_p;
-
-    /* The query string is not part of the route. */
-    query_string_p = strstr(path_p, "?");
-
-    if (query_string_p != NULL) {
-        path_length = (query_string_p - path_p);
-    } else {
-        path_length = strlen(path_p);
-    }
 
     route_p = self_p->routes_p;
 
     while (route_p->path_p != NULL) {
-        if (strncmp(route_p->path_p, path_p, path_length) == 0) {
+        if (strncmp(route_p->path_p, path_p, strlen(route_p->path_p)) == 0) {
             return (route_p->callback);
         }
 
@@ -388,7 +382,7 @@ static void *listener_main(void *arg_p)
     if (socket_open_tcp(&listener_p->socket) != 0) {
         log_object_print(NULL,
                          LOG_ERROR,
-                         FSTR("Failed to open socket."));
+                         FSTR("failed to open socket\r\n"));
         return (NULL);
     }
 
@@ -401,16 +395,22 @@ static void *listener_main(void *arg_p)
     if (socket_bind(&listener_p->socket, &addr) != 0) {
         log_object_print(NULL,
                          LOG_ERROR,
-                         FSTR("Failed to bind socket."));
+                         FSTR("failed to bind socket\r\n"));
         return (NULL);
     }
 
     if (socket_listen(&listener_p->socket, 3) != 0) {
         log_object_print(NULL,
                          LOG_ERROR,
-                         FSTR("Failed to listen on socket."));
+                         FSTR("failed to listen on socket\r\n"));
         return (NULL);
     }
+
+    log_object_print(NULL,
+                     LOG_INFO,
+                     FSTR("serving HTTP on %s:%u\r\n"),
+                     listener_p->address_p,
+                     listener_p->port);
 
     /* Wait for clients to connect. */
     while (1) {

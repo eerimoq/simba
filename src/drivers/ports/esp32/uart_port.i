@@ -61,6 +61,8 @@ static size_t fill_tx_fifo(struct uart_driver_t *drv_p)
 static inline void tx_isr(struct uart_driver_t *drv_p,
                           struct uart_device_t *dev_p)
 {
+    portBASE_TYPE higher_prio_task_woken;
+
     /* Clear the interrupt. */
     dev_p->regs_p->INT_CLR = ESP32_UART_INT_CLR_TXFIFO_EMPTY;
 
@@ -70,7 +72,12 @@ static inline void tx_isr(struct uart_driver_t *drv_p,
         dev_p->regs_p->INT_ENA &= ~ESP32_UART_INT_ENA_TXFIFO_EMPTY;
         thrd_resume_isr(drv_p->thrd_p, 0);
 
-        xSemaphoreGiveFromISR(thrd_idle_sem, NULL);
+        higher_prio_task_woken = pdFALSE;
+        xSemaphoreGiveFromISR(thrd_idle_sem, &higher_prio_task_woken);
+
+        if (higher_prio_task_woken == pdTRUE) {
+            portYIELD_FROM_ISR() ;
+        }
     }
 }
 
@@ -78,29 +85,32 @@ static inline void rx_isr(struct uart_driver_t *drv_p,
                           struct uart_device_t *dev_p)
 {
     char c;
-    uint32_t error;
+    portBASE_TYPE higher_prio_task_woken;
 
     /* ToDo: hande errors.*/
-    error = 0;
-    c = dev_p->regs_p->FIFO;
 
-    /* Clear the interrupt. */
-    dev_p->regs_p->INT_CLR = ESP32_UART_INT_CLR_RXFIFO_FULL;
+    /* Drain the RX FIFO. Write data to the input channel. */
+    while (dev_p->regs_p->STATUS & ESP32_UART_STATUS_RXFIFO_CNT_MASK) {
+        c = dev_p->regs_p->FIFO;
 
-    /* Error frames are discarded. */
-    if (error == 0) {
-        /* Write data to the input channel. */
         if (chan_write_isr(&drv_p->chin, &c, 1) != 1) {
             fs_counter_increment(&rx_channel_overflow, 1);
         }
+    }
 
-        xSemaphoreGiveFromISR(thrd_idle_sem, NULL);
-    } else {
-        fs_counter_increment(&rx_errors, 1);
+    /* Clear the interrupt(s). */
+    dev_p->regs_p->INT_CLR = (ESP32_UART_INT_CLR_RXFIFO_TOUT
+                              | ESP32_UART_INT_CLR_RXFIFO_FULL);
+
+    higher_prio_task_woken = pdFALSE;
+    xSemaphoreGiveFromISR(thrd_idle_sem, &higher_prio_task_woken);
+
+    if (higher_prio_task_woken == pdTRUE) {
+        portYIELD_FROM_ISR() ;
     }
 }
 
-static void isr(void *arg_p)
+static RAM_CODE void isr(void *arg_p)
 {
     struct uart_device_t *dev_p;
     struct uart_driver_t *drv_p;
@@ -111,7 +121,7 @@ static void isr(void *arg_p)
         drv_p = dev_p->drv_p;
 
         /* Skip devices without active transfers. */
-        if ((drv_p == NULL) || (drv_p->thrd_p == NULL)) {
+        if (drv_p == NULL) {
             continue;
         }
 
@@ -121,7 +131,8 @@ static void isr(void *arg_p)
             tx_isr(drv_p, dev_p);
         }
 
-        if (dev_p->regs_p->INT_ST & ESP32_UART_INT_ST_RXFIFO_FULL) {
+        if (dev_p->regs_p->INT_ST & (ESP32_UART_INT_ST_RXFIFO_TOUT
+                                     | ESP32_UART_INT_ST_RXFIFO_FULL)) {
             rx_isr(drv_p, dev_p);
         }
     }
@@ -142,42 +153,70 @@ static int uart_port_module_init()
     return (0);
 }
 
-static int uart_port_start(struct uart_driver_t *drv_p)
+#include "soc/dport_reg.h"
+
+static int uart_port_start(struct uart_driver_t *self_p)
 {
     volatile struct esp32_uart_t *regs_p;
+    struct uart_device_t *dev_p;
+    struct pin_device_t *tx_pin_p;
+    struct pin_device_t *rx_pin_p;
 
-    regs_p = drv_p->dev_p->regs_p;
+    dev_p = self_p->dev_p;
+    regs_p = dev_p->regs_p;
+    tx_pin_p = dev_p->tx_pin_p;
+    rx_pin_p = dev_p->rx_pin_p;
 
     /* Wait until the transmit fifo is empty. */
     while ((regs_p->STATUS & ESP32_UART_STATUS_TXFIFO_CNT_MASK) != 0);
 
+    /* Configure TX pin in the GPIO matrix and IO MUX. */
+    ESP32_GPIO->FUNC_OUT_SEL_CFG[tx_pin_p->id] = dev_p->tx_signal;
+    ESP32_GPIO->FUNC_IN_SEL_CFG[dev_p->tx_signal] = 0x30;
+    ESP32_GPIO->PIN[tx_pin_p->id] = 0;
+    ESP32_IO_MUX->PIN[tx_pin_p->iomux] = (ESP32_IO_MUX_PIN_MCU_SEL_GPIO);
+
+    /* Configure RX pin in the GPIO matrix and IO MUX. */
+    ESP32_GPIO->FUNC_OUT_SEL_CFG[rx_pin_p->id] = 0x100;
+    ESP32_GPIO->FUNC_IN_SEL_CFG[dev_p->rx_signal] =
+        (ESP32_GPIO_FUNC_IN_SEL_CFG_SIG_IN_SEL
+         | rx_pin_p->id);
+    ESP32_GPIO->PIN[rx_pin_p->id] = 0;
+    ESP32_IO_MUX->PIN[rx_pin_p->iomux] = (ESP32_IO_MUX_PIN_MCU_SEL_GPIO
+                                          | ESP32_IO_MUX_PIN_FUNC_WPU
+                                          | ESP32_IO_MUX_PIN_FUNC_IE);
+
     /* Configure the hardware and reset the fifos. */
-    regs_p->CLKDIV = (80000000 / drv_p->baudrate);
-    regs_p->CONF0 |= (ESP32_UART_CONF0_TXFIFO_RST
-                      | ESP32_UART_CONF0_RXFIFO_RST);
-    regs_p->CONF0 &= (~(ESP32_UART_CONF0_TXFIFO_RST
-                        | ESP32_UART_CONF0_RXFIFO_RST));
+    regs_p->CLKDIV = (80000000 / self_p->baudrate);
+    regs_p->CONF0 = (ESP32_UART_CONF0_BIT_NUM(3)
+                     | ESP32_UART_CONF0_STOP_BIT_NUM(1)
+                     | ESP32_UART_CONF0_UART_ERR_WR_MASK
+                     | ESP32_UART_CONF0_UART_TICK_REF_ALWAYS_ON);
+    regs_p->CONF1 = (ESP32_UART_CONF1_RX_TOUT_EN
+                     | ESP32_UART_CONF1_RX_TOUT_THRHD(8)
+                     | ESP32_UART_CONF1_RXFIFO_FULL_THRHD(16));
 
-    regs_p->INT_ENA = (ESP32_UART_INT_ST_RXFIFO_FULL);
+    regs_p->INT_ENA = (ESP32_UART_INT_ENA_RXFIFO_TOUT
+                       | ESP32_UART_INT_ST_RXFIFO_FULL);
 
-    drv_p->dev_p->drv_p = drv_p;
+    self_p->dev_p->drv_p = self_p;
 
     /* Install interrupt handler. */
-    esp_xt_set_interrupt_handler(drv_p->dev_p->interrupt.cpu, isr, NULL);
-    esp_xt_ints_on(BIT(drv_p->dev_p->interrupt.cpu));
+    esp_xt_set_interrupt_handler(self_p->dev_p->interrupt.cpu, isr, NULL);
+    esp_xt_ints_on(BIT(self_p->dev_p->interrupt.cpu));
 
     /* Map given peripheral interrupts to given CPU interrupt. */
     intr_matrix_set(xPortGetCoreID(),
-                    drv_p->dev_p->interrupt.source,
-                    drv_p->dev_p->interrupt.cpu);
+                    self_p->dev_p->interrupt.source,
+                    self_p->dev_p->interrupt.cpu);
 
     return (0);
 }
 
-static int uart_port_stop(struct uart_driver_t *drv_p)
+static int uart_port_stop(struct uart_driver_t *self_p)
 {
     intr_matrix_set(xPortGetCoreID(),
-                    drv_p->dev_p->interrupt.source,
+                    self_p->dev_p->interrupt.source,
                     PERIPHERAL_DISABLED);
 
     return (0);

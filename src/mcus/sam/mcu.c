@@ -218,22 +218,6 @@ struct uart_device_t uart_device[UART_DEVICE_MAX] = {
             }
         },
         .id = PERIPHERAL_ID_USART2
-    },
-
-    {
-        .drv_p = NULL,
-        .regs_p = (struct sam_uart_t *)SAM_USART3,
-        .pio = {
-            .rx = {
-                .regs_p = SAM_PIOD,
-                .mask = SAM_PIO_P5
-            },
-            .tx = {
-                .regs_p = SAM_PIOD,
-                .mask = SAM_PIO_P4
-            }
-        },
-        .id = PERIPHERAL_ID_USART3
     }
 };
 

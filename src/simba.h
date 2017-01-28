@@ -236,6 +236,7 @@ extern "C" {
 #include "inet/http_server.h"
 #include "inet/http_websocket_server.h"
 #include "inet/http_websocket_client.h"
+#include "inet/tftp_server.h"
 #include "inet/mqtt_client.h"
 #include "inet/network_interface.h"
 #include "inet/network_interface/slip.h"
@@ -246,6 +247,14 @@ extern "C" {
 #    include "inet/network_interface/driver/esp.h"
 #endif
 
+#if defined(FAMILY_LINUX) || defined(FAMILY_ESP32)
+#    include "oam/upgrade.h"
+#    include "oam/upgrade/kermit.h"
+#    include "oam/upgrade/uds.h"
+#    include "oam/upgrade/http.h"
+#    include "oam/upgrade/tftp.h"
+#endif
+    
 #ifdef __cplusplus
 }
 #endif

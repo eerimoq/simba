@@ -58,7 +58,10 @@ ifeq ($(BOARD), linux)
     TESTS += $(addprefix tst/debug/, log)
     TESTS += $(addprefix tst/oam/, service \
 				   settings \
-				   shell)
+				   shell \
+				   upgrade \
+				   upgrade/kermit \
+				   upgrade/uds)
     TESTS += $(addprefix tst/filesystems/, fat16 \
 				          fs \
                                           spiffs)
@@ -72,7 +75,8 @@ ifeq ($(BOARD), linux)
 				    inet \
 				    mqtt_client \
 				    ping \
-				    ssl)
+				    ssl \
+				    tftp_server)
     TESTS += $(addprefix tst/multimedia/, midi)
 endif
 
@@ -105,12 +109,6 @@ ifeq ($(BOARD), arduino_due)
                                       json)
     TESTS += $(addprefix tst/hash/, crc \
                                     sha1)
-    TESTS += $(addprefix tst/inet/, http_server \
-				    http_websocket_client \
-				    http_websocket_server \
-				    inet \
-				    mqtt_client \
-				    ping)
     TESTS += $(addprefix tst/drivers/, chipid \
 				       can \
 				       flash \

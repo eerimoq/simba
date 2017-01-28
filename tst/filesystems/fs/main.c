@@ -42,6 +42,9 @@ static struct fs_counter_t your_counter;
 static int our_parameter_value = OUR_PARAMETER_DEFAULT;
 static struct fs_parameter_t our_parameter;
 
+static struct fs_filesystem_operations_t generic_ops;
+static struct fs_filesystem_t genericfs;
+
 #if defined(ARCH_LINUX)
 
 #define BLOCK_SIZE 512
@@ -109,7 +112,6 @@ static int32_t filesystem_spiffs_read(struct spiffs_t *fs_p,
                                        uint32_t size,
                                        uint8_t *dst_p)
 {
-    BTASSERT(addr >= 0);
     BTASSERT(addr + size <= sizeof(spiffs_buffer));
 
     memcpy(dst_p, &spiffs_buffer[addr], size);
@@ -125,7 +127,6 @@ static int32_t filesystem_spiffs_write(struct spiffs_t *fs_p,
                                         uint32_t size,
                                         uint8_t *src_p)
 {
-    BTASSERT(addr >= 0);
     BTASSERT(addr + size <= sizeof(spiffs_buffer));
 
     memcpy(&spiffs_buffer[addr], src_p, size);
@@ -625,6 +626,30 @@ static int test_filesystem_spiffs(struct harness_t *harness_p)
 #endif
 }
 
+static int test_filesystem_generic(struct harness_t *harness_p)
+{
+    char buf[32];
+    struct fs_file_t file;
+
+    /* Create and register the tftp file system used to write received
+       software to the application area. */
+    BTASSERT(fs_filesystem_init_generic(&genericfs,
+                                        "/generic",
+                                        &generic_ops) == 0);
+    BTASSERT(fs_filesystem_register(&genericfs) == 0);
+
+    /* Perform file operations. */
+    BTASSERT(fs_open(&file,
+                     "/generic/foo.txt",
+                     FS_CREAT | FS_RDWR | FS_SYNC) == 0);
+    BTASSERT(fs_write(&file, "hello!", 6) == 6);
+    BTASSERT(fs_seek(&file, 0, FS_SEEK_SET) == 0);
+    BTASSERT(fs_read(&file, buf, 6) == 6);
+    BTASSERT(fs_close(&file) == 0);
+
+    return (0);
+}
+
 static int test_filesystem(struct harness_t *harness_p)
 {
 #if defined(ARCH_LINUX)
@@ -649,12 +674,13 @@ static int test_filesystem_commands(struct harness_t *harness_p)
 {
 #if defined(ARCH_LINUX)
 
-    char buf[256];
+    char buf[512];
 
     strcpy(buf, "/filesystems/fs/filesystems/list");
     BTASSERT(fs_call(buf, NULL, &qout, NULL) == 0);
     read_until(buf,
                "MOUNT-POINT                    MEDIUM   TYPE     AVAILABLE  SIZE  USAGE\r\n"
+               "/generic                       -        generic          -     -     -%\r\n"
                "/spiffsfs                      -        spiffs           -     -     -%\r\n"
                "/fat16fs                       -        fat16            -     -     -%\r\n");
 
@@ -693,18 +719,18 @@ static int test_filesystem_commands(struct harness_t *harness_p)
 
     strcpy(buf, "/filesystems/fs/read spiffsfs/cmd.txt");
     BTASSERT(fs_call(buf, NULL, &qout, NULL) == 0);
-    read_until(buf, "12\r\n");
+    read_until(buf, "12");
 
     /* Write in paste mode, and read. */
     chan_write(&qin, "First\r\nSecond\r\n\x04", 16);
     strcpy(buf, "/filesystems/fs/write spiffsfs/cmd.txt");
     BTASSERT(fs_call(buf, &qin, &qout, NULL) == 0);
-    read_until(buf, "Paste mode. Ctrl-D to finish.\r\n");
+    read_until(buf, "Reading, press Ctrl-D when done.\r\n");
     read_until(buf, "Wrote 15 bytes to spiffsfs/cmd.txt.\r\n");
 
     strcpy(buf, "/filesystems/fs/read spiffsfs/cmd.txt");
     BTASSERT(fs_call(buf, NULL, &qout, NULL) == 0);
-    read_until(buf, "First\r\nSecond\r\n\r\n");
+    read_until(buf, "First\r\nSecond\r\n");
 
     /* Truncate existing file. */
     strcpy(buf, "/filesystems/fs/write spiffsfs/cmd.txt 1");
@@ -712,7 +738,7 @@ static int test_filesystem_commands(struct harness_t *harness_p)
 
     strcpy(buf, "/filesystems/fs/read spiffsfs/cmd.txt");
     BTASSERT(fs_call(buf, NULL, &qout, NULL) == 0);
-    read_until(buf, "1\r\n");
+    read_until(buf, "1");
 
     /* List all files in the FAT16 file system. */
     strcpy(buf, "/filesystems/fs/list fat16fs");
@@ -865,6 +891,7 @@ int main()
         { test_escape, "test_escape" },
         { test_filesystem_fat16, "test_filesystem_fat16" },
         { test_filesystem_spiffs, "test_filesystem_spiffs" },
+        { test_filesystem_generic, "test_filesystem_generic" },
         { test_filesystem, "test_filesystem" },
         { test_filesystem_commands, "test_filesystem_commands" },
         { test_read_line, "test_read_line" },

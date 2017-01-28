@@ -32,7 +32,8 @@ EXAMPLES = \
 	analog_read \
 	analog_write \
 	blink \
-	bootloader \
+	upgrade/application \
+	upgrade/bootloader \
 	ds18b20 \
 	fat16 \
 	filesystem \

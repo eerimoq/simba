@@ -141,6 +141,7 @@ static int cmd_filesystems_list_cb(int argc,
         switch (filesystem_p->type) {
         case fs_type_fat16_t: type_p = "fat16"; break;
         case fs_type_spiffs_t: type_p = "spiffs"; break;
+        case fs_type_generic_t: type_p = "generic"; break;
         default: type_p = "-"; break;
         }
 
@@ -188,8 +189,6 @@ static int cmd_read_cb(int argc,
         chan_write(chout_p, buf, size);
     }
 
-    std_fprintf(chout_p, FSTR("\r\n"));
-
     fs_close(&file);
 
     return (0);
@@ -229,7 +228,7 @@ static int cmd_write_cb(int argc,
             std_fprintf(chout_p, FSTR("Failed to write to %s.\r\n"), argv[1]);
         }
     } else {
-        std_fprintf(chout_p, FSTR("Paste mode. Ctrl-D to finish.\r\n"));
+        std_fprintf(chout_p, FSTR("Reading, press Ctrl-D when done.\r\n"));
         size = 0;
 
         while (1) {
@@ -890,6 +889,34 @@ static int create_absolute_path(char *dst_p,
     return (size < CONFIG_FS_PATH_MAX ? 0 : -1);
 }
 
+int file_open_null(struct fs_filesystem_t *filesystem_p,
+                   struct fs_file_t *self_p,
+                   const char *path_p,
+                   int flags)
+{
+    return (0);
+}
+
+int file_close_null(struct fs_file_t *self_p)
+{
+    return (0);
+}
+
+ssize_t file_read_null(struct fs_file_t *self_p, void *dst_p, size_t size)
+{
+    return (size);
+}
+
+ssize_t file_write_null(struct fs_file_t *self_p, const void *src_p, size_t size)
+{
+    return (size);
+}
+
+int file_seek_null(struct fs_file_t *self_p, int offset, int whence)
+{
+    return (0);
+}
+
 int fs_open(struct fs_file_t *self_p, const char *path_p, int flags)
 {
     ASSERTN(self_p != NULL, -EINVAL);
@@ -931,6 +958,16 @@ int fs_open(struct fs_file_t *self_p, const char *path_p, int flags)
 
 #endif
 
+#if CONFIG_FILESYSTEM_GENERIC == 1
+
+    case fs_type_generic_t:
+        return (filesystem_p->fs.generic.ops_p->file_open(filesystem_p,
+                                                          self_p,
+                                                          path_p,
+                                                          flags));
+
+#endif
+
     default:
         return (-1);
     }
@@ -954,6 +991,13 @@ int fs_close(struct fs_file_t *self_p)
     case fs_type_spiffs_t:
         return (spiffs_close(self_p->filesystem_p->fs.spiffs_p,
                              self_p->u.spiffs));
+
+#endif
+
+#if CONFIG_FILESYSTEM_GENERIC == 1
+
+    case fs_type_generic_t:
+        return (self_p->filesystem_p->fs.generic.ops_p->file_close(self_p));
 
 #endif
 
@@ -993,6 +1037,15 @@ ssize_t fs_read(struct fs_file_t *self_p, void *dst_p, size_t size)
                 return (res);
             }
         }
+#endif
+
+#if CONFIG_FILESYSTEM_GENERIC == 1
+
+    case fs_type_generic_t:
+        return (self_p->filesystem_p->fs.generic.ops_p->file_read(self_p,
+                                                                  dst_p,
+                                                                  size));
+
 #endif
 
     default:
@@ -1054,6 +1107,15 @@ ssize_t fs_write(struct fs_file_t *self_p, const void *src_p, size_t size)
 
 #endif
 
+#if CONFIG_FILESYSTEM_GENERIC == 1
+
+    case fs_type_generic_t:
+        return (self_p->filesystem_p->fs.generic.ops_p->file_write(self_p,
+                                                                   src_p,
+                                                                   size));
+
+#endif
+
     default:
         return (-1);
     }
@@ -1083,6 +1145,15 @@ int fs_seek(struct fs_file_t *self_p, int offset, int whence)
         } else {
             return (-1);
         }
+
+#endif
+
+#if CONFIG_FILESYSTEM_GENERIC == 1
+
+    case fs_type_generic_t:
+        return (self_p->filesystem_p->fs.generic.ops_p->file_seek(self_p,
+                                                                  offset,
+                                                                  whence));
 
 #endif
 
@@ -1670,6 +1741,41 @@ void fs_merge(char *path_p, char *cmd_p)
     }
 }
 
+int fs_filesystem_init_generic(struct fs_filesystem_t *self_p,
+                               const char *name_p,
+                               struct fs_filesystem_operations_t *ops_p)
+{
+    ASSERTN(self_p != NULL, -EINVAL);
+    ASSERTN(name_p != NULL, -EINVAL);
+    ASSERTN(ops_p != NULL, -EINVAL);
+
+    if (ops_p->file_open == NULL) {
+        ops_p->file_open = file_open_null;
+    }
+
+    if (ops_p->file_close == NULL) {
+        ops_p->file_close = file_close_null;
+    }
+
+    if (ops_p->file_read == NULL) {
+        ops_p->file_read = file_read_null;
+    }
+
+    if (ops_p->file_write == NULL) {
+        ops_p->file_write = file_write_null;
+    }
+
+    if (ops_p->file_seek == NULL) {
+        ops_p->file_seek = file_seek_null;
+    }
+
+    self_p->name_p = name_p;
+    self_p->type = fs_type_generic_t;
+    self_p->fs.generic.ops_p = ops_p;
+
+    return (0);
+}
+
 int fs_filesystem_init_fat16(struct fs_filesystem_t *self_p,
                              const char *name_p,
                              struct fat16_t *fat16_p)
@@ -1799,8 +1905,8 @@ int fs_counter_init(struct fs_counter_t *self_p,
     return (0);
 }
 
-int fs_counter_increment(struct fs_counter_t *self_p,
-                         uint64_t value)
+RAM_CODE int fs_counter_increment(struct fs_counter_t *self_p,
+                                  uint64_t value)
 {
     ASSERTN(self_p != NULL, -EINVAL);
 

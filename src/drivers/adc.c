@@ -99,8 +99,8 @@ int adc_convert(struct adc_driver_t *self_p,
     return (0);
 }
 
-int adc_convert_isr(struct adc_driver_t *self_p,
-                    uint16_t *sample_p)
+RAM_CODE int adc_convert_isr(struct adc_driver_t *self_p,
+                             uint16_t *sample_p)
 {
     ASSERTN(self_p != NULL, EINVAL);
     ASSERTN(sample_p != NULL, EINVAL);

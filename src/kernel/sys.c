@@ -482,6 +482,10 @@ int sys_start(void)
     start_network();
 #endif
 
+#if CONFIG_MODULE_INIT_UPGRADE == 1
+    upgrade_module_init();
+#endif
+
     return (0);
 }
 

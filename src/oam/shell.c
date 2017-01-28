@@ -43,6 +43,12 @@
 #define CTRL_G                 7
 #define ALT                   27
 
+struct module_t {
+    int initialized;
+};
+
+static struct module_t module;
+
 static struct fs_command_t cmd_logout;
 
 #if CONFIG_SHELL_MINIMAL == 0
@@ -1135,6 +1141,13 @@ static int read_command(struct shell_t *self_p)
 
 int shell_module_init()
 {
+    /* Return immediately if the module is already initialized. */
+    if (module.initialized == 1) {
+        return (0);
+    }
+
+    module.initialized = 1;
+
     fs_command_init(&cmd_logout,
                     FSTR("/logout"),
                     cmd_logout_cb,

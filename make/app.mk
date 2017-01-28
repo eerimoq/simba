@@ -66,6 +66,8 @@ SETTINGS_INI ?= $(SIMBA_ROOT)/make/settings.ini
 EXE_SUFFIX ?= out
 EXE = $(BUILDDIR)/$(NAME).$(EXE_SUFFIX)
 BIN = $(BUILDDIR)/$(NAME).bin
+UBIN = $(BUILDDIR)/$(NAME).ubin
+UPGRADE_BINARY_DESCRIPTION ?= "$(shell date)"
 HEX = $(BUILDDIR)/$(NAME).hex
 MAP = $(BUILDDIR)/$(NAME).map
 RUNLOG = $(BUILDDIR)/run.log
@@ -169,7 +171,7 @@ console:
 
 report:
 	@echo "$(NAME):"
-	cat $(RUNLOG) | tr -cd '[:print:]\t\r\n' | grep "exit: test_" | python $(SIMBA_ROOT)/make/color.py || true
+	cat $(RUNLOG) | tr -cd '[:print:]\t\r\n' | egrep -e "^(exit: test|\w+_suite:)" | python $(SIMBA_ROOT)/make/color.py || true
 
 test: run
 	$(MAKE) report

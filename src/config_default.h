@@ -936,6 +936,19 @@
 #endif
 
 /**
+ * Initialize the upgrade module at system startup.
+ */
+#ifndef CONFIG_MODULE_INIT_UPGRADE
+#    if defined(CONFIG_MINIMAL_SYSTEM)
+#        define CONFIG_MODULE_INIT_UPGRADE                  0
+#    elif defined(ARCH_ESP32) || defined(ARCH_LINUX)
+#        define CONFIG_MODULE_INIT_UPGRADE                  1
+#    else
+#        define CONFIG_MODULE_INIT_UPGRADE                  0
+#    endif
+#endif
+
+/**
  * Debug file system command to list all DS18B20 sensors on the bus.
  */
 #ifndef CONFIG_FS_CMD_DS18B20_LIST
@@ -1325,6 +1338,34 @@
 #endif
 
 /**
+ * Debug file system command to enter the application.
+ */
+#ifndef CONFIG_FS_CMD_UPGRADE_APPLICATION_ENTER
+#    define CONFIG_FS_CMD_UPGRADE_APPLICATION_ENTER         1
+#endif
+
+/**
+ * Debug file system command to erase the application.
+ */
+#ifndef CONFIG_FS_CMD_UPGRADE_APPLICATION_ERASE
+#    define CONFIG_FS_CMD_UPGRADE_APPLICATION_ERASE         1
+#endif
+
+/**
+ * Debug file system command to check if the application is valid.
+ */
+#ifndef CONFIG_FS_CMD_UPGRADE_APPLICATION_IS_VALID
+#    define CONFIG_FS_CMD_UPGRADE_APPLICATION_IS_VALID      1
+#endif
+
+/**
+ * Debug file system command to enter the bootloader.
+ */
+#ifndef CONFIG_FS_CMD_UPGRADE_BOOTLOADER_ENTER
+#    define CONFIG_FS_CMD_UPGRADE_BOOTLOADER_ENTER          1
+#endif
+
+/**
  * Debug file system command to list all USB devices.
  */
 #ifndef CONFIG_FS_CMD_USB_DEVICE_LIST
@@ -1363,6 +1404,13 @@
 #    else
 #        define CONFIG_MONITOR_THREAD                       1
 #    endif
+#endif
+
+/**
+ * Default period of the monitor thread in microseconds.
+ */
+#ifndef CONFIG_MONITOR_THREAD_PERIOD_US
+#    define CONFIG_MONITOR_THREAD_PERIOD_US           2000000
 #endif
 
 /**
@@ -1453,6 +1501,17 @@
 #    endif
 #endif
 
+/**
+ * Generic file system.
+ */
+#ifndef CONFIG_FILESYSTEM_GENERIC
+#    if defined(CONFIG_MINIMAL_SYSTEM)
+#        define CONFIG_FILESYSTEM_GENERIC                   0
+#    else
+#        define CONFIG_FILESYSTEM_GENERIC                   1
+#    endif
+#endif
+
 #define CONFIG_START_CONSOLE_NONE                           0
 #define CONFIG_START_CONSOLE_UART                           1
 #define CONFIG_START_CONSOLE_USB_CDC                        2
@@ -1494,7 +1553,11 @@
  * Console UART baudrate.
  */
 #ifndef CONFIG_START_CONSOLE_UART_RX_BUFFER_SIZE
-#    define CONFIG_START_CONSOLE_UART_RX_BUFFER_SIZE       32
+#    if defined(BOARD_NANO32)
+#        define CONFIG_START_CONSOLE_UART_RX_BUFFER_SIZE  512
+#    else
+#        define CONFIG_START_CONSOLE_UART_RX_BUFFER_SIZE   32
+#    endif
 #endif
 
 /**
@@ -1780,7 +1843,6 @@
 #        define CONFIG_HTTP_SERVER_SSL                      0
 #    endif
 #endif
-
 
 /**
  * Configuration validation.

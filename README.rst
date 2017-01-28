@@ -1,6 +1,7 @@
 |gitter|_
 |buildstatus|_
 |codecov|_
+|coverity|_
 |donate|_
 
 Simba
@@ -57,6 +58,9 @@ is placed in the ``3pp`` folder.
 
 .. |codecov| image:: https://codecov.io/gh/eerimoq/simba/branch/master/graph/badge.svg
 .. _codecov: https://codecov.io/gh/eerimoq/simba
+
+.. |coverity| image:: https://scan.coverity.com/projects/11324/badge.svg
+.. _coverity: https://scan.coverity.com/projects/eerimoq-simba
 
 .. |donate| image:: https://img.shields.io/badge/paypal-donate-yellow.svg
 .. _donate: https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=X2NWV6RHV58GC&lc=SE&item_name=Simba%20OS%20and%20Build%20Framework&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donateCC_LG%2egif%3aNonHosted

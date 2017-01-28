@@ -139,7 +139,8 @@ typedef int (*fs_parameter_print_callback_t)(void *chout_p,
 
 enum fs_type_t {
     fs_type_fat16_t = 0,
-    fs_type_spiffs_t
+    fs_type_spiffs_t,
+    fs_type_generic_t
 };
 
 /**
@@ -172,6 +173,9 @@ struct fs_filesystem_t {
     union {
         struct fat16_t *fat16_p;
         struct spiffs_t *spiffs_p;
+        struct {
+            struct fs_filesystem_operations_t *ops_p;
+        } generic;
     } fs;
     union {
         struct fs_filesystem_spiffs_config_t *spiffs_p;
@@ -231,6 +235,18 @@ struct fs_dir_entry_t {
     int type;
     size_t size;
     struct date_t latest_mod_date;
+};
+
+struct fs_filesystem_operations_t {
+    int (*file_open)(struct fs_filesystem_t *filesystem_p,
+                     struct fs_file_t *self_p,
+                     const char *path_p,
+                     int flags);
+    int (*file_close)(struct fs_file_t *self_p);
+    ssize_t (*file_read)(struct fs_file_t *self_p, void *dst_p, size_t size);
+    ssize_t (*file_write)(struct fs_file_t *self_p, const void *src_p, size_t size);
+    int (*file_seek)(struct fs_file_t *self_p, int offset, int whence);
+    ssize_t (*file_tell)(struct fs_file_t *self_p);
 };
 
 /**
@@ -492,6 +508,19 @@ void fs_split(char *buf_p, char **path_pp, char **cmd_pp);
  * @return zero(0) or negative error code.
  */
 void fs_merge(char *path_p, char *cmd_p);
+
+/**
+ * Initialize given generic file system.
+ *
+ * @param[in] self_p File system to initialize.
+ * @param[in] name_p Path to register.
+ * @param[in] ops_p File system function callbacks.
+ *
+ * @return zero(0) or negative error code.
+ */
+int fs_filesystem_init_generic(struct fs_filesystem_t *self_p,
+                               const char *name_p,
+                               struct fs_filesystem_operations_t *ops_p);
 
 /**
  * Initialize given FAT16 file system.

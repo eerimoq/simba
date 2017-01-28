@@ -29,12 +29,6 @@ Arduino Due
 - :github-blob:`encode/json<tst/encode/json/main.c>`
 - :github-blob:`hash/crc<tst/hash/crc/main.c>`
 - :github-blob:`hash/sha1<tst/hash/sha1/main.c>`
-- :github-blob:`inet/http_server<tst/inet/http_server/main.c>`
-- :github-blob:`inet/http_websocket_client<tst/inet/http_websocket_client/main.c>`
-- :github-blob:`inet/http_websocket_server<tst/inet/http_websocket_server/main.c>`
-- :github-blob:`inet/inet<tst/inet/inet/main.c>`
-- :github-blob:`inet/mqtt_client<tst/inet/mqtt_client/main.c>`
-- :github-blob:`inet/ping<tst/inet/ping/main.c>`
 - :github-blob:`drivers/chipid<tst/drivers/chipid/main.c>`
 - :github-blob:`drivers/can<tst/drivers/can/main.c>`
 - :github-blob:`drivers/flash<tst/drivers/flash/main.c>`
@@ -141,6 +135,9 @@ Linux
 - :github-blob:`oam/service<tst/oam/service/main.c>`
 - :github-blob:`oam/settings<tst/oam/settings/main.c>`
 - :github-blob:`oam/shell<tst/oam/shell/main.c>`
+- :github-blob:`oam/upgrade<tst/oam/upgrade/main.c>`
+- :github-blob:`oam/upgrade/kermit<tst/oam/upgrade/kermit/main.c>`
+- :github-blob:`oam/upgrade/uds<tst/oam/upgrade/uds/main.c>`
 - :github-blob:`filesystems/fat16<tst/filesystems/fat16/main.c>`
 - :github-blob:`filesystems/fs<tst/filesystems/fs/main.c>`
 - :github-blob:`filesystems/spiffs<tst/filesystems/spiffs/main.c>`
@@ -155,6 +152,7 @@ Linux
 - :github-blob:`inet/mqtt_client<tst/inet/mqtt_client/main.c>`
 - :github-blob:`inet/ping<tst/inet/ping/main.c>`
 - :github-blob:`inet/ssl<tst/inet/ssl/main.c>`
+- :github-blob:`inet/tftp_server<tst/inet/tftp_server/main.c>`
 - :github-blob:`multimedia/midi<tst/multimedia/midi/main.c>`
 
 Nano32

@@ -8,6 +8,8 @@ Pinout
    :width: 50%
    :target: ../_images/arduino-mega-pinout.png
 
+
+
 Default system features
 -----------------------
 
@@ -69,9 +71,9 @@ Below is the memory usage of two applications:
 +--------------------------+-----------+-----------+
 | Application              | Flash     | RAM       |
 +==========================+===========+===========+
-| minimal-configuration    |      2586 |       335 |
+| minimal-configuration    |      2506 |       317 |
 +--------------------------+-----------+-----------+
-| default-configuration    |     67718 |      3576 |
+| default-configuration    |     68078 |      3572 |
 +--------------------------+-----------+-----------+
 
 Default configuration
@@ -115,6 +117,8 @@ Default Standard Library configuration.
 |  CONFIG_EXTI_                                          |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_FAT16_                                         |  1                                                  |
++--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_FILESYSTEM_GENERIC_                            |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_FLASH_                                         |  0                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
@@ -187,6 +191,14 @@ Default Standard Library configuration.
 |  CONFIG_FS_CMD_THRD_LIST_                              |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_FS_CMD_THRD_SET_LOG_MASK_                      |  1                                                  |
++--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_FS_CMD_UPGRADE_APPLICATION_ENTER_              |  1                                                  |
++--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_FS_CMD_UPGRADE_APPLICATION_ERASE_              |  1                                                  |
++--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_FS_CMD_UPGRADE_APPLICATION_IS_VALID_           |  1                                                  |
++--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_FS_CMD_UPGRADE_BOOTLOADER_ENTER_               |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_FS_CMD_USB_DEVICE_LIST_                        |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
@@ -266,6 +278,8 @@ Default Standard Library configuration.
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_MODULE_INIT_UART_SOFT_                         |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_MODULE_INIT_UPGRADE_                           |  0                                                  |
++--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_MODULE_INIT_USB_                               |  0                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_MODULE_INIT_USB_DEVICE_                        |  0                                                  |
@@ -275,6 +289,8 @@ Default Standard Library configuration.
 |  CONFIG_MODULE_INIT_WATCHDOG_                          |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_MONITOR_THREAD_                                |  1                                                  |
++--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_MONITOR_THREAD_PERIOD_US_                      |  2000000                                            |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_NRF24L01_                                      |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
@@ -317,6 +333,8 @@ Default Standard Library configuration.
 |  CONFIG_START_CONSOLE_DEVICE_INDEX_                    |  0                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_START_CONSOLE_UART_BAUDRATE_                   |  38400                                              |
++--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_START_CONSOLE_UART_RX_BUFFER_SIZE_             |  32                                                 |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_START_CONSOLE_USB_CDC_CONTROL_INTERFACE_       |  0                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
@@ -398,8 +416,6 @@ Mcu
 
 :doc:`atmega2560<../library-reference/mcus/atmega2560>`
 
-
-
 .. _CONFIG_ADC: ../user-guide/configuration.html#c.CONFIG_ADC
 
 .. _CONFIG_ANALOG_INPUT_PIN: ../user-guide/configuration.html#c.CONFIG_ANALOG_INPUT_PIN
@@ -433,6 +449,8 @@ Mcu
 .. _CONFIG_EXTI: ../user-guide/configuration.html#c.CONFIG_EXTI
 
 .. _CONFIG_FAT16: ../user-guide/configuration.html#c.CONFIG_FAT16
+
+.. _CONFIG_FILESYSTEM_GENERIC: ../user-guide/configuration.html#c.CONFIG_FILESYSTEM_GENERIC
 
 .. _CONFIG_FLASH: ../user-guide/configuration.html#c.CONFIG_FLASH
 
@@ -505,6 +523,14 @@ Mcu
 .. _CONFIG_FS_CMD_THRD_LIST: ../user-guide/configuration.html#c.CONFIG_FS_CMD_THRD_LIST
 
 .. _CONFIG_FS_CMD_THRD_SET_LOG_MASK: ../user-guide/configuration.html#c.CONFIG_FS_CMD_THRD_SET_LOG_MASK
+
+.. _CONFIG_FS_CMD_UPGRADE_APPLICATION_ENTER: ../user-guide/configuration.html#c.CONFIG_FS_CMD_UPGRADE_APPLICATION_ENTER
+
+.. _CONFIG_FS_CMD_UPGRADE_APPLICATION_ERASE: ../user-guide/configuration.html#c.CONFIG_FS_CMD_UPGRADE_APPLICATION_ERASE
+
+.. _CONFIG_FS_CMD_UPGRADE_APPLICATION_IS_VALID: ../user-guide/configuration.html#c.CONFIG_FS_CMD_UPGRADE_APPLICATION_IS_VALID
+
+.. _CONFIG_FS_CMD_UPGRADE_BOOTLOADER_ENTER: ../user-guide/configuration.html#c.CONFIG_FS_CMD_UPGRADE_BOOTLOADER_ENTER
 
 .. _CONFIG_FS_CMD_USB_DEVICE_LIST: ../user-guide/configuration.html#c.CONFIG_FS_CMD_USB_DEVICE_LIST
 
@@ -584,6 +610,8 @@ Mcu
 
 .. _CONFIG_MODULE_INIT_UART_SOFT: ../user-guide/configuration.html#c.CONFIG_MODULE_INIT_UART_SOFT
 
+.. _CONFIG_MODULE_INIT_UPGRADE: ../user-guide/configuration.html#c.CONFIG_MODULE_INIT_UPGRADE
+
 .. _CONFIG_MODULE_INIT_USB: ../user-guide/configuration.html#c.CONFIG_MODULE_INIT_USB
 
 .. _CONFIG_MODULE_INIT_USB_DEVICE: ../user-guide/configuration.html#c.CONFIG_MODULE_INIT_USB_DEVICE
@@ -593,6 +621,8 @@ Mcu
 .. _CONFIG_MODULE_INIT_WATCHDOG: ../user-guide/configuration.html#c.CONFIG_MODULE_INIT_WATCHDOG
 
 .. _CONFIG_MONITOR_THREAD: ../user-guide/configuration.html#c.CONFIG_MONITOR_THREAD
+
+.. _CONFIG_MONITOR_THREAD_PERIOD_US: ../user-guide/configuration.html#c.CONFIG_MONITOR_THREAD_PERIOD_US
 
 .. _CONFIG_NRF24L01: ../user-guide/configuration.html#c.CONFIG_NRF24L01
 
@@ -635,6 +665,8 @@ Mcu
 .. _CONFIG_START_CONSOLE_DEVICE_INDEX: ../user-guide/configuration.html#c.CONFIG_START_CONSOLE_DEVICE_INDEX
 
 .. _CONFIG_START_CONSOLE_UART_BAUDRATE: ../user-guide/configuration.html#c.CONFIG_START_CONSOLE_UART_BAUDRATE
+
+.. _CONFIG_START_CONSOLE_UART_RX_BUFFER_SIZE: ../user-guide/configuration.html#c.CONFIG_START_CONSOLE_UART_RX_BUFFER_SIZE
 
 .. _CONFIG_START_CONSOLE_USB_CDC_CONTROL_INTERFACE: ../user-guide/configuration.html#c.CONFIG_START_CONSOLE_USB_CDC_CONTROL_INTERFACE
 

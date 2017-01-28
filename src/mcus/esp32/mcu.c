@@ -87,6 +87,10 @@ struct uart_device_t uart_device[UART_DEVICE_MAX] = {
     {
         .drv_p = NULL,
         .regs_p = ESP32_UART0,
+        .tx_signal = ESP32_PERIPHERAL_SIGNAL_U0TXD_OUT,
+        .rx_signal = ESP32_PERIPHERAL_SIGNAL_U0RXD_IN,
+        .tx_pin_p = &pin_gpio01_dev,
+        .rx_pin_p = &pin_gpio03_dev,
         .interrupt = {
             .source = ESP32_INTR_SOURCE_UART0,
             .cpu = ESP32_CPU_INTR_UART_NUM
@@ -95,6 +99,10 @@ struct uart_device_t uart_device[UART_DEVICE_MAX] = {
     {
         .drv_p = NULL,
         .regs_p = ESP32_UART1,
+        .tx_signal = ESP32_PERIPHERAL_SIGNAL_U1TXD_OUT,
+        .rx_signal = ESP32_PERIPHERAL_SIGNAL_U1RXD_IN,
+        .tx_pin_p = &pin_gpio19_dev,
+        .rx_pin_p = &pin_gpio23_dev,
         .interrupt = {
             .source = ESP32_INTR_SOURCE_UART1,
             .cpu = ESP32_CPU_INTR_UART_NUM
@@ -103,6 +111,10 @@ struct uart_device_t uart_device[UART_DEVICE_MAX] = {
     {
         .drv_p = NULL,
         .regs_p = ESP32_UART2,
+        .tx_signal = ESP32_PERIPHERAL_SIGNAL_U2TXD_OUT,
+        .rx_signal = ESP32_PERIPHERAL_SIGNAL_U2RXD_IN,
+        .tx_pin_p = &pin_gpio18_dev,
+        .rx_pin_p = &pin_gpio05_dev,
         .interrupt = {
             .source = ESP32_INTR_SOURCE_UART2,
             .cpu = ESP32_CPU_INTR_UART_NUM
@@ -186,8 +198,8 @@ struct can_device_t can_device[CAN_DEVICE_MAX] = {
     {
         .drv_p = NULL,
         .regs_p = ESP32_CAN,
-        .tx_pin_device_p = &pin_gpio16_dev,
-        .rx_pin_device_p = &pin_gpio17_dev
+        .tx_pin_p = &pin_gpio16_dev,
+        .rx_pin_p = &pin_gpio17_dev
     }
 };
 

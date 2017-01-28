@@ -2,9 +2,9 @@
  * @section License
  *
  * The MIT License (MIT)
- * 
+ *
  * Copyright (c) 2014-2016, Erik Moqvist
- * 
+ *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
  * files (the "Software"), to deal in the Software without
@@ -30,20 +30,20 @@
 
 #include "simba.h"
 
-#define BUFFER_SIZE(buffer_p) \
+#define BUFFER_SIZE(buffer_p)                           \
     ((buffer_p)->size > 0 ? (buffer_p)->size - 1 : 0)
-#define BUFFER_USED_UNTIL_END(buffer_p) \
+#define BUFFER_USED_UNTIL_END(buffer_p)         \
     ((buffer_p)->end_p - (buffer_p)->read_p)
-#define WRITER_SIZE(queue_p) \
+#define WRITER_SIZE(queue_p)                            \
     ((queue_p->base.writer_p != NULL) * queue_p->left)
-#define READER_SIZE(queue_p) \
+#define READER_SIZE(queue_p)                            \
     ((queue_p->base.reader_p != NULL) * queue_p->left)
-#define BUFFER_UNUSED_UNTIL_END(buffer_p) \
+#define BUFFER_UNUSED_UNTIL_END(buffer_p)       \
     ((buffer_p)->end_p - (buffer_p)->write_p)
-#define BUFFER_UNUSED(buffer_p) \
+#define BUFFER_UNUSED(buffer_p)                         \
     (BUFFER_SIZE(buffer_p) - get_buffer_used(buffer_p))
 
-static inline size_t get_buffer_used(struct queue_buffer_t *buffer_p)
+RAM_CODE static inline size_t get_buffer_used(struct queue_buffer_t *buffer_p)
 {
     if (buffer_p->begin_p == NULL) {
         return (0);
@@ -112,7 +112,7 @@ int queue_stop(struct queue_t *self_p)
     return (res);
 }
 
-int queue_stop_isr(struct queue_t *self_p)
+RAM_CODE int queue_stop_isr(struct queue_t *self_p)
 {
     int res = 0;
 
@@ -262,9 +262,9 @@ ssize_t queue_write(struct queue_t *self_p,
     return (res);
 }
 
-ssize_t queue_write_isr(struct queue_t *self_p,
-                        const void *buf_p,
-                        size_t size)
+RAM_CODE ssize_t queue_write_isr(struct queue_t *self_p,
+                                 const void *buf_p,
+                                 size_t size)
 {
     size_t n, left;
     size_t buffer_unused_until_end, buffer_unused;
@@ -340,7 +340,7 @@ ssize_t queue_write_isr(struct queue_t *self_p,
     return (size - left);
 }
 
-ssize_t queue_size(struct queue_t *self_p)
+RAM_CODE ssize_t queue_size(struct queue_t *self_p)
 {
     ASSERTN(self_p != NULL, EINVAL);
 
@@ -362,7 +362,7 @@ ssize_t queue_unused_size(struct queue_t *self_p)
     return (res);
 }
 
-ssize_t queue_unused_size_isr(struct queue_t *self_p)
+RAM_CODE ssize_t queue_unused_size_isr(struct queue_t *self_p)
 {
     return (BUFFER_UNUSED(&self_p->buffer) + READER_SIZE(self_p));
 }

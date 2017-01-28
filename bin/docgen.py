@@ -21,6 +21,8 @@ Pinout
    :width: 50%
    :target: ../_images/{pinout}
 
+{include_extra}
+
 Default system features
 -----------------------
 
@@ -85,8 +87,6 @@ Mcu
 ---
 
 :doc:`{mcu}<../library-reference/mcus/{mcu}>`
-
-{include_extra}
 
 {targets}
 """

@@ -55,7 +55,7 @@ extern int esp_wifi_softap_port_station_disconnected(void);
 static esp_err_t event_handler(void *ctx_p, system_event_t *event_p)
 {
     uint8_t reason;
-
+    
     switch (event_p->event_id) {
 
     case SYSTEM_EVENT_WIFI_READY:
@@ -83,10 +83,8 @@ static esp_err_t event_handler(void *ctx_p, system_event_t *event_p)
             esp_wifi_station_port_set_connect_status(esp_wifi_station_status_no_ap_found_t);
         } else if (reason == WIFI_REASON_AUTH_FAIL) {
             esp_wifi_station_port_set_connect_status(esp_wifi_station_status_auth_failure_t);
-        } else if (reason == WIFI_REASON_AUTH_EXPIRE) {
-            esp_esp_wifi_connect();
         } else {
-            esp_wifi_station_port_set_connect_status(esp_wifi_station_status_connect_fail_t);
+            esp_esp_wifi_connect();
         }
         break;
 

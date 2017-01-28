@@ -131,8 +131,11 @@ static int test_list(struct harness_t *harness_p)
 
     BTASSERT(chan_list_init(&list, &workspace[0], sizeof(workspace)) == 0);
     BTASSERT(chan_list_add(&list, &chan[0]) == 0);
+    BTASSERT(chan[0].list_p != NULL);
     BTASSERT(chan_list_add(&list, &chan[1]) == -ENOMEM);
     BTASSERT(chan_list_remove(&list, &chan[1]) == -1);
+    BTASSERT(chan_list_remove(&list, &chan[0]) == 0);
+    BTASSERT(chan[0].list_p == NULL);
 
     return (0);
 }

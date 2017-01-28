@@ -148,7 +148,7 @@ int main()
     }
 
     std_printf(FSTR("HTTP server running. "
-                    "Enter 'http://" STRINGIFY(IP) "/index.html'"
+                    "Enter URL 'http://" STRINGIFY(IP) "/index.html' "
                     "in your web browser.\r\n"));
 
     thrd_suspend(NULL);

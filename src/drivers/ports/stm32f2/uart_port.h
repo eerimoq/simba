@@ -41,6 +41,7 @@ struct uart_device_t {
 };
 
 struct uart_driver_t {
+    struct queue_t chin;
     struct uart_device_t *dev_p;
     struct sem_t sem;
     const uint8_t *txbuf_p;
@@ -48,7 +49,6 @@ struct uart_driver_t {
     struct thrd_t *thrd_p;
     long baudrate;
     struct chan_t chout;
-    struct queue_t chin;
 };
 
 #endif

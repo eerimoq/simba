@@ -38,7 +38,7 @@ ssize_t flash_port_read(struct flash_driver_t *self_p,
                         size_t src,
                         size_t size)
 {
-    return (-1);
+    return (size);
 }
 
 ssize_t flash_port_write(struct flash_driver_t *self_p,
@@ -46,12 +46,12 @@ ssize_t flash_port_write(struct flash_driver_t *self_p,
                          const void *src_p,
                          size_t size)
 {
-    return (-1);
+    return (size);
 }
 
 static int flash_port_erase(struct flash_driver_t *self_p,
                             uintptr_t addr,
                             uint32_t size)
 {
-    return (-1);
+    return (0);
 }
