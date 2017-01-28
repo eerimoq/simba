@@ -142,7 +142,7 @@ static int upgrade_port_bootloader_stay_set()
     }
 
     if (esp_esp_partition_write(partition_p,
-                                partition_p->size - 4,
+                                partition_p->size - SPI_FLASH_SEC_SIZE,
                                 STAY_MAGIC,
                                 4) != ESP_OK) {
         return (-1);
@@ -164,8 +164,8 @@ static int upgrade_port_bootloader_stay_clear()
     }
 
     if (esp_esp_partition_erase_range(partition_p,
-                                      partition_p->size - 4,
-                                      4) != ESP_OK) {
+                                      partition_p->size - SPI_FLASH_SEC_SIZE,
+                                      SPI_FLASH_SEC_SIZE) != ESP_OK) {
         return (-1);
     }
 
@@ -186,7 +186,7 @@ static int upgrade_port_bootloader_stay_get()
     }
 
     if (esp_esp_partition_read(partition_p,
-                               partition_p->size - 4,
+                               partition_p->size - SPI_FLASH_SEC_SIZE,
                                buf,
                                sizeof(buf)) != ESP_OK) {
         return (-1);

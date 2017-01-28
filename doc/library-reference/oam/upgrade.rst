@@ -15,6 +15,63 @@ partition by using the erase and write commands.
 .. warning:: The WiFi connection is often lost during the erase
              operation on ESP32. Troubleshooting ongoing...
 
+Debug file system commands
+--------------------------
+
+Five debug file system commands are available, all located in the
+directory ``oam/upgrade/``.
+
++-------------------------------+-----------------------------------------------------------------+
+|  Command                      | Description                                                     |
++===============================+=================================================================+
+|  ``application/enter``        | Enter the appliaction.                                          |
++-------------------------------+-----------------------------------------------------------------+
+|  ``application/erase``        | Erase the appliaction. May not be called from the |br|          |
+|                               | application about to be erased.                                 |
++-------------------------------+-----------------------------------------------------------------+
+|  ``application/is_valid``     | Check is there is a valid application in the memory.            |
++-------------------------------+-----------------------------------------------------------------+
+|  ``kermit/upload``            | Upload a upgrade binary file using the Kermit file |br|         |
+|                               | transfer protocol.                                              |
++-------------------------------+-----------------------------------------------------------------+
+|  ``bootloader/enter``         | Enter the bootloader.                                           |
++-------------------------------+-----------------------------------------------------------------+
+
+Example output from the shell:
+
+.. code-block:: text
+
+   $ oam/upgrade/application/is_valid
+   yes
+
+HTTP requests
+-------------
+
+Five HTTP requests are available. Form the URL by prefixing them with
+``http://<hostname>/oam/upgrade/``,
+ie. ``http://<hostname>/oam/upgrade/application/is_valid``.
+
++---------------------------+------+--------------------------------------------------------------+
+|  Request                  | Type | Description                                                  |
++===========================+======+==============================================================+
+|  ``application/enter``    |  GET | Enter the appliaction.                                       |
++---------------------------+------+--------------------------------------------------------------+
+|  ``application/erase``    |  GET | Erase the appliaction. May not be called from the |br|       |
+|                           |      | application about to be erased.                              |
++---------------------------+------+--------------------------------------------------------------+
+|  ``application/is_valid`` |  GET | Check is there is a valid application in the memory.         |
++---------------------------+------+--------------------------------------------------------------+
+|  ``upload``               | POST | Upload a upgrade binary file using the Kermit file |br|      |
+|                           |      | transfer protocol.                                           |
++---------------------------+------+--------------------------------------------------------------+
+|  ``bootloader/enter``     |  GET | Enter the bootloader.                                        |
++---------------------------+------+--------------------------------------------------------------+
+
+TFTP file transfer
+------------------
+
+Only upload, aka "put", in binary mode is supported.
+
 Examples
 --------
 
@@ -49,7 +106,7 @@ Then start it using HTTP.
 
 .. code-block:: text
 
-   > curl http://192.168.0.7/kernel/sys/reboot
+   > curl http://192.168.0.7/oam/upgrade/application/enter
    Welcome to the test application!
 
 TFTP
@@ -82,7 +139,7 @@ Then start it using the serial port.
    C-Kermit>connect
    $ oam/upgrade/application/is_valid
    yes
-   $ kernel/sys/reboot
+   $ oam/upgrade/application/enter
    Welcome to the test application!
 
 Kermit
@@ -116,187 +173,20 @@ Then start it using the serial port.
    C-Kermit> connect
    $ oam/upgrade/application/is_valid
    yes
-   $ kernel/sys/reboot
+   $ oam/upgrade/application/enter
    Welcome to the test application!
-
-Bootloader
-----------
-
-Four protocols are available to upload an application to the board;
-HTTP, TFTP, Kermit and UDS.
-
-Upgrade binary file (.ubin)
-^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-This is the format of a .ubin file. All fields except `data` are part
-of the header.
-
-.. code-block:: text
-
-   SIZE       TYPE  DESCRIPTION
-      4   uint32_t  header version
-      4   uint32_t  header size in bytes
-      4   uint32_t  data size in bytes
-     20  uint8_t[]  SHA1 of the data
-     1+   c-string  data description
-      4   uint32_t  CRC32 of the header (not including this field)
-     0+  uint8_t[]  data
-
-File system commands
-^^^^^^^^^^^^^^^^^^^^
-
-These file system commands are available to perform the application
-software upgrade.
-
-.. code-block:: text
-
-   /oam/upgrade/application/erase
-   /oam/upgrade/application/is_valid
-   /oam/upgrade/kermit/upload
-
-HTTP requests
-^^^^^^^^^^^^^
-
-These HTTP requests are available to perform the application software
-upgrade.
-
-.. code-block:: text
-
-   GET /oam/upgrade/application/erase
-   GET /oam/upgrade/application/is_valid
-   POST /oam/upgrade/upload
-
-Application erase
-%%%%%%%%%%%%%%%%%
-
-Request:
-
-.. code-block:: text
-
-    GET /oam/upgrade/application/erase HTTP/1.1
-    Host: 192.168.0.7
-    User-Agent: curl/7.47.0
-    Accept: */*
-
-Successful response:
-
-.. code-block:: text
-
-   HTTP/1.1 200 OK
-   Content-Type: text/plain
-   Content-Length: 16
-
-   erase successful
-
-Error response:
-
-.. code-block:: text
-
-  HTTP/1.1 400 Bad Request
-  Content-Type: text/plain
-  Content-Length: 16
-
-  erase failed
-
-Upload
-%%%%%%
-
-Request:
-
-.. code-block:: text
-
-  POST /oam/upgrade/upload HTTP/1.1
-  Host: 192.168.0.7
-  User-Agent: curl/7.47.0
-  Accept: */*
-  Content-Type: application/octet-stream
-  Content-Length: 537072
-  Expect: 100-continue
-
-  <upgrade binary file (.ubin)>
-
-Successful response:
-
-.. code-block:: text
-
-  HTTP/1.1 200 OK
-  Content-Type: text/plain
-  Content-Length: 16
-
-  upload successful
-
-Error response:
-
-.. code-block:: text
-
-  HTTP/1.1 400 Bad Request
-  Content-Type: text/plain
-  Content-Length: 16
-
-  upload failed
-
-Application is valid
-%%%%%%%%%%%%%%%%%%%%
-
-Request:
-
-.. code-block:: text
-
-   GET /oam/upgrade/application/is_valid HTTP/1.1
-   Host: 192.168.0.7
-   User-Agent: curl/7.47.0
-   Accept: */*
-
-Response:
-
-.. code-block:: text
-
-   HTTP/1.1 200 OK
-   Content-Type: text/plain
-   Content-Length: 40
-
-   {yes, no}
-
-TFTP file transfer
-^^^^^^^^^^^^^^^^^^
-
-Only upload, aka "put", in binary mode is supported.
-
-Application
------------
-
-File system commands
-^^^^^^^^^^^^^^^^^^^^
-
-This file system command is available in the application.
-
-.. code-block:: text
-
-   /oam/upgrade/bootloader/enter
-
-HTTP requests
-^^^^^^^^^^^^^
-
-This HTTP request is available in the application; given that the
-application starts a HTTP server with it registered.
-
-.. code-block:: text
-
-   GET /oam/upgrade/bootloader/enter
 
 ----------------------------------------------
 
 Source code: :github-blob:`src/oam/upgrade.h`,
-:github-blob:`src/oam/upgrade.c`,
-:github-tree:`src/oam/upgrade/application`,
-:github-tree:`src/oam/upgrade/bootloader`
+:github-blob:`src/oam/upgrade.c`, :github-tree:`src/oam/upgrade`
 
-Test code: :github-blob:`tst/oam/upgrade/kermit/main.c`,
+Test code: :github-blob:`tst/oam/upgrade/main.c`,
+:github-blob:`tst/oam/upgrade/kermit/main.c`,
 :github-blob:`tst/oam/upgrade/uds/main.c`
 
 Test coverage: :codecov:`src/oam/upgrade.c`,
-:codecov-tree:`src/oam/upgrade/application`,
-:codecov-tree:`src/oam/upgrade/bootloader`
+:codecov-tree:`src/oam/upgrade`
 
 Example code: :github-blob:`examples/upgrade/bootloader/main.c`,
 :github-blob:`examples/upgrade/application/main.c`
@@ -305,3 +195,7 @@ Example code: :github-blob:`examples/upgrade/bootloader/main.c`,
 
 .. doxygenfile:: oam/upgrade.h
    :project: simba
+
+.. |br| raw:: html
+
+   <br />

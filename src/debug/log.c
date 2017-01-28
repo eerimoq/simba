@@ -171,7 +171,7 @@ static int cmd_set_log_mask_cb(int argc,
 
     while (object_p != NULL) {
         if (strcmp(object_p->name_p, name_p) == 0) {
-            log_object_set_log_mask(object_p, mask);
+            (void)log_object_set_log_mask(object_p, mask);
             found = 1;
 
             break;

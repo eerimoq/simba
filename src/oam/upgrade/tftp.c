@@ -93,8 +93,13 @@ int upgrade_tftp_init(int port, int timeout_ms)
 
     /* Create and register the tftp file system used to write received
        software to the application area. */
-    fs_filesystem_init_generic(&fs, root_p, &tftp_ops);
-    fs_filesystem_register(&fs);
+    if (fs_filesystem_init_generic(&fs, root_p, &tftp_ops) != 0) {
+        return (-1);
+    }
+
+    if (fs_filesystem_register(&fs) != 0) {
+        return (-1);
+    }
 
     return (tftp_server_init(&module.server,
                              &addr,

@@ -136,7 +136,8 @@ static int cmd_filesystems_list_cb(int argc,
     filesystem_p = module.filesystems_p;
 
     while (filesystem_p != NULL) {
-        strcpy(buf, filesystem_p->name_p);
+        strncpy(buf, filesystem_p->name_p, sizeof(buf));
+        buf[sizeof(buf) - 1] = '\0';
 
         switch (filesystem_p->type) {
         case fs_type_fat16_t: type_p = "fat16"; break;
@@ -189,7 +190,7 @@ static int cmd_read_cb(int argc,
         chan_write(chout_p, buf, size);
     }
 
-    fs_close(&file);
+    (void)fs_close(&file);
 
     return (0);
 }
@@ -253,7 +254,7 @@ static int cmd_write_cb(int argc,
     }
 
  err:
-    fs_close(&file);
+    (void)fs_close(&file);
 
     return (0);
 }
@@ -289,7 +290,7 @@ static int cmd_append_cb(int argc,
         return (-1);
     }
 
-    fs_close(&file);
+    (void)fs_close(&file);
 
     return (0);
 }
@@ -1320,13 +1321,16 @@ int fs_dir_read(struct fs_dir_t *dir_p,
             struct fat16_dir_entry_t entry;
 
             res = fat16_dir_read(&dir_p->u.fat16, &entry);
-            strncpy(&entry_p->name[0],
-                    &entry.name[0],
-                    membersof(entry_p->name));
-            entry_p->name[membersof(entry_p->name) - 1] = '\0';
-            entry_p->type = (entry.is_dir == 1 ? FS_TYPE_DIR : FS_TYPE_FILE);
-            entry_p->size = entry.size;
-            entry_p->latest_mod_date = entry.latest_mod_date;
+
+            if (res == 1) {
+                strncpy(&entry_p->name[0],
+                        &entry.name[0],
+                        membersof(entry_p->name));
+                entry_p->name[membersof(entry_p->name) - 1] = '\0';
+                entry_p->type = (entry.is_dir == 1 ? FS_TYPE_DIR : FS_TYPE_FILE);
+                entry_p->size = entry.size;
+                entry_p->latest_mod_date = entry.latest_mod_date;
+            }
         }
         break;
 

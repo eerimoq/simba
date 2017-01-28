@@ -284,10 +284,10 @@ int upgrade_binary_upload(const void *buf_p,
                 return (0);
             }
 
-            module.header_size = ((module.buf[4] << 24)
-                                  | (module.buf[5] << 16)
-                                  | (module.buf[6] << 8)
-                                  | module.buf[7]);
+            module.header_size = (ssize_t)((module.buf[4] << 24)
+                                           | (module.buf[5] << 16)
+                                           | (module.buf[6] << 8)
+                                           | module.buf[7]);
 
             if ((module.header_size > sizeof(module.buf))
                 || (module.header_size < 40)) {

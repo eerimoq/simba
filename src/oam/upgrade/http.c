@@ -49,8 +49,8 @@ static int http_request_application_is_valid(struct http_server_connection_t *co
                                              struct http_server_request_t *request_p);
 static int http_request_upload(struct http_server_connection_t *connection_p,
                                struct http_server_request_t *request_p);
-static int http_request_sys_reboot(struct http_server_connection_t *connection_p,
-                                   struct http_server_request_t *request_p);
+static int http_request_bootloader_enter(struct http_server_connection_t *connection_p,
+                                         struct http_server_request_t *request_p);
 
 static struct upgrade_http_t module;
 static THRD_STACK(listener_stack, 2048);
@@ -65,8 +65,8 @@ static struct http_server_route_t routes[] = {
       .callback = http_request_application_is_valid },
     { .path_p = "/oam/upgrade/upload",
       .callback = http_request_upload },
-    { .path_p = "/kernel/sys/reboot",
-      .callback = http_request_sys_reboot },
+    { .path_p = "/oam/upgrade/bootloader/enter",
+      .callback = http_request_bootloader_enter },
     { .path_p = NULL, .callback = NULL }
 };
 
@@ -116,7 +116,7 @@ static int http_request_application_enter(struct http_server_connection_t *conne
     if (upgrade_application_enter() != 0) {
         /* Create the error response. */
         response.code = http_server_response_code_400_bad_request_t;
-        response.content.buf_p = "erase failed";
+        response.content.buf_p = "enter application failed";
         response.content.type = http_server_content_type_text_plain_t;
         response.content.size = strlen(response.content.buf_p);
 
@@ -281,24 +281,31 @@ static int http_request_upload(struct http_server_connection_t *connection_p,
 }
 
 /**
- * HTTP server request to reboot the system.
+ * HTTP server request to enter the bootloader.
  *
  * @return zero(0) or negative error code.
  */
-static int http_request_sys_reboot(struct http_server_connection_t *connection_p,
-                                   struct http_server_request_t *request_p)
+static int http_request_bootloader_enter(struct http_server_connection_t *connection_p,
+                                         struct http_server_request_t *request_p)
 {
+    struct http_server_response_t response;
+
     /* Only the GET action is supported. */
     if (request_p->action != http_server_request_action_get_t) {
         return (-1);
     }
 
-    socket_close(&connection_p->socket);
+    if (upgrade_bootloader_enter() != 0) {
+        /* Create the error response. */
+        response.code = http_server_response_code_400_bad_request_t;
+        response.content.buf_p = "enter bootloader failed";
+        response.content.type = http_server_content_type_text_plain_t;
+        response.content.size = strlen(response.content.buf_p);
 
-    std_printf(FSTR("Rebooting in 3 seconds.\r\n"));
-    thrd_sleep(3);
-
-    sys_reboot();
+        return (http_server_response_write(connection_p,
+                                           request_p,
+                                           &response));
+    }
 
     return (-1);
 }
