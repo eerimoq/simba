@@ -33,5 +33,7 @@ BOARD ?= linux
 
 CFLAGS += -DUPGRADE_TEST
 
+INC += $(SIMBA_ROOT)/tst/oam/upgrade
+
 SIMBA_ROOT ?= ../../..
 include $(SIMBA_ROOT)/make/app.mk

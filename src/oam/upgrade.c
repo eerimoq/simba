@@ -64,7 +64,17 @@ static int binary_header_parse(struct upgrade_binary_header_t *header_p,
                                uint8_t *src_p,
                                size_t size)
 {
+    uint32_t version;
     uint32_t crc;
+
+    version = ((src_p[0] << 24)
+               | (src_p[1] << 16)
+               | (src_p[2] << 8)
+               | src_p[3]);
+
+    if (version != 1) {
+        return (-1);
+    }
 
     crc = ((src_p[size - 4] << 24)
            | (src_p[size - 3] << 16)
