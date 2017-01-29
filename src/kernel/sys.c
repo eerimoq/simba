@@ -31,7 +31,6 @@
 #include "simba.h"
 
 struct sys_t sys = {
-    .tick = 0,
     .on_fatal_callback = sys_stop,
     .stdin_p = NULL,
     .stdout_p = NULL,
@@ -127,14 +126,14 @@ static const FAR char config[] =
 
     "";
 
+extern const FAR char sysinfo[];
+
 extern void time_tick_isr(void);
 extern void timer_tick_isr(void);
 extern void thrd_tick_isr(void);
-extern const FAR char sysinfo[];
 
 static void RAM_CODE sys_tick_isr(void)
 {
-    sys.tick++;
     time_tick_isr();
     timer_tick_isr();
     thrd_tick_isr();
@@ -277,7 +276,7 @@ static void init_inet(void)
     ssl_module_init();
 #endif
 }
-    
+
 #if CONFIG_START_CONSOLE != CONFIG_START_CONSOLE_NONE
 
 static int start_console(void)
@@ -446,15 +445,33 @@ int sys_module_init(void)
 
 int sys_start(void)
 {
+#if CONFIG_MODULE_INIT_RWLOCK == 1
     rwlock_module_init();
+#endif
+#if CONFIG_MODULE_INIT_FS == 1
     fs_module_init();
+#endif
+#if CONFIG_MODULE_INIT_SETTINGS == 1
     settings_module_init();
+#endif
+#if CONFIG_MODULE_INIT_STD == 1
     std_module_init();
+#endif
+#if CONFIG_MODULE_INIT_SEM == 1
     sem_module_init();
+#endif
+#if CONFIG_MODULE_INIT_TIMER == 1
     timer_module_init();
+#endif
+#if CONFIG_MODULE_INIT_LOG == 1
     log_module_init();
+#endif
+#if CONFIG_MODULE_INIT_CHAN == 1
     chan_module_init();
+#endif
+#if CONFIG_MODULE_INIT_THRD == 1
     thrd_module_init();
+#endif
 #if CONFIG_MODULE_INIT_SHELL == 1
     shell_module_init();
 #endif
@@ -465,7 +482,7 @@ int sys_start(void)
 
     init_drivers();
     init_inet();
-    
+
 #if CONFIG_START_CONSOLE != CONFIG_START_CONSOLE_NONE
     start_console();
 #endif

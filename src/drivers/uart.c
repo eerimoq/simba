@@ -89,4 +89,29 @@ int uart_stop(struct uart_driver_t *self_p)
     return (uart_port_stop(self_p));
 }
 
+int uart_device_start(struct uart_device_t *dev_p,
+                      long baudrate)
+{
+    return (uart_port_device_start(dev_p, baudrate));
+}
+
+int uart_device_stop(struct uart_device_t *dev_p)
+{
+    return (uart_port_device_stop(dev_p));
+}
+
+ssize_t uart_device_read(struct uart_device_t *dev_p,
+                         void *buf_p,
+                         size_t size)
+{
+    return (uart_port_device_read(dev_p, buf_p, size));
+}
+
+ssize_t uart_device_write(struct uart_device_t *dev_p,
+                          const void *buf_p,
+                          size_t size)
+{
+    return (uart_port_device_write(dev_p, buf_p, size));
+}
+
 #endif

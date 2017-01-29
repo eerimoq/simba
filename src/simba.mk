@@ -56,6 +56,10 @@ ifeq ($(TYPE),suite)
       KERNEL_SRC += ports/esp32/gnu/thrd_port.S
   endif
 
+  ifeq ($(FAMILY),spc5)
+      KERNEL_SRC += ports/ppc/gnu/thrd_port.S
+  endif
+
   ifeq ($(MCU),atmega32u4)
     DRIVERS_SRC += \
 	usb.c \
@@ -237,6 +241,12 @@ DRIVERS_SRC ?= flash.c \
                uart.c
 endif
 
+ifeq ($(FAMILY),spc5)
+DRIVERS_SRC ?= pin.c \
+               flash.c \
+               uart.c
+endif
+
 SRC += $(DRIVERS_SRC:%=$(SIMBA_ROOT)/src/drivers/%)
 
 # Encode package.
@@ -400,6 +410,10 @@ KERNEL_SRC_TMP = sys.c \
 
 ifeq ($(FAMILY),esp32)
     KERNEL_SRC_TMP += ports/esp32/gnu/thrd_port.S
+endif
+
+ifeq ($(FAMILY),spc5)
+    KERNEL_SRC_TMP += ports/ppc/gnu/thrd_port.S
 endif
 
 KERNEL_SRC ?= $(KERNEL_SRC_TMP)

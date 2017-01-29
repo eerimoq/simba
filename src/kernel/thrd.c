@@ -162,7 +162,6 @@ static THRD_STACK(idle_thrd_stack, CONFIG_THRD_IDLE_STACK_SIZE);
 void terminate(void)
 {
 #if CONFIG_THRD_TERMINATE == 1
-
     struct thrd_t *thrd_p, *prev_p;
 
     /* Remove the thread from the global list of threads. */
@@ -186,20 +185,14 @@ void terminate(void)
         thrd_p = thrd_p->next_p;
     }
 
-    sys_unlock();
-
-    sem_give(&thrd_self()->join_sem, 1);
-
-    sys_lock();
+    sem_give_isr(&thrd_self()->join_sem, 1);
     thrd_self()->state = THRD_STATE_TERMINATED;
     thrd_reschedule();
-    sys_unlock();
 
-#else
+    /* Should never come here. */
+#endif
 
     sys_stop(1);
-
-#endif
 }
 
 /**
@@ -417,7 +410,8 @@ static int cmd_set_log_mask_cb(int argc,
     long mask;
 
     if (argc != 3) {
-        std_fprintf(chout_p, FSTR("Usage: set_log_mask <thread name> <log mask>\r\n"));
+        std_fprintf(chout_p,
+                    FSTR("Usage: set_log_mask <thread name> <log mask>\r\n"));
         return (-EINVAL);
     }
 
@@ -470,7 +464,7 @@ int thrd_module_init(void)
               sizeof(stack_heap_buffer),
               &stack_heap_fixed_buffer_sizes[0]);
 #endif
-    
+
 #if CONFIG_THRD_ENV == 1
     module.env.global.variables_p = module.env.global_variables;
     module.env.global.number_of_variables = 0;

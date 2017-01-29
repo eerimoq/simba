@@ -2,9 +2,9 @@
  * @section License
  *
  * The MIT License (MIT)
- * 
+ *
  * Copyright (c) 2014-2016, Erik Moqvist
- * 
+ *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
  * files (the "Software"), to deal in the Software without
@@ -341,6 +341,75 @@ static int test_libc(struct harness_t *harness_p)
     return (0);
 }
 
+static int strtod_test(const char *str_p,
+                       int expected_end_offset,
+                       double expected_value)
+{
+    const char *end_p;
+    double value;
+
+    end_p = std_strtod(str_p, &value);
+
+    if (end_p == NULL) {
+        if (expected_end_offset != 0) {
+            return (0);
+        }
+    } else if (end_p != &str_p[expected_end_offset]) {
+        return (0);
+    }
+
+    return (value == expected_value);
+}
+
+static int test_strtod(struct harness_t *harness_p)
+{
+    BTASSERT(strtod_test(".1", 2, .1) == 1);
+    BTASSERT(strtod_test("  .", 0, .0) == 1);
+    BTASSERT(strtod_test("  1.2e3", 7, 1.2e3) == 1);
+    BTASSERT(strtod_test(" +1.2e3", 7, +1.2e3) == 1);
+    BTASSERT(strtod_test("1.2e3", 5, 1.2e3) == 1);
+    BTASSERT(strtod_test("+1.2e3", 6, +1.2e3) == 1);
+    BTASSERT(strtod_test("+1.e3", 5, +1.e3) == 1);
+    BTASSERT(strtod_test("-1.2e3", 6, -1.2e3) == 1);
+    BTASSERT(strtod_test("-1.2e3.5", 6, -1.2e3) == 1);
+    BTASSERT(strtod_test("-1.2e", 4, -1.2) == 1);
+    BTASSERT(strtod_test("--1.2e3.5", 0, .0) == 1);
+    BTASSERT(strtod_test("--1-.2e3.5", 0, .0) == 1);
+    BTASSERT(strtod_test("-a", 0, .0) == 1);
+    BTASSERT(strtod_test("a", 0, .0) == 1);
+    BTASSERT(strtod_test(".1e", 2, .1) == 1);
+    BTASSERT(strtod_test(".1e3", 4, .1e3) == 1);
+    BTASSERT(strtod_test(".1e-3", 5, .1e-3) == 1);
+    BTASSERT(strtod_test(".1e-", 2, .1) == 1);
+    BTASSERT(strtod_test(" .e-", 0, .0) == 1);
+    BTASSERT(strtod_test(" .e", 0, .0) == 1);
+    BTASSERT(strtod_test(" e", 0, .0) == 1);
+    BTASSERT(strtod_test(" e0", 0, .0) == 1);
+    BTASSERT(strtod_test(" ee", 0, .0) == 1);
+    BTASSERT(strtod_test(" -e", 0, .0) == 1);
+    BTASSERT(strtod_test(" .9", 3, .9) == 1);
+    BTASSERT(strtod_test(" ..9", 0, .0) == 1);
+    BTASSERT(strtod_test("009", 3, 9.0) == 1);
+    BTASSERT(strtod_test("0.09e02", 7, 9.0) == 1);
+    /* http://thread.gmane.org/gmane.editors.vim.devel/19268/ */
+    BTASSERT(strtod_test("0.9999999999999999999999999999999999", 36, 1.0) == 1);
+    BTASSERT(strtod_test("2.2250738585072010e-308", 23, .0) == 1); // BUG
+    /* PHP (slashdot.jp): http://opensource.slashdot.jp/story/11/01/08/0527259/PHP%E3%81%AE%E6%B5%AE%E5%8B%95%E5%B0%8F%E6%95%B0%E7%82%B9%E5%87%A6%E7%90%86%E3%81%AB%E7%84%A1%E9%99%90%E3%83%AB%E3%83%BC%E3%83%97%E3%81%AE%E3%83%90%E3%82%B0 */
+    BTASSERT(strtod_test("2.2250738585072011e-308", 23, .0) == 1);
+    /* Gauche: http://blog.practical-scheme.net/gauche/20110203-bitten-by-floating-point-numbers-again */
+    BTASSERT(strtod_test("2.2250738585072012e-308",
+                         23,
+                         2.2250738585072012e-308) == 1);
+    BTASSERT(strtod_test("2.2250738585072013e-308",
+                         23,
+                         2.2250738585072013e-308) == 1);
+    BTASSERT(strtod_test("2.2250738585072014e-308",
+                         23,
+                         2.2250738585072014e-308) == 1);
+
+    return (0);
+}
+
 int main()
 {
     struct harness_t harness;
@@ -356,6 +425,7 @@ int main()
         { test_sprintf_double, "test_sprintf_double" },
         { test_strip, "test_strip" },
         { test_libc, "test_libc" },
+        { test_strtod, "test_strtod" },
         { NULL, NULL }
     };
 

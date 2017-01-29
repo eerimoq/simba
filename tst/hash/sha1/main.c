@@ -2,9 +2,9 @@
  * @section License
  *
  * The MIT License (MIT)
- * 
+ *
  * Copyright (c) 2014-2016, Erik Moqvist
- * 
+ *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
  * files (the "Software"), to deal in the Software without
@@ -54,7 +54,7 @@ int test_sha1(struct harness_t *harness_p)
             .input_p = "abc",
             .hash_p =
             "\xa9\x99\x3e\x36\x47\x06\x81\x6a\xba\x3e"
-            "\x25\x71\x78\x50\xc2\x6c\x9c\xd0\xd8\x9d"        
+            "\x25\x71\x78\x50\xc2\x6c\x9c\xd0\xd8\x9d"
         },
 
         {
@@ -115,7 +115,7 @@ int test_sha1(struct harness_t *harness_p)
     }
 
     BTASSERT(sha1_digest(&foo, hash) == 0);
-        
+
     BTASSERT(memcmp(hash,
                     "\x7f\xdd\xab\x82\x28\xdf\x0f\x39\x77\xed"
                     "\xf7\x3b\xb8\x06\x86\x11\x59\xad\x89\xd1",

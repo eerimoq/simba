@@ -1,0 +1,337 @@
+/**
+ * @section License
+ *
+ * The MIT License (MIT)
+ *
+ * Copyright (c) 2014-2016, Erik Moqvist
+ *
+ * Permission is hereby granted, free of charge, to any person
+ * obtaining a copy of this software and associated documentation
+ * files (the "Software"), to deal in the Software without
+ * restriction, including without limitation the rights to use, copy,
+ * modify, merge, publish, distribute, sublicense, and/or sell copies
+ * of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be
+ * included in all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+ * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
+ * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
+ * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+ * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ *
+ * This file is part of the Simba project.
+ */
+
+#ifndef __SPC5_H__
+#define __SPC5_H__
+
+/* 7. MC_CGM. */
+struct spc5_mc_cgm_t {
+    struct {
+        uint32_t CTL;
+        uint32_t RESERVED0[7];
+    } FXOSC;
+    uint32_t RESERVED0[16];
+    struct {
+        uint32_t CTL;
+        uint32_t RESERVED0[7];
+    } FIRC;
+    struct {
+        uint32_t CTL;
+        uint32_t RESERVED0[7];
+    } SIRC;
+    struct {
+        uint32_t CR;
+        uint32_t MR;
+        uint32_t RESERVED0[6];
+    } FMPLL;
+    uint32_t RESERVED1[16];
+    struct {
+        uint32_t CSR;
+        uint32_t FDR;
+        uint32_t HFREFR;
+        uint32_t LFREFR;
+        uint32_t ISR;
+        uint32_t RESERVED0[1];
+        uint32_t MDR;
+        uint32_t RESERVED1[1];
+    } CMU;
+    uint32_t RESERVED2[148];
+    uint32_t OC_EN;
+    uint32_t OCDS_SC;
+    uint32_t SC_SS;
+    uint32_t SC_DC0;
+    uint32_t SC_DC1;
+    uint32_t SC_DC2;
+};
+
+#define SPC5_MC_CGM_FMPLL_CR_IDF_POS                     (26)
+#define SPC5_MC_CGM_FMPLL_CR_IDF_MASK (0xf << SPC5_MC_CGM_FMPLL_CR_IDF_POS)
+#define SPC5_MC_CGM_FMPLL_CR_IDF(value) BITFIELD_SET(SPC5_MC_CGM_FMPLL_CR_IDF, value)
+#define SPC5_MC_CGM_FMPLL_CR_ODF_POS                     (24)
+#define SPC5_MC_CGM_FMPLL_CR_ODF_MASK (0x3 << SPC5_MC_CGM_FMPLL_CR_ODF_POS)
+#define SPC5_MC_CGM_FMPLL_CR_ODF(value) BITFIELD_SET(SPC5_MC_CGM_FMPLL_CR_ODF, value)
+#define SPC5_MC_CGM_FMPLL_CR_NDIV_POS                    (16)
+#define SPC5_MC_CGM_FMPLL_CR_NDIV_MASK (0x7f << SPC5_MC_CGM_FMPLL_CR_NDIV_POS)
+#define SPC5_MC_CGM_FMPLL_CR_NDIV(value) BITFIELD_SET(SPC5_MC_CGM_FMPLL_CR_NDIV, value)
+
+/* 8. MC_ME. */
+struct spc5_mc_me_t {
+    uint32_t GS;
+    uint32_t MCTL;
+    uint32_t ME;
+    uint32_t IS;
+    uint32_t IM;
+    uint32_t IMTS;
+    uint32_t DMTS;
+    uint32_t RESERVED0[1];
+    uint32_t RESET_MC;
+    uint32_t TEST_MC;
+    uint32_t SAFE_MC;
+    uint32_t DRUN_MC;
+    uint32_t RUN0_MC;
+    uint32_t RUN1_MC;
+    uint32_t RUN2_MC;
+    uint32_t RUN3_MC;
+    uint32_t HALT_MC;
+    uint32_t RESERVED1[1];
+    uint32_t STOP_MC;
+    uint32_t RESERVED2[2];
+    uint32_t STANDBY_MC;
+    uint32_t RESERVED3[2];
+    uint32_t PS[4];
+    uint32_t RESERVED4[4];
+    uint32_t RUN_PC[8];
+    uint32_t LP_PC[8];
+    uint8_t PCTL[128];
+};
+
+/* 17. INTC. */
+struct spc5_intc_t {
+    uint32_t MCR;
+    uint32_t RESERVED0;
+    uint32_t CPR;
+    uint32_t RESERVED1;
+    uint32_t IACKR;
+    uint32_t RESERVED2;
+    uint32_t EOIR;
+    uint32_t RESERVED3;
+    uint32_t SSCI[2];
+    uint32_t RESERVED4[6];
+    uint32_t PSR[39];
+};
+
+/* 19. SIUL. */
+struct spc5_siul_t {
+    uint32_t RESERVED0[1];
+    uint32_t MIDR[2];
+    uint32_t RESERVED1[2];
+    uint32_t ISR;
+    uint32_t IRER;
+    uint32_t RESERVED2[3];
+    uint32_t IRERR;
+    uint32_t IFEER;
+    uint32_t IFER;
+    uint32_t RESERVED3[3];
+    uint16_t PCR[123];
+    uint16_t RESERVED4[485];
+    uint32_t PSMI[16];
+    uint32_t RESERVED5[48];
+    uint32_t GPDO[31];
+    uint32_t RESERVED6[97];
+    uint32_t GPDI[31];
+    uint32_t RESERVED7[225];
+    uint32_t PGPDO[4];
+    uint32_t RESERVED8[12];
+    uint32_t PGPDI[4];
+    uint32_t RESERVED9[12];
+    uint32_t MPGPDO[8];
+    uint32_t RESERVED10[216];
+    uint32_t IFMC[24];
+    uint32_t RESERVED11[8];
+    uint32_t IFCPR;
+};
+
+/* 20. LINFlex. */
+struct spc5_linflex_t {
+    uint32_t LINCR1;
+    uint32_t LINIER;
+    uint32_t LINSR;
+    uint32_t LINESR;
+    uint32_t UARTCR;
+    uint32_t UARTSR;
+    uint32_t LINTCSR;
+    uint32_t LINOCR;
+    uint32_t LINTOCR;
+    uint32_t LINFBRR;
+    uint32_t LINIBRR;
+    uint32_t LINCFR;
+    uint32_t LINCR2;
+    uint32_t BIDR;
+    uint8_t BDRL[4];
+    uint32_t BDRM;
+    uint32_t IFER;
+    uint32_t IFMI;
+    uint32_t IFMR;
+    uint32_t IFCR[16];
+};
+
+#define SPC5_LINFLEX_LINCR1_INIT                       BIT(0)
+
+#define SPC5_LINFLEX_LINSR_DRF                         BIT(2)
+#define SPC5_LINFLEX_LINSR_DTF                         BIT(1)
+
+#define SPC5_LINFLEX_LINIER_DRIE                       BIT(2)
+#define SPC5_LINFLEX_LINIER_DTIE                       BIT(1)
+
+#define SPC5_LINFLEX_UARTSR_PE3                       BIT(13)
+#define SPC5_LINFLEX_UARTSR_PE2                       BIT(12)
+#define SPC5_LINFLEX_UARTSR_PE1                       BIT(11)
+#define SPC5_LINFLEX_UARTSR_PE0                       BIT(10)
+#define SPC5_LINFLEX_UARTSR_DRF                        BIT(2)
+#define SPC5_LINFLEX_UARTSR_DTF                        BIT(1)
+
+#define SPC5_LINFLEX_UARTCR_TDFL_POS                     (13)
+#define SPC5_LINFLEX_UARTCR_TDFL_MASK (0x7 << SPC5_LINFLEX_UARTCR_TDFL_POS)
+#define SPC5_LINFLEX_UARTCR_TDFL(value) BITFIELD_SET(SPC5_LINFLEX_UARTCR_TDFL, value)
+#define SPC5_LINFLEX_UARTCR_TDFL_1BYTE SPC5_LINFLEX_UARTCR_TDFL(0)
+#define SPC5_LINFLEX_UARTCR_RDFL_POS                     (10)
+#define SPC5_LINFLEX_UARTCR_RDFL_MASK (0x7 << SPC5_LINFLEX_UARTCR_RDFL_POS)
+#define SPC5_LINFLEX_UARTCR_RDFL(value) BITFIELD_SET(SPC5_LINFLEX_UARTCR_RDFL, value)
+#define SPC5_LINFLEX_UARTCR_RDFL_1BYTE SPC5_LINFLEX_UARTCR_RDFL(0)
+#define SPC5_LINFLEX_UARTCR_RXEN                       BIT(5)
+#define SPC5_LINFLEX_UARTCR_TXEN                       BIT(4)
+#define SPC5_LINFLEX_UARTCR_WL                         BIT(1)
+#define SPC5_LINFLEX_UARTCR_UART                       BIT(0)
+
+/* 22. FlexCAN. */
+struct spc5_flexcan_t {
+    uint32_t MCR;
+    uint32_t CTRL;
+    uint32_t TIMER;
+    uint32_t RESERVED0;
+    uint32_t RXGMASK;
+    uint32_t RX14MASK;
+    uint32_t RX15MASK;
+    uint32_t ECR;
+    uint32_t ESR;
+    uint32_t IMASK2;
+    uint32_t IMASK1;
+    uint32_t IFLAG2;
+    uint32_t IFLAG1;
+    uint32_t RESERVED1[19];
+    uint32_t MSGBUF[64];
+};
+
+/* 24. STM. */
+struct spc5_stm_t {
+    uint32_t CR;
+    uint32_t CNT;
+    uint32_t RESERVED0[2];
+    struct {
+        uint32_t CCR;
+        uint32_t CIR;
+        uint32_t CMP;
+        uint32_t RESERVED0;
+    } CHANNELS[4];
+};
+
+#define SPC5_STM_CR_TEN                                BIT(0)
+
+#define SPC5_STM_CHANNELS_CCR_CEN                      BIT(0)
+
+#define SPC5_STM_CHANNELS_CIR_CIF                      BIT(0)
+
+/* 27. Flash memory. */
+struct spc5_flash_t {
+    uint32_t MCR;
+    uint32_t LML;
+    uint32_t RESERVED0[1];
+    uint32_t SLL;
+    uint32_t LMS;
+    uint32_t RESERVED1[1];
+    uint32_t ADR;
+    uint32_t PFCR[2];
+    uint32_t PFAPR;
+    uint32_t RESERVED2[6];
+    uint32_t UT0;
+    uint32_t UT1;
+    uint32_t UT2;
+    uint32_t UMISR[5];
+};
+
+#define SPC5_FLASH_MCR_EDC                            BIT(31)
+#define SPC5_FLASH_MCR_SIZE_POS                          (24)
+#define SPC5_FLASH_MCR_SIZE_MASK (0x7 << SPC5_FLASH_MCR_SIZE_POS)
+#define SPC5_FLASH_MCR_SIZE(value) BITFIELD_SET(SPC5_FLASH_MCR_SIZE, value)
+#define SPC5_FLASH_MCR_LAS_POS                           (19)
+#define SPC5_FLASH_MCR_LAS_MASK (0x7 << SPC5_FLASH_MCR_LAS_POS)
+#define SPC5_FLASH_MCR_LAS(value) BITFIELD_SET(SPC5_FLASH_MCR_LAS, value)
+#define SPC5_FLASH_MCR_MAS                            BIT(16)
+#define SPC5_FLASH_MCR_EER                            BIT(15)
+#define SPC5_FLASH_MCR_RWE                            BIT(14)
+#define SPC5_FLASH_MCR_PEAS                           BIT(11)
+#define SPC5_FLASH_MCR_DONE                           BIT(10)
+#define SPC5_FLASH_MCR_PEG                             BIT(9)
+#define SPC5_FLASH_MCR_PGM                             BIT(4)
+#define SPC5_FLASH_MCR_PSUS                            BIT(3)
+#define SPC5_FLASH_MCR_ERS                             BIT(2)
+#define SPC5_FLASH_MCR_ESUS                            BIT(1)
+#define SPC5_FLASH_MCR_EHV                             BIT(0)
+
+/* 30. SWT. */
+struct spc5_swt_t {
+    uint32_t CR;
+    uint32_t IR;
+    uint32_t TO;
+    uint32_t WN;
+    uint32_t SR;
+    uint32_t CO;
+};
+
+/* Base addresses of peripherals. */
+#define SPC5_CFLASH    ((volatile struct spc5_flash_t *)   0xc3f88000ul)
+#define SPC5_DFLASH    ((volatile struct spc5_flash_t *)   0xc3f8c000ul)
+#define SPC5_SIUL      ((volatile struct spc5_siul_t *)    0xc3f90000ul)
+#define SPC5_WKPU      ((volatile struct spc5__t *)        0xc3f94000ul)
+#define SPC5_EMIOS_0   ((volatile struct spc5__t *)        0xc3fa0000ul)
+#define SPC5_SSCM      ((volatile struct spc5__t *)        0xc3fd8000ul)
+#define SPC5_MC_ME     ((volatile struct spc5_mc_me_t *)   0xc3fdc000ul)
+#define SPC5_MC_CGM    ((volatile struct spc5_mc_cgm_t *)  0xc3fe0000ul)
+#define SPC5_MC_RGM    ((volatile struct spc5__t *)        0xc3fe4000ul)
+#define SPC5_MC_PCU    ((volatile struct spc5__t *)        0xc3fe8000ul)
+#define SPC5_RTC_API   ((volatile struct spc5__t *)        0xc3fec000ul)
+#define SPC5_PIT       ((volatile struct spc5__t *)        0xc3ff0000ul)
+#define SPC5_ADC_1     ((volatile struct spc5__t *)        0xffe04000ul)
+#define SPC5_LINFLEX_0 ((volatile struct spc5_linflex_t *) 0xffe40000ul)
+#define SPC5_LINFLEX_1 ((volatile struct spc5_linflex_t *) 0xffe44000ul)
+#define SPC5_LINFLEX_2 ((volatile struct spc5_linflex_t *) 0xffe48000ul)
+#define SPC5_CTU       ((volatile struct spc5__t *)        0xffe64000ul)
+#define SPC5_SWT       ((volatile struct spc5_swt_t *)     0xfff38000ul)
+#define SPC5_STM       ((volatile struct spc5_stm_t *)     0xfff3c000ul)
+#define SPC5_ECSM      ((volatile struct spc5__t *)        0xfff40000ul)
+#define SPC5_EDMA      ((volatile struct spc5__t *)        0xfff44000ul)
+#define SPC5_INTC      ((volatile struct spc5_intc_t *)    0xfff48000ul)
+#define SPC5_DSPI_0    ((volatile struct spc5__t *)        0xfff90000ul)
+#define SPC5_DSPI_1    ((volatile struct spc5__t *)        0xfff94000ul)
+#define SPC5_FLEXCAN_0 ((volatile struct spc5_flexcan_t *) 0xfffc0000ul)
+#define SPC5_DMA_MUX   ((volatile struct spc5__t *)        0xfffdc000ul)
+#define SPC5_BAM       ((volatile struct spc5__t *)        0xffffc000ul)
+
+/* Flash addresses and sizes. */
+#define SPC5_CFLASH_ADDRESS                               0x0
+#define SPC5_CFLASH_SIZE                              0x40000
+#define SPC5_DFLASH_ADDRESS                          0x800000
+#define SPC5_DFLASH_SIZE                              0x10000
+
+/* Interrupt service routine. */
+#define ISR(vector)                             \
+    void isr_ ## vector(void)
+
+#endif

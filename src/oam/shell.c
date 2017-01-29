@@ -2,9 +2,9 @@
  * @section License
  *
  * The MIT License (MIT)
- * 
+ *
  * Copyright (c) 2014-2016, Erik Moqvist
- * 
+ *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
  * files (the "Software"), to deal in the Software without
@@ -80,7 +80,7 @@ static int is_shell_command(const char *line_p)
     if (*line_p == '/') {
         line_p++;
     }
-    
+
     return (shell_command_compare(line_p, FSTR("logout"), 6)
             || shell_command_compare(line_p, FSTR("history"), 7)
             || shell_command_compare(line_p, FSTR("help"), 4));
@@ -101,7 +101,7 @@ static int cmd_logout_cb(int argc,
     if (self_p->username_p != NULL) {
         self_p->authorized = 0;
     }
-    
+
     return (1);
 }
 
@@ -305,7 +305,7 @@ static int cmd_history_cb(int argc,
     }
 
     std_fprintf(self_p->chout_p, FSTR(CONFIG_SHELL_PROMPT));
-        
+
     return (0);
 }
 
@@ -534,7 +534,7 @@ static int login(struct shell_t *self_p)
         correct_username = !strcmp(self_p->username_p,
                                    line_get_buf(&self_p->line));
 
-        /* Read the  password. */
+        /* Read the password. */
         std_fprintf(self_p->chout_p, FSTR("password: "));
         res = read_line(self_p, 1);
 
@@ -1237,7 +1237,7 @@ void *shell_main(void *arg_p)
         if (res > 0) {
             stripped_line_p = std_strip(line_get_buf(&self_p->line),
                                         NULL);
-            
+
             if (is_shell_command(stripped_line_p) == 1) {
                 (void)fs_call(stripped_line_p,
                               self_p->chin_p,

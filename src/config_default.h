@@ -153,6 +153,12 @@
 #    define PORT_HAS_FLASH
 #endif
 
+#if defined(FAMILY_SPC5)
+#    define PORT_HAS_PIN
+#    define PORT_HAS_UART
+#    define PORT_HAS_FLASH
+#endif
+
 /**
  * The system configuration string contains a list of all configration
  * varialbes and their values.
@@ -538,6 +544,97 @@
 #endif
 
 /**
+ * Initialize the module at system startup.
+ */
+#ifndef CONFIG_MODULE_INIT_RWLOCK
+#    if defined(CONFIG_MINIMAL_SYSTEM)
+#        define CONFIG_MODULE_INIT_RWLOCK                   0
+#    else
+#        define CONFIG_MODULE_INIT_RWLOCK                   1
+#    endif
+#endif
+
+/**
+ * Initialize the fs module at system startup.
+ */
+#ifndef CONFIG_MODULE_INIT_FS
+#    if defined(CONFIG_MINIMAL_SYSTEM)
+#        define CONFIG_MODULE_INIT_FS                       0
+    #    else
+#        define CONFIG_MODULE_INIT_FS                       1
+#    endif
+#endif
+
+/**
+ * Initialize the settings module at system startup.
+ */
+#ifndef CONFIG_MODULE_INIT_SETTINGS
+#    if defined(CONFIG_MINIMAL_SYSTEM)
+#        define CONFIG_MODULE_INIT_SETTINGS                 0
+#    else
+#        define CONFIG_MODULE_INIT_SETTINGS                 1
+#    endif
+#endif
+
+/**
+ * Initialize the std module at system startup.
+ */
+#ifndef CONFIG_MODULE_INIT_STD
+#    if defined(CONFIG_MINIMAL_SYSTEM)
+#        define CONFIG_MODULE_INIT_STD                      0
+#    else
+#        define CONFIG_MODULE_INIT_STD                      1
+#    endif
+#endif
+
+/**
+ * Initialize the sem module at system startup.
+ */
+#ifndef CONFIG_MODULE_INIT_SEM
+#    if defined(CONFIG_MINIMAL_SYSTEM)
+#        define CONFIG_MODULE_INIT_SEM                      0
+#    else
+#        define CONFIG_MODULE_INIT_SEM                      1
+#    endif
+#endif
+
+/**
+ * Initialize the timer module at system startup.
+ */
+#ifndef CONFIG_MODULE_INIT_TIMER
+#    define CONFIG_MODULE_INIT_TIMER                        1
+#endif
+
+/**
+ * Initialize the log module at system startup.
+ */
+#ifndef CONFIG_MODULE_INIT_LOG
+#    if defined(CONFIG_MINIMAL_SYSTEM)
+#        define CONFIG_MODULE_INIT_LOG                      0
+#    else
+#        define CONFIG_MODULE_INIT_LOG                      1
+#    endif
+#endif
+
+/**
+ * Initialize the chan module at system startup.
+ */
+#ifndef CONFIG_MODULE_INIT_CHAN
+#    if defined(CONFIG_MINIMAL_SYSTEM)
+#        define CONFIG_MODULE_INIT_CHAN                     0
+#    else
+#        define CONFIG_MODULE_INIT_CHAN                     1
+#    endif
+#endif
+
+/**
+ * Initialize the thrd module at system startup.
+ */
+#ifndef CONFIG_MODULE_INIT_THRD
+#    define CONFIG_MODULE_INIT_THRD                         1
+#endif
+
+/**
  * Initialize the adc driver module at system startup.
  */
 #ifndef CONFIG_MODULE_INIT_ADC
@@ -882,7 +979,7 @@
  * Initialize the inet module at system startup.
  */
 #ifndef CONFIG_MODULE_INIT_INET
-#    if defined(CONFIG_MINIMAL_SYSTEM) || defined(ARCH_ARM) || defined(ARCH_AVR)
+#    if defined(CONFIG_MINIMAL_SYSTEM) || defined(ARCH_ARM) || defined(ARCH_AVR) || defined(ARCH_PPC)
 #        define CONFIG_MODULE_INIT_INET                     0
 #    else
 #        define CONFIG_MODULE_INIT_INET                     1
@@ -893,7 +990,7 @@
  * Initialize the ping module at system startup.
  */
 #ifndef CONFIG_MODULE_INIT_PING
-#    if defined(CONFIG_MINIMAL_SYSTEM) || defined(ARCH_ARM) || defined(ARCH_AVR)
+#    if defined(CONFIG_MINIMAL_SYSTEM) || defined(ARCH_ARM) || defined(ARCH_AVR) || defined(ARCH_PPC)
 #        define CONFIG_MODULE_INIT_PING                     0
 #    else
 #        define CONFIG_MODULE_INIT_PING                     1
@@ -904,7 +1001,7 @@
  * Initialize the socket module at system startup.
  */
 #ifndef CONFIG_MODULE_INIT_SOCKET
-#    if defined(CONFIG_MINIMAL_SYSTEM) || defined(ARCH_ARM) || defined(ARCH_AVR)
+#    if defined(CONFIG_MINIMAL_SYSTEM) || defined(ARCH_ARM) || defined(ARCH_AVR) || defined(ARCH_PPC)
 #        define CONFIG_MODULE_INIT_SOCKET                   0
 #    else
 #        define CONFIG_MODULE_INIT_SOCKET                   1
@@ -915,7 +1012,7 @@
  * Initialize the network_interface module at system startup.
  */
 #ifndef CONFIG_MODULE_INIT_NETWORK_INTERFACE
-#    if defined(CONFIG_MINIMAL_SYSTEM) || defined(ARCH_ARM) || defined(ARCH_AVR)
+#    if defined(CONFIG_MINIMAL_SYSTEM) || defined(ARCH_ARM) || defined(ARCH_AVR) || defined(ARCH_PPC)
 #        define CONFIG_MODULE_INIT_NETWORK_INTERFACE        0
 #    else
 #        define CONFIG_MODULE_INIT_NETWORK_INTERFACE        1
@@ -1399,7 +1496,7 @@
  * Start the monitor thread to gather statistics of the scheulder.
  */
 #ifndef CONFIG_MONITOR_THREAD
-#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(BOARD_ESP12E) || defined(BOARD_ESP01) || defined(BOARD_NODEMCU) || defined(BOARD_NANO32) || defined(CONFIG_MINIMAL_SYSTEM)
+#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(BOARD_ESP12E) || defined(BOARD_ESP01) || defined(BOARD_NODEMCU) || defined(BOARD_NANO32) || defined(BOARD_SPC56DDISCOVERY) || defined(CONFIG_MINIMAL_SYSTEM)
 #        define CONFIG_MONITOR_THREAD                       0
 #    else
 #        define CONFIG_MONITOR_THREAD                       1
@@ -1542,7 +1639,7 @@
 #ifndef CONFIG_START_CONSOLE_UART_BAUDRATE
 #    if defined(BOARD_ESP01) || defined(BOARD_ESP12E) || defined(BOARD_NODEMCU)
 #        define CONFIG_START_CONSOLE_UART_BAUDRATE      76800
-#    elif defined(BOARD_NANO32)
+#    elif defined(BOARD_NANO32) || defined(BOARD_SPC56DDISCOVERY)
 #        define CONFIG_START_CONSOLE_UART_BAUDRATE     115200
 #    else
 #        define CONFIG_START_CONSOLE_UART_BAUDRATE      38400
@@ -1702,10 +1799,24 @@
 #endif
 
 /**
+ * Enable formatting of floating point values.
+ */
+#ifndef CONFIG_STD_FORMAT_FLOAT
+#    define CONFIG_STD_FORMAT_FLOAT                         1
+#endif
+
+/**
  * System tick frequency in Hertz.
  */
 #ifndef CONFIG_SYSTEM_TICK_FREQUENCY
 #    define CONFIG_SYSTEM_TICK_FREQUENCY                  100
+#endif
+
+/**
+ * Use interrupts.
+ */
+#ifndef CONFIG_SYSTEM_INTERRUPTS
+#    define CONFIG_SYSTEM_INTERRUPTS                        1
 #endif
 
 /**
@@ -1736,7 +1847,7 @@
  * Stack size of the idle thread.
  */
 #ifndef CONFIG_THRD_IDLE_STACK_SIZE
-#    if defined(ARCH_ARM)
+#    if defined(ARCH_ARM) || defined(ARCH_PPC)
 #        define CONFIG_THRD_IDLE_STACK_SIZE               384
 #    elif defined(ARCH_AVR)
 #        define CONFIG_THRD_IDLE_STACK_SIZE               156
@@ -1842,6 +1953,26 @@
 #    else
 #        define CONFIG_HTTP_SERVER_SSL                      0
 #    endif
+#endif
+
+/**
+ * Use lookup tables for CRC calculations. It is faster, but uses more
+ * memory.
+ */
+#ifndef CONFIG_CRC_TABLE_LOOKUP
+#    define CONFIG_CRC_TABLE_LOOKUP                         1
+#endif
+
+/**
+ */
+#ifndef CONFIG_SPC5_BOOT_ENTRY_RCHW
+#    define CONFIG_SPC5_BOOT_ENTRY_RCHW                     1
+#endif
+
+/**
+ */
+#ifndef CONFIG_SPC5_RAM_CLEAR_ALL
+#    define CONFIG_SPC5_RAM_CLEAR_ALL                       1
 #endif
 
 /**

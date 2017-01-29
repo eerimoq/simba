@@ -35,7 +35,8 @@ BOARD ?= linux
 SRC += socket_stub.c ssl_stub.c
 CDEFS += \
 	CONFIG_MINIMAL_SYSTEM=1 \
-	CONFIG_FS_CMD_THRD_LIST=1
+	CONFIG_FS_CMD_THRD_LIST=1 \
+	CONFIG_MODULE_INIT_LOG=1
 
 ifeq ($(BOARD), linux)
 CDEFS += \

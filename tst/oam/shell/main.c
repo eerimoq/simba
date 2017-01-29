@@ -2,9 +2,9 @@
  * @section License
  *
  * The MIT License (MIT)
- * 
+ *
  * Copyright (c) 2014-2016, Erik Moqvist
- * 
+ *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
  * files (the "Software"), to deal in the Software without
@@ -256,7 +256,7 @@ static int test_auto_completion(struct harness_t *harness_p)
     BTASSERT(std_strcmp(buf,
                         FSTR("\r\n"
                              "bar\r\n"
-#if !defined(ARCH_LINUX)
+#if !defined(ARCH_LINUX) && !defined(ARCH_PPC)
                              "drivers/\r\n"
 #endif
                              "fie\r\n"

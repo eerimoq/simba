@@ -34,6 +34,9 @@
 #include "simba.h"
 #include "sys_port.h"
 
+#define VERSION_STR                        STRINGIFY(VERSION)
+#define SYS_TICK_MAX                         ((sys_tick_t)-1)
+
 typedef uint64_t sys_tick_t;
 
 /**
@@ -41,7 +44,7 @@ typedef uint64_t sys_tick_t;
  */
 static inline sys_tick_t t2st(struct time_t *time_p)
 {
-    return (((uint64_t)(time_p)->seconds * CONFIG_SYSTEM_TICK_FREQUENCY) +
+    return (((sys_tick_t)(time_p)->seconds * CONFIG_SYSTEM_TICK_FREQUENCY) +
             DIV_CEIL((DIV_CEIL((time_p)->nanoseconds, 1000)
                       * CONFIG_SYSTEM_TICK_FREQUENCY), 1000000));
 }
@@ -56,10 +59,7 @@ static inline void st2t(sys_tick_t tick, struct time_t *time_p)
                             / CONFIG_SYSTEM_TICK_FREQUENCY) * 1000);
 }
 
-#define VERSION_STR STRINGIFY(VERSION)
-
 struct sys_t {
-    sys_tick_t tick;
     void (*on_fatal_callback)(int error);
     void *stdin_p;
     void *stdout_p;
@@ -70,8 +70,6 @@ struct sys_t {
 };
 
 extern struct sys_t sys;
-
-#define SYS_TICK_MAX (~0ULL)
 
 /**
  * Initialize the sys module. This function must be called before

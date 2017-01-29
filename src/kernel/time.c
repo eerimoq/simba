@@ -2,9 +2,9 @@
  * @section License
  *
  * The MIT License (MIT)
- * 
+ *
  * Copyright (c) 2014-2016, Erik Moqvist
- * 
+ *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
  * files (the "Software"), to deal in the Software without
@@ -61,11 +61,11 @@
 #include "time_port.i"
 
 /* 2000-03-01 (mod 400 year, immediately after feb29 */
-#define LEAPOCH (946684800LL + 86400*(31+29))
+#define LEAPOCH (946684800LL + 86400 * (31 + 29))
 
-#define DAYS_PER_400Y (365L*400L + 97L)
-#define DAYS_PER_100Y (365L*100L + 24L)
-#define DAYS_PER_4Y   (365L*4L   + 1L)
+#define DAYS_PER_400Y (365L * 400L + 97L)
+#define DAYS_PER_100Y (365L * 100L + 24L)
+#define DAYS_PER_4Y   (365L * 4L   + 1L)
 
 struct module_t {
     uint64_t tick; /* Current tick. 64 bits so it does not wrap around
@@ -90,7 +90,7 @@ static inline void tick_to_time(uint64_t tick,
  */
 void RAM_CODE time_tick_isr(void)
 {
-    module.tick += 1;
+    module.tick++;
 }
 
 int time_get(struct time_t *now_p)
@@ -153,7 +153,7 @@ int time_diff(struct time_t *diff_p,
         diff_p->seconds++;
         diff_p->nanoseconds -= 1000000000L;
     }
-    
+
     return (0);
 }
 

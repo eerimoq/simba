@@ -55,12 +55,12 @@ static ssize_t handle_input_idle(struct isotp_t *self_p,
 {
     int res;
     int type;
-    
+
     type = (buf_p[0] >> 4);
 
     switch (type) {
 
-    case TYPE_SINGLE_FRAME:       
+    case TYPE_SINGLE_FRAME:
         size = (buf_p[0] & 0x0f);
 
         if (size > 7) {
@@ -72,7 +72,7 @@ static ssize_t handle_input_idle(struct isotp_t *self_p,
             res = -1;
             break;
         }
-        
+
         memcpy(self_p->message_p, &buf_p[1], size);
         res = size;
         break;
@@ -89,7 +89,7 @@ static ssize_t handle_input_idle(struct isotp_t *self_p,
             res = -1;
             break;
         }
-        
+
         memcpy(self_p->message_p, &buf_p[2], 6);
         self_p->message.size = size;
         self_p->message.offset = 6;
@@ -102,7 +102,7 @@ static ssize_t handle_input_idle(struct isotp_t *self_p,
         res = -1;
         break;
     }
-    
+
     return (res);
 }
 
@@ -123,9 +123,9 @@ static ssize_t handle_input_first_frame_sent(struct isotp_t *self_p,
         self_p->state = state_idle_t;
         return (-1);
     }
-    
+
     self_p->state = state_flow_control_frame_received_t;
-    
+
     return (0);
 }
 
@@ -147,14 +147,14 @@ static ssize_t handle_input_flow_control_sent(struct isotp_t *self_p,
     self_p->message.offset += (size - 1);
     self_p->message.next_index++;
     self_p->message.next_index %= 16;
-    
+
     if (self_p->message.offset == self_p->message.size) {
         res = self_p->message.size;
         self_p->state = state_idle_t;
     } else {
         res = 0;
     }
-    
+
     return (res);
 }
 
@@ -165,7 +165,7 @@ static ssize_t handle_output_idle(struct isotp_t *self_p,
     int res;
 
     res = 0;
-    
+
     if (self_p->size < 8) {
         output_p[0] = ((TYPE_SINGLE_FRAME << 4) | self_p->size);
         memcpy(&output_p[1], self_p->message_p, self_p->size);
@@ -180,7 +180,7 @@ static ssize_t handle_output_idle(struct isotp_t *self_p,
         self_p->message.next_index = 1;
         self_p->state = state_first_frame_sent_t;
     }
-    
+
     return (res);
 }
 
@@ -193,7 +193,7 @@ static ssize_t handle_output_first_frame_received(struct isotp_t *self_p,
     buf_p[2] = 0;
     *size_p = 3;
     self_p->state = state_flow_control_frame_sent_t;
-    
+
     return (0);
 }
 
@@ -205,7 +205,7 @@ static ssize_t handle_output_flow_control_received(struct isotp_t *self_p,
     size_t size;
 
     res = 0;
-    
+
     buf_p[0] = ((TYPE_CONSECUTIVE_FRAME << 4) | self_p->message.next_index);
     size = MIN(self_p->size - self_p->message.offset, 7);
     memcpy(&buf_p[1], &self_p->message_p[self_p->message.offset], size);
@@ -233,7 +233,7 @@ int isotp_init(struct isotp_t *self_p,
     self_p->message_p = buf_p;
     self_p->size = size;
     self_p->state = state_idle_t;
-    
+
     return (0);
 }
 
@@ -241,8 +241,11 @@ ssize_t isotp_input(struct isotp_t *self_p,
                     const uint8_t *buf_p,
                     size_t size)
 {
+    ASSERTN(self_p != NULL, -EINVAL);
+    ASSERTN(buf_p != NULL, -EINVAL);
+
     ssize_t res;
-    
+
     switch (self_p->state) {
 
     case state_idle_t:
@@ -261,7 +264,7 @@ ssize_t isotp_input(struct isotp_t *self_p,
         res = -1;
         break;
     }
-    
+
     return (res);
 }
 
@@ -269,10 +272,13 @@ ssize_t isotp_output(struct isotp_t *self_p,
                      uint8_t *buf_p,
                      size_t *size_p)
 {
+    ASSERTN(self_p != NULL, -EINVAL);
+    ASSERTN(buf_p != NULL, -EINVAL);
+
     int res;
 
     *size_p = 0;
-    
+
     switch (self_p->state) {
 
     case state_idle_t:
@@ -291,6 +297,6 @@ ssize_t isotp_output(struct isotp_t *self_p,
         res = -1;
         break;
     }
-    
+
     return (res);
 }

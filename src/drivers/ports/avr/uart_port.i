@@ -2,9 +2,9 @@
  * @section License
  *
  * The MIT License (MIT)
- * 
+ *
  * Copyright (c) 2014-2016, Erik Moqvist
- * 
+ *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
  * files (the "Software"), to deal in the Software without
@@ -39,84 +39,6 @@
 
 static struct fs_counter_t rx_channel_overflow;
 static struct fs_counter_t rx_errors;
-
-static int uart_port_module_init()
-{
-    fs_counter_init(&rx_channel_overflow,
-                    FSTR("/drivers/uart/rx_channel_overflow"),
-                    0);
-    fs_counter_register(&rx_channel_overflow);
-    
-    fs_counter_init(&rx_errors,
-                    FSTR("/drivers/uart/rx_errors"),
-                    0);
-    fs_counter_register(&rx_errors);
-    
-    return (0);
-}
-
-static int uart_port_start(struct uart_driver_t *self_p)
-{
-    uint16_t baudrate = (F_CPU / 16 / self_p->baudrate - 1);
-    struct uart_device_t *dev_p = self_p->dev_p;
-
-    *UBRRn(dev_p) = baudrate;
-    *UCSRnA(dev_p) = 0;
-    *UCSRnB(dev_p) = (_BV(RXCIE0) | _BV(TXCIE0) | _BV(RXEN0) | _BV(TXEN0));
-    *UCSRnC(dev_p) = (_BV(UCSZ00) | _BV(UCSZ01));
-
-    dev_p->drv_p = self_p;
-
-    return (0);
-}
-
-static int uart_port_stop(struct uart_driver_t *self_p)
-{
-    *UCSRnA(self_p->dev_p) = 0;
-    *UCSRnB(self_p->dev_p) = 0;
-    *UCSRnC(self_p->dev_p) = 0;
-
-    self_p->dev_p->drv_p = NULL;
-
-    return (0);
-}
-
-static ssize_t uart_port_write_cb(void *arg_p,
-                                  const void *txbuf_p,
-                                  size_t size)
-{
-    struct uart_driver_t *self_p;
-
-    self_p = container_of(arg_p, struct uart_driver_t, chout);
-
-    sem_take(&self_p->sem, NULL);
-
-    /* Initiate transfer by writing the first byte. */
-    self_p->txbuf_p = (txbuf_p + 1);
-    self_p->txsize = (size - 1);
-    self_p->thrd_p = thrd_self();
-
-    sys_lock();
-
-    /* Write the first byte. The rest are written from the interrupt
-       routine. */
-    *UDRn(self_p->dev_p) = self_p->txbuf_p[-1];
-
-    thrd_suspend_isr(NULL);
-
-    sys_unlock();
-
-    sem_give(&self_p->sem, 1);
-
-    return (size);
-}
-
-static ssize_t uart_port_write_cb_isr(void *arg_p,
-                                      const void *txbuf_p,
-                                      size_t size)
-{
-    return (-1);
-}
 
 static void tx_isr(int index)
 {
@@ -192,3 +114,106 @@ UART_ISR(USART2, 2)
 #if (UART_DEVICE_MAX >= 4)
 UART_ISR(USART3, 3)
 #endif
+
+static int uart_port_module_init()
+{
+    fs_counter_init(&rx_channel_overflow,
+                    FSTR("/drivers/uart/rx_channel_overflow"),
+                    0);
+    fs_counter_register(&rx_channel_overflow);
+
+    fs_counter_init(&rx_errors,
+                    FSTR("/drivers/uart/rx_errors"),
+                    0);
+    fs_counter_register(&rx_errors);
+
+    return (0);
+}
+
+static int uart_port_start(struct uart_driver_t *self_p)
+{
+    uint16_t baudrate = (F_CPU / 16 / self_p->baudrate - 1);
+    struct uart_device_t *dev_p = self_p->dev_p;
+
+    *UBRRn(dev_p) = baudrate;
+    *UCSRnA(dev_p) = 0;
+    *UCSRnB(dev_p) = (_BV(RXCIE0) | _BV(TXCIE0) | _BV(RXEN0) | _BV(TXEN0));
+    *UCSRnC(dev_p) = (_BV(UCSZ00) | _BV(UCSZ01));
+
+    dev_p->drv_p = self_p;
+
+    return (0);
+}
+
+static int uart_port_stop(struct uart_driver_t *self_p)
+{
+    *UCSRnA(self_p->dev_p) = 0;
+    *UCSRnB(self_p->dev_p) = 0;
+    *UCSRnC(self_p->dev_p) = 0;
+
+    self_p->dev_p->drv_p = NULL;
+
+    return (0);
+}
+
+static ssize_t uart_port_write_cb(void *arg_p,
+                                  const void *txbuf_p,
+                                  size_t size)
+{
+    struct uart_driver_t *self_p;
+
+    self_p = container_of(arg_p, struct uart_driver_t, chout);
+
+    sem_take(&self_p->sem, NULL);
+
+    /* Initiate transfer by writing the first byte. */
+    self_p->txbuf_p = (txbuf_p + 1);
+    self_p->txsize = (size - 1);
+    self_p->thrd_p = thrd_self();
+
+    sys_lock();
+
+    /* Write the first byte. The rest are written from the interrupt
+       routine. */
+    *UDRn(self_p->dev_p) = self_p->txbuf_p[-1];
+
+    thrd_suspend_isr(NULL);
+
+    sys_unlock();
+
+    sem_give(&self_p->sem, 1);
+
+    return (size);
+}
+
+static ssize_t uart_port_write_cb_isr(void *arg_p,
+                                      const void *txbuf_p,
+                                      size_t size)
+{
+    return (-1);
+}
+
+static int uart_port_device_start(struct uart_device_t *dev_p,
+                                  long baudrate)
+{
+    return (-1);
+}
+
+static int uart_port_device_stop(struct uart_device_t *dev_p)
+{
+    return (-1);
+}
+
+static ssize_t uart_port_device_read_isr(struct uart_device_t *dev_p,
+                                         void *buf_p,
+                                         size_t size)
+{
+    return (-1);
+}
+
+static ssize_t uart_port_device_write_isr(struct uart_device_t *dev_p,
+                                          const void *buf_p,
+                                          size_t size)
+{
+    return (-1);
+}

@@ -75,6 +75,10 @@ static int test_input_multi_frame(struct harness_t *harness_p)
     frame[7] = '6';
 
     BTASSERT(isotp_input(&isotp, &frame[0], 8) == 0);
+
+    /* Unexpected input frame. */
+    BTASSERT(isotp_input(&isotp, &frame[0], 8) == -1);
+
     BTASSERT(isotp_output(&isotp, &frame[0], &size) == 0);
 
     /* Verify that the flow control frame was created. */
@@ -82,6 +86,9 @@ static int test_input_multi_frame(struct harness_t *harness_p)
     BTASSERT(frame[0] == (3 << 4));
     BTASSERT(frame[1] == 0);
     BTASSERT(frame[2] == 0);
+
+    /* No data to output. */
+    BTASSERT(isotp_output(&isotp, &frame[0], &size) == -1);
 
     /* Input two consecutive frames. */
     frame[0] = (2 << 4) | 1;
@@ -103,6 +110,7 @@ static int test_input_multi_frame(struct harness_t *harness_p)
     frame[5] = 'h';
     frame[6] = 'i';
 
+    /* Message completly received. */
     BTASSERT(isotp_input(&isotp, &frame[0], 7) == 19);
 
     BTASSERT(memcmp(&buf[0], "1234567890abcdefghi", 19) == 0);

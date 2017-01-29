@@ -304,6 +304,31 @@ ifeq ($(BOARD), photon)
 				    ping)
 endif
 
+ifeq ($(BOARD), spc56ddiscovery)
+    TESTS = $(addprefix tst/kernel/, sys \
+                                     thrd \
+                                     time \
+                                     timer)
+    TESTS += $(addprefix tst/sync/, bus \
+                                    event \
+                                    queue \
+                                    rwlock \
+                                    sem)
+    TESTS += $(addprefix tst/collections/, binary_tree \
+                                           bits \
+                                           fifo \
+                                           hash_map)
+    TESTS += $(addprefix tst/alloc/, circular_heap)
+    TESTS += $(addprefix tst/text/, std \
+                                    re)
+    TESTS += $(addprefix tst/debug/, log)
+    TESTS += $(addprefix tst/oam/, shell)
+    TESTS += $(addprefix tst/encode/, base64 \
+                                      json)
+    TESTS += $(addprefix tst/hash/, crc \
+                                    sha1)
+endif
+
 # List of all application to build
 APPS += $(TESTS)
 
@@ -390,6 +415,9 @@ clean-stm32vldiscovery:
 clean-photon:
 	$(MAKE) BOARD=photon SERIAL_PORT=/dev/simba-photon clean
 
+clean-spc56ddiscovery:
+	$(MAKE) BOARD=spc56ddiscovery SERIAL_PORT=/dev/ttyUSB0 CONTROL_PORT=/dev/ttyUSB1 clean
+
 test-arduino-due:
 	@echo "Arduino Due"
 	$(MAKE) BOARD=arduino_due SERIAL_PORT=/dev/simba-arduino_due test
@@ -425,6 +453,10 @@ test-stm32vldiscovery:
 test-photon:
 	@echo "Photon"
 	$(MAKE) BOARD=photon SERIAL_PORT=/dev/simba-photon test
+
+test-spc56ddiscovery:
+	@echo "SPC56D Discovery"
+	$(MAKE) BOARD=spc56ddiscovery SERIAL_PORT=/dev/ttyUSB0 CONTROL_PORT=/dev/ttyUSB1 test
 
 clean-arduino-due-platformio:
 	@echo "Arduino Due"
@@ -473,6 +505,7 @@ test-all-boards:
 	$(MAKE) test-arduino-pro-micro
 	$(MAKE) test-nodemcu
 	$(MAKE) test-nano32
+	$(MAKE) test-spc56ddiscovery
 
 clean-all-boards:
 	$(MAKE) clean-arduino-due
@@ -487,6 +520,7 @@ clean-all-boards:
 	$(MAKE) clean-arduino-pro-micro
 	$(MAKE) clean-nodemcu
 	$(MAKE) clean-nano32
+	$(MAKE) clean-spc56ddiscovery
 
 doc:
 	+bin/dbgen.py > database.json
