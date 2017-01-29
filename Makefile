@@ -81,6 +81,7 @@ ifeq ($(BOARD), linux)
 				    ssl \
 				    tftp_server)
     TESTS += $(addprefix tst/multimedia/, midi)
+    TESTS += $(addprefix tst/drivers/, isotp)
 endif
 
 ifeq ($(BOARD), arduino_due)

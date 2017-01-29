@@ -223,7 +223,9 @@ extern "C" {
 #ifdef PORT_HAS_RANDOM
 #    include "drivers/random.h"
 #endif
-    
+
+#include "drivers/isotp.h"
+
 #include "debug/harness.h"
 
 #include "multimedia/midi.h"
