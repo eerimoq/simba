@@ -83,6 +83,7 @@ extern "C" {
 #include "collections/fifo.h"
 #include "collections/list.h"
 #include "collections/hash_map.h"
+#include "collections/circular_buffer.h"
 
 #include "kernel/time.h"
 

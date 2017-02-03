@@ -47,6 +47,7 @@ ifeq ($(BOARD), linux)
                                     sem)
     TESTS += $(addprefix tst/collections/, binary_tree \
                                            bits \
+                                           circular_buffer \
                                            fifo \
                                            hash_map)
     TESTS += $(addprefix tst/alloc/, circular_heap \

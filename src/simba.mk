@@ -76,8 +76,10 @@ ALLOC_SRC ?= circular_heap.c \
 SRC += $(ALLOC_SRC:%=$(SIMBA_ROOT)/src/alloc/%)
 
 # Collections package.
-COLLECTIONS_SRC ?= binary_tree.c \
-		   hash_map.c
+COLLECTIONS_SRC ?= \
+	binary_tree.c \
+	circular_buffer.c \
+	hash_map.c
 
 SRC += $(COLLECTIONS_SRC:%=$(SIMBA_ROOT)/src/collections/%)
 
