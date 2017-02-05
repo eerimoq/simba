@@ -56,15 +56,6 @@ def create_packet(packet_type, payload):
     return slip_packet
 
 
-class Database(object):
-
-    def __init__(self, filename):
-        pass
-
-    def lookup_id(self, string):
-        return string
-
-
 class TimeoutError(Exception):
     pass
 
@@ -177,11 +168,10 @@ class ReaderThread(threading.Thread):
 
 class SlipSerialClient(object):
 
-    def __init__(self, serial_port, baudrate, database):
+    def __init__(self, serial_port, baudrate):
         self.serial = serial.Serial(serial_port,
                                     baudrate=baudrate,
                                     timeout=0.5)
-        self.database = Database(database)
         self.reader = ReaderThread(self)
         self.reader.start()
 
@@ -192,7 +182,7 @@ class SlipSerialClient(object):
         """
 
         command = command_with_args.split(' ')[0]
-        command_id = self.database.lookup_id(command)
+        command_id = command
         command_with_args = command_with_args.replace(command, command_id, 1)
         command_with_args += b'\x00'
 
@@ -301,12 +291,11 @@ class Shell(cmd.Cmd):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('-s', '--port', default='/dev/ttyACM1')
+    parser.add_argument('-p', '--port', default='/dev/ttyACM1')
     parser.add_argument('-b', '--baudrate', type=int, default=115200)
-    parser.add_argument('database')
     args = parser.parse_args()
 
-    client = SlipSerialClient(args.port, args.baudrate, args.database)
+    client = SlipSerialClient(args.port, args.baudrate)
     shell = Shell(client)
     shell.cmdloop()
     client.reader.stop()
