@@ -77,6 +77,7 @@ ifeq ($(BOARD), linux)
 				    inet \
 				    mqtt_client \
 				    ping \
+				    slip \
 				    ssl \
 				    tftp_server)
     TESTS += $(addprefix tst/multimedia/, midi)
