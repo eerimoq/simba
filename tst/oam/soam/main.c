@@ -144,10 +144,10 @@ static int test_command(struct harness_t *harness_p)
 
     BTASSERT(soam_input(&soam,
                         (uint8_t *)"\x01"
-                        "\x00\x13"
+                        "\x00\x05"
                         "\x80\x03\x00"
-                        "\xa5\xc2",
-                        8) == 8);
+                        "\x99\xfc",
+                        8) == 0);
 
     /* Read the type and size fields of the data response. */
     BTASSERT(chan_read(&chout, &buf[0], 3) == 3);
@@ -187,6 +187,38 @@ static int test_command(struct harness_t *harness_p)
     return (0);
 }
 
+static int test_bad_input(struct harness_t *harness_p)
+{
+    /* Short packet. */
+    BTASSERT(soam_input(&soam, (uint8_t *)"1234", 4) == -1);
+
+    /* CRC error. */
+    BTASSERT(soam_input(&soam,
+                        (uint8_t *)"\x01"
+                        "\x00\x05"
+                        "\x80\x03\x00"
+                        "\xa5\xc1",
+                        8) == -1);
+
+    /* Bad type in the packet. */
+    BTASSERT(soam_input(&soam,
+                        (uint8_t *)"\x00"
+                        "\x00\x05"
+                        "\x80\x03\x00"
+                        "\xdc\x5c",
+                        8) == -1);
+
+    /* Bad length in the packet. */
+    BTASSERT(soam_input(&soam,
+                        (uint8_t *)"\x01"
+                        "\x00\x06"
+                        "\x80\x03\x00"
+                        "\x02\x20",
+                        8) == -1);
+
+    return (0);
+}
+
 int main()
 {
     struct harness_t harness;
@@ -194,6 +226,7 @@ int main()
         { test_init, "test_init" },
         { test_log, "test_log" },
         { test_command, "test_command" },
+        { test_bad_input, "test_bad_input" },
         { NULL, NULL }
     };
 

@@ -42,16 +42,11 @@ static ssize_t command_write(void *chan_p,
         return (-1);
     }
 
-    if (soam_write_chunk(self_p, self_p->command.id_p, 2) != 2) {
-        return (-1);
-    }
-
-    if (soam_write_chunk(self_p, buf_p, size) != size) {
-        return (-1);
-    }
+    (void)soam_write_chunk(self_p, self_p->command.id_p, 2);
+    (void)soam_write_chunk(self_p, buf_p, size);
 
     if (soam_write_end(self_p) != size + 2) {
-        return (-1);
+        size = -1;
     }
 
     return (size);
@@ -118,11 +113,12 @@ int soam_init(struct soam_t *self_p,
     return (0);
 }
 
-ssize_t soam_input(struct soam_t *self_p,
-                   uint8_t *buf_p,
-                   size_t size)
+int soam_input(struct soam_t *self_p,
+               uint8_t *buf_p,
+               size_t size)
 {
     uint8_t type;
+    size_t payload_crc_size;
     uint16_t crc;
     uint16_t input_crc;
     int32_t res;
@@ -132,14 +128,24 @@ ssize_t soam_input(struct soam_t *self_p,
         return (-1);
     }
 
-    input_crc = ((buf_p[size - 2] << 8) | buf_p[size - 1]);
-    crc = crc_ccitt(0xffff, buf_p, size - 2);
+    payload_crc_size = ((buf_p[1] << 8) | buf_p[2]);
+
+    if (payload_crc_size > (size - 3)) {
+        return (-1);
+    }
+
+    input_crc = ((buf_p[payload_crc_size + 1] << 8)
+                 | buf_p[payload_crc_size + 2]);
+    crc = crc_ccitt(0xffff, buf_p, payload_crc_size + 1);
+
+    std_printf(FSTR("crc: %04x\r\n"), crc);
 
     if (crc != input_crc) {
         return (-1);
     }
 
     type = buf_p[0];
+
     self_p->command.id_p = &buf_p[3];
     buf[0] = self_p->command.id_p[0];
     buf[1] = self_p->command.id_p[1];
@@ -163,10 +169,10 @@ ssize_t soam_input(struct soam_t *self_p,
         break;
 
     default:
-        break;
+        return (-1);
     }
 
-    return (size);
+    return (0);
 }
 
 ssize_t soam_write_begin(struct soam_t *self_p,
@@ -201,24 +207,28 @@ ssize_t soam_write_end(struct soam_t *self_p)
     size_t data_crc_size;
     uint16_t crc;
 
-    size = (self_p->tx.pos + 2);
-    data_crc_size = (size - 3);
+    if (self_p->tx.pos != -1) {
+        size = (self_p->tx.pos + 2);
+        data_crc_size = (size - 3);
 
-    /* Write packet size and crc fields. */
-    self_p->tx.buf_p[1] = (data_crc_size >> 8);
-    self_p->tx.buf_p[2] = data_crc_size;
+        /* Write packet size and crc fields. */
+        self_p->tx.buf_p[1] = (data_crc_size >> 8);
+        self_p->tx.buf_p[2] = data_crc_size;
 
-    crc = crc_ccitt(0xffff, &self_p->tx.buf_p[0], size - 2);
+        crc = crc_ccitt(0xffff, &self_p->tx.buf_p[0], size - 2);
 
-    self_p->tx.buf_p[size - 2] = (crc >> 8);
-    self_p->tx.buf_p[size - 1] = crc;
+        self_p->tx.buf_p[size - 2] = (crc >> 8);
+        self_p->tx.buf_p[size - 1] = crc;
 
-    if (chan_write(self_p->tx.chout_p,
-                   &self_p->tx.buf_p[0],
-                   size) != size) {
-        size = -1;
+        if (chan_write(self_p->tx.chout_p,
+                       &self_p->tx.buf_p[0],
+                       size) != size) {
+            size = -1;
+        } else {
+            size -= 5;
+        }
     } else {
-        size -= 5;
+        size = -1;
     }
 
     sem_give(&self_p->tx.sem, 1);
@@ -235,9 +245,7 @@ ssize_t soam_write(struct soam_t *self_p,
         return (-1);
     }
 
-    if (soam_write_chunk(self_p ,buf_p, size) != size) {
-        return (-1);
-    }
+    (void)soam_write_chunk(self_p ,buf_p, size);
 
     return (soam_write_end(self_p));
 }

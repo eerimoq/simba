@@ -89,9 +89,9 @@ int soam_init(struct soam_t *self_p,
  *
  * @return zero(0) or negative error code.
  */
-ssize_t soam_input(struct soam_t *self_p,
-                   uint8_t *buf_p,
-                   size_t size);
+int soam_input(struct soam_t *self_p,
+               uint8_t *buf_p,
+               size_t size);
 
 /**
  * Start outputting a soam packet of given type.
