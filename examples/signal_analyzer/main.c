@@ -176,8 +176,8 @@ static int cmd_pwm_measure_cb(int argc,
 
         for (j = 0; j < membersof(reports); j++, delim_p = ",") {
             duty_cycle = ((100 * reports[j].high_count) / TIMEOUTS_PER_REPORT);
-            frequency = (reports[j].rising_count
-                         / SAMPLE_TIMEOUT_IN_MILLISECONDS);
+            frequency = ((1000 * reports[j].rising_count)
+                         / (TIMEOUTS_PER_REPORT * SAMPLE_TIMEOUT_IN_MILLISECONDS));
             std_fprintf(chout_p,
                         FSTR("%s(%d,%d)"),
                         delim_p,
