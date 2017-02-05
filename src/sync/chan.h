@@ -34,6 +34,16 @@
 #include "simba.h"
 
 /**
+ * Beginning of a packet.
+ */
+#define CHAN_CONTROL_PACKET_BEGIN                           1
+
+/**
+ * End of a packet.
+ */
+#define CHAN_CONTROL_PACKET_END                             2
+
+/**
  * Channel read function callback type.
  *
  * @param[in] self_p Channel to read from.
@@ -58,6 +68,17 @@ typedef ssize_t (*chan_read_fn_t)(void *self_p,
 typedef ssize_t (*chan_write_fn_t)(void *self_p,
                                    const void *buf_p,
                                    size_t size);
+
+/**
+ * Channel control function callback type.
+ *
+ * @param[in] self_p Channel to read from.
+ * @param[in] operation Control operation.
+ *
+ * @return Operation specific.
+ */
+typedef int (*chan_control_fn_t)(void *self_p,
+                                 int operation);
 
 /**
  * Channel write filter function callback type.
@@ -96,6 +117,7 @@ struct chan_t {
     chan_read_fn_t read;
     chan_write_fn_t write;
     chan_size_fn_t size;
+    chan_control_fn_t control;
     chan_write_filter_fn_t write_filter_cb;
     chan_write_fn_t write_isr;
     chan_write_filter_fn_t write_filter_isr_cb;
@@ -183,6 +205,17 @@ int chan_set_write_filter_isr_cb(struct chan_t *self_p,
                                  chan_write_filter_fn_t write_filter_isr_cb);
 
 /**
+ * Set control function callback.
+ *
+ * @param[in] self_p Initialized driver object.
+ * @param[in] control Control function to set.
+ *
+ * @return zero(0) or negative error code.
+ */
+int chan_set_control_cb(struct chan_t *self_p,
+                        chan_control_fn_t control_cb);
+
+/**
  * Read data from given channel. The behaviour of this function
  * depends on the channel implementation. Often, the calling thread
  * will be blocked until all data has been read or an error occurs.
@@ -220,6 +253,13 @@ ssize_t chan_write(void *self_p,
  * @return Number of bytes available.
  */
 size_t chan_size(void *self_p);
+
+/**
+ * Control given channel.
+ *
+ * @return Operation specific.
+ */
+int chan_control(void *self_p, int operation);
 
 /**
  * Write data to given channel from interrupt context or with the

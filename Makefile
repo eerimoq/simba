@@ -60,6 +60,7 @@ ifeq ($(BOARD), linux)
     TESTS += $(addprefix tst/oam/, service \
 				   settings \
 				   shell \
+				   soam \
 				   upgrade \
 				   upgrade/kermit \
 				   upgrade/uds)

@@ -262,6 +262,7 @@ INET_SRC_TMP = \
 	network_interface.c \
 	network_interface/slip.c \
 	network_interface/wifi.c \
+	slip.c \
 	socket.c \
 	ping.c
 
@@ -410,7 +411,8 @@ OAM_SRC_TMP ?= \
 	console.c \
 	service.c \
 	settings.c \
-	shell.c
+	shell.c \
+	soam.c
 
 ifeq ($(FAMILY), $(filter $(FAMILY), esp32 linux))
 OAM_SRC_TMP += \
