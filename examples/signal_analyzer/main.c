@@ -119,7 +119,7 @@ static void sample_timeout(void *arg_p)
 
 /**
  * File system command to measure duty cycle and frequency of up to
- * eight signals.
+ * eight PWM signals.
  */
 static int cmd_pwm_measure_cb(int argc,
                               const char *argv[],
