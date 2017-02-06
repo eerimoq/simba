@@ -34,7 +34,7 @@
 #define TIMEOUTS_PER_REPORT                                20
 
 /**
- * Data for a report.
+ * Report of a measurement period.
  */
 struct report_t {
     uint32_t high_count;
@@ -42,6 +42,9 @@ struct report_t {
     uint32_t rising_count;
 };
 
+/**
+ * PWM signal measurement pin.
+ */
 struct pwm_pin_t {
     struct pin_device_t *pin_device_p;
     int previous_value;
@@ -79,18 +82,17 @@ static void sample_timeout(void *arg_p)
     int i;
     int value;
 
+    /* Read the pin value and update the report for each pin. */
     for (i = 0; i < membersof(module.pwm_pins); i++) {
         value = pin_device_read(module.pwm_pins[i].pin_device_p);
 
-        /* For duty cycle calculation. */
         if (value == 1) {
             module.pwm_pins[i].report.high_count++;
         } else {
             module.pwm_pins[i].report.low_count++;
         }
 
-        if ((value == 1)
-            && (module.pwm_pins[i].previous_value == 0)) {
+        if ((value == 1) && (module.pwm_pins[i].previous_value == 0)) {
             module.pwm_pins[i].report.rising_count++;
         }
 
@@ -99,6 +101,8 @@ static void sample_timeout(void *arg_p)
 
     module.timeout_count++;
 
+    /* Write the reports to the report queue when the report period is
+       over. */
     if ((module.timeout_count % TIMEOUTS_PER_REPORT) == 0) {
         queue_write_isr(&module.queue,
                         &module.timeout_count,
@@ -154,9 +158,7 @@ static int cmd_pwm_measure_cb(int argc,
     }
 
     /* Initialization. */
-    queue_init(&module.queue,
-               &module.buf[0],
-               sizeof(module.buf));
+    queue_init(&module.queue, &module.buf[0], sizeof(module.buf));
     module.timeout_count = 0;
 
     for (i = 0; i < membersof(module.pwm_pins); i++) {
