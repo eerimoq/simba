@@ -69,6 +69,11 @@ static struct module_t module = {
     }
 };
 
+/**
+ * PWM measure timer callback. Reads input pin values, stores the data
+ * in a report, and writes the report to a queue once the report
+ * period is over.
+ */
 static void sample_timeout(void *arg_p)
 {
     int i;
@@ -112,6 +117,10 @@ static void sample_timeout(void *arg_p)
     }
 }
 
+/**
+ * File system command to measure duty cycle and frequency of up to
+ * eight signals.
+ */
 static int cmd_pwm_measure_cb(int argc,
                               const char *argv[],
                               void *chout_p,
@@ -128,7 +137,7 @@ static int cmd_pwm_measure_cb(int argc,
     int frequency;
     long iterations;
     struct timer_t timer;
-    
+
     if (argc > 2) {
         std_fprintf(chout_p, FSTR("Usage: %s [iterations]\r\n"), argv[0]);
 
@@ -144,11 +153,10 @@ static int cmd_pwm_measure_cb(int argc,
         iterations = 1;
     }
 
+    /* Initialization. */
     queue_init(&module.queue,
                &module.buf[0],
                sizeof(module.buf));
-
-    /* Reset timeout variables. */
     module.timeout_count = 0;
 
     for (i = 0; i < membersof(module.pwm_pins); i++) {
@@ -167,6 +175,7 @@ static int cmd_pwm_measure_cb(int argc,
                TIMER_PERIODIC);
     timer_start(&timer);
 
+    /* Wait for reports from the timer callback. */
     for (i = 0; i < iterations; i++) {
         queue_read(&module.queue, &time, sizeof(time));
         queue_read(&module.queue, &reports[0], sizeof(reports));
@@ -187,7 +196,8 @@ static int cmd_pwm_measure_cb(int argc,
 
         std_fprintf(chout_p, FSTR("]\r\n"));
     }
-    
+
+    /* Measurement complete, stop the timer. */
     timer_stop(&timer);
 
     return (0);
@@ -200,7 +210,7 @@ int main()
     sys_start();
 
     std_printf(sys_get_info());
-    
+
     /* Initialize the pins as inputs. */
     for (i = 0; i < membersof(module.pwm_pins); i++) {
         pin_device_set_mode(module.pwm_pins[i].pin_device_p, PIN_INPUT);
