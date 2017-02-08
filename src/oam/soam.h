@@ -30,12 +30,13 @@
 
 #include "simba.h"
 
-#define SOAM_PACKET_SIZE_MIN                                5
+#define SOAM_PACKET_SIZE_MIN                                6
 
-#define SOAM_TYPE_COMMAND_REQUEST                           1
-#define SOAM_TYPE_COMMAND_RESPONSE_DATA                     2
-#define SOAM_TYPE_COMMAND_RESPONSE                          3
-#define SOAM_TYPE_LOG_POINT                                 4
+#define SOAM_TYPE_COMMAND_REQUEST                    (1 << 4)
+#define SOAM_TYPE_COMMAND_RESPONSE_DATA_PRINTF       (2 << 4)
+#define SOAM_TYPE_COMMAND_RESPONSE_DATA_BINARY       (3 << 4)
+#define SOAM_TYPE_COMMAND_RESPONSE                   (4 << 4)
+#define SOAM_TYPE_LOG_POINT                          (5 << 4)
 
 struct soam_t {
     struct {
@@ -44,9 +45,10 @@ struct soam_t {
         ssize_t pos;
         struct sem_t sem;
         void *chout_p;
+        uint8_t packet_index;
     } tx;
     struct {
-        uint8_t *id_p;
+        int is_printf;
         struct chan_t chan;
     } command;
     struct {

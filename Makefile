@@ -322,7 +322,8 @@ ifeq ($(BOARD), spc56ddiscovery)
     TESTS += $(addprefix tst/text/, std \
                                     re)
     TESTS += $(addprefix tst/debug/, log)
-    TESTS += $(addprefix tst/oam/, shell)
+    TESTS += $(addprefix tst/oam/, shell \
+				   soam)
     TESTS += $(addprefix tst/encode/, base64 \
                                       json)
     TESTS += $(addprefix tst/hash/, crc \

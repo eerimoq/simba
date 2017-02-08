@@ -52,14 +52,14 @@ static int cmd_set_min_max_cb(int argc,
     UNUSED(in_p);
 
     if (argc != 3) {
-        std_fprintf(out_p, FSTR("2 argument required.\r\n"));
+        std_fprintf(out_p, CRSTR("2 argument required.\r\n"));
         return (1);
     }
 
     if ((std_strtol(argv[1], &min) == NULL) ||
         (std_strtol(argv[2], &max) == NULL)) {
         std_fprintf(out_p,
-                    FSTR("bad min or max value '%s' '%s'\r\n"),
+                    CRSTR("bad min or max value '%s' '%s'\r\n"),
                     argv[1],
                     argv[2]);
         return (1);
@@ -68,7 +68,7 @@ static int cmd_set_min_max_cb(int argc,
     temp_min = 10000 * min;
     temp_max = 10000 * max;
     std_fprintf(out_p,
-                FSTR("min set to %ld and max set to %ld\r\n"),
+                CRSTR("min set to %ld and max set to %ld\r\n"),
                 temp_min / 10000,
                 temp_max / 10000);
 
@@ -90,7 +90,7 @@ int main()
     sys_start();
 
     fs_command_init(&cmd_set_min_max,
-                    FSTR("/temp/set_min_max"),
+                    CSTR("/temp/set_min_max"),
                     cmd_set_min_max_cb,
                     NULL);
     fs_command_register(&cmd_set_min_max);

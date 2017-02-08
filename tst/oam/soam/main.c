@@ -30,13 +30,11 @@
 
 #include "simba.h"
 
-#define SSTR1(string) "%d\x1f""%s\x1f\x80\x01"
-#define SSTR2(string) "\x80\x02"
-#define SSTR3(string) "/\x80\x03"
+#define TX_BUFFER_SIZE                                    48
 
 static struct soam_t soam;
-static uint8_t txbuf[128];
-static uint8_t buf[128];
+static uint8_t txbuf[TX_BUFFER_SIZE];
+static uint8_t queuebuf[256];
 
 static struct queue_t chout;
 static struct fs_command_t cmd_foo;
@@ -48,7 +46,27 @@ static int cmd_foo_cb(int argc,
                       void *arg_p,
                       void *call_arg_p)
 {
-    std_fprintf(chout_p, SSTR2("foo\r\n"));
+    /* The formatted string must be longer than the printf output
+       buffer to the begin/end functionality. */
+    std_fprintf(chout_p,
+                CRSTR("%d %u %f %s %c\r\n"),
+                -33544,
+                56342,
+                98743.58,
+                "this is a bunch of characters that will not fit in "
+                "the tx buffer...",
+                'q');
+
+    /* Bypass the channel control begin/end functions to write binary
+       data. */
+    chan_write(chout_p,
+               "\xbe\xef\xba\xbe\x00\x01\x02\x03"
+               "\xbe\xef\xba\xbe\x00\x01\x02\x03"
+               "\xbe\xef\xba\xbe\x00\x01\x02\x03"
+               "\xbe\xef\xba\xbe\x00\x01\x02\x03"
+               "\xbe\xef\xba\xbe\x00\x01\x02\x03"
+               "\xbe\xef\xba\xbe\x00\x01\x02\x03",
+               48);
 
     return (-1);
 }
@@ -57,11 +75,11 @@ static int test_init(struct harness_t *harness_p)
 {
     void *chin_p;
 
-    BTASSERT(fs_command_init(&cmd_foo, SSTR3("/foo"), cmd_foo_cb, NULL) == 0);
+    BTASSERT(fs_command_init(&cmd_foo, CSTR("/foo"), cmd_foo_cb, NULL) == 0);
     BTASSERT(fs_command_register(&cmd_foo) == 0);
 
-    BTASSERT(queue_init(&chout, &buf[0], sizeof(buf)) == 0);
-    
+    BTASSERT(queue_init(&chout, &queuebuf[0], sizeof(queuebuf)) == 0);
+
     BTASSERT(soam_init(&soam,
                        &txbuf[0],
                        sizeof(txbuf),
@@ -71,7 +89,7 @@ static int test_init(struct harness_t *harness_p)
 
     BTASSERT(chin_p != NULL);
     BTASSERT(log_set_default_handler_output_channel(chin_p) == 0);
-    
+
     return (0);
 }
 
@@ -81,57 +99,60 @@ static int test_log(struct harness_t *harness_p)
     size_t size;
     size_t offset;
     uint16_t crc;
-    
+
     log_object_print(NULL,
                      LOG_INFO,
-                     SSTR1("one: %d, erik: %s\r\n"),
+                     LSTR("one: %d, "
+                          "erik"": %s\r\n"),
                      1,
                      "erik");
 
     /* Read the SOAM packet written to the output channel from the log
        function. */
-    BTASSERT(chan_read(&chout, &buf[0], 3) == 3);
-    BTASSERT(buf[0] == 4);
+    BTASSERT(chan_read(&chout, &buf[0], 4) == 4);
+    BTASSERT(buf[0] == 0x51);
+    BTASSERT(buf[1] == 1);
 
-    size = ((buf[1] << 8) | buf[2]);
-    BTASSERT(size >= 32);
-    offset = 3;
+    size = ((buf[2] << 8) | buf[3]);
+    BTASSERT(size >= 31);
+    offset = 4;
 
     /* Skip the log timestamp since its value is unknown. */
-    BTASSERT(chan_read(&chout, &buf[offset], size - 31) == size - 31);
-    offset += (size - 31);
-    BTASSERT(chan_read(&chout, &buf[offset], 31) == 31);
-    
+    BTASSERT(chan_read(&chout, &buf[offset], size - 30) == size - 30);
+    offset += (size - 30);
+    BTASSERT(chan_read(&chout, &buf[offset], 30) == 30);
+
     BTASSERT(memcmp(&buf[offset],
                     ":info:main:default: "
+                    "\x80\x02"
                     "1\x1f"
-                    "erik\x1f"
-                    "\x80\x01", 29) == 0);
+                    "erik", 28) == 0);
 
-    crc = ((buf[size + 1] << 8) | buf[size + 2]);
-    BTASSERT(crc_ccitt(0xffff, &buf[0], size + 1) == crc);
+    crc = ((buf[size + 2] << 8) | buf[size + 3]);
+    BTASSERT(crc_ccitt(0xffff, &buf[0], size + 2) == crc);
 
     /* Another log point. */
-    log_object_print(NULL, LOG_ERROR, SSTR2("foo\r\n"));
+    log_object_print(NULL, LOG_ERROR, LSTR("foo\r\n"));
 
     /* Read the SOAM packet written to the output channel from the log
        function. */
-    BTASSERT(chan_read(&chout, &buf[0], 3) == 3);
-    BTASSERT(buf[0] == 4);
+    BTASSERT(chan_read(&chout, &buf[0], 4) == 4);
+    BTASSERT(buf[0] == 0x51);
+    BTASSERT(buf[1] == 2);
 
-    size = ((buf[1] << 8) | buf[2]);
+    size = ((buf[2] << 8) | buf[3]);
     BTASSERT(size >= 26);
-    offset = 3;
+    offset = 4;
 
     /* Skip the log timestamp since its value is unknown. */
     BTASSERT(chan_read(&chout, &buf[offset], size - 25) == size - 25);
     offset += (size - 25);
     BTASSERT(chan_read(&chout, &buf[offset], 25) == 25);
-    
-    BTASSERT(memcmp(&buf[offset], ":error:main:default: \x80\x02", 23) == 0);
 
-    crc = ((buf[size + 1] << 8) | buf[size + 2]);
-    BTASSERT(crc_ccitt(0xffff, &buf[0], size + 1) == crc);
+    BTASSERT(memcmp(&buf[offset], ":error:main:default: \x80\x03", 23) == 0);
+
+    crc = ((buf[size + 2] << 8) | buf[size + 3]);
+    BTASSERT(crc_ccitt(0xffff, &buf[0], size + 2) == crc);
 
     return (0);
 }
@@ -142,48 +163,122 @@ static int test_command(struct harness_t *harness_p)
     size_t size;
     uint16_t crc;
 
+    /* Command 'foo'. */
     BTASSERT(soam_input(&soam,
-                        (uint8_t *)"\x01"
+                        (uint8_t *)"\x10"
+                        "\x01"
                         "\x00\x05"
-                        "\x80\x03\x00"
-                        "\x99\xfc",
-                        8) == 0);
+                        "\x80\x04\x00"
+                        "\xc8\xce",
+                        9) == 0);
 
-    /* Read the type and size fields of the data response. */
-    BTASSERT(chan_read(&chout, &buf[0], 3) == 3);
-    BTASSERT(buf[0] == 2);
+    /* Read the command response printf data packet #1, created by
+       std_fprintf(...). */
+    BTASSERT(chan_read(&chout, &buf[0], 4) == 4);
+    BTASSERT(buf[0] == 0x20);
+    BTASSERT(buf[1] == 3);
 
-    size = ((buf[1] << 8) | buf[2]);
-    BTASSERT(size == 6);
+    size = ((buf[2] << 8) | buf[3]);
+    BTASSERT(size == 44);
 
-    /* Read the command id and payload. */
-    BTASSERT(chan_read(&chout, &buf[3], size) == size);
-    BTASSERT(buf[3] == 0x80);
-    BTASSERT(buf[4] == 0x03);
-    BTASSERT(buf[5] == 0x80);
-    BTASSERT(buf[6] == 0x02);
-    
-    crc = ((buf[size + 1] << 8) | buf[size + 2]);
-    BTASSERT(crc_ccitt(0xffff, &buf[0], size + 1) == crc);
+    BTASSERT(chan_read(&chout, &buf[4], size) == size);
+    BTASSERT(memcmp(&buf[4],
+                    "\x80\x01"
+                    "-33544""\x1f"
+                    "56342""\x1f"
+                    "98743.580000""\x1f"
+                    "this is a bunc",
+                    42) == 0);
+    crc = ((buf[46] << 8) | buf[47]);
+    BTASSERT(crc_ccitt(0xffff, &buf[0], 46) == crc);
 
-    /* Read the command response packet (with code). */
-    BTASSERT(chan_read(&chout, &buf[0], 3) == 3);
-    BTASSERT(buf[0] == 3);
+    /* Read the command response printf data packet #2, created by
+       std_fprintf(...). */
+    BTASSERT(chan_read(&chout, &buf[0], 4) == 4);
+    BTASSERT(buf[0] == 0x22);
+    BTASSERT(buf[1] == 4);
 
-    size = ((buf[1] << 8) | buf[2]);
+    size = ((buf[2] << 8) | buf[3]);
+    BTASSERT(size == 44);
+
+    BTASSERT(chan_read(&chout, &buf[4], size) == size);
+    BTASSERT(memcmp(&buf[4],
+                    "h of characters that will not fit in the t",
+                    42) == 0);
+    crc = ((buf[46] << 8) | buf[47]);
+    BTASSERT(crc_ccitt(0xffff, &buf[0], 46) == crc);
+
+    /* Read the command response printf data packet #3, created by
+       std_fprintf(...). */
+    BTASSERT(chan_read(&chout, &buf[0], 4) == 4);
+    BTASSERT(buf[0] == 0x23);
+    BTASSERT(buf[1] == 5);
+
+    size = ((buf[2] << 8) | buf[3]);
+    BTASSERT(size == 15);
+
+    BTASSERT(chan_read(&chout, &buf[4], size) == size);
+    BTASSERT(memcmp(&buf[4],
+                    "x buffer..."
+                    "\x1f"
+                    "q",
+                    13) == 0);
+    crc = ((buf[17] << 8) | buf[18]);
+    BTASSERT(crc_ccitt(0xffff, &buf[0], 17) == crc);
+
+    /* Read the command response binary data packet #1, created by
+       chan_write(...). */
+    BTASSERT(chan_read(&chout, &buf[0], 4) == 4);
+    BTASSERT(buf[0] == 0x30);
+    BTASSERT(buf[1] == 6);
+
+    size = ((buf[2] << 8) | buf[3]);
+    BTASSERT(size == 44);
+
+    BTASSERT(chan_read(&chout, &buf[4], size) == size);
+    BTASSERT(memcmp(&buf[4],
+                    "\xbe\xef\xba\xbe\x00\x01\x02\x03"
+                    "\xbe\xef\xba\xbe\x00\x01\x02\x03"
+                    "\xbe\xef\xba\xbe\x00\x01\x02\x03"
+                    "\xbe\xef\xba\xbe\x00\x01\x02\x03"
+                    "\xbe\xef\xba\xbe\x00\x01\x02\x03"
+                    "\xbe\xef",
+                    42) == 0);
+    crc = ((buf[46] << 8) | buf[47]);
+    BTASSERT(crc_ccitt(0xffff, &buf[0], 46) == crc);
+
+    /* Read the command response binary data packet #2, created by
+       chan_write(...). */
+    BTASSERT(chan_read(&chout, &buf[0], 4) == 4);
+    BTASSERT(buf[0] == 0x33);
+    BTASSERT(buf[1] == 7);
+
+    size = ((buf[2] << 8) | buf[3]);
     BTASSERT(size == 8);
 
-    BTASSERT(chan_read(&chout, &buf[3], size) == size);
-    BTASSERT(buf[3] == 0x80);
-    BTASSERT(buf[4] == 0x03);
+    BTASSERT(chan_read(&chout, &buf[4], size) == size);
+    BTASSERT(memcmp(&buf[4], "\xba\xbe\x00\x01\x02\x03", 6) == 0);
+    crc = ((buf[10] << 8) | buf[11]);
+    BTASSERT(crc_ccitt(0xffff, &buf[0], 10) == crc);
+
+    /* Read the command response packet, containing the command exit
+       code. */
+    BTASSERT(chan_read(&chout, &buf[0], 4) == 4);
+    BTASSERT(buf[0] == 0x41);
+    BTASSERT(buf[1] == 8);
+
+    size = ((buf[2] << 8) | buf[3]);
+    BTASSERT(size == 6);
+
+    BTASSERT(chan_read(&chout, &buf[4], size) == size);
+    BTASSERT(buf[4] == 0xff);
     BTASSERT(buf[5] == 0xff);
     BTASSERT(buf[6] == 0xff);
     BTASSERT(buf[7] == 0xff);
-    BTASSERT(buf[8] == 0xff);
-    
-    crc = ((buf[size + 1] << 8) | buf[size + 2]);
-    BTASSERT(crc_ccitt(0xffff, &buf[0], size + 1) == crc);
-    
+
+    crc = ((buf[8] << 8) | buf[9]);
+    BTASSERT(crc_ccitt(0xffff, &buf[0], 8) == crc);
+
     return (0);
 }
 

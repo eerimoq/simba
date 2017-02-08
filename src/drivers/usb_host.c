@@ -71,7 +71,7 @@ static int cmd_list_cb(int argc,
         }
     }
 
-    std_fprintf(out_p, FSTR("BUS  ADDRESS   VID   PID  DESCRIPTION\r\n"));
+    std_fprintf(out_p, CRSTR("BUS  ADDRESS   VID   PID  DESCRIPTION\r\n"));
 
     self_p = module.drivers_p;
 
@@ -84,7 +84,7 @@ static int cmd_list_cb(int argc,
             }
 
             std_fprintf(out_p,
-                        FSTR("%3d %8d  %04x  %04x  %s\r\n"),
+                        CRSTR("%3d %8d  %04x  %04x  %s\r\n"),
                         device_p->self_p->id,
                         device_p->address,
                         device_p->vid,
@@ -440,7 +440,7 @@ static int device_enumerate(struct usb_host_device_t *device_p)
 
     return (0);
 
-err:
+ err:
     if (pipe_p != NULL) {
         usb_pipe_free(device_p->self_p, pipe_p);
     }
@@ -460,7 +460,7 @@ int usb_host_module_init(void)
 #if CONFIG_FS_CMD_USB_HOST_LIST == 1
 
     fs_command_init(&module.cmd_list,
-                    FSTR("/drivers/usb_host/list"),
+                    CSTR("/drivers/usb_host/list"),
                     cmd_list_cb,
                     NULL);
     fs_command_register(&module.cmd_list);

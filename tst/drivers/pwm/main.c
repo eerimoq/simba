@@ -55,7 +55,7 @@ static int test_duty_cycle(struct harness_t *harness_p)
             BTASSERT(pwm_set_duty_cycle(&pwm[j], duty_cycle) == 0);
         }
 
-        thrd_sleep_ms(100);
+        thrd_sleep_ms(1000);
     }
 
     /* Test maximum duty cycle. */

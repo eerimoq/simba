@@ -71,7 +71,7 @@ static int cmd_list_cb(int argc,
 
     /* Print the header. */
     std_fprintf(chout_p,
-                FSTR("NAME                  TYPE     SIZE  VALUE\r\n"));
+                CRSTR("NAME                  TYPE     SIZE  VALUE\r\n"));
 
     /* Print all settings. */
     setting_p = &settings[0];
@@ -83,7 +83,7 @@ static int cmd_list_cb(int argc,
         }
 
         std_strcpy(buf, setting_p->name_p);
-        std_fprintf(chout_p, FSTR("%-20s  "), buf);
+        std_fprintf(chout_p, CRSTR("%-20s  "), buf);
         size = setting_p->size;
 
         switch (setting_p->type) {
@@ -92,7 +92,7 @@ static int cmd_list_cb(int argc,
             int8 = 0;
             settings_read(&int8, setting_p->address, size);
             std_fprintf(chout_p,
-                        FSTR("int8_t      1  %d\r\n"),
+                        CRSTR("int8_t      1  %d\r\n"),
                         (int)int8);
             break;
 
@@ -100,7 +100,7 @@ static int cmd_list_cb(int argc,
             int16 = 0;
             settings_read(&int16, setting_p->address, size);
             std_fprintf(chout_p,
-                        FSTR("int16_t     2  %d\r\n"),
+                        CRSTR("int16_t     2  %d\r\n"),
                         (int)int16);
             break;
 
@@ -108,12 +108,12 @@ static int cmd_list_cb(int argc,
             int32 = 0;
             settings_read(&int32, setting_p->address, size);
             std_fprintf(chout_p,
-                        FSTR("int32_t     4  %ld\r\n"),
+                        CRSTR("int32_t     4  %ld\r\n"),
                         (long)int32);
             break;
 
         case setting_type_string_t:
-            std_fprintf(chout_p, FSTR("string   %4u  "), (int)size);
+            std_fprintf(chout_p, CRSTR("string   %4u  "), (int)size);
 
             for (i = 0; i < size; i++) {
                 settings_read(&buf[0], setting_p->address + i, 1);
@@ -122,15 +122,15 @@ static int cmd_list_cb(int argc,
                     break;
                 }
 
-                std_fprintf(chout_p, FSTR("%c"), buf[0]);
+                std_fprintf(chout_p, CRSTR("%c"), buf[0]);
             }
 
-            std_fprintf(chout_p, FSTR("\r\n"));
+            std_fprintf(chout_p, CRSTR("\r\n"));
             break;
 
         default:
             std_fprintf(chout_p,
-                        FSTR("bad setting type %d\r\n"),
+                        CRSTR("bad setting type %d\r\n"),
                         setting_p->type);
         }
 
@@ -173,7 +173,7 @@ static int cmd_read_cb(int argc,
     char buf[1];
 
     if (argc != 2) {
-        std_fprintf(chout_p, FSTR("Usage: %s <name>\r\n"), argv[0]);
+        std_fprintf(chout_p, CRSTR("Usage: %s <name>\r\n"), argv[0]);
 
         return (-1);
     }
@@ -188,19 +188,19 @@ static int cmd_read_cb(int argc,
             case setting_type_int8_t:
                 int8 = 0;
                 settings_read(&int8, setting_p->address, setting_p->size);
-                std_fprintf(chout_p, FSTR("%d\r\n"), (int)int8);
+                std_fprintf(chout_p, CRSTR("%d\r\n"), (int)int8);
                 break;
 
             case setting_type_int16_t:
                 int16 = 0;
                 settings_read(&int16, setting_p->address, setting_p->size);
-                std_fprintf(chout_p, FSTR("%d\r\n"), (int)int16);
+                std_fprintf(chout_p, CRSTR("%d\r\n"), (int)int16);
                 break;
 
             case setting_type_int32_t:
                 int32 = 0;
                 settings_read(&int32, setting_p->address, setting_p->size);
-                std_fprintf(chout_p, FSTR("%ld\r\n"), (long)int32);
+                std_fprintf(chout_p, CRSTR("%ld\r\n"), (long)int32);
                 break;
 
             case setting_type_string_t:
@@ -212,15 +212,15 @@ static int cmd_read_cb(int argc,
                         break;
                     }
 
-                    std_fprintf(chout_p, FSTR("%c"), buf[0]);
+                    std_fprintf(chout_p, CRSTR("%c"), buf[0]);
                 }
 
-                std_fprintf(chout_p, FSTR("\r\n"));
+                std_fprintf(chout_p, CRSTR("\r\n"));
                 break;
 
             default:
                 std_fprintf(chout_p,
-                            FSTR("bad setting type %d\r\n"),
+                            CRSTR("bad setting type %d\r\n"),
                             setting_p->type);
             }
 
@@ -230,7 +230,7 @@ static int cmd_read_cb(int argc,
         setting_p++;
     }
 
-    std_fprintf(chout_p, FSTR("%s: setting not found\r\n"), argv[1]);
+    std_fprintf(chout_p, CRSTR("%s: setting not found\r\n"), argv[1]);
 
     return (-1);
 }
@@ -253,7 +253,7 @@ static int cmd_write_cb(int argc,
     int32_t int32;
 
     if (argc != 3) {
-        std_fprintf(chout_p, FSTR("Usage: %s <name> <value>\r\n"), argv[0]);
+        std_fprintf(chout_p, CRSTR("Usage: %s <name> <value>\r\n"), argv[0]);
 
         return (-1);
     }
@@ -273,7 +273,7 @@ static int cmd_write_cb(int argc,
                 /* Range check. */
                 if ((value > 127) || (value < -128)) {
                     std_fprintf(chout_p,
-                                FSTR("%ld: value out of range\r\n"),
+                                CRSTR("%ld: value out of range\r\n"),
                                 value);
                     return (-1);
                 }
@@ -290,7 +290,7 @@ static int cmd_write_cb(int argc,
                 /* Range check. */
                 if ((value > 32767) || (value < -32768)) {
                     std_fprintf(chout_p,
-                                FSTR("%ld: value out of range\r\n"),
+                                CRSTR("%ld: value out of range\r\n"),
                                 value);
                     return (-1);
                 }
@@ -307,7 +307,7 @@ static int cmd_write_cb(int argc,
                 /* Range check. */
                 if ((value > 2147483647) || (value < -2147483648)) {
                     std_fprintf(chout_p,
-                                FSTR("%ld: value out of range\r\n"),
+                                CRSTR("%ld: value out of range\r\n"),
                                 value);
                     return (-1);
                 }
@@ -320,7 +320,7 @@ static int cmd_write_cb(int argc,
                 /* Range check. */
                 if (strlen(argv[2]) >= setting_p->size) {
                     std_fprintf(chout_p,
-                                FSTR("%s: string too long\r\n"),
+                                CRSTR("%s: string too long\r\n"),
                                 argv[2]);
                     return (-1);
                 }
@@ -330,7 +330,7 @@ static int cmd_write_cb(int argc,
 
             default:
                 std_fprintf(chout_p,
-                            FSTR("bad setting type %d\r\n"),
+                            CRSTR("bad setting type %d\r\n"),
                             setting_p->type);
             }
 
@@ -340,7 +340,7 @@ static int cmd_write_cb(int argc,
         setting_p++;
     }
 
-    std_fprintf(chout_p, FSTR("%s: setting not found\r\n"), argv[1]);
+    std_fprintf(chout_p, CRSTR("%s: setting not found\r\n"), argv[1]);
 
     return (-1);
 }
@@ -359,7 +359,7 @@ int settings_module_init(void)
 #if CONFIG_FS_CMD_SETTINGS_LIST == 1
 
     fs_command_init(&module.cmd_list,
-                    FSTR("/oam/settings/list"),
+                    CSTR("/oam/settings/list"),
                     cmd_list_cb,
                     NULL);
     fs_command_register(&module.cmd_list);
@@ -369,7 +369,7 @@ int settings_module_init(void)
 #if CONFIG_FS_CMD_SETTINGS_RESET == 1
 
     fs_command_init(&module.cmd_reset,
-                    FSTR("/oam/settings/reset"),
+                    CSTR("/oam/settings/reset"),
                     cmd_reset_cb,
                     NULL);
     fs_command_register(&module.cmd_reset);
@@ -379,7 +379,7 @@ int settings_module_init(void)
 #if CONFIG_FS_CMD_SETTINGS_READ == 1
 
     fs_command_init(&module.cmd_read,
-                    FSTR("/oam/settings/read"),
+                    CSTR("/oam/settings/read"),
                     cmd_read_cb,
                     NULL);
     fs_command_register(&module.cmd_read);
@@ -389,7 +389,7 @@ int settings_module_init(void)
 #if CONFIG_FS_CMD_SETTINGS_WRITE == 1
 
     fs_command_init(&module.cmd_write,
-                    FSTR("/oam/settings/write"),
+                    CSTR("/oam/settings/write"),
                     cmd_write_cb,
                     NULL);
     fs_command_register(&module.cmd_write);

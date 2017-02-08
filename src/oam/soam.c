@@ -30,26 +30,76 @@
 
 #include "simba.h"
 
+#define SOAM_PACKET_FLAGS_CONSECUTIVE                (1 << 1)
+#define SOAM_PACKET_FLAGS_LAST                       (1 << 0)
+
+static ssize_t packet_output(struct soam_t *self_p)
+{
+    ssize_t size;
+    size_t payload_crc_size;
+    uint16_t crc;
+
+    size = (self_p->tx.pos + 2);
+    payload_crc_size = (size - 4);
+
+    /* Write packet size and crc fields. */
+    self_p->tx.buf_p[2] = (payload_crc_size >> 8);
+    self_p->tx.buf_p[3] = payload_crc_size;
+
+    crc = crc_ccitt(0xffff, &self_p->tx.buf_p[0], size - 2);
+
+    self_p->tx.buf_p[size - 2] = (crc >> 8);
+    self_p->tx.buf_p[size - 1] = crc;
+
+    if (chan_write(self_p->tx.chout_p,
+                   &self_p->tx.buf_p[0],
+                   size) != size) {
+        return (-1);
+    }
+
+    return (size - 6);
+}
+
 static ssize_t command_write(void *chan_p,
                              const void *buf_p,
                              size_t size)
+{
+    ssize_t res;
+    struct soam_t *self_p;
+
+    self_p = container_of(chan_p, struct soam_t, command.chan);
+
+    if (self_p->command.is_printf == 1) {
+        res = soam_write_chunk(self_p, buf_p, size);
+    } else {
+        (void)soam_write_begin(self_p, SOAM_TYPE_COMMAND_RESPONSE_DATA_BINARY);
+        (void)soam_write_chunk(self_p, buf_p, size);
+        res = soam_write_end(self_p);
+    }
+
+    return (res);
+}
+
+static int command_control(void *chan_p,
+                           int operation)
 {
     struct soam_t *self_p;
 
     self_p = container_of(chan_p, struct soam_t, command.chan);
 
-    if (soam_write_begin(self_p, SOAM_TYPE_COMMAND_RESPONSE_DATA) != 0) {
+    switch (operation) {
+
+    case CHAN_CONTROL_PRINTF_BEGIN:
+        self_p->command.is_printf = 1;
+        return (soam_write_begin(self_p, SOAM_TYPE_COMMAND_RESPONSE_DATA_PRINTF));
+
+    case CHAN_CONTROL_PRINTF_END:
+        self_p->command.is_printf = 0;
+        return (soam_write_end(self_p));
+
+    default:
         return (-1);
     }
-
-    (void)soam_write_chunk(self_p, self_p->command.id_p, 2);
-    (void)soam_write_chunk(self_p, buf_p, size);
-
-    if (soam_write_end(self_p) != size + 2) {
-        size = -1;
-    }
-
-    return (size);
 }
 
 static ssize_t log_write(void *chan_p,
@@ -72,10 +122,10 @@ static int log_control(void *chan_p,
 
     switch (operation) {
 
-    case CHAN_CONTROL_PACKET_BEGIN:
+    case CHAN_CONTROL_LOG_BEGIN:
         return (soam_write_begin(self_p, SOAM_TYPE_LOG_POINT));
 
-    case CHAN_CONTROL_PACKET_END:
+    case CHAN_CONTROL_LOG_END:
         return (soam_write_end(self_p));
 
     default:
@@ -96,13 +146,16 @@ int soam_init(struct soam_t *self_p,
     self_p->tx.buf_p = buf_p;
     self_p->tx.size = size;
     self_p->tx.chout_p = chout_p;
+    self_p->tx.packet_index = 1;
 
     sem_init(&self_p->tx.sem, 0, 1);
 
+    self_p->command.is_printf = 0;
     chan_init(&self_p->command.chan,
               chan_read_null,
               command_write,
               chan_size_null);
+    chan_set_control_cb(&self_p->command.chan, command_control);
 
     chan_init(&self_p->log.chan,
               chan_read_null,
@@ -122,21 +175,21 @@ int soam_input(struct soam_t *self_p,
     uint16_t crc;
     uint16_t input_crc;
     int32_t res;
-    uint8_t buf[6];
+    uint8_t buf[4];
 
     if (size < SOAM_PACKET_SIZE_MIN) {
         return (-1);
     }
 
-    payload_crc_size = ((buf_p[1] << 8) | buf_p[2]);
+    payload_crc_size = ((buf_p[2] << 8) | buf_p[3]);
 
-    if (payload_crc_size > (size - 3)) {
+    if (payload_crc_size > (size - 4)) {
         return (-1);
     }
 
-    input_crc = ((buf_p[payload_crc_size + 1] << 8)
-                 | buf_p[payload_crc_size + 2]);
-    crc = crc_ccitt(0xffff, buf_p, payload_crc_size + 1);
+    input_crc = ((buf_p[payload_crc_size + 2] << 8)
+                 | buf_p[payload_crc_size + 3]);
+    crc = crc_ccitt(0xffff, buf_p, payload_crc_size + 2);
 
     /* std_printf(FSTR("crc: %04x\r\n"), crc); */
 
@@ -146,23 +199,19 @@ int soam_input(struct soam_t *self_p,
 
     type = buf_p[0];
 
-    self_p->command.id_p = &buf_p[3];
-    buf[0] = self_p->command.id_p[0];
-    buf[1] = self_p->command.id_p[1];
-
     switch (type) {
 
     case SOAM_TYPE_COMMAND_REQUEST:
-        res = fs_call((char *)self_p->command.id_p,
+        res = fs_call((char *)&buf_p[4],
                       &self_p->command.chan,
                       &self_p->command.chan,
                       NULL);
-        buf[2] = (res >> 24);
-        buf[3] = (res >> 16);
-        buf[4] = (res >> 8);
-        buf[5] = res;
+        buf[0] = (res >> 24);
+        buf[1] = (res >> 16);
+        buf[2] = (res >> 8);
+        buf[3] = res;
 
-        if (soam_write(self_p, SOAM_TYPE_COMMAND_RESPONSE, &buf[0], 6) != 6) {
+        if (soam_write(self_p, SOAM_TYPE_COMMAND_RESPONSE, &buf[0], 4) != 4) {
             return (-1);
         }
 
@@ -178,25 +227,53 @@ int soam_input(struct soam_t *self_p,
 ssize_t soam_write_begin(struct soam_t *self_p,
                          int type)
 {
-    self_p->tx.buf_p[0] = type;
-    self_p->tx.pos = 3;
+    sem_take(&self_p->tx.sem, NULL);
 
-    return (sem_take(&self_p->tx.sem, NULL));
+    /* First packet initialization. */
+    self_p->tx.buf_p[0] = type;
+    self_p->tx.buf_p[1] = self_p->tx.packet_index++;
+    self_p->tx.pos = 4;
+
+    return (0);
 }
 
 ssize_t soam_write_chunk(struct soam_t *self_p,
                          const void *buf_p,
                          size_t size)
 {
-    if ((size > (self_p->tx.size - self_p->tx.pos - 2))
-        || (self_p->tx.pos == -1)) {
-        self_p->tx.pos = -1;
+    size_t left;
+    size_t n;
+    const uint8_t *b_p;
 
-        return (-1);
+    b_p = buf_p;
+    left = size;
+
+    while (left > 0) {
+        /* Output if the transmission buffer is full. */
+        if (self_p->tx.pos == self_p->tx.size - 2) {
+            if (packet_output(self_p) <= 0) {
+                self_p->tx.pos = -1;
+                return (-1);
+            }
+
+            /* Next packet initialization. */
+            self_p->tx.buf_p[0] |= SOAM_PACKET_FLAGS_CONSECUTIVE;
+            self_p->tx.buf_p[1] = self_p->tx.packet_index++;
+            self_p->tx.pos = 4;
+        }
+
+        /* Copy data to the transmission buffer. */
+        n = (self_p->tx.size - self_p->tx.pos - 2);
+
+        if (left < n) {
+            n = left;
+        }
+
+        memcpy(&self_p->tx.buf_p[self_p->tx.pos], b_p, n);
+        b_p += n;
+        self_p->tx.pos += n;
+        left -= n;
     }
-
-    memcpy(&self_p->tx.buf_p[self_p->tx.pos], buf_p, size);
-    self_p->tx.pos += size;
 
     return (size);
 }
@@ -204,29 +281,11 @@ ssize_t soam_write_chunk(struct soam_t *self_p,
 ssize_t soam_write_end(struct soam_t *self_p)
 {
     ssize_t size;
-    size_t data_crc_size;
-    uint16_t crc;
 
+    /* Output last packet, if any. */
     if (self_p->tx.pos != -1) {
-        size = (self_p->tx.pos + 2);
-        data_crc_size = (size - 3);
-
-        /* Write packet size and crc fields. */
-        self_p->tx.buf_p[1] = (data_crc_size >> 8);
-        self_p->tx.buf_p[2] = data_crc_size;
-
-        crc = crc_ccitt(0xffff, &self_p->tx.buf_p[0], size - 2);
-
-        self_p->tx.buf_p[size - 2] = (crc >> 8);
-        self_p->tx.buf_p[size - 1] = crc;
-
-        if (chan_write(self_p->tx.chout_p,
-                       &self_p->tx.buf_p[0],
-                       size) != size) {
-            size = -1;
-        } else {
-            size -= 5;
-        }
+        self_p->tx.buf_p[0] |= SOAM_PACKET_FLAGS_LAST;
+        size = packet_output(self_p);
     } else {
         size = -1;
     }

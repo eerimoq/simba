@@ -123,26 +123,26 @@ static int pwm_port_init(struct pwm_driver_t *self_p,
     case 2:
         /* Timer 3. */
         TCCR3A |= _BV(WGM30);
-        TCCR3B |= _BV(CS31) | _BV(CS30);
+        TCCR3B |= _BV(CS32) | /*_BV(CS31) |*/ _BV(CS30);
         break;
     case 3:
     case 4:
     case 5:
         /* Timer 4. */
         TCCR4A |= _BV(WGM40);
-        TCCR4B |= _BV(CS41) | _BV(CS40);
+        TCCR4B |= _BV(CS42) | /*_BV(CS41) |*/ _BV(CS40);
         break;
     case 6:
     case 7:
         /* Timer 2. */
         TCCR2A |= _BV(WGM20);
-        TCCR2B |= _BV(CS22);
+        TCCR2B |= _BV(CS22) | /*_BV(CS21) |*/ _BV(CS20);
         break;
     case 8:
     case 9:
         /* Timer 1. */
         TCCR1A |= _BV(WGM10);
-        TCCR1B |= _BV(CS11) | _BV(CS10);
+        TCCR1B |= _BV(CS12) | /*_BV(CS11) |*/ _BV(CS10);
         break;
     default:
         break;

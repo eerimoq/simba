@@ -81,7 +81,7 @@ static int counter_get(struct fs_counter_t *counter_p,
                        void *chout_p)
 {
     std_fprintf(chout_p,
-                FSTR("%08lx%08lx\r\n"),
+                CRSTR("%08lx%08lx\r\n"),
                 (long)(counter_p->value >> 32),
                 (long)(counter_p->value & 0xffffffff));
 
@@ -111,7 +111,7 @@ static int cmd_parameter_cb(int argc,
         res = parameter_p->set_cb(parameter_p->value_p, argv[1]);
     } else {
         res = parameter_p->print_cb(chout_p, parameter_p->value_p);
-        std_fprintf(chout_p, FSTR("\r\n"));
+        std_fprintf(chout_p, CRSTR("\r\n"));
     }
 
     return (res);
@@ -131,7 +131,8 @@ static int cmd_filesystems_list_cb(int argc,
     char *type_p;
 
     std_fprintf(chout_p,
-                FSTR("MOUNT-POINT                    MEDIUM   TYPE     AVAILABLE  SIZE  USAGE\r\n"));
+                CRSTR("MOUNT-POINT                    MEDIUM   TYPE"
+                      "     AVAILABLE  SIZE  USAGE\r\n"));
 
     filesystem_p = module.filesystems_p;
 
@@ -147,7 +148,7 @@ static int cmd_filesystems_list_cb(int argc,
         }
 
         std_fprintf(chout_p,
-                    FSTR("%-29s  %-7s  %-7s  %9s  %4s  %5s\r\n"),
+                    CRSTR("%-29s  %-7s  %-7s  %9s  %4s  %5s\r\n"),
                     buf,
                     "-",
                     type_p,
@@ -177,12 +178,12 @@ static int cmd_read_cb(int argc,
     char buf[32];
 
     if (argc != 2) {
-        std_fprintf(chout_p, FSTR("Usage: %s <file>\r\n"), argv[0]);
+        std_fprintf(chout_p, CRSTR("Usage: %s <file>\r\n"), argv[0]);
         return (-1);
     }
 
     if (fs_open(&file, argv[1], FS_READ) != 0) {
-        std_fprintf(chout_p, FSTR("Failed to open %s.\r\n"), argv[1]);
+        std_fprintf(chout_p, CRSTR("Failed to open %s.\r\n"), argv[1]);
         return (-1);
     }
 
@@ -211,13 +212,13 @@ static int cmd_write_cb(int argc,
     char data;
 
     if (argc < 2) {
-        std_fprintf(chout_p, FSTR("Usage: %s <file> [<data>]\r\n"), argv[0]);
+        std_fprintf(chout_p, CRSTR("Usage: %s <file> [<data>]\r\n"), argv[0]);
 
         return (-1);
     }
 
     if (fs_open(&file, argv[1], FS_CREAT | FS_TRUNC | FS_RDWR) != 0) {
-        std_fprintf(chout_p, FSTR("Failed to open %s.\r\n"), argv[1]);
+        std_fprintf(chout_p, CRSTR("Failed to open %s.\r\n"), argv[1]);
 
         return (-1);
     }
@@ -226,10 +227,10 @@ static int cmd_write_cb(int argc,
         size = strlen(argv[2]);
 
         if (fs_write(&file, argv[2], size) != size) {
-            std_fprintf(chout_p, FSTR("Failed to write to %s.\r\n"), argv[1]);
+            std_fprintf(chout_p, CRSTR("Failed to write to %s.\r\n"), argv[1]);
         }
     } else {
-        std_fprintf(chout_p, FSTR("Reading, press Ctrl-D when done.\r\n"));
+        std_fprintf(chout_p, CRSTR("Reading, press Ctrl-D when done.\r\n"));
         size = 0;
 
         while (1) {
@@ -243,14 +244,14 @@ static int cmd_write_cb(int argc,
             }
 
             if (fs_write(&file, &data, sizeof(data)) != sizeof(data)) {
-                std_fprintf(chout_p, FSTR("Failed to write to %s.\r\n"), argv[1]);
+                std_fprintf(chout_p, CRSTR("Failed to write to %s.\r\n"), argv[1]);
                 goto err;
             }
 
             size++;
         }
 
-        std_fprintf(chout_p, FSTR("Wrote %u bytes to %s.\r\n"), size, argv[1]);
+        std_fprintf(chout_p, CRSTR("Wrote %u bytes to %s.\r\n"), size, argv[1]);
     }
 
  err:
@@ -274,19 +275,19 @@ static int cmd_append_cb(int argc,
     size_t size;
 
     if (argc != 3) {
-        std_fprintf(chout_p, FSTR("Usage: %s <file> <data>\r\n"), argv[0]);
+        std_fprintf(chout_p, CRSTR("Usage: %s <file> <data>\r\n"), argv[0]);
         return (-1);
     }
 
     if (fs_open(&file, argv[1], FS_RDWR | FS_APPEND) != 0) {
-        std_fprintf(chout_p, FSTR("Failed to open %s.\r\n"), argv[1]);
+        std_fprintf(chout_p, CRSTR("Failed to open %s.\r\n"), argv[1]);
         return (-1);
     }
 
     size = strlen(argv[2]);
 
     if (fs_write(&file, argv[2], size) != size) {
-        std_fprintf(chout_p, FSTR("Failed to append %s to the file.\r\n"), argv[2]);
+        std_fprintf(chout_p, CRSTR("Failed to append %s to the file.\r\n"), argv[2]);
         return (-1);
     }
 
@@ -307,12 +308,12 @@ static int cmd_remove_cb(int argc,
                          void *call_arg_p)
 {
     if (argc != 2) {
-        std_fprintf(chout_p, FSTR("Usage: %s <file>\r\n"), argv[0]);
+        std_fprintf(chout_p, CRSTR("Usage: %s <file>\r\n"), argv[0]);
         return (-1);
     }
 
     if (fs_remove(argv[1]) != 0) {
-        std_fprintf(chout_p, FSTR("Failed to remove %s.\r\n"), argv[1]);
+        std_fprintf(chout_p, CRSTR("Failed to remove %s.\r\n"), argv[1]);
         return (-1);
     }
 
@@ -331,7 +332,7 @@ static int cmd_list_cb(int argc,
                        void *call_arg_p)
 {
     if (argc != 2) {
-        std_fprintf(chout_p, FSTR("Usage: %s <path>\r\n"), argv[0]);
+        std_fprintf(chout_p, CRSTR("Usage: %s <path>\r\n"), argv[0]);
         return (-1);
     }
 
@@ -350,7 +351,7 @@ static int cmd_format_cb(int argc,
                          void *call_arg_p)
 {
     if (argc != 2) {
-        std_fprintf(chout_p, FSTR("Usage: %s <path>\r\n"), argv[0]);
+        std_fprintf(chout_p, CRSTR("Usage: %s <path>\r\n"), argv[0]);
         return (-1);
     }
 
@@ -372,13 +373,13 @@ static int cmd_counters_list_cb(int argc,
     char buf[FS_NAME_MAX];
 
     std_fprintf(chout_p,
-                FSTR("NAME                                                 VALUE\r\n"));
+                CRSTR("NAME                                                 VALUE\r\n"));
 
     counter_p = module.counters_p;
 
     while (counter_p != NULL) {
         std_strcpy(buf, counter_p->command.path_p);
-        std_fprintf(chout_p, FSTR("%-53s"), buf);
+        std_fprintf(chout_p, CRSTR("%-53s"), buf);
         counter_p->command.callback(1,
                                     NULL,
                                     chout_p,
@@ -436,13 +437,13 @@ static int cmd_parameters_list_cb(int argc,
     char buf[FS_NAME_MAX];
 
     std_fprintf(chout_p,
-                FSTR("NAME                                                 VALUE\r\n"));
+                CRSTR("NAME                                                 VALUE\r\n"));
 
     parameter_p = module.parameters_p;
 
     while (parameter_p != NULL) {
         std_strcpy(buf, parameter_p->command.path_p);
-        std_fprintf(chout_p, FSTR("%-53s"), buf);
+        std_fprintf(chout_p, CRSTR("%-53s"), buf);
         parameter_p->command.callback(1,
                                       NULL,
                                       chout_p,
@@ -570,7 +571,7 @@ int fs_module_init()
 #if CONFIG_FS_CMD_FS_FILESYSTEMS_LIST == 1
 
     fs_command_init(&module.cmd_filesystems_list,
-                    FSTR("/filesystems/fs/filesystems/list"),
+                    CSTR("/filesystems/fs/filesystems/list"),
                     cmd_filesystems_list_cb,
                     NULL);
     fs_command_register(&module.cmd_filesystems_list);
@@ -580,7 +581,7 @@ int fs_module_init()
 #if CONFIG_FS_CMD_FS_READ == 1
 
     fs_command_init(&module.cmd_read,
-                    FSTR("/filesystems/fs/read"),
+                    CSTR("/filesystems/fs/read"),
                     cmd_read_cb,
                     NULL);
     fs_command_register(&module.cmd_read);
@@ -590,7 +591,7 @@ int fs_module_init()
 #if CONFIG_FS_CMD_FS_WRITE == 1
 
     fs_command_init(&module.cmd_write,
-                    FSTR("/filesystems/fs/write"),
+                    CSTR("/filesystems/fs/write"),
                     cmd_write_cb,
                     NULL);
     fs_command_register(&module.cmd_write);
@@ -600,7 +601,7 @@ int fs_module_init()
 #if CONFIG_FS_CMD_FS_APPEND == 1
 
     fs_command_init(&module.cmd_append,
-                    FSTR("/filesystems/fs/append"),
+                    CSTR("/filesystems/fs/append"),
                     cmd_append_cb,
                     NULL);
     fs_command_register(&module.cmd_append);
@@ -610,7 +611,7 @@ int fs_module_init()
 #if CONFIG_FS_CMD_FS_REMOVE == 1
 
     fs_command_init(&module.cmd_remove,
-                    FSTR("/filesystems/fs/remove"),
+                    CSTR("/filesystems/fs/remove"),
                     cmd_remove_cb,
                     NULL);
     fs_command_register(&module.cmd_remove);
@@ -620,7 +621,7 @@ int fs_module_init()
 #if CONFIG_FS_CMD_FS_LIST == 1
 
     fs_command_init(&module.cmd_list,
-                    FSTR("/filesystems/fs/list"),
+                    CSTR("/filesystems/fs/list"),
                     cmd_list_cb,
                     NULL);
     fs_command_register(&module.cmd_list);
@@ -630,7 +631,7 @@ int fs_module_init()
 #if CONFIG_FS_CMD_FS_FORMAT == 1
 
     fs_command_init(&module.cmd_format,
-                    FSTR("/filesystems/fs/format"),
+                    CSTR("/filesystems/fs/format"),
                     cmd_format_cb,
                     NULL);
     fs_command_register(&module.cmd_format);
@@ -640,7 +641,7 @@ int fs_module_init()
 #if CONFIG_FS_CMD_FS_COUNTERS_LIST == 1
 
     fs_command_init(&module.cmd_counters_list,
-                    FSTR("/filesystems/fs/counters/list"),
+                    CSTR("/filesystems/fs/counters/list"),
                     cmd_counters_list_cb,
                     NULL);
     fs_command_register(&module.cmd_counters_list);
@@ -650,7 +651,7 @@ int fs_module_init()
 #if CONFIG_FS_CMD_FS_COUNTERS_RESET == 1
 
     fs_command_init(&module.cmd_counters_reset,
-                    FSTR("/filesystems/fs/counters/reset"),
+                    CSTR("/filesystems/fs/counters/reset"),
                     cmd_counters_reset_cb,
                     NULL);
     fs_command_register(&module.cmd_counters_reset);
@@ -660,7 +661,7 @@ int fs_module_init()
 #if CONFIG_FS_CMD_FS_PARAMETERS_LIST == 1
 
     fs_command_init(&module.cmd_parameters_list,
-                    FSTR("/filesystems/fs/parameters/list"),
+                    CSTR("/filesystems/fs/parameters/list"),
                     cmd_parameters_list_cb,
                     NULL);
     fs_command_register(&module.cmd_parameters_list);
@@ -704,7 +705,7 @@ int fs_call(char *command_p,
         current_p = current_p->next_p;
     }
 
-    std_fprintf(chout_p, FSTR("%s: command not found\r\n"), argv[0]);
+    std_fprintf(chout_p, CRSTR("%s: command not found\r\n"), argv[0]);
 
     return (-ENOENT);
 }

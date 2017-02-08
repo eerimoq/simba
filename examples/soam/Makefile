@@ -31,6 +31,8 @@
 NAME = soam
 BOARD ?= linux
 
+SOAM = yes
+
 CDEFS += \
 	CONFIG_START_SHELL=0
 

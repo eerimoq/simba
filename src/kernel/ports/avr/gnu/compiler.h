@@ -31,11 +31,11 @@
 #ifndef __KERNEL_COMPILER_H__
 #define __KERNEL_COMPILER_H__
 
+#include "far.h"
+
 #if __cplusplus
 
 #include <avr/pgmspace.h>
-
-#define FAR
 
 #define __PROGMEM PROGMEM
 
@@ -49,8 +49,6 @@ typedef const PROGMEM class prog_str *far_string_t;
                    }                                                    \
                                                                         ))  
 #else
-
-#define FAR __flash
 
 typedef const FAR char *far_string_t;
 

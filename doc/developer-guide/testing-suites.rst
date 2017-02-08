@@ -279,6 +279,7 @@ SPC56D Discovery
 - :github-blob:`text/re<tst/text/re/main.c>`
 - :github-blob:`debug/log<tst/debug/log/main.c>`
 - :github-blob:`oam/shell<tst/oam/shell/main.c>`
+- :github-blob:`oam/soam<tst/oam/soam/main.c>`
 - :github-blob:`encode/base64<tst/encode/base64/main.c>`
 - :github-blob:`encode/json<tst/encode/json/main.c>`
 - :github-blob:`hash/crc<tst/hash/crc/main.c>`

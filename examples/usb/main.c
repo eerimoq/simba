@@ -198,7 +198,7 @@ static void init(void)
     std_printf(sys_get_info());
 
     fs_command_init(&cmd_state,
-                    FSTR("/state"),
+                    CSTR("/state"),
                     cmd_state_cb,
                     NULL);
     fs_command_register(&cmd_state);

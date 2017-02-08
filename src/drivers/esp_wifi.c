@@ -71,7 +71,7 @@ int esp_wifi_module_init(void)
 #if CONFIG_FS_CMD_ESP_WIFI_STATUS == 1
 
     fs_command_init(&module.cmd_status,
-                    FSTR("/drivers/esp_wifi/status"),
+                    CSTR("/drivers/esp_wifi/status"),
                     cmd_status_cb,
                     NULL);
     fs_command_register(&module.cmd_status);

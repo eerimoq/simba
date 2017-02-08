@@ -2648,7 +2648,7 @@ BOARDS = {
             "/home/erik/Freescale/S32_Power_v1.1/Cross_Tools/powerpc-eabivle-4_9/powerpc-eabivle/newlib/lib"
         ], 
         "linker_script": "script.ld", 
-        "mcu_desc": "SPC56D40L1 PPC @ 48MHz, 16k SRAM, 256k CFLASH, 64k DFLASH", 
+        "mcu_desc": "SPC56D40L1 PPC @ 48MHz, 16k SRAM, 256k CFlash, 64k DFlash", 
         "src": [
             "src/settings_default.c", 
             "src/boards/spc56ddiscovery/board.c", 

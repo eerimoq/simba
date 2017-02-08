@@ -52,16 +52,20 @@ SETTINGS_BIN ?= $(SIMBA_ROOT)/src/settings_default.bin
 SETTTNGS_OUTPUT_DIRECTORY ?= .
 SRC_FILTERED = $(filter-out $(SRC_IGNORE),$(SRC))
 CSRC += $(filter %.c,$(SRC_FILTERED))
-CPPSRC += $(filter %.cpp,$(SRC_FILTERED))
+CXXSRC += $(filter %.cpp,$(SRC_FILTERED))
 ASMSRC += $(filter %.S,$(SRC_FILTERED))
 ASMOBJ = $(patsubst %,$(OBJDIR)%,$(abspath $(ASMSRC:%.S=%.obj)))
 RUST_SRC += $(filter %.rs,$(SRC_FILTERED))
 COBJ = $(patsubst %,$(OBJDIR)%,$(abspath $(CSRC:%.c=%.o)))
-CPPOBJ = $(patsubst %,$(OBJDIR)%,$(abspath $(CPPSRC:%.cpp=%.o)))
+CXXOBJ = $(patsubst %,$(OBJDIR)%,$(abspath $(CXXSRC:%.cpp=%.o)))
 RUST_OBJ = $(patsubst %,$(OBJDIR)%,$(abspath $(RUST_SRC:%.rs=%.o)))
-OBJ = $(COBJ) $(CPPOBJ) $(RUST_OBJ) $(ASMOBJ)
+OBJ = $(COBJ) $(CXXOBJ) $(RUST_OBJ) $(ASMOBJ)
 GENCSRC = $(GENDIR)/simba_gen.c
+SOAMDBAPP = $(GENDIR)/simba_gen.c.db
 GENOBJ = $(patsubst %,$(OBJDIR)/%,$(notdir $(GENCSRC:%.c=%.o)))
+ifeq ($(SOAM), yes)
+SOAMDB = $(COBJ:%=%.pp.c.db) $(CXXOBJ:%=%.pp.cpp.db)
+endif
 SETTINGS_INI ?= $(SIMBA_ROOT)/make/settings.ini
 EXE_SUFFIX ?= out
 EXE = $(BUILDDIR)/$(NAME).$(EXE_SUFFIX)
@@ -165,9 +169,13 @@ run: upload
 	$(MAKE) rerun
 
 console:
+ifeq ($(SOAM), yes)
+	soam.py --port $(SERIAL_PORT) --baudrate $(BAUDRATE) $(SOAMDBAPP)
+else
 	python -u $(CONSOLESCRIPT) --port $(SERIAL_PORT) \
 				   $(CONSOLE_RESET_TYPE:%=--reset-type %) \
 			           --baudrate $(BAUDRATE)
+endif
 
 report:
 	@echo "$(NAME):"
@@ -204,22 +212,34 @@ $(patsubst %.c,$(OBJDIR)%.o,$(abspath $1)): $1
 	mkdir -p $(OBJDIR)$(abspath $(dir $1))
 	mkdir -p $(DEPSDIR)$(abspath $(dir $1))
 	mkdir -p $(GENDIR)
-	$$(CC) $$(INC:%=-I%) $$(CDEFS:%=-D%) $$(CFLAGS) -o $$@ $$<
+ifeq ($(SOAM), yes)
+	$$(CC) $$(INC:%=-I%) $$(CDEFS:%=-D%) $$(CFLAGS) -DSIMBAPP -o $$@.pp $$< -E
+	$(SIMBA_ROOT)/bin/simbapp.py -o $$@.pp.c $$@.pp
+else
+	$$(CC) $$(INC:%=-I%) $$(CDEFS:%=-D%) $$(CFLAGS) -o $$@.pp.c $$< -E
+endif
+	$$(CC) $$(INC:%=-I%) $$(CDEFS:%=-D%) $$(CFLAGS) -o $$@ $$@.pp.c
 	gcc -MM -MT $$@ $$(INC:%=-I%) $$(CDEFS:%=-D%) -o $(patsubst %.c,$(DEPSDIR)%.o.dep,$(abspath $1)) $$<
 endef
 $(foreach file,$(CSRC),$(eval $(call COMPILE_template,$(file))))
 
-define COMPILE_CPP_template
+define COMPILE_CXX_template
 -include $(patsubst %.cpp,$(DEPSDIR)%.o.dep,$(abspath $1))
 $(patsubst %.cpp,$(OBJDIR)%.o,$(abspath $1)): $1
 	@echo "CXX $1"
 	mkdir -p $(OBJDIR)$(abspath $(dir $1))
 	mkdir -p $(DEPSDIR)$(abspath $(dir $1))
 	mkdir -p $(GENDIR)
-	$$(CXX) $$(INC:%=-I%) $$(CDEFS:%=-D%) $$(CXXFLAGS) -o $$@ $$<
+ifeq ($(SOAM), yes)
+	$$(CXX) $$(INC:%=-I%) $$(CDEFS:%=-D%) $$(CXXFLAGS) -DSIMBAPP -o $$@.pp $$< -E
+	$(SIMBA_ROOT)/bin/simbapp.py -o $$@.pp.cpp $$@.pp
+else
+	$$(CXX) $$(INC:%=-I%) $$(CDEFS:%=-D%) $$(CXXFLAGS) -o $$@.pp.cpp $$< -E
+endif
+	$$(CXX) $$(INC:%=-I%) $$(CDEFS:%=-D%) $$(CXXFLAGS) -o $$@ $$@.pp.cpp
 	$$(CXX) -MM -MT $$@ $$(INC:%=-I%) $$(CDEFS:%=-D%) -std=c++11 -o $(patsubst %.cpp,$(DEPSDIR)%.o.dep,$(abspath $1)) $$<
 endef
-$(foreach file,$(CPPSRC),$(eval $(call COMPILE_CPP_template,$(file))))
+$(foreach file,$(CXXSRC),$(eval $(call COMPILE_CXX_template,$(file))))
 
 define COMPILE_ASM_template
 -include $(patsubst %.S,$(DEPSDIR)%.obj.dep,$(abspath $1))
@@ -306,8 +326,8 @@ endef
 $(foreach file,$(RUST_SRC),$(eval $(call RUST_COMPILE_template,$(file))))
 
 $(GENOBJ): $(OBJ)
-	$(SIMBA_ROOT)/src/kernel/tools/gen.py $(NAME) $(VERSION) $(BOARD_DESC) $(MCU_DESC) \
-	    $(GENCSRC)
+	$(SIMBA_ROOT)/src/kernel/tools/gen.py $(NAME) $(VERSION) $(BOARD_DESC) \
+	$(MCU_DESC) $(GENCSRC) $(SOAMDB)
 	@echo "CC $(GENCSRC)"
 	$(CC) $(INC:%=-I%) $(CDEFS:%=-D%) $(CFLAGS) -o $@ $(GENCSRC)
 
@@ -321,8 +341,8 @@ CPPCHECK_ENABLE = warning performance portability information
 
 cppcheck:
 	(for path in $(CSRC); do echo $$path; done) | \
-	cppcheck --std=c99 $(CPPCHECK_ENABLE:%=--enable=%) $(INC:%=-I%) $(CDEFS:%=-D%) \
-	--file-list=- --template=gcc --error-exitcode=1
+	cppcheck --std=c99 $(CPPCHECK_ENABLE:%=--enable=%) $(INC:%=-I%) \
+	$(CDEFS:%=-D%) --file-list=- --template=gcc --error-exitcode=1
 
 help:
 	@echo "--------------------------------------------------------------------------------"

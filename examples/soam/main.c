@@ -80,7 +80,7 @@ int main()
     }
 
     log_set_default_handler_output_channel(soam_get_log_input_channel(&soam));
-
+    
     thrd_spawn(input_main,
                NULL,
                0,
@@ -92,7 +92,7 @@ int main()
     while (1) {
         log_object_print(NULL,
                          LOG_INFO,
-                         FSTR("i: %d\r\n"),
+                         LSTR("i: %d\r\n"),
                          i);
 
         i++;

@@ -374,7 +374,7 @@ static int cmd_uptime_cb(int argc,
     time_get(&now);
 
     std_fprintf(out_p,
-                FSTR("%lu.%lu seconds\r\n"),
+                CRSTR("%lu.%lu seconds\r\n"),
                 now.seconds,
                 now.nanoseconds / 1000000ul);
 
@@ -410,7 +410,7 @@ int sys_module_init(void)
 
 #if CONFIG_FS_CMD_SYS_INFO == 1
     fs_command_init(&module.cmd_info,
-                    FSTR("/kernel/sys/info"),
+                    CSTR("/kernel/sys/info"),
                     cmd_info_cb,
                     NULL);
     fs_command_register(&module.cmd_info);
@@ -418,7 +418,7 @@ int sys_module_init(void)
 
 #if CONFIG_FS_CMD_SYS_CONFIG == 1
     fs_command_init(&module.cmd_config,
-                    FSTR("/kernel/sys/config"),
+                    CSTR("/kernel/sys/config"),
                     cmd_config_cb,
                     NULL);
     fs_command_register(&module.cmd_config);
@@ -426,7 +426,7 @@ int sys_module_init(void)
 
 #if CONFIG_FS_CMD_SYS_UPTIME == 1
     fs_command_init(&module.cmd_uptime,
-                    FSTR("/kernel/sys/uptime"),
+                    CSTR("/kernel/sys/uptime"),
                     cmd_uptime_cb,
                     NULL);
     fs_command_register(&module.cmd_uptime);
@@ -434,7 +434,7 @@ int sys_module_init(void)
 
 #if CONFIG_FS_CMD_SYS_REBOOT == 1
     fs_command_init(&module.cmd_reboot,
-                    FSTR("/kernel/sys/reboot"),
+                    CSTR("/kernel/sys/reboot"),
                     cmd_reboot_cb,
                     NULL);
     fs_command_register(&module.cmd_reboot);

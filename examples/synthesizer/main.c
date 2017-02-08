@@ -94,7 +94,7 @@ static int note_off(struct channel_t *channel_p,
 
     log_object_print(NULL,
                      LOG_INFO,
-                     FSTR("note off: note = %d"),
+                     LSTR("note off: note = %d"),
                      note);
 
     sem_take(&synthesizer.sem, NULL);
@@ -119,7 +119,7 @@ static int note_on(struct channel_t *channel_p,
 
     log_object_print(NULL,
                      LOG_INFO,
-                     FSTR("note on: note = %d, velocity = %d"),
+                     LSTR("note on: note = %d, velocity = %d"),
                      note,
                      velocity);
 
@@ -160,7 +160,7 @@ static int cmd_status_cb(int argc,
         channel_p = &synthesizer.channels[i];
 
         std_fprintf(out_p,
-                    FSTR("channel %d {\r\n"
+                    CRSTR("channel %d {\r\n"
                          "    status = %s\r\n"
                          "    length = %d\r\n"),
                     i,
@@ -169,7 +169,7 @@ static int cmd_status_cb(int argc,
 
         for (j = 0; j < channel_p->length; j++) {
             std_fprintf(out_p,
-                        FSTR("    notes[%d] {\r\n"
+                        CRSTR("    notes[%d] {\r\n"
                              "        note = %d\r\n"
                              "        oscillator {\r\n"
                              "            frequency = %f\r\n"
@@ -180,7 +180,7 @@ static int cmd_status_cb(int argc,
                         channel_p->notes[j].oscillator.frequency);
         }
 
-        std_fprintf(out_p, FSTR("}\r\n"));
+        std_fprintf(out_p, CRSTR("}\r\n"));
     }
 
     return (0);
@@ -198,7 +198,7 @@ static int cmd_set_waveform_cb(int argc,
 
     if (argc != 3) {
         std_fprintf(out_p,
-                    FSTR("Usage: %s <channel> <square or saw>\r\n"),
+                    CRSTR("Usage: %s <channel> <square or saw>\r\n"),
                     argv[0]);
 
         return (-EINVAL);
@@ -223,7 +223,7 @@ static int cmd_set_waveform_cb(int argc,
                              waveform_square_256,
                              membersof(waveform_square_256));
     } else {
-        std_fprintf(out_p, FSTR("bad waveform %s\r\n"), argv[2]);
+        std_fprintf(out_p, CRSTR("bad waveform %s\r\n"), argv[2]);
 
         return (-EINVAL);
     }
@@ -242,7 +242,7 @@ static int cmd_set_vibrato_cb(int argc,
 
     if (argc != 2) {
         std_fprintf(out_p,
-                    FSTR("Usage: %s <0 to 100>\r\n"),
+                    CRSTR("Usage: %s <0 to 100>\r\n"),
                     argv[0]);
 
         return (-EINVAL);
@@ -268,7 +268,7 @@ static int cmd_set_envelope_cb(int argc,
 
     if (argc != 4) {
         std_fprintf(out_p,
-                    FSTR("Usage: %s <attack> <decay> <release>\r\n"),
+                    CRSTR("Usage: %s <attack> <decay> <release>\r\n"),
                     argv[0]);
 
         return (-EINVAL);
@@ -306,7 +306,7 @@ static int cmd_note_on_cb(int argc,
 
     if (argc != 4) {
         std_fprintf(out_p,
-                    FSTR("Usage: %s <channel> <note> <frequency>\r\n"),
+                    CRSTR("Usage: %s <channel> <note> <frequency>\r\n"),
                     argv[0]);
 
         return (-EINVAL);
@@ -341,7 +341,7 @@ static int cmd_note_off_cb(int argc,
 
     if (argc != 3) {
         std_fprintf(out_p,
-                    FSTR("Usage: %s <channel> <note>\r\n"),
+                    CRSTR("Usage: %s <channel> <note>\r\n"),
                     argv[0]);
 
         return (-EINVAL);
@@ -369,7 +369,7 @@ static int cmd_channel_on_cb(int argc,
 
     if (argc != 2) {
         std_fprintf(out_p,
-                    FSTR("Usage: %s <channel>\r\n"),
+                    CRSTR("Usage: %s <channel>\r\n"),
                     argv[0]);
 
         return (-EINVAL);
@@ -395,7 +395,7 @@ static int cmd_channel_off_cb(int argc,
 
     if (argc != 2) {
         std_fprintf(out_p,
-                    FSTR("Usage: %s <channel>\r\n"),
+                    CRSTR("Usage: %s <channel>\r\n"),
                     argv[0]);
 
         return (-EINVAL);
@@ -588,49 +588,49 @@ static int init(void)
     fs_counter_register(&midi_unhandled_command);
 
     fs_command_init(&cmd_status,
-                    FSTR("/status"),
+                    CSTR("/status"),
                     cmd_status_cb,
                     NULL);
     fs_command_register(&cmd_status);
 
     fs_command_init(&cmd_set_waveform,
-                    FSTR("/set_waveform"),
+                    CSTR("/set_waveform"),
                     cmd_set_waveform_cb,
                     NULL);
     fs_command_register(&cmd_set_waveform);
 
     fs_command_init(&cmd_set_vibrato,
-                    FSTR("/set_vibrato"),
+                    CSTR("/set_vibrato"),
                     cmd_set_vibrato_cb,
                     NULL);
     fs_command_register(&cmd_set_vibrato);
 
     fs_command_init(&cmd_set_envelope,
-                    FSTR("/set_envelope"),
+                    CSTR("/set_envelope"),
                     cmd_set_envelope_cb,
                     NULL);
     fs_command_register(&cmd_set_envelope);
 
     fs_command_init(&cmd_note_on,
-                    FSTR("/note_on"),
+                    CSTR("/note_on"),
                     cmd_note_on_cb,
                     NULL);
     fs_command_register(&cmd_note_on);
 
     fs_command_init(&cmd_note_off,
-                    FSTR("/note_off"),
+                    CSTR("/note_off"),
                     cmd_note_off_cb,
                     NULL);
     fs_command_register(&cmd_note_off);
 
     fs_command_init(&cmd_channel_on,
-                    FSTR("/channel_on"),
+                    CSTR("/channel_on"),
                     cmd_channel_on_cb,
                     NULL);
     fs_command_register(&cmd_channel_on);
 
     fs_command_init(&cmd_channel_off,
-                    FSTR("/channel_off"),
+                    CSTR("/channel_off"),
                     cmd_channel_off_cb,
                     NULL);
     fs_command_register(&cmd_channel_off);

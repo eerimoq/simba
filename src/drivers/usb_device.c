@@ -81,7 +81,7 @@ int usb_device_module_init(void)
 #if CONFIG_FS_CMD_USB_DEVICE_LIST == 1
 
     fs_command_init(&cmd_list,
-                    FSTR("/drivers/usb_device/list"),
+                    CSTR("/drivers/usb_device/list"),
                     cmd_list_cb,
                     NULL);
     fs_command_register(&cmd_list);

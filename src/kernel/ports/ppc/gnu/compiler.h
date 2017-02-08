@@ -31,7 +31,7 @@
 #ifndef __KERNEL_COMPILER_H__
 #define __KERNEL_COMPILER_H__
 
-#define FAR
+#include "far.h"
 
 typedef const FAR char *far_string_t;
 

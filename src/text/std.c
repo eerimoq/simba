@@ -360,6 +360,16 @@ static void vcprintf(void (*std_putc)(char c, void *arg_p),
     }
 }
 
+static void cvcprintf(struct buffered_output_t *output_p,
+                      FAR const char *fmt_p,
+                      va_list *ap_p)
+{
+    chan_control(output_p->chan_p, CHAN_CONTROL_PRINTF_BEGIN);
+    vcprintf(fprintf_putc, output_p, fmt_p, ap_p);
+    output_flush(output_p);
+    chan_control(output_p->chan_p, CHAN_CONTROL_PRINTF_END);
+}
+
 int std_module_init(void)
 {
     return (0);
@@ -439,9 +449,8 @@ ssize_t std_printf(far_string_t fmt_p, ...)
 
     if (output.chan_p != NULL) {
         va_start(ap, fmt_p);
-        vcprintf(fprintf_putc, &output, fmt_p, &ap);
+        cvcprintf(&output, fmt_p, &ap);
         va_end(ap);
-        output_flush(&output);
     }
 
     return (output.size);
@@ -459,8 +468,7 @@ ssize_t std_vprintf(FAR const char *fmt_p, va_list *ap_p)
     output.chan_p = sys_get_stdout();
 
     if (output.chan_p != NULL) {
-        vcprintf(fprintf_putc, &output, fmt_p, ap_p);
-        output_flush(&output);
+        cvcprintf(&output, fmt_p, ap_p);
     }
 
     return (output.size);
@@ -479,9 +487,8 @@ ssize_t std_fprintf(void *chan_p, FAR const char *fmt_p, ...)
     output.chan_p = chan_p;
 
     va_start(ap, fmt_p);
-    vcprintf(fprintf_putc, &output, fmt_p, &ap);
+    cvcprintf(&output, fmt_p, &ap);
     va_end(ap);
-    output_flush(&output);
 
     return (output.size);
 }
@@ -498,8 +505,7 @@ ssize_t std_vfprintf(void *chan_p, FAR const char *fmt_p, va_list *ap_p)
     output.size = 0;
     output.chan_p = chan_p;
 
-    vcprintf(fprintf_putc, &output, fmt_p, ap_p);
-    output_flush(&output);
+    cvcprintf(&output, fmt_p, ap_p);
 
     return (output.size);
 }

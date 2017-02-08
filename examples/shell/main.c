@@ -46,7 +46,7 @@ static int cmd_hello_world_cb(int argc,
                               void *call_arg_p)
 {
     /* Write "Hello World!" to the output channel. */
-    std_fprintf(out_p, FSTR("Hello World!\r\n"));
+    std_fprintf(out_p, CRSTR("Hello World!\r\n"));
 
     return (0);
 }
@@ -60,7 +60,7 @@ int main()
 
     /* Register the hello world command. */
     fs_command_init(&cmd_hello_world,
-                    FSTR("/hello_world"),
+                    CSTR("/hello_world"),
                     cmd_hello_world_cb,
                     NULL);
     fs_command_register(&cmd_hello_world);

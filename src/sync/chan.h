@@ -34,14 +34,24 @@
 #include "simba.h"
 
 /**
- * Beginning of a packet.
+ * Beginning of a log entry.
  */
-#define CHAN_CONTROL_PACKET_BEGIN                           1
+#define CHAN_CONTROL_LOG_BEGIN                              1
 
 /**
- * End of a packet.
+ * End of a log entry.
  */
-#define CHAN_CONTROL_PACKET_END                             2
+#define CHAN_CONTROL_LOG_END                                2
+
+/**
+ * Beginning of printf output.
+ */
+#define CHAN_CONTROL_PRINTF_BEGIN                           3
+
+/**
+ * End of printf output.
+ */
+#define CHAN_CONTROL_PRINTF_END                             4
 
 /**
  * Channel read function callback type.
@@ -393,5 +403,13 @@ ssize_t chan_write_null(void *self_p,
  * @return Always returns zero(0).
  */
 size_t chan_size_null(void *self_p);
+
+/**
+ * Null channel control function callback. Will silently ignore the
+ * control request.
+ *
+ * @return Always returns zero(0).
+ */
+int chan_control_null(void *self_p, int operation);
 
 #endif

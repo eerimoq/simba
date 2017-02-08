@@ -31,7 +31,7 @@
 #include "simba.h"
 
 #define SAMPLE_TIMEOUT_IN_MILLISECONDS                      1
-#define TIMEOUTS_PER_REPORT                                20
+#define TIMEOUTS_PER_REPORT                               100
 
 /**
  * Report of a measurement period.
@@ -143,7 +143,7 @@ static int cmd_pwm_measure_cb(int argc,
     struct timer_t timer;
 
     if (argc > 2) {
-        std_fprintf(chout_p, FSTR("Usage: %s [iterations]\r\n"), argv[0]);
+        std_fprintf(chout_p, CRSTR("Usage: %s [iterations]\r\n"), argv[0]);
 
         return (-1);
     }
@@ -182,7 +182,7 @@ static int cmd_pwm_measure_cb(int argc,
         queue_read(&module.queue, &time, sizeof(time));
         queue_read(&module.queue, &reports[0], sizeof(reports));
 
-        std_fprintf(chout_p, FSTR("%lu: ["), time);
+        std_fprintf(chout_p, CRSTR("%lu: ["), time);
         delim_p = "";
 
         for (j = 0; j < membersof(reports); j++, delim_p = ",") {
@@ -190,13 +190,13 @@ static int cmd_pwm_measure_cb(int argc,
             frequency = ((1000 * reports[j].rising_count)
                          / (TIMEOUTS_PER_REPORT * SAMPLE_TIMEOUT_IN_MILLISECONDS));
             std_fprintf(chout_p,
-                        FSTR("%s(%d,%d)"),
+                        CRSTR("%s(%d,%d)"),
                         delim_p,
                         duty_cycle,
                         frequency);
         }
 
-        std_fprintf(chout_p, FSTR("]\r\n"));
+        std_fprintf(chout_p, CRSTR("]\r\n"));
     }
 
     /* Measurement complete, stop the timer. */
@@ -219,7 +219,7 @@ int main()
     }
 
     fs_command_init(&module.cmd_pwm_measure,
-                    FSTR("/pwm/measure"),
+                    CSTR("/pwm/measure"),
                     cmd_pwm_measure_cb,
                     NULL);
     fs_command_register(&module.cmd_pwm_measure);

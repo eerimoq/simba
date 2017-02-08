@@ -348,7 +348,7 @@ static int cmd_list_cb(int argc,
     struct thrd_t *thrd_p;
 
     std_fprintf(chout_p,
-                FSTR("            NAME        STATE  PRIO"
+                CRSTR("            NAME        STATE  PRIO"
 #if CONFIG_THRD_CPU_USAGE == 1
                      "   CPU"
 #endif
@@ -364,7 +364,7 @@ static int cmd_list_cb(int argc,
 
     while (thrd_p != NULL) {
         std_fprintf(chout_p,
-                    FSTR("%16s %12s %5d"
+                    CRSTR("%16s %12s %5d"
 #if CONFIG_THRD_CPU_USAGE == 1
                          " %4u%%"
 #endif
@@ -411,7 +411,7 @@ static int cmd_set_log_mask_cb(int argc,
 
     if (argc != 3) {
         std_fprintf(chout_p,
-                    FSTR("Usage: set_log_mask <thread name> <log mask>\r\n"));
+                    CRSTR("Usage: set_log_mask <thread name> <log mask>\r\n"));
         return (-EINVAL);
     }
 
@@ -533,7 +533,7 @@ int thrd_module_init(void)
 
 #if CONFIG_FS_CMD_THRD_LIST == 1
     fs_command_init(&module.cmd_list,
-                    FSTR("/kernel/thrd/list"),
+                    CSTR("/kernel/thrd/list"),
                     cmd_list_cb,
                     NULL);
     fs_command_register(&module.cmd_list);
@@ -541,7 +541,7 @@ int thrd_module_init(void)
 
 #if CONFIG_FS_CMD_THRD_SET_LOG_MASK == 1
     fs_command_init(&module.cmd_set_log_mask,
-                    FSTR("/kernel/thrd/set_log_mask"),
+                    CSTR("/kernel/thrd/set_log_mask"),
                     cmd_set_log_mask_cb,
                     NULL);
     fs_command_register(&module.cmd_set_log_mask);
@@ -549,13 +549,13 @@ int thrd_module_init(void)
 
 #if CONFIG_MONITOR_THREAD == 1
     fs_command_init(&module.cmd_monitor_set_period_ms,
-                    FSTR("/kernel/thrd/monitor/set_period_ms"),
+                    CSTR("/kernel/thrd/monitor/set_period_ms"),
                     cmd_monitor_set_period_ms_cb,
                     NULL);
     fs_command_register(&module.cmd_monitor_set_period_ms);
 
     fs_command_init(&module.cmd_monitor_set_print,
-                    FSTR("/kernel/thrd/monitor/set_print"),
+                    CSTR("/kernel/thrd/monitor/set_print"),
                     cmd_monitor_set_print_cb,
                     NULL);
     fs_command_register(&module.cmd_monitor_set_print);
