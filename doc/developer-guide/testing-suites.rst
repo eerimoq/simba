@@ -123,6 +123,7 @@ Linux
 - :github-blob:`sync/sem<tst/sync/sem/main.c>`
 - :github-blob:`collections/binary_tree<tst/collections/binary_tree/main.c>`
 - :github-blob:`collections/bits<tst/collections/bits/main.c>`
+- :github-blob:`collections/circular_buffer<tst/collections/circular_buffer/main.c>`
 - :github-blob:`collections/fifo<tst/collections/fifo/main.c>`
 - :github-blob:`collections/hash_map<tst/collections/hash_map/main.c>`
 - :github-blob:`alloc/circular_heap<tst/alloc/circular_heap/main.c>`
@@ -135,6 +136,7 @@ Linux
 - :github-blob:`oam/service<tst/oam/service/main.c>`
 - :github-blob:`oam/settings<tst/oam/settings/main.c>`
 - :github-blob:`oam/shell<tst/oam/shell/main.c>`
+- :github-blob:`oam/soam<tst/oam/soam/main.c>`
 - :github-blob:`oam/upgrade<tst/oam/upgrade/main.c>`
 - :github-blob:`oam/upgrade/kermit<tst/oam/upgrade/kermit/main.c>`
 - :github-blob:`oam/upgrade/uds<tst/oam/upgrade/uds/main.c>`
@@ -151,9 +153,11 @@ Linux
 - :github-blob:`inet/inet<tst/inet/inet/main.c>`
 - :github-blob:`inet/mqtt_client<tst/inet/mqtt_client/main.c>`
 - :github-blob:`inet/ping<tst/inet/ping/main.c>`
+- :github-blob:`inet/slip<tst/inet/slip/main.c>`
 - :github-blob:`inet/ssl<tst/inet/ssl/main.c>`
 - :github-blob:`inet/tftp_server<tst/inet/tftp_server/main.c>`
 - :github-blob:`multimedia/midi<tst/multimedia/midi/main.c>`
+- :github-blob:`drivers/isotp<tst/drivers/isotp/main.c>`
 
 Nano32
 ------
@@ -253,6 +257,32 @@ Particle IO Photon
 - :github-blob:`inet/inet<tst/inet/inet/main.c>`
 - :github-blob:`inet/mqtt_client<tst/inet/mqtt_client/main.c>`
 - :github-blob:`inet/ping<tst/inet/ping/main.c>`
+
+SPC56D Discovery
+---------------
+
+- :github-blob:`kernel/sys<tst/kernel/sys/main.c>`
+- :github-blob:`kernel/thrd<tst/kernel/thrd/main.c>`
+- :github-blob:`kernel/time<tst/kernel/time/main.c>`
+- :github-blob:`kernel/timer<tst/kernel/timer/main.c>`
+- :github-blob:`sync/bus<tst/sync/bus/main.c>`
+- :github-blob:`sync/event<tst/sync/event/main.c>`
+- :github-blob:`sync/queue<tst/sync/queue/main.c>`
+- :github-blob:`sync/rwlock<tst/sync/rwlock/main.c>`
+- :github-blob:`sync/sem<tst/sync/sem/main.c>`
+- :github-blob:`collections/binary_tree<tst/collections/binary_tree/main.c>`
+- :github-blob:`collections/bits<tst/collections/bits/main.c>`
+- :github-blob:`collections/fifo<tst/collections/fifo/main.c>`
+- :github-blob:`collections/hash_map<tst/collections/hash_map/main.c>`
+- :github-blob:`alloc/circular_heap<tst/alloc/circular_heap/main.c>`
+- :github-blob:`text/std<tst/text/std/main.c>`
+- :github-blob:`text/re<tst/text/re/main.c>`
+- :github-blob:`debug/log<tst/debug/log/main.c>`
+- :github-blob:`oam/shell<tst/oam/shell/main.c>`
+- :github-blob:`encode/base64<tst/encode/base64/main.c>`
+- :github-blob:`encode/json<tst/encode/json/main.c>`
+- :github-blob:`hash/crc<tst/hash/crc/main.c>`
+- :github-blob:`hash/sha1<tst/hash/sha1/main.c>`
 
 STM32F3DISCOVERY
 ----------------

@@ -34,6 +34,7 @@ Supported drivers for this board.
 - :doc:`../library-reference/drivers/exti`
 - :doc:`../library-reference/drivers/flash`
 - :doc:`../library-reference/drivers/i2c_soft`
+- :doc:`../library-reference/drivers/isotp`
 - :doc:`../library-reference/drivers/mcp2515`
 - :doc:`../library-reference/drivers/owi`
 - :doc:`../library-reference/drivers/pin`
@@ -70,7 +71,7 @@ Below is the memory usage of two applications:
 +--------------------------+-----------+-----------+
 | Application              | Flash     | RAM       |
 +==========================+===========+===========+
-| minimal-configuration    |     10752 |      2060 |
+| minimal-configuration    |      5888 |      1680 |
 +--------------------------+-----------+-----------+
 | default-configuration    |    107256 |     10114 |
 +--------------------------+-----------+-----------+
@@ -96,6 +97,8 @@ Default Standard Library configuration.
 |  CONFIG_CAN_                                           |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_CHIPID_                                        |  1                                                  |
++--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_CRC_TABLE_LOOKUP_                              |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_DAC_                                           |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
@@ -225,6 +228,8 @@ Default Standard Library configuration.
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_MODULE_INIT_CAN_                               |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_MODULE_INIT_CHAN_                              |  1                                                  |
++--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_MODULE_INIT_CHIPID_                            |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_MODULE_INIT_DAC_                               |  1                                                  |
@@ -239,11 +244,15 @@ Default Standard Library configuration.
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_MODULE_INIT_FLASH_                             |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_MODULE_INIT_FS_                                |  1                                                  |
++--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_MODULE_INIT_I2C_                               |  0                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_MODULE_INIT_I2C_SOFT_                          |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_MODULE_INIT_INET_                              |  0                                                  |
++--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_MODULE_INIT_LOG_                               |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_MODULE_INIT_MCP2515_                           |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
@@ -263,15 +272,27 @@ Default Standard Library configuration.
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_MODULE_INIT_RANDOM_                            |  0                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_MODULE_INIT_RWLOCK_                            |  1                                                  |
++--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_MODULE_INIT_SD_                                |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_MODULE_INIT_SDIO_                              |  0                                                  |
++--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_MODULE_INIT_SEM_                               |  1                                                  |
++--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_MODULE_INIT_SETTINGS_                          |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_MODULE_INIT_SOCKET_                            |  0                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_MODULE_INIT_SPI_                               |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_MODULE_INIT_SSL_                               |  0                                                  |
++--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_MODULE_INIT_STD_                               |  1                                                  |
++--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_MODULE_INIT_THRD_                              |  1                                                  |
++--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_MODULE_INIT_TIMER_                             |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_MODULE_INIT_UART_                              |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
@@ -323,6 +344,10 @@ Default Standard Library configuration.
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_SOCKET_RAW_                                    |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_SPC5_BOOT_ENTRY_RCHW_                          |  1                                                  |
++--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_SPC5_RAM_CLEAR_ALL_                            |  1                                                  |
++--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_SPI_                                           |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_SPIFFS_                                        |  1                                                  |
@@ -363,7 +388,11 @@ Default Standard Library configuration.
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_START_SHELL_STACK_SIZE_                        |  1536                                               |
 +--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_STD_FORMAT_FLOAT_                              |  1                                                  |
++--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_STD_OUTPUT_BUFFER_MAX_                         |  16                                                 |
++--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_SYSTEM_INTERRUPTS_                             |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_SYSTEM_TICK_FREQUENCY_                         |  100                                                |
 +--------------------------------------------------------+-----------------------------------------------------+
@@ -428,6 +457,8 @@ Mcu
 .. _CONFIG_CAN: ../user-guide/configuration.html#c.CONFIG_CAN
 
 .. _CONFIG_CHIPID: ../user-guide/configuration.html#c.CONFIG_CHIPID
+
+.. _CONFIG_CRC_TABLE_LOOKUP: ../user-guide/configuration.html#c.CONFIG_CRC_TABLE_LOOKUP
 
 .. _CONFIG_DAC: ../user-guide/configuration.html#c.CONFIG_DAC
 
@@ -557,6 +588,8 @@ Mcu
 
 .. _CONFIG_MODULE_INIT_CAN: ../user-guide/configuration.html#c.CONFIG_MODULE_INIT_CAN
 
+.. _CONFIG_MODULE_INIT_CHAN: ../user-guide/configuration.html#c.CONFIG_MODULE_INIT_CHAN
+
 .. _CONFIG_MODULE_INIT_CHIPID: ../user-guide/configuration.html#c.CONFIG_MODULE_INIT_CHIPID
 
 .. _CONFIG_MODULE_INIT_DAC: ../user-guide/configuration.html#c.CONFIG_MODULE_INIT_DAC
@@ -571,11 +604,15 @@ Mcu
 
 .. _CONFIG_MODULE_INIT_FLASH: ../user-guide/configuration.html#c.CONFIG_MODULE_INIT_FLASH
 
+.. _CONFIG_MODULE_INIT_FS: ../user-guide/configuration.html#c.CONFIG_MODULE_INIT_FS
+
 .. _CONFIG_MODULE_INIT_I2C: ../user-guide/configuration.html#c.CONFIG_MODULE_INIT_I2C
 
 .. _CONFIG_MODULE_INIT_I2C_SOFT: ../user-guide/configuration.html#c.CONFIG_MODULE_INIT_I2C_SOFT
 
 .. _CONFIG_MODULE_INIT_INET: ../user-guide/configuration.html#c.CONFIG_MODULE_INIT_INET
+
+.. _CONFIG_MODULE_INIT_LOG: ../user-guide/configuration.html#c.CONFIG_MODULE_INIT_LOG
 
 .. _CONFIG_MODULE_INIT_MCP2515: ../user-guide/configuration.html#c.CONFIG_MODULE_INIT_MCP2515
 
@@ -595,15 +632,27 @@ Mcu
 
 .. _CONFIG_MODULE_INIT_RANDOM: ../user-guide/configuration.html#c.CONFIG_MODULE_INIT_RANDOM
 
+.. _CONFIG_MODULE_INIT_RWLOCK: ../user-guide/configuration.html#c.CONFIG_MODULE_INIT_RWLOCK
+
 .. _CONFIG_MODULE_INIT_SD: ../user-guide/configuration.html#c.CONFIG_MODULE_INIT_SD
 
 .. _CONFIG_MODULE_INIT_SDIO: ../user-guide/configuration.html#c.CONFIG_MODULE_INIT_SDIO
+
+.. _CONFIG_MODULE_INIT_SEM: ../user-guide/configuration.html#c.CONFIG_MODULE_INIT_SEM
+
+.. _CONFIG_MODULE_INIT_SETTINGS: ../user-guide/configuration.html#c.CONFIG_MODULE_INIT_SETTINGS
 
 .. _CONFIG_MODULE_INIT_SOCKET: ../user-guide/configuration.html#c.CONFIG_MODULE_INIT_SOCKET
 
 .. _CONFIG_MODULE_INIT_SPI: ../user-guide/configuration.html#c.CONFIG_MODULE_INIT_SPI
 
 .. _CONFIG_MODULE_INIT_SSL: ../user-guide/configuration.html#c.CONFIG_MODULE_INIT_SSL
+
+.. _CONFIG_MODULE_INIT_STD: ../user-guide/configuration.html#c.CONFIG_MODULE_INIT_STD
+
+.. _CONFIG_MODULE_INIT_THRD: ../user-guide/configuration.html#c.CONFIG_MODULE_INIT_THRD
+
+.. _CONFIG_MODULE_INIT_TIMER: ../user-guide/configuration.html#c.CONFIG_MODULE_INIT_TIMER
 
 .. _CONFIG_MODULE_INIT_UART: ../user-guide/configuration.html#c.CONFIG_MODULE_INIT_UART
 
@@ -655,6 +704,10 @@ Mcu
 
 .. _CONFIG_SOCKET_RAW: ../user-guide/configuration.html#c.CONFIG_SOCKET_RAW
 
+.. _CONFIG_SPC5_BOOT_ENTRY_RCHW: ../user-guide/configuration.html#c.CONFIG_SPC5_BOOT_ENTRY_RCHW
+
+.. _CONFIG_SPC5_RAM_CLEAR_ALL: ../user-guide/configuration.html#c.CONFIG_SPC5_RAM_CLEAR_ALL
+
 .. _CONFIG_SPI: ../user-guide/configuration.html#c.CONFIG_SPI
 
 .. _CONFIG_SPIFFS: ../user-guide/configuration.html#c.CONFIG_SPIFFS
@@ -695,7 +748,11 @@ Mcu
 
 .. _CONFIG_START_SHELL_STACK_SIZE: ../user-guide/configuration.html#c.CONFIG_START_SHELL_STACK_SIZE
 
+.. _CONFIG_STD_FORMAT_FLOAT: ../user-guide/configuration.html#c.CONFIG_STD_FORMAT_FLOAT
+
 .. _CONFIG_STD_OUTPUT_BUFFER_MAX: ../user-guide/configuration.html#c.CONFIG_STD_OUTPUT_BUFFER_MAX
+
+.. _CONFIG_SYSTEM_INTERRUPTS: ../user-guide/configuration.html#c.CONFIG_SYSTEM_INTERRUPTS
 
 .. _CONFIG_SYSTEM_TICK_FREQUENCY: ../user-guide/configuration.html#c.CONFIG_SYSTEM_TICK_FREQUENCY
 

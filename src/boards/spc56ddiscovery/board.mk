@@ -32,7 +32,7 @@ INC += $(SIMBA_ROOT)/src/boards/spc56ddiscovery
 SRC += $(SIMBA_ROOT)/src/boards/spc56ddiscovery/board.c
 
 BOARD_HOMEPAGE = "http://www.st.com/en/evaluation-tools/spc56d-discovery.html"
-BOARD_PINOUT = ""
+BOARD_PINOUT = "spc56d-discovery-pinout.png"
 BOARD_DESC = "SPC56D Discovery"
 
 MCU = spc56d40l1
