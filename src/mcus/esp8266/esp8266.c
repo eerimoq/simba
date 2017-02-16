@@ -29,3 +29,5 @@
  */
 
 #include "simba.h"
+
+int __errno;

@@ -676,8 +676,13 @@ const char *std_strtod(const char *str, double *value_p)
         }
 
         if (d == 2.2250738585072012 && e <= -308) {
-            d *= 1.0e-308;
+#if __DBL_MANT_DIG__ > 24
+            d *= 1.0e-308l;
             a = p;
+#else
+            d = 0.0;
+            a = str;
+#endif
             goto done;
         }
 
