@@ -143,9 +143,9 @@ struct spc5_siul_t {
     uint16_t RESERVED4[485];
     uint32_t PSMI[16];
     uint32_t RESERVED5[48];
-    uint32_t GPDO[31];
+    uint8_t GPDO[124];
     uint32_t RESERVED6[97];
-    uint32_t GPDI[31];
+    uint8_t GPDI[124];
     uint32_t RESERVED7[225];
     uint32_t PGPDO[4];
     uint32_t RESERVED8[12];
@@ -157,6 +157,15 @@ struct spc5_siul_t {
     uint32_t RESERVED11[8];
     uint32_t IFCPR;
 };
+
+#define SPC5_SIUL_PCR_SMC                             BIT(14)
+#define SPC5_SIUL_PCR_APC                             BIT(13)
+#define SPC5_SIUL_PCR_OBE                              BIT(9)
+#define SPC5_SIUL_PCR_IBE                              BIT(8)
+#define SPC5_SIUL_PCR_ODE                              BIT(5)
+#define SPC5_SIUL_PCR_SRC                              BIT(2)
+#define SPC5_SIUL_PCR_WPE                              BIT(1)
+#define SPC5_SIUL_PCR_WPS                              BIT(0)
 
 /* 20. LINFlex. */
 struct spc5_linflex_t {

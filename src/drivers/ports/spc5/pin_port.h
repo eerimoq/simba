@@ -42,10 +42,11 @@ struct pin_driver_t {
 static inline int pin_port_device_set_mode(const struct pin_device_t *dev_p,
                                            int mode)
 {
-    SPC5_SIUL->PCR[dev_p->id] = (1 << 9);
 
     if (mode == PIN_OUTPUT) {
+        SPC5_SIUL->PCR[dev_p->id] = SPC5_SIUL_PCR_OBE;
     } else {
+        SPC5_SIUL->PCR[dev_p->id] = SPC5_SIUL_PCR_IBE;
     }
 
     return (0);
@@ -53,19 +54,23 @@ static inline int pin_port_device_set_mode(const struct pin_device_t *dev_p,
 
 static inline int pin_port_device_read(const struct pin_device_t *dev_p)
 {
-    return (-1);
+    int value;
+
+    value = SPC5_SIUL->GPDI[dev_p->id];
+
+    return (value);
 }
 
 static inline int pin_port_device_write_high(const struct pin_device_t *dev_p)
 {
-    SPC5_SIUL->GPDO[dev_p->id / 4] |= (0x01000000UL >> (8 * (dev_p->id % 4)));
+    SPC5_SIUL->GPDO[dev_p->id] = 1;
 
     return (0);
 }
 
 static inline int pin_port_device_write_low(const struct pin_device_t *dev_p)
 {
-    SPC5_SIUL->GPDO[dev_p->id / 4] &= ~(0x01000000UL >> (8 * (dev_p->id % 4)));
+    SPC5_SIUL->GPDO[dev_p->id] = 0;
 
     return (0);
 }

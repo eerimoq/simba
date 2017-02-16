@@ -37,25 +37,33 @@ static int pin_port_init(struct pin_driver_t *self_p,
                          const struct pin_device_t *dev,
                          int mode)
 {
-    return (-1);
+    return (pin_set_mode(self_p, mode));
 }
 
 static int pin_port_read(struct pin_driver_t *self_p)
 {
-    return (-1);
+    return (pin_port_device_read(self_p->dev_p));
 }
 
 static int pin_port_write(struct pin_driver_t *self_p, int value)
 {
-    return (-1);
+    if (value != 0) {
+        pin_device_write_high(self_p->dev_p);
+    } else {
+        pin_device_write_low(self_p->dev_p);
+    }
+
+    return (0);
 }
 
 static int pin_port_toggle(struct pin_driver_t *self_p)
 {
-    return (-1);
+    SPC5_SIUL->GPDO[self_p->dev_p->id] ^= 1;
+
+    return (0);
 }
 
 static int pin_port_set_mode(struct pin_driver_t *self_p, int mode)
 {
-    return (-1);
+    return (pin_device_set_mode(self_p->dev_p, mode));
 }
