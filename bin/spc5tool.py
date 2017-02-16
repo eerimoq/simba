@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 #
-# SPC5 Tool.
+# Erase, read from and write to SPC5 flash memory. Uploads a small
+# application to SRAM using the BAM, which in turn accesses the flash
+# memory.
 #
 
 from __future__ import print_function
@@ -328,7 +330,10 @@ def do_flash_write(args):
 
 
 def main():
-    parser = argparse.ArgumentParser()
+    description = "Erase, read from and write to SPC5 flash memory. Uploads a " \
+                  "small application (~3k) to SRAM using the BAM, which in " \
+                  "turn accesses the flash memory."
+    parser = argparse.ArgumentParser(description=description)
     parser.add_argument('-p', '--port', default='/dev/ttyUSB1')
     parser.add_argument('-b', '--baudrate',
                         type=int,
@@ -341,29 +346,29 @@ def main():
 
     subparsers = parser.add_subparsers()
 
-    upload = subparsers.add_parser('upload')
-    upload.set_defaults(func=do_upload)
+    upload_parser = subparsers.add_parser('upload')
+    upload_parser.set_defaults(func=do_upload)
 
-    ping = subparsers.add_parser('ping')
-    ping.set_defaults(func=do_ping)
+    ping_parser = subparsers.add_parser('ping')
+    ping_parser.set_defaults(func=do_ping)
 
-    flash_erase = subparsers.add_parser('flash_erase')
-    flash_erase.add_argument('address')
-    flash_erase.add_argument('size')
-    flash_erase.set_defaults(func=do_flash_erase)
+    flash_erase_parser = subparsers.add_parser('flash_erase')
+    flash_erase_parser.add_argument('address')
+    flash_erase_parser.add_argument('size')
+    flash_erase_parser.set_defaults(func=do_flash_erase)
 
-    flash_read = subparsers.add_parser('flash_read')
-    flash_read.add_argument('-o', '--outfile')
-    flash_read.add_argument('address')
-    flash_read.add_argument('size')
-    flash_read.set_defaults(func=do_flash_read)
+    flash_read_parser = subparsers.add_parser('flash_read')
+    flash_read_parser.add_argument('-o', '--outfile')
+    flash_read_parser.add_argument('address')
+    flash_read_parser.add_argument('size')
+    flash_read_parser.set_defaults(func=do_flash_read)
 
-    flash_write = subparsers.add_parser('flash_write')
-    flash_write.add_argument('-u', '--no-upload', action='store_true')
-    flash_write.add_argument('-e', '--erase', action='store_true')
-    flash_write.add_argument('-v', '--verify', action='store_true')
-    flash_write.add_argument('hexfile')
-    flash_write.set_defaults(func=do_flash_write)
+    flash_write_parser = subparsers.add_parser('flash_write')
+    flash_write_parser.add_argument('-u', '--no-upload', action='store_true')
+    flash_write_parser.add_argument('-e', '--erase', action='store_true')
+    flash_write_parser.add_argument('-v', '--verify', action='store_true')
+    flash_write_parser.add_argument('hexfile')
+    flash_write_parser.set_defaults(func=do_flash_write)
 
     args = parser.parse_args()
     args.func(args)
