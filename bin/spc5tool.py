@@ -23,7 +23,6 @@ COMMAND_TYPE_READ   =  3
 COMMAND_TYPE_WRITE  =  4
 
 SERIAL_TIMEOUT = 3.0
-BAM_BAUDRATE = 19200
 
 READ_WRITE_CHUNK_SIZE = 1016
 
@@ -202,7 +201,7 @@ def erase(serial_connection, address, size):
 
 def do_upload(args):
     serial_connection = serial.Serial(args.port,
-                                      baudrate=BAM_BAUDRATE,
+                                      baudrate=args.bam_baudrate,
                                       timeout=SERIAL_TIMEOUT)
     upload(serial_connection, args.baudrate, args.control_port)
 
@@ -259,7 +258,7 @@ def do_flash_write(args):
                                       timeout=SERIAL_TIMEOUT)
 
     if not args.no_upload:
-        serial_connection.baudrate = BAM_BAUDRATE
+        serial_connection.baudrate = args.bam_baudrate
         upload(serial_connection, args.baudrate, args.control_port)
         serial_connection.baudrate = args.baudrate
 
@@ -335,6 +334,9 @@ def main():
                         type=int,
                         default=921600,
                         choices=[115200, 921600])
+    parser.add_argument('-B', '--bam-baudrate',
+                        type=int,
+                        default=19200)
     parser.add_argument('-c', '--control-port')
 
     subparsers = parser.add_subparsers()
