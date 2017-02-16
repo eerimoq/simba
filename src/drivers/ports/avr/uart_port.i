@@ -204,16 +204,16 @@ static int uart_port_device_stop(struct uart_device_t *dev_p)
     return (-1);
 }
 
-static ssize_t uart_port_device_read_isr(struct uart_device_t *dev_p,
-                                         void *buf_p,
-                                         size_t size)
+static ssize_t uart_port_device_read(struct uart_device_t *dev_p,
+                                     void *buf_p,
+                                     size_t size)
 {
     return (-1);
 }
 
-static ssize_t uart_port_device_write_isr(struct uart_device_t *dev_p,
-                                          const void *buf_p,
-                                          size_t size)
+static ssize_t uart_port_device_write(struct uart_device_t *dev_p,
+                                      const void *buf_p,
+                                      size_t size)
 {
     return (-1);
 }
