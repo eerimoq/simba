@@ -389,34 +389,34 @@ release:
 	+bin/release.py --package --version $(SIMBA_VERSION)
 
 clean-arduino-due:
-	$(MAKE) BOARD=arduino_due SERIAL_PORT=/dev/simba-arduino_due clean
+	$(MAKE) BOARD=arduino_due clean
 
 clean-arduino-mega:
-	$(MAKE) BOARD=arduino_mega SERIAL_PORT=/dev/simba-arduino_mega clean
+	$(MAKE) BOARD=arduino_mega clean
 
 clean-arduino-nano:
-	$(MAKE) BOARD=arduino_nano SERIAL_PORT=/dev/simba-arduino_nano clean
+	$(MAKE) BOARD=arduino_nano clean
 
 clean-arduino-pro-micro:
-	$(MAKE) BOARD=arduino_pro_micro SERIAL_PORT=/dev/simba-arduino_pro_micro clean
+	$(MAKE) BOARD=arduino_pro_micro clean
 
 clean-nodemcu:
-	$(MAKE) BOARD=nodemcu SERIAL_PORT=/dev/simba-nodemcuv3 clean
+	$(MAKE) BOARD=nodemcu clean
 
 clean-esp12e:
-	$(MAKE) BOARD=esp12e SERIAL_PORT=/dev/simba-esp12e clean
+	$(MAKE) BOARD=esp12e clean
 
 clean-nano32:
-	$(MAKE) BOARD=nano32 SERIAL_PORT=/dev/simba-nano32 clean
+	$(MAKE) BOARD=nano32 clean
 
 clean-stm32vldiscovery:
-	$(MAKE) BOARD=stm32vldiscovery SERIAL_PORT=/dev/simba-stm32vldiscovery clean
+	$(MAKE) BOARD=stm32vldiscovery clean
 
 clean-photon:
-	$(MAKE) BOARD=photon SERIAL_PORT=/dev/simba-photon clean
+	$(MAKE) BOARD=photon clean
 
 clean-spc56ddiscovery:
-	$(MAKE) BOARD=spc56ddiscovery SERIAL_PORT=/dev/ttyUSB0 CONTROL_PORT=/dev/ttyUSB1 clean
+	$(MAKE) BOARD=spc56ddiscovery clean
 
 test-arduino-due:
 	@echo "Arduino Due"
@@ -456,7 +456,7 @@ test-photon:
 
 test-spc56ddiscovery:
 	@echo "SPC56D Discovery"
-	$(MAKE) BOARD=spc56ddiscovery SERIAL_PORT=/dev/ttyUSB0 CONTROL_PORT=/dev/ttyUSB1 test
+	$(MAKE) BOARD=spc56ddiscovery SERIAL_PORT=/dev/simba-spc56ddiscovery CONTROL_PORT=/dev/simba-spc56ddiscovery-control test
 
 clean-arduino-due-platformio:
 	@echo "Arduino Due"
