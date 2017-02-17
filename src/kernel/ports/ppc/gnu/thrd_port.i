@@ -67,11 +67,9 @@ static int thrd_port_spawn(struct thrd_t *thrd_p,
     context_p = (stack_p + stack_size - sizeof(*context_p));
     thrd_p->port.context_p = context_p;
 
-    /* Prepare the software context. */
+    /* Prepare the context on the stack. */
     context_p->r13 = (uint32_t)main;
     context_p->r14 = (uint32_t)arg_p;
-
-    /* Prepare the hardware context. */
     context_p->lr = (uint32_t)thrd_port_main;
 
     return (0);
