@@ -9,7 +9,7 @@ doxygen:
 
 sphinx:
 	$(MAKE) -f sphinx.mk html
-	echo "Run 'firefox _build/html/index.html' to view the generated documentation."
+	echo "Run 'firefox `readlink -f _build/html/index.html`' to view the generated documentation."
 
 sphinx-clean:
 	$(MAKE) -f sphinx.mk clean
