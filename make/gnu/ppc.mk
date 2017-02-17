@@ -28,7 +28,6 @@
 # This file is part of the Simba project.
 #
 
-#CROSS_COMPILE = ppc-freevle-eabi-
 CROSS_COMPILE = powerpc-eabivle-
 
 LIBPATH += $(FREESCALE_POWERPC_EABIVLE_ROOT)/powerpc-eabivle/newlib/lib

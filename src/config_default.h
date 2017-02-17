@@ -1073,7 +1073,7 @@
  * Debug file system command to append to a file.
  */
 #ifndef CONFIG_FS_CMD_FS_APPEND
-#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(CONFIG_MINIMAL_SYSTEM)
+#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(BOARD_SPC56DDISCOVERY) || defined(CONFIG_MINIMAL_SYSTEM)
 #        define CONFIG_FS_CMD_FS_APPEND                     0
 #    else
 #        define CONFIG_FS_CMD_FS_APPEND                     1
@@ -1084,7 +1084,7 @@
  * Debug file system command to list all counters.
  */
 #ifndef CONFIG_FS_CMD_FS_COUNTERS_LIST
-#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(CONFIG_MINIMAL_SYSTEM)
+#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(BOARD_SPC56DDISCOVERY) || defined(CONFIG_MINIMAL_SYSTEM)
 #        define CONFIG_FS_CMD_FS_COUNTERS_LIST              0
 #    else
 #        define CONFIG_FS_CMD_FS_COUNTERS_LIST              1
@@ -1095,7 +1095,7 @@
  * Debug file system command to set all counters to zero.
  */
 #ifndef CONFIG_FS_CMD_FS_COUNTERS_RESET
-#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(CONFIG_MINIMAL_SYSTEM)
+#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(BOARD_SPC56DDISCOVERY) || defined(CONFIG_MINIMAL_SYSTEM)
 #        define CONFIG_FS_CMD_FS_COUNTERS_RESET             0
 #    else
 #        define CONFIG_FS_CMD_FS_COUNTERS_RESET             1
@@ -1106,7 +1106,7 @@
  * Debug file system command to list all registered file systems.
  */
 #ifndef CONFIG_FS_CMD_FS_FILESYSTEMS_LIST
-#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(CONFIG_MINIMAL_SYSTEM)
+#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(BOARD_SPC56DDISCOVERY) || defined(CONFIG_MINIMAL_SYSTEM)
 #        define CONFIG_FS_CMD_FS_FILESYSTEMS_LIST           0
 #    else
 #        define CONFIG_FS_CMD_FS_FILESYSTEMS_LIST           1
@@ -1117,7 +1117,7 @@
  * Debug file system command to list all registered file systems.
  */
 #ifndef CONFIG_FS_CMD_FS_LIST
-#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(CONFIG_MINIMAL_SYSTEM)
+#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(BOARD_SPC56DDISCOVERY) || defined(CONFIG_MINIMAL_SYSTEM)
 #        define CONFIG_FS_CMD_FS_LIST                       0
 #    else
 #        define CONFIG_FS_CMD_FS_LIST                       1
@@ -1128,7 +1128,7 @@
  * Debug file system command to format a file system.
  */
 #ifndef CONFIG_FS_CMD_FS_FORMAT
-#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(CONFIG_MINIMAL_SYSTEM)
+#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(BOARD_SPC56DDISCOVERY) || defined(CONFIG_MINIMAL_SYSTEM)
 #        define CONFIG_FS_CMD_FS_FORMAT                     0
 #    else
 #        define CONFIG_FS_CMD_FS_FORMAT                     1
@@ -1139,7 +1139,7 @@
  * Debug file system command to list all parameters.
  */
 #ifndef CONFIG_FS_CMD_FS_PARAMETERS_LIST
-#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(CONFIG_MINIMAL_SYSTEM)
+#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(BOARD_SPC56DDISCOVERY) || defined(CONFIG_MINIMAL_SYSTEM)
 #        define CONFIG_FS_CMD_FS_PARAMETERS_LIST            0
 #    else
 #        define CONFIG_FS_CMD_FS_PARAMETERS_LIST            1
@@ -1150,7 +1150,7 @@
  * Debug file system command to read from a file.
  */
 #ifndef CONFIG_FS_CMD_FS_READ
-#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(CONFIG_MINIMAL_SYSTEM)
+#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(BOARD_SPC56DDISCOVERY) || defined(CONFIG_MINIMAL_SYSTEM)
 #        define CONFIG_FS_CMD_FS_READ                       0
 #    else
 #        define CONFIG_FS_CMD_FS_READ                       1
@@ -1161,7 +1161,7 @@
  * Debug file system command to remove a file.
  */
 #ifndef CONFIG_FS_CMD_FS_REMOVE
-#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(CONFIG_MINIMAL_SYSTEM)
+#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(BOARD_SPC56DDISCOVERY) || defined(CONFIG_MINIMAL_SYSTEM)
 #        define CONFIG_FS_CMD_FS_REMOVE                     0
 #    else
 #        define CONFIG_FS_CMD_FS_REMOVE                     1
@@ -1172,7 +1172,7 @@
  * Debug file system command to write to a file.
  */
 #ifndef CONFIG_FS_CMD_FS_WRITE
-#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(CONFIG_MINIMAL_SYSTEM)
+#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(BOARD_SPC56DDISCOVERY) || defined(CONFIG_MINIMAL_SYSTEM)
 #        define CONFIG_FS_CMD_FS_WRITE                      0
 #    else
 #        define CONFIG_FS_CMD_FS_WRITE                      1
