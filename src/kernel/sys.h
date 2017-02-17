@@ -37,7 +37,7 @@
 #define VERSION_STR                        STRINGIFY(VERSION)
 #define SYS_TICK_MAX                         ((sys_tick_t)-1)
 
-typedef uint64_t sys_tick_t;
+typedef uint32_t sys_tick_t;
 
 /**
  * Convertion from the time struct to system ticks.

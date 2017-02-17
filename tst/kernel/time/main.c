@@ -29,6 +29,7 @@
  */
 
 #include "simba.h"
+#include <limits.h>
 
 struct test_date_t {
     struct time_t time;
@@ -56,9 +57,10 @@ static int test_get_set(struct harness_t *harness)
     BTASSERT((time2.seconds > time1.seconds)
              || (time2.nanoseconds > time1.nanoseconds));
 
-    /* Set the time to a high value. */
-    time1.seconds = 100;
-    time1.nanoseconds = 350000000;
+    /* Set the time just before a MSB increment, to verify that
+       increment. */
+    time1.seconds = (INT_MAX / CONFIG_SYSTEM_TICK_FREQUENCY - 1);
+    time1.nanoseconds = 999000000;
     BTASSERT(time_set(&time1) == 0);
 
     /* Get the new time. */
@@ -127,7 +129,7 @@ static int test_date(struct harness_t *harness)
 
 static int test_sleep(struct harness_t *harness)
 {
-    struct time_t start, stop;
+    struct time_t start, stop, diff;
     int i;
 
     long times[] = {
@@ -142,27 +144,23 @@ static int test_sleep(struct harness_t *harness)
     };
 
     for (i = 0; i < membersof(times); i++) {
-        std_printf(FSTR("sleep for %ld microseconds\r\n"), times[i]);
-
-        start.seconds = 0;
-        start.nanoseconds = 0;
-        BTASSERT(time_set(&start) == 0);
+        std_printf(FSTR("busy-wait for %ld microseconds\r\n"), times[i]);
 
         BTASSERT(time_get(&start) == 0);
-        
-        std_printf(FSTR("  start: seconds = %lu, microseconds = %lu\r\n"),
-                   start.seconds, start.nanoseconds / 1000);
-        
         time_busy_wait_us(times[i]);
-        
         BTASSERT(time_get(&stop) == 0);
-        
-        std_printf(FSTR("  stop: seconds = %lu, microseconds = %lu\r\n"
-                        "  diff: seconds = %lu, microseconds = %lu\r\n"),
+
+        time_diff(&diff, &stop, &start);
+
+        std_printf(FSTR("  start: seconds = %ld, microseconds = %ld\r\n"
+                        "  stop: seconds = %ld, microseconds = %ld\r\n"
+                        "  diff: seconds = %ld, microseconds = %ld\r\n"),
+                   start.seconds,
+                   start.nanoseconds / 1000,
                    stop.seconds,
                    stop.nanoseconds / 1000,
-                   (stop.seconds - start.seconds),
-                   (stop.nanoseconds - start.nanoseconds) / 1000);
+                   diff.seconds,
+                   diff.nanoseconds / 1000);
     }
 
     return (0);
@@ -173,7 +171,7 @@ static int test_diff(struct harness_t *harness)
     struct time_t *left_p, *right_p, diff;
     float fleft, fright, fdiff;
     int i;
-    
+
     /* left, right, diff. */
     struct time_t times[][3] = {
         { {  0,         0 }, {  0,          0 }, {   0,           0 } },
