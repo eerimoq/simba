@@ -179,6 +179,15 @@ void socket_stub_output(void *buf_p, size_t size)
     chan_read(&qoutput, buf_p, size);
 }
 
+void socket_stub_input_flush()
+{
+    char c;
+    
+    while (chan_size(&qinput) > 0) {
+        chan_read(&qinput, &c, sizeof(c));
+    }
+}
+
 void socket_stub_wait_closed()
 {
     uint32_t mask;

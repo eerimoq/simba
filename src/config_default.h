@@ -1956,6 +1956,14 @@
 #endif
 
 /**
+ * Size of the HTTP server request buffer. This buffer is used when
+ * parsing received HTTP request headers.
+ */
+#ifndef CONFIG_HTTP_SERVER_REQUEST_BUFFER_SIZE
+#    define CONFIG_HTTP_SERVER_REQUEST_BUFFER_SIZE        128
+#endif
+
+/**
  * Use lookup tables for CRC calculations. It is faster, but uses more
  * memory.
  */

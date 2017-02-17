@@ -49,6 +49,13 @@ static const FAR char not_found_fmt[] =
     "Content-Length: %d\r\n"
     "\r\n";
 
+static const FAR char bad_request_header[] =
+    "HTTP/1.1 400 Bad Request\r\n"
+    "Content-Type: text/plain\r\n"
+    "Content-Length: 32\r\n"
+    "\r\n"
+    "Failed to parse the HTTP header.";
+
 static int read_initial_request_line(void *chan_p,
                                      char *buf_p,
                                      struct http_server_request_t *request_p)
@@ -57,11 +64,16 @@ static int read_initial_request_line(void *chan_p,
     char *path_p = NULL;
     char *proto_p = NULL;
     size_t size;
-
+    
     *buf_p++ = '\0';
     action_p = buf_p;
-
+    size = 0;
+    
     while (1) {
+        if (size == CONFIG_HTTP_SERVER_REQUEST_BUFFER_SIZE) {
+            return (-ENOMEM);
+        }
+        
         if (chan_read(chan_p, buf_p, sizeof(*buf_p)) != sizeof(*buf_p)) {
             return (-EIO);
         }
@@ -84,10 +96,12 @@ static int read_initial_request_line(void *chan_p,
                 proto_p = buf_p;
             }
         }
+
+        size++;
     }
 
-    /* A path is required. */
-    if (path_p == NULL) {
+    /* Path and protocol are mandatory. */
+    if ((path_p == NULL) || (proto_p == NULL)) {
         return (-1);
     }
 
@@ -116,11 +130,17 @@ static int read_header_line(void *chan_p,
                             char **header_pp,
                             char **value_pp)
 {
+    size_t size;
     *buf_p++ = '\0';
     *header_pp = buf_p;
     *value_pp = NULL;
-
+    size = 0;
+    
     while (1) {
+        if (size == CONFIG_HTTP_SERVER_REQUEST_BUFFER_SIZE) {
+            return (-ENOMEM);
+        }
+        
         if (chan_read(chan_p, buf_p, sizeof(*buf_p)) != sizeof(*buf_p)) {
             return (-EIO);
         }
@@ -140,6 +160,8 @@ static int read_header_line(void *chan_p,
                 *value_pp = buf_p;
             }
         }
+        
+        size++;
     }
 
     if (*value_pp != NULL) {
@@ -155,16 +177,18 @@ static int read_request(struct http_server_t *self_p,
                         struct http_server_request_t *request_p)
 {
     int res;
-    char buf[128];
+    char buf[CONFIG_HTTP_SERVER_REQUEST_BUFFER_SIZE];
     char *header_p;
     char *value_p;
     size_t size;
 
     /* Read the intial line in the request. */
-    if (read_initial_request_line(connection_p->chan_p,
-                                  buf,
-                                  request_p) != 0) {
-        return (-EIO);
+    res = read_initial_request_line(connection_p->chan_p,
+                                    buf,
+                                    request_p);
+
+    if (res != 0) {
+        return (res);
     }
 
     memset(&request_p->headers, 0, sizeof(request_p->headers));
@@ -179,7 +203,7 @@ static int read_request(struct http_server_t *self_p,
         if (res == 1) {
             break;
         } else if (res < 0) {
-            return (-EIO);
+            return (res);
         }
 
         log_object_print(NULL, LOG_DEBUG, LSTR("%s: %s\r\n"), header_p, value_p);
@@ -248,6 +272,9 @@ static int handle_request(struct http_server_t *self_p,
     res = read_request(self_p, connection_p, &request);
 
     if (res != 0) {
+        /* Reply with a Bad Request if the header could not be read.*/
+        std_fprintf(connection_p->chan_p, bad_request_header);
+        
         return (res);
     }
 
@@ -528,10 +555,9 @@ int http_server_stop(struct http_server_t *self_p)
     return (0);
 }
 
-int
-http_server_response_write(struct http_server_connection_t *connection_p,
-                           struct http_server_request_t *request_p,
-                           struct http_server_response_t *response_p)
+int http_server_response_write(struct http_server_connection_t *connection_p,
+                               struct http_server_request_t *request_p,
+                               struct http_server_response_t *response_p)
 {
     ASSERTN(connection_p != NULL, EINVAL);
     ASSERTN(request_p != NULL, EINVAL);
