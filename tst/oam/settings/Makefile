@@ -2,9 +2,9 @@
 # @section License
 #
 # The MIT License (MIT)
-# 
+#
 # Copyright (c) 2014-2016, Erik Moqvist
-# 
+#
 # Permission is hereby granted, free of charge, to any person
 # obtaining a copy of this software and associated documentation
 # files (the "Software"), to deal in the Software without
@@ -43,7 +43,8 @@ CDEFS += \
 	CONFIG_FS_CMD_SETTINGS_WRITE=1 \
 	CONFIG_FS_CMD_SETTINGS_READ=1 \
 	CONFIG_FS_CMD_SETTINGS_RESET=1 \
-	CONFIG_FS_CMD_THRD_LIST=1
+	CONFIG_FS_CMD_THRD_LIST=1 \
+	CONFIG_MODULE_INIT_SETTINGS=1
 
 SIMBA_ROOT ?= ../../..
 include $(SIMBA_ROOT)/make/app.mk

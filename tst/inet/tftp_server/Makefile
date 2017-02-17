@@ -2,9 +2,9 @@
 # @section License
 #
 # The MIT License (MIT)
-# 
+#
 # Copyright (c) 2014-2016, Erik Moqvist
-# 
+#
 # Permission is hereby granted, free of charge, to any person
 # obtaining a copy of this software and associated documentation
 # files (the "Software"), to deal in the Software without
@@ -38,7 +38,8 @@ CDEFS += \
 	CONFIG_FAT16=1 \
 	CONFIG_SPIFFS=1 \
 	CONFIG_THRD_ENV=1 \
-	CONFIG_FS_CMD_THRD_LIST=1
+	CONFIG_FS_CMD_THRD_LIST=1 \
+	CONFIG_MODULE_INIT_LOG=1
 
 SRC += socket_stub.c
 SYNC_SRC = \

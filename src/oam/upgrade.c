@@ -168,11 +168,11 @@ static int cmd_application_is_valid_cb(int argc,
     res = upgrade_application_is_valid(0);
 
     if (res == 1) {
-        std_fprintf(out_p, FSTR("yes\r\n"));
+        std_fprintf(out_p, CRSTR("yes\r\n"));
     } else if (res == 0) {
-        std_fprintf(out_p, FSTR("no\r\n"));
+        std_fprintf(out_p, CRSTR("no\r\n"));
     } else {
-        std_fprintf(out_p, FSTR("failed\r\n"));
+        std_fprintf(out_p, CRSTR("failed\r\n"));
     }
 
     return (0);
@@ -191,7 +191,7 @@ int upgrade_module_init()
 
 #if CONFIG_FS_CMD_UPGRADE_BOOTLOADER_ENTER == 1
     fs_command_init(&module.cmd_bootloader_enter,
-                    FSTR("/oam/upgrade/bootloader/enter"),
+                    CSTR("/oam/upgrade/bootloader/enter"),
                     cmd_bootloader_enter_cb,
                     NULL);
     fs_command_register(&module.cmd_bootloader_enter);
@@ -199,7 +199,7 @@ int upgrade_module_init()
 
 #if CONFIG_FS_CMD_UPGRADE_APPLICATION_ENTER == 1
     fs_command_init(&module.cmd_application_enter,
-                    FSTR("/oam/upgrade/application/enter"),
+                    CSTR("/oam/upgrade/application/enter"),
                     cmd_application_enter_cb,
                     NULL);
     fs_command_register(&module.cmd_application_enter);
@@ -207,7 +207,7 @@ int upgrade_module_init()
 
 #if CONFIG_FS_CMD_UPGRADE_APPLICATION_ERASE == 1
     fs_command_init(&module.cmd_application_erase,
-                    FSTR("/oam/upgrade/application/erase"),
+                    CSTR("/oam/upgrade/application/erase"),
                     cmd_application_erase_cb,
                     NULL);
     fs_command_register(&module.cmd_application_erase);
@@ -215,7 +215,7 @@ int upgrade_module_init()
 
 #if CONFIG_FS_CMD_UPGRADE_APPLICATION_IS_VALID == 1
     fs_command_init(&module.cmd_application_is_valid,
-                    FSTR("/oam/upgrade/application/is_valid"),
+                    CSTR("/oam/upgrade/application/is_valid"),
                     cmd_application_is_valid_cb,
                     NULL);
     fs_command_register(&module.cmd_application_is_valid);
@@ -293,7 +293,7 @@ int upgrade_binary_upload(const void *buf_p,
                 || (module.header_size < 40)) {
                 log_object_print(NULL,
                                  LOG_ERROR,
-                                 FSTR("bad upgrade file header size %u\r\n"),
+                                 LSTR("bad upgrade file header size %u\r\n"),
                                  module.header_size);
                 return (-1);
             }
@@ -308,13 +308,13 @@ int upgrade_binary_upload(const void *buf_p,
                                 module.header_size) != 0) {
             log_object_print(NULL,
                              LOG_ERROR,
-                             FSTR("failed to parse upgrade file header\r\n"));
+                             LSTR("failed to parse upgrade file header\r\n"));
             return (-1);
         }
 
         log_object_print(NULL,
                          LOG_INFO,
-                         FSTR("parsed upgrade file header description '%s'"
+                         LSTR("parsed upgrade file header description '%s'"
                               " and data size %u\r\n"),
                          module.header.description,
                          module.header.size);

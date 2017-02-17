@@ -2,9 +2,9 @@
 # @section License
 #
 # The MIT License (MIT)
-# 
+#
 # Copyright (c) 2014-2016, Erik Moqvist
-# 
+#
 # Permission is hereby granted, free of charge, to any person
 # obtaining a copy of this software and associated documentation
 # files (the "Software"), to deal in the Software without
@@ -32,7 +32,8 @@ NAME = timer_suite
 TYPE = suite
 BOARD ?= linux
 
-CDEFS += CONFIG_MINIMAL_SYSTEM=1 \
+CDEFS += \
+	CONFIG_MINIMAL_SYSTEM=1 \
 	CONFIG_FS_CMD_THRD_LIST=1
 
 SYNC_SRC += event.c

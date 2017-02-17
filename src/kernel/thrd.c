@@ -162,7 +162,6 @@ static THRD_STACK(idle_thrd_stack, CONFIG_THRD_IDLE_STACK_SIZE);
 void terminate(void)
 {
 #if CONFIG_THRD_TERMINATE == 1
-
     struct thrd_t *thrd_p, *prev_p;
 
     /* Remove the thread from the global list of threads. */
@@ -186,20 +185,14 @@ void terminate(void)
         thrd_p = thrd_p->next_p;
     }
 
-    sys_unlock();
-
-    sem_give(&thrd_self()->join_sem, 1);
-
-    sys_lock();
+    sem_give_isr(&thrd_self()->join_sem, 1);
     thrd_self()->state = THRD_STATE_TERMINATED;
     thrd_reschedule();
-    sys_unlock();
 
-#else
+    /* Should never come here. */
+#endif
 
     sys_stop(1);
-
-#endif
 }
 
 /**
@@ -355,7 +348,7 @@ static int cmd_list_cb(int argc,
     struct thrd_t *thrd_p;
 
     std_fprintf(chout_p,
-                FSTR("            NAME        STATE  PRIO"
+                CRSTR("            NAME        STATE  PRIO"
 #if CONFIG_THRD_CPU_USAGE == 1
                      "   CPU"
 #endif
@@ -371,7 +364,7 @@ static int cmd_list_cb(int argc,
 
     while (thrd_p != NULL) {
         std_fprintf(chout_p,
-                    FSTR("%16s %12s %5d"
+                    CRSTR("%16s %12s %5d"
 #if CONFIG_THRD_CPU_USAGE == 1
                          " %4u%%"
 #endif
@@ -417,7 +410,8 @@ static int cmd_set_log_mask_cb(int argc,
     long mask;
 
     if (argc != 3) {
-        std_fprintf(chout_p, FSTR("Usage: set_log_mask <thread name> <log mask>\r\n"));
+        std_fprintf(chout_p,
+                    CRSTR("Usage: set_log_mask <thread name> <log mask>\r\n"));
         return (-EINVAL);
     }
 
@@ -470,7 +464,7 @@ int thrd_module_init(void)
               sizeof(stack_heap_buffer),
               &stack_heap_fixed_buffer_sizes[0]);
 #endif
-    
+
 #if CONFIG_THRD_ENV == 1
     module.env.global.variables_p = module.env.global_variables;
     module.env.global.number_of_variables = 0;
@@ -539,7 +533,7 @@ int thrd_module_init(void)
 
 #if CONFIG_FS_CMD_THRD_LIST == 1
     fs_command_init(&module.cmd_list,
-                    FSTR("/kernel/thrd/list"),
+                    CSTR("/kernel/thrd/list"),
                     cmd_list_cb,
                     NULL);
     fs_command_register(&module.cmd_list);
@@ -547,7 +541,7 @@ int thrd_module_init(void)
 
 #if CONFIG_FS_CMD_THRD_SET_LOG_MASK == 1
     fs_command_init(&module.cmd_set_log_mask,
-                    FSTR("/kernel/thrd/set_log_mask"),
+                    CSTR("/kernel/thrd/set_log_mask"),
                     cmd_set_log_mask_cb,
                     NULL);
     fs_command_register(&module.cmd_set_log_mask);
@@ -555,13 +549,13 @@ int thrd_module_init(void)
 
 #if CONFIG_MONITOR_THREAD == 1
     fs_command_init(&module.cmd_monitor_set_period_ms,
-                    FSTR("/kernel/thrd/monitor/set_period_ms"),
+                    CSTR("/kernel/thrd/monitor/set_period_ms"),
                     cmd_monitor_set_period_ms_cb,
                     NULL);
     fs_command_register(&module.cmd_monitor_set_period_ms);
 
     fs_command_init(&module.cmd_monitor_set_print,
-                    FSTR("/kernel/thrd/monitor/set_print"),
+                    CSTR("/kernel/thrd/monitor/set_print"),
                     cmd_monitor_set_print_cb,
                     NULL);
     fs_command_register(&module.cmd_monitor_set_print);

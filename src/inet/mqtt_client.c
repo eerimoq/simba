@@ -2,9 +2,9 @@
  * @section License
  *
  * The MIT License (MIT)
- * 
+ *
  * Copyright (c) 2014-2016, Erik Moqvist
- * 
+ *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
  * files (the "Software"), to deal in the Software without
@@ -96,7 +96,7 @@ static int write_fixed_header(struct mqtt_client_t *self_p,
 
     log_object_print(self_p->log_object_p,
                      LOG_DEBUG,
-                     FSTR("Writing MQTT message '%s' to the server.\r\n"),
+                     LSTR("Writing MQTT message '%s' to the server.\r\n"),
                      message_fmt[type]);
 
     buf[0] = (type << 4) | flags;
@@ -701,7 +701,7 @@ static int read_server_message(struct mqtt_client_t *self_p)
 
     log_object_print(self_p->log_object_p,
                      LOG_DEBUG,
-                     FSTR("Read MQTT message '%s' from the server.\r\n"),
+                     LSTR("Read MQTT message '%s' from the server.\r\n"),
                      message_fmt[type]);
 
     switch (type) {

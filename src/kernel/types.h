@@ -2,9 +2,9 @@
  * @section License
  *
  * The MIT License (MIT)
- * 
+ *
  * Copyright (c) 2014-2016, Erik Moqvist
- * 
+ *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
  * files (the "Software"), to deal in the Software without
@@ -159,6 +159,16 @@
 
 #define BITFIELD_GET(name, value)               \
     (((value) & name ## _MASK) >> name ## _POS)
+
+#if defined(SIMBAPP)
+#    define LSTR(string) __simbapp_fmtstr_begin__ string __simbapp_fmtstr_end__
+#    define CSTR(string) __simbapp_cmdstr_begin__ string __simbapp_cmdstr_end__
+#    define CRSTR(string) __simbapp_fmtstr_begin__ string __simbapp_fmtstr_end__
+#else
+#    define LSTR(string) FSTR(string)
+#    define CSTR(string) FSTR(string)
+#    define CRSTR(string) FSTR(string)
+#endif
 
 typedef uint8_t u8_t;
 typedef int8_t s8_t;

@@ -2,9 +2,9 @@
  * @section License
  *
  * The MIT License (MIT)
- * 
+ *
  * Copyright (c) 2014-2016, Erik Moqvist
- * 
+ *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
  * files (the "Software"), to deal in the Software without
@@ -127,13 +127,15 @@ uint32_t crc_32(uint32_t crc, const void *buf_p, size_t size)
     return (crc ^ ~0ul);
 }
 
+#if CONFIG_CRC_TABLE_LOOKUP == 1
+
 uint16_t crc_ccitt(uint16_t crc, const void *buf_p, size_t size)
 {
     ASSERTN(buf_p != NULL, EINVAL);
 
     size_t i;
     const uint8_t *b_p;
-        
+
     b_p = buf_p;
 
     for (i = 0; i < size; i++) {
@@ -142,6 +144,34 @@ uint16_t crc_ccitt(uint16_t crc, const void *buf_p, size_t size)
 
     return (crc);
 }
+
+#else
+
+uint16_t crc_ccitt(uint16_t crc, const void *buf_p, size_t size)
+{
+    ASSERTN(buf_p != NULL, EINVAL);
+
+    size_t i;
+    uint8_t msb;
+    uint8_t lsb;
+    const uint8_t *b_p;
+    uint8_t x;
+
+    msb = (crc >> 8);
+    lsb = (crc & 0xff);
+    b_p = buf_p;
+
+    for (i = 0; i < size; i++) {
+        x = (b_p[i] ^ msb);
+        x ^= (x >> 4);
+        msb = ((lsb ^ (x >> 3) ^ (x << 4)) & 0xff);
+        lsb = ((x ^ (x << 5)) & 0xff);
+    }
+
+    return ((msb << 8) + lsb);
+}
+
+#endif
 
 uint16_t crc_xmodem(uint16_t crc, const void *buf_p, size_t size)
 {
@@ -169,4 +199,3 @@ uint8_t crc_7(const void* buf_p, size_t size)
 
     return (crc | 1);
 }
-

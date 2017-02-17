@@ -2,9 +2,9 @@
  * @section License
  *
  * The MIT License (MIT)
- * 
+ *
  * Copyright (c) 2014-2016, Erik Moqvist
- * 
+ *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
  * files (the "Software"), to deal in the Software without
@@ -119,5 +119,57 @@ int uart_stop(struct uart_driver_t *self_p);
  */
 #define uart_write(self_p, buf_p, size)                  \
     (self_p)->chout.write(&(self_p)->chout, buf_p, size)
+
+/**
+ * Starts the UART device using given configration. The UART device
+ * group of functions does not use interrupts, but instead polls the
+ * hardware for events. The driver and device functions may not be
+ * used for the same UART device.
+ *
+ * @param[in] dev_p UART device to start.
+ * @param[in] baudrate Baudrate.
+ *
+ * @return zero(0) or negative error code.
+ */
+int uart_device_start(struct uart_device_t *dev_p,
+                      long baudrate);
+
+/**
+ * Stops given UART device.
+ *
+ * @param[in] dev_p UART device to stop.
+ *
+ * @return zero(0) or negative error code.
+ */
+int uart_device_stop(struct uart_device_t *dev_p);
+
+/**
+ * Read data from the UART. This function does not wait for
+ * interrupts, but instead busy-waits for data by polling UART
+ * registers.
+ *
+ * @param[in] dev_p UART device to read from.
+ * @param[in] buf_p Buffer to read into.
+ * @param[in] size Number of bytes to receive.
+ *
+ * @return Number of received bytes or negative error code.
+ */
+ssize_t uart_device_read(struct uart_device_t *dev_p,
+                         void *buf_p,
+                         size_t size);
+
+/**
+ * Write data to the UART. This function does not wait for interrupts,
+ * but instead busy-waits for data by polling UART registers.
+ *
+ * @param[in] dev_p UART device to write to.
+ * @param[in] buf_p Buffer to write.
+ * @param[in] size Number of bytes to write.
+ *
+ * @return Number of written bytes or negative error code.
+ */
+ssize_t uart_device_write(struct uart_device_t *dev_p,
+                          const void *buf_p,
+                          size_t size);
 
 #endif

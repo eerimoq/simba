@@ -2,9 +2,9 @@
  * @section License
  *
  * The MIT License (MIT)
- * 
+ *
  * Copyright (c) 2014-2016, Erik Moqvist
- * 
+ *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
  * files (the "Software"), to deal in the Software without
@@ -122,6 +122,31 @@ static int test_read_write(struct harness_t *harness_p)
                         (uint32_t *)ram_address,
                         flash_address, 1) == 1);
     BTASSERT(strcmp((void *)ram_address, "") == 0);
+
+    return (0);
+}
+
+#elif defined(BOARD_SPC56DDISCOVERY)
+
+static int test_read_write(struct harness_t *harness_p)
+{
+    struct flash_driver_t drv;
+    char name[] = "Kalle kula";
+    char buf[16];
+    uint32_t address;
+
+    BTASSERT(flash_init(&drv, &flash_device[1]) == 0);
+
+    /* Write and read over a 8 bytes boundary. */
+    address = (SPC5_DFLASH_ADDRESS + 7);
+
+    BTASSERT(flash_erase(&drv, address, sizeof(name)) == 0);
+    BTASSERT(flash_write(&drv, address, name, sizeof(name)) == sizeof(name));
+
+    memset(buf, 0, sizeof(buf));
+    BTASSERT(flash_read(&drv, buf, address, sizeof(buf)) == sizeof(buf));
+
+    BTASSERT(strcmp(name, buf) == 0);
 
     return (0);
 }

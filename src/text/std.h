@@ -2,9 +2,9 @@
  * @section License
  *
  * The MIT License (MIT)
- * 
+ *
  * Copyright (c) 2014-2016, Erik Moqvist
- * 
+ *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
  * files (the "Software"), to deal in the Software without
@@ -180,6 +180,16 @@ ssize_t std_vfprintf(void *chan_p, FAR const char *fmt_p, va_list *ap_p);
  * @return Pointer to the next byte or NULL on failure.
  */
 const char *std_strtol(const char *str_p, long *value_p);
+
+/**
+ * Convert string to double.
+ *
+ * @param[in] str_p Double string.
+ * @param[out] value_p Double value.
+ *
+ * @return Pointer to the next byte or NULL on failure.
+ */
+const char *std_strtod(const char *str_p, double *value_p);
 
 /**
  * Copy string from far memory to memory.

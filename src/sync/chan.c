@@ -36,7 +36,8 @@ static const struct chan_t null = {
     .read = chan_read_null,
     .write = chan_write_null,
     .write_isr = chan_write_null,
-    .size = chan_size_null
+    .size = chan_size_null,
+    .control = chan_control_null
 };
 
 int chan_module_init(void)
@@ -58,6 +59,7 @@ int chan_init(struct chan_t *self_p,
     self_p->write = write;
     self_p->write_isr = chan_write_null;
     self_p->size = size;
+    self_p->control = chan_control_null;
     self_p->write_filter_cb = NULL;
     self_p->write_filter_isr_cb = NULL;
     self_p->writer_p = NULL;
@@ -127,6 +129,20 @@ int chan_list_destroy(struct chan_list_t *list_p)
     return (0);
 }
 
+int chan_set_control_cb(struct chan_t *self_p,
+                        chan_control_fn_t control_cb)
+{
+    ASSERTN(self_p != NULL, -EINVAL);
+
+    if (control_cb == NULL) {
+        control_cb = chan_control_null;
+    }
+
+    self_p->control = control_cb;
+
+    return (0);
+}
+
 ssize_t chan_read(void *self_p,
                   void *buf_p,
                   size_t size)
@@ -159,6 +175,14 @@ ssize_t chan_write(void *v_self_p,
     }
 
     return (self_p->write(self_p, buf_p, size));
+}
+
+int chan_control(void *self_p,
+                 int operation)
+{
+    ASSERTN(self_p != NULL, -EINVAL);
+
+    return (((struct chan_t *)self_p)->control(self_p, operation));
 }
 
 RAM_CODE ssize_t chan_write_isr(void *self_in_p,
@@ -312,6 +336,11 @@ size_t chan_size_null(void *self_p)
 {
     /* Set to 1 because read will return immediately. */
     return (1);
+}
+
+int chan_control_null(void *self_p, int operation)
+{
+    return (0);
 }
 
 RAM_CODE int chan_is_polled_isr(struct chan_t *self_p)

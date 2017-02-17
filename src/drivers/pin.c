@@ -62,7 +62,7 @@ static int cmd_set_mode_cb(int argc,
     int mode;
 
     if (argc != 3) {
-        std_fprintf(out_p, FSTR("Usage: %s <pin> <mode>\r\n"),
+        std_fprintf(out_p, CRSTR("Usage: %s <pin> <mode>\r\n"),
                     argv[0]);
 
         return (-EINVAL);
@@ -72,7 +72,7 @@ static int cmd_set_mode_cb(int argc,
     pin = board_pin_string_to_device_index(argv[1]);
 
     if (pin == -1) {
-        std_fprintf(out_p, FSTR("%s: bad pin\r\n"), argv[1]);
+        std_fprintf(out_p, CRSTR("%s: bad pin\r\n"), argv[1]);
 
         return (-EINVAL);
     }
@@ -83,7 +83,7 @@ static int cmd_set_mode_cb(int argc,
     } else if (strcmp(argv[2], "input") == 0) {
         mode = PIN_INPUT;
     } else {
-        std_fprintf(out_p, FSTR("%s: bad mode\r\n"), argv[2]);
+        std_fprintf(out_p, CRSTR("%s: bad mode\r\n"), argv[2]);
 
         return (-EINVAL);
     }
@@ -108,7 +108,7 @@ static int cmd_read_cb(int argc,
     int value;
 
     if (argc != 2) {
-        std_fprintf(out_p, FSTR("Usage: %s <pin>\r\n"), argv[0]);
+        std_fprintf(out_p, CRSTR("Usage: %s <pin>\r\n"), argv[0]);
 
         return (-EINVAL);
     }
@@ -117,7 +117,7 @@ static int cmd_read_cb(int argc,
     pin = board_pin_string_to_device_index(argv[1]);
 
     if (pin == -1) {
-        std_fprintf(out_p, FSTR("%s: bad pin\r\n"), argv[1]);
+        std_fprintf(out_p, CRSTR("%s: bad pin\r\n"), argv[1]);
 
         return (-EINVAL);
     }
@@ -125,9 +125,9 @@ static int cmd_read_cb(int argc,
     value = pin_device_read(&pin_device[pin]);
 
     if (value == 1) {
-        std_fprintf(out_p, FSTR("high\r\n"));
+        std_fprintf(out_p, CRSTR("high\r\n"));
     } else {
-        std_fprintf(out_p, FSTR("low\r\n"));
+        std_fprintf(out_p, CRSTR("low\r\n"));
     }
 
     return (0);
@@ -147,7 +147,7 @@ static int cmd_write_cb(int argc,
     int pin;
 
     if (argc != 3) {
-        std_fprintf(out_p, FSTR("Usage: %s <pin> <value>\r\n"), argv[0]);
+        std_fprintf(out_p, CRSTR("Usage: %s <pin> <value>\r\n"), argv[0]);
 
         return (-EINVAL);
     }
@@ -156,7 +156,7 @@ static int cmd_write_cb(int argc,
     pin = board_pin_string_to_device_index(argv[1]);
 
     if (pin == -1) {
-        std_fprintf(out_p, FSTR("%s: bad pin\r\n"), argv[1]);
+        std_fprintf(out_p, CRSTR("%s: bad pin\r\n"), argv[1]);
 
         return (-EINVAL);
     }
@@ -167,7 +167,7 @@ static int cmd_write_cb(int argc,
     } else if (strcmp(argv[2], "low") == 0) {
         pin_device_write_low(&pin_device[pin]);
     } else {
-        std_fprintf(out_p, FSTR("Bad value '%s',\r\n"), argv[2]);
+        std_fprintf(out_p, CRSTR("Bad value '%s',\r\n"), argv[2]);
 
         return (-EINVAL);
     }
@@ -189,7 +189,7 @@ int pin_module_init(void)
 #if CONFIG_FS_CMD_PIN_SET_MODE == 1
 
     fs_command_init(&module.cmd_set_mode,
-                    FSTR("/drivers/pin/set_mode"),
+                    CSTR("/drivers/pin/set_mode"),
                     cmd_set_mode_cb,
                     NULL);
     fs_command_register(&module.cmd_set_mode);
@@ -199,7 +199,7 @@ int pin_module_init(void)
 #if CONFIG_FS_CMD_PIN_READ == 1
 
     fs_command_init(&module.cmd_read,
-                    FSTR("/drivers/pin/read"),
+                    CSTR("/drivers/pin/read"),
                     cmd_read_cb,
                     NULL);
     fs_command_register(&module.cmd_read);
@@ -209,7 +209,7 @@ int pin_module_init(void)
 #if CONFIG_FS_CMD_PIN_WRITE == 1
 
     fs_command_init(&module.cmd_write,
-                    FSTR("/drivers/pin/write"),
+                    CSTR("/drivers/pin/write"),
                     cmd_write_cb,
                     NULL);
     fs_command_register(&module.cmd_write);

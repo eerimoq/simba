@@ -4,9 +4,9 @@
     * @section License
     *
     * The MIT License (MIT)
-    * 
+    *
     * Copyright (c) 2014-2016, Erik Moqvist
-    * 
+    *
     * Permission is hereby granted, free of charge, to any person
     * obtaining a copy of this software and associated documentation
     * files (the "Software"), to deal in the Software without
@@ -48,7 +48,7 @@
                                  void *call_arg_p)
    {
        /* Write "Hello World!" to the output channel. */
-       std_fprintf(out_p, FSTR("Hello World!\r\n"));
+       std_fprintf(out_p, CRSTR("Hello World!\r\n"));
    
        return (0);
    }
@@ -62,7 +62,7 @@
    
        /* Register the hello world command. */
        fs_command_init(&cmd_hello_world,
-                       FSTR("/hello_world"),
+                       CSTR("/hello_world"),
                        cmd_hello_world_cb,
                        NULL);
        fs_command_register(&cmd_hello_world);

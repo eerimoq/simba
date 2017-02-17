@@ -2,9 +2,9 @@
  * @section License
  *
  * The MIT License (MIT)
- * 
+ *
  * Copyright (c) 2014-2016, Erik Moqvist
- * 
+ *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
  * files (the "Software"), to deal in the Software without
@@ -302,7 +302,7 @@ int music_player_set_bits_per_sample(struct music_player_t *self_p,
 
     log_object_print(NULL,
                      LOG_INFO,
-                     FSTR("down_sampling_mask = 0x%lx\r\n"),
+                     LSTR("down_sampling_mask = 0x%lx\r\n"),
                      self_p->down_sampling_mask);
 
     return (0);

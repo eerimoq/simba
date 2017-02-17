@@ -2,9 +2,9 @@
  * @section License
  *
  * The MIT License (MIT)
- * 
+ *
  * Copyright (c) 2014-2016, Erik Moqvist
- * 
+ *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
  * files (the "Software"), to deal in the Software without
@@ -223,7 +223,9 @@ extern "C" {
 #ifdef PORT_HAS_RANDOM
 #    include "drivers/random.h"
 #endif
-    
+
+#include "drivers/isotp.h"
+
 #include "debug/harness.h"
 
 #include "multimedia/midi.h"
@@ -234,6 +236,7 @@ extern "C" {
 #    include "inet/ssl.h"
 #endif
 
+#include "inet/slip.h"
 #include "inet/http_server.h"
 #include "inet/http_websocket_server.h"
 #include "inet/http_websocket_client.h"
@@ -243,6 +246,8 @@ extern "C" {
 #include "inet/network_interface/slip.h"
 #include "inet/network_interface/wifi.h"
 #include "inet/ping.h"
+
+#include "oam/soam.h"
 
 #if defined(FAMILY_ESP) || defined(FAMILY_ESP32)
 #    include "inet/network_interface/driver/esp.h"

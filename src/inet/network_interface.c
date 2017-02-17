@@ -2,9 +2,9 @@
  * @section License
  *
  * The MIT License (MIT)
- * 
+ *
  * Copyright (c) 2014-2016, Erik Moqvist
- * 
+ *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
  * files (the "Software"), to deal in the Software without
@@ -55,7 +55,7 @@ static int cmd_list_cb(int argc,
     char buf[16];
 
     /* Print the title. */
-    std_fprintf(out_p, FSTR("NAME            "
+    std_fprintf(out_p, CRSTR("NAME            "
                             "STATE  "
                             "ADDRESS          "
                             "  TX BYTES  "
@@ -69,7 +69,7 @@ static int cmd_list_cb(int argc,
         network_interface_get_ip_info(network_interface_p, &info);
         
         std_fprintf(out_p,
-                    FSTR("%-14s  %-5s  %-15s  %10s  %10s\r\n"),
+                    CRSTR("%-14s  %-5s  %-15s  %10s  %10s\r\n"),
                     network_interface_p->name_p,
                     (network_interface_p->is_up(network_interface_p)
                      ? "up"
@@ -98,7 +98,7 @@ int network_interface_module_init()
 #if CONFIG_FS_CMD_NETWORK_INTERFACE_LIST == 1
 
     fs_command_init(&module.cmd_list,
-                    FSTR("/inet/network_interface/list"),
+                    CSTR("/inet/network_interface/list"),
                     cmd_list_cb,
                     NULL);
     fs_command_register(&module.cmd_list);

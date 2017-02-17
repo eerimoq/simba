@@ -44,7 +44,7 @@ int main()
 
     log_object_print(NULL,
                      LOG_INFO,
-                     FSTR("staying in the bootloader\r\n"));
+                     LSTR("staying in the bootloader\r\n"));
 
     upgrade_module_init();
 

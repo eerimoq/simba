@@ -2,9 +2,9 @@
 # @section License
 #
 # The MIT License (MIT)
-# 
+#
 # Copyright (c) 2014-2016, Erik Moqvist
-# 
+#
 # Permission is hereby granted, free of charge, to any person
 # obtaining a copy of this software and associated documentation
 # files (the "Software"), to deal in the Software without
@@ -45,6 +45,7 @@ endif
 
 CDEFS += \
 	CONFIG_MINIMAL_SYSTEM=1 \
+	CONFIG_MODULE_INIT_LOG=1 \
 	CONFIG_ESP_WIFI=1 \
 	CONFIG_START_NETWORK=1 \
 	CONFIG_FS_CMD_THRD_LIST=1 \

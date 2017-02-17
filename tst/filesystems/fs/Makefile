@@ -2,9 +2,9 @@
 # @section License
 #
 # The MIT License (MIT)
-# 
+#
 # Copyright (c) 2014-2016, Erik Moqvist
-# 
+#
 # Permission is hereby granted, free of charge, to any person
 # obtaining a copy of this software and associated documentation
 # files (the "Software"), to deal in the Software without
@@ -46,7 +46,8 @@ CDEFS += CONFIG_MINIMAL_SYSTEM=1 \
 	CONFIG_SPIFFS=1 \
 	CONFIG_FILESYSTEM_GENERIC=1 \
 	CONFIG_THRD_ENV=1 \
-	CONFIG_FS_CMD_THRD_LIST=1
+	CONFIG_FS_CMD_THRD_LIST=1 \
+	CONFIG_MODULE_INIT_FS=1
 
 FILESYSTEMS_SRC = fat16.c spiffs.c
 SPIFFS_SRC = \

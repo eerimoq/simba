@@ -2,9 +2,9 @@
  * @section License
  *
  * The MIT License (MIT)
- * 
+ *
  * Copyright (c) 2014-2016, Erik Moqvist
- * 
+ *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
  * files (the "Software"), to deal in the Software without
@@ -78,13 +78,13 @@ static int cmd_print_cb(int argc,
                         void *call_arg_p)
 {
     if (argc != 2) {
-        std_fprintf(out_p, FSTR("Usage: print <string>\r\n"));
+        std_fprintf(out_p, CRSTR("Usage: print <string>\r\n"));
 
         return (-EINVAL);
     }
 
     /* Write the argument to the log. */
-    log_object_print(&module.object, LOG_INFO, FSTR("%s\r\n"), argv[1]);
+    log_object_print(&module.object, LOG_INFO, LSTR("%s\r\n"), argv[1]);
 
     return (0);
 }
@@ -106,20 +106,20 @@ static int cmd_list_cb(int argc,
     struct log_object_t *object_p;
 
     if (argc != 1) {
-        std_fprintf(out_p, FSTR("Usage: list\r\n"));
+        std_fprintf(out_p, CRSTR("Usage: list\r\n"));
 
         return (-EINVAL);
     }
 
     sem_take(&module.sem, NULL);
 
-    std_fprintf(out_p, FSTR("OBJECT-NAME       MASK\r\n"));
+    std_fprintf(out_p, CRSTR("OBJECT-NAME       MASK\r\n"));
 
     object_p = &module.object;
 
     while (object_p != NULL) {
         std_fprintf(out_p,
-                    FSTR("%-16s  0x%02x\r\n"),
+                    CRSTR("%-16s  0x%02x\r\n"),
                     object_p->name_p,
                     (int)object_p->mask);
 
@@ -151,13 +151,13 @@ static int cmd_set_log_mask_cb(int argc,
     const char *name_p;
 
     if (argc != 3) {
-        std_fprintf(out_p, FSTR("Usage: set_log_mask <obejct> <mask>\r\n"));
+        std_fprintf(out_p, CRSTR("Usage: set_log_mask <obejct> <mask>\r\n"));
 
         return (-EINVAL);
     }
 
     if (std_strtol(argv[2], &mask) == NULL) {
-        std_fprintf(out_p, FSTR("bad mask %s\r\n"), argv[2]);
+        std_fprintf(out_p, CRSTR("bad mask %s\r\n"), argv[2]);
 
         return (-EINVAL);
     }
@@ -184,7 +184,7 @@ static int cmd_set_log_mask_cb(int argc,
 
     if (found == 0) {
         std_fprintf(out_p,
-                    FSTR("warning: no log object with name %s\r\n"),
+                    CRSTR("warning: no log object with name %s\r\n"),
                     name_p);
 
         return (-EINVAL);
@@ -217,7 +217,7 @@ int log_module_init()
 
     /* Setup shell commands. */
     fs_command_init(&module.cmd_print,
-                    FSTR("/debug/log/print"),
+                    CSTR("/debug/log/print"),
                     cmd_print_cb,
                     NULL);
     fs_command_register(&module.cmd_print);
@@ -227,7 +227,7 @@ int log_module_init()
 #if CONFIG_FS_CMD_LOG_LIST == 1
 
     fs_command_init(&module.cmd_list,
-                    FSTR("/debug/log/list"),
+                    CSTR("/debug/log/list"),
                     cmd_list_cb,
                     NULL);
     fs_command_register(&module.cmd_list);
@@ -237,7 +237,7 @@ int log_module_init()
 #if CONFIG_FS_CMD_LOG_SET_LOG_MASK == 1
 
     fs_command_init(&module.cmd_set_log_mask,
-                    FSTR("/debug/log/set_log_mask"),
+                    CSTR("/debug/log/set_log_mask"),
                     cmd_set_log_mask_cb,
                     NULL);
     fs_command_register(&module.cmd_set_log_mask);
@@ -431,6 +431,8 @@ int log_object_print(struct log_object_t *self_p,
         chout_p = handler_p->chout_p;
 
         if (chout_p != NULL) {
+            chan_control(chout_p, CHAN_CONTROL_LOG_BEGIN);
+
             /* Write the header. */
             std_fprintf(chout_p, FSTR("%lu:"), now.seconds);
             std_fprintf(chout_p, level_as_string[level]);
@@ -443,6 +445,8 @@ int log_object_print(struct log_object_t *self_p,
             va_start(ap, fmt_p);
             std_vfprintf(chout_p, fmt_p, &ap);
             va_end(ap);
+
+            chan_control(chout_p, CHAN_CONTROL_LOG_END);
 
             count++;
         }

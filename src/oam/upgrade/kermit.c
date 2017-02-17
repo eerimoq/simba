@@ -336,7 +336,7 @@ int upgrade_kermit_init(void *chin_p,
     module.chout_p = chout_p;
 
     fs_command_init(&cmd_application_kermit_load,
-                    FSTR("/oam/upgrade/kermit/upload"),
+                    CSTR("/oam/upgrade/kermit/upload"),
                     cmd_application_kermit_load_cb,
                     NULL);
     fs_command_register(&cmd_application_kermit_load);

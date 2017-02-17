@@ -2,9 +2,9 @@
  * @section License
  *
  * The MIT License (MIT)
- * 
+ *
  * Copyright (c) 2014-2016, Erik Moqvist
- * 
+ *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
  * files (the "Software"), to deal in the Software without
@@ -332,21 +332,21 @@ static int cmd_list_cb(int argc,
     int number;
 
     if (argc != 1) {
-        std_fprintf(out_p, FSTR("Usage: %s\r\n"), argv[0]);
+        std_fprintf(out_p, CRSTR("Usage: %s\r\n"), argv[0]);
 
         return (1);
     }
 
     /* Write the header. */
     std_fprintf(out_p,
-                FSTR("NUMBER            NAME  LENGTH\r\n"));
+                CRSTR("NUMBER            NAME  LENGTH\r\n"));
 
     /* Iterate over all songs in the ordered hash map. */
     for (number = FIRST_SONG_NUMBER;
          ((song_p = hash_map_get(&song_map, number)) != NULL);
          number++) {
         std_fprintf(out_p,
-                    FSTR("%6d %15s %4d:%02d\r\n"),
+                    CRSTR("%6d %15s %4d:%02d\r\n"),
                     song_p->number,
                     song_p->name,
                     song_p->minutes,
@@ -367,7 +367,7 @@ static int cmd_play_cb(int argc,
     struct song_t *song_p;
 
     if (argc > 2) {
-        std_fprintf(out_p, FSTR("Usage: %s [<song number>]\r\n"), argv[0]);
+        std_fprintf(out_p, CRSTR("Usage: %s [<song number>]\r\n"), argv[0]);
 
         return (-EINVAL);
     }
@@ -403,7 +403,7 @@ static int cmd_pause_cb(int argc,
                         void *call_arg_p)
 {
     if (argc != 1) {
-        std_fprintf(out_p, FSTR("Usage: %s\r\n"), argv[0]);
+        std_fprintf(out_p, CRSTR("Usage: %s\r\n"), argv[0]);
 
         return (-EINVAL);
     }
@@ -419,7 +419,7 @@ static int cmd_next_cb(int argc,
                        void *call_arg_p)
 {
     if (argc != 1) {
-        std_fprintf(out_p, FSTR("Usage: %s\r\n"), argv[0]);
+        std_fprintf(out_p, CRSTR("Usage: %s\r\n"), argv[0]);
 
         return (-EINVAL);
     }
@@ -435,7 +435,7 @@ static int cmd_prev_cb(int argc,
                        void *call_arg_p)
 {
     if (argc != 1) {
-        std_fprintf(out_p, FSTR("Usage: %s\r\n"), argv[0]);
+        std_fprintf(out_p, CRSTR("Usage: %s\r\n"), argv[0]);
 
         return (-EINVAL);
     }
@@ -451,7 +451,7 @@ static int cmd_stop_cb(int argc,
                        void *call_arg_p)
 {
     if (argc != 1) {
-        std_fprintf(out_p, FSTR("Usage: %s\r\n"), argv[0]);
+        std_fprintf(out_p, CRSTR("Usage: %s\r\n"), argv[0]);
 
         return (-EINVAL);
     }
@@ -467,7 +467,7 @@ static int cmd_repeat_cb(int argc,
                          void *call_arg_p)
 {
     if (argc != 1) {
-        std_fprintf(out_p, FSTR("Usage: %s\r\n"), argv[0]);
+        std_fprintf(out_p, CRSTR("Usage: %s\r\n"), argv[0]);
 
         return (-EINVAL);
     }
@@ -487,21 +487,21 @@ static int cmd_set_bits_per_sample_cb(int argc,
     long bits_per_sample;
 
     if (argc != 2) {
-        std_fprintf(out_p, FSTR("Usage: %s <number of bits>\r\n"),
+        std_fprintf(out_p, CRSTR("Usage: %s <number of bits>\r\n"),
                     argv[0]);
 
         return (-EINVAL);
     }
 
     if (std_strtol(argv[1], &bits_per_sample) != 0) {
-        std_fprintf(out_p, FSTR("Usage: %s <number of bits>\r\n"),
+        std_fprintf(out_p, CRSTR("Usage: %s <number of bits>\r\n"),
                     argv[0]);
 
         return (-EINVAL);
     }
 
     if ((bits_per_sample < 0) || (bits_per_sample > 12)) {
-        std_printf(FSTR("The number of bits per sample bust be "
+        std_printf(CRSTR("The number of bits per sample bust be "
                         "an interger from 0 to 12.\r\n"));
 
         return (-EINVAL);
@@ -532,22 +532,22 @@ static void init(void)
 
     std_printf(sys_get_info());
 
-    fs_command_init(&cmd_list, FSTR("/list"), cmd_list_cb, NULL);
+    fs_command_init(&cmd_list, CSTR("/list"), cmd_list_cb, NULL);
     fs_command_register(&cmd_list);
-    fs_command_init(&cmd_play, FSTR("/play"), cmd_play_cb, NULL);
+    fs_command_init(&cmd_play, CSTR("/play"), cmd_play_cb, NULL);
     fs_command_register(&cmd_play);
-    fs_command_init(&cmd_pause, FSTR("/pause"), cmd_pause_cb, NULL);
+    fs_command_init(&cmd_pause, CSTR("/pause"), cmd_pause_cb, NULL);
     fs_command_register(&cmd_pause);
-    fs_command_init(&cmd_next, FSTR("/next"), cmd_next_cb, NULL);
+    fs_command_init(&cmd_next, CSTR("/next"), cmd_next_cb, NULL);
     fs_command_register(&cmd_next);
-    fs_command_init(&cmd_prev, FSTR("/prev"), cmd_prev_cb, NULL);
+    fs_command_init(&cmd_prev, CSTR("/prev"), cmd_prev_cb, NULL);
     fs_command_register(&cmd_prev);
-    fs_command_init(&cmd_stop, FSTR("/stop"), cmd_stop_cb, NULL);
+    fs_command_init(&cmd_stop, CSTR("/stop"), cmd_stop_cb, NULL);
     fs_command_register(&cmd_stop);
-    fs_command_init(&cmd_repeat, FSTR("/repeat"), cmd_repeat_cb, NULL);
+    fs_command_init(&cmd_repeat, CSTR("/repeat"), cmd_repeat_cb, NULL);
     fs_command_register(&cmd_repeat);
     fs_command_init(&cmd_set_bits_per_sample,
-                    FSTR("/set_bits_per_sample"),
+                    CSTR("/set_bits_per_sample"),
                     cmd_set_bits_per_sample_cb,
                     NULL);
     fs_command_register(&cmd_set_bits_per_sample);

@@ -2,9 +2,9 @@
  * @section License
  *
  * The MIT License (MIT)
- * 
+ *
  * Copyright (c) 2014-2016, Erik Moqvist
- * 
+ *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
  * files (the "Software"), to deal in the Software without
@@ -73,7 +73,7 @@ static int cmd_list_cb(int argc,
     struct owi_device_t *dev_p;
     int i;
 
-    std_fprintf(chout_p, FSTR("              ID      TEMP\r\n"));
+    std_fprintf(chout_p, CRSTR("              ID      TEMP\r\n"));
 
     self_p = module.list_p;
 
@@ -88,7 +88,7 @@ static int cmd_list_cb(int argc,
             }
 
             std_fprintf(chout_p,
-                        FSTR("%02x%02x%02x%02x%02x%02x%02x%02x %9s\r\n"),
+                        CRSTR("%02x%02x%02x%02x%02x%02x%02x%02x %9s\r\n"),
                         (unsigned int)dev_p->id[0],
                         (unsigned int)dev_p->id[1],
                         (unsigned int)dev_p->id[2],
@@ -144,7 +144,7 @@ int ds18b20_module_init()
 #if CONFIG_FS_CMD_DS18B20_LIST == 1
 
     fs_command_init(&module.cmd_list,
-                    FSTR("/drivers/ds18b20/list"),
+                    CSTR("/drivers/ds18b20/list"),
                     cmd_list_cb,
                     NULL);
     fs_command_register(&module.cmd_list);

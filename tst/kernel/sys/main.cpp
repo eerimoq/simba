@@ -228,6 +228,6 @@ int main()
 
     harness_init(&harness);
     harness_run(&harness, harness_testcases);
-    
+
     return (0);
 }

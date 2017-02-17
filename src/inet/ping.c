@@ -2,9 +2,9 @@
  * @section License
  *
  * The MIT License (MIT)
- * 
+ *
  * Copyright (c) 2014-2016, Erik Moqvist
- * 
+ *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
  * files (the "Software"), to deal in the Software without
@@ -68,14 +68,14 @@ static int cmd_ping_cb(int argc,
     const char *remote_host_p;
     
     if (argc != 2) {
-        std_fprintf(out_p, FSTR("Usage: %s <remote host>\r\n"), argv[0]);
+        std_fprintf(out_p, CRSTR("Usage: %s <remote host>\r\n"), argv[0]);
         return (-1);
     }
 
     remote_host_p = argv[1];
     
     if (inet_aton(remote_host_p, &address) != 0) {
-        std_fprintf(out_p, FSTR("Bad ip address '%s'.\r\n"), remote_host_p);
+        std_fprintf(out_p, CRSTR("Bad ip address '%s'.\r\n"), remote_host_p);
         return (-1);
     }
 
@@ -88,11 +88,11 @@ static int cmd_ping_cb(int argc,
         round_trip_time_ms = (round_trip_time.seconds * 1000
                               + round_trip_time.nanoseconds / 1000000);
         std_fprintf(out_p,
-                    FSTR("Successfully pinged '%s' in %d ms.\r\n"),
+                    CRSTR("Successfully pinged '%s' in %d ms.\r\n"),
                     remote_host_p,
                     round_trip_time_ms);
     } else {
-        std_fprintf(out_p, FSTR("Failed to ping '%s'.\r\n"), remote_host_p);
+        std_fprintf(out_p, CRSTR("Failed to ping '%s'.\r\n"), remote_host_p);
     }
     
     return (0);
@@ -112,7 +112,7 @@ int ping_module_init(void)
 #if CONFIG_FS_CMD_PING_PING == 1
 
     fs_command_init(&module.cmd_ping,
-                    FSTR("/inet/ping/ping"),
+                    CSTR("/inet/ping/ping"),
                     cmd_ping_cb,
                     NULL);
     fs_command_register(&module.cmd_ping);

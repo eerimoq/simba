@@ -2,9 +2,9 @@
 # @section License
 #
 # The MIT License (MIT)
-# 
+#
 # Copyright (c) 2014-2016, Erik Moqvist
-# 
+#
 # Permission is hereby granted, free of charge, to any person
 # obtaining a copy of this software and associated documentation
 # files (the "Software"), to deal in the Software without
@@ -54,6 +54,7 @@ TIMEOUT ?= 100
 CDEFS += \
 	CONFIG_MINIMAL_SYSTEM=1 \
 	CONFIG_ESP_WIFI=1 \
+	CONFIG_MODULE_INIT_FS=1 \
 	CONFIG_FS_CMD_FS_COUNTERS_LIST=1 \
 	CONFIG_FS_CMD_NETWORK_INTERFACE_LIST=1 \
 	CONFIG_FS_CMD_ESP_WIFI_STATUS=1

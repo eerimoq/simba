@@ -1,7 +1,6 @@
-coverage:
-  ignore:
-    - "3pp/*"
-    - "examples/*"
-    - "src/boards/*"
-    - "src/drivers/*"
-    - "tst/*"
+ignore:
+  - "3pp"
+  - "examples"
+  - "src/boards"
+  - "src/drivers"
+  - "tst"

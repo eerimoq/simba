@@ -2,9 +2,9 @@
  * @section License
  *
  * The MIT License (MIT)
- * 
+ *
  * Copyright (c) 2014-2016, Erik Moqvist
- * 
+ *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
  * files (the "Software"), to deal in the Software without
@@ -173,7 +173,7 @@ char *configfile_get(struct configfile_t *self_p,
                         if (value_length == (length - 1)) {
                             return (NULL);
                         }
-                        
+
                         value_p[value_length] = *buf_p;
                         value_length++;
                     }
@@ -231,7 +231,8 @@ int configfile_get_float(struct configfile_t *self_p,
                          float *value_p)
 {
     char buf[32];
-    char *next_p;
+    const char *next_p;
+    double value;
 
     /* Get the property value as a string. */
     if (configfile_get(self_p, section_p, property_p, buf, sizeof(buf)) == NULL) {
@@ -239,9 +240,10 @@ int configfile_get_float(struct configfile_t *self_p,
     }
 
     /* Convert the property value string to a float. */
-    *value_p = strtod(buf, &next_p);
+    next_p = std_strtod(buf, &value);
+    *value_p = value;
 
-    if ((buf == next_p) || (*next_p != '\0')) {
+    if ((next_p == NULL) || (*next_p != '\0')) {
         return (-1);
     }
 

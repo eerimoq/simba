@@ -2,9 +2,9 @@
  * @section License
  *
  * The MIT License (MIT)
- * 
+ *
  * Copyright (c) 2014-2016, Erik Moqvist
- * 
+ *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
  * files (the "Software"), to deal in the Software without
@@ -31,6 +31,7 @@
 #include "simba.h"
 #include <stdarg.h>
 #include <limits.h>
+#include <math.h>
 
 /* +7 for floating point decimal point and fraction. */
 #define VALUE_BUF_MAX (3 * sizeof(long) + 7)
@@ -47,6 +48,17 @@ struct snprintf_output_t {
     size_t size;
     size_t size_max;
 };
+
+static char *skipwhite(const char *q_p)
+{
+    char *p_p = (char *)q_p;
+
+    while (isspace((int)*p_p)) {
+        p_p++;
+    }
+
+    return (p_p);
+}
 
 /**
  * @return true(1) if the character is part of the string, otherwise
@@ -200,6 +212,8 @@ static char *formati(char c,
     return (str_p);
 }
 
+#if CONFIG_STD_FORMAT_FLOAT == 1
+
 static char *formatf(char c,
                      char *str_p,
                      va_list *ap_p,
@@ -257,6 +271,8 @@ static char *formatf(char c,
     return (str_p);
 }
 
+#endif
+
 static void vcprintf(void (*std_putc)(char c, void *arg_p),
                      void *arg_p,
                      FAR const char *fmt_p,
@@ -307,25 +323,34 @@ static void vcprintf(void (*std_putc)(char c, void *arg_p),
 
         /* Parse the specifier. */
         negative_sign = 0;
+
         switch (c) {
+
         case 's':
             s_p = va_arg(*ap_p, char*);
             break;
+
         case 'c':
             buf[sizeof(buf) - 2] = (char)va_arg(*ap_p, int);
             s_p = &buf[sizeof(buf) - 2];
             break;
+
         case 'i':
         case 'd':
         case 'u':
             s_p = formati(c, &buf[sizeof(buf) - 1], 10, ap_p, length, &negative_sign);
             break;
+
         case 'x':
             s_p = formati(c, &buf[sizeof(buf) - 1], 16, ap_p, length, &negative_sign);
             break;
+
+#if CONFIG_STD_FORMAT_FLOAT == 1
         case 'f':
             s_p = formatf(c, &buf[sizeof(buf) - 1], ap_p, length, &negative_sign);
             break;
+#endif
+
         default:
             std_putc(c, arg_p);
             continue;
@@ -333,6 +358,16 @@ static void vcprintf(void (*std_putc)(char c, void *arg_p),
 
         formats(std_putc, arg_p, s_p, flags, width, negative_sign);
     }
+}
+
+static void cvcprintf(struct buffered_output_t *output_p,
+                      FAR const char *fmt_p,
+                      va_list *ap_p)
+{
+    chan_control(output_p->chan_p, CHAN_CONTROL_PRINTF_BEGIN);
+    vcprintf(fprintf_putc, output_p, fmt_p, ap_p);
+    output_flush(output_p);
+    chan_control(output_p->chan_p, CHAN_CONTROL_PRINTF_END);
 }
 
 int std_module_init(void)
@@ -414,9 +449,8 @@ ssize_t std_printf(far_string_t fmt_p, ...)
 
     if (output.chan_p != NULL) {
         va_start(ap, fmt_p);
-        vcprintf(fprintf_putc, &output, fmt_p, &ap);
+        cvcprintf(&output, fmt_p, &ap);
         va_end(ap);
-        output_flush(&output);
     }
 
     return (output.size);
@@ -434,8 +468,7 @@ ssize_t std_vprintf(FAR const char *fmt_p, va_list *ap_p)
     output.chan_p = sys_get_stdout();
 
     if (output.chan_p != NULL) {
-        vcprintf(fprintf_putc, &output, fmt_p, ap_p);
-        output_flush(&output);
+        cvcprintf(&output, fmt_p, ap_p);
     }
 
     return (output.size);
@@ -454,9 +487,8 @@ ssize_t std_fprintf(void *chan_p, FAR const char *fmt_p, ...)
     output.chan_p = chan_p;
 
     va_start(ap, fmt_p);
-    vcprintf(fprintf_putc, &output, fmt_p, &ap);
+    cvcprintf(&output, fmt_p, &ap);
     va_end(ap);
-    output_flush(&output);
 
     return (output.size);
 }
@@ -473,8 +505,7 @@ ssize_t std_vfprintf(void *chan_p, FAR const char *fmt_p, va_list *ap_p)
     output.size = 0;
     output.chan_p = chan_p;
 
-    vcprintf(fprintf_putc, &output, fmt_p, ap_p);
-    output_flush(&output);
+    cvcprintf(&output, fmt_p, ap_p);
 
     return (output.size);
 }
@@ -548,6 +579,130 @@ const char *std_strtol(const char *str_p, long *value_p)
     *value_p *= sign;
 
     return (str_p - 1);
+}
+
+/*
+ * strtod implementation.
+ * author: Yasuhiro Matsumoto
+ * license: public domain
+ */
+const char *std_strtod(const char *str, double *value_p)
+{
+    double d = 0.0;
+    int sign;
+    int n = 0;
+    const char *p, *a;
+
+    a = p = str;
+    p = skipwhite(p);
+
+    /* decimal part */
+    sign = 1;
+
+    if (*p == '-') {
+        sign = -1;
+        ++p;
+    } else if (*p == '+') {
+        ++p;
+    }
+
+    if (isdigit((int)*p)) {
+        d = (double)(*p++ - '0');
+
+        while (*p && isdigit((int)*p)) {
+            d = d * 10.0 + (double)(*p - '0');
+            ++p;
+            ++n;
+        }
+
+        a = p;
+    } else if (*p != '.') {
+        goto done;
+    }
+
+    d *= sign;
+
+    /* fraction part */
+    if (*p == '.') {
+        double f = 0.0;
+        double base = 0.1;
+        ++p;
+
+        if (isdigit((int)*p)) {
+            while (*p && isdigit((int)*p)) {
+                f += base * (*p - '0') ;
+                base /= 10.0;
+                ++p;
+                ++n;
+            }
+        }
+
+        d += f * sign;
+        a = p;
+    }
+
+    /* exponential part */
+    if ((*p == 'E') || (*p == 'e')) {
+        int e = 0;
+        ++p;
+
+        sign = 1;
+
+        if (*p == '-') {
+            sign = -1;
+            ++p;
+        } else if (*p == '+') {
+            ++p;
+        }
+
+        if (isdigit((int)*p)) {
+            while (*p == '0') {
+                ++p;
+            }
+
+            e = (int)(*p++ - '0');
+
+            while (*p && isdigit((int)*p)) {
+                e = e * 10 + (int)(*p - '0');
+                ++p;
+            }
+
+            e *= sign;
+        } else if (!isdigit((int)*(a-1))) {
+            a = str;
+            goto done;
+        } else if (*p == 0) {
+            goto done;
+        }
+
+        if (d == 2.2250738585072011 && e == -308) {
+            d = 0.0;
+            a = p;
+            goto done;
+        }
+
+        if (d == 2.2250738585072012 && e <= -308) {
+#if __DBL_MANT_DIG__ > 24
+            d *= 1.0e-308l;
+            a = p;
+#else
+            d = 0.0;
+            a = str;
+#endif
+            goto done;
+        }
+
+        d *= pow(10.0, (double) e);
+        a = p;
+    } else if (p > str && !isdigit((int)*(p-1))) {
+        a = str;
+        goto done;
+    }
+
+ done:
+    *value_p = d;
+
+    return (a);
 }
 
 int std_strcpy(char *dst_p, FAR const char *fsrc_p)

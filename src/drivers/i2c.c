@@ -2,9 +2,9 @@
  * @section License
  *
  * The MIT License (MIT)
- * 
+ *
  * Copyright (c) 2014-2016, Erik Moqvist
- * 
+ *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
  * files (the "Software"), to deal in the Software without
@@ -61,29 +61,29 @@ static int cmd_read_cb(int argc,
     uint8_t data;
 
     if (argc != 2) {
-        std_printf(FSTR("Usage: %s <slave address>\r\n"), argv[0]);
+        std_printf(CRSTR("Usage: %s <slave address>\r\n"), argv[0]);
 
         return (-EINVAL);
     }
 
     if (std_strtol(argv[1], &value) == NULL) {
-        std_printf(FSTR("Bad slave address.\r\n"));
-        
+        std_printf(CRSTR("Bad slave address.\r\n"));
+
         return (-EINVAL);
     }
 
     slave_address = value;
-    
+
     i2c_init(&i2c, &i2c_0_dev, I2C_BAUDRATE_100KBPS, -1);
     i2c_start(&i2c);
 
     if (i2c_read(&i2c, slave_address, &data, 1) != 1) {
-        std_printf(FSTR("Failed to read from slave device 0x%02x.\r\n"),
+        std_printf(CRSTR("Failed to read from slave device 0x%02x.\r\n"),
                    slave_address);
         goto out;
     }
 
-    std_printf(FSTR("0x%02x\r\n"), data);
+    std_printf(CRSTR("0x%02x\r\n"), data);
 
  out:
     i2c_stop(&i2c);
@@ -108,40 +108,40 @@ static int cmd_write_cb(int argc,
     uint8_t data;
 
     if (argc != 3) {
-        std_printf(FSTR("Usage: %s <slave address> <data byte>\r\n"),
+        std_printf(CRSTR("Usage: %s <slave address> <data byte>\r\n"),
                    argv[0]);
 
         return (-EINVAL);
     }
 
     if (std_strtol(argv[1], &value) == NULL) {
-        std_printf(FSTR("Bad slave address.\r\n"));
-        
+        std_printf(CRSTR("Bad slave address.\r\n"));
+
         return (-EINVAL);
     }
 
     slave_address = value;
 
     if (std_strtol(argv[2], &value) == NULL) {
-        std_printf(FSTR("Bad data value.\r\n"));
+        std_printf(CRSTR("Bad data value.\r\n"));
 
         return (-EINVAL);
     }
 
     if ((value > 255) || (value < 0)) {
-        std_printf(FSTR("Data byte value out of range.\r\n"));
+        std_printf(CRSTR("Data byte value out of range.\r\n"));
 
         return (-EINVAL);
     }
 
     data = value;
-    
+
     i2c_init(&i2c, &i2c_0_dev, I2C_BAUDRATE_100KBPS, -1);
     i2c_start(&i2c);
 
     if (i2c_write(&i2c, slave_address, &data, 1) != 1) {
-        std_printf(FSTR("Failed to write data 0x%02x to slave"
-                        " device 0x%02x.\r\n"),
+        std_printf(CRSTR("Failed to write data 0x%02x to slave"
+                         " device 0x%02x.\r\n"),
                    data,
                    slave_address);
     }
@@ -165,7 +165,7 @@ int i2c_module_init()
 #if CONFIG_FS_CMD_I2C_READ == 1
 
     fs_command_init(&module.cmd_read,
-                    FSTR("/drivers/i2c/read"),
+                    CSTR("/drivers/i2c/read"),
                     cmd_read_cb,
                     NULL);
     fs_command_register(&module.cmd_read);
@@ -175,7 +175,7 @@ int i2c_module_init()
 #if CONFIG_FS_CMD_I2C_WRITE == 1
 
     fs_command_init(&module.cmd_write,
-                    FSTR("/drivers/i2c/write"),
+                    CSTR("/drivers/i2c/write"),
                     cmd_write_cb,
                     NULL);
     fs_command_register(&module.cmd_write);

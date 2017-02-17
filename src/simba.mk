@@ -2,9 +2,9 @@
 # @section License
 #
 # The MIT License (MIT)
-# 
+#
 # Copyright (c) 2014-2016, Erik Moqvist
-# 
+#
 # Permission is hereby granted, free of charge, to any person
 # obtaining a copy of this software and associated documentation
 # files (the "Software"), to deal in the Software without
@@ -56,6 +56,10 @@ ifeq ($(TYPE),suite)
       KERNEL_SRC += ports/esp32/gnu/thrd_port.S
   endif
 
+  ifeq ($(FAMILY),spc5)
+      KERNEL_SRC += ports/ppc/gnu/thrd_port.S
+  endif
+
   ifeq ($(MCU),atmega32u4)
     DRIVERS_SRC += \
 	usb.c \
@@ -103,6 +107,7 @@ DRIVERS_SRC ?= adc.c \
                flash.c \
                pin.c \
                i2c_soft.c \
+               isotp.c \
                owi.c \
                pwm.c \
                pwm_soft.c \
@@ -121,6 +126,7 @@ DRIVERS_SRC_TMP = adc.c \
                   exti.c \
                   i2c.c \
                   i2c_soft.c \
+                  isotp.c \
                   mcp2515.c \
                   nrf24l01.c \
                   spi.c \
@@ -157,6 +163,7 @@ DRIVERS_SRC ?= adc.c \
                owi.c \
                pin.c \
                i2c_soft.c \
+               isotp.c \
                sd.c \
                spi.c \
                uart.c \
@@ -177,6 +184,7 @@ DRIVERS_SRC ?= adc.c \
                pin.c \
                pwm_soft.c \
                i2c_soft.c \
+               isotp.c \
 	       random.c \
                spi.c \
                uart.c \
@@ -193,6 +201,7 @@ DRIVERS_SRC ?= adc.c \
                esp_wifi.c \
                esp_wifi/station.c \
                esp_wifi/softap.c \
+               isotp.c \
 	       owi.c \
 	       pin.c \
 	       random.c \
@@ -219,6 +228,7 @@ DRIVERS_SRC ?= bcm43362.c \
 	       flash.c \
                pin.c \
                i2c_soft.c \
+               isotp.c \
 	       sdio.c \
 	       uart.c
 endif
@@ -227,6 +237,13 @@ ifeq ($(FAMILY),stm32f3)
 DRIVERS_SRC ?= flash.c \
                pin.c \
                i2c_soft.c \
+               isotp.c \
+               uart.c
+endif
+
+ifeq ($(FAMILY),spc5)
+DRIVERS_SRC ?= pin.c \
+               flash.c \
                uart.c
 endif
 
@@ -262,6 +279,7 @@ INET_SRC_TMP = \
 	network_interface.c \
 	network_interface/slip.c \
 	network_interface/wifi.c \
+	slip.c \
 	socket.c \
 	ping.c
 
@@ -394,6 +412,10 @@ ifeq ($(FAMILY),esp32)
     KERNEL_SRC_TMP += ports/esp32/gnu/thrd_port.S
 endif
 
+ifeq ($(FAMILY),spc5)
+    KERNEL_SRC_TMP += ports/ppc/gnu/thrd_port.S
+endif
+
 KERNEL_SRC ?= $(KERNEL_SRC_TMP)
 
 SRC += $(KERNEL_SRC:%=$(SIMBA_ROOT)/src/kernel/%)
@@ -410,7 +432,8 @@ OAM_SRC_TMP ?= \
 	console.c \
 	service.c \
 	settings.c \
-	shell.c
+	shell.c \
+	soam.c
 
 ifeq ($(FAMILY), $(filter $(FAMILY), esp32 linux))
 OAM_SRC_TMP += \

@@ -2,9 +2,9 @@
  * @section License
  *
  * The MIT License (MIT)
- * 
+ *
  * Copyright (c) 2014-2016, Erik Moqvist
- * 
+ *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
  * files (the "Software"), to deal in the Software without
@@ -48,9 +48,10 @@ enum queue_state_t {
 #define QUEUE_INIT_DECL(_name, _buf, _size)                             \
     struct queue_t _name = {                                            \
         .base = {                                                       \
-            .read = (ssize_t (*)(void *, void *, size_t))queue_read,    \
-            .write = (ssize_t (*)(void *, const void *, size_t))queue_write, \
-            .size = (size_t (*)(void *))queue_size,                     \
+            .read = (chan_read_fn_t)queue_read,                         \
+            .write = (chan_write_fn_t)queue_write,                      \
+            .size = (chan_size_fn_t)queue_size,                         \
+            .control = chan_control_null,                               \
             .writer_p = NULL,                                           \
             .reader_p = NULL,                                           \
             .list_p = NULL                                              \

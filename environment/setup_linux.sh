@@ -36,3 +36,6 @@ if [ -f ~/.simbarc ]; then
 fi
 
 export IDF_PATH=${SIMBA_ROOT}/3pp/esp32/esp-idf
+
+export FREESCALE_POWERPC_EABIVLE_ROOT=$(readlink -f ../../Freescale/S32_Power_v1.1/Cross_Tools/powerpc-eabivle-4_9)
+export PATH=${PATH}:${FREESCALE_POWERPC_EABIVLE_ROOT}/bin

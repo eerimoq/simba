@@ -2,9 +2,9 @@
 # @section License
 #
 # The MIT License (MIT)
-# 
+#
 # Copyright (c) 2014-2016, Erik Moqvist
-# 
+#
 # Permission is hereby granted, free of charge, to any person
 # obtaining a copy of this software and associated documentation
 # files (the "Software"), to deal in the Software without
@@ -60,6 +60,7 @@ ifeq ($(BOARD), linux)
     TESTS += $(addprefix tst/oam/, service \
 				   settings \
 				   shell \
+				   soam \
 				   upgrade \
 				   upgrade/kermit \
 				   upgrade/uds)
@@ -76,9 +77,11 @@ ifeq ($(BOARD), linux)
 				    inet \
 				    mqtt_client \
 				    ping \
+				    slip \
 				    ssl \
 				    tftp_server)
     TESTS += $(addprefix tst/multimedia/, midi)
+    TESTS += $(addprefix tst/drivers/, isotp)
 endif
 
 ifeq ($(BOARD), arduino_due)
@@ -301,6 +304,32 @@ ifeq ($(BOARD), photon)
 				    ping)
 endif
 
+ifeq ($(BOARD), spc56ddiscovery)
+    TESTS = $(addprefix tst/kernel/, sys \
+                                     thrd \
+                                     time \
+                                     timer)
+    TESTS += $(addprefix tst/sync/, bus \
+                                    event \
+                                    queue \
+                                    rwlock \
+                                    sem)
+    TESTS += $(addprefix tst/collections/, binary_tree \
+                                           bits \
+                                           fifo \
+                                           hash_map)
+    TESTS += $(addprefix tst/alloc/, circular_heap)
+    TESTS += $(addprefix tst/text/, std \
+                                    re)
+    TESTS += $(addprefix tst/debug/, log)
+    TESTS += $(addprefix tst/oam/, shell \
+				   soam)
+    TESTS += $(addprefix tst/encode/, base64 \
+                                      json)
+    TESTS += $(addprefix tst/hash/, crc \
+                                    sha1)
+endif
+
 # List of all application to build
 APPS += $(TESTS)
 
@@ -361,31 +390,34 @@ release:
 	+bin/release.py --package --version $(SIMBA_VERSION)
 
 clean-arduino-due:
-	$(MAKE) BOARD=arduino_due SERIAL_PORT=/dev/simba-arduino_due clean
+	$(MAKE) BOARD=arduino_due clean
 
 clean-arduino-mega:
-	$(MAKE) BOARD=arduino_mega SERIAL_PORT=/dev/simba-arduino_mega clean
+	$(MAKE) BOARD=arduino_mega clean
 
 clean-arduino-nano:
-	$(MAKE) BOARD=arduino_nano SERIAL_PORT=/dev/simba-arduino_nano clean
+	$(MAKE) BOARD=arduino_nano clean
 
 clean-arduino-pro-micro:
-	$(MAKE) BOARD=arduino_pro_micro SERIAL_PORT=/dev/simba-arduino_pro_micro clean
+	$(MAKE) BOARD=arduino_pro_micro clean
 
 clean-nodemcu:
-	$(MAKE) BOARD=nodemcu SERIAL_PORT=/dev/simba-nodemcuv3 clean
+	$(MAKE) BOARD=nodemcu clean
 
 clean-esp12e:
-	$(MAKE) BOARD=esp12e SERIAL_PORT=/dev/simba-esp12e clean
+	$(MAKE) BOARD=esp12e clean
 
 clean-nano32:
-	$(MAKE) BOARD=nano32 SERIAL_PORT=/dev/simba-nano32 clean
+	$(MAKE) BOARD=nano32 clean
 
 clean-stm32vldiscovery:
-	$(MAKE) BOARD=stm32vldiscovery SERIAL_PORT=/dev/simba-stm32vldiscovery clean
+	$(MAKE) BOARD=stm32vldiscovery clean
 
 clean-photon:
-	$(MAKE) BOARD=photon SERIAL_PORT=/dev/simba-photon clean
+	$(MAKE) BOARD=photon clean
+
+clean-spc56ddiscovery:
+	$(MAKE) BOARD=spc56ddiscovery clean
 
 test-arduino-due:
 	@echo "Arduino Due"
@@ -422,6 +454,10 @@ test-stm32vldiscovery:
 test-photon:
 	@echo "Photon"
 	$(MAKE) BOARD=photon SERIAL_PORT=/dev/simba-photon test
+
+test-spc56ddiscovery:
+	@echo "SPC56D Discovery"
+	$(MAKE) BOARD=spc56ddiscovery SERIAL_PORT=/dev/simba-spc56ddiscovery CONTROL_PORT=/dev/simba-spc56ddiscovery-control test
 
 clean-arduino-due-platformio:
 	@echo "Arduino Due"
@@ -470,6 +506,7 @@ test-all-boards:
 	$(MAKE) test-arduino-pro-micro
 	$(MAKE) test-nodemcu
 	$(MAKE) test-nano32
+	$(MAKE) test-spc56ddiscovery
 
 clean-all-boards:
 	$(MAKE) clean-arduino-due
@@ -484,6 +521,7 @@ clean-all-boards:
 	$(MAKE) clean-arduino-pro-micro
 	$(MAKE) clean-nodemcu
 	$(MAKE) clean-nano32
+	$(MAKE) clean-spc56ddiscovery
 
 doc:
 	+bin/dbgen.py > database.json

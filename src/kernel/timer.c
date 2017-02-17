@@ -31,8 +31,8 @@
 #include "simba.h"
 
 struct timer_list_t {
-    struct timer_t tail_timer; /* Tail element og timer list.*/
-    struct timer_t *head_p;    /* List of timers sorted by expiry tick.*/
+    struct timer_t tail_timer; /* Tail element of timer list. */
+    struct timer_t *head_p;    /* List of timers sorted by expiry tick. */
 };
 
 static struct timer_list_t list = {
@@ -52,7 +52,7 @@ static void RAM_CODE timer_insert_isr(struct timer_t *timer_p)
 {
     struct timer_t *elem_p, *prev_p;
 
-    /* Find element preceeding this timer.*/
+    /* Find element preceeding this timer. */
     elem_p = list.head_p;
     prev_p = NULL;
 
@@ -63,7 +63,7 @@ static void RAM_CODE timer_insert_isr(struct timer_t *timer_p)
         elem_p = elem_p->next_p;
     }
 
-    /* Insert new timer into list.*/
+    /* Insert new timer into list. */
     if (elem_p != &list.tail_timer) {
         elem_p->delta -= timer_p->delta;
     }

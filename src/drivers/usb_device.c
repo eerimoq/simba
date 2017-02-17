@@ -2,9 +2,9 @@
  * @section License
  *
  * The MIT License (MIT)
- * 
+ *
  * Copyright (c) 2014-2016, Erik Moqvist
- * 
+ *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
  * files (the "Software"), to deal in the Software without
@@ -81,7 +81,7 @@ int usb_device_module_init(void)
 #if CONFIG_FS_CMD_USB_DEVICE_LIST == 1
 
     fs_command_init(&cmd_list,
-                    FSTR("/drivers/usb_device/list"),
+                    CSTR("/drivers/usb_device/list"),
                     cmd_list_cb,
                     NULL);
     fs_command_register(&cmd_list);
