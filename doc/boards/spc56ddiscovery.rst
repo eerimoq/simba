@@ -55,9 +55,9 @@ Below is the memory usage of two applications:
 +--------------------------+-----------+-----------+
 | Application              | Flash     | RAM       |
 +==========================+===========+===========+
-| minimal-configuration    |      6464 |       576 |
+| minimal-configuration    |      6448 |       588 |
 +--------------------------+-----------+-----------+
-| default-configuration    |     50424 |      3478 |
+| default-configuration    |     50600 |      4162 |
 +--------------------------+-----------+-----------+
 
 Default configuration
@@ -107,6 +107,8 @@ Default Standard Library configuration.
 |  CONFIG_FILESYSTEM_GENERIC_                            |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_FLASH_                                         |  0                                                  |
++--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_FLOAT_                                         |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_FS_CMD_DS18B20_LIST_                           |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
@@ -191,6 +193,8 @@ Default Standard Library configuration.
 |  CONFIG_FS_CMD_USB_HOST_LIST_                          |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_FS_PATH_MAX_                                   |  64                                                 |
++--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_HTTP_SERVER_REQUEST_BUFFER_SIZE_               |  128                                                |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_HTTP_SERVER_SSL_                               |  0                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
@@ -292,7 +296,7 @@ Default Standard Library configuration.
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_MODULE_INIT_WATCHDOG_                          |  0                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
-|  CONFIG_MONITOR_THREAD_                                |  0                                                  |
+|  CONFIG_MONITOR_THREAD_                                |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_MONITOR_THREAD_PERIOD_US_                      |  2000000                                            |
 +--------------------------------------------------------+-----------------------------------------------------+
@@ -371,8 +375,6 @@ Default Standard Library configuration.
 |  CONFIG_START_SHELL_PRIO_                              |  30                                                 |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_START_SHELL_STACK_SIZE_                        |  768                                                |
-+--------------------------------------------------------+-----------------------------------------------------+
-|  CONFIG_STD_FORMAT_FLOAT_                              |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_STD_OUTPUT_BUFFER_MAX_                         |  16                                                 |
 +--------------------------------------------------------+-----------------------------------------------------+
@@ -468,6 +470,8 @@ Mcu
 
 .. _CONFIG_FLASH: ../user-guide/configuration.html#c.CONFIG_FLASH
 
+.. _CONFIG_FLOAT: ../user-guide/configuration.html#c.CONFIG_FLOAT
+
 .. _CONFIG_FS_CMD_DS18B20_LIST: ../user-guide/configuration.html#c.CONFIG_FS_CMD_DS18B20_LIST
 
 .. _CONFIG_FS_CMD_ESP_WIFI_STATUS: ../user-guide/configuration.html#c.CONFIG_FS_CMD_ESP_WIFI_STATUS
@@ -551,6 +555,8 @@ Mcu
 .. _CONFIG_FS_CMD_USB_HOST_LIST: ../user-guide/configuration.html#c.CONFIG_FS_CMD_USB_HOST_LIST
 
 .. _CONFIG_FS_PATH_MAX: ../user-guide/configuration.html#c.CONFIG_FS_PATH_MAX
+
+.. _CONFIG_HTTP_SERVER_REQUEST_BUFFER_SIZE: ../user-guide/configuration.html#c.CONFIG_HTTP_SERVER_REQUEST_BUFFER_SIZE
 
 .. _CONFIG_HTTP_SERVER_SSL: ../user-guide/configuration.html#c.CONFIG_HTTP_SERVER_SSL
 
@@ -731,8 +737,6 @@ Mcu
 .. _CONFIG_START_SHELL_PRIO: ../user-guide/configuration.html#c.CONFIG_START_SHELL_PRIO
 
 .. _CONFIG_START_SHELL_STACK_SIZE: ../user-guide/configuration.html#c.CONFIG_START_SHELL_STACK_SIZE
-
-.. _CONFIG_STD_FORMAT_FLOAT: ../user-guide/configuration.html#c.CONFIG_STD_FORMAT_FLOAT
 
 .. _CONFIG_STD_OUTPUT_BUFFER_MAX: ../user-guide/configuration.html#c.CONFIG_STD_OUTPUT_BUFFER_MAX
 
