@@ -38,7 +38,8 @@
  */
 struct event_t {
     struct chan_t base;
-    uint32_t mask;          /* Events that occured. */
+    uint32_t mask;                 /* Events that occured. */
+    uint32_t reader_mask;          /* Events the reader are waiting for. */
 };
 
 /**

@@ -35,7 +35,57 @@
 #define EVENT_BIT_2 0x4
 #define EVENT_BIT_3 0x8
 
-static int test_read_write(struct harness_t *harness)
+static struct event_t tester_event_tx;
+static struct event_t tester_event_rx;
+
+static THRD_STACK(tester_stack, 512);
+
+static void *tester_main(void *arg_p)
+{
+    uint32_t mask;
+
+    /* Wait for testcase start event. */
+    mask = EVENT_BIT_0;
+    BTASSERTN(event_read(&tester_event_rx,
+                         &mask,
+                         sizeof(mask)) == sizeof(mask), NULL);
+
+    /* Write an event that the reader is not waiting for. */
+    mask = EVENT_BIT_0;
+    BTASSERTN(event_write(&tester_event_tx,
+                          &mask,
+                          sizeof(mask)) == sizeof(mask), NULL);
+
+    /* Wait a while before checking if the reader was resumed. */
+    thrd_sleep_ms(5);
+    BTASSERTN(event_size(&tester_event_tx) != 0, NULL);
+    
+    /* Write the event that the reader is waiting for. */
+    mask = EVENT_BIT_1;
+    BTASSERTN(event_write(&tester_event_tx,
+                          &mask,
+                          sizeof(mask)) == sizeof(mask), NULL);
+
+    thrd_suspend(NULL);
+    
+    return (0);
+}
+
+static int test_init(struct harness_t *harness_p)
+{
+    BTASSERT(event_init(&tester_event_rx) == 0);
+    BTASSERT(event_init(&tester_event_tx) == 0);
+
+    BTASSERT(thrd_spawn(tester_main,
+                        NULL,
+                        1,
+                        tester_stack,
+                        sizeof(tester_stack)) != NULL);
+
+    return (0);
+}
+    
+static int test_read_write(struct harness_t *harness_p)
 {
     uint32_t mask;
     struct event_t event;
@@ -81,7 +131,7 @@ static int test_read_write(struct harness_t *harness)
     return (0);
 }
 
-static int test_poll(struct harness_t *harness)
+static int test_poll(struct harness_t *harness_p)
 {
     uint32_t mask;
     struct event_t event;
@@ -99,7 +149,7 @@ static int test_poll(struct harness_t *harness)
     return (0);
 }
 
-static int test_poll_timeout(struct harness_t *harness)
+static int test_poll_timeout(struct harness_t *harness_p)
 {
     struct event_t event;
     struct time_t timeout;
@@ -115,7 +165,7 @@ static int test_poll_timeout(struct harness_t *harness)
     return (0);
 }
 
-static int test_poll_list(struct harness_t *harness)
+static int test_poll_list(struct harness_t *harness_p)
 {
     uint32_t mask;
     struct event_t event;
@@ -155,7 +205,7 @@ static int test_poll_list(struct harness_t *harness)
     return (0);
 }
 
-static int test_poll_list_timeout(struct harness_t *harness)
+static int test_poll_list_timeout(struct harness_t *harness_p)
 {
     struct event_t event;
     struct chan_list_t list;
@@ -188,15 +238,40 @@ static int test_poll_list_timeout(struct harness_t *harness)
     return (0);
 }
 
+static int test_write_not_read_mask(struct harness_t *harness_p)
+{
+    uint32_t mask;
+
+    /* Signal tester thread to start. */
+    mask = EVENT_BIT_0;
+    BTASSERT(event_write(&tester_event_rx, &mask, sizeof(mask)) == 4);
+    
+    /* Wait for the second event written by the tester thread. */
+    mask = EVENT_BIT_1;
+    BTASSERT(event_read(&tester_event_tx, &mask, sizeof(mask)) == 4);
+    BTASSERT(mask == EVENT_BIT_1);
+
+    /* Read the first event written by the tester thread. */
+    mask = EVENT_BIT_0;
+    BTASSERT(chan_read(&tester_event_tx, &mask, sizeof(mask)) == 4);
+    BTASSERT(mask == EVENT_BIT_0);
+
+    BTASSERT(event_size(&tester_event_tx) == 0);
+
+    return (0);
+}
+
 int main()
 {
     struct harness_t harness;
     struct harness_testcase_t harness_testcases[] = {
+        { test_init, "test_init" },
         { test_read_write, "test_read_write" },
         { test_poll, "test_poll" },
         { test_poll_timeout, "test_poll_timeout" },
         { test_poll_list, "test_poll_list" },
         { test_poll_list_timeout, "test_poll_list_timeout" },
+        { test_write_not_read_mask, "test_write_not_read_mask" },
         { NULL, NULL }
     };
 
