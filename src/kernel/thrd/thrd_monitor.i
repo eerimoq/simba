@@ -115,9 +115,15 @@ static int update_cpu_usage(int print)
         thrd_port_cpu_usage_reset(thrd_p);
 
         if (print == 1) {
+#if CONFIG_FLOAT == 1
             std_printf(FSTR("%20s %10f%%\r\n"),
                        thrd_p->name_p,
-                       thrd_p->statistics.cpu.usage);
+                       (float)thrd_p->statistics.cpu.usage);
+#else
+            std_printf(FSTR("%20s %10d%%\r\n"),
+                       thrd_p->name_p,
+                       (int)thrd_p->statistics.cpu.usage);
+#endif
         }
 
         thrd_p = thrd_p->next_p;
@@ -132,7 +138,7 @@ static int update_cpu_usage(int print)
 static void *monitor_thrd(void *arg_p)
 {
     int print;
-    float irq_usage;
+    cpu_usage_t irq_usage;
 
     thrd_set_name("monitor");
 
@@ -145,9 +151,15 @@ static void *monitor_thrd(void *arg_p)
         sys_interrupt_cpu_usage_reset();
 
         if (print == 1) {
+#if CONFIG_FLOAT == 1
             std_printf(FSTR("\r\n                NAME         CPU\r\n"
                             "                 irq %10f%%\r\n"),
-                       irq_usage);
+                       (float)irq_usage);
+#else
+            std_printf(FSTR("\r\n                NAME         CPU\r\n"
+                            "                 irq %10d%%\r\n"),
+                       (int)irq_usage);
+#endif
         }
 
         update_cpu_usage(print);

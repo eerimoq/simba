@@ -148,10 +148,10 @@ int _getpid()
     return (-1);
 }
 
-static float sys_port_interrupt_cpu_usage_get(void)
+static cpu_usage_t sys_port_interrupt_cpu_usage_get(void)
 {
 #if defined(FAMILY_SAM)
-    return ((100.0 * sys.interrupt.time) /
+    return (((cpu_usage_t)100 * sys.interrupt.time) /
             (SAM_TC0->CHANNEL[0].CV - sys.interrupt.start));
 #else
     return (0);

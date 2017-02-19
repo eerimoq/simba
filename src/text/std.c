@@ -212,7 +212,7 @@ static char *formati(char c,
     return (str_p);
 }
 
-#if CONFIG_STD_FORMAT_FLOAT == 1
+#if CONFIG_FLOAT == 1
 
 static char *formatf(char c,
                      char *str_p,
@@ -345,7 +345,7 @@ static void vcprintf(void (*std_putc)(char c, void *arg_p),
             s_p = formati(c, &buf[sizeof(buf) - 1], 16, ap_p, length, &negative_sign);
             break;
 
-#if CONFIG_STD_FORMAT_FLOAT == 1
+#if CONFIG_FLOAT == 1
         case 'f':
             s_p = formatf(c, &buf[sizeof(buf) - 1], ap_p, length, &negative_sign);
             break;

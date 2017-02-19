@@ -39,6 +39,12 @@
 
 typedef uint32_t sys_tick_t;
 
+#if CONFIG_FLOAT == 1
+typedef float cpu_usage_t;
+#else
+typedef uint32_t cpu_usage_t;
+#endif
+
 /**
  * Convertion from the time struct to system ticks.
  */
@@ -209,7 +215,7 @@ far_string_t sys_get_config(void);
  *
  * @return cpu usage, 0-100.
  */
-float sys_interrupt_cpu_usage_get(void);
+cpu_usage_t sys_interrupt_cpu_usage_get(void);
 
 /**
  * Reset the interrupt cpu usage counter.

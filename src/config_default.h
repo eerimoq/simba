@@ -1496,7 +1496,7 @@
  * Start the monitor thread to gather statistics of the scheulder.
  */
 #ifndef CONFIG_MONITOR_THREAD
-#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(BOARD_ESP12E) || defined(BOARD_ESP01) || defined(BOARD_NODEMCU) || defined(BOARD_NANO32) || defined(BOARD_SPC56DDISCOVERY) || defined(CONFIG_MINIMAL_SYSTEM)
+#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(BOARD_ESP12E) || defined(BOARD_ESP01) || defined(BOARD_NODEMCU) || defined(BOARD_NANO32) || defined(CONFIG_MINIMAL_SYSTEM)
 #        define CONFIG_MONITOR_THREAD                       0
 #    else
 #        define CONFIG_MONITOR_THREAD                       1
@@ -1799,10 +1799,10 @@
 #endif
 
 /**
- * Enable formatting of floating point values.
+ * Use floating point numbers instead of intergers where applicable.
  */
-#ifndef CONFIG_STD_FORMAT_FLOAT
-#    define CONFIG_STD_FORMAT_FLOAT                         1
+#ifndef CONFIG_FLOAT
+#    define CONFIG_FLOAT                                    1
 #endif
 
 /**

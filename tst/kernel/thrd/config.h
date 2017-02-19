@@ -51,10 +51,18 @@
 #endif
 
 #ifndef CONFIG_MONITOR_THREAD
-#    if defined(ARCH_LINUX)
+#    if defined(ARCH_LINUX) || defined(ARCH_PPC)
 #        define CONFIG_MONITOR_THREAD                       1
 #    else
 #        define CONFIG_MONITOR_THREAD                       0
+#    endif
+#endif
+
+#ifndef CONFIG_FLOAT
+#    if defined(ARCH_LINUX)
+#        define CONFIG_FLOAT                                1
+#    else
+#        define CONFIG_FLOAT                                0
 #    endif
 #endif
 

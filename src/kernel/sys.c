@@ -571,7 +571,7 @@ far_string_t sys_get_config()
     return (config);
 }
 
-float sys_interrupt_cpu_usage_get()
+cpu_usage_t sys_interrupt_cpu_usage_get()
 {
     return (sys_port_interrupt_cpu_usage_get());
 }

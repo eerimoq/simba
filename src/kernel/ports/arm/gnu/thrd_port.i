@@ -160,10 +160,10 @@ static void thrd_port_cpu_usage_stop(struct thrd_t *thrd_p)
 
 #if CONFIG_MONITOR_THREAD == 1
 
-static float thrd_port_cpu_usage_get(struct thrd_t *thrd_p)
+static cpu_usage_t thrd_port_cpu_usage_get(struct thrd_t *thrd_p)
 {
 #if defined(FAMILY_SAM)
-    return ((100.0 * thrd_p->port.cpu.period.time)
+    return (((cpu_usage_t)100 * thrd_p->port.cpu.period.time)
             / (SAM_TC0->CHANNEL[0].CV - thrd_p->port.cpu.period.start));
 #else
     return (0);

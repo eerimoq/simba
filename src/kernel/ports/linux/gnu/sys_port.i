@@ -106,9 +106,9 @@ int sys_port_module_init(void)
     return (0);
 }
 
-static float sys_port_interrupt_cpu_usage_get(void)
+static cpu_usage_t sys_port_interrupt_cpu_usage_get(void)
 {
-    return (0.0f);
+    return (0);
 }
 
 static void sys_port_interrupt_cpu_usage_reset(void)

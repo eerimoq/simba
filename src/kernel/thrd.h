@@ -102,7 +102,11 @@ struct thrd_t {
     struct {
 #if CONFIG_THRD_CPU_USAGE == 1
         struct {
+#if CONFIG_FLOAT == 1
             float usage;
+#else
+            int usage;
+#endif
         } cpu;
 #endif
 #if CONFIG_THRD_SCHEDULED == 1
