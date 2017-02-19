@@ -162,6 +162,7 @@ def create_src_filter(srcs):
     \"\"\"
 
     src_filter = [
+        "-<bin/>",
         "-<3pp/>",
         "-<src/>",
         "-<tst/>"
