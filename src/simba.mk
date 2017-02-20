@@ -217,15 +217,7 @@ DRIVERS_SRC ?= flash.c \
 endif
 
 ifeq ($(FAMILY),stm32f2)
-DRIVERS_SRC ?= bcm43362.c \
-	       bcm43362/wwd_buffer.c \
-	       bcm43362/wwd_bus.c \
-	       bcm43362/wwd_network.c \
-	       bcm43362/wwd_platform.c \
-	       bcm43362/wwd_resource.c \
-	       bcm43362/wwd_rtos.c \
-	       bcm43362/wwd_sdio.c \
-	       flash.c \
+DRIVERS_SRC ?= flash.c \
                pin.c \
                i2c_soft.c \
                isotp.c \

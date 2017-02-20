@@ -87,8 +87,6 @@ Default Standard Library configuration.
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_ASSERT_                                        |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
-|  CONFIG_BCM43362_                                      |  0                                                  |
-+--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_CAN_                                           |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_CHIPID_                                        |  0                                                  |
@@ -220,8 +218,6 @@ Default Standard Library configuration.
 |  CONFIG_MODULE_INIT_ANALOG_INPUT_PIN_                  |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_MODULE_INIT_ANALOG_OUTPUT_PIN_                 |  0                                                  |
-+--------------------------------------------------------+-----------------------------------------------------+
-|  CONFIG_MODULE_INIT_BCM43362_                          |  0                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_MODULE_INIT_BUS_                               |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
@@ -455,8 +451,6 @@ Mcu
 
 .. _CONFIG_ASSERT: ../user-guide/configuration.html#c.CONFIG_ASSERT
 
-.. _CONFIG_BCM43362: ../user-guide/configuration.html#c.CONFIG_BCM43362
-
 .. _CONFIG_CAN: ../user-guide/configuration.html#c.CONFIG_CAN
 
 .. _CONFIG_CHIPID: ../user-guide/configuration.html#c.CONFIG_CHIPID
@@ -588,8 +582,6 @@ Mcu
 .. _CONFIG_MODULE_INIT_ANALOG_INPUT_PIN: ../user-guide/configuration.html#c.CONFIG_MODULE_INIT_ANALOG_INPUT_PIN
 
 .. _CONFIG_MODULE_INIT_ANALOG_OUTPUT_PIN: ../user-guide/configuration.html#c.CONFIG_MODULE_INIT_ANALOG_OUTPUT_PIN
-
-.. _CONFIG_MODULE_INIT_BCM43362: ../user-guide/configuration.html#c.CONFIG_MODULE_INIT_BCM43362
 
 .. _CONFIG_MODULE_INIT_BUS: ../user-guide/configuration.html#c.CONFIG_MODULE_INIT_BUS
 

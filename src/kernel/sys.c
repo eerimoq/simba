@@ -155,10 +155,6 @@ static void init_drivers(void)
     analog_output_pin_module_init();
 #endif
 
-#if CONFIG_MODULE_INIT_BCM43362 == 1
-    bcm43362_module_init();
-#endif
-
 #if CONFIG_MODULE_INIT_CAN == 1
     can_module_init();
 #endif

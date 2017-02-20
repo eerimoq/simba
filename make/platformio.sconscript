@@ -2440,9 +2440,6 @@ BOARDS = {
             "src", 
             "build/photon", 
             "src/boards/photon", 
-            "3pp/wiced/WWD/include", 
-            "3pp/wiced/WWD/internal/bus_protocols/SDIO", 
-            "3pp/wiced/WWD/internal/chips/43362A2", 
             "src/mcus/stm32f205rg", 
             "src", 
             "3pp/compat", 
@@ -2464,11 +2461,8 @@ BOARDS = {
             "-Wl,-Map=build/photon/default_configuration.map", 
             "-Wl,--gc-sections"
         ], 
-        "lib": [
-            "wwdsdio"
-        ], 
+        "lib": [], 
         "libpath": [
-            "3pp/wiced/WWD/lib", 
             "src/boards/photon"
         ], 
         "linker_script": "script.ld", 
@@ -2485,14 +2479,6 @@ BOARDS = {
             "src/collections/hash_map.c", 
             "src/debug/log.c", 
             "src/debug/harness.c", 
-            "src/drivers/bcm43362.c", 
-            "src/drivers/bcm43362/wwd_buffer.c", 
-            "src/drivers/bcm43362/wwd_bus.c", 
-            "src/drivers/bcm43362/wwd_network.c", 
-            "src/drivers/bcm43362/wwd_platform.c", 
-            "src/drivers/bcm43362/wwd_resource.c", 
-            "src/drivers/bcm43362/wwd_rtos.c", 
-            "src/drivers/bcm43362/wwd_sdio.c", 
             "src/drivers/flash.c", 
             "src/drivers/pin.c", 
             "src/drivers/i2c_soft.c", 

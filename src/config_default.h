@@ -143,7 +143,6 @@
 #    define PORT_HAS_UART
 #    define PORT_HAS_FLASH
 #    define PORT_HAS_SDIO
-#    define PORT_HAS_BCM43362
 #endif
 
 #if defined(FAMILY_STM32F3)
@@ -239,17 +238,6 @@
 #        define CONFIG_ANALOG_OUTPUT_PIN                    0
 #    else
 #        define CONFIG_ANALOG_OUTPUT_PIN                    1
-#    endif
-#endif
-
-/**
- * Enable the bcm43362 driver.
- */
-#ifndef CONFIG_BCM43362
-#    if defined(CONFIG_MINIMAL_SYSTEM) || !defined(PORT_HAS_BCM43362)
-#        define CONFIG_BCM43362                             0
-#    else
-#        define CONFIG_BCM43362                             1
 #    endif
 #endif
 
@@ -664,17 +652,6 @@
 #        define CONFIG_MODULE_INIT_ANALOG_OUTPUT_PIN        1
 #    else
 #        define CONFIG_MODULE_INIT_ANALOG_OUTPUT_PIN        0
-#    endif
-#endif
-
-/**
- * Initialize the bcm43362 driver module at system startup.
- */
-#ifndef CONFIG_MODULE_INIT_BCM43362
-#    if CONFIG_BCM43362 == 1
-#        define CONFIG_MODULE_INIT_BCM43362                 1
-#    else
-#        define CONFIG_MODULE_INIT_BCM43362                 0
 #    endif
 #endif
 
