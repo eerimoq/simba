@@ -305,7 +305,7 @@ static int client_read_request_transfer_data(struct client_t *self_p)
             if (block_number != self_p->data.block_number) {
                 log_object_print(NULL,
                                  LOG_DEBUG,
-                                 LSTR("ignoring block number %u when"
+                                 OSTR("ignoring block number %u when"
                                       " expecting %u\r\n"),
                                  block_number,
                                  self_p->data.block_number);
@@ -318,7 +318,7 @@ static int client_read_request_transfer_data(struct client_t *self_p)
             if (self_p->data.size < DATA_SIZE) {
                 log_object_print(NULL,
                                  LOG_INFO,
-                                 LSTR("sent %u bytes\r\n"),
+                                 OSTR("sent %u bytes\r\n"),
                                  self_p->number_of_bytes_transferred);
                 return (0);
             }
@@ -342,7 +342,7 @@ static int client_read_request_transfer_data(struct client_t *self_p)
 
             log_object_print(NULL,
                              LOG_ERROR,
-                             LSTR("error code %u: %s\r\n"),
+                             OSTR("error code %u: %s\r\n"),
                              error_code,
                              error_code_str[error_code]);
             return (-1);
@@ -350,7 +350,7 @@ static int client_read_request_transfer_data(struct client_t *self_p)
         default:
             log_object_print(NULL,
                              LOG_ERROR,
-                             LSTR("bad opcode %u\r\n"),
+                             OSTR("bad opcode %u\r\n"),
                              opcode);
             return (-1);
         }
@@ -410,7 +410,7 @@ static int client_write_request_transfer_data(struct client_t *self_p)
             if (block_number != self_p->data.block_number) {
                 log_object_print(NULL,
                                  LOG_INFO,
-                                 LSTR("ignoring block number %u when"
+                                 OSTR("ignoring block number %u when"
                                       " expecting %u\r\n"),
                                  block_number,
                                  self_p->data.block_number);
@@ -434,7 +434,7 @@ static int client_write_request_transfer_data(struct client_t *self_p)
             if (size < DATA_SIZE) {
                 log_object_print(NULL,
                                  LOG_INFO,
-                                 LSTR("received %u bytes\r\n"),
+                                 OSTR("received %u bytes\r\n"),
                                  self_p->number_of_bytes_transferred);
                 return (0);
             }
@@ -449,7 +449,7 @@ static int client_write_request_transfer_data(struct client_t *self_p)
 
             log_object_print(NULL,
                              LOG_ERROR,
-                             LSTR("error code %u: %s\r\n"),
+                             OSTR("error code %u: %s\r\n"),
                              error_code,
                              error_code_str[error_code]);
             return (-1);
@@ -457,7 +457,7 @@ static int client_write_request_transfer_data(struct client_t *self_p)
         default:
             log_object_print(NULL,
                              LOG_ERROR,
-                             LSTR("bad opcode %u\r\n"),
+                             OSTR("bad opcode %u\r\n"),
                              opcode);
             return (-1);
         }
@@ -536,7 +536,7 @@ static int handle_read_request(struct tftp_server_t *self_p,
         if (fs_open(&client.file, client.filename_p, FS_READ) == 0) {
             log_object_print(NULL,
                              LOG_INFO,
-                             LSTR("reading from '%s'\r\n"),
+                             OSTR("reading from '%s'\r\n"),
                              client.filename_p);
             res = client_read_request_transfer_data(&client);
             (void)fs_close(&client.file);
@@ -566,7 +566,7 @@ static int handle_write_request(struct tftp_server_t *self_p,
                     FS_WRITE | FS_CREAT | FS_TRUNC) == 0) {
             log_object_print(NULL,
                              LOG_INFO,
-                             LSTR("writing to '%s'\r\n"),
+                             OSTR("writing to '%s'\r\n"),
                              client.filename_p);
             res = client_write_request_transfer_data(&client);
             (void)fs_close(&client.file);
@@ -605,7 +605,7 @@ static int handle_request(struct tftp_server_t *self_p,
     default:
         log_object_print(NULL,
                          LOG_INFO,
-                         LSTR("bad opcode %u\r\n"),
+                         OSTR("bad opcode %u\r\n"),
                          opcode);
         res = -1;
         break;
@@ -643,7 +643,7 @@ static void *tftp_server_main(void *arg_p)
 
     log_object_print(NULL,
                      LOG_INFO,
-                     LSTR("serving TFTP on %s:%u\r\n"),
+                     OSTR("serving TFTP on %s:%u\r\n"),
                      inet_ntoa(&self_p->addr.ip, &addrbuf[0]),
                      self_p->addr.port);
 
@@ -656,7 +656,7 @@ static void *tftp_server_main(void *arg_p)
                                &addr);
         log_object_print(NULL,
                          LOG_INFO,
-                         LSTR("connection from %s:%u\r\n"),
+                         OSTR("connection from %s:%u\r\n"),
                          inet_ntoa(&addr.ip, &addrbuf[0]),
                          addr.port);
         buf[size] = '\0';

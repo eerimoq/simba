@@ -30,9 +30,21 @@
 
 #include "simba.h"
 
+#define SOAM_PACKET_SIZE_MIN                                6
+
+#define SOAM_TYPE_STDOUT                             (1 << 4)
+#define SOAM_TYPE_LOG_POINT                          (2 << 4)
+#define SOAM_TYPE_COMMAND_REQUEST                    (3 << 4)
+#define SOAM_TYPE_COMMAND_RESPONSE_DATA_PRINTF       (4 << 4)
+#define SOAM_TYPE_COMMAND_RESPONSE_DATA_BINARY       (5 << 4)
+#define SOAM_TYPE_COMMAND_RESPONSE                   (6 << 4)
+
 #define SOAM_PACKET_FLAGS_CONSECUTIVE                (1 << 1)
 #define SOAM_PACKET_FLAGS_LAST                       (1 << 0)
 
+/**
+ * Finalize and output current packet to the output channel.
+ */
 static ssize_t packet_output(struct soam_t *self_p)
 {
     ssize_t size;
@@ -60,19 +72,17 @@ static ssize_t packet_output(struct soam_t *self_p)
     return (size - 6);
 }
 
-static ssize_t command_write(void *chan_p,
-                             const void *buf_p,
-                             size_t size)
+static ssize_t printf_or_binary_write(struct soam_t *self_p,
+                                      const void *buf_p,
+                                      size_t size,
+                                      int type)
 {
     ssize_t res;
-    struct soam_t *self_p;
 
-    self_p = container_of(chan_p, struct soam_t, command.chan);
-
-    if (self_p->command.is_printf == 1) {
+    if (self_p->is_printf == 1) {
         res = soam_write_chunk(self_p, buf_p, size);
     } else {
-        (void)soam_write_begin(self_p, SOAM_TYPE_COMMAND_RESPONSE_DATA_BINARY);
+        (void)soam_write_begin(self_p, type);
         (void)soam_write_chunk(self_p, buf_p, size);
         res = soam_write_end(self_p);
     }
@@ -80,21 +90,66 @@ static ssize_t command_write(void *chan_p,
     return (res);
 }
 
-static int command_control(void *chan_p,
-                           int operation)
+static int printf_or_binary_control(struct soam_t *self_p,
+                                    int operation,
+                                    int type)
 {
-    struct soam_t *self_p;
-
-    self_p = container_of(chan_p, struct soam_t, command.chan);
+    int res;
 
     switch (operation) {
 
     case CHAN_CONTROL_PRINTF_BEGIN:
-        self_p->command.is_printf = 1;
-        return (soam_write_begin(self_p, SOAM_TYPE_COMMAND_RESPONSE_DATA_PRINTF));
+        res = soam_write_begin(self_p, type);
+        self_p->is_printf = 1;
+        break;
 
     case CHAN_CONTROL_PRINTF_END:
-        self_p->command.is_printf = 0;
+        self_p->is_printf = 0;
+        res = soam_write_end(self_p);
+        break;
+
+    default:
+        res = -1;
+        break;
+    }
+
+    return (res);
+}
+
+static int stdout_control(void *chan_p,
+                          int operation)
+{
+    struct soam_t *self_p;
+
+    self_p = container_of(chan_p, struct soam_t, stdout_chan);
+
+    return (printf_or_binary_control(self_p, operation, SOAM_TYPE_STDOUT));
+}
+
+static ssize_t stdout_write(void *chan_p,
+                            const void *buf_p,
+                            size_t size)
+{
+    struct soam_t *self_p;
+
+    self_p = container_of(chan_p, struct soam_t, stdout_chan);
+
+    return (printf_or_binary_write(self_p, buf_p, size, SOAM_TYPE_STDOUT));
+}
+
+static int log_control(void *chan_p,
+                       int operation)
+{
+    struct soam_t *self_p;
+
+    self_p = container_of(chan_p, struct soam_t, log_chan);
+
+    switch (operation) {
+
+    case CHAN_CONTROL_LOG_BEGIN:
+        return (soam_write_begin(self_p, SOAM_TYPE_LOG_POINT));
+
+    case CHAN_CONTROL_LOG_END:
         return (soam_write_end(self_p));
 
     default:
@@ -108,29 +163,35 @@ static ssize_t log_write(void *chan_p,
 {
     struct soam_t *self_p;
 
-    self_p = container_of(chan_p, struct soam_t, log.chan);
+    self_p = container_of(chan_p, struct soam_t, log_chan);
 
     return (soam_write_chunk(self_p, buf_p, size));
 }
 
-static int log_control(void *chan_p,
-                       int operation)
+static int command_control(void *chan_p,
+                           int operation)
 {
     struct soam_t *self_p;
 
-    self_p = container_of(chan_p, struct soam_t, log.chan);
+    self_p = container_of(chan_p, struct soam_t, command_chan);
 
-    switch (operation) {
+    return (printf_or_binary_control(self_p,
+                                     operation,
+                                     SOAM_TYPE_COMMAND_RESPONSE_DATA_PRINTF));
+}
 
-    case CHAN_CONTROL_LOG_BEGIN:
-        return (soam_write_begin(self_p, SOAM_TYPE_LOG_POINT));
+static ssize_t command_write(void *chan_p,
+                             const void *buf_p,
+                             size_t size)
+{
+    struct soam_t *self_p;
 
-    case CHAN_CONTROL_LOG_END:
-        return (soam_write_end(self_p));
+    self_p = container_of(chan_p, struct soam_t, command_chan);
 
-    default:
-        return (-1);
-    }
+    return (printf_or_binary_write(self_p,
+                                   buf_p,
+                                   size,
+                                   SOAM_TYPE_COMMAND_RESPONSE_DATA_BINARY));
 }
 
 int soam_init(struct soam_t *self_p,
@@ -150,18 +211,25 @@ int soam_init(struct soam_t *self_p,
 
     sem_init(&self_p->tx.sem, 0, 1);
 
-    self_p->command.is_printf = 0;
-    chan_init(&self_p->command.chan,
-              chan_read_null,
-              command_write,
-              chan_size_null);
-    chan_set_control_cb(&self_p->command.chan, command_control);
+    self_p->is_printf = 0;
 
-    chan_init(&self_p->log.chan,
+    chan_init(&self_p->stdout_chan,
+              chan_read_null,
+              stdout_write,
+              chan_size_null);
+    chan_set_control_cb(&self_p->stdout_chan, stdout_control);
+
+    chan_init(&self_p->log_chan,
               chan_read_null,
               log_write,
               chan_size_null);
-    chan_set_control_cb(&self_p->log.chan, log_control);
+    chan_set_control_cb(&self_p->log_chan, log_control);
+
+    chan_init(&self_p->command_chan,
+              chan_read_null,
+              command_write,
+              chan_size_null);
+    chan_set_control_cb(&self_p->command_chan, command_control);
 
     return (0);
 }
@@ -203,8 +271,8 @@ int soam_input(struct soam_t *self_p,
 
     case SOAM_TYPE_COMMAND_REQUEST:
         res = fs_call((char *)&buf_p[4],
-                      &self_p->command.chan,
-                      &self_p->command.chan,
+                      &self_p->command_chan,
+                      &self_p->command_chan,
                       NULL);
         buf[0] = (res >> 24);
         buf[1] = (res >> 16);
@@ -311,5 +379,10 @@ ssize_t soam_write(struct soam_t *self_p,
 
 void *soam_get_log_input_channel(struct soam_t *self_p)
 {
-    return (&self_p->log.chan);
+    return (&self_p->log_chan);
+}
+
+void *soam_get_stdout_input_channel(struct soam_t *self_p)
+{
+    return (&self_p->stdout_chan);
 }

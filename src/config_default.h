@@ -1764,7 +1764,7 @@
  * Start a shell thread communication over the console channels.
  */
 #ifndef CONFIG_START_SHELL
-#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(CONFIG_MINIMAL_SYSTEM)
+#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(CONFIG_MINIMAL_SYSTEM) || defined(SOAM)
 #        define CONFIG_START_SHELL                          0
 #    else
 #        define CONFIG_START_SHELL                          1
@@ -1788,6 +1788,37 @@
 #        define CONFIG_START_SHELL_STACK_SIZE            4096
 #    else
 #        define CONFIG_START_SHELL_STACK_SIZE             768
+#    endif
+#endif
+
+/**
+ * Start a SOAM thread communication over the console channels.
+ */
+#ifndef CONFIG_START_SOAM
+#    if defined(SOAM)
+#        define CONFIG_START_SOAM                           1
+#    else
+#        define CONFIG_START_SOAM                           0
+#    endif
+#endif
+
+/**
+ * SOAM thread priority.
+ */
+#ifndef CONFIG_START_SOAM_PRIO
+#    define CONFIG_START_SOAM_PRIO                         30
+#endif
+
+/**
+ * SOAM thread stack size in words.
+ */
+#ifndef CONFIG_START_SOAM_STACK_SIZE
+#    if defined(BOARD_ARDUINO_DUE) || defined(ARCH_ESP)
+#        define CONFIG_START_SOAM_STACK_SIZE             1536
+#    elif defined(ARCH_ESP32)
+#        define CONFIG_START_SOAM_STACK_SIZE             4096
+#    else
+#        define CONFIG_START_SOAM_STACK_SIZE              768
 #    endif
 #endif
 
@@ -1992,6 +2023,10 @@
 
 #if (CONFIG_MODULE_INIT_PWM_SOFT == 1) &&  (CONFIG_SYSTEM_TICK_SOFTWARE == 0) && (ARCH_ESP)
 #    error "CONFIG_SYSTEM_TICK_SOFTWARE must be 1 when CONFIG_MODULE_INIT_PWM_SOFT is 1."
+#endif
+
+#if (CONFIG_START_SHELL == 1) &&  (CONFIG_START_SOAM == 1)
+#    error "CONFIG_START_SHELL and CONFIG_START_SOAM cannot both be set to 1."
 #endif
 
 #endif

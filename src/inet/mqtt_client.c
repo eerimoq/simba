@@ -96,7 +96,7 @@ static int write_fixed_header(struct mqtt_client_t *self_p,
 
     log_object_print(self_p->log_object_p,
                      LOG_DEBUG,
-                     LSTR("Writing MQTT message '%s' to the server.\r\n"),
+                     OSTR("Writing MQTT message '%s' to the server.\r\n"),
                      message_fmt[type]);
 
     buf[0] = (type << 4) | flags;
@@ -701,7 +701,7 @@ static int read_server_message(struct mqtt_client_t *self_p)
 
     log_object_print(self_p->log_object_p,
                      LOG_DEBUG,
-                     LSTR("Read MQTT message '%s' from the server.\r\n"),
+                     OSTR("Read MQTT message '%s' from the server.\r\n"),
                      message_fmt[type]);
 
     switch (type) {

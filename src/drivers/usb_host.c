@@ -71,7 +71,7 @@ static int cmd_list_cb(int argc,
         }
     }
 
-    std_fprintf(out_p, CRSTR("BUS  ADDRESS   VID   PID  DESCRIPTION\r\n"));
+    std_fprintf(out_p, OSTR("BUS  ADDRESS   VID   PID  DESCRIPTION\r\n"));
 
     self_p = module.drivers_p;
 
@@ -84,7 +84,7 @@ static int cmd_list_cb(int argc,
             }
 
             std_fprintf(out_p,
-                        CRSTR("%3d %8d  %04x  %04x  %s\r\n"),
+                        OSTR("%3d %8d  %04x  %04x  %s\r\n"),
                         device_p->self_p->id,
                         device_p->address,
                         device_p->vid,

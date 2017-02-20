@@ -30,15 +30,8 @@
 
 #include "simba.h"
 
-#define SOAM_PACKET_SIZE_MIN                                6
-
-#define SOAM_TYPE_COMMAND_REQUEST                    (1 << 4)
-#define SOAM_TYPE_COMMAND_RESPONSE_DATA_PRINTF       (2 << 4)
-#define SOAM_TYPE_COMMAND_RESPONSE_DATA_BINARY       (3 << 4)
-#define SOAM_TYPE_COMMAND_RESPONSE                   (4 << 4)
-#define SOAM_TYPE_LOG_POINT                          (5 << 4)
-
 struct soam_t {
+    int is_printf;
     struct {
         uint8_t *buf_p;
         size_t size;
@@ -47,13 +40,9 @@ struct soam_t {
         void *chout_p;
         uint8_t packet_index;
     } tx;
-    struct {
-        int is_printf;
-        struct chan_t chan;
-    } command;
-    struct {
-        struct chan_t chan;
-    } log;
+    struct chan_t stdout_chan;
+    struct chan_t log_chan;
+    struct chan_t command_chan;
 };
 
 /**
@@ -153,3 +142,13 @@ ssize_t soam_write(struct soam_t *self_p,
  * @return Log input channel.
  */
 void *soam_get_log_input_channel(struct soam_t *self_p);
+
+/**
+ * Get the standard output input channel. This channel can be set as
+ * standard output channel of the sys module with `sys_set_stdout()`.
+ *
+ * @param[in] self_p Soam object.
+ *
+ * @return Standard output input channel.
+ */
+void *soam_get_stdout_input_channel(struct soam_t *self_p);

@@ -71,7 +71,7 @@ static int cmd_list_cb(int argc,
 
     /* Print the header. */
     std_fprintf(chout_p,
-                CRSTR("NAME                  TYPE     SIZE  VALUE\r\n"));
+                OSTR("NAME                  TYPE     SIZE  VALUE\r\n"));
 
     /* Print all settings. */
     setting_p = &settings[0];
@@ -83,7 +83,7 @@ static int cmd_list_cb(int argc,
         }
 
         std_strcpy(buf, setting_p->name_p);
-        std_fprintf(chout_p, CRSTR("%-20s  "), buf);
+        std_fprintf(chout_p, OSTR("%-20s  "), buf);
         size = setting_p->size;
 
         switch (setting_p->type) {
@@ -92,7 +92,7 @@ static int cmd_list_cb(int argc,
             int8 = 0;
             settings_read(&int8, setting_p->address, size);
             std_fprintf(chout_p,
-                        CRSTR("int8_t      1  %d\r\n"),
+                        OSTR("int8_t      1  %d\r\n"),
                         (int)int8);
             break;
 
@@ -100,7 +100,7 @@ static int cmd_list_cb(int argc,
             int16 = 0;
             settings_read(&int16, setting_p->address, size);
             std_fprintf(chout_p,
-                        CRSTR("int16_t     2  %d\r\n"),
+                        OSTR("int16_t     2  %d\r\n"),
                         (int)int16);
             break;
 
@@ -108,12 +108,12 @@ static int cmd_list_cb(int argc,
             int32 = 0;
             settings_read(&int32, setting_p->address, size);
             std_fprintf(chout_p,
-                        CRSTR("int32_t     4  %ld\r\n"),
+                        OSTR("int32_t     4  %ld\r\n"),
                         (long)int32);
             break;
 
         case setting_type_string_t:
-            std_fprintf(chout_p, CRSTR("string   %4u  "), (int)size);
+            std_fprintf(chout_p, OSTR("string   %4u  "), (int)size);
 
             for (i = 0; i < size; i++) {
                 settings_read(&buf[0], setting_p->address + i, 1);
@@ -122,15 +122,15 @@ static int cmd_list_cb(int argc,
                     break;
                 }
 
-                std_fprintf(chout_p, CRSTR("%c"), buf[0]);
+                std_fprintf(chout_p, OSTR("%c"), buf[0]);
             }
 
-            std_fprintf(chout_p, CRSTR("\r\n"));
+            std_fprintf(chout_p, OSTR("\r\n"));
             break;
 
         default:
             std_fprintf(chout_p,
-                        CRSTR("bad setting type %d\r\n"),
+                        OSTR("bad setting type %d\r\n"),
                         setting_p->type);
         }
 
@@ -173,7 +173,7 @@ static int cmd_read_cb(int argc,
     char buf[1];
 
     if (argc != 2) {
-        std_fprintf(chout_p, CRSTR("Usage: %s <name>\r\n"), argv[0]);
+        std_fprintf(chout_p, OSTR("Usage: %s <name>\r\n"), argv[0]);
 
         return (-1);
     }
@@ -188,19 +188,19 @@ static int cmd_read_cb(int argc,
             case setting_type_int8_t:
                 int8 = 0;
                 settings_read(&int8, setting_p->address, setting_p->size);
-                std_fprintf(chout_p, CRSTR("%d\r\n"), (int)int8);
+                std_fprintf(chout_p, OSTR("%d\r\n"), (int)int8);
                 break;
 
             case setting_type_int16_t:
                 int16 = 0;
                 settings_read(&int16, setting_p->address, setting_p->size);
-                std_fprintf(chout_p, CRSTR("%d\r\n"), (int)int16);
+                std_fprintf(chout_p, OSTR("%d\r\n"), (int)int16);
                 break;
 
             case setting_type_int32_t:
                 int32 = 0;
                 settings_read(&int32, setting_p->address, setting_p->size);
-                std_fprintf(chout_p, CRSTR("%ld\r\n"), (long)int32);
+                std_fprintf(chout_p, OSTR("%ld\r\n"), (long)int32);
                 break;
 
             case setting_type_string_t:
@@ -212,15 +212,15 @@ static int cmd_read_cb(int argc,
                         break;
                     }
 
-                    std_fprintf(chout_p, CRSTR("%c"), buf[0]);
+                    std_fprintf(chout_p, OSTR("%c"), buf[0]);
                 }
 
-                std_fprintf(chout_p, CRSTR("\r\n"));
+                std_fprintf(chout_p, OSTR("\r\n"));
                 break;
 
             default:
                 std_fprintf(chout_p,
-                            CRSTR("bad setting type %d\r\n"),
+                            OSTR("bad setting type %d\r\n"),
                             setting_p->type);
             }
 
@@ -230,7 +230,7 @@ static int cmd_read_cb(int argc,
         setting_p++;
     }
 
-    std_fprintf(chout_p, CRSTR("%s: setting not found\r\n"), argv[1]);
+    std_fprintf(chout_p, OSTR("%s: setting not found\r\n"), argv[1]);
 
     return (-1);
 }
@@ -253,7 +253,7 @@ static int cmd_write_cb(int argc,
     int32_t int32;
 
     if (argc != 3) {
-        std_fprintf(chout_p, CRSTR("Usage: %s <name> <value>\r\n"), argv[0]);
+        std_fprintf(chout_p, OSTR("Usage: %s <name> <value>\r\n"), argv[0]);
 
         return (-1);
     }
@@ -273,7 +273,7 @@ static int cmd_write_cb(int argc,
                 /* Range check. */
                 if ((value > 127) || (value < -128)) {
                     std_fprintf(chout_p,
-                                CRSTR("%ld: value out of range\r\n"),
+                                OSTR("%ld: value out of range\r\n"),
                                 value);
                     return (-1);
                 }
@@ -290,7 +290,7 @@ static int cmd_write_cb(int argc,
                 /* Range check. */
                 if ((value > 32767) || (value < -32768)) {
                     std_fprintf(chout_p,
-                                CRSTR("%ld: value out of range\r\n"),
+                                OSTR("%ld: value out of range\r\n"),
                                 value);
                     return (-1);
                 }
@@ -307,7 +307,7 @@ static int cmd_write_cb(int argc,
                 /* Range check. */
                 if ((value > 2147483647) || (value < -2147483648)) {
                     std_fprintf(chout_p,
-                                CRSTR("%ld: value out of range\r\n"),
+                                OSTR("%ld: value out of range\r\n"),
                                 value);
                     return (-1);
                 }
@@ -320,7 +320,7 @@ static int cmd_write_cb(int argc,
                 /* Range check. */
                 if (strlen(argv[2]) >= setting_p->size) {
                     std_fprintf(chout_p,
-                                CRSTR("%s: string too long\r\n"),
+                                OSTR("%s: string too long\r\n"),
                                 argv[2]);
                     return (-1);
                 }
@@ -330,7 +330,7 @@ static int cmd_write_cb(int argc,
 
             default:
                 std_fprintf(chout_p,
-                            CRSTR("bad setting type %d\r\n"),
+                            OSTR("bad setting type %d\r\n"),
                             setting_p->type);
             }
 
@@ -340,7 +340,7 @@ static int cmd_write_cb(int argc,
         setting_p++;
     }
 
-    std_fprintf(chout_p, CRSTR("%s: setting not found\r\n"), argv[1]);
+    std_fprintf(chout_p, OSTR("%s: setting not found\r\n"), argv[1]);
 
     return (-1);
 }

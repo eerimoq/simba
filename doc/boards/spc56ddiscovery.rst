@@ -57,7 +57,7 @@ Below is the memory usage of two applications:
 +==========================+===========+===========+
 | minimal-configuration    |      6448 |       588 |
 +--------------------------+-----------+-----------+
-| default-configuration    |     50600 |      4162 |
+| default-configuration    |     50604 |      4158 |
 +--------------------------+-----------+-----------+
 
 Default configuration
@@ -375,6 +375,12 @@ Default Standard Library configuration.
 |  CONFIG_START_SHELL_PRIO_                              |  30                                                 |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_START_SHELL_STACK_SIZE_                        |  768                                                |
++--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_START_SOAM_                                    |  0                                                  |
++--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_START_SOAM_PRIO_                               |  30                                                 |
++--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_START_SOAM_STACK_SIZE_                         |  768                                                |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_STD_OUTPUT_BUFFER_MAX_                         |  16                                                 |
 +--------------------------------------------------------+-----------------------------------------------------+
@@ -737,6 +743,12 @@ Mcu
 .. _CONFIG_START_SHELL_PRIO: ../user-guide/configuration.html#c.CONFIG_START_SHELL_PRIO
 
 .. _CONFIG_START_SHELL_STACK_SIZE: ../user-guide/configuration.html#c.CONFIG_START_SHELL_STACK_SIZE
+
+.. _CONFIG_START_SOAM: ../user-guide/configuration.html#c.CONFIG_START_SOAM
+
+.. _CONFIG_START_SOAM_PRIO: ../user-guide/configuration.html#c.CONFIG_START_SOAM_PRIO
+
+.. _CONFIG_START_SOAM_STACK_SIZE: ../user-guide/configuration.html#c.CONFIG_START_SOAM_STACK_SIZE
 
 .. _CONFIG_STD_OUTPUT_BUFFER_MAX: ../user-guide/configuration.html#c.CONFIG_STD_OUTPUT_BUFFER_MAX
 

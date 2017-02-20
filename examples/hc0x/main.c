@@ -56,7 +56,7 @@ static int cmd_at_cb(int argc,
     char c;
     char buf[32];
 
-    std_fprintf(out_p, CRSTR("type ctrl-d to exit\r\n"));
+    std_fprintf(out_p, OSTR("type ctrl-d to exit\r\n"));
 
     /* Wait for data from PC and HC-0X. */
     chan_list_init(&list, buf, sizeof(buf));
@@ -81,7 +81,7 @@ static int cmd_at_cb(int argc,
             chan_read(chan_p, &c, sizeof(c));
             chan_write(out_p, &c, sizeof(c));
         } else {
-            std_printf(CRSTR("bad input channel 0x%02x\r\n"),  (int)chan_p);
+            std_printf(OSTR("bad input channel 0x%02x\r\n"),  (int)chan_p);
         }
     }
 

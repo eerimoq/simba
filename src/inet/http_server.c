@@ -107,7 +107,7 @@ static int read_initial_request_line(void *chan_p,
 
     log_object_print(NULL,
                      LOG_DEBUG,
-                     LSTR("%s %s %s\r\n"), action_p, path_p, proto_p);
+                     OSTR("%s %s %s\r\n"), action_p, path_p, proto_p);
 
     /* Save the action and path in the request struct. */
     size = sizeof(request_p->path);
@@ -206,7 +206,7 @@ static int read_request(struct http_server_t *self_p,
             return (res);
         }
 
-        log_object_print(NULL, LOG_DEBUG, LSTR("%s: %s\r\n"), header_p, value_p);
+        log_object_print(NULL, LOG_DEBUG, OSTR("%s: %s\r\n"), header_p, value_p);
 
         /* Save the header field in the request object. */
         if (strcmp(header_p, "Sec-WebSocket-Key") == 0) {
@@ -307,7 +307,7 @@ static void *connection_main(void *arg_p)
     while (1) {
         log_object_print(NULL,
                          LOG_DEBUG,
-                         LSTR("Connection thread '%s' waiting for a new connection.\r\n"),
+                         OSTR("Connection thread '%s' waiting for a new connection.\r\n"),
                          thrd_get_name());
 
         mask = 0x1;
@@ -409,7 +409,7 @@ static void *listener_main(void *arg_p)
     if (socket_open_tcp(&listener_p->socket) != 0) {
         log_object_print(NULL,
                          LOG_ERROR,
-                         LSTR("failed to open socket\r\n"));
+                         OSTR("failed to open socket\r\n"));
         return (NULL);
     }
 
@@ -422,20 +422,20 @@ static void *listener_main(void *arg_p)
     if (socket_bind(&listener_p->socket, &addr) != 0) {
         log_object_print(NULL,
                          LOG_ERROR,
-                         LSTR("failed to bind socket\r\n"));
+                         OSTR("failed to bind socket\r\n"));
         return (NULL);
     }
 
     if (socket_listen(&listener_p->socket, 3) != 0) {
         log_object_print(NULL,
                          LOG_ERROR,
-                         LSTR("failed to listen on socket\r\n"));
+                         OSTR("failed to listen on socket\r\n"));
         return (NULL);
     }
 
     log_object_print(NULL,
                      LOG_INFO,
-                     LSTR("serving HTTP on %s:%u\r\n"),
+                     OSTR("serving HTTP on %s:%u\r\n"),
                      listener_p->address_p,
                      listener_p->port);
 

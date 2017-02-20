@@ -143,7 +143,7 @@ static int cmd_pwm_measure_cb(int argc,
     struct timer_t timer;
 
     if (argc > 2) {
-        std_fprintf(chout_p, CRSTR("Usage: %s [iterations]\r\n"), argv[0]);
+        std_fprintf(chout_p, OSTR("Usage: %s [iterations]\r\n"), argv[0]);
 
         return (-1);
     }
@@ -182,7 +182,7 @@ static int cmd_pwm_measure_cb(int argc,
         queue_read(&module.queue, &time, sizeof(time));
         queue_read(&module.queue, &reports[0], sizeof(reports));
 
-        std_fprintf(chout_p, CRSTR("%lu: ["), time);
+        std_fprintf(chout_p, OSTR("%lu: ["), time);
         delim_p = "";
 
         for (j = 0; j < membersof(reports); j++, delim_p = ",") {
@@ -190,13 +190,13 @@ static int cmd_pwm_measure_cb(int argc,
             frequency = ((1000 * reports[j].rising_count)
                          / (TIMEOUTS_PER_REPORT * SAMPLE_TIMEOUT_IN_MILLISECONDS));
             std_fprintf(chout_p,
-                        CRSTR("%s(%d,%d)"),
+                        OSTR("%s(%d,%d)"),
                         delim_p,
                         duty_cycle,
                         frequency);
         }
 
-        std_fprintf(chout_p, CRSTR("]\r\n"));
+        std_fprintf(chout_p, OSTR("]\r\n"));
     }
 
     /* Measurement complete, stop the timer. */

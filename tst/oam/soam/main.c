@@ -49,7 +49,7 @@ static int cmd_foo_cb(int argc,
     /* The formatted string must be longer than the printf output
        buffer to the begin/end functionality. */
     std_fprintf(chout_p,
-                CRSTR("%d %u %f %s %c\r\n"),
+                OSTR("%d %u %f %s %c\r\n"),
                 -33544,
                 56342,
                 98743.58,
@@ -102,7 +102,7 @@ static int test_log(struct harness_t *harness_p)
 
     log_object_print(NULL,
                      LOG_INFO,
-                     LSTR("one: %d, "
+                     OSTR("one: %d, "
                           "erik"": %s\r\n"),
                      1,
                      "erik");
@@ -110,7 +110,7 @@ static int test_log(struct harness_t *harness_p)
     /* Read the SOAM packet written to the output channel from the log
        function. */
     BTASSERT(chan_read(&chout, &buf[0], 4) == 4);
-    BTASSERT(buf[0] == 0x51);
+    BTASSERT(buf[0] == 0x21);
     BTASSERT(buf[1] == 1);
 
     size = ((buf[2] << 8) | buf[3]);
@@ -122,22 +122,22 @@ static int test_log(struct harness_t *harness_p)
     offset += (size - 30);
     BTASSERT(chan_read(&chout, &buf[offset], 30) == 30);
 
-    BTASSERT(memcmp(&buf[offset],
-                    ":info:main:default: "
-                    "\x80\x02"
+    BTASSERT(memcmp(&buf[offset], ":info:main:default: ", 20) == 0);
+    BTASSERT(memcmp(&buf[offset + 22],
                     "1\x1f"
-                    "erik", 28) == 0);
+                    "erik",
+                    6) == 0);
 
     crc = ((buf[size + 2] << 8) | buf[size + 3]);
     BTASSERT(crc_ccitt(0xffff, &buf[0], size + 2) == crc);
 
     /* Another log point. */
-    log_object_print(NULL, LOG_ERROR, LSTR("foo\r\n"));
+    log_object_print(NULL, LOG_ERROR, OSTR("foo\r\n"));
 
     /* Read the SOAM packet written to the output channel from the log
        function. */
     BTASSERT(chan_read(&chout, &buf[0], 4) == 4);
-    BTASSERT(buf[0] == 0x51);
+    BTASSERT(buf[0] == 0x21);
     BTASSERT(buf[1] == 2);
 
     size = ((buf[2] << 8) | buf[3]);
@@ -149,7 +149,7 @@ static int test_log(struct harness_t *harness_p)
     offset += (size - 25);
     BTASSERT(chan_read(&chout, &buf[offset], 25) == 25);
 
-    BTASSERT(memcmp(&buf[offset], ":error:main:default: \x80\x03", 23) == 0);
+    BTASSERT(memcmp(&buf[offset], ":error:main:default: ", 21) == 0);
 
     crc = ((buf[size + 2] << 8) | buf[size + 3]);
     BTASSERT(crc_ccitt(0xffff, &buf[0], size + 2) == crc);
@@ -164,18 +164,21 @@ static int test_command(struct harness_t *harness_p)
     uint16_t crc;
 
     /* Command 'foo'. */
-    BTASSERT(soam_input(&soam,
-                        (uint8_t *)"\x10"
-                        "\x01"
-                        "\x00\x05"
-                        "\x80\x04\x00"
-                        "\xc8\xce",
-                        9) == 0);
+    buf[0] = 0x30;
+    buf[1] = 0x01;
+    buf[2] = 0x00;
+    buf[3] = 0x05;
+    buf[4] = CSTR("/foo")[1];
+    buf[5] = CSTR("/foo")[2];
+    buf[6] = 0x00;
+    buf[7] = 0xa6;
+    buf[8] = 0x38;
+    BTASSERT(soam_input(&soam, &buf[0], 9) == 0);
 
     /* Read the command response printf data packet #1, created by
        std_fprintf(...). */
     BTASSERT(chan_read(&chout, &buf[0], 4) == 4);
-    BTASSERT(buf[0] == 0x20);
+    BTASSERT(buf[0] == 0x40);
     BTASSERT(buf[1] == 3);
 
     size = ((buf[2] << 8) | buf[3]);
@@ -195,7 +198,7 @@ static int test_command(struct harness_t *harness_p)
     /* Read the command response printf data packet #2, created by
        std_fprintf(...). */
     BTASSERT(chan_read(&chout, &buf[0], 4) == 4);
-    BTASSERT(buf[0] == 0x22);
+    BTASSERT(buf[0] == 0x42);
     BTASSERT(buf[1] == 4);
 
     size = ((buf[2] << 8) | buf[3]);
@@ -211,7 +214,7 @@ static int test_command(struct harness_t *harness_p)
     /* Read the command response printf data packet #3, created by
        std_fprintf(...). */
     BTASSERT(chan_read(&chout, &buf[0], 4) == 4);
-    BTASSERT(buf[0] == 0x23);
+    BTASSERT(buf[0] == 0x43);
     BTASSERT(buf[1] == 5);
 
     size = ((buf[2] << 8) | buf[3]);
@@ -229,7 +232,7 @@ static int test_command(struct harness_t *harness_p)
     /* Read the command response binary data packet #1, created by
        chan_write(...). */
     BTASSERT(chan_read(&chout, &buf[0], 4) == 4);
-    BTASSERT(buf[0] == 0x30);
+    BTASSERT(buf[0] == 0x50);
     BTASSERT(buf[1] == 6);
 
     size = ((buf[2] << 8) | buf[3]);
@@ -250,7 +253,7 @@ static int test_command(struct harness_t *harness_p)
     /* Read the command response binary data packet #2, created by
        chan_write(...). */
     BTASSERT(chan_read(&chout, &buf[0], 4) == 4);
-    BTASSERT(buf[0] == 0x33);
+    BTASSERT(buf[0] == 0x53);
     BTASSERT(buf[1] == 7);
 
     size = ((buf[2] << 8) | buf[3]);
@@ -264,7 +267,7 @@ static int test_command(struct harness_t *harness_p)
     /* Read the command response packet, containing the command exit
        code. */
     BTASSERT(chan_read(&chout, &buf[0], 4) == 4);
-    BTASSERT(buf[0] == 0x41);
+    BTASSERT(buf[0] == 0x61);
     BTASSERT(buf[1] == 8);
 
     size = ((buf[2] << 8) | buf[3]);

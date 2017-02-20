@@ -35,12 +35,18 @@ BOARD ?= linux
 SOAM ?= yes
 
 CDEFS += \
+	CONFIG_START_SOAM=0 \
 	CONFIG_MINIMAL_SYSTEM=1 \
 	CONFIG_MODULE_INIT_SOAM=1 \
-	CONFIG_MODULE_INIT_LOG=1
+	CONFIG_MODULE_INIT_LOG=1 \
+	CONFIG_FS_CMD_THRD_LIST=1
 
 OAM_SRC += soam.c
 HASH_SRC += crc.c
+
+# With SOAM enabled the harness will output these as suite result.
+RUN_END_PATTERN = "PASSED|FAILED"
+RUN_END_PATTERN_SUCCESS = "PASSED"
 
 SIMBA_ROOT ?= ../../..
 include $(SIMBA_ROOT)/make/app.mk

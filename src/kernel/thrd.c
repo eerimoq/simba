@@ -348,7 +348,7 @@ static int cmd_list_cb(int argc,
     struct thrd_t *thrd_p;
 
     std_fprintf(chout_p,
-                CRSTR("            NAME        STATE  PRIO"
+                OSTR("            NAME        STATE  PRIO"
 #if CONFIG_THRD_CPU_USAGE == 1
                      "   CPU"
 #endif
@@ -364,7 +364,7 @@ static int cmd_list_cb(int argc,
 
     while (thrd_p != NULL) {
         std_fprintf(chout_p,
-                    CRSTR("%16s %12s %5d"
+                    OSTR("%16s %12s %5d"
 #if CONFIG_THRD_CPU_USAGE == 1
                          " %4u%%"
 #endif
@@ -411,7 +411,7 @@ static int cmd_set_log_mask_cb(int argc,
 
     if (argc != 3) {
         std_fprintf(chout_p,
-                    CRSTR("Usage: set_log_mask <thread name> <log mask>\r\n"));
+                    OSTR("Usage: set_log_mask <thread name> <log mask>\r\n"));
         return (-EINVAL);
     }
 

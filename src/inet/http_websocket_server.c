@@ -64,7 +64,7 @@ int http_websocket_server_handshake(struct http_websocket_server_t *self_p,
     if (request_p->headers.sec_websocket_key.present == 0) {
         log_object_print(NULL,
                          LOG_DEBUG,
-                         LSTR("Missing HTTP header field: Sec-Websocket-Key\r\n"));
+                         OSTR("Missing HTTP header field: Sec-Websocket-Key\r\n"));
 
         return (-1);
     }

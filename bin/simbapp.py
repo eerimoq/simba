@@ -6,6 +6,7 @@ from __future__ import print_function
 import sys
 import argparse
 import re
+import base64
 
 
 def canonical(filename):
@@ -77,8 +78,9 @@ def process_format_strings(contents, canonical_filename):
         decoder_format_string = re.sub(r'%-?[0-9]*?l?[dsuxcf]', "{}",
                                        format_string)
         decoder_format_string = re.sub(r'%%', "%", decoder_format_string)
-        c_variable = '__fmt_' + canonical_filename + str(begin)
-        format_strings.append((c_variable,
+        c_variable = '__fmt_' + base64.b32encode(format_string).replace('=', '_').lower()
+        format_strings.append((format_string,
+                               c_variable,
                                soam_format_string,
                                decoder_format_string))
         output_contents += c_variable
@@ -88,7 +90,7 @@ def process_format_strings(contents, canonical_filename):
 
     declarations = ''
 
-    for c_variable, _, _ in format_strings:
+    for _, c_variable, _, _ in format_strings:
         declarations += 'extern const FAR char {}[];\n'.format(c_variable)
 
     return declarations + output_contents, format_strings
@@ -120,8 +122,8 @@ def process_commands(contents, canonical_filename):
             sys.exit(1)
 
         command = pack_c_string(contents[begin+25:end-1])
-        c_variable = '__cmd_' + canonical_filename + str(begin)
-        commands.append((c_variable, command))
+        c_variable = '__cmd_' + base64.b32encode(command).replace('=', '_').lower()
+        commands.append((command, c_variable))
         output_contents += c_variable
 
         end += 22
@@ -129,7 +131,7 @@ def process_commands(contents, canonical_filename):
 
     declarations = ''
 
-    for c_variable, _ in commands:
+    for _, c_variable in commands:
         declarations += 'extern const FAR char {}[];\n'.format(c_variable)
 
     return declarations + output_contents, commands
@@ -153,13 +155,11 @@ def main():
         fout.write(contents)
 
     with open(args.output + '.db', 'wb') as fout:
-        for c_variable, soam_fmtstr, decoder_fmtstr in format_strings:
-            fout.write('{} {} {}\n'.format(c_variable,
-                                           soam_fmtstr,
-                                           decoder_fmtstr))
+        for format_string in format_strings:
+            fout.write('FMT\n{}\n{}\n{}\n{}\n\n'.format(*format_string))
 
-        for c_variable, soam_command in commands:
-            fout.write('{} {}\n'.format(c_variable, soam_command))
+        for command in commands:
+            fout.write('CMD\n{}\n{}\n\n'.format(*command))
 
 
 if __name__ == '__main__':

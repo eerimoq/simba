@@ -380,6 +380,12 @@ Default Standard Library configuration.
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_START_SHELL_STACK_SIZE_                        |  768                                                |
 +--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_START_SOAM_                                    |  0                                                  |
++--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_START_SOAM_PRIO_                               |  30                                                 |
++--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_START_SOAM_STACK_SIZE_                         |  768                                                |
++--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_STD_OUTPUT_BUFFER_MAX_                         |  16                                                 |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_SYSTEM_INTERRUPTS_                             |  1                                                  |
@@ -741,6 +747,12 @@ Mcu
 .. _CONFIG_START_SHELL_PRIO: ../user-guide/configuration.html#c.CONFIG_START_SHELL_PRIO
 
 .. _CONFIG_START_SHELL_STACK_SIZE: ../user-guide/configuration.html#c.CONFIG_START_SHELL_STACK_SIZE
+
+.. _CONFIG_START_SOAM: ../user-guide/configuration.html#c.CONFIG_START_SOAM
+
+.. _CONFIG_START_SOAM_PRIO: ../user-guide/configuration.html#c.CONFIG_START_SOAM_PRIO
+
+.. _CONFIG_START_SOAM_STACK_SIZE: ../user-guide/configuration.html#c.CONFIG_START_SOAM_STACK_SIZE
 
 .. _CONFIG_STD_OUTPUT_BUFFER_MAX: ../user-guide/configuration.html#c.CONFIG_STD_OUTPUT_BUFFER_MAX
 

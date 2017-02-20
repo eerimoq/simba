@@ -81,7 +81,7 @@ static int counter_get(struct fs_counter_t *counter_p,
                        void *chout_p)
 {
     std_fprintf(chout_p,
-                CRSTR("%08lx%08lx\r\n"),
+                OSTR("%08lx%08lx\r\n"),
                 (long)(counter_p->value >> 32),
                 (long)(counter_p->value & 0xffffffff));
 
@@ -111,7 +111,7 @@ static int cmd_parameter_cb(int argc,
         res = parameter_p->set_cb(parameter_p->value_p, argv[1]);
     } else {
         res = parameter_p->print_cb(chout_p, parameter_p->value_p);
-        std_fprintf(chout_p, CRSTR("\r\n"));
+        std_fprintf(chout_p, OSTR("\r\n"));
     }
 
     return (res);
@@ -131,7 +131,7 @@ static int cmd_filesystems_list_cb(int argc,
     char *type_p;
 
     std_fprintf(chout_p,
-                CRSTR("MOUNT-POINT                    MEDIUM   TYPE"
+                OSTR("MOUNT-POINT                    MEDIUM   TYPE"
                       "     AVAILABLE  SIZE  USAGE\r\n"));
 
     filesystem_p = module.filesystems_p;
@@ -148,7 +148,7 @@ static int cmd_filesystems_list_cb(int argc,
         }
 
         std_fprintf(chout_p,
-                    CRSTR("%-29s  %-7s  %-7s  %9s  %4s  %5s\r\n"),
+                    OSTR("%-29s  %-7s  %-7s  %9s  %4s  %5s\r\n"),
                     buf,
                     "-",
                     type_p,
@@ -178,12 +178,12 @@ static int cmd_read_cb(int argc,
     char buf[32];
 
     if (argc != 2) {
-        std_fprintf(chout_p, CRSTR("Usage: %s <file>\r\n"), argv[0]);
+        std_fprintf(chout_p, OSTR("Usage: %s <file>\r\n"), argv[0]);
         return (-1);
     }
 
     if (fs_open(&file, argv[1], FS_READ) != 0) {
-        std_fprintf(chout_p, CRSTR("Failed to open %s.\r\n"), argv[1]);
+        std_fprintf(chout_p, OSTR("Failed to open %s.\r\n"), argv[1]);
         return (-1);
     }
 
@@ -212,13 +212,13 @@ static int cmd_write_cb(int argc,
     char data;
 
     if (argc < 2) {
-        std_fprintf(chout_p, CRSTR("Usage: %s <file> [<data>]\r\n"), argv[0]);
+        std_fprintf(chout_p, OSTR("Usage: %s <file> [<data>]\r\n"), argv[0]);
 
         return (-1);
     }
 
     if (fs_open(&file, argv[1], FS_CREAT | FS_TRUNC | FS_RDWR) != 0) {
-        std_fprintf(chout_p, CRSTR("Failed to open %s.\r\n"), argv[1]);
+        std_fprintf(chout_p, OSTR("Failed to open %s.\r\n"), argv[1]);
 
         return (-1);
     }
@@ -227,10 +227,10 @@ static int cmd_write_cb(int argc,
         size = strlen(argv[2]);
 
         if (fs_write(&file, argv[2], size) != size) {
-            std_fprintf(chout_p, CRSTR("Failed to write to %s.\r\n"), argv[1]);
+            std_fprintf(chout_p, OSTR("Failed to write to %s.\r\n"), argv[1]);
         }
     } else {
-        std_fprintf(chout_p, CRSTR("Reading, press Ctrl-D when done.\r\n"));
+        std_fprintf(chout_p, OSTR("Reading, press Ctrl-D when done.\r\n"));
         size = 0;
 
         while (1) {
@@ -244,14 +244,14 @@ static int cmd_write_cb(int argc,
             }
 
             if (fs_write(&file, &data, sizeof(data)) != sizeof(data)) {
-                std_fprintf(chout_p, CRSTR("Failed to write to %s.\r\n"), argv[1]);
+                std_fprintf(chout_p, OSTR("Failed to write to %s.\r\n"), argv[1]);
                 goto err;
             }
 
             size++;
         }
 
-        std_fprintf(chout_p, CRSTR("Wrote %u bytes to %s.\r\n"), size, argv[1]);
+        std_fprintf(chout_p, OSTR("Wrote %u bytes to %s.\r\n"), size, argv[1]);
     }
 
  err:
@@ -275,19 +275,19 @@ static int cmd_append_cb(int argc,
     size_t size;
 
     if (argc != 3) {
-        std_fprintf(chout_p, CRSTR("Usage: %s <file> <data>\r\n"), argv[0]);
+        std_fprintf(chout_p, OSTR("Usage: %s <file> <data>\r\n"), argv[0]);
         return (-1);
     }
 
     if (fs_open(&file, argv[1], FS_RDWR | FS_APPEND) != 0) {
-        std_fprintf(chout_p, CRSTR("Failed to open %s.\r\n"), argv[1]);
+        std_fprintf(chout_p, OSTR("Failed to open %s.\r\n"), argv[1]);
         return (-1);
     }
 
     size = strlen(argv[2]);
 
     if (fs_write(&file, argv[2], size) != size) {
-        std_fprintf(chout_p, CRSTR("Failed to append %s to the file.\r\n"), argv[2]);
+        std_fprintf(chout_p, OSTR("Failed to append %s to the file.\r\n"), argv[2]);
         return (-1);
     }
 
@@ -308,12 +308,12 @@ static int cmd_remove_cb(int argc,
                          void *call_arg_p)
 {
     if (argc != 2) {
-        std_fprintf(chout_p, CRSTR("Usage: %s <file>\r\n"), argv[0]);
+        std_fprintf(chout_p, OSTR("Usage: %s <file>\r\n"), argv[0]);
         return (-1);
     }
 
     if (fs_remove(argv[1]) != 0) {
-        std_fprintf(chout_p, CRSTR("Failed to remove %s.\r\n"), argv[1]);
+        std_fprintf(chout_p, OSTR("Failed to remove %s.\r\n"), argv[1]);
         return (-1);
     }
 
@@ -332,7 +332,7 @@ static int cmd_list_cb(int argc,
                        void *call_arg_p)
 {
     if (argc != 2) {
-        std_fprintf(chout_p, CRSTR("Usage: %s <path>\r\n"), argv[0]);
+        std_fprintf(chout_p, OSTR("Usage: %s <path>\r\n"), argv[0]);
         return (-1);
     }
 
@@ -351,7 +351,7 @@ static int cmd_format_cb(int argc,
                          void *call_arg_p)
 {
     if (argc != 2) {
-        std_fprintf(chout_p, CRSTR("Usage: %s <path>\r\n"), argv[0]);
+        std_fprintf(chout_p, OSTR("Usage: %s <path>\r\n"), argv[0]);
         return (-1);
     }
 
@@ -373,13 +373,13 @@ static int cmd_counters_list_cb(int argc,
     char buf[FS_NAME_MAX];
 
     std_fprintf(chout_p,
-                CRSTR("NAME                                                 VALUE\r\n"));
+                OSTR("NAME                                                 VALUE\r\n"));
 
     counter_p = module.counters_p;
 
     while (counter_p != NULL) {
         std_strcpy(buf, counter_p->command.path_p);
-        std_fprintf(chout_p, CRSTR("%-53s"), buf);
+        std_fprintf(chout_p, OSTR("%-53s"), buf);
         counter_p->command.callback(1,
                                     NULL,
                                     chout_p,
@@ -437,13 +437,13 @@ static int cmd_parameters_list_cb(int argc,
     char buf[FS_NAME_MAX];
 
     std_fprintf(chout_p,
-                CRSTR("NAME                                                 VALUE\r\n"));
+                OSTR("NAME                                                 VALUE\r\n"));
 
     parameter_p = module.parameters_p;
 
     while (parameter_p != NULL) {
         std_strcpy(buf, parameter_p->command.path_p);
-        std_fprintf(chout_p, CRSTR("%-53s"), buf);
+        std_fprintf(chout_p, OSTR("%-53s"), buf);
         parameter_p->command.callback(1,
                                       NULL,
                                       chout_p,
@@ -705,7 +705,7 @@ int fs_call(char *command_p,
         current_p = current_p->next_p;
     }
 
-    std_fprintf(chout_p, CRSTR("%s: command not found\r\n"), argv[0]);
+    std_fprintf(chout_p, OSTR("%s: command not found\r\n"), argv[0]);
 
     return (-ENOENT);
 }

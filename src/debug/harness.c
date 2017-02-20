@@ -53,30 +53,30 @@ int harness_run(struct harness_t *self_p,
 #endif
     
     /* Print a header. */
-    std_printf(FSTR("\r\n"));
+    std_printf(OSTR("\r\n"));
 
-    std_printf(FSTR("================================== TEST BEGIN ==================================\r\n\r\n"));
+    std_printf(OSTR("================================== TEST BEGIN ==================================\r\n\r\n"));
     std_printf(sys_get_info());
-    std_printf(FSTR("\r\n"));
+    std_printf(OSTR("\r\n"));
 
     while (testcase_p->callback != NULL) {
         if (testcase_p->name_p != NULL) {
-            std_printf(FSTR("enter: %s\r\n"), testcase_p->name_p);
+            std_printf(OSTR("enter: %s\r\n"), testcase_p->name_p);
         }
 
         err = testcase_p->callback(self_p);
 
         if (err == 0) {
             passed++;
-            std_printf(FSTR("exit: %s: PASSED\r\n\r\n"),
+            std_printf(OSTR("exit: %s: PASSED\r\n\r\n"),
                        testcase_p->name_p);
         } else if (err < 0) {
             failed++;
-            std_printf(FSTR("exit: %s: FAILED\r\n\r\n"),
+            std_printf(OSTR("exit: %s: FAILED\r\n\r\n"),
                        testcase_p->name_p);
         } else {
             skipped++;
-            std_printf(FSTR("exit: %s: SKIPPED\r\n\r\n"),
+            std_printf(OSTR("exit: %s: SKIPPED\r\n\r\n"),
                        testcase_p->name_p);
         }
 
@@ -88,18 +88,18 @@ int harness_run(struct harness_t *self_p,
 
     char buf[17];
 
-    strcpy(buf, "kernel/thrd/list");
+    strcpy(buf, CSTR("/kernel/thrd/list"));
     fs_call(buf, NULL, sys_get_stdout(), NULL);
 
-    std_printf(FSTR("\r\n"));
+    std_printf(OSTR("\r\n"));
 
 #endif
 
-    std_printf(FSTR("harness report: total(%d), passed(%d), "
+    std_printf(OSTR("harness report: total(%d), passed(%d), "
                     "failed(%d), skipped(%d)\r\n\r\n"),
                total, passed, failed, skipped);
 
-    std_printf(FSTR("=============================== TEST END (%s) ==============================\r\n\r\n"),
+    std_printf(OSTR("=============================== TEST END (%s) ==============================\r\n\r\n"),
                ((passed + skipped) == total ? "PASSED" : "FAILED"));
 
     sys_stop(failed);

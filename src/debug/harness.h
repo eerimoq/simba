@@ -33,6 +33,8 @@
 
 #include "simba.h"
 
+#define _ASSERTFMT(fmt, ...) std_printf(FSTR(fmt "\n"), ##__VA_ARGS__);
+
 /**
  * Assert given condition. Print an error message and return given
  * value ``res`` on error.
