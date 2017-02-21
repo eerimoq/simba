@@ -80,10 +80,14 @@ static void read_frame_from_hw(struct can_driver_t *self_p,
 static void write_frame_to_hw(volatile struct spc5_flexcan_t *regs_p,
                               const struct can_frame_t *frame_p)
 {
+    uint32_t ctrl_status;
+
     /* Write the frame to the hardware. */
     if (frame_p->extended_frame == 0) {
+        ctrl_status = 0;
         regs_p->MSGBUF[1].PRIO_ID = SPC5_FLEXCAN_MSGBUF_PRIO_ID_STD_ID(frame_p->id);
     } else {
+        ctrl_status = SPC5_FLEXCAN_MSGBUF_CTRL_STATUS_IDE;
         regs_p->MSGBUF[1].PRIO_ID = SPC5_FLEXCAN_MSGBUF_PRIO_ID_EXT_ID(frame_p->id);
     }
 
@@ -91,7 +95,8 @@ static void write_frame_to_hw(volatile struct spc5_flexcan_t *regs_p,
     regs_p->MSGBUF[1].DATA[1] = frame_p->data.u32[1];
 
     /* Set DLC and trigger the transmission. */
-    regs_p->MSGBUF[1].CTRL_STATUS = (SPC5_FLEXCAN_MSGBUF_CTRL_STATUS_CODE(0xc)
+    regs_p->MSGBUF[1].CTRL_STATUS = (ctrl_status
+                                     | SPC5_FLEXCAN_MSGBUF_CTRL_STATUS_CODE(0xc)
                                      | SPC5_FLEXCAN_MSGBUF_CTRL_STATUS_LENGTH(frame_p->size));
 }
 
