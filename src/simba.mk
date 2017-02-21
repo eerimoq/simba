@@ -235,6 +235,7 @@ endif
 
 ifeq ($(FAMILY),spc5)
 DRIVERS_SRC ?= pin.c \
+	       can.c \
                flash.c \
                uart.c
 endif

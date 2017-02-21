@@ -156,6 +156,7 @@
 #    define PORT_HAS_PIN
 #    define PORT_HAS_UART
 #    define PORT_HAS_FLASH
+#    define PORT_HAS_CAN
 #endif
 
 /**
