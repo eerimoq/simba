@@ -74,6 +74,7 @@ SUPPORTED_BOARDS = [
     "esp12e",
     "esp01",
     "nodemcu",
+    "huzzah",
     "nano32"
 ]
 
@@ -255,6 +256,14 @@ def setup_board_nodemcu(env):
     setup_mcu_esp(env, "simba.flash.4m.ld", "6")
 
 
+def setup_board_huzzah(env):
+    \"\"\"Setup the Huzzah environment.
+
+    \"\"\"
+
+    setup_mcu_esp(env, "simba.flash.4m.ld", "6")
+
+
 def setup_board_nano32(env):
     \"\"\"Setup the Nano32 environment.
 
@@ -352,6 +361,8 @@ elif board == "esp01":
     setup_board_esp01(env)
 elif board == "nodemcu":
     setup_board_nodemcu(env)
+elif board == "huzzah":
+    setup_board_huzzah(env)
 elif board == "nano32":
     setup_board_nano32(env)
 elif 'ARCH_AVR' in BOARDS[board]['cdefs']:
