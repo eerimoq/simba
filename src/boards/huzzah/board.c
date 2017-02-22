@@ -62,7 +62,7 @@ int board_pin_string_to_device_index(const char *str_p)
             return (-1);
         }
     } else if (strcmp(str_p, "led") == 0) {
-        pin = 0;
+        pin = 2;
     } else {
         return (-1);
     }
