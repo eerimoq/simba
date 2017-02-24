@@ -1,6 +1,8 @@
 File tree
 =========
 
+This is the file tree of the Simba repository.
+
 .. code-block:: text
 
     simba                    - this directory
