@@ -161,22 +161,28 @@ def boards_generate(database):
             "default-configuration"
         ]
         memory_usage = []
-        for application in applications:
-            subprocess.check_call(['make',
-                                   '-s',
-                                   '-C', os.path.join('examples', application),
-                                   'BOARD=' + board,
-                                   'all'])
-            sizes_json = subprocess.check_output(['make',
-                                                  '-s',
-                                                  '-C', os.path.join('examples', application),
-                                                  'BOARD=' + board,
-                                                  'size-json'])
-            sizes = json.loads(sizes_json)
-            memory_usage.append('| {application:24} | {program:9} | {data:9} |'.format(
-                application=application,
-                program=sizes['program'],
-                data=sizes['data']))
+
+        try:
+            for application in applications:
+                subprocess.check_call(['make',
+                                       '-s',
+                                       '-C', os.path.join('examples', application),
+                                       'BOARD=' + board,
+                                       'all'])
+                sizes_json = subprocess.check_output(['make',
+                                                      '-s',
+                                                      '-C', os.path.join('examples', application),
+                                                      'BOARD=' + board,
+                                                      'size-json'])
+                sizes = json.loads(sizes_json)
+                memory_usage.append('| {application:24} | {program:9} | {data:9} |'.format(
+                    application=application,
+                    program=sizes['program'],
+                    data=sizes['data']))
+        except subprocess.CalledProcessError:
+            print('Failed to generate memory footprint data for board {}. '
+                  'Skipping board.'.format(board))
+            continue
 
         rst = BOARD_FMT.format(name=board,
                                desc=data["board_desc"],
