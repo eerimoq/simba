@@ -80,7 +80,7 @@ static void sys_port_unlock_isr(void)
 {
 }
 
-static float sys_port_interrupt_cpu_usage_get(void)
+static cpu_usage_t sys_port_interrupt_cpu_usage_get(void)
 {
     return (0);
 }

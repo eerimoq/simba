@@ -61,13 +61,13 @@ static int cmd_read_cb(int argc,
     uint8_t data;
 
     if (argc != 2) {
-        std_printf(CRSTR("Usage: %s <slave address>\r\n"), argv[0]);
+        std_printf(OSTR("Usage: %s <slave address>\r\n"), argv[0]);
 
         return (-EINVAL);
     }
 
     if (std_strtol(argv[1], &value) == NULL) {
-        std_printf(CRSTR("Bad slave address.\r\n"));
+        std_printf(OSTR("Bad slave address.\r\n"));
 
         return (-EINVAL);
     }
@@ -78,12 +78,12 @@ static int cmd_read_cb(int argc,
     i2c_start(&i2c);
 
     if (i2c_read(&i2c, slave_address, &data, 1) != 1) {
-        std_printf(CRSTR("Failed to read from slave device 0x%02x.\r\n"),
+        std_printf(OSTR("Failed to read from slave device 0x%02x.\r\n"),
                    slave_address);
         goto out;
     }
 
-    std_printf(CRSTR("0x%02x\r\n"), data);
+    std_printf(OSTR("0x%02x\r\n"), data);
 
  out:
     i2c_stop(&i2c);
@@ -108,14 +108,14 @@ static int cmd_write_cb(int argc,
     uint8_t data;
 
     if (argc != 3) {
-        std_printf(CRSTR("Usage: %s <slave address> <data byte>\r\n"),
+        std_printf(OSTR("Usage: %s <slave address> <data byte>\r\n"),
                    argv[0]);
 
         return (-EINVAL);
     }
 
     if (std_strtol(argv[1], &value) == NULL) {
-        std_printf(CRSTR("Bad slave address.\r\n"));
+        std_printf(OSTR("Bad slave address.\r\n"));
 
         return (-EINVAL);
     }
@@ -123,13 +123,13 @@ static int cmd_write_cb(int argc,
     slave_address = value;
 
     if (std_strtol(argv[2], &value) == NULL) {
-        std_printf(CRSTR("Bad data value.\r\n"));
+        std_printf(OSTR("Bad data value.\r\n"));
 
         return (-EINVAL);
     }
 
     if ((value > 255) || (value < 0)) {
-        std_printf(CRSTR("Data byte value out of range.\r\n"));
+        std_printf(OSTR("Data byte value out of range.\r\n"));
 
         return (-EINVAL);
     }
@@ -140,7 +140,7 @@ static int cmd_write_cb(int argc,
     i2c_start(&i2c);
 
     if (i2c_write(&i2c, slave_address, &data, 1) != 1) {
-        std_printf(CRSTR("Failed to write data 0x%02x to slave"
+        std_printf(OSTR("Failed to write data 0x%02x to slave"
                          " device 0x%02x.\r\n"),
                    data,
                    slave_address);

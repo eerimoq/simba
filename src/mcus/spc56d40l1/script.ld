@@ -39,6 +39,7 @@ SECTIONS
         KEEP(*(.ivor))
         *(.text .text.* .gnu.linkonce.t.*)
         *(.rodata .rodata* .gnu.linkonce.r.*)
+        *(.sdata .sdata.*);
 
         /* Support C constructors, and C destructors in both user code
            and the C library. This also provides support for C++ code. */
@@ -87,7 +88,6 @@ SECTIONS
         __relocate_begin = .;
         *(.ramfunc .ramfunc.*);
         *(.data .data.*);
-        *(.sdata .sdata.*);
         . = ALIGN(4);
         __relocate_end = .;
     } > ram

@@ -155,10 +155,6 @@ static void init_drivers(void)
     analog_output_pin_module_init();
 #endif
 
-#if CONFIG_MODULE_INIT_BCM43362 == 1
-    bcm43362_module_init();
-#endif
-
 #if CONFIG_MODULE_INIT_CAN == 1
     can_module_init();
 #endif
@@ -320,6 +316,69 @@ static int start_shell(void)
 
 #endif
 
+#if CONFIG_START_SOAM == 1
+
+static struct slip_t slip;
+static uint8_t slip_buf[128];
+
+static struct soam_t soam;
+static uint8_t soam_buf[128];
+
+static THRD_STACK(soam_stack, CONFIG_START_SOAM_STACK_SIZE);
+
+/**
+ * This thread executes file system commands.
+ */
+static void *soam_main(void *arg_p)
+{
+    uint8_t byte;
+    ssize_t size;
+
+    thrd_set_name("soam");
+    
+    while (1) {
+        chan_read(sys_get_stdin(), &byte, sizeof(byte));
+
+        size = slip_input(&slip, byte);
+
+        if (size > 0) {
+            soam_input(&soam, &slip_buf[0], size);
+        }
+    }
+
+    return (NULL);
+}
+
+static int start_soam(void)
+{
+    if (slip_init(&slip,
+                  &slip_buf[0],
+                  sizeof(slip_buf),
+                  sys_get_stdout()) != 0) {
+        return (-1);
+    }
+
+    if (soam_init(&soam,
+                  &soam_buf[0],
+                  sizeof(soam_buf),
+                  slip_get_output_channel(&slip)) != 0) {
+        return (-1);
+    }
+
+    log_set_default_handler_output_channel(soam_get_log_input_channel(&soam));
+    sys_set_stdout(soam_get_stdout_input_channel(&soam));
+
+    thrd_spawn(soam_main,
+               &soam,
+               CONFIG_START_SOAM_PRIO,
+               soam_stack,
+               sizeof(soam_stack));
+
+    return (0);
+}
+
+#endif
+
 #if CONFIG_START_FILESYSTEM == 1
 #    include "sys/filesystem.i"
 #endif
@@ -374,7 +433,7 @@ static int cmd_uptime_cb(int argc,
     time_get(&now);
 
     std_fprintf(out_p,
-                CRSTR("%lu.%lu seconds\r\n"),
+                OSTR("%lu.%lu seconds\r\n"),
                 now.seconds,
                 now.nanoseconds / 1000000ul);
 
@@ -491,6 +550,10 @@ int sys_start(void)
     start_shell();
 #endif
 
+#if CONFIG_START_SOAM == 1
+    start_soam();
+#endif
+
 # if CONFIG_START_FILESYSTEM == 1
     start_filesystem();
 #endif
@@ -571,7 +634,7 @@ far_string_t sys_get_config()
     return (config);
 }
 
-float sys_interrupt_cpu_usage_get()
+cpu_usage_t sys_interrupt_cpu_usage_get()
 {
     return (sys_port_interrupt_cpu_usage_get());
 }

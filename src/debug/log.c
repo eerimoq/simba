@@ -78,13 +78,13 @@ static int cmd_print_cb(int argc,
                         void *call_arg_p)
 {
     if (argc != 2) {
-        std_fprintf(out_p, CRSTR("Usage: print <string>\r\n"));
+        std_fprintf(out_p, OSTR("Usage: print <string>\r\n"));
 
         return (-EINVAL);
     }
 
     /* Write the argument to the log. */
-    log_object_print(&module.object, LOG_INFO, LSTR("%s\r\n"), argv[1]);
+    log_object_print(&module.object, LOG_INFO, OSTR("%s\r\n"), argv[1]);
 
     return (0);
 }
@@ -106,20 +106,20 @@ static int cmd_list_cb(int argc,
     struct log_object_t *object_p;
 
     if (argc != 1) {
-        std_fprintf(out_p, CRSTR("Usage: list\r\n"));
+        std_fprintf(out_p, OSTR("Usage: list\r\n"));
 
         return (-EINVAL);
     }
 
     sem_take(&module.sem, NULL);
 
-    std_fprintf(out_p, CRSTR("OBJECT-NAME       MASK\r\n"));
+    std_fprintf(out_p, OSTR("OBJECT-NAME       MASK\r\n"));
 
     object_p = &module.object;
 
     while (object_p != NULL) {
         std_fprintf(out_p,
-                    CRSTR("%-16s  0x%02x\r\n"),
+                    OSTR("%-16s  0x%02x\r\n"),
                     object_p->name_p,
                     (int)object_p->mask);
 
@@ -151,13 +151,13 @@ static int cmd_set_log_mask_cb(int argc,
     const char *name_p;
 
     if (argc != 3) {
-        std_fprintf(out_p, CRSTR("Usage: set_log_mask <obejct> <mask>\r\n"));
+        std_fprintf(out_p, OSTR("Usage: set_log_mask <obejct> <mask>\r\n"));
 
         return (-EINVAL);
     }
 
     if (std_strtol(argv[2], &mask) == NULL) {
-        std_fprintf(out_p, CRSTR("bad mask %s\r\n"), argv[2]);
+        std_fprintf(out_p, OSTR("bad mask %s\r\n"), argv[2]);
 
         return (-EINVAL);
     }
@@ -184,7 +184,7 @@ static int cmd_set_log_mask_cb(int argc,
 
     if (found == 0) {
         std_fprintf(out_p,
-                    CRSTR("warning: no log object with name %s\r\n"),
+                    OSTR("warning: no log object with name %s\r\n"),
                     name_p);
 
         return (-EINVAL);

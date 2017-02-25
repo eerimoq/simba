@@ -84,7 +84,7 @@ static int request_index(struct http_server_connection_t *connection_p,
         "<!DOCTYPE HTML>\n"
         "<html>\n"
         "  <body>\n"
-        "    Hello from Simba!"
+        "    Hello from Simba!\n"
         "  </body>\n"
         "</html>\n";
     struct http_server_response_t response;

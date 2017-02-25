@@ -46,7 +46,7 @@ static int cmd_hello_world_cb(int argc,
                               void *call_arg_p)
 {
     /* Write "Hello World!" to the output channel. */
-    std_fprintf(out_p, CRSTR("Hello World!\r\n"));
+    std_fprintf(out_p, OSTR("Hello World!\r\n"));
 
     return (0);
 }

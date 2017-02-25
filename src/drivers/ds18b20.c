@@ -73,7 +73,7 @@ static int cmd_list_cb(int argc,
     struct owi_device_t *dev_p;
     int i;
 
-    std_fprintf(chout_p, CRSTR("              ID      TEMP\r\n"));
+    std_fprintf(chout_p, OSTR("              ID      TEMP\r\n"));
 
     self_p = module.list_p;
 
@@ -88,7 +88,7 @@ static int cmd_list_cb(int argc,
             }
 
             std_fprintf(chout_p,
-                        CRSTR("%02x%02x%02x%02x%02x%02x%02x%02x %9s\r\n"),
+                        OSTR("%02x%02x%02x%02x%02x%02x%02x%02x %9s\r\n"),
                         (unsigned int)dev_p->id[0],
                         (unsigned int)dev_p->id[1],
                         (unsigned int)dev_p->id[2],

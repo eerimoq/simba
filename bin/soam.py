@@ -10,11 +10,12 @@ import cmd
 import threading
 import serial
 
-SOAM_TYPE_COMMAND_REQUEST              = 1
-SOAM_TYPE_COMMAND_RESPONSE_DATA_PRINTF = 2
-SOAM_TYPE_COMMAND_RESPONSE_DATA_BINARY = 3
-SOAM_TYPE_COMMAND_RESPONSE             = 4
-SOAM_TYPE_LOG_POINT                    = 5
+SOAM_TYPE_STDOUT                       = 1
+SOAM_TYPE_LOG_POINT                    = 2
+SOAM_TYPE_COMMAND_REQUEST              = 3
+SOAM_TYPE_COMMAND_RESPONSE_DATA_PRINTF = 4
+SOAM_TYPE_COMMAND_RESPONSE_DATA_BINARY = 5
+SOAM_TYPE_COMMAND_RESPONSE             = 6
 
 SOAM_SEGMENT_SIZE_MIN = 6
 
@@ -90,15 +91,15 @@ class ReaderThread(threading.Thread):
                 if byte == b'\xc0':
                     if len(packet) > 0:
                         return packet
-                elif byte == b'db':
+                elif byte == b'\xdb':
                     is_escaped = True
                 else:
                     packet += byte
             else:
                 if byte == b'\xdc':
-                    packet += b'c0'
+                    packet += b'\xc0'
                 elif byte == b'\xdd':
-                    packet += b'db'
+                    packet += b'\xdb'
                 else:
                     # Protocol error. Discard the packet.
                     print('Discarding:', packet)
@@ -181,7 +182,7 @@ class ReaderThread(threading.Thread):
             else:
                 if flags == 0:
                     segments = [payload]
-                else:                
+                else:
                     segments += [payload]
 
             if (flags & SOAM_SEGMENT_FLAGS_LAST) == 0:
@@ -189,18 +190,10 @@ class ReaderThread(threading.Thread):
 
             packet_type = segment_type
             packet = ''.join(segments)
-            
-            # Decode the reassembled packet.
-            if packet_type in [SOAM_TYPE_COMMAND_RESPONSE_DATA_PRINTF,
-                               SOAM_TYPE_COMMAND_RESPONSE_DATA_BINARY]:
-                response_data.append((packet_type, packet))
-            elif packet_type == SOAM_TYPE_COMMAND_RESPONSE:
-                code = struct.unpack('>i', packet)[0]
 
-                with self.response_packet_cond:
-                    self.response_packet = code, response_data
-                    response_data = []
-                    self.response_packet_cond.notify_all()
+            # Decode the reassembled packet.
+            if packet_type == SOAM_TYPE_STDOUT:
+                print(packet, end='')
             elif packet_type == SOAM_TYPE_LOG_POINT:
                 # Format the log point.
                 header, data = packet.split(': ', 1)
@@ -210,11 +203,21 @@ class ReaderThread(threading.Thread):
                                        + ': '
                                        + fmt.format(*data[2:].split('\x1f')))
                 print(formatted_log_point, end='')
+            elif packet_type in [SOAM_TYPE_COMMAND_RESPONSE_DATA_PRINTF,
+                                 SOAM_TYPE_COMMAND_RESPONSE_DATA_BINARY]:
+                response_data.append((packet_type, packet))
+            elif packet_type == SOAM_TYPE_COMMAND_RESPONSE:
+                code = struct.unpack('>i', packet)[0]
+
+                with self.response_packet_cond:
+                    self.response_packet = code, response_data
+                    response_data = []
+                    self.response_packet_cond.notify_all()
             else:
                 print('Bad packet type:', packet)
 
             segments = None
-                
+
     def stop(self):
         self.running = False
 
@@ -232,7 +235,7 @@ class Database(object):
                     continue
 
                 kind, identity, string = line.strip().split(' ', 2)
-                identity = int(identity)
+                identity = int(identity, 0)
                 string = string[1:-1]
                 string = string.replace('\\n', '\n')
                 string = string.replace('\\r', '\r')

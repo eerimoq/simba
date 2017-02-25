@@ -217,9 +217,6 @@ extern "C" {
 #    include "drivers/esp_wifi/station.h"
 #    include "drivers/esp_wifi/softap.h"
 #endif
-#ifdef PORT_HAS_BCM43362
-#    include "drivers/bcm43362.h"
-#endif
 #ifdef PORT_HAS_RANDOM
 #    include "drivers/random.h"
 #endif

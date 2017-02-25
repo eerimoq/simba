@@ -31,13 +31,12 @@
 NAME = wifi_esp_suite
 TYPE = suite
 
-ifneq ($(SSID),)
-CDEFS += SSID=$(SSID)
-endif
+SSID ?= Qvist2
+PASSWORD ?= maxierik
 
-ifneq ($(PASSWORD),)
-CDEFS += PASSWORD=$(PASSWORD)
-endif
+CDEFS += \
+	SSID=$(SSID) \
+	PASSWORD=$(PASSWORD)
 
 ifneq ($(ESP8266_IP),)
 CDEFS += ESP8266_IP=$(ESP8266_IP)

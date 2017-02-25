@@ -121,3 +121,7 @@ struct flash_device_t flash_device[FLASH_DEVICE_MAX] = {
         .program_size = 1
     }
 };
+
+struct can_device_t can_device[CAN_DEVICE_MAX] = {
+    { .regs_p = SPC5_FLEXCAN_0 }
+};

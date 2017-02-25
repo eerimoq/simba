@@ -28,6 +28,8 @@
 # This file is part of the Simba project.
 #
 
+.PHONY: coverage
+
 INC += $(SIMBA_ROOT)/src/boards/linux
 SRC += $(SIMBA_ROOT)/src/boards/linux/board.c
 
@@ -38,6 +40,7 @@ BOARD_DESC = "Linux"
 MCU = linux
 
 GCOV ?= gcov
+COVERAGE_REMOVE_FILTER ?=
 
 upload:
 
@@ -54,7 +57,14 @@ profile:
 
 coverage:
 	geninfo . -o coverage.info
-	genhtml coverage.info
+	if [ ! -z "$(COVERAGE_REMOVE_FILTER)" ] ; then \
+	    lcov -r coverage.info $(COVERAGE_REMOVE_FILTER) -o coverage.filtered.info && \
+	    mv coverage.filtered.info coverage.info ; \
+	fi
+	mkdir -p coverage && cd coverage && genhtml ../coverage.info
+	@echo
+	@echo "Run 'firefox `readlink -f coverage/index.html`' to open the coverage report in a web browser."
+	@echo
 
 codecov-coverage:
 	geninfo . --gcov-tool $(GCOV) -o coverage.info

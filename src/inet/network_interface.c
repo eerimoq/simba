@@ -55,7 +55,7 @@ static int cmd_list_cb(int argc,
     char buf[16];
 
     /* Print the title. */
-    std_fprintf(out_p, CRSTR("NAME            "
+    std_fprintf(out_p, OSTR("NAME            "
                             "STATE  "
                             "ADDRESS          "
                             "  TX BYTES  "
@@ -69,7 +69,7 @@ static int cmd_list_cb(int argc,
         network_interface_get_ip_info(network_interface_p, &info);
         
         std_fprintf(out_p,
-                    CRSTR("%-14s  %-5s  %-15s  %10s  %10s\r\n"),
+                    OSTR("%-14s  %-5s  %-15s  %10s  %10s\r\n"),
                     network_interface_p->name_p,
                     (network_interface_p->is_up(network_interface_p)
                      ? "up"

@@ -119,15 +119,13 @@
 /**
  * Debug print of file and line.
  */
-#define PRINT_FILE_LINE() std_printf(FSTR("%s:%d:\r\n"), __FILE__, __LINE__);
+#define PRINT_FILE_LINE() std_printf(OSTR("%s:%d:\r\n"), __FILE__, __LINE__);
 
 #if CONFIG_DEBUG == 1
 #    define STD_PRINTF_DEBUG(...) std_printf(__VA_ARGS__)
 #else
 #    define STD_PRINTF_DEBUG(...)
 #endif
-
-#define _ASSERTFMT(fmt, ...) std_printf(FSTR(fmt "\n"), ##__VA_ARGS__);
 
 /**
  * Assert given condition and call the system on fatal callback with
@@ -136,7 +134,7 @@
 #if CONFIG_ASSERT == 1
 #    define ASSERTN(cond, n, ...)                                       \
     if (!(cond)) {                                                      \
-        std_printf(FSTR(__FILE__ ":%d: ASSERT: (" #cond ") " #__VA_ARGS__ "\r\n"), \
+        std_printf(OSTR(__FILE__ ":%d: ASSERT: (" #cond ") " #__VA_ARGS__ "\r\n"), \
                    __LINE__);                                           \
         sys.on_fatal_callback(n);                                       \
     }
@@ -161,13 +159,11 @@
     (((value) & name ## _MASK) >> name ## _POS)
 
 #if defined(SIMBAPP)
-#    define LSTR(string) __simbapp_fmtstr_begin__ string __simbapp_fmtstr_end__
+#    define OSTR(string) __simbapp_fmtstr_begin__ string __simbapp_fmtstr_end__
 #    define CSTR(string) __simbapp_cmdstr_begin__ string __simbapp_cmdstr_end__
-#    define CRSTR(string) __simbapp_fmtstr_begin__ string __simbapp_fmtstr_end__
 #else
-#    define LSTR(string) FSTR(string)
+#    define OSTR(string) FSTR(string)
 #    define CSTR(string) FSTR(string)
-#    define CRSTR(string) FSTR(string)
 #endif
 
 typedef uint8_t u8_t;

@@ -61,7 +61,7 @@ CXXOBJ = $(patsubst %,$(OBJDIR)%,$(abspath $(CXXSRC:%.cpp=%.o)))
 RUST_OBJ = $(patsubst %,$(OBJDIR)%,$(abspath $(RUST_SRC:%.rs=%.o)))
 OBJ = $(COBJ) $(CXXOBJ) $(RUST_OBJ) $(ASMOBJ)
 GENCSRC = $(GENDIR)/simba_gen.c
-SOAMDBAPP = $(GENDIR)/simba_gen.c.db
+SOAMDBAPP = $(BUILDDIR)/$(NAME).soamdb
 GENOBJ = $(patsubst %,$(OBJDIR)/%,$(notdir $(GENCSRC:%.c=%.o)))
 ifeq ($(SOAM), yes)
 SOAMDB = $(COBJ:%=%.pp.c.db) $(CXXOBJ:%=%.pp.cpp.db)
@@ -93,6 +93,9 @@ CDEFS += ARCH_$(UPPER_ARCH) \
 	BOARD_$(UPPER_BOARD) \
 	VERSION=$(VERSION) \
 	MBEDTLS_USER_CONFIG_FILE="\"mbedtls/user_config.h\""
+ifeq ($(SOAM),yes)
+  CDEFS += SOAM
+endif
 CDEFS += $(CDEFS_EXTRA)
 
 LDFLAGS += $(LDFLAGS_EXTRA)
@@ -325,9 +328,9 @@ $(patsubst %.rs,$(OBJDIR)%.o,$(abspath $1)): $1 $(SIMBA_RS)
 endef
 $(foreach file,$(RUST_SRC),$(eval $(call RUST_COMPILE_template,$(file))))
 
-$(GENOBJ): $(OBJ)
+$(SOAMDBAPP) $(GENOBJ): $(OBJ)
 	$(SIMBA_ROOT)/src/kernel/tools/gen.py $(NAME) $(VERSION) $(BOARD_DESC) \
-	$(MCU_DESC) $(GENCSRC) $(SOAMDB)
+	$(MCU_DESC) $(GENCSRC) $(SOAMDBAPP) $(SOAMDB)
 	@echo "CC $(GENCSRC)"
 	$(CC) $(INC:%=-I%) $(CDEFS:%=-D%) $(CFLAGS) -o $@ $(GENCSRC)
 

@@ -2,9 +2,9 @@
 # @section License
 #
 # The MIT License (MIT)
-#
+# 
 # Copyright (c) 2014-2016, Erik Moqvist
-#
+# 
 # Permission is hereby granted, free of charge, to any person
 # obtaining a copy of this software and associated documentation
 # files (the "Software"), to deal in the Software without
@@ -28,12 +28,33 @@
 # This file is part of the Simba project.
 #
 
-NAME = bcm43362_suite
-TYPE = suite
-BOARD ?= linux
+INC += $(SIMBA_ROOT)/src/boards/huzzah
+SRC += $(SIMBA_ROOT)/src/boards/huzzah/board.c
 
-CDEFS += CONFIG_MINIMAL_SYSTEM=1 \
-	CONFIG_FS_CMD_THRD_LIST=1
+LINKER_SCRIPT ?= simba.flash.4m.ld
+ESP_FLASH_SIZE = 4M
 
-SIMBA_ROOT ?= ../../..
-include $(SIMBA_ROOT)/make/app.mk
+BOARD_HOMEPAGE = "https://www.adafruit.com/product/2471"
+BOARD_PINOUT = "huzzah-pinout.jpg"
+BOARD_DESC = "Adafruit HUZZAH ESP8266 breakout"
+
+MCU = esp8266
+SERIAL_PORT ?= /dev/arduino
+BOARD_PY = $(SIMBA_ROOT)/src/boards/huzzah/board.py
+RUN_PY ?= $(SIMBA_ROOT)/src/boards/huzzah/run.py
+CONSOLE_RESET_TYPE ?= 0
+TIMEOUT ?= 10
+BAUDRATE ?= 76800
+
+upload:
+	@echo "Uploading $(EXE)"
+	python -u $(BOARD_PY) upload --port $(SERIAL_PORT) $(BIN)
+
+rerun:
+	@echo "Running '$(EXE)'."
+	python -u $(RUN_PY) --port $(SERIAL_PORT) \
+			    --timeout $(TIMEOUT) \
+			    --baudrate $(BAUDRATE) \
+	 		    --pattern $(RUN_END_PATTERN)\
+			    --pattern-success $(RUN_END_PATTERN_SUCCESS) \
+			    | tee $(RUNLOG) ; test $${PIPESTATUS[0]} -eq 0

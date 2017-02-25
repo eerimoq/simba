@@ -10,6 +10,8 @@ Simba
 This is the source code repository of the Simba Embedded Programming
 Platform. See http://simba-os.readthedocs.org for further details.
 
+Simba is written in C.
+
 Don't hesitate to create issues or pull requests if you want to
 improve Simba!
 

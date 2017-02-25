@@ -24,7 +24,6 @@ Drivers
 
 Supported drivers for this board.
 
-- :doc:`../library-reference/drivers/bcm43362`
 - :doc:`../library-reference/drivers/flash`
 - :doc:`../library-reference/drivers/i2c_soft`
 - :doc:`../library-reference/drivers/isotp`
@@ -59,9 +58,9 @@ Below is the memory usage of two applications:
 +--------------------------+-----------+-----------+
 | Application              | Flash     | RAM       |
 +==========================+===========+===========+
-| minimal-configuration    |      4204 |      1664 |
+| minimal-configuration    |      4204 |      1656 |
 +--------------------------+-----------+-----------+
-| default-configuration    |     63584 |      5802 |
+| default-configuration    |     62056 |      5794 |
 +--------------------------+-----------+-----------+
 
 Default configuration
@@ -79,8 +78,6 @@ Default Standard Library configuration.
 |  CONFIG_ANALOG_OUTPUT_PIN_                             |  0                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_ASSERT_                                        |  1                                                  |
-+--------------------------------------------------------+-----------------------------------------------------+
-|  CONFIG_BCM43362_                                      |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_CAN_                                           |  0                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
@@ -111,6 +108,8 @@ Default Standard Library configuration.
 |  CONFIG_FILESYSTEM_GENERIC_                            |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_FLASH_                                         |  1                                                  |
++--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_FLOAT_                                         |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_FS_CMD_DS18B20_LIST_                           |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
@@ -196,6 +195,8 @@ Default Standard Library configuration.
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_FS_PATH_MAX_                                   |  64                                                 |
 +--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_HTTP_SERVER_REQUEST_BUFFER_SIZE_               |  128                                                |
++--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_HTTP_SERVER_SSL_                               |  0                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_I2C_                                           |  0                                                  |
@@ -209,8 +210,6 @@ Default Standard Library configuration.
 |  CONFIG_MODULE_INIT_ANALOG_INPUT_PIN_                  |  0                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_MODULE_INIT_ANALOG_OUTPUT_PIN_                 |  0                                                  |
-+--------------------------------------------------------+-----------------------------------------------------+
-|  CONFIG_MODULE_INIT_BCM43362_                          |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_MODULE_INIT_BUS_                               |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
@@ -376,7 +375,11 @@ Default Standard Library configuration.
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_START_SHELL_STACK_SIZE_                        |  768                                                |
 +--------------------------------------------------------+-----------------------------------------------------+
-|  CONFIG_STD_FORMAT_FLOAT_                              |  1                                                  |
+|  CONFIG_START_SOAM_                                    |  0                                                  |
++--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_START_SOAM_PRIO_                               |  30                                                 |
++--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_START_SOAM_STACK_SIZE_                         |  768                                                |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_STD_OUTPUT_BUFFER_MAX_                         |  16                                                 |
 +--------------------------------------------------------+-----------------------------------------------------+
@@ -440,8 +443,6 @@ Mcu
 
 .. _CONFIG_ASSERT: ../user-guide/configuration.html#c.CONFIG_ASSERT
 
-.. _CONFIG_BCM43362: ../user-guide/configuration.html#c.CONFIG_BCM43362
-
 .. _CONFIG_CAN: ../user-guide/configuration.html#c.CONFIG_CAN
 
 .. _CONFIG_CHIPID: ../user-guide/configuration.html#c.CONFIG_CHIPID
@@ -471,6 +472,8 @@ Mcu
 .. _CONFIG_FILESYSTEM_GENERIC: ../user-guide/configuration.html#c.CONFIG_FILESYSTEM_GENERIC
 
 .. _CONFIG_FLASH: ../user-guide/configuration.html#c.CONFIG_FLASH
+
+.. _CONFIG_FLOAT: ../user-guide/configuration.html#c.CONFIG_FLOAT
 
 .. _CONFIG_FS_CMD_DS18B20_LIST: ../user-guide/configuration.html#c.CONFIG_FS_CMD_DS18B20_LIST
 
@@ -556,6 +559,8 @@ Mcu
 
 .. _CONFIG_FS_PATH_MAX: ../user-guide/configuration.html#c.CONFIG_FS_PATH_MAX
 
+.. _CONFIG_HTTP_SERVER_REQUEST_BUFFER_SIZE: ../user-guide/configuration.html#c.CONFIG_HTTP_SERVER_REQUEST_BUFFER_SIZE
+
 .. _CONFIG_HTTP_SERVER_SSL: ../user-guide/configuration.html#c.CONFIG_HTTP_SERVER_SSL
 
 .. _CONFIG_I2C: ../user-guide/configuration.html#c.CONFIG_I2C
@@ -569,8 +574,6 @@ Mcu
 .. _CONFIG_MODULE_INIT_ANALOG_INPUT_PIN: ../user-guide/configuration.html#c.CONFIG_MODULE_INIT_ANALOG_INPUT_PIN
 
 .. _CONFIG_MODULE_INIT_ANALOG_OUTPUT_PIN: ../user-guide/configuration.html#c.CONFIG_MODULE_INIT_ANALOG_OUTPUT_PIN
-
-.. _CONFIG_MODULE_INIT_BCM43362: ../user-guide/configuration.html#c.CONFIG_MODULE_INIT_BCM43362
 
 .. _CONFIG_MODULE_INIT_BUS: ../user-guide/configuration.html#c.CONFIG_MODULE_INIT_BUS
 
@@ -736,7 +739,11 @@ Mcu
 
 .. _CONFIG_START_SHELL_STACK_SIZE: ../user-guide/configuration.html#c.CONFIG_START_SHELL_STACK_SIZE
 
-.. _CONFIG_STD_FORMAT_FLOAT: ../user-guide/configuration.html#c.CONFIG_STD_FORMAT_FLOAT
+.. _CONFIG_START_SOAM: ../user-guide/configuration.html#c.CONFIG_START_SOAM
+
+.. _CONFIG_START_SOAM_PRIO: ../user-guide/configuration.html#c.CONFIG_START_SOAM_PRIO
+
+.. _CONFIG_START_SOAM_STACK_SIZE: ../user-guide/configuration.html#c.CONFIG_START_SOAM_STACK_SIZE
 
 .. _CONFIG_STD_OUTPUT_BUFFER_MAX: ../user-guide/configuration.html#c.CONFIG_STD_OUTPUT_BUFFER_MAX
 

@@ -32,8 +32,8 @@ NAME = ssl_client
 BOARD ?= nano32
 TIMEOUT ?= 30
 
-SSID = Qvist2
-PASSWORD = maxierik
+SSID ?= Qvist2
+PASSWORD ?= maxierik
 
 CDEFS += \
 	CONFIG_MINIMAL_SYSTEM=1 \

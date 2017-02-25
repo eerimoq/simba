@@ -143,7 +143,6 @@
 #    define PORT_HAS_UART
 #    define PORT_HAS_FLASH
 #    define PORT_HAS_SDIO
-#    define PORT_HAS_BCM43362
 #endif
 
 #if defined(FAMILY_STM32F3)
@@ -157,6 +156,7 @@
 #    define PORT_HAS_PIN
 #    define PORT_HAS_UART
 #    define PORT_HAS_FLASH
+#    define PORT_HAS_CAN
 #endif
 
 /**
@@ -239,17 +239,6 @@
 #        define CONFIG_ANALOG_OUTPUT_PIN                    0
 #    else
 #        define CONFIG_ANALOG_OUTPUT_PIN                    1
-#    endif
-#endif
-
-/**
- * Enable the bcm43362 driver.
- */
-#ifndef CONFIG_BCM43362
-#    if defined(CONFIG_MINIMAL_SYSTEM) || !defined(PORT_HAS_BCM43362)
-#        define CONFIG_BCM43362                             0
-#    else
-#        define CONFIG_BCM43362                             1
 #    endif
 #endif
 
@@ -664,17 +653,6 @@
 #        define CONFIG_MODULE_INIT_ANALOG_OUTPUT_PIN        1
 #    else
 #        define CONFIG_MODULE_INIT_ANALOG_OUTPUT_PIN        0
-#    endif
-#endif
-
-/**
- * Initialize the bcm43362 driver module at system startup.
- */
-#ifndef CONFIG_MODULE_INIT_BCM43362
-#    if CONFIG_BCM43362 == 1
-#        define CONFIG_MODULE_INIT_BCM43362                 1
-#    else
-#        define CONFIG_MODULE_INIT_BCM43362                 0
 #    endif
 #endif
 
@@ -1496,7 +1474,7 @@
  * Start the monitor thread to gather statistics of the scheulder.
  */
 #ifndef CONFIG_MONITOR_THREAD
-#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(BOARD_ESP12E) || defined(BOARD_ESP01) || defined(BOARD_NODEMCU) || defined(BOARD_NANO32) || defined(BOARD_SPC56DDISCOVERY) || defined(CONFIG_MINIMAL_SYSTEM)
+#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(BOARD_ESP12E) || defined(BOARD_ESP01) || defined(BOARD_NODEMCU) || defined(BOARD_NANO32) || defined(CONFIG_MINIMAL_SYSTEM)
 #        define CONFIG_MONITOR_THREAD                       0
 #    else
 #        define CONFIG_MONITOR_THREAD                       1
@@ -1764,7 +1742,7 @@
  * Start a shell thread communication over the console channels.
  */
 #ifndef CONFIG_START_SHELL
-#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(CONFIG_MINIMAL_SYSTEM)
+#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(CONFIG_MINIMAL_SYSTEM) || defined(SOAM)
 #        define CONFIG_START_SHELL                          0
 #    else
 #        define CONFIG_START_SHELL                          1
@@ -1792,6 +1770,37 @@
 #endif
 
 /**
+ * Start a SOAM thread communication over the console channels.
+ */
+#ifndef CONFIG_START_SOAM
+#    if defined(SOAM)
+#        define CONFIG_START_SOAM                           1
+#    else
+#        define CONFIG_START_SOAM                           0
+#    endif
+#endif
+
+/**
+ * SOAM thread priority.
+ */
+#ifndef CONFIG_START_SOAM_PRIO
+#    define CONFIG_START_SOAM_PRIO                         30
+#endif
+
+/**
+ * SOAM thread stack size in words.
+ */
+#ifndef CONFIG_START_SOAM_STACK_SIZE
+#    if defined(BOARD_ARDUINO_DUE) || defined(ARCH_ESP)
+#        define CONFIG_START_SOAM_STACK_SIZE             1536
+#    elif defined(ARCH_ESP32)
+#        define CONFIG_START_SOAM_STACK_SIZE             4096
+#    else
+#        define CONFIG_START_SOAM_STACK_SIZE              768
+#    endif
+#endif
+
+/**
  * Maximum number of bytes in the print output buffer.
  */
 #ifndef CONFIG_STD_OUTPUT_BUFFER_MAX
@@ -1799,10 +1808,10 @@
 #endif
 
 /**
- * Enable formatting of floating point values.
+ * Use floating point numbers instead of intergers where applicable.
  */
-#ifndef CONFIG_STD_FORMAT_FLOAT
-#    define CONFIG_STD_FORMAT_FLOAT                         1
+#ifndef CONFIG_FLOAT
+#    define CONFIG_FLOAT                                    1
 #endif
 
 /**
@@ -1956,6 +1965,14 @@
 #endif
 
 /**
+ * Size of the HTTP server request buffer. This buffer is used when
+ * parsing received HTTP request headers.
+ */
+#ifndef CONFIG_HTTP_SERVER_REQUEST_BUFFER_SIZE
+#    define CONFIG_HTTP_SERVER_REQUEST_BUFFER_SIZE        128
+#endif
+
+/**
  * Use lookup tables for CRC calculations. It is faster, but uses more
  * memory.
  */
@@ -1984,6 +2001,10 @@
 
 #if (CONFIG_MODULE_INIT_PWM_SOFT == 1) &&  (CONFIG_SYSTEM_TICK_SOFTWARE == 0) && (ARCH_ESP)
 #    error "CONFIG_SYSTEM_TICK_SOFTWARE must be 1 when CONFIG_MODULE_INIT_PWM_SOFT is 1."
+#endif
+
+#if (CONFIG_START_SHELL == 1) &&  (CONFIG_START_SOAM == 1)
+#    error "CONFIG_START_SHELL and CONFIG_START_SOAM cannot both be set to 1."
 #endif
 
 #endif

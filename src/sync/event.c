@@ -40,6 +40,7 @@ int event_init(struct event_t *self_p)
               (size_t (*)(void *))event_size);
 
     self_p->mask = 0;
+    self_p->reader_mask = 0;
 
     return (0);
 }
@@ -64,6 +65,7 @@ ssize_t event_read(struct event_t *self_p,
     if (mask != 0) {
         *mask_p = mask;
     } else {
+        self_p->reader_mask = *mask_p;
         self_p->base.reader_p = thrd_self();
         thrd_suspend_isr(NULL);
         *mask_p = (self_p->mask & *mask_p);
@@ -103,8 +105,9 @@ ssize_t event_write_isr(struct event_t *self_p,
 
     self_p->mask |= *(uint32_t *)buf_p;
 
-    /* Resume waiting thread. */
-    if (self_p->base.reader_p != NULL)  {
+    /* Resume reader thread waiting for given event(s). */
+    if ((self_p->base.reader_p != NULL)
+        && ((self_p->reader_mask & self_p->mask) != 0))  {
         thrd_resume_isr(self_p->base.reader_p, 0);
         self_p->base.reader_p = NULL;
     }

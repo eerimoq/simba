@@ -18,10 +18,12 @@ application entry function ``main()``.
 
    int main()
    {
-       /* Start the system. */
+       /* Initialize modules and start the scheduler. */
        sys_start();
    
        std_printf(FSTR("Hello world!\n"));
+
+       return (0);
    }
 
 Makefile

@@ -57,12 +57,12 @@ static int cmd_list_cb(int argc,
 {
     struct service_t *service_p;
 
-    std_fprintf(chout_p, CRSTR("NAME                    STATUS\r\n"));
+    std_fprintf(chout_p, OSTR("NAME                    STATUS\r\n"));
 
     service_p = module.services_p;
 
     while (service_p != NULL) {
-        std_fprintf(chout_p, CRSTR("%-24s%s\r\n"),
+        std_fprintf(chout_p, OSTR("%-24s%s\r\n"),
                     service_p->name_p,
                     (service_p->status_cb(service_p) == service_status_running_t
                      ? "running"
@@ -88,7 +88,7 @@ static int cmd_start_cb(int argc,
     const char *name_p;
     
     if (argc != 2) {
-        std_fprintf(chout_p, CRSTR("Usage: %s <service>\r\n"), argv[0]);
+        std_fprintf(chout_p, OSTR("Usage: %s <service>\r\n"), argv[0]);
         return (-EINVAL);
     }
 
@@ -103,7 +103,7 @@ static int cmd_start_cb(int argc,
         service_p = service_p->next_p;
     }
     
-    std_fprintf(chout_p, CRSTR("%s: bad service\r\n"), name_p);
+    std_fprintf(chout_p, OSTR("%s: bad service\r\n"), name_p);
 
     return (-1);
 }
@@ -123,7 +123,7 @@ static int cmd_stop_cb(int argc,
     const char *name_p;
     
     if (argc != 2) {
-        std_fprintf(chout_p, CRSTR("Usage: %s <service>\r\n"), argv[0]);
+        std_fprintf(chout_p, OSTR("Usage: %s <service>\r\n"), argv[0]);
         return (-EINVAL);
     }
 
@@ -138,7 +138,7 @@ static int cmd_stop_cb(int argc,
         service_p = service_p->next_p;
     }
     
-    std_fprintf(chout_p, CRSTR("%s: bad service\r\n"), name_p);
+    std_fprintf(chout_p, OSTR("%s: bad service\r\n"), name_p);
 
     return (-1);
 }

@@ -2,9 +2,9 @@
  * @section License
  *
  * The MIT License (MIT)
- *
+ * 
  * Copyright (c) 2014-2016, Erik Moqvist
- *
+ * 
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
  * files (the "Software"), to deal in the Software without
@@ -30,31 +30,42 @@
 
 #include "simba.h"
 
-#include "platform/wwd_resource_interface.h"
-
-wwd_result_t host_platform_resource_size(wwd_resource_t resource,
-                                         uint32_t* size_out)
+int board_pin_string_to_device_index(const char *str_p)
 {
-    ASSERTN(0, ENOSYS);
-    
-    return (WWD_SUCCESS);
-}
+    long pin;
 
-wwd_result_t host_platform_resource_read_direct(wwd_resource_t resource,
-                                                const void** ptr_out)
-{
-    ASSERTN(0, ENOSYS);
-    
-    return (WWD_SUCCESS);
-}
+    if (strncmp(&str_p[0], "gpio", 4) == 0) {
+        if (std_strtol(&str_p[4], &pin) == NULL) {
+            return (-1);
+        }
+        
+        switch (pin) {
 
-wwd_result_t host_platform_resource_read_indirect(wwd_resource_t resource,
-                                                  uint32_t offset,
-                                                  void* buffer,
-                                                  uint32_t buffer_size,
-                                                  uint32_t* size_out)
-{
-    ASSERTN(0, ENOSYS);
-    
-    return (WWD_SUCCESS);
+        case 0:
+        case 2:
+        case 12:
+        case 13:
+        case 14:
+        case 15:
+        case 16:
+            break;
+
+        case 4:
+            pin = 5;
+            break;
+            
+        case 5:
+            pin = 4;
+            break;
+            
+        default:
+            return (-1);
+        }
+    } else if (strcmp(str_p, "led") == 0) {
+        pin = 2;
+    } else {
+        return (-1);
+    }
+
+    return (pin);
 }

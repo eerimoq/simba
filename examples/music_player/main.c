@@ -332,21 +332,21 @@ static int cmd_list_cb(int argc,
     int number;
 
     if (argc != 1) {
-        std_fprintf(out_p, CRSTR("Usage: %s\r\n"), argv[0]);
+        std_fprintf(out_p, OSTR("Usage: %s\r\n"), argv[0]);
 
         return (1);
     }
 
     /* Write the header. */
     std_fprintf(out_p,
-                CRSTR("NUMBER            NAME  LENGTH\r\n"));
+                OSTR("NUMBER            NAME  LENGTH\r\n"));
 
     /* Iterate over all songs in the ordered hash map. */
     for (number = FIRST_SONG_NUMBER;
          ((song_p = hash_map_get(&song_map, number)) != NULL);
          number++) {
         std_fprintf(out_p,
-                    CRSTR("%6d %15s %4d:%02d\r\n"),
+                    OSTR("%6d %15s %4d:%02d\r\n"),
                     song_p->number,
                     song_p->name,
                     song_p->minutes,
@@ -367,7 +367,7 @@ static int cmd_play_cb(int argc,
     struct song_t *song_p;
 
     if (argc > 2) {
-        std_fprintf(out_p, CRSTR("Usage: %s [<song number>]\r\n"), argv[0]);
+        std_fprintf(out_p, OSTR("Usage: %s [<song number>]\r\n"), argv[0]);
 
         return (-EINVAL);
     }
@@ -403,7 +403,7 @@ static int cmd_pause_cb(int argc,
                         void *call_arg_p)
 {
     if (argc != 1) {
-        std_fprintf(out_p, CRSTR("Usage: %s\r\n"), argv[0]);
+        std_fprintf(out_p, OSTR("Usage: %s\r\n"), argv[0]);
 
         return (-EINVAL);
     }
@@ -419,7 +419,7 @@ static int cmd_next_cb(int argc,
                        void *call_arg_p)
 {
     if (argc != 1) {
-        std_fprintf(out_p, CRSTR("Usage: %s\r\n"), argv[0]);
+        std_fprintf(out_p, OSTR("Usage: %s\r\n"), argv[0]);
 
         return (-EINVAL);
     }
@@ -435,7 +435,7 @@ static int cmd_prev_cb(int argc,
                        void *call_arg_p)
 {
     if (argc != 1) {
-        std_fprintf(out_p, CRSTR("Usage: %s\r\n"), argv[0]);
+        std_fprintf(out_p, OSTR("Usage: %s\r\n"), argv[0]);
 
         return (-EINVAL);
     }
@@ -451,7 +451,7 @@ static int cmd_stop_cb(int argc,
                        void *call_arg_p)
 {
     if (argc != 1) {
-        std_fprintf(out_p, CRSTR("Usage: %s\r\n"), argv[0]);
+        std_fprintf(out_p, OSTR("Usage: %s\r\n"), argv[0]);
 
         return (-EINVAL);
     }
@@ -467,7 +467,7 @@ static int cmd_repeat_cb(int argc,
                          void *call_arg_p)
 {
     if (argc != 1) {
-        std_fprintf(out_p, CRSTR("Usage: %s\r\n"), argv[0]);
+        std_fprintf(out_p, OSTR("Usage: %s\r\n"), argv[0]);
 
         return (-EINVAL);
     }
@@ -487,21 +487,21 @@ static int cmd_set_bits_per_sample_cb(int argc,
     long bits_per_sample;
 
     if (argc != 2) {
-        std_fprintf(out_p, CRSTR("Usage: %s <number of bits>\r\n"),
+        std_fprintf(out_p, OSTR("Usage: %s <number of bits>\r\n"),
                     argv[0]);
 
         return (-EINVAL);
     }
 
     if (std_strtol(argv[1], &bits_per_sample) != 0) {
-        std_fprintf(out_p, CRSTR("Usage: %s <number of bits>\r\n"),
+        std_fprintf(out_p, OSTR("Usage: %s <number of bits>\r\n"),
                     argv[0]);
 
         return (-EINVAL);
     }
 
     if ((bits_per_sample < 0) || (bits_per_sample > 12)) {
-        std_printf(CRSTR("The number of bits per sample bust be "
+        std_printf(OSTR("The number of bits per sample bust be "
                         "an interger from 0 to 12.\r\n"));
 
         return (-EINVAL);

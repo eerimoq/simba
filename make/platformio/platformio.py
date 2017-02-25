@@ -74,6 +74,7 @@ SUPPORTED_BOARDS = [
     "esp12e",
     "esp01",
     "nodemcu",
+    "huzzah",
     "nano32"
 ]
 
@@ -162,6 +163,7 @@ def create_src_filter(srcs):
     \"\"\"
 
     src_filter = [
+        "-<bin/>",
         "-<3pp/>",
         "-<src/>",
         "-<tst/>"
@@ -248,6 +250,14 @@ def setup_board_esp01(env):
 
 def setup_board_nodemcu(env):
     \"\"\"Setup the NodeMCU environment.
+
+    \"\"\"
+
+    setup_mcu_esp(env, "simba.flash.4m.ld", "6")
+
+
+def setup_board_huzzah(env):
+    \"\"\"Setup the Huzzah environment.
 
     \"\"\"
 
@@ -351,6 +361,8 @@ elif board == "esp01":
     setup_board_esp01(env)
 elif board == "nodemcu":
     setup_board_nodemcu(env)
+elif board == "huzzah":
+    setup_board_huzzah(env)
 elif board == "nano32":
     setup_board_nano32(env)
 elif 'ARCH_AVR' in BOARDS[board]['cdefs']:
@@ -385,7 +397,7 @@ for src in env.LookupSources(variant_dir, src_dir, True, src_filter):
 env.Command(SIMBA_GEN_C,
             source_files,
             ('"$PYTHONEXE" "$PLATFORMFW_DIR/src/kernel/tools/gen.py" "$NAME" "$VERSION" '
-             '"$BOARD_DESC" "$MCU_DESC" "$TARGET"'))
+             '"$BOARD_DESC" "$MCU_DESC" "$TARGET" "${{TARGET}}.soamdb"'))
 source_files.append(SIMBA_GEN_C)
 
 lib = env.Library(target=join("$BUILD_DIR", "SimbaFramework"), source=source_files)

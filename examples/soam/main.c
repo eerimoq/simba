@@ -30,69 +30,18 @@
 
 #include "simba.h"
 
-static struct slip_t slip;
-static uint8_t slip_buf[128];
-
-static struct soam_t soam;
-static uint8_t soam_buf[128];
-
-static THRD_STACK(input_stack, 2048);
-
-/**
- * This thread executes file system commands.
- */
-static void *input_main(void *arg_p)
-{
-    uint8_t byte;
-    ssize_t size;
-
-    while (1) {
-        chan_read(sys_get_stdin(), &byte, sizeof(byte));
-
-        size = slip_input(&slip, byte);
-
-        if (size > 0) {
-            soam_input(&soam, &slip_buf[0], size);
-        }
-    }
-
-    return (NULL);
-}
-
 int main()
 {
     int i;
 
     sys_start();
 
-    if (slip_init(&slip,
-                  &slip_buf[0],
-                  sizeof(slip_buf),
-                  sys_get_stdout()) != 0) {
-        return (-1);
-    }
-
-    if (soam_init(&soam,
-                  &soam_buf[0],
-                  sizeof(soam_buf),
-                  slip_get_output_channel(&slip)) != 0) {
-        return (-1);
-    }
-
-    log_set_default_handler_output_channel(soam_get_log_input_channel(&soam));
-    
-    thrd_spawn(input_main,
-               NULL,
-               0,
-               input_stack,
-               sizeof(input_stack));
-
     i = 0;
 
     while (1) {
         log_object_print(NULL,
                          LOG_INFO,
-                         LSTR("i: %d\r\n"),
+                         OSTR("i: %d\r\n"),
                          i);
 
         i++;

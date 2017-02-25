@@ -145,13 +145,6 @@ static int test_time(struct harness_t *harness_p)
             .time_out = { .seconds = 4325, .nanoseconds = 740000000 }
         },
 
-        /* Max time. */
-        {
-            .time_in = { .seconds = 4294967295 / 2, .nanoseconds = 0 },
-            .tick = 214748364700,
-            .time_out = { .seconds = 4294967295 / 2, .nanoseconds = 0 }
-        },
-
         /* Max tick. */
         {
             .time_in = { .seconds = 42949672, .nanoseconds = 949999999 },

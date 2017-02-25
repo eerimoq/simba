@@ -108,6 +108,10 @@ ESP-12E Development Board
 - :github-blob:`kernel/thrd<tst/kernel/thrd/main.c>`
 - :github-blob:`kernel/timer<tst/kernel/timer/main.c>`
 
+Adafruit HUZZAH ESP8266 breakout
+------
+
+
 Linux
 -----
 
@@ -320,4 +324,3 @@ STM32VLDISCOVERY
 - :github-blob:`inet/ping<tst/inet/ping/main.c>`
 - :github-blob:`drivers/pin<tst/drivers/pin/main.c>`
 - :github-blob:`drivers/random<tst/drivers/random/main.c>`
-

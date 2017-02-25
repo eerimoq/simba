@@ -39,6 +39,7 @@ extern int ssl_size_counter;
 extern void socket_stub_init(void);
 extern void socket_stub_accept();
 extern void socket_stub_input(void *buf_p, size_t size);
+extern void socket_stub_input_flush(void);
 extern void socket_stub_output(void *buf_p, size_t size);
 extern void socket_stub_wait_closed(void);
 extern void socket_stub_close_connection(void);
@@ -494,6 +495,79 @@ static int test_request_no_route(struct harness_t *harness_p)
     return (0);
 }
 
+static int test_request_url_too_long(struct harness_t *harness_p)
+{
+    char *str_p;
+    char buf[256];
+
+    /* Input the accept answer. */
+    socket_stub_accept();
+
+    /* Input a very long URL on the connection socket. */
+    str_p =
+        "GET /this/url/is/far/too/long/to/fit/in/the/statically/allocated/"
+        "buffer/that/the/received/url/is/read/into//the/request/will/be/"
+        "dropped.html HTTP/1.1\r\n"
+        "User-Agent: TestcaseRequestIndex\r\n"
+        "Connection: keep-alive\r\n"
+        "\r\n";
+    socket_stub_input(str_p, strlen(str_p));
+
+    /* Read the GET response and verify it. */
+    str_p =
+        "HTTP/1.1 400 Bad Request\r\n"
+        "Content-Type: text/plain\r\n"
+        "Content-Length: 32\r\n"
+        "\r\n"
+        "Failed to parse the HTTP header.";
+
+    socket_stub_output(buf, strlen(str_p));
+    buf[strlen(str_p)] = '\0';
+    BTASSERT(strcmp(buf, str_p) == 0);
+
+    socket_stub_wait_closed();
+    socket_stub_input_flush();
+
+    return (0);
+}
+
+static int test_request_header_field_too_long(struct harness_t *harness_p)
+{
+    char *str_p;
+    char buf[256];
+
+    /* Input the accept answer. */
+    socket_stub_accept();
+
+    /* Input a very long header field on the connection socket. */
+    str_p =
+        "GET /foo.html HTTP/1.1\r\n"
+        "User-Agent: TestcaseRequestIndexTestcaseRequestIndex"
+        "TestcaseRequestIndexTestcaseRequestIndex"
+        "TestcaseRequestIndexTestcaseRequestIndex"
+        "TestcaseRequestIndexTestcaseRequestIndex\r\n"
+        "Connection: keep-alive\r\n"
+        "\r\n";
+    socket_stub_input(str_p, strlen(str_p));
+
+    /* Read the GET response and verify it. */
+    str_p =
+        "HTTP/1.1 400 Bad Request\r\n"
+        "Content-Type: text/plain\r\n"
+        "Content-Length: 32\r\n"
+        "\r\n"
+        "Failed to parse the HTTP header.";
+
+    socket_stub_output(buf, strlen(str_p));
+    buf[strlen(str_p)] = '\0';
+    BTASSERT(strcmp(buf, str_p) == 0);
+
+    socket_stub_wait_closed();
+    socket_stub_input_flush();
+
+    return (0);
+}
+
 static int test_stop(struct harness_t *harness_p)
 {
     BTASSERT(http_server_stop(&foo) == 0);
@@ -583,6 +657,8 @@ int main()
         { test_request_form, "test_request_form" },
         { test_request_websocket, "test_request_websocket" },
         { test_request_no_route, "test_request_no_route" },
+        { test_request_url_too_long, "test_request_url_too_long" },
+        { test_request_header_field_too_long, "test_request_header_field_too_long" },
         { test_stop, "test_stop" },
         { test_https_start, "test_https_start" },
 #if CONFIG_HTTP_SERVER_SSL == 1

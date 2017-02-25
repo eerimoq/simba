@@ -67,22 +67,54 @@
 #define DAYS_PER_100Y (365L * 100L + 24L)
 #define DAYS_PER_4Y   (365L * 4L   + 1L)
 
+#define SECONDS_PER_MSB (INT_MAX / CONFIG_SYSTEM_TICK_FREQUENCY)
+#define TICKS_PER_MSB   (SECONDS_PER_MSB * CONFIG_SYSTEM_TICK_FREQUENCY)
+
+/* 64 bits so it does not wrap around during the system's uptime. */
+struct tick_t {
+    uint32_t msb;
+    uint32_t lsb;
+};
+
 struct module_t {
-    uint64_t tick; /* Current tick. 64 bits so it does not wrap around
-                      during the system's uptime. */
+    struct tick_t tick;
 };
 
 static struct module_t module = {
-    .tick = 0
+    .tick = {
+        .msb = 0,
+        .lsb = 0
+    }
 };
 
-static inline void tick_to_time(uint64_t tick,
+static inline void tick_to_time(struct time_t *time_p,
+                                struct tick_t *tick_p)
+{
+    uint32_t lsb_seconds;
+    uint32_t lsb_ticks;
+
+    lsb_seconds = (tick_p->lsb / CONFIG_SYSTEM_TICK_FREQUENCY);
+    lsb_ticks = (tick_p->lsb - (CONFIG_SYSTEM_TICK_FREQUENCY * lsb_seconds));
+
+    time_p->seconds = (tick_p->msb * SECONDS_PER_MSB + lsb_seconds);
+    time_p->nanoseconds = (1000 * ((1000000UL * lsb_ticks)
+                                   / CONFIG_SYSTEM_TICK_FREQUENCY));
+}
+
+static inline void time_to_tick(struct tick_t *tick_p,
                                 struct time_t *time_p)
 {
-    time_p->seconds = (tick / CONFIG_SYSTEM_TICK_FREQUENCY);
-    time_p->nanoseconds =
-        ((1000000000ULL * (tick % CONFIG_SYSTEM_TICK_FREQUENCY))
-         / CONFIG_SYSTEM_TICK_FREQUENCY);
+    uint32_t lsb_seconds;
+    uint32_t lsb_ticks;
+
+    lsb_seconds = (tick_p->lsb / CONFIG_SYSTEM_TICK_FREQUENCY);
+    lsb_ticks = (tick_p->lsb - (CONFIG_SYSTEM_TICK_FREQUENCY * lsb_seconds));
+
+    tick_p->msb = (time_p->seconds / SECONDS_PER_MSB);
+    lsb_seconds = (time_p->seconds - (tick_p->msb * SECONDS_PER_MSB));
+    lsb_ticks = (((time_p->nanoseconds / 1000)
+                  * CONFIG_SYSTEM_TICK_FREQUENCY) / 1000000);
+    tick_p->lsb = ((lsb_seconds * CONFIG_SYSTEM_TICK_FREQUENCY) + lsb_ticks);
 }
 
 /**
@@ -90,20 +122,25 @@ static inline void tick_to_time(uint64_t tick,
  */
 void RAM_CODE time_tick_isr(void)
 {
-    module.tick++;
+    module.tick.lsb++;
+
+    if (module.tick.lsb == TICKS_PER_MSB) {
+        module.tick.msb++;
+        module.tick.lsb = 0;
+    }
 }
 
 int time_get(struct time_t *now_p)
 {
     ASSERTN(now_p != NULL, EINVAL);
 
-    uint64_t tick;
+    struct tick_t tick;
 
     sys_lock();
     tick = module.tick;
     sys_unlock();
 
-    tick_to_time(tick, now_p);
+    tick_to_time(now_p, &tick);
 
     return (0);
 }
@@ -112,11 +149,9 @@ int time_set(struct time_t *new_p)
 {
     ASSERTN(new_p != NULL, EINVAL);
 
-    uint64_t tick;
+    struct tick_t tick;
 
-    tick = ((new_p->seconds * CONFIG_SYSTEM_TICK_FREQUENCY) +
-            DIV_CEIL((DIV_CEIL(new_p->nanoseconds, 1000)
-                      * CONFIG_SYSTEM_TICK_FREQUENCY), 1000000));
+    time_to_tick(&tick, new_p);
 
     sys_lock();
     module.tick = tick;

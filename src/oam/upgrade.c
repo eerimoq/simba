@@ -168,11 +168,11 @@ static int cmd_application_is_valid_cb(int argc,
     res = upgrade_application_is_valid(0);
 
     if (res == 1) {
-        std_fprintf(out_p, CRSTR("yes\r\n"));
+        std_fprintf(out_p, OSTR("yes\r\n"));
     } else if (res == 0) {
-        std_fprintf(out_p, CRSTR("no\r\n"));
+        std_fprintf(out_p, OSTR("no\r\n"));
     } else {
-        std_fprintf(out_p, CRSTR("failed\r\n"));
+        std_fprintf(out_p, OSTR("failed\r\n"));
     }
 
     return (0);
@@ -293,7 +293,7 @@ int upgrade_binary_upload(const void *buf_p,
                 || (module.header_size < 40)) {
                 log_object_print(NULL,
                                  LOG_ERROR,
-                                 LSTR("bad upgrade file header size %u\r\n"),
+                                 OSTR("bad upgrade file header size %u\r\n"),
                                  module.header_size);
                 return (-1);
             }
@@ -308,13 +308,13 @@ int upgrade_binary_upload(const void *buf_p,
                                 module.header_size) != 0) {
             log_object_print(NULL,
                              LOG_ERROR,
-                             LSTR("failed to parse upgrade file header\r\n"));
+                             OSTR("failed to parse upgrade file header\r\n"));
             return (-1);
         }
 
         log_object_print(NULL,
                          LOG_INFO,
-                         LSTR("parsed upgrade file header description '%s'"
+                         OSTR("parsed upgrade file header description '%s'"
                               " and data size %u\r\n"),
                          module.header.description,
                          module.header.size);
