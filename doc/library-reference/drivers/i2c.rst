@@ -15,6 +15,9 @@ requirements. In this implementation the slave will always send an
 acknowledgement when addressed by the master, and lock the bus by
 pulling SCL low until it is ready for the transmission.
 
+This driver is for systems with hardware I2C support. For systems
+without hardware I2C support the :doc:`i2c_soft` driver can be used.
+
 --------------------------------------------------
 
 Source code: :github-blob:`src/drivers/i2c.h`, :github-blob:`src/drivers/i2c.c`
