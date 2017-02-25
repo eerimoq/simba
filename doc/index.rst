@@ -14,6 +14,8 @@ Welcome to Simba's documentation!
 `Simba` is an Embedded Programming Platform. It aims to make embedded
 programming easy and portable.
 
+Simba is written in C.
+
 Project homepage: https://github.com/eerimoq/simba
 
 Videos
