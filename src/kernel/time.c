@@ -107,9 +107,6 @@ static inline void time_to_tick(struct tick_t *tick_p,
     uint32_t lsb_seconds;
     uint32_t lsb_ticks;
 
-    lsb_seconds = (tick_p->lsb / CONFIG_SYSTEM_TICK_FREQUENCY);
-    lsb_ticks = (tick_p->lsb - (CONFIG_SYSTEM_TICK_FREQUENCY * lsb_seconds));
-
     tick_p->msb = (time_p->seconds / SECONDS_PER_MSB);
     lsb_seconds = (time_p->seconds - (tick_p->msb * SECONDS_PER_MSB));
     lsb_ticks = (((time_p->nanoseconds / 1000)
