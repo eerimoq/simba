@@ -2,12 +2,12 @@ Documentation
 =============
 
 The documentation is generated to ``.html`` from ``.rst`` files using
-`Sphinx<http://www.sphinx-doc.org>`.
+`Sphinx`_.
 
 To perform a complete documentation build which also regenerate the
 automatically generated documentation, such as default per-board flash
 and RAM size, you need the full Simba toolchain installed as
-documented on the :doc:`getting-started` page.
+documented on the `Getting Started`_ page.
 
 To perform such a build run:
 
@@ -28,3 +28,6 @@ an Ubuntu Linux system, run the following:
 
    sudo apt-get install doxygen python-sphinx python-sphinx-rtd-theme \
      python-breathe
+
+.. _Sphinx: http://www.sphinx-doc.org
+.. _Getting Started: http://simba-os.readthedocs.io/en/latest/getting-started.html#simba-simba-build-system
