@@ -199,3 +199,30 @@ uint8_t crc_7(const void* buf_p, size_t size)
 
     return (crc | 1);
 }
+
+uint8_t crc_8(uint8_t crc,
+              uint8_t polynomial,
+              const void *buf_p,
+              size_t size)
+{
+    uint8_t *b_p = (uint8_t *)buf_p;
+    uint8_t data;
+    int i;
+    uint8_t mix;
+
+    while (size--) {
+        data = *b_p++;
+
+        for (i = 0; i < 8; i++) {
+            mix = (crc ^ data) & 0x01;
+            crc >>= 1;
+            data >>= 1;
+
+            if (mix != 0) {
+                crc ^= polynomial;
+            }
+        }
+    }
+
+    return crc;
+}

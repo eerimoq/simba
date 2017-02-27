@@ -87,6 +87,11 @@ static int cmd_list_cb(int argc,
                 continue;
             }
 
+            if (ds18b20_get_temperature_str(self_p, dev_p->id, buf) == NULL) {
+                buf[0] = '-';
+                buf[1] = '\0';
+            }
+
             std_fprintf(chout_p,
                         OSTR("%02x%02x%02x%02x%02x%02x%02x%02x %9s\r\n"),
                         (unsigned int)dev_p->id[0],
@@ -97,7 +102,7 @@ static int cmd_list_cb(int argc,
                         (unsigned int)dev_p->id[5],
                         (unsigned int)dev_p->id[6],
                         (unsigned int)dev_p->id[7],
-                        ds18b20_get_temperature_str(self_p, dev_p->id, buf));
+                        buf);
         }
 
         self_p = self_p->next_p;
@@ -192,8 +197,18 @@ int ds18b20_get_temperature(struct ds18b20_driver_t *self_p,
     ASSERTN(temp_p != NULL, EINVAL);
 
     struct ds18b20_scratchpad_t scratchpad;
+    uint8_t crc;
 
     ds18b20_read_scratchpad(self_p, &scratchpad, id_p);
+    crc = crc_8(0,
+                CRC_8_POLYNOMIAL_8_5_4_0,
+                &scratchpad,
+                sizeof(scratchpad));
+
+    if (crc != 0) {
+        return (-1);
+    }
+
     *temp_p = scratchpad.temperature;
 
     return (0);
@@ -209,7 +224,10 @@ char *ds18b20_get_temperature_str(struct ds18b20_driver_t *self_p,
 
     int temp;
 
-    ds18b20_get_temperature(self_p, id_p, &temp);
+    if (ds18b20_get_temperature(self_p, id_p, &temp) != 0) {
+        return (NULL);
+    }
+
     std_sprintf(temp_p,
                 FSTR("%d.%d"),
                 (temp >> 4),

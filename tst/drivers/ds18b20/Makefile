@@ -40,6 +40,7 @@ CDEFS += \
 	CONFIG_FS_CMD_THRD_LIST=1
 
 DRIVERS_SRC = ds18b20.c pin.c owi.c
+HASH_SRC = crc.c
 
 SIMBA_ROOT ?= ../../..
 include $(SIMBA_ROOT)/make/app.mk
