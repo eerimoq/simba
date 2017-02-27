@@ -206,23 +206,19 @@ uint8_t crc_8(uint8_t crc,
               size_t size)
 {
     uint8_t *b_p = (uint8_t *)buf_p;
-    uint8_t data;
     int i;
-    uint8_t mix;
 
     while (size--) {
-        data = *b_p++;
+        crc ^= *b_p++;
 
         for (i = 0; i < 8; i++) {
-            mix = (crc ^ data) & 0x01;
-            crc >>= 1;
-            data >>= 1;
-
-            if (mix != 0) {
-                crc ^= polynomial;
+            if (crc & 0x01) {
+                crc = (crc >> 1) ^ polynomial;
+            } else {
+                crc = (crc >> 1);
             }
         }
     }
 
-    return crc;
+    return (crc);
 }
