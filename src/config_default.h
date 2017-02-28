@@ -1993,6 +1993,13 @@
 #endif
 
 /**
+ * Include the function time_unix_time_to_date().
+ */
+#ifndef CONFIG_TIME_UNIX_TIME_TO_DATE
+#    define CONFIG_TIME_UNIX_TIME_TO_DATE                   1
+#endif
+
+/**
  * Configuration validation.
  */
 #if (CONFIG_START_SHELL == 1) &&  (CONFIG_START_CONSOLE == CONFIG_START_CONSOLE_NONE)
