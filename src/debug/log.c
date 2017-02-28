@@ -435,7 +435,10 @@ int log_object_print(struct log_object_t *self_p,
             chan_control(chout_p, CHAN_CONTROL_LOG_BEGIN);
 
             /* Write the header. */
-            std_fprintf(chout_p, FSTR("%lu:"), now.seconds);
+            std_fprintf(chout_p,
+                        FSTR("%lu.%03lu:"),
+                        now.seconds,
+                        now.nanoseconds / 1000000ul);
             std_fprintf(chout_p, level_as_string[level]);
             std_fprintf(chout_p,
                         FSTR(":%s:%s: "),
