@@ -108,6 +108,10 @@ ESP-12E Development Board
 - :github-blob:`kernel/thrd<tst/kernel/thrd/main.c>`
 - :github-blob:`kernel/timer<tst/kernel/timer/main.c>`
 
+ESP32-DevKitC
+-------------
+
+
 Adafruit HUZZAH ESP8266 breakout
 ------
 
