@@ -29,7 +29,7 @@
  */
 
 /**
- * `time_time_to_date()` is based on the musl project code.
+ * `time_unix_time_to_date()` is based on the musl project code.
  *
  * musl as a whole is licensed under the following standard MIT license:
  *
