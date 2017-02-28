@@ -71,9 +71,9 @@ Below is the memory usage of two applications:
 +--------------------------+-----------+-----------+
 | Application              | Flash     | RAM       |
 +==========================+===========+===========+
-| minimal-configuration    |    121812 |    320584 |
+| minimal-configuration    |    121844 |    320744 |
 +--------------------------+-----------+-----------+
-| default-configuration    |    337511 |    434168 |
+| default-configuration    |    337951 |    434424 |
 +--------------------------+-----------+-----------+
 
 Default configuration
@@ -419,6 +419,8 @@ Default Standard Library configuration.
 |  CONFIG_THRD_STACK_HEAP_SIZE_                          |  0                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_THRD_TERMINATE_                                |  1                                                  |
++--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_TIME_UNIX_TIME_TO_DATE_                        |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_UART_                                          |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
@@ -783,6 +785,8 @@ Mcu
 .. _CONFIG_THRD_STACK_HEAP_SIZE: ../user-guide/configuration.html#c.CONFIG_THRD_STACK_HEAP_SIZE
 
 .. _CONFIG_THRD_TERMINATE: ../user-guide/configuration.html#c.CONFIG_THRD_TERMINATE
+
+.. _CONFIG_TIME_UNIX_TIME_TO_DATE: ../user-guide/configuration.html#c.CONFIG_TIME_UNIX_TIME_TO_DATE
 
 .. _CONFIG_UART: ../user-guide/configuration.html#c.CONFIG_UART
 

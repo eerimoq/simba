@@ -58,7 +58,7 @@ Below is the memory usage of two applications:
 +==========================+===========+===========+
 | minimal-configuration    |      6448 |       588 |
 +--------------------------+-----------+-----------+
-| default-configuration    |     51404 |      4194 |
+| default-configuration    |     51436 |      4194 |
 +--------------------------+-----------+-----------+
 
 Default configuration
@@ -404,6 +404,8 @@ Default Standard Library configuration.
 |  CONFIG_THRD_STACK_HEAP_SIZE_                          |  0                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_THRD_TERMINATE_                                |  1                                                  |
++--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_TIME_UNIX_TIME_TO_DATE_                        |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_UART_                                          |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
@@ -768,6 +770,8 @@ Mcu
 .. _CONFIG_THRD_STACK_HEAP_SIZE: ../user-guide/configuration.html#c.CONFIG_THRD_STACK_HEAP_SIZE
 
 .. _CONFIG_THRD_TERMINATE: ../user-guide/configuration.html#c.CONFIG_THRD_TERMINATE
+
+.. _CONFIG_TIME_UNIX_TIME_TO_DATE: ../user-guide/configuration.html#c.CONFIG_TIME_UNIX_TIME_TO_DATE
 
 .. _CONFIG_UART: ../user-guide/configuration.html#c.CONFIG_UART
 

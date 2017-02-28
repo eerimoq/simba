@@ -324,3 +324,4 @@ STM32VLDISCOVERY
 - :github-blob:`inet/ping<tst/inet/ping/main.c>`
 - :github-blob:`drivers/pin<tst/drivers/pin/main.c>`
 - :github-blob:`drivers/random<tst/drivers/random/main.c>`
+
