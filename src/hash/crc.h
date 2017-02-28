@@ -86,10 +86,10 @@ uint16_t crc_xmodem(uint16_t crc, const void *buf_p, size_t size);
 uint8_t crc_7(const void* buf_p, size_t size);
 
 /**
- * Calculate a 8 bits crc using given polynimial.
+ * Calculate a 8 bits crc using given polynomial.
  *
  * @param[in] crc Initial crc. Must be 0x00 on first call.
- * @param[in] polynimial CRC polynimial.
+ * @param[in] polynimial CRC polynomial.
  * @param[in] buf_p Buffer to calculate crc of.
  * @param[in] size Size of the buffer.
  *
