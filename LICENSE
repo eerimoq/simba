@@ -1,3 +1,6 @@
+The Simba project as a whole is licensed under the following MIT
+license:
+
 The MIT License (MIT)
 
 Copyright (c) 2014-2016, Erik Moqvist
@@ -20,3 +23,10 @@ NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
 LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
 OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+
+The following files are subjected to other Licenses:
+
+- 3pp/*: Various Licenses.
+
+- src/filesystems/fat16.*: GNU LGPL
