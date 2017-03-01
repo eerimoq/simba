@@ -48,7 +48,7 @@ Need help?
 License
 =======
 
-Simba is licensed in the public domain. See LICENSE for a copy of the
+Simba is licensed under the MIT License. See LICENSE for a copy of the
 licence. Third party source code and libraries that Simba depends on
 may have other licenses. Most third party code is placed in the
 ``3pp`` folder.
