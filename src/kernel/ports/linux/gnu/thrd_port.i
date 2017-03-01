@@ -28,8 +28,6 @@
  * This file is part of the Simba project.
  */
 
-#define THRD_MONITOR_STACK_MAX 1024
-
 struct thrd_port_idle_t {
     pthread_mutex_t mutex;
     pthread_cond_t cond;

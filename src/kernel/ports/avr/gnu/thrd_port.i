@@ -30,8 +30,6 @@
 
 #include <avr/sleep.h>
 
-#define THRD_MONITOR_STACK_MAX 256
-
 static struct thrd_t main_thrd __attribute__ ((section (".noinit")));
 extern char __main_stack_end;
 

@@ -1868,6 +1868,21 @@
 #endif
 
 /**
+ * Stack size of the monitor thread.
+ */
+#ifndef CONFIG_THRD_MONITOR_STACK_SIZE
+#    if defined(ARCH_PPC) || defined(ARCH_ESP) || defined(ARCH_ESP32)
+#        define CONFIG_THRD_MONITOR_STACK_SIZE            768
+#    elif defined(ARCH_ARM)
+#        define CONFIG_THRD_MONITOR_STACK_SIZE            512
+#    elif defined(ARCH_AVR)
+#        define CONFIG_THRD_MONITOR_STACK_SIZE            256
+#    else
+#        define CONFIG_THRD_MONITOR_STACK_SIZE           1024
+#    endif
+#endif
+
+/**
  * Count the number of times each thread has been scheduled.
  */
 #ifndef CONFIG_THRD_SCHEDULED

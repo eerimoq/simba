@@ -68,7 +68,7 @@ Below is the memory usage of two applications:
 +==========================+===========+===========+
 | minimal-configuration    |    265752 |     33928 |
 +--------------------------+-----------+-----------+
-| default-configuration    |    307767 |     47752 |
+| default-configuration    |    307767 |     48264 |
 +--------------------------+-----------+-----------+
 
 Default configuration
@@ -406,6 +406,8 @@ Default Standard Library configuration.
 |  CONFIG_THRD_ENV_                                      |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_THRD_IDLE_STACK_SIZE_                          |  768                                                |
++--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_THRD_MONITOR_STACK_SIZE_                       |  768                                                |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_THRD_SCHEDULED_                                |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
@@ -772,6 +774,8 @@ Mcu
 .. _CONFIG_THRD_ENV: ../user-guide/configuration.html#c.CONFIG_THRD_ENV
 
 .. _CONFIG_THRD_IDLE_STACK_SIZE: ../user-guide/configuration.html#c.CONFIG_THRD_IDLE_STACK_SIZE
+
+.. _CONFIG_THRD_MONITOR_STACK_SIZE: ../user-guide/configuration.html#c.CONFIG_THRD_MONITOR_STACK_SIZE
 
 .. _CONFIG_THRD_SCHEDULED: ../user-guide/configuration.html#c.CONFIG_THRD_SCHEDULED
 

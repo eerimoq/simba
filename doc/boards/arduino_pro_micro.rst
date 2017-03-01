@@ -414,6 +414,8 @@ Default Standard Library configuration.
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_THRD_IDLE_STACK_SIZE_                          |  156                                                |
 +--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_THRD_MONITOR_STACK_SIZE_                       |  256                                                |
++--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_THRD_SCHEDULED_                                |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_THRD_STACK_HEAP_                               |  0                                                  |
@@ -779,6 +781,8 @@ Mcu
 .. _CONFIG_THRD_ENV: ../user-guide/configuration.html#c.CONFIG_THRD_ENV
 
 .. _CONFIG_THRD_IDLE_STACK_SIZE: ../user-guide/configuration.html#c.CONFIG_THRD_IDLE_STACK_SIZE
+
+.. _CONFIG_THRD_MONITOR_STACK_SIZE: ../user-guide/configuration.html#c.CONFIG_THRD_MONITOR_STACK_SIZE
 
 .. _CONFIG_THRD_SCHEDULED: ../user-guide/configuration.html#c.CONFIG_THRD_SCHEDULED
 
