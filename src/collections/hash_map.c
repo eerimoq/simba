@@ -179,7 +179,7 @@ int hash_map_remove(struct hash_map_t *self_p,
 void *hash_map_get(struct hash_map_t *self_p,
                    long key)
 {
-    ASSERTN(self_p != NULL, EINVAL);
+    ASSERTNRN(self_p != NULL, EINVAL);
 
     int hash;
     struct hash_map_bucket_t *bucket_p;

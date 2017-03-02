@@ -76,6 +76,17 @@
 #define UNIQUE(x)  TOKENPASTE(x, TOKENPASTE(___, __LINE__))
 
 /**
+ * Debug print of file and line.
+ */
+#define PRINT_FILE_LINE() std_printf(OSTR("%s:%d:\r\n"), __FILE__, __LINE__);
+
+#if CONFIG_DEBUG == 1
+#    define STD_PRINTF_DEBUG(...) std_printf(__VA_ARGS__)
+#else
+#    define STD_PRINTF_DEBUG(...)
+#endif
+
+/**
  * Get the number of elements in an array.
  *
  * As an example, the code below outputs ``number of members in foo =
@@ -115,38 +126,6 @@
 #ifndef MAX
 #    define MAX(a, b) (((a) > (b)) ? (a) : (b))
 #endif
-
-/**
- * Debug print of file and line.
- */
-#define PRINT_FILE_LINE() std_printf(OSTR("%s:%d:\r\n"), __FILE__, __LINE__);
-
-#if CONFIG_DEBUG == 1
-#    define STD_PRINTF_DEBUG(...) std_printf(__VA_ARGS__)
-#else
-#    define STD_PRINTF_DEBUG(...)
-#endif
-
-/**
- * Assert given condition and call the system on fatal callback with
- * given value ``n`` on error.
- */
-#if CONFIG_ASSERT == 1
-#    define ASSERTN(cond, n, ...)                                       \
-    if (!(cond)) {                                                      \
-        std_printf(OSTR(__FILE__ ":%d: ASSERT: (" #cond ") " #__VA_ARGS__ "\r\n"), \
-                   __LINE__);                                           \
-        sys.on_fatal_callback(n);                                       \
-    }
-#else
-#    define ASSERTN(cond, n, ...)
-#endif
-
-/**
- * Assert given condition and call the system on fatal callback with
- * value ``1`` on error.
- */
-#define ASSERT(cond, ...) ASSERTN(cond, 1, __VA_ARGS__)
 
 #ifndef BIT
 #    define BIT(pos) (1 << (pos))

@@ -66,7 +66,7 @@ static int dac_port_async_convert(struct dac_driver_t *self_p,
                                   uint8_t *samples_p,
                                   size_t length)
 {
-    ASSERTN(length <= 2, -EINVAL);
+    ASSERTN(length <= 2, EINVAL);
     
     esp_dac_out_voltage(self_p->pin0_channel, *samples_p++);
 
@@ -86,7 +86,7 @@ static int dac_port_convert(struct dac_driver_t *self_p,
                             uint8_t *samples_p,
                             size_t length)
 {
-    ASSERTN(length <= 2, -EINVAL);
+    ASSERTN(length <= 2, EINVAL);
 
     dac_port_async_convert(self_p, samples_p, length);
     dac_port_async_wait(self_p);

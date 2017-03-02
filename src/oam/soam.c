@@ -199,10 +199,10 @@ int soam_init(struct soam_t *self_p,
               size_t size,
               void *chout_p)
 {
-    ASSERTN(self_p != NULL, -EINVAL);
-    ASSERTN(buf_p != NULL, -EINVAL);
-    ASSERTN(size >= 5, -EINVAL);
-    ASSERTN(chout_p != NULL, -EINVAL);
+    ASSERTN(self_p != NULL, EINVAL);
+    ASSERTN(buf_p != NULL, EINVAL);
+    ASSERTN(size >= 5, EINVAL);
+    ASSERTN(chout_p != NULL, EINVAL);
 
     self_p->tx.buf_p = buf_p;
     self_p->tx.size = size;

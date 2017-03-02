@@ -112,7 +112,7 @@ int network_interface_module_init()
 
 int network_interface_add(struct network_interface_t *netif_p)
 {
-    ASSERTN(netif_p != NULL, -EINVAL);
+    ASSERTN(netif_p != NULL, EINVAL);
     netif_p->next_p = module.network_interfaces_p;
     module.network_interfaces_p = netif_p;
 
@@ -121,7 +121,7 @@ int network_interface_add(struct network_interface_t *netif_p)
 
 int network_interface_start(struct network_interface_t *netif_p)
 {
-    ASSERTN(netif_p != NULL, -EINVAL);
+    ASSERTN(netif_p != NULL, EINVAL);
 
     return (netif_p->start(netif_p));
 }
@@ -136,7 +136,7 @@ int network_interface_start(struct network_interface_t *netif_p)
 
 int network_interface_add(struct network_interface_t *netif_p)
 {
-    ASSERTN(netif_p != NULL, -EINVAL);
+    ASSERTN(netif_p != NULL, EINVAL);
 
     ip_addr_t ipaddr, netmask, gw;
 
@@ -160,7 +160,7 @@ int network_interface_add(struct network_interface_t *netif_p)
 
 int network_interface_start(struct network_interface_t *netif_p)
 {
-    ASSERTN(netif_p != NULL, -EINVAL);
+    ASSERTN(netif_p != NULL, EINVAL);
 
     int res = 0;
 
@@ -179,7 +179,7 @@ int network_interface_start(struct network_interface_t *netif_p)
 
 int network_interface_add(struct network_interface_t *netif_p)
 {
-    ASSERTN(netif_p != NULL, -EINVAL);
+    ASSERTN(netif_p != NULL, EINVAL);
 
     netif_p->next_p = module.network_interfaces_p;
     module.network_interfaces_p = netif_p;
@@ -196,14 +196,14 @@ int network_interface_start(struct network_interface_t *netif_p)
 
 int network_interface_is_up(struct network_interface_t *netif_p)
 {
-    ASSERTN(netif_p != NULL, -EINVAL);
+    ASSERTN(netif_p != NULL, EINVAL);
     
     return (netif_p->is_up(netif_p));
 }
 
 struct network_interface_t *network_interface_get_by_name(const char *name_p)
 {
-    ASSERTN(name_p != NULL, -EINVAL);
+    ASSERTNRN(name_p != NULL, EINVAL);
     
     struct network_interface_t *netif_p;
 
@@ -223,8 +223,8 @@ struct network_interface_t *network_interface_get_by_name(const char *name_p)
 int network_interface_set_ip_info(struct network_interface_t *netif_p,
                                   const struct inet_if_ip_info_t *info_p)
 {
-    ASSERTN(netif_p != NULL, -EINVAL);
-    ASSERTN(info_p != NULL, -EINVAL);
+    ASSERTN(netif_p != NULL, EINVAL);
+    ASSERTN(info_p != NULL, EINVAL);
 
     if (netif_p->set_ip_info(netif_p, info_p) != 0) {
         return (-1);
@@ -238,8 +238,8 @@ int network_interface_set_ip_info(struct network_interface_t *netif_p,
 int network_interface_get_ip_info(struct network_interface_t *netif_p,
                                   struct inet_if_ip_info_t *info_p)
 {
-    ASSERTN(netif_p != NULL, -EINVAL);
-    ASSERTN(info_p != NULL, -EINVAL);
+    ASSERTN(netif_p != NULL, EINVAL);
+    ASSERTN(info_p != NULL, EINVAL);
     
     if (netif_p->get_ip_info(netif_p, &netif_p->info) != 0) {
         return (-1);

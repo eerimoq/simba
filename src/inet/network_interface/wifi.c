@@ -42,10 +42,10 @@ int network_interface_wifi_init(struct network_interface_wifi_t *self_p,
                                 const char *ssid_p,
                                 const char *password_p)
 {
-    ASSERTN(self_p != NULL, -EINVAL);
-    ASSERTN(name_p != NULL, -EINVAL);
-    ASSERTN(driver_p != NULL, -EINVAL);
-    ASSERTN(ssid_p != NULL, -EINVAL);
+    ASSERTN(self_p != NULL, EINVAL);
+    ASSERTN(name_p != NULL, EINVAL);
+    ASSERTN(driver_p != NULL, EINVAL);
+    ASSERTN(ssid_p != NULL, EINVAL);
 
     self_p->network_interface.name_p = name_p;
     self_p->network_interface.start =
@@ -73,7 +73,7 @@ int network_interface_wifi_init(struct network_interface_wifi_t *self_p,
 
 int network_interface_wifi_start(struct network_interface_wifi_t *self_p)
 {
-    ASSERTN(self_p != NULL, -EINVAL);
+    ASSERTN(self_p != NULL, EINVAL);
 
     return (self_p->driver_p->start(self_p->arg_p,
                                     self_p->ssid_p,
@@ -83,14 +83,14 @@ int network_interface_wifi_start(struct network_interface_wifi_t *self_p)
 
 int network_interface_wifi_stop(struct network_interface_wifi_t *self_p)
 {
-    ASSERTN(self_p != NULL, -EINVAL);
+    ASSERTN(self_p != NULL, EINVAL);
 
     return (self_p->driver_p->stop(self_p->arg_p));
 }
 
 int network_interface_wifi_is_up(struct network_interface_wifi_t *self_p)
 {
-    ASSERTN(self_p != NULL, -EINVAL);
+    ASSERTN(self_p != NULL, EINVAL);
 
     return (self_p->driver_p->is_up(self_p->arg_p));
 }
@@ -98,8 +98,8 @@ int network_interface_wifi_is_up(struct network_interface_wifi_t *self_p)
 int network_interface_wifi_set_ip_info(struct network_interface_wifi_t *self_p,
                                        const struct inet_if_ip_info_t *info_p)
 {
-    ASSERTN(self_p != NULL, -EINVAL);
-    ASSERTN(info_p != NULL, -EINVAL);
+    ASSERTN(self_p != NULL, EINVAL);
+    ASSERTN(info_p != NULL, EINVAL);
 
     self_p->info_p = info_p;
     
@@ -109,8 +109,8 @@ int network_interface_wifi_set_ip_info(struct network_interface_wifi_t *self_p,
 int network_interface_wifi_get_ip_info(struct network_interface_wifi_t *self_p,
                                        struct inet_if_ip_info_t *info_p)
 {
-    ASSERTN(self_p != NULL, -EINVAL);
-    ASSERTN(info_p != NULL, -EINVAL);
+    ASSERTN(self_p != NULL, EINVAL);
+    ASSERTN(info_p != NULL, EINVAL);
 
     return (self_p->driver_p->get_ip_info(self_p->arg_p, info_p));
 }

@@ -494,8 +494,8 @@ static struct json_tok_t *object_get(struct json_t *self_p,
                                      struct json_tok_t *object_p,
                                      int type)
 {
-    ASSERTN(self_p != NULL, -EINVAL);
-    ASSERTN(key_p != NULL, -EINVAL);
+    ASSERTNRN(self_p != NULL, EINVAL);
+    ASSERTNRN(key_p != NULL, EINVAL);
 
     int i;
     int key_length;
@@ -537,9 +537,9 @@ int json_init(struct json_t *self_p,
               struct json_tok_t *tokens_p,
               int num_tokens)
 {
-    ASSERTN(self_p != NULL, -EINVAL);
+    ASSERTN(self_p != NULL, EINVAL);
     ASSERTN(((tokens_p != NULL) && (num_tokens > 0))
-            || (num_tokens == 0), -EINVAL);
+            || (num_tokens == 0), EINVAL);
 
     self_p->pos = 0;
     self_p->toknext = 0;
@@ -554,9 +554,9 @@ int json_parse(struct json_t *self_p,
                const char *js_p,
                size_t len)
 {
-    ASSERTN(self_p != NULL, -EINVAL);
-    ASSERTN(js_p != NULL, -EINVAL);
-    ASSERTN(len > 0, -EINVAL);
+    ASSERTN(self_p != NULL, EINVAL);
+    ASSERTN(js_p != NULL, EINVAL);
+    ASSERTN(len > 0, EINVAL);
 
     int r;
     int i;
@@ -781,8 +781,8 @@ ssize_t json_dumps(struct json_t *self_p,
                    struct json_tok_t *tokens_p,
                    char *js_p)
 {
-    ASSERTN(self_p != NULL, -EINVAL);
-    ASSERTN(js_p != NULL, -EINVAL);
+    ASSERTN(self_p != NULL, EINVAL);
+    ASSERTN(js_p != NULL, EINVAL);
 
     ssize_t res;
     struct string_t string;
@@ -804,8 +804,8 @@ ssize_t json_dump(struct json_t *self_p,
                   struct json_tok_t *tokens_p,
                   void *out_p)
 {
-    ASSERTN(self_p != NULL, -EINVAL);
-    ASSERTN(out_p != NULL, -EINVAL);
+    ASSERTN(self_p != NULL, EINVAL);
+    ASSERTN(out_p != NULL, EINVAL);
 
     struct dump_t state;
 
@@ -849,8 +849,8 @@ struct json_tok_t *json_array_get(struct json_t *self_p,
                                   int index,
                                   struct json_tok_t *array_p)
 {
-    ASSERTN(self_p != NULL, -EINVAL);
-    ASSERTN(index >= 0, -EINVAL);
+    ASSERTNRN(self_p != NULL, EINVAL);
+    ASSERTNRN(index >= 0, EINVAL);
 
     int i;
     int number_of_children;

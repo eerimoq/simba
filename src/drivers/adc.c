@@ -59,8 +59,8 @@ int adc_init(struct adc_driver_t *self_p,
              long sampling_rate)
 {
     ASSERTN(self_p != NULL, EINVAL);
-    ASSERTN(adc_is_valid_device(dev_p), -EINVAL);
-    ASSERTN(pin_is_valid_device(pin_dev_p), -EINVAL);
+    ASSERTN(adc_is_valid_device(dev_p), EINVAL);
+    ASSERTN(pin_is_valid_device(pin_dev_p), EINVAL);
     ASSERTN(reference == ADC_REFERENCE_VCC, EINVAL);
     ASSERTN(sampling_rate > 0, EINVAL);
 

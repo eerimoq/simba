@@ -131,8 +131,8 @@ int ssl_module_init()
 int ssl_context_init(struct ssl_context_t *self_p,
                      enum ssl_protocol_t protocol)
 {
-    ASSERTN(self_p != NULL, -EINVAL);
-    ASSERTN(module.initialized == 1, -EINVAL);
+    ASSERTN(self_p != NULL, EINVAL);
+    ASSERTN(module.initialized == 1, EINVAL);
 
     self_p->protocol = protocol;
 
@@ -156,8 +156,8 @@ int ssl_context_init(struct ssl_context_t *self_p,
 
 int ssl_context_destroy(struct ssl_context_t *self_p)
 {
-    ASSERTN(self_p != NULL, -EINVAL);
-    ASSERTN(self_p->conf_p != NULL, -EINVAL);
+    ASSERTN(self_p != NULL, EINVAL);
+    ASSERTN(self_p->conf_p != NULL, EINVAL);
 
     free_conf(self_p->conf_p);
 
@@ -168,9 +168,9 @@ int ssl_context_load_cert_chain(struct ssl_context_t *self_p,
                                 const char *cert_p,
                                 const char *key_p)
 {
-    ASSERTN(self_p != NULL, -EINVAL);
-    ASSERTN(self_p->conf_p != NULL, -EINVAL);
-    ASSERTN(cert_p != NULL, -EINVAL);
+    ASSERTN(self_p != NULL, EINVAL);
+    ASSERTN(self_p->conf_p != NULL, EINVAL);
+    ASSERTN(cert_p != NULL, EINVAL);
 
     mbedtls_x509_crt_init(&module.cert);
     mbedtls_pk_init(&module.key);
@@ -237,11 +237,11 @@ int ssl_socket_open(struct ssl_socket_t *self_p,
                     int flags,
                     const char *server_hostname_p)
 {
-    ASSERTN(module.initialized == 1, -EINVAL);
-    ASSERTN(self_p != NULL, -EINVAL);
-    ASSERTN(context_p != NULL, -EINVAL);
-    ASSERTN(context_p->conf_p != NULL, -EINVAL);
-    ASSERTN(socket_p != NULL, -EINVAL);
+    ASSERTN(module.initialized == 1, EINVAL);
+    ASSERTN(self_p != NULL, EINVAL);
+    ASSERTN(context_p != NULL, EINVAL);
+    ASSERTN(context_p->conf_p != NULL, EINVAL);
+    ASSERTN(socket_p != NULL, EINVAL);
 
     int res;
     int authmode;
@@ -341,8 +341,8 @@ int ssl_socket_open(struct ssl_socket_t *self_p,
 
 int ssl_socket_close(struct ssl_socket_t *self_p)
 {
-    ASSERTN(self_p != NULL, -EINVAL);
-    ASSERTN(self_p->ssl_p != NULL, -EINVAL);
+    ASSERTN(self_p != NULL, EINVAL);
+    ASSERTN(self_p->ssl_p != NULL, EINVAL);
 
     mbedtls_ssl_close_notify(self_p->ssl_p);
     mbedtls_ssl_free(self_p->ssl_p);
@@ -355,9 +355,9 @@ ssize_t ssl_socket_write(struct ssl_socket_t *self_p,
                          const void *buf_p,
                          size_t size)
 {
-    ASSERTN(self_p != NULL, -EINVAL);
-    ASSERTN(self_p->ssl_p != NULL, -EINVAL);
-    ASSERTN(buf_p != NULL, -EINVAL);
+    ASSERTN(self_p != NULL, EINVAL);
+    ASSERTN(self_p->ssl_p != NULL, EINVAL);
+    ASSERTN(buf_p != NULL, EINVAL);
 
     return (mbedtls_ssl_write(self_p->ssl_p, buf_p, size));
 }
@@ -366,17 +366,17 @@ ssize_t ssl_socket_read(struct ssl_socket_t *self_p,
                         void *buf_p,
                         size_t size)
 {
-    ASSERTN(self_p != NULL, -EINVAL);
-    ASSERTN(self_p->ssl_p != NULL, -EINVAL);
-    ASSERTN(buf_p != NULL, -EINVAL);
+    ASSERTN(self_p != NULL, EINVAL);
+    ASSERTN(self_p->ssl_p != NULL, EINVAL);
+    ASSERTN(buf_p != NULL, EINVAL);
 
     return (mbedtls_ssl_read(self_p->ssl_p, buf_p, size));
 }
 
 ssize_t ssl_socket_size(struct ssl_socket_t *self_p)
 {
-    ASSERTN(self_p != NULL, -EINVAL);
-    ASSERTN(self_p->ssl_p != NULL, -EINVAL);
+    ASSERTN(self_p != NULL, EINVAL);
+    ASSERTN(self_p->ssl_p != NULL, EINVAL);
 
     return (mbedtls_ssl_get_bytes_avail(self_p->ssl_p)
             + chan_size(self_p->socket_p));

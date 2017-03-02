@@ -50,10 +50,10 @@ int chan_init(struct chan_t *self_p,
               chan_write_fn_t write,
               chan_size_fn_t size)
 {
-    ASSERTN(self_p != NULL, -EINVAL);
-    ASSERTN(read != NULL, -EINVAL);
-    ASSERTN(write != NULL, -EINVAL);
-    ASSERTN(size != NULL, -EINVAL);
+    ASSERTN(self_p != NULL, EINVAL);
+    ASSERTN(read != NULL, EINVAL);
+    ASSERTN(write != NULL, EINVAL);
+    ASSERTN(size != NULL, EINVAL);
 
     self_p->read = read;
     self_p->write = write;
@@ -97,10 +97,10 @@ int chan_list_init(struct chan_list_t *list_p,
                    void *workspace_p,
                    size_t size)
 {
-    ASSERTN(list_p != NULL, -EINVAL);
-    ASSERTN(workspace_p != NULL, -EINVAL);
-    ASSERTN(size > 0, -EINVAL);
-    ASSERTN((size / sizeof(list_p->chans_pp[0])) > 0, -EINVAL);
+    ASSERTN(list_p != NULL, EINVAL);
+    ASSERTN(workspace_p != NULL, EINVAL);
+    ASSERTN(size > 0, EINVAL);
+    ASSERTN((size / sizeof(list_p->chans_pp[0])) > 0, EINVAL);
 
     list_p->max = (size / sizeof(list_p->chans_pp[0]));
     list_p->chans_pp = workspace_p;
@@ -112,7 +112,7 @@ int chan_list_init(struct chan_list_t *list_p,
 
 int chan_list_destroy(struct chan_list_t *list_p)
 {
-    ASSERTN(list_p != NULL, -EINVAL);
+    ASSERTN(list_p != NULL, EINVAL);
 
     struct chan_t *chan_p = NULL;
     size_t i;
@@ -132,7 +132,7 @@ int chan_list_destroy(struct chan_list_t *list_p)
 int chan_set_control_cb(struct chan_t *self_p,
                         chan_control_fn_t control_cb)
 {
-    ASSERTN(self_p != NULL, -EINVAL);
+    ASSERTN(self_p != NULL, EINVAL);
 
     if (control_cb == NULL) {
         control_cb = chan_control_null;
@@ -147,10 +147,10 @@ ssize_t chan_read(void *self_p,
                   void *buf_p,
                   size_t size)
 {
-    ASSERTN(self_p != NULL, -EINVAL);
-    ASSERTN(((struct chan_t *)self_p)->read != NULL, -EINVAL);
-    ASSERTN(buf_p != NULL, -EINVAL);
-    ASSERTN(size > 0, -EINVAL);
+    ASSERTN(self_p != NULL, EINVAL);
+    ASSERTN(((struct chan_t *)self_p)->read != NULL, EINVAL);
+    ASSERTN(buf_p != NULL, EINVAL);
+    ASSERTN(size > 0, EINVAL);
 
     return (((struct chan_t *)self_p)->read(self_p, buf_p, size));
 }
@@ -159,10 +159,10 @@ ssize_t chan_write(void *v_self_p,
                    const void *buf_p,
                    size_t size)
 {
-    ASSERTN(v_self_p != NULL, -EINVAL);
-    ASSERTN(((struct chan_t *)v_self_p)->write != NULL, -EINVAL);
-    ASSERTN(buf_p != NULL, -EINVAL);
-    ASSERTN(size > 0, -EINVAL);
+    ASSERTN(v_self_p != NULL, EINVAL);
+    ASSERTN(((struct chan_t *)v_self_p)->write != NULL, EINVAL);
+    ASSERTN(buf_p != NULL, EINVAL);
+    ASSERTN(size > 0, EINVAL);
 
     struct chan_t *self_p;
 
@@ -180,7 +180,7 @@ ssize_t chan_write(void *v_self_p,
 int chan_control(void *self_p,
                  int operation)
 {
-    ASSERTN(self_p != NULL, -EINVAL);
+    ASSERTN(self_p != NULL, EINVAL);
 
     return (((struct chan_t *)self_p)->control(self_p, operation));
 }
@@ -204,15 +204,15 @@ RAM_CODE ssize_t chan_write_isr(void *self_in_p,
 
 RAM_CODE size_t chan_size(void *self_p)
 {
-    ASSERTN(self_p != NULL, -EINVAL);
+    ASSERTN(self_p != NULL, EINVAL);
 
     return (((struct chan_t *)self_p)->size(self_p));
 }
 
 int chan_list_add(struct chan_list_t *list_p, void *chan_p)
 {
-    ASSERTN(list_p != NULL, -EINVAL);
-    ASSERTN(chan_p != NULL, -EINVAL);
+    ASSERTN(list_p != NULL, EINVAL);
+    ASSERTN(chan_p != NULL, EINVAL);
 
     int res = 0;
 
@@ -233,8 +233,8 @@ int chan_list_add(struct chan_list_t *list_p, void *chan_p)
 
 int chan_list_remove(struct chan_list_t *list_p, void *chan_p)
 {
-    ASSERTN(list_p != NULL, -EINVAL);
-    ASSERTN(chan_p != NULL, -EINVAL);
+    ASSERTN(list_p != NULL, EINVAL);
+    ASSERTN(chan_p != NULL, EINVAL);
 
     int i;
     int res = -1;
@@ -259,7 +259,7 @@ int chan_list_remove(struct chan_list_t *list_p, void *chan_p)
 void *chan_list_poll(struct chan_list_t *list_p,
                      struct time_t *timeout_p)
 {
-    ASSERTN(list_p != NULL, -EINVAL);
+    ASSERTNRN(list_p != NULL, EINVAL);
 
     struct chan_t *chan_p = NULL;
     size_t i;

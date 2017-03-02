@@ -103,7 +103,7 @@ enum esp_wifi_phy_mode_t esp_wifi_get_phy_mode()
 
 void esp_wifi_print(void *chout_p)
 {
-    ASSERTN(chout_p != NULL, -EINVAL);
+    ASSERTNRV(chout_p != NULL, EINVAL);
 
     int i;
     int number_of_infos;

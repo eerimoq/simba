@@ -52,9 +52,23 @@ static int sys_port_module_init(void)
     return (0);
 }
 
+__attribute__ ((noreturn))
 static void sys_port_stop(int error)
 {
     while (1);
+}
+
+#define CONSOLE_UART_REGS SPC5_LINFLEX_0
+
+static void sys_port_panic_putc(char c)
+{
+    /* Write the next byte. */
+    CONSOLE_UART_REGS->BDRL[3] = c;
+    
+    /* Wait for the byte to be transmitted. */
+    while (((CONSOLE_UART_REGS->UARTSR & SPC5_LINFLEX_UARTSR_DTF) == 0));
+    
+    CONSOLE_UART_REGS->UARTSR = SPC5_LINFLEX_UARTSR_DTF;
 }
 
 static void sys_port_reboot()

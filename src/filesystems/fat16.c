@@ -438,9 +438,9 @@ int fat16_init(struct fat16_t *self_p,
                void *arg_p,
                unsigned int partition)
 {
-    ASSERTN(self_p != NULL, -EINVAL);
-    ASSERTN(read != NULL, -EINVAL);
-    ASSERTN(write != NULL, -EINVAL);
+    ASSERTN(self_p != NULL, EINVAL);
+    ASSERTN(read != NULL, EINVAL);
+    ASSERTN(write != NULL, EINVAL);
 
     /* Error if invalid partition. */
     if (partition > 4) {
@@ -458,7 +458,7 @@ int fat16_init(struct fat16_t *self_p,
 
 int fat16_mount(struct fat16_t *self_p)
 {
-    ASSERTN(self_p != NULL, -EINVAL);
+    ASSERTN(self_p != NULL, EINVAL);
 
     uint32_t total_blocks;
     struct bpb_t* bpb_p;
@@ -533,14 +533,14 @@ int fat16_mount(struct fat16_t *self_p)
 
 int fat16_unmount(struct fat16_t *self_p)
 {
-    ASSERTN(self_p != NULL, -EINVAL);
+    ASSERTN(self_p != NULL, EINVAL);
 
     return (cache_flush(self_p));
 }
 
 int fat16_format(struct fat16_t *self_p)
 {
-    ASSERTN(self_p != NULL, -EINVAL);
+    ASSERTN(self_p != NULL, EINVAL);
 
     struct fbs_t fbs;
     uint32_t volume_start_block;
@@ -622,8 +622,8 @@ int fat16_format(struct fat16_t *self_p)
 
 int fat16_print(struct fat16_t *self_p, void *chan_p)
 {
-    ASSERTN(self_p != NULL, -EINVAL);
-    ASSERTN(chan_p != NULL, -EINVAL);
+    ASSERTN(self_p != NULL, EINVAL);
+    ASSERTN(chan_p != NULL, EINVAL);
 
     std_fprintf(chan_p,
                 FSTR("fat_count = %u\r\n"
@@ -1152,16 +1152,16 @@ int fat16_file_open(struct fat16_t *self_p,
                     const char* path_p,
                     int oflag)
 {
-    ASSERTN(self_p != NULL, -EINVAL);
-    ASSERTN(file_p != NULL, -EINVAL);
-    ASSERTN(path_p != NULL, -EINVAL);
+    ASSERTN(self_p != NULL, EINVAL);
+    ASSERTN(file_p != NULL, EINVAL);
+    ASSERTN(path_p != NULL, EINVAL);
 
     return (file_open(self_p, file_p, path_p, oflag, 0));
 }
 
 int fat16_file_close(struct fat16_file_t *file_p)
 {
-    ASSERTN(file_p != NULL, -EINVAL);
+    ASSERTN(file_p != NULL, EINVAL);
 
     if (fat16_file_sync(file_p) != 0) {
         return (FAT16_EOF);
@@ -1174,8 +1174,8 @@ ssize_t fat16_file_read(struct fat16_file_t *file_p,
                         void* buf_p,
                         size_t size)
 {
-    ASSERTN(file_p != NULL, -EINVAL);
-    ASSERTN((buf_p != NULL) || (size == 0), -EINVAL);
+    ASSERTN(file_p != NULL, EINVAL);
+    ASSERTN((buf_p != NULL) || (size == 0), EINVAL);
 
     size_t left;
     uint8_t blk_of_cluster;
@@ -1251,8 +1251,8 @@ ssize_t fat16_file_write(struct fat16_file_t *file_p,
                          const void *src_p,
                          size_t size)
 {
-    ASSERTN(file_p != NULL, -EINVAL);
-    ASSERTN((src_p != NULL) || (size == 0), -EINVAL);
+    ASSERTN(file_p != NULL, EINVAL);
+    ASSERTN((src_p != NULL) || (size == 0), EINVAL);
 
     size_t left = size;
     uint16_t block_offset;
@@ -1317,7 +1317,7 @@ int fat16_file_seek(struct fat16_file_t *file_p,
                     int pos,
                     int whence)
 {
-    ASSERTN(file_p != NULL, -EINVAL);
+    ASSERTN(file_p != NULL, EINVAL);
 
     fat_t n;
     uint8_t blocks_per_cluster = file_p->fat16_p->blocks_per_cluster;
@@ -1373,7 +1373,7 @@ int fat16_file_seek(struct fat16_file_t *file_p,
 
 ssize_t fat16_file_tell(struct fat16_file_t *file_p)
 {
-    ASSERTN(file_p != NULL, -EINVAL);
+    ASSERTN(file_p != NULL, EINVAL);
 
     return (file_p->cur_position);
 }
@@ -1381,7 +1381,7 @@ ssize_t fat16_file_tell(struct fat16_file_t *file_p)
 int fat16_file_truncate(struct fat16_file_t *file_p,
                         size_t size)
 {
-    ASSERTN(file_p != NULL, -EINVAL);
+    ASSERTN(file_p != NULL, EINVAL);
 
     uint32_t new_pos;
     fat_t to_free;
@@ -1460,14 +1460,14 @@ int fat16_file_truncate(struct fat16_file_t *file_p,
 
 ssize_t fat16_file_size(struct fat16_file_t *file_p)
 {
-    ASSERTN(file_p != NULL, -EINVAL);
+    ASSERTN(file_p != NULL, EINVAL);
 
     return (file_p->file_size);
 }
 
 int fat16_file_sync(struct fat16_file_t *file_p)
 {
-    ASSERTN(file_p != NULL, -EINVAL);
+    ASSERTN(file_p != NULL, EINVAL);
 
     struct dir_t* dir_p;
 
@@ -1503,8 +1503,8 @@ int fat16_dir_open(struct fat16_t *self_p,
                    const char *path_p,
                    int oflag)
 {
-    ASSERTN(dir_p != NULL, -EINVAL);
-    ASSERTN(path_p != NULL, -EINVAL);
+    ASSERTN(dir_p != NULL, EINVAL);
+    ASSERTN(path_p != NULL, EINVAL);
 
     struct fat16_file_t *file_p = &dir_p->file;
     uint8_t dname[11];
@@ -1548,7 +1548,7 @@ int fat16_dir_open(struct fat16_t *self_p,
 
 int fat16_dir_close(struct fat16_dir_t *dir_p)
 {
-    ASSERTN(dir_p != NULL, -EINVAL);
+    ASSERTN(dir_p != NULL, EINVAL);
 
     if (dir_p->root_index == -1) {
         if (fat16_file_sync(&dir_p->file) != 0) {
@@ -1562,8 +1562,8 @@ int fat16_dir_close(struct fat16_dir_t *dir_p)
 int fat16_dir_read(struct fat16_dir_t *dir_p,
                    struct fat16_dir_entry_t *entry_p)
 {
-    ASSERTN(dir_p != NULL, -EINVAL);
-    ASSERTN(entry_p != NULL, -EINVAL);
+    ASSERTN(dir_p != NULL, EINVAL);
+    ASSERTN(entry_p != NULL, EINVAL);
 
     struct fat16_file_t *file_p = &dir_p->file;
     struct dir_t dir;

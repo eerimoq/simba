@@ -193,19 +193,18 @@ static ssize_t uart_port_write_cb(void *arg_p,
 {
     struct uart_driver_t *self_p;
     volatile struct spc5_linflex_t *regs_p;
-    /* int i; */
 
     self_p = container_of(arg_p, struct uart_driver_t, chout);
-
     regs_p = self_p->dev_p->regs_p;
 
     sem_take(&self_p->sem, NULL);
 
-    /* Initiate transfer by writing the first byte. */
     self_p->txbuf_p = (txbuf_p + 1);
     self_p->txsize = (size - 1);
     self_p->thrd_p = thrd_self();
 
+    /* Initiate transfer by writing the first byte, and wait for
+       completion. */
     sys_lock();
     regs_p->BDRL[3] = self_p->txbuf_p[-1];
     thrd_suspend_isr(NULL);
@@ -299,8 +298,10 @@ static ssize_t uart_port_device_write(struct uart_device_t *dev_p,
     buf_p = txbuf_p;
 
     for (i = 0; i < size; i++) {
+        /* Write the next byte. */
         regs_p->BDRL[3] = buf_p[i];
 
+        /* Wait for the byte to be transmitted. */
         while (((regs_p->UARTSR & SPC5_LINFLEX_UARTSR_DTF) == 0));
 
         regs_p->UARTSR = SPC5_LINFLEX_UARTSR_DTF;

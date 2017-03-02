@@ -28,18 +28,11 @@
 # This file is part of the Simba project.
 #
 
-NAME = sys_suite
-TYPE = suite
+NAME = panic
 BOARD ?= linux
 
-MAIN_C = main.cpp
+RUN_END_PATTERN = "Intentional panic!"
+RUN_END_PATTERN_SUCCESS = "Intentional panic!"
 
-CDEFS += \
-	CONFIG_MINIMAL_SYSTEM=1 \
-	CONFIG_FS_CMD_THRD_LIST=1 \
-	CONFIG_ASSERT=1 \
-	CONFIG_ASSERT_FORCE_FATAL=0 \
-	CONFIG_SYS_CONFIG_STRING=1
-
-SIMBA_ROOT ?= ../../..
+SIMBA_ROOT ?= ../..
 include $(SIMBA_ROOT)/make/app.mk

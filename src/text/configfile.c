@@ -58,11 +58,11 @@ char *configfile_get(struct configfile_t *self_p,
                      char *value_p,
                      int length)
 {
-    ASSERTN(self_p != NULL, EINVAL);
-    ASSERTN(section_p != NULL, EINVAL);
-    ASSERTN(property_p != NULL, EINVAL);
-    ASSERTN(value_p != NULL, EINVAL);
-    ASSERTN(length > 0, EINVAL);
+    ASSERTNRN(self_p != NULL, EINVAL);
+    ASSERTNRN(section_p != NULL, EINVAL);
+    ASSERTNRN(property_p != NULL, EINVAL);
+    ASSERTNRN(value_p != NULL, EINVAL);
+    ASSERTNRN(length > 0, EINVAL);
 
     int in_correct_section;
     int section_length;

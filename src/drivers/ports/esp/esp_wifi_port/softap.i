@@ -44,7 +44,7 @@ static struct softap_config config;
 static int esp_wifi_softap_port_init(const char *ssid_p,
                          const char *password_p)
 {
-    ASSERTN(ssid_p != NULL, -EINVAL);
+    ASSERTN(ssid_p != NULL, EINVAL);
 
     if ((strlen(ssid_p) == 0)
         || (strlen(ssid_p) >= sizeof(config.ssid))) {
@@ -75,7 +75,7 @@ static int esp_wifi_softap_port_set_ip_info(const struct inet_if_ip_info_t *info
 
 static int esp_wifi_softap_port_get_ip_info(struct inet_if_ip_info_t *info_p)
 {
-    ASSERTN(info_p != NULL, -EINVAL);
+    ASSERTN(info_p != NULL, EINVAL);
 
     struct ip_info info;
 

@@ -218,9 +218,9 @@ char *ds18b20_get_temperature_str(struct ds18b20_driver_t *self_p,
                                   const uint8_t *id_p,
                                   char *temp_p)
 {
-    ASSERTN(self_p != NULL, EINVAL);
-    ASSERTN(id_p != NULL, EINVAL);
-    ASSERTN(temp_p != NULL, EINVAL);
+    ASSERTNRN(self_p != NULL, EINVAL);
+    ASSERTNRN(id_p != NULL, EINVAL);
+    ASSERTNRN(temp_p != NULL, EINVAL);
 
     int temp;
 

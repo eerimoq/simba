@@ -45,8 +45,8 @@ static ssize_t flash_port_read(struct flash_driver_t *self_p,
                                uintptr_t src,
                                size_t size)
 {
-    ASSERTN(src < (uintptr_t)&__rom_size, -EINVAL);
-    ASSERTN(size <= ((uintptr_t)&__rom_size - src), -EINVAL);
+    ASSERTN(src < (uintptr_t)&__rom_size, EINVAL);
+    ASSERTN(size <= ((uintptr_t)&__rom_size - src), EINVAL);
 
     uintptr_t aligned_src_begin;
     uintptr_t aligned_src_end;
@@ -132,8 +132,8 @@ static ssize_t flash_port_write(struct flash_driver_t *self_p,
                                 const void *src_p,
                                 size_t size)
 {
-    ASSERTN(dst < (uintptr_t)&__rom_size, -EINVAL);
-    ASSERTN(size <= ((uintptr_t)&__rom_size - dst), -EINVAL);
+    ASSERTN(dst < (uintptr_t)&__rom_size, EINVAL);
+    ASSERTN(size <= ((uintptr_t)&__rom_size - dst), EINVAL);
 
     uintptr_t aligned_dst_begin;
     uintptr_t aligned_dst_end;
@@ -219,8 +219,8 @@ static int flash_port_erase(struct flash_driver_t *self_p,
                             uintptr_t addr,
                             uint32_t size)
 {
-    ASSERTN(addr < (uintptr_t)&__rom_size, -EINVAL);
-    ASSERTN(size <= ((uintptr_t)&__rom_size - addr), -EINVAL);
+    ASSERTN(addr < (uintptr_t)&__rom_size, EINVAL);
+    ASSERTN(size <= ((uintptr_t)&__rom_size - addr), EINVAL);
 
     uintptr_t aligned_addr;
     int first_sector;

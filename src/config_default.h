@@ -199,6 +199,35 @@
 #endif
 
 /**
+ * Force all assertions to be fatal.
+ */
+#ifndef CONFIG_ASSERT_FORCE_FATAL
+#    define CONFIG_ASSERT_FORCE_FATAL                       1
+#endif
+
+/**
+ * Enable fatal assertions, ``FATAL_ASSERT*()``.
+ */
+#ifndef CONFIG_FATAL_ASSERT
+#    if defined(CONFIG_MINIMAL_SYSTEM)
+#        define CONFIG_FATAL_ASSERT                         0
+#    else
+#        define CONFIG_FATAL_ASSERT                         1
+#    endif
+#endif
+
+/**
+ * Enable panic assertions, ``PANIC_ASSERT*()``.
+ */
+#ifndef CONFIG_PANIC_ASSERT
+#    if defined(CONFIG_MINIMAL_SYSTEM)
+#        define CONFIG_PANIC_ASSERT                         0
+#    else
+#        define CONFIG_PANIC_ASSERT                         1
+#    endif
+#endif
+
+/**
  * Include more debug information.
  */
 #ifndef CONFIG_DEBUG
@@ -1380,7 +1409,18 @@
 #endif
 
 /**
- * Debug file system command to reboot the system uptime.
+ * Debug file system command to force a panic of the system.
+ */
+#ifndef CONFIG_FS_CMD_SYS_PANIC
+#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(CONFIG_MINIMAL_SYSTEM)
+#        define CONFIG_FS_CMD_SYS_PANIC                     0
+#    else
+#        define CONFIG_FS_CMD_SYS_PANIC                     1
+#    endif
+#endif
+
+/**
+ * Debug file system command to reboot the system.
  */
 #ifndef CONFIG_FS_CMD_SYS_REBOOT
 #    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(CONFIG_MINIMAL_SYSTEM)

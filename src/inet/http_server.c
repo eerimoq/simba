@@ -497,8 +497,8 @@ int http_server_init(struct http_server_t *self_p,
 int http_server_wrap_ssl(struct http_server_t *self_p,
                          struct ssl_context_t *context_p)
 {
-    ASSERTN(self_p != NULL, -EINVAL);
-    ASSERTN(context_p != NULL, -EINVAL);
+    ASSERTN(self_p != NULL, EINVAL);
+    ASSERTN(context_p != NULL, EINVAL);
 
     self_p->ssl_context_p = context_p;
 

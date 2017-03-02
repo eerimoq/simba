@@ -40,7 +40,7 @@ static int test_echo_server(struct harness_t *harness_p)
     int i;
     struct chan_list_t list;
     void *workspace[UART_DEVICE_MAX];
-
+    
     chan_list_init(&list, workspace, sizeof(workspace));
 
     /* Initialize and start all UART drivers except the UART used for

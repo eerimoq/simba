@@ -536,7 +536,7 @@ struct usb_host_device_t *
 usb_host_device_open(struct usb_host_driver_t *self_p,
                      int device)
 {
-    ASSERTN(self_p != NULL, EINVAL);
+    ASSERTNRN(self_p != NULL, EINVAL);
 
     struct usb_host_device_t *device_p;
 

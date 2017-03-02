@@ -674,10 +674,10 @@ int tftp_server_init(struct tftp_server_t *self_p,
                      void *stack_p,
                      size_t stack_size)
 {
-    ASSERTN(self_p != NULL, -EINVAL);
-    ASSERTN(addr_p != NULL, -EINVAL);
-    ASSERTN(name_p != NULL, -EINVAL);
-    ASSERTN(stack_p != NULL, -EINVAL);
+    ASSERTN(self_p != NULL, EINVAL);
+    ASSERTN(addr_p != NULL, EINVAL);
+    ASSERTN(name_p != NULL, EINVAL);
+    ASSERTN(stack_p != NULL, EINVAL);
 
     self_p->addr = *addr_p;
     self_p->timeout_ms = timeout_ms;
@@ -691,7 +691,7 @@ int tftp_server_init(struct tftp_server_t *self_p,
 
 int tftp_server_start(struct tftp_server_t *self_p)
 {
-    ASSERTN(self_p != NULL, -EINVAL);
+    ASSERTN(self_p != NULL, EINVAL);
 
     self_p->thrd_p = thrd_spawn(tftp_server_main,
                                 self_p,

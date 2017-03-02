@@ -34,8 +34,8 @@
 
 int emacs(const char *path_p, void *chin_p, void *chout_p)
 {
-    ASSERTN(chin_p != NULL, -EINVAL);
-    ASSERTN(chout_p != NULL, -EINVAL);
+    ASSERTN(chin_p != NULL, EINVAL);
+    ASSERTN(chout_p != NULL, EINVAL);
 
     const char *args[2];
 

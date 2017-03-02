@@ -185,8 +185,8 @@ int service_init(struct service_t *self_p,
                  const char *name_p,
                  service_get_status_cb_t status_cb)
 {
-    ASSERTN(self_p != NULL, -EINVAL);
-    ASSERTN(name_p != NULL, -EINVAL);
+    ASSERTN(self_p != NULL, EINVAL);
+    ASSERTN(name_p != NULL, EINVAL);
 
     if (event_init(&self_p->control) != 0) {
         return (-1);
@@ -220,7 +220,7 @@ int service_stop(struct service_t *self_p)
 
 int service_register(struct service_t *service_p)
 {
-    ASSERTN(service_p != NULL, -EINVAL);
+    ASSERTN(service_p != NULL, EINVAL);
 
     /* Add the service to the list of services. */
     service_p->next_p = module.services_p;
@@ -231,7 +231,7 @@ int service_register(struct service_t *service_p)
 
 int service_deregister(struct service_t *service_p)
 {
-    ASSERTN(service_p != NULL, -EINVAL);
+    ASSERTN(service_p != NULL, EINVAL);
     
     return (-ENOSYS);
 }

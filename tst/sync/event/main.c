@@ -48,23 +48,23 @@ static void *tester_main(void *arg_p)
     mask = EVENT_BIT_0;
     BTASSERTN(event_read(&tester_event_rx,
                          &mask,
-                         sizeof(mask)) == sizeof(mask), NULL);
+                         sizeof(mask)) == sizeof(mask));
 
     /* Write an event that the reader is not waiting for. */
     mask = EVENT_BIT_0;
     BTASSERTN(event_write(&tester_event_tx,
                           &mask,
-                          sizeof(mask)) == sizeof(mask), NULL);
+                          sizeof(mask)) == sizeof(mask));
 
     /* Wait a while before checking if the reader was resumed. */
     thrd_sleep_ms(5);
-    BTASSERTN(event_size(&tester_event_tx) != 0, NULL);
+    BTASSERTN(event_size(&tester_event_tx) != 0);
     
     /* Write the event that the reader is waiting for. */
     mask = EVENT_BIT_1;
     BTASSERTN(event_write(&tester_event_tx,
                           &mask,
-                          sizeof(mask)) == sizeof(mask), NULL);
+                          sizeof(mask)) == sizeof(mask));
 
     thrd_suspend(NULL);
     

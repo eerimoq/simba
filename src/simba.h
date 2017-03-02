@@ -75,6 +75,7 @@ extern "C" {
 
 #include "kernel/errno.h"
 #include "kernel/types.h"
+#include "kernel/assert.h"
 
 #include "oam/settings.h"
 

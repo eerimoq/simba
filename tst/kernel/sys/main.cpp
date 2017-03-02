@@ -41,10 +41,23 @@ static void on_fatal(int error)
     std_printf(FSTR("on_fatal: error: %d\r\n"), error);
 }
 
+static int call_assert(void)
+{
+    ASSERT(0 == 1, "intentional fatal assert");
+
+    return (0);
+}
+
 static int test_set_on_fatal_callback(struct harness_t *harness_p)
 {
     sys_set_on_fatal_callback(on_fatal);
-    ASSERT(0 == 1, "intentional fatal assert");
+
+    return (0);
+}
+
+static int test_non_fatal_assert(struct harness_t *harness_p)
+{
+    BTASSERT(call_assert() == -EASSERT);
 
     return (0);
 }
@@ -208,6 +221,7 @@ int main()
     struct harness_t harness;
     struct harness_testcase_t harness_testcases[] = {
         { test_set_on_fatal_callback, "test_set_on_fatal_callback" },
+        { test_non_fatal_assert, "test_non_fatal_assert" },
         { test_info, "test_info" },
         { test_config, "test_config" },
         { test_uptime, "test_uptime" },

@@ -30,56 +30,12 @@
 
 #include "simba.h"
 
-#if CONFIG_PWM == 1
-
-#include "pwm_port.i"
-
-int pwm_module_init()
+int main()
 {
+    /* Start the system. */
+    sys_start();
+
+    sys_panic("Intentional panic!\r\n");
+
     return (0);
 }
-
-int pwm_init(struct pwm_driver_t *self_p,
-             struct pwm_device_t *dev_p)
-{
-    ASSERTN(self_p != NULL, EINVAL);
-    ASSERTN(dev_p != NULL, EINVAL);
-
-    self_p->dev_p = dev_p;
-    
-    return (pwm_port_init(self_p, dev_p));
-}
-
-int pwm_set_duty_cycle(struct pwm_driver_t *self_p,
-                       int value)
-{
-    ASSERTN(self_p != NULL, EINVAL);
-
-    return (pwm_port_set_duty_cycle(self_p, value));
-}
-
-int pwm_get_duty_cycle(struct pwm_driver_t *self_p)
-{
-    ASSERTN(self_p != NULL, EINVAL);
-
-    return (pwm_port_get_duty_cycle(self_p));
-}
-
-int pwm_duty_cycle(int percentage)
-{
-    return (pwm_port_duty_cycle(percentage));
-}
-
-int pwm_duty_cycle_as_percent(int value)
-{
-    return (pwm_port_duty_cycle_as_percent(value));
-}
-
-struct pwm_device_t *pwm_pin_to_device(struct pin_device_t *pin_p)
-{
-    ASSERTNRN(pin_p != NULL, EINVAL);
-    
-    return (pwm_port_pin_to_device(pin_p));
-}
-
-#endif

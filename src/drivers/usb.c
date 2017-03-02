@@ -275,8 +275,8 @@ usb_desc_get_configuration(uint8_t *buf_p,
                            size_t size,
                            int configuration)
 {
-    ASSERTN(buf_p != NULL, EINVAL);
-    ASSERTN(size > 0, EINVAL);
+    ASSERTNRN(buf_p != NULL, EINVAL);
+    ASSERTNRN(size > 0, EINVAL);
 
     union usb_descriptor_t *desc_p;
     size_t pos = 0;
@@ -309,8 +309,8 @@ usb_desc_get_interface(uint8_t *buf_p,
                        int configuration,
                        int interface)
 {
-    ASSERTN(buf_p != NULL, EINVAL);
-    ASSERTN(size > 0, EINVAL);
+    ASSERTNRN(buf_p != NULL, EINVAL);
+    ASSERTNRN(size > 0, EINVAL);
 
     union usb_descriptor_t *desc_p;
     struct usb_descriptor_configuration_t *conf_desc_p = NULL;
@@ -353,8 +353,8 @@ usb_desc_get_endpoint(uint8_t *buf_p,
                       int interface,
                       int endpoint)
 {
-    ASSERTN(buf_p != NULL, EINVAL);
-    ASSERTN(size > 0, EINVAL);
+    ASSERTNRN(buf_p != NULL, EINVAL);
+    ASSERTNRN(size > 0, EINVAL);
 
     union usb_descriptor_t *desc_p;
     struct usb_descriptor_configuration_t *conf_desc_p = NULL;

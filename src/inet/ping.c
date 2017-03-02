@@ -126,9 +126,9 @@ int ping_host_by_ip_address(struct inet_ip_addr_t *address_p,
                             struct time_t *timeout_p,
                             struct time_t *round_trip_time_p)
 {
-    ASSERTN(address_p != NULL, -EINVAL);
-    ASSERTN(timeout_p != NULL, -EINVAL);
-    ASSERTN(round_trip_time_p != NULL, -EINVAL);
+    ASSERTN(address_p != NULL, EINVAL);
+    ASSERTN(timeout_p != NULL, EINVAL);
+    ASSERTN(round_trip_time_p != NULL, EINVAL);
     
     int res = -1;
     ssize_t reply_size;
