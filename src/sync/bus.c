@@ -105,8 +105,8 @@ int bus_detatch(struct bus_t *self_p,
         res = binary_tree_delete(&self_p->listeners, listener_p->id);
 
         if (listener_p->next_p != NULL) {
-            binary_tree_insert(&self_p->listeners,
-                               &listener_p->next_p->base);
+            (void)binary_tree_insert(&self_p->listeners,
+                                     &listener_p->next_p->base);
         }
     } else {
         curr_p = head_p->next_p;

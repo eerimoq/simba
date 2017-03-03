@@ -654,6 +654,11 @@ static void *tftp_server_main(void *arg_p)
                                sizeof(buf) - 1,
                                0,
                                &addr);
+
+        if (size < 0) {
+            continue;
+        }
+
         log_object_print(NULL,
                          LOG_INFO,
                          OSTR("connection from %s:%u\r\n"),
