@@ -87,6 +87,15 @@ class ReaderThread(threading.Thread):
         while self.running:
             byte = self.client.serial.read(1)
 
+            # Print stored packet on timeout. Likely non-framed data,
+            # for example from a panic.
+            if not byte:
+                if len(packet) > 0:
+                    print(packet)
+                    packet = b''
+
+                continue
+
             if not is_escaped:
                 if byte == b'\xc0':
                     if len(packet) > 0:
@@ -339,8 +348,13 @@ class Shell(cmd.Cmd):
         cmd.Cmd.__init__(self, stdout=stdout)
 
         for command in client.database.commands:
-            command = command[1:]
-            setattr(self.__class__, 'do_' + command, self.do_command)
+            parts = command[1:].split('/')
+            command = parts[0]
+
+            if len(parts) > 1:
+                command += '/'
+
+            setattr(self.__class__, 'do_' + command, self.default)
 
         self.client = client
         self.stdout = stdout
@@ -348,7 +362,17 @@ class Shell(cmd.Cmd):
 
     def emptyline(self):
         pass
-    
+
+    @handle_errors
+    def default(self, line):
+        code, output = self.client.execute_command(self.line)
+        self.output(output, end='')
+
+        if code == 0:
+            self.output(CommandStatus.OK)
+        else:
+            self.output(CommandStatus.ERROR + '({})'.format(code))
+
     def completedefault(self, *args):
         _, line, begidx, _ = args
         alternatives = []
@@ -358,11 +382,11 @@ class Shell(cmd.Cmd):
                 alternatives.append(command)
 
         completions = []
-        
+
         for alternative in alternatives:
             parts = alternative[begidx + 1:].split('/')
             completion = parts[0]
-                
+
             # Directories.
             if len(parts) > 1:
                 completion += '/'
@@ -386,20 +410,6 @@ class Shell(cmd.Cmd):
     def precmd(self, line):
         self.line = line
         return line
-
-    @handle_errors
-    def do_command(self, _):
-        """Execute given command.
-
-        """
-
-        code, output = self.client.execute_command(self.line)
-        self.output(output, end='')
-
-        if code == 0:
-            self.output(CommandStatus.OK)
-        else:
-            self.output(CommandStatus.ERROR + '({})'.format(code))
 
     @handle_errors
     def do_exit(self, args):
