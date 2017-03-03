@@ -353,7 +353,7 @@ static int test_stack_heap(struct harness_t *harness_p)
 {
     BTASSERT(thrd_stack_alloc(1) == NULL);
     BTASSERT(thrd_stack_free(NULL) == -1);
-    
+
     return (0);
 }
 

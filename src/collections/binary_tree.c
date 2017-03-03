@@ -247,14 +247,14 @@ struct binary_tree_node_t *
 binary_tree_search(struct binary_tree_t *self_p,
                    int key)
 {
-    ASSERTN(self_p != NULL, EINVAL);
+    ASSERTNRN(self_p != NULL, EINVAL);
 
     return (node_search(self_p->root_p, key));
 }
 
 void binary_tree_print(struct binary_tree_t *self_p)
 {
-    ASSERTN(self_p != NULL, EINVAL);
+    ASSERTNRV(self_p != NULL, EINVAL);
 
     if (self_p->root_p == NULL) {
         std_printf(FSTR("empty\r\n"));

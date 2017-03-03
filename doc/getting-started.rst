@@ -79,7 +79,8 @@ The `Simba` development environment can be installed on `Linux (Ubuntu
         sudo apt install bossa-cli gcc-arm-none-eabi && \
         sudo apt install make unrar autoconf automake libtool gcc g++ gperf \
                              flex bison texinfo gawk ncurses-dev libexpat-dev \
-                             python-serial sed libtool-bin pmccabe && \
+                             python-serial sed libtool-bin pmccabe help2man \
+                             python-pyelftools && \
         sudo pip install pyserial xpect readchar sphinx breathe sphinx_rtd_theme && \
         (git clone --recursive https://github.com/pfalcon/esp-open-sdk && \
          cd esp-open-sdk && \

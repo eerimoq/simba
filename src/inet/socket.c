@@ -1124,7 +1124,7 @@ int socket_open(struct socket_t *self_p,
                 int type,
                 int protocol)
 {
-    ASSERTN(self_p != NULL, -EINVAL);
+    ASSERTN(self_p != NULL, EINVAL);
 
     int res = -1;
 

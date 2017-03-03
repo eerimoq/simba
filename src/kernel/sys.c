@@ -51,6 +51,9 @@ struct module_t {
 #if CONFIG_FS_CMD_SYS_UPTIME == 1
     struct fs_command_t cmd_uptime;
 #endif
+#if CONFIG_FS_CMD_SYS_PANIC == 1
+    struct fs_command_t cmd_panic;
+#endif
 #if CONFIG_FS_CMD_SYS_REBOOT == 1
     struct fs_command_t cmd_reboot;
 #endif
@@ -63,64 +66,12 @@ static const FAR char config[] =
 
 #if CONFIG_SYS_CONFIG_STRING == 1
 
+    "        fatal-assert=" STRINGIFY(CONFIG_FATAL_ASSERT) "\r\n"
     "        assert=" STRINGIFY(CONFIG_ASSERT) "\r\n"
     "        debug=" STRINGIFY(CONFIG_DEBUG) "\r\n"
-    "        fs-cmd-ds18b20-list=" STRINGIFY(CONFIG_FS_CMD_DS18B20_LIST) "\r\n"
-    "        fs-cmd-fs-counters-list=" STRINGIFY(CONFIG_FS_CMD_FS_COUNTERS_LIST) "\r\n"
-    "        fs-cmd-fs-counters-reset=" STRINGIFY(CONFIG_FS_CMD_FS_COUNTERS_RESET) "\r\n"
-    "        fs-cmd-fs-filesystems-append=" STRINGIFY(CONFIG_FS_CMD_FS_APPEND) "\r\n"
-    "        fs-cmd-fs-filesystems-list=" STRINGIFY(CONFIG_FS_CMD_FS_LIST) "\r\n"
-    "        fs-cmd-fs-filesystems-read=" STRINGIFY(CONFIG_FS_CMD_FS_READ) "\r\n"
-    "        fs-cmd-fs-filesystems-write=" STRINGIFY(CONFIG_FS_CMD_FS_WRITE) "\r\n"
-    "        fs-cmd-fs-parameters-list=" STRINGIFY(CONFIG_FS_CMD_FS_PARAMETERS_LIST) "\r\n"
-    "        fs-cmd-i2c-read=" STRINGIFY(CONFIG_FS_CMD_I2C_READ) "\r\n"
-    "        fs-cmd-i2c-write=" STRINGIFY(CONFIG_FS_CMD_I2C_WRITE) "\r\n"
-    "        fs-cmd-log-list=" STRINGIFY(CONFIG_FS_CMD_LOG_LIST) "\r\n"
-    "        fs-cmd-log-print=" STRINGIFY(CONFIG_FS_CMD_LOG_PRINT) "\r\n"
-    "        fs-cmd-log-set-log-mask=" STRINGIFY(CONFIG_FS_CMD_LOG_SET_LOG_MASK) "\r\n"
-    "        fs-cmd-network-interface-list=" STRINGIFY(CONFIG_FS_CMD_NETWORK_INTERFACE_LIST) "\r\n"
-    "        fs-cmd-pin-read=" STRINGIFY(CONFIG_FS_CMD_PIN_READ) "\r\n"
-    "        fs-cmd-pin-set-mode=" STRINGIFY(CONFIG_FS_CMD_PIN_SET_MODE) "\r\n"
-    "        fs-cmd-pin-write=" STRINGIFY(CONFIG_FS_CMD_PIN_WRITE) "\r\n"
-    "        fs-cmd-settings-list=" STRINGIFY(CONFIG_FS_CMD_SETTINGS_LIST) "\r\n"
-    "        fs-cmd-settings-read=" STRINGIFY(CONFIG_FS_CMD_SETTINGS_READ) "\r\n"
-    "        fs-cmd-settings-reset=" STRINGIFY(CONFIG_FS_CMD_SETTINGS_RESET) "\r\n"
-    "        fs-cmd-settings-write=" STRINGIFY(CONFIG_FS_CMD_SETTINGS_WRITE) "\r\n"
-    "        fs-cmd-sys-info=" STRINGIFY(CONFIG_FS_CMD_SYS_INFO) "\r\n"
-    "        fs-cmd-sys-uptime=" STRINGIFY(CONFIG_FS_CMD_SYS_UPTIME) "\r\n"
-    "        fs-cmd-thrd-list=" STRINGIFY(CONFIG_FS_CMD_THRD_LIST) "\r\n"
-    "        fs-cmd-thrd-set-log-mask=" STRINGIFY(CONFIG_FS_CMD_THRD_SET_LOG_MASK) "\r\n"
-    "        fs-cmd-usb-device-list=" STRINGIFY(CONFIG_FS_CMD_USB_DEVICE_LIST) "\r\n"
-    "        fs-cmd-usb-host-list=" STRINGIFY(CONFIG_FS_CMD_USB_HOST_LIST) "\r\n"
-    "        monitor-thread=" STRINGIFY(CONFIG_MONITOR_THREAD) "\r\n"
     "        preemptive-scheduler=" STRINGIFY(CONFIG_PREEMPTIVE_SCHEDULER) "\r\n"
     "        profile-stack=" STRINGIFY(CONFIG_PROFILE_STACK) "\r\n"
-    "        settings-area-size=" STRINGIFY(CONFIG_SETTINGS_AREA_SIZE) "\r\n"
-    "        shell-command-max=" STRINGIFY(CONFIG_SHELL_COMMAND_MAX) "\r\n"
-    "        shell-history-size=" STRINGIFY(CONFIG_SHELL_HISTORY_SIZE) "\r\n"
-    "        shell-minimal=" STRINGIFY(CONFIG_SHELL_MINIMAL) "\r\n"
-    "        shell-prompt=" STRINGIFY(CONFIG_SHELL_PROMPT) "\r\n"
-    "        spiffs=" STRINGIFY(CONFIG_SPIFFS) "\r\n"
-    "        start-console=" STRINGIFY(CONFIG_START_CONSOLE) "\r\n"
-    "        start-console-device-index=" STRINGIFY(CONFIG_START_CONSOLE_DEVICE_INDEX) "\r\n"
-    "        start-console-uart-baudrate=" STRINGIFY(CONFIG_START_CONSOLE_UART_BAUDRATE) "\r\n"
-    "        start-console-usb-cdc-control-interface=" STRINGIFY(CONFIG_START_CONSOLE_USB_CDC_CONTROL_INTERFACE) "\r\n"
-    "        start-console-usb-cdc-endpoint-in=" STRINGIFY(CONFIG_START_CONSOLE_USB_CDC_ENDPOINT_IN) "\r\n"
-    "        start-console-usb-cdc-endpoint-out=" STRINGIFY(CONFIG_START_CONSOLE_USB_CDC_ENDPOINT_OUT) "\r\n"
-    "        start-console-usb-cdc-wait-for-connetion=" STRINGIFY(CONFIG_START_CONSOLE_USB_CDC_WAIT_FOR_CONNETION) "\r\n"
-    "        start-filesystem=" STRINGIFY(CONFIG_START_FILESYSTEM) "\r\n"
-    "        start-filesystem-address=" STRINGIFY(CONFIG_START_FILESYSTEM_ADDRESS) "\r\n"
-    "        start-filesystem-size=" STRINGIFY(CONFIG_START_FILESYSTEM_SIZE) "\r\n"
-    "        start-network=" STRINGIFY(CONFIG_START_NETWORK) "\r\n"
-    "        start-network-interface-wifi-ssid=" STRINGIFY(CONFIG_START_NETWORK_INTERFACE_WIFI_SSID) "\r\n"
-    "        start-network-interface-wifi-password=********\r\n"
-    "        start-shell=" STRINGIFY(CONFIG_START_SHELL) "\r\n"
-    "        start-shell-prio=" STRINGIFY(CONFIG_START_SHELL_PRIO) "\r\n"
-    "        start-shell-stack-size=" STRINGIFY(CONFIG_START_SHELL_STACK_SIZE) "\r\n"
-    "        std-output-buffer-max=" STRINGIFY(CONFIG_STD_OUTPUT_BUFFER_MAX) "\r\n"
     "        system-tick-frequency=" STRINGIFY(CONFIG_SYSTEM_TICK_FREQUENCY) "\r\n"
-    "        usb-device-vid=" STRINGIFY(CONFIG_USB_DEVICE_VID) "\r\n"
-    "        usb-device-pid=" STRINGIFY(CONFIG_USB_DEVICE_PID) "\r\n"
 
 #endif
 
@@ -335,7 +286,7 @@ static void *soam_main(void *arg_p)
     ssize_t size;
 
     thrd_set_name("soam");
-    
+
     while (1) {
         chan_read(sys_get_stdin(), &byte, sizeof(byte));
 
@@ -442,6 +393,22 @@ static int cmd_uptime_cb(int argc,
 
 #endif
 
+#if CONFIG_FS_CMD_SYS_PANIC == 1
+
+static int cmd_panic_cb(int argc,
+                         const char *argv[],
+                         void *out_p,
+                         void *in_p,
+                         void *arg_p,
+                         void *call_arg_p)
+{
+    sys_panic("Panic!\r\n");
+
+    return (0);
+}
+
+#endif
+
 #if CONFIG_FS_CMD_SYS_REBOOT == 1
 
 static int cmd_reboot_cb(int argc,
@@ -491,6 +458,14 @@ int sys_module_init(void)
     fs_command_register(&module.cmd_uptime);
 #endif
 
+#if CONFIG_FS_CMD_SYS_PANIC == 1
+    fs_command_init(&module.cmd_panic,
+                    CSTR("/kernel/sys/panic"),
+                    cmd_panic_cb,
+                    NULL);
+    fs_command_register(&module.cmd_panic);
+#endif
+
 #if CONFIG_FS_CMD_SYS_REBOOT == 1
     fs_command_init(&module.cmd_reboot,
                     CSTR("/kernel/sys/reboot"),
@@ -504,6 +479,9 @@ int sys_module_init(void)
 
 int sys_start(void)
 {
+    sys.stdin_p = chan_null();
+    sys.stdout_p = chan_null();
+
 #if CONFIG_MODULE_INIT_RWLOCK == 1
     rwlock_module_init();
 #endif
@@ -574,19 +552,34 @@ void sys_stop(int error)
     sys_port_stop(error);
 }
 
+void sys_panic(const char *message_p)
+{
+    sys_lock();
+
+    while (*message_p != '\0') {
+        sys_port_panic_putc(*message_p++);
+    }
+    
+    sys_reboot();
+}
+
 void sys_reboot(void)
 {
     sys_port_reboot();
 }
 
-void sys_set_on_fatal_callback(void (*callback)(int error))
+void sys_set_on_fatal_callback(sys_on_fatal_fn_t callback)
 {
     sys.on_fatal_callback = callback;
 }
 
 void sys_set_stdin(void *chan_p)
 {
-    sys.stdin_p = chan_p;
+    if (chan_p != NULL) {
+        sys.stdin_p = chan_p;
+    } else {
+        sys.stdin_p = chan_null();
+    }
 }
 
 void *sys_get_stdin()
@@ -596,7 +589,11 @@ void *sys_get_stdin()
 
 void sys_set_stdout(void *chan_p)
 {
-    sys.stdout_p = chan_p;
+    if (chan_p != NULL) {
+        sys.stdout_p = chan_p;
+    } else {
+        sys.stdout_p = chan_null();
+    }
 }
 
 void *sys_get_stdout()

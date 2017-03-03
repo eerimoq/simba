@@ -53,8 +53,8 @@ int circular_heap_init(struct circular_heap_t *self_p,
 void *circular_heap_alloc(struct circular_heap_t *self_p,
                           size_t size)
 {
-    ASSERTN(self_p != NULL, EINVAL);
-    ASSERTN(size > 0, EINVAL);
+    ASSERTNRN(self_p != NULL, EINVAL);
+    ASSERTNRN(size > 0, EINVAL);
 
     struct header_t *header_p = NULL;
 

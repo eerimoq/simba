@@ -30,7 +30,9 @@
 
 SIZECMD = $(CROSS_COMPILE)size $(SIZEARGS) ${EXE} ; \
           echo ; \
-          $(CROSS_COMPILE)size $(OBJ) -t
+          $(CROSS_COMPILE)size $(OBJ) -t | sort -n -k4 ; \
+          $(CROSS_COMPILE)readelf -W -s $(EXE) | sort -n -k3 | \
+	      awk '{if ($$3 != 0) {print $$0}}' | grep -v "Symbol table"
 
 SIZE_SUMMARY_CMD ?= $(CROSS_COMPILE)size ${EXE} | python -c "import sys; text, data, bss = sys.stdin.readlines()[1].split()[0:3]; print '{{\"program\": {}, \"data\": {}}}'.format(text, int(data) + int(bss))"
 

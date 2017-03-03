@@ -34,9 +34,9 @@ int circular_buffer_init(struct circular_buffer_t *self_p,
                          void *buf_p,
                          size_t size)
 {
-    ASSERTN(self_p != NULL, -EINVAL);
-    ASSERTN(buf_p != NULL, -EINVAL);
-    ASSERTN(size > 0, -EINVAL);
+    ASSERTN(self_p != NULL, EINVAL);
+    ASSERTN(buf_p != NULL, EINVAL);
+    ASSERTN(size > 0, EINVAL);
 
     self_p->buf_p = buf_p;
     self_p->size = size;
@@ -50,8 +50,8 @@ ssize_t circular_buffer_write(struct circular_buffer_t *self_p,
                               const void *buf_p,
                               size_t size)
 {
-    ASSERTN(self_p != NULL, -EINVAL);
-    ASSERTN(buf_p != NULL, -EINVAL);
+    ASSERTN(self_p != NULL, EINVAL);
+    ASSERTN(buf_p != NULL, EINVAL);
 
     size_t first_chunk_size;
     size_t unused_size;
@@ -82,8 +82,8 @@ ssize_t circular_buffer_read(struct circular_buffer_t *self_p,
                              void *buf_p,
                              size_t size)
 {
-    ASSERTN(self_p != NULL, -EINVAL);
-    ASSERTN(buf_p != NULL, -EINVAL);
+    ASSERTN(self_p != NULL, EINVAL);
+    ASSERTN(buf_p != NULL, EINVAL);
 
     size_t first_chunk_size;
     size_t used_size;

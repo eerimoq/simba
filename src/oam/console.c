@@ -192,8 +192,8 @@ int console_module_init(void)
     }
 
     module.initialized = 1;
-    module.console.chin_p = NULL;
-    module.console.chout_p = NULL;
+    module.console.chin_p = chan_null();
+    module.console.chout_p = chan_null();
 
     return (0);
 }

@@ -28,8 +28,6 @@
  * This file is part of the Simba project.
  */
 
-#define THRD_MONITOR_STACK_MAX 256
-
 #include "freertos/FreeRTOS.h"
 #include "freertos/semphr.h"
 

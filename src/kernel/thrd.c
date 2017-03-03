@@ -275,7 +275,7 @@ static void thrd_reschedule(void)
 
     out_p = thrd_self();
 
-    ASSERTN(out_p->stack_low_magic == THRD_STACK_LOW_MAGIC, ESTACK);
+    PANIC_ASSERTN(out_p->stack_low_magic == THRD_STACK_LOW_MAGIC, ESTACK);
 
     in_p = scheduler_ready_pop();
 
@@ -508,7 +508,7 @@ int thrd_module_init(void)
     thrd_p->env.max_number_of_variables = 0;
 #endif
 
-#if CONFIG_ASSERT == 1
+#if CONFIG_PANIC_ASSERT == 1
     thrd_p->stack_low_magic = THRD_STACK_LOW_MAGIC;
 #endif
 
@@ -570,9 +570,9 @@ struct thrd_t *thrd_spawn(void *(*main)(void *),
                           void *stack_p,
                           size_t stack_size)
 {
-    ASSERTN(main != NULL, EINVAL);
-    ASSERTN(stack_p != NULL, EINVAL);
-    ASSERTN(stack_size > sizeof(struct thrd_t) + 1, EINVAL);
+    ASSERTNRN(main != NULL, EINVAL);
+    ASSERTNRN(stack_p != NULL, EINVAL);
+    ASSERTNRN(stack_size > sizeof(struct thrd_t) + 1, EINVAL);
 
     struct thrd_t *thrd_p;
     int err = 0;
@@ -607,7 +607,7 @@ struct thrd_t *thrd_spawn(void *(*main)(void *),
     thrd_p->env.max_number_of_variables = 0;
 #endif
 
-#if CONFIG_ASSERT == 1
+#if CONFIG_PANIC_ASSERT == 1
     thrd_p->stack_low_magic = THRD_STACK_LOW_MAGIC;
 #endif
 
@@ -789,7 +789,7 @@ int thrd_init_global_env(struct thrd_environment_variable_t *variables_p,
 
 int thrd_set_global_env(const char *name_p, const char *value_p)
 {
-    ASSERTN(name_p != NULL, -EINVAL);
+    ASSERTN(name_p != NULL, EINVAL);
 
 #if CONFIG_THRD_ENV == 1
 
@@ -810,7 +810,7 @@ int thrd_set_global_env(const char *name_p, const char *value_p)
 
 const char *thrd_get_global_env(const char *name_p)
 {
-    ASSERTN(name_p != NULL, -EINVAL);
+    ASSERTNRN(name_p != NULL, EINVAL);
 
 #if CONFIG_THRD_ENV == 1
 
@@ -849,7 +849,7 @@ int thrd_init_env(struct thrd_environment_variable_t *variables_p,
 
 int thrd_set_env(const char *name_p, const char *value_p)
 {
-    ASSERTN(name_p != NULL, -EINVAL);
+    ASSERTN(name_p != NULL, EINVAL);
 
 #if CONFIG_THRD_ENV == 1
 
@@ -864,7 +864,7 @@ int thrd_set_env(const char *name_p, const char *value_p)
 
 const char *thrd_get_env(const char *name_p)
 {
-    ASSERTN(name_p != NULL, -EINVAL);
+    ASSERTNRN(name_p != NULL, EINVAL);
 
 #if CONFIG_THRD_ENV == 1
 

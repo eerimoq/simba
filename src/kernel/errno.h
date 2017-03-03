@@ -426,4 +426,7 @@
 /** Test assertion. */
 #define EBTASSERT      1001
 
+/** Assertion. */
+#define EASSERT        1002
+
 #endif

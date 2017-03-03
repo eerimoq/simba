@@ -28,8 +28,6 @@
  * This file is part of the Simba project.
  */
 
-#define THRD_MONITOR_STACK_MAX 512
-
 static struct thrd_t main_thrd __attribute__ ((section (".main_stack")));
 extern char __main_stack_end;
 

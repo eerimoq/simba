@@ -45,6 +45,8 @@ typedef float cpu_usage_t;
 typedef uint32_t cpu_usage_t;
 #endif
 
+typedef void (*sys_on_fatal_fn_t)(int error) __attribute__ ((noreturn));
+
 /**
  * Convertion from the time struct to system ticks.
  */
@@ -66,7 +68,7 @@ static inline void st2t(sys_tick_t tick, struct time_t *time_p)
 }
 
 struct sys_t {
-    void (*on_fatal_callback)(int error);
+    sys_on_fatal_fn_t on_fatal_callback;
     void *stdin_p;
     void *stdout_p;
     struct {
@@ -105,9 +107,25 @@ int sys_start(void);
 /**
  * Stop the system.
  *
+ * @param[in] error Error code.
+ *
  * @return Never returns.
  */
+__attribute__ ((noreturn))
 void sys_stop(int error);
+
+/**
+ * System panic. Write given message and other port specific debug
+ * information to the console and then reboot the system.
+ *
+ * This function may be called from interrupt context and with the
+ * system lock taken.
+ *
+ * @param[in] message_p Panic message to write to the console.
+ *
+ * @return Never returns.
+ */
+void sys_panic(const char *message_p);
 
 /**
  * Reboot the system. Sets all registers to their known, default
@@ -127,7 +145,7 @@ void sys_reboot(void);
  *
  * @return void
  */
-void sys_set_on_fatal_callback(void (*callback)(int error));
+void sys_set_on_fatal_callback(sys_on_fatal_fn_t callback);
 
 /**
  * Set the standard input channel.

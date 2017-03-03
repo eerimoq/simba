@@ -1209,7 +1209,7 @@ int shell_init(struct shell_t *self_p,
 
 void *shell_main(void *arg_p)
 {
-    ASSERTN(arg_p != NULL, EINVAL);
+    ASSERTNRN(arg_p != NULL, EINVAL);
 
     struct shell_t *self_p;
     int res;

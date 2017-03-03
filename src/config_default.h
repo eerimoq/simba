@@ -199,6 +199,35 @@
 #endif
 
 /**
+ * Force all assertions to be fatal.
+ */
+#ifndef CONFIG_ASSERT_FORCE_FATAL
+#    define CONFIG_ASSERT_FORCE_FATAL                       1
+#endif
+
+/**
+ * Enable fatal assertions, ``FATAL_ASSERT*()``.
+ */
+#ifndef CONFIG_FATAL_ASSERT
+#    if defined(CONFIG_MINIMAL_SYSTEM)
+#        define CONFIG_FATAL_ASSERT                         0
+#    else
+#        define CONFIG_FATAL_ASSERT                         1
+#    endif
+#endif
+
+/**
+ * Enable panic assertions, ``PANIC_ASSERT*()``.
+ */
+#ifndef CONFIG_PANIC_ASSERT
+#    if defined(CONFIG_MINIMAL_SYSTEM)
+#        define CONFIG_PANIC_ASSERT                         0
+#    else
+#        define CONFIG_PANIC_ASSERT                         1
+#    endif
+#endif
+
+/**
  * Include more debug information.
  */
 #ifndef CONFIG_DEBUG
@@ -1380,7 +1409,18 @@
 #endif
 
 /**
- * Debug file system command to reboot the system uptime.
+ * Debug file system command to force a panic of the system.
+ */
+#ifndef CONFIG_FS_CMD_SYS_PANIC
+#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(CONFIG_MINIMAL_SYSTEM)
+#        define CONFIG_FS_CMD_SYS_PANIC                     0
+#    else
+#        define CONFIG_FS_CMD_SYS_PANIC                     1
+#    endif
+#endif
+
+/**
+ * Debug file system command to reboot the system.
  */
 #ifndef CONFIG_FS_CMD_SYS_REBOOT
 #    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(CONFIG_MINIMAL_SYSTEM)
@@ -1474,7 +1514,7 @@
  * Start the monitor thread to gather statistics of the scheulder.
  */
 #ifndef CONFIG_MONITOR_THREAD
-#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(BOARD_ESP12E) || defined(BOARD_ESP01) || defined(BOARD_NODEMCU) || defined(BOARD_NANO32) || defined(CONFIG_MINIMAL_SYSTEM)
+#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(BOARD_ESP12E) || defined(BOARD_ESP01) || defined(BOARD_NODEMCU) || defined(BOARD_NANO32) || defined(BOARD_ESP32_DEVKITC) || defined(CONFIG_MINIMAL_SYSTEM)
 #        define CONFIG_MONITOR_THREAD                       0
 #    else
 #        define CONFIG_MONITOR_THREAD                       1
@@ -1617,7 +1657,7 @@
 #ifndef CONFIG_START_CONSOLE_UART_BAUDRATE
 #    if defined(BOARD_ESP01) || defined(BOARD_ESP12E) || defined(BOARD_NODEMCU)
 #        define CONFIG_START_CONSOLE_UART_BAUDRATE      76800
-#    elif defined(BOARD_NANO32) || defined(BOARD_SPC56DDISCOVERY)
+#    elif defined(BOARD_NANO32) || defined(BOARD_ESP32_DEVKITC) || defined(BOARD_SPC56DDISCOVERY)
 #        define CONFIG_START_CONSOLE_UART_BAUDRATE     115200
 #    else
 #        define CONFIG_START_CONSOLE_UART_BAUDRATE      38400
@@ -1628,7 +1668,7 @@
  * Console UART baudrate.
  */
 #ifndef CONFIG_START_CONSOLE_UART_RX_BUFFER_SIZE
-#    if defined(BOARD_NANO32)
+#    if defined(BOARD_NANO32) || defined(BOARD_ESP32_DEVKITC)
 #        define CONFIG_START_CONSOLE_UART_RX_BUFFER_SIZE  512
 #    else
 #        define CONFIG_START_CONSOLE_UART_RX_BUFFER_SIZE   32
@@ -1686,7 +1726,7 @@
 #        define CONFIG_START_FILESYSTEM_ADDRESS    0x0006b000
 #    elif defined(BOARD_ESP12E) || defined(BOARD_NODEMCU)
 #        define CONFIG_START_FILESYSTEM_ADDRESS    0x00300000
-#    elif defined(BOARD_NANO32)
+#    elif defined(BOARD_NANO32) || defined(BOARD_ESP32_DEVKITC)
 #        define CONFIG_START_FILESYSTEM_ADDRESS    0x00300000
 #    else
 #        define CONFIG_START_FILESYSTEM_ADDRESS             0
@@ -1868,6 +1908,21 @@
 #endif
 
 /**
+ * Stack size of the monitor thread.
+ */
+#ifndef CONFIG_THRD_MONITOR_STACK_SIZE
+#    if defined(ARCH_PPC) || defined(ARCH_ESP) || defined(ARCH_ESP32)
+#        define CONFIG_THRD_MONITOR_STACK_SIZE            768
+#    elif defined(ARCH_ARM)
+#        define CONFIG_THRD_MONITOR_STACK_SIZE            512
+#    elif defined(ARCH_AVR)
+#        define CONFIG_THRD_MONITOR_STACK_SIZE            256
+#    else
+#        define CONFIG_THRD_MONITOR_STACK_SIZE           1024
+#    endif
+#endif
+
+/**
  * Count the number of times each thread has been scheduled.
  */
 #ifndef CONFIG_THRD_SCHEDULED
@@ -1990,6 +2045,13 @@
  */
 #ifndef CONFIG_SPC5_RAM_CLEAR_ALL
 #    define CONFIG_SPC5_RAM_CLEAR_ALL                       1
+#endif
+
+/**
+ * Include the function time_unix_time_to_date().
+ */
+#ifndef CONFIG_TIME_UNIX_TIME_TO_DATE
+#    define CONFIG_TIME_UNIX_TIME_TO_DATE                   1
 #endif
 
 /**

@@ -42,8 +42,8 @@ int pwm_module_init()
 int pwm_init(struct pwm_driver_t *self_p,
              struct pwm_device_t *dev_p)
 {
-    ASSERTN(self_p != NULL, -EINVAL);
-    ASSERTN(dev_p != NULL, -EINVAL);
+    ASSERTN(self_p != NULL, EINVAL);
+    ASSERTN(dev_p != NULL, EINVAL);
 
     self_p->dev_p = dev_p;
     
@@ -53,14 +53,14 @@ int pwm_init(struct pwm_driver_t *self_p,
 int pwm_set_duty_cycle(struct pwm_driver_t *self_p,
                        int value)
 {
-    ASSERTN(self_p != NULL, -EINVAL);
+    ASSERTN(self_p != NULL, EINVAL);
 
     return (pwm_port_set_duty_cycle(self_p, value));
 }
 
 int pwm_get_duty_cycle(struct pwm_driver_t *self_p)
 {
-    ASSERTN(self_p != NULL, -EINVAL);
+    ASSERTN(self_p != NULL, EINVAL);
 
     return (pwm_port_get_duty_cycle(self_p));
 }
@@ -77,7 +77,7 @@ int pwm_duty_cycle_as_percent(int value)
 
 struct pwm_device_t *pwm_pin_to_device(struct pin_device_t *pin_p)
 {
-    ASSERTN(pin_p != NULL, -EINVAL);
+    ASSERTNRN(pin_p != NULL, EINVAL);
     
     return (pwm_port_pin_to_device(pin_p));
 }

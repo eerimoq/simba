@@ -66,9 +66,9 @@ Below is the memory usage of two applications:
 +--------------------------+-----------+-----------+
 | Application              | Flash     | RAM       |
 +==========================+===========+===========+
-| minimal-configuration    |    265752 |     33928 |
+| minimal-configuration    |    265788 |     33980 |
 +--------------------------+-----------+-----------+
-| default-configuration    |    308275 |     47704 |
+| default-configuration    |    308507 |     46156 |
 +--------------------------+-----------+-----------+
 
 Default configuration
@@ -86,6 +86,8 @@ Default Standard Library configuration.
 |  CONFIG_ANALOG_OUTPUT_PIN_                             |  0                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_ASSERT_                                        |  0                                                  |
++--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_ASSERT_FORCE_FATAL_                            |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_CAN_                                           |  0                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
@@ -112,6 +114,8 @@ Default Standard Library configuration.
 |  CONFIG_EXTI_                                          |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_FAT16_                                         |  1                                                  |
++--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_FATAL_ASSERT_                                  |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_FILESYSTEM_GENERIC_                            |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
@@ -180,6 +184,8 @@ Default Standard Library configuration.
 |  CONFIG_FS_CMD_SYS_CONFIG_                             |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_FS_CMD_SYS_INFO_                               |  1                                                  |
++--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_FS_CMD_SYS_PANIC_                              |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_FS_CMD_SYS_REBOOT_                             |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
@@ -311,6 +317,8 @@ Default Standard Library configuration.
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_OWI_                                           |  0                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_PANIC_ASSERT_                                  |  1                                                  |
++--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_PIN_                                           |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_PREEMPTIVE_SCHEDULER_                          |  0                                                  |
@@ -407,6 +415,8 @@ Default Standard Library configuration.
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_THRD_IDLE_STACK_SIZE_                          |  768                                                |
 +--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_THRD_MONITOR_STACK_SIZE_                       |  768                                                |
++--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_THRD_SCHEDULED_                                |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_THRD_STACK_HEAP_                               |  0                                                  |
@@ -414,6 +424,8 @@ Default Standard Library configuration.
 |  CONFIG_THRD_STACK_HEAP_SIZE_                          |  0                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_THRD_TERMINATE_                                |  1                                                  |
++--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_TIME_UNIX_TIME_TO_DATE_                        |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_UART_                                          |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
@@ -451,6 +463,8 @@ Mcu
 
 .. _CONFIG_ASSERT: ../user-guide/configuration.html#c.CONFIG_ASSERT
 
+.. _CONFIG_ASSERT_FORCE_FATAL: ../user-guide/configuration.html#c.CONFIG_ASSERT_FORCE_FATAL
+
 .. _CONFIG_CAN: ../user-guide/configuration.html#c.CONFIG_CAN
 
 .. _CONFIG_CHIPID: ../user-guide/configuration.html#c.CONFIG_CHIPID
@@ -476,6 +490,8 @@ Mcu
 .. _CONFIG_EXTI: ../user-guide/configuration.html#c.CONFIG_EXTI
 
 .. _CONFIG_FAT16: ../user-guide/configuration.html#c.CONFIG_FAT16
+
+.. _CONFIG_FATAL_ASSERT: ../user-guide/configuration.html#c.CONFIG_FATAL_ASSERT
 
 .. _CONFIG_FILESYSTEM_GENERIC: ../user-guide/configuration.html#c.CONFIG_FILESYSTEM_GENERIC
 
@@ -544,6 +560,8 @@ Mcu
 .. _CONFIG_FS_CMD_SYS_CONFIG: ../user-guide/configuration.html#c.CONFIG_FS_CMD_SYS_CONFIG
 
 .. _CONFIG_FS_CMD_SYS_INFO: ../user-guide/configuration.html#c.CONFIG_FS_CMD_SYS_INFO
+
+.. _CONFIG_FS_CMD_SYS_PANIC: ../user-guide/configuration.html#c.CONFIG_FS_CMD_SYS_PANIC
 
 .. _CONFIG_FS_CMD_SYS_REBOOT: ../user-guide/configuration.html#c.CONFIG_FS_CMD_SYS_REBOOT
 
@@ -675,6 +693,8 @@ Mcu
 
 .. _CONFIG_OWI: ../user-guide/configuration.html#c.CONFIG_OWI
 
+.. _CONFIG_PANIC_ASSERT: ../user-guide/configuration.html#c.CONFIG_PANIC_ASSERT
+
 .. _CONFIG_PIN: ../user-guide/configuration.html#c.CONFIG_PIN
 
 .. _CONFIG_PREEMPTIVE_SCHEDULER: ../user-guide/configuration.html#c.CONFIG_PREEMPTIVE_SCHEDULER
@@ -771,6 +791,8 @@ Mcu
 
 .. _CONFIG_THRD_IDLE_STACK_SIZE: ../user-guide/configuration.html#c.CONFIG_THRD_IDLE_STACK_SIZE
 
+.. _CONFIG_THRD_MONITOR_STACK_SIZE: ../user-guide/configuration.html#c.CONFIG_THRD_MONITOR_STACK_SIZE
+
 .. _CONFIG_THRD_SCHEDULED: ../user-guide/configuration.html#c.CONFIG_THRD_SCHEDULED
 
 .. _CONFIG_THRD_STACK_HEAP: ../user-guide/configuration.html#c.CONFIG_THRD_STACK_HEAP
@@ -778,6 +800,8 @@ Mcu
 .. _CONFIG_THRD_STACK_HEAP_SIZE: ../user-guide/configuration.html#c.CONFIG_THRD_STACK_HEAP_SIZE
 
 .. _CONFIG_THRD_TERMINATE: ../user-guide/configuration.html#c.CONFIG_THRD_TERMINATE
+
+.. _CONFIG_TIME_UNIX_TIME_TO_DATE: ../user-guide/configuration.html#c.CONFIG_TIME_UNIX_TIME_TO_DATE
 
 .. _CONFIG_UART: ../user-guide/configuration.html#c.CONFIG_UART
 

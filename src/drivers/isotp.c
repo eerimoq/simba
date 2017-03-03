@@ -226,9 +226,9 @@ int isotp_init(struct isotp_t *self_p,
                uint8_t *buf_p,
                size_t size)
 {
-    ASSERTN(self_p != NULL, -EINVAL);
-    ASSERTN(buf_p != NULL, -EINVAL);
-    ASSERTN(size > 0, -EINVAL);
+    ASSERTN(self_p != NULL, EINVAL);
+    ASSERTN(buf_p != NULL, EINVAL);
+    ASSERTN(size > 0, EINVAL);
 
     self_p->message_p = buf_p;
     self_p->size = size;
@@ -241,8 +241,8 @@ ssize_t isotp_input(struct isotp_t *self_p,
                     const uint8_t *buf_p,
                     size_t size)
 {
-    ASSERTN(self_p != NULL, -EINVAL);
-    ASSERTN(buf_p != NULL, -EINVAL);
+    ASSERTN(self_p != NULL, EINVAL);
+    ASSERTN(buf_p != NULL, EINVAL);
 
     ssize_t res;
 
@@ -272,8 +272,8 @@ ssize_t isotp_output(struct isotp_t *self_p,
                      uint8_t *buf_p,
                      size_t *size_p)
 {
-    ASSERTN(self_p != NULL, -EINVAL);
-    ASSERTN(buf_p != NULL, -EINVAL);
+    ASSERTN(self_p != NULL, EINVAL);
+    ASSERTN(buf_p != NULL, EINVAL);
 
     int res;
 

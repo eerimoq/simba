@@ -39,7 +39,7 @@
  * Assert given condition. Print an error message and return given
  * value ``res`` on error.
  */
-#define BTASSERTN(cond, res, ...)                                       \
+#define BTASSERTR(cond, res, ...)                                       \
     if (!(cond)) {                                                      \
         std_printf(FSTR(__FILE__ ":%d: BTASSERT: %s "), __LINE__, #cond); \
         _ASSERTFMT(__VA_ARGS__);                                        \
@@ -47,14 +47,25 @@
     }
 
 /**
+ * Assert given condition. Print an error message and return given
+ * value on error.
+ */
+#define BTASSERTN(cond, ...) BTASSERTR(cond, NULL, __VA_ARGS__)
+
+/**
+ * Assert given condition. Print an error message and return.
+ */
+#define BTASSERT(cond, ...) BTASSERTR(cond, -1, __VA_ARGS__)
+
+/**
  * Assert given condition in a testcase. Print an error message and
  * return -1 on error.
  */
-#define BTASSERT(cond, ...)                                             \
+#define BTASSERTV(cond, ...)                                            \
     if (!(cond)) {                                                      \
         std_printf(FSTR(__FILE__ ":%d: BTASSERT: %s "), __LINE__, #cond); \
         _ASSERTFMT(__VA_ARGS__);                                        \
-        return (-1);                                                    \
+        return;                                                         \
     }
 
 struct harness_t;

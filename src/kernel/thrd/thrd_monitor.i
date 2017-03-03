@@ -43,7 +43,7 @@ static struct monitor_t monitor = {
 };
 
 /* Stacks. */
-static THRD_STACK(monitor_thrd_stack, THRD_MONITOR_STACK_MAX);
+static THRD_STACK(monitor_thrd_stack, CONFIG_THRD_MONITOR_STACK_SIZE);
 
 static int cmd_monitor_set_period_ms_cb(int argc,
                                         const char *argv[],

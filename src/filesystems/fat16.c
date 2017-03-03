@@ -1,29 +1,19 @@
 /**
  * @section License
  *
- * The MIT License (MIT)
+ * Copyright (C) 2009, William Greiman (Arduino Fat16 Library)
+ * Copyright (C) 2013-2015, Mikael Patel (Cosa, Refactoring)
+ * Copyright (C) 2015-2016, Erik Moqvist
  *
- * Copyright (c) 2014-2016, Erik Moqvist
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
  *
- * Permission is hereby granted, free of charge, to any person
- * obtaining a copy of this software and associated documentation
- * files (the "Software"), to deal in the Software without
- * restriction, including without limitation the rights to use, copy,
- * modify, merge, publish, distribute, sublicense, and/or sell copies
- * of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be
- * included in all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
  *
  * This file is part of the Simba project.
  */
@@ -448,9 +438,9 @@ int fat16_init(struct fat16_t *self_p,
                void *arg_p,
                unsigned int partition)
 {
-    ASSERTN(self_p != NULL, -EINVAL);
-    ASSERTN(read != NULL, -EINVAL);
-    ASSERTN(write != NULL, -EINVAL);
+    ASSERTN(self_p != NULL, EINVAL);
+    ASSERTN(read != NULL, EINVAL);
+    ASSERTN(write != NULL, EINVAL);
 
     /* Error if invalid partition. */
     if (partition > 4) {
@@ -468,7 +458,7 @@ int fat16_init(struct fat16_t *self_p,
 
 int fat16_mount(struct fat16_t *self_p)
 {
-    ASSERTN(self_p != NULL, -EINVAL);
+    ASSERTN(self_p != NULL, EINVAL);
 
     uint32_t total_blocks;
     struct bpb_t* bpb_p;
@@ -543,14 +533,14 @@ int fat16_mount(struct fat16_t *self_p)
 
 int fat16_unmount(struct fat16_t *self_p)
 {
-    ASSERTN(self_p != NULL, -EINVAL);
+    ASSERTN(self_p != NULL, EINVAL);
 
     return (cache_flush(self_p));
 }
 
 int fat16_format(struct fat16_t *self_p)
 {
-    ASSERTN(self_p != NULL, -EINVAL);
+    ASSERTN(self_p != NULL, EINVAL);
 
     struct fbs_t fbs;
     uint32_t volume_start_block;
@@ -632,8 +622,8 @@ int fat16_format(struct fat16_t *self_p)
 
 int fat16_print(struct fat16_t *self_p, void *chan_p)
 {
-    ASSERTN(self_p != NULL, -EINVAL);
-    ASSERTN(chan_p != NULL, -EINVAL);
+    ASSERTN(self_p != NULL, EINVAL);
+    ASSERTN(chan_p != NULL, EINVAL);
 
     std_fprintf(chan_p,
                 FSTR("fat_count = %u\r\n"
@@ -1162,16 +1152,16 @@ int fat16_file_open(struct fat16_t *self_p,
                     const char* path_p,
                     int oflag)
 {
-    ASSERTN(self_p != NULL, -EINVAL);
-    ASSERTN(file_p != NULL, -EINVAL);
-    ASSERTN(path_p != NULL, -EINVAL);
+    ASSERTN(self_p != NULL, EINVAL);
+    ASSERTN(file_p != NULL, EINVAL);
+    ASSERTN(path_p != NULL, EINVAL);
 
     return (file_open(self_p, file_p, path_p, oflag, 0));
 }
 
 int fat16_file_close(struct fat16_file_t *file_p)
 {
-    ASSERTN(file_p != NULL, -EINVAL);
+    ASSERTN(file_p != NULL, EINVAL);
 
     if (fat16_file_sync(file_p) != 0) {
         return (FAT16_EOF);
@@ -1184,8 +1174,8 @@ ssize_t fat16_file_read(struct fat16_file_t *file_p,
                         void* buf_p,
                         size_t size)
 {
-    ASSERTN(file_p != NULL, -EINVAL);
-    ASSERTN((buf_p != NULL) || (size == 0), -EINVAL);
+    ASSERTN(file_p != NULL, EINVAL);
+    ASSERTN((buf_p != NULL) || (size == 0), EINVAL);
 
     size_t left;
     uint8_t blk_of_cluster;
@@ -1261,8 +1251,8 @@ ssize_t fat16_file_write(struct fat16_file_t *file_p,
                          const void *src_p,
                          size_t size)
 {
-    ASSERTN(file_p != NULL, -EINVAL);
-    ASSERTN((src_p != NULL) || (size == 0), -EINVAL);
+    ASSERTN(file_p != NULL, EINVAL);
+    ASSERTN((src_p != NULL) || (size == 0), EINVAL);
 
     size_t left = size;
     uint16_t block_offset;
@@ -1327,7 +1317,7 @@ int fat16_file_seek(struct fat16_file_t *file_p,
                     int pos,
                     int whence)
 {
-    ASSERTN(file_p != NULL, -EINVAL);
+    ASSERTN(file_p != NULL, EINVAL);
 
     fat_t n;
     uint8_t blocks_per_cluster = file_p->fat16_p->blocks_per_cluster;
@@ -1383,7 +1373,7 @@ int fat16_file_seek(struct fat16_file_t *file_p,
 
 ssize_t fat16_file_tell(struct fat16_file_t *file_p)
 {
-    ASSERTN(file_p != NULL, -EINVAL);
+    ASSERTN(file_p != NULL, EINVAL);
 
     return (file_p->cur_position);
 }
@@ -1391,7 +1381,7 @@ ssize_t fat16_file_tell(struct fat16_file_t *file_p)
 int fat16_file_truncate(struct fat16_file_t *file_p,
                         size_t size)
 {
-    ASSERTN(file_p != NULL, -EINVAL);
+    ASSERTN(file_p != NULL, EINVAL);
 
     uint32_t new_pos;
     fat_t to_free;
@@ -1470,14 +1460,14 @@ int fat16_file_truncate(struct fat16_file_t *file_p,
 
 ssize_t fat16_file_size(struct fat16_file_t *file_p)
 {
-    ASSERTN(file_p != NULL, -EINVAL);
+    ASSERTN(file_p != NULL, EINVAL);
 
     return (file_p->file_size);
 }
 
 int fat16_file_sync(struct fat16_file_t *file_p)
 {
-    ASSERTN(file_p != NULL, -EINVAL);
+    ASSERTN(file_p != NULL, EINVAL);
 
     struct dir_t* dir_p;
 
@@ -1513,8 +1503,8 @@ int fat16_dir_open(struct fat16_t *self_p,
                    const char *path_p,
                    int oflag)
 {
-    ASSERTN(dir_p != NULL, -EINVAL);
-    ASSERTN(path_p != NULL, -EINVAL);
+    ASSERTN(dir_p != NULL, EINVAL);
+    ASSERTN(path_p != NULL, EINVAL);
 
     struct fat16_file_t *file_p = &dir_p->file;
     uint8_t dname[11];
@@ -1558,7 +1548,7 @@ int fat16_dir_open(struct fat16_t *self_p,
 
 int fat16_dir_close(struct fat16_dir_t *dir_p)
 {
-    ASSERTN(dir_p != NULL, -EINVAL);
+    ASSERTN(dir_p != NULL, EINVAL);
 
     if (dir_p->root_index == -1) {
         if (fat16_file_sync(&dir_p->file) != 0) {
@@ -1572,8 +1562,8 @@ int fat16_dir_close(struct fat16_dir_t *dir_p)
 int fat16_dir_read(struct fat16_dir_t *dir_p,
                    struct fat16_dir_entry_t *entry_p)
 {
-    ASSERTN(dir_p != NULL, -EINVAL);
-    ASSERTN(entry_p != NULL, -EINVAL);
+    ASSERTN(dir_p != NULL, EINVAL);
+    ASSERTN(entry_p != NULL, EINVAL);
 
     struct fat16_file_t *file_p = &dir_p->file;
     struct dir_t dir;
@@ -1655,6 +1645,6 @@ int fat16_stat(struct fat16_t *self_p,
 
         return (fat16_dir_close(&dir));
     }
-    
+
     return (-1);
 }

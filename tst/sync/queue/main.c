@@ -42,28 +42,28 @@ static void *t0_main(void *arg_p)
 
     /* Test: test_read_write. */
     b = 1;
-    BTASSERTN(chan_write(&queue[0], &b, sizeof(b)) == sizeof(b), NULL);
-    BTASSERTN(b == 1, NULL);
+    BTASSERTN(chan_write(&queue[0], &b, sizeof(b)) == sizeof(b));
+    BTASSERTN(b == 1);
     b = 2;
-    BTASSERTN(chan_write(&queue[0], &b, sizeof(b)) == sizeof(b), NULL);
-    BTASSERTN(b == 2, NULL);
+    BTASSERTN(chan_write(&queue[0], &b, sizeof(b)) == sizeof(b));
+    BTASSERTN(b == 2);
     b = 3;
-    BTASSERTN(chan_write(&queue[0], &b, sizeof(b)) == sizeof(b), NULL);
-    BTASSERTN(b == 3, NULL);
+    BTASSERTN(chan_write(&queue[0], &b, sizeof(b)) == sizeof(b));
+    BTASSERTN(b == 3);
     c[0] = 4;
     c[1] = 5;
     c[2] = 6;
     c[3] = 7;
-    BTASSERTN(chan_write(&queue[0], c, sizeof(c)) == sizeof(c), NULL);
-    BTASSERTN(c[0] == 4, NULL);
-    BTASSERTN(c[1] == 5, NULL);
-    BTASSERTN(c[2] == 6, NULL);
-    BTASSERTN(c[3] == 7, NULL);
-    BTASSERTN(chan_write(&queue[0], c, sizeof(c)) == sizeof(c), NULL);
-    BTASSERTN(c[0] == 4, NULL);
-    BTASSERTN(c[1] == 5, NULL);
-    BTASSERTN(c[2] == 6, NULL);
-    BTASSERTN(c[3] == 7, NULL);
+    BTASSERTN(chan_write(&queue[0], c, sizeof(c)) == sizeof(c));
+    BTASSERTN(c[0] == 4);
+    BTASSERTN(c[1] == 5);
+    BTASSERTN(c[2] == 6);
+    BTASSERTN(c[3] == 7);
+    BTASSERTN(chan_write(&queue[0], c, sizeof(c)) == sizeof(c));
+    BTASSERTN(c[0] == 4);
+    BTASSERTN(c[1] == 5);
+    BTASSERTN(c[2] == 6);
+    BTASSERTN(c[3] == 7);
 
     thrd_sleep_us(50000);
 
@@ -72,30 +72,30 @@ static void *t0_main(void *arg_p)
     c[1] = 9;
     c[2] = 10;
     c[3] = 11;
-    BTASSERTN(chan_write(&queue[1], c, sizeof(c)) == sizeof(c), NULL);
+    BTASSERTN(chan_write(&queue[1], c, sizeof(c)) == sizeof(c));
 
     /* Write to chan that was polled but not read.*/
     b = 12;
-    BTASSERTN(chan_write(&queue[0], &b, sizeof(b)) == sizeof(b), NULL);
+    BTASSERTN(chan_write(&queue[0], &b, sizeof(b)) == sizeof(b));
 
     /* Test: test_size. */
     b = 0;
-    BTASSERTN(chan_read(&queue[0], &b, sizeof(b)) == sizeof(b), NULL);
-    BTASSERTN(b == 1, NULL);
+    BTASSERTN(chan_read(&queue[0], &b, sizeof(b)) == sizeof(b));
+    BTASSERTN(b == 1);
 
     /* Test: test_stopped. */
 
     /* Read one of the two integers the other thread writes. Tests
        resuming the writer when a queue is stopped. */
-    BTASSERTN(chan_read(&queue[0], &b, sizeof(b)) == sizeof(b), NULL);
-    BTASSERTN(b == 2, NULL);
-    BTASSERTN(chan_size(&queue[0]) == sizeof(b), NULL);
-    BTASSERTN(queue_stop(&queue[0]) == 1, NULL);
+    BTASSERTN(chan_read(&queue[0], &b, sizeof(b)) == sizeof(b));
+    BTASSERTN(b == 2);
+    BTASSERTN(chan_size(&queue[0]) == sizeof(b));
+    BTASSERTN(queue_stop(&queue[0]) == 1);
 
     /* Tests resuming a reader thread when stopping a queue. */
     b = 13;
-    BTASSERTN(chan_write(&queue[1], &b, sizeof(b)) == sizeof(b), NULL);
-    BTASSERTN(queue_stop(&queue[1]) == 1, NULL);
+    BTASSERTN(chan_write(&queue[1], &b, sizeof(b)) == sizeof(b));
+    BTASSERTN(queue_stop(&queue[1]) == 1);
 
     thrd_suspend(NULL);
 

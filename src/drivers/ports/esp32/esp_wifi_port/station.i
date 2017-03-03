@@ -49,7 +49,7 @@ static int esp_wifi_station_port_init(const char *ssid_p,
                                       const char *password_p,
                                       const struct inet_if_ip_info_t *info_p)
 {
-    ASSERTN(ssid_p != NULL, -EINVAL);
+    ASSERTN(ssid_p != NULL, EINVAL);
 
     if ((strlen(ssid_p) == 0)
         || (strlen(ssid_p) >= sizeof(config.ssid))) {
@@ -86,7 +86,7 @@ static int esp_wifi_station_port_disconnect(void)
 
 static int esp_wifi_station_port_set_ip_info(const struct inet_if_ip_info_t *info_p)
 {
-    ASSERTN(info_p != NULL, -EINVAL);
+    ASSERTN(info_p != NULL, EINVAL);
 
     tcpip_adapter_ip_info_t info;
 
@@ -105,7 +105,7 @@ static int esp_wifi_station_port_set_ip_info(const struct inet_if_ip_info_t *inf
 
 static int esp_wifi_station_port_get_ip_info(struct inet_if_ip_info_t *info_p)
 {
-    ASSERTN(info_p != NULL, -EINVAL);
+    ASSERTN(info_p != NULL, EINVAL);
 
     tcpip_adapter_ip_info_t info;
 

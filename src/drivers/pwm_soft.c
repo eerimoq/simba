@@ -155,9 +155,9 @@ int pwm_soft_init(struct pwm_soft_driver_t *self_p,
                   struct pin_device_t *pin_dev_p,
                   long duty_cycle)
 {
-    ASSERTN(self_p != NULL, -EINVAL);
-    ASSERTN(pin_dev_p != NULL, -EINVAL);
-    ASSERTN((duty_cycle >= 0) && (duty_cycle <= DUTY_CYCLE_MAX), -EINVAL);
+    ASSERTN(self_p != NULL, EINVAL);
+    ASSERTN(pin_dev_p != NULL, EINVAL);
+    ASSERTN((duty_cycle >= 0) && (duty_cycle <= DUTY_CYCLE_MAX), EINVAL);
 
     self_p->pin_dev_p = pin_dev_p;
     self_p->duty_cycle = duty_cycle;
@@ -170,7 +170,7 @@ int pwm_soft_init(struct pwm_soft_driver_t *self_p,
 
 int pwm_soft_start(struct pwm_soft_driver_t *self_p)
 {
-    ASSERTN(self_p != NULL, -EINVAL);
+    ASSERTN(self_p != NULL, EINVAL);
 
     pin_device_set_mode(self_p->pin_dev_p, PIN_OUTPUT);
 
@@ -190,7 +190,7 @@ int pwm_soft_start(struct pwm_soft_driver_t *self_p)
 
 int pwm_soft_stop(struct pwm_soft_driver_t *self_p)
 {
-    ASSERTN(self_p != NULL, -EINVAL);
+    ASSERTN(self_p != NULL, EINVAL);
 
     if (!((self_p->duty_cycle == DUTY_CYCLE_MAX) ||
           (self_p->duty_cycle == 0))) {
@@ -218,8 +218,8 @@ int pwm_soft_stop(struct pwm_soft_driver_t *self_p)
 int pwm_soft_set_duty_cycle(struct pwm_soft_driver_t *self_p,
                             long value)
 {
-    ASSERTN(self_p != NULL, -EINVAL);
-    ASSERTN((value >= 0) && (value <= DUTY_CYCLE_MAX), -EINVAL);
+    ASSERTN(self_p != NULL, EINVAL);
+    ASSERTN((value >= 0) && (value <= DUTY_CYCLE_MAX), EINVAL);
 
     if (pwm_soft_stop(self_p) != 0) {
         return (-1);
@@ -232,21 +232,21 @@ int pwm_soft_set_duty_cycle(struct pwm_soft_driver_t *self_p,
 
 unsigned int pwm_soft_get_duty_cycle(struct pwm_soft_driver_t *self_p)
 {
-    ASSERTN(self_p != NULL, -EINVAL);
+    ASSERTN(self_p != NULL, EINVAL);
 
     return (self_p->duty_cycle);
 }
 
 long pwm_soft_duty_cycle(int percentage)
 {
-    ASSERTN((percentage >= 0) && (percentage <= 100), -EINVAL);
+    ASSERTN((percentage >= 0) && (percentage <= 100), EINVAL);
 
     return ((DUTY_CYCLE_MAX * percentage) / 100L);
 }
 
 int pwm_soft_duty_cycle_as_percent(long value)
 {
-    ASSERTN((value >= 0) && (value <= DUTY_CYCLE_MAX), -EINVAL);
+    ASSERTN((value >= 0) && (value <= DUTY_CYCLE_MAX), EINVAL);
 
     return ((100L * value) / DUTY_CYCLE_MAX);
 }

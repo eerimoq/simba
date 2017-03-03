@@ -98,10 +98,10 @@ int slip_init(struct slip_t *self_p,
               size_t size,
               void *chout_p)
 {
-    ASSERTN(self_p != NULL, -EINVAL);
-    ASSERTN(buf_p != NULL, -EINVAL);
-    ASSERTN(size > 0, -EINVAL);
-    ASSERTN(chout_p != NULL, -EINVAL);
+    ASSERTN(self_p != NULL, EINVAL);
+    ASSERTN(buf_p != NULL, EINVAL);
+    ASSERTN(size > 0, EINVAL);
+    ASSERTN(chout_p != NULL, EINVAL);
 
     self_p->rx.is_escaped = 0;
     self_p->rx.buf_p = buf_p;
@@ -120,7 +120,7 @@ int slip_init(struct slip_t *self_p,
 ssize_t slip_input(struct slip_t *self_p,
                    uint8_t data)
 {
-    ASSERTN(self_p != NULL, -EINVAL);
+    ASSERTN(self_p != NULL, EINVAL);
 
     int res;
 
@@ -156,7 +156,7 @@ ssize_t slip_input(struct slip_t *self_p,
 
 void *slip_get_output_channel(struct slip_t *self_p)
 {
-    ASSERTN(self_p != NULL, -EINVAL);
+    ASSERTNRN(self_p != NULL, EINVAL);
 
     return (&self_p->chout);
 }

@@ -69,10 +69,27 @@ static int test_crc_xmodem(struct harness_t *harness_p)
 
 static int test_crc_7(struct harness_t *harness_p)
 {
-    /* CRC-7 calculation. */
     BTASSERT(crc_7("", 0) == 0x01);
     BTASSERT(crc_7("1", 1) == 0x45);
     BTASSERT(crc_7("123456789", 9) == 0xeb);
+
+    return (0);
+}
+
+static int test_crc_8(struct harness_t *harness_p)
+{
+    BTASSERT(crc_8(0,
+                   CRC_8_POLYNOMIAL_8_5_4_0,
+                   "",
+                   0) == 0x00);
+    BTASSERT(crc_8(0,
+                   CRC_8_POLYNOMIAL_8_5_4_0,
+                   "\x10\x50\xa9\x0a\x02\x08\x00\x37",
+                   8) == 0x00);
+    BTASSERT(crc_8(0,
+                   CRC_8_POLYNOMIAL_8_5_4_0,
+                   "\x02\x1c\xb8\x01\x00\x00\x00\xa2",
+                   8) == 0x00);
 
     return (0);
 }
@@ -85,6 +102,7 @@ int main()
         { test_crc_ccitt, "test_crc_ccitt" },
         { test_crc_xmodem, "test_crc_xmodem" },
         { test_crc_7, "test_crc_7" },
+        { test_crc_8, "test_crc_8" },
         { NULL, NULL }
     };
 

@@ -63,9 +63,15 @@ static void *sys_port_ticker(void *arg)
     return (NULL);
 }
 
+__attribute__ ((noreturn))
 static void sys_port_stop(int error)
 {
     exit(error);
+}
+
+static void sys_port_panic_putc(char c)
+{
+    fputc(c, stderr);
 }
 
 static void sys_port_reboot()

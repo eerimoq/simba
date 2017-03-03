@@ -676,7 +676,7 @@ int fs_call(char *command_p,
             void *chout_p,
             void *arg_p)
 {
-    ASSERTN(command_p != NULL, -EINVAL);
+    ASSERTN(command_p != NULL, EINVAL);
 
     int argc, skip_slash;
     const char *argv[FS_COMMAND_ARGS_MAX];
@@ -921,8 +921,8 @@ int file_seek_null(struct fs_file_t *self_p, int offset, int whence)
 
 int fs_open(struct fs_file_t *self_p, const char *path_p, int flags)
 {
-    ASSERTN(self_p != NULL, -EINVAL);
-    ASSERTN(path_p != NULL, -EINVAL);
+    ASSERTN(self_p != NULL, EINVAL);
+    ASSERTN(path_p != NULL, EINVAL);
 
     struct fs_filesystem_t *filesystem_p;
     char path[CONFIG_FS_PATH_MAX];
@@ -977,7 +977,7 @@ int fs_open(struct fs_file_t *self_p, const char *path_p, int flags)
 
 int fs_close(struct fs_file_t *self_p)
 {
-    ASSERTN(self_p != NULL, -EINVAL);
+    ASSERTN(self_p != NULL, EINVAL);
 
     switch (self_p->filesystem_p->type) {
 
@@ -1010,8 +1010,8 @@ int fs_close(struct fs_file_t *self_p)
 
 ssize_t fs_read(struct fs_file_t *self_p, void *dst_p, size_t size)
 {
-    ASSERTN(self_p != NULL, -EINVAL);
-    ASSERTN((dst_p != NULL) || (size == 0), -EINVAL);
+    ASSERTN(self_p != NULL, EINVAL);
+    ASSERTN((dst_p != NULL) || (size == 0), EINVAL);
 
     switch (self_p->filesystem_p->type) {
 
@@ -1057,8 +1057,8 @@ ssize_t fs_read(struct fs_file_t *self_p, void *dst_p, size_t size)
 
 ssize_t fs_read_line(struct fs_file_t *self_p, void *dst_p, size_t size)
 {
-    ASSERTN(self_p != NULL, -EINVAL);
-    ASSERTN(dst_p != NULL, -EINVAL);
+    ASSERTN(self_p != NULL, EINVAL);
+    ASSERTN(dst_p != NULL, EINVAL);
 
     ssize_t i;
     char *d_p;
@@ -1087,8 +1087,8 @@ ssize_t fs_read_line(struct fs_file_t *self_p, void *dst_p, size_t size)
 
 ssize_t fs_write(struct fs_file_t *self_p, const void *src_p, size_t size)
 {
-    ASSERTN(self_p != NULL, -EINVAL);
-    ASSERTN((src_p != NULL) || (size == 0), -EINVAL);
+    ASSERTN(self_p != NULL, EINVAL);
+    ASSERTN((src_p != NULL) || (size == 0), EINVAL);
 
     switch (self_p->filesystem_p->type) {
 
@@ -1125,7 +1125,7 @@ ssize_t fs_write(struct fs_file_t *self_p, const void *src_p, size_t size)
 
 int fs_seek(struct fs_file_t *self_p, int offset, int whence)
 {
-    ASSERTN(self_p != NULL, -EINVAL);
+    ASSERTN(self_p != NULL, EINVAL);
 
     switch (self_p->filesystem_p->type) {
 
@@ -1166,7 +1166,7 @@ int fs_seek(struct fs_file_t *self_p, int offset, int whence)
 
 ssize_t fs_tell(struct fs_file_t *self_p)
 {
-    ASSERTN(self_p != NULL, -EINVAL);
+    ASSERTN(self_p != NULL, EINVAL);
 
     switch (self_p->filesystem_p->type) {
 
@@ -1192,7 +1192,7 @@ ssize_t fs_tell(struct fs_file_t *self_p)
 
 int fs_mkdir(const char *path_p)
 {
-    ASSERTN(path_p != NULL, -EINVAL);
+    ASSERTN(path_p != NULL, EINVAL);
 
     struct fs_filesystem_t *filesystem_p;
     char path[CONFIG_FS_PATH_MAX];
@@ -1235,8 +1235,8 @@ int fs_dir_open(struct fs_dir_t *dir_p,
                 const char *path_p,
                 int oflag)
 {
-    ASSERTN(dir_p != NULL, -EINVAL);
-    ASSERTN(path_p != NULL, -EINVAL);
+    ASSERTN(dir_p != NULL, EINVAL);
+    ASSERTN(path_p != NULL, EINVAL);
 
     struct fs_filesystem_t *filesystem_p;
     char path[CONFIG_FS_PATH_MAX];
@@ -1283,7 +1283,7 @@ int fs_dir_open(struct fs_dir_t *dir_p,
 
 int fs_dir_close(struct fs_dir_t *dir_p)
 {
-    ASSERTN(dir_p != NULL, -EINVAL);
+    ASSERTN(dir_p != NULL, EINVAL);
 
     switch (dir_p->filesystem_p->type) {
 
@@ -1309,7 +1309,7 @@ int fs_dir_close(struct fs_dir_t *dir_p)
 int fs_dir_read(struct fs_dir_t *dir_p,
                 struct fs_dir_entry_t *entry_p)
 {
-    ASSERTN(dir_p != NULL, -EINVAL);
+    ASSERTN(dir_p != NULL, EINVAL);
 
     int res;
 
@@ -1368,7 +1368,7 @@ int fs_dir_read(struct fs_dir_t *dir_p,
 
 int fs_remove(const char *path_p)
 {
-    ASSERTN(path_p != NULL, -EINVAL);
+    ASSERTN(path_p != NULL, EINVAL);
 
     struct fs_filesystem_t *filesystem_p;
     char path[CONFIG_FS_PATH_MAX];
@@ -1397,8 +1397,8 @@ int fs_remove(const char *path_p)
 
 int fs_stat(const char *path_p, struct fs_stat_t *stat_p)
 {
-    ASSERTN(path_p != NULL, -EINVAL);
-    ASSERTN(stat_p != NULL, -EINVAL);
+    ASSERTN(path_p != NULL, EINVAL);
+    ASSERTN(stat_p != NULL, EINVAL);
 
     struct fs_filesystem_t *filesystem_p;
     char path[CONFIG_FS_PATH_MAX];
@@ -1455,7 +1455,7 @@ int fs_stat(const char *path_p, struct fs_stat_t *stat_p)
 
 int fs_format(const char *path_p)
 {
-    ASSERTN(path_p != NULL, -EINVAL);
+    ASSERTN(path_p != NULL, EINVAL);
 
     struct fs_filesystem_t *filesystem_p;
 
@@ -1511,8 +1511,8 @@ int fs_ls(const char *path_p,
           const char *filter_p,
           void *chout_p)
 {
-    ASSERTN(path_p != NULL, -EINVAL);
-    ASSERTN(chout_p != NULL, -EINVAL);
+    ASSERTN(path_p != NULL, EINVAL);
+    ASSERTN(chout_p != NULL, EINVAL);
 
     struct fs_filesystem_t *filesystem_p;
     char path[CONFIG_FS_PATH_MAX];
@@ -1554,8 +1554,8 @@ int fs_list(const char *path_p,
             const char *filter_p,
             void *chout_p)
 {
-    ASSERTN(path_p != NULL, -EINVAL);
-    ASSERTN(chout_p != NULL, -EINVAL);
+    ASSERTN(path_p != NULL, EINVAL);
+    ASSERTN(chout_p != NULL, EINVAL);
 
     int buf_length, path_offset, filter_offset, path_length;
     struct fs_command_t *command_p;
@@ -1623,7 +1623,7 @@ int fs_list(const char *path_p,
 
 int fs_auto_complete(char *path_p)
 {
-    ASSERTN(path_p != NULL, -EINVAL);
+    ASSERTN(path_p != NULL, EINVAL);
 
     char next_char;
     int mismatch, path_length, offset, size;
@@ -1710,9 +1710,9 @@ int fs_auto_complete(char *path_p)
 
 void fs_split(char *buf_p, char **path_pp, char **cmd_pp)
 {
-    ASSERTN(buf_p != NULL, -EINVAL);
-    ASSERTN(path_pp != NULL, -EINVAL);
-    ASSERTN(cmd_pp != NULL, -EINVAL);
+    ASSERTNRV(buf_p != NULL, EINVAL);
+    ASSERTNRV(path_pp != NULL, EINVAL);
+    ASSERTNRV(cmd_pp != NULL, EINVAL);
 
     char *last_slash_p = NULL;
 
@@ -1738,8 +1738,8 @@ void fs_split(char *buf_p, char **path_pp, char **cmd_pp)
 
 void fs_merge(char *path_p, char *cmd_p)
 {
-    ASSERTN(path_p != NULL, -EINVAL);
-    ASSERTN(cmd_p != NULL, -EINVAL);
+    ASSERTNRV(path_p != NULL, EINVAL);
+    ASSERTNRV(cmd_p != NULL, EINVAL);
 
     if (path_p != empty_path) {
         cmd_p[-1] = '/';
@@ -1750,9 +1750,9 @@ int fs_filesystem_init_generic(struct fs_filesystem_t *self_p,
                                const char *name_p,
                                struct fs_filesystem_operations_t *ops_p)
 {
-    ASSERTN(self_p != NULL, -EINVAL);
-    ASSERTN(name_p != NULL, -EINVAL);
-    ASSERTN(ops_p != NULL, -EINVAL);
+    ASSERTN(self_p != NULL, EINVAL);
+    ASSERTN(name_p != NULL, EINVAL);
+    ASSERTN(ops_p != NULL, EINVAL);
 
     if (ops_p->file_open == NULL) {
         ops_p->file_open = file_open_null;
@@ -1785,9 +1785,9 @@ int fs_filesystem_init_fat16(struct fs_filesystem_t *self_p,
                              const char *name_p,
                              struct fat16_t *fat16_p)
 {
-    ASSERTN(self_p != NULL, -EINVAL);
-    ASSERTN(name_p != NULL, -EINVAL);
-    ASSERTN(fat16_p != NULL, -EINVAL);
+    ASSERTN(self_p != NULL, EINVAL);
+    ASSERTN(name_p != NULL, EINVAL);
+    ASSERTN(fat16_p != NULL, EINVAL);
 
     self_p->name_p = name_p;
     self_p->type = fs_type_fat16_t;
@@ -1801,16 +1801,16 @@ int fs_filesystem_init_spiffs(struct fs_filesystem_t *self_p,
                               struct spiffs_t *spiffs_p,
                               struct fs_filesystem_spiffs_config_t *config_p)
 {
-    ASSERTN(self_p != NULL, -EINVAL);
-    ASSERTN(name_p != NULL, -EINVAL);
-    ASSERTN(spiffs_p != NULL, -EINVAL);
-    ASSERTN(config_p != NULL, -EINVAL);
-    ASSERTN(config_p->config_p != NULL, -EINVAL);
-    ASSERTN(config_p->workspace_p != NULL, -EINVAL);
-    ASSERTN(config_p->fdworkspace.buf_p != NULL, -EINVAL);
-    ASSERTN(config_p->fdworkspace.size > 0, -EINVAL);
-    ASSERTN(config_p->cache.buf_p != NULL, -EINVAL);
-    ASSERTN(config_p->cache.size > 0, -EINVAL);
+    ASSERTN(self_p != NULL, EINVAL);
+    ASSERTN(name_p != NULL, EINVAL);
+    ASSERTN(spiffs_p != NULL, EINVAL);
+    ASSERTN(config_p != NULL, EINVAL);
+    ASSERTN(config_p->config_p != NULL, EINVAL);
+    ASSERTN(config_p->workspace_p != NULL, EINVAL);
+    ASSERTN(config_p->fdworkspace.buf_p != NULL, EINVAL);
+    ASSERTN(config_p->fdworkspace.size > 0, EINVAL);
+    ASSERTN(config_p->cache.buf_p != NULL, EINVAL);
+    ASSERTN(config_p->cache.size > 0, EINVAL);
 
     self_p->name_p = name_p;
     self_p->type = fs_type_spiffs_t;
@@ -1822,7 +1822,7 @@ int fs_filesystem_init_spiffs(struct fs_filesystem_t *self_p,
 
 int fs_filesystem_register(struct fs_filesystem_t *filesystem_p)
 {
-    ASSERTN(filesystem_p != NULL, -EINVAL);
+    ASSERTN(filesystem_p != NULL, EINVAL);
 
     filesystem_p->next_p = module.filesystems_p;
     module.filesystems_p = filesystem_p;
@@ -1842,9 +1842,9 @@ int fs_command_init(struct fs_command_t *self_p,
                     fs_callback_t callback,
                     void *arg_p)
 {
-    ASSERTN(self_p != NULL, -EINVAL);
-    ASSERTN(path_p != NULL, -EINVAL);
-    ASSERTN(callback != NULL, -EINVAL);
+    ASSERTN(self_p != NULL, EINVAL);
+    ASSERTN(path_p != NULL, EINVAL);
+    ASSERTN(callback != NULL, EINVAL);
 
     self_p->next_p = NULL;
     self_p->path_p = path_p;
@@ -1856,7 +1856,7 @@ int fs_command_init(struct fs_command_t *self_p,
 
 int fs_command_register(struct fs_command_t *command_p)
 {
-    ASSERTN(command_p != NULL, -EINVAL);
+    ASSERTN(command_p != NULL, EINVAL);
 
     struct fs_command_t *current_p, *prev_p;
 
@@ -1896,8 +1896,8 @@ int fs_counter_init(struct fs_counter_t *self_p,
                     const FAR char *path_p,
                     uint64_t value)
 {
-    ASSERTN(self_p != NULL, -EINVAL);
-    ASSERTN(path_p != NULL, -EINVAL);
+    ASSERTN(self_p != NULL, EINVAL);
+    ASSERTN(path_p != NULL, EINVAL);
 
     fs_command_init(&self_p->command,
                     path_p,
@@ -1913,7 +1913,7 @@ int fs_counter_init(struct fs_counter_t *self_p,
 RAM_CODE int fs_counter_increment(struct fs_counter_t *self_p,
                                   uint64_t value)
 {
-    ASSERTN(self_p != NULL, -EINVAL);
+    ASSERTN(self_p != NULL, EINVAL);
 
     self_p->value += value;
 
@@ -1922,7 +1922,7 @@ RAM_CODE int fs_counter_increment(struct fs_counter_t *self_p,
 
 int fs_counter_register(struct fs_counter_t *counter_p)
 {
-    ASSERTN(counter_p != NULL, -EINVAL);
+    ASSERTN(counter_p != NULL, EINVAL);
 
     /* Insert counter into the command list and the counter list. */
     fs_command_register(&counter_p->command);
@@ -1946,11 +1946,11 @@ int fs_parameter_init(struct fs_parameter_t *self_p,
                       fs_parameter_print_callback_t print_cb,
                       void *value_p)
 {
-    ASSERTN(self_p != NULL, -EINVAL);
-    ASSERTN(path_p != NULL, -EINVAL);
-    ASSERTN(set_cb != NULL, -EINVAL);
-    ASSERTN(print_cb != NULL, -EINVAL);
-    ASSERTN(value_p != NULL, -EINVAL);
+    ASSERTN(self_p != NULL, EINVAL);
+    ASSERTN(path_p != NULL, EINVAL);
+    ASSERTN(set_cb != NULL, EINVAL);
+    ASSERTN(print_cb != NULL, EINVAL);
+    ASSERTN(value_p != NULL, EINVAL);
 
     fs_command_init(&self_p->command,
                     path_p,
@@ -1967,7 +1967,7 @@ int fs_parameter_init(struct fs_parameter_t *self_p,
 
 int fs_parameter_register(struct fs_parameter_t *parameter_p)
 {
-    ASSERTN(parameter_p != NULL, -EINVAL);
+    ASSERTN(parameter_p != NULL, EINVAL);
 
     /* Insert counter into the command list and the counter list. */
     fs_command_register(&parameter_p->command);

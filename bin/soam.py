@@ -348,12 +348,30 @@ class Shell(cmd.Cmd):
 
     def emptyline(self):
         pass
-
+    
     def completedefault(self, *args):
         _, line, begidx, _ = args
-        return [command[begidx+1:]
-                for command in self.client.database.commands
-                if command[1:].startswith(line)]
+        alternatives = []
+
+        for command in self.client.database.commands:
+            if command[1:].startswith(line):
+                alternatives.append(command)
+
+        completions = []
+        
+        for alternative in alternatives:
+            parts = alternative[begidx + 1:].split('/')
+            completion = parts[0]
+                
+            # Directories.
+            if len(parts) > 1:
+                completion += '/'
+            else:
+                completion += ' '
+
+            completions.append(completion)
+
+        return completions
 
     def output_exception(self, e):
         text = "{module}.{name}: {message}".format(module=type(e).__module__,
