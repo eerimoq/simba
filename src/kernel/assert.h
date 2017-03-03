@@ -50,28 +50,28 @@
  * failure. Call the system on fatal callback with error code
  * ``EASSERT`` on fatal error, otherwise return NULL.
  */
-#define ASSERT(cond, ...) ASSERTNR(cond, EASSERT, FATAL(EASSERT), __VA_ARGS__);
+#define ASSERT(cond, ...) ASSERTNR(cond, EASSERT, FATAL(EASSERT), __VA_ARGS__)
 
 /**
  * Assert given condition and print an error message on assertion
  * failure. Call the system on fatal callback with given error code
  * ``n`` on fatal error, otherwise return the error code negated.
  */
-#define ASSERTN(cond, n, ...) ASSERTNR(cond, n, FATAL(n), __VA_ARGS__);
+#define ASSERTN(cond, n, ...) ASSERTNR(cond, n, FATAL(n), __VA_ARGS__)
 
 /**
  * Assert given condition and print an error message on assertion
  * failure. Call the system on fatal callback with error code
  * ``EASSERT`` on fatal error, otherwise return NULL.
  */
-#define ASSERTRV(cond, ...) ASSERTNRV(cond, EASSERT, __VA_ARGS__);
+#define ASSERTRV(cond, ...) ASSERTNRV(cond, EASSERT, __VA_ARGS__)
 
 /**
  * Assert given condition and print an error message on assertion
  * failure. Call the system on fatal callback with error code
  * ``EASSERT`` on fatal error, otherwise return NULL.
  */
-#define ASSERTRN(cond, ...) ASSERTNR(cond, EASSERT, NULL, __VA_ARGS__);
+#define ASSERTRN(cond, ...) ASSERTNR(cond, EASSERT, NULL, __VA_ARGS__)
 
 /**
  * Assert given condition and print an error message. Call the system
@@ -120,7 +120,7 @@
  * failure. Call the system on fatal callback with given error code
  * ``n`` on fatal error, otherwise return NULL.
  */
-#define ASSERTNRN(cond, n, ...) ASSERTNR(cond, n, NULL, __VA_ARGS__);
+#define ASSERTNRN(cond, n, ...) ASSERTNR(cond, n, NULL, __VA_ARGS__)
 
 /**
  * Assert given condition and print an error message on assertion
@@ -150,7 +150,7 @@
  * This assertion is not affected by ``CONFIG_ASSERT``, but instead
  * ``CONFIG_FATAL_ASSERT``.
  */
-#define FATAL_ASSERT(cond, ...) FATAL_ASSERTN(cond, EASSERT, __VA_ARGS__);
+#define FATAL_ASSERT(cond, ...) FATAL_ASSERTN(cond, EASSERT, __VA_ARGS__)
 
 /**
  * Assert given condition and call `sys_panic()` with given error code
@@ -176,6 +176,6 @@
  * This assertion is not affected by ``CONFIG_ASSERT``, but instead
  * ``CONFIG_PANIC_ASSERT``.
  */
-#define PANIC_ASSERT(cond, ...) PANIC_ASSERTN(cond, EASSERT, __VA_ARGS__);
+#define PANIC_ASSERT(cond, ...) PANIC_ASSERTN(cond, EASSERT, __VA_ARGS__)
 
 #endif
