@@ -111,8 +111,7 @@ int sys_start(void);
  *
  * @return Never returns.
  */
-__attribute__ ((noreturn))
-void sys_stop(int error);
+void sys_stop(int error) __attribute__ ((noreturn));
 
 /**
  * System panic. Write given message and other port specific debug
@@ -125,7 +124,7 @@ void sys_stop(int error);
  *
  * @return Never returns.
  */
-void sys_panic(const char *message_p);
+void sys_panic(const char *message_p) __attribute__ ((noreturn));
 
 /**
  * Reboot the system. Sets all registers to their known, default
@@ -133,7 +132,7 @@ void sys_panic(const char *message_p);
  *
  * @return Never returns.
  */
-void sys_reboot(void);
+void sys_reboot(void) __attribute__ ((noreturn));
 
 /**
  * Set the on-fatal-callback function to given callback.

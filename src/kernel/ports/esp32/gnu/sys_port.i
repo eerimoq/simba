@@ -87,6 +87,7 @@ static void sys_port_panic_putc(char c)
 {
 }
 
+__attribute__ ((noreturn))
 static void sys_port_reboot()
 {
     esp_esp_restart();

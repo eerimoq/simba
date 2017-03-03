@@ -71,6 +71,7 @@ static void sys_port_panic_putc(char c)
     CONSOLE_UART_REGS->UARTSR = SPC5_LINFLEX_UARTSR_DTF;
 }
 
+__attribute__ ((noreturn))
 static void sys_port_reboot()
 {
     while (1);

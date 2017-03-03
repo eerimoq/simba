@@ -68,15 +68,16 @@ static void sys_port_panic_putc(char c)
 {
 }
 
+__attribute__ ((noreturn))
 static void sys_port_reboot()
 {
 #if defined(FAMILY_SAM)
     SAM_RSTC->CR = (RSTC_CR_KEY(0xa5)
                     | RSTC_CR_PERRST
                     | RSTC_CR_PROCRST);
-#else
-    while(1);
 #endif
+
+    while(1);
 }
 
 static void sys_port_lock(void)

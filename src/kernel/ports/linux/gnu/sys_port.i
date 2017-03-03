@@ -74,6 +74,7 @@ static void sys_port_panic_putc(char c)
     fputc(c, stderr);
 }
 
+__attribute__ ((noreturn))
 static void sys_port_reboot()
 {
     exit(1);

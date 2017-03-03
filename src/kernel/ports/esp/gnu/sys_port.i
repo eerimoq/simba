@@ -114,9 +114,12 @@ static void sys_port_panic_putc(char c)
 {
 }
 
+__attribute__ ((noreturn))
 static void sys_port_reboot()
 {
     system_restart();
+
+    while (1);
 }
 
 static void sys_port_lock(void)
