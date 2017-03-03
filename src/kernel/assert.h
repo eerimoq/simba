@@ -173,7 +173,7 @@
  * Assert given condition and call `sys_panic()` with error code
  * ``EASSERT``.
  *
- * This assertion is not affected by CONFIG_ASSERT, but instead
+ * This assertion is not affected by ``CONFIG_ASSERT``, but instead
  * ``CONFIG_PANIC_ASSERT``.
  */
 #define PANIC_ASSERT(cond, ...) PANIC_ASSERTN(cond, EASSERT, __VA_ARGS__);
