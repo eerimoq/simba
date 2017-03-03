@@ -395,7 +395,7 @@ for src in env.LookupSources(variant_dir, src_dir, True, src_filter):
 # Command to generate simba_gen.c
 env.Command(SIMBA_GEN_C,
             source_files,
-            ('"$PYTHONEXE" "$PLATFORMFW_DIR/src/kernel/tools/gen.py" "$NAME" "$VERSION" '
+            ('"$PYTHONEXE" "$PLATFORMFW_DIR/bin/simbagen.py" "$NAME" "$VERSION" '
              '"$BOARD_DESC" "$MCU_DESC" "$TARGET" "${{TARGET}}.soamdb"'))
 source_files.append(SIMBA_GEN_C)
 

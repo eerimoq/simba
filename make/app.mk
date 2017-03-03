@@ -329,7 +329,7 @@ endef
 $(foreach file,$(RUST_SRC),$(eval $(call RUST_COMPILE_template,$(file))))
 
 $(SOAMDBAPP) $(GENOBJ): $(OBJ)
-	$(SIMBA_ROOT)/src/kernel/tools/gen.py $(NAME) $(VERSION) $(BOARD_DESC) \
+	$(SIMBA_ROOT)/bin/simbagen.py $(NAME) $(VERSION) $(BOARD_DESC) \
 	$(MCU_DESC) $(GENCSRC) $(SOAMDBAPP) $(SOAMDB)
 	@echo "CC $(GENCSRC)"
 	$(CC) $(INC:%=-I%) $(CDEFS:%=-D%) $(CFLAGS) -o $@ $(GENCSRC)
