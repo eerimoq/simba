@@ -1,0 +1,12 @@
+:mod:`spc56d40l1` --- SPC56D40L1
+================================
+
+.. module:: spc56d40l1
+   :synopsis: SPC56D40L1.
+
+Source code: :github-blob:`src/mcus/spc56d40l1/mcu.h`
+
+----------------------------------------------
+
+.. doxygenfile:: mcus/spc56d40l1/mcu.h
+   :project: simba
