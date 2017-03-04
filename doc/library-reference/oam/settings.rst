@@ -30,12 +30,13 @@ address 0 and increasing from there.
 
 The build system variable ``SETTINGS_INI`` contains the path to the
 ini-file used by the build system. Set this variable to the path of
-yours application ini-file and run ``make settings-generate`` to
-generate four files; ``settings.h``, ``settings.c``,
-``settings.little-endian.bin`` and ``settings.big-endian.bin``.
+the applications ini-file to automatically generate four files in the
+board's generate directory ``build/<board>/gen``; ``settings.h``,
+``settings.c``, ``settings.little-endian.bin`` and
+``settings.big-endian.bin``. One can also generate the four files with
+``make settings-generate``.
 
-Also add this to the Makefile: ``SRC += settings.c`` and include
-``settings.h`` in the source files that accesses the settings.
+Include ``gen/settings.h`` in source files that uses the settings.
 
 Debug file system commands
 --------------------------

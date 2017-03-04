@@ -33,8 +33,6 @@ TYPE = suite
 BOARD ?= linux
 
 SETTINGS_C = settings.c
-
-SETTINGS_INI = settings.ini
 SETTINGS_BIN = settings.little-endian.bin
 
 CDEFS += \

@@ -44,10 +44,18 @@ ifeq ($(RUST),yes)
 else
     SRC += $(MAIN_C)
 endif
+SETTINGS_INI ?=
+ifeq ($(SETTINGS_INI),)
 SETTINGS_C ?= $(SIMBA_ROOT)/src/settings_default.c
+SETTTNGS_OUTPUT_DIRECTORY ?= .
+else
+SETTINGS_C ?= $(GENDIR)/settings.c
+SETTTNGS_OUTPUT_DIRECTORY ?= $(GENDIR)
+$(SETTINGS_C): $(SETTINGS_INI)
+	$(MAKE) settings-generate
+endif
 SRC += $(SETTINGS_C)
 SETTINGS_BIN ?= $(SIMBA_ROOT)/src/settings_default.bin
-SETTTNGS_OUTPUT_DIRECTORY ?= .
 SRC_FILTERED = $(filter-out $(SRC_IGNORE),$(SRC))
 CSRC += $(filter %.c,$(SRC_FILTERED))
 CXXSRC += $(filter %.cpp,$(SRC_FILTERED))
@@ -64,7 +72,6 @@ GENOBJ = $(patsubst %,$(OBJDIR)/%,$(notdir $(GENCSRC:%.c=%.o)))
 ifeq ($(SOAM), yes)
 SOAMDB = $(COBJ:%=%.pp.c.db) $(CXXOBJ:%=%.pp.cpp.db)
 endif
-SETTINGS_INI ?= $(SIMBA_ROOT)/make/settings.ini
 EXE_SUFFIX ?= out
 EXE = $(BUILDDIR)/$(NAME).$(EXE_SUFFIX)
 BIN = $(BUILDDIR)/$(NAME).bin

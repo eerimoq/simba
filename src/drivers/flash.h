@@ -75,8 +75,7 @@ ssize_t flash_read(struct flash_driver_t *self_p,
                    size_t size);
 
 /**
- * Write data to given flash memory. Only erased parts of the memory
- * can be written to.
+ * Write data to given flash memory.
  *
  * @param[in] self_p Initialized driver object.
  * @param[in] dst Address in flash memory to write to.
