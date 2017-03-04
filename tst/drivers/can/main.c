@@ -114,8 +114,8 @@ static void *rx_thrd(void *arg_p)
     thrd_set_name("rx_thrd");
 
     while (1) {
-        BTASSERTN(can_read(&can1, &frame, sizeof(frame)) == sizeof(frame), NULL);
-        BTASSERTN(frame.id == id, NULL,
+        BTASSERTN(can_read(&can1, &frame, sizeof(frame)) == sizeof(frame));
+        BTASSERTN(frame.id == id,
                   FSTR(" i = %d, frame.id = %d, id = %d\r\n"),
                   i,
                   frame.id,

@@ -61,14 +61,14 @@ struct module_t {
 
 static struct module_t module = {
     .pwm_pins = {
-        { .pin_device_p = &pin_gpio02_dev },
-        { .pin_device_p = &pin_gpio04_dev },
-        { .pin_device_p = &pin_gpio16_dev },
-        { .pin_device_p = &pin_gpio17_dev },
-        { .pin_device_p = &pin_gpio05_dev },
-        { .pin_device_p = &pin_gpio18_dev },
-        { .pin_device_p = &pin_gpio23_dev },
-        { .pin_device_p = &pin_gpio19_dev }
+        { .pin_device_p = &pin_d2_dev },
+        { .pin_device_p = &pin_d3_dev },
+        { .pin_device_p = &pin_d4_dev },
+        { .pin_device_p = &pin_d5_dev },
+        { .pin_device_p = &pin_d6_dev },
+        { .pin_device_p = &pin_d7_dev },
+        { .pin_device_p = &pin_d8_dev },
+        { .pin_device_p = &pin_d9_dev }
     }
 };
 
