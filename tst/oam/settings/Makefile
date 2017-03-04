@@ -46,5 +46,7 @@ CDEFS += \
 	CONFIG_FS_CMD_THRD_LIST=1 \
 	CONFIG_MODULE_INIT_SETTINGS=1
 
+HASH_SRC ?= crc.c
+
 SIMBA_ROOT ?= ../../..
 include $(SIMBA_ROOT)/make/app.mk

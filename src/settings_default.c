@@ -51,7 +51,7 @@ __attribute__ ((weak)) = {
     0xff,
 };
 
-#elif defined(ARCH_ARM)
+#elif defined(ARCH_ARM) || defined(ARCH_PPC)
 
 uint8_t settings_area[2][CONFIG_SETTINGS_AREA_SIZE]
 __attribute__ ((section (".settings"), weak)) = {

@@ -64,6 +64,9 @@ LDFLAGS += \
         -Wl,--cref \
         -T$(LINKER_SCRIPT)
 
+
+CONFIG_SETTINGS_SIZE ?= 16384
+
 build: $(BIN) $(HEX)
 
 $(BIN): $(EXE)

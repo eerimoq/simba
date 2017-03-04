@@ -32,8 +32,6 @@
 
 VERSION ?= $(shell cat $(SIMBA_ROOT)/VERSION.txt)
 
-CONFIG_SETTINGS_SIZE ?= 256
-
 # files and folders
 BUILDDIR ?= build/$(BOARD)
 OBJDIR = $(BUILDDIR)/obj
@@ -140,6 +138,8 @@ RUN_END_PATTERN ?= "=============================== TEST END \(\w+\) ===========
 RUN_END_PATTERN_SUCCESS ?= "=============================== TEST END \(PASSED\) ==============================\r\n\r\n"
 
 CONSOLESCRIPT = $(SIMBA_ROOT)/make/console.py
+
+CONFIG_SETTINGS_SIZE ?= 256
 
 # include packages in dist-packages used by the application
 define DIST_PACKAGES_template

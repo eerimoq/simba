@@ -88,7 +88,7 @@ static int test_cmd_read(struct harness_t *harness_p)
     size = strlen(response);
     BTASSERT(chan_read(&queue, buf, size) == size);
     buf[size] = '\0';
-    BTASSERT(strcmp(buf, response) == 0);
+    BTASSERT(strcmp(buf, response) == 0, "'%s'", buf);
 
     /* Bad setting name. */
     std_sprintf(buf, FSTR("oam/settings/read missing"));
@@ -201,6 +201,7 @@ static int test_cmd_read_write_read(struct harness_t *harness_p)
         size = strlen(response);
         BTASSERT(chan_read(&queue, buf, size) == size);
         buf[size] = '\0';
+        std_printf(FSTR("%s"), &buf[0]);
         BTASSERT(strcmp(buf, response) == 0);
 
         /* Write a new value. */
@@ -220,6 +221,7 @@ static int test_cmd_read_write_read(struct harness_t *harness_p)
         size = strlen(response);
         BTASSERT(chan_read(&queue, buf, size) == size);
         buf[size] = '\0';
+        std_printf(FSTR("%s"), &buf[0]);
         BTASSERT(strcmp(buf, response) == 0);
     }
 

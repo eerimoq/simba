@@ -82,6 +82,12 @@ SECTIONS
     . = ALIGN(4);
     __text_end = .;
 
+    /* Settings area. */
+    .settings :
+    {
+        . = ALIGN(256);
+    } > dflash
+
     .relocate : AT (__text_end)
     {
         . = ALIGN(4);
