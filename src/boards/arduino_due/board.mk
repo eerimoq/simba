@@ -42,6 +42,7 @@ RUST_TARGET = thumbv7em-none-eabi
 SERIAL_PORT ?= /dev/arduino
 BOARD_PY = $(SIMBA_ROOT)/src/boards/arduino_due/board.py
 TIMEOUT ?= 10
+BAUDRATE ?= 115200
 
 upload:
 	@echo "Uploading '$(EXE)'."
