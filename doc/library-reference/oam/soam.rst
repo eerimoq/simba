@@ -46,10 +46,40 @@ Usage
 Enable SOAM by adding ``SOAM=yes`` to the application makefile.
 
 Connect to the board with ``soam.py`` instead of a serial terminal
-program.
+program. The only required argument is the string database file.
 
-The string database is called
-``build/<board>/<application-name>.soamdb``.
+Here is an example usage of the script. `Ctrl-D` is pressed to exit
+the script.
+
+.. code-block:: text
+
+   > soam.py --port /dev/arduino --baudrate 115200 \
+         build/arduino_due/soam.soamdb
+   Welcome to the SOAM shell.
+
+   Type help or ? to list commands.
+
+   $ kernel/sys/info
+   app:    soam-master built 2017-03-05 21:26 CET by erik.
+   board:  Arduino Due
+   mcu:    Atmel SAM3X8E Cortex-M3 @ 84MHz, 96k sram, 512k flash
+   OK
+   $ kernel/thrd/list
+               NAME        STATE  PRIO   CPU   SCHEDULED  MAX-STACK-USAGE  LOGMASK
+               soam      current    30    0%         112       748/  1542     0x0f
+            monitor    suspended   -80    0%          22       176/   518     0x0f
+               idle        ready   127   99%         594       276/   390     0x0f
+               main    suspended     0    0%         305       540/ 88898     0x00
+   OK
+   $ kernel/thrd/set_log_mask foo 0
+   ERROR(-3)
+   $ <Ctrl-D>
+
+   Bye!
+   >
+
+``OK`` is printed by the shell if the file system command returned
+`zero(0)`, otherwise ``ERROR(error code)`` is printed.
 
 ----------------------------------------------
 
