@@ -38,9 +38,14 @@
 #define SOAM_TYPE_COMMAND_RESPONSE_DATA_PRINTF       (4 << 4)
 #define SOAM_TYPE_COMMAND_RESPONSE_DATA_BINARY       (5 << 4)
 #define SOAM_TYPE_COMMAND_RESPONSE                   (6 << 4)
+#define SOAM_TYPE_DATABASE_ID_REQUEST                (7 << 4)
+#define SOAM_TYPE_DATABASE_ID_RESPONSE               (8 << 4)
 
 #define SOAM_PACKET_FLAGS_CONSECUTIVE                (1 << 1)
 #define SOAM_PACKET_FLAGS_LAST                       (1 << 0)
+
+/* The generated SOAM database id. */
+extern char soam_database_id[];
 
 /**
  * Finalize and output current packet to the output channel.
@@ -268,6 +273,15 @@ int soam_input(struct soam_t *self_p,
     type = buf_p[0];
 
     switch (type) {
+
+    case SOAM_TYPE_DATABASE_ID_REQUEST:
+        if (soam_write(self_p,
+                       SOAM_TYPE_DATABASE_ID_RESPONSE,
+                       &soam_database_id[0],
+                       32) != 32) {
+            return (-1);
+        }
+        break;
 
     case SOAM_TYPE_COMMAND_REQUEST:
         res = fs_call((char *)&buf_p[4],

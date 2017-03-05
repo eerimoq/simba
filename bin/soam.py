@@ -9,6 +9,7 @@ import argparse
 import cmd
 import threading
 import serial
+import hashlib
 
 SOAM_TYPE_STDOUT                       = 1
 SOAM_TYPE_LOG_POINT                    = 2
@@ -16,6 +17,8 @@ SOAM_TYPE_COMMAND_REQUEST              = 3
 SOAM_TYPE_COMMAND_RESPONSE_DATA_PRINTF = 4
 SOAM_TYPE_COMMAND_RESPONSE_DATA_BINARY = 5
 SOAM_TYPE_COMMAND_RESPONSE             = 6
+SOAM_TYPE_DATABASE_ID_REQUEST          = 7
+SOAM_TYPE_DATABASE_ID_RESPONSE         = 8
 
 SOAM_SEGMENT_SIZE_MIN = 6
 
@@ -117,7 +120,7 @@ class ReaderThread(threading.Thread):
                 is_escaped = False
 
 
-    def read_command_response(self, timeout=None):
+    def read_response(self, timeout=None):
         """Wait for a response packet of given type.
 
         """
@@ -132,7 +135,7 @@ class ReaderThread(threading.Thread):
             packet = self.response_packet
             self.response_packet = None
 
-        return packet[0], packet[1]
+        return packet
 
     def run(self):
         """Read packets from the soam server.
@@ -222,6 +225,10 @@ class ReaderThread(threading.Thread):
                     self.response_packet = code, response_data
                     response_data = []
                     self.response_packet_cond.notify_all()
+            elif packet_type == SOAM_TYPE_DATABASE_ID_RESPONSE:
+                with self.response_packet_cond:
+                    self.response_packet = packet
+                    self.response_packet_cond.notify_all()
             else:
                 print('Bad packet type:', packet)
 
@@ -269,7 +276,35 @@ class SlipSerialClient(object):
                                     baudrate=baudrate,
                                     timeout=0.5)
         self.reader = ReaderThread(self)
+        self.reader.setDaemon(True)
         self.reader.start()
+
+        try:
+            device_database_id = self.get_database_id_from_device()
+        except:
+            sys.exit("error: failed to read the database id from the device")
+
+        with open(database, 'rb') as fin:
+            database_id = hashlib.md5(fin.read()).hexdigest()
+
+        if device_database_id != database_id:
+            sys.exit("error: database id mismatch ({} != {})".format(
+                device_database_id,
+                database_id))
+
+    def get_database_id_from_device(self):
+        """Get the database id from the device.
+
+        """
+
+        packet = create_segment(SOAM_TYPE_DATABASE_ID_REQUEST,
+                                self.packet_index,
+                                b'')
+        self.packet_index += 1
+
+        self.serial.write(packet)
+
+        return self.reader.read_response(3.0)
 
     def execute_command(self, command_with_args):
         """Execute given file system (fs) command and return a tuple of the
@@ -291,7 +326,7 @@ class SlipSerialClient(object):
 
         self.serial.write(packet)
 
-        code, response_data_list = self.reader.read_command_response(3.0)
+        code, response_data_list = self.reader.read_response(3.0)
         formatted_response_data = ''
 
         for packet_type, response_data in response_data_list:
