@@ -68,7 +68,7 @@ static int cmd_ping_cb(int argc,
     const char *remote_host_p;
     
     if (argc != 2) {
-        std_fprintf(out_p, OSTR("Usage: %s <remote host>\r\n"), argv[0]);
+        std_fprintf(out_p, OSTR("Usage: ping <remote host>\r\n"));
         return (-1);
     }
 

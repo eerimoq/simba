@@ -61,7 +61,7 @@ static int cmd_read_cb(int argc,
     uint8_t data;
 
     if (argc != 2) {
-        std_printf(OSTR("Usage: %s <slave address>\r\n"), argv[0]);
+        std_printf(OSTR("Usage: read <slave address>\r\n"));
 
         return (-EINVAL);
     }
@@ -108,8 +108,7 @@ static int cmd_write_cb(int argc,
     uint8_t data;
 
     if (argc != 3) {
-        std_printf(OSTR("Usage: %s <slave address> <data byte>\r\n"),
-                   argv[0]);
+        std_printf(OSTR("Usage: write <slave address> <data byte>\r\n"));
 
         return (-EINVAL);
     }

@@ -178,7 +178,7 @@ static int cmd_read_cb(int argc,
     char buf[32];
 
     if (argc != 2) {
-        std_fprintf(chout_p, OSTR("Usage: %s <file>\r\n"), argv[0]);
+        std_fprintf(chout_p, OSTR("Usage: read <file>\r\n"));
         return (-1);
     }
 
@@ -212,7 +212,7 @@ static int cmd_write_cb(int argc,
     char data;
 
     if (argc < 2) {
-        std_fprintf(chout_p, OSTR("Usage: %s <file> [<data>]\r\n"), argv[0]);
+        std_fprintf(chout_p, OSTR("Usage: write <file> [<data>]\r\n"));
 
         return (-1);
     }
@@ -275,7 +275,7 @@ static int cmd_append_cb(int argc,
     size_t size;
 
     if (argc != 3) {
-        std_fprintf(chout_p, OSTR("Usage: %s <file> <data>\r\n"), argv[0]);
+        std_fprintf(chout_p, OSTR("Usage: append <file> <data>\r\n"));
         return (-1);
     }
 
@@ -308,7 +308,7 @@ static int cmd_remove_cb(int argc,
                          void *call_arg_p)
 {
     if (argc != 2) {
-        std_fprintf(chout_p, OSTR("Usage: %s <file>\r\n"), argv[0]);
+        std_fprintf(chout_p, OSTR("Usage: remove <file>\r\n"));
         return (-1);
     }
 
@@ -332,7 +332,7 @@ static int cmd_list_cb(int argc,
                        void *call_arg_p)
 {
     if (argc != 2) {
-        std_fprintf(chout_p, OSTR("Usage: %s <path>\r\n"), argv[0]);
+        std_fprintf(chout_p, OSTR("Usage: list <path>\r\n"));
         return (-1);
     }
 
@@ -351,7 +351,7 @@ static int cmd_format_cb(int argc,
                          void *call_arg_p)
 {
     if (argc != 2) {
-        std_fprintf(chout_p, OSTR("Usage: %s <path>\r\n"), argv[0]);
+        std_fprintf(chout_p, OSTR("Usage: format <path>\r\n"));
         return (-1);
     }
 

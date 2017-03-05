@@ -169,7 +169,7 @@ static int cmd_read_cb(int argc,
     char buf[1];
 
     if (argc != 2) {
-        std_fprintf(chout_p, OSTR("Usage: %s <name>\r\n"), argv[0]);
+        std_fprintf(chout_p, OSTR("Usage: read <name>\r\n"));
 
         return (-1);
     }
@@ -253,7 +253,7 @@ static int cmd_write_cb(int argc,
     int i;
 
     if (argc != 3) {
-        std_fprintf(chout_p, OSTR("Usage: %s <name> <value>\r\n"), argv[0]);
+        std_fprintf(chout_p, OSTR("Usage: write <name> <value>\r\n"));
 
         return (-1);
     }

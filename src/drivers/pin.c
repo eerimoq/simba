@@ -62,8 +62,7 @@ static int cmd_set_mode_cb(int argc,
     int mode;
 
     if (argc != 3) {
-        std_fprintf(out_p, OSTR("Usage: %s <pin> <mode>\r\n"),
-                    argv[0]);
+        std_fprintf(out_p, OSTR("Usage: set_mode <pin> <mode>\r\n"));
 
         return (-EINVAL);
     }
@@ -108,7 +107,7 @@ static int cmd_read_cb(int argc,
     int value;
 
     if (argc != 2) {
-        std_fprintf(out_p, OSTR("Usage: %s <pin>\r\n"), argv[0]);
+        std_fprintf(out_p, OSTR("Usage: read <pin>\r\n"));
 
         return (-EINVAL);
     }
@@ -147,7 +146,7 @@ static int cmd_write_cb(int argc,
     int pin;
 
     if (argc != 3) {
-        std_fprintf(out_p, OSTR("Usage: %s <pin> <value>\r\n"), argv[0]);
+        std_fprintf(out_p, OSTR("Usage: write <pin> <value>\r\n"));
 
         return (-EINVAL);
     }
