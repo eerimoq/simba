@@ -62,7 +62,7 @@ static int test_cmd_list(struct harness_t *harness_p)
     buf[size] = '\0';
     std_printf(FSTR("%s\r\n"), buf);
     BTASSERT(std_strcmp(buf, response_p) == 0);
-
+    
     return (0);
 
 #else
@@ -83,7 +83,7 @@ static int test_cmd_read(struct harness_t *harness_p)
     /* Bad number of arguments. */
     std_sprintf(buf, FSTR("oam/settings/read"));
     BTASSERT(fs_call(buf, NULL, &queue, NULL) == -1);
-    std_sprintf(response, FSTR("Usage: oam/settings/read <name>\r\n"));
+    std_sprintf(response, FSTR("Usage: read <name>\r\n"));
     size = strlen(response);
     BTASSERT(chan_read(&queue, buf, size) == size);
     buf[size] = '\0';
@@ -164,7 +164,7 @@ static int test_cmd_write(struct harness_t *harness_p)
     std_sprintf(buf, FSTR("oam/settings/write"));
     BTASSERT(fs_call(buf, NULL, &queue, NULL) == -1);
     size = std_sprintf(response,
-                       FSTR("Usage: oam/settings/write <name> <value>\r\n"));
+                       FSTR("Usage: write <name> <value>\r\n"));
     BTASSERT(chan_read(&queue, buf, size) == size);
     buf[size] = '\0';
     BTASSERT(strcmp(buf, response) == 0);
