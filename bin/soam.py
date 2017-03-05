@@ -250,6 +250,7 @@ class Database(object):
                 string = string.replace('\\r', '\r')
                 string = string.replace('\\t', '\t')
                 string = string.replace('\\v', '\v')
+                string = string.replace('\\\\', '\\')
                 if kind == 'FMT:':
                     self.formats[identity] = string
                 elif kind == 'CMD:':
