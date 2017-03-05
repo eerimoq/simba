@@ -32,8 +32,7 @@ NAME = settings_suite
 TYPE = suite
 BOARD ?= linux
 
-SETTINGS_C = settings.c
-SETTINGS_BIN = settings.little-endian.bin
+SETTINGS_INI = settings.ini
 
 CDEFS += \
 	CONFIG_MINIMAL_SYSTEM=1 \

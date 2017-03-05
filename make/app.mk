@@ -32,6 +32,8 @@
 
 VERSION ?= $(shell cat $(SIMBA_ROOT)/VERSION.txt)
 
+all:
+
 # files and folders
 BUILDDIR ?= build/$(BOARD)
 OBJDIR = $(BUILDDIR)/obj
@@ -49,10 +51,12 @@ ifeq ($(SETTINGS_INI),)
 SETTINGS_C ?= $(SIMBA_ROOT)/src/settings_default.c
 SETTTNGS_OUTPUT_DIRECTORY ?= .
 else
+SETTINGS_H ?= $(GENDIR)/settings.h
 SETTINGS_C ?= $(GENDIR)/settings.c
 SETTTNGS_OUTPUT_DIRECTORY ?= $(GENDIR)
-$(SETTINGS_C): $(SETTINGS_INI)
+$(SETTTNGS_H) $(SETTINGS_C): $(SETTINGS_INI)
 	$(MAKE) settings-generate
+generate: $(SETTTNGS_H) $(SETTINGS_C)
 endif
 SRC += $(SETTINGS_C)
 SETTINGS_BIN ?= $(SIMBA_ROOT)/src/settings_default.bin

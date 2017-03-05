@@ -63,15 +63,13 @@ static int cmd_list_cb(int argc,
 {
     const FAR struct setting_t *setting_p;
     int i;
-    int8_t int8;
-    int16_t int16;
     int32_t int32;
     char buf[32];
     size_t size;
 
     /* Print the header. */
     std_fprintf(chout_p,
-                OSTR("NAME                  TYPE     SIZE  VALUE\r\n"));
+                OSTR("NAME                  TYPE      SIZE  VALUE\r\n"));
 
     /* Print all settings. */
     setting_p = &settings[0];
@@ -88,32 +86,16 @@ static int cmd_list_cb(int argc,
 
         switch (setting_p->type) {
 
-        case setting_type_int8_t:
-            int8 = 0;
-            settings_read(&int8, setting_p->address, size);
-            std_fprintf(chout_p,
-                        OSTR("int8_t      1  %d\r\n"),
-                        (int)int8);
-            break;
-
-        case setting_type_int16_t:
-            int16 = 0;
-            settings_read(&int16, setting_p->address, size);
-            std_fprintf(chout_p,
-                        OSTR("int16_t     2  %d\r\n"),
-                        (int)int16);
-            break;
-
         case setting_type_int32_t:
             int32 = 0;
             settings_read(&int32, setting_p->address, size);
             std_fprintf(chout_p,
-                        OSTR("int32_t     4  %ld\r\n"),
+                        OSTR("int32_t      4  %ld\r\n"),
                         (long)int32);
             break;
 
         case setting_type_string_t:
-            std_fprintf(chout_p, OSTR("string   %4u  "), (int)size);
+            std_fprintf(chout_p, OSTR("string_t  %4u  "), (int)size);
 
             for (i = 0; i < size; i++) {
                 settings_read(&buf[0], setting_p->address + i, 1);
@@ -127,6 +109,22 @@ static int cmd_list_cb(int argc,
 
             std_fprintf(chout_p, OSTR("\r\n"));
             break;
+
+#if CONFIG_SETTINGS_BLOB == 1
+
+        case setting_type_blob_t:
+            std_fprintf(chout_p, OSTR("blob_t    %4u  "), (int)size);
+
+            for (i = 0; i < size; i++) {
+                buf[0] = 0x00;
+                settings_read(&buf[0], setting_p->address + i, 1);
+                std_fprintf(chout_p, OSTR("\\x%02x"), buf[0]);
+            }
+
+            std_fprintf(chout_p, OSTR("\r\n"));
+            break;
+
+#endif
 
         default:
             std_fprintf(chout_p,
@@ -167,8 +165,6 @@ static int cmd_read_cb(int argc,
 {
     const FAR struct setting_t *setting_p;
     int i;
-    int8_t int8;
-    int16_t int16;
     int32_t int32;
     char buf[1];
 
@@ -184,18 +180,6 @@ static int cmd_read_cb(int argc,
     while (setting_p->name_p != NULL) {
         if (std_strcmp(argv[1], setting_p->name_p) == 0) {
             switch (setting_p->type) {
-
-            case setting_type_int8_t:
-                int8 = 0;
-                settings_read(&int8, setting_p->address, setting_p->size);
-                std_fprintf(chout_p, OSTR("%d\r\n"), (int)int8);
-                break;
-
-            case setting_type_int16_t:
-                int16 = 0;
-                settings_read(&int16, setting_p->address, setting_p->size);
-                std_fprintf(chout_p, OSTR("%d\r\n"), (int)int16);
-                break;
 
             case setting_type_int32_t:
                 int32 = 0;
@@ -217,6 +201,20 @@ static int cmd_read_cb(int argc,
 
                 std_fprintf(chout_p, OSTR("\r\n"));
                 break;
+
+#if CONFIG_SETTINGS_BLOB == 1
+
+            case setting_type_blob_t:
+                for (i = 0; i < setting_p->size; i++) {
+                    buf[0] = 0;
+                    settings_read(&buf[0], setting_p->address + i, 1);
+                    std_fprintf(chout_p, OSTR("\\x%02x"), buf[0]);
+                }
+
+                std_fprintf(chout_p, OSTR("\r\n"));
+                break;
+
+#endif
 
             default:
                 std_fprintf(chout_p,
@@ -247,10 +245,12 @@ static int cmd_write_cb(int argc,
                         void *call_arg_p)
 {
     const FAR struct setting_t *setting_p;
+    size_t size;
     long value;
-    int8_t int8;
-    int16_t int16;
     int32_t int32;
+    char buf[5];
+    char *buf_p;
+    int i;
 
     if (argc != 3) {
         std_fprintf(chout_p, OSTR("Usage: %s <name> <value>\r\n"), argv[0]);
@@ -264,40 +264,6 @@ static int cmd_write_cb(int argc,
     while (setting_p->name_p != NULL) {
         if (std_strcmp(argv[1], setting_p->name_p) == 0) {
             switch (setting_p->type) {
-
-            case setting_type_int8_t:
-                if (std_strtol(argv[2], &value) == NULL) {
-                    return (-1);
-                }
-
-                /* Range check. */
-                if ((value > 127) || (value < -128)) {
-                    std_fprintf(chout_p,
-                                OSTR("%ld: value out of range\r\n"),
-                                value);
-                    return (-1);
-                }
-
-                int8 = (int8_t)value;
-                settings_write(setting_p->address, &int8, setting_p->size);
-                break;
-
-            case setting_type_int16_t:
-                if (std_strtol(argv[2], &value) == NULL) {
-                    return (-1);
-                }
-
-                /* Range check. */
-                if ((value > 32767) || (value < -32768)) {
-                    std_fprintf(chout_p,
-                                OSTR("%ld: value out of range\r\n"),
-                                value);
-                    return (-1);
-                }
-
-                int16 = (int16_t)value;
-                settings_write(setting_p->address, &int16, setting_p->size);
-                break;
 
             case setting_type_int32_t:
                 if (std_strtol(argv[2], &value) == NULL) {
@@ -327,6 +293,47 @@ static int cmd_write_cb(int argc,
 
                 settings_write(setting_p->address, argv[2], setting_p->size);
                 break;
+
+#if CONFIG_SETTINGS_BLOB == 1
+
+            case setting_type_blob_t:
+                /* Range check. */
+                size = DIV_CEIL(strlen(argv[2]), 4);
+
+                if (size != setting_p->size) {
+                    std_fprintf(chout_p,
+                                OSTR("%u: bad blob data length\r\n"),
+                                size);
+                    return (-1);
+                }
+
+                for (i = 0; i < 4 * size; i += 4) {
+                    if ((argv[2][i] != '\\')
+                        || (argv[2][i + 1] != 'x')
+                        || !isxdigit((int)argv[2][i + 2])
+                        || !isxdigit((int)argv[2][i + 3])) {
+                        std_fprintf(chout_p, OSTR("bad blob data\r\n"));
+                        return (-1);
+                    }
+                }
+
+                /* For std_strtol(). */
+                buf[0] = '0';
+                buf[4] = '\0';
+
+                /* argv pointers shall not be const in the furute. */
+                buf_p = (char *)argv[2];
+
+                for (i = 0; i < size; i++) {
+                    memcpy(&buf[1], &argv[2][4 * i + 1], 3);
+                    (void)std_strtol(&buf[0], &value);
+                    *buf_p++ = value;
+                }
+
+                settings_write(setting_p->address, argv[2], size);
+                break;
+
+#endif
 
             default:
                 std_fprintf(chout_p,

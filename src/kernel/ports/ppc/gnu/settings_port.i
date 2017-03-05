@@ -156,41 +156,19 @@ static ssize_t settings_port_write(size_t dst, const void *src_p, size_t size)
         return (-1);
     } 
 
-    for (i = 0; i < dst; i += 8) {
+    for (i = 0; i < CONFIG_SETTINGS_AREA_SIZE - 8; i += 8) {
         if (flash_read(&drv,
-                       buf,
+                       &buf[0],
                        (uintptr_t)&settings_area[SECONDARY][i],
                        sizeof(buf)) != sizeof(buf)) {
             return (-1);
         }
-        
-        /* Update the primary area. */
-        if (flash_write(&drv,
-                        (uintptr_t)&settings_area[PRIMARY][i],
-                        &buf[0],
-                        sizeof(buf)) != sizeof(buf)) {
-            return (-1);
-        }
-    }
 
-    for (; i < dst + size; i += 8) {
-        /* Update the primary area. */
-        if (flash_write(&drv,
-                        (uintptr_t)&settings_area[PRIMARY][i],
-                        &((uint8_t *)src_p)[i - dst],
-                        sizeof(buf)) != sizeof(buf)) {
-            return (-1);
+        /* Overwrite read data in input range. */
+        if ((i >= dst) && (i < dst + size)) {
+            memcpy(&buf[0], &((uint8_t *)src_p)[i - dst], sizeof(buf));
         }
-    }
 
-    for (; i < CONFIG_SETTINGS_AREA_SIZE - 8; i += 8) {
-        if (flash_read(&drv,
-                       buf,
-                       (uintptr_t)&settings_area[SECONDARY][i],
-                       sizeof(buf)) != sizeof(buf)) {
-            return (-1);
-        }
-        
         /* Update the primary area. */
         if (flash_write(&drv,
                         (uintptr_t)&settings_area[PRIMARY][i],

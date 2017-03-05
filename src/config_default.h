@@ -1556,6 +1556,13 @@
 #endif
 
 /**
+ * Enable the blob setting type.
+ */
+#ifndef CONFIG_SETTINGS_BLOB
+#    define CONFIG_SETTINGS_BLOB                            1
+#endif
+
+/**
  * Maximum number of characters in a shell command.
  */
 #ifndef CONFIG_SHELL_COMMAND_MAX

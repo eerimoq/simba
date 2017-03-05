@@ -39,10 +39,9 @@
  * Settings types. Each setting must have be one of these types.
  */
 enum setting_type_t {
-    setting_type_int8_t = 0,
-    setting_type_int16_t,
-    setting_type_int32_t,
-    setting_type_string_t
+    setting_type_int32_t = 0,
+    setting_type_string_t,
+    setting_type_blob_t
 };
 
 struct setting_t {

@@ -13,13 +13,11 @@ and a default value, all defined in the ini-file.
 
 Supported types are:
 
-- ``int8_t`` An 8 bits signed integer.
-
-- ``int16_t`` A 16 bits signed integer.
-
 - ``int32_t`` A 32 bits signed integer.
 
 - ``string`` An ASCII string.
+
+- ``blob`` A chunk of data.
 
 The size is the number of bytes of the value. For the standard integer
 types the size must be the value returned by `sizeof()`. For strings
@@ -62,11 +60,11 @@ Example output from the shell:
 .. code-block:: text
 
    $ oam/settings/list 
-   NAME                  TYPE     SIZE  VALUE
-   version               int8_t      1  1
-   value_1               int16_t     2  24567
-   value_2               int32_t     4  -57
-   value_3               string     16  foobar
+   NAME                  TYPE      SIZE  VALUE
+   version               int32_t      4  1
+   value_1               int32_t      4  24567
+   value_2               blob_t       4  \xca\xfe\xba\xbe
+   value_3               string_t    16  foobar
    $ oam/settings/read value_1
    24567
    $ oam/settings/write value_1 -5
@@ -74,32 +72,32 @@ Example output from the shell:
    -5
    $ oam/settings/reset
    $ oam/settings/list 
-   NAME                  TYPE     SIZE  VALUE
-   version               int8_t      1  1
-   value_1               int16_t     2  24567
-   value_2               int32_t     4  -57
-   value_3               string     16  foobar
+   NAME                  TYPE      SIZE  VALUE
+   version               int32_t      4  1
+   value_1               int32_t      4  24567
+   value_2               blob_t       4  \xca\xfe\xba\xbe
+   value_3               string_t    16  foobar
 
 Example
 -------
 
 In this example the ini-file has one setting defined, ``foo``. The
-type is ``int8_t``, the address is ``0x00``, the size is ``1`` and the
+type is ``int32_t``, the address is ``0x00``, the size is ``4`` and the
 default value is ``-4``.
 
 .. code-block:: ini
 
+   [values]
+   foo = -4
+
    [types]
-   foo = int8_t
+   foo = int32_t
 
    [addresses]
    foo = 0x00
 
    [sizes]
-   foo = 1
-
-   [values]
-   foo = -4
+   foo = 4
 
 The settings can be read and written with the functions
 `settings_read()` and `settings_write()`. Give the generated defines
@@ -110,7 +108,7 @@ functions.
 
    int my_read_write_foo()
    {
-       int8_t foo;
+       int32_t foo;
 
        /* Read the foo setting. */
        if (settings_read(&foo,

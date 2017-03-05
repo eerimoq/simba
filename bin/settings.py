@@ -3,7 +3,6 @@
 import sys
 import time
 import struct
-import re
 import zlib
 import argparse
 import os
@@ -170,8 +169,6 @@ __attribute__ ((weak)) = {{
 #endif
 """
 
-re_integer = re.compile(r"(?P<sign>)int(?P<bits>\d+)_t")
-
 
 def parse_settings_file(filename):
     settings_parser = ConfigParser()
@@ -238,33 +235,27 @@ def create_binary_content(settings, settings_size, endianess):
         # add the value
         if item["type"] == "string_t":
             if item["size"] <= len(item["value"]):
-                sys.stderr.write("{}: value does not fit in size {}\n".format(
+                sys.exit("{}: value does not fit in size {}\n".format(
                     item["value"],
                     item["size"]))
-                sys.exit(1)
             content += item["value"]
             # null termination
             content += "\x00"
-        elif re_integer.match(item["type"]):
-            bits_to_fmt = {
-                8: "b",
-                16: "h",
-                32: "i"
-            }
-            mo = re_integer.match(item["type"])
-            sign = mo.group("sign")
-            bits = int(mo.group("bits"))
-            if bits not in [8, 16, 32]:
-                sys.stderr.write("{}: bad type\n".format(item["type"]))
-                sys.exit(1)
-            if bits / 8 != item["size"]:
+        elif item["type"] == "blob_t":
+            if item["size"] < len(item["value"]) / 4:
+                sys.exit("{}: value does not fit in size {}\n".format(
+                    item["value"],
+                    item["size"]))
+            for byte in item["value"][2:].split('\\x'):
+                if len(byte) != 2:
+                    sys.exit("bad blob data")
+                content += byte.decode('hex')
+        elif item["type"] == 'int32_t':
+            if item["size"] != 4:
                 sys.stderr.write("{}: bad length of {}\n".format(item["size"],
                                                                  item["type"]))
                 sys.exit(1)
-            fmt = bits_to_fmt[bits]
-            if sign == "u":
-                fmt.upper()
-            content += struct.pack(endianess_prefix + fmt, int(item["value"], 0))
+            content += struct.pack(endianess_prefix + 'i', int(item["value"], 0))
         else:
             sys.stderr.write("{}: bad type\n".format(item["type"]))
             sys.exit(1)
@@ -295,7 +286,7 @@ def create_header_file(outdir,
                          .format(name=name.upper(), value=item["address"]))
         sizes.append("#define SETTING_{name}_SIZE {value}"
                      .format(name=name.upper(), value=item["size"]))
-        types.append("#define SETTING_{name}_TYPE setting_type_{value}_t"
+        types.append("#define SETTING_{name}_TYPE setting_type_{value}"
                      .format(name=name.upper(), value=item["type"]))
         values.append("#define SETTING_{name}_VALUE {value}"
                       .format(name=name.upper(), value=item["value"]))

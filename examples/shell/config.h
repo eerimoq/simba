@@ -37,5 +37,6 @@
 #define CONFIG_START_SHELL                                  0
 #define CONFIG_START_FILESYSTEM                             0
 #define CONFIG_START_NETWORK                                0
+#define CONFIG_CRC_TABLE_LOOKUP                             0
 
 #endif
