@@ -36,5 +36,7 @@ SOAM = yes
 CDEFS += \
 	CONFIG_START_SHELL=0
 
+SETTINGS_INI = settings.ini
+
 SIMBA_ROOT ?= ../..
 include $(SIMBA_ROOT)/make/app.mk
