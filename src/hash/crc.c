@@ -153,7 +153,7 @@ uint32_t crc_32(uint32_t crc, const void *buf_p, size_t size)
 
     const uint8_t *b_p;
     size_t i;
-    
+
     b_p = buf_p;
     crc ^= 0xfffffffful;
 
@@ -166,7 +166,7 @@ uint32_t crc_32(uint32_t crc, const void *buf_p, size_t size)
 
         size--;
     }
-    
+
     return (~crc);
 }
 
