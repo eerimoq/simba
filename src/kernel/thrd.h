@@ -35,7 +35,8 @@
 #include "thrd_port.h"
  
 /**
- * Macro to declare a thread stack with given name and size.
+ * Macro to declare a thread stack with given name and size. All
+ * thread stacks must be defined using this macro.
  *
  * @param[in] name The name of the stack. A variable is declared with
  *                 this name that should be passed to `thrd_spawn()`.

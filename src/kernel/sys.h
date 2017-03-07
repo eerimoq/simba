@@ -127,8 +127,7 @@ void sys_stop(int error) __attribute__ ((noreturn));
 void sys_panic(const char *message_p) __attribute__ ((noreturn));
 
 /**
- * Reboot the system. Sets all registers to their known, default
- * values and restarts the application. Also known as a soft reset.
+ * Reboot the system. Also known as a soft reset.
  *
  * @return Never returns.
  */
@@ -158,7 +157,7 @@ void sys_set_stdin(void *chan_p);
 /**
  * Get the standard input channel.
  *
- * @return Standard input channel or NULL.
+ * @return Standard input channel.
  */
 void *sys_get_stdin(void);
 
@@ -174,7 +173,7 @@ void sys_set_stdout(void *chan_p);
 /**
  * Get the standard output channel.
  *
- * @return Standard output channel or NULL.
+ * @return Standard output channel.
  */
 void *sys_get_stdout(void);
 
@@ -208,22 +207,22 @@ void sys_lock_isr(void);
 void sys_unlock_isr(void);
 
 /**
- * Get a pointer to the application information buffer.
+ * Get a pointer to the application information string.
  *
  * The buffer contains various information about the application; for
  * example the application name and the build date.
  *
- * @return The pointer to the application information buffer.
+ * @return The pointer to the application information string.
  */
 far_string_t sys_get_info(void);
 
 /**
- * Get a pointer to the application configuration buffer.
+ * Get a pointer to the application configuration string.
  *
  * The buffer contains a string of all configuration variables and
  * their values.
  *
- * @return The pointer to the application configuration buffer.
+ * @return The pointer to the application configuration string.
  */
 far_string_t sys_get_config(void);
 
