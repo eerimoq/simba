@@ -1662,8 +1662,7 @@ int fs_auto_complete(char *path_p)
        Example:
        path_p = "/tm"
        commands = ["/tmp/foo", "/tmp/bar", "/zoo/lander"]
-       auto-completed = "/tmp/"
-    */
+       auto-completed = "/tmp/" */
     while (1) {
         mismatch = 0;
         next_char = command_p->path_p[offset + size];
