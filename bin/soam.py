@@ -19,6 +19,7 @@ SOAM_TYPE_COMMAND_RESPONSE_DATA_BINARY = 5
 SOAM_TYPE_COMMAND_RESPONSE             = 6
 SOAM_TYPE_DATABASE_ID_REQUEST          = 7
 SOAM_TYPE_DATABASE_ID_RESPONSE         = 8
+SOAM_TYPE_INVALID_TYPE                 = 9
 
 SOAM_SEGMENT_SIZE_MIN = 6
 
@@ -233,6 +234,8 @@ class ReaderThread(threading.Thread):
                 with self.response_packet_cond:
                     self.response_packet = packet
                     self.response_packet_cond.notify_all()
+            elif packet_type == SOAM_TYPE_INVALID_TYPE:
+                print('Invalid type packet received.')
             else:
                 print('Bad packet type:', packet)
 
@@ -325,7 +328,7 @@ class SlipSerialClient(object):
         except KeyError:
             raise CommandNotFoundError(
                 "{}: command not found in string database".format(command))
-        
+
         command_with_args = command_with_args.replace(command, command_id, 1)
         command_with_args += b'\x00'
 

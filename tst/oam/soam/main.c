@@ -93,6 +93,33 @@ static int test_init(struct harness_t *harness_p)
     return (0);
 }
 
+static int test_database_request(struct harness_t *harness_p)
+{
+    uint8_t buf[64];
+    size_t size;
+    uint16_t crc;
+
+    /* Request the database id. */
+    buf[0] = 0x70;
+    buf[1] = 0x01;
+    buf[2] = 0x00;
+    buf[3] = 0x02;
+    buf[4] = 0xd1;
+    buf[5] = 0xc7;
+    BTASSERT(soam_input(&soam, &buf[0], 6) == 0);
+
+    /* Read the database id. */
+    BTASSERT(chan_read(&chout, &buf[0], 38) == 38);
+    BTASSERT(buf[0] == 0x81);
+    BTASSERT(buf[1] == 1);
+    size = ((buf[2] << 8) | buf[3]);
+    BTASSERT(size == 34);
+    crc = ((buf[36] << 8) | buf[37]);
+    BTASSERT(crc_ccitt(0xffff, &buf[0], 36) == crc);
+
+    return (0);
+}
+
 static int test_log(struct harness_t *harness_p)
 {
     uint8_t buf[64];
@@ -111,7 +138,7 @@ static int test_log(struct harness_t *harness_p)
        function. */
     BTASSERT(chan_read(&chout, &buf[0], 4) == 4);
     BTASSERT(buf[0] == 0x21);
-    BTASSERT(buf[1] == 1);
+    BTASSERT(buf[1] == 2);
 
     size = ((buf[2] << 8) | buf[3]);
     BTASSERT(size >= 31);
@@ -138,7 +165,7 @@ static int test_log(struct harness_t *harness_p)
        function. */
     BTASSERT(chan_read(&chout, &buf[0], 4) == 4);
     BTASSERT(buf[0] == 0x21);
-    BTASSERT(buf[1] == 2);
+    BTASSERT(buf[1] == 3);
 
     size = ((buf[2] << 8) | buf[3]);
     BTASSERT(size >= 26);
@@ -179,7 +206,7 @@ static int test_command(struct harness_t *harness_p)
        std_fprintf(...). */
     BTASSERT(chan_read(&chout, &buf[0], 4) == 4);
     BTASSERT(buf[0] == 0x40);
-    BTASSERT(buf[1] == 3);
+    BTASSERT(buf[1] == 4);
 
     size = ((buf[2] << 8) | buf[3]);
     BTASSERT(size == 44);
@@ -199,7 +226,7 @@ static int test_command(struct harness_t *harness_p)
        std_fprintf(...). */
     BTASSERT(chan_read(&chout, &buf[0], 4) == 4);
     BTASSERT(buf[0] == 0x42);
-    BTASSERT(buf[1] == 4);
+    BTASSERT(buf[1] == 5);
 
     size = ((buf[2] << 8) | buf[3]);
     BTASSERT(size == 44);
@@ -215,7 +242,7 @@ static int test_command(struct harness_t *harness_p)
        std_fprintf(...). */
     BTASSERT(chan_read(&chout, &buf[0], 4) == 4);
     BTASSERT(buf[0] == 0x43);
-    BTASSERT(buf[1] == 5);
+    BTASSERT(buf[1] == 6);
 
     size = ((buf[2] << 8) | buf[3]);
     BTASSERT(size == 15);
@@ -233,7 +260,7 @@ static int test_command(struct harness_t *harness_p)
        chan_write(...). */
     BTASSERT(chan_read(&chout, &buf[0], 4) == 4);
     BTASSERT(buf[0] == 0x50);
-    BTASSERT(buf[1] == 6);
+    BTASSERT(buf[1] == 7);
 
     size = ((buf[2] << 8) | buf[3]);
     BTASSERT(size == 44);
@@ -254,7 +281,7 @@ static int test_command(struct harness_t *harness_p)
        chan_write(...). */
     BTASSERT(chan_read(&chout, &buf[0], 4) == 4);
     BTASSERT(buf[0] == 0x53);
-    BTASSERT(buf[1] == 7);
+    BTASSERT(buf[1] == 8);
 
     size = ((buf[2] << 8) | buf[3]);
     BTASSERT(size == 8);
@@ -268,7 +295,7 @@ static int test_command(struct harness_t *harness_p)
        code. */
     BTASSERT(chan_read(&chout, &buf[0], 4) == 4);
     BTASSERT(buf[0] == 0x61);
-    BTASSERT(buf[1] == 8);
+    BTASSERT(buf[1] == 9);
 
     size = ((buf[2] << 8) | buf[3]);
     BTASSERT(size == 6);
@@ -292,27 +319,49 @@ static int test_bad_input(struct harness_t *harness_p)
 
     /* CRC error. */
     BTASSERT(soam_input(&soam,
-                        (uint8_t *)"\x01"
+                        (uint8_t *)"\x10"
+                        "\x01"
                         "\x00\x05"
                         "\x80\x03\x00"
                         "\xa5\xc1",
-                        8) == -1);
-
-    /* Bad type in the packet. */
-    BTASSERT(soam_input(&soam,
-                        (uint8_t *)"\x00"
-                        "\x00\x05"
-                        "\x80\x03\x00"
-                        "\xdc\x5c",
-                        8) == -1);
+                        9) == -1);
 
     /* Bad length in the packet. */
     BTASSERT(soam_input(&soam,
-                        (uint8_t *)"\x01"
+                        (uint8_t *)"\x10"
+                        "\x01"
                         "\x00\x06"
                         "\x80\x03\x00"
                         "\x02\x20",
-                        8) == -1);
+                        9) == -1);
+
+    return (0);
+}
+
+static int test_invalid_type(struct harness_t *harness_p)
+{
+    uint8_t buf[64];
+    size_t size;
+    uint16_t crc;
+
+    /* Invalid type identifier. */
+    buf[0] = 0xf0;
+    buf[1] = 0x01;
+    buf[2] = 0x00;
+    buf[3] = 0x02;
+    buf[4] = 0x0c;
+    buf[5] = 0xff;
+    BTASSERT(soam_input(&soam, &buf[0], 6) == -1);
+
+    /* Read the invalid type response. */
+    BTASSERT(chan_read(&chout, &buf[0], 12) == 12);
+    BTASSERT(buf[0] == 0x91);
+    BTASSERT(buf[1] == 10);
+    size = ((buf[2] << 8) | buf[3]);
+    BTASSERT(size == 8);
+    BTASSERT(memcmp(&buf[4], "\xf0\x01\x00\x02\x0c\xff", 6) == 0);
+    crc = ((buf[10] << 8) | buf[11]);
+    BTASSERT(crc_ccitt(0xffff, &buf[0], 10) == crc);
 
     return (0);
 }
@@ -323,19 +372,19 @@ static int test_stdout(struct harness_t *harness_p)
     uint8_t buf[64];
     size_t size;
     uint16_t crc;
-    
+
     stdout_p = sys_get_stdout();
 
     sys_set_stdout(soam_get_stdout_input_channel(&soam));
     std_printf(OSTR("hej\r\n"));
-    
+
     sys_set_stdout(stdout_p);
 
     /* Read the SOAM packet written to the output channel from the
        printf function. */
     BTASSERT(chan_read(&chout, &buf[0], 4) == 4);
     BTASSERT(buf[0] == 0x11);
-    BTASSERT(buf[1] == 9);
+    BTASSERT(buf[1] == 11);
 
     size = ((buf[2] << 8) | buf[3]);
     BTASSERT(size == 4);
@@ -344,7 +393,7 @@ static int test_stdout(struct harness_t *harness_p)
 
     crc = ((buf[6] << 8) | buf[7]);
     BTASSERT(crc_ccitt(0xffff, &buf[0], size + 2) == crc);
-    
+
     return (0);
 }
 
@@ -353,9 +402,11 @@ int main()
     struct harness_t harness;
     struct harness_testcase_t harness_testcases[] = {
         { test_init, "test_init" },
+        { test_database_request, "test_database_request" },
         { test_log, "test_log" },
         { test_command, "test_command" },
         { test_bad_input, "test_bad_input" },
+        { test_invalid_type, "test_invalid_type" },
         { test_stdout, "test_stdout" },
         { NULL, NULL }
     };

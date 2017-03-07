@@ -40,6 +40,7 @@
 #define SOAM_TYPE_COMMAND_RESPONSE                   (6 << 4)
 #define SOAM_TYPE_DATABASE_ID_REQUEST                (7 << 4)
 #define SOAM_TYPE_DATABASE_ID_RESPONSE               (8 << 4)
+#define SOAM_TYPE_INVALID_TYPE                       (9 << 4)
 
 #define SOAM_PACKET_FLAGS_CONSECUTIVE                (1 << 1)
 #define SOAM_PACKET_FLAGS_LAST                       (1 << 0)
@@ -300,6 +301,8 @@ int soam_input(struct soam_t *self_p,
         break;
 
     default:
+        soam_write(self_p, SOAM_TYPE_INVALID_TYPE, buf_p, size);
+
         return (-1);
     }
 
@@ -386,7 +389,7 @@ ssize_t soam_write(struct soam_t *self_p,
         return (-1);
     }
 
-    (void)soam_write_chunk(self_p ,buf_p, size);
+    (void)soam_write_chunk(self_p, buf_p, size);
 
     return (soam_write_end(self_p));
 }
