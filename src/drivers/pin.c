@@ -166,7 +166,7 @@ static int cmd_write_cb(int argc,
     } else if (strcmp(argv[2], "low") == 0) {
         pin_device_write_low(&pin_device[pin]);
     } else {
-        std_fprintf(out_p, OSTR("Bad value '%s',\r\n"), argv[2]);
+        std_fprintf(out_p, OSTR("%s: bad value\r\n"), argv[2]);
 
         return (-EINVAL);
     }
