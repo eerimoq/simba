@@ -26,6 +26,10 @@ SOAM_SEGMENT_FLAGS_CONSECUTIVE = (1 << 1)
 SOAM_SEGMENT_FLAGS_LAST        = (1 << 0)
 
 
+class CommandNotFoundError(Exception):
+    pass
+
+
 def crc_ccitt(data):
     msb = 0xff
     lsb = 0xff
@@ -315,7 +319,13 @@ class SlipSerialClient(object):
         if command_with_args[0] != '/':
             command_with_args = '/' + command_with_args
         command = command_with_args.split(' ')[0]
-        command_id = struct.pack('>H', self.database.commands[command])
+
+        try:
+            command_id = struct.pack('>H', self.database.commands[command])
+        except KeyError:
+            raise CommandNotFoundError(
+                "{}: command not found in string database".format(command))
+        
         command_with_args = command_with_args.replace(command, command_id, 1)
         command_with_args += b'\x00'
 
@@ -334,7 +344,8 @@ class SlipSerialClient(object):
                 identity = struct.unpack('>H', response_data[0:2])[0]
                 try:
                     fmt = self.database.formats[identity]
-                    formatted_response_data += fmt.format(*response_data[2:].split('\x1f'))
+                    formatted_response_data += fmt.format(
+                        *response_data[2:].split('\x1f'))
                 except KeyError:
                     formatted_response_data += response_data
             else:
@@ -361,6 +372,9 @@ def handle_errors(func):
             return func(*args, **kwargs)
         except KeyboardInterrupt:
             print("Keyboard interrupt.")
+            self.output(CommandStatus.ERROR)
+        except CommandNotFoundError as e:
+            print(e)
             self.output(CommandStatus.ERROR)
         except BaseException as e:
             self.output_exception(e)
