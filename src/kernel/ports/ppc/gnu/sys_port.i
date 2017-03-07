@@ -32,6 +32,16 @@ extern int main();
 
 #define SYS_TICK_COUNT           (F_CPU / CONFIG_SYSTEM_TICK_FREQUENCY)
 
+#if CONFIG_START_CONSOLE_DEVICE_INDEX == 0
+#    define CONSOLE_UART_REGS                  SPC5_LINFLEX_0
+#elif CONFIG_START_CONSOLE_DEVICE_INDEX == 1
+#    define CONSOLE_UART_REGS                  SPC5_LINFLEX_1
+#elif CONFIG_START_CONSOLE_DEVICE_INDEX == 2
+#    define CONSOLE_UART_REGS                  SPC5_LINFLEX_2
+#else
+#    error "Bad console UART index."
+#endif
+
 ISR(stm_match_on_channel_0)
 {
     /* Setup next timeout. */
@@ -57,8 +67,6 @@ static void sys_port_stop(int error)
 {
     while (1);
 }
-
-#define CONSOLE_UART_REGS SPC5_LINFLEX_0
 
 static void sys_port_panic_putc(char c)
 {
