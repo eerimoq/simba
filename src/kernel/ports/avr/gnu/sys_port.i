@@ -59,6 +59,22 @@
 #    error "CONFIG_SYSTEM_TICK_FREQUENCY is too low."
 #endif
 
+#if CONFIG_START_CONSOLE_DEVICE_INDEX == 0
+#    define CONSOLE_UCSRNA                             UCSR0A
+#    define CONSOLE_UDRN                                 UDR0
+#elif CONFIG_START_CONSOLE_DEVICE_INDEX == 1
+#    define CONSOLE_UCSRNA                             UCSR1A
+#    define CONSOLE_UDRN                                 UDR1
+#elif CONFIG_START_CONSOLE_DEVICE_INDEX == 2
+#    define CONSOLE_UCSRNA                             UCSR2A
+#    define CONSOLE_UDRN                                 UDR2
+#elif CONFIG_START_CONSOLE_DEVICE_INDEX == 3
+#    define CONSOLE_UCSRNA                             UCSR3A
+#    define CONSOLE_UDRN                                 UDR3
+#else
+#    error "Bad console UART index."
+#endif
+
 ISR(TIMER0_COMPA_vect)
 {
     sys_tick_isr();
@@ -96,6 +112,10 @@ static void sys_port_stop(int error)
 
 static void sys_port_panic_putc(char c)
 {
+    /* Wait for the transmission buffer to be empty. */
+    while ((CONSOLE_UCSRNA & _BV(UDRE0)) == 0);
+
+    CONSOLE_UDRN = c;
 }
 
 __attribute__ ((noreturn))
