@@ -62,6 +62,7 @@ ifeq ($(BOARD), linux)
 				   shell \
 				   soam \
 				   upgrade \
+				   upgrade/http \
 				   upgrade/kermit \
 				   upgrade/uds)
     TESTS += $(addprefix tst/filesystems/, fat16 \
