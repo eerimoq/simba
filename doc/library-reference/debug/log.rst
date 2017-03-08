@@ -82,7 +82,7 @@ and then use them and the default log object `default`.
 
 The source code:
 
-.. code:: c
+.. code-block:: c
 
    /* Initialize the log objects foo and bar. */
    struct log_object_t foo;
@@ -100,7 +100,7 @@ The source code:
 All logs are printed from the main thread as can be seen in the third
 field in the entries in the output below.
 
-.. code:: text
+.. code-block:: text
 
    23.0:info:main:foo: A foo info message.
    24.0:info:main:bar: A bar info message.
