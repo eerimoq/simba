@@ -77,16 +77,35 @@ Example output from the shell:
 Example
 -------
 
-Here are a few example outputs using three log objects; `foo`, `bar`
-and the default log object `default`. All logs are from the main
-thread as can be seen in the third field in the entries.
+Here is an example of how to create two log objects; `foo` and `bar`,
+and then use them and the default log object `default`.
+
+The source code:
+
+.. code:: c
+
+   /* Initialize the log objects foo and bar. */
+   struct log_object_t foo;
+   struct log_object_t bar;
+
+   log_object_init(&foo, "foo", LOG_UPTO(INFO));
+   log_object_init(&bar, "bar", LOG_UPTO(DEBUG));
+
+   /* Print four log entries. */
+   log_object_print(&foo, LOG_INFO, OSTR("A foo info message."));
+   log_object_print(&bar, LOG_INFO, OSTR("A bar info message."));
+   log_object_print(&bar, LOG_DEBUG, OSTR("A bar debug message."));
+   log_object_print(NULL, LOG_ERROR, OSTR("A default error message."));
+
+All logs are printed from the main thread as can be seen in the third
+field in the entries in the output below.
 
 .. code:: text
 
-   23:info:main:foo: A foo info message.
-   24:info:main:bar: A bar info message.
-   37:debug:main:bar: A bar debug message.
-   56:error:main:default: A main error message.
+   23.0:info:main:foo: A foo info message.
+   24.0:info:main:bar: A bar info message.
+   37.0:debug:main:bar: A bar debug message.
+   56.0:error:main:default: A default error message.
 
 ----------------------------------------------
 
