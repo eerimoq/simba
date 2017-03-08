@@ -37,7 +37,7 @@ debug. The thread name is the name of the thread that created the log
 entry and the log object name is the name of the log object the entry
 was printed on. The message is a user defined string.
 
-.. code:: text
+.. code-block:: text
 
    <timestamp>:<log level>:<thread name>:<log object name>: <message>
 
@@ -56,7 +56,7 @@ directory ``debug/log/``.
 |                                   | level ``LOG_INFO``. This command has no use except to test |br| |
 |                                   | that the log module works.                                      |
 +-----------------------------------+-----------------------------------------------------------------+
-|  ``set_log_mask <obejct> <mask>`` | Set the log mask to ``<mask>`` for log object ``<object>``.     |
+|  ``set_log_mask <object> <mask>`` | Set the log mask to ``<mask>`` for log object ``<object>``.     |
 +-----------------------------------+-----------------------------------------------------------------+
 
 Example output from the shell:
