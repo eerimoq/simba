@@ -72,7 +72,7 @@ int sem_take(struct sem_t *self_p,
         elem.thrd_p = thrd_self();
         elem.next_p = self_p->head_p;
         elem.prev_p = NULL;
-        self_p->head_p = &elem;        
+        self_p->head_p = &elem;
 
         if (self_p->tail_p == NULL) {
             self_p->tail_p = &elem;

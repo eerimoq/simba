@@ -45,7 +45,7 @@ static void *worker_main(void *arg_p)
     name_p = arg_p;
     thrd_set_name(name_p);
     time_get(&prev);
-    
+
     while (1) {
         sem_take(&sem, NULL);
         counter++;
@@ -55,12 +55,12 @@ static void *worker_main(void *arg_p)
 
         time_get(&now);
         time_diff(&diff, &now, &prev);
-        
+
         if (diff.seconds >= 1) {
             prev = now;
             log_object_print(NULL, LOG_ERROR, OSTR("Count: %d\r\n"), count);
         }
-        
+
         thrd_yield();
     }
 
@@ -70,27 +70,27 @@ static void *worker_main(void *arg_p)
 static int test_all(struct harness_t *harness_p)
 {
     sem_init(&sem, 0, 1);
-    
+
     thrd_spawn(worker_main,
                "worker_0",
                90,
                worker_0_stack,
                sizeof(worker_0_stack));
-    
+
     thrd_spawn(worker_main,
                "worker_1",
                90,
                worker_1_stack,
                sizeof(worker_1_stack));
-    
+
     thrd_spawn(worker_main,
                "worker_2",
                90,
                worker_2_stack,
                sizeof(worker_2_stack));
-    
+
     thrd_sleep_ms(5500);
-    
+
     return (0);
 }
 
