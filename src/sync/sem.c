@@ -52,6 +52,7 @@ int sem_init(struct sem_t *self_p,
     self_p->count = count;
     self_p->count_max = count_max;
     self_p->head_p = NULL;
+    self_p->tail_p = NULL;
 
     return (0);
 }
@@ -67,13 +68,22 @@ int sem_take(struct sem_t *self_p,
     sys_lock();
 
     if (self_p->count == self_p->count_max) {
+        /* Add to head. */
         elem.thrd_p = thrd_self();
         elem.next_p = self_p->head_p;
         elem.prev_p = NULL;
-        self_p->head_p = &elem;
+        self_p->head_p = &elem;        
+
+        if (self_p->tail_p == NULL) {
+            self_p->tail_p = &elem;
+        } else {
+            elem.next_p->prev_p = &elem;
+        }
+
         err = thrd_suspend_isr(timeout_p);
 
         if (err == -ETIMEDOUT) {
+            /* Remove the element from the list. */
             if (elem.prev_p != NULL) {
                 elem.prev_p->next_p = elem.next_p;
             } else {
@@ -82,6 +92,8 @@ int sem_take(struct sem_t *self_p,
 
             if (elem.next_p != NULL) {
                 elem.next_p->prev_p = elem.prev_p;
+            } else {
+                self_p->tail_p = elem.prev_p;
             }
         }
     } else {
@@ -117,13 +129,18 @@ int sem_give_isr(struct sem_t *self_p,
         self_p->count = 0;
     }
 
-    while ((self_p->count < self_p->count_max) && (self_p->head_p != NULL)) {
+    while ((self_p->count < self_p->count_max) && (self_p->tail_p != NULL)) {
         self_p->count++;
-        elem_p = self_p->head_p;
-        self_p->head_p = elem_p->next_p;
 
-        if (elem_p->next_p != NULL) {
-            elem_p->next_p->prev_p = NULL;
+        /* Remove from tail. */
+        elem_p = self_p->tail_p;
+        self_p->tail_p = elem_p->prev_p;
+
+        if (self_p->tail_p == NULL) {
+            self_p->head_p = NULL;
+        } else {
+            elem_p->prev_p->next_p = NULL;
+            self_p->tail_p = elem_p->prev_p;
         }
 
         thrd_resume_isr(elem_p->thrd_p, 0);

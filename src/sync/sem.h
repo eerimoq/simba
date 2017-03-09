@@ -57,6 +57,7 @@ struct sem_t {
     int count_max;
     /** Wait list. */
     struct sem_elem_t *head_p;
+    struct sem_elem_t *tail_p;
 };
 
 /**
