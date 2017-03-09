@@ -117,7 +117,7 @@ int sem_give_isr(struct sem_t *self_p,
         self_p->count = 0;
     }
 
-    while ((self_p->count <= self_p->count_max) && (self_p->head_p != NULL)) {
+    while ((self_p->count < self_p->count_max) && (self_p->head_p != NULL)) {
         self_p->count++;
         elem_p = self_p->head_p;
         self_p->head_p = elem_p->next_p;
