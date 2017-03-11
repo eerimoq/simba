@@ -72,7 +72,7 @@ int can_init(struct can_driver_t *self_p,
 
     chan_init(&self_p->base,
               base_chan_read,
-              (ssize_t (*)(void *, const void *, size_t))write_cb,
+              (chan_write_fn_t)write_cb,
               base_chan_size);
 
     queue_init(&self_p->chin, rxbuf_p, size);

@@ -228,6 +228,12 @@ struct spc5_linflex_t {
 #define SPC5_LINFLEX_UARTCR_UART                       BIT(0)
 
 /* 22. FlexCAN. */
+struct spc5_flexcan_msgbuf_t {
+    uint32_t CTRL_STATUS;
+    uint32_t PRIO_ID;
+    uint32_t DATA[2];
+};
+
 struct spc5_flexcan_t {
     uint32_t MCR;
     uint32_t CTRL;
@@ -243,11 +249,7 @@ struct spc5_flexcan_t {
     uint32_t IFLAG2;
     uint32_t IFLAG1;
     uint32_t RESERVED1[19];
-    struct {
-        uint32_t CTRL_STATUS;
-        uint32_t PRIO_ID;
-        uint32_t DATA[2];
-    } MSGBUF[64];
+    struct spc5_flexcan_msgbuf_t MSGBUF[64];
 };
 
 #define SPC5_FLEXCAN_MCR_MDIS                         BIT(31)
@@ -298,7 +300,7 @@ struct spc5_flexcan_t {
 
 #define SPC5_FLEXCAN_MSGBUF_PRIO_ID_EXT_ID_POS            (0)
 #define SPC5_FLEXCAN_MSGBUF_PRIO_ID_EXT_ID_MASK         \
-    (0x3ffff << SPC5_FLEXCAN_MSGBUF_PRIO_ID_EXT_ID_POS)
+    (0x1fffffff << SPC5_FLEXCAN_MSGBUF_PRIO_ID_EXT_ID_POS)
 #define SPC5_FLEXCAN_MSGBUF_PRIO_ID_EXT_ID(value)               \
     BITFIELD_SET(SPC5_FLEXCAN_MSGBUF_PRIO_ID_EXT_ID, value)
 
