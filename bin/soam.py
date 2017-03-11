@@ -11,6 +11,7 @@ import threading
 import serial
 import hashlib
 
+# SOAM protocol definitions.
 SOAM_TYPE_STDOUT                       = 1
 SOAM_TYPE_LOG_POINT                    = 2
 SOAM_TYPE_COMMAND_REQUEST              = 3
@@ -44,35 +45,37 @@ def crc_ccitt(data):
     return (msb << 8) + lsb
 
 
-def create_segment(packet_type, index, payload):
-    """Create a SOAM/SLIP segment.
-
-    """
-
-    soam_packet = struct.pack('>BBH',
-                              packet_type << 4,
-                              index,
-                              len(payload) + 2)
-    soam_packet += payload
-    soam_packet += struct.pack('>H', crc_ccitt(soam_packet))
-
-    slip_packet = b'\xc0'
-
-    for byte in soam_packet:
-        if byte == b'\xc0':
-            slip_packet += b'\xdb\xdc'
-        elif byte == b'\xdb':
-            slip_packet += b'\xdb\xdd'
-        else:
-            slip_packet += byte
-
-    slip_packet += b'\xc0'
-
-    return slip_packet
-
-
 class TimeoutError(Exception):
     pass
+
+
+class Database(object):
+
+    def __init__(self, database):
+        self.formats = {}
+        self.commands = {}
+
+        with open(database) as fin:
+            for line in fin.readlines():
+                # Ignore comments.
+                if line.startswith('#'):
+                    continue
+
+                kind, identity, string = line.strip().split(' ', 2)
+                identity = int(identity, 0)
+                string = string[1:-1]
+                string = string.replace('\\n', '\n')
+                string = string.replace('\\r', '\r')
+                string = string.replace('\\t', '\t')
+                string = string.replace('\\v', '\v')
+                string = string.replace('\\\\', '\\')
+
+                if kind == 'FMT:':
+                    self.formats[identity] = string
+                elif kind == 'CMD:':
+                    self.commands[string] = identity
+                else:
+                    sys.exit('{}: bad kind'.format(kind))
 
 
 class ReaderThread(threading.Thread):
@@ -84,46 +87,14 @@ class ReaderThread(threading.Thread):
         self.response_packet_cond = threading.Condition()
         self.response_packet = None
 
-    def _read_segment(self):
+    def read_soam_segment(self):
         """Read a packet from the SOAM server.
+
+        This method is overridden by subclasses.
 
         """
 
-        packet = b''
-        is_escaped = False
-
-        while self.running:
-            byte = self.client.serial.read(1)
-
-            # Print stored packet on timeout. Likely non-framed data,
-            # for example from a panic.
-            if not byte:
-                if len(packet) > 0:
-                    print(packet)
-                    packet = b''
-
-                continue
-
-            if not is_escaped:
-                if byte == b'\xc0':
-                    if len(packet) > 0:
-                        return packet
-                elif byte == b'\xdb':
-                    is_escaped = True
-                else:
-                    packet += byte
-            else:
-                if byte == b'\xdc':
-                    packet += b'\xc0'
-                elif byte == b'\xdd':
-                    packet += b'\xdb'
-                else:
-                    # Protocol error. Discard the packet.
-                    print('Discarding:', packet)
-                    packet = b''
-
-                is_escaped = False
-
+        raise NotImplementedError()
 
     def read_response(self, timeout=None):
         """Wait for a response packet of given type.
@@ -153,12 +124,10 @@ class ReaderThread(threading.Thread):
 
         while self.running:
             try:
-                segment = self._read_segment()
-                if segment is None:
-                    break
+                segment = self.read_soam_segment()
             except BaseException:
-                print("failed to read segment")
-                break
+                print("warning: failed to read segment")
+                continue
 
             #print(segment.encode('hex'))
 
@@ -235,9 +204,9 @@ class ReaderThread(threading.Thread):
                     self.response_packet = packet
                     self.response_packet_cond.notify_all()
             elif packet_type == SOAM_TYPE_INVALID_TYPE:
-                print('Invalid type packet received.')
+                print('warning: "invalid type" packet received')
             else:
-                print('Bad packet type:', packet)
+                print('warning: {}: bad packet type', packet_type)
 
             segments = None
 
@@ -245,71 +214,60 @@ class ReaderThread(threading.Thread):
         self.running = False
 
 
-class Database(object):
+class Client(object):
 
-    def __init__(self, database):
-        self.formats = {}
-        self.commands = {}
-
-        with open(database) as fin:
-            for line in fin.readlines():
-                # Comments.
-                if line.startswith('#'):
-                    continue
-
-                kind, identity, string = line.strip().split(' ', 2)
-                identity = int(identity, 0)
-                string = string[1:-1]
-                string = string.replace('\\n', '\n')
-                string = string.replace('\\r', '\r')
-                string = string.replace('\\t', '\t')
-                string = string.replace('\\v', '\v')
-                string = string.replace('\\\\', '\\')
-                if kind == 'FMT:':
-                    self.formats[identity] = string
-                elif kind == 'CMD:':
-                    self.commands[string] = identity
-                else:
-                    print('Bad kind', kind)
-                    sys.exit(1)
-
-
-class SlipSerialClient(object):
-
-    def __init__(self, serial_port, baudrate, database):
+    def __init__(self, database, reader):
         self.database = Database(database)
         self.packet_index = 1
-        self.serial = serial.Serial(serial_port,
-                                    baudrate=baudrate,
-                                    timeout=0.5)
-        self.reader = ReaderThread(self)
+        self.reader = reader
         self.reader.setDaemon(True)
         self.reader.start()
 
         try:
             device_database_id = self.get_database_id_from_device()
-        except:
-            sys.exit("error: failed to read the database id from the device")
+        except BaseException:
+            sys.exit('error: failed to read the database id from the device')
 
         with open(database, 'rb') as fin:
             database_id = hashlib.md5(fin.read()).hexdigest()
 
         if device_database_id != database_id:
-            sys.exit("error: database id mismatch ({} != {})".format(
+            sys.exit('error: database id mismatch ({} != {})'.format(
                 device_database_id,
                 database_id))
+
+    def write_soam_segment(self, segment):
+        """Write given packet to the server.
+
+        This method is overridden by subclasses.
+
+        """
+
+        raise NotImplementedError()
+
+    def create_soam_segment(self, packet_type, payload):
+        """Create a SOAM packet.
+
+        """
+
+        packet = struct.pack('>BBH',
+                             packet_type << 4,
+                             self.packet_index,
+                             len(payload) + 2)
+        packet += payload
+        packet += struct.pack('>H', crc_ccitt(packet))
+
+        self.packet_index += 1
+
+        return packet
 
     def get_database_id_from_device(self):
         """Get the database id from the device.
 
         """
 
-        packet = create_segment(SOAM_TYPE_DATABASE_ID_REQUEST,
-                                self.packet_index,
-                                b'')
-        self.packet_index += 1
-
-        self.serial.write(packet)
+        segment = self.create_soam_segment(SOAM_TYPE_DATABASE_ID_REQUEST, b'')
+        self.write_soam_segment(segment)
 
         return self.reader.read_response(3.0)
 
@@ -332,12 +290,9 @@ class SlipSerialClient(object):
         command_with_args = command_with_args.replace(command, command_id, 1)
         command_with_args += b'\x00'
 
-        packet = create_segment(SOAM_TYPE_COMMAND_REQUEST,
-                                self.packet_index,
-                                command_with_args)
-        self.packet_index += 1
-
-        self.serial.write(packet)
+        segment = self.create_soam_segment(SOAM_TYPE_COMMAND_REQUEST,
+                                           command_with_args)
+        self.write_soam_segment(segment)
 
         code, response_data_list = self.reader.read_response(3.0)
         formatted_response_data = ''
@@ -483,6 +438,82 @@ class Shell(cmd.Cmd):
         """
 
         return self.do_exit(args)
+
+
+class SlipSerialReaderThread(ReaderThread):
+
+    def __init__(self, client):
+        super(SlipSerialReaderThread, self).__init__(client)
+
+    def read_soam_segment(self):
+        """Read an SLIP packet.
+
+        """
+
+        packet = b''
+        is_escaped = False
+
+        while self.running:
+            byte = self.client.serial.read(1)
+
+            # Print stored packet on timeout. Likely non-framed data,
+            # for example from a panic.
+            if not byte:
+                if len(packet) > 0:
+                    print('warning: {}: serial read failure, discarding '
+                          'packet'.format(packet))
+                    packet = b''
+
+                continue
+
+            if not is_escaped:
+                if byte == b'\xc0':
+                    if len(packet) > 0:
+                        return packet
+                elif byte == b'\xdb':
+                    is_escaped = True
+                else:
+                    packet += byte
+            else:
+                if byte == b'\xdc':
+                    packet += b'\xc0'
+                elif byte == b'\xdd':
+                    packet += b'\xdb'
+                else:
+                    # Protocol error. Discard the packet.
+                    print('warning: {}: discarding packet'.format(packet))
+                    packet = b''
+
+                is_escaped = False
+
+
+class SlipSerialClient(Client):
+
+    def __init__(self, serial_port, baudrate, database):
+        self.serial = serial.Serial(serial_port,
+                                    baudrate=baudrate,
+                                    timeout=0.5)
+        super(SlipSerialClient, self).__init__(database,
+                                               SlipSerialReaderThread(self))
+
+    def write_soam_segment(self, segment):
+        """Wrap given packet in SLIP and write it to the serial connection.
+
+        """
+
+        packet = b'\xc0'
+
+        for byte in segment:
+            if byte == b'\xc0':
+                packet += b'\xdb\xdc'
+            elif byte == b'\xdb':
+                packet += b'\xdb\xdd'
+            else:
+                packet += byte
+
+        packet += b'\xc0'
+
+        self.serial.write(packet)
 
 
 def main():
