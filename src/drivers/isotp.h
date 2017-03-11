@@ -33,10 +33,13 @@
 
 #include "simba.h"
 
+#define ISOTP_FLAGS_NO_FLOW_CONTROL            (1 << 0)
+
 struct isotp_t {
     uint8_t *message_p;
     size_t size;
     int state;
+    int flags;
     struct {
         size_t size;
         size_t offset;
@@ -57,12 +60,14 @@ struct isotp_t {
  * @param[in] message_p ISO-TP message to transmit, or a reception
  *                      buffer for an incoming message.
  * @param[in] size Size of the message buffer in bytes.
+ * @param[in] flags Configuration flags.
  *
  * @return zero(0) or negative error code.
  */
 int isotp_init(struct isotp_t *self_p,
                uint8_t *message_p,
-               size_t size);
+               size_t size,
+               int flags);
 
 /**
  * Input a CAN frame into given ISO-TP object.
