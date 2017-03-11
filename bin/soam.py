@@ -258,6 +258,7 @@ class Client(object):
         packet += struct.pack('>H', crc_ccitt(packet))
 
         self.packet_index += 1
+        self.packet_index &= 0xff
 
         return packet
 
