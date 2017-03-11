@@ -61,7 +61,8 @@ BOARD_MAP = {{
     "megaatmega2560": "arduino_mega",
     "nanoatmega328": "arduino_nano",
     "uno": "arduino_uno",
-    "nodemcuv2": "nodemcu"
+    "nodemcuv2": "nodemcu",
+    "esp32dev": "esp32_devkitc"
 }}
 
 # Map the PlatformIO board name to the Simba board name
@@ -74,7 +75,8 @@ SUPPORTED_BOARDS = [
     "esp01",
     "nodemcu",
     "huzzah",
-    "nano32"
+    "nano32",
+    "esp32_devkitc"
 ]
 
 
@@ -363,6 +365,8 @@ elif board == "nodemcu":
 elif board == "huzzah":
     setup_board_huzzah(env)
 elif board == "nano32":
+    setup_board_nano32(env)
+elif board == "esp32_devkitc":
     setup_board_nano32(env)
 elif 'ARCH_AVR' in BOARDS[board]['cdefs']:
     # LTO makes the application crash.

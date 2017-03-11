@@ -87,7 +87,7 @@ static void *udp_reader(void *arg_p)
     std_printf(FSTR("reader recvfrom\r\n"));
 
     size = socket_recvfrom(socket_p, buf, sizeof(buf), 0, &addr);
-    BTASSERTN(size == 9, NULL);
+    BTASSERTR(size == 9, NULL);
     buf[size] = '\0';
     std_printf(FSTR("reader received '%s' from %s:%d\r\n"),
                buf,
@@ -98,7 +98,7 @@ static void *udp_reader(void *arg_p)
                buf,
                inet_ntoa(&addr.ip, addrbuf),
                addr.port);
-    BTASSERTN(socket_sendto(socket_p, buf, size, 0, &addr) == size, NULL);
+    BTASSERTR(socket_sendto(socket_p, buf, size, 0, &addr) == size, NULL);
 
     mask = 0x1;
     event_write(&event, &mask, sizeof(mask));

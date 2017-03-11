@@ -42,7 +42,8 @@ BOARD_MAP = {
     "megaatmega2560": "arduino_mega",
     "nanoatmega328": "arduino_nano",
     "uno": "arduino_uno",
-    "nodemcuv2": "nodemcu"
+    "nodemcuv2": "nodemcu",
+    "esp32dev": "esp32_devkitc"
 }
 
 # Map the PlatformIO board name to the Simba board name
@@ -55,7 +56,8 @@ SUPPORTED_BOARDS = [
     "esp01",
     "nodemcu",
     "huzzah",
-    "nano32"
+    "nano32",
+    "esp32_devkitc"
 ]
 
 
@@ -67,7 +69,7 @@ BOARDS = {
             "FAMILY_SAM", 
             "MCU_SAM3X8E", 
             "BOARD_ARDUINO_DUE", 
-            "VERSION=master", 
+            "VERSION=14.0.0", 
             "MBEDTLS_USER_CONFIG_FILE=\"\\\"mbedtls/user_config.h\\\"\""
         ], 
         "cflags": [
@@ -153,7 +155,6 @@ BOARDS = {
             "src/drivers/owi.c", 
             "src/drivers/pin.c", 
             "src/drivers/i2c_soft.c", 
-            "src/drivers/isotp.c", 
             "src/drivers/sd.c", 
             "src/drivers/spi.c", 
             "src/drivers/uart.c", 
@@ -195,6 +196,7 @@ BOARDS = {
             "src/inet/http_websocket_server.c", 
             "src/inet/http_websocket_client.c", 
             "src/inet/inet.c", 
+            "src/inet/isotp.c", 
             "src/inet/mqtt_client.c", 
             "src/inet/tftp_server.c", 
             "src/inet/network_interface.c", 
@@ -251,7 +253,7 @@ BOARDS = {
             "FAMILY_AVR", 
             "MCU_ATMEGA2560", 
             "BOARD_ARDUINO_MEGA", 
-            "VERSION=master", 
+            "VERSION=14.0.0", 
             "MBEDTLS_USER_CONFIG_FILE=\"\\\"mbedtls/user_config.h\\\"\"", 
             "__DELAY_BACKWARD_COMPATIBLE__"
         ], 
@@ -326,7 +328,6 @@ BOARDS = {
             "src/drivers/exti.c", 
             "src/drivers/i2c.c", 
             "src/drivers/i2c_soft.c", 
-            "src/drivers/isotp.c", 
             "src/drivers/mcp2515.c", 
             "src/drivers/nrf24l01.c", 
             "src/drivers/spi.c", 
@@ -372,6 +373,7 @@ BOARDS = {
             "src/inet/http_websocket_server.c", 
             "src/inet/http_websocket_client.c", 
             "src/inet/inet.c", 
+            "src/inet/isotp.c", 
             "src/inet/mqtt_client.c", 
             "src/inet/tftp_server.c", 
             "src/inet/network_interface.c", 
@@ -417,7 +419,7 @@ BOARDS = {
             "FAMILY_AVR", 
             "MCU_ATMEGA328P", 
             "BOARD_ARDUINO_NANO", 
-            "VERSION=master", 
+            "VERSION=14.0.0", 
             "MBEDTLS_USER_CONFIG_FILE=\"\\\"mbedtls/user_config.h\\\"\"", 
             "__DELAY_BACKWARD_COMPATIBLE__"
         ], 
@@ -492,7 +494,6 @@ BOARDS = {
             "src/drivers/exti.c", 
             "src/drivers/i2c.c", 
             "src/drivers/i2c_soft.c", 
-            "src/drivers/isotp.c", 
             "src/drivers/mcp2515.c", 
             "src/drivers/nrf24l01.c", 
             "src/drivers/spi.c", 
@@ -538,6 +539,7 @@ BOARDS = {
             "src/inet/http_websocket_server.c", 
             "src/inet/http_websocket_client.c", 
             "src/inet/inet.c", 
+            "src/inet/isotp.c", 
             "src/inet/mqtt_client.c", 
             "src/inet/tftp_server.c", 
             "src/inet/network_interface.c", 
@@ -583,7 +585,7 @@ BOARDS = {
             "FAMILY_AVR", 
             "MCU_ATMEGA32U4", 
             "BOARD_ARDUINO_PRO_MICRO", 
-            "VERSION=master", 
+            "VERSION=14.0.0", 
             "MBEDTLS_USER_CONFIG_FILE=\"\\\"mbedtls/user_config.h\\\"\"", 
             "__DELAY_BACKWARD_COMPATIBLE__"
         ], 
@@ -658,7 +660,6 @@ BOARDS = {
             "src/drivers/exti.c", 
             "src/drivers/i2c.c", 
             "src/drivers/i2c_soft.c", 
-            "src/drivers/isotp.c", 
             "src/drivers/mcp2515.c", 
             "src/drivers/nrf24l01.c", 
             "src/drivers/spi.c", 
@@ -708,6 +709,7 @@ BOARDS = {
             "src/inet/http_websocket_server.c", 
             "src/inet/http_websocket_client.c", 
             "src/inet/inet.c", 
+            "src/inet/isotp.c", 
             "src/inet/mqtt_client.c", 
             "src/inet/tftp_server.c", 
             "src/inet/network_interface.c", 
@@ -753,7 +755,7 @@ BOARDS = {
             "FAMILY_AVR", 
             "MCU_ATMEGA328P", 
             "BOARD_ARDUINO_UNO", 
-            "VERSION=master", 
+            "VERSION=14.0.0", 
             "MBEDTLS_USER_CONFIG_FILE=\"\\\"mbedtls/user_config.h\\\"\"", 
             "__DELAY_BACKWARD_COMPATIBLE__"
         ], 
@@ -828,7 +830,6 @@ BOARDS = {
             "src/drivers/exti.c", 
             "src/drivers/i2c.c", 
             "src/drivers/i2c_soft.c", 
-            "src/drivers/isotp.c", 
             "src/drivers/mcp2515.c", 
             "src/drivers/nrf24l01.c", 
             "src/drivers/spi.c", 
@@ -874,6 +875,7 @@ BOARDS = {
             "src/inet/http_websocket_server.c", 
             "src/inet/http_websocket_client.c", 
             "src/inet/inet.c", 
+            "src/inet/isotp.c", 
             "src/inet/mqtt_client.c", 
             "src/inet/tftp_server.c", 
             "src/inet/network_interface.c", 
@@ -919,7 +921,7 @@ BOARDS = {
             "FAMILY_LINUX", 
             "MCU_LINUX", 
             "BOARD_CYGWIN", 
-            "VERSION=master", 
+            "VERSION=14.0.0", 
             "MBEDTLS_USER_CONFIG_FILE=\"\\\"mbedtls/user_config.h\\\"\""
         ], 
         "cflags": [
@@ -1009,7 +1011,6 @@ BOARDS = {
             "src/drivers/flash.c", 
             "src/drivers/pin.c", 
             "src/drivers/i2c_soft.c", 
-            "src/drivers/isotp.c", 
             "src/drivers/owi.c", 
             "src/drivers/pwm.c", 
             "src/drivers/pwm_soft.c", 
@@ -1025,6 +1026,7 @@ BOARDS = {
             "src/inet/http_websocket_server.c", 
             "src/inet/http_websocket_client.c", 
             "src/inet/inet.c", 
+            "src/inet/isotp.c", 
             "src/inet/mqtt_client.c", 
             "src/inet/tftp_server.c", 
             "src/inet/network_interface.c", 
@@ -1154,7 +1156,7 @@ BOARDS = {
             "FAMILY_ESP", 
             "MCU_ESP8266", 
             "BOARD_ESP01", 
-            "VERSION=master", 
+            "VERSION=14.0.0", 
             "MBEDTLS_USER_CONFIG_FILE=\"\\\"mbedtls/user_config.h\\\"\"", 
             "ICACHE_FLASH", 
             "__STRICT_ANSI__", 
@@ -1266,7 +1268,6 @@ BOARDS = {
             "src/drivers/pin.c", 
             "src/drivers/pwm_soft.c", 
             "src/drivers/i2c_soft.c", 
-            "src/drivers/isotp.c", 
             "src/drivers/random.c", 
             "src/drivers/spi.c", 
             "src/drivers/uart.c", 
@@ -1279,6 +1280,7 @@ BOARDS = {
             "src/inet/http_websocket_server.c", 
             "src/inet/http_websocket_client.c", 
             "src/inet/inet.c", 
+            "src/inet/isotp.c", 
             "src/inet/mqtt_client.c", 
             "src/inet/tftp_server.c", 
             "src/inet/network_interface.c", 
@@ -1404,7 +1406,7 @@ BOARDS = {
             "FAMILY_ESP", 
             "MCU_ESP8266", 
             "BOARD_ESP12E", 
-            "VERSION=master", 
+            "VERSION=14.0.0", 
             "MBEDTLS_USER_CONFIG_FILE=\"\\\"mbedtls/user_config.h\\\"\"", 
             "ICACHE_FLASH", 
             "__STRICT_ANSI__", 
@@ -1516,7 +1518,6 @@ BOARDS = {
             "src/drivers/pin.c", 
             "src/drivers/pwm_soft.c", 
             "src/drivers/i2c_soft.c", 
-            "src/drivers/isotp.c", 
             "src/drivers/random.c", 
             "src/drivers/spi.c", 
             "src/drivers/uart.c", 
@@ -1529,6 +1530,7 @@ BOARDS = {
             "src/inet/http_websocket_server.c", 
             "src/inet/http_websocket_client.c", 
             "src/inet/inet.c", 
+            "src/inet/isotp.c", 
             "src/inet/mqtt_client.c", 
             "src/inet/tftp_server.c", 
             "src/inet/network_interface.c", 
@@ -1654,7 +1656,7 @@ BOARDS = {
             "FAMILY_ESP32", 
             "MCU_ESP32", 
             "BOARD_ESP32_DEVKITC", 
-            "VERSION=master", 
+            "VERSION=14.0.0", 
             "MBEDTLS_USER_CONFIG_FILE=\"\\\"mbedtls/user_config.h\\\"\""
         ], 
         "cflags": [
@@ -1775,7 +1777,6 @@ BOARDS = {
             "src/drivers/esp_wifi.c", 
             "src/drivers/esp_wifi/station.c", 
             "src/drivers/esp_wifi/softap.c", 
-            "src/drivers/isotp.c", 
             "src/drivers/owi.c", 
             "src/drivers/pin.c", 
             "src/drivers/random.c", 
@@ -1789,6 +1790,7 @@ BOARDS = {
             "src/inet/http_websocket_server.c", 
             "src/inet/http_websocket_client.c", 
             "src/inet/inet.c", 
+            "src/inet/isotp.c", 
             "src/inet/mqtt_client.c", 
             "src/inet/tftp_server.c", 
             "src/inet/network_interface.c", 
@@ -1920,7 +1922,7 @@ BOARDS = {
             "FAMILY_ESP", 
             "MCU_ESP8266", 
             "BOARD_HUZZAH", 
-            "VERSION=master", 
+            "VERSION=14.0.0", 
             "MBEDTLS_USER_CONFIG_FILE=\"\\\"mbedtls/user_config.h\\\"\"", 
             "ICACHE_FLASH", 
             "__STRICT_ANSI__", 
@@ -2032,7 +2034,6 @@ BOARDS = {
             "src/drivers/pin.c", 
             "src/drivers/pwm_soft.c", 
             "src/drivers/i2c_soft.c", 
-            "src/drivers/isotp.c", 
             "src/drivers/random.c", 
             "src/drivers/spi.c", 
             "src/drivers/uart.c", 
@@ -2045,6 +2046,7 @@ BOARDS = {
             "src/inet/http_websocket_server.c", 
             "src/inet/http_websocket_client.c", 
             "src/inet/inet.c", 
+            "src/inet/isotp.c", 
             "src/inet/mqtt_client.c", 
             "src/inet/tftp_server.c", 
             "src/inet/network_interface.c", 
@@ -2170,7 +2172,7 @@ BOARDS = {
             "FAMILY_LINUX", 
             "MCU_LINUX", 
             "BOARD_LINUX", 
-            "VERSION=master", 
+            "VERSION=14.0.0", 
             "MBEDTLS_USER_CONFIG_FILE=\"\\\"mbedtls/user_config.h\\\"\""
         ], 
         "cflags": [
@@ -2260,7 +2262,6 @@ BOARDS = {
             "src/drivers/flash.c", 
             "src/drivers/pin.c", 
             "src/drivers/i2c_soft.c", 
-            "src/drivers/isotp.c", 
             "src/drivers/owi.c", 
             "src/drivers/pwm.c", 
             "src/drivers/pwm_soft.c", 
@@ -2276,6 +2277,7 @@ BOARDS = {
             "src/inet/http_websocket_server.c", 
             "src/inet/http_websocket_client.c", 
             "src/inet/inet.c", 
+            "src/inet/isotp.c", 
             "src/inet/mqtt_client.c", 
             "src/inet/tftp_server.c", 
             "src/inet/network_interface.c", 
@@ -2405,7 +2407,7 @@ BOARDS = {
             "FAMILY_ESP32", 
             "MCU_ESP32", 
             "BOARD_NANO32", 
-            "VERSION=master", 
+            "VERSION=14.0.0", 
             "MBEDTLS_USER_CONFIG_FILE=\"\\\"mbedtls/user_config.h\\\"\""
         ], 
         "cflags": [
@@ -2526,7 +2528,6 @@ BOARDS = {
             "src/drivers/esp_wifi.c", 
             "src/drivers/esp_wifi/station.c", 
             "src/drivers/esp_wifi/softap.c", 
-            "src/drivers/isotp.c", 
             "src/drivers/owi.c", 
             "src/drivers/pin.c", 
             "src/drivers/random.c", 
@@ -2540,6 +2541,7 @@ BOARDS = {
             "src/inet/http_websocket_server.c", 
             "src/inet/http_websocket_client.c", 
             "src/inet/inet.c", 
+            "src/inet/isotp.c", 
             "src/inet/mqtt_client.c", 
             "src/inet/tftp_server.c", 
             "src/inet/network_interface.c", 
@@ -2671,7 +2673,7 @@ BOARDS = {
             "FAMILY_ESP", 
             "MCU_ESP8266", 
             "BOARD_NODEMCU", 
-            "VERSION=master", 
+            "VERSION=14.0.0", 
             "MBEDTLS_USER_CONFIG_FILE=\"\\\"mbedtls/user_config.h\\\"\"", 
             "ICACHE_FLASH", 
             "__STRICT_ANSI__", 
@@ -2783,7 +2785,6 @@ BOARDS = {
             "src/drivers/pin.c", 
             "src/drivers/pwm_soft.c", 
             "src/drivers/i2c_soft.c", 
-            "src/drivers/isotp.c", 
             "src/drivers/random.c", 
             "src/drivers/spi.c", 
             "src/drivers/uart.c", 
@@ -2796,6 +2797,7 @@ BOARDS = {
             "src/inet/http_websocket_server.c", 
             "src/inet/http_websocket_client.c", 
             "src/inet/inet.c", 
+            "src/inet/isotp.c", 
             "src/inet/mqtt_client.c", 
             "src/inet/tftp_server.c", 
             "src/inet/network_interface.c", 
@@ -2921,7 +2923,7 @@ BOARDS = {
             "FAMILY_STM32F2", 
             "MCU_STM32F205RG", 
             "BOARD_PHOTON", 
-            "VERSION=master", 
+            "VERSION=14.0.0", 
             "MBEDTLS_USER_CONFIG_FILE=\"\\\"mbedtls/user_config.h\\\"\""
         ], 
         "cflags": [
@@ -2998,7 +3000,6 @@ BOARDS = {
             "src/drivers/flash.c", 
             "src/drivers/pin.c", 
             "src/drivers/i2c_soft.c", 
-            "src/drivers/isotp.c", 
             "src/drivers/sdio.c", 
             "src/drivers/uart.c", 
             "src/encode/base64.c", 
@@ -3035,6 +3036,7 @@ BOARDS = {
             "src/inet/http_websocket_server.c", 
             "src/inet/http_websocket_client.c", 
             "src/inet/inet.c", 
+            "src/inet/isotp.c", 
             "src/inet/mqtt_client.c", 
             "src/inet/tftp_server.c", 
             "src/inet/network_interface.c", 
@@ -3091,7 +3093,7 @@ BOARDS = {
             "FAMILY_SPC5", 
             "MCU_SPC56D40L1", 
             "BOARD_SPC56DDISCOVERY", 
-            "VERSION=master", 
+            "VERSION=14.0.0", 
             "MBEDTLS_USER_CONFIG_FILE=\"\\\"mbedtls/user_config.h\\\"\""
         ], 
         "cflags": [
@@ -3202,6 +3204,7 @@ BOARDS = {
             "src/inet/http_websocket_server.c", 
             "src/inet/http_websocket_client.c", 
             "src/inet/inet.c", 
+            "src/inet/isotp.c", 
             "src/inet/mqtt_client.c", 
             "src/inet/tftp_server.c", 
             "src/inet/network_interface.c", 
@@ -3259,7 +3262,7 @@ BOARDS = {
             "FAMILY_STM32F3", 
             "MCU_STM32F303VC", 
             "BOARD_STM32F3DISCOVERY", 
-            "VERSION=master", 
+            "VERSION=14.0.0", 
             "MBEDTLS_USER_CONFIG_FILE=\"\\\"mbedtls/user_config.h\\\"\""
         ], 
         "cflags": [
@@ -3336,7 +3339,6 @@ BOARDS = {
             "src/drivers/flash.c", 
             "src/drivers/pin.c", 
             "src/drivers/i2c_soft.c", 
-            "src/drivers/isotp.c", 
             "src/drivers/uart.c", 
             "src/encode/base64.c", 
             "src/encode/json.c", 
@@ -3372,6 +3374,7 @@ BOARDS = {
             "src/inet/http_websocket_server.c", 
             "src/inet/http_websocket_client.c", 
             "src/inet/inet.c", 
+            "src/inet/isotp.c", 
             "src/inet/mqtt_client.c", 
             "src/inet/tftp_server.c", 
             "src/inet/network_interface.c", 
@@ -3428,7 +3431,7 @@ BOARDS = {
             "FAMILY_STM32F1", 
             "MCU_STM32F100RB", 
             "BOARD_STM32VLDISCOVERY", 
-            "VERSION=master", 
+            "VERSION=14.0.0", 
             "MBEDTLS_USER_CONFIG_FILE=\"\\\"mbedtls/user_config.h\\\"\""
         ], 
         "cflags": [
@@ -3540,6 +3543,7 @@ BOARDS = {
             "src/inet/http_websocket_server.c", 
             "src/inet/http_websocket_client.c", 
             "src/inet/inet.c", 
+            "src/inet/isotp.c", 
             "src/inet/mqtt_client.c", 
             "src/inet/tftp_server.c", 
             "src/inet/network_interface.c", 
@@ -3874,6 +3878,8 @@ elif board == "nodemcu":
 elif board == "huzzah":
     setup_board_huzzah(env)
 elif board == "nano32":
+    setup_board_nano32(env)
+elif board == "esp32_devkitc":
     setup_board_nano32(env)
 elif 'ARCH_AVR' in BOARDS[board]['cdefs']:
     # LTO makes the application crash.

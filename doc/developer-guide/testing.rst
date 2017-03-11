@@ -1,7 +1,7 @@
 Testing
 =======
 
-To ensure high code quility each module is tested extensively by many
+To ensure high code quility each release is tested extensively by many
 test suites. The test suites are executed both on native Linux and on
 many of the supported boards. See `Test suites`_ for a list of all
 test suites that are executed before each release.
@@ -11,6 +11,26 @@ The native Linux test suites are executed automatically on each commit.
 Test result: https://travis-ci.org/eerimoq/simba
 
 Code coverage: https://codecov.io/gh/eerimoq/simba
+
+Unit tests
+----------
+
+Each module shall have unit tests to verify that the implementation
+works as expected and that future refactoring does not break legacy.
+
+All unit tests except low level drivers and networking are hardware
+independent. This makes it possible to use common Linux tools (gcov,
+valgrind, gdb, etc.) to debug and gather statistics of a module, which
+is very useful.
+
+For low level drivers where the majority of the code is hardware
+specific (:github-tree:`ports<src/drivers/ports>` folder), testing on
+real hardware is important. It's preferable to have a hardware
+independent test suite with stubbed interfaces for drivers without any
+port specific code, and having an example application in
+:github-tree:`examples<examples>` to test on real hardware.
+
+All unit tests are found in the :github-tree:`tst<tst>` folder.
 
 Hardware setup
 --------------

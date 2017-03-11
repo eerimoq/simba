@@ -112,10 +112,12 @@ static void sys_port_stop(int error)
 
 static void sys_port_panic_putc(char c)
 {
+#if !defined(BOARD_ARDUINO_PRO_MICRO)
     /* Wait for the transmission buffer to be empty. */
     while ((CONSOLE_UCSRNA & _BV(UDRE0)) == 0);
-
+    
     CONSOLE_UDRN = c;
+#endif
 }
 
 __attribute__ ((noreturn))

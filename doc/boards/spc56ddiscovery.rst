@@ -58,7 +58,7 @@ Below is the memory usage of two applications:
 +==========================+===========+===========+
 | minimal-configuration    |      6616 |       608 |
 +--------------------------+-----------+-----------+
-| default-configuration    |     61964 |      4566 |
+| default-configuration    |     63316 |      5346 |
 +--------------------------+-----------+-----------+
 
 Default configuration
@@ -327,6 +327,8 @@ Default Standard Library configuration.
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_SETTINGS_AREA_SIZE_                            |  16384                                              |
 +--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_SETTINGS_BLOB_                                 |  1                                                  |
++--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_SHELL_COMMAND_MAX_                             |  64                                                 |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_SHELL_HISTORY_SIZE_                            |  768                                                |
@@ -379,7 +381,7 @@ Default Standard Library configuration.
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_START_SHELL_PRIO_                              |  30                                                 |
 +--------------------------------------------------------+-----------------------------------------------------+
-|  CONFIG_START_SHELL_STACK_SIZE_                        |  768                                                |
+|  CONFIG_START_SHELL_STACK_SIZE_                        |  1536                                               |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_START_SOAM_                                    |  0                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
@@ -702,6 +704,8 @@ Mcu
 .. _CONFIG_SDIO: ../user-guide/configuration.html#c.CONFIG_SDIO
 
 .. _CONFIG_SETTINGS_AREA_SIZE: ../user-guide/configuration.html#c.CONFIG_SETTINGS_AREA_SIZE
+
+.. _CONFIG_SETTINGS_BLOB: ../user-guide/configuration.html#c.CONFIG_SETTINGS_BLOB
 
 .. _CONFIG_SHELL_COMMAND_MAX: ../user-guide/configuration.html#c.CONFIG_SHELL_COMMAND_MAX
 

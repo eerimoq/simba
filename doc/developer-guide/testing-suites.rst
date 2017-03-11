@@ -146,6 +146,7 @@ Linux
 - :github-blob:`oam/shell<tst/oam/shell/main.c>`
 - :github-blob:`oam/soam<tst/oam/soam/main.c>`
 - :github-blob:`oam/upgrade<tst/oam/upgrade/main.c>`
+- :github-blob:`oam/upgrade/http<tst/oam/upgrade/http/main.c>`
 - :github-blob:`oam/upgrade/kermit<tst/oam/upgrade/kermit/main.c>`
 - :github-blob:`oam/upgrade/uds<tst/oam/upgrade/uds/main.c>`
 - :github-blob:`filesystems/fat16<tst/filesystems/fat16/main.c>`
@@ -159,13 +160,13 @@ Linux
 - :github-blob:`inet/http_websocket_client<tst/inet/http_websocket_client/main.c>`
 - :github-blob:`inet/http_websocket_server<tst/inet/http_websocket_server/main.c>`
 - :github-blob:`inet/inet<tst/inet/inet/main.c>`
+- :github-blob:`inet/isotp<tst/inet/isotp/main.c>`
 - :github-blob:`inet/mqtt_client<tst/inet/mqtt_client/main.c>`
 - :github-blob:`inet/ping<tst/inet/ping/main.c>`
 - :github-blob:`inet/slip<tst/inet/slip/main.c>`
 - :github-blob:`inet/ssl<tst/inet/ssl/main.c>`
 - :github-blob:`inet/tftp_server<tst/inet/tftp_server/main.c>`
 - :github-blob:`multimedia/midi<tst/multimedia/midi/main.c>`
-- :github-blob:`drivers/isotp<tst/drivers/isotp/main.c>`
 
 Nano32
 ------

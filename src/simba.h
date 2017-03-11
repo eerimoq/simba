@@ -222,7 +222,7 @@ extern "C" {
 #    include "drivers/random.h"
 #endif
 
-#include "drivers/isotp.h"
+#include "inet/isotp.h"
 
 #include "debug/harness.h"
 

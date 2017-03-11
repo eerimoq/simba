@@ -31,7 +31,6 @@ Supported drivers for this board.
 - :doc:`../library-reference/drivers/exti`
 - :doc:`../library-reference/drivers/i2c`
 - :doc:`../library-reference/drivers/i2c_soft`
-- :doc:`../library-reference/drivers/isotp`
 - :doc:`../library-reference/drivers/mcp2515`
 - :doc:`../library-reference/drivers/nrf24l01`
 - :doc:`../library-reference/drivers/owi`
@@ -73,9 +72,9 @@ Below is the memory usage of two applications:
 +--------------------------+-----------+-----------+
 | Application              | Flash     | RAM       |
 +==========================+===========+===========+
-| minimal-configuration    |      6276 |       519 |
+| minimal-configuration    |      6276 |       521 |
 +--------------------------+-----------+-----------+
-| default-configuration    |     13102 |       886 |
+| default-configuration    |     13108 |       894 |
 +--------------------------+-----------+-----------+
 
 Default configuration
@@ -343,6 +342,8 @@ Default Standard Library configuration.
 |  CONFIG_SDIO_                                          |  0                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_SETTINGS_AREA_SIZE_                            |  256                                                |
++--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_SETTINGS_BLOB_                                 |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_SHELL_COMMAND_MAX_                             |  64                                                 |
 +--------------------------------------------------------+-----------------------------------------------------+
@@ -719,6 +720,8 @@ Mcu
 .. _CONFIG_SDIO: ../user-guide/configuration.html#c.CONFIG_SDIO
 
 .. _CONFIG_SETTINGS_AREA_SIZE: ../user-guide/configuration.html#c.CONFIG_SETTINGS_AREA_SIZE
+
+.. _CONFIG_SETTINGS_BLOB: ../user-guide/configuration.html#c.CONFIG_SETTINGS_BLOB
 
 .. _CONFIG_SHELL_COMMAND_MAX: ../user-guide/configuration.html#c.CONFIG_SHELL_COMMAND_MAX
 

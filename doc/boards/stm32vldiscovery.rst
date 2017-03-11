@@ -58,7 +58,7 @@ Below is the memory usage of two applications:
 +==========================+===========+===========+
 | minimal-configuration    |      4352 |      1672 |
 +--------------------------+-----------+-----------+
-| default-configuration    |     71936 |      5818 |
+| default-configuration    |     72192 |      5838 |
 +--------------------------+-----------+-----------+
 
 Default configuration
@@ -326,6 +326,8 @@ Default Standard Library configuration.
 |  CONFIG_SDIO_                                          |  0                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_SETTINGS_AREA_SIZE_                            |  256                                                |
++--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_SETTINGS_BLOB_                                 |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_SHELL_COMMAND_MAX_                             |  64                                                 |
 +--------------------------------------------------------+-----------------------------------------------------+
@@ -702,6 +704,8 @@ Mcu
 .. _CONFIG_SDIO: ../user-guide/configuration.html#c.CONFIG_SDIO
 
 .. _CONFIG_SETTINGS_AREA_SIZE: ../user-guide/configuration.html#c.CONFIG_SETTINGS_AREA_SIZE
+
+.. _CONFIG_SETTINGS_BLOB: ../user-guide/configuration.html#c.CONFIG_SETTINGS_BLOB
 
 .. _CONFIG_SHELL_COMMAND_MAX: ../user-guide/configuration.html#c.CONFIG_SHELL_COMMAND_MAX
 

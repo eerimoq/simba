@@ -28,8 +28,8 @@
  * This file is part of the Simba project.
  */
 
-#ifndef __DRIVERS_ISOTP_H__
-#define __DRIVERS_ISOTP_H__
+#ifndef __INET_ISOTP_H__
+#define __INET_ISOTP_H__
 
 #include "simba.h"
 

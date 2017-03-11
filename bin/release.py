@@ -66,7 +66,8 @@ PACKAGE_ESP_RELEASE_ENTRY_FMT = """
     "boards": [
         {{"name" : "ESP-01"}},
         {{"name" : "ESP-12E"}},
-        {{"name" : "NodeMCU"}}
+        {{"name" : "NodeMCU"}},
+        {{"name" : "Huzzah"}}
     ],
     "toolsDependencies": [
         {{
@@ -96,7 +97,8 @@ PACKAGE_ESP32_RELEASE_ENTRY_FMT = """
     "checksum": "SHA-256:{sha256sum}",
     "size": "{size}",
     "boards": [
-        {{"name" : "Nano32"}}
+        {{"name" : "Nano32"}},
+        {{"name" : "ESP32-DevKitC"}}
     ],
     "toolsDependencies": [
         {{

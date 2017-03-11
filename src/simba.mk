@@ -107,7 +107,6 @@ DRIVERS_SRC ?= adc.c \
                flash.c \
                pin.c \
                i2c_soft.c \
-               isotp.c \
                owi.c \
                pwm.c \
                pwm_soft.c \
@@ -126,7 +125,6 @@ DRIVERS_SRC_TMP = adc.c \
                   exti.c \
                   i2c.c \
                   i2c_soft.c \
-                  isotp.c \
                   mcp2515.c \
                   nrf24l01.c \
                   spi.c \
@@ -163,7 +161,6 @@ DRIVERS_SRC ?= adc.c \
                owi.c \
                pin.c \
                i2c_soft.c \
-               isotp.c \
                sd.c \
                spi.c \
                uart.c \
@@ -184,7 +181,6 @@ DRIVERS_SRC ?= adc.c \
                pin.c \
                pwm_soft.c \
                i2c_soft.c \
-               isotp.c \
 	       random.c \
                spi.c \
                uart.c \
@@ -201,7 +197,6 @@ DRIVERS_SRC ?= adc.c \
                esp_wifi.c \
                esp_wifi/station.c \
                esp_wifi/softap.c \
-               isotp.c \
 	       owi.c \
 	       pin.c \
 	       random.c \
@@ -220,7 +215,6 @@ ifeq ($(FAMILY),stm32f2)
 DRIVERS_SRC ?= flash.c \
                pin.c \
                i2c_soft.c \
-               isotp.c \
 	       sdio.c \
 	       uart.c
 endif
@@ -229,14 +223,12 @@ ifeq ($(FAMILY),stm32f3)
 DRIVERS_SRC ?= flash.c \
                pin.c \
                i2c_soft.c \
-               isotp.c \
                uart.c
 endif
 
 ifeq ($(FAMILY),spc5)
 DRIVERS_SRC ?= pin.c \
                can.c \
-               isotp.c \
                flash.c \
                uart.c
 endif
@@ -268,6 +260,7 @@ INET_SRC_TMP = \
 	http_websocket_server.c \
 	http_websocket_client.c \
 	inet.c \
+	isotp.c \
 	mqtt_client.c \
 	tftp_server.c \
 	network_interface.c \

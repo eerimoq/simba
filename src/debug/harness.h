@@ -41,7 +41,7 @@
  */
 #define BTASSERTR(cond, res, ...)                                       \
     if (!(cond)) {                                                      \
-        std_printf(FSTR(__FILE__ ":%d: BTASSERT: %s "), __LINE__, #cond); \
+        std_printf(FSTR(__FILE__ ":" STRINGIFY(__LINE__) ": BTASSERT: " #cond " ")); \
         _ASSERTFMT(__VA_ARGS__);                                        \
         return (res);                                                   \
     }
@@ -63,7 +63,7 @@
  */
 #define BTASSERTV(cond, ...)                                            \
     if (!(cond)) {                                                      \
-        std_printf(FSTR(__FILE__ ":%d: BTASSERT: %s "), __LINE__, #cond); \
+        std_printf(FSTR(__FILE__ ":" STRINGIFY(__LINE__) ": BTASSERT: " #cond " ")); \
         _ASSERTFMT(__VA_ARGS__);                                        \
         return;                                                         \
     }
