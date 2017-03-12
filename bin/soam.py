@@ -224,17 +224,25 @@ class Client(object):
         self.reader.start()
 
         try:
+            print('Reading database id from device... ', end='')
             device_database_id = self.get_database_id_from_device()
+            print('done.')
         except BaseException:
+            print('failed. ')
             sys.exit('error: failed to read the database id from the device')
+
+        print('Comparing read and calculated database ids... ', end='')
 
         with open(database, 'rb') as fin:
             database_id = hashlib.md5(fin.read()).hexdigest()
 
         if device_database_id != database_id:
+            print('failed. ')
             sys.exit('error: database id mismatch ({} != {})'.format(
                 device_database_id,
                 database_id))
+
+        print('done.')
 
     def write_soam_segment(self, segment):
         """Write given packet to the server.
@@ -347,7 +355,7 @@ def handle_errors(func):
 
 class Shell(cmd.Cmd):
 
-    intro = "Welcome to the SOAM shell.\n\nType help or ? to list commands.\n"
+    intro = "\nWelcome to the SOAM shell.\n\nType help or ? to list commands.\n"
     prompt = "$ "
     identchars = cmd.Cmd.identchars + '/'
 
