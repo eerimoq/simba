@@ -221,6 +221,9 @@ extern "C" {
 #ifdef PORT_HAS_RANDOM
 #    include "drivers/random.h"
 #endif
+#ifdef PORT_HAS_WS2812
+#    include "drivers/ws2812.h"
+#endif
 
 #include "inet/isotp.h"
 

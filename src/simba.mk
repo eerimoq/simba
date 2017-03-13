@@ -201,7 +201,8 @@ DRIVERS_SRC ?= adc.c \
 	       pin.c \
 	       random.c \
                spi.c \
-	       uart.c
+	       uart.c \
+	       ws2812.c
 endif
 
 ifeq ($(FAMILY),stm32f1)

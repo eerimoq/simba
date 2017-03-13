@@ -128,6 +128,7 @@
 #    define PORT_HAS_ESP_WIFI
 #    define PORT_HAS_CAN
 #    define PORT_HAS_RANDOM
+#    define PORT_HAS_WS2812
 #endif
 
 #if defined(FAMILY_STM32F1)

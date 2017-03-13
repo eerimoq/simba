@@ -103,7 +103,7 @@ int time_diff(struct time_t *diff_p,
  *
  * NOTE: The maximum allowed time to sleep is target specific.
  *
- * @param[in] useconds Microseconds to sleep.
+ * @param[in] useconds Microseconds to busy wait.
  *
  * @return void
  */
