@@ -24,7 +24,7 @@ HEADER_FMT = """/**
  *
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2016, Erik Moqvist
+ * Copyright (c) 2014-2017, Erik Moqvist
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -74,7 +74,7 @@ SOURCE_FMT = """/**
  *
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2016, Erik Moqvist
+ * Copyright (c) 2014-2017, Erik Moqvist
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
