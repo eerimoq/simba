@@ -110,7 +110,7 @@ int ws2812_write(struct ws2812_driver_t *self_p,
 
     for (i = 0; i < number_of_pixles; i++) {
         for (j = 0; j < 3; j++) {
-            for (k = 0; k < 8; k++) {
+            for (k = 7; k >= 0; k--) {
                 ones = 0;
 
                 for (l = 0; l < 8; l++) {
