@@ -1,0 +1,13 @@
+:mod:`ws2812` --- NeoPixels
+===========================
+
+.. module:: ws2812
+   :synopsis: NeoPixels.
+
+Source code: :github-blob:`src/drivers/ws2812.h`,
+:github-blob:`src/drivers/ws2812.c`
+
+----------------------------------------------
+
+.. doxygenfile:: drivers/ws2812.h
+   :project: simba
