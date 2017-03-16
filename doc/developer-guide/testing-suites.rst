@@ -330,3 +330,7 @@ STM32VLDISCOVERY
 - :github-blob:`drivers/pin<tst/drivers/pin/main.c>`
 - :github-blob:`drivers/random<tst/drivers/random/main.c>`
 
+WEMOS D1 mini
+-------------
+
+

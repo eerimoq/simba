@@ -1667,7 +1667,7 @@
  * Console UART baudrate.
  */
 #ifndef CONFIG_START_CONSOLE_UART_BAUDRATE
-#    if defined(BOARD_ESP01) || defined(BOARD_ESP12E) || defined(BOARD_NODEMCU)
+#    if defined(BOARD_ESP01) || defined(BOARD_ESP12E) || defined(BOARD_NODEMCU) || defined(BOARD_WEMOS_D1_MINI)
 #        define CONFIG_START_CONSOLE_UART_BAUDRATE      76800
 #    elif defined(BOARD_NANO32) || defined(BOARD_ESP32_DEVKITC) || defined(BOARD_SPC56DDISCOVERY) || defined(BOARD_ARDUINO_DUE)
 #        define CONFIG_START_CONSOLE_UART_BAUDRATE     115200
