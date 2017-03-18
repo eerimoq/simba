@@ -59,20 +59,20 @@ int ws2812_module_init(void);
  * Initialize given driver object from given configuration.
  *
  * @param[out] self_p Driver object to be initialized.
- * @param[in] pins_pp An array of pin device(s) to use. The maximum
- *                    length of the array is defined as
- *                    ``WS2812_PIN_DEVICES_MAX``.
- * @param[in] number_of_pins Number of pin devices in the pin devices
- *                           array.
+ * @param[in] pin_devices_pp An array of pin device(s) to use. The
+ *                           maximum length of the array is defined as
+ *                           ``WS2812_PIN_DEVICES_MAX``.
+ * @param[in] number_of_pin_devices Number of pin devices in the pin
+ *                                  devices array.
  *
  * @return zero(0) or negative error code.
  */
 int ws2812_init(struct ws2812_driver_t *self_p,
-                struct pin_device_t **pins_pp,
-                int number_of_pins);
+                struct pin_device_t **pin_devices_pp,
+                int number_of_pin_devices);
 
 /**
- * Write given RGB values to the next LEDs in the chain.
+ * Write given RGB colors to the NeoPixels.
  *
  * CAUTION: Interrupts are disabled during the write to meet the
  *          strict timing requirements on the pulse train. It takes
@@ -81,18 +81,14 @@ int ws2812_init(struct ws2812_driver_t *self_p,
  *          may cause the rest of the system to misbehave.
  *
  * @param[in] self_p Driver object.
- * @param[in] buffer_p An array of GRB (Green, Red, Blue) pixel
- *                     colors. If more than one pin device is used the
- *                     colors are given as follows:
- *
- *                     ``| green 0 | green 1 | red 0 | red 1 | blue 0 | blue 1 |``
- *
- *                     That is, first all pins' green color component,
- *                     then all red and last all blue, repeated for
- *                     each pixel. The somewhat unusual format
- *                     improves the performance of the module to meet
- *                     the pulse train deadlines.
- * @param[in] number_of_pixles Number of pixles in `buffer`.
+ * @param[in] colors_p An array of GRB colors to write to the
+ *                     NeoPixels. All pin devices green component
+ *                     first, then all red, and last all blue,
+ *                     repeated for all NeoPixels. For example, when a
+ *                     single pin device is configured the array is
+ *                     G0, R0, B0, G1, R1, B1, ...
+ * @param[in] number_of_pixles Number of GRB colors per pin device
+ *                             in `colors_p`.
  *
  * @return zero(0) or negative error code.
  */
