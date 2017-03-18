@@ -93,7 +93,7 @@ int ws2812_init(struct ws2812_driver_t *self_p,
  * @return zero(0) or negative error code.
  */
 int ws2812_write(struct ws2812_driver_t *self_p,
-                 const uint8_t *buffer_p,
+                 const uint8_t *colors_p,
                  int number_of_pixles);
 
 #endif
