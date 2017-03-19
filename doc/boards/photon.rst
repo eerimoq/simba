@@ -27,7 +27,6 @@ Supported drivers for this board.
 - :doc:`../library-reference/drivers/flash`
 - :doc:`../library-reference/drivers/i2c_soft`
 - :doc:`../library-reference/drivers/pin`
-- :doc:`../library-reference/drivers/sdio`
 - :doc:`../library-reference/drivers/uart`
 
 Library Reference
@@ -59,7 +58,7 @@ Below is the memory usage of two applications:
 +==========================+===========+===========+
 | minimal-configuration    |      4460 |      1672 |
 +--------------------------+-----------+-----------+
-| default-configuration    |     73064 |      5838 |
+| default-configuration    |     72296 |      5838 |
 +--------------------------+-----------+-----------+
 
 Default configuration
@@ -268,8 +267,6 @@ Default Standard Library configuration.
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_MODULE_INIT_SD_                                |  0                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
-|  CONFIG_MODULE_INIT_SDIO_                              |  1                                                  |
-+--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_MODULE_INIT_SEM_                               |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_MODULE_INIT_SETTINGS_                          |  1                                                  |
@@ -323,8 +320,6 @@ Default Standard Library configuration.
 |  CONFIG_RANDOM_                                        |  0                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_SD_                                            |  0                                                  |
-+--------------------------------------------------------+-----------------------------------------------------+
-|  CONFIG_SDIO_                                          |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_SETTINGS_AREA_SIZE_                            |  256                                                |
 +--------------------------------------------------------+-----------------------------------------------------+
@@ -646,8 +641,6 @@ Mcu
 
 .. _CONFIG_MODULE_INIT_SD: ../user-guide/configuration.html#c.CONFIG_MODULE_INIT_SD
 
-.. _CONFIG_MODULE_INIT_SDIO: ../user-guide/configuration.html#c.CONFIG_MODULE_INIT_SDIO
-
 .. _CONFIG_MODULE_INIT_SEM: ../user-guide/configuration.html#c.CONFIG_MODULE_INIT_SEM
 
 .. _CONFIG_MODULE_INIT_SETTINGS: ../user-guide/configuration.html#c.CONFIG_MODULE_INIT_SETTINGS
@@ -701,8 +694,6 @@ Mcu
 .. _CONFIG_RANDOM: ../user-guide/configuration.html#c.CONFIG_RANDOM
 
 .. _CONFIG_SD: ../user-guide/configuration.html#c.CONFIG_SD
-
-.. _CONFIG_SDIO: ../user-guide/configuration.html#c.CONFIG_SDIO
 
 .. _CONFIG_SETTINGS_AREA_SIZE: ../user-guide/configuration.html#c.CONFIG_SETTINGS_AREA_SIZE
 

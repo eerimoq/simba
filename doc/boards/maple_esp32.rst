@@ -4,9 +4,9 @@ Maple-ESP32
 Pinout
 ------
 
-.. image:: ../images/boards/maple-esp32.jpg
+.. image:: ../images/boards/maple-esp32-pinout.jpg
    :width: 50%
-   :target: ../_images/maple-esp32.jpg
+   :target: ../_images/maple-esp32-pinout.jpg
 
 
 
@@ -68,7 +68,7 @@ Below is the memory usage of two applications:
 +==========================+===========+===========+
 | minimal-configuration    |     91409 |      8636 |
 +--------------------------+-----------+-----------+
-| default-configuration    |    349609 |     83640 |
+| default-configuration    |    348953 |     83232 |
 +--------------------------+-----------+-----------+
 
 Default configuration
@@ -277,8 +277,6 @@ Default Standard Library configuration.
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_MODULE_INIT_SD_                                |  0                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
-|  CONFIG_MODULE_INIT_SDIO_                              |  0                                                  |
-+--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_MODULE_INIT_SEM_                               |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_MODULE_INIT_SETTINGS_                          |  1                                                  |
@@ -309,7 +307,7 @@ Default Standard Library configuration.
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_MODULE_INIT_WATCHDOG_                          |  0                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
-|  CONFIG_MONITOR_THREAD_                                |  1                                                  |
+|  CONFIG_MONITOR_THREAD_                                |  0                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_MONITOR_THREAD_PERIOD_US_                      |  2000000                                            |
 +--------------------------------------------------------+-----------------------------------------------------+
@@ -332,8 +330,6 @@ Default Standard Library configuration.
 |  CONFIG_RANDOM_                                        |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_SD_                                            |  0                                                  |
-+--------------------------------------------------------+-----------------------------------------------------+
-|  CONFIG_SDIO_                                          |  0                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_SETTINGS_AREA_SIZE_                            |  256                                                |
 +--------------------------------------------------------+-----------------------------------------------------+
@@ -361,9 +357,9 @@ Default Standard Library configuration.
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_START_CONSOLE_DEVICE_INDEX_                    |  0                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
-|  CONFIG_START_CONSOLE_UART_BAUDRATE_                   |  38400                                              |
+|  CONFIG_START_CONSOLE_UART_BAUDRATE_                   |  115200                                             |
 +--------------------------------------------------------+-----------------------------------------------------+
-|  CONFIG_START_CONSOLE_UART_RX_BUFFER_SIZE_             |  32                                                 |
+|  CONFIG_START_CONSOLE_UART_RX_BUFFER_SIZE_             |  512                                                |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_START_CONSOLE_USB_CDC_CONTROL_INTERFACE_       |  0                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
@@ -375,7 +371,7 @@ Default Standard Library configuration.
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_START_FILESYSTEM_                              |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
-|  CONFIG_START_FILESYSTEM_ADDRESS_                      |  0                                                  |
+|  CONFIG_START_FILESYSTEM_ADDRESS_                      |  0x00300000                                         |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_START_FILESYSTEM_SIZE_                         |  32768                                              |
 +--------------------------------------------------------+-----------------------------------------------------+
@@ -655,8 +651,6 @@ Mcu
 
 .. _CONFIG_MODULE_INIT_SD: ../user-guide/configuration.html#c.CONFIG_MODULE_INIT_SD
 
-.. _CONFIG_MODULE_INIT_SDIO: ../user-guide/configuration.html#c.CONFIG_MODULE_INIT_SDIO
-
 .. _CONFIG_MODULE_INIT_SEM: ../user-guide/configuration.html#c.CONFIG_MODULE_INIT_SEM
 
 .. _CONFIG_MODULE_INIT_SETTINGS: ../user-guide/configuration.html#c.CONFIG_MODULE_INIT_SETTINGS
@@ -710,8 +704,6 @@ Mcu
 .. _CONFIG_RANDOM: ../user-guide/configuration.html#c.CONFIG_RANDOM
 
 .. _CONFIG_SD: ../user-guide/configuration.html#c.CONFIG_SD
-
-.. _CONFIG_SDIO: ../user-guide/configuration.html#c.CONFIG_SDIO
 
 .. _CONFIG_SETTINGS_AREA_SIZE: ../user-guide/configuration.html#c.CONFIG_SETTINGS_AREA_SIZE
 

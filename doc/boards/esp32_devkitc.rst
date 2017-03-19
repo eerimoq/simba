@@ -37,6 +37,7 @@ Supported drivers for this board.
 - :doc:`../library-reference/drivers/random`
 - :doc:`../library-reference/drivers/spi`
 - :doc:`../library-reference/drivers/uart`
+- :doc:`../library-reference/drivers/ws2812`
 
 Library Reference
 -----------------
@@ -276,8 +277,6 @@ Default Standard Library configuration.
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_MODULE_INIT_SD_                                |  0                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
-|  CONFIG_MODULE_INIT_SDIO_                              |  0                                                  |
-+--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_MODULE_INIT_SEM_                               |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_MODULE_INIT_SETTINGS_                          |  1                                                  |
@@ -331,8 +330,6 @@ Default Standard Library configuration.
 |  CONFIG_RANDOM_                                        |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_SD_                                            |  0                                                  |
-+--------------------------------------------------------+-----------------------------------------------------+
-|  CONFIG_SDIO_                                          |  0                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_SETTINGS_AREA_SIZE_                            |  256                                                |
 +--------------------------------------------------------+-----------------------------------------------------+
@@ -654,8 +651,6 @@ Mcu
 
 .. _CONFIG_MODULE_INIT_SD: ../user-guide/configuration.html#c.CONFIG_MODULE_INIT_SD
 
-.. _CONFIG_MODULE_INIT_SDIO: ../user-guide/configuration.html#c.CONFIG_MODULE_INIT_SDIO
-
 .. _CONFIG_MODULE_INIT_SEM: ../user-guide/configuration.html#c.CONFIG_MODULE_INIT_SEM
 
 .. _CONFIG_MODULE_INIT_SETTINGS: ../user-guide/configuration.html#c.CONFIG_MODULE_INIT_SETTINGS
@@ -709,8 +704,6 @@ Mcu
 .. _CONFIG_RANDOM: ../user-guide/configuration.html#c.CONFIG_RANDOM
 
 .. _CONFIG_SD: ../user-guide/configuration.html#c.CONFIG_SD
-
-.. _CONFIG_SDIO: ../user-guide/configuration.html#c.CONFIG_SDIO
 
 .. _CONFIG_SETTINGS_AREA_SIZE: ../user-guide/configuration.html#c.CONFIG_SETTINGS_AREA_SIZE
 
