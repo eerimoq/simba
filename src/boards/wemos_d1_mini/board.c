@@ -33,7 +33,7 @@
 /**
  * Mapping table Dx -> pin number.
  */
-static const int dpins[] = {
+static const int digital_pin_map[] = {
     16,
      5,
      4,
@@ -55,6 +55,7 @@ int board_pin_string_to_device_index(const char *str_p)
         }
 
         switch (pin) {
+
         case 0:
         case 2:
         case 4:
@@ -69,14 +70,16 @@ int board_pin_string_to_device_index(const char *str_p)
         default:
             return (-1);
         }
-    } else if (str_p[0] == 'd' || str_p[0] == 'D') {
+    } else if ((str_p[0] == 'd') || (str_p[0] == 'D')) {
         if (std_strtol(&str_p[1], &pin) == NULL) {
             return (-1);
         }
-        if (pin < 0 || pin >= sizeof(dpins)) {
+
+        if ((pin < 0) || (pin >= membersof(digital_pin_map))) {
             return (-1);
         }
-        pin = dpins[pin];
+
+        pin = digital_pin_map[pin];
     } else if (strcmp(str_p, "led") == 0) {
         pin = 2;
     } else {
