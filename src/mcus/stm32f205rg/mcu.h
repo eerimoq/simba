@@ -39,6 +39,5 @@
 #define I2C_DEVICE_MAX      2
 #define CAN_DEVICE_MAX      1
 #define FLASH_DEVICE_MAX    1
-#define SDIO_DEVICE_MAX     1
 
 #endif

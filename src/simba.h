@@ -158,9 +158,6 @@ extern "C" {
 #ifdef PORT_HAS_SD
 #    include "drivers/sd.h"
 #endif
-#ifdef PORT_HAS_SDIO
-#    include "drivers/sdio.h"
-#endif
 #ifdef PORT_HAS_DS18B20
 #    include "drivers/ds18b20.h"
 #endif

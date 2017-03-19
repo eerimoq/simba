@@ -169,10 +169,6 @@ static void init_drivers(void)
 #if CONFIG_MODULE_INIT_SD == 1
 #endif
 
-#if CONFIG_MODULE_INIT_SDIO == 1
-    sdio_module_init();
-#endif
-
 #if CONFIG_MODULE_INIT_SPI == 1
     spi_module_init();
 #endif

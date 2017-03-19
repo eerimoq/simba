@@ -143,7 +143,6 @@
 #    define PORT_HAS_I2C_SOFT
 #    define PORT_HAS_UART
 #    define PORT_HAS_FLASH
-#    define PORT_HAS_SDIO
 #endif
 
 #if defined(FAMILY_STM32F3)
@@ -467,17 +466,6 @@
 #        define CONFIG_SD                                   0
 #    else
 #        define CONFIG_SD                                   1
-#    endif
-#endif
-
-/**
- * Enable the sdio driver.
- */
-#ifndef CONFIG_SDIO
-#    if defined(CONFIG_MINIMAL_SYSTEM) || !defined(PORT_HAS_SDIO)
-#        define CONFIG_SDIO                                 0
-#    else
-#        define CONFIG_SDIO                                 1
 #    endif
 #endif
 
@@ -881,17 +869,6 @@
 #        define CONFIG_MODULE_INIT_SD                       1
 #    else
 #        define CONFIG_MODULE_INIT_SD                       0
-#    endif
-#endif
-
-/**
- * Initialize the sdio driver module at system startup.
- */
-#ifndef CONFIG_MODULE_INIT_SDIO
-#    if CONFIG_SDIO == 1
-#        define CONFIG_MODULE_INIT_SDIO                     1
-#    else
-#        define CONFIG_MODULE_INIT_SDIO                     0
 #    endif
 #endif
 
