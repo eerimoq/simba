@@ -108,9 +108,9 @@ The `Simba` development environment can be installed on `Linux (Ubuntu
 
 4. Done!
 
-NOTE: Some boards, such as the :doc:`boards/spc56ddiscovery`, require
-a specific toolchain to build. Such cases are documented on the
-individual board documentation page.
+.. note:: Some boards, such as the :doc:`boards/spc56ddiscovery`,
+          require a specific toolchain to build. Such cases are
+          documented on the individual board documentation page.
 
 .. _Cygwin: https://cygwin.com/setup-x86.exe
 .. _PlatformIO: http://platformio.org
