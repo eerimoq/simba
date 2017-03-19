@@ -1492,7 +1492,7 @@
  * Start the monitor thread to gather statistics of the scheulder.
  */
 #ifndef CONFIG_MONITOR_THREAD
-#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(BOARD_ESP12E) || defined(BOARD_ESP01) || defined(BOARD_NODEMCU) || defined(BOARD_NANO32) || defined(BOARD_ESP32_DEVKITC) || defined(CONFIG_MINIMAL_SYSTEM)
+#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(BOARD_ESP12E) || defined(BOARD_ESP01) || defined(BOARD_NODEMCU) || defined(BOARD_WEMOS_D1_MINI) || defined(BOARD_NANO32) || defined(BOARD_ESP32_DEVKITC) || defined(BOARD_MAPLE_ESP32) || defined(CONFIG_MINIMAL_SYSTEM)
 #        define CONFIG_MONITOR_THREAD                       0
 #    else
 #        define CONFIG_MONITOR_THREAD                       1
@@ -1646,7 +1646,7 @@
 #ifndef CONFIG_START_CONSOLE_UART_BAUDRATE
 #    if defined(BOARD_ESP01) || defined(BOARD_ESP12E) || defined(BOARD_NODEMCU) || defined(BOARD_WEMOS_D1_MINI)
 #        define CONFIG_START_CONSOLE_UART_BAUDRATE      76800
-#    elif defined(BOARD_NANO32) || defined(BOARD_ESP32_DEVKITC) || defined(BOARD_SPC56DDISCOVERY) || defined(BOARD_ARDUINO_DUE)
+#    elif defined(BOARD_NANO32) || defined(BOARD_ESP32_DEVKITC) || defined(BOARD_MAPLE_ESP32) || defined(BOARD_SPC56DDISCOVERY) || defined(BOARD_ARDUINO_DUE)
 #        define CONFIG_START_CONSOLE_UART_BAUDRATE     115200
 #    else
 #        define CONFIG_START_CONSOLE_UART_BAUDRATE      38400
@@ -1657,7 +1657,7 @@
  * Console UART baudrate.
  */
 #ifndef CONFIG_START_CONSOLE_UART_RX_BUFFER_SIZE
-#    if defined(BOARD_NANO32) || defined(BOARD_ESP32_DEVKITC)
+#    if defined(BOARD_NANO32) || defined(BOARD_ESP32_DEVKITC) || defined(BOARD_MAPLE_ESP32)
 #        define CONFIG_START_CONSOLE_UART_RX_BUFFER_SIZE  512
 #    else
 #        define CONFIG_START_CONSOLE_UART_RX_BUFFER_SIZE   32
@@ -1715,7 +1715,7 @@
 #        define CONFIG_START_FILESYSTEM_ADDRESS    0x0006b000
 #    elif defined(BOARD_ESP12E) || defined(BOARD_NODEMCU)
 #        define CONFIG_START_FILESYSTEM_ADDRESS    0x00300000
-#    elif defined(BOARD_NANO32) || defined(BOARD_ESP32_DEVKITC)
+#    elif defined(BOARD_NANO32) || defined(BOARD_ESP32_DEVKITC) || defined(BOARD_MAPLE_ESP32)
 #        define CONFIG_START_FILESYSTEM_ADDRESS    0x00300000
 #    else
 #        define CONFIG_START_FILESYSTEM_ADDRESS             0
