@@ -112,7 +112,6 @@ The `Simba` development environment can be installed on `Linux (Ubuntu
           require a specific toolchain to build. Such cases are
           documented on the individual board documentation page.
 
-.. _Cygwin: https://cygwin.com/setup-x86.exe
 .. _PlatformIO: http://platformio.org
 .. _Arduino IDE 1.6.10: https://www.arduino.cc/en/Main/Software
 .. _PlatformIO IDE: http://platformio.org/platformio-ide
