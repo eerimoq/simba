@@ -62,7 +62,6 @@ int sem_take(struct sem_t *self_p,
     sys_lock();
 
     if (self_p->count == self_p->count_max) {
-        /* Add to head. */
         elem.thrd_p = thrd_self();
         thrd_prio_list_push_isr(&self_p->waiters, &elem);
         err = thrd_suspend_isr(timeout_p);
