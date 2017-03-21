@@ -140,7 +140,13 @@ struct spi_device_t spi_device[SPI_DEVICE_MAX] = {
             .source = ESP32_INTR_SOURCE_SPI1,
             .cpu = ESP32_CPU_INTR_SPI_NUM
         },
-        .sem = { .count = 0, .count_max = 1, .head_p = NULL }
+        .sem = {
+            .count = 0,
+            .count_max = 1,
+            .waiters = {
+                .head_p = NULL
+            }
+        }
     },
     {
         .drv_p = NULL,
@@ -158,7 +164,13 @@ struct spi_device_t spi_device[SPI_DEVICE_MAX] = {
             .source = ESP32_INTR_SOURCE_SPI2,
             .cpu = ESP32_CPU_INTR_SPI_NUM
         },
-        .sem = { .count = 0, .count_max = 1, .head_p = NULL }
+        .sem = {
+            .count = 0,
+            .count_max = 1,
+            .waiters = {
+                .head_p = NULL
+            }
+        }
     },
     {
         .drv_p = NULL,
@@ -177,7 +189,13 @@ struct spi_device_t spi_device[SPI_DEVICE_MAX] = {
             .source = ESP32_INTR_SOURCE_SPI3,
             .cpu = ESP32_CPU_INTR_SPI_NUM
         },
-        .sem = { .count = 0, .count_max = 1, .head_p = NULL }
+        .sem = {
+            .count = 0,
+            .count_max = 1,
+            .waiters = {
+                .head_p = NULL
+            }
+        }
     }
 };
 

@@ -152,4 +152,13 @@ typedef int16_t s16_t;
 typedef uint32_t u32_t;
 typedef int32_t s32_t;
 
+struct thrd_prio_list_elem_t {
+    struct thrd_prio_list_elem_t *next_p;
+    struct thrd_t *thrd_p;
+};
+
+struct thrd_prio_list_t {
+    struct thrd_prio_list_elem_t *head_p;
+};
+
 #endif

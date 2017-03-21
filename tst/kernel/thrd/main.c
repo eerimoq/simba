@@ -357,6 +357,24 @@ static int test_stack_heap(struct harness_t *harness_p)
     return (0);
 }
 
+static int test_prio_list(struct harness_t *harness_p)
+{
+    struct thrd_prio_list_t list;
+    struct thrd_prio_list_elem_t elems[2];
+
+    BTASSERT(thrd_prio_list_init(&list) == 0);
+
+    elems[0].thrd_p = thrd_self();
+    elems[1].thrd_p = thrd_self();
+    thrd_prio_list_push_isr(&list, &elems[0]);
+    thrd_prio_list_push_isr(&list, &elems[1]);
+
+    BTASSERT(thrd_prio_list_pop_isr(&list) == &elems[0]);
+    BTASSERT(thrd_prio_list_pop_isr(&list) == &elems[1]);
+
+    return (0);
+}
+
 int main()
 {
     struct harness_t harness;
@@ -373,6 +391,7 @@ int main()
         { test_stack_top_bottom, "test_stack_top_bottom" },
         { test_monitor_thread, "test_monitor_thread" },
         { test_stack_heap, "test_stack_heap" },
+        { test_prio_list, "test_prio_list" },
         { NULL, NULL }
     };
 

@@ -119,7 +119,13 @@ struct spi_device_t spi_device[SPI_DEVICE_MAX] = {
         .sck_p = &pin_device[52],
         .mosi_p = &pin_device[51],
         .miso_p = &pin_device[50],
-        .sem = { .count = 0, .count_max = 1, .head_p = NULL }
+        .sem = {
+            .count = 0,
+            .count_max = 1,
+            .waiters = {
+                .head_p = NULL
+            }
+        }
     }
 };
 

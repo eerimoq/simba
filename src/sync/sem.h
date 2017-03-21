@@ -56,8 +56,7 @@ struct sem_t {
     /** Maximum number of resources. */
     int count_max;
     /** Wait list. */
-    struct sem_elem_t *head_p;
-    struct sem_elem_t *tail_p;
+    struct thrd_prio_list_t waiters;
 };
 
 /**

@@ -86,8 +86,7 @@ struct thrd_environment_t {
 
 struct thrd_t {
     struct {
-        struct thrd_t *prev_p;
-        struct thrd_t *next_p;
+        struct thrd_prio_list_elem_t elem;
     } scheduler;
     struct thrd_port_t port;
     int prio;
@@ -428,5 +427,45 @@ const void *thrd_get_bottom_of_stack(struct thrd_t *thrd_p);
  * error.
  */
 const void *thrd_get_top_of_stack(struct thrd_t *thrd_p);
+
+/**
+ * Initialize given prio list.
+ */
+int thrd_prio_list_init(struct thrd_prio_list_t *self_p);
+
+/**
+ * Push given element on given priority list. The priority list is a
+ * linked list with the highest priority thread first. The pushed
+ * element is added _after_ any already pushed elements with the same
+ * thread priority.
+ *
+ * @param[in] self_p Priority list to push on.
+ * @param[in] elem_p Element to push.
+ *
+ * @return void.
+ */
+void thrd_prio_list_push_isr(struct thrd_prio_list_t *self_p,
+                             struct thrd_prio_list_elem_t *elem_p);
+
+/**
+ * Pop the highest priority element from given priority list.
+ *
+ * @param[in] self_p Priority list to pop from.
+ *
+ * @return Poped element or NULL if the list was empty.
+ */
+struct thrd_prio_list_elem_t *thrd_prio_list_pop_isr(
+    struct thrd_prio_list_t *self_p);
+
+/**
+ * Remove given element from given priority list.
+ *
+ * @param[in] self_p Priority list to remove given element from.
+ * @param[in] elem_p Element to remove.
+ *
+ * @return zero(0) or negative error code.
+ */
+int thrd_prio_list_remove_isr(struct thrd_prio_list_t *self_p,
+                              struct thrd_prio_list_elem_t *elem_p);
 
 #endif
