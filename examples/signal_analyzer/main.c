@@ -30,8 +30,8 @@
 
 #include "simba.h"
 
-#define SAMPLE_TIMEOUT_IN_MILLISECONDS                      1
-#define TIMEOUTS_PER_REPORT                               100
+#define SAMPLE_TIMEOUT_IN_MICROSECONDS                     50
+#define TIMEOUTS_PER_REPORT                              1000
 
 /**
  * Report of a measurement period.
@@ -168,7 +168,7 @@ static int cmd_pwm_measure_cb(int argc,
     }
 
     timeout.seconds = 0;
-    timeout.nanoseconds = 1000000L * SAMPLE_TIMEOUT_IN_MILLISECONDS;
+    timeout.nanoseconds = 1000L * SAMPLE_TIMEOUT_IN_MICROSECONDS;
 
     timer_init(&timer,
                &timeout,
@@ -187,8 +187,8 @@ static int cmd_pwm_measure_cb(int argc,
 
         for (j = 0; j < membersof(reports); j++, delim_p = ",") {
             duty_cycle = ((100 * reports[j].high_count) / TIMEOUTS_PER_REPORT);
-            frequency = ((1000 * reports[j].rising_count)
-                         / (TIMEOUTS_PER_REPORT * SAMPLE_TIMEOUT_IN_MILLISECONDS));
+            frequency = ((1000000 * reports[j].rising_count)
+                         / (TIMEOUTS_PER_REPORT * SAMPLE_TIMEOUT_IN_MICROSECONDS));
             std_fprintf(chout_p,
                         OSTR("%s(%d,%d)"),
                         delim_p,

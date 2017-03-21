@@ -31,8 +31,10 @@
 NAME = signal_analyzer
 BOARD ?= linux
 
+SOAM = yes
+
 CDEFS += \
-	CONFIG_SYSTEM_TICK_FREQUENCY=1000
+	CONFIG_SYSTEM_TICK_FREQUENCY=20000
 
 SIMBA_ROOT ?= ../..
 include $(SIMBA_ROOT)/make/app.mk
