@@ -44,7 +44,7 @@ PARTITIONS_BIN ?= $(SIMBA_ROOT)/3pp/esp32/bin/partitions_singleapp.bin
 endif
 
 BOARD_HOMEPAGE = "http://www.analoglamb.com/product/maple-esp32/"
-BOARD_PINOUT = "maple-esp32.jpg"
+BOARD_PINOUT = "maple-esp32-pinout.jpg"
 BOARD_DESC = "Maple-ESP32"
 
 MCU = esp32
