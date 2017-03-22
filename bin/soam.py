@@ -12,15 +12,16 @@ import serial
 import hashlib
 
 # SOAM protocol definitions.
-SOAM_TYPE_STDOUT                       = 1
-SOAM_TYPE_LOG_POINT                    = 2
-SOAM_TYPE_COMMAND_REQUEST              = 3
-SOAM_TYPE_COMMAND_RESPONSE_DATA_PRINTF = 4
-SOAM_TYPE_COMMAND_RESPONSE_DATA_BINARY = 5
-SOAM_TYPE_COMMAND_RESPONSE             = 6
-SOAM_TYPE_DATABASE_ID_REQUEST          = 7
-SOAM_TYPE_DATABASE_ID_RESPONSE         = 8
-SOAM_TYPE_INVALID_TYPE                 = 9
+SOAM_TYPE_STDOUT_PRINTF                = 1
+SOAM_TYPE_STDOUT_BINARY                = 2
+SOAM_TYPE_LOG_POINT                    = 3
+SOAM_TYPE_COMMAND_REQUEST              = 4
+SOAM_TYPE_COMMAND_RESPONSE_DATA_PRINTF = 5
+SOAM_TYPE_COMMAND_RESPONSE_DATA_BINARY = 6
+SOAM_TYPE_COMMAND_RESPONSE             = 7
+SOAM_TYPE_DATABASE_ID_REQUEST          = 8
+SOAM_TYPE_DATABASE_ID_RESPONSE         = 9
+SOAM_TYPE_INVALID_TYPE                 = 10
 
 SOAM_SEGMENT_SIZE_MIN = 6
 
@@ -178,17 +179,34 @@ class ReaderThread(threading.Thread):
             packet = b''.join(segments)
 
             # Decode the reassembled packet.
-            if packet_type == SOAM_TYPE_STDOUT:
-                print(packet.decode('ascii'), end='')
+            if packet_type == SOAM_TYPE_STDOUT_PRINTF:
+                # Format the printf.
+                identity = struct.unpack('>H', packet[0:2])[0]
+
+                try:
+                    fmt = self.client.database.formats[identity]
+                    args = packet[2:].decode('ascii').split('\x1f')
+                    formatted_string = fmt.format(*args)
+                except KeyError:
+                    formatted_string = packet.decode('ascii')
+
+                print(formatted_string, end='')
+            elif packet_type == SOAM_TYPE_STDOUT_BINARY:
+                print(packet, end='')
             elif packet_type == SOAM_TYPE_LOG_POINT:
                 # Format the log point.
                 header, data = packet.split(b': ', 1)
                 identity = struct.unpack('>H', data[0:2])[0]
-                fmt = self.client.database.formats[identity]
-                args = data[2:].decode('ascii').split('\x1f')
-                formatted_log_point = (header.decode('ascii')
-                                       + ': '
-                                       + fmt.format(*args))
+
+                try:
+                    fmt = self.client.database.formats[identity]
+                    args = data[2:].decode('ascii').split('\x1f')
+                    formatted_log_point = (header.decode('ascii')
+                                           + ': '
+                                           + fmt.format(*args))
+                except KeyError:
+                    formatted_log_point = packet.decode('ascii')
+
                 print(formatted_log_point, end='')
             elif packet_type in [SOAM_TYPE_COMMAND_RESPONSE_DATA_PRINTF,
                                  SOAM_TYPE_COMMAND_RESPONSE_DATA_BINARY]:
@@ -318,7 +336,7 @@ class Client(object):
                     args = response_data[2:].decode('ascii').split('\x1f')
                     formatted_response_data += fmt.format(*args)
                 except KeyError:
-                    formatted_response_data += response_data
+                    formatted_response_data += response_data.deocde('ascii')
             else:
                 formatted_response_data += response_data
 

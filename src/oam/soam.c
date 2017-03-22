@@ -32,15 +32,16 @@
 
 #define SOAM_PACKET_SIZE_MIN                                6
 
-#define SOAM_TYPE_STDOUT                             (1 << 4)
-#define SOAM_TYPE_LOG_POINT                          (2 << 4)
-#define SOAM_TYPE_COMMAND_REQUEST                    (3 << 4)
-#define SOAM_TYPE_COMMAND_RESPONSE_DATA_PRINTF       (4 << 4)
-#define SOAM_TYPE_COMMAND_RESPONSE_DATA_BINARY       (5 << 4)
-#define SOAM_TYPE_COMMAND_RESPONSE                   (6 << 4)
-#define SOAM_TYPE_DATABASE_ID_REQUEST                (7 << 4)
-#define SOAM_TYPE_DATABASE_ID_RESPONSE               (8 << 4)
-#define SOAM_TYPE_INVALID_TYPE                       (9 << 4)
+#define SOAM_TYPE_STDOUT_PRINTF                      (1 << 4)
+#define SOAM_TYPE_STDOUT_BINARY                      (2 << 4)
+#define SOAM_TYPE_LOG_POINT                          (3 << 4)
+#define SOAM_TYPE_COMMAND_REQUEST                    (4 << 4)
+#define SOAM_TYPE_COMMAND_RESPONSE_DATA_PRINTF       (5 << 4)
+#define SOAM_TYPE_COMMAND_RESPONSE_DATA_BINARY       (6 << 4)
+#define SOAM_TYPE_COMMAND_RESPONSE                   (7 << 4)
+#define SOAM_TYPE_DATABASE_ID_REQUEST                (8 << 4)
+#define SOAM_TYPE_DATABASE_ID_RESPONSE               (9 << 4)
+#define SOAM_TYPE_INVALID_TYPE                      (10 << 4)
 
 #define SOAM_PACKET_FLAGS_CONSECUTIVE                (1 << 1)
 #define SOAM_PACKET_FLAGS_LAST                       (1 << 0)
@@ -129,7 +130,7 @@ static int stdout_control(void *chan_p,
 
     self_p = container_of(chan_p, struct soam_t, stdout_chan);
 
-    return (printf_or_binary_control(self_p, operation, SOAM_TYPE_STDOUT));
+    return (printf_or_binary_control(self_p, operation, SOAM_TYPE_STDOUT_PRINTF));
 }
 
 static ssize_t stdout_write(void *chan_p,
@@ -140,7 +141,7 @@ static ssize_t stdout_write(void *chan_p,
 
     self_p = container_of(chan_p, struct soam_t, stdout_chan);
 
-    return (printf_or_binary_write(self_p, buf_p, size, SOAM_TYPE_STDOUT));
+    return (printf_or_binary_write(self_p, buf_p, size, SOAM_TYPE_STDOUT_BINARY));
 }
 
 static int log_control(void *chan_p,
@@ -265,7 +266,7 @@ int soam_input(struct soam_t *self_p,
                  | buf_p[payload_crc_size + 3]);
     crc = crc_ccitt(0xffff, buf_p, payload_crc_size + 2);
 
-    /* std_printf(FSTR("crc: %04x\r\n"), crc); */
+    std_printf(FSTR("crc: %04x\r\n"), crc);
 
     if (crc != input_crc) {
         return (-1);
