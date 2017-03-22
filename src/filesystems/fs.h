@@ -143,6 +143,8 @@ enum fs_type_t {
     fs_type_generic_t
 };
 
+#if CONFIG_SPIFFS == 1
+
 /**
  * A SPIFFS file system.
  */
@@ -159,6 +161,10 @@ struct fs_filesystem_spiffs_config_t {
     } cache;
 };
 
+#endif
+
+#if CONFIG_FAT16 == 1
+
 /**
  * A FAT16 file system.
  */
@@ -166,19 +172,27 @@ struct fs_filesystem_fat16_t {
     struct fat16_t *fat16_p;
 };
 
+#endif
+
 /* File system. */
 struct fs_filesystem_t {
     const char *name_p;
     enum fs_type_t type;
     union {
+#if CONFIG_FAT16 == 1
         struct fat16_t *fat16_p;
+#endif
+#if CONFIG_SPIFFS == 1
         struct spiffs_t *spiffs_p;
+#endif
         struct {
             struct fs_filesystem_operations_t *ops_p;
         } generic;
     } fs;
     union {
+#if CONFIG_SPIFFS == 1
         struct fs_filesystem_spiffs_config_t *spiffs_p;
+#endif
     } config;
     struct fs_filesystem_t *next_p;
 };
@@ -187,15 +201,19 @@ struct fs_filesystem_t {
 struct fs_file_t {
     struct fs_filesystem_t *filesystem_p;
     union {
+#if CONFIG_FAT16 == 1
         struct fat16_file_t fat16;
+#endif
+#if CONFIG_SPIFFS == 1
         spiffs_file_t spiffs;
+#endif
     } u;
 };
 
 /** Path stats. */
 struct fs_stat_t {
     uint32_t size;
-    spiffs_obj_type_t type;
+    uint8_t type;
 };
 
 /* Command. */
@@ -225,8 +243,12 @@ struct fs_parameter_t {
 struct fs_dir_t {
     struct fs_filesystem_t *filesystem_p;
     union {
+#if CONFIG_FAT16 == 1
         struct fat16_dir_t fat16;
+#endif
+#if CONFIG_SPIFFS == 1
         struct spiffs_dir_t spiffs;
+#endif
     } u;
 };
 
@@ -522,6 +544,8 @@ int fs_filesystem_init_generic(struct fs_filesystem_t *self_p,
                                const char *name_p,
                                struct fs_filesystem_operations_t *ops_p);
 
+#if CONFIG_FAT16 == 1
+
 /**
  * Initialize given FAT16 file system.
  *
@@ -534,6 +558,10 @@ int fs_filesystem_init_generic(struct fs_filesystem_t *self_p,
 int fs_filesystem_init_fat16(struct fs_filesystem_t *self_p,
                              const char *name_p,
                              struct fat16_t *fat16_p);
+
+#endif
+
+#if CONFIG_SPIFFS == 1
 
 /**
  * Initialize given SPIFFS file system.
@@ -549,6 +577,8 @@ int fs_filesystem_init_spiffs(struct fs_filesystem_t *self_p,
                               const char *name_p,
                               struct spiffs_t *spiffs_p,
                               struct fs_filesystem_spiffs_config_t *config_p);
+
+#endif
 
 /**
  * Register given file system. Use the functions `fs_open()`,

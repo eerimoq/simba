@@ -20,6 +20,8 @@
 
 #include "simba.h"
 
+#if CONFIG_FAT16 == 1
+
 /** Chunk size in number of bytes. */
 #define BLOCK_SIZE 512
 
@@ -1648,3 +1650,5 @@ int fat16_stat(struct fat16_t *self_p,
 
     return (-1);
 }
+
+#endif

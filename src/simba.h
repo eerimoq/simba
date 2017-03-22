@@ -103,7 +103,9 @@ extern "C" {
 #include "alloc/heap.h"
 #include "alloc/circular_heap.h"
 
-#include "filesystems/fat16.h"
+#if CONFIG_FAT16 == 1
+#    include "filesystems/fat16.h"
+#endif
 #include "filesystems/spiffs.h"
 
 #include "oam/console.h"
@@ -258,7 +260,7 @@ extern "C" {
 #    include "oam/upgrade/http.h"
 #    include "oam/upgrade/tftp.h"
 #endif
-    
+
 #ifdef __cplusplus
 }
 #endif

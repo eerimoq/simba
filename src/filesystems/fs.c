@@ -141,8 +141,12 @@ static int cmd_filesystems_list_cb(int argc,
         buf[sizeof(buf) - 1] = '\0';
 
         switch (filesystem_p->type) {
+#if CONFIG_FAT16 == 1
         case fs_type_fat16_t: type_p = "fat16"; break;
+#endif
+#if CONFIG_SPIFFS == 1
         case fs_type_spiffs_t: type_p = "spiffs"; break;
+#endif
         case fs_type_generic_t: type_p = "generic"; break;
         default: type_p = "-"; break;
         }
@@ -1780,6 +1784,8 @@ int fs_filesystem_init_generic(struct fs_filesystem_t *self_p,
     return (0);
 }
 
+#if CONFIG_FAT16 == 1
+
 int fs_filesystem_init_fat16(struct fs_filesystem_t *self_p,
                              const char *name_p,
                              struct fat16_t *fat16_p)
@@ -1794,6 +1800,10 @@ int fs_filesystem_init_fat16(struct fs_filesystem_t *self_p,
 
     return (0);
 }
+
+#endif
+
+#if CONFIG_SPIFFS == 1
 
 int fs_filesystem_init_spiffs(struct fs_filesystem_t *self_p,
                               const char *name_p,
@@ -1818,6 +1828,8 @@ int fs_filesystem_init_spiffs(struct fs_filesystem_t *self_p,
 
     return (0);
 }
+
+#endif
 
 int fs_filesystem_register(struct fs_filesystem_t *filesystem_p)
 {
