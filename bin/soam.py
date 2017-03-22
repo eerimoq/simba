@@ -36,8 +36,8 @@ def crc_ccitt(data):
     msb = 0xff
     lsb = 0xff
 
-    for c in data:
-        x = ord(c) ^ msb
+    for c in bytearray(data):
+        x = c ^ msb
         x ^= (x >> 4)
         msb = (lsb ^ (x >> 3) ^ (x << 4)) & 255
         lsb = (x ^ (x << 5)) & 255
@@ -175,19 +175,20 @@ class ReaderThread(threading.Thread):
                 continue
 
             packet_type = segment_type
-            packet = ''.join(segments)
+            packet = b''.join(segments)
 
             # Decode the reassembled packet.
             if packet_type == SOAM_TYPE_STDOUT:
-                print(packet, end='')
+                print(packet.decode('ascii'), end='')
             elif packet_type == SOAM_TYPE_LOG_POINT:
                 # Format the log point.
-                header, data = packet.split(': ', 1)
+                header, data = packet.split(b': ', 1)
                 identity = struct.unpack('>H', data[0:2])[0]
                 fmt = self.client.database.formats[identity]
-                formatted_log_point = (header
+                args = data[2:].decode('ascii').split('\x1f')
+                formatted_log_point = (header.decode('ascii')
                                        + ': '
-                                       + fmt.format(*data[2:].split('\x1f')))
+                                       + fmt.format(*args))
                 print(formatted_log_point, end='')
             elif packet_type in [SOAM_TYPE_COMMAND_RESPONSE_DATA_PRINTF,
                                  SOAM_TYPE_COMMAND_RESPONSE_DATA_BINARY]:
@@ -234,7 +235,7 @@ class Client(object):
         print('Comparing read and calculated database ids... ', end='')
 
         with open(database, 'rb') as fin:
-            database_id = hashlib.md5(fin.read()).hexdigest()
+            database_id = hashlib.md5(fin.read()).hexdigest().encode('ascii')
 
         if device_database_id != database_id:
             print('failed. ')
@@ -296,7 +297,10 @@ class Client(object):
             raise CommandNotFoundError(
                 "{}: command not found in string database".format(command))
 
-        command_with_args = command_with_args.replace(command, command_id, 1)
+        command_with_args = command_with_args.encode('ascii')
+        command_with_args = command_with_args.replace(command.encode('ascii'),
+                                                      command_id,
+                                                      1)
         command_with_args += b'\x00'
 
         segment = self.create_soam_segment(SOAM_TYPE_COMMAND_REQUEST,
@@ -311,8 +315,8 @@ class Client(object):
                 identity = struct.unpack('>H', response_data[0:2])[0]
                 try:
                     fmt = self.database.formats[identity]
-                    formatted_response_data += fmt.format(
-                        *response_data[2:].split('\x1f'))
+                    args = response_data[2:].decode('ascii').split('\x1f')
+                    formatted_response_data += fmt.format(*args)
                 except KeyError:
                     formatted_response_data += response_data
             else:
@@ -512,13 +516,13 @@ class SlipSerialClient(Client):
 
         packet = b'\xc0'
 
-        for byte in segment:
-            if byte == b'\xc0':
+        for byte in bytearray(segment):
+            if byte == 0xc0:
                 packet += b'\xdb\xdc'
-            elif byte == b'\xdb':
+            elif byte == 0xdb:
                 packet += b'\xdb\xdd'
             else:
-                packet += byte
+                packet += struct.pack('B', byte)
 
         packet += b'\xc0'
 
