@@ -266,7 +266,7 @@ int soam_input(struct soam_t *self_p,
                  | buf_p[payload_crc_size + 3]);
     crc = crc_ccitt(0xffff, buf_p, payload_crc_size + 2);
 
-    std_printf(FSTR("crc: %04x\r\n"), crc);
+    /* std_printf(FSTR("crc: %04x\r\n"), crc); */
 
     if (crc != input_crc) {
         return (-1);
