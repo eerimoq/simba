@@ -1513,7 +1513,16 @@ BOARDS = {
             "gcc", 
             "c", 
             "m", 
-            "xtensa-debug-module"
+            "xtensa-debug-module", 
+            "coap", 
+            "cxx", 
+            "fatfs", 
+            "jsmn", 
+            "mdns", 
+            "rtc_clk", 
+            "sdmmc", 
+            "stdc++", 
+            "bootloader_support"
         ], 
         "libpath": [
             "src/mcus/esp32/ld", 
@@ -2265,7 +2274,16 @@ BOARDS = {
             "gcc", 
             "c", 
             "m", 
-            "xtensa-debug-module"
+            "xtensa-debug-module", 
+            "coap", 
+            "cxx", 
+            "fatfs", 
+            "jsmn", 
+            "mdns", 
+            "rtc_clk", 
+            "sdmmc", 
+            "stdc++", 
+            "bootloader_support"
         ], 
         "libpath": [
             "src/mcus/esp32/ld", 
@@ -2532,7 +2550,16 @@ BOARDS = {
             "gcc", 
             "c", 
             "m", 
-            "xtensa-debug-module"
+            "xtensa-debug-module", 
+            "coap", 
+            "cxx", 
+            "fatfs", 
+            "jsmn", 
+            "mdns", 
+            "rtc_clk", 
+            "sdmmc", 
+            "stdc++", 
+            "bootloader_support"
         ], 
         "libpath": [
             "src/mcus/esp32/ld", 

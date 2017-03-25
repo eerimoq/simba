@@ -19,9 +19,11 @@ SECTIONS
   */
   .rtc.data :
   {
+    _rtc_data_start = ABSOLUTE(.);
     *(.rtc.data)
     *(.rtc.rodata)
     *rtc_wake_stub*.o(.data .rodata .data.* .rodata.* .bss .bss.*)
+    _rtc_data_end = ABSOLUTE(.);
   } > rtc_slow_seg
 
   /* RTC bss, from any source file named rtc_wake_stub*.c */
@@ -69,6 +71,10 @@ SECTIONS
     *(.init.literal)
     *(.init)
     _init_end = ABSOLUTE(.);
+
+    /* This goes here, not at top of linker script, so addr2line finds it last,
+       and uses it in preference to the first symbol in IRAM */
+    _iram_start = ABSOLUTE(0);
   } > iram0_0_seg
 
   .iram0.text :
@@ -78,12 +84,39 @@ SECTIONS
     *(.iram1 .iram1.*)
     *libfreertos.a:(.literal .text .literal.* .text.*)
     *libesp32.a:panic.o(.literal .text .literal.* .text.*)
+    *libesp32.a:core_dump.o(.literal .text .literal.* .text.*)
     *libphy.a:(.literal .text .literal.* .text.*)
     *librtc.a:(.literal .text .literal.* .text.*)
-    *libpp.a:(.literal .text .literal.* .text.*)
+    *librtc_clk.a:(.literal .text .literal.* .text.*)
+    *libpp.a:pp.o(.literal .text .literal.* .text.*)
+    *libpp.a:lmac.o(.literal .text .literal.* .text.*)
+    *libpp.a:wdev.o(.literal .text .literal.* .text.*)
+    *libcore.a:ets_timer.o(.literal .text .literal.* .text.*)
+    *libnet80211.a:ieee80211_misc.o(.literal .text .literal.* .text.*)
     *libhal.a:(.literal .text .literal.* .text.*)
+    *libcoexist.a:(.literal .text .literal.* .text.*)
     _iram_text_end = ABSOLUTE(.);
   } > iram0_0_seg
+
+  .dram0.data :
+  {
+    _data_start = ABSOLUTE(.);
+    KEEP(*(.data))
+    KEEP(*(.data.*))
+    KEEP(*(.gnu.linkonce.d.*))
+    KEEP(*(.data1))
+    KEEP(*(.sdata))
+    KEEP(*(.sdata.*))
+    KEEP(*(.gnu.linkonce.s.*))
+    KEEP(*(.sdata2))
+    KEEP(*(.sdata2.*))
+    KEEP(*(.gnu.linkonce.s2.*))
+    KEEP(*(.jcr))
+    *(.dram1 .dram1.*)
+    *libesp32.a:panic.o(.rodata .rodata.*)
+    _data_end = ABSOLUTE(.);
+    . = ALIGN(4);
+  } >dram0_0_seg
 
   /* Shared RAM */
   .dram0.bss (NOLOAD) :
@@ -106,26 +139,6 @@ SECTIONS
     *(COMMON)
     . = ALIGN (8);
     _bss_end = ABSOLUTE(.);
-  } >dram0_0_seg
-
-  .dram0.data :
-  {
-    _data_start = ABSOLUTE(.);
-    *(.data)
-    *(.data.*)
-    KEEP(*(.gnu.linkonce.d.*))
-    KEEP(*(.data1))
-    KEEP(*(.sdata))
-    KEEP(*(.sdata.*))
-    KEEP(*(.gnu.linkonce.s.*))
-    KEEP(*(.sdata2))
-    KEEP(*(.sdata2.*))
-    KEEP(*(.gnu.linkonce.s2.*))
-    KEEP(*(.jcr))
-    *(.dram1 .dram1.*)
-    *libesp32.a:panic.o(.rodata .rodata.*)
-    _data_end = ABSOLUTE(.);
-    . = ALIGN(4);
     _heap_start = ABSOLUTE(.);
   } >dram0_0_seg
 
@@ -184,5 +197,11 @@ SECTIONS
     *(.gnu.version)
     _text_end = ABSOLUTE(.);
     _etext = .;
+
+    /* Similar to _iram_start, this symbol goes here so it is
+       resolved by addr2line in preference to the first symbol in
+       the flash.text segment.
+    */
+    _flash_cache_start = ABSOLUTE(0);
   } >iram0_2_seg
 }

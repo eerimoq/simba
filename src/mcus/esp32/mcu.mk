@@ -81,7 +81,16 @@ LIB += \
 	gcc \
 	c \
 	m \
-	xtensa-debug-module
+	xtensa-debug-module \
+	coap \
+	cxx \
+	fatfs \
+	jsmn \
+	mdns \
+	rtc_clk \
+	sdmmc \
+	stdc++ \
+	bootloader_support
 
 F_CPU = 240000000
 
