@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 #
 
 from __future__ import print_function
@@ -10,6 +10,12 @@ import cmd
 import threading
 import serial
 import hashlib
+import lzma
+
+try:
+    from StringIO import StringIO
+except ImportError:
+    from io import StringIO
 
 # SOAM protocol definitions.
 SOAM_TYPE_STDOUT_PRINTF                = 1
@@ -21,7 +27,9 @@ SOAM_TYPE_COMMAND_RESPONSE_DATA_BINARY = 6
 SOAM_TYPE_COMMAND_RESPONSE             = 7
 SOAM_TYPE_DATABASE_ID_REQUEST          = 8
 SOAM_TYPE_DATABASE_ID_RESPONSE         = 9
-SOAM_TYPE_INVALID_TYPE                 = 10
+SOAM_TYPE_DATABASE_REQUEST             = 10
+SOAM_TYPE_DATABASE_RESPONSE            = 11
+SOAM_TYPE_INVALID_TYPE                 = 15
 
 SOAM_SEGMENT_SIZE_MIN = 6
 
@@ -52,31 +60,35 @@ class TimeoutError(Exception):
 
 class Database(object):
 
-    def __init__(self, database):
+    def __init__(self):
         self.formats = {}
         self.commands = {}
 
-        with open(database) as fin:
-            for line in fin.readlines():
-                # Ignore comments.
-                if line.startswith('#'):
-                    continue
+    def set_database(self, database):
+        """Set the database.
 
-                kind, identity, string = line.strip().split(' ', 2)
-                identity = int(identity, 0)
-                string = string[1:-1]
-                string = string.replace('\\n', '\n')
-                string = string.replace('\\r', '\r')
-                string = string.replace('\\t', '\t')
-                string = string.replace('\\v', '\v')
-                string = string.replace('\\\\', '\\')
+        """
 
-                if kind == 'FMT:':
-                    self.formats[identity] = string
-                elif kind == 'CMD:':
-                    self.commands[string] = identity
-                else:
-                    sys.exit('{}: bad kind'.format(kind))
+        for line in database.readlines():
+            # Ignore comments.
+            if line.startswith('#'):
+                continue
+
+            kind, identity, string = line.strip().split(' ', 2)
+            identity = int(identity, 0)
+            string = string[1:-1]
+            string = string.replace('\\n', '\n')
+            string = string.replace('\\r', '\r')
+            string = string.replace('\\t', '\t')
+            string = string.replace('\\v', '\v')
+            string = string.replace('\\\\', '\\')
+
+            if kind == 'FMT:':
+                self.formats[identity] = string
+            elif kind == 'CMD:':
+                self.commands[string] = identity
+            else:
+                sys.exit('{}: bad kind'.format(kind))
 
 
 class ReaderThread(threading.Thread):
@@ -188,7 +200,10 @@ class ReaderThread(threading.Thread):
                     args = packet[2:].decode('ascii').split('\x1f')
                     formatted_string = fmt.format(*args)
                 except KeyError:
-                    formatted_string = packet.decode('ascii')
+                    try:
+                        formatted_string = packet.decode('ascii')
+                    except UnicodeDecodeError:
+                        formatted_string = packet
 
                 print(formatted_string, end='')
             elif packet_type == SOAM_TYPE_STDOUT_BINARY:
@@ -205,7 +220,10 @@ class ReaderThread(threading.Thread):
                                            + ': '
                                            + fmt.format(*args))
                 except KeyError:
-                    formatted_log_point = packet.decode('ascii')
+                    try:
+                        formatted_log_point = packet.decode('ascii')
+                    except UnicodeDecodeError:
+                        formatted_log_point = packet
 
                 print(formatted_log_point, end='')
             elif packet_type in [SOAM_TYPE_COMMAND_RESPONSE_DATA_PRINTF,
@@ -218,7 +236,8 @@ class ReaderThread(threading.Thread):
                     self.response_packet = code, response_data
                     response_data = []
                     self.response_packet_cond.notify_all()
-            elif packet_type == SOAM_TYPE_DATABASE_ID_RESPONSE:
+            elif packet_type in [SOAM_TYPE_DATABASE_ID_RESPONSE,
+                                 SOAM_TYPE_DATABASE_RESPONSE]:
                 with self.response_packet_cond:
                     self.response_packet = packet
                     self.response_packet_cond.notify_all()
@@ -236,11 +255,28 @@ class ReaderThread(threading.Thread):
 class Client(object):
 
     def __init__(self, database, reader):
-        self.database = Database(database)
+        self.database = Database()
         self.packet_index = 1
         self.reader = reader
         self.reader.setDaemon(True)
         self.reader.start()
+
+        if database:
+            with open(database, 'rb') as fin:
+                database = fin.read()
+        else:
+            # Get the database from the device if not given.
+            try:
+                print('Reading database from device... ', end='')
+                database_compressed = self.get_database_from_device()
+                print('done.')
+            except BaseException:
+                print('failed. ')
+                sys.exit('error: failed to read the database from the device')
+
+            database = lzma.decompress(database_compressed)
+
+        self.database.set_database(StringIO(database.decode('ascii')))
 
         try:
             print('Reading database id from device... ', end='')
@@ -252,8 +288,7 @@ class Client(object):
 
         print('Comparing read and calculated database ids... ', end='')
 
-        with open(database, 'rb') as fin:
-            database_id = hashlib.md5(fin.read()).hexdigest().encode('ascii')
+        database_id = hashlib.md5(database).hexdigest().encode('ascii')
 
         if device_database_id != database_id:
             print('failed. ')
@@ -299,6 +334,16 @@ class Client(object):
 
         return self.reader.read_response(3.0)
 
+    def get_database_from_device(self):
+        """Get the database from the device.
+
+        """
+
+        segment = self.create_soam_segment(SOAM_TYPE_DATABASE_REQUEST, b'')
+        self.write_soam_segment(segment)
+
+        return self.reader.read_response(10.0)
+
     def execute_command(self, command_with_args):
         """Execute given file system (fs) command and return a tuple of the
         command status code and output.
@@ -336,7 +381,7 @@ class Client(object):
                     args = response_data[2:].decode('ascii').split('\x1f')
                     formatted_response_data += fmt.format(*args)
                 except KeyError:
-                    formatted_response_data += response_data.deocde('ascii')
+                    formatted_response_data += response_data.decode('ascii')
             else:
                 formatted_response_data += response_data
 
@@ -551,7 +596,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('-p', '--port', default='/dev/ttyACM1')
     parser.add_argument('-b', '--baudrate', type=int, default=115200)
-    parser.add_argument('database')
+    parser.add_argument('database', nargs='?')
     args = parser.parse_args()
 
     client = SlipSerialClient(args.port, args.baudrate, args.database)

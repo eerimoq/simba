@@ -355,7 +355,7 @@ static int test_invalid_type(struct harness_t *harness_p)
 
     /* Read the invalid type response. */
     BTASSERT(chan_read(&chout, &buf[0], 12) == 12);
-    BTASSERT(buf[0] == 0xa1);
+    BTASSERT(buf[0] == 0xf1);
     BTASSERT(buf[1] == 10);
     size = ((buf[2] << 8) | buf[3]);
     BTASSERT(size == 8);

@@ -1825,7 +1825,7 @@
 #    elif defined(ARCH_ESP32)
 #        define CONFIG_START_SOAM_STACK_SIZE             4096
 #    else
-#        define CONFIG_START_SOAM_STACK_SIZE              768
+#        define CONFIG_START_SOAM_STACK_SIZE              840
 #    endif
 #endif
 
@@ -2041,6 +2041,13 @@
  */
 #ifndef CONFIG_TIME_UNIX_TIME_TO_DATE
 #    define CONFIG_TIME_UNIX_TIME_TO_DATE                   1
+#endif
+
+/**
+ * Embed the SOAM database in the application.
+ */
+#ifndef CONFIG_SOAM_EMBEDDED_DATABASE
+#    define CONFIG_SOAM_EMBEDDED_DATABASE                   0
 #endif
 
 /**

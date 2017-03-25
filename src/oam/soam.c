@@ -41,13 +41,19 @@
 #define SOAM_TYPE_COMMAND_RESPONSE                   (7 << 4)
 #define SOAM_TYPE_DATABASE_ID_REQUEST                (8 << 4)
 #define SOAM_TYPE_DATABASE_ID_RESPONSE               (9 << 4)
-#define SOAM_TYPE_INVALID_TYPE                      (10 << 4)
+#define SOAM_TYPE_DATABASE_REQUEST                  (10 << 4)
+#define SOAM_TYPE_DATABASE_RESPONSE                 (11 << 4)
+#define SOAM_TYPE_INVALID_TYPE                      (15 << 4)
 
 #define SOAM_PACKET_FLAGS_CONSECUTIVE                (1 << 1)
 #define SOAM_PACKET_FLAGS_LAST                       (1 << 0)
 
+#define BUFFER_SIZE                                        64
+
 /* The generated SOAM database id. */
 extern char soam_database_id[];
+extern const size_t soam_database_compressed_size;
+extern const uint8_t soam_database_compressed[];
 
 /**
  * Finalize and output current packet to the output channel.
@@ -201,6 +207,84 @@ static ssize_t command_write(void *chan_p,
                                    SOAM_TYPE_COMMAND_RESPONSE_DATA_BINARY));
 }
 
+static int handle_database_id_request(struct soam_t *self_p,
+                                      uint8_t *buf_p)
+{
+    if (soam_write(self_p,
+                   SOAM_TYPE_DATABASE_ID_RESPONSE,
+                   &soam_database_id[0],
+                   32) != 32) {
+        return (-1);
+    }
+
+    return (0);
+}
+
+#if CONFIG_SOAM_EMBEDDED_DATABASE == 1
+
+static int handle_database_request(struct soam_t *self_p,
+                                   uint8_t *buf_p)
+{
+    size_t size;
+    size_t left;
+    size_t offset;
+    int i;
+
+    if (soam_write_begin(self_p, SOAM_TYPE_DATABASE_RESPONSE) != 0) {
+        return (-1);
+    }
+    
+    left = soam_database_compressed_size;
+    offset = 0;
+
+    while (left > 0) {
+        if (left > BUFFER_SIZE) {
+            size = BUFFER_SIZE;
+        } else {
+            size = left;
+        }
+
+        for (i = 0; i < size; i++) {
+            buf_p[i] = soam_database_compressed[offset + i];
+        }
+
+        (void)soam_write_chunk(self_p, &buf_p[0], size);
+
+        left -= size;
+        offset += size;
+    }
+
+    if (soam_write_end(self_p) != soam_database_compressed_size) {
+        return (-1);
+    }
+
+    return (0);
+}
+
+#endif
+
+static int handle_command_request(struct soam_t *self_p,
+                                  uint8_t *input_p,
+                                  uint8_t *buf_p)
+{
+    int32_t res;
+    
+    res = fs_call((char *)&input_p[4],
+                  &self_p->command_chan,
+                  &self_p->command_chan,
+                  NULL);
+    buf_p[0] = (res >> 24);
+    buf_p[1] = (res >> 16);
+    buf_p[2] = (res >> 8);
+    buf_p[3] = res;
+    
+    if (soam_write(self_p, SOAM_TYPE_COMMAND_RESPONSE, &buf_p[0], 4) != 4) {
+        return (-1);
+    }
+
+    return (0);
+}
+
 int soam_init(struct soam_t *self_p,
               void *buf_p,
               size_t size,
@@ -249,8 +333,8 @@ int soam_input(struct soam_t *self_p,
     size_t payload_crc_size;
     uint16_t crc;
     uint16_t input_crc;
-    int32_t res;
-    uint8_t buf[4];
+    int res;
+    uint8_t buf[BUFFER_SIZE];
 
     if (size < SOAM_PACKET_SIZE_MIN) {
         return (-1);
@@ -273,41 +357,32 @@ int soam_input(struct soam_t *self_p,
     }
 
     type = buf_p[0];
-
+    
     switch (type) {
 
     case SOAM_TYPE_DATABASE_ID_REQUEST:
-        if (soam_write(self_p,
-                       SOAM_TYPE_DATABASE_ID_RESPONSE,
-                       &soam_database_id[0],
-                       32) != 32) {
-            return (-1);
-        }
+        res = handle_database_id_request(self_p, &buf[0]);
         break;
 
+#if CONFIG_SOAM_EMBEDDED_DATABASE == 1
+
+    case SOAM_TYPE_DATABASE_REQUEST:
+        res = handle_database_request(self_p, &buf[0]);
+        break;
+
+#endif
+
     case SOAM_TYPE_COMMAND_REQUEST:
-        res = fs_call((char *)&buf_p[4],
-                      &self_p->command_chan,
-                      &self_p->command_chan,
-                      NULL);
-        buf[0] = (res >> 24);
-        buf[1] = (res >> 16);
-        buf[2] = (res >> 8);
-        buf[3] = res;
-
-        if (soam_write(self_p, SOAM_TYPE_COMMAND_RESPONSE, &buf[0], 4) != 4) {
-            return (-1);
-        }
-
+        res = handle_command_request(self_p, buf_p, &buf[0]);
         break;
 
     default:
         soam_write(self_p, SOAM_TYPE_INVALID_TYPE, buf_p, size);
-
-        return (-1);
+        res = -1;
+        break;
     }
 
-    return (0);
+    return (res);
 }
 
 ssize_t soam_write_begin(struct soam_t *self_p,
