@@ -42,19 +42,21 @@ SIZEARGS = --mcu=$(MCU) --format=avr
 CDEFS += F_CPU=$(F_CPU)UL \
 	__DELAY_BACKWARD_COMPATIBLE__
 
-CFLAGS += -mmcu=$(CPU) \
-          -O2 \
-          -ffunction-sections \
-          -fdata-sections \
-          -fpack-struct \
-          -fshort-enums
+CFLAGS += \
+	-mmcu=$(CPU) \
+        -O2 \
+        -ffunction-sections \
+        -fdata-sections \
+        -fpack-struct \
+        -fshort-enums
 
-CXXFLAGS += -mmcu=$(CPU) \
-          -O2 \
-          -ffunction-sections \
-          -fdata-sections \
-          -fpack-struct \
-          -fshort-enums
+CXXFLAGS += \
+	-mmcu=$(CPU) \
+        -O2 \
+        -ffunction-sections \
+        -fdata-sections \
+        -fpack-struct \
+        -fshort-enums
 
 LDFLAGS += -mmcu=$(CPU) \
            -Wl,--cref \

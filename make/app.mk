@@ -351,6 +351,9 @@ include $(SIMBA_GLOBAL_MK)
 valgrind:
 	valgrind --leak-check=full ./$(EXE)
 
+stack-usage:
+	cat $$(find $(BUILDDIR)/obj -name "*.su") | sort -n -k2
+
 CPPCHECK_ENABLE = warning performance portability information
 
 cppcheck:
@@ -375,6 +378,7 @@ help:
 	@echo "                              baudrate BAUDRATE."
 	@echo "  release                     Compile with NASSERT=yes and NDEBUG=yes."
 	@echo "  size                        Print application size information."
+	@echo "  stack-usage                 Print stack usage per function."
 	@IFS=$$'\n' ; for h in $(HELP_TARGETS) ; do \
 	  echo $$h ; \
 	done

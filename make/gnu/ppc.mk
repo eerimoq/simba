@@ -49,7 +49,8 @@ CFLAGS += \
 	$(OPT) \
         -ffunction-sections \
         -fdata-sections \
-        -fpack-struct
+        -fpack-struct \
+	-fstack-usage
 
 CXXFLAGS += \
 	-Werror \
@@ -57,7 +58,8 @@ CXXFLAGS += \
 	$(OPT) \
         -ffunction-sections \
         -fdata-sections \
-        -fpack-struct
+        -fpack-struct \
+	-fstack-usage
 
 LDFLAGS += \
 	-mcpu=$(MCPU) \

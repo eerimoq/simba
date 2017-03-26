@@ -50,17 +50,19 @@ endif
 
 CDEFS += F_CPU=$(F_CPU)UL
 
-CFLAGS += -mthumb \
-          -mcpu=$(MCPU) \
-          -ffunction-sections \
-          -fdata-sections \
-          -fpack-struct
+CFLAGS += \
+	-mthumb \
+        -mcpu=$(MCPU) \
+        -ffunction-sections \
+        -fdata-sections \
+        -fpack-struct
 
-CXXFLAGS += -mthumb \
-          -mcpu=$(MCPU) \
-          -ffunction-sections \
-          -fdata-sections \
-          -fpack-struct
+CXXFLAGS += \
+	-mthumb \
+        -mcpu=$(MCPU) \
+        -ffunction-sections \
+        -fdata-sections \
+        -fpack-struct
 
 LDFLAGS += -mcpu=$(MCPU) \
            -Wl,--cref \
