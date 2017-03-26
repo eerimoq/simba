@@ -370,6 +370,25 @@ static void cvcprintf(struct buffered_output_t *output_p,
     chan_control(output_p->chan_p, CHAN_CONTROL_PRINTF_END);
 }
 
+static void print_ascii(void *chan_p, const char *buf_p, size_t size)
+{
+    int i;
+
+    for (i = 0; i < 16 - size; i++) {
+        std_fprintf(chan_p, FSTR("   "));
+    }
+
+    std_fprintf(chan_p, FSTR("'"));
+
+    for (i = 0; i < size; i++) {
+        std_fprintf(chan_p,
+                    FSTR("%c"),
+                    isprint((int)buf_p[i]) ? buf_p[i] : '.');
+    }
+
+    std_fprintf(chan_p, FSTR("'"));
+}
+
 int std_module_init(void)
 {
     return (0);
@@ -834,4 +853,38 @@ char *std_strip(char *str_p, const char *strip_p)
     }
 
     return (begin_p);
+}
+
+ssize_t std_hexdump(void *chan_p, const void *buf_p, size_t size)
+{
+    const char *b_p;
+    int pos;
+    ssize_t res;
+
+    res = 0;
+    pos = 0;
+    b_p = buf_p;
+
+    while (size > 0) {
+        if ((pos % 16) == 0) {
+            std_fprintf(chan_p, FSTR("%08x: "), pos);
+        }
+
+        std_fprintf(chan_p, FSTR("%02x "), b_p[pos]);
+
+        if ((pos % 16) == 15) {
+            print_ascii(chan_p, &b_p[pos - 15], 16);
+            std_fprintf(chan_p, FSTR("\r\n"));
+            res += 78;
+        }
+
+        pos++;
+        size--;
+    }
+
+    print_ascii(chan_p, &b_p[pos - (pos % 16)], pos % 16);
+    std_fprintf(chan_p, FSTR("\r\n"));
+    res += (60 + (pos % 16));
+
+    return (res);
 }

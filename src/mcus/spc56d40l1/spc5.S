@@ -184,7 +184,8 @@ isr_external_input:
 
         /* Read the ISR address from the IACKR register. */
         e_lis     %r3, INTC_IACKR@ha
-        e_lwz     %r3, INTC_IACKR@l(%r3) /* Address in the external interrupt vector. */
+        e_lwz     %r3, INTC_IACKR@l(%r3) /* Address in the external interrupt
+                                            vector. */
         e_lwz     %r3, 0x0(%r3) /* Load the ISR address. */
 
         /* Call the ISR. */

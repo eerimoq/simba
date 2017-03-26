@@ -350,7 +350,7 @@ static int strtod_test(const char *str_p,
     double value;
 
     end_p = std_strtod(str_p, &value);
-    
+
     if (end_p == NULL) {
         if (expected_end_offset != 0) {
             std_printf(FSTR("End mismatch.\r\n"));
@@ -365,7 +365,7 @@ static int strtod_test(const char *str_p,
         std_printf(FSTR("Value too small.\r\n"));
         return (-1);
     }
-    
+
     if (value > expected_max) {
         std_printf(FSTR("Value too big.\r\n"));
         return (-1);
@@ -450,7 +450,16 @@ static int test_strtod(struct harness_t *harness_p)
                          2.2250738585072014e-308l,
                          2.2250738585072014e-308l) == 0);
 #endif
-    
+
+    return (0);
+}
+
+static int test_hexdump(struct harness_t *harness_p)
+{
+    BTASSERT(std_hexdump(sys_get_stdout(),
+                         "1234567890abcdefghijkl\r\n",
+                         25) == 147);
+
     return (0);
 }
 
@@ -470,6 +479,7 @@ int main()
         { test_strip, "test_strip" },
         { test_libc, "test_libc" },
         { test_strtod, "test_strtod" },
+        { test_hexdump, "test_hexdump" },
         { NULL, NULL }
     };
 

@@ -275,4 +275,16 @@ int std_strlen(FAR const char *fstr_p);
  */
 char *std_strip(char *str_p, const char *strip_p);
 
+/**
+ * Write a hex dump of given data to given channel.
+ *
+ * @param[in] chan_p Channel to write the hexdump to.
+ * @param[in] buf_p Buffer to dump.
+ * @param[in] size Size of buffer.
+ *
+ * @return Number of characters written to given channel, or negative
+ *         error code.
+ */
+ssize_t std_hexdump(void *chan_p, const void *buf_p, size_t size);
+
 #endif
