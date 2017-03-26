@@ -34,6 +34,8 @@
 #define INTC_IACKR                       0xfff48010
 #define INTC_EOIR                        0xfff48018
 
+#define INTERRUPT_STACK (interrupt_stack + CONFIG_SYSTEM_INTERRUPT_STACK_SIZE - 76)
+
 .section .startup
 
 #if CONFIG_SPC5_BOOT_ENTRY_RCHW == 1
@@ -156,9 +158,19 @@ _interrupt_init:
         .type     isr_external_input,@function
         .weak     isr_external_input
 isr_external_input:
+#if CONFIG_SYSTEM_INTERRUPT_STACK_SIZE == 0
         /* Store registers on the stack to allow an interrupt handler
            written in C. */
         e_stwu    %r1, -76(%r1)
+#else
+        /* Store r2 on the thread stack and move the stack pointer to
+           r2, later saved on the interrupt stack. */
+        e_stwu    %r1, -8(%r1)
+        se_stw    %r2, 4(%r1)
+        se_mr     %r2, %r1
+        e_lis     %r1, INTERRUPT_STACK@ha
+        e_or2i    %r1, INTERRUPT_STACK@l
+#endif
         e_stw     %r0, 64(%r1)
         se_stw    %r2, 60(%r1)
         se_stw    %r3, 56(%r1)
@@ -221,7 +233,14 @@ isr_external_input:
         se_lwz    %r3, 56(%r1)
         se_lwz    %r2, 60(%r1)
         e_lwz     %r0, 64(%r1)
+#if CONFIG_SYSTEM_INTERRUPT_STACK_SIZE == 0
         e_add16i  %r1, %r1, 76
+#else
+        /* Restore the thread stack pointer. */
+        se_mr     %r1, %r2
+        se_lwz    %r2, 4(%r1)
+        e_add16i  %r1, %r1, 8
+#endif
 
         se_rfi
 

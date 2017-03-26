@@ -32,6 +32,10 @@
 
 #if CONFIG_SYSTEM_INTERRUPTS == 1
 
+#    if CONFIG_SYSTEM_INTERRUPT_STACK_SIZE != 0
+char interrupt_stack[CONFIG_SYSTEM_INTERRUPT_STACK_SIZE];
+#    endif
+
 /**
  * Do nothing if no interrupt service routine is installed in the
  * interrupt vector.

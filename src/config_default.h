@@ -1858,6 +1858,18 @@
 #endif
 
 /**
+ * Interrupt stack size in bytes. Set to a value greater than zero to
+ * enable the interrupt stack.
+ */
+#ifndef CONFIG_SYSTEM_INTERRUPT_STACK_SIZE
+#    if defined(FAMILY_SPC5)
+#        define CONFIG_SYSTEM_INTERRUPT_STACK_SIZE        256
+#    else
+#        define CONFIG_SYSTEM_INTERRUPT_STACK_SIZE          0
+#    endif
+#endif
+
+/**
  * Calculate thread CPU usage.
  */
 #ifndef CONFIG_THRD_CPU_USAGE
@@ -1885,9 +1897,9 @@
  * Stack size of the idle thread.
  */
 #ifndef CONFIG_THRD_IDLE_STACK_SIZE
-#    if defined(ARCH_ARM) || defined(ARCH_PPC)
+#    if defined(ARCH_ARM)
 #        define CONFIG_THRD_IDLE_STACK_SIZE               384
-#    elif defined(ARCH_AVR)
+#    elif defined(ARCH_AVR) || defined(FAMILY_SPC5)
 #        define CONFIG_THRD_IDLE_STACK_SIZE               156
 #    elif defined(ARCH_ESP)
 #        define CONFIG_THRD_IDLE_STACK_SIZE               768
