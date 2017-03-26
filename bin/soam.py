@@ -267,11 +267,11 @@ class Client(object):
         else:
             # Get the database from the device if not given.
             try:
-                print('Reading database from device... ', end='')
+                print('Reading database from device... ', end='', flush=True)
                 database_compressed = self.get_database_from_device()
-                print('done.')
+                print('done.', flush=True)
             except BaseException:
-                print('failed. ')
+                print('failed. ', flush=True)
                 sys.exit('error: failed to read the database from the device')
 
             database = lzma.decompress(database_compressed)
@@ -279,11 +279,11 @@ class Client(object):
         self.database.set_database(StringIO(database.decode('ascii')))
 
         try:
-            print('Reading database id from device... ', end='')
+            print('Reading database id from device... ', end='', flush=True)
             device_database_id = self.get_database_id_from_device()
-            print('done.')
+            print('done.', flush=True)
         except BaseException:
-            print('failed. ')
+            print('failed. ', flush=True)
             sys.exit('error: failed to read the database id from the device')
 
         print('Comparing read and calculated database ids... ', end='')
@@ -291,12 +291,12 @@ class Client(object):
         database_id = hashlib.md5(database).hexdigest().encode('ascii')
 
         if device_database_id != database_id:
-            print('failed. ')
+            print('failed. ', flush=True)
             sys.exit('error: database id mismatch ({} != {})'.format(
                 device_database_id,
                 database_id))
 
-        print('done.')
+        print('done.', flush=True)
 
     def write_soam_segment(self, segment):
         """Write given packet to the server.
