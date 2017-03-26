@@ -70,9 +70,9 @@ Below is the memory usage of two applications:
 +--------------------------+-----------+-----------+
 | Application              | Flash     | RAM       |
 +==========================+===========+===========+
-| minimal-configuration    |      1598 |       280 |
+| minimal-configuration    |      1556 |       278 |
 +--------------------------+-----------+-----------+
-| default-configuration    |     11330 |       771 |
+| default-configuration    |     11490 |       759 |
 +--------------------------+-----------+-----------+
 
 Default configuration
@@ -347,6 +347,8 @@ Default Standard Library configuration.
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_SHELL_PROMPT_                                  |  "$ "                                               |
 +--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_SOAM_EMBEDDED_DATABASE_                        |  0                                                  |
++--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_SOCKET_RAW_                                    |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_SPC5_BOOT_ENTRY_RCHW_                          |  1                                                  |
@@ -397,11 +399,13 @@ Default Standard Library configuration.
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_START_SOAM_PRIO_                               |  30                                                 |
 +--------------------------------------------------------+-----------------------------------------------------+
-|  CONFIG_START_SOAM_STACK_SIZE_                         |  768                                                |
+|  CONFIG_START_SOAM_STACK_SIZE_                         |  840                                                |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_STD_OUTPUT_BUFFER_MAX_                         |  16                                                 |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_SYSTEM_INTERRUPTS_                             |  1                                                  |
++--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_SYSTEM_INTERRUPT_STACK_SIZE_                   |  0                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_SYSTEM_TICK_FREQUENCY_                         |  100                                                |
 +--------------------------------------------------------+-----------------------------------------------------+
@@ -721,6 +725,8 @@ Mcu
 
 .. _CONFIG_SHELL_PROMPT: ../user-guide/configuration.html#c.CONFIG_SHELL_PROMPT
 
+.. _CONFIG_SOAM_EMBEDDED_DATABASE: ../user-guide/configuration.html#c.CONFIG_SOAM_EMBEDDED_DATABASE
+
 .. _CONFIG_SOCKET_RAW: ../user-guide/configuration.html#c.CONFIG_SOCKET_RAW
 
 .. _CONFIG_SPC5_BOOT_ENTRY_RCHW: ../user-guide/configuration.html#c.CONFIG_SPC5_BOOT_ENTRY_RCHW
@@ -776,6 +782,8 @@ Mcu
 .. _CONFIG_STD_OUTPUT_BUFFER_MAX: ../user-guide/configuration.html#c.CONFIG_STD_OUTPUT_BUFFER_MAX
 
 .. _CONFIG_SYSTEM_INTERRUPTS: ../user-guide/configuration.html#c.CONFIG_SYSTEM_INTERRUPTS
+
+.. _CONFIG_SYSTEM_INTERRUPT_STACK_SIZE: ../user-guide/configuration.html#c.CONFIG_SYSTEM_INTERRUPT_STACK_SIZE
 
 .. _CONFIG_SYSTEM_TICK_FREQUENCY: ../user-guide/configuration.html#c.CONFIG_SYSTEM_TICK_FREQUENCY
 
