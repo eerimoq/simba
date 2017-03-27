@@ -38,28 +38,32 @@ SIZE_SUMMARY_CMD ?= $(SIMBA_ROOT)/bin/memory_usage.py \
 			--rom-section .irom0.text \
 			${EXE}
 
+OPT ?= -Os
+
 CDEFS += F_CPU=$(F_CPU)UL \
 	ICACHE_FLASH \
 	__STRICT_ANSI__ \
 	__ets__
 
-CFLAGS += -Os \
-          -Werror \
-          -nostdlib \
-          -mlongcalls \
-          -mtext-section-literals \
-          -ffunction-sections \
-	  -fno-inline-functions \
-	  -fsingle-precision-constant \
-          -fdata-sections
+CFLAGS += \
+	$(OPT) \
+        -Werror \
+        -nostdlib \
+        -mlongcalls \
+        -mtext-section-literals \
+        -ffunction-sections \
+	-fno-inline-functions \
+	-fsingle-precision-constant \
+        -fdata-sections
 
-CXXFLAGS += -Os \
-          -Werror \
-          -nostdlib \
-          -mlongcalls \
-          -mtext-section-literals \
-          -ffunction-sections \
-          -fdata-sections
+CXXFLAGS += \
+	$(OPT) \
+        -Werror \
+        -nostdlib \
+        -mlongcalls \
+        -mtext-section-literals \
+        -ffunction-sections \
+        -fdata-sections
 
 LIBPATH += $(ESP8266_RTOS_SDK_ROOT)/lib
 

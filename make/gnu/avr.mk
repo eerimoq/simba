@@ -39,12 +39,14 @@ SIZE_SUMMARY_CMD ?= $(SIMBA_ROOT)/bin/memory_usage.py \
 
 SIZEARGS = --mcu=$(MCU) --format=avr
 
+OPT ?= -O2
+
 CDEFS += F_CPU=$(F_CPU)UL \
 	__DELAY_BACKWARD_COMPATIBLE__
 
 CFLAGS += \
 	-mmcu=$(CPU) \
-        -O2 \
+        $(OPT) \
         -ffunction-sections \
         -fdata-sections \
         -fpack-struct \
@@ -52,7 +54,7 @@ CFLAGS += \
 
 CXXFLAGS += \
 	-mmcu=$(CPU) \
-        -O2 \
+        $(OPT) \
         -ffunction-sections \
         -fdata-sections \
         -fpack-struct \

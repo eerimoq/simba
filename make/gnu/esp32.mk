@@ -39,19 +39,23 @@ SIZE_SUMMARY_CMD ?= $(SIMBA_ROOT)/bin/memory_usage.py \
 
 CDEFS += F_CPU=$(F_CPU)UL
 
-CFLAGS += -Os \
-          -Werror \
-          -nostdlib \
-          -mlongcalls \
-          -ffunction-sections \
-          -fdata-sections
+OPT ?= -Os
 
-CXXFLAGS += -Os \
-          -Werror \
-          -nostdlib \
-          -mlongcalls \
-          -ffunction-sections \
-          -fdata-sections
+CFLAGS += \
+	$(OPT) \
+        -Werror \
+        -nostdlib \
+        -mlongcalls \
+        -ffunction-sections \
+        -fdata-sections
+
+CXXFLAGS += \
+	$(OPT) \
+        -Werror \
+        -nostdlib \
+        -mlongcalls \
+        -ffunction-sections \
+        -fdata-sections
 
 LDFLAGS += -Wl,-static \
            -nostdlib \
