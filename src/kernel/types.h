@@ -3,7 +3,7 @@
  *
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2016, Erik Moqvist
+ * Copyright (c) 2014-2017, Erik Moqvist
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -151,5 +151,14 @@ typedef uint16_t u16_t;
 typedef int16_t s16_t;
 typedef uint32_t u32_t;
 typedef int32_t s32_t;
+
+struct thrd_prio_list_elem_t {
+    struct thrd_prio_list_elem_t *next_p;
+    struct thrd_t *thrd_p;
+};
+
+struct thrd_prio_list_t {
+    struct thrd_prio_list_elem_t *head_p;
+};
 
 #endif

@@ -10,7 +10,7 @@ Measure duty cycle and frequency on eight pins in parallel with the
 file system command ``/pwm/measure [iterations]``.
 
 The leftmost column is the number of samples used to calculate the
-duty cycles and frequencies. The sample interval is set to 1 ms.
+duty cycles and frequencies. The sample interval is set to 50 us.
 
 .. code-block:: text
 

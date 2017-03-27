@@ -3,7 +3,7 @@
  *
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2016, Erik Moqvist
+ * Copyright (c) 2014-2017, Erik Moqvist
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -47,7 +47,7 @@ struct module_t {
     int initialized;
     struct {
         struct thrd_t *current_p;
-        struct thrd_t *ready_p;
+        struct thrd_prio_list_t ready;
     } scheduler;
     struct thrd_t *threads_p;
 #if CONFIG_THRD_ENV == 1
@@ -197,69 +197,25 @@ void terminate(void)
 
 /**
  * Push a thread on the list of threads that are ready to be
- * scheduled. The ready list is a linked list with the highest
- * priority thread in the first element. The pushed thread is added
- * _after_ any already pushed threads with the same priority.
+ * scheduled.
  *
  * @param[in] thrd_p Thread to push to the the ready list.
+ *
+ * @return void.
  */
 static void scheduler_ready_push(struct thrd_t *thrd_p)
 {
-    struct thrd_t *ready_p;
-
-    /* Add in prio order, with highest prio first. */
-    ready_p = module.scheduler.ready_p;
-
-    while (ready_p != NULL) {
-        if (thrd_p->prio < ready_p->prio) {
-            /* Insert before the 'ready_p' thrd. */
-            if (ready_p->scheduler.prev_p != NULL) {
-                ready_p->scheduler.prev_p->scheduler.next_p = thrd_p;
-            } else {
-                module.scheduler.ready_p = thrd_p;
-            }
-
-            thrd_p->scheduler.prev_p = ready_p->scheduler.prev_p;
-            thrd_p->scheduler.next_p = ready_p;
-            ready_p->scheduler.prev_p = thrd_p;
-            return;
-        }
-
-        /* End of ready list. */
-        if (ready_p->scheduler.next_p == NULL) {
-            ready_p->scheduler.next_p = thrd_p;
-            thrd_p->scheduler.prev_p = ready_p;
-            thrd_p->scheduler.next_p = NULL;
-            return;
-        }
-
-        ready_p = ready_p->scheduler.next_p;
-    }
-
-    /* Empty list. */
-    module.scheduler.ready_p = thrd_p;
-    thrd_p->scheduler.prev_p = NULL;
-    thrd_p->scheduler.next_p = NULL;
+    thrd_prio_list_push_isr(&module.scheduler.ready, &thrd_p->scheduler.elem);
 }
 
 /**
  * Pop the most important thread from the ready list.
+ *
+ * @return Thread to swap to.
  */
 static struct thrd_t *scheduler_ready_pop(void)
 {
-    struct thrd_t *thrd_p;
-
-    thrd_p = module.scheduler.ready_p;
-    module.scheduler.ready_p = thrd_p->scheduler.next_p;
-
-    if (module.scheduler.ready_p != NULL) {
-        module.scheduler.ready_p->scheduler.prev_p = NULL;
-    }
-
-    thrd_p->scheduler.prev_p = NULL;
-    thrd_p->scheduler.next_p = NULL;
-
-    return (thrd_p);
+    return (thrd_prio_list_pop_isr(&module.scheduler.ready)->thrd_p);
 }
 
 /**
@@ -458,6 +414,8 @@ int thrd_module_init(void)
 
     module.initialized = 1;
 
+    thrd_prio_list_init(&module.scheduler.ready);
+
 #if CONFIG_THRD_STACK_HEAP == 1
     heap_init(&stack_heap,
               &stack_heap_buffer[0],
@@ -479,8 +437,7 @@ int thrd_module_init(void)
 
     /* Main function becomes a thrd. */
     thrd_p = thrd_port_get_main_thrd();
-    thrd_p->scheduler.prev_p = NULL;
-    thrd_p->scheduler.next_p = NULL;
+    thrd_p->scheduler.elem.thrd_p = thrd_p;
     thrd_p->prio = 0;
     thrd_p->state = THRD_STATE_CURRENT;
     thrd_p->err = 0;
@@ -520,7 +477,6 @@ int thrd_module_init(void)
     module.threads_p = thrd_p;
 
     thrd_port_init_main(&thrd_p->port);
-
     thrd_spawn(idle_thrd, NULL, 127, idle_thrd_stack, sizeof(idle_thrd_stack));
 
 #if CONFIG_MONITOR_THREAD == 1
@@ -579,8 +535,7 @@ struct thrd_t *thrd_spawn(void *(*main)(void *),
 
     /* Initialize thrd structure in the beginning of the stack. */
     thrd_p = stack_p;
-    thrd_p->scheduler.prev_p = NULL;
-    thrd_p->scheduler.next_p = NULL;
+    thrd_p->scheduler.elem.thrd_p = thrd_p;
     thrd_p->prio = prio;
     thrd_p->state = THRD_STATE_READY;
     thrd_p->err = 0;
@@ -624,7 +579,7 @@ struct thrd_t *thrd_spawn(void *(*main)(void *),
     scheduler_ready_push(thrd_p);
     sys_unlock();
 
-    return (err == 0 ? stack_p : NULL);
+    return (err == 0 ? thrd_p : NULL);
 }
 
 int thrd_suspend(struct time_t *timeout_p)
@@ -987,4 +942,95 @@ const void *thrd_get_bottom_of_stack(struct thrd_t *thrd_p)
 const void *thrd_get_top_of_stack(struct thrd_t *thrd_p)
 {
     return (thrd_port_get_top_of_stack(thrd_p));
+}
+
+int thrd_prio_list_init(struct thrd_prio_list_t *self_p)
+{
+    self_p->head_p = NULL;
+
+    return (0);
+}
+
+RAM_CODE void thrd_prio_list_push_isr(struct thrd_prio_list_t *self_p,
+                                      struct thrd_prio_list_elem_t *elem_p)
+{
+    struct thrd_prio_list_elem_t *curr_p;
+    struct thrd_prio_list_elem_t *prev_p;
+    int prio;
+
+    elem_p->next_p = NULL;
+
+    if (self_p->head_p == NULL) {
+        /* Empty list. */
+        self_p->head_p = elem_p;
+    } else {
+        /* Add in prio order, with highest prio first. */
+        curr_p = self_p->head_p;
+        prev_p = NULL;
+        prio = elem_p->thrd_p->prio;
+
+        while (curr_p != NULL) {
+            if (prio < curr_p->thrd_p->prio) {
+                /* Insert before the 'curr_p' element. */
+                if (prev_p != NULL) {
+                    elem_p->next_p = prev_p->next_p;
+                    prev_p->next_p = elem_p;
+                } else {
+                    elem_p->next_p = self_p->head_p;
+                    self_p->head_p = elem_p;
+                }
+
+                return;
+            }
+
+            prev_p = curr_p;
+            curr_p = curr_p->next_p;
+        }
+
+        /* End of the list. */
+        prev_p->next_p = elem_p;
+    }
+}
+
+RAM_CODE struct thrd_prio_list_elem_t *thrd_prio_list_pop_isr(
+    struct thrd_prio_list_t *self_p)
+{
+    struct thrd_prio_list_elem_t *elem_p;
+
+    elem_p = self_p->head_p;
+
+    if (elem_p == NULL) {
+        return (NULL);
+    }
+
+    self_p->head_p = elem_p->next_p;
+
+    return (elem_p);
+}
+
+RAM_CODE int thrd_prio_list_remove_isr(struct thrd_prio_list_t *self_p,
+                                       struct thrd_prio_list_elem_t *elem_p)
+{
+    struct thrd_prio_list_elem_t *curr_p;
+    struct thrd_prio_list_elem_t *prev_p;
+
+    curr_p = self_p->head_p;
+    prev_p = NULL;
+
+    while (curr_p != NULL) {
+        if (curr_p == elem_p) {
+            if (prev_p != NULL) {
+                prev_p->next_p = elem_p->next_p;
+            } else {
+                self_p->head_p = elem_p->next_p;
+            }
+
+            return (0);
+        }
+
+        prev_p = curr_p;
+        curr_p = curr_p->next_p;
+    }
+
+    return (-1);
 }

@@ -3,7 +3,7 @@
  *
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2016, Erik Moqvist
+ * Copyright (c) 2014-2017, Erik Moqvist
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -36,7 +36,7 @@ static int test_input_single_frame(struct harness_t *harness_p)
     uint8_t buf[8];
     uint8_t frame[8];
 
-    BTASSERT(isotp_init(&isotp, &buf[0], sizeof(buf)) == 0);
+    BTASSERT(isotp_init(&isotp, &buf[0], sizeof(buf), 0) == 0);
 
     /* Input a good frame. */
     frame[0] = (0 << 4) | 3;
@@ -62,7 +62,7 @@ static int test_input_multi_frame(struct harness_t *harness_p)
     uint8_t frame[8];
     size_t size;
 
-    BTASSERT(isotp_init(&isotp, &buf[0], sizeof(buf)) == 0);
+    BTASSERT(isotp_init(&isotp, &buf[0], sizeof(buf), 0) == 0);
 
     /* Input the first frame. */
     frame[0] = (1 << 4) | 0;
@@ -130,7 +130,7 @@ static int test_output_single_frame(struct harness_t *harness_p)
     message[1] = 'o';
     message[2] = 'o';
 
-    BTASSERT(isotp_init(&isotp, &message[0], 3) == 0);
+    BTASSERT(isotp_init(&isotp, &message[0], 3, 0) == 0);
     BTASSERT(isotp_output(&isotp, &frame[0], &size) == 3);
 
     BTASSERT(frame[0] == ((0 << 4) | 3));
@@ -149,7 +149,7 @@ static int test_output_multi_frame(struct harness_t *harness_p)
     size_t size;
 
     /* Send a message. */
-    BTASSERT(isotp_init(&isotp, (uint8_t *)&message[0], 19) == 0);
+    BTASSERT(isotp_init(&isotp, (uint8_t *)&message[0], 19, 0) == 0);
     BTASSERT(isotp_output(&isotp, &frame[0], &size) == 0);
 
     /* Verify outputted first frame. */

@@ -3,7 +3,7 @@
  *
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2016, Erik Moqvist
+ * Copyright (c) 2014-2017, Erik Moqvist
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -39,10 +39,9 @@
  * Settings types. Each setting must have be one of these types.
  */
 enum setting_type_t {
-    setting_type_int8_t = 0,
-    setting_type_int16_t,
-    setting_type_int32_t,
-    setting_type_string_t
+    setting_type_int32_t = 0,
+    setting_type_string_t,
+    setting_type_blob_t
 };
 
 struct setting_t {

@@ -3,7 +3,7 @@
  *
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2016, Erik Moqvist
+ * Copyright (c) 2014-2017, Erik Moqvist
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -30,12 +30,6 @@
 
 #include "simba.h"
 
-struct sem_elem_t {
-    struct sem_elem_t *next_p;
-    struct sem_elem_t *prev_p;
-    struct thrd_t *thrd_p;
-};
-
 int sem_module_init(void)
 {
     return (0);
@@ -51,7 +45,8 @@ int sem_init(struct sem_t *self_p,
 
     self_p->count = count;
     self_p->count_max = count_max;
-    self_p->head_p = NULL;
+
+    thrd_prio_list_init(&self_p->waiters);
 
     return (0);
 }
@@ -62,27 +57,17 @@ int sem_take(struct sem_t *self_p,
     ASSERTN(self_p != NULL, EINVAL);
 
     int err = 0;
-    struct sem_elem_t elem;
+    struct thrd_prio_list_elem_t elem;
 
     sys_lock();
 
     if (self_p->count == self_p->count_max) {
         elem.thrd_p = thrd_self();
-        elem.next_p = self_p->head_p;
-        elem.prev_p = NULL;
-        self_p->head_p = &elem;
+        thrd_prio_list_push_isr(&self_p->waiters, &elem);
         err = thrd_suspend_isr(timeout_p);
 
         if (err == -ETIMEDOUT) {
-            if (elem.prev_p != NULL) {
-                elem.prev_p->next_p = elem.next_p;
-            } else {
-                self_p->head_p = elem.next_p;
-            }
-
-            if (elem.next_p != NULL) {
-                elem.next_p->prev_p = elem.prev_p;
-            }
+            thrd_prio_list_remove_isr(&self_p->waiters, &elem);
         }
     } else {
         self_p->count++;
@@ -109,23 +94,13 @@ int sem_give(struct sem_t *self_p,
 int sem_give_isr(struct sem_t *self_p,
                  int count)
 {
-    struct sem_elem_t *elem_p;
+    struct thrd_prio_list_elem_t *elem_p;
 
     self_p->count -= count;
 
-    if (self_p->count < 0) {
-        self_p->count = 0;
-    }
-
-    while ((self_p->count <= self_p->count_max) && (self_p->head_p != NULL)) {
+    while ((self_p->count < self_p->count_max)
+           && ((elem_p = thrd_prio_list_pop_isr(&self_p->waiters)) != NULL)) {
         self_p->count++;
-        elem_p = self_p->head_p;
-        self_p->head_p = elem_p->next_p;
-
-        if (elem_p->next_p != NULL) {
-            elem_p->next_p->prev_p = NULL;
-        }
-
         thrd_resume_isr(elem_p->thrd_p, 0);
     }
 

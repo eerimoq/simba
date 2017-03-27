@@ -37,7 +37,7 @@ debug. The thread name is the name of the thread that created the log
 entry and the log object name is the name of the log object the entry
 was printed on. The message is a user defined string.
 
-.. code:: text
+.. code-block:: text
 
    <timestamp>:<log level>:<thread name>:<log object name>: <message>
 
@@ -56,7 +56,7 @@ directory ``debug/log/``.
 |                                   | level ``LOG_INFO``. This command has no use except to test |br| |
 |                                   | that the log module works.                                      |
 +-----------------------------------+-----------------------------------------------------------------+
-|  ``set_log_mask <obejct> <mask>`` | Set the log mask to ``<mask>`` for log object ``<object>``.     |
+|  ``set_log_mask <object> <mask>`` | Set the log mask to ``<mask>`` for log object ``<object>``.     |
 +-----------------------------------+-----------------------------------------------------------------+
 
 Example output from the shell:
@@ -77,16 +77,35 @@ Example output from the shell:
 Example
 -------
 
-Here are a few example outputs using three log objects; `foo`, `bar`
-and the default log object `default`. All logs are from the main
-thread as can be seen in the third field in the entries.
+Here is an example of how to create two log objects; `foo` and `bar`,
+and then use them and the default log object `default`.
 
-.. code:: text
+The source code:
 
-   23:info:main:foo: A foo info message.
-   24:info:main:bar: A bar info message.
-   37:debug:main:bar: A bar debug message.
-   56:error:main:default: A main error message.
+.. code-block:: c
+
+   /* Initialize the log objects foo and bar. */
+   struct log_object_t foo;
+   struct log_object_t bar;
+
+   log_object_init(&foo, "foo", LOG_UPTO(INFO));
+   log_object_init(&bar, "bar", LOG_UPTO(DEBUG));
+
+   /* Print four log entries. */
+   log_object_print(&foo, LOG_INFO, OSTR("A foo info message."));
+   log_object_print(&bar, LOG_INFO, OSTR("A bar info message."));
+   log_object_print(&bar, LOG_DEBUG, OSTR("A bar debug message."));
+   log_object_print(NULL, LOG_ERROR, OSTR("A default error message."));
+
+All logs are printed from the main thread as can be seen in the third
+field in the entries in the output below.
+
+.. code-block:: text
+
+   23.0:info:main:foo: A foo info message.
+   24.0:info:main:bar: A bar info message.
+   37.0:debug:main:bar: A bar debug message.
+   56.0:error:main:default: A default error message.
 
 ----------------------------------------------
 

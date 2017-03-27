@@ -3,7 +3,7 @@
  *
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2016, Erik Moqvist
+ * Copyright (c) 2014-2017, Erik Moqvist
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -32,9 +32,14 @@
 
 static int test_crc_32(struct harness_t *harness_p)
 {
+    uint32_t crc;
     char string[] = "The quick brown fox jumps over the lazy dog";
 
     BTASSERT(crc_32(0, string, strlen(string)) == 0x414fa339);
+
+    crc = crc_32(0, string, 10);
+    BTASSERT(crc == 0xa3ec1434);
+    BTASSERT(crc_32(crc, &string[10], strlen(string) - 10) == 0x414fa339);
 
     return (0);
 }

@@ -3,7 +3,7 @@
  *
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2016, Erik Moqvist
+ * Copyright (c) 2014-2017, Erik Moqvist
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -51,7 +51,7 @@ __attribute__ ((weak)) = {
     0xff,
 };
 
-#elif defined(ARCH_ARM)
+#elif defined(ARCH_ARM) || defined(ARCH_PPC)
 
 uint8_t settings_area[2][CONFIG_SETTINGS_AREA_SIZE]
 __attribute__ ((section (".settings"), weak)) = {

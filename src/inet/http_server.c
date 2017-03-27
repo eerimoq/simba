@@ -3,7 +3,7 @@
  *
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2016, Erik Moqvist
+ * Copyright (c) 2014-2017, Erik Moqvist
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -64,16 +64,16 @@ static int read_initial_request_line(void *chan_p,
     char *path_p = NULL;
     char *proto_p = NULL;
     size_t size;
-    
+
     *buf_p++ = '\0';
     action_p = buf_p;
     size = 0;
-    
+
     while (1) {
         if (size == CONFIG_HTTP_SERVER_REQUEST_BUFFER_SIZE) {
             return (-ENOMEM);
         }
-        
+
         if (chan_read(chan_p, buf_p, sizeof(*buf_p)) != sizeof(*buf_p)) {
             return (-EIO);
         }
@@ -135,12 +135,12 @@ static int read_header_line(void *chan_p,
     *header_pp = buf_p;
     *value_pp = NULL;
     size = 0;
-    
+
     while (1) {
         if (size == CONFIG_HTTP_SERVER_REQUEST_BUFFER_SIZE) {
             return (-ENOMEM);
         }
-        
+
         if (chan_read(chan_p, buf_p, sizeof(*buf_p)) != sizeof(*buf_p)) {
             return (-EIO);
         }
@@ -160,7 +160,7 @@ static int read_header_line(void *chan_p,
                 *value_pp = buf_p;
             }
         }
-        
+
         size++;
     }
 
@@ -274,7 +274,7 @@ static int handle_request(struct http_server_t *self_p,
     if (res != 0) {
         /* Reply with a Bad Request if the header could not be read.*/
         std_fprintf(connection_p->chan_p, bad_request_header);
-        
+
         return (res);
     }
 

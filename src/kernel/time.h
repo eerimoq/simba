@@ -3,7 +3,7 @@
  *
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2016, Erik Moqvist
+ * Copyright (c) 2014-2017, Erik Moqvist
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -103,7 +103,7 @@ int time_diff(struct time_t *diff_p,
  *
  * NOTE: The maximum allowed time to sleep is target specific.
  *
- * @param[in] useconds Microseconds to sleep.
+ * @param[in] useconds Microseconds to busy wait.
  *
  * @return void
  */

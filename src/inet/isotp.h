@@ -3,7 +3,7 @@
  *
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2016, Erik Moqvist
+ * Copyright (c) 2014-2017, Erik Moqvist
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -28,15 +28,18 @@
  * This file is part of the Simba project.
  */
 
-#ifndef __DRIVERS_ISOTP_H__
-#define __DRIVERS_ISOTP_H__
+#ifndef __INET_ISOTP_H__
+#define __INET_ISOTP_H__
 
 #include "simba.h"
+
+#define ISOTP_FLAGS_NO_FLOW_CONTROL            (1 << 0)
 
 struct isotp_t {
     uint8_t *message_p;
     size_t size;
     int state;
+    int flags;
     struct {
         size_t size;
         size_t offset;
@@ -57,12 +60,14 @@ struct isotp_t {
  * @param[in] message_p ISO-TP message to transmit, or a reception
  *                      buffer for an incoming message.
  * @param[in] size Size of the message buffer in bytes.
+ * @param[in] flags Configuration flags.
  *
  * @return zero(0) or negative error code.
  */
 int isotp_init(struct isotp_t *self_p,
                uint8_t *message_p,
-               size_t size);
+               size_t size,
+               int flags);
 
 /**
  * Input a CAN frame into given ISO-TP object.

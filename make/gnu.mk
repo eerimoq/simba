@@ -3,7 +3,7 @@
 #
 # The MIT License (MIT)
 #
-# Copyright (c) 2014-2016, Erik Moqvist
+# Copyright (c) 2014-2017, Erik Moqvist
 #
 # Permission is hereby granted, free of charge, to any person
 # obtaining a copy of this software and associated documentation
@@ -29,9 +29,9 @@
 #
 
 SIZECMD = $(CROSS_COMPILE)size $(SIZEARGS) ${EXE} ; \
-          echo ; \
-          $(CROSS_COMPILE)size $(OBJ) -t | sort -n -k4 ; \
-          $(CROSS_COMPILE)readelf -W -s $(EXE) | sort -n -k3 | \
+	  echo ; \
+	  $(CROSS_COMPILE)size $(OBJ) -t | sort -n -k4 ; \
+	  $(CROSS_COMPILE)readelf -W -s $(EXE) | sort -n -k3 | \
 	      awk '{if ($$3 != 0) {print $$0}}' | grep -v "Symbol table"
 
 SIZE_SUMMARY_CMD ?= $(CROSS_COMPILE)size ${EXE} | python -c "import sys; text, data, bss = sys.stdin.readlines()[1].split()[0:3]; print '{{\"program\": {}, \"data\": {}}}'.format(text, int(data) + int(bss))"
@@ -39,17 +39,20 @@ SIZE_SUMMARY_CMD ?= $(CROSS_COMPILE)size ${EXE} | python -c "import sys; text, d
 CC = $(CROSS_COMPILE)gcc$(CCVERSION:%=-%)
 CXX = $(CROSS_COMPILE)g++$(CCVERSION:%=-%)
 
-CFLAGS += -c \
-          -Wall \
-          -funsigned-bitfields \
-          -std=gnu99 \
-          -Wno-error=unused-variable
+CFLAGS += \
+	-c \
+	-Wall \
+	-funsigned-bitfields \
+	-std=gnu99 \
+	-Wno-error=unused-variable
 
-CXXFLAGS += -c \
-          -Wall \
-          -funsigned-bitfields \
-          -std=c++11 \
-          -Wno-error=unused-variable
+CXXFLAGS += \
+	-c \
+	-Wall \
+	-funsigned-bitfields \
+	-std=c++11 \
+	-Wno-error=unused-variable
 
-LDFLAGS += -Wl,-Map=$(MAP) \
-           -Wl,--gc-sections
+LDFLAGS += \
+	-Wl,-Map=$(MAP) \
+	-Wl,--gc-sections

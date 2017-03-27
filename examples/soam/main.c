@@ -3,7 +3,7 @@
  *
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2016, Erik Moqvist
+ * Copyright (c) 2014-2017, Erik Moqvist
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -32,19 +32,15 @@
 
 int main()
 {
-    int i;
-
     sys_start();
 
-    i = 0;
-
     while (1) {
-        log_object_print(NULL,
-                         LOG_INFO,
-                         OSTR("i: %d\r\n"),
-                         i);
+        log_object_print(NULL, LOG_INFO, OSTR("log_object_print(OSTR())\r\n"));
+        log_object_print(NULL, LOG_INFO, FSTR("log_object_print(FSTR())\r\n"));
+        std_printf(OSTR("std_printf(OSTR())\r\n"));
+        std_printf(FSTR("std_printf(FSTR())\r\n"));
+        chan_write(sys_get_stdout(), "chan_write()\r\n", 14);
 
-        i++;
         thrd_sleep(3);
     }
 

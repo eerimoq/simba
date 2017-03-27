@@ -3,7 +3,7 @@
  *
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2016, Erik Moqvist
+ * Copyright (c) 2014-2017, Erik Moqvist
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -41,7 +41,7 @@
  */
 #define BTASSERTR(cond, res, ...)                                       \
     if (!(cond)) {                                                      \
-        std_printf(FSTR(__FILE__ ":%d: BTASSERT: %s "), __LINE__, #cond); \
+        std_printf(FSTR(__FILE__ ":" STRINGIFY(__LINE__) ": BTASSERT: " #cond " ")); \
         _ASSERTFMT(__VA_ARGS__);                                        \
         return (res);                                                   \
     }
@@ -63,7 +63,7 @@
  */
 #define BTASSERTV(cond, ...)                                            \
     if (!(cond)) {                                                      \
-        std_printf(FSTR(__FILE__ ":%d: BTASSERT: %s "), __LINE__, #cond); \
+        std_printf(FSTR(__FILE__ ":" STRINGIFY(__LINE__) ": BTASSERT: " #cond " ")); \
         _ASSERTFMT(__VA_ARGS__);                                        \
         return;                                                         \
     }

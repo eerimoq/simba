@@ -3,7 +3,7 @@
 #
 # The MIT License (MIT)
 #
-# Copyright (c) 2014-2016, Erik Moqvist
+# Copyright (c) 2014-2017, Erik Moqvist
 #
 # Permission is hereby granted, free of charge, to any person
 # obtaining a copy of this software and associated documentation
@@ -32,7 +32,7 @@
 
 VERSION ?= $(shell cat $(SIMBA_ROOT)/VERSION.txt)
 
-CONFIG_SETTINGS_SIZE ?= 256
+all:
 
 # files and folders
 BUILDDIR ?= build/$(BOARD)
@@ -46,10 +46,20 @@ ifeq ($(RUST),yes)
 else
     SRC += $(MAIN_C)
 endif
+SETTINGS_INI ?=
+ifeq ($(SETTINGS_INI),)
 SETTINGS_C ?= $(SIMBA_ROOT)/src/settings_default.c
+SETTTNGS_OUTPUT_DIRECTORY ?= .
+else
+SETTINGS_H ?= $(GENDIR)/settings.h
+SETTINGS_C ?= $(GENDIR)/settings.c
+SETTTNGS_OUTPUT_DIRECTORY ?= $(GENDIR)
+$(SETTTNGS_H) $(SETTINGS_C): $(SETTINGS_INI)
+	$(MAKE) settings-generate
+generate: $(SETTTNGS_H) $(SETTINGS_C)
+endif
 SRC += $(SETTINGS_C)
 SETTINGS_BIN ?= $(SIMBA_ROOT)/src/settings_default.bin
-SETTTNGS_OUTPUT_DIRECTORY ?= .
 SRC_FILTERED = $(filter-out $(SRC_IGNORE),$(SRC))
 CSRC += $(filter %.c,$(SRC_FILTERED))
 CXXSRC += $(filter %.cpp,$(SRC_FILTERED))
@@ -66,7 +76,6 @@ GENOBJ = $(patsubst %,$(OBJDIR)/%,$(notdir $(GENCSRC:%.c=%.o)))
 ifeq ($(SOAM), yes)
 SOAMDB = $(COBJ:%=%.pp.c.db) $(CXXOBJ:%=%.pp.cpp.db)
 endif
-SETTINGS_INI ?= $(SIMBA_ROOT)/make/settings.ini
 EXE_SUFFIX ?= out
 EXE = $(BUILDDIR)/$(NAME).$(EXE_SUFFIX)
 BIN = $(BUILDDIR)/$(NAME).bin
@@ -140,6 +149,8 @@ RUN_END_PATTERN ?= "=============================== TEST END \(\w+\) ===========
 RUN_END_PATTERN_SUCCESS ?= "=============================== TEST END \(PASSED\) ==============================\r\n\r\n"
 
 CONSOLESCRIPT = $(SIMBA_ROOT)/make/console.py
+
+CONFIG_SETTINGS_SIZE ?= 256
 
 # include packages in dist-packages used by the application
 define DIST_PACKAGES_template
@@ -340,6 +351,9 @@ include $(SIMBA_GLOBAL_MK)
 valgrind:
 	valgrind --leak-check=full ./$(EXE)
 
+stack-usage:
+	cat $$(find $(BUILDDIR)/obj -name "*.su") | sort -n -k2
+
 CPPCHECK_ENABLE = warning performance portability information
 
 cppcheck:
@@ -364,6 +378,7 @@ help:
 	@echo "                              baudrate BAUDRATE."
 	@echo "  release                     Compile with NASSERT=yes and NDEBUG=yes."
 	@echo "  size                        Print application size information."
+	@echo "  stack-usage                 Print stack usage per function."
 	@IFS=$$'\n' ; for h in $(HELP_TARGETS) ; do \
 	  echo $$h ; \
 	done

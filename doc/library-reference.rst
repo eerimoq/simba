@@ -15,8 +15,8 @@ and their implementatins are available on :github-tree:`Github <src>`.
    :titlesonly:
 
    library-reference/kernel
-   library-reference/drivers
    library-reference/sync
+   library-reference/drivers
    library-reference/filesystems
    library-reference/inet
    library-reference/oam

@@ -3,7 +3,7 @@
  *
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2016, Erik Moqvist
+ * Copyright (c) 2014-2017, Erik Moqvist
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -221,7 +221,7 @@ static int test_cmd_ping_bad_input(struct harness_t *harness_p)
     /* Too few arguemnts. */
     strcpy(buf, "inet/ping/ping\r\n");
     BTASSERT(fs_call(buf, NULL, &qout, NULL) == -1);
-    read_until(buf, "Usage: inet/ping/ping <remote host>\r\n");
+    read_until(buf, "Usage: ping <remote host>\r\n");
 
     /* Bad ip address. */
     strcpy(buf, "inet/ping/ping a.b.c.d\r\n");

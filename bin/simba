@@ -44,7 +44,7 @@ PACKAGE_H = """/**
  *
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2016, Erik Moqvist
+ * Copyright (c) 2014-2017, Erik Moqvist
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -82,7 +82,7 @@ PACKAGE_MK = """#
 #
 # The MIT License (MIT)
 #
-# Copyright (c) 2014-2016, Erik Moqvist
+# Copyright (c) 2014-2017, Erik Moqvist
 #
 # Permission is hereby granted, free of charge, to any person
 # obtaining a copy of this software and associated documentation
@@ -119,7 +119,7 @@ MODULE_H = """/**
  *
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2016, Erik Moqvist
+ * Copyright (c) 2014-2017, Erik Moqvist
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -165,7 +165,7 @@ MODULE_C = """/**
  *
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2016, Erik Moqvist
+ * Copyright (c) 2014-2017, Erik Moqvist
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -206,7 +206,7 @@ MAIN_C = """/**
  *
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2016, Erik Moqvist
+ * Copyright (c) 2014-2017, Erik Moqvist
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -262,7 +262,7 @@ MAKEFILE = """#
 #
 # The MIT License (MIT)
 #
-# Copyright (c) 2014-2016, Erik Moqvist
+# Copyright (c) 2014-2017, Erik Moqvist
 #
 # Permission is hereby granted, free of charge, to any person
 # obtaining a copy of this software and associated documentation
@@ -3193,7 +3193,7 @@ APP_MAIN_C = """/**
  *
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2016, Erik Moqvist
+ * Copyright (c) 2014-2017, Erik Moqvist
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -3239,7 +3239,7 @@ APP_MAKEFILE = """#
 #
 # The MIT License (MIT)
 #
-# Copyright (c) 2014-2016, Erik Moqvist
+# Copyright (c) 2014-2017, Erik Moqvist
 #
 # Permission is hereby granted, free of charge, to any person
 # obtaining a copy of this software and associated documentation

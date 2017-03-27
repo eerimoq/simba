@@ -3,7 +3,7 @@
  *
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2016, Erik Moqvist
+ * Copyright (c) 2014-2017, Erik Moqvist
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -94,7 +94,13 @@ static ssize_t handle_input_idle(struct isotp_t *self_p,
         self_p->message.size = size;
         self_p->message.offset = 6;
         self_p->message.next_index = 1;
-        self_p->state = state_first_frame_received_t;
+
+        if (self_p->flags & ISOTP_FLAGS_NO_FLOW_CONTROL) {
+            self_p->state = state_flow_control_frame_sent_t;
+        } else {
+            self_p->state = state_first_frame_received_t;
+        }
+
         res = 0;
         break;
 
@@ -178,7 +184,12 @@ static ssize_t handle_output_idle(struct isotp_t *self_p,
         *output_size_p = 8;
         self_p->message.offset = 6;
         self_p->message.next_index = 1;
-        self_p->state = state_first_frame_sent_t;
+
+        if (self_p->flags & ISOTP_FLAGS_NO_FLOW_CONTROL) {
+            self_p->state = state_flow_control_frame_received_t;
+        } else {
+            self_p->state = state_first_frame_sent_t;
+        }
     }
 
     return (res);
@@ -224,7 +235,8 @@ static ssize_t handle_output_flow_control_received(struct isotp_t *self_p,
 
 int isotp_init(struct isotp_t *self_p,
                uint8_t *buf_p,
-               size_t size)
+               size_t size,
+               int flags)
 {
     ASSERTN(self_p != NULL, EINVAL);
     ASSERTN(buf_p != NULL, EINVAL);
@@ -233,6 +245,7 @@ int isotp_init(struct isotp_t *self_p,
     self_p->message_p = buf_p;
     self_p->size = size;
     self_p->state = state_idle_t;
+    self_p->flags = flags;
 
     return (0);
 }

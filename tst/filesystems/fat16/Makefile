@@ -3,7 +3,7 @@
 #
 # The MIT License (MIT)
 #
-# Copyright (c) 2014-2016, Erik Moqvist
+# Copyright (c) 2014-2017, Erik Moqvist
 #
 # Permission is hereby granted, free of charge, to any person
 # obtaining a copy of this software and associated documentation
@@ -36,6 +36,7 @@ TIMEOUT = 60
 
 CDEFS += \
 	CONFIG_MINIMAL_SYSTEM=1 \
+	CONFIG_FAT16=1 \
 	CONFIG_SPI=1 \
 	CONFIG_SD=1 \
 	CONFIG_PIN=1 \

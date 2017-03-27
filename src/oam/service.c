@@ -3,7 +3,7 @@
  *
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2016, Erik Moqvist
+ * Copyright (c) 2014-2017, Erik Moqvist
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -88,7 +88,7 @@ static int cmd_start_cb(int argc,
     const char *name_p;
     
     if (argc != 2) {
-        std_fprintf(chout_p, OSTR("Usage: %s <service>\r\n"), argv[0]);
+        std_fprintf(chout_p, OSTR("Usage: start <service>\r\n"));
         return (-EINVAL);
     }
 
@@ -123,7 +123,7 @@ static int cmd_stop_cb(int argc,
     const char *name_p;
     
     if (argc != 2) {
-        std_fprintf(chout_p, OSTR("Usage: %s <service>\r\n"), argv[0]);
+        std_fprintf(chout_p, OSTR("Usage: stop <service>\r\n"));
         return (-EINVAL);
     }
 

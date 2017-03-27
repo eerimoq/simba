@@ -3,7 +3,7 @@
  *
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2016, Erik Moqvist
+ * Copyright (c) 2014-2017, Erik Moqvist
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -103,7 +103,9 @@ extern "C" {
 #include "alloc/heap.h"
 #include "alloc/circular_heap.h"
 
-#include "filesystems/fat16.h"
+#if CONFIG_FAT16 == 1
+#    include "filesystems/fat16.h"
+#endif
 #include "filesystems/spiffs.h"
 
 #include "oam/console.h"
@@ -157,9 +159,6 @@ extern "C" {
 #endif
 #ifdef PORT_HAS_SD
 #    include "drivers/sd.h"
-#endif
-#ifdef PORT_HAS_SDIO
-#    include "drivers/sdio.h"
 #endif
 #ifdef PORT_HAS_DS18B20
 #    include "drivers/ds18b20.h"
@@ -221,8 +220,11 @@ extern "C" {
 #ifdef PORT_HAS_RANDOM
 #    include "drivers/random.h"
 #endif
+#ifdef PORT_HAS_WS2812
+#    include "drivers/ws2812.h"
+#endif
 
-#include "drivers/isotp.h"
+#include "inet/isotp.h"
 
 #include "debug/harness.h"
 
@@ -258,7 +260,7 @@ extern "C" {
 #    include "oam/upgrade/http.h"
 #    include "oam/upgrade/tftp.h"
 #endif
-    
+
 #ifdef __cplusplus
 }
 #endif

@@ -56,9 +56,9 @@ Below is the memory usage of two applications:
 +--------------------------+-----------+-----------+
 | Application              | Flash     | RAM       |
 +==========================+===========+===========+
-| minimal-configuration    |      6536 |       608 |
+| minimal-configuration    |      6564 |       640 |
 +--------------------------+-----------+-----------+
-| default-configuration    |     57868 |      4466 |
+| default-configuration    |     62268 |      5358 |
 +--------------------------+-----------+-----------+
 
 Default configuration
@@ -109,7 +109,7 @@ Default Standard Library configuration.
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_FILESYSTEM_GENERIC_                            |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
-|  CONFIG_FLASH_                                         |  0                                                  |
+|  CONFIG_FLASH_                                         |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_FLOAT_                                         |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
@@ -233,7 +233,7 @@ Default Standard Library configuration.
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_MODULE_INIT_EXTI_                              |  0                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
-|  CONFIG_MODULE_INIT_FLASH_                             |  0                                                  |
+|  CONFIG_MODULE_INIT_FLASH_                             |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_MODULE_INIT_FS_                                |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
@@ -266,8 +266,6 @@ Default Standard Library configuration.
 |  CONFIG_MODULE_INIT_RWLOCK_                            |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_MODULE_INIT_SD_                                |  0                                                  |
-+--------------------------------------------------------+-----------------------------------------------------+
-|  CONFIG_MODULE_INIT_SDIO_                              |  0                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_MODULE_INIT_SEM_                               |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
@@ -323,9 +321,9 @@ Default Standard Library configuration.
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_SD_                                            |  0                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
-|  CONFIG_SDIO_                                          |  0                                                  |
+|  CONFIG_SETTINGS_AREA_SIZE_                            |  16384                                              |
 +--------------------------------------------------------+-----------------------------------------------------+
-|  CONFIG_SETTINGS_AREA_SIZE_                            |  256                                                |
+|  CONFIG_SETTINGS_BLOB_                                 |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_SHELL_COMMAND_MAX_                             |  64                                                 |
 +--------------------------------------------------------+-----------------------------------------------------+
@@ -334,6 +332,8 @@ Default Standard Library configuration.
 |  CONFIG_SHELL_MINIMAL_                                 |  0                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_SHELL_PROMPT_                                  |  "$ "                                               |
++--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_SOAM_EMBEDDED_DATABASE_                        |  0                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_SOCKET_RAW_                                    |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
@@ -379,17 +379,19 @@ Default Standard Library configuration.
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_START_SHELL_PRIO_                              |  30                                                 |
 +--------------------------------------------------------+-----------------------------------------------------+
-|  CONFIG_START_SHELL_STACK_SIZE_                        |  768                                                |
+|  CONFIG_START_SHELL_STACK_SIZE_                        |  1536                                               |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_START_SOAM_                                    |  0                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_START_SOAM_PRIO_                               |  30                                                 |
 +--------------------------------------------------------+-----------------------------------------------------+
-|  CONFIG_START_SOAM_STACK_SIZE_                         |  768                                                |
+|  CONFIG_START_SOAM_STACK_SIZE_                         |  840                                                |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_STD_OUTPUT_BUFFER_MAX_                         |  16                                                 |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_SYSTEM_INTERRUPTS_                             |  1                                                  |
++--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_SYSTEM_INTERRUPT_STACK_SIZE_                   |  256                                                |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_SYSTEM_TICK_FREQUENCY_                         |  100                                                |
 +--------------------------------------------------------+-----------------------------------------------------+
@@ -403,7 +405,7 @@ Default Standard Library configuration.
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_THRD_ENV_                                      |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
-|  CONFIG_THRD_IDLE_STACK_SIZE_                          |  384                                                |
+|  CONFIG_THRD_IDLE_STACK_SIZE_                          |  156                                                |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_THRD_MONITOR_STACK_SIZE_                       |  768                                                |
 +--------------------------------------------------------+-----------------------------------------------------+
@@ -643,8 +645,6 @@ Mcu
 
 .. _CONFIG_MODULE_INIT_SD: ../user-guide/configuration.html#c.CONFIG_MODULE_INIT_SD
 
-.. _CONFIG_MODULE_INIT_SDIO: ../user-guide/configuration.html#c.CONFIG_MODULE_INIT_SDIO
-
 .. _CONFIG_MODULE_INIT_SEM: ../user-guide/configuration.html#c.CONFIG_MODULE_INIT_SEM
 
 .. _CONFIG_MODULE_INIT_SETTINGS: ../user-guide/configuration.html#c.CONFIG_MODULE_INIT_SETTINGS
@@ -699,9 +699,9 @@ Mcu
 
 .. _CONFIG_SD: ../user-guide/configuration.html#c.CONFIG_SD
 
-.. _CONFIG_SDIO: ../user-guide/configuration.html#c.CONFIG_SDIO
-
 .. _CONFIG_SETTINGS_AREA_SIZE: ../user-guide/configuration.html#c.CONFIG_SETTINGS_AREA_SIZE
+
+.. _CONFIG_SETTINGS_BLOB: ../user-guide/configuration.html#c.CONFIG_SETTINGS_BLOB
 
 .. _CONFIG_SHELL_COMMAND_MAX: ../user-guide/configuration.html#c.CONFIG_SHELL_COMMAND_MAX
 
@@ -710,6 +710,8 @@ Mcu
 .. _CONFIG_SHELL_MINIMAL: ../user-guide/configuration.html#c.CONFIG_SHELL_MINIMAL
 
 .. _CONFIG_SHELL_PROMPT: ../user-guide/configuration.html#c.CONFIG_SHELL_PROMPT
+
+.. _CONFIG_SOAM_EMBEDDED_DATABASE: ../user-guide/configuration.html#c.CONFIG_SOAM_EMBEDDED_DATABASE
 
 .. _CONFIG_SOCKET_RAW: ../user-guide/configuration.html#c.CONFIG_SOCKET_RAW
 
@@ -766,6 +768,8 @@ Mcu
 .. _CONFIG_STD_OUTPUT_BUFFER_MAX: ../user-guide/configuration.html#c.CONFIG_STD_OUTPUT_BUFFER_MAX
 
 .. _CONFIG_SYSTEM_INTERRUPTS: ../user-guide/configuration.html#c.CONFIG_SYSTEM_INTERRUPTS
+
+.. _CONFIG_SYSTEM_INTERRUPT_STACK_SIZE: ../user-guide/configuration.html#c.CONFIG_SYSTEM_INTERRUPT_STACK_SIZE
 
 .. _CONFIG_SYSTEM_TICK_FREQUENCY: ../user-guide/configuration.html#c.CONFIG_SYSTEM_TICK_FREQUENCY
 

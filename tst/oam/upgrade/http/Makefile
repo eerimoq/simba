@@ -3,7 +3,7 @@
 #
 # The MIT License (MIT)
 #
-# Copyright (c) 2014-2016, Erik Moqvist
+# Copyright (c) 2014-2017, Erik Moqvist
 #
 # Permission is hereby granted, free of charge, to any person
 # obtaining a copy of this software and associated documentation
@@ -28,15 +28,17 @@
 # This file is part of the Simba project.
 #
 
-NAME = isotp_suite
-TYPE = suite
+NAME = upgrade_http_suite
 BOARD ?= linux
 
-CDEFS += \
-	CONFIG_MINIMAL_SYSTEM=1 \
-	CONFIG_FS_CMD_THRD_LIST=1
+CFLAGS += -DUPGRADE_TEST
 
-DRIVERS_SRC = isotp.c
+SRC_IGNORE += \
+	$(SIMBA_ROOT)/src/inet/http_server.c \
+	$(SIMBA_ROOT)/src/oam/upgrade.c
+SRC += \
+	http_server_stub.c \
+	upgrade_stub.c
 
-SIMBA_ROOT ?= ../../..
+SIMBA_ROOT ?= ../../../..
 include $(SIMBA_ROOT)/make/app.mk

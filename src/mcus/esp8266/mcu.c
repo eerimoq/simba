@@ -3,7 +3,7 @@
  *
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2016, Erik Moqvist
+ * Copyright (c) 2014-2017, Erik Moqvist
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -80,7 +80,13 @@ struct spi_device_t spi_device[SPI_DEVICE_MAX] = {
     {
         .drv_p = NULL,
         .regs_p = ESP8266_SPI0,
-        .sem = { .count = 0, .count_max = 1, .head_p = NULL }
+        .sem = {
+            .count = 0,
+            .count_max = 1,
+            .waiters = {
+                .head_p = NULL
+            }
+        }
     }
 };
 

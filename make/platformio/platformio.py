@@ -22,7 +22,7 @@ PLATFORMIO_SCONSSCRIPT_FMT = """#
 #
 # The MIT License (MIT)
 #
-# Copyright (c) 2014-2016, Erik Moqvist
+# Copyright (c) 2014-2017, Erik Moqvist
 #
 # Permission is hereby granted, free of charge, to any person
 # obtaining a copy of this software and associated documentation
@@ -61,7 +61,9 @@ BOARD_MAP = {{
     "megaatmega2560": "arduino_mega",
     "nanoatmega328": "arduino_nano",
     "uno": "arduino_uno",
-    "nodemcuv2": "nodemcu"
+    "nodemcuv2": "nodemcu",
+    "esp32dev": "esp32_devkitc",
+    "d1_mini": "wemos_d1_mini"
 }}
 
 # Map the PlatformIO board name to the Simba board name
@@ -74,7 +76,8 @@ SUPPORTED_BOARDS = [
     "esp01",
     "nodemcu",
     "huzzah",
-    "nano32"
+    "nano32",
+    "esp32_devkitc"
 ]
 
 
@@ -263,6 +266,14 @@ def setup_board_huzzah(env):
     setup_mcu_esp(env, "simba.flash.4m.ld", "6")
 
 
+def setup_board_wemos_d1_mini(env):
+    \"\"\"Setup the WEMOS D1 mini environment.
+
+    \"\"\"
+
+    setup_mcu_esp(env, "simba.flash.4m.ld", "6")
+
+
 def setup_board_nano32(env):
     \"\"\"Setup the Nano32 environment.
 
@@ -362,7 +373,11 @@ elif board == "nodemcu":
     setup_board_nodemcu(env)
 elif board == "huzzah":
     setup_board_huzzah(env)
+elif board == "wemos_d1_mini":
+    setup_board_wemos_d1_mini(env)
 elif board == "nano32":
+    setup_board_nano32(env)
+elif board == "esp32_devkitc":
     setup_board_nano32(env)
 elif 'ARCH_AVR' in BOARDS[board]['cdefs']:
     # LTO makes the application crash.

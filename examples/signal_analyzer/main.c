@@ -3,7 +3,7 @@
  *
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2016, Erik Moqvist
+ * Copyright (c) 2014-2017, Erik Moqvist
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -30,8 +30,8 @@
 
 #include "simba.h"
 
-#define SAMPLE_TIMEOUT_IN_MILLISECONDS                      1
-#define TIMEOUTS_PER_REPORT                               100
+#define SAMPLE_TIMEOUT_IN_MICROSECONDS                     50
+#define TIMEOUTS_PER_REPORT                              1000
 
 /**
  * Report of a measurement period.
@@ -61,14 +61,14 @@ struct module_t {
 
 static struct module_t module = {
     .pwm_pins = {
-        { .pin_device_p = &pin_gpio02_dev },
-        { .pin_device_p = &pin_gpio04_dev },
-        { .pin_device_p = &pin_gpio16_dev },
-        { .pin_device_p = &pin_gpio17_dev },
-        { .pin_device_p = &pin_gpio05_dev },
-        { .pin_device_p = &pin_gpio18_dev },
-        { .pin_device_p = &pin_gpio23_dev },
-        { .pin_device_p = &pin_gpio19_dev }
+        { .pin_device_p = &pin_d2_dev },
+        { .pin_device_p = &pin_d3_dev },
+        { .pin_device_p = &pin_d4_dev },
+        { .pin_device_p = &pin_d5_dev },
+        { .pin_device_p = &pin_d6_dev },
+        { .pin_device_p = &pin_d7_dev },
+        { .pin_device_p = &pin_d8_dev },
+        { .pin_device_p = &pin_d9_dev }
     }
 };
 
@@ -168,7 +168,7 @@ static int cmd_pwm_measure_cb(int argc,
     }
 
     timeout.seconds = 0;
-    timeout.nanoseconds = 1000000L * SAMPLE_TIMEOUT_IN_MILLISECONDS;
+    timeout.nanoseconds = 1000L * SAMPLE_TIMEOUT_IN_MICROSECONDS;
 
     timer_init(&timer,
                &timeout,
@@ -187,8 +187,8 @@ static int cmd_pwm_measure_cb(int argc,
 
         for (j = 0; j < membersof(reports); j++, delim_p = ",") {
             duty_cycle = ((100 * reports[j].high_count) / TIMEOUTS_PER_REPORT);
-            frequency = ((1000 * reports[j].rising_count)
-                         / (TIMEOUTS_PER_REPORT * SAMPLE_TIMEOUT_IN_MILLISECONDS));
+            frequency = ((1000000 * reports[j].rising_count)
+                         / (TIMEOUTS_PER_REPORT * SAMPLE_TIMEOUT_IN_MICROSECONDS));
             std_fprintf(chout_p,
                         OSTR("%s(%d,%d)"),
                         delim_p,

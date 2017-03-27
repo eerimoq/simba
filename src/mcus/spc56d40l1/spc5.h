@@ -3,7 +3,7 @@
  *
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2016, Erik Moqvist
+ * Copyright (c) 2014-2017, Erik Moqvist
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -199,12 +199,20 @@ struct spc5_linflex_t {
 #define SPC5_LINFLEX_LINIER_DRIE                       BIT(2)
 #define SPC5_LINFLEX_LINIER_DTIE                       BIT(1)
 
+#define SPC5_LINFLEX_UARTSR_SZF                       BIT(15)
+#define SPC5_LINFLEX_UARTSR_OCF                       BIT(14)
 #define SPC5_LINFLEX_UARTSR_PE3                       BIT(13)
 #define SPC5_LINFLEX_UARTSR_PE2                       BIT(12)
 #define SPC5_LINFLEX_UARTSR_PE1                       BIT(11)
 #define SPC5_LINFLEX_UARTSR_PE0                       BIT(10)
+#define SPC5_LINFLEX_UARTSR_RMB                        BIT(9)
+#define SPC5_LINFLEX_UARTSR_FEF                        BIT(8)
+#define SPC5_LINFLEX_UARTSR_BOF                        BIT(7)
+#define SPC5_LINFLEX_UARTSR_RPS                        BIT(6)
+#define SPC5_LINFLEX_UARTSR_WUF                        BIT(5)
 #define SPC5_LINFLEX_UARTSR_DRF                        BIT(2)
 #define SPC5_LINFLEX_UARTSR_DTF                        BIT(1)
+#define SPC5_LINFLEX_UARTSR_NF                         BIT(0)
 
 #define SPC5_LINFLEX_UARTCR_TDFL_POS                     (13)
 #define SPC5_LINFLEX_UARTCR_TDFL_MASK (0x7 << SPC5_LINFLEX_UARTCR_TDFL_POS)
@@ -220,6 +228,12 @@ struct spc5_linflex_t {
 #define SPC5_LINFLEX_UARTCR_UART                       BIT(0)
 
 /* 22. FlexCAN. */
+struct spc5_flexcan_msgbuf_t {
+    uint32_t CTRL_STATUS;
+    uint32_t PRIO_ID;
+    uint32_t DATA[2];
+};
+
 struct spc5_flexcan_t {
     uint32_t MCR;
     uint32_t CTRL;
@@ -235,11 +249,7 @@ struct spc5_flexcan_t {
     uint32_t IFLAG2;
     uint32_t IFLAG1;
     uint32_t RESERVED1[19];
-    struct {
-        uint32_t CTRL_STATUS;
-        uint32_t PRIO_ID;
-        uint32_t DATA[2];
-    } MSGBUF[64];
+    struct spc5_flexcan_msgbuf_t MSGBUF[64];
 };
 
 #define SPC5_FLEXCAN_MCR_MDIS                         BIT(31)
@@ -290,7 +300,7 @@ struct spc5_flexcan_t {
 
 #define SPC5_FLEXCAN_MSGBUF_PRIO_ID_EXT_ID_POS            (0)
 #define SPC5_FLEXCAN_MSGBUF_PRIO_ID_EXT_ID_MASK         \
-    (0x3ffff << SPC5_FLEXCAN_MSGBUF_PRIO_ID_EXT_ID_POS)
+    (0x1fffffff << SPC5_FLEXCAN_MSGBUF_PRIO_ID_EXT_ID_POS)
 #define SPC5_FLEXCAN_MSGBUF_PRIO_ID_EXT_ID(value)               \
     BITFIELD_SET(SPC5_FLEXCAN_MSGBUF_PRIO_ID_EXT_ID, value)
 

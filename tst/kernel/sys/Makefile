@@ -3,7 +3,7 @@
 #
 # The MIT License (MIT)
 #
-# Copyright (c) 2014-2016, Erik Moqvist
+# Copyright (c) 2014-2017, Erik Moqvist
 #
 # Permission is hereby granted, free of charge, to any person
 # obtaining a copy of this software and associated documentation
@@ -37,6 +37,9 @@ MAIN_C = main.cpp
 CDEFS += \
 	CONFIG_MINIMAL_SYSTEM=1 \
 	CONFIG_FS_CMD_THRD_LIST=1 \
+	CONFIG_FS_CMD_SYS_CONFIG=1 \
+	CONFIG_FS_CMD_SYS_INFO=1 \
+	CONFIG_FS_CMD_SYS_UPTIME=1 \
 	CONFIG_ASSERT=1 \
 	CONFIG_ASSERT_FORCE_FATAL=0 \
 	CONFIG_SYS_CONFIG_STRING=1

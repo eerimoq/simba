@@ -3,7 +3,7 @@
  *
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2016, Erik Moqvist
+ * Copyright (c) 2014-2017, Erik Moqvist
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -79,8 +79,12 @@ static void rx_isr(int index)
                                | SPC5_LINFLEX_UARTSR_PE3));
     c = regs_p->BDRM;
 
-    /* Clear interrupt flags. */
-    regs_p->UARTSR = SPC5_LINFLEX_UARTSR_DRF;
+    /* Clear status flags. */
+    regs_p->UARTSR = (SPC5_LINFLEX_UARTSR_DRF
+                      | SPC5_LINFLEX_UARTSR_PE0
+                      | SPC5_LINFLEX_UARTSR_PE1
+                      | SPC5_LINFLEX_UARTSR_PE2
+                      | SPC5_LINFLEX_UARTSR_PE3);
     regs_p->LINSR = SPC5_LINFLEX_LINSR_DRF;
 
     /* Error frames are discarded. */
@@ -93,14 +97,20 @@ static void rx_isr(int index)
         }
     } else {
 #if CONFIG_FS_COUNTERS_UART == 1
-        fs_counter_increment(&rx_errors, 1);
+        fs_counter_increment(&errors, 1);
 #endif
     }
 }
 
 static void err_isr(int index)
 {
-    while (1);
+    struct uart_device_t *dev_p = &uart_device[index];
+
+    dev_p->regs_p->UARTSR = (SPC5_LINFLEX_UARTSR_SZF
+                             | SPC5_LINFLEX_UARTSR_OCF
+                             | SPC5_LINFLEX_UARTSR_FEF
+                             | SPC5_LINFLEX_UARTSR_BOF);
+
 #if CONFIG_FS_COUNTERS_UART == 1
     fs_counter_increment(&errors, 1);
 #endif

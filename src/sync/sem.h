@@ -3,7 +3,7 @@
  *
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2016, Erik Moqvist
+ * Copyright (c) 2014-2017, Erik Moqvist
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -56,7 +56,7 @@ struct sem_t {
     /** Maximum number of resources. */
     int count_max;
     /** Wait list. */
-    struct sem_elem_t *head_p;
+    struct thrd_prio_list_t waiters;
 };
 
 /**

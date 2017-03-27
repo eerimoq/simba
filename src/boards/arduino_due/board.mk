@@ -3,7 +3,7 @@
 #
 # The MIT License (MIT)
 #
-# Copyright (c) 2014-2016, Erik Moqvist
+# Copyright (c) 2014-2017, Erik Moqvist
 #
 # Permission is hereby granted, free of charge, to any person
 # obtaining a copy of this software and associated documentation
@@ -42,6 +42,7 @@ RUST_TARGET = thumbv7em-none-eabi
 SERIAL_PORT ?= /dev/arduino
 BOARD_PY = $(SIMBA_ROOT)/src/boards/arduino_due/board.py
 TIMEOUT ?= 10
+BAUDRATE ?= 115200
 
 upload:
 	@echo "Uploading '$(EXE)'."

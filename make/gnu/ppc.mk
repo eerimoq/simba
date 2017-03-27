@@ -3,7 +3,7 @@
 #
 # The MIT License (MIT)
 #
-# Copyright (c) 2014-2016, Erik Moqvist
+# Copyright (c) 2014-2017, Erik Moqvist
 #
 # Permission is hereby granted, free of charge, to any person
 # obtaining a copy of this software and associated documentation
@@ -49,7 +49,8 @@ CFLAGS += \
 	$(OPT) \
         -ffunction-sections \
         -fdata-sections \
-        -fpack-struct
+        -fpack-struct \
+	-fstack-usage
 
 CXXFLAGS += \
 	-Werror \
@@ -57,12 +58,16 @@ CXXFLAGS += \
 	$(OPT) \
         -ffunction-sections \
         -fdata-sections \
-        -fpack-struct
+        -fpack-struct \
+	-fstack-usage
 
 LDFLAGS += \
 	-mcpu=$(MCPU) \
         -Wl,--cref \
         -T$(LINKER_SCRIPT)
+
+
+CONFIG_SETTINGS_SIZE ?= 16384
 
 build: $(BIN) $(HEX)
 

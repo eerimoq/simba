@@ -3,7 +3,7 @@
  *
  * Copyright (C) 2009, William Greiman (Arduino Fat16 Library)
  * Copyright (C) 2013-2015, Mikael Patel (Cosa, Refactoring)
- * Copyright (C) 2015-2016, Erik Moqvist
+ * Copyright (C) 2015-2017, Erik Moqvist
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -19,6 +19,8 @@
  */
 
 #include "simba.h"
+
+#if CONFIG_FAT16 == 1
 
 /** Chunk size in number of bytes. */
 #define BLOCK_SIZE 512
@@ -1648,3 +1650,5 @@ int fat16_stat(struct fat16_t *self_p,
 
     return (-1);
 }
+
+#endif

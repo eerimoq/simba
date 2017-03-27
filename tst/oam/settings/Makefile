@@ -3,7 +3,7 @@
 #
 # The MIT License (MIT)
 #
-# Copyright (c) 2014-2016, Erik Moqvist
+# Copyright (c) 2014-2017, Erik Moqvist
 #
 # Permission is hereby granted, free of charge, to any person
 # obtaining a copy of this software and associated documentation
@@ -32,10 +32,7 @@ NAME = settings_suite
 TYPE = suite
 BOARD ?= linux
 
-SETTINGS_C = settings.c
-
 SETTINGS_INI = settings.ini
-SETTINGS_BIN = settings.little-endian.bin
 
 CDEFS += \
 	CONFIG_MINIMAL_SYSTEM=1 \
@@ -45,6 +42,8 @@ CDEFS += \
 	CONFIG_FS_CMD_SETTINGS_RESET=1 \
 	CONFIG_FS_CMD_THRD_LIST=1 \
 	CONFIG_MODULE_INIT_SETTINGS=1
+
+HASH_SRC ?= crc.c
 
 SIMBA_ROOT ?= ../../..
 include $(SIMBA_ROOT)/make/app.mk

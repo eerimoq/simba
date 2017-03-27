@@ -3,7 +3,7 @@
  *
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2016, Erik Moqvist
+ * Copyright (c) 2014-2017, Erik Moqvist
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -34,10 +34,12 @@
     ((buffer_p)->size > 0 ? (buffer_p)->size - 1 : 0)
 #define BUFFER_USED_UNTIL_END(buffer_p)         \
     ((buffer_p)->end_p - (buffer_p)->read_p)
-#define WRITER_SIZE(queue_p)                            \
-    ((queue_p->base.writer_p != NULL) * queue_p->left)
-#define READER_SIZE(queue_p)                            \
-    ((queue_p->base.reader_p != NULL) * queue_p->left)
+#define WRITER_SIZE(queue_p)                    \
+    ((queue_p)->writer_p == NULL                \
+     ? 0                                        \
+     : (queue_p)->writer_p->left)
+#define READER_SIZE(queue_p)                                            \
+    (((queue_p)->base.reader_p != NULL) * (queue_p)->reader.left)
 #define BUFFER_UNUSED_UNTIL_END(buffer_p)       \
     ((buffer_p)->end_p - (buffer_p)->write_p)
 #define BUFFER_UNUSED(buffer_p)                         \
@@ -73,6 +75,14 @@ int queue_init(struct queue_t *self_p,
               (chan_size_fn_t)queue_size);
     chan_set_write_isr_cb(&self_p->base, (chan_write_fn_t)queue_write_isr);
 
+    thrd_prio_list_init(&self_p->writers);
+
+    self_p->writer_p = NULL;
+    
+    self_p->reader.buf_p = NULL;
+    self_p->reader.size = 0;
+    self_p->reader.left = 0;
+
     self_p->buffer.begin_p = buf_p;
     self_p->buffer.read_p = buf_p;
     self_p->buffer.write_p = buf_p;
@@ -80,10 +90,6 @@ int queue_init(struct queue_t *self_p,
     self_p->buffer.size = size;
 
     self_p->state = QUEUE_STATE_INITIALIZED;
-
-    self_p->buf_p = NULL;
-    self_p->size = 0;
-    self_p->left = 0;
 
     return (0);
 }
@@ -119,14 +125,16 @@ RAM_CODE int queue_stop_isr(struct queue_t *self_p)
     /* If the reader is from a poll call, the resume value is
        ignored. */
     if (self_p->base.reader_p != NULL) {
-        thrd_resume_isr(self_p->base.reader_p, self_p->size - self_p->left);
+        thrd_resume_isr(self_p->base.reader_p,
+                        self_p->reader.size - self_p->reader.left);
         self_p->base.reader_p = NULL;
         res = 1;
     }
 
-    if (self_p->base.writer_p != NULL) {
-        thrd_resume_isr(self_p->base.writer_p, self_p->size - self_p->left);
-        self_p->base.writer_p = NULL;
+    if (self_p->writer_p != NULL) {
+        thrd_resume_isr(self_p->writer_p->base.thrd_p,
+                        self_p->reader.size - self_p->reader.left);
+        self_p->writer_p = NULL;
         res = 1;
     }
 
@@ -181,24 +189,30 @@ ssize_t queue_read(struct queue_t *self_p, void *buf_p, size_t size)
     }
 
     /* Copy data from the writer, if one is present. */
-    if (self_p->base.writer_p != NULL) {
-        if (left < self_p->left) {
+    while ((self_p->writer_p != NULL) && (left > 0)) {
+        if (left < self_p->writer_p->left) {
             n = left;
         } else {
-            n = self_p->left;
+            n = self_p->writer_p->left;
         }
 
-        memcpy(cbuf_p, self_p->buf_p, n);
-        self_p->buf_p += n;
-        self_p->left -= n;
+        memcpy(cbuf_p, self_p->writer_p->buf_p, n);
+        self_p->writer_p->buf_p += n;
+        self_p->writer_p->left -= n;
         cbuf_p += n;
         left -= n;
 
         /* Writer buffer empty. */
-        if (self_p->left == 0) {
+        if (self_p->writer_p->left == 0) {
             /* Wake the writer. */
-            thrd_resume_isr(self_p->base.writer_p, self_p->size);
-            self_p->base.writer_p = NULL;
+            thrd_resume_isr(self_p->writer_p->base.thrd_p,
+                            self_p->writer_p->size);
+            self_p->writer_p = NULL;
+
+            /* More writers waiting? */
+            self_p->writer_p =
+                (struct queue_writer_elem_t *)thrd_prio_list_pop_isr(
+                    &self_p->writers);
         }
     }
 
@@ -210,9 +224,9 @@ ssize_t queue_read(struct queue_t *self_p, void *buf_p, size_t size)
         } else {
             /* The writer writes the remaining data to the reader buffer. */
             self_p->base.reader_p = thrd_self();
-            self_p->buf_p = cbuf_p;
-            self_p->size = size;
-            self_p->left = left;
+            self_p->reader.buf_p = cbuf_p;
+            self_p->reader.size = size;
+            self_p->reader.left = left;
 
             size = thrd_suspend_isr(NULL);
         }
@@ -234,6 +248,7 @@ ssize_t queue_write(struct queue_t *self_p,
     ssize_t res;
     size_t left;
     const char *cbuf_p;
+    struct queue_writer_elem_t elem;
 
     left = size;
     cbuf_p = buf_p;
@@ -248,10 +263,17 @@ ssize_t queue_write(struct queue_t *self_p,
         /* The reader reads the remaining data. */
         if (left > 0) {
             cbuf_p += (size - left);
-            self_p->base.writer_p = thrd_self();
-            self_p->buf_p = (void *)cbuf_p;
-            self_p->size = size;
-            self_p->left = left;
+            elem.base.thrd_p = thrd_self();
+            elem.buf_p = (void *)cbuf_p;
+            elem.size = size;
+            elem.left = left;
+
+            if (self_p->writer_p == NULL) {
+                self_p->writer_p = &elem;
+            } else {
+                thrd_prio_list_push_isr(&self_p->writers,
+                                        (struct thrd_prio_list_elem_t *)&elem);
+            }
 
             res = thrd_suspend_isr(NULL);
         }
@@ -286,23 +308,23 @@ RAM_CODE ssize_t queue_write_isr(struct queue_t *self_p,
 
     /* Copy data to the reader, if one is present. */
     if (self_p->base.reader_p != NULL) {
-        if (left < self_p->left) {
+        if (left < self_p->reader.left) {
             n = left;
         } else {
-            n = self_p->left;
+            n = self_p->reader.left;
         }
 
-        memcpy(self_p->buf_p, cbuf_p, n);
+        memcpy(self_p->reader.buf_p, cbuf_p, n);
 
-        self_p->buf_p += n;
-        self_p->left -= n;
+        self_p->reader.buf_p += n;
+        self_p->reader.left -= n;
         cbuf_p += n;
         left -= n;
 
         /* Read buffer full. */
-        if (self_p->left == 0) {
+        if (self_p->reader.left == 0) {
             /* Wake the reader. */
-            thrd_resume_isr(self_p->base.reader_p, self_p->size);
+            thrd_resume_isr(self_p->base.reader_p, self_p->reader.size);
             self_p->base.reader_p = NULL;
         }
     }

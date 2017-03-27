@@ -3,7 +3,7 @@
  *
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2016, Erik Moqvist
+ * Copyright (c) 2014-2017, Erik Moqvist
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -167,10 +167,6 @@ static void init_drivers(void)
 #endif
 
 #if CONFIG_MODULE_INIT_SD == 1
-#endif
-
-#if CONFIG_MODULE_INIT_SDIO == 1
-    sdio_module_init();
 #endif
 
 #if CONFIG_MODULE_INIT_SPI == 1

@@ -3,7 +3,7 @@
  *
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2016, Erik Moqvist
+ * Copyright (c) 2014-2017, Erik Moqvist
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -190,10 +190,12 @@ static int test_stdin(struct harness_t *harness_p)
 
     sys_set_stdin(&chan);
     stdin_p = sys_get_stdin();
+    BTASSERT(stdin_p == &chan);
+
+    sys_set_stdin(NULL);
+    BTASSERT(sys_get_stdin() == chan_null());
 
     sys_set_stdin(original_stdin_p);
-
-    BTASSERT(stdin_p == &chan);
 
     return (0);
 }
@@ -208,10 +210,12 @@ static int test_stdout(struct harness_t *harness_p)
 
     sys_set_stdout(&chan);
     stdout_p = sys_get_stdout();
+    BTASSERT(stdout_p == &chan);
+
+    sys_set_stdout(NULL);
+    BTASSERT(sys_get_stdout() == chan_null());
 
     sys_set_stdout(original_stdout_p);
-
-    BTASSERT(stdout_p == &chan);
 
     return (0);
 }

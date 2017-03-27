@@ -3,7 +3,7 @@
  *
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2016, Erik Moqvist
+ * Copyright (c) 2014-2017, Erik Moqvist
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -141,8 +141,12 @@ static int cmd_filesystems_list_cb(int argc,
         buf[sizeof(buf) - 1] = '\0';
 
         switch (filesystem_p->type) {
+#if CONFIG_FAT16 == 1
         case fs_type_fat16_t: type_p = "fat16"; break;
+#endif
+#if CONFIG_SPIFFS == 1
         case fs_type_spiffs_t: type_p = "spiffs"; break;
+#endif
         case fs_type_generic_t: type_p = "generic"; break;
         default: type_p = "-"; break;
         }
@@ -178,7 +182,7 @@ static int cmd_read_cb(int argc,
     char buf[32];
 
     if (argc != 2) {
-        std_fprintf(chout_p, OSTR("Usage: %s <file>\r\n"), argv[0]);
+        std_fprintf(chout_p, OSTR("Usage: read <file>\r\n"));
         return (-1);
     }
 
@@ -212,7 +216,7 @@ static int cmd_write_cb(int argc,
     char data;
 
     if (argc < 2) {
-        std_fprintf(chout_p, OSTR("Usage: %s <file> [<data>]\r\n"), argv[0]);
+        std_fprintf(chout_p, OSTR("Usage: write <file> [<data>]\r\n"));
 
         return (-1);
     }
@@ -275,7 +279,7 @@ static int cmd_append_cb(int argc,
     size_t size;
 
     if (argc != 3) {
-        std_fprintf(chout_p, OSTR("Usage: %s <file> <data>\r\n"), argv[0]);
+        std_fprintf(chout_p, OSTR("Usage: append <file> <data>\r\n"));
         return (-1);
     }
 
@@ -308,7 +312,7 @@ static int cmd_remove_cb(int argc,
                          void *call_arg_p)
 {
     if (argc != 2) {
-        std_fprintf(chout_p, OSTR("Usage: %s <file>\r\n"), argv[0]);
+        std_fprintf(chout_p, OSTR("Usage: remove <file>\r\n"));
         return (-1);
     }
 
@@ -332,7 +336,7 @@ static int cmd_list_cb(int argc,
                        void *call_arg_p)
 {
     if (argc != 2) {
-        std_fprintf(chout_p, OSTR("Usage: %s <path>\r\n"), argv[0]);
+        std_fprintf(chout_p, OSTR("Usage: list <path>\r\n"));
         return (-1);
     }
 
@@ -351,7 +355,7 @@ static int cmd_format_cb(int argc,
                          void *call_arg_p)
 {
     if (argc != 2) {
-        std_fprintf(chout_p, OSTR("Usage: %s <path>\r\n"), argv[0]);
+        std_fprintf(chout_p, OSTR("Usage: format <path>\r\n"));
         return (-1);
     }
 
@@ -1662,8 +1666,7 @@ int fs_auto_complete(char *path_p)
        Example:
        path_p = "/tm"
        commands = ["/tmp/foo", "/tmp/bar", "/zoo/lander"]
-       auto-completed = "/tmp/"
-    */
+       auto-completed = "/tmp/" */
     while (1) {
         mismatch = 0;
         next_char = command_p->path_p[offset + size];
@@ -1781,6 +1784,8 @@ int fs_filesystem_init_generic(struct fs_filesystem_t *self_p,
     return (0);
 }
 
+#if CONFIG_FAT16 == 1
+
 int fs_filesystem_init_fat16(struct fs_filesystem_t *self_p,
                              const char *name_p,
                              struct fat16_t *fat16_p)
@@ -1795,6 +1800,10 @@ int fs_filesystem_init_fat16(struct fs_filesystem_t *self_p,
 
     return (0);
 }
+
+#endif
+
+#if CONFIG_SPIFFS == 1
 
 int fs_filesystem_init_spiffs(struct fs_filesystem_t *self_p,
                               const char *name_p,
@@ -1819,6 +1828,8 @@ int fs_filesystem_init_spiffs(struct fs_filesystem_t *self_p,
 
     return (0);
 }
+
+#endif
 
 int fs_filesystem_register(struct fs_filesystem_t *filesystem_p)
 {

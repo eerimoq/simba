@@ -1,5 +1,5 @@
 :mod:`stm32f3discovery` --- STM32F3DISCOVERY
-==================================
+============================================
 
 .. module:: stm32f3discovery
    :synopsis: STM32F3DISCOVERY.

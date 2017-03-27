@@ -66,7 +66,8 @@ PACKAGE_ESP_RELEASE_ENTRY_FMT = """
     "boards": [
         {{"name" : "ESP-01"}},
         {{"name" : "ESP-12E"}},
-        {{"name" : "NodeMCU"}}
+        {{"name" : "NodeMCU"}},
+        {{"name" : "Huzzah"}}
     ],
     "toolsDependencies": [
         {{
@@ -96,7 +97,9 @@ PACKAGE_ESP32_RELEASE_ENTRY_FMT = """
     "checksum": "SHA-256:{sha256sum}",
     "size": "{size}",
     "boards": [
-        {{"name" : "Nano32"}}
+        {{"name" : "Nano32"}},
+        {{"name" : "ESP32-DevKitC"}},
+        {{"name" : "Maple-ESP32"}}
     ],
     "toolsDependencies": [
         {{
@@ -247,7 +250,9 @@ def test():
                           ("sam", "arduino_due_x_dbg"),
                           ("esp", "esp01"),
                           ("esp", "esp12e"),
-                          ("esp32", "nano32")]:
+                          ("esp32", "nano32"),
+                          ("esp32", "esp32_devkitc"),
+                          ("esp32", "maple_esp32")]:
         command = [
             "make",
             "all",

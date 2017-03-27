@@ -3,7 +3,7 @@
  *
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2016, Erik Moqvist
+ * Copyright (c) 2014-2017, Erik Moqvist
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -31,8 +31,11 @@
 #include "simba.h"
 
 static struct queue_t queue[2];
+static struct queue_t buffered_queue;
+static char buffer[8];
 
 static THRD_STACK(t0_stack, 512);
+static THRD_STACK(t1_stack, 512);
 
 static void *t0_main(void *arg_p)
 {
@@ -97,6 +100,31 @@ static void *t0_main(void *arg_p)
     BTASSERTN(chan_write(&queue[1], &b, sizeof(b)) == sizeof(b));
     BTASSERTN(queue_stop(&queue[1]) == 1);
 
+    /* Multiple writer test. */
+    c[0] = 14;
+    c[1] = 15;
+    c[2] = 16;
+    c[3] = 17;
+    BTASSERTN(queue_write(&buffered_queue, &c[0], sizeof(c)) == sizeof(c));
+
+    thrd_suspend(NULL);
+
+    return (0);
+}
+
+static void *t1_main(void *arg_p)
+{
+    int c[4];
+
+    thrd_set_name("t1");
+
+    /* Multiple writer test. */
+    c[0] = 14;
+    c[1] = 15;
+    c[2] = 16;
+    c[3] = 17;
+    BTASSERTN(queue_write(&buffered_queue, &c, sizeof(c)) == sizeof(c));
+
     thrd_suspend(NULL);
 
     return (0);
@@ -104,16 +132,15 @@ static void *t0_main(void *arg_p)
 
 static int test_init(struct harness_t *harness)
 {
-    struct thrd_t *t0;
-
     BTASSERT(queue_init(&queue[0], NULL, 0) == 0);
     BTASSERT(queue_init(&queue[1], NULL, 0) == 0);
+    BTASSERT(queue_init(&buffered_queue, buffer, sizeof(buffer)) == 0);
 
-    BTASSERT((t0 = thrd_spawn(t0_main,
-                              NULL,
-                              1,
-                              t0_stack,
-                              sizeof(t0_stack))) != NULL);
+    BTASSERT(thrd_spawn(t0_main,
+                        NULL,
+                        1,
+                        t0_stack,
+                        sizeof(t0_stack)) != NULL);
 
     return (0);
 }
@@ -237,6 +264,36 @@ static int test_stopped(struct harness_t *harness_p)
     return (0);
 }
 
+static int test_multiple_writers(struct harness_t *harness_p)
+{
+    int c[4];
+
+    BTASSERT(thrd_spawn(t1_main,
+                        NULL,
+                        -1,
+                        t1_stack,
+                        sizeof(t1_stack)) != NULL);
+
+    /* Let thread t1 write to the buffered queue. */
+    thrd_yield();
+
+    /* Both t0 and t1 are waiting for this thread to read from the
+       queue. */
+    BTASSERT(queue_read(&buffered_queue, &c[0], sizeof(c)) == sizeof(c));
+    BTASSERT(c[0] == 14);
+    BTASSERT(c[1] == 15);
+    BTASSERT(c[2] == 16);
+    BTASSERT(c[3] == 17);
+
+    BTASSERT(queue_read(&buffered_queue, &c[0], sizeof(c)) == sizeof(c));
+    BTASSERT(c[0] == 14);
+    BTASSERT(c[1] == 15);
+    BTASSERT(c[2] == 16);
+    BTASSERT(c[3] == 17);
+
+    return (0);
+}
+
 int main()
 {
     struct harness_t harness;
@@ -246,6 +303,7 @@ int main()
         { test_poll, "test_poll" },
         { test_size, "test_size" },
         { test_stopped, "test_stopped" },
+        { test_multiple_writers, "test_multiple_writers" },
         { NULL, NULL }
     };
 

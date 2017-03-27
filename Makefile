@@ -3,7 +3,7 @@
 #
 # The MIT License (MIT)
 #
-# Copyright (c) 2014-2016, Erik Moqvist
+# Copyright (c) 2014-2017, Erik Moqvist
 #
 # Permission is hereby granted, free of charge, to any person
 # obtaining a copy of this software and associated documentation
@@ -62,6 +62,7 @@ ifeq ($(BOARD), linux)
 				   shell \
 				   soam \
 				   upgrade \
+				   upgrade/http \
 				   upgrade/kermit \
 				   upgrade/uds)
     TESTS += $(addprefix tst/filesystems/, fat16 \
@@ -75,13 +76,13 @@ ifeq ($(BOARD), linux)
 				    http_websocket_client \
 				    http_websocket_server \
 				    inet \
+				    isotp \
 				    mqtt_client \
 				    ping \
 				    slip \
 				    ssl \
 				    tftp_server)
     TESTS += $(addprefix tst/multimedia/, midi)
-    TESTS += $(addprefix tst/drivers/, isotp)
 endif
 
 ifeq ($(BOARD), arduino_due)

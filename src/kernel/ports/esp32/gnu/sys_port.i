@@ -3,7 +3,7 @@
  *
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2016, Erik Moqvist
+ * Copyright (c) 2014-2017, Erik Moqvist
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -87,6 +87,7 @@ static void sys_port_panic_putc(char c)
 {
 }
 
+__attribute__ ((noreturn))
 static void sys_port_reboot()
 {
     esp_esp_restart();

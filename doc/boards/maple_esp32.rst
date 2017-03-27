@@ -1,12 +1,12 @@
-Cygwin
-======
+Maple-ESP32
+===========
 
 Pinout
 ------
 
-.. image:: ../images/boards/cygwin-pinout.png
+.. image:: ../images/boards/maple-esp32-pinout.jpg
    :width: 50%
-   :target: ../_images/cygwin-pinout.png
+   :target: ../_images/maple-esp32-pinout.jpg
 
 
 
@@ -27,28 +27,23 @@ Supported drivers for this board.
 
 - :doc:`../library-reference/drivers/adc`
 - :doc:`../library-reference/drivers/analog_input_pin`
-- :doc:`../library-reference/drivers/analog_output_pin`
 - :doc:`../library-reference/drivers/can`
 - :doc:`../library-reference/drivers/dac`
 - :doc:`../library-reference/drivers/ds18b20`
-- :doc:`../library-reference/drivers/exti`
+- :doc:`../library-reference/drivers/esp_wifi`
 - :doc:`../library-reference/drivers/flash`
-- :doc:`../library-reference/drivers/i2c_soft`
-- :doc:`../library-reference/drivers/isotp`
 - :doc:`../library-reference/drivers/owi`
 - :doc:`../library-reference/drivers/pin`
-- :doc:`../library-reference/drivers/pwm`
-- :doc:`../library-reference/drivers/pwm_soft`
 - :doc:`../library-reference/drivers/random`
-- :doc:`../library-reference/drivers/sd`
 - :doc:`../library-reference/drivers/spi`
 - :doc:`../library-reference/drivers/uart`
+- :doc:`../library-reference/drivers/ws2812`
 
 Library Reference
 -----------------
 
-Read more about board specific functionality in the :doc:`Cygwin
-<../library-reference/boards/cygwin>` module documentation in the
+Read more about board specific functionality in the :doc:`Maple-ESP32
+<../library-reference/boards/maple_esp32>` module documentation in the
 Library Reference.
 
 Memory usage
@@ -71,9 +66,9 @@ Below is the memory usage of two applications:
 +--------------------------+-----------+-----------+
 | Application              | Flash     | RAM       |
 +==========================+===========+===========+
-| minimal-configuration    |    144940 |    317160 |
+| minimal-configuration    |     91341 |      8636 |
 +--------------------------+-----------+-----------+
-| default-configuration    |    362623 |    429656 |
+| default-configuration    |    348885 |     83216 |
 +--------------------------+-----------+-----------+
 
 Default configuration
@@ -88,7 +83,7 @@ Default Standard Library configuration.
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_ANALOG_INPUT_PIN_                              |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
-|  CONFIG_ANALOG_OUTPUT_PIN_                             |  1                                                  |
+|  CONFIG_ANALOG_OUTPUT_PIN_                             |  0                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_ASSERT_                                        |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
@@ -114,9 +109,9 @@ Default Standard Library configuration.
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_EMACS_ROWS_MAX_                                |  24                                                 |
 +--------------------------------------------------------+-----------------------------------------------------+
-|  CONFIG_ESP_WIFI_                                      |  0                                                  |
+|  CONFIG_ESP_WIFI_                                      |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
-|  CONFIG_EXTI_                                          |  1                                                  |
+|  CONFIG_EXTI_                                          |  0                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_FAT16_                                         |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
@@ -220,7 +215,7 @@ Default Standard Library configuration.
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_I2C_                                           |  0                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
-|  CONFIG_I2C_SOFT_                                      |  1                                                  |
+|  CONFIG_I2C_SOFT_                                      |  0                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_MCP2515_                                       |  0                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
@@ -228,7 +223,7 @@ Default Standard Library configuration.
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_MODULE_INIT_ANALOG_INPUT_PIN_                  |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
-|  CONFIG_MODULE_INIT_ANALOG_OUTPUT_PIN_                 |  1                                                  |
+|  CONFIG_MODULE_INIT_ANALOG_OUTPUT_PIN_                 |  0                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_MODULE_INIT_BUS_                               |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
@@ -244,9 +239,9 @@ Default Standard Library configuration.
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_MODULE_INIT_DS3231_                            |  0                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
-|  CONFIG_MODULE_INIT_ESP_WIFI_                          |  0                                                  |
+|  CONFIG_MODULE_INIT_ESP_WIFI_                          |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
-|  CONFIG_MODULE_INIT_EXTI_                              |  1                                                  |
+|  CONFIG_MODULE_INIT_EXTI_                              |  0                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_MODULE_INIT_FLASH_                             |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
@@ -254,7 +249,7 @@ Default Standard Library configuration.
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_MODULE_INIT_I2C_                               |  0                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
-|  CONFIG_MODULE_INIT_I2C_SOFT_                          |  1                                                  |
+|  CONFIG_MODULE_INIT_I2C_SOFT_                          |  0                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_MODULE_INIT_INET_                              |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
@@ -272,17 +267,15 @@ Default Standard Library configuration.
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_MODULE_INIT_PING_                              |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
-|  CONFIG_MODULE_INIT_PWM_                               |  1                                                  |
+|  CONFIG_MODULE_INIT_PWM_                               |  0                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
-|  CONFIG_MODULE_INIT_PWM_SOFT_                          |  1                                                  |
+|  CONFIG_MODULE_INIT_PWM_SOFT_                          |  0                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_MODULE_INIT_RANDOM_                            |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_MODULE_INIT_RWLOCK_                            |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
-|  CONFIG_MODULE_INIT_SD_                                |  1                                                  |
-+--------------------------------------------------------+-----------------------------------------------------+
-|  CONFIG_MODULE_INIT_SDIO_                              |  0                                                  |
+|  CONFIG_MODULE_INIT_SD_                                |  0                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_MODULE_INIT_SEM_                               |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
@@ -314,7 +307,7 @@ Default Standard Library configuration.
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_MODULE_INIT_WATCHDOG_                          |  0                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
-|  CONFIG_MONITOR_THREAD_                                |  1                                                  |
+|  CONFIG_MONITOR_THREAD_                                |  0                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_MONITOR_THREAD_PERIOD_US_                      |  2000000                                            |
 +--------------------------------------------------------+-----------------------------------------------------+
@@ -330,17 +323,17 @@ Default Standard Library configuration.
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_PROFILE_STACK_                                 |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
-|  CONFIG_PWM_                                           |  1                                                  |
+|  CONFIG_PWM_                                           |  0                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
-|  CONFIG_PWM_SOFT_                                      |  1                                                  |
+|  CONFIG_PWM_SOFT_                                      |  0                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_RANDOM_                                        |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
-|  CONFIG_SD_                                            |  1                                                  |
-+--------------------------------------------------------+-----------------------------------------------------+
-|  CONFIG_SDIO_                                          |  0                                                  |
+|  CONFIG_SD_                                            |  0                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_SETTINGS_AREA_SIZE_                            |  256                                                |
++--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_SETTINGS_BLOB_                                 |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_SHELL_COMMAND_MAX_                             |  64                                                 |
 +--------------------------------------------------------+-----------------------------------------------------+
@@ -349,6 +342,8 @@ Default Standard Library configuration.
 |  CONFIG_SHELL_MINIMAL_                                 |  0                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_SHELL_PROMPT_                                  |  "$ "                                               |
++--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_SOAM_EMBEDDED_DATABASE_                        |  0                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_SOCKET_RAW_                                    |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
@@ -364,9 +359,9 @@ Default Standard Library configuration.
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_START_CONSOLE_DEVICE_INDEX_                    |  0                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
-|  CONFIG_START_CONSOLE_UART_BAUDRATE_                   |  38400                                              |
+|  CONFIG_START_CONSOLE_UART_BAUDRATE_                   |  115200                                             |
 +--------------------------------------------------------+-----------------------------------------------------+
-|  CONFIG_START_CONSOLE_UART_RX_BUFFER_SIZE_             |  32                                                 |
+|  CONFIG_START_CONSOLE_UART_RX_BUFFER_SIZE_             |  512                                                |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_START_CONSOLE_USB_CDC_CONTROL_INTERFACE_       |  0                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
@@ -378,9 +373,9 @@ Default Standard Library configuration.
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_START_FILESYSTEM_                              |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
-|  CONFIG_START_FILESYSTEM_ADDRESS_                      |  0                                                  |
+|  CONFIG_START_FILESYSTEM_ADDRESS_                      |  0x00300000                                         |
 +--------------------------------------------------------+-----------------------------------------------------+
-|  CONFIG_START_FILESYSTEM_SIZE_                         |  65536                                              |
+|  CONFIG_START_FILESYSTEM_SIZE_                         |  32768                                              |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_START_NETWORK_                                 |  0                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
@@ -394,17 +389,19 @@ Default Standard Library configuration.
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_START_SHELL_PRIO_                              |  30                                                 |
 +--------------------------------------------------------+-----------------------------------------------------+
-|  CONFIG_START_SHELL_STACK_SIZE_                        |  768                                                |
+|  CONFIG_START_SHELL_STACK_SIZE_                        |  4096                                               |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_START_SOAM_                                    |  0                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_START_SOAM_PRIO_                               |  30                                                 |
 +--------------------------------------------------------+-----------------------------------------------------+
-|  CONFIG_START_SOAM_STACK_SIZE_                         |  768                                                |
+|  CONFIG_START_SOAM_STACK_SIZE_                         |  4096                                               |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_STD_OUTPUT_BUFFER_MAX_                         |  16                                                 |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_SYSTEM_INTERRUPTS_                             |  1                                                  |
++--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_SYSTEM_INTERRUPT_STACK_SIZE_                   |  0                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_SYSTEM_TICK_FREQUENCY_                         |  100                                                |
 +--------------------------------------------------------+-----------------------------------------------------+
@@ -412,7 +409,7 @@ Default Standard Library configuration.
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_SYS_CONFIG_STRING_                             |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
-|  CONFIG_SYS_SIMBA_MAIN_STACK_MAX_                      |  4096                                               |
+|  CONFIG_SYS_SIMBA_MAIN_STACK_MAX_                      |  8192                                               |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_THRD_CPU_USAGE_                                |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
@@ -420,7 +417,7 @@ Default Standard Library configuration.
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_THRD_IDLE_STACK_SIZE_                          |  1024                                               |
 +--------------------------------------------------------+-----------------------------------------------------+
-|  CONFIG_THRD_MONITOR_STACK_SIZE_                       |  1024                                               |
+|  CONFIG_THRD_MONITOR_STACK_SIZE_                       |  768                                                |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_THRD_SCHEDULED_                                |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
@@ -453,12 +450,12 @@ Default Standard Library configuration.
 Homepage
 --------
 
-http://www.cygwin.com
+http://www.analoglamb.com/product/maple-esp32/
 
 Mcu
 ---
 
-:doc:`linux<../library-reference/mcus/linux>`
+:doc:`esp32<../library-reference/mcus/esp32>`
 
 .. _CONFIG_ADC: ../user-guide/configuration.html#c.CONFIG_ADC
 
@@ -658,8 +655,6 @@ Mcu
 
 .. _CONFIG_MODULE_INIT_SD: ../user-guide/configuration.html#c.CONFIG_MODULE_INIT_SD
 
-.. _CONFIG_MODULE_INIT_SDIO: ../user-guide/configuration.html#c.CONFIG_MODULE_INIT_SDIO
-
 .. _CONFIG_MODULE_INIT_SEM: ../user-guide/configuration.html#c.CONFIG_MODULE_INIT_SEM
 
 .. _CONFIG_MODULE_INIT_SETTINGS: ../user-guide/configuration.html#c.CONFIG_MODULE_INIT_SETTINGS
@@ -714,9 +709,9 @@ Mcu
 
 .. _CONFIG_SD: ../user-guide/configuration.html#c.CONFIG_SD
 
-.. _CONFIG_SDIO: ../user-guide/configuration.html#c.CONFIG_SDIO
-
 .. _CONFIG_SETTINGS_AREA_SIZE: ../user-guide/configuration.html#c.CONFIG_SETTINGS_AREA_SIZE
+
+.. _CONFIG_SETTINGS_BLOB: ../user-guide/configuration.html#c.CONFIG_SETTINGS_BLOB
 
 .. _CONFIG_SHELL_COMMAND_MAX: ../user-guide/configuration.html#c.CONFIG_SHELL_COMMAND_MAX
 
@@ -725,6 +720,8 @@ Mcu
 .. _CONFIG_SHELL_MINIMAL: ../user-guide/configuration.html#c.CONFIG_SHELL_MINIMAL
 
 .. _CONFIG_SHELL_PROMPT: ../user-guide/configuration.html#c.CONFIG_SHELL_PROMPT
+
+.. _CONFIG_SOAM_EMBEDDED_DATABASE: ../user-guide/configuration.html#c.CONFIG_SOAM_EMBEDDED_DATABASE
 
 .. _CONFIG_SOCKET_RAW: ../user-guide/configuration.html#c.CONFIG_SOCKET_RAW
 
@@ -781,6 +778,8 @@ Mcu
 .. _CONFIG_STD_OUTPUT_BUFFER_MAX: ../user-guide/configuration.html#c.CONFIG_STD_OUTPUT_BUFFER_MAX
 
 .. _CONFIG_SYSTEM_INTERRUPTS: ../user-guide/configuration.html#c.CONFIG_SYSTEM_INTERRUPTS
+
+.. _CONFIG_SYSTEM_INTERRUPT_STACK_SIZE: ../user-guide/configuration.html#c.CONFIG_SYSTEM_INTERRUPT_STACK_SIZE
 
 .. _CONFIG_SYSTEM_TICK_FREQUENCY: ../user-guide/configuration.html#c.CONFIG_SYSTEM_TICK_FREQUENCY
 

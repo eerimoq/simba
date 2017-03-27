@@ -28,7 +28,7 @@ SERIAL_TIMEOUT = 3.0
 
 READ_WRITE_CHUNK_SIZE = 1016
 
-SCRIPTPATH = os.path.dirname(os.path.realpath(__file__))
+SCRIPT_PATH = os.path.dirname(os.path.realpath(__file__))
 
 
 class CommandError(Exception):
@@ -36,6 +36,10 @@ class CommandError(Exception):
 
 
 def crc_ccitt(data):
+    """Calculate a CRC of given data.
+
+    """
+
     msb = 0xff
     lsb = 0xff
 
@@ -49,19 +53,27 @@ def crc_ccitt(data):
 
 
 def packet_write(serial_connection, command_type, payload):
+    """Write given packet to given serial connection.
+
+    """
+
     header = struct.pack('>bH', command_type, len(payload))
     footer = struct.pack('>H', crc_ccitt(header + payload))
 
-    # serial_connection.write(packet)
     serial_connection.write(header)
     time.sleep(0.002)
     serial_connection.write(payload + footer)
 
 
 def packet_read(serial_connection):
+    """Read a packet from given serial connection.
+
+    """
+
     header = serial_connection.read(3)
 
     if len(header) != 3:
+        print('error: failed to read packet header')
         return None, None
 
     command_type, payload_size = struct.unpack('>bH', header)
@@ -70,8 +82,9 @@ def packet_read(serial_connection):
         payload = serial_connection.read(payload_size)
 
         if len(payload) != payload_size:
-            print(len(payload), payload_size)
-            print(payload.encode('hex'))
+            print('error: received {} bytes when expecting {}'.format(
+                len(payload), payload_size))
+            print('error: payload:', payload.encode('hex'))
             return None, None
     else:
         payload = b''
@@ -79,17 +92,23 @@ def packet_read(serial_connection):
     footer = serial_connection.read(2)
 
     if len(footer) != 2:
+        print('error: failed to read packet footer')
         return None, None
 
     crc = struct.unpack('>H', footer)[0]
 
     if crc != crc_ccitt(header + payload):
+        print('error: crc mismatch of received packet')
         return None, None
 
     return command_type, payload
 
 
 def execute_command(serial_connection, command_type, payload=None):
+    """Execute given command and return the response payload.
+
+    """
+
     if payload is None:
         payload = b''
 
@@ -100,11 +119,14 @@ def execute_command(serial_connection, command_type, payload=None):
         if response_command_type == command_type:
             return response_payload
 
-    print('Communication failure.')
-    sys.exit(1)
+    sys.exit('Communication failure.')
 
 
 def flash_read(serial_connection, address, size, progress=None):
+    """Read from flash.
+
+    """
+
     left = size
     response_payload = b''
 
@@ -128,7 +150,11 @@ def flash_read(serial_connection, address, size, progress=None):
 
 
 def upload(serial_connection, baudrate, control_port):
-    spc5tool_bin = os.path.join(SCRIPTPATH,
+    """Upload the spc5tool SRAM application using the BAM.
+
+    """
+
+    spc5tool_bin = os.path.join(SCRIPT_PATH,
                                 'spc5tool',
                                 'spc5tool.' + str(baudrate) + '.bin')
 
@@ -138,7 +164,7 @@ def upload(serial_connection, baudrate, control_port):
         # Set FAB high for serial boot mode.
         control_port_connection.dtr = False
         time.sleep(0.01)
-        
+
         # Toggle RESET.
         control_port_connection.rts = False
         time.sleep(0.01)
@@ -149,7 +175,7 @@ def upload(serial_connection, baudrate, control_port):
 
         # Flush any received garbage.
         serial_connection.flushInput()
-        
+
     with open(spc5tool_bin, 'rb') as fin:
         binary_data = fin.read()
 
@@ -192,6 +218,10 @@ def upload(serial_connection, baudrate, control_port):
 
 
 def erase(serial_connection, address, size):
+    """Erase flash memory.
+
+    """
+
     payload = struct.pack('>II', address, size)
 
     print('Erasing 0x{:08x}-0x{:08x}.'.format(address, address + size))

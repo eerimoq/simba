@@ -3,7 +3,7 @@
  *
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2016, Erik Moqvist
+ * Copyright (c) 2014-2017, Erik Moqvist
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -111,6 +111,8 @@ static FAR const uint16_t ccitt_tab[256] = {
     0x6e17, 0x7e36, 0x4e55, 0x5e74, 0x2e93, 0x3eb2, 0x0ed1, 0x1ef0
 };
 
+#if CONFIG_CRC_TABLE_LOOKUP == 1
+
 uint32_t crc_32(uint32_t crc, const void *buf_p, size_t size)
 {
     ASSERTN(buf_p != NULL, EINVAL);
@@ -118,16 +120,14 @@ uint32_t crc_32(uint32_t crc, const void *buf_p, size_t size)
     const uint8_t *b_p;
 
     b_p = buf_p;
-    crc ^= ~0ul;
+    crc ^= 0xfffffffful;
 
     while (size--) {
         crc = crc32_tab[(crc ^ *b_p++) & 0xff] ^ (crc >> 8);
     }
 
-    return (crc ^ ~0ul);
+    return (~crc);
 }
-
-#if CONFIG_CRC_TABLE_LOOKUP == 1
 
 uint16_t crc_ccitt(uint16_t crc, const void *buf_p, size_t size)
 {
@@ -146,6 +146,29 @@ uint16_t crc_ccitt(uint16_t crc, const void *buf_p, size_t size)
 }
 
 #else
+
+uint32_t crc_32(uint32_t crc, const void *buf_p, size_t size)
+{
+    ASSERTN(buf_p != NULL, EINVAL);
+
+    const uint8_t *b_p;
+    size_t i;
+
+    b_p = buf_p;
+    crc ^= 0xfffffffful;
+
+    while (size > 0) {
+        crc = (crc ^ *b_p++);
+
+        for (i = 0; i < 8; i++) {
+            crc = (crc >> 1) ^ (0xedb88320 & (-(crc & 1)));
+        }
+
+        size--;
+    }
+
+    return (~crc);
+}
 
 uint16_t crc_ccitt(uint16_t crc, const void *buf_p, size_t size)
 {

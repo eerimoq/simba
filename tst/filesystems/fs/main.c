@@ -3,7 +3,7 @@
  *
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2016, Erik Moqvist
+ * Copyright (c) 2014-2017, Erik Moqvist
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -687,19 +687,19 @@ static int test_filesystem_commands(struct harness_t *harness_p)
     /* Bad arguments. */
     strcpy(buf, "/filesystems/fs/read");
     BTASSERT(fs_call(buf, NULL, &qout, NULL) == -1);
-    read_until(buf, "Usage: /filesystems/fs/read <file>\r\n");
+    read_until(buf, "Usage: read <file>\r\n");
 
     strcpy(buf, "/filesystems/fs/write");
     BTASSERT(fs_call(buf, NULL, &qout, NULL) == -1);
-    read_until(buf, "Usage: /filesystems/fs/write <file> [<data>]\r\n");
+    read_until(buf, "Usage: write <file> [<data>]\r\n");
 
     strcpy(buf, "/filesystems/fs/append");
     BTASSERT(fs_call(buf, NULL, &qout, NULL) == -1);
-    read_until(buf, "Usage: /filesystems/fs/append <file> <data>\r\n");
+    read_until(buf, "Usage: append <file> <data>\r\n");
 
     strcpy(buf, "/filesystems/fs/list");
     BTASSERT(fs_call(buf, NULL, &qout, NULL) == -1);
-    read_until(buf, "Usage: /filesystems/fs/list <path>\r\n");
+    read_until(buf, "Usage: list <path>\r\n");
 
     /* Non-existing file. */
     strcpy(buf, "/filesystems/fs/read spiffsfs/cmd.txt");
@@ -762,7 +762,7 @@ static int test_filesystem_commands(struct harness_t *harness_p)
     /* Bad arguments. */
     strcpy(buf, "/filesystems/fs/remove");
     BTASSERT(fs_call(buf, NULL, &qout, NULL) == -1);
-    read_until(buf, "Usage: /filesystems/fs/remove <file>\r\n");
+    read_until(buf, "Usage: remove <file>\r\n");
 
     return (0);
 

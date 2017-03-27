@@ -3,7 +3,7 @@
 #
 # The MIT License (MIT)
 #
-# Copyright (c) 2014-2016, Erik Moqvist
+# Copyright (c) 2014-2017, Erik Moqvist
 #
 # Permission is hereby granted, free of charge, to any person
 # obtaining a copy of this software and associated documentation
@@ -28,30 +28,8 @@
 # This file is part of the Simba project.
 #
 
-INC += $(SIMBA_ROOT)/src/boards/linux
-SRC += $(SIMBA_ROOT)/src/boards/linux/board.c
+NAME = stress_suite
+BOARD ?= linux
 
-BOARD_HOMEPAGE = "http://www.cygwin.com"
-BOARD_PINOUT = "cygwin-pinout.png"
-BOARD_DESC = "Cygwin"
-
-MCU = linux
-
-upload:
-
-rerun:
-	@echo "Running $(EXE)"
-	./$(EXE) | tee $(RUNLOG) ; test $${PIPESTATUS[0]} -eq 0
-
-run-debugger: all
-	gdb $(EXE) --eval-command "break main" --eval-command run
-
-profile:
-	gprof $(EXE)
-
-coverage:
-	geninfo . -o coverage.info
-	genhtml coverage.info
-
-jenkins-coverage:
-	gcovr -r $(readlink -f ../../..) -x -e ".*main.c"
+SIMBA_ROOT ?= ../..
+include $(SIMBA_ROOT)/make/app.mk

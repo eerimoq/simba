@@ -3,7 +3,7 @@
  *
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2016, Erik Moqvist
+ * Copyright (c) 2014-2017, Erik Moqvist
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -28,16 +28,51 @@
  * This file is part of the Simba project.
  */
 
-#ifndef __DRIVERS_SDIO_PORT_H__
-#define __DRIVERS_SDIO_PORT_H__
+#include "simba.h"
 
-struct sdio_device_t {
-    struct sdio_driver_t *drv_p;
-    volatile struct stm32_sdio_t *regs_p;
-};
+/* Number of pixels in the chain. */
+#define PIXEL_MAX                                          81
 
-struct sdio_driver_t {
-    struct sdio_device_t *dev_p;
-};
+static uint8_t red[3 * PIXEL_MAX];
+static uint8_t green[3 * PIXEL_MAX];
+static uint8_t blue[3 * PIXEL_MAX];
 
-#endif
+int main()
+{
+    struct ws2812_driver_t ws2812;
+    struct pin_device_t *pins[] = {
+        &pin_gpio18_dev
+    };
+    int i;
+
+    sys_start();
+
+    ws2812_init(&ws2812, &pins[0], 1);
+
+    /* Initialize the color buffers. */
+    memset(&red[0], 0, sizeof(red));
+    memset(&green[0], 0, sizeof(green));
+    memset(&blue[0], 0, sizeof(blue));
+
+    for (i = 0; i < PIXEL_MAX; i++) {
+        red[3 * i + 1] = 255;
+        green[3 * i] = 255;
+        blue[3 * i + 2] = 255;
+    }
+
+    while (1) {
+        std_printf(OSTR("Red.\r\n"));
+        ws2812_write(&ws2812, &red[0], membersof(red) / 3);
+        thrd_sleep(0.5);
+
+        std_printf(OSTR("Green.\r\n"));
+        ws2812_write(&ws2812, &green[0], membersof(green) / 3);
+        thrd_sleep(0.5);
+
+        std_printf(OSTR("Blue.\r\n"));
+        ws2812_write(&ws2812, &blue[0], membersof(blue) / 3);
+        thrd_sleep(0.5);
+    }
+
+    return (0);
+}

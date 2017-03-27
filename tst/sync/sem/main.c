@@ -3,7 +3,7 @@
  *
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2016, Erik Moqvist
+ * Copyright (c) 2014-2017, Erik Moqvist
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -33,7 +33,7 @@
 static struct sem_t sem;
 static struct sem_t sem2;
 
-#if defined(ARCH_ESP32)
+#if defined(ARCH_ESP32) || defined(ARCH_PPC)
 static THRD_STACK(t0_stack, 512);
 static THRD_STACK(t1_stack, 512);
 #else
@@ -64,9 +64,9 @@ static int test_all(struct harness_t *harness_p)
         .nanoseconds = 0
     };
 
-    sem_init(&sem, 1, 1);
+    sem_init(&sem, 2, 2);
     sem_init(&sem2, 2, 2);
-    
+
     /* 1. Take all resources. */
     BTASSERT(sem_take(&sem, &timeout) == -ETIMEDOUT);
 

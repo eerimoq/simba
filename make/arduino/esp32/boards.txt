@@ -3,7 +3,7 @@
 #
 # The MIT License (MIT)
 #
-# Copyright (c) 2014-2016, Erik Moqvist
+# Copyright (c) 2014-2017, Erik Moqvist
 #
 # Permission is hereby granted, free of charge, to any person
 # obtaining a copy of this software and associated documentation
@@ -55,5 +55,63 @@ nano32.compiler.cpp.extra_flags={nano32_compiler_cxx_extra_flags}
 nano32.compiler.S.extra_flags={nano32_compiler_c_extra_flags}
 nano32.compiler.c.elf.extra_flags={nano32_compiler_c_elf_extra_flags}
 nano32.compiler.c.elf.libs={nano32_compiler_c_elf_libs}
+
+##################################################################
+
+esp32_devkitc.name=ESP32-DevKitC
+
+esp32_devkitc.upload.tool=esptool
+esp32_devkitc.upload.speed=115200
+esp32_devkitc.upload.resetmethod=ck
+esp32_devkitc.upload.maximum_size=2000000
+esp32_devkitc.upload.maximum_data_size=294912
+esp32_devkitc.upload.wait_for_upload_port=true
+esp32_devkitc.serial.disableDTR=true
+esp32_devkitc.serial.disableRTS=true
+
+esp32_devkitc.build.mcu=esp32
+esp32_devkitc.build.f_cpu=240000000L
+esp32_devkitc.build.board=Esp32_Devkitc
+esp32_devkitc.build.variant=esp32_devkitc
+esp32_devkitc.build.core=Simba:simba
+esp32_devkitc.build.ldscript=simba.flash.ld
+esp32_devkitc.build.flash_size=4M
+esp32_devkitc.build.flash_mode=dio
+esp32_devkitc.build.flash_freq=40
+
+esp32_devkitc.compiler.c.extra_flags={esp32_devkitc_compiler_c_extra_flags}
+esp32_devkitc.compiler.cpp.extra_flags={esp32_devkitc_compiler_cxx_extra_flags}
+esp32_devkitc.compiler.S.extra_flags={esp32_devkitc_compiler_c_extra_flags}
+esp32_devkitc.compiler.c.elf.extra_flags={esp32_devkitc_compiler_c_elf_extra_flags}
+esp32_devkitc.compiler.c.elf.libs={esp32_devkitc_compiler_c_elf_libs}
+
+##################################################################
+
+maple_esp32.name=Maple-ESP32
+
+maple_esp32.upload.tool=esptool
+maple_esp32.upload.speed=115200
+maple_esp32.upload.resetmethod=ck
+maple_esp32.upload.maximum_size=2000000
+maple_esp32.upload.maximum_data_size=294912
+maple_esp32.upload.wait_for_upload_port=true
+maple_esp32.serial.disableDTR=true
+maple_esp32.serial.disableRTS=true
+
+maple_esp32.build.mcu=esp32
+maple_esp32.build.f_cpu=240000000L
+maple_esp32.build.board=Maple_Esp32
+maple_esp32.build.variant=maple_esp32
+maple_esp32.build.core=Simba:simba
+maple_esp32.build.ldscript=simba.flash.ld
+maple_esp32.build.flash_size=4M
+maple_esp32.build.flash_mode=dio
+maple_esp32.build.flash_freq=40
+
+maple_esp32.compiler.c.extra_flags={maple_esp32_compiler_c_extra_flags}
+maple_esp32.compiler.cpp.extra_flags={maple_esp32_compiler_cxx_extra_flags}
+maple_esp32.compiler.S.extra_flags={maple_esp32_compiler_c_extra_flags}
+maple_esp32.compiler.c.elf.extra_flags={maple_esp32_compiler_c_elf_extra_flags}
+maple_esp32.compiler.c.elf.libs={maple_esp32_compiler_c_elf_libs}
 
 ##################################################################

@@ -3,7 +3,7 @@
  *
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2016, Erik Moqvist
+ * Copyright (c) 2014-2017, Erik Moqvist
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -101,10 +101,3 @@ struct uart_device_t uart_device[UART_DEVICE_MAX] = {
 };
 
 struct flash_device_t flash_device[FLASH_DEVICE_MAX];
-
-struct sdio_device_t sdio_device[SDIO_DEVICE_MAX] = {
-    {
-        .drv_p = NULL,
-        .regs_p = STM32_SDIO
-    }
-};

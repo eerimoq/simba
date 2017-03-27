@@ -3,7 +3,7 @@
  *
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2016, Erik Moqvist
+ * Copyright (c) 2014-2017, Erik Moqvist
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -32,34 +32,41 @@
 
 static struct fs_counter_t rx_channel_overflow;
 
+/**
+ * Read a frame from given message buffer.
+ */
 static void read_frame_from_hw(struct can_driver_t *self_p,
-                               volatile struct spc5_flexcan_t *regs_p)
+                               volatile struct spc5_flexcan_msgbuf_t *msgbuf_p)
 {
     struct can_frame_t frame;
 
     /* Read the frame from the hardware. */
-    if (regs_p->MSGBUF[0].CTRL_STATUS & SPC5_FLEXCAN_MSGBUF_CTRL_STATUS_IDE) {
-        frame.extended_frame = 1;
-        frame.id = ((regs_p->MSGBUF[0].PRIO_ID
-                     & SPC5_FLEXCAN_MSGBUF_PRIO_ID_EXT_ID_MASK)
-                    >> SPC5_FLEXCAN_MSGBUF_PRIO_ID_EXT_ID_POS);
-    } else {
-        frame.extended_frame = 0;
-        frame.id = ((regs_p->MSGBUF[0].PRIO_ID
-                     & SPC5_FLEXCAN_MSGBUF_PRIO_ID_STD_ID_MASK)
-                    >> SPC5_FLEXCAN_MSGBUF_PRIO_ID_STD_ID_POS);
-    }
-
-    frame.size = ((regs_p->MSGBUF[0].CTRL_STATUS
+    frame.size = ((msgbuf_p->CTRL_STATUS
                    & SPC5_FLEXCAN_MSGBUF_CTRL_STATUS_LENGTH_MASK)
                   >> SPC5_FLEXCAN_MSGBUF_CTRL_STATUS_LENGTH_POS);
     frame.rtr = 0;
     frame.timestamp = 0;
-    frame.data.u32[0] = regs_p->MSGBUF[0].DATA[0];
-    frame.data.u32[1] = regs_p->MSGBUF[0].DATA[1];
+    frame.data.u32[0] = msgbuf_p->DATA[0];
+    frame.data.u32[1] = msgbuf_p->DATA[1];
 
-    /* Allow reception of the next message. */
-    regs_p->MSGBUF[0].CTRL_STATUS = SPC5_FLEXCAN_MSGBUF_CTRL_STATUS_CODE(4);
+    if (msgbuf_p->CTRL_STATUS & SPC5_FLEXCAN_MSGBUF_CTRL_STATUS_IDE) {
+        frame.extended_frame = 1;
+        frame.id = ((msgbuf_p->PRIO_ID
+                     & SPC5_FLEXCAN_MSGBUF_PRIO_ID_EXT_ID_MASK)
+                    >> SPC5_FLEXCAN_MSGBUF_PRIO_ID_EXT_ID_POS);
+
+        /* Allow reception of the next message. */
+        msgbuf_p->CTRL_STATUS = (SPC5_FLEXCAN_MSGBUF_CTRL_STATUS_CODE(4)
+                                 | SPC5_FLEXCAN_MSGBUF_CTRL_STATUS_IDE);
+    } else {
+        frame.extended_frame = 0;
+        frame.id = ((msgbuf_p->PRIO_ID
+                     & SPC5_FLEXCAN_MSGBUF_PRIO_ID_STD_ID_MASK)
+                    >> SPC5_FLEXCAN_MSGBUF_PRIO_ID_STD_ID_POS);
+
+        /* Allow reception of the next message. */
+        msgbuf_p->CTRL_STATUS = SPC5_FLEXCAN_MSGBUF_CTRL_STATUS_CODE(4);
+    }
 
     /* Write the received frame to the application input channel. */
     if (queue_unused_size_isr(&self_p->chin) >= sizeof(frame)) {
@@ -77,32 +84,38 @@ static void read_frame_from_hw(struct can_driver_t *self_p,
     }
 }
 
+/**
+ * Write given frame to the hardware for transmission.
+ */
 static void write_frame_to_hw(volatile struct spc5_flexcan_t *regs_p,
                               const struct can_frame_t *frame_p)
 {
     uint32_t ctrl_status;
+    volatile struct spc5_flexcan_msgbuf_t *msgbuf_p;
 
     /* Write the frame to the hardware. */
     if (frame_p->extended_frame == 0) {
         ctrl_status = 0;
-        regs_p->MSGBUF[1].PRIO_ID = SPC5_FLEXCAN_MSGBUF_PRIO_ID_STD_ID(frame_p->id);
+        msgbuf_p = &regs_p->MSGBUF[2];
+        msgbuf_p->PRIO_ID = SPC5_FLEXCAN_MSGBUF_PRIO_ID_STD_ID(frame_p->id);
     } else {
         ctrl_status = SPC5_FLEXCAN_MSGBUF_CTRL_STATUS_IDE;
-        regs_p->MSGBUF[1].PRIO_ID = SPC5_FLEXCAN_MSGBUF_PRIO_ID_EXT_ID(frame_p->id);
+        msgbuf_p = &regs_p->MSGBUF[3];
+        msgbuf_p->PRIO_ID = SPC5_FLEXCAN_MSGBUF_PRIO_ID_EXT_ID(frame_p->id);
     }
 
-    regs_p->MSGBUF[1].DATA[0] = frame_p->data.u32[0];
-    regs_p->MSGBUF[1].DATA[1] = frame_p->data.u32[1];
+    msgbuf_p->DATA[0] = frame_p->data.u32[0];
+    msgbuf_p->DATA[1] = frame_p->data.u32[1];
 
     /* Set DLC and trigger the transmission. */
-    regs_p->MSGBUF[1].CTRL_STATUS = (ctrl_status
-                                     | SPC5_FLEXCAN_MSGBUF_CTRL_STATUS_CODE(0xc)
-                                     | SPC5_FLEXCAN_MSGBUF_CTRL_STATUS_LENGTH(frame_p->size));
+    msgbuf_p->CTRL_STATUS = (ctrl_status
+                             | SPC5_FLEXCAN_MSGBUF_CTRL_STATUS_CODE(0xc)
+                             | SPC5_FLEXCAN_MSGBUF_CTRL_STATUS_LENGTH(frame_p->size));
 }
 
 ISR(flexcan_0_esr_err)
 {
-    while (1);
+    sys_panic("flexcan_0_esr_err");
 }
 
 ISR(flexcan_0_buf_00_03)
@@ -120,10 +133,21 @@ ISR(flexcan_0_buf_00_03)
     self_p = dev_p->drv_p;
     regs_p = dev_p->regs_p;
 
-    /* Handle TX complete interrupt. */
+    /* Handle standard ID RX complete interrupt. */
+    if (regs_p->IFLAG1 & 0x1) {
+        regs_p->IFLAG1 = 0x1;
+        read_frame_from_hw(self_p, &regs_p->MSGBUF[0]);
+    }
+
+    /* Handle extended ID TX complete interrupt. */
     if (regs_p->IFLAG1 & 0x2) {
-        /* Clear interrupt flag. */
         regs_p->IFLAG1 = 0x2;
+        read_frame_from_hw(self_p, &regs_p->MSGBUF[1]);
+    }
+
+    /* Handle TX complete interrupt. */
+    if (regs_p->IFLAG1 & 0xc) {
+        regs_p->IFLAG1 = 0xc;
 
         if (self_p->txsize > 0) {
             write_frame_to_hw(regs_p, self_p->txframe_p);
@@ -132,13 +156,6 @@ ISR(flexcan_0_buf_00_03)
         } else {
             thrd_resume_isr(self_p->thrd_p, 0);
         }
-    }
-
-    if (regs_p->IFLAG1 & 0x1) {
-        /* Clear interrupt flag. */
-        regs_p->IFLAG1 = 0x1;
-
-        read_frame_from_hw(self_p, regs_p);
     }
 }
 
@@ -206,17 +223,26 @@ int can_port_start(struct can_driver_t *self_p)
                    | SPC5_FLEXCAN_MCR_WRN_EN
                    | SPC5_FLEXCAN_MCR_SRX_DIS
                    | SPC5_FLEXCAN_MCR_AEN
-                   | SPC5_FLEXCAN_MCR_MAXMB(1));
+                   | SPC5_FLEXCAN_MCR_MAXMB(3));
     regs_p->CTRL = (self_p->speed);
 
-    /* RX message buffer initialization. */
+    /* Standard frame ID RX message buffer initialization. */
     regs_p->MSGBUF[0].PRIO_ID = 0;
     regs_p->MSGBUF[0].CTRL_STATUS = SPC5_FLEXCAN_MSGBUF_CTRL_STATUS_CODE(4);
 
-    /* TX message buffer initialization. */
-    regs_p->MSGBUF[1].CTRL_STATUS = SPC5_FLEXCAN_MSGBUF_CTRL_STATUS_CODE(8);
+    /* Extended frame ID RX message buffer initialization. */
+    regs_p->MSGBUF[1].PRIO_ID = 0;
+    regs_p->MSGBUF[1].CTRL_STATUS = (SPC5_FLEXCAN_MSGBUF_CTRL_STATUS_CODE(4)
+                                     | SPC5_FLEXCAN_MSGBUF_CTRL_STATUS_IDE);
 
-    regs_p->IMASK1 = 0x3;
+    /* Standard frame ID TX message buffer initialization. */
+    regs_p->MSGBUF[2].CTRL_STATUS = SPC5_FLEXCAN_MSGBUF_CTRL_STATUS_CODE(8);
+
+    /* Extended frame ID TX message buffer initialization. */
+    regs_p->MSGBUF[3].CTRL_STATUS = (SPC5_FLEXCAN_MSGBUF_CTRL_STATUS_CODE(8)
+                                     | SPC5_FLEXCAN_MSGBUF_CTRL_STATUS_IDE);
+
+    regs_p->IMASK1 = 0xf;
     regs_p->RXGMASK = 0;
 
     /* Let it loose! */

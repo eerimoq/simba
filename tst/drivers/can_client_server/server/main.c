@@ -3,7 +3,7 @@
  *
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2016, Erik Moqvist
+ * Copyright (c) 2014-2017, Erik Moqvist
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -61,7 +61,8 @@ int main()
             break;
         }
 
-        std_printf(FSTR("Read frame.    id: 0x%x, size: %d, data:"),
+        std_printf(FSTR("Read frame.    extended: %d, id: 0x%x, size: %d, data:"),
+                   frame.extended_frame,
                    frame.id,
                    frame.size);
 
@@ -78,7 +79,8 @@ int main()
             frame.data.u8[i]++;
         }
 
-        std_printf(FSTR("Writing frame. id: 0x%x, size: %d, data:"),
+        std_printf(FSTR("Writing frame. extended: %d, id: 0x%x, size: %d, data:"),
+                   frame.extended_frame,
                    frame.id,
                    frame.size);
 

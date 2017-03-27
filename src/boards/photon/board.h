@@ -3,7 +3,7 @@
  *
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2016, Erik Moqvist
+ * Copyright (c) 2014-2017, Erik Moqvist
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -60,8 +60,6 @@
 #define pwm_a5_dev pwm_device[5]
 
 #define flash_0_dev flash_device[0]
-
-#define sdio_0_dev sdio_device[0]
 
 /**
  * Convert given pin string to the pin number.

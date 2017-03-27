@@ -3,7 +3,7 @@
  *
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2016, Erik Moqvist
+ * Copyright (c) 2014-2017, Erik Moqvist
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -131,9 +131,7 @@ struct chan_t {
     chan_write_filter_fn_t write_filter_cb;
     chan_write_fn_t write_isr;
     chan_write_filter_fn_t write_filter_isr_cb;
-    /* Reader thread waiting for data or writer thread waiting for a
-       reader. */
-    struct thrd_t *writer_p;
+    /* Reader thread waiting for data. */
     struct thrd_t *reader_p;
     /* Used by the reader when polling channels. */
     struct chan_list_t *list_p;

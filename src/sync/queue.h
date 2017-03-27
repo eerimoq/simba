@@ -3,7 +3,7 @@
  *
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2016, Erik Moqvist
+ * Copyright (c) 2014-2017, Erik Moqvist
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -45,28 +45,33 @@ enum queue_state_t {
 };
 
 /* Compile time declaration and initialization of a channel. */
-#define QUEUE_INIT_DECL(_name, _buf, _size)                             \
-    struct queue_t _name = {                                            \
-        .base = {                                                       \
-            .read = (chan_read_fn_t)queue_read,                         \
-            .write = (chan_write_fn_t)queue_write,                      \
-            .size = (chan_size_fn_t)queue_size,                         \
-            .control = chan_control_null,                               \
-            .writer_p = NULL,                                           \
-            .reader_p = NULL,                                           \
-            .list_p = NULL                                              \
-        },                                                              \
-        .buffer = {                                                     \
-            .begin_p = _buf,                                            \
-            .read_p = _buf,                                             \
-            .write_p = _buf,                                            \
-            .end_p = &_buf[_size],                                      \
-            .size = _size                                               \
-        },                                                              \
-        .state = QUEUE_STATE_INITIALIZED,                               \
-        .buf_p = NULL,                                                  \
-        .size = 0,                                                      \
-        .left = 0                                                       \
+#define QUEUE_INIT_DECL(_name, _buf, _size)             \
+    struct queue_t _name = {                            \
+        .base = {                                       \
+            .read = (chan_read_fn_t)queue_read,         \
+            .write = (chan_write_fn_t)queue_write,      \
+            .size = (chan_size_fn_t)queue_size,         \
+            .control = chan_control_null,               \
+            .reader_p = NULL,                           \
+            .list_p = NULL                              \
+        },                                              \
+        .writers = {                                    \
+            .head_p = NULL,                             \
+        },                                              \
+        .writer_p = NULL,                               \
+        .buffer = {                                     \
+            .begin_p = _buf,                            \
+            .read_p = _buf,                             \
+            .write_p = _buf,                            \
+            .end_p = &_buf[_size],                      \
+            .size = _size                               \
+        },                                              \
+        .state = QUEUE_STATE_INITIALIZED,               \
+        .reader = {                                     \
+            .buf_p = NULL,                              \
+            .size = 0,                                  \
+            .left = 0                                   \
+        }                                               \
     }
 
 struct queue_buffer_t{
@@ -77,14 +82,25 @@ struct queue_buffer_t{
     size_t size;
 };
 
+struct queue_writer_elem_t {
+    struct thrd_prio_list_elem_t base;
+    void *buf_p;
+    size_t size;
+    size_t left;
+};
+
 /* Queue. */
 struct queue_t {
     struct chan_t base;
+    struct thrd_prio_list_t writers;
+    struct queue_writer_elem_t *writer_p;
+    struct {
+        char *buf_p;
+        size_t size;
+        size_t left;
+    } reader;
     struct queue_buffer_t buffer;
     enum queue_state_t state;
-    char *buf_p;
-    size_t size;
-    size_t left;
 };
 
 /**

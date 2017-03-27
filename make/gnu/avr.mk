@@ -3,7 +3,7 @@
 #
 # The MIT License (MIT)
 #
-# Copyright (c) 2014-2016, Erik Moqvist
+# Copyright (c) 2014-2017, Erik Moqvist
 #
 # Permission is hereby granted, free of charge, to any person
 # obtaining a copy of this software and associated documentation
@@ -42,19 +42,21 @@ SIZEARGS = --mcu=$(MCU) --format=avr
 CDEFS += F_CPU=$(F_CPU)UL \
 	__DELAY_BACKWARD_COMPATIBLE__
 
-CFLAGS += -mmcu=$(CPU) \
-          -O2 \
-          -ffunction-sections \
-          -fdata-sections \
-          -fpack-struct \
-          -fshort-enums
+CFLAGS += \
+	-mmcu=$(CPU) \
+        -O2 \
+        -ffunction-sections \
+        -fdata-sections \
+        -fpack-struct \
+        -fshort-enums
 
-CXXFLAGS += -mmcu=$(CPU) \
-          -O2 \
-          -ffunction-sections \
-          -fdata-sections \
-          -fpack-struct \
-          -fshort-enums
+CXXFLAGS += \
+	-mmcu=$(CPU) \
+        -O2 \
+        -ffunction-sections \
+        -fdata-sections \
+        -fpack-struct \
+        -fshort-enums
 
 LDFLAGS += -mmcu=$(CPU) \
            -Wl,--cref \

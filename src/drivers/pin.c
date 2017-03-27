@@ -3,7 +3,7 @@
  *
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2016, Erik Moqvist
+ * Copyright (c) 2014-2017, Erik Moqvist
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -62,8 +62,7 @@ static int cmd_set_mode_cb(int argc,
     int mode;
 
     if (argc != 3) {
-        std_fprintf(out_p, OSTR("Usage: %s <pin> <mode>\r\n"),
-                    argv[0]);
+        std_fprintf(out_p, OSTR("Usage: set_mode <pin> <mode>\r\n"));
 
         return (-EINVAL);
     }
@@ -108,7 +107,7 @@ static int cmd_read_cb(int argc,
     int value;
 
     if (argc != 2) {
-        std_fprintf(out_p, OSTR("Usage: %s <pin>\r\n"), argv[0]);
+        std_fprintf(out_p, OSTR("Usage: read <pin>\r\n"));
 
         return (-EINVAL);
     }
@@ -147,7 +146,7 @@ static int cmd_write_cb(int argc,
     int pin;
 
     if (argc != 3) {
-        std_fprintf(out_p, OSTR("Usage: %s <pin> <value>\r\n"), argv[0]);
+        std_fprintf(out_p, OSTR("Usage: write <pin> <value>\r\n"));
 
         return (-EINVAL);
     }
@@ -167,7 +166,7 @@ static int cmd_write_cb(int argc,
     } else if (strcmp(argv[2], "low") == 0) {
         pin_device_write_low(&pin_device[pin]);
     } else {
-        std_fprintf(out_p, OSTR("Bad value '%s',\r\n"), argv[2]);
+        std_fprintf(out_p, OSTR("%s: bad value\r\n"), argv[2]);
 
         return (-EINVAL);
     }
