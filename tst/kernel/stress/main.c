@@ -54,7 +54,7 @@ static void *worker_main(void *arg_p)
         sem_give(&sem, 1);
 
         time_get(&now);
-        time_diff(&diff, &now, &prev);
+        time_subtract(&diff, &now, &prev);
 
         if (diff.seconds >= 1) {
             prev = now;

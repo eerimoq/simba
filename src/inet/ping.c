@@ -179,7 +179,7 @@ int ping_host_by_ip_address(struct inet_ip_addr_t *address_p,
                                          &address); 
            
             /* Calculate the round trip time (RTT). */
-            time_diff(round_trip_time_p, &stop, &start);
+            time_subtract(round_trip_time_p, &stop, &start);
             
             /* Decrement the timeout by the elapsed time waiting for a
                packet. */
@@ -188,7 +188,7 @@ int ping_host_by_ip_address(struct inet_ip_addr_t *address_p,
                 timeout.seconds = 0;
                 timeout.nanoseconds = -1;
             } else {
-                time_diff(&timeout, timeout_p, round_trip_time_p);
+                time_subtract(&timeout, timeout_p, round_trip_time_p);
             }
             
             if (reply_size != sizeof(reply)) {

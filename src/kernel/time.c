@@ -53,8 +53,8 @@ static struct module_t module = {
     }
 };
 
-static inline void tick_to_time(struct time_t *time_p,
-                                struct tick_t *tick_p)
+static void tick_to_time(struct time_t *time_p,
+                         struct tick_t *tick_p)
 {
     uint32_t lsb_seconds;
     uint32_t lsb_ticks;
@@ -67,8 +67,8 @@ static inline void tick_to_time(struct time_t *time_p,
                                    / CONFIG_SYSTEM_TICK_FREQUENCY));
 }
 
-static inline void time_to_tick(struct tick_t *tick_p,
-                                struct time_t *time_p)
+static void time_to_tick(struct tick_t *tick_p,
+                         struct time_t *time_p)
 {
     uint32_t lsb_seconds;
     uint32_t lsb_ticks;
@@ -78,6 +78,27 @@ static inline void time_to_tick(struct tick_t *tick_p,
     lsb_ticks = (((time_p->nanoseconds / 1000)
                   * CONFIG_SYSTEM_TICK_FREQUENCY) / 1000000);
     tick_p->lsb = ((lsb_seconds * CONFIG_SYSTEM_TICK_FREQUENCY) + lsb_ticks);
+}
+
+static void adjust_result(struct time_t *res_p)
+{
+    /* abs(nanosecons) must be less than 1000000000. */
+    if (res_p->nanoseconds < -999999999L) {
+        res_p->seconds--;
+        res_p->nanoseconds += 1000000000L;
+    } else if (res_p->nanoseconds > 999999999L) {
+        res_p->seconds++;
+        res_p->nanoseconds -= 1000000000L;
+    }
+
+    /* `seconds` and `nanoseconds` must have the same sign. */
+    if ((res_p->seconds > 0) && (res_p->nanoseconds < 0)) {
+        res_p->seconds--;
+        res_p->nanoseconds += 1000000000L;
+    } else if ((res_p->seconds < 0) && (res_p->nanoseconds > 0)) {
+        res_p->seconds++;
+        res_p->nanoseconds -= 1000000000L;
+    }
 }
 
 /**
@@ -98,12 +119,17 @@ int time_get(struct time_t *now_p)
     ASSERTN(now_p != NULL, EINVAL);
 
     struct tick_t tick;
+    struct time_t offset;
+
+    offset.seconds = 0;
 
     sys_lock();
     tick = module.tick;
+    offset.nanoseconds = time_port_get_time_into_tick();
     sys_unlock();
 
     tick_to_time(now_p, &tick);
+    time_add(now_p, now_p, &offset);
 
     return (0);
 }
@@ -123,34 +149,34 @@ int time_set(struct time_t *new_p)
     return (0);
 }
 
-int time_diff(struct time_t *diff_p,
-              struct time_t *left_p,
-              struct time_t *right_p)
+int time_add(struct time_t *res_p,
+             struct time_t *left_p,
+             struct time_t *right_p)
 {
-    ASSERTN(diff_p != NULL, EINVAL);
+    ASSERTN(res_p != NULL, EINVAL);
     ASSERTN(left_p != NULL, EINVAL);
     ASSERTN(right_p != NULL, EINVAL);
 
-    diff_p->seconds = (left_p->seconds - right_p->seconds);
-    diff_p->nanoseconds = (left_p->nanoseconds - right_p->nanoseconds);
+    res_p->seconds = (left_p->seconds + right_p->seconds);
+    res_p->nanoseconds = (left_p->nanoseconds + right_p->nanoseconds);
 
-    /* abs(nanosecons) must be less than 1000000000. */
-    if (diff_p->nanoseconds < -999999999L) {
-        diff_p->seconds--;
-        diff_p->nanoseconds += 1000000000L;
-    } else if (diff_p->nanoseconds > 999999999L) {
-        diff_p->seconds++;
-        diff_p->nanoseconds -= 1000000000L;
-    }
+    adjust_result(res_p);
 
-    /* `seconds` and `nanoseconds` must have the same sign. */
-    if ((diff_p->seconds > 0) && (diff_p->nanoseconds < 0)) {
-        diff_p->seconds--;
-        diff_p->nanoseconds += 1000000000L;
-    } else if ((diff_p->seconds < 0) && (diff_p->nanoseconds > 0)) {
-        diff_p->seconds++;
-        diff_p->nanoseconds -= 1000000000L;
-    }
+    return (0);
+}
+
+int time_subtract(struct time_t *res_p,
+                  struct time_t *left_p,
+                  struct time_t *right_p)
+{
+    ASSERTN(res_p != NULL, EINVAL);
+    ASSERTN(left_p != NULL, EINVAL);
+    ASSERTN(right_p != NULL, EINVAL);
+
+    res_p->seconds = (left_p->seconds - right_p->seconds);
+    res_p->nanoseconds = (left_p->nanoseconds - right_p->nanoseconds);
+
+    adjust_result(res_p);
 
     return (0);
 }

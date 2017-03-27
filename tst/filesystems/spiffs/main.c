@@ -348,7 +348,7 @@ static int test_read_write_performance(struct harness_t *harness_p)
             }
 
             time_get(&done);
-            time_diff(&diff, &done, &start);
+            time_subtract(&diff, &done, &start);
             seconds = (diff.seconds + diff.nanoseconds / 1000000000.0);
             std_printf(FSTR("  Wrote %lu bytes in %f seconds "
                             "(%d bytes/s).\r\n"),

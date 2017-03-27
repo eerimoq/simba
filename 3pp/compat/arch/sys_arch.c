@@ -92,7 +92,7 @@ u32_t sys_arch_mbox_fetch(sys_mbox_t *self_p,
     }
 
     time_get(&stop);
-    time_diff(&diff, &stop, &start);
+    time_subtract(&diff, &stop, &start);
 
     return (1000 * diff.seconds + diff.nanoseconds / 1000000ul);
 }

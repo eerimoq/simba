@@ -370,9 +370,10 @@ test: run
 
 coverage: $(TESTS:%=%.cov)
 	lcov $(TESTS:%=-a %/coverage.info) -o coverage.info
+	mkdir -p coverage && cd coverage && genhtml ../coverage.info
 	genhtml coverage.info
 	@echo
-	@echo "Run 'firefox index.html' to open the coverage report in a web browser."
+	@echo "Run 'firefox coverage/index.html' to open the coverage report in a web browser."
 	@echo
 
 codecov-coverage: $(TESTS:%=%.ccc)

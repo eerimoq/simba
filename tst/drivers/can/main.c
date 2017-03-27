@@ -262,7 +262,7 @@ static int test_max_throughput(struct harness_t *harness_p)
         time_get(&stop_time);
 
         /* Statistics. */
-        time_diff(&diff_time, &stop_time, &start_time);
+        time_subtract(&diff_time, &stop_time, &start_time);
         elapsed_time = (diff_time.seconds
                         + diff_time.nanoseconds / 1000000000.0);
 

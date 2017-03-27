@@ -29,8 +29,6 @@
 #
 
 CROSS_COMPILE = arm-none-eabi-
-CFLAGS += -Werror
-CXXFLAGS += -Werror
 
 SIZE_SUMMARY_CMD ?= $(SIMBA_ROOT)/bin/memory_usage.py \
 			--ram-section .relocate \
@@ -40,9 +38,11 @@ SIZE_SUMMARY_CMD ?= $(SIMBA_ROOT)/bin/memory_usage.py \
 			--rom-section .settings \
 			${EXE}
 
+
 ifeq ($(NDEBUG),yes)
-CFLAGS += -O2
-CXXFLAGS += -O2
+OPT ?= -O2
+CFLAGS += $(OPT)
+CXXFLAGS += $(OPT)
 else
 CFLAGS += -g
 CXXFLAGS += -g
@@ -51,6 +51,7 @@ endif
 CDEFS += F_CPU=$(F_CPU)UL
 
 CFLAGS += \
+	-Werror \
 	-mthumb \
         -mcpu=$(MCPU) \
         -ffunction-sections \
@@ -58,16 +59,18 @@ CFLAGS += \
         -fpack-struct
 
 CXXFLAGS += \
+	-Werror \
 	-mthumb \
         -mcpu=$(MCPU) \
         -ffunction-sections \
         -fdata-sections \
         -fpack-struct
 
-LDFLAGS += -mcpu=$(MCPU) \
-           -Wl,--cref \
-           -T$(LINKER_SCRIPT) \
-           -mthumb
+LDFLAGS += \
+	-mcpu=$(MCPU) \
+        -Wl,--cref \
+        -T$(LINKER_SCRIPT) \
+        -mthumb
 
 build: $(BIN)
 $(BIN): $(EXE)
