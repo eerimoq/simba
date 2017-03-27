@@ -48,21 +48,21 @@ static int settings_port_module_init(void)
 
 static ssize_t settings_port_read(void *dst_p, size_t src, size_t size)
 {
-    fseek(settings_p, src, SEEK_SET);
+    (void)fseek(settings_p, src, SEEK_SET);
 
     return (fread(dst_p, 1, size, settings_p));
 }
 
 static ssize_t settings_port_write(size_t dst, const void *src_p, size_t size)
 {
-    fseek(settings_p, dst, SEEK_SET);
+    (void)fseek(settings_p, dst, SEEK_SET);
 
     return (fwrite(src_p, 1, size, settings_p));
 }
 
 static ssize_t settings_port_reset()
 {
-    fseek(settings_p, 0, SEEK_SET);
+    (void)fseek(settings_p, 0, SEEK_SET);
     fwrite(settings_default_area,
            sizeof(settings_default_area),
            1,

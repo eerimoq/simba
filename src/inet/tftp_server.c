@@ -630,7 +630,7 @@ static void *tftp_server_main(void *arg_p)
     /* Set current working directory if given. */
     if (self_p->root_p != NULL) {
         thrd_init_env(&env[0], membersof(env));
-        thrd_set_env("CWD", self_p->root_p);
+        (void)thrd_set_env("CWD", self_p->root_p);
     }
 
     if (socket_open_udp(&self_p->listener) != 0) {

@@ -79,7 +79,7 @@ int http_websocket_server_handshake(struct http_websocket_server_t *self_p,
     sha1_update(&sha, buf, size + sizeof(secret) - 1);
     sha1_digest(&sha, hash);
 
-    base64_encode(accept_key, hash, sizeof(hash));
+    (void)base64_encode(accept_key, hash, sizeof(hash));
     accept_key[sizeof(accept_key) - 1] = '\0';
 
     /* Format and write the websocket handshake response to the

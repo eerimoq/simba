@@ -88,7 +88,7 @@ static int cmd_list_cb(int argc,
 
         case setting_type_int32_t:
             int32 = 0;
-            settings_read(&int32, setting_p->address, size);
+            (void)settings_read(&int32, setting_p->address, size);
             std_fprintf(chout_p,
                         OSTR("int32_t      4  %ld\r\n"),
                         (long)int32);
@@ -98,7 +98,7 @@ static int cmd_list_cb(int argc,
             std_fprintf(chout_p, OSTR("string_t  %4u  "), (int)size);
 
             for (i = 0; i < size; i++) {
-                settings_read(&buf[0], setting_p->address + i, 1);
+                (void)settings_read(&buf[0], setting_p->address + i, 1);
 
                 if (buf[0] == '\0') {
                     break;
@@ -117,7 +117,7 @@ static int cmd_list_cb(int argc,
 
             for (i = 0; i < size; i++) {
                 buf[0] = 0x00;
-                settings_read(&buf[0], setting_p->address + i, 1);
+                (void)settings_read(&buf[0], setting_p->address + i, 1);
                 std_fprintf(chout_p, OSTR("\\x%02x"), buf[0]);
             }
 
