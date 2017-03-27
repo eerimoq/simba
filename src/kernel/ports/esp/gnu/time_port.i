@@ -30,6 +30,11 @@
 
 #include "esp_misc.h"
 
+static int time_port_get_time_into_tick()
+{
+    return (0);
+}
+
 static void time_port_busy_wait_us(int microseconds)
 {
     os_delay_us(microseconds);

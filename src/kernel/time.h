@@ -85,18 +85,32 @@ int time_get(struct time_t *now_p);
 int time_set(struct time_t *new_p);
 
 /**
+ * Add given times.
+ *
+ * @param[out] res_p The result of the adding ``left_p`` to
+ *                   ``right_p``.
+ * @param[in] left_p First operand.
+ * @param[in] right_p Second operand.
+ *
+ * @return zero(0) or negative error code.
+ */
+int time_add(struct time_t *res_p,
+             struct time_t *left_p,
+             struct time_t *right_p);
+
+/**
  * Subtract given times.
  *
- * @param[out] diff_p The result of the subtrancting ``left_p`` from
- *                    ``right_p``.
+ * @param[out] res_p The result of the subtrancting ``left_p`` from
+ *                   ``right_p``.
  * @param[in] left_p The operand to subtract from.
  * @param[in] right_p The operand to subtract.
  *
  * @return zero(0) or negative error code.
  */
-int time_diff(struct time_t *diff_p,
-              struct time_t *left_p,
-              struct time_t *right_p);
+int time_subtract(struct time_t *res_p,
+                  struct time_t *left_p,
+                  struct time_t *right_p);
 
 /**
  * Busy wait for given number of microseconds.

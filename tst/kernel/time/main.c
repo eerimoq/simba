@@ -150,7 +150,7 @@ static int test_sleep(struct harness_t *harness)
         time_busy_wait_us(times[i]);
         BTASSERT(time_get(&stop) == 0);
 
-        time_diff(&diff, &stop, &start);
+        time_subtract(&diff, &stop, &start);
 
         std_printf(FSTR("  start: seconds = %ld, microseconds = %ld\r\n"
                         "  stop: seconds = %ld, microseconds = %ld\r\n"
@@ -166,13 +166,59 @@ static int test_sleep(struct harness_t *harness)
     return (0);
 }
 
-static int test_diff(struct harness_t *harness)
+static int test_add(struct harness_t *harness)
 {
-    struct time_t *left_p, *right_p, diff;
-    float fleft, fright, fdiff;
+    struct time_t *left_p, *right_p, res;
+    float fleft, fright, fres;
     int i;
 
-    /* left, right, diff. */
+    /* left, right, res. */
+    struct time_t times[][3] = {
+        { {  0,         0 }, {  0,          0 }, {   0,           0 } },
+        { {  1,         0 }, {  0,  100000000 }, {   1,   100000000 } },
+        { { -1,         0 }, {  0, -100000000 }, {  -1,  -100000000 } },
+        { {  1,         0 }, {  2,          0 }, {   3,           0 } },
+        { {  0,         0 }, {  0,  100000000 }, {   0,   100000000 } },
+        { {  1,         0 }, {  0, -100000000 }, {   0,   900000000 } },
+        { { 10, 100000000 }, {  2,  700000000 }, {  12,   800000000 } },
+        { { 10, 100000000 }, { 20,  700000000 }, {  30,   800000000 } },
+    };
+
+    for (i = 0; i < membersof(times); i++) {
+        left_p = &times[i][0];
+        right_p = &times[i][1];
+
+        time_add(&res, left_p, right_p);
+
+        fleft = (left_p->seconds + left_p->nanoseconds / 1000000000.0);
+        fright = (right_p->seconds + right_p->nanoseconds / 1000000000.0);
+        fres = (fleft - fright);
+
+        std_printf(FSTR("%ld;%ld - %ld;%ld = %ld;%ld (%f - %f = %f)\r\n"),
+                   (long)left_p->seconds,
+                   (long)left_p->nanoseconds / 100000000,
+                   (long)right_p->seconds,
+                   (long)right_p->nanoseconds / 100000000,
+                   (long)res.seconds,
+                   (long)res.nanoseconds / 100000000,
+                   fleft,
+                   fright,
+                   fres);
+
+        BTASSERT(res.seconds == times[i][2].seconds);
+        BTASSERT(res.nanoseconds == times[i][2].nanoseconds);
+    }
+
+    return (0);
+}
+
+static int test_subtract(struct harness_t *harness)
+{
+    struct time_t *left_p, *right_p, res;
+    float fleft, fright, fres;
+    int i;
+
+    /* left, right, res. */
     struct time_t times[][3] = {
         { {  0,         0 }, {  0,          0 }, {   0,           0 } },
         { {  1,         0 }, {  0,  100000000 }, {   0,   900000000 } },
@@ -188,25 +234,25 @@ static int test_diff(struct harness_t *harness)
         left_p = &times[i][0];
         right_p = &times[i][1];
 
-        time_diff(&diff, left_p, right_p);
+        time_subtract(&res, left_p, right_p);
 
         fleft = (left_p->seconds + left_p->nanoseconds / 1000000000.0);
         fright = (right_p->seconds + right_p->nanoseconds / 1000000000.0);
-        fdiff = (fleft - fright);
+        fres = (fleft - fright);
 
         std_printf(FSTR("%ld;%ld - %ld;%ld = %ld;%ld (%f - %f = %f)\r\n"),
                    (long)left_p->seconds,
                    (long)left_p->nanoseconds / 100000000,
                    (long)right_p->seconds,
                    (long)right_p->nanoseconds / 100000000,
-                   (long)diff.seconds,
-                   (long)diff.nanoseconds / 100000000,
+                   (long)res.seconds,
+                   (long)res.nanoseconds / 100000000,
                    fleft,
                    fright,
-                   fdiff);
+                   fres);
 
-        BTASSERT(diff.seconds == times[i][2].seconds);
-        BTASSERT(diff.nanoseconds == times[i][2].nanoseconds);
+        BTASSERT(res.seconds == times[i][2].seconds);
+        BTASSERT(res.nanoseconds == times[i][2].nanoseconds);
     }
 
     return (0);
@@ -219,7 +265,8 @@ int main()
         { test_get_set, "test_get_set" },
         { test_date, "test_date" },
         { test_sleep, "test_sleep" },
-        { test_diff, "test_diff" },
+        { test_add, "test_add" },
+        { test_subtract, "test_subtract" },
         { NULL, NULL }
     };
 

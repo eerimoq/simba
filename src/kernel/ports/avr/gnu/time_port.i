@@ -32,6 +32,11 @@
 
 #define I_CPU (F_CPU / 1000000L)
 
+static int time_port_get_time_into_tick()
+{
+    return (0);
+}
+
 static void time_port_busy_wait_us(long microseconds)
 {
     _delay_loop_2((microseconds * I_CPU) / 4);

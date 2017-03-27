@@ -163,7 +163,7 @@ static int test_preemptive(struct harness_t *harness_p)
     BTASSERT(thrd_suspend(&timeout) == -ETIMEDOUT);
 
     BTASSERT(time_get(&stop) == 0);
-    BTASSERT(time_diff(&duration, &stop, &start) == 0);
+    BTASSERT(time_subtract(&duration, &stop, &start) == 0);
 
     BTASSERT(duration.seconds == 0);
     BTASSERT(duration.nanoseconds == 10000000);

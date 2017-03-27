@@ -298,7 +298,7 @@ static int test_write_performance(struct harness_t *harness_p)
     }
 
     time_get(&stop);
-    time_diff(&diff, &stop, &start);
+    time_subtract(&diff, &stop, &start);
     seconds = (diff.seconds + diff.nanoseconds / 1000000000.0f);
     bytes_per_seconds = ((SD_BLOCK_SIZE * number_of_blocks) / seconds);
 
@@ -333,7 +333,7 @@ static int test_read_performance(struct harness_t *harness_p)
     }
 
     time_get(&stop);
-    time_diff(&diff, &stop, &start);
+    time_subtract(&diff, &stop, &start);
     seconds = (diff.seconds + diff.nanoseconds / 1000000000.0f);
     bytes_per_seconds = ((SD_BLOCK_SIZE * number_of_blocks) / seconds);
 

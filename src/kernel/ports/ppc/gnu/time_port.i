@@ -28,6 +28,17 @@
  * This file is part of the Simba project.
  */
 
+#define SYS_TICK_COUNT           (F_CPU / CONFIG_SYSTEM_TICK_FREQUENCY)
+
+static int32_t time_port_get_time_into_tick()
+{
+    uint32_t count;
+
+    count = (SPC5_STM->CNT - (SPC5_STM->CHANNELS[0].CMP - SYS_TICK_COUNT));
+
+    return (1000 * (count / (F_CPU / 1000000)));
+}
+
 static void time_port_busy_wait_us(long microseconds)
 {
     volatile int i;
