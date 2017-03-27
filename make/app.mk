@@ -229,10 +229,10 @@ $(patsubst %.c,$(OBJDIR)%.o,$(abspath $1)): $1
 ifeq ($(SOAM), yes)
 	$$(CC) $$(INC:%=-I%) $$(CDEFS:%=-D%) $$(CFLAGS) -DSIMBAPP -o $$@.pp $$< -E
 	$(SIMBA_ROOT)/bin/simbapp.py -o $$@.pp.c $$@.pp
-else
-	$$(CC) $$(INC:%=-I%) $$(CDEFS:%=-D%) $$(CFLAGS) -o $$@.pp.c $$< -E
-endif
 	$$(CC) $$(INC:%=-I%) $$(CDEFS:%=-D%) $$(CFLAGS) -o $$@ $$@.pp.c
+else
+	$$(CC) $$(INC:%=-I%) $$(CDEFS:%=-D%) $$(CFLAGS) -o $$@ $$<
+endif
 	gcc -MM -MT $$@ $$(INC:%=-I%) $$(CDEFS:%=-D%) -o $(patsubst %.c,$(DEPSDIR)%.o.dep,$(abspath $1)) $$<
 endef
 $(foreach file,$(CSRC),$(eval $(call COMPILE_template,$(file))))
@@ -247,10 +247,10 @@ $(patsubst %.cpp,$(OBJDIR)%.o,$(abspath $1)): $1
 ifeq ($(SOAM), yes)
 	$$(CXX) $$(INC:%=-I%) $$(CDEFS:%=-D%) $$(CXXFLAGS) -DSIMBAPP -o $$@.pp $$< -E
 	$(SIMBA_ROOT)/bin/simbapp.py -o $$@.pp.cpp $$@.pp
-else
-	$$(CXX) $$(INC:%=-I%) $$(CDEFS:%=-D%) $$(CXXFLAGS) -o $$@.pp.cpp $$< -E
-endif
 	$$(CXX) $$(INC:%=-I%) $$(CDEFS:%=-D%) $$(CXXFLAGS) -o $$@ $$@.pp.cpp
+else
+	$$(CXX) $$(INC:%=-I%) $$(CDEFS:%=-D%) $$(CXXFLAGS) -o $$@ $$<
+endif
 	$$(CXX) -MM -MT $$@ $$(INC:%=-I%) $$(CDEFS:%=-D%) -std=c++11 -o $(patsubst %.cpp,$(DEPSDIR)%.o.dep,$(abspath $1)) $$<
 endef
 $(foreach file,$(CXXSRC),$(eval $(call COMPILE_CXX_template,$(file))))
