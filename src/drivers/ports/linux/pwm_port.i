@@ -34,15 +34,26 @@ static int pwm_port_init(struct pwm_driver_t *self_p,
     return (0);
 }
 
-static int pwm_port_set_duty_cycle(struct pwm_driver_t *self_p,
-                                   int value)
+static int pwm_port_set_frequency(struct pwm_driver_t *self_p,
+                                  long value)
 {
     return (0);
 }
 
-static int pwm_port_get_duty_cycle(struct pwm_driver_t *self_p)
+static int pwm_port_set_duty_cycle(struct pwm_driver_t *self_p,
+                                   long value)
 {
-    return (-1);
+    return (0);
+}
+
+static long pwm_port_frequency(int hertz)
+{
+    return (0);
+}
+
+static int pwm_port_frequency_as_hertz(long value)
+{
+    return (0);
 }
 
 static int pwm_port_duty_cycle(int percentage)

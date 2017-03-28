@@ -42,14 +42,20 @@ static int test_duty_cycle(struct harness_t *harness_p)
 {
     struct pwm_driver_t pwm[PWM_DEVICE_MAX];
     int i, j;
-    int duty_cycle;
+    long duty_cycle;
 
     for (i = 0; i < membersof(pwm); i++) {
-        BTASSERT(pwm_init(&pwm[i], &pwm_device[i]) == 0);
+        BTASSERT(pwm_init(&pwm[i],
+                          &pwm_device[i],
+                          pwm_frequency(1000),
+                          pwm_duty_cycle(0)) == 0);
+        BTASSERT(pwm_start(&pwm[i]) == 0)
     }
 
     /* Test various duty cycles. */
     for (i = 0; i <= 100; i += 10) {
+        std_printf(OSTR("Duty cycle: %d\r\n"), i);
+
         for (j = 0; j < membersof(pwm); j++) {
             duty_cycle = pwm_duty_cycle((i + 10 * j) % 100);
             BTASSERT(pwm_set_duty_cycle(&pwm[j], duty_cycle) == 0);
@@ -74,6 +80,47 @@ static int test_duty_cycle(struct harness_t *harness_p)
 
     thrd_sleep_ms(100);
 
+    for (i = 0; i < membersof(pwm); i++) {
+        BTASSERT(pwm_stop(&pwm[i]) == 0)
+    }
+
+    thrd_sleep_ms(100);
+
+    return (0);
+}
+
+static int test_frequency(struct harness_t *harness_p)
+{
+    struct pwm_driver_t pwm[PWM_DEVICE_MAX];
+    int i, j;
+    long frequency;
+
+    for (i = 0; i < membersof(pwm); i++) {
+        BTASSERT(pwm_init(&pwm[i],
+                          &pwm_device[i],
+                          pwm_frequency(1000),
+                          pwm_duty_cycle(70)) == 0);
+        BTASSERT(pwm_start(&pwm[i]) == 0)
+    }
+
+    /* Test various frequencies. */
+    for (i = 0; i <= 1000; i += 100) {
+        std_printf(OSTR("Frequency: %d\r\n"), i);
+
+        for (j = 0; j < membersof(pwm); j++) {
+            frequency = pwm_frequency(i);
+            BTASSERT(pwm_set_frequency(&pwm[j], frequency) == 0);
+        }
+
+        thrd_sleep_ms(1000);
+    }
+
+    for (i = 0; i < membersof(pwm); i++) {
+        BTASSERT(pwm_stop(&pwm[i]) == 0)
+    }
+
+    thrd_sleep_ms(100);
+
     return (0);
 }
 
@@ -83,6 +130,7 @@ int main()
     struct harness_testcase_t harness_testcases[] = {
         { test_duty_cycle_convert, "test_duty_cycle_convert" },
         { test_duty_cycle, "test_duty_cycle" },
+        { test_frequency, "test_frequency" },
         { NULL, NULL }
     };
 

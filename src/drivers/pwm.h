@@ -53,14 +53,58 @@ int pwm_module_init(void);
  *
  * @param[out] self_p Driver object to be initialized.
  * @param[in] dev_p PWM device to use.
+ * @param[in] frequency Frequency.
+ * @param[in] duty_cycle Duty cycle.
  *
  * @return zero(0) or negative error code.
  */
 int pwm_init(struct pwm_driver_t *self_p,
-             struct pwm_device_t *dev_p);
+             struct pwm_device_t *dev_p,
+             long frequency,
+             long duty_cycle);
 
 /**
- * Set the duty cycle.
+ * Start given PWM driver object.
+ *
+ * @param[in] self_p Driver object to start.
+ *
+ * @return zero(0) or negative error code.
+ */
+int pwm_start(struct pwm_driver_t *self_p);
+
+/**
+ * Stop given PWM driver object.
+ *
+ * @param[in] self_p Driver object to stop.
+ *
+ * @return zero(0) or negative error code.
+ */
+int pwm_stop(struct pwm_driver_t *self_p);
+
+/**
+ * Set the frequency of the PWM signal.
+ *
+ * @param[in] self_p Driver object.
+ * @param[in] value Frequency. Use `pwm_frequency()` to convert a
+ *                  frequency in Hertz to a value expected by this
+ *                  function.
+ *
+ * @return zero(0) or negative error code.
+ */
+int pwm_set_frequency(struct pwm_driver_t *self_p,
+                      long value);
+
+/**
+ * Get current frequency.
+ *
+ * @param[in] self_p Driver object.
+ *
+ * @return Current frequency.
+ */
+long pwm_get_frequency(struct pwm_driver_t *self_p);
+
+/**
+ * Set the duty cycle of the signal.
  *
  * @param[in] self_p Driver object.
  * @param[in] value Duty cycle. Use `pwm_duty_cycle()` to convert a
@@ -70,7 +114,7 @@ int pwm_init(struct pwm_driver_t *self_p,
  * @return zero(0) or negative error code.
  */
 int pwm_set_duty_cycle(struct pwm_driver_t *self_p,
-                       int value);
+                       long value);
 
 /**
  * Get current duty cycle.
@@ -79,27 +123,47 @@ int pwm_set_duty_cycle(struct pwm_driver_t *self_p,
  *
  * @return Current duty cycle.
  */
-int pwm_get_duty_cycle(struct pwm_driver_t *self_p);
+long pwm_get_duty_cycle(struct pwm_driver_t *self_p);
 
 /**
- * Convert a duty cycle percentage to a value for `pwm_init()` and
+ * Convert a duty cycle percentage to a value for
+ * `pwm_set_frequency()`.
+ *
+ * @param[in] hertz Frequency in Hertz.
+ *
+ * @return Frequency.
+ */
+long pwm_frequency(int hertz);
+
+/**
+ * Convert a frequency value returned by `pwm_get_frequency()` to
+ * Hertz.
+ *
+ * @param[in] value Frequency.
+ *
+ * @return Frequency in Hertz.
+ */
+int pwm_frequency_as_hertz(long value);
+
+/**
+ * Convert a duty cycle percentage to a value for
  * `pwm_set_duty_cycle()`.
  *
  * @param[in] percentage Duty cycle percentage.
  *
  * @return Duty cycle.
  */
-int pwm_duty_cycle(int percentage);
+long pwm_duty_cycle(int percentage);
 
 /**
- * Convert a duty cycle value for `pwm_init()` and
- * `pwm_set_duty_cycle()` to a percentage.
+ * Convert a duty cycle value returned by `pwm_get_duty_cycle()` to a
+ * percentage.
  *
  * @param[in] value Duty cycle.
  *
  * @return Duty cycle percentage.
  */
-int pwm_duty_cycle_as_percent(int value);
+int pwm_duty_cycle_as_percent(long value);
 
 /**
  * Get the PWM device for given pin.

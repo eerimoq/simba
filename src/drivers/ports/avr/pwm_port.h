@@ -41,6 +41,8 @@ struct pwm_device_t {
 struct pwm_driver_t {
     const struct pwm_device_t *dev_p;
     struct pin_driver_t pin_drv;
+    long frequency;
+    long duty_cycle;
 };
 
 #endif
