@@ -32,6 +32,8 @@ NAME = pwm_suite
 TYPE = suite
 BOARD ?= linux
 
+TIMEOUT ?= 30
+
 CDEFS += \
 	CONFIG_MINIMAL_SYSTEM=1 \
 	CONFIG_PWM=1 \
