@@ -39,18 +39,22 @@ void counting(void)
 
     for (mult = 1, dot = 3; mult <= 0x1000; mult *= 0x10, dot--) {
         led_7seg_ht16k33_show_dot(&led, dot, true);
+
 	for (i = 0; i <= 0xf; i++) {
 	    led_7seg_ht16k33_set_num(&led, i * mult, 16);
 	    led_7seg_ht16k33_show_colon(&led, i % 2);
 	    led_7seg_ht16k33_display(&led);
 	    thrd_sleep_ms(500);
 	}
+
         led_7seg_ht16k33_show_dot(&led, dot, false);
     }
 }
 
 void single_cycle(void)
 {
+    int i;
+
     led_7seg_ht16k33_set_num(&led, 42, 10);
     led_7seg_ht16k33_display(&led);
     thrd_sleep(1);
@@ -67,14 +71,14 @@ void single_cycle(void)
     led_7seg_ht16k33_display(&led);
     thrd_sleep(1);
 
-    for (int i = 0; i < 4; i++) {
+    for (i = 0; i < 4; i++) {
         led_7seg_ht16k33_show_dot(&led, i, true);
         led_7seg_ht16k33_display(&led);
         thrd_sleep(1);
         led_7seg_ht16k33_show_dot(&led, i, false);
     }
 
-    for (int i = LED_7SEG_HT16K33_BRIGHTNESS_MIN;
+    for (i = LED_7SEG_HT16K33_BRIGHTNESS_MIN;
 	 i <= LED_7SEG_HT16K33_BRIGHTNESS_MAX;
 	 i++) {
         led_7seg_ht16k33_brightness(&led, i);
@@ -120,7 +124,6 @@ void single_cycle(void)
 
 int main()
 {
-
     /* Initialization. */
     sys_start();
     led_7seg_ht16k33_module_init();
@@ -128,10 +131,11 @@ int main()
     led_7seg_ht16k33_init(&led, &i2c, LED_7SEG_HT16K33_DEFAULT_I2C_ADDR);
     led_7seg_ht16k33_start(&led);
 
-    std_printf("\n\n");
+    std_printf(OSTR("\r\n"));
     std_printf(sys_get_info());
+
     while (1) {
-	counting();
+        counting();
         single_cycle();
     }
 

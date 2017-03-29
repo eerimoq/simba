@@ -34,4 +34,5 @@
 #define CONFIG_MINIMAL_SYSTEM                               1
 #define CONFIG_I2C_SOFT                                     1
 #define CONFIG_LED_7SEG_HT16K33                             1
+
 #endif

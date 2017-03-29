@@ -120,7 +120,8 @@ int led_7seg_ht16k33_brightness(struct led_7seg_ht16k33_driver_t *self_p,
  * @return zero(0) or negative error code.
  */
 int led_7seg_ht16k33_set_num(struct led_7seg_ht16k33_driver_t *self_p,
-                             int num, int base);
+                             int num,
+                             int base);
 
 /**
  * Set show/hide of colon in the display buffer.
@@ -143,6 +144,7 @@ int led_7seg_ht16k33_show_colon(struct led_7seg_ht16k33_driver_t *self_p,
  * @return zero(0) or negative error code.
  */
 int led_7seg_ht16k33_show_dot(struct led_7seg_ht16k33_driver_t *self_p,
-                              int position, int show_colon);
+                              int position,
+                              int show_colon);
 
 #endif

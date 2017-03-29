@@ -158,8 +158,9 @@ int led_7seg_ht16k33_set_num(struct led_7seg_ht16k33_driver_t *self_p,
     ASSERTN(base <= 16, EINVAL);
 
     for (int i = 0, j = 4; i < 4; i++, j--) {
-        if (i == SEVEN_SEG_COLON_POS)
+        if (i == SEVEN_SEG_COLON_POS) {
             j--;
+	}
         // Avoid leading 0s, but allow a single one.
         if (num || i == 0) {
             int dot = self_p->buf[j] & SEVEN_SEG_DOT;
