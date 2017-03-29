@@ -1713,7 +1713,7 @@
 #        define CONFIG_START_FILESYSTEM_ADDRESS    0x000e0000
 #    elif defined(BOARD_ESP01)
 #        define CONFIG_START_FILESYSTEM_ADDRESS    0x0006b000
-#    elif defined(BOARD_ESP12E) || defined(BOARD_NODEMCU)
+#    elif defined(BOARD_ESP12E) || defined(BOARD_NODEMCU) || defined(BOARD_WEMOS_D1_MINI)
 #        define CONFIG_START_FILESYSTEM_ADDRESS    0x00300000
 #    elif defined(BOARD_NANO32) || defined(BOARD_ESP32_DEVKITC) || defined(BOARD_MAPLE_ESP32)
 #        define CONFIG_START_FILESYSTEM_ADDRESS    0x00300000
@@ -1730,7 +1730,7 @@
 #        define CONFIG_START_FILESYSTEM_SIZE            32768
 #    elif defined(BOARD_ESP01)
 #        define CONFIG_START_FILESYSTEM_SIZE          0x10000
-#    elif defined(BOARD_ESP12E) || defined(BOARD_NODEMCU)
+#    elif defined(BOARD_ESP12E) || defined(BOARD_NODEMCU) || defined(BOARD_WEMOS_D1_MINI)
 #        define CONFIG_START_FILESYSTEM_SIZE          0xFB000
 #    elif defined(ARCH_ESP32)
 #        define CONFIG_START_FILESYSTEM_SIZE            32768
