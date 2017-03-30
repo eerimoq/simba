@@ -113,6 +113,7 @@
 #    define PORT_HAS_FLASH
 #    define PORT_HAS_ESP_WIFI
 #    define PORT_HAS_RANDOM
+#    define PORT_HAS_LED_7SEG_HT16K33
 #endif
 
 #if defined(FAMILY_ESP32)
@@ -301,6 +302,17 @@
 #        define CONFIG_RANDOM                               0
 #    else
 #        define CONFIG_RANDOM                               1
+#    endif
+#endif
+
+/**
+ * Enable the led_7seg_ht16k33 driver.
+ */
+#ifndef CONFIG_LED_7SEG_HT16K33
+#    if defined(CONFIG_MINIMAL_SYSTEM) || !defined(PORT_HAS_LED_7SEG_HT16K33)
+#        define CONFIG_LED_7SEG_HT16K33                    0
+#    else
+#        define CONFIG_LED_7SEG_HT16K33                    1
 #    endif
 #endif
 

@@ -178,6 +178,7 @@ DRIVERS_SRC ?= adc.c \
                esp_wifi/softap.c \
                exti.c \
                flash.c \
+               led_7seg_ht16k33.c \
                pin.c \
                pwm_soft.c \
                i2c_soft.c \

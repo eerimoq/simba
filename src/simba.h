@@ -220,6 +220,9 @@ extern "C" {
 #ifdef PORT_HAS_RANDOM
 #    include "drivers/random.h"
 #endif
+#ifdef CONFIG_LED_7SEG_HT16K33
+#    include "drivers/led_7seg_ht16k33.h"
+#endif
 #ifdef PORT_HAS_WS2812
 #    include "drivers/ws2812.h"
 #endif
