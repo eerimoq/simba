@@ -373,6 +373,7 @@ def main():
                         type=int,
                         default=19200)
     parser.add_argument('-c', '--control-port')
+    parser.add_argument('-d', '--debug', action='store_true')
 
     subparsers = parser.add_subparsers()
 
@@ -401,7 +402,14 @@ def main():
     flash_write_parser.set_defaults(func=do_flash_write)
 
     args = parser.parse_args()
-    args.func(args)
+
+    if not args.debug:
+        try:
+            args.func(args)
+        except BaseException as e:
+            sys.exit(str(e))
+    else:
+        args.func(args)
 
 
 if __name__ == "__main__":
