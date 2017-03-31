@@ -63,6 +63,13 @@ int main()
                                                         devices[i].id,
                                                         temperature);
 
+            if (temperature_p == NULL) {
+                strncpy(temperature, FSTR("failed to get"),
+                        sizeof(temperature));
+                temperature[sizeof(temperature) - 1] = '\0';
+                temperature_p = temperature;
+            }
+
             std_printf(FSTR("Device id: %02x %02x %02x %02x %02x %02x %02x %02x,"
                             " Temperature: %s\r\n"),
                        (unsigned int)devices[i].id[0],
