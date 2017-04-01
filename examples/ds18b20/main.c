@@ -64,10 +64,7 @@ int main()
                                                         temperature);
 
             if (temperature_p == NULL) {
-                strncpy(temperature, FSTR("failed to get"),
-                        sizeof(temperature));
-                temperature[sizeof(temperature) - 1] = '\0';
-                temperature_p = temperature;
+                temperature_p = "failed to get";
             }
 
             std_printf(FSTR("Device id: %02x %02x %02x %02x %02x %02x %02x %02x,"
