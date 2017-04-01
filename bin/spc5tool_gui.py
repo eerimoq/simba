@@ -101,7 +101,7 @@ def main():
                 "Please select a serial port.")
             return
 
-        command = ['python', SPC5TOOL_PY]
+        command = ['python', '-u', SPC5TOOL_PY]
         command += ['--port', serial_port.get()]
 
         if control_port.get():
@@ -123,6 +123,7 @@ def main():
             text.insert(END, line)
             text.see(END)
             text.pack(fill=BOTH, expand=YES, padx=3, pady=3)
+            root.update()
 
         exit_code = sp.wait()
 
@@ -136,6 +137,7 @@ def main():
         text.insert(END, 34 * '=' + ' UPLOAD END ' + 34 * '=' + '\n\n')
         text.see(END)
         text.pack(fill=BOTH, expand=YES, padx=3, pady=3)
+        root.update()
 
         if exit_code == 0:
             messagebox.showinfo("Upload", "Upload successful.")
