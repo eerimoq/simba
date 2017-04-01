@@ -107,6 +107,10 @@ static int test_sprintf(struct harness_t *harness_p)
     std_printf(FSTR("%s\r\n"), buf);
     BTASSERT(size == 21);
 
+    size = std_sprintf(buf, FSTR("NULL string: %s"), NULL);
+    std_printf(FSTR("%s\r\n"), buf);
+    BTASSERT(strcmp(buf, "NULL string: (null)") == 0);
+
 #ifdef ARCH_LINUX
     BTASSERT((size = std_sprintf(buf,
                                  FSTR("Big unsigned:          '%u'"),
@@ -116,6 +120,7 @@ static int test_sprintf(struct harness_t *harness_p)
                                  FSTR("Big unsigned:          '%u'"),
                                  0xffffU)) == 30);
 #endif
+
     std_printf(FSTR("%s\r\n"), buf);
 
     return (0);

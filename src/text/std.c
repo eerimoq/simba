@@ -130,39 +130,39 @@ static void output_flush(struct buffered_output_t *output_p)
     }
 }
 
-static void formats(void (*std_putc)(char c, void *arg),
-                    void *arg,
-                    char *str,
+static void formats(void (*std_putc)(char c, void *arg_p),
+                    void *arg_p,
+                    char *str_p,
                     char flags,
                     int width,
                     char negative_sign)
 {
-    char *s = str;
+    char *s_p = str_p;
 
-    while (*s++ != '\0') {
+    while (*s_p++ != '\0') {
         width--;
     }
 
     /* Right justification. */
     if (flags != '-') {
         if ((negative_sign == 1) && (flags == '0')) {
-            std_putc(*str++, arg);
+            std_putc(*str_p++, arg_p);
         }
 
         while (width > 0) {
-            std_putc(flags, arg);
+            std_putc(flags, arg_p);
             width--;
         }
     }
 
     /* Number */
-    while (*str != '\0') {
-        std_putc(*str++, arg);
+    while (*str_p != '\0') {
+        std_putc(*str_p++, arg_p);
     }
 
     /* Left justification. */
     while (width > 0) {
-        std_putc(' ', arg);
+        std_putc(' ', arg_p);
         width--;
     }
 }
@@ -328,6 +328,11 @@ static void vcprintf(void (*std_putc)(char c, void *arg_p),
 
         case 's':
             s_p = va_arg(*ap_p, char*);
+
+            if (s_p == NULL) {
+                s_p = "(null)";
+            }
+
             break;
 
         case 'c':
