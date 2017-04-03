@@ -381,7 +381,7 @@ class Client(object):
                 identity = struct.unpack('>H', response_data[0:2])[0]
                 try:
                     fmt = self.database.formats[identity]
-                    if code == -2:
+                    if code == -1003:
                         command_id = struct.unpack('>H', response_data[2:4])[0]
                         args = [self.database.command_id_to_string[command_id]]
                     else:

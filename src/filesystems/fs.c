@@ -711,7 +711,7 @@ int fs_call(char *command_p,
 
     std_fprintf(chout_p, OSTR("%s: command not found\r\n"), argv[0]);
 
-    return (-ENOENT);
+    return (-ENOCOMMAND);
 }
 
 /**

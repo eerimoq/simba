@@ -429,4 +429,7 @@
 /** Assertion. */
 #define EASSERT        1002
 
+/** Assertion. */
+#define ENOCOMMAND     1003
+
 #endif

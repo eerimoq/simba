@@ -288,7 +288,7 @@ static int test_command(struct harness_t *harness_p)
     BTASSERT(fs_call(buf, NULL, &qout, NULL) == -E2BIG);
 
     strcpy(buf, "/tmp/bar/missing");
-    BTASSERT(fs_call(buf, NULL, &qout, NULL) == -ENOENT);
+    BTASSERT(fs_call(buf, NULL, &qout, NULL) == -ENOCOMMAND);
     read_until(buf, "\n");
 
     strcpy(buf, "");
