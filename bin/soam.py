@@ -11,6 +11,7 @@ import threading
 import serial
 import hashlib
 import lzma
+import traceback
 
 try:
     from StringIO import StringIO
@@ -63,6 +64,7 @@ class Database(object):
     def __init__(self):
         self.formats = {}
         self.commands = {}
+        self.command_id_to_string = {}
 
     def set_database(self, database):
         """Set the database.
@@ -87,6 +89,7 @@ class Database(object):
                 self.formats[identity] = string
             elif kind == 'CMD:':
                 self.commands[string] = identity
+                self.command_id_to_string[identity] = string
             else:
                 sys.exit('{}: bad kind'.format(kind))
 
@@ -378,7 +381,11 @@ class Client(object):
                 identity = struct.unpack('>H', response_data[0:2])[0]
                 try:
                     fmt = self.database.formats[identity]
-                    args = response_data[2:].decode('ascii').split('\x1f')
+                    if code == -2:
+                        command_id = struct.unpack('>H', response_data[2:4])[0]
+                        args = [self.database.command_id_to_string[command_id]]
+                    else:
+                        args = response_data[2:].decode('ascii').split('\x1f')
                     formatted_response_data += fmt.format(*args)
                 except KeyError:
                     formatted_response_data += response_data.decode('ascii')
@@ -426,7 +433,7 @@ class Shell(cmd.Cmd):
     prompt = "$ "
     identchars = cmd.Cmd.identchars + '/'
 
-    def __init__(self, client, stdout=None):
+    def __init__(self, client, stdout=None, debug=False):
         if stdout is None:
             stdout = sys.stdout
         cmd.Cmd.__init__(self, stdout=stdout)
@@ -442,6 +449,7 @@ class Shell(cmd.Cmd):
 
         self.client = client
         self.stdout = stdout
+        self.debug = debug
         self.line = None
 
     def emptyline(self):
@@ -482,11 +490,16 @@ class Shell(cmd.Cmd):
         return completions
 
     def output_exception(self, e):
-        text = "{module}.{name}: {message}".format(module=type(e).__module__,
-                                                   name=type(e).__name__,
-                                                   message=str(e))
-        print(text)
-        self.output(text)
+        if self.debug:
+            for entry in traceback.format_exception(type(e), e, e.__traceback__):
+                for line in entry.splitlines():
+                    self.output(line.rstrip())
+        else:
+            text = "{module}.{name}: {message}".format(module=type(e).__module__,
+                                                       name=type(e).__name__,
+                                                       message=str(e))
+            print(text)
+            self.output(text)
 
     def output(self, text="", end="\n"):
         print(text, file=self.stdout, end=end)
@@ -596,11 +609,12 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('-p', '--port', default='/dev/ttyACM1')
     parser.add_argument('-b', '--baudrate', type=int, default=115200)
+    parser.add_argument('-d', '--debug', action='store_true')
     parser.add_argument('database', nargs='?')
     args = parser.parse_args()
 
     client = SlipSerialClient(args.port, args.baudrate, args.database)
-    shell = Shell(client)
+    shell = Shell(client, debug=args.debug)
     shell.cmdloop()
     client.reader.stop()
 
