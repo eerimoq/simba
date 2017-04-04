@@ -49,9 +49,9 @@ int harness_run(struct harness_t *self_p,
     testcase_p = testcases_p;
 
 #if !defined(ARCH_LINUX)
-    thrd_sleep_us(200000);
+    thrd_sleep_ms(200);
 #endif
-    
+
     /* Print a header. */
     std_printf(OSTR("\r\n"));
 
@@ -60,9 +60,7 @@ int harness_run(struct harness_t *self_p,
     std_printf(OSTR("\r\n"));
 
     while (testcase_p->callback != NULL) {
-        if (testcase_p->name_p != NULL) {
-            std_printf(OSTR("enter: %s\r\n"), testcase_p->name_p);
-        }
+        std_printf(OSTR("enter: %s\r\n"), testcase_p->name_p);
 
         err = testcase_p->callback(self_p);
 
