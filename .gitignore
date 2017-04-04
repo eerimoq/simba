@@ -30,3 +30,5 @@ simba-arduino
 build
 
 .*.passed
+
+spc5tool_gui.json

@@ -191,15 +191,15 @@ def upload(serial_connection, baudrate, control_port):
 
     print('Uploading {} to SRAM using the BAM.'.format(spc5tool_bin))
 
-    bytes_transferred = 0
-
     for byte in tqdm(payload, unit=' bytes'):
         serial_connection.write(byte)
         response_byte = serial_connection.read(1)
 
         if not response_byte:
             print()
-            print("Upload failed! Timeout waiting for BAM response.")
+            print("Upload failed! Timeout waiting for BAM response. Make "
+                  "sure all serial cables are connected and that the board "
+                  "is powered.")
             sys.exit(1)
 
         if response_byte != byte:
@@ -208,8 +208,6 @@ def upload(serial_connection, baudrate, control_port):
                   "expecting '{}'.".format(response_byte.encode('hex'),
                                            byte.encode('hex')))
             sys.exit(1)
-
-        bytes_transferred += 1
 
     # Give the uploaded application 10 ms to start.
     time.sleep(0.01)
@@ -299,6 +297,7 @@ def do_flash_write(args):
 
     erase_segments = []
     total = 0
+
     for address, _, data in f.iter_segments():
         erase_segments.append((address, len(data)))
 

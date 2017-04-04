@@ -119,11 +119,18 @@ def main():
                               stdout=subprocess.PIPE,
                               stderr=subprocess.STDOUT)
 
-        for line in iter(sp.stdout.readline, b''):
-            text.insert(END, line)
-            text.see(END)
-            text.pack(fill=BOTH, expand=YES, padx=3, pady=3)
-            root.update()
+        data = b''
+
+        for byte in iter(lambda: sp.stdout.read(1), b''):
+            data += byte
+            data = re.sub(b'([^\n])\r([^\n])', b'\\1\n\\2', data)
+
+            if b'\n' in data:
+                line, _, data = data.partition(b'\n')
+                text.insert(END, line.strip(b'\r') + b'\n')
+                text.see(END)
+                text.pack(fill=BOTH, expand=YES, padx=3, pady=3)
+                root.update()
 
         exit_code = sp.wait()
 
