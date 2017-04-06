@@ -134,6 +134,16 @@ void sys_panic(const char *message_p) __attribute__ ((noreturn));
 void sys_reboot(void) __attribute__ ((noreturn));
 
 /**
+ * Store the backtrace in given buffer.
+ *
+ * @param[out] buf_p Buffer to store the backtrace in.
+ * @param[in] size Size of the buffer.
+ *
+ * @return Backtrace depth.
+ */
+int sys_backtrace(void **buf_p, size_t size);
+
+/**
  * Set the on-fatal-callback function to given callback.
  *
  * The on-fatal-callback is called when a fatal error occurs. The

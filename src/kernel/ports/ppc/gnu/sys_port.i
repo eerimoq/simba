@@ -72,10 +72,10 @@ static void sys_port_panic_putc(char c)
 {
     /* Write the next byte. */
     CONSOLE_UART_REGS->BDRL[3] = c;
-    
+
     /* Wait for the byte to be transmitted. */
     while (((CONSOLE_UART_REGS->UARTSR & SPC5_LINFLEX_UARTSR_DTF) == 0));
-    
+
     CONSOLE_UART_REGS->UARTSR = SPC5_LINFLEX_UARTSR_DTF;
 }
 
@@ -83,6 +83,42 @@ __attribute__ ((noreturn))
 static void sys_port_reboot()
 {
     while (1);
+}
+
+static int sys_port_backtrace(void **buf_pp, size_t size)
+{
+    void *return_address_p;
+    void *frame_address_p;
+    void **frame_address_pp;
+    int depth;
+    int depth_max;
+
+    return_address_p = __builtin_return_address(0);
+    frame_address_p = __builtin_frame_address(1);
+    depth = 0;
+    depth_max = (size / sizeof(void*) / 2);
+
+    buf_pp[depth] = return_address_p;
+    buf_pp[depth + 1] = frame_address_p;
+    depth++;
+
+    frame_address_pp = (void **)frame_address_p;
+
+    while ((frame_address_p != NULL) && (depth < depth_max)) {
+        frame_address_p = *frame_address_pp;
+        frame_address_pp = (void **)frame_address_p;
+
+        if (*frame_address_pp == NULL) {
+            break;
+        }
+
+        return_address_p = *(frame_address_pp + 1);
+        buf_pp[2 * depth] = return_address_p;
+        buf_pp[2 * depth + 1] = frame_address_p;
+        depth++;
+    }
+
+    return (depth);
 }
 
 static void sys_port_lock(void)

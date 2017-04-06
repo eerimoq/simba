@@ -220,6 +220,26 @@ static int test_stdout(struct harness_t *harness_p)
     return (0);
 }
 
+static int test_backtrace(struct harness_t *harness_p)
+{
+#if defined(ARCH_PPC)
+
+    void *buf[4];
+
+    BTASSERT(sys_backtrace(buf, sizeof(buf)) == 2);
+
+    std_printf(OSTR("[0]: 0x%08x 0x%08x\r\n"), buf[0], buf[1]);
+    std_printf(OSTR("[1]: 0x%08x 0x%08x\r\n"), buf[2], buf[3]);
+
+    return (0);
+
+#else
+
+    return (1);
+
+#endif
+}
+
 int main()
 {
     struct harness_t harness;
@@ -232,6 +252,7 @@ int main()
         { test_time, "test_time" },
         { test_stdin, "test_stdin" },
         { test_stdout, "test_stdout" },
+        { test_backtrace, "test_backtrace" },
         { NULL, NULL }
     };
 

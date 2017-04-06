@@ -555,13 +555,18 @@ void sys_panic(const char *message_p)
     while (*message_p != '\0') {
         sys_port_panic_putc(*message_p++);
     }
-    
+
     sys_reboot();
 }
 
 void sys_reboot(void)
 {
     sys_port_reboot();
+}
+
+int sys_backtrace(void **buf_pp, size_t size)
+{
+    return (sys_port_backtrace(buf_pp, size));
 }
 
 void sys_set_on_fatal_callback(sys_on_fatal_fn_t callback)

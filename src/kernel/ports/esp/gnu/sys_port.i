@@ -122,6 +122,11 @@ static void sys_port_reboot()
     while (1);
 }
 
+static int sys_port_backtrace(void **buf_pp, size_t size)
+{
+    return (0);
+}
+
 static void sys_port_lock(void)
 {
     portDISABLE_INTERRUPTS();
