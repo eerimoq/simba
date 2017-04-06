@@ -440,11 +440,12 @@ static int cmd_backtrace_cb(int argc,
     depth = sys_backtrace(buf, sizeof(buf));
 
     for (i = 0; i < depth; i++) {
-        std_printf(OSTR("[%d]: 0x%08x 0x%08x\r\n"),
-                   i,
+        std_printf(OSTR("0x%08x:0x%08x "),
                    buf[2 * i],
                    buf[2 * i + 1]);
     }
+
+    std_printf(OSTR("\r\n"));
 
     return (0);
 }

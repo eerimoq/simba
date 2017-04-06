@@ -230,9 +230,11 @@ static int test_backtrace(struct harness_t *harness_p)
     BTASSERT(sys_backtrace(backtrace, sizeof(backtrace)) == 2);
 
     std_printf(FSTR("Backtrace:\r\n"));
-    std_printf(OSTR("[0]: 0x%08x 0x%08x\r\n"), backtrace[0], backtrace[1]);
-    std_printf(OSTR("[1]: 0x%08x 0x%08x\r\n"), backtrace[2], backtrace[3]);
-    std_printf(FSTR("\r\n"));
+    std_printf(OSTR("0x%08x:0x%08x 0x%08x:0x%08x\r\n"),
+               backtrace[0],
+               backtrace[1],
+               backtrace[2],
+               backtrace[3]);
 
     std_printf(FSTR("/kernel/sys/backtrace:\r\n"));
     strcpy(buf, "/kernel/sys/backtrace");

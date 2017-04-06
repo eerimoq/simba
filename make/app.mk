@@ -379,6 +379,9 @@ help:
 	@echo "  release                     Compile with NASSERT=yes and NDEBUG=yes."
 	@echo "  size                        Print application size information."
 	@echo "  stack-usage                 Print stack usage per function."
+	@echo "  backtrace                   Convert a list of space separated addresses in "
+	@echo "                              BACKTRACE to a human readable string."
+
 	@IFS=$$'\n' ; for h in $(HELP_TARGETS) ; do \
 	  echo $$h ; \
 	done
