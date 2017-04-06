@@ -1421,6 +1421,17 @@
 #endif
 
 /**
+ * Debug file system command to print a backtrace.
+ */
+#ifndef CONFIG_FS_CMD_SYS_BACKTRACE
+#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(CONFIG_MINIMAL_SYSTEM)
+#        define CONFIG_FS_CMD_SYS_BACKTRACE                 0
+#    else
+#        define CONFIG_FS_CMD_SYS_BACKTRACE                 1
+#    endif
+#endif
+
+/**
  * Debug file system command to list threads' information.
  */
 #ifndef CONFIG_FS_CMD_THRD_LIST

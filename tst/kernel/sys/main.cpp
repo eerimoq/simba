@@ -224,12 +224,19 @@ static int test_backtrace(struct harness_t *harness_p)
 {
 #if defined(ARCH_PPC)
 
-    void *buf[4];
+    void *backtrace[4];
+    char buf[32];
 
-    BTASSERT(sys_backtrace(buf, sizeof(buf)) == 2);
+    BTASSERT(sys_backtrace(backtrace, sizeof(backtrace)) == 2);
 
-    std_printf(OSTR("[0]: 0x%08x 0x%08x\r\n"), buf[0], buf[1]);
-    std_printf(OSTR("[1]: 0x%08x 0x%08x\r\n"), buf[2], buf[3]);
+    std_printf(FSTR("Backtrace:\r\n"));
+    std_printf(OSTR("[0]: 0x%08x 0x%08x\r\n"), backtrace[0], backtrace[1]);
+    std_printf(OSTR("[1]: 0x%08x 0x%08x\r\n"), backtrace[2], backtrace[3]);
+    std_printf(FSTR("\r\n"));
+
+    std_printf(FSTR("/kernel/sys/backtrace:\r\n"));
+    strcpy(buf, "/kernel/sys/backtrace");
+    BTASSERT(fs_call(buf, chan_null(), sys_get_stdout(), NULL) == 0);
 
     return (0);
 
