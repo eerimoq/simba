@@ -55,6 +55,26 @@ def crc_ccitt(data):
     return (msb << 8) + lsb
 
 
+def format_printf(database, packet):
+    """Format given printf.
+
+    """
+
+    identity = struct.unpack('>H', packet[0:2])[0]
+
+    try:
+        fmt = database.formats[identity]
+        args = packet[2:].decode('ascii').split('\x1f')
+        formatted_string = fmt.format(*args)
+    except KeyError:
+        try:
+            formatted_string = packet.decode('ascii')
+        except UnicodeDecodeError:
+            formatted_string = packet
+
+    return formatted_string
+
+
 class TimeoutError(Exception):
     pass
 
@@ -195,19 +215,7 @@ class ReaderThread(threading.Thread):
 
             # Decode the reassembled packet.
             if packet_type == SOAM_TYPE_STDOUT_PRINTF:
-                # Format the printf.
-                identity = struct.unpack('>H', packet[0:2])[0]
-
-                try:
-                    fmt = self.client.database.formats[identity]
-                    args = packet[2:].decode('ascii').split('\x1f')
-                    formatted_string = fmt.format(*args)
-                except KeyError:
-                    try:
-                        formatted_string = packet.decode('ascii')
-                    except UnicodeDecodeError:
-                        formatted_string = packet
-
+                formatted_string = format_printf(self.client.database, packet)
                 print(formatted_string, end='')
             elif packet_type == SOAM_TYPE_STDOUT_BINARY:
                 print(packet, end='')
@@ -605,18 +613,57 @@ class SlipSerialClient(Client):
         self.serial.write(packet)
 
 
+def decode_unframed_text_stream(stream, database):
+    """Decode given stream of unframed SOAM data.
+
+    """
+
+    # Setup the database.
+    db = Database()
+
+    with open(database, 'rb') as fin:
+        database = fin.read()
+
+    db.set_database(StringIO(database.decode('ascii')))
+
+    # Split on SOAM packet IDs.
+    entry = stream.read(2)
+
+    while True:
+        byte = stream.read(1)
+
+        if not byte:
+            formatted_string = format_printf(db, entry)
+            print(formatted_string, end='')
+            break
+
+        # First byte of an id found?
+        if struct.unpack('>B', byte)[0] > 127:
+            formatted_string = format_printf(db, entry)
+            print(formatted_string, end='')
+            entry = (byte + stream.read(1))
+        else:
+            entry += byte
+
+
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('-p', '--port', default='/dev/ttyACM1')
+    parser.add_argument('-p', '--port', help='Serial port.')
     parser.add_argument('-b', '--baudrate', type=int, default=115200)
     parser.add_argument('-d', '--debug', action='store_true')
+    parser.add_argument('-u', '--unframed-text', action='store_true')
     parser.add_argument('database', nargs='?')
     args = parser.parse_args()
 
-    client = SlipSerialClient(args.port, args.baudrate, args.database)
-    shell = Shell(client, debug=args.debug)
-    shell.cmdloop()
-    client.reader.stop()
+    if args.port:
+        client = SlipSerialClient(args.port, args.baudrate, args.database)
+        shell = Shell(client, debug=args.debug)
+        shell.cmdloop()
+        client.reader.stop()
+    elif args.unframed_text:
+        decode_unframed_text_stream(sys.stdin, args.database)
+    else:
+        sys.exit('Bad input arguments.')
 
 
 if __name__ == '__main__':
