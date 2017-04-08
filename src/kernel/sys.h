@@ -114,8 +114,9 @@ int sys_start(void);
 void sys_stop(int error) __attribute__ ((noreturn));
 
 /**
- * System panic. Write given message and other port specific debug
- * information to the console and then reboot the system.
+ * System panic. Write given message, a backtrace and other port
+ * specific debug information to the console and then reboot the
+ * system.
  *
  * This function may be called from interrupt context and with the
  * system lock taken.
