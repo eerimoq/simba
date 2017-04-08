@@ -595,7 +595,7 @@ void sys_panic(const char *message_p)
     int i;
     int count;
     void *backtrace[24];
-    char buf[19];
+    char buf[23];
     char *buf_p;
 
     sys_lock();
@@ -613,7 +613,7 @@ void sys_panic(const char *message_p)
 
     for (i = 0; i < count; i++) {
         std_sprintf(&buf[0],
-                    FSTR("%08lx:%08lx "),
+                    FSTR("0x%08lx:0x%08lx "),
                     (long)backtrace[2 * i],
                     (long)backtrace[2 * i + 1]);
         buf_p = &buf[0];
