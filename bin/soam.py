@@ -12,6 +12,7 @@ import serial
 import hashlib
 import lzma
 import traceback
+import binascii
 
 try:
     from StringIO import StringIO
@@ -56,7 +57,7 @@ def crc_ccitt(data):
 
 
 def format_printf(database, packet):
-    """Format given printf.
+    """Format given printf packet.
 
     """
 
@@ -71,6 +72,8 @@ def format_printf(database, packet):
             formatted_string = packet.decode('ascii')
         except UnicodeDecodeError:
             formatted_string = packet
+    except UnicodeDecodeError:
+        formatted_string = packet
 
     return formatted_string
 
@@ -235,6 +238,8 @@ class ReaderThread(threading.Thread):
                         formatted_log_point = packet.decode('ascii')
                     except UnicodeDecodeError:
                         formatted_log_point = packet
+                except UnicodeDecodeError:
+                    formatted_log_point = packet
 
                 print(formatted_log_point, end='')
             elif packet_type in [SOAM_TYPE_COMMAND_RESPONSE_DATA_PRINTF,
@@ -397,6 +402,10 @@ class Client(object):
                     formatted_response_data += fmt.format(*args)
                 except KeyError:
                     formatted_response_data += response_data.decode('ascii')
+                except UnicodeDecodeError:
+                    formatted_response_data += 'bad non ascii data in printf: '
+                    formatted_response_data += '{}'.format(response_data)
+                    formatted_response_data += ' '
             else:
                 formatted_response_data += response_data
 
