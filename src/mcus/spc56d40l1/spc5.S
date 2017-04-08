@@ -34,7 +34,7 @@
 #define INTC_IACKR                       0xfff48010
 #define INTC_EOIR                        0xfff48018
 
-#define INTERRUPT_STACK (interrupt_stack + CONFIG_SYSTEM_INTERRUPT_STACK_SIZE - 76)
+#define INTERRUPT_STACK (interrupt_stack + CONFIG_SYSTEM_INTERRUPT_STACK_SIZE - 84)
 
 .section .startup
 
@@ -155,6 +155,8 @@ _interrupt_init:
 /**
  * External interrupt handler.
  */
+.section .text
+
         .type     isr_external_input,@function
         .weak     isr_external_input
 isr_external_input:
@@ -168,10 +170,14 @@ isr_external_input:
         e_stwu    %r1, -8(%r1)
         se_stw    %r2, 4(%r1)
         se_mr     %r2, %r1
+        e_add16i  %r2, %r2, 8
         e_lis     %r1, INTERRUPT_STACK@ha
         e_or2i    %r1, INTERRUPT_STACK@l
+        e_stw     %r2, 0(%r1)
 #endif
         e_stw     %r0, 64(%r1)
+        mfsrr0    %r0
+        e_stw     %r0, 80(%r1)
         se_stw    %r2, 60(%r1)
         se_stw    %r3, 56(%r1)
         se_stw    %r4, 52(%r1)
@@ -238,6 +244,7 @@ isr_external_input:
 #else
         /* Restore the thread stack pointer. */
         se_mr     %r1, %r2
+        e_sub16i  %r1, %r1, 8
         se_lwz    %r2, 4(%r1)
         e_add16i  %r1, %r1, 8
 #endif
