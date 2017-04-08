@@ -439,13 +439,16 @@ static int cmd_backtrace_cb(int argc,
 
     depth = sys_backtrace(buf, sizeof(buf));
 
+    std_fprintf(out_p, OSTR("Backtrace: "));
+
     for (i = 0; i < depth; i++) {
-        std_printf(OSTR("0x%08x:0x%08x "),
-                   buf[2 * i],
-                   buf[2 * i + 1]);
+        std_fprintf(out_p,
+                    OSTR("0x%08x:0x%08x "),
+                    buf[2 * i],
+                    buf[2 * i + 1]);
     }
 
-    std_printf(OSTR("\r\n"));
+    std_fprintf(out_p, OSTR("\r\n"));
 
     return (0);
 }
@@ -589,10 +592,35 @@ void sys_stop(int error)
 
 void sys_panic(const char *message_p)
 {
+    int i;
+    int count;
+    void *backtrace[24];
+    char buf[19];
+    char *buf_p;
+
     sys_lock();
 
+    /* Output the message. */
     while (*message_p != '\0') {
         sys_port_panic_putc(*message_p++);
+    }
+
+    sys_port_panic_putc(':');
+    sys_port_panic_putc(' ');
+
+    /* Output the backtrace. */
+    count = sys_backtrace(&backtrace[0], sizeof(backtrace));
+
+    for (i = 0; i < count; i++) {
+        std_sprintf(&buf[0],
+                    FSTR("%08lx:%08lx "),
+                    (long)backtrace[2 * i],
+                    (long)backtrace[2 * i + 1]);
+        buf_p = &buf[0];
+
+        while (*buf_p != '\0') {
+            sys_port_panic_putc(*buf_p++);
+        }
     }
 
     sys_reboot();

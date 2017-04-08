@@ -37,29 +37,13 @@ char interrupt_stack[CONFIG_SYSTEM_INTERRUPT_STACK_SIZE];
 #    endif
 
 /**
- * Do nothing if no interrupt service routine is installed in the
- * interrupt vector.
+ * Panic if no interrupt service routine is installed in the interrupt
+ * vector.
  */
 static void isr_none(void)
 {
-    while (1);
+    sys_panic("isr_none");
 }
-
-void isr_critical_input(void) __attribute__ ((weak, alias("isr_none")));
-void isr_machine_check(void) __attribute__ ((weak, alias("isr_none")));
-void isr_data_storage(void) __attribute__ ((weak, alias("isr_none")));
-void isr_instruction_storage(void) __attribute__ ((weak, alias("isr_none")));
-void isr_alignment(void) __attribute__ ((weak, alias("isr_none")));
-void isr_program(void) __attribute__ ((weak, alias("isr_none")));
-void isr_reserved(void) __attribute__ ((weak, alias("isr_none")));
-void isr_system_call(void) __attribute__ ((weak, alias("isr_none")));
-void isr_auxiliary_processor_unavailable(void) __attribute__ ((weak, alias("isr_none")));
-void isr_decrementer(void) __attribute__ ((weak, alias("isr_none")));
-void isr_fixed_interval_timer_interrupt(void) __attribute__ ((weak, alias("isr_none")));
-void isr_watchdog_timer_interrupt(void) __attribute__ ((weak, alias("isr_none")));
-void isr_data_tlb_error(void) __attribute__ ((weak, alias("isr_none")));
-void isr_instruction_tlb_error(void) __attribute__ ((weak, alias("isr_none")));
-void isr_debug(void) __attribute__ ((weak, alias("isr_none")));
 
 void isr_software_configurable_flag_0(void) __attribute__ ((weak, alias("isr_none")));
 void isr_software_configurable_flag_1(void) __attribute__ ((weak, alias("isr_none")));

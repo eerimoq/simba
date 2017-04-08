@@ -286,4 +286,262 @@ ivor:
         .align    4
         e_b       isr_debug
 
+/**
+ * Interrupt debug strings.
+ */
+.section .data
+
+        .type     isr_critical_input_string,@object
+isr_critical_input_string:
+        .string   "isr_critical_input"
+
+        .type     isr_machine_check_string,@object
+isr_machine_check_string:
+        .string   "isr_machine_check"
+
+        .type     isr_data_storage_string,@object
+isr_data_storage_string:
+        .string   "isr_data_storage"
+
+        .type     isr_instruction_storage_string,@object
+isr_instruction_storage_string:
+        .string   "isr_instruction_storage"
+
+        .type     isr_alignment_string,@object
+isr_alignment_string:
+        .string   "isr_alignment"
+
+        .type     isr_program_string,@object
+isr_program_string:
+        .string   "isr_program"
+
+        .type     isr_reserved_string,@object
+isr_reserved_string:
+        .string   "isr_reserved"
+
+        .type     isr_system_call_string,@object
+isr_system_call_string:
+        .string   "isr_system_call"
+
+        .type     isr_auxiliary_processor_unavailable_string,@object
+isr_auxiliary_processor_unavailable_string:
+        .string   "isr_auxiliary_processor_unavailable"
+
+        .type     isr_decrementer_string,@object
+isr_decrementer_string:
+        .string   "isr_decrementer"
+
+        .type     isr_fixed_interval_timer_interrupt_string,@object
+isr_fixed_interval_timer_interrupt_string:
+        .string   "isr_fixed_interval_timer_interrupt"
+
+        .type     isr_watchdog_timer_interrupt_string,@object
+isr_watchdog_timer_interrupt_string:
+        .string   "isr_watchdog_timer_interrupt"
+
+        .type     isr_data_tlb_error_string,@object
+isr_data_tlb_error_string:
+        .string   "isr_data_tlb_error"
+
+        .type     isr_instruction_tlb_error_string,@object
+isr_instruction_tlb_error_string:
+        .string   "isr_instruction_tlb_error"
+
+        .type     isr_debug_string,@object
+isr_debug_string:
+        .string   "isr_debug"
+
+/**
+ * Interrupt handlers.
+ *
+ * Assembler functions equivalent to the C code below, but saving SRR0
+ * as return address instead of LR.
+ *
+ * void isr_<name>(void)
+ * {
+ *     sys_panic("<name>")
+ * }
+ */
+.section .text
+
+        .globl    isr_critical_input
+        .type     isr_critical_input,@function
+        .weak     isr_critical_input
+        .align    4
+isr_critical_input:
+        e_stwu    %r1, -8(%r1)
+        mfsrr0    %r0
+        se_stw    %r0, 12(%r1)
+        e_lis     %r3, isr_critical_input_string@ha
+        e_add16i  %r3, %r3, isr_critical_input_string@l
+        e_bl      sys_panic
+
+        .globl    isr_machine_check
+        .type     isr_machine_check,@function
+        .weak     isr_machine_check
+        .align    4
+isr_machine_check:
+        e_stwu    %r1, -8(%r1)
+        mfsrr0    %r0
+        se_stw    %r0, 12(%r1)
+        e_lis     %r3, isr_machine_check_string@ha
+        e_add16i  %r3, %r3, isr_machine_check_string@l
+        e_bl      sys_panic
+
+        .globl    isr_data_storage
+        .type     isr_data_storage,@function
+        .weak     isr_data_storage
+        .align    4
+isr_data_storage:
+        e_stwu    %r1, -8(%r1)
+        mfsrr0    %r0
+        se_stw    %r0, 12(%r1)
+        e_lis     %r3, isr_data_storage_string@ha
+        e_add16i  %r3, %r3, isr_data_storage_string@l
+        e_bl      sys_panic
+
+        .globl    isr_instruction_storage
+        .type     isr_instruction_storage,@function
+        .weak     isr_instruction_storage
+        .align    4
+isr_instruction_storage:
+        e_stwu    %r1, -8(%r1)
+        mfsrr0    %r0
+        se_stw    %r0, 12(%r1)
+        e_lis     %r3, isr_instruction_storage_string@ha
+        e_add16i  %r3, %r3, isr_instruction_storage_string@l
+        e_bl      sys_panic
+
+        .globl    isr_alignment
+        .type     isr_alignment,@function
+        .weak     isr_alignment
+        .align    4
+isr_alignment:
+        e_stwu    %r1, -8(%r1)
+        mfsrr0    %r0
+        se_stw    %r0, 12(%r1)
+        e_lis     %r3, isr_alignment_string@ha
+        e_add16i  %r3, %r3, isr_alignment_string@l
+        e_bl      sys_panic
+
+        .globl    isr_program
+        .type     isr_program,@function
+        .weak     isr_program
+        .align    4
+isr_program:
+        e_stwu    %r1, -8(%r1)
+        mfsrr0    %r0
+        se_stw    %r0, 12(%r1)
+        e_lis     %r3, isr_program_string@ha
+        e_add16i  %r3, %r3, isr_program_string@l
+        e_bl      sys_panic
+
+        .globl    isr_reserved
+        .type     isr_reserved,@function
+        .weak     isr_reserved
+        .align    4
+isr_reserved:
+        e_stwu    %r1, -8(%r1)
+        mfsrr0    %r0
+        se_stw    %r0, 12(%r1)
+        e_lis     %r3, isr_reserved_string@ha
+        e_add16i  %r3, %r3, isr_reserved_string@l
+        e_bl      sys_panic
+
+        .globl    isr_system_call
+        .type     isr_system_call,@function
+        .weak     isr_system_call
+        .align    4
+isr_system_call:
+        e_stwu    %r1, -8(%r1)
+        mfsrr0    %r0
+        se_stw    %r0, 12(%r1)
+        e_lis     %r3, isr_system_call_string@ha
+        e_add16i  %r3, %r3, isr_system_call_string@l
+        e_bl      sys_panic
+
+        .globl    isr_auxiliary_processor_unavailable
+        .type     isr_auxiliary_processor_unavailable,@function
+        .weak     isr_auxiliary_processor_unavailable
+        .align    4
+isr_auxiliary_processor_unavailable:
+        e_stwu    %r1, -8(%r1)
+        mfsrr0    %r0
+        se_stw    %r0, 12(%r1)
+        e_lis     %r3, isr_auxiliary_processor_unavailable_string@ha
+        e_add16i  %r3, %r3, isr_auxiliary_processor_unavailable_string@l
+        e_bl      sys_panic
+
+        .globl    isr_decrementer
+        .type     isr_decrementer,@function
+        .weak     isr_decrementer
+        .align    4
+isr_decrementer:
+        e_stwu    %r1, -8(%r1)
+        mfsrr0    %r0
+        se_stw    %r0, 12(%r1)
+        e_lis     %r3, isr_decrementer_string@ha
+        e_add16i  %r3, %r3, isr_decrementer_string@l
+        e_bl      sys_panic
+
+        .globl    isr_fixed_interval_timer_interrupt
+        .type     isr_fixed_interval_timer_interrupt,@function
+        .weak     isr_fixed_interval_timer_interrupt
+        .align    4
+isr_fixed_interval_timer_interrupt:
+        e_stwu    %r1, -8(%r1)
+        mfsrr0    %r0
+        se_stw    %r0, 12(%r1)
+        e_lis     %r3, isr_fixed_interval_timer_interrupt_string@ha
+        e_add16i  %r3, %r3, isr_fixed_interval_timer_interrupt_string@l
+        e_bl      sys_panic
+
+        .globl    isr_watchdog_timer_interrupt
+        .type     isr_watchdog_timer_interrupt,@function
+        .weak     isr_watchdog_timer_interrupt
+        .align    4
+isr_watchdog_timer_interrupt:
+        e_stwu    %r1, -8(%r1)
+        mfsrr0    %r0
+        se_stw    %r0, 12(%r1)
+        e_lis     %r3, isr_watchdog_timer_interrupt_string@ha
+        e_add16i  %r3, %r3, isr_watchdog_timer_interrupt_string@l
+        e_bl      sys_panic
+
+        .globl    isr_data_tlb_error
+        .type     isr_data_tlb_error,@function
+        .weak     isr_data_tlb_error
+        .align    4
+isr_data_tlb_error:
+        e_stwu    %r1, -8(%r1)
+        mfsrr0    %r0
+        se_stw    %r0, 12(%r1)
+        e_lis     %r3, isr_data_tlb_error_string@ha
+        e_add16i  %r3, %r3, isr_data_tlb_error_string@l
+        e_bl      sys_panic
+
+        .globl    isr_instruction_tlb_error
+        .type     isr_instruction_tlb_error,@function
+        .weak     isr_instruction_tlb_error
+        .align    4
+isr_instruction_tlb_error:
+        e_stwu    %r1, -8(%r1)
+        mfsrr0    %r0
+        se_stw    %r0, 12(%r1)
+        e_lis     %r3, isr_instruction_tlb_error_string@ha
+        e_add16i  %r3, %r3, isr_instruction_tlb_error_string@l
+        e_bl      sys_panic
+
+        .globl    isr_debug
+        .type     isr_debug,@function
+        .weak     isr_debug
+        .align    4
+isr_debug:
+        e_stwu    %r1, -8(%r1)
+        mfsrr0    %r0
+        se_stw    %r0, 12(%r1)
+        e_lis     %r3, isr_debug_string@ha
+        e_add16i  %r3, %r3, isr_debug_string@l
+        e_bl      sys_panic
+
 #endif
