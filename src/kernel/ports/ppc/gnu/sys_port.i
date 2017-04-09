@@ -82,6 +82,10 @@ static void sys_port_panic_putc(char c)
 __attribute__ ((noreturn))
 static void sys_port_reboot()
 {
+#if CONFIG_WATCHDOG == 1
+    watchdog_start_ms(1, NULL);
+#endif
+
     while (1);
 }
 
