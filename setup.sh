@@ -3,7 +3,7 @@
 # in your shell to setup the environment.
 #
 
-if [ "${OSTYPE}" == "linux-gnu" ]; then
+if [ "${OSTYPE}" = "linux-gnu" ]; then
     source environment/setup_linux.sh
 else
     echo "\$\{OSTYPE\} must be linux-gnu."
