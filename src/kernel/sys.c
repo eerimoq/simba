@@ -614,8 +614,8 @@ void sys_panic(const char *message_p)
     for (i = 0; i < count; i++) {
         std_sprintf(&buf[0],
                     FSTR("0x%08lx:0x%08lx "),
-                    (long)backtrace[2 * i],
-                    (long)backtrace[2 * i + 1]);
+                    (long)(uintptr_t)backtrace[2 * i],
+                    (long)(uintptr_t)backtrace[2 * i + 1]);
         buf_p = &buf[0];
 
         while (*buf_p != '\0') {
