@@ -75,7 +75,7 @@ INC += $(SIMBA_ROOT)/3pp/compat
 
 # Alloc package.
 ALLOC_SRC ?= circular_heap.c \
-             heap.c
+	     heap.c
 
 SRC += $(ALLOC_SRC:%=$(SIMBA_ROOT)/src/alloc/%)
 
@@ -89,7 +89,7 @@ SRC += $(COLLECTIONS_SRC:%=$(SIMBA_ROOT)/src/collections/%)
 
 # Debug package.
 DEBUG_SRC ?= log.c \
-             harness.c
+	     harness.c
 
 SRC += $(DEBUG_SRC:%=$(SIMBA_ROOT)/src/debug/%)
 
@@ -98,48 +98,48 @@ INC += $(SIMBA_ROOT)/src/drivers/ports/$(FAMILY)
 
 ifeq ($(FAMILY),linux)
 DRIVERS_SRC ?= adc.c \
-               analog_input_pin.c \
-               analog_output_pin.c \
+	       analog_input_pin.c \
+	       analog_output_pin.c \
 	       can.c \
-               dac.c \
-               ds18b20.c \
+	       dac.c \
+	       ds18b20.c \
 	       exti.c \
-               flash.c \
-               pin.c \
-               i2c_soft.c \
-               owi.c \
-               pwm.c \
-               pwm_soft.c \
+	       flash.c \
+	       pin.c \
+	       i2c_soft.c \
+	       owi.c \
+	       pwm.c \
+	       pwm_soft.c \
 	       random.c \
-               sd.c \
-               spi.c \
-               uart.c
+	       sd.c \
+	       spi.c \
+	       uart.c
 endif
 
 ifeq ($(FAMILY),avr)
 DRIVERS_SRC_TMP = adc.c \
-                  analog_input_pin.c \
-                  analog_output_pin.c \
-                  ds18b20.c \
-                  ds3231.c \
-                  exti.c \
-                  i2c.c \
-                  i2c_soft.c \
-                  mcp2515.c \
-                  nrf24l01.c \
-                  spi.c \
-                  owi.c \
-                  pin.c \
-                  pwm.c \
-                  pwm_soft.c \
-                  sd.c \
-                  uart.c \
-                  uart_soft.c \
+		  analog_input_pin.c \
+		  analog_output_pin.c \
+		  ds18b20.c \
+		  ds3231.c \
+		  exti.c \
+		  i2c.c \
+		  i2c_soft.c \
+		  mcp2515.c \
+		  nrf24l01.c \
+		  spi.c \
+		  owi.c \
+		  pin.c \
+		  pwm.c \
+		  pwm_soft.c \
+		  sd.c \
+		  uart.c \
+		  uart_soft.c \
 		  watchdog.c
 
 ifeq ($(MCU),atmega32u4)
 DRIVERS_SRC_TMP += usb.c \
-                   usb_device.c \
+		   usb_device.c \
 		   usb/device/descriptors.c \
 		   usb/device/class/cdc.c
 endif
@@ -150,108 +150,109 @@ endif
 
 ifeq ($(FAMILY),sam)
 DRIVERS_SRC ?= adc.c \
-               analog_input_pin.c \
-               can.c \
-               chipid.c \
-               dac.c \
-               ds18b20.c \
-               exti.c \
-               flash.c \
-               mcp2515.c \
-               owi.c \
-               pin.c \
-               i2c_soft.c \
-               sd.c \
-               spi.c \
-               uart.c \
-               usb.c \
-               usb_host.c \
-               usb/host/class/hid.c \
-               usb/host/class/mass_storage.c
+	       analog_input_pin.c \
+	       can.c \
+	       chipid.c \
+	       dac.c \
+	       ds18b20.c \
+	       exti.c \
+	       flash.c \
+	       mcp2515.c \
+	       owi.c \
+	       pin.c \
+	       i2c_soft.c \
+	       sd.c \
+	       spi.c \
+	       uart.c \
+	       usb.c \
+	       usb_host.c \
+	       usb/host/class/hid.c \
+	       usb/host/class/mass_storage.c
 endif
 
 ifeq ($(FAMILY),esp)
 DRIVERS_SRC ?= adc.c \
-               analog_input_pin.c \
-               esp_wifi.c \
-               esp_wifi/station.c \
-               esp_wifi/softap.c \
-               exti.c \
-               flash.c \
-               led_7seg_ht16k33.c \
-               pin.c \
-               pwm_soft.c \
-               i2c_soft.c \
+	       analog_input_pin.c \
+	       esp_wifi.c \
+	       esp_wifi/station.c \
+	       esp_wifi/softap.c \
+	       exti.c \
+	       flash.c \
+	       led_7seg_ht16k33.c \
+	       pin.c \
+	       pwm_soft.c \
+	       i2c_soft.c \
 	       random.c \
-               spi.c \
-               uart.c \
-               uart_soft.c
+	       spi.c \
+	       uart.c \
+	       uart_soft.c
 endif
 
 ifeq ($(FAMILY),esp32)
 DRIVERS_SRC ?= adc.c \
-               analog_input_pin.c \
-               can.c \
-               dac.c \
+	       analog_input_pin.c \
+	       can.c \
+	       dac.c \
 	       ds18b20.c \
-               flash.c \
-               esp_wifi.c \
-               esp_wifi/station.c \
-               esp_wifi/softap.c \
+	       flash.c \
+	       esp_wifi.c \
+	       esp_wifi/station.c \
+	       esp_wifi/softap.c \
 	       owi.c \
 	       pin.c \
 	       random.c \
-               spi.c \
+	       spi.c \
 	       uart.c \
 	       ws2812.c
 endif
 
 ifeq ($(FAMILY),stm32f1)
 DRIVERS_SRC ?= flash.c \
-               pin.c \
-               i2c_soft.c \
+	       pin.c \
+	       i2c_soft.c \
 	       uart.c
 endif
 
 ifeq ($(FAMILY),stm32f2)
 DRIVERS_SRC ?= flash.c \
-               pin.c \
-               i2c_soft.c \
+	       pin.c \
+	       i2c_soft.c \
 	       uart.c
 endif
 
 ifeq ($(FAMILY),stm32f3)
 DRIVERS_SRC ?= flash.c \
-               pin.c \
-               i2c_soft.c \
-               uart.c
+	       pin.c \
+	       i2c_soft.c \
+	       uart.c
 endif
 
 ifeq ($(FAMILY),spc5)
 DRIVERS_SRC ?= pin.c \
-               can.c \
-               flash.c \
-               uart.c
+	       can.c \
+	       flash.c \
+	       uart.c \
+	       watchdog.c
 endif
 
 SRC += $(DRIVERS_SRC:%=$(SIMBA_ROOT)/src/drivers/%)
 
 # Encode package.
 ENCODE_SRC ?= base64.c \
-              json.c
+	      json.c
 
 SRC += $(ENCODE_SRC:%=$(SIMBA_ROOT)/src/encode/%)
 
 # Hash package.
 HASH_SRC ?= crc.c \
-            sha1.c
+	    sha1.c
 
 SRC += $(HASH_SRC:%=$(SIMBA_ROOT)/src/hash/%)
 
 # Inet package.
 ifneq ($(ARCH),$(filter $(ARCH), esp esp32))
     INC += $(SIMBA_ROOT)/3pp/lwip-1.4.1/src/include \
-           $(SIMBA_ROOT)/3pp/lwip-1.4.1/src/include/ipv4
+	   $(SIMBA_ROOT)/3pp/lwip-1.4.1/src/include/ipv4
 endif
 
 INC += $(SIMBA_ROOT)/3pp/mbedtls/include
@@ -392,9 +393,9 @@ endif
 INC += $(SIMBA_ROOT)/src/kernel/ports/$(ARCH)/$(TOOLCHAIN)
 
 KERNEL_SRC_TMP = sys.c \
-              thrd.c \
-              time.c \
-              timer.c
+	      thrd.c \
+	      time.c \
+	      timer.c
 
 ifeq ($(FAMILY),esp32)
     KERNEL_SRC_TMP += ports/esp32/gnu/thrd_port.S
@@ -456,19 +457,19 @@ SRC += $(SPIFFS_SRC:%=$(SIMBA_ROOT)/%)
 
 # Sync package.
 SYNC_SRC ?= bus.c \
-            chan.c \
-            event.c \
-            queue.c \
-            rwlock.c \
-            sem.c
+	    chan.c \
+	    event.c \
+	    queue.c \
+	    rwlock.c \
+	    sem.c
 
 SRC += $(SYNC_SRC:%=$(SIMBA_ROOT)/src/sync/%)
 
 # Text package.
 TEXT_SRC ?= configfile.c \
-            emacs.c \
-            std.c \
-            re.c
+	    emacs.c \
+	    std.c \
+	    re.c
 
 ifneq ($(ARCH),$(filter $(ARCH), avr))
   INC += \

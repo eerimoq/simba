@@ -556,7 +556,7 @@
 #        define CONFIG_WATCHDOG                             1
 #    elif defined(CONFIG_MINIMAL_SYSTEM)
 #        define CONFIG_WATCHDOG                             0
-#    elif defined(FAMILY_AVR)
+#    elif defined(FAMILY_AVR) || defined(FAMILY_SPC5)
 #        define CONFIG_WATCHDOG                             1
 #    else
 #        define CONFIG_WATCHDOG                             0
