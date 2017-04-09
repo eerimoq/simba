@@ -66,7 +66,7 @@ ssize_t circular_buffer_write(struct circular_buffer_t *self_p,
     b_p = buf_p;
     first_chunk_size = (self_p->size - self_p->writepos);
 
-    if (first_chunk_size < size) {
+    if (first_chunk_size <= size) {
         memcpy(&self_p->buf_p[self_p->writepos], &b_p[0], first_chunk_size);
         memcpy(&self_p->buf_p[0], &b_p[first_chunk_size], size - first_chunk_size);
         self_p->writepos = (size - first_chunk_size);
@@ -98,7 +98,7 @@ ssize_t circular_buffer_read(struct circular_buffer_t *self_p,
     b_p = buf_p;
     first_chunk_size = (self_p->size - self_p->readpos);
 
-    if (first_chunk_size < size) {
+    if (first_chunk_size <= size) {
         memcpy(&b_p[0], &self_p->buf_p[self_p->readpos], first_chunk_size);
         memcpy(&b_p[first_chunk_size], &self_p->buf_p[0], size - first_chunk_size);
         self_p->readpos = (size - first_chunk_size);
@@ -112,11 +112,15 @@ ssize_t circular_buffer_read(struct circular_buffer_t *self_p,
 
 ssize_t circular_buffer_used_size(struct circular_buffer_t *self_p)
 {
+    ASSERTN(self_p != NULL, EINVAL);
+
     return (self_p->size - circular_buffer_unused_size(self_p) - 1);
 }
 
 ssize_t circular_buffer_unused_size(struct circular_buffer_t *self_p)
 {
+    ASSERTN(self_p != NULL, EINVAL);
+
     ssize_t available;
 
     available = (self_p->readpos - self_p->writepos - 1);
@@ -126,4 +130,94 @@ ssize_t circular_buffer_unused_size(struct circular_buffer_t *self_p)
     }
 
     return (available);
+}
+
+ssize_t circular_buffer_skip_front(struct circular_buffer_t *self_p,
+                                   size_t size)
+{
+    ASSERTN(self_p != NULL, EINVAL);
+
+    size_t first_chunk_size;
+    size_t used_size;
+
+    used_size = circular_buffer_used_size(self_p);
+
+    if (size > used_size) {
+        size = used_size;
+    }
+
+    first_chunk_size = (self_p->size - self_p->readpos);
+
+    if (first_chunk_size <= size) {
+        self_p->readpos = (size - first_chunk_size);
+    } else {
+        self_p->readpos += size;
+    }
+
+    return (size);
+}
+
+ssize_t circular_buffer_reverse_skip_back(struct circular_buffer_t *self_p,
+                                          size_t size)
+{
+    ASSERTN(self_p != NULL, EINVAL);
+
+    size_t used_size;
+
+    used_size = circular_buffer_used_size(self_p);
+
+    if (size > used_size) {
+        size = used_size;
+    }
+
+    if (size > self_p->writepos) {
+        self_p->writepos = (self_p->size - (size - self_p->writepos));
+    } else {
+        self_p->writepos -= size;
+    }
+
+    return (size);
+}
+
+ssize_t circular_buffer_array_one(struct circular_buffer_t *self_p,
+                                  void **buf_pp,
+                                  size_t size)
+{
+    size_t first_chunk_size;
+
+    if (self_p->writepos >= self_p->readpos) {
+        first_chunk_size = (self_p->writepos - self_p->readpos);
+    } else {
+        first_chunk_size = (self_p->size - self_p->readpos);
+    }
+
+    if (size > first_chunk_size) {
+        size = first_chunk_size;
+    }
+
+    if (size > 0) {
+        *buf_pp = &self_p->buf_p[self_p->readpos];
+    }
+
+    return (size);
+}
+
+ssize_t circular_buffer_array_two(struct circular_buffer_t *self_p,
+                                  void **buf_pp,
+                                  size_t size)
+{
+    /* Return immediately if there is no second chunk. */
+    if (self_p->writepos >= self_p->readpos) {
+        return (0);
+    }
+
+    if (size > self_p->writepos) {
+        size = self_p->writepos;
+    }
+
+    if (size > 0) {
+        *buf_pp = &self_p->buf_p[0];
+    }
+
+    return (size);
 }
