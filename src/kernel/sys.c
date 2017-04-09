@@ -600,6 +600,10 @@ void sys_panic(const char *message_p)
 
     sys_lock();
 
+#if CONFIG_WATCHDOG == 1
+    watchdog_kick();
+#endif
+
     /* Output the message. */
     while (*message_p != '\0') {
         sys_port_panic_putc(*message_p++);
@@ -621,6 +625,13 @@ void sys_panic(const char *message_p)
         while (*buf_p != '\0') {
             sys_port_panic_putc(*buf_p++);
         }
+    }
+
+    /* Reboot the system. */
+    message_p = "Rebooting...";
+
+    while (*message_p != '\0') {
+        sys_port_panic_putc(*message_p++);
     }
 
     sys_reboot();
