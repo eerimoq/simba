@@ -79,7 +79,7 @@ static int check_reset_to_bootloader(struct usb_device_class_cdc_driver_t *self_
        line state). */
     if ((self_p->line_state & LINE_STATE_DTR) == 0) {
         *(uint16_t *)0x0800 = STAY_IN_BOOT_LOADER_MAGIC;
-        watchdog_start_ms(100);
+        watchdog_start_ms(100, NULL);
     } else {
         *(uint16_t *)0x0800 = 0x0;
         watchdog_stop();
