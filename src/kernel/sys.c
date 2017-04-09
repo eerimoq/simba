@@ -597,6 +597,7 @@ void sys_panic(const char *message_p)
     void *backtrace[24];
     char buf[23];
     char *buf_p;
+    FAR const char *info_p;
 
     sys_lock();
 
@@ -625,6 +626,13 @@ void sys_panic(const char *message_p)
         while (*buf_p != '\0') {
             sys_port_panic_putc(*buf_p++);
         }
+    }
+
+    /* Print system information. */
+    info_p = &sysinfo[0];
+
+    while (*info_p != '\0') {
+        sys_port_panic_putc(*info_p++);
     }
 
     /* Reboot the system. */
