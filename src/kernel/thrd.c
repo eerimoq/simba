@@ -304,7 +304,7 @@ static int cmd_list_cb(int argc,
     struct thrd_t *thrd_p;
 
     std_fprintf(chout_p,
-                OSTR("            NAME        STATE  PRIO"
+                OSTR("                NAME        STATE  PRIO"
 #if CONFIG_THRD_CPU_USAGE == 1
                      "   CPU"
 #endif
@@ -320,7 +320,7 @@ static int cmd_list_cb(int argc,
 
     while (thrd_p != NULL) {
         std_fprintf(chout_p,
-                    OSTR("%16s %12s %5d"
+                    OSTR("%20s %12s %5d"
 #if CONFIG_THRD_CPU_USAGE == 1
                          " %4u%%"
 #endif
