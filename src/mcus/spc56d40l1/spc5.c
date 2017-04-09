@@ -329,7 +329,7 @@ void spc5_init(void)
     /* Disable the watchdog. */
     SPC5_SWT->SR = 0x0000c520;
     SPC5_SWT->SR = 0x0000d928;
-    SPC5_SWT->CR = 0xff00001a;
+    SPC5_SWT->CR = 0;
 
 #if CONFIG_SYSTEM_INTERRUPTS == 1
     /* Software vector mode. */
