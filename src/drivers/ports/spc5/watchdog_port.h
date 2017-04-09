@@ -28,26 +28,7 @@
  * This file is part of the Simba project.
  */
 
-#include <avr/wdt.h>
+#ifndef __DRIVERS_WATCHDOG_PORT_H__
+#define __DRIVERS_WATCHDOG_PORT_H__
 
-int watchdog_port_start_ms(int timeout,
-                           watchdog_isr_fn_t on_interrupt)
-{
-    wdt_enable(timeout);
-
-    return (0);
-}
-
-int watchdog_port_stop(void)
-{
-    wdt_disable();
-
-    return (0);
-}
-
-int watchdog_port_kick(void)
-{
-    wdt_reset();
-
-    return (0);
-}
+#endif

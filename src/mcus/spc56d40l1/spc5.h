@@ -370,6 +370,25 @@ struct spc5_swt_t {
     uint32_t CO;
 };
 
+#define SPC5_SWT_CR_MAP_0                            BIT(31)
+#define SPC5_SWT_CR_MAP_1                            BIT(30)
+#define SPC5_SWT_CR_MAP_2                            BIT(29)
+#define SPC5_SWT_CR_MAP_3                            BIT(28)
+#define SPC5_SWT_CR_MAP_4                            BIT(27)
+#define SPC5_SWT_CR_MAP_5                            BIT(26)
+#define SPC5_SWT_CR_MAP_6                            BIT(25)
+#define SPC5_SWT_CR_MAP_7                            BIT(24)
+#define SPC5_SWT_CR_KEY                               BIT(9)
+#define SPC5_SWT_CR_RIA                               BIT(8)
+#define SPC5_SWT_CR_WND                               BIT(7)
+#define SPC5_SWT_CR_ITR                               BIT(6)
+#define SPC5_SWT_CR_HLK                               BIT(5)
+#define SPC5_SWT_CR_SLK                               BIT(4)
+#define SPC5_SWT_CR_CSL                               BIT(3)
+#define SPC5_SWT_CR_STP                               BIT(2)
+#define SPC5_SWT_CR_FRZ                               BIT(1)
+#define SPC5_SWT_CR_WEN                               BIT(0)
+
 /* Base addresses of peripherals. */
 #define SPC5_CFLASH    ((volatile struct spc5_flash_t *)   0xc3f88000ul)
 #define SPC5_DFLASH    ((volatile struct spc5_flash_t *)   0xc3f8c000ul)

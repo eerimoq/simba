@@ -28,26 +28,77 @@
  * This file is part of the Simba project.
  */
 
-#include <avr/wdt.h>
+#include "simba.h"
 
-int watchdog_port_start_ms(int timeout,
-                           watchdog_isr_fn_t on_interrupt)
+#if defined(FAMILY_SPC5)
+
+static volatile int interrupt = 0;
+
+static void isr_watchdog_timeout(void)
 {
-    wdt_enable(timeout);
+    interrupt = 1;
+}
+
+#endif
+
+static int test_interrupt(struct harness_t *harness_p)
+{
+#if defined(FAMILY_SPC5)
+
+    watchdog_start_ms(50, isr_watchdog_timeout);
+
+    thrd_sleep_ms(40);
+    watchdog_kick();
+
+    /* Wait for the interrupt. */
+    while (interrupt == 0);
+
+    watchdog_kick();
+
+    watchdog_stop();
+    thrd_sleep_ms(60);
+
+    return (0);
+
+#else
+
+    return (1);
+
+#endif
+}
+
+static int test_no_interrupt(struct harness_t *harness_p)
+{
+    watchdog_start_ms(20, 0);
+
+    thrd_sleep_ms(10);
+    watchdog_kick();
+
+    thrd_sleep_ms(10);
+    watchdog_kick();
+
+    thrd_sleep_ms(10);
+    watchdog_kick();
+
+    watchdog_stop();
+    thrd_sleep_ms(30);
 
     return (0);
 }
 
-int watchdog_port_stop(void)
+int main()
 {
-    wdt_disable();
+    struct harness_t harness;
+    struct harness_testcase_t harness_testcases[] = {
+        { test_interrupt, "test_interrupt" },
+        { test_no_interrupt, "test_no_interrupt" },
+        { NULL, NULL }
+    };
 
-    return (0);
-}
+    sys_start();
 
-int watchdog_port_kick(void)
-{
-    wdt_reset();
+    harness_init(&harness);
+    harness_run(&harness, harness_testcases);
 
     return (0);
 }

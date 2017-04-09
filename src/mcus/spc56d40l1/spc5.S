@@ -204,10 +204,10 @@ isr_external_input:
         e_lis     %r3, INTC_IACKR@ha
         e_lwz     %r3, INTC_IACKR@l(%r3) /* Address in the external interrupt
                                             vector. */
-        e_lwz     %r3, 0x0(%r3) /* Load the ISR address. */
+        e_lwz     %r4, 0x0(%r3) /* Load the ISR address. */
 
         /* Call the ISR. */
-        se_mtctr  %r3
+        se_mtctr  %r4
         se_bctrl
 
         mbar

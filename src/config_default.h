@@ -158,6 +158,7 @@
 #    define PORT_HAS_UART
 #    define PORT_HAS_FLASH
 #    define PORT_HAS_CAN
+#    define PORT_HAS_WATCHDOG
 #endif
 
 /**

@@ -40,106 +40,112 @@ char interrupt_stack[CONFIG_SYSTEM_INTERRUPT_STACK_SIZE];
  * Panic if no interrupt service routine is installed in the interrupt
  * vector.
  */
-static void isr_none(void)
+static void isr_none(uint32_t address)
 {
-    sys_panic("isr_none");
+    char buf[40];
+
+    std_sprintf(&buf[0],
+                FSTR("unhandled external interrupt %d"),
+                (address - 0x800) / 4);
+
+    sys_panic(&buf[0]);
 }
 
-void isr_software_configurable_flag_0(void) __attribute__ ((weak, alias("isr_none")));
-void isr_software_configurable_flag_1(void) __attribute__ ((weak, alias("isr_none")));
-void isr_software_configurable_flag_2(void) __attribute__ ((weak, alias("isr_none")));
-void isr_software_configurable_flag_3(void) __attribute__ ((weak, alias("isr_none")));
-void isr_software_configurable_flag_4(void) __attribute__ ((weak, alias("isr_none")));
-void isr_software_configurable_flag_5(void) __attribute__ ((weak, alias("isr_none")));
-void isr_software_configurable_flag_6(void) __attribute__ ((weak, alias("isr_none")));
-void isr_software_configurable_flag_7(void) __attribute__ ((weak, alias("isr_none")));
-void isr_ecsm_flash_bank_stall_abort(void) __attribute__ ((weak, alias("isr_none")));
-void isr_edma_combined_error(void) __attribute__ ((weak, alias("isr_none")));
-void isr_edma_channel_0(void) __attribute__ ((weak, alias("isr_none")));
-void isr_edma_channel_1(void) __attribute__ ((weak, alias("isr_none")));
-void isr_edma_channel_2(void) __attribute__ ((weak, alias("isr_none")));
-void isr_edma_channel_3(void) __attribute__ ((weak, alias("isr_none")));
-void isr_edma_channel_4(void) __attribute__ ((weak, alias("isr_none")));
-void isr_edma_channel_5(void) __attribute__ ((weak, alias("isr_none")));
-void isr_edma_channel_6(void) __attribute__ ((weak, alias("isr_none")));
-void isr_edma_channel_7(void) __attribute__ ((weak, alias("isr_none")));
-void isr_edma_channel_8(void) __attribute__ ((weak, alias("isr_none")));
-void isr_edma_channel_9(void) __attribute__ ((weak, alias("isr_none")));
-void isr_edma_channel_10(void) __attribute__ ((weak, alias("isr_none")));
-void isr_edma_channel_11(void) __attribute__ ((weak, alias("isr_none")));
-void isr_edma_channel_12(void) __attribute__ ((weak, alias("isr_none")));
-void isr_edma_channel_13(void) __attribute__ ((weak, alias("isr_none")));
-void isr_edma_channel_14(void) __attribute__ ((weak, alias("isr_none")));
-void isr_edma_channel_15(void) __attribute__ ((weak, alias("isr_none")));
-void isr_swt_timeout(void) __attribute__ ((weak, alias("isr_none")));
-void isr_stm_match_on_channel_0(void) __attribute__ ((weak, alias("isr_none")));
-void isr_stm_match_on_channel_1(void) __attribute__ ((weak, alias("isr_none")));
-void isr_stm_match_on_channel_2(void) __attribute__ ((weak, alias("isr_none")));
-void isr_stm_match_on_channel_3(void) __attribute__ ((weak, alias("isr_none")));
-void isr_ecc_dbd(void) __attribute__ ((weak, alias("isr_none")));
-void isr_ecc_sbc(void) __attribute__ ((weak, alias("isr_none")));
-void isr_rtc_api_rtc(void) __attribute__ ((weak, alias("isr_none")));
-void isr_rtc_api_api(void) __attribute__ ((weak, alias("isr_none")));
-void isr_siul_0(void) __attribute__ ((weak, alias("isr_none")));
-void isr_siul_1(void) __attribute__ ((weak, alias("isr_none")));
-void isr_siul_2(void) __attribute__ ((weak, alias("isr_none")));
-void isr_wkpu_irq_0(void) __attribute__ ((weak, alias("isr_none")));
-void isr_wkpu_irq_1(void) __attribute__ ((weak, alias("isr_none")));
-void isr_wkpu_irq_2(void) __attribute__ ((weak, alias("isr_none")));
-void isr_wkpu_irq_3(void) __attribute__ ((weak, alias("isr_none")));
-void isr_mc_me_safe_mode(void) __attribute__ ((weak, alias("isr_none")));
-void isr_mc_me_mode_transition(void) __attribute__ ((weak, alias("isr_none")));
-void isr_mc_me_invalid_mode(void) __attribute__ ((weak, alias("isr_none")));
-void isr_mc_me_invalid_mode_config(void) __attribute__ ((weak, alias("isr_none")));
-void isr_fxosc_counter_expired_ipi_int_osc_fxosc(void) __attribute__ ((weak, alias("isr_none")));
-void isr_pit_channel_0(void) __attribute__ ((weak, alias("isr_none")));
-void isr_pit_channel_1(void) __attribute__ ((weak, alias("isr_none")));
-void isr_pit_channel_2(void) __attribute__ ((weak, alias("isr_none")));
-void isr_flexcan_0_esr_err(void) __attribute__ ((weak, alias("isr_none")));
-void isr_flexcan_0_buf_00_03(void) __attribute__ ((weak, alias("isr_none")));
-void isr_flexcan_0_buf_04_07(void) __attribute__ ((weak, alias("isr_none")));
-void isr_flexcan_0_buf_08_11(void) __attribute__ ((weak, alias("isr_none")));
-void isr_flexcan_0_buf_12_15(void) __attribute__ ((weak, alias("isr_none")));
-void isr_flexcan_0_buf_16_31(void) __attribute__ ((weak, alias("isr_none")));
-void isr_dspi_0_sr_eoqf(void) __attribute__ ((weak, alias("isr_none")));
-void isr_dspi_0_sr_tfff(void) __attribute__ ((weak, alias("isr_none")));
-void isr_dspi_0_sr_tcf(void) __attribute__ ((weak, alias("isr_none")));
-void isr_dspi_0_sr_rfdf(void) __attribute__ ((weak, alias("isr_none")));
-void isr_linflex_0_rxi(void) __attribute__ ((weak, alias("isr_none")));
-void isr_linflex_0_txi(void) __attribute__ ((weak, alias("isr_none")));
-void isr_linflex_0_err(void) __attribute__ ((weak, alias("isr_none")));
-void isr_adc_1_eoc(void) __attribute__ ((weak, alias("isr_none")));
-void isr_adc_1_wd(void) __attribute__ ((weak, alias("isr_none")));
-void isr_dspi_1_sr_eoqf(void) __attribute__ ((weak, alias("isr_none")));
-void isr_dspi_1_sr_tfff(void) __attribute__ ((weak, alias("isr_none")));
-void isr_dspi_1_sr_tcf(void) __attribute__ ((weak, alias("isr_none")));
-void isr_dspi_1_sr_rfdf(void) __attribute__ ((weak, alias("isr_none")));
-void isr_linflex_1_rxi(void) __attribute__ ((weak, alias("isr_none")));
-void isr_linflex_1_txi(void) __attribute__ ((weak, alias("isr_none")));
-void isr_linflex_1_err(void) __attribute__ ((weak, alias("isr_none")));
-void isr_linflex_2_rxi(void) __attribute__ ((weak, alias("isr_none")));
-void isr_linflex_2_txi(void) __attribute__ ((weak, alias("isr_none")));
-void isr_linflex_2_err(void) __attribute__ ((weak, alias("isr_none")));
-void isr_pit_channel_3(void) __attribute__ ((weak, alias("isr_none")));
-void isr_emios_0_gfr_f0_f1(void) __attribute__ ((weak, alias("isr_none")));
-void isr_emios_0_gfr_f2_f3(void) __attribute__ ((weak, alias("isr_none")));
-void isr_emios_0_gfr_f4_f5(void) __attribute__ ((weak, alias("isr_none")));
-void isr_emios_0_gfr_f6_f7(void) __attribute__ ((weak, alias("isr_none")));
-void isr_emios_0_gfr_f8_f9(void) __attribute__ ((weak, alias("isr_none")));
-void isr_emios_0_gfr_f10_f11(void) __attribute__ ((weak, alias("isr_none")));
-void isr_emios_0_gfr_f12_f13(void) __attribute__ ((weak, alias("isr_none")));
-void isr_emios_0_gfr_f14_f15(void) __attribute__ ((weak, alias("isr_none")));
-void isr_emios_0_gfr_f16_f17(void) __attribute__ ((weak, alias("isr_none")));
-void isr_emios_0_gfr_f18_f19(void) __attribute__ ((weak, alias("isr_none")));
-void isr_emios_0_gfr_f20_f21(void) __attribute__ ((weak, alias("isr_none")));
-void isr_emios_0_gfr_f22_f23(void) __attribute__ ((weak, alias("isr_none")));
-void isr_emios_0_gfr_f24_f25(void) __attribute__ ((weak, alias("isr_none")));
-void isr_emios_0_gfr_f26_f27(void) __attribute__ ((weak, alias("isr_none")));
+void isr_software_configurable_flag_0(uint32_t address) __attribute__ ((weak, alias("isr_none")));
+void isr_software_configurable_flag_1(uint32_t address) __attribute__ ((weak, alias("isr_none")));
+void isr_software_configurable_flag_2(uint32_t address) __attribute__ ((weak, alias("isr_none")));
+void isr_software_configurable_flag_3(uint32_t address) __attribute__ ((weak, alias("isr_none")));
+void isr_software_configurable_flag_4(uint32_t address) __attribute__ ((weak, alias("isr_none")));
+void isr_software_configurable_flag_5(uint32_t address) __attribute__ ((weak, alias("isr_none")));
+void isr_software_configurable_flag_6(uint32_t address) __attribute__ ((weak, alias("isr_none")));
+void isr_software_configurable_flag_7(uint32_t address) __attribute__ ((weak, alias("isr_none")));
+void isr_ecsm_flash_bank_stall_abort(uint32_t address) __attribute__ ((weak, alias("isr_none")));
+void isr_edma_combined_error(uint32_t address) __attribute__ ((weak, alias("isr_none")));
+void isr_edma_channel_0(uint32_t address) __attribute__ ((weak, alias("isr_none")));
+void isr_edma_channel_1(uint32_t address) __attribute__ ((weak, alias("isr_none")));
+void isr_edma_channel_2(uint32_t address) __attribute__ ((weak, alias("isr_none")));
+void isr_edma_channel_3(uint32_t address) __attribute__ ((weak, alias("isr_none")));
+void isr_edma_channel_4(uint32_t address) __attribute__ ((weak, alias("isr_none")));
+void isr_edma_channel_5(uint32_t address) __attribute__ ((weak, alias("isr_none")));
+void isr_edma_channel_6(uint32_t address) __attribute__ ((weak, alias("isr_none")));
+void isr_edma_channel_7(uint32_t address) __attribute__ ((weak, alias("isr_none")));
+void isr_edma_channel_8(uint32_t address) __attribute__ ((weak, alias("isr_none")));
+void isr_edma_channel_9(uint32_t address) __attribute__ ((weak, alias("isr_none")));
+void isr_edma_channel_10(uint32_t address) __attribute__ ((weak, alias("isr_none")));
+void isr_edma_channel_11(uint32_t address) __attribute__ ((weak, alias("isr_none")));
+void isr_edma_channel_12(uint32_t address) __attribute__ ((weak, alias("isr_none")));
+void isr_edma_channel_13(uint32_t address) __attribute__ ((weak, alias("isr_none")));
+void isr_edma_channel_14(uint32_t address) __attribute__ ((weak, alias("isr_none")));
+void isr_edma_channel_15(uint32_t address) __attribute__ ((weak, alias("isr_none")));
+void isr_swt_timeout(uint32_t address) __attribute__ ((weak, alias("isr_none")));
+void isr_stm_match_on_channel_0(uint32_t address) __attribute__ ((weak, alias("isr_none")));
+void isr_stm_match_on_channel_1(uint32_t address) __attribute__ ((weak, alias("isr_none")));
+void isr_stm_match_on_channel_2(uint32_t address) __attribute__ ((weak, alias("isr_none")));
+void isr_stm_match_on_channel_3(uint32_t address) __attribute__ ((weak, alias("isr_none")));
+void isr_ecc_dbd(uint32_t address) __attribute__ ((weak, alias("isr_none")));
+void isr_ecc_sbc(uint32_t address) __attribute__ ((weak, alias("isr_none")));
+void isr_rtc_api_rtc(uint32_t address) __attribute__ ((weak, alias("isr_none")));
+void isr_rtc_api_api(uint32_t address) __attribute__ ((weak, alias("isr_none")));
+void isr_siul_0(uint32_t address) __attribute__ ((weak, alias("isr_none")));
+void isr_siul_1(uint32_t address) __attribute__ ((weak, alias("isr_none")));
+void isr_siul_2(uint32_t address) __attribute__ ((weak, alias("isr_none")));
+void isr_wkpu_irq_0(uint32_t address) __attribute__ ((weak, alias("isr_none")));
+void isr_wkpu_irq_1(uint32_t address) __attribute__ ((weak, alias("isr_none")));
+void isr_wkpu_irq_2(uint32_t address) __attribute__ ((weak, alias("isr_none")));
+void isr_wkpu_irq_3(uint32_t address) __attribute__ ((weak, alias("isr_none")));
+void isr_mc_me_safe_mode(uint32_t address) __attribute__ ((weak, alias("isr_none")));
+void isr_mc_me_mode_transition(uint32_t address) __attribute__ ((weak, alias("isr_none")));
+void isr_mc_me_invalid_mode(uint32_t address) __attribute__ ((weak, alias("isr_none")));
+void isr_mc_me_invalid_mode_config(uint32_t address) __attribute__ ((weak, alias("isr_none")));
+void isr_fxosc_counter_expired_ipi_int_osc_fxosc(uint32_t address) __attribute__ ((weak, alias("isr_none")));
+void isr_pit_channel_0(uint32_t address) __attribute__ ((weak, alias("isr_none")));
+void isr_pit_channel_1(uint32_t address) __attribute__ ((weak, alias("isr_none")));
+void isr_pit_channel_2(uint32_t address) __attribute__ ((weak, alias("isr_none")));
+void isr_flexcan_0_esr_err(uint32_t address) __attribute__ ((weak, alias("isr_none")));
+void isr_flexcan_0_buf_00_03(uint32_t address) __attribute__ ((weak, alias("isr_none")));
+void isr_flexcan_0_buf_04_07(uint32_t address) __attribute__ ((weak, alias("isr_none")));
+void isr_flexcan_0_buf_08_11(uint32_t address) __attribute__ ((weak, alias("isr_none")));
+void isr_flexcan_0_buf_12_15(uint32_t address) __attribute__ ((weak, alias("isr_none")));
+void isr_flexcan_0_buf_16_31(uint32_t address) __attribute__ ((weak, alias("isr_none")));
+void isr_dspi_0_sr_eoqf(uint32_t address) __attribute__ ((weak, alias("isr_none")));
+void isr_dspi_0_sr_tfff(uint32_t address) __attribute__ ((weak, alias("isr_none")));
+void isr_dspi_0_sr_tcf(uint32_t address) __attribute__ ((weak, alias("isr_none")));
+void isr_dspi_0_sr_rfdf(uint32_t address) __attribute__ ((weak, alias("isr_none")));
+void isr_linflex_0_rxi(uint32_t address) __attribute__ ((weak, alias("isr_none")));
+void isr_linflex_0_txi(uint32_t address) __attribute__ ((weak, alias("isr_none")));
+void isr_linflex_0_err(uint32_t address) __attribute__ ((weak, alias("isr_none")));
+void isr_adc_1_eoc(uint32_t address) __attribute__ ((weak, alias("isr_none")));
+void isr_adc_1_wd(uint32_t address) __attribute__ ((weak, alias("isr_none")));
+void isr_dspi_1_sr_eoqf(uint32_t address) __attribute__ ((weak, alias("isr_none")));
+void isr_dspi_1_sr_tfff(uint32_t address) __attribute__ ((weak, alias("isr_none")));
+void isr_dspi_1_sr_tcf(uint32_t address) __attribute__ ((weak, alias("isr_none")));
+void isr_dspi_1_sr_rfdf(uint32_t address) __attribute__ ((weak, alias("isr_none")));
+void isr_linflex_1_rxi(uint32_t address) __attribute__ ((weak, alias("isr_none")));
+void isr_linflex_1_txi(uint32_t address) __attribute__ ((weak, alias("isr_none")));
+void isr_linflex_1_err(uint32_t address) __attribute__ ((weak, alias("isr_none")));
+void isr_linflex_2_rxi(uint32_t address) __attribute__ ((weak, alias("isr_none")));
+void isr_linflex_2_txi(uint32_t address) __attribute__ ((weak, alias("isr_none")));
+void isr_linflex_2_err(uint32_t address) __attribute__ ((weak, alias("isr_none")));
+void isr_pit_channel_3(uint32_t address) __attribute__ ((weak, alias("isr_none")));
+void isr_emios_0_gfr_f0_f1(uint32_t address) __attribute__ ((weak, alias("isr_none")));
+void isr_emios_0_gfr_f2_f3(uint32_t address) __attribute__ ((weak, alias("isr_none")));
+void isr_emios_0_gfr_f4_f5(uint32_t address) __attribute__ ((weak, alias("isr_none")));
+void isr_emios_0_gfr_f6_f7(uint32_t address) __attribute__ ((weak, alias("isr_none")));
+void isr_emios_0_gfr_f8_f9(uint32_t address) __attribute__ ((weak, alias("isr_none")));
+void isr_emios_0_gfr_f10_f11(uint32_t address) __attribute__ ((weak, alias("isr_none")));
+void isr_emios_0_gfr_f12_f13(uint32_t address) __attribute__ ((weak, alias("isr_none")));
+void isr_emios_0_gfr_f14_f15(uint32_t address) __attribute__ ((weak, alias("isr_none")));
+void isr_emios_0_gfr_f16_f17(uint32_t address) __attribute__ ((weak, alias("isr_none")));
+void isr_emios_0_gfr_f18_f19(uint32_t address) __attribute__ ((weak, alias("isr_none")));
+void isr_emios_0_gfr_f20_f21(uint32_t address) __attribute__ ((weak, alias("isr_none")));
+void isr_emios_0_gfr_f22_f23(uint32_t address) __attribute__ ((weak, alias("isr_none")));
+void isr_emios_0_gfr_f24_f25(uint32_t address) __attribute__ ((weak, alias("isr_none")));
+void isr_emios_0_gfr_f26_f27(uint32_t address) __attribute__ ((weak, alias("isr_none")));
 
 /* Vector table with all external (IVOR4) interrupt service
    routines. */
 __attribute__ ((section(".vector"), used))
-void (*vector_table[])(void) = {
+void (*vector_table[])(uint32_t address) = {
     isr_software_configurable_flag_0,
     isr_software_configurable_flag_1,
     isr_software_configurable_flag_2,
@@ -323,7 +329,7 @@ void spc5_init(void)
     /* Disable the watchdog. */
     SPC5_SWT->SR = 0x0000c520;
     SPC5_SWT->SR = 0x0000d928;
-    SPC5_SWT->CR = 0xff00000a;
+    SPC5_SWT->CR = 0xff00001a;
 
 #if CONFIG_SYSTEM_INTERRUPTS == 1
     /* Software vector mode. */
