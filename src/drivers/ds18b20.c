@@ -47,7 +47,7 @@ struct ds18b20_scratchpad_t {
     uint8_t configuration;
     uint8_t reserved[3];
     uint8_t crc;
-};
+} PACKED;
 
 struct module_t {
     int initialized;

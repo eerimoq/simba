@@ -173,12 +173,14 @@ endif
 ifeq ($(FAMILY),esp)
 DRIVERS_SRC ?= adc.c \
 	       analog_input_pin.c \
+	       ds18b20.c \
 	       esp_wifi.c \
 	       esp_wifi/station.c \
 	       esp_wifi/softap.c \
 	       exti.c \
 	       flash.c \
 	       led_7seg_ht16k33.c \
+	       owi.c \
 	       pin.c \
 	       pwm_soft.c \
 	       i2c_soft.c \
