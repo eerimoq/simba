@@ -108,6 +108,8 @@
 #    define PORT_HAS_SPI
 #    define PORT_HAS_UART
 #    define PORT_HAS_UART_SOFT
+#    define PORT_HAS_OWI
+#    define PORT_HAS_DS18B20
 #    define PORT_HAS_ADC
 #    define PORT_HAS_ANALOG_INPUT_PIN
 #    define PORT_HAS_FLASH
