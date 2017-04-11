@@ -601,7 +601,7 @@ void sys_panic(const char *message_p)
 
     sys_lock();
 
-#if CONFIG_WATCHDOG == 1
+#if CONFIG_SYS_PANIC_KICK_WATCHDOG == 1
     watchdog_kick();
 #endif
 

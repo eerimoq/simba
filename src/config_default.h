@@ -188,6 +188,13 @@
 #endif
 
 /**
+ * Kick the watchdog in `sys_panic()` before writing to the console.
+ */
+#ifndef CONFIG_SYS_PANIC_KICK_WATCHDOG
+#    define CONFIG_SYS_PANIC_KICK_WATCHDOG                  0
+#endif
+
+/**
  * Assertions are used to check various conditions during the
  * application execution. A typical usage is to validate function
  * input arguments.
