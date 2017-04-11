@@ -239,9 +239,7 @@ else
 	$$(CC) $$(INC:%=-I%) $$(CDEFS:%=-D%) $$(CFLAGS) -o $$@ $$<
 endif
 ifneq ($(STUB),)
-ifeq ($(TYPE), suite)
 	stub.py "$(CROSS_COMPILE)" $$@ "$$(filter $$(call STUB_template,$$<), $(STUB))"
-endif
 endif
 	gcc -MM -MT $$@ $$(INC:%=-I%) $$(CDEFS:%=-D%) -o $(patsubst %.c,$(DEPSDIR)%.o.dep,$(abspath $1)) $$<
 endef
@@ -261,6 +259,9 @@ ifeq ($(SOAM), yes)
 else
 	$$(CXX) $$(INC:%=-I%) $$(CDEFS:%=-D%) $$(CXXFLAGS) -o $$@ $$<
 endif
+ifneq ($(STUB),)
+	stub.py "$(CROSS_COMPILE)" $$@ "$$(filter $$(call STUB_template,$$<), $(STUB))"
+endif
 	$$(CXX) -MM -MT $$@ $$(INC:%=-I%) $$(CDEFS:%=-D%) -std=c++11 -o $(patsubst %.cpp,$(DEPSDIR)%.o.dep,$(abspath $1)) $$<
 endef
 $(foreach file,$(CXXSRC),$(eval $(call COMPILE_CXX_template,$(file))))
@@ -273,6 +274,9 @@ $(patsubst %.S,$(OBJDIR)%.obj,$(abspath $1)): $1
 	mkdir -p $(DEPSDIR)$(abspath $(dir $1))
 	mkdir -p $(GENDIR)
 	$$(CC) $$(INC:%=-I%) $$(CDEFS:%=-D%) $$(CFLAGS) -o $$@ $$<
+ifneq ($(STUB),)
+	stub.py "$(CROSS_COMPILE)" $$@ "$$(filter $$(call STUB_template,$$<), $(STUB))"
+endif
 	gcc -MM -MT $$@ $$(INC:%=-I%) $$(CDEFS:%=-D%) -o $(patsubst %.S,$(DEPSDIR)%.obj.dep,$(abspath $1)) $$<
 endef
 $(foreach file,$(ASMSRC),$(eval $(call COMPILE_ASM_template,$(file))))

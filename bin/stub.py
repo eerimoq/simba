@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import sys
 import argparse
 import subprocess
 
@@ -14,12 +15,20 @@ def main():
     if not args.pattern:
         return
 
-    symbols = args.pattern.split(':')[1].split(',')
+    try:
+        symbols = args.pattern.split(':')[1]
+
+        if not symbols:
+            return
+
+        symbols = symbols.split(',')
+    except:
+        sys.exit("error: bad stub pattern '{}'".format(args.pattern))
 
     command = [args.crosscompile + 'objcopy']
 
     for symbol in symbols:
-        print('redefining symbol', symbol)
+        print('stubbing symbol', symbol)
         command += [
             '--redefine-sym', '{symbol}=__stub_{symbol}'.format(symbol=symbol)
         ]
