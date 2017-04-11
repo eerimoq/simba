@@ -88,6 +88,7 @@ CLEAN = $(BUILDDIR) $(EXE) $(RUNLOG) size.log \
         coverage.log coverage.xml gmon.out *.gcov profile.log \
 	index.*html \
 	$(RUST_SIMBA_RS) $(RUST_LIBSIMBA) $(RUST_LIBCORE)
+STUB ?=
 
 # configuration
 TOOLCHAIN ?= gnu
@@ -219,6 +220,10 @@ settings-generate: $(SETTINGS_INI)
             --settings-size $(CONFIG_SETTINGS_SIZE) \
 	    $^
 
+define STUB_template =
+$1%
+endef
+
 define COMPILE_template
 -include $(patsubst %.c,$(DEPSDIR)%.o.dep,$(abspath $1))
 $(patsubst %.c,$(OBJDIR)%.o,$(abspath $1)): $1
@@ -232,6 +237,11 @@ ifeq ($(SOAM), yes)
 	$$(CC) $$(INC:%=-I%) $$(CDEFS:%=-D%) $$(CFLAGS) -o $$@ $$@.pp.c
 else
 	$$(CC) $$(INC:%=-I%) $$(CDEFS:%=-D%) $$(CFLAGS) -o $$@ $$<
+endif
+ifneq ($(STUB),)
+ifeq ($(TYPE), suite)
+	stub.py "$(CROSS_COMPILE)" $$@ "$$(filter $$(call STUB_template,$$<), $(STUB))"
+endif
 endif
 	gcc -MM -MT $$@ $$(INC:%=-I%) $$(CDEFS:%=-D%) -o $(patsubst %.c,$(DEPSDIR)%.o.dep,$(abspath $1)) $$<
 endef

@@ -68,6 +68,12 @@
         return;                                                         \
     }
 
+/**
+ * Stub given function. Used with the make variable STUB to preprocess
+ * object file(s).
+ */
+#define STUB(function) __stub_ ## function
+
 struct harness_t;
 
 /**
