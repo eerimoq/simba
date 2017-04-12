@@ -119,9 +119,10 @@ class Database(object):
 
 class ReaderThread(threading.Thread):
 
-    def __init__(self, client):
+    def __init__(self, client, ostream):
         super(ReaderThread, self).__init__()
         self.client = client
+        self.ostream = ostream
         self.running = True
         self.response_packet_cond = threading.Condition()
         self.response_packet = None
@@ -165,10 +166,10 @@ class ReaderThread(threading.Thread):
             try:
                 segment = self.read_soam_segment()
             except BaseException:
-                print("warning: failed to read segment")
+                print("warning: failed to read segment", file=self.ostream)
                 continue
 
-            #print(segment.encode('hex'))
+            #print(segment.encode('hex'), file=self.ostream)
 
             if len(segment) < SOAM_SEGMENT_SIZE_MIN:
                 continue
@@ -177,7 +178,7 @@ class ReaderThread(threading.Thread):
             crc = crc_ccitt(segment[:-2])
 
             if crc != struct.unpack('>H', segment[-2:])[0]:
-                print('Segment CRC mismatch:', segment)
+                print('Segment CRC mismatch:', segment, file=self.ostream)
                 segments = None
                 continue
 
@@ -192,7 +193,7 @@ class ReaderThread(threading.Thread):
                 segment_index += 1
                 segment_index &= 0xff
             else:
-                print('Bad segment index.')
+                print('Bad segment index.', file=self.ostream)
                 segment_index = index + 1
                 segments = None
                 continue
@@ -219,9 +220,9 @@ class ReaderThread(threading.Thread):
             # Decode the reassembled packet.
             if packet_type == SOAM_TYPE_STDOUT_PRINTF:
                 formatted_string = format_printf(self.client.database, packet)
-                print(formatted_string, end='')
+                print(formatted_string, end='', file=self.ostream)
             elif packet_type == SOAM_TYPE_STDOUT_BINARY:
-                print(packet, end='')
+                print(packet, end='', file=self.ostream)
             elif packet_type == SOAM_TYPE_LOG_POINT:
                 # Format the log point.
                 header, data = packet.split(b': ', 1)
@@ -241,7 +242,7 @@ class ReaderThread(threading.Thread):
                 except UnicodeDecodeError:
                     formatted_log_point = packet
 
-                print(formatted_log_point, end='')
+                print(formatted_log_point, end='', file=self.ostream)
             elif packet_type in [SOAM_TYPE_COMMAND_RESPONSE_DATA_PRINTF,
                                  SOAM_TYPE_COMMAND_RESPONSE_DATA_BINARY]:
                 response_data.append((packet_type, packet))
@@ -258,9 +259,9 @@ class ReaderThread(threading.Thread):
                     self.response_packet = packet
                     self.response_packet_cond.notify_all()
             elif packet_type == SOAM_TYPE_INVALID_TYPE:
-                print('warning: "invalid type" packet received')
+                print('warning: "invalid type" packet received', file=self.ostream)
             else:
-                print('warning: {}: bad packet type', packet_type)
+                print('warning: {}: bad packet type', packet_type, file=self.ostream)
 
             segments = None
 
@@ -270,10 +271,11 @@ class ReaderThread(threading.Thread):
 
 class Client(object):
 
-    def __init__(self, database, reader):
+    def __init__(self, database, reader, ostream):
         self.database = Database()
         self.packet_index = 1
         self.reader = reader
+        self.ostream = ostream
         self.reader.setDaemon(True)
         self.reader.start()
 
@@ -283,11 +285,14 @@ class Client(object):
         else:
             # Get the database from the device if not given.
             try:
-                print('Reading database from device... ', end='', flush=True)
+                print('Reading database from device... ',
+                      end='',
+                      flush=True,
+                      file=self.ostream)
                 database_compressed = self.get_database_from_device()
-                print('done.', flush=True)
+                print('done.', flush=True, file=self.ostream)
             except BaseException:
-                print('failed. ', flush=True)
+                print('failed. ', flush=True, file=self.ostream)
                 sys.exit('error: failed to read the database from the device')
 
             database = lzma.decompress(database_compressed)
@@ -295,24 +300,29 @@ class Client(object):
         self.database.set_database(StringIO(database.decode('ascii')))
 
         try:
-            print('Reading database id from device... ', end='', flush=True)
+            print('Reading database id from device... ',
+                  end='',
+                  flush=True,
+                  file=self.ostream)
             device_database_id = self.get_database_id_from_device()
-            print('done.', flush=True)
+            print('done.', flush=True, file=self.ostream)
         except BaseException:
-            print('failed. ', flush=True)
+            print('failed. ', flush=True, file=self.ostream)
             sys.exit('error: failed to read the database id from the device')
 
-        print('Comparing read and calculated database ids... ', end='')
+        print('Comparing read and calculated database ids... ',
+              end='',
+              file=self.ostream)
 
         database_id = hashlib.md5(database).hexdigest().encode('ascii')
 
         if device_database_id != database_id:
-            print('failed. ', flush=True)
+            print('failed. ', flush=True, file=self.ostream)
             sys.exit('error: database id mismatch ({} != {})'.format(
                 device_database_id,
                 database_id))
 
-        print('done.', flush=True)
+        print('done.', flush=True, file=self.ostream)
 
     def write_soam_segment(self, segment):
         """Write given packet to the server.
@@ -548,8 +558,8 @@ class Shell(cmd.Cmd):
 
 class SlipSerialReaderThread(ReaderThread):
 
-    def __init__(self, client):
-        super(SlipSerialReaderThread, self).__init__(client)
+    def __init__(self, client, ostream):
+        super(SlipSerialReaderThread, self).__init__(client, ostream)
 
     def read_soam_segment(self):
         """Read an SLIP packet.
@@ -567,7 +577,7 @@ class SlipSerialReaderThread(ReaderThread):
             if not byte:
                 if len(packet) > 0:
                     print('warning: {}: serial read failure, discarding '
-                          'packet'.format(packet))
+                          'packet'.format(packet), file=self.ostream)
                     packet = b''
 
                 continue
@@ -592,15 +602,21 @@ class SlipSerialReaderThread(ReaderThread):
 
                 is_escaped = False
 
+        return b''
+
 
 class SlipSerialClient(Client):
 
-    def __init__(self, serial_port, baudrate, database):
+    def __init__(self, serial_port, baudrate, database, ostream=None):
         self.serial = serial.Serial(serial_port,
                                     baudrate=baudrate,
                                     timeout=0.5)
+        if ostream is None:
+            ostream = sys.stdout
+
         super(SlipSerialClient, self).__init__(database,
-                                               SlipSerialReaderThread(self))
+                                               SlipSerialReaderThread(self, ostream),
+                                               ostream)
 
     def write_soam_segment(self, segment):
         """Wrap given packet in SLIP and write it to the serial connection.
