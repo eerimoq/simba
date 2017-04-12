@@ -21,12 +21,12 @@ Symbols can be stubbed per C-file using the ``STUB()`` macro and
 ``STUB`` make variable. The ``STUB`` make variable is a list of source
 files and their stubbed symbols.
 
-For example, stub functions ``foo_bar()`` and ``foo_fie()`` in `foo.c`
-by defining a stub functions ``STUB(foo_bar)()`` and
+For example, stub functions ``foo_bar()`` and ``foo_fie()`` in
+``foo.c`` by defining a stub functions ``STUB(foo_bar)()`` and
 ``STUB(foo_fie)()``, and add ``foo.c:foo_bar`` to the make variable
 ``STUB``.
 
-Prototypes for ``foo_bar()`` and ``foo_fie()`` in `foo.h`:
+Prototypes for ``foo_bar()`` and ``foo_fie()`` in ``foo.h``:
 
 .. code-block:: c
 
@@ -49,7 +49,7 @@ The stubbed implementations, often defined in the test suite file
    }
 
 And last, add the stubbed symbol to the test suite makefile
-`Makefile`:
+``Makefile``:
 
 .. code-block:: makefile
 
