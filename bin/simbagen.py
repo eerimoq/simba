@@ -70,7 +70,7 @@ def generate_id():
 
     # The command parser function does not accept quotes (0x22) in the
     # command string.
-    if (ID & 0xff) in [0, 0x22]:
+    if (ID & 0xff) in [0, 0x22, 0x25]:
         ID += 1
 
     if ID == 0xffff:
