@@ -28,7 +28,7 @@ by defining a stub functions ``STUB(foo_bar)()`` and
 
 Prototypes for ``foo_bar()`` and ``foo_fie()`` in `foo.h`:
 
-.. code-block::
+.. code-block:: c
 
    int foo_bar();
    int foo_fie();
@@ -36,7 +36,7 @@ Prototypes for ``foo_bar()`` and ``foo_fie()`` in `foo.h`:
 The stubbed implementations, often defined in the test suite file
 ``main.c``:
 
-.. code-block::
+.. code-block:: c
 
    int STUB(foo_bar)()
    {
@@ -51,7 +51,7 @@ The stubbed implementations, often defined in the test suite file
 And last, add the stubbed symbol to the test suite makefile
 `Makefile`:
 
-.. code-block::
+.. code-block:: makefile
 
    STUB = foo.c:foo_bar,foo_fie
 
