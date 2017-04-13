@@ -68,9 +68,10 @@ def generate_id():
     global ID
     ID += 1
 
-    # The command parser function does not accept quotes (0x22) in the
-    # command string.
-    if (ID & 0xff) in [0, 0x22, 0x25]:
+    # The command parser function does not accept string termination
+    # (0x00), quotes (0x22) or percent sign (0x25) in the command
+    # string.
+    if (ID & 0xff) in [0x00, 0x22, 0x25]:
         ID += 1
 
     if ID == 0xffff:
