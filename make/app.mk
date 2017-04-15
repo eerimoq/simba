@@ -185,7 +185,11 @@ run: upload
 
 console:
 ifeq ($(SOAM), yes)
-	soam.py --port $(SERIAL_PORT) --baudrate $(BAUDRATE) $(SOAMDBAPP)
+ifeq ($(BOARD), linux)
+	soam.py tcp $(SOAMDBAPP)
+else
+	soam.py serial --port $(SERIAL_PORT) --baudrate $(BAUDRATE) $(SOAMDBAPP)
+endif
 else
 	python -u $(CONSOLESCRIPT) --port $(SERIAL_PORT) \
 				   $(CONSOLE_RESET_TYPE:%=--reset-type %) \

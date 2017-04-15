@@ -12,7 +12,9 @@ import serial
 import hashlib
 import lzma
 import traceback
-import binascii
+import socket
+import _thread
+import socket_device
 
 try:
     from StringIO import StringIO
@@ -38,8 +40,16 @@ SOAM_SEGMENT_SIZE_MIN = 6
 SOAM_SEGMENT_FLAGS_CONSECUTIVE = (1 << 1)
 SOAM_SEGMENT_FLAGS_LAST        = (1 << 0)
 
+# Simba socket device types.
+TYPE_UART_DEVICE_REQUEST               = 1
+TYPE_UART_DEVICE_RESPONSE              = 2
+
 
 class CommandNotFoundError(Exception):
+    pass
+
+
+class ClientClosedError(Exception):
     pass
 
 
@@ -556,10 +566,10 @@ class Shell(cmd.Cmd):
         return self.do_exit(args)
 
 
-class SlipSerialReaderThread(ReaderThread):
+class SlipReaderThread(ReaderThread):
 
     def __init__(self, client, ostream):
-        super(SlipSerialReaderThread, self).__init__(client, ostream)
+        super(SlipReaderThread, self).__init__(client, ostream)
 
     def read_soam_segment(self):
         """Read an SLIP packet.
@@ -570,7 +580,11 @@ class SlipSerialReaderThread(ReaderThread):
         is_escaped = False
 
         while self.running:
-            byte = self.client.serial.read(1)
+            try:
+                byte = self.client.read(1)
+            except ClientClosedError:
+                self.running = False
+                continue
 
             # Print stored packet on timeout. Likely non-framed data,
             # for example from a panic.
@@ -605,18 +619,18 @@ class SlipSerialReaderThread(ReaderThread):
         return b''
 
 
-class SlipSerialClient(Client):
+class SlipClient(Client):
 
-    def __init__(self, serial_port, baudrate, database, ostream=None):
-        self.serial = serial.Serial(serial_port,
-                                    baudrate=baudrate,
-                                    timeout=0.5)
-        if ostream is None:
-            ostream = sys.stdout
+    def __init__(self, database, ostream):
+        super(SlipClient, self).__init__(database,
+                                         SlipReaderThread(self, ostream),
+                                         ostream)
 
-        super(SlipSerialClient, self).__init__(database,
-                                               SlipSerialReaderThread(self, ostream),
-                                               ostream)
+    def write(self, buff):
+        raise NotImplementedError('')
+
+    def read(self, size):
+        raise NotImplementedError('')
 
     def write_soam_segment(self, segment):
         """Wrap given packet in SLIP and write it to the serial connection.
@@ -635,7 +649,53 @@ class SlipSerialClient(Client):
 
         packet += b'\xc0'
 
-        self.serial.write(packet)
+        self.write(packet)
+
+
+class SlipSerialClient(SlipClient):
+
+    def __init__(self, serial_port, baudrate, database, ostream):
+        self.serial = serial.Serial(serial_port,
+                                    baudrate=baudrate,
+                                    timeout=0.5)
+
+        super(SlipSerialClient, self).__init__(database, ostream)
+
+    def write(self, buf):
+        self.serial.write(buf)
+
+    def read(self, size):
+        return self.serial.read(size)
+
+
+class SlipTcpClient(SlipClient):
+
+    def __init__(self, address, port, database, ostream):
+        self.socket = socket_device.connect(address, port)
+        socket_device.request_device(self.socket,
+                                     socket_device.TYPE_UART_DEVICE_REQUEST,
+                                     'uart',
+                                     0)
+
+        super(SlipTcpClient, self).__init__(database, ostream)
+
+    def write(self, buf):
+        self.socket.sendall(buf)
+
+    def read(self, size):
+        buf = b''
+
+        while len(buf) < size:
+            data = self.socket.recv(size - len(buf))
+
+            if not data:
+                print('Connection closed.', file=self.ostream)
+                _thread.interrupt_main()
+                raise ClientClosedError()
+
+            buf += data
+
+        return buf
 
 
 def decode_unframed_text_stream(stream, database):
@@ -671,24 +731,66 @@ def decode_unframed_text_stream(stream, database):
             entry += byte
 
 
+def do_serial(args):
+    client = SlipSerialClient(args.port,
+                              args.baudrate,
+                              args.database,
+                              sys.stdout)
+    shell = Shell(client, debug=args.debug)
+    shell.cmdloop()
+    client.reader.stop()
+
+
+def do_tcp(args):
+    client = SlipTcpClient(args.address,
+                           args.port,
+                           args.database,
+                           sys.stdout)
+    shell = Shell(client, debug=args.debug)
+    shell.cmdloop()
+    client.reader.stop()
+
+
+def do_unframed_text(args):
+    decode_unframed_text_stream(sys.stdin, args.database)
+
+
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('-p', '--port', help='Serial port.')
-    parser.add_argument('-b', '--baudrate', type=int, default=115200)
+
     parser.add_argument('-d', '--debug', action='store_true')
-    parser.add_argument('-u', '--unframed-text', action='store_true')
-    parser.add_argument('database', nargs='?')
+
+    subparsers = parser.add_subparsers()
+
+    serial_parser = subparsers.add_parser('serial')
+    serial_parser.add_argument('-p', '--port', help='Serial port.')
+    serial_parser.add_argument('-b', '--baudrate',
+                               type=int,
+                               default=115200)
+    serial_parser.add_argument('database', nargs='?')
+    serial_parser.set_defaults(func=do_serial)
+
+    tcp_parser = subparsers.add_parser('tcp')
+    tcp_parser.add_argument('-a', '--address',
+                            default='localhost',
+                            help='TCP address to connect to.')
+    tcp_parser.add_argument('-p', '--port',
+                            type=int,
+                            default=47000,
+                            help='TCP port to connect to.')
+    tcp_parser.add_argument('database', nargs='?')
+    tcp_parser.set_defaults(func=do_tcp)
+
+    unframed_text_parser = subparsers.add_parser('unframed_text')
+    unframed_text_parser.add_argument('database', nargs='?')
+    unframed_text_parser.set_defaults(func=do_unframed_text)
+
     args = parser.parse_args()
 
-    if args.port:
-        client = SlipSerialClient(args.port, args.baudrate, args.database)
-        shell = Shell(client, debug=args.debug)
-        shell.cmdloop()
-        client.reader.stop()
-    elif args.unframed_text:
-        decode_unframed_text_stream(sys.stdin, args.database)
-    else:
-        sys.exit('Bad input arguments.')
+    try:
+        args.func(args)
+    except BaseException as e:
+        print(str(e))
 
 
 if __name__ == '__main__':

@@ -250,6 +250,14 @@
 #endif
 
 /**
+ * Enable linux driver implementations as TCP sockets. Can be used to
+ * simulate driver communication in an application running on linux.
+ */
+#ifndef CONFIG_LINUX_SOCKET_DEVICE
+#    define CONFIG_LINUX_SOCKET_DEVICE                      0
+#endif
+
+/**
  * Enable the adc driver.
  */
 #ifndef CONFIG_ADC

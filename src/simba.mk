@@ -114,6 +114,8 @@ DRIVERS_SRC ?= adc.c \
 	       sd.c \
 	       spi.c \
 	       uart.c
+
+SRC += $(SIMBA_ROOT)/src/drivers/ports/linux/socket_device.c
 endif
 
 ifeq ($(FAMILY),avr)
