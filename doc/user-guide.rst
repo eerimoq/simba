@@ -35,4 +35,5 @@ directly access the hardware registers.
    user-guide/applications-packages-and-modules
    user-guide/configuration
    user-guide/build-system
+   user-guide/socket-devices
    user-guide/simba
