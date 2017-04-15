@@ -39,12 +39,18 @@ def request_device(server, request_type, name, device):
     """
 
     try:
-        print('Requesting {} device {}... '.format(name, int(device)),
+        print('Requesting {} device {}... '.format(name, device),
               flush=True,
               end='')
-        request = struct.pack('>III', request_type, 4, int(device))
+        device = device.encode('ascii')
+        request = struct.pack('>IIs', request_type, len(device), device)
         server.sendall(request)
         response = server.recv(12)
+
+        if len(response) != 12:
+            raise RuntimeError('error: bad response length {}'.format(
+                len(response)))
+
         response_type, size, result = struct.unpack('>IIi', response)
 
         if response_type != request_type + 1:

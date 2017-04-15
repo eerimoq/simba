@@ -62,7 +62,7 @@ struct header_t {
 
 struct device_request_t {
     struct header_t header;
-    uint32_t index;
+    uint8_t device[64];
 };
 
 struct device_response_t {
@@ -73,12 +73,14 @@ struct device_response_t {
 struct uart_client_t {
     int socket;
     struct uart_device_t *dev_p;
+    char name[64];
     pthread_t thrd;
 };
 
 struct pin_client_t {
     int socket;
     struct pin_device_t *dev_p;
+    char name[64];
     pthread_t thrd;
 };
 
@@ -97,7 +99,8 @@ static void *uart_client_main(void *arg_p)
 
     client_p = arg_p;
 
-    printf("socket_device: uart device connected\n");
+    printf("socket_device: uart device %s connected\n",
+           &client_p->name[0]);
 
     while (1) {
         size = read(client_p->socket, &byte, sizeof(byte));
@@ -120,7 +123,8 @@ static void *uart_client_main(void *arg_p)
     close(client_p->socket);
     client_p->socket = -2;
 
-    printf("socket_device: uart device disconnected\n");
+    printf("socket_device: uart device %s disconnected\n",
+           &client_p->name[0]);
 
     return (NULL);
 }
@@ -136,7 +140,8 @@ static void *pin_client_main(void *arg_p)
 
     client_p = arg_p;
 
-    printf("socket_device: pin device connected\n");
+    printf("socket_device: pin device %s connected\n",
+           &client_p->name[0]);
 
     while (1) {
         size = read(client_p->socket, &byte, sizeof(byte));
@@ -151,7 +156,8 @@ static void *pin_client_main(void *arg_p)
     close(client_p->socket);
     client_p->socket = -2;
 
-    printf("socket_device: pin device disconnected\n");
+    printf("socket_device: pin device %s disconnected\n",
+           &client_p->name[0]);
 
     return (NULL);
 }
@@ -161,10 +167,17 @@ static int handle_uart_device_request(struct device_request_t *request_p,
 {
     struct device_response_t response;
     int res;
-    int index;
+    long index;
+    char *device_p;
 
     res = 0;
-    index = request_p->index;
+
+    /* Parse the device name. */
+    device_p = (char *)&request_p->device[0];
+
+    if (std_strtol(device_p, &index) == NULL) {
+        return (-1);
+    }
 
     /* Prepare the response. */
     response.header.type = htonl(TYPE_UART_DEVICE_RESPONSE);
@@ -189,6 +202,7 @@ static int handle_uart_device_request(struct device_request_t *request_p,
     if (res == sizeof(response)) {
         uart_clients[index].socket = client;
         uart_clients[index].dev_p = &uart_device[index];
+        strcpy(&uart_clients[index].name[0], device_p);
         res = pthread_create(&uart_clients[0].thrd,
                              NULL,
                              uart_client_main,
@@ -207,10 +221,21 @@ static int handle_pin_device_request(struct device_request_t *request_p,
 {
     struct device_response_t response;
     int res;
-    int index;
+    long index;
+    char *device_p;
 
     res = 0;
-    index = request_p->index;
+
+    /* Parse the device name. */
+    device_p = (char *)&request_p->device[0];
+
+    index = board_pin_string_to_device_index(device_p);
+
+    if (index < 0) {
+        if (std_strtol(device_p, &index) == NULL) {
+            return (-1);
+        }
+    }
 
     /* Prepare the response. */
     response.header.type = htonl(TYPE_PIN_DEVICE_RESPONSE);
@@ -235,6 +260,7 @@ static int handle_pin_device_request(struct device_request_t *request_p,
     if (res == sizeof(response)) {
         pin_clients[index].socket = client;
         pin_clients[index].dev_p = &pin_device[index];
+        strcpy(&pin_clients[index].name[0], device_p);
         res = pthread_create(&pin_clients[0].thrd,
                              NULL,
                              pin_client_main,
@@ -346,18 +372,36 @@ static void *listener_main(void *arg_p)
             continue;
         }
 
-        /* Read the request. */
-        size = read(client, &request, sizeof(request));
+        /* Read the request header. */
+        size = read(client, &request.header, sizeof(request.header));
 
-        if (size != sizeof(request)) {
+        if (size != sizeof(request.header)) {
             perror("socket_device: read request");
+            close(client);
             continue;
         }
 
         /* Host byte order. */
         request.header.type = ntohl(request.header.type);
         request.header.size = ntohl(request.header.size);
-        request.index = ntohl(request.index);
+
+        /* Validate the size. */
+        if (request.header.size >= sizeof(request.device)) {
+            perror("socket_device: read request size");
+            close(client);
+            continue;
+        }
+
+        /* Read the device name. */
+        size = read(client, &request.device[0], request.header.size);
+
+        if (size != request.header.size) {
+            perror("socket_device: read request device name");
+            close(client);
+            continue;
+        }
+
+        request.device[request.header.size] = '\0';
 
         /* Handle the request type. */
         if (request.header.type == TYPE_UART_DEVICE_REQUEST) {
