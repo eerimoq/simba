@@ -32,6 +32,7 @@
 #define __DRIVERS_PWM_PORT_H__
 
 struct pwm_device_t {
+    struct pin_device_t *pin_dev_p;
 };
 
 struct pwm_driver_t {

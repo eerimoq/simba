@@ -43,12 +43,15 @@
 #define TYPE_UART_DEVICE_RESPONSE                         (2)
 #define TYPE_PIN_DEVICE_REQUEST                           (3)
 #define TYPE_PIN_DEVICE_RESPONSE                          (4)
+#define TYPE_PWM_DEVICE_REQUEST                           (5)
+#define TYPE_PWM_DEVICE_RESPONSE                          (6)
 
 /**
  * Convert given device pointer to its index.
  */
 #define UART_INDEX(dev_p) (dev_p - &uart_device[0])
 #define PIN_INDEX(dev_p) (dev_p - &pin_device[0])
+#define PWM_INDEX(dev_p) (dev_p - &pwm_device[0])
 
 struct module_t {
     int initialized;
@@ -84,8 +87,16 @@ struct pin_client_t {
     pthread_t thrd;
 };
 
+struct pwm_client_t {
+    int socket;
+    struct pwm_device_t *dev_p;
+    char name[64];
+    pthread_t thrd;
+};
+
 static struct uart_client_t uart_clients[UART_DEVICE_MAX];
 static struct pin_client_t pin_clients[PIN_DEVICE_MAX];
+static struct pwm_client_t pwm_clients[PWM_DEVICE_MAX];
 static struct module_t module;
 
 /**
@@ -162,6 +173,39 @@ static void *pin_client_main(void *arg_p)
     return (NULL);
 }
 
+/**
+ * Handle a pwm client connection.
+ */
+static void *pwm_client_main(void *arg_p)
+{
+    struct pwm_client_t *client_p;
+    ssize_t size;
+    uint8_t byte;
+
+    client_p = arg_p;
+
+    printf("socket_device: pwm device %s connected\n",
+           &client_p->name[0]);
+
+    while (1) {
+        size = read(client_p->socket, &byte, sizeof(byte));
+
+        if (size != sizeof(byte)) {
+            break;
+        }
+
+        /* Discard input data for now. */
+    }
+
+    close(client_p->socket);
+    client_p->socket = -2;
+
+    printf("socket_device: pwm device %s disconnected\n",
+           &client_p->name[0]);
+
+    return (NULL);
+}
+
 static int handle_uart_device_request(struct device_request_t *request_p,
                                       int client)
 {
@@ -203,7 +247,7 @@ static int handle_uart_device_request(struct device_request_t *request_p,
         uart_clients[index].socket = client;
         uart_clients[index].dev_p = &uart_device[index];
         strcpy(&uart_clients[index].name[0], device_p);
-        res = pthread_create(&uart_clients[0].thrd,
+        res = pthread_create(&uart_clients[index].thrd,
                              NULL,
                              uart_client_main,
                              &uart_clients[index]);
@@ -261,13 +305,80 @@ static int handle_pin_device_request(struct device_request_t *request_p,
         pin_clients[index].socket = client;
         pin_clients[index].dev_p = &pin_device[index];
         strcpy(&pin_clients[index].name[0], device_p);
-        res = pthread_create(&pin_clients[0].thrd,
+        res = pthread_create(&pin_clients[index].thrd,
                              NULL,
                              pin_client_main,
                              &pin_clients[index]);
 
         if (res != 0) {
             fprintf(stderr, "error: creating pin device thread\n");
+        }
+    }
+
+    return (0);
+}
+
+static int handle_pwm_device_request(struct device_request_t *request_p,
+                                      int client)
+{
+    struct device_response_t response;
+    int res;
+    long index;
+    char *device_p;
+    struct pwm_device_t *dev_p;
+
+    res = 0;
+
+    /* Parse the device name. */
+    device_p = (char *)&request_p->device[0];
+
+    index = board_pin_string_to_device_index(device_p);
+
+    if (index >= 0) {
+        dev_p = pwm_pin_to_device(&pin_device[index]);
+
+        if (dev_p == NULL) {
+            return (-1);
+        }
+
+        index = PWM_INDEX(dev_p);
+    } else {
+        if (std_strtol(device_p, &index) == NULL) {
+            return (-1);
+        }
+    }
+
+    /* Prepare the response. */
+    response.header.type = htonl(TYPE_PWM_DEVICE_RESPONSE);
+    response.header.size = htonl(4);
+
+    if ((index >= PWM_DEVICE_MAX) || (pwm_clients[index].socket >= 0)) {
+        response.result = -1;
+    } else {
+        if (pwm_clients[index].socket == -2) {
+            pthread_join(pwm_clients[index].thrd, NULL);
+            pwm_clients[index].socket = -1;
+        }
+
+        response.result = 0;
+    }
+
+    /* Send the response. */
+    response.result = htonl(response.result);
+    res = write(client, &response, sizeof(response));
+
+    /* Start the client thread if everything went well so far. */
+    if (res == sizeof(response)) {
+        pwm_clients[index].socket = client;
+        pwm_clients[index].dev_p = &pwm_device[index];
+        strcpy(&pwm_clients[index].name[0], device_p);
+        res = pthread_create(&pwm_clients[index].thrd,
+                             NULL,
+                             pwm_client_main,
+                             &pwm_clients[index]);
+
+        if (res != 0) {
+            fprintf(stderr, "error: creating pwm device thread\n");
         }
     }
 
@@ -408,6 +519,8 @@ static void *listener_main(void *arg_p)
             res = handle_uart_device_request(&request, client);
         } else if (request.header.type == TYPE_PIN_DEVICE_REQUEST) {
             res = handle_pin_device_request(&request, client);
+        } else if (request.header.type == TYPE_PWM_DEVICE_REQUEST) {
+            res = handle_pwm_device_request(&request, client);
         } else {
             res = -1;
         }
@@ -437,6 +550,10 @@ int socket_device_module_init()
 
     for (i = 0; i < membersof(uart_clients); i++) {
         uart_clients[i].socket = -1;
+    }
+
+    for (i = 0; i < membersof(pwm_clients); i++) {
+        pwm_clients[i].socket = -1;
     }
 
 #if CONFIG_LINUX_SOCKET_DEVICE == 1
@@ -490,4 +607,21 @@ ssize_t socket_device_pin_device_write_isr(const struct pin_device_t *dev_p,
                                            size_t size)
 {
     return (write(pin_clients[PIN_INDEX(dev_p)].socket, buf_p, size));
+}
+
+int socket_device_is_pwm_device_connected_isr(
+    const struct pwm_device_t *dev_p)
+{
+    int client;
+
+    client = pwm_clients[PWM_INDEX(dev_p)].socket;
+
+    return (client >= 0);
+}
+
+ssize_t socket_device_pwm_device_write_isr(const struct pwm_device_t *dev_p,
+                                           const void *buf_p,
+                                           size_t size)
+{
+    return (write(pwm_clients[PWM_INDEX(dev_p)].socket, buf_p, size));
 }

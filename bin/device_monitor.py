@@ -45,6 +45,14 @@ def do_uart(args):
             args.device)
 
 
+def do_pwm(args):
+    monitor(args.address,
+            args.port,
+            socket_device.TYPE_PWM_DEVICE_REQUEST,
+            'pwm',
+            args.device)
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('-d', '--debug', action='store_true')
@@ -60,6 +68,9 @@ def main():
 
     pin_parser = subparsers.add_parser('pin')
     pin_parser.set_defaults(func=do_pin)
+
+    pwm_parser = subparsers.add_parser('pwm')
+    pwm_parser.set_defaults(func=do_pwm)
 
     uart_parser = subparsers.add_parser('uart')
     uart_parser.set_defaults(func=do_uart)

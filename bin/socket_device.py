@@ -11,6 +11,8 @@ TYPE_UART_DEVICE_REQUEST               = 1
 TYPE_UART_DEVICE_RESPONSE              = 2
 TYPE_PIN_DEVICE_REQUEST                = 3
 TYPE_PIN_DEVICE_RESPONSE               = 4
+TYPE_PWM_DEVICE_REQUEST                = 5
+TYPE_PWM_DEVICE_RESPONSE               = 6
 
 
 def connect(address, port):
