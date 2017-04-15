@@ -675,7 +675,7 @@ class SlipTcpClient(SlipClient):
         socket_device.request_device(self.socket,
                                      socket_device.TYPE_UART_DEVICE_REQUEST,
                                      'uart',
-                                     0)
+                                     '0')
 
         super(SlipTcpClient, self).__init__(database, ostream)
 

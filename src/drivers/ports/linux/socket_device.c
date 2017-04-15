@@ -396,7 +396,7 @@ static void *listener_main(void *arg_p)
         size = read(client, &request.device[0], request.header.size);
 
         if (size != request.header.size) {
-            perror("socket_device: read request device name");
+            perror("socket_device: read request device name size");
             close(client);
             continue;
         }

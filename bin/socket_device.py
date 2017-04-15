@@ -43,7 +43,8 @@ def request_device(server, request_type, name, device):
               flush=True,
               end='')
         device = device.encode('ascii')
-        request = struct.pack('>IIs', request_type, len(device), device)
+        request = struct.pack('>II', request_type, len(device))
+        request += device
         server.sendall(request)
         response = server.recv(12)
 
