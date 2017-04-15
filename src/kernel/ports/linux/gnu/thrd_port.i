@@ -51,15 +51,15 @@ static struct thrd_port_idle_t idle = {
     .cond = PTHREAD_COND_INITIALIZER
 };
 
-static void *thrd_port_main(void *arg)
+static void *thrd_port_main(void *arg_p)
 {
-    struct thrd_port_t *port;
+    struct thrd_port_t *port_p;
 
-    port = arg;
-    pthread_cond_wait(&port->cond, &port->mutex);
-    pthread_mutex_unlock(&port->mutex);
+    port_p = arg_p;
+    pthread_cond_wait(&port_p->cond, &port_p->mutex);
+    pthread_mutex_unlock(&port_p->mutex);
     sys_unlock();
-    port->main(port->arg);
+    port_p->main(port_p->arg);
 
     /* Thread termination. */
     terminate();
@@ -67,43 +67,43 @@ static void *thrd_port_main(void *arg)
     return (NULL);
 }
 
-static void thrd_port_swap(struct thrd_t *in,
-                           struct thrd_t *out)
+static void thrd_port_swap(struct thrd_t *in_p,
+                           struct thrd_t *out_p)
 {
     /* Signal 'out' thrd and enter wait.*/
-    pthread_mutex_lock(&out->port.mutex);
-    pthread_mutex_lock(&in->port.mutex);
-    pthread_cond_signal(&in->port.cond);
-    pthread_mutex_unlock(&in->port.mutex);
-    pthread_cond_wait(&out->port.cond, &out->port.mutex);
-    pthread_mutex_unlock(&out->port.mutex);
+    pthread_mutex_lock(&out_p->port.mutex);
+    pthread_mutex_lock(&in_p->port.mutex);
+    pthread_cond_signal(&in_p->port.cond);
+    pthread_mutex_unlock(&in_p->port.mutex);
+    pthread_cond_wait(&out_p->port.cond, &out_p->port.mutex);
+    pthread_mutex_unlock(&out_p->port.mutex);
 }
 
-static void thrd_port_init_main(struct thrd_port_t *port)
+static void thrd_port_init_main(struct thrd_port_t *port_p)
 {
-    port->main = NULL;
-    port->arg = NULL;
-    pthread_mutex_init(&port->mutex, NULL);
-    pthread_cond_init (&port->cond, NULL);
+    port_p->main = NULL;
+    port_p->arg = NULL;
+    pthread_mutex_init(&port_p->mutex, NULL);
+    pthread_cond_init (&port_p->cond, NULL);
 }
 
 static int thrd_port_spawn(struct thrd_t *thrd_p,
                            void *(*main)(void *),
-                           void *arg,
-                           void *stack,
+                           void *arg_p,
+                           void *stack_p,
                            size_t stack_size)
 {
-    struct thrd_port_t *port;
+    struct thrd_port_t *port_p;
 
     /* Initialize thrd port.*/
-    port = &thrd_p->port;
-    port->main = main;
-    port->arg = arg;
-    pthread_mutex_init(&port->mutex, NULL);
-    pthread_cond_init (&port->cond, NULL);
-    pthread_mutex_lock(&port->mutex);
+    port_p = &thrd_p->port;
+    port_p->main = main;
+    port_p->arg = arg_p;
+    pthread_mutex_init(&port_p->mutex, NULL);
+    pthread_cond_init (&port_p->cond, NULL);
+    pthread_mutex_lock(&port_p->mutex);
 
-    if (pthread_create(&port->thrd, NULL, thrd_port_main, port)) {
+    if (pthread_create(&port_p->thrd, NULL, thrd_port_main, port_p)) {
         fprintf(stderr, "Error creating thrd\n");
         return (1);
     }
@@ -125,10 +125,11 @@ static void thrd_port_idle_wait(struct thrd_t *thrd_p)
     sys_unlock();
 }
 
-static void thrd_port_suspend_timer_callback(void *arg)
+static void thrd_port_suspend_timer_callback(void *arg_p)
 {
-    struct thrd_t *thrd_p = arg;
+    struct thrd_t *thrd_p;
 
+    thrd_p = arg_p;
     thrd_p->err = -ETIMEDOUT;
     thrd_p->state = THRD_STATE_READY;
     scheduler_ready_push(thrd_p);
@@ -171,7 +172,9 @@ static void thrd_port_cpu_usage_reset(struct thrd_t *thrd_p)
 static const void *thrd_port_get_bottom_of_stack(struct thrd_t *thrd_p)
 {
     char dummy;
-    const void *bottom_p = (const void *)&dummy;
+    const void *bottom_p;
+
+    bottom_p = (const void *)&dummy;
 
     if (thrd_p == thrd_self()) {
         return (bottom_p);
