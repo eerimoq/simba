@@ -63,7 +63,7 @@ static int esp_wifi_station_port_init(const char *ssid_p,
 
     if (bssid_p != NULL) {
         config.bssid_set = 1;
-        memcpy(config.bssid, bssid_p, 6);
+        memcpy(config.bssid, bssid_p, sizeof(config.bssid));
     }
 
     /* Static or dynamic ip. */
