@@ -45,7 +45,7 @@ int main()
 
     if (esp_wifi_station_init("Qvist2",
                               "maxierik",
-                              (uint8_t[]){0xc8, 0xd7, 0x19, 0x0f, 0x04, 0x66},
+                              (uint8_t[]){0xc8, 0xd7, 0x19, 0x0f, 0x04, 0x65},
                               &info) != 0) {
         std_printf(FSTR("Failed to configure the Station.\r\n"));
     }
