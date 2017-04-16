@@ -14,7 +14,7 @@ import lzma
 import traceback
 import socket
 import _thread
-import socket_device
+from socket_device import SocketDevice
 
 try:
     from StringIO import StringIO
@@ -671,29 +671,21 @@ class SlipSerialClient(SlipClient):
 class SlipTcpClient(SlipClient):
 
     def __init__(self, address, port, database, ostream):
-        self.socket = socket_device.connect(address, port)
-        socket_device.request_device(self.socket,
-                                     socket_device.TYPE_UART_DEVICE_REQUEST,
-                                     'uart',
-                                     '0')
+        self.socket = SocketDevice('uart', '0', address, port)
+        self.socket.start()
 
         super(SlipTcpClient, self).__init__(database, ostream)
 
     def write(self, buf):
-        self.socket.sendall(buf)
+        self.socket.write(buf)
 
     def read(self, size):
-        buf = b''
+        buf = self.socket.read(size)
 
-        while len(buf) < size:
-            data = self.socket.recv(size - len(buf))
-
-            if not data:
-                print('Connection closed.', file=self.ostream)
-                _thread.interrupt_main()
-                raise ClientClosedError()
-
-            buf += data
+        if not buf:
+            print('Connection closed.', file=self.ostream)
+            _thread.interrupt_main()
+            raise ClientClosedError()
 
         return buf
 

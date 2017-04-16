@@ -220,15 +220,17 @@ static int handle_uart_device_request(struct device_request_t *request_p,
     device_p = (char *)&request_p->device[0];
 
     if (std_strtol(device_p, &index) == NULL) {
-        return (-1);
+        index = -1;
     }
 
     /* Prepare the response. */
     response.header.type = htonl(TYPE_UART_DEVICE_RESPONSE);
     response.header.size = htonl(4);
 
-    if ((index >= UART_DEVICE_MAX) || (uart_clients[index].socket >= 0)) {
-        response.result = -1;
+    if ((index < 0) || (index >= UART_DEVICE_MAX)) {
+        response.result = -ENODEV;
+    } else if (uart_clients[index].socket >= 0) {
+        response.result = -EADDRINUSE;
     } else {
         if (uart_clients[index].socket == -2) {
             pthread_join(uart_clients[index].thrd, NULL);
@@ -241,6 +243,10 @@ static int handle_uart_device_request(struct device_request_t *request_p,
     /* Send the response. */
     response.result = htonl(response.result);
     res = write(client, &response, sizeof(response));
+
+    if (response.result != 0) {
+        return (-1);
+    }
 
     /* Start the client thread if everything went well so far. */
     if (res == sizeof(response)) {
@@ -277,7 +283,7 @@ static int handle_pin_device_request(struct device_request_t *request_p,
 
     if (index < 0) {
         if (std_strtol(device_p, &index) == NULL) {
-            return (-1);
+            index = -1;
         }
     }
 
@@ -285,8 +291,10 @@ static int handle_pin_device_request(struct device_request_t *request_p,
     response.header.type = htonl(TYPE_PIN_DEVICE_RESPONSE);
     response.header.size = htonl(4);
 
-    if ((index >= PIN_DEVICE_MAX) || (pin_clients[index].socket >= 0)) {
-        response.result = -1;
+    if ((index < 0) || (index >= PIN_DEVICE_MAX)) {
+        response.result = -ENODEV;
+    } else if (pin_clients[index].socket >= 0) {
+        response.result = -EADDRINUSE;
     } else {
         if (pin_clients[index].socket == -2) {
             pthread_join(pin_clients[index].thrd, NULL);
@@ -299,6 +307,10 @@ static int handle_pin_device_request(struct device_request_t *request_p,
     /* Send the response. */
     response.result = htonl(response.result);
     res = write(client, &response, sizeof(response));
+
+    if (response.result != 0) {
+        return (-1);
+    }
 
     /* Start the client thread if everything went well so far. */
     if (res == sizeof(response)) {
@@ -338,13 +350,13 @@ static int handle_pwm_device_request(struct device_request_t *request_p,
         dev_p = pwm_pin_to_device(&pin_device[index]);
 
         if (dev_p == NULL) {
-            return (-1);
+            index = -1;
+        } else {
+            index = PWM_INDEX(dev_p);
         }
-
-        index = PWM_INDEX(dev_p);
     } else {
         if (std_strtol(device_p, &index) == NULL) {
-            return (-1);
+            index = -1;
         }
     }
 
@@ -352,8 +364,10 @@ static int handle_pwm_device_request(struct device_request_t *request_p,
     response.header.type = htonl(TYPE_PWM_DEVICE_RESPONSE);
     response.header.size = htonl(4);
 
-    if ((index >= PWM_DEVICE_MAX) || (pwm_clients[index].socket >= 0)) {
-        response.result = -1;
+    if ((index < 0) || (index >= PWM_DEVICE_MAX)) {
+        response.result = -ENODEV;
+    } else if (pwm_clients[index].socket >= 0) {
+        response.result = -EADDRINUSE;
     } else {
         if (pwm_clients[index].socket == -2) {
             pthread_join(pwm_clients[index].thrd, NULL);
@@ -366,6 +380,10 @@ static int handle_pwm_device_request(struct device_request_t *request_p,
     /* Send the response. */
     response.result = htonl(response.result);
     res = write(client, &response, sizeof(response));
+
+    if (response.result != 0) {
+        return (-1);
+    }
 
     /* Start the client thread if everything went well so far. */
     if (res == sizeof(response)) {

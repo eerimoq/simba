@@ -5,19 +5,19 @@ from __future__ import print_function
 
 import sys
 import argparse
-import socket_device
+from socket_device import SocketDevice
 
 
-def monitor(address, port, request_type, name, device):
+def monitor(device_type, device_name, address, port):
     """Monitor given device.
 
     """
 
-    server = socket_device.connect(address, port)
-    socket_device.request_device(server, request_type, name, device)
+    device = SocketDevice(device_type, device_name, address, port)
+    device.start()
 
     while True:
-        byte = server.recv(1)
+        byte = device.read(1)
 
         if not byte:
             print('Connection closed.')
@@ -30,27 +30,15 @@ def monitor(address, port, request_type, name, device):
 
 
 def do_pin(args):
-    monitor(args.address,
-            args.port,
-            socket_device.TYPE_PIN_DEVICE_REQUEST,
-            'pin',
-            args.device)
+    monitor('pin', args.device, args.address, args.port)
 
 
 def do_uart(args):
-    monitor(args.address,
-            args.port,
-            socket_device.TYPE_UART_DEVICE_REQUEST,
-            'uart',
-            args.device)
+    monitor('uart', args.device, args.address, args.port)
 
 
 def do_pwm(args):
-    monitor(args.address,
-            args.port,
-            socket_device.TYPE_PWM_DEVICE_REQUEST,
-            'pwm',
-            args.device)
+    monitor('pwm', args.device, args.address, args.port)
 
 
 def main():
