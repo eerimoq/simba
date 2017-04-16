@@ -2,7 +2,23 @@ Socket devices
 ==============
 
 The Linux socket device implementation allows another program to
-simulate the hardware.
+simulate the hardware. The program connunicates with the Simba
+application using TCP sockets, one socket for each device.
+
+At startup the Simba application creates a socket and starts listening
+for clients on port 47000.
+
+The Python script ``bin/device_monitor.py`` can be used to monitor a
+given device.
+
+Here is an example of how to monitor digital pin 0, ``d0``:
+
+.. code-block:: text
+
+   $ device_monitor.py pin d0
+   high
+   high
+   low
 
 Protocol
 --------
@@ -10,7 +26,7 @@ Protocol
 Devices
 ~~~~~~~
 
-These drivers suppors the socket device protocol.
+These drivers supports the socket device protocol.
 
 Uart
 ^^^^
@@ -21,7 +37,8 @@ from the application.
 Pin
 ^^^
 
-Sends ``high`` or ``low`` when written to given device.
+Sends ``high`` or ``low`` when written to given device. Input is not
+supported yet.
 
 Pwm
 ^^^
@@ -29,24 +46,33 @@ Pwm
 Sends ``frequency = <value>`` and ``duty_cycle = <value>`` when set on
 given device.
 
-Device setup
-~~~~~~~~~~~~
+Device request message
+~~~~~~~~~~~~~~~~~~~~~~
 
-Defined messages:
+This message is sent to the Simba application to request a device.
 
 .. code-block:: text
 
-   Device request message:
-                
    +---------+---------+----------------+
    | 4b type | 4b size | <size>b device |
    +---------+---------+----------------+
 
    `device` is the device name as a string. No NULL termination is
    required.
-   
-   Device response message:
-                
+
+   TYPE  SIZE  DESCRIPTION
+   --------------------------------------
+      1     n  Uart device request.
+      3     n  Pin device request.
+      5     n  Pwm device request.
+
+Device response message
+~~~~~~~~~~~~~~~~~~~~~~~
+
+This message is the response to the request message.
+
+.. code-block:: text
+
    +---------+---------+-----------+
    | 4b type | 4b size | 4b result |
    +---------+---------+-----------+
@@ -56,11 +82,8 @@ Defined messages:
 
    TYPE  SIZE  DESCRIPTION
    --------------------------------------
-      1     n  Uart device request.
       2     4  Uart device response.
-      3     n  Pin device request.
       4     4  Pin device response.
-      5     n  Pwm device request.
       6     4  Pwm device response.
 
 Build system tips
