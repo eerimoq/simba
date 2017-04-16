@@ -28,6 +28,25 @@ Arduino Mega pinout ...
    pin(d0) RX: high
    pin(d0) RX: low
 
+Alternatively, monitor all devices at the same time with the monitor
+make target.
+
+.. code-block:: text
+
+   $ make BOARD=linux PINOUT=arduino_mega monitor
+   Connecting to localhost:47000... done.
+   Requesting uart device 0... done.
+   ...
+   Connecting to localhost:47000... done.
+   Requesting pin device 0... done.
+   Connecting to localhost:47000... done.
+   Requesting pin device 1... done.
+   ...
+   $
+   pin(0) RX: low
+   uart(0) RX: b'\n'
+   pin(1) RX: high
+
 Protocol
 --------
 
