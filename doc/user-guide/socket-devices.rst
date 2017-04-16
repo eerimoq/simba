@@ -9,7 +9,7 @@ At startup the Simba application creates a socket and starts listening
 for clients on port 47000.
 
 The Python script ``bin/device_monitor.py`` can be used to monitor a
-given device.
+device.
 
 Here is an example of how to monitor digital pin 0, ``d0``:
 
