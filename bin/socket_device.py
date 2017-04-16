@@ -231,7 +231,7 @@ def monitor_line(device_type, device_name, address, port):
     reader.start()
 
     while True:
-        line = input('')
+        line = input('$ ')
         line = line.strip('\r\n')
         print('TX:', line)
         line += '\r\n'
