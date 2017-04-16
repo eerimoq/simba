@@ -42,7 +42,7 @@
 
 #include "esp_wifi.h"
 
-static wifi_sta_config_t config = {0};
+static wifi_sta_config_t config = {{0}};
 static enum esp_wifi_station_status_t connection_status = esp_wifi_station_status_idle_t;
 
 static int esp_wifi_station_port_init(const char *ssid_p,

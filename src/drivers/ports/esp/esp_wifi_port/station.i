@@ -39,7 +39,7 @@
 #include "espressif/esp_misc.h"
 #include "espressif/esp_sta.h"
 
-static struct station_config config = {0};
+static struct station_config config = {{0}};
 
 static int esp_wifi_station_port_init(const char *ssid_p,
                                       const char *password_p,
