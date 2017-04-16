@@ -125,15 +125,17 @@ static int exti_port_start(struct exti_driver_t *self_p)
 
     /* Enable the interrupt. */
     dev_p->pio_p->PER |= dev_p->mask;
-    dev_p->pio_p->AIMER |= dev_p->mask;
-    dev_p->pio_p->ESR |= dev_p->mask;
 
-    /* Trigger on both edges is not implemented yet. It's very little
-       work. */
     if (self_p->trigger == EXTI_TRIGGER_FALLING_EDGE) {
+        dev_p->pio_p->AIMER |= dev_p->mask;
+        dev_p->pio_p->ESR |= dev_p->mask;
         dev_p->pio_p->FELLSR |= dev_p->mask;
     } else if (self_p->trigger == EXTI_TRIGGER_RISING_EDGE) {
+        dev_p->pio_p->AIMER |= dev_p->mask;
+        dev_p->pio_p->ESR |= dev_p->mask;
         dev_p->pio_p->REHLSR |= dev_p->mask;
+    } else if (self_p->trigger == EXTI_PORT_TRIGGER_BOTH_EDGES) {
+        /* Default will trigger on both rising and falling edges */
     } else {
         return (-1);
     }
