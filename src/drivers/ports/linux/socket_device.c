@@ -45,6 +45,8 @@
 #define TYPE_PIN_DEVICE_RESPONSE                          (4)
 #define TYPE_PWM_DEVICE_REQUEST                           (5)
 #define TYPE_PWM_DEVICE_RESPONSE                          (6)
+#define TYPE_CAN_DEVICE_REQUEST                           (7)
+#define TYPE_CAN_DEVICE_RESPONSE                          (8)
 
 /**
  * Convert given device pointer to its index.
@@ -52,6 +54,7 @@
 #define UART_INDEX(dev_p) (dev_p - &uart_device[0])
 #define PIN_INDEX(dev_p) (dev_p - &pin_device[0])
 #define PWM_INDEX(dev_p) (dev_p - &pwm_device[0])
+#define CAN_INDEX(dev_p) (dev_p - &can_device[0])
 
 struct module_t {
     int initialized;
@@ -94,9 +97,17 @@ struct pwm_client_t {
     pthread_t thrd;
 };
 
+struct can_client_t {
+    int socket;
+    struct can_device_t *dev_p;
+    char name[64];
+    pthread_t thrd;
+};
+
 static struct uart_client_t uart_clients[UART_DEVICE_MAX];
 static struct pin_client_t pin_clients[PIN_DEVICE_MAX];
 static struct pwm_client_t pwm_clients[PWM_DEVICE_MAX];
+static struct can_client_t can_clients[CAN_DEVICE_MAX];
 static struct module_t module;
 
 /**
@@ -112,6 +123,7 @@ static void *uart_client_main(void *arg_p)
 
     printf("socket_device: uart device %s connected\n",
            &client_p->name[0]);
+    fflush(stdout);
 
     while (1) {
         size = read(client_p->socket, &byte, sizeof(byte));
@@ -136,6 +148,7 @@ static void *uart_client_main(void *arg_p)
 
     printf("socket_device: uart device %s disconnected\n",
            &client_p->name[0]);
+    fflush(stdout);
 
     return (NULL);
 }
@@ -153,6 +166,7 @@ static void *pin_client_main(void *arg_p)
 
     printf("socket_device: pin device %s connected\n",
            &client_p->name[0]);
+    fflush(stdout);
 
     while (1) {
         size = read(client_p->socket, &byte, sizeof(byte));
@@ -169,9 +183,12 @@ static void *pin_client_main(void *arg_p)
 
     printf("socket_device: pin device %s disconnected\n",
            &client_p->name[0]);
+    fflush(stdout);
 
     return (NULL);
 }
+
+#if CONFIG_PWM == 1
 
 /**
  * Handle a pwm client connection.
@@ -186,6 +203,7 @@ static void *pwm_client_main(void *arg_p)
 
     printf("socket_device: pwm device %s connected\n",
            &client_p->name[0]);
+    fflush(stdout);
 
     while (1) {
         size = read(client_p->socket, &byte, sizeof(byte));
@@ -202,6 +220,175 @@ static void *pwm_client_main(void *arg_p)
 
     printf("socket_device: pwm device %s disconnected\n",
            &client_p->name[0]);
+    fflush(stdout);
+
+    return (NULL);
+}
+
+static int handle_pwm_device_request(struct device_request_t *request_p,
+                                      int client)
+{
+    struct device_response_t response;
+    int res;
+    long index;
+    char *device_p;
+    struct pwm_device_t *dev_p;
+
+    res = 0;
+
+    /* Parse the device name. */
+    device_p = (char *)&request_p->device[0];
+
+    index = board_pin_string_to_device_index(device_p);
+
+    if (index >= 0) {
+        dev_p = pwm_pin_to_device(&pin_device[index]);
+
+        if (dev_p == NULL) {
+            index = -1;
+        } else {
+            index = PWM_INDEX(dev_p);
+        }
+    } else {
+        if (std_strtol(device_p, &index) == NULL) {
+            index = -1;
+        }
+    }
+
+    /* Prepare the response. */
+    response.header.type = htonl(TYPE_PWM_DEVICE_RESPONSE);
+    response.header.size = htonl(4);
+
+    if ((index < 0) || (index >= PWM_DEVICE_MAX)) {
+        response.result = -ENODEV;
+    } else if (pwm_clients[index].socket >= 0) {
+        response.result = -EADDRINUSE;
+    } else {
+        if (pwm_clients[index].socket == -2) {
+            pthread_join(pwm_clients[index].thrd, NULL);
+            pwm_clients[index].socket = -1;
+        }
+
+        response.result = 0;
+    }
+
+    /* Send the response. */
+    response.result = htonl(response.result);
+    res = write(client, &response, sizeof(response));
+
+    if (response.result != 0) {
+        return (-1);
+    }
+
+    /* Start the client thread if everything went well so far. */
+    if (res == sizeof(response)) {
+        pwm_clients[index].socket = client;
+        pwm_clients[index].dev_p = &pwm_device[index];
+        strcpy(&pwm_clients[index].name[0], device_p);
+        res = pthread_create(&pwm_clients[index].thrd,
+                             NULL,
+                             pwm_client_main,
+                             &pwm_clients[index]);
+
+        if (res != 0) {
+            fprintf(stderr, "error: creating pwm device thread\n");
+        }
+    }
+
+    return (0);
+}
+
+#endif
+
+/**
+ * Handle a can client connection.
+ */
+static void *can_client_main(void *arg_p)
+{
+    struct can_client_t *client_p;
+    ssize_t size;
+    char line[64];
+    struct can_frame_t frame;
+    int frame_size;
+    int frame_data[8];
+
+    client_p = arg_p;
+
+    printf("socket_device: can device %s connected\n",
+           &client_p->name[0]);
+    fflush(stdout);
+
+    while (1) {
+        size = read(client_p->socket, &line[0], 31);
+
+        if (size == 0) {
+            break;
+        } else if (size != 31) {
+            printf("warning: bad can line size %d\n", (int)size);
+            fflush(stdout);
+            continue;
+        }
+
+        size = sscanf(&line[0],
+                      "%08x,%d,%d,%02x%02x%02x%02x%02x%02x%02x%02x\r\n",
+                      &frame.id,
+                      &frame.extended_frame,
+                      &frame_size,
+                      &frame_data[0],
+                      &frame_data[1],
+                      &frame_data[2],
+                      &frame_data[3],
+                      &frame_data[4],
+                      &frame_data[5],
+                      &frame_data[6],
+                      &frame_data[7]);
+
+        if (size != 11) {
+            printf("warning: bad can message received: %s\n", &line[0]);
+            fflush(stdout);
+            continue;
+        }
+
+        if ((frame.extended_frame != 0) && (frame.extended_frame != 1)) {
+            printf("warning: bad can message exteneded frame: %d\n",
+                   frame.extended_frame);
+            fflush(stdout);
+            continue;
+        }
+
+        if (frame_size > 8) {
+            printf("warning: bad can message size: %d\n", frame_size);
+            fflush(stdout);
+            continue;
+        }
+
+        frame.size = frame_size;
+        frame.data.u8[0] = frame_data[0];
+        frame.data.u8[1] = frame_data[1];
+        frame.data.u8[2] = frame_data[2];
+        frame.data.u8[3] = frame_data[3];
+        frame.data.u8[4] = frame_data[4];
+        frame.data.u8[5] = frame_data[5];
+        frame.data.u8[6] = frame_data[6];
+        frame.data.u8[7] = frame_data[7];
+
+        sys_lock();
+
+        if (client_p->dev_p->drv_p != NULL) {
+            queue_write_isr(&client_p->dev_p->drv_p->chin,
+                            &frame,
+                            sizeof(frame));
+        }
+
+        sys_unlock();
+    }
+
+    close(client_p->socket);
+    client_p->socket = -2;
+
+    printf("socket_device: can device %s disconnected\n",
+           &client_p->name[0]);
+    fflush(stdout);
 
     return (NULL);
 }
@@ -330,48 +517,35 @@ static int handle_pin_device_request(struct device_request_t *request_p,
     return (0);
 }
 
-static int handle_pwm_device_request(struct device_request_t *request_p,
+static int handle_can_device_request(struct device_request_t *request_p,
                                       int client)
 {
     struct device_response_t response;
     int res;
     long index;
     char *device_p;
-    struct pwm_device_t *dev_p;
 
     res = 0;
 
     /* Parse the device name. */
     device_p = (char *)&request_p->device[0];
 
-    index = board_pin_string_to_device_index(device_p);
-
-    if (index >= 0) {
-        dev_p = pwm_pin_to_device(&pin_device[index]);
-
-        if (dev_p == NULL) {
-            index = -1;
-        } else {
-            index = PWM_INDEX(dev_p);
-        }
-    } else {
-        if (std_strtol(device_p, &index) == NULL) {
-            index = -1;
-        }
+    if (std_strtol(device_p, &index) == NULL) {
+        index = -1;
     }
 
     /* Prepare the response. */
-    response.header.type = htonl(TYPE_PWM_DEVICE_RESPONSE);
+    response.header.type = htonl(TYPE_CAN_DEVICE_RESPONSE);
     response.header.size = htonl(4);
 
-    if ((index < 0) || (index >= PWM_DEVICE_MAX)) {
+    if ((index < 0) || (index >= CAN_DEVICE_MAX)) {
         response.result = -ENODEV;
-    } else if (pwm_clients[index].socket >= 0) {
+    } else if (can_clients[index].socket >= 0) {
         response.result = -EADDRINUSE;
     } else {
-        if (pwm_clients[index].socket == -2) {
-            pthread_join(pwm_clients[index].thrd, NULL);
-            pwm_clients[index].socket = -1;
+        if (can_clients[index].socket == -2) {
+            pthread_join(can_clients[index].thrd, NULL);
+            can_clients[index].socket = -1;
         }
 
         response.result = 0;
@@ -387,16 +561,16 @@ static int handle_pwm_device_request(struct device_request_t *request_p,
 
     /* Start the client thread if everything went well so far. */
     if (res == sizeof(response)) {
-        pwm_clients[index].socket = client;
-        pwm_clients[index].dev_p = &pwm_device[index];
-        strcpy(&pwm_clients[index].name[0], device_p);
-        res = pthread_create(&pwm_clients[index].thrd,
+        can_clients[index].socket = client;
+        can_clients[index].dev_p = &can_device[index];
+        strcpy(&can_clients[index].name[0], device_p);
+        res = pthread_create(&can_clients[index].thrd,
                              NULL,
-                             pwm_client_main,
-                             &pwm_clients[index]);
+                             can_client_main,
+                             &can_clients[index]);
 
         if (res != 0) {
-            fprintf(stderr, "error: creating pwm device thread\n");
+            fprintf(stderr, "error: creating can device thread\n");
         }
     }
 
@@ -537,8 +711,12 @@ static void *listener_main(void *arg_p)
             res = handle_uart_device_request(&request, client);
         } else if (request.header.type == TYPE_PIN_DEVICE_REQUEST) {
             res = handle_pin_device_request(&request, client);
+#if CONFIG_PWM == 1
         } else if (request.header.type == TYPE_PWM_DEVICE_REQUEST) {
             res = handle_pwm_device_request(&request, client);
+#endif
+        } else if (request.header.type == TYPE_CAN_DEVICE_REQUEST) {
+            res = handle_can_device_request(&request, client);
         } else {
             res = -1;
         }
@@ -572,6 +750,10 @@ int socket_device_module_init()
 
     for (i = 0; i < membersof(pwm_clients); i++) {
         pwm_clients[i].socket = -1;
+    }
+
+    for (i = 0; i < membersof(can_clients); i++) {
+        can_clients[i].socket = -1;
     }
 
 #if CONFIG_LINUX_SOCKET_DEVICE == 1
@@ -642,4 +824,21 @@ ssize_t socket_device_pwm_device_write_isr(const struct pwm_device_t *dev_p,
                                            size_t size)
 {
     return (write(pwm_clients[PWM_INDEX(dev_p)].socket, buf_p, size));
+}
+
+int socket_device_is_can_device_connected_isr(
+    const struct can_device_t *dev_p)
+{
+    int client;
+
+    client = can_clients[CAN_INDEX(dev_p)].socket;
+
+    return (client >= 0);
+}
+
+ssize_t socket_device_can_device_write_isr(const struct can_device_t *dev_p,
+                                           const void *buf_p,
+                                           size_t size)
+{
+    return (write(can_clients[CAN_INDEX(dev_p)].socket, buf_p, size));
 }

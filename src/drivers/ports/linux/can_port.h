@@ -36,6 +36,7 @@
 #define CAN_PORT_SPEED_250KBPS  (2)
 
 struct can_device_t {
+    struct can_driver_t *drv_p;
 };
 
 struct can_driver_t {

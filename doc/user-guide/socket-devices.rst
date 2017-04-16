@@ -8,14 +8,14 @@ application using TCP sockets, one socket for each device.
 At startup the Simba application creates a socket and starts listening
 for clients on port 47000.
 
-The Python script ``bin/device_monitor.py`` can be used to monitor a
-device.
+The Python script ``bin/socket_device.py`` can be used to monitor and
+send data to a device.
 
 Here is an example of how to monitor digital pin 0, ``d0``:
 
 .. code-block:: text
 
-   $ device_monitor.py pin d0
+   $ socket_device.py pin d0
    high
    high
    low

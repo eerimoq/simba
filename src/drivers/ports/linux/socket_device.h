@@ -114,4 +114,27 @@ ssize_t socket_device_pwm_device_write_isr(const struct pwm_device_t *dev_p,
                                            const void *buf_p,
                                            size_t size);
 
+/**
+ * Check if a client is connected for given can device.
+ *
+ * @param[in] dev_p Can device.
+ *
+ * @return true(1) if a client is connected, otherwise false(0).
+ */
+int socket_device_is_can_device_connected_isr(
+    const struct can_device_t *dev_p);
+
+/**
+ * Write data to given can device.
+ *
+ * @param[in] dev_p Can device.
+ * @param[in] buf_p Buffer to write.
+ * @param[in] size Number of bytes to write.
+ *
+ * @return Number of bytes written, or negative error code.
+ */
+ssize_t socket_device_can_device_write_isr(const struct can_device_t *dev_p,
+                                           const void *buf_p,
+                                           size_t size);
+
 #endif

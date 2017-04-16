@@ -3,8 +3,11 @@
 
 from __future__ import print_function
 
+import sys
 import struct
 import socket
+import argparse
+import threading
 
 
 # Simba socket device types.
@@ -14,13 +17,16 @@ TYPE_PIN_DEVICE_REQUEST                = 3
 TYPE_PIN_DEVICE_RESPONSE               = 4
 TYPE_PWM_DEVICE_REQUEST                = 5
 TYPE_PWM_DEVICE_RESPONSE               = 6
+TYPE_CAN_DEVICE_REQUEST                = 7
+TYPE_CAN_DEVICE_RESPONSE               = 8
 
 
 # Maps device type strings to request types.
 REQUEST_TYPE_FROM_STRING = {
     'uart': TYPE_UART_DEVICE_REQUEST,
     'pin': TYPE_PIN_DEVICE_REQUEST,
-    'pwm': TYPE_PWM_DEVICE_REQUEST
+    'pwm': TYPE_PWM_DEVICE_REQUEST,
+    'can': TYPE_CAN_DEVICE_REQUEST
 }
 
 
@@ -89,7 +95,7 @@ class SocketDevice(object):
 
             request_type = REQUEST_TYPE_FROM_STRING[self.device_type]
             request = struct.pack('>II', request_type, len(self.device_name))
-            request += self.device_name.encode('ascii')
+            request += self.device_name.encode('utf-8')
 
             self.write(request)
             response = self.read(12)
@@ -138,3 +144,153 @@ class SocketDevice(object):
             buf += data
 
         return buf
+
+    def readline(self):
+        """Read a line.
+
+        """
+
+        buf = b''
+
+        while True:
+            data = self.socket.recv(1)
+
+            if not data:
+                break
+
+            buf += data
+
+            if data == b'\n':
+                break
+
+        return buf
+
+
+def reader_main(device):
+    """Reads data from the application.
+
+    """
+
+    while True:
+        byte = device.read(1)
+
+        if not byte:
+            print('Connection closed.')
+            break
+
+        try:
+            print(byte.decode('utf-8'), end='')
+        except UnicodeDecodeError:
+            print(byte)
+
+
+def reader_line_main(device):
+    """Reads data from the application, one line at a time.
+
+    """
+
+    while True:
+        line = device.readline()
+
+        if not line:
+            print('Connection closed.')
+            break
+
+        line = line.strip()
+
+        try:
+            print('RX:', line.decode('utf-8'))
+        except UnicodeDecodeError:
+            print('RX:', line)
+
+
+def monitor(device_type, device_name, address, port):
+    """Monitor given device.
+
+    """
+
+    device = SocketDevice(device_type, device_name, address, port)
+    device.start()
+    reader = threading.Thread(target=reader_main, args=(device, ))
+    reader.setDaemon(True)
+    reader.start()
+
+    while True:
+        device.write(sys.stdin.read(1).encode('utf-8'))
+
+
+def monitor_line(device_type, device_name, address, port):
+    """Monitor given device.
+
+    """
+
+    device = SocketDevice(device_type, device_name, address, port)
+    device.start()
+    reader = threading.Thread(target=reader_line_main, args=(device, ))
+    reader.setDaemon(True)
+    reader.start()
+
+    while True:
+        line = input('')
+        line = line.strip('\r\n')
+        print('TX:', line)
+        line += '\r\n'
+        device.write(line.encode('utf-8'))
+
+
+def do_pin(args):
+    monitor_line('pin', args.device, args.address, args.port)
+
+
+def do_uart(args):
+    monitor('uart', args.device, args.address, args.port)
+
+
+def do_pwm(args):
+    monitor_line('pwm', args.device, args.address, args.port)
+
+
+def do_can(args):
+    monitor_line('can', args.device, args.address, args.port)
+
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-d', '--debug', action='store_true')
+    parser.add_argument('-a', '--address',
+                        default='localhost',
+                        help='TCP address to connect to.')
+    parser.add_argument('-p', '--port',
+                        type=int,
+                        default=47000,
+                        help='TCP port to connect to.')
+
+    subparsers = parser.add_subparsers()
+
+    uart_parser = subparsers.add_parser('uart')
+    uart_parser.set_defaults(func=do_uart)
+
+    pin_parser = subparsers.add_parser('pin')
+    pin_parser.set_defaults(func=do_pin)
+
+    pwm_parser = subparsers.add_parser('pwm')
+    pwm_parser.set_defaults(func=do_pwm)
+
+    can_parser = subparsers.add_parser('can')
+    can_parser.set_defaults(func=do_can)
+
+    parser.add_argument('device', help='UART device to monitor.')
+
+    args = parser.parse_args()
+
+    if not args.debug:
+        try:
+            args.func(args)
+        except BaseException as e:
+            sys.exit(str(e))
+    else:
+        args.func(args)
+
+
+if __name__ == '__main__':
+    main()
