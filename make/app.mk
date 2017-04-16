@@ -196,6 +196,13 @@ else
 			           --baudrate $(BAUDRATE)
 endif
 
+monitor:
+ifeq ($(BOARD), linux)
+	socket_device.py monitor
+else
+	echo "Only the linux board supports this make target."
+endif
+
 report:
 	@echo "$(NAME):"
 	cat $(RUNLOG) | tr -cd '[:print:]\t\r\n' | egrep -e "^(exit: test|\w+_suite:)" | python $(SIMBA_ROOT)/make/color.py || true
