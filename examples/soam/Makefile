@@ -38,10 +38,6 @@ CDEFS += \
 	CONFIG_SOAM_EMBEDDED_DATABASE=1 \
 	CONFIG_LINUX_SOCKET_DEVICE=1
 
-INC += $(SIMBA_ROOT)/src/boards/arduino_mega
-SRC += $(SIMBA_ROOT)/src/boards/arduino_mega/board.c
-SRC_IGNORE += $(SIMBA_ROOT)/src/boards/linux/board.c
-
 SETTINGS_INI = settings.ini
 
 SIMBA_ROOT ?= ../..

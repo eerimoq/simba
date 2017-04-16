@@ -39,6 +39,7 @@
 /**
  * Setup message types.
  */
+#define TYPE_UNSUPPORTED_TYPE                             (0)
 #define TYPE_UART_DEVICE_REQUEST                          (1)
 #define TYPE_UART_DEVICE_RESPONSE                         (2)
 #define TYPE_PIN_DEVICE_REQUEST                           (3)
@@ -657,6 +658,7 @@ static void *listener_main(void *arg_p)
     int client;
     ssize_t size;
     struct device_request_t request;
+    struct header_t response;
     int res;
 
     listener = setup_listener();
@@ -718,6 +720,10 @@ static void *listener_main(void *arg_p)
         } else if (request.header.type == TYPE_CAN_DEVICE_REQUEST) {
             res = handle_can_device_request(&request, client);
         } else {
+            /* Send the response. */
+            response.type = htonl(TYPE_UNSUPPORTED_TYPE);
+            response.size = htonl(0);
+            write(client, &response, sizeof(response));
             res = -1;
         }
 

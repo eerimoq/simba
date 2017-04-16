@@ -24,9 +24,9 @@ Arduino Mega pinout ...
    Connecting to localhost:47000... done.
    Requesting pin device d0... done.
    $
-   RX: high
-   RX: high
-   RX: low
+   RX(d0): high
+   RX(d0): high
+   RX(d0): low
 
 Protocol
 --------
@@ -72,8 +72,8 @@ integers.
    Connecting to localhost:47000... done.
    Requesting can device 0... done.
    $ 00000005,1,2,0011000000000000<Enter>
-   TX: 00000005,1,2,0011000000000000
-   RX: 00000006,1,2,0112000000000000
+   TX(0): 00000005,1,2,0011000000000000
+   RX(0): 00000006,1,2,0112000000000000
 
 Device request message
 ~~~~~~~~~~~~~~~~~~~~~~

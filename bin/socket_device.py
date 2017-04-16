@@ -11,6 +11,7 @@ import threading
 
 
 # Simba socket device types.
+TYPE_UNSUPPORTED_TYPE                  = 0
 TYPE_UART_DEVICE_REQUEST               = 1
 TYPE_UART_DEVICE_RESPONSE              = 2
 TYPE_PIN_DEVICE_REQUEST                = 3
@@ -33,6 +34,18 @@ REQUEST_TYPE_FROM_STRING = {
 # Error codes.
 ENODEV     = 19
 EADDRINUSE = 98
+
+
+class UnsupportedTypeError(Exception):
+    pass
+
+
+class NoSuchDeviceError(Exception):
+    pass
+
+
+class DeviceAlreadyInUseError(Exception):
+    pass
 
 
 class SocketDevice(object):
@@ -98,34 +111,49 @@ class SocketDevice(object):
             request += self.device_name.encode('utf-8')
 
             self.write(request)
-            response = self.read(12)
 
-            if len(response) != 12:
+            # Read the header.
+            response = self.read(8)
+
+            if len(response) != 8:
                 raise RuntimeError('error: bad response length {}'.format(
                     len(response)))
 
-            response_type, size, result = struct.unpack('>IIi', response)
+            response_type, size = struct.unpack('>II', response)
+
+            if response_type == TYPE_UNSUPPORTED_TYPE:
+                raise UnsupportedTypeError()
 
             if response_type != request_type + 1:
                 raise RuntimeError('error: bad response type {}'.format(
                     response_type))
 
             if size != 4:
-                raise RuntimeError('error: bad response size {}'.format(size))
+                raise RuntimeError('error: bad response size {}'.format(
+                    size))
+
+            # Read the data.
+            data = self.read(size)
+
+            if len(data) != size:
+                raise RuntimeError('error: bad response data length {}'.format(
+                    len(data)))
+
+            result = struct.unpack('>i', data)[0]
 
             if result != 0:
                 if result == -ENODEV:
-                    message = 'no such device'
+                    raise NoSuchDeviceError(
+                        'error: no such device: {}'.format(self.device_name))
                 elif result == -EADDRINUSE:
-                    message = 'device already in use'
+                    raise DeviceAlreadyInUseError(
+                        'error: device already in use: {}'.format(self.device_name))
                 else:
-                    message = '{}'.format(result)
-
-                raise RuntimeError('error: {}: {}'.format(message,
-                                                          self.device_name))
+                    raise RuntimeError('error: {}: {}'.format(result,
+                                                              self.device_name))
 
             print('done.')
-        except RuntimeError:
+        except BaseException:
             print('failed.', flush=True)
             raise
 
@@ -178,10 +206,7 @@ def reader_main(device):
             print('Connection closed.')
             break
 
-        try:
-            print(byte.decode('utf-8'), end='')
-        except UnicodeDecodeError:
-            print(byte)
+        print('RX({}):'.format(device.device_name), byte)
 
 
 def reader_line_main(device):
@@ -198,10 +223,12 @@ def reader_line_main(device):
 
         line = line.strip()
 
+        prefix = 'RX({}):'.format(device.device_name)
+
         try:
-            print('RX:', line.decode('utf-8'))
+            print(prefix, line.decode('utf-8'))
         except UnicodeDecodeError:
-            print('RX:', line)
+            print(prefix, line)
 
 
 def monitor(device_type, device_name, address, port):
@@ -233,9 +260,61 @@ def monitor_line(device_type, device_name, address, port):
     while True:
         line = input('$ ')
         line = line.strip('\r\n')
-        print('TX:', line)
+        print('TX({}):'.format(device.device_name), line)
         line += '\r\n'
         device.write(line.encode('utf-8'))
+
+
+def request_all_devices(device_type, address, port):
+    """Request all devices of given type.
+
+    """
+
+    devices = []
+    index = 0
+
+    while True:
+        try:
+            device = SocketDevice(device_type, str(index), address, port)
+            device.start()
+        except DeviceAlreadyInUseError:
+            pass
+        except (NoSuchDeviceError, UnsupportedTypeError):
+            break
+
+        reader = threading.Thread(target=reader_main, args=(device, ))
+        reader.setDaemon(True)
+        reader.start()
+        devices.append((device, reader))
+        index += 1
+
+    return devices
+
+
+def request_all_line_devices(device_type, address, port):
+    """Request all line devices of given type.
+
+    """
+
+    devices = []
+    index = 0
+
+    while True:
+        try:
+            device = SocketDevice(device_type, str(index), address, port)
+            device.start()
+        except DeviceAlreadyInUseError:
+            pass
+        except (NoSuchDeviceError, UnsupportedTypeError):
+            break
+
+        reader = threading.Thread(target=reader_line_main, args=(device, ))
+        reader.setDaemon(True)
+        reader.start()
+        devices.append((device, reader))
+        index += 1
+
+    return devices
 
 
 def do_pin(args):
@@ -254,6 +333,23 @@ def do_can(args):
     monitor_line('can', args.device, args.address, args.port)
 
 
+def do_monitor(args):
+    uart_devices = request_all_devices('uart',
+                                       args.address,
+                                       args.port)
+    pin_devices = request_all_line_devices('pin',
+                                           args.address,
+                                           args.port)
+    pwm_devices = request_all_line_devices('pwm',
+                                           args.address,
+                                           args.port)
+    can_devices = request_all_line_devices('can',
+                                           args.address,
+                                           args.port)
+
+    input('Press <Enter> to exit.')
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('-d', '--debug', action='store_true')
@@ -268,18 +364,23 @@ def main():
     subparsers = parser.add_subparsers()
 
     uart_parser = subparsers.add_parser('uart')
+    uart_parser.add_argument('device', help='UART device to monitor.')
     uart_parser.set_defaults(func=do_uart)
 
     pin_parser = subparsers.add_parser('pin')
+    pin_parser.add_argument('device', help='UART device to monitor.')
     pin_parser.set_defaults(func=do_pin)
 
     pwm_parser = subparsers.add_parser('pwm')
+    pwm_parser.add_argument('device', help='UART device to monitor.')
     pwm_parser.set_defaults(func=do_pwm)
 
     can_parser = subparsers.add_parser('can')
+    can_parser.add_argument('device', help='UART device to monitor.')
     can_parser.set_defaults(func=do_can)
 
-    parser.add_argument('device', help='UART device to monitor.')
+    monitor_parser = subparsers.add_parser('monitor')
+    monitor_parser.set_defaults(func=do_monitor)
 
     args = parser.parse_args()
 
