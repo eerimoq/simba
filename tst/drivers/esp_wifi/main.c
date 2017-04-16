@@ -87,6 +87,7 @@ static int test_station(struct harness_t *harness_p)
     BTASSERT(esp_wifi_set_op_mode(esp_wifi_op_mode_station_t) == 0);
     BTASSERT(esp_wifi_station_init(STRINGIFY(SSID),
                                    STRINGIFY(PASSWORD),
+                                   NULL,
                                    NULL) == 0);
     BTASSERT(esp_wifi_station_connect() == 0);
 

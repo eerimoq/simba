@@ -50,8 +50,8 @@ static int esp_station_start(void *arg_p,
     if (esp_wifi_set_op_mode(mode) != 0) {
         return (-1);
     }
-    
-    esp_wifi_station_init(ssid_p, password_p, info_p);
+
+    esp_wifi_station_init(ssid_p, password_p, arg_p, info_p);
     esp_wifi_station_connect();
 
     return (0);
