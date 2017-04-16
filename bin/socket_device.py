@@ -206,7 +206,9 @@ def reader_main(device):
             print('Connection closed.')
             break
 
-        print('RX({}):'.format(device.device_name), byte)
+        prefix = '{}({}) RX:'.format(device.device_type,
+                                     device.device_name)
+        print(prefix, byte)
 
 
 def reader_line_main(device):
@@ -223,7 +225,8 @@ def reader_line_main(device):
 
         line = line.strip()
 
-        prefix = 'RX({}):'.format(device.device_name)
+        prefix = '{}({}) RX:'.format(device.device_type,
+                                     device.device_name)
 
         try:
             print(prefix, line.decode('utf-8'))
@@ -260,7 +263,7 @@ def monitor_line(device_type, device_name, address, port):
     while True:
         line = input('$ ')
         line = line.strip('\r\n')
-        print('TX({}):'.format(device.device_name), line)
+        print('{}({}) TX:'.format(device_type, device_name), line)
         line += '\r\n'
         device.write(line.encode('utf-8'))
 
