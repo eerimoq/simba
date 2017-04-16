@@ -11,14 +11,21 @@ for clients on port 47000.
 The Python script ``bin/socket_device.py`` can be used to monitor and
 send data to a device.
 
-Here is an example of how to monitor digital pin 0, ``d0``:
+Here is an example of how to build a linux application with the
+Arduino Mega pinout ...
 
 .. code-block:: text
 
-   $ socket_device.py pin d0
-   high
-   high
-   low
+   $ make BOARD=linux PINOUT=arduino_mega run
+
+... and then monitor digital pin 0, ``d0``.
+
+.. code-block:: text
+
+   > socket_device.py pin d0
+   RX: high
+   RX: high
+   RX: low
 
 Protocol
 --------
@@ -26,7 +33,8 @@ Protocol
 Devices
 ~~~~~~~
 
-These drivers supports the socket device protocol.
+These drivers supports the socket device protocol at the moment. More
+to be added when needed.
 
 Uart
 ^^^^
@@ -46,6 +54,21 @@ Pwm
 Sends ``frequency = <value>`` and ``duty_cycle = <value>`` when set on
 given device.
 
+Can
+^^^
+
+Sends and receives frames on the format ``<id>,<extended>,<data
+size>,<data>``. ``<id>`` and ``<data>`` are hexadecimal numbers not
+prefixed with ``0x``. ``<extended>`` and ``<size>`` are decimal
+integers.
+
+.. code-block:: text
+
+   > socket_device.py can 0
+   $ 00000005,1,2,0011000000000000<Enter>
+   TX: 00000005,1,2,0011000000000000
+   RX: 00000006,1,2,0112000000000000
+
 Device request message
 ~~~~~~~~~~~~~~~~~~~~~~
 
@@ -57,14 +80,14 @@ This message is sent to the Simba application to request a device.
    | 4b type | 4b size | <size>b device |
    +---------+---------+----------------+
 
-   `device` is the device name as a string. No NULL termination is
-   required.
+   `device` is the device name as a string without NULL termination.
 
    TYPE  SIZE  DESCRIPTION
    --------------------------------------
       1     n  Uart device request.
       3     n  Pin device request.
       5     n  Pwm device request.
+      7     n  Can device request.
 
 Device response message
 ~~~~~~~~~~~~~~~~~~~~~~~
@@ -80,21 +103,16 @@ This message is the response to the request message.
    `result` is zero(0) on success, and otherwise a negative error
    code.
 
+   Defined error codes are:
+
+      ENODEV(19): No device found matching requested device name.
+
+      EADDRINUSE(98): The requested device is already requested and in
+                      use.
+
    TYPE  SIZE  DESCRIPTION
    --------------------------------------
       2     4  Uart device response.
       4     4  Pin device response.
       6     4  Pwm device response.
-
-Build system tips
------------------
-
-Add the rows below to your application's makefile to include the
-target board's pin mapping in the linux build. In the example below
-``arduino_mega`` is the target board.
-
-.. code-block:: makefile
-
-   INC += $(SIMBA_ROOT)/src/boards/arduino_mega
-   SRC += $(SIMBA_ROOT)/src/boards/arduino_mega/board.c
-   SRC_IGNORE += $(SIMBA_ROOT)/src/boards/linux/board.c
+      8     4  Can device response.
