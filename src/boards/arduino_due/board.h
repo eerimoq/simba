@@ -197,6 +197,9 @@
 
 #define flash_0_dev flash_device[0]
 
+
+#define i2c_0_dev i2c_device[0]
+#define i2c_1_dev i2c_device[1]
 /**
  * Convert given pin string to the pin number.
  *
