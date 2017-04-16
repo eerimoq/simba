@@ -29,7 +29,7 @@
  */
 
 #include "simba.h"
-
+#define STATIC_IP
 int main()
 {
     struct inet_if_ip_info_t info;
@@ -42,11 +42,18 @@ int main()
     inet_aton("192.168.0.200", &info.address);
     inet_aton("255.255.255.0", &info.netmask);
     inet_aton("192.168.0.1", &info.gateway);
-
+#ifdef STATIC_IP	
     if (esp_wifi_station_init("Qvist2", "maxierik", &info) != 0) {
         std_printf(FSTR("Failed to configure the Station.\r\n"));
     }
-
+#else
+    if (esp_wifi_station_init("Qvist2", "maxierik", NULL) != 0) {
+        std_printf(FSTR("Failed to configure the Station.\r\n"));
+    }
+#endif
+	esp_wifi_station_connect();
+	
+	
     while (1) {
         esp_wifi_print(sys_get_stdout());
         thrd_sleep(2);
