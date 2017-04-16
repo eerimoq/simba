@@ -1,12 +1,10 @@
 Socket devices
 ==============
 
-The Linux socket device implementation allows another program to
-simulate the hardware. The program connunicates with the Simba
-application using TCP sockets, one socket for each device.
-
-At startup the Simba application creates a socket and starts listening
-for clients on port 47000.
+The Linux socket device drivers implementation allows an external
+program to simulate the hardware. The external program communicates
+with the Simba application using TCP sockets, one socket for each
+device.
 
 The Python script ``bin/socket_device.py`` can be used to monitor and
 send data to a device.
@@ -32,6 +30,9 @@ Arduino Mega pinout ...
 
 Protocol
 --------
+
+At startup the Simba application creates a socket and starts listening
+for clients on port 47000.
 
 Devices
 ~~~~~~~
