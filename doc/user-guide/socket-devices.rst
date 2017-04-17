@@ -25,9 +25,9 @@ Arduino Mega pinout ...
    Connecting to localhost:47000... done.
    Requesting pin device d0... done.
    $
-   pin(d0) RX: high
-   pin(d0) RX: high
-   pin(d0) RX: low
+   14:48:10.004512 pin(d0) RX: high
+   14:48:52.535323 pin(d0) RX: high
+   14:49:20.123124 pin(d0) RX: low
 
 Alternatively, monitor all devices at the same time with the monitor
 make target.
@@ -44,9 +44,9 @@ make target.
    Requesting pin device 1... done.
    ...
    $
-   pin(0) RX: low
-   uart(0) RX: b'\n'
-   pin(1) RX: high
+   14:51:50.531761 pin(0) RX: low
+   14:51:50.541784 uart(0) RX: b'\n'
+   14:51:51.178744 pin(1) RX: high
 
 Python modules
 --------------
@@ -123,8 +123,8 @@ integers.
    Connecting to localhost:47000... done.
    Requesting can device 0... done.
    $ 00000005,1,2,0011000000000000<Enter>
-   can(0) TX: 00000005,1,2,0011000000000000
-   can(0) RX: 00000006,1,2,0112000000000000
+   14:57:22.344321 can(0) TX: 00000005,1,2,0011000000000000
+   14:57:22.346321 can(0) RX: 00000006,1,2,0112000000000000
 
 Device request message
 ~~~~~~~~~~~~~~~~~~~~~~
