@@ -6,8 +6,9 @@ program to simulate the hardware. The external program communicates
 with the Simba application using TCP sockets, one socket for each
 device.
 
-The Python script ``bin/socket_device.py`` can be used to monitor and
-send data to a device.
+The Python script
+:github-blob:`socket_device.py<bin/socket_device.py>` can be used to
+monitor and send data to a device.
 
 Here is an example of how to build a linux application with the
 Arduino Mega pinout ...
