@@ -281,7 +281,7 @@ def request_all_devices(device_type, address, port):
             device = SocketDevice(device_type, str(index), address, port)
             device.start()
         except DeviceAlreadyInUseError:
-            pass
+            continue
         except (NoSuchDeviceError, UnsupportedTypeError):
             break
 
@@ -307,7 +307,7 @@ def request_all_line_devices(device_type, address, port):
             device = SocketDevice(device_type, str(index), address, port)
             device.start()
         except DeviceAlreadyInUseError:
-            pass
+            continue
         except (NoSuchDeviceError, UnsupportedTypeError):
             break
 
@@ -355,31 +355,35 @@ def do_monitor(args):
 
 def main():
     parser = argparse.ArgumentParser()
+
     parser.add_argument('-d', '--debug', action='store_true')
     parser.add_argument('-a', '--address',
                         default='localhost',
-                        help='TCP address to connect to.')
+                        help='TCP address to connect to (default: localhost).')
     parser.add_argument('-p', '--port',
                         type=int,
                         default=47000,
-                        help='TCP port to connect to.')
+                        help='TCP port to connect to (default: 47000).')
 
-    subparsers = parser.add_subparsers()
+    # Workaround to make the subparser required in Python 3.
+    subparsers = parser.add_subparsers(title='subcommands',
+                                       dest='subcommand')
+    subparsers.required = True
 
     uart_parser = subparsers.add_parser('uart')
-    uart_parser.add_argument('device', help='UART device to monitor.')
+    uart_parser.add_argument('device', help='Uart device to request.')
     uart_parser.set_defaults(func=do_uart)
 
     pin_parser = subparsers.add_parser('pin')
-    pin_parser.add_argument('device', help='UART device to monitor.')
+    pin_parser.add_argument('device', help='Pin device to request.')
     pin_parser.set_defaults(func=do_pin)
 
     pwm_parser = subparsers.add_parser('pwm')
-    pwm_parser.add_argument('device', help='UART device to monitor.')
+    pwm_parser.add_argument('device', help='Pwm device to request.')
     pwm_parser.set_defaults(func=do_pwm)
 
     can_parser = subparsers.add_parser('can')
-    can_parser.add_argument('device', help='UART device to monitor.')
+    can_parser.add_argument('device', help='Can device to request.')
     can_parser.set_defaults(func=do_can)
 
     monitor_parser = subparsers.add_parser('monitor')

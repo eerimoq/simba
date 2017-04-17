@@ -3,7 +3,7 @@
 # A stub of python-can.
 #
 
-import struct
+import binascii
 from socket_device import SocketDevice
 
 
@@ -16,6 +16,12 @@ class Message(object):
         self.arbitration_id = arbitration_id
         self.extended_id = extended_id
         self.data = data
+
+    def __repr__(self):
+        return 'Message(arbitration_id={}, extended_id={}, data={})'.format(
+            self.arbitration_id,
+            self.extended_id,
+            self.data)
 
 
 class interface(object):
@@ -36,23 +42,16 @@ class interface(object):
             """
 
             length = len(message.data)
-            data = bytearray(message.data + b'\x00' * (8 - length))
+            data = message.data + b'\x00' * (8 - length)
 
-            line = "{:08x} {} {} {:02x} {:02x} {:02x} {:02x} " \
-                   "{:02x} {:02x} {:02x} {:02x}\r\n".format(
-                       message.arbitration_id,
-                       1 if message.extended_id else 0,
-                       length,
-                       data[0],
-                       data[1],
-                       data[2],
-                       data[3],
-                       data[4],
-                       data[5],
-                       data[6],
-                       data[7])
+            line = "{:08x},{},{},".format(message.arbitration_id,
+                                          1 if message.extended_id else 0,
+                                          length)
+            line = line.encode('ascii')
+            line += binascii.hexlify(data)
+            line += b"\r\n"
 
-            self.device.write(line.encode('ascii'))
+            self.device.write(line)
 
         def recv(self):
             """Read a message from the application.
@@ -62,11 +61,10 @@ class interface(object):
             line = self.device.readline()
             line = line.strip(b'\r\n')
 
-            words = line.split()
+            words = line.split(b',')
             arbitration_id = int(words[0], 16)
             extended_id = (words[1] == b'1')
             length = int(words[2])
-            data = b''.join([struct.pack('B', int(word, 16))
-                             for word in words[3:]])
+            data = binascii.unhexlify(words[3][0:2*length])
 
-            return Message(arbitration_id, extended_id, data[0:length])
+            return Message(arbitration_id, extended_id, data)

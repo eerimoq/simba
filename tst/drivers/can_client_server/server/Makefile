@@ -30,7 +30,7 @@
 
 NAME = can_server
 TYPE = suite
-BOARD = arduino_due
+BOARD ?= linux
 
 TIMEOUT ?= 60
 
