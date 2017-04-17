@@ -15,7 +15,7 @@ class Message(object):
     def __init__(self, arbitration_id, extended_id, data):
         self.arbitration_id = arbitration_id
         self.extended_id = extended_id
-        self.data = data
+        self.data = bytearray(data)
 
     def __repr__(self):
         return 'Message(arbitration_id={}, extended_id={}, data={})'.format(
@@ -48,7 +48,7 @@ class interface(object):
                                           1 if message.extended_id else 0,
                                           length)
             line = line.encode('ascii')
-            line += binascii.hexlify(data)
+            line += binascii.hexlify(bytes(data))
             line += b"\r\n"
 
             self.device.write(line)
@@ -65,6 +65,6 @@ class interface(object):
             arbitration_id = int(words[0], 16)
             extended_id = (words[1] == b'1')
             length = int(words[2])
-            data = binascii.unhexlify(words[3][0:2*length])
+            data = bytearray(binascii.unhexlify(words[3][0:2*length]))
 
             return Message(arbitration_id, extended_id, data)
