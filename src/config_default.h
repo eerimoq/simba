@@ -116,6 +116,7 @@
 #    define PORT_HAS_ESP_WIFI
 #    define PORT_HAS_RANDOM
 #    define PORT_HAS_LED_7SEG_HT16K33
+#    define PORT_HAS_SHT3XD
 #endif
 
 #if defined(FAMILY_ESP32)
@@ -331,6 +332,17 @@
 #        define CONFIG_LED_7SEG_HT16K33                    0
 #    else
 #        define CONFIG_LED_7SEG_HT16K33                    1
+#    endif
+#endif
+
+/**
+ * Enable the sht3xd driver.
+ */
+#ifndef CONFIG_SHT3XD
+#    if defined(CONFIG_MINIMAL_SYSTEM) || !defined(PORT_HAS_SHT3XD)
+#        define CONFIG_SHT3XD                              0
+#    else
+#        define CONFIG_SHT3XD                              1
 #    endif
 #endif
 
