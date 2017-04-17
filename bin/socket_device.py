@@ -8,6 +8,7 @@ import struct
 import socket
 import argparse
 import threading
+import datetime
 
 
 # Simba socket device types.
@@ -206,8 +207,10 @@ def reader_main(device):
             print('Connection closed.')
             break
 
-        prefix = '{}({}) RX:'.format(device.device_type,
-                                     device.device_name)
+        timestamp = datetime.datetime.now().strftime("%H:%M:%S.%f")
+        prefix = '{} {}({}) RX:'.format(timestamp,
+                                        device.device_type,
+                                        device.device_name)
         print(prefix, byte)
 
 
@@ -225,8 +228,10 @@ def reader_line_main(device):
 
         line = line.strip()
 
-        prefix = '{}({}) RX:'.format(device.device_type,
-                                     device.device_name)
+        timestamp = datetime.datetime.now().strftime("%H:%M:%S.%f")
+        prefix = '{} {}({}) RX:'.format(timestamp,
+                                        device.device_type,
+                                        device.device_name)
 
         try:
             print(prefix, line.decode('utf-8'))
@@ -263,7 +268,9 @@ def monitor_line(device_type, device_name, address, port):
     while True:
         line = input('$ ')
         line = line.strip('\r\n')
-        print('{}({}) TX:'.format(device_type, device_name), line)
+        timestamp = datetime.datetime.now().strftime("%H:%M:%S.%f")
+        prefix = '{} {}({}) TX:'.format(timestamp, device_type, device_name)
+        print(prefix, line)
         line += '\r\n'
         device.write(line.encode('utf-8'))
 
