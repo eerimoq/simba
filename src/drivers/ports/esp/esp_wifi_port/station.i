@@ -39,10 +39,11 @@
 #include "espressif/esp_misc.h"
 #include "espressif/esp_sta.h"
 
-static struct station_config config;
+static struct station_config config = {{0}};
 
 static int esp_wifi_station_port_init(const char *ssid_p,
                                       const char *password_p,
+                                      const uint8_t *bssid_p,
                                       const struct inet_if_ip_info_t *info_p)
 {
     ASSERTN(ssid_p != NULL, EINVAL);
@@ -58,6 +59,13 @@ static int esp_wifi_station_port_init(const char *ssid_p,
         strcpy((char *)config.password, password_p);
     } else {
         config.password[0] = 0;
+    }
+
+    if (bssid_p != NULL) {
+        config.bssid_set = 1;
+        memcpy(config.bssid, bssid_p, sizeof(config.bssid));
+    } else {
+        config.bssid_set = 0;
     }
 
     /* Static or dynamic ip. */

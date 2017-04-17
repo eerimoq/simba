@@ -14,7 +14,7 @@ will accept connections to the SSID `Simba`.
 
    esp_wifi_set_op_mode(esp_wifi_op_mode_station_softap_t);
    esp_wifi_softap_init("Simba", NULL);
-   esp_wifi_station_init("ssid", "password", NULL);
+   esp_wifi_station_init("ssid", "password", NULL, NULL);
 
 Configure the WiFi as an Access Point. The application will accept
 connections to the SSID `Simba`.
@@ -30,7 +30,18 @@ Wifi with SSID `ssid`.
 .. code-block:: c
 
    esp_wifi_set_op_mode(esp_wifi_op_mode_station_t);
-   esp_wifi_station_init("ssid", "password", NULL);
+   esp_wifi_station_init("ssid", "password", NULL, NULL);
+
+Configure the WiFi as a Station specifying the MAC address of the
+access point. The application tries to connect to a Wifi with
+a MAC of `c8:d7:19:0f:04:66` and SSID `ssid`.
+
+.. code-block:: c
+
+   esp_wifi_set_op_mode(esp_wifi_op_mode_station_t);
+   esp_wifi_station_init("ssid", "password",
+                         (uint8_t[]){0xc8, 0xd7, 0x19, 0x0f, 0x04, 0x66},
+                         NULL);
 
 ----------------------------------------------
 

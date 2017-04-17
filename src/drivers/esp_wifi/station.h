@@ -57,6 +57,7 @@ enum esp_wifi_station_status_t {
  */
 int esp_wifi_station_init(const char *ssid_p,
                           const char *password_p,
+                          const uint8_t *bssid_p,
                           const struct inet_if_ip_info_t *info_p);
 
 /**

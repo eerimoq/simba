@@ -34,10 +34,12 @@
 
 int esp_wifi_station_init(const char *ssid_p,
                           const char *password_p,
+                          const uint8_t *bssid_p,
                           const struct inet_if_ip_info_t *info_p)
 {
     return (esp_wifi_station_port_init(ssid_p,
                                        password_p,
+                                       bssid_p,
                                        info_p));
 }
 
