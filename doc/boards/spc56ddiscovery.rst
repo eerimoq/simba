@@ -26,8 +26,11 @@ Supported drivers for this board.
 
 - :doc:`../library-reference/drivers/can`
 - :doc:`../library-reference/drivers/flash`
+- :doc:`../library-reference/drivers/i2c`
+- :doc:`../library-reference/drivers/i2c_soft`
 - :doc:`../library-reference/drivers/pin`
 - :doc:`../library-reference/drivers/uart`
+- :doc:`../library-reference/drivers/watchdog`
 
 Library Reference
 -----------------
@@ -56,9 +59,9 @@ Below is the memory usage of two applications:
 +--------------------------+-----------+-----------+
 | Application              | Flash     | RAM       |
 +==========================+===========+===========+
-| minimal-configuration    |      6564 |       640 |
+| minimal-configuration    |     13108 |       944 |
 +--------------------------+-----------+-----------+
-| default-configuration    |     62268 |      5358 |
+| default-configuration    |     70012 |      5734 |
 +--------------------------+-----------+-----------+
 
 Default configuration
@@ -171,6 +174,8 @@ Default Standard Library configuration.
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_FS_CMD_SETTINGS_WRITE_                         |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_FS_CMD_SYS_BACKTRACE_                          |  1                                                  |
++--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_FS_CMD_SYS_CONFIG_                             |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_FS_CMD_SYS_INFO_                               |  1                                                  |
@@ -203,9 +208,13 @@ Default Standard Library configuration.
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_HTTP_SERVER_SSL_                               |  0                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
-|  CONFIG_I2C_                                           |  0                                                  |
+|  CONFIG_I2C_                                           |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
-|  CONFIG_I2C_SOFT_                                      |  0                                                  |
+|  CONFIG_I2C_SOFT_                                      |  1                                                  |
++--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_LED_7SEG_HT16K33_                              |  0                                                  |
++--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_LINUX_SOCKET_DEVICE_                           |  0                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_MCP2515_                                       |  0                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
@@ -237,9 +246,9 @@ Default Standard Library configuration.
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_MODULE_INIT_FS_                                |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
-|  CONFIG_MODULE_INIT_I2C_                               |  0                                                  |
+|  CONFIG_MODULE_INIT_I2C_                               |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
-|  CONFIG_MODULE_INIT_I2C_SOFT_                          |  0                                                  |
+|  CONFIG_MODULE_INIT_I2C_SOFT_                          |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_MODULE_INIT_INET_                              |  0                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
@@ -295,7 +304,7 @@ Default Standard Library configuration.
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_MODULE_INIT_USB_HOST_                          |  0                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
-|  CONFIG_MODULE_INIT_WATCHDOG_                          |  0                                                  |
+|  CONFIG_MODULE_INIT_WATCHDOG_                          |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_MONITOR_THREAD_                                |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
@@ -333,9 +342,13 @@ Default Standard Library configuration.
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_SHELL_PROMPT_                                  |  "$ "                                               |
 +--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_SHT3XD_                                        |  0                                                  |
++--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_SOAM_EMBEDDED_DATABASE_                        |  0                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_SOCKET_RAW_                                    |  1                                                  |
++--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_SOFTWARE_I2C_                                  |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_SPC5_BOOT_ENTRY_RCHW_                          |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
@@ -399,6 +412,8 @@ Default Standard Library configuration.
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_SYS_CONFIG_STRING_                             |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_SYS_PANIC_KICK_WATCHDOG_                       |  0                                                  |
++--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_SYS_SIMBA_MAIN_STACK_MAX_                      |  4096                                               |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_THRD_CPU_USAGE_                                |  1                                                  |
@@ -433,7 +448,7 @@ Default Standard Library configuration.
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_USB_HOST_                                      |  0                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
-|  CONFIG_WATCHDOG_                                      |  0                                                  |
+|  CONFIG_WATCHDOG_                                      |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 
 
@@ -549,6 +564,8 @@ Mcu
 
 .. _CONFIG_FS_CMD_SETTINGS_WRITE: ../user-guide/configuration.html#c.CONFIG_FS_CMD_SETTINGS_WRITE
 
+.. _CONFIG_FS_CMD_SYS_BACKTRACE: ../user-guide/configuration.html#c.CONFIG_FS_CMD_SYS_BACKTRACE
+
 .. _CONFIG_FS_CMD_SYS_CONFIG: ../user-guide/configuration.html#c.CONFIG_FS_CMD_SYS_CONFIG
 
 .. _CONFIG_FS_CMD_SYS_INFO: ../user-guide/configuration.html#c.CONFIG_FS_CMD_SYS_INFO
@@ -584,6 +601,10 @@ Mcu
 .. _CONFIG_I2C: ../user-guide/configuration.html#c.CONFIG_I2C
 
 .. _CONFIG_I2C_SOFT: ../user-guide/configuration.html#c.CONFIG_I2C_SOFT
+
+.. _CONFIG_LED_7SEG_HT16K33: ../user-guide/configuration.html#c.CONFIG_LED_7SEG_HT16K33
+
+.. _CONFIG_LINUX_SOCKET_DEVICE: ../user-guide/configuration.html#c.CONFIG_LINUX_SOCKET_DEVICE
 
 .. _CONFIG_MCP2515: ../user-guide/configuration.html#c.CONFIG_MCP2515
 
@@ -711,9 +732,13 @@ Mcu
 
 .. _CONFIG_SHELL_PROMPT: ../user-guide/configuration.html#c.CONFIG_SHELL_PROMPT
 
+.. _CONFIG_SHT3XD: ../user-guide/configuration.html#c.CONFIG_SHT3XD
+
 .. _CONFIG_SOAM_EMBEDDED_DATABASE: ../user-guide/configuration.html#c.CONFIG_SOAM_EMBEDDED_DATABASE
 
 .. _CONFIG_SOCKET_RAW: ../user-guide/configuration.html#c.CONFIG_SOCKET_RAW
+
+.. _CONFIG_SOFTWARE_I2C: ../user-guide/configuration.html#c.CONFIG_SOFTWARE_I2C
 
 .. _CONFIG_SPC5_BOOT_ENTRY_RCHW: ../user-guide/configuration.html#c.CONFIG_SPC5_BOOT_ENTRY_RCHW
 
@@ -776,6 +801,8 @@ Mcu
 .. _CONFIG_SYSTEM_TICK_SOFTWARE: ../user-guide/configuration.html#c.CONFIG_SYSTEM_TICK_SOFTWARE
 
 .. _CONFIG_SYS_CONFIG_STRING: ../user-guide/configuration.html#c.CONFIG_SYS_CONFIG_STRING
+
+.. _CONFIG_SYS_PANIC_KICK_WATCHDOG: ../user-guide/configuration.html#c.CONFIG_SYS_PANIC_KICK_WATCHDOG
 
 .. _CONFIG_SYS_SIMBA_MAIN_STACK_MAX: ../user-guide/configuration.html#c.CONFIG_SYS_SIMBA_MAIN_STACK_MAX
 
