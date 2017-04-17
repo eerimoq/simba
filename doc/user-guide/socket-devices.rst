@@ -51,22 +51,26 @@ make target.
 Python modules
 --------------
 
-There are a few Python modules in the
-:github-tree:`bin/socket_device<bin/socket_device>` folder in the
-Simba repository. These modules implements the same interface as the
-default Python module/package with the same name, and can be used to
+There are two Python modules in the folder
+:github-tree:`bin/socket_device<bin/socket_device>` in the Simba
+repository. Both modules implements the same interface as the default
+Python module/package with the same name, and can be used to
 communicate over a socket device instead of using the hardware.
 
-- ``serial.py`` implements the `pyserial`_ interface.
+- :github-blob:`serial.py<bin/socket_device/serial.py>` implements the
+  `pyserial`_ interface.
 
-- ``can.py`` implements the `python-can`_ interface.
+- :github-blob:`can.py<bin/socket_device/can.py>` implements the
+  `python-can`_ interface.
 
 Use the environment variable ``PYTHONPATH`` to import the socket
 device modules instead of the default modules/packages.
 
 .. code-block:: text
 
-   > PYTHONPATH=$(readlink -f ${SIMBA_ROOT}/bin/socket_device) bpython3
+   > export PYTHONPATH=$(readlink -f ${SIMBA_ROOT}/bin)
+   > export PYTHONPATH=${PYTHONPATH}:$(readlink -f ${SIMBA_ROOT}/bin/socket_device)
+   > bpython3
    >>> import serial
    >>> serial
    <module 'serial' from '/home/erik/workspace/simba/bin/socket_device/serial.py'>
