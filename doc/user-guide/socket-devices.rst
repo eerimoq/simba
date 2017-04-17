@@ -78,7 +78,7 @@ Protocol
 --------
 
 At startup the Simba application creates a socket and starts listening
-for clients on port 47000.
+for clients on TCP port 47000.
 
 Devices
 ~~~~~~~
