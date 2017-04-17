@@ -187,6 +187,7 @@ DRIVERS_SRC ?= adc.c \
 	       pwm_soft.c \
 	       i2c_soft.c \
 	       random.c \
+	       sht3xd.c \
 	       spi.c \
 	       uart.c \
 	       uart_soft.c
