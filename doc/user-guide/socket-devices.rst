@@ -50,9 +50,10 @@ make target.
 Python modules
 --------------
 
-There are a few Python modules in the ``bin/socket_device``
-folder. These modules implements the same interface as the default
-Python module/package with the same name, and can be used to
+There are a few Python modules in the
+:github-tree:`bin/socket_device<bin/socket_device>` folder in the
+Simba repository. These modules implements the same interface as the
+default Python module/package with the same name, and can be used to
 communicate over a socket device instead of using the hardware.
 
 - ``serial.py`` implements the `pyserial`_ interface.
