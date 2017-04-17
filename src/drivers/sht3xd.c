@@ -55,7 +55,6 @@
  */
 static int sht3xd_sendcmd(struct sht3xd_driver_t *self_p, uint16_t cmd)
 {
-
     uint8_t i2ccmd[2];
     int res;
 
@@ -89,7 +88,6 @@ static int sht3xd_sendcmd(struct sht3xd_driver_t *self_p, uint16_t cmd)
  */
 static int sht3xd_read2x16(struct sht3xd_driver_t *self_p, uint8_t *data_p)
 {
-
     int res;
 
     res = i2c_soft_read(self_p->i2c_p, self_p->i2c_addr, data_p, 6);
@@ -127,7 +125,6 @@ static int sht3xd_read2x16(struct sht3xd_driver_t *self_p, uint8_t *data_p)
  */
 static int sht3xd_read_serial(struct sht3xd_driver_t *self_p)
 {
-
     int res;
     uint8_t data[6];
 
@@ -150,7 +147,6 @@ static int sht3xd_read_serial(struct sht3xd_driver_t *self_p)
 
 int sht3xd_module_init()
 {
-
     i2c_soft_module_init();
 #ifdef CONFIG_SHT3XD_DEBUG_LOG_MASK
     log_module_init();

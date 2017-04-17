@@ -80,13 +80,13 @@ int main()
     while (1) {
         res = sht3xd_get_temp_humid(&sht3xd, &temp, &humid);
 
-	if (res == 0) {
-	    std_printf(OSTR("Temperature: %f C ; Humidity: %f RH%%\r\n"),
-		       temp,
-		       humid);
-	} else {
-	    std_printf(OSTR("Could not get measurement.\r\n"));
-	}
+        if (res == 0) {
+            std_printf(OSTR("Temperature: %f C ; Humidity: %f RH%%\r\n"),
+                       temp,
+                       humid);
+        } else {
+            std_printf(OSTR("Could not get measurement.\r\n"));
+        }
 
         /* Sleep 2 seconds until next measurement. */
         thrd_sleep(2);
