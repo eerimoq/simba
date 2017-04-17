@@ -47,6 +47,32 @@ make target.
    uart(0) RX: b'\n'
    pin(1) RX: high
 
+Python modules
+--------------
+
+There are a few Python modules in the ``bin/socket_device``
+folder. These modules implements the same interface as the default
+Python module/package with the same name, and can be used to
+communicate over a socket device instead of using the hardware.
+
+- ``serial.py`` implements the `pyserial`_ interface.
+
+- ``can.py`` implements the `python-can`_ interface.
+
+Use the environment variable ``PYTHONPATH`` to import the socket
+device modules instead of the default modules/packages.
+
+.. code-block:: text
+
+   > PYTHONPATH=$(readlink -f ${SIMBA_ROOT}/bin/socket_device) bpython3
+   >>> import serial
+   >>> serial
+   <module 'serial' from '/home/erik/workspace/simba/bin/socket_device/serial.py'>
+   >>> import can
+   >>> can
+   <module 'can' from '/home/erik/workspace/simba/bin/socket_device/can.py'>
+   >>>
+
 Protocol
 --------
 
@@ -141,3 +167,7 @@ This message is the response to the request message.
       4     4  Pin device response.
       6     4  Pwm device response.
       8     4  Can device response.
+
+.. _pyserial: https://pythonhosted.org/pyserial
+
+.. _python-can: https://python-can.readthedocs.io
