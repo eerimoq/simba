@@ -638,6 +638,8 @@ static int setup_listener(void)
         goto close_socket;
     }
 
+    freeaddrinfo(addr_p);
+
     return (listener);
 
  close_socket:

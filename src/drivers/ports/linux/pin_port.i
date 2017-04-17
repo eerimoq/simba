@@ -83,7 +83,7 @@ int pin_port_device_write_high(const struct pin_device_t *dev_p)
 
     d_p = (struct pin_device_t *)dev_p;
     d_p->value = 1;
-    
+
     sys_lock();
 
     if (socket_device_is_pin_device_connected_isr(d_p) == 1) {
@@ -101,7 +101,7 @@ int pin_port_device_write_low(const struct pin_device_t *dev_p)
 
     d_p = (struct pin_device_t *)dev_p;
     d_p->value = 0;
-    
+
     sys_lock();
 
     if (socket_device_is_pin_device_connected_isr(d_p) == 1) {
