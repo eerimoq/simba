@@ -106,6 +106,7 @@ DRIVERS_SRC ?= adc.c \
 	       exti.c \
 	       flash.c \
 	       pin.c \
+	       i2c.c \
 	       i2c_soft.c \
 	       owi.c \
 	       pwm.c \
@@ -162,6 +163,7 @@ DRIVERS_SRC ?= adc.c \
 	       mcp2515.c \
 	       owi.c \
 	       pin.c \
+	       i2c.c \
 	       i2c_soft.c \
 	       sd.c \
 	       spi.c \
@@ -185,6 +187,7 @@ DRIVERS_SRC ?= adc.c \
 	       owi.c \
 	       pin.c \
 	       pwm_soft.c \
+	       i2c.c \
 	       i2c_soft.c \
 	       random.c \
 	       sht3xd.c \
@@ -203,6 +206,8 @@ DRIVERS_SRC ?= adc.c \
 	       esp_wifi.c \
 	       esp_wifi/station.c \
 	       esp_wifi/softap.c \
+	       i2c.c \
+	       i2c_soft.c \
 	       owi.c \
 	       pin.c \
 	       random.c \
@@ -214,6 +219,7 @@ endif
 ifeq ($(FAMILY),stm32f1)
 DRIVERS_SRC ?= flash.c \
 	       pin.c \
+	       i2c.c \
 	       i2c_soft.c \
 	       uart.c
 endif
@@ -221,6 +227,7 @@ endif
 ifeq ($(FAMILY),stm32f2)
 DRIVERS_SRC ?= flash.c \
 	       pin.c \
+	       i2c.c \
 	       i2c_soft.c \
 	       uart.c
 endif
@@ -228,6 +235,7 @@ endif
 ifeq ($(FAMILY),stm32f3)
 DRIVERS_SRC ?= flash.c \
 	       pin.c \
+	       i2c.c \
 	       i2c_soft.c \
 	       uart.c
 endif
@@ -236,6 +244,8 @@ ifeq ($(FAMILY),spc5)
 DRIVERS_SRC ?= pin.c \
 	       can.c \
 	       flash.c \
+	       i2c.c \
+	       i2c_soft.c \
 	       uart.c \
 	       watchdog.c
 endif

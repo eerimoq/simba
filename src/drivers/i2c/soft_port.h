@@ -28,41 +28,24 @@
  * This file is part of the Simba project.
  */
 
-#include "simba.h"
+#ifndef __DRIVERS_I2C_SOFT_PORT_H__
+#define __DRIVERS_I2C_SOFT_PORT_H__
 
-struct pin_device_t pin_device[PIN_DEVICE_MAX];
-
-struct uart_device_t uart_device[UART_DEVICE_MAX] = {
-    {
-        .drv_p = NULL,
-        .regs_p = STM32_USART1
-    },
-
-    {
-        .drv_p = NULL,
-        .regs_p = STM32_USART2
-    },
-
-    {
-        .drv_p = NULL,
-        .regs_p = STM32_USART3
-    }
+struct i2c_device_t {
+    struct pin_device_t *scl_p;
+    struct pin_device_t *sda_p;
+    long max_clock_stretching_us;
+    long clock_stretching_sleep_us;
 };
 
-struct flash_device_t flash_device[FLASH_DEVICE_MAX];
-
-/* Use software i2c. */
-struct i2c_device_t i2c_device[I2C_DEVICE_MAX] = {
-    {
-        .scl_p = &pin_device[0],
-        .sda_p = &pin_device[1],
-        .max_clock_stretching_us = 100000,
-        .clock_stretching_sleep_us = 1000
-    },
-    {
-        .scl_p = &pin_device[2],
-        .sda_p = &pin_device[3],
-        .max_clock_stretching_us = 100000,
-        .clock_stretching_sleep_us = 1000
-    }
+struct i2c_driver_t {
+    struct i2c_soft_driver_t soft;
 };
+
+/* Predefined baudrates. */
+#define I2C_PORT_BAUDRATE_3_2MBPS             3200000
+#define I2C_PORT_BAUDRATE_1MBPS               1000000
+#define I2C_PORT_BAUDRATE_400KBPS              400000
+#define I2C_PORT_BAUDRATE_100KBPS              100000
+
+#endif

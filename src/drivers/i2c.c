@@ -42,7 +42,11 @@ struct module_t {
 #endif
 };
 
-#include "i2c_port.i"
+#if CONFIG_SOFTWARE_I2C == 1
+#    include "i2c/soft_port.i"
+#else
+#    include "i2c_port.i"
+#endif
 
 static struct module_t module;
 
@@ -74,7 +78,7 @@ static int cmd_read_cb(int argc,
 
     slave_address = value;
 
-    i2c_init(&i2c, &i2c_0_dev, I2C_BAUDRATE_100KBPS, -1);
+    i2c_init(&i2c, &i2c_device[0], I2C_BAUDRATE_100KBPS, -1);
     i2c_start(&i2c);
 
     if (i2c_read(&i2c, slave_address, &data, 1) != 1) {
@@ -135,7 +139,7 @@ static int cmd_write_cb(int argc,
 
     data = value;
 
-    i2c_init(&i2c, &i2c_0_dev, I2C_BAUDRATE_100KBPS, -1);
+    i2c_init(&i2c, &i2c_device[0], I2C_BAUDRATE_100KBPS, -1);
     i2c_start(&i2c);
 
     if (i2c_write(&i2c, slave_address, &data, 1) != 1) {

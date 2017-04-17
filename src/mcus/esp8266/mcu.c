@@ -91,3 +91,19 @@ struct spi_device_t spi_device[SPI_DEVICE_MAX] = {
 };
 
 struct flash_device_t flash_device[FLASH_DEVICE_MAX];
+
+/* Software i2c on ESP8266. */
+struct i2c_device_t i2c_device[I2C_DEVICE_MAX] = {
+    {
+        .scl_p = &pin_device[4],
+        .sda_p = &pin_device[5],
+        .max_clock_stretching_us = 100000,
+        .clock_stretching_sleep_us = 1000
+    },
+    {
+        .scl_p = &pin_device[12],
+        .sda_p = &pin_device[13],
+        .max_clock_stretching_us = 100000,
+        .clock_stretching_sleep_us = 1000
+    }
+};

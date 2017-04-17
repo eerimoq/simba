@@ -125,3 +125,13 @@ struct flash_device_t flash_device[FLASH_DEVICE_MAX] = {
 struct can_device_t can_device[CAN_DEVICE_MAX] = {
     { .regs_p = SPC5_FLEXCAN_0 }
 };
+
+/* Use software i2c. */
+struct i2c_device_t i2c_device[I2C_DEVICE_MAX] = {
+    {
+        .scl_p = &pin_device[0],
+        .sda_p = &pin_device[1],
+        .max_clock_stretching_us = 100000,
+        .clock_stretching_sleep_us = 1000
+    }
+};

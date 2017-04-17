@@ -110,6 +110,7 @@
 #    define PORT_HAS_UART_SOFT
 #    define PORT_HAS_OWI
 #    define PORT_HAS_DS18B20
+#    define PORT_HAS_DS3231
 #    define PORT_HAS_ADC
 #    define PORT_HAS_ANALOG_INPUT_PIN
 #    define PORT_HAS_FLASH
@@ -122,6 +123,7 @@
 #if defined(FAMILY_ESP32)
 #    define PORT_HAS_FLASH
 #    define PORT_HAS_PIN
+#    define PORT_HAS_I2C_SOFT
 #    define PORT_HAS_OWI
 #    define PORT_HAS_DS18B20
 #    define PORT_HAS_SPI
@@ -158,10 +160,16 @@
 
 #if defined(FAMILY_SPC5)
 #    define PORT_HAS_PIN
+#    define PORT_HAS_I2C_SOFT
 #    define PORT_HAS_UART
 #    define PORT_HAS_FLASH
 #    define PORT_HAS_CAN
 #    define PORT_HAS_WATCHDOG
+#endif
+
+#if defined(PORT_HAS_I2C_SOFT) && !defined(PORT_HAS_I2C)
+#    define PORT_HAS_I2C
+#    define CONFIG_SOFTWARE_I2C                            1
 #endif
 
 /**

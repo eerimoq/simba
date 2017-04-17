@@ -40,4 +40,7 @@
 #define ADC_DEVICE_MAX               1
 #define FLASH_DEVICE_MAX             1
 
+/* Software i2c on ESP8266. */
+#define I2C_DEVICE_MAX               2
+
 #endif

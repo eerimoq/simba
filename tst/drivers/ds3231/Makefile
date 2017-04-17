@@ -35,9 +35,10 @@ CDEFS += \
 	CONFIG_MINIMAL_SYSTEM=1 \
 	CONFIG_DS3231=1 \
 	CONFIG_I2C=1 \
+	CONFIG_I2C_SOFT=1 \
 	CONFIG_FS_CMD_THRD_LIST=1
 
-DRIVERS_SRC = ds3231.c i2c.c
+DRIVERS_SRC = ds3231.c i2c.c i2c_soft.c
 
 SIMBA_ROOT ?= ../../..
 include $(SIMBA_ROOT)/make/app.mk

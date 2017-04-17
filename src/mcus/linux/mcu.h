@@ -40,5 +40,6 @@
 #define ADC_DEVICE_MAX                                     16
 #define FLASH_DEVICE_MAX                                   16
 #define DAC_DEVICE_MAX                                     16
+#define I2C_DEVICE_MAX                                     16
 
 #endif

@@ -33,7 +33,11 @@
 
 #include "simba.h"
 
-#include "i2c_port.h"
+#if CONFIG_SOFTWARE_I2C == 1
+#    include "i2c/soft_port.h"
+#else
+#    include "i2c_port.h"
+#endif
 
 /* Predefined baudrates. */
 #define I2C_BAUDRATE_3_2MBPS     I2C_PORT_BAUDRATE_3_2MBPS
