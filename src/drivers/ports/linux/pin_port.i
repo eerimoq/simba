@@ -58,7 +58,7 @@ static int pin_port_write(struct pin_driver_t *drv_p, int value)
 
 static int pin_port_toggle(struct pin_driver_t *drv_p)
 {
-    return (0);
+    return (pin_write(drv_p, !drv_p->dev_p->value));
 }
 
 static int pin_port_set_mode(struct pin_driver_t *drv_p, int mode)
@@ -82,6 +82,7 @@ int pin_port_device_write_high(const struct pin_device_t *dev_p)
     struct pin_device_t *d_p;
 
     d_p = (struct pin_device_t *)dev_p;
+    d_p->value = 1;
     
     sys_lock();
 
@@ -99,6 +100,7 @@ int pin_port_device_write_low(const struct pin_device_t *dev_p)
     struct pin_device_t *d_p;
 
     d_p = (struct pin_device_t *)dev_p;
+    d_p->value = 0;
     
     sys_lock();
 

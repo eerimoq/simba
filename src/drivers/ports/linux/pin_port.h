@@ -33,6 +33,7 @@
 
 struct pin_device_t {
     const struct pin_driver_t *drv_p;
+    int value;
 };
 
 struct pin_driver_t {
