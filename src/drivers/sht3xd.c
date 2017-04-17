@@ -26,6 +26,7 @@
  * SOFTWARE.
  *
  * This code was originally written by Simon L. B. Nielsen.
+ *
  * This file is part of the Simba project.
  */
 
@@ -54,26 +55,29 @@
  */
 static int sht3xd_sendcmd(struct sht3xd_driver_t *self_p, uint16_t cmd)
 {
-    ASSERTN(self_p != NULL, EINVAL);
 
     uint8_t i2ccmd[2];
-    int r;
+    int res;
 
     i2ccmd[0] = (cmd >> 8) & 0xff;
     i2ccmd[1] = cmd & 0xff;
-#ifdef DRIVER_DEBUG_LOG
+#ifdef CONFIG_SHT3XD_DEBUG_LOG_MASK
     log_object_print(&self_p->log, LOG_DEBUG,
                      OSTR("Sending command 0x%04x to device"),
                      cmd);
 #endif
-    r = i2c_soft_write(self_p->i2c_p, self_p->i2c_addr, i2ccmd, 2);
-    if (r != 2) {
-#ifdef DRIVER_DEBUG_LOG
+    res = i2c_soft_write(self_p->i2c_p, self_p->i2c_addr, i2ccmd, 2);
+
+    if (res != 2) {
+#ifdef CONFIG_SHT3XD_DEBUG_LOG_MASK
         log_object_print(&self_p->log, LOG_ERROR,
-                         OSTR("Failed to write to device; err %d"), r);
+                         OSTR("Failed to write to device; err %d"), res);
 #endif
-        if (r < 0)
-            return (r);
+
+        if (res < 0) {
+            return (res);
+        }
+
         return (-EIO);
     }
 
@@ -83,33 +87,34 @@ static int sht3xd_sendcmd(struct sht3xd_driver_t *self_p, uint16_t cmd)
 /**
  * Read 2x 16bit to the SHT3x-D device.
  */
-static int sht3xd_read2x16(struct sht3xd_driver_t *self_p, uint8_t *data)
+static int sht3xd_read2x16(struct sht3xd_driver_t *self_p, uint8_t *data_p)
 {
-    ASSERTN(self_p != NULL, EINVAL);
 
-    int r;
+    int res;
 
-    r = i2c_soft_read(self_p->i2c_p, self_p->i2c_addr, data, 6);
-    if (r != 6) {
-#ifdef DRIVER_DEBUG_LOG
+    res = i2c_soft_read(self_p->i2c_p, self_p->i2c_addr, data_p, 6);
+
+    if (res != 6) {
+#ifdef CONFIG_SHT3XD_DEBUG_LOG_MASK
         log_object_print(&self_p->log,
                          LOG_ERROR,
                          OSTR("Failed to read data - %d\r\n"),
-                         r);
+                         res);
 #endif
         return (-EIO);
     }
-#ifdef DRIVER_DEBUG_LOG
+
+#ifdef CONFIG_SHT3XD_DEBUG_LOG_MASK
     log_object_print(&self_p->log,
                      LOG_INFO,
                      OSTR("Got data from SHT3x: 0x%02x%02x%02x "
-                          "x%02x%02x%02x"),
-                     data[0],
-                     data[1],
-                     data[2],
-                     data[3],
-                     data[4],
-                     data[5]);
+                          "0x%02x%02x%02x"),
+                     data_p[0],
+                     data_p[1],
+                     data_p[2],
+                     data_p[3],
+                     data_p[4],
+                     data_p[5]);
 #endif
 
     // Here should go CRC check.
@@ -122,19 +127,20 @@ static int sht3xd_read2x16(struct sht3xd_driver_t *self_p, uint8_t *data)
  */
 static int sht3xd_read_serial(struct sht3xd_driver_t *self_p)
 {
-    ASSERTN(self_p != NULL, EINVAL);
 
-    int r;
+    int res;
     uint8_t data[6];
 
-    r = sht3xd_sendcmd(self_p, CMD_GETSERIAL);
-    if (r != 0) {
-        return (r);
+    res = sht3xd_sendcmd(self_p, CMD_GETSERIAL);
+
+    if (res != 0) {
+        return (res);
     }
 
-    r = sht3xd_read2x16(self_p, data);
-    if (r != 0) {
-        return (r);
+    res = sht3xd_read2x16(self_p, data);
+
+    if (res != 0) {
+        return (res);
     }
 
     self_p->serial = data[0] << 24 | data[1] << 16 | data[3] << 8 | data[4];
@@ -146,7 +152,7 @@ int sht3xd_module_init()
 {
 
     i2c_soft_module_init();
-#ifdef DRIVER_DEBUG_LOG
+#ifdef CONFIG_SHT3XD_DEBUG_LOG_MASK
     log_module_init();
 #endif
 
@@ -163,8 +169,8 @@ int sht3xd_init(struct sht3xd_driver_t *self_p,
     self_p->i2c_p = i2c_p;
     self_p->i2c_addr = i2c_addr;
 
-#ifdef DRIVER_DEBUG_LOG
-    log_object_init(&self_p->log, "sht3xd", DRIVER_DEBUG_LOG);
+#ifdef CONFIG_SHT3XD_DEBUG_LOG_MASK
+    log_object_init(&self_p->log, "sht3xd", CONFIG_SHT3XD_DEBUG_LOG_MASK);
 #endif
 
     return (0);
@@ -174,15 +180,16 @@ int sht3xd_start(struct sht3xd_driver_t *self_p)
 {
     ASSERTN(self_p != NULL, EINVAL);
 
-    int r;
+    int res;
 
-#ifdef DRIVER_DEBUG_LOG
+#ifdef CONFIG_SHT3XD_DEBUG_LOG_MASK
     log_object_print(&self_p->log, LOG_INFO,
                      OSTR("Starting SHT3x-D driver."));
 #endif
     i2c_soft_start(self_p->i2c_p);
+
     if (i2c_soft_scan(self_p->i2c_p, self_p->i2c_addr) != 1) {
-#ifdef DRIVER_DEBUG_LOG
+#ifdef CONFIG_SHT3XD_DEBUG_LOG_MASK
         log_object_print(&self_p->log, LOG_WARNING,
                          OSTR("No device found at 0x%x."),
                          self_p->i2c_addr);
@@ -190,15 +197,18 @@ int sht3xd_start(struct sht3xd_driver_t *self_p)
         return (-ENOENT);
     }
 
-    r = sht3xd_read_serial(self_p);
-    if (r != 0) {
-#ifdef DRIVER_DEBUG_LOG
+    res = sht3xd_read_serial(self_p);
+
+    if (res != 0) {
+#ifdef CONFIG_SHT3XD_DEBUG_LOG_MASK
         log_object_print(&self_p->log, LOG_ERROR,
                          OSTR("Error reading serial for at 0x%x"),
                          self_p->i2c_addr);
 #endif
+        return (res);
     }
-#ifdef DRIVER_DEBUG_LOG
+
+#ifdef CONFIG_SHT3XD_DEBUG_LOG_MASK
     log_object_print(&self_p->log, LOG_INFO,
                      OSTR("Device found serial %8x at 0x%x"),
                      self_p->serial, self_p->i2c_addr);
@@ -236,12 +246,12 @@ static float sht3xd_calculate_humid(uint8_t msb, uint8_t lsb)
 }
 
 int sht3xd_get_temp_humid(struct sht3xd_driver_t *self_p,
-                          float *temp,
-                          float *humid)
+                          float *temp_p,
+                          float *humid_p)
 {
     ASSERTN(self_p != NULL, EINVAL);
 
-    int r;
+    int res;
     uint8_t data[6];
 
     /*
@@ -250,36 +260,38 @@ int sht3xd_get_temp_humid(struct sht3xd_driver_t *self_p,
      * long sleep (probably a bit more power efficient), and to not
      * block the I2C bus while sensor is active - in case it's shared.
      */
-    r = sht3xd_sendcmd(self_p, CMD_SINGLE_NOCLKSTRETCH_REPHIGH);
-    if (r != 0) {
-        return (r);
+    res = sht3xd_sendcmd(self_p, CMD_SINGLE_NOCLKSTRETCH_REPHIGH);
+
+    if (res != 0) {
+        return (res);
     }
 
     // We use max duration to avoid having to handle retry.
     thrd_sleep_ms(MEASUREMENT_DURATION_HIGH_MS);
 
-    r = sht3xd_read2x16(self_p, data);
-    if (r != 0) {
-        return (r);
+    res = sht3xd_read2x16(self_p, data);
+
+    if (res != 0) {
+        return (res);
     }
 
-    if (temp != NULL) {
-        *temp = sht3xd_calculate_temp_c(data[0], data[1]);
+    if (temp_p != NULL) {
+        *temp_p = sht3xd_calculate_temp_c(data[0], data[1]);
     }
-    if (humid != NULL) {
-        *humid = sht3xd_calculate_humid(data[3], data[4]);
+    if (humid_p != NULL) {
+        *humid_p = sht3xd_calculate_humid(data[3], data[4]);
     }
 
     return (0);
 }
 
 int sht3xd_get_serial(struct sht3xd_driver_t *self_p,
-                      uint32_t *serial)
+                      uint32_t *serial_p)
 {
     ASSERTN(self_p != NULL, EINVAL);
     ASSERTN(serial != NULL, EINVAL);
 
-    *serial = self_p->serial;
+    *serial_p = self_p->serial;
 
     return (0);
 }

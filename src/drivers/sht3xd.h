@@ -37,7 +37,7 @@ struct sht3xd_driver_t {
     struct i2c_soft_driver_t *i2c_p;
     int i2c_addr;
     uint32_t serial;
-#ifdef DRIVER_DEBUG_LOG
+#ifdef CONFIG_SHT3XD_DEBUG_LOG_MASK
     struct log_object_t log;
 #endif
 };
@@ -94,24 +94,24 @@ int sht3xd_start(struct sht3xd_driver_t *self_p);
  * takes the sensor to perform the measurement.
  *
  * @param[in] self_p Driver object.
- * @param[out] temp Tempererature in Celsius, or NULL.
- * @param[out] humid Relative Humidity, or NULL.
+ * @param[out] temp_p Tempererature in Celsius, or NULL.
+ * @param[out] humid_p Relative Humidity, or NULL.
  *
  * @return zero(0) or negative error code.
  */
 int sht3xd_get_temp_humid(struct sht3xd_driver_t *self_p,
-                          float *temp,
-                          float *humid);
+                          float *temp_p,
+                          float *humid_p);
 
 /**
  * Get the serial number from the SHD3x-D.
  *
  * @param[in] self_p Driver object.
- * @param[out] serial Serial number of the SHT3x-D sensor.
+ * @param[out] serial_p Serial number of the SHT3x-D sensor.
  *
  * @return zero(0) or negative error code.
  */
 int sht3xd_get_serial(struct sht3xd_driver_t *self_p,
-		      uint32_t *serial);
+		      uint32_t *serial_p);
 
 #endif

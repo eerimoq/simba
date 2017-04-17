@@ -26,6 +26,7 @@
  * SOFTWARE.
  *
  * This code was originally written by Simon L. B. Nielsen.
+ *
  * This file is part of the Simba project.
  */
 
@@ -37,7 +38,7 @@ int main()
     struct i2c_soft_driver_t i2c;
     float temp, humid;
     uint32_t serial;
-    int r;
+    int res;
 
     /* Initialization. */
     sys_start();
@@ -47,33 +48,39 @@ int main()
     thrd_sleep(1);
 
     /* Driver initialization. */
-    r = i2c_soft_init(&i2c, &pin_d1_dev, &pin_d2_dev, 50000, 100000, 1000);
-    if (r != 0) {
+    res = i2c_soft_init(&i2c, &pin_d1_dev, &pin_d2_dev, 50000, 100000, 1000);
+
+    if (res != 0) {
         std_printf(OSTR("Error initilizing i2c_soft driver\r\n"));
         return (-1);
     }
-    r = sht3xd_init(&sht3xd, &i2c, SHT3X_DIS_I2C_ADDR_A);
-    if (r != 0) {
+
+    res = sht3xd_init(&sht3xd, &i2c, SHT3X_DIS_I2C_ADDR_A);
+
+    if (res != 0) {
         std_printf(OSTR("Error initilizing sht3xd driver\r\n"));
         return (-1);
     }
 
     /* Start driver - first actual sensor communication here. */
-    r = sht3xd_start(&sht3xd);
-    if (r != 0) {
+    res = sht3xd_start(&sht3xd);
+
+    if (res != 0) {
         std_printf(OSTR("Error starting sht3xd driver\r\n"));
         return (-1);
     }
 
     /* Start getting data from sensor. */
-    r = sht3xd_get_serial(&sht3xd, &serial);
-    if (r == 0) {
+    res = sht3xd_get_serial(&sht3xd, &serial);
+
+    if (res == 0) {
         std_printf(OSTR("SHT3x-D serial: 0x%08x\r\n"), serial);
     }
 
     while (1) {
-        r = sht3xd_get_temp_humid(&sht3xd, &temp, &humid);
-	if (r == 0) {
+        res = sht3xd_get_temp_humid(&sht3xd, &temp, &humid);
+
+	if (res == 0) {
 	    std_printf(OSTR("Temperature: %f C ; Humidity: %f RH%%\r\n"),
 		       temp,
 		       humid);
