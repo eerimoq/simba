@@ -137,4 +137,28 @@ ssize_t socket_device_can_device_write_isr(const struct can_device_t *dev_p,
                                            const void *buf_p,
                                            size_t size);
 
+/**
+ * Check if a client is connected for given i2c device.
+ *
+ * @param[in] dev_p I2c device.
+ *
+ * @return true(1) if a client is connected, otherwise false(0).
+ */
+int socket_device_is_i2c_device_connected_isr(
+    const struct i2c_device_t *dev_p);
+
+/**
+ * Write data to given i2c device.
+ *
+ * @param[in] dev_p I2c device.
+ * @param[in] buf_p Buffer to write.
+ * @param[in] size Number of bytes to write.
+ *
+ * @return Number of bytes written, or negative error code.
+ */
+ssize_t socket_device_i2c_device_write_isr(const struct i2c_device_t *dev_p,
+                                           int address,
+                                           const void *buf_p,
+                                           size_t size);
+
 #endif

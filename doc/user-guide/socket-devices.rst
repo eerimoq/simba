@@ -141,6 +141,21 @@ integers.
    14:57:22.344321 can(0) TX: 00000005,1,2,0011000000000000
    14:57:22.346321 can(0) RX: 00000006,1,2,0112000000000000
 
+I2c
+^^^
+
+Sends and receives data on the format ``<slave
+address>,<data>``. ``<slave address>`` is an decimal integer, and
+``<data>`` is a hexadecimal number.
+
+.. code-block:: text
+
+   > socket_device.py i2c 0
+   Connecting to localhost:47000... done.
+   Requesting i2c device 0... done.
+   $ 
+   14:57:22.346321 i2c(0) RX: 6,1a2b3c
+
 Device request message
 ~~~~~~~~~~~~~~~~~~~~~~
 

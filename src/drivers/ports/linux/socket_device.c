@@ -48,6 +48,8 @@
 #define TYPE_PWM_DEVICE_RESPONSE                          (6)
 #define TYPE_CAN_DEVICE_REQUEST                           (7)
 #define TYPE_CAN_DEVICE_RESPONSE                          (8)
+#define TYPE_I2C_DEVICE_REQUEST                           (9)
+#define TYPE_I2C_DEVICE_RESPONSE                         (10)
 
 /**
  * Convert given device pointer to its index.
@@ -56,6 +58,7 @@
 #define PIN_INDEX(dev_p) (dev_p - &pin_device[0])
 #define PWM_INDEX(dev_p) (dev_p - &pwm_device[0])
 #define CAN_INDEX(dev_p) (dev_p - &can_device[0])
+#define I2C_INDEX(dev_p) (dev_p - &i2c_device[0])
 
 struct module_t {
     int initialized;
@@ -105,10 +108,18 @@ struct can_client_t {
     pthread_t thrd;
 };
 
+struct i2c_client_t {
+    int socket;
+    struct i2c_device_t *dev_p;
+    char name[64];
+    pthread_t thrd;
+};
+
 static struct uart_client_t uart_clients[UART_DEVICE_MAX];
 static struct pin_client_t pin_clients[PIN_DEVICE_MAX];
 static struct pwm_client_t pwm_clients[PWM_DEVICE_MAX];
 static struct can_client_t can_clients[CAN_DEVICE_MAX];
+static struct i2c_client_t i2c_clients[I2C_DEVICE_MAX];
 static struct module_t module;
 
 /**
@@ -154,6 +165,66 @@ static void *uart_client_main(void *arg_p)
     return (NULL);
 }
 
+static int handle_uart_device_request(struct device_request_t *request_p,
+                                      int client)
+{
+    struct device_response_t response;
+    int res;
+    long index;
+    char *device_p;
+
+    res = 0;
+
+    /* Parse the device name. */
+    device_p = (char *)&request_p->device[0];
+
+    if (std_strtol(device_p, &index) == NULL) {
+        index = -1;
+    }
+
+    /* Prepare the response. */
+    response.header.type = htonl(TYPE_UART_DEVICE_RESPONSE);
+    response.header.size = htonl(4);
+
+    if ((index < 0) || (index >= UART_DEVICE_MAX)) {
+        response.result = -ENODEV;
+    } else if (uart_clients[index].socket >= 0) {
+        response.result = -EADDRINUSE;
+    } else {
+        if (uart_clients[index].socket == -2) {
+            pthread_join(uart_clients[index].thrd, NULL);
+            uart_clients[index].socket = -1;
+        }
+
+        response.result = 0;
+    }
+
+    /* Send the response. */
+    response.result = htonl(response.result);
+    res = write(client, &response, sizeof(response));
+
+    if (response.result != 0) {
+        return (-1);
+    }
+
+    /* Start the client thread if everything went well so far. */
+    if (res == sizeof(response)) {
+        uart_clients[index].socket = client;
+        uart_clients[index].dev_p = &uart_device[index];
+        strcpy(&uart_clients[index].name[0], device_p);
+        res = pthread_create(&uart_clients[index].thrd,
+                             NULL,
+                             uart_client_main,
+                             &uart_clients[index]);
+
+        if (res != 0) {
+            fprintf(stderr, "error: creating uart device thread\n");
+        }
+    }
+
+    return (0);
+}
+
 /**
  * Handle a pin client connection.
  */
@@ -187,6 +258,70 @@ static void *pin_client_main(void *arg_p)
     fflush(stdout);
 
     return (NULL);
+}
+
+static int handle_pin_device_request(struct device_request_t *request_p,
+                                      int client)
+{
+    struct device_response_t response;
+    int res;
+    long index;
+    char *device_p;
+
+    res = 0;
+
+    /* Parse the device name. */
+    device_p = (char *)&request_p->device[0];
+
+    index = board_pin_string_to_device_index(device_p);
+
+    if (index < 0) {
+        if (std_strtol(device_p, &index) == NULL) {
+            index = -1;
+        }
+    }
+
+    /* Prepare the response. */
+    response.header.type = htonl(TYPE_PIN_DEVICE_RESPONSE);
+    response.header.size = htonl(4);
+
+    if ((index < 0) || (index >= PIN_DEVICE_MAX)) {
+        response.result = -ENODEV;
+    } else if (pin_clients[index].socket >= 0) {
+        response.result = -EADDRINUSE;
+    } else {
+        if (pin_clients[index].socket == -2) {
+            pthread_join(pin_clients[index].thrd, NULL);
+            pin_clients[index].socket = -1;
+        }
+
+        response.result = 0;
+    }
+
+    /* Send the response. */
+    response.result = htonl(response.result);
+    res = write(client, &response, sizeof(response));
+
+    if (response.result != 0) {
+        return (-1);
+    }
+
+    /* Start the client thread if everything went well so far. */
+    if (res == sizeof(response)) {
+        pin_clients[index].socket = client;
+        pin_clients[index].dev_p = &pin_device[index];
+        strcpy(&pin_clients[index].name[0], device_p);
+        res = pthread_create(&pin_clients[index].thrd,
+                             NULL,
+                             pin_client_main,
+                             &pin_clients[index]);
+
+        if (res != 0) {
+            fprintf(stderr, "error: creating pin device thread\n");
+        }
+    }
+
+    return (0);
 }
 
 #if CONFIG_PWM == 1
@@ -394,130 +529,6 @@ static void *can_client_main(void *arg_p)
     return (NULL);
 }
 
-static int handle_uart_device_request(struct device_request_t *request_p,
-                                      int client)
-{
-    struct device_response_t response;
-    int res;
-    long index;
-    char *device_p;
-
-    res = 0;
-
-    /* Parse the device name. */
-    device_p = (char *)&request_p->device[0];
-
-    if (std_strtol(device_p, &index) == NULL) {
-        index = -1;
-    }
-
-    /* Prepare the response. */
-    response.header.type = htonl(TYPE_UART_DEVICE_RESPONSE);
-    response.header.size = htonl(4);
-
-    if ((index < 0) || (index >= UART_DEVICE_MAX)) {
-        response.result = -ENODEV;
-    } else if (uart_clients[index].socket >= 0) {
-        response.result = -EADDRINUSE;
-    } else {
-        if (uart_clients[index].socket == -2) {
-            pthread_join(uart_clients[index].thrd, NULL);
-            uart_clients[index].socket = -1;
-        }
-
-        response.result = 0;
-    }
-
-    /* Send the response. */
-    response.result = htonl(response.result);
-    res = write(client, &response, sizeof(response));
-
-    if (response.result != 0) {
-        return (-1);
-    }
-
-    /* Start the client thread if everything went well so far. */
-    if (res == sizeof(response)) {
-        uart_clients[index].socket = client;
-        uart_clients[index].dev_p = &uart_device[index];
-        strcpy(&uart_clients[index].name[0], device_p);
-        res = pthread_create(&uart_clients[index].thrd,
-                             NULL,
-                             uart_client_main,
-                             &uart_clients[index]);
-
-        if (res != 0) {
-            fprintf(stderr, "error: creating uart device thread\n");
-        }
-    }
-
-    return (0);
-}
-
-static int handle_pin_device_request(struct device_request_t *request_p,
-                                      int client)
-{
-    struct device_response_t response;
-    int res;
-    long index;
-    char *device_p;
-
-    res = 0;
-
-    /* Parse the device name. */
-    device_p = (char *)&request_p->device[0];
-
-    index = board_pin_string_to_device_index(device_p);
-
-    if (index < 0) {
-        if (std_strtol(device_p, &index) == NULL) {
-            index = -1;
-        }
-    }
-
-    /* Prepare the response. */
-    response.header.type = htonl(TYPE_PIN_DEVICE_RESPONSE);
-    response.header.size = htonl(4);
-
-    if ((index < 0) || (index >= PIN_DEVICE_MAX)) {
-        response.result = -ENODEV;
-    } else if (pin_clients[index].socket >= 0) {
-        response.result = -EADDRINUSE;
-    } else {
-        if (pin_clients[index].socket == -2) {
-            pthread_join(pin_clients[index].thrd, NULL);
-            pin_clients[index].socket = -1;
-        }
-
-        response.result = 0;
-    }
-
-    /* Send the response. */
-    response.result = htonl(response.result);
-    res = write(client, &response, sizeof(response));
-
-    if (response.result != 0) {
-        return (-1);
-    }
-
-    /* Start the client thread if everything went well so far. */
-    if (res == sizeof(response)) {
-        pin_clients[index].socket = client;
-        pin_clients[index].dev_p = &pin_device[index];
-        strcpy(&pin_clients[index].name[0], device_p);
-        res = pthread_create(&pin_clients[index].thrd,
-                             NULL,
-                             pin_client_main,
-                             &pin_clients[index]);
-
-        if (res != 0) {
-            fprintf(stderr, "error: creating pin device thread\n");
-        }
-    }
-
-    return (0);
-}
-
 static int handle_can_device_request(struct device_request_t *request_p,
                                       int client)
 {
@@ -572,6 +583,101 @@ static int handle_can_device_request(struct device_request_t *request_p,
 
         if (res != 0) {
             fprintf(stderr, "error: creating can device thread\n");
+        }
+    }
+
+    return (0);
+}
+
+/**
+ * Handle a i2c client connection.
+ */
+static void *i2c_client_main(void *arg_p)
+{
+    struct i2c_client_t *client_p;
+    ssize_t size;
+    uint8_t byte;
+
+    client_p = arg_p;
+
+    printf("socket_device: i2c device %s connected\n",
+           &client_p->name[0]);
+    fflush(stdout);
+
+    while (1) {
+        size = read(client_p->socket, &byte, sizeof(byte));
+
+        if (size == 0) {
+            break;
+        }
+
+        /* Discard input data for now. */
+    }
+
+    close(client_p->socket);
+    client_p->socket = -2;
+
+    printf("socket_device: i2c device %s disconnected\n",
+           &client_p->name[0]);
+    fflush(stdout);
+
+    return (NULL);
+}
+
+static int handle_i2c_device_request(struct device_request_t *request_p,
+                                     int client)
+{
+    struct device_response_t response;
+    int res;
+    long index;
+    char *device_p;
+
+    res = 0;
+
+    /* Parse the device name. */
+    device_p = (char *)&request_p->device[0];
+
+    if (std_strtol(device_p, &index) == NULL) {
+        index = -1;
+    }
+
+    /* Prepare the response. */
+    response.header.type = htonl(TYPE_I2C_DEVICE_RESPONSE);
+    response.header.size = htonl(4);
+
+    if ((index < 0) || (index >= I2C_DEVICE_MAX)) {
+        response.result = -ENODEV;
+    } else if (i2c_clients[index].socket >= 0) {
+        response.result = -EADDRINUSE;
+    } else {
+        if (i2c_clients[index].socket == -2) {
+            pthread_join(i2c_clients[index].thrd, NULL);
+            i2c_clients[index].socket = -1;
+        }
+
+        response.result = 0;
+    }
+
+    /* Send the response. */
+    response.result = htonl(response.result);
+    res = write(client, &response, sizeof(response));
+
+    if (response.result != 0) {
+        return (-1);
+    }
+
+    /* Start the client thread if everything went well so far. */
+    if (res == sizeof(response)) {
+        i2c_clients[index].socket = client;
+        i2c_clients[index].dev_p = &i2c_device[index];
+        strcpy(&i2c_clients[index].name[0], device_p);
+        res = pthread_create(&i2c_clients[index].thrd,
+                             NULL,
+                             i2c_client_main,
+                             &i2c_clients[index]);
+
+        if (res != 0) {
+            fprintf(stderr, "error: creating i2c device thread\n");
         }
     }
 
@@ -721,6 +827,8 @@ static void *listener_main(void *arg_p)
 #endif
         } else if (request.header.type == TYPE_CAN_DEVICE_REQUEST) {
             res = handle_can_device_request(&request, client);
+        } else if (request.header.type == TYPE_I2C_DEVICE_REQUEST) {
+            res = handle_i2c_device_request(&request, client);
         } else {
             /* Send the response. */
             response.type = htonl(TYPE_UNSUPPORTED_TYPE);
@@ -762,6 +870,10 @@ int socket_device_module_init()
 
     for (i = 0; i < membersof(can_clients); i++) {
         can_clients[i].socket = -1;
+    }
+
+    for (i = 0; i < membersof(i2c_clients); i++) {
+        i2c_clients[i].socket = -1;
     }
 
 #if CONFIG_LINUX_SOCKET_DEVICE == 1
@@ -848,5 +960,79 @@ ssize_t socket_device_can_device_write_isr(const struct can_device_t *dev_p,
                                            const void *buf_p,
                                            size_t size)
 {
-    return (write(can_clients[CAN_INDEX(dev_p)].socket, buf_p, size));
+    const struct can_frame_t *frame_p;
+    char line[64];
+
+    frame_p = (struct can_frame_t *)buf_p;
+
+    /* Format the line to send to the client. */
+    sprintf(&line[0],
+            "%08x,%d,%d,%02x%02x%02x%02x%02x%02x%02x%02x\r\n",
+            frame_p->id,
+            (int)frame_p->extended_frame,
+            (int)frame_p->size,
+            frame_p->data.u8[0],
+            frame_p->data.u8[1],
+            frame_p->data.u8[2],
+            frame_p->data.u8[3],
+            frame_p->data.u8[4],
+            frame_p->data.u8[5],
+            frame_p->data.u8[6],
+            frame_p->data.u8[7]);
+
+    return (write(can_clients[CAN_INDEX(dev_p)].socket, &line[0], 31));
+}
+
+int socket_device_is_i2c_device_connected_isr(
+    const struct i2c_device_t *dev_p)
+{
+    int client;
+
+    client = i2c_clients[I2C_INDEX(dev_p)].socket;
+
+    return (client >= 0);
+}
+
+ssize_t socket_device_i2c_device_write_isr(const struct i2c_device_t *dev_p,
+                                           int address,
+                                           const void *buf_p,
+                                           size_t size)
+{
+    char buf[16];
+    ssize_t res;
+    int socket;
+    size_t i;
+    const uint8_t *byte_p;
+
+    socket = i2c_clients[I2C_INDEX(dev_p)].socket;
+
+    /* Write the address. */
+    sprintf(&buf[0], "%u,", address);
+
+    res = write(socket, &buf[0], strlen(&buf[0]));
+
+    if (res != strlen(&buf[0])) {
+        return (-1);
+    }
+
+    /* Write the data, one byte at a time. */
+    byte_p = buf_p;
+
+    for (i = 0; i < size; i++) {
+        sprintf(&buf[0], "%02x", byte_p[i]);
+
+        res = write(socket, &buf[0], 2);
+
+        if (res != 2) {
+            return (-1);
+        }
+    }
+
+    res = write(socket, "\r\n", 2);
+
+    if (res != 2) {
+        return (-1);
+    }
+
+    return (size);
 }

@@ -55,6 +55,7 @@ static ssize_t uart_port_write_cb(void *arg_p,
     struct uart_device_t *dev_p;
     size_t i;
     const char *c_p;
+    ssize_t res;
 
     self_p = container_of(arg_p, struct uart_driver_t, chout);
     dev_p = self_p->dev_p;
@@ -68,13 +69,15 @@ static ssize_t uart_port_write_cb(void *arg_p,
             putc(*c_p++, stdout);
             fflush(stdout);
         }
+
+        res = size;
     } else {
-        size = socket_device_uart_device_write_isr(dev_p, txbuf_p, size);
+        res = socket_device_uart_device_write_isr(dev_p, txbuf_p, size);
     }
 
     sys_unlock();
 
-    return (size);
+    return (res);
 }
 
 static ssize_t uart_port_write_cb_isr(void *arg_p,

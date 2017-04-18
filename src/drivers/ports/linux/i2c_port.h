@@ -28,54 +28,21 @@
  * This file is part of the Simba project.
  */
 
-#include "socket_device.h"
+#ifndef __DRIVERS_I2C_PORT_H__
+#define __DRIVERS_I2C_PORT_H__
 
-static ssize_t write_cb(void *arg_p,
-                        const void *buf_p,
-                        size_t size)
-{
-    struct can_driver_t *self_p;
-    struct can_device_t *dev_p;
-    ssize_t res;
+/* Predefined baudrates. */
+#define I2C_PORT_BAUDRATE_3_2MBPS  0
+#define I2C_PORT_BAUDRATE_1MBPS    1
+#define I2C_PORT_BAUDRATE_400KBPS  2
+#define I2C_PORT_BAUDRATE_100KBPS  3
 
-    self_p = arg_p;
-    dev_p = self_p->dev_p;
+struct i2c_device_t {
+    struct i2c_driver_t *drv_p;
+};
 
-    sys_lock();
+struct i2c_driver_t {
+    struct i2c_device_t *dev_p;
+};
 
-    if (socket_device_is_can_device_connected_isr(dev_p) == 1) {
-        res = socket_device_can_device_write_isr(dev_p, buf_p, size);
-    } else {
-        res = size;
-    }
-
-    sys_unlock();
-
-    return (res);
-}
-
-static int can_port_module_init()
-{
-    return (socket_device_module_init());
-}
-
-static int can_port_init(struct can_driver_t *self_p,
-                         struct can_device_t *dev_p,
-                         uint32_t speed)
-{
-    return (0);
-}
-
-static int can_port_start(struct can_driver_t *self_p)
-{
-    self_p->dev_p->drv_p = self_p;
-
-    return (0);
-}
-
-static int can_port_stop(struct can_driver_t *self_p)
-{
-    self_p->dev_p->drv_p = NULL;
-
-    return (0);
-}
+#endif

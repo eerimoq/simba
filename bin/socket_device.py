@@ -12,15 +12,17 @@ import datetime
 
 
 # Simba socket device types.
-TYPE_UNSUPPORTED_TYPE                  = 0
-TYPE_UART_DEVICE_REQUEST               = 1
-TYPE_UART_DEVICE_RESPONSE              = 2
-TYPE_PIN_DEVICE_REQUEST                = 3
-TYPE_PIN_DEVICE_RESPONSE               = 4
-TYPE_PWM_DEVICE_REQUEST                = 5
-TYPE_PWM_DEVICE_RESPONSE               = 6
-TYPE_CAN_DEVICE_REQUEST                = 7
-TYPE_CAN_DEVICE_RESPONSE               = 8
+TYPE_UNSUPPORTED_TYPE                  =  0
+TYPE_UART_DEVICE_REQUEST               =  1
+TYPE_UART_DEVICE_RESPONSE              =  2
+TYPE_PIN_DEVICE_REQUEST                =  3
+TYPE_PIN_DEVICE_RESPONSE               =  4
+TYPE_PWM_DEVICE_REQUEST                =  5
+TYPE_PWM_DEVICE_RESPONSE               =  6
+TYPE_CAN_DEVICE_REQUEST                =  7
+TYPE_CAN_DEVICE_RESPONSE               =  8
+TYPE_I2C_DEVICE_REQUEST                =  9
+TYPE_I2C_DEVICE_RESPONSE               = 10
 
 
 # Maps device type strings to request types.
@@ -28,7 +30,8 @@ REQUEST_TYPE_FROM_STRING = {
     'uart': TYPE_UART_DEVICE_REQUEST,
     'pin': TYPE_PIN_DEVICE_REQUEST,
     'pwm': TYPE_PWM_DEVICE_REQUEST,
-    'can': TYPE_CAN_DEVICE_REQUEST
+    'can': TYPE_CAN_DEVICE_REQUEST,
+    'i2c': TYPE_I2C_DEVICE_REQUEST
 }
 
 
@@ -343,6 +346,10 @@ def do_can(args):
     monitor_line('can', args.device, args.address, args.port)
 
 
+def do_i2c(args):
+    monitor_line('i2c', args.device, args.address, args.port)
+
+
 def do_monitor(args):
     uart_devices = request_all_devices('uart',
                                        args.address,
@@ -354,6 +361,9 @@ def do_monitor(args):
                                            args.address,
                                            args.port)
     can_devices = request_all_line_devices('can',
+                                           args.address,
+                                           args.port)
+    i2c_devices = request_all_line_devices('i2c',
                                            args.address,
                                            args.port)
 
@@ -392,6 +402,10 @@ def main():
     can_parser = subparsers.add_parser('can')
     can_parser.add_argument('device', help='Can device to request.')
     can_parser.set_defaults(func=do_can)
+
+    i2c_parser = subparsers.add_parser('i2c')
+    i2c_parser.add_argument('device', help='I2c device to request.')
+    i2c_parser.set_defaults(func=do_i2c)
 
     monitor_parser = subparsers.add_parser('monitor')
     monitor_parser.set_defaults(func=do_monitor)

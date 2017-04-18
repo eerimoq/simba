@@ -36,13 +36,16 @@ static struct can_driver_t can;
 static uint8_t canrxbuf[128];
 static struct uart_driver_t uart;
 static uint8_t uartrxbuf[128];
+static struct i2c_driver_t i2c;
 
 int main()
 {
     struct can_frame_t frame;
-    uint8_t byte;
     long frequency;
     long duty_cycle;
+    uint8_t uart_byte;
+    uint8_t i2c_byte;
+    int i2c_slave_address;
 
     /* Start the system. */
     sys_start();
@@ -57,7 +60,7 @@ int main()
     frequency = 100;
     duty_cycle = 0;
 
-    /* Initialize a CAN driver. */
+    /* Initialize the CAN driver. */
     can_init(&can,
              &can_device[0],
              CAN_SPEED_250KBPS,
@@ -68,14 +71,23 @@ int main()
     frame.size = 4;
     frame.data.u32[0] = htonl(0x12345678);
 
-    /* Initialize a UART driver. */
+    /* Initialize the UART driver. */
     uart_init(&uart,
               &uart_device[3],
               115200,
               &uartrxbuf[0],
               sizeof(uartrxbuf));
     uart_start(&uart);
-    byte = 0;
+    uart_byte = 0;
+
+    /* Initialize the I2C driver. */
+    i2c_init(&i2c,
+             &i2c_device[2],
+             I2C_BAUDRATE_3_2MBPS,
+             -1);
+    i2c_start(&i2c);
+    i2c_slave_address = 0;
+    i2c_byte = 0;
 
     while (1) {
         /* Wait half a second. */
@@ -96,8 +108,14 @@ int main()
         frame.id++;
 
         /* Write to the UART. */
-        uart_write(&uart, &byte, sizeof(byte));
-        byte++;
+        uart_write(&uart, &uart_byte, sizeof(uart_byte));
+        uart_byte++;
+
+        /* Write to the I2C. */
+        i2c_write(&i2c, i2c_slave_address, &i2c_byte, sizeof(i2c_byte));
+        i2c_slave_address += 2;
+        i2c_slave_address %= 128;
+        i2c_byte++;
     }
 
     return (0);

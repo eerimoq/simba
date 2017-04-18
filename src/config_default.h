@@ -37,6 +37,7 @@
 #if defined(FAMILY_LINUX)
 #    define PORT_HAS_EXTI
 #    define PORT_HAS_PIN
+#    define PORT_HAS_I2C
 #    define PORT_HAS_I2C_SOFT
 #    define PORT_HAS_PWM
 #    define PORT_HAS_PWM_SOFT
