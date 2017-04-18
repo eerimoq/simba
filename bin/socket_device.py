@@ -287,15 +287,15 @@ def request_all_devices(device_type, address, port):
         try:
             device = SocketDevice(device_type, str(index), address, port)
             device.start()
+            reader = threading.Thread(target=reader_main, args=(device, ))
+            reader.setDaemon(True)
+            reader.start()
+            devices.append((device, reader))
         except DeviceAlreadyInUseError:
-            continue
+            pass
         except (NoSuchDeviceError, UnsupportedTypeError):
             break
 
-        reader = threading.Thread(target=reader_main, args=(device, ))
-        reader.setDaemon(True)
-        reader.start()
-        devices.append((device, reader))
         index += 1
 
     return devices
@@ -313,15 +313,15 @@ def request_all_line_devices(device_type, address, port):
         try:
             device = SocketDevice(device_type, str(index), address, port)
             device.start()
+            reader = threading.Thread(target=reader_line_main, args=(device, ))
+            reader.setDaemon(True)
+            reader.start()
+            devices.append((device, reader))
         except DeviceAlreadyInUseError:
-            continue
+            pass
         except (NoSuchDeviceError, UnsupportedTypeError):
             break
 
-        reader = threading.Thread(target=reader_line_main, args=(device, ))
-        reader.setDaemon(True)
-        reader.start()
-        devices.append((device, reader))
         index += 1
 
     return devices
