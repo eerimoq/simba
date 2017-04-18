@@ -39,7 +39,8 @@ a MAC of `c8:d7:19:0f:04:66` and SSID `ssid`.
 .. code-block:: c
 
    esp_wifi_set_op_mode(esp_wifi_op_mode_station_t);
-   esp_wifi_station_init("ssid", "password",
+   esp_wifi_station_init("ssid",
+                         "password",
                          (uint8_t[]){0xc8, 0xd7, 0x19, 0x0f, 0x04, 0x66},
                          NULL);
 
