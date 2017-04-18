@@ -10,24 +10,38 @@ The Python script
 :github-blob:`socket_device.py<bin/socket_device.py>` can be used to
 monitor and send data to a device.
 
-Here is an example of how to build a linux application with the
-Arduino Mega pinout ...
+Arduino Mega example
+--------------------
+
+In this example :github-blob:`socket_device.py<bin/socket_device.py>`
+is the hardware simulator (to the left in the image below), and
+:github-tree:`socket_device<examples/socket_device>` is the Simba
+application (to the right in the image below). The five horizontal
+lines each represents input and output of one device.
+
+.. image:: ../images/socket-devices.jpg
+   :width: 80%
+   :align: center
+   :target: ../_images/socket-devices.jpg
+
+First build and run the linux application with the Arduino Mega
+pinout...
 
 .. code-block:: text
 
    $ make BOARD=linux PINOUT=arduino_mega run
 
-... and then monitor digital pin 0, ``d0``.
+...and then, in a second terminal, monitor digital pin 2, ``d2``.
 
 .. code-block:: text
 
-   > socket_device.py pin d0
+   > socket_device.py pin d2
    Connecting to localhost:47000... done.
-   Requesting pin device d0... done.
+   Requesting pin device d2... done.
    $
-   14:48:10.004512 pin(d0) RX: high
-   14:48:52.535323 pin(d0) RX: high
-   14:49:20.123124 pin(d0) RX: low
+   14:48:10.004512 pin(d2) RX: high
+   14:48:52.535323 pin(d2) RX: high
+   14:49:20.123124 pin(d2) RX: low
 
 Alternatively, monitor all devices at the same time with the monitor
 make target.
@@ -35,18 +49,19 @@ make target.
 .. code-block:: text
 
    $ make BOARD=linux PINOUT=arduino_mega monitor
+   socket_device.py monitor
    Connecting to localhost:47000... done.
    Requesting uart device 0... done.
    ...
    Connecting to localhost:47000... done.
-   Requesting pin device 0... done.
+   Requesting pin device 2... done.
    Connecting to localhost:47000... done.
-   Requesting pin device 1... done.
+   Requesting pin device 4... done.
    ...
    $
-   14:51:50.531761 pin(0) RX: low
+   14:51:50.531761 pin(2) RX: low
    14:51:50.541784 uart(0) RX: b'\n'
-   14:51:51.178744 pin(1) RX: high
+   14:51:51.178744 pin(4) RX: high
 
 Python modules
 --------------
@@ -145,6 +160,8 @@ This message is sent to the Simba application to request a device.
       3     n  Pin device request.
       5     n  Pwm device request.
       7     n  Can device request.
+      9     n  I2c device request.
+     11     n  Spi device request.
 
 Device response message
 ~~~~~~~~~~~~~~~~~~~~~~~
@@ -173,6 +190,8 @@ This message is the response to the request message.
       4     4  Pin device response.
       6     4  Pwm device response.
       8     4  Can device response.
+     10     4  I2c device response.
+     12     4  Spi device response.
 
 .. _pyserial: https://pythonhosted.org/pyserial
 

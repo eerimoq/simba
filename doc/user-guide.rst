@@ -21,13 +21,13 @@ directly access the hardware registers.
 
 .. image:: images/packages.jpg
    :width: 90%
-   :align: center    
+   :align: center
    :target: _images/packages.jpg
 
 **Contents:**
 
 .. toctree::
-   :glob:   
+   :glob:
    :maxdepth: 1
 
    user-guide/environment-setup
