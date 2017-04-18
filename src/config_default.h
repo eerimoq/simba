@@ -1720,7 +1720,7 @@
  * Console UART baudrate.
  */
 #ifndef CONFIG_START_CONSOLE_UART_RX_BUFFER_SIZE
-#    if defined(BOARD_NANO32) || defined(BOARD_ESP32_DEVKITC) || defined(BOARD_MAPLE_ESP32)
+#    if defined(BOARD_NANO32) || defined(BOARD_ESP32_DEVKITC) || defined(BOARD_MAPLE_ESP32) || defined(BOARD_LINUX)
 #        define CONFIG_START_CONSOLE_UART_RX_BUFFER_SIZE  512
 #    else
 #        define CONFIG_START_CONSOLE_UART_RX_BUFFER_SIZE   32
