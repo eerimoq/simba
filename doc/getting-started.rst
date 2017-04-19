@@ -97,12 +97,13 @@ The `Simba` development environment can be installed on `Linux (Ubuntu
       $ cd simba
       $ source setup.sh
 
-2. Build and upload the blink example to your device.
+2. Build and upload the blink example to your device. Replace
+   ``<my-serial-port>`` with your serial port name.
 
    .. code-block:: text
 
       $ cd examples/blink
-      $ make -s BOARD=nano32 upload
+      $ make -s BOARD=nano32 SERIAL_PORT=<my-serial-port> upload
 
 3. The built-in LED blinks!
 
