@@ -28,9 +28,19 @@
  * This file is part of the Simba project.
  */
 
+/**
+ * This port of the i2c module implements the i2c physical layer in
+ * software, using the i2c_soft module.
+ */
+
 #ifndef __DRIVERS_I2C_SOFT_PORT_H__
 #define __DRIVERS_I2C_SOFT_PORT_H__
 
+/**
+ * The device data structure contains arguments passed to
+ * i2c_soft_init(), as these arguments are missing in the hardware i2c
+ * init function, i2c_init().
+ */
 struct i2c_device_t {
     struct pin_device_t *scl_p;
     struct pin_device_t *sda_p;

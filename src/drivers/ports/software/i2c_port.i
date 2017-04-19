@@ -78,6 +78,10 @@ int i2c_port_scan(struct i2c_driver_t *self_p,
     return (i2c_soft_scan(&self_p->soft, address));
 }
 
+/**
+ * The slave interface is not implemented in this port.
+ */
+
 int i2c_port_slave_start(struct i2c_driver_t *self_p)
 {
     return (-1);
