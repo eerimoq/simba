@@ -68,7 +68,7 @@
  *
  * @param[in] str_p Pin as a string.
  *
- * @return Pin number of negative error code.
+ * @return Pin number or negative error code.
  */
 int board_pin_string_to_device_index(const char *str_p);
 

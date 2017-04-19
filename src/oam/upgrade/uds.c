@@ -206,7 +206,7 @@ static int ignore_and_write_response_no_data(struct upgrade_uds_t *self_p,
  *
  * @param[in] self_p UDS object..
  * @param[in] length Number of bytes to ignore on the input channel.
- * @param[in] buf_p Two bytes of negative response data after 0x7f.
+ * @param[in] buf_p Two bytes or negative response data after 0x7f.
  *
  * @returns zero(0) or negative error code.
  */
