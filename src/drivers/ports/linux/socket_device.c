@@ -778,10 +778,14 @@ static void *listener_main(void *arg_p)
     listener = setup_listener();
 
     if (listener < 0) {
-        printf("warning: failed to setup socket device listener socket\n");
+        printf("warning: socket_device: failed to setup listener socket\n");
+        fflush(stdout);
 
         return (NULL);
     }
+
+    printf("info: socket_device: listening for clients on TCP port 47000\n");
+    fflush(stdout);
 
     while (1) {
         client = accept(listener, NULL, NULL);
