@@ -449,10 +449,11 @@ static void *can_client_main(void *arg_p)
 {
     struct can_client_t *client_p;
     ssize_t size;
-    char line[64];
+    char buf[64];
     struct can_frame_t frame;
     int frame_size;
-    int frame_data[8];
+    long value;
+    size_t i;
 
     client_p = arg_p;
 
@@ -461,32 +462,24 @@ static void *can_client_main(void *arg_p)
     fflush(stdout);
 
     while (1) {
-        size = read(client_p->socket, &line[0], 31);
+        size = read(client_p->socket, &buf[0], 35);
 
         if (size == 0) {
             break;
-        } else if (size != 31) {
+        } else if (size != 35) {
             printf("warning: bad can line size %d\n", (int)size);
             fflush(stdout);
             continue;
         }
 
-        size = sscanf(&line[0],
-                      "%08x,%d,%d,%02x%02x%02x%02x%02x%02x%02x%02x\r\n",
+        size = sscanf(&buf[0],
+                      "id=%08x,extended=%d,size=%d,data=",
                       &frame.id,
                       &frame.extended_frame,
-                      &frame_size,
-                      &frame_data[0],
-                      &frame_data[1],
-                      &frame_data[2],
-                      &frame_data[3],
-                      &frame_data[4],
-                      &frame_data[5],
-                      &frame_data[6],
-                      &frame_data[7]);
+                      &frame_size);
 
-        if (size != 11) {
-            printf("warning: bad can message received: %s\n", &line[0]);
+        if (size != 3) {
+            printf("warning: bad can message received: %s\n", &buf[0]);
             fflush(stdout);
             continue;
         }
@@ -505,14 +498,40 @@ static void *can_client_main(void *arg_p)
         }
 
         frame.size = frame_size;
-        frame.data.u8[0] = frame_data[0];
-        frame.data.u8[1] = frame_data[1];
-        frame.data.u8[2] = frame_data[2];
-        frame.data.u8[3] = frame_data[3];
-        frame.data.u8[4] = frame_data[4];
-        frame.data.u8[5] = frame_data[5];
-        frame.data.u8[6] = frame_data[6];
-        frame.data.u8[7] = frame_data[7];
+
+        /* Read the data, one byte at a time. */
+        buf[0] = '0';
+        buf[1] = 'x';
+        buf[4] = '\0';
+
+        for (i = 0; i < frame_size; i++) {
+            size = read(client_p->socket, &buf[2], 2);
+
+            if (size == 0) {
+                break;
+            } else if (size != 2) {
+                printf("warning: bad can line size %d\n", (int)size);
+                fflush(stdout);
+                size = -1;
+                break;
+            }
+
+            if (std_strtol(&buf[0], &value) == NULL) {
+                size = -1;
+                break;
+            }
+
+            frame.data.u8[i] = value;
+        }
+
+        if (size == 0) {
+            break;
+        } else if (size == -1) {
+            continue;
+        }
+
+        /* Read the line terminator. */
+        read(client_p->socket, &buf[0], 2);
 
         sys_lock();
 
@@ -971,26 +990,46 @@ ssize_t socket_device_can_device_write_isr(const struct can_device_t *dev_p,
                                            size_t size)
 {
     const struct can_frame_t *frame_p;
-    char line[64];
+    char buf[64];
+    ssize_t res;
+    int socket;
+    size_t i;
+
+    socket = can_clients[CAN_INDEX(dev_p)].socket;
 
     frame_p = (struct can_frame_t *)buf_p;
 
     /* Format the line to send to the client. */
-    sprintf(&line[0],
-            "%08x,%d,%d,%02x%02x%02x%02x%02x%02x%02x%02x\r\n",
+    sprintf(&buf[0],
+            "id=%08x,extended=%d,size=%d,data=",
             frame_p->id,
             (int)frame_p->extended_frame,
-            (int)frame_p->size,
-            frame_p->data.u8[0],
-            frame_p->data.u8[1],
-            frame_p->data.u8[2],
-            frame_p->data.u8[3],
-            frame_p->data.u8[4],
-            frame_p->data.u8[5],
-            frame_p->data.u8[6],
-            frame_p->data.u8[7]);
+            (int)frame_p->size);
 
-    return (write(can_clients[CAN_INDEX(dev_p)].socket, &line[0], 31));
+    res = write(socket, &buf[0], strlen(&buf[0]));
+
+    if (res != strlen(&buf[0])) {
+        return (-1);
+    }
+
+    /* Write the data, one byte at a time. */
+    for (i = 0; i < frame_p->size; i++) {
+        sprintf(&buf[0], "%02x", frame_p->data.u8[i]);
+
+        res = write(socket, &buf[0], 2);
+
+        if (res != 2) {
+            return (-1);
+        }
+    }
+
+    res = write(socket, "\r\n", 2);
+
+    if (res != 2) {
+        return (-1);
+    }
+
+    return (size);
 }
 
 int socket_device_is_i2c_device_connected_isr(
@@ -1008,7 +1047,7 @@ ssize_t socket_device_i2c_device_write_isr(const struct i2c_device_t *dev_p,
                                            const void *buf_p,
                                            size_t size)
 {
-    char buf[16];
+    char buf[64];
     ssize_t res;
     int socket;
     size_t i;
@@ -1017,7 +1056,7 @@ ssize_t socket_device_i2c_device_write_isr(const struct i2c_device_t *dev_p,
     socket = i2c_clients[I2C_INDEX(dev_p)].socket;
 
     /* Write the address. */
-    sprintf(&buf[0], "%u,", address);
+    sprintf(&buf[0], "address=%04x,size=%04lx,data=", address, size);
 
     res = write(socket, &buf[0], strlen(&buf[0]));
 

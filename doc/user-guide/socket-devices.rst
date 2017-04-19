@@ -121,32 +121,33 @@ supported yet.
 Pwm
 ^^^
 
-Sends ``frequency = <value>`` and ``duty_cycle = <value>`` when set on
+Sends ``frequency=<value>`` and ``duty_cycle=<value>`` when set on
 given device.
 
 Can
 ^^^
 
-Sends and receives frames on the format ``<id>,<extended>,<data
-size>,<data>``. ``<id>`` and ``<data>`` are hexadecimal numbers not
-prefixed with ``0x``. ``<extended>`` and ``<size>`` are decimal
-integers.
+Sends and receives frames on the format
+``id=<id>,extended=<extended>,size=<size>,data=<data>``. ``<id>`` and
+``<data>`` are hexadecimal numbers not prefixed with ``0x``. ``size``
+and ``<extended>`` is a decimal integers.
 
 .. code-block:: text
 
    > socket_device.py can 0
    Connecting to localhost:47000... done.
    Requesting can device 0... done.
-   $ 00000005,1,2,0011000000000000<Enter>
-   14:57:22.344321 can(0) TX: 00000005,1,2,0011000000000000
-   14:57:22.346321 can(0) RX: 00000006,1,2,0112000000000000
+   $ id=00000005,extended=1,size=2,data=0011<Enter>
+   14:57:22.344321 can(0) TX: id=00000005,extended=1,size=2,data=0011
+   14:57:22.346321 can(0) RX: id=00000006,extended=1,size=2,data=0112
 
 I2c
 ^^^
 
-Sends and receives data on the format ``<slave
-address>,<data>``. ``<slave address>`` is an decimal integer, and
-``<data>`` is a hexadecimal number.
+Sends and receives data on the format
+``address=<address>,size=<size>,data=<data>``. ``<address>`` is an
+decimal integer, while ``<size>`` and ``<data>`` is a hexadecimal
+numbers.
 
 .. code-block:: text
 
@@ -154,7 +155,7 @@ address>,<data>``. ``<slave address>`` is an decimal integer, and
    Connecting to localhost:47000... done.
    Requesting i2c device 0... done.
    $ 
-   14:57:22.346321 i2c(0) RX: 6,1a2b3c
+   14:57:22.346321 i2c(0) RX: address=0006,size=0003,data=1a2b3c
 
 Device request message
 ~~~~~~~~~~~~~~~~~~~~~~

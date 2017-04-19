@@ -5,6 +5,7 @@
 
 import binascii
 from socket_device import SocketDevice
+import re
 
 
 rc = {}
@@ -41,14 +42,12 @@ class interface(object):
 
             """
 
-            length = len(message.data)
-            data = message.data + b'\x00' * (8 - length)
-
-            line = "{:08x},{},{},".format(message.arbitration_id,
-                                          1 if message.extended_id else 0,
-                                          length)
+            line = "id={:08x},extended={},size={},data=".format(
+                message.arbitration_id,
+                1 if message.extended_id else 0,
+                len(message.data))
             line = line.encode('ascii')
-            line += binascii.hexlify(bytes(data))
+            line += binascii.hexlify(bytes(message.data))
             line += b"\r\n"
 
             self.device.write(line)
@@ -59,12 +58,14 @@ class interface(object):
             """
 
             line = self.device.readline()
-            line = line.strip(b'\r\n')
 
-            words = line.split(b',')
-            arbitration_id = int(words[0], 16)
-            extended_id = (words[1] == b'1')
-            length = int(words[2])
-            data = bytearray(binascii.unhexlify(words[3][0:2*length]))
+            line = line.strip(b'\r\n')
+            mo = re.match(rb'id=(\w{8}),extended=(\d),size=(\d),data=(\w+)',
+                          line)
+
+            arbitration_id = int(mo.group(1), 16)
+            extended_id = (mo.group(2) == b'1')
+            length = int(mo.group(3))
+            data = bytearray(binascii.unhexlify(mo.group(4)[0:2*length]))
 
             return Message(arbitration_id, extended_id, data)

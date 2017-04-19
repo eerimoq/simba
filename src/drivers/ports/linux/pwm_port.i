@@ -44,7 +44,7 @@ static int pwm_port_set_frequency(struct pwm_driver_t *self_p,
     sys_lock();
 
     if (socket_device_is_pwm_device_connected_isr(self_p->dev_p) == 1) {
-        sprintf(&buf[0], "frequency = %ld\r\n", value);
+        sprintf(&buf[0], "frequency=%ld\r\n", value);
         socket_device_pwm_device_write_isr(self_p->dev_p,
                                            &buf[0],
                                            strlen(&buf[0]));
@@ -63,7 +63,7 @@ static int pwm_port_set_duty_cycle(struct pwm_driver_t *self_p,
     sys_lock();
 
     if (socket_device_is_pwm_device_connected_isr(self_p->dev_p) == 1) {
-        sprintf(&buf[0], "duty_cycle = %ld\r\n", value);
+        sprintf(&buf[0], "duty_cycle=%ld\r\n", value);
         socket_device_pwm_device_write_isr(self_p->dev_p,
                                            &buf[0],
                                            strlen(&buf[0]));
