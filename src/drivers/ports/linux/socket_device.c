@@ -37,7 +37,7 @@
 #include <netdb.h>
 
 /**
- * Setup message types.
+ * Message types.
  */
 #define TYPE_UNSUPPORTED_TYPE                             (0)
 #define TYPE_UART_DEVICE_REQUEST                          (1)
@@ -65,6 +65,9 @@ struct module_t {
     pthread_t thrd;
 };
 
+/**
+ * A setup message header.
+ */
 struct header_t {
     uint32_t type;
     uint32_t size;
@@ -80,6 +83,9 @@ struct device_response_t {
     int32_t result;
 };
 
+/**
+ * The client types.
+ */
 struct uart_client_t {
     int socket;
     struct uart_device_t *dev_p;
