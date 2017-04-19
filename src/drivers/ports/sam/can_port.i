@@ -153,6 +153,8 @@ static ssize_t write_cb(void *arg_p,
     self_p = arg_p;
     dev_p = self_p->dev_p;
 
+    sem_take(&self_p->sem, NULL);
+
     self_p->txframe_p = (frame_p + 1);
     self_p->txsize = (size - sizeof(*frame_p));
     self_p->thrd_p = thrd_self();
@@ -161,13 +163,11 @@ static ssize_t write_cb(void *arg_p,
                       frame_p);
 
     sys_lock();
-
     dev_p->regs_p->IER = CAN_IER_MB0;
-
-    /* Wait for transmission to complete. */
     thrd_suspend_isr(NULL);
-
     sys_unlock();
+
+    sem_give(&self_p->sem, 1);
 
     return (size);
 }

@@ -31,9 +31,9 @@
 #ifndef __DRIVERS_CAN_PORT_H__
 #define __DRIVERS_CAN_PORT_H__
 
-#define CAN_PORT_SPEED_1000KBPS (0)
-#define CAN_PORT_SPEED_500KBPS  (1)
-#define CAN_PORT_SPEED_250KBPS  (2)
+#define CAN_PORT_SPEED_1000KBPS                           (0)
+#define CAN_PORT_SPEED_500KBPS                            (1)
+#define CAN_PORT_SPEED_250KBPS                            (2)
 
 struct can_device_t {
     struct can_driver_t *drv_p;
@@ -43,6 +43,7 @@ struct can_driver_t {
     struct chan_t base; /* Used as output channel. */
     struct can_device_t *dev_p;
     struct queue_t chin;
+    struct sem_t sem;
 };
 
 #endif

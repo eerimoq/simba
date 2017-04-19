@@ -173,6 +173,8 @@ static ssize_t write_cb(void *arg_p,
     regs_p = dev_p->regs_p;
     frame_p = (struct can_frame_t *)buf_p;
 
+    sem_take(&self_p->sem, NULL);
+
     self_p->txframe_p = (frame_p + 1);
     self_p->txsize = (size - sizeof(*frame_p));
     self_p->thrd_p = thrd_self();
@@ -181,6 +183,8 @@ static ssize_t write_cb(void *arg_p,
     write_frame_to_hw(regs_p, frame_p);
     thrd_suspend_isr(NULL);
     sys_unlock();
+
+    sem_give(&self_p->sem, 1);
 
     return (size);
 }
