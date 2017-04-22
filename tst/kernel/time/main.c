@@ -65,6 +65,7 @@ static int test_get_set(struct harness_t *harness)
 
     /* Get the new time. */
     BTASSERT(time_get(&time1) == 0);
+    BTASSERT(time1.seconds >= (INT_MAX / CONFIG_SYSTEM_TICK_FREQUENCY - 1));
 
     std_printf(FSTR("time1: seconds = %lu, nanoseconds = %lu\r\n"),
                time1.seconds, time1.nanoseconds);

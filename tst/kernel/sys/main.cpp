@@ -96,6 +96,24 @@ static int test_config(struct harness_t *harness_p)
 
 static int test_uptime(struct harness_t *harness_p)
 {
+    int res;
+    struct time_t uptime;
+
+    BTASSERT(sys_uptime(&uptime) == 0);
+    std_printf(OSTR("seconds: %d, nanosecons: %d\r\n"),
+               uptime.seconds,
+               uptime.nanoseconds);
+
+    sys_lock();
+    res = sys_uptime_isr(&uptime);
+    sys_unlock();
+
+    std_printf(OSTR("seconds: %d, nanosecons: %d\r\n"),
+               uptime.seconds,
+               uptime.nanoseconds);
+
+    BTASSERT(res == 0);
+
 #if CONFIG_FS_CMD_SYS_UPTIME == 1
 
     char buf[32];
@@ -103,13 +121,9 @@ static int test_uptime(struct harness_t *harness_p)
     strcpy(buf, "/kernel/sys/uptime");
     BTASSERT(fs_call(buf, chan_null(), sys_get_stdout(), NULL) == 0);
 
-    return (0);
-
-#else
-
-    return (1);
-
 #endif
+
+    return (0);
 }
 
 static int test_time(struct harness_t *harness_p)

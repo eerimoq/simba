@@ -29,19 +29,20 @@
  */
 
 #include "simba.h"
+#include <limits.h>
 
-struct sys_t sys = {
-    .on_fatal_callback = sys_stop,
-    .stdin_p = NULL,
-    .stdout_p = NULL,
-    .interrupt = {
-        .start = 0,
-        .time = 0
-    }
+#define SECONDS_PER_MSB (INT_MAX / CONFIG_SYSTEM_TICK_FREQUENCY)
+#define TICKS_PER_MSB   (SECONDS_PER_MSB * CONFIG_SYSTEM_TICK_FREQUENCY)
+
+/* 64 bits so it does not wrap around during the system's uptime. */
+struct tick_t {
+    uint32_t msb;
+    uint32_t lsb;
 };
 
 struct module_t {
     int initialized;
+    struct tick_t tick;
 #if CONFIG_FS_CMD_SYS_INFO == 1
     struct fs_command_t cmd_info;
 #endif
@@ -63,6 +64,16 @@ struct module_t {
 };
 
 static struct module_t module;
+
+struct sys_t sys = {
+    .on_fatal_callback = sys_stop,
+    .stdin_p = NULL,
+    .stdout_p = NULL,
+    .interrupt = {
+        .start = 0,
+        .time = 0
+    }
+};
 
 static const FAR char config[] =
     "config: sys-config-string=" STRINGIFY(CONFIG_SYS_CONFIG_STRING) "\r\n"
@@ -88,12 +99,45 @@ extern void thrd_tick_isr(void);
 
 static void RAM_CODE sys_tick_isr(void)
 {
-    time_tick_isr();
+    module.tick.lsb++;
+
+    if (module.tick.lsb == TICKS_PER_MSB) {
+        module.tick.msb++;
+        module.tick.lsb = 0;
+    }
+
     timer_tick_isr();
     thrd_tick_isr();
 }
 
 #include "sys_port.i"
+
+static void tick_to_time(struct time_t *time_p,
+                         struct tick_t *tick_p)
+{
+    uint32_t lsb_seconds;
+    uint32_t lsb_ticks;
+
+    lsb_seconds = (tick_p->lsb / CONFIG_SYSTEM_TICK_FREQUENCY);
+    lsb_ticks = (tick_p->lsb - (CONFIG_SYSTEM_TICK_FREQUENCY * lsb_seconds));
+
+    time_p->seconds = (tick_p->msb * SECONDS_PER_MSB + lsb_seconds);
+    time_p->nanoseconds = (1000 * ((1000000UL * lsb_ticks)
+                                   / CONFIG_SYSTEM_TICK_FREQUENCY));
+}
+
+/* static void time_to_tick(struct tick_t *tick_p, */
+/*                          struct time_t *time_p) */
+/* { */
+/*     uint32_t lsb_seconds; */
+/*     uint32_t lsb_ticks; */
+
+/*     tick_p->msb = (time_p->seconds / SECONDS_PER_MSB); */
+/*     lsb_seconds = (time_p->seconds - (tick_p->msb * SECONDS_PER_MSB)); */
+/*     lsb_ticks = (((time_p->nanoseconds / 1000) */
+/*                   * CONFIG_SYSTEM_TICK_FREQUENCY) / 1000000); */
+/*     tick_p->lsb = ((lsb_seconds * CONFIG_SYSTEM_TICK_FREQUENCY) + lsb_ticks); */
+/* } */
 
 static void init_drivers(void)
 {
@@ -378,14 +422,14 @@ static int cmd_uptime_cb(int argc,
                          void *arg_p,
                          void *call_arg_p)
 {
-    struct time_t now;
+    struct time_t uptime;
 
-    time_get(&now);
+    sys_uptime(&uptime);
 
     std_fprintf(out_p,
                 OSTR("%lu.%lu seconds\r\n"),
-                now.seconds,
-                now.nanoseconds / 1000000ul);
+                uptime.seconds,
+                uptime.nanoseconds / 1000000ul);
 
     return (0);
 }
@@ -653,6 +697,42 @@ void sys_reboot(void)
 int sys_backtrace(void **buf_pp, size_t size)
 {
     return (sys_port_backtrace(buf_pp, size));
+}
+
+int sys_uptime(struct time_t *uptime_p)
+{
+    ASSERTN(uptime_p != NULL, EINVAL);
+
+    struct tick_t tick;
+    struct time_t offset;
+
+    offset.seconds = 0;
+
+    sys_lock();
+    tick = module.tick;
+    offset.nanoseconds = sys_port_get_time_into_tick();
+    sys_unlock();
+
+    tick_to_time(uptime_p, &tick);
+
+    return (time_add(uptime_p, uptime_p, &offset));
+}
+
+int sys_uptime_isr(struct time_t *uptime_p)
+{
+    ASSERTN(uptime_p != NULL, EINVAL);
+
+    struct tick_t tick;
+    struct time_t offset;
+
+    offset.seconds = 0;
+
+    tick = module.tick;
+    offset.nanoseconds = sys_port_get_time_into_tick();
+
+    tick_to_time(uptime_p, &tick);
+
+    return (time_add(uptime_p, uptime_p, &offset));
 }
 
 void sys_set_on_fatal_callback(sys_on_fatal_fn_t callback)

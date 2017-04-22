@@ -125,6 +125,15 @@ static int sys_port_backtrace(void **buf_pp, size_t size)
     return (depth);
 }
 
+static int32_t sys_port_get_time_into_tick()
+{
+    uint32_t count;
+
+    count = (SPC5_STM->CNT - (SPC5_STM->CHANNELS[0].CMP - SYS_TICK_COUNT));
+
+    return (1000 * (count / (F_CPU / 1000000)));
+}
+
 static void sys_port_lock(void)
 {
     asm volatile("wrteei 0");

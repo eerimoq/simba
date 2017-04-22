@@ -145,6 +145,25 @@ void sys_reboot(void) __attribute__ ((noreturn));
 int sys_backtrace(void **buf_p, size_t size);
 
 /**
+ * Get the system uptime.
+ *
+ * @param[out] uptime_p System uptime.
+ *
+ * @return zero(0) or negative error code.
+ */
+int sys_uptime(struct time_t *uptime_p);
+
+/**
+ * Get the system uptime from interrupt context or with the system
+ * lock taken.
+ *
+ * @param[out] uptime_p System uptime.
+ *
+ * @return zero(0) or negative error code.
+ */
+int sys_uptime_isr(struct time_t *uptime_p);
+
+/**
  * Set the on-fatal-callback function to given callback.
  *
  * The on-fatal-callback is called when a fatal error occurs. The
