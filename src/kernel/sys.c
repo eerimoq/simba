@@ -570,11 +570,11 @@ int sys_start(void)
     start_soam();
 #endif
 
-# if CONFIG_START_FILESYSTEM == 1
+#if CONFIG_START_FILESYSTEM == 1
     start_filesystem();
 #endif
 
-# if CONFIG_START_NETWORK == 1
+#if CONFIG_START_NETWORK == 1
     start_network();
 #endif
 
