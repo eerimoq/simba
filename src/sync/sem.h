@@ -48,8 +48,6 @@
                           .count_max = _count_max,      \
                           .head_p = NULL }
 
-struct sem_elem_t;
-
 struct sem_t {
     /** Number of used resources. */
     int count;
