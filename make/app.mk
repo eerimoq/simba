@@ -41,11 +41,7 @@ DEPSDIR = $(BUILDDIR)/deps
 GENDIR = $(BUILDDIR)/gen
 INC += . $(SIMBA_ROOT)/src $(BUILDDIR)
 MAIN_C ?= main.c
-ifeq ($(RUST),yes)
-    SRC += main.rs
-else
-    SRC += $(MAIN_C)
-endif
+SRC += $(MAIN_C)
 SETTINGS_INI ?=
 ifeq ($(SETTINGS_INI),)
 SETTINGS_C ?= $(SIMBA_ROOT)/src/settings_default.c
@@ -64,12 +60,10 @@ SRC_FILTERED = $(filter-out $(SRC_IGNORE),$(SRC))
 CSRC += $(filter %.c,$(SRC_FILTERED))
 CXXSRC += $(filter %.cpp,$(SRC_FILTERED))
 ASMSRC += $(filter %.S,$(SRC_FILTERED))
-ASMOBJ = $(patsubst %,$(OBJDIR)%,$(abspath $(ASMSRC:%.S=%.obj)))
-RUST_SRC += $(filter %.rs,$(SRC_FILTERED))
-COBJ = $(patsubst %,$(OBJDIR)%,$(abspath $(CSRC:%.c=%.o)))
-CXXOBJ = $(patsubst %,$(OBJDIR)%,$(abspath $(CXXSRC:%.cpp=%.o)))
-RUST_OBJ = $(patsubst %,$(OBJDIR)%,$(abspath $(RUST_SRC:%.rs=%.o)))
-OBJ = $(COBJ) $(CXXOBJ) $(RUST_OBJ) $(ASMOBJ)
+ASMOBJ += $(patsubst %,$(OBJDIR)%,$(abspath $(ASMSRC:%.S=%.obj)))
+COBJ += $(patsubst %,$(OBJDIR)%,$(abspath $(CSRC:%.c=%.o)))
+CXXOBJ += $(patsubst %,$(OBJDIR)%,$(abspath $(CXXSRC:%.cpp=%.o)))
+OBJ += $(COBJ) $(CXXOBJ) $(ASMOBJ)
 GENCSRC = $(GENDIR)/simba_gen.c
 SOAMDBAPP = $(BUILDDIR)/$(NAME).soamdb
 GENOBJ = $(patsubst %,$(OBJDIR)/%,$(notdir $(GENCSRC:%.c=%.o)))
@@ -86,8 +80,7 @@ MAP = $(BUILDDIR)/$(NAME).map
 RUNLOG = $(BUILDDIR)/run.log
 CLEAN = $(BUILDDIR) $(EXE) $(RUNLOG) size.log \
         coverage.log coverage.xml gmon.out *.gcov profile.log \
-	index.*html \
-	$(RUST_SIMBA_RS) $(RUST_LIBSIMBA) $(RUST_LIBCORE)
+	index.*html
 STUB ?=
 
 # configuration
@@ -291,78 +284,6 @@ endif
 	gcc -MM -MT $$@ $$(INC:%=-I%) $$(CDEFS:%=-D%) -o $(patsubst %.S,$(DEPSDIR)%.obj.dep,$(abspath $1)) $$<
 endef
 $(foreach file,$(ASMSRC),$(eval $(call COMPILE_ASM_template,$(file))))
-
-RUSTLIB = rustlib
-RUST_ROOT ?= $(SIMBA_ROOT)/rost/rust
-RUST_TARGET ?=
-RUST_SIMBA_RS = $(SIMBA_ROOT)/rost/src/simba.rs
-RUST_LIBSIMBA = libsimba.a
-RUST_LIBSIMBA_SRC = \
-	lib.rs \
-	kernel/chan.rs \
-	kernel/event.rs \
-	kernel/mod.rs \
-	kernel/queue.rs \
-	kernel/sys.rs \
-	kernel/thrd.rs \
-	drivers/mod.rs \
-	drivers/uart.rs \
-	slib/mod.rs \
-	slib/harness.rs
-RUST_LIBRARIES = \
-	core \
-	alloc \
-	rustc_unicode \
-	collections
-RSFLAGS = \
-	-g \
-	-Z no-landing-pads \
-	-C opt-level=3 \
-	-L . \
-	--crate-type lib \
-	$(RUST_TARGET:%=--target=$(SIMBA_ROOT)/make/rust/%.json) \
-	$(RSFLAGS_EXTRA)
-
-ifeq ($(RUST), yes)
-    LIB += simba $(RUST_LIBRARIES)
-    LDFLAGS += -L $(RUSTLIB)
-
-generate: $(RUST_LIBRARIES:%=$(RUSTLIB)/lib%.a) $(RUSTLIB)/$(RUST_LIBSIMBA)
-endif
-
-$(RUST_LIBRARIES:%=$(RUSTLIB)/lib%.a):
-	@echo "Compiling RUST library $@..."
-	mkdir -p $(RUSTLIB)
-ifeq ($(RUST_TARGET),)
-	cp /usr/local/lib/rustlib/*-unknown-linux-gnu/lib/$(@:$(RUSTLIB)/%.a=%)-*.rlib $@
-else
-	rustc $(RSFLAGS) $(RUST_ROOT)/src/$(@:$(RUSTLIB)/%.a=%)/lib.rs --out-dir .
-	cp $(@:$(RUSTLIB)/%.a=%.rlib) $@
-endif
-
-$(RUSTLIB)/$(RUST_LIBSIMBA): $(RUST_SIMBA_RS) $(RUST_LIBSIMBA_SRC:%=$(SIMBA_ROOT)/rost/src/%)
-	@echo "Compiling RUST $@..."
-	rustc $(RSFLAGS) $(SIMBA_ROOT)/rost/src/lib.rs --crate-name simba --out-dir .
-	cp libsimba.rlib $@
-
--include $(DEPSDIR)/simba.rs.dep
-$(RUST_SIMBA_RS):
-	@echo "Generating RUST $@"
-	mkdir -p $(DEPSDIR)
-	bindgen -builtins -core $(filter -I% -D% -O%,$(CFLAGS)) -o $@ $(SIMBA_ROOT)/src/simba.h
-	gcc -MM -MT $@ $(filter -I% -D% -O%,$(CFLAGS)) -o $(DEPSDIR)/simba.rs.dep $(SIMBA_ROOT)/src/simba.h
-
-define RUST_COMPILE_template
--include $(patsubst %.rs,$(DEPSDIR)%.o.dep,$(abspath $1))
-$(patsubst %.rs,$(OBJDIR)%.o,$(abspath $1)): $1 $(SIMBA_RS)
-	@echo "Compiling $1"
-	mkdir -p $(OBJDIR)$(abspath $(dir $1))
-	mkdir -p $(DEPSDIR)$(abspath $(dir $1))
-	mkdir -p $(GENDIR)$(abspath $(dir $1))
-	cp $$< $(patsubst %.rs,$(GENDIR)%.o.pp,$(abspath $1))
-	rustc $(RSFLAGS) -o $$@ $$<
-endef
-$(foreach file,$(RUST_SRC),$(eval $(call RUST_COMPILE_template,$(file))))
 
 $(SOAMDBAPP) $(GENOBJ): $(OBJ)
 	$(SIMBA_ROOT)/bin/simbagen.py $(NAME) $(VERSION) $(BOARD_DESC) \

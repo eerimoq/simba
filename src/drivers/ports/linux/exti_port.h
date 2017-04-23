@@ -33,6 +33,7 @@
 #define EXTI_PORT_TRIGGER_RISING_EDGE  2
 
 struct exti_device_t {
+    struct exti_driver_t *drv_p;
 };
 
 struct exti_driver_t {
