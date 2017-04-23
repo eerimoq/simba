@@ -16,6 +16,12 @@ Normally one log object is created for each subsystem in an
 application. This gives the user the power to control which parts of
 the system to debug and/or monitor at runtime.
 
+It's also possible to print log entries without using log objects, but
+instead use the current threads' log mask to filter log entries. Just
+give ``NULL`` as the first arguement to ``log_object_print()``, and
+the threads' log mask will be used. See :doc:`../kernel/thrd` details
+on how to change the threads' log mask.
+
 Sometimes it's useful to write log entries to multiple channels. This
 is possible by creating and adding another log handler to the log
 module.
