@@ -2085,6 +2085,13 @@
 #endif
 
 /**
+ * Sleep in the test harness before executing the first testcase.
+ */
+#ifndef CONFIG_HARNESS_SLEEP_MS
+#    define CONFIG_HARNESS_SLEEP_MS                       200
+#endif
+
+/**
  * Size of the HTTP server request buffer. This buffer is used when
  * parsing received HTTP request headers.
  */

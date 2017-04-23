@@ -49,7 +49,7 @@ int harness_run(struct harness_t *self_p,
     testcase_p = testcases_p;
 
 #if !defined(ARCH_LINUX)
-    thrd_sleep_ms(200);
+    thrd_sleep_ms(CONFIG_HARNESS_SLEEP_MS);
 #endif
 
     /* Print a header. */
