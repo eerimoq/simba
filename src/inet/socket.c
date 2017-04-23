@@ -540,7 +540,7 @@ static void on_tcp_err(void *arg_p, err_t err)
     /* The PCB has already been freed by LwIP before calling this
        function. */
     socket_p->pcb_p = NULL;
-    
+
     if (socket_p->output.cb.state == STATE_CONNECT) {
         socket_p->output.cb.state = STATE_CLOSED;
         resume_thrd(socket_p->input.cb.thrd_p, -1);
@@ -593,6 +593,10 @@ static err_t on_tcp_recv(void *arg_p,
                         args_p->size - args_p->extra.left);
         } else {
             resume_if_polled(socket_p);
+        }
+
+        if(socket_p->output.cb.state == STATE_SENDTO) {
+            resume_thrd(socket_p->output.cb.thrd_p, 0);
         }
     }
 
@@ -790,7 +794,7 @@ static void tcp_send_to_cb(void *ctx_p)
         resume_thrd(socket_p->output.cb.thrd_p, 0);
         return;
     }
-    
+
     args_p = socket_p->output.cb.args_p;
     size = MIN(args_p->extra.left,
                tcp_sndbuf(((struct tcp_pcb *)socket_p->pcb_p)));
@@ -1294,7 +1298,7 @@ ssize_t socket_sendto(struct socket_t *self_p,
     ASSERTN(self_p != NULL, EINVAL);
     ASSERTN(buf_p != NULL, EINVAL);
     ASSERTN(size > 0, EINVAL);
-    
+
     switch (self_p->type) {
 
     case SOCKET_TYPE_STREAM:
