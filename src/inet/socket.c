@@ -595,7 +595,7 @@ static err_t on_tcp_recv(void *arg_p,
             resume_if_polled(socket_p);
         }
 
-        if(socket_p->output.cb.state == STATE_SENDTO) {
+        if (socket_p->output.cb.state == STATE_SENDTO) {
             resume_thrd(socket_p->output.cb.thrd_p, 0);
         }
     }
