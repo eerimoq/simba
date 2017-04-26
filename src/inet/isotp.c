@@ -125,7 +125,7 @@ static ssize_t handle_input_first_frame_sent(struct isotp_t *self_p,
         return (-1);
     }
 
-    if (size != 3) {
+    if (size < 3) {
         self_p->state = state_idle_t;
         return (-1);
     }
@@ -154,7 +154,7 @@ static ssize_t handle_input_flow_control_sent(struct isotp_t *self_p,
     self_p->message.next_index++;
     self_p->message.next_index %= 16;
 
-    if (self_p->message.offset == self_p->message.size) {
+    if (self_p->message.offset >= self_p->message.size) {
         res = self_p->message.size;
         self_p->state = state_idle_t;
     } else {
@@ -225,7 +225,7 @@ static ssize_t handle_output_flow_control_received(struct isotp_t *self_p,
     self_p->message.next_index++;
     self_p->message.next_index %= 16;
 
-    if (self_p->message.offset == self_p->size) {
+    if (self_p->message.offset >= self_p->size) {
         self_p->state = state_idle_t;
         res = self_p->size;
     }

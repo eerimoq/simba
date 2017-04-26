@@ -195,6 +195,86 @@ static int test_output_multi_frame(struct harness_t *harness_p)
     return (0);
 }
 
+static int test_input_single_frame_excessive_data(struct harness_t *harness_p)
+{
+    struct isotp_t isotp;
+    uint8_t buf[8];
+    uint8_t frame[8];
+
+    BTASSERT(isotp_init(&isotp, &buf[0], sizeof(buf), 0) == 0);
+
+    /* Input a good frame. */
+    frame[0] = (0 << 4) | 3;
+    frame[1] = 'f';
+    frame[2] = 'o';
+    frame[3] = 'o';
+
+    /* Input 8 bytes, that is 5 excessive bytes. */
+    BTASSERT(isotp_input(&isotp, &frame[0], 8) == 3);
+    BTASSERT(memcmp(&buf[0], "foo", 3) == 0);
+
+    return (0);
+}
+
+static int test_input_multi_frame_excessive_data(struct harness_t *harness_p)
+{
+    struct isotp_t isotp;
+    uint8_t buf[32];
+    uint8_t frame[8];
+    size_t size;
+
+    BTASSERT(isotp_init(&isotp, &buf[0], sizeof(buf), 0) == 0);
+
+    /* Input the first frame. */
+    frame[0] = (1 << 4) | 0;
+    frame[1] = 19;
+    frame[2] = '1';
+    frame[3] = '2';
+    frame[4] = '3';
+    frame[5] = '4';
+    frame[6] = '5';
+    frame[7] = '6';
+
+    BTASSERT(isotp_input(&isotp, &frame[0], 8) == 0);
+
+    /* Verify that the flow control frame was created. */
+    BTASSERT(isotp_output(&isotp, &frame[0], &size) == 0);
+    BTASSERT(size == 3);
+    BTASSERT(frame[0] == (3 << 4));
+    BTASSERT(frame[1] == 0);
+    BTASSERT(frame[2] == 0);
+
+    /* No data to output. */
+    BTASSERT(isotp_output(&isotp, &frame[0], &size) == -1);
+
+    /* Input two consecutive frames. */
+    frame[0] = (2 << 4) | 1;
+    frame[1] = '7';
+    frame[2] = '8';
+    frame[3] = '9';
+    frame[4] = '0';
+    frame[5] = 'a';
+    frame[6] = 'b';
+    frame[7] = 'c';
+
+    BTASSERT(isotp_input(&isotp, &frame[0], 8) == 0);
+
+    frame[0] = (2 << 4) | 2;
+    frame[1] = 'd';
+    frame[2] = 'e';
+    frame[3] = 'f';
+    frame[4] = 'g';
+    frame[5] = 'h';
+    frame[6] = 'i';
+
+    /* Message completly received, with one excessive byte. */
+    BTASSERT(isotp_input(&isotp, &frame[0], 8) == 19);
+
+    BTASSERT(memcmp(&buf[0], "1234567890abcdefghi", 19) == 0);
+
+    return (0);
+}
+
 int main()
 {
     struct harness_t harness;
@@ -203,6 +283,10 @@ int main()
         { test_input_multi_frame, "test_input_multi_frame" },
         { test_output_single_frame, "test_output_single_frame" },
         { test_output_multi_frame, "test_output_multi_frame" },
+        { test_input_single_frame_excessive_data,
+          "test_input_single_frame_excessive_data" },
+        { test_input_multi_frame_excessive_data,
+          "test_input_multi_frame_excessive_data" },
         { NULL, NULL }
     };
 
