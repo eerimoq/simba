@@ -104,3 +104,34 @@ int harness_run(struct harness_t *self_p,
 
     return (0);
 }
+
+int harness_expect(void *chan_p,
+                   const char *pattern_p,
+                   const struct time_t *timeout_p)
+{
+    char c;
+    size_t length;
+    size_t pattern_length;
+    static char buf[CONFIG_HARNESS_EXPECT_BUFFER_SIZE];
+
+    length = 0;
+    pattern_length = strlen(pattern_p);
+
+    while (length < sizeof(buf) - 1) {
+        chan_read(chan_p, &c, sizeof(c));
+
+        std_printf(FSTR("%c"), c);
+
+        buf[length++] = c;
+        buf[length] = '\0';
+
+        /* Compare to pattern. */
+        if (length >= pattern_length) {
+            if (strcmp(&buf[length - pattern_length], pattern_p) == 0) {
+                return (0);
+            }
+        }
+    }
+
+    return (-1);
+}

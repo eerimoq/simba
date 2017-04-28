@@ -2092,6 +2092,13 @@
 #endif
 
 /**
+ * Maximum buffer size the expect function can handle.
+ */
+#ifndef CONFIG_HARNESS_EXPECT_BUFFER_SIZE
+#    define CONFIG_HARNESS_EXPECT_BUFFER_SIZE             512
+#endif
+
+/**
  * Size of the HTTP server request buffer. This buffer is used when
  * parsing received HTTP request headers.
  */
