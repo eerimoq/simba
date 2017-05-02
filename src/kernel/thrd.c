@@ -582,7 +582,7 @@ struct thrd_t *thrd_spawn(void *(*main)(void *),
     return (err == 0 ? thrd_p : NULL);
 }
 
-int thrd_suspend(struct time_t *timeout_p)
+int thrd_suspend(const struct time_t *timeout_p)
 {
     int err;
 
@@ -849,7 +849,7 @@ void RAM_CODE thrd_tick_isr(void)
 #endif
 }
 
-int thrd_suspend_isr(struct time_t *timeout_p)
+int thrd_suspend_isr(const struct time_t *timeout_p)
 {
     struct thrd_t *thrd_p;
     struct timer_t timer;

@@ -33,7 +33,7 @@
 
 #include "simba.h"
 #include "thrd_port.h"
- 
+
 /**
  * Macro to declare a thread stack with given name and size. All
  * thread stacks must be defined using this macro.
@@ -166,7 +166,7 @@ struct thrd_t *thrd_spawn(void *(*main)(void *),
  *
  * @return zero(0), -ETIMEOUT on timeout or other negative error code.
  */
-int thrd_suspend(struct time_t *timeout_p);
+int thrd_suspend(const struct time_t *timeout_p);
 
 /**
  * Resume given thread. If resumed thread is not yet suspended it will
@@ -374,7 +374,7 @@ const char *thrd_get_env(const char *name_p);
  *
  * @return zero(0), -ETIMEOUT on timeout or other negative error code.
  */
-int thrd_suspend_isr(struct time_t *timeout_p);
+int thrd_suspend_isr(const struct time_t *timeout_p);
 
 /**
  * Resume given thread from isr or with the system lock taken (see

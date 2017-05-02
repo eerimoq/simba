@@ -352,7 +352,7 @@ int chan_list_remove(struct chan_list_t *list_p, void *chan_p);
  * @return Channel with data or NULL on timeout.
  */
 void *chan_list_poll(struct chan_list_t *list_p,
-                       struct time_t *timeout_p);
+                     const struct time_t *timeout_p);
 
 /**
  * Poll given channel for events. Blocks until the channel has data
@@ -364,7 +364,7 @@ void *chan_list_poll(struct chan_list_t *list_p,
  *
  * @return The channel or NULL on timeout.
  */
-void *chan_poll(void *chan_p, struct time_t *timeout_p);
+void *chan_poll(void *chan_p, const struct time_t *timeout_p);
 
 /**
  * Get a reference to the null channel. This channel will ignore all
