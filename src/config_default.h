@@ -54,6 +54,7 @@
 #    define PORT_HAS_ANALOG_OUTPUT_PIN
 #    define PORT_HAS_CAN
 #    define PORT_HAS_RANDOM
+#    define PORT_HAS_EEPROM_SOFT
 #endif
 
 #if defined(FAMILY_AVR)
@@ -100,6 +101,7 @@
 #    define PORT_HAS_USB
 #    define PORT_HAS_USB_HOST
 #    define PORT_HAS_ANALOG_INPUT_PIN
+#    define PORT_HAS_EEPROM_SOFT
 #endif
 
 #if defined(FAMILY_ESP)
@@ -120,6 +122,7 @@
 #    define PORT_HAS_RANDOM
 #    define PORT_HAS_LED_7SEG_HT16K33
 #    define PORT_HAS_SHT3XD
+#    define PORT_HAS_EEPROM_SOFT
 #endif
 
 #if defined(FAMILY_ESP32)
@@ -138,6 +141,7 @@
 #    define PORT_HAS_CAN
 #    define PORT_HAS_RANDOM
 #    define PORT_HAS_WS2812
+#    define PORT_HAS_EEPROM_SOFT
 #endif
 
 #if defined(FAMILY_STM32F1)
@@ -145,6 +149,7 @@
 #    define PORT_HAS_I2C_SOFT
 #    define PORT_HAS_UART
 #    define PORT_HAS_FLASH
+#    define PORT_HAS_EEPROM_SOFT
 #endif
 
 #if defined(FAMILY_STM32F2)
@@ -152,6 +157,7 @@
 #    define PORT_HAS_I2C_SOFT
 #    define PORT_HAS_UART
 #    define PORT_HAS_FLASH
+#    define PORT_HAS_EEPROM_SOFT
 #endif
 
 #if defined(FAMILY_STM32F3)
@@ -159,6 +165,7 @@
 #    define PORT_HAS_I2C_SOFT
 #    define PORT_HAS_UART
 #    define PORT_HAS_FLASH
+#    define PORT_HAS_EEPROM_SOFT
 #endif
 
 #if defined(FAMILY_SPC5)
@@ -168,6 +175,7 @@
 #    define PORT_HAS_FLASH
 #    define PORT_HAS_CAN
 #    define PORT_HAS_WATCHDOG
+#    define PORT_HAS_EEPROM_SOFT
 #endif
 
 #if defined(PORT_HAS_I2C_SOFT) && !defined(PORT_HAS_I2C)

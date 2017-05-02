@@ -229,6 +229,9 @@ extern "C" {
 #ifdef PORT_HAS_SHT3XD
 #    include "drivers/sht3xd.h"
 #endif
+#ifdef PORT_HAS_EEPROM_SOFT
+#    include "drivers/eeprom_soft.h"
+#endif
 
 #include "inet/isotp.h"
 

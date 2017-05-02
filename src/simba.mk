@@ -60,6 +60,10 @@ ifeq ($(TYPE),suite)
       KERNEL_SRC += ports/ppc/gnu/thrd_port.S
   endif
 
+  ifneq ($(FAMILY),avr)
+    DRIVERS_SRC += eeprom_soft.c
+  endif
+
   ifeq ($(MCU),atmega32u4)
     DRIVERS_SRC += \
 	usb.c \
@@ -152,102 +156,116 @@ DRIVERS_SRC ?= $(DRIVERS_SRC_TMP)
 endif
 
 ifeq ($(FAMILY),sam)
-DRIVERS_SRC ?= adc.c \
-	       analog_input_pin.c \
-	       can.c \
-	       chipid.c \
-	       dac.c \
-	       ds18b20.c \
-	       exti.c \
-	       flash.c \
-	       mcp2515.c \
-	       owi.c \
-	       pin.c \
-	       i2c.c \
-	       i2c_soft.c \
-	       sd.c \
-	       spi.c \
-	       uart.c \
-	       usb.c \
-	       usb_host.c \
-	       usb/host/class/hid.c \
-	       usb/host/class/mass_storage.c
+DRIVERS_SRC ?= \
+	adc.c \
+	analog_input_pin.c \
+	can.c \
+	chipid.c \
+	dac.c \
+	ds18b20.c \
+	eeprom_soft.c \
+	exti.c \
+	flash.c \
+	mcp2515.c \
+	owi.c \
+	pin.c \
+	i2c.c \
+	i2c_soft.c \
+	sd.c \
+	spi.c \
+	uart.c \
+	usb.c \
+	usb_host.c \
+	usb/host/class/hid.c \
+	usb/host/class/mass_storage.c
 endif
 
 ifeq ($(FAMILY),esp)
-DRIVERS_SRC ?= adc.c \
-	       analog_input_pin.c \
-	       ds18b20.c \
-	       esp_wifi.c \
-	       esp_wifi/station.c \
-	       esp_wifi/softap.c \
-	       exti.c \
-	       flash.c \
-	       led_7seg_ht16k33.c \
-	       owi.c \
-	       pin.c \
-	       pwm_soft.c \
-	       i2c.c \
-	       i2c_soft.c \
-	       random.c \
-	       sht3xd.c \
-	       spi.c \
-	       uart.c \
-	       uart_soft.c
+DRIVERS_SRC ?= \
+	adc.c \
+	analog_input_pin.c \
+	ds18b20.c \
+	eeprom_soft.c \
+	esp_wifi.c \
+	esp_wifi/station.c \
+	esp_wifi/softap.c \
+	exti.c \
+	flash.c \
+	led_7seg_ht16k33.c \
+	owi.c \
+	pin.c \
+	pwm_soft.c \
+	i2c.c \
+	i2c_soft.c \
+	random.c \
+	sht3xd.c \
+	spi.c \
+	uart.c \
+	uart_soft.c
 endif
 
 ifeq ($(FAMILY),esp32)
-DRIVERS_SRC ?= adc.c \
-	       analog_input_pin.c \
-	       can.c \
-	       dac.c \
-	       ds18b20.c \
-	       flash.c \
-	       esp_wifi.c \
-	       esp_wifi/station.c \
-	       esp_wifi/softap.c \
-	       i2c.c \
-	       i2c_soft.c \
-	       owi.c \
-	       pin.c \
-	       random.c \
-	       spi.c \
-	       uart.c \
-	       ws2812.c
+DRIVERS_SRC ?= \
+	adc.c \
+	analog_input_pin.c \
+	can.c \
+	dac.c \
+	ds18b20.c \
+	eeprom_soft.c \
+	flash.c \
+	esp_wifi.c \
+	esp_wifi/station.c \
+	esp_wifi/softap.c \
+	i2c.c \
+	i2c_soft.c \
+	owi.c \
+	pin.c \
+	random.c \
+	spi.c \
+	uart.c \
+	ws2812.c
 endif
 
 ifeq ($(FAMILY),stm32f1)
-DRIVERS_SRC ?= flash.c \
-	       pin.c \
-	       i2c.c \
-	       i2c_soft.c \
-	       uart.c
+DRIVERS_SRC ?= \
+	eeprom_soft.c \
+	flash.c \
+	pin.c \
+	i2c.c \
+	i2c_soft.c \
+	uart.c
 endif
 
 ifeq ($(FAMILY),stm32f2)
-DRIVERS_SRC ?= flash.c \
-	       pin.c \
-	       i2c.c \
-	       i2c_soft.c \
-	       uart.c
+DRIVERS_SRC ?= \
+	eeprom_soft.c \
+	flash.c \
+	pin.c \
+	i2c.c \
+	i2c_soft.c \
+	uart.c
 endif
 
 ifeq ($(FAMILY),stm32f3)
-DRIVERS_SRC ?= flash.c \
-	       pin.c \
-	       i2c.c \
-	       i2c_soft.c \
-	       uart.c
+DRIVERS_SRC ?= \
+	eeprom_soft.c \
+	flash.c \
+	pin.c \
+	i2c.c \
+	i2c_soft.c \
+	uart.c
 endif
 
 ifeq ($(FAMILY),spc5)
-DRIVERS_SRC ?= pin.c \
-	       can.c \
-	       flash.c \
-	       i2c.c \
-	       i2c_soft.c \
-	       uart.c \
-	       watchdog.c
+DRIVERS_SRC ?= \
+	can.c \
+	eeprom_soft.c \
+	flash.c \
+	i2c.c \
+	i2c_soft.c \
+	pin.c \
+	uart.c \
+	watchdog.c
 endif
 
 SRC += $(DRIVERS_SRC:%=$(SIMBA_ROOT)/src/drivers/%)
