@@ -166,6 +166,7 @@ static int test_command_not_found(struct harness_t *harness_p)
     BTASSERT(harness_expect(&qout,
                             "/1/2/3\r\n"
                             "/1/2/3: command not found\r\n"
+                            "ERROR(-1003)\r\n"
                             "$ ",
                             NULL) == 0);
 
@@ -187,6 +188,7 @@ static int test_command_too_long(struct harness_t *harness_p)
                             "This command is too long for the shell to "
                             "handle. The maximum c\n"
                             "This: command not found\r\n"
+                            "ERROR(-1003)\r\n"
                             "$ ",
                             NULL) == 0);
 
@@ -221,6 +223,7 @@ static int test_auto_completion(struct harness_t *harness_p)
     BTASSERT(harness_expect(&qout,
                             "bar \r\n"
                             "0000000000000000\r\n"
+                            "OK\r\n"
                             "$ ",
                             NULL) == 0);
 
@@ -236,6 +239,7 @@ static int test_commands_foo_and_bar(struct harness_t *harness_p)
     BTASSERT(harness_expect(&qout,
                             "/tmp/foo 3 2 1\n"
                             "argc = 4, argv[0] = /tmp/foo, argv[1] = 3, argv[2] = 2\n"
+                            "OK\r\n"
                             "$ ",
                             NULL) == 0);
 
@@ -243,7 +247,8 @@ static int test_commands_foo_and_bar(struct harness_t *harness_p)
     chan_write(&qin, "/tmp/bar 3\n", 11);
     BTASSERT(harness_expect(&qout,
                             "/tmp/bar 3\n"
-                             "bar 6\n"
+                            "bar 6\n"
+                            "OK\r\n"
                             "$ ",
                             NULL) == 0);
 
@@ -259,13 +264,16 @@ static int test_parameters(struct harness_t *harness_p)
     BTASSERT(harness_expect(&qout,
                             "/tmp/fie\n"
                             "57\r\n"
+                            "OK\r\n"
                             "$ ",
                             NULL) == 0);
 
     /* Set parameter value. */
     chan_write(&qin, "/tmp/fie 58\n", 12);
     BTASSERT(harness_expect(&qout,
-                            "/tmp/fie 58\n$ ",
+                            "/tmp/fie 58\n"
+                            "OK\r\n"
+                            "$ ",
                             NULL) == 0);
 
     /* Get modified parameter value. */
@@ -273,6 +281,7 @@ static int test_parameters(struct harness_t *harness_p)
     BTASSERT(harness_expect(&qout,
                             "/tmp/fie\n"
                             "58\r\n"
+                            "OK\r\n"
                             "$ ",
                             NULL) == 0);
 
@@ -328,6 +337,7 @@ static int test_fs_counters_list(struct harness_t *harness_p)
                             "0000004efee6b839\r\n"
                              "/fie                                                 "
                             "0000000000000001\r\n"
+                            "OK\r\n"
                             "$ ",
                             NULL) == 0);
 
@@ -536,7 +546,9 @@ static int test_backspace(struct harness_t *harness_p)
     /* Read until a new prompt to clean up. */
     chan_write(&qin, "\r\n", 2);
     BTASSERT(harness_expect(&qout,
-                            "\r\n13: command not found\r\n$ ",
+                            "\r\n13: command not found\r\n"
+                            "ERROR(-1003)\r\n"
+                            "$ ",
                             NULL) == 0);
 
     std_printf(FSTR("\r\n"));
@@ -644,7 +656,9 @@ static int test_history_up_down(struct harness_t *harness_p)
     /* Hit enter to execute 'hello'. */
     chan_write(&qin, "\n", 1);
     BTASSERT(harness_expect(&qout,
-                            "\nhello: command not found\r\n$ ",
+                            "\nhello: command not found\r\n"
+                            "ERROR(-1003)\r\n"
+                            "$ ",
                             NULL) == 0);
 
     std_printf(FSTR("\r\n"));
@@ -667,7 +681,9 @@ static int test_history_search(struct harness_t *harness_p)
     chan_write(&qin, "\n", 1);
     BTASSERT(harness_expect(&qout,
                             "\x1b[18D\x1b[Khello\n"
-                            "hello: command not found\r\n$ ",
+                            "hello: command not found\r\n"
+                            "ERROR(-1003)\r\n"
+                            "$ ",
                             NULL) == 0);
 
     /* Send Ctrl+R and search for the 'history' command. */
