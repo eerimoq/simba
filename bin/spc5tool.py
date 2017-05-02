@@ -279,7 +279,11 @@ def do_flash_read(args):
         address += size
         left -= size
 
-    print(read_data, end='')
+    if args.outfile:
+        with open(args.outfile, "wb") as fout:
+            fout.write(read_data)
+    else:
+        print(read_data, end='')
 
 
 def do_flash_write(args):
