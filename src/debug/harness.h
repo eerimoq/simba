@@ -124,7 +124,7 @@ int harness_run(struct harness_t *self_p,
  *
  * @param[in] chan_p Channel to read from.
  * @param[in] pattern_p Pattern to wait for.
- * @param[in] timeout_p Timeout, or NULL.
+ * @param[in] timeout_p Timeout, or NULL to wait forever.
  *
  * @return zero(0) or negative error code.
  */

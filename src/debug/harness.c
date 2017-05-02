@@ -118,6 +118,10 @@ int harness_expect(void *chan_p,
     pattern_length = strlen(pattern_p);
 
     while (length < sizeof(buf) - 1) {
+        if (chan_poll(chan_p, timeout_p) == NULL) {
+            return (-ETIMEDOUT);
+        }
+
         chan_read(chan_p, &c, sizeof(c));
 
         std_printf(FSTR("%c"), c);
