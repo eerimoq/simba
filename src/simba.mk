@@ -40,7 +40,7 @@ ifeq ($(TYPE),suite)
   LWIP_SRC +=
   KERNEL_SRC += sys.c time.c timer.c thrd.c
   MULTIMEDIA_SRC +=
-  OAM_SRC += console.c settings.c
+  OAM_SRC += console.c settings.c nvm.c
   FILESYSTEMS_SRC += fs.c
   SPIFFS_SRC +=
   SYNC_SRC += chan.c queue.c rwlock.c sem.c
@@ -101,54 +101,58 @@ SRC += $(DEBUG_SRC:%=$(SIMBA_ROOT)/src/debug/%)
 INC += $(SIMBA_ROOT)/src/drivers/ports/$(FAMILY)
 
 ifeq ($(FAMILY),linux)
-DRIVERS_SRC ?= adc.c \
-	       analog_input_pin.c \
-	       analog_output_pin.c \
-	       can.c \
-	       dac.c \
-	       ds18b20.c \
-	       exti.c \
-	       flash.c \
-	       pin.c \
-	       i2c.c \
-	       i2c_soft.c \
-	       owi.c \
-	       pwm.c \
-	       pwm_soft.c \
-	       random.c \
-	       sd.c \
-	       spi.c \
-	       uart.c
+DRIVERS_SRC ?= \
+	adc.c \
+	analog_input_pin.c \
+	analog_output_pin.c \
+	can.c \
+	dac.c \
+	ds18b20.c \
+	eeprom_soft.c \
+	exti.c \
+	flash.c \
+	pin.c \
+	i2c.c \
+	i2c_soft.c \
+	owi.c \
+	pwm.c \
+	pwm_soft.c \
+	random.c \
+	sd.c \
+	spi.c \
+	uart.c
 
 SRC += $(SIMBA_ROOT)/src/drivers/ports/linux/socket_device.c
 endif
 
 ifeq ($(FAMILY),avr)
-DRIVERS_SRC_TMP = adc.c \
-		  analog_input_pin.c \
-		  analog_output_pin.c \
-		  ds18b20.c \
-		  ds3231.c \
-		  exti.c \
-		  i2c.c \
-		  i2c_soft.c \
-		  mcp2515.c \
-		  nrf24l01.c \
-		  spi.c \
-		  owi.c \
-		  pin.c \
-		  pwm.c \
-		  pwm_soft.c \
-		  sd.c \
-		  uart.c \
-		  uart_soft.c \
-		  watchdog.c
+DRIVERS_SRC_TMP = \
+	adc.c \
+	analog_input_pin.c \
+	analog_output_pin.c \
+	ds18b20.c \
+	ds3231.c \
+	exti.c \
+	i2c.c \
+	i2c_soft.c \
+	mcp2515.c \
+	nrf24l01.c \
+	spi.c \
+	owi.c \
+	pin.c \
+	pwm.c \
+	pwm_soft.c \
+	sd.c \
+	uart.c \
+	uart_soft.c \
+	watchdog.c
 
 ifeq ($(MCU),atmega32u4)
-DRIVERS_SRC_TMP += usb.c \
-		   usb_device.c \
-		   usb/device/descriptors.c \
-		   usb/device/class/cdc.c
+DRIVERS_SRC_TMP += \
+	usb.c \
+	usb_device.c \
+	usb/device/descriptors.c \
+	usb/device/class/cdc.c
 endif
 
 DRIVERS_SRC ?= $(DRIVERS_SRC_TMP)
@@ -452,6 +456,7 @@ INC += $(SIMBA_ROOT)/src/oam/ports/$(FAMILY)
 
 OAM_SRC_TMP ?= \
 	console.c \
+	nvm.c \
 	service.c \
 	settings.c \
 	shell.c \

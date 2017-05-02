@@ -50,7 +50,7 @@ typedef void (*sys_on_fatal_fn_t)(int error) __attribute__ ((noreturn));
 /**
  * Convertion from the time struct to system ticks.
  */
-static inline sys_tick_t t2st(struct time_t *time_p)
+static inline sys_tick_t t2st(const struct time_t *time_p)
 {
     return (((sys_tick_t)(time_p)->seconds * CONFIG_SYSTEM_TICK_FREQUENCY) +
             DIV_CEIL((DIV_CEIL((time_p)->nanoseconds, 1000)

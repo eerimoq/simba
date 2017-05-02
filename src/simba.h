@@ -112,6 +112,7 @@ extern "C" {
 #include "filesystems/fs.h"
 #include "oam/shell.h"
 #include "oam/service.h"
+#include "oam/nvm.h"
 
 #include "debug/log.h"
 
@@ -269,6 +270,8 @@ extern "C" {
 #    include "oam/upgrade/http.h"
 #    include "oam/upgrade/tftp.h"
 #endif
+
+#include <simba_gen.h>
 
 #ifdef __cplusplus
 }

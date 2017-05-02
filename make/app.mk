@@ -39,23 +39,10 @@ BUILDDIR ?= build/$(BOARD)
 OBJDIR = $(BUILDDIR)/obj
 DEPSDIR = $(BUILDDIR)/deps
 GENDIR = $(BUILDDIR)/gen
-INC += . $(SIMBA_ROOT)/src $(BUILDDIR)
+INC += . $(GENDIR) $(SIMBA_ROOT)/src
 MAIN_C ?= main.c
 SRC += $(MAIN_C)
 SETTINGS_INI ?=
-ifeq ($(SETTINGS_INI),)
-SETTINGS_C ?= $(SIMBA_ROOT)/src/settings_default.c
-SETTTNGS_OUTPUT_DIRECTORY ?= .
-else
-SETTINGS_H ?= $(GENDIR)/settings.h
-SETTINGS_C ?= $(GENDIR)/settings.c
-SETTTNGS_OUTPUT_DIRECTORY ?= $(GENDIR)
-$(SETTTNGS_H) $(SETTINGS_C): $(SETTINGS_INI)
-	$(MAKE) settings-generate
-generate: $(SETTTNGS_H) $(SETTINGS_C)
-endif
-SRC += $(SETTINGS_C)
-SETTINGS_BIN ?= $(SIMBA_ROOT)/src/settings_default.bin
 SRC_FILTERED = $(filter-out $(SRC_IGNORE),$(SRC))
 CSRC += $(filter %.c,$(SRC_FILTERED))
 CXXSRC += $(filter %.cpp,$(SRC_FILTERED))
@@ -64,9 +51,10 @@ ASMOBJ += $(patsubst %,$(OBJDIR)%,$(abspath $(ASMSRC:%.S=%.obj)))
 COBJ += $(patsubst %,$(OBJDIR)%,$(abspath $(CSRC:%.c=%.o)))
 CXXOBJ += $(patsubst %,$(OBJDIR)%,$(abspath $(CXXSRC:%.cpp=%.o)))
 OBJ += $(COBJ) $(CXXOBJ) $(ASMOBJ)
-GENCSRC = $(GENDIR)/simba_gen.c
-SOAMDBAPP = $(BUILDDIR)/$(NAME).soamdb
-GENOBJ = $(patsubst %,$(OBJDIR)/%,$(notdir $(GENCSRC:%.c=%.o)))
+SIMBA_GEN_H = $(GENDIR)/simba_gen.h
+SIMBA_GEN_C = $(GENDIR)/simba_gen.c
+SIMBA_GEN_O = $(patsubst %,$(OBJDIR)/%,$(notdir $(SIMBA_GEN_C:%.c=%.o)))
+SOAMDBAPP = $(GENDIR)/$(NAME).soamdb
 ifeq ($(SOAM), yes)
 SOAMDB = $(COBJ:%=%.pp.c.db) $(CXXOBJ:%=%.pp.cpp.db)
 endif
@@ -82,6 +70,10 @@ CLEAN = $(BUILDDIR) $(EXE) $(RUNLOG) size.log \
         coverage.log coverage.xml gmon.out *.gcov profile.log \
 	index.*html
 STUB ?=
+ENDIANESS ?= little
+
+EEPROM_SOFT_CHUNK_SIZE ?= 2048
+EEPROM_BIN ?= $(GENDIR)/eeprom.bin
 
 # configuration
 TOOLCHAIN ?= gnu
@@ -106,18 +98,12 @@ SHELL = /bin/bash
 
 all:
 	@echo -e "\n>>> app: $(NAME), board: $(BOARD) <<<\n"
-	$(MAKE) prepare
 	$(MAKE) generate
 	$(MAKE) build
-	$(MAKE) postpare
 
-prepare:
-
-generate:
+generate: $(SIMBA_GEN_H)
 
 build: $(EXE)
-
-postpare:
 
 # layers
 BOARD.mk ?= $(SIMBA_ROOT)/src/boards/$(BOARD)/board.mk
@@ -143,8 +129,6 @@ RUN_END_PATTERN ?= "=============================== TEST END \(\w+\) ===========
 RUN_END_PATTERN_SUCCESS ?= "=============================== TEST END \(PASSED\) ==============================\r\n\r\n"
 
 CONSOLESCRIPT = $(SIMBA_ROOT)/make/console.py
-
-CONFIG_SETTINGS_SIZE ?= 256
 
 # include packages in dist-packages used by the application
 define DIST_PACKAGES_template
@@ -212,17 +196,9 @@ size-json:
 release:
 	env NASSERT=yes NDEBUG=yes $(MAKE)
 
-$(EXE): $(OBJ) $(GENOBJ)
+$(EXE): $(OBJ) $(SIMBA_GEN_O)
 	@echo "LD $@"
 	$(CXX) $(LIBPATH:%=-L%) $(LDFLAGS) -Wl,--start-group $(LIB:%=-l%) $^ -Wl,--end-group -o $@
-
-settings-generate: $(SETTINGS_INI)
-	@echo "Generating settings from $<"
-	mkdir -p $(SETTTNGS_OUTPUT_DIRECTORY)
-	$(SIMBA_ROOT)/bin/settings.py \
-	    --output-directory $(SETTTNGS_OUTPUT_DIRECTORY) \
-            --settings-size $(CONFIG_SETTINGS_SIZE) \
-	    $^
 
 define STUB_template =
 $1%
@@ -285,11 +261,30 @@ endif
 endef
 $(foreach file,$(ASMSRC),$(eval $(call COMPILE_ASM_template,$(file))))
 
-$(SOAMDBAPP) $(GENOBJ): $(OBJ)
-	$(SIMBA_ROOT)/bin/simbagen.py $(NAME) $(VERSION) $(BOARD_DESC) \
-	$(MCU_DESC) $(GENCSRC) $(SOAMDBAPP) $(SOAMDB)
-	@echo "CC $(GENCSRC)"
-	$(CC) $(INC:%=-I%) $(CDEFS:%=-D%) $(CFLAGS) -o $@ $(GENCSRC)
+$(SIMBA_GEN_H): $(SETTINGS_INI)
+	@echo "GEN $@"
+	mkdir -p $(GENDIR)
+	$(SIMBA_ROOT)/bin/simbagen.py \
+	    --output-directory $(GENDIR) \
+	    header \
+	    --endianess $(ENDIANESS) \
+	    $(<:%=--settings %)
+
+$(SOAMDBAPP) $(SIMBA_GEN_O): $(OBJ)
+	@echo "GEN $(SIMBA_GEN_C)"
+	$(SIMBA_ROOT)/bin/simbagen.py \
+	    --output-directory $(GENDIR) \
+	    source \
+	    --name $(NAME) \
+	    --version $(VERSION) \
+	    --board $(BOARD_DESC) \
+	    --mcu $(MCU_DESC) \
+	    --endianess $(ENDIANESS) \
+	    --eeprom-soft-chunk-size $(EEPROM_SOFT_CHUNK_SIZE) \
+	    $(SETTINGS_INI:%=--settings %) \
+	    $(SOAMDB)
+	@echo "CC $(SIMBA_GEN_C)"
+	$(CC) $(INC:%=-I%) $(CDEFS:%=-D%) $(CFLAGS) -o $@ $(SIMBA_GEN_C)
 
 -include local.mk
 include $(SIMBA_GLOBAL_MK)

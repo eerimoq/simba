@@ -116,10 +116,14 @@ SECTIONS
     } > rom
     PROVIDE_HIDDEN (__exidx_end = .);
 
-    /* Settings area. */
-    .settings :
+    /* Non-volatile memory. */
+    .nvm.eeprom_soft :
     {
         . = ALIGN(256);
+        *(.nvm.eeprom_soft.block_0);
+
+        . = ALIGN(256);
+        *(.nvm.eeprom_soft.block_1);
     } > rom
 
     . = ALIGN(256);

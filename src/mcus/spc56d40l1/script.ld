@@ -82,10 +82,14 @@ SECTIONS
     . = ALIGN(4);
     __text_end = .;
 
-    /* Settings area. */
-    .settings :
+    /* Non-volatile memory. One DFlash block for each nvm block. */
+    .nvm.eeprom_soft :
     {
-        . = ALIGN(256);
+        *(.nvm.eeprom_soft.block_0);
+        . = 0x4000;
+
+        *(.nvm.eeprom_soft.block_1);
+        . = 0x8000;
     } > dflash
 
     .relocate : AT (__text_end)
@@ -101,8 +105,8 @@ SECTIONS
     .bss (NOLOAD) :
     {
           . = ALIGN(4);
-          __bss_begin = . ;
-          __zero_begin = . ;
+          __bss_begin = .;
+          __zero_begin = .;
           *(.bss .bss.*)
           *(COMMON)
           . = ALIGN(4);

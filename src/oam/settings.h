@@ -51,8 +51,6 @@ struct setting_t {
     size_t size;
 };
 
-#include "settings_port.h"
-
 /**
  * Initialize the settings module. This function must be called before
  * calling any other function in this module.

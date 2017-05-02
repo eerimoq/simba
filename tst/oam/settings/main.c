@@ -30,8 +30,6 @@
 
 #include "simba.h"
 
-#include "gen/settings.h"
-
 static char qbuf[512];
 static struct queue_t queue;
 
@@ -46,23 +44,18 @@ static int test_cmd_list(struct harness_t *harness_p)
 {
 #if CONFIG_FS_CMD_SETTINGS_LIST == 1
 
-    char buf[512];
-    size_t size;
-    FAR const char *response_p;
+    char buf[64];
 
     /* Call the list command and validate the output. */
     strcpy(buf, "oam/settings/list");
     BTASSERT(fs_call(buf, NULL, &queue, NULL) == 0);
-    response_p = FSTR("NAME                  TYPE      SIZE  VALUE\r\n"
-                      "int32                 int32_t      4  -2\r\n"
-                      "string                string_t     4  y\r\n"
-                      "blob                  blob_t       2  \\x11\\x12\r\n");
-    size = std_strlen(response_p);
-    BTASSERT(chan_read(&queue, buf, size) == size);
-    buf[size] = '\0';
-    std_printf(FSTR("%s\r\n"), buf);
-    BTASSERT(std_strcmp(buf, response_p) == 0);
-    
+    BTASSERT(harness_expect(&queue,
+                            "NAME                  TYPE      SIZE  VALUE\r\n"
+                            "int32                 int32_t      4  -2\r\n"
+                            "string                string_t     4  y\r\n"
+                            "blob                  blob_t       2  \\x11\\x12\r\n",
+                            NULL) == 0);
+
     return (0);
 
 #else
@@ -76,27 +69,21 @@ static int test_cmd_read(struct harness_t *harness_p)
 {
 #if CONFIG_FS_CMD_SETTINGS_READ == 1
 
-    char buf[128];
-    char response[64];
-    size_t size;
+    char buf[64];
 
     /* Bad number of arguments. */
     std_sprintf(buf, FSTR("oam/settings/read"));
     BTASSERT(fs_call(buf, NULL, &queue, NULL) == -1);
-    std_sprintf(response, FSTR("Usage: read <name>\r\n"));
-    size = strlen(response);
-    BTASSERT(chan_read(&queue, buf, size) == size);
-    buf[size] = '\0';
-    BTASSERT(strcmp(buf, response) == 0, "'%s'", buf);
+    BTASSERT(harness_expect(&queue,
+                            "Usage: read <name>\r\n",
+                            NULL) == 0);
 
     /* Bad setting name. */
     std_sprintf(buf, FSTR("oam/settings/read missing"));
     BTASSERT(fs_call(buf, NULL, &queue, NULL) == -1);
-    std_sprintf(response, FSTR("missing: setting not found\r\n"));
-    size = strlen(response);
-    BTASSERT(chan_read(&queue, buf, size) == size);
-    buf[size] = '\0';
-    BTASSERT(strcmp(buf, response) == 0);
+    BTASSERT(harness_expect(&queue,
+                            "missing: setting not found\r\n",
+                            NULL) == 0);
 
     return (0);
 
@@ -112,71 +99,60 @@ static int test_cmd_write(struct harness_t *harness_p)
 #if CONFIG_FS_CMD_SETTINGS_READ == 1
 
     char buf[128];
-    char response[64];
-    size_t size;
 
     /* Write a string that is too long. */
     std_sprintf(buf,
                 FSTR("oam/settings/write string ThisStringIsTooLong"));
     BTASSERT(fs_call(buf, NULL, &queue, NULL) == -1);
-    size = std_sprintf(response, FSTR("ThisStringIsTooLong: string too long\r\n"));
-    BTASSERT(chan_read(&queue, buf, size) == size);
-    buf[size] = '\0';
-    BTASSERT(strcmp(buf, response) == 0);
+    BTASSERT(harness_expect(&queue,
+                            "ThisStringIsTooLong: string too long\r\n",
+                            NULL) == 0);
 
     /* Write a blob that is too long. */
     std_sprintf(buf,
                 FSTR("oam/settings/write blob \\x01\\x02\\x03"));
     BTASSERT(fs_call(buf, NULL, &queue, NULL) == -1);
-    size = std_sprintf(response, FSTR("3: bad blob data length\r\n"));
-    BTASSERT(chan_read(&queue, buf, size) == size);
-    buf[size] = '\0';
-    BTASSERT(strcmp(buf, response) == 0);
+    BTASSERT(harness_expect(&queue,
+                            "3: bad blob data length\r\n",
+                            NULL) == 0);
 
     /* Write a blob that is too short. */
     std_sprintf(buf,
                 FSTR("oam/settings/write blob \\x01"));
     BTASSERT(fs_call(buf, NULL, &queue, NULL) == -1);
-    size = std_sprintf(response, FSTR("1: bad blob data length\r\n"));
-    BTASSERT(chan_read(&queue, buf, size) == size);
-    buf[size] = '\0';
-    BTASSERT(strcmp(buf, response) == 0);
+    BTASSERT(harness_expect(&queue,
+                            "1: bad blob data length\r\n",
+                            NULL) == 0);
 
     /* Write a blob that contains invalid data. */
     std_sprintf(buf,
                 FSTR("oam/settings/write blob \\x01\\xXX"));
     BTASSERT(fs_call(buf, NULL, &queue, NULL) == -1);
-    size = std_sprintf(response, FSTR("bad blob data\r\n"));
-    BTASSERT(chan_read(&queue, buf, size) == size);
-    buf[size] = '\0';
-    BTASSERT(strcmp(buf, response) == 0);
+    BTASSERT(harness_expect(&queue,
+                            "bad blob data\r\n",
+                            NULL) == 0);
 
     /* Write a blob that contains invalid data. */
     std_sprintf(buf,
                 FSTR("oam/settings/write blob 12345678"));
     BTASSERT(fs_call(buf, NULL, &queue, NULL) == -1);
-    size = std_sprintf(response, FSTR("bad blob data\r\n"));
-    BTASSERT(chan_read(&queue, buf, size) == size);
-    buf[size] = '\0';
-    BTASSERT(strcmp(buf, response) == 0);
+    BTASSERT(harness_expect(&queue,
+                            "bad blob data\r\n",
+                            NULL) == 0);
 
     /* Bad number of arguments. */
     std_sprintf(buf, FSTR("oam/settings/write"));
     BTASSERT(fs_call(buf, NULL, &queue, NULL) == -1);
-    size = std_sprintf(response,
-                       FSTR("Usage: write <name> <value>\r\n"));
-    BTASSERT(chan_read(&queue, buf, size) == size);
-    buf[size] = '\0';
-    BTASSERT(strcmp(buf, response) == 0);
+    BTASSERT(harness_expect(&queue,
+                            "Usage: write <name> <value>\r\n",
+                            NULL) == 0);
 
     /* Bad setting name. */
     std_sprintf(buf, FSTR("oam/settings/write missing 1"));
     BTASSERT(fs_call(buf, NULL, &queue, NULL) == -1);
-    std_sprintf(response, FSTR("missing: setting not found\r\n"));
-    size = strlen(response);
-    BTASSERT(chan_read(&queue, buf, size) == size);
-    buf[size] = '\0';
-    BTASSERT(strcmp(buf, response) == 0);
+    BTASSERT(harness_expect(&queue,
+                            "missing: setting not found\r\n",
+                            NULL) == 0);
 
     return (0);
 
@@ -194,7 +170,6 @@ static int test_cmd_read_write_read(struct harness_t *harness_p)
     int i;
     char buf[128];
     char response[64];
-    size_t size;
     char *names_p[] = {
         "int32", "string", "blob"
     };
@@ -210,12 +185,8 @@ static int test_cmd_read_write_read(struct harness_t *harness_p)
         std_sprintf(buf, FSTR("oam/settings/read %s"), names_p[i]);
         std_printf(FSTR("%s\r\n"), buf);
         BTASSERT(fs_call(buf, NULL, &queue, NULL) == 0);
-        std_sprintf(response, FSTR("%s\r\n"), values_before_p[i]);
-        size = strlen(response);
-        BTASSERT(chan_read(&queue, buf, size) == size);
-        buf[size] = '\0';
-        std_printf(FSTR("%s"), &buf[0]);
-        BTASSERT(strcmp(buf, response) == 0);
+        std_sprintf(&response[0], FSTR("%s\r\n"), values_before_p[i]);
+        BTASSERT(harness_expect(&queue, &response[0], NULL) == 0);
 
         /* Write a new value. */
         std_sprintf(buf,
@@ -230,12 +201,8 @@ static int test_cmd_read_write_read(struct harness_t *harness_p)
         std_sprintf(buf, FSTR("oam/settings/read %s"), names_p[i]);
         std_printf(FSTR("%s\r\n"), buf);
         BTASSERT(fs_call(buf, NULL, &queue, NULL) == 0);
-        std_sprintf(response, FSTR("%s\r\n"), values_after_p[i]);
-        size = strlen(response);
-        BTASSERT(chan_read(&queue, buf, size) == size);
-        buf[size] = '\0';
-        std_printf(FSTR("%s"), &buf[0]);
-        BTASSERT(strcmp(buf, response) == 0);
+        std_sprintf(&response[0], FSTR("%s\r\n"), values_after_p[i]);
+        BTASSERT(harness_expect(&queue, &response[0], NULL) == 0);
     }
 
     return (0);
@@ -251,9 +218,7 @@ static int test_cmd_reset(struct harness_t *harness_p)
 {
 #if CONFIG_FS_CMD_SETTINGS_RESET == 1
 
-    char buf[512];
-    size_t size;
-    FAR const char *response_p;
+    char buf[64];
 
     /* Call the list command and validate the output. */
     strcpy(buf, "oam/settings/reset");
@@ -262,14 +227,12 @@ static int test_cmd_reset(struct harness_t *harness_p)
     /* Check the list output. */
     strcpy(buf, "oam/settings/list");
     BTASSERT(fs_call(buf, NULL, &queue, NULL) == 0);
-    response_p = FSTR("NAME                  TYPE      SIZE  VALUE\r\n"
-                      "int32                 int32_t      4  -2\r\n"
-                      "string                string_t     4  y\r\n"
-                      "blob                  blob_t       2  \\x11\\x12\r\n");
-    size = std_strlen(response_p);
-    BTASSERT(chan_read(&queue, buf, size) == size);
-    buf[size] = '\0';
-    BTASSERT(std_strcmp(buf, response_p) == 0);
+    BTASSERT(harness_expect(&queue,
+                            "NAME                  TYPE      SIZE  VALUE\r\n"
+                            "int32                 int32_t      4  -2\r\n"
+                            "string                string_t     4  y\r\n"
+                            "blob                  blob_t       2  \\x11\\x12\r\n",
+                            NULL) == 0);
 
     return (0);
 
@@ -314,7 +277,7 @@ static int test_string(struct harness_t *harness_p)
                            SETTING_STRING_SIZE) == SETTING_STRING_SIZE);
     BTASSERT(strcmp(string, "y") == 0);
 
-    /* OVerwrite the default value with "x". */
+    /* Overwrite the default value with "x". */
     string[0] = 'x';
     string[1] = '\0';
     BTASSERT(settings_write(SETTING_STRING_ADDR,
@@ -353,22 +316,17 @@ static int test_cmd_list_after_updates(struct harness_t *harness_p)
 {
 #if CONFIG_FS_CMD_SETTINGS_LIST == 1
 
-    char buf[512];
-    size_t size;
-    FAR const char *response_p;
+    char buf[64];
 
     /* Call the list command and validate the output. */
     strcpy(buf, "oam/settings/list");
     BTASSERT(fs_call(buf, NULL, &queue, NULL) == 0);
-    response_p = FSTR("NAME                  TYPE      SIZE  VALUE\r\n"
-                      "int32                 int32_t      4  10\r\n"
-                      "string                string_t     4  x\r\n"
-                      "blob                  blob_t       2  \\x11\\x12\r\n");
-    size = std_strlen(response_p);
-    BTASSERT(chan_read(&queue, buf, size) == size);
-    buf[size] = '\0';
-    std_printf(FSTR("%s\r\n"), buf);
-    BTASSERT(std_strcmp(buf, response_p) == 0);
+    BTASSERT(harness_expect(&queue,
+                            "NAME                  TYPE      SIZE  VALUE\r\n"
+                            "int32                 int32_t      4  10\r\n"
+                            "string                string_t     4  x\r\n"
+                            "blob                  blob_t       2  \\x11\\x12\r\n",
+                            NULL) == 0);
 
     return (0);
 

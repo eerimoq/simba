@@ -28,45 +28,62 @@
  * This file is part of the Simba project.
  */
 
-#define SETTINGS_FILENAME "settings.bin"
+#define NVM_FILENAME "nvm.bin"
 
-extern const uint8_t settings_default_area[CONFIG_SETTINGS_AREA_SIZE];
-
-static FILE *settings_p = NULL;
-
-static int settings_port_module_init(void)
+static int nvm_port_module_init()
 {
-    settings_p = fopen(SETTINGS_FILENAME, "r+");
+    module.port.nvm_p = NULL;
 
-    if (settings_p == NULL) {
-        settings_p = fopen(SETTINGS_FILENAME, "w+");
-        settings_reset();
+    return (0);
+}
+
+static int nvm_port_mount()
+{
+    module.port.nvm_p = fopen(NVM_FILENAME, "r+");
+
+    if (module.port.nvm_p == NULL) {
+        return (-1);
+    } else {
+        return (0);
+    }
+}
+
+static int nvm_port_format()
+{
+    if (module.port.nvm_p == NULL) {
+        module.port.nvm_p = fopen(NVM_FILENAME, "w+");
     }
 
-    return (0);
-}
+    ASSERTN(module.port.nvm_p != NULL, EINVAL);
 
-static ssize_t settings_port_read(void *dst_p, size_t src, size_t size)
-{
-    (void)fseek(settings_p, src, SEEK_SET);
+    int i;
+    uint8_t byte;
 
-    return (fread(dst_p, 1, size, settings_p));
-}
+    byte = 0xff;
+    (void)fseek(module.port.nvm_p, 0, SEEK_SET);
 
-static ssize_t settings_port_write(size_t dst, const void *src_p, size_t size)
-{
-    (void)fseek(settings_p, dst, SEEK_SET);
+    for (i = 0; i < CONFIG_NVM_EEPROM_SOFT_CHUNK_SIZE; i++) {
+        fwrite(&byte, 1, sizeof(byte), module.port.nvm_p);
+    }
 
-    return (fwrite(src_p, 1, size, settings_p));
-}
-
-static ssize_t settings_port_reset()
-{
-    (void)fseek(settings_p, 0, SEEK_SET);
-    fwrite(settings_default_area,
-           sizeof(settings_default_area),
-           1,
-           settings_p);
+    fclose(module.port.nvm_p);
+    module.port.nvm_p = NULL;
 
     return (0);
+}
+
+static ssize_t nvm_port_read(void *dst_p, size_t src, size_t size)
+{
+    std_printf(FSTR("src: %d, size: %d\r\n"), src, size);
+    (void)fseek(module.port.nvm_p, src, SEEK_SET);
+
+    return (fread(dst_p, 1, size, module.port.nvm_p));
+}
+
+static ssize_t nvm_port_write(size_t dst, const void *src_p, size_t size)
+{
+    std_printf(FSTR("dst: %d, size: %d\r\n"), dst, size);
+    (void)fseek(module.port.nvm_p, dst, SEEK_SET);
+
+    return (fwrite(src_p, 1, size, module.port.nvm_p));
 }

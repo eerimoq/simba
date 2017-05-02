@@ -28,22 +28,13 @@
  * This file is part of the Simba project.
  */
 
-static int settings_port_module_init(void)
-{
-    return (0);
-}
+#ifndef __OAM_NVM_PORT_EEPROM_SOFT_H__
+#define __OAM_NVM_PORT_EEPROM_SOFT_H__
 
-static int settings_port_read(void *dst_p, size_t src, size_t size)
-{
-    return (-1);
-}
+struct module_port_t {
+    struct flash_driver_t flash;
+    struct eeprom_soft_driver_t eeprom_soft;
+    struct eeprom_soft_block_t blocks[2];
+};
 
-static int settings_port_write(size_t dst, const void *src_p, size_t size)
-{
-    return (-1);
-}
-
-static ssize_t settings_port_reset()
-{
-    return (-1);
-}
+#endif

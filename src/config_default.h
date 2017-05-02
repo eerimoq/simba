@@ -1119,7 +1119,7 @@
  * Debug file system command to append to a file.
  */
 #ifndef CONFIG_FS_CMD_FS_APPEND
-#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(BOARD_SPC56DDISCOVERY) || defined(CONFIG_MINIMAL_SYSTEM)
+#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(FAMILY_SPC5) || defined(CONFIG_MINIMAL_SYSTEM)
 #        define CONFIG_FS_CMD_FS_APPEND                     0
 #    else
 #        define CONFIG_FS_CMD_FS_APPEND                     1
@@ -1130,7 +1130,7 @@
  * Debug file system command to list all counters.
  */
 #ifndef CONFIG_FS_CMD_FS_COUNTERS_LIST
-#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(BOARD_SPC56DDISCOVERY) || defined(CONFIG_MINIMAL_SYSTEM)
+#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(FAMILY_SPC5) || defined(CONFIG_MINIMAL_SYSTEM)
 #        define CONFIG_FS_CMD_FS_COUNTERS_LIST              0
 #    else
 #        define CONFIG_FS_CMD_FS_COUNTERS_LIST              1
@@ -1141,7 +1141,7 @@
  * Debug file system command to set all counters to zero.
  */
 #ifndef CONFIG_FS_CMD_FS_COUNTERS_RESET
-#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(BOARD_SPC56DDISCOVERY) || defined(CONFIG_MINIMAL_SYSTEM)
+#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(FAMILY_SPC5) || defined(CONFIG_MINIMAL_SYSTEM)
 #        define CONFIG_FS_CMD_FS_COUNTERS_RESET             0
 #    else
 #        define CONFIG_FS_CMD_FS_COUNTERS_RESET             1
@@ -1152,7 +1152,7 @@
  * Debug file system command to list all registered file systems.
  */
 #ifndef CONFIG_FS_CMD_FS_FILESYSTEMS_LIST
-#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(BOARD_SPC56DDISCOVERY) || defined(CONFIG_MINIMAL_SYSTEM)
+#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(FAMILY_SPC5) || defined(CONFIG_MINIMAL_SYSTEM)
 #        define CONFIG_FS_CMD_FS_FILESYSTEMS_LIST           0
 #    else
 #        define CONFIG_FS_CMD_FS_FILESYSTEMS_LIST           1
@@ -1163,7 +1163,7 @@
  * Debug file system command to list all registered file systems.
  */
 #ifndef CONFIG_FS_CMD_FS_LIST
-#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(BOARD_SPC56DDISCOVERY) || defined(CONFIG_MINIMAL_SYSTEM)
+#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(FAMILY_SPC5) || defined(CONFIG_MINIMAL_SYSTEM)
 #        define CONFIG_FS_CMD_FS_LIST                       0
 #    else
 #        define CONFIG_FS_CMD_FS_LIST                       1
@@ -1174,7 +1174,7 @@
  * Debug file system command to format a file system.
  */
 #ifndef CONFIG_FS_CMD_FS_FORMAT
-#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(BOARD_SPC56DDISCOVERY) || defined(CONFIG_MINIMAL_SYSTEM)
+#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(FAMILY_SPC5) || defined(CONFIG_MINIMAL_SYSTEM)
 #        define CONFIG_FS_CMD_FS_FORMAT                     0
 #    else
 #        define CONFIG_FS_CMD_FS_FORMAT                     1
@@ -1185,7 +1185,7 @@
  * Debug file system command to list all parameters.
  */
 #ifndef CONFIG_FS_CMD_FS_PARAMETERS_LIST
-#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(BOARD_SPC56DDISCOVERY) || defined(CONFIG_MINIMAL_SYSTEM)
+#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(FAMILY_SPC5) || defined(CONFIG_MINIMAL_SYSTEM)
 #        define CONFIG_FS_CMD_FS_PARAMETERS_LIST            0
 #    else
 #        define CONFIG_FS_CMD_FS_PARAMETERS_LIST            1
@@ -1196,7 +1196,7 @@
  * Debug file system command to read from a file.
  */
 #ifndef CONFIG_FS_CMD_FS_READ
-#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(BOARD_SPC56DDISCOVERY) || defined(CONFIG_MINIMAL_SYSTEM)
+#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(FAMILY_SPC5) || defined(CONFIG_MINIMAL_SYSTEM)
 #        define CONFIG_FS_CMD_FS_READ                       0
 #    else
 #        define CONFIG_FS_CMD_FS_READ                       1
@@ -1207,7 +1207,7 @@
  * Debug file system command to remove a file.
  */
 #ifndef CONFIG_FS_CMD_FS_REMOVE
-#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(BOARD_SPC56DDISCOVERY) || defined(CONFIG_MINIMAL_SYSTEM)
+#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(FAMILY_SPC5) || defined(CONFIG_MINIMAL_SYSTEM)
 #        define CONFIG_FS_CMD_FS_REMOVE                     0
 #    else
 #        define CONFIG_FS_CMD_FS_REMOVE                     1
@@ -1218,7 +1218,7 @@
  * Debug file system command to write to a file.
  */
 #ifndef CONFIG_FS_CMD_FS_WRITE
-#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(BOARD_SPC56DDISCOVERY) || defined(CONFIG_MINIMAL_SYSTEM)
+#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(FAMILY_SPC5) || defined(CONFIG_MINIMAL_SYSTEM)
 #        define CONFIG_FS_CMD_FS_WRITE                      0
 #    else
 #        define CONFIG_FS_CMD_FS_WRITE                      1
@@ -1554,6 +1554,28 @@
 #endif
 
 /**
+ * Debug file system command to read for non-volatile memory.
+ */
+#ifndef CONFIG_FS_CMD_NVM_READ
+#    if defined(CONFIG_MINIMAL_SYSTEM)
+#        define CONFIG_FS_CMD_NVM_READ                      0
+#    else
+#        define CONFIG_FS_CMD_NVM_READ                      1
+#    endif
+#endif
+
+/**
+ * Debug file system command to write for non-volatile memory.
+ */
+#ifndef CONFIG_FS_CMD_NVM_WRITE
+#    if defined(CONFIG_MINIMAL_SYSTEM)
+#        define CONFIG_FS_CMD_NVM_WRITE                      0
+#    else
+#        define CONFIG_FS_CMD_NVM_WRITE                      1
+#    endif
+#endif
+
+/**
  * The maximum length of an absolute path in the file system.
  */
 #ifndef CONFIG_FS_PATH_MAX
@@ -1564,7 +1586,7 @@
  * Start the monitor thread to gather statistics of the scheulder.
  */
 #ifndef CONFIG_MONITOR_THREAD
-#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(BOARD_ESP12E) || defined(BOARD_ESP01) || defined(BOARD_NODEMCU) || defined(BOARD_WEMOS_D1_MINI) || defined(BOARD_NANO32) || defined(BOARD_ESP32_DEVKITC) || defined(BOARD_MAPLE_ESP32) || defined(CONFIG_MINIMAL_SYSTEM)
+#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(FAMILY_ESP) || defined(FAMILY_ESP32) || defined(CONFIG_MINIMAL_SYSTEM)
 #        define CONFIG_MONITOR_THREAD                       0
 #    else
 #        define CONFIG_MONITOR_THREAD                       1
@@ -1599,7 +1621,7 @@
  */
 #ifndef CONFIG_SETTINGS_AREA_SIZE
 #    if defined(ARCH_PPC)
-#        define CONFIG_SETTINGS_AREA_SIZE               16384
+#        define CONFIG_SETTINGS_AREA_SIZE                1028
 #    else
 #        define CONFIG_SETTINGS_AREA_SIZE                 256
 #    endif
@@ -1716,9 +1738,9 @@
  * Console UART baudrate.
  */
 #ifndef CONFIG_START_CONSOLE_UART_BAUDRATE
-#    if defined(BOARD_ESP01) || defined(BOARD_ESP12E) || defined(BOARD_NODEMCU) || defined(BOARD_WEMOS_D1_MINI)
+#    if defined(FAMILY_ESP)
 #        define CONFIG_START_CONSOLE_UART_BAUDRATE      76800
-#    elif defined(BOARD_NANO32) || defined(BOARD_ESP32_DEVKITC) || defined(BOARD_MAPLE_ESP32) || defined(BOARD_SPC56DDISCOVERY) || defined(BOARD_ARDUINO_DUE)
+#    elif defined(FAMILY_ESP32) || defined(FAMILY_SPC5) || defined(BOARD_ARDUINO_DUE)
 #        define CONFIG_START_CONSOLE_UART_BAUDRATE     115200
 #    else
 #        define CONFIG_START_CONSOLE_UART_BAUDRATE      38400
@@ -1808,6 +1830,74 @@
 #        define CONFIG_START_FILESYSTEM_SIZE            32768
 #    else
 #        define CONFIG_START_FILESYSTEM_SIZE            65536
+#    endif
+#endif
+
+/**
+ * Configure a default non-volatile memory.
+ */
+#ifndef CONFIG_START_NVM
+#    if defined(CONFIG_MINIMAL_SYSTEM)
+#        define CONFIG_START_NVM                            0
+#    else
+#        define CONFIG_START_NVM                            1
+#    endif
+#endif
+
+/**
+ * Non-volatile memory size in bytes.
+ */
+#ifndef CONFIG_NVM_SIZE
+#    if defined(ARCH_AVR)
+#        define CONFIG_NVM_SIZE                           256
+#    else
+#        define CONFIG_NVM_SIZE                          2040
+#    endif
+#endif
+
+/**
+ * Use the software EEPROM implementation in the non-volatile memory
+ * module.
+ */
+#ifndef CONFIG_NVM_EEPROM_SOFT
+#    if defined(ARCH_LINUX) || defined(ARCH_AVR) || defined(ARCH_ESP32) || defined(ARCH_ESP)
+#        define CONFIG_NVM_EEPROM_SOFT                      0
+#    else
+#        define CONFIG_NVM_EEPROM_SOFT                      1
+#    endif
+#endif
+
+/**
+ * Non-volatile memory software EEPROM block 0 size. Must be a
+ * multiple of ``CONFIG_NVM_EEPROM_SOFT_CHUNK_SIZE``.
+ */
+#ifndef CONFIG_NVM_EEPROM_SOFT_BLOCK_0_SIZE
+#    define CONFIG_NVM_EEPROM_SOFT_BLOCK_0_SIZE         16384
+#endif
+
+/**
+ * Non-volatile memory software EEPROM block 1 size. Must be a
+ * multiple of ``CONFIG_NVM_EEPROM_SOFT_CHUNK_SIZE``.
+ */
+#ifndef CONFIG_NVM_EEPROM_SOFT_BLOCK_1_SIZE
+#    define CONFIG_NVM_EEPROM_SOFT_BLOCK_1_SIZE         16384
+#endif
+
+/**
+ * Non-volatile software EEPROM chunk size. Must be a power of two.
+ */
+#ifndef CONFIG_NVM_EEPROM_SOFT_CHUNK_SIZE
+#    define CONFIG_NVM_EEPROM_SOFT_CHUNK_SIZE (CONFIG_NVM_SIZE + 8)
+#endif
+
+/**
+ * Non-volatile software EEPROM flash device index.
+ */
+#ifndef CONFIG_NVM_EEPROM_SOFT_FLASH_DEVICE_INDEX
+#    if defined(FAMILY_SPC5)
+#        define CONFIG_NVM_EEPROM_SOFT_FLASH_DEVICE_INDEX   1
+#    else
+#        define CONFIG_NVM_EEPROM_SOFT_FLASH_DEVICE_INDEX   0
 #    endif
 #endif
 
@@ -1950,6 +2040,13 @@
 #    else
 #        define CONFIG_THRD_CPU_USAGE                       1
 #    endif
+#endif
+
+/**
+ * Default thread log mask.
+ */
+#ifndef CONFIG_THRD_DEFAULT_LOG_MASK
+#    define CONFIG_THRD_DEFAULT_LOG_MASK       LOG_UPTO(INFO)
 #endif
 
 /**
@@ -2146,6 +2243,13 @@
  */
 #ifndef CONFIG_SOAM_EMBEDDED_DATABASE
 #    define CONFIG_SOAM_EMBEDDED_DATABASE                   0
+#endif
+
+/**
+ * System module log mask.
+ */
+#ifndef CONFIG_LOG_MASK_SYS
+#    define CONFIG_LOG_MASK_SYS                LOG_UPTO(INFO)
 #endif
 
 /**

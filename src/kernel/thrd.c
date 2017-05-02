@@ -243,7 +243,7 @@ static void thrd_reschedule(void)
         thrd_port_cpu_usage_stop(out_p);
         thrd_port_swap(in_p, out_p);
         thrd_port_cpu_usage_start(out_p);
-# if CONFIG_THRD_SCHEDULED == 1
+#if CONFIG_THRD_SCHEDULED == 1
         out_p->statistics.scheduled++;
 #endif
     }
@@ -441,7 +441,7 @@ int thrd_module_init(void)
     thrd_p->prio = 0;
     thrd_p->state = THRD_STATE_CURRENT;
     thrd_p->err = 0;
-    thrd_p->log_mask = LOG_UPTO(INFO);
+    thrd_p->log_mask = CONFIG_THRD_DEFAULT_LOG_MASK;
     thrd_p->timer_p = NULL;
     thrd_p->name_p = "main";
     thrd_p->next_p = NULL;
@@ -531,7 +531,7 @@ struct thrd_t *thrd_spawn(void *(*main)(void *),
     ASSERTNRN(stack_size > sizeof(struct thrd_t) + 1, EINVAL);
 
     struct thrd_t *thrd_p;
-    int err = 0;
+    int res = 0;
 
     /* Initialize thrd structure in the beginning of the stack. */
     thrd_p = stack_p;
@@ -539,7 +539,7 @@ struct thrd_t *thrd_spawn(void *(*main)(void *),
     thrd_p->prio = prio;
     thrd_p->state = THRD_STATE_READY;
     thrd_p->err = 0;
-    thrd_p->log_mask = LOG_UPTO(INFO);
+    thrd_p->log_mask = CONFIG_THRD_DEFAULT_LOG_MASK;
     thrd_p->timer_p = NULL;
     thrd_p->name_p = "";
     thrd_p->stack_size = (stack_size - sizeof(*thrd_p));
@@ -573,24 +573,24 @@ struct thrd_t *thrd_spawn(void *(*main)(void *),
     thrd_p->next_p = module.threads_p;
     module.threads_p = thrd_p;
 
-    err = thrd_port_spawn(thrd_p, main, arg_p, stack_p, stack_size);
+    res = thrd_port_spawn(thrd_p, main, arg_p, stack_p, stack_size);
 
     sys_lock();
     scheduler_ready_push(thrd_p);
     sys_unlock();
 
-    return (err == 0 ? thrd_p : NULL);
+    return (res == 0 ? thrd_p : NULL);
 }
 
 int thrd_suspend(const struct time_t *timeout_p)
 {
-    int err;
+    int res;
 
     sys_lock();
-    err = thrd_suspend_isr(timeout_p);
+    res = thrd_suspend_isr(timeout_p);
     sys_unlock();
 
-    return (err);
+    return (res);
 }
 
 int thrd_resume(struct thrd_t *thrd_p, int err)
@@ -648,13 +648,13 @@ int thrd_sleep_ms(int ms)
 int thrd_sleep_us(long us)
 {
     struct time_t timeout;
-    int err;
+    int res;
 
     timeout.seconds = (us / 1000000);
     timeout.nanoseconds = 1000 * (us % 1000000);
-    err = thrd_suspend(&timeout);
+    res = thrd_suspend(&timeout);
 
-    return (err == -ETIMEDOUT ? 0 : -1);
+    return (res == -ETIMEDOUT ? 0 : -1);
 }
 
 struct thrd_t *thrd_self(void)

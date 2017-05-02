@@ -28,22 +28,47 @@
  * This file is part of the Simba project.
  */
 
-static int settings_port_module_init(void)
+/**
+ * Start the file non-volatile memory.
+ */
+static int start_nvm(void)
 {
+    int res;
+
+    if (nvm_module_init() != 0) {
+        return (-1);
+    }
+
+    LOG_OBJECT_PRINT(NULL,
+                     LOG_INFO,
+                     OSTR("Mounting the non-volatile memory...\r\n"));
+    res = nvm_mount();
+
+    if (res != 0) {
+        LOG_OBJECT_PRINT(NULL, LOG_INFO, OSTR("failed.\r\n"));
+        LOG_OBJECT_PRINT(NULL,
+                         LOG_INFO,
+                         OSTR("Formatting the non-volatile memory...\r\n"));
+        res = nvm_format();
+
+        if (res != 0) {
+            LOG_OBJECT_PRINT(NULL, LOG_INFO, OSTR("failed.\r\n"));
+            return (-1);
+        }
+
+        LOG_OBJECT_PRINT(NULL, LOG_INFO, OSTR("done.\r\n"));
+        LOG_OBJECT_PRINT(NULL,
+                         LOG_INFO,
+                         OSTR("Mounting the non-volatile memory...\r\n"));
+        res = nvm_mount();
+
+        if (res != 0) {
+            LOG_OBJECT_PRINT(NULL, LOG_INFO, OSTR("failed.\r\n"));
+            return (-1);
+        }
+    }
+
+    LOG_OBJECT_PRINT(NULL, LOG_INFO, OSTR("done.\r\n"));
+
     return (0);
-}
-
-static int settings_port_read(void *dst_p, size_t src, size_t size)
-{
-    return (-1);
-}
-
-static int settings_port_write(size_t dst, const void *src_p, size_t size)
-{
-    return (-1);
-}
-
-static ssize_t settings_port_reset()
-{
-    return (-1);
 }

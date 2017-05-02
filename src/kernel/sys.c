@@ -34,6 +34,12 @@
 #define SECONDS_PER_MSB (INT_MAX / CONFIG_SYSTEM_TICK_FREQUENCY)
 #define TICKS_PER_MSB   (SECONDS_PER_MSB * CONFIG_SYSTEM_TICK_FREQUENCY)
 
+#if CONFIG_LOG_MASK_SYS > 0
+#    define LOG_OBJECT_PRINT(...) log_object_print(__VA_ARGS__)
+#else
+#    define LOG_OBJECT_PRINT()
+#endif
+
 /* 64 bits so it does not wrap around during the system's uptime. */
 struct tick_t {
     uint32_t msb;
@@ -125,19 +131,6 @@ static void tick_to_time(struct time_t *time_p,
     time_p->nanoseconds = (1000 * ((1000000UL * lsb_ticks)
                                    / CONFIG_SYSTEM_TICK_FREQUENCY));
 }
-
-/* static void time_to_tick(struct tick_t *tick_p, */
-/*                          struct time_t *time_p) */
-/* { */
-/*     uint32_t lsb_seconds; */
-/*     uint32_t lsb_ticks; */
-
-/*     tick_p->msb = (time_p->seconds / SECONDS_PER_MSB); */
-/*     lsb_seconds = (time_p->seconds - (tick_p->msb * SECONDS_PER_MSB)); */
-/*     lsb_ticks = (((time_p->nanoseconds / 1000) */
-/*                   * CONFIG_SYSTEM_TICK_FREQUENCY) / 1000000); */
-/*     tick_p->lsb = ((lsb_seconds * CONFIG_SYSTEM_TICK_FREQUENCY) + lsb_ticks); */
-/* } */
 
 static void init_drivers(void)
 {
@@ -381,6 +374,10 @@ static int start_soam(void)
 #    include "sys/network.i"
 #endif
 
+#if CONFIG_START_NVM == 1
+#    include "sys/nvm.i"
+#endif
+
 #if CONFIG_FS_CMD_SYS_INFO == 1
 
 static int cmd_info_cb(int argc,
@@ -570,9 +567,6 @@ int sys_start(void)
 #if CONFIG_MODULE_INIT_FS == 1
     fs_module_init();
 #endif
-#if CONFIG_MODULE_INIT_SETTINGS == 1
-    settings_module_init();
-#endif
 #if CONFIG_MODULE_INIT_STD == 1
     std_module_init();
 #endif
@@ -604,6 +598,14 @@ int sys_start(void)
 
 #if CONFIG_START_CONSOLE != CONFIG_START_CONSOLE_NONE
     start_console();
+#endif
+
+#if CONFIG_START_NVM == 1
+    start_nvm();
+#endif
+
+#if CONFIG_MODULE_INIT_SETTINGS == 1
+    settings_module_init();
 #endif
 
 #if CONFIG_START_SHELL == 1

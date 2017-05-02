@@ -41,7 +41,7 @@ TIMEOUT ?= 10
 
 upload:
 	@echo "Uploading $(EXE)"
-	avrdude -p atmega2560 -D -P $(SERIAL_PORT) -c wiring -V -b 115200 -U eeprom:w:$(SETTINGS_BIN):r
+	avrdude -p atmega2560 -D -P $(SERIAL_PORT) -c wiring -V -b 115200 -U eeprom:w:$(EEPROM_BIN):r
 	avrdude -p atmega2560 -D -P $(SERIAL_PORT) -c wiring -V -b 115200 -U flash:w:$(HEX)
 
 rerun:

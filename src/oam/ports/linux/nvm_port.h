@@ -28,7 +28,11 @@
  * This file is part of the Simba project.
  */
 
-#ifndef __KERNEL_SETTINGS_PORT_H__
-#define __KERNEL_SETTINGS_PORT_H__
+#ifndef __OAM_NVM_PORT_H__
+#define __OAM_NVM_PORT_H__
+
+struct module_port_t {
+    FILE *nvm_p;
+};
 
 #endif

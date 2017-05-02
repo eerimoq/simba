@@ -28,7 +28,53 @@
  * This file is part of the Simba project.
  */
 
-#ifndef __KERNEL_SETTINGS_PORT_H__
-#define __KERNEL_SETTINGS_PORT_H__
+#include "simba.h"
 
-#endif
+int main()
+{
+    long counter;
+    ssize_t size;
+
+    sys_start();
+
+    std_printf(sys_get_info());
+
+    log_object_print(NULL,
+                     LOG_INFO,
+                     OSTR("Reading counter from non-volatile memory...\r\n"));
+
+    size = nvm_read(&counter, 0, sizeof(counter));
+
+    if (size != sizeof(counter)) {
+        log_object_print(NULL, LOG_INFO, OSTR("failed.\r\n"));
+        return (-1);
+    }
+
+    log_object_print(NULL, LOG_INFO, OSTR("done.\r\n"));
+    log_object_print(NULL,
+                     LOG_INFO,
+                     OSTR("Incrementing counter from %ld to %ld.\r\n"),
+                     counter,
+                     counter + 1);
+    counter++;
+
+    log_object_print(NULL,
+                     LOG_INFO,
+                     OSTR("Writing incremented counter to non-volatile "
+                          "memory...\r\n"));
+
+    size = nvm_write(0, &counter, sizeof(counter));
+
+    if (size != sizeof(counter)) {
+        log_object_print(NULL, LOG_INFO, OSTR("failed.\r\n"));
+
+        return (-1);
+    }
+
+    log_object_print(NULL, LOG_INFO, OSTR("done.\r\n"));
+    log_object_print(NULL, LOG_INFO, OSTR("All good!\r\n"));
+
+    thrd_suspend(NULL);
+
+    return (0);
+}

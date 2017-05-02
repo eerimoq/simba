@@ -28,9 +28,27 @@
  * This file is part of the Simba project.
  */
 
-#ifndef __KERNEL_SETTING_PORT_H__
-#define __KERNEL_SETTING_PORT_H__
+static int nvm_port_module_init()
+{
+    return (0);
+}
 
-#define SETTING_MEMORY_EEPROM
+static int nvm_port_mount()
+{
+    return (-1);
+}
 
-#endif
+static int nvm_port_format()
+{
+    return (-1);
+}
+
+static ssize_t nvm_port_read(void *dst_p, size_t src, size_t size)
+{
+    return (-1);
+}
+
+static ssize_t nvm_port_write(size_t dst, const void *src_p, size_t size)
+{
+    return (-1);
+}

@@ -28,54 +28,17 @@
 # This file is part of the Simba project.
 #
 
-CROSS_COMPILE = powerpc-eabivle-
+NAME = nvm
+BOARD ?= arduino_due
 
-LIBPATH += $(FREESCALE_POWERPC_EABIVLE_ROOT)/powerpc-eabivle/newlib/lib
+TIMEOUT = 5
 
-SIZE_SUMMARY_CMD ?= $(SIMBA_ROOT)/bin/memory_usage.py \
-			--ram-section .relocate \
-			--ram-section .bss \
-			--ram-section .main_stack \
-			--rom-section .text \
-			${EXE}
+CDEFS += \
+	CONFIG_START_NETWORK=0 \
+	CONFIG_START_FILESYSTEM=0
 
-CDEFS += F_CPU=$(F_CPU)UL
+RUN_END_PATTERN = "All good!"
+RUN_END_PATTERN_SUCCESS = $(RUN_END_PATTERN)
 
-OPT ?= -O2
-
-CFLAGS += \
-	-Werror \
-	-mcpu=$(MCPU) \
-	$(OPT) \
-        -ffunction-sections \
-        -fdata-sections \
-        -fpack-struct \
-	-fstack-usage
-
-CXXFLAGS += \
-	-Werror \
-	-mcpu=$(MCPU) \
-	$(OPT) \
-        -ffunction-sections \
-        -fdata-sections \
-        -fpack-struct \
-	-fstack-usage
-
-LDFLAGS += \
-	-mcpu=$(MCPU) \
-        -Wl,--cref \
-        -T$(LINKER_SCRIPT)
-
-
-ENDIANESS = big
-
-build: $(BIN) $(HEX)
-
-$(BIN): $(EXE)
-	$(CROSS_COMPILE)objcopy -O binary $< $@
-
-$(HEX): $(EXE)
-	@echo "Creating $@"
-	$(CROSS_COMPILE)objcopy -O ihex $< $@
-
-include $(SIMBA_ROOT)/make/gnu.mk
+SIMBA_ROOT ?= ../..
+include $(SIMBA_ROOT)/make/app.mk

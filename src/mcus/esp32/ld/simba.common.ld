@@ -184,5 +184,6 @@ SECTIONS
     *(.gnu.version)
     _text_end = ABSOLUTE(.);
     _etext = .;
+    . = ALIGN(4);
   } >iram0_2_seg
 }
