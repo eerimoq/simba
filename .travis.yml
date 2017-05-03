@@ -10,6 +10,7 @@ before_install:
   - sudo apt-get install -qq pmccabe -y
   - sudo apt-get install -qq python3 -y
   - sudo apt-get install -qq python3-pip -y
+  - sudo pip install bincopy
   - sudo pip3 install bincopy
   - source setup.sh
   - gcc --version
