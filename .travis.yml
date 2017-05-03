@@ -8,6 +8,7 @@ before_install:
   - sudo apt-get install -qq lcov -y
   - sudo apt-get install -qq cloc -y
   - sudo apt-get install -qq pmccabe -y
+  - sudo pip install bincopy
   - source setup.sh
   - gcc --version
   - g++ --version
