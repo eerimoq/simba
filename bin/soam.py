@@ -12,7 +12,6 @@ import serial
 import hashlib
 import lzma
 import traceback
-import socket
 import _thread
 from socket_device import SocketDevice
 
@@ -39,10 +38,6 @@ SOAM_SEGMENT_SIZE_MIN = 6
 
 SOAM_SEGMENT_FLAGS_CONSECUTIVE = (1 << 1)
 SOAM_SEGMENT_FLAGS_LAST        = (1 << 0)
-
-# Simba socket device types.
-TYPE_UART_DEVICE_REQUEST               = 1
-TYPE_UART_DEVICE_RESPONSE              = 2
 
 
 class CommandNotFoundError(Exception):
