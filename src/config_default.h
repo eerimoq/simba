@@ -2193,7 +2193,7 @@
  * Sleep in the test harness before executing the first testcase.
  */
 #ifndef CONFIG_HARNESS_SLEEP_MS
-#    define CONFIG_HARNESS_SLEEP_MS                       200
+#    define CONFIG_HARNESS_SLEEP_MS                       300
 #endif
 
 /**

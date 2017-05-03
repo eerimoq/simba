@@ -329,6 +329,7 @@ ifeq ($(BOARD), spc56ddiscovery)
                                       json)
     TESTS += $(addprefix tst/hash/, crc \
                                     sha1)
+    TESTS += $(addprefix tst/drivers/, eeprom_soft)
 endif
 
 # List of all application to build
