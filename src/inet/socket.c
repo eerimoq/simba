@@ -596,6 +596,7 @@ static err_t on_tcp_recv(void *arg_p,
         }
 
         if (socket_p->output.cb.state == STATE_SENDTO) {
+            socket_p->output.cb.state = STATE_IDLE;
             resume_thrd(socket_p->output.cb.thrd_p, 0);
         }
     }
