@@ -7,6 +7,9 @@
 A non-volatile memory is typically used for long-term persistent
 storage.
 
+This module implements a singleton non-volatile memory, often on top
+of an EEPROM or software emulated EEPROM.
+
 ----------------------------------------------
 
 Source code: :github-blob:`src/oam/nvm.h`,

@@ -34,7 +34,7 @@
 #include "simba.h"
 
 /**
- * Initialize the nvm module. This function must be called before
+ * Initialize the NVM module. This function must be called before
  * calling any other function in this module.
  *
  * The module will only be initialized once even if this function is
@@ -47,22 +47,24 @@ int nvm_module_init(void);
 /**
  * Mount the non-volatile memory.
  *
- * @return zero(0) or negative error code.
+ * @return zero(0) if the memory was successfully mounted, otherwise
+ *         negative error code.
  */
 int nvm_mount(void);
 
 /**
- * Format the non-volatile memory, writing 0xff to the whole memory.
+ * Format the non-volatile memory, writing 0xff/erasing to the whole
+ * memory. A formatted NVM can always be mounted with `nvm_mount()`.
  *
  * @return zero(0) or negative error code.
  */
 int nvm_format(void);
 
 /**
- * Read into given buffer from given nvm address.
+ * Read into given buffer from given NVM address.
  *
  * @param[out] dst_p Buffer to read into.
- * @param[in] src Address in nvm to read from. Addressing starts at
+ * @param[in] src Address in NVM to read from. Addressing starts at
  *                zero(0).
  * @param[in] size Number of bytes to read.
  *
@@ -71,9 +73,9 @@ int nvm_format(void);
 ssize_t nvm_read(void *dst_p, uint32_t src, size_t size);
 
 /**
- * Write given buffer to given nvm address.
+ * Write given buffer to given NVM address.
  *
- * @param[in] dst Address in nvm to write to. Addressing starts at
+ * @param[in] dst Address in NVM to write to. Addressing starts at
  *                zero(0).
  * @param[in] src_p Buffer to write.
  * @param[in] size Number of bytes to write.
