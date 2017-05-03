@@ -167,9 +167,9 @@ def upload(serial_connection, baudrate, control_port):
 
         # Toggle RESET.
         control_port_connection.rts = False
-        time.sleep(0.01)
+        time.sleep(0.05)
         control_port_connection.rts = True
-        time.sleep(0.01)
+        time.sleep(0.05)
         control_port_connection.rts = False
         time.sleep(0.01)
 
