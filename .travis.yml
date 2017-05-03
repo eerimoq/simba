@@ -8,6 +8,7 @@ before_install:
   - sudo apt-get install -qq lcov -y
   - sudo apt-get install -qq cloc -y
   - sudo apt-get install -qq pmccabe -y
+  - sudo apt-get install -qq python3 -y
   - sudo pip3 install bincopy
   - source setup.sh
   - gcc --version
