@@ -6,7 +6,10 @@ import sys
 import time
 import getpass
 import hashlib
-import lzma
+try:
+    import lzma
+except ImportError:
+    print("Failed to import lzma. Cannot compress SOAM database.")
 import argparse
 import struct
 import os
@@ -255,7 +258,7 @@ class Settings(object):
 
         """
 
-        return self.binfile.as_binary()
+        return bytes(self.binfile.as_binary())
 
     def as_simba_gen_h_section(self):
         """Create the header file.
@@ -398,7 +401,10 @@ class SoamDb(object):
 
         # Compress the database.
         with open(filename, 'rb') as fin:
-            compressed = lzma.compress(fin.read())
+            if 'lzma' in sys.modules:
+                compressed = lzma.compress(fin.read())
+            else:
+                compressed = fin.read()
 
         fmt = 'const size_t soam_database_compressed_size = {};\n\n'
         compressed_database_size = fmt.format(len(compressed))

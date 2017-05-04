@@ -13,6 +13,8 @@ before_install:
   - sudo pip install bincopy
   - sudo pip3 install bincopy
   - source setup.sh
+  - python --version
+  - python3 --version
   - gcc --version
   - g++ --version
   - ld --version
