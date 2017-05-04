@@ -3,7 +3,6 @@
 from __future__ import print_function
 
 import sys
-print(sys.path)
 import time
 import getpass
 import hashlib
@@ -15,7 +14,6 @@ import argparse
 import struct
 import os
 import binascii
-import bincopy
 import re
 import zlib
 
@@ -161,7 +159,7 @@ class Settings(object):
 
         """
 
-        self.binfile = bincopy.BinFile()
+        self.binary = b''
         self.endianess = endianess
         self.settings = OrderedDict()
 
@@ -252,14 +250,22 @@ class Settings(object):
             else:
                 sys.exit("error: {}: bad setting type".format(item["type"]))
 
-            self.binfile.add_binary(data, item["address"])
+            if item["address"] < len(self.binary):
+                sys.exit("error: {}: address overlapping".format(
+                    item["address"]))
+
+            # Padding from last setting end to this setting start.
+            if item["address"] > len(self.binary):
+                self.binary += (item["address"] - len(self.binary))* b'\xff'
+
+            self.binary += data
 
     def as_binary(self):
         """Get the binary from given settings.
 
         """
 
-        return bytes(self.binfile.as_binary())
+        return self.binary
 
     def as_simba_gen_h_section(self):
         """Create the header file.
@@ -325,7 +331,7 @@ class EepromSoft(object):
 
     def __init__(self, binary, chunk_size, endianess):
         binary += b'\xff' * (chunk_size - 8 - len(binary))
-        crc = zlib.crc32(binary)
+        crc = zlib.crc32(binary) & 0xffffffff
         endianess_prefix = ">" if endianess == "big" else "<"
         header = struct.pack(endianess_prefix + "I", crc)
         header += struct.pack(endianess_prefix + "H", 1)
@@ -403,9 +409,9 @@ class SoamDb(object):
         # Compress the database.
         with open(filename, 'rb') as fin:
             if 'lzma' in sys.modules:
-                compressed = lzma.compress(fin.read())
+                compressed = b'\x00' + lzma.compress(fin.read())
             else:
-                compressed = fin.read()
+                compressed = b'\x01' + fin.read()
 
         fmt = 'const size_t soam_database_compressed_size = {};\n\n'
         compressed_database_size = fmt.format(len(compressed))
@@ -470,9 +476,9 @@ class SoamDb(object):
         self.id += 1
 
         # The command parser function does not accept string
-        # termination (0x00), quotes (0x22) or percent sign (0x25) in
-        # the command string.
-        if (self.id & 0xff) in [0x00, 0x22, 0x25]:
+        # termination (0x00), quotes (0x22), space (0x20) or percent
+        # sign (0x25) in the command string.
+        if (self.id & 0xff) in [0x00, 0x22, 0x25, 0x20]:
             self.id += 1
 
         if self.id == 0xffff:

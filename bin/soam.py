@@ -39,6 +39,8 @@ SOAM_SEGMENT_SIZE_MIN = 6
 SOAM_SEGMENT_FLAGS_CONSECUTIVE = (1 << 1)
 SOAM_SEGMENT_FLAGS_LAST        = (1 << 0)
 
+DATABASE_COMPRESSION_SCHEME_LZMA         = 0
+DATABASE_COMPRESSION_SCHEME_UNCOMPRESSED = 1
 
 class CommandNotFoundError(Exception):
     pass
@@ -300,7 +302,13 @@ class Client(object):
                 print('failed. ', flush=True, file=self.ostream)
                 sys.exit('error: failed to read the database from the device')
 
-            database = lzma.decompress(database_compressed)
+            if database_compressed[0] == DATABASE_COMPRESSION_SCHEME_LZMA:
+                database = lzma.decompress(database_compressed[1:])
+            elif database_compressed[0] == DATABASE_COMPRESSION_SCHEME_UNCOMPRESSED:
+                database = database_compressed[1:]
+            else:
+                sys.exit("error: {}: Invalid database compression scheme".format(
+                    database_compressed[0]))
 
         self.database.set_database(StringIO(database.decode('ascii')))
 
