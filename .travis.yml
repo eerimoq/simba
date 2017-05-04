@@ -8,14 +8,12 @@ before_install:
   - sudo apt-get install -qq lcov -y
   - sudo apt-get install -qq cloc -y
   - sudo apt-get install -qq pmccabe -y
-  - sudo pip install --user bincopy
   - source setup.sh
-  - python --version
   - gcc --version
   - g++ --version
   - ld --version
 
-script: ls ~/.local/lib/python2.7/site-packages && env PYTHONPATH=~/.local/lib/python2.7/site-packages make -s travis -j $(cat /proc/cpuinfo | grep processor | wc -l)
+script: make -s travis -j $(cat /proc/cpuinfo | grep processor | wc -l)
 
 after_success:
   - make codecov-coverage
