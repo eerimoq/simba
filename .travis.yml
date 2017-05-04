@@ -3,18 +3,14 @@ sudo: required
 dist: trusty
 
 before_install:
-  - sudo apt-get update -qq
-  - sudo apt-get install -qq parted -y
-  - sudo apt-get install -qq lcov -y
-  - sudo apt-get install -qq cloc -y
-  - sudo apt-get install -qq pmccabe -y
-  - sudo apt-get install -qq python3 -y
-  - sudo apt-get install -qq python3-pip -y
-  - sudo pip install bincopy
-  - sudo pip3 install bincopy
+  - apt-get update -qq
+  - apt-get install -qq parted -y
+  - apt-get install -qq lcov -y
+  - apt-get install -qq cloc -y
+  - apt-get install -qq pmccabe -y
+  - pip --user install bincopy
   - source setup.sh
   - python --version
-  - python3 --version
   - gcc --version
   - g++ --version
   - ld --version

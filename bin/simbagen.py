@@ -3,6 +3,7 @@
 from __future__ import print_function
 
 import sys
+print(sys.path)
 import time
 import getpass
 import hashlib
