@@ -15,7 +15,7 @@ before_install:
   - g++ --version
   - ld --version
 
-script: make -s travis -j $(cat /proc/cpuinfo | grep processor | wc -l)
+script: ls ~/.local/lib/python2.7/site-packages && env PYTHONPATH=~/.local/lib/python2.7/site-packages make -s travis -j $(cat /proc/cpuinfo | grep processor | wc -l)
 
 after_success:
   - make codecov-coverage
