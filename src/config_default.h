@@ -2253,6 +2253,13 @@
 #endif
 
 /**
+ * The external oscillator frequency in Hertz.
+ */
+#ifndef CONFIG_EXTERNAL_OSCILLATOR_FREQUENCY_HZ
+#    define CONFIG_EXTERNAL_OSCILLATOR_FREQUENCY_HZ  16000000
+#endif
+
+/**
  * Configuration validation.
  */
 #if (CONFIG_START_SHELL == 1) &&  (CONFIG_START_CONSOLE == CONFIG_START_CONSOLE_NONE)

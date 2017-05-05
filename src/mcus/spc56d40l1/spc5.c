@@ -307,9 +307,18 @@ void (*vector_table[])(uint32_t address) = {
 
 void spc5_init(void)
 {
+#if CONFIG_EXTERNAL_OSCILLATOR_FREQUENCY_HZ == 16000000
     SPC5_MC_CGM->FMPLL.CR = (SPC5_MC_CGM_FMPLL_CR_IDF(1)
                              | SPC5_MC_CGM_FMPLL_CR_ODF(2)
                              | SPC5_MC_CGM_FMPLL_CR_NDIV(48));
+#elif CONFIG_EXTERNAL_OSCILLATOR_FREQUENCY_HZ == 8000000
+    SPC5_MC_CGM->FMPLL.CR = (SPC5_MC_CGM_FMPLL_CR_IDF(0)
+                             | SPC5_MC_CGM_FMPLL_CR_ODF(2)
+                             | SPC5_MC_CGM_FMPLL_CR_NDIV(48));
+#else
+#    error "Unsupported external oscillator frequency."
+#endif
+
     SPC5_MC_ME->DRUN_MC = 0x001f00f2;
     SPC5_MC_ME->MCTL = 0x30005af0;
     SPC5_MC_ME->MCTL = 0x3000a50f;
