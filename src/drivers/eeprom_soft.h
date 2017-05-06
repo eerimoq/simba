@@ -68,7 +68,10 @@ int eeprom_soft_module_init(void);
  * @param[in] flash_p Flash driver.
  * @param[in] blocks_p Flash memory blocks to use.
  * @param[in] number_of_blocks Number of blocks.
- * @param[in] chunk_size Chunk size in bytes.
+ * @param[in] chunk_size Chunk size in bytes. This is the size of the
+ *                       EEPROM. Eight bytes of the chunk will be used
+ *                       to store metadata, so only `chunk_size - 8`
+ *                       bytes are available to the user.
  *
  * @return zero(0) or negative error code.
  */

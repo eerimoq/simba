@@ -88,7 +88,7 @@ static int test_format_mount(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_read_write(struct harness_t *harness_p)
+static int test_read_write_sizes(struct harness_t *harness_p)
 {
     int i;
     uint8_t buf[55];
@@ -145,6 +145,71 @@ static int test_read_write(struct harness_t *harness_p)
     for (i = 0; i < membersof(buf); i++) {
         BTASSERT(buf[i] == i, "[%d]: %02x", i, buf[i]);
     }
+
+    return (0);
+}
+
+static int test_read_write_low_high(struct harness_t *harness_p)
+{
+    uint8_t byte;
+
+    /* Lowest address. */
+    byte = 1;
+    BTASSERT(eeprom_soft_write(&eeprom_soft,
+                               0,
+                               &byte,
+                               sizeof(byte)) == sizeof(byte));
+
+    byte = 0;
+    BTASSERT(eeprom_soft_read(&eeprom_soft,
+                              &byte,
+                              0,
+                              sizeof(byte)) == sizeof(byte));
+    BTASSERT(byte == 1);
+
+    /* Highest address. */
+    byte = 2;
+    BTASSERT(eeprom_soft_write(&eeprom_soft,
+                               CHUNK_SIZE - 9,
+                               &byte,
+                               sizeof(byte)) == sizeof(byte));
+
+    byte = 0;
+    BTASSERT(eeprom_soft_read(&eeprom_soft,
+                              &byte,
+                              CHUNK_SIZE - 9,
+                              sizeof(byte)) == sizeof(byte));
+
+    return (0);
+}
+
+static int test_read_write_bad_address(struct harness_t *harness_p)
+{
+    uint8_t buf[2];
+
+    memset(&buf[0], 0, sizeof(buf));
+
+    /* Start address outside the EEPROM. */
+    BTASSERT(eeprom_soft_read(&eeprom_soft,
+                              &buf[0],
+                              CHUNK_SIZE - 8,
+                              sizeof(buf)) == -EINVAL);
+
+    BTASSERT(eeprom_soft_write(&eeprom_soft,
+                               CHUNK_SIZE - 8,
+                               &buf[0],
+                               sizeof(buf)) == -EINVAL);
+
+    /* End address outside the EEPROM. */
+    BTASSERT(eeprom_soft_read(&eeprom_soft,
+                              &buf[0],
+                              CHUNK_SIZE - 9,
+                              sizeof(buf)) == -EINVAL);
+
+    BTASSERT(eeprom_soft_write(&eeprom_soft,
+                               CHUNK_SIZE - 9,
+                               &buf[0],
+                               sizeof(buf)) == -EINVAL);
 
     return (0);
 }
@@ -222,7 +287,9 @@ int main()
     struct harness_testcase_t harness_testcases[] = {
         { test_init, "test_init" },
         { test_format_mount, "test_format_mount" },
-        { test_read_write, "test_read_write" },
+        { test_read_write_sizes, "test_read_write_sizes" },
+        { test_read_write_low_high, "test_read_write_low_high" },
+        { test_read_write_bad_address, "test_read_write_bad_address" },
         { NULL, NULL }
     };
 
