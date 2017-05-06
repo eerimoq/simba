@@ -93,18 +93,15 @@ static int is_valid_chunk(struct eeprom_soft_driver_t *self_p,
 
     /* Check the valid flag. */
     if (header.valid != VALID_PATTERN) {
-            PRINT_FILE_LINE();
         return (0);
     }
 
     /* Check the CRC. */
     if (calculate_chunk_crc(self_p, &crc, address) != 0) {
-            PRINT_FILE_LINE();
         return (-1);
     }
 
     if (crc != header.crc) {
-            PRINT_FILE_LINE();
         return (0);
     }
 
@@ -322,7 +319,6 @@ int eeprom_soft_mount(struct eeprom_soft_driver_t *self_p)
     /* Make sure the chunk is valid. */
     if (latest_revision != -1) {
         if (is_valid_chunk(self_p, latest_chunk_address) != 1) {
-            PRINT_FILE_LINE();
             return (-1);
         }
 

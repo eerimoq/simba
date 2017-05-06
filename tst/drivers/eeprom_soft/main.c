@@ -79,6 +79,57 @@ static int test_init(struct harness_t *harness_p)
     return (0);
 }
 
+static int test_mount_corrupt_header_valid(struct harness_t *harness_p)
+{
+    uint8_t byte;
+
+    BTASSERT(eeprom_soft_format(&eeprom_soft) == 0);
+
+    byte = 0x01;
+    BTASSERT(flash_write(&flash,
+                         FLASH_ADDRESS + 7,
+                         &byte,
+                         sizeof(byte)) == sizeof(byte));
+
+    BTASSERT(eeprom_soft_mount(&eeprom_soft) == -1);
+
+    return (0);
+}
+
+static int test_mount_corrupt_header_crc(struct harness_t *harness_p)
+{
+    uint8_t byte;
+
+    BTASSERT(eeprom_soft_format(&eeprom_soft) == 0);
+
+    byte = 0x01;
+    BTASSERT(flash_write(&flash,
+                         FLASH_ADDRESS,
+                         &byte,
+                         sizeof(byte)) == sizeof(byte));
+
+    BTASSERT(eeprom_soft_mount(&eeprom_soft) == -1);
+
+    return (0);
+}
+
+static int test_mount_corrupt_data(struct harness_t *harness_p)
+{
+    uint8_t byte;
+
+    BTASSERT(eeprom_soft_format(&eeprom_soft) == 0);
+
+    byte = 0x01;
+    BTASSERT(flash_write(&flash,
+                         FLASH_ADDRESS + 8,
+                         &byte,
+                         sizeof(byte)) == sizeof(byte));
+
+    BTASSERT(eeprom_soft_mount(&eeprom_soft) == -1);
+
+    return (0);
+}
+
 static int test_format_mount(struct harness_t *harness_p)
 {
     BTASSERT(eeprom_soft_mount(&eeprom_soft) == -1);
@@ -286,6 +337,9 @@ int main()
     struct harness_t harness;
     struct harness_testcase_t harness_testcases[] = {
         { test_init, "test_init" },
+        { test_mount_corrupt_header_valid, "test_mount_corrupt_header_valid" },
+        { test_mount_corrupt_header_crc, "test_mount_corrupt_header_crc" },
+        { test_mount_corrupt_data, "test_mount_corrupt_data" },
         { test_format_mount, "test_format_mount" },
         { test_read_write_sizes, "test_read_write_sizes" },
         { test_read_write_low_high, "test_read_write_low_high" },
