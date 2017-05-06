@@ -307,6 +307,11 @@ int eeprom_soft_mount(struct eeprom_soft_driver_t *self_p)
                 continue;
             }
 
+            /* Revision must be a positive integer. */
+            if (header.revision & 0x8000) {
+                continue;
+            }
+
             /* Keep track of the latest revision chunk. */
             if (is_later_revision(header.revision, latest_revision) == 1) {
                 latest_revision = header.revision;
