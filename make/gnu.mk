@@ -31,6 +31,8 @@
 SIZECMD = $(CROSS_COMPILE)size $(SIZEARGS) $(EXE) ; \
 	  echo ; \
 	  $(CROSS_COMPILE)size $(OBJ) $(SIMBA_GEN_O) -t | sort -n -k4 ; \
+	  echo ; \
+	  $(CROSS_COMPILE)readelf -W -S $(EXE) ; \
 	  $(CROSS_COMPILE)readelf -W -s $(EXE) | sort -n -k3 | \
 	      awk '{if ($$3 != 0) {print $$0}}' | grep -v "Symbol table"
 
