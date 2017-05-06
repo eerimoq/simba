@@ -1827,7 +1827,7 @@
 #    elif defined(BOARD_ESP12E) || defined(BOARD_NODEMCU) || defined(BOARD_WEMOS_D1_MINI)
 #        define CONFIG_START_FILESYSTEM_SIZE          0xFB000
 #    elif defined(ARCH_ESP32)
-#        define CONFIG_START_FILESYSTEM_SIZE            32768
+#        define CONFIG_START_FILESYSTEM_SIZE          0x20000
 #    else
 #        define CONFIG_START_FILESYSTEM_SIZE            65536
 #    endif
