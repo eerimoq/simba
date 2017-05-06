@@ -397,7 +397,6 @@
 /** Quota exceeded. */
 #define EDQUOT          122
 
-
 /** No medium found. */
 #define ENOMEDIUM       123
 
