@@ -83,7 +83,7 @@ static int cmd_read_cb(int argc,
     size = nvm_read(&byte, address, sizeof(byte));
 
     if (size != sizeof(byte)) {
-        return (size);
+        return (-1);
     }
 
     std_fprintf(chout_p, OSTR("0x%02x\r\n"), byte);
@@ -136,7 +136,7 @@ static int cmd_write_cb(int argc,
     size = nvm_write(address, &byte, sizeof(byte));
 
     if (size != sizeof(byte)) {
-        return (size);
+        return (-1);
     }
 
     return (0);

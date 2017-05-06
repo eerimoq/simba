@@ -57,7 +57,8 @@ ifeq ($(BOARD), linux)
 				    std \
                                     re)
     TESTS += $(addprefix tst/debug/, log)
-    TESTS += $(addprefix tst/oam/, service \
+    TESTS += $(addprefix tst/oam/, nvm \
+				   service \
 				   settings \
 				   shell \
 				   soam \

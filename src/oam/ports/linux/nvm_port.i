@@ -62,7 +62,7 @@ static int nvm_port_format()
     byte = 0xff;
     (void)fseek(module.port.nvm_p, 0, SEEK_SET);
 
-    for (i = 0; i < CONFIG_NVM_EEPROM_SOFT_CHUNK_SIZE; i++) {
+    for (i = 0; i < CONFIG_NVM_SIZE; i++) {
         fwrite(&byte, 1, sizeof(byte), module.port.nvm_p);
     }
 
@@ -74,7 +74,14 @@ static int nvm_port_format()
 
 static ssize_t nvm_port_read(void *dst_p, size_t src, size_t size)
 {
-    std_printf(FSTR("src: %d, size: %d\r\n"), src, size);
+    if (src >= CONFIG_NVM_SIZE) {
+        return (-EINVAL);
+    }
+
+    if (src + size > CONFIG_NVM_SIZE) {
+        return (-EINVAL);
+    }
+
     (void)fseek(module.port.nvm_p, src, SEEK_SET);
 
     return (fread(dst_p, 1, size, module.port.nvm_p));
@@ -82,7 +89,15 @@ static ssize_t nvm_port_read(void *dst_p, size_t src, size_t size)
 
 static ssize_t nvm_port_write(size_t dst, const void *src_p, size_t size)
 {
-    std_printf(FSTR("dst: %d, size: %d\r\n"), dst, size);
+
+    if (dst >= CONFIG_NVM_SIZE) {
+        return (-EINVAL);
+    }
+
+    if (dst + size > CONFIG_NVM_SIZE) {
+        return (-EINVAL);
+    }
+
     (void)fseek(module.port.nvm_p, dst, SEEK_SET);
 
     return (fwrite(src_p, 1, size, module.port.nvm_p));
