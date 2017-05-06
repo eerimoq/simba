@@ -429,7 +429,7 @@
 /** Assertion. */
 #define EASSERT        1002
 
-/** Assertion. */
+/** Command not found. */
 #define ENOCOMMAND     1003
 
 #endif

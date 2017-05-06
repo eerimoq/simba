@@ -10,7 +10,15 @@ import cmd
 import threading
 import serial
 import hashlib
-import lzma
+
+try:
+    import lzma
+except ImportError:
+    try:
+        from backports import lzma
+    except ImportError:
+        print("Failed to import lmza.")
+
 import traceback
 import _thread
 from socket_device import SocketDevice
@@ -19,6 +27,8 @@ try:
     from StringIO import StringIO
 except ImportError:
     from io import StringIO
+
+from errnos import human_readable_errno
 
 # SOAM protocol definitions.
 SOAM_TYPE_STDOUT_PRINTF                = 1
@@ -503,7 +513,17 @@ class Shell(cmd.Cmd):
         if code == 0:
             self.output(CommandStatus.OK)
         else:
-            self.output(CommandStatus.ERROR + '({})'.format(code))
+            if code < 0:
+                message = human_readable_errno(-code)
+
+                if message is None:
+                    message = code
+                else:
+                    message = '"' + message + '"'
+            else:
+                message = code
+
+            self.output(CommandStatus.ERROR + '({})'.format(message))
 
     def completedefault(self, *args):
         _, line, begidx, _ = args

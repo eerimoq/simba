@@ -6,10 +6,15 @@ import sys
 import time
 import getpass
 import hashlib
+
 try:
     import lzma
 except ImportError:
-    print("Failed to import lzma. Cannot compress SOAM database.")
+    try:
+        from backports import lzma
+    except ImportError:
+        print("Failed to import lzma. Cannot compress SOAM database.")
+
 import argparse
 import struct
 import os
