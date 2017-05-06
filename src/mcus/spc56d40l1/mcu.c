@@ -78,7 +78,11 @@ struct pin_device_t pin_device[PIN_DEVICE_MAX] = {
     { .id = 39 },
     { .id = 40 },
     { .id = 41 },
-    { .id = 42 }
+    { .id = 42 },
+
+    /* PH9-10. */
+    { .id = 121 },
+    { .id = 122 }
 };
 
 struct uart_device_t uart_device[UART_DEVICE_MAX] = {

@@ -66,6 +66,14 @@ int board_pin_string_to_device_index(const char *str_p)
             pin = (32 + pad);
             break;
 
+        case 'h':
+            if ((pad < 9) || (pad > 10)) {
+                return (-1);
+            }
+
+            pin = (43 + pad - 9);
+            break;
+
         default:
             return (-1);
         }
