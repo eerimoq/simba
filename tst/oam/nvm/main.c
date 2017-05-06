@@ -68,8 +68,8 @@ static int test_read_write_bad_address(struct harness_t *harness_p)
     uint8_t byte;
 
     byte = 0;
-    BTASSERT(nvm_write(0xffffffff, &byte, sizeof(byte)) == -EINVAL);
-    BTASSERT(nvm_read(&byte, 0xffffffff, sizeof(byte)) == -EINVAL);
+    BTASSERT(nvm_write(CONFIG_NVM_SIZE, &byte, sizeof(byte)) == -EINVAL);
+    BTASSERT(nvm_read(&byte, CONFIG_NVM_SIZE, sizeof(byte)) == -EINVAL);
 
     return (0);
 }
