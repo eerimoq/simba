@@ -163,15 +163,15 @@ def upload(serial_connection, baudrate, control_port):
 
         # Set FAB high for serial boot mode.
         control_port_connection.dtr = False
-        time.sleep(0.01)
+        time.sleep(0.05)
 
         # Toggle RESET.
         control_port_connection.rts = False
-        time.sleep(0.05)
+        time.sleep(0.1)
         control_port_connection.rts = True
-        time.sleep(0.05)
+        time.sleep(0.1)
         control_port_connection.rts = False
-        time.sleep(0.01)
+        time.sleep(0.05)
 
         # Flush any received garbage.
         serial_connection.flushInput()
