@@ -81,6 +81,7 @@ static int test_init(struct harness_t *harness_p)
 
 static int test_mount_corrupt_header_valid(struct harness_t *harness_p)
 {
+#if defined(ARCH_LINUX)
     uint8_t byte;
 
     BTASSERT(eeprom_soft_format(&eeprom_soft) == 0);
@@ -94,10 +95,14 @@ static int test_mount_corrupt_header_valid(struct harness_t *harness_p)
     BTASSERT(eeprom_soft_mount(&eeprom_soft) == -1);
 
     return (0);
+#else
+    return (1);
+#endif
 }
 
 static int test_mount_corrupt_header_crc(struct harness_t *harness_p)
 {
+#if defined(ARCH_LINUX)
     uint8_t byte;
 
     BTASSERT(eeprom_soft_format(&eeprom_soft) == 0);
@@ -111,6 +116,9 @@ static int test_mount_corrupt_header_crc(struct harness_t *harness_p)
     BTASSERT(eeprom_soft_mount(&eeprom_soft) == -1);
 
     return (0);
+#else
+    return (1);
+#endif
 }
 
 static int test_mount_corrupt_data(struct harness_t *harness_p)
