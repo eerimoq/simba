@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 #
+# A SOAM client implementation.
+#
 
 from __future__ import print_function
 
@@ -52,15 +54,36 @@ SOAM_SEGMENT_FLAGS_LAST        = (1 << 0)
 DATABASE_COMPRESSION_SCHEME_LZMA         = 0
 DATABASE_COMPRESSION_SCHEME_UNCOMPRESSED = 1
 
+
 class CommandNotFoundError(Exception):
+    """Given command was not found.
+
+    """
+
     pass
 
 
 class ClientClosedError(Exception):
+    """The client closed the connection.
+
+    """
+
+    pass
+
+
+class TimeoutError(Exception):
+    """An timeout occured.
+
+    """
+
     pass
 
 
 def crc_ccitt(data):
+    """Calculate the CRC of given data.
+
+    """
+
     msb = 0xff
     lsb = 0xff
 
@@ -95,11 +118,10 @@ def format_printf(database, packet):
     return formatted_string
 
 
-class TimeoutError(Exception):
-    pass
-
-
 class Database(object):
+    """The SOAM database.
+
+    """
 
     def __init__(self):
         self.formats = {}
@@ -778,10 +800,13 @@ def main():
     subparsers = parser.add_subparsers()
 
     serial_parser = subparsers.add_parser('serial')
-    serial_parser.add_argument('-p', '--port', help='Serial port.')
+    serial_parser.add_argument('-p', '--port',
+                               default='/dev/ttyUSB0',
+                               help='Serial port.')
     serial_parser.add_argument('-b', '--baudrate',
                                type=int,
-                               default=115200)
+                               default=115200,
+                               help='Baudrate.')
     serial_parser.add_argument('database', nargs='?')
     serial_parser.set_defaults(func=do_serial)
 
@@ -802,10 +827,13 @@ def main():
 
     args = parser.parse_args()
 
-    try:
+    if args.debug:
         args.func(args)
-    except BaseException as e:
-        print(str(e))
+    else:
+        try:
+            args.func(args)
+        except BaseException as e:
+            print(str(e))
 
 
 if __name__ == '__main__':
