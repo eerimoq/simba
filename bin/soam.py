@@ -803,7 +803,10 @@ def main():
 
     parser.add_argument('-d', '--debug', action='store_true')
 
-    subparsers = parser.add_subparsers()
+    # Workaround to make the subparser required in Python 3.
+    subparsers = parser.add_subparsers(title='subcommands',
+                                       dest='subcommand')
+    subparsers.required = True
 
     serial_parser = subparsers.add_parser('serial')
     serial_parser.add_argument('-p', '--port',
