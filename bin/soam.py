@@ -118,6 +118,29 @@ def format_printf(database, packet):
     return formatted_string
 
 
+def format_log_point(database, packet):
+    """Format given log point packet.
+
+    """
+
+    header, data = packet.split(b': ', 1)
+    identity = struct.unpack('>H', data[0:2])[0]
+
+    try:
+        fmt = database.formats[identity]
+        args = data[2:].decode('ascii').split('\x1f')
+        formatted_string = (header.decode('ascii') + ': ' + fmt.format(*args))
+    except KeyError:
+        try:
+            formatted_string = packet.decode('ascii')
+        except UnicodeDecodeError:
+            formatted_string = packet
+    except UnicodeDecodeError:
+        formatted_string = packet
+
+    return formatted_string
+
+
 class Database(object):
     """The SOAM database.
 
@@ -263,25 +286,8 @@ class ReaderThread(threading.Thread):
             elif packet_type == SOAM_TYPE_STDOUT_BINARY:
                 print(packet, end='', file=self.ostream)
             elif packet_type == SOAM_TYPE_LOG_POINT:
-                # Format the log point.
-                header, data = packet.split(b': ', 1)
-                identity = struct.unpack('>H', data[0:2])[0]
-
-                try:
-                    fmt = self.client.database.formats[identity]
-                    args = data[2:].decode('ascii').split('\x1f')
-                    formatted_log_point = (header.decode('ascii')
-                                           + ': '
-                                           + fmt.format(*args))
-                except KeyError:
-                    try:
-                        formatted_log_point = packet.decode('ascii')
-                    except UnicodeDecodeError:
-                        formatted_log_point = packet
-                except UnicodeDecodeError:
-                    formatted_log_point = packet
-
-                print(formatted_log_point, end='', file=self.ostream)
+                formatted_string = format_log_point(self.client.database, packet)
+                print(formatted_string, end='', file=self.ostream)
             elif packet_type in [SOAM_TYPE_COMMAND_RESPONSE_DATA_PRINTF,
                                  SOAM_TYPE_COMMAND_RESPONSE_DATA_BINARY]:
                 response_data.append((packet_type, packet))
