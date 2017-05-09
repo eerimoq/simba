@@ -549,7 +549,7 @@ class Shell(cmd.Cmd):
                 if message is None:
                     message = code
                 else:
-                    message = '"' + message + '"'
+                    message = '{}: {}'.format(code, message)
             else:
                 message = code
 

@@ -2,6 +2,11 @@
 
 import re
 import json
+import os
+
+
+SCRIPT_DIR = os.path.dirname(os.path.realpath(__file__))
+ERRNOS_JSON = os.path.join(SCRIPT_DIR, "errnos.json")
 
 
 def human_readable_errno(code_in):
@@ -9,10 +14,10 @@ def human_readable_errno(code_in):
 
     """
 
-    with open("errnos.json") as fin:
+    with open(ERRNOS_JSON) as fin:
         errnos = json.load(fin)
 
-    for name, code, description in errnos:
+    for _, code, description in errnos:
         if code == code_in:
             return description
 
@@ -28,7 +33,7 @@ def main():
         for description, name, code in re_errno.findall(f.read()):
             errnos.append((name, int(code), description.strip()[:-1].lower()))
 
-    with open("errnos.json", "w") as fout:
+    with open(ERRNOS_JSON, "w") as fout:
         fout.write(json.dumps(errnos, indent=4))
 
 
