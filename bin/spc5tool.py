@@ -17,6 +17,9 @@ import bincopy
 from tqdm import tqdm
 
 
+__version__ = '1.0'
+
+
 # Command types.
 COMMAND_TYPE_FAILED = -1
 COMMAND_TYPE_PING   =  1
@@ -377,6 +380,10 @@ def main():
                         default=19200)
     parser.add_argument('-c', '--control-port')
     parser.add_argument('-d', '--debug', action='store_true')
+    parser.add_argument('--version',
+                        action='version',
+                        version=__version__,
+                        help='Print version information and exit.')
 
     subparsers = parser.add_subparsers()
 
