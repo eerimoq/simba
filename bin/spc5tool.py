@@ -413,13 +413,13 @@ def main():
 
     args = parser.parse_args()
 
-    if not args.debug:
+    if args.debug:
+        args.func(args)
+    else:
         try:
             args.func(args)
         except BaseException as e:
             sys.exit(str(e))
-    else:
-        args.func(args)
 
 
 if __name__ == "__main__":

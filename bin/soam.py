@@ -848,7 +848,7 @@ def main():
         try:
             args.func(args)
         except BaseException as e:
-            print(str(e))
+            sys.exit(str(e))
 
 
 if __name__ == '__main__':
