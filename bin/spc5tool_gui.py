@@ -50,6 +50,13 @@ def main():
 
     root.protocol("WM_DELETE_WINDOW", on_close)
 
+    # Emit a check event periodically every 500 ms to quit when Ctrl-C
+    # is pressed in the shell.
+    def check():
+        root.after(500, check)
+
+    root.after(500, check)
+
     input_frame = LabelFrame(root, text='Input')
     input_frame.pack(side=TOP, fill=X, padx=5, pady=5)
 
