@@ -102,6 +102,7 @@ void isr_pit_channel_0(uint32_t address) __attribute__ ((weak, alias("isr_none")
 void isr_pit_channel_1(uint32_t address) __attribute__ ((weak, alias("isr_none")));
 void isr_pit_channel_2(uint32_t address) __attribute__ ((weak, alias("isr_none")));
 void isr_flexcan_0_esr_err(uint32_t address) __attribute__ ((weak, alias("isr_none")));
+void isr_flexcan_0_esr_boff_tx_rx_warn(uint32_t address) __attribute__ ((weak, alias("isr_none")));
 void isr_flexcan_0_buf_00_03(uint32_t address) __attribute__ ((weak, alias("isr_none")));
 void isr_flexcan_0_buf_04_07(uint32_t address) __attribute__ ((weak, alias("isr_none")));
 void isr_flexcan_0_buf_08_11(uint32_t address) __attribute__ ((weak, alias("isr_none")));
@@ -212,7 +213,7 @@ void (*vector_table[])(uint32_t address) = {
     isr_none,
     isr_none,
     isr_flexcan_0_esr_err,
-    isr_none,
+    isr_flexcan_0_esr_boff_tx_rx_warn,
     isr_none,
     isr_flexcan_0_buf_00_03,
     isr_flexcan_0_buf_04_07,
