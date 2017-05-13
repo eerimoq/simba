@@ -130,14 +130,6 @@ RUN_END_PATTERN_SUCCESS ?= "=============================== TEST END \(PASSED\) 
 
 CONSOLESCRIPT = $(SIMBA_ROOT)/make/console.py
 
-# include packages in dist-packages used by the application
-define DIST_PACKAGES_template
-$(shell python -c "import sys; sys.stdout.write(sys.argv[1].upper() + '_ROOT')" $1) ?= \
-    $(SIMBA_ROOT)/dist-packages/$1
-include $(SIMBA_ROOT)/dist-packages/$1/src/$1.mk
-endef
-$(foreach name,$(DIST_PACKAGES),$(eval $(call DIST_PACKAGES_template,$(name))))
-
 clean:
 	@echo "Cleaning"
 	rm -rf $(CLEAN)

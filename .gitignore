@@ -20,9 +20,6 @@ size.log
 doc/_build
 doc/xml
 
-dist-packages/
-!dist-packages/README.rst
-
 database.json
 coverage
 simba.rs

@@ -9,9 +9,6 @@ Application
 
 An application is an executable consisting of zero or more packages.
 
-An application file tree can either be created manually or by using
-the tool :doc:`simba`.
-
 .. code-block:: text
 
    myapp
@@ -27,9 +24,6 @@ Package
 -------
 
 A package is a container of modules.
-
-A package file tree can either be created manually or by using the
-tool :doc:`simba`.
 
 A package file tree **must** be organized as seen below. This is
 required by the build framework and `Simba` tools.

@@ -36,4 +36,3 @@ directly access the hardware registers.
    user-guide/configuration
    user-guide/build-system
    user-guide/socket-devices
-   user-guide/simba
