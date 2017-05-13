@@ -1412,46 +1412,46 @@ int socket_module_init(void)
 
 int socket_open_tcp(struct socket_t *self_p)
 {
-    return (-1);
+    return (-ENOSYS);
 }
 
 int socket_open_udp(struct socket_t *self_p)
 {
-    return (-1);
+    return (-ENOSYS);
 }
 
 int socket_open_raw(struct socket_t *self_p)
 {
-    return (-1);
+    return (-ENOSYS);
 }
 
 int socket_close(struct socket_t *self_p)
 {
-    return (-1);
+    return (-ENOSYS);
 }
 
 int socket_bind(struct socket_t *self_p,
                 const struct inet_addr_t *local_addr_p)
 {
-    return (-1);
+    return (-ENOSYS);
 }
 
 int socket_listen(struct socket_t *self_p, int backlog)
 {
-    return (-1);
+    return (-ENOSYS);
 }
 
 int socket_connect(struct socket_t *self_p,
                    const struct inet_addr_t *addr_p)
 {
-    return (-1);
+    return (-ENOSYS);
 }
 
 int socket_accept(struct socket_t *self_p,
                   struct socket_t *accepted_p,
                   struct inet_addr_t *addr_p)
 {
-    return (-1);
+    return (-ENOSYS);
 }
 
 ssize_t socket_sendto(struct socket_t *self_p,
@@ -1460,7 +1460,7 @@ ssize_t socket_sendto(struct socket_t *self_p,
                       int flags,
                       const struct inet_addr_t *remote_addr_p)
 {
-    return (-1);
+    return (-ENOSYS);
 }
 
 ssize_t socket_recvfrom(struct socket_t *self_p,
@@ -1469,7 +1469,7 @@ ssize_t socket_recvfrom(struct socket_t *self_p,
                         int flags,
                         struct inet_addr_t *remote_addr_p)
 {
-    return (-1);
+    return (-ENOSYS);
 }
 
 ssize_t socket_write(struct socket_t *self_p,
@@ -1498,7 +1498,7 @@ ssize_t socket_size(struct socket_t *self_p)
 {
     ASSERTN(self_p != NULL, EINVAL);
 
-    return (-1);
+    return (-ENOSYS);
 }
 
 #endif
