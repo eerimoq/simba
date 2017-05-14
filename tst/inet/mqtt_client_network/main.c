@@ -30,8 +30,13 @@
 
 #include "simba.h"
 
+#ifndef REMOTE_HOST_IP
 #define REMOTE_HOST_IP   192.168.0.4
+#endif
+
+#ifndef REMOTE_HOST_PORT
 #define REMOTE_HOST_PORT       10000
+#endif
 
 struct message_t {
     void *buf_p;
@@ -60,14 +65,6 @@ static size_t on_publish(struct mqtt_client_t *client_p,
     return (0);
 }
 
-static int on_error(struct mqtt_client_t *client_p,
-                    int error)
-{
-    std_printf(FSTR("error = %d\r\n"), error);
-
-    return (0);
-}
-
 static int test_init(struct harness_t *harness_p)
 {
     struct thrd_t *thrd_p;
@@ -91,7 +88,7 @@ static int test_init(struct harness_t *harness_p)
                               &server_sock,
                               &server_sock,
                               on_publish,
-                              on_error) == 0);
+                              NULL) == 0);
 
     thrd_p = thrd_spawn(mqtt_client_main,
                         &client,

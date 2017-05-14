@@ -747,6 +747,20 @@ static int read_server_message(struct mqtt_client_t *self_p)
     return (res);
 }
 
+/**
+ * Default on_error callback used if application has not provided one.
+ */
+static int default_on_error(struct mqtt_client_t *self_p,
+                            int error)
+{
+    log_object_print(self_p->log_object_p,
+                     LOG_ERROR,
+                     OSTR("mqtt_client error: %d.\r\n"),
+                     error);
+
+    return (0);
+}
+
 int mqtt_client_init(struct mqtt_client_t *self_p,
                      const char *name_p,
                      struct log_object_t *log_object_p,
@@ -755,6 +769,10 @@ int mqtt_client_init(struct mqtt_client_t *self_p,
                      mqtt_on_publish_t on_publish,
                      mqtt_on_error_t on_error)
 {
+    if (on_error == NULL) {
+        on_error = default_on_error;
+    }
+
     self_p->name_p = name_p;
     self_p->log_object_p = log_object_p;
     self_p->state = mqtt_client_state_disconnected_t;
