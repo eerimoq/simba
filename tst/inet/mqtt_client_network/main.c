@@ -31,11 +31,11 @@
 #include "simba.h"
 
 #ifndef REMOTE_HOST_IP
-#define REMOTE_HOST_IP   192.168.0.4
+#   define REMOTE_HOST_IP   192.168.0.4
 #endif
 
 #ifndef REMOTE_HOST_PORT
-#define REMOTE_HOST_PORT       10000
+#   define REMOTE_HOST_PORT       10000
 #endif
 
 struct message_t {
