@@ -53,7 +53,7 @@ static int test_cmd_list(struct harness_t *harness_p)
                             "NAME                  TYPE      SIZE  VALUE\r\n"
                             "int32                 int32_t      4  -2\r\n"
                             "string                string_t     4  y\r\n"
-                            "blob                  blob_t       2  \\x11\\x12\r\n",
+                            "blob                  blob_t       2  1112\r\n",
                             NULL) == 0);
 
     return (0);
@@ -110,7 +110,7 @@ static int test_cmd_write(struct harness_t *harness_p)
 
     /* Write a blob that is too long. */
     std_sprintf(buf,
-                FSTR("oam/settings/write blob \\x01\\x02\\x03"));
+                FSTR("oam/settings/write blob 010203"));
     BTASSERT(fs_call(buf, NULL, &queue, NULL) == -1);
     BTASSERT(harness_expect(&queue,
                             "3: bad blob data length\r\n",
@@ -118,7 +118,7 @@ static int test_cmd_write(struct harness_t *harness_p)
 
     /* Write a blob that is too short. */
     std_sprintf(buf,
-                FSTR("oam/settings/write blob \\x01"));
+                FSTR("oam/settings/write blob 01"));
     BTASSERT(fs_call(buf, NULL, &queue, NULL) == -1);
     BTASSERT(harness_expect(&queue,
                             "1: bad blob data length\r\n",
@@ -126,15 +126,15 @@ static int test_cmd_write(struct harness_t *harness_p)
 
     /* Write a blob that contains invalid data. */
     std_sprintf(buf,
-                FSTR("oam/settings/write blob \\x01\\xXX"));
+                FSTR("oam/settings/write blob 01XX"));
     BTASSERT(fs_call(buf, NULL, &queue, NULL) == -1);
     BTASSERT(harness_expect(&queue,
-                            "bad blob data\r\n",
+                            "01XX: bad blob data\r\n",
                             NULL) == 0);
 
     /* Write a blob that contains invalid data. */
     std_sprintf(buf,
-                FSTR("oam/settings/write blob 12345678"));
+                FSTR("oam/settings/write blob foo1"));
     BTASSERT(fs_call(buf, NULL, &queue, NULL) == -1);
     BTASSERT(harness_expect(&queue,
                             "bad blob data\r\n",
@@ -174,10 +174,10 @@ static int test_cmd_read_write_read(struct harness_t *harness_p)
         "int32", "string", "blob"
     };
     char *values_before_p[] = {
-        "-2", "y", "\\x11\\x12"
+        "-2", "y", "1112"
     };
     char *values_after_p[] = {
-        "12345678", "hi", "\\x01\\x02"
+        "12345678", "hi", "0102"
     };
 
     for (i = 0; i < membersof(names_p); i++) {
@@ -231,7 +231,7 @@ static int test_cmd_reset(struct harness_t *harness_p)
                             "NAME                  TYPE      SIZE  VALUE\r\n"
                             "int32                 int32_t      4  -2\r\n"
                             "string                string_t     4  y\r\n"
-                            "blob                  blob_t       2  \\x11\\x12\r\n",
+                            "blob                  blob_t       2  1112\r\n",
                             NULL) == 0);
 
     return (0);
@@ -325,7 +325,7 @@ static int test_cmd_list_after_updates(struct harness_t *harness_p)
                             "NAME                  TYPE      SIZE  VALUE\r\n"
                             "int32                 int32_t      4  10\r\n"
                             "string                string_t     4  x\r\n"
-                            "blob                  blob_t       2  \\x11\\x12\r\n",
+                            "blob                  blob_t       2  1112\r\n",
                             NULL) == 0);
 
     return (0);

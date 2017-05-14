@@ -56,7 +56,7 @@ Example output from the shell:
    NAME                  TYPE      SIZE  VALUE
    version               int32_t      4  1
    value_1               int32_t      4  24567
-   value_2               blob_t       4  \xca\xfe\xba\xbe
+   value_2               blob_t       4  cafebabe
    value_3               string_t    16  foobar
    $ oam/settings/read value_1
    24567
@@ -68,7 +68,7 @@ Example output from the shell:
    NAME                  TYPE      SIZE  VALUE
    version               int32_t      4  1
    value_1               int32_t      4  24567
-   value_2               blob_t       4  \xca\xfe\xba\xbe
+   value_2               blob_t       4  cafebabe
    value_3               string_t    16  foobar
 
 Example

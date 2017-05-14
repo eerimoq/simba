@@ -224,12 +224,12 @@ class Settings(object):
                     sys.exit("error: {}: string value too long".format(
                         item["value"]))
             elif item["type"] == "blob_t":
-                mo = re.match(r"^(\\x[0-9a-fA-F]{2})+$", item["value"])
+                mo = re.match(r"^([0-9a-fA-F]{2})+$", item["value"])
 
                 if not mo:
                     sys.exit("error: {}: bad blob value".format(item["value"]))
 
-                if len(item["value"]) // 4 > item["size"]:
+                if len(item["value"]) // 2 > item["size"]:
                     sys.exit("error: {}: blob value too long".format(
                         item["value"]))
 
@@ -248,8 +248,7 @@ class Settings(object):
             if item["type"] == "string_t":
                 data = item["value"].encode('ascii') + b'\x00'
             elif item["type"] == "blob_t":
-                data = b''.join([binascii.unhexlify(byte)
-                                 for byte in item["value"][2:].split('\\x')])
+                data = binascii.unhexlify(item["value"])
             elif item["type"] == 'int32_t':
                 data = struct.pack(endianess_prefix + 'i', int(item["value"], 0))
             else:
