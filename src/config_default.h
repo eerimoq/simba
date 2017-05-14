@@ -2249,7 +2249,11 @@
  * System module log mask.
  */
 #ifndef CONFIG_LOG_MASK_SYS
-#    define CONFIG_LOG_MASK_SYS                LOG_UPTO(INFO)
+#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(CONFIG_MINIMAL_SYSTEM)
+#        define CONFIG_LOG_MASK_SYS                -1
+#    else
+#        define CONFIG_LOG_MASK_SYS                LOG_UPTO(INFO)
+#    endif
 #endif
 
 /**

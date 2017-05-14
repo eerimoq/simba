@@ -37,7 +37,7 @@
 #if CONFIG_LOG_MASK_SYS > 0
 #    define LOG_OBJECT_PRINT(...) log_object_print(__VA_ARGS__)
 #else
-#    define LOG_OBJECT_PRINT()
+#    define LOG_OBJECT_PRINT(...)
 #endif
 
 /* 64 bits so it does not wrap around during the system's uptime. */
