@@ -263,6 +263,32 @@ static int test_backtrace(struct harness_t *harness_p)
 #endif
 }
 
+static int test_div_ceil(struct harness_t *harness_p)
+{
+    BTASSERT(DIV_CEIL(0, 1) == 0);
+    BTASSERT(DIV_CEIL(11, 5) == 3);
+    BTASSERT(DIV_CEIL(11, 6) == 2);
+
+    return (0);
+}
+
+static int test_div_round(struct harness_t *harness_p)
+{
+    BTASSERT(DIV_ROUND(11, 1) == 11);
+    BTASSERT(DIV_ROUND(11, 2) == 6);
+    BTASSERT(DIV_ROUND(11, 3) == 4);
+    BTASSERT(DIV_ROUND(11, 4) == 3);
+    BTASSERT(DIV_ROUND(11, 5) == 2);
+    BTASSERT(DIV_ROUND(11, 6) == 2);
+    BTASSERT(DIV_ROUND(11, 7) == 2);
+    BTASSERT(DIV_ROUND(11, 8) == 1);
+    BTASSERT(DIV_ROUND(11, 9) == 1);
+    BTASSERT(DIV_ROUND(11, 10) == 1);
+    BTASSERT(DIV_ROUND(11, 11) == 1);
+
+    return (0);
+}
+
 int main()
 {
     struct harness_t harness;
@@ -276,6 +302,8 @@ int main()
         { test_stdin, "test_stdin" },
         { test_stdout, "test_stdout" },
         { test_backtrace, "test_backtrace" },
+        { test_div_ceil, "test_div_ceil" },
+        { test_div_round, "test_div_round" },
         { NULL, NULL }
     };
 
