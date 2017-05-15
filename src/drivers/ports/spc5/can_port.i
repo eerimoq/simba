@@ -115,40 +115,61 @@ static void write_frame_to_hw(volatile struct spc5_flexcan_t *regs_p,
 
 ISR(flexcan_0_esr_err)
 {
-    sys_panic("flexcan_0_esr_err");
+    struct can_driver_t *self_p;
+    volatile struct spc5_flexcan_t *regs_p;
+
+    self_p = can_device[0].drv_p;
+    regs_p = can_device[0].regs_p;
+
+    /* Clear the interrupt flag. */
+    regs_p->ESR = SPC5_FLEXCAN_ESR_ERR_INT;
+
+    if (self_p == NULL) {
+        return;
+    }
+
+    if (self_p->thrd_p != NULL) {
+        /* Abort the ongoing transmission. */
+        if (self_p->txframe_p[-1].extended_frame == 0) {
+            regs_p->MSGBUF[2].CTRL_STATUS = SPC5_FLEXCAN_MSGBUF_CTRL_STATUS_CODE(0x9);
+        } else {
+            regs_p->MSGBUF[3].CTRL_STATUS = SPC5_FLEXCAN_MSGBUF_CTRL_STATUS_CODE(0x9);
+        }
+
+        /* Resume the thread. */
+        thrd_resume_isr(self_p->thrd_p, -1);
+    }
 }
 
 ISR(flexcan_0_buf_00_03)
 {
     struct can_driver_t *self_p;
-    struct can_device_t *dev_p;
     volatile struct spc5_flexcan_t *regs_p;
+    uint32_t iflag1;
 
-    dev_p = &can_device[0];
+    self_p = can_device[0].drv_p;
+    regs_p = can_device[0].regs_p;
 
-    if (dev_p->drv_p == NULL) {
+    /* Clear all interrupt flags. */
+    iflag1 = regs_p->IFLAG1;
+    regs_p->IFLAG1 = 0xf;
+
+    if (self_p == NULL) {
         return;
     }
 
-    self_p = dev_p->drv_p;
-    regs_p = dev_p->regs_p;
-
     /* Handle standard ID RX complete interrupt. */
-    if (regs_p->IFLAG1 & 0x1) {
-        regs_p->IFLAG1 = 0x1;
+    if (iflag1 & 0x1) {
         read_frame_from_hw(self_p, &regs_p->MSGBUF[0]);
     }
 
     /* Handle extended ID TX complete interrupt. */
-    if (regs_p->IFLAG1 & 0x2) {
-        regs_p->IFLAG1 = 0x2;
+    if (iflag1 & 0x2) {
         read_frame_from_hw(self_p, &regs_p->MSGBUF[1]);
     }
 
     /* Handle TX complete interrupt. */
-    if (regs_p->IFLAG1 & 0xc) {
-        regs_p->IFLAG1 = 0xc;
-
+    if (iflag1 & 0xc) {
         if (self_p->txsize > 0) {
             write_frame_to_hw(regs_p, self_p->txframe_p);
             self_p->txsize -= sizeof(*self_p->txframe_p);
@@ -167,11 +188,14 @@ static ssize_t write_cb(void *arg_p,
     struct can_device_t *dev_p;
     volatile struct spc5_flexcan_t *regs_p;
     const struct can_frame_t *frame_p;
+    int res;
 
     self_p = arg_p;
     dev_p = self_p->dev_p;
     regs_p = dev_p->regs_p;
     frame_p = (struct can_frame_t *)buf_p;
+
+    sem_take(&self_p->sem, NULL);
 
     self_p->txframe_p = (frame_p + 1);
     self_p->txsize = (size - sizeof(*frame_p));
@@ -179,10 +203,12 @@ static ssize_t write_cb(void *arg_p,
 
     sys_lock();
     write_frame_to_hw(regs_p, frame_p);
-    thrd_suspend_isr(NULL);
+    res = thrd_suspend_isr(NULL);
     sys_unlock();
 
-    return (size);
+    sem_give(&self_p->sem, 1);
+
+    return (res == 0 ? size : -1);
 }
 
 int can_port_module_init()
@@ -216,15 +242,16 @@ int can_port_start(struct can_driver_t *self_p)
     SPC5_SIUL->PCR[16] = (1 << 10) | (1 << 9);
     SPC5_SIUL->PCR[17] = 0x0103;
 
+    SPC5_INTC->PSR[64/4] = 0xffffffff;
     SPC5_INTC->PSR[68/4] = 0xffffffff;
 
     regs_p->MCR = (SPC5_FLEXCAN_MCR_HALT
                    | SPC5_FLEXCAN_MCR_SUPV
-                   | SPC5_FLEXCAN_MCR_WRN_EN
                    | SPC5_FLEXCAN_MCR_SRX_DIS
                    | SPC5_FLEXCAN_MCR_AEN
                    | SPC5_FLEXCAN_MCR_MAXMB(3));
-    regs_p->CTRL = (self_p->speed);
+    regs_p->CTRL = (SPC5_FLEXCAN_CTRL_ERR_MSK
+                    | self_p->speed);
 
     /* Standard frame ID RX message buffer initialization. */
     regs_p->MSGBUF[0].PRIO_ID = 0;

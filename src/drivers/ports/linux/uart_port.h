@@ -34,12 +34,12 @@
 #include <io.h>
 
 struct uart_device_t {
-    volatile struct st_scif4567 *port_p;
+    struct uart_driver_t *drv_p;
 };
 
 struct uart_driver_t {
     struct queue_t chin;
-    const struct uart_device_t *dev_p;
+    struct uart_device_t *dev_p;
     struct sem_t sem;
     long baudrate;
     size_t rxsize;

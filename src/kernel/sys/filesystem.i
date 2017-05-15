@@ -94,7 +94,6 @@ static int start_filesystem(void)
     }
 
     if (fs_filesystem_register(&fat16fs) != 0) {
-        std_printf(FSTR("Failed to register the file system into the debug file system.\r\n"));
         return (-1);
     }
 
@@ -192,16 +191,16 @@ static int start_filesystem(void)
     int res;
 
     if (flash_module_init() != 0) {
-        std_printf(FSTR("Failed to initialize the flash module.\r\n"));
         return (-1);
     }
 
     if (flash_init(&fs.flash, &flash_0_dev) != 0) {
-        std_printf(FSTR("Failed to initialize the flash driver.\r\n"));
         return (-1);
     }
 
-    std_printf(FSTR("Trying to mount the file system.\r\n"));
+    LOG_OBJECT_PRINT(NULL,
+                     LOG_INFO,
+                     OSTR("Mounting the file system...\r\n"));
 
     /* Initiate the config struct. */
     fs.spiffs.config.hal_read_f = hal_read;
@@ -224,16 +223,22 @@ static int start_filesystem(void)
                        NULL);
 
     if (res != 0) {
-        std_printf(FSTR("Failed to mount the file system. Formatting it.\r\n"));
+        LOG_OBJECT_PRINT(NULL, LOG_INFO, OSTR("failed.\r\n"));
+        LOG_OBJECT_PRINT(NULL,
+                         LOG_INFO,
+                         OSTR("Formatting the file system...\r\n"));
 
         res = spiffs_format(&fs.spiffs.fs);
 
         if (res != 0) {
-            std_printf(FSTR("Failed to mount the file system. Formatting it.\r\n"));
+            LOG_OBJECT_PRINT(NULL, LOG_INFO, OSTR("failed.\r\n"));
             return (-1);
         }
 
-        std_printf(FSTR("Trying to mount the file system after formatting it.\r\n"));
+        LOG_OBJECT_PRINT(NULL, LOG_INFO, OSTR("done.\r\n"));
+        LOG_OBJECT_PRINT(NULL,
+                         LOG_INFO,
+                         OSTR("Mounting the file system...\r\n"));
 
         res = spiffs_mount(&fs.spiffs.fs,
                            &fs.spiffs.config,
@@ -245,12 +250,12 @@ static int start_filesystem(void)
                            NULL);
 
         if (res != 0) {
-            std_printf(FSTR("Failed to mount the file system.\r\n"));
+            LOG_OBJECT_PRINT(NULL, LOG_INFO, OSTR("failed.\r\n"));
             return (-1);
         }
     }
 
-    std_printf(FSTR("File system mounted.\r\n"));
+    LOG_OBJECT_PRINT(NULL, LOG_INFO, OSTR("done.\r\n"));
 
     /* Register the SPIFFS file system in the fs module. */
     fs.fs.config.config_p = &fs.spiffs.config;
@@ -259,15 +264,13 @@ static int start_filesystem(void)
     fs.fs.config.fdworkspace.size = sizeof(fs.spiffs.fdworkspace);
     fs.fs.config.cache.buf_p = fs.spiffs.cache;
     fs.fs.config.cache.size = sizeof(fs.spiffs.cache);
-    
+
     fs_filesystem_init_spiffs(&fs.fs.fs,
                               "/fs",
                               &fs.spiffs.fs,
                               &fs.fs.config);
 
     if (fs_filesystem_register(&fs.fs.fs) != 0) {
-        std_printf(FSTR("Failed to register the file system into the "
-                        "debug file system.\r\n"));
         return (-1);
     }
 

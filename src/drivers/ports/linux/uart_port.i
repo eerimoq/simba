@@ -28,17 +28,21 @@
  * This file is part of the Simba project.
  */
 
+#include "socket_device.h"
+
 static int uart_port_module_init()
 {
-    return (0);
+    return (socket_device_module_init());
 }
 
-static int uart_port_start(struct uart_driver_t *drv)
+static int uart_port_start(struct uart_driver_t *self_p)
 {
+    self_p->dev_p->drv_p = self_p;
+
     return (0);
 }
 
-static int uart_port_stop(struct uart_driver_t *drv)
+static int uart_port_stop(struct uart_driver_t *self_p)
 {
     return (0);
 }
@@ -47,15 +51,33 @@ static ssize_t uart_port_write_cb(void *arg_p,
                                   const void *txbuf_p,
                                   size_t size)
 {
+    struct uart_driver_t *self_p;
+    struct uart_device_t *dev_p;
     size_t i;
-    const char *c_p = txbuf_p;
+    const char *c_p;
+    ssize_t res;
 
-    for (i = 0; i < size; i++) {
-        putc(*c_p++, stdout);
-        fflush(stdout);
+    self_p = container_of(arg_p, struct uart_driver_t, chout);
+    dev_p = self_p->dev_p;
+
+    sys_lock();
+
+    if (socket_device_is_uart_device_connected_isr(dev_p) == 0) {
+        c_p = txbuf_p;
+
+        for (i = 0; i < size; i++) {
+            putc(*c_p++, stdout);
+            fflush(stdout);
+        }
+
+        res = size;
+    } else {
+        res = socket_device_uart_device_write_isr(dev_p, txbuf_p, size);
     }
 
-    return (size);
+    sys_unlock();
+
+    return (res);
 }
 
 static ssize_t uart_port_write_cb_isr(void *arg_p,

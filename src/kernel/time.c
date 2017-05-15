@@ -29,56 +29,14 @@
  */
 
 #include "simba.h"
-#include <limits.h>
 
 #include "time_port.i"
 
-#define SECONDS_PER_MSB (INT_MAX / CONFIG_SYSTEM_TICK_FREQUENCY)
-#define TICKS_PER_MSB   (SECONDS_PER_MSB * CONFIG_SYSTEM_TICK_FREQUENCY)
-
-/* 64 bits so it does not wrap around during the system's uptime. */
-struct tick_t {
-    uint32_t msb;
-    uint32_t lsb;
-};
-
 struct module_t {
-    struct tick_t tick;
+    struct time_t uptime_offset;
 };
 
-static struct module_t module = {
-    .tick = {
-        .msb = 0,
-        .lsb = 0
-    }
-};
-
-static void tick_to_time(struct time_t *time_p,
-                         struct tick_t *tick_p)
-{
-    uint32_t lsb_seconds;
-    uint32_t lsb_ticks;
-
-    lsb_seconds = (tick_p->lsb / CONFIG_SYSTEM_TICK_FREQUENCY);
-    lsb_ticks = (tick_p->lsb - (CONFIG_SYSTEM_TICK_FREQUENCY * lsb_seconds));
-
-    time_p->seconds = (tick_p->msb * SECONDS_PER_MSB + lsb_seconds);
-    time_p->nanoseconds = (1000 * ((1000000UL * lsb_ticks)
-                                   / CONFIG_SYSTEM_TICK_FREQUENCY));
-}
-
-static void time_to_tick(struct tick_t *tick_p,
-                         struct time_t *time_p)
-{
-    uint32_t lsb_seconds;
-    uint32_t lsb_ticks;
-
-    tick_p->msb = (time_p->seconds / SECONDS_PER_MSB);
-    lsb_seconds = (time_p->seconds - (tick_p->msb * SECONDS_PER_MSB));
-    lsb_ticks = (((time_p->nanoseconds / 1000)
-                  * CONFIG_SYSTEM_TICK_FREQUENCY) / 1000000);
-    tick_p->lsb = ((lsb_seconds * CONFIG_SYSTEM_TICK_FREQUENCY) + lsb_ticks);
-}
+static struct module_t module;
 
 static void adjust_result(struct time_t *res_p)
 {
@@ -101,52 +59,28 @@ static void adjust_result(struct time_t *res_p)
     }
 }
 
-/**
- * Update the current time every system tick.
- */
-void RAM_CODE time_tick_isr(void)
-{
-    module.tick.lsb++;
-
-    if (module.tick.lsb == TICKS_PER_MSB) {
-        module.tick.msb++;
-        module.tick.lsb = 0;
-    }
-}
-
 int time_get(struct time_t *now_p)
 {
     ASSERTN(now_p != NULL, EINVAL);
 
-    struct tick_t tick;
-    struct time_t offset;
+    if (sys_uptime(now_p) != 0) {
+        return (-1);
+    }
 
-    offset.seconds = 0;
-
-    sys_lock();
-    tick = module.tick;
-    offset.nanoseconds = time_port_get_time_into_tick();
-    sys_unlock();
-
-    tick_to_time(now_p, &tick);
-    time_add(now_p, now_p, &offset);
-
-    return (0);
+    return (time_add(now_p, now_p, &module.uptime_offset));
 }
 
 int time_set(struct time_t *new_p)
 {
     ASSERTN(new_p != NULL, EINVAL);
 
-    struct tick_t tick;
+    struct time_t uptime;
 
-    time_to_tick(&tick, new_p);
+    if (sys_uptime(&uptime) != 0) {
+        return (-1);
+    }
 
-    sys_lock();
-    module.tick = tick;
-    sys_unlock();
-
-    return (0);
+    return (time_subtract(&module.uptime_offset, new_p, &uptime));
 }
 
 int time_add(struct time_t *res_p,

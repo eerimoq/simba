@@ -17,6 +17,9 @@ import bincopy
 from tqdm import tqdm
 
 
+__version__ = '1.0'
+
+
 # Command types.
 COMMAND_TYPE_FAILED = -1
 COMMAND_TYPE_PING   =  1
@@ -163,15 +166,15 @@ def upload(serial_connection, baudrate, control_port):
 
         # Set FAB high for serial boot mode.
         control_port_connection.dtr = False
-        time.sleep(0.01)
+        time.sleep(0.05)
 
         # Toggle RESET.
         control_port_connection.rts = False
-        time.sleep(0.01)
+        time.sleep(0.1)
         control_port_connection.rts = True
-        time.sleep(0.01)
+        time.sleep(0.1)
         control_port_connection.rts = False
-        time.sleep(0.01)
+        time.sleep(0.05)
 
         # Flush any received garbage.
         serial_connection.flushInput()
@@ -191,15 +194,15 @@ def upload(serial_connection, baudrate, control_port):
 
     print('Uploading {} to SRAM using the BAM.'.format(spc5tool_bin))
 
-    bytes_transferred = 0
-
     for byte in tqdm(payload, unit=' bytes'):
         serial_connection.write(byte)
         response_byte = serial_connection.read(1)
 
         if not response_byte:
             print()
-            print("Upload failed! Timeout waiting for BAM response.")
+            print("Upload failed! Timeout waiting for BAM response. Make "
+                  "sure all serial cables are connected and that the board "
+                  "is powered.")
             sys.exit(1)
 
         if response_byte != byte:
@@ -208,8 +211,6 @@ def upload(serial_connection, baudrate, control_port):
                   "expecting '{}'.".format(response_byte.encode('hex'),
                                            byte.encode('hex')))
             sys.exit(1)
-
-        bytes_transferred += 1
 
     # Give the uploaded application 10 ms to start.
     time.sleep(0.01)
@@ -281,7 +282,11 @@ def do_flash_read(args):
         address += size
         left -= size
 
-    print(read_data, end='')
+    if args.outfile:
+        with open(args.outfile, "wb") as fout:
+            fout.write(read_data)
+    else:
+        print(read_data, end='')
 
 
 def do_flash_write(args):
@@ -299,6 +304,7 @@ def do_flash_write(args):
 
     erase_segments = []
     total = 0
+
     for address, _, data in f.iter_segments():
         erase_segments.append((address, len(data)))
 
@@ -373,6 +379,11 @@ def main():
                         type=int,
                         default=19200)
     parser.add_argument('-c', '--control-port')
+    parser.add_argument('-d', '--debug', action='store_true')
+    parser.add_argument('--version',
+                        action='version',
+                        version=__version__,
+                        help='Print version information and exit.')
 
     subparsers = parser.add_subparsers()
 
@@ -401,7 +412,14 @@ def main():
     flash_write_parser.set_defaults(func=do_flash_write)
 
     args = parser.parse_args()
-    args.func(args)
+
+    if args.debug:
+        args.func(args)
+    else:
+        try:
+            args.func(args)
+        except BaseException as e:
+            sys.exit(str(e))
 
 
 if __name__ == "__main__":

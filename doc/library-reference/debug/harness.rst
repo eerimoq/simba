@@ -14,6 +14,58 @@ This module implements the test execution engine.
 
 The test scripts are part of the build system.
 
+Stubs
+-----
+
+Symbols can be stubbed per C-file using the ``STUB()`` macro and
+``STUB`` make variable. The ``STUB`` make variable is a list of source
+files and the symbols to stub within given file.
+
+For example, stub functions ``foo_bar()`` and ``foo_fie()`` in
+``fum.c`` by defining stub functions ``STUB(foo_bar)()`` and
+``STUB(foo_fie)()``, and set the make variable ``STUB`` to
+``fum.c:foo_bar,foo_fie``.
+
+Prototypes for ``foo_bar()`` and ``foo_fie()`` in ``foo.h``:
+
+.. code-block:: c
+
+   int foo_bar();
+   int foo_fie();
+
+``foo_bar()`` and ``foo_fie()`` called in ``fum.c``. Both function
+calls will call the stubbed version on the respective function.
+
+.. code-block:: c
+
+   int fum_init()
+   {
+      foo_bar();
+      foo_fie();
+   }
+
+The stubbed implementations, often defined in the test suite file
+``main.c``:
+
+.. code-block:: c
+
+   int STUB(foo_bar)()
+   {
+       return (0);
+   }
+
+   int STUB(foo_fie)()
+   {
+       return (0);
+   }
+
+And last, add the stubbed symbol to the test suite makefile
+``Makefile``:
+
+.. code-block:: makefile
+
+   STUB = fum.c:foo_bar,foo_fie
+
 Example test suite
 ------------------
 

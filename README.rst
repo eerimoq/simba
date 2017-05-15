@@ -1,4 +1,3 @@
-|gitter|_
 |buildstatus|_
 |codecov|_
 |coverity|_
@@ -55,9 +54,6 @@ may have other licenses. Most third party code is placed in the
 
 .. |buildstatus| image:: https://travis-ci.org/eerimoq/simba.svg
 .. _buildstatus: https://travis-ci.org/eerimoq/simba
-
-.. |gitter| image:: https://badges.gitter.im/eerimoq/simba.svg
-.. _gitter: https://gitter.im/eerimoq/simba
 
 .. |codecov| image:: https://codecov.io/gh/eerimoq/simba/branch/master/graph/badge.svg
 .. _codecov: https://codecov.io/gh/eerimoq/simba

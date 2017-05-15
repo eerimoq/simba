@@ -46,11 +46,13 @@ struct module_t {
 #endif
 };
 
-#include "settings_port.i"
-
 static struct module_t module;
 
-extern const FAR struct setting_t settings[];
+const FAR struct setting_t settings[] __attribute__ ((weak)) = {
+    { NULL, 0, 0, 0 }
+};
+const FAR uint8_t settings_default[CONFIG_SETTINGS_AREA_SIZE]
+__attribute__ ((weak)) = { 0xff, };
 
 #if CONFIG_FS_CMD_SETTINGS_LIST == 1
 
@@ -118,7 +120,7 @@ static int cmd_list_cb(int argc,
             for (i = 0; i < size; i++) {
                 buf[0] = 0x00;
                 (void)settings_read(&buf[0], setting_p->address + i, 1);
-                std_fprintf(chout_p, OSTR("\\x%02x"), buf[0]);
+                std_fprintf(chout_p, OSTR("%02x"), buf[0]);
             }
 
             std_fprintf(chout_p, OSTR("\r\n"));
@@ -208,7 +210,7 @@ static int cmd_read_cb(int argc,
                 for (i = 0; i < setting_p->size; i++) {
                     buf[0] = 0;
                     settings_read(&buf[0], setting_p->address + i, 1);
-                    std_fprintf(chout_p, OSTR("\\x%02x"), buf[0]);
+                    std_fprintf(chout_p, OSTR("%02x"), buf[0]);
                 }
 
                 std_fprintf(chout_p, OSTR("\r\n"));
@@ -298,7 +300,7 @@ static int cmd_write_cb(int argc,
 
             case setting_type_blob_t:
                 /* Range check. */
-                size = DIV_CEIL(strlen(argv[2]), 4);
+                size = DIV_CEIL(strlen(argv[2]), 2);
 
                 if (size != setting_p->size) {
                     std_fprintf(chout_p,
@@ -307,25 +309,28 @@ static int cmd_write_cb(int argc,
                     return (-1);
                 }
 
-                for (i = 0; i < 4 * size; i += 4) {
-                    if ((argv[2][i] != '\\')
-                        || (argv[2][i + 1] != 'x')
-                        || !isxdigit((int)argv[2][i + 2])
-                        || !isxdigit((int)argv[2][i + 3])) {
-                        std_fprintf(chout_p, OSTR("bad blob data\r\n"));
+                /* For odd number of bytes the check will fail since
+                   the null termination is not a hexadecimal digit. */
+                for (i = 0; i < 2 * size; i += 2) {
+                    if (!(isxdigit((int)argv[2][i])
+                          && isxdigit((int)argv[2][i + 1]))) {
+                        std_fprintf(chout_p,
+                                    OSTR("%s: bad blob data\r\n"),
+                                    argv[2]);
                         return (-1);
                     }
                 }
 
                 /* For std_strtol(). */
                 buf[0] = '0';
+                buf[1] = 'x';
                 buf[4] = '\0';
 
                 /* argv pointers shall not be const in the furute. */
                 buf_p = (char *)argv[2];
 
                 for (i = 0; i < size; i++) {
-                    memcpy(&buf[1], &argv[2][4 * i + 1], 3);
+                    memcpy(&buf[2], &argv[2][2 * i], 2);
                     (void)std_strtol(&buf[0], &value);
                     *buf_p++ = value;
                 }
@@ -403,7 +408,7 @@ int settings_module_init(void)
 
 #endif
 
-    return (settings_port_module_init());
+    return (nvm_module_init());
 }
 
 ssize_t settings_read(void *dst_p, size_t src, size_t size)
@@ -411,7 +416,7 @@ ssize_t settings_read(void *dst_p, size_t src, size_t size)
     ASSERTN(dst_p != NULL, EINVAL);
     ASSERTN(size > 0, EINVAL);
 
-    return (settings_port_read(dst_p, src, size));
+    return (nvm_read(dst_p, src, size));
 }
 
 ssize_t settings_write(size_t dst, const void *src_p, size_t size)
@@ -419,7 +424,7 @@ ssize_t settings_write(size_t dst, const void *src_p, size_t size)
     ASSERTN(src_p != NULL, EINVAL);
     ASSERTN(size > 0, EINVAL);
 
-    return (settings_port_write(dst, src_p, size));
+    return (nvm_write(dst, src_p, size));
 }
 
 ssize_t settings_read_by_name(const char *name_p,
@@ -480,5 +485,33 @@ ssize_t settings_write_by_name(const char *name_p,
 
 int settings_reset()
 {
-    return (settings_port_reset());
+    size_t i;
+    size_t size;
+    size_t offset;
+    size_t left;
+    uint8_t buf[128];
+
+    offset = 0;
+    left = sizeof(settings_default);
+
+    while (left > 0) {
+        if (left < sizeof(buf)) {
+            size = left;
+        } else {
+            size = sizeof(buf);
+        }
+
+        for (i = 0; i < size; i++) {
+            buf[i] = settings_default[offset + i];
+        }
+
+        if (nvm_write(offset, &buf[0], size) != size) {
+            return (-1);
+        }
+
+        offset += size;
+        left -= size;
+    }
+
+    return (0);
 }

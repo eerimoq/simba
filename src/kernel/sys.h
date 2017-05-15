@@ -50,7 +50,7 @@ typedef void (*sys_on_fatal_fn_t)(int error) __attribute__ ((noreturn));
 /**
  * Convertion from the time struct to system ticks.
  */
-static inline sys_tick_t t2st(struct time_t *time_p)
+static inline sys_tick_t t2st(const struct time_t *time_p)
 {
     return (((sys_tick_t)(time_p)->seconds * CONFIG_SYSTEM_TICK_FREQUENCY) +
             DIV_CEIL((DIV_CEIL((time_p)->nanoseconds, 1000)
@@ -114,8 +114,9 @@ int sys_start(void);
 void sys_stop(int error) __attribute__ ((noreturn));
 
 /**
- * System panic. Write given message and other port specific debug
- * information to the console and then reboot the system.
+ * System panic. Write given message, a backtrace and other port
+ * specific debug information to the console and then reboot the
+ * system.
  *
  * This function may be called from interrupt context and with the
  * system lock taken.
@@ -132,6 +133,35 @@ void sys_panic(const char *message_p) __attribute__ ((noreturn));
  * @return Never returns.
  */
 void sys_reboot(void) __attribute__ ((noreturn));
+
+/**
+ * Store the backtrace in given buffer.
+ *
+ * @param[out] buf_p Buffer to store the backtrace in.
+ * @param[in] size Size of the buffer.
+ *
+ * @return Backtrace depth.
+ */
+int sys_backtrace(void **buf_p, size_t size);
+
+/**
+ * Get the system uptime.
+ *
+ * @param[out] uptime_p System uptime.
+ *
+ * @return zero(0) or negative error code.
+ */
+int sys_uptime(struct time_t *uptime_p);
+
+/**
+ * Get the system uptime from interrupt context or with the system
+ * lock taken.
+ *
+ * @param[out] uptime_p System uptime.
+ *
+ * @return zero(0) or negative error code.
+ */
+int sys_uptime_isr(struct time_t *uptime_p);
 
 /**
  * Set the on-fatal-callback function to given callback.

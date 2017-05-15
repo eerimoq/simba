@@ -49,7 +49,10 @@ static int start_network(void)
     network_interface_module_init();
     ping_module_init();
 
-    std_printf(FSTR("Connecting to WiFi with SSID '%s'.\r\n"), ssid);
+    LOG_OBJECT_PRINT(NULL,
+                     LOG_INFO,
+                     OSTR("Connecting to WiFi with SSID '%s'.\r\n"),
+                     ssid);
 
     /* Initialize WiFi in station mode with given SSID and
        password. */
@@ -71,28 +74,39 @@ static int start_network(void)
             break;
         }
 
-        std_printf(FSTR("Waiting for a connection to WiFi with SSID '%s'.\r\n"),
-                   ssid);
+        LOG_OBJECT_PRINT(NULL,
+                         LOG_INFO,
+                         OSTR("Waiting for a connection to WiFi with "
+                              "SSID '%s'.\r\n"),
+                         ssid);
         thrd_sleep(1);
     }
 
     if (i == CONFIG_START_NETWORK_INTERFACE_WIFI_CONNECT_TIMEOUT) {
-        std_printf(FSTR("Timeout connecting to WiFi with SSID '%s'.\r\n"),
-                   ssid);
+        LOG_OBJECT_PRINT(NULL,
+                         LOG_INFO,
+                         OSTR("Timeout connecting to WiFi with SSID '%s'.\r\n"),
+                         ssid);
 
         return (-1);
     }
 
     /* Get the IP address of the interface*/
     if (network_interface_get_ip_info(&wifi.network_interface, &info) != 0) {
-        std_printf(FSTR("No IP address for WiFi with SSID '%s'.\r\n"), ssid);
+        LOG_OBJECT_PRINT(NULL,
+                         LOG_INFO,
+                         OSTR("No IP address for WiFi with SSID '%s'.\r\n"),
+                         ssid);
 
         return (-1);
     }
 
-    std_printf(FSTR("Connected to WiFi with SSID '%s'. Got IP address '%s'.\r\n"),
-               ssid,
-               inet_ntoa(&info.address, buf));
+    LOG_OBJECT_PRINT(NULL,
+                     LOG_INFO,
+                     OSTR("Connected to WiFi with SSID '%s'. Got IP address "
+                          "'%s'.\r\n"),
+                     ssid,
+                     inet_ntoa(&info.address, buf));
 
     return (0);
 }

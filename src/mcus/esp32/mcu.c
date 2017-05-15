@@ -210,7 +210,17 @@ struct spi_device_t spi_device[SPI_DEVICE_MAX] = {
 /*     } */
 /* }; */
 
-struct flash_device_t flash_device[FLASH_DEVICE_MAX];
+struct flash_device_t flash_device[FLASH_DEVICE_MAX] = {
+    {
+        .sem = {
+            .count = 0,
+            .count_max = 1,
+            .waiters = {
+                .head_p = NULL
+            }
+        }
+    }
+};
 
 struct can_device_t can_device[CAN_DEVICE_MAX] = {
     {
@@ -224,3 +234,13 @@ struct can_device_t can_device[CAN_DEVICE_MAX] = {
 struct adc_device_t adc_device[ADC_DEVICE_MAX];
 
 struct dac_device_t dac_device[DAC_DEVICE_MAX];
+
+/* Use software i2c. */
+struct i2c_device_t i2c_device[I2C_DEVICE_MAX] = {
+    {
+        .scl_p = &pin_device[0],
+        .sda_p = &pin_device[1],
+        .max_clock_stretching_us = 100000,
+        .clock_stretching_sleep_us = 1000
+    }
+};

@@ -83,7 +83,7 @@ int timer_module_init(void);
  * @return zero(0) or negative error code.
  */
 int timer_init(struct timer_t *self_p,
-               struct time_t *timeout_p,
+               const struct time_t *timeout_p,
                timer_callback_t callback,
                void *arg_p,
                int flags);

@@ -41,6 +41,8 @@ static int spi_port_init(struct spi_driver_t *self_p,
                          int polarity,
                          int phase)
 {
+    pin_init(&self_p->ss, ss_pin_p, PIN_OUTPUT);
+
     return (0);
 }
 

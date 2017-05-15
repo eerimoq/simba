@@ -74,8 +74,8 @@ BOARDS = {
             "MBEDTLS_USER_CONFIG_FILE=\"\\\"mbedtls/user_config.h\\\"\""
         ], 
         "cflags": [
-            "-Werror", 
             "-g", 
+            "-Werror", 
             "-mthumb", 
             "-mcpu=cortex-m3", 
             "-ffunction-sections", 
@@ -88,8 +88,8 @@ BOARDS = {
             "-Wno-error=unused-variable"
         ], 
         "cxxflags": [
-            "-Werror", 
             "-g", 
+            "-Werror", 
             "-mthumb", 
             "-mcpu=cortex-m3", 
             "-ffunction-sections", 
@@ -102,8 +102,8 @@ BOARDS = {
             "-Wno-error=unused-variable"
         ], 
         "inc": [
+            "build/arduino_due/gen", 
             "src", 
-            "build/arduino_due", 
             "src/boards/arduino_due", 
             "src/mcus/sam", 
             "src", 
@@ -133,7 +133,6 @@ BOARDS = {
         "linker_script": "script.ld", 
         "mcu_desc": "Atmel SAM3X8E Cortex-M3 @ 84MHz, 96k sram, 512k flash", 
         "src": [
-            "src/settings_default.c", 
             "src/boards/arduino_due/board.c", 
             "src/mcus/sam/sam3.c", 
             "src/mcus/sam/mcu.c", 
@@ -150,11 +149,13 @@ BOARDS = {
             "src/drivers/chipid.c", 
             "src/drivers/dac.c", 
             "src/drivers/ds18b20.c", 
+            "src/drivers/eeprom_soft.c", 
             "src/drivers/exti.c", 
             "src/drivers/flash.c", 
             "src/drivers/mcp2515.c", 
             "src/drivers/owi.c", 
             "src/drivers/pin.c", 
+            "src/drivers/i2c.c", 
             "src/drivers/i2c_soft.c", 
             "src/drivers/sd.c", 
             "src/drivers/spi.c", 
@@ -212,6 +213,7 @@ BOARDS = {
             "src/kernel/timer.c", 
             "src/multimedia/midi.c", 
             "src/oam/console.c", 
+            "src/oam/nvm.c", 
             "src/oam/service.c", 
             "src/oam/settings.c", 
             "src/oam/shell.c", 
@@ -285,8 +287,8 @@ BOARDS = {
             "-Wno-error=unused-variable"
         ], 
         "inc": [
+            "build/arduino_mega/gen", 
             "src", 
-            "build/arduino_mega", 
             "src/boards/arduino_mega", 
             "src/mcus/atmega2560", 
             "src", 
@@ -311,7 +313,6 @@ BOARDS = {
         "linker_script": "", 
         "mcu_desc": "Atmel ATMega2560 AVR @ 16MHz, 8k sram, 256k flash", 
         "src": [
-            "src/settings_default.c", 
             "src/boards/arduino_mega/board.c", 
             "src/mcus/atmega2560/mcu.c", 
             "src/alloc/circular_heap.c", 
@@ -389,6 +390,7 @@ BOARDS = {
             "src/kernel/timer.c", 
             "src/multimedia/midi.c", 
             "src/oam/console.c", 
+            "src/oam/nvm.c", 
             "src/oam/service.c", 
             "src/oam/settings.c", 
             "src/oam/shell.c", 
@@ -451,8 +453,8 @@ BOARDS = {
             "-Wno-error=unused-variable"
         ], 
         "inc": [
+            "build/arduino_nano/gen", 
             "src", 
-            "build/arduino_nano", 
             "src/boards/arduino_nano", 
             "src/mcus/atmega328p", 
             "src", 
@@ -477,7 +479,6 @@ BOARDS = {
         "linker_script": "", 
         "mcu_desc": "Atmel ATMega328p AVR @ 16MHz, 2k sram, 32k flash", 
         "src": [
-            "src/settings_default.c", 
             "src/boards/arduino_nano/board.c", 
             "src/mcus/atmega328p/mcu.c", 
             "src/alloc/circular_heap.c", 
@@ -555,6 +556,7 @@ BOARDS = {
             "src/kernel/timer.c", 
             "src/multimedia/midi.c", 
             "src/oam/console.c", 
+            "src/oam/nvm.c", 
             "src/oam/service.c", 
             "src/oam/settings.c", 
             "src/oam/shell.c", 
@@ -617,8 +619,8 @@ BOARDS = {
             "-Wno-error=unused-variable"
         ], 
         "inc": [
+            "build/arduino_pro_micro/gen", 
             "src", 
-            "build/arduino_pro_micro", 
             "src/boards/arduino_pro_micro", 
             "src/mcus/atmega32u4", 
             "src", 
@@ -643,7 +645,6 @@ BOARDS = {
         "linker_script": "", 
         "mcu_desc": "Atmel ATMega32u4 AVR @ 16MHz, 2.5k sram, 32k flash", 
         "src": [
-            "src/settings_default.c", 
             "src/boards/arduino_pro_micro/board.c", 
             "src/mcus/atmega32u4/mcu.c", 
             "src/alloc/circular_heap.c", 
@@ -725,6 +726,7 @@ BOARDS = {
             "src/kernel/timer.c", 
             "src/multimedia/midi.c", 
             "src/oam/console.c", 
+            "src/oam/nvm.c", 
             "src/oam/service.c", 
             "src/oam/settings.c", 
             "src/oam/shell.c", 
@@ -787,8 +789,8 @@ BOARDS = {
             "-Wno-error=unused-variable"
         ], 
         "inc": [
+            "build/arduino_uno/gen", 
             "src", 
-            "build/arduino_uno", 
             "src/boards/arduino_uno", 
             "src/mcus/atmega328p", 
             "src", 
@@ -813,7 +815,6 @@ BOARDS = {
         "linker_script": "", 
         "mcu_desc": "Atmel ATMega328p AVR @ 16MHz, 2k sram, 32k flash", 
         "src": [
-            "src/settings_default.c", 
             "src/boards/arduino_uno/board.c", 
             "src/mcus/atmega328p/mcu.c", 
             "src/alloc/circular_heap.c", 
@@ -891,6 +892,7 @@ BOARDS = {
             "src/kernel/timer.c", 
             "src/multimedia/midi.c", 
             "src/oam/console.c", 
+            "src/oam/nvm.c", 
             "src/oam/service.c", 
             "src/oam/settings.c", 
             "src/oam/shell.c", 
@@ -959,8 +961,8 @@ BOARDS = {
             "-Wno-error=unused-variable"
         ], 
         "inc": [
+            "build/esp01/gen", 
             "src", 
-            "build/esp01", 
             "src/boards/esp01", 
             "src/mcus/esp8266", 
             "3pp/ESP8266_RTOS_SDK/extra_include", 
@@ -1013,7 +1015,6 @@ BOARDS = {
         "linker_script": "simba.flash.512k.ld", 
         "mcu_desc": "Espressif ESP8266 @ 80 MHz, 82 kB dram, 4 MB flash", 
         "src": [
-            "src/settings_default.c", 
             "src/boards/esp01/board.c", 
             "src/mcus/esp8266/mcu.c", 
             "src/mcus/esp8266/esp8266.c", 
@@ -1026,15 +1027,21 @@ BOARDS = {
             "src/debug/harness.c", 
             "src/drivers/adc.c", 
             "src/drivers/analog_input_pin.c", 
+            "src/drivers/ds18b20.c", 
+            "src/drivers/eeprom_soft.c", 
             "src/drivers/esp_wifi.c", 
             "src/drivers/esp_wifi/station.c", 
             "src/drivers/esp_wifi/softap.c", 
             "src/drivers/exti.c", 
             "src/drivers/flash.c", 
+            "src/drivers/led_7seg_ht16k33.c", 
+            "src/drivers/owi.c", 
             "src/drivers/pin.c", 
             "src/drivers/pwm_soft.c", 
+            "src/drivers/i2c.c", 
             "src/drivers/i2c_soft.c", 
             "src/drivers/random.c", 
+            "src/drivers/sht3xd.c", 
             "src/drivers/spi.c", 
             "src/drivers/uart.c", 
             "src/drivers/uart_soft.c", 
@@ -1130,6 +1137,7 @@ BOARDS = {
             "src/kernel/timer.c", 
             "src/multimedia/midi.c", 
             "src/oam/console.c", 
+            "src/oam/nvm.c", 
             "src/oam/service.c", 
             "src/oam/settings.c", 
             "src/oam/shell.c", 
@@ -1209,8 +1217,8 @@ BOARDS = {
             "-Wno-error=unused-variable"
         ], 
         "inc": [
+            "build/esp12e/gen", 
             "src", 
-            "build/esp12e", 
             "src/boards/esp12e", 
             "src/mcus/esp8266", 
             "3pp/ESP8266_RTOS_SDK/extra_include", 
@@ -1263,7 +1271,6 @@ BOARDS = {
         "linker_script": "simba.flash.4m.ld", 
         "mcu_desc": "Espressif ESP8266 @ 80 MHz, 82 kB dram, 4 MB flash", 
         "src": [
-            "src/settings_default.c", 
             "src/boards/esp12e/board.c", 
             "src/mcus/esp8266/mcu.c", 
             "src/mcus/esp8266/esp8266.c", 
@@ -1276,15 +1283,21 @@ BOARDS = {
             "src/debug/harness.c", 
             "src/drivers/adc.c", 
             "src/drivers/analog_input_pin.c", 
+            "src/drivers/ds18b20.c", 
+            "src/drivers/eeprom_soft.c", 
             "src/drivers/esp_wifi.c", 
             "src/drivers/esp_wifi/station.c", 
             "src/drivers/esp_wifi/softap.c", 
             "src/drivers/exti.c", 
             "src/drivers/flash.c", 
+            "src/drivers/led_7seg_ht16k33.c", 
+            "src/drivers/owi.c", 
             "src/drivers/pin.c", 
             "src/drivers/pwm_soft.c", 
+            "src/drivers/i2c.c", 
             "src/drivers/i2c_soft.c", 
             "src/drivers/random.c", 
+            "src/drivers/sht3xd.c", 
             "src/drivers/spi.c", 
             "src/drivers/uart.c", 
             "src/drivers/uart_soft.c", 
@@ -1380,6 +1393,7 @@ BOARDS = {
             "src/kernel/timer.c", 
             "src/multimedia/midi.c", 
             "src/oam/console.c", 
+            "src/oam/nvm.c", 
             "src/oam/service.c", 
             "src/oam/settings.c", 
             "src/oam/shell.c", 
@@ -1452,8 +1466,8 @@ BOARDS = {
             "-Wno-error=unused-variable"
         ], 
         "inc": [
+            "build/esp32_devkitc/gen", 
             "src", 
-            "build/esp32_devkitc", 
             "src/boards/esp32_devkitc", 
             "src/mcus/esp32", 
             "3pp/esp32/inc/app_update/include", 
@@ -1523,7 +1537,6 @@ BOARDS = {
         "linker_script": "simba.flash.ld", 
         "mcu_desc": "Espressif ESP32 @ 240 MHz, 512 kB sram, 4 MB flash", 
         "src": [
-            "src/settings_default.c", 
             "src/boards/esp32_devkitc/board.c", 
             "src/mcus/esp32/mcu.c", 
             "src/mcus/esp32/esp32.c", 
@@ -1539,10 +1552,13 @@ BOARDS = {
             "src/drivers/can.c", 
             "src/drivers/dac.c", 
             "src/drivers/ds18b20.c", 
+            "src/drivers/eeprom_soft.c", 
             "src/drivers/flash.c", 
             "src/drivers/esp_wifi.c", 
             "src/drivers/esp_wifi/station.c", 
             "src/drivers/esp_wifi/softap.c", 
+            "src/drivers/i2c.c", 
+            "src/drivers/i2c_soft.c", 
             "src/drivers/owi.c", 
             "src/drivers/pin.c", 
             "src/drivers/random.c", 
@@ -1642,6 +1658,7 @@ BOARDS = {
             "src/kernel/ports/esp32/gnu/thrd_port.S", 
             "src/multimedia/midi.c", 
             "src/oam/console.c", 
+            "src/oam/nvm.c", 
             "src/oam/service.c", 
             "src/oam/settings.c", 
             "src/oam/shell.c", 
@@ -1726,8 +1743,8 @@ BOARDS = {
             "-Wno-error=unused-variable"
         ], 
         "inc": [
+            "build/huzzah/gen", 
             "src", 
-            "build/huzzah", 
             "src/boards/huzzah", 
             "src/mcus/esp8266", 
             "3pp/ESP8266_RTOS_SDK/extra_include", 
@@ -1780,7 +1797,6 @@ BOARDS = {
         "linker_script": "simba.flash.4m.ld", 
         "mcu_desc": "Espressif ESP8266 @ 80 MHz, 82 kB dram, 4 MB flash", 
         "src": [
-            "src/settings_default.c", 
             "src/boards/huzzah/board.c", 
             "src/mcus/esp8266/mcu.c", 
             "src/mcus/esp8266/esp8266.c", 
@@ -1793,15 +1809,21 @@ BOARDS = {
             "src/debug/harness.c", 
             "src/drivers/adc.c", 
             "src/drivers/analog_input_pin.c", 
+            "src/drivers/ds18b20.c", 
+            "src/drivers/eeprom_soft.c", 
             "src/drivers/esp_wifi.c", 
             "src/drivers/esp_wifi/station.c", 
             "src/drivers/esp_wifi/softap.c", 
             "src/drivers/exti.c", 
             "src/drivers/flash.c", 
+            "src/drivers/led_7seg_ht16k33.c", 
+            "src/drivers/owi.c", 
             "src/drivers/pin.c", 
             "src/drivers/pwm_soft.c", 
+            "src/drivers/i2c.c", 
             "src/drivers/i2c_soft.c", 
             "src/drivers/random.c", 
+            "src/drivers/sht3xd.c", 
             "src/drivers/spi.c", 
             "src/drivers/uart.c", 
             "src/drivers/uart_soft.c", 
@@ -1897,6 +1919,7 @@ BOARDS = {
             "src/kernel/timer.c", 
             "src/multimedia/midi.c", 
             "src/oam/console.c", 
+            "src/oam/nvm.c", 
             "src/oam/service.c", 
             "src/oam/settings.c", 
             "src/oam/shell.c", 
@@ -1975,8 +1998,8 @@ BOARDS = {
             "-Wno-error=unused-variable"
         ], 
         "inc": [
+            "build/linux/gen", 
             "src", 
-            "build/linux", 
             "src/boards/linux", 
             "src/mcus/linux", 
             "src", 
@@ -2009,7 +2032,6 @@ BOARDS = {
         "linker_script": "", 
         "mcu_desc": "Linux", 
         "src": [
-            "src/settings_default.c", 
             "src/boards/linux/board.c", 
             "src/mcus/linux/mcu.c", 
             "src/alloc/circular_heap.c", 
@@ -2019,15 +2041,18 @@ BOARDS = {
             "src/collections/hash_map.c", 
             "src/debug/log.c", 
             "src/debug/harness.c", 
+            "src/drivers/ports/linux/socket_device.c", 
             "src/drivers/adc.c", 
             "src/drivers/analog_input_pin.c", 
             "src/drivers/analog_output_pin.c", 
             "src/drivers/can.c", 
             "src/drivers/dac.c", 
             "src/drivers/ds18b20.c", 
+            "src/drivers/eeprom_soft.c", 
             "src/drivers/exti.c", 
             "src/drivers/flash.c", 
             "src/drivers/pin.c", 
+            "src/drivers/i2c.c", 
             "src/drivers/i2c_soft.c", 
             "src/drivers/owi.c", 
             "src/drivers/pwm.c", 
@@ -2127,6 +2152,7 @@ BOARDS = {
             "src/kernel/timer.c", 
             "src/multimedia/midi.c", 
             "src/oam/console.c", 
+            "src/oam/nvm.c", 
             "src/oam/service.c", 
             "src/oam/settings.c", 
             "src/oam/shell.c", 
@@ -2204,8 +2230,8 @@ BOARDS = {
             "-Wno-error=unused-variable"
         ], 
         "inc": [
+            "build/maple_esp32/gen", 
             "src", 
-            "build/maple_esp32", 
             "src/boards/maple_esp32", 
             "src/mcus/esp32", 
             "3pp/esp32/inc/app_update/include", 
@@ -2275,7 +2301,6 @@ BOARDS = {
         "linker_script": "simba.flash.ld", 
         "mcu_desc": "Espressif ESP32 @ 240 MHz, 512 kB sram, 4 MB flash", 
         "src": [
-            "src/settings_default.c", 
             "src/boards/maple_esp32/board.c", 
             "src/mcus/esp32/mcu.c", 
             "src/mcus/esp32/esp32.c", 
@@ -2291,10 +2316,13 @@ BOARDS = {
             "src/drivers/can.c", 
             "src/drivers/dac.c", 
             "src/drivers/ds18b20.c", 
+            "src/drivers/eeprom_soft.c", 
             "src/drivers/flash.c", 
             "src/drivers/esp_wifi.c", 
             "src/drivers/esp_wifi/station.c", 
             "src/drivers/esp_wifi/softap.c", 
+            "src/drivers/i2c.c", 
+            "src/drivers/i2c_soft.c", 
             "src/drivers/owi.c", 
             "src/drivers/pin.c", 
             "src/drivers/random.c", 
@@ -2394,6 +2422,7 @@ BOARDS = {
             "src/kernel/ports/esp32/gnu/thrd_port.S", 
             "src/multimedia/midi.c", 
             "src/oam/console.c", 
+            "src/oam/nvm.c", 
             "src/oam/service.c", 
             "src/oam/settings.c", 
             "src/oam/shell.c", 
@@ -2471,8 +2500,8 @@ BOARDS = {
             "-Wno-error=unused-variable"
         ], 
         "inc": [
+            "build/nano32/gen", 
             "src", 
-            "build/nano32", 
             "src/boards/nano32", 
             "src/mcus/esp32", 
             "3pp/esp32/inc/app_update/include", 
@@ -2542,7 +2571,6 @@ BOARDS = {
         "linker_script": "simba.flash.ld", 
         "mcu_desc": "Espressif ESP32 @ 240 MHz, 512 kB sram, 4 MB flash", 
         "src": [
-            "src/settings_default.c", 
             "src/boards/nano32/board.c", 
             "src/mcus/esp32/mcu.c", 
             "src/mcus/esp32/esp32.c", 
@@ -2558,10 +2586,13 @@ BOARDS = {
             "src/drivers/can.c", 
             "src/drivers/dac.c", 
             "src/drivers/ds18b20.c", 
+            "src/drivers/eeprom_soft.c", 
             "src/drivers/flash.c", 
             "src/drivers/esp_wifi.c", 
             "src/drivers/esp_wifi/station.c", 
             "src/drivers/esp_wifi/softap.c", 
+            "src/drivers/i2c.c", 
+            "src/drivers/i2c_soft.c", 
             "src/drivers/owi.c", 
             "src/drivers/pin.c", 
             "src/drivers/random.c", 
@@ -2661,6 +2692,7 @@ BOARDS = {
             "src/kernel/ports/esp32/gnu/thrd_port.S", 
             "src/multimedia/midi.c", 
             "src/oam/console.c", 
+            "src/oam/nvm.c", 
             "src/oam/service.c", 
             "src/oam/settings.c", 
             "src/oam/shell.c", 
@@ -2745,8 +2777,8 @@ BOARDS = {
             "-Wno-error=unused-variable"
         ], 
         "inc": [
+            "build/nodemcu/gen", 
             "src", 
-            "build/nodemcu", 
             "src/boards/nodemcu", 
             "src/mcus/esp8266", 
             "3pp/ESP8266_RTOS_SDK/extra_include", 
@@ -2799,7 +2831,6 @@ BOARDS = {
         "linker_script": "simba.flash.4m.ld", 
         "mcu_desc": "Espressif ESP8266 @ 80 MHz, 82 kB dram, 4 MB flash", 
         "src": [
-            "src/settings_default.c", 
             "src/boards/nodemcu/board.c", 
             "src/mcus/esp8266/mcu.c", 
             "src/mcus/esp8266/esp8266.c", 
@@ -2812,15 +2843,21 @@ BOARDS = {
             "src/debug/harness.c", 
             "src/drivers/adc.c", 
             "src/drivers/analog_input_pin.c", 
+            "src/drivers/ds18b20.c", 
+            "src/drivers/eeprom_soft.c", 
             "src/drivers/esp_wifi.c", 
             "src/drivers/esp_wifi/station.c", 
             "src/drivers/esp_wifi/softap.c", 
             "src/drivers/exti.c", 
             "src/drivers/flash.c", 
+            "src/drivers/led_7seg_ht16k33.c", 
+            "src/drivers/owi.c", 
             "src/drivers/pin.c", 
             "src/drivers/pwm_soft.c", 
+            "src/drivers/i2c.c", 
             "src/drivers/i2c_soft.c", 
             "src/drivers/random.c", 
+            "src/drivers/sht3xd.c", 
             "src/drivers/spi.c", 
             "src/drivers/uart.c", 
             "src/drivers/uart_soft.c", 
@@ -2916,6 +2953,7 @@ BOARDS = {
             "src/kernel/timer.c", 
             "src/multimedia/midi.c", 
             "src/oam/console.c", 
+            "src/oam/nvm.c", 
             "src/oam/service.c", 
             "src/oam/settings.c", 
             "src/oam/shell.c", 
@@ -2962,8 +3000,8 @@ BOARDS = {
             "MBEDTLS_USER_CONFIG_FILE=\"\\\"mbedtls/user_config.h\\\"\""
         ], 
         "cflags": [
-            "-Werror", 
             "-g", 
+            "-Werror", 
             "-mthumb", 
             "-mcpu=cortex-m3", 
             "-ffunction-sections", 
@@ -2976,8 +3014,8 @@ BOARDS = {
             "-Wno-error=unused-variable"
         ], 
         "cxxflags": [
-            "-Werror", 
             "-g", 
+            "-Werror", 
             "-mthumb", 
             "-mcpu=cortex-m3", 
             "-ffunction-sections", 
@@ -2990,8 +3028,8 @@ BOARDS = {
             "-Wno-error=unused-variable"
         ], 
         "inc": [
+            "build/photon/gen", 
             "src", 
-            "build/photon", 
             "src/boards/photon", 
             "src/mcus/stm32f205rg", 
             "src", 
@@ -3021,7 +3059,6 @@ BOARDS = {
         "linker_script": "script.ld", 
         "mcu_desc": "ST STM32F205RG ARM Cortex-M3 @ 120MHz, 128k sram, 1M flash", 
         "src": [
-            "src/settings_default.c", 
             "src/boards/photon/board.c", 
             "src/mcus/stm32f205rg/mcu.c", 
             "src/mcus/stm32f205rg/stm32.c", 
@@ -3032,8 +3069,10 @@ BOARDS = {
             "src/collections/hash_map.c", 
             "src/debug/log.c", 
             "src/debug/harness.c", 
+            "src/drivers/eeprom_soft.c", 
             "src/drivers/flash.c", 
             "src/drivers/pin.c", 
+            "src/drivers/i2c.c", 
             "src/drivers/i2c_soft.c", 
             "src/drivers/uart.c", 
             "src/encode/base64.c", 
@@ -3085,6 +3124,7 @@ BOARDS = {
             "src/kernel/timer.c", 
             "src/multimedia/midi.c", 
             "src/oam/console.c", 
+            "src/oam/nvm.c", 
             "src/oam/service.c", 
             "src/oam/settings.c", 
             "src/oam/shell.c", 
@@ -3159,10 +3199,11 @@ BOARDS = {
             "-Wno-error=unused-variable"
         ], 
         "inc": [
+            "build/spc56ddiscovery/gen", 
             "src", 
-            "build/spc56ddiscovery", 
             "src/boards/spc56ddiscovery", 
             "src/mcus/spc56d40l1", 
+            "src/mcus/spc5", 
             "src", 
             "3pp/compat", 
             "src/drivers/ports/spc5", 
@@ -3190,10 +3231,9 @@ BOARDS = {
         "linker_script": "script.ld", 
         "mcu_desc": "SPC56D40L1 PPC @ 48MHz, 16k SRAM, 256k CFlash, 64k DFlash", 
         "src": [
-            "src/settings_default.c", 
             "src/boards/spc56ddiscovery/board.c", 
-            "src/mcus/spc56d40l1/spc5.c", 
-            "src/mcus/spc56d40l1/spc5.S", 
+            "src/mcus/spc5/spc5.c", 
+            "src/mcus/spc5/spc5.S", 
             "src/mcus/spc56d40l1/mcu.c", 
             "src/alloc/circular_heap.c", 
             "src/alloc/heap.c", 
@@ -3202,10 +3242,14 @@ BOARDS = {
             "src/collections/hash_map.c", 
             "src/debug/log.c", 
             "src/debug/harness.c", 
-            "src/drivers/pin.c", 
             "src/drivers/can.c", 
+            "src/drivers/eeprom_soft.c", 
             "src/drivers/flash.c", 
+            "src/drivers/i2c.c", 
+            "src/drivers/i2c_soft.c", 
+            "src/drivers/pin.c", 
             "src/drivers/uart.c", 
+            "src/drivers/watchdog.c", 
             "src/encode/base64.c", 
             "src/encode/json.c", 
             "src/hash/crc.c", 
@@ -3256,6 +3300,7 @@ BOARDS = {
             "src/kernel/ports/ppc/gnu/thrd_port.S", 
             "src/multimedia/midi.c", 
             "src/oam/console.c", 
+            "src/oam/nvm.c", 
             "src/oam/service.c", 
             "src/oam/settings.c", 
             "src/oam/shell.c", 
@@ -3302,8 +3347,8 @@ BOARDS = {
             "MBEDTLS_USER_CONFIG_FILE=\"\\\"mbedtls/user_config.h\\\"\""
         ], 
         "cflags": [
-            "-Werror", 
             "-g", 
+            "-Werror", 
             "-mthumb", 
             "-mcpu=cortex-m4", 
             "-ffunction-sections", 
@@ -3316,8 +3361,8 @@ BOARDS = {
             "-Wno-error=unused-variable"
         ], 
         "cxxflags": [
-            "-Werror", 
             "-g", 
+            "-Werror", 
             "-mthumb", 
             "-mcpu=cortex-m4", 
             "-ffunction-sections", 
@@ -3330,8 +3375,8 @@ BOARDS = {
             "-Wno-error=unused-variable"
         ], 
         "inc": [
+            "build/stm32f3discovery/gen", 
             "src", 
-            "build/stm32f3discovery", 
             "src/boards/stm32f3discovery", 
             "src/mcus/stm32f303vc", 
             "src", 
@@ -3361,7 +3406,6 @@ BOARDS = {
         "linker_script": "script.ld", 
         "mcu_desc": "ST STM32F303VC ARM Cortex-M4 @ 72MHz, 40k sram, 256k flash", 
         "src": [
-            "src/settings_default.c", 
             "src/boards/stm32f3discovery/board.c", 
             "src/mcus/stm32f303vc/mcu.c", 
             "src/mcus/stm32f303vc/stm32.c", 
@@ -3372,8 +3416,10 @@ BOARDS = {
             "src/collections/hash_map.c", 
             "src/debug/log.c", 
             "src/debug/harness.c", 
+            "src/drivers/eeprom_soft.c", 
             "src/drivers/flash.c", 
             "src/drivers/pin.c", 
+            "src/drivers/i2c.c", 
             "src/drivers/i2c_soft.c", 
             "src/drivers/uart.c", 
             "src/encode/base64.c", 
@@ -3425,6 +3471,7 @@ BOARDS = {
             "src/kernel/timer.c", 
             "src/multimedia/midi.c", 
             "src/oam/console.c", 
+            "src/oam/nvm.c", 
             "src/oam/service.c", 
             "src/oam/settings.c", 
             "src/oam/shell.c", 
@@ -3471,8 +3518,8 @@ BOARDS = {
             "MBEDTLS_USER_CONFIG_FILE=\"\\\"mbedtls/user_config.h\\\"\""
         ], 
         "cflags": [
-            "-Werror", 
             "-g", 
+            "-Werror", 
             "-mthumb", 
             "-mcpu=cortex-m3", 
             "-ffunction-sections", 
@@ -3485,8 +3532,8 @@ BOARDS = {
             "-Wno-error=unused-variable"
         ], 
         "cxxflags": [
-            "-Werror", 
             "-g", 
+            "-Werror", 
             "-mthumb", 
             "-mcpu=cortex-m3", 
             "-ffunction-sections", 
@@ -3499,8 +3546,8 @@ BOARDS = {
             "-Wno-error=unused-variable"
         ], 
         "inc": [
+            "build/stm32vldiscovery/gen", 
             "src", 
-            "build/stm32vldiscovery", 
             "src/boards/stm32vldiscovery", 
             "src/mcus/stm32f100rb", 
             "src", 
@@ -3530,7 +3577,6 @@ BOARDS = {
         "linker_script": "script.ld", 
         "mcu_desc": "ST STM32F100RB ARM Cortex-M3 @ 24MHz, 8k sram, 128k flash", 
         "src": [
-            "src/settings_default.c", 
             "src/boards/stm32vldiscovery/board.c", 
             "src/mcus/stm32f100rb/mcu.c", 
             "src/mcus/stm32f100rb/stm32.c", 
@@ -3541,8 +3587,10 @@ BOARDS = {
             "src/collections/hash_map.c", 
             "src/debug/log.c", 
             "src/debug/harness.c", 
+            "src/drivers/eeprom_soft.c", 
             "src/drivers/flash.c", 
             "src/drivers/pin.c", 
+            "src/drivers/i2c.c", 
             "src/drivers/i2c_soft.c", 
             "src/drivers/uart.c", 
             "src/encode/base64.c", 
@@ -3594,6 +3642,7 @@ BOARDS = {
             "src/kernel/timer.c", 
             "src/multimedia/midi.c", 
             "src/oam/console.c", 
+            "src/oam/nvm.c", 
             "src/oam/service.c", 
             "src/oam/settings.c", 
             "src/oam/shell.c", 
@@ -3673,8 +3722,8 @@ BOARDS = {
             "-Wno-error=unused-variable"
         ], 
         "inc": [
+            "build/wemos_d1_mini/gen", 
             "src", 
-            "build/wemos_d1_mini", 
             "src/boards/wemos_d1_mini", 
             "src/mcus/esp8266", 
             "3pp/ESP8266_RTOS_SDK/extra_include", 
@@ -3727,7 +3776,6 @@ BOARDS = {
         "linker_script": "simba.flash.4m.ld", 
         "mcu_desc": "Espressif ESP8266 @ 80 MHz, 82 kB dram, 4 MB flash", 
         "src": [
-            "src/settings_default.c", 
             "src/boards/wemos_d1_mini/board.c", 
             "src/mcus/esp8266/mcu.c", 
             "src/mcus/esp8266/esp8266.c", 
@@ -3740,15 +3788,21 @@ BOARDS = {
             "src/debug/harness.c", 
             "src/drivers/adc.c", 
             "src/drivers/analog_input_pin.c", 
+            "src/drivers/ds18b20.c", 
+            "src/drivers/eeprom_soft.c", 
             "src/drivers/esp_wifi.c", 
             "src/drivers/esp_wifi/station.c", 
             "src/drivers/esp_wifi/softap.c", 
             "src/drivers/exti.c", 
             "src/drivers/flash.c", 
+            "src/drivers/led_7seg_ht16k33.c", 
+            "src/drivers/owi.c", 
             "src/drivers/pin.c", 
             "src/drivers/pwm_soft.c", 
+            "src/drivers/i2c.c", 
             "src/drivers/i2c_soft.c", 
             "src/drivers/random.c", 
+            "src/drivers/sht3xd.c", 
             "src/drivers/spi.c", 
             "src/drivers/uart.c", 
             "src/drivers/uart_soft.c", 
@@ -3844,6 +3898,7 @@ BOARDS = {
             "src/kernel/timer.c", 
             "src/multimedia/midi.c", 
             "src/oam/console.c", 
+            "src/oam/nvm.c", 
             "src/oam/service.c", 
             "src/oam/settings.c", 
             "src/oam/shell.c", 
@@ -4208,8 +4263,15 @@ for src in env.LookupSources(variant_dir, src_dir, True, src_filter):
 # Command to generate simba_gen.c
 env.Command(SIMBA_GEN_C,
             source_files,
-            ('"$PYTHONEXE" "$PLATFORMFW_DIR/bin/simbagen.py" "$NAME" "$VERSION" '
-             '"$BOARD_DESC" "$MCU_DESC" "$TARGET" "${TARGET}.soamdb"'))
+            ('"$PYTHONEXE" "$PLATFORMFW_DIR/bin/simbagen.py" '
+             '--output-directory "$BUILD_DIR/SimbaFramework" '
+             'source '
+             '--name "$NAME" '
+             '--version "$VERSION" '
+             '--board "$BOARD_DESC" '
+             '--mcu "$MCU_DESC" '
+             '--endianess little '
+             '--eeprom-soft-chunk-size 2048 '))
 source_files.append(SIMBA_GEN_C)
 
 lib = env.Library(target=join("$BUILD_DIR", "SimbaFramework"), source=source_files)

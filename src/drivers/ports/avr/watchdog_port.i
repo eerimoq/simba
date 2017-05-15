@@ -30,7 +30,8 @@
 
 #include <avr/wdt.h>
 
-int watchdog_port_start_ms(int timeout)
+int watchdog_port_start_ms(int timeout,
+                           watchdog_isr_fn_t on_interrupt)
 {
     wdt_enable(timeout);
 

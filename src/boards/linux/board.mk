@@ -30,8 +30,10 @@
 
 .PHONY: coverage
 
-INC += $(SIMBA_ROOT)/src/boards/linux
-SRC += $(SIMBA_ROOT)/src/boards/linux/board.c
+PINOUT ?= linux
+
+INC += $(SIMBA_ROOT)/src/boards/$(PINOUT)
+SRC += $(SIMBA_ROOT)/src/boards/$(PINOUT)/board.c
 
 BOARD_HOMEPAGE = "http://www.kernel.org"
 BOARD_PINOUT = "linux-pinout.png"

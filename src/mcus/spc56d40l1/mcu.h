@@ -33,9 +33,10 @@
 
 #include "spc5.h"
 
-#define PIN_DEVICE_MAX     43
+#define PIN_DEVICE_MAX     45
 #define UART_DEVICE_MAX     3
 #define FLASH_DEVICE_MAX    2
 #define CAN_DEVICE_MAX      1
+#define I2C_DEVICE_MAX      1
 
 #endif

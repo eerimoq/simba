@@ -38,32 +38,6 @@ extern void socket_stub_output(void *buf_p, size_t size);
 static char qoutbuf[BUFFER_SIZE];
 static QUEUE_INIT_DECL(qout, qoutbuf, sizeof(qoutbuf));
 
-static int read_until(char *buf_p, const char *pattern)
-{
-    char c;
-    size_t length = 0;
-    size_t pattern_length = strlen(pattern);
-
-    while (length < BUFFER_SIZE - 1) {
-        chan_read(&qout, &c, sizeof(c));
-#if defined(ARCH_LINUX)
-        std_printf(FSTR("%c"), c);
-#endif
-        *buf_p++ = c;
-        length++;
-        *buf_p = '\0';
-
-        /* Compare to pattern. */
-        if (length >= pattern_length) {
-            if (!strcmp(&buf_p[-pattern_length], pattern)) {
-                return (1);
-            }
-        }
-    }
-
-    return (0);
-}
-
 static int test_host_by_ip_address(struct harness_t *harness_p)
 {
     struct inet_ip_addr_t address;
@@ -173,7 +147,7 @@ static int test_cmd_ping(struct harness_t *harness_p)
     /* Perform the ping. */
     strcpy(buf, "inet/ping/ping 1.1.1.1\r\n");
     BTASSERT(fs_call(buf, NULL, &qout, NULL) == 0);
-    read_until(buf, "Successfully pinged '1.1.1.1' in 0 ms.\r\n");
+    harness_expect(&qout, "Successfully pinged '1.1.1.1' in 0 ms.\r\n", NULL);
     
     /* Check the request send by the ping module. */
     socket_stub_output(request, sizeof(request));
@@ -209,7 +183,7 @@ static int test_cmd_ping_bad_reply(struct harness_t *harness_p)
     /* Perform the ping. */
     strcpy(buf, "inet/ping/ping 1.1.1.1\r\n");
     BTASSERT(fs_call(buf, NULL, &qout, NULL) == 0);
-    read_until(buf, "Failed to ping '1.1.1.1'.\r\n");
+    harness_expect(&qout, "Failed to ping '1.1.1.1'.\r\n", NULL);
         
     return (0);
 }
@@ -221,12 +195,12 @@ static int test_cmd_ping_bad_input(struct harness_t *harness_p)
     /* Too few arguemnts. */
     strcpy(buf, "inet/ping/ping\r\n");
     BTASSERT(fs_call(buf, NULL, &qout, NULL) == -1);
-    read_until(buf, "Usage: ping <remote host>\r\n");
+    harness_expect(&qout, "Usage: ping <remote host>\r\n", NULL);
 
     /* Bad ip address. */
     strcpy(buf, "inet/ping/ping a.b.c.d\r\n");
     BTASSERT(fs_call(buf, NULL, &qout, NULL) == -1);
-    read_until(buf, "Bad ip address 'a.b.c.d'.\r\n");
+    harness_expect(&qout, "Bad ip address 'a.b.c.d'.\r\n", NULL);
         
     return (0);
 }

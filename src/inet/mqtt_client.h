@@ -124,7 +124,7 @@ struct mqtt_application_message_t {
  * @param[in] on_publish On-publish callback function. Called when the
  *                       server publishes a message.
  * @param[in] on_error On-error callback function. Called when an error
- *                     occurs.
+ *                     occurs. If NULL, a default handler is used.
  *
  * @return zero(0) or negative error code.
  */

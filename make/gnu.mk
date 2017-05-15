@@ -28,13 +28,15 @@
 # This file is part of the Simba project.
 #
 
-SIZECMD = $(CROSS_COMPILE)size $(SIZEARGS) ${EXE} ; \
+SIZECMD = $(CROSS_COMPILE)size $(SIZEARGS) $(EXE) ; \
 	  echo ; \
-	  $(CROSS_COMPILE)size $(OBJ) -t | sort -n -k4 ; \
+	  $(CROSS_COMPILE)size $(OBJ) $(SIMBA_GEN_O) -t | sort -n -k4 ; \
+	  echo ; \
+	  $(CROSS_COMPILE)readelf -W -S $(EXE) ; \
 	  $(CROSS_COMPILE)readelf -W -s $(EXE) | sort -n -k3 | \
 	      awk '{if ($$3 != 0) {print $$0}}' | grep -v "Symbol table"
 
-SIZE_SUMMARY_CMD ?= $(CROSS_COMPILE)size ${EXE} | python -c "import sys; text, data, bss = sys.stdin.readlines()[1].split()[0:3]; print '{{\"program\": {}, \"data\": {}}}'.format(text, int(data) + int(bss))"
+SIZE_SUMMARY_CMD ?= $(CROSS_COMPILE)size $(EXE) | python -c "import sys; text, data, bss = sys.stdin.readlines()[1].split()[0:3]; print '{{\"program\": {}, \"data\": {}}}'.format(text, int(data) + int(bss))"
 
 CC = $(CROSS_COMPILE)gcc$(CCVERSION:%=-%)
 CXX = $(CROSS_COMPILE)g++$(CCVERSION:%=-%)
@@ -56,3 +58,6 @@ CXXFLAGS += \
 LDFLAGS += \
 	-Wl,-Map=$(MAP) \
 	-Wl,--gc-sections
+
+backtrace:
+	$(CROSS_COMPILE)addr2line -f -p -C -a -e $(EXE) $(BACKTRACE)

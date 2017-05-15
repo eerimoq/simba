@@ -195,32 +195,6 @@ static char qinbuf[32];
 static QUEUE_INIT_DECL(qin, qinbuf, sizeof(qinbuf));
 #endif
 
-static int read_until(char *buf_p, const char *pattern)
-{
-    char c;
-    size_t length = 0;
-    size_t pattern_length = strlen(pattern);
-
-    while (length < BUFFER_SIZE - 1) {
-        chan_read(&qout, &c, sizeof(c));
-#if defined(ARCH_LINUX)
-        std_printf(FSTR("%c"), c);
-#endif
-        *buf_p++ = c;
-        length++;
-        *buf_p = '\0';
-
-        /* Compare to pattern. */
-        if (length >= pattern_length) {
-            if (!strcmp(&buf_p[-pattern_length], pattern)) {
-                return (1);
-            }
-        }
-    }
-
-    return (0);
-}
-
 static int test_init(struct harness_t *harness_p)
 {
     /* Setup the commands. */
@@ -282,14 +256,14 @@ static int test_command(struct harness_t *harness_p)
 
     strcpy(buf, "  /tmp/foo/bar     foo1 foo2  ");
     BTASSERT(fs_call(buf, NULL, &qout, NULL) == 0);
-    read_until(buf, "\n");
+    BTASSERT(harness_expect(&qout, "\n", NULL) == 0);
 
     strcpy(buf, "/tmp/bar 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16");
     BTASSERT(fs_call(buf, NULL, &qout, NULL) == -E2BIG);
 
     strcpy(buf, "/tmp/bar/missing");
-    BTASSERT(fs_call(buf, NULL, &qout, NULL) == -ENOENT);
-    read_until(buf, "\n");
+    BTASSERT(fs_call(buf, NULL, &qout, NULL) == -ENOCOMMAND);
+    BTASSERT(harness_expect(&qout, "\n", NULL) == 0);
 
     strcpy(buf, "");
     BTASSERT(fs_call(buf, NULL, &qout, NULL) == -1);
@@ -303,20 +277,22 @@ static int test_counter(struct harness_t *harness_p)
 
     strcpy(buf, "filesystems/fs/counters/list");
     BTASSERT(fs_call(buf, NULL, &qout, NULL) == 0);
-    read_until(buf, "/your/counter                                        0000000000000000\r\n");
+    BTASSERT(harness_expect(&qout,
+                            "/your/counter                                        0000000000000000\r\n",
+                            NULL) == 0);
 
     fs_counter_increment(&my_counter, 3);
 
     strcpy(buf, "my/counter");
     BTASSERT(fs_call(buf, NULL, &qout, NULL) == 0);
-    read_until(buf, "0000000000000003\r\n");
+    BTASSERT(harness_expect(&qout, "0000000000000003\r\n", NULL) == 0);
 
     strcpy(buf, "filesystems/fs/counters/reset");
     BTASSERT(fs_call(buf, NULL, &qout, NULL) == 0);
 
     strcpy(buf, "my/counter");
     BTASSERT(fs_call(buf, NULL, &qout, NULL) == 0);
-    read_until(buf, "0000000000000000\r\n");
+    BTASSERT(harness_expect(&qout, "0000000000000000\r\n", NULL) == 0);
 
     return (0);
 }
@@ -327,9 +303,10 @@ static int test_parameter(struct harness_t *harness_p)
 
     strcpy(buf, "filesystems/fs/parameters/list");
     BTASSERT(fs_call(buf, NULL, &qout, NULL) == 0);
-    read_until(buf,
-               "NAME                                                 VALUE\r\n"
-               "/our/parameter                                       5\r\n");
+    BTASSERT(harness_expect(&qout,
+                            "NAME                                                 VALUE\r\n"
+                            "/our/parameter                                       5\r\n",
+                            NULL) == 0);
 
     BTASSERT(our_parameter_value == OUR_PARAMETER_DEFAULT);
     our_parameter_value = 1;
@@ -337,44 +314,41 @@ static int test_parameter(struct harness_t *harness_p)
 
     strcpy(buf, "/our/parameter");
     BTASSERT(fs_call(buf, NULL, &qout, NULL) == 0);
-    read_until(buf, "1\r\n");
+    BTASSERT(harness_expect(&qout, "1\r\n", NULL) == 0);
 
     strcpy(buf, "/our/parameter 3");
     BTASSERT(fs_call(buf, NULL, &qout, NULL) == 0);
 
     strcpy(buf, "/our/parameter");
     BTASSERT(fs_call(buf, NULL, &qout, NULL) == 0);
-    read_until(buf, "3\r\n");
+    BTASSERT(harness_expect(&qout, "3\r\n", NULL) == 0);
 
     return (0);
 }
 
 static int test_list(struct harness_t *harness_p)
 {
-    char buf[256];
-
     BTASSERT(fs_list("filesystems", NULL, &qout) == 0);
-    read_until(buf,
-               "fs/\r\n");
+    BTASSERT(harness_expect(&qout, "fs/\r\n", NULL) == 0);
 
     BTASSERT(fs_list("/filesystems", "f", &qout) == 0);
-    read_until(buf, "fs/\r\n");
+    BTASSERT(harness_expect(&qout, "fs/\r\n", NULL) == 0);
 
     BTASSERT(fs_list("tmp/foo", NULL, &qout) == 0);
-    read_until(buf,
-               "bar\r\n");
+    BTASSERT(harness_expect(&qout, "bar\r\n", NULL) == 0);
 
     BTASSERT(fs_list("", NULL, &qout) == 0);
-    read_until(buf,
-               "filesystems/\r\n"
-               "kernel/\r\n"
-               "my/\r\n"
-               "our/\r\n"
-               "tmp/\r\n"
-               "your/\r\n");
+    BTASSERT(harness_expect(&qout,
+                            "filesystems/\r\n"
+                            "kernel/\r\n"
+                            "my/\r\n"
+                            "our/\r\n"
+                            "tmp/\r\n"
+                            "your/\r\n",
+                            NULL) == 0);
 
     BTASSERT(fs_list("", "o", &qout) == 0);
-    read_until(buf, "our/\r\n");
+    BTASSERT(harness_expect(&qout, "our/\r\n", NULL) == 0);
 
     return (0);
 }
@@ -430,17 +404,17 @@ static int test_split_merge(struct harness_t *harness_p)
 
 static int test_quotes(struct harness_t *harness_p)
 {
-    char buf[BUFFER_SIZE];
+    char buf[64];
 
     /* "1 2" is parsed as one argument. */
     strcpy(buf, "tmp/foo/bar \"1 2\" 3");
     BTASSERT(fs_call(buf, NULL, &qout, NULL) == 0);
-    read_until(buf, "argv[1] = 1 2, argv[2] = 3\n");
+    BTASSERT(harness_expect(&qout, "argv[1] = 1 2, argv[2] = 3\n", NULL) == 0);
 
     /* "1""" is parsed as one argument. */
     strcpy(buf, "tmp/foo/bar \"1\"\"\" 2");
     BTASSERT(fs_call(buf, NULL, &qout, NULL) == 0);
-    read_until(buf, "argv[1] = 1, argv[2] = 2\n");
+    BTASSERT(harness_expect(&qout, "argv[1] = 1, argv[2] = 2\n", NULL) == 0);
 
     /* "1 fails because the end " is missing. */
     strcpy(buf, "tmp/foo/bar \"1 2");
@@ -451,12 +425,14 @@ static int test_quotes(struct harness_t *harness_p)
 
 static int test_escape(struct harness_t *harness_p)
 {
-    char buf[BUFFER_SIZE];
+    char buf[64];
 
     /* \"2\" parsed as "2". */
     strcpy(buf, "tmp/foo/bar 1 \\\"2\\\"");
     BTASSERT(fs_call(buf, NULL, &qout, NULL) == 0);
-    read_until(buf, "argv[1] = 1, argv[2] = \"2\"\n");
+    BTASSERT(harness_expect(&qout,
+                            "argv[1] = 1, argv[2] = \"2\"\n",
+                            NULL) == 0);
 
     return (0);
 }
@@ -674,41 +650,50 @@ static int test_filesystem_commands(struct harness_t *harness_p)
 {
 #if defined(ARCH_LINUX)
 
-    char buf[512];
+    char buf[64];
 
     strcpy(buf, "/filesystems/fs/filesystems/list");
     BTASSERT(fs_call(buf, NULL, &qout, NULL) == 0);
-    read_until(buf,
-               "MOUNT-POINT                    MEDIUM   TYPE     AVAILABLE  SIZE  USAGE\r\n"
-               "/generic                       -        generic          -     -     -%\r\n"
-               "/spiffsfs                      -        spiffs           -     -     -%\r\n"
-               "/fat16fs                       -        fat16            -     -     -%\r\n");
+    BTASSERT(harness_expect(&qout,
+                            "MOUNT-POINT                    MEDIUM   TYPE     AVAILABLE  SIZE  USAGE\r\n"
+                            "/generic                       -        generic          -     -     -%\r\n"
+                            "/spiffsfs                      -        spiffs           -     -     -%\r\n"
+                            "/fat16fs                       -        fat16            -     -     -%\r\n",
+                            NULL) == 0);
 
     /* Bad arguments. */
     strcpy(buf, "/filesystems/fs/read");
     BTASSERT(fs_call(buf, NULL, &qout, NULL) == -1);
-    read_until(buf, "Usage: read <file>\r\n");
+    BTASSERT(harness_expect(&qout, "Usage: read <file>\r\n", NULL) == 0);
 
     strcpy(buf, "/filesystems/fs/write");
     BTASSERT(fs_call(buf, NULL, &qout, NULL) == -1);
-    read_until(buf, "Usage: write <file> [<data>]\r\n");
+    BTASSERT(harness_expect(&qout,
+                            "Usage: write <file> [<data>]\r\n",
+                            NULL) == 0);
 
     strcpy(buf, "/filesystems/fs/append");
     BTASSERT(fs_call(buf, NULL, &qout, NULL) == -1);
-    read_until(buf, "Usage: append <file> <data>\r\n");
+    BTASSERT(harness_expect(&qout,
+                            "Usage: append <file> <data>\r\n",
+                            NULL) == 0);
 
     strcpy(buf, "/filesystems/fs/list");
     BTASSERT(fs_call(buf, NULL, &qout, NULL) == -1);
-    read_until(buf, "Usage: list <path>\r\n");
+    BTASSERT(harness_expect(&qout, "Usage: list <path>\r\n", NULL) == 0);
 
     /* Non-existing file. */
     strcpy(buf, "/filesystems/fs/read spiffsfs/cmd.txt");
     BTASSERT(fs_call(buf, NULL, &qout, NULL) == -1);
-    read_until(buf, "Failed to open spiffsfs/cmd.txt.\r\n");
+    BTASSERT(harness_expect(&qout,
+                            "Failed to open spiffsfs/cmd.txt.\r\n",
+                            NULL) == 0);
 
     strcpy(buf, "/filesystems/fs/append spiffsfs/cmd.txt a");
     BTASSERT(fs_call(buf, NULL, &qout, NULL) == -1);
-    read_until(buf, "Failed to open spiffsfs/cmd.txt.\r\n");
+    BTASSERT(harness_expect(&qout,
+                            "Failed to open spiffsfs/cmd.txt.\r\n",
+                            NULL) == 0);
 
     /* Write, append and read. */
     strcpy(buf, "/filesystems/fs/write spiffsfs/cmd.txt 1");
@@ -719,18 +704,22 @@ static int test_filesystem_commands(struct harness_t *harness_p)
 
     strcpy(buf, "/filesystems/fs/read spiffsfs/cmd.txt");
     BTASSERT(fs_call(buf, NULL, &qout, NULL) == 0);
-    read_until(buf, "12");
+    BTASSERT(harness_expect(&qout, "12", NULL) == 0);
 
     /* Write in paste mode, and read. */
     chan_write(&qin, "First\r\nSecond\r\n\x04", 16);
     strcpy(buf, "/filesystems/fs/write spiffsfs/cmd.txt");
     BTASSERT(fs_call(buf, &qin, &qout, NULL) == 0);
-    read_until(buf, "Reading, press Ctrl-D when done.\r\n");
-    read_until(buf, "Wrote 15 bytes to spiffsfs/cmd.txt.\r\n");
+    BTASSERT(harness_expect(&qout,
+                            "Reading, press Ctrl-D when done.\r\n",
+                            NULL) == 0);
+    BTASSERT(harness_expect(&qout,
+                            "Wrote 15 bytes to spiffsfs/cmd.txt.\r\n",
+                            NULL) == 0);
 
     strcpy(buf, "/filesystems/fs/read spiffsfs/cmd.txt");
     BTASSERT(fs_call(buf, NULL, &qout, NULL) == 0);
-    read_until(buf, "First\r\nSecond\r\n");
+    BTASSERT(harness_expect(&qout, "First\r\nSecond\r\n", NULL) == 0);
 
     /* Truncate existing file. */
     strcpy(buf, "/filesystems/fs/write spiffsfs/cmd.txt 1");
@@ -738,18 +727,21 @@ static int test_filesystem_commands(struct harness_t *harness_p)
 
     strcpy(buf, "/filesystems/fs/read spiffsfs/cmd.txt");
     BTASSERT(fs_call(buf, NULL, &qout, NULL) == 0);
-    read_until(buf, "1");
+    BTASSERT(harness_expect(&qout, "1", NULL) == 0);
 
     /* List all files in the FAT16 file system. */
     strcpy(buf, "/filesystems/fs/list fat16fs");
     BTASSERT(fs_call(buf, NULL, &qout, NULL) == 0);
-    read_until(buf, "2000-01-01 01:00        6 FOO.TXT\r\n");
+    BTASSERT(harness_expect(&qout,
+                            "2000-01-01 01:00        6 FOO.TXT\r\n",
+                            NULL) == 0);
 
     /* List all files in the SPIFFS file system. */
     strcpy(buf, "/filesystems/fs/list spiffsfs");
     BTASSERT(fs_call(buf, NULL, &qout, NULL) == 0);
-    read_until(buf,
-               "xxxx-xx-xx xx-xx        1 cmd.txt\r\n");
+    BTASSERT(harness_expect(&qout,
+                            "xxxx-xx-xx xx-xx        1 cmd.txt\r\n",
+                            NULL) == 0);
 
     /* Remove a file. */
     strcpy(buf, "/filesystems/fs/remove spiffsfs/cmd.txt");
@@ -762,7 +754,7 @@ static int test_filesystem_commands(struct harness_t *harness_p)
     /* Bad arguments. */
     strcpy(buf, "/filesystems/fs/remove");
     BTASSERT(fs_call(buf, NULL, &qout, NULL) == -1);
-    read_until(buf, "Usage: remove <file>\r\n");
+    BTASSERT(harness_expect(&qout, "Usage: remove <file>\r\n", NULL) == 0);
 
     return (0);
 

@@ -28,33 +28,54 @@
  * This file is part of the Simba project.
  */
 
-#include "simba.h"
+#include "socket_device.h"
 
 static ssize_t write_cb(void *arg_p,
                         const void *buf_p,
                         size_t size)
 {
-    return (size);
+    struct can_driver_t *self_p;
+    struct can_device_t *dev_p;
+    ssize_t res;
+
+    self_p = arg_p;
+    dev_p = self_p->dev_p;
+
+    sys_lock();
+
+    if (socket_device_is_can_device_connected_isr(dev_p) == 1) {
+        res = socket_device_can_device_write_isr(dev_p, buf_p, size);
+    } else {
+        res = size;
+    }
+
+    sys_unlock();
+
+    return (res);
 }
 
-int can_port_module_init()
+static int can_port_module_init()
+{
+    return (socket_device_module_init());
+}
+
+static int can_port_init(struct can_driver_t *self_p,
+                         struct can_device_t *dev_p,
+                         uint32_t speed)
 {
     return (0);
 }
 
-int can_port_init(struct can_driver_t *self_p,
-                  struct can_device_t *dev_p,
-                  uint32_t speed)
+static int can_port_start(struct can_driver_t *self_p)
 {
+    self_p->dev_p->drv_p = self_p;
+
     return (0);
 }
 
-int can_port_start(struct can_driver_t *self_p)
+static int can_port_stop(struct can_driver_t *self_p)
 {
-    return (0);
-}
+    self_p->dev_p->drv_p = NULL;
 
-int can_port_stop(struct can_driver_t *self_p)
-{
     return (0);
 }

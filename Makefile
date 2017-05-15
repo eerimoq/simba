@@ -57,7 +57,8 @@ ifeq ($(BOARD), linux)
 				    std \
                                     re)
     TESTS += $(addprefix tst/debug/, log)
-    TESTS += $(addprefix tst/oam/, service \
+    TESTS += $(addprefix tst/oam/, nvm \
+				   service \
 				   settings \
 				   shell \
 				   soam \
@@ -329,6 +330,7 @@ ifeq ($(BOARD), spc56ddiscovery)
                                       json)
     TESTS += $(addprefix tst/hash/, crc \
                                     sha1)
+    TESTS += $(addprefix tst/drivers/, eeprom_soft)
 endif
 
 # List of all application to build

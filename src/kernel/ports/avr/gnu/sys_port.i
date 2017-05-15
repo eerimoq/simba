@@ -131,6 +131,16 @@ static void sys_port_reboot()
     while (1);
 }
 
+static int sys_port_backtrace(void **buf_pp, size_t size)
+{
+    return (0);
+}
+
+static int sys_port_get_time_into_tick()
+{
+    return (0);
+}
+
 static void sys_port_lock(void)
 {
     asm volatile ("cli" ::: "memory");

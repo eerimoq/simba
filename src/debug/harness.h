@@ -68,6 +68,12 @@
         return;                                                         \
     }
 
+/**
+ * Stub given function. Used with the make variable STUB to preprocess
+ * object file(s).
+ */
+#define STUB(function) __stub_ ## function
+
 struct harness_t;
 
 /**
@@ -111,5 +117,19 @@ int harness_init(struct harness_t *self_p);
  */
 int harness_run(struct harness_t *self_p,
                 struct harness_testcase_t *testcases_p);
+
+/**
+ * Continiously read from the channel and return when given pattern
+ * has been read, or when a timeout occurs.
+ *
+ * @param[in] chan_p Channel to read from.
+ * @param[in] pattern_p Pattern to wait for.
+ * @param[in] timeout_p Timeout, or NULL to wait forever.
+ *
+ * @return zero(0) or negative error code.
+ */
+int harness_expect(void *chan_p,
+                   const char *pattern_p,
+                   const struct time_t *timeout_p);
 
 #endif

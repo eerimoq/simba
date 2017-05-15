@@ -36,6 +36,11 @@
 #include "watchdog_port.h"
 
 /**
+ * Watchdog interrupt function prototype.
+ */
+typedef void (*watchdog_isr_fn_t)(void);
+
+/**
  * Initialize the watchdog driver module. This function must be called
  * before calling any other function in this module.
  *
@@ -51,10 +56,14 @@ int watchdog_module_init(void);
  * periodically restart the timer.
  *
  * @param[in] timeout Watchdog timeout in milliseconds.
+ * @param[in] on_interrupt Function callback called when a watchdog
+ *                         interrupt occurs. Not all MCU:s supports
+ *                         this feature.
  *
  * @return zero(0) or negative error code.
  */
-int watchdog_start_ms(int timeout);
+int watchdog_start_ms(int timeout,
+                      watchdog_isr_fn_t on_interrupt);
 
 /**
  * Stop the watchdog.

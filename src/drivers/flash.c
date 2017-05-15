@@ -72,7 +72,19 @@ ssize_t flash_read(struct flash_driver_t *self_p,
     ASSERTN(dst_p != NULL, EINVAL);
     ASSERTN(size > 0, EINVAL);
 
-    return (flash_port_read(self_p, dst_p, src, size));
+    ssize_t res;
+
+#if CONFIG_FLASH_DEVICE_SEMAPHORE == 1
+    sem_take(&self_p->dev_p->sem, NULL);
+#endif
+
+    res = flash_port_read(self_p, dst_p, src, size);
+
+#if CONFIG_FLASH_DEVICE_SEMAPHORE == 1
+    sem_give(&self_p->dev_p->sem, 1);
+#endif
+
+    return (res);
 }
 
 ssize_t flash_write(struct flash_driver_t *self_p,
@@ -84,7 +96,19 @@ ssize_t flash_write(struct flash_driver_t *self_p,
     ASSERTN(src_p != NULL , EINVAL);
     ASSERTN(size > 0, EINVAL);
 
-    return (flash_port_write(self_p, dst, src_p, size));
+    ssize_t res;
+
+#if CONFIG_FLASH_DEVICE_SEMAPHORE == 1
+    sem_take(&self_p->dev_p->sem, NULL);
+#endif
+
+    res = flash_port_write(self_p, dst, src_p, size);
+
+#if CONFIG_FLASH_DEVICE_SEMAPHORE == 1
+    sem_give(&self_p->dev_p->sem, 1);
+#endif
+
+    return (res);
 }
 
 int flash_erase(struct flash_driver_t *self_p,
@@ -94,7 +118,19 @@ int flash_erase(struct flash_driver_t *self_p,
     ASSERTN(self_p != NULL, EINVAL);
     ASSERTN(size > 0, EINVAL);
 
-    return (flash_port_erase(self_p, addr, size));
+    ssize_t res;
+
+#if CONFIG_FLASH_DEVICE_SEMAPHORE == 1
+    sem_take(&self_p->dev_p->sem, NULL);
+#endif
+
+    res = flash_port_erase(self_p, addr, size);
+
+#if CONFIG_FLASH_DEVICE_SEMAPHORE == 1
+    sem_give(&self_p->dev_p->sem, 1);
+#endif
+
+    return (res);
 }
 
 #endif

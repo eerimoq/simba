@@ -130,7 +130,15 @@ struct pwm_device_t *pwm_pin_to_device(struct pin_device_t *pin_p)
 {
     ASSERTNRN(pin_p != NULL, EINVAL);
 
-    return (pwm_port_pin_to_device(pin_p));
+    int i;
+
+    for (i = 0; i < PWM_DEVICE_MAX; i++) {
+        if (pwm_device[i].pin_dev_p == pin_p) {
+            return (&pwm_device[i]);
+        }
+    }
+
+    return (NULL);
 }
 
 #endif

@@ -410,8 +410,15 @@ for src in env.LookupSources(variant_dir, src_dir, True, src_filter):
 # Command to generate simba_gen.c
 env.Command(SIMBA_GEN_C,
             source_files,
-            ('"$PYTHONEXE" "$PLATFORMFW_DIR/bin/simbagen.py" "$NAME" "$VERSION" '
-             '"$BOARD_DESC" "$MCU_DESC" "$TARGET" "${{TARGET}}.soamdb"'))
+            ('"$PYTHONEXE" "$PLATFORMFW_DIR/bin/simbagen.py" '
+             '--output-directory "$BUILD_DIR/SimbaFramework" '
+             'source '
+             '--name "$NAME" '
+             '--version "$VERSION" '
+             '--board "$BOARD_DESC" '
+             '--mcu "$MCU_DESC" '
+             '--endianess little '
+             '--eeprom-soft-chunk-size 2048 '))
 source_files.append(SIMBA_GEN_C)
 
 lib = env.Library(target=join("$BUILD_DIR", "SimbaFramework"), source=source_files)

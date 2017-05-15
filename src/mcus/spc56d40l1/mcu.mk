@@ -28,16 +28,18 @@
 # This file is part of the Simba project.
 #
 
-INC += $(SIMBA_ROOT)/src/mcus/spc56d40l1
+INC += \
+	$(SIMBA_ROOT)/src/mcus/spc56d40l1 \
+	$(SIMBA_ROOT)/src/mcus/spc5
 SRC += \
-	$(SIMBA_ROOT)/src/mcus/spc56d40l1/spc5.c \
-	$(SIMBA_ROOT)/src/mcus/spc56d40l1/spc5.S \
+	$(SIMBA_ROOT)/src/mcus/spc5/spc5.c \
+	$(SIMBA_ROOT)/src/mcus/spc5/spc5.S \
 	$(SIMBA_ROOT)/src/mcus/spc56d40l1/mcu.c
 
 F_CPU = 48000000
 MCPU = e200z0
 
-LIBPATH += "$(SIMBA_ROOT)/src/mcus/$(MCU)"
+LIBPATH += "$(SIMBA_ROOT)/src/mcus/spc56d40l1"
 LINKER_SCRIPT ?= script.ld
 
 ARCH = ppc

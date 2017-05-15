@@ -28,34 +28,87 @@
  * This file is part of the Simba project.
  */
 
+#include "socket_device.h"
+
 static int pin_port_module_init(void)
 {
-    return (0);
+    return (socket_device_module_init());
 }
 
-static int pin_port_init(struct pin_driver_t *drv,
-                         const struct pin_device_t *dev,
+static int pin_port_init(struct pin_driver_t *drv_p,
+                         const struct pin_device_t *dev_p,
                          int mode)
 {
     return (0);
 }
 
-static int pin_port_read(struct pin_driver_t *drv)
+static int pin_port_read(struct pin_driver_t *drv_p)
 {
     return (0);
 }
 
-static int pin_port_write(struct pin_driver_t *drv, int value)
+static int pin_port_write(struct pin_driver_t *drv_p, int value)
+{
+    if (value == 1) {
+        return (pin_device_write_high(drv_p->dev_p));
+    } else {
+        return (pin_device_write_low(drv_p->dev_p));
+    }
+}
+
+static int pin_port_toggle(struct pin_driver_t *drv_p)
+{
+    return (pin_write(drv_p, !drv_p->dev_p->value));
+}
+
+static int pin_port_set_mode(struct pin_driver_t *drv_p, int mode)
 {
     return (0);
 }
 
-static int pin_port_toggle(struct pin_driver_t *drv)
+int pin_port_device_set_mode(const struct pin_device_t *dev_p,
+                                           int mode)
 {
     return (0);
 }
 
-static int pin_port_set_mode(struct pin_driver_t *drv, int mode)
+int pin_port_device_read(const struct pin_device_t *dev_p)
 {
+    return (0);
+}
+
+int pin_port_device_write_high(const struct pin_device_t *dev_p)
+{
+    struct pin_device_t *d_p;
+
+    d_p = (struct pin_device_t *)dev_p;
+    d_p->value = 1;
+
+    sys_lock();
+
+    if (socket_device_is_pin_device_connected_isr(d_p) == 1) {
+        socket_device_pin_device_write_isr(d_p, "high\r\n", 6);
+    }
+
+    sys_unlock();
+
+    return (0);
+}
+
+int pin_port_device_write_low(const struct pin_device_t *dev_p)
+{
+    struct pin_device_t *d_p;
+
+    d_p = (struct pin_device_t *)dev_p;
+    d_p->value = 0;
+
+    sys_lock();
+
+    if (socket_device_is_pin_device_connected_isr(d_p) == 1) {
+        socket_device_pin_device_write_isr(d_p, "low\r\n", 5);
+    }
+
+    sys_unlock();
+
     return (0);
 }

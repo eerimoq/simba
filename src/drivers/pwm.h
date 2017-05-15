@@ -168,7 +168,7 @@ int pwm_duty_cycle_as_percent(long value);
 /**
  * Get the PWM device for given pin.
  *
- * @param[in] pin_p The pin device to get the pwm device for.
+ * @param[in] pin_p The pin device to get the PWM device for.
  *
  * @return PWM device, or NULL on error.
  */

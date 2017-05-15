@@ -51,12 +51,14 @@ enum esp_wifi_station_status_t {
  *
  * @param[in] ssid_p WiFi SSID to connect to.
  * @param[in] password_p WiFi password.
+ * @param[in] bssid_p WiFi station MAC (BSSID) or NULL to ignore.
  * @param[in] info_p Static ip configration or NULL to use DHCP.
  *
  * @return zero(0) or negative error code.
  */
 int esp_wifi_station_init(const char *ssid_p,
                           const char *password_p,
+                          const uint8_t *bssid_p,
                           const struct inet_if_ip_info_t *info_p);
 
 /**

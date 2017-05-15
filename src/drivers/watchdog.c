@@ -32,6 +32,12 @@
 
 #if CONFIG_WATCHDOG == 1
 
+struct module_t {
+    watchdog_isr_fn_t on_interrupt;
+};
+
+static struct module_t module;
+
 #include "watchdog_port.i"
 
 int watchdog_module_init()
@@ -39,9 +45,12 @@ int watchdog_module_init()
     return (0);
 }
 
-int watchdog_start_ms(int timeout)
+int watchdog_start_ms(int timeout,
+                      watchdog_isr_fn_t on_interrupt)
 {
-    return (watchdog_port_start_ms(timeout));
+    module.on_interrupt = on_interrupt;
+
+    return (watchdog_port_start_ms(timeout, on_interrupt));
 }
 
 int watchdog_stop(void)

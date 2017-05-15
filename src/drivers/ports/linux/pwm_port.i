@@ -28,6 +28,8 @@
  * This file is part of the Simba project.
  */
 
+#include "socket_device.h"
+
 static int pwm_port_init(struct pwm_driver_t *self_p,
                          const struct pwm_device_t *dev_p)
 {
@@ -37,36 +39,57 @@ static int pwm_port_init(struct pwm_driver_t *self_p,
 static int pwm_port_set_frequency(struct pwm_driver_t *self_p,
                                   long value)
 {
+    char buf[32];
+
+    sys_lock();
+
+    if (socket_device_is_pwm_device_connected_isr(self_p->dev_p) == 1) {
+        sprintf(&buf[0], "frequency=%ld\r\n", value);
+        socket_device_pwm_device_write_isr(self_p->dev_p,
+                                           &buf[0],
+                                           strlen(&buf[0]));
+    }
+
+    sys_unlock();
+
     return (0);
 }
 
 static int pwm_port_set_duty_cycle(struct pwm_driver_t *self_p,
                                    long value)
 {
+    char buf[32];
+
+    sys_lock();
+
+    if (socket_device_is_pwm_device_connected_isr(self_p->dev_p) == 1) {
+        sprintf(&buf[0], "duty_cycle=%ld\r\n", value);
+        socket_device_pwm_device_write_isr(self_p->dev_p,
+                                           &buf[0],
+                                           strlen(&buf[0]));
+    }
+
+    sys_unlock();
+
     return (0);
 }
 
 static long pwm_port_frequency(int hertz)
 {
-    return (0);
+    return (hertz);
 }
 
 static int pwm_port_frequency_as_hertz(long value)
 {
-    return (0);
+    return (value);
 }
 
 static int pwm_port_duty_cycle(int percentage)
 {
-    return (-1);
+    return (percentage);
 }
 
 static int pwm_port_duty_cycle_as_percent(int value)
 {
-    return (-1);
-}
-
-static struct pwm_device_t *pwm_port_pin_to_device(struct pin_device_t *pin_p)
-{
-    return (NULL);
+    return (value);
 }

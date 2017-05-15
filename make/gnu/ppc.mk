@@ -67,7 +67,7 @@ LDFLAGS += \
         -T$(LINKER_SCRIPT)
 
 
-CONFIG_SETTINGS_SIZE ?= 16384
+ENDIANESS = big
 
 build: $(BIN) $(HEX)
 

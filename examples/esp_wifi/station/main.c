@@ -43,7 +43,10 @@ int main()
     inet_aton("255.255.255.0", &info.netmask);
     inet_aton("192.168.0.1", &info.gateway);
 
-    if (esp_wifi_station_init("Qvist2", "maxierik", &info) != 0) {
+    if (esp_wifi_station_init("Qvist2",
+                              "maxierik",
+                              (uint8_t[]){0xc8, 0xd7, 0x19, 0x0f, 0x04, 0x65},
+                              &info) != 0) {
         std_printf(FSTR("Failed to configure the Station.\r\n"));
     }
 

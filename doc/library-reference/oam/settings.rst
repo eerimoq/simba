@@ -27,14 +27,7 @@ The address for each setting is defined by the user, starting at
 address 0 and increasing from there.
 
 The build system variable ``SETTINGS_INI`` contains the path to the
-ini-file used by the build system. Set this variable to the path of
-the applications ini-file to automatically generate four files in the
-board's generate directory ``build/<board>/gen``; ``settings.h``,
-``settings.c``, ``settings.little-endian.bin`` and
-``settings.big-endian.bin``. One can also generate the four files with
-``make settings-generate``.
-
-Include ``gen/settings.h`` in source files that uses the settings.
+ini-file used by the build system.
 
 Debug file system commands
 --------------------------
@@ -59,11 +52,11 @@ Example output from the shell:
 
 .. code-block:: text
 
-   $ oam/settings/list 
+   $ oam/settings/list
    NAME                  TYPE      SIZE  VALUE
    version               int32_t      4  1
    value_1               int32_t      4  24567
-   value_2               blob_t       4  \xca\xfe\xba\xbe
+   value_2               blob_t       4  cafebabe
    value_3               string_t    16  foobar
    $ oam/settings/read value_1
    24567
@@ -71,11 +64,11 @@ Example output from the shell:
    $ oam/settings/read value_1
    -5
    $ oam/settings/reset
-   $ oam/settings/list 
+   $ oam/settings/list
    NAME                  TYPE      SIZE  VALUE
    version               int32_t      4  1
    value_1               int32_t      4  24567
-   value_2               blob_t       4  \xca\xfe\xba\xbe
+   value_2               blob_t       4  cafebabe
    value_3               string_t    16  foobar
 
 Example

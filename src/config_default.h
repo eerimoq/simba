@@ -37,6 +37,7 @@
 #if defined(FAMILY_LINUX)
 #    define PORT_HAS_EXTI
 #    define PORT_HAS_PIN
+#    define PORT_HAS_I2C
 #    define PORT_HAS_I2C_SOFT
 #    define PORT_HAS_PWM
 #    define PORT_HAS_PWM_SOFT
@@ -46,12 +47,14 @@
 #    define PORT_HAS_UART
 #    define PORT_HAS_SD
 #    define PORT_HAS_DS18B20
+#    define PORT_HAS_DS3231
 #    define PORT_HAS_OWI
 #    define PORT_HAS_FLASH
 #    define PORT_HAS_ANALOG_INPUT_PIN
 #    define PORT_HAS_ANALOG_OUTPUT_PIN
 #    define PORT_HAS_CAN
 #    define PORT_HAS_RANDOM
+#    define PORT_HAS_EEPROM_SOFT
 #endif
 
 #if defined(FAMILY_AVR)
@@ -98,6 +101,7 @@
 #    define PORT_HAS_USB
 #    define PORT_HAS_USB_HOST
 #    define PORT_HAS_ANALOG_INPUT_PIN
+#    define PORT_HAS_EEPROM_SOFT
 #endif
 
 #if defined(FAMILY_ESP)
@@ -108,18 +112,26 @@
 #    define PORT_HAS_SPI
 #    define PORT_HAS_UART
 #    define PORT_HAS_UART_SOFT
+#    define PORT_HAS_OWI
+#    define PORT_HAS_DS18B20
+#    define PORT_HAS_DS3231
 #    define PORT_HAS_ADC
 #    define PORT_HAS_ANALOG_INPUT_PIN
 #    define PORT_HAS_FLASH
 #    define PORT_HAS_ESP_WIFI
 #    define PORT_HAS_RANDOM
+#    define PORT_HAS_LED_7SEG_HT16K33
+#    define PORT_HAS_SHT3XD
+#    define PORT_HAS_EEPROM_SOFT
 #endif
 
 #if defined(FAMILY_ESP32)
 #    define PORT_HAS_FLASH
 #    define PORT_HAS_PIN
+#    define PORT_HAS_I2C_SOFT
 #    define PORT_HAS_OWI
 #    define PORT_HAS_DS18B20
+#    define PORT_HAS_DS3231
 #    define PORT_HAS_SPI
 #    define PORT_HAS_UART
 #    define PORT_HAS_ADC
@@ -129,6 +141,7 @@
 #    define PORT_HAS_CAN
 #    define PORT_HAS_RANDOM
 #    define PORT_HAS_WS2812
+#    define PORT_HAS_EEPROM_SOFT
 #endif
 
 #if defined(FAMILY_STM32F1)
@@ -136,6 +149,7 @@
 #    define PORT_HAS_I2C_SOFT
 #    define PORT_HAS_UART
 #    define PORT_HAS_FLASH
+#    define PORT_HAS_EEPROM_SOFT
 #endif
 
 #if defined(FAMILY_STM32F2)
@@ -143,6 +157,7 @@
 #    define PORT_HAS_I2C_SOFT
 #    define PORT_HAS_UART
 #    define PORT_HAS_FLASH
+#    define PORT_HAS_EEPROM_SOFT
 #endif
 
 #if defined(FAMILY_STM32F3)
@@ -150,13 +165,22 @@
 #    define PORT_HAS_I2C_SOFT
 #    define PORT_HAS_UART
 #    define PORT_HAS_FLASH
+#    define PORT_HAS_EEPROM_SOFT
 #endif
 
 #if defined(FAMILY_SPC5)
 #    define PORT_HAS_PIN
+#    define PORT_HAS_I2C_SOFT
 #    define PORT_HAS_UART
 #    define PORT_HAS_FLASH
 #    define PORT_HAS_CAN
+#    define PORT_HAS_WATCHDOG
+#    define PORT_HAS_EEPROM_SOFT
+#endif
+
+#if defined(PORT_HAS_I2C_SOFT) && !defined(PORT_HAS_I2C)
+#    define PORT_HAS_I2C
+#    define CONFIG_SOFTWARE_I2C                            1
 #endif
 
 /**
@@ -181,6 +205,13 @@
 #    else
 #        define CONFIG_SYS_SIMBA_MAIN_STACK_MAX          4096
 #    endif
+#endif
+
+/**
+ * Kick the watchdog in `sys_panic()` before writing to the console.
+ */
+#ifndef CONFIG_SYS_PANIC_KICK_WATCHDOG
+#    define CONFIG_SYS_PANIC_KICK_WATCHDOG                  0
 #endif
 
 /**
@@ -236,6 +267,14 @@
 #    else
 #        define CONFIG_DEBUG                                1
 #    endif
+#endif
+
+/**
+ * Enable linux driver implementations as TCP sockets. Can be used to
+ * simulate driver communication in an application running on linux.
+ */
+#ifndef CONFIG_LINUX_SOCKET_DEVICE
+#    define CONFIG_LINUX_SOCKET_DEVICE                      0
 #endif
 
 /**
@@ -301,6 +340,28 @@
 #        define CONFIG_RANDOM                               0
 #    else
 #        define CONFIG_RANDOM                               1
+#    endif
+#endif
+
+/**
+ * Enable the led_7seg_ht16k33 driver.
+ */
+#ifndef CONFIG_LED_7SEG_HT16K33
+#    if defined(CONFIG_MINIMAL_SYSTEM) || !defined(PORT_HAS_LED_7SEG_HT16K33)
+#        define CONFIG_LED_7SEG_HT16K33                    0
+#    else
+#        define CONFIG_LED_7SEG_HT16K33                    1
+#    endif
+#endif
+
+/**
+ * Enable the sht3xd driver.
+ */
+#ifndef CONFIG_SHT3XD
+#    if defined(CONFIG_MINIMAL_SYSTEM) || !defined(PORT_HAS_SHT3XD)
+#        define CONFIG_SHT3XD                              0
+#    else
+#        define CONFIG_SHT3XD                              1
 #    endif
 #endif
 
@@ -543,7 +604,7 @@
 #        define CONFIG_WATCHDOG                             1
 #    elif defined(CONFIG_MINIMAL_SYSTEM)
 #        define CONFIG_WATCHDOG                             0
-#    elif defined(FAMILY_AVR)
+#    elif defined(FAMILY_AVR) || defined(FAMILY_SPC5)
 #        define CONFIG_WATCHDOG                             1
 #    else
 #        define CONFIG_WATCHDOG                             0
@@ -1058,7 +1119,7 @@
  * Debug file system command to append to a file.
  */
 #ifndef CONFIG_FS_CMD_FS_APPEND
-#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(BOARD_SPC56DDISCOVERY) || defined(CONFIG_MINIMAL_SYSTEM)
+#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(FAMILY_SPC5) || defined(CONFIG_MINIMAL_SYSTEM)
 #        define CONFIG_FS_CMD_FS_APPEND                     0
 #    else
 #        define CONFIG_FS_CMD_FS_APPEND                     1
@@ -1069,7 +1130,7 @@
  * Debug file system command to list all counters.
  */
 #ifndef CONFIG_FS_CMD_FS_COUNTERS_LIST
-#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(BOARD_SPC56DDISCOVERY) || defined(CONFIG_MINIMAL_SYSTEM)
+#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(FAMILY_SPC5) || defined(CONFIG_MINIMAL_SYSTEM)
 #        define CONFIG_FS_CMD_FS_COUNTERS_LIST              0
 #    else
 #        define CONFIG_FS_CMD_FS_COUNTERS_LIST              1
@@ -1080,7 +1141,7 @@
  * Debug file system command to set all counters to zero.
  */
 #ifndef CONFIG_FS_CMD_FS_COUNTERS_RESET
-#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(BOARD_SPC56DDISCOVERY) || defined(CONFIG_MINIMAL_SYSTEM)
+#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(FAMILY_SPC5) || defined(CONFIG_MINIMAL_SYSTEM)
 #        define CONFIG_FS_CMD_FS_COUNTERS_RESET             0
 #    else
 #        define CONFIG_FS_CMD_FS_COUNTERS_RESET             1
@@ -1091,7 +1152,7 @@
  * Debug file system command to list all registered file systems.
  */
 #ifndef CONFIG_FS_CMD_FS_FILESYSTEMS_LIST
-#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(BOARD_SPC56DDISCOVERY) || defined(CONFIG_MINIMAL_SYSTEM)
+#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(FAMILY_SPC5) || defined(CONFIG_MINIMAL_SYSTEM)
 #        define CONFIG_FS_CMD_FS_FILESYSTEMS_LIST           0
 #    else
 #        define CONFIG_FS_CMD_FS_FILESYSTEMS_LIST           1
@@ -1102,7 +1163,7 @@
  * Debug file system command to list all registered file systems.
  */
 #ifndef CONFIG_FS_CMD_FS_LIST
-#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(BOARD_SPC56DDISCOVERY) || defined(CONFIG_MINIMAL_SYSTEM)
+#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(FAMILY_SPC5) || defined(CONFIG_MINIMAL_SYSTEM)
 #        define CONFIG_FS_CMD_FS_LIST                       0
 #    else
 #        define CONFIG_FS_CMD_FS_LIST                       1
@@ -1113,7 +1174,7 @@
  * Debug file system command to format a file system.
  */
 #ifndef CONFIG_FS_CMD_FS_FORMAT
-#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(BOARD_SPC56DDISCOVERY) || defined(CONFIG_MINIMAL_SYSTEM)
+#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(FAMILY_SPC5) || defined(CONFIG_MINIMAL_SYSTEM)
 #        define CONFIG_FS_CMD_FS_FORMAT                     0
 #    else
 #        define CONFIG_FS_CMD_FS_FORMAT                     1
@@ -1124,7 +1185,7 @@
  * Debug file system command to list all parameters.
  */
 #ifndef CONFIG_FS_CMD_FS_PARAMETERS_LIST
-#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(BOARD_SPC56DDISCOVERY) || defined(CONFIG_MINIMAL_SYSTEM)
+#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(FAMILY_SPC5) || defined(CONFIG_MINIMAL_SYSTEM)
 #        define CONFIG_FS_CMD_FS_PARAMETERS_LIST            0
 #    else
 #        define CONFIG_FS_CMD_FS_PARAMETERS_LIST            1
@@ -1135,7 +1196,7 @@
  * Debug file system command to read from a file.
  */
 #ifndef CONFIG_FS_CMD_FS_READ
-#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(BOARD_SPC56DDISCOVERY) || defined(CONFIG_MINIMAL_SYSTEM)
+#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(FAMILY_SPC5) || defined(CONFIG_MINIMAL_SYSTEM)
 #        define CONFIG_FS_CMD_FS_READ                       0
 #    else
 #        define CONFIG_FS_CMD_FS_READ                       1
@@ -1146,7 +1207,7 @@
  * Debug file system command to remove a file.
  */
 #ifndef CONFIG_FS_CMD_FS_REMOVE
-#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(BOARD_SPC56DDISCOVERY) || defined(CONFIG_MINIMAL_SYSTEM)
+#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(FAMILY_SPC5) || defined(CONFIG_MINIMAL_SYSTEM)
 #        define CONFIG_FS_CMD_FS_REMOVE                     0
 #    else
 #        define CONFIG_FS_CMD_FS_REMOVE                     1
@@ -1157,7 +1218,7 @@
  * Debug file system command to write to a file.
  */
 #ifndef CONFIG_FS_CMD_FS_WRITE
-#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(BOARD_SPC56DDISCOVERY) || defined(CONFIG_MINIMAL_SYSTEM)
+#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(FAMILY_SPC5) || defined(CONFIG_MINIMAL_SYSTEM)
 #        define CONFIG_FS_CMD_FS_WRITE                      0
 #    else
 #        define CONFIG_FS_CMD_FS_WRITE                      1
@@ -1409,6 +1470,17 @@
 #endif
 
 /**
+ * Debug file system command to print a backtrace.
+ */
+#ifndef CONFIG_FS_CMD_SYS_BACKTRACE
+#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(CONFIG_MINIMAL_SYSTEM)
+#        define CONFIG_FS_CMD_SYS_BACKTRACE                 0
+#    else
+#        define CONFIG_FS_CMD_SYS_BACKTRACE                 1
+#    endif
+#endif
+
+/**
  * Debug file system command to list threads' information.
  */
 #ifndef CONFIG_FS_CMD_THRD_LIST
@@ -1482,6 +1554,28 @@
 #endif
 
 /**
+ * Debug file system command to read for non-volatile memory.
+ */
+#ifndef CONFIG_FS_CMD_NVM_READ
+#    if defined(CONFIG_MINIMAL_SYSTEM)
+#        define CONFIG_FS_CMD_NVM_READ                      0
+#    else
+#        define CONFIG_FS_CMD_NVM_READ                      1
+#    endif
+#endif
+
+/**
+ * Debug file system command to write for non-volatile memory.
+ */
+#ifndef CONFIG_FS_CMD_NVM_WRITE
+#    if defined(CONFIG_MINIMAL_SYSTEM)
+#        define CONFIG_FS_CMD_NVM_WRITE                      0
+#    else
+#        define CONFIG_FS_CMD_NVM_WRITE                      1
+#    endif
+#endif
+
+/**
  * The maximum length of an absolute path in the file system.
  */
 #ifndef CONFIG_FS_PATH_MAX
@@ -1492,7 +1586,7 @@
  * Start the monitor thread to gather statistics of the scheulder.
  */
 #ifndef CONFIG_MONITOR_THREAD
-#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(BOARD_ESP12E) || defined(BOARD_ESP01) || defined(BOARD_NODEMCU) || defined(BOARD_WEMOS_D1_MINI) || defined(BOARD_NANO32) || defined(BOARD_ESP32_DEVKITC) || defined(BOARD_MAPLE_ESP32) || defined(CONFIG_MINIMAL_SYSTEM)
+#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(FAMILY_ESP) || defined(FAMILY_ESP32) || defined(CONFIG_MINIMAL_SYSTEM)
 #        define CONFIG_MONITOR_THREAD                       0
 #    else
 #        define CONFIG_MONITOR_THREAD                       1
@@ -1527,7 +1621,7 @@
  */
 #ifndef CONFIG_SETTINGS_AREA_SIZE
 #    if defined(ARCH_PPC)
-#        define CONFIG_SETTINGS_AREA_SIZE               16384
+#        define CONFIG_SETTINGS_AREA_SIZE                1028
 #    else
 #        define CONFIG_SETTINGS_AREA_SIZE                 256
 #    endif
@@ -1644,9 +1738,9 @@
  * Console UART baudrate.
  */
 #ifndef CONFIG_START_CONSOLE_UART_BAUDRATE
-#    if defined(BOARD_ESP01) || defined(BOARD_ESP12E) || defined(BOARD_NODEMCU) || defined(BOARD_WEMOS_D1_MINI)
+#    if defined(FAMILY_ESP)
 #        define CONFIG_START_CONSOLE_UART_BAUDRATE      76800
-#    elif defined(BOARD_NANO32) || defined(BOARD_ESP32_DEVKITC) || defined(BOARD_MAPLE_ESP32) || defined(BOARD_SPC56DDISCOVERY) || defined(BOARD_ARDUINO_DUE)
+#    elif defined(FAMILY_ESP32) || defined(FAMILY_SPC5) || defined(BOARD_ARDUINO_DUE)
 #        define CONFIG_START_CONSOLE_UART_BAUDRATE     115200
 #    else
 #        define CONFIG_START_CONSOLE_UART_BAUDRATE      38400
@@ -1657,7 +1751,7 @@
  * Console UART baudrate.
  */
 #ifndef CONFIG_START_CONSOLE_UART_RX_BUFFER_SIZE
-#    if defined(BOARD_NANO32) || defined(BOARD_ESP32_DEVKITC) || defined(BOARD_MAPLE_ESP32)
+#    if defined(BOARD_NANO32) || defined(BOARD_ESP32_DEVKITC) || defined(BOARD_MAPLE_ESP32) || defined(BOARD_LINUX)
 #        define CONFIG_START_CONSOLE_UART_RX_BUFFER_SIZE  512
 #    else
 #        define CONFIG_START_CONSOLE_UART_RX_BUFFER_SIZE   32
@@ -1713,7 +1807,7 @@
 #        define CONFIG_START_FILESYSTEM_ADDRESS    0x000e0000
 #    elif defined(BOARD_ESP01)
 #        define CONFIG_START_FILESYSTEM_ADDRESS    0x0006b000
-#    elif defined(BOARD_ESP12E) || defined(BOARD_NODEMCU)
+#    elif defined(BOARD_ESP12E) || defined(BOARD_NODEMCU) || defined(BOARD_WEMOS_D1_MINI)
 #        define CONFIG_START_FILESYSTEM_ADDRESS    0x00300000
 #    elif defined(BOARD_NANO32) || defined(BOARD_ESP32_DEVKITC) || defined(BOARD_MAPLE_ESP32)
 #        define CONFIG_START_FILESYSTEM_ADDRESS    0x00300000
@@ -1730,12 +1824,80 @@
 #        define CONFIG_START_FILESYSTEM_SIZE            32768
 #    elif defined(BOARD_ESP01)
 #        define CONFIG_START_FILESYSTEM_SIZE          0x10000
-#    elif defined(BOARD_ESP12E) || defined(BOARD_NODEMCU)
+#    elif defined(BOARD_ESP12E) || defined(BOARD_NODEMCU) || defined(BOARD_WEMOS_D1_MINI)
 #        define CONFIG_START_FILESYSTEM_SIZE          0xFB000
 #    elif defined(ARCH_ESP32)
-#        define CONFIG_START_FILESYSTEM_SIZE            32768
+#        define CONFIG_START_FILESYSTEM_SIZE          0x20000
 #    else
 #        define CONFIG_START_FILESYSTEM_SIZE            65536
+#    endif
+#endif
+
+/**
+ * Configure a default non-volatile memory.
+ */
+#ifndef CONFIG_START_NVM
+#    if defined(CONFIG_MINIMAL_SYSTEM)
+#        define CONFIG_START_NVM                            0
+#    else
+#        define CONFIG_START_NVM                            1
+#    endif
+#endif
+
+/**
+ * Non-volatile memory size in bytes.
+ */
+#ifndef CONFIG_NVM_SIZE
+#    if defined(ARCH_AVR)
+#        define CONFIG_NVM_SIZE                           256
+#    else
+#        define CONFIG_NVM_SIZE                          2040
+#    endif
+#endif
+
+/**
+ * Use the software EEPROM implementation in the non-volatile memory
+ * module.
+ */
+#ifndef CONFIG_NVM_EEPROM_SOFT
+#    if defined(ARCH_LINUX) || defined(ARCH_AVR) || defined(ARCH_ESP32) || defined(ARCH_ESP)
+#        define CONFIG_NVM_EEPROM_SOFT                      0
+#    else
+#        define CONFIG_NVM_EEPROM_SOFT                      1
+#    endif
+#endif
+
+/**
+ * Non-volatile memory software EEPROM block 0 size. Must be a
+ * multiple of ``CONFIG_NVM_EEPROM_SOFT_CHUNK_SIZE``.
+ */
+#ifndef CONFIG_NVM_EEPROM_SOFT_BLOCK_0_SIZE
+#    define CONFIG_NVM_EEPROM_SOFT_BLOCK_0_SIZE         16384
+#endif
+
+/**
+ * Non-volatile memory software EEPROM block 1 size. Must be a
+ * multiple of ``CONFIG_NVM_EEPROM_SOFT_CHUNK_SIZE``.
+ */
+#ifndef CONFIG_NVM_EEPROM_SOFT_BLOCK_1_SIZE
+#    define CONFIG_NVM_EEPROM_SOFT_BLOCK_1_SIZE         16384
+#endif
+
+/**
+ * Non-volatile software EEPROM chunk size. Must be a power of two.
+ */
+#ifndef CONFIG_NVM_EEPROM_SOFT_CHUNK_SIZE
+#    define CONFIG_NVM_EEPROM_SOFT_CHUNK_SIZE (CONFIG_NVM_SIZE + 8)
+#endif
+
+/**
+ * Non-volatile software EEPROM flash device index.
+ */
+#ifndef CONFIG_NVM_EEPROM_SOFT_FLASH_DEVICE_INDEX
+#    if defined(FAMILY_SPC5)
+#        define CONFIG_NVM_EEPROM_SOFT_FLASH_DEVICE_INDEX   1
+#    else
+#        define CONFIG_NVM_EEPROM_SOFT_FLASH_DEVICE_INDEX   0
 #    endif
 #endif
 
@@ -1881,6 +2043,13 @@
 #endif
 
 /**
+ * Default thread log mask.
+ */
+#ifndef CONFIG_THRD_DEFAULT_LOG_MASK
+#    define CONFIG_THRD_DEFAULT_LOG_MASK       LOG_UPTO(INFO)
+#endif
+
+/**
  * Each thread has a list of environment variables associated with
  * it. A typical example of an environment variable is "CWD" - Current
  * Working Directory.
@@ -2021,6 +2190,20 @@
 #endif
 
 /**
+ * Sleep in the test harness before executing the first testcase.
+ */
+#ifndef CONFIG_HARNESS_SLEEP_MS
+#    define CONFIG_HARNESS_SLEEP_MS                       300
+#endif
+
+/**
+ * Maximum buffer size the expect function can handle.
+ */
+#ifndef CONFIG_HARNESS_EXPECT_BUFFER_SIZE
+#    define CONFIG_HARNESS_EXPECT_BUFFER_SIZE             512
+#endif
+
+/**
  * Size of the HTTP server request buffer. This buffer is used when
  * parsing received HTTP request headers.
  */
@@ -2060,6 +2243,31 @@
  */
 #ifndef CONFIG_SOAM_EMBEDDED_DATABASE
 #    define CONFIG_SOAM_EMBEDDED_DATABASE                   0
+#endif
+
+/**
+ * System module log mask.
+ */
+#ifndef CONFIG_LOG_MASK_SYS
+#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(CONFIG_MINIMAL_SYSTEM)
+#        define CONFIG_LOG_MASK_SYS                -1
+#    else
+#        define CONFIG_LOG_MASK_SYS                LOG_UPTO(INFO)
+#    endif
+#endif
+
+/**
+ * The external oscillator frequency in Hertz.
+ */
+#ifndef CONFIG_EXTERNAL_OSCILLATOR_FREQUENCY_HZ
+#    define CONFIG_EXTERNAL_OSCILLATOR_FREQUENCY_HZ  16000000
+#endif
+
+/**
+ * Semaphore protected device access in the flash driver module.
+ */
+#ifndef CONFIG_FLASH_DEVICE_SEMAPHORE
+#    define CONFIG_FLASH_DEVICE_SEMAPHORE                   1
 #endif
 
 /**

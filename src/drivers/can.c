@@ -54,7 +54,7 @@ static size_t base_chan_size(void *base_p)
 
 int can_module_init(void)
 {
-    return (0);
+    return (can_port_module_init());
 }
 
 int can_init(struct can_driver_t *self_p,
@@ -76,6 +76,8 @@ int can_init(struct can_driver_t *self_p,
               base_chan_size);
 
     queue_init(&self_p->chin, rxbuf_p, size);
+
+    sem_init(&self_p->sem, 0, 1);
 
     return (can_port_init(self_p, dev_p, speed));
 }

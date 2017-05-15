@@ -112,6 +112,7 @@ extern "C" {
 #include "filesystems/fs.h"
 #include "oam/shell.h"
 #include "oam/service.h"
+#include "oam/nvm.h"
 
 #include "debug/log.h"
 
@@ -220,8 +221,17 @@ extern "C" {
 #ifdef PORT_HAS_RANDOM
 #    include "drivers/random.h"
 #endif
+#ifdef CONFIG_LED_7SEG_HT16K33
+#    include "drivers/led_7seg_ht16k33.h"
+#endif
 #ifdef PORT_HAS_WS2812
 #    include "drivers/ws2812.h"
+#endif
+#ifdef PORT_HAS_SHT3XD
+#    include "drivers/sht3xd.h"
+#endif
+#ifdef PORT_HAS_EEPROM_SOFT
+#    include "drivers/eeprom_soft.h"
 #endif
 
 #include "inet/isotp.h"
@@ -260,6 +270,8 @@ extern "C" {
 #    include "oam/upgrade/http.h"
 #    include "oam/upgrade/tftp.h"
 #endif
+
+#include <simba_gen.h>
 
 #ifdef __cplusplus
 }

@@ -256,7 +256,7 @@ int chan_list_remove(struct chan_list_t *list_p, void *chan_p)
 }
 
 void *chan_list_poll(struct chan_list_t *list_p,
-                     struct time_t *timeout_p)
+                     const struct time_t *timeout_p)
 {
     ASSERTNRN(list_p != NULL, EINVAL);
 
@@ -298,7 +298,7 @@ void *chan_list_poll(struct chan_list_t *list_p,
     return (chan_p);
 }
 
-void *chan_poll(void *chan_p, struct time_t *timeout_p)
+void *chan_poll(void *chan_p, const struct time_t *timeout_p)
 {
     void *res_p;
     struct chan_list_t list;

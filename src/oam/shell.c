@@ -1245,10 +1245,16 @@ void *shell_main(void *arg_p)
                               self_p);
                 continue;
             } else {
-                (void)fs_call(stripped_line_p,
+                res = fs_call(stripped_line_p,
                               self_p->chin_p,
                               self_p->chout_p,
                               self_p->arg_p);
+
+                if (res == 0) {
+                    std_fprintf(self_p->chout_p, OSTR("OK\r\n"));
+                } else {
+                    std_fprintf(self_p->chout_p, OSTR("ERROR(%d)\r\n"), res);
+                }
             }
         } else if (res == -EIO) {
             break;

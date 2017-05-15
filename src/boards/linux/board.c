@@ -32,5 +32,15 @@
 
 int board_pin_string_to_device_index(const char *str_p)
 {
-    return (-1);
+    long pin;
+
+    if (std_strtol(&str_p[0], &pin) == NULL) {
+        return (-1);
+    }
+
+    if ((pin < 0) || (pin >= PIN_DEVICE_MAX)) {
+        return (-1);
+    }
+
+    return (pin);
 }

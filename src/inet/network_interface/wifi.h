@@ -74,7 +74,9 @@ int network_interface_wifi_module_init(void);
  * @param[in] self_p The WiFi network interface to initialize.
  * @param[in] name_p Name to assign the to interface.
  * @param[in] driver_p Driver virtualization callbacks to use.
- * @param[in] arg_p Argument passed to the driver callbacks.
+ * @param[in] arg_p Argument passed to the driver callbacks. In case
+ *            of ESP chips and WiFi station mode - compound
+ *            literal of uint8_t[6] specifying the access point MAC.
  * @param[in] ssid_p Access Point SSID.
  * @param[in] password_p Access Point password.
  *

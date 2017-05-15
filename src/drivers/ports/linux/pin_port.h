@@ -33,31 +33,20 @@
 
 struct pin_device_t {
     const struct pin_driver_t *drv_p;
+    int value;
 };
 
 struct pin_driver_t {
     const struct pin_device_t *dev_p;
 };
 
-static inline int pin_port_device_set_mode(const struct pin_device_t *dev_p,
-                                           int mode)           
-{
-    return (0);
-}
+int pin_port_device_set_mode(const struct pin_device_t *dev_p,
+                             int mode);
 
-static inline int pin_port_device_read(const struct pin_device_t *dev_p)
-{
-    return (0);
-}
+int pin_port_device_read(const struct pin_device_t *dev_p);
 
-static inline int pin_port_device_write_high(const struct pin_device_t *dev_p)
-{
-    return (0);
-}
+int pin_port_device_write_high(const struct pin_device_t *dev_p);
 
-static inline int pin_port_device_write_low(const struct pin_device_t *dev_p) 
-{
-    return (0);
-}
+int pin_port_device_write_low(const struct pin_device_t *dev_p);
 
 #endif

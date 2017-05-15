@@ -180,20 +180,18 @@ static ssize_t write_cb(void *arg_p,
     self_p = arg_p;
     dev_p = self_p->dev_p;
 
+    sem_take(&self_p->sem, NULL);
+
     self_p->txframe_p = (frame_p + 1);
     self_p->txsize = (size - sizeof(*frame_p));
     self_p->thrd_p = thrd_self();
 
     sys_lock();
-
-    /* Initiate the transmission of the first frame. Other frames are
-       transmitted from the interrupt handler. */
     write_frame_to_hw(dev_p->regs_p, frame_p);
-
-    /* Wait for the transmission to complete. */
     thrd_suspend_isr(NULL);
-
     sys_unlock();
+
+    sem_give(&self_p->sem, 1);
 
     return (size);
 }

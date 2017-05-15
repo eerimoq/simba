@@ -49,9 +49,9 @@ int harness_run(struct harness_t *self_p,
     testcase_p = testcases_p;
 
 #if !defined(ARCH_LINUX)
-    thrd_sleep_us(200000);
+    thrd_sleep_ms(CONFIG_HARNESS_SLEEP_MS);
 #endif
-    
+
     /* Print a header. */
     std_printf(OSTR("\r\n"));
 
@@ -60,9 +60,7 @@ int harness_run(struct harness_t *self_p,
     std_printf(OSTR("\r\n"));
 
     while (testcase_p->callback != NULL) {
-        if (testcase_p->name_p != NULL) {
-            std_printf(OSTR("enter: %s\r\n"), testcase_p->name_p);
-        }
+        std_printf(OSTR("enter: %s\r\n"), testcase_p->name_p);
 
         err = testcase_p->callback(self_p);
 
@@ -105,4 +103,39 @@ int harness_run(struct harness_t *self_p,
     sys_stop(failed);
 
     return (0);
+}
+
+int harness_expect(void *chan_p,
+                   const char *pattern_p,
+                   const struct time_t *timeout_p)
+{
+    char c;
+    size_t length;
+    size_t pattern_length;
+    static char buf[CONFIG_HARNESS_EXPECT_BUFFER_SIZE];
+
+    length = 0;
+    pattern_length = strlen(pattern_p);
+
+    while (length < sizeof(buf) - 1) {
+        if (chan_poll(chan_p, timeout_p) == NULL) {
+            return (-ETIMEDOUT);
+        }
+
+        chan_read(chan_p, &c, sizeof(c));
+
+        std_printf(FSTR("%c"), c);
+
+        buf[length++] = c;
+        buf[length] = '\0';
+
+        /* Compare to pattern. */
+        if (length >= pattern_length) {
+            if (strcmp(&buf[length - pattern_length], pattern_p) == 0) {
+                return (0);
+            }
+        }
+    }
+
+    return (-1);
 }

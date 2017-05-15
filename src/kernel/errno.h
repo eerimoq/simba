@@ -397,7 +397,6 @@
 /** Quota exceeded. */
 #define EDQUOT          122
 
-
 /** No medium found. */
 #define ENOMEDIUM       123
 
@@ -428,5 +427,8 @@
 
 /** Assertion. */
 #define EASSERT        1002
+
+/** Command not found. */
+#define ENOCOMMAND     1003
 
 #endif

@@ -42,7 +42,7 @@ int main()
         std_printf(FSTR("Failed to configure the Soft AP.\r\n"));
     }
 
-    if (esp_wifi_station_init("Qvist2", "maxierik", NULL) != 0) {
+    if (esp_wifi_station_init("Qvist2", "maxierik", NULL, NULL) != 0) {
         std_printf(FSTR("Failed to configure the Station.\r\n"));
     }
 

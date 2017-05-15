@@ -47,14 +47,16 @@ static void *sys_port_ticker(void *arg)
 
     pthread_mutex_init(&sys_port.mutex, NULL);
     pthread_cond_init (&sys_port.cond, NULL);
-
     pthread_mutex_lock(&sys_port.mutex);
+
     while (1) {
         clock_gettime(CLOCK_REALTIME, &now);
         abstimeout.tv_sec = now.tv_sec;
+
         if (now.tv_nsec > 990000000L) {
             abstimeout.tv_sec++;
         }
+
         abstimeout.tv_nsec = ((now.tv_nsec + 10000000L) % 1000000000L);
         pthread_cond_timedwait(&sys_port.cond, &sys_port.mutex, &abstimeout);
         sys_tick_isr();
@@ -78,6 +80,16 @@ __attribute__ ((noreturn))
 static void sys_port_reboot()
 {
     exit(1);
+}
+
+static int sys_port_backtrace(void **buf_pp, size_t size)
+{
+    return (0);
+}
+
+static int sys_port_get_time_into_tick()
+{
+    return (0);
 }
 
 static void sys_port_lock(void)

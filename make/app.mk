@@ -39,40 +39,22 @@ BUILDDIR ?= build/$(BOARD)
 OBJDIR = $(BUILDDIR)/obj
 DEPSDIR = $(BUILDDIR)/deps
 GENDIR = $(BUILDDIR)/gen
-INC += . $(SIMBA_ROOT)/src $(BUILDDIR)
+INC += . $(GENDIR) $(SIMBA_ROOT)/src
 MAIN_C ?= main.c
-ifeq ($(RUST),yes)
-    SRC += main.rs
-else
-    SRC += $(MAIN_C)
-endif
+SRC += $(MAIN_C)
 SETTINGS_INI ?=
-ifeq ($(SETTINGS_INI),)
-SETTINGS_C ?= $(SIMBA_ROOT)/src/settings_default.c
-SETTTNGS_OUTPUT_DIRECTORY ?= .
-else
-SETTINGS_H ?= $(GENDIR)/settings.h
-SETTINGS_C ?= $(GENDIR)/settings.c
-SETTTNGS_OUTPUT_DIRECTORY ?= $(GENDIR)
-$(SETTTNGS_H) $(SETTINGS_C): $(SETTINGS_INI)
-	$(MAKE) settings-generate
-generate: $(SETTTNGS_H) $(SETTINGS_C)
-endif
-SRC += $(SETTINGS_C)
-SETTINGS_BIN ?= $(SIMBA_ROOT)/src/settings_default.bin
 SRC_FILTERED = $(filter-out $(SRC_IGNORE),$(SRC))
 CSRC += $(filter %.c,$(SRC_FILTERED))
 CXXSRC += $(filter %.cpp,$(SRC_FILTERED))
 ASMSRC += $(filter %.S,$(SRC_FILTERED))
-ASMOBJ = $(patsubst %,$(OBJDIR)%,$(abspath $(ASMSRC:%.S=%.obj)))
-RUST_SRC += $(filter %.rs,$(SRC_FILTERED))
-COBJ = $(patsubst %,$(OBJDIR)%,$(abspath $(CSRC:%.c=%.o)))
-CXXOBJ = $(patsubst %,$(OBJDIR)%,$(abspath $(CXXSRC:%.cpp=%.o)))
-RUST_OBJ = $(patsubst %,$(OBJDIR)%,$(abspath $(RUST_SRC:%.rs=%.o)))
-OBJ = $(COBJ) $(CXXOBJ) $(RUST_OBJ) $(ASMOBJ)
-GENCSRC = $(GENDIR)/simba_gen.c
-SOAMDBAPP = $(BUILDDIR)/$(NAME).soamdb
-GENOBJ = $(patsubst %,$(OBJDIR)/%,$(notdir $(GENCSRC:%.c=%.o)))
+ASMOBJ += $(patsubst %,$(OBJDIR)%,$(abspath $(ASMSRC:%.S=%.obj)))
+COBJ += $(patsubst %,$(OBJDIR)%,$(abspath $(CSRC:%.c=%.o)))
+CXXOBJ += $(patsubst %,$(OBJDIR)%,$(abspath $(CXXSRC:%.cpp=%.o)))
+OBJ += $(COBJ) $(CXXOBJ) $(ASMOBJ)
+SIMBA_GEN_H = $(GENDIR)/simba_gen.h
+SIMBA_GEN_C = $(GENDIR)/simba_gen.c
+SIMBA_GEN_O = $(patsubst %,$(OBJDIR)/%,$(notdir $(SIMBA_GEN_C:%.c=%.o)))
+SOAMDBAPP = $(GENDIR)/$(NAME).soamdb
 ifeq ($(SOAM), yes)
 SOAMDB = $(COBJ:%=%.pp.c.db) $(CXXOBJ:%=%.pp.cpp.db)
 endif
@@ -86,8 +68,12 @@ MAP = $(BUILDDIR)/$(NAME).map
 RUNLOG = $(BUILDDIR)/run.log
 CLEAN = $(BUILDDIR) $(EXE) $(RUNLOG) size.log \
         coverage.log coverage.xml gmon.out *.gcov profile.log \
-	index.*html \
-	$(RUST_SIMBA_RS) $(RUST_LIBSIMBA) $(RUST_LIBCORE)
+	index.*html
+STUB ?=
+ENDIANESS ?= little
+
+EEPROM_SOFT_CHUNK_SIZE ?= 2048
+EEPROM_BIN ?= $(GENDIR)/eeprom.bin
 
 # configuration
 TOOLCHAIN ?= gnu
@@ -112,18 +98,12 @@ SHELL = /bin/bash
 
 all:
 	@echo -e "\n>>> app: $(NAME), board: $(BOARD) <<<\n"
-	$(MAKE) prepare
 	$(MAKE) generate
 	$(MAKE) build
-	$(MAKE) postpare
 
-prepare:
-
-generate:
+generate: $(SIMBA_GEN_H)
 
 build: $(EXE)
-
-postpare:
 
 # layers
 BOARD.mk ?= $(SIMBA_ROOT)/src/boards/$(BOARD)/board.mk
@@ -150,16 +130,6 @@ RUN_END_PATTERN_SUCCESS ?= "=============================== TEST END \(PASSED\) 
 
 CONSOLESCRIPT = $(SIMBA_ROOT)/make/console.py
 
-CONFIG_SETTINGS_SIZE ?= 256
-
-# include packages in dist-packages used by the application
-define DIST_PACKAGES_template
-$(shell python -c "import sys; sys.stdout.write(sys.argv[1].upper() + '_ROOT')" $1) ?= \
-    $(SIMBA_ROOT)/dist-packages/$1
-include $(SIMBA_ROOT)/dist-packages/$1/src/$1.mk
-endef
-$(foreach name,$(DIST_PACKAGES),$(eval $(call DIST_PACKAGES_template,$(name))))
-
 clean:
 	@echo "Cleaning"
 	rm -rf $(CLEAN)
@@ -184,11 +154,22 @@ run: upload
 
 console:
 ifeq ($(SOAM), yes)
-	soam.py --port $(SERIAL_PORT) --baudrate $(BAUDRATE) $(SOAMDBAPP)
+ifeq ($(BOARD), linux)
+	soam.py tcp $(SOAMDBAPP)
+else
+	soam.py serial --port $(SERIAL_PORT) --baudrate $(BAUDRATE) $(SOAMDBAPP)
+endif
 else
 	python -u $(CONSOLESCRIPT) --port $(SERIAL_PORT) \
 				   $(CONSOLE_RESET_TYPE:%=--reset-type %) \
 			           --baudrate $(BAUDRATE)
+endif
+
+monitor:
+ifeq ($(BOARD), linux)
+	socket_device.py monitor
+else
+	echo "Only the linux board supports this make target."
 endif
 
 report:
@@ -207,17 +188,13 @@ size-json:
 release:
 	env NASSERT=yes NDEBUG=yes $(MAKE)
 
-$(EXE): $(OBJ) $(GENOBJ)
+$(EXE): $(OBJ) $(SIMBA_GEN_O)
 	@echo "LD $@"
 	$(CXX) $(LIBPATH:%=-L%) $(LDFLAGS) -Wl,--start-group $(LIB:%=-l%) $^ -Wl,--end-group -o $@
 
-settings-generate: $(SETTINGS_INI)
-	@echo "Generating settings from $<"
-	mkdir -p $(SETTTNGS_OUTPUT_DIRECTORY)
-	$(SIMBA_ROOT)/bin/settings.py \
-	    --output-directory $(SETTTNGS_OUTPUT_DIRECTORY) \
-            --settings-size $(CONFIG_SETTINGS_SIZE) \
-	    $^
+define STUB_template =
+$1%
+endef
 
 define COMPILE_template
 -include $(patsubst %.c,$(DEPSDIR)%.o.dep,$(abspath $1))
@@ -232,6 +209,9 @@ ifeq ($(SOAM), yes)
 	$$(CC) $$(INC:%=-I%) $$(CDEFS:%=-D%) $$(CFLAGS) -o $$@ $$@.pp.c
 else
 	$$(CC) $$(INC:%=-I%) $$(CDEFS:%=-D%) $$(CFLAGS) -o $$@ $$<
+endif
+ifneq ($(STUB),)
+	stub.py "$(CROSS_COMPILE)" $$@ "$$(filter $$(call STUB_template,$$<), $(STUB))"
 endif
 	gcc -MM -MT $$@ $$(INC:%=-I%) $$(CDEFS:%=-D%) -o $(patsubst %.c,$(DEPSDIR)%.o.dep,$(abspath $1)) $$<
 endef
@@ -251,6 +231,9 @@ ifeq ($(SOAM), yes)
 else
 	$$(CXX) $$(INC:%=-I%) $$(CDEFS:%=-D%) $$(CXXFLAGS) -o $$@ $$<
 endif
+ifneq ($(STUB),)
+	stub.py "$(CROSS_COMPILE)" $$@ "$$(filter $$(call STUB_template,$$<), $(STUB))"
+endif
 	$$(CXX) -MM -MT $$@ $$(INC:%=-I%) $$(CDEFS:%=-D%) -std=c++11 -o $(patsubst %.cpp,$(DEPSDIR)%.o.dep,$(abspath $1)) $$<
 endef
 $(foreach file,$(CXXSRC),$(eval $(call COMPILE_CXX_template,$(file))))
@@ -263,87 +246,37 @@ $(patsubst %.S,$(OBJDIR)%.obj,$(abspath $1)): $1
 	mkdir -p $(DEPSDIR)$(abspath $(dir $1))
 	mkdir -p $(GENDIR)
 	$$(CC) $$(INC:%=-I%) $$(CDEFS:%=-D%) $$(CFLAGS) -o $$@ $$<
+ifneq ($(STUB),)
+	stub.py "$(CROSS_COMPILE)" $$@ "$$(filter $$(call STUB_template,$$<), $(STUB))"
+endif
 	gcc -MM -MT $$@ $$(INC:%=-I%) $$(CDEFS:%=-D%) -o $(patsubst %.S,$(DEPSDIR)%.obj.dep,$(abspath $1)) $$<
 endef
 $(foreach file,$(ASMSRC),$(eval $(call COMPILE_ASM_template,$(file))))
 
-RUSTLIB = rustlib
-RUST_ROOT ?= $(SIMBA_ROOT)/rost/rust
-RUST_TARGET ?=
-RUST_SIMBA_RS = $(SIMBA_ROOT)/rost/src/simba.rs
-RUST_LIBSIMBA = libsimba.a
-RUST_LIBSIMBA_SRC = \
-	lib.rs \
-	kernel/chan.rs \
-	kernel/event.rs \
-	kernel/mod.rs \
-	kernel/queue.rs \
-	kernel/sys.rs \
-	kernel/thrd.rs \
-	drivers/mod.rs \
-	drivers/uart.rs \
-	slib/mod.rs \
-	slib/harness.rs
-RUST_LIBRARIES = \
-	core \
-	alloc \
-	rustc_unicode \
-	collections
-RSFLAGS = \
-	-g \
-	-Z no-landing-pads \
-	-C opt-level=3 \
-	-L . \
-	--crate-type lib \
-	$(RUST_TARGET:%=--target=$(SIMBA_ROOT)/make/rust/%.json) \
-	$(RSFLAGS_EXTRA)
+$(SIMBA_GEN_H): $(SETTINGS_INI)
+	@echo "GEN $@"
+	mkdir -p $(GENDIR)
+	$(SIMBA_ROOT)/bin/simbagen.py \
+	    --output-directory $(GENDIR) \
+	    header \
+	    --endianess $(ENDIANESS) \
+	    $(<:%=--settings %)
 
-ifeq ($(RUST), yes)
-    LIB += simba $(RUST_LIBRARIES)
-    LDFLAGS += -L $(RUSTLIB)
-
-generate: $(RUST_LIBRARIES:%=$(RUSTLIB)/lib%.a) $(RUSTLIB)/$(RUST_LIBSIMBA)
-endif
-
-$(RUST_LIBRARIES:%=$(RUSTLIB)/lib%.a):
-	@echo "Compiling RUST library $@..."
-	mkdir -p $(RUSTLIB)
-ifeq ($(RUST_TARGET),)
-	cp /usr/local/lib/rustlib/*-unknown-linux-gnu/lib/$(@:$(RUSTLIB)/%.a=%)-*.rlib $@
-else
-	rustc $(RSFLAGS) $(RUST_ROOT)/src/$(@:$(RUSTLIB)/%.a=%)/lib.rs --out-dir .
-	cp $(@:$(RUSTLIB)/%.a=%.rlib) $@
-endif
-
-$(RUSTLIB)/$(RUST_LIBSIMBA): $(RUST_SIMBA_RS) $(RUST_LIBSIMBA_SRC:%=$(SIMBA_ROOT)/rost/src/%)
-	@echo "Compiling RUST $@..."
-	rustc $(RSFLAGS) $(SIMBA_ROOT)/rost/src/lib.rs --crate-name simba --out-dir .
-	cp libsimba.rlib $@
-
--include $(DEPSDIR)/simba.rs.dep
-$(RUST_SIMBA_RS):
-	@echo "Generating RUST $@"
-	mkdir -p $(DEPSDIR)
-	bindgen -builtins -core $(filter -I% -D% -O%,$(CFLAGS)) -o $@ $(SIMBA_ROOT)/src/simba.h
-	gcc -MM -MT $@ $(filter -I% -D% -O%,$(CFLAGS)) -o $(DEPSDIR)/simba.rs.dep $(SIMBA_ROOT)/src/simba.h
-
-define RUST_COMPILE_template
--include $(patsubst %.rs,$(DEPSDIR)%.o.dep,$(abspath $1))
-$(patsubst %.rs,$(OBJDIR)%.o,$(abspath $1)): $1 $(SIMBA_RS)
-	@echo "Compiling $1"
-	mkdir -p $(OBJDIR)$(abspath $(dir $1))
-	mkdir -p $(DEPSDIR)$(abspath $(dir $1))
-	mkdir -p $(GENDIR)$(abspath $(dir $1))
-	cp $$< $(patsubst %.rs,$(GENDIR)%.o.pp,$(abspath $1))
-	rustc $(RSFLAGS) -o $$@ $$<
-endef
-$(foreach file,$(RUST_SRC),$(eval $(call RUST_COMPILE_template,$(file))))
-
-$(SOAMDBAPP) $(GENOBJ): $(OBJ)
-	$(SIMBA_ROOT)/bin/simbagen.py $(NAME) $(VERSION) $(BOARD_DESC) \
-	$(MCU_DESC) $(GENCSRC) $(SOAMDBAPP) $(SOAMDB)
-	@echo "CC $(GENCSRC)"
-	$(CC) $(INC:%=-I%) $(CDEFS:%=-D%) $(CFLAGS) -o $@ $(GENCSRC)
+$(SOAMDBAPP) $(SIMBA_GEN_O): $(OBJ)
+	@echo "GEN $(SIMBA_GEN_C)"
+	$(SIMBA_ROOT)/bin/simbagen.py \
+	    --output-directory $(GENDIR) \
+	    source \
+	    --name $(NAME) \
+	    --version $(VERSION) \
+	    --board $(BOARD_DESC) \
+	    --mcu $(MCU_DESC) \
+	    --endianess $(ENDIANESS) \
+	    --eeprom-soft-chunk-size $(EEPROM_SOFT_CHUNK_SIZE) \
+	    $(SETTINGS_INI:%=--settings %) \
+	    $(SOAMDB)
+	@echo "CC $(SIMBA_GEN_C)"
+	$(CC) $(INC:%=-I%) $(CDEFS:%=-D%) $(CFLAGS) -o $@ $(SIMBA_GEN_C)
 
 -include local.mk
 include $(SIMBA_GLOBAL_MK)
@@ -379,6 +312,9 @@ help:
 	@echo "  release                     Compile with NASSERT=yes and NDEBUG=yes."
 	@echo "  size                        Print application size information."
 	@echo "  stack-usage                 Print stack usage per function."
+	@echo "  backtrace                   Convert a list of space separated addresses in "
+	@echo "                              BACKTRACE to a human readable string."
+
 	@IFS=$$'\n' ; for h in $(HELP_TARGETS) ; do \
 	  echo $$h ; \
 	done
