@@ -32,6 +32,7 @@
 #define __DRIVERS_FLASH_PORT_H__
 
 struct flash_device_t {
+    struct sem_t sem;
 };
 
 struct flash_driver_t {

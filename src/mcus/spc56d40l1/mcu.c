@@ -115,14 +115,28 @@ struct flash_device_t flash_device[FLASH_DEVICE_MAX] = {
         .address = SPC5_CFLASH_ADDRESS,
         .size = SPC5_CFLASH_SIZE,
         .sector_sizes_p = cflash_sector_sizes,
-        .program_size = 2
+        .program_size = 2,
+        .sem = {
+            .count = 0,
+            .count_max = 1,
+            .waiters = {
+                .head_p = NULL
+            }
+        }
     },
     {
         .regs_p = SPC5_DFLASH,
         .address = SPC5_DFLASH_ADDRESS,
         .size = SPC5_DFLASH_SIZE,
         .sector_sizes_p = dflash_sector_sizes,
-        .program_size = 1
+        .program_size = 1,
+        .sem = {
+            .count = 0,
+            .count_max = 1,
+            .waiters = {
+                .head_p = NULL
+            }
+        }
     }
 };
 

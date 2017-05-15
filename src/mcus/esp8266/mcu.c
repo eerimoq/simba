@@ -90,7 +90,17 @@ struct spi_device_t spi_device[SPI_DEVICE_MAX] = {
     }
 };
 
-struct flash_device_t flash_device[FLASH_DEVICE_MAX];
+struct flash_device_t flash_device[FLASH_DEVICE_MAX] = {
+    {
+        .sem = {
+            .count = 0,
+            .count_max = 1,
+            .waiters = {
+                .head_p = NULL
+            }
+        }
+    }
+};
 
 /* Software i2c on ESP8266. */
 struct i2c_device_t i2c_device[I2C_DEVICE_MAX] = {

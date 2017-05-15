@@ -2264,6 +2264,13 @@
 #endif
 
 /**
+ * Semaphore protected device access in the flash driver module.
+ */
+#ifndef CONFIG_FLASH_DEVICE_SEMAPHORE
+#    define CONFIG_FLASH_DEVICE_SEMAPHORE                   1
+#endif
+
+/**
  * Configuration validation.
  */
 #if (CONFIG_START_SHELL == 1) &&  (CONFIG_START_CONSOLE == CONFIG_START_CONSOLE_NONE)
