@@ -218,7 +218,9 @@ static int flash_port_erase(struct flash_driver_t *self_p,
     *(uint32_t *)(address & 0xfffffff8) = 0xffffffff;
     regs_p->MCR = (SPC5_FLASH_MCR_EHV | SPC5_FLASH_MCR_ERS);
 
-    while ((regs_p->MCR & SPC5_FLASH_MCR_DONE) == 0);
+    while ((regs_p->MCR & SPC5_FLASH_MCR_DONE) == 0) {
+        thrd_sleep_ms(50);
+    }
 
     res = ((regs_p->MCR & SPC5_FLASH_MCR_PEG) == 0 ? -1 : 0);
     regs_p->MCR = SPC5_FLASH_MCR_ERS;
