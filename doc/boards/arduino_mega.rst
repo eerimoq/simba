@@ -71,9 +71,9 @@ Below is the memory usage of two applications:
 +--------------------------+-----------+-----------+
 | Application              | Flash     | RAM       |
 +==========================+===========+===========+
-| minimal-configuration    |      1742 |       278 |
+| minimal-configuration    |      1734 |       278 |
 +--------------------------+-----------+-----------+
-| default-configuration    |     62076 |      3724 |
+| default-configuration    |     64282 |      3750 |
 +--------------------------+-----------+-----------+
 
 Default configuration
@@ -115,6 +115,8 @@ Default Standard Library configuration.
 |  CONFIG_EMACS_ROWS_MAX_                                |  24                                                 |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_ESP_WIFI_                                      |  0                                                  |
++--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_EXTERNAL_OSCILLATOR_FREQUENCY_HZ_              |  16000000                                           |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_EXTI_                                          |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
@@ -163,6 +165,10 @@ Default Standard Library configuration.
 |  CONFIG_FS_CMD_LOG_SET_LOG_MASK_                       |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_FS_CMD_NETWORK_INTERFACE_LIST_                 |  1                                                  |
++--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_FS_CMD_NVM_READ_                               |  1                                                  |
++--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_FS_CMD_NVM_WRITE_                              |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_FS_CMD_PING_PING_                              |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
@@ -216,6 +222,10 @@ Default Standard Library configuration.
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_FS_PATH_MAX_                                   |  64                                                 |
 +--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_HARNESS_EXPECT_BUFFER_SIZE_                    |  512                                                |
++--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_HARNESS_SLEEP_MS_                              |  300                                                |
++--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_HTTP_SERVER_REQUEST_BUFFER_SIZE_               |  128                                                |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_HTTP_SERVER_SSL_                               |  0                                                  |
@@ -227,6 +237,8 @@ Default Standard Library configuration.
 |  CONFIG_LED_7SEG_HT16K33_                              |  0                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_LINUX_SOCKET_DEVICE_                           |  0                                                  |
++--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_LOG_MASK_SYS_                                  |  LOG_UPTO(INFO)                                     |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_MCP2515_                                       |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
@@ -324,6 +336,18 @@ Default Standard Library configuration.
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_NRF24L01_                                      |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_NVM_EEPROM_SOFT_                               |  0                                                  |
++--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_NVM_EEPROM_SOFT_BLOCK_0_SIZE_                  |  16384                                              |
++--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_NVM_EEPROM_SOFT_BLOCK_1_SIZE_                  |  16384                                              |
++--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_NVM_EEPROM_SOFT_CHUNK_SIZE_                    |  (CONFIG_NVM_SIZE + 8)                              |
++--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_NVM_EEPROM_SOFT_FLASH_DEVICE_INDEX_            |  0                                                  |
++--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_NVM_SIZE_                                      |  256                                                |
++--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_OWI_                                           |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_PANIC_ASSERT_                                  |  1                                                  |
@@ -398,6 +422,8 @@ Default Standard Library configuration.
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_START_NETWORK_INTERFACE_WIFI_SSID_             |  MyWiFiSSID                                         |
 +--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_START_NVM_                                     |  1                                                  |
++--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_START_SHELL_                                   |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_START_SHELL_PRIO_                              |  30                                                 |
@@ -427,6 +453,8 @@ Default Standard Library configuration.
 |  CONFIG_SYS_SIMBA_MAIN_STACK_MAX_                      |  4096                                               |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_THRD_CPU_USAGE_                                |  1                                                  |
++--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_THRD_DEFAULT_LOG_MASK_                         |  LOG_UPTO(INFO)                                     |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_THRD_ENV_                                      |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
@@ -504,6 +532,8 @@ Mcu
 
 .. _CONFIG_ESP_WIFI: ../user-guide/configuration.html#c.CONFIG_ESP_WIFI
 
+.. _CONFIG_EXTERNAL_OSCILLATOR_FREQUENCY_HZ: ../user-guide/configuration.html#c.CONFIG_EXTERNAL_OSCILLATOR_FREQUENCY_HZ
+
 .. _CONFIG_EXTI: ../user-guide/configuration.html#c.CONFIG_EXTI
 
 .. _CONFIG_FAT16: ../user-guide/configuration.html#c.CONFIG_FAT16
@@ -551,6 +581,10 @@ Mcu
 .. _CONFIG_FS_CMD_LOG_SET_LOG_MASK: ../user-guide/configuration.html#c.CONFIG_FS_CMD_LOG_SET_LOG_MASK
 
 .. _CONFIG_FS_CMD_NETWORK_INTERFACE_LIST: ../user-guide/configuration.html#c.CONFIG_FS_CMD_NETWORK_INTERFACE_LIST
+
+.. _CONFIG_FS_CMD_NVM_READ: ../user-guide/configuration.html#c.CONFIG_FS_CMD_NVM_READ
+
+.. _CONFIG_FS_CMD_NVM_WRITE: ../user-guide/configuration.html#c.CONFIG_FS_CMD_NVM_WRITE
 
 .. _CONFIG_FS_CMD_PING_PING: ../user-guide/configuration.html#c.CONFIG_FS_CMD_PING_PING
 
@@ -604,6 +638,10 @@ Mcu
 
 .. _CONFIG_FS_PATH_MAX: ../user-guide/configuration.html#c.CONFIG_FS_PATH_MAX
 
+.. _CONFIG_HARNESS_EXPECT_BUFFER_SIZE: ../user-guide/configuration.html#c.CONFIG_HARNESS_EXPECT_BUFFER_SIZE
+
+.. _CONFIG_HARNESS_SLEEP_MS: ../user-guide/configuration.html#c.CONFIG_HARNESS_SLEEP_MS
+
 .. _CONFIG_HTTP_SERVER_REQUEST_BUFFER_SIZE: ../user-guide/configuration.html#c.CONFIG_HTTP_SERVER_REQUEST_BUFFER_SIZE
 
 .. _CONFIG_HTTP_SERVER_SSL: ../user-guide/configuration.html#c.CONFIG_HTTP_SERVER_SSL
@@ -615,6 +653,8 @@ Mcu
 .. _CONFIG_LED_7SEG_HT16K33: ../user-guide/configuration.html#c.CONFIG_LED_7SEG_HT16K33
 
 .. _CONFIG_LINUX_SOCKET_DEVICE: ../user-guide/configuration.html#c.CONFIG_LINUX_SOCKET_DEVICE
+
+.. _CONFIG_LOG_MASK_SYS: ../user-guide/configuration.html#c.CONFIG_LOG_MASK_SYS
 
 .. _CONFIG_MCP2515: ../user-guide/configuration.html#c.CONFIG_MCP2515
 
@@ -712,6 +752,18 @@ Mcu
 
 .. _CONFIG_NRF24L01: ../user-guide/configuration.html#c.CONFIG_NRF24L01
 
+.. _CONFIG_NVM_EEPROM_SOFT: ../user-guide/configuration.html#c.CONFIG_NVM_EEPROM_SOFT
+
+.. _CONFIG_NVM_EEPROM_SOFT_BLOCK_0_SIZE: ../user-guide/configuration.html#c.CONFIG_NVM_EEPROM_SOFT_BLOCK_0_SIZE
+
+.. _CONFIG_NVM_EEPROM_SOFT_BLOCK_1_SIZE: ../user-guide/configuration.html#c.CONFIG_NVM_EEPROM_SOFT_BLOCK_1_SIZE
+
+.. _CONFIG_NVM_EEPROM_SOFT_CHUNK_SIZE: ../user-guide/configuration.html#c.CONFIG_NVM_EEPROM_SOFT_CHUNK_SIZE
+
+.. _CONFIG_NVM_EEPROM_SOFT_FLASH_DEVICE_INDEX: ../user-guide/configuration.html#c.CONFIG_NVM_EEPROM_SOFT_FLASH_DEVICE_INDEX
+
+.. _CONFIG_NVM_SIZE: ../user-guide/configuration.html#c.CONFIG_NVM_SIZE
+
 .. _CONFIG_OWI: ../user-guide/configuration.html#c.CONFIG_OWI
 
 .. _CONFIG_PANIC_ASSERT: ../user-guide/configuration.html#c.CONFIG_PANIC_ASSERT
@@ -786,6 +838,8 @@ Mcu
 
 .. _CONFIG_START_NETWORK_INTERFACE_WIFI_SSID: ../user-guide/configuration.html#c.CONFIG_START_NETWORK_INTERFACE_WIFI_SSID
 
+.. _CONFIG_START_NVM: ../user-guide/configuration.html#c.CONFIG_START_NVM
+
 .. _CONFIG_START_SHELL: ../user-guide/configuration.html#c.CONFIG_START_SHELL
 
 .. _CONFIG_START_SHELL_PRIO: ../user-guide/configuration.html#c.CONFIG_START_SHELL_PRIO
@@ -815,6 +869,8 @@ Mcu
 .. _CONFIG_SYS_SIMBA_MAIN_STACK_MAX: ../user-guide/configuration.html#c.CONFIG_SYS_SIMBA_MAIN_STACK_MAX
 
 .. _CONFIG_THRD_CPU_USAGE: ../user-guide/configuration.html#c.CONFIG_THRD_CPU_USAGE
+
+.. _CONFIG_THRD_DEFAULT_LOG_MASK: ../user-guide/configuration.html#c.CONFIG_THRD_DEFAULT_LOG_MASK
 
 .. _CONFIG_THRD_ENV: ../user-guide/configuration.html#c.CONFIG_THRD_ENV
 

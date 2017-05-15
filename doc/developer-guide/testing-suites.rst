@@ -137,6 +137,7 @@ Linux
 - :github-blob:`text/std<tst/text/std/main.c>`
 - :github-blob:`text/re<tst/text/re/main.c>`
 - :github-blob:`debug/log<tst/debug/log/main.c>`
+- :github-blob:`oam/nvm<tst/oam/nvm/main.c>`
 - :github-blob:`oam/service<tst/oam/service/main.c>`
 - :github-blob:`oam/settings<tst/oam/settings/main.c>`
 - :github-blob:`oam/shell<tst/oam/shell/main.c>`
@@ -293,6 +294,7 @@ SPC56D Discovery
 - :github-blob:`encode/json<tst/encode/json/main.c>`
 - :github-blob:`hash/crc<tst/hash/crc/main.c>`
 - :github-blob:`hash/sha1<tst/hash/sha1/main.c>`
+- :github-blob:`drivers/eeprom_soft<tst/drivers/eeprom_soft/main.c>`
 
 STM32F3DISCOVERY
 ----------------
