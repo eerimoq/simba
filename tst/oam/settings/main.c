@@ -50,11 +50,13 @@ static int test_cmd_list(struct harness_t *harness_p)
     strcpy(buf, "oam/settings/list");
     BTASSERT(fs_call(buf, NULL, &queue, NULL) == 0);
     BTASSERT(harness_expect(&queue,
-                            "NAME                  TYPE      SIZE  VALUE\r\n"
-                            "int32                 int32_t      4  -2\r\n"
-                            "string                string_t     4  y\r\n"
-                            "blob                  blob_t       2  1112\r\n",
-                            NULL) == 0);
+                            "NAME                                      TYPE      SIZE  VALUE\r\n"
+                            "int32                                     int32_t      4  -2\r\n"
+                            "string                                    string_t     4  y\r\n"
+                            "blob                                      blob_t       2  1112\r\n"
+                            "blob_with_empty_default_data              blob_t       4  ffffffff\r\n"
+                            "max_name_length_40_123456789012345678901  string_t     4  \r\n",
+                            NULL) == 380);
 
     return (0);
 
@@ -76,14 +78,14 @@ static int test_cmd_read(struct harness_t *harness_p)
     BTASSERT(fs_call(buf, NULL, &queue, NULL) == -1);
     BTASSERT(harness_expect(&queue,
                             "Usage: read <name>\r\n",
-                            NULL) == 0);
+                            NULL) == 20);
 
     /* Bad setting name. */
     std_sprintf(buf, FSTR("oam/settings/read missing"));
     BTASSERT(fs_call(buf, NULL, &queue, NULL) == -1);
     BTASSERT(harness_expect(&queue,
                             "missing: setting not found\r\n",
-                            NULL) == 0);
+                            NULL) == 28);
 
     return (0);
 
@@ -106,7 +108,7 @@ static int test_cmd_write(struct harness_t *harness_p)
     BTASSERT(fs_call(buf, NULL, &queue, NULL) == -1);
     BTASSERT(harness_expect(&queue,
                             "ThisStringIsTooLong: string too long\r\n",
-                            NULL) == 0);
+                            NULL) == 38);
 
     /* Write a blob that is too long. */
     std_sprintf(buf,
@@ -114,7 +116,7 @@ static int test_cmd_write(struct harness_t *harness_p)
     BTASSERT(fs_call(buf, NULL, &queue, NULL) == -1);
     BTASSERT(harness_expect(&queue,
                             "3: bad blob data length\r\n",
-                            NULL) == 0);
+                            NULL) == 25);
 
     /* Write a blob that is too short. */
     std_sprintf(buf,
@@ -122,7 +124,7 @@ static int test_cmd_write(struct harness_t *harness_p)
     BTASSERT(fs_call(buf, NULL, &queue, NULL) == -1);
     BTASSERT(harness_expect(&queue,
                             "1: bad blob data length\r\n",
-                            NULL) == 0);
+                            NULL) == 25);
 
     /* Write a blob that contains invalid data. */
     std_sprintf(buf,
@@ -130,29 +132,29 @@ static int test_cmd_write(struct harness_t *harness_p)
     BTASSERT(fs_call(buf, NULL, &queue, NULL) == -1);
     BTASSERT(harness_expect(&queue,
                             "01XX: bad blob data\r\n",
-                            NULL) == 0);
+                            NULL) == 21);
 
     /* Write a blob that contains invalid data. */
     std_sprintf(buf,
                 FSTR("oam/settings/write blob foo1"));
     BTASSERT(fs_call(buf, NULL, &queue, NULL) == -1);
     BTASSERT(harness_expect(&queue,
-                            "bad blob data\r\n",
-                            NULL) == 0);
+                            "foo1: bad blob data\r\n",
+                            NULL) == 21);
 
     /* Bad number of arguments. */
     std_sprintf(buf, FSTR("oam/settings/write"));
     BTASSERT(fs_call(buf, NULL, &queue, NULL) == -1);
     BTASSERT(harness_expect(&queue,
                             "Usage: write <name> <value>\r\n",
-                            NULL) == 0);
+                            NULL) == 29);
 
     /* Bad setting name. */
     std_sprintf(buf, FSTR("oam/settings/write missing 1"));
     BTASSERT(fs_call(buf, NULL, &queue, NULL) == -1);
     BTASSERT(harness_expect(&queue,
                             "missing: setting not found\r\n",
-                            NULL) == 0);
+                            NULL) == 28);
 
     return (0);
 
@@ -177,7 +179,7 @@ static int test_cmd_read_write_read(struct harness_t *harness_p)
         "-2", "y", "1112"
     };
     char *values_after_p[] = {
-        "12345678", "hi", "0102"
+        "12345678", "hi", "ffff"
     };
 
     for (i = 0; i < membersof(names_p); i++) {
@@ -186,7 +188,8 @@ static int test_cmd_read_write_read(struct harness_t *harness_p)
         std_printf(FSTR("%s\r\n"), buf);
         BTASSERT(fs_call(buf, NULL, &queue, NULL) == 0);
         std_sprintf(&response[0], FSTR("%s\r\n"), values_before_p[i]);
-        BTASSERT(harness_expect(&queue, &response[0], NULL) == 0);
+        BTASSERT(harness_expect(&queue, &response[0], NULL)
+                 == strlen(values_before_p[i]) + 2);
 
         /* Write a new value. */
         std_sprintf(buf,
@@ -202,7 +205,8 @@ static int test_cmd_read_write_read(struct harness_t *harness_p)
         std_printf(FSTR("%s\r\n"), buf);
         BTASSERT(fs_call(buf, NULL, &queue, NULL) == 0);
         std_sprintf(&response[0], FSTR("%s\r\n"), values_after_p[i]);
-        BTASSERT(harness_expect(&queue, &response[0], NULL) == 0);
+        BTASSERT(harness_expect(&queue, &response[0], NULL)
+                 == strlen(values_after_p[i]) + 2);
     }
 
     return (0);
@@ -228,11 +232,13 @@ static int test_cmd_reset(struct harness_t *harness_p)
     strcpy(buf, "oam/settings/list");
     BTASSERT(fs_call(buf, NULL, &queue, NULL) == 0);
     BTASSERT(harness_expect(&queue,
-                            "NAME                  TYPE      SIZE  VALUE\r\n"
-                            "int32                 int32_t      4  -2\r\n"
-                            "string                string_t     4  y\r\n"
-                            "blob                  blob_t       2  1112\r\n",
-                            NULL) == 0);
+                            "NAME                                      TYPE      SIZE  VALUE\r\n"
+                            "int32                                     int32_t      4  -2\r\n"
+                            "string                                    string_t     4  y\r\n"
+                            "blob                                      blob_t       2  1112\r\n"
+                            "blob_with_empty_default_data              blob_t       4  ffffffff\r\n"
+                            "max_name_length_40_123456789012345678901  string_t     4  \r\n",
+                            NULL) == 380);
 
     return (0);
 
@@ -322,11 +328,13 @@ static int test_cmd_list_after_updates(struct harness_t *harness_p)
     strcpy(buf, "oam/settings/list");
     BTASSERT(fs_call(buf, NULL, &queue, NULL) == 0);
     BTASSERT(harness_expect(&queue,
-                            "NAME                  TYPE      SIZE  VALUE\r\n"
-                            "int32                 int32_t      4  10\r\n"
-                            "string                string_t     4  x\r\n"
-                            "blob                  blob_t       2  1112\r\n",
-                            NULL) == 0);
+                            "NAME                                      TYPE      SIZE  VALUE\r\n"
+                            "int32                                     int32_t      4  10\r\n"
+                            "string                                    string_t     4  x\r\n"
+                            "blob                                      blob_t       2  1112\r\n"
+                            "blob_with_empty_default_data              blob_t       4  ffffffff\r\n"
+                            "max_name_length_40_123456789012345678901  string_t     4  \r\n",
+                            NULL) == 380);
 
     return (0);
 

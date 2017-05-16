@@ -66,24 +66,19 @@ static int cmd_list_cb(int argc,
     const FAR struct setting_t *setting_p;
     int i;
     int32_t int32;
-    char buf[32];
+    char buf[41];
     size_t size;
 
     /* Print the header. */
     std_fprintf(chout_p,
-                OSTR("NAME                  TYPE      SIZE  VALUE\r\n"));
+                OSTR("NAME                                      TYPE      SIZE  VALUE\r\n"));
 
     /* Print all settings. */
     setting_p = &settings[0];
 
     while (setting_p->name_p != NULL) {
-        /* Print the name. */
-        if (std_strlen(setting_p->name_p) >= sizeof(buf)) {
-            continue;
-        }
-
-        std_strcpy(buf, setting_p->name_p);
-        std_fprintf(chout_p, OSTR("%-20s  "), buf);
+        std_strcpy(&buf[0], setting_p->name_p);
+        std_fprintf(chout_p, OSTR("%-40s  "), &buf[0]);
         size = setting_p->size;
 
         switch (setting_p->type) {
@@ -120,7 +115,7 @@ static int cmd_list_cb(int argc,
             for (i = 0; i < size; i++) {
                 buf[0] = 0x00;
                 (void)settings_read(&buf[0], setting_p->address + i, 1);
-                std_fprintf(chout_p, OSTR("%02x"), buf[0]);
+                std_fprintf(chout_p, OSTR("%02x"), buf[0] & 0xff);
             }
 
             std_fprintf(chout_p, OSTR("\r\n"));
@@ -210,7 +205,7 @@ static int cmd_read_cb(int argc,
                 for (i = 0; i < setting_p->size; i++) {
                     buf[0] = 0;
                     settings_read(&buf[0], setting_p->address + i, 1);
-                    std_fprintf(chout_p, OSTR("%02x"), buf[0]);
+                    std_fprintf(chout_p, OSTR("%02x"), buf[0] & 0xff);
                 }
 
                 std_fprintf(chout_p, OSTR("\r\n"));

@@ -132,7 +132,7 @@ int harness_expect(void *chan_p,
         /* Compare to pattern. */
         if (length >= pattern_length) {
             if (strcmp(&buf[length - pattern_length], pattern_p) == 0) {
-                return (0);
+                return (length);
             }
         }
     }

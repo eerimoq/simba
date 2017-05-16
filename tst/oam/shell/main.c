@@ -106,42 +106,42 @@ static int test_init(struct harness_t *harness_p)
 static int test_login(struct harness_t *harness_p)
 {
     /* Bad username. */
-    BTASSERT(harness_expect(&qout, "username: ", NULL) == 0);
+    BTASSERT(harness_expect(&qout, "username: ", NULL) > 0);
     chan_write(&qin, "bad\r\n", 5);
-    BTASSERT(harness_expect(&qout, "bad\r\n", NULL) == 0);
+    BTASSERT(harness_expect(&qout, "bad\r\n", NULL) > 0);
 
     /* Ok password. */
-    BTASSERT(harness_expect(&qout, "password: ", NULL) == 0);
+    BTASSERT(harness_expect(&qout, "password: ", NULL) > 0);
     chan_write(&qin, "pannkaka\n", 9);
     BTASSERT(harness_expect(&qout,
                             "********\nauthentication failure\r\n",
-                            NULL) == 0);
+                            NULL) > 0);
 
     /* Ok username. */
-    BTASSERT(harness_expect(&qout, "username: ", NULL) == 0);
+    BTASSERT(harness_expect(&qout, "username: ", NULL) > 0);
     chan_write(&qin, "erik\r\n", 6);
-    BTASSERT(harness_expect(&qout, "erik\r\n", NULL) == 0);
+    BTASSERT(harness_expect(&qout, "erik\r\n", NULL) > 0);
 
     /* Bad password. */
-    BTASSERT(harness_expect(&qout, "password: ", NULL) == 0);
+    BTASSERT(harness_expect(&qout, "password: ", NULL) > 0);
     chan_write(&qin, "bad\n", 4);
     BTASSERT(harness_expect(&qout,
                             "***\nauthentication failure\r\n",
-                            NULL) == 0);
+                            NULL) > 0);
 
     /* Misspell the username ... */
-    BTASSERT(harness_expect(&qout, "username: ", NULL) == 0);
+    BTASSERT(harness_expect(&qout, "username: ", NULL) > 0);
     chan_write(&qin, "eril", 4);
-    BTASSERT(harness_expect(&qout, "eril", NULL) == 0);
+    BTASSERT(harness_expect(&qout, "eril", NULL) > 0);
 
     /* ... and correct it using backspace. */
     chan_write(&qin, "\x7fk\r\n", 4);
-    BTASSERT(harness_expect(&qout, "\x08 \x08k\r\n", NULL) == 0);
+    BTASSERT(harness_expect(&qout, "\x08 \x08k\r\n", NULL) > 0);
 
     /* OK password. */
-    BTASSERT(harness_expect(&qout, "password: ", NULL) == 0);
+    BTASSERT(harness_expect(&qout, "password: ", NULL) > 0);
     chan_write(&qin, "pannkaka\n", 9);
-    BTASSERT(harness_expect(&qout, "********\n$ ", NULL) == 0);
+    BTASSERT(harness_expect(&qout, "********\n$ ", NULL) > 0);
 
     std_printf(FSTR("\r\n"));
 
@@ -152,7 +152,7 @@ static int test_empty_line(struct harness_t *harness_p)
 {
     /* Empty line. */
     chan_write(&qin, "\n", sizeof("\n") - 1);
-    BTASSERT(harness_expect(&qout, "\n$ ", NULL) == 0);
+    BTASSERT(harness_expect(&qout, "\n$ ", NULL) > 0);
 
     std_printf(FSTR("\r\n"));
 
@@ -168,7 +168,7 @@ static int test_command_not_found(struct harness_t *harness_p)
                             "/1/2/3: command not found\r\n"
                             "ERROR(-1003)\r\n"
                             "$ ",
-                            NULL) == 0);
+                            NULL) > 0);
 
     std_printf(FSTR("\r\n"));
 
@@ -190,7 +190,7 @@ static int test_command_too_long(struct harness_t *harness_p)
                             "This: command not found\r\n"
                             "ERROR(-1003)\r\n"
                             "$ ",
-                            NULL) == 0);
+                            NULL) > 0);
 
     std_printf(FSTR("\r\n"));
 
@@ -216,7 +216,7 @@ static int test_auto_completion(struct harness_t *harness_p)
                             "logout\r\n"
                             "tmp/\r\n"
                             "$ ",
-                            NULL) == 0);
+                            NULL) > 0);
 
     /* Auto completion. */
     chan_write(&qin, "ba\t\r\n", 5);
@@ -225,7 +225,7 @@ static int test_auto_completion(struct harness_t *harness_p)
                             "0000000000000000\r\n"
                             "OK\r\n"
                             "$ ",
-                            NULL) == 0);
+                            NULL) > 0);
 
     std_printf(FSTR("\r\n"));
 
@@ -241,7 +241,7 @@ static int test_commands_foo_and_bar(struct harness_t *harness_p)
                             "argc = 4, argv[0] = /tmp/foo, argv[1] = 3, argv[2] = 2\n"
                             "OK\r\n"
                             "$ ",
-                            NULL) == 0);
+                            NULL) > 0);
 
     /* Test command bar. */
     chan_write(&qin, "/tmp/bar 3\n", 11);
@@ -250,7 +250,7 @@ static int test_commands_foo_and_bar(struct harness_t *harness_p)
                             "bar 6\n"
                             "OK\r\n"
                             "$ ",
-                            NULL) == 0);
+                            NULL) > 0);
 
     std_printf(FSTR("\r\n"));
 
@@ -266,7 +266,7 @@ static int test_parameters(struct harness_t *harness_p)
                             "57\r\n"
                             "OK\r\n"
                             "$ ",
-                            NULL) == 0);
+                            NULL) > 0);
 
     /* Set parameter value. */
     chan_write(&qin, "/tmp/fie 58\n", 12);
@@ -274,7 +274,7 @@ static int test_parameters(struct harness_t *harness_p)
                             "/tmp/fie 58\n"
                             "OK\r\n"
                             "$ ",
-                            NULL) == 0);
+                            NULL) > 0);
 
     /* Get modified parameter value. */
     chan_write(&qin, "/tmp/fie\n", 9);
@@ -283,7 +283,7 @@ static int test_parameters(struct harness_t *harness_p)
                             "58\r\n"
                             "OK\r\n"
                             "$ ",
-                            NULL) == 0);
+                            NULL) > 0);
 
     std_printf(FSTR("\r\n"));
 
@@ -296,7 +296,7 @@ static int test_set_log_mask(struct harness_t *harness_p)
     chan_write(&qin, "/kernel/thrd/set_log_mask shell 0xff\r\n", 38);
     BTASSERT(harness_expect(&qout,
                             "$ ",
-                            NULL) == 0);
+                            NULL) > 0);
 
     std_printf(FSTR("\r\n"));
 
@@ -309,7 +309,7 @@ static int test_thrd_list(struct harness_t *harness_p)
     /* List thrds. */
     chan_write(&qin, "/kernel/thrd/list\r\n", 19);
     /* Read until a prompt is found to empty the buffer. */
-    BTASSERT(harness_expect(&qout, "$ ", NULL) == 0);
+    BTASSERT(harness_expect(&qout, "$ ", NULL) > 0);
 
     std_printf(FSTR("\r\n"));
 
@@ -339,7 +339,7 @@ static int test_fs_counters_list(struct harness_t *harness_p)
                             "0000000000000001\r\n"
                             "OK\r\n"
                             "$ ",
-                            NULL) == 0);
+                            NULL) > 0);
 
 #endif
 
@@ -352,27 +352,27 @@ static int test_cursor_movement(struct harness_t *harness_p)
 {
     /* Write '123' to the shell. */
     chan_write(&qin, "123", 3);
-    BTASSERT(harness_expect(&qout, "123", NULL) == 0);
+    BTASSERT(harness_expect(&qout, "123", NULL) > 0);
 
     /* Move the cursor to the beginning of the line (Ctrl+A). */
     chan_write(&qin, "\x01", 1);
-    BTASSERT(harness_expect(&qout, "\x1b[3D", NULL) == 0);
+    BTASSERT(harness_expect(&qout, "\x1b[3D", NULL) > 0);
 
     /* Move the cursor one step to the right (right arrow).*/
     chan_write(&qin, "\x1b[C", 3);
-    BTASSERT(harness_expect(&qout, "\x1b[1C", NULL) == 0);
+    BTASSERT(harness_expect(&qout, "\x1b[1C", NULL) > 0);
 
     /* Move the cursor to the end of the line (Ctrl+E).*/
     chan_write(&qin, "\x05", 1);
-    BTASSERT(harness_expect(&qout, "\x1b[2C", NULL) == 0);
+    BTASSERT(harness_expect(&qout, "\x1b[2C", NULL) > 0);
 
     /* Move the cursor to the beginning of the line (HOME). */
     chan_write(&qin, "\x1bOH", 3);
-    BTASSERT(harness_expect(&qout, "\x1b[3D", NULL) == 0);
+    BTASSERT(harness_expect(&qout, "\x1b[3D", NULL) > 0);
 
     /* Move the cursor to the end of the line (END).*/
     chan_write(&qin, "\x1bOF", 3);
-    BTASSERT(harness_expect(&qout, "\x1b[3C", NULL) == 0);
+    BTASSERT(harness_expect(&qout, "\x1b[3C", NULL) > 0);
 
     /* Move the cursor one step to the right (right arrow). This
        should not output anything since the cursor is already at the
@@ -382,11 +382,11 @@ static int test_cursor_movement(struct harness_t *harness_p)
     /* Move one left and then right. */
     chan_write(&qin, "\x1b[D", 3);
     chan_write(&qin, "\x1b[C", 3);
-    BTASSERT(harness_expect(&qout, "\x1b[1D\x1b[1C", NULL) == 0);
+    BTASSERT(harness_expect(&qout, "\x1b[1D\x1b[1C", NULL) > 0);
 
     /* Read until a new prompt to clean up. */
     chan_write(&qin, "\r\n", 2);
-    BTASSERT(harness_expect(&qout, "$ ", NULL) == 0);
+    BTASSERT(harness_expect(&qout, "$ ", NULL) > 0);
 
     std_printf(FSTR("\r\n"));
 
@@ -397,37 +397,37 @@ static int test_cursor_insert(struct harness_t *harness_p)
 {
     /* Write 'ep' to the shell. */
     chan_write(&qin, "ep", 2);
-    BTASSERT(harness_expect(&qout, "ep", NULL) == 0);
+    BTASSERT(harness_expect(&qout, "ep", NULL) > 0);
 
     /* Move the cursor to the beginning of the line (Ctrl+A). */
     chan_write(&qin, "\x01", 1);
-    BTASSERT(harness_expect(&qout, "\x1b[2D", NULL) == 0);
+    BTASSERT(harness_expect(&qout, "\x1b[2D", NULL) > 0);
 
     /* Write 'h' at the beginning of a line. The cursor should be
        advanced by one (in this case moving 2 steps to the left after
        hep has been printed).*/
     chan_write(&qin, "h", 1);
-    BTASSERT(harness_expect(&qout, "\x1b[Khep\x1b[2D", NULL) == 0);
+    BTASSERT(harness_expect(&qout, "\x1b[Khep\x1b[2D", NULL) > 0);
 
     /* Move the cursor right once to insert 'l' to complete the word
        'help'. */
     chan_write(&qin, "\x1b[C", 3);
-    BTASSERT(harness_expect(&qout, "\x1b[1C", NULL) == 0);
+    BTASSERT(harness_expect(&qout, "\x1b[1C", NULL) > 0);
 
     /* Write 'l'.*/
     chan_write(&qin, "l", 1);
-    BTASSERT(harness_expect(&qout, "\x1b[2D\x1b[Khelp", NULL) == 0);
+    BTASSERT(harness_expect(&qout, "\x1b[2D\x1b[Khelp", NULL) > 0);
 
     /* Read until a new prompt to clean up. */
     chan_write(&qin, "\r\n", 2);
-    BTASSERT(harness_expect(&qout, "Cursor movement", NULL) == 0);
-    BTASSERT(harness_expect(&qout, "Edit", NULL) == 0);
-    BTASSERT(harness_expect(&qout, "History", NULL) == 0);
-    BTASSERT(harness_expect(&qout, "$ ", NULL) == 0);
+    BTASSERT(harness_expect(&qout, "Cursor movement", NULL) > 0);
+    BTASSERT(harness_expect(&qout, "Edit", NULL) > 0);
+    BTASSERT(harness_expect(&qout, "History", NULL) > 0);
+    BTASSERT(harness_expect(&qout, "$ ", NULL) > 0);
 
     /* Write 'ff'.*/
     chan_write(&qin, "fff", 3);
-    BTASSERT(harness_expect(&qout, "fff", NULL) == 0);
+    BTASSERT(harness_expect(&qout, "fff", NULL) > 0);
 
     /* Delete a character at the end of the line. Nothing should
        happen (Ctrl+D). */
@@ -435,15 +435,15 @@ static int test_cursor_insert(struct harness_t *harness_p)
 
     /* Move the cursor to the beginning of the line (Ctrl+A). */
     chan_write(&qin, "\x01", 1);
-    BTASSERT(harness_expect(&qout, "\x1b[3D", NULL) == 0);
+    BTASSERT(harness_expect(&qout, "\x1b[3D", NULL) > 0);
 
     /* Delete the first 'f' (Ctrl+D). */
     chan_write(&qin, "\x04", 1);
-    BTASSERT(harness_expect(&qout, "\x1b[Kff", NULL) == 0);
+    BTASSERT(harness_expect(&qout, "\x1b[Kff", NULL) > 0);
 
     /* Read until a new prompt to clean up. */
     chan_write(&qin, "\r\n", 2);
-    BTASSERT(harness_expect(&qout, "$ ", NULL) == 0);
+    BTASSERT(harness_expect(&qout, "$ ", NULL) > 0);
 
     std_printf(FSTR("\r\n"));
 
@@ -454,19 +454,19 @@ static int test_cursor_cut(struct harness_t *harness_p)
 {
     /* Write 'foo' to the shell. */
     chan_write(&qin, "foo", 3);
-    BTASSERT(harness_expect(&qout, "foo", NULL) == 0);
+    BTASSERT(harness_expect(&qout, "foo", NULL) > 0);
 
     /* Move the cursor to the beginning of the line (Ctrl+A). */
     chan_write(&qin, "\x01", 1);
-    BTASSERT(harness_expect(&qout, "\x1b[3D", NULL) == 0);
+    BTASSERT(harness_expect(&qout, "\x1b[3D", NULL) > 0);
 
     /* Cut the whole line (Ctrl+K). */
     chan_write(&qin, "\x0b", 1);
-    BTASSERT(harness_expect(&qout, "\x08 \x08\x08 \x08\x08 \x08", NULL) == 0);
+    BTASSERT(harness_expect(&qout, "\x08 \x08\x08 \x08\x08 \x08", NULL) > 0);
 
     /* Read until a new prompt to clean up. */
     chan_write(&qin, "\r\n", 2);
-    BTASSERT(harness_expect(&qout, "$ ", NULL) == 0);
+    BTASSERT(harness_expect(&qout, "$ ", NULL) > 0);
 
     std_printf(FSTR("\r\n"));
 
@@ -477,41 +477,41 @@ static int test_swap_characters(struct harness_t *harness_p)
 {
     /* Write 'b' to the shell. */
     chan_write(&qin, "b", 1);
-    BTASSERT(harness_expect(&qout, "b", NULL) == 0);
+    BTASSERT(harness_expect(&qout, "b", NULL) > 0);
 
     /* Cannot swap one character. At least two are needed. (Ctrl+T). */
     chan_write(&qin, "\x14", 1);
 
     /* Write 'ra' to the shell. */
     chan_write(&qin, "ra", 2);
-    BTASSERT(harness_expect(&qout, "ra", NULL) == 0);
+    BTASSERT(harness_expect(&qout, "ra", NULL) > 0);
 
     /* Move the cursor to the beginning of the line (Ctrl+A). */
     chan_write(&qin, "\x01", 1);
-    BTASSERT(harness_expect(&qout, "\x1b[3D", NULL) == 0);
+    BTASSERT(harness_expect(&qout, "\x1b[3D", NULL) > 0);
 
     /* Cannot swap at the beginning of the line (Ctrl+T). */
     chan_write(&qin, "\x14", 1);
 
     /* Move the cursor to the end of the line (Ctrl+E).*/
     chan_write(&qin, "\x05", 1);
-    BTASSERT(harness_expect(&qout, "\x1b[3C", NULL) == 0);
+    BTASSERT(harness_expect(&qout, "\x1b[3C", NULL) > 0);
 
     /* Swap 'r' and 'a' to get "bar" (Ctrl+T). */
     chan_write(&qin, "\x14", 1);
-    BTASSERT(harness_expect(&qout, "\x1b[3D\x1b[Kbar", NULL) == 0);
+    BTASSERT(harness_expect(&qout, "\x1b[3D\x1b[Kbar", NULL) > 0);
 
     /* Move the cursor one step to the left. */
     chan_write(&qin, "\x1b[D", 3);
-    BTASSERT(harness_expect(&qout, "\x1b[1D", NULL) == 0);
+    BTASSERT(harness_expect(&qout, "\x1b[1D", NULL) > 0);
 
     /* Swap 'a' and 'r' to get "bra" (Ctrl+T).*/
     chan_write(&qin, "\x14", 1);
-    BTASSERT(harness_expect(&qout, "\x1b[2D\x1b[Kbra", NULL) == 0);
+    BTASSERT(harness_expect(&qout, "\x1b[2D\x1b[Kbra", NULL) > 0);
 
     /* Read until a new prompt to clean up. */
     chan_write(&qin, "\r\n", 2);
-    BTASSERT(harness_expect(&qout, "$ ", NULL) == 0);
+    BTASSERT(harness_expect(&qout, "$ ", NULL) > 0);
 
     std_printf(FSTR("\r\n"));
 
@@ -525,23 +525,23 @@ static int test_backspace(struct harness_t *harness_p)
 
     /* Write '1' to the shell. */
     chan_write(&qin, "1", 1);
-    BTASSERT(harness_expect(&qout, "1", NULL) == 0);
+    BTASSERT(harness_expect(&qout, "1", NULL) > 0);
 
     /* Delete the '1'. */
     chan_write(&qin, "\x7f", 1);
-    BTASSERT(harness_expect(&qout, "\x08 \x08", NULL) == 0);
+    BTASSERT(harness_expect(&qout, "\x08 \x08", NULL) > 0);
 
     /* Write '123' to the shell. */
     chan_write(&qin, "123", 3);
-    BTASSERT(harness_expect(&qout, "123", NULL) == 0);
+    BTASSERT(harness_expect(&qout, "123", NULL) > 0);
 
     /* Move the cursor one step to the left. */
     chan_write(&qin, "\x1b[D", 3);
-    BTASSERT(harness_expect(&qout, "\x1b[1D", NULL) == 0);
+    BTASSERT(harness_expect(&qout, "\x1b[1D", NULL) > 0);
 
     /* Delete the '2' with the backspace key. */
     chan_write(&qin, "\x7f", 1);
-    BTASSERT(harness_expect(&qout, "\x1b[2D\x1b[K13\x1b[1D", NULL) == 0);
+    BTASSERT(harness_expect(&qout, "\x1b[2D\x1b[K13\x1b[1D", NULL) > 0);
 
     /* Read until a new prompt to clean up. */
     chan_write(&qin, "\r\n", 2);
@@ -549,7 +549,7 @@ static int test_backspace(struct harness_t *harness_p)
                             "\r\n13: command not found\r\n"
                             "ERROR(-1003)\r\n"
                             "$ ",
-                            NULL) == 0);
+                            NULL) > 0);
 
     std_printf(FSTR("\r\n"));
 
@@ -565,27 +565,27 @@ static int test_delete_word(struct harness_t *harness_p)
 
     /* Write '1' to the shell. */
     chan_write(&qin, "123 456 789", 11);
-    BTASSERT(harness_expect(&qout, "123 456 789", NULL) == 0);
+    BTASSERT(harness_expect(&qout, "123 456 789", NULL) > 0);
 
     /* Move the cursor eight step to the left. */
     for (i = 0; i < 8; i++) {
         chan_write(&qin, "\x1b[D", 3);
-        BTASSERT(harness_expect(&qout, "\x1b[1D", NULL) == 0);
+        BTASSERT(harness_expect(&qout, "\x1b[1D", NULL) > 0);
     }
 
     /* Delete the word ' 456'. */
     chan_write(&qin, "\x1b""d", 2);
-    BTASSERT(harness_expect(&qout, "\x1b[3D\x1b[K123 789\x1b[4D", NULL) == 0);
+    BTASSERT(harness_expect(&qout, "\x1b[3D\x1b[K123 789\x1b[4D", NULL) > 0);
 
     /* Delete the word ' 789'. */
     chan_write(&qin, "\x1b""d", 2);
     BTASSERT(harness_expect(&qout,
                             "    \x08 \x08\x08 \x08\x08 \x08\x08 \x08",
-                            NULL) == 0);
+                            NULL) > 0);
 
     /* Read until a new prompt to clean up. */
     chan_write(&qin, "\r\n", 2);
-    BTASSERT(harness_expect(&qout, "$ ", NULL) == 0);
+    BTASSERT(harness_expect(&qout, "$ ", NULL) > 0);
 
     std_printf(FSTR("\r\n"));
 
@@ -596,7 +596,7 @@ static int test_history_clear(struct harness_t *harness_p)
 {
     /* Clear the history. */
     chan_write(&qin, "history -c\n", 11);
-    BTASSERT(harness_expect(&qout, "$ ", NULL) == 0);
+    BTASSERT(harness_expect(&qout, "$ ", NULL) > 0);
 
     std_printf(FSTR("\r\n"));
 
@@ -607,11 +607,11 @@ static int test_history(struct harness_t *harness_p)
 {
     /* Print the history. */
     chan_write(&qin, "history\n", 8);
-    BTASSERT(harness_expect(&qout, "$ ", NULL) == 0);
+    BTASSERT(harness_expect(&qout, "$ ", NULL) > 0);
 
     /* Print the history. */
     chan_write(&qin, "/history\n", 9);
-    BTASSERT(harness_expect(&qout, "$ ", NULL) == 0);
+    BTASSERT(harness_expect(&qout, "$ ", NULL) > 0);
 
     std_printf(FSTR("\r\n"));
 
@@ -622,16 +622,16 @@ static int test_history_up_down(struct harness_t *harness_p)
 {
     /* Clear the history. */
     chan_write(&qin, "history -c\n", 11);
-    BTASSERT(harness_expect(&qout, "$ ", NULL) == 0);
+    BTASSERT(harness_expect(&qout, "$ ", NULL) > 0);
 
     /* Print the history. */
     chan_write(&qin, "history\n", 8);
-    BTASSERT(harness_expect(&qout, "$ ", NULL) == 0);
+    BTASSERT(harness_expect(&qout, "$ ", NULL) > 0);
 
     /* Go to the previous command. */
     chan_write(&qin, "\x1b[A", 3);
     chan_write(&qin, "\x1b[A", 3);
-    BTASSERT(harness_expect(&qout, "history", NULL) == 0);
+    BTASSERT(harness_expect(&qout, "history", NULL) > 0);
 
     /* Go to the next command (there is none). */
     chan_write(&qin, "\x1b[B", 3);
@@ -639,19 +639,19 @@ static int test_history_up_down(struct harness_t *harness_p)
     BTASSERT(harness_expect(&qout,
                             "\x08 \x08\x08 \x08\x08 \x08\x08 \x08"
                             "\x08 \x08\x08 \x08\x08 \x08",
-                            NULL) == 0);
+                            NULL) > 0);
 
     /* Start typing a command but do not hit enter. */
     chan_write(&qin, "hello", 5);
-    BTASSERT(harness_expect(&qout, "hello", NULL) == 0);
+    BTASSERT(harness_expect(&qout, "hello", NULL) > 0);
 
     /* Go to the previous command. */
     chan_write(&qin, "\x1b[A", 3);
-    BTASSERT(harness_expect(&qout, "\x1b[5D\x1b[Khistory", NULL) == 0);
+    BTASSERT(harness_expect(&qout, "\x1b[5D\x1b[Khistory", NULL) > 0);
 
     /* Go to the next command. The text 'hello' should be printed. */
     chan_write(&qin, "\x1b[B", 3);
-    BTASSERT(harness_expect(&qout, "\x1b[7D\x1b[Khello", NULL) == 0);
+    BTASSERT(harness_expect(&qout, "\x1b[7D\x1b[Khello", NULL) > 0);
 
     /* Hit enter to execute 'hello'. */
     chan_write(&qin, "\n", 1);
@@ -659,7 +659,7 @@ static int test_history_up_down(struct harness_t *harness_p)
                             "\nhello: command not found\r\n"
                             "ERROR(-1003)\r\n"
                             "$ ",
-                            NULL) == 0);
+                            NULL) > 0);
 
     std_printf(FSTR("\r\n"));
 
@@ -672,10 +672,10 @@ static int test_history_search(struct harness_t *harness_p)
     chan_write(&qin, "\x12", 1);
     BTASSERT(harness_expect(&qout,
                             "\x1b[K(history-search)`': \x1b[3D",
-                            NULL) == 0)
+                            NULL) > 0)
 
     chan_write(&qin, "h", 1);
-    BTASSERT(harness_expect(&qout, "\x1b[Kh': hello\x1b[8D", NULL) == 0);
+    BTASSERT(harness_expect(&qout, "\x1b[Kh': hello\x1b[8D", NULL) > 0);
 
     /* Hit enter to execute 'hello'. */
     chan_write(&qin, "\n", 1);
@@ -684,23 +684,23 @@ static int test_history_search(struct harness_t *harness_p)
                             "hello: command not found\r\n"
                             "ERROR(-1003)\r\n"
                             "$ ",
-                            NULL) == 0);
+                            NULL) > 0);
 
     /* Send Ctrl+R and search for the 'history' command. */
     chan_write(&qin, "\x12", 1);
     BTASSERT(harness_expect(&qout,
                             "\x1b[K(history-search)`': \x1b[3D",
-                            NULL) == 0);
+                            NULL) > 0);
 
     chan_write(&qin, "h", 1);
-    BTASSERT(harness_expect(&qout, "\x1b[Kh': hello\x1b[8D", NULL) == 0);
+    BTASSERT(harness_expect(&qout, "\x1b[Kh': hello\x1b[8D", NULL) > 0);
 
     chan_write(&qin, "i", 1);
     BTASSERT(harness_expect(&qout,
                             "\x1b[K"
                             "i': "
                             "history\x1b[10D",
-                            NULL) == 0);
+                            NULL) > 0);
 
     /* Delete the 'i' to find hello again. */
     chan_write(&qin, "\x7f", 1);
@@ -709,11 +709,11 @@ static int test_history_search(struct harness_t *harness_p)
                             "\x1b[K"
                             "': "
                             "hello\x1b[8D",
-                            NULL) == 0);
+                            NULL) > 0);
 
     /* Ctrl+G to abort the search. */
     chan_write(&qin, "\x07", 1);
-    BTASSERT(harness_expect(&qout, "\x1b[18D\x1b[K", NULL) == 0);
+    BTASSERT(harness_expect(&qout, "\x1b[18D\x1b[K", NULL) > 0);
 
     std_printf(FSTR("\r\n"));
 
@@ -724,7 +724,7 @@ static int test_logout(struct harness_t *harness_p)
 {
     /* Logout. */
     chan_write(&qin, "logout\n", 7);
-    BTASSERT(harness_expect(&qout, "logout\nusername: ", NULL) == 0);
+    BTASSERT(harness_expect(&qout, "logout\nusername: ", NULL) > 0);
 
     std_printf(FSTR("\r\n"));
 

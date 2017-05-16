@@ -83,21 +83,21 @@ static int test_fs_commands(struct harness_t *harness_p)
     BTASSERT(fs_call(&buf[0], chan_null(), &queue, NULL) == -EINVAL);
     BTASSERT(harness_expect(&queue,
                             "Usage: write <address> <data>\r\n",
-                            NULL) == 0);
+                            NULL) == 31);
 
     strcpy(&buf[0], "/oam/nvm/write foo bar");
     BTASSERT(fs_call(&buf[0], chan_null(), &queue, NULL) == -EINVAL);
-    BTASSERT(harness_expect(&queue, "foo: bad address\r\n", NULL) == 0);
+    BTASSERT(harness_expect(&queue, "foo: bad address\r\n", NULL) == 18);
 
     strcpy(&buf[0], "/oam/nvm/write 0x2 bar");
     BTASSERT(fs_call(&buf[0], chan_null(), &queue, NULL) == -EINVAL);
-    BTASSERT(harness_expect(&queue, "bar: bad data\r\n", NULL) == 0);
+    BTASSERT(harness_expect(&queue, "bar: bad data\r\n", NULL) == 15);
 
     strcpy(&buf[0], "/oam/nvm/write 0x2 0x123");
     BTASSERT(fs_call(&buf[0], chan_null(), &queue, NULL) == -EINVAL);
     BTASSERT(harness_expect(&queue,
                             "0x123: data out of range\r\n",
-                            NULL) == 0);
+                            NULL) == 26);
 
     strcpy(&buf[0], "/oam/nvm/write 0x2 0x12");
     BTASSERT(fs_call(&buf[0], chan_null(), &queue, NULL) == 0);
@@ -107,15 +107,15 @@ static int test_fs_commands(struct harness_t *harness_p)
     BTASSERT(fs_call(&buf[0], chan_null(), &queue, NULL) == -EINVAL);
     BTASSERT(harness_expect(&queue,
                             "Usage: read <address>\r\n",
-                            NULL) == 0);
+                            NULL) == 23);
 
     strcpy(&buf[0], "/oam/nvm/read fie");
     BTASSERT(fs_call(&buf[0], chan_null(), &queue, NULL) == -EINVAL);
-    BTASSERT(harness_expect(&queue, "fie: bad address\r\n", NULL) == 0);
+    BTASSERT(harness_expect(&queue, "fie: bad address\r\n", NULL) == 18);
 
     strcpy(&buf[0], "/oam/nvm/read 0x2");
     BTASSERT(fs_call(&buf[0], chan_null(), &queue, NULL) == 0);
-    BTASSERT(harness_expect(&queue, "0x12\r\n", NULL) == 0);
+    BTASSERT(harness_expect(&queue, "0x12\r\n", NULL) == 6);
 
     return (0);
 }

@@ -126,7 +126,8 @@ int harness_run(struct harness_t *self_p,
  * @param[in] pattern_p Pattern to wait for.
  * @param[in] timeout_p Timeout, or NULL to wait forever.
  *
- * @return zero(0) or negative error code.
+ * @return Number of bytes read from the channel when match occured,
+ *         or negative error code.
  */
 int harness_expect(void *chan_p,
                    const char *pattern_p,
