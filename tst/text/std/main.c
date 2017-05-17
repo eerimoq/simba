@@ -462,8 +462,8 @@ static int test_strtod(struct harness_t *harness_p)
 static int test_hexdump(struct harness_t *harness_p)
 {
     BTASSERT(std_hexdump(sys_get_stdout(),
-                         "1234567890abcdefghijkl\r\n",
-                         25) == 147);
+                         "1234567890abcdefghijkl\xff\r\n",
+                         26) == 148);
 
     return (0);
 }

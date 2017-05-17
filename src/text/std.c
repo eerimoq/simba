@@ -875,7 +875,7 @@ ssize_t std_hexdump(void *chan_p, const void *buf_p, size_t size)
             std_fprintf(chan_p, FSTR("%08x: "), pos);
         }
 
-        std_fprintf(chan_p, FSTR("%02x "), b_p[pos]);
+        std_fprintf(chan_p, FSTR("%02x "), b_p[pos] & 0xff);
 
         if ((pos % 16) == 15) {
             print_ascii(chan_p, &b_p[pos - 15], 16);
