@@ -35,27 +35,79 @@
 
 #define _ASSERTFMT(fmt, ...) std_printf(FSTR(fmt "\n"), ##__VA_ARGS__);
 
+#define _ASSERTHEX(actual_str, actual, expected_str, expected, size)    \
+    std_printf(FSTR(":: \r\n"                                           \
+                    "Memory buffer '" actual_str "'\r\n"));             \
+    std_hexdump(sys_get_stdout(), actual, size);                        \
+    std_printf(FSTR("is not equal to memory buffer '" expected_str "'\r\n")); \
+    std_hexdump(sys_get_stdout(), expected, size);
+
 /**
  * Assert given condition. Print an error message and return given
  * value ``res`` on error.
  */
-#define BTASSERTR(cond, res, ...)                                       \
+#define BTASSERTRM(cond, cond_str, res, msg)                            \
     if (!(cond)) {                                                      \
-        std_printf(FSTR(__FILE__ ":" STRINGIFY(__LINE__) ": BTASSERT: " #cond " ")); \
-        _ASSERTFMT(__VA_ARGS__);                                        \
+        std_printf(FSTR(__FILE__ ":" STRINGIFY(__LINE__) ": BTASSERT: " \
+                        cond_str " "));                                 \
+        msg;                                                            \
         return (res);                                                   \
     }
 
 /**
  * Assert given condition. Print an error message and return given
+ * value ``res`` on error.
+ */
+#define BTASSERTR(cond, cond_str, res, ...) \
+    BTASSERTRM(cond, cond_str, res, _ASSERTFMT(__VA_ARGS__));
+
+/**
+ * Assert given condition. Print an error message and return given
  * value on error.
  */
-#define BTASSERTN(cond, ...) BTASSERTR(cond, NULL, __VA_ARGS__)
+#define BTASSERTN(cond, ...) BTASSERTR(cond, #cond, NULL, __VA_ARGS__)
 
 /**
  * Assert given condition. Print an error message and return.
  */
-#define BTASSERT(cond, ...) BTASSERTR(cond, -1, __VA_ARGS__)
+#define BTASSERT(cond, ...) BTASSERTR(cond, #cond, -1, __VA_ARGS__)
+
+/**
+ * Compare two integers `actual` and `expected` with given operator
+ * `operator`. Print an error message if the condition is not true and
+ * return.
+ */
+#define BTASSERTI(actual, operator, expected)                           \
+    do {                                                                \
+        int UNIQUE(_actual);                                            \
+        int UNIQUE(_expected);                                          \
+        UNIQUE(_actual) = (actual);                                     \
+        UNIQUE(_expected) = (expected);                                 \
+        BTASSERTR(UNIQUE(_actual) operator UNIQUE(_expected),           \
+                  #actual " " #operator " " #expected,                  \
+                  -1,                                                   \
+                  ":: Condition '%d " #operator " %d' is not true.",    \
+                  UNIQUE(_actual),                                      \
+                  UNIQUE(_expected));                                   \
+    } while (0)
+
+/**
+ * Comapre two memory positions `actual` and `expected`. Print an
+ * error message if they are not equal and return.
+ */
+#define BTASSERTM(actual, expected, size)                               \
+    do {                                                                \
+        const void *UNIQUE(_actual);                                    \
+        const void *UNIQUE(_expected);                                  \
+        UNIQUE(_actual) = (actual);                                     \
+        UNIQUE(_expected) = (expected);                                 \
+        BTASSERTRM(memcmp(UNIQUE(_actual), UNIQUE(_expected), size) == 0, \
+                   "memcmp(" #actual ", " #expected ") == 0",           \
+                   -1,                                                  \
+                   _ASSERTHEX(#actual, UNIQUE(_actual),                 \
+                              #expected, UNIQUE(_expected),             \
+                              size));                                   \
+    } while (0)
 
 /**
  * Assert given condition in a testcase. Print an error message and
