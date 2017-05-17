@@ -152,14 +152,16 @@ def flash_read(serial_connection, address, size, progress=None):
     return response_payload
 
 
-def upload(serial_connection, baudrate, control_port):
+def upload(serial_connection, mcu, baudrate, bam_baudrate, control_port):
     """Upload the spc5tool SRAM application using the BAM.
 
     """
 
     spc5tool_bin = os.path.join(SCRIPT_PATH,
                                 'spc5tool',
-                                'spc5tool.' + str(baudrate) + '.bin')
+                                'spc5tool-{}-{}-{}.bin'.format(mcu,
+                                                               baudrate,
+                                                               bam_baudrate))
 
     if control_port:
         control_port_connection = serial.Serial(control_port)
@@ -236,7 +238,11 @@ def do_upload(args):
     serial_connection = serial.Serial(args.port,
                                       baudrate=args.bam_baudrate,
                                       timeout=SERIAL_TIMEOUT)
-    upload(serial_connection, args.baudrate, args.control_port)
+    upload(serial_connection,
+           args.mcu,
+           args.baudrate,
+           args.bam_baudrate,
+           args.control_port)
 
 
 def do_ping(args):
@@ -296,7 +302,11 @@ def do_flash_write(args):
 
     if not args.no_upload:
         serial_connection.baudrate = args.bam_baudrate
-        upload(serial_connection, args.baudrate, args.control_port)
+        upload(serial_connection,
+               args.mcu,
+               args.baudrate,
+               args.bam_baudrate,
+               args.control_port)
         serial_connection.baudrate = args.baudrate
 
     f = bincopy.BinFile()
@@ -371,13 +381,17 @@ def main():
                   "turn accesses the flash memory."
     parser = argparse.ArgumentParser(description=description)
     parser.add_argument('-p', '--port', default='/dev/ttyUSB1')
+    parser.add_argument('-m', '--mcu',
+                        default='spc56d40l1',
+                        choices=['spc56d30l1', 'spc56d40l1'])
     parser.add_argument('-b', '--baudrate',
                         type=int,
                         default=921600,
                         choices=[115200, 921600])
     parser.add_argument('-B', '--bam-baudrate',
                         type=int,
-                        default=19200)
+                        default=19200,
+                        choices=[9600, 19200])
     parser.add_argument('-c', '--control-port')
     parser.add_argument('-d', '--debug', action='store_true')
     parser.add_argument('--version',

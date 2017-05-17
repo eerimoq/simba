@@ -449,7 +449,17 @@ struct spc5_swt_t {
 
 /* Flash addresses and sizes. */
 #define SPC5_CFLASH_ADDRESS                               0x0
-#define SPC5_CFLASH_SIZE                              0x40000
+
+#if defined(MCU_SPC56D30L1)
+#    define SPC5_CFLASH_SIZE                          0x20000
+#elif defined(MCU_SPC56D40L1)
+#    define SPC5_CFLASH_SIZE                          0x40000
+#elif defined(MCU_LINUX)
+#    define SPC5_CFLASH_SIZE                          0x20000
+#else
+#    error "Unsupported MCU."
+#endif
+
 #define SPC5_DFLASH_ADDRESS                          0x800000
 #define SPC5_DFLASH_SIZE                              0x10000
 

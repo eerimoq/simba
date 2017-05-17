@@ -7,7 +7,7 @@ MEMORY
 {
         cflash (rx)  : ORIGIN = 0x00000000, LENGTH = 0x00040000 /* Code flash, 256K */
         dflash (rx)  : ORIGIN = 0x00800000, LENGTH = 0x00010000 /* Data flash,  64K */
-        ram (rwx)    : ORIGIN = 0x40000100, LENGTH = 0x00003f00 /* SRAM,        16K */
+        ram (rwx)    : ORIGIN = 0x40000100, LENGTH = 0x00002000 /* SRAM,        8K */
 }
 
 __cflash_begin = ORIGIN(cflash);

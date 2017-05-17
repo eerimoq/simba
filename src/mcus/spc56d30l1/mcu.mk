@@ -28,33 +28,25 @@
 # This file is part of the Simba project.
 #
 
-INC += $(SIMBA_ROOT)/src/boards/spc56ddiscovery
-SRC += $(SIMBA_ROOT)/src/boards/spc56ddiscovery/board.c
+INC += \
+	$(SIMBA_ROOT)/src/mcus/spc56d30l1 \
+	$(SIMBA_ROOT)/src/mcus/spc5
+SRC += \
+	$(SIMBA_ROOT)/src/mcus/spc5/spc5.c \
+	$(SIMBA_ROOT)/src/mcus/spc5/spc5.S \
+	$(SIMBA_ROOT)/src/mcus/spc56d30l1/mcu.c
 
-BOARD_HOMEPAGE = "http://www.st.com/en/evaluation-tools/spc56d-discovery.html"
-BOARD_PINOUT = "spc56d-discovery-pinout.png"
-BOARD_DESC = "SPC56D Discovery"
+F_CPU = 48000000
+MCPU = e200z0
 
-MCU ?= spc56d40l1
+LIBPATH += "$(SIMBA_ROOT)/src/mcus/spc56d30l1"
+LINKER_SCRIPT ?= script.ld
 
-SERIAL_PORT ?= /dev/arduino
-CONTROL_PORT ?=
-CONTROL_PORT_ARG = $(CONTROL_PORT:%=--control-port %)
-TIMEOUT ?= 10
-SPC5TOOL_PY ?= $(SIMBA_ROOT)/bin/spc5tool.py
-RUN_PY ?= $(SIMBA_ROOT)/src/boards/spc56ddiscovery/run.py
-BAUDRATE ?= 115200
+ARCH = ppc
+FAMILY = spc5
 
-upload:
-	python -u $(SPC5TOOL_PY) --port $(SERIAL_PORT) $(CONTROL_PORT_ARG) \
-	flash_write --erase --verify $(HEX)
+MCU_HOMEPAGE = ""
+MCU_NAME = ""
+MCU_DESC = "SPC56D30L1 PPC @ 48MHz, 12k SRAM, 128k CFlash, 64k DFlash"
 
-rerun:
-	@echo "Running '$(EXE)'."
-	python -u $(RUN_PY) --port $(SERIAL_PORT) \
-			    $(CONTROL_PORT_ARG) \
-			    --timeout $(TIMEOUT) \
-			    --baudrate $(BAUDRATE) \
-			    --pattern $(RUN_END_PATTERN)\
-			    --pattern-success $(RUN_END_PATTERN_SUCCESS) \
-			    | tee $(RUNLOG) ; test $${PIPESTATUS[0]} -eq 0
+include $(SIMBA_ROOT)/make/$(TOOLCHAIN)/ppc.mk
