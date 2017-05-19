@@ -224,4 +224,9 @@ int ssl_socket_get_cipher(struct ssl_socket_t *self_p,
                           const char **protocol_pp,
                           int *number_of_secret_bits_p);
 
+/**
+ * Reinitialize the SSL module 
+ */
+void ssl_module_reset();
+
 #endif
