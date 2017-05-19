@@ -79,27 +79,6 @@ void ssl_module_reset()
 	ssl_module_init();
 }
 
-void ssl_module_reset()
-{
-	if(module.initialized == 0)
-	{
-		return ;
-	}
-	mbedtls_entropy_free(&module.entropy);
-	mbedtls_ctr_drbg_free(&module.ctr_drbg);
-	mbedtls_ssl_free(&module.ssl);
-	mbedtls_ssl_config_free(&module.conf);
-	mbedtls_x509_crt_free(&module.cert);
-	mbedtls_pk_free(&module.key);
-	mbedtls_x509_crt_free(&module.ca_certs);
-	memset(&module.timer,0,sizeof(module.timer));
-	module.initialized = 0;
-	module.ssl_allocated = 0;
-	module.conf_allocated = 0 ;
-	
-	ssl_module_init();
-}
-
 static void *alloc_ssl(void)
 {
     if (module.ssl_allocated == 1) {
