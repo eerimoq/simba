@@ -2588,6 +2588,18 @@ struct sam_twi_t {
     uint32_t PTSR;      /**< \brief (Twi Offset: 0x124) Transfer Status Register */
 };
 
+/* SAM3 True Random Number Generator registers */
+struct sam_trng_t   {
+    uint32_t CR;
+    uint32_t Reserved1[3];
+    uint32_t IER;      /**< \brief (Trng Offset: 0x10) Interrupt Enable Register */
+    uint32_t IDR;      /**< \brief (Trng Offset: 0x14) Interrupt Disable Register */
+    uint32_t IMR;      /**< \brief (Trng Offset: 0x18) Interrupt Mask Register */
+    uint32_t ISR;      /**< \brief (Trng Offset: 0x1C) Interrupt Status Register */
+    uint32_t Reserved2[12];
+    uint32_t ODATA;    /**< \brief (Trng Offset: 0x50) Output Data Register */
+};
+
 
 /* Base addresses of peripherals. */
 #define SAM_HSMCI      ((volatile struct sam_hsmci_t  *)0x40000000u)
