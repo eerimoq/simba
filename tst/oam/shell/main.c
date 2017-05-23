@@ -720,6 +720,17 @@ static int test_history_search(struct harness_t *harness_p)
     return (0);
 }
 
+static int test_comment(struct harness_t *harness_p)
+{
+    /* Logout. */
+    chan_write(&qin, " # this is a comment\n", 21);
+    BTASSERTI(harness_expect(&qout, " # this is a comment\n$ ", NULL), ==, 23);
+
+    std_printf(FSTR("\r\n"));
+
+    return (0);
+}
+
 static int test_logout(struct harness_t *harness_p)
 {
     /* Logout. */
@@ -756,6 +767,7 @@ int main()
         { test_history, "test_history" },
         { test_history_up_down, "test_history_up_down" },
         { test_history_search, "test_history_search" },
+        { test_comment, "test_comment" },
         { test_logout, "test_logout" },
         { NULL, NULL }
     };

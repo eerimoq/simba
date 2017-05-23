@@ -32,7 +32,7 @@ except ImportError:
 
 from errnos import human_readable_errno
 
-__version__ = '1.0'
+__version__ = '1.1'
 
 # SOAM protocol definitions.
 SOAM_TYPE_STDOUT_PRINTF                = 1
@@ -595,6 +595,10 @@ class Shell(cmd.Cmd):
         print(text, file=self.stdout, end=end)
 
     def precmd(self, line):
+        # Lines starting with # is a comment.
+        if line.strip().startswith('#'):
+            return ''
+
         self.line = line
         return line
 
