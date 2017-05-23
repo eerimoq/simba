@@ -78,7 +78,6 @@ void ssl_module_reset()
     //these are always initialized in module.init 
     mbedtls_entropy_free(&module.entropy);
     mbedtls_ctr_drbg_free(&module.ctr_drbg);
-    
     //sanity checks 
     if(module.allocated[SSL_MODULE_ALLOCATED_SSL])
             mbedtls_ssl_free(&module.ssl);
@@ -107,7 +106,11 @@ static void *alloc_ssl(void)
 
 static void free_ssl(void *ssl_p)
 {
+    //more sanity checks 
+    if(0 == module.allocated[SSL_MODULE_ALLOCATED_SSL])
+        return ;
     module.allocated[SSL_MODULE_ALLOCATED_SSL] = 0;
+    mbedtls_ssl_free(ssl_p);
 }
 
 static void *alloc_conf(void)
@@ -116,13 +119,15 @@ static void *alloc_conf(void)
         return (NULL);
     }
     module.allocated[SSL_MODULE_ALLOCATED_CONF] = 1;
-
     return (&module.conf);
 }
 
 static void free_conf(void *conf_p)
 {
+    if(0 == module.allocated[SSL_MODULE_ALLOCATED_CONF])
+        return ;
     module.allocated[SSL_MODULE_ALLOCATED_CONF] = 0;
+    mbedtls_ssl_config_free(conf_p);
 }
 
 static int ssl_send(void *ctx_p,
@@ -158,7 +163,6 @@ int ssl_module_init()
                               0) != 0) {
         return (-1);
     }
-		printf("done reinitializing\n");
     return (0);
 }
 
@@ -193,6 +197,15 @@ int ssl_context_destroy(struct ssl_context_t *self_p)
     ASSERTN(self_p->conf_p != NULL, EINVAL);
 		module.initialized = 0 ;
     free_conf(self_p->conf_p);
+    if(module.allocated[SSL_MODULE_ALLOCATED_CERT])
+        mbedtls_x509_crt_free(&module.cert);
+    if(module.allocated[SSL_MODULE_ALLOCATED_KEY])
+        mbedtls_pk_free(&module.key);
+    if(module.allocated[SSL_MODULE_ALLOCATED_CA_CERTS])
+        mbedtls_x509_crt_free(&module.ca_certs);
+    module.allocated[SSL_MODULE_ALLOCATED_CERT] = 0;
+    module.allocated[SSL_MODULE_ALLOCATED_KEY] = 0;
+    module.allocated[SSL_MODULE_ALLOCATED_CA_CERTS] = 0;
     return (0);
 }
 
@@ -286,7 +299,6 @@ int ssl_socket_open(struct ssl_socket_t *self_p,
     int res;
     int authmode;
     int server_side;
-   // mbedtls_ssl_conf_dbg(context_p->conf_p, my_f_debug, stdout);
     mbedtls_ssl_conf_dbg(context_p->conf_p, my_f_debug, stdout);
     server_side = (flags & SSL_SOCKET_SERVER_SIDE);
     
@@ -391,7 +403,6 @@ int ssl_socket_close(struct ssl_socket_t *self_p)
     mbedtls_ssl_close_notify(self_p->ssl_p);
     mbedtls_ssl_free(self_p->ssl_p);
     free_ssl(self_p->ssl_p);
-
     return (0);
 }
 
@@ -470,7 +481,7 @@ int ssl_context_create_private_key(unsigned char* output_buf)
 #endif
 
 #if defined(MBEDTLS_PK_WRITE_C) && \
-	defined(MBEDTLS_ENTROPY_C) && defined(MBEDTLS_CTR_DRBG_C)
+    defined(MBEDTLS_ENTROPY_C) && defined(MBEDTLS_CTR_DRBG_C)
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -511,76 +522,73 @@ USAGE_DEV_RANDOM
 */
 struct options_key
 {
-	int type;                   /* the type of key to generate          */
-	int rsa_keysize;            /* length of key in bits                */
-	int ec_curve;               /* curve identifier for EC keys         */
-	int format;                 /* the output format to use             */
-	int use_dev_random;         /* use /dev/random as entropy source    */
+    int type;                   /* the type of key to generate          */
+    int rsa_keysize;            /* length of key in bits                */
+    int ec_curve;               /* curve identifier for EC keys         */
+    int format;                 /* the output format to use             */
+    int use_dev_random;         /* use /dev/random as entropy source    */
 } opt_key;
  
 static int write_private_key( unsigned char* output_buf)
 {
-	int ret;
-	int len = 0;
-	if( opt_key.format == FORMAT_PEM )
-	{
-		if( ( ret = mbedtls_pk_write_key_pem(&global_key, output_buf, 1024 ) ) != 0 )
+    int ret = 0;
+    if( opt_key.format == FORMAT_PEM )
+    {
+        if( ( ret = mbedtls_pk_write_key_pem(&global_key, output_buf, 1024 ) ) != 0 )
             return( ret );
-        len = strlen( (char *) output_buf );
-	}
+        ret = strlen( (char *) output_buf );
+    }
     //todo : support FORMAT_DER
-	return len;
+    return ret;
 
 }
  
 static mbedtls_pk_context generate_key(unsigned char* output_buf)
 {
-	int ret = 1;
-	mbedtls_pk_context key;
-	mbedtls_entropy_context entropy;
-	mbedtls_ctr_drbg_context ctr_drbg;
-	const char *pers = "gen_key";
-	mbedtls_pk_init( &key );
-	mbedtls_ctr_drbg_init( &ctr_drbg );
-
-    
-	opt_key.type                = DFL_TYPE;
-	opt_key.rsa_keysize         = DFL_RSA_KEYSIZE;
-	opt_key.ec_curve            = DFL_EC_CURVE;
-	opt_key.format              = DFL_FORMAT;
-	opt_key.use_dev_random      = DFL_USE_DEV_RANDOM;
-	mbedtls_entropy_init( &entropy );
-	if( ( ret = mbedtls_ctr_drbg_seed( &ctr_drbg, mbedtls_entropy_func, &entropy,
-														 (const unsigned char *) pers,
-														 strlen( pers ) ) ) != 0 )
-	{
+    int ret = 1;
+    mbedtls_pk_context key;
+    mbedtls_entropy_context entropy;
+    mbedtls_ctr_drbg_context ctr_drbg;
+    const char *pers = "gen_key";
+    mbedtls_pk_init( &key );
+    mbedtls_ctr_drbg_init( &ctr_drbg );
+    opt_key.type                = DFL_TYPE;
+    opt_key.rsa_keysize         = DFL_RSA_KEYSIZE;
+    opt_key.ec_curve            = DFL_EC_CURVE;
+    opt_key.format              = DFL_FORMAT;
+    opt_key.use_dev_random      = DFL_USE_DEV_RANDOM;
+    mbedtls_entropy_init( &entropy );
+    if( ( ret = mbedtls_ctr_drbg_seed( &ctr_drbg, mbedtls_entropy_func, &entropy,
+                                                        (const unsigned char *) pers,
+                                                        strlen( pers ) ) ) != 0 )
+    {
         mbedtls_printf( "Certificate creation failed\n  ! mbedtls_ctr_drbg_seed returned -0x%04x\n", -ret );
         goto exit;
 	}
 
 
-	if( ( ret = mbedtls_pk_setup( &key, mbedtls_pk_info_from_type( opt_key.type ) ) ) != 0 )
-	{
+    if( ( ret = mbedtls_pk_setup( &key, mbedtls_pk_info_from_type( opt_key.type ) ) ) != 0 )
+    {
         mbedtls_printf( "Certificate creation  failed\n  !  mbedtls_pk_setup returned -0x%04x", -ret );
         goto exit;
-	}
+    }
 
 #if defined(MBEDTLS_RSA_C) && defined(MBEDTLS_GENPRIME)
-	if( opt_key.type == MBEDTLS_PK_RSA )
-	{
+    if( opt_key.type == MBEDTLS_PK_RSA )
+    {
         ret = mbedtls_rsa_gen_key( mbedtls_pk_rsa( key ), mbedtls_ctr_drbg_random, &ctr_drbg,
-                                             opt_key.rsa_keysize, 65537 );
+                                                        opt_key.rsa_keysize, 65537 );
         if( ret != 0 )
         {
-                mbedtls_printf( "Certificate creation  failed\n  !  mbedtls_rsa_gen_key returned -0x%04x", -ret );
-                goto exit;
+            mbedtls_printf( "Certificate creation  failed\n  !  mbedtls_rsa_gen_key returned -0x%04x", -ret );
+            goto exit;
         }
 	}
 	else
 #endif /* MBEDTLS_RSA_C */
 #if defined(MBEDTLS_ECP_C)
-	if( opt_key.type == MBEDTLS_PK_ECKEY )
-	{
+    if( opt_key.type == MBEDTLS_PK_ECKEY )
+    {
         ret = mbedtls_ecp_gen_key( opt_key.ec_curve, mbedtls_pk_ec( key ),
                                             mbedtls_ctr_drbg_random, &ctr_drbg );
         if( ret != 0 )
@@ -588,18 +596,17 @@ static mbedtls_pk_context generate_key(unsigned char* output_buf)
                 mbedtls_printf( "Certificate creation  failed\n  !  mbedtls_rsa_gen_key returned -0x%04x", -ret );
                 goto exit;
         }
-	}
-	else
+    }
+    else
 #endif /* MBEDTLS_ECP_C */
-	{
+    {
         mbedtls_printf( "Certificate creation  failed\n  !  key type not supported\n" );
         goto exit;
-	}
-  mbedtls_entropy_free( &entropy );
-  mbedtls_ctr_drbg_free( &ctr_drbg );
+    }
+    mbedtls_entropy_free( &entropy );
+    mbedtls_ctr_drbg_free( &ctr_drbg );
 exit:
-
-	return(key) ;
+    return(key) ;
 }
 
 
@@ -673,39 +680,39 @@ USAGE_CSR
 */
 struct options_cert
 {
-	const char *issuer_crt;     /* filename of the issuer certificate   */
-	const char *request_file;   /* filename of the certificate request  */
-	const char *issuer_key;     /* filename of the issuer key file      */
-	const char *subject_pwd;    /* password for the subject key file    */
-	const char *issuer_pwd;     /* password for the issuer key file     */
-	const char *output_file;    /* where to store the constructed key file  */
-	const char *subject_name;   /* subject name for certificate         */
-	const char *issuer_name;    /* issuer name for certificate          */
-	const char *not_before;     /* validity period not before           */
-	const char *not_after;      /* validity period not after            */
-	const char *serial;         /* serial number string                 */
-	int selfsign;               /* selfsign the certificate             */
-	int is_ca;                  /* is a CA certificate                  */
-	int max_pathlen;            /* maximum CA path length               */
-	unsigned char key_usage;    /* key usage flags                      */
-	unsigned char ns_cert_type; /* NS cert type                         */
+    const char *issuer_crt;     /* filename of the issuer certificate   */
+    const char *request_file;   /* filename of the certificate request  */
+    const char *issuer_key;     /* filename of the issuer key file      */
+    const char *subject_pwd;    /* password for the subject key file    */
+    const char *issuer_pwd;     /* password for the issuer key file     */
+    const char *output_file;    /* where to store the constructed key file  */
+    const char *subject_name;   /* subject name for certificate         */
+    const char *issuer_name;    /* issuer name for certificate          */
+    const char *not_before;     /* validity period not before           */
+    const char *not_after;      /* validity period not after            */
+    const char *serial;         /* serial number string                 */
+    int selfsign;               /* selfsign the certificate             */
+    int is_ca;                  /* is a CA certificate                  */
+    int max_pathlen;            /* maximum CA path length               */
+    unsigned char key_usage;    /* key usage flags                      */
+    unsigned char ns_cert_type; /* NS cert type                         */
 } opt_cert;
 
 int write_certificate( mbedtls_x509write_cert *crt,
                        int (*f_rng)(void *, unsigned char *, size_t),
                        void *p_rng, unsigned char* output_buf )
 {
-	int ret ;
-	if( (ret = mbedtls_x509write_crt_pem( crt, output_buf, 1024, f_rng, p_rng ) ) < 0 )
-		return ret;
-	return strlen((char *)output_buf);
+    int ret ;
+    if( (ret = mbedtls_x509write_crt_pem( crt, output_buf, 1024, f_rng, p_rng ) ) < 0 )
+        return ret;
+    return strlen((char *)output_buf);
 }
 int create_certificate_from_key(unsigned char *cert_buf)
 { 
-	 
+     
     int ret = 0;
     mbedtls_x509_crt issuer_crt;
-		mbedtls_pk_context *issuer_key = &global_key; 
+        mbedtls_pk_context *issuer_key = &global_key; 
 #if defined(MBEDTLS_X509_CSR_PARSE_C)
     mbedtls_x509_csr csr;
 #endif
@@ -714,7 +721,6 @@ int create_certificate_from_key(unsigned char *cert_buf)
     mbedtls_entropy_context entropy;
     mbedtls_ctr_drbg_context ctr_drbg;
     const char *pers = "crt example app";
-    
     mbedtls_x509write_crt_init( &crt );
     mbedtls_x509write_crt_set_md_alg( &crt, MBEDTLS_MD_SHA256 );
     mbedtls_mpi_init( &serial );
@@ -839,48 +845,33 @@ int create_certificate_from_key(unsigned char *cert_buf)
 
     if( opt_cert.key_usage )
     {
-        mbedtls_printf( "  . Adding the Key Usage extension ..." );
-        fflush( stdout );
-
         ret = mbedtls_x509write_crt_set_key_usage( &crt, opt_cert.key_usage );
         if( ret != 0 )
         {
             mbedtls_printf( " failed\n  !  mbedtls_x509write_crt_set_key_usage returned\n\n");// -0x%02x - %s\n\n", -ret, buf );
             goto exit;
         }
-
-        mbedtls_printf( " ok\n" );
     }
 
     if( opt_cert.ns_cert_type )
     {
-        mbedtls_printf( "  . Adding the NS Cert Type extension ..." );
-        fflush( stdout );
-
         ret = mbedtls_x509write_crt_set_ns_cert_type( &crt, opt_cert.ns_cert_type );
         if( ret != 0 )
         {
             mbedtls_printf( " failed\n  !  mbedtls_x509write_crt_set_ns_cert_type returned \n\n");//-0x%02x - %s\n\n", -ret, buf );
             goto exit;
         }
-
-        mbedtls_printf( " ok\n" );
     }
 
     /*
-     * 1.2. Writing the request
+     * 1.2. Writing the certificate 
      */
-    mbedtls_printf( ".Writing the certificate..." );
-
-
 		
     if( ( ret = write_certificate( &crt, mbedtls_ctr_drbg_random, &ctr_drbg, cert_buf ) ) < 0  ) //memory consuming as fuck 
     {
         mbedtls_printf( " failed\n  !  write_certifcate error code %d \n\n", ret );// -0x%02x - %s\n\n", -ret, buf );
         goto exit;
     }
-
-    mbedtls_printf( " ok\n" );
 
 exit:
     mbedtls_mpi_free( &serial );
