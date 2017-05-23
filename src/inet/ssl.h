@@ -174,14 +174,6 @@ int ssl_socket_close(struct ssl_socket_t *self_p);
  * @return Number of written bytes or negative error code.
  */
  
-/**
-*	Used for generating new ssl certificates 
-* and private keys 
-*
-*
-*
-*
-*/
 ssize_t ssl_socket_write(struct ssl_socket_t *self_p,
                          const void *buf_p,
                          size_t size);
@@ -234,6 +226,7 @@ int ssl_socket_get_cipher(struct ssl_socket_t *self_p,
                           const char **cipher_pp,
                           const char **protocol_pp,
                           int *number_of_secret_bits_p);
+                          
 /**
  * Writes to output_buf a generated key, returns its length through key_len
  * 
