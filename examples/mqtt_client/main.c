@@ -39,16 +39,11 @@
 #   define REMOTE_HOST_PORT       10000
 #endif
 
-struct message_t {
-    void *buf_p;
-    size_t size;
-};
-
 static struct socket_t server_sock;
 static struct mqtt_client_t client;
 
 static THRD_STACK(stack, 4096);
-int message_count = 0;
+static int message_count = 0;
 
 //! Callback when we get an message from the MQTT broker.
 static size_t on_publish(struct mqtt_client_t *client_p,
@@ -87,39 +82,39 @@ static int mqtt_init(void)
     int port = REMOTE_HOST_PORT;
     char remote_host_ip[] = STRINGIFY(REMOTE_HOST_IP);
     struct inet_addr_t remote_host_address;
-    int ret;
+    int res;
 
-    /* Setup TCP connection to MQTT broker */
+    /* Setup TCP connection to MQTT broker. */
     std_printf(OSTR("Connecting to MQTT Broker '%s:%d'.\r\n"),
-               emote_host_ip,
+               remote_host_ip,
                port);
     remote_host_address.port = port;
-    ret = inet_aton(remote_host_ip, &remote_host_address.ip);
+    res = inet_aton(remote_host_ip, &remote_host_address.ip);
 
-    if (ret != 0) {
+    if (res != 0) {
         std_printf(OSTR("Failed to convert '%s' to IP address: %d'\r\n"),
                    remote_host_ip,
-                   ret);
-        return (ret);
+                   res);
+        return (res);
     }
 
-    ret = socket_open_tcp(&server_sock);
+    res = socket_open_tcp(&server_sock);
 
-    if (ret != 0) {
+    if (res != 0) {
         std_printf(OSTR("Failed to open TCP socket: %d'\r\n"),
-                   ret);
-        return (ret);
+                   res);
+        return (res);
     }
 
-    ret = socket_connect(&server_sock, &remote_host_address);
+    res = socket_connect(&server_sock, &remote_host_address);
 
-    if (ret != 0) {
+    if (res != 0) {
         std_printf(OSTR("Failed to connect TCP socket to broker: %d'\r\n"),
-                   ret);
-        return (ret);
+                   res);
+        return (res);
     }
 
-    ret = mqtt_client_init(&client,
+    res = mqtt_client_init(&client,
                            "mqtt_client",
                            NULL,
                            &server_sock,
@@ -127,13 +122,13 @@ static int mqtt_init(void)
                            on_publish,
                            NULL);
 
-    if (ret != 0) {
+    if (res != 0) {
         std_printf(OSTR("Failed to initialized MQTT client: %d'\r\n"),
-                   ret);
-        return (ret);
+                   res);
+        return (res);
     }
 
-    /* Start the thread which will do the actual work */
+    /* Start the thread which will do the actual work. */
     thrd_p = thrd_spawn(mqtt_client_main,
                         &client,
                         0,
@@ -145,26 +140,28 @@ static int mqtt_init(void)
         return (-1);
     }
 
-    /* Set the mqtt_client thread to log errors */
+    /* Set the mqtt_client thread to log errors. */
     thrd_set_log_mask(thrd_p, LOG_UPTO(DEBUG));
 
-    /* Start MQTT connection */
-    ret = mqtt_client_connect(&client);
-    if (ret != 0) {
+    /* Start MQTT connection. */
+    res = mqtt_client_connect(&client);
+
+    if (res != 0) {
         std_printf(OSTR("Failed to connect to Broker: %d'\r\n"),
-                   ret);
-        return (ret);
+                   res);
+        return (res);
     }
 
     /*
      * We ping the broke to see if we have a connection.  This is not
      * required, just a sanity check.
      */
-    ret = mqtt_client_ping(&client);
-    if (ret != 0) {
+    res = mqtt_client_ping(&client);
+
+    if (res != 0) {
         std_printf(OSTR("Failed to ping Broker: %d'\r\n"),
-                   ret);
-        return (ret);
+                   res);
+        return (res);
     }
 
     return (0);
@@ -173,7 +170,7 @@ static int mqtt_init(void)
 static void publish_connected(void)
 {
     struct mqtt_application_message_t pub;
-    int ret;
+    int res;
 
     pub.topic.buf_p = "simba/test/connected";
     pub.topic.size = strlen(pub.topic.buf_p);
@@ -181,19 +178,20 @@ static void publish_connected(void)
     pub.payload.size = strlen(pub.payload.buf_p);
     pub.qos = mqtt_qos_1_t;
 
-    ret = mqtt_client_publish(&client, &pub);
-    if (ret != 0) {
+    res = mqtt_client_publish(&client, &pub);
+
+    if (res != 0) {
         std_printf(OSTR("Failed to publish %s = %s: %d\r\n"),
                    pub.topic.buf_p,
                    pub.payload.buf_p,
-                   ret);
+                   res);
     }
 }
 
 static void subscribe(void)
 {
     struct mqtt_application_message_t sub;
-    int ret;
+    int res;
 
     sub.topic.buf_p = "simba/test/sub0";
     sub.topic.size = strlen(sub.topic.buf_p);
@@ -201,35 +199,37 @@ static void subscribe(void)
 
     std_printf(OSTR("Subscribing to %s\r\n"), sub.topic.buf_p);
 
-    ret = mqtt_client_subscribe(&client, &sub);
-    if (ret != 0) {
+    res = mqtt_client_subscribe(&client, &sub);
+
+    if (res != 0) {
         std_printf(OSTR("Failed to subscribe %s: %d\r\n"),
                    sub.topic.buf_p,
-                   ret);
+                   res);
     }
 }
 
 static void unsubscribe(void)
 {
     struct mqtt_application_message_t unsub;
-    int ret;
+    int res;
 
     unsub.topic.buf_p = "simba/test/sub0";
     unsub.topic.size = strlen(unsub.topic.buf_p);
 
     std_printf(OSTR("Unsubscribing from %s\r\n"), unsub.topic.buf_p);
 
-    ret = mqtt_client_unsubscribe(&client, &unsub);
-    if (ret != 0) {
+    res = mqtt_client_unsubscribe(&client, &unsub);
+
+    if (res != 0) {
         std_printf(OSTR("Failed to unsubscribe %s: %d\r\n"),
                    unsub.topic.buf_p,
-                   ret);
+                   res);
     }
 }
 
 int main()
 {
-    int ret;
+    int res;
 
     /* Initialization. */
     sys_start();
@@ -240,7 +240,7 @@ int main()
     /* Connect and start operations. */
     mqtt_init();
 
-    /* Publish a message */
+    /* Publish a message. */
     publish_connected();
 
     /* Subscribe to our single topic. */
@@ -250,15 +250,15 @@ int main()
         std_printf(OSTR("Got %d messages\r\n"), message_count);
 
         /*
-         * Me must ensure we sent traffic periodically (at least every
+         * We must ensure we sent traffic periodically (at least every
          * 10 seconds) to the MQTT broker, otherwise it will close the
          * connection.
          */
-        ret = mqtt_client_ping(&client);
+        res = mqtt_client_ping(&client);
 
-        if (ret != 0) {
+        if (res != 0) {
             std_printf(OSTR("Failed to ping Broker: %d\r\n"),
-                   ret);
+                   res);
         }
 
         thrd_sleep(5);
