@@ -275,6 +275,75 @@ static int test_input_multi_frame_excessive_data(struct harness_t *harness_p)
     return (0);
 }
 
+static int test_input_single_frame_no_data(struct harness_t *harness_p)
+{
+    struct isotp_t isotp;
+    uint8_t buf[32];
+    uint8_t frame[8];
+
+    BTASSERT(isotp_init(&isotp, &buf[0], sizeof(buf), 0) == 0);
+
+    /* Input a single frame without data. */
+    frame[0] = (0 << 4) | 0;
+
+    BTASSERT(isotp_input(&isotp, &frame[0], 1) == -1);
+    BTASSERT(isotp_input(&isotp, &frame[0], 1) == -1);
+
+    return (0);
+}
+
+static int test_input_first_frame_no_data(struct harness_t *harness_p)
+{
+    struct isotp_t isotp;
+    uint8_t buf[32];
+    uint8_t frame[8];
+
+    BTASSERT(isotp_init(&isotp, &buf[0], sizeof(buf), 0) == 0);
+
+    /* Input a first frame without data. */
+    frame[0] = (1 << 4) | 0;
+    frame[1] = 0;
+
+    BTASSERT(isotp_input(&isotp, &frame[0], 2) == -1);
+    BTASSERT(isotp_input(&isotp, &frame[0], 2) == -1);
+
+    return (0);
+}
+
+static int test_input_unexpected_consecutive_frame(struct harness_t *harness_p)
+{
+    struct isotp_t isotp;
+    uint8_t buf[32];
+    uint8_t frame[8];
+
+    BTASSERT(isotp_init(&isotp, &buf[0], sizeof(buf), 0) == 0);
+
+    /* Input a first frame without data. */
+    frame[0] = (2 << 4) | 1;
+
+    BTASSERT(isotp_input(&isotp, &frame[0], 1) == -1);
+    BTASSERT(isotp_input(&isotp, &frame[0], 1) == -1);
+
+    return (0);
+}
+
+static int test_input_unexpected_flow_control_frame(struct harness_t *harness_p)
+{
+    struct isotp_t isotp;
+    uint8_t buf[32];
+    uint8_t frame[8];
+
+    BTASSERT(isotp_init(&isotp, &buf[0], sizeof(buf), 0) == 0);
+
+    /* Input a first frame without data. */
+    frame[0] = (3 << 4) | 0;
+
+    BTASSERT(isotp_input(&isotp, &frame[0], 1) == -1);
+    BTASSERT(isotp_input(&isotp, &frame[0], 1) == -1);
+
+    return (0);
+}
+
 int main()
 {
     struct harness_t harness;
@@ -287,6 +356,14 @@ int main()
           "test_input_single_frame_excessive_data" },
         { test_input_multi_frame_excessive_data,
           "test_input_multi_frame_excessive_data" },
+        { test_input_single_frame_no_data,
+          "test_input_single_frame_no_data" },
+        { test_input_first_frame_no_data,
+          "test_input_first_frame_no_data" },
+        { test_input_unexpected_consecutive_frame,
+          "test_input_unexpected_consecutive_frame" },
+        { test_input_unexpected_flow_control_frame,
+          "test_input_unexpected_flow_control_frame" },
         { NULL, NULL }
     };
 

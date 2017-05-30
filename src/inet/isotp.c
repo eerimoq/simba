@@ -63,7 +63,7 @@ static ssize_t handle_input_idle(struct isotp_t *self_p,
     case TYPE_SINGLE_FRAME:
         size = (buf_p[0] & 0x0f);
 
-        if (size > 7) {
+        if ((size > 7) || (size == 0)) {
             res = -1;
             break;
         }

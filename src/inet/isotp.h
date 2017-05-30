@@ -78,9 +78,9 @@ int isotp_init(struct isotp_t *self_p,
  *
  * @return Once a complete ISO-TP message has been received the size
  *         of the message is returned. Meanwhile, zero(0) or negative
- *         error code is returned. For an ISO-TP object that
- *         transmitts a message this function always returns zero(0)
- *         or negative error code.
+ *         error code is returned. For an ISO-TP object that transmits
+ *         a message this function always returns zero(0) or negative
+ *         error code.
  */
 ssize_t isotp_input(struct isotp_t *self_p,
                     const uint8_t *buf_p,
