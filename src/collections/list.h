@@ -153,7 +153,7 @@ struct list_sl_iterator_t {
  *
  * @param[in] list_p List object.
  * @param[in] iterator_p Used internally.
- * @param[in] element_p Used internally.
+ * @param[in] element_p Element to remove.
  * @param[in] iterator_element_p Used internally.
  * @param[in] previous_element_p Used internally.
  */
@@ -170,7 +170,7 @@ struct list_sl_iterator_t {
             if ((previous_element_p) != NULL) {                         \
                 (previous_element_p)->next_p = (element_p)->next_p;     \
             } else {                                                    \
-                (list_p)->head_p = NULL;                                \
+                (list_p)->head_p = (void *)((element_p)->next_p);       \
             }                                                           \
             if ((element_p)->next_p == NULL) {                          \
                 (list_p)->tail_p = NULL;                                \
