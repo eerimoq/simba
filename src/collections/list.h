@@ -110,16 +110,16 @@ struct list_sl_iterator_t {
  * @param[in] list_p List object.
  * @param[out] element_pp First element of the list.
  */
-#define LIST_SL_REMOVE_HEAD(list_p, element_pp)         \
-    do {                                                \
-        *(element_pp) = (list_p)->head_p;               \
-        if (*(element_pp) != NULL) {                    \
-            (list_p)->head_p = (*(element_pp))->next_p; \
-            (*(element_pp))->next_p = NULL;             \
-            if ((list_p)->tail_p == *(element_pp)) {    \
-                (list_p)->tail_p = NULL;                \
-            }                                           \
-        }                                               \
+#define LIST_SL_REMOVE_HEAD(list_p, element_pp)                 \
+    do {                                                        \
+        *(element_pp) = (list_p)->head_p;                       \
+        if (*(element_pp) != NULL) {                            \
+            (list_p)->head_p = (void *)(*(element_pp))->next_p; \
+            (*(element_pp))->next_p = NULL;                     \
+            if ((list_p)->tail_p == *(element_pp)) {            \
+                (list_p)->tail_p = NULL;                        \
+            }                                                   \
+        }                                                       \
     } while (0)
 
 /**

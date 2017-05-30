@@ -2211,7 +2211,7 @@
 #    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO)
 #        define CONFIG_HARNESS_HEAP_MAX                    16
 #    else
-#        define CONFIG_HARNESS_HEAP_MAX                  1024
+#        define CONFIG_HARNESS_HEAP_MAX                  2048
 #    endif
 #endif
 
