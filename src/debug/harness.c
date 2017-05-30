@@ -30,9 +30,42 @@
 
 #include "simba.h"
 
+struct mock_entry_t {
+    struct entry_t *next_p;
+    char *id_p;
+    struct {
+        void *buf_p;
+        size_t size;
+    } data;
+};
+
+struct module_t {
+    struct {
+        struct heap_t obj;
+        uint8_t buf[CONFIG_HARNESS_HEAP_MAX];
+    } heap;
+    struct {
+        struct mock_entry_t *head_p;
+        struct mock_entry_t *tail_p;
+    } mock_list;
+    struct sem_t sem;
+};
+
+static struct module_t module;
+
 int harness_init(struct harness_t *self_p)
 {
-    return (0);
+    size_t sizes[HEAP_FIXED_SIZES_MAX] = {
+        8, 16, 32, 64, 128, 128, 128, 128
+    };
+
+    LIST_SL_INIT(&module.mock_list);
+    sem_init(&module.sem, 0, 1);
+
+    return (heap_init(&module.heap.obj,
+                      &module.heap.buf[0],
+                      sizeof(module.heap.buf),
+                      &sizes[0]));
 }
 
 int harness_run(struct harness_t *self_p,
@@ -138,4 +171,107 @@ int harness_expect(void *chan_p,
     }
 
     return (-1);
+}
+
+ssize_t harness_mock_write(const char *id_p,
+                           const void *buf_p,
+                           size_t size)
+{
+    ssize_t res;
+    struct mock_entry_t *entry_p;
+
+    res = size;
+
+    sem_take(&module.sem, NULL);
+
+    /* Allocate memory for the mock id and data. */
+    entry_p = heap_alloc(&module.heap.obj, sizeof(*entry_p));
+
+    if (entry_p != NULL) {
+        entry_p->id_p = heap_alloc(&module.heap.obj, strlen(id_p) + 1);
+
+        if (entry_p->id_p != NULL) {
+            entry_p->data.buf_p = heap_alloc(&module.heap.obj, size);
+
+            if (entry_p->data.buf_p == NULL) {
+                heap_free(&module.heap.obj, entry_p->id_p);
+                heap_free(&module.heap.obj, entry_p);
+                res = -1;
+            }
+        } else {
+            heap_free(&module.heap.obj, entry_p);
+            res = -1;
+        }
+    } else {
+        res = -1;
+    }
+
+    if (res == size) {
+        /* Initiate the object. */
+        strcpy(entry_p->id_p, id_p);
+        memcpy(entry_p->data.buf_p, buf_p, size);
+        entry_p->data.size = size;
+
+        /* Add the entry at the end of the list. */
+        LIST_SL_ADD_TAIL(&module.mock_list, entry_p);
+    } else {
+        std_printf(FSTR("error: %s: mock id memory allocation failed\r\n"),
+                   id_p);
+    }
+
+    sem_give(&module.sem, 1);
+
+    return (res);
+}
+
+ssize_t harness_mock_read(const char *id_p,
+                          void *buf_p,
+                          size_t size)
+{
+    struct list_sl_iterator_t iterator;
+    struct mock_entry_t *entry_p;
+    struct mock_entry_t *iterator_entry_p;
+    struct mock_entry_t *prev_entry_p;
+    ssize_t res;
+
+    res = -1;
+
+    sem_take(&module.sem, NULL);
+
+    LIST_SL_ITERATOR_INIT(&iterator, &module.mock_list);
+
+    while (1) {
+        LIST_SL_ITERATOR_NEXT(&iterator, &entry_p);
+
+        if (entry_p == NULL) {
+            std_printf(FSTR("error: %s: mock id not found\r\n"), id_p);
+            break;
+        }
+
+        if (strcmp(entry_p->id_p, id_p) == 0) {
+            res = size;
+            break;
+        }
+    }
+
+    if (res == size) {
+        /* Remove the element from the list. */
+        LIST_SL_REMOVE_ELEM(&module.mock_list,
+                            &iterator,
+                            entry_p,
+                            iterator_entry_p,
+                            prev_entry_p);
+
+        /* Copy the value to the output buffer. */
+        memcpy(buf_p, entry_p->data.buf_p, entry_p->data.size);
+
+        /* Free allocated memory. */
+        heap_free(&module.heap.obj, entry_p->data.buf_p);
+        heap_free(&module.heap.obj, entry_p->id_p);
+        heap_free(&module.heap.obj, entry_p);
+    }
+
+    sem_give(&module.sem, 1);
+
+    return (res);
 }

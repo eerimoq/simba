@@ -56,7 +56,8 @@ ifeq ($(BOARD), linux)
 				    emacs \
 				    std \
                                     re)
-    TESTS += $(addprefix tst/debug/, log)
+    TESTS += $(addprefix tst/debug/, log \
+				     harness)
     TESTS += $(addprefix tst/oam/, nvm \
 				   service \
 				   settings \

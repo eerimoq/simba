@@ -30,7 +30,7 @@
 
 # Minimal set of files for a test suite.
 ifeq ($(TYPE),suite)
-  ALLOC_SRC +=
+  ALLOC_SRC += heap.c
   COLLECTIONS_SRC +=
   DEBUG_SRC += log.c harness.c
   DRIVERS_SRC += flash.c uart.c

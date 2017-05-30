@@ -86,7 +86,10 @@
         BTASSERTR(UNIQUE(_actual) operator UNIQUE(_expected),           \
                   #actual " " #operator " " #expected,                  \
                   -1,                                                   \
-                  ":: Condition '%d " #operator " %d' is not true.",    \
+                  ":: Condition '%d " #operator " %d' ('0x%x "          \
+                  #operator " 0x%x') is not true.",                     \
+                  UNIQUE(_actual),                                      \
+                  UNIQUE(_expected),                                    \
                   UNIQUE(_actual),                                      \
                   UNIQUE(_expected));                                   \
     } while (0)
@@ -102,7 +105,7 @@
         UNIQUE(_actual) = (actual);                                     \
         UNIQUE(_expected) = (expected);                                 \
         BTASSERTRM(memcmp(UNIQUE(_actual), UNIQUE(_expected), size) == 0, \
-                   "memcmp(" #actual ", " #expected ") == 0",           \
+                   "memcmp(" #actual ", " #expected ", " #size ") == 0", \
                    -1,                                                  \
                    _ASSERTHEX(#actual, UNIQUE(_actual),                 \
                               #expected, UNIQUE(_expected),             \
@@ -184,5 +187,31 @@ int harness_run(struct harness_t *self_p,
 int harness_expect(void *chan_p,
                    const char *pattern_p,
                    const struct time_t *timeout_p);
+
+/**
+ * Write given data buffer to a mock entry with given id.
+ *
+ * @param[in] id_p Mock id string to write.
+ * @param[in] buf_p Data for given mock id.
+ * @param[in] size Buffer size in words.
+ *
+ * @return Number of written words or negative error code.
+ */
+ssize_t harness_mock_write(const char *id_p,
+                           const void *buf_p,
+                           size_t size);
+
+/**
+ * Read data from mock entry with given id.
+ *
+ * @param[in] id_p Mock id string to read.
+ * @param[out] buf_p Buffer to read into.
+ * @param[in] size Buffer size in words.
+ *
+ * @return Number of read words or negative error code.
+ */
+ssize_t harness_mock_read(const char *id_p,
+                          void *buf_p,
+                          size_t size);
 
 #endif

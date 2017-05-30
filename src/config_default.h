@@ -2204,6 +2204,18 @@
 #endif
 
 /**
+ * Size of the harness heap, required for harness_mock_write() and
+ * harness_mock_read().
+ */
+#ifndef CONFIG_HARNESS_HEAP_MAX
+#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO)
+#        define CONFIG_HARNESS_HEAP_MAX                    16
+#    else
+#        define CONFIG_HARNESS_HEAP_MAX                  1024
+#    endif
+#endif
+
+/**
  * Size of the HTTP server request buffer. This buffer is used when
  * parsing received HTTP request headers.
  */
