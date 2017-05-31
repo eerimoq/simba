@@ -50,30 +50,34 @@ static struct timer_list_t list = {
  */
 static void RAM_CODE timer_insert_isr(struct timer_t *timer_p)
 {
-    struct timer_t *elem_p, *prev_p;
+    struct timer_t *elem_p;
+    struct timer_t *prev_p;
 
     /* Find element preceeding this timer. */
     elem_p = list.head_p;
     prev_p = NULL;
 
-    /* Delta is initially the timeout. */
+    /* Find the element to insert this timer before. Delta is
+       initially the timeout. */
     while (elem_p->delta < timer_p->delta) {
         timer_p->delta -= elem_p->delta;
         prev_p = elem_p;
         elem_p = elem_p->next_p;
     }
 
-    /* Insert new timer into list. */
+    /* Adjust the next timer for this timers delta. Do not adjust the
+       tail timer. */
     if (elem_p != &list.tail_timer) {
         elem_p->delta -= timer_p->delta;
     }
 
+    /* Insert the new timer into list. */
     timer_p->next_p = elem_p;
 
-    if (prev_p != NULL) {
-        prev_p->next_p = timer_p;
-    } else {
+    if (prev_p == NULL) {
         list.head_p = timer_p;
+    } else {
+        prev_p->next_p = timer_p;
     }
 }
 
@@ -90,10 +94,16 @@ static int timer_remove_isr(struct timer_t *timer_p)
 
     while (elem_p != NULL) {
         if (elem_p == timer_p) {
+            /* Remove the timer from the list. */
             if (prev_p != NULL) {
                 prev_p->next_p = elem_p->next_p;
             } else {
                 list.head_p = elem_p->next_p;
+            }
+
+            /* Add the delta timeout to the next timer. */
+            if (elem_p->next_p != &list.tail_timer) {
+                elem_p->next_p->delta += elem_p->delta;
             }
 
             return (0);
@@ -118,26 +128,23 @@ void RAM_CODE timer_tick_isr(void)
     sys_lock_isr();
 
     /* Return if no timers are active.*/
-    if (list.head_p == &list.tail_timer) {
-        goto out;
-    }
+    if (list.head_p != &list.tail_timer) {
+        /* Fire all expired timers.*/
+        list.head_p->delta--;
 
-    /* Fire all expired timers.*/
-    list.head_p->delta--;
+        while (list.head_p->delta == 0) {
+            timer_p = list.head_p;
+            list.head_p = timer_p->next_p;
+            timer_p->callback(timer_p->arg_p);
 
-    while (list.head_p->delta == 0) {
-        timer_p = list.head_p;
-        list.head_p = timer_p->next_p;
-        timer_p->callback(timer_p->arg_p);
-
-        /* Re-set periodic timers. */
-        if (timer_p->flags & TIMER_PERIODIC) {
-            timer_p->delta = timer_p->timeout;
-            timer_insert_isr(timer_p);
+            /* Re-set periodic timers. */
+            if (timer_p->flags & TIMER_PERIODIC) {
+                timer_p->delta = timer_p->timeout;
+                timer_insert_isr(timer_p);
+            }
         }
     }
 
- out:
     sys_unlock_isr();
 }
 
