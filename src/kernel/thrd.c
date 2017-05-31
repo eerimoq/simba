@@ -196,6 +196,26 @@ void terminate(void)
 }
 
 /**
+ * Timer callback for threads suspended with a timeout.
+ */
+static void on_suspend_timer_expired(void *arg_p)
+{
+    struct thrd_t *thrd_p;
+
+    thrd_p = arg_p;
+
+    /* The timer is no longer in use. */
+    thrd_p->timer_p = NULL;
+
+    /* Push thread on scheduler ready queue. */
+    thrd_p->err = -ETIMEDOUT;
+    thrd_p->state = THRD_STATE_READY;
+    scheduler_ready_push(thrd_p);
+
+    thrd_port_on_suspend_timer_expired(thrd_p);
+}
+
+/**
  * Push a thread on the list of threads that are ready to be
  * scheduled.
  *
@@ -870,7 +890,7 @@ int thrd_suspend_isr(const struct time_t *timeout_p)
                 thrd_p->timer_p = &timer;
                 timer_init(&timer,
                            timeout_p,
-                           thrd_port_suspend_timer_callback,
+                           on_suspend_timer_expired,
                            thrd_p,
                            0);
                 timer_start_isr(&timer);
