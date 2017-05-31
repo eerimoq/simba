@@ -68,60 +68,69 @@ static int test_sprintf(struct harness_t *harness_p)
                        'b', -43, 0xffffffffUL, "foo");
     std_printf(FSTR("%s\r\n"), buf);
     BTASSERT(size == 51);
+    BTASSERTM(&buf[0],
+              "Normal:                'b' '-43' '4294967295' 'foo'",
+              size + 1);
 
     size = std_sprintf(buf,
                        FSTR("Left justification:    '%-10c' '%-10d' '%-10lu' '%-10s'"),
                        'b', -43, 0xffffffffUL, "foo");
-    std_printf(FSTR("%s\r\n"), buf);
     BTASSERT(size == 74);
+    BTASSERTM(&buf[0],
+              "Left justification:    'b         ' '-43       ' "
+              "'4294967295' 'foo       '",
+              size + 1);
 
     size = std_sprintf(buf,
                        FSTR("Preceding with blanks: '%10c' '%10d' '%10lu' '%10s'"),
                        'b', -43, 0xffffffffUL, "foo");
-    std_printf(FSTR("%s\r\n"), buf);
     BTASSERT(size == 74);
+    BTASSERTM(&buf[0],
+              "Preceding with blanks: '         b' '       -43' "
+              "'4294967295' '       foo'",
+              size + 1);
 
     size = std_sprintf(buf,
                        FSTR("Preceding with zeros:  '%010c' '%010d' '%010lu' '%010s'"),
                        'b', -43, 0xffffffffUL, "foo");
-    std_printf(FSTR("%s\r\n"), buf);
     BTASSERT(size == 74);
+    BTASSERTM(&buf[0],
+              "Preceding with zeros:  '000000000b' '-000000043' "
+              "'4294967295' '0000000foo'",
+              size + 1);
 
     size = std_sprintf(buf, FSTR("Bad format: %g %"));
-    std_printf(FSTR("%s\r\n"), buf);
     BTASSERT(size == 14);
+    BTASSERTM(&buf[0], "Bad format: g ", size + 1);
 
     size = std_sprintf(buf, FSTR("INT_MAX %%i: %i"), 0xffffffffL);
-    std_printf(FSTR("%s\r\n"), buf);
     BTASSERT(size == 14);
+    BTASSERTM(&buf[0], "INT_MAX %i: -1", size + 1);
 
     size = std_sprintf(buf, FSTR("INT_MAX %%d: %d"), 0xffffffffL);
-    std_printf(FSTR("%s\r\n"), buf);
     BTASSERT(size == 14);
+    BTASSERTM(&buf[0], "INT_MAX %d: -1", size + 1);
 
     size = std_sprintf(buf, FSTR("INT_MAX %%lu: %lu"), 0xffffffffL);
-    std_printf(FSTR("%s\r\n"), buf);
     BTASSERT(size == 23);
+    BTASSERTM(&buf[0], "INT_MAX %lu: 4294967295", size + 1);
 
     size = std_sprintf(buf, FSTR("INT_MAX %%lx: %lx"), 0xffffffffL);
-    std_printf(FSTR("%s\r\n"), buf);
     BTASSERT(size == 21);
+    BTASSERTM(&buf[0], "INT_MAX %lx: ffffffff", size + 1);
 
     size = std_sprintf(buf, FSTR("NULL string: %s"), NULL);
-    std_printf(FSTR("%s\r\n"), buf);
-    BTASSERT(strcmp(buf, "NULL string: (null)") == 0);
+    BTASSERTM(&buf[0], "NULL string: (null)", size + 1);
 
 #ifdef ARCH_LINUX
-    BTASSERT((size = std_sprintf(buf,
-                                 FSTR("Big unsigned:          '%u'"),
-                                 0xffffffffU)) == 35);
+    size = std_sprintf(buf, FSTR("Big unsigned:          '%u'"), 0xffffffffU);
+    BTASSERT(size == 35);
+    BTASSERTM("Big unsigned:          '4294967295'", &buf[0], size + 1);
 #else
-    BTASSERT((size = std_sprintf(buf,
-                                 FSTR("Big unsigned:          '%u'"),
-                                 0xffffU)) == 30);
+    size = std_sprintf(buf, FSTR("Big unsigned:          '%u'"), 0xffffU);
+    BTASSERT(size == 30);
+    BTASSERTM("Big unsigned:          ''", &buf[0], size + 1);
 #endif
-
-    std_printf(FSTR("%s\r\n"), buf);
 
     return (0);
 }
@@ -131,12 +140,12 @@ static int test_snprintf(struct harness_t *harness_p)
     char buf[128];
 
     BTASSERT(std_snprintf(buf, sizeof(buf), FSTR("foo")) == 3);
-    BTASSERT(strcmp(buf, "foo") == 0);
+    BTASSERTM(&buf[0], "foo", 4);
 
     /* Destination buffer too small. */
     memset(buf, -1, sizeof(buf));
     BTASSERT(std_snprintf(buf, 2, FSTR("foo")) == 3);
-    BTASSERT(memcmp(buf, "fo\xff", 3) == 0);
+    BTASSERTM(&buf[0], "fo\xff", 3);
 
     return (0);
 }
@@ -162,25 +171,65 @@ static int test_sprintf_double(struct harness_t *harness_p)
     char buf[128];
     ssize_t size;
 
-    BTASSERT((size = std_sprintf(buf,
-                                 FSTR("Normal:                '%f' '%f'"),
-                                 10.5f, -37.731)) == 47);
-    std_printf(FSTR("%s\r\n"), buf);
+    size = std_sprintf(&buf[0],
+                       FSTR("Normal:                '%f' '%f'"),
+                       10.5f, -37.731);
+    BTASSERT(size == 47);
+    BTASSERTM(&buf[0],
+              "Normal:                '10.500000' '-37.731000'",
+              size + 1);
 
     BTASSERT((size = std_sprintf(buf,
                                  FSTR("Left justification:    '%-12f' '%-12f'"),
                                  10.5f, -37.731)) == 52);
-    std_printf(FSTR("%s\r\n"), buf);
+    BTASSERT(size == 52);
+    BTASSERTM(&buf[0],
+              "Left justification:    '10.500000   ' '-37.731000  '",
+              size + 1);
 
-    BTASSERT((size = std_sprintf(buf,
-                                 FSTR("Preceding with blanks: '%12f' '%12f'"),
-                                 10.5f, -37.731)) == 52);
-    std_printf(FSTR("%s\r\n"), buf);
+    size = std_sprintf(buf,
+                       FSTR("Preceding with blanks: '%12f' '%12f'"),
+                       10.5f, -37.731);
+    BTASSERT(size == 52);
+    BTASSERTM(&buf[0],
+              "Preceding with blanks: '   10.500000' '  -37.731000'",
+              size + 1);
 
-    BTASSERT((size = std_sprintf(buf,
-                                 FSTR("Preceding with zeros:  '%012f' '%012f'"),
-                                 10.5f, -37.731)) == 52);
-    std_printf(FSTR("%s\r\n"), buf);
+    size = std_sprintf(buf,
+                       FSTR("Preceding with zeros:  '%012f' '%012f'"),
+                       10.5f, -37.731);
+    BTASSERT(size == 52);
+    BTASSERTM(&buf[0],
+              "Preceding with zeros:  '00010.500000' '-0037.731000'",
+              size + 1);
+
+    return (0);
+}
+
+static int test_sprintf_unsigned(struct harness_t *harness_p)
+{
+    char buf[32];
+    ssize_t size;
+
+    size = std_sprintf(&buf[0], FSTR("%u"), 1);
+    BTASSERT(size == 1);
+    BTASSERTM(&buf[0], "1", size + 1);
+
+    size = std_sprintf(&buf[0], FSTR("%03u"), 1);
+    BTASSERT(size == 3);
+    BTASSERTM(&buf[0], "001", size + 1);
+
+    size = std_sprintf(&buf[0], FSTR("%03u"), 10);
+    BTASSERT(size == 3);
+    BTASSERTM(&buf[0], "010", size + 1);
+
+    size = std_sprintf(&buf[0], FSTR("%03u"), 100);
+    BTASSERT(size == 3);
+    BTASSERTM(&buf[0], "100", size + 1);
+
+    size = std_sprintf(&buf[0], FSTR("%03u"), 1000);
+    BTASSERT(size == 4);
+    BTASSERTM(&buf[0], "1000", size + 1);
 
     return (0);
 }
@@ -481,6 +530,7 @@ int main()
         { test_strcmp, "test_strcmp" },
         { test_strlen, "test_strlen" },
         { test_sprintf_double, "test_sprintf_double" },
+        { test_sprintf_unsigned, "test_sprintf_unsigned" },
         { test_strip, "test_strip" },
         { test_libc, "test_libc" },
         { test_strtod, "test_strtod" },
