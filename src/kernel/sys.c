@@ -424,7 +424,7 @@ static int cmd_uptime_cb(int argc,
     sys_uptime(&uptime);
 
     std_fprintf(out_p,
-                OSTR("%lu.%lu seconds\r\n"),
+                OSTR("%lu.%03lu seconds\r\n"),
                 uptime.seconds,
                 uptime.nanoseconds / 1000000ul);
 
