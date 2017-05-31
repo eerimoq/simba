@@ -310,7 +310,7 @@ def do_flash_write(args):
         serial_connection.baudrate = args.baudrate
 
     f = bincopy.BinFile()
-    f.add_ihex_file(args.hexfile)
+    f.add_file(args.binfile)
 
     erase_segments = []
     total = 0
@@ -322,7 +322,7 @@ def do_flash_write(args):
         for address, size in erase_segments:
             erase(serial_connection, address, size)
 
-    print('Writing {} to flash.'.format(os.path.abspath(args.hexfile)))
+    print('Writing {} to flash.'.format(os.path.abspath(args.binfile)))
 
     with tqdm(total=total, unit=' bytes') as progress:
         for address, _, data in f.iter_segments():
@@ -422,7 +422,7 @@ def main():
     flash_write_parser.add_argument('-u', '--no-upload', action='store_true')
     flash_write_parser.add_argument('-e', '--erase', action='store_true')
     flash_write_parser.add_argument('-v', '--verify', action='store_true')
-    flash_write_parser.add_argument('hexfile')
+    flash_write_parser.add_argument('binfile')
     flash_write_parser.set_defaults(func=do_flash_write)
 
     args = parser.parse_args()
