@@ -129,7 +129,7 @@ static int test_sprintf(struct harness_t *harness_p)
 #else
     size = std_sprintf(buf, FSTR("Big unsigned:          '%u'"), 0xffffU);
     BTASSERT(size == 30);
-    BTASSERTM("Big unsigned:          ''", &buf[0], size + 1);
+    BTASSERTM("Big unsigned:          '65535'", &buf[0], size + 1);
 #endif
 
     return (0);
@@ -175,33 +175,57 @@ static int test_sprintf_double(struct harness_t *harness_p)
                        FSTR("Normal:                '%f' '%f'"),
                        10.5f, -37.731);
     BTASSERT(size == 47);
+#if defined(ARCH_ESP)
+    BTASSERTM(&buf[0],
+              "Normal:                '10.500000' '-37.730998'",
+              size + 1);
+#else
     BTASSERTM(&buf[0],
               "Normal:                '10.500000' '-37.731000'",
               size + 1);
-
+#endif
+    
     BTASSERT((size = std_sprintf(buf,
                                  FSTR("Left justification:    '%-12f' '%-12f'"),
                                  10.5f, -37.731)) == 52);
     BTASSERT(size == 52);
+#if defined(ARCH_ESP)
+    BTASSERTM(&buf[0],
+              "Left justification:    '10.500000   ' '-37.730998  '",
+              size + 1);
+#else
     BTASSERTM(&buf[0],
               "Left justification:    '10.500000   ' '-37.731000  '",
               size + 1);
-
+#endif
+    
     size = std_sprintf(buf,
                        FSTR("Preceding with blanks: '%12f' '%12f'"),
                        10.5f, -37.731);
     BTASSERT(size == 52);
+#if defined(ARCH_ESP)
+    BTASSERTM(&buf[0],
+              "Preceding with blanks: '   10.500000' '  -37.730998'",
+              size + 1);
+#else
     BTASSERTM(&buf[0],
               "Preceding with blanks: '   10.500000' '  -37.731000'",
               size + 1);
+#endif
 
     size = std_sprintf(buf,
                        FSTR("Preceding with zeros:  '%012f' '%012f'"),
                        10.5f, -37.731);
     BTASSERT(size == 52);
+#if defined(ARCH_ESP)
+    BTASSERTM(&buf[0],
+              "Preceding with zeros:  '00010.500000' '-0037.730998'",
+              size + 1);
+#else
     BTASSERTM(&buf[0],
               "Preceding with zeros:  '00010.500000' '-0037.731000'",
               size + 1);
+#endif
 
     return (0);
 }
