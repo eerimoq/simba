@@ -41,7 +41,7 @@ int socket_open_tcp(struct socket_t *self_p)
               chan_read_null,
               chan_write_null,
               (chan_size_fn_t)socket_size);
-    
+
     return (0);
 }
 
@@ -81,6 +81,11 @@ int socket_accept(struct socket_t *self_p,
                   struct socket_t *accepted_p,
                   struct inet_addr_t *addr_p)
 {
+    chan_init(&accepted_p->base,
+              chan_read_null,
+              chan_write_null,
+              (chan_size_fn_t)socket_size);
+
     return (0);
 }
 
