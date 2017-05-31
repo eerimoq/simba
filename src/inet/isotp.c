@@ -41,12 +41,10 @@ enum state_t {
     /* RX states. */
     state_first_frame_received_t,
     state_flow_control_frame_sent_t,
-    state_consecutive_frame_received_t,
 
     /* TX states. */
     state_first_frame_sent_t,
-    state_flow_control_frame_received_t,
-    state_consecutive_frame_sent_t
+    state_flow_control_frame_received_t
 };
 
 static ssize_t handle_input_idle(struct isotp_t *self_p,
@@ -121,12 +119,10 @@ static ssize_t handle_input_first_frame_sent(struct isotp_t *self_p,
     type = (buf_p[0] >> 4);
 
     if (type != TYPE_FLOW_CONTROL_FRAME) {
-        self_p->state = state_idle_t;
         return (-1);
     }
 
     if (size < 3) {
-        self_p->state = state_idle_t;
         return (-1);
     }
 
@@ -141,11 +137,17 @@ static ssize_t handle_input_flow_control_sent(struct isotp_t *self_p,
 {
     int index;
     ssize_t res;
+    int type;
+
+    type = (buf_p[0] >> 4);
+
+    if (type != TYPE_CONSECUTIVE_FRAME) {
+        return (-1);
+    }
 
     index = (buf_p[0] & 0x0f);
 
     if (index != self_p->message.next_index) {
-        self_p->state = state_idle_t;
         return (-1);
     }
 
@@ -162,6 +164,21 @@ static ssize_t handle_input_flow_control_sent(struct isotp_t *self_p,
     }
 
     return (res);
+}
+
+static ssize_t handle_input_flow_control_received(struct isotp_t *self_p,
+                                                  const uint8_t *buf_p,
+                                                  size_t size)
+{
+    int type;
+
+    type = (buf_p[0] >> 4);
+
+    if (type != TYPE_FLOW_CONTROL_FRAME) {
+        return (-1);
+    }
+
+    return (0);
 }
 
 static ssize_t handle_output_idle(struct isotp_t *self_p,
@@ -273,6 +290,10 @@ ssize_t isotp_input(struct isotp_t *self_p,
         res = handle_input_flow_control_sent(self_p, buf_p, size);
         break;
 
+    case state_flow_control_frame_received_t:
+        res = handle_input_flow_control_received(self_p, buf_p, size);
+        break;
+
     default:
         res = -1;
         break;
@@ -304,6 +325,11 @@ ssize_t isotp_output(struct isotp_t *self_p,
 
     case state_flow_control_frame_received_t:
         res = handle_output_flow_control_received(self_p, buf_p, size_p);
+        break;
+
+    case state_first_frame_sent_t:
+    case state_flow_control_frame_sent_t:
+        res = 0;
         break;
 
     default:

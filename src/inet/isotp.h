@@ -70,17 +70,21 @@ int isotp_init(struct isotp_t *self_p,
                int flags);
 
 /**
- * Input a CAN frame into given ISO-TP object.
+ * Input a CAN frame into given ISO-TP object. Always call
+ * isotp_output() after this function returns zero(0) to check if
+ * there are frames to transmit.
  *
  * @param[in] self_p Initialized ISO-TP object.
  * @param[in] buf_p Input data.
  * @param[in] size Data buffer length is bytes.
  *
  * @return Once a complete ISO-TP message has been received the size
- *         of the message is returned. Meanwhile, zero(0) or negative
- *         error code is returned. For an ISO-TP object that transmits
- *         a message this function always returns zero(0) or negative
- *         error code.
+ *         of the message is returned. Meanwhile, zero(0) is returned
+ *         if the frame was expected. A negative error code is
+ *         returned if the frame was unexpected or invalid.
+ *
+ *         For an ISO-TP object that transmits a message this function
+ *         always returns zero(0) or negative error code.
  */
 ssize_t isotp_input(struct isotp_t *self_p,
                     const uint8_t *buf_p,
@@ -97,9 +101,10 @@ ssize_t isotp_input(struct isotp_t *self_p,
  *
  * @return Once a complete ISO-TP message has been transmitted the
  *         size of the message is returned. Meanwhile, zero(0) or
- *         negative error code is returned. For an ISO-TP object that
- *         receives a message this function always returns zero(0) or
- *         negative error code.
+ *         negative error code is returned.
+ *
+ *         For an ISO-TP object that receives a message this function
+ *         always returns zero(0) or negative error code.
  */
 ssize_t isotp_output(struct isotp_t *self_p,
                      uint8_t *buf_p,
