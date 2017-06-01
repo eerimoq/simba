@@ -60,7 +60,11 @@ static int write_aligned(struct flash_device_t *dev_p,
 
         regs_p->MCR = (SPC5_FLASH_MCR_PGM | SPC5_FLASH_MCR_EHV);
 
-        while ((regs_p->MCR & SPC5_FLASH_MCR_DONE) == 0);
+        while ((regs_p->MCR & SPC5_FLASH_MCR_DONE) == 0) {
+#if CONFIG_SYSTEM_INTERRUPTS == 1
+            thrd_yield();
+#endif
+        }
 
         res = ((regs_p->MCR & SPC5_FLASH_MCR_PEG) == 0 ? -1 : 0);
         regs_p->MCR = SPC5_FLASH_MCR_PGM;
@@ -220,7 +224,7 @@ static int flash_port_erase(struct flash_driver_t *self_p,
 
     while ((regs_p->MCR & SPC5_FLASH_MCR_DONE) == 0) {
 #if CONFIG_SYSTEM_INTERRUPTS == 1
-        thrd_sleep_ms(50);
+        thrd_yield();
 #endif
     }
 
