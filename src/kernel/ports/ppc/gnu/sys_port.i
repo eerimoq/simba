@@ -53,11 +53,58 @@ ISR(stm_match_on_channel_0)
 
 static int sys_port_module_init(void)
 {
+    uint16_t fes;
+    uint16_t des;
+
     /* Start the system tick timer. */
     SPC5_STM->CHANNELS[0].CMP = SYS_TICK_COUNT;
     SPC5_STM->CHANNELS[0].CCR = SPC5_STM_CHANNELS_CCR_CEN;
     SPC5_STM->CR = SPC5_STM_CR_TEN;
     SPC5_INTC->PSR[30/4] = 0x00000100;
+
+    /* Get the reset cause. */
+    fes = SPC5_MC_RGM->FES;
+    des = SPC5_MC_RGM->DES;
+
+    /* Clear the reset cause. */
+    SPC5_MC_RGM->FES = 0xffff;
+    SPC5_MC_RGM->DES = 0xffff;
+
+    if (des & SPC5_MC_RGM_DES_F_POR) {
+        module.reset_cause = sys_reset_cause_power_on_t;
+    } else if (des & SPC5_MC_RGM_DES_F_SWT) {
+        module.reset_cause = sys_reset_cause_watchdog_timeout_t;
+    } else if (des & SPC5_MC_RGM_DES_F_LVD27_VREG) {
+        module.reset_cause = sys_reset_cause_lvd27_vreg_t;
+    } else if (des & SPC5_MC_RGM_DES_F_LVD27) {
+        module.reset_cause = sys_reset_cause_lvd27_t;
+    } else if (des & SPC5_MC_RGM_DES_F_LVD12_PD1) {
+        module.reset_cause = sys_reset_cause_lvd12_pd1_t;
+    } else if (des & SPC5_MC_RGM_DES_F_LVD12_PD0) {
+        module.reset_cause = sys_reset_cause_lvd12_pd0_t;
+    } else if (fes & SPC5_MC_RGM_FES_F_SOFT) {
+        module.reset_cause = sys_reset_cause_software_t;
+    } else if (fes & SPC5_MC_RGM_FES_F_JTAG) {
+        module.reset_cause = sys_reset_cause_jtag_t;
+    } else if (fes & SPC5_MC_RGM_FES_F_FLASH) {
+        module.reset_cause = sys_reset_cause_flash_t;
+    } else if (fes & SPC5_MC_RGM_FES_F_LVD45) {
+        module.reset_cause = sys_reset_cause_lvd45_t;
+    } else if (fes & SPC5_MC_RGM_FES_F_CMU_FHL) {
+        module.reset_cause = sys_reset_cause_cmu_fhl_t;
+    } else if (fes & SPC5_MC_RGM_FES_F_CMU_OLR) {
+        module.reset_cause = sys_reset_cause_cmu_olr_t;
+    } else if (fes & SPC5_MC_RGM_FES_F_FMPLL) {
+        module.reset_cause = sys_reset_cause_fmpll_t;
+    } else if (fes & SPC5_MC_RGM_FES_F_CHKSTOP) {
+        module.reset_cause = sys_reset_cause_chkstop_t;
+    } else if (fes & SPC5_MC_RGM_FES_F_CORE) {
+        module.reset_cause = sys_reset_cause_core_t;
+    } else if (fes & SPC5_MC_RGM_FES_F_EXR) {
+        module.reset_cause = sys_reset_cause_external_t;
+    } else {
+        module.reset_cause = sys_reset_cause_unknown_t;
+    }
 
     return (0);
 }

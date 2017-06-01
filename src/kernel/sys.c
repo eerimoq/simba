@@ -49,6 +49,7 @@ struct tick_t {
 struct module_t {
     int initialized;
     struct tick_t tick;
+    enum sys_reset_cause_t reset_cause;
 #if CONFIG_FS_CMD_SYS_INFO == 1
     struct fs_command_t cmd_info;
 #endif
@@ -66,6 +67,9 @@ struct module_t {
 #endif
 #if CONFIG_FS_CMD_SYS_BACKTRACE == 1
     struct fs_command_t cmd_backtrace;
+#endif
+#if CONFIG_FS_CMD_SYS_RESET_CAUSE == 1
+    struct fs_command_t cmd_reset_cause;
 #endif
 };
 
@@ -96,6 +100,18 @@ static const FAR char config[] =
 #endif
 
     "";
+
+const char *sys_reset_cause_string_map[sys_reset_cause_max_t] = {
+    "unknown",
+    "power_on",
+    "watchdog_timeout",
+    "software",
+    "external",
+    "jtag",
+#if defined(SYS_PORT_RESET_CAUSE_STRINGS_MAP)
+    SYS_PORT_RESET_CAUSE_STRINGS_MAP
+#endif
+};
 
 extern const FAR char sysinfo[];
 
@@ -496,6 +512,24 @@ static int cmd_backtrace_cb(int argc,
 
 #endif
 
+#if CONFIG_FS_CMD_SYS_RESET_CAUSE == 1
+
+static int cmd_reset_cause_cb(int argc,
+                              const char *argv[],
+                              void *out_p,
+                              void *in_p,
+                              void *arg_p,
+                              void *call_arg_p)
+{
+    std_fprintf(out_p,
+                OSTR("%s\r\n"),
+                sys_reset_cause_string_map[sys_reset_cause()]);
+
+    return (0);
+}
+
+#endif
+
 int sys_module_init(void)
 {
     /* Return immediately if the module is already initialized. */
@@ -551,6 +585,14 @@ int sys_module_init(void)
                     cmd_backtrace_cb,
                     NULL);
     fs_command_register(&module.cmd_backtrace);
+#endif
+
+#if CONFIG_FS_CMD_SYS_RESET_CAUSE == 1
+    fs_command_init(&module.cmd_reset_cause,
+                    CSTR("/kernel/sys/reset_cause"),
+                    cmd_reset_cause_cb,
+                    NULL);
+    fs_command_register(&module.cmd_reset_cause);
 #endif
 
     return (sys_port_module_init());
@@ -699,6 +741,11 @@ void sys_reboot(void)
 int sys_backtrace(void **buf_pp, size_t size)
 {
     return (sys_port_backtrace(buf_pp, size));
+}
+
+enum sys_reset_cause_t sys_reset_cause()
+{
+    return (module.reset_cause);
 }
 
 int sys_uptime(struct time_t *uptime_p)

@@ -112,6 +112,36 @@ struct spc5_mc_me_t {
     uint8_t PCTL[128];
 };
 
+/* 9. Reset Generation. */
+struct spc5_mc_rgm_t {
+    uint16_t FES;
+    uint16_t DES;
+    uint16_t FERD;
+    uint16_t DERD;
+    uint16_t RESERVED0[8];
+    uint16_t FESS;
+    uint16_t STDBY;
+    uint16_t FBRE;
+};
+
+#define SPC5_MC_RGM_FES_F_EXR                         BIT(15)
+#define SPC5_MC_RGM_FES_F_FLASH                        BIT(8)
+#define SPC5_MC_RGM_FES_F_LVD45                        BIT(7)
+#define SPC5_MC_RGM_FES_F_CMU_FHL                      BIT(6)
+#define SPC5_MC_RGM_FES_F_CMU_OLR                      BIT(5)
+#define SPC5_MC_RGM_FES_F_FMPLL                        BIT(4)
+#define SPC5_MC_RGM_FES_F_CHKSTOP                      BIT(3)
+#define SPC5_MC_RGM_FES_F_SOFT                         BIT(2)
+#define SPC5_MC_RGM_FES_F_CORE                         BIT(1)
+#define SPC5_MC_RGM_FES_F_JTAG                         BIT(0)
+
+#define SPC5_MC_RGM_DES_F_POR                         BIT(15)
+#define SPC5_MC_RGM_DES_F_LVD27_VREG                   BIT(4)
+#define SPC5_MC_RGM_DES_F_LVD27                        BIT(3)
+#define SPC5_MC_RGM_DES_F_SWT                          BIT(2)
+#define SPC5_MC_RGM_DES_F_LVD12_PD1                    BIT(1)
+#define SPC5_MC_RGM_DES_F_LVD12_PD0                    BIT(0)
+
 /* 17. INTC. */
 struct spc5_intc_t {
     uint32_t MCR;
@@ -427,7 +457,7 @@ struct spc5_swt_t {
 #define SPC5_SSCM      ((volatile struct spc5__t *)        0xc3fd8000ul)
 #define SPC5_MC_ME     ((volatile struct spc5_mc_me_t *)   0xc3fdc000ul)
 #define SPC5_MC_CGM    ((volatile struct spc5_mc_cgm_t *)  0xc3fe0000ul)
-#define SPC5_MC_RGM    ((volatile struct spc5__t *)        0xc3fe4000ul)
+#define SPC5_MC_RGM    ((volatile struct spc5_mc_rgm_t *)  0xc3fe4000ul)
 #define SPC5_MC_PCU    ((volatile struct spc5__t *)        0xc3fe8000ul)
 #define SPC5_RTC_API   ((volatile struct spc5__t *)        0xc3fec000ul)
 #define SPC5_PIT       ((volatile struct spc5__t *)        0xc3ff0000ul)

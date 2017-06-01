@@ -289,6 +289,28 @@ static int test_div_round(struct harness_t *harness_p)
     return (0);
 }
 
+static int test_reset_cause(struct harness_t *harness_p)
+{
+    char buf[32];
+    enum sys_reset_cause_t reset_cause;
+
+    BTASSERT(sys_reset_cause_string_map[sys_reset_cause_max_t - 1] != NULL);
+
+    reset_cause = sys_reset_cause();
+
+    BTASSERT(reset_cause >= sys_reset_cause_unknown_t);
+    BTASSERT(reset_cause < sys_reset_cause_max_t);
+
+    std_printf(FSTR("Reset cause: %s (%d)\r\n"),
+               sys_reset_cause_string_map[reset_cause],
+               reset_cause);
+
+    strcpy(&buf[0], "/kernel/sys/reset_cause");
+    BTASSERT(fs_call(&buf[0], chan_null(), sys_get_stdout(), NULL) == 0);
+
+    return (0);
+}
+
 int main()
 {
     struct harness_t harness;
@@ -304,6 +326,7 @@ int main()
         { test_backtrace, "test_backtrace" },
         { test_div_ceil, "test_div_ceil" },
         { test_div_round, "test_div_round" },
+        { test_reset_cause, "test_reset_cause" },
         { NULL, NULL }
     };
 
