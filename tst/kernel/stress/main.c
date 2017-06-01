@@ -61,6 +61,10 @@ static void *worker_main(void *arg_p)
             log_object_print(NULL, LOG_ERROR, OSTR("Count: %d\r\n"), count);
         }
 
+        if (count % 100 == 0) {
+            thrd_sleep_us(10);
+        }
+
         thrd_yield();
     }
 
