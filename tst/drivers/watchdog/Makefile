@@ -28,7 +28,7 @@
 # This file is part of the Simba project.
 #
 
-NAME = wtchdog_suite
+NAME = watchdog_suite
 TYPE = suite
 BOARD ?= linux
 

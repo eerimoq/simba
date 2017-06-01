@@ -339,7 +339,10 @@ void spc5_init(void)
     /* Disable the watchdog. */
     SPC5_SWT->SR = 0x0000c520;
     SPC5_SWT->SR = 0x0000d928;
-    SPC5_SWT->CR = 0;
+    SPC5_SWT->CR = (SPC5_SWT_CR_MAP_0
+                    | SPC5_SWT_CR_RIA
+                    | SPC5_SWT_CR_CSL
+                    | SPC5_SWT_CR_FRZ);
 
 #if CONFIG_SYSTEM_INTERRUPTS == 1
     /* Software vector mode. */
