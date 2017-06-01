@@ -642,16 +642,12 @@ int thrd_join(struct thrd_t *thrd_p)
     ASSERTN(thrd_p != NULL, EINVAL);
 
 #if CONFIG_THRD_TERMINATE == 1
-
     sem_take(&thrd_p->join_sem, NULL);
     sem_give(&thrd_p->join_sem, 1);
 
     return (0);
-
 #else
-
     return (-1);
-
 #endif
 }
 
@@ -746,7 +742,6 @@ int thrd_init_global_env(struct thrd_environment_variable_t *variables_p,
                          int length)
 {
 #if CONFIG_THRD_ENV == 1
-
     sem_take(&module.env.sem, NULL);
     module.env.global.variables_p = variables_p;
     module.env.global.number_of_variables = 0;
@@ -754,11 +749,8 @@ int thrd_init_global_env(struct thrd_environment_variable_t *variables_p,
     sem_give(&module.env.sem, 1);
 
     return (0);
-
 #else
-
     return (-1);
-
 #endif
 }
 
@@ -767,7 +759,6 @@ int thrd_set_global_env(const char *name_p, const char *value_p)
     ASSERTN(name_p != NULL, EINVAL);
 
 #if CONFIG_THRD_ENV == 1
-
     int res;
 
     sem_take(&module.env.sem, NULL);
@@ -775,11 +766,8 @@ int thrd_set_global_env(const char *name_p, const char *value_p)
     sem_give(&module.env.sem, 1);
 
     return (res);
-
 #else
-
     return (-1);
-
 #endif
 }
 
@@ -788,7 +776,6 @@ const char *thrd_get_global_env(const char *name_p)
     ASSERTNRN(name_p != NULL, EINVAL);
 
 #if CONFIG_THRD_ENV == 1
-
     const char *value_p;
 
     sem_take(&module.env.sem, NULL);
@@ -796,11 +783,8 @@ const char *thrd_get_global_env(const char *name_p)
     sem_give(&module.env.sem, 1);
 
     return (value_p);
-
 #else
-
     return (NULL);
-
 #endif
 }
 
@@ -808,17 +792,13 @@ int thrd_init_env(struct thrd_environment_variable_t *variables_p,
                   int length)
 {
 #if CONFIG_THRD_ENV == 1
-
     module.scheduler.current_p->env.variables_p = variables_p;
     module.scheduler.current_p->env.number_of_variables = 0;
     module.scheduler.current_p->env.max_number_of_variables = length;
 
     return (0);
-
 #else
-
     return (-1);
-
 #endif
 }
 
@@ -827,13 +807,9 @@ int thrd_set_env(const char *name_p, const char *value_p)
     ASSERTN(name_p != NULL, EINVAL);
 
 #if CONFIG_THRD_ENV == 1
-
     return (set_env(&module.scheduler.current_p->env, name_p, value_p));
-
 #else
-
     return (-1);
-
 #endif
 }
 
@@ -842,7 +818,6 @@ const char *thrd_get_env(const char *name_p)
     ASSERTNRN(name_p != NULL, EINVAL);
 
 #if CONFIG_THRD_ENV == 1
-
     const char *value_p;
 
     value_p = get_env(&module.scheduler.current_p->env, name_p);
@@ -852,11 +827,8 @@ const char *thrd_get_env(const char *name_p)
     }
 
     return (thrd_get_global_env(name_p));
-
 #else
-
     return (NULL);
-
 #endif
 }
 
@@ -905,8 +877,9 @@ int thrd_suspend_isr(const struct time_t *timeout_p)
 
 int thrd_resume_isr(struct thrd_t *thrd_p, int err)
 {
-    int res = 1;
+    int res;
 
+    res = 1;
     thrd_p->err = err;
 
     if (thrd_p->state == THRD_STATE_SUSPENDED) {
