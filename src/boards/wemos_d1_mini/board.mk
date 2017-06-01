@@ -34,7 +34,7 @@ SRC += $(SIMBA_ROOT)/src/boards/wemos_d1_mini/board.c
 LINKER_SCRIPT ?= simba.flash.4m.ld
 ESP_FLASH_SIZE = 4M
 
-BOARD_HOMEPAGE = "https://www.wemos.cc/product/d1-mini.html"
+BOARD_HOMEPAGE = "https://wiki.wemos.cc/products:d1:d1_mini"
 BOARD_PINOUT = "wemos-d1-mini-pinout.jpg"
 BOARD_DESC = "WEMOS D1 mini"
 

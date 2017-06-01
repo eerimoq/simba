@@ -72,7 +72,7 @@ Below is the memory usage of two applications:
 +==========================+===========+===========+
 | minimal-configuration    |      1548 |       278 |
 +--------------------------+-----------+-----------+
-| default-configuration    |     13168 |       801 |
+| default-configuration    |     13238 |       805 |
 +--------------------------+-----------+-----------+
 
 Default configuration
@@ -126,6 +126,8 @@ Default Standard Library configuration.
 |  CONFIG_FILESYSTEM_GENERIC_                            |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_FLASH_                                         |  0                                                  |
++--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_FLASH_DEVICE_SEMAPHORE_                        |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_FLOAT_                                         |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
@@ -222,6 +224,8 @@ Default Standard Library configuration.
 |  CONFIG_FS_PATH_MAX_                                   |  64                                                 |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_HARNESS_EXPECT_BUFFER_SIZE_                    |  512                                                |
++--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_HARNESS_HEAP_MAX_                              |  16                                                 |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_HARNESS_SLEEP_MS_                              |  300                                                |
 +--------------------------------------------------------+-----------------------------------------------------+
@@ -543,6 +547,8 @@ Mcu
 
 .. _CONFIG_FLASH: ../user-guide/configuration.html#c.CONFIG_FLASH
 
+.. _CONFIG_FLASH_DEVICE_SEMAPHORE: ../user-guide/configuration.html#c.CONFIG_FLASH_DEVICE_SEMAPHORE
+
 .. _CONFIG_FLOAT: ../user-guide/configuration.html#c.CONFIG_FLOAT
 
 .. _CONFIG_FS_CMD_DS18B20_LIST: ../user-guide/configuration.html#c.CONFIG_FS_CMD_DS18B20_LIST
@@ -638,6 +644,8 @@ Mcu
 .. _CONFIG_FS_PATH_MAX: ../user-guide/configuration.html#c.CONFIG_FS_PATH_MAX
 
 .. _CONFIG_HARNESS_EXPECT_BUFFER_SIZE: ../user-guide/configuration.html#c.CONFIG_HARNESS_EXPECT_BUFFER_SIZE
+
+.. _CONFIG_HARNESS_HEAP_MAX: ../user-guide/configuration.html#c.CONFIG_HARNESS_HEAP_MAX
 
 .. _CONFIG_HARNESS_SLEEP_MS: ../user-guide/configuration.html#c.CONFIG_HARNESS_SLEEP_MS
 
