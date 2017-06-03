@@ -2271,11 +2271,11 @@
 /**
  * System module log mask.
  */
-#ifndef CONFIG_LOG_MASK_SYS
+#ifndef CONFIG_SYS_LOG_MASK
 #    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(CONFIG_MINIMAL_SYSTEM)
-#        define CONFIG_LOG_MASK_SYS                -1
+#        define CONFIG_SYS_LOG_MASK                -1
 #    else
-#        define CONFIG_LOG_MASK_SYS                LOG_UPTO(INFO)
+#        define CONFIG_SYS_LOG_MASK                LOG_UPTO(INFO)
 #    endif
 #endif
 
