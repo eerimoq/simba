@@ -106,14 +106,14 @@ static int timer_remove_isr(struct timer_t *timer_p)
                 elem_p->next_p->delta += elem_p->delta;
             }
 
-            return (0);
+            return (1);
         }
 
         prev_p = elem_p;
         elem_p = elem_p->next_p;
     }
 
-    return (-1);
+    return (0);
 }
 
 int timer_module_init(void)
