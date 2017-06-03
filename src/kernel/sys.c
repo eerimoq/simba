@@ -687,7 +687,9 @@ void sys_panic(const char *message_p)
     char *buf_p;
     FAR const char *info_p;
 
+#if !defined(ARCH_LINUX)
     sys_lock();
+#endif
 
 #if CONFIG_SYS_PANIC_KICK_WATCHDOG == 1
     watchdog_kick();

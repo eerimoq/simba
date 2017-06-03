@@ -39,14 +39,9 @@ SIZE_SUMMARY_CMD ?= $(SIMBA_ROOT)/bin/memory_usage.py \
 			${EXE}
 
 
-ifeq ($(NDEBUG),yes)
 OPT ?= -O2
 CFLAGS += $(OPT)
 CXXFLAGS += $(OPT)
-else
-CFLAGS += -g
-CXXFLAGS += -g
-endif
 
 CDEFS += F_CPU=$(F_CPU)UL
 

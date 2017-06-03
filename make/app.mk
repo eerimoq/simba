@@ -91,6 +91,13 @@ CDEFS += ARCH_$(UPPER_ARCH) \
 ifeq ($(SOAM),yes)
   CDEFS += SOAM
 endif
+ifeq ($(TYPE),suite)
+  ifneq ($(NASSERT),yes)
+    # Enable panic assert by default in a test suite.
+    CDEFS += \
+	CONFIG_PANIC_ASSERT=1
+  endif
+endif
 CDEFS += $(CDEFS_EXTRA)
 
 LDFLAGS += $(LDFLAGS_EXTRA)
@@ -186,7 +193,7 @@ size-json:
 	set -o pipefail ; $(SIZE_SUMMARY_CMD) | tee $(BUILDDIR)/size-summary.log
 
 release:
-	env NASSERT=yes NDEBUG=yes $(MAKE)
+	env NASSERT=yes $(MAKE)
 
 $(EXE): $(OBJ) $(SIMBA_GEN_O)
 	@echo "LD $@"
@@ -309,7 +316,7 @@ help:
 	@echo "  test                        run + report"
 	@echo "  console                     Open a serial console on /dev/arduino with"
 	@echo "                              baudrate BAUDRATE."
-	@echo "  release                     Compile with NASSERT=yes and NDEBUG=yes."
+	@echo "  release                     Compile with NASSERT=yes."
 	@echo "  size                        Print application size information."
 	@echo "  stack-usage                 Print stack usage per function."
 	@echo "  backtrace                   Convert a list of space separated addresses in "
