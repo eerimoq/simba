@@ -52,7 +52,7 @@
 
 #ifdef CONFIG_SHT3XD_DEBUG_LOG_MASK
 #    define DLOG(self_p, level, msg, ...)                               \
-    log_object_print(&self_p->log, level, OSTR(msg), ##__VA_ARGS__)
+    log_object_print(&(self_p)->log, level, OSTR(msg), ##__VA_ARGS__)
 #else
 #    define DLOG(self_p, level, msg, ...)
 #endif
