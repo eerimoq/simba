@@ -137,6 +137,7 @@ Linux
 - :github-blob:`text/std<tst/text/std/main.c>`
 - :github-blob:`text/re<tst/text/re/main.c>`
 - :github-blob:`debug/log<tst/debug/log/main.c>`
+- :github-blob:`debug/harness<tst/debug/harness/main.c>`
 - :github-blob:`oam/nvm<tst/oam/nvm/main.c>`
 - :github-blob:`oam/service<tst/oam/service/main.c>`
 - :github-blob:`oam/settings<tst/oam/settings/main.c>`
