@@ -32,7 +32,7 @@ except ImportError:
 
 from errnos import human_readable_errno
 
-__version__ = '1.1'
+__version__ = '1.2'
 
 # SOAM protocol definitions.
 SOAM_TYPE_STDOUT_PRINTF                = 1
@@ -49,6 +49,7 @@ SOAM_TYPE_DATABASE_RESPONSE            = 11
 SOAM_TYPE_INVALID_TYPE                 = 15
 
 SOAM_SEGMENT_SIZE_MIN = 6
+SOAM_SEGMENT_SIZE_MAX = 1024
 
 SOAM_SEGMENT_FLAGS_CONSECUTIVE = (1 << 1)
 SOAM_SEGMENT_FLAGS_LAST        = (1 << 0)
@@ -234,9 +235,6 @@ class ReaderThread(threading.Thread):
                 continue
 
             #print(segment.encode('hex'), file=self.ostream)
-
-            if len(segment) < SOAM_SEGMENT_SIZE_MIN:
-                continue
 
             # Parse the received packet.
             crc = crc_ccitt(segment[:-2])
@@ -640,6 +638,9 @@ class SlipReaderThread(ReaderThread):
             try:
                 byte = self.client.read(1)
             except ClientClosedError:
+                if len(packet) > 0:
+                    print('warning: {}: client closed, discarding '
+                          'packet'.format(packet), file=self.ostream)
                 self.running = False
                 continue
 
@@ -650,13 +651,26 @@ class SlipReaderThread(ReaderThread):
                     print('warning: {}: serial read failure, discarding '
                           'packet'.format(packet), file=self.ostream)
                     packet = b''
+                    is_escaped = False
+                continue
 
+            # The server is likely in a reboot loop printing startup
+            # and/or crash information if the segment size is too big.
+            if len(packet) > SOAM_SEGMENT_SIZE_MAX:
+                print('warning: {}: discarding long packet'.format(packet),
+                      file=self.ostream)
+                packet = b''
+                is_escaped = False
                 continue
 
             if not is_escaped:
                 if byte == b'\xc0':
-                    if len(packet) > 0:
+                    if len(packet) >= SOAM_SEGMENT_SIZE_MIN:
                         return packet
+                    elif len(packet) > 0:
+                        print('warning: {}: discarding short packet'.format(packet),
+                              file=self.ostream)
+                        packet = b''
                 elif byte == b'\xdb':
                     is_escaped = True
                 else:
@@ -668,7 +682,8 @@ class SlipReaderThread(ReaderThread):
                     packet += b'\xdb'
                 else:
                     # Protocol error. Discard the packet.
-                    print('warning: {}: discarding packet'.format(packet))
+                    print('warning: {}: discarding packet'.format(packet),
+                          file=self.ostream)
                     packet = b''
 
                 is_escaped = False
