@@ -50,6 +50,13 @@
 #define CMD_SINGLE_NOCLKSTRETCH_REPHIGH   0x2400
 #define CMD_GETSERIAL                     0x3780
 
+#ifdef CONFIG_SHT3XD_DEBUG_LOG_MASK
+#    define DLOG(self_p, level, msg, ...)                               \
+    log_object_print(&(self_p)->log, level, OSTR(msg), ##__VA_ARGS__)
+#else
+#    define DLOG(self_p, level, msg, ...)
+#endif
+
 /**
  * Send a single 16bit command to the SHT3x-D device.
  */
@@ -60,18 +67,11 @@ static int sht3xd_sendcmd(struct sht3xd_driver_t *self_p, uint16_t cmd)
 
     i2ccmd[0] = (cmd >> 8) & 0xff;
     i2ccmd[1] = cmd & 0xff;
-#ifdef CONFIG_SHT3XD_DEBUG_LOG_MASK
-    log_object_print(&self_p->log, LOG_DEBUG,
-                     OSTR("Sending command 0x%04x to device"),
-                     cmd);
-#endif
+    DLOG(self_p, LOG_DEBUG, "Sending command 0x%04x to device", cmd);
     res = i2c_soft_write(self_p->i2c_p, self_p->i2c_addr, i2ccmd, 2);
 
     if (res != 2) {
-#ifdef CONFIG_SHT3XD_DEBUG_LOG_MASK
-        log_object_print(&self_p->log, LOG_ERROR,
-                         OSTR("Failed to write to device; err %d"), res);
-#endif
+        DLOG(self_p, LOG_ERROR, "Failed to write to device: %d", res);
 
         if (res < 0) {
             return (res);
@@ -93,27 +93,19 @@ static int sht3xd_read2x16(struct sht3xd_driver_t *self_p, uint8_t *data_p)
     res = i2c_soft_read(self_p->i2c_p, self_p->i2c_addr, data_p, 6);
 
     if (res != 6) {
-#ifdef CONFIG_SHT3XD_DEBUG_LOG_MASK
-        log_object_print(&self_p->log,
-                         LOG_ERROR,
-                         OSTR("Failed to read data - %d\r\n"),
-                         res);
-#endif
+        DLOG(self_p, LOG_ERROR, "Failed to read data: %d", res);
         return (-EIO);
     }
 
-#ifdef CONFIG_SHT3XD_DEBUG_LOG_MASK
-    log_object_print(&self_p->log,
-                     LOG_INFO,
-                     OSTR("Got data from SHT3x: 0x%02x%02x%02x "
-                          "0x%02x%02x%02x"),
-                     data_p[0],
-                     data_p[1],
-                     data_p[2],
-                     data_p[3],
-                     data_p[4],
-                     data_p[5]);
-#endif
+    DLOG(self_p,
+         LOG_DEBUG,
+         "Got data from SHT3x: 0x%02x%02x%02x 0x%02x%02x%02x",
+         data_p[0],
+         data_p[1],
+         data_p[2],
+         data_p[3],
+         data_p[4],
+         data_p[5]);
 
     // Here should go CRC check.
 
@@ -178,37 +170,29 @@ int sht3xd_start(struct sht3xd_driver_t *self_p)
 
     int res;
 
-#ifdef CONFIG_SHT3XD_DEBUG_LOG_MASK
-    log_object_print(&self_p->log, LOG_INFO,
-                     OSTR("Starting SHT3x-D driver."));
-#endif
+    DLOG(self_p, LOG_INFO, "Starting SHT3x-D driver");
     i2c_soft_start(self_p->i2c_p);
 
     if (i2c_soft_scan(self_p->i2c_p, self_p->i2c_addr) != 1) {
-#ifdef CONFIG_SHT3XD_DEBUG_LOG_MASK
-        log_object_print(&self_p->log, LOG_WARNING,
-                         OSTR("No device found at 0x%x."),
-                         self_p->i2c_addr);
-#endif
+        DLOG(self_p, LOG_WARNING, "No device found at 0x%x", self_p->i2c_addr);
         return (-ENOENT);
     }
 
     res = sht3xd_read_serial(self_p);
 
     if (res != 0) {
-#ifdef CONFIG_SHT3XD_DEBUG_LOG_MASK
-        log_object_print(&self_p->log, LOG_ERROR,
-                         OSTR("Error reading serial for at 0x%x"),
-                         self_p->i2c_addr);
-#endif
+        DLOG(self_p,
+             LOG_ERROR,
+             "Error reading serial from 0x%x",
+             self_p->i2c_addr);
         return (res);
     }
 
-#ifdef CONFIG_SHT3XD_DEBUG_LOG_MASK
-    log_object_print(&self_p->log, LOG_INFO,
-                     OSTR("Device found serial %8x at 0x%x"),
-                     self_p->serial, self_p->i2c_addr);
-#endif
+    DLOG(self_p,
+         LOG_INFO,
+         "Device found serial %8x at 0x%x",
+         self_p->serial,
+         self_p->i2c_addr);
 
     return (0);
 }
