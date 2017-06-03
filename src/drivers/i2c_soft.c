@@ -225,6 +225,7 @@ static int read_byte(struct i2c_soft_driver_t *self_p,
     uint8_t bit;
     int i;
 
+    bit = 0;
     *byte_p = 0;
 
     for (i = 0; i < 8; i++) {
