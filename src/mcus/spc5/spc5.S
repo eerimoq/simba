@@ -34,6 +34,9 @@
 #define INTC_IACKR                       0xfff48010
 #define INTC_EOIR                        0xfff48018
 
+/* Enable critical and machine check interrupts. */
+#define MSR                              0x00021000
+
 #define INTERRUPT_STACK (interrupt_stack + CONFIG_SYSTEM_INTERRUPT_STACK_SIZE - 84)
 
 .section .startup
@@ -59,6 +62,13 @@ _rchw:
 _start:
         se_bl     _ecc_init
         se_bl     _relocate_init
+
+#if CONFIG_SYSTEM_INTERRUPTS == 1
+        /* Configure the MSR register. */
+        e_lis     %r1, MSR@ha
+        e_or2i    %r1, MSR@l
+        mtmsr     %r1
+#endif
 
         /* Stack pointer initialization. */
         e_lis     %r1, __main_stack_end@ha

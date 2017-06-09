@@ -497,4 +497,14 @@ struct spc5_swt_t {
 #define ISR(vector)                             \
     void isr_ ## vector(void)
 
+/**
+ * Read the MSR register.
+ */
+#define mfmsr() ({                                              \
+            uint32_t UNIQUE(msr);                               \
+            asm volatile("mfmsr %0" : "=r" (UNIQUE(msr)) :      \
+                         : "memory");                           \
+            UNIQUE(msr);                                        \
+        })
+
 #endif
