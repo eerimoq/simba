@@ -13,11 +13,12 @@ import argparse
 import struct
 import serial
 import time
+import binascii
 import bincopy
 from tqdm import tqdm
 
 
-__version__ = '1.1'
+__version__ = '1.2'
 
 
 # Command types.
@@ -46,8 +47,8 @@ def crc_ccitt(data):
     msb = 0xff
     lsb = 0xff
 
-    for c in data:
-        x = ord(c) ^ msb
+    for c in bytearray(data):
+        x = c ^ msb
         x ^= (x >> 4)
         msb = (lsb ^ (x >> 3) ^ (x << 4)) & 255
         lsb = (x ^ (x << 5)) & 255
@@ -87,7 +88,7 @@ def packet_read(serial_connection):
         if len(payload) != payload_size:
             print('error: received {} bytes when expecting {}'.format(
                 len(payload), payload_size))
-            print('error: payload:', payload.encode('hex'))
+            print('error: payload:', binascii.hexlify(payload))
             return None, None
     else:
         payload = b''
@@ -196,7 +197,8 @@ def upload(serial_connection, mcu, baudrate, bam_baudrate, control_port):
 
     print('Uploading {} to SRAM using the BAM.'.format(spc5tool_bin))
 
-    for byte in tqdm(payload, unit=' bytes'):
+    for byte in tqdm(bytearray(payload), unit=' bytes'):
+        byte = struct.pack('B', byte)
         serial_connection.write(byte)
         response_byte = serial_connection.read(1)
 
@@ -210,8 +212,8 @@ def upload(serial_connection, mcu, baudrate, bam_baudrate, control_port):
         if response_byte != byte:
             print()
             print("Upload failed! Unexpected BAM response '{}' when "
-                  "expecting '{}'.".format(response_byte.encode('hex'),
-                                           byte.encode('hex')))
+                  "expecting '{}'.".format(binascii.hexlify(response_byte),
+                                           binascii.hexlify(byte)))
             sys.exit(1)
 
     # Give the uploaded application 10 ms to start.
@@ -335,7 +337,7 @@ def do_flash_write(args):
                     size = left
 
                 payload = struct.pack('>II', address, size)
-                payload += str(data[:size])
+                payload += data[:size]
                 data = data[size:]
                 execute_command(serial_connection, COMMAND_TYPE_WRITE, payload)
                 address += size
@@ -349,7 +351,6 @@ def do_flash_write(args):
 
         with tqdm(total=total, unit=' bytes') as progress:
             for address, _, data in f.iter_segments():
-                data = str(data)
                 left = len(data)
 
                 while left > 0:
@@ -365,9 +366,8 @@ def do_flash_write(args):
                     address += size
                     left -= size
 
-                    if read_data != data[:size]:
-                        print('Verify failed.')
-                        sys.exit(1)
+                    if bytearray(read_data) != data[:size]:
+                        sys.exit('Verify failed.')
 
                     data = data[size:]
                     progress.update(size)
