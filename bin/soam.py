@@ -12,6 +12,7 @@ import cmd
 import threading
 import serial
 import hashlib
+#import binascii
 
 try:
     import lzma
@@ -32,7 +33,7 @@ except ImportError:
 
 from errnos import human_readable_errno
 
-__version__ = '1.2'
+__version__ = '1.3'
 
 # SOAM protocol definitions.
 SOAM_TYPE_STDOUT_PRINTF                = 1
@@ -234,13 +235,14 @@ class ReaderThread(threading.Thread):
                 print("warning: failed to read segment", file=self.ostream)
                 continue
 
-            #print(segment.encode('hex'), file=self.ostream)
+            #print(binascii.hexlify(segment), file=self.ostream)
 
             # Parse the received packet.
             crc = crc_ccitt(segment[:-2])
 
             if crc != struct.unpack('>H', segment[-2:])[0]:
-                print('Segment CRC mismatch:', segment, file=self.ostream)
+                print('warning: {}: segment crc mismatch'.format(segment),
+                      file=self.ostream)
                 segments = None
                 continue
 
@@ -255,10 +257,21 @@ class ReaderThread(threading.Thread):
                 segment_index += 1
                 segment_index &= 0xff
             else:
-                print('Bad segment index.', file=self.ostream)
+                if index == 1:
+                    print('warning: unexpected segment index 1 received'
+                          ' (a reboot likely occured)', file=self.ostream)
+                else:
+                    print('warning: unexpected segment index {} received'.format(
+                        index),
+                          file=self.ostream)
+
                 segment_index = index + 1
+
+                if segments is not None:
+                    for segment in segments:
+                        print('warning: {}: discarding segment'.format(segment))
+
                 segments = None
-                continue
 
             # Receive all segments.
             if segments == None:
@@ -292,10 +305,10 @@ class ReaderThread(threading.Thread):
                                  SOAM_TYPE_COMMAND_RESPONSE_DATA_BINARY]:
                 response_data.append((packet_type, packet))
             elif packet_type == SOAM_TYPE_COMMAND_RESPONSE:
-                code = struct.unpack('>i', packet)[0]
+                transaction_id, code = struct.unpack('>Bi', packet)
 
                 with self.response_packet_cond:
-                    self.response_packet = code, response_data
+                    self.response_packet = transaction_id, code, response_data
                     response_data = []
                     self.response_packet_cond.notify_all()
             elif packet_type in [SOAM_TYPE_DATABASE_ID_RESPONSE,
@@ -316,13 +329,21 @@ class ReaderThread(threading.Thread):
 
 class Client(object):
 
-    def __init__(self, database, reader, ostream):
+    def __init__(self,
+                 database,
+                 reader,
+                 ostream,
+                 response_timeout=3.0,
+                 database_response_timeout=10.0):
         self.database = Database()
         self.packet_index = 1
         self.reader = reader
         self.ostream = ostream
         self.reader.setDaemon(True)
         self.reader.start()
+        self.command_transaction_id = 0
+        self.response_timeout = response_timeout
+        self.database_response_timeout = database_response_timeout
 
         if database:
             with open(database, 'rb') as fin:
@@ -409,7 +430,7 @@ class Client(object):
         segment = self.create_soam_segment(SOAM_TYPE_DATABASE_ID_REQUEST, b'')
         self.write_soam_segment(segment)
 
-        return self.reader.read_response(3.0)
+        return self.reader.read_response(self.response_timeout)
 
     def get_database_from_device(self):
         """Get the database from the device.
@@ -419,7 +440,7 @@ class Client(object):
         segment = self.create_soam_segment(SOAM_TYPE_DATABASE_REQUEST, b'')
         self.write_soam_segment(segment)
 
-        return self.reader.read_response(10.0)
+        return self.reader.read_response(self.database_response_timeout)
 
     def execute_command(self, command_with_args):
         """Execute given file system (fs) command and return a tuple of the
@@ -437,17 +458,36 @@ class Client(object):
             raise CommandNotFoundError(
                 "{}: command not found in string database".format(command))
 
-        command_with_args = command_with_args.encode('ascii')
-        command_with_args = command_with_args.replace(command.encode('ascii'),
-                                                      command_id,
-                                                      1)
-        command_with_args += b'\x00'
+        data = command_with_args.encode('ascii')
+        data = data.replace(command.encode('ascii'), command_id, 1)
+        data += b'\x00'
+
+        # Get a command transaction id.
+        self.command_transaction_id += 1
+        self.command_transaction_id &= 0xff
+        transaction_id = self.command_transaction_id
+
+        header = struct.pack('B', transaction_id)
 
         segment = self.create_soam_segment(SOAM_TYPE_COMMAND_REQUEST,
-                                           command_with_args)
+                                           header + data)
         self.write_soam_segment(segment)
 
-        code, response_data_list = self.reader.read_response(3.0)
+        while True:
+            try:
+                response = self.reader.read_response(self.response_timeout)
+            except TimeoutError:
+                raise TimeoutError('{}: timeout waiting for command '
+                                   'response'.format(command_with_args))
+
+            response_transaction_id, code, response_data_list = response
+
+            if response_transaction_id == transaction_id:
+                break
+
+            print('warning: {}: unexpected transaction id in command '
+                  'response.'.format(response), file=self.ostream)
+
         formatted_response_data = ''
 
         for packet_type, response_data in response_data_list:
@@ -493,6 +533,9 @@ def handle_errors(func):
             print("Keyboard interrupt.")
             self.output(CommandStatus.ERROR)
         except CommandNotFoundError as e:
+            print(e)
+            self.output(CommandStatus.ERROR)
+        except TimeoutError as e:
             print(e)
             self.output(CommandStatus.ERROR)
         except BaseException as e:
@@ -693,10 +736,16 @@ class SlipReaderThread(ReaderThread):
 
 class SlipClient(Client):
 
-    def __init__(self, database, ostream):
+    def __init__(self,
+                 database,
+                 ostream,
+                 response_timeout=3.0,
+                 database_response_timeout=10.0):
         super(SlipClient, self).__init__(database,
                                          SlipReaderThread(self, ostream),
-                                         ostream)
+                                         ostream,
+                                         response_timeout,
+                                         database_response_timeout)
 
     def write(self, buff):
         raise NotImplementedError('')
@@ -726,12 +775,21 @@ class SlipClient(Client):
 
 class SlipSerialClient(SlipClient):
 
-    def __init__(self, serial_port, baudrate, database, ostream):
+    def __init__(self,
+                 serial_port,
+                 baudrate,
+                 database,
+                 ostream,
+                 response_timeout=3.0,
+                 database_response_timeout=10.0):
         self.serial = serial.Serial(serial_port,
                                     baudrate=baudrate,
                                     timeout=0.5)
 
-        super(SlipSerialClient, self).__init__(database, ostream)
+        super(SlipSerialClient, self).__init__(database,
+                                               ostream,
+                                               response_timeout,
+                                               database_response_timeout)
 
     def write(self, buf):
         self.serial.write(buf)
@@ -742,11 +800,20 @@ class SlipSerialClient(SlipClient):
 
 class SlipTcpClient(SlipClient):
 
-    def __init__(self, address, port, database, ostream):
+    def __init__(self,
+                 address,
+                 port,
+                 database,
+                 ostream,
+                 response_timeout=3.0,
+                 database_response_timeout=10.0):
         self.socket = SocketDevice('uart', '0', address, port)
         self.socket.start()
 
-        super(SlipTcpClient, self).__init__(database, ostream)
+        super(SlipTcpClient, self).__init__(database,
+                                            ostream,
+                                            response_timeout,
+                                            database_response_timeout)
 
     def write(self, buf):
         self.socket.write(buf)
@@ -799,7 +866,9 @@ def do_serial(args):
     client = SlipSerialClient(args.port,
                               args.baudrate,
                               args.database,
-                              sys.stdout)
+                              sys.stdout,
+                              args.response_timeout,
+                              args.database_response_timeout)
     shell = Shell(client, debug=args.debug)
     shell.cmdloop()
     client.reader.stop()
@@ -809,7 +878,9 @@ def do_tcp(args):
     client = SlipTcpClient(args.address,
                            args.port,
                            args.database,
-                           sys.stdout)
+                           sys.stdout,
+                           args.response_timeout,
+                           args.database_response_timeout)
     shell = Shell(client, debug=args.debug)
     shell.cmdloop()
     client.reader.stop()
@@ -827,6 +898,14 @@ def main():
                         action='version',
                         version=__version__,
                         help='Print version information and exit.')
+    parser.add_argument('-t', '--response-timeout',
+                        type=int,
+                        default=3,
+                        help='Response timeout in seconds (default: 3).')
+    parser.add_argument('-T', '--database-response-timeout',
+                        type=int,
+                        default=10,
+                        help='Database response timeout in seconds (default: 10).')
 
     # Workaround to make the subparser required in Python 3.
     subparsers = parser.add_subparsers(title='subcommands',

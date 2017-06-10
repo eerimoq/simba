@@ -194,13 +194,14 @@ static int test_command(struct harness_t *harness_p)
     buf[0] = 0x40;
     buf[1] = 0x01;
     buf[2] = 0x00;
-    buf[3] = 0x05;
-    buf[4] = CSTR("/foo")[1];
-    buf[5] = CSTR("/foo")[2];
-    buf[6] = 0x00;
-    buf[7] = 0x11;
-    buf[8] = 0x68;
-    BTASSERT(soam_input(&soam, &buf[0], 9) == 0);
+    buf[3] = 0x06;
+    buf[4] = 0x01;
+    buf[5] = CSTR("/foo")[1];
+    buf[6] = CSTR("/foo")[2];
+    buf[7] = 0x00;
+    buf[8] = 0x00;
+    buf[9] = 0x11;
+    BTASSERT(soam_input(&soam, &buf[0], 10) == 0);
 
     /* Read the command response printf data packet #1, created by
        std_fprintf(...). */
@@ -298,16 +299,17 @@ static int test_command(struct harness_t *harness_p)
     BTASSERT(buf[1] == 9);
 
     size = ((buf[2] << 8) | buf[3]);
-    BTASSERT(size == 6);
+    BTASSERT(size == 7);
 
     BTASSERT(chan_read(&chout, &buf[4], size) == size);
-    BTASSERT(buf[4] == 0xff);
+    BTASSERT(buf[4] == 0x01);
     BTASSERT(buf[5] == 0xff);
     BTASSERT(buf[6] == 0xff);
     BTASSERT(buf[7] == 0xff);
+    BTASSERT(buf[8] == 0xff);
 
-    crc = ((buf[8] << 8) | buf[9]);
-    BTASSERT(crc_ccitt(0xffff, &buf[0], 8) == crc);
+    crc = ((buf[9] << 8) | buf[10]);
+    BTASSERT(crc_ccitt(0xffff, &buf[0], 9) == crc);
 
     return (0);
 }

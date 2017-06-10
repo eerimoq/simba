@@ -642,20 +642,20 @@ int sys_start(void)
     start_console();
 #endif
 
-#if CONFIG_START_NVM == 1
-    start_nvm();
-#endif
-
-#if CONFIG_MODULE_INIT_SETTINGS == 1
-    settings_module_init();
-#endif
-
 #if CONFIG_START_SHELL == 1
     start_shell();
 #endif
 
 #if CONFIG_START_SOAM == 1
     start_soam();
+#endif
+
+#if CONFIG_START_NVM == 1
+    start_nvm();
+#endif
+
+#if CONFIG_MODULE_INIT_SETTINGS == 1
+    settings_module_init();
 #endif
 
 #if CONFIG_START_FILESYSTEM == 1

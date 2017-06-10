@@ -269,16 +269,20 @@ static int handle_command_request(struct soam_t *self_p,
 {
     int32_t res;
     
-    res = fs_call((char *)&input_p[4],
+    res = fs_call((char *)&input_p[5],
                   &self_p->command_chan,
                   &self_p->command_chan,
                   NULL);
-    buf_p[0] = (res >> 24);
-    buf_p[1] = (res >> 16);
-    buf_p[2] = (res >> 8);
-    buf_p[3] = res;
+
+    /* Create the response packet with received transaction id and
+       command result. */
+    buf_p[0] = input_p[4];
+    buf_p[1] = (res >> 24);
+    buf_p[2] = (res >> 16);
+    buf_p[3] = (res >> 8);
+    buf_p[4] = res;
     
-    if (soam_write(self_p, SOAM_TYPE_COMMAND_RESPONSE, &buf_p[0], 4) != 4) {
+    if (soam_write(self_p, SOAM_TYPE_COMMAND_RESPONSE, &buf_p[0], 5) != 5) {
         return (-1);
     }
 
