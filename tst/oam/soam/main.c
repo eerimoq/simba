@@ -202,14 +202,13 @@ static int test_command(struct harness_t *harness_p)
     buf[1] = 0x01;
     buf[2] = transaction_id;
     buf[3] = 0x00;
-    buf[4] = 0x06;
-    buf[5] = 0x01;
-    buf[6] = CSTR("/foo")[1];
-    buf[7] = CSTR("/foo")[2];
-    buf[8] = 0x00;
-    buf[9] = 0xc7;
-    buf[10] = 0x87;
-    BTASSERT(soam_input(&soam, &buf[0], 11) == 0);
+    buf[4] = 0x05;
+    buf[5] = CSTR("/foo")[1];
+    buf[6] = CSTR("/foo")[2];
+    buf[7] = 0x00;
+    buf[8] = 0x42;
+    buf[9] = 0xc5;
+    BTASSERT(soam_input(&soam, &buf[0], 10) == 0);
 
     /* Read the command response printf data packet #1, created by
        std_fprintf(...). */
