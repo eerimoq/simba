@@ -299,7 +299,7 @@ int eeprom_soft_mount(struct eeprom_soft_driver_t *self_p)
                               sizeof(header));
 
             if (size != sizeof(header)) {
-                return (-1);
+                continue;
             }
 
             /* Check the valid flag. */

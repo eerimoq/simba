@@ -90,9 +90,19 @@ static ssize_t flash_port_read(struct flash_driver_t *self_p,
                                uintptr_t src,
                                size_t size)
 {
+    ssize_t res;
+
     memcpy(dst_p, (void *)src, size);
 
-    return (size);
+    /* Failed if an ECC error occured. */
+    if (self_p->dev_p->regs_p->MCR & SPC5_FLASH_MCR_EER) {
+        self_p->dev_p->regs_p->MCR = SPC5_FLASH_MCR_EER;
+        res = -1;
+    } else {
+        res = size;
+    }
+
+    return (res);
 }
 
 static ssize_t flash_port_write(struct flash_driver_t *self_p,

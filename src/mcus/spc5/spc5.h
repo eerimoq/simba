@@ -400,6 +400,40 @@ struct spc5_flash_t {
     uint32_t UMISR[5];
 };
 
+/* 35. Error Correction Status Module. */
+struct spc5_ecsm_t {
+    uint16_t PCT;
+    uint16_t REV;
+    uint32_t RESERVED0[1];
+    uint32_t IOPMC;
+    uint8_t RESERVED1[7];
+    uint8_t MWCR;
+    uint8_t RESERVED2[11];
+    uint8_t MIR;
+    uint32_t RESERVED3[1];
+    uint32_t MUDCR;
+    uint8_t RESERVED4[27];
+    uint8_t ECR;
+    uint8_t RESERVED5[3];
+    uint8_t ESR;
+    uint8_t RESERVED6[2];
+    uint16_t EEGR;
+    uint32_t RESERVED7[1];
+    uint32_t PFEAR;
+    uint8_t RESERVED8[2];
+    uint8_t PFEMR;
+    uint8_t PFEAT;
+    uint32_t RESERVED9[1];
+    uint32_t PFEDR;
+    uint32_t PREAR;
+    uint8_t RESERVED10[1];
+    uint8_t PRESR;
+    uint8_t PREMR;
+    uint8_t PREAT;
+    uint8_t RESERVED11[4];
+    uint32_t PREDR;
+};
+
 #define SPC5_FLASH_MCR_EDC                            BIT(31)
 #define SPC5_FLASH_MCR_SIZE_POS                          (24)
 #define SPC5_FLASH_MCR_SIZE_MASK (0x7 << SPC5_FLASH_MCR_SIZE_POS)
@@ -468,7 +502,7 @@ struct spc5_swt_t {
 #define SPC5_CTU       ((volatile struct spc5__t *)        0xffe64000ul)
 #define SPC5_SWT       ((volatile struct spc5_swt_t *)     0xfff38000ul)
 #define SPC5_STM       ((volatile struct spc5_stm_t *)     0xfff3c000ul)
-#define SPC5_ECSM      ((volatile struct spc5__t *)        0xfff40000ul)
+#define SPC5_ECSM      ((volatile struct spc5_ecsm_t *)    0xfff40000ul)
 #define SPC5_EDMA      ((volatile struct spc5__t *)        0xfff44000ul)
 #define SPC5_INTC      ((volatile struct spc5_intc_t *)    0xfff48000ul)
 #define SPC5_DSPI_0    ((volatile struct spc5__t *)        0xfff90000ul)

@@ -51,6 +51,20 @@ static void isr_none(uint32_t address)
     sys_panic(&buf[0]);
 }
 
+#if CONFIG_FLASH == 1
+
+ISR(data_storage)
+{
+    if (SPC5_DFLASH->MCR & SPC5_FLASH_MCR_EER) {
+        /* DFlash ECC errors are handled by the flash driver. */
+    } else {
+        sys_panic("isr_data_storage");
+    }
+
+}
+
+#endif
+
 void isr_software_configurable_flag_0(uint32_t address) __attribute__ ((weak, alias("isr_none")));
 void isr_software_configurable_flag_1(uint32_t address) __attribute__ ((weak, alias("isr_none")));
 void isr_software_configurable_flag_2(uint32_t address) __attribute__ ((weak, alias("isr_none")));
