@@ -49,7 +49,7 @@ SOAM_TYPE_DATABASE_REQUEST             = 10
 SOAM_TYPE_DATABASE_RESPONSE            = 11
 SOAM_TYPE_INVALID_TYPE                 = 15
 
-SOAM_SEGMENT_SIZE_MIN = 6
+SOAM_SEGMENT_SIZE_MIN = 7
 SOAM_SEGMENT_SIZE_MAX = 1024
 
 SOAM_SEGMENT_FLAGS_CONSECUTIVE = (1 << 1)
@@ -246,10 +246,10 @@ class ReaderThread(threading.Thread):
                 segments = None
                 continue
 
-            segment_type_flags, index = struct.unpack('BB', segment[0:2])
+            segment_type_flags, index, transaction_id = struct.unpack('BBB', segment[0:3])
             segment_type = (segment_type_flags >> 4)
             flags = (segment_type_flags & 0xf)
-            payload = segment[4:-2]
+            payload = segment[5:-2]
 
             if segment_index is None:
                 segment_index = index + 1
@@ -272,6 +272,11 @@ class ReaderThread(threading.Thread):
                         print('warning: {}: discarding segment'.format(segment))
 
                 segments = None
+
+                if response_data:
+                    print('warning: {}: discarding command response data'.format(
+                        response_data))
+                    response_data = []
 
             # Receive all segments.
             if segments == None:
@@ -303,9 +308,9 @@ class ReaderThread(threading.Thread):
                 print(formatted_string, end='', file=self.ostream)
             elif packet_type in [SOAM_TYPE_COMMAND_RESPONSE_DATA_PRINTF,
                                  SOAM_TYPE_COMMAND_RESPONSE_DATA_BINARY]:
-                response_data.append((packet_type, packet))
+                response_data.append((packet_type, transaction_id, packet))
             elif packet_type == SOAM_TYPE_COMMAND_RESPONSE:
-                transaction_id, code = struct.unpack('>Bi', packet)
+                code = struct.unpack('>i', packet)[0]
 
                 with self.response_packet_cond:
                     self.response_packet = transaction_id, code, response_data
@@ -341,7 +346,7 @@ class Client(object):
         self.ostream = ostream
         self.reader.setDaemon(True)
         self.reader.start()
-        self.command_transaction_id = 0
+        self.transaction_id = 0
         self.response_timeout = response_timeout
         self.database_response_timeout = database_response_timeout
 
@@ -410,9 +415,14 @@ class Client(object):
 
         """
 
-        packet = struct.pack('>BBH',
+        # Get a transaction id.
+        self.transaction_id += 1
+        self.transaction_id &= 0xff
+
+        packet = struct.pack('>BBBH',
                              packet_type << 4,
                              self.packet_index,
+                             self.transaction_id,
                              len(payload) + 2)
         packet += payload
         packet += struct.pack('>H', crc_ccitt(packet))
@@ -462,15 +472,7 @@ class Client(object):
         data = data.replace(command.encode('ascii'), command_id, 1)
         data += b'\x00'
 
-        # Get a command transaction id.
-        self.command_transaction_id += 1
-        self.command_transaction_id &= 0xff
-        transaction_id = self.command_transaction_id
-
-        header = struct.pack('B', transaction_id)
-
-        segment = self.create_soam_segment(SOAM_TYPE_COMMAND_REQUEST,
-                                           header + data)
+        segment = self.create_soam_segment(SOAM_TYPE_COMMAND_REQUEST, data)
         self.write_soam_segment(segment)
 
         while True:
@@ -482,7 +484,7 @@ class Client(object):
 
             response_transaction_id, code, response_data_list = response
 
-            if response_transaction_id == transaction_id:
+            if response_transaction_id == self.transaction_id:
                 break
 
             print('warning: {}: unexpected transaction id in command '
@@ -490,9 +492,15 @@ class Client(object):
 
         formatted_response_data = ''
 
-        for packet_type, response_data in response_data_list:
+        for packet_type, response_transaction_id, response_data in response_data_list:
+            if response_transaction_id != self.transaction_id:
+                print('warning: {}: unexpected transaction id in command '
+                      'response'.format(response_transaction_id))
+                continue
+
             if packet_type == SOAM_TYPE_COMMAND_RESPONSE_DATA_PRINTF:
                 identity = struct.unpack('>H', response_data[0:2])[0]
+
                 try:
                     fmt = self.database.formats[identity]
                     if code == -1003:
@@ -501,8 +509,10 @@ class Client(object):
                     else:
                         args = response_data[2:].decode('ascii').split('\x1f')
                     formatted_response_data += fmt.format(*args)
+
                 except KeyError:
                     formatted_response_data += response_data.decode('ascii')
+
                 except UnicodeDecodeError:
                     formatted_response_data += 'bad non ascii data in printf: '
                     formatted_response_data += '{}'.format(response_data)
