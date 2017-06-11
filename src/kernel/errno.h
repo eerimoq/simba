@@ -133,7 +133,6 @@
 /** Math result not representable. */
 #define ERANGE           34
 
-
 /** Resource deadlock would occur. */
 #define EDEADLK          35
 
@@ -203,6 +202,7 @@
 /** Invalid slot. */
 #define EBADSLT          57
 
+/** Deadlock. */
 #define EDEADLOCK        EDEADLK
 
 /** Bad font file format. */
@@ -417,7 +417,6 @@
 
 /** Key was rejected by service. */
 #define EKEYREJECTED    129
-
 
 /** Stack corrupt. */
 #define ESTACK         1000

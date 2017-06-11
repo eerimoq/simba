@@ -75,14 +75,14 @@ static int test_cmd_read(struct harness_t *harness_p)
 
     /* Bad number of arguments. */
     std_sprintf(buf, FSTR("oam/settings/read"));
-    BTASSERTI(fs_call(buf, NULL, &queue, NULL), ==, -1);
+    BTASSERTI(fs_call(buf, NULL, &queue, NULL), ==, -EINVAL);
     BTASSERTI(harness_expect(&queue,
                              "Usage: read <name>\r\n",
                              NULL), ==, 20);
 
     /* Bad setting name. */
     std_sprintf(buf, FSTR("oam/settings/read missing"));
-    BTASSERTI(fs_call(buf, NULL, &queue, NULL), ==, -1);
+    BTASSERTI(fs_call(buf, NULL, &queue, NULL), ==, -EINVAL);
     BTASSERTI(harness_expect(&queue,
                              "missing: setting not found\r\n",
                              NULL), ==, 28);
@@ -105,7 +105,7 @@ static int test_cmd_write(struct harness_t *harness_p)
     /* Write a string that is too long. */
     std_sprintf(buf,
                 FSTR("oam/settings/write string ThisStringIsTooLong"));
-    BTASSERTI(fs_call(buf, NULL, &queue, NULL), ==, -1);
+    BTASSERTI(fs_call(buf, NULL, &queue, NULL), ==, -EINVAL);
     BTASSERTI(harness_expect(&queue,
                              "ThisStringIsTooLong: string too long\r\n",
                              NULL), ==, 38);
@@ -113,7 +113,7 @@ static int test_cmd_write(struct harness_t *harness_p)
     /* Write a blob that is too long. */
     std_sprintf(buf,
                 FSTR("oam/settings/write blob 010203"));
-    BTASSERTI(fs_call(buf, NULL, &queue, NULL), ==, -1);
+    BTASSERTI(fs_call(buf, NULL, &queue, NULL), ==, -EINVAL);
     BTASSERTI(harness_expect(&queue,
                              "3: bad blob data length\r\n",
                              NULL), ==, 25);
@@ -121,7 +121,7 @@ static int test_cmd_write(struct harness_t *harness_p)
     /* Write a blob that is too short. */
     std_sprintf(buf,
                 FSTR("oam/settings/write blob 01"));
-    BTASSERTI(fs_call(buf, NULL, &queue, NULL), ==, -1);
+    BTASSERTI(fs_call(buf, NULL, &queue, NULL), ==, -EINVAL);
     BTASSERTI(harness_expect(&queue,
                              "1: bad blob data length\r\n",
                              NULL), ==, 25);
@@ -129,7 +129,7 @@ static int test_cmd_write(struct harness_t *harness_p)
     /* Write a blob that contains invalid data. */
     std_sprintf(buf,
                 FSTR("oam/settings/write blob 01XX"));
-    BTASSERTI(fs_call(buf, NULL, &queue, NULL), ==, -1);
+    BTASSERTI(fs_call(buf, NULL, &queue, NULL), ==, -EINVAL);
     BTASSERTI(harness_expect(&queue,
                              "01XX: bad blob data\r\n",
                              NULL), ==, 21);
@@ -137,21 +137,21 @@ static int test_cmd_write(struct harness_t *harness_p)
     /* Write a blob that contains invalid data. */
     std_sprintf(buf,
                 FSTR("oam/settings/write blob foo1"));
-    BTASSERTI(fs_call(buf, NULL, &queue, NULL), ==, -1);
+    BTASSERTI(fs_call(buf, NULL, &queue, NULL), ==, -EINVAL);
     BTASSERTI(harness_expect(&queue,
                              "foo1: bad blob data\r\n",
                              NULL), ==, 21);
 
     /* Bad number of arguments. */
     std_sprintf(buf, FSTR("oam/settings/write"));
-    BTASSERTI(fs_call(buf, NULL, &queue, NULL), ==, -1);
+    BTASSERTI(fs_call(buf, NULL, &queue, NULL), ==, -EINVAL);
     BTASSERTI(harness_expect(&queue,
                              "Usage: write <name> <value>\r\n",
                              NULL), ==, 29);
 
     /* Bad setting name. */
     std_sprintf(buf, FSTR("oam/settings/write missing 1"));
-    BTASSERTI(fs_call(buf, NULL, &queue, NULL), ==, -1);
+    BTASSERTI(fs_call(buf, NULL, &queue, NULL), ==, -EINVAL);
     BTASSERTI(harness_expect(&queue,
                              "missing: setting not found\r\n",
                              NULL), ==, 28);

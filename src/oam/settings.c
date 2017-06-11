@@ -168,7 +168,7 @@ static int cmd_read_cb(int argc,
     if (argc != 2) {
         std_fprintf(chout_p, OSTR("Usage: read <name>\r\n"));
 
-        return (-1);
+        return (-EINVAL);
     }
 
     /* Find the setting in the settings array. */
@@ -227,7 +227,7 @@ static int cmd_read_cb(int argc,
 
     std_fprintf(chout_p, OSTR("%s: setting not found\r\n"), argv[1]);
 
-    return (-1);
+    return (-EINVAL);
 }
 
 #endif
@@ -252,7 +252,7 @@ static int cmd_write_cb(int argc,
     if (argc != 3) {
         std_fprintf(chout_p, OSTR("Usage: write <name> <value>\r\n"));
 
-        return (-1);
+        return (-EINVAL);
     }
 
     /* Find the setting in the settings array. */
@@ -264,7 +264,7 @@ static int cmd_write_cb(int argc,
 
             case setting_type_int32_t:
                 if (std_strtol(argv[2], &value) == NULL) {
-                    return (-1);
+                    return (-EINVAL);
                 }
 
                 /* Range check. */
@@ -272,7 +272,7 @@ static int cmd_write_cb(int argc,
                     std_fprintf(chout_p,
                                 OSTR("%ld: value out of range\r\n"),
                                 value);
-                    return (-1);
+                    return (-EINVAL);
                 }
 
                 int32 = (int32_t)value;
@@ -285,7 +285,7 @@ static int cmd_write_cb(int argc,
                     std_fprintf(chout_p,
                                 OSTR("%s: string too long\r\n"),
                                 argv[2]);
-                    return (-1);
+                    return (-EINVAL);
                 }
 
                 settings_write(setting_p->address, argv[2], setting_p->size);
@@ -301,7 +301,7 @@ static int cmd_write_cb(int argc,
                     std_fprintf(chout_p,
                                 OSTR("%u: bad blob data length\r\n"),
                                 size);
-                    return (-1);
+                    return (-EINVAL);
                 }
 
                 /* For odd number of bytes the check will fail since
@@ -312,7 +312,7 @@ static int cmd_write_cb(int argc,
                         std_fprintf(chout_p,
                                     OSTR("%s: bad blob data\r\n"),
                                     argv[2]);
-                        return (-1);
+                        return (-EINVAL);
                     }
                 }
 
@@ -349,7 +349,7 @@ static int cmd_write_cb(int argc,
 
     std_fprintf(chout_p, OSTR("%s: setting not found\r\n"), argv[1]);
 
-    return (-1);
+    return (-EINVAL);
 }
 
 #endif

@@ -33,7 +33,7 @@ except ImportError:
 
 from errnos import human_readable_errno
 
-__version__ = '1.3'
+__version__ = '2.0'
 
 # SOAM protocol definitions.
 SOAM_TYPE_STDOUT_PRINTF                = 1
