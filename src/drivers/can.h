@@ -39,15 +39,20 @@
 #define CAN_SPEED_250KBPS  CAN_PORT_SPEED_250KBPS
 
 struct can_frame_t {
-    uint32_t id;          /* Frame ID. */
-    int extended_frame;   /* Extended frame. Id is (29 bits). */
-    size_t size;          /* Number of bytes in data array. */
-    int rtr;              /* Remote transmission request. */
-    uint32_t timestamp;   /* Receive timestamp. */
+    uint32_t id;                    /* Frame ID. */
+    struct {
+        uint8_t extended_frame : 1; /* Extended frame. Id is (29 bits). */
+        uint8_t rtr : 1;            /* Remote transmission request. */
+        uint8_t size : 4;           /* Number of bytes in data array. */
+    };
+#if CONFIG_CAN_FRAME_TIMESTAMP == 1
+    uint32_t timestamp;             /* Frame reception/transmission
+                                       timestamp. */
+#endif
     union {
         uint8_t u8[8];
         uint32_t u32[2];
-    } data;               /* Payload. */
+    } data;                         /* Payload. */
 };
 
 extern struct can_device_t can_device[CAN_DEVICE_MAX];

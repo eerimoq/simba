@@ -50,7 +50,9 @@ static void read_frame_from_hw(struct can_driver_t *self_p,
     msr = mailbox_p->MSR;
     frame.size = ((msr & CAN_MSR_MDLC_MASK) >> CAN_MSR_MDLC_POS);
     frame.rtr = ((msr & CAN_MSR_MRTR) != 0);
+#if CONFIG_CAN_FRAME_TIMESTAMP == 1
     frame.timestamp = 0;
+#endif
     frame.data.u32[0] = mailbox_p->MDL;
     frame.data.u32[1] = mailbox_p->MDH;
 

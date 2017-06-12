@@ -454,6 +454,7 @@ static void *can_client_main(void *arg_p)
     int frame_size;
     long value;
     size_t i;
+    int extended_frame;
 
     client_p = arg_p;
 
@@ -475,8 +476,10 @@ static void *can_client_main(void *arg_p)
         size = sscanf(&buf[0],
                       "id=%08x,extended=%d,size=%d,data=",
                       &frame.id,
-                      &frame.extended_frame,
+                      &extended_frame,
                       &frame_size);
+
+        frame.extended_frame = extended_frame;
 
         if (size != 3) {
             printf("warning: bad can message received: %s\n", &buf[0]);

@@ -322,6 +322,13 @@
 #endif
 
 /**
+ * Timestamp received CAN frames.
+ */
+#ifndef CONFIG_CAN_FRAME_TIMESTAMP
+#    define CONFIG_CAN_FRAME_TIMESTAMP                      1
+#endif
+
+/**
  * Enable the chipid driver.
  */
 #ifndef CONFIG_CHIPID

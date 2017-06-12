@@ -45,7 +45,9 @@ static void read_frame_from_hw(struct can_driver_t *self_p,
                    & SPC5_FLEXCAN_MSGBUF_CTRL_STATUS_LENGTH_MASK)
                   >> SPC5_FLEXCAN_MSGBUF_CTRL_STATUS_LENGTH_POS);
     frame.rtr = 0;
+#if CONFIG_CAN_FRAME_TIMESTAMP == 1
     frame.timestamp = 0;
+#endif
     frame.data.u32[0] = msgbuf_p->DATA[0];
     frame.data.u32[1] = msgbuf_p->DATA[1];
 
