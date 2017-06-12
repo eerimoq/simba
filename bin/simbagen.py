@@ -415,7 +415,7 @@ class SoamDb(object):
 
         # Compress the database.
         with open(filename, 'rb') as fin:
-            if 'lzma' in sys.modules:
+            if 'lzma' in sys.modules or 'backports.lzma' in sys.modules:
                 compressed = b'\x00' + lzma.compress(fin.read())
             else:
                 compressed = b'\x01' + fin.read()
