@@ -98,6 +98,10 @@ int sem_give_isr(struct sem_t *self_p,
 
     self_p->count -= count;
 
+    if (self_p->count < 0) {
+        self_p->count = 0;
+    }
+
     while ((self_p->count < self_p->count_max)
            && ((elem_p = thrd_prio_list_pop_isr(&self_p->waiters)) != NULL)) {
         self_p->count++;

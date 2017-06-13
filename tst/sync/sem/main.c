@@ -57,7 +57,7 @@ static void *sem_main(void *arg_p)
     return (NULL);
 }
 
-static int test_all(struct harness_t *harness_p)
+static int test_multi_thread(struct harness_t *harness_p)
 {
     struct time_t timeout = {
         .seconds = 0,
@@ -96,11 +96,34 @@ static int test_all(struct harness_t *harness_p)
     return (0);
 }
 
+static int test_binary(struct harness_t *harness_p)
+{
+    struct time_t timeout = {
+        .seconds = 0,
+        .nanoseconds = 1
+    };
+
+    BTASSERT(sem_init(&sem, 1, 1) == 0);
+
+    BTASSERT(sem_take(&sem, &timeout) == -ETIMEDOUT);
+
+    /* Give twice to test that the resource count stays at zero(0). */
+    BTASSERT(sem_give(&sem, 1) == 0);
+    BTASSERT(sem_give(&sem, 1) == 0);
+
+    /* Can be taken once, not twice. */
+    BTASSERT(sem_take(&sem, &timeout) == 0);
+    BTASSERT(sem_take(&sem, &timeout) == -ETIMEDOUT);
+
+    return (0);
+}
+
 int main()
 {
     struct harness_t harness;
     struct harness_testcase_t harness_testcases[] = {
-        { test_all, "test_all" },
+        { test_multi_thread, "test_multi_thread" },
+        { test_binary, "test_binary" },
         { NULL, NULL }
     };
 
