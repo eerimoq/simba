@@ -137,6 +137,7 @@ ISR(flexcan_0_esr_err)
 
             /* Resume the thread. */
             thrd_resume_isr(self_p->thrd_p, -1);
+            self_p->thrd_p = NULL;
         }
     }
 
@@ -174,6 +175,7 @@ ISR(flexcan_0_buf_00_03)
                 self_p->txframe_p++;
             } else {
                 thrd_resume_isr(self_p->thrd_p, 0);
+                self_p->thrd_p = NULL;
             }
         }
     }
