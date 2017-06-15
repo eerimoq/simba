@@ -110,11 +110,28 @@ static void thrd_port_cpu_usage_stop(struct thrd_t *thrd_p)
 
 #if CONFIG_MONITOR_THREAD == 1
 
+#    if CONFIG_FLOAT == 1
+
 static cpu_usage_t thrd_port_cpu_usage_get(struct thrd_t *thrd_p)
 {
     return (((cpu_usage_t)100 * thrd_p->port.cpu.period.time)
             / (SPC5_STM->CNT - thrd_p->port.cpu.period.start));
 }
+
+#    else
+
+static cpu_usage_t thrd_port_cpu_usage_get(struct thrd_t *thrd_p)
+{
+    uint32_t time;
+    uint32_t period;
+
+    time = (thrd_p->port.cpu.period.time / 128);
+    period = ((SPC5_STM->CNT - thrd_p->port.cpu.period.start) / 128);
+
+    return DIV_ROUND(((cpu_usage_t)100 * time), period);
+}
+
+#    endif
 
 static void thrd_port_cpu_usage_reset(struct thrd_t *thrd_p)
 {

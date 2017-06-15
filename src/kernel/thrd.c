@@ -354,7 +354,11 @@ static int cmd_list_cb(int argc,
                     thrd_p->name_p,
                     state_fmt[thrd_p->state], thrd_p->prio,
 #if CONFIG_THRD_CPU_USAGE == 1
+#    if CONFIG_FLOAT == 1
+                    (unsigned int)(thrd_p->statistics.cpu.usage + 0.5),
+#    else
                     (unsigned int)thrd_p->statistics.cpu.usage,
+#    endif
 #endif
 #if CONFIG_THRD_SCHEDULED == 1
                     (unsigned int)thrd_p->statistics.scheduled,
