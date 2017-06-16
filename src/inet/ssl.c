@@ -42,52 +42,85 @@
 #include "mbedtls/debug.h"
 #include "mbedtls/timing.h"
 
+#define SSL_MODULE_ALLOCATED_SSL 0
+#define SSL_MODULE_ALLOCATED_CONF 1
+#define SSL_MODULE_ALLOCATED_CERT 2
+#define SSL_MODULE_ALLOCATED_KEY 3
+#define SSL_MODULE_ALLOCATED_CA_CERTS 4
+
 struct module_t {
-    int initialized;
+    char initialized;
     mbedtls_entropy_context entropy;
     mbedtls_ctr_drbg_context ctr_drbg;
     mbedtls_ssl_context ssl;
-    int ssl_allocated;
     mbedtls_ssl_config conf;
-    int conf_allocated;
     mbedtls_x509_crt cert;
     mbedtls_pk_context key;
     mbedtls_x509_crt ca_certs;
     mbedtls_timing_delay_context timer;
+		char allocated[5];
 };
 
 static struct module_t module;
-
+void ssl_module_reset()
+{
+    if(module.initialized == 0)
+    {
+            return ;
+    }
+    //these are always initialized in module.init 
+    mbedtls_entropy_free(&module.entropy);
+    mbedtls_ctr_drbg_free(&module.ctr_drbg);
+    //sanity checks 
+    if(module.allocated[SSL_MODULE_ALLOCATED_SSL])
+            mbedtls_ssl_free(&module.ssl);
+    if(module.allocated[SSL_MODULE_ALLOCATED_CONF])
+            mbedtls_ssl_config_free(&module.conf);
+    if(module.allocated[SSL_MODULE_ALLOCATED_CERT])
+            mbedtls_x509_crt_free(&module.cert);
+    if(module.allocated[SSL_MODULE_ALLOCATED_KEY])
+            mbedtls_pk_free(&module.key);
+    if(module.allocated[SSL_MODULE_ALLOCATED_CA_CERTS])
+            mbedtls_x509_crt_free(&module.ca_certs);
+    memset(&module.timer,0,sizeof(module.timer));
+    module.initialized = 0;
+    memset(module.allocated,0,sizeof(module.allocated));
+    ssl_module_init();
+}
 static void *alloc_ssl(void)
 {
-    if (module.ssl_allocated == 1) {
+    if (module.allocated[SSL_MODULE_ALLOCATED_SSL] == 1) {
+				printf("alloc_ssl returns NULL \n");
         return (NULL);
     }
-
-    module.ssl_allocated = 1;
-
+    module.allocated[SSL_MODULE_ALLOCATED_SSL]=1;
     return (&module.ssl);
 }
 
 static void free_ssl(void *ssl_p)
 {
-    module.ssl_allocated = 0;
+    //more sanity checks 
+    if(0 == module.allocated[SSL_MODULE_ALLOCATED_SSL])
+        return ;
+    module.allocated[SSL_MODULE_ALLOCATED_SSL] = 0;
+    mbedtls_ssl_free(ssl_p);
 }
 
 static void *alloc_conf(void)
 {
-    if (module.conf_allocated == 1) {
+    if (module.allocated[SSL_MODULE_ALLOCATED_CONF] == 1) {
         return (NULL);
     }
-
-    module.conf_allocated = 1;
-
+    module.allocated[SSL_MODULE_ALLOCATED_CONF] = 1;
     return (&module.conf);
 }
 
 static void free_conf(void *conf_p)
 {
-    module.conf_allocated = 0;
+    if(0 == module.allocated[SSL_MODULE_ALLOCATED_CONF])
+        return ;
+    module.allocated[SSL_MODULE_ALLOCATED_CONF] = 0;
+    mbedtls_ssl_config_free(conf_p);
 }
 
 static int ssl_send(void *ctx_p,
@@ -112,7 +145,6 @@ int ssl_module_init()
     }
 
     module.initialized = 1;
-
     mbedtls_entropy_init(&module.entropy);
     mbedtls_ctr_drbg_init(&module.ctr_drbg);
 
@@ -124,7 +156,6 @@ int ssl_module_init()
                               0) != 0) {
         return (-1);
     }
-
     return (0);
 }
 
@@ -133,9 +164,8 @@ int ssl_context_init(struct ssl_context_t *self_p,
 {
     ASSERTN(self_p != NULL, EINVAL);
     ASSERTN(module.initialized == 1, EINVAL);
-
     self_p->protocol = protocol;
-
+		
     /* Allocate the mbedTLS SSL config datastructure. */
     self_p->conf_p = alloc_conf();
 
@@ -158,12 +188,19 @@ int ssl_context_destroy(struct ssl_context_t *self_p)
 {
     ASSERTN(self_p != NULL, EINVAL);
     ASSERTN(self_p->conf_p != NULL, EINVAL);
-
+		module.initialized = 0 ;
     free_conf(self_p->conf_p);
-
+    if(module.allocated[SSL_MODULE_ALLOCATED_CERT])
+        mbedtls_x509_crt_free(&module.cert);
+    if(module.allocated[SSL_MODULE_ALLOCATED_KEY])
+        mbedtls_pk_free(&module.key);
+    if(module.allocated[SSL_MODULE_ALLOCATED_CA_CERTS])
+        mbedtls_x509_crt_free(&module.ca_certs);
+    module.allocated[SSL_MODULE_ALLOCATED_CERT] = 0;
+    module.allocated[SSL_MODULE_ALLOCATED_KEY] = 0;
+    module.allocated[SSL_MODULE_ALLOCATED_CA_CERTS] = 0;
     return (0);
 }
-
 int ssl_context_load_cert_chain(struct ssl_context_t *self_p,
                                 const char *cert_p,
                                 const char *key_p)
@@ -171,7 +208,8 @@ int ssl_context_load_cert_chain(struct ssl_context_t *self_p,
     ASSERTN(self_p != NULL, EINVAL);
     ASSERTN(self_p->conf_p != NULL, EINVAL);
     ASSERTN(cert_p != NULL, EINVAL);
-
+		module.allocated[SSL_MODULE_ALLOCATED_CERT]=1; 
+		module.allocated[SSL_MODULE_ALLOCATED_KEY]=1;
     mbedtls_x509_crt_init(&module.cert);
     mbedtls_pk_init(&module.key);
 
@@ -206,6 +244,7 @@ int ssl_context_load_verify_location(struct ssl_context_t *self_p,
                                      const char *ca_certs_p)
 {
     /* Parse the CA certificate(s). */
+		module.allocated[SSL_MODULE_ALLOCATED_CA_CERTS]=1;
     if (mbedtls_x509_crt_parse(&module.ca_certs,
                                (unsigned char *)ca_certs_p,
                                strlen(ca_certs_p) + 1) != 0) {
