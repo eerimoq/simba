@@ -2,9 +2,9 @@
  * @section License
  *
  * The MIT License (MIT)
- *
- * Copyright (c) 2014-2017, Erik Moqvist
- *
+ * 
+ * Copyright (c) 2014-2016, Erik Moqvist
+ * 
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
  * files (the "Software"), to deal in the Software without
@@ -35,16 +35,16 @@
 #undef MBEDTLS_NET_C
 #undef MBEDTLS_TIMING_C
 #undef MBEDTLS_FS_IO
-#undef MBEDTLS_DEBUG_C
+//#undef MBEDTLS_DEBUG_C
 #undef MBEDTLS_SSL_PROTO_DTLS
 #undef MBEDTLS_SSL_DTLS_HELLO_VERIFY
 #undef MBEDTLS_SSL_DTLS_CLIENT_PORT_REUSE
 #undef MBEDTLS_SSL_DTLS_ANTI_REPLAY
 #undef MBEDTLS_SSL_DTLS_BADMAC_LIMIT
 
-#undef MBEDTLS_DEBUG_C
+//#undef MBEDTLS_DEBUG_C
 #undef MBEDTLS_BLOWFISH_C
-#undef MBEDTLS_X509_CSR_WRITE_C
+//#undef MBEDTLS_X509_CSR_WRITE_C
 
 #undef MBEDTLS_HAVE_TIME
 #undef MBEDTLS_HAVE_TIME_DATE

@@ -173,6 +173,7 @@ int ssl_socket_close(struct ssl_socket_t *self_p);
  *
  * @return Number of written bytes or negative error code.
  */
+ 
 ssize_t ssl_socket_write(struct ssl_socket_t *self_p,
                          const void *buf_p,
                          size_t size);
@@ -200,6 +201,8 @@ ssize_t ssl_socket_read(struct ssl_socket_t *self_p,
  */
 ssize_t ssl_socket_size(struct ssl_socket_t *self_p);
 
+
+
 /**
  * Get the hostname of the server.
  *
@@ -223,5 +226,23 @@ int ssl_socket_get_cipher(struct ssl_socket_t *self_p,
                           const char **cipher_pp,
                           const char **protocol_pp,
                           int *number_of_secret_bits_p);
+                          
+/**
+ * Writes to output_buf a generated key, returns its length through key_len
+ * 
+ */
+int ssl_context_create_private_key(unsigned char* output_buf);
 
+/**
+ * Writes to cert_buf a generated certificated.  
+ * Must be called before ssl_context_create_private_key
+ * Returns the number of bytes written to output_buf
+ */
+int create_certificate_from_key(unsigned char *cert_buf );
+
+/**
+ * Reinitialize the SSL module 
+ * Returns the number bytes written to cert_buf
+ */
+void ssl_module_reset();
 #endif
