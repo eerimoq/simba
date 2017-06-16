@@ -1,3 +1,3 @@
 # The Simba package.
 
-import fs
+from . import fs
