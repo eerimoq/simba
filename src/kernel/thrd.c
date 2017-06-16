@@ -261,8 +261,8 @@ static void thrd_reschedule(void)
     if (in_p != out_p) {
         module.scheduler.current_p = in_p;
         thrd_port_cpu_usage_stop(out_p);
+        thrd_port_cpu_usage_start(in_p);
         thrd_port_swap(in_p, out_p);
-        thrd_port_cpu_usage_start(out_p);
 #if CONFIG_THRD_SCHEDULED == 1
         out_p->statistics.scheduled++;
 #endif
