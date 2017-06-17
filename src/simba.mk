@@ -227,7 +227,8 @@ DRIVERS_SRC ?= \
 	random.c \
 	spi.c \
 	uart.c \
-	ws2812.c
+	ws2812.c \
+    eeprom_i2c.c 
 endif
 
 ifeq ($(FAMILY),stm32f1)

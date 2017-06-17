@@ -135,7 +135,11 @@ ssize_t i2c_soft_write(struct i2c_soft_driver_t *self_p,
  * @return true(1) if a slave responded to given address, otherwise
  *         false(0) or negative error code.
  */
-int i2c_soft_scan(struct i2c_soft_driver_t *self_p,
-                  int address);
+int i2c_soft_scan(struct i2c_soft_driver_t *self_p,int address);
 
+
+int i2c_soft_write_byte(struct i2c_soft_driver_t *self_p,uint8_t byte,    uint8_t ACK);
+int i2c_soft_read_byte (struct i2c_soft_driver_t *self_p,uint8_t *byte_p, uint8_t ACK);
+int i2c_soft_stop_cond(struct i2c_soft_driver_t *self_p);                     
+int i2c_soft_start_cond(struct i2c_soft_driver_t *self_p);                     
 #endif

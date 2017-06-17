@@ -62,12 +62,15 @@ static int wait_for_clock_stretching_end(struct i2c_soft_driver_t *self_p)
  *
  * Both SDA and SCL are set to 0 if this function returns 0.
  */
-static int start_cond(struct i2c_soft_driver_t *self_p)
+int i2c_soft_start_cond(struct i2c_soft_driver_t *self_p)
 {
     /* The line is busy if SDA is low. */
     pin_device_set_mode(self_p->sda_p, PIN_INPUT);
-
-    if (pin_device_read(self_p->sda_p) == 0) {
+    time_busy_wait_us(self_p->baudrate_us);
+    pin_device_set_mode(self_p->scl_p, PIN_INPUT);
+    time_busy_wait_us(self_p->baudrate_us);
+    if (pin_device_read(self_p->sda_p) == 0
+        || pin_device_read(self_p->scl_p) == 0 ) {
         return (-1);
     }
 
@@ -77,7 +80,7 @@ static int start_cond(struct i2c_soft_driver_t *self_p)
 
     /* Set SCL low as preparation for the first transfer. */
     pin_device_set_mode(self_p->scl_p, PIN_OUTPUT);
-
+    time_busy_wait_us(self_p->baudrate_us);
     return (0);
 }
 
@@ -87,19 +90,19 @@ static int start_cond(struct i2c_soft_driver_t *self_p)
  * Both SDA and SCL are floating (set to 1 by pullup) if this function
  * returns 0.
  */
-static int stop_cond(struct i2c_soft_driver_t *self_p)
+int i2c_soft_stop_cond(struct i2c_soft_driver_t *self_p)
 {
     /* Set SDA to 0. */
     pin_device_set_mode(self_p->sda_p, PIN_OUTPUT);
     time_busy_wait_us(self_p->baudrate_us);
 
-    /* SDA to 1. */
+    /* SCL to 1. */
     pin_device_set_mode(self_p->scl_p, PIN_INPUT);
 
-    /* Clock stretching. */
+    /*
     if (wait_for_clock_stretching_end(self_p) != 0) {
         return (-1);
-    }
+    }*/
 
     /* Stop bit setup time, minimum 4us. */
     time_busy_wait_us(self_p->baudrate_us);
@@ -151,6 +154,7 @@ static int write_bit(struct i2c_soft_driver_t *self_p,
     /* Clear the SCL to low in preparation for next change. */
     pin_device_set_mode(self_p->scl_p, PIN_OUTPUT);
 
+    time_busy_wait_us(self_p->baudrate_us);
     return (0);
 }
 
@@ -194,8 +198,8 @@ static int read_bit(struct i2c_soft_driver_t *self_p,
 /**
  * Write a byte to I2C bus. Return 0 if ack by the slave.
  */
-static int write_byte(struct i2c_soft_driver_t *self_p,
-                      uint8_t byte)
+int i2c_soft_write_byte(struct i2c_soft_driver_t *self_p,
+                      uint8_t byte, uint8_t ACK)
 {
     int i;
     uint8_t nack;
@@ -208,7 +212,7 @@ static int write_byte(struct i2c_soft_driver_t *self_p,
         byte <<= 1;
     }
 
-    if (read_bit(self_p, &nack) != 0) {
+    if (read_bit(self_p, &nack) != !ACK) {
         return (-1);
     }
 
@@ -219,8 +223,8 @@ static int write_byte(struct i2c_soft_driver_t *self_p,
 /**
  * Read a byte from I2C bus.
  */
-static int read_byte(struct i2c_soft_driver_t *self_p,
-                     uint8_t *byte_p)
+int i2c_soft_read_byte(struct i2c_soft_driver_t *self_p,
+                     uint8_t *byte_p, uint8_t ACK)
 {
     uint8_t bit;
     int i;
@@ -237,7 +241,7 @@ static int read_byte(struct i2c_soft_driver_t *self_p,
     }
 
     /* Acknowledge that the byte was successfully received. */
-    if (write_bit(self_p, 0) != 0) {
+    if (write_bit(self_p, !ACK) != 0) {
         return (-1);
     }
 
@@ -296,26 +300,26 @@ ssize_t i2c_soft_read(struct i2c_soft_driver_t *self_p,
     b_p = buf_p;
 
     /* Send the start condition. */
-    if (start_cond(self_p) != 0) {
+    if (i2c_soft_start_cond(self_p) != 0) {
         return (-1);
     }
 
     /* Write the address iwth the direction bit set to 1. */
-    if (write_byte(self_p, ((address << 1) | 0x1)) != 0) {
-        stop_cond(self_p);
+    if (i2c_soft_write_byte(self_p, ((address << 1) | 0x1), 1) != 0) {
+        i2c_soft_stop_cond(self_p);
         return (-1);
     }
 
     /* Read the data. */
     for (i = 0; i < size; i++) {
-        if (read_byte(self_p, &b_p[i]) != 0) {
-            stop_cond(self_p);
+        if (i2c_soft_read_byte(self_p, &b_p[i],1) != 0) {
+            i2c_soft_stop_cond(self_p);
             return (-1);
         }
     }
 
     /* Send the stop condition. */
-    if (stop_cond(self_p) != 0) {
+    if (i2c_soft_stop_cond(self_p) != 0) {
         return (-1);
     }
 
@@ -333,26 +337,26 @@ ssize_t i2c_soft_write(struct i2c_soft_driver_t *self_p,
     b_p = buf_p;
 
     /* Send the start condition. */
-    if (start_cond(self_p) != 0) {
+    if (i2c_soft_start_cond(self_p) != 0) {
         return (-1);
     }
 
     /* Write the address with the direction bit set to 0. */
-    if (write_byte(self_p, ((address << 1) | 0x0)) != 0) {
-        stop_cond(self_p);
+    if (i2c_soft_write_byte(self_p, ((address << 1) | 0x0),1) != 0) {
+        i2c_soft_stop_cond(self_p);
         return (-1);
     }
 
     /* Write the data. */
     for (i = 0; i < size; i++) {
-        if (write_byte(self_p, b_p[i]) != 0) {
-            stop_cond(self_p);
+        if (i2c_soft_write_byte(self_p, b_p[i], 1) != 0) {
+            i2c_soft_stop_cond(self_p);
             return (-1);
         }
     }
 
     /* Send the stop condition. */
-    if (stop_cond(self_p) != 0) {
+    if (i2c_soft_stop_cond(self_p) != 0) {
         return (-1);
     }
 
@@ -365,15 +369,15 @@ int i2c_soft_scan(struct i2c_soft_driver_t *self_p,
     int res;
 
     /* Send the start condition. */
-    if (start_cond(self_p) != 0) {
+    if (i2c_soft_start_cond(self_p) != 0) {
         return (-1);
     }
 
     /* Write the address with the direction bit set to 0. */
-    res = (write_byte(self_p, ((address << 1) | 0x0)) == 0);
+    res = (i2c_soft_write_byte(self_p, ((address << 1) | 0x0), 1) == 0);
 
     /* Send the stop condition. */
-    if (stop_cond(self_p) != 0) {
+    if (i2c_soft_stop_cond(self_p) != 0) {
         return (-1);
     }
 
