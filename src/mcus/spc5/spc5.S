@@ -65,13 +65,13 @@ _start:
 
 #if CONFIG_SYSTEM_INTERRUPTS == 1
         /* Configure the MSR register. */
-        e_lis     %r1, MSR@ha
+        e_lis     %r1, MSR@h
         e_or2i    %r1, MSR@l
         mtmsr     %r1
 #endif
 
         /* Stack pointer initialization. */
-        e_lis     %r1, __main_stack_end@ha
+        e_lis     %r1, __main_stack_end@h
         e_or2i    %r1, __main_stack_end@l
 
         e_bl      spc5_init
@@ -93,13 +93,13 @@ _start:
         .type     _ecc_init,@function
 _ecc_init:
 #if CONFIG_SPC5_RAM_CLEAR_ALL == 1
-        e_lis     %r3, __ram_begin@ha
+        e_lis     %r3, __ram_begin@h
         e_or2i    %r3, __ram_begin@l
 #else
-        e_lis     %r3, __bss_begin@ha
+        e_lis     %r3, __bss_begin@h
         e_or2i    %r3, __bss_begin@l
 #endif
-        e_lis     %r4, __ram_end@ha
+        e_lis     %r4, __ram_end@h
         e_or2i    %r4, __ram_end@l
 
         not       %r5, %r3
@@ -156,7 +156,7 @@ _relocate_init:
 _interrupt_init:
         /* Interrupt vector prefix register. The base address of the
            interrupt vector. */
-        e_lis     %r3, ivor@ha
+        e_lis     %r3, ivor@h
         e_or2i    %r3, ivor@l
         mtivpr    %r3
 
@@ -181,7 +181,7 @@ isr_external_input:
         se_stw    %r2, 4(%r1)
         se_mr     %r2, %r1
         e_add16i  %r2, %r2, 8
-        e_lis     %r1, INTERRUPT_STACK@ha
+        e_lis     %r1, INTERRUPT_STACK@h
         e_or2i    %r1, INTERRUPT_STACK@l
         e_stw     %r2, 0(%r1)
 #endif
@@ -389,7 +389,7 @@ isr_critical_input:
         e_stwu    %r1, -8(%r1)
         mfsrr0    %r0
         se_stw    %r0, 12(%r1)
-        e_lis     %r3, isr_critical_input_string@ha
+        e_lis     %r3, isr_critical_input_string@h
         e_add16i  %r3, %r3, isr_critical_input_string@l
         e_bl      sys_panic
 
@@ -401,7 +401,7 @@ isr_machine_check:
         e_stwu    %r1, -8(%r1)
         mfsrr0    %r0
         se_stw    %r0, 12(%r1)
-        e_lis     %r3, isr_machine_check_string@ha
+        e_lis     %r3, isr_machine_check_string@h
         e_add16i  %r3, %r3, isr_machine_check_string@l
         e_bl      sys_panic
 
@@ -413,7 +413,7 @@ isr_data_storage:
         e_stwu    %r1, -8(%r1)
         mfsrr0    %r0
         se_stw    %r0, 12(%r1)
-        e_lis     %r3, isr_data_storage_string@ha
+        e_lis     %r3, isr_data_storage_string@h
         e_add16i  %r3, %r3, isr_data_storage_string@l
         e_bl      sys_panic
 
@@ -425,7 +425,7 @@ isr_instruction_storage:
         e_stwu    %r1, -8(%r1)
         mfsrr0    %r0
         se_stw    %r0, 12(%r1)
-        e_lis     %r3, isr_instruction_storage_string@ha
+        e_lis     %r3, isr_instruction_storage_string@h
         e_add16i  %r3, %r3, isr_instruction_storage_string@l
         e_bl      sys_panic
 
@@ -437,7 +437,7 @@ isr_alignment:
         e_stwu    %r1, -8(%r1)
         mfsrr0    %r0
         se_stw    %r0, 12(%r1)
-        e_lis     %r3, isr_alignment_string@ha
+        e_lis     %r3, isr_alignment_string@h
         e_add16i  %r3, %r3, isr_alignment_string@l
         e_bl      sys_panic
 
@@ -449,7 +449,7 @@ isr_program:
         e_stwu    %r1, -8(%r1)
         mfsrr0    %r0
         se_stw    %r0, 12(%r1)
-        e_lis     %r3, isr_program_string@ha
+        e_lis     %r3, isr_program_string@h
         e_add16i  %r3, %r3, isr_program_string@l
         e_bl      sys_panic
 
@@ -461,7 +461,7 @@ isr_reserved:
         e_stwu    %r1, -8(%r1)
         mfsrr0    %r0
         se_stw    %r0, 12(%r1)
-        e_lis     %r3, isr_reserved_string@ha
+        e_lis     %r3, isr_reserved_string@h
         e_add16i  %r3, %r3, isr_reserved_string@l
         e_bl      sys_panic
 
@@ -473,7 +473,7 @@ isr_system_call:
         e_stwu    %r1, -8(%r1)
         mfsrr0    %r0
         se_stw    %r0, 12(%r1)
-        e_lis     %r3, isr_system_call_string@ha
+        e_lis     %r3, isr_system_call_string@h
         e_add16i  %r3, %r3, isr_system_call_string@l
         e_bl      sys_panic
 
@@ -485,7 +485,7 @@ isr_auxiliary_processor_unavailable:
         e_stwu    %r1, -8(%r1)
         mfsrr0    %r0
         se_stw    %r0, 12(%r1)
-        e_lis     %r3, isr_auxiliary_processor_unavailable_string@ha
+        e_lis     %r3, isr_auxiliary_processor_unavailable_string@h
         e_add16i  %r3, %r3, isr_auxiliary_processor_unavailable_string@l
         e_bl      sys_panic
 
@@ -497,7 +497,7 @@ isr_decrementer:
         e_stwu    %r1, -8(%r1)
         mfsrr0    %r0
         se_stw    %r0, 12(%r1)
-        e_lis     %r3, isr_decrementer_string@ha
+        e_lis     %r3, isr_decrementer_string@h
         e_add16i  %r3, %r3, isr_decrementer_string@l
         e_bl      sys_panic
 
@@ -509,7 +509,7 @@ isr_fixed_interval_timer_interrupt:
         e_stwu    %r1, -8(%r1)
         mfsrr0    %r0
         se_stw    %r0, 12(%r1)
-        e_lis     %r3, isr_fixed_interval_timer_interrupt_string@ha
+        e_lis     %r3, isr_fixed_interval_timer_interrupt_string@h
         e_add16i  %r3, %r3, isr_fixed_interval_timer_interrupt_string@l
         e_bl      sys_panic
 
@@ -521,7 +521,7 @@ isr_watchdog_timer_interrupt:
         e_stwu    %r1, -8(%r1)
         mfsrr0    %r0
         se_stw    %r0, 12(%r1)
-        e_lis     %r3, isr_watchdog_timer_interrupt_string@ha
+        e_lis     %r3, isr_watchdog_timer_interrupt_string@h
         e_add16i  %r3, %r3, isr_watchdog_timer_interrupt_string@l
         e_bl      sys_panic
 
@@ -533,7 +533,7 @@ isr_data_tlb_error:
         e_stwu    %r1, -8(%r1)
         mfsrr0    %r0
         se_stw    %r0, 12(%r1)
-        e_lis     %r3, isr_data_tlb_error_string@ha
+        e_lis     %r3, isr_data_tlb_error_string@h
         e_add16i  %r3, %r3, isr_data_tlb_error_string@l
         e_bl      sys_panic
 
@@ -545,7 +545,7 @@ isr_instruction_tlb_error:
         e_stwu    %r1, -8(%r1)
         mfsrr0    %r0
         se_stw    %r0, 12(%r1)
-        e_lis     %r3, isr_instruction_tlb_error_string@ha
+        e_lis     %r3, isr_instruction_tlb_error_string@h
         e_add16i  %r3, %r3, isr_instruction_tlb_error_string@l
         e_bl      sys_panic
 
@@ -557,7 +557,7 @@ isr_debug:
         e_stwu    %r1, -8(%r1)
         mfsrr0    %r0
         se_stw    %r0, 12(%r1)
-        e_lis     %r3, isr_debug_string@ha
+        e_lis     %r3, isr_debug_string@h
         e_add16i  %r3, %r3, isr_debug_string@l
         e_bl      sys_panic
 
