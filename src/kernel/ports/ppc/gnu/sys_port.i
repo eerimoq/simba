@@ -51,16 +51,12 @@ ISR(stm_match_on_channel_0)
     sys_tick_isr();
 }
 
-static int sys_port_module_init(void)
+#if CONFIG_SYS_RESET_CAUSE == 1
+
+static void read_and_clear_reset_cause(void)
 {
     uint16_t fes;
     uint16_t des;
-
-    /* Start the system tick timer. */
-    SPC5_STM->CHANNELS[0].CMP = SYS_TICK_COUNT;
-    SPC5_STM->CHANNELS[0].CCR = SPC5_STM_CHANNELS_CCR_CEN;
-    SPC5_STM->CR = SPC5_STM_CR_TEN;
-    SPC5_INTC->PSR[30/4] = 0x00000100;
 
     /* Get the reset cause. */
     fes = SPC5_MC_RGM->FES;
@@ -105,6 +101,21 @@ static int sys_port_module_init(void)
     } else {
         module.reset_cause = sys_reset_cause_unknown_t;
     }
+}
+
+#endif
+
+static int sys_port_module_init(void)
+{
+    /* Start the system tick timer. */
+    SPC5_STM->CHANNELS[0].CMP = SYS_TICK_COUNT;
+    SPC5_STM->CHANNELS[0].CCR = SPC5_STM_CHANNELS_CCR_CEN;
+    SPC5_STM->CR = SPC5_STM_CR_TEN;
+    SPC5_INTC->PSR[30/4] = 0x00000100;
+
+#if CONFIG_SYS_RESET_CAUSE == 1
+    read_and_clear_reset_cause();
+#endif
 
     return (0);
 }

@@ -208,6 +208,13 @@
 #endif
 
 /**
+ * Read, and when needed clear, the reset cause at startup.
+ */
+#ifndef CONFIG_SYS_RESET_CAUSE
+#    define CONFIG_SYS_RESET_CAUSE                          1
+#endif
+
+/**
  * Kick the watchdog in `sys_panic()` before writing to the console.
  */
 #ifndef CONFIG_SYS_PANIC_KICK_WATCHDOG
