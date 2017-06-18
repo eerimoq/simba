@@ -58,3 +58,12 @@ rerun:
 			    --pattern $(RUN_END_PATTERN)\
 			    --pattern-success $(RUN_END_PATTERN_SUCCESS) \
 			    | tee $(RUNLOG) ; test $${PIPESTATUS[0]} -eq 0
+
+erase:
+	@echo "Erasing."
+	python -u $(SPC5TOOL_PY) --port $(SERIAL_PORT) $(CONTROL_PORT_ARG) \
+	upload
+	python -u $(SPC5TOOL_PY) --port $(SERIAL_PORT) $(CONTROL_PORT_ARG) \
+	flash_erase 0x0 0x40000
+	python -u $(SPC5TOOL_PY) --port $(SERIAL_PORT) $(CONTROL_PORT_ARG) \
+	flash_erase 0x800000 0x10000
