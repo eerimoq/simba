@@ -35,6 +35,8 @@
  */
 #define VALID_PATTERN                                  0xa5c3
 
+#define CHUNK_HEADER_SIZE        sizeof(struct chunk_header_t)
+
 struct chunk_header_t {
     uint32_t crc;
     int16_t revision;
@@ -52,7 +54,7 @@ static uint32_t calculate_chunk_crc(struct eeprom_soft_driver_t *self_p,
     uint8_t buf[8];
     size_t offset;
 
-    offset = sizeof(struct chunk_header_t);
+    offset = CHUNK_HEADER_SIZE;
     *crc_p = 0;
 
     while (offset < self_p->chunk_size) {
@@ -67,6 +69,10 @@ static uint32_t calculate_chunk_crc(struct eeprom_soft_driver_t *self_p,
 
         *crc_p = crc_32(*crc_p, &buf[0], sizeof(buf));
         offset += sizeof(buf);
+
+#if CONFIG_PREEMPTIVE_SCHEDULER == 0
+        thrd_yield();
+#endif
     }
 
     return (0);
@@ -143,6 +149,10 @@ static int is_blank_chunk(struct eeprom_soft_driver_t *self_p,
         if (byte != 0xff) {
             return (0);
         }
+
+#if CONFIG_PREEMPTIVE_SCHEDULER == 0
+        thrd_yield();
+#endif
     }
 
     return (1);
@@ -243,6 +253,7 @@ int eeprom_soft_init(struct eeprom_soft_driver_t *self_p,
     self_p->blocks_p = blocks_p;
     self_p->number_of_blocks = number_of_blocks;
     self_p->chunk_size = chunk_size;
+    self_p->eeprom_size = (chunk_size - CHUNK_HEADER_SIZE);
     self_p->current.block_p = NULL;
     self_p->current.chunk_address = 0xffffffff;
 
@@ -345,15 +356,15 @@ ssize_t eeprom_soft_read(struct eeprom_soft_driver_t *self_p,
     ASSERTN(self_p != NULL, EINVAL);
     ASSERTN(dst_p != NULL, EINVAL);
 
-    if (src >= self_p->chunk_size - 8) {
+    if (src >= self_p->eeprom_size) {
         return (-EINVAL);
     }
 
-    if (src + size > self_p->chunk_size - 8) {
+    if (src + size > self_p->eeprom_size) {
         return (-EINVAL);
     }
 
-    src += (self_p->current.chunk_address + 8);
+    src += (self_p->current.chunk_address + CHUNK_HEADER_SIZE);
 
     return (flash_read(self_p->flash_p, dst_p, src, size));
 }
@@ -375,11 +386,11 @@ ssize_t eeprom_soft_write(struct eeprom_soft_driver_t *self_p,
     int overwrite_index;
     size_t overwrite_size;
 
-    if (dst >= self_p->chunk_size - 8) {
+    if (dst >= self_p->eeprom_size) {
         return (-EINVAL);
     }
 
-    if (dst + size > self_p->chunk_size - 8) {
+    if (dst + size > self_p->eeprom_size) {
         return (-EINVAL);
     }
 
@@ -390,25 +401,25 @@ ssize_t eeprom_soft_write(struct eeprom_soft_driver_t *self_p,
     /* Write to new chunk. */
     u8_src_p = src_p;
 
-    for (offset = 0; offset < self_p->chunk_size - 8; offset += 8) {
+    for (offset = 0; offset < self_p->eeprom_size; offset += sizeof(buf)) {
         /* Read from old chunk. */
         if (flash_read(self_p->flash_p,
                        &buf[0],
-                       self_p->current.chunk_address + offset + 8,
+                       self_p->current.chunk_address + CHUNK_HEADER_SIZE + offset,
                        sizeof(buf)) != sizeof(buf)) {
             return (-1);
         }
 
         /* Overwrite given data region. */
-        if ((dst < offset + 8) && (dst + size > offset)) {
+        if ((dst < offset + sizeof(buf)) && (dst + size > offset)) {
             if (dst <= offset) {
                 overwrite_index = 0;
             } else {
                 overwrite_index = (dst - offset);
             }
 
-            if (dst + size >= offset + 8) {
-                overwrite_size = 8;
+            if (dst + size >= offset + sizeof(buf)) {
+                overwrite_size = sizeof(buf);
             } else {
                 overwrite_size = (dst + size - offset);
             }
@@ -421,11 +432,15 @@ ssize_t eeprom_soft_write(struct eeprom_soft_driver_t *self_p,
 
         /* Write to new chunk. */
         if (flash_write(self_p->flash_p,
-                        chunk_address + offset + 8,
+                        chunk_address + CHUNK_HEADER_SIZE + offset,
                         &buf[0],
                         sizeof(buf)) != sizeof(buf)) {
             return (-1);
         }
+
+#if CONFIG_PREEMPTIVE_SCHEDULER == 0
+        thrd_yield();
+#endif
     }
 
     revision = (self_p->current.revision + 1);

@@ -43,6 +43,7 @@ struct eeprom_soft_driver_t {
     const struct eeprom_soft_block_t *blocks_p;
     int number_of_blocks;
     size_t chunk_size;
+    size_t eeprom_size;
     struct {
         const struct eeprom_soft_block_t *block_p;
         uintptr_t chunk_address;
