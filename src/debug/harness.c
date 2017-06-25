@@ -262,7 +262,9 @@ ssize_t harness_mock_read(const char *id_p,
         LIST_SL_ITERATOR_NEXT(&iterator, &entry_p);
 
         if (entry_p == NULL) {
+#if CONFIG_HARNESS_MOCK_VERBOSE == 1
             std_printf(FSTR("error: %s: mock id not found\r\n"), id_p);
+#endif
             break;
         }
 

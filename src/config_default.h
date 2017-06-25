@@ -2241,6 +2241,13 @@
 #endif
 
 /**
+ * Verbose mock framework.
+ */
+#ifndef CONFIG_HARNESS_MOCK_VERBOSE
+#    define CONFIG_HARNESS_MOCK_VERBOSE                     1
+#endif
+
+/**
  * Size of the HTTP server request buffer. This buffer is used when
  * parsing received HTTP request headers.
  */
