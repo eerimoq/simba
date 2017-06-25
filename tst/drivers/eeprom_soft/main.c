@@ -35,6 +35,9 @@
 #    define FLASH_ADDRESS                   0x0000
 #    define FLASH_SIZE                       0x800
 #    define CHUNK_SIZE                       0x100
+
+static uint8_t flash_buf[FLASH_SIZE];
+
 #elif defined(FAMILY_SPC5)
 #    define DEVICE_INDEX                         1
 #    define FLASH_ADDRESS      SPC5_DFLASH_ADDRESS
@@ -75,65 +78,6 @@ static int test_init(struct harness_t *harness_p)
                               &blocks[0],
                               membersof(blocks),
                               CHUNK_SIZE) == 0);
-
-    return (0);
-}
-
-static int test_mount_corrupt_header_valid(struct harness_t *harness_p)
-{
-#if defined(ARCH_LINUX)
-    uint8_t byte;
-
-    BTASSERT(eeprom_soft_format(&eeprom_soft) == 0);
-
-    byte = 0x01;
-    BTASSERT(flash_write(&flash,
-                         FLASH_ADDRESS + 7,
-                         &byte,
-                         sizeof(byte)) == sizeof(byte));
-
-    BTASSERT(eeprom_soft_mount(&eeprom_soft) == -1);
-
-    return (0);
-#else
-    return (1);
-#endif
-}
-
-static int test_mount_corrupt_header_crc(struct harness_t *harness_p)
-{
-#if defined(ARCH_LINUX)
-    uint8_t byte;
-
-    BTASSERT(eeprom_soft_format(&eeprom_soft) == 0);
-
-    byte = 0x01;
-    BTASSERT(flash_write(&flash,
-                         FLASH_ADDRESS,
-                         &byte,
-                         sizeof(byte)) == sizeof(byte));
-
-    BTASSERT(eeprom_soft_mount(&eeprom_soft) == -1);
-
-    return (0);
-#else
-    return (1);
-#endif
-}
-
-static int test_mount_corrupt_data(struct harness_t *harness_p)
-{
-    uint8_t byte;
-
-    BTASSERT(eeprom_soft_format(&eeprom_soft) == 0);
-
-    byte = 0x01;
-    BTASSERT(flash_write(&flash,
-                         FLASH_ADDRESS + 8,
-                         &byte,
-                         sizeof(byte)) == sizeof(byte));
-
-    BTASSERT(eeprom_soft_mount(&eeprom_soft) == -1);
 
     return (0);
 }
@@ -273,13 +217,132 @@ static int test_read_write_bad_address(struct harness_t *harness_p)
     return (0);
 }
 
-/**
- * Stub the flash driver on Linux. Use real flash driver on target
- * hardware.
- */
+static int test_mount_corrupt_data(struct harness_t *harness_p)
+{
+    uint8_t byte;
+
+    BTASSERT(eeprom_soft_format(&eeprom_soft) == 0);
+
+    byte = 0x01;
+    BTASSERT(flash_write(&flash,
+                         FLASH_ADDRESS + 8,
+                         &byte,
+                         sizeof(byte)) == sizeof(byte));
+
+    BTASSERT(eeprom_soft_mount(&eeprom_soft) == -1);
+
+    return (0);
+}
+
 #if defined(ARCH_LINUX)
 
-static uint8_t flash_buf[FLASH_SIZE];
+static int test_mount_corrupt_header_valid(struct harness_t *harness_p)
+{
+    BTASSERT(eeprom_soft_format(&eeprom_soft) == 0);
+
+    /* Overwrite parts of the valid flag. */
+    flash_buf[7] = 1;
+
+    BTASSERT(eeprom_soft_mount(&eeprom_soft) == -1);
+
+    return (0);
+}
+
+static int test_mount_corrupt_header_crc(struct harness_t *harness_p)
+{
+    BTASSERT(eeprom_soft_format(&eeprom_soft) == 0);
+
+    /* Overwrite parts of the crc. */
+    flash_buf[0] = 1;
+
+    BTASSERT(eeprom_soft_mount(&eeprom_soft) == -1);
+
+    return (0);
+}
+
+static int test_mount_flash_read_fails(struct harness_t *harness_p)
+{
+    ssize_t res;
+
+    BTASSERT(eeprom_soft_format(&eeprom_soft) == 0);
+
+    res = -1;
+    harness_mock_write("flash_read(): return (res)", &res, sizeof(res));
+    BTASSERT(eeprom_soft_mount(&eeprom_soft) == -1);
+
+    return (0);
+}
+
+static int test_mount_after_write(struct harness_t *harness_p)
+{
+    uint8_t byte;
+
+    BTASSERT(eeprom_soft_format(&eeprom_soft) == 0);
+    BTASSERT(eeprom_soft_mount(&eeprom_soft) == 0);
+
+    byte = 1;
+    BTASSERT(eeprom_soft_write(&eeprom_soft,
+                               0,
+                               &byte,
+                               sizeof(byte)) == sizeof(byte));
+
+    BTASSERT(eeprom_soft_mount(&eeprom_soft) == 0);
+
+    return (0);
+}
+
+static int test_write_flash_read_fails_blank_chunk(struct harness_t *harness_p)
+{
+    uint8_t byte;
+    ssize_t res;
+
+    BTASSERT(eeprom_soft_format(&eeprom_soft) == 0);
+    BTASSERT(eeprom_soft_mount(&eeprom_soft) == 0);
+
+    /* Flash read fails checking blank chunk. */
+    res = -1;
+    harness_mock_write("flash_read(): return (res)", &res, sizeof(res));
+
+    byte = 1;
+    BTASSERT(eeprom_soft_write(&eeprom_soft,
+                               0,
+                               &byte,
+                               sizeof(byte)) == sizeof(byte));
+
+    return (0);
+}
+
+static int test_write_blank_chunk_not_blank(struct harness_t *harness_p)
+{
+    uint8_t byte;
+
+    BTASSERT(eeprom_soft_format(&eeprom_soft) == 0);
+    BTASSERT(eeprom_soft_mount(&eeprom_soft) == 0);
+
+    /* Overwrite a byte in the first blank chunk. */
+    flash_buf[CHUNK_SIZE] = 0;
+
+    byte = 1;
+    BTASSERT(eeprom_soft_write(&eeprom_soft,
+                               0,
+                               &byte,
+                               sizeof(byte)) == sizeof(byte));
+
+    return (0);
+}
+
+static int test_format_flash_erase_fails(struct harness_t *harness_p)
+{
+    int res;
+
+    /* Flash erase fails. */
+    res = -1;
+    harness_mock_write("flash_erase(): return (res)", &res, sizeof(res));
+
+    BTASSERT(eeprom_soft_format(&eeprom_soft) == -1);
+
+    return (0);
+}
 
 int __wrap_flash_module_init(void)
 {
@@ -303,12 +366,22 @@ ssize_t __wrap_flash_read(struct flash_driver_t *self_p,
                           size_t size)
 {
     BTASSERT(self_p != NULL);
-    BTASSERT(src < FLASH_SIZE);
-    BTASSERT(size <= CHUNK_SIZE);
+    BTASSERTI(src, <, FLASH_SIZE);
+    BTASSERTI(size, <=, CHUNK_SIZE);
 
-    memcpy(dst_p, &flash_buf[src], size);
+    ssize_t res;
+    int res2;
 
-    return (size);
+    res2 = harness_mock_read("flash_read(): return (res)",
+                            &res,
+                            sizeof(res));
+
+    if (res2 == -1) {
+        memcpy(dst_p, &flash_buf[src], size);
+        res = size;
+    }
+
+    return (res);
 }
 
 ssize_t __wrap_flash_write(struct flash_driver_t *self_p,
@@ -333,9 +406,19 @@ int __wrap_flash_erase(struct flash_driver_t *self_p,
     BTASSERT(addr < FLASH_SIZE);
     BTASSERT(size <= FLASH_SIZE);
 
-    memset(&flash_buf[addr], 0xff, size);
+    int res;
+    int res2;
 
-    return (0);
+    res2 = harness_mock_read("flash_erase(): return (res)",
+                            &res,
+                            sizeof(res));
+
+    if (res2 == -1) {
+        memset(&flash_buf[addr], 0xff, size);
+        res = 0;
+    }
+
+    return (res);
 }
 
 #endif
@@ -345,13 +428,23 @@ int main()
     struct harness_t harness;
     struct harness_testcase_t harness_testcases[] = {
         { test_init, "test_init" },
-        { test_mount_corrupt_header_valid, "test_mount_corrupt_header_valid" },
-        { test_mount_corrupt_header_crc, "test_mount_corrupt_header_crc" },
-        { test_mount_corrupt_data, "test_mount_corrupt_data" },
         { test_format_mount, "test_format_mount" },
         { test_read_write_sizes, "test_read_write_sizes" },
         { test_read_write_low_high, "test_read_write_low_high" },
         { test_read_write_bad_address, "test_read_write_bad_address" },
+        { test_mount_corrupt_data, "test_mount_corrupt_data" },
+#if defined(ARCH_LINUX)
+        { test_mount_corrupt_header_valid, "test_mount_corrupt_header_valid" },
+        { test_mount_corrupt_header_crc, "test_mount_corrupt_header_crc" },
+        { test_mount_flash_read_fails, "test_mount_flash_read_fails" },
+        { test_mount_after_write, "test_mount_after_write" },
+        {
+            test_write_flash_read_fails_blank_chunk,
+            "test_write_flash_read_fails_blank_chunk"
+        },
+        { test_write_blank_chunk_not_blank, "test_write_blank_chunk_not_blank" },
+        { test_format_flash_erase_fails, "test_format_flash_erase_fails" },
+#endif
         { NULL, NULL }
     };
 

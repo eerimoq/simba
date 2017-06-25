@@ -2315,6 +2315,23 @@
 #endif
 
 /**
+ * Semaphore protected software eeprom accesses.
+ */
+#ifndef CONFIG_EEPROM_SOFT_SEMAPHORE
+#    define CONFIG_EEPROM_SOFT_SEMAPHORE                    1
+#endif
+
+#define CONFIG_EEPROM_SOFT_CRC_32                           0
+#define CONFIG_EEPROM_SOFT_CRC_CCITT                        1
+
+/**
+ * Software eeprom crc algorithm.
+ */
+#ifndef CONFIG_EEPROM_SOFT_CRC
+#    define CONFIG_EEPROM_SOFT_CRC  CONFIG_EEPROM_SOFT_CRC_32
+#endif
+
+/**
  * Configuration validation.
  */
 #if (CONFIG_START_SHELL == 1) &&  (CONFIG_START_CONSOLE == CONFIG_START_CONSOLE_NONE)

@@ -47,8 +47,11 @@ struct eeprom_soft_driver_t {
     struct {
         const struct eeprom_soft_block_t *block_p;
         uintptr_t chunk_address;
-        int16_t revision;
+        uint16_t revision;
     } current;
+#if CONFIG_EEPROM_SOFT_SEMAPHORE == 1
+    struct sem_t sem;
+#endif
 };
 
 /**
