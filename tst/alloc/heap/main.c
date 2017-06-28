@@ -44,6 +44,7 @@ static int test_alloc_free(struct harness_t *harness)
     /* Allocate a few buffers... */
     for (i = 0; i < 16; i++) {
         buffers[i] = heap_alloc(&heap, 1 + (4 * i));
+        memset(buffers[i], -1, 1 + (4 * i));
         BTASSERT(buffers[i] != NULL);
     }
 
@@ -55,6 +56,7 @@ static int test_alloc_free(struct harness_t *harness)
     /* Allocate from the free list... */
     for (i = 0; i < 16; i++) {
         buffers[i] = heap_alloc(&heap, 1 + (4 * i));
+        memset(buffers[i], -1, 1 + (4 * i));
         BTASSERT(buffers[i] != NULL);
     }
 
@@ -110,22 +112,27 @@ static int test_big_buffer(struct harness_t *harness)
     /* Allocate new block. */
     buffers[0] = heap_alloc(&heap, 513);
     BTASSERT(buffers[0] != NULL);
+    memset(buffers[0], -1, 513);
     BTASSERT(heap_free(&heap, buffers[0]) == 0);
 
     /* Allocate from the free list. */
     buffers[0] = heap_alloc(&heap, 513);
     BTASSERT(buffers[0] != NULL);
+    memset(buffers[0], -1, 513);
     BTASSERT(heap_free(&heap, buffers[0]) == 0);
 
     /* Allocate from the end of the free list*/
     buffers[0] = heap_alloc(&heap, 513);
     BTASSERT(buffers[0] != NULL);
+    memset(buffers[0], -1, 513);
     buffers[1] = heap_alloc(&heap, 514);
-    BTASSERT(buffers[0] != NULL);
+    BTASSERT(buffers[1] != NULL);
+    memset(buffers[1], -1, 514);
     BTASSERT(heap_free(&heap, buffers[1]) == 0);
     BTASSERT(heap_free(&heap, buffers[0]) == 0);
     buffers[0] = heap_alloc(&heap, 514);
     BTASSERT(buffers[0] != NULL);
+    memset(buffers[0], -1, 514);
     BTASSERT(heap_free(&heap, buffers[0]) == 0);
 
     return (0);
@@ -137,12 +144,12 @@ static int test_out_of_memory(struct harness_t *harness)
     void *buf_p;
     size_t sizes[8] = { 16, 32, 64, 128, 256, 512, 512, 512 };
 
-    BTASSERT(heap_init(&heap, buffer, 32, sizes) == 0);
+    BTASSERT(heap_init(&heap, buffer, 40, sizes) == 0);
 
     buf_p = heap_alloc(&heap, 1);
     BTASSERT(buf_p != NULL);
 
-    buf_p = heap_alloc(&heap, 26);
+    buf_p = heap_alloc(&heap, 36);
     BTASSERT(buf_p == NULL);
 
     /* Big buffer. */
