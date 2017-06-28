@@ -2241,6 +2241,13 @@
 #endif
 
 /**
+ * Verbose mock framework.
+ */
+#ifndef CONFIG_HARNESS_MOCK_VERBOSE
+#    define CONFIG_HARNESS_MOCK_VERBOSE                     1
+#endif
+
+/**
  * Size of the HTTP server request buffer. This buffer is used when
  * parsing received HTTP request headers.
  */
@@ -2305,6 +2312,23 @@
  */
 #ifndef CONFIG_FLASH_DEVICE_SEMAPHORE
 #    define CONFIG_FLASH_DEVICE_SEMAPHORE                   1
+#endif
+
+/**
+ * Semaphore protected software eeprom accesses.
+ */
+#ifndef CONFIG_EEPROM_SOFT_SEMAPHORE
+#    define CONFIG_EEPROM_SOFT_SEMAPHORE                    1
+#endif
+
+#define CONFIG_EEPROM_SOFT_CRC_32                           0
+#define CONFIG_EEPROM_SOFT_CRC_CCITT                        1
+
+/**
+ * Software eeprom crc algorithm.
+ */
+#ifndef CONFIG_EEPROM_SOFT_CRC
+#    define CONFIG_EEPROM_SOFT_CRC  CONFIG_EEPROM_SOFT_CRC_32
 #endif
 
 /**
