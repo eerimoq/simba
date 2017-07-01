@@ -82,6 +82,9 @@ static const char *message_fmt[] = {
     "forbidden"
 };
 
+//! Interval required between MQTT packets.
+#define KEEP_ALIVE 300
+
 /**
  * Write the fixed header of the MQTT message to the server.
  */
@@ -176,18 +179,18 @@ static int handle_control_connect(struct mqtt_client_t *self_p)
     }
 
     /* Write the variable header. */
-    buf[0] = 0;               /* Protocol Name - Length MSB */
-    buf[1] = 4;               /* Protocol Name - Length LSB */
-    buf[2] = 'M';             /* Protocol Name */
-    buf[3] = 'Q';             /* Protocol Name */
-    buf[4] = 'T';             /* Protocol Name */
-    buf[5] = 'T';             /* Protocol Name */
-    buf[6] = 4;               /* Protocol Level */
-    buf[7] = (CLEAN_SESSION); /* Connect Flags */
-    buf[8] = 0;               /* Keep Alive MSB */
-    buf[9] = 10;              /* Keep Alive LSB */
-    buf[10] = 0;              /* Payload - Length MSB */
-    buf[11] = 0;              /* Payload - Length LSB */
+    buf[0] = 0;                          /* Protocol Name - Length MSB */
+    buf[1] = 4;                          /* Protocol Name - Length LSB */
+    buf[2] = 'M';                        /* Protocol Name */
+    buf[3] = 'Q';                        /* Protocol Name */
+    buf[4] = 'T';                        /* Protocol Name */
+    buf[5] = 'T';                        /* Protocol Name */
+    buf[6] = 4;                          /* Protocol Level */
+    buf[7] = (CLEAN_SESSION);            /* Connect Flags */
+    buf[8] = ((KEEP_ALIVE) >> 8) & 0xff; /* Keep Alive MSB */
+    buf[9] = (KEEP_ALIVE) & 0xff;        /* Keep Alive LSB */
+    buf[10] = 0;                         /* Payload - Length MSB */
+    buf[11] = 0;                         /* Payload - Length LSB */
 
     if (chan_write(self_p->transport.out_p, &buf[0], 12) != 12) {
         return (-EIO);
