@@ -261,6 +261,37 @@
                             "name": "xtensa-esp32-elf-gcc"
                         }
                     ]
+                },
+                {
+                    "name": "Simba",
+                    "architecture": "esp32",
+                    "version": "15.0.0",
+                    "category": "Simba",
+                    "help": {
+                        "online": "https://simba-os.readthedocs.org"
+                    },
+                    "url": "https://github.com/eerimoq/simba-releases/raw/master/arduino/esp32/simba-arduino-esp32-15.0.0.zip",
+                    "archiveFileName": "simba-arduino-esp32-15.0.0.zip",
+                    "checksum": "SHA-256:7c9d7b77458e180d1cb40bd277b939a6229cf45c6014dbd70c0b21e3cc05be00",
+                    "size": "9802062",
+                    "boards": [
+                        {
+                            "name": "Nano32"
+                        },
+                        {
+                            "name": "ESP32-DevKitC"
+                        },
+                        {
+                            "name": "Maple-ESP32"
+                        }
+                    ],
+                    "toolsDependencies": [
+                        {
+                            "packager": "Simba",
+                            "version": "1.22.0-59",
+                            "name": "xtensa-esp32-elf-gcc"
+                        }
+                    ]
                 }
             ],
             "tools": [
