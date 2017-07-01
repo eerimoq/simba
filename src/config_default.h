@@ -142,6 +142,7 @@
 #    define PORT_HAS_RANDOM
 #    define PORT_HAS_WS2812
 #    define PORT_HAS_EEPROM_SOFT
+#    define PORT_HAS_EEPROM_I2C
 #endif
 
 #if defined(FAMILY_STM32F1)
