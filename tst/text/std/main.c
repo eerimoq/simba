@@ -179,6 +179,10 @@ static int test_sprintf_double(struct harness_t *harness_p)
     BTASSERTM(&buf[0],
               "Normal:                '10.500000' '-37.730998'",
               size + 1);
+#elif defined(ARCH_AVR)
+    BTASSERTM(&buf[0],
+              "Normal:                '10.500000' '-37.730999'",
+              size + 1);
 #else
     BTASSERTM(&buf[0],
               "Normal:                '10.500000' '-37.731000'",
@@ -192,6 +196,10 @@ static int test_sprintf_double(struct harness_t *harness_p)
 #if defined(ARCH_ESP)
     BTASSERTM(&buf[0],
               "Left justification:    '10.500000   ' '-37.730998  '",
+              size + 1);
+#elif defined(ARCH_AVR)
+    BTASSERTM(&buf[0],
+              "Left justification:    '10.500000   ' '-37.730999  '",
               size + 1);
 #else
     BTASSERTM(&buf[0],
@@ -207,6 +215,10 @@ static int test_sprintf_double(struct harness_t *harness_p)
     BTASSERTM(&buf[0],
               "Preceding with blanks: '   10.500000' '  -37.730998'",
               size + 1);
+#elif defined(ARCH_AVR)
+    BTASSERTM(&buf[0],
+              "Preceding with blanks: '   10.500000' '  -37.730999'",
+              size + 1);
 #else
     BTASSERTM(&buf[0],
               "Preceding with blanks: '   10.500000' '  -37.731000'",
@@ -220,6 +232,10 @@ static int test_sprintf_double(struct harness_t *harness_p)
 #if defined(ARCH_ESP)
     BTASSERTM(&buf[0],
               "Preceding with zeros:  '00010.500000' '-0037.730998'",
+              size + 1);
+#elif defined(ARCH_AVR)
+    BTASSERTM(&buf[0],
+              "Preceding with zeros:  '00010.500000' '-0037.730999'",
               size + 1);
 #else
     BTASSERTM(&buf[0],

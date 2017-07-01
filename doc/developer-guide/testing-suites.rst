@@ -17,7 +17,6 @@ Arduino Due
 - :github-blob:`alloc/circular_heap<tst/alloc/circular_heap/main.c>`
 - :github-blob:`alloc/heap<tst/alloc/heap/main.c>`
 - :github-blob:`text/configfile<tst/text/configfile/main.c>`
-- :github-blob:`text/emacs<tst/text/emacs/main.c>`
 - :github-blob:`text/std<tst/text/std/main.c>`
 - :github-blob:`text/re<tst/text/re/main.c>`
 - :github-blob:`debug/log<tst/debug/log/main.c>`
@@ -32,7 +31,6 @@ Arduino Due
 - :github-blob:`drivers/chipid<tst/drivers/chipid/main.c>`
 - :github-blob:`drivers/can<tst/drivers/can/main.c>`
 - :github-blob:`drivers/flash<tst/drivers/flash/main.c>`
-- :github-blob:`drivers/pin<tst/drivers/pin/main.c>`
 
 Arduino Mega
 ------------

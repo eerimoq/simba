@@ -104,7 +104,6 @@ ifeq ($(BOARD), arduino_due)
     TESTS += $(addprefix tst/alloc/, circular_heap \
                                      heap)
     TESTS += $(addprefix tst/text/, configfile \
-				    emacs \
 				    std \
                                     re)
     TESTS += $(addprefix tst/debug/, log)
@@ -118,8 +117,7 @@ ifeq ($(BOARD), arduino_due)
                                     sha1)
     TESTS += $(addprefix tst/drivers/, chipid \
 				       can \
-				       flash \
-				       pin)
+				       flash)
 endif
 
 ifeq ($(BOARD), arduino_mega)

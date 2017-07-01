@@ -41,7 +41,7 @@ SERIAL_PORT ?= /dev/arduino
 
 upload:
 	@echo "Uploading $(EXE)"
-	avrdude -p atmega328p -D -P $(SERIAL_PORT) -c arduino -V -b 57600 -U eeprom:w:$(SETTINGS_BIN):r
+	avrdude -p atmega328p -D -P $(SERIAL_PORT) -c arduino -V -b 57600 -U eeprom:w:$(EEPROM_BIN):r
 	avrdude -p atmega328p -D -P $(SERIAL_PORT) -c arduino -V -b 57600 -U flash:w:$(HEX)
 
 rerun:
