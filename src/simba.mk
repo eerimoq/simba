@@ -108,6 +108,7 @@ DRIVERS_SRC ?= \
 	can.c \
 	dac.c \
 	ds18b20.c \
+	eeprom_i2c.c \
 	eeprom_soft.c \
 	exti.c \
 	flash.c \
@@ -168,6 +169,7 @@ DRIVERS_SRC ?= \
 	chipid.c \
 	dac.c \
 	ds18b20.c \
+	eeprom_i2c.c \
 	eeprom_soft.c \
 	exti.c \
 	flash.c \
@@ -190,6 +192,7 @@ DRIVERS_SRC ?= \
 	adc.c \
 	analog_input_pin.c \
 	ds18b20.c \
+	eeprom_i2c.c \
 	eeprom_soft.c \
 	esp_wifi.c \
 	esp_wifi/station.c \
@@ -216,6 +219,7 @@ DRIVERS_SRC ?= \
 	can.c \
 	dac.c \
 	ds18b20.c \
+	eeprom_i2c.c \
 	eeprom_soft.c \
 	flash.c \
 	esp_wifi.c \
@@ -233,6 +237,7 @@ endif
 
 ifeq ($(FAMILY),stm32f1)
 DRIVERS_SRC ?= \
+	eeprom_i2c.c \
 	eeprom_soft.c \
 	flash.c \
 	pin.c \
@@ -243,6 +248,7 @@ endif
 
 ifeq ($(FAMILY),stm32f2)
 DRIVERS_SRC ?= \
+	eeprom_i2c.c \
 	eeprom_soft.c \
 	flash.c \
 	pin.c \
@@ -253,6 +259,7 @@ endif
 
 ifeq ($(FAMILY),stm32f3)
 DRIVERS_SRC ?= \
+	eeprom_i2c.c \
 	eeprom_soft.c \
 	flash.c \
 	pin.c \
@@ -264,6 +271,7 @@ endif
 ifeq ($(FAMILY),spc5)
 DRIVERS_SRC ?= \
 	can.c \
+	eeprom_i2c.c \
 	eeprom_soft.c \
 	flash.c \
 	i2c.c \
