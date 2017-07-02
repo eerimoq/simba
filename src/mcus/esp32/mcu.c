@@ -238,8 +238,8 @@ struct dac_device_t dac_device[DAC_DEVICE_MAX];
 /* Use software i2c. */
 struct i2c_device_t i2c_device[I2C_DEVICE_MAX] = {
     {
-        .scl_p = &pin_device[0],
-        .sda_p = &pin_device[1],
+        .scl_p = &pin_device[22],
+        .sda_p = &pin_device[21],
         .max_clock_stretching_us = 100000,
         .clock_stretching_sleep_us = 1000
     }
