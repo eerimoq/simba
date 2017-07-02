@@ -109,7 +109,7 @@ static int test_read_write_sizes(struct harness_t *harness_p)
     BTASSERT(eeprom_soft_read(&eeprom_soft, &buf[21], 21,  7) ==  7);
     BTASSERT(eeprom_soft_read(&eeprom_soft, &buf[28], 28,  8) ==  8);
     BTASSERT(eeprom_soft_read(&eeprom_soft, &buf[36], 36,  9) ==  9);
-    BTASSERT(eeprom_soft_read(&eeprom_soft, &buf[45], 65, 10) == 10);
+    BTASSERT(eeprom_soft_read(&eeprom_soft, &buf[45], 45, 10) == 10);
 
     for (i = 0; i < membersof(buf); i++) {
         BTASSERT(buf[i] == 0xff, "[%d]: %02x", i, buf[i]);
@@ -129,7 +129,7 @@ static int test_read_write_sizes(struct harness_t *harness_p)
     BTASSERT(eeprom_soft_write(&eeprom_soft, 21, &buf[21],  7) ==  7);
     BTASSERT(eeprom_soft_write(&eeprom_soft, 28, &buf[28],  8) ==  8);
     BTASSERT(eeprom_soft_write(&eeprom_soft, 36, &buf[36],  9) ==  9);
-    BTASSERT(eeprom_soft_write(&eeprom_soft, 65, &buf[45], 10) == 10);
+    BTASSERT(eeprom_soft_write(&eeprom_soft, 45, &buf[45], 10) == 10);
 
     /* Read and verify the written data. */
     memset(&buf[0], -1, sizeof(buf));
@@ -143,7 +143,7 @@ static int test_read_write_sizes(struct harness_t *harness_p)
     BTASSERT(eeprom_soft_read(&eeprom_soft, &buf[21], 21,  7) ==  7);
     BTASSERT(eeprom_soft_read(&eeprom_soft, &buf[28], 28,  8) ==  8);
     BTASSERT(eeprom_soft_read(&eeprom_soft, &buf[36], 36,  9) ==  9);
-    BTASSERT(eeprom_soft_read(&eeprom_soft, &buf[45], 65, 10) == 10);
+    BTASSERT(eeprom_soft_read(&eeprom_soft, &buf[45], 45, 10) == 10);
 
     for (i = 0; i < membersof(buf); i++) {
         BTASSERT(buf[i] == i, "[%d]: %02x", i, buf[i]);

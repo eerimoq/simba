@@ -40,6 +40,9 @@ struct module_t {
 #if CONFIG_FS_CMD_I2C_WRITE == 1
     struct fs_command_t cmd_write;
 #endif
+#if CONFIG_FS_CMD_I2C_SCAN == 1
+    struct fs_command_t cmd_scan;
+#endif
 };
 
 #if CONFIG_SOFTWARE_I2C == 1
@@ -156,6 +159,36 @@ static int cmd_write_cb(int argc,
 
 #endif
 
+#if CONFIG_FS_CMD_I2C_SCAN == 1
+
+static int cmd_scan_cb(int argc,
+                       const char *argv[],
+                       void *chout_p,
+                       void *chin_p,
+                       void *arg_p,
+                       void *call_arg_p)
+{
+    struct i2c_driver_t i2c;
+    int slave_address;
+
+    i2c_init(&i2c, &i2c_device[0], I2C_BAUDRATE_100KBPS, -1);
+    i2c_start(&i2c);
+
+    for (slave_address = 0; slave_address < 128; slave_address++) {
+        if (i2c_scan(&i2c, slave_address) == 1) {
+            std_fprintf(chout_p,
+                        OSTR("Found slave device with address 0x%x.\r\n"),
+                        slave_address);
+        }
+    }
+    
+    i2c_stop(&i2c);
+
+    return (0);
+}
+
+#endif
+
 int i2c_module_init()
 {
     /* Return immediately if the module is already initialized. */
@@ -166,23 +199,27 @@ int i2c_module_init()
     module.initialized = 1;
 
 #if CONFIG_FS_CMD_I2C_READ == 1
-
     fs_command_init(&module.cmd_read,
                     CSTR("/drivers/i2c/read"),
                     cmd_read_cb,
                     NULL);
     fs_command_register(&module.cmd_read);
-
 #endif
 
 #if CONFIG_FS_CMD_I2C_WRITE == 1
-
     fs_command_init(&module.cmd_write,
                     CSTR("/drivers/i2c/write"),
                     cmd_write_cb,
                     NULL);
     fs_command_register(&module.cmd_write);
+#endif
 
+#if CONFIG_FS_CMD_I2C_SCAN == 1
+    fs_command_init(&module.cmd_scan,
+                    CSTR("/drivers/i2c/scan"),
+                    cmd_scan_cb,
+                    NULL);
+    fs_command_register(&module.cmd_scan);
 #endif
 
     return (i2c_port_module_init());

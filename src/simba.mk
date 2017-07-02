@@ -132,6 +132,7 @@ DRIVERS_SRC_TMP = \
 	analog_output_pin.c \
 	ds18b20.c \
 	ds3231.c \
+	eeprom_i2c.c \
 	exti.c \
 	i2c.c \
 	i2c_soft.c \

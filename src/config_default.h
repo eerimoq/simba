@@ -183,6 +183,10 @@
 #    define CONFIG_SOFTWARE_I2C                            1
 #endif
 
+#if defined(PORT_HAS_I2C)
+#    define PORT_HAS_EEPROM_I2C
+#endif
+
 /**
  * The system configuration string contains a list of all configration
  * varialbes and their values.
@@ -465,6 +469,25 @@
 #    else
 #        define CONFIG_I2C_SOFT                             1
 #    endif
+#endif
+
+/**
+ * Enable the eeprom_i2c driver.
+ */
+#ifndef CONFIG_EEPROM_I2C
+#    if defined(CONFIG_I2C)
+#        define CONFIG_EEPROM_I2C                           0
+#    else
+#        define CONFIG_EEPROM_I2C                           1
+#    endif
+#endif
+
+/**
+ * Number of write retry attemps before giving up accessing a i2c
+ * eeprom.
+ */
+#ifndef CONFIG_EEPROM_I2C_NUMBER_OF_ATTEMPTS
+#    define CONFIG_EEPROM_I2C_NUMBER_OF_ATTEMPTS          100
 #endif
 
 /**
@@ -1258,6 +1281,17 @@
 #        define CONFIG_FS_CMD_I2C_WRITE                     0
 #    else
 #        define CONFIG_FS_CMD_I2C_WRITE                     1
+#    endif
+#endif
+
+/**
+ * Debug file system command to scan a i2c bus.
+ */
+#ifndef CONFIG_FS_CMD_I2C_SCAN
+#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(CONFIG_MINIMAL_SYSTEM)
+#        define CONFIG_FS_CMD_I2C_SCAN                      0
+#    else
+#        define CONFIG_FS_CMD_I2C_SCAN                      1
 #    endif
 #endif
 
