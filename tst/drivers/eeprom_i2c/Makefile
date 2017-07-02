@@ -37,9 +37,10 @@ CDEFS += \
 	CONFIG_HARNESS_MOCK_VERBOSE=0 \
 	CONFIG_EEPROM_I2C=1 \
 	CONFIG_I2C=1 \
+	CONFIG_I2C_SOFT=1 \
 	CONFIG_FS_CMD_THRD_LIST=1
 
-DRIVERS_SRC = eeprom_i2c.c i2c.c
+DRIVERS_SRC = eeprom_i2c.c i2c.c i2c_soft.c
 
 SIMBA_ROOT ?= ../../..
 include $(SIMBA_ROOT)/make/app.mk
