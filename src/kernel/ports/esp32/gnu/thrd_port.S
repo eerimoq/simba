@@ -103,3 +103,14 @@ thrd_port_main:
 
     /* Thread termination. */
     call4   terminate
+
+/**
+ * Return the stack address of the current thread.
+ */
+    .globl  thrd_port_get_bottom_of_stack_current_thread
+    .type   thrd_port_get_bottom_of_stack_current_thread,@function
+    .align  4
+thrd_port_get_bottom_of_stack_current_thread:
+    entry   a1, 32
+    mov     a2, a1
+    retw.n
