@@ -181,7 +181,7 @@ static int cmd_scan_cb(int argc,
                         slave_address);
         }
     }
-    
+
     i2c_stop(&i2c);
 
     return (0);
