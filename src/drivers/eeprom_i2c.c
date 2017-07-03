@@ -28,9 +28,9 @@
  * This file is part of the Simba project.
  */
 
-#if CONFIG_EEPROM_I2C == 1
-
 #include "simba.h"
+
+#if CONFIG_EEPROM_I2C == 1
 
 /**
  * Try to write given buffer to the EEPROM.

@@ -475,7 +475,7 @@
  * Enable the eeprom_i2c driver.
  */
 #ifndef CONFIG_EEPROM_I2C
-#    if defined(CONFIG_I2C)
+#    if defined(CONFIG_MINIMAL_SYSTEM) || !defined(PORT_HAS_EEPROM_I2C)
 #        define CONFIG_EEPROM_I2C                           0
 #    else
 #        define CONFIG_EEPROM_I2C                           1
