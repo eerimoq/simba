@@ -60,6 +60,21 @@ static int test_read_write_sizes(struct harness_t *harness_p)
     uint8_t write_buf[153];
     uint8_t read_buf[153];
 
+    /* Write zeros to the EEPROM. */
+    memset(&write_buf[0], 0, sizeof(write_buf));
+    BTASSERT(eeprom_i2c_write(&eeprom_i2c,
+                              0,
+                              &write_buf[0],
+                              sizeof(write_buf)) == sizeof(write_buf));
+
+    /* Read and verify the written data. */
+    memset(&read_buf[0], -1, sizeof(read_buf));
+    BTASSERT(eeprom_i2c_read(&eeprom_i2c,
+                             &read_buf[0],
+                             0,
+                             sizeof(read_buf)) ==  sizeof(read_buf));
+    BTASSERTM(&read_buf[0], &write_buf[0], sizeof(write_buf));
+
     /* Write various sizes at various alignments. */
     for (i = 0; i < membersof(write_buf); i++) {
         write_buf[i] = (membersof(write_buf) - i);

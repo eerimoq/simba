@@ -32,6 +32,34 @@
 
 #include "simba.h"
 
+/**
+ * Try to write given buffer to the EEPROM.
+ */
+static ssize_t try_write(struct eeprom_i2c_driver_t *self_p,
+                         uint8_t *buf_p,
+                         size_t size)
+{
+    int attempt;
+    ssize_t res;
+
+    attempt = 0;
+
+    while (attempt < CONFIG_EEPROM_I2C_NUMBER_OF_ATTEMPTS) {
+        res = i2c_write(self_p->i2c_p,
+                        self_p->i2c_address,
+                        buf_p,
+                        size);
+
+        if (res == size) {
+            break;
+        }
+
+        attempt++;
+    }
+
+    return (res);
+}
+
 int eeprom_i2c_module_init()
 {
     return (0);
@@ -40,7 +68,7 @@ int eeprom_i2c_module_init()
 int eeprom_i2c_init(struct eeprom_i2c_driver_t *self_p,
                     struct i2c_driver_t *i2c_p,
                     int i2c_address,
-                    size_t size)
+                    uint32_t size)
 {
     self_p->i2c_p = i2c_p;
     self_p->i2c_address = i2c_address;
@@ -51,7 +79,7 @@ int eeprom_i2c_init(struct eeprom_i2c_driver_t *self_p,
 
 ssize_t eeprom_i2c_read(struct eeprom_i2c_driver_t *self_p,
                         void *dst_p,
-                        uintptr_t src,
+                        uint32_t src,
                         size_t size)
 {
     ASSERTN(self_p != NULL, EINVAL);
@@ -59,7 +87,6 @@ ssize_t eeprom_i2c_read(struct eeprom_i2c_driver_t *self_p,
 
     ssize_t res;
     uint8_t buf[2];
-    int attempt;
 
     if (src >= self_p->size) {
         return (-EINVAL);
@@ -73,23 +100,10 @@ ssize_t eeprom_i2c_read(struct eeprom_i2c_driver_t *self_p,
     buf[0] = (uint8_t)(src >> 8);
     buf[1] = (uint8_t)src;
 
-    attempt = 0;
+    res = try_write(self_p, &buf[0], sizeof(buf));
 
-    while (attempt < CONFIG_EEPROM_I2C_NUMBER_OF_ATTEMPTS) {
-        res = i2c_write(self_p->i2c_p,
-                        self_p->i2c_address,
-                        &buf[0],
-                        sizeof(buf));
-
-        if (res == sizeof(buf)) {
-            break;
-        }
-
-        attempt++;
-    }
-
-    if (attempt == CONFIG_EEPROM_I2C_NUMBER_OF_ATTEMPTS) {
-        return (-1);
+    if (res != sizeof(buf)) {
+        return (res);
     }
 
     /* Read data from the EEPROM. */
@@ -100,7 +114,7 @@ ssize_t eeprom_i2c_read(struct eeprom_i2c_driver_t *self_p,
 }
 
 ssize_t eeprom_i2c_write(struct eeprom_i2c_driver_t *self_p,
-                         uintptr_t dst,
+                         uint32_t dst,
                          const void *src_p,
                          size_t size)
 {
@@ -111,7 +125,6 @@ ssize_t eeprom_i2c_write(struct eeprom_i2c_driver_t *self_p,
     ssize_t res;
     const uint8_t *u8_src_p;
     uint8_t buf[3];
-    int attempt;
 
     if (dst >= self_p->size) {
         return (-EINVAL);
@@ -123,26 +136,17 @@ ssize_t eeprom_i2c_write(struct eeprom_i2c_driver_t *self_p,
 
     u8_src_p = src_p;
 
-    /* Write one byte at a time. */
+    /* Write one byte at a time. No page write support for now as it
+       makes the implementation more complicated. */
     for (i = 0; i < size; i++, dst++) {
-        /* Write one byte at a time. No page write support for now. */
         buf[0] = (uint8_t)(dst >> 8);
         buf[1] = (uint8_t)dst;
         buf[2] = u8_src_p[i];
 
-        attempt = 0;
+        res = try_write(self_p, &buf[0], sizeof(buf));
 
-        while (attempt < CONFIG_EEPROM_I2C_NUMBER_OF_ATTEMPTS) {
-            res = i2c_write(self_p->i2c_p,
-                            self_p->i2c_address,
-                            &buf[0],
-                            sizeof(buf));
-
-            if (res == sizeof(buf)) {
-                break;
-            }
-
-            attempt++;
+        if (res != sizeof(buf)) {
+            return (res);
         }
     }
 

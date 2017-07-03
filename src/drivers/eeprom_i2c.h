@@ -36,7 +36,7 @@
 struct eeprom_i2c_driver_t {
     struct i2c_driver_t *i2c_p;
     int i2c_address;
-    size_t size;
+    uint32_t size;
 };
 
 /**
@@ -63,7 +63,7 @@ int eeprom_i2c_module_init(void);
 int eeprom_i2c_init(struct eeprom_i2c_driver_t *self_p,
                     struct i2c_driver_t *i2c_p,
                     int i2c_address,
-                    size_t size);
+                    uint32_t size);
 
 /**
  * Read into given buffer from given EEPROM address.
@@ -77,7 +77,7 @@ int eeprom_i2c_init(struct eeprom_i2c_driver_t *self_p,
  */
 ssize_t eeprom_i2c_read(struct eeprom_i2c_driver_t *self_p,
                         void *dst_p,
-                        uintptr_t src,
+                        uint32_t src,
                         size_t size);
 
 /**
@@ -91,7 +91,7 @@ ssize_t eeprom_i2c_read(struct eeprom_i2c_driver_t *self_p,
  * @return Number of bytes written or negative error code.
  */
 ssize_t eeprom_i2c_write(struct eeprom_i2c_driver_t *self_p,
-                         uintptr_t dst,
+                         uint32_t dst,
                          const void *src_p,
                          size_t size);
 
