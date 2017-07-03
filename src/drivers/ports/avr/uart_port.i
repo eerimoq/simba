@@ -132,11 +132,14 @@ static int uart_port_module_init()
 
 static int uart_port_start(struct uart_driver_t *self_p)
 {
-    uint16_t baudrate = (F_CPU / 16 / self_p->baudrate - 1);
-    struct uart_device_t *dev_p = self_p->dev_p;
+    uint16_t baudrate;
+    struct uart_device_t *dev_p;
+
+    baudrate = ((F_CPU / 4 / self_p->baudrate - 1) / 2);
+    dev_p = self_p->dev_p;
 
     *UBRRn(dev_p) = baudrate;
-    *UCSRnA(dev_p) = 0;
+    *UCSRnA(dev_p) = _BV(U2X0);
     *UCSRnB(dev_p) = (_BV(RXCIE0) | _BV(TXCIE0) | _BV(RXEN0) | _BV(TXEN0));
     *UCSRnC(dev_p) = (_BV(UCSZ00) | _BV(UCSZ01));
 
