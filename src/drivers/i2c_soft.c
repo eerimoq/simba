@@ -302,7 +302,7 @@ ssize_t i2c_soft_read(struct i2c_soft_driver_t *self_p,
         return (-1);
     }
 
-    /* Write the address iwth the direction bit set to 1. */
+    /* Write the address with the direction bit set to 1. */
     if (write_byte(self_p, ((address << 1) | 0x1)) != 0) {
         stop_cond(self_p);
         return (-1);
