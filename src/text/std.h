@@ -68,7 +68,7 @@ int std_module_init(void);
  * @return Length of the string written to the destination buffer, not
  *         inclusing the null termination, or negative error code.
  */
-ssize_t std_sprintf(char *dst_p, FAR const char *fmt_p, ...);
+ssize_t std_sprintf(char *dst_p, far_string_t fmt_p, ...);
 
 /**
  * Format and write data to given buffer. The output is null
@@ -85,7 +85,7 @@ ssize_t std_sprintf(char *dst_p, FAR const char *fmt_p, ...);
  */
 ssize_t std_snprintf(char *dst_p,
                      size_t size,
-                     FAR const char *fmt_p,
+                     far_string_t fmt_p,
                      ...);
 
 /**
@@ -100,7 +100,7 @@ ssize_t std_snprintf(char *dst_p,
  * @return Length of the string written to the destination buffer, not
  *         inclusing the null termination, or negative error code.
  */
-ssize_t std_vsprintf(char *dst_p, FAR const char *fmt_p, va_list *ap_p);
+ssize_t std_vsprintf(char *dst_p, far_string_t fmt_p, va_list *ap_p);
 
 /**
  * Format and write data to given buffer. The output is null
@@ -115,7 +115,7 @@ ssize_t std_vsprintf(char *dst_p, FAR const char *fmt_p, va_list *ap_p);
  * @return Length of the string written to the destination buffer, not
  *         inclusing the null termination, or negative error code.
  */
-ssize_t std_vsnprintf(char *dst_p, size_t size, FAR const char *fmt_p, va_list *ap_p);
+ssize_t std_vsnprintf(char *dst_p, size_t size, far_string_t fmt_p, va_list *ap_p);
 
 /**
  * Format and print data to standard output. The output is not null terminated.
@@ -141,7 +141,7 @@ ssize_t std_printf(far_string_t fmt_p, ...);
  * @return Number of characters written to standard output, or
  *         negative error code.
  */
-ssize_t std_vprintf(FAR const char *fmt_p, va_list *ap_p);
+ssize_t std_vprintf(far_string_t fmt_p, va_list *ap_p);
 
 /**
  * Format and print data to channel. The output is not null terminated.
@@ -155,7 +155,7 @@ ssize_t std_vprintf(FAR const char *fmt_p, va_list *ap_p);
  * @return Number of characters written to given channel, or negative
  *         error code.
  */
-ssize_t std_fprintf(void *chan_p, FAR const char *fmt_p, ...);
+ssize_t std_fprintf(void *chan_p, far_string_t fmt_p, ...);
 
 /**
  * Format and print data to channel. The output is not null terminated.
@@ -169,7 +169,7 @@ ssize_t std_fprintf(void *chan_p, FAR const char *fmt_p, ...);
  * @return Number of characters written to given channel, or negative
  *         error code.
  */
-ssize_t std_vfprintf(void *chan_p, FAR const char *fmt_p, va_list *ap_p);
+ssize_t std_vfprintf(void *chan_p, far_string_t fmt_p, va_list *ap_p);
 
 /**
  * Convert string to integer.
@@ -199,7 +199,7 @@ const char *std_strtod(const char *str_p, double *value_p);
  *
  * @return String length or negative error code.
  */
-int std_strcpy(char *dst_p, FAR const char *src_p);
+int std_strcpy(char *dst_p, far_string_t src_p);
 
 /**
  * Compare a string with a far string.
@@ -210,7 +210,7 @@ int std_strcpy(char *dst_p, FAR const char *src_p);
  * @return zero(0) if match, otherwise the difference of
  *         the mismatched characters
  */
-int std_strcmp(const char *str_p, FAR const char *fstr_p);
+int std_strcmp(const char *str_p, far_string_t fstr_p);
 
 /**
  * Compare two far strings.
@@ -221,8 +221,8 @@ int std_strcmp(const char *str_p, FAR const char *fstr_p);
  * @return zero(0) if match, otherwise the difference of the
  *         mismatched characters.
  */
-int std_strcmp_f(FAR const char *fstr0_p,
-                 FAR const char *fstr1_p);
+int std_strcmp_f(far_string_t fstr0_p,
+                 far_string_t fstr1_p);
 
 /**
  * Compare at most `size` bytes of one far string and one string.
@@ -234,7 +234,7 @@ int std_strcmp_f(FAR const char *fstr0_p,
  * @return zero(0) if match, otherwise the difference of the
  *         mismatched characters.
  */
-int std_strncmp(FAR const char *fstr_p,
+int std_strncmp(far_string_t fstr_p,
                 const char *str_p,
                 size_t size);
 
@@ -248,8 +248,8 @@ int std_strncmp(FAR const char *fstr_p,
  * @return zero(0) if match, otherwise the difference of the
  *         mismatched characters.
  */
-int std_strncmp_f(FAR const char *fstr0_p,
-                  FAR const char *fstr1_p,
+int std_strncmp_f(far_string_t fstr0_p,
+                  far_string_t fstr1_p,
                   size_t size);
 
 /**
@@ -261,7 +261,7 @@ int std_strncmp_f(FAR const char *fstr0_p,
  * @return String length in number of bytes (not including the null
  *         termination).
  */
-int std_strlen(FAR const char *fstr_p);
+int std_strlen(far_string_t fstr_p);
 
 /**
  * Strip leading and trailing characters from a string. The characters
