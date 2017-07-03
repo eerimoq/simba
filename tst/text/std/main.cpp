@@ -29,8 +29,9 @@
  */
 
 #include "simba.h"
+#include <ctype.h>
 
-static ssize_t test_vprintf_wrapper(FAR const char *fmt_p, ...)
+static ssize_t test_vprintf_wrapper(far_string_t fmt_p, ...)
 {
     ssize_t res;
     va_list ap;
@@ -43,7 +44,7 @@ static ssize_t test_vprintf_wrapper(FAR const char *fmt_p, ...)
 }
 
 static ssize_t test_vfprintf_wrapper(void *chan_p,
-                                     FAR const char *fmt_p,
+                                     far_string_t fmt_p,
                                      ...)
 {
     ssize_t res;
@@ -188,7 +189,7 @@ static int test_sprintf_double(struct harness_t *harness_p)
               "Normal:                '10.500000' '-37.731000'",
               size + 1);
 #endif
-    
+
     BTASSERT((size = std_sprintf(buf,
                                  FSTR("Left justification:    '%-12f' '%-12f'"),
                                  10.5f, -37.731)) == 52);
@@ -206,7 +207,7 @@ static int test_sprintf_double(struct harness_t *harness_p)
               "Left justification:    '10.500000   ' '-37.731000  '",
               size + 1);
 #endif
-    
+
     size = std_sprintf(buf,
                        FSTR("Preceding with blanks: '%12f' '%12f'"),
                        10.5f, -37.731);
@@ -411,7 +412,7 @@ static int test_strip(struct harness_t *harness_p)
 static int test_libc(struct harness_t *harness_p)
 {
     int c;
-    char *c_p;
+    const char *c_p;
 
     /* Blank. */
     c_p = " \t";

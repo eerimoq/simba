@@ -31,6 +31,7 @@
 NAME = std_suite
 TYPE = suite
 BOARD ?= linux
+MAIN_C = main.cpp
 
 CDEFS += \
 	CONFIG_MINIMAL_SYSTEM=1 \

@@ -31,6 +31,7 @@
 NAME = fs_suite
 TYPE = suite
 BOARD ?= linux
+MAIN_C = main.cpp
 
 CDEFS += CONFIG_MINIMAL_SYSTEM=1 \
 	CONFIG_FS_CMD_FS_COUNTERS_LIST=1 \

@@ -187,16 +187,22 @@ static int tmp_bar(int argc,
     return (0);
 }
 
+static struct queue_t qout;
 static char qoutbuf[BUFFER_SIZE];
-static QUEUE_INIT_DECL(qout, qoutbuf, sizeof(qoutbuf));
 
 #if defined(ARCH_LINUX)
+static struct queue_t qin;
 static char qinbuf[32];
-static QUEUE_INIT_DECL(qin, qinbuf, sizeof(qinbuf));
 #endif
 
 static int test_init(struct harness_t *harness_p)
 {
+    queue_init(&qout, &qoutbuf[0], sizeof(qoutbuf));
+
+#if defined(ARCH_LINUX)
+    queue_init(&qin, &qinbuf[0], sizeof(qinbuf));
+#endif
+
     /* Setup the commands. */
     BTASSERT(fs_command_init(&foo_bar, FSTR("/tmp/foo/bar"), tmp_foo_bar, NULL) == 0);
     BTASSERT(fs_command_register(&foo_bar) == 0);
