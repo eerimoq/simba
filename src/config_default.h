@@ -1129,6 +1129,17 @@
 #endif
 
 /**
+ * Initialize the regular expression module at system startup.
+ */
+#ifndef CONFIG_MODULE_INIT_RE
+#    if defined(CONFIG_MINIMAL_SYSTEM)
+#        define CONFIG_MODULE_INIT_RE                       0
+#    else
+#        define CONFIG_MODULE_INIT_RE                       1
+#    endif
+#endif
+
+/**
  * Debug file system command to list all DS18B20 sensors on the bus.
  */
 #ifndef CONFIG_FS_CMD_DS18B20_LIST
@@ -2106,6 +2117,13 @@
  */
 #ifndef CONFIG_THRD_DEFAULT_LOG_MASK
 #    define CONFIG_THRD_DEFAULT_LOG_MASK       LOG_UPTO(INFO)
+#endif
+
+/**
+ * Regular expression module debug log mask.
+ */
+#ifndef CONFIG_RE_DEBUG_LOG_MASK
+#    define CONFIG_RE_DEBUG_LOG_MASK                       -1
 #endif
 
 /**

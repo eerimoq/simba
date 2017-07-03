@@ -30,6 +30,14 @@
 
 #include "simba.h"
 
+int test_init(struct harness_t *harness_p)
+{
+    BTASSERT(re_module_init() == 0);
+    BTASSERT(re_module_init() == 0);
+
+    return (0);
+}
+
 int test_text(struct harness_t *harness_p)
 {
     char re[8];
@@ -376,6 +384,7 @@ int main()
 {
     struct harness_t harness;
     struct harness_testcase_t harness_testcases[] = {
+        { test_init, "test_init" },
         { test_text, "test_text" },
         { test_newline, "test_newline" },
         { test_special_escaped, "test_special_escaped" },
