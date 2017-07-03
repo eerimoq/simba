@@ -695,6 +695,45 @@
                             "name": "esptool"
                         }
                     ]
+                },
+                {
+                    "name": "Simba",
+                    "architecture": "esp",
+                    "version": "15.0.2",
+                    "category": "Simba",
+                    "help": {
+                        "online": "https://simba-os.readthedocs.org"
+                    },
+                    "url": "https://github.com/eerimoq/simba-releases/raw/master/arduino/esp/simba-arduino-esp-15.0.2.zip",
+                    "archiveFileName": "simba-arduino-esp-15.0.2.zip",
+                    "checksum": "SHA-256:a1665a04dcb54a2f95e9e3e0a65306769767592046d0f44022aa1616aabb2303",
+                    "size": "2698574",
+                    "boards": [
+                        {
+                            "name": "ESP-01"
+                        },
+                        {
+                            "name": "ESP-12E"
+                        },
+                        {
+                            "name": "NodeMCU"
+                        },
+                        {
+                            "name": "Huzzah"
+                        }
+                    ],
+                    "toolsDependencies": [
+                        {
+                            "packager": "Simba",
+                            "version": "1.20.0-26-gb404fb9-2",
+                            "name": "xtensa-lx106-elf-gcc"
+                        },
+                        {
+                            "packager": "Simba",
+                            "version": "0.4.9",
+                            "name": "esptool"
+                        }
+                    ]
                 }
             ],
             "tools": [
