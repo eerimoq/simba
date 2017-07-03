@@ -32,6 +32,10 @@ NAME = thrd_suite
 TYPE = suite
 BOARD ?= linux
 
+ifeq ($(BOARD),arduino_mega)
+BAUDRATE ?= 115200
+endif
+
 CDEFS += \
 	CONFIG_MINIMAL_SYSTEM=1 \
 	CONFIG_THRD_CPU_USAGE=1 \

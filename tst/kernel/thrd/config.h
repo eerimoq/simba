@@ -70,4 +70,8 @@
 #    define CONFIG_MONITOR_THREAD_PERIOD_US                25
 #endif
 
+#if defined(BOARD_ARDUINO_MEGA)
+#    define CONFIG_START_CONSOLE_UART_BAUDRATE             115200
+#endif
+
 #endif
