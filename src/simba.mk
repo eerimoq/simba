@@ -180,6 +180,7 @@ DRIVERS_SRC ?= \
 	pin.c \
 	i2c.c \
 	i2c_soft.c \
+	random.c \
 	sd.c \
 	sht3xd.c \
 	spi.c \

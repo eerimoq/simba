@@ -157,6 +157,7 @@ BOARDS = {
             "src/drivers/pin.c", 
             "src/drivers/i2c.c", 
             "src/drivers/i2c_soft.c", 
+            "src/drivers/random.c", 
             "src/drivers/sd.c", 
             "src/drivers/spi.c", 
             "src/drivers/uart.c", 

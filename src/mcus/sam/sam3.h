@@ -2560,6 +2560,47 @@ struct sam_dacc_t {
 /* Write Protect Mode Register. */
 #define SAM_DACC_WPMR_WPEN              BIT(0)
 
+
+/* TODO: How Do I Number This?. TWI Controller. */
+struct sam_twi_t {
+    uint32_t CR;
+    uint32_t MMR;
+    uint32_t SMR;
+    uint32_t IADR;
+    uint32_t CWGR;
+    uint32_t reserved0[3];
+    uint32_t SR;
+    uint32_t IER;
+    uint32_t IDR;
+    uint32_t IMR;
+    uint32_t RHR;
+    uint32_t THR;
+    uint32_t Reserved2[50];
+    uint32_t RPR;       /**< \brief (Twi Offset: 0x100) Receive Pointer Register */
+    uint32_t RCR;       /**< \brief (Twi Offset: 0x104) Receive Counter Register */
+    uint32_t TPR;       /**< \brief (Twi Offset: 0x108) Transmit Pointer Register */
+    uint32_t TCR;       /**< \brief (Twi Offset: 0x10C) Transmit Counter Register */
+    uint32_t RNPR;      /**< \brief (Twi Offset: 0x110) Receive Next Pointer Register */
+    uint32_t RNCR;      /**< \brief (Twi Offset: 0x114) Receive Next Counter Register */
+    uint32_t TNPR;      /**< \brief (Twi Offset: 0x118) Transmit Next Pointer Register */
+    uint32_t TNCR;      /**< \brief (Twi Offset: 0x11C) Transmit Next Counter Register */
+    uint32_t PTCR;      /**< \brief (Twi Offset: 0x120) Transfer Control Register */
+    uint32_t PTSR;      /**< \brief (Twi Offset: 0x124) Transfer Status Register */
+};
+
+/* SAM3 True Random Number Generator registers */
+struct sam_trng_t   {
+    uint32_t CR;
+    uint32_t Reserved1[3];
+    uint32_t IER;      /**< \brief (Trng Offset: 0x10) Interrupt Enable Register */
+    uint32_t IDR;      /**< \brief (Trng Offset: 0x14) Interrupt Disable Register */
+    uint32_t IMR;      /**< \brief (Trng Offset: 0x18) Interrupt Mask Register */
+    uint32_t ISR;      /**< \brief (Trng Offset: 0x1C) Interrupt Status Register */
+    uint32_t Reserved2[12];
+    uint32_t ODATA;    /**< \brief (Trng Offset: 0x50) Output Data Register */
+};
+
+
 /* Base addresses of peripherals. */
 #define SAM_HSMCI      ((volatile struct sam_hsmci_t  *)0x40000000u)
 #define SAM_SSC        ((volatile struct sam_ssc_t    *)0x40004000u)
