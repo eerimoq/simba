@@ -30,18 +30,14 @@
 
 #include "simba.h"
 
-#define pin_scl_dev pin_d1_dev
-#define pin_sca_dev pin_d2_dev
-
 int test_get_temp_humid(struct harness_t *harness_p)
 {
     struct sht3xd_driver_t sht3xd;
-    struct i2c_soft_driver_t i2c;
+    struct i2c_driver_t i2c;
     float temp, humid;
     uint32_t serial;
 
-    BTASSERT(i2c_soft_init(&i2c, &pin_scl_dev, &pin_sca_dev, 50000, 1000000,
-			   1000) == 0);
+    BTASSERT(i2c_init(&i2c, &i2c_device[0], I2C_BAUDRATE_100KBPS, -1) == 0);
     BTASSERT(sht3xd_init(&sht3xd, &i2c, SHT3X_DIS_I2C_ADDR_A) == 0);
     BTASSERT(sht3xd_start(&sht3xd) == 0);
 

@@ -119,6 +119,7 @@ DRIVERS_SRC ?= \
 	pwm.c \
 	pwm_soft.c \
 	random.c \
+	sht3xd.c \
 	sd.c \
 	spi.c \
 	uart.c
@@ -145,6 +146,7 @@ DRIVERS_SRC_TMP = \
 	pwm.c \
 	pwm_soft.c \
 	sd.c \
+	sht3xd.c \
 	uart.c \
 	uart_soft.c \
 	watchdog.c
@@ -179,6 +181,7 @@ DRIVERS_SRC ?= \
 	i2c.c \
 	i2c_soft.c \
 	sd.c \
+	sht3xd.c \
 	spi.c \
 	uart.c \
 	usb.c \
@@ -230,6 +233,7 @@ DRIVERS_SRC ?= \
 	owi.c \
 	pin.c \
 	random.c \
+	sht3xd.c \
 	spi.c \
 	uart.c \
 	ws2812.c
@@ -243,6 +247,7 @@ DRIVERS_SRC ?= \
 	pin.c \
 	i2c.c \
 	i2c_soft.c \
+	sht3xd.c \
 	uart.c
 endif
 
@@ -254,6 +259,7 @@ DRIVERS_SRC ?= \
 	pin.c \
 	i2c.c \
 	i2c_soft.c \
+	sht3xd.c \
 	uart.c
 endif
 
@@ -265,6 +271,7 @@ DRIVERS_SRC ?= \
 	pin.c \
 	i2c.c \
 	i2c_soft.c \
+	sht3xd.c \
 	uart.c
 endif
 
@@ -277,6 +284,7 @@ DRIVERS_SRC ?= \
 	i2c.c \
 	i2c_soft.c \
 	pin.c \
+	sht3xd.c \
 	uart.c \
 	watchdog.c
 endif

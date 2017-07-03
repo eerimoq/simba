@@ -121,7 +121,6 @@
 #    define PORT_HAS_ESP_WIFI
 #    define PORT_HAS_RANDOM
 #    define PORT_HAS_LED_7SEG_HT16K33
-#    define PORT_HAS_SHT3XD
 #    define PORT_HAS_EEPROM_SOFT
 #endif
 
@@ -185,6 +184,7 @@
 
 #if defined(PORT_HAS_I2C)
 #    define PORT_HAS_EEPROM_I2C
+#    define PORT_HAS_SHT3XD
 #endif
 
 /**

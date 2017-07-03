@@ -35,7 +35,7 @@
 int main()
 {
     struct sht3xd_driver_t sht3xd;
-    struct i2c_soft_driver_t i2c;
+    struct i2c_driver_t i2c;
     float temp, humid;
     uint32_t serial;
     int res;
@@ -48,7 +48,7 @@ int main()
     thrd_sleep(1);
 
     /* Driver initialization. */
-    res = i2c_soft_init(&i2c, &pin_d1_dev, &pin_d2_dev, 50000, 100000, 1000);
+    res = i2c_init(&i2c, &i2c_device[0], I2C_BAUDRATE_100KBPS, -1);
 
     if (res != 0) {
         std_printf(OSTR("Error initilizing i2c_soft driver\r\n"));

@@ -35,10 +35,11 @@ BOARD ?= nodemcu
 CDEFS += \
 	CONFIG_MINIMAL_SYSTEM=1 \
 	CONFIG_SHT3XD=1 \
+	CONFIG_I2C=1 \
 	CONFIG_I2C_SOFT=1 \
 	CONFIG_SHT3XD_DEBUG_LOG_MASK="LOG_UPTO(WARNING)"
 
-DRIVERS_SRC = sht3xd.c i2c_soft.c
+DRIVERS_SRC = sht3xd.c i2c_soft.c i2c.c
 
 SIMBA_ROOT ?= ../../..
 include $(SIMBA_ROOT)/make/app.mk
