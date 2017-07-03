@@ -218,7 +218,7 @@ struct fs_stat_t {
 
 /* Command. */
 struct fs_command_t {
-    const FAR char *path_p;
+    far_string_t path_p;
     fs_callback_t callback;
     void *arg_p;
     struct fs_command_t *next_p;
@@ -611,7 +611,7 @@ int fs_filesystem_deregister(struct fs_filesystem_t *self_p);
  * @return zero(0) or negative error code.
  */
 int fs_command_init(struct fs_command_t *self_p,
-                    const FAR char *path_p,
+                    far_string_t path_p,
                     fs_callback_t callback,
                     void *arg_p);
 
@@ -644,7 +644,7 @@ int fs_command_deregister(struct fs_command_t *command_p);
  * @return zero(0) or negative error code.
  */
 int fs_counter_init(struct fs_counter_t *self_p,
-                    const FAR char *path_p,
+                    far_string_t path_p,
                     uint64_t value);
 
 /**
@@ -689,7 +689,7 @@ int fs_counter_deregister(struct fs_counter_t *counter_p);
  * @return zero(0) or negative error code.
  */
 int fs_parameter_init(struct fs_parameter_t *self_p,
-                      const FAR char *path_p,
+                      far_string_t path_p,
                       fs_parameter_set_callback_t set_cb,
                       fs_parameter_print_callback_t print_cb,
                       void *value_p);

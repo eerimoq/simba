@@ -275,7 +275,7 @@ static char *formatf(char c,
 
 static void vcprintf(void (*std_putc)(char c, void *arg_p),
                      void *arg_p,
-                     FAR const char *fmt_p,
+                     far_string_t fmt_p,
                      va_list *ap_p)
 {
     char c, flags, length, negative_sign, buf[VALUE_BUF_MAX], *s_p;
@@ -366,7 +366,7 @@ static void vcprintf(void (*std_putc)(char c, void *arg_p),
 }
 
 static void cvcprintf(struct buffered_output_t *output_p,
-                      FAR const char *fmt_p,
+                      far_string_t fmt_p,
                       va_list *ap_p)
 {
     chan_control(output_p->chan_p, CHAN_CONTROL_PRINTF_BEGIN);
@@ -399,7 +399,7 @@ int std_module_init(void)
     return (0);
 }
 
-ssize_t std_sprintf(char *dst_p, FAR const char *fmt_p, ...)
+ssize_t std_sprintf(char *dst_p, far_string_t fmt_p, ...)
 {
     va_list ap;
     ssize_t res;
@@ -413,7 +413,7 @@ ssize_t std_sprintf(char *dst_p, FAR const char *fmt_p, ...)
 
 ssize_t std_snprintf(char *dst_p,
                      size_t size,
-                     FAR const char *fmt_p,
+                     far_string_t fmt_p,
                      ...)
 {
     va_list ap;
@@ -426,7 +426,7 @@ ssize_t std_snprintf(char *dst_p,
     return (res);
 }
 
-ssize_t std_vsprintf(char *dst_p, FAR const char *fmt_p, va_list *ap_p)
+ssize_t std_vsprintf(char *dst_p, far_string_t fmt_p, va_list *ap_p)
 {
     ASSERTN(dst_p != NULL, EINVAL);
     ASSERTN(fmt_p != NULL, EINVAL);
@@ -441,7 +441,7 @@ ssize_t std_vsprintf(char *dst_p, FAR const char *fmt_p, va_list *ap_p)
 
 ssize_t std_vsnprintf(char *dst_p,
                       size_t size,
-                      FAR const char *fmt_p,
+                      far_string_t fmt_p,
                       va_list *ap_p)
 {
     ASSERTN(dst_p != NULL, EINVAL);
@@ -478,7 +478,7 @@ ssize_t std_printf(far_string_t fmt_p, ...)
     return (output.size);
 }
 
-ssize_t std_vprintf(FAR const char *fmt_p, va_list *ap_p)
+ssize_t std_vprintf(far_string_t fmt_p, va_list *ap_p)
 {
     ASSERTN(fmt_p != NULL, EINVAL);
     ASSERTN(ap_p != NULL, EINVAL);
@@ -494,7 +494,7 @@ ssize_t std_vprintf(FAR const char *fmt_p, va_list *ap_p)
     return (output.size);
 }
 
-ssize_t std_fprintf(void *chan_p, FAR const char *fmt_p, ...)
+ssize_t std_fprintf(void *chan_p, far_string_t fmt_p, ...)
 {
     ASSERTN(chan_p != NULL, EINVAL);
     ASSERTN(fmt_p != NULL, EINVAL);
@@ -513,7 +513,7 @@ ssize_t std_fprintf(void *chan_p, FAR const char *fmt_p, ...)
     return (output.size);
 }
 
-ssize_t std_vfprintf(void *chan_p, FAR const char *fmt_p, va_list *ap_p)
+ssize_t std_vfprintf(void *chan_p, far_string_t fmt_p, va_list *ap_p)
 {
     ASSERTN(chan_p != NULL, EINVAL);
     ASSERTN(fmt_p != NULL, EINVAL);
@@ -725,7 +725,7 @@ const char *std_strtod(const char *str, double *value_p)
     return (a);
 }
 
-int std_strcpy(char *dst_p, FAR const char *fsrc_p)
+int std_strcpy(char *dst_p, far_string_t fsrc_p)
 {
     ASSERTN(dst_p != NULL, EINVAL);
     ASSERTN(fsrc_p != NULL, EINVAL);
@@ -742,7 +742,7 @@ int std_strcpy(char *dst_p, FAR const char *fsrc_p)
     return (length);
 }
 
-int std_strcmp(const char *str_p, FAR const char *fstr_p)
+int std_strcmp(const char *str_p, far_string_t fstr_p)
 {
     ASSERTN(str_p != NULL, EINVAL);
     ASSERTN(fstr_p != NULL, EINVAL);
@@ -756,8 +756,8 @@ int std_strcmp(const char *str_p, FAR const char *fstr_p)
     return (str_p[-1] - fstr_p[-1]);
 }
 
-int std_strcmp_f(FAR const char *fstr0_p,
-                 FAR const char *fstr1_p)
+int std_strcmp_f(far_string_t fstr0_p,
+                 far_string_t fstr1_p)
 {
     ASSERTN(fstr0_p != NULL, EINVAL);
     ASSERTN(fstr1_p != NULL, EINVAL);
@@ -771,14 +771,14 @@ int std_strcmp_f(FAR const char *fstr0_p,
     return (fstr0_p[-1] - fstr1_p[-1]);
 }
 
-int std_strncmp(FAR const char *fstr_p,
+int std_strncmp(far_string_t fstr_p,
                 const char *str_p,
                 size_t size)
 {
     ASSERTN(fstr_p != NULL, EINVAL);
     ASSERTN(str_p != NULL, EINVAL);
 
-    FAR const char *fstr_end_p = (fstr_p + size);
+    far_string_t fstr_end_p = (fstr_p + size);
 
     /* Match if no characters are compared. */
     if (size == 0) {
@@ -794,14 +794,14 @@ int std_strncmp(FAR const char *fstr_p,
     return (fstr_p[-1] - str_p[-1]);
 }
 
-int std_strncmp_f(FAR const char *fstr0_p,
-                  FAR const char *fstr1_p,
+int std_strncmp_f(far_string_t fstr0_p,
+                  far_string_t fstr1_p,
                   size_t size)
 {
     ASSERTN(fstr0_p != NULL, EINVAL);
     ASSERTN(fstr1_p != NULL, EINVAL);
 
-    FAR const char *fstr_end_p = (fstr0_p + size);
+    far_string_t fstr_end_p = (fstr0_p + size);
 
     /* Match if no characters are compared. */
     if (size == 0) {
@@ -817,11 +817,11 @@ int std_strncmp_f(FAR const char *fstr0_p,
     return (fstr0_p[-1] - fstr1_p[-1]);
 }
 
-int std_strlen(FAR const char *fstr_p)
+int std_strlen(far_string_t fstr_p)
 {
     ASSERTN(fstr_p != NULL, EINVAL);
 
-    FAR const char *fstr_start_p = fstr_p;
+    far_string_t fstr_start_p = fstr_p;
 
     while (*fstr_p++ != '\0') {
     }
