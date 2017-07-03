@@ -3,7 +3,7 @@
  *
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2017, Erik Moqvist
+ * Copyright (c) 2017, Erik Moqvist
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -28,31 +28,43 @@
  * This file is part of the Simba project.
  */
 
-#ifndef __MCU_H__
-#define __MCU_H__
+#ifndef __DRIVERS_I2C_PORT_H__
+#define __DRIVERS_I2C_PORT_H__
 
-#include "sam3.h"
+/* Predefined baudrates. */
+#define I2C_PORT_BAUDRATE_1MBPS                 \
+    (SAM_TWI_CWGR_CLDIV(36)                     \
+     | SAM_TWI_CWGR_CHDIV(36)                   \
+     | SAM_TWI_CWGR_CKDIV(0))
 
-/* Pin controller start indexes in devices array. */
-#define SAM_PA 0
-#define SAM_PB 30
-#define SAM_PC 62
-#define SAM_PD 93
+#define I2C_PORT_BAUDRATE_400KBPS               \
+    (SAM_TWI_CWGR_CLDIV(50)                     \
+     | SAM_TWI_CWGR_CHDIV(50)                   \
+     | SAM_TWI_CWGR_CKDIV(1))
 
-#if defined(MCU_SAM3X8E)
-#    define PIN_DEVICE_MAX             103
-#    define EXTI_DEVICE_MAX PIN_DEVICE_MAX
-#    define SPI_DEVICE_MAX               1
-#    define UART_DEVICE_MAX              4
-#    define PWM_DEVICE_MAX              12
-#    define ADC_DEVICE_MAX               1
-#    define DAC_DEVICE_MAX               1
-#    define FLASH_DEVICE_MAX             1
-#    define CAN_DEVICE_MAX               2
-#    define USB_DEVICE_MAX               1
-#    define I2C_DEVICE_MAX               2
-#else
-#     error "Unsupported MCU."
-#endif
+#define I2C_PORT_BAUDRATE_100KBPS               \
+    (SAM_TWI_CWGR_CLDIV(206)                    \
+     | SAM_TWI_CWGR_CHDIV(206)                  \
+     | SAM_TWI_CWGR_CKDIV(1))
+
+struct i2c_device_t {
+    int id;
+    volatile struct sam_twi_t *regs_p;
+    struct {
+        volatile struct sam_pio_t *pio_p;
+        uint32_t mask;
+    } scl;
+    struct {
+        volatile struct sam_pio_t *pio_p;
+        uint32_t mask;
+    } sda;
+    struct i2c_driver_t *drv_p;
+};
+
+struct i2c_driver_t {
+    struct i2c_device_t *dev_p;
+    int address;
+    int cwgr;
+};
 
 #endif

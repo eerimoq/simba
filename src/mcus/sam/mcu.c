@@ -440,9 +440,29 @@ struct usb_device_t usb_device[USB_DEVICE_MAX] = {
 /* Use software i2c. */
 struct i2c_device_t i2c_device[I2C_DEVICE_MAX] = {
     {
-        .scl_p = &pin_device[0],
-        .sda_p = &pin_device[1],
-        .max_clock_stretching_us = 100000,
-        .clock_stretching_sleep_us = 1000
+        .id = PERIPHERAL_ID_TWI0,
+        .regs_p = SAM_TWI0,
+        .scl = {
+            .pio_p = SAM_PIOA,
+            .mask = SAM_PIO_P18
+        },
+        .sda = {
+            .pio_p = SAM_PIOA,
+            .mask = SAM_PIO_P17
+        },
+        .drv_p = NULL
+    },
+    {
+        .id = PERIPHERAL_ID_TWI1,
+        .regs_p = SAM_TWI1,
+        .scl = {
+            .pio_p = SAM_PIOB,
+            .mask = SAM_PIO_P13
+        },
+        .sda = {
+            .pio_p = SAM_PIOB,
+            .mask = SAM_PIO_P12
+        },
+        .drv_p = NULL
     }
 };

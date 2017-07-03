@@ -88,6 +88,7 @@
 #    define PORT_HAS_EXTI
 #    define PORT_HAS_FLASH
 #    define PORT_HAS_PIN
+#    define PORT_HAS_I2C
 #    define PORT_HAS_I2C_SOFT
 #    define PORT_HAS_SPI
 #    define PORT_HAS_UART

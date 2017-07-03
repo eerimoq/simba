@@ -181,7 +181,7 @@ struct sam_dmac_t {
     uint32_t SREQ;
     uint32_t CREQ;
     uint32_t LAST;
-    uint32_t reserved1;
+    uint32_t RESERVED1;
     uint32_t EBCIER;
     uint32_t EBCIDR;
     uint32_t EBCIMR;
@@ -189,7 +189,7 @@ struct sam_dmac_t {
     uint32_t CHER;
     uint32_t CHDR;
     uint32_t CHSR;
-    uint32_t reserved2[2];
+    uint32_t RESERVED2[2];
     struct {
         uint32_t SADDR;
         uint32_t DADDR;
@@ -197,7 +197,7 @@ struct sam_dmac_t {
         uint32_t CTRLA;
         uint32_t CTRLB;
         uint32_t CFG;
-        uint32_t reserved1[4];
+        uint32_t RESERVED1[4];
     } channel[6];
     uint32_t WPMR;
     uint32_t WPSR;
@@ -522,7 +522,7 @@ struct sam_pmc_t {
     uint32_t SCER;
     uint32_t SCDR;
     uint32_t SCSR;
-    uint32_t reserved1;
+    uint32_t RESERVED1;
     uint32_t PCER0;
     uint32_t PCDR0;
     uint32_t PCSR0;
@@ -530,13 +530,13 @@ struct sam_pmc_t {
     uint32_t CKGR_MOR;
     uint32_t CKGR_MCFR;
     uint32_t CKGR_PLLAR;
-    uint32_t reserved2;
+    uint32_t RESERVED2;
     uint32_t MCKR;
-    uint32_t reserved3;
+    uint32_t RESERVED3;
     uint32_t USB;
-    uint32_t reserved4;
+    uint32_t RESERVED4;
     uint32_t PCK[3];
-    uint32_t reserved5[5];
+    uint32_t RESERVED5[5];
     uint32_t IER;
     uint32_t IDR;
     uint32_t SR;
@@ -544,10 +544,10 @@ struct sam_pmc_t {
     uint32_t FSMR;
     uint32_t FSPR;
     uint32_t FOCR;
-    uint32_t reserved6[26];
+    uint32_t RESERVED6[26];
     uint32_t WPMR;
     uint32_t WPSR;
-    uint32_t reserved7[5];
+    uint32_t RESERVED7[5];
     uint32_t PCER1;
     uint32_t PCDR1;
     uint32_t PCSR1;
@@ -866,15 +866,15 @@ struct sam_pio_t {
     uint32_t PER;
     uint32_t PDR;
     uint32_t PSR;
-    uint32_t reserved1;
+    uint32_t RESERVED1;
     uint32_t OER;
     uint32_t ODR;
     uint32_t OSR;
-    uint32_t reserved2;
+    uint32_t RESERVED2;
     uint32_t IFER;
     uint32_t IFDR;
     uint32_t IFSR;
-    uint32_t reserved3;
+    uint32_t RESERVED3;
     uint32_t SODR;
     uint32_t CODR;
     uint32_t ODSR;
@@ -886,34 +886,34 @@ struct sam_pio_t {
     uint32_t MDER;
     uint32_t MDDR;
     uint32_t MDSR;
-    uint32_t reserved4;
+    uint32_t RESERVED4;
     uint32_t PUDR;
     uint32_t PUER;
     uint32_t PUSR;
-    uint32_t reserved5;
+    uint32_t RESERVED5;
     uint32_t ABSR;
-    uint32_t reserved6[3];
+    uint32_t RESERVED6[3];
     uint32_t SCIFSR;
     uint32_t DIFSR;
     uint32_t IFDGSR;
     uint32_t SCDR;
-    uint32_t reserved7[4];
+    uint32_t RESERVED7[4];
     uint32_t OWER;
     uint32_t OWDR;
     uint32_t OWSR;
-    uint32_t reserved8;
+    uint32_t RESERVED8;
     uint32_t AIMER;
     uint32_t AIMDR;
     uint32_t AIMMR;
-    uint32_t reserved9;
+    uint32_t RESERVED9;
     uint32_t ESR;
     uint32_t LSR;
     uint32_t ELSR;
-    uint32_t reserved10;
+    uint32_t RESERVED10;
     uint32_t FELLSR;
     uint32_t REHLSR;
     uint32_t FRLHSR;
-    uint32_t reserved11;
+    uint32_t RESERVED11;
     uint32_t LOCKSR;
     uint32_t WPMR;
     uint32_t WPSR;
@@ -963,9 +963,9 @@ struct sam_spi_t {
     uint32_t IER;
     uint32_t IDR;
     uint32_t IMR;
-    uint32_t reserved1[4];
+    uint32_t RESERVED1[4];
     uint32_t CSR[4];
-    uint32_t reserved2[38];
+    uint32_t RESERVED2[38];
     uint32_t WPMR;
     uint32_t WPSR;
 };
@@ -1062,6 +1062,128 @@ struct sam_spi_t {
 #define SPI_CSR_DLYBCT_MASK             (0xff << SPI_CSR_DLYBCT_POS)
 #define SPI_CSR_DLYBCT(value)           BITFIELD_SET(SPI_CSR_DLYBCT, value)
 
+/* 33. Two-wire Interface (TWI) User Interface. */
+struct sam_twi_t {
+    uint32_t CR;
+    uint32_t MMR;
+    uint32_t SMR;
+    uint32_t IADR;
+    uint32_t CWGR;
+    uint32_t RESERVED0[3];
+    uint32_t SR;
+    uint32_t IER;
+    uint32_t IDR;
+    uint32_t IMR;
+    uint32_t RHR;
+    uint32_t THR;
+    uint32_t RESERVED1[50];
+    struct sam_pdc_t PDC;
+};
+
+/* Control register. */
+#define SAM_TWI_CR_START                BIT(0)
+#define SAM_TWI_CR_STOP                 BIT(1)
+#define SAM_TWI_CR_MSEN                 BIT(2)
+#define SAM_TWI_CR_MSDIS                BIT(3)
+#define SAM_TWI_CR_SVEN                 BIT(4)
+#define SAM_TWI_CR_SVDIS                BIT(5)
+#define SAM_TWI_CR_QUICK                BIT(6)
+#define SAM_TWI_CR_SWRST                BIT(7)
+
+/* Master mode register. */
+#define SAM_TWI_MMR_IADRSZ_POS          (8)
+#define SAM_TWI_MMR_IADRSZ_MASK         (0x3 << SAM_TWI_MMR_IADRSZ_POS)
+#define SAM_TWI_MMR_IADRSZ(value)       BITFIELD_SET(SAM_TWI_MMR_IADRSZ, value)
+#define SAM_TWI_MMR_IADRSZ_NONE         SAM_TWI_MMR_IADRSZ(0)
+#define SAM_TWI_MMR_IADRSZ_1_BYTE       SAM_TWI_MMR_IADRSZ(1)
+#define SAM_TWI_MMR_IADRSZ_2_BYTE       SAM_TWI_MMR_IADRSZ(2)
+#define SAM_TWI_MMR_IADRSZ_3_BYTE       SAM_TWI_MMR_IADRSZ(3)
+#define SAM_TWI_MMR_MREAD               BIT(12)
+#define SAM_TWI_MMR_DADR_POS            (16)
+#define SAM_TWI_MMR_DADR_MASK           (0x7f << SAM_TWI_MMR_DADR_POS)
+#define SAM_TWI_MMR_DADR(value)         BITFIELD_SET(SAM_TWI_MMR_DADR, value)
+
+/* Slave mode register. */
+#define SAM_TWI_SMR_SADR_POS            (16)
+#define SAM_TWI_SMR_SADR_MASK           (0x7f << SAM_TWI_MMR_SADR_POS)
+#define SAM_TWI_SMR_SADR(value)         BITFIELD_SET(SAM_TWI_MMR_SADR, value)
+
+/* Clock waveform generator register. */
+#define SAM_TWI_CWGR_CLDIV_POS           (0)
+#define SAM_TWI_CWGR_CLDIV_MASK          (0xff << SAM_TWI_CWGR_CLDIV_POS)
+#define SAM_TWI_CWGR_CLDIV(value)        BITFIELD_SET(SAM_TWI_CWGR_CLDIV, value)
+#define SAM_TWI_CWGR_CHDIV_POS           (8)
+#define SAM_TWI_CWGR_CHDIV_MASK          (0xff << SAM_TWI_CWGR_CHDIV_POS)
+#define SAM_TWI_CWGR_CHDIV(value)        BITFIELD_SET(SAM_TWI_CWGR_CHDIV, value)
+#define SAM_TWI_CWGR_CKDIV_POS           (16)
+#define SAM_TWI_CWGR_CKDIV_MASK          (0xff << SAM_TWI_CWGR_CKDIV_POS)
+#define SAM_TWI_CWGR_CKDIV(value)        BITFIELD_SET(SAM_TWI_CWGR_CKDIV, value)
+
+/* Status register. */
+#define SAM_TWI_SR_TXCOMP                BIT(0)
+#define SAM_TWI_SR_RXRDY                 BIT(1)
+#define SAM_TWI_SR_TXRDY                 BIT(2)
+#define SAM_TWI_SR_SVREAD                BIT(3)
+#define SAM_TWI_SR_SVACC                 BIT(4)
+#define SAM_TWI_SR_GACC                  BIT(5)
+#define SAM_TWI_SR_OVRE                  BIT(6)
+#define SAM_TWI_SR_NACK                  BIT(8)
+#define SAM_TWI_SR_ARBLST                BIT(9)
+#define SAM_TWI_SR_SCLWS                 BIT(10)
+#define SAM_TWI_SR_EOSACC                BIT(11)
+#define SAM_TWI_SR_ENDRX                 BIT(12)
+#define SAM_TWI_SR_ENDTX                 BIT(13)
+#define SAM_TWI_SR_RXBUFF                BIT(14)
+#define SAM_TWI_SR_TXBUFE                BIT(15)
+
+/* Interrupt enable register. */
+#define SAM_TWI_IER_TXCOMP                BIT(0)
+#define SAM_TWI_IER_RXRDY                 BIT(1)
+#define SAM_TWI_IER_TXRDY                 BIT(2)
+#define SAM_TWI_IER_SVACC                 BIT(4)
+#define SAM_TWI_IER_GACC                  BIT(5)
+#define SAM_TWI_IER_OVRE                  BIT(6)
+#define SAM_TWI_IER_NACK                  BIT(8)
+#define SAM_TWI_IER_ARBLST                BIT(9)
+#define SAM_TWI_IER_SCLWS                 BIT(10)
+#define SAM_TWI_IER_EOSACC                BIT(11)
+#define SAM_TWI_IER_ENDRX                 BIT(12)
+#define SAM_TWI_IER_ENDTX                 BIT(13)
+#define SAM_TWI_IER_RXBUFF                BIT(14)
+#define SAM_TWI_IER_TXBUFE                BIT(15)
+
+/* Interrupt disable register. */
+#define SAM_TWI_IDR_TXCOMP                BIT(0)
+#define SAM_TWI_IDR_RXRDY                 BIT(1)
+#define SAM_TWI_IDR_TXRDY                 BIT(2)
+#define SAM_TWI_IDR_SVACC                 BIT(4)
+#define SAM_TWI_IDR_GACC                  BIT(5)
+#define SAM_TWI_IDR_OVRE                  BIT(6)
+#define SAM_TWI_IDR_NACK                  BIT(8)
+#define SAM_TWI_IDR_ARBLST                BIT(9)
+#define SAM_TWI_IDR_SCLWS                 BIT(10)
+#define SAM_TWI_IDR_EOSACC                BIT(11)
+#define SAM_TWI_IDR_ENDRX                 BIT(12)
+#define SAM_TWI_IDR_ENDTX                 BIT(13)
+#define SAM_TWI_IDR_RXBUFF                BIT(14)
+#define SAM_TWI_IDR_TXBUFE                BIT(15)
+
+/* Interrupt mask register. */
+#define SAM_TWI_IMR_TXCOMP                BIT(0)
+#define SAM_TWI_IMR_RXRDY                 BIT(1)
+#define SAM_TWI_IMR_TXRDY                 BIT(2)
+#define SAM_TWI_IMR_SVACC                 BIT(4)
+#define SAM_TWI_IMR_GACC                  BIT(5)
+#define SAM_TWI_IMR_OVRE                  BIT(6)
+#define SAM_TWI_IMR_NACK                  BIT(8)
+#define SAM_TWI_IMR_ARBLST                BIT(9)
+#define SAM_TWI_IMR_SCLWS                 BIT(10)
+#define SAM_TWI_IMR_EOSACC                BIT(11)
+#define SAM_TWI_IMR_ENDRX                 BIT(12)
+#define SAM_TWI_IMR_ENDTX                 BIT(13)
+#define SAM_TWI_IMR_RXBUFF                BIT(14)
+#define SAM_TWI_IMR_TXBUFE                BIT(15)
+
 /* 34. Universal Asynchronous Receiver Tranceiver. */
 struct sam_uart_t {
     uint32_t CR;
@@ -1073,7 +1195,7 @@ struct sam_uart_t {
     uint32_t RHR;
     uint32_t THR;
     uint32_t BRGR;
-    uint32_t reserved1[55];
+    uint32_t RESERVED1[55];
     struct sam_pdc_t PDC;
 };
 
@@ -1090,18 +1212,18 @@ struct sam_usart_t {
     uint32_t BRGR;
     uint32_t RTOR;
     uint32_t TTGR;
-    uint32_t reserved1[5];
+    uint32_t RESERVED1[5];
     uint32_t FIDI;
     uint32_t NER;
-    uint32_t reserved2[1];
+    uint32_t RESERVED2[1];
     uint32_t IF;
     uint32_t MAN;
     uint32_t LINMR;
     uint32_t LINIR;
-    uint32_t reserved3[34];
+    uint32_t RESERVED3[34];
     uint32_t WPMR;
     uint32_t WPSR;
-    uint32_t reserved4[5];
+    uint32_t RESERVED4[5];
     struct sam_pdc_t PDC;
 };
 
@@ -1405,7 +1527,7 @@ struct sam_tc_t {
         uint32_t CCR;
         uint32_t CMR;
         uint32_t SMMR;
-        uint32_t reserved0;
+        uint32_t RESERVED0;
         uint32_t CV;
         uint32_t RA;
         uint32_t RB;
@@ -1414,7 +1536,7 @@ struct sam_tc_t {
         uint32_t IER;
         uint32_t IDR;
         uint32_t IMR;
-        uint32_t reserved1[4];
+        uint32_t RESERVED1[4];
     } CHANNEL[3];
     uint32_t BCR;
     uint32_t BMR;
@@ -1564,17 +1686,17 @@ struct sam_hsmci_t {
     uint32_t RSPR[4];
     uint32_t RDR;
     uint32_t TDR;
-    uint32_t reserved1[2];
+    uint32_t RESERVED1[2];
     uint32_t SR;
     uint32_t IER;
     uint32_t IDR;
     uint32_t IMR;
     uint32_t DMA;
     uint32_t CFG;
-    uint32_t reserved2[35];
+    uint32_t RESERVED2[35];
     uint32_t WPMR;
     uint32_t WPSR;
-    uint32_t reserved3[69];
+    uint32_t RESERVED3[69];
     uint32_t FIFO[256];
 };
 
@@ -1592,21 +1714,21 @@ struct sam_uotghs_t {
         uint32_t IER;
         uint32_t EPT;
         uint32_t FNUM;
-        uint32_t reserved0[55];
+        uint32_t RESERVED0[55];
         uint32_t EPTCFG[10];
-        uint32_t reserved1[2];
+        uint32_t RESERVED1[2];
         uint32_t EPTISR[10];
-        uint32_t reserved2[2];
+        uint32_t RESERVED2[2];
         uint32_t EPTICR[10];
-        uint32_t reserved3[2];
+        uint32_t RESERVED3[2];
         uint32_t EPTIFR[10];
-        uint32_t reserved4[2];
+        uint32_t RESERVED4[2];
         uint32_t EPTIMR[10];
-        uint32_t reserved5[2];
+        uint32_t RESERVED5[2];
         uint32_t EPTIER[10];
-        uint32_t reserved6[2];
+        uint32_t RESERVED6[2];
         uint32_t EPTIDR[10];
-        uint32_t reserved8[50];
+        uint32_t RESERVED7[50];
         struct {
             uint32_t NXTDSC;
             uint32_t ADDRESS;
@@ -1614,7 +1736,7 @@ struct sam_uotghs_t {
             uint32_t STATUS;
         } DMA[7];
     } DEVICE;
-    uint32_t reserved0[32];
+    uint32_t RESERVED0[32];
 
     /* USB Host registers. */
     struct {
@@ -1628,7 +1750,7 @@ struct sam_uotghs_t {
         uint32_t PIP;
         uint32_t FNUM;
         uint32_t ADDR[3];
-        uint32_t reserved0[52];
+        uint32_t RESERVED0[52];
         uint32_t PIPCFG[10];
         uint32_t reverved1[2];
         uint32_t PIPISR[10];
@@ -1646,7 +1768,7 @@ struct sam_uotghs_t {
         uint32_t PIPINRQ[10];
         uint32_t reverved8[2];
         uint32_t PIPERR[10];
-        uint32_t reserved10[26];
+        uint32_t RESERVED10[26];
         struct {
             uint32_t NXTDSC;
             uint32_t ADDRESS;
@@ -1654,14 +1776,14 @@ struct sam_uotghs_t {
             uint32_t STATUS;
         } DMA[7];
     } HOST;
-    uint32_t reserved1[32];
+    uint32_t RESERVED1[32];
 
     /* General USB registers. */
     uint32_t CTRL;
     uint32_t SR;
     uint32_t SCR;
     uint32_t SFR;
-    uint32_t reserved2[7];
+    uint32_t RESERVED2[7];
     uint32_t FSM;
 };
 
@@ -2134,10 +2256,10 @@ struct sam_can_t {
     uint32_t ECR;
     uint32_t TCR;
     uint32_t ACR;
-    uint32_t reserved0[46];
+    uint32_t RESERVED0[46];
     uint32_t WPMR;
     uint32_t WPSR;
-    uint32_t reserved1[69];
+    uint32_t RESERVED1[69];
     struct sam_can_mailbox_t MAILBOX[8];
 };
 
@@ -2383,25 +2505,25 @@ struct sam_adc_t {
     uint32_t CHER;
     uint32_t CHDR;
     uint32_t CHSR;
-    uint32_t reserved0;
+    uint32_t RESERVED0;
     uint32_t LCDR;
     uint32_t IER;
     uint32_t IDR;
     uint32_t IMR;
     uint32_t ISR;
-    uint32_t reserved1[2];
+    uint32_t RESERVED1[2];
     uint32_t OVER;
     uint32_t EMR;
     uint32_t CWR;
     uint32_t CGR;
     uint32_t COR;
     uint32_t CDR[16];
-    uint32_t reserved2;
+    uint32_t RESERVED2;
     uint32_t ACR;
-    uint32_t reserved3[19];
+    uint32_t RESERVED3[19];
     uint32_t WPMR;
     uint32_t WPSR;
-    uint32_t reserved4[5];
+    uint32_t RESERVED4[5];
     struct sam_pdc_t PDC;
 };
 
@@ -2468,22 +2590,22 @@ struct sam_adc_t {
 struct sam_dacc_t {
     uint32_t CR;
     uint32_t MR;
-    uint32_t reserved0[2];
+    uint32_t RESERVED0[2];
     uint32_t CHER;
     uint32_t CHDR;
     uint32_t CHSR;
-    uint32_t reserved1;
+    uint32_t RESERVED1;
     uint32_t CDR;
     uint32_t IER;
     uint32_t IDR;
     uint32_t IMR;
     uint32_t ISR;
-    uint32_t reserved2[24];
+    uint32_t RESERVED2[24];
     uint32_t ACR;
-    uint32_t reserved3[19];
+    uint32_t RESERVED3[19];
     uint32_t WPMR;
     uint32_t WPSR;
-    uint32_t reserved4[5];
+    uint32_t RESERVED4[5];
     struct sam_pdc_t PDC;
 };
 
