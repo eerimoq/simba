@@ -63,7 +63,7 @@ static ssize_t write_bytes(struct xbee_driver_t *self_p,
             chunk_size = 1;
             break;
         }
-
+        
         /* Write the bytes the the XBee module. */
         res = chan_write(self_p->transport_p, &chunk[0], chunk_size);
         
@@ -105,12 +105,18 @@ int xbee_write(struct xbee_driver_t *self_p,
     /* Write the header. */
     header[0] = FRAME_DELIMITER;
     header[1] = (command_p->data.size >> 8);
-    header[2] = command_p->data.size;
+    header[2] = (command_p->data.size + 1);
     header[3] = command_p->id;
     
-    res = write_bytes(self_p, &header[0], sizeof(header));
+    res = chan_write(self_p->transport_p, &header[0], 1);
     
-    if (res != sizeof(header)) {
+    if (res != 1) {
+        return (-EIO);
+    }
+    
+    res = write_bytes(self_p, &header[1], 3);
+    
+    if (res != 3) {
         return (-EIO);
     }
 
@@ -124,7 +130,7 @@ int xbee_write(struct xbee_driver_t *self_p,
     }
 
     /* Calculate the CRC. */
-    crc = 0;
+    crc = command_p->id;
 
     for (i = 0; i < command_p->data.size; i++) {
         crc += command_p->data.buf[i];
@@ -133,9 +139,9 @@ int xbee_write(struct xbee_driver_t *self_p,
     crc ^= 0xff;
     
     /* Write the checksum. */
-    res = write_bytes(self_p, &crc, sizeof(crc));
+    res = chan_write(self_p->transport_p, &crc, 1);
     
-    if (res != sizeof(crc)) {
+    if (res != 1) {
         return (-EIO);
     }
 

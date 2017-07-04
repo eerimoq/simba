@@ -117,7 +117,8 @@ ifeq ($(BOARD), arduino_due)
                                     sha1)
     TESTS += $(addprefix tst/drivers/, chipid \
 				       can \
-				       flash)
+				       flash \
+				       xbee)
 endif
 
 ifeq ($(BOARD), arduino_mega)

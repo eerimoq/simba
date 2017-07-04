@@ -37,6 +37,8 @@
    characters and the command identifier). */
 #define XBEE_COMMAND_DATA_MAX                             110
 
+#define XBEE_FRAME_ID_NO_ACK                             0x00
+
 enum xbee_command_id_t {
     /* Command identifiers transmitted to the XBee. */
     xbee_command_id_tx_request_64_bit_address_t        = 0x00,
