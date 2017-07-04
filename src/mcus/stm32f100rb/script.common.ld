@@ -116,7 +116,7 @@ SECTIONS
     PROVIDE_HIDDEN (__exidx_end = .);
 
     /* Settings area. */
-    .settings :
+    .nvm.eeprom_soft :
     {
         . = ALIGN(256);
     } > rom
