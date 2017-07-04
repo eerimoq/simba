@@ -36,6 +36,7 @@
 #define PORT_HAS_OWI
 #define PORT_HAS_PIN
 #define PORT_HAS_UART
+#define PORT_HAS_XBEE
 
 /**
  * Used to include driver header files and the c-file source.
@@ -640,6 +641,17 @@
 #        define CONFIG_WATCHDOG                             1
 #    else
 #        define CONFIG_WATCHDOG                             0
+#    endif
+#endif
+
+/**
+ * Enable the xbee driver.
+ */
+#ifndef CONFIG_XBEE
+#    if defined(CONFIG_MINIMAL_SYSTEM) || !defined(PORT_HAS_XBEE)
+#        define CONFIG_XBEE                                 0
+#    else
+#        define CONFIG_XBEE                                 1
 #    endif
 #endif
 
