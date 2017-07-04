@@ -451,8 +451,8 @@ static int test_request_websocket(struct harness_t *harness_p)
         socket_stub_input(buf, 10);
 
         /* Read the echo frame from the socket. */
-        socket_stub_output(buf, 10);
-        BTASSERT(strcmp(&buf[6], "123") == 0);
+        socket_stub_output(buf, 6);
+        BTASSERT(strcmp(&buf[2], "123") == 0);
     }
 
     socket_stub_close_connection();
