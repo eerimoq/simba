@@ -35,7 +35,7 @@ SIZE_SUMMARY_CMD ?= $(SIMBA_ROOT)/bin/memory_usage.py \
 			--ram-section .bss \
 			--ram-section .main_stack \
 			--rom-section .text \
-			--rom-section .settings \
+			--rom-section .nvm.eeprom_soft \
 			${EXE}
 
 
