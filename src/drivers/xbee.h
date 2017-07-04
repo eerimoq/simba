@@ -68,7 +68,7 @@ struct xbee_driver_t {
 };
 
 /**
- * Initialize XBEE module. This function must be called before calling
+ * Initialize XBee module. This function must be called before calling
  * any other function in this module.
  *
  * The module will only be initialized once even if this function is
@@ -82,7 +82,7 @@ int xbee_module_init(void);
  * Initialize given driver object from given configuration.
  *
  * @param[in,out] self_p Driver object to initialize.
- * @param[in] transport_p Channel to the Xbee module, often a UART
+ * @param[in] transport_p Channel to the XBee module, often a UART
  *                        driver.
  *
  * @return zero(0) or negative error code.
