@@ -36,6 +36,83 @@
 #define XON                                   0x11
 #define XOFF                                  0x13
 
+/**
+ * Read data from the transport channel until a frame delimiter is
+ * found.
+ */
+static int read_frame_delimiter(struct xbee_driver_t *self_p)
+{
+    int res;
+    uint8_t byte;
+
+    while (1) {
+        res = chan_read(self_p->transport_p, &byte, sizeof(byte));
+
+        if (res != sizeof(byte)) {
+            res = -EIO;
+            break;
+        }
+
+        if (byte == FRAME_DELIMITER) {
+            res = 0;
+            break;
+        }
+    }
+
+    return (res);
+}
+
+/**
+ * Read and unescape given number of command bytes from the transport
+ * channel.
+ */
+static ssize_t read_bytes(struct xbee_driver_t *self_p,
+                          uint8_t *buf_p,
+                          size_t size)
+{
+    ssize_t res;
+    size_t i;
+    uint8_t byte;
+
+    for (i = 0; i < size; i++) {
+        res = chan_read(self_p->transport_p, &byte, sizeof(byte));
+
+        if (res != sizeof(byte)) {
+            return (-EIO);
+        }
+
+        /* Handle frame delimiters and escaped bytes. */
+        if (byte == FRAME_DELIMITER) {
+            return (-EIO);
+        } else if (byte == ESCAPE) {
+            res = chan_read(self_p->transport_p, &byte, sizeof(byte));
+
+            if (res != sizeof(byte)) {
+                return (-EIO);
+            }
+
+            byte ^= 0x20;
+
+            /* The unescaped byte must be on of the following,
+               otherwise it's a protocol error. */
+            if ((byte != FRAME_DELIMITER)
+                && (byte != ESCAPE)
+                && (byte != XON)
+                && (byte != XOFF)) {
+                return (-EIO);
+            }
+        }
+
+        buf_p[i] = byte;
+    }
+
+    return (size);
+}
+
+/**
+ * Escape and write given number of command bytes to the transport
+ * channel.
+ */
 static ssize_t write_bytes(struct xbee_driver_t *self_p,
                            const uint8_t *buf_p,
                            size_t size)
@@ -63,15 +140,15 @@ static ssize_t write_bytes(struct xbee_driver_t *self_p,
             chunk_size = 1;
             break;
         }
-        
+
         /* Write the bytes the the XBee module. */
         res = chan_write(self_p->transport_p, &chunk[0], chunk_size);
-        
+
         if (res != chunk_size) {
             return (-EIO);
         }
     }
-    
+
     return (size);
 }
 
@@ -91,32 +168,96 @@ int xbee_init(struct xbee_driver_t *self_p,
 int xbee_read(struct xbee_driver_t *self_p,
               struct xbee_command_t *command_p)
 {
-    return (-ENOSYS);
+    ssize_t res;
+    uint8_t size[2];
+    size_t i;
+    uint8_t crc;
+
+    /* Find a frame delimiter. */
+    res = read_frame_delimiter(self_p);
+
+    if (res != 0) {
+        return (-EIO);
+    }
+
+    /* Read the size. */
+    res = read_bytes(self_p, &size[0], sizeof(size));
+
+    if (res != sizeof(size)) {
+        return (-EIO);
+    }
+
+    command_p->data.size = ((size[0] << 8) | size[1]);
+
+    if (command_p->data.size < 1) {
+        return (-EIO);
+    }
+
+    /* Read the command id. */
+    res = read_bytes(self_p, &command_p->id, sizeof(command_p->id));
+
+    if (res != sizeof(command_p->id)) {
+        return (-EIO);
+    }
+
+    /* The command id is not part of the data. */
+    command_p->data.size--;
+
+    if (command_p->data.size > sizeof(command_p->data.buf)) {
+        return (-EIO);
+    }
+
+    /* Read the data. */
+    res = read_bytes(self_p,
+                     &command_p->data.buf[0],
+                     command_p->data.size);
+
+    if (res != command_p->data.size) {
+        return (-EIO);
+    }
+
+    /* Read the CRC. */
+    res = chan_read(self_p->transport_p, &crc, sizeof(crc));
+
+    if (res != sizeof(crc)) {
+        return (-EIO);
+    }
+
+    /* Calculate the CRC. */
+    crc += command_p->id;
+
+    for (i = 0; i < command_p->data.size; i++) {
+        crc += command_p->data.buf[i];
+    }
+
+    return (crc != 0xff);
 }
 
 int xbee_write(struct xbee_driver_t *self_p,
                const struct xbee_command_t *command_p)
 {
     ssize_t res;
-    uint8_t header[4];
+    uint8_t header[3];
     size_t i;
     uint8_t crc;
-    
-    /* Write the header. */
+
+    /* Write the frame delimiter. */
     header[0] = FRAME_DELIMITER;
-    header[1] = (command_p->data.size >> 8);
-    header[2] = (command_p->data.size + 1);
-    header[3] = command_p->id;
-    
-    res = chan_write(self_p->transport_p, &header[0], 1);
-    
-    if (res != 1) {
+
+    res = chan_write(self_p->transport_p, &header[0], sizeof(header[0]));
+
+    if (res != sizeof(header[0])) {
         return (-EIO);
     }
-    
-    res = write_bytes(self_p, &header[1], 3);
-    
-    if (res != 3) {
+
+    /* Write the header. */
+    header[0] = (command_p->data.size >> 8);
+    header[1] = (command_p->data.size + 1);
+    header[2] = command_p->id;
+
+    res = write_bytes(self_p, &header[0], sizeof(header));
+
+    if (res != sizeof(header)) {
         return (-EIO);
     }
 
@@ -124,7 +265,7 @@ int xbee_write(struct xbee_driver_t *self_p,
     res = write_bytes(self_p,
                       &command_p->data.buf[0],
                       command_p->data.size);
-    
+
     if (res != command_p->data.size) {
         return (-EIO);
     }
@@ -137,11 +278,11 @@ int xbee_write(struct xbee_driver_t *self_p,
     }
 
     crc ^= 0xff;
-    
+
     /* Write the checksum. */
-    res = chan_write(self_p->transport_p, &crc, 1);
-    
-    if (res != 1) {
+    res = chan_write(self_p->transport_p, &crc, sizeof(crc));
+
+    if (res != sizeof(crc)) {
         return (-EIO);
     }
 

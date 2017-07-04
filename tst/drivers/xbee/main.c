@@ -75,7 +75,7 @@ static int test_write_at(struct harness_t *harness_p)
     uint8_t buf[7];
 
     /* Prepare a command reading the AT command "DL". */
-    command.id = xbee_command_id_at_command_t;
+    command.id = XBEE_COMMAND_ID_AT_COMMAND;
     command.data.buf[0] = 0x52;
     command.data.buf[1] = 'D';
     command.data.buf[2] = 'L';
@@ -98,6 +98,33 @@ static int test_write_at(struct harness_t *harness_p)
     return (0);
 }
 
+static int test_read_unescape(struct harness_t *harness_p)
+{
+    struct xbee_command_t command;
+    uint8_t buf[] = {
+        0x7e, 0x00, 0x02, 0x23, 0x7d, 0x31, 0xcb
+    };
+
+    /* Prepare a frame from the XBee module where 0x7d 0x31 will be
+       unescaped to 0x11. */
+    harness_mock_write("chan_read(): return (buf_p)", &buf[0], 1);
+    harness_mock_write("chan_read(): return (buf_p)", &buf[1], 1);
+    harness_mock_write("chan_read(): return (buf_p)", &buf[2], 1);
+    harness_mock_write("chan_read(): return (buf_p)", &buf[3], 1);
+    harness_mock_write("chan_read(): return (buf_p)", &buf[4], 1);
+    harness_mock_write("chan_read(): return (buf_p)", &buf[5], 1);
+    harness_mock_write("chan_read(): return (buf_p)", &buf[6], 1);
+
+    BTASSERT(xbee_read(&xbee, &command) == 0);
+
+    /* Validate the read command. */
+    BTASSERTI(command.id, ==, 0x23);
+    BTASSERTI(command.data.buf[0], ==, 0x11);
+    BTASSERTI(command.data.size, ==, 1);
+
+    return (0);
+}
+
 ssize_t STUB(chan_read)(void *self_p,
                         void *buf_p,
                         size_t size)
@@ -109,6 +136,10 @@ ssize_t STUB(chan_read)(void *self_p,
                           sizeof(res)) == -1) {
         res = size;
     }
+
+    harness_mock_read("chan_read(): return (buf_p)",
+                      buf_p,
+                      res);
 
     return (res);
 }
@@ -137,6 +168,7 @@ int main()
         { test_init, "test_init" },
         { test_write_escape, "test_write_escape" },
         { test_write_at, "test_write_at" },
+        { test_read_unescape, "test_read_unescape" },
         { NULL, NULL }
     };
 

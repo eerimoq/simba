@@ -40,7 +40,7 @@ CDEFS += \
 
 DRIVERS_SRC = xbee.c
 
-STUB = $(SIMBA_ROOT)/src/drivers/xbee.c:chan_write
+STUB = $(SIMBA_ROOT)/src/drivers/xbee.c:chan_write,chan_read
 
 SIMBA_ROOT ?= ../../..
 include $(SIMBA_ROOT)/make/app.mk

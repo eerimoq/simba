@@ -35,28 +35,26 @@
 
 /* Maximum number of data bytes in a command (excluding escape
    characters and the command identifier). */
-#define XBEE_COMMAND_DATA_MAX                             110
+#define XBEE_COMMAND_DATA_MAX                              110
 
-#define XBEE_FRAME_ID_NO_ACK                             0x00
+#define XBEE_FRAME_ID_NO_ACK                              0x00
 
-enum xbee_command_id_t {
-    /* Command identifiers transmitted to the XBee. */
-    xbee_command_id_tx_request_64_bit_address_t        = 0x00,
-    xbee_command_id_tx_request_16_bit_address_t        = 0x01,
-    xbee_command_id_at_command_t                       = 0x08,
-    xbee_command_id_at_command_queue_parameter_value_t = 0x09,
+/* Command identifiers transmitted to the XBee. */
+#define XBEE_COMMAND_ID_TX_REQUEST_64_BIT_ADDRESS         0x00
+#define XBEE_COMMAND_ID_TX_REQUEST_16_BIT_ADDRESS         0x01
+#define XBEE_COMMAND_ID_AT_COMMAND                        0x08
+#define XBEE_COMMAND_ID_AT_COMMAND_QUEUE_PARAMETER_VALUE  0x09
 
-    /* Command identifiers received from the XBee. */
-    xbee_command_id_rx_packet_64_bit_address_t         = 0x80,
-    xbee_command_id_rx_packet_16_bit_address_t         = 0x81,
-    xbee_command_id_at_command_response_t              = 0x88,
-    xbee_command_id_tx_status_t                        = 0x89,
-    xbee_command_id_modem_status_t                     = 0x8a
-};
+/* Command identifiers received from the XBee. */
+#define XBEE_COMMAND_ID_RX_PACKET_64_BIT_ADDRESS          0x80
+#define XBEE_COMMAND_ID_RX_PACKET_16_BIT_ADDRESS          0x81
+#define XBEE_COMMAND_ID_AT_COMMAND_RESPONSE               0x88
+#define XBEE_COMMAND_ID_TX_STATUS                         0x89
+#define XBEE_COMMAND_ID_MODEM_STATUS                      0x8a
 
 /* An XBee command. */
 struct xbee_command_t {
-    enum xbee_command_id_t id;
+    uint8_t id;
     struct {
         uint8_t buf[XBEE_COMMAND_DATA_MAX];
         size_t size;
