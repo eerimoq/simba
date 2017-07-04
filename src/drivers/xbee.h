@@ -92,7 +92,7 @@ int xbee_init(struct xbee_driver_t *self_p,
 
 /**
  * Read one XBee command from the XBee module. Blocks until the
- * command is received.
+ * command is received or an error occurs.
  *
  * @param[in] self_p Initialized driver object.
  * @param[out] command_p Read command.
@@ -104,7 +104,7 @@ int xbee_read(struct xbee_driver_t *self_p,
 
 /**
  * Write a XBee command to the XBee module. Blocks until the command
- * have been transmitted.
+ * have been transmitted or an error occurs.
  *
  * @param[in] self_p Initialized driver object.
  * @param[in] command_p Command to write.
