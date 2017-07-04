@@ -47,7 +47,6 @@
 #    define PORT_HAS_UART
 #    define PORT_HAS_SD
 #    define PORT_HAS_DS18B20
-#    define PORT_HAS_DS3231
 #    define PORT_HAS_OWI
 #    define PORT_HAS_FLASH
 #    define PORT_HAS_ANALOG_INPUT_PIN
@@ -70,7 +69,6 @@
 #    define PORT_HAS_UART_SOFT
 #    define PORT_HAS_OWI
 #    define PORT_HAS_DS18B20
-#    define PORT_HAS_DS3231
 #    define PORT_HAS_MCP2515
 #    define PORT_HAS_NRF24L01
 #    define PORT_HAS_SD
@@ -115,7 +113,6 @@
 #    define PORT_HAS_UART_SOFT
 #    define PORT_HAS_OWI
 #    define PORT_HAS_DS18B20
-#    define PORT_HAS_DS3231
 #    define PORT_HAS_ADC
 #    define PORT_HAS_ANALOG_INPUT_PIN
 #    define PORT_HAS_FLASH
@@ -131,7 +128,6 @@
 #    define PORT_HAS_I2C_SOFT
 #    define PORT_HAS_OWI
 #    define PORT_HAS_DS18B20
-#    define PORT_HAS_DS3231
 #    define PORT_HAS_SPI
 #    define PORT_HAS_UART
 #    define PORT_HAS_ADC
@@ -186,6 +182,7 @@
 #if defined(PORT_HAS_I2C)
 #    define PORT_HAS_EEPROM_I2C
 #    define PORT_HAS_SHT3XD
+#    define PORT_HAS_DS3231
 #endif
 
 /**

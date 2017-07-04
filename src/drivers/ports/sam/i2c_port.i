@@ -85,7 +85,9 @@ int i2c_port_start(struct i2c_driver_t *self_p)
 
 int i2c_port_stop(struct i2c_driver_t *self_p)
 {
-    return (-ENOSYS);
+    self_p->dev_p->regs_p->CR = SAM_TWI_CR_SWRST;
+
+    return (0);
 }
 
 ssize_t i2c_port_read(struct i2c_driver_t *self_p,
@@ -113,7 +115,7 @@ ssize_t i2c_port_read(struct i2c_driver_t *self_p,
         u8_buf_p[i] = regs_p->RHR;
     }
 
-    /* Write given buffer to the slave. */
+    /* Send the stop condition after next read. */
     regs_p->CR = SAM_TWI_CR_STOP;
 
     /* Read the last byte. */
@@ -136,6 +138,7 @@ ssize_t i2c_port_write(struct i2c_driver_t *self_p,
     volatile struct sam_twi_t *regs_p;
     size_t i;
     const uint8_t *u8_buf_p;
+    uint32_t sr;
 
     res = size;
     u8_buf_p = buf_p;
@@ -151,9 +154,11 @@ ssize_t i2c_port_write(struct i2c_driver_t *self_p,
     for (i = 0; i < size; i++) {
         regs_p->THR = u8_buf_p[i];
 
-        while ((regs_p->SR & SAM_TWI_SR_TXRDY) == 0);
+        do {
+            sr = regs_p->SR;
+        } while ((sr & SAM_TWI_SR_TXRDY) == 0);
 
-        if (regs_p->SR & SAM_TWI_SR_TXCOMP) {
+        if (sr & SAM_TWI_SR_NACK) {
             res = -1;
             break;
         }
@@ -171,7 +176,24 @@ ssize_t i2c_port_write(struct i2c_driver_t *self_p,
 int i2c_port_scan(struct i2c_driver_t *self_p,
                   int address)
 {
-    return (-ENOSYS);
+    volatile struct sam_twi_t *regs_p;
+    uint32_t sr;
+
+    regs_p = self_p->dev_p->regs_p;
+
+    /* Slave address and read command. */
+    regs_p->MMR = (SAM_TWI_MMR_DADR(address)
+                   | SAM_TWI_MMR_MREAD);
+
+    /* Set both start and stop conditions to read a single byte. */
+    regs_p->CR = (SAM_TWI_CR_START | SAM_TWI_CR_STOP);
+
+    /* Wait for completion. */
+    do {
+        sr = regs_p->SR;
+    } while ((sr & SAM_TWI_SR_TXCOMP) == 0);
+
+    return ((sr & SAM_TWI_SR_NACK) == 0);
 }
 
 int i2c_port_slave_start(struct i2c_driver_t *self_p)

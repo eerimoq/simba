@@ -54,6 +54,27 @@ static int test_init(struct harness_t *harness_p)
     return (0);
 }
 
+static int test_scan(struct harness_t *harness_p)
+{
+    int number_of_slaves_found;
+    int address;
+
+    number_of_slaves_found = 0;
+
+    for (address = 0; address < 128; address++) {
+        if (i2c_scan(&i2c, address) == 1) {
+            std_printf(OSTR("Found slave with address 0x%02x.\r\n"),
+                       address);
+            number_of_slaves_found++;
+        }
+    }
+
+    std_printf(OSTR("Number of slaves found: %d\r\n"),
+               number_of_slaves_found);
+
+    return (0);
+}
+
 static int test_read_write_sizes(struct harness_t *harness_p)
 {
     int i;
@@ -195,6 +216,7 @@ int main()
     struct harness_t harness;
     struct harness_testcase_t harness_testcases[] = {
         { test_init, "test_init" },
+        { test_scan, "test_scan" },
         { test_read_write_sizes, "test_read_write_sizes" },
         { test_read_write_low_high, "test_read_write_low_high" },
         { test_read_write_bad_address, "test_read_write_bad_address" },
