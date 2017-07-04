@@ -288,3 +288,39 @@ int xbee_write(struct xbee_driver_t *self_p,
 
     return (0);
 }
+
+const char *xbee_command_id_as_string(uint8_t command_id)
+{
+    switch (command_id) {
+
+    case XBEE_COMMAND_ID_TX_REQUEST_64_BIT_ADDRESS:
+        return "TX (Transmit) Request: 64-bit address";
+
+    case XBEE_COMMAND_ID_TX_REQUEST_16_BIT_ADDRESS:
+        return "TX (Transmit) Request: 16-bit address";
+
+    case XBEE_COMMAND_ID_AT_COMMAND:
+        return "AT Command";
+
+    case XBEE_COMMAND_ID_AT_COMMAND_QUEUE_PARAMETER_VALUE:
+        return "AT Command - Queue Parameter Value";
+
+    case XBEE_COMMAND_ID_RX_PACKET_64_BIT_ADDRESS:
+        return "RX (Receive) Packet: 64-bit Address";
+
+    case XBEE_COMMAND_ID_RX_PACKET_16_BIT_ADDRESS:
+        return "RX (Receive) Packet: 16-bit Address";
+
+    case XBEE_COMMAND_ID_AT_COMMAND_RESPONSE:
+        return "AT Command Response";
+
+    case XBEE_COMMAND_ID_TX_STATUS:
+        return "TX (Transmit) Status";
+
+    case XBEE_COMMAND_ID_MODEM_STATUS:
+        return "Modem Status";
+
+    default:
+        return "Unknown Command";
+    }
+}

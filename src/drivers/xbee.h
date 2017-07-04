@@ -114,4 +114,13 @@ int xbee_read(struct xbee_driver_t *self_p,
 int xbee_write(struct xbee_driver_t *self_p,
                const struct xbee_command_t *command_p);
 
+/**
+ * Map given command identifier to a human readable string.
+ *
+ * @param[in] command_id Command identifier.
+ *
+ * @return Human readable command identifer string.
+ */
+const char *xbee_command_id_as_string(uint8_t command_id);
+
 #endif

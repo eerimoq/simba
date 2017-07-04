@@ -125,6 +125,54 @@ static int test_read_unescape(struct harness_t *harness_p)
     return (0);
 }
 
+static int test_command_id_as_string(struct harness_t *harness_p)
+{
+    const char *actual_p;
+    const char *expected_p;
+
+    actual_p = xbee_command_id_as_string(XBEE_COMMAND_ID_TX_REQUEST_64_BIT_ADDRESS);
+    expected_p = "TX (Transmit) Request: 64-bit address";
+    BTASSERTM(actual_p, expected_p, strlen(expected_p) + 1);
+
+    actual_p = xbee_command_id_as_string(XBEE_COMMAND_ID_TX_REQUEST_16_BIT_ADDRESS);
+    expected_p = "TX (Transmit) Request: 16-bit address";
+    BTASSERTM(actual_p, expected_p, strlen(expected_p) + 1);
+
+    actual_p = xbee_command_id_as_string(XBEE_COMMAND_ID_AT_COMMAND);
+    expected_p = "AT Command";
+    BTASSERTM(actual_p, expected_p, strlen(expected_p) + 1);
+
+    actual_p = xbee_command_id_as_string(XBEE_COMMAND_ID_AT_COMMAND_QUEUE_PARAMETER_VALUE);
+    expected_p = "AT Command - Queue Parameter Value";
+    BTASSERTM(actual_p, expected_p, strlen(expected_p) + 1);
+
+    actual_p = xbee_command_id_as_string(XBEE_COMMAND_ID_RX_PACKET_64_BIT_ADDRESS);
+    expected_p = "RX (Receive) Packet: 64-bit Address";
+    BTASSERTM(actual_p, expected_p, strlen(expected_p) + 1);
+
+    actual_p = xbee_command_id_as_string(XBEE_COMMAND_ID_RX_PACKET_16_BIT_ADDRESS);
+    expected_p = "RX (Receive) Packet: 16-bit Address";
+    BTASSERTM(actual_p, expected_p, strlen(expected_p) + 1);
+
+    actual_p = xbee_command_id_as_string(XBEE_COMMAND_ID_AT_COMMAND_RESPONSE);
+    expected_p = "AT Command Response";
+    BTASSERTM(actual_p, expected_p, strlen(expected_p) + 1);
+
+    actual_p = xbee_command_id_as_string(XBEE_COMMAND_ID_TX_STATUS);
+    expected_p = "TX (Transmit) Status";
+    BTASSERTM(actual_p, expected_p, strlen(expected_p) + 1);
+
+    actual_p = xbee_command_id_as_string(XBEE_COMMAND_ID_MODEM_STATUS);
+    expected_p = "Modem Status";
+    BTASSERTM(actual_p, expected_p, strlen(expected_p) + 1);
+
+    actual_p = xbee_command_id_as_string(0xff);
+    expected_p = "Unknown Command";
+    BTASSERTM(actual_p, expected_p, strlen(expected_p) + 1);
+
+    return (0);
+}
+
 ssize_t STUB(chan_read)(void *self_p,
                         void *buf_p,
                         size_t size)
@@ -169,6 +217,7 @@ int main()
         { test_write_escape, "test_write_escape" },
         { test_write_at, "test_write_at" },
         { test_read_unescape, "test_read_unescape" },
+        { test_command_id_as_string, "test_command_id_as_string" },
         { NULL, NULL }
     };
 
