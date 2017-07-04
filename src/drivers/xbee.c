@@ -152,6 +152,45 @@ static ssize_t write_bytes(struct xbee_driver_t *self_p,
     return (size);
 }
 
+static ssize_t base_chan_read(void *base_p,
+                              void *buf_p,
+                              size_t size)
+{
+    struct xbee_driver_t *self_p;
+    struct xbee_command_t *command_p;
+
+    ASSERTN(size == sizeof(*command_p), EINVAL);
+
+    self_p = base_p;
+    command_p = buf_p;
+
+    return (xbee_read(self_p, command_p));
+}
+
+static ssize_t base_chan_write(void *base_p,
+                               const void *buf_p,
+                               size_t size)
+{
+    struct xbee_driver_t *self_p;
+    const struct xbee_command_t *command_p;
+
+    ASSERTN(size == sizeof(*command_p), EINVAL);
+
+    self_p = base_p;
+    command_p = buf_p;
+
+    return (xbee_write(self_p, command_p));
+}
+
+static size_t base_chan_size(void *base_p)
+{
+    struct xbee_driver_t *self_p;
+
+    self_p = base_p;
+
+    return (chan_size(self_p->transport_p));
+}
+
 int xbee_module_init(void)
 {
     return (0);
@@ -160,6 +199,14 @@ int xbee_module_init(void)
 int xbee_init(struct xbee_driver_t *self_p,
               void *transport_p)
 {
+    ASSERTN(self_p != NULL, EINVAL);
+    ASSERTN(transport_p != NULL, EINVAL);
+
+    chan_init(&self_p->base,
+              base_chan_read,
+              base_chan_write,
+              base_chan_size);
+
     self_p->transport_p = transport_p;
 
     return (0);
@@ -168,6 +215,9 @@ int xbee_init(struct xbee_driver_t *self_p,
 int xbee_read(struct xbee_driver_t *self_p,
               struct xbee_command_t *command_p)
 {
+    ASSERTN(self_p != NULL, EINVAL);
+    ASSERTN(command_p != NULL, EINVAL);
+
     ssize_t res;
     uint8_t size[2];
     size_t i;
@@ -236,6 +286,9 @@ int xbee_read(struct xbee_driver_t *self_p,
 int xbee_write(struct xbee_driver_t *self_p,
                const struct xbee_command_t *command_p)
 {
+    ASSERTN(self_p != NULL, EINVAL);
+    ASSERTN(command_p != NULL, EINVAL);
+
     ssize_t res;
     uint8_t header[3];
     size_t i;

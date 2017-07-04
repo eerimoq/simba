@@ -125,6 +125,62 @@ static int test_read_unescape(struct harness_t *harness_p)
     return (0);
 }
 
+static int test_channel_write_at(struct harness_t *harness_p)
+{
+    struct xbee_command_t command;
+    uint8_t buf[7];
+
+    /* Prepare a command reading the AT command "DL". */
+    command.id = XBEE_COMMAND_ID_AT_COMMAND;
+    command.data.buf[0] = 0x52;
+    command.data.buf[1] = 'D';
+    command.data.buf[2] = 'L';
+    command.data.size = 3;
+
+    BTASSERT(chan_write(&xbee, &command, sizeof(command)) == 0);
+
+    /* Validate the written frame. */
+    harness_mock_read("chan_write(buf_p)", &buf[0], 1);
+    harness_mock_read("chan_write(buf_p)", &buf[1], 1);
+    harness_mock_read("chan_write(buf_p)", &buf[2], 1);
+    harness_mock_read("chan_write(buf_p)", &buf[3], 1);
+    harness_mock_read("chan_write(buf_p)", &buf[4], 1);
+    harness_mock_read("chan_write(buf_p)", &buf[5], 1);
+    harness_mock_read("chan_write(buf_p)", &buf[6], 1);
+    harness_mock_read("chan_write(buf_p)", &buf[7], 1);
+
+    BTASSERTM(&buf[0], "\x7e\x00\x04\x08\x52\x44\x4c\x15", 8);
+
+    return (0);
+}
+
+static int test_channel_read_unescape(struct harness_t *harness_p)
+{
+    struct xbee_command_t command;
+    uint8_t buf[] = {
+        0x7e, 0x00, 0x02, 0x23, 0x7d, 0x31, 0xcb
+    };
+
+    /* Prepare a frame from the XBee module where 0x7d 0x31 will be
+       unescaped to 0x11. */
+    harness_mock_write("chan_read(): return (buf_p)", &buf[0], 1);
+    harness_mock_write("chan_read(): return (buf_p)", &buf[1], 1);
+    harness_mock_write("chan_read(): return (buf_p)", &buf[2], 1);
+    harness_mock_write("chan_read(): return (buf_p)", &buf[3], 1);
+    harness_mock_write("chan_read(): return (buf_p)", &buf[4], 1);
+    harness_mock_write("chan_read(): return (buf_p)", &buf[5], 1);
+    harness_mock_write("chan_read(): return (buf_p)", &buf[6], 1);
+
+    BTASSERT(chan_read(&xbee, &command, sizeof(command)) == 0);
+
+    /* Validate the read command. */
+    BTASSERTI(command.id, ==, 0x23);
+    BTASSERTI(command.data.buf[0], ==, 0x11);
+    BTASSERTI(command.data.size, ==, 1);
+
+    return (0);
+}
+
 static int test_command_id_as_string(struct harness_t *harness_p)
 {
     const char *actual_p;
@@ -217,6 +273,8 @@ int main()
         { test_write_escape, "test_write_escape" },
         { test_write_at, "test_write_at" },
         { test_read_unescape, "test_read_unescape" },
+        { test_channel_write_at, "test_channel_write_at" },
+        { test_channel_read_unescape, "test_channel_read_unescape" },
         { test_command_id_as_string, "test_command_id_as_string" },
         { NULL, NULL }
     };
