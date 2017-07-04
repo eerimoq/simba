@@ -83,7 +83,7 @@ static ssize_t read_bytes(struct xbee_driver_t *self_p,
 
         /* Handle frame delimiters and escaped bytes. */
         if (byte == FRAME_DELIMITER) {
-            return (-EIO);
+            return (-EPROTO);
         } else if (byte == ESCAPE) {
             res = chan_read(self_p->transport_p, &byte, sizeof(byte));
 
@@ -99,7 +99,7 @@ static ssize_t read_bytes(struct xbee_driver_t *self_p,
                 && (byte != ESCAPE)
                 && (byte != XON)
                 && (byte != XOFF)) {
-                return (-EIO);
+                return (-EPROTO);
             }
         }
 
@@ -227,34 +227,34 @@ int xbee_read(struct xbee_driver_t *self_p,
     res = read_frame_delimiter(self_p);
 
     if (res != 0) {
-        return (-EIO);
+        return (res);
     }
 
     /* Read the size. */
     res = read_bytes(self_p, &size[0], sizeof(size));
 
     if (res != sizeof(size)) {
-        return (-EIO);
+        return (res);
     }
 
     command_p->data.size = ((size[0] << 8) | size[1]);
 
     if (command_p->data.size < 1) {
-        return (-EIO);
+        return (-EPROTO);
     }
 
     /* Read the command id. */
     res = read_bytes(self_p, &command_p->id, sizeof(command_p->id));
 
     if (res != sizeof(command_p->id)) {
-        return (-EIO);
+        return (res);
     }
 
     /* The command id is not part of the data. */
     command_p->data.size--;
 
     if (command_p->data.size > sizeof(command_p->data.buf)) {
-        return (-EIO);
+        return (-ENOMEM);
     }
 
     /* Read the data. */
@@ -263,7 +263,7 @@ int xbee_read(struct xbee_driver_t *self_p,
                      command_p->data.size);
 
     if (res != command_p->data.size) {
-        return (-EIO);
+        return (res);
     }
 
     /* Read the CRC. */
@@ -280,7 +280,11 @@ int xbee_read(struct xbee_driver_t *self_p,
         crc += command_p->data.buf[i];
     }
 
-    return (crc != 0xff);
+    if (crc != 0xff) {
+        return (-EPROTO);
+    }
+
+    return (0);
 }
 
 int xbee_write(struct xbee_driver_t *self_p,
@@ -311,7 +315,7 @@ int xbee_write(struct xbee_driver_t *self_p,
     res = write_bytes(self_p, &header[0], sizeof(header));
 
     if (res != sizeof(header)) {
-        return (-EIO);
+        return (res);
     }
 
     /* Write the data. */
@@ -320,7 +324,7 @@ int xbee_write(struct xbee_driver_t *self_p,
                       command_p->data.size);
 
     if (res != command_p->data.size) {
-        return (-EIO);
+        return (res);
     }
 
     /* Calculate the CRC. */
