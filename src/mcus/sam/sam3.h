@@ -2496,6 +2496,37 @@ struct sam_can_t {
 #define CAN_MCR_MACR                    BIT(22)
 #define CAN_MCR_MTCR                    BIT(23)
 
+/* 42. True Random Number Generator. */
+struct sam_trng_t {
+    uint32_t CR;
+    uint32_t RESERVED0[3];
+    uint32_t IER;
+    uint32_t IDR;
+    uint32_t IMR;
+    uint32_t ISR;
+    uint32_t RESERVED1[12];
+    uint32_t ODATA;
+};
+
+/* Control register. */
+#define SAM_TRNG_CR_ENABLE              BIT(0)
+#define SAM_TRNG_CR_KEY_POS             (8)
+#define SAM_TRNG_CR_KEY_MASK            (0xffffff << SAM_TRNG_CR_KEY_POS)
+#define SAM_TRNG_CR_KEY(value)          BITFIELD_SET(SAM_TRNG_CR_KEY, value)
+#define SAM_TRNG_CR_KEY_RNG             SAM_TRNG_CR_KEY(0x524e47)
+
+/* Interrupt enable register. */
+#define SAM_TRNG_IER_DATRDY             BIT(0)
+
+/* Interrupt disable register. */
+#define SAM_TRNG_IDR_DATRDY             BIT(0)
+
+/* Interrupt mask register. */
+#define SAM_TRNG_IMR_DATRDY             BIT(0)
+
+/* Interrupt status register. */
+#define SAM_TRNG_ISR_DATRDY             BIT(0)
+
 /* 43. Analog-to-Digital Converter Controller. */
 struct sam_adc_t {
     uint32_t CR;

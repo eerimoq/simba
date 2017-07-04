@@ -28,45 +28,21 @@
  * This file is part of the Simba project.
  */
 
-#include "simba.h"
-
-static int test_init(struct harness_t *harness_p)
+static int random_port_module_init()
 {
-    BTASSERT(random_module_init() == 0);
-    BTASSERT(random_module_init() == 0);
+    pmc_peripheral_clock_enable(PERIPHERAL_ID_TRNG);
+
+    /* Enable the random number generator. */
+    SAM_TRNG->CR = (SAM_TRNG_CR_ENABLE
+                    | SAM_TRNG_CR_KEY_RNG);
 
     return (0);
 }
 
-static int test_read(struct harness_t *harness_p)
+static uint32_t random_port_read()
 {
-    uint32_t random[16];
-    int i;
+    /* Wait for a new random number, generated in 84 clock cycles. */
+    while ((SAM_TRNG->ISR & SAM_TRNG_ISR_DATRDY) == 0);
 
-    for (i = 0; i < 16; i++) {
-        random[i] = random_read();
-    }
-
-    for (i = 0; i < 16; i++) {
-        std_printf(FSTR("read: 0x%08lx\r\n"), (unsigned long)random[i]);
-    }
-
-    return (0);
-}
-
-int main()
-{
-    struct harness_t harness;
-    struct harness_testcase_t testcases[] = {
-        { test_init, "test_init" },
-        { test_read, "test_read" },
-        { NULL, NULL }
-    };
-
-    sys_start();
-
-    harness_init(&harness);
-    harness_run(&harness, testcases);
-
-    return (0);
+    return (SAM_TRNG->ODATA);
 }

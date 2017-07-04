@@ -101,6 +101,7 @@
 #    define PORT_HAS_USB_HOST
 #    define PORT_HAS_ANALOG_INPUT_PIN
 #    define PORT_HAS_EEPROM_SOFT
+#    define PORT_HAS_RANDOM
 #endif
 
 #if defined(FAMILY_ESP)
