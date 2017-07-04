@@ -343,3 +343,7 @@ default-configuration:
 		| grep "#define CONFIG"_ \
 		| grep -v "#define __CONFIG" \
 		| grep -v -P "#define CONFIG_START_CONSOLE_NONE |#define CONFIG_START_CONSOLE_UART |#define CONFIG_START_CONSOLE_USB_CDC "
+
+port-has:
+	gcc -E -dM $(CDEFS:%=-D%) $(SIMBA_ROOT)/src/config_default.h \
+		| grep "#define PORT_HAS_"

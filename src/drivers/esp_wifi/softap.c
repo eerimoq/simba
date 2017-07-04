@@ -30,6 +30,8 @@
 
 #include "simba.h"
 
+#if CONFIG_ESP_WIFI == 1
+
 #include "esp_wifi_port/softap.i"
 
 int esp_wifi_softap_init(const char *ssid_p,
@@ -74,3 +76,5 @@ enum esp_wifi_dhcp_status_t esp_wifi_softap_dhcp_server_status()
 {
     return (esp_wifi_softap_port_dhcp_server_status());
 }
+
+#endif

@@ -28,6 +28,8 @@ Supported drivers for this board.
 - :doc:`../library-reference/drivers/adc`
 - :doc:`../library-reference/drivers/analog_input_pin`
 - :doc:`../library-reference/drivers/ds18b20`
+- :doc:`../library-reference/drivers/ds3231`
+- :doc:`../library-reference/drivers/eeprom_i2c`
 - :doc:`../library-reference/drivers/eeprom_soft`
 - :doc:`../library-reference/drivers/esp_wifi`
 - :doc:`../library-reference/drivers/exti`
@@ -71,9 +73,9 @@ Below is the memory usage of two applications:
 +--------------------------+-----------+-----------+
 | Application              | Flash     | RAM       |
 +==========================+===========+===========+
-| minimal-configuration    |    265820 |     34064 |
+| minimal-configuration    |    277748 |     35760 |
 +--------------------------+-----------+-----------+
-| default-configuration    |    312160 |     47196 |
+| default-configuration    |    324280 |     49232 |
 +--------------------------+-----------+-----------+
 
 Default configuration
@@ -109,6 +111,12 @@ Default Standard Library configuration.
 |  CONFIG_DS18B20_                                       |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_DS3231_                                        |  1                                                  |
++--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_EEPROM_I2C_                                    |  1                                                  |
++--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_EEPROM_I2C_NUMBER_OF_ATTEMPTS_                 |  100                                                |
++--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_EEPROM_SOFT_                                   |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_EEPROM_SOFT_CRC_                               |  CONFIG_EEPROM_SOFT_CRC_32                          |
 +--------------------------------------------------------+-----------------------------------------------------+
@@ -167,6 +175,8 @@ Default Standard Library configuration.
 |  CONFIG_FS_CMD_FS_WRITE_                               |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_FS_CMD_I2C_READ_                               |  1                                                  |
++--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_FS_CMD_I2C_SCAN_                               |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_FS_CMD_I2C_WRITE_                              |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
@@ -312,6 +322,8 @@ Default Standard Library configuration.
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_MODULE_INIT_RANDOM_                            |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_MODULE_INIT_RE_                                |  1                                                  |
++--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_MODULE_INIT_RWLOCK_                            |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_MODULE_INIT_SD_                                |  0                                                  |
@@ -379,6 +391,8 @@ Default Standard Library configuration.
 |  CONFIG_PWM_SOFT_                                      |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_RANDOM_                                        |  1                                                  |
++--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_RE_DEBUG_LOG_MASK_                             |  -1                                                 |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_SD_                                            |  0                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
@@ -510,6 +524,8 @@ Default Standard Library configuration.
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_WATCHDOG_                                      |  0                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_WS2812_                                        |  0                                                  |
++--------------------------------------------------------+-----------------------------------------------------+
 
 
 Homepage
@@ -547,6 +563,12 @@ Mcu
 .. _CONFIG_DS18B20: ../user-guide/configuration.html#c.CONFIG_DS18B20
 
 .. _CONFIG_DS3231: ../user-guide/configuration.html#c.CONFIG_DS3231
+
+.. _CONFIG_EEPROM_I2C: ../user-guide/configuration.html#c.CONFIG_EEPROM_I2C
+
+.. _CONFIG_EEPROM_I2C_NUMBER_OF_ATTEMPTS: ../user-guide/configuration.html#c.CONFIG_EEPROM_I2C_NUMBER_OF_ATTEMPTS
+
+.. _CONFIG_EEPROM_SOFT: ../user-guide/configuration.html#c.CONFIG_EEPROM_SOFT
 
 .. _CONFIG_EEPROM_SOFT_CRC: ../user-guide/configuration.html#c.CONFIG_EEPROM_SOFT_CRC
 
@@ -605,6 +627,8 @@ Mcu
 .. _CONFIG_FS_CMD_FS_WRITE: ../user-guide/configuration.html#c.CONFIG_FS_CMD_FS_WRITE
 
 .. _CONFIG_FS_CMD_I2C_READ: ../user-guide/configuration.html#c.CONFIG_FS_CMD_I2C_READ
+
+.. _CONFIG_FS_CMD_I2C_SCAN: ../user-guide/configuration.html#c.CONFIG_FS_CMD_I2C_SCAN
 
 .. _CONFIG_FS_CMD_I2C_WRITE: ../user-guide/configuration.html#c.CONFIG_FS_CMD_I2C_WRITE
 
@@ -750,6 +774,8 @@ Mcu
 
 .. _CONFIG_MODULE_INIT_RANDOM: ../user-guide/configuration.html#c.CONFIG_MODULE_INIT_RANDOM
 
+.. _CONFIG_MODULE_INIT_RE: ../user-guide/configuration.html#c.CONFIG_MODULE_INIT_RE
+
 .. _CONFIG_MODULE_INIT_RWLOCK: ../user-guide/configuration.html#c.CONFIG_MODULE_INIT_RWLOCK
 
 .. _CONFIG_MODULE_INIT_SD: ../user-guide/configuration.html#c.CONFIG_MODULE_INIT_SD
@@ -817,6 +843,8 @@ Mcu
 .. _CONFIG_PWM_SOFT: ../user-guide/configuration.html#c.CONFIG_PWM_SOFT
 
 .. _CONFIG_RANDOM: ../user-guide/configuration.html#c.CONFIG_RANDOM
+
+.. _CONFIG_RE_DEBUG_LOG_MASK: ../user-guide/configuration.html#c.CONFIG_RE_DEBUG_LOG_MASK
 
 .. _CONFIG_SD: ../user-guide/configuration.html#c.CONFIG_SD
 
@@ -947,3 +975,5 @@ Mcu
 .. _CONFIG_USB_HOST: ../user-guide/configuration.html#c.CONFIG_USB_HOST
 
 .. _CONFIG_WATCHDOG: ../user-guide/configuration.html#c.CONFIG_WATCHDOG
+
+.. _CONFIG_WS2812: ../user-guide/configuration.html#c.CONFIG_WS2812

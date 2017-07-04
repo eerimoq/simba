@@ -30,6 +30,8 @@
 
 #include "simba.h"
 
+#if CONFIG_USB_DEVICE == 1
+
 static FAR const struct usb_descriptor_device_t
 device_descriptor = {
     .length = sizeof(device_descriptor),
@@ -196,3 +198,5 @@ __attribute__((weak)) FAR const uint16_t usb_device_descriptor_string_imanufactu
     (DESCRIPTOR_TYPE_STRING << 8) | (2 + 2 * 11),
     'U','n','k','n','o','w','n',' ',' ',' ',' '
 };
+
+#endif

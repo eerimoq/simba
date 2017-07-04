@@ -30,6 +30,8 @@
 
 #include "simba.h"
 
+#if CONFIG_EEPROM_SOFT == 1
+
 /**
  * Valid pattern in the header.
  */
@@ -493,3 +495,5 @@ ssize_t eeprom_soft_write(struct eeprom_soft_driver_t *self_p,
 
     return (res);
 }
+
+#endif

@@ -31,148 +31,110 @@
 #ifndef __CONFIG_DEFAULT_H__
 #define __CONFIG_DEFAULT_H__
 
+/* All ports must implement uart and pin drivers. */
+#define PORT_HAS_I2C_SOFT
+#define PORT_HAS_OWI
+#define PORT_HAS_PIN
+#define PORT_HAS_UART
+
 /**
  * Used to include driver header files and the c-file source.
  */
 #if defined(FAMILY_LINUX)
+#    define PORT_HAS_ADC
+#    define PORT_HAS_CAN
+#    define PORT_HAS_DAC
+#    define PORT_HAS_EEPROM_SOFT
 #    define PORT_HAS_EXTI
-#    define PORT_HAS_PIN
+#    define PORT_HAS_FLASH
 #    define PORT_HAS_I2C
-#    define PORT_HAS_I2C_SOFT
 #    define PORT_HAS_PWM
 #    define PORT_HAS_PWM_SOFT
-#    define PORT_HAS_ADC
-#    define PORT_HAS_DAC
-#    define PORT_HAS_SPI
-#    define PORT_HAS_UART
-#    define PORT_HAS_SD
-#    define PORT_HAS_DS18B20
-#    define PORT_HAS_OWI
-#    define PORT_HAS_FLASH
-#    define PORT_HAS_ANALOG_INPUT_PIN
-#    define PORT_HAS_ANALOG_OUTPUT_PIN
-#    define PORT_HAS_CAN
 #    define PORT_HAS_RANDOM
-#    define PORT_HAS_EEPROM_SOFT
+#    define PORT_HAS_SD
+#    define PORT_HAS_SPI
 #endif
 
 #if defined(FAMILY_AVR)
-#    define PORT_HAS_EXTI
-#    define PORT_HAS_PIN
-#    define PORT_HAS_PWM
-#    define PORT_HAS_PWM_SOFT
 #    define PORT_HAS_ADC
-#    define PORT_HAS_SPI
-#    define PORT_HAS_UART
+#    define PORT_HAS_EXTI
 #    define PORT_HAS_I2C
-#    define PORT_HAS_I2C_SOFT
-#    define PORT_HAS_UART_SOFT
-#    define PORT_HAS_OWI
-#    define PORT_HAS_DS18B20
 #    define PORT_HAS_MCP2515
 #    define PORT_HAS_NRF24L01
+#    define PORT_HAS_PWM
+#    define PORT_HAS_PWM_SOFT
 #    define PORT_HAS_SD
-#    define PORT_HAS_WATCHDOG
-#    define PORT_HAS_ANALOG_INPUT_PIN
-#    define PORT_HAS_ANALOG_OUTPUT_PIN
+#    define PORT_HAS_SPI
+#    define PORT_HAS_UART_SOFT
 #    if defined(MCU_ATMEGA32U4)
 #        define PORT_HAS_USB
 #        define PORT_HAS_USB_DEVICE
 #    endif
+#    define PORT_HAS_WATCHDOG
 #endif
 
 #if defined(FAMILY_SAM)
+#    define PORT_HAS_ADC
+#    define PORT_HAS_CAN
 #    define PORT_HAS_CHIPID
+#    define PORT_HAS_DAC
+#    define PORT_HAS_EEPROM_SOFT
 #    define PORT_HAS_EXTI
 #    define PORT_HAS_FLASH
-#    define PORT_HAS_PIN
 #    define PORT_HAS_I2C
-#    define PORT_HAS_I2C_SOFT
-#    define PORT_HAS_SPI
-#    define PORT_HAS_UART
-#    define PORT_HAS_SD
-#    define PORT_HAS_CAN
 #    define PORT_HAS_MCP2515
-#    define PORT_HAS_OWI
-#    define PORT_HAS_DS18B20
-#    define PORT_HAS_ADC
-#    define PORT_HAS_DAC
+#    define PORT_HAS_RANDOM
+#    define PORT_HAS_SD
+#    define PORT_HAS_SPI
 #    define PORT_HAS_USB
 #    define PORT_HAS_USB_HOST
-#    define PORT_HAS_ANALOG_INPUT_PIN
-#    define PORT_HAS_EEPROM_SOFT
-#    define PORT_HAS_RANDOM
 #endif
 
 #if defined(FAMILY_ESP)
-#    define PORT_HAS_EXTI
-#    define PORT_HAS_PIN
-#    define PORT_HAS_PWM_SOFT
-#    define PORT_HAS_I2C_SOFT
-#    define PORT_HAS_SPI
-#    define PORT_HAS_UART
-#    define PORT_HAS_UART_SOFT
-#    define PORT_HAS_OWI
-#    define PORT_HAS_DS18B20
 #    define PORT_HAS_ADC
-#    define PORT_HAS_ANALOG_INPUT_PIN
-#    define PORT_HAS_FLASH
-#    define PORT_HAS_ESP_WIFI
-#    define PORT_HAS_RANDOM
-#    define PORT_HAS_LED_7SEG_HT16K33
 #    define PORT_HAS_EEPROM_SOFT
+#    define PORT_HAS_ESP_WIFI
+#    define PORT_HAS_EXTI
+#    define PORT_HAS_FLASH
+#    define PORT_HAS_LED_7SEG_HT16K33
+#    define PORT_HAS_PWM_SOFT
+#    define PORT_HAS_RANDOM
+#    define PORT_HAS_SPI
+#    define PORT_HAS_UART_SOFT
 #endif
 
 #if defined(FAMILY_ESP32)
-#    define PORT_HAS_FLASH
-#    define PORT_HAS_PIN
-#    define PORT_HAS_I2C_SOFT
-#    define PORT_HAS_OWI
-#    define PORT_HAS_DS18B20
-#    define PORT_HAS_SPI
-#    define PORT_HAS_UART
 #    define PORT_HAS_ADC
-#    define PORT_HAS_ANALOG_INPUT_PIN
-#    define PORT_HAS_DAC
-#    define PORT_HAS_ESP_WIFI
 #    define PORT_HAS_CAN
-#    define PORT_HAS_RANDOM
-#    define PORT_HAS_WS2812
+#    define PORT_HAS_DAC
 #    define PORT_HAS_EEPROM_SOFT
+#    define PORT_HAS_ESP_WIFI
+#    define PORT_HAS_FLASH
+#    define PORT_HAS_RANDOM
+#    define PORT_HAS_SPI
+#    define PORT_HAS_WS2812
 #endif
 
 #if defined(FAMILY_STM32F1)
-#    define PORT_HAS_PIN
-#    define PORT_HAS_I2C_SOFT
-#    define PORT_HAS_UART
-#    define PORT_HAS_FLASH
 #    define PORT_HAS_EEPROM_SOFT
+#    define PORT_HAS_FLASH
 #endif
 
 #if defined(FAMILY_STM32F2)
-#    define PORT_HAS_PIN
-#    define PORT_HAS_I2C_SOFT
-#    define PORT_HAS_UART
-#    define PORT_HAS_FLASH
 #    define PORT_HAS_EEPROM_SOFT
+#    define PORT_HAS_FLASH
 #endif
 
 #if defined(FAMILY_STM32F3)
-#    define PORT_HAS_PIN
-#    define PORT_HAS_I2C_SOFT
-#    define PORT_HAS_UART
-#    define PORT_HAS_FLASH
 #    define PORT_HAS_EEPROM_SOFT
+#    define PORT_HAS_FLASH
 #endif
 
 #if defined(FAMILY_SPC5)
-#    define PORT_HAS_PIN
-#    define PORT_HAS_I2C_SOFT
-#    define PORT_HAS_UART
-#    define PORT_HAS_FLASH
 #    define PORT_HAS_CAN
-#    define PORT_HAS_WATCHDOG
 #    define PORT_HAS_EEPROM_SOFT
+#    define PORT_HAS_FLASH
+#    define PORT_HAS_WATCHDOG
 #endif
 
 #if defined(PORT_HAS_I2C_SOFT) && !defined(PORT_HAS_I2C)
@@ -181,9 +143,21 @@
 #endif
 
 #if defined(PORT_HAS_I2C)
+#    define PORT_HAS_DS3231
 #    define PORT_HAS_EEPROM_I2C
 #    define PORT_HAS_SHT3XD
-#    define PORT_HAS_DS3231
+#endif
+
+#if defined(PORT_HAS_OWI)
+#    define PORT_HAS_DS18B20
+#endif
+
+#if defined(PORT_HAS_PWM)
+#    define PORT_HAS_ANALOG_OUTPUT_PIN
+#endif
+
+#if defined(PORT_HAS_ADC)
+#    define PORT_HAS_ANALOG_INPUT_PIN
 #endif
 
 /**
@@ -361,6 +335,17 @@
 #endif
 
 /**
+ * Enable the ws2812 driver.
+ */
+#ifndef CONFIG_WS2812
+#    if defined(CONFIG_MINIMAL_SYSTEM) || !defined(PORT_HAS_WS2812)
+#        define CONFIG_WS2812                               0
+#    else
+#        define CONFIG_WS2812                               1
+#    endif
+#endif
+
+/**
  * Enable the led_7seg_ht16k33 driver.
  */
 #ifndef CONFIG_LED_7SEG_HT16K33
@@ -412,6 +397,17 @@
 #        define CONFIG_DS3231                               0
 #    else
 #        define CONFIG_DS3231                               1
+#    endif
+#endif
+
+/**
+ * Enable the eeprom_soft driver.
+ */
+#ifndef CONFIG_EEPROM_SOFT
+#    if defined(CONFIG_MINIMAL_SYSTEM) || !defined(PORT_HAS_EEPROM_SOFT)
+#        define CONFIG_EEPROM_SOFT                          0
+#    else
+#        define CONFIG_EEPROM_SOFT                          1
 #    endif
 #endif
 

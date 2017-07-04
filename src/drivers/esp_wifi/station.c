@@ -30,6 +30,8 @@
 
 #include "simba.h"
 
+#if CONFIG_ESP_WIFI == 1
+
 #include "esp_wifi_port/station.i"
 
 int esp_wifi_station_init(const char *ssid_p,
@@ -114,3 +116,5 @@ const char *esp_wifi_station_status_as_string(enum esp_wifi_station_status_t sta
         return "unknown";
     }
 }
+
+#endif

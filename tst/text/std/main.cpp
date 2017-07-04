@@ -176,11 +176,7 @@ static int test_sprintf_double(struct harness_t *harness_p)
                        FSTR("Normal:                '%f' '%f'"),
                        10.5f, -37.731);
     BTASSERT(size == 47);
-#if defined(ARCH_ESP)
-    BTASSERTM(&buf[0],
-              "Normal:                '10.500000' '-37.730998'",
-              size + 1);
-#elif defined(ARCH_AVR)
+#if defined(ARCH_AVR)
     BTASSERTM(&buf[0],
               "Normal:                '10.500000' '-37.730999'",
               size + 1);
@@ -194,11 +190,7 @@ static int test_sprintf_double(struct harness_t *harness_p)
                                  FSTR("Left justification:    '%-12f' '%-12f'"),
                                  10.5f, -37.731)) == 52);
     BTASSERT(size == 52);
-#if defined(ARCH_ESP)
-    BTASSERTM(&buf[0],
-              "Left justification:    '10.500000   ' '-37.730998  '",
-              size + 1);
-#elif defined(ARCH_AVR)
+#if defined(ARCH_AVR)
     BTASSERTM(&buf[0],
               "Left justification:    '10.500000   ' '-37.730999  '",
               size + 1);
@@ -212,11 +204,7 @@ static int test_sprintf_double(struct harness_t *harness_p)
                        FSTR("Preceding with blanks: '%12f' '%12f'"),
                        10.5f, -37.731);
     BTASSERT(size == 52);
-#if defined(ARCH_ESP)
-    BTASSERTM(&buf[0],
-              "Preceding with blanks: '   10.500000' '  -37.730998'",
-              size + 1);
-#elif defined(ARCH_AVR)
+#if defined(ARCH_AVR)
     BTASSERTM(&buf[0],
               "Preceding with blanks: '   10.500000' '  -37.730999'",
               size + 1);
@@ -230,11 +218,7 @@ static int test_sprintf_double(struct harness_t *harness_p)
                        FSTR("Preceding with zeros:  '%012f' '%012f'"),
                        10.5f, -37.731);
     BTASSERT(size == 52);
-#if defined(ARCH_ESP)
-    BTASSERTM(&buf[0],
-              "Preceding with zeros:  '00010.500000' '-0037.730998'",
-              size + 1);
-#elif defined(ARCH_AVR)
+#if defined(ARCH_AVR)
     BTASSERTM(&buf[0],
               "Preceding with zeros:  '00010.500000' '-0037.730999'",
               size + 1);
@@ -471,14 +455,14 @@ static int strtod_test(const char *str_p,
 
 static int test_strtod(struct harness_t *harness_p)
 {
-    BTASSERT(strtod_test(".1", 2, .1, .1) == 0);
+    BTASSERT(strtod_test(".1", 2, .1, .1000001) == 0);
     BTASSERT(strtod_test("  .", 0, .0, .0) == 0);
     BTASSERT(strtod_test("--1.2e3.5", 0, .0, .0) == 0);
     BTASSERT(strtod_test("--1-.2e3.5", 0, .0, .0) == 0);
     BTASSERT(strtod_test("-a", 0, .0, .0) == 0);
     BTASSERT(strtod_test("a", 0, .0, .0) == 0);
-    BTASSERT(strtod_test(".1e", 2, .1, .1) == 0);
-    BTASSERT(strtod_test(".1e-", 2, .1, .1) == 0);
+    BTASSERT(strtod_test(".1e", 2, .1, .1000001) == 0);
+    BTASSERT(strtod_test(".1e-", 2, .1, .1000001) == 0);
     BTASSERT(strtod_test(" .e-", 0, .0, .0) == 0);
     BTASSERT(strtod_test(" .e", 0, .0, .0) == 0);
     BTASSERT(strtod_test(" e", 0, .0, .0) == 0);
@@ -496,7 +480,7 @@ static int test_strtod(struct harness_t *harness_p)
     BTASSERT(strtod_test("+1.e3", 5, +1.e3, +1.e3) == 0);
     BTASSERT(strtod_test("-1.2e3", 6, -1.200001e3, -1.2e3) == 0);
     BTASSERT(strtod_test("-1.2e3.5", 6, -1.200001e3, -1.2e3) == 0);
-    BTASSERT(strtod_test("-1.2e", 4, -1.2, -1.19999) == 0);
+    BTASSERT(strtod_test("-1.2e", 4, -1.2000001, -1.19999) == 0);
     BTASSERT(strtod_test(".1e3", 4, .1e3, .100001e3) == 0);
     BTASSERT(strtod_test(".1e-3", 5, .1e-3, .100001e-3) == 0);
     BTASSERT(strtod_test(" .9", 3, .9, .900001) == 0);

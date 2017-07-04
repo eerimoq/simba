@@ -60,6 +60,8 @@ LIB += \
 	freertos \
 	lwip \
 	m \
+	cirom \
+	stdc++ \
 	$(LIB_MINIC)
 
 F_CPU = 80000000

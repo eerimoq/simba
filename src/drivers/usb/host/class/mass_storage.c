@@ -30,6 +30,8 @@
 
 #include "simba.h"
 
+#if CONFIG_USB_HOST == 1
+
 #define REQUEST_GET_MAX_LUN 0xfe
 #define REQUEST_RESET       0xff
 
@@ -472,3 +474,5 @@ ssize_t usb_host_class_mass_storage_device_read(
 
     return (size - csw.data_residue);
 }
+
+#endif
