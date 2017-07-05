@@ -6,6 +6,14 @@
 
 An XBee is a module for wireless communication.
 
+This driver implements reception and transmission of frames over a
+channel (normally a UART driver).
+
+Known limitations:
+
+- Only AP=2 is supported. That is, API operation with escaped
+  charaters. AP=1 could easily be implemented.
+
 Manufacturer homepage: https://www.digi.com/
 
 --------------------------------------------------
