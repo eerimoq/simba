@@ -63,7 +63,7 @@ static int read_frame_delimiter(struct xbee_driver_t *self_p)
 }
 
 /**
- * Read and unescape given number of command bytes from the transport
+ * Read and unescape given number of frame bytes from the transport
  * channel.
  */
 static ssize_t read_bytes(struct xbee_driver_t *self_p,
@@ -110,7 +110,7 @@ static ssize_t read_bytes(struct xbee_driver_t *self_p,
 }
 
 /**
- * Escape and write given number of command bytes to the transport
+ * Escape and write given number of frame bytes to the transport
  * channel.
  */
 static ssize_t write_bytes(struct xbee_driver_t *self_p,
@@ -157,14 +157,14 @@ static ssize_t base_chan_read(void *base_p,
                               size_t size)
 {
     struct xbee_driver_t *self_p;
-    struct xbee_command_t *command_p;
+    struct xbee_frame_t *frame_p;
 
-    ASSERTN(size == sizeof(*command_p), EINVAL);
+    ASSERTN(size == sizeof(*frame_p), EINVAL);
 
     self_p = base_p;
-    command_p = buf_p;
+    frame_p = buf_p;
 
-    return (xbee_read(self_p, command_p));
+    return (xbee_read(self_p, frame_p));
 }
 
 static ssize_t base_chan_write(void *base_p,
@@ -172,14 +172,14 @@ static ssize_t base_chan_write(void *base_p,
                                size_t size)
 {
     struct xbee_driver_t *self_p;
-    const struct xbee_command_t *command_p;
+    const struct xbee_frame_t *frame_p;
 
-    ASSERTN(size == sizeof(*command_p), EINVAL);
+    ASSERTN(size == sizeof(*frame_p), EINVAL);
 
     self_p = base_p;
-    command_p = buf_p;
+    frame_p = buf_p;
 
-    return (xbee_write(self_p, command_p));
+    return (xbee_write(self_p, frame_p));
 }
 
 static size_t base_chan_size(void *base_p)
@@ -213,10 +213,10 @@ int xbee_init(struct xbee_driver_t *self_p,
 }
 
 int xbee_read(struct xbee_driver_t *self_p,
-              struct xbee_command_t *command_p)
+              struct xbee_frame_t *frame_p)
 {
     ASSERTN(self_p != NULL, EINVAL);
-    ASSERTN(command_p != NULL, EINVAL);
+    ASSERTN(frame_p != NULL, EINVAL);
 
     ssize_t res;
     uint8_t size[2];
@@ -237,32 +237,32 @@ int xbee_read(struct xbee_driver_t *self_p,
         return (res);
     }
 
-    command_p->data.size = ((size[0] << 8) | size[1]);
+    frame_p->data.size = ((size[0] << 8) | size[1]);
 
-    if (command_p->data.size < 1) {
+    if (frame_p->data.size < 1) {
         return (-EPROTO);
     }
 
-    /* Read the command id. */
-    res = read_bytes(self_p, &command_p->id, sizeof(command_p->id));
+    /* Read the frame id. */
+    res = read_bytes(self_p, &frame_p->type, sizeof(frame_p->type));
 
-    if (res != sizeof(command_p->id)) {
+    if (res != sizeof(frame_p->type)) {
         return (res);
     }
 
-    /* The command id is not part of the data. */
-    command_p->data.size--;
+    /* The frame id is not part of the data. */
+    frame_p->data.size--;
 
-    if (command_p->data.size > sizeof(command_p->data.buf)) {
+    if (frame_p->data.size > sizeof(frame_p->data.buf)) {
         return (-ENOMEM);
     }
 
     /* Read the data. */
     res = read_bytes(self_p,
-                     &command_p->data.buf[0],
-                     command_p->data.size);
+                     &frame_p->data.buf[0],
+                     frame_p->data.size);
 
-    if (res != command_p->data.size) {
+    if (res != frame_p->data.size) {
         return (res);
     }
 
@@ -274,10 +274,10 @@ int xbee_read(struct xbee_driver_t *self_p,
     }
 
     /* Calculate the CRC. */
-    crc += command_p->id;
+    crc += frame_p->type;
 
-    for (i = 0; i < command_p->data.size; i++) {
-        crc += command_p->data.buf[i];
+    for (i = 0; i < frame_p->data.size; i++) {
+        crc += frame_p->data.buf[i];
     }
 
     if (crc != 0xff) {
@@ -288,10 +288,10 @@ int xbee_read(struct xbee_driver_t *self_p,
 }
 
 int xbee_write(struct xbee_driver_t *self_p,
-               const struct xbee_command_t *command_p)
+               const struct xbee_frame_t *frame_p)
 {
     ASSERTN(self_p != NULL, EINVAL);
-    ASSERTN(command_p != NULL, EINVAL);
+    ASSERTN(frame_p != NULL, EINVAL);
 
     ssize_t res;
     uint8_t header[3];
@@ -308,9 +308,9 @@ int xbee_write(struct xbee_driver_t *self_p,
     }
 
     /* Write the header. */
-    header[0] = (command_p->data.size >> 8);
-    header[1] = (command_p->data.size + 1);
-    header[2] = command_p->id;
+    header[0] = (frame_p->data.size >> 8);
+    header[1] = (frame_p->data.size + 1);
+    header[2] = frame_p->type;
 
     res = write_bytes(self_p, &header[0], sizeof(header));
 
@@ -320,18 +320,18 @@ int xbee_write(struct xbee_driver_t *self_p,
 
     /* Write the data. */
     res = write_bytes(self_p,
-                      &command_p->data.buf[0],
-                      command_p->data.size);
+                      &frame_p->data.buf[0],
+                      frame_p->data.size);
 
-    if (res != command_p->data.size) {
+    if (res != frame_p->data.size) {
         return (res);
     }
 
     /* Calculate the CRC. */
-    crc = command_p->id;
+    crc = frame_p->type;
 
-    for (i = 0; i < command_p->data.size; i++) {
-        crc += command_p->data.buf[i];
+    for (i = 0; i < frame_p->data.size; i++) {
+        crc += frame_p->data.buf[i];
     }
 
     crc ^= 0xff;
@@ -346,38 +346,156 @@ int xbee_write(struct xbee_driver_t *self_p,
     return (0);
 }
 
-const char *xbee_command_id_as_string(uint8_t command_id)
+const char *xbee_frame_type_as_string(uint8_t frame_type)
 {
-    switch (command_id) {
+    switch (frame_type) {
 
-    case XBEE_COMMAND_ID_TX_REQUEST_64_BIT_ADDRESS:
+    case XBEE_FRAME_TYPE_TX_REQUEST_64_BIT_ADDRESS:
         return "TX (Transmit) Request: 64-bit address";
 
-    case XBEE_COMMAND_ID_TX_REQUEST_16_BIT_ADDRESS:
+    case XBEE_FRAME_TYPE_TX_REQUEST_16_BIT_ADDRESS:
         return "TX (Transmit) Request: 16-bit address";
 
-    case XBEE_COMMAND_ID_AT_COMMAND:
+    case XBEE_FRAME_TYPE_AT_COMMAND:
         return "AT Command";
 
-    case XBEE_COMMAND_ID_AT_COMMAND_QUEUE_PARAMETER_VALUE:
+    case XBEE_FRAME_TYPE_AT_COMMAND_QUEUE_PARAMETER_VALUE:
         return "AT Command - Queue Parameter Value";
 
-    case XBEE_COMMAND_ID_RX_PACKET_64_BIT_ADDRESS:
+    case XBEE_FRAME_TYPE_ZIGBEE_TRANSMIT_REQUEST:
+        return "ZigBee Transmit Request";
+
+    case XBEE_FRAME_TYPE_EXPLICIT_ADDRESSING_ZIGBEE_COMMAND_FRAME:
+        return "Explicit Addressing ZigBee Command Frame";
+
+    case XBEE_FRAME_TYPE_REMOTE_COMMAND_REQUEST:
+        return "Remote Command Request";
+
+    case XBEE_FRAME_TYPE_CREATE_SOURCE_ROUTE:
+        return "Create Source Route";
+
+    case XBEE_FRAME_TYPE_RX_PACKET_64_BIT_ADDRESS:
         return "RX (Receive) Packet: 64-bit Address";
 
-    case XBEE_COMMAND_ID_RX_PACKET_16_BIT_ADDRESS:
+    case XBEE_FRAME_TYPE_RX_PACKET_16_BIT_ADDRESS:
         return "RX (Receive) Packet: 16-bit Address";
 
-    case XBEE_COMMAND_ID_AT_COMMAND_RESPONSE:
+    case XBEE_FRAME_TYPE_RX_PACKET_64_BIT_ADDRESS_IO:
+        return "RX Packet: 64-bit Address I/O";
+
+    case XBEE_FRAME_TYPE_RX_PACKET_16_BIT_ADDRESS_IO:
+        return "RX Packet: 16-bit Address I/O";
+
+    case XBEE_FRAME_TYPE_AT_COMMAND_RESPONSE:
         return "AT Command Response";
 
-    case XBEE_COMMAND_ID_TX_STATUS:
+    case XBEE_FRAME_TYPE_TX_STATUS:
         return "TX (Transmit) Status";
 
-    case XBEE_COMMAND_ID_MODEM_STATUS:
+    case XBEE_FRAME_TYPE_MODEM_STATUS:
         return "Modem Status";
+
+    case XBEE_FRAME_TYPE_ZIGBEE_TRANSMIT_STATUS:
+        return "ZigBee Transmit Status";
+
+    case XBEE_FRAME_TYPE_ZIGBEE_RECEIVE_PACKET_AO_0:
+        return "ZigBee Receive Packet (AO=0)";
+
+    case XBEE_FRAME_TYPE_ZIGBEE_EXPLICIT_RX_INDICATOR_AO_1:
+        return "ZigBee Explicit Rx Indicator (AO=1)";
+
+    case XBEE_FRAME_TYPE_ZIGBEE_IO_DATA_SAMPLE_RX_INDICATOR:
+        return "ZigBee I/O Data Sample Rx Indicator";
+
+    case XBEE_FRAME_TYPE_XBEE_SENSOR_READ_INDICATOR_AO_0:
+        return "XBee Sensor Read Indicator (AO=0)";
+
+    case XBEE_FRAME_TYPE_NODE_IDENTIFICATION_INDICATOR_AO_0:
+        return "Node Identification Indicator (AO=0)";
+
+    case XBEE_FRAME_TYPE_REMOTE_COMMAND_RESPONSE:
+        return "Remote Command Response";
+
+    case XBEE_FRAME_TYPE_EXTENDED_MODEM_STATUS:
+        return "Extended Modem Status";
+
+    case XBEE_FRAME_TYPE_OVER_THE_AIR_FIRMWARE_UPDATE_STATUS:
+        return "Over-the-Air Firmware Update Status";
+
+    case XBEE_FRAME_TYPE_ROUTE_RECORD_INDICATOR:
+        return "Route Record Indicator";
+
+    case XBEE_FRAME_TYPE_MANY_TO_ONE_ROUTE_REQUEST_INDICATOR:
+        return "Many-to-One Route Request Indicator";
 
     default:
         return "Unknown Command";
     }
+}
+
+const char *xbee_modem_status_as_string(uint8_t modem_status)
+{
+    switch (modem_status) {
+
+    case 0x00:
+        return "Hardware reset";
+
+    case 0x01:
+        return "Watchdog timer reset";
+
+    case 0x02:
+        return "End device successfully associated with a coordinator";
+
+    case 0x03:
+        return "End device disassociated from coordinator or coordinator "
+            "failed to form a new network";
+
+    case 0x06:
+        return "Coordinator formed a new network";
+
+    case 0x0d:
+        return "Input voltage on the XBee-PRO device is too high, which "
+            "prevents transmissions";
+
+    default:
+        return "Unknown Modem Status";
+    }
+}
+
+int xbee_print_frame(void *chan_p, struct xbee_frame_t *frame_p)
+{
+    ASSERTN(chan_p != NULL, EINVAL);
+    ASSERTN(frame_p != NULL, EINVAL);
+
+    int res;
+
+    res = 0;
+
+    switch (frame_p->type) {
+
+    case XBEE_FRAME_TYPE_MODEM_STATUS:
+        std_fprintf(chan_p,
+                    OSTR("%s(status='%s')\r\n"),
+                    xbee_frame_type_as_string(frame_p->type),
+                    xbee_modem_status_as_string(frame_p->data.buf[0]));
+        break;
+
+    case XBEE_FRAME_TYPE_AT_COMMAND:
+        std_fprintf(chan_p,
+                    OSTR("%s(frame_id=0x%02x, at_command='%c%c')\r\n"),
+                    xbee_frame_type_as_string(frame_p->type),
+                    frame_p->data.buf[0],
+                    frame_p->data.buf[1],
+                    frame_p->data.buf[2]);
+        break;
+
+    default:
+        std_fprintf(chan_p,
+                    OSTR("Unknown frame type 0x%02x.\r\n"),
+                    frame_p->type);
+        res = -EINVAL;
+        break;
+    }
+
+    return (res);
 }
