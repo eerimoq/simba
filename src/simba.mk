@@ -303,10 +303,12 @@ endif
 #Kernel package.
 INC += $(SIMBA_ROOT)/src/kernel/ports/$(ARCH)/$(TOOLCHAIN)
 
-KERNEL_SRC_TMP = sys.c \
-	      thrd.c \
-	      time.c \
-	      timer.c
+KERNEL_SRC_TMP = \
+	errno.c \
+	sys.c \
+	thrd.c \
+	time.c \
+	timer.c
 
 ifeq ($(FAMILY),esp32)
     KERNEL_SRC_TMP += ports/esp32/gnu/thrd_port.S

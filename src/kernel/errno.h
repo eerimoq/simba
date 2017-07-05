@@ -430,4 +430,15 @@
 /** Command not found. */
 #define ENOCOMMAND     1003
 
+/**
+ * Map given error number to a string.
+ *
+ * @param[in] errno Error number to map to a string. Both positive and
+ *                  negative error numbers are accepted.
+ *
+ * @return Error number as a string or NULL if it's not an error
+ *         number.
+ */
+const char *errno_as_string(int errno);
+
 #endif
