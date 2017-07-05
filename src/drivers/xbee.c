@@ -346,6 +346,129 @@ int xbee_write(struct xbee_driver_t *self_p,
     return (0);
 }
 
+int xbee_print_frame(void *chan_p, struct xbee_frame_t *frame_p)
+{
+    ASSERTN(chan_p != NULL, EINVAL);
+    ASSERTN(frame_p != NULL, EINVAL);
+
+    int res;
+    size_t i;
+    const char *delim_p;
+
+    res = 0;
+
+    /* Print the frame header. */
+    std_fprintf(chan_p,
+                OSTR("%s("),
+                xbee_frame_type_as_string(frame_p->type));
+
+    /* Print the frame data. */
+    switch (frame_p->type) {
+
+    case XBEE_FRAME_TYPE_MODEM_STATUS:
+        std_fprintf(chan_p,
+                    OSTR("status='%s'"),
+                    xbee_modem_status_as_string(frame_p->data.buf[0]));
+        break;
+
+    case XBEE_FRAME_TYPE_AT_COMMAND:
+        std_fprintf(chan_p,
+                    OSTR("frame_id=0x%02x, at_command='%c%c'"),
+                    frame_p->data.buf[0],
+                    frame_p->data.buf[1],
+                    frame_p->data.buf[2]);
+
+        delim_p = ", parameter=0x";
+
+        for (i = 0; i < frame_p->data.size - 3; i++, delim_p = "") {
+            std_fprintf(chan_p,
+                        OSTR("%s%02x"),
+                        delim_p,
+                        frame_p->data.buf[3 + i]);
+        }
+        break;
+
+    case XBEE_FRAME_TYPE_RX_PACKET_64_BIT_ADDRESS:
+        std_fprintf(chan_p,
+                    OSTR("address=0x%02x%02x%02x%02x%02x%02x%02x%02x, "
+                         "rssi=%u, "
+                         "options=[adddress_broadcast=%u, pan_broadcast=%u]"),
+                    frame_p->data.buf[0],
+                    frame_p->data.buf[1],
+                    frame_p->data.buf[2],
+                    frame_p->data.buf[3],
+                    frame_p->data.buf[4],
+                    frame_p->data.buf[5],
+                    frame_p->data.buf[6],
+                    frame_p->data.buf[7],
+                    frame_p->data.buf[8],
+                    ((frame_p->data.buf[9] >> 1) & 0x1),
+                    ((frame_p->data.buf[9] >> 2) & 0x1));
+
+        delim_p = ", data=0x";
+
+        for (i = 0; i < frame_p->data.size - 10; i++, delim_p = "") {
+            std_fprintf(chan_p,
+                        OSTR("%s%02x"),
+                        delim_p,
+                        frame_p->data.buf[10 + i]);
+        }
+        break;
+
+    case XBEE_FRAME_TYPE_RX_PACKET_16_BIT_ADDRESS:
+        std_fprintf(chan_p,
+                    OSTR("address=0x%02x%02x, "
+                         "rssi=%u, "
+                         "options=[adddress_broadcast=%u, pan_broadcast=%u]"),
+                    frame_p->data.buf[0],
+                    frame_p->data.buf[1],
+                    frame_p->data.buf[2],
+                    ((frame_p->data.buf[3] >> 1) & 0x1),
+                    ((frame_p->data.buf[3] >> 2) & 0x1));
+
+        delim_p = ", data=0x";
+
+        for (i = 0; i < frame_p->data.size - 4; i++, delim_p = "") {
+            std_fprintf(chan_p,
+                        OSTR("%s%02x"),
+                        delim_p,
+                        frame_p->data.buf[4 + i]);
+        }
+        break;
+
+    case XBEE_FRAME_TYPE_AT_COMMAND_RESPONSE:
+        std_fprintf(chan_p,
+                    OSTR("frame_id=0x%02x, at_command='%c%c', "
+                         "status='%s'"),
+                    frame_p->data.buf[0],
+                    frame_p->data.buf[1],
+                    frame_p->data.buf[2],
+                    xbee_at_command_response_status_as_string(
+                        frame_p->data.buf[3]));
+
+        delim_p = ", data=0x";
+
+        for (i = 0; i < frame_p->data.size - 4; i++, delim_p = "") {
+            std_fprintf(chan_p,
+                        OSTR("%s%02x"),
+                        delim_p,
+                        frame_p->data.buf[4 + i]);
+        }
+        break;
+
+    default:
+        std_fprintf(chan_p, OSTR("\r\n'"));
+        std_hexdump(chan_p, &frame_p->data.buf[0], frame_p->data.size);
+        res = -EINVAL;
+        break;
+    }
+
+    /* Print the frame footer. */
+    std_fprintf(chan_p, OSTR(")\r\n"));
+
+    return (res);
+}
+
 const char *xbee_frame_type_as_string(uint8_t frame_type)
 {
     switch (frame_type) {
@@ -481,127 +604,4 @@ const char *xbee_at_command_response_status_as_string(uint8_t response_status)
     default:
         return "Unknown Command Status";
     }
-}
-
-int xbee_print_frame(void *chan_p, struct xbee_frame_t *frame_p)
-{
-    ASSERTN(chan_p != NULL, EINVAL);
-    ASSERTN(frame_p != NULL, EINVAL);
-
-    int res;
-    size_t i;
-    const char *delim_p;
-
-    res = 0;
-
-    /* Print the frame header. */
-    std_fprintf(chan_p,
-                OSTR("%s("),
-                xbee_frame_type_as_string(frame_p->type));
-
-    /* Print the frame data. */
-    switch (frame_p->type) {
-
-    case XBEE_FRAME_TYPE_MODEM_STATUS:
-        std_fprintf(chan_p,
-                    OSTR("status='%s'"),
-                    xbee_modem_status_as_string(frame_p->data.buf[0]));
-        break;
-
-    case XBEE_FRAME_TYPE_AT_COMMAND:
-        std_fprintf(chan_p,
-                    OSTR("frame_id=0x%02x, at_command='%c%c'"),
-                    frame_p->data.buf[0],
-                    frame_p->data.buf[1],
-                    frame_p->data.buf[2]);
-
-        delim_p = ", parameter=0x";
-
-        for (i = 0; i < frame_p->data.size - 3; i++, delim_p = "") {
-            std_fprintf(chan_p,
-                        OSTR("%s%02x"),
-                        delim_p,
-                        frame_p->data.buf[3 + i]);
-        }
-        break;
-
-    case XBEE_FRAME_TYPE_RX_PACKET_64_BIT_ADDRESS:
-        std_fprintf(chan_p,
-                    OSTR("address=0x%02x%02x%02x%02x%02x%02x%02x%02x, "
-                         "rssi=%u, "
-                         "options=[adddress_broadcast=%u, pan_broadcast=%u]"),
-                    frame_p->data.buf[0],
-                    frame_p->data.buf[1],
-                    frame_p->data.buf[2],
-                    frame_p->data.buf[3],
-                    frame_p->data.buf[4],
-                    frame_p->data.buf[5],
-                    frame_p->data.buf[6],
-                    frame_p->data.buf[7],
-                    frame_p->data.buf[8],
-                    ((frame_p->data.buf[9] >> 1) & 0x1),
-                    ((frame_p->data.buf[9] >> 2) & 0x1));
-
-        delim_p = ", data=0x";
-
-        for (i = 0; i < frame_p->data.size - 10; i++, delim_p = "") {
-            std_fprintf(chan_p,
-                        OSTR("%s%02x"),
-                        delim_p,
-                        frame_p->data.buf[10 + i]);
-        }
-        break;
-
-    case XBEE_FRAME_TYPE_RX_PACKET_16_BIT_ADDRESS:
-        std_fprintf(chan_p,
-                    OSTR("address=0x%02x%02x, "
-                         "rssi=%u, "
-                         "options=[adddress_broadcast=%u, pan_broadcast=%u]"),
-                    frame_p->data.buf[0],
-                    frame_p->data.buf[1],
-                    frame_p->data.buf[2],
-                    ((frame_p->data.buf[3] >> 1) & 0x1),
-                    ((frame_p->data.buf[3] >> 2) & 0x1));
-
-        delim_p = ", data=0x";
-
-        for (i = 0; i < frame_p->data.size - 4; i++, delim_p = "") {
-            std_fprintf(chan_p,
-                        OSTR("%s%02x"),
-                        delim_p,
-                        frame_p->data.buf[4 + i]);
-        }
-        break;
-
-    case XBEE_FRAME_TYPE_AT_COMMAND_RESPONSE:
-        std_fprintf(chan_p,
-                    OSTR("frame_id=0x%02x, at_command='%c%c', "
-                         "status='%s'"),
-                    frame_p->data.buf[0],
-                    frame_p->data.buf[1],
-                    frame_p->data.buf[2],
-                    xbee_at_command_response_status_as_string(
-                        frame_p->data.buf[3]));
-
-        delim_p = ", data=0x";
-
-        for (i = 0; i < frame_p->data.size - 4; i++, delim_p = "") {
-            std_fprintf(chan_p,
-                        OSTR("%s%02x"),
-                        delim_p,
-                        frame_p->data.buf[4 + i]);
-        }
-        break;
-
-    default:
-        std_fprintf(chan_p, OSTR("\r\n'"));
-        std_hexdump(chan_p, &frame_p->data.buf[0], frame_p->data.size);
-        res = -EINVAL;
-        break;
-    }
-
-    /* Print the frame footer. */
-    std_fprintf(chan_p, OSTR(")\r\n"));
-
-    return (res);
 }

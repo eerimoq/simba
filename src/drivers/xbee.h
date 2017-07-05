@@ -132,6 +132,17 @@ int xbee_write(struct xbee_driver_t *self_p,
                const struct xbee_frame_t *frame_p);
 
 /**
+ * Decode given frame and print it as a human readable string on given
+ * channel.
+ *
+ * @param[in] chan_p Output channel.
+ * @param[in] frame_p Frame.
+ *
+ * @return zero(0) or negative error code.
+ */
+int xbee_print_frame(void *chan_p, struct xbee_frame_t *frame_p);
+
+/**
  * Map given frame type to a human readable string.
  *
  * @param[in] frame_type Frame type.
@@ -157,16 +168,5 @@ const char *xbee_modem_status_as_string(uint8_t modem_status);
  * @return Human readable AT command response status string.
  */
 const char *xbee_at_command_response_status_as_string(uint8_t response_status);
-
-/**
- * Decode given frame and print it as a human readable string on given
- * channel.
- *
- * @param[in] chan_p Output channel.
- * @param[in] frame_p Frame.
- *
- * @return zero(0) or negative error code.
- */
-int xbee_print_frame(void *chan_p, struct xbee_frame_t *frame_p);
 
 #endif
