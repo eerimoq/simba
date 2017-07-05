@@ -491,8 +491,9 @@ int xbee_print_frame(void *chan_p, struct xbee_frame_t *frame_p)
 
     default:
         std_fprintf(chan_p,
-                    OSTR("Unknown frame type 0x%02x.\r\n"),
+                    OSTR("Hexdump of unknown frame type 0x%02x:\r\n"),
                     frame_p->type);
+        std_hexdump(chan_p, &frame_p->data.buf[0], frame_p->data.size);
         res = -EINVAL;
         break;
     }

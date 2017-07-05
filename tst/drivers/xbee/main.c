@@ -333,7 +333,10 @@ static int test_frame_as_string(struct harness_t *harness_p)
 
     /* Unknown frame type. */
     frame.type = 0xff;
-    frame.data.size = 0;
+    frame.data.buf[0] = 'f';
+    frame.data.buf[1] = 'o';
+    frame.data.buf[2] = 'o';
+    frame.data.size = 3;
 
     BTASSERT(xbee_print_frame(sys_get_stdout(), &frame) == -EINVAL);
 
