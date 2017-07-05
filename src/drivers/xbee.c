@@ -365,12 +365,6 @@ int xbee_print_frame(void *chan_p, struct xbee_frame_t *frame_p)
     /* Print the frame data. */
     switch (frame_p->type) {
 
-    case XBEE_FRAME_TYPE_MODEM_STATUS:
-        std_fprintf(chan_p,
-                    OSTR("status='%s'"),
-                    xbee_modem_status_as_string(frame_p->data.buf[0]));
-        break;
-
     case XBEE_FRAME_TYPE_AT_COMMAND:
         std_fprintf(chan_p,
                     OSTR("frame_id=0x%02x, at_command='%c%c'"),
@@ -456,6 +450,19 @@ int xbee_print_frame(void *chan_p, struct xbee_frame_t *frame_p)
         }
         break;
 
+    case XBEE_FRAME_TYPE_TX_STATUS:
+        std_fprintf(chan_p,
+                    OSTR("frame_id=0x%02x, status='%s'"),
+                    frame_p->data.buf[0],
+                    xbee_tx_status_as_string(frame_p->data.buf[1]));
+        break;
+
+    case XBEE_FRAME_TYPE_MODEM_STATUS:
+        std_fprintf(chan_p,
+                    OSTR("status='%s'"),
+                    xbee_modem_status_as_string(frame_p->data.buf[0]));
+        break;
+
     default:
         std_fprintf(chan_p, OSTR("\r\n'"));
         std_hexdump(chan_p, &frame_p->data.buf[0], frame_p->data.size);
@@ -474,10 +481,10 @@ const char *xbee_frame_type_as_string(uint8_t frame_type)
     switch (frame_type) {
 
     case XBEE_FRAME_TYPE_TX_REQUEST_64_BIT_ADDRESS:
-        return "TX (Transmit) Request: 64-bit address";
+        return "TX Request: 64-bit address";
 
     case XBEE_FRAME_TYPE_TX_REQUEST_16_BIT_ADDRESS:
-        return "TX (Transmit) Request: 16-bit address";
+        return "TX Request: 16-bit address";
 
     case XBEE_FRAME_TYPE_AT_COMMAND:
         return "AT Command";
@@ -513,7 +520,7 @@ const char *xbee_frame_type_as_string(uint8_t frame_type)
         return "AT Command Response";
 
     case XBEE_FRAME_TYPE_TX_STATUS:
-        return "TX (Transmit) Status";
+        return "TX Status";
 
     case XBEE_FRAME_TYPE_MODEM_STATUS:
         return "Modem Status";
@@ -553,6 +560,47 @@ const char *xbee_frame_type_as_string(uint8_t frame_type)
 
     default:
         return "Unknown Command";
+    }
+}
+
+const char *xbee_tx_status_as_string(uint8_t tx_status)
+{
+    switch (tx_status) {
+
+    case 0x00:
+        return "Standard";
+
+    case 0x01:
+        return "No ACK received";
+
+    case 0x02:
+        return "CCA failure";
+
+    case 0x03:
+        return "Transmission was purged because a coordinator tried "
+            "to send to an end device, but it timed out waiting for "
+            "a poll from the end device that never occurred";
+
+    case 0x21:
+        return "Network ACK failure";
+
+    case 0x22:
+        return "Transmission failed because an end device was not "
+            "joined to the network";
+
+    case 0x31:
+        return "Internal error";
+
+    case 0x32:
+        return "Transmission failed due to resource depletion (for "
+            "example, out of buffers, especially for indirect "
+            "messages from coordinator)";
+
+    case 0x74:
+        return "The payload in the frame was larger than allowed";
+
+    default:
+        return "Unknown Status";
     }
 }
 

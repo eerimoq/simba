@@ -205,11 +205,11 @@ static int test_frame_type_as_string(struct harness_t *harness_p)
     const char *expected_p;
 
     actual_p = xbee_frame_type_as_string(XBEE_FRAME_TYPE_TX_REQUEST_64_BIT_ADDRESS);
-    expected_p = "TX (Transmit) Request: 64-bit address";
+    expected_p = "TX Request: 64-bit address";
     BTASSERTM(actual_p, expected_p, strlen(expected_p) + 1);
 
     actual_p = xbee_frame_type_as_string(XBEE_FRAME_TYPE_TX_REQUEST_16_BIT_ADDRESS);
-    expected_p = "TX (Transmit) Request: 16-bit address";
+    expected_p = "TX Request: 16-bit address";
     BTASSERTM(actual_p, expected_p, strlen(expected_p) + 1);
 
     actual_p = xbee_frame_type_as_string(XBEE_FRAME_TYPE_AT_COMMAND);
@@ -257,7 +257,7 @@ static int test_frame_type_as_string(struct harness_t *harness_p)
     BTASSERTM(actual_p, expected_p, strlen(expected_p) + 1);
 
     actual_p = xbee_frame_type_as_string(XBEE_FRAME_TYPE_TX_STATUS);
-    expected_p = "TX (Transmit) Status";
+    expected_p = "TX Status";
     BTASSERTM(actual_p, expected_p, strlen(expected_p) + 1);
 
     actual_p = xbee_frame_type_as_string(XBEE_FRAME_TYPE_MODEM_STATUS);
@@ -310,6 +310,59 @@ static int test_frame_type_as_string(struct harness_t *harness_p)
 
     actual_p = xbee_frame_type_as_string(XBEE_FRAME_TYPE_MANY_TO_ONE_ROUTE_REQUEST_INDICATOR);
     expected_p = "Many-to-One Route Request Indicator";
+    BTASSERTM(actual_p, expected_p, strlen(expected_p) + 1);
+
+    return (0);
+}
+
+static int test_tx_status_as_string(struct harness_t *harness_p)
+{
+    const char *actual_p;
+    const char *expected_p;
+
+    actual_p = xbee_tx_status_as_string(0x00);
+    expected_p = "Standard";
+    BTASSERTM(actual_p, expected_p, strlen(expected_p) + 1);
+
+    actual_p = xbee_tx_status_as_string(0x01);
+    expected_p = "No ACK received";
+    BTASSERTM(actual_p, expected_p, strlen(expected_p) + 1);
+
+    actual_p = xbee_tx_status_as_string(0x02);
+    expected_p = "CCA failure";
+    BTASSERTM(actual_p, expected_p, strlen(expected_p) + 1);
+
+    actual_p = xbee_tx_status_as_string(0x03);
+    expected_p = "Transmission was purged because a coordinator tried "
+        "to send to an end device, but it timed out waiting for "
+        "a poll from the end device that never occurred";
+    BTASSERTM(actual_p, expected_p, strlen(expected_p) + 1);
+
+    actual_p = xbee_tx_status_as_string(0x21);
+    expected_p = "Network ACK failure";
+    BTASSERTM(actual_p, expected_p, strlen(expected_p) + 1);
+
+    actual_p = xbee_tx_status_as_string(0x22);
+    expected_p = "Transmission failed because an end device was not "
+        "joined to the network";
+    BTASSERTM(actual_p, expected_p, strlen(expected_p) + 1);
+
+    actual_p = xbee_tx_status_as_string(0x31);
+    expected_p = "Internal error";
+    BTASSERTM(actual_p, expected_p, strlen(expected_p) + 1);
+
+    actual_p = xbee_tx_status_as_string(0x32);
+    expected_p = "Transmission failed due to resource depletion (for "
+        "example, out of buffers, especially for indirect "
+        "messages from coordinator)";
+    BTASSERTM(actual_p, expected_p, strlen(expected_p) + 1);
+
+    actual_p = xbee_tx_status_as_string(0x74);
+    expected_p = "The payload in the frame was larger than allowed";
+    BTASSERTM(actual_p, expected_p, strlen(expected_p) + 1);
+
+    actual_p = xbee_tx_status_as_string(0xff);
+    expected_p = "Unknown Status";
     BTASSERTM(actual_p, expected_p, strlen(expected_p) + 1);
 
     return (0);
@@ -385,16 +438,6 @@ static int test_frame_as_string(struct harness_t *harness_p)
 {
     struct xbee_frame_t frame;
 
-    /* Modem status. */
-    frame.type = XBEE_FRAME_TYPE_MODEM_STATUS;
-    frame.data.buf[0] = 0x00;
-    frame.data.size = 1;
-
-    BTASSERT(xbee_print_frame(&queue, &frame) == 0);
-    BTASSERTI(harness_expect(&queue,
-                             "Modem Status(status='Hardware reset')\r\n",
-                             NULL), ==, 39);
-
     /* AT Command - parameter read. */
     frame.type = XBEE_FRAME_TYPE_AT_COMMAND;
     frame.data.buf[0] = 0x01;
@@ -423,40 +466,6 @@ static int test_frame_as_string(struct harness_t *harness_p)
                   &queue,
                   "AT Command(frame_id=0x02, at_command='DL', "
                   "parameter=0x01020304)\r\n",
-                  NULL), ==, 66);
-
-    /* AT Command Response - parameter read. */
-    frame.type = XBEE_FRAME_TYPE_AT_COMMAND_RESPONSE;
-    frame.data.buf[0] = 0x03;
-    frame.data.buf[1] = 'D';
-    frame.data.buf[2] = 'L';
-    frame.data.buf[3] = 0x00;
-    frame.data.buf[4] = 0x04;
-    frame.data.buf[5] = 0x03;
-    frame.data.buf[6] = 0x02;
-    frame.data.buf[7] = 0x01;
-    frame.data.size = 8;
-
-    BTASSERT(xbee_print_frame(&queue, &frame) == 0);
-    BTASSERTI(harness_expect(
-                  &queue,
-                  "AT Command Response(frame_id=0x03, at_command='DL', "
-                  "status='OK', data=0x04030201)\r\n",
-                  NULL), ==, 83);
-
-    /* AT Command Response - parameter write. */
-    frame.type = XBEE_FRAME_TYPE_AT_COMMAND_RESPONSE;
-    frame.data.buf[0] = 0x03;
-    frame.data.buf[1] = 'D';
-    frame.data.buf[2] = 'L';
-    frame.data.buf[3] = 0x00;
-    frame.data.size = 4;
-
-    BTASSERT(xbee_print_frame(&queue, &frame) == 0);
-    BTASSERTI(harness_expect(
-                  &queue,
-                  "AT Command Response(frame_id=0x03, at_command='DL', "
-                  "status='OK')\r\n",
                   NULL), ==, 66);
 
     /* RX Packet: 64-bit Address frame. */
@@ -502,6 +511,61 @@ static int test_frame_as_string(struct harness_t *harness_p)
                   "options=[adddress_broadcast=1, pan_broadcast=0], "
                   "data=0x010203)\r\n",
                   NULL), ==, 121);
+
+    /* AT Command Response - parameter read. */
+    frame.type = XBEE_FRAME_TYPE_AT_COMMAND_RESPONSE;
+    frame.data.buf[0] = 0x03;
+    frame.data.buf[1] = 'D';
+    frame.data.buf[2] = 'L';
+    frame.data.buf[3] = 0x00;
+    frame.data.buf[4] = 0x04;
+    frame.data.buf[5] = 0x03;
+    frame.data.buf[6] = 0x02;
+    frame.data.buf[7] = 0x01;
+    frame.data.size = 8;
+
+    BTASSERT(xbee_print_frame(&queue, &frame) == 0);
+    BTASSERTI(harness_expect(
+                  &queue,
+                  "AT Command Response(frame_id=0x03, at_command='DL', "
+                  "status='OK', data=0x04030201)\r\n",
+                  NULL), ==, 83);
+
+    /* AT Command Response - parameter write. */
+    frame.type = XBEE_FRAME_TYPE_AT_COMMAND_RESPONSE;
+    frame.data.buf[0] = 0x03;
+    frame.data.buf[1] = 'D';
+    frame.data.buf[2] = 'L';
+    frame.data.buf[3] = 0x00;
+    frame.data.size = 4;
+
+    BTASSERT(xbee_print_frame(&queue, &frame) == 0);
+    BTASSERTI(harness_expect(
+                  &queue,
+                  "AT Command Response(frame_id=0x03, at_command='DL', "
+                  "status='OK')\r\n",
+                  NULL), ==, 66);
+
+    /* TX status. */
+    frame.type = XBEE_FRAME_TYPE_TX_STATUS;
+    frame.data.buf[0] = 0xff;
+    frame.data.buf[1] = 0x00;
+    frame.data.size = 2;
+
+    BTASSERT(xbee_print_frame(&queue, &frame) == 0);
+    BTASSERTI(harness_expect(&queue,
+                             "TX Status(frame_id=0xff, status='Standard')\r\n",
+                             NULL), ==, 45);
+
+    /* Modem status. */
+    frame.type = XBEE_FRAME_TYPE_MODEM_STATUS;
+    frame.data.buf[0] = 0x00;
+    frame.data.size = 1;
+
+    BTASSERT(xbee_print_frame(&queue, &frame) == 0);
+    BTASSERTI(harness_expect(&queue,
+                             "Modem Status(status='Hardware reset')\r\n",
+                             NULL), ==, 39);
 
     /* Unknown frame type. */
     frame.type = 0xff;
@@ -568,6 +632,7 @@ int main()
         { test_channel_write_tx_request, "test_channel_write_tx_request" },
         { test_channel_read_unescape, "test_channel_read_unescape" },
         { test_frame_type_as_string, "test_frame_type_as_string" },
+        { test_tx_status_as_string, "test_tx_status_as_string" },
         { test_modem_status_as_string, "test_modem_status_as_string" },
         {
             test_at_command_response_status_as_string,

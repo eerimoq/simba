@@ -152,6 +152,15 @@ int xbee_print_frame(void *chan_p, struct xbee_frame_t *frame_p);
 const char *xbee_frame_type_as_string(uint8_t frame_type);
 
 /**
+ * Map given TX status to a human readable string.
+ *
+ * @param[in] tx_status TX status.
+ *
+ * @return Human readable TX status string.
+ */
+const char *xbee_tx_status_as_string(uint8_t tx_status);
+
+/**
  * Map given modem status to a human readable string.
  *
  * @param[in] modem_status Modem status.
