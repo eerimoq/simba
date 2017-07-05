@@ -152,45 +152,6 @@ static ssize_t write_bytes(struct xbee_driver_t *self_p,
     return (size);
 }
 
-static ssize_t base_chan_read(void *base_p,
-                              void *buf_p,
-                              size_t size)
-{
-    struct xbee_driver_t *self_p;
-    struct xbee_frame_t *frame_p;
-
-    ASSERTN(size == sizeof(*frame_p), EINVAL);
-
-    self_p = base_p;
-    frame_p = buf_p;
-
-    return (xbee_read(self_p, frame_p));
-}
-
-static ssize_t base_chan_write(void *base_p,
-                               const void *buf_p,
-                               size_t size)
-{
-    struct xbee_driver_t *self_p;
-    const struct xbee_frame_t *frame_p;
-
-    ASSERTN(size == sizeof(*frame_p), EINVAL);
-
-    self_p = base_p;
-    frame_p = buf_p;
-
-    return (xbee_write(self_p, frame_p));
-}
-
-static size_t base_chan_size(void *base_p)
-{
-    struct xbee_driver_t *self_p;
-
-    self_p = base_p;
-
-    return (chan_size(self_p->transport_p));
-}
-
 int xbee_module_init(void)
 {
     return (0);
@@ -201,11 +162,6 @@ int xbee_init(struct xbee_driver_t *self_p,
 {
     ASSERTN(self_p != NULL, EINVAL);
     ASSERTN(transport_p != NULL, EINVAL);
-
-    chan_init(&self_p->base,
-              base_chan_read,
-              base_chan_write,
-              base_chan_size);
 
     self_p->transport_p = transport_p;
 

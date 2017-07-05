@@ -80,7 +80,6 @@ struct xbee_frame_t {
 
 /* The XBee driver. */
 struct xbee_driver_t {
-    struct chan_t base;
     struct chan_t *transport_p;
 };
 

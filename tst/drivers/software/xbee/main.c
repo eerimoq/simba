@@ -38,6 +38,10 @@ static uint8_t queue_buf[256];
 
 static int test_init(struct harness_t *harness_p)
 {
+    BTASSERT(xbee_module_init() == 0);
+    BTASSERT(xbee_module_init() == 0);
+
+    BTASSERT(queue_init(&queue, &queue_buf[0], sizeof(queue_buf)) == 0);
     BTASSERT(queue_init(&queue, &queue_buf[0], sizeof(queue_buf)) == 0);
     BTASSERT(chan_init(&transport,
                        chan_read_null,
@@ -102,34 +106,7 @@ static int test_write_at(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_read_unescape(struct harness_t *harness_p)
-{
-    struct xbee_frame_t frame;
-    uint8_t buf[] = {
-        0x7e, 0x00, 0x02, 0x23, 0x7d, 0x31, 0xcb
-    };
-
-    /* Prepare a frame from the XBee module where 0x7d 0x31 will be
-       unescaped to 0x11. */
-    harness_mock_write("chan_read(): return (buf_p)", &buf[0], 1);
-    harness_mock_write("chan_read(): return (buf_p)", &buf[1], 1);
-    harness_mock_write("chan_read(): return (buf_p)", &buf[2], 1);
-    harness_mock_write("chan_read(): return (buf_p)", &buf[3], 1);
-    harness_mock_write("chan_read(): return (buf_p)", &buf[4], 1);
-    harness_mock_write("chan_read(): return (buf_p)", &buf[5], 1);
-    harness_mock_write("chan_read(): return (buf_p)", &buf[6], 1);
-
-    BTASSERT(xbee_read(&xbee, &frame) == 0);
-
-    /* Validate the read frame. */
-    BTASSERTI(frame.type, ==, 0x23);
-    BTASSERTI(frame.data.buf[0], ==, 0x11);
-    BTASSERTI(frame.data.size, ==, 1);
-
-    return (0);
-}
-
-static int test_channel_write_tx_request(struct harness_t *harness_p)
+static int test_write_tx_request(struct harness_t *harness_p)
 {
     struct xbee_frame_t frame;
     uint8_t buf[14];
@@ -147,7 +124,7 @@ static int test_channel_write_tx_request(struct harness_t *harness_p)
     frame.data.buf[8] = 0x6f;
     frame.data.size = 9;
 
-    BTASSERT(chan_write(&xbee, &frame, sizeof(frame)) == 0);
+    BTASSERT(xbee_write(&xbee, &frame) == 0);
 
     /* Validate the written frame. */
     harness_mock_read("chan_write(buf_p)", &buf[0],  1);
@@ -172,7 +149,7 @@ static int test_channel_write_tx_request(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_channel_read_unescape(struct harness_t *harness_p)
+static int test_read_unescape(struct harness_t *harness_p)
 {
     struct xbee_frame_t frame;
     uint8_t buf[] = {
@@ -189,7 +166,7 @@ static int test_channel_read_unescape(struct harness_t *harness_p)
     harness_mock_write("chan_read(): return (buf_p)", &buf[5], 1);
     harness_mock_write("chan_read(): return (buf_p)", &buf[6], 1);
 
-    BTASSERT(chan_read(&xbee, &frame, sizeof(frame)) == 0);
+    BTASSERT(xbee_read(&xbee, &frame) == 0);
 
     /* Validate the read frame. */
     BTASSERTI(frame.type, ==, 0x23);
@@ -628,9 +605,8 @@ int main()
         { test_init, "test_init" },
         { test_write_escape, "test_write_escape" },
         { test_write_at, "test_write_at" },
+        { test_write_tx_request, "test_write_tx_request" },
         { test_read_unescape, "test_read_unescape" },
-        { test_channel_write_tx_request, "test_channel_write_tx_request" },
-        { test_channel_read_unescape, "test_channel_read_unescape" },
         { test_frame_type_as_string, "test_frame_type_as_string" },
         { test_tx_status_as_string, "test_tx_status_as_string" },
         { test_modem_status_as_string, "test_modem_status_as_string" },
