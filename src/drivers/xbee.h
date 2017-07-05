@@ -108,11 +108,11 @@ int xbee_init(struct xbee_driver_t *self_p,
               void *transport_p);
 
 /**
- * Read one XBee frame from the XBee module. Blocks until a frame is
- * received or an error occurs.
+ * Read a frame from the XBee module. Blocks until a frame is received
+ * or an error occurs.
  *
  * @param[in] self_p Initialized driver object.
- * @param[out] frame_p Read frame.
+ * @param[out] frame_p Frame to read into.
  *
  * @return zero(0) or negative error code.
  */
@@ -120,8 +120,8 @@ int xbee_read(struct xbee_driver_t *self_p,
               struct xbee_frame_t *frame_p);
 
 /**
- * Write a XBee frame to the XBee module. Blocks until the frame
- * have been transmitted or an error occurs.
+ * Write given frame to the XBee module. Blocks until the frame have
+ * been transmitted or an error occurs.
  *
  * @param[in] self_p Initialized driver object.
  * @param[in] frame_p Frame to write.

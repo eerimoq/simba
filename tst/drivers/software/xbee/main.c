@@ -33,8 +33,12 @@
 struct xbee_driver_t xbee;
 struct chan_t transport;
 
+static struct queue_t queue;
+static uint8_t queue_buf[256];
+
 static int test_init(struct harness_t *harness_p)
 {
+    BTASSERT(queue_init(&queue, &queue_buf[0], sizeof(queue_buf)) == 0);
     BTASSERT(chan_init(&transport,
                        chan_read_null,
                        chan_write_null,
@@ -233,11 +237,11 @@ static int test_frame_type_as_string(struct harness_t *harness_p)
     BTASSERTM(actual_p, expected_p, strlen(expected_p) + 1);
 
     actual_p = xbee_frame_type_as_string(XBEE_FRAME_TYPE_RX_PACKET_64_BIT_ADDRESS);
-    expected_p = "RX (Receive) Packet: 64-bit Address";
+    expected_p = "RX Packet: 64-bit Address";
     BTASSERTM(actual_p, expected_p, strlen(expected_p) + 1);
 
     actual_p = xbee_frame_type_as_string(XBEE_FRAME_TYPE_RX_PACKET_16_BIT_ADDRESS);
-    expected_p = "RX (Receive) Packet: 16-bit Address";
+    expected_p = "RX Packet: 16-bit Address";
     BTASSERTM(actual_p, expected_p, strlen(expected_p) + 1);
 
     actual_p = xbee_frame_type_as_string(XBEE_FRAME_TYPE_RX_PACKET_64_BIT_ADDRESS_IO);
@@ -386,7 +390,10 @@ static int test_frame_as_string(struct harness_t *harness_p)
     frame.data.buf[0] = 0x00;
     frame.data.size = 1;
 
-    BTASSERT(xbee_print_frame(sys_get_stdout(), &frame) == 0);
+    BTASSERT(xbee_print_frame(&queue, &frame) == 0);
+    BTASSERTI(harness_expect(&queue,
+                             "Modem Status(status='Hardware reset')\r\n",
+                             NULL), ==, 39);
 
     /* AT Command - parameter read. */
     frame.type = XBEE_FRAME_TYPE_AT_COMMAND;
@@ -395,7 +402,10 @@ static int test_frame_as_string(struct harness_t *harness_p)
     frame.data.buf[2] = 'L';
     frame.data.size = 3;
 
-    BTASSERT(xbee_print_frame(sys_get_stdout(), &frame) == 0);
+    BTASSERT(xbee_print_frame(&queue, &frame) == 0);
+    BTASSERTI(harness_expect(&queue,
+                             "AT Command(frame_id=0x01, at_command='DL')\r\n",
+                             NULL), ==, 44);
 
     /* AT Command - parameter write. */
     frame.type = XBEE_FRAME_TYPE_AT_COMMAND;
@@ -408,7 +418,12 @@ static int test_frame_as_string(struct harness_t *harness_p)
     frame.data.buf[6] = 0x04;
     frame.data.size = 7;
 
-    BTASSERT(xbee_print_frame(sys_get_stdout(), &frame) == 0);
+    BTASSERT(xbee_print_frame(&queue, &frame) == 0);
+    BTASSERTI(harness_expect(
+                  &queue,
+                  "AT Command(frame_id=0x02, at_command='DL', "
+                  "parameter=0x01020304)\r\n",
+                  NULL), ==, 66);
 
     /* AT Command Response - parameter read. */
     frame.type = XBEE_FRAME_TYPE_AT_COMMAND_RESPONSE;
@@ -422,7 +437,12 @@ static int test_frame_as_string(struct harness_t *harness_p)
     frame.data.buf[7] = 0x01;
     frame.data.size = 8;
 
-    BTASSERT(xbee_print_frame(sys_get_stdout(), &frame) == 0);
+    BTASSERT(xbee_print_frame(&queue, &frame) == 0);
+    BTASSERTI(harness_expect(
+                  &queue,
+                  "AT Command Response(frame_id=0x03, at_command='DL', "
+                  "status='OK', data=0x04030201)\r\n",
+                  NULL), ==, 83);
 
     /* AT Command Response - parameter write. */
     frame.type = XBEE_FRAME_TYPE_AT_COMMAND_RESPONSE;
@@ -432,7 +452,56 @@ static int test_frame_as_string(struct harness_t *harness_p)
     frame.data.buf[3] = 0x00;
     frame.data.size = 4;
 
-    BTASSERT(xbee_print_frame(sys_get_stdout(), &frame) == 0);
+    BTASSERT(xbee_print_frame(&queue, &frame) == 0);
+    BTASSERTI(harness_expect(
+                  &queue,
+                  "AT Command Response(frame_id=0x03, at_command='DL', "
+                  "status='OK')\r\n",
+                  NULL), ==, 66);
+
+    /* RX Packet: 64-bit Address frame. */
+    frame.type = XBEE_FRAME_TYPE_RX_PACKET_64_BIT_ADDRESS;
+    frame.data.buf[0] = 0x12;
+    frame.data.buf[1] = 0x34;
+    frame.data.buf[2] = 0x56;
+    frame.data.buf[3] = 0x78;
+    frame.data.buf[4] = 0x9a;
+    frame.data.buf[5] = 0xbc;
+    frame.data.buf[6] = 0xde;
+    frame.data.buf[7] = 0xf0;
+    frame.data.buf[8] = 0x28;
+    frame.data.buf[9] = 0x04;
+    frame.data.buf[10] = 0x01;
+    frame.data.buf[11] = 0x02;
+    frame.data.buf[12] = 0x03;
+    frame.data.size = 13;
+
+    BTASSERT(xbee_print_frame(&queue, &frame) == 0);
+    BTASSERTI(harness_expect(
+                  &queue,
+                  "RX Packet: 64-bit Address(address=0x123456789abcdef0, "
+                  "rssi=40, options=[adddress_broadcast=0, "
+                  "pan_broadcast=1], data=0x010203)\r\n",
+                  NULL), ==, 128);
+
+    /* RX Packet: 16-bit Address frame. */
+    frame.type = XBEE_FRAME_TYPE_RX_PACKET_16_BIT_ADDRESS;
+    frame.data.buf[0] = 0x12;
+    frame.data.buf[1] = 0x34;
+    frame.data.buf[2] = 0x28;
+    frame.data.buf[3] = 0x02;
+    frame.data.buf[4] = 0x01;
+    frame.data.buf[5] = 0x02;
+    frame.data.buf[6] = 0x03;
+    frame.data.size = 7;
+
+    BTASSERT(xbee_print_frame(&queue, &frame) == 0);
+    BTASSERTI(harness_expect(
+                  &queue,
+                  "RX Packet: 16-bit Address(address=0x1234, rssi=40, "
+                  "options=[adddress_broadcast=1, pan_broadcast=0], "
+                  "data=0x010203)\r\n",
+                  NULL), ==, 116);
 
     /* Unknown frame type. */
     frame.type = 0xff;
@@ -441,7 +510,13 @@ static int test_frame_as_string(struct harness_t *harness_p)
     frame.data.buf[2] = 'o';
     frame.data.size = 3;
 
-    BTASSERT(xbee_print_frame(sys_get_stdout(), &frame) == -EINVAL);
+    BTASSERT(xbee_print_frame(&queue, &frame) == -EINVAL);
+    BTASSERTI(harness_expect(&queue,
+                             "Unknown Command(\r\n"
+                             "'00000000: 66 6f 6f                  "
+                             "                      'foo'\r\n"
+                             ")\r\n",
+                             NULL), ==, 87);
 
     return (0);
 }

@@ -375,10 +375,10 @@ const char *xbee_frame_type_as_string(uint8_t frame_type)
         return "Create Source Route";
 
     case XBEE_FRAME_TYPE_RX_PACKET_64_BIT_ADDRESS:
-        return "RX (Receive) Packet: 64-bit Address";
+        return "RX Packet: 64-bit Address";
 
     case XBEE_FRAME_TYPE_RX_PACKET_16_BIT_ADDRESS:
-        return "RX (Receive) Packet: 16-bit Address";
+        return "RX Packet: 16-bit Address";
 
     case XBEE_FRAME_TYPE_RX_PACKET_64_BIT_ADDRESS_IO:
         return "RX Packet: 64-bit Address I/O";
@@ -522,6 +522,54 @@ int xbee_print_frame(void *chan_p, struct xbee_frame_t *frame_p)
                         OSTR("%s%02x"),
                         delim_p,
                         frame_p->data.buf[3 + i]);
+        }
+        break;
+
+    case XBEE_FRAME_TYPE_RX_PACKET_64_BIT_ADDRESS:
+        std_fprintf(chan_p,
+                    OSTR("address=0x%02x%02x%02x%02x%02x%02x%02x%02x, "
+                         "rssi=%u, "
+                         "options=[adddress_broadcast=%u, pan_broadcast=%u]"),
+                    frame_p->data.buf[0],
+                    frame_p->data.buf[1],
+                    frame_p->data.buf[2],
+                    frame_p->data.buf[3],
+                    frame_p->data.buf[4],
+                    frame_p->data.buf[5],
+                    frame_p->data.buf[6],
+                    frame_p->data.buf[7],
+                    frame_p->data.buf[8],
+                    ((frame_p->data.buf[9] >> 1) & 0x1),
+                    ((frame_p->data.buf[9] >> 2) & 0x1));
+
+        delim_p = ", data=0x";
+
+        for (i = 0; i < frame_p->data.size - 10; i++, delim_p = "") {
+            std_fprintf(chan_p,
+                        OSTR("%s%02x"),
+                        delim_p,
+                        frame_p->data.buf[10 + i]);
+        }
+        break;
+
+    case XBEE_FRAME_TYPE_RX_PACKET_16_BIT_ADDRESS:
+        std_fprintf(chan_p,
+                    OSTR("address=0x%02x%02x, "
+                         "rssi=%u, "
+                         "options=[adddress_broadcast=%u, pan_broadcast=%u]"),
+                    frame_p->data.buf[0],
+                    frame_p->data.buf[1],
+                    frame_p->data.buf[2],
+                    ((frame_p->data.buf[3] >> 1) & 0x1),
+                    ((frame_p->data.buf[3] >> 2) & 0x1));
+
+        delim_p = ", data=0x";
+
+        for (i = 0; i < frame_p->data.size - 4; i++, delim_p = "") {
+            std_fprintf(chan_p,
+                        OSTR("%s%02x"),
+                        delim_p,
+                        frame_p->data.buf[4 + i]);
         }
         break;
 
