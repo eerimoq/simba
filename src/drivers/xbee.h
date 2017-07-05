@@ -108,7 +108,7 @@ int xbee_init(struct xbee_driver_t *self_p,
               void *transport_p);
 
 /**
- * Read one XBee frame from the XBee module. Blocks until the frame is
+ * Read one XBee frame from the XBee module. Blocks until a frame is
  * received or an error occurs.
  *
  * @param[in] self_p Initialized driver object.
@@ -145,12 +145,22 @@ const char *xbee_frame_type_as_string(uint8_t frame_type);
  *
  * @param[in] modem_status Modem status.
  *
- * @return Human readable frame type string.
+ * @return Human readable modem status string.
  */
 const char *xbee_modem_status_as_string(uint8_t modem_status);
 
 /**
- * Decode given frame and print it as a human readable string to given channel.
+ * Map given AT command response status to a human readable string.
+ *
+ * @param[in] response_status AT command response status.
+ *
+ * @return Human readable AT command response status string.
+ */
+const char *xbee_at_command_response_status_as_string(uint8_t response_status);
+
+/**
+ * Decode given frame and print it as a human readable string on given
+ * channel.
  *
  * @param[in] chan_p Output channel.
  * @param[in] frame_p Frame.

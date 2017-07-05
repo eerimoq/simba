@@ -346,7 +346,35 @@ static int test_modem_status_as_string(struct harness_t *harness_p)
     expected_p = "Unknown Modem Status";
     BTASSERTM(actual_p, expected_p, strlen(expected_p) + 1);
 
- return (0);
+    return (0);
+}
+
+static int test_at_command_response_status_as_string(struct harness_t *harness_p)
+{
+    const char *actual_p;
+    const char *expected_p;
+
+    actual_p = xbee_at_command_response_status_as_string(0x00);
+    expected_p = "OK";
+    BTASSERTM(actual_p, expected_p, strlen(expected_p) + 1);
+
+    actual_p = xbee_at_command_response_status_as_string(0x01);
+    expected_p = "ERROR";
+    BTASSERTM(actual_p, expected_p, strlen(expected_p) + 1);
+
+    actual_p = xbee_at_command_response_status_as_string(0x02);
+    expected_p = "Invalid command";
+    BTASSERTM(actual_p, expected_p, strlen(expected_p) + 1);
+
+    actual_p = xbee_at_command_response_status_as_string(0x03);
+    expected_p = "Invalid parameter";
+    BTASSERTM(actual_p, expected_p, strlen(expected_p) + 1);
+
+    actual_p = xbee_at_command_response_status_as_string(0x04);
+    expected_p = "Unknown Command Status";
+    BTASSERTM(actual_p, expected_p, strlen(expected_p) + 1);
+
+    return (0);
 }
 
 static int test_frame_as_string(struct harness_t *harness_p)
@@ -360,12 +388,49 @@ static int test_frame_as_string(struct harness_t *harness_p)
 
     BTASSERT(xbee_print_frame(sys_get_stdout(), &frame) == 0);
 
-    /* AT Command. */
+    /* AT Command - parameter read. */
     frame.type = XBEE_FRAME_TYPE_AT_COMMAND;
-    frame.data.buf[0] = 0x00;
+    frame.data.buf[0] = 0x01;
     frame.data.buf[1] = 'D';
     frame.data.buf[2] = 'L';
     frame.data.size = 3;
+
+    BTASSERT(xbee_print_frame(sys_get_stdout(), &frame) == 0);
+
+    /* AT Command - parameter write. */
+    frame.type = XBEE_FRAME_TYPE_AT_COMMAND;
+    frame.data.buf[0] = 0x02;
+    frame.data.buf[1] = 'D';
+    frame.data.buf[2] = 'L';
+    frame.data.buf[3] = 0x01;
+    frame.data.buf[4] = 0x02;
+    frame.data.buf[5] = 0x03;
+    frame.data.buf[6] = 0x04;
+    frame.data.size = 7;
+
+    BTASSERT(xbee_print_frame(sys_get_stdout(), &frame) == 0);
+
+    /* AT Command Response - parameter read. */
+    frame.type = XBEE_FRAME_TYPE_AT_COMMAND_RESPONSE;
+    frame.data.buf[0] = 0x03;
+    frame.data.buf[1] = 'D';
+    frame.data.buf[2] = 'L';
+    frame.data.buf[3] = 0x00;
+    frame.data.buf[4] = 0x04;
+    frame.data.buf[5] = 0x03;
+    frame.data.buf[6] = 0x02;
+    frame.data.buf[7] = 0x01;
+    frame.data.size = 8;
+
+    BTASSERT(xbee_print_frame(sys_get_stdout(), &frame) == 0);
+
+    /* AT Command Response - parameter write. */
+    frame.type = XBEE_FRAME_TYPE_AT_COMMAND_RESPONSE;
+    frame.data.buf[0] = 0x03;
+    frame.data.buf[1] = 'D';
+    frame.data.buf[2] = 'L';
+    frame.data.buf[3] = 0x00;
+    frame.data.size = 4;
 
     BTASSERT(xbee_print_frame(sys_get_stdout(), &frame) == 0);
 
@@ -429,6 +494,10 @@ int main()
         { test_channel_read_unescape, "test_channel_read_unescape" },
         { test_frame_type_as_string, "test_frame_type_as_string" },
         { test_modem_status_as_string, "test_modem_status_as_string" },
+        {
+            test_at_command_response_status_as_string,
+            "test_at_command_response_status_as_string"
+        },
         { test_frame_as_string, "test_frame_as_string" },
         { NULL, NULL }
     };

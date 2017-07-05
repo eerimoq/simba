@@ -462,41 +462,98 @@ const char *xbee_modem_status_as_string(uint8_t modem_status)
     }
 }
 
+const char *xbee_at_command_response_status_as_string(uint8_t response_status)
+{
+    switch (response_status) {
+
+    case 0x00:
+        return "OK";
+
+    case 0x01:
+        return "ERROR";
+
+    case 0x02:
+        return "Invalid command";
+
+    case 0x03:
+        return "Invalid parameter";
+
+    default:
+        return "Unknown Command Status";
+    }
+}
+
 int xbee_print_frame(void *chan_p, struct xbee_frame_t *frame_p)
 {
     ASSERTN(chan_p != NULL, EINVAL);
     ASSERTN(frame_p != NULL, EINVAL);
 
     int res;
+    size_t i;
+    const char *delim_p;
 
     res = 0;
 
+    /* Print the frame header. */
+    std_fprintf(chan_p,
+                OSTR("%s("),
+                xbee_frame_type_as_string(frame_p->type));
+
+    /* Print the frame data. */
     switch (frame_p->type) {
 
     case XBEE_FRAME_TYPE_MODEM_STATUS:
         std_fprintf(chan_p,
-                    OSTR("%s(status='%s')\r\n"),
-                    xbee_frame_type_as_string(frame_p->type),
+                    OSTR("status='%s'"),
                     xbee_modem_status_as_string(frame_p->data.buf[0]));
         break;
 
     case XBEE_FRAME_TYPE_AT_COMMAND:
         std_fprintf(chan_p,
-                    OSTR("%s(frame_id=0x%02x, at_command='%c%c')\r\n"),
-                    xbee_frame_type_as_string(frame_p->type),
+                    OSTR("frame_id=0x%02x, at_command='%c%c'"),
                     frame_p->data.buf[0],
                     frame_p->data.buf[1],
                     frame_p->data.buf[2]);
+
+        delim_p = ", parameter=0x";
+
+        for (i = 0; i < frame_p->data.size - 3; i++, delim_p = "") {
+            std_fprintf(chan_p,
+                        OSTR("%s%02x"),
+                        delim_p,
+                        frame_p->data.buf[3 + i]);
+        }
+        break;
+
+    case XBEE_FRAME_TYPE_AT_COMMAND_RESPONSE:
+        std_fprintf(chan_p,
+                    OSTR("frame_id=0x%02x, at_command='%c%c', "
+                         "status='%s'"),
+                    frame_p->data.buf[0],
+                    frame_p->data.buf[1],
+                    frame_p->data.buf[2],
+                    xbee_at_command_response_status_as_string(
+                        frame_p->data.buf[3]));
+
+        delim_p = ", data=0x";
+
+        for (i = 0; i < frame_p->data.size - 4; i++, delim_p = "") {
+            std_fprintf(chan_p,
+                        OSTR("%s%02x"),
+                        delim_p,
+                        frame_p->data.buf[4 + i]);
+        }
         break;
 
     default:
-        std_fprintf(chan_p,
-                    OSTR("Hexdump of unknown frame type 0x%02x:\r\n"),
-                    frame_p->type);
+        std_fprintf(chan_p, OSTR("\r\n'"));
         std_hexdump(chan_p, &frame_p->data.buf[0], frame_p->data.size);
         res = -EINVAL;
         break;
     }
+
+    /* Print the frame footer. */
+    std_fprintf(chan_p, OSTR(")\r\n"));
 
     return (res);
 }
