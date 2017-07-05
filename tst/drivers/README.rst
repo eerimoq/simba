@@ -22,5 +22,5 @@ Folder structure:
 .. code-block:: text
 
    -- drivers/
-      +-- hardware/         # Test suites requireing real hardware.
-      +-- software/         # Test suites **not** requireing real hardware.
+      +-- hardware/         # Test suites requiring real hardware.
+      +-- software/         # Test suites **not** requiring real hardware.
