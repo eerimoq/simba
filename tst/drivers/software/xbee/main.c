@@ -554,10 +554,10 @@ static int test_frame_as_string(struct harness_t *harness_p)
     BTASSERT(xbee_print_frame(&queue, &frame) == -EINVAL);
     BTASSERTI(harness_expect(&queue,
                              "Unknown Command(\r\n"
-                             "'00000000: 66 6f 6f                  "
+                             "00000000: 66 6f 6f                  "
                              "                      'foo'\r\n"
                              ")\r\n",
-                             NULL), ==, 87);
+                             NULL), ==, 86);
 
     return (0);
 }

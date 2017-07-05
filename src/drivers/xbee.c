@@ -420,7 +420,7 @@ int xbee_print_frame(void *chan_p, struct xbee_frame_t *frame_p)
         break;
 
     default:
-        std_fprintf(chan_p, OSTR("\r\n'"));
+        std_fprintf(chan_p, OSTR("\r\n"));
         std_hexdump(chan_p, &frame_p->data.buf[0], frame_p->data.size);
         res = -EINVAL;
         break;

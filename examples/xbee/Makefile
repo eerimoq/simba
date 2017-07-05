@@ -29,6 +29,6 @@
 #
 
 NAME = xbee
-BOARD = arduino_mega
+BOARD ?= linux
 
 include $(SIMBA_ROOT)/make/app.mk
