@@ -143,7 +143,7 @@ static int test_channel_write_tx_request(struct harness_t *harness_p)
     frame.data.buf[8] = 0x6f;
     frame.data.size = 9;
 
-    BTASSERT(xbee_write(&xbee, &frame) == 0);
+    BTASSERT(chan_write(&xbee, &frame, sizeof(frame)) == 0);
 
     /* Validate the written frame. */
     harness_mock_read("chan_write(buf_p)", &buf[0],  1);
@@ -311,6 +311,44 @@ static int test_frame_type_as_string(struct harness_t *harness_p)
     return (0);
 }
 
+static int test_modem_status_as_string(struct harness_t *harness_p)
+{
+    const char *actual_p;
+    const char *expected_p;
+
+    actual_p = xbee_modem_status_as_string(0x00);
+    expected_p = "Hardware reset";
+    BTASSERTM(actual_p, expected_p, strlen(expected_p) + 1);
+
+    actual_p = xbee_modem_status_as_string(0x01);
+    expected_p = "Watchdog timer reset";
+    BTASSERTM(actual_p, expected_p, strlen(expected_p) + 1);
+
+    actual_p = xbee_modem_status_as_string(0x02);
+    expected_p = "End device successfully associated with a coordinator";
+    BTASSERTM(actual_p, expected_p, strlen(expected_p) + 1);
+
+    actual_p = xbee_modem_status_as_string(0x03);
+    expected_p = "End device disassociated from coordinator or coordinator "
+        "failed to form a new network";
+    BTASSERTM(actual_p, expected_p, strlen(expected_p) + 1);
+
+    actual_p = xbee_modem_status_as_string(0x06);
+    expected_p = "Coordinator formed a new network";
+    BTASSERTM(actual_p, expected_p, strlen(expected_p) + 1);
+
+    actual_p = xbee_modem_status_as_string(0x0d);
+    expected_p = "Input voltage on the XBee-PRO device is too high, which "
+        "prevents transmissions";
+    BTASSERTM(actual_p, expected_p, strlen(expected_p) + 1);
+
+    actual_p = xbee_modem_status_as_string(0xff);
+    expected_p = "Unknown Modem Status";
+    BTASSERTM(actual_p, expected_p, strlen(expected_p) + 1);
+
+ return (0);
+}
+
 static int test_frame_as_string(struct harness_t *harness_p)
 {
     struct xbee_frame_t frame;
@@ -390,6 +428,7 @@ int main()
         { test_channel_write_tx_request, "test_channel_write_tx_request" },
         { test_channel_read_unescape, "test_channel_read_unescape" },
         { test_frame_type_as_string, "test_frame_type_as_string" },
+        { test_modem_status_as_string, "test_modem_status_as_string" },
         { test_frame_as_string, "test_frame_as_string" },
         { NULL, NULL }
     };
