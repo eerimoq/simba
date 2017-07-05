@@ -4,11 +4,11 @@
 .. module:: xbee
    :synopsis: Xbee.
 
+An XBee is a module for wireless communication.
+
 .. image:: ../../images/drivers/xbee-s2c-zigbee.jpg
    :width: 50%
    :target: ../../_images/xbee-s2c-zigbee.jpg
-
-An XBee is a module for wireless communication.
 
 This driver implements reception and transmission of frames over a
 channel (normally a UART driver).
