@@ -68,7 +68,7 @@ int main()
         return (-1);
     }
 
-    /* Read frames from the XBee and print them to standard output. */
+    /* Read frames from the XBee and print them on standard output. */
     while (1) {
         res = xbee_read(&xbee, &frame);
 
