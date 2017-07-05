@@ -4,6 +4,12 @@
 .. module:: nrf24l01
    :synopsis: Wireless communication.
 
+NRF24L01 is a wireless communication module.
+              
+.. image:: ../../images/drivers/sku_149483_2.jpg
+   :width: 40%
+   :target: ../../_images/sku_149483_2.jpg
+
 Source code: :github-blob:`src/drivers/nrf24l01.h`, :github-blob:`src/drivers/nrf24l01.c`
 
 ----------------------------------------------

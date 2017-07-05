@@ -4,6 +4,12 @@
 .. module:: ws2812
    :synopsis: NeoPixels.
 
+WS2812 is a NeoPixel.
+              
+.. image:: ../../images/drivers/ws2812b-from-tronixlabs-australia.jpg
+   :width: 30%
+   :target: ../../_images/ws2812b-from-tronixlabs-australia.jpg
+
 Source code: :github-blob:`src/drivers/ws2812.h`,
 :github-blob:`src/drivers/ws2812.c`
 
