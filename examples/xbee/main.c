@@ -35,9 +35,9 @@ int main()
     struct xbee_driver_t xbee;
     struct uart_driver_t uart;
     uint8_t uart_rxbuf[128];
-    struct xbee_command_t command;
+    struct xbee_frame_t frame;
     int res;
-    
+
     sys_start();
 
     /* Initialize the UART driver. */
@@ -53,7 +53,7 @@ int main()
     }
 
     /* Start the UART driver. */
-    res = uart_start(&uart);    
+    res = uart_start(&uart);
 
     if (res != 0) {
         std_printf(OSTR("Failed to start the UART driver.\r\n"));
@@ -68,32 +68,17 @@ int main()
         return (-1);
     }
 
-    /* Write the AT command "DB" to the XBee. */
-    command.id = xbee_command_id_at_command_t;
-    memcpy(&command.data.buf[0], "ATDB", 4);
-    command.data.size = 4;
-    
-    res = xbee_write(&xbee, &command);
+    /* Read frames from the XBee and print them to standard output. */
+    while (1) {
+        res = xbee_read(&xbee, &frame);
 
-    if (res != 0) {
-        std_printf(OSTR("Failed to write command to the XBee.\r\n"));
-        return (-1);
+        if (res != 0) {
+            std_printf(OSTR("Failed to read frame from the XBee.\r\n"));
+            continue;
+        }
+
+        xbee_print_frame(sys_get_stdout(), &frame);
     }
 
-    /* Read the AT command response from the XBee. */
-    res = xbee_read(&xbee, &command);
-
-    if (res != 0) {
-        std_printf(OSTR("Failed to read command from the XBee.\r\n"));
-        return (-1);
-    }
-
-    /* Print the read command on standard output. */
-    std_printf(OSTR("Read command with id %d.\r\n"), command.id);
-
-    std_hexdump(sys_get_stdout(),
-                &command.data.buf[0],
-                command.data.size);
-    
     return (0);
 }
