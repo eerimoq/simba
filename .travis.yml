@@ -12,8 +12,9 @@ before_install:
   - gcc --version
   - g++ --version
   - ld --version
+  - env
 
-script: make travis TESTS=tst/drivers/software/xbee -j $(cat /proc/cpuinfo | grep processor | wc -l)
+script: make -C tst/drivers/software/xbee print-STUB
 
 after_success:
   - make codecov-coverage
