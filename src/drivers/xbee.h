@@ -85,8 +85,8 @@ struct xbee_driver_t {
 };
 
 /**
- * Initialize XBee module. This function must be called before calling
- * any other function in this module.
+ * Initialize the xbee module. This function must be called before
+ * calling any other function in this module.
  *
  * The module will only be initialized once even if this function is
  * called multiple times.
