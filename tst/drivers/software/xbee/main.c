@@ -241,10 +241,6 @@ static int test_frame_type_as_string(struct harness_t *harness_p)
     expected_p = "Modem Status";
     BTASSERTM(actual_p, expected_p, strlen(expected_p) + 1);
 
-    actual_p = xbee_frame_type_as_string(0xff);
-    expected_p = "Unknown Command";
-    BTASSERTM(actual_p, expected_p, strlen(expected_p) + 1);
-
     actual_p = xbee_frame_type_as_string(XBEE_FRAME_TYPE_ZIGBEE_TRANSMIT_STATUS);
     expected_p = "ZigBee Transmit Status";
     BTASSERTM(actual_p, expected_p, strlen(expected_p) + 1);
@@ -288,6 +284,9 @@ static int test_frame_type_as_string(struct harness_t *harness_p)
     actual_p = xbee_frame_type_as_string(XBEE_FRAME_TYPE_MANY_TO_ONE_ROUTE_REQUEST_INDICATOR);
     expected_p = "Many-to-One Route Request Indicator";
     BTASSERTM(actual_p, expected_p, strlen(expected_p) + 1);
+
+    actual_p = xbee_frame_type_as_string(0xff);
+    BTASSERT(actual_p == NULL);
 
     return (0);
 }
@@ -339,8 +338,7 @@ static int test_tx_status_as_string(struct harness_t *harness_p)
     BTASSERTM(actual_p, expected_p, strlen(expected_p) + 1);
 
     actual_p = xbee_tx_status_as_string(0xff);
-    expected_p = "Unknown Status";
-    BTASSERTM(actual_p, expected_p, strlen(expected_p) + 1);
+    BTASSERT(actual_p == NULL);
 
     return (0);
 }
@@ -377,8 +375,7 @@ static int test_modem_status_as_string(struct harness_t *harness_p)
     BTASSERTM(actual_p, expected_p, strlen(expected_p) + 1);
 
     actual_p = xbee_modem_status_as_string(0xff);
-    expected_p = "Unknown Modem Status";
-    BTASSERTM(actual_p, expected_p, strlen(expected_p) + 1);
+    BTASSERT(actual_p == NULL);
 
     return (0);
 }
@@ -405,9 +402,8 @@ static int test_at_command_response_status_as_string(struct harness_t *harness_p
     BTASSERTM(actual_p, expected_p, strlen(expected_p) + 1);
 
     actual_p = xbee_at_command_response_status_as_string(0x04);
-    expected_p = "Unknown Command Status";
-    BTASSERTM(actual_p, expected_p, strlen(expected_p) + 1);
-
+    BTASSERT(actual_p == NULL);
+    
     return (0);
 }
 
@@ -553,7 +549,7 @@ static int test_frame_as_string(struct harness_t *harness_p)
 
     BTASSERT(xbee_print_frame(&queue, &frame) == -EINVAL);
     BTASSERTI(harness_expect(&queue,
-                             "Unknown Command(\r\n"
+                             "frame_type=0xff(\r\n"
                              "00000000: 66 6f 6f                  "
                              "                      'foo'\r\n"
                              ")\r\n",

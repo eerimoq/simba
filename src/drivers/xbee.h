@@ -146,7 +146,8 @@ int xbee_print_frame(void *chan_p, struct xbee_frame_t *frame_p);
  *
  * @param[in] frame_type Frame type.
  *
- * @return Human readable frame type string.
+ * @return Human readable frame type string or NULL if given frame
+ *         type is unknown.
  */
 const char *xbee_frame_type_as_string(uint8_t frame_type);
 
@@ -155,7 +156,8 @@ const char *xbee_frame_type_as_string(uint8_t frame_type);
  *
  * @param[in] tx_status TX status.
  *
- * @return Human readable TX status string.
+ * @return Human readable TX status string or NULL if given TX status
+ *         is unknown.
  */
 const char *xbee_tx_status_as_string(uint8_t tx_status);
 
@@ -164,7 +166,8 @@ const char *xbee_tx_status_as_string(uint8_t tx_status);
  *
  * @param[in] modem_status Modem status.
  *
- * @return Human readable modem status string.
+ * @return Human readable modem status string or NULL if given modem
+ *         status is unknown.
  */
 const char *xbee_modem_status_as_string(uint8_t modem_status);
 
@@ -173,7 +176,8 @@ const char *xbee_modem_status_as_string(uint8_t modem_status);
  *
  * @param[in] response_status AT command response status.
  *
- * @return Human readable AT command response status string.
+ * @return Human readable AT command response status string or NULL if
+ *         given response status is unknown.
  */
 const char *xbee_at_command_response_status_as_string(uint8_t response_status);
 

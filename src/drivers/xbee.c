@@ -310,13 +310,20 @@ int xbee_print_frame(void *chan_p, struct xbee_frame_t *frame_p)
     int res;
     size_t i;
     const char *delim_p;
+    const char *frame_type_p;
 
     res = 0;
 
     /* Print the frame header. */
-    std_fprintf(chan_p,
-                OSTR("%s("),
-                xbee_frame_type_as_string(frame_p->type));
+    frame_type_p = xbee_frame_type_as_string(frame_p->type);
+
+    if (frame_type_p != NULL) {
+        std_fprintf(chan_p,
+                    OSTR("%s("),
+                    xbee_frame_type_as_string(frame_p->type));
+    } else {
+        std_fprintf(chan_p, OSTR("frame_type=0x%02x("), frame_p->type);
+    }
 
     /* Print the frame data. */
     switch (frame_p->type) {
@@ -515,7 +522,7 @@ const char *xbee_frame_type_as_string(uint8_t frame_type)
         return "Many-to-One Route Request Indicator";
 
     default:
-        return "Unknown Command";
+        return (NULL);
     }
 }
 
@@ -556,7 +563,7 @@ const char *xbee_tx_status_as_string(uint8_t tx_status)
         return "The payload in the frame was larger than allowed";
 
     default:
-        return "Unknown Status";
+        return (NULL);
     }
 }
 
@@ -585,7 +592,7 @@ const char *xbee_modem_status_as_string(uint8_t modem_status)
             "prevents transmissions";
 
     default:
-        return "Unknown Modem Status";
+        return (NULL);
     }
 }
 
@@ -606,6 +613,6 @@ const char *xbee_at_command_response_status_as_string(uint8_t response_status)
         return "Invalid parameter";
 
     default:
-        return "Unknown Command Status";
+        return (NULL);
     }
 }
