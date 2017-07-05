@@ -391,7 +391,7 @@ int xbee_print_frame(void *chan_p, struct xbee_frame_t *frame_p)
     case XBEE_FRAME_TYPE_RX_PACKET_64_BIT_ADDRESS:
         std_fprintf(chan_p,
                     OSTR("address=0x%02x%02x%02x%02x%02x%02x%02x%02x, "
-                         "rssi=%u, "
+                         "rssi=-%u dBm, "
                          "options=[adddress_broadcast=%u, pan_broadcast=%u]"),
                     frame_p->data.buf[0],
                     frame_p->data.buf[1],
@@ -418,7 +418,7 @@ int xbee_print_frame(void *chan_p, struct xbee_frame_t *frame_p)
     case XBEE_FRAME_TYPE_RX_PACKET_16_BIT_ADDRESS:
         std_fprintf(chan_p,
                     OSTR("address=0x%02x%02x, "
-                         "rssi=%u, "
+                         "rssi=-%u dBm, "
                          "options=[adddress_broadcast=%u, pan_broadcast=%u]"),
                     frame_p->data.buf[0],
                     frame_p->data.buf[1],

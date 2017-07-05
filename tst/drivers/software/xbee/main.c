@@ -480,9 +480,9 @@ static int test_frame_as_string(struct harness_t *harness_p)
     BTASSERTI(harness_expect(
                   &queue,
                   "RX Packet: 64-bit Address(address=0x123456789abcdef0, "
-                  "rssi=40, options=[adddress_broadcast=0, "
+                  "rssi=-40 dBm, options=[adddress_broadcast=0, "
                   "pan_broadcast=1], data=0x010203)\r\n",
-                  NULL), ==, 128);
+                  NULL), ==, 133);
 
     /* RX Packet: 16-bit Address frame. */
     frame.type = XBEE_FRAME_TYPE_RX_PACKET_16_BIT_ADDRESS;
@@ -498,10 +498,10 @@ static int test_frame_as_string(struct harness_t *harness_p)
     BTASSERT(xbee_print_frame(&queue, &frame) == 0);
     BTASSERTI(harness_expect(
                   &queue,
-                  "RX Packet: 16-bit Address(address=0x1234, rssi=40, "
+                  "RX Packet: 16-bit Address(address=0x1234, rssi=-40 dBm, "
                   "options=[adddress_broadcast=1, pan_broadcast=0], "
                   "data=0x010203)\r\n",
-                  NULL), ==, 116);
+                  NULL), ==, 121);
 
     /* Unknown frame type. */
     frame.type = 0xff;

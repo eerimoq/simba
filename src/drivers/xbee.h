@@ -132,11 +132,11 @@ int xbee_write(struct xbee_driver_t *self_p,
                const struct xbee_frame_t *frame_p);
 
 /**
- * Decode given frame and print it as a human readable string on given
+ * Decode given frame and write it as a human readable string to given
  * channel.
  *
- * @param[in] chan_p Output channel.
- * @param[in] frame_p Frame.
+ * @param[in] chan_p Channel to write the human readable string to.
+ * @param[in] frame_p Frame to decode.
  *
  * @return zero(0) or negative error code.
  */
