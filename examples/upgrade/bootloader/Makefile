@@ -50,5 +50,4 @@ CDEFS += \
 	CONFIG_START_NETWORK_INTERFACE_WIFI_PASSWORD=$(PASSWORD)
 endif
 
-SIMBA_ROOT ?= ../../..
 include $(SIMBA_ROOT)/make/app.mk

@@ -37,5 +37,4 @@ CDEFS += CONFIG_MINIMAL_SYSTEM=1 \
 
 ALLOC_SRC += circular_heap.c
 
-SIMBA_ROOT ?= ../../..
 include $(SIMBA_ROOT)/make/app.mk

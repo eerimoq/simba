@@ -40,5 +40,4 @@ SRC += \
 	http_server_stub.c \
 	upgrade_stub.c
 
-SIMBA_ROOT ?= ../../../..
 include $(SIMBA_ROOT)/make/app.mk

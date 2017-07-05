@@ -39,5 +39,4 @@ CDEFS += \
 
 TEXT_SRC += emacs.c
 
-SIMBA_ROOT ?= ../../..
 include $(SIMBA_ROOT)/make/app.mk

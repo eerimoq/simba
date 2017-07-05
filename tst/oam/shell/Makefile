@@ -44,5 +44,4 @@ CDEFS += \
 OAM_SRC += shell.c
 ALLOC_SRC += circular_heap.c
 
-SIMBA_ROOT ?= ../../..
 include $(SIMBA_ROOT)/make/app.mk

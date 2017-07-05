@@ -85,6 +85,7 @@ ifeq ($(BOARD), linux)
 				    ssl \
 				    tftp_server)
     TESTS += $(addprefix tst/multimedia/, midi)
+    TESTS += $(addprefix tst/drivers/software/, xbee)
 endif
 
 ifeq ($(BOARD), arduino_due)
@@ -115,10 +116,10 @@ ifeq ($(BOARD), arduino_due)
                                       json)
     TESTS += $(addprefix tst/hash/, crc \
                                     sha1)
-    TESTS += $(addprefix tst/drivers/, chipid \
+    TESTS += $(addprefix tst/drivers/hardware/, \
+				       chipid \
 				       can \
-				       flash \
-				       xbee)
+				       flash)
 endif
 
 ifeq ($(BOARD), arduino_mega)
@@ -153,7 +154,8 @@ ifeq ($(BOARD), arduino_mega)
 				    inet \
 				    mqtt_client \
 				    ping)
-    TESTS += $(addprefix tst/drivers/, adc \
+    TESTS += $(addprefix tst/drivers/hardware/, \
+				       adc \
 				       analog_input_pin \
 				       ds3231 \
 				       sd \
@@ -161,7 +163,7 @@ ifeq ($(BOARD), arduino_mega)
 endif
 
 ifeq ($(BOARD), arduino_nano)
-    TESTS = $(addprefix tst/drivers/, ds18b20 \
+    TESTS = $(addprefix tst/drivers/hardware/, ds18b20 \
 				      analog_output_pin \
 				      exti \
 				      owi)
@@ -207,7 +209,7 @@ ifeq ($(BOARD), nodemcu)
 				    mqtt_client \
 				    network_interface/wifi_esp \
 				    ping)
-    TESTS += $(addprefix tst/drivers/, pin \
+    TESTS += $(addprefix tst/drivers/hardware/, pin \
 			            random)
     TESTS += $(addprefix tst/filesystems/, fs \
                                            spiffs)
@@ -272,7 +274,7 @@ ifeq ($(BOARD), stm32vldiscovery)
 				    inet \
 				    mqtt_client \
 				    ping)
-    TESTS += $(addprefix tst/drivers/, pin \
+    TESTS += $(addprefix tst/drivers/hardware/, pin \
 			            random)
 endif
 
@@ -330,7 +332,7 @@ ifeq ($(BOARD), spc56ddiscovery)
                                       json)
     TESTS += $(addprefix tst/hash/, crc \
                                     sha1)
-    TESTS += $(addprefix tst/drivers/, eeprom_soft)
+    TESTS += $(addprefix tst/drivers/hardware/, eeprom_soft)
 endif
 
 # List of all application to build
@@ -489,13 +491,13 @@ test-nodemcu-platformio:
 
 test-i2c-nano-mega:
 	@echo "I2C Nano Mega"
-	$(MAKE) -C tst/drivers/i2c/slave BOARD=arduino_nano SERIAL_PORT=/dev/simba-arduino_nano upload
-	$(MAKE) -C tst/drivers/i2c/master_soft BOARD=arduino_mega SERIAL_PORT=/dev/simba-arduino_mega run
+	$(MAKE) -C tst/drivers/hardware/i2c/slave BOARD=arduino_nano SERIAL_PORT=/dev/simba-arduino_nano upload
+	$(MAKE) -C tst/drivers/hardware/i2c/master_soft BOARD=arduino_mega SERIAL_PORT=/dev/simba-arduino_mega run
 
 clean-i2c-nano-mega:
 	@echo "I2C Nano Mega"
-	$(MAKE) -C tst/drivers/i2c/slave BOARD=arduino_nano clean
-	$(MAKE) -C tst/drivers/i2c/master_soft BOARD=arduino_mega clean
+	$(MAKE) -C tst/drivers/hardware/i2c/slave BOARD=arduino_nano clean
+	$(MAKE) -C tst/drivers/hardware/i2c/master_soft BOARD=arduino_mega clean
 
 test-all-boards:
 	$(MAKE) test-arduino-due

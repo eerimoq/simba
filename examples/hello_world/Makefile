@@ -34,5 +34,4 @@ BOARD ?= linux
 RUN_END_PATTERN = "Hello world!"
 RUN_END_PATTERN_SUCCESS = $(RUN_END_PATTERN)
 
-SIMBA_ROOT ?= ../..
 include $(SIMBA_ROOT)/make/app.mk

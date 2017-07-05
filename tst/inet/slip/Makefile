@@ -38,5 +38,4 @@ CDEFS += \
 
 INET_SRC = slip.c
 
-SIMBA_ROOT ?= ../../..
 include $(SIMBA_ROOT)/make/app.mk

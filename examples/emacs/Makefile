@@ -33,5 +33,4 @@ BOARD ?= linux
 
 CDEFS += CONFIG_START_SHELL=0
 
-SIMBA_ROOT ?= ../..
 include $(SIMBA_ROOT)/make/app.mk

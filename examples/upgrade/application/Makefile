@@ -35,5 +35,4 @@ PARTITION = application
 CDEFS += \
 	CONFIG_UPGRADE_APPLICATION=1
 
-SIMBA_ROOT ?= ../../..
 include $(SIMBA_ROOT)/make/app.mk

@@ -31,5 +31,4 @@
 NAME = ping
 BOARD ?= esp12e
 
-SIMBA_ROOT ?= ../..
 include $(SIMBA_ROOT)/make/app.mk

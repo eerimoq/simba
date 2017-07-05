@@ -34,5 +34,4 @@ BOARD ?= nano32
 CDEFS += \
 	CONFIG_START_NETWORK=1
 
-SIMBA_ROOT ?= ../..
 include $(SIMBA_ROOT)/make/app.mk

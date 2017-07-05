@@ -35,5 +35,4 @@ TIMEOUT = 60
 
 CDEFS += CONFIG_START_NETWORK=0
 
-SIMBA_ROOT ?= ../..
 include $(SIMBA_ROOT)/make/app.mk

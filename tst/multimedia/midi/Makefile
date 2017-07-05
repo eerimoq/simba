@@ -38,5 +38,4 @@ CDEFS += \
 
 MULTIMEDIA_SRC = midi.c
 
-SIMBA_ROOT ?= ../../..
 include $(SIMBA_ROOT)/make/app.mk

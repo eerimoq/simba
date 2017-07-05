@@ -41,5 +41,4 @@ CDEFS += \
 
 TEXT_SRC += re.c
 
-SIMBA_ROOT ?= ../../..
 include $(SIMBA_ROOT)/make/app.mk

@@ -43,5 +43,4 @@ HASH_SRC = sha1.c
 INET_SRC = \
 	http_websocket_server.c
 
-SIMBA_ROOT ?= ../../..
 include $(SIMBA_ROOT)/make/app.mk

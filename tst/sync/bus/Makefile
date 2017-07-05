@@ -38,5 +38,4 @@ CDEFS += CONFIG_MINIMAL_SYSTEM=1 \
 SYNC_SRC += bus.c event.c
 COLLECTIONS_SRC += binary_tree.c
 
-SIMBA_ROOT ?= ../../..
 include $(SIMBA_ROOT)/make/app.mk

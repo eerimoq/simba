@@ -48,5 +48,4 @@ HASH_SRC += crc.c
 RUN_END_PATTERN = "PASSED|FAILED"
 RUN_END_PATTERN_SUCCESS = "PASSED"
 
-SIMBA_ROOT ?= ../../..
 include $(SIMBA_ROOT)/make/app.mk

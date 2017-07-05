@@ -38,5 +38,4 @@ CDEFS += \
 
 ENCODE_SRC = json.c
 
-SIMBA_ROOT ?= ../../..
 include $(SIMBA_ROOT)/make/app.mk

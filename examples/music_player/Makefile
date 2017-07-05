@@ -38,5 +38,4 @@ CDEFS_EXTRA = \
 	MUSIC_PLAYER_STORAGE_USB \
 	LOG_BUFFER_SIZE=2048
 
-SIMBA_ROOT ?= ../..
 include $(SIMBA_ROOT)/make/app.mk

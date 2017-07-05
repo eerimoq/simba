@@ -31,5 +31,4 @@
 NAME = led_7seg_ht16k33
 BOARD = nodemcu
 
-SIMBA_ROOT ?= ../..
 include $(SIMBA_ROOT)/make/app.mk

@@ -44,5 +44,4 @@ CDEFS += \
 	CONFIG_FS_CMD_THRD_SET_LOG_MASK=1 \
 	CONFIG_THRD_TERMINATE=1
 
-SIMBA_ROOT ?= ../../..
 include $(SIMBA_ROOT)/make/app.mk

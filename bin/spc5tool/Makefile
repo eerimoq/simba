@@ -71,7 +71,6 @@ default:
 	    done ; \
 	done
 
-SIMBA_ROOT ?= ../..
 include $(SIMBA_ROOT)/make/app.mk
 
 install:

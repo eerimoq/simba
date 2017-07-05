@@ -70,5 +70,4 @@ INET_SRC = \
 	network_interface/wifi.c \
 	network_interface/driver/esp.c
 
-SIMBA_ROOT ?= ../../../..
 include $(SIMBA_ROOT)/make/app.mk

@@ -38,5 +38,4 @@ CDEFS += \
 	CONFIG_FS_CMD_NVM_READ=1 \
 	CONFIG_FS_CMD_NVM_WRITE=1
 
-SIMBA_ROOT ?= ../../..
 include $(SIMBA_ROOT)/make/app.mk

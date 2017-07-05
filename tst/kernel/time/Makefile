@@ -37,5 +37,4 @@ CDEFS += \
 	CONFIG_SYSTEM_TICK_FREQUENCY=1000 \
 	CONFIG_FS_CMD_THRD_LIST=1
 
-SIMBA_ROOT ?= ../../..
 include $(SIMBA_ROOT)/make/app.mk

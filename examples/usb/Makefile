@@ -31,5 +31,4 @@
 NAME = usb
 BOARD = arduino_due
 
-SIMBA_ROOT ?= ../..
 include $(SIMBA_ROOT)/make/app.mk

@@ -33,5 +33,4 @@ BOARD ?= linux
 
 CDEFS += CONFIG_FS_CMD_THRD_LIST=1
 
-SIMBA_ROOT ?= ../..
 include $(SIMBA_ROOT)/make/app.mk

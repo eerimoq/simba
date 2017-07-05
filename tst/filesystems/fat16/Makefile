@@ -46,5 +46,4 @@ FILESYSTEMS_SRC = fat16.c
 DRIVERS_SRC = spi.c sd.c pin.c
 HASH_SRC = crc.c
 
-SIMBA_ROOT ?= ../../..
 include $(SIMBA_ROOT)/make/app.mk
