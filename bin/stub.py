@@ -10,21 +10,30 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('crosscompile')
     parser.add_argument('objectfile')
-    parser.add_argument('pattern', nargs='?')
+    parser.add_argument('sourcefile')
+    parser.add_argument('patterns', nargs='+')
     args = parser.parse_args()
 
-    if not args.pattern:
+    # Find th pattern for this source file (if any).
+    found = False
+
+    for pattern in args.patterns:
+        if pattern.startswith(args.sourcefile):
+            found = True
+            break
+
+    if not found:
         return
 
     try:
-        c_source, symbols = args.pattern.split(':')
+        c_source, symbols = pattern.split(':')
 
         if not symbols:
             return
 
         symbols = symbols.split(',')
     except:
-        sys.exit("error: bad stub pattern '{}'".format(args.pattern))
+        sys.exit("error: bad stub pattern '{}'".format(pattern))
 
     # Find all symbols in the object file.
     command = [args.crosscompile + 'readelf']

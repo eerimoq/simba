@@ -199,10 +199,6 @@ $(EXE): $(OBJ) $(SIMBA_GEN_O)
 	@echo "LD $@"
 	$(CXX) $(LIBPATH:%=-L%) $(LDFLAGS) -Wl,--start-group $(LIB:%=-l%) $^ -Wl,--end-group -o $@
 
-define STUB_template =
-$1%
-endef
-
 define COMPILE_template
 -include $(patsubst %.c,$(DEPSDIR)%.o.dep,$(abspath $1))
 $(patsubst %.c,$(OBJDIR)%.o,$(abspath $1)): $1
@@ -218,7 +214,7 @@ else
 	$$(CC) $$(INC:%=-I%) $$(CDEFS:%=-D%) $$(CFLAGS) -o $$@ $$<
 endif
 ifneq ($(STUB),)
-	stub.py "$(CROSS_COMPILE)" $$@ "$$(filter $$(call STUB_template,$$<), $(STUB))"
+	stub.py "$(CROSS_COMPILE)" $$@ $$< $(STUB)
 endif
 	gcc -MM -MT $$@ $$(INC:%=-I%) $$(CDEFS:%=-D%) -o $(patsubst %.c,$(DEPSDIR)%.o.dep,$(abspath $1)) $$<
 endef
@@ -239,7 +235,7 @@ else
 	$$(CXX) $$(INC:%=-I%) $$(CDEFS:%=-D%) $$(CXXFLAGS) -o $$@ $$<
 endif
 ifneq ($(STUB),)
-	stub.py "$(CROSS_COMPILE)" $$@ "$$(filter $$(call STUB_template,$$<), $(STUB))"
+	stub.py "$(CROSS_COMPILE)" $$@ $$< $(STUB)
 endif
 	$$(CXX) -MM -MT $$@ $$(INC:%=-I%) $$(CDEFS:%=-D%) -std=c++11 -o $(patsubst %.cpp,$(DEPSDIR)%.o.dep,$(abspath $1)) $$<
 endef
@@ -254,7 +250,7 @@ $(patsubst %.S,$(OBJDIR)%.obj,$(abspath $1)): $1
 	mkdir -p $(GENDIR)
 	$$(CC) $$(INC:%=-I%) $$(CDEFS:%=-D%) $$(CFLAGS) -o $$@ $$<
 ifneq ($(STUB),)
-	stub.py "$(CROSS_COMPILE)" $$@ "$$(filter $$(call STUB_template,$$<), $(STUB))"
+	stub.py "$(CROSS_COMPILE)" $$@ $$< $(STUB)
 endif
 	gcc -MM -MT $$@ $$(INC:%=-I%) $$(CDEFS:%=-D%) -o $(patsubst %.S,$(DEPSDIR)%.obj.dep,$(abspath $1)) $$<
 endef
