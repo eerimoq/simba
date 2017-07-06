@@ -239,6 +239,9 @@ extern "C" {
 #ifdef PORT_HAS_XBEE
 #    include "drivers/xbee.h"
 #endif
+#ifdef PORT_HAS_HX711
+#    include "drivers/hx711.h"
+#endif
 
 #include "inet/isotp.h"
 

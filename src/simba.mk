@@ -116,6 +116,7 @@ DRIVERS_SRC ?= \
 	esp_wifi/softap.c \
 	exti.c \
 	flash.c \
+	hx711.c \
 	i2c.c \
 	i2c_soft.c \
 	led_7seg_ht16k33.c \

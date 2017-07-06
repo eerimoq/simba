@@ -37,6 +37,7 @@
 #define PORT_HAS_PIN
 #define PORT_HAS_UART
 #define PORT_HAS_XBEE
+#define PORT_HAS_HX711
 
 /**
  * Used to include driver header files and the c-file source.
@@ -652,6 +653,17 @@
 #        define CONFIG_XBEE                                 0
 #    else
 #        define CONFIG_XBEE                                 1
+#    endif
+#endif
+
+/**
+ * Enable the hx711 driver.
+ */
+#ifndef CONFIG_HX711
+#    if defined(CONFIG_MINIMAL_SYSTEM) || !defined(PORT_HAS_HX711)
+#        define CONFIG_HX711                                0
+#    else
+#        define CONFIG_HX711                                1
 #    endif
 #endif
 

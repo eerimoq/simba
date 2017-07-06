@@ -1,0 +1,28 @@
+:mod:`hx711` --- HX711 ADC for weigh scales
+===========================================
+
+.. module:: hx711
+   :synopsis: HX711 ADC for weigh scales.
+
+The HX711 chipset performs ADC convertions on weigh scales. It can be
+used to measure weight in various ranges.
+              
+.. image:: ../../images/drivers/hx711.jpg
+   :width: 40%
+   :target: ../../_images/hx711.jpg
+
+This driver provides methods to read ADC samples from given channel
+with given gain.
+            
+--------------------------------------------------
+
+Source code: :github-blob:`src/drivers/hx711.h`, :github-blob:`src/drivers/hx711.c`
+
+Test code: :github-blob:`tst/drivers/software/hx711/main.c`
+
+Test coverage: :codecov:`src/drivers/hx711.c`
+
+--------------------------------------------------
+
+.. doxygenfile:: drivers/hx711.h
+   :project: simba
