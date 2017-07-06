@@ -6,7 +6,7 @@
 
 Source code: :github-blob:`src/drivers/adc.h`, :github-blob:`src/drivers/adc.c`
 
-Test code: :github-blob:`tst/drivers/adc/main.c`
+Test code: :github-blob:`tst/drivers/hardware/adc/main.c`
 
 --------------------------------------------------
 

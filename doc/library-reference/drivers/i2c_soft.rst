@@ -16,7 +16,7 @@ will probably be preferable.
 
 Source code: :github-blob:`src/drivers/i2c_soft.h`, :github-blob:`src/drivers/i2c_soft.c`
 
-Test code: :github-blob:`tst/drivers/i2c/master_soft/main.c`
+Test code: :github-blob:`tst/drivers/hardware/i2c/master_soft/main.c`
 
 --------------------------------------------------
 

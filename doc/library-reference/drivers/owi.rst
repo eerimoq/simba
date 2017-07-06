@@ -6,7 +6,7 @@
 
 Source code: :github-blob:`src/drivers/owi.h`, :github-blob:`src/drivers/owi.c`
 
-Test code: :github-blob:`tst/drivers/owi/main.c`
+Test code: :github-blob:`tst/drivers/hardware/owi/main.c`
 
 ----------------------------------------------
 

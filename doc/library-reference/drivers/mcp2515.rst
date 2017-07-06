@@ -12,7 +12,7 @@ MCP2515 is a CAN controller.
 
 Source code: :github-blob:`src/drivers/mcp2515.h`, :github-blob:`src/drivers/mcp2515.c`
 
-Test code: :github-blob:`tst/drivers/mcp2515/main.c`
+Test code: :github-blob:`tst/drivers/hardware/mcp2515/main.c`
 
 ----------------------------------------------
 

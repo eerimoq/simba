@@ -20,7 +20,7 @@ Known limitations:
 Source code: :github-blob:`src/drivers/eeprom_i2c.h`,
 :github-blob:`src/drivers/eeprom_i2c.c`
 
-Test code: :github-blob:`tst/drivers/eeprom_i2c/main.c`
+Test code: :github-blob:`tst/drivers/hardware/eeprom_i2c/main.c`
 
 ----------------------------------------------
 
