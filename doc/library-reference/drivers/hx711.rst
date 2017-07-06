@@ -6,14 +6,45 @@
 
 The HX711 chipset performs ADC convertions on weigh scales. It can be
 used to measure weight in various ranges.
-              
+
 .. image:: ../../images/drivers/hx711.jpg
    :width: 40%
    :target: ../../_images/hx711.jpg
 
 This driver provides methods to read ADC samples from given channel
 with given gain.
-            
+
+Example usage
+-------------
+
+This is a small example illustrating how to read one sample from each
+channel and gain combination.
+
+.. code-block:: c
+
+   struct hx711_driver_t hx711;
+   uint32_t samples_a_128;
+   uint32_t samples_b_64;
+   uint32_t samples_a_32;
+
+   /* Initialize and start the deivce. */
+   hx711_init(&hx711, &pin_d2_dev, &pin_d3_dev);
+   hx711_start(&hx711);
+
+   /* Read a few samples from the device. */
+   hx711_read(&hx711, &sample_a_128, hx711_channel_gain_a_128_t);
+   hx711_read(&hx711, &sample_b_64, hx711_channel_gain_b_64_t);
+   hx711_read(&hx711, &sample_a_32, hx711_channel_gain_a_32_t);
+
+   /* Print the samples. */
+   std_printf(OSTR(sample_a_128: %lu, sample_b_64: %lu, sample_a_32: %lu\r\n),
+              sample_a_128,
+              sample_b_64,
+              sample_a_32);
+
+   /* Stop the deivce. */
+   hx711_stop(&hx711);
+
 --------------------------------------------------
 
 Source code: :github-blob:`src/drivers/hx711.h`, :github-blob:`src/drivers/hx711.c`

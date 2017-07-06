@@ -39,7 +39,7 @@ enum hx711_channel_gain_t {
     hx711_channel_gain_a_32_t
 };
 
-/* The Hx711 driver. */
+/* The HX711 driver. */
 struct hx711_driver_t {
     struct pin_device_t *pd_sck_p;
     struct pin_device_t *dout_p;
@@ -88,10 +88,11 @@ int hx711_start(struct hx711_driver_t *self_p);
 int hx711_stop(struct hx711_driver_t *self_p);
 
 /**
- * Read a sample from the HX711 device.
+ * Read a sample from given channel and gain combination.
  *
  * @param[in] self_p Initialized driver object.
  * @param[out] sample_p Buffer to read the sample into.
+ * @param[in] channel_gain Channel and gain combination.
  *
  * @return zero(0) or negative error code.
  */
