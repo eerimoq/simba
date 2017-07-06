@@ -18,7 +18,7 @@ buffer.
 
 .. image:: ../../images/queue.jpg
    :width: 90%
-   :align: center    
+   :align: center
    :target: ../../_images/queue.jpg
 
 The data is either copied directly from the source to the destination
@@ -31,6 +31,40 @@ figure).
 2. The reader thread is *not* waiting for data. The writer writes from
    its source buffer into the queue buffer. Later, the reader reads
    data from the queue buffer to its destination buffer.
+
+Example usage
+-------------
+
+This is a small example of writing a value from an interrupt handler
+to a thread.
+
+.. code-block:: c
+
+   struct queue_t queue;
+   uint8_t buf[8];
+
+   /* The interrupt handler. */
+   ISR(foo)
+   {
+       uint8_t byte;
+
+       byte = 1;
+       queue_write_isr(&queue, &byte, sizeof(byte));
+   }
+
+   /* The thread. */
+   void bar(void *arg_p)
+   {
+       uint8_t byte;
+
+       /* Must be called before any read from or write to the
+          queue. */
+       queue_init(&queue, &buf[0], sizeof(buf));
+
+       queue_read(&queue, &byte, sizeof(byte))
+
+       /* Do something with the read byte. */
+   }
 
 ----------------------------------------------
 
