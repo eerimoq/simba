@@ -41,6 +41,7 @@ static int read_bit(struct hx711_driver_t *self_p)
     int value;
 
     /* Beginning of the clock pulse. */
+    sys_lock();
     pin_device_write_high(self_p->pd_sck_p);
     time_busy_wait_us(1);
 
@@ -49,6 +50,7 @@ static int read_bit(struct hx711_driver_t *self_p)
 
     /* End of the clock pulse. */
     pin_device_write_low(self_p->pd_sck_p);
+    sys_unlock();
     time_busy_wait_us(1);
 
     return (value);

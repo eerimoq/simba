@@ -39,7 +39,7 @@ CDEFS += \
 	CONFIG_HARNESS_MOCK_VERBOSE=0 \
 	CONFIG_FS_CMD_THRD_LIST=1
 
-STUB = $(SIMBA_ROOT)/src/drivers/hx711.c:pin_port_device_set_mode,pin_port_device_read,pin_port_device_write_high,pin_port_device_write_low
+STUB = $(SIMBA_ROOT)/src/drivers/hx711.c:pin_port_device_set_mode,pin_port_device_read,pin_port_device_write_high,pin_port_device_write_low,sys_lock,sys_unlock
 
 DRIVERS_SRC = hx711.c
 

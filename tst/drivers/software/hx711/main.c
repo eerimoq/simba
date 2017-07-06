@@ -218,6 +218,14 @@ int STUB(pin_port_device_write_low)(const struct pin_device_t *dev_p)
     return (0);
 }
 
+void STUB(sys_lock)()
+{
+}
+
+void STUB(sys_unlock)()
+{
+}
+
 int main()
 {
     struct harness_t harness;
