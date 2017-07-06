@@ -124,6 +124,7 @@ extern "C" {
 
 #include "encode/base64.h"
 #include "encode/json.h"
+#include "encode/nmea.h"
 
 #include "hash/crc.h"
 #include "hash/sha1.h"

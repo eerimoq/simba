@@ -80,7 +80,8 @@ ifeq ($(BOARD), linux)
 	spiffs)
     TESTS += $(addprefix tst/encode/, \
 	base64 \
-	json)
+	json \
+	nmea)
     TESTS += $(addprefix tst/hash/, \
 	crc \
 	sha1)

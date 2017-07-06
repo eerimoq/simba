@@ -271,10 +271,14 @@ static int test_strtol(struct harness_t *harness_p)
     BTASSERT(value == 0xf011);
     BTASSERT(std_strtol("0xB011", &value) != NULL);
     BTASSERT(value == 0xB011);
+    BTASSERT(std_strtol("0x", &value) != NULL);
+    BTASSERT(value == 0);
 
     /* Base 10. */
     BTASSERT(std_strtol("1011", &value) != NULL);
     BTASSERT(value == 1011);
+    BTASSERT(std_strtol("0", &value) != NULL);
+    BTASSERT(value == 0);
 
     /* Base 8. */
     BTASSERT(std_strtol("01011", &value) != NULL);
@@ -283,6 +287,8 @@ static int test_strtol(struct harness_t *harness_p)
     /* Base 2. */
     BTASSERT(std_strtol("0b1011", &value) != NULL);
     BTASSERT(value == 0b1011);
+    BTASSERT(std_strtol("0b", &value) != NULL);
+    BTASSERT(value == 0);
 
     /* Negative integers.*/
     BTASSERT(std_strtol("-0x1011", &value) != NULL);

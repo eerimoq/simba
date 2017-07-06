@@ -150,8 +150,10 @@ SRC += $(SIMBA_ROOT)/src/drivers/ports/linux/socket_device.c
 endif
 
 # Encode package.
-ENCODE_SRC ?= base64.c \
-	      json.c
+ENCODE_SRC ?= \
+	base64.c \
+	json.c \
+	nmea.c
 
 SRC += $(ENCODE_SRC:%=$(SIMBA_ROOT)/src/encode/%)
 
