@@ -61,6 +61,8 @@ static uint32_t read_sample(struct hx711_driver_t *self_p)
     int i;
     uint32_t sample;
 
+    sample = 0;
+
     for (i = 0; i < 24; i++) {
         sample <<= 1;
         sample |= read_bit(self_p);
