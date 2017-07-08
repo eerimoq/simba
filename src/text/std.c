@@ -747,6 +747,62 @@ const char *std_strtod(const char *str, double *value_p)
     return (a);
 }
 
+const char *std_strtodfp(const char *str_p,
+                         long *value_p,
+                         int precision)
+{
+    int i;
+    long integer;
+    long decimals;
+    int number_of_decimals;
+    const char *integer_end_p;
+    const char *decimal_end_p;
+
+    /* Integer part. */
+    integer_end_p = std_strtol(&str_p[0], &integer, 10);
+
+    if (integer_end_p == NULL) {
+        return (NULL);
+    }
+
+    for (i = 0; i < precision; i++) {
+        integer *= 10;
+    }
+
+    *value_p = integer;
+
+    if (*integer_end_p != '.') {
+        return (integer_end_p);
+    }
+
+    /* Decimal part. */
+    decimal_end_p = std_strtol(&integer_end_p[1], &decimals, 10);
+
+    if (decimal_end_p == NULL) {
+        return (integer_end_p + 1);
+    }
+
+    number_of_decimals = (decimal_end_p - &integer_end_p[1]);
+
+    /* Truncate decimals if needed. */
+    if (number_of_decimals > precision) {
+        for (i = 0; i < (number_of_decimals - precision); i++) {
+            decimals /= 10;
+            decimal_end_p--;
+        }
+
+        number_of_decimals = precision;
+    }
+
+    for (i = 0; i < (precision - number_of_decimals); i++) {
+        decimals *= 10;
+    }
+
+    *value_p += decimals;
+
+    return (decimal_end_p);
+}
+
 int std_strcpy(char *dst_p, far_string_t fsrc_p)
 {
     ASSERTN(dst_p != NULL, EINVAL);

@@ -189,14 +189,27 @@ const char *std_strtol(const char *str_p,
                        int base);
 
 /**
- * Convert string to double.
+ * Convert given string to a double.
  *
  * @param[in] str_p Double string.
- * @param[out] value_p Double value.
+ * @param[out] value_p Parsed value.
  *
- * @return Pointer to the next byte or NULL on failure.
+ * @return Pointer to the next byte, or NULL if no value vas found.
  */
 const char *std_strtod(const char *str_p, double *value_p);
+
+/**
+ * Convert string to decimal fixed point number with given precision.
+ *
+ * @param[in] str_p Double string.
+ * @param[out] value_p Decimal fixed point number of given precision.
+ * @param[in] precision Number precision, or decimal places.
+ *
+ * @return Pointer to the next byte, or NULL on failure.
+ */
+const char *std_strtodfp(const char *str_p,
+                         long *value_p,
+                         int precision);
 
 /**
  * Copy string from far memory to memory.

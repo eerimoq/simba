@@ -570,6 +570,60 @@ static int test_strtod(struct harness_t *harness_p)
     return (0);
 }
 
+static int test_strtodfp(struct harness_t *harness_p)
+{
+    long value;
+
+    const char value_1[] = "1.";
+    BTASSERT(std_strtodfp(&value_1[0], &value, 2) == &value_1[2]);
+    BTASSERTI(value, ==, 100);
+
+    const char value_2[] = "1.1";
+    BTASSERT(std_strtodfp(&value_2[0], &value, 6) == &value_2[3]);
+    BTASSERTI(value, ==, 1100000);
+
+    const char value_3[] = "1.01";
+    BTASSERT(std_strtodfp(&value_3[0], &value, 6) == &value_3[4]);
+    BTASSERTI(value, ==, 1010000);
+
+    const char value_4[] = "0.000012";
+    BTASSERT(std_strtodfp(&value_4[0], &value, 6) == &value_4[8]);
+    BTASSERTI(value, ==, 12);
+
+    const char value_5[] = "1234.00010";
+    BTASSERT(std_strtodfp(&value_5[0], &value, 6) == &value_5[10]);
+    BTASSERTI(value, ==, 1234000100);
+
+    const char value_6[] = "1234.00010";
+    BTASSERT(std_strtodfp(&value_6[0], &value, 4) == &value_6[9]);
+    BTASSERTI(value, ==, 12340001);
+
+    const char value_7[] = "1234.00010";
+    BTASSERT(std_strtodfp(&value_7[0], &value, 0) == &value_7[5]);
+    BTASSERTI(value, ==, 1234);
+
+    const char value_8[] = "01234.00010";
+    BTASSERT(std_strtodfp(&value_8[0], &value, 0) == &value_8[6]);
+    BTASSERTI(value, ==, 1234);
+
+    const char value_9[] = "1.y";
+    BTASSERT(std_strtodfp(&value_9[0], &value, 0) == &value_9[2]);
+    BTASSERTI(value, ==, 1);
+
+    const char value_10[] = "077.077D";
+    BTASSERT(std_strtodfp(&value_10[0], &value, 4) == &value_10[7]);
+    BTASSERTI(value, ==, 770770);
+
+    const char value_11[] = "1";
+    BTASSERT(std_strtodfp(&value_11[0], &value, 6) == &value_11[1]);
+    BTASSERTI(value, ==, 1000000);
+
+    const char value_12[] = "x.123";
+    BTASSERT(std_strtodfp(&value_12[0], &value, 6) == NULL);
+
+    return (0);
+}
+
 static int test_hexdump(struct harness_t *harness_p)
 {
     BTASSERT(std_hexdump(sys_get_stdout(),
@@ -596,6 +650,7 @@ int main()
         { test_strip, "test_strip" },
         { test_libc, "test_libc" },
         { test_strtod, "test_strtod" },
+        { test_strtodfp, "test_strtodfp" },
         { test_hexdump, "test_hexdump" },
         { NULL, NULL }
     };
