@@ -140,6 +140,11 @@
 #    define PORT_HAS_WATCHDOG
 #endif
 
+#if defined(FAMILY_NRF5)
+#    define PORT_HAS_EEPROM_SOFT
+#    define PORT_HAS_FLASH
+#endif
+
 #if defined(PORT_HAS_I2C_SOFT) && !defined(PORT_HAS_I2C)
 #    define PORT_HAS_I2C
 #    define CONFIG_SOFTWARE_I2C                            1
@@ -440,7 +445,7 @@
  * Enable the flash driver.
  */
 #ifndef CONFIG_FLASH
-#    if defined(BOARD_ARDUINO_DUE) || defined(ARCH_LINUX) || defined(ARCH_ESP) || defined(ARCH_ESP32) || defined(FAMILY_STM32F1) || defined(FAMILY_STM32F2) || defined(FAMILY_STM32F3) || defined(FAMILY_SPC5)
+#    if defined(BOARD_ARDUINO_DUE) || defined(ARCH_LINUX) || defined(ARCH_ESP) || defined(ARCH_ESP32) || defined(FAMILY_STM32F1) || defined(FAMILY_STM32F2) || defined(FAMILY_STM32F3) || defined(FAMILY_SPC5) || defined(FAMILY_NRF5)
 #        define CONFIG_FLASH                                1
 #    else
 #        define CONFIG_FLASH                                0

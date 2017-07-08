@@ -1,0 +1,12 @@
+:mod:`nrf52840` --- nRF52840
+==================================
+
+.. module:: nrf52840
+   :synopsis: nRF52840.
+
+Source code: :github-blob:`src/mcus/nrf52840/mcu.h`
+
+----------------------------------------------
+
+.. doxygenfile:: mcus/nrf52840/mcu.h
+   :project: simba
