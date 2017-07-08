@@ -30,6 +30,18 @@
 
 #include "simba.h"
 
+static int test_encode(struct harness_t *harness_p)
+{
+    struct nmea_sentence_t decoded;
+    char buf[NMEA_SENTENCE_SIZE_MAX];
+
+    decoded.type = nmea_sentence_type_gll_t;
+
+    BTASSERTI(nmea_encode(&buf[0], &decoded), ==, -ENOSYS);
+
+    return (0);
+}
+
 static int test_decode_bad_dollar(struct harness_t *harness_p)
 {
     size_t size;
@@ -116,7 +128,7 @@ static int test_decode_gga(struct harness_t *harness_p)
     struct nmea_sentence_t decoded;
 
     size = strlen(encoded);
-    BTASSERTI(nmea_decode(&decoded, &encoded[0], size), ==, size);
+    BTASSERTI(nmea_decode(&decoded, &encoded[0], size), ==, 0);
 
     BTASSERTI(decoded.type, ==, nmea_sentence_type_gga_t);
     BTASSERTM(decoded.gga.time_of_fix_p, "123519", strlen("123519") + 1);
@@ -143,7 +155,7 @@ static int test_decode_gga_empty(struct harness_t *harness_p)
     struct nmea_sentence_t decoded;
 
     size = strlen(encoded);
-    BTASSERTI(nmea_decode(&decoded, &encoded[0], size), ==, size);
+    BTASSERTI(nmea_decode(&decoded, &encoded[0], size), ==, 0);
 
     BTASSERTI(decoded.type, ==, nmea_sentence_type_gga_t);
     BTASSERTM(decoded.gga.time_of_fix_p, "", strlen("") + 1);
@@ -183,7 +195,7 @@ static int test_decode_gll(struct harness_t *harness_p)
     struct nmea_sentence_t decoded;
 
     size = strlen(encoded);
-    BTASSERTI(nmea_decode(&decoded, &encoded[0], size), ==, size);
+    BTASSERTI(nmea_decode(&decoded, &encoded[0], size), ==, 0);
 
     BTASSERTI(decoded.type, ==, nmea_sentence_type_gll_t);
     BTASSERTM(decoded.gll.time_of_fix_p, "225444", strlen("225444") + 1);
@@ -204,7 +216,7 @@ static int test_decode_gll_empty(struct harness_t *harness_p)
     struct nmea_sentence_t decoded;
 
     size = strlen(encoded);
-    BTASSERTI(nmea_decode(&decoded, &encoded[0], size), ==, size);
+    BTASSERTI(nmea_decode(&decoded, &encoded[0], size), ==, 0);
 
     BTASSERTI(decoded.type, ==, nmea_sentence_type_gll_t);
     BTASSERTM(decoded.gll.time_of_fix_p, "", strlen("") + 1);
@@ -238,7 +250,7 @@ static int test_decode_gsa(struct harness_t *harness_p)
     struct nmea_sentence_t decoded;
 
     size = strlen(encoded);
-    BTASSERTI(nmea_decode(&decoded, &encoded[0], size), ==, size);
+    BTASSERTI(nmea_decode(&decoded, &encoded[0], size), ==, 0);
 
     BTASSERTI(decoded.type, ==, nmea_sentence_type_gsa_t);
     BTASSERTM(decoded.gsa.selection_p, "A", strlen("A") + 1);
@@ -270,7 +282,7 @@ static int test_decode_gsa_empty(struct harness_t *harness_p)
     struct nmea_sentence_t decoded;
 
     size = strlen(encoded);
-    BTASSERTI(nmea_decode(&decoded, &encoded[0], size), ==, size);
+    BTASSERTI(nmea_decode(&decoded, &encoded[0], size), ==, 0);
 
     BTASSERTI(decoded.type, ==, nmea_sentence_type_gsa_t);
     BTASSERTM(decoded.gsa.selection_p, "", strlen("") + 1);
@@ -315,7 +327,7 @@ static int test_decode_gsv(struct harness_t *harness_p)
     struct nmea_sentence_t decoded;
 
     size = strlen(encoded);
-    BTASSERTI(nmea_decode(&decoded, &encoded[0], size), ==, size);
+    BTASSERTI(nmea_decode(&decoded, &encoded[0], size), ==, 0);
 
     BTASSERTI(decoded.type, ==, nmea_sentence_type_gsv_t);
     BTASSERTM(decoded.gsv.number_of_sentences_p, "2", strlen("2") + 1);
@@ -350,7 +362,7 @@ static int test_decode_gsv_empty(struct harness_t *harness_p)
     struct nmea_sentence_t decoded;
 
     size = strlen(encoded);
-    BTASSERTI(nmea_decode(&decoded, &encoded[0], size), ==, size);
+    BTASSERTI(nmea_decode(&decoded, &encoded[0], size), ==, 0);
 
     BTASSERTI(decoded.type, ==, nmea_sentence_type_gsv_t);
     BTASSERTM(decoded.gsv.number_of_sentences_p, "", strlen("") + 1);
@@ -397,7 +409,7 @@ static int test_decode_rmc(struct harness_t *harness_p)
     struct nmea_sentence_t decoded;
 
     size = strlen(encoded);
-    BTASSERTI(nmea_decode(&decoded, &encoded[0], size), ==, size);
+    BTASSERTI(nmea_decode(&decoded, &encoded[0], size), ==, 0);
 
     BTASSERTI(decoded.type, ==, nmea_sentence_type_rmc_t);
     BTASSERTM(decoded.rmc.time_of_fix_p, "123519", strlen("123519") + 1);
@@ -406,7 +418,7 @@ static int test_decode_rmc(struct harness_t *harness_p)
     BTASSERTM(decoded.rmc.latitude.direction_p, "N", strlen("N") + 1);
     BTASSERTM(decoded.rmc.longitude.angle_p, "01131.000", strlen("01131.000") + 1);
     BTASSERTM(decoded.rmc.longitude.direction_p, "E", strlen("E") + 1);
-    BTASSERTM(decoded.rmc.speed_p, "022.4", strlen("022.4") + 1);
+    BTASSERTM(decoded.rmc.speed_knots_p, "022.4", strlen("022.4") + 1);
     BTASSERTM(decoded.rmc.track_angle_p, "084.4", strlen("084.4") + 1);
     BTASSERTM(decoded.rmc.date_p, "230394", strlen("230394") + 1);
     BTASSERTM(decoded.rmc.magnetic_variation.angle_p, "003.1", strlen("003.1") + 1);
@@ -423,7 +435,7 @@ static int test_decode_rmc_empty(struct harness_t *harness_p)
     struct nmea_sentence_t decoded;
 
     size = strlen(encoded);
-    BTASSERTI(nmea_decode(&decoded, &encoded[0], size), ==, size);
+    BTASSERTI(nmea_decode(&decoded, &encoded[0], size), ==, 0);
 
     BTASSERTI(decoded.type, ==, nmea_sentence_type_rmc_t);
     BTASSERTM(decoded.rmc.time_of_fix_p, "", strlen("") + 1);
@@ -432,7 +444,7 @@ static int test_decode_rmc_empty(struct harness_t *harness_p)
     BTASSERTM(decoded.rmc.latitude.direction_p, "", strlen("") + 1);
     BTASSERTM(decoded.rmc.longitude.angle_p, "", strlen("") + 1);
     BTASSERTM(decoded.rmc.longitude.direction_p, "", strlen("") + 1);
-    BTASSERTM(decoded.rmc.speed_p, "", strlen("") + 1);
+    BTASSERTM(decoded.rmc.speed_knots_p, "", strlen("") + 1);
     BTASSERTM(decoded.rmc.track_angle_p, "", strlen("") + 1);
     BTASSERTM(decoded.rmc.date_p, "", strlen("") + 1);
     BTASSERTM(decoded.rmc.magnetic_variation.angle_p, "", strlen("") + 1);
@@ -462,7 +474,7 @@ static int test_decode_vtg(struct harness_t *harness_p)
     struct nmea_sentence_t decoded;
 
     size = strlen(encoded);
-    BTASSERTI(nmea_decode(&decoded, &encoded[0], size), ==, size);
+    BTASSERTI(nmea_decode(&decoded, &encoded[0], size), ==, 0);
 
     BTASSERTI(decoded.type, ==, nmea_sentence_type_vtg_t);
     BTASSERTM(decoded.vtg.track_made_good_true.value_p, "054.7", strlen("054.7") + 1);
@@ -485,7 +497,7 @@ static int test_decode_vtg_empty(struct harness_t *harness_p)
     struct nmea_sentence_t decoded;
 
     size = strlen(encoded);
-    BTASSERTI(nmea_decode(&decoded, &encoded[0], size), ==, size);
+    BTASSERTI(nmea_decode(&decoded, &encoded[0], size), ==, 0);
 
     BTASSERTI(decoded.type, ==, nmea_sentence_type_vtg_t);
     BTASSERTM(decoded.vtg.track_made_good_true.value_p, "", strlen("") + 1);
@@ -513,14 +525,86 @@ static int test_decode_vtg_short(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_encode(struct harness_t *harness_p)
+static int test_decode_fix_time(struct harness_t *harness_p)
 {
-    struct nmea_sentence_t decoded;
-    char buf[NMEA_SENTENCE_SIZE_MAX];
+    char early_morning[] = "052859";
+    int hour;
+    int minute;
+    int second;
 
-    decoded.type = nmea_sentence_type_gll_t;
+    BTASSERTI(nmea_decode_fix_time(&early_morning[0],
+                                   &hour,
+                                   &minute,
+                                   &second), ==, 0);
+    BTASSERTI(hour, ==, 5);
+    BTASSERTI(minute, ==, 28);
+    BTASSERTI(second, ==, 59);
 
-    BTASSERTI(nmea_encode(&buf[0], &decoded), ==, -ENOSYS);
+    return (0);
+}
+
+static int test_decode_date(struct harness_t *harness_p)
+{
+    char late_spring[] = "140517";
+    int year;
+    int month;
+    int date;
+
+    BTASSERTI(nmea_decode_date(&late_spring[0],
+                               &year,
+                               &month,
+                               &date), ==, 0);
+    BTASSERTI(year, ==, 17);
+    BTASSERTI(month, ==, 5);
+    BTASSERTI(date, ==, 14);
+
+    return (0);
+}
+
+static int test_decode_position(struct harness_t *harness_p)
+{
+    long degrees;
+
+    /* Position 1. */
+    char angle_1[] = "4703.324";
+    struct nmea_position_t position_1 = { &angle_1[0], "N" };
+    BTASSERTI(nmea_decode_position(&position_1, &degrees), ==, 0);
+    BTASSERTI(degrees, ==, 47000000 + (3324000 / 60));
+
+    /* Position 2. */
+    char angle_2[] = "10012.0245";
+    struct nmea_position_t position_2 = { &angle_2[0], "S" };
+    BTASSERTI(nmea_decode_position(&position_2, &degrees), ==, 0);
+    BTASSERTI(degrees, ==, -(100000000 + (12024500 / 60)));
+
+    /* Position 3. */
+    char angle_3[] = "10012.0000019";
+    struct nmea_position_t position_3 = { &angle_3[0], "E" };
+    BTASSERTI(nmea_decode_position(&position_3, &degrees), ==, 0);
+    BTASSERTI(degrees, ==, 100000000 + (12000001 / 60));
+
+    /* Position 4. */
+    char angle_4[] = "0000.00019";
+    struct nmea_position_t position_4 = { &angle_4[0], "W" };
+    BTASSERTI(nmea_decode_position(&position_4, &degrees), ==, 0);
+    BTASSERTI(degrees, ==, -(190 / 60));
+
+    /* Position 5. */
+    char angle_5[] = "35959.999999";
+    struct nmea_position_t position_5 = { &angle_5[0], "N" };
+    BTASSERTI(nmea_decode_position(&position_5, &degrees), ==, 0);
+    BTASSERTI(degrees, ==, 359000000 + (59999999 / 60));
+
+    /* Position 6. */
+    char angle_6[] = "36000.0";
+    struct nmea_position_t position_6 = { &angle_6[0], "N" };
+    BTASSERTI(nmea_decode_position(&position_6, &degrees), ==, 0);
+    BTASSERTI(degrees, ==, 360000000);
+
+    /* Position 7. */
+    char angle_7[] = "10012";
+    struct nmea_position_t position_7 = { &angle_7[0], "N" };
+    BTASSERTI(nmea_decode_position(&position_7, &degrees), ==, -EPROTO);
 
     return (0);
 }
@@ -529,6 +613,7 @@ int main()
 {
     struct harness_t harness;
     struct harness_testcase_t harness_testcases[] = {
+        { test_encode, "test_encode" },
         { test_decode_bad_dollar, "test_decode_bad_dollar" },
         { test_decode_bad_line_termination, "test_decode_bad_line_termination" },
         { test_decode_bad_asterix, "test_decode_bad_asterix" },
@@ -550,10 +635,12 @@ int main()
         { test_decode_rmc, "test_decode_rmc" },
         { test_decode_rmc_empty, "test_decode_rmc_empty" },
         { test_decode_rmc_short, "test_decode_rmc_short" },
-        { test_encode, "test_encode" },
         { test_decode_vtg, "test_decode_vtg" },
         { test_decode_vtg_empty, "test_decode_vtg_empty" },
         { test_decode_vtg_short, "test_decode_vtg_short" },
+        { test_decode_fix_time, "test_decode_fix_time" },
+        { test_decode_date, "test_decode_date" },
+        { test_decode_position, "test_decode_position" },
         { NULL, NULL }
     };
 

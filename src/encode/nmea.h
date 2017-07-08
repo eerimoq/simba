@@ -35,6 +35,9 @@
 
 #define NMEA_SENTENCE_SIZE_MAX                       (80 + 3)
 
+#define NMEA_KNOTS_TO_METERS_PER_SECOND(knots) \
+    DIV_ROUND((51444L * knots), 100000L)
+
 struct nmea_position_t {
     char *angle_p;
     char *direction_p;
@@ -109,7 +112,7 @@ struct nmea_sentence_rmc_t {
     char *status_p;
     struct nmea_position_t latitude;
     struct nmea_position_t longitude;
-    char *speed_p;
+    char *speed_knots_p;
     char *track_angle_p;
     char *date_p;
     struct nmea_position_t magnetic_variation;
@@ -174,10 +177,58 @@ ssize_t nmea_encode(char *dst_p, struct nmea_sentence_t *src_p);
  * @param[in] size Number of bytes in the sentence to decode, not
  *                 including the null-termination.
  *
- * @return Number of decoded bytes, or negative error code.
+ * @return zero(0) or negative error code.
  */
 ssize_t nmea_decode(struct nmea_sentence_t *dst_p,
                     char *src_p,
                     size_t size);
+
+/**
+ * Decode given NMEA fix time "hhmmss". The output variables have not
+ * been modified if the decoding failed.
+ *
+ * @param[in] src_p Fix time to decode.
+ * @param[out] hour_p Decoded hour.
+ * @param[out] minute_p Decoded minute.
+ * @param[out] second_p Decoded second.
+ *
+ * @return zero(0) or negative error code.
+ */
+int nmea_decode_fix_time(char *src_p,
+                         int *hour_p,
+                         int *minute_p,
+                         int *second_p);
+
+/**
+ * Decode given NMEA date "ddmmyy". The output variables have not been
+ * modified if the decoding failed.
+ *
+ * @param[in] src_p Date to decode.
+ * @param[out] year_p Decoded year.
+ * @param[out] month_p Decoded month.
+ * @param[out] date_p Decoded date.
+ *
+ * @return zero(0) or negative error code.
+ */
+int nmea_decode_date(char *src_p,
+                     int *year_p,
+                     int *month_p,
+                     int *date_p);
+
+/**
+ * Decode given NMEA position angle "d{2,3}mm.m+" and direction
+ * "[NSEW]", for example "4703.324" "N", which is decoded as 47
+ * degrees, 3.324 minutes, or 47055400 microdegrees.
+ *
+ * The output variable has not been modified if the decoding failed.
+ *
+ * @param[in] src_p Position to decode.
+ * @param[out] degrees_p Decoded position in microdegrees (millions
+ *                       of degrees).
+ *
+ * @return zero(0) or negative error code.
+ */
+int nmea_decode_position(struct nmea_position_t *src_p,
+                         long *degrees_p);
 
 #endif
