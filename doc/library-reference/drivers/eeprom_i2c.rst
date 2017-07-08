@@ -9,6 +9,7 @@ driver. Other I2C EEPROMs may work as well, as they often implement
 the same interface.
 
 - AT24C32 from Atmel.
+- AT24C256 from Atmel.
 
 Known limitations:
 
