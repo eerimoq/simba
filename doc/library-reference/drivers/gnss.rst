@@ -24,6 +24,8 @@ Source code: :github-blob:`src/drivers/gnss.h`, :github-blob:`src/drivers/gnss.c
 
 Test code: :github-blob:`tst/drivers/software/gnss/main.c`
 
+Example code: :github-blob:`examples/gnss/main.c`
+
 --------------------------------------------------
 
 .. doxygenfile:: drivers/gnss.h
