@@ -99,6 +99,7 @@ ifeq ($(BOARD), linux)
     TESTS += $(addprefix tst/multimedia/, \
 	midi)
     TESTS += $(addprefix tst/drivers/software/, \
+	gnss \
 	hx711 \
 	xbee)
 endif
