@@ -184,8 +184,8 @@ ssize_t nmea_decode(struct nmea_sentence_t *dst_p,
                     size_t size);
 
 /**
- * Decode given NMEA fix time "hhmmss". The output variables have not
- * been modified if the decoding failed.
+ * Decode given NMEA fix time ``hhmmss``. The output variables have
+ * not been modified if the decoding failed.
  *
  * @param[in] src_p Fix time to decode.
  * @param[out] hour_p Decoded hour.
@@ -200,8 +200,8 @@ int nmea_decode_fix_time(char *src_p,
                          int *second_p);
 
 /**
- * Decode given NMEA date "ddmmyy". The output variables have not been
- * modified if the decoding failed.
+ * Decode given NMEA date ``ddmmyy``. The output variables have not
+ * been modified if the decoding failed.
  *
  * @param[in] src_p Date to decode.
  * @param[out] year_p Decoded year.
@@ -216,8 +216,8 @@ int nmea_decode_date(char *src_p,
                      int *date_p);
 
 /**
- * Decode given NMEA position angle "d{2,3}mm.m+" and direction
- * "[NSEW]", for example "4703.324" "N", which is decoded as 47
+ * Decode given NMEA position angle ``d{2,3}mm.m+`` and direction
+ * ``[NSEW]``, for example ``4703.324`` ``N``, which is decoded as 47
  * degrees, 3.324 minutes, or 47055400 microdegrees.
  *
  * The output variable has not been modified if the decoding failed.
