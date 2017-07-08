@@ -33,7 +33,7 @@
 
 #include "nrf52840.h"
 
-#define PIN_DEVICE_MAX      1
+#define PIN_DEVICE_MAX     48
 #define UART_DEVICE_MAX     1
 #define I2C_DEVICE_MAX      1
 #define FLASH_DEVICE_MAX    1

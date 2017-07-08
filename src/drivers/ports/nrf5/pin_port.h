@@ -32,6 +32,7 @@
 #define __DRIVERS_PIN_PORT_H__
 
 struct pin_device_t {
+    int id;
 };
 
 struct pin_driver_t {
