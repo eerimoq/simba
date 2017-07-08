@@ -38,6 +38,7 @@
 #define PORT_HAS_UART
 #define PORT_HAS_XBEE
 #define PORT_HAS_HX711
+#define PORT_HAS_GNSS
 
 /**
  * Used to include driver header files and the c-file source.
@@ -664,6 +665,17 @@
 #        define CONFIG_HX711                                0
 #    else
 #        define CONFIG_HX711                                1
+#    endif
+#endif
+
+/**
+ * Enable the gnss driver.
+ */
+#ifndef CONFIG_GNSS
+#    if defined(CONFIG_MINIMAL_SYSTEM) || !defined(PORT_HAS_GNSS)
+#        define CONFIG_GNSS                                 0
+#    else
+#        define CONFIG_GNSS                                 1
 #    endif
 #endif
 

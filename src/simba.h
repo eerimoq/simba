@@ -243,6 +243,9 @@ extern "C" {
 #ifdef PORT_HAS_HX711
 #    include "drivers/hx711.h"
 #endif
+#ifdef PORT_HAS_GNSS
+#    include "drivers/gnss.h"
+#endif
 
 #include "inet/isotp.h"
 
