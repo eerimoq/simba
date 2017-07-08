@@ -60,7 +60,7 @@ int std_module_init(void);
  * * length: ``l`` for long or nothing
  * * specifier: ``c``, ``s``, ``S``, ``d``, ``i``, ``u``, ``x`` or ``f``
  *
- * The ``S`` specifier expects a far strings (``far_string_t``)
+ * The ``S`` specifier expects a far string (``far_string_t``)
  * argument. Other specifiers have their usual definition.
  *
  * @param[out] dst_p Destination buffer. The formatted string is
