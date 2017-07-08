@@ -3,7 +3,7 @@
 #
 # The MIT License (MIT)
 #
-# Copyright (c) 2014-2017, Erik Moqvist
+# Copyright (c) 2017, Erik Moqvist
 #
 # Permission is hereby granted, free of charge, to any person
 # obtaining a copy of this software and associated documentation
@@ -28,48 +28,13 @@
 # This file is part of the Simba project.
 #
 
-EXAMPLES = \
-	analog_read \
-	analog_write \
-	blink \
-	upgrade/application \
-	upgrade/bootloader \
-	ds18b20 \
-	fat16 \
-	filesystem \
-	gnss \
-	hc0x \
-	hello_world \
-	http_client \
-	http_server \
-	inet \
-	midi_player \
-	music_player \
-	nrf24l01 \
-	owi \
-	queue \
-	shell \
-	spi \
-	ssl_client \
-	ssl_server \
-	synthesizer \
-	timer \
-	usb \
-	xbee
+NAME = gnss
+BOARD ?= linux
 
-all: $(EXAMPLES:%=%.all)
+CDEFS += \
+	CONFIG_START_SHELL=0 \
+	CONFIG_START_NVM=0 \
+	CONFIG_START_FILESYSTEM=0 \
+	CONFIG_LINUX_SOCKET_DEVICE=1
 
-clean: $(EXAMPLES:%=%.clean)
-
-$(EXAMPLES:%=%.all):
-	$(MAKE) -C $(basename $@) all
-
-$(EXAMPLES:%=%.clean):
-	$(MAKE) -C $(basename $@) clean
-
-help:
-	@echo "--------------------------------------------------------------------------------"
-	@echo "  target                      description"
-	@echo "--------------------------------------------------------------------------------"
-	@echo "  all                         compile and link the examples"
-	@echo
+include $(SIMBA_ROOT)/make/app.mk
