@@ -61,7 +61,6 @@ int main()
 
     while (1) {
         if (chan_poll(sys_get_stdin(), &timeout) != NULL) {
-            std_printf(OSTR("data available.\r\n"));
             res = gnss_read(&gnss);
 
             if (res != 0) {
@@ -70,8 +69,6 @@ int main()
                            errno_as_string(res));
             }
         }
-
-        std_printf(OSTR("foo.\r\n"));
 
         /* Date. */
         age = gnss_get_date(&gnss, &date);
