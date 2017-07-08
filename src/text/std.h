@@ -172,7 +172,7 @@ ssize_t std_fprintf(void *chan_p, far_string_t fmt_p, ...);
 ssize_t std_vfprintf(void *chan_p, far_string_t fmt_p, va_list *ap_p);
 
 /**
- * Convert given string to an integer.
+ * Convert given string to an integer in given base.
  *
  * @param[in] str_p Integer string.
  * @param[out] value_p Parsed integer.
@@ -184,9 +184,20 @@ ssize_t std_vfprintf(void *chan_p, far_string_t fmt_p, va_list *ap_p);
  *
  * @return Pointer to the next byte, or NULL if no value was found.
  */
-const char *std_strtol(const char *str_p,
-                       long *value_p,
-                       int base);
+const char *std_strtolb(const char *str_p,
+                        long *value_p,
+                        int base);
+
+/**
+ * Convert given string to an integer with base selection based on the
+ * string prefix.
+ *
+ * @param[in] str_p Integer string.
+ * @param[out] value_p Parsed integer.
+ *
+ * @return Pointer to the next byte, or NULL if no value was found.
+ */
+const char *std_strtol(const char *str_p, long *value_p);
 
 /**
  * Convert given string to a double.

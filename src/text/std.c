@@ -530,9 +530,9 @@ ssize_t std_vfprintf(void *chan_p, far_string_t fmt_p, va_list *ap_p)
     return (output.size);
 }
 
-const char *std_strtol(const char *str_p,
-                       long *value_p,
-                       int base)
+const char *std_strtolb(const char *str_p,
+                        long *value_p,
+                        int base)
 {
     ASSERTNRN(str_p != NULL, EINVAL);
     ASSERTNRN(value_p != NULL, EINVAL);
@@ -621,6 +621,11 @@ const char *std_strtol(const char *str_p,
     *value_p = value;
 
     return (str_p - 1);
+}
+
+const char *std_strtol(const char *str_p, long *value_p)
+{
+    return (std_strtolb(str_p, value_p, 0));
 }
 
 /*
@@ -759,7 +764,7 @@ const char *std_strtodfp(const char *str_p,
     const char *decimal_end_p;
 
     /* Integer part. */
-    integer_end_p = std_strtol(&str_p[0], &integer, 10);
+    integer_end_p = std_strtolb(&str_p[0], &integer, 10);
 
     if (integer_end_p == NULL) {
         return (NULL);
@@ -776,7 +781,7 @@ const char *std_strtodfp(const char *str_p,
     }
 
     /* Decimal part. */
-    decimal_end_p = std_strtol(&integer_end_p[1], &decimals, 10);
+    decimal_end_p = std_strtolb(&integer_end_p[1], &decimals, 10);
 
     if (decimal_end_p == NULL) {
         return (integer_end_p + 1);

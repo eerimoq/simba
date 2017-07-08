@@ -267,86 +267,86 @@ static int test_strtol(struct harness_t *harness_p)
     /* Positive integers.*/
 
     /* Base 16. */
-    BTASSERT(std_strtol("0x1011", &value, 0) != NULL);
+    BTASSERT(std_strtol("0x1011", &value) != NULL);
     BTASSERT(value == 0x1011);
-    BTASSERT(std_strtol("0xf011", &value, 0) != NULL);
+    BTASSERT(std_strtol("0xf011", &value) != NULL);
     BTASSERT(value == 0xf011);
-    BTASSERT(std_strtol("0xB011", &value, 0) != NULL);
+    BTASSERT(std_strtol("0xB011", &value) != NULL);
     BTASSERT(value == 0xb011);
     value = 57;
-    BTASSERT(std_strtol("0x", &value, 0) == NULL);
+    BTASSERT(std_strtol("0x", &value) == NULL);
     BTASSERT(value == 57);
-    BTASSERT(std_strtol("0x", &value, 16) == NULL);
+    BTASSERT(std_strtolb("0x", &value, 16) == NULL);
     BTASSERT(value == 57);
-    BTASSERT(std_strtol("g", &value, 16) == NULL);
+    BTASSERT(std_strtolb("g", &value, 16) == NULL);
     BTASSERT(value == 57);
-    BTASSERT(std_strtol("0xg", &value, 16) == NULL);
+    BTASSERT(std_strtolb("0xg", &value, 16) == NULL);
     BTASSERT(value == 57);
 
     /* Base 10. */
-    BTASSERT(std_strtol("1011", &value, 0) != NULL);
+    BTASSERT(std_strtol("1011", &value) != NULL);
     BTASSERT(value == 1011);
-    BTASSERT(std_strtol("0", &value, 0) != NULL);
+    BTASSERT(std_strtol("0", &value) != NULL);
     BTASSERT(value == 0);
-    BTASSERT(std_strtol("1011", &value, 10) != NULL);
+    BTASSERT(std_strtolb("1011", &value, 10) != NULL);
     BTASSERT(value == 1011);
-    BTASSERT(std_strtol("0x", &value, 10) != NULL);
+    BTASSERT(std_strtolb("0x", &value, 10) != NULL);
     BTASSERT(value == 0);
     value = 57;
-    BTASSERT(std_strtol("a", &value, 10) == NULL);
+    BTASSERT(std_strtolb("a", &value, 10) == NULL);
     BTASSERT(value == 57);
 
     /* Base 8. */
-    BTASSERT(std_strtol("01011", &value, 0) != NULL);
+    BTASSERT(std_strtol("01011", &value) != NULL);
     BTASSERT(value == 01011);
-    BTASSERT(std_strtol("01011", &value, 8) != NULL);
+    BTASSERT(std_strtolb("01011", &value, 8) != NULL);
     BTASSERT(value == 01011);
-    BTASSERT(std_strtol("0x", &value, 8) != NULL);
+    BTASSERT(std_strtolb("0x", &value, 8) != NULL);
     BTASSERT(value == 0);
     value = 57;
-    BTASSERT(std_strtol("8", &value, 8) == NULL);
+    BTASSERT(std_strtolb("8", &value, 8) == NULL);
     BTASSERT(value == 57);
 
     /* Base 2. */
-    BTASSERT(std_strtol("0b1011", &value, 0) != NULL);
+    BTASSERT(std_strtol("0b1011", &value) != NULL);
     BTASSERT(value == 0b1011);
-    BTASSERT(std_strtol("0b1011", &value, 2) != NULL);
+    BTASSERT(std_strtolb("0b1011", &value, 2) != NULL);
     BTASSERT(value == 0b1011);
     value = 57;
-    BTASSERT(std_strtol("0b", &value, 0) == NULL);
-    BTASSERT(std_strtol("0b", &value, 2) == NULL);
-    BTASSERT(std_strtol("2", &value, 2) == NULL);
-    BTASSERT(std_strtol("0b2", &value, 2) == NULL);
+    BTASSERT(std_strtol("0b", &value) == NULL);
+    BTASSERT(std_strtolb("0b", &value, 2) == NULL);
+    BTASSERT(std_strtolb("2", &value, 2) == NULL);
+    BTASSERT(std_strtolb("0b2", &value, 2) == NULL);
     BTASSERT(value == 57);
 
     /* Negative integers.*/
-    BTASSERT(std_strtol("-0x1011", &value, 0) != NULL);
+    BTASSERT(std_strtol("-0x1011", &value) != NULL);
     BTASSERT(value == -0x1011);
 
-    BTASSERT(std_strtol("-1011", &value, 0) != NULL);
+    BTASSERT(std_strtol("-1011", &value) != NULL);
     BTASSERT(value == -1011);
 
-    BTASSERT(std_strtol("-0b1011", &value, 0) != NULL);
+    BTASSERT(std_strtol("-0b1011", &value) != NULL);
     BTASSERT(value == -0b1011);
 
     /* Non-null termination. */
-    BTASSERT(std_strtol("0x1r11", &value, 0) != NULL);
+    BTASSERT(std_strtol("0x1r11", &value) != NULL);
     BTASSERT(value == 0x1);
-    BTASSERT(std_strtol("0b1012", &value, 0) != NULL);
+    BTASSERT(std_strtol("0b1012", &value) != NULL);
     BTASSERT(value == 0b101);
 
     /* Bad input. No value found. */
     value = 57;
-    BTASSERT(std_strtol("a", &value, 0) == NULL);
+    BTASSERT(std_strtol("a", &value) == NULL);
     BTASSERT(value == 57);
 
     /* Next byte. */
-    next_p = std_strtol("0x1011", &value, 0);
+    next_p = std_strtol("0x1011", &value);
     BTASSERT(next_p != NULL);
     BTASSERT(value == 0x1011);
     BTASSERT(*next_p == '\0');
 
-    next_p = std_strtol("0x101.", &value, 0);
+    next_p = std_strtol("0x101.", &value);
     BTASSERT(next_p != NULL);
     BTASSERT(value == 0x101);
     BTASSERT(*next_p == '.');

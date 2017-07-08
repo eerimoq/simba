@@ -54,21 +54,21 @@ static int decode_triple(char *src_p,
     long v2;
 
     /* v2. */
-    if (std_strtol(&src_p[4], &v2, 10) != &src_p[6]) {
+    if (std_strtolb(&src_p[4], &v2, 10) != &src_p[6]) {
         return (-EPROTO);
     }
 
     src_p[4] = '\0';
 
     /* v1. */
-    if (std_strtol(&src_p[2], &v1, 10) != &src_p[4]) {
+    if (std_strtolb(&src_p[2], &v1, 10) != &src_p[4]) {
         return (-EPROTO);
     }
 
     src_p[2] = '\0';
 
     /* v0. */
-    if (std_strtol(&src_p[0], &v0, 10) != &src_p[2]) {
+    if (std_strtolb(&src_p[0], &v0, 10) != &src_p[2]) {
         return (-EPROTO);
     }
 
@@ -338,7 +338,7 @@ ssize_t nmea_decode(struct nmea_sentence_t *dst_p,
 
     /* Check the CRC. */
     actual_crc = calculate_crc(&src_p[1], size - 6);
-    end_p = std_strtol(&src_p[size - 4], &expected_crc, 16);
+    end_p = std_strtolb(&src_p[size - 4], &expected_crc, 16);
 
     if (end_p != &src_p[size - 2]) {
         return (-EPROTO);
@@ -438,7 +438,7 @@ int nmea_decode_position(struct nmea_position_t *src_p,
     /* Degrees. */
     angle_p[minutes_pos] = '\0';
 
-    if (std_strtol(&angle_p[0], &degrees, 10) != &angle_p[minutes_pos]) {
+    if (std_strtolb(&angle_p[0], &degrees, 10) != &angle_p[minutes_pos]) {
         return (-EPROTO);
     }
 
