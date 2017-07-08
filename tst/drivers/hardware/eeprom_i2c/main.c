@@ -32,11 +32,12 @@
 
 #if defined(BOARD_ARDUINO_DUE)
 #    define EEPROM_I2C_ADDRESS 0x50
-#    define EEPROM_SIZE        262144
+#    define EEPROM_SIZE        32768
 #else
 #    define EEPROM_I2C_ADDRESS 0x57
-#    define EEPROM_SIZE        32768
+#    define EEPROM_SIZE        4096
 #endif
+
 
 static struct eeprom_i2c_driver_t eeprom_i2c;
 static struct i2c_driver_t i2c;
