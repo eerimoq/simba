@@ -89,7 +89,7 @@ int main()
         age = gnss_get_position(&gnss, &latitude, &longitude);
 
         if (age >= 0) {
-            std_printf(OSTR("Latitude: %ld.%06lu udeg, Longitude: %ld.%06lu udeg "
+            std_printf(OSTR("Latitude: %ld.%06lu degrees, Longitude: %ld.%06lu degrees "
                             "(age: %d seconds)\r\n"),
                        latitude / 1000000,
                        abs(latitude) % 1000000,
