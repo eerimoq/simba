@@ -435,12 +435,10 @@ int log_object_print(struct log_object_t *self_p,
 
             /* Write the header. */
             std_fprintf(chout_p,
-                        FSTR("%lu.%03lu:"),
+                        FSTR("%lu.%03lu:%S:%s:%s: "),
                         now.seconds,
-                        now.nanoseconds / 1000000ul);
-            std_fprintf(chout_p, level_as_string[level]);
-            std_fprintf(chout_p,
-                        FSTR(":%s:%s: "),
+                        now.nanoseconds / 1000000ul,
+                        level_as_string[level],
                         thrd_get_name(),
                         name_p);
 

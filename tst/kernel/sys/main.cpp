@@ -311,6 +311,35 @@ static int test_reset_cause(struct harness_t *harness_p)
     return (0);
 }
 
+static int test_errno(struct harness_t *harness_p)
+{
+#if !defined(BOARD_ARDUINO_NANO) && !defined(BOARD_ARDUINO_PRO_MICRO)
+
+    BTASSERT(std_strcmp("Operation not permitted",
+                        errno_as_string(EPERM)) == 0);
+    BTASSERT(std_strcmp("Key was rejected by service",
+                        errno_as_string(EKEYREJECTED)) == 0);
+
+    BTASSERT(errno_as_string(EPERM - 1) == NULL);
+    BTASSERT(errno_as_string(EKEYREJECTED + 1) == NULL);
+
+    BTASSERT(std_strcmp("Stack corrupt",
+                        errno_as_string(ESTACK)) == 0);
+    BTASSERT(std_strcmp("Command not found",
+                        errno_as_string(ENOCOMMAND)) == 0);
+
+    BTASSERT(errno_as_string(ESTACK - 1) == NULL);
+    BTASSERT(errno_as_string(ENOCOMMAND + 1) == NULL);
+
+    return (0);
+
+#else
+
+    return (1);
+
+#endif
+}
+
 int main()
 {
     struct harness_t harness;
@@ -327,6 +356,7 @@ int main()
         { test_div_ceil, "test_div_ceil" },
         { test_div_round, "test_div_round" },
         { test_reset_cause, "test_reset_cause" },
+        { test_errno, "test_errno" },
         { NULL, NULL }
     };
 

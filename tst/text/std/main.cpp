@@ -259,6 +259,33 @@ static int test_sprintf_unsigned(struct harness_t *harness_p)
     return (0);
 }
 
+static int test_sprintf_far_string(struct harness_t *harness_p)
+{
+    char buf[8];
+    ssize_t size;
+
+    size = std_sprintf(&buf[0], FSTR("%S"), FSTR("far"));
+    BTASSERT(size == 3);
+    BTASSERTM(&buf[0], "far", size + 1);
+
+    /* Left justification. */
+    size = std_sprintf(&buf[0], FSTR("%-5S"), FSTR("far"));
+    BTASSERT(size == 5);
+    BTASSERTM(&buf[0], "far  ", size + 1);
+
+    /* Right justification. */
+    size = std_sprintf(&buf[0], FSTR("%5S"), FSTR("far"));
+    BTASSERT(size == 5);
+    BTASSERTM(&buf[0], "  far", size + 1);
+
+    /* NULL pointer. */
+    size = std_sprintf(&buf[0], FSTR("%S"), NULL);
+    BTASSERT(size == 6);
+    BTASSERTM(&buf[0], "(null)", size + 1);
+
+    return (0);
+}
+
 static int test_strtol(struct harness_t *harness_p)
 {
     long value;
@@ -647,6 +674,7 @@ int main()
         { test_strlen, "test_strlen" },
         { test_sprintf_double, "test_sprintf_double" },
         { test_sprintf_unsigned, "test_sprintf_unsigned" },
+        { test_sprintf_far_string, "test_sprintf_far_string" },
         { test_strip, "test_strip" },
         { test_libc, "test_libc" },
         { test_strtod, "test_strtod" },

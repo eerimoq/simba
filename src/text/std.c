@@ -326,6 +326,38 @@ static void vcprintf(void (*std_putc)(char c, void *arg_p),
 
         switch (c) {
 
+        case 'S':
+#if defined(FAR_SPECIAL_ADDRESS)
+            {
+                FAR const char *far_string_p;
+
+                far_string_p = va_arg(*ap_p, FAR const char*);
+
+                if (far_string_p == NULL) {
+                    far_string_p = FSTR("(null)");
+                }
+
+                s_p = &buf[sizeof(buf) - 1];
+                width -= std_strlen(far_string_p);
+
+                /* Right justification. */
+                if (flags != '-') {
+                    formats(std_putc, arg_p, s_p, flags, width, negative_sign);
+                }
+
+                while (*far_string_p != '\0') {
+                    std_putc(*far_string_p++, arg_p);
+                }
+
+                /* Left justification. */
+                if (flags == '-') {
+                    formats(std_putc, arg_p, s_p, flags, width, negative_sign);
+                }
+            }
+
+            continue;
+#endif
+
         case 's':
             s_p = va_arg(*ap_p, char*);
 

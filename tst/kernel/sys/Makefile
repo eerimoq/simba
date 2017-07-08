@@ -46,4 +46,6 @@ CDEFS += \
 	CONFIG_ASSERT_FORCE_FATAL=0 \
 	CONFIG_SYS_CONFIG_STRING=1
 
+KERNEL_SRC += errno.c
+
 include $(SIMBA_ROOT)/make/app.mk

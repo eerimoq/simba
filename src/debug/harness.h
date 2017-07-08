@@ -79,15 +79,15 @@
  */
 #define BTASSERTI(actual, operator, expected)                           \
     do {                                                                \
-        int UNIQUE(_actual);                                            \
-        int UNIQUE(_expected);                                          \
+        long UNIQUE(_actual);                                           \
+        long UNIQUE(_expected);                                         \
         UNIQUE(_actual) = (actual);                                     \
         UNIQUE(_expected) = (expected);                                 \
         BTASSERTR(UNIQUE(_actual) operator UNIQUE(_expected),           \
                   #actual " " #operator " " #expected,                  \
                   -1,                                                   \
-                  ":: Condition '%d " #operator " %d' ('0x%x "          \
-                  #operator " 0x%x') is not true.",                     \
+                  ":: Condition '%ld " #operator " %ld' ('0x%lx "       \
+                  #operator " 0x%lx') is not true.",                    \
                   UNIQUE(_actual),                                      \
                   UNIQUE(_expected),                                    \
                   UNIQUE(_actual),                                      \

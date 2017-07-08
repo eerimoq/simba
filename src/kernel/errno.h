@@ -436,9 +436,9 @@
  * @param[in] errno Error number to map to a string. Both positive and
  *                  negative error numbers are accepted.
  *
- * @return Error number as a string or NULL if it's not an error
+ * @return Error number as a far string or NULL if it's not an error
  *         number.
  */
-const char *errno_as_string(int errno);
+far_string_t errno_as_string(int errno);
 
 #endif

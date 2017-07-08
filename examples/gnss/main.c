@@ -64,7 +64,7 @@ int main()
             res = gnss_read(&gnss);
 
             if (res != 0) {
-                std_printf(OSTR("gnss_read() failed with %d: %s.\r\n"),
+                std_printf(OSTR("gnss_read() failed with %d: %S.\r\n"),
                            res,
                            errno_as_string(res));
             }

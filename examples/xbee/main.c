@@ -73,7 +73,7 @@ int main()
         res = xbee_read(&xbee, &frame);
 
         if (res != 0) {
-            std_printf(OSTR("Read failed with %d: %s.\r\n"),
+            std_printf(OSTR("Read failed with %d: %S.\r\n"),
                        res,
                        errno_as_string(res));
             continue;
