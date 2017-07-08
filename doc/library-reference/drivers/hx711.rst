@@ -37,7 +37,7 @@ channel and gain combination.
    hx711_read(&hx711, &sample_a_32, hx711_channel_gain_a_32_t);
 
    /* Print the samples. */
-   std_printf(OSTR(sample_a_128: %lu, sample_b_64: %lu, sample_a_32: %lu\r\n),
+   std_printf(OSTR("sample_a_128: %lu, sample_b_64: %lu, sample_a_32: %lu\r\n"),
               sample_a_128,
               sample_b_64,
               sample_a_32);
