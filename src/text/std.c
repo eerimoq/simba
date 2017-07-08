@@ -575,16 +575,12 @@ const char *std_strtolb(const char *str_p,
                 str_p--;
             }
         }
-    } else if (base == 16) {
-        if ((c == '0') && (*str_p == 'x')) {
+    } else if (c == '0') {
+        if (((base == 16) && (*str_p == 'x'))
+            || ((base == 2) && (*str_p == 'b'))) {
             str_p++;
             c = *str_p++;
-        }
-    } else if (base == 2) {
-        if ((c == '0') && (*str_p == 'b')) {
-            str_p++;
-            c = *str_p++;
-        }
+        };
     }
 
     /* Get number. */
@@ -612,13 +608,11 @@ const char *std_strtolb(const char *str_p,
         value_found = 1;
     }
 
-    value *= sign;
-
     if (value_found == 0) {
         return (NULL);
     }
 
-    *value_p = value;
+    *value_p = (sign * value);
 
     return (str_p - 1);
 }
