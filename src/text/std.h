@@ -172,14 +172,21 @@ ssize_t std_fprintf(void *chan_p, far_string_t fmt_p, ...);
 ssize_t std_vfprintf(void *chan_p, far_string_t fmt_p, va_list *ap_p);
 
 /**
- * Convert string to integer.
+ * Convert given string to an integer.
  *
  * @param[in] str_p Integer string.
- * @param[out] value_p Integer value.
+ * @param[out] value_p Parsed integer.
+ * @param[in] base The base of the value to parse. One of 16, 10, 8 or
+ *                 2, or 0 to select base based on the string
+ *                 prefix. Supported string prefixes are "0x" for
+ *                 hexadecimal numbers, "0" for octal numbers and "0b"
+ *                 for binary numbers.
  *
- * @return Pointer to the next byte or NULL on failure.
+ * @return Pointer to the next byte, or NULL if no value was found.
  */
-const char *std_strtol(const char *str_p, long *value_p);
+const char *std_strtol(const char *str_p,
+                       long *value_p,
+                       int base);
 
 /**
  * Convert string to double.

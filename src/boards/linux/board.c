@@ -34,7 +34,7 @@ int board_pin_string_to_device_index(const char *str_p)
 {
     long pin;
 
-    if (std_strtol(&str_p[0], &pin) == NULL) {
+    if (std_strtol(&str_p[0], &pin, 0) == NULL) {
         return (-1);
     }
 

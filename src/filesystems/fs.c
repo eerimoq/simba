@@ -1998,7 +1998,7 @@ int fs_parameter_int_set(void *value_p, const char *src_p)
 {
     long value;
 
-    if (std_strtol(src_p, &value) == NULL) {
+    if (std_strtol(src_p, &value, 0) == NULL) {
         return (-1);
     }
 

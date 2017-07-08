@@ -530,15 +530,24 @@ ssize_t std_vfprintf(void *chan_p, far_string_t fmt_p, va_list *ap_p)
     return (output.size);
 }
 
-const char *std_strtol(const char *str_p, long *value_p)
+const char *std_strtol(const char *str_p,
+                       long *value_p,
+                       int base)
 {
     ASSERTNRN(str_p != NULL, EINVAL);
     ASSERTNRN(value_p != NULL, EINVAL);
+    ASSERTNRN((base == 16)
+              || (base == 10)
+              || (base == 8)
+              || (base == 2)
+              || (base == 0), EINVAL);
 
-    unsigned char base = 10;
     unsigned char c;
-    long sign = 1;
+    long sign;
+    long value;
+    int value_found;
 
+    sign = 1;
     c = *str_p++;
 
     /* Find sign. */
@@ -547,34 +556,46 @@ const char *std_strtol(const char *str_p, long *value_p)
         sign = -1;
     }
 
-    /* The number must start with a digit. */
-    if (isdigit(c) == 0) {
-        return (NULL);
-    }
+    if (base == 0) {
+        base = 10;
 
-    /* Find base based on prefix. */
-    if (c == '0') {
-        c = *str_p++;
+        /* Find base based on prefix. */
+        if (c == '0') {
+            c = *str_p++;
 
-        if (c == 'x') {
-            base = 16;
+            if (c == 'x') {
+                base = 16;
+                c = *str_p++;
+            } else if (c == 'b') {
+                base = 2;
+                c = *str_p++;
+            } else {
+                base = 8;
+                c = str_p[-2];
+                str_p--;
+            }
+        }
+    } else if (base == 16) {
+        if ((c == '0') && (*str_p == 'x')) {
+            str_p++;
             c = *str_p++;
-        } else if (c == 'b') {
-            base = 2;
+        }
+    } else if (base == 2) {
+        if ((c == '0') && (*str_p == 'b')) {
+            str_p++;
             c = *str_p++;
-        } else {
-            base = 8;
         }
     }
 
     /* Get number. */
-    *value_p = 0;
+    value_found = 0;
+    value = 0;
 
     while (((base == 16) && isxdigit(c))
            || ((base == 10) && isdigit(c))
            || ((base == 8) && (c >= '0') && (c < '8'))
            || ((base == 2) && (c >= '0') && (c < '2'))) {
-        *value_p *= base;
+        value *= base;
 
         /* Special handling of base 16. */
         if (base == 16) {
@@ -585,18 +606,19 @@ const char *std_strtol(const char *str_p, long *value_p)
             }
         }
 
-        /* Bad value in string. */
         c -= '0';
-
-        if (c >= base) {
-            return (NULL);
-        }
-
-        *value_p += c;
+        value += c;
         c = *str_p++;
+        value_found = 1;
     }
 
-    *value_p *= sign;
+    value *= sign;
+
+    if (value_found == 0) {
+        return (NULL);
+    }
+
+    *value_p = value;
 
     return (str_p - 1);
 }

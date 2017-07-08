@@ -184,7 +184,7 @@ static int handle_uart_device_request(struct device_request_t *request_p,
     /* Parse the device name. */
     device_p = (char *)&request_p->device[0];
 
-    if (std_strtol(device_p, &index) == NULL) {
+    if (std_strtol(device_p, &index, 0) == NULL) {
         index = -1;
     }
 
@@ -282,7 +282,7 @@ static int handle_pin_device_request(struct device_request_t *request_p,
     index = board_pin_string_to_device_index(device_p);
 
     if (index < 0) {
-        if (std_strtol(device_p, &index) == NULL) {
+        if (std_strtol(device_p, &index, 0) == NULL) {
             index = -1;
         }
     }
@@ -519,7 +519,7 @@ static void *can_client_main(void *arg_p)
                 break;
             }
 
-            if (std_strtol(&buf[0], &value) == NULL) {
+            if (std_strtol(&buf[0], &value, 0) == NULL) {
                 size = -1;
                 break;
             }
@@ -570,7 +570,7 @@ static int handle_can_device_request(struct device_request_t *request_p,
     /* Parse the device name. */
     device_p = (char *)&request_p->device[0];
 
-    if (std_strtol(device_p, &index) == NULL) {
+    if (std_strtol(device_p, &index, 0) == NULL) {
         index = -1;
     }
 
@@ -665,7 +665,7 @@ static int handle_i2c_device_request(struct device_request_t *request_p,
     /* Parse the device name. */
     device_p = (char *)&request_p->device[0];
 
-    if (std_strtol(device_p, &index) == NULL) {
+    if (std_strtol(device_p, &index, 0) == NULL) {
         index = -1;
     }
 
