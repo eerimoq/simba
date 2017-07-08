@@ -140,6 +140,44 @@ static int test_read_read_failed(struct harness_t *harness_p)
     return (0);
 }
 
+static int test_read_sentence_too_long(struct harness_t *harness_p)
+{
+    int i;
+    char byte;
+    ssize_t res;
+
+    res = 1;
+    byte = '$';
+
+    for (i = 0; i < NMEA_SENTENCE_SIZE_MAX; i++) {
+        harness_mock_write("chan_read(): return (res)", &res, sizeof(res));
+        harness_mock_write("chan_read(): return (buf_p)", &byte, sizeof(byte));
+    }
+
+    BTASSERTI(gnss_read(&gnss), ==, -ENOMEM);
+
+    return (0);
+}
+
+static int test_read_start_not_first(struct harness_t *harness_p)
+{
+    int i;
+    ssize_t res;
+    char sentence[] =
+        "\r\n$GPRMC,123519,A,4807.038,N,01131.000,W,022.4,084.4,230394,003.1,W*78\r\n";
+
+    res = 1;
+
+    for (i = 0; i < strlen(sentence); i++) {
+        harness_mock_write("chan_read(): return (res)", &res, sizeof(res));
+        harness_mock_write("chan_read(): return (buf_p)", &sentence[i], 1);
+    }
+
+    BTASSERTI(gnss_read(&gnss), ==, 0);
+
+    return (0);
+}
+
 ssize_t STUB(chan_read)(void *self_p,
                         void *buf_p,
                         size_t size)
@@ -167,6 +205,8 @@ int main()
         { test_get_no_data, "test_get_no_data" },
         { test_read, "test_read" },
         { test_read_read_failed, "test_read_read_failed" },
+        { test_read_sentence_too_long, "test_read_sentence_too_long" },
+        { test_read_start_not_first, "test_read_start_not_first" },
         { NULL, NULL }
     };
 

@@ -105,7 +105,7 @@ static int read_until_sentence_end(struct gnss_driver_t *self_p)
         }
 
         /* Space for the read character and a null-termination. */
-        if ((self_p->nmea.input.size + 2) == sizeof(self_p->nmea.input.buf)) {
+        if ((self_p->nmea.input.size + 1) == sizeof(self_p->nmea.input.buf)) {
             self_p->nmea.input.size = 0;
             return (-ENOMEM);
         }
@@ -281,6 +281,9 @@ int gnss_read(struct gnss_driver_t *self_p)
 
     /* Process the read sentence. */
     res = process_sentence(self_p);
+
+    /* Expect a new sentence. */
+    self_p->nmea.input.size = 0;
 
     return (res);
 }
