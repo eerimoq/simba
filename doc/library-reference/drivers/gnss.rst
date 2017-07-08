@@ -7,8 +7,16 @@
 `GNSS`_ is a set of global coverage satellite system, including GPS,
 GLONASS and Galileo.
 
-This drivers parses NMEA sentences from a GNSS device and stores
-position, time and speed in RAM.
+This drivers reads `NMEA 0183`_ sentences from a channel (often a UART
+driver), parses them and stores position, time and speed in the driver
+object.
+
+This driver should be compatible with all GNSS devices sending and
+receiving NMEA sentences over a serial port.
+
+Devices known to work with this driver:
+
+-
 
 --------------------------------------------------
 
@@ -22,3 +30,4 @@ Test code: :github-blob:`tst/drivers/software/gnss/main.c`
    :project: simba
 
 .. _GNSS: https://en.wikipedia.org/wiki/Satellite_navigation
+.. _NMEA 0183: https://en.wikipedia.org/wiki/NMEA_0183
