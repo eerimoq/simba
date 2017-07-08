@@ -37,6 +37,27 @@
 #define XOFF                                  0x13
 
 /**
+ * Read a single byte from the transport channel.
+ *
+ * @return zero(0) or negative error code.
+ */
+static int read_byte(struct xbee_driver_t *self_p,
+                     uint8_t *byte_p)
+{
+    int res;
+
+    res = chan_read(self_p->transport_p,
+                    byte_p,
+                    sizeof(*byte_p));
+
+    if (res == 0) {
+        res = -EIO;
+    }
+
+    return (res);
+}
+
+/**
  * Read data from the transport channel until a frame delimiter is
  * found.
  */
@@ -46,10 +67,9 @@ static int read_frame_delimiter(struct xbee_driver_t *self_p)
     uint8_t byte;
 
     while (1) {
-        res = chan_read(self_p->transport_p, &byte, sizeof(byte));
+        res = read_byte(self_p, &byte);
 
         if (res != sizeof(byte)) {
-            res = -EIO;
             break;
         }
 
@@ -75,20 +95,20 @@ static ssize_t read_bytes(struct xbee_driver_t *self_p,
     uint8_t byte;
 
     for (i = 0; i < size; i++) {
-        res = chan_read(self_p->transport_p, &byte, sizeof(byte));
+        res = read_byte(self_p, &byte);
 
         if (res != sizeof(byte)) {
-            return (-EIO);
+            return (res);
         }
 
         /* Handle frame delimiters and escaped bytes. */
         if (byte == FRAME_DELIMITER) {
             return (-EPROTO);
         } else if (byte == ESCAPE) {
-            res = chan_read(self_p->transport_p, &byte, sizeof(byte));
+            res = read_byte(self_p, &byte);
 
             if (res != sizeof(byte)) {
-                return (-EIO);
+                return (res);
             }
 
             byte ^= 0x20;
@@ -223,10 +243,10 @@ int xbee_read(struct xbee_driver_t *self_p,
     }
 
     /* Read the CRC. */
-    res = chan_read(self_p->transport_p, &crc, sizeof(crc));
+    res = read_byte(self_p, &crc);
 
     if (res != sizeof(crc)) {
-        return (-EIO);
+        return (res);
     }
 
     /* Calculate the CRC. */
