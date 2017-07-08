@@ -30,11 +30,15 @@
 
 #include "simba.h"
 
-struct gnss_driver_t gnss;
-struct chan_t transport;
+static struct gnss_driver_t gnss;
+static struct chan_t transport;
+static struct queue_t queue;
+static uint8_t buf[256];
 
 static int test_init(struct harness_t *harness_p)
 {
+    BTASSERT(queue_init(&queue, &buf[0], sizeof(buf)) == 0);
+
     BTASSERT(gnss_module_init() == 0);
     BTASSERT(gnss_module_init() == 0);
 
@@ -70,6 +74,18 @@ static int test_get_no_data(struct harness_t *harness_p)
     speed = 654;
     BTASSERTI(gnss_get_speed(&gnss, &speed), ==, -ENODATA);
     BTASSERTI(speed, ==, 654);
+
+    return (0);
+}
+
+static int test_print_no_data(struct harness_t *harness_p)
+{
+    BTASSERTI(gnss_print(&gnss, &queue), ==, 0);
+    BTASSERTI(harness_expect(&queue,
+                             "Date:     unavailable\r\n"
+                             "Position: unavailable\r\n"
+                             "Speed:    unavailable\r\n",
+                             NULL), ==, 69);
 
     return (0);
 }
@@ -115,6 +131,14 @@ static int test_read(struct harness_t *harness_p)
     speed = 654;
     BTASSERTI(gnss_get_speed(&gnss, &speed), >=, 0);
     BTASSERTI(speed, ==, 11523);
+
+    BTASSERTI(gnss_print(&gnss, &queue), ==, 0);
+    BTASSERTI(harness_expect(
+                  &queue,
+                  "Date:     12:35:19 94-03-23             (age: 0 seconds)\r\n"
+                  "Position: 48.117300, -11.516666 degrees (age: 0 seconds)\r\n"
+                  "Speed:    11.523 m/s                    (age: 0 seconds)\r\n",
+                  NULL), ==, 174);
 
     return (0);
 }
@@ -203,6 +227,7 @@ int main()
     struct harness_testcase_t harness_testcases[] = {
         { test_init, "test_init" },
         { test_get_no_data, "test_get_no_data" },
+        { test_print_no_data, "test_print_no_data" },
         { test_read, "test_read" },
         { test_read_read_failed, "test_read_read_failed" },
         { test_read_sentence_too_long, "test_read_sentence_too_long" },

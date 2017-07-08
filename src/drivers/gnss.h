@@ -124,4 +124,15 @@ int gnss_get_position(struct gnss_driver_t *self_p,
 int gnss_get_speed(struct gnss_driver_t *self_p,
                    long *speed_p);
 
+/**
+ * Print the driver state as a human readable string to given channel.
+ *
+ * @param[in] self_p Initialized driver object.
+ * @param[out] chan_p Channel to print to.
+ *
+ * @return zero(0) or negative error code.
+ */
+int gnss_print(struct gnss_driver_t *self_p,
+               void *chan_p);
+
 #endif

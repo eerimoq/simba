@@ -331,3 +331,63 @@ int gnss_get_speed(struct gnss_driver_t *self_p,
 
     return (res);
 }
+
+int gnss_print(struct gnss_driver_t *self_p,
+               void *chan_p)
+{
+    struct date_t date;
+    long latitude;
+    long longitude;
+    long speed;
+    int age;
+
+    /* Date. */
+    age = gnss_get_date(self_p, &date);
+
+    if (age >= 0) {
+        std_fprintf(chan_p,
+                    OSTR("Date:     %02u:%02u:%02u %02u-%02u-%02u "
+                         "            (age: %d seconds)\r\n"),
+                    date.hour,
+                    date.minute,
+                    date.second,
+                    date.year,
+                    date.month,
+                    date.date,
+                    age);
+    } else {
+        std_fprintf(chan_p, OSTR("Date:     unavailable\r\n"));
+    }
+
+    /* Position. */
+    age = gnss_get_position(self_p, &latitude, &longitude);
+
+    if (age >= 0) {
+        std_fprintf(chan_p,
+                    OSTR("Position: %ld.%06lu, %ld.%06lu degrees "
+                         "(age: %d seconds)\r\n"),
+                    latitude / 1000000,
+                    abs(latitude) % 1000000,
+                    longitude / 1000000,
+                    abs(longitude) % 1000000,
+                    age);
+    } else {
+        std_fprintf(chan_p, OSTR("Position: unavailable\r\n"));
+    }
+
+    /* Speed. */
+    age = gnss_get_speed(self_p, &speed);
+
+    if (age >= 0) {
+        std_fprintf(chan_p,
+                    OSTR("Speed:    %ld.%03lu m/s                    "
+                         "(age: %d seconds)\r\n"),
+                    speed / 1000,
+                    speed % 1000,
+                    age);
+    } else {
+        std_fprintf(chan_p, OSTR("Speed:    unavailable\r\n"));
+    }
+
+    return (0);
+}

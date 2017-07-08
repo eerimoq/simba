@@ -38,11 +38,6 @@ int main()
 {
     int res;
     struct time_t timeout;
-    struct date_t date;
-    long latitude;
-    long longitude;
-    long speed;
-    int age;
 
     sys_start();
 
@@ -74,50 +69,8 @@ int main()
             }
         }
 
-        /* Date. */
-        age = gnss_get_date(&gnss, &date);
-
-        if (age >= 0) {
-            std_printf(OSTR("Date:     %02u:%02u:%02u %u-%02u-%02u "
-                            "            (age: %d seconds)\r\n"),
-                       date.hour,
-                       date.minute,
-                       date.second,
-                       date.year,
-                       date.month,
-                       date.date,
-                       age);
-        } else {
-            std_printf(OSTR("Date:     unavailable\r\n"));
-        }
-
-        /* Position. */
-        age = gnss_get_position(&gnss, &latitude, &longitude);
-
-        if (age >= 0) {
-            std_printf(OSTR("Position: %ld.%06lu, %ld.%06lu degrees "
-                            "(age: %d seconds)\r\n"),
-                       latitude / 1000000,
-                       abs(latitude) % 1000000,
-                       longitude / 1000000,
-                       abs(longitude) % 1000000,
-                       age);
-        } else {
-            std_printf(OSTR("Position: unavailable\r\n"));
-        }
-
-        /* Speed. */
-        age = gnss_get_speed(&gnss, &speed);
-
-        if (age >= 0) {
-            std_printf(OSTR("Speed:    %ld.%03lu m/s                    "
-                            "(age: %d seconds)\r\n"),
-                       speed / 1000,
-                       speed % 1000,
-                       age);
-        } else {
-            std_printf(OSTR("Speed:    unavailable\r\n"));
-        }
+        /* Print GNSS information on standard output. */
+        gnss_print(&gnss, sys_get_stdout());
 
         std_printf(OSTR("\r\n"));
     }
