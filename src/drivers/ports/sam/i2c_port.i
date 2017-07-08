@@ -193,6 +193,9 @@ int i2c_port_scan(struct i2c_driver_t *self_p,
         sr = regs_p->SR;
     } while ((sr & SAM_TWI_SR_TXCOMP) == 0);
 
+    /* Dummy-read the read byte. */
+    (void)regs_p->RHR;
+
     return ((sr & SAM_TWI_SR_NACK) == 0);
 }
 
