@@ -49,6 +49,10 @@ struct gnss_driver_t {
         } input;
         struct nmea_sentence_t decoded;
     } nmea;
+#if CONFIG_GNSS_DEBUG_LOG_MASK > -1
+    struct log_object_t log;
+#endif
+
 };
 
 /**

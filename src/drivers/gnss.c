@@ -30,6 +30,13 @@
 
 #include "simba.h"
 
+#if CONFIG_GNSS_DEBUG_LOG_MASK > -1
+#    define DLOG(level, msg, ...)                                       \
+    log_object_print(&(self_p)->log, LOG_ ## level, OSTR(msg), ##__VA_ARGS__)
+#else
+#    define DLOG(level, msg, ...)
+#endif
+
 static int get_data_age(struct time_t *timestamp_p)
 {
     struct time_t uptime;
@@ -82,6 +89,7 @@ static int find_sentence_start(struct gnss_driver_t *self_p)
         if (byte == '$') {
             self_p->nmea.input.buf[0] = '$';
             self_p->nmea.input.size = 1;
+            DLOG(DEBUG, "NMEA sentence start found.\r\n");
             break;
         }
     }
@@ -222,6 +230,7 @@ static int process_sentence(struct gnss_driver_t *self_p)
                       self_p->nmea.input.size);
 
     if (res != 0) {
+        DLOG(WARNING, "NMEA sentence decoding failed with %d.\r\n", res);
         return (res);
     }
 
@@ -233,6 +242,9 @@ static int process_sentence(struct gnss_driver_t *self_p)
         break;
 
     default:
+        DLOG(INFO,
+             "Discarding NMEA sentence of type %d.\r\n",
+             self_p->nmea.decoded.type);
         break;
     }
 
@@ -241,6 +253,10 @@ static int process_sentence(struct gnss_driver_t *self_p)
 
 int gnss_module_init()
 {
+#if CONFIG_GNSS_DEBUG_LOG_MASK > -1
+    log_module_init();
+#endif
+
     return (0);
 }
 
@@ -254,6 +270,10 @@ int gnss_init(struct gnss_driver_t *self_p,
     self_p->rmc_timestamp.seconds = -1;
     self_p->rmc_timestamp.nanoseconds = 0;
     self_p->nmea.input.size = 0;
+
+#if CONFIG_GNSS_DEBUG_LOG_MASK > -1
+    log_object_init(&self_p->log, "gnss", CONFIG_GNSS_DEBUG_LOG_MASK);
+#endif
 
     return (0);
 }

@@ -685,6 +685,13 @@
 #endif
 
 /**
+ * GNSS module debug log mask.
+ */
+#ifndef CONFIG_GNSS_DEBUG_LOG_MASK
+#    define CONFIG_GNSS_DEBUG_LOG_MASK                     -1
+#endif
+
+/**
  * Initialize the module at system startup.
  */
 #ifndef CONFIG_MODULE_INIT_RWLOCK

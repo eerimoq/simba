@@ -188,7 +188,8 @@ static int test_read_start_not_first(struct harness_t *harness_p)
     int i;
     ssize_t res;
     char sentence[] =
-        "\r\n$GPRMC,123519,A,4807.038,N,01131.000,W,022.4,084.4,230394,003.1,W*78\r\n";
+        "\r\n$GPRMC,123519,A,4807.038,N,01131.000,W,022.4,084.4,230394,"
+        "003.1,W*78\r\n";
 
     res = 1;
 
@@ -198,6 +199,42 @@ static int test_read_start_not_first(struct harness_t *harness_p)
     }
 
     BTASSERTI(gnss_read(&gnss), ==, 0);
+
+    return (0);
+}
+
+static int test_read_unsupported_sentence(struct harness_t *harness_p)
+{
+    int i;
+    ssize_t res;
+    char sentence[] = "$GPFOO,BAR*2C\r\n";
+
+    res = 1;
+
+    for (i = 0; i < strlen(sentence); i++) {
+        harness_mock_write("chan_read(): return (res)", &res, sizeof(res));
+        harness_mock_write("chan_read(): return (buf_p)", &sentence[i], 1);
+    }
+
+    BTASSERTI(gnss_read(&gnss), ==, 0);
+
+    return (0);
+}
+
+static int test_read_wrong_crc(struct harness_t *harness_p)
+{
+    int i;
+    ssize_t res;
+    char sentence[] = "$GPFOO,BAR*2D\r\n";
+
+    res = 1;
+
+    for (i = 0; i < strlen(sentence); i++) {
+        harness_mock_write("chan_read(): return (res)", &res, sizeof(res));
+        harness_mock_write("chan_read(): return (buf_p)", &sentence[i], 1);
+    }
+
+    BTASSERTI(gnss_read(&gnss), ==, -EPROTO);
 
     return (0);
 }
@@ -232,6 +269,8 @@ int main()
         { test_read_read_failed, "test_read_read_failed" },
         { test_read_sentence_too_long, "test_read_sentence_too_long" },
         { test_read_start_not_first, "test_read_start_not_first" },
+        { test_read_unsupported_sentence, "test_read_unsupported_sentence" },
+        { test_read_wrong_crc, "test_read_wrong_crc" },
         { NULL, NULL }
     };
 
