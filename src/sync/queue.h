@@ -44,6 +44,8 @@ enum queue_state_t {
     QUEUE_STATE_STOPPED,
 };
 
+#define QUEUE_FLAGS_NON_BLOCKING_READ                     0x1
+
 /* Compile time declaration and initialization of a channel. */
 #define QUEUE_INIT_DECL(_name, _buf, _size)             \
     struct queue_t _name = {                            \
@@ -101,6 +103,7 @@ struct queue_t {
     } reader;
     struct queue_buffer_t buffer;
     enum queue_state_t state;
+    int flags;
 };
 
 /**

@@ -64,6 +64,30 @@ RAM_CODE static inline size_t get_buffer_used(struct queue_buffer_t *buffer_p)
     }
 }
 
+static int control(struct queue_t *self_p, int operation)
+{
+    int res;
+
+    res = 0;
+
+    switch (operation) {
+
+    case CHAN_CONTROL_NON_BLOCKING_READ:
+        self_p->flags |= QUEUE_FLAGS_NON_BLOCKING_READ;
+        break;
+
+    case CHAN_CONTROL_BLOCKING_READ:
+        self_p->flags &= ~QUEUE_FLAGS_NON_BLOCKING_READ;
+        break;
+
+    default:
+        res = -EINVAL;
+        break;
+    }
+
+    return (res);
+}
+
 int queue_init(struct queue_t *self_p,
                void *buf_p,
                size_t size)
@@ -77,11 +101,12 @@ int queue_init(struct queue_t *self_p,
               (chan_write_fn_t)queue_write,
               (chan_size_fn_t)queue_size);
     chan_set_write_isr_cb(&self_p->base, (chan_write_fn_t)queue_write_isr);
+    chan_set_control_cb(&self_p->base, (chan_control_fn_t)control);
 
     thrd_prio_list_init(&self_p->writers);
 
     self_p->writer_p = NULL;
-    
+
     self_p->reader.buf_p = NULL;
     self_p->reader.size = 0;
     self_p->reader.left = 0;
@@ -93,6 +118,7 @@ int queue_init(struct queue_t *self_p,
     self_p->buffer.size = size;
 
     self_p->state = QUEUE_STATE_INITIALIZED;
+    self_p->flags = 0;
 
     return (0);
 }
@@ -224,6 +250,12 @@ ssize_t queue_read(struct queue_t *self_p, void *buf_p, size_t size)
         /* No more data will be written to a stopped queue. */
         if (self_p->state == QUEUE_STATE_STOPPED) {
             size = (size - left);
+        } else if (self_p->flags & QUEUE_FLAGS_NON_BLOCKING_READ) {
+            size = (size - left);
+
+            if (size == 0) {
+                size = -EAGAIN;
+            }
         } else {
             /* The writer writes the remaining data to the reader buffer. */
             self_p->base.reader_p = thrd_self();

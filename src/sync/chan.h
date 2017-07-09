@@ -54,6 +54,17 @@
 #define CHAN_CONTROL_PRINTF_END                             4
 
 /**
+ * Non-blocking read operation. A channel should return -EAGAIN when a
+ * read would block the channel.
+ */
+#define CHAN_CONTROL_NON_BLOCKING_READ                      5
+
+/**
+ * Blocking read operation.
+ */
+#define CHAN_CONTROL_BLOCKING_READ                          6
+
+/**
  * Channel read function callback type.
  *
  * @param[in] self_p Channel to read from.

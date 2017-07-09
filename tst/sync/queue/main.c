@@ -360,6 +360,39 @@ static int test_poll_write_two_channels(struct harness_t *harness_p)
     return (0);
 }
 
+static int test_non_blocking(struct harness_t *harness_p)
+{
+    int a[2];
+
+    BTASSERT(chan_control(&buffered_queue,
+                          CHAN_CONTROL_NON_BLOCKING_READ) == 0);
+
+    /* Write one integer. */
+    a[0] = 98;
+    BTASSERT(queue_write(&buffered_queue,
+                         &a[0],
+                         sizeof(a[0])) == sizeof(a[0]));
+
+    /* Try to read two integers. Only one should be read*/
+    a[0] = 99;
+    a[1] = 100;
+    BTASSERT(queue_read(&buffered_queue, &a[0], sizeof(a)) == sizeof(a[0]));
+    BTASSERT(a[0] == 98)
+    BTASSERT(a[1] == 100)
+
+    /* Try to read two more integers from the empty queue. Should
+       return -EAGAIN. */
+    a[0] = 101;
+    a[1] = 102;
+    BTASSERT(queue_read(&buffered_queue, &a[0], sizeof(a)) == -EAGAIN);
+    BTASSERT(a[0] == 101)
+    BTASSERT(a[1] == 102)
+
+    BTASSERT(chan_control(&queue[0], CHAN_CONTROL_BLOCKING_READ) == 0);
+
+    return (0);
+}
+
 int main()
 {
     struct harness_t harness;
@@ -371,6 +404,7 @@ int main()
         { test_stopped, "test_stopped" },
         { test_multiple_writers, "test_multiple_writers" },
         { test_poll_write_two_channels, "test_poll_write_two_channels" },
+        { test_non_blocking, "test_non_blocking" },
         { NULL, NULL }
     };
 
