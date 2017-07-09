@@ -325,6 +325,23 @@ static int test_read_wrong_crc(struct harness_t *harness_p)
     return (0);
 }
 
+static int test_write(struct harness_t *harness_p)
+{
+    char data[] = "GPFOO,BAR";
+    char sentence[NMEA_SENTENCE_SIZE_MAX];
+    ssize_t size;
+
+    BTASSERTI(gnss_write(&gnss, &data[0]), ==, 0);
+
+    harness_mock_read("chan_write(size)", &size, sizeof(size));
+    BTASSERTI(size, ==, 15);
+
+    harness_mock_read("chan_write(buf_p)", &sentence[0], 1);
+    BTASSERTM(&sentence[0], "$GPFOO,BAR*2C\r\n", size);
+
+    return (0);
+}
+
 ssize_t STUB(chan_read)(void *self_p,
                         void *buf_p,
                         size_t size)
@@ -344,6 +361,24 @@ ssize_t STUB(chan_read)(void *self_p,
     return (res);
 }
 
+ssize_t STUB(chan_write)(void *self_p,
+                         const void *buf_p,
+                         size_t size)
+{
+    ssize_t res;
+
+    harness_mock_write("chan_write(buf_p)", buf_p, size);
+    harness_mock_write("chan_write(size)", &size, sizeof(size));
+
+    if (harness_mock_read("chan_write(): return (res)",
+                          &res,
+                          sizeof(res)) == -1) {
+        res = size;
+    }
+
+    return (res);
+}
+
 int main()
 {
     struct harness_t harness;
@@ -358,6 +393,7 @@ int main()
         { test_read_start_not_first, "test_read_start_not_first" },
         { test_read_unsupported_sentence, "test_read_unsupported_sentence" },
         { test_read_wrong_crc, "test_read_wrong_crc" },
+        { test_write, "test_write" },
         { NULL, NULL }
     };
 

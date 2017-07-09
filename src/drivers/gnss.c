@@ -370,6 +370,31 @@ int gnss_read(struct gnss_driver_t *self_p)
     return (res);
 }
 
+int gnss_write(struct gnss_driver_t *self_p,
+               char *str_p)
+{
+    int res;
+    char encoded[NMEA_SENTENCE_SIZE_MAX];
+    struct nmea_sentence_t decoded;
+
+    decoded.type = nmea_sentence_type_raw_t;
+    decoded.raw.str_p = str_p;
+
+    res = nmea_encode(&encoded[0], &decoded);
+
+    if (res < 0) {
+        return (res);
+    }
+
+    if (chan_write(self_p->transport_p, &encoded[0], res) == res) {
+        res = 0;
+    } else {
+        res = -EIO;
+    }
+
+    return (res);
+}
+
 int gnss_get_date(struct gnss_driver_t *self_p,
                   struct date_t *date_p)
 {

@@ -95,6 +95,24 @@ int gnss_init(struct gnss_driver_t *self_p,
 int gnss_read(struct gnss_driver_t *self_p);
 
 /**
+ * Encode an NMEA sentence of given string by prepending a ``$`` and
+ * appending a CRC and line termination, and write the sentence to the
+ * transport channel.
+ *
+ * For example, the string ``GPGLL,4916.45,N,12311.12,W,225444,A,`` is
+ * encoded to ``$GPGLL,4916.45,N,12311.12,W,225444,A,*1D\r\n`` and
+ * then written to the transport channel.
+ *
+ * @param[in] self_p Initialized driver object.
+ * @param[in] str_p String to write.
+ *
+ * @return zero(0) if the NEMA sentence was written to the transport
+ *         channel, otherwise negative error code.
+ */
+int gnss_write(struct gnss_driver_t *self_p,
+               char *str_p);
+
+/**
  * Get most recently received date.
  *
  * @param[in] self_p Initialized driver object.
