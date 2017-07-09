@@ -54,6 +54,13 @@ struct nmea_track_made_good_t {
 };
 
 /**
+ * Raw string data.
+ */
+struct nmea_sentence_raw_t {
+    char *str_p;
+};
+
+/**
  * Fix information.
  */
 struct nmea_sentence_gga_t {
@@ -132,12 +139,13 @@ struct nmea_sentence_vtg_t {
  * Sentence types.
  */
 enum nmea_sentence_type_t {
-    nmea_sentence_type_gga_t = 0,
+    nmea_sentence_type_raw_t = 0,
+    nmea_sentence_type_gga_t,
     nmea_sentence_type_gll_t,
     nmea_sentence_type_gsa_t,
     nmea_sentence_type_gsv_t,
     nmea_sentence_type_rmc_t,
-    nmea_sentence_type_vtg_t
+    nmea_sentence_type_vtg_t,
 };
 
 /**
@@ -146,6 +154,7 @@ enum nmea_sentence_type_t {
 struct nmea_sentence_t {
     enum nmea_sentence_type_t type;
     union {
+        struct nmea_sentence_raw_t raw;
         struct nmea_sentence_gga_t gga;
         struct nmea_sentence_gll_t gll;
         struct nmea_sentence_gsa_t gsa;

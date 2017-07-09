@@ -80,6 +80,167 @@ static int decode_triple(char *src_p,
 }
 
 /**
+ * Encode given raw sentence into given buffer.
+ */
+static ssize_t encode_raw(char *dst_p,
+                          struct nmea_sentence_raw_t *src_p)
+{
+    return (std_sprintf(dst_p, FSTR("%s"), src_p->str_p));
+}
+
+/**
+ * Encode given GGA sentence into given buffer.
+ */
+static ssize_t encode_gga(char *dst_p,
+                          struct nmea_sentence_gga_t *src_p)
+{
+    return (std_sprintf(dst_p,
+                        FSTR("GPGGA,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,,"),
+                        src_p->time_of_fix_p,
+                        src_p->latitude.angle_p,
+                        src_p->latitude.direction_p,
+                        src_p->longitude.angle_p,
+                        src_p->longitude.direction_p,
+                        src_p->fix_quality_p,
+                        src_p->number_of_tracked_satellites_p,
+                        src_p->horizontal_dilution_of_position_p,
+                        src_p->altitude.value_p,
+                        src_p->altitude.unit_p,
+                        src_p->height_of_geoid.value_p,
+                        src_p->height_of_geoid.unit_p));
+}
+
+/**
+ * Encode given GLL sentence into given buffer.
+ */
+static ssize_t encode_gll(char *dst_p,
+                          struct nmea_sentence_gll_t *src_p)
+{
+    return (std_sprintf(dst_p,
+                        FSTR("GPGLL,%s,%s,%s,%s,%s,%s,"),
+                        src_p->latitude.angle_p,
+                        src_p->latitude.direction_p,
+                        src_p->longitude.angle_p,
+                        src_p->longitude.direction_p,
+                        src_p->time_of_fix_p,
+                        src_p->data_active_p));
+}
+
+/**
+ * Encode given GSA sentence into given buffer.
+ */
+static ssize_t encode_gsa(char *dst_p,
+                          struct nmea_sentence_gsa_t *src_p)
+{
+    return (std_sprintf(dst_p,
+                        FSTR("GPGSA,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,"
+                             "%s,%s,%s,%s,%s,%s,%s"),
+                        src_p->selection_p,
+                        src_p->fix_p,
+                        src_p->prns[0],
+                        src_p->prns[1],
+                        src_p->prns[2],
+                        src_p->prns[3],
+                        src_p->prns[4],
+                        src_p->prns[5],
+                        src_p->prns[6],
+                        src_p->prns[7],
+                        src_p->prns[8],
+                        src_p->prns[9],
+                        src_p->prns[10],
+                        src_p->prns[11],
+                        src_p->pdop_p,
+                        src_p->hdop_p,
+                        src_p->vdop_p));
+}
+
+/**
+ * Encode given GSV sentence into given buffer.
+ */
+static ssize_t encode_gsv(char *dst_p,
+                          struct nmea_sentence_gsv_t *src_p)
+{
+    return (std_sprintf(dst_p,
+                        FSTR("GPGSV,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,"
+                             "%s,%s,%s,%s,%s,%s,%s,%s,%s"),
+                        src_p->number_of_sentences_p,
+                        src_p->sentence_p,
+                        src_p->number_of_satellites_p,
+                        src_p->satellites[0].prn_p,
+                        src_p->satellites[0].elevation_p,
+                        src_p->satellites[0].azimuth_p,
+                        src_p->satellites[0].snr_p,
+                        src_p->satellites[1].prn_p,
+                        src_p->satellites[1].elevation_p,
+                        src_p->satellites[1].azimuth_p,
+                        src_p->satellites[1].snr_p,
+                        src_p->satellites[2].prn_p,
+                        src_p->satellites[2].elevation_p,
+                        src_p->satellites[2].azimuth_p,
+                        src_p->satellites[2].snr_p,
+                        src_p->satellites[3].prn_p,
+                        src_p->satellites[3].elevation_p,
+                        src_p->satellites[3].azimuth_p,
+                        src_p->satellites[3].snr_p));
+}
+
+/**
+ * Encode given RMC sentence into given buffer.
+ */
+static ssize_t encode_rmc(char *dst_p,
+                          struct nmea_sentence_rmc_t *src_p)
+{
+    return (std_sprintf(dst_p,
+                        FSTR("GPRMC,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s"),
+                        src_p->time_of_fix_p,
+                        src_p->status_p,
+                        src_p->latitude.angle_p,
+                        src_p->latitude.direction_p,
+                        src_p->longitude.angle_p,
+                        src_p->longitude.direction_p,
+                        src_p->speed_knots_p,
+                        src_p->track_angle_p,
+                        src_p->date_p,
+                        src_p->magnetic_variation.angle_p,
+                        src_p->magnetic_variation.direction_p));
+}
+
+/**
+ * Encode given VTG sentence into given buffer.
+ */
+static ssize_t encode_vtg(char *dst_p,
+                          struct nmea_sentence_vtg_t *src_p)
+{
+    return (std_sprintf(dst_p,
+                        FSTR("GPVTG,%s,%s,%s,%s,%s,%s,%s,%s"),
+                        src_p->track_made_good_true.value_p,
+                        src_p->track_made_good_true.relative_to_p,
+                        src_p->track_made_good_magnetic.value_p,
+                        src_p->track_made_good_magnetic.relative_to_p,
+                        src_p->ground_speed_knots.value_p,
+                        src_p->ground_speed_knots.unit_p,
+                        src_p->ground_speed_kmph.value_p,
+                        src_p->ground_speed_kmph.unit_p));
+}
+
+/**
+ * Decode given raw sentence.
+ */
+static ssize_t decode_raw(struct nmea_sentence_t *dst_p,
+                          char *src_p,
+                          size_t size)
+{
+    /* Set the type. */
+    dst_p->type = nmea_sentence_type_raw_t;
+
+    /* Null-terminate the raw string (overwrites CRC prefix *). */
+    src_p[size - 1] = '\0';
+    dst_p->raw.str_p = src_p;
+
+    return (0);
+}
+
+/**
  * Decode given GGA sentence by validating and splitting the source
  * string into values.
  */
@@ -296,6 +457,34 @@ ssize_t nmea_encode(char *dst_p,
     /* Type specific contents. */
     switch (src_p->type) {
 
+    case nmea_sentence_type_raw_t:
+        res = encode_raw(&dst_p[1], &src_p->raw);
+        break;
+
+    case nmea_sentence_type_gga_t:
+        res = encode_gga(&dst_p[1], &src_p->gga);
+        break;
+
+    case nmea_sentence_type_gll_t:
+        res = encode_gll(&dst_p[1], &src_p->gll);
+        break;
+
+    case nmea_sentence_type_gsa_t:
+        res = encode_gsa(&dst_p[1], &src_p->gsa);
+        break;
+
+    case nmea_sentence_type_gsv_t:
+        res = encode_gsv(&dst_p[1], &src_p->gsv);
+        break;
+
+    case nmea_sentence_type_rmc_t:
+        res = encode_rmc(&dst_p[1], &src_p->rmc);
+        break;
+
+    case nmea_sentence_type_vtg_t:
+        res = encode_vtg(&dst_p[1], &src_p->vtg);
+        break;
+
     default:
         return (-ENOSYS);
     }
@@ -370,14 +559,10 @@ ssize_t nmea_decode(struct nmea_sentence_t *dst_p,
     } else if (memcmp(&src_p[1], "GPVTG,", 6) == 0) {
         res = decode_vtg(dst_p, &src_p[1]);
     } else {
-        res = -ENOSYS;
+        res = decode_raw(dst_p, &src_p[1], size);
     }
 
-    if (res != 0) {
-        return (res);
-    }
-
-    return (0);
+    return (res);
 }
 
 int nmea_decode_fix_time(char *src_p,
