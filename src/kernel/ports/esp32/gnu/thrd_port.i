@@ -122,14 +122,8 @@ static void thrd_port_idle_wait(struct thrd_t *thrd_p)
     sys_unlock();
 }
 
-static void thrd_port_suspend_timer_callback(void *arg_p)
+static void thrd_port_on_suspend_timer_expired(struct thrd_t *thrd_p)
 {
-    struct thrd_t *thrd_p = arg_p;
-
-    /* Push thread on scheduler ready queue. */
-    thrd_p->err = -ETIMEDOUT;
-    thrd_p->state = THRD_STATE_READY;
-    scheduler_ready_push(thrd_p);
 }
 
 static void RAM_CODE thrd_port_tick(void)
@@ -160,11 +154,10 @@ static void thrd_port_cpu_usage_reset(struct thrd_t *thrd_p)
 
 static const void *thrd_port_get_bottom_of_stack(struct thrd_t *thrd_p)
 {
-    char dummy;
     const void *bottom_p;
 
     if (thrd_p == thrd_self()) {
-        bottom_p = (const void *)&dummy;
+        bottom_p = thrd_port_get_bottom_of_stack_current_thread();
     } else {
         sys_lock();
         bottom_p = thrd_p->port.context_p;

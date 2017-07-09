@@ -51,19 +51,19 @@ static void *alloc_fixed_size(struct heap_t *self_p,
         if (size <= fixed_p->size) {
             if (fixed_p->free_p != NULL) {
                 header_p = fixed_p->free_p;
-                fixed_p->free_p = *((void **)fixed_p->free_p);
+                fixed_p->free_p = header_p->u.next_p;
             } else {
                 next_p = self_p->next_p;
 
                 /* Out of memory?. */
                 left = (self_p->size - (next_p - (char *)self_p->buf_p));
 
-                if (left < (sizeof(*header_p) + size)) {
+                if (left < (sizeof(*header_p) + fixed_p->size)) {
                     break;
                 }
 
                 header_p = self_p->next_p;
-                next_p += (sizeof(*header_p) + size);
+                next_p += (sizeof(*header_p) + fixed_p->size);
                 self_p->next_p = next_p;
             }
 
@@ -73,7 +73,7 @@ static void *alloc_fixed_size(struct heap_t *self_p,
             header_p->count = 1;
 
             return (&header_p[1]);
-            
+
         }
 
         fixed_p++;
@@ -96,12 +96,14 @@ static void *alloc_dynamic_size(struct heap_t *self_p,
     while (header_p != NULL) {
         if (size <= header_p->size) {
             header_p->count = 1;
-            
+
             if (prev_p != NULL) {
                 prev_p->u.next_p = header_p->u.next_p;
             } else {
                 self_p->dynamic.free_p = header_p->u.next_p;
             }
+
+            header_p->u.fixed_p = NULL;
 
             return (&header_p[1]);
         }
@@ -114,16 +116,17 @@ static void *alloc_dynamic_size(struct heap_t *self_p,
 
     /* Allocate new memory. */
     left = (self_p->size - (next_p - (char *)self_p->buf_p));
-    
+
     if (left < (sizeof(*header_p) + size)) {
         return (NULL);
     }
-    
+
     header_p = self_p->next_p;
     next_p += (sizeof(*header_p) + size);
     self_p->next_p = next_p;
 
     /* Initialize the allocated buffer. */
+    header_p->u.fixed_p = NULL;
     header_p->size = size;
     header_p->count = 1;
 
@@ -140,7 +143,7 @@ static int free_fixed_size(struct heap_t *self_p,
     header_p->u.next_p = fixed_p->free_p;
     fixed_p->free_p = header_p;
 
-    return (0);    
+    return (0);
 }
 
 static int free_dynamic_buffer(struct heap_t *self_p,
@@ -214,7 +217,7 @@ int heap_free(struct heap_t *self_p,
     if (header_p->count > 0) {
         header_p->count--;
         count = header_p->count;
-        
+
         /* Free when count is zero. */
         if (count == 0) {
             if (header_p->u.fixed_p != NULL) {

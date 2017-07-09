@@ -36,5 +36,4 @@ CDEFS += \
 	CONFIG_PIN=1 \
 	CONFIG_LINUX_SOCKET_DEVICE=1
 
-SIMBA_ROOT ?= ../..
 include $(SIMBA_ROOT)/make/app.mk

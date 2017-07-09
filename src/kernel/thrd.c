@@ -196,6 +196,26 @@ void terminate(void)
 }
 
 /**
+ * Timer callback for threads suspended with a timeout.
+ */
+static void on_suspend_timer_expired(void *arg_p)
+{
+    struct thrd_t *thrd_p;
+
+    thrd_p = arg_p;
+
+    /* The timer is no longer in use. */
+    thrd_p->timer_p = NULL;
+
+    /* Push thread on scheduler ready queue. */
+    thrd_p->err = -ETIMEDOUT;
+    thrd_p->state = THRD_STATE_READY;
+    scheduler_ready_push(thrd_p);
+
+    thrd_port_on_suspend_timer_expired(thrd_p);
+}
+
+/**
  * Push a thread on the list of threads that are ready to be
  * scheduled.
  *
@@ -241,8 +261,8 @@ static void thrd_reschedule(void)
     if (in_p != out_p) {
         module.scheduler.current_p = in_p;
         thrd_port_cpu_usage_stop(out_p);
+        thrd_port_cpu_usage_start(in_p);
         thrd_port_swap(in_p, out_p);
-        thrd_port_cpu_usage_start(out_p);
 #if CONFIG_THRD_SCHEDULED == 1
         out_p->statistics.scheduled++;
 #endif
@@ -334,7 +354,11 @@ static int cmd_list_cb(int argc,
                     thrd_p->name_p,
                     state_fmt[thrd_p->state], thrd_p->prio,
 #if CONFIG_THRD_CPU_USAGE == 1
+#    if CONFIG_FLOAT == 1
+                    (unsigned int)(thrd_p->statistics.cpu.usage + 0.5),
+#    else
                     (unsigned int)thrd_p->statistics.cpu.usage,
+#    endif
 #endif
 #if CONFIG_THRD_SCHEDULED == 1
                     (unsigned int)thrd_p->statistics.scheduled,
@@ -622,16 +646,12 @@ int thrd_join(struct thrd_t *thrd_p)
     ASSERTN(thrd_p != NULL, EINVAL);
 
 #if CONFIG_THRD_TERMINATE == 1
-
     sem_take(&thrd_p->join_sem, NULL);
     sem_give(&thrd_p->join_sem, 1);
 
     return (0);
-
 #else
-
     return (-1);
-
 #endif
 }
 
@@ -726,7 +746,6 @@ int thrd_init_global_env(struct thrd_environment_variable_t *variables_p,
                          int length)
 {
 #if CONFIG_THRD_ENV == 1
-
     sem_take(&module.env.sem, NULL);
     module.env.global.variables_p = variables_p;
     module.env.global.number_of_variables = 0;
@@ -734,11 +753,8 @@ int thrd_init_global_env(struct thrd_environment_variable_t *variables_p,
     sem_give(&module.env.sem, 1);
 
     return (0);
-
 #else
-
     return (-1);
-
 #endif
 }
 
@@ -747,7 +763,6 @@ int thrd_set_global_env(const char *name_p, const char *value_p)
     ASSERTN(name_p != NULL, EINVAL);
 
 #if CONFIG_THRD_ENV == 1
-
     int res;
 
     sem_take(&module.env.sem, NULL);
@@ -755,11 +770,8 @@ int thrd_set_global_env(const char *name_p, const char *value_p)
     sem_give(&module.env.sem, 1);
 
     return (res);
-
 #else
-
     return (-1);
-
 #endif
 }
 
@@ -768,7 +780,6 @@ const char *thrd_get_global_env(const char *name_p)
     ASSERTNRN(name_p != NULL, EINVAL);
 
 #if CONFIG_THRD_ENV == 1
-
     const char *value_p;
 
     sem_take(&module.env.sem, NULL);
@@ -776,11 +787,8 @@ const char *thrd_get_global_env(const char *name_p)
     sem_give(&module.env.sem, 1);
 
     return (value_p);
-
 #else
-
     return (NULL);
-
 #endif
 }
 
@@ -788,17 +796,13 @@ int thrd_init_env(struct thrd_environment_variable_t *variables_p,
                   int length)
 {
 #if CONFIG_THRD_ENV == 1
-
     module.scheduler.current_p->env.variables_p = variables_p;
     module.scheduler.current_p->env.number_of_variables = 0;
     module.scheduler.current_p->env.max_number_of_variables = length;
 
     return (0);
-
 #else
-
     return (-1);
-
 #endif
 }
 
@@ -807,13 +811,9 @@ int thrd_set_env(const char *name_p, const char *value_p)
     ASSERTN(name_p != NULL, EINVAL);
 
 #if CONFIG_THRD_ENV == 1
-
     return (set_env(&module.scheduler.current_p->env, name_p, value_p));
-
 #else
-
     return (-1);
-
 #endif
 }
 
@@ -822,7 +822,6 @@ const char *thrd_get_env(const char *name_p)
     ASSERTNRN(name_p != NULL, EINVAL);
 
 #if CONFIG_THRD_ENV == 1
-
     const char *value_p;
 
     value_p = get_env(&module.scheduler.current_p->env, name_p);
@@ -832,11 +831,8 @@ const char *thrd_get_env(const char *name_p)
     }
 
     return (thrd_get_global_env(name_p));
-
 #else
-
     return (NULL);
-
 #endif
 }
 
@@ -867,10 +863,11 @@ int thrd_suspend_isr(const struct time_t *timeout_p)
             if ((timeout_p->seconds <= 0) && (timeout_p->nanoseconds <= 0)) {
                 return (-ETIMEDOUT);
             } else {
+                PANIC_ASSERT(thrd_p->timer_p == NULL);
                 thrd_p->timer_p = &timer;
                 timer_init(&timer,
                            timeout_p,
-                           thrd_port_suspend_timer_callback,
+                           on_suspend_timer_expired,
                            thrd_p,
                            0);
                 timer_start_isr(&timer);
@@ -885,15 +882,17 @@ int thrd_suspend_isr(const struct time_t *timeout_p)
 
 int thrd_resume_isr(struct thrd_t *thrd_p, int err)
 {
-    int res = 1;
+    int res;
 
+    res = 0;
     thrd_p->err = err;
 
     if (thrd_p->state == THRD_STATE_SUSPENDED) {
         thrd_p->state = THRD_STATE_READY;
 
         if (thrd_p->timer_p != NULL) {
-            timer_stop_isr(thrd_p->timer_p);
+            err = timer_stop_isr(thrd_p->timer_p);
+            PANIC_ASSERT(err == 1);
             thrd_p->timer_p = NULL;
         }
 
@@ -901,7 +900,7 @@ int thrd_resume_isr(struct thrd_t *thrd_p, int err)
     } else if (thrd_p->state != THRD_STATE_TERMINATED) {
         thrd_p->state = THRD_STATE_RESUMED;
     } else {
-        res = 0;
+        res = -1;
     }
 
     return (res);

@@ -133,7 +133,6 @@
 /** Math result not representable. */
 #define ERANGE           34
 
-
 /** Resource deadlock would occur. */
 #define EDEADLK          35
 
@@ -203,6 +202,7 @@
 /** Invalid slot. */
 #define EBADSLT          57
 
+/** Deadlock. */
 #define EDEADLOCK        EDEADLK
 
 /** Bad font file format. */
@@ -418,7 +418,6 @@
 /** Key was rejected by service. */
 #define EKEYREJECTED    129
 
-
 /** Stack corrupt. */
 #define ESTACK         1000
 
@@ -430,5 +429,16 @@
 
 /** Command not found. */
 #define ENOCOMMAND     1003
+
+/**
+ * Map given error number to a string.
+ *
+ * @param[in] errno Error number to map to a string. Both positive and
+ *                  negative error numbers are accepted.
+ *
+ * @return Error number as a far string or NULL if it's not an error
+ *         number.
+ */
+far_string_t errno_as_string(int errno);
 
 #endif

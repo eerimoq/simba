@@ -17,8 +17,6 @@ The SHT3x-D sensors supports I2C speed of up to 1MHz.
 
 Current limitations of this driver:
 
-* Only supports using the :doc:`i2c_soft` driver to communicate with
-  the SHT3x sensor, not the :doc:`i2c` driver.
 * Only supports basic functionality and high repeatability mode.
 * Does not perform check CRC of sensor result.
 

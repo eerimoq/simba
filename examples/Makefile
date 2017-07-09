@@ -37,6 +37,7 @@ EXAMPLES = \
 	ds18b20 \
 	fat16 \
 	filesystem \
+	gnss \
 	hc0x \
 	hello_world \
 	http_client \
@@ -53,7 +54,8 @@ EXAMPLES = \
 	ssl_server \
 	synthesizer \
 	timer \
-	usb
+	usb \
+	xbee
 
 all: $(EXAMPLES:%=%.all)
 

@@ -70,6 +70,16 @@ static int shell_command_compare(const char *line_p,
 }
 
 /**
+ * Check if given line is a comment.
+ *
+ * @return true(1) if given line is a comment, otherwise false(0).
+ */
+static int is_comment(const char *line_p)
+{
+    return (*line_p == '#');
+}
+
+/**
  * Check if given line is a shell command.
  *
  * @return true(1) if given line is a shell command, otherwise
@@ -1238,7 +1248,9 @@ void *shell_main(void *arg_p)
             stripped_line_p = std_strip(line_get_buf(&self_p->line),
                                         NULL);
 
-            if (is_shell_command(stripped_line_p) == 1) {
+            if (is_comment(stripped_line_p) == 1) {
+                /* Just print a prompt. */
+            } else if (is_shell_command(stripped_line_p) == 1) {
                 (void)fs_call(stripped_line_p,
                               self_p->chin_p,
                               self_p->chout_p,

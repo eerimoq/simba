@@ -10,7 +10,7 @@ This module is a wrapper for the Espressif WiFi SoftAP interface.
 
 Source code: :github-blob:`src/drivers/esp_wifi/softap.h`, :github-blob:`src/drivers/esp_wifi/softap.c`
 
-Test code: :github-blob:`tst/drivers/esp_wifi/softap/main.c`
+Test code: :github-blob:`tst/drivers/hardware/esp_wifi/softap/main.c`
 
 ----------------------------------------------
 

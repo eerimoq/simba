@@ -28,6 +28,8 @@ Supported drivers for this board.
 - :doc:`../library-reference/drivers/adc`
 - :doc:`../library-reference/drivers/analog_input_pin`
 - :doc:`../library-reference/drivers/ds18b20`
+- :doc:`../library-reference/drivers/ds3231`
+- :doc:`../library-reference/drivers/eeprom_i2c`
 - :doc:`../library-reference/drivers/eeprom_soft`
 - :doc:`../library-reference/drivers/esp_wifi`
 - :doc:`../library-reference/drivers/exti`
@@ -71,9 +73,9 @@ Below is the memory usage of two applications:
 +--------------------------+-----------+-----------+
 | Application              | Flash     | RAM       |
 +==========================+===========+===========+
-| minimal-configuration    |    265804 |     33992 |
+| minimal-configuration    |    277748 |     35760 |
 +--------------------------+-----------+-----------+
-| default-configuration    |    311952 |     46868 |
+| default-configuration    |    324436 |     49232 |
 +--------------------------+-----------+-----------+
 
 Default configuration
@@ -96,6 +98,8 @@ Default Standard Library configuration.
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_CAN_                                           |  0                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_CAN_FRAME_TIMESTAMP_                           |  1                                                  |
++--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_CHIPID_                                        |  0                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_CRC_TABLE_LOOKUP_                              |  1                                                  |
@@ -107,6 +111,20 @@ Default Standard Library configuration.
 |  CONFIG_DS18B20_                                       |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_DS3231_                                        |  1                                                  |
++--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_EEPROM_I2C_                                    |  1                                                  |
++--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_EEPROM_I2C_NUMBER_OF_ATTEMPTS_                 |  100                                                |
++--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_EEPROM_SOFT_                                   |  1                                                  |
++--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_EEPROM_SOFT_CRC_                               |  CONFIG_EEPROM_SOFT_CRC_32                          |
++--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_EEPROM_SOFT_CRC_32_                            |  0                                                  |
++--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_EEPROM_SOFT_CRC_CCITT_                         |  1                                                  |
++--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_EEPROM_SOFT_SEMAPHORE_                         |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_EMACS_COLUMNS_MAX_                             |  80                                                 |
 +--------------------------------------------------------+-----------------------------------------------------+
@@ -127,6 +145,8 @@ Default Standard Library configuration.
 |  CONFIG_FILESYSTEM_GENERIC_                            |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_FLASH_                                         |  1                                                  |
++--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_FLASH_DEVICE_SEMAPHORE_                        |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_FLOAT_                                         |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
@@ -155,6 +175,8 @@ Default Standard Library configuration.
 |  CONFIG_FS_CMD_FS_WRITE_                               |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_FS_CMD_I2C_READ_                               |  1                                                  |
++--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_FS_CMD_I2C_SCAN_                               |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_FS_CMD_I2C_WRITE_                              |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
@@ -202,6 +224,8 @@ Default Standard Library configuration.
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_FS_CMD_SYS_REBOOT_                             |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_FS_CMD_SYS_RESET_CAUSE_                        |  1                                                  |
++--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_FS_CMD_SYS_UPTIME_                             |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_FS_CMD_THRD_LIST_                              |  1                                                  |
@@ -224,6 +248,10 @@ Default Standard Library configuration.
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_HARNESS_EXPECT_BUFFER_SIZE_                    |  512                                                |
 +--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_HARNESS_HEAP_MAX_                              |  2048                                               |
++--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_HARNESS_MOCK_VERBOSE_                          |  1                                                  |
++--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_HARNESS_SLEEP_MS_                              |  300                                                |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_HTTP_SERVER_REQUEST_BUFFER_SIZE_               |  128                                                |
@@ -237,8 +265,6 @@ Default Standard Library configuration.
 |  CONFIG_LED_7SEG_HT16K33_                              |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_LINUX_SOCKET_DEVICE_                           |  0                                                  |
-+--------------------------------------------------------+-----------------------------------------------------+
-|  CONFIG_LOG_MASK_SYS_                                  |  LOG_UPTO(INFO)                                     |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_MCP2515_                                       |  0                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
@@ -295,6 +321,8 @@ Default Standard Library configuration.
 |  CONFIG_MODULE_INIT_PWM_SOFT_                          |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_MODULE_INIT_RANDOM_                            |  1                                                  |
++--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_MODULE_INIT_RE_                                |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_MODULE_INIT_RWLOCK_                            |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
@@ -363,6 +391,8 @@ Default Standard Library configuration.
 |  CONFIG_PWM_SOFT_                                      |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_RANDOM_                                        |  1                                                  |
++--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_RE_DEBUG_LOG_MASK_                             |  -1                                                 |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_SD_                                            |  0                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
@@ -450,7 +480,11 @@ Default Standard Library configuration.
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_SYS_CONFIG_STRING_                             |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_SYS_LOG_MASK_                                  |  LOG_UPTO(INFO)                                     |
++--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_SYS_PANIC_KICK_WATCHDOG_                       |  0                                                  |
++--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_SYS_RESET_CAUSE_                               |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_SYS_SIMBA_MAIN_STACK_MAX_                      |  4096                                               |
 +--------------------------------------------------------+-----------------------------------------------------+
@@ -490,6 +524,8 @@ Default Standard Library configuration.
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_WATCHDOG_                                      |  0                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_WS2812_                                        |  0                                                  |
++--------------------------------------------------------+-----------------------------------------------------+
 
 
 Homepage
@@ -514,6 +550,8 @@ Mcu
 
 .. _CONFIG_CAN: ../user-guide/configuration.html#c.CONFIG_CAN
 
+.. _CONFIG_CAN_FRAME_TIMESTAMP: ../user-guide/configuration.html#c.CONFIG_CAN_FRAME_TIMESTAMP
+
 .. _CONFIG_CHIPID: ../user-guide/configuration.html#c.CONFIG_CHIPID
 
 .. _CONFIG_CRC_TABLE_LOOKUP: ../user-guide/configuration.html#c.CONFIG_CRC_TABLE_LOOKUP
@@ -525,6 +563,20 @@ Mcu
 .. _CONFIG_DS18B20: ../user-guide/configuration.html#c.CONFIG_DS18B20
 
 .. _CONFIG_DS3231: ../user-guide/configuration.html#c.CONFIG_DS3231
+
+.. _CONFIG_EEPROM_I2C: ../user-guide/configuration.html#c.CONFIG_EEPROM_I2C
+
+.. _CONFIG_EEPROM_I2C_NUMBER_OF_ATTEMPTS: ../user-guide/configuration.html#c.CONFIG_EEPROM_I2C_NUMBER_OF_ATTEMPTS
+
+.. _CONFIG_EEPROM_SOFT: ../user-guide/configuration.html#c.CONFIG_EEPROM_SOFT
+
+.. _CONFIG_EEPROM_SOFT_CRC: ../user-guide/configuration.html#c.CONFIG_EEPROM_SOFT_CRC
+
+.. _CONFIG_EEPROM_SOFT_CRC_32: ../user-guide/configuration.html#c.CONFIG_EEPROM_SOFT_CRC_32
+
+.. _CONFIG_EEPROM_SOFT_CRC_CCITT: ../user-guide/configuration.html#c.CONFIG_EEPROM_SOFT_CRC_CCITT
+
+.. _CONFIG_EEPROM_SOFT_SEMAPHORE: ../user-guide/configuration.html#c.CONFIG_EEPROM_SOFT_SEMAPHORE
 
 .. _CONFIG_EMACS_COLUMNS_MAX: ../user-guide/configuration.html#c.CONFIG_EMACS_COLUMNS_MAX
 
@@ -545,6 +597,8 @@ Mcu
 .. _CONFIG_FILESYSTEM_GENERIC: ../user-guide/configuration.html#c.CONFIG_FILESYSTEM_GENERIC
 
 .. _CONFIG_FLASH: ../user-guide/configuration.html#c.CONFIG_FLASH
+
+.. _CONFIG_FLASH_DEVICE_SEMAPHORE: ../user-guide/configuration.html#c.CONFIG_FLASH_DEVICE_SEMAPHORE
 
 .. _CONFIG_FLOAT: ../user-guide/configuration.html#c.CONFIG_FLOAT
 
@@ -573,6 +627,8 @@ Mcu
 .. _CONFIG_FS_CMD_FS_WRITE: ../user-guide/configuration.html#c.CONFIG_FS_CMD_FS_WRITE
 
 .. _CONFIG_FS_CMD_I2C_READ: ../user-guide/configuration.html#c.CONFIG_FS_CMD_I2C_READ
+
+.. _CONFIG_FS_CMD_I2C_SCAN: ../user-guide/configuration.html#c.CONFIG_FS_CMD_I2C_SCAN
 
 .. _CONFIG_FS_CMD_I2C_WRITE: ../user-guide/configuration.html#c.CONFIG_FS_CMD_I2C_WRITE
 
@@ -620,6 +676,8 @@ Mcu
 
 .. _CONFIG_FS_CMD_SYS_REBOOT: ../user-guide/configuration.html#c.CONFIG_FS_CMD_SYS_REBOOT
 
+.. _CONFIG_FS_CMD_SYS_RESET_CAUSE: ../user-guide/configuration.html#c.CONFIG_FS_CMD_SYS_RESET_CAUSE
+
 .. _CONFIG_FS_CMD_SYS_UPTIME: ../user-guide/configuration.html#c.CONFIG_FS_CMD_SYS_UPTIME
 
 .. _CONFIG_FS_CMD_THRD_LIST: ../user-guide/configuration.html#c.CONFIG_FS_CMD_THRD_LIST
@@ -642,6 +700,10 @@ Mcu
 
 .. _CONFIG_HARNESS_EXPECT_BUFFER_SIZE: ../user-guide/configuration.html#c.CONFIG_HARNESS_EXPECT_BUFFER_SIZE
 
+.. _CONFIG_HARNESS_HEAP_MAX: ../user-guide/configuration.html#c.CONFIG_HARNESS_HEAP_MAX
+
+.. _CONFIG_HARNESS_MOCK_VERBOSE: ../user-guide/configuration.html#c.CONFIG_HARNESS_MOCK_VERBOSE
+
 .. _CONFIG_HARNESS_SLEEP_MS: ../user-guide/configuration.html#c.CONFIG_HARNESS_SLEEP_MS
 
 .. _CONFIG_HTTP_SERVER_REQUEST_BUFFER_SIZE: ../user-guide/configuration.html#c.CONFIG_HTTP_SERVER_REQUEST_BUFFER_SIZE
@@ -655,8 +717,6 @@ Mcu
 .. _CONFIG_LED_7SEG_HT16K33: ../user-guide/configuration.html#c.CONFIG_LED_7SEG_HT16K33
 
 .. _CONFIG_LINUX_SOCKET_DEVICE: ../user-guide/configuration.html#c.CONFIG_LINUX_SOCKET_DEVICE
-
-.. _CONFIG_LOG_MASK_SYS: ../user-guide/configuration.html#c.CONFIG_LOG_MASK_SYS
 
 .. _CONFIG_MCP2515: ../user-guide/configuration.html#c.CONFIG_MCP2515
 
@@ -713,6 +773,8 @@ Mcu
 .. _CONFIG_MODULE_INIT_PWM_SOFT: ../user-guide/configuration.html#c.CONFIG_MODULE_INIT_PWM_SOFT
 
 .. _CONFIG_MODULE_INIT_RANDOM: ../user-guide/configuration.html#c.CONFIG_MODULE_INIT_RANDOM
+
+.. _CONFIG_MODULE_INIT_RE: ../user-guide/configuration.html#c.CONFIG_MODULE_INIT_RE
 
 .. _CONFIG_MODULE_INIT_RWLOCK: ../user-guide/configuration.html#c.CONFIG_MODULE_INIT_RWLOCK
 
@@ -781,6 +843,8 @@ Mcu
 .. _CONFIG_PWM_SOFT: ../user-guide/configuration.html#c.CONFIG_PWM_SOFT
 
 .. _CONFIG_RANDOM: ../user-guide/configuration.html#c.CONFIG_RANDOM
+
+.. _CONFIG_RE_DEBUG_LOG_MASK: ../user-guide/configuration.html#c.CONFIG_RE_DEBUG_LOG_MASK
 
 .. _CONFIG_SD: ../user-guide/configuration.html#c.CONFIG_SD
 
@@ -868,7 +932,11 @@ Mcu
 
 .. _CONFIG_SYS_CONFIG_STRING: ../user-guide/configuration.html#c.CONFIG_SYS_CONFIG_STRING
 
+.. _CONFIG_SYS_LOG_MASK: ../user-guide/configuration.html#c.CONFIG_SYS_LOG_MASK
+
 .. _CONFIG_SYS_PANIC_KICK_WATCHDOG: ../user-guide/configuration.html#c.CONFIG_SYS_PANIC_KICK_WATCHDOG
+
+.. _CONFIG_SYS_RESET_CAUSE: ../user-guide/configuration.html#c.CONFIG_SYS_RESET_CAUSE
 
 .. _CONFIG_SYS_SIMBA_MAIN_STACK_MAX: ../user-guide/configuration.html#c.CONFIG_SYS_SIMBA_MAIN_STACK_MAX
 
@@ -907,3 +975,5 @@ Mcu
 .. _CONFIG_USB_HOST: ../user-guide/configuration.html#c.CONFIG_USB_HOST
 
 .. _CONFIG_WATCHDOG: ../user-guide/configuration.html#c.CONFIG_WATCHDOG
+
+.. _CONFIG_WS2812: ../user-guide/configuration.html#c.CONFIG_WS2812

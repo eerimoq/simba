@@ -36,5 +36,4 @@ NAME = firmware
 BUILDDIR = .pioenvs/$(BOARD)
 EXE_SUFFIX = elf
 
-SIMBA_ROOT ?= ../../..
 include $(SIMBA_ROOT)/make/app.mk

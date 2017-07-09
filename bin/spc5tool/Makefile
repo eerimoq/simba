@@ -28,14 +28,17 @@
 # This file is part of the Simba project.
 #
 
+MCU ?= spc56d40l1
 BAUDRATE ?= 115200
+BAM_BAUDRATE ?= 19200
+BOARD ?= spc56ddiscovery
 
-NAME ?= spc5tool.$(BAUDRATE)
-BOARD ?= linux
+NAME ?= spc5tool-$(MCU)-$(BAUDRATE)-$(BAM_BAUDRATE)
 
 CDEFS += \
 	CONFIG_MINIMAL_SYSTEM=1 \
 	CONFIG_FLASH=1 \
+	CONFIG_FLASH_DEVICE_SEMAPHORE=0 \
 	CONFIG_UART=1 \
 	CONFIG_START_CONSOLE=CONFIG_START_CONSOLE_NONE \
 	CONFIG_SYSTEM_INTERRUPTS=0 \
@@ -44,6 +47,10 @@ CDEFS += \
 	CONFIG_SYSTEM_TICK=0 \
 	CONFIG_CRC_TABLE_LOOKUP=0 \
 	BAUDRATE=$(BAUDRATE)
+
+ifeq ($(BAM_BAUDRATE), 9600)
+CDEFS += CONFIG_EXTERNAL_OSCILLATOR_FREQUENCY_HZ=8000000
+endif
 
 # Optimize for size.
 OPT = -Os
@@ -54,14 +61,16 @@ LDFLAGS += -flto
 LINKER_SCRIPT ?= script.spc5tool.ld
 
 default:
-	$(MAKE) BAUDRATE=115200 clean
-	$(MAKE) BAUDRATE=115200 all
-	$(MAKE) BAUDRATE=115200 install
-	$(MAKE) BAUDRATE=921600 clean
-	$(MAKE) BAUDRATE=921600 all
-	$(MAKE) BAUDRATE=921600 install
+	for mcu in spc56d30l1 spc56d40l1 ; do \
+	    for baudrate in 115200 921600 ; do \
+	        for bam_baudrate in 9600 19200 ; do \
+	            $(MAKE) MCU=$${mcu} BAUDRATE=$${baudrate} BAM_BAUDRATE=$${bam_baudrate} clean ; \
+	            $(MAKE) MCU=$${mcu} BAUDRATE=$${baudrate} BAM_BAUDRATE=$${bam_baudrate} all ; \
+	            $(MAKE) MCU=$${mcu} BAUDRATE=$${baudrate} BAM_BAUDRATE=$${bam_baudrate} install ; \
+	        done ; \
+	    done ; \
+	done
 
-SIMBA_ROOT ?= ../..
 include $(SIMBA_ROOT)/make/app.mk
 
 install:

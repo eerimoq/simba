@@ -153,14 +153,8 @@ static void thrd_port_idle_wait(struct thrd_t *thrd_p)
     thrd_reschedule();
 }
 
-static void thrd_port_suspend_timer_callback(void *arg_p)
+static void thrd_port_on_suspend_timer_expired(struct thrd_t *thrd_p)
 {
-    struct thrd_t *thrd_p = arg_p;
-
-    /* Push thread on scheduler ready queue. */
-    thrd_p->err = -ETIMEDOUT;
-    thrd_p->state = THRD_STATE_READY;
-    scheduler_ready_push(thrd_p);
 }
 
 static void thrd_port_tick(void)

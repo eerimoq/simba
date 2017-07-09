@@ -197,6 +197,9 @@ class Settings(object):
             self.settings[name] = {"address": address}
 
         for name in self.settings.keys():
+            if len(name) > 40:
+                sys.exit("error: {}: setting name over 40 characters".format(name))
+
             if name not in sizes:
                 sys.exit("error: {}: no size found for setting".format(name))
 
@@ -224,7 +227,7 @@ class Settings(object):
                     sys.exit("error: {}: string value too long".format(
                         item["value"]))
             elif item["type"] == "blob_t":
-                mo = re.match(r"^([0-9a-fA-F]{2})+$", item["value"])
+                mo = re.match(r"^([0-9a-fA-F]{2})*$", item["value"])
 
                 if not mo:
                     sys.exit("error: {}: bad blob value".format(item["value"]))
@@ -412,7 +415,7 @@ class SoamDb(object):
 
         # Compress the database.
         with open(filename, 'rb') as fin:
-            if 'lzma' in sys.modules:
+            if 'lzma' in sys.modules or 'backports.lzma' in sys.modules:
                 compressed = b'\x00' + lzma.compress(fin.read())
             else:
                 compressed = b'\x01' + fin.read()

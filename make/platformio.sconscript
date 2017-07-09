@@ -70,11 +70,11 @@ BOARDS = {
             "FAMILY_SAM", 
             "MCU_SAM3X8E", 
             "BOARD_ARDUINO_DUE", 
-            "VERSION=master", 
+            "VERSION=15.0.2", 
             "MBEDTLS_USER_CONFIG_FILE=\"\\\"mbedtls/user_config.h\\\"\""
         ], 
         "cflags": [
-            "-g", 
+            "-O2", 
             "-Werror", 
             "-mthumb", 
             "-mcpu=cortex-m3", 
@@ -88,7 +88,7 @@ BOARDS = {
             "-Wno-error=unused-variable"
         ], 
         "cxxflags": [
-            "-g", 
+            "-O2", 
             "-Werror", 
             "-mthumb", 
             "-mcpu=cortex-m3", 
@@ -256,7 +256,7 @@ BOARDS = {
             "FAMILY_AVR", 
             "MCU_ATMEGA2560", 
             "BOARD_ARDUINO_MEGA", 
-            "VERSION=master", 
+            "VERSION=15.0.2", 
             "MBEDTLS_USER_CONFIG_FILE=\"\\\"mbedtls/user_config.h\\\"\"", 
             "__DELAY_BACKWARD_COMPATIBLE__"
         ], 
@@ -422,7 +422,7 @@ BOARDS = {
             "FAMILY_AVR", 
             "MCU_ATMEGA328P", 
             "BOARD_ARDUINO_NANO", 
-            "VERSION=master", 
+            "VERSION=15.0.2", 
             "MBEDTLS_USER_CONFIG_FILE=\"\\\"mbedtls/user_config.h\\\"\"", 
             "__DELAY_BACKWARD_COMPATIBLE__"
         ], 
@@ -588,7 +588,7 @@ BOARDS = {
             "FAMILY_AVR", 
             "MCU_ATMEGA32U4", 
             "BOARD_ARDUINO_PRO_MICRO", 
-            "VERSION=master", 
+            "VERSION=15.0.2", 
             "MBEDTLS_USER_CONFIG_FILE=\"\\\"mbedtls/user_config.h\\\"\"", 
             "__DELAY_BACKWARD_COMPATIBLE__"
         ], 
@@ -758,7 +758,7 @@ BOARDS = {
             "FAMILY_AVR", 
             "MCU_ATMEGA328P", 
             "BOARD_ARDUINO_UNO", 
-            "VERSION=master", 
+            "VERSION=15.0.2", 
             "MBEDTLS_USER_CONFIG_FILE=\"\\\"mbedtls/user_config.h\\\"\"", 
             "__DELAY_BACKWARD_COMPATIBLE__"
         ], 
@@ -924,7 +924,7 @@ BOARDS = {
             "FAMILY_ESP", 
             "MCU_ESP8266", 
             "BOARD_ESP01", 
-            "VERSION=master", 
+            "VERSION=15.0.2", 
             "MBEDTLS_USER_CONFIG_FILE=\"\\\"mbedtls/user_config.h\\\"\"", 
             "ICACHE_FLASH", 
             "__STRICT_ANSI__", 
@@ -1180,7 +1180,7 @@ BOARDS = {
             "FAMILY_ESP", 
             "MCU_ESP8266", 
             "BOARD_ESP12E", 
-            "VERSION=master", 
+            "VERSION=15.0.2", 
             "MBEDTLS_USER_CONFIG_FILE=\"\\\"mbedtls/user_config.h\\\"\"", 
             "ICACHE_FLASH", 
             "__STRICT_ANSI__", 
@@ -1436,7 +1436,7 @@ BOARDS = {
             "FAMILY_ESP32", 
             "MCU_ESP32", 
             "BOARD_ESP32_DEVKITC", 
-            "VERSION=master", 
+            "VERSION=15.0.2", 
             "MBEDTLS_USER_CONFIG_FILE=\"\\\"mbedtls/user_config.h\\\"\""
         ], 
         "cflags": [
@@ -1706,7 +1706,7 @@ BOARDS = {
             "FAMILY_ESP", 
             "MCU_ESP8266", 
             "BOARD_HUZZAH", 
-            "VERSION=master", 
+            "VERSION=15.0.2", 
             "MBEDTLS_USER_CONFIG_FILE=\"\\\"mbedtls/user_config.h\\\"\"", 
             "ICACHE_FLASH", 
             "__STRICT_ANSI__", 
@@ -1962,7 +1962,7 @@ BOARDS = {
             "FAMILY_LINUX", 
             "MCU_LINUX", 
             "BOARD_LINUX", 
-            "VERSION=master", 
+            "VERSION=15.0.2", 
             "MBEDTLS_USER_CONFIG_FILE=\"\\\"mbedtls/user_config.h\\\"\""
         ], 
         "cflags": [
@@ -2200,7 +2200,7 @@ BOARDS = {
             "FAMILY_ESP32", 
             "MCU_ESP32", 
             "BOARD_MAPLE_ESP32", 
-            "VERSION=master", 
+            "VERSION=15.0.2", 
             "MBEDTLS_USER_CONFIG_FILE=\"\\\"mbedtls/user_config.h\\\"\""
         ], 
         "cflags": [
@@ -2470,7 +2470,7 @@ BOARDS = {
             "FAMILY_ESP32", 
             "MCU_ESP32", 
             "BOARD_NANO32", 
-            "VERSION=master", 
+            "VERSION=15.0.2", 
             "MBEDTLS_USER_CONFIG_FILE=\"\\\"mbedtls/user_config.h\\\"\""
         ], 
         "cflags": [
@@ -2740,7 +2740,7 @@ BOARDS = {
             "FAMILY_ESP", 
             "MCU_ESP8266", 
             "BOARD_NODEMCU", 
-            "VERSION=master", 
+            "VERSION=15.0.2", 
             "MBEDTLS_USER_CONFIG_FILE=\"\\\"mbedtls/user_config.h\\\"\"", 
             "ICACHE_FLASH", 
             "__STRICT_ANSI__", 
@@ -2996,11 +2996,11 @@ BOARDS = {
             "FAMILY_STM32F2", 
             "MCU_STM32F205RG", 
             "BOARD_PHOTON", 
-            "VERSION=master", 
+            "VERSION=15.0.2", 
             "MBEDTLS_USER_CONFIG_FILE=\"\\\"mbedtls/user_config.h\\\"\""
         ], 
         "cflags": [
-            "-g", 
+            "-O2", 
             "-Werror", 
             "-mthumb", 
             "-mcpu=cortex-m3", 
@@ -3014,7 +3014,7 @@ BOARDS = {
             "-Wno-error=unused-variable"
         ], 
         "cxxflags": [
-            "-g", 
+            "-O2", 
             "-Werror", 
             "-mthumb", 
             "-mcpu=cortex-m3", 
@@ -3167,7 +3167,7 @@ BOARDS = {
             "FAMILY_SPC5", 
             "MCU_SPC56D40L1", 
             "BOARD_SPC56DDISCOVERY", 
-            "VERSION=master", 
+            "VERSION=15.0.2", 
             "MBEDTLS_USER_CONFIG_FILE=\"\\\"mbedtls/user_config.h\\\"\""
         ], 
         "cflags": [
@@ -3343,11 +3343,11 @@ BOARDS = {
             "FAMILY_STM32F3", 
             "MCU_STM32F303VC", 
             "BOARD_STM32F3DISCOVERY", 
-            "VERSION=master", 
+            "VERSION=15.0.2", 
             "MBEDTLS_USER_CONFIG_FILE=\"\\\"mbedtls/user_config.h\\\"\""
         ], 
         "cflags": [
-            "-g", 
+            "-O2", 
             "-Werror", 
             "-mthumb", 
             "-mcpu=cortex-m4", 
@@ -3361,7 +3361,7 @@ BOARDS = {
             "-Wno-error=unused-variable"
         ], 
         "cxxflags": [
-            "-g", 
+            "-O2", 
             "-Werror", 
             "-mthumb", 
             "-mcpu=cortex-m4", 
@@ -3514,11 +3514,11 @@ BOARDS = {
             "FAMILY_STM32F1", 
             "MCU_STM32F100RB", 
             "BOARD_STM32VLDISCOVERY", 
-            "VERSION=master", 
+            "VERSION=15.0.2", 
             "MBEDTLS_USER_CONFIG_FILE=\"\\\"mbedtls/user_config.h\\\"\""
         ], 
         "cflags": [
-            "-g", 
+            "-O2", 
             "-Werror", 
             "-mthumb", 
             "-mcpu=cortex-m3", 
@@ -3532,7 +3532,7 @@ BOARDS = {
             "-Wno-error=unused-variable"
         ], 
         "cxxflags": [
-            "-g", 
+            "-O2", 
             "-Werror", 
             "-mthumb", 
             "-mcpu=cortex-m3", 
@@ -3685,7 +3685,7 @@ BOARDS = {
             "FAMILY_ESP", 
             "MCU_ESP8266", 
             "BOARD_WEMOS_D1_MINI", 
-            "VERSION=master", 
+            "VERSION=15.0.2", 
             "MBEDTLS_USER_CONFIG_FILE=\"\\\"mbedtls/user_config.h\\\"\"", 
             "ICACHE_FLASH", 
             "__STRICT_ANSI__", 
@@ -3936,19 +3936,19 @@ BOARDS = {
     }
 }
 
+
 def add_include_paths(env, paths):
     """Add given list of include paths.
 
     """
 
+    platform = env.PioPlatform()
     env.Append(CPPPATH=["$PROJECTSRC_DIR"])
+    framework_dir = platform.get_package_dir("framework-simba")
+    assert os.path.isdir(framework_dir)
 
     for path in paths:
-        env.VariantDirWrap(
-            join("$BUILD_DIR", "SimbaFramework", path),
-            join("$PLATFORMFW_DIR", path)
-        )
-        env.Append(CPPPATH=[join("$BUILD_DIR", "SimbaFramework", path)])
+        env.Append(CPPPATH=[join(framework_dir, path)])
 
 
 def set_default_values(env):
@@ -3993,7 +3993,7 @@ def setup_mcu_esp(env, linker_script, flash_size_map):
             + str(source[0]) + " eagle.app.v6.irom0text.bin",
             shell=True)
         subprocess.check_call(
-            env.subst('$PYTHONEXE $PLATFORMFW_DIR/3pp/ESP8266_RTOS_SDK/tools/gen_appbin.py') + " " + str(source[0]) + " 2 0 0 " + flash_size_map,
+            env.subst('$PYTHONEXE "$PLATFORMFW_DIR/3pp/ESP8266_RTOS_SDK/tools/gen_appbin.py"') + " " + str(source[0]) + " 2 0 0 " + flash_size_map,
             shell=True)
         shutil.copy("eagle.app.flash.bin", str(target[0]))
 
@@ -4008,8 +4008,8 @@ def setup_mcu_esp(env, linker_script, flash_size_map):
         '--baud 230400',
         '--port $UPLOAD_PORT',
         'write_flash',
-        '0x00000 $PLATFORMFW_DIR/3pp/ESP8266_RTOS_SDK/bin/boot_v1.4.bin',
-        '0x01000 $BUILD_DIR/firmware.bin']))
+        '0x00000 "$PLATFORMFW_DIR/3pp/ESP8266_RTOS_SDK/bin/boot_v1.4.bin"',
+        '0x01000 "$BUILD_DIR/firmware.bin"']))
 
 
 
@@ -4204,7 +4204,7 @@ linkflags = []
 
 for flag in env["LINKFLAGS"]:
     if flag.startswith("-Wl,-Map="):
-        flag = "-Wl,-Map=$BUILD_DIR/firmware.map"
+        flag = '-Wl,-Map="$BUILD_DIR/firmware.map"'
     linkflags.append(flag)
 env.Replace(LINKFLAGS=linkflags)
 

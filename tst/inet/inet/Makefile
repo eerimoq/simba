@@ -37,5 +37,4 @@ CDEFS += CONFIG_MINIMAL_SYSTEM=1 \
 
 INET_SRC = inet.c
 
-SIMBA_ROOT ?= ../../..
 include $(SIMBA_ROOT)/make/app.mk

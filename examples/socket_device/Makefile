@@ -34,5 +34,4 @@ BOARD ?= linux
 CDEFS += \
 	CONFIG_LINUX_SOCKET_DEVICE=1
 
-SIMBA_ROOT ?= ../..
 include $(SIMBA_ROOT)/make/app.mk

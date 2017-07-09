@@ -46,9 +46,9 @@
 int random_module_init(void);
 
 /**
- * Read a random number from the hardware.
+ * Read a 32 bits random number from the hardware.
  *
- * @return Read random number.
+ * @return A 32 bits random number.
  */
 uint32_t random_read(void);
 

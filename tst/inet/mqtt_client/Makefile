@@ -42,5 +42,4 @@ SRC_IGNORE = $(SIMBA_ROOT)/src/inet/socket.c
 
 INET_SRC = mqtt_client.c
 
-SIMBA_ROOT ?= ../../..
 include $(SIMBA_ROOT)/make/app.mk

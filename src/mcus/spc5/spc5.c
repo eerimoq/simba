@@ -51,6 +51,20 @@ static void isr_none(uint32_t address)
     sys_panic(&buf[0]);
 }
 
+#if CONFIG_FLASH == 1
+
+ISR(data_storage)
+{
+    if (SPC5_DFLASH->MCR & SPC5_FLASH_MCR_EER) {
+        /* DFlash ECC errors are handled by the flash driver. */
+    } else {
+        sys_panic("isr_data_storage");
+    }
+
+}
+
+#endif
+
 void isr_software_configurable_flag_0(uint32_t address) __attribute__ ((weak, alias("isr_none")));
 void isr_software_configurable_flag_1(uint32_t address) __attribute__ ((weak, alias("isr_none")));
 void isr_software_configurable_flag_2(uint32_t address) __attribute__ ((weak, alias("isr_none")));
@@ -339,7 +353,10 @@ void spc5_init(void)
     /* Disable the watchdog. */
     SPC5_SWT->SR = 0x0000c520;
     SPC5_SWT->SR = 0x0000d928;
-    SPC5_SWT->CR = 0;
+    SPC5_SWT->CR = (SPC5_SWT_CR_MAP_0
+                    | SPC5_SWT_CR_RIA
+                    | SPC5_SWT_CR_CSL
+                    | SPC5_SWT_CR_FRZ);
 
 #if CONFIG_SYSTEM_INTERRUPTS == 1
     /* Software vector mode. */

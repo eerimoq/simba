@@ -31,5 +31,4 @@
 NAME = queue
 BOARD ?= linux
 
-SIMBA_ROOT ?= ../..
 include $(SIMBA_ROOT)/make/app.mk

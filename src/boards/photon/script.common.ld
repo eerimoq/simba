@@ -126,8 +126,8 @@ SECTIONS
     } > rom
     PROVIDE_HIDDEN (__exidx_end = .);
 
-    /* Settings area. */
-    .settings :
+    /* Non-volatile memory area. */
+    .nvm.eeprom_soft :
     {
         . = ALIGN(256);
     } > rom

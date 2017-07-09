@@ -32,16 +32,19 @@
 
 #define BUFFER_SIZE(buffer_p)                           \
     ((buffer_p)->size > 0 ? (buffer_p)->size - 1 : 0)
+
 #define BUFFER_USED_UNTIL_END(buffer_p)         \
     ((buffer_p)->end_p - (buffer_p)->read_p)
-#define WRITER_SIZE(queue_p)                    \
-    ((queue_p)->writer_p == NULL                \
-     ? 0                                        \
-     : (queue_p)->writer_p->left)
+
+#define WRITER_SIZE(queue_p)                                            \
+    ((queue_p)->writer_p == NULL ? 0 : (queue_p)->writer_p->left)
+
 #define READER_SIZE(queue_p)                                            \
     (((queue_p)->base.reader_p != NULL) * (queue_p)->reader.left)
+
 #define BUFFER_UNUSED_UNTIL_END(buffer_p)       \
     ((buffer_p)->end_p - (buffer_p)->write_p)
+
 #define BUFFER_UNUSED(buffer_p)                         \
     (BUFFER_SIZE(buffer_p) - get_buffer_used(buffer_p))
 

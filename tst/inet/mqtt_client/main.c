@@ -151,25 +151,25 @@ static int test_connect(struct harness_t *harness_p)
     BTASSERT(queue_write(&qserverin, &message, sizeof(message)) == sizeof(message));
 
     /* Connect. */
-    BTASSERT(mqtt_client_connect(&client) == 0);
+    BTASSERTI(mqtt_client_connect(&client), ==, 0);
 
-    BTASSERT(queue_read(&qserverout, buf, 2) == 2);
-    BTASSERT(buf[0] == 0x10);
-    BTASSERT(buf[1] == 12);
+    BTASSERTI(queue_read(&qserverout, buf, 2), ==, 2);
+    BTASSERTI(buf[0], ==, 0x10);
+    BTASSERTI(buf[1], ==, 12);
 
-    BTASSERT(queue_read(&qserverout, buf, 12) == 12);
-    BTASSERT(buf[0] == 0);
-    BTASSERT(buf[1] == 4);
-    BTASSERT(buf[2] == 'M');
-    BTASSERT(buf[3] == 'Q');
-    BTASSERT(buf[4] == 'T');
-    BTASSERT(buf[5] == 'T');
-    BTASSERT(buf[6] == 4);
-    BTASSERT(buf[7] == 0x02);
-    BTASSERT(buf[8] == 0);
-    BTASSERT(buf[9] == 10);
-    BTASSERT(buf[10] == 0);
-    BTASSERT(buf[11] == 0);
+    BTASSERTI(queue_read(&qserverout, buf, 12), ==, 12);
+    BTASSERTI(buf[0], ==, 0);
+    BTASSERTI(buf[1], ==, 4);
+    BTASSERTI(buf[2], ==, 'M');
+    BTASSERTI(buf[3], ==, 'Q');
+    BTASSERTI(buf[4], ==, 'T');
+    BTASSERTI(buf[5], ==, 'T');
+    BTASSERTI(buf[6], ==, 4);
+    BTASSERTI(buf[7], ==, 0x02);
+    BTASSERTI(buf[8], ==, 1);
+    BTASSERTI(buf[9], ==, 0x2c);
+    BTASSERTI(buf[10], ==, 0);
+    BTASSERTI(buf[11], ==, 0);
 
     return (0);
 }

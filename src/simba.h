@@ -124,6 +124,7 @@ extern "C" {
 
 #include "encode/base64.h"
 #include "encode/json.h"
+#include "encode/nmea.h"
 
 #include "hash/crc.h"
 #include "hash/sha1.h"
@@ -232,6 +233,18 @@ extern "C" {
 #endif
 #ifdef PORT_HAS_EEPROM_SOFT
 #    include "drivers/eeprom_soft.h"
+#endif
+#ifdef PORT_HAS_EEPROM_I2C
+#    include "drivers/eeprom_i2c.h"
+#endif
+#ifdef PORT_HAS_XBEE
+#    include "drivers/xbee.h"
+#endif
+#ifdef PORT_HAS_HX711
+#    include "drivers/hx711.h"
+#endif
+#ifdef PORT_HAS_GNSS
+#    include "drivers/gnss.h"
 #endif
 
 #include "inet/isotp.h"

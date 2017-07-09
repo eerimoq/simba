@@ -42,5 +42,4 @@ SRC_IGNORE = $(SIMBA_ROOT)/src/inet/socket.c
 INET_SRC += ssl.c
 MBED_TLS_SRC =
 
-SIMBA_ROOT ?= ../../..
 include $(SIMBA_ROOT)/make/app.mk

@@ -31,5 +31,4 @@
 NAME = esp_wifi_softap
 BOARD ?= esp12e
 
-SIMBA_ROOT ?= ../../..
 include $(SIMBA_ROOT)/make/app.mk

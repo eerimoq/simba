@@ -45,4 +45,30 @@ static inline uint16_t htons(uint16_t v)
 
 #define ntohs(v) htons(v)
 
+#define SYS_PORT_RESET_CAUSES                   \
+    sys_reset_cause_lvd27_vreg_t,               \
+        sys_reset_cause_lvd27_t,                \
+        sys_reset_cause_lvd12_pd1_t,            \
+        sys_reset_cause_lvd12_pd0_t,            \
+        sys_reset_cause_flash_t,                \
+        sys_reset_cause_lvd45_t,                \
+        sys_reset_cause_cmu_fhl_t,              \
+        sys_reset_cause_cmu_olr_t,              \
+        sys_reset_cause_fmpll_t,                \
+        sys_reset_cause_chkstop_t,              \
+        sys_reset_cause_core_t
+
+#define SYS_PORT_RESET_CAUSE_STRINGS_MAP        \
+    "lvd27_vreg",                               \
+        "lvd27",                                \
+        "lvd12_pd1",                            \
+        "lvd12_pd0",                            \
+        "flash",                                \
+        "lvd45",                                \
+        "cmu_fhl",                              \
+        "cmu_olr",                              \
+        "fmpll",                                \
+        "chkstop",                              \
+        "core"
+
 #endif

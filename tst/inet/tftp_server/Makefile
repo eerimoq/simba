@@ -55,5 +55,4 @@ SPIFFS_SRC = \
 	3pp/spiffs-0.3.5/src/spiffs_cache.c \
 	3pp/spiffs-0.3.5/src/spiffs_check.c
 
-SIMBA_ROOT ?= ../../..
 include $(SIMBA_ROOT)/make/app.mk

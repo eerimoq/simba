@@ -26,7 +26,7 @@ The diagram below is an example of how three threads; ``shell``,
 
 .. image:: ../../images/thread-scheduling.jpg
    :width: 90%
-   :align: center    
+   :align: center
    :target: ../../_images/thread-scheduling.jpg
 
 As it is a single core scheduler only one thread is runnng at a

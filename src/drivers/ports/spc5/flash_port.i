@@ -60,7 +60,11 @@ static int write_aligned(struct flash_device_t *dev_p,
 
         regs_p->MCR = (SPC5_FLASH_MCR_PGM | SPC5_FLASH_MCR_EHV);
 
-        while ((regs_p->MCR & SPC5_FLASH_MCR_DONE) == 0);
+        while ((regs_p->MCR & SPC5_FLASH_MCR_DONE) == 0) {
+#if CONFIG_SYSTEM_INTERRUPTS == 1
+            thrd_yield();
+#endif
+        }
 
         res = ((regs_p->MCR & SPC5_FLASH_MCR_PEG) == 0 ? -1 : 0);
         regs_p->MCR = SPC5_FLASH_MCR_PGM;
@@ -86,9 +90,19 @@ static ssize_t flash_port_read(struct flash_driver_t *self_p,
                                uintptr_t src,
                                size_t size)
 {
+    ssize_t res;
+
     memcpy(dst_p, (void *)src, size);
 
-    return (size);
+    /* Failed if an ECC error occured. */
+    if (self_p->dev_p->regs_p->MCR & SPC5_FLASH_MCR_EER) {
+        self_p->dev_p->regs_p->MCR = SPC5_FLASH_MCR_EER;
+        res = -1;
+    } else {
+        res = size;
+    }
+
+    return (res);
 }
 
 static ssize_t flash_port_write(struct flash_driver_t *self_p,
@@ -219,7 +233,9 @@ static int flash_port_erase(struct flash_driver_t *self_p,
     regs_p->MCR = (SPC5_FLASH_MCR_EHV | SPC5_FLASH_MCR_ERS);
 
     while ((regs_p->MCR & SPC5_FLASH_MCR_DONE) == 0) {
-        thrd_sleep_ms(50);
+#if CONFIG_SYSTEM_INTERRUPTS == 1
+        thrd_yield();
+#endif
     }
 
     res = ((regs_p->MCR & SPC5_FLASH_MCR_PEG) == 0 ? -1 : 0);

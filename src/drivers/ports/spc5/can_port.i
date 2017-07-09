@@ -45,7 +45,9 @@ static void read_frame_from_hw(struct can_driver_t *self_p,
                    & SPC5_FLEXCAN_MSGBUF_CTRL_STATUS_LENGTH_MASK)
                   >> SPC5_FLEXCAN_MSGBUF_CTRL_STATUS_LENGTH_POS);
     frame.rtr = 0;
+#if CONFIG_CAN_FRAME_TIMESTAMP == 1
     frame.timestamp = 0;
+#endif
     frame.data.u32[0] = msgbuf_p->DATA[0];
     frame.data.u32[1] = msgbuf_p->DATA[1];
 
@@ -108,9 +110,10 @@ static void write_frame_to_hw(volatile struct spc5_flexcan_t *regs_p,
     msgbuf_p->DATA[1] = frame_p->data.u32[1];
 
     /* Set DLC and trigger the transmission. */
-    msgbuf_p->CTRL_STATUS = (ctrl_status
-                             | SPC5_FLEXCAN_MSGBUF_CTRL_STATUS_CODE(0xc)
-                             | SPC5_FLEXCAN_MSGBUF_CTRL_STATUS_LENGTH(frame_p->size));
+    msgbuf_p->CTRL_STATUS =
+        (ctrl_status
+         | SPC5_FLEXCAN_MSGBUF_CTRL_STATUS_CODE(0xc)
+         | SPC5_FLEXCAN_MSGBUF_CTRL_STATUS_LENGTH(frame_p->size));
 }
 
 ISR(flexcan_0_esr_err)
@@ -121,24 +124,25 @@ ISR(flexcan_0_esr_err)
     self_p = can_device[0].drv_p;
     regs_p = can_device[0].regs_p;
 
+    if (self_p != NULL) {
+        if (self_p->thrd_p != NULL) {
+            /* Abort the ongoing transmission. */
+            if (self_p->txframe_p[-1].extended_frame == 0) {
+                regs_p->MSGBUF[2].CTRL_STATUS =
+                    SPC5_FLEXCAN_MSGBUF_CTRL_STATUS_CODE(0x9);
+            } else {
+                regs_p->MSGBUF[3].CTRL_STATUS =
+                    SPC5_FLEXCAN_MSGBUF_CTRL_STATUS_CODE(0x9);
+            }
+
+            /* Resume the thread. */
+            thrd_resume_isr(self_p->thrd_p, -1);
+            self_p->thrd_p = NULL;
+        }
+    }
+
     /* Clear the interrupt flag. */
     regs_p->ESR = SPC5_FLEXCAN_ESR_ERR_INT;
-
-    if (self_p == NULL) {
-        return;
-    }
-
-    if (self_p->thrd_p != NULL) {
-        /* Abort the ongoing transmission. */
-        if (self_p->txframe_p[-1].extended_frame == 0) {
-            regs_p->MSGBUF[2].CTRL_STATUS = SPC5_FLEXCAN_MSGBUF_CTRL_STATUS_CODE(0x9);
-        } else {
-            regs_p->MSGBUF[3].CTRL_STATUS = SPC5_FLEXCAN_MSGBUF_CTRL_STATUS_CODE(0x9);
-        }
-
-        /* Resume the thread. */
-        thrd_resume_isr(self_p->thrd_p, -1);
-    }
 }
 
 ISR(flexcan_0_buf_00_03)
@@ -150,34 +154,34 @@ ISR(flexcan_0_buf_00_03)
     self_p = can_device[0].drv_p;
     regs_p = can_device[0].regs_p;
 
-    /* Clear all interrupt flags. */
     iflag1 = regs_p->IFLAG1;
-    regs_p->IFLAG1 = 0xf;
 
-    if (self_p == NULL) {
-        return;
-    }
+    if (self_p != NULL) {
+        /* Handle standard ID RX complete interrupt. */
+        if (iflag1 & 0x1) {
+            read_frame_from_hw(self_p, &regs_p->MSGBUF[0]);
+        }
 
-    /* Handle standard ID RX complete interrupt. */
-    if (iflag1 & 0x1) {
-        read_frame_from_hw(self_p, &regs_p->MSGBUF[0]);
-    }
+        /* Handle extended ID RX complete interrupt. */
+        if (iflag1 & 0x2) {
+            read_frame_from_hw(self_p, &regs_p->MSGBUF[1]);
+        }
 
-    /* Handle extended ID TX complete interrupt. */
-    if (iflag1 & 0x2) {
-        read_frame_from_hw(self_p, &regs_p->MSGBUF[1]);
-    }
-
-    /* Handle TX complete interrupt. */
-    if (iflag1 & 0xc) {
-        if (self_p->txsize > 0) {
-            write_frame_to_hw(regs_p, self_p->txframe_p);
-            self_p->txsize -= sizeof(*self_p->txframe_p);
-            self_p->txframe_p++;
-        } else {
-            thrd_resume_isr(self_p->thrd_p, 0);
+        /* Handle TX complete interrupt. */
+        if (iflag1 & 0xc) {
+            if (self_p->txsize > 0) {
+                write_frame_to_hw(regs_p, self_p->txframe_p);
+                self_p->txsize -= sizeof(*self_p->txframe_p);
+                self_p->txframe_p++;
+            } else {
+                thrd_resume_isr(self_p->thrd_p, 0);
+                self_p->thrd_p = NULL;
+            }
         }
     }
+
+    /* Clear all handled flags. */
+    regs_p->IFLAG1 = iflag1;
 }
 
 static ssize_t write_cb(void *arg_p,

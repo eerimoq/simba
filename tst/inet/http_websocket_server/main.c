@@ -100,7 +100,7 @@ static int test_handshake_bad_action(struct harness_t *harness_p)
     request.action = http_server_request_action_get_t + 1;
     request.headers.sec_websocket_key.present = 1;
     strcpy(request.headers.sec_websocket_key.value, "");
-    
+
     /* Perform the handshake. */
     BTASSERT(http_websocket_server_handshake(&server,
                                              &request) == -1);
@@ -119,9 +119,9 @@ static int test_read(struct harness_t *harness_p)
     buf[3] = 0x02; /* Masking key 1. */
     buf[4] = 0x03; /* Masking key 2. */
     buf[5] = 0x04; /* Masking key 3. */
-    buf[6] = 'g'; /* Payload 0. */
-    buf[7] = 'm'; /* Payload 1. */
-    buf[8] = 'l'; /* Payload 2. */
+    buf[6] = 'g';  /* Payload 0. */
+    buf[7] = 'm';  /* Payload 1. */
+    buf[8] = 'l';  /* Payload 2. */
     socket_stub_input(buf, 9);
 
     BTASSERT(http_websocket_server_read(&server,
@@ -141,8 +141,8 @@ static int test_read(struct harness_t *harness_p)
     buf[5] = 0x00; /* Masking key 1. */
     buf[6] = 0x00; /* Masking key 2. */
     buf[7] = 0x00; /* Masking key 3. */
-    buf[8] = 'b'; /* Payload 0. */
-    buf[9] = 'a'; /* Payload 1. */
+    buf[8] = 'b';  /* Payload 0. */
+    buf[9] = 'a';  /* Payload 1. */
     buf[10] = 'r'; /* Payload 2. */
     socket_stub_input(buf, 11);
 
@@ -155,23 +155,23 @@ static int test_read(struct harness_t *harness_p)
     BTASSERT(buf[2] == 'r');
 
     /* Prepare socket input with 8 length byte. */
-    buf[0] = 0x81; /* FIN & TEXT. */
-    buf[1] = 0xff; /* MASK and 8 bytes payload length. */
-    buf[2] = 0x00; /* Payload length 0. */
-    buf[3] = 0x00; /* Payload length 1. */
-    buf[4] = 0x00; /* Payload length 2. */
-    buf[5] = 0x00; /* Payload length 3. */
-    buf[6] = 0x00; /* Payload length 4. */
-    buf[7] = 0x00; /* Payload length 5. */
-    buf[8] = 0x00; /* Payload length 6. */
-    buf[9] = 0x03; /* Payload length 7. */
+    buf[0] = 0x81;  /* FIN & TEXT. */
+    buf[1] = 0xff;  /* MASK and 8 bytes payload length. */
+    buf[2] = 0x00;  /* Payload length 0. */
+    buf[3] = 0x00;  /* Payload length 1. */
+    buf[4] = 0x00;  /* Payload length 2. */
+    buf[5] = 0x00;  /* Payload length 3. */
+    buf[6] = 0x00;  /* Payload length 4. */
+    buf[7] = 0x00;  /* Payload length 5. */
+    buf[8] = 0x00;  /* Payload length 6. */
+    buf[9] = 0x03;  /* Payload length 7. */
     buf[10] = 0x00; /* Masking key 0. */
     buf[11] = 0x00; /* Masking key 1. */
     buf[12] = 0x00; /* Masking key 2. */
     buf[13] = 0x00; /* Masking key 3. */
-    buf[14] = 'f'; /* Payload 0. */
-    buf[15] = 'i'; /* Payload 1. */
-    buf[16] = 'e'; /* Payload 2. */
+    buf[14] = 'f';  /* Payload 0. */
+    buf[15] = 'i';  /* Payload 1. */
+    buf[16] = 'e';  /* Payload 2. */
     socket_stub_input(buf, 17);
 
     BTASSERT(http_websocket_server_read(&server,
@@ -189,9 +189,9 @@ static int test_read(struct harness_t *harness_p)
     buf[3] = 0x00; /* Masking key 1. */
     buf[4] = 0x00; /* Masking key 2. */
     buf[5] = 0x00; /* Masking key 3. */
-    buf[6] = 'f'; /* Payload 0. */
-    buf[7] = 'o'; /* Payload 1. */
-    buf[8] = 'o'; /* Payload 2. */
+    buf[6] = 'f';  /* Payload 0. */
+    buf[7] = 'o';  /* Payload 1. */
+    buf[8] = 'o';  /* Payload 2. */
     socket_stub_input(buf, 9);
 
     /* Read only two of the three bytes. The third byte should be
@@ -210,9 +210,9 @@ static int test_read(struct harness_t *harness_p)
     buf[3] = 0x00; /* Masking key 1. */
     buf[4] = 0x00; /* Masking key 2. */
     buf[5] = 0x00; /* Masking key 3. */
-    buf[6] = 'f'; /* Payload 0. */
-    buf[7] = 'o'; /* Payload 1. */
-    buf[8] = 'o'; /* Payload 2. */
+    buf[6] = 'f';  /* Payload 0. */
+    buf[7] = 'o';  /* Payload 1. */
+    buf[8] = 'o';  /* Payload 2. */
     socket_stub_input(buf, 9);
 
     BTASSERT(http_websocket_server_read(&server,
@@ -238,16 +238,12 @@ static int test_write(struct harness_t *harness_p)
                                          3) == 3);
 
     /* Verify the output data. */
-    socket_stub_output(buf, 6 + 3);
+    socket_stub_output(buf, 2 + 3);
     BTASSERT(buf[0] == 0x82); /* FIN & BINARY. */
-    BTASSERT(buf[1] == 0x83); /* MASK and 3 bytes of payload. */
-    BTASSERT(buf[2] == 0x00); /* Masking key 0. */
-    BTASSERT(buf[3] == 0x00); /* Masking key 1. */
-    BTASSERT(buf[4] == 0x00); /* Masking key 2. */
-    BTASSERT(buf[5] == 0x00); /* Masking key 3. */
-    BTASSERT(buf[6] == 'f'); /* Payload 0. */
-    BTASSERT(buf[7] == 'o'); /* Payload 1. */
-    BTASSERT(buf[8] == 'o'); /* Payload 2. */
+    BTASSERT(buf[1] == 0x03); /* 3 bytes of payload. */
+    BTASSERT(buf[2] == 'f');  /* Payload 0. */
+    BTASSERT(buf[3] == 'o');  /* Payload 1. */
+    BTASSERT(buf[4] == 'o');  /* Payload 2. */
 
     buf[0] = 'b';
     buf[1] = 'a';
@@ -259,18 +255,14 @@ static int test_write(struct harness_t *harness_p)
                                          126) == 126);
 
     /* Prepare socket input with 2 length byte. */
-    socket_stub_output(buf, 8 + 126);
+    socket_stub_output(buf, 4 + 126);
     BTASSERT(buf[0] == 0x82); /* FIN & BINARY. */
-    BTASSERT(buf[1] == 0xfe); /* MASK and 2 bytes payload length. */
+    BTASSERT(buf[1] == 0x7e); /* 2 bytes payload length. */
     BTASSERT(buf[2] == 0x00); /* Payload length 0. */
     BTASSERT(buf[3] == 0x7e); /* Payload length 1. */
-    BTASSERT(buf[4] == 0x00); /* Masking key 0. */
-    BTASSERT(buf[5] == 0x00); /* Masking key 1. */
-    BTASSERT(buf[6] == 0x00); /* Masking key 2. */
-    BTASSERT(buf[7] == 0x00); /* Masking key 3. */
-    BTASSERT(buf[8] == 'b'); /* Payload 0. */
-    BTASSERT(buf[9] == 'a'); /* Payload 1. */
-    BTASSERT(buf[10] == 'r'); /* Payload 2. */
+    BTASSERT(buf[4] == 'b');  /* Payload 0. */
+    BTASSERT(buf[5] == 'a');  /* Payload 1. */
+    BTASSERT(buf[6] == 'r');  /* Payload 2. */
 
 #if defined(ARCH_LINUX)
 
@@ -284,9 +276,9 @@ static int test_write(struct harness_t *harness_p)
                                          65536) == 65536);
 
     /* Prepare socket input with 8 length byte. */
-    socket_stub_output(buf, 14 + 65536);
+    socket_stub_output(buf, 10 + 65536);
     BTASSERT(buf[0] == 0x82); /* FIN & BINARY. */
-    BTASSERT(buf[1] == 0xff); /* MASK and 8 bytes payload length. */
+    BTASSERT(buf[1] == 0x7f); /* 8 bytes payload length. */
     BTASSERT(buf[2] == 0x00); /* Payload length 0. */
     BTASSERT(buf[3] == 0x00); /* Payload length 1. */
     BTASSERT(buf[4] == 0x00); /* Payload length 2. */
@@ -295,13 +287,9 @@ static int test_write(struct harness_t *harness_p)
     BTASSERT(buf[7] == 0x01); /* Payload length 5. */
     BTASSERT(buf[8] == 0x00); /* Payload length 6. */
     BTASSERT(buf[9] == 0x00); /* Payload length 7. */
-    BTASSERT(buf[10] == 0x00); /* Masking key 0. */
-    BTASSERT(buf[11] == 0x00); /* Masking key 1. */
-    BTASSERT(buf[12] == 0x00); /* Masking key 2. */
-    BTASSERT(buf[13] == 0x00); /* Masking key 3. */
-    BTASSERT(buf[14] == 'f'); /* Payload 0. */
-    BTASSERT(buf[15] == 'i'); /* Payload 1. */
-    BTASSERT(buf[16] == 'e'); /* Payload 2. */
+    BTASSERT(buf[10] == 'f'); /* Payload 0. */
+    BTASSERT(buf[11] == 'i'); /* Payload 1. */
+    BTASSERT(buf[12] == 'e'); /* Payload 2. */
 
 #endif
 

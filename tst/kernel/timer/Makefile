@@ -38,5 +38,4 @@ CDEFS += \
 
 SYNC_SRC += event.c
 
-SIMBA_ROOT ?= ../../..
 include $(SIMBA_ROOT)/make/app.mk

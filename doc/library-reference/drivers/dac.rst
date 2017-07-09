@@ -6,7 +6,7 @@
 
 Source code: :github-blob:`src/drivers/dac.h`, :github-blob:`src/drivers/dac.c`
 
-Test code: :github-blob:`tst/drivers/dac/main.c`
+Test code: :github-blob:`tst/drivers/hardware/dac/main.c`
 
 --------------------------------------------------
 

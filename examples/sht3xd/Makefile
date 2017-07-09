@@ -31,5 +31,4 @@
 NAME = sht3xd
 BOARD = wemos_d1_mini
 
-SIMBA_ROOT ?= ../..
 include $(SIMBA_ROOT)/make/app.mk

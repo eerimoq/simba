@@ -31,5 +31,4 @@
 NAME = analog_write
 BOARD = arduino_mega
 
-SIMBA_ROOT ?= ../..
 include $(SIMBA_ROOT)/make/app.mk

@@ -31,5 +31,4 @@
 NAME = server
 BOARD = arduino_nano
 
-SIMBA_ROOT ?= ../../..
 include $(SIMBA_ROOT)/make/app.mk

@@ -286,8 +286,14 @@ void *chan_list_poll(struct chan_list_t *list_p,
         /* No data was available, wait for data to be written to one
            of the channels. */
         if (thrd_suspend_isr(timeout_p) == -ETIMEDOUT) {
-            chan_p = NULL;
+            for (i = 0; i < list_p->len; i++) {
+                chan_p = list_p->chans_pp[i];
+                chan_p->reader_p = NULL;
+            }
+
             list_p->flags = 0;
+            chan_p = NULL;
+
             goto out;
         }
     }
@@ -344,12 +350,26 @@ int chan_control_null(void *self_p, int operation)
 
 RAM_CODE int chan_is_polled_isr(struct chan_t *self_p)
 {
+    int i;
+    int res;
+    struct chan_t *chan_p;
+
+    res = 0;
+
     if (self_p->list_p != NULL) {
         if (self_p->list_p->flags & CHAN_LIST_POLLING) {
+            res = 1;
             self_p->list_p->flags = 0;
-            return (1);
+
+            for (i = 0; i < self_p->list_p->len; i++) {
+                chan_p = self_p->list_p->chans_pp[i];
+
+                if (self_p != chan_p) {
+                    chan_p->reader_p = NULL;
+                }
+            }
         }
     }
 
-    return (0);
+    return (res);
 }

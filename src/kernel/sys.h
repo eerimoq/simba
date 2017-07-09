@@ -48,6 +48,28 @@ typedef uint32_t cpu_usage_t;
 typedef void (*sys_on_fatal_fn_t)(int error) __attribute__ ((noreturn));
 
 /**
+ * System reset causes.
+ */
+enum sys_reset_cause_t {
+    sys_reset_cause_unknown_t = 0,
+    sys_reset_cause_power_on_t,
+    sys_reset_cause_watchdog_timeout_t,
+    sys_reset_cause_software_t,
+    sys_reset_cause_external_t,
+    sys_reset_cause_jtag_t,
+#if defined(SYS_PORT_RESET_CAUSES)
+    SYS_PORT_RESET_CAUSES,
+#endif
+    sys_reset_cause_max_t
+};
+
+
+/**
+ * System reset cause strings map.
+ */
+extern const char *sys_reset_cause_string_map[sys_reset_cause_max_t];
+
+/**
  * Convertion from the time struct to system ticks.
  */
 static inline sys_tick_t t2st(const struct time_t *time_p)
@@ -143,6 +165,13 @@ void sys_reboot(void) __attribute__ ((noreturn));
  * @return Backtrace depth.
  */
 int sys_backtrace(void **buf_p, size_t size);
+
+/**
+ * Get the system reset cause.
+ *
+ * @return The reset cause.
+ */
+enum sys_reset_cause_t sys_reset_cause(void);
 
 /**
  * Get the system uptime.

@@ -35,7 +35,7 @@ BOARD_HOMEPAGE = "http://www.st.com/en/evaluation-tools/spc56d-discovery.html"
 BOARD_PINOUT = "spc56d-discovery-pinout.png"
 BOARD_DESC = "SPC56D Discovery"
 
-MCU = spc56d40l1
+MCU ?= spc56d40l1
 
 SERIAL_PORT ?= /dev/arduino
 CONTROL_PORT ?=
@@ -58,3 +58,12 @@ rerun:
 			    --pattern $(RUN_END_PATTERN)\
 			    --pattern-success $(RUN_END_PATTERN_SUCCESS) \
 			    | tee $(RUNLOG) ; test $${PIPESTATUS[0]} -eq 0
+
+erase:
+	@echo "Erasing."
+	python -u $(SPC5TOOL_PY) --port $(SERIAL_PORT) $(CONTROL_PORT_ARG) \
+	upload
+	python -u $(SPC5TOOL_PY) --port $(SERIAL_PORT) $(CONTROL_PORT_ARG) \
+	flash_erase 0x0 0x40000
+	python -u $(SPC5TOOL_PY) --port $(SERIAL_PORT) $(CONTROL_PORT_ARG) \
+	flash_erase 0x800000 0x10000

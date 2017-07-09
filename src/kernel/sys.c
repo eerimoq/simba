@@ -34,7 +34,7 @@
 #define SECONDS_PER_MSB (INT_MAX / CONFIG_SYSTEM_TICK_FREQUENCY)
 #define TICKS_PER_MSB   (SECONDS_PER_MSB * CONFIG_SYSTEM_TICK_FREQUENCY)
 
-#if CONFIG_LOG_MASK_SYS > 0
+#if CONFIG_SYS_LOG_MASK > 0
 #    define LOG_OBJECT_PRINT(...) log_object_print(__VA_ARGS__)
 #else
 #    define LOG_OBJECT_PRINT(...)
@@ -49,6 +49,7 @@ struct tick_t {
 struct module_t {
     int initialized;
     struct tick_t tick;
+    enum sys_reset_cause_t reset_cause;
 #if CONFIG_FS_CMD_SYS_INFO == 1
     struct fs_command_t cmd_info;
 #endif
@@ -66,6 +67,9 @@ struct module_t {
 #endif
 #if CONFIG_FS_CMD_SYS_BACKTRACE == 1
     struct fs_command_t cmd_backtrace;
+#endif
+#if CONFIG_FS_CMD_SYS_RESET_CAUSE == 1
+    struct fs_command_t cmd_reset_cause;
 #endif
 };
 
@@ -96,6 +100,18 @@ static const FAR char config[] =
 #endif
 
     "";
+
+const char *sys_reset_cause_string_map[sys_reset_cause_max_t] = {
+    "unknown",
+    "power_on",
+    "watchdog_timeout",
+    "software",
+    "external",
+    "jtag",
+#if defined(SYS_PORT_RESET_CAUSE_STRINGS_MAP)
+    SYS_PORT_RESET_CAUSE_STRINGS_MAP
+#endif
+};
 
 extern const FAR char sysinfo[];
 
@@ -424,7 +440,7 @@ static int cmd_uptime_cb(int argc,
     sys_uptime(&uptime);
 
     std_fprintf(out_p,
-                OSTR("%lu.%lu seconds\r\n"),
+                OSTR("%lu.%03lu seconds\r\n"),
                 uptime.seconds,
                 uptime.nanoseconds / 1000000ul);
 
@@ -496,6 +512,24 @@ static int cmd_backtrace_cb(int argc,
 
 #endif
 
+#if CONFIG_FS_CMD_SYS_RESET_CAUSE == 1
+
+static int cmd_reset_cause_cb(int argc,
+                              const char *argv[],
+                              void *out_p,
+                              void *in_p,
+                              void *arg_p,
+                              void *call_arg_p)
+{
+    std_fprintf(out_p,
+                OSTR("%s\r\n"),
+                sys_reset_cause_string_map[sys_reset_cause()]);
+
+    return (0);
+}
+
+#endif
+
 int sys_module_init(void)
 {
     /* Return immediately if the module is already initialized. */
@@ -553,6 +587,14 @@ int sys_module_init(void)
     fs_command_register(&module.cmd_backtrace);
 #endif
 
+#if CONFIG_FS_CMD_SYS_RESET_CAUSE == 1
+    fs_command_init(&module.cmd_reset_cause,
+                    CSTR("/kernel/sys/reset_cause"),
+                    cmd_reset_cause_cb,
+                    NULL);
+    fs_command_register(&module.cmd_reset_cause);
+#endif
+
     return (sys_port_module_init());
 }
 
@@ -600,20 +642,20 @@ int sys_start(void)
     start_console();
 #endif
 
-#if CONFIG_START_NVM == 1
-    start_nvm();
-#endif
-
-#if CONFIG_MODULE_INIT_SETTINGS == 1
-    settings_module_init();
-#endif
-
 #if CONFIG_START_SHELL == 1
     start_shell();
 #endif
 
 #if CONFIG_START_SOAM == 1
     start_soam();
+#endif
+
+#if CONFIG_START_NVM == 1
+    start_nvm();
+#endif
+
+#if CONFIG_MODULE_INIT_SETTINGS == 1
+    settings_module_init();
 #endif
 
 #if CONFIG_START_FILESYSTEM == 1
@@ -645,7 +687,9 @@ void sys_panic(const char *message_p)
     char *buf_p;
     FAR const char *info_p;
 
+#if !defined(ARCH_LINUX)
     sys_lock();
+#endif
 
 #if CONFIG_SYS_PANIC_KICK_WATCHDOG == 1
     watchdog_kick();
@@ -699,6 +743,11 @@ void sys_reboot(void)
 int sys_backtrace(void **buf_pp, size_t size)
 {
     return (sys_port_backtrace(buf_pp, size));
+}
+
+enum sys_reset_cause_t sys_reset_cause()
+{
+    return (module.reset_cause);
 }
 
 int sys_uptime(struct time_t *uptime_p)

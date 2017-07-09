@@ -197,21 +197,20 @@ ssize_t http_websocket_server_write(struct http_websocket_server_t *self_p,
     ASSERTN(buf_p != NULL, EINVAL)
     ASSERTN(size > 0, EINVAL)
 
-    const uint8_t masking_key[4] = { 0x00, 0x00, 0x00, 0x00 };
     uint8_t header[16];
     size_t header_size = 2;
 
     header[0] = (INET_HTTP_WEBSOCKET_FIN | type);
 
     if (size < 126) {
-        header[1] = (INET_HTTP_WEBSOCKET_MASK | size);
+        header[1] = size;
     } else if (size < 65536) {
-        header[1] = (INET_HTTP_WEBSOCKET_MASK | 126);
+        header[1] = 126;
         header[2] = ((size >> 8) & 0xff);
         header[3] = ((size >> 0) & 0xff);
         header_size += 2;
     } else {
-        header[1] = (INET_HTTP_WEBSOCKET_MASK | 127);
+        header[1] = 127;
         header[2] = 0;
         header[3] = 0;
         header[4] = 0;
@@ -222,12 +221,6 @@ ssize_t http_websocket_server_write(struct http_websocket_server_t *self_p,
         header[9] = ((size >>  0) & 0xff);
         header_size += 8;
     }
-
-    header[header_size + 0] = masking_key[0];
-    header[header_size + 1] = masking_key[1];
-    header[header_size + 2] = masking_key[2];
-    header[header_size + 3] = masking_key[3];
-    header_size += 4;
 
     if (socket_write(self_p->socket_p,
                      header,

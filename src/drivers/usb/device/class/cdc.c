@@ -30,6 +30,8 @@
 
 #include "simba.h"
 
+#if CONFIG_USB_DEVICE == 1
+
 #define LINE_STATE_DTR              0x01
 #define STAY_IN_BOOT_LOADER_MAGIC 0x7777
 
@@ -284,3 +286,5 @@ int usb_device_class_cdc_is_connected(struct usb_device_class_cdc_driver_t *self
 {
     return (self_p->line_state != 0);
 }
+
+#endif

@@ -183,7 +183,7 @@ static int test_cmd_ping_bad_reply(struct harness_t *harness_p)
     /* Perform the ping. */
     strcpy(buf, "inet/ping/ping 1.1.1.1\r\n");
     BTASSERT(fs_call(buf, NULL, &qout, NULL) == 0);
-    harness_expect(&qout, "Failed to ping '1.1.1.1'.\r\n", NULL);
+    BTASSERT(harness_expect(&qout, "Failed to ping '1.1.1.1'.\r\n", NULL) > 0);
         
     return (0);
 }
@@ -195,12 +195,16 @@ static int test_cmd_ping_bad_input(struct harness_t *harness_p)
     /* Too few arguemnts. */
     strcpy(buf, "inet/ping/ping\r\n");
     BTASSERT(fs_call(buf, NULL, &qout, NULL) == -1);
-    harness_expect(&qout, "Usage: ping <remote host>\r\n", NULL);
+    BTASSERT(harness_expect(&qout,
+                            "Usage: ping <remote host>\r\n",
+                            NULL) == 27);
 
     /* Bad ip address. */
     strcpy(buf, "inet/ping/ping a.b.c.d\r\n");
     BTASSERT(fs_call(buf, NULL, &qout, NULL) == -1);
-    harness_expect(&qout, "Bad ip address 'a.b.c.d'.\r\n", NULL);
+    BTASSERT(harness_expect(&qout,
+                            "Bad ip address 'a.b.c.d'.\r\n",
+                            NULL) == 27);
         
     return (0);
 }

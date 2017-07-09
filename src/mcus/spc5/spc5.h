@@ -112,6 +112,36 @@ struct spc5_mc_me_t {
     uint8_t PCTL[128];
 };
 
+/* 9. Reset Generation. */
+struct spc5_mc_rgm_t {
+    uint16_t FES;
+    uint16_t DES;
+    uint16_t FERD;
+    uint16_t DERD;
+    uint16_t RESERVED0[8];
+    uint16_t FESS;
+    uint16_t STDBY;
+    uint16_t FBRE;
+};
+
+#define SPC5_MC_RGM_FES_F_EXR                         BIT(15)
+#define SPC5_MC_RGM_FES_F_FLASH                        BIT(8)
+#define SPC5_MC_RGM_FES_F_LVD45                        BIT(7)
+#define SPC5_MC_RGM_FES_F_CMU_FHL                      BIT(6)
+#define SPC5_MC_RGM_FES_F_CMU_OLR                      BIT(5)
+#define SPC5_MC_RGM_FES_F_FMPLL                        BIT(4)
+#define SPC5_MC_RGM_FES_F_CHKSTOP                      BIT(3)
+#define SPC5_MC_RGM_FES_F_SOFT                         BIT(2)
+#define SPC5_MC_RGM_FES_F_CORE                         BIT(1)
+#define SPC5_MC_RGM_FES_F_JTAG                         BIT(0)
+
+#define SPC5_MC_RGM_DES_F_POR                         BIT(15)
+#define SPC5_MC_RGM_DES_F_LVD27_VREG                   BIT(4)
+#define SPC5_MC_RGM_DES_F_LVD27                        BIT(3)
+#define SPC5_MC_RGM_DES_F_SWT                          BIT(2)
+#define SPC5_MC_RGM_DES_F_LVD12_PD1                    BIT(1)
+#define SPC5_MC_RGM_DES_F_LVD12_PD0                    BIT(0)
+
 /* 17. INTC. */
 struct spc5_intc_t {
     uint32_t MCR;
@@ -370,6 +400,40 @@ struct spc5_flash_t {
     uint32_t UMISR[5];
 };
 
+/* 35. Error Correction Status Module. */
+struct spc5_ecsm_t {
+    uint16_t PCT;
+    uint16_t REV;
+    uint32_t RESERVED0[1];
+    uint32_t IOPMC;
+    uint8_t RESERVED1[7];
+    uint8_t MWCR;
+    uint8_t RESERVED2[11];
+    uint8_t MIR;
+    uint32_t RESERVED3[1];
+    uint32_t MUDCR;
+    uint8_t RESERVED4[27];
+    uint8_t ECR;
+    uint8_t RESERVED5[3];
+    uint8_t ESR;
+    uint8_t RESERVED6[2];
+    uint16_t EEGR;
+    uint32_t RESERVED7[1];
+    uint32_t PFEAR;
+    uint8_t RESERVED8[2];
+    uint8_t PFEMR;
+    uint8_t PFEAT;
+    uint32_t RESERVED9[1];
+    uint32_t PFEDR;
+    uint32_t PREAR;
+    uint8_t RESERVED10[1];
+    uint8_t PRESR;
+    uint8_t PREMR;
+    uint8_t PREAT;
+    uint8_t RESERVED11[4];
+    uint32_t PREDR;
+};
+
 #define SPC5_FLASH_MCR_EDC                            BIT(31)
 #define SPC5_FLASH_MCR_SIZE_POS                          (24)
 #define SPC5_FLASH_MCR_SIZE_MASK (0x7 << SPC5_FLASH_MCR_SIZE_POS)
@@ -427,7 +491,7 @@ struct spc5_swt_t {
 #define SPC5_SSCM      ((volatile struct spc5__t *)        0xc3fd8000ul)
 #define SPC5_MC_ME     ((volatile struct spc5_mc_me_t *)   0xc3fdc000ul)
 #define SPC5_MC_CGM    ((volatile struct spc5_mc_cgm_t *)  0xc3fe0000ul)
-#define SPC5_MC_RGM    ((volatile struct spc5__t *)        0xc3fe4000ul)
+#define SPC5_MC_RGM    ((volatile struct spc5_mc_rgm_t *)  0xc3fe4000ul)
 #define SPC5_MC_PCU    ((volatile struct spc5__t *)        0xc3fe8000ul)
 #define SPC5_RTC_API   ((volatile struct spc5__t *)        0xc3fec000ul)
 #define SPC5_PIT       ((volatile struct spc5__t *)        0xc3ff0000ul)
@@ -438,7 +502,7 @@ struct spc5_swt_t {
 #define SPC5_CTU       ((volatile struct spc5__t *)        0xffe64000ul)
 #define SPC5_SWT       ((volatile struct spc5_swt_t *)     0xfff38000ul)
 #define SPC5_STM       ((volatile struct spc5_stm_t *)     0xfff3c000ul)
-#define SPC5_ECSM      ((volatile struct spc5__t *)        0xfff40000ul)
+#define SPC5_ECSM      ((volatile struct spc5_ecsm_t *)    0xfff40000ul)
 #define SPC5_EDMA      ((volatile struct spc5__t *)        0xfff44000ul)
 #define SPC5_INTC      ((volatile struct spc5_intc_t *)    0xfff48000ul)
 #define SPC5_DSPI_0    ((volatile struct spc5__t *)        0xfff90000ul)
@@ -449,12 +513,32 @@ struct spc5_swt_t {
 
 /* Flash addresses and sizes. */
 #define SPC5_CFLASH_ADDRESS                               0x0
-#define SPC5_CFLASH_SIZE                              0x40000
+
+#if defined(MCU_SPC56D30L1)
+#    define SPC5_CFLASH_SIZE                          0x20000
+#elif defined(MCU_SPC56D40L1)
+#    define SPC5_CFLASH_SIZE                          0x40000
+#elif defined(MCU_LINUX)
+#    define SPC5_CFLASH_SIZE                          0x20000
+#else
+#    error "Unsupported MCU."
+#endif
+
 #define SPC5_DFLASH_ADDRESS                          0x800000
 #define SPC5_DFLASH_SIZE                              0x10000
 
 /* Interrupt service routine. */
 #define ISR(vector)                             \
     void isr_ ## vector(void)
+
+/**
+ * Read the MSR register.
+ */
+#define mfmsr() ({                                              \
+            uint32_t UNIQUE(msr);                               \
+            asm volatile("mfmsr %0" : "=r" (UNIQUE(msr)) :      \
+                         : "memory");                           \
+            UNIQUE(msr);                                        \
+        })
 
 #endif

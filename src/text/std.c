@@ -275,7 +275,7 @@ static char *formatf(char c,
 
 static void vcprintf(void (*std_putc)(char c, void *arg_p),
                      void *arg_p,
-                     FAR const char *fmt_p,
+                     far_string_t fmt_p,
                      va_list *ap_p)
 {
     char c, flags, length, negative_sign, buf[VALUE_BUF_MAX], *s_p;
@@ -326,6 +326,38 @@ static void vcprintf(void (*std_putc)(char c, void *arg_p),
 
         switch (c) {
 
+        case 'S':
+#if defined(FAR_SPECIAL_ADDRESS)
+            {
+                FAR const char *far_string_p;
+
+                far_string_p = va_arg(*ap_p, FAR const char*);
+
+                if (far_string_p == NULL) {
+                    far_string_p = FSTR("(null)");
+                }
+
+                s_p = &buf[sizeof(buf) - 1];
+                width -= std_strlen(far_string_p);
+
+                /* Right justification. */
+                if (flags != '-') {
+                    formats(std_putc, arg_p, s_p, flags, width, negative_sign);
+                }
+
+                while (*far_string_p != '\0') {
+                    std_putc(*far_string_p++, arg_p);
+                }
+
+                /* Left justification. */
+                if (flags == '-') {
+                    formats(std_putc, arg_p, s_p, flags, width, negative_sign);
+                }
+            }
+
+            continue;
+#endif
+
         case 's':
             s_p = va_arg(*ap_p, char*);
 
@@ -366,7 +398,7 @@ static void vcprintf(void (*std_putc)(char c, void *arg_p),
 }
 
 static void cvcprintf(struct buffered_output_t *output_p,
-                      FAR const char *fmt_p,
+                      far_string_t fmt_p,
                       va_list *ap_p)
 {
     chan_control(output_p->chan_p, CHAN_CONTROL_PRINTF_BEGIN);
@@ -399,7 +431,7 @@ int std_module_init(void)
     return (0);
 }
 
-ssize_t std_sprintf(char *dst_p, FAR const char *fmt_p, ...)
+ssize_t std_sprintf(char *dst_p, far_string_t fmt_p, ...)
 {
     va_list ap;
     ssize_t res;
@@ -413,7 +445,7 @@ ssize_t std_sprintf(char *dst_p, FAR const char *fmt_p, ...)
 
 ssize_t std_snprintf(char *dst_p,
                      size_t size,
-                     FAR const char *fmt_p,
+                     far_string_t fmt_p,
                      ...)
 {
     va_list ap;
@@ -426,7 +458,7 @@ ssize_t std_snprintf(char *dst_p,
     return (res);
 }
 
-ssize_t std_vsprintf(char *dst_p, FAR const char *fmt_p, va_list *ap_p)
+ssize_t std_vsprintf(char *dst_p, far_string_t fmt_p, va_list *ap_p)
 {
     ASSERTN(dst_p != NULL, EINVAL);
     ASSERTN(fmt_p != NULL, EINVAL);
@@ -441,7 +473,7 @@ ssize_t std_vsprintf(char *dst_p, FAR const char *fmt_p, va_list *ap_p)
 
 ssize_t std_vsnprintf(char *dst_p,
                       size_t size,
-                      FAR const char *fmt_p,
+                      far_string_t fmt_p,
                       va_list *ap_p)
 {
     ASSERTN(dst_p != NULL, EINVAL);
@@ -478,7 +510,7 @@ ssize_t std_printf(far_string_t fmt_p, ...)
     return (output.size);
 }
 
-ssize_t std_vprintf(FAR const char *fmt_p, va_list *ap_p)
+ssize_t std_vprintf(far_string_t fmt_p, va_list *ap_p)
 {
     ASSERTN(fmt_p != NULL, EINVAL);
     ASSERTN(ap_p != NULL, EINVAL);
@@ -494,7 +526,7 @@ ssize_t std_vprintf(FAR const char *fmt_p, va_list *ap_p)
     return (output.size);
 }
 
-ssize_t std_fprintf(void *chan_p, FAR const char *fmt_p, ...)
+ssize_t std_fprintf(void *chan_p, far_string_t fmt_p, ...)
 {
     ASSERTN(chan_p != NULL, EINVAL);
     ASSERTN(fmt_p != NULL, EINVAL);
@@ -513,7 +545,7 @@ ssize_t std_fprintf(void *chan_p, FAR const char *fmt_p, ...)
     return (output.size);
 }
 
-ssize_t std_vfprintf(void *chan_p, FAR const char *fmt_p, va_list *ap_p)
+ssize_t std_vfprintf(void *chan_p, far_string_t fmt_p, va_list *ap_p)
 {
     ASSERTN(chan_p != NULL, EINVAL);
     ASSERTN(fmt_p != NULL, EINVAL);
@@ -530,15 +562,24 @@ ssize_t std_vfprintf(void *chan_p, FAR const char *fmt_p, va_list *ap_p)
     return (output.size);
 }
 
-const char *std_strtol(const char *str_p, long *value_p)
+const char *std_strtolb(const char *str_p,
+                        long *value_p,
+                        int base)
 {
     ASSERTNRN(str_p != NULL, EINVAL);
     ASSERTNRN(value_p != NULL, EINVAL);
+    ASSERTNRN((base == 16)
+              || (base == 10)
+              || (base == 8)
+              || (base == 2)
+              || (base == 0), EINVAL);
 
-    unsigned char base = 10;
     unsigned char c;
-    long sign = 1;
+    long sign;
+    long value;
+    int value_found;
 
+    sign = 1;
     c = *str_p++;
 
     /* Find sign. */
@@ -547,34 +588,42 @@ const char *std_strtol(const char *str_p, long *value_p)
         sign = -1;
     }
 
-    /* The number must start with a digit. */
-    if (isdigit(c) == 0) {
-        return (NULL);
-    }
+    if (base == 0) {
+        base = 10;
 
-    /* Find base based on prefix. */
-    if (c == '0') {
-        c = *str_p++;
+        /* Find base based on prefix. */
+        if (c == '0') {
+            c = *str_p++;
 
-        if (c == 'x') {
-            base = 16;
-            c = *str_p++;
-        } else if (c == 'b') {
-            base = 2;
-            c = *str_p++;
-        } else {
-            base = 8;
+            if (c == 'x') {
+                base = 16;
+                c = *str_p++;
+            } else if (c == 'b') {
+                base = 2;
+                c = *str_p++;
+            } else {
+                base = 8;
+                c = str_p[-2];
+                str_p--;
+            }
         }
+    } else if (c == '0') {
+        if (((base == 16) && (*str_p == 'x'))
+            || ((base == 2) && (*str_p == 'b'))) {
+            str_p++;
+            c = *str_p++;
+        };
     }
 
     /* Get number. */
-    *value_p = 0;
+    value_found = 0;
+    value = 0;
 
     while (((base == 16) && isxdigit(c))
            || ((base == 10) && isdigit(c))
            || ((base == 8) && (c >= '0') && (c < '8'))
            || ((base == 2) && (c >= '0') && (c < '2'))) {
-        *value_p *= base;
+        value *= base;
 
         /* Special handling of base 16. */
         if (base == 16) {
@@ -585,20 +634,24 @@ const char *std_strtol(const char *str_p, long *value_p)
             }
         }
 
-        /* Bad value in string. */
         c -= '0';
-
-        if (c >= base) {
-            return (NULL);
-        }
-
-        *value_p += c;
+        value += c;
         c = *str_p++;
+        value_found = 1;
     }
 
-    *value_p *= sign;
+    if (value_found == 0) {
+        return (NULL);
+    }
+
+    *value_p = (sign * value);
 
     return (str_p - 1);
+}
+
+const char *std_strtol(const char *str_p, long *value_p)
+{
+    return (std_strtolb(str_p, value_p, 0));
 }
 
 /*
@@ -725,7 +778,63 @@ const char *std_strtod(const char *str, double *value_p)
     return (a);
 }
 
-int std_strcpy(char *dst_p, FAR const char *fsrc_p)
+const char *std_strtodfp(const char *str_p,
+                         long *value_p,
+                         int precision)
+{
+    int i;
+    long integer;
+    long decimals;
+    int number_of_decimals;
+    const char *integer_end_p;
+    const char *decimal_end_p;
+
+    /* Integer part. */
+    integer_end_p = std_strtolb(&str_p[0], &integer, 10);
+
+    if (integer_end_p == NULL) {
+        return (NULL);
+    }
+
+    for (i = 0; i < precision; i++) {
+        integer *= 10;
+    }
+
+    *value_p = integer;
+
+    if (*integer_end_p != '.') {
+        return (integer_end_p);
+    }
+
+    /* Decimal part. */
+    decimal_end_p = std_strtolb(&integer_end_p[1], &decimals, 10);
+
+    if (decimal_end_p == NULL) {
+        return (integer_end_p + 1);
+    }
+
+    number_of_decimals = (decimal_end_p - &integer_end_p[1]);
+
+    /* Truncate decimals if needed. */
+    if (number_of_decimals > precision) {
+        for (i = 0; i < (number_of_decimals - precision); i++) {
+            decimals /= 10;
+            decimal_end_p--;
+        }
+
+        number_of_decimals = precision;
+    }
+
+    for (i = 0; i < (precision - number_of_decimals); i++) {
+        decimals *= 10;
+    }
+
+    *value_p += decimals;
+
+    return (decimal_end_p);
+}
+
+int std_strcpy(char *dst_p, far_string_t fsrc_p)
 {
     ASSERTN(dst_p != NULL, EINVAL);
     ASSERTN(fsrc_p != NULL, EINVAL);
@@ -742,7 +851,7 @@ int std_strcpy(char *dst_p, FAR const char *fsrc_p)
     return (length);
 }
 
-int std_strcmp(const char *str_p, FAR const char *fstr_p)
+int std_strcmp(const char *str_p, far_string_t fstr_p)
 {
     ASSERTN(str_p != NULL, EINVAL);
     ASSERTN(fstr_p != NULL, EINVAL);
@@ -756,8 +865,8 @@ int std_strcmp(const char *str_p, FAR const char *fstr_p)
     return (str_p[-1] - fstr_p[-1]);
 }
 
-int std_strcmp_f(FAR const char *fstr0_p,
-                 FAR const char *fstr1_p)
+int std_strcmp_f(far_string_t fstr0_p,
+                 far_string_t fstr1_p)
 {
     ASSERTN(fstr0_p != NULL, EINVAL);
     ASSERTN(fstr1_p != NULL, EINVAL);
@@ -771,14 +880,14 @@ int std_strcmp_f(FAR const char *fstr0_p,
     return (fstr0_p[-1] - fstr1_p[-1]);
 }
 
-int std_strncmp(FAR const char *fstr_p,
+int std_strncmp(far_string_t fstr_p,
                 const char *str_p,
                 size_t size)
 {
     ASSERTN(fstr_p != NULL, EINVAL);
     ASSERTN(str_p != NULL, EINVAL);
 
-    FAR const char *fstr_end_p = (fstr_p + size);
+    far_string_t fstr_end_p = (fstr_p + size);
 
     /* Match if no characters are compared. */
     if (size == 0) {
@@ -794,14 +903,14 @@ int std_strncmp(FAR const char *fstr_p,
     return (fstr_p[-1] - str_p[-1]);
 }
 
-int std_strncmp_f(FAR const char *fstr0_p,
-                  FAR const char *fstr1_p,
+int std_strncmp_f(far_string_t fstr0_p,
+                  far_string_t fstr1_p,
                   size_t size)
 {
     ASSERTN(fstr0_p != NULL, EINVAL);
     ASSERTN(fstr1_p != NULL, EINVAL);
 
-    FAR const char *fstr_end_p = (fstr0_p + size);
+    far_string_t fstr_end_p = (fstr0_p + size);
 
     /* Match if no characters are compared. */
     if (size == 0) {
@@ -817,11 +926,11 @@ int std_strncmp_f(FAR const char *fstr0_p,
     return (fstr0_p[-1] - fstr1_p[-1]);
 }
 
-int std_strlen(FAR const char *fstr_p)
+int std_strlen(far_string_t fstr_p)
 {
     ASSERTN(fstr_p != NULL, EINVAL);
 
-    FAR const char *fstr_start_p = fstr_p;
+    far_string_t fstr_start_p = fstr_p;
 
     while (*fstr_p++ != '\0') {
     }
@@ -875,7 +984,7 @@ ssize_t std_hexdump(void *chan_p, const void *buf_p, size_t size)
             std_fprintf(chan_p, FSTR("%08x: "), pos);
         }
 
-        std_fprintf(chan_p, FSTR("%02x "), b_p[pos]);
+        std_fprintf(chan_p, FSTR("%02x "), b_p[pos] & 0xff);
 
         if ((pos % 16) == 15) {
             print_ascii(chan_p, &b_p[pos - 15], 16);

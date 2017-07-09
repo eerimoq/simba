@@ -32,6 +32,7 @@
 
 struct soam_t {
     int is_printf;
+    uint8_t transaction_id;
     struct {
         uint8_t *buf_p;
         size_t size;

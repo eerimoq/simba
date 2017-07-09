@@ -37,5 +37,4 @@ endif
 
 SETTINGS_INI = settings.ini
 
-SIMBA_ROOT ?= ../..
 include $(SIMBA_ROOT)/make/app.mk

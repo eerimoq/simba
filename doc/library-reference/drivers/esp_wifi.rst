@@ -57,7 +57,7 @@ Submodules:
 
 Source code: :github-blob:`src/drivers/esp_wifi.h`, :github-blob:`src/drivers/esp_wifi.c`
 
-Test code: :github-blob:`tst/drivers/esp_wifi/main.c`
+Test code: :github-blob:`tst/drivers/hardware/esp_wifi/main.c`
 
 ----------------------------------------------
 

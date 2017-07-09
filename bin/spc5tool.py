@@ -13,11 +13,12 @@ import argparse
 import struct
 import serial
 import time
+import binascii
 import bincopy
 from tqdm import tqdm
 
 
-__version__ = '1.0'
+__version__ = '1.2'
 
 
 # Command types.
@@ -46,8 +47,8 @@ def crc_ccitt(data):
     msb = 0xff
     lsb = 0xff
 
-    for c in data:
-        x = ord(c) ^ msb
+    for c in bytearray(data):
+        x = c ^ msb
         x ^= (x >> 4)
         msb = (lsb ^ (x >> 3) ^ (x << 4)) & 255
         lsb = (x ^ (x << 5)) & 255
@@ -87,7 +88,7 @@ def packet_read(serial_connection):
         if len(payload) != payload_size:
             print('error: received {} bytes when expecting {}'.format(
                 len(payload), payload_size))
-            print('error: payload:', payload.encode('hex'))
+            print('error: payload:', binascii.hexlify(payload))
             return None, None
     else:
         payload = b''
@@ -152,14 +153,16 @@ def flash_read(serial_connection, address, size, progress=None):
     return response_payload
 
 
-def upload(serial_connection, baudrate, control_port):
+def upload(serial_connection, mcu, baudrate, bam_baudrate, control_port):
     """Upload the spc5tool SRAM application using the BAM.
 
     """
 
     spc5tool_bin = os.path.join(SCRIPT_PATH,
                                 'spc5tool',
-                                'spc5tool.' + str(baudrate) + '.bin')
+                                'spc5tool-{}-{}-{}.bin'.format(mcu,
+                                                               baudrate,
+                                                               bam_baudrate))
 
     if control_port:
         control_port_connection = serial.Serial(control_port)
@@ -194,7 +197,8 @@ def upload(serial_connection, baudrate, control_port):
 
     print('Uploading {} to SRAM using the BAM.'.format(spc5tool_bin))
 
-    for byte in tqdm(payload, unit=' bytes'):
+    for byte in tqdm(bytearray(payload), unit=' bytes'):
+        byte = struct.pack('B', byte)
         serial_connection.write(byte)
         response_byte = serial_connection.read(1)
 
@@ -208,8 +212,8 @@ def upload(serial_connection, baudrate, control_port):
         if response_byte != byte:
             print()
             print("Upload failed! Unexpected BAM response '{}' when "
-                  "expecting '{}'.".format(response_byte.encode('hex'),
-                                           byte.encode('hex')))
+                  "expecting '{}'.".format(binascii.hexlify(response_byte),
+                                           binascii.hexlify(byte)))
             sys.exit(1)
 
     # Give the uploaded application 10 ms to start.
@@ -236,7 +240,11 @@ def do_upload(args):
     serial_connection = serial.Serial(args.port,
                                       baudrate=args.bam_baudrate,
                                       timeout=SERIAL_TIMEOUT)
-    upload(serial_connection, args.baudrate, args.control_port)
+    upload(serial_connection,
+           args.mcu,
+           args.baudrate,
+           args.bam_baudrate,
+           args.control_port)
 
 
 def do_ping(args):
@@ -296,11 +304,15 @@ def do_flash_write(args):
 
     if not args.no_upload:
         serial_connection.baudrate = args.bam_baudrate
-        upload(serial_connection, args.baudrate, args.control_port)
+        upload(serial_connection,
+               args.mcu,
+               args.baudrate,
+               args.bam_baudrate,
+               args.control_port)
         serial_connection.baudrate = args.baudrate
 
     f = bincopy.BinFile()
-    f.add_ihex_file(args.hexfile)
+    f.add_file(args.binfile)
 
     erase_segments = []
     total = 0
@@ -312,7 +324,7 @@ def do_flash_write(args):
         for address, size in erase_segments:
             erase(serial_connection, address, size)
 
-    print('Writing {} to flash.'.format(os.path.abspath(args.hexfile)))
+    print('Writing {} to flash.'.format(os.path.abspath(args.binfile)))
 
     with tqdm(total=total, unit=' bytes') as progress:
         for address, _, data in f.iter_segments():
@@ -325,7 +337,7 @@ def do_flash_write(args):
                     size = left
 
                 payload = struct.pack('>II', address, size)
-                payload += str(data[:size])
+                payload += data[:size]
                 data = data[size:]
                 execute_command(serial_connection, COMMAND_TYPE_WRITE, payload)
                 address += size
@@ -339,7 +351,6 @@ def do_flash_write(args):
 
         with tqdm(total=total, unit=' bytes') as progress:
             for address, _, data in f.iter_segments():
-                data = str(data)
                 left = len(data)
 
                 while left > 0:
@@ -355,9 +366,8 @@ def do_flash_write(args):
                     address += size
                     left -= size
 
-                    if read_data != data[:size]:
-                        print('Verify failed.')
-                        sys.exit(1)
+                    if bytearray(read_data) != data[:size]:
+                        sys.exit('Verify failed.')
 
                     data = data[size:]
                     progress.update(size)
@@ -371,13 +381,17 @@ def main():
                   "turn accesses the flash memory."
     parser = argparse.ArgumentParser(description=description)
     parser.add_argument('-p', '--port', default='/dev/ttyUSB1')
+    parser.add_argument('-m', '--mcu',
+                        default='spc56d40l1',
+                        choices=['spc56d30l1', 'spc56d40l1'])
     parser.add_argument('-b', '--baudrate',
                         type=int,
                         default=921600,
                         choices=[115200, 921600])
     parser.add_argument('-B', '--bam-baudrate',
                         type=int,
-                        default=19200)
+                        default=19200,
+                        choices=[9600, 19200])
     parser.add_argument('-c', '--control-port')
     parser.add_argument('-d', '--debug', action='store_true')
     parser.add_argument('--version',
@@ -408,7 +422,7 @@ def main():
     flash_write_parser.add_argument('-u', '--no-upload', action='store_true')
     flash_write_parser.add_argument('-e', '--erase', action='store_true')
     flash_write_parser.add_argument('-v', '--verify', action='store_true')
-    flash_write_parser.add_argument('hexfile')
+    flash_write_parser.add_argument('binfile')
     flash_write_parser.set_defaults(func=do_flash_write)
 
     args = parser.parse_args()

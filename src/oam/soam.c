@@ -30,7 +30,7 @@
 
 #include "simba.h"
 
-#define SOAM_PACKET_SIZE_MIN                                6
+#define SOAM_PACKET_SIZE_MIN                                7
 
 #define SOAM_TYPE_STDOUT_PRINTF                      (1 << 4)
 #define SOAM_TYPE_STDOUT_BINARY                      (2 << 4)
@@ -65,11 +65,12 @@ static ssize_t packet_output(struct soam_t *self_p)
     uint16_t crc;
 
     size = (self_p->tx.pos + 2);
-    payload_crc_size = (size - 4);
+    payload_crc_size = (size - 5);
 
     /* Write packet size and crc fields. */
-    self_p->tx.buf_p[2] = (payload_crc_size >> 8);
-    self_p->tx.buf_p[3] = payload_crc_size;
+    self_p->tx.buf_p[2] = self_p->transaction_id;
+    self_p->tx.buf_p[3] = (payload_crc_size >> 8);
+    self_p->tx.buf_p[4] = payload_crc_size;
 
     crc = crc_ccitt(0xffff, &self_p->tx.buf_p[0], size - 2);
 
@@ -82,7 +83,7 @@ static ssize_t packet_output(struct soam_t *self_p)
         return (-1);
     }
 
-    return (size - 6);
+    return (size - 7);
 }
 
 static ssize_t printf_or_binary_write(struct soam_t *self_p,
@@ -269,10 +270,13 @@ static int handle_command_request(struct soam_t *self_p,
 {
     int32_t res;
     
-    res = fs_call((char *)&input_p[4],
+    res = fs_call((char *)&input_p[5],
                   &self_p->command_chan,
                   &self_p->command_chan,
                   NULL);
+
+    /* Create the response packet with received transaction id and
+       command result. */
     buf_p[0] = (res >> 24);
     buf_p[1] = (res >> 16);
     buf_p[2] = (res >> 8);
@@ -303,6 +307,7 @@ int soam_init(struct soam_t *self_p,
     sem_init(&self_p->tx.sem, 0, 1);
 
     self_p->is_printf = 0;
+    self_p->transaction_id = 0;
 
     chan_init(&self_p->stdout_chan,
               chan_read_null,
@@ -340,24 +345,25 @@ int soam_input(struct soam_t *self_p,
         return (-1);
     }
 
-    payload_crc_size = ((buf_p[2] << 8) | buf_p[3]);
+    payload_crc_size = ((buf_p[3] << 8) | buf_p[4]);
 
-    if (payload_crc_size > (size - 4)) {
+    if (payload_crc_size > (size - 5)) {
         return (-1);
     }
 
-    input_crc = ((buf_p[payload_crc_size + 2] << 8)
-                 | buf_p[payload_crc_size + 3]);
-    crc = crc_ccitt(0xffff, buf_p, payload_crc_size + 2);
+    input_crc = ((buf_p[payload_crc_size + 3] << 8)
+                 | buf_p[payload_crc_size + 4]);
+    crc = crc_ccitt(0xffff, &buf_p[0], payload_crc_size + 3);
 
-    /* std_printf(FSTR("crc: %04x\r\n"), crc); */
+    /* std_printf(FSTR("crc: 0x%04x, 0x%04x\r\n"), crc, input_crc); */
 
     if (crc != input_crc) {
         return (-1);
     }
 
     type = buf_p[0];
-    
+    self_p->transaction_id = buf_p[2];
+
     switch (type) {
 
     case SOAM_TYPE_DATABASE_ID_REQUEST:
@@ -393,7 +399,7 @@ ssize_t soam_write_begin(struct soam_t *self_p,
     /* First packet initialization. */
     self_p->tx.buf_p[0] = type;
     self_p->tx.buf_p[1] = self_p->tx.packet_index++;
-    self_p->tx.pos = 4;
+    self_p->tx.pos = 5;
 
     return (0);
 }
@@ -420,7 +426,7 @@ ssize_t soam_write_chunk(struct soam_t *self_p,
             /* Next packet initialization. */
             self_p->tx.buf_p[0] |= SOAM_PACKET_FLAGS_CONSECUTIVE;
             self_p->tx.buf_p[1] = self_p->tx.packet_index++;
-            self_p->tx.pos = 4;
+            self_p->tx.pos = 5;
         }
 
         /* Copy data to the transmission buffer. */

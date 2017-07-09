@@ -34,7 +34,7 @@
 #define __DRIVERS_SHT3X_H__
 
 struct sht3xd_driver_t {
-    struct i2c_soft_driver_t *i2c_p;
+    struct i2c_driver_t *i2c_p;
     int i2c_addr;
     uint32_t serial;
 #ifdef CONFIG_SHT3XD_DEBUG_LOG_MASK
@@ -73,7 +73,7 @@ int sht3xd_module_init(void);
  * @return zero(0) or negative error code.
  */
 int sht3xd_init(struct sht3xd_driver_t *self_p,
-                struct i2c_soft_driver_t *i2c_p,
+                struct i2c_driver_t *i2c_p,
                 int i2c_addr);
 
 /**
@@ -112,6 +112,6 @@ int sht3xd_get_temp_humid(struct sht3xd_driver_t *self_p,
  * @return zero(0) or negative error code.
  */
 int sht3xd_get_serial(struct sht3xd_driver_t *self_p,
-		      uint32_t *serial_p);
+                      uint32_t *serial_p);
 
 #endif

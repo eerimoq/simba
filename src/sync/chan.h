@@ -187,7 +187,7 @@ int chan_set_write_isr_cb(struct chan_t *self_p,
 /**
  * Set the write filter callback function. The write filter function
  * is called when data is written to the channel, and its return value
- * determines is the data shall be written to the underlying channel
+ * determines if the data shall be written to the underlying channel
  * implementation, or discarded.
  *
  * @param[in] self_p Initialized driver object.

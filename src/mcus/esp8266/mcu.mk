@@ -47,6 +47,7 @@ LIBPATH += "$(SIMBA_ROOT)/src/mcus/esp8266/ld"
 LDFLAGS += -Wl,-T$(LINKER_SCRIPT)
 
 LIB_MINIC ?= minic
+LIB_CIROM ?= cirom
 
 LIB += \
 	hal \
@@ -60,6 +61,8 @@ LIB += \
 	freertos \
 	lwip \
 	m \
+	$(LIB_CIROM) \
+	stdc++ \
 	$(LIB_MINIC)
 
 F_CPU = 80000000

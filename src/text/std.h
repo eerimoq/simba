@@ -58,7 +58,10 @@ int std_module_init(void);
  * * flags: ``0`` or ``-``
  * * width: ``0``..``127``
  * * length: ``l`` for long or nothing
- * * specifier: ``c``, ``s``, ``d``, ``i``, ``u``, ``x`` or ``f``
+ * * specifier: ``c``, ``s``, ``S``, ``d``, ``i``, ``u``, ``x`` or ``f``
+ *
+ * The ``S`` specifier expects a far string (``far_string_t``)
+ * argument. Other specifiers have their usual definition.
  *
  * @param[out] dst_p Destination buffer. The formatted string is
  *                   written to this buffer.
@@ -68,7 +71,7 @@ int std_module_init(void);
  * @return Length of the string written to the destination buffer, not
  *         inclusing the null termination, or negative error code.
  */
-ssize_t std_sprintf(char *dst_p, FAR const char *fmt_p, ...);
+ssize_t std_sprintf(char *dst_p, far_string_t fmt_p, ...);
 
 /**
  * Format and write data to given buffer. The output is null
@@ -85,7 +88,7 @@ ssize_t std_sprintf(char *dst_p, FAR const char *fmt_p, ...);
  */
 ssize_t std_snprintf(char *dst_p,
                      size_t size,
-                     FAR const char *fmt_p,
+                     far_string_t fmt_p,
                      ...);
 
 /**
@@ -100,7 +103,7 @@ ssize_t std_snprintf(char *dst_p,
  * @return Length of the string written to the destination buffer, not
  *         inclusing the null termination, or negative error code.
  */
-ssize_t std_vsprintf(char *dst_p, FAR const char *fmt_p, va_list *ap_p);
+ssize_t std_vsprintf(char *dst_p, far_string_t fmt_p, va_list *ap_p);
 
 /**
  * Format and write data to given buffer. The output is null
@@ -115,7 +118,7 @@ ssize_t std_vsprintf(char *dst_p, FAR const char *fmt_p, va_list *ap_p);
  * @return Length of the string written to the destination buffer, not
  *         inclusing the null termination, or negative error code.
  */
-ssize_t std_vsnprintf(char *dst_p, size_t size, FAR const char *fmt_p, va_list *ap_p);
+ssize_t std_vsnprintf(char *dst_p, size_t size, far_string_t fmt_p, va_list *ap_p);
 
 /**
  * Format and print data to standard output. The output is not null terminated.
@@ -141,7 +144,7 @@ ssize_t std_printf(far_string_t fmt_p, ...);
  * @return Number of characters written to standard output, or
  *         negative error code.
  */
-ssize_t std_vprintf(FAR const char *fmt_p, va_list *ap_p);
+ssize_t std_vprintf(far_string_t fmt_p, va_list *ap_p);
 
 /**
  * Format and print data to channel. The output is not null terminated.
@@ -155,7 +158,7 @@ ssize_t std_vprintf(FAR const char *fmt_p, va_list *ap_p);
  * @return Number of characters written to given channel, or negative
  *         error code.
  */
-ssize_t std_fprintf(void *chan_p, FAR const char *fmt_p, ...);
+ssize_t std_fprintf(void *chan_p, far_string_t fmt_p, ...);
 
 /**
  * Format and print data to channel. The output is not null terminated.
@@ -169,27 +172,58 @@ ssize_t std_fprintf(void *chan_p, FAR const char *fmt_p, ...);
  * @return Number of characters written to given channel, or negative
  *         error code.
  */
-ssize_t std_vfprintf(void *chan_p, FAR const char *fmt_p, va_list *ap_p);
+ssize_t std_vfprintf(void *chan_p, far_string_t fmt_p, va_list *ap_p);
 
 /**
- * Convert string to integer.
+ * Convert given string to an integer in given base.
  *
  * @param[in] str_p Integer string.
- * @param[out] value_p Integer value.
+ * @param[out] value_p Parsed integer.
+ * @param[in] base The base of the value to parse. One of 16, 10, 8 or
+ *                 2, or 0 to select base based on the string
+ *                 prefix. Supported string prefixes are "0x" for
+ *                 hexadecimal numbers, "0" for octal numbers and "0b"
+ *                 for binary numbers.
  *
- * @return Pointer to the next byte or NULL on failure.
+ * @return Pointer to the next byte, or NULL if no value was found.
+ */
+const char *std_strtolb(const char *str_p,
+                        long *value_p,
+                        int base);
+
+/**
+ * Convert given string to an integer with base selection based on the
+ * string prefix.
+ *
+ * @param[in] str_p Integer string.
+ * @param[out] value_p Parsed integer.
+ *
+ * @return Pointer to the next byte, or NULL if no value was found.
  */
 const char *std_strtol(const char *str_p, long *value_p);
 
 /**
- * Convert string to double.
+ * Convert given string to a double.
  *
  * @param[in] str_p Double string.
- * @param[out] value_p Double value.
+ * @param[out] value_p Parsed value.
  *
- * @return Pointer to the next byte or NULL on failure.
+ * @return Pointer to the next byte, or NULL if no value vas found.
  */
 const char *std_strtod(const char *str_p, double *value_p);
+
+/**
+ * Convert string to decimal fixed point number with given precision.
+ *
+ * @param[in] str_p Double string.
+ * @param[out] value_p Decimal fixed point number of given precision.
+ * @param[in] precision Number precision, or decimal places.
+ *
+ * @return Pointer to the next byte, or NULL on failure.
+ */
+const char *std_strtodfp(const char *str_p,
+                         long *value_p,
+                         int precision);
 
 /**
  * Copy string from far memory to memory.
@@ -199,7 +233,7 @@ const char *std_strtod(const char *str_p, double *value_p);
  *
  * @return String length or negative error code.
  */
-int std_strcpy(char *dst_p, FAR const char *src_p);
+int std_strcpy(char *dst_p, far_string_t src_p);
 
 /**
  * Compare a string with a far string.
@@ -210,7 +244,7 @@ int std_strcpy(char *dst_p, FAR const char *src_p);
  * @return zero(0) if match, otherwise the difference of
  *         the mismatched characters
  */
-int std_strcmp(const char *str_p, FAR const char *fstr_p);
+int std_strcmp(const char *str_p, far_string_t fstr_p);
 
 /**
  * Compare two far strings.
@@ -221,8 +255,8 @@ int std_strcmp(const char *str_p, FAR const char *fstr_p);
  * @return zero(0) if match, otherwise the difference of the
  *         mismatched characters.
  */
-int std_strcmp_f(FAR const char *fstr0_p,
-                 FAR const char *fstr1_p);
+int std_strcmp_f(far_string_t fstr0_p,
+                 far_string_t fstr1_p);
 
 /**
  * Compare at most `size` bytes of one far string and one string.
@@ -234,7 +268,7 @@ int std_strcmp_f(FAR const char *fstr0_p,
  * @return zero(0) if match, otherwise the difference of the
  *         mismatched characters.
  */
-int std_strncmp(FAR const char *fstr_p,
+int std_strncmp(far_string_t fstr_p,
                 const char *str_p,
                 size_t size);
 
@@ -248,8 +282,8 @@ int std_strncmp(FAR const char *fstr_p,
  * @return zero(0) if match, otherwise the difference of the
  *         mismatched characters.
  */
-int std_strncmp_f(FAR const char *fstr0_p,
-                  FAR const char *fstr1_p,
+int std_strncmp_f(far_string_t fstr0_p,
+                  far_string_t fstr1_p,
                   size_t size);
 
 /**
@@ -261,7 +295,7 @@ int std_strncmp_f(FAR const char *fstr0_p,
  * @return String length in number of bytes (not including the null
  *         termination).
  */
-int std_strlen(FAR const char *fstr_p);
+int std_strlen(far_string_t fstr_p);
 
 /**
  * Strip leading and trailing characters from a string. The characters

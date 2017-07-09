@@ -33,6 +33,7 @@
 static struct queue_t queue[2];
 static struct queue_t buffered_queue;
 static char buffer[8];
+static struct event_t event;
 
 static THRD_STACK(t0_stack, 512);
 static THRD_STACK(t1_stack, 512);
@@ -115,6 +116,7 @@ static void *t0_main(void *arg_p)
 static void *t1_main(void *arg_p)
 {
     int c[4];
+    uint32_t mask;
 
     thrd_set_name("t1");
 
@@ -124,6 +126,27 @@ static void *t1_main(void *arg_p)
     c[2] = 16;
     c[3] = 17;
     BTASSERTN(queue_write(&buffered_queue, &c, sizeof(c)) == sizeof(c));
+
+    /* Wait for testcase test_poll_write_all_channels start event. */
+    mask = 1;
+    BTASSERTN(event_read(&event, &mask, sizeof(mask)) == sizeof(mask));
+
+    /* Sleep a while to let the main thread start polling. */
+    thrd_sleep_ms(50);
+
+    /* Write an event that the reader is not waiting for for each
+       channel. */
+    c[0] = 18;
+    c[1] = 19;
+    c[2] = 20;
+    c[3] = 21;
+    BTASSERTN(queue_write(&queue[0], &c[0], sizeof(c)) == sizeof(c));
+
+    c[0] = 22;
+    c[1] = 23;
+    c[2] = 24;
+    c[3] = 25;
+    BTASSERTN(queue_write(&queue[1], &c[0], sizeof(c)) == sizeof(c));
 
     thrd_suspend(NULL);
 
@@ -135,6 +158,7 @@ static int test_init(struct harness_t *harness)
     BTASSERT(queue_init(&queue[0], NULL, 0) == 0);
     BTASSERT(queue_init(&queue[1], NULL, 0) == 0);
     BTASSERT(queue_init(&buffered_queue, buffer, sizeof(buffer)) == 0);
+    BTASSERT(event_init(&event) == 0);
 
     BTASSERT(thrd_spawn(t0_main,
                         NULL,
@@ -294,6 +318,48 @@ static int test_multiple_writers(struct harness_t *harness_p)
     return (0);
 }
 
+static int test_poll_write_two_channels(struct harness_t *harness_p)
+{
+    uint32_t mask;
+    struct chan_list_t list;
+    char workspace[64];
+    int c[4];
+
+    BTASSERT(queue_start(&queue[0]) == 0);
+
+    /* Use a list with two channels.*/
+    BTASSERT(chan_list_init(&list, workspace, sizeof(workspace)) == 0);
+    BTASSERT(chan_list_add(&list, &queue[0]) == 0);
+    BTASSERT(chan_list_add(&list, &queue[1]) == 0);
+
+    /* Signal tester thread to start. It will sleep for a while to let
+       this thread start polling. */
+    mask = 1;
+    BTASSERT(event_write(&event, &mask, sizeof(mask)) == 4);
+
+    /* Poll the list of channels and make sure the first channel has
+       the event set.*/
+    BTASSERT(chan_list_poll(&list, NULL) == &queue[0]);
+
+    BTASSERT(queue_read(&queue[0], &c[0], sizeof(c)) == sizeof(c));
+    BTASSERT(c[0] == 18);
+    BTASSERT(c[1] == 19);
+    BTASSERT(c[2] == 20);
+    BTASSERT(c[3] == 21);
+
+    /* Wait a while to make sure the other thread has written to the
+       second queue. */
+    thrd_sleep_ms(50);
+
+    BTASSERT(queue_read(&queue[1], &c[0], sizeof(c)) == sizeof(c));
+    BTASSERT(c[0] == 22);
+    BTASSERT(c[1] == 23);
+    BTASSERT(c[2] == 24);
+    BTASSERT(c[3] == 25);
+
+    return (0);
+}
+
 int main()
 {
     struct harness_t harness;
@@ -304,6 +370,7 @@ int main()
         { test_size, "test_size" },
         { test_stopped, "test_stopped" },
         { test_multiple_writers, "test_multiple_writers" },
+        { test_poll_write_two_channels, "test_poll_write_two_channels" },
         { NULL, NULL }
     };
 

@@ -1,5 +1,5 @@
-:mod:`base64` --- Base64 encoding and decoding.
-===============================================
+:mod:`base64` --- Base64 encoding and decoding
+==============================================
 
 .. module:: base64
    :synopsis: Base64 encoding and decoding.

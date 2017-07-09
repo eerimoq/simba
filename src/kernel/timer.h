@@ -107,13 +107,13 @@ int timer_start_isr(struct timer_t *self_p);
 
 /**
  * Stop given timer object. This has no effect on a timer that already
- * expired or was never started. The return code is 0 if the timer was
- * stopped and -1 otherwise.
+ * expired or was never started.
  *
  * @param[in] self_p Timer object to stop.
  *
- * @return zero(0) if the timer was stopped and -1 if the timer has
- *         already expired or was never started.
+ * @return true(1) if the timer was stopped, false(0) if the timer
+ *         already expired or was never started, and otherwise
+ *         negative error code.
  */
 int timer_stop(struct timer_t *self_p);
 

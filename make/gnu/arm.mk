@@ -35,18 +35,13 @@ SIZE_SUMMARY_CMD ?= $(SIMBA_ROOT)/bin/memory_usage.py \
 			--ram-section .bss \
 			--ram-section .main_stack \
 			--rom-section .text \
-			--rom-section .settings \
+			--rom-section .nvm.eeprom_soft \
 			${EXE}
 
 
-ifeq ($(NDEBUG),yes)
 OPT ?= -O2
 CFLAGS += $(OPT)
 CXXFLAGS += $(OPT)
-else
-CFLAGS += -g
-CXXFLAGS += -g
-endif
 
 CDEFS += F_CPU=$(F_CPU)UL
 

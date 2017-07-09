@@ -30,6 +30,8 @@
 
 #include "simba.h"
 
+#if CONFIG_USB_HOST == 1
+
 int usb_class_hub_enumerate(struct usb_host_device_t *device_p)
 {
     /* Setup the interrupt endpoint. */
@@ -57,3 +59,5 @@ ssize_t usb_class_hub_read(struct usb_class_hub_t *hub_p,
 
     return (-1);
 }
+
+#endif

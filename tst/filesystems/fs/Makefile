@@ -31,6 +31,7 @@
 NAME = fs_suite
 TYPE = suite
 BOARD ?= linux
+MAIN_C = main.cpp
 
 CDEFS += CONFIG_MINIMAL_SYSTEM=1 \
 	CONFIG_FS_CMD_FS_COUNTERS_LIST=1 \
@@ -57,5 +58,4 @@ SPIFFS_SRC = \
 	3pp/spiffs-0.3.5/src/spiffs_cache.c \
 	3pp/spiffs-0.3.5/src/spiffs_check.c
 
-SIMBA_ROOT ?= ../../..
 include $(SIMBA_ROOT)/make/app.mk

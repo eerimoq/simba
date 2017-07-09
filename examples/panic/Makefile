@@ -34,5 +34,4 @@ BOARD ?= linux
 RUN_END_PATTERN = "Intentional panic!"
 RUN_END_PATTERN_SUCCESS = "Intentional panic!"
 
-SIMBA_ROOT ?= ../..
 include $(SIMBA_ROOT)/make/app.mk

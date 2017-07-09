@@ -35,302 +35,398 @@ SIMBA_VERSION ?= $(shell cat VERSION.txt)
 BOARD ?= linux
 
 ifeq ($(BOARD), linux)
-    TESTS = $(addprefix tst/kernel/, sys \
-                                     thrd \
-                                     time \
-                                     timer)
-    TESTS += $(addprefix tst/sync/, bus \
-                                    chan \
-                                    event \
-                                    queue \
-                                    rwlock \
-                                    sem)
-    TESTS += $(addprefix tst/collections/, binary_tree \
-                                           bits \
-                                           circular_buffer \
-                                           fifo \
-                                           hash_map)
-    TESTS += $(addprefix tst/alloc/, circular_heap \
-                                     heap)
-    TESTS += $(addprefix tst/text/, configfile \
-				    emacs \
-				    std \
-                                    re)
-    TESTS += $(addprefix tst/debug/, log)
-    TESTS += $(addprefix tst/oam/, nvm \
-				   service \
-				   settings \
-				   shell \
-				   soam \
-				   upgrade \
-				   upgrade/http \
-				   upgrade/kermit \
-				   upgrade/uds)
-    TESTS += $(addprefix tst/filesystems/, fat16 \
-				          fs \
-                                          spiffs)
-    TESTS += $(addprefix tst/encode/, base64 \
-                                      json)
-    TESTS += $(addprefix tst/hash/, crc \
-                                    sha1)
-    TESTS += $(addprefix tst/inet/, http_server \
-				    http_websocket_client \
-				    http_websocket_server \
-				    inet \
-				    isotp \
-				    mqtt_client \
-				    ping \
-				    slip \
-				    ssl \
-				    tftp_server)
-    TESTS += $(addprefix tst/multimedia/, midi)
+    TESTS = $(addprefix tst/kernel/, \
+	sys \
+	thrd \
+	time \
+	timer)
+    TESTS += $(addprefix tst/sync/, \
+	bus \
+	chan \
+	event \
+	queue \
+	rwlock \
+	sem)
+    TESTS += $(addprefix tst/collections/, \
+	binary_tree \
+	bits \
+	circular_buffer \
+	fifo \
+	hash_map)
+    TESTS += $(addprefix tst/alloc/, \
+	circular_heap \
+	heap)
+    TESTS += $(addprefix tst/text/, \
+	configfile \
+	emacs \
+	std \
+	re)
+    TESTS += $(addprefix tst/debug/, \
+	log \
+	harness)
+    TESTS += $(addprefix tst/oam/, \
+	nvm \
+	service \
+	settings \
+	shell \
+	soam \
+	upgrade \
+	upgrade/http \
+	upgrade/kermit \
+	upgrade/uds)
+    TESTS += $(addprefix tst/filesystems/, \
+	fat16 \
+	fs \
+	spiffs)
+    TESTS += $(addprefix tst/encode/, \
+	base64 \
+	json \
+	nmea)
+    TESTS += $(addprefix tst/hash/, \
+	crc \
+	sha1)
+    TESTS += $(addprefix tst/inet/, \
+	http_server \
+	http_websocket_client \
+	http_websocket_server \
+	inet \
+	isotp \
+	mqtt_client \
+	ping \
+	slip \
+	ssl \
+	tftp_server)
+    TESTS += $(addprefix tst/multimedia/, \
+	midi)
+    TESTS += $(addprefix tst/drivers/software/, \
+	gnss \
+	hx711 \
+	xbee)
 endif
 
 ifeq ($(BOARD), arduino_due)
-    TESTS = $(addprefix tst/kernel/, sys \
-                                     thrd \
-                                     time \
-                                     timer)
-    TESTS += $(addprefix tst/sync/, bus \
-                                    event \
-                                    queue \
-                                    rwlock \
-                                    sem)
-    TESTS += $(addprefix tst/collections/, binary_tree \
-                                           bits \
-                                           fifo \
-                                           hash_map)
-    TESTS += $(addprefix tst/alloc/, circular_heap \
-                                     heap)
-    TESTS += $(addprefix tst/text/, configfile \
-				    emacs \
-				    std \
-                                    re)
-    TESTS += $(addprefix tst/debug/, log)
-    TESTS += $(addprefix tst/oam/, settings \
-	        		   shell)
-    TESTS += $(addprefix tst/filesystems/, fs \
-					  spiffs)
-    TESTS += $(addprefix tst/encode/, base64 \
-                                      json)
-    TESTS += $(addprefix tst/hash/, crc \
-                                    sha1)
-    TESTS += $(addprefix tst/drivers/, chipid \
-				       can \
-				       flash \
-				       pin)
+    TESTS = $(addprefix tst/kernel/, \
+	sys \
+	thrd \
+	time \
+	timer)
+    TESTS += $(addprefix tst/sync/, \
+	bus \
+	event \
+	queue \
+	rwlock \
+	sem)
+    TESTS += $(addprefix tst/collections/, \
+	binary_tree \
+	bits \
+	fifo \
+	hash_map)
+    TESTS += $(addprefix tst/alloc/, \
+	circular_heap \
+	heap)
+    TESTS += $(addprefix tst/text/, \
+	configfile \
+	std \
+	re)
+    TESTS += $(addprefix tst/debug/, \
+	log)
+    TESTS += $(addprefix tst/oam/, \
+	settings \
+	shell)
+    TESTS += $(addprefix tst/filesystems/, \
+	fs \
+	spiffs)
+    TESTS += $(addprefix tst/encode/, \
+	base64 \
+	json)
+    TESTS += $(addprefix tst/hash/, \
+	crc \
+	sha1)
+    TESTS += $(addprefix tst/drivers/hardware/, \
+	chipid \
+	can \
+	flash)
 endif
 
 ifeq ($(BOARD), arduino_mega)
-    TESTS = $(addprefix tst/kernel/, sys \
-                                     thrd \
-                                     time \
-                                     timer)
-    TESTS += $(addprefix tst/sync/, bus \
-                                    event \
-                                    queue \
-                                    rwlock \
-                                    sem)
-    TESTS += $(addprefix tst/collections/, binary_tree \
-                                           bits \
-                                           fifo \
-                                           hash_map)
-    TESTS += $(addprefix tst/alloc/, circular_heap \
-                                     heap)
-    TESTS += $(addprefix tst/text/, configfile \
-				    std \
-                                    re)
-    TESTS += $(addprefix tst/debug/, log)
-    TESTS += $(addprefix tst/oam/, settings \
-	        		   shell)
-    TESTS += $(addprefix tst/filesystems/, fat16 \
-					  fs)
-    TESTS += $(addprefix tst/encode/, base64)
-    TESTS += $(addprefix tst/hash/, crc \
-                                    sha1)
-    TESTS += $(addprefix tst/inet/, http_websocket_client \
-				    http_websocket_server \
-				    inet \
-				    mqtt_client \
-				    ping)
-    TESTS += $(addprefix tst/drivers/, adc \
-				       analog_input_pin \
-				       ds3231 \
-				       sd \
-				       pin)
+    TESTS = $(addprefix tst/kernel/, \
+	sys \
+	thrd \
+	time \
+	timer)
+    TESTS += $(addprefix tst/sync/, \
+	bus \
+	event \
+	queue \
+	rwlock \
+	sem)
+    TESTS += $(addprefix tst/collections/, \
+	binary_tree \
+	bits \
+	fifo \
+	hash_map)
+    TESTS += $(addprefix tst/alloc/, \
+	circular_heap \
+	heap)
+    TESTS += $(addprefix tst/text/, \
+	configfile \
+	std \
+	re)
+    TESTS += $(addprefix tst/debug/, \
+	log)
+    TESTS += $(addprefix tst/oam/, \
+	settings \
+	shell)
+    TESTS += $(addprefix tst/filesystems/, \
+	fat16 \
+	fs)
+    TESTS += $(addprefix tst/encode/, \
+	base64)
+    TESTS += $(addprefix tst/hash/, \
+	crc \
+	sha1)
+    TESTS += $(addprefix tst/inet/, \
+	http_websocket_client \
+	http_websocket_server \
+	inet \
+	mqtt_client \
+	ping)
+    TESTS += $(addprefix tst/drivers/hardware/, \
+	adc \
+	analog_input_pin \
+	ds3231 \
+	sd \
+	pin)
 endif
 
 ifeq ($(BOARD), arduino_nano)
-    TESTS = $(addprefix tst/drivers/, ds18b20 \
-				      analog_output_pin \
-				      exti \
-				      owi)
+    TESTS = $(addprefix tst/drivers/hardware/, \
+	ds18b20 \
+	analog_output_pin \
+	exti \
+	owi)
 endif
 
 ifeq ($(BOARD), arduino_pro_micro)
-    TESTS = $(addprefix tst/kernel/, sys \
-                                     thrd \
-                                     timer)
+    TESTS = $(addprefix tst/kernel/, \
+	sys \
+	thrd \
+	timer)
 endif
 
 ifeq ($(BOARD), esp12e)
-    TESTS = $(addprefix tst/kernel/, sys \
-                                     thrd \
-                                     timer)
+    TESTS = $(addprefix tst/kernel/, \
+	sys \
+	thrd \
+	timer)
 endif
 
 ifeq ($(BOARD), nodemcu)
-    TESTS = $(addprefix tst/kernel/, sys \
-                                     thrd \
-                                     timer)
-    TESTS += $(addprefix tst/sync/, bus \
-                                    event \
-                                    queue \
-                                    rwlock \
-                                    sem)
-    TESTS += $(addprefix tst/collections/, binary_tree \
-                                           bits \
-                                           fifo \
-                                           hash_map)
-    TESTS += $(addprefix tst/alloc/, circular_heap)
-    TESTS += $(addprefix tst/text/, std \
-                                    re)
-    TESTS += $(addprefix tst/debug/, log)
-    TESTS += $(addprefix tst/oam/, shell)
-    TESTS += $(addprefix tst/encode/, base64 \
-                                      json)
-    TESTS += $(addprefix tst/hash/, crc \
-                                    sha1)
-    TESTS += $(addprefix tst/inet/, http_websocket_client \
-				    http_websocket_server \
-				    inet \
-				    mqtt_client \
-				    network_interface/wifi_esp \
-				    ping)
-    TESTS += $(addprefix tst/drivers/, pin \
-			            random)
-    TESTS += $(addprefix tst/filesystems/, fs \
-                                           spiffs)
+    TESTS = $(addprefix tst/kernel/, \
+	sys \
+	thrd \
+	timer)
+    TESTS += $(addprefix tst/sync/, \
+	bus \
+	event \
+	queue \
+	rwlock \
+	sem)
+    TESTS += $(addprefix tst/collections/, \
+	binary_tree \
+	bits \
+	fifo \
+	hash_map)
+    TESTS += $(addprefix tst/alloc/, \
+	circular_heap)
+    TESTS += $(addprefix tst/text/, \
+	std \
+	re)
+    TESTS += $(addprefix tst/debug/, \
+	log)
+    TESTS += $(addprefix tst/oam/, \
+	shell)
+    TESTS += $(addprefix tst/encode/, \
+	base64 \
+	json)
+    TESTS += $(addprefix tst/hash/, \
+	crc \
+	sha1)
+    TESTS += $(addprefix tst/inet/, \
+	http_websocket_client \
+	http_websocket_server \
+	inet \
+	mqtt_client \
+	network_interface/wifi_esp \
+	ping)
+    TESTS += $(addprefix tst/drivers/hardware/, \
+	pin \
+	random)
+    TESTS += $(addprefix tst/filesystems/, \
+	fs \
+	spiffs)
 endif
 
 ifeq ($(BOARD), nano32)
-    TESTS = $(addprefix tst/kernel/, sys \
-                                     thrd \
-                                     timer)
-    TESTS += $(addprefix tst/sync/, bus \
-                                    event \
-                                    queue \
-                                    rwlock \
-                                    sem)
-    TESTS += $(addprefix tst/collections/, binary_tree \
-                                           bits \
-                                           fifo \
-                                           hash_map)
-    TESTS += $(addprefix tst/alloc/, circular_heap)
-    TESTS += $(addprefix tst/text/, std \
-                                    re)
-    TESTS += $(addprefix tst/debug/, log)
-    TESTS += $(addprefix tst/oam/, shell)
-    TESTS += $(addprefix tst/encode/, base64 \
-                                      json)
-    TESTS += $(addprefix tst/hash/, crc \
-                                    sha1)
-    TESTS += $(addprefix tst/inet/, http_websocket_client \
-				    http_websocket_server \
-				    inet \
-				    mqtt_client_network \
-				    network_interface/wifi_esp \
-				    ping)
-    TESTS += $(addprefix tst/filesystems/, fs \
-                                           spiffs)
+    TESTS = $(addprefix tst/kernel/, \
+	sys \
+	thrd \
+	timer)
+    TESTS += $(addprefix tst/sync/, \
+	bus \
+	event \
+	queue \
+	rwlock \
+	sem)
+    TESTS += $(addprefix tst/collections/, \
+	binary_tree \
+	bits \
+	fifo \
+	hash_map)
+    TESTS += $(addprefix tst/alloc/, \
+	circular_heap)
+    TESTS += $(addprefix tst/text/, \
+	std \
+	re)
+    TESTS += $(addprefix tst/debug/, \
+	log)
+    TESTS += $(addprefix tst/oam/, \
+	shell)
+    TESTS += $(addprefix tst/encode/, \
+	base64 \
+	json)
+    TESTS += $(addprefix tst/hash/, \
+	crc \
+	sha1)
+    TESTS += $(addprefix tst/inet/, \
+	http_websocket_client \
+	http_websocket_server \
+	inet \
+	mqtt_client_network \
+	network_interface/wifi_esp \
+	ping)
+    TESTS += $(addprefix tst/filesystems/, \
+	fs \
+	spiffs)
 endif
 
 ifeq ($(BOARD), stm32vldiscovery)
-    TESTS = $(addprefix tst/kernel/, sys \
-                                     thrd \
-                                     timer)
-    TESTS += $(addprefix tst/sync/, bus \
-                                    event \
-                                    queue \
-                                    rwlock \
-                                    sem)
-    TESTS += $(addprefix tst/collections/, binary_tree \
-                                           bits \
-                                           fifo \
-                                           hash_map)
-    TESTS += $(addprefix tst/alloc/, circular_heap)
-    TESTS += $(addprefix tst/text/, std \
-                                    re)
-    TESTS += $(addprefix tst/debug/, log)
-    TESTS += $(addprefix tst/oam/, shell)
-    TESTS += $(addprefix tst/encode/, base64 \
-                                      json)
-    TESTS += $(addprefix tst/hash/, crc \
-                                    sha1)
-    TESTS += $(addprefix tst/inet/, http_websocket_client \
-				    http_websocket_server \
-				    inet \
-				    mqtt_client \
-				    ping)
-    TESTS += $(addprefix tst/drivers/, pin \
-			            random)
+    TESTS = $(addprefix tst/kernel/, \
+	sys \
+	thrd \
+	timer)
+    TESTS += $(addprefix tst/sync/, \
+	bus \
+	event \
+	queue \
+	rwlock \
+	sem)
+    TESTS += $(addprefix tst/collections/, \
+	binary_tree \
+	bits \
+	fifo \
+	hash_map)
+    TESTS += $(addprefix tst/alloc/, \
+	circular_heap)
+    TESTS += $(addprefix tst/text/, \
+	std \
+	re)
+    TESTS += $(addprefix tst/debug/, \
+	log)
+    TESTS += $(addprefix tst/oam/, \
+	shell)
+    TESTS += $(addprefix tst/encode/, \
+	base64 \
+	json)
+    TESTS += $(addprefix tst/hash/, \
+	crc \
+	sha1)
+    TESTS += $(addprefix tst/inet/, \
+	http_websocket_client \
+	http_websocket_server \
+	inet \
+	mqtt_client \
+	ping)
+    TESTS += $(addprefix tst/drivers/hardware/, \
+	pin \
+	random)
 endif
 
 ifeq ($(BOARD), photon)
-    TESTS = $(addprefix tst/kernel/, sys \
-                                     thrd \
-				     time \
-                                     timer)
-    TESTS += $(addprefix tst/sync/, bus \
-                                    event \
-                                    queue \
-                                    rwlock \
-                                    sem)
-    TESTS += $(addprefix tst/collections/, binary_tree \
-                                           bits \
-                                           fifo \
-                                           hash_map)
-    TESTS += $(addprefix tst/alloc/, circular_heap)
-    TESTS += $(addprefix tst/text/, std \
-                                    re)
-    TESTS += $(addprefix tst/debug/, log)
-    TESTS += $(addprefix tst/oam/, shell)
-    TESTS += $(addprefix tst/encode/, base64 \
-                                      json)
-    TESTS += $(addprefix tst/hash/, crc \
-                                    sha1)
-    TESTS += $(addprefix tst/inet/, http_websocket_client \
-				    http_websocket_server \
-				    inet \
-				    mqtt_client \
-				    ping)
+    TESTS = $(addprefix tst/kernel/, \
+	sys \
+	thrd \
+	time \
+	timer)
+    TESTS += $(addprefix tst/sync/, \
+	bus \
+	event \
+	queue \
+	rwlock \
+	sem)
+    TESTS += $(addprefix tst/collections/, \
+	binary_tree \
+	bits \
+	fifo \
+	hash_map)
+    TESTS += $(addprefix tst/alloc/, \
+	circular_heap)
+    TESTS += $(addprefix tst/text/, \
+	std \
+	re)
+    TESTS += $(addprefix tst/debug/, \
+	log)
+    TESTS += $(addprefix tst/oam/, \
+	shell)
+    TESTS += $(addprefix tst/encode/, \
+	base64 \
+	json)
+    TESTS += $(addprefix tst/hash/, \
+	crc \
+	sha1)
+    TESTS += $(addprefix tst/inet/, \
+	http_websocket_client \
+	http_websocket_server \
+	inet \
+	mqtt_client \
+	ping)
 endif
 
 ifeq ($(BOARD), spc56ddiscovery)
-    TESTS = $(addprefix tst/kernel/, sys \
-                                     thrd \
-                                     time \
-                                     timer)
-    TESTS += $(addprefix tst/sync/, bus \
-                                    event \
-                                    queue \
-                                    rwlock \
-                                    sem)
-    TESTS += $(addprefix tst/collections/, binary_tree \
-                                           bits \
-                                           fifo \
-                                           hash_map)
-    TESTS += $(addprefix tst/alloc/, circular_heap)
-    TESTS += $(addprefix tst/text/, std \
-                                    re)
-    TESTS += $(addprefix tst/debug/, log)
-    TESTS += $(addprefix tst/oam/, shell \
-				   soam)
-    TESTS += $(addprefix tst/encode/, base64 \
-                                      json)
-    TESTS += $(addprefix tst/hash/, crc \
-                                    sha1)
-    TESTS += $(addprefix tst/drivers/, eeprom_soft)
+    TESTS = $(addprefix tst/kernel/, \
+	sys \
+	thrd \
+	time \
+	timer)
+    TESTS += $(addprefix tst/sync/, \
+	bus \
+	event \
+	queue \
+	rwlock \
+	sem)
+    TESTS += $(addprefix tst/collections/, \
+	binary_tree \
+	bits \
+	fifo \
+	hash_map)
+    TESTS += $(addprefix tst/alloc/, \
+	circular_heap)
+    TESTS += $(addprefix tst/text/, \
+	std \
+	re)
+    TESTS += $(addprefix tst/debug/, \
+	log)
+    TESTS += $(addprefix tst/oam/, \
+	shell \
+	soam)
+    TESTS += $(addprefix tst/encode/, \
+	base64 \
+	 json)
+    TESTS += $(addprefix tst/hash/, \
+	crc \
+	sha1)
+    TESTS += $(addprefix tst/drivers/hardware/, \
+	eeprom_soft)
 endif
 
 # List of all application to build
@@ -350,12 +446,12 @@ rerun:
 run: all
 	for test in $(TESTS) ; do \
 	    if [ ! -e $$test/.$(BOARD).passed ] ; then \
-	        $(MAKE) -C $$test run || exit 1 ; \
-	        touch $$test/.$(BOARD).passed ; \
+		$(MAKE) -C $$test run || exit 1 ; \
+		touch $$test/.$(BOARD).passed ; \
 	    else \
-	        echo ; \
-	        echo "$$test already passed." ; \
-	        echo ; \
+		echo ; \
+		echo "$$test already passed." ; \
+		echo ; \
 	    fi \
 	done
 
@@ -489,13 +585,13 @@ test-nodemcu-platformio:
 
 test-i2c-nano-mega:
 	@echo "I2C Nano Mega"
-	$(MAKE) -C tst/drivers/i2c/slave BOARD=arduino_nano SERIAL_PORT=/dev/simba-arduino_nano upload
-	$(MAKE) -C tst/drivers/i2c/master_soft BOARD=arduino_mega SERIAL_PORT=/dev/simba-arduino_mega run
+	$(MAKE) -C tst/drivers/hardware/i2c/slave BOARD=arduino_nano SERIAL_PORT=/dev/simba-arduino_nano upload
+	$(MAKE) -C tst/drivers/hardware/i2c/master_soft BOARD=arduino_mega SERIAL_PORT=/dev/simba-arduino_mega run
 
 clean-i2c-nano-mega:
 	@echo "I2C Nano Mega"
-	$(MAKE) -C tst/drivers/i2c/slave BOARD=arduino_nano clean
-	$(MAKE) -C tst/drivers/i2c/master_soft BOARD=arduino_mega clean
+	$(MAKE) -C tst/drivers/hardware/i2c/slave BOARD=arduino_nano clean
+	$(MAKE) -C tst/drivers/hardware/i2c/master_soft BOARD=arduino_mega clean
 
 test-all-boards:
 	$(MAKE) test-arduino-due

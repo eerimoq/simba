@@ -38,5 +38,4 @@ CDEFS += \
 
 HASH_SRC = sha1.c
 
-SIMBA_ROOT ?= ../../..
 include $(SIMBA_ROOT)/make/app.mk

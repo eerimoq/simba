@@ -42,6 +42,8 @@ void thrd_port_set_main_thrd(struct thrd_t *thrd_p);
 
 void thrd_port_set_main_thrd_stack_top(void *top_p);
 
+const void *thrd_port_get_bottom_of_stack_current_thread(void);
+
 struct thrd_port_context_t {
     uint32_t a0;           /* Return addess from the swap function. */
     uint32_t ps;

@@ -32,6 +32,10 @@ NAME = thrd_suite
 TYPE = suite
 BOARD ?= linux
 
+ifeq ($(BOARD),arduino_mega)
+BAUDRATE ?= 115200
+endif
+
 CDEFS += \
 	CONFIG_MINIMAL_SYSTEM=1 \
 	CONFIG_THRD_CPU_USAGE=1 \
@@ -40,5 +44,4 @@ CDEFS += \
 	CONFIG_FS_CMD_THRD_SET_LOG_MASK=1 \
 	CONFIG_THRD_TERMINATE=1
 
-SIMBA_ROOT ?= ../../..
 include $(SIMBA_ROOT)/make/app.mk

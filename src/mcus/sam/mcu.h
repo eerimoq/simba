@@ -50,7 +50,7 @@
 #    define FLASH_DEVICE_MAX             1
 #    define CAN_DEVICE_MAX               2
 #    define USB_DEVICE_MAX               1
-#    define I2C_DEVICE_MAX               1
+#    define I2C_DEVICE_MAX               2
 #else
 #     error "Unsupported MCU."
 #endif

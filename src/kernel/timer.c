@@ -30,19 +30,18 @@
 
 #include "simba.h"
 
-struct timer_list_t {
+struct module_t {
+    struct timer_t *head_p;    /* List of timers sorted by expiry
+                                  tick. */
     struct timer_t tail_timer; /* Tail element of timer list. */
-    struct timer_t *head_p;    /* List of timers sorted by expiry tick. */
 };
 
-static struct timer_list_t list = {
+static struct module_t module = {
+    .head_p = &module.tail_timer,
     .tail_timer = {
         .next_p = NULL,
-        .delta = SYS_TICK_MAX,
-        .callback = NULL,
-        .arg_p = NULL
-    },
-    .head_p = &list.tail_timer
+        .delta = SYS_TICK_MAX
+    }
 };
 
 /**
@@ -50,30 +49,34 @@ static struct timer_list_t list = {
  */
 static void RAM_CODE timer_insert_isr(struct timer_t *timer_p)
 {
-    struct timer_t *elem_p, *prev_p;
+    struct timer_t *elem_p;
+    struct timer_t *prev_p;
 
     /* Find element preceeding this timer. */
-    elem_p = list.head_p;
+    elem_p = module.head_p;
     prev_p = NULL;
 
-    /* Delta is initially the timeout. */
+    /* Find the element to insert this timer before. Delta is
+       initially the timeout. */
     while (elem_p->delta < timer_p->delta) {
         timer_p->delta -= elem_p->delta;
         prev_p = elem_p;
         elem_p = elem_p->next_p;
     }
 
-    /* Insert new timer into list. */
-    if (elem_p != &list.tail_timer) {
+    /* Adjust the next timer for this timers delta. Do not adjust the
+       tail timer. */
+    if (elem_p != &module.tail_timer) {
         elem_p->delta -= timer_p->delta;
     }
 
+    /* Insert the new timer into list. */
     timer_p->next_p = elem_p;
 
-    if (prev_p != NULL) {
-        prev_p->next_p = timer_p;
+    if (prev_p == NULL) {
+        module.head_p = timer_p;
     } else {
-        list.head_p = timer_p;
+        prev_p->next_p = timer_p;
     }
 }
 
@@ -82,28 +85,35 @@ static void RAM_CODE timer_insert_isr(struct timer_t *timer_p)
  */
 static int timer_remove_isr(struct timer_t *timer_p)
 {
-    struct timer_t *elem_p, *prev_p;
+    struct timer_t *elem_p;
+    struct timer_t *prev_p;
 
     /* Find element preceeding this timer.*/
-    elem_p = list.head_p;
+    elem_p = module.head_p;
     prev_p = NULL;
 
     while (elem_p != NULL) {
         if (elem_p == timer_p) {
+            /* Remove the timer from the list. */
             if (prev_p != NULL) {
                 prev_p->next_p = elem_p->next_p;
             } else {
-                list.head_p = elem_p->next_p;
+                module.head_p = elem_p->next_p;
             }
 
-            return (0);
+            /* Add the delta timeout to the next timer. */
+            if (elem_p->next_p != &module.tail_timer) {
+                elem_p->next_p->delta += elem_p->delta;
+            }
+
+            return (1);
         }
 
         prev_p = elem_p;
         elem_p = elem_p->next_p;
     }
 
-    return (-1);
+    return (0);
 }
 
 int timer_module_init(void)
@@ -118,26 +128,23 @@ void RAM_CODE timer_tick_isr(void)
     sys_lock_isr();
 
     /* Return if no timers are active.*/
-    if (list.head_p == &list.tail_timer) {
-        goto out;
-    }
+    if (module.head_p != &module.tail_timer) {
+        /* Fire all expired timers.*/
+        module.head_p->delta--;
 
-    /* Fire all expired timers.*/
-    list.head_p->delta--;
+        while (module.head_p->delta == 0) {
+            timer_p = module.head_p;
+            module.head_p = timer_p->next_p;
+            timer_p->callback(timer_p->arg_p);
 
-    while (list.head_p->delta == 0) {
-        timer_p = list.head_p;
-        list.head_p = timer_p->next_p;
-        timer_p->callback(timer_p->arg_p);
-
-        /* Re-set periodic timers. */
-        if (timer_p->flags & TIMER_PERIODIC) {
-            timer_p->delta = timer_p->timeout;
-            timer_insert_isr(timer_p);
+            /* Re-set periodic timers. */
+            if (timer_p->flags & TIMER_PERIODIC) {
+                timer_p->delta = timer_p->timeout;
+                timer_insert_isr(timer_p);
+            }
         }
     }
 
- out:
     sys_unlock_isr();
 }
 
@@ -187,13 +194,13 @@ int timer_stop(struct timer_t *self_p)
 {
     ASSERTN(self_p != NULL, EINVAL);
 
-    int err = 0;
+    int res;
 
     sys_lock();
-    err = timer_stop_isr(self_p);
+    res = timer_stop_isr(self_p);
     sys_unlock();
 
-    return (err);
+    return (res);
 }
 
 int timer_stop_isr(struct timer_t *self_p)

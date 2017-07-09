@@ -47,11 +47,6 @@ static int test_input_single_frame(struct harness_t *harness_p)
     BTASSERT(isotp_input(&isotp, &frame[0], 4) == 3);
     BTASSERT(memcmp(&buf[0], "foo", 3) == 0);
 
-    /* Length field has too high value. */
-    frame[0] = (0 << 4) | 8;
-
-    BTASSERT(isotp_input(&isotp, &frame[0], 4) == -1);
-
     return (0);
 }
 
@@ -76,19 +71,17 @@ static int test_input_multi_frame(struct harness_t *harness_p)
 
     BTASSERT(isotp_input(&isotp, &frame[0], 8) == 0);
 
-    /* Unexpected input frame. */
-    BTASSERT(isotp_input(&isotp, &frame[0], 8) == -1);
-
+    /* Verify that the flow control frame is created. */
     BTASSERT(isotp_output(&isotp, &frame[0], &size) == 0);
 
-    /* Verify that the flow control frame was created. */
     BTASSERT(size == 3);
     BTASSERT(frame[0] == (3 << 4));
     BTASSERT(frame[1] == 0);
     BTASSERT(frame[2] == 0);
 
     /* No data to output. */
-    BTASSERT(isotp_output(&isotp, &frame[0], &size) == -1);
+    BTASSERT(isotp_output(&isotp, &frame[0], &size) == 0);
+    BTASSERT(size == 0);
 
     /* Input two consecutive frames. */
     frame[0] = (2 << 4) | 1;
@@ -101,6 +94,10 @@ static int test_input_multi_frame(struct harness_t *harness_p)
     frame[7] = 'c';
 
     BTASSERT(isotp_input(&isotp, &frame[0], 8) == 0);
+
+    /* No data to output. */
+    BTASSERT(isotp_output(&isotp, &frame[0], &size) == 0);
+    BTASSERT(size == 0);
 
     frame[0] = (2 << 4) | 2;
     frame[1] = 'd';
@@ -163,7 +160,7 @@ static int test_output_multi_frame(struct harness_t *harness_p)
     BTASSERT(frame[6] == '5');
     BTASSERT(frame[7] == '6');
 
-    /* Input the flow control frame. */
+    /* Input a flow control frame. */
     frame[0] = (3 << 4);
     frame[1] = 0;
     frame[2] = 0;
@@ -181,6 +178,14 @@ static int test_output_multi_frame(struct harness_t *harness_p)
     BTASSERT(frame[6] == 'b');
     BTASSERT(frame[7] == 'c');
 
+    /* Input another flow control frame. */
+    frame[0] = (3 << 4);
+    frame[1] = 0;
+    frame[2] = 0;
+
+    BTASSERT(isotp_input(&isotp, &frame[0], 3) == 0);
+
+    /* Message complete. */
     BTASSERT(isotp_output(&isotp, &frame[0], &size) == 19);
 
     /* Verify the outputted final consecutive frame. */
@@ -245,7 +250,8 @@ static int test_input_multi_frame_excessive_data(struct harness_t *harness_p)
     BTASSERT(frame[2] == 0);
 
     /* No data to output. */
-    BTASSERT(isotp_output(&isotp, &frame[0], &size) == -1);
+    BTASSERT(isotp_output(&isotp, &frame[0], &size) == 0);
+    BTASSERT(size == 0);
 
     /* Input two consecutive frames. */
     frame[0] = (2 << 4) | 1;
@@ -275,6 +281,187 @@ static int test_input_multi_frame_excessive_data(struct harness_t *harness_p)
     return (0);
 }
 
+static int test_input_single_frame_too_long(struct harness_t *harness_p)
+{
+    struct isotp_t isotp;
+    uint8_t buf[8];
+    uint8_t frame[8];
+
+    BTASSERT(isotp_init(&isotp, &buf[0], sizeof(buf), 0) == 0);
+
+    /* Length field has too high value. */
+    frame[0] = (0 << 4) | 8;
+
+    BTASSERT(isotp_input(&isotp, &frame[0], 4) == -1);
+
+    return (0);
+}
+
+static int test_input_single_frame_no_data(struct harness_t *harness_p)
+{
+    struct isotp_t isotp;
+    uint8_t buf[32];
+    uint8_t frame[8];
+
+    BTASSERT(isotp_init(&isotp, &buf[0], sizeof(buf), 0) == 0);
+
+    /* Input a single frame without data. */
+    frame[0] = (0 << 4) | 0;
+
+    BTASSERT(isotp_input(&isotp, &frame[0], 1) == -1);
+
+    return (0);
+}
+
+static int test_input_first_frame_no_data(struct harness_t *harness_p)
+{
+    struct isotp_t isotp;
+    uint8_t buf[32];
+    uint8_t frame[8];
+
+    BTASSERT(isotp_init(&isotp, &buf[0], sizeof(buf), 0) == 0);
+
+    /* Input a first frame without data. */
+    frame[0] = (1 << 4) | 0;
+    frame[1] = 0;
+
+    BTASSERT(isotp_input(&isotp, &frame[0], 2) == -1);
+
+    return (0);
+}
+
+static int test_input_unexpected_consecutive_frame(struct harness_t *harness_p)
+{
+    struct isotp_t isotp;
+    uint8_t buf[32];
+    uint8_t frame[8];
+
+    BTASSERT(isotp_init(&isotp, &buf[0], sizeof(buf), 0) == 0);
+
+    /* Input a consecutive frame. */
+    frame[0] = (2 << 4) | 1;
+
+    BTASSERT(isotp_input(&isotp, &frame[0], 1) == -1);
+
+    return (0);
+}
+
+static int test_input_unexpected_flow_control_frame(struct harness_t *harness_p)
+{
+    struct isotp_t isotp;
+    uint8_t buf[32];
+    uint8_t frame[8];
+
+    BTASSERT(isotp_init(&isotp, &buf[0], sizeof(buf), 0) == 0);
+
+    /* Input a flow control frame. */
+    frame[0] = (3 << 4) | 0;
+
+    BTASSERT(isotp_input(&isotp, &frame[0], 1) == -1);
+
+    return (0);
+}
+
+static int test_input_bad_multi_frame_consecutive(struct harness_t *harness_p)
+{
+    struct isotp_t isotp;
+    uint8_t buf[32];
+    uint8_t frame[8];
+    size_t size;
+
+    BTASSERT(isotp_init(&isotp, &buf[0], sizeof(buf), 0) == 0);
+
+    /* Input the first frame. */
+    frame[0] = (1 << 4) | 0;
+    frame[1] = 19;
+    frame[2] = '1';
+    frame[3] = '2';
+    frame[4] = '3';
+    frame[5] = '4';
+    frame[6] = '5';
+    frame[7] = '6';
+
+    BTASSERT(isotp_input(&isotp, &frame[0], 8) == 0);
+
+    /* Verify that the flow control frame is created. */
+    BTASSERT(isotp_output(&isotp, &frame[0], &size) == 0);
+
+    BTASSERT(size == 3);
+    BTASSERT(frame[0] == (3 << 4));
+    BTASSERT(frame[1] == 0);
+    BTASSERT(frame[2] == 0);
+
+    /* No data to output. */
+    BTASSERT(isotp_output(&isotp, &frame[0], &size) == 0);
+    BTASSERT(size == 0);
+
+    /* Input an unexpected first frame, waiting for a consecutive
+       frame. */
+    frame[0] = (1 << 4) | 0;
+    frame[1] = 19;
+    frame[2] = '1';
+    frame[3] = '2';
+    frame[4] = '3';
+    frame[5] = '4';
+    frame[6] = '5';
+    frame[7] = '6';
+
+    BTASSERT(isotp_input(&isotp, &frame[0], 8) == -1);
+
+    return (0);
+}
+
+static int test_output_multi_frame_unexpected_non_flow_control(
+    struct harness_t *harness_p)
+{
+    struct isotp_t isotp;
+    char message[] = "1234567890abcdefghi";
+    uint8_t frame[8];
+    size_t size;
+
+    /* Send a message. */
+    BTASSERT(isotp_init(&isotp, (uint8_t *)&message[0], 19, 0) == 0);
+    BTASSERT(isotp_output(&isotp, &frame[0], &size) == 0);
+
+    /* Verify outputted first frame. */
+    BTASSERT(size == 8);
+    BTASSERT(frame[0] == ((1 << 4) | 0));
+    BTASSERT(frame[1] == 19);
+    BTASSERT(frame[2] == '1');
+    BTASSERT(frame[3] == '2');
+    BTASSERT(frame[4] == '3');
+    BTASSERT(frame[5] == '4');
+    BTASSERT(frame[6] == '5');
+    BTASSERT(frame[7] == '6');
+
+    /* Input a flow control frame. */
+    frame[0] = (3 << 4);
+    frame[1] = 0;
+    frame[2] = 0;
+
+    BTASSERT(isotp_input(&isotp, &frame[0], 3) == 0);
+    BTASSERT(isotp_output(&isotp, &frame[0], &size) == 0);
+
+    /* Verify the outputted consecutive frame. */
+    BTASSERT(frame[0] == ((2 << 4) | 1));
+    BTASSERT(frame[1] == '7');
+    BTASSERT(frame[2] == '8');
+    BTASSERT(frame[3] == '9');
+    BTASSERT(frame[4] == '0');
+    BTASSERT(frame[5] == 'a');
+    BTASSERT(frame[6] == 'b');
+    BTASSERT(frame[7] == 'c');
+
+    /* Input an unexpected non-flow control frame, in this case a
+       single frame . */
+    frame[0] = (0 << 4) | 1;
+    frame[1] = '1';
+
+    BTASSERT(isotp_input(&isotp, &frame[0], 2) == -1);
+
+    return (0);
+}
+
 int main()
 {
     struct harness_t harness;
@@ -287,6 +474,20 @@ int main()
           "test_input_single_frame_excessive_data" },
         { test_input_multi_frame_excessive_data,
           "test_input_multi_frame_excessive_data" },
+        { test_input_single_frame_too_long,
+          "test_input_single_frame_too_long" },
+        { test_input_single_frame_no_data,
+          "test_input_single_frame_no_data" },
+        { test_input_first_frame_no_data,
+          "test_input_first_frame_no_data" },
+        { test_input_unexpected_consecutive_frame,
+          "test_input_unexpected_consecutive_frame" },
+        { test_input_unexpected_flow_control_frame,
+          "test_input_unexpected_flow_control_frame" },
+        { test_input_bad_multi_frame_consecutive,
+          "test_input_bad_multi_frame_consecutive" },
+        { test_output_multi_frame_unexpected_non_flow_control,
+          "test_output_multi_frame_unexpected_non_flow_control" },
         { NULL, NULL }
     };
 

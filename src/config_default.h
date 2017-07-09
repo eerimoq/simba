@@ -31,156 +31,141 @@
 #ifndef __CONFIG_DEFAULT_H__
 #define __CONFIG_DEFAULT_H__
 
+/* All ports must implement uart and pin drivers. */
+#define PORT_HAS_I2C_SOFT
+#define PORT_HAS_OWI
+#define PORT_HAS_PIN
+#define PORT_HAS_UART
+#define PORT_HAS_XBEE
+#define PORT_HAS_HX711
+#define PORT_HAS_GNSS
+
 /**
  * Used to include driver header files and the c-file source.
  */
 #if defined(FAMILY_LINUX)
+#    define PORT_HAS_ADC
+#    define PORT_HAS_CAN
+#    define PORT_HAS_DAC
+#    define PORT_HAS_EEPROM_SOFT
 #    define PORT_HAS_EXTI
-#    define PORT_HAS_PIN
+#    define PORT_HAS_FLASH
 #    define PORT_HAS_I2C
-#    define PORT_HAS_I2C_SOFT
 #    define PORT_HAS_PWM
 #    define PORT_HAS_PWM_SOFT
-#    define PORT_HAS_ADC
-#    define PORT_HAS_DAC
-#    define PORT_HAS_SPI
-#    define PORT_HAS_UART
-#    define PORT_HAS_SD
-#    define PORT_HAS_DS18B20
-#    define PORT_HAS_DS3231
-#    define PORT_HAS_OWI
-#    define PORT_HAS_FLASH
-#    define PORT_HAS_ANALOG_INPUT_PIN
-#    define PORT_HAS_ANALOG_OUTPUT_PIN
-#    define PORT_HAS_CAN
 #    define PORT_HAS_RANDOM
-#    define PORT_HAS_EEPROM_SOFT
+#    define PORT_HAS_SD
+#    define PORT_HAS_SPI
 #endif
 
 #if defined(FAMILY_AVR)
-#    define PORT_HAS_EXTI
-#    define PORT_HAS_PIN
-#    define PORT_HAS_PWM
-#    define PORT_HAS_PWM_SOFT
 #    define PORT_HAS_ADC
-#    define PORT_HAS_SPI
-#    define PORT_HAS_UART
+#    define PORT_HAS_EXTI
 #    define PORT_HAS_I2C
-#    define PORT_HAS_I2C_SOFT
-#    define PORT_HAS_UART_SOFT
-#    define PORT_HAS_OWI
-#    define PORT_HAS_DS18B20
-#    define PORT_HAS_DS3231
 #    define PORT_HAS_MCP2515
 #    define PORT_HAS_NRF24L01
+#    define PORT_HAS_PWM
+#    define PORT_HAS_PWM_SOFT
 #    define PORT_HAS_SD
-#    define PORT_HAS_WATCHDOG
-#    define PORT_HAS_ANALOG_INPUT_PIN
-#    define PORT_HAS_ANALOG_OUTPUT_PIN
+#    define PORT_HAS_SPI
+#    define PORT_HAS_UART_SOFT
 #    if defined(MCU_ATMEGA32U4)
 #        define PORT_HAS_USB
 #        define PORT_HAS_USB_DEVICE
 #    endif
+#    define PORT_HAS_WATCHDOG
 #endif
 
 #if defined(FAMILY_SAM)
+#    define PORT_HAS_ADC
+#    define PORT_HAS_CAN
 #    define PORT_HAS_CHIPID
+#    define PORT_HAS_DAC
+#    define PORT_HAS_EEPROM_SOFT
 #    define PORT_HAS_EXTI
 #    define PORT_HAS_FLASH
-#    define PORT_HAS_PIN
-#    define PORT_HAS_I2C_SOFT
-#    define PORT_HAS_SPI
-#    define PORT_HAS_UART
-#    define PORT_HAS_SD
-#    define PORT_HAS_CAN
+#    define PORT_HAS_I2C
 #    define PORT_HAS_MCP2515
-#    define PORT_HAS_OWI
-#    define PORT_HAS_DS18B20
-#    define PORT_HAS_ADC
-#    define PORT_HAS_DAC
+#    define PORT_HAS_RANDOM
+#    define PORT_HAS_SD
+#    define PORT_HAS_SPI
 #    define PORT_HAS_USB
 #    define PORT_HAS_USB_HOST
-#    define PORT_HAS_ANALOG_INPUT_PIN
-#    define PORT_HAS_EEPROM_SOFT
 #endif
 
 #if defined(FAMILY_ESP)
-#    define PORT_HAS_EXTI
-#    define PORT_HAS_PIN
-#    define PORT_HAS_PWM_SOFT
-#    define PORT_HAS_I2C_SOFT
-#    define PORT_HAS_SPI
-#    define PORT_HAS_UART
-#    define PORT_HAS_UART_SOFT
-#    define PORT_HAS_OWI
-#    define PORT_HAS_DS18B20
-#    define PORT_HAS_DS3231
 #    define PORT_HAS_ADC
-#    define PORT_HAS_ANALOG_INPUT_PIN
-#    define PORT_HAS_FLASH
-#    define PORT_HAS_ESP_WIFI
-#    define PORT_HAS_RANDOM
-#    define PORT_HAS_LED_7SEG_HT16K33
-#    define PORT_HAS_SHT3XD
 #    define PORT_HAS_EEPROM_SOFT
+#    define PORT_HAS_ESP_WIFI
+#    define PORT_HAS_EXTI
+#    define PORT_HAS_FLASH
+#    define PORT_HAS_LED_7SEG_HT16K33
+#    define PORT_HAS_PWM_SOFT
+#    define PORT_HAS_RANDOM
+#    define PORT_HAS_SPI
+#    define PORT_HAS_UART_SOFT
 #endif
 
 #if defined(FAMILY_ESP32)
-#    define PORT_HAS_FLASH
-#    define PORT_HAS_PIN
-#    define PORT_HAS_I2C_SOFT
-#    define PORT_HAS_OWI
-#    define PORT_HAS_DS18B20
-#    define PORT_HAS_DS3231
-#    define PORT_HAS_SPI
-#    define PORT_HAS_UART
 #    define PORT_HAS_ADC
-#    define PORT_HAS_ANALOG_INPUT_PIN
-#    define PORT_HAS_DAC
-#    define PORT_HAS_ESP_WIFI
 #    define PORT_HAS_CAN
-#    define PORT_HAS_RANDOM
-#    define PORT_HAS_WS2812
+#    define PORT_HAS_DAC
 #    define PORT_HAS_EEPROM_SOFT
+#    define PORT_HAS_ESP_WIFI
+#    define PORT_HAS_FLASH
+#    define PORT_HAS_RANDOM
+#    define PORT_HAS_SPI
+#    define PORT_HAS_WS2812
 #endif
 
 #if defined(FAMILY_STM32F1)
-#    define PORT_HAS_PIN
-#    define PORT_HAS_I2C_SOFT
-#    define PORT_HAS_UART
-#    define PORT_HAS_FLASH
 #    define PORT_HAS_EEPROM_SOFT
+#    define PORT_HAS_FLASH
 #endif
 
 #if defined(FAMILY_STM32F2)
-#    define PORT_HAS_PIN
-#    define PORT_HAS_I2C_SOFT
-#    define PORT_HAS_UART
-#    define PORT_HAS_FLASH
 #    define PORT_HAS_EEPROM_SOFT
+#    define PORT_HAS_FLASH
 #endif
 
 #if defined(FAMILY_STM32F3)
-#    define PORT_HAS_PIN
-#    define PORT_HAS_I2C_SOFT
-#    define PORT_HAS_UART
-#    define PORT_HAS_FLASH
 #    define PORT_HAS_EEPROM_SOFT
+#    define PORT_HAS_FLASH
 #endif
 
 #if defined(FAMILY_SPC5)
-#    define PORT_HAS_PIN
-#    define PORT_HAS_I2C_SOFT
-#    define PORT_HAS_UART
-#    define PORT_HAS_FLASH
 #    define PORT_HAS_CAN
-#    define PORT_HAS_WATCHDOG
 #    define PORT_HAS_EEPROM_SOFT
+#    define PORT_HAS_FLASH
+#    define PORT_HAS_WATCHDOG
+#endif
+
+#if defined(FAMILY_NRF5)
+#    define PORT_HAS_EEPROM_SOFT
+#    define PORT_HAS_FLASH
 #endif
 
 #if defined(PORT_HAS_I2C_SOFT) && !defined(PORT_HAS_I2C)
 #    define PORT_HAS_I2C
 #    define CONFIG_SOFTWARE_I2C                            1
+#endif
+
+#if defined(PORT_HAS_I2C)
+#    define PORT_HAS_DS3231
+#    define PORT_HAS_EEPROM_I2C
+#    define PORT_HAS_SHT3XD
+#endif
+
+#if defined(PORT_HAS_OWI)
+#    define PORT_HAS_DS18B20
+#endif
+
+#if defined(PORT_HAS_PWM)
+#    define PORT_HAS_ANALOG_OUTPUT_PIN
+#endif
+
+#if defined(PORT_HAS_ADC)
+#    define PORT_HAS_ANALOG_INPUT_PIN
 #endif
 
 /**
@@ -205,6 +190,13 @@
 #    else
 #        define CONFIG_SYS_SIMBA_MAIN_STACK_MAX          4096
 #    endif
+#endif
+
+/**
+ * Read, and when needed clear, the reset cause at startup.
+ */
+#ifndef CONFIG_SYS_RESET_CAUSE
+#    define CONFIG_SYS_RESET_CAUSE                          1
 #endif
 
 /**
@@ -322,6 +314,13 @@
 #endif
 
 /**
+ * Timestamp received CAN frames.
+ */
+#ifndef CONFIG_CAN_FRAME_TIMESTAMP
+#    define CONFIG_CAN_FRAME_TIMESTAMP                      1
+#endif
+
+/**
  * Enable the chipid driver.
  */
 #ifndef CONFIG_CHIPID
@@ -340,6 +339,17 @@
 #        define CONFIG_RANDOM                               0
 #    else
 #        define CONFIG_RANDOM                               1
+#    endif
+#endif
+
+/**
+ * Enable the ws2812 driver.
+ */
+#ifndef CONFIG_WS2812
+#    if defined(CONFIG_MINIMAL_SYSTEM) || !defined(PORT_HAS_WS2812)
+#        define CONFIG_WS2812                               0
+#    else
+#        define CONFIG_WS2812                               1
 #    endif
 #endif
 
@@ -399,6 +409,17 @@
 #endif
 
 /**
+ * Enable the eeprom_soft driver.
+ */
+#ifndef CONFIG_EEPROM_SOFT
+#    if defined(CONFIG_MINIMAL_SYSTEM) || !defined(PORT_HAS_EEPROM_SOFT)
+#        define CONFIG_EEPROM_SOFT                          0
+#    else
+#        define CONFIG_EEPROM_SOFT                          1
+#    endif
+#endif
+
+/**
  * Enable the esp_wifi driver.
  */
 #ifndef CONFIG_ESP_WIFI
@@ -424,7 +445,7 @@
  * Enable the flash driver.
  */
 #ifndef CONFIG_FLASH
-#    if defined(BOARD_ARDUINO_DUE) || defined(ARCH_LINUX) || defined(ARCH_ESP) || defined(ARCH_ESP32) || defined(FAMILY_STM32F1) || defined(FAMILY_STM32F2) || defined(FAMILY_STM32F3) || defined(FAMILY_SPC5)
+#    if defined(BOARD_ARDUINO_DUE) || defined(ARCH_LINUX) || defined(ARCH_ESP) || defined(ARCH_ESP32) || defined(FAMILY_STM32F1) || defined(FAMILY_STM32F2) || defined(FAMILY_STM32F3) || defined(FAMILY_SPC5) || defined(FAMILY_NRF5)
 #        define CONFIG_FLASH                                1
 #    else
 #        define CONFIG_FLASH                                0
@@ -451,6 +472,25 @@
 #    else
 #        define CONFIG_I2C_SOFT                             1
 #    endif
+#endif
+
+/**
+ * Enable the eeprom_i2c driver.
+ */
+#ifndef CONFIG_EEPROM_I2C
+#    if defined(CONFIG_MINIMAL_SYSTEM) || !defined(PORT_HAS_EEPROM_I2C)
+#        define CONFIG_EEPROM_I2C                           0
+#    else
+#        define CONFIG_EEPROM_I2C                           1
+#    endif
+#endif
+
+/**
+ * Number of write retry attemps before giving up accessing a i2c
+ * eeprom.
+ */
+#ifndef CONFIG_EEPROM_I2C_NUMBER_OF_ATTEMPTS
+#    define CONFIG_EEPROM_I2C_NUMBER_OF_ATTEMPTS          100
 #endif
 
 /**
@@ -609,6 +649,46 @@
 #    else
 #        define CONFIG_WATCHDOG                             0
 #    endif
+#endif
+
+/**
+ * Enable the xbee driver.
+ */
+#ifndef CONFIG_XBEE
+#    if defined(CONFIG_MINIMAL_SYSTEM) || !defined(PORT_HAS_XBEE)
+#        define CONFIG_XBEE                                 0
+#    else
+#        define CONFIG_XBEE                                 1
+#    endif
+#endif
+
+/**
+ * Enable the hx711 driver.
+ */
+#ifndef CONFIG_HX711
+#    if defined(CONFIG_MINIMAL_SYSTEM) || !defined(PORT_HAS_HX711)
+#        define CONFIG_HX711                                0
+#    else
+#        define CONFIG_HX711                                1
+#    endif
+#endif
+
+/**
+ * Enable the gnss driver.
+ */
+#ifndef CONFIG_GNSS
+#    if defined(CONFIG_MINIMAL_SYSTEM) || !defined(PORT_HAS_GNSS)
+#        define CONFIG_GNSS                                 0
+#    else
+#        define CONFIG_GNSS                                 1
+#    endif
+#endif
+
+/**
+ * GNSS module debug log mask.
+ */
+#ifndef CONFIG_GNSS_DEBUG_LOG_MASK
+#    define CONFIG_GNSS_DEBUG_LOG_MASK                     -1
 #endif
 
 /**
@@ -1092,6 +1172,17 @@
 #endif
 
 /**
+ * Initialize the regular expression module at system startup.
+ */
+#ifndef CONFIG_MODULE_INIT_RE
+#    if defined(CONFIG_MINIMAL_SYSTEM)
+#        define CONFIG_MODULE_INIT_RE                       0
+#    else
+#        define CONFIG_MODULE_INIT_RE                       1
+#    endif
+#endif
+
+/**
  * Debug file system command to list all DS18B20 sensors on the bus.
  */
 #ifndef CONFIG_FS_CMD_DS18B20_LIST
@@ -1244,6 +1335,17 @@
 #        define CONFIG_FS_CMD_I2C_WRITE                     0
 #    else
 #        define CONFIG_FS_CMD_I2C_WRITE                     1
+#    endif
+#endif
+
+/**
+ * Debug file system command to scan a i2c bus.
+ */
+#ifndef CONFIG_FS_CMD_I2C_SCAN
+#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(CONFIG_MINIMAL_SYSTEM)
+#        define CONFIG_FS_CMD_I2C_SCAN                      0
+#    else
+#        define CONFIG_FS_CMD_I2C_SCAN                      1
 #    endif
 #endif
 
@@ -1481,6 +1583,17 @@
 #endif
 
 /**
+ * Debug file system command to print the system reset cause.
+ */
+#ifndef CONFIG_FS_CMD_SYS_RESET_CAUSE
+#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(CONFIG_MINIMAL_SYSTEM)
+#        define CONFIG_FS_CMD_SYS_RESET_CAUSE               0
+#    else
+#        define CONFIG_FS_CMD_SYS_RESET_CAUSE               1
+#    endif
+#endif
+
+/**
  * Debug file system command to list threads' information.
  */
 #ifndef CONFIG_FS_CMD_THRD_LIST
@@ -1620,7 +1733,7 @@
  * the settings generated by the settings.py script.
  */
 #ifndef CONFIG_SETTINGS_AREA_SIZE
-#    if defined(ARCH_PPC)
+#    if defined(ARCH_PPC) || defined(ARCH_LINUX)
 #        define CONFIG_SETTINGS_AREA_SIZE                1028
 #    else
 #        define CONFIG_SETTINGS_AREA_SIZE                 256
@@ -2050,6 +2163,13 @@
 #endif
 
 /**
+ * Regular expression module debug log mask.
+ */
+#ifndef CONFIG_RE_DEBUG_LOG_MASK
+#    define CONFIG_RE_DEBUG_LOG_MASK                       -1
+#endif
+
+/**
  * Each thread has a list of environment variables associated with
  * it. A typical example of an environment variable is "CWD" - Current
  * Working Directory.
@@ -2204,6 +2324,25 @@
 #endif
 
 /**
+ * Size of the harness heap, required for harness_mock_write() and
+ * harness_mock_read().
+ */
+#ifndef CONFIG_HARNESS_HEAP_MAX
+#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO)
+#        define CONFIG_HARNESS_HEAP_MAX                    16
+#    else
+#        define CONFIG_HARNESS_HEAP_MAX                  2048
+#    endif
+#endif
+
+/**
+ * Verbose mock framework.
+ */
+#ifndef CONFIG_HARNESS_MOCK_VERBOSE
+#    define CONFIG_HARNESS_MOCK_VERBOSE                     1
+#endif
+
+/**
  * Size of the HTTP server request buffer. This buffer is used when
  * parsing received HTTP request headers.
  */
@@ -2248,11 +2387,11 @@
 /**
  * System module log mask.
  */
-#ifndef CONFIG_LOG_MASK_SYS
+#ifndef CONFIG_SYS_LOG_MASK
 #    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(CONFIG_MINIMAL_SYSTEM)
-#        define CONFIG_LOG_MASK_SYS                -1
+#        define CONFIG_SYS_LOG_MASK                -1
 #    else
-#        define CONFIG_LOG_MASK_SYS                LOG_UPTO(INFO)
+#        define CONFIG_SYS_LOG_MASK                LOG_UPTO(INFO)
 #    endif
 #endif
 
@@ -2268,6 +2407,23 @@
  */
 #ifndef CONFIG_FLASH_DEVICE_SEMAPHORE
 #    define CONFIG_FLASH_DEVICE_SEMAPHORE                   1
+#endif
+
+/**
+ * Semaphore protected software eeprom accesses.
+ */
+#ifndef CONFIG_EEPROM_SOFT_SEMAPHORE
+#    define CONFIG_EEPROM_SOFT_SEMAPHORE                    1
+#endif
+
+#define CONFIG_EEPROM_SOFT_CRC_32                           0
+#define CONFIG_EEPROM_SOFT_CRC_CCITT                        1
+
+/**
+ * Software eeprom crc algorithm.
+ */
+#ifndef CONFIG_EEPROM_SOFT_CRC
+#    define CONFIG_EEPROM_SOFT_CRC  CONFIG_EEPROM_SOFT_CRC_32
 #endif
 
 /**

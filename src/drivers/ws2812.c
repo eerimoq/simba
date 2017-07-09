@@ -30,6 +30,8 @@
 
 #include "simba.h"
 
+#if CONFIG_WS2812 == 1
+
 #if defined(ARCH_ESP32)
 
 static inline void nop(int number)
@@ -147,3 +149,5 @@ int ws2812_write(struct ws2812_driver_t *self_p,
 
     return (0);
 }
+
+#endif

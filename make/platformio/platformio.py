@@ -83,19 +83,19 @@ SUPPORTED_BOARDS = [
 
 BOARDS = {boards}
 
+
 def add_include_paths(env, paths):
     \"\"\"Add given list of include paths.
 
     \"\"\"
 
+    platform = env.PioPlatform()
     env.Append(CPPPATH=["$PROJECTSRC_DIR"])
+    framework_dir = platform.get_package_dir("framework-simba")
+    assert os.path.isdir(framework_dir)
 
     for path in paths:
-        env.VariantDirWrap(
-            join("$BUILD_DIR", "SimbaFramework", path),
-            join("$PLATFORMFW_DIR", path)
-        )
-        env.Append(CPPPATH=[join("$BUILD_DIR", "SimbaFramework", path)])
+        env.Append(CPPPATH=[join(framework_dir, path)])
 
 
 def set_default_values(env):
@@ -140,7 +140,7 @@ def setup_mcu_esp(env, linker_script, flash_size_map):
             + str(source[0]) + " eagle.app.v6.irom0text.bin",
             shell=True)
         subprocess.check_call(
-            env.subst('$PYTHONEXE $PLATFORMFW_DIR/3pp/ESP8266_RTOS_SDK/tools/gen_appbin.py') + " " + str(source[0]) + " 2 0 0 " + flash_size_map,
+            env.subst('$PYTHONEXE "$PLATFORMFW_DIR/3pp/ESP8266_RTOS_SDK/tools/gen_appbin.py"') + " " + str(source[0]) + " 2 0 0 " + flash_size_map,
             shell=True)
         shutil.copy("eagle.app.flash.bin", str(target[0]))
 
@@ -155,8 +155,8 @@ def setup_mcu_esp(env, linker_script, flash_size_map):
         '--baud 230400',
         '--port $UPLOAD_PORT',
         'write_flash',
-        '0x00000 $PLATFORMFW_DIR/3pp/ESP8266_RTOS_SDK/bin/boot_v1.4.bin',
-        '0x01000 $BUILD_DIR/firmware.bin']))
+        '0x00000 "$PLATFORMFW_DIR/3pp/ESP8266_RTOS_SDK/bin/boot_v1.4.bin"',
+        '0x01000 "$BUILD_DIR/firmware.bin"']))
 
 
 
@@ -351,7 +351,7 @@ linkflags = []
 
 for flag in env["LINKFLAGS"]:
     if flag.startswith("-Wl,-Map="):
-        flag = "-Wl,-Map=$BUILD_DIR/firmware.map"
+        flag = '-Wl,-Map="$BUILD_DIR/firmware.map"'
     linkflags.append(flag)
 env.Replace(LINKFLAGS=linkflags)
 

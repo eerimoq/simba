@@ -220,11 +220,13 @@ static int write_byte(struct i2c_soft_driver_t *self_p,
  * Read a byte from I2C bus.
  */
 static int read_byte(struct i2c_soft_driver_t *self_p,
-                     uint8_t *byte_p)
+                     uint8_t *byte_p,
+                     int ack)
 {
     uint8_t bit;
     int i;
 
+    bit = 0;
     *byte_p = 0;
 
     for (i = 0; i < 8; i++) {
@@ -236,7 +238,7 @@ static int read_byte(struct i2c_soft_driver_t *self_p,
     }
 
     /* Acknowledge that the byte was successfully received. */
-    if (write_bit(self_p, 0) != 0) {
+    if (write_bit(self_p, !ack) != 0) {
         return (-1);
     }
 
@@ -291,6 +293,7 @@ ssize_t i2c_soft_read(struct i2c_soft_driver_t *self_p,
 {
     size_t i;
     uint8_t *b_p;
+    int ack;
 
     b_p = buf_p;
 
@@ -299,7 +302,7 @@ ssize_t i2c_soft_read(struct i2c_soft_driver_t *self_p,
         return (-1);
     }
 
-    /* Write the address iwth the direction bit set to 1. */
+    /* Write the address with the direction bit set to 1. */
     if (write_byte(self_p, ((address << 1) | 0x1)) != 0) {
         stop_cond(self_p);
         return (-1);
@@ -307,7 +310,10 @@ ssize_t i2c_soft_read(struct i2c_soft_driver_t *self_p,
 
     /* Read the data. */
     for (i = 0; i < size; i++) {
-        if (read_byte(self_p, &b_p[i]) != 0) {
+        /* ACK all but last read byte. */
+        ack = (i + 1 != size);
+
+        if (read_byte(self_p, &b_p[i], ack) != 0) {
             stop_cond(self_p);
             return (-1);
         }

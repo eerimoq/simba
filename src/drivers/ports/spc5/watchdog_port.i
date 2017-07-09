@@ -56,13 +56,6 @@ int watchdog_port_start_ms(int timeout,
     SPC5_SWT->SR = 0x0000c520;
     SPC5_SWT->SR = 0x0000d928;
     SPC5_SWT->CR = (SPC5_SWT_CR_MAP_0
-                    | SPC5_SWT_CR_MAP_1
-                    | SPC5_SWT_CR_MAP_2
-                    | SPC5_SWT_CR_MAP_3
-                    | SPC5_SWT_CR_MAP_4
-                    | SPC5_SWT_CR_MAP_5
-                    | SPC5_SWT_CR_MAP_6
-                    | SPC5_SWT_CR_MAP_7
                     | SPC5_SWT_CR_RIA
                     | itr
                     | SPC5_SWT_CR_CSL

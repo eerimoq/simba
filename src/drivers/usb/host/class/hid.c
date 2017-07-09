@@ -30,6 +30,8 @@
 
 #include "simba.h"
 
+#if CONFIG_USB_HOST == 1
+
 /**
  * @return true(1) if the device class is HID, otherwise false(0)
  */
@@ -94,3 +96,5 @@ int usb_host_class_hid_stop(struct usb_host_class_hid_driver_t *self_p)
     return (usb_host_driver_remove(self_p->usb_p,
                                    &self_p->device_driver));
 }
+
+#endif

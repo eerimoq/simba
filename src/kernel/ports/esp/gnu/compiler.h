@@ -44,4 +44,6 @@ typedef const FAR char *far_string_t;
 
 #define PACKED __attribute__((packed))
 
+char *strsep(char **string_pp, const char *delim_p);
+
 #endif
