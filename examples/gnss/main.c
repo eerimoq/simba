@@ -49,21 +49,28 @@ int main()
               9600,
               &uart_rxbuf[0],
               sizeof(uart_rxbuf));
+    chan_control(&uart, CHAN_CONTROL_NON_BLOCKING_READ);
     uart_start(&uart);
     gnss_init(&gnss, &uart);
 
-    /* Read and print GNSS data. */
     timeout.seconds = 1;
     timeout.nanoseconds = 0;
 
     std_printf(OSTR("Waiting for GNSS data...\r\n"));
 
     while (1) {
+        /* Read and decode GNSS sentences. */
         if (chan_poll(&uart, &timeout) != NULL) {
             res = gnss_read(&gnss);
 
+            /* Non-blocking channels returns -EAGAIN when a read would
+               block. */
+            if (res == -EAGAIN) {
+                continue;
+            }
+
             if (res != 0) {
-                std_printf(OSTR("gnss_read() failed with %d: %S.\r\n"),
+                std_printf(OSTR("gnss_read() failed with %d: %S.\r\n\r\n"),
                            res,
                            errno_as_string(res));
             }
@@ -71,7 +78,6 @@ int main()
 
         /* Print GNSS information on standard output. */
         gnss_print(&gnss, sys_get_stdout());
-
         std_printf(OSTR("\r\n"));
     }
 
