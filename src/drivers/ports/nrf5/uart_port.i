@@ -63,6 +63,8 @@ static int uart_port_start(struct uart_driver_t *self_p)
 
 static int uart_port_stop(struct uart_driver_t *self_p)
 {
+    self_p->dev_p->regs_p->TASKS.SUSPEND = 1;
+
     return (0);
 }
 

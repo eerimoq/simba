@@ -3,7 +3,7 @@
  *
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2017, Erik Moqvist
+ * Copyright (c) 2017, Erik Moqvist
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -31,6 +31,7 @@
 #ifndef __BOARD_H__
 #define __BOARD_H__
 
+/* Digital pins. */
 #define pin_p00_dev  pin_device[0]
 #define pin_p01_dev  pin_device[1]
 #define pin_p02_dev  pin_device[2]
@@ -64,8 +65,7 @@
 #define pin_p30_dev  pin_device[30]
 #define pin_p31_dev  pin_device[31]
 
-#define pin_led_dev  pin_p17_dev
-
+/* Analog pins. */
 #define pin_ain0_dev  pin_p02_dev
 #define pin_ain1_dev  pin_p03_dev
 #define pin_ain2_dev  pin_p04_dev
@@ -75,15 +75,20 @@
 #define pin_ain6_dev  pin_p30_dev
 #define pin_ain7_dev  pin_p31_dev
 
+/* Button pins. */
 #define pin_btn1_dev  pin_p13_dev
 #define pin_btn2_dev  pin_p14_dev
 #define pin_btn3_dev  pin_p15_dev
 #define pin_btn4_dev  pin_p16_dev
 
+/* LED pins. */
 #define pin_led1_dev  pin_p17_dev
 #define pin_led2_dev  pin_p18_dev
 #define pin_led3_dev  pin_p19_dev
 #define pin_led4_dev  pin_p20_dev
+
+/* On board LED.*/
+#define pin_led_dev  pin_led1_dev
 
 /**
  * Convert given pin string to the pin number.
