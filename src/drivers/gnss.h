@@ -52,7 +52,6 @@ struct gnss_driver_t {
 #if CONFIG_GNSS_DEBUG_LOG_MASK > -1
     struct log_object_t log;
 #endif
-
 };
 
 /**
