@@ -30,6 +30,8 @@
 
 #include "simba.h"
 
+#define PRINT_AGE_COLUMN                          58
+
 #if CONFIG_GNSS_DEBUG_LOG_MASK > -1
 #    define DLOG(level, msg, ...)                                       \
     log_object_print(&(self_p)->log, LOG_ ## level, OSTR(msg), ##__VA_ARGS__)
@@ -131,6 +133,60 @@ static int read_until_sentence_end(struct gnss_driver_t *self_p)
 }
 
 /**
+ * Process given NMEA GGA sentence.
+ */
+static int process_gga(struct gnss_driver_t *self_p)
+{
+    int res;
+    struct nmea_sentence_gga_t *gga_p;
+    long number_of_satellites;
+    long latitude_degrees;
+    long longitude_degrees;
+    long altitude;
+
+    gga_p = &self_p->nmea.decoded.gga;
+
+    /* Latitude. */
+    res = nmea_decode_position(&gga_p->latitude,
+                               &latitude_degrees);
+
+    if (res != 0) {
+        return (res);
+    }
+
+    /* Longitude. */
+    res = nmea_decode_position(&gga_p->longitude,
+                               &longitude_degrees);
+
+    if (res != 0) {
+        return (res);
+    }
+
+    /* Number of satellites. */
+    if (std_strtolb(gga_p->number_of_tracked_satellites_p,
+                    &number_of_satellites,
+                    10) == NULL) {
+        return (-EPROTO);
+    }
+
+    /* Altitude. */
+    if (std_strtodfp(gga_p->altitude.value_p, &altitude, 3) == NULL) {
+        return (-EPROTO);
+    }
+
+    /* Save parsed data. */
+    self_p->position.latitude_degrees = latitude_degrees;
+    self_p->position.longitude_degrees = longitude_degrees;
+    self_p->position.timestamp_p = &self_p->gga_timestamp;
+    self_p->number_of_satellites = number_of_satellites;
+    self_p->altitude = altitude;
+
+    sys_uptime(&self_p->gga_timestamp);
+
+    return (0);
+}
+
+/**
  * Get the date from given NMEA RMC sentence.
  */
 static int process_rmc_date(struct nmea_sentence_rmc_t *rmc_p,
@@ -210,6 +266,7 @@ static int process_rmc(struct gnss_driver_t *self_p)
     self_p->date = date;
     self_p->position.latitude_degrees = latitude_degrees;
     self_p->position.longitude_degrees = longitude_degrees;
+    self_p->position.timestamp_p = &self_p->rmc_timestamp;
     self_p->speed = NMEA_KNOTS_TO_METERS_PER_SECOND(speed);
 
     sys_uptime(&self_p->rmc_timestamp);
@@ -236,6 +293,10 @@ static int process_sentence(struct gnss_driver_t *self_p)
 
     /* Process the decoded sentence. */
     switch (self_p->nmea.decoded.type) {
+
+    case nmea_sentence_type_gga_t:
+        res = process_gga(self_p);
+        break;
 
     case nmea_sentence_type_rmc_t:
         res = process_rmc(self_p);
@@ -268,7 +329,8 @@ int gnss_init(struct gnss_driver_t *self_p,
 
     self_p->transport_p = transport_p;
     self_p->rmc_timestamp.seconds = -1;
-    self_p->rmc_timestamp.nanoseconds = 0;
+    self_p->gga_timestamp.seconds = -1;
+    self_p->position.timestamp_p = &self_p->rmc_timestamp;
     self_p->nmea.input.size = 0;
 
 #if CONFIG_GNSS_DEBUG_LOG_MASK > -1
@@ -328,7 +390,7 @@ int gnss_get_position(struct gnss_driver_t *self_p,
 {
     int res;
 
-    res = get_data_age(&self_p->rmc_timestamp);
+    res = get_data_age(self_p->position.timestamp_p);
 
     if (res >= 0) {
         *latitude_p = self_p->position.latitude_degrees;
@@ -352,13 +414,44 @@ int gnss_get_speed(struct gnss_driver_t *self_p,
     return (res);
 }
 
+int gnss_get_number_of_satellites(struct gnss_driver_t *self_p,
+                                  int *number_of_satellites_p)
+{
+    int res;
+
+    res = get_data_age(&self_p->gga_timestamp);
+
+    if (res >= 0) {
+        *number_of_satellites_p = self_p->number_of_satellites;
+    }
+
+    return (res);
+}
+
+int gnss_get_altitude(struct gnss_driver_t *self_p,
+                      long *altitude_p)
+{
+    int res;
+
+    res = get_data_age(&self_p->gga_timestamp);
+
+    if (res >= 0) {
+        *altitude_p = self_p->altitude;
+    }
+
+    return (res);
+}
+
 int gnss_print(struct gnss_driver_t *self_p,
                void *chan_p)
 {
+    ssize_t size;
     struct date_t date;
     long latitude;
     long longitude;
     long speed;
+    int number_of_satellites;
+    long altitude;
     int age;
 
     /* Date. */
@@ -366,8 +459,9 @@ int gnss_print(struct gnss_driver_t *self_p,
 
     if (age >= 0) {
         std_fprintf(chan_p,
-                    OSTR("Date:     %02u:%02u:%02u %02u-%02u-%02u "
-                         "            (age: %d seconds)\r\n"),
+                    OSTR("Date:                 "
+                         "%02u:%02u:%02u %02u-%02u-%02u                   "
+                         "(age: %d seconds)\r\n"),
                     date.hour,
                     date.minute,
                     date.second,
@@ -376,23 +470,29 @@ int gnss_print(struct gnss_driver_t *self_p,
                     date.date,
                     age);
     } else {
-        std_fprintf(chan_p, OSTR("Date:     unavailable\r\n"));
+        std_fprintf(chan_p, OSTR("Date:                 unavailable\r\n"));
     }
 
     /* Position. */
     age = gnss_get_position(self_p, &latitude, &longitude);
 
     if (age >= 0) {
-        std_fprintf(chan_p,
-                    OSTR("Position: %ld.%06lu, %ld.%06lu degrees "
-                         "(age: %d seconds)\r\n"),
-                    latitude / 1000000,
-                    abs(latitude) % 1000000,
-                    longitude / 1000000,
-                    abs(longitude) % 1000000,
-                    age);
+        size = std_fprintf(chan_p,
+                           OSTR("Position:             "
+                                "%ld.%06lu, %ld.%06lu degrees"),
+                           latitude / 1000000,
+                           abs(latitude) % 1000000,
+                           longitude / 1000000,
+                           abs(longitude) % 1000000);
+
+        while (size < PRINT_AGE_COLUMN) {
+            std_fprintf(chan_p, OSTR(" "));
+            size++;
+        }
+
+        std_fprintf(chan_p, OSTR("(age: %d seconds)\r\n"), age);
     } else {
-        std_fprintf(chan_p, OSTR("Position: unavailable\r\n"));
+        std_fprintf(chan_p, OSTR("Position:             unavailable\r\n"));
     }
 
     /* Speed. */
@@ -400,13 +500,41 @@ int gnss_print(struct gnss_driver_t *self_p,
 
     if (age >= 0) {
         std_fprintf(chan_p,
-                    OSTR("Speed:    %ld.%03lu m/s                    "
+                    OSTR("Speed:                %ld.%03lu m/s                          "
                          "(age: %d seconds)\r\n"),
                     speed / 1000,
                     speed % 1000,
                     age);
     } else {
-        std_fprintf(chan_p, OSTR("Speed:    unavailable\r\n"));
+        std_fprintf(chan_p, OSTR("Speed:                unavailable\r\n"));
+    }
+
+    /* Number of tracked satellites. */
+    age = gnss_get_number_of_satellites(self_p,
+                                        &number_of_satellites);
+
+    if (age >= 0) {
+        std_fprintf(chan_p,
+                    OSTR("Number of satellites: %-2u                                  "
+                         "(age: %d seconds)\r\n"),
+                    number_of_satellites,
+                    age);
+    } else {
+        std_fprintf(chan_p, OSTR("Number of satellites: unavailable\r\n"));
+    }
+
+    /* Altitude. */
+    age = gnss_get_altitude(self_p, &altitude);
+
+    if (age >= 0) {
+        std_fprintf(chan_p,
+                    OSTR("Altitude:             %ld.%03lu m                           "
+                         "(age: %d seconds)\r\n"),
+                    altitude / 1000,
+                    altitude % 1000,
+                    age);
+    } else {
+        std_fprintf(chan_p, OSTR("Altitude:             unavailable\r\n"));
     }
 
     return (0);

@@ -36,12 +36,16 @@
 struct gnss_driver_t {
     void *transport_p;
     struct time_t rmc_timestamp;
+    struct time_t gga_timestamp;
     struct date_t date;
     struct {
         long latitude_degrees;
         long longitude_degrees;
+        struct time_t *timestamp_p;
     } position;
     long speed;
+    int number_of_satellites;
+    long altitude;
     struct {
         struct {
             char buf[NMEA_SENTENCE_SIZE_MAX];
@@ -126,6 +130,30 @@ int gnss_get_position(struct gnss_driver_t *self_p,
  */
 int gnss_get_speed(struct gnss_driver_t *self_p,
                    long *speed_p);
+
+/**
+ * Get most recently received number of tracked satellites.
+ *
+ * @param[in] self_p Initialized driver object.
+ * @param[out] number_of_satellites_p Current number of tracked
+ *                                    satellites.
+ *
+ * @return Number of tracked satellites age in seconds or negative
+ *         error code.
+ */
+int gnss_get_number_of_satellites(struct gnss_driver_t *self_p,
+                                  int *number_of_satellites_p);
+
+/**
+ * Get most recently received altitude.
+ *
+ * @param[in] self_p Initialized driver object.
+ * @param[out] altitude_p Current altitude in millimeters.
+ *
+ * @return Altitude age in seconds or negative error code.
+ */
+int gnss_get_altitude(struct gnss_driver_t *self_p,
+                      long *altitude_p);
 
 /**
  * Print the driver state as a human readable string to given channel.

@@ -33,7 +33,7 @@
 static struct gnss_driver_t gnss;
 static struct chan_t transport;
 static struct queue_t queue;
-static uint8_t buf[256];
+static uint8_t buf[768];
 
 static int test_init(struct harness_t *harness_p)
 {
@@ -57,6 +57,8 @@ static int test_get_no_data(struct harness_t *harness_p)
     long latitude;
     long longitude;
     long speed;
+    int number_of_satellites;
+    long altitude;
 
     /* Date should be unmodified. */
     date.year = 1200;
@@ -75,6 +77,18 @@ static int test_get_no_data(struct harness_t *harness_p)
     BTASSERTI(gnss_get_speed(&gnss, &speed), ==, -ENODATA);
     BTASSERTI(speed, ==, 654);
 
+    /* Number of satellites. */
+    number_of_satellites = 654;
+    BTASSERTI(gnss_get_number_of_satellites(
+                  &gnss,
+                  &number_of_satellites), ==, -ENODATA);
+    BTASSERTI(number_of_satellites, ==, 654);
+
+    /* Altitude. */
+    altitude = 654;
+    BTASSERTI(gnss_get_altitude(&gnss, &altitude), ==, -ENODATA);
+    BTASSERTI(altitude, ==, 654);
+
     return (0);
 }
 
@@ -82,15 +96,17 @@ static int test_print_no_data(struct harness_t *harness_p)
 {
     BTASSERTI(gnss_print(&gnss, &queue), ==, 0);
     BTASSERTI(harness_expect(&queue,
-                             "Date:     unavailable\r\n"
-                             "Position: unavailable\r\n"
-                             "Speed:    unavailable\r\n",
-                             NULL), ==, 69);
+                             "Date:                 unavailable\r\n"
+                             "Position:             unavailable\r\n"
+                             "Speed:                unavailable\r\n"
+                             "Number of satellites: unavailable\r\n"
+                             "Altitude:             unavailable\r\n",
+                             NULL), ==, 175);
 
     return (0);
 }
 
-static int test_read(struct harness_t *harness_p)
+static int test_read_rmc(struct harness_t *harness_p)
 {
     int i;
     ssize_t res;
@@ -135,10 +151,80 @@ static int test_read(struct harness_t *harness_p)
     BTASSERTI(gnss_print(&gnss, &queue), ==, 0);
     BTASSERTI(harness_expect(
                   &queue,
-                  "Date:     12:35:19 94-03-23             (age: 0 seconds)\r\n"
-                  "Position: 48.117300, -11.516666 degrees (age: 0 seconds)\r\n"
-                  "Speed:    11.523 m/s                    (age: 0 seconds)\r\n",
-                  NULL), ==, 174);
+                  "Date:                 12:35:19 94-03-23                   (age: 0 seconds)\r\n"
+                  "Position:             48.117300, -11.516666 degrees       (age: 0 seconds)\r\n"
+                  "Speed:                11.523 m/s                          (age: 0 seconds)\r\n"
+                  "Number of satellites: unavailable\r\n"
+                  "Altitude:             unavailable\r\n",
+                  NULL), ==, 298);
+
+    return (0);
+}
+
+static int test_read_gga(struct harness_t *harness_p)
+{
+    int i;
+    ssize_t res;
+    char sentence[] =
+        "$GPGGA,123520,4907.038,N,01031.000,E,1,08,0.9,545.4,M,46.9,M,,*4d\r\n";
+    struct date_t date;
+    long latitude;
+    long longitude;
+    long speed;
+    int number_of_satellites;
+    long altitude;
+
+    res = 1;
+
+    for (i = 0; i < strlen(sentence); i++) {
+        harness_mock_write("chan_read(): return (res)", &res, sizeof(res));
+        harness_mock_write("chan_read(): return (buf_p)", &sentence[i], 1);
+    }
+
+    BTASSERTI(gnss_read(&gnss), ==, 0);
+
+    /* Date. */
+    date.year = 1200;
+    BTASSERTI(gnss_get_date(&gnss, &date), >=, 0);
+    BTASSERTI(date.year, ==, 94);
+    BTASSERTI(date.month, ==, 3);
+    BTASSERTI(date.date, ==, 23);
+    BTASSERTI(date.hour, ==, 12);
+    BTASSERTI(date.minute, ==, 35);
+    BTASSERTI(date.second, ==, 19);
+
+    /* Position. */
+    latitude = 23;
+    longitude = 24;
+    BTASSERTI(gnss_get_position(&gnss, &latitude, &longitude), >=, 0);
+    BTASSERTI(latitude, ==, 49000000 + (7038000 / 60));
+    BTASSERTI(longitude, ==, 10000000 + (31000000 / 60));
+
+    /* Speed. */
+    speed = 654;
+    BTASSERTI(gnss_get_speed(&gnss, &speed), >=, 0);
+    BTASSERTI(speed, ==, 11523);
+
+    /* Number of satellites. */
+    number_of_satellites = 654;
+    BTASSERTI(gnss_get_number_of_satellites(&gnss,
+                                            &number_of_satellites), >=, 0);
+    BTASSERTI(number_of_satellites, ==, 8);
+
+    /* Altitude. */
+    altitude = 654;
+    BTASSERTI(gnss_get_altitude(&gnss, &altitude), >=, 0);
+    BTASSERTI(altitude, ==, 545400);
+
+    BTASSERTI(gnss_print(&gnss, &queue), ==, 0);
+    BTASSERTI(harness_expect(
+                  &queue,
+                  "Date:                 12:35:19 94-03-23                   (age: 0 seconds)\r\n"
+                  "Position:             49.117300, 10.516666 degrees        (age: 0 seconds)\r\n"
+                  "Speed:                11.523 m/s                          (age: 0 seconds)\r\n"
+                  "Number of satellites: 8                                   (age: 0 seconds)\r\n"
+                  "Altitude:             545.400 m                           (age: 0 seconds)\r\n",
+                  NULL), ==, 380);
 
     return (0);
 }
@@ -265,7 +351,8 @@ int main()
         { test_init, "test_init" },
         { test_get_no_data, "test_get_no_data" },
         { test_print_no_data, "test_print_no_data" },
-        { test_read, "test_read" },
+        { test_read_rmc, "test_read_rmc" },
+        { test_read_gga, "test_read_gga" },
         { test_read_read_failed, "test_read_read_failed" },
         { test_read_sentence_too_long, "test_read_sentence_too_long" },
         { test_read_start_not_first, "test_read_start_not_first" },
