@@ -292,13 +292,13 @@ static int test_decode_raw(struct harness_t *harness_p)
 {
     size_t size;
     char encoded[] =
-        "$FOO,,,,,,*46\r\n";
+        "$GOO,,,,,,*47\r\n";
     struct nmea_sentence_t decoded;
 
     size = strlen(encoded);
     BTASSERTI(nmea_decode(&decoded, &encoded[0], size), ==, 0);
     BTASSERTI(decoded.type, ==, nmea_sentence_type_raw_t);
-    BTASSERTM(decoded.raw.str_p, "FOO,,,,,,", strlen("FOO,,,,,,") + 1);
+    BTASSERTM(decoded.raw.str_p, "GOO,,,,,,", strlen("GOO,,,,,,") + 1);
 
     return (0);
 }

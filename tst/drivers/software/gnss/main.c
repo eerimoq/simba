@@ -161,12 +161,12 @@ static int test_read_rmc(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_read_gga(struct harness_t *harness_p)
+static int test_read_gga_glonass(struct harness_t *harness_p)
 {
     int i;
     ssize_t res;
     char sentence[] =
-        "$GPGGA,123520,4907.038,N,01031.000,E,1,08,0.9,545.4,M,46.9,M,,*4d\r\n";
+        "$GNGGA,123520,4907.038,N,01031.000,E,1,08,0.9,545.4,M,46.9,M,,*53\r\n";
     struct date_t date;
     long latitude;
     long longitude;
@@ -387,7 +387,7 @@ int main()
         { test_get_no_data, "test_get_no_data" },
         { test_print_no_data, "test_print_no_data" },
         { test_read_rmc, "test_read_rmc" },
-        { test_read_gga, "test_read_gga" },
+        { test_read_gga_glonass, "test_read_gga_glonass" },
         { test_read_read_failed, "test_read_read_failed" },
         { test_read_sentence_too_long, "test_read_sentence_too_long" },
         { test_read_start_not_first, "test_read_start_not_first" },

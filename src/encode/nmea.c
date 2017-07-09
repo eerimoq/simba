@@ -247,8 +247,6 @@ static ssize_t decode_raw(struct nmea_sentence_t *dst_p,
 static ssize_t decode_gga(struct nmea_sentence_t *dst_p,
                           char *src_p)
 {
-    src_p += 6;
-
     /* Set the type. */
     dst_p->type = nmea_sentence_type_gga_t;
 
@@ -283,8 +281,6 @@ static ssize_t decode_gga(struct nmea_sentence_t *dst_p,
 static ssize_t decode_gll(struct nmea_sentence_t *dst_p,
                           char *src_p)
 {
-    src_p += 6;
-
     /* Set the type. */
     dst_p->type = nmea_sentence_type_gll_t;
 
@@ -313,8 +309,6 @@ static ssize_t decode_gsa(struct nmea_sentence_t *dst_p,
                           char *src_p)
 {
     int i;
-
-    src_p += 6;
 
     /* Set the type. */
     dst_p->type = nmea_sentence_type_gsa_t;
@@ -347,8 +341,6 @@ static ssize_t decode_gsv(struct nmea_sentence_t *dst_p,
                           char *src_p)
 {
     int i;
-
-    src_p += 6;
 
     /* Set the type. */
     dst_p->type = nmea_sentence_type_gsv_t;
@@ -385,8 +377,6 @@ static ssize_t decode_gsv(struct nmea_sentence_t *dst_p,
 static ssize_t decode_vtg(struct nmea_sentence_t *dst_p,
                           char *src_p)
 {
-    src_p += 6;
-
     /* Set the type. */
     dst_p->type = nmea_sentence_type_vtg_t;
 
@@ -416,8 +406,6 @@ static ssize_t decode_vtg(struct nmea_sentence_t *dst_p,
 static ssize_t decode_rmc(struct nmea_sentence_t *dst_p,
                           char *src_p)
 {
-    src_p += 6;
-
     /* Set the type. */
     dst_p->type = nmea_sentence_type_rmc_t;
 
@@ -518,6 +506,7 @@ ssize_t nmea_decode(struct nmea_sentence_t *dst_p,
 
     /* Basic validation of the sentence. */
     if ((src_p[0] != '$')
+        || (src_p[1] != 'G')
         || (src_p[size - 5] != '*')
         || (src_p[size - 2] != '\r')
         || (src_p[size - 1] != '\n')
@@ -546,18 +535,18 @@ ssize_t nmea_decode(struct nmea_sentence_t *dst_p,
     size -= 5;
 
     /* Parse the sentence. */
-    if (memcmp(&src_p[1], "GPGGA,", 6) == 0) {
-        res = decode_gga(dst_p, &src_p[1]);
-    } else if (memcmp(&src_p[1], "GPGLL,", 6) == 0) {
-        res = decode_gll(dst_p, &src_p[1]);
-    } else if (memcmp(&src_p[1], "GPGSA,", 6) == 0) {
-        res = decode_gsa(dst_p, &src_p[1]);
-    } else if (memcmp(&src_p[1], "GPGSV,", 6) == 0) {
-        res = decode_gsv(dst_p, &src_p[1]);
-    } else if (memcmp(&src_p[1], "GPRMC,", 6) == 0) {
-        res = decode_rmc(dst_p, &src_p[1]);
-    } else if (memcmp(&src_p[1], "GPVTG,", 6) == 0) {
-        res = decode_vtg(dst_p, &src_p[1]);
+    if (memcmp(&src_p[3], "GGA,", 4) == 0) {
+        res = decode_gga(dst_p, &src_p[7]);
+    } else if (memcmp(&src_p[3], "GLL,", 4) == 0) {
+        res = decode_gll(dst_p, &src_p[7]);
+    } else if (memcmp(&src_p[3], "GSA,", 4) == 0) {
+        res = decode_gsa(dst_p, &src_p[7]);
+    } else if (memcmp(&src_p[3], "GSV,", 4) == 0) {
+        res = decode_gsv(dst_p, &src_p[7]);
+    } else if (memcmp(&src_p[3], "RMC,", 4) == 0) {
+        res = decode_rmc(dst_p, &src_p[7]);
+    } else if (memcmp(&src_p[3], "VTG,", 4) == 0) {
+        res = decode_vtg(dst_p, &src_p[7]);
     } else {
         res = decode_raw(dst_p, &src_p[1], size);
     }
