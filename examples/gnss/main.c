@@ -63,12 +63,14 @@ int main()
         if (chan_poll(&uart, &timeout) != NULL) {
             res = gnss_read(&gnss);
 
-            /* Non-blocking channels returns -EAGAIN when a read would
-               block. */
+            /* -EAGAIN is returned if a sentence was only partly
+                received. The sentence is finalized in subsequent
+                calls to gnss_read(). */
             if (res == -EAGAIN) {
                 continue;
             }
 
+            /* Print errors that occurs. */
             if (res != 0) {
                 std_printf(OSTR("gnss_read() failed with %d: %S.\r\n\r\n"),
                            res,
@@ -76,7 +78,7 @@ int main()
             }
         }
 
-        /* Print GNSS information on standard output. */
+        /* Print current position, date, altitude, etc. */
         gnss_print(&gnss, sys_get_stdout());
         std_printf(OSTR("\r\n"));
     }
