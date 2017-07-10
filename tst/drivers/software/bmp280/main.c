@@ -289,7 +289,7 @@ static int test_i2c_read_status_timeout(struct harness_t *harness_p)
 
 static int test_i2c_stop(struct harness_t *harness_p)
 {
-    BTASSERT(bmp280_stop(&bmp280_i2c) == 0);
+    BTASSERT(bmp280_stop(&bmp280_i2c) == -ENOSYS);
 
     return (0);
 }
@@ -339,9 +339,42 @@ static int test_spi_start(struct harness_t *harness_p)
     return (0);
 }
 
+static int test_spi_read_fixed_point(struct harness_t *harness_p)
+{
+    long temperature;
+    long pressure;
+    uint8_t buf[8];
+    size_t size;
+    ssize_t res;
+
+    /* Temperature and pressure reading. */
+    res = 6;
+    harness_mock_write("spi_read(): return (res)", &res, sizeof(res));
+    harness_mock_write("spi_read(): return (buf_p)",
+                       "\x65\x5a\xc0\x7e\xed\x00",
+                       res);
+
+    BTASSERT(bmp280_read_fixed_point(&bmp280_spi,
+                                     &temperature,
+                                     &pressure) == 0);
+    BTASSERTI(temperature, ==, 25082);
+    BTASSERTI(pressure, ==, 100739);
+
+    /* Read temperature and pressure. */
+    harness_mock_read("spi_write(size)", &size, sizeof(size));
+    BTASSERTI(size, ==, 1);
+    harness_mock_read("spi_write(buf_p)", &buf[0], size);
+    BTASSERTM(&buf[0], "\xf7", size);
+
+    harness_mock_read("spi_read(size)", &size, sizeof(size));
+    BTASSERTI(size, ==, 6);
+
+    return (0);
+}
+
 static int test_spi_stop(struct harness_t *harness_p)
 {
-    BTASSERT(bmp280_stop(&bmp280_spi) == 0);
+    BTASSERT(bmp280_stop(&bmp280_spi) == -ENOSYS);
 
     return (0);
 }
@@ -434,6 +467,7 @@ int main()
         { test_i2c_read_status_timeout, "test_i2c_read_status_timeout" },
         { test_i2c_stop, "test_i2c_stop" },
         { test_spi_start, "test_spi_start" },
+        { test_spi_read_fixed_point, "test_spi_read_fixed_point" },
         { test_spi_stop, "test_spi_stop" },
         { NULL, NULL }
     };

@@ -36,6 +36,7 @@ CDEFS += \
 	CONFIG_MINIMAL_SYSTEM=1 \
 	CONFIG_BMP280=1 \
 	CONFIG_BMP280_COVERTION_TIMEOUT_MS=3 \
+	CONFIG_BMP280_DEBUG_LOG_MASK=LOG_ALL \
 	CONFIG_I2C=1 \
 	CONFIG_SPI=1 \
 	CONFIG_HARNESS_HEAP_MAX=4096 \
@@ -44,6 +45,7 @@ CDEFS += \
 
 STUB = $(SIMBA_ROOT)/src/drivers/bmp280.c:i2c_write,i2c_read,spi_write,spi_read,spi_select,spi_deselect
 
+KERNEL_SRC += errno.c
 DRIVERS_SRC = bmp280.c spi.c i2c.c
 
 include $(SIMBA_ROOT)/make/app.mk

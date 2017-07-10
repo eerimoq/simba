@@ -55,68 +55,87 @@
 #define REG_CONFIG_T_SB(value)               (value << 5)
 #define REG_CONFIG_FILTER(value)             (value << 2)
 
+#if CONFIG_BMP280_DEBUG_LOG_MASK > -1
+#    define DLOG(level, msg, ...)                                       \
+    log_object_print(&(self_p)->log, LOG_ ## level, OSTR(msg), ##__VA_ARGS__)
+#else
+#    define DLOG(level, msg, ...)
+#endif
+
 struct bmp280_transport_protocol_t {
-    int (*read)(void *transport_p,
+    int (*read)(struct bmp280_driver_t *self_p,
                 uint8_t address,
                 uint8_t *buf_p,
                 size_t size);
-    int (*write)(void *transport_p,
+    int (*write)(struct bmp280_driver_t *self_p,
                  uint8_t address,
                  uint8_t data);
 };
 
 #if CONFIG_I2C == 1
 
-static int transport_i2c_read(void *transport_p,
+static int transport_i2c_read(struct bmp280_driver_t *self_p,
                               uint8_t address,
                               uint8_t *buf_p,
                               size_t size)
 {
-    struct bmp280_transport_i2c_t *self_p;
+    struct bmp280_transport_i2c_t *transport_p;
     ssize_t res;
 
-    self_p = transport_p;
+    transport_p = (struct bmp280_transport_i2c_t *)self_p->transport_p;
 
-    res = i2c_write(self_p->i2c_p,
-                    self_p->i2c_address,
+    res = i2c_write(transport_p->i2c_p,
+                    transport_p->i2c_address,
                     &address,
                     sizeof(address));
 
     if (res != sizeof(address)) {
+        DLOG(ERROR,
+             "I2C address write failed with %d: %S.\r\n",
+             res,
+             errno_as_string(res));
         return (-EIO);
     }
 
-    res = i2c_read(self_p->i2c_p,
-                   self_p->i2c_address,
+    res = i2c_read(transport_p->i2c_p,
+                   transport_p->i2c_address,
                    buf_p,
                    size);
 
     if (res != size) {
+        DLOG(ERROR,
+             "I2C read failed with %d: %S.\r\n",
+             res,
+             errno_as_string(res));
         return (-EIO);
     }
 
     return (0);
 }
 
-static int transport_i2c_write(void *transport_p,
+static int transport_i2c_write(struct bmp280_driver_t *self_p,
                                uint8_t address,
                                uint8_t data)
 {
-    struct bmp280_transport_i2c_t *self_p;
+    struct bmp280_transport_i2c_t *transport_p;
     ssize_t res;
     uint8_t buf[2];
 
-    self_p = transport_p;
+    transport_p = (struct bmp280_transport_i2c_t *)self_p->transport_p;
 
     buf[0] = address;
     buf[1] = data;
 
-    res = i2c_write(self_p->i2c_p,
-                    self_p->i2c_address,
+    res = i2c_write(transport_p->i2c_p,
+                    transport_p->i2c_address,
                     &buf[0],
                     sizeof(buf));
 
     if (res != sizeof(buf)) {
+        DLOG(ERROR,
+             "I2C write failed with %d: %S.\r\n",
+             res,
+             errno_as_string(res));
         return (-EIO);
     }
 
@@ -132,57 +151,71 @@ struct bmp280_transport_protocol_t transport_i2c_protocol = {
 
 #if CONFIG_SPI == 1
 
-static int transport_spi_read(void *transport_p,
+static int transport_spi_read(struct bmp280_driver_t *self_p,
                               uint8_t address,
                               uint8_t *buf_p,
                               size_t size)
 {
-    struct bmp280_transport_spi_t *self_p;
+    struct bmp280_transport_spi_t *transport_p;
     ssize_t res;
 
-    self_p = transport_p;
+    transport_p = (struct bmp280_transport_spi_t *)self_p->transport_p;
 
-    spi_select(self_p->spi_p);
-    res = spi_write(self_p->spi_p,
+    spi_select(transport_p->spi_p);
+    res = spi_write(transport_p->spi_p,
                     &address,
                     sizeof(address));
 
-    if (res == sizeof(address)) {
-        res = spi_read(self_p->spi_p,
+    if (res != sizeof(address)) {
+        DLOG(ERROR,
+             "SPI address write failed with %d: %S.\r\n",
+             res,
+             errno_as_string(res));
+        res = -EIO;
+    } else {
+        res = spi_read(transport_p->spi_p,
                        buf_p,
                        size);
-    } else {
-        res = -EIO;
+
+        if (res != size) {
+            DLOG(ERROR,
+                 "SPI read failed with %d: %S.\r\n",
+                 res,
+                 errno_as_string(res));
+            res = -EIO;
+        } else {
+            res = 0;
+        }
     }
 
-    spi_deselect(self_p->spi_p);
+    spi_deselect(transport_p->spi_p);
 
-    if (res != size) {
-        return (-EIO);
-    }
-
-    return (0);
+    return (res);
 }
 
-static int transport_spi_write(void *transport_p,
+static int transport_spi_write(struct bmp280_driver_t *self_p,
                                uint8_t address,
                                uint8_t data)
 {
-    struct bmp280_transport_spi_t *self_p;
+    struct bmp280_transport_spi_t *transport_p;
     ssize_t res;
     uint8_t buf[2];
 
-    self_p = transport_p;
+    transport_p = (struct bmp280_transport_spi_t *)self_p->transport_p;
 
     /* Clear bit 7 for write. */
     buf[0] = (address & 0x7f);
     buf[1] = data;
 
-    spi_select(self_p->spi_p);
-    res = spi_write(self_p->spi_p, &buf[0], sizeof(buf));
-    spi_deselect(self_p->spi_p);
+    spi_select(transport_p->spi_p);
+    res = spi_write(transport_p->spi_p, &buf[0], sizeof(buf));
+    spi_deselect(transport_p->spi_p);
 
     if (res != sizeof(buf)) {
+        DLOG(ERROR,
+             "SPI write failed with %d: %S.\r\n",
+             res,
+             errno_as_string(res));
         return (-EIO);
     }
 
@@ -201,18 +234,18 @@ static int is_normal_mode(struct bmp280_driver_t *self_p)
     return ((self_p->ctrl_meas & 0x3) == bmp280_mode_normal_t);
 }
 
-static int is_convertion_running(struct bmp280_driver_t *self_p)
+static int is_conversion_running(struct bmp280_driver_t *self_p)
 {
     uint8_t status;
     int res;
 
-    res = self_p->transport_p->protocol_p->read(self_p->transport_p,
+    res = self_p->transport_p->protocol_p->read(self_p,
                                                 REG_STATUS,
                                                 &status,
                                                 sizeof(status));
 
     if (res != 0) {
-        return (-EIO);
+        return (res);
     }
 
     return ((status & REG_STATUS_MEASURING) != 0);
@@ -220,7 +253,7 @@ static int is_convertion_running(struct bmp280_driver_t *self_p)
 
 static int write_ctrl_meas(struct bmp280_driver_t *self_p)
 {
-    return (self_p->transport_p->protocol_p->write(self_p->transport_p,
+    return (self_p->transport_p->protocol_p->write(self_p,
                                                    REG_CTRL_MEAS,
                                                    self_p->ctrl_meas));
 }
@@ -241,13 +274,13 @@ static void compensate(struct bmp280_driver_t *self_p,
     uint32_t p;
 
     /* Temperature compensation. */
-    var1 = ((adc_t >> 3) - (self_p->compensation[0] << 1));
-    var1 *= self_p->compensation[1];
+    var1 = ((adc_t >> 3) - (self_p->calibration[0] << 1));
+    var1 *= self_p->calibration[1];
     var1 >>= 11;
-    var2 = ((adc_t >> 4) - (uint16_t)self_p->compensation[0]);
+    var2 = ((adc_t >> 4) - (uint16_t)self_p->calibration[0]);
     var2 *= var2;
     var2 >>= 12;
-    var2 *= self_p->compensation[2];
+    var2 *= self_p->calibration[2];
     var2 >>= 14;
     t_fine = (var1 + var2);
 
@@ -258,14 +291,14 @@ static void compensate(struct bmp280_driver_t *self_p,
     var2 = (var1 >> 2);
     var2 *= var2;
     var2 >>= 11;
-    var2 *= self_p->compensation[8];
-    var2 += ((var1 * self_p->compensation[7]) << 1);
+    var2 *= self_p->calibration[8];
+    var2 += ((var1 * self_p->calibration[7]) << 1);
     var2 >>= 2;
-    var2 += ((int32_t)self_p->compensation[6] << 16);
-    var1 = ((((self_p->compensation[5] * (((var1 >> 2) * (var1 >> 2)) >> 13)) >> 3)
-             + ((self_p->compensation[4] * var1) >> 1)) >> 18);
+    var2 += ((int32_t)self_p->calibration[6] << 16);
+    var1 = ((((self_p->calibration[5] * (((var1 >> 2) * (var1 >> 2)) >> 13)) >> 3)
+             + ((self_p->calibration[4] * var1) >> 1)) >> 18);
     var1 += 32768;
-    var1 *= (uint16_t)self_p->compensation[3];
+    var1 *= (uint16_t)self_p->calibration[3];
     var1 >>= 15;
 
     if (var1 == 0) {
@@ -282,15 +315,19 @@ static void compensate(struct bmp280_driver_t *self_p,
         p = (p / (uint32_t)var1) * 2;
     }
 
-    var1 = ((self_p->compensation[11]
+    var1 = ((self_p->calibration[11]
              * ((int32_t)(((p >> 3) * (p >> 3)) >> 13))) >> 12);
-    var2 = ((((int32_t)(p >> 2)) * ((int32_t)self_p->compensation[10])) >> 13);
+    var2 = ((((int32_t)(p >> 2)) * ((int32_t)self_p->calibration[10])) >> 13);
 
-    *pressure_p = ((int32_t)p + ((var1 + var2 + self_p->compensation[9]) >> 4));
+    *pressure_p = ((int32_t)p + ((var1 + var2 + self_p->calibration[9]) >> 4));
 }
 
 int bmp280_module_init()
 {
+#if CONFIG_BMP280_DEBUG_LOG_MASK > -1
+    log_module_init();
+#endif
+
     return (0);
 }
 
@@ -312,6 +349,10 @@ int bmp280_init(struct bmp280_driver_t *self_p,
     self_p->config = (REG_CONFIG_T_SB(standby_time)
                       | REG_CONFIG_FILTER(filter));
 
+#if CONFIG_BMP280_DEBUG_LOG_MASK > -1
+    log_object_init(&self_p->log, "bmp280", CONFIG_BMP280_DEBUG_LOG_MASK);
+#endif
+
     return (0);
 }
 
@@ -330,15 +371,32 @@ int bmp280_start(struct bmp280_driver_t *self_p)
     }
 
     if (res == 0) {
-        res = self_p->transport_p->protocol_p->read(self_p->transport_p,
+        res = self_p->transport_p->protocol_p->read(self_p,
                                                     REG_CALIBRATION,
                                                     &buf[0],
                                                     sizeof(buf));
 
         /* Endianess. */
-        for (i = 0; i < membersof(self_p->compensation); i++) {
-            self_p->compensation[i] = (((buf[2 * i + 1]) << 8) | buf[2 * i]);
+        for (i = 0; i < membersof(self_p->calibration); i++) {
+            self_p->calibration[i] = (((buf[2 * i + 1]) << 8) | buf[2 * i]);
         }
+
+        DLOG(INFO,
+             "Read device calibration: "
+             "dig_T = [%u, %d, %d], "
+             "dig_P = [%u, %d, %d, %d, %d, %d, %d, %d, %d]\r\n",
+             (uint16_t)self_p->calibration[0],
+             self_p->calibration[1],
+             self_p->calibration[2],
+             (uint16_t)self_p->calibration[3],
+             self_p->calibration[4],
+             self_p->calibration[5],
+             self_p->calibration[6],
+             self_p->calibration[7],
+             self_p->calibration[8],
+             self_p->calibration[9],
+             self_p->calibration[10],
+             self_p->calibration[11]);
     }
 
     return (res);
@@ -348,12 +406,37 @@ int bmp280_stop(struct bmp280_driver_t *self_p)
 {
     ASSERTN(self_p != NULL, EINVAL);
 
-    return (0);
+    return (-ENOSYS);
 }
 
 int bmp280_read(struct bmp280_driver_t *self_p,
                 float *temperature_p,
                 float *pressure_p)
+{
+    ASSERTN(self_p != NULL, EINVAL);
+
+    int res;
+    long temperature;
+    long pressure;
+
+    res = bmp280_read_fixed_point(self_p, &temperature, &pressure);
+
+    if (res == 0) {
+        if (temperature_p != NULL) {
+            *temperature_p = (temperature / 1000.0f);
+        }
+
+        if (pressure_p != NULL) {
+            *pressure_p = (pressure / 1000.0f);
+        }
+    }
+
+    return (res);
+}
+
+int bmp280_read_fixed_point(struct bmp280_driver_t *self_p,
+                            long *temperature_p,
+                            long *pressure_p)
 {
     ASSERTN(self_p != NULL, EINVAL);
 
@@ -376,7 +459,7 @@ int bmp280_read(struct bmp280_driver_t *self_p,
         attempt = 1;
 
         while (1) {
-            res = is_convertion_running(self_p);
+            res = is_conversion_running(self_p);
 
             if (res < 0) {
                 return (res);
@@ -387,6 +470,7 @@ int bmp280_read(struct bmp280_driver_t *self_p,
             }
 
             if (attempt == CONFIG_BMP280_COVERTION_TIMEOUT_MS) {
+                DLOG(WARNING, "Conversion timeout.\r\n");
                 return (-ETIMEDOUT);
             }
 
@@ -396,7 +480,7 @@ int bmp280_read(struct bmp280_driver_t *self_p,
     }
 
     /* Read the pressure and temperature. */
-    res = self_p->transport_p->protocol_p->read(self_p->transport_p,
+    res = self_p->transport_p->protocol_p->read(self_p,
                                                 REG_PRESS_MSB,
                                                 &buf[0],
                                                 sizeof(buf));
@@ -412,11 +496,11 @@ int bmp280_read(struct bmp280_driver_t *self_p,
                    &pressure);
 
         if (temperature_p != NULL) {
-            *temperature_p = (temperature / 1000.0f);
+            *temperature_p = temperature;
         }
 
         if (pressure_p != NULL) {
-            *pressure_p = (pressure / 1000.0f);
+            *pressure_p = pressure;
         }
     }
 

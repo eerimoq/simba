@@ -30,8 +30,6 @@
 
 #include "simba.h"
 
-#define PRINT_AGE_COLUMN                          58
-
 #if CONFIG_GNSS_DEBUG_LOG_MASK > -1
 #    define DLOG(level, msg, ...)                                       \
     log_object_print(&(self_p)->log, LOG_ ## level, OSTR(msg), ##__VA_ARGS__)

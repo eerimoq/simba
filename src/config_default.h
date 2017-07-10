@@ -689,7 +689,7 @@
 #endif
 
 /**
- * GNSS module debug log mask.
+ * GNSS driver debug log mask.
  */
 #ifndef CONFIG_GNSS_DEBUG_LOG_MASK
 #    define CONFIG_GNSS_DEBUG_LOG_MASK                     -1
@@ -711,6 +711,13 @@
  */
 #ifndef CONFIG_BMP280_COVERTION_TIMEOUT_MS
 #    define CONFIG_BMP280_COVERTION_TIMEOUT_MS             50
+#endif
+
+/**
+ * BMP280 driver debug log mask.
+ */
+#ifndef CONFIG_BMP280_DEBUG_LOG_MASK
+#    define CONFIG_BMP280_DEBUG_LOG_MASK                   -1
 #endif
 
 /**

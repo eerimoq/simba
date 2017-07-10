@@ -114,7 +114,10 @@ struct bmp280_driver_t {
     struct bmp280_transport_t *transport_p;
     uint8_t ctrl_meas;
     uint8_t config;
-    int16_t compensation[12];
+    int16_t calibration[12];
+#if CONFIG_BMP280_DEBUG_LOG_MASK > -1
+    struct log_object_t log;
+#endif
 };
 
 struct bmp280_transport_protocol_t;
@@ -204,6 +207,20 @@ int bmp280_stop(struct bmp280_driver_t *self_p);
 int bmp280_read(struct bmp280_driver_t *self_p,
                 float *temperature_p,
                 float *pressure_p);
+
+/**
+ * Read temperature and pressure from the device and return them as
+ * fixed point numbers with three decimal places.
+ *
+ * @param[in] self_p Driver object.
+ * @param[out] temperature_p Temperature in milli-Celsius, or NULL.
+ * @param[out] pressure_p Pressure in milli-Pascal, or NULL.
+ *
+ * @return zero(0) or negative error code.
+ */
+int bmp280_read_fixed_point(struct bmp280_driver_t *self_p,
+                            long *temperature_p,
+                            long *pressure_p);
 
 /**
  * Initialize given I2C transport object.
