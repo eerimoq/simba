@@ -1,0 +1,26 @@
+:mod:`bmp280` --- BMP280 temperature and pressure sensor
+========================================================
+
+.. module:: bmp280
+   :synopsis: BMP280 temperature and pressure sensor.
+
+BMP280 is a temperature and pressure sensor from Bosch Sensortec.
+
+.. image:: ../../images/drivers/MFG_BST-BMP280-DS001-12.jpg
+   :width: 40%
+   :target: ../../_images/MFG_BST-BMP280-DS001-12.jpg
+
+Datasheet: `Datasheet BMP280`_
+
+----------------------------------------------
+
+Source code: :github-blob:`src/drivers/bmp280.h`, :github-blob:`src/drivers/bmp280.c`
+
+Test code: :github-blob:`tst/drivers/software/bmp280/main.c`
+
+----------------------------------------------
+
+.. doxygenfile:: drivers/bmp280.h
+   :project: simba
+
+.. _Datasheet BMP280: https://github.com/eerimoq/hardware-reference/raw/master/Bosch%20Sensortec/BST-BMP280-DS001-11.pdf

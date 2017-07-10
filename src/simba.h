@@ -246,6 +246,9 @@ extern "C" {
 #ifdef PORT_HAS_GNSS
 #    include "drivers/gnss.h"
 #endif
+#ifdef PORT_HAS_BMP280
+#    include "drivers/bmp280.h"
+#endif
 
 #include "inet/isotp.h"
 

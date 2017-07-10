@@ -29,5 +29,6 @@ Source code: :github-blob:`src/drivers/sht3xd.h`,
 
 .. doxygenfile:: drivers/sht3xd.h
    :project: simba
+
 .. _Sensirion SHT3x-D: https://www.sensirion.com/environmental-sensors/humidity-sensors/digital-humidity-sensors-for-various-applications/
 .. _Datasheet SHT3x-DIS: https://www.sensirion.com/fileadmin/user_upload/customers/sensirion/Dokumente/2_Humidity_Sensors/Sensirion_Humidity_Sensors_SHT3x_Datasheet_digital.pdf

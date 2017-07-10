@@ -168,6 +168,10 @@
 #    define PORT_HAS_ANALOG_INPUT_PIN
 #endif
 
+#if defined(PORT_HAS_SPI) || defined(PORT_HAS_I2C)
+#    define PORT_HAS_BMP280
+#endif
+
 /**
  * The system configuration string contains a list of all configration
  * varialbes and their values.
@@ -689,6 +693,24 @@
  */
 #ifndef CONFIG_GNSS_DEBUG_LOG_MASK
 #    define CONFIG_GNSS_DEBUG_LOG_MASK                     -1
+#endif
+
+/**
+ * Enable the bmp280 driver.
+ */
+#ifndef CONFIG_BMP280
+#    if defined(CONFIG_MINIMAL_SYSTEM) || !defined(PORT_HAS_BMP280)
+#        define CONFIG_BMP280                               0
+#    else
+#        define CONFIG_BMP280                               1
+#    endif
+#endif
+
+/**
+ * BMP280 convertion timeout in milliseconds.
+ */
+#ifndef CONFIG_BMP280_COVERTION_TIMEOUT_MS
+#    define CONFIG_BMP280_COVERTION_TIMEOUT_MS             50
 #endif
 
 /**

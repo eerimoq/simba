@@ -104,6 +104,7 @@ DRIVERS_SRC ?= \
 	adc.c \
 	analog_input_pin.c \
 	analog_output_pin.c \
+	bmp280.c \
 	can.c \
 	chipid.c \
 	dac.c \
