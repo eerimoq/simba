@@ -410,30 +410,30 @@ int gnss_get_date(struct gnss_driver_t *self_p,
 }
 
 int gnss_get_position(struct gnss_driver_t *self_p,
-                      long *latitude_p,
-                      long *longitude_p)
+                      float *latitude_p,
+                      float *longitude_p)
 {
     int res;
 
     res = get_data_age(self_p->position.timestamp_p);
 
     if (res >= 0) {
-        *latitude_p = self_p->position.latitude_degrees;
-        *longitude_p = self_p->position.longitude_degrees;
+        *latitude_p = (self_p->position.latitude_degrees / 1000000.0f);
+        *longitude_p = (self_p->position.longitude_degrees / 1000000.0f);
     }
 
     return (res);
 }
 
 int gnss_get_speed(struct gnss_driver_t *self_p,
-                   long *speed_p)
+                   float *speed_p)
 {
     int res;
 
     res = get_data_age(&self_p->rmc_timestamp);
 
     if (res >= 0) {
-        *speed_p = self_p->speed;
+        *speed_p = (self_p->speed / 1000.0f);
     }
 
     return (res);
@@ -454,14 +454,14 @@ int gnss_get_number_of_satellites(struct gnss_driver_t *self_p,
 }
 
 int gnss_get_altitude(struct gnss_driver_t *self_p,
-                      long *altitude_p)
+                      float *altitude_p)
 {
     int res;
 
     res = get_data_age(&self_p->gga_timestamp);
 
     if (res >= 0) {
-        *altitude_p = self_p->altitude;
+        *altitude_p = (self_p->altitude / 1000.0f);
     }
 
     return (res);
@@ -470,14 +470,14 @@ int gnss_get_altitude(struct gnss_driver_t *self_p,
 int gnss_print(struct gnss_driver_t *self_p,
                void *chan_p)
 {
-    ssize_t size;
     struct date_t date;
-    long latitude;
-    long longitude;
-    long speed;
+    float latitude;
+    float longitude;
+    float speed;
     int number_of_satellites;
-    long altitude;
+    float altitude;
     int age;
+    char buf[48];
 
     /* Date. */
     age = gnss_get_date(self_p, &date);
@@ -502,20 +502,15 @@ int gnss_print(struct gnss_driver_t *self_p,
     age = gnss_get_position(self_p, &latitude, &longitude);
 
     if (age >= 0) {
-        size = std_fprintf(chan_p,
-                           OSTR("Position:             "
-                                "%ld.%06lu, %ld.%06lu degrees"),
-                           latitude / 1000000,
-                           abs(latitude) % 1000000,
-                           longitude / 1000000,
-                           abs(longitude) % 1000000);
-
-        while (size < PRINT_AGE_COLUMN) {
-            std_fprintf(chan_p, OSTR(" "));
-            size++;
-        }
-
-        std_fprintf(chan_p, OSTR("(age: %d seconds)\r\n"), age);
+        std_snprintf(&buf[0],
+                     sizeof(buf),
+                     OSTR("%f, %f degrees"),
+                     latitude,
+                     longitude);
+        std_fprintf(chan_p,
+                    OSTR("Position:             %-36s(age: %d seconds)\r\n"),
+                    &buf[0],
+                    age);
     } else {
         std_fprintf(chan_p, OSTR("Position:             unavailable\r\n"));
     }
@@ -524,11 +519,10 @@ int gnss_print(struct gnss_driver_t *self_p,
     age = gnss_get_speed(self_p, &speed);
 
     if (age >= 0) {
+        std_snprintf(&buf[0], sizeof(buf), OSTR("%f m/s"), speed);
         std_fprintf(chan_p,
-                    OSTR("Speed:                %ld.%03lu m/s                          "
-                         "(age: %d seconds)\r\n"),
-                    speed / 1000,
-                    speed % 1000,
+                    OSTR("Speed:                %-36s(age: %d seconds)\r\n"),
+                    &buf[0],
                     age);
     } else {
         std_fprintf(chan_p, OSTR("Speed:                unavailable\r\n"));
@@ -552,11 +546,10 @@ int gnss_print(struct gnss_driver_t *self_p,
     age = gnss_get_altitude(self_p, &altitude);
 
     if (age >= 0) {
+        std_snprintf(&buf[0], sizeof(buf), OSTR("%3f m"), altitude);
         std_fprintf(chan_p,
-                    OSTR("Altitude:             %ld.%03lu m                           "
-                         "(age: %d seconds)\r\n"),
-                    altitude / 1000,
-                    altitude % 1000,
+                    OSTR("Altitude:             %-36s(age: %d seconds)\r\n"),
+                    &buf[0],
                     age);
     } else {
         std_fprintf(chan_p, OSTR("Altitude:             unavailable\r\n"));

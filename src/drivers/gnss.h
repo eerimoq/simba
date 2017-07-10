@@ -127,27 +127,27 @@ int gnss_get_date(struct gnss_driver_t *self_p,
  * Get most recently received position.
  *
  * @param[in] self_p Initialized driver object.
- * @param[out] latitude_p Current latitude in microdegrees. Positive
- *                        number for north, negative south.
- * @param[out] longitude_p Current longitude in microdegrees. Positive
+ * @param[out] latitude_p Current latitude in degrees. Positive number
+ *                        for north, negative south.
+ * @param[out] longitude_p Current longitude in degrees. Positive
  *                         number for east, negative for west.
  *
  * @return Position age in seconds or negative error code.
  */
 int gnss_get_position(struct gnss_driver_t *self_p,
-                      long *latitude_p,
-                      long *longitude_p);
+                      float *latitude_p,
+                      float *longitude_p);
 
 /**
  * Get most recently received speed.
  *
  * @param[in] self_p Initialized driver object.
- * @param[out] speed_p Current speed in millimeters per second.
+ * @param[out] speed_p Current speed in meters per second.
  *
  * @return Speed age in seconds or negative error code.
  */
 int gnss_get_speed(struct gnss_driver_t *self_p,
-                   long *speed_p);
+                   float *speed_p);
 
 /**
  * Get most recently received number of tracked satellites.
@@ -166,12 +166,12 @@ int gnss_get_number_of_satellites(struct gnss_driver_t *self_p,
  * Get most recently received altitude.
  *
  * @param[in] self_p Initialized driver object.
- * @param[out] altitude_p Current altitude in millimeters.
+ * @param[out] altitude_p Current altitude in meters.
  *
  * @return Altitude age in seconds or negative error code.
  */
 int gnss_get_altitude(struct gnss_driver_t *self_p,
-                      long *altitude_p);
+                      float *altitude_p);
 
 /**
  * Print the driver state as a human readable string to given channel.

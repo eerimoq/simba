@@ -54,11 +54,11 @@ static int test_init(struct harness_t *harness_p)
 static int test_get_no_data(struct harness_t *harness_p)
 {
     struct date_t date;
-    long latitude;
-    long longitude;
-    long speed;
+    float latitude;
+    float longitude;
+    float speed;
     int number_of_satellites;
-    long altitude;
+    float altitude;
 
     /* Date should be unmodified. */
     date.year = 1200;
@@ -113,9 +113,9 @@ static int test_read_rmc(struct harness_t *harness_p)
     char sentence[] =
         "$GPRMC,123519,A,4807.038,N,01131.000,W,022.4,084.4,230394,003.1,W*78\r\n";
     struct date_t date;
-    long latitude;
-    long longitude;
-    long speed;
+    float latitude;
+    float longitude;
+    float speed;
 
     res = 1;
 
@@ -140,20 +140,20 @@ static int test_read_rmc(struct harness_t *harness_p)
     latitude = 23;
     longitude = 24;
     BTASSERTI(gnss_get_position(&gnss, &latitude, &longitude), >=, 0);
-    BTASSERTI(latitude, ==, 48000000 + (7038000 / 60));
-    BTASSERTI(longitude, ==, -(11000000 + (31000000 / 60)));
+    BTASSERTI(latitude, ==, 48 + (7.038f / 60));
+    BTASSERTI(longitude, ==, -(11 + (31.0f / 60)));
 
     /* Speed. */
     speed = 654;
     BTASSERTI(gnss_get_speed(&gnss, &speed), >=, 0);
-    BTASSERTI(speed, ==, 11523);
+    BTASSERTI(speed, ==, 11.523f);
 
     BTASSERTI(gnss_print(&gnss, &queue), ==, 0);
     BTASSERTI(harness_expect(
                   &queue,
                   "Date:                 12:35:19 94-03-23                   (age: 0 seconds)\r\n"
-                  "Position:             48.117300, -11.516666 degrees       (age: 0 seconds)\r\n"
-                  "Speed:                11.523 m/s                          (age: 0 seconds)\r\n"
+                  "Position:             48.117298, -11.516666 degrees       (age: 0 seconds)\r\n"
+                  "Speed:                11.522999 m/s                       (age: 0 seconds)\r\n"
                   "Number of satellites: unavailable\r\n"
                   "Altitude:             unavailable\r\n",
                   NULL), ==, 298);
@@ -168,11 +168,11 @@ static int test_read_gga_glonass(struct harness_t *harness_p)
     char sentence[] =
         "$GNGGA,123520,4907.038,N,01031.000,E,1,08,0.9,545.4,M,46.9,M,,*53\r\n";
     struct date_t date;
-    long latitude;
-    long longitude;
-    long speed;
+    float latitude;
+    float longitude;
+    float speed;
     int number_of_satellites;
-    long altitude;
+    float altitude;
 
     res = 1;
 
@@ -197,13 +197,13 @@ static int test_read_gga_glonass(struct harness_t *harness_p)
     latitude = 23;
     longitude = 24;
     BTASSERTI(gnss_get_position(&gnss, &latitude, &longitude), >=, 0);
-    BTASSERTI(latitude, ==, 49000000 + (7038000 / 60));
-    BTASSERTI(longitude, ==, 10000000 + (31000000 / 60));
+    BTASSERTI(latitude, ==, 49 + (7.038f / 60));
+    BTASSERTI(longitude, ==, 10 + (31.0f / 60));
 
     /* Speed. */
     speed = 654;
     BTASSERTI(gnss_get_speed(&gnss, &speed), >=, 0);
-    BTASSERTI(speed, ==, 11523);
+    BTASSERTI(speed, ==, 11.523f);
 
     /* Number of satellites. */
     number_of_satellites = 654;
@@ -214,16 +214,16 @@ static int test_read_gga_glonass(struct harness_t *harness_p)
     /* Altitude. */
     altitude = 654;
     BTASSERTI(gnss_get_altitude(&gnss, &altitude), >=, 0);
-    BTASSERTI(altitude, ==, 545400);
+    BTASSERTI(altitude, ==, 545.4f);
 
     BTASSERTI(gnss_print(&gnss, &queue), ==, 0);
     BTASSERTI(harness_expect(
                   &queue,
                   "Date:                 12:35:19 94-03-23                   (age: 0 seconds)\r\n"
-                  "Position:             49.117300, 10.516666 degrees        (age: 0 seconds)\r\n"
-                  "Speed:                11.523 m/s                          (age: 0 seconds)\r\n"
+                  "Position:             49.117298, 10.516666 degrees        (age: 0 seconds)\r\n"
+                  "Speed:                11.522999 m/s                       (age: 0 seconds)\r\n"
                   "Number of satellites: 8                                   (age: 0 seconds)\r\n"
-                  "Altitude:             545.400 m                           (age: 0 seconds)\r\n",
+                  "Altitude:             545.400024 m                        (age: 0 seconds)\r\n",
                   NULL), ==, 380);
 
     return (0);
