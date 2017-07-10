@@ -249,6 +249,9 @@ extern "C" {
 #ifdef PORT_HAS_BMP280
 #    include "drivers/bmp280.h"
 #endif
+#ifdef PORT_HAS_DHT
+#    include "drivers/dht.h"
+#endif
 
 #include "inet/isotp.h"
 

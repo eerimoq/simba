@@ -39,6 +39,7 @@
 #define PORT_HAS_XBEE
 #define PORT_HAS_HX711
 #define PORT_HAS_GNSS
+#define PORT_HAS_DHT
 
 /**
  * Used to include driver header files and the c-file source.
@@ -718,6 +719,17 @@
  */
 #ifndef CONFIG_BMP280_DEBUG_LOG_MASK
 #    define CONFIG_BMP280_DEBUG_LOG_MASK                   -1
+#endif
+
+/**
+ * Enable the dht driver.
+ */
+#ifndef CONFIG_DHT
+#    if defined(CONFIG_MINIMAL_SYSTEM) || !defined(PORT_HAS_DHT)
+#        define CONFIG_DHT                                  0
+#    else
+#        define CONFIG_DHT                                  1
+#    endif
 #endif
 
 /**

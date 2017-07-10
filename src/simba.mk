@@ -108,6 +108,7 @@ DRIVERS_SRC ?= \
 	can.c \
 	chipid.c \
 	dac.c \
+	dht.c \
 	ds18b20.c \
 	ds3231.c \
 	eeprom_i2c.c \
