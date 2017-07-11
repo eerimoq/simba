@@ -128,9 +128,9 @@ int time_micros()
     return (time_port_micros());
 }
 
-int time_micros_maximum()
+int time_micros_elapsed(int start, int stop)
 {
-    return (time_port_micros_maximum());
+    return (time_port_micros_elapsed(start, stop));
 }
 
 int time_micros_resolution()
@@ -138,7 +138,7 @@ int time_micros_resolution()
     return (time_port_micros_resolution());
 }
 
-int time_micros_elapsed(int start, int stop)
+int time_micros_maximum()
 {
-    return (time_port_micros_elapsed(start, stop));
+    return (time_port_micros_maximum());
 }

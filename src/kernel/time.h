@@ -139,7 +139,7 @@ void time_busy_wait_us(long useconds);
 
 /**
  * Get current time in microseconds. Use `time_micros_resolution()`
- * and `time_micros_max()` to get its properties, and
+ * and `time_micros_maximum()` to get its properties, and
  * `time_micros_elapsed()` to calculate the elapsed time between two
  * times.
  *
@@ -149,28 +149,6 @@ void time_busy_wait_us(long useconds);
  * @return Current time in microseconds.
  */
 int time_micros(void);
-
-/**
- * Get micros maximum value plus one. Often the system tick period.
- *
- * This function may be called from interrupt context and with the
- * system lock taken.
- *
- * @return Maximum value plus one in microseconds or negative error
- *         code. Returns -ENOSYS if the the micro functionality is
- *         unimplemented on this board.
- */
-int time_micros_maximum(void);
-
-/**
- * Get micros resolution in microseconds, rounded up.
- *
- * This function may be called from interrupt context and with the
- * system lock taken.
- *
- * @return Resolution in microseconds or negative error code.
- */
-int time_micros_resolution(void);
 
 /**
  * Calculate the elapsed time from start to stop. The caller must
@@ -183,5 +161,27 @@ int time_micros_resolution(void);
  * @return The elapsed time from start to stop.
  */
 int time_micros_elapsed(int start, int stop);
+
+/**
+ * Get micros resolution in microseconds, rounded up.
+ *
+ * This function may be called from interrupt context and with the
+ * system lock taken.
+ *
+ * @return Resolution in microseconds or negative error code.
+ */
+int time_micros_resolution(void);
+
+/**
+ * Get micros maximum value plus one, often the system tick period.
+ *
+ * This function may be called from interrupt context and with the
+ * system lock taken.
+ *
+ * @return Maximum value plus one in microseconds or negative error
+ *         code. Returns -ENOSYS if the the micro functionality is
+ *         unimplemented on this board.
+ */
+int time_micros_maximum(void);
 
 #endif
