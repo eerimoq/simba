@@ -7,12 +7,12 @@
 This module implements wall clock time, date and low overhead
 microsecond timing functions.
 
-The ``time_micros*()`` functions are intended for bit banging drivers,
-requiring precise microsecond timing with very low overhead. The
-microsecond counter wraps quite frequently, and it's recommended to
-only measure very short time periods. The maximum time that can be
-measured is port specific, and can be read at runtime with
-``time_micros_maximum()``.
+The ``time_micros*()`` and ``time_busy_wait_us()`` functions are
+intended for bit banging drivers, requiring precise microsecond timing
+with very low overhead. The internal microsecond counter wraps around
+quite frequently, and it's recommended to only measure very short time
+periods. The maximum time that can be measured is port specific, and
+can be read at runtime with ``time_micros_maximum()``.
 
 ----------------------------------------------
 
