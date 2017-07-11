@@ -36,9 +36,9 @@
 #define RISING                                      1
 
 /* Time definitions. */
-#define TIMEOUT_NS                                  100000
-#define MINIMUM_RESPONSE_LOW_NS                     50000
-#define MINIMUM_RESPONSE_HIGH_NS                    60000
+#define TIMEOUT_US                                  100
+#define MINIMUM_RESPONSE_LOW_US                     50
+#define MINIMUM_RESPONSE_HIGH_US                    60
 
 /* Data definitions. */
 #define DATA_SIZE                                   5
@@ -71,28 +71,29 @@ static int is_valid(uint8_t *buf_p)
  *
  * @return Wait time in nanoseconds, or negative error code.
  */
-static long wait_for_edge(struct dht_driver_t *self_p,
-                          int target_level)
+static int wait_for_edge(struct dht_driver_t *self_p,
+                         int target_level)
 {
-    struct time_t start;
-    struct time_t stop;
+    int start;
+    int stop;
+    int elapsed;
 
-    sys_uptime_isr(&start);
+    start = time_micros();
 
     while (1) {
-        sys_uptime_isr(&stop);
-        time_subtract(&stop, &stop, &start);
+        stop = time_micros();
+        elapsed = time_micros_elapsed(start, stop);
 
         if (pin_device_read(self_p->pin_p) == target_level) {
             break;
         }
 
-        if (stop.nanoseconds > TIMEOUT_NS) {
+        if (elapsed > TIMEOUT_US) {
             return (-ETIMEDOUT);
         }
     }
 
-    return (stop.nanoseconds);
+    return (elapsed);
 }
 
 /**
@@ -103,7 +104,7 @@ static long wait_for_edge(struct dht_driver_t *self_p,
 static int read_bit(struct dht_driver_t *self_p,
                     int *value_p)
 {
-    long res;
+    int res;
 
     res = wait_for_edge(self_p, RISING);
 
@@ -117,7 +118,7 @@ static int read_bit(struct dht_driver_t *self_p,
         return (res);
     }
 
-    *value_p = (res > 50000);
+    *value_p = (res > 50);
 
     return (0);
 }
@@ -143,14 +144,14 @@ static int read_isr(struct dht_driver_t *self_p, uint8_t *buf_p)
 
     res = wait_for_edge(self_p, RISING);
 
-    if (res < MINIMUM_RESPONSE_LOW_NS) {
-        return (res);
+    if (res < MINIMUM_RESPONSE_LOW_US) {
+        return (res >= 0 ? -EPROTO : res);
     }
 
     res = wait_for_edge(self_p, FALLING);
 
-    if (res < MINIMUM_RESPONSE_HIGH_NS) {
-        return (res);
+    if (res < MINIMUM_RESPONSE_HIGH_US) {
+        return (res >= 0 ? -EPROTO : res);
     }
 
     /* Read temperature, humidty and parity. */
@@ -170,12 +171,19 @@ static int read_isr(struct dht_driver_t *self_p, uint8_t *buf_p)
 
 int dht_module_init()
 {
-    return (0);
+    FATAL_ASSERT(time_micros_maximum() > TIMEOUT_US);
+
+    return (pin_module_init());
 }
 
 int dht_init(struct dht_driver_t *self_p,
              struct pin_device_t *pin_p)
 {
+    ASSERTN(self_p != NULL, EINVAL);
+    ASSERTN(pin_p != NULL, EINVAL);
+
+    self_p->pin_p = pin_p;
+
     pin_device_set_mode(self_p->pin_p, PIN_OUTPUT);
     pin_device_write_high(self_p->pin_p);
 

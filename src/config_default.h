@@ -39,7 +39,6 @@
 #define PORT_HAS_XBEE
 #define PORT_HAS_HX711
 #define PORT_HAS_GNSS
-#define PORT_HAS_DHT
 
 /**
  * Used to include driver header files and the c-file source.
@@ -77,6 +76,7 @@
 #        define PORT_HAS_USB_DEVICE
 #    endif
 #    define PORT_HAS_WATCHDOG
+#    define PORT_HAS_DHT
 #endif
 
 #if defined(FAMILY_SAM)

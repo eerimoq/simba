@@ -39,10 +39,14 @@ int main()
 
     sys_start();
 
+    dht_module_init();
+
     /* Initialize the DHT driver. */
     dht_init(&dht, &pin_d2_dev);
 
     while (1) {
+        thrd_sleep(2.5);
+
         /* Read temperature and humidty from the device. */
         res = dht_read(&dht, &temperature, &humidty);
 
@@ -59,8 +63,6 @@ int main()
                         "\r\n"),
                    temperature,
                    humidty);
-
-        thrd_sleep(2.5);
     }
 
     return (0);
