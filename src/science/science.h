@@ -35,7 +35,6 @@
 
 #define SCIENCE_SEA_LEVEL_STANDARD_PRESSURE            101325
 
-
 /**
  * Initialize the science module. This function must be called before
  * calling any other function in this module.

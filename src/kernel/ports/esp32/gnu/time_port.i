@@ -51,8 +51,3 @@ static int time_port_micros_resolution(void)
 {
     return (-ENOSYS);
 }
-
-static int time_port_micros_elapsed(int start, int stop)
-{
-    return (-ENOSYS);
-}

@@ -130,7 +130,11 @@ int time_micros()
 
 int time_micros_elapsed(int start, int stop)
 {
-    return (time_port_micros_elapsed(start, stop));
+    if (stop >= start) {
+        return (stop - start);
+    } else {
+        return (time_port_micros_maximum() - (start - stop));
+    }
 }
 
 int time_micros_resolution()

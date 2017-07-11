@@ -52,12 +52,3 @@ static int time_port_micros_resolution(void)
 {
     return (DIV_CEIL(CPU_CYCLES_PER_TIMER_TICK, (F_CPU / 1000000)));
 }
-
-static int time_port_micros_elapsed(int start, int stop)
-{
-    if (stop >= start) {
-        return (stop - start);
-    } else {
-        return (time_port_micros_maximum() - (start - stop));
-    }
-}
