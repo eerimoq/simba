@@ -39,9 +39,11 @@ int main()
 
     sys_start();
 
+    /* Initialize the DHT driver. */
     dht_init(&dht, &pin_d2_dev);
 
     while (1) {
+        /* Read temperature and humidty from the device. */
         res = dht_read(&dht, &temperature, &humidty);
 
         if (res != 0) {
@@ -51,11 +53,14 @@ int main()
             continue;
         }
 
+        /* Print the read temperature and humidty. */
         std_printf(OSTR("Temperature: %f C\r\n"
                         "Humidty:     %f %%RH\r\n"
                         "\r\n"),
                    temperature,
                    humidty);
+
+        thrd_sleep(2.5);
     }
 
     return (0);

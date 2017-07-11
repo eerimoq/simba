@@ -68,6 +68,10 @@ int dht_init(struct dht_driver_t *self_p,
 /**
  * Read temperature and humidity from the device.
  *
+ * CAUTION: This function disables interrupts for up to 5 ms, which
+ *          may cause problems for other timing critical
+ *          functionality.
+ *
  * @param[in] self_p Driver object.
  * @param[out] temperature_p Temperature in degrees Celsius, or NULL.
  * @param[out] humidity_p Humidity in relative humidty %RH, or NULL.

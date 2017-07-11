@@ -32,21 +32,45 @@
 
 #if CONFIG_DHT == 1
 
-#define FALLING 0
-#define RISING  1
-#define TIMEOUT 100000L
+#define FALLING                                     0
+#define RISING                                      1
 
+/* Time definitions. */
+#define TIMEOUT_NS                                  100000
+#define MINIMUM_RESPONSE_LOW_NS                     50000
+#define MINIMUM_RESPONSE_HIGH_NS                    60000
+
+/* Data definitions. */
+#define DATA_SIZE                                   5
+
+#define HUMID_MSB_INDEX                             0
+#define HUMID_LSB_INDEX                             1
+#define TEMP_MSB_INDEX                              2
+#define TEMP_LSB_INDEX                              3
+#define PARITY_INDEX                                4
+
+/**
+ * Check if given buffer contains valid data.
+ */
 static int is_valid(uint8_t *buf_p)
 {
     uint8_t actual_parity;
     uint8_t expected_parity;
 
-    actual_parity = (buf_p[0] + buf_p[1] + buf_p[2] + buf_p[3]);
-    expected_parity = buf_p[4];
+    actual_parity = (buf_p[HUMID_MSB_INDEX]
+                     + buf_p[HUMID_LSB_INDEX]
+                     + buf_p[TEMP_MSB_INDEX]
+                     + buf_p[TEMP_LSB_INDEX]);
+    expected_parity = buf_p[PARITY_INDEX];
 
     return (actual_parity == expected_parity);
 }
 
+/**
+ * Wait for a rising or falling edge.
+ *
+ * @return Wait time in nanoseconds, or negative error code.
+ */
 static long wait_for_edge(struct dht_driver_t *self_p,
                           int target_level)
 {
@@ -63,7 +87,7 @@ static long wait_for_edge(struct dht_driver_t *self_p,
             break;
         }
 
-        if (stop.nanoseconds > TIMEOUT) {
+        if (stop.nanoseconds > TIMEOUT_NS) {
             return (-ETIMEDOUT);
         }
     }
@@ -71,6 +95,11 @@ static long wait_for_edge(struct dht_driver_t *self_p,
     return (stop.nanoseconds);
 }
 
+/**
+ * Read a bit from the device.
+ *
+ * @return zero(0) or negative error code.
+ */
 static int read_bit(struct dht_driver_t *self_p,
                     int *value_p)
 {
@@ -88,9 +117,55 @@ static int read_bit(struct dht_driver_t *self_p,
         return (res);
     }
 
-    *value_p = (res > 50);
+    *value_p = (res > 50000);
 
     return (0);
+}
+
+/**
+ * Read data from the device by setting the start signal high, wait
+ * for the response and then read all 40 bits.
+ *
+ * @return zero(0), positive number on failure, or negative error code.
+ */
+static int read_isr(struct dht_driver_t *self_p, uint8_t *buf_p)
+{
+    int i;
+    int res;
+    int value;
+
+    pin_device_write_high(self_p->pin_p);
+    time_busy_wait_us(20);
+    pin_device_set_mode(self_p->pin_p, PIN_INPUT);
+
+    /* Wait for the response signal. */
+    time_busy_wait_us(10);
+
+    res = wait_for_edge(self_p, RISING);
+
+    if (res < MINIMUM_RESPONSE_LOW_NS) {
+        return (res);
+    }
+
+    res = wait_for_edge(self_p, FALLING);
+
+    if (res < MINIMUM_RESPONSE_HIGH_NS) {
+        return (res);
+    }
+
+    /* Read temperature, humidty and parity. */
+    for (i = DATA_SIZE * 8 - 1; i >= 0; i--) {
+        res = read_bit(self_p, &value);
+
+        if (res != 0) {
+            break;
+        }
+
+        buf_p[i / 8] |= value;
+        buf_p[i / 8] <<= 1;
+    }
+
+    return (res);
 }
 
 int dht_module_init()
@@ -112,71 +187,46 @@ int dht_read(struct dht_driver_t *self_p,
              float *humidty_p)
 {
     int res;
-    int i;
-    int value;
     int negative;
-    uint8_t buf[5];
+    uint8_t buf[DATA_SIZE];
 
     memset(&buf[0], 0, sizeof(buf));
-    value = 0;
 
-    /* Send start signal. */
+    /* Device communication. Start start signal by setting the pin
+       low. */
     pin_device_write_low(self_p->pin_p);
     thrd_sleep_ms(1);
 
     sys_lock();
-
-    pin_device_write_high(self_p->pin_p);
-    time_busy_wait_us(20);
-    pin_device_set_mode(self_p->pin_p, PIN_INPUT);
-
-    /* Wait for the response signal. */
-    time_busy_wait_us(10);
-
-    res = wait_for_edge(self_p, RISING);
-
-    if (res > 50) {
-        res = wait_for_edge(self_p, FALLING);
-
-        if (res > 60) {
-            /* Read the 40 bits of data. */
-            for (i = 39; i >= 0; i--) {
-                res = read_bit(self_p, &value);
-
-                if (res != 0) {
-                    break;
-                }
-
-                buf[i / 8] |= value;
-                buf[i / 8] <<= 1;
-            }
-        }
-    }
-
+    res = read_isr(self_p, &buf[0]);
     sys_unlock();
 
     pin_device_set_mode(self_p->pin_p, PIN_OUTPUT);
     pin_device_write_high(self_p->pin_p);
 
-    if (res == 0) {
-        /* Check the parity bits. */
-        if (is_valid(&buf[0])) {
-            negative = (buf[2] >> 7);
-            buf[2] &= 0x7f;
-            *temperature_p = ((buf[2] << 8)| buf[3]) / 10.0f;
-
-            if (negative == 1) {
-                *temperature_p *= -1.0f;
-            }
-
-            *humidty_p = (((buf[0] << 8)| buf[1]) / 10.0f);
-            res = 0;
-        } else {
-            res = -EPROTO;
-        }
+    if (res != 0) {
+        return (res < 0 ? res : -EPROTO);
     }
 
-    return (res);
+    /* Check the parity bits. */
+    if (!is_valid(&buf[0])) {
+        return (-EPROTO);
+    }
+
+    /* Temperature and humidty unpacking and convertion. */
+    negative = (buf[TEMP_MSB_INDEX] >> 7);
+    buf[TEMP_MSB_INDEX] &= 0x7f;
+    *temperature_p = ((buf[TEMP_MSB_INDEX] << 8) | buf[TEMP_LSB_INDEX]);
+    *temperature_p /= 10.0f;
+
+    if (negative == 1) {
+        *temperature_p *= -1.0f;
+    }
+
+    *humidty_p = ((buf[HUMID_MSB_INDEX] << 8) | buf[HUMID_LSB_INDEX]);
+    *humidty_p /= 10.0f;
+
+    return (0);
 }
 
 #endif
