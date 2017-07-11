@@ -36,33 +36,33 @@ struct test_time_t {
     struct time_t time_out;
 };
 
-static void on_fatal(int error)
+void on_fatal(int error)
 {
     std_printf(FSTR("on_fatal: error: %d\r\n"), error);
 }
 
-static int call_assert(void)
+int call_assert(void)
 {
     ASSERT(0 == 1, "intentional fatal assert");
 
     return (0);
 }
 
-static int test_set_on_fatal_callback(struct harness_t *harness_p)
+int test_set_on_fatal_callback(struct harness_t *harness_p)
 {
     sys_set_on_fatal_callback(on_fatal);
 
     return (0);
 }
 
-static int test_non_fatal_assert(struct harness_t *harness_p)
+int test_non_fatal_assert(struct harness_t *harness_p)
 {
     BTASSERT(call_assert() == -EASSERT);
 
     return (0);
 }
 
-static int test_info(struct harness_t *harness_p)
+int test_info(struct harness_t *harness_p)
 {
     std_printf(sys_get_info());
 
@@ -78,7 +78,7 @@ static int test_info(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_config(struct harness_t *harness_p)
+int test_config(struct harness_t *harness_p)
 {
     std_printf(sys_get_config());
 
@@ -94,13 +94,13 @@ static int test_config(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_uptime(struct harness_t *harness_p)
+int test_uptime(struct harness_t *harness_p)
 {
     int res;
     struct time_t uptime;
 
     BTASSERT(sys_uptime(&uptime) == 0);
-    std_printf(OSTR("seconds: %d, nanosecons: %d\r\n"),
+    std_printf(OSTR("seconds: %ld, nanosecons: %ld\r\n"),
                uptime.seconds,
                uptime.nanoseconds);
 
@@ -108,7 +108,7 @@ static int test_uptime(struct harness_t *harness_p)
     res = sys_uptime_isr(&uptime);
     sys_unlock();
 
-    std_printf(OSTR("seconds: %d, nanosecons: %d\r\n"),
+    std_printf(OSTR("seconds: %ld, nanosecons: %ld\r\n"),
                uptime.seconds,
                uptime.nanoseconds);
 
@@ -126,7 +126,40 @@ static int test_uptime(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_time(struct harness_t *harness_p)
+int test_repeated_uptime(struct harness_t *harness_p)
+{
+    struct time_t uptime[150];
+    struct time_t diff;
+    int i;
+    int backwards;
+    int failed;
+
+    for (i = 0; i < membersof(uptime); i++) {
+        BTASSERT(sys_uptime(&uptime[i]) == 0);
+    }
+
+    failed = 0;
+
+    for (i = 1; i < membersof(uptime); i++) {
+        time_subtract(&diff, &uptime[i], &uptime[i - 1]);
+        backwards = ((diff.seconds < 0) || (diff.nanoseconds < 0));
+
+        if (backwards == 1) {
+            failed = -1;
+        }
+
+        std_printf(OSTR("seconds: %ld, nanoseconds: %ld%s\r\n"),
+                   uptime[i].seconds,
+                   uptime[i].nanoseconds,
+                   (backwards ? " !" : ""));
+    }
+
+    BTASSERTI(failed, ==, 0);
+
+    return (0);
+}
+
+int test_time(struct harness_t *harness_p)
 {
     int i;
     struct time_t time;
@@ -194,7 +227,7 @@ static int test_time(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_stdin(struct harness_t *harness_p)
+int test_stdin(struct harness_t *harness_p)
 {
     void *original_stdin_p;
     void *stdin_p;
@@ -214,7 +247,7 @@ static int test_stdin(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_stdout(struct harness_t *harness_p)
+int test_stdout(struct harness_t *harness_p)
 {
     void *original_stdout_p;
     void *stdout_p;
@@ -234,7 +267,7 @@ static int test_stdout(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_backtrace(struct harness_t *harness_p)
+int test_backtrace(struct harness_t *harness_p)
 {
 #if defined(ARCH_PPC)
 
@@ -263,7 +296,7 @@ static int test_backtrace(struct harness_t *harness_p)
 #endif
 }
 
-static int test_div_ceil(struct harness_t *harness_p)
+int test_div_ceil(struct harness_t *harness_p)
 {
     BTASSERT(DIV_CEIL(0, 1) == 0);
     BTASSERT(DIV_CEIL(11, 5) == 3);
@@ -272,7 +305,7 @@ static int test_div_ceil(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_div_round(struct harness_t *harness_p)
+int test_div_round(struct harness_t *harness_p)
 {
     BTASSERT(DIV_ROUND(11, 1) == 11);
     BTASSERT(DIV_ROUND(11, 2) == 6);
@@ -289,7 +322,7 @@ static int test_div_round(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_reset_cause(struct harness_t *harness_p)
+int test_reset_cause(struct harness_t *harness_p)
 {
     char buf[32];
     enum sys_reset_cause_t reset_cause;
@@ -311,10 +344,8 @@ static int test_reset_cause(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_errno(struct harness_t *harness_p)
+int test_errno(struct harness_t *harness_p)
 {
-#if !defined(BOARD_ARDUINO_NANO) && !defined(BOARD_ARDUINO_PRO_MICRO)
-
     BTASSERT(std_strcmp("Operation not permitted",
                         errno_as_string(EPERM)) == 0);
     BTASSERT(std_strcmp("Key was rejected by service",
@@ -332,12 +363,6 @@ static int test_errno(struct harness_t *harness_p)
     BTASSERT(errno_as_string(ENOCOMMAND + 1) == NULL);
 
     return (0);
-
-#else
-
-    return (1);
-
-#endif
 }
 
 int main()
@@ -349,14 +374,19 @@ int main()
         { test_info, "test_info" },
         { test_config, "test_config" },
         { test_uptime, "test_uptime" },
+#if !defined(BOARD_ARDUINO_NANO) && !defined(BOARD_ARDUINO_UNO) && !defined(BOARD_ARDUINO_PRO_MICRO)
+        { test_repeated_uptime, "test_repeated_uptime" },
         { test_time, "test_time" },
+#endif
         { test_stdin, "test_stdin" },
         { test_stdout, "test_stdout" },
         { test_backtrace, "test_backtrace" },
         { test_div_ceil, "test_div_ceil" },
         { test_div_round, "test_div_round" },
         { test_reset_cause, "test_reset_cause" },
+#if !defined(BOARD_ARDUINO_NANO) && !defined(BOARD_ARDUINO_UNO) && !defined(BOARD_ARDUINO_PRO_MICRO)
         { test_errno, "test_errno" },
+#endif
         { NULL, NULL }
     };
 

@@ -44,7 +44,7 @@ static void *suspend_resume_main(void *arg_p)
     return (NULL);
 }
 
-static int test_init(struct harness_t *harness_p)
+int test_init(struct harness_t *harness_p)
 {
     /* This function may be called multiple times. */
     BTASSERT(thrd_module_init() == 0);
@@ -53,7 +53,7 @@ static int test_init(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_suspend_resume(struct harness_t *harness_p)
+int test_suspend_resume(struct harness_t *harness_p)
 {
     int err;
     struct thrd_t *thrd_p;
@@ -74,14 +74,14 @@ static int test_suspend_resume(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_yield(struct harness_t *harness_p)
+int test_yield(struct harness_t *harness_p)
 {
     BTASSERT(thrd_yield() == 0);
 
     return (0);
 }
 
-static int test_sleep(struct harness_t *harness_p)
+int test_sleep(struct harness_t *harness_p)
 {
     BTASSERT(thrd_sleep(0.001) == 0);
     BTASSERT(thrd_sleep_ms(1) == 0);
@@ -90,7 +90,7 @@ static int test_sleep(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_priority(struct harness_t *harness_p)
+int test_priority(struct harness_t *harness_p)
 {
     BTASSERT(thrd_get_prio() == 0);
     BTASSERT(thrd_set_prio(thrd_self(), 1) == 0);
@@ -99,7 +99,7 @@ static int test_priority(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_log_mask(struct harness_t *harness_p)
+int test_log_mask(struct harness_t *harness_p)
 {
     char command[64];
 
@@ -127,11 +127,9 @@ static int test_log_mask(struct harness_t *harness_p)
     return (0);
 }
 
-#if CONFIG_PREEMPTIVE_SCHEDULER == 1
-
 static THRD_STACK(preemptive_stack, 256);
 
-static void *preemptive_main(void *arg_p)
+void *preemptive_main(void *arg_p)
 {
     thrd_set_name("preemptive");
 
@@ -140,7 +138,7 @@ static void *preemptive_main(void *arg_p)
     return (NULL);
 }
 
-static int test_preemptive(struct harness_t *harness_p)
+int test_preemptive(struct harness_t *harness_p)
 {
     struct time_t timeout;
     struct time_t start, stop, duration;
@@ -171,19 +169,8 @@ static int test_preemptive(struct harness_t *harness_p)
     return (0);
 }
 
-#else
-
-static int test_preemptive(struct harness_t *harness_p)
+int test_env(struct harness_t *harness_p)
 {
-    return (1);
-}
-
-#endif
-
-static int test_env(struct harness_t *harness_p)
-{
-#if CONFIG_THRD_ENV == 1
-
     struct thrd_environment_variable_t global_variables[2];
     struct thrd_environment_variable_t variables[4];
 
@@ -260,15 +247,9 @@ static int test_env(struct harness_t *harness_p)
     BTASSERT(thrd_init_global_env(NULL, 0) == 0);
 
     return (0);
-
-#else
-
-    return (1);
-
-#endif
 }
 
-static int test_get_by_name(struct harness_t *harness_p)
+int test_get_by_name(struct harness_t *harness_p)
 {
     BTASSERT(thrd_get_by_name("main") == thrd_self());
     BTASSERT(thrd_get_by_name("none") == NULL);
@@ -276,7 +257,7 @@ static int test_get_by_name(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_stack_top_bottom(struct harness_t *harness_p)
+int test_stack_top_bottom(struct harness_t *harness_p)
 {
     const void *top_p;
     const void *bottom_p;
@@ -301,9 +282,8 @@ static int test_stack_top_bottom(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_monitor_thread(struct harness_t *harness_p)
+int test_monitor_thread(struct harness_t *harness_p)
 {
-#if CONFIG_MONITOR_THREAD == 1
     char command[64];
 
     /* Missing print value. */
@@ -344,12 +324,9 @@ static int test_monitor_thread(struct harness_t *harness_p)
     BTASSERT(fs_call(command, NULL, chan_null(), NULL) == -EINVAL);
 
     return (0);
-#else
-    return (1);
-#endif
 }
 
-static int test_stack_heap(struct harness_t *harness_p)
+int test_stack_heap(struct harness_t *harness_p)
 {
     BTASSERT(thrd_stack_alloc(1) == NULL);
     BTASSERT(thrd_stack_free(NULL) == -1);
@@ -357,7 +334,7 @@ static int test_stack_heap(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_prio_list(struct harness_t *harness_p)
+int test_prio_list(struct harness_t *harness_p)
 {
     struct thrd_prio_list_t list;
     struct thrd_prio_list_elem_t elems[2];
@@ -380,18 +357,28 @@ int main()
     struct harness_t harness;
     struct harness_testcase_t harness_testcases[] = {
         { test_init, "test_init" },
+#if !defined(BOARD_ARDUINO_NANO) && !defined(BOARD_ARDUINO_UNO) && !defined(BOARD_ARDUINO_PRO_MICRO)
         { test_suspend_resume, "test_suspend_resume" },
+#endif
         { test_yield, "test_yield" },
         { test_sleep, "test_sleep" },
         { test_priority, "test_priority" },
+#if !defined(BOARD_ARDUINO_NANO) && !defined(BOARD_ARDUINO_UNO) && !defined(BOARD_ARDUINO_PRO_MICRO)
         { test_log_mask, "test_log_mask" },
+#    if CONFIG_PREEMPTIVE_SCHEDULER == 1
         { test_preemptive, "test_preemptive" },
+#    endif
+#    if CONFIG_THRD_ENV == 1
         { test_env, "test_env" },
+#    endif
         { test_get_by_name, "test_get_by_name" },
         { test_stack_top_bottom, "test_stack_top_bottom" },
+#    if CONFIG_MONITOR_THREAD == 1
         { test_monitor_thread, "test_monitor_thread" },
+#    endif
         { test_stack_heap, "test_stack_heap" },
         { test_prio_list, "test_prio_list" },
+#endif
         { NULL, NULL }
     };
 

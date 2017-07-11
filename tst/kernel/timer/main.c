@@ -42,7 +42,7 @@ static void callback(void *arg_p)
     event_write_isr(&event, &mask, sizeof(mask));
 }
 
-static int test_single_shot(struct harness_t *harness_p)
+int test_single_shot(struct harness_t *harness_p)
 {
     uint32_t mask;
     uint32_t callback_mask;
@@ -71,7 +71,7 @@ static int test_single_shot(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_periodic(struct harness_t *harness_p)
+int test_periodic(struct harness_t *harness_p)
 {
     int i;
     uint32_t mask;
@@ -112,7 +112,7 @@ static int test_periodic(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_multiple_timers(struct harness_t *harness_p)
+int test_multiple_timers(struct harness_t *harness_p)
 {
     int i;
     int j;
@@ -183,7 +183,9 @@ int main()
     struct harness_testcase_t harness_testcases[] = {
         { test_single_shot, "test_single_shot" },
         { test_periodic, "test_periodic" },
+#if !defined(BOARD_ARDUINO_NANO) && !defined(BOARD_ARDUINO_UNO) && !defined(BOARD_ARDUINO_PRO_MICRO)
         { test_multiple_timers, "test_multiple_timers" },
+#endif
         { NULL, NULL }
     };
 
