@@ -124,6 +124,16 @@
     }
 
 /**
+ * Assert that given value is in given range. Print an error message
+ * and return.
+ */
+#define BTASSERT_IN_RANGE(value, low, high)     \
+    do {                                        \
+        BTASSERT(value >= low);                 \
+        BTASSERT(value <= high);                \
+    } while (0)
+
+/**
  * Stub given function. Used with the make variable STUB to preprocess
  * object file(s).
  */

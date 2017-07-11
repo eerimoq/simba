@@ -103,6 +103,8 @@ ifeq ($(BOARD), linux)
 	gnss \
 	hx711 \
 	xbee)
+    TESTS += $(addprefix tst/science/, \
+	science)
 endif
 
 ifeq ($(BOARD), arduino_due)

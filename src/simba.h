@@ -52,6 +52,7 @@ extern "C" {
 #include <cstring>
 #include <cstddef>
 #include <cstdint>
+#include <math.h>
 
 #undef time_t
 
@@ -64,6 +65,7 @@ extern "C" {
 #include <stdint.h>
 #include <sys/types.h>
 #include <ctype.h>
+#include <math.h>
 
 #endif
 
@@ -289,6 +291,8 @@ extern "C" {
 #    include "oam/upgrade/http.h"
 #    include "oam/upgrade/tftp.h"
 #endif
+
+#include "science/science.h"
 
 #include <simba_gen.h>
 

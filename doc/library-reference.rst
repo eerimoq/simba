@@ -27,5 +27,6 @@ and their implementatins are available on :github-tree:`Github <src>`.
    library-reference/encode
    library-reference/hash
    library-reference/multimedia
+   library-reference/science
    library-reference/boards
    library-reference/mcus

@@ -45,6 +45,7 @@ ifeq ($(TYPE),suite)
   SPIFFS_SRC +=
   SYNC_SRC += chan.c queue.c rwlock.c sem.c
   TEXT_SRC += std.c
+  SCIENCE_SRC +=
 
   ifeq ($(FAMILY),$(filter $(FAMILY), sam stm32f1 stm32f2 stm32f3))
     ifneq ($(filter crc.c, $(HASH_SRC)), crc.c)
@@ -415,3 +416,9 @@ ifneq ($(ARCH),$(filter $(ARCH), avr))
 endif
 
 SRC += $(TEXT_SRC:%=$(SIMBA_ROOT)/src/text/%)
+
+# Science package.
+SCIENCE_SRC ?= \
+	science.c
+
+SRC += $(SCIENCE_SRC:%=$(SIMBA_ROOT)/src/science/%)
