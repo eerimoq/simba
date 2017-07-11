@@ -36,7 +36,7 @@ struct test_date_t {
     struct date_t date;
 };
 
-static int test_get_set(struct harness_t *harness)
+static int test_get_set(struct harness_t *harness_p)
 {
     struct time_t time1;
     struct time_t time2;
@@ -48,7 +48,7 @@ static int test_get_set(struct harness_t *harness)
                time1.seconds, time1.nanoseconds);
 
     /* Wait a while and verify that the time has changed. */
-    thrd_sleep_us(100000);
+    thrd_sleep_ms(100);
     BTASSERT(time_get(&time2) == 0);
 
     std_printf(FSTR("time2: seconds = %lu, nanoseconds = %lu\r\n"),
@@ -71,7 +71,7 @@ static int test_get_set(struct harness_t *harness)
                time1.seconds, time1.nanoseconds);
 
     /* Wait a while and verify that the time has changed. */
-    thrd_sleep_us(100000);
+    thrd_sleep_ms(100);
     BTASSERT(time_get(&time2) == 0);
 
     std_printf(FSTR("time2: seconds = %lu, nanoseconds = %lu\r\n"),
@@ -83,7 +83,7 @@ static int test_get_set(struct harness_t *harness)
     return (0);
 }
 
-static int test_date(struct harness_t *harness)
+static int test_date(struct harness_t *harness_p)
 {
     int i;
     struct date_t date;
@@ -128,46 +128,56 @@ static int test_date(struct harness_t *harness)
     return (0);
 }
 
-static int test_sleep(struct harness_t *harness)
+static int test_sleep(struct harness_t *harness_p)
 {
-    struct time_t start, stop, diff;
+    uint16_t start, stop, diff;
     int i;
 
     long times[] = {
         1,
         10,
+        20,
+        30,
+        40,
+        50,
+        60,
+        70,
+        80,
+        90,
         100,
+        200,
+        300,
+        400,
+        500,
         1000,
+        2000,
+        5000,
         10000,
         100000,
-        1000000, /* 1 second. */
-        2000000, /* 2 seconds. */
+        1000000 /* 1 second. */
     };
 
     for (i = 0; i < membersof(times); i++) {
         std_printf(FSTR("busy-wait for %ld microseconds\r\n"), times[i]);
 
-        BTASSERT(time_get(&start) == 0);
+        start = time_micros();
         time_busy_wait_us(times[i]);
-        BTASSERT(time_get(&stop) == 0);
+        stop = time_micros();
 
-        time_subtract(&diff, &stop, &start);
+        diff = (stop - start);
 
-        std_printf(FSTR("  start: seconds = %ld, microseconds = %ld\r\n"
-                        "  stop: seconds = %ld, microseconds = %ld\r\n"
-                        "  diff: seconds = %ld, microseconds = %ld\r\n"),
-                   start.seconds,
-                   start.nanoseconds / 1000,
-                   stop.seconds,
-                   stop.nanoseconds / 1000,
-                   diff.seconds,
-                   diff.nanoseconds / 1000);
+        std_printf(FSTR("  start: %u microseconds\r\n"
+                        "  stop:  %u microseconds\r\n"
+                        "  diff:  %u microseconds\r\n"),
+                   start,
+                   stop,
+                   diff);
     }
 
     return (0);
 }
 
-static int test_add(struct harness_t *harness)
+static int test_add(struct harness_t *harness_p)
 {
     struct time_t *left_p, *right_p, res;
     float fleft, fright, fres;
@@ -215,7 +225,7 @@ static int test_add(struct harness_t *harness)
     return (0);
 }
 
-static int test_subtract(struct harness_t *harness)
+static int test_subtract(struct harness_t *harness_p)
 {
     struct time_t *left_p, *right_p, res;
     float fleft, fright, fres;
@@ -263,6 +273,43 @@ static int test_subtract(struct harness_t *harness)
     return (0);
 }
 
+static int test_micros(struct harness_t *harness_p)
+{
+    int i;
+    int times[100];
+
+    std_printf(OSTR("Max:        %d\r\n"), time_micros_maximum());
+    std_printf(OSTR("Resolution: %d\r\n"), time_micros_resolution());
+
+    /* Skip the test for unsupported boards. */
+    if (time_micros_maximum() == -ENOSYS ) {
+        return (1);
+    }
+
+    BTASSERTI(time_micros_resolution(), >, 0);
+
+    sys_lock();
+
+    for (i = 0; i < membersof(times); i++) {
+        times[i] = time_micros();
+        time_busy_wait_us(10);
+    }
+
+    sys_unlock();
+
+    for (i = 0; i < membersof(times); i++) {
+        std_printf(OSTR("[%d]: micros: %d, elapsed: %d)\r\n"),
+                   i,
+                   times[i],
+                   time_micros_elapsed(times[0], times[i]));
+        BTASSERTI(times[i], >=, 0);
+        BTASSERTI(times[i], <, time_micros_maximum());
+        BTASSERTI(time_micros_elapsed(times[0], times[i]), >=, 0);
+    }
+
+    return (0);
+}
+
 int main()
 {
     struct harness_t harness;
@@ -272,6 +319,7 @@ int main()
         { test_sleep, "test_sleep" },
         { test_add, "test_add" },
         { test_subtract, "test_subtract" },
+        { test_micros, "test_micros" },
         { NULL, NULL }
     };
 

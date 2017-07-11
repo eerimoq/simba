@@ -28,6 +28,7 @@
  * This file is part of the Simba project.
  */
 
+#include "types_port.h"
 #include <util/delay_basic.h>
 
 #define I_CPU (F_CPU / 1000000L)
@@ -35,4 +36,28 @@
 static void time_port_busy_wait_us(long microseconds)
 {
     _delay_loop_2((microseconds * I_CPU) / 4);
+}
+
+static int time_port_micros(void)
+{
+    return ((CPU_CYCLES_PER_TIMER_TICK * TCNT1) / (F_CPU / 1000000ul));
+}
+
+static int time_port_micros_maximum(void)
+{
+    return (CPU_CYCLES_PER_SYS_TICK / (F_CPU / 1000000));
+}
+
+static int time_port_micros_resolution(void)
+{
+    return (DIV_CEIL(CPU_CYCLES_PER_TIMER_TICK, (F_CPU / 1000000)));
+}
+
+static int time_port_micros_elapsed(int start, int stop)
+{
+    if (stop >= start) {
+        return (stop - start);
+    } else {
+        return (time_port_micros_maximum() - (start - stop));
+    }
 }

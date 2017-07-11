@@ -31,33 +31,7 @@
 #include <avr/interrupt.h>
 #include <avr/eeprom.h>
 #include <avr/wdt.h>
-
-/**
- * Calculate system tick timer configuration parameters from cpu
- * frequency and desired system tick frequency. Select closest match
- * above desired system tick frequency.
- */
-#define CPU_CYCLES_PER_SYS_TICK (F_CPU / CONFIG_SYSTEM_TICK_FREQUENCY)
-#if (CPU_CYCLES_PER_SYS_TICK == 0)
-#    error "CONFIG_SYSTEM_TICK_FREQUENCY is too high."
-#elif (CPU_CYCLES_PER_SYS_TICK < 256)
-#    define CLOCK_SELECT _BV(CS00)
-#    define TCNT0_MAX (CPU_CYCLES_PER_SYS_TICK - 1)
-#elif (CPU_CYCLES_PER_SYS_TICK < (8 * 256))
-#    define CLOCK_SELECT _BV(CS01)
-#    define TCNT0_MAX (DIV_CEIL(CPU_CYCLES_PER_SYS_TICK, 8) - 1)
-#elif (CPU_CYCLES_PER_SYS_TICK < (64 * 256))
-#    define CLOCK_SELECT (_BV(CS01) | _BV(CS00))
-#    define TCNT0_MAX (DIV_CEIL(CPU_CYCLES_PER_SYS_TICK, 64) - 1)
-#elif (CPU_CYCLES_PER_SYS_TICK < (256 * 256))
-#    define CLOCK_SELECT _BV(CS02)
-#    define TCNT0_MAX (DIV_CEIL(CPU_CYCLES_PER_SYS_TICK, 256) - 1)
-#elif (CPU_CYCLES_PER_SYS_TICK < (1024 * 256))
-#    define CLOCK_SELECT (_BV(CS02) | _BV(CS00))
-#    define TCNT0_MAX (DIV_CEIL(CPU_CYCLES_PER_SYS_TICK, 1024) - 1)
-#else
-#    error "CONFIG_SYSTEM_TICK_FREQUENCY is too low."
-#endif
+#include "types_port.h"
 
 #if CONFIG_START_CONSOLE_DEVICE_INDEX == 0
 #    define CONSOLE_UCSRNA                             UCSR0A
@@ -75,7 +49,7 @@
 #    error "Bad console UART index."
 #endif
 
-ISR(TIMER0_COMPA_vect)
+ISR(TIMER1_COMPA_vect)
 {
     sys_tick_isr();
 }
@@ -83,12 +57,12 @@ ISR(TIMER0_COMPA_vect)
 static int sys_port_module_init(void)
 {
     /* Start periodic system tick timer. An interrupt is generated
-       when TCNT0 matches OCR0A. CTC timer mode is used. */
-    TCCR0A = _BV(WGM01);
-    TCCR0B = CLOCK_SELECT;
-    TCNT0 = 0;
-    OCR0A = TCNT0_MAX;
-    TIMSK0 = _BV(OCIE0A);
+       when TCNT1 matches OCR1A. CTC timer mode is used. */
+    TCCR1A = 0;
+    TCCR1B = (_BV(WGM12) | CLOCK_SELECT);
+    TCNT1 = 0;
+    OCR1A = TCNT1_MAX;
+    TIMSK1 = _BV(OCIE1A);
 
     /* Enable interrupts. */
     asm volatile ("sei");
@@ -115,7 +89,7 @@ static void sys_port_panic_putc(char c)
 #if !defined(BOARD_ARDUINO_PRO_MICRO)
     /* Wait for the transmission buffer to be empty. */
     while ((CONSOLE_UCSRNA & _BV(UDRE0)) == 0);
-    
+
     CONSOLE_UDRN = c;
 #endif
 }
@@ -136,9 +110,18 @@ static int sys_port_backtrace(void **buf_pp, size_t size)
     return (0);
 }
 
-static int sys_port_get_time_into_tick()
+static long sys_port_get_time_into_tick()
 {
-    return (0);
+    long cpu_cycles;
+
+    cpu_cycles = (CPU_CYCLES_PER_TIMER_TICK * (uint32_t)TCNT1);
+
+    /* Interrupt pending? */
+    if (TIFR1 & _BV(OCF1A)) {
+        cpu_cycles += CPU_CYCLES_PER_SYS_TICK;
+    }
+
+    return (1000ul * (cpu_cycles / (F_CPU / 1000000ul)));
 }
 
 static void sys_port_lock(void)

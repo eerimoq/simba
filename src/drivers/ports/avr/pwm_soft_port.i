@@ -47,19 +47,19 @@ static int frequency_to_hw_config(long frequency,
     if (cpu_cycles_per_sys_tick == 0) {
         return (-1);
     } else if (cpu_cycles_per_sys_tick < 65536L) {
-        *clock_select_p = _BV(CS10);
+        *clock_select_p = _BV(CS30);
         *duty_cycle_max_p = (cpu_cycles_per_sys_tick - 1);
     } else if (cpu_cycles_per_sys_tick < (8L * 65536L)) {
-        *clock_select_p = _BV(CS11);
+        *clock_select_p = _BV(CS31);
         *duty_cycle_max_p = (DIV_CEIL(cpu_cycles_per_sys_tick, 8) - 1);
     } else if (cpu_cycles_per_sys_tick < (64L * 65536L)) {
-        *clock_select_p = (_BV(CS11) | _BV(CS10));
+        *clock_select_p = (_BV(CS31) | _BV(CS30));
         *duty_cycle_max_p = (DIV_CEIL(cpu_cycles_per_sys_tick, 64) - 1);
     } else if (cpu_cycles_per_sys_tick < (256L * 65536L)) {
-        *clock_select_p = _BV(CS12);
+        *clock_select_p = _BV(CS32);
         *duty_cycle_max_p = (DIV_CEIL(cpu_cycles_per_sys_tick, 256) - 1);
     } else if (cpu_cycles_per_sys_tick < (1024L * 65536L)) {
-        *clock_select_p = (_BV(CS12) | _BV(CS10));
+        *clock_select_p = (_BV(CS32) | _BV(CS30));
         *duty_cycle_max_p = (DIV_CEIL(cpu_cycles_per_sys_tick, 1024) - 1);
     } else {
         return (-1);
@@ -71,20 +71,20 @@ static int frequency_to_hw_config(long frequency,
 static void reset_timer_isr(uint16_t count)
 {
     /* Stop the timer to ensure that no compare match is missed. */
-    TCCR1B = 0;
+    TCCR3B = 0;
 
     /* Configure the timer. */
-    TCNT1 = 0;
-    OCR1A = count;
+    TCNT3 = 0;
+    OCR3A = count;
 
     /* Start the timer. */
-    TCCR1B = module.port.clock_select;
+    TCCR3B = module.port.clock_select;
 }
 
 /**
  * Hardware timer interrput handler.
  */
-ISR(TIMER1_COMPA_vect)
+ISR(TIMER3_COMPA_vect)
 {
     PWM_SOFT_ISR_PROLOGUE;
     reset_timer_isr(elem_p->delta);
@@ -102,9 +102,9 @@ static int pwm_soft_port_module_init(long frequency)
     module.tail_pwm_soft.delta = DUTY_CYCLE_MAX;
 
     /* Enable the timer interrput. */
-    TCCR1A = 0;
+    TCCR3A = 0;
     reset_timer_isr(module.tail_pwm_soft.delta);
-    TIMSK1 = _BV(OCIE1A);
+    TIMSK3 = _BV(OCIE3A);
 
     return (0);
 }

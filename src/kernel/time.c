@@ -29,7 +29,6 @@
  */
 
 #include "simba.h"
-
 #include "time_port.i"
 
 struct module_t {
@@ -115,11 +114,31 @@ int time_subtract(struct time_t *res_p,
     return (0);
 }
 
+#if CONFIG_TIME_UNIX_TIME_TO_DATE == 1
+#    include "time/unix_time_to_date.i"
+#endif
+
 void time_busy_wait_us(long microseconds)
 {
     time_port_busy_wait_us(microseconds);
 }
 
-#if CONFIG_TIME_UNIX_TIME_TO_DATE == 1
-#    include "time/unix_time_to_date.i"
-#endif
+int time_micros()
+{
+    return (time_port_micros());
+}
+
+int time_micros_maximum()
+{
+    return (time_port_micros_maximum());
+}
+
+int time_micros_resolution()
+{
+    return (time_port_micros_resolution());
+}
+
+int time_micros_elapsed(int start, int stop)
+{
+    return (time_port_micros_elapsed(start, stop));
+}

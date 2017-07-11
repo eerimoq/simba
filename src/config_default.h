@@ -66,7 +66,9 @@
 #    define PORT_HAS_MCP2515
 #    define PORT_HAS_NRF24L01
 #    define PORT_HAS_PWM
-#    define PORT_HAS_PWM_SOFT
+#    if !defined(BOARD_ARDUINO_NANO) && !defined(BOARD_ARDUINO_UNO) && !defined(BOARD_ARDUINO_PRO_MICRO)
+#        define PORT_HAS_PWM_SOFT
+#    endif
 #    define PORT_HAS_SD
 #    define PORT_HAS_SPI
 #    define PORT_HAS_UART_SOFT

@@ -47,3 +47,23 @@ static void time_port_busy_wait_us(long microseconds)
                  "bne    L_%=_time_port_busy_wait_us" "\n"
                  : "+r" (iterations) : );
 }
+
+static int time_port_micros(void)
+{
+    return (-ENOSYS);
+}
+
+static int time_port_micros_maximum(void)
+{
+    return (-ENOSYS);
+}
+
+static int time_port_micros_resolution(void)
+{
+    return (-ENOSYS);
+}
+
+static int time_port_micros_elapsed(int start, int stop)
+{
+    return (-ENOSYS);
+}
