@@ -201,7 +201,7 @@ int ds18b20_read(struct ds18b20_driver_t *self_p,
     int temperature;
     int res;
 
-    res = ds18b20_get_temperature(self_p, id_p, &temperature);
+    res = ds18b20_read_fixed_point(self_p, id_p, &temperature);
     
     if (res != 0) {
         return (res);

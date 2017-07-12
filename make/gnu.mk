@@ -46,7 +46,8 @@ CFLAGS += \
 	-Wall \
 	-funsigned-bitfields \
 	-std=gnu99 \
-	-Wno-error=unused-variable
+	-Wno-error=unused-variable \
+	-Wno-error=deprecated-declarations
 
 CXXFLAGS += \
 	-c \

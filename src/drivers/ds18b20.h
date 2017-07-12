@@ -130,6 +130,7 @@ char *ds18b20_read_string(struct ds18b20_driver_t *self_p,
  *
  * @return zero(0) or negative error code.
  */
+__attribute__ ((deprecated))
 int ds18b20_get_temperature(struct ds18b20_driver_t *self_p,
                             const uint8_t *id_p,
                             int *temperature_p);
@@ -143,6 +144,7 @@ int ds18b20_get_temperature(struct ds18b20_driver_t *self_p,
  *
  * @return ``temperature_p`` on success, NULL otherwise.
  */
+__attribute__ ((deprecated))
 char *ds18b20_get_temperature_str(struct ds18b20_driver_t *self_p,
                                   const uint8_t *id_p,
                                   char *temperature_p);
