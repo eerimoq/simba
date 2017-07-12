@@ -66,8 +66,7 @@ int ds18b20_init(struct ds18b20_driver_t *self_p,
 
 /**
  * Start a temperature convertion on all sensors. The converted
- * temperature can later be read with `ds18b20_temperature()` or
- * `ds18b20_get_temperature()`.
+ * temperature can later be read with ``ds18b20_read*()``.
  *
  * @param[in] self_p Initialized driver object.
  *
