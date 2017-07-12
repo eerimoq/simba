@@ -118,7 +118,7 @@ int time_subtract(struct time_t *res_p,
 #    include "time/unix_time_to_date.i"
 #endif
 
-void time_busy_wait_us(long microseconds)
+void time_busy_wait_us(int microseconds)
 {
     time_port_busy_wait_us(microseconds);
 }

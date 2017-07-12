@@ -135,7 +135,7 @@ int time_unix_time_to_date(struct date_t *date_p,
  *
  * @return void
  */
-void time_busy_wait_us(long useconds);
+void time_busy_wait_us(int microseconds);
 
 /**
  * Get current time in microseconds. Use `time_micros_resolution()`
