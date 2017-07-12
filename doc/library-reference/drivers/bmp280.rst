@@ -28,10 +28,11 @@ device.
    struct bmp280_transport_i2c_t transport;
    float temperature;
    float pressure;
+   float altitude;
 
    /* Initialize and start a I2C driver. */
    i2c_init(&i2c, &i2c_device[0], I2C_BAUDRATE_100KBPS, -1);
-   i2c_start(&i2c)
+   i2c_start(&i2c);
 
    /* Initialize the BMP280 I2C transport layer. */
    bmp280_transport_i2c_init(&transport,
@@ -52,16 +53,25 @@ device.
    /* Read temperature and pressure from the BMP280. */
    bmp280_read(&bmp280, &temperature, &pressure);
 
+   /* Calculate the altitude from read pressure. */
+   altitude = science_pressure_to_altitude(
+       pressure,
+       SCIENCE_SEA_LEVEL_STANDARD_PRESSURE);
+
    std_printf(OSTR("Temperature: %f\r\n"
-                   "Pressure: %f\r\n"),
+                   "Pressure: %f\r\n"
+                   "Altitude: %f\r\n"),
               temperature,
-              pressure);
+              pressure,
+              altitude);
 
 ----------------------------------------------
 
 Source code: :github-blob:`src/drivers/bmp280.h`, :github-blob:`src/drivers/bmp280.c`
 
 Test code: :github-blob:`tst/drivers/software/bmp280/main.c`
+
+Example code: :github-blob:`examples/bmp280/main.c`
 
 ----------------------------------------------
 
