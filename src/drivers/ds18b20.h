@@ -54,7 +54,7 @@ int ds18b20_module_init(void);
 
 /**
  * Initialize given driver object. The driver object will communicate
- * with all DS18B20 devices on given OWI bus.
+ * with all DS18B20 sensors on given OWI bus.
  *
  * @param[out] self_p Driver object to be initialized.
  * @param[in] owi_p One-Wire (OWI) driver.
@@ -78,7 +78,7 @@ int ds18b20_convert(struct ds18b20_driver_t *self_p);
  * Read the most recently converted temperature from given sensor.
  *
  * @param[in] self_p Initialized driver object.
- * @param[in] id_p Device identity.
+ * @param[in] id_p Sensor identity.
  * @param[out] temperature_p Measured temperature.
  *
  * @return zero(0) or negative error code.
@@ -92,7 +92,7 @@ int ds18b20_read(struct ds18b20_driver_t *self_p,
  * fixed point number.
  *
  * @param[in] self_p Initialized driver object.
- * @param[in] id_p Device identity.
+ * @param[in] id_p Sensor identity.
  * @param[out] temperature_p Measured temperature in Q4 fixed point
  *                           format, or unit 0.0625 degrees Celsius
  *                           (the raw value read from the sensor).
@@ -108,7 +108,7 @@ int ds18b20_read_fixed_point(struct ds18b20_driver_t *self_p,
  * string.
  *
  * @param[in] self_p Initialized driver object.
- * @param[in] id_p Device identity.
+ * @param[in] id_p Sensor identity.
  * @param[out] temperature_p Measured temperature as a string.
  *
  * @return ``temperature_p`` on success, NULL otherwise.
@@ -123,7 +123,7 @@ char *ds18b20_read_string(struct ds18b20_driver_t *self_p,
  * sensor and update the cached value.
  *
  * @param[in] self_p Initialized driver object.
- * @param[in] id_p Device identity.
+ * @param[in] id_p Sensor identity.
  * @param[out] temperature_p Measured temperature in 0.0625 degrees
  *                           Celsius (the raw value read from the
  *                           sensor).
@@ -135,10 +135,10 @@ int ds18b20_get_temperature(struct ds18b20_driver_t *self_p,
                             int *temperature_p);
 
 /**
- * Get temperature for given device identity formatted as a string.
+ * Get temperature for given sensor identity formatted as a string.
  *
  * @param[in] self_p Initialized driver object.
- * @param[in] id_p Device identity.
+ * @param[in] id_p Sensor identity.
  * @param[out] temperature_p Measured formatted temperature.
  *
  * @return ``temperature_p`` on success, NULL otherwise.
