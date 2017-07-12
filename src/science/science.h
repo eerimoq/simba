@@ -105,18 +105,18 @@ float science_mps_to_knots(float speed);
 float science_mps_from_knots(float speed);
 
 /**
- * Convert given speed from m/s to miles/h.
+ * Convert given speed from m/s to mi/h.
  *
  * @param[in] speed Speed in m/s.
  *
- * @return Speed in miles/h, or NaN if an error occurred.
+ * @return Speed in mi/h, or NaN if an error occurred.
  */
 float science_mps_to_mph(float speed);
 
 /**
- * Convert given speed from miles/h to m/s.
+ * Convert given speed from mi/h to m/s.
  *
- * @param[in] speed Speed in miles/h.
+ * @param[in] speed Speed in mi/h.
  *
  * @return Speed in m/s, or NaN if an error occurred.
  */
