@@ -30,29 +30,87 @@
 
 #include "simba.h"
 
-int test_get_temp(struct harness_t *harness_p)
-{
-    struct owi_driver_t owi;
-    struct ds18b20_driver_t ds;
-    struct owi_device_t devices[4];
-    char buf[24];
-    int number_of_sensors;
+static struct owi_driver_t owi;
+static struct ds18b20_driver_t ds;
+static struct owi_device_t devices[4];
 
+int test_init(struct harness_t *harness_p)
+{
     BTASSERT(owi_init(&owi, &pin_d7_dev, devices, membersof(devices)) == 0);
     BTASSERT(ds18b20_init(&ds, &owi) == 0);
 
     time_busy_wait_us(50000);
 
-    number_of_sensors = owi_search(&owi);
+    return (0);
+}
 
-    std_printf(FSTR("number_of_sensors = %d\r\n"), number_of_sensors);
+int test_scan(struct harness_t *harness_p)
+{
+    BTASSERTI(owi_search(&owi), ==, 2);
 
-    BTASSERT(number_of_sensors == 2);
+    return (0);
+}
 
-    strcpy(buf, "drivers/ds18b20/list");
-    BTASSERT(fs_call(buf, NULL, sys_get_stdout(), NULL) == 0);
+int test_convert(struct harness_t *harness_p)
+{
+    BTASSERT(ds18b20_convert(&ds) == 0);
 
-    time_busy_wait_us(50000);
+    return (0);
+}
+
+int test_read(struct harness_t *harness_p)
+{
+    int i;
+    float temperature;
+
+    for (i = 0; i < 2; i++) {
+        BTASSERT(ds18b20_read(&ds,
+                              &devices[i].id[0],
+                              &temperature) == 0);
+        std_printf(OSTR("temperature: %f\r\n"), temperature);
+        BTASSERT(temperature > 0);
+    }
+
+    return (0);
+}
+
+int test_read_fixed_point(struct harness_t *harness_p)
+{
+    int i;
+    int temperature;
+
+    for (i = 0; i < 2; i++) {
+        BTASSERT(ds18b20_read_fixed_point(&ds,
+                                          &devices[i].id[0],
+                                          &temperature) == 0);
+        std_printf(OSTR("temperature: 0x%x\r\n"), temperature);
+        BTASSERT(temperature > 0);
+    }
+
+    return (0);
+}
+
+int test_read_string(struct harness_t *harness_p)
+{
+    int i;
+    char temperature[16];
+
+    for (i = 0; i < 2; i++) {
+        BTASSERT(ds18b20_read_string(&ds,
+                                     &devices[i].id[0],
+                                     &temperature[0]) != NULL);
+        std_printf(OSTR("temperature: %s\r\n"), &temperature[0]);
+    }
+
+    return (0);
+}
+
+int test_command_list(struct harness_t *harness_p)
+{
+    char buf[24];
+
+    strcpy(&buf[0], "drivers/ds18b20/list");
+    BTASSERT(fs_call(&buf[0], NULL, sys_get_stdout(), NULL) == 0);
 
     return (0);
 }
@@ -61,7 +119,13 @@ int main()
 {
     struct harness_t harness;
     struct harness_testcase_t harness_testcases[] = {
-        { test_get_temp, "test_get_temp" },
+        { test_init, "test_init" },
+        { test_scan, "test_scan" },
+        { test_convert, "test_convert" },
+        { test_read, "test_read" },
+        { test_read_fixed_point, "test_read_fixed_point" },
+        { test_read_string, "test_read_string" },
+        { test_command_list, "test_command_list" },
         { NULL, NULL }
     };
 

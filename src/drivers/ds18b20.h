@@ -65,39 +65,87 @@ int ds18b20_init(struct ds18b20_driver_t *self_p,
                  struct owi_driver_t *owi_p);
 
 /**
- * Start temperature convertion on all sensors.
+ * Start a temperature convertion on all sensors. The converted
+ * temperature can later be read with `ds18b20_temperature()` or
+ * `ds18b20_get_temperature()`.
  *
- * @param[in] self_p Driver object to be initialized.
+ * @param[in] self_p Initialized driver object.
  *
  * @return zero(0) or negative error code.
  */
 int ds18b20_convert(struct ds18b20_driver_t *self_p);
 
 /**
- * Get the temperature for given device identity.
+ * Read the most recently converted temperature from given sensor.
  *
- * @param[in] self_p Driver object to be initialized.
+ * @param[in] self_p Initialized driver object.
  * @param[in] id_p Device identity.
- * @param[out] temp_p Measured temperature in Q4.4 to Q8.4 depending
- *                    on resolution.
+ * @param[out] temperature_p Measured temperature.
+ *
+ * @return zero(0) or negative error code.
+ */
+int ds18b20_read(struct ds18b20_driver_t *self_p,
+                 const uint8_t *id_p,
+                 float *temperature_p);
+
+/**
+ * Read the most recently converted temperature from given sensor as a
+ * fixed point number.
+ *
+ * @param[in] self_p Initialized driver object.
+ * @param[in] id_p Device identity.
+ * @param[out] temperature_p Measured temperature in Q4 fixed point
+ *                           format, or unit 0.0625 degrees Celsius
+ *                           (the raw value read from the sensor).
+ *
+ * @return zero(0) or negative error code.
+ */
+int ds18b20_read_fixed_point(struct ds18b20_driver_t *self_p,
+                             const uint8_t *id_p,
+                             int *temperature_p);
+
+/**
+ * Read the most recently converted temperature from given sensor as a
+ * string.
+ *
+ * @param[in] self_p Initialized driver object.
+ * @param[in] id_p Device identity.
+ * @param[out] temperature_p Measured temperature as a string.
+ *
+ * @return ``temperature_p`` on success, NULL otherwise.
+ */
+char *ds18b20_read_string(struct ds18b20_driver_t *self_p,
+                          const uint8_t *id_p,
+                          char *temperature_p);
+
+/**
+ * Read the most recently converted temperature from given
+ * sensor. Call ``ds18b20_convert()`` to read the temperature from the
+ * sensor and update the cached value.
+ *
+ * @param[in] self_p Initialized driver object.
+ * @param[in] id_p Device identity.
+ * @param[out] temperature_p Measured temperature in 0.0625 degrees
+ *                           Celsius (the raw value read from the
+ *                           sensor).
  *
  * @return zero(0) or negative error code.
  */
 int ds18b20_get_temperature(struct ds18b20_driver_t *self_p,
                             const uint8_t *id_p,
-                            int *temp_p);
+                            int *temperature_p);
 
 /**
  * Get temperature for given device identity formatted as a string.
  *
- * @param[in] self_p Driver object to be initialized.
+ * @param[in] self_p Initialized driver object.
  * @param[in] id_p Device identity.
- * @param[out] temp_p Measured formatted temperature.
+ * @param[out] temperature_p Measured formatted temperature.
  *
- * @return ``temp_p`` on success, NULL otherwise.
+ * @return ``temperature_p`` on success, NULL otherwise.
  */
 char *ds18b20_get_temperature_str(struct ds18b20_driver_t *self_p,
                                   const uint8_t *id_p,
-                                  char *temp_p);
+                                  char *temperature_p);
 
 #endif

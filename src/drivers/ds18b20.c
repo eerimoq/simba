@@ -87,7 +87,7 @@ static int cmd_list_cb(int argc,
                 continue;
             }
 
-            if (ds18b20_get_temperature_str(self_p, dev_p->id, buf) == NULL) {
+            if (ds18b20_read_string(self_p, dev_p->id, buf) == NULL) {
                 buf[0] = '-';
                 buf[1] = '\0';
             }
@@ -115,9 +115,11 @@ static int cmd_list_cb(int argc,
 
 /**
  * Read scratchpad in device.
- * @param[in] drv Driver object to be initialized.
- * @param[out] scratchpad Read scratchpad.
- * @param[in] id Device identity.
+ *
+ * @param[in] self_p Initialized driver object.
+ * @param[out] scratchpad_p Read scratchpad.
+ * @param[in] id_p Device identity.
+ *
  * @return zero(0) or negative error code.
  */
 static int ds18b20_read_scratchpad(struct ds18b20_driver_t *self_p,
@@ -188,13 +190,35 @@ int ds18b20_convert(struct ds18b20_driver_t *self_p)
     return (0);
 }
 
-int ds18b20_get_temperature(struct ds18b20_driver_t *self_p,
-                            const uint8_t *id_p,
-                            int *temp_p)
+int ds18b20_read(struct ds18b20_driver_t *self_p,
+                 const uint8_t *id_p,
+                 float *temperature_p)
 {
     ASSERTN(self_p != NULL, EINVAL);
     ASSERTN(id_p != NULL, EINVAL);
-    ASSERTN(temp_p != NULL, EINVAL);
+    ASSERTN(temperature_p != NULL, EINVAL);
+
+    int temperature;
+    int res;
+
+    res = ds18b20_get_temperature(self_p, id_p, &temperature);
+    
+    if (res != 0) {
+        return (res);
+    }
+
+    *temperature_p = (temperature * 0.0625f);
+    
+    return (res);
+}
+
+int ds18b20_read_fixed_point(struct ds18b20_driver_t *self_p,
+                             const uint8_t *id_p,
+                             int *temperature_p)
+{
+    ASSERTN(self_p != NULL, EINVAL);
+    ASSERTN(id_p != NULL, EINVAL);
+    ASSERTN(temperature_p != NULL, EINVAL);
 
     struct ds18b20_scratchpad_t scratchpad;
     uint8_t crc;
@@ -206,34 +230,48 @@ int ds18b20_get_temperature(struct ds18b20_driver_t *self_p,
                 sizeof(scratchpad));
 
     if (crc != 0) {
-        return (-1);
+        return (-EPROTO);
     }
 
-    *temp_p = scratchpad.temperature;
+    *temperature_p = scratchpad.temperature;
 
     return (0);
 }
 
-char *ds18b20_get_temperature_str(struct ds18b20_driver_t *self_p,
-                                  const uint8_t *id_p,
-                                  char *temp_p)
+char *ds18b20_read_string(struct ds18b20_driver_t *self_p,
+                          const uint8_t *id_p,
+                          char *temperature_p)
 {
     ASSERTNRN(self_p != NULL, EINVAL);
     ASSERTNRN(id_p != NULL, EINVAL);
-    ASSERTNRN(temp_p != NULL, EINVAL);
+    ASSERTNRN(temperature_p != NULL, EINVAL);
 
-    int temp;
+    int temperature;
 
-    if (ds18b20_get_temperature(self_p, id_p, &temp) != 0) {
+    if (ds18b20_read_fixed_point(self_p, id_p, &temperature) != 0) {
         return (NULL);
     }
 
-    std_sprintf(temp_p,
-                FSTR("%d.%d"),
-                (temp >> 4),
-                (temp & 0xf) * 625);
+    std_sprintf(temperature_p,
+                FSTR("%d.%04u"),
+                (temperature >> 4),
+                (temperature & 0xf) * 625);
 
-    return (temp_p);
+    return (temperature_p);
+}
+
+int ds18b20_get_temperature(struct ds18b20_driver_t *self_p,
+                            const uint8_t *id_p,
+                            int *temperature_p)
+{
+    return (ds18b20_read_fixed_point(self_p, id_p, temperature_p));
+}
+
+char *ds18b20_get_temperature_str(struct ds18b20_driver_t *self_p,
+                                  const uint8_t *id_p,
+                                  char *temperature_p)
+{
+    return (ds18b20_read_string(self_p, id_p, temperature_p));
 }
 
 #endif
