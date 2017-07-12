@@ -675,7 +675,9 @@ int thrd_sleep_us(long microseconds)
 
     res = thrd_suspend(&timeout);
 
-    return (res == -ETIMEDOUT ? 0 : -1);
+    PANIC_ASSERT(res == -ETIMEDOUT);
+
+    return (0);
 }
 
 struct thrd_t *thrd_self(void)
