@@ -660,18 +660,19 @@ int thrd_sleep(float seconds)
     return (thrd_sleep_us(1000000 * seconds));
 }
 
-int thrd_sleep_ms(int ms)
+int thrd_sleep_ms(int milliseconds)
 {
-    return (thrd_sleep_us(1000L * ms));
+    return (thrd_sleep_us(1000L * milliseconds));
 }
 
-int thrd_sleep_us(long us)
+int thrd_sleep_us(long microseconds)
 {
     struct time_t timeout;
     int res;
 
-    timeout.seconds = (us / 1000000);
-    timeout.nanoseconds = 1000 * (us % 1000000);
+    timeout.seconds = (microseconds / 1000000);
+    timeout.nanoseconds = 1000 * (microseconds % 1000000);
+
     res = thrd_suspend(&timeout);
 
     return (res == -ETIMEDOUT ? 0 : -1);

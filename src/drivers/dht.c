@@ -69,7 +69,7 @@ static int is_valid(uint8_t *buf_p)
 /**
  * Wait for a rising or falling edge.
  *
- * @return Wait time in nanoseconds, or negative error code.
+ * @return Wait time in microseconds, or negative error code.
  */
 static int wait_for_edge(struct dht_driver_t *self_p,
                          int target_level)

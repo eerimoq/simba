@@ -214,20 +214,20 @@ int thrd_sleep(float seconds);
 /**
  * Pauses the current thread for given number of milliseconds.
  *
- * @param[in] ms Milliseconds to sleep.
+ * @param[in] milliseconds Milliseconds to sleep.
  *
  * @return zero(0) or negative error code.
  */
-int thrd_sleep_ms(int ms);
+int thrd_sleep_ms(int milliseconds);
 
 /**
  * Pauses the current thread for given number of microseconds.
  *
- * @param[in] us Microseconds to sleep.
+ * @param[in] microseconds Microseconds to sleep.
  *
  * @return zero(0) or negative error code.
  */
-int thrd_sleep_us(long us);
+int thrd_sleep_us(long microseconds);
 
 /**
  * Get current thread's id.
