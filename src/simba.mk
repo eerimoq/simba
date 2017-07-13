@@ -145,7 +145,8 @@ DRIVERS_SRC ?= \
 	usb/host/class/hid.c \
 	usb/host/class/mass_storage.c \
 	ws2812.c \
-	xbee.c
+	xbee.c \
+	xbee_client.c
 
 SRC += $(DRIVERS_SRC:%=$(SIMBA_ROOT)/src/drivers/%)
 

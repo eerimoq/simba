@@ -37,6 +37,7 @@
 #define PORT_HAS_PIN
 #define PORT_HAS_UART
 #define PORT_HAS_XBEE
+#define PORT_HAS_XBEE_CLIENT
 #define PORT_HAS_HX711
 #define PORT_HAS_GNSS
 
@@ -667,6 +668,31 @@
 #    else
 #        define CONFIG_XBEE                                 1
 #    endif
+#endif
+
+/**
+ * Maximum xbee driver frame data size.
+ */
+#ifndef CONFIG_XBEE_DATA_MAX
+#    define CONFIG_XBEE_DATA_MAX                          120
+#endif
+
+/**
+ * Enable the xbee_client driver.
+ */
+#ifndef CONFIG_XBEE_CLIENT
+#    if defined(CONFIG_MINIMAL_SYSTEM) || !defined(PORT_HAS_XBEE_CLIENT)
+#        define CONFIG_XBEE_CLIENT                          0
+#    else
+#        define CONFIG_XBEE_CLIENT                          1
+#    endif
+#endif
+
+/**
+ * xbee_client driver debug log mask.
+ */
+#ifndef CONFIG_XBEE_CLIENT_DEBUG_LOG_MASK
+#    define CONFIG_XBEE_CLIENT_DEBUG_LOG_MASK              -1
 #endif
 
 /**

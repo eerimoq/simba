@@ -46,7 +46,7 @@ static int read_byte(struct xbee_driver_t *self_p,
 {
     int res;
 
-    res = chan_read(self_p->transport_p,
+    res = chan_read(self_p->transport.chin_p,
                     byte_p,
                     sizeof(*byte_p));
 
@@ -65,7 +65,7 @@ static int read_frame_delimiter(struct xbee_driver_t *self_p)
 {
     int res;
     uint8_t byte;
-
+    
     while (1) {
         res = read_byte(self_p, &byte);
 
@@ -162,7 +162,9 @@ static ssize_t write_bytes(struct xbee_driver_t *self_p,
         }
 
         /* Write the bytes the the XBee module. */
-        res = chan_write(self_p->transport_p, &chunk[0], chunk_size);
+        res = chan_write(self_p->transport.chout_p,
+                         &chunk[0],
+                         chunk_size);
 
         if (res != chunk_size) {
             return (-EIO);
@@ -178,12 +180,15 @@ int xbee_module_init(void)
 }
 
 int xbee_init(struct xbee_driver_t *self_p,
-              void *transport_p)
+              void *chin_p,
+              void *chout_p)
 {
     ASSERTN(self_p != NULL, EINVAL);
-    ASSERTN(transport_p != NULL, EINVAL);
+    ASSERTN(chin_p != NULL, EINVAL);
+    ASSERTN(chout_p != NULL, EINVAL);
 
-    self_p->transport_p = transport_p;
+    self_p->transport.chin_p = chin_p;
+    self_p->transport.chout_p = chout_p;
 
     return (0);
 }
@@ -215,12 +220,16 @@ int xbee_read(struct xbee_driver_t *self_p,
 
     frame_p->data.size = ((size[0] << 8) | size[1]);
 
+    std_printf(OSTR("frame_p->data.size: %d\r\n"), frame_p->data.size);
+    
     if (frame_p->data.size < 1) {
         return (-EPROTO);
     }
 
     /* Read the frame id. */
     res = read_bytes(self_p, &frame_p->type, sizeof(frame_p->type));
+
+    std_printf(OSTR("frame_p->type: 0x%x\r\n"), frame_p->type);
 
     if (res != sizeof(frame_p->type)) {
         return (res);
@@ -277,7 +286,9 @@ int xbee_write(struct xbee_driver_t *self_p,
     /* Write the frame delimiter. */
     header[0] = FRAME_DELIMITER;
 
-    res = chan_write(self_p->transport_p, &header[0], sizeof(header[0]));
+    res = chan_write(self_p->transport.chout_p,
+                     &header[0],
+                     sizeof(header[0]));
 
     if (res != sizeof(header[0])) {
         return (-EIO);
@@ -313,7 +324,9 @@ int xbee_write(struct xbee_driver_t *self_p,
     crc ^= 0xff;
 
     /* Write the checksum. */
-    res = chan_write(self_p->transport_p, &crc, sizeof(crc));
+    res = chan_write(self_p->transport.chout_p,
+                     &crc,
+                     sizeof(crc));
 
     if (res != sizeof(crc)) {
         return (-EIO);

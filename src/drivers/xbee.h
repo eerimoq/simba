@@ -35,7 +35,7 @@
 
 /* Maximum number of data bytes in a frame (excluding escape
    characters and the frame type). */
-#define XBEE_DATA_MAX                                              110
+#define XBEE_DATA_MAX                             CONFIG_XBEE_DATA_MAX
 
 #define XBEE_FRAME_ID_NO_ACK                                      0x00
 
@@ -69,6 +69,27 @@
 #define XBEE_FRAME_TYPE_ROUTE_RECORD_INDICATOR                    0xa1
 #define XBEE_FRAME_TYPE_MANY_TO_ONE_ROUTE_REQUEST_INDICATOR       0xa3
 
+#define XBEE_PIN_DIO0                                             0
+#define XBEE_PIN_DIO1                                             1
+#define XBEE_PIN_DIO2                                             2
+#define XBEE_PIN_DIO3                                             3
+#define XBEE_PIN_DIO4                                             4
+#define XBEE_PIN_DIO5                                             5
+#define XBEE_PIN_DIO6                                             6
+#define XBEE_PIN_DIO7                                             7
+#define XBEE_PIN_DIO8                                             8
+
+#define XBEE_PIN_AD0                                              0
+#define XBEE_PIN_AD1                                              1
+#define XBEE_PIN_AD2                                              2
+#define XBEE_PIN_AD3                                              3
+
+#define XBEE_PIN_MODE_DISABLED                                    0
+#define XBEE_PIN_MODE_ADC                                         2
+#define XBEE_PIN_MODE_INPUT                                       3
+#define XBEE_PIN_MODE_OUTPUT_LOW                                  4
+#define XBEE_PIN_MODE_OUTPUT_HIGH                                 5
+
 /* An XBee frame (without crc). */
 struct xbee_frame_t {
     uint8_t type;
@@ -80,7 +101,10 @@ struct xbee_frame_t {
 
 /* The XBee driver. */
 struct xbee_driver_t {
-    struct chan_t *transport_p;
+    struct {
+        struct chan_t *chin_p;
+        struct chan_t *chout_p;
+    } transport;
 };
 
 /**
@@ -98,13 +122,16 @@ int xbee_module_init(void);
  * Initialize given driver object from given configuration.
  *
  * @param[in,out] self_p Driver object to initialize.
- * @param[in] transport_p Channel to the XBee module, often a UART
- *                        driver.
+ * @param[in] chin_p Input channel from the XBee module, often a UART
+ *                   driver.
+ * @param[in] chout_p Output channel to the XBee module, often a UART
+ *                    driver output channel.
  *
  * @return zero(0) or negative error code.
  */
 int xbee_init(struct xbee_driver_t *self_p,
-              void *transport_p);
+              void *chin_p,
+              void *chout_p);
 
 /**
  * Read a frame from the XBee module. Blocks until a frame is received
