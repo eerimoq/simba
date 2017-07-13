@@ -542,7 +542,10 @@ int xbee_client_at_command_read_u32(struct xbee_client_t *self_p,
                                       &buf[0],
                                       sizeof(buf));
 
-    *parameter_p = ((buf[0] << 24) | (buf[1] << 8) | (buf[2] << 8) | buf[3]);
+    *parameter_p = (((uint32_t)buf[0] << 24)
+                    | ((uint32_t)buf[1] << 16)
+                    | ((uint32_t)buf[2] << 8)
+                    | (uint32_t)buf[3]);
 
     return (res == sizeof(buf) ? 0 : res);
 }
