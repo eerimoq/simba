@@ -403,7 +403,7 @@ static int test_subscribe_qos1(struct harness_t *harness_p)
 
     /* Prepare the server to send a publish message. */
     /* Packet fixed header */
-    buf[0] = (3 << 4);
+    buf[0] = (3 << 4) | 2;
     buf[1] = 14;
     /* Variable header */
     buf[2] = 0;
@@ -430,6 +430,12 @@ static int test_subscribe_qos1(struct harness_t *harness_p)
     thrd_suspend(NULL);
 
 
+    /* Prepare the server to receive the ACK message. */
+    message.buf_p = NULL;
+    message.size = 4;
+    BTASSERT(queue_write(&qserverin, &message, sizeof(message)) == sizeof(message));
+    
+    /* Read the ACK packet */
     BTASSERT(queue_read(&qserverout, buf, 4) == 4);
     BTASSERT(buf[0] == (4 << 4));
     BTASSERT(buf[1] == 2);
@@ -497,7 +503,7 @@ static int test_subscribe_qos2(struct harness_t *harness_p)
     /* Subscribe. */
     foobar.topic.buf_p = "foo/bar";
     foobar.topic.size = 7;
-    foobar.qos = mqtt_qos_1_t;
+    foobar.qos = mqtt_qos_2_t;
     BTASSERT(mqtt_client_subscribe(&client, &foobar) == 0);
 
     BTASSERT(queue_read(&qserverout, buf, 14) == 14);
@@ -514,11 +520,11 @@ static int test_subscribe_qos2(struct harness_t *harness_p)
     BTASSERT(buf[10] == 'b');
     BTASSERT(buf[11] == 'a');
     BTASSERT(buf[12] == 'r');
-    BTASSERT(buf[13] == 0x01);
+    BTASSERT(buf[13] == 0x02);
 
     /* Prepare the server to send a publish message. */
     /* Packet fixed header */
-    buf[0] = (3 << 4);
+    buf[0] = (3 << 4) | 4;
     buf[1] = 14;
     /* Variable header */
     buf[2] = 0;
@@ -544,7 +550,12 @@ static int test_subscribe_qos2(struct harness_t *harness_p)
     /* Resumed from the callback. */
     thrd_suspend(NULL);
 
+    /* Prepare the server to receive the ACK message. */
+    message.buf_p = NULL;
+    message.size = 4;
+    BTASSERT(queue_write(&qserverin, &message, sizeof(message)) == sizeof(message));
 
+    /* Read the ACK packet */
     BTASSERT(queue_read(&qserverout, buf, 4) == 4);
     BTASSERT(buf[0] == (5 << 4));
     BTASSERT(buf[1] == 2);

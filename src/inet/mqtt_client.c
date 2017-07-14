@@ -443,7 +443,7 @@ static int handle_control_subscribe(struct mqtt_client_t *self_p)
     }
 
     /* Write the topic filter QoS. */
-    buf[0] = 0x01;
+    buf[0] = message_p->qos;
 
     if (chan_write(self_p->transport.out_p, &buf[0], 1) != 1) {
         return (-EIO);
@@ -612,12 +612,20 @@ static int handle_publish(struct mqtt_client_t *self_p,
     topic[topic_size] = '\0';
     qos = ((flags >> 1) & 0x3);
 
+
+    log_object_print(self_p->log_object_p,
+                     LOG_DEBUG,
+                     OSTR("QoS: %d, Flags: %x.\r\n"),
+                     qos,
+                     flags);
+
     if (qos == 0) {
         payload_size = (size - topic_size - 2);
     } else {
         if (chan_read(self_p->transport.in_p, buf, 2) != 2) { /* read the packet identifier */
             return (-EIO);
         }
+
 
         if (qos == 1) {
             res = write_fixed_header(self_p, MQTT_PUBACK, 0, 2);
@@ -630,7 +638,7 @@ static int handle_publish(struct mqtt_client_t *self_p,
             return (res);
         }
 
-        if (chan_write(self_p->transport.out_p, &buf[0], 2) != 2) {
+        if (chan_write(self_p->transport.out_p, &buf, 2) != 2) {
             return (-EIO);
         }
 
