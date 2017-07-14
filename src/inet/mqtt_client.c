@@ -627,10 +627,10 @@ static int handle_publish(struct mqtt_client_t *self_p,
 
         if (qos == 1) {
             res = write_fixed_header(self_p, MQTT_PUBACK, 0, 2);
-        } else if(qos == 2) { 
+        } else if (qos == 2) { 
             res = write_fixed_header(self_p, MQTT_PUBREC, 0, 2);
         } else {
-            return (-EPROTO);
+            res = (-EPROTO);
         }
 
         if (res != 0) {

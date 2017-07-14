@@ -363,43 +363,6 @@ static int test_incoming_publish_qos0(struct harness_t *harness_p)
     struct message_t message;
     struct mqtt_application_message_t foobar;
 
-    /* Prepare the server to receive the subscribe message. */
-    message.buf_p = NULL;
-    message.size = 14;
-    BTASSERT(queue_write(&qserverin, &message, sizeof(message)) == sizeof(message));
-
-    /* Prepare the server to send the subscibe ack message. */
-    buf[0] = (9 << 4);
-    buf[1] = 3;
-    buf[2] = 0;
-    buf[3] = 1;
-    buf[4] = 0;
-    message.buf_p = buf;
-    message.size = 5;
-    BTASSERT(queue_write(&qserverin, &message, sizeof(message)) == sizeof(message));
-
-    /* Subscribe. */
-    foobar.topic.buf_p = "foo/bar";
-    foobar.topic.size = 7;
-    foobar.qos = mqtt_qos_0_t;
-    BTASSERT(mqtt_client_subscribe(&client, &foobar) == 0);
-
-    BTASSERT(queue_read(&qserverout, buf, 14) == 14);
-    BTASSERT(buf[0] == ((8 << 4) | 2));
-    BTASSERT(buf[1] == 12);
-    BTASSERT(buf[2] == 0);
-    BTASSERT(buf[3] == 1);
-    BTASSERT(buf[4] == 0);
-    BTASSERT(buf[5] == 7);
-    BTASSERT(buf[6] == 'f');
-    BTASSERT(buf[7] == 'o');
-    BTASSERT(buf[8] == 'o');
-    BTASSERT(buf[9] == '/');
-    BTASSERT(buf[10] == 'b');
-    BTASSERT(buf[11] == 'a');
-    BTASSERT(buf[12] == 'r');
-    BTASSERT(buf[13] == 0x00);
-
     /* Prepare the server to send a publish message. */
     /* Packet fixed header */
     buf[0] = (3 << 4);
@@ -425,40 +388,6 @@ static int test_incoming_publish_qos0(struct harness_t *harness_p)
     /* Resumed from the callback. */
     thrd_suspend(NULL);
 
-    /* Prepare the server to receive the unsubscribe message. */
-    message.buf_p = NULL;
-    message.size = 13;
-    BTASSERT(queue_write(&qserverin, &message, sizeof(message)) == sizeof(message));
-
-    /* Prepare the server to send the unsubscibe ack message. */
-    buf[0] = (11 << 4);
-    buf[1] = 2;
-    buf[2] = 0;
-    buf[3] = 2;
-    message.buf_p = buf;
-    message.size = 4;
-    BTASSERT(queue_write(&qserverin, &message, sizeof(message)) == sizeof(message));
-
-    /* Unsubscribe. */
-    foobar.topic.buf_p = "foo/bar";
-    foobar.topic.size = 7;
-    BTASSERT(mqtt_client_unsubscribe(&client, &foobar) == 0);
-
-    BTASSERT(queue_read(&qserverout, buf, 13) == 13);
-    BTASSERT(buf[0] == ((10 << 4) | 2));
-    BTASSERT(buf[1] == 11);
-    BTASSERT(buf[2] == 0);
-    BTASSERT(buf[3] == 2);
-    BTASSERT(buf[4] == 0);
-    BTASSERT(buf[5] == 7);
-    BTASSERT(buf[6] == 'f');
-    BTASSERT(buf[7] == 'o');
-    BTASSERT(buf[8] == 'o');
-    BTASSERT(buf[9] == '/');
-    BTASSERT(buf[10] == 'b');
-    BTASSERT(buf[11] == 'a');
-    BTASSERT(buf[12] == 'r');
-
     return (0);
 }
 
@@ -467,43 +396,6 @@ static int test_incoming_publish_qos1(struct harness_t *harness_p)
     uint8_t buf[16];
     struct message_t message;
     struct mqtt_application_message_t foobar;
-
-    /* Prepare the server to receive the subscribe message. */
-    message.buf_p = NULL;
-    message.size = 14;
-    BTASSERT(queue_write(&qserverin, &message, sizeof(message)) == sizeof(message));
-
-    /* Prepare the server to send the subscibe ack message. */
-    buf[0] = (9 << 4);
-    buf[1] = 3;
-    buf[2] = 0;
-    buf[3] = 1;
-    buf[4] = 0;
-    message.buf_p = buf;
-    message.size = 5;
-    BTASSERT(queue_write(&qserverin, &message, sizeof(message)) == sizeof(message));
-
-    /* Subscribe. */
-    foobar.topic.buf_p = "foo/bar";
-    foobar.topic.size = 7;
-    foobar.qos = mqtt_qos_1_t;
-    BTASSERT(mqtt_client_subscribe(&client, &foobar) == 0);
-
-    BTASSERT(queue_read(&qserverout, buf, 14) == 14);
-    BTASSERT(buf[0] == ((8 << 4) | 2));
-    BTASSERT(buf[1] == 12);
-    BTASSERT(buf[2] == 0);
-    BTASSERT(buf[3] == 1);
-    BTASSERT(buf[4] == 0);
-    BTASSERT(buf[5] == 7);
-    BTASSERT(buf[6] == 'f');
-    BTASSERT(buf[7] == 'o');
-    BTASSERT(buf[8] == 'o');
-    BTASSERT(buf[9] == '/');
-    BTASSERT(buf[10] == 'b');
-    BTASSERT(buf[11] == 'a');
-    BTASSERT(buf[12] == 'r');
-    BTASSERT(buf[13] == 0x01);
 
     /* Prepare the server to send a publish message. */
     /* Packet fixed header */
@@ -546,40 +438,6 @@ static int test_incoming_publish_qos1(struct harness_t *harness_p)
     BTASSERT(buf[2] == 0);
     BTASSERT(buf[3] == 1);
 
-    /* Prepare the server to receive the unsubscribe message. */
-    message.buf_p = NULL;
-    message.size = 13;
-    BTASSERT(queue_write(&qserverin, &message, sizeof(message)) == sizeof(message));
-
-    /* Prepare the server to send the unsubscibe ack message. */
-    buf[0] = (11 << 4);
-    buf[1] = 2;
-    buf[2] = 0;
-    buf[3] = 2;
-    message.buf_p = buf;
-    message.size = 4;
-    BTASSERT(queue_write(&qserverin, &message, sizeof(message)) == sizeof(message));
-
-    /* Unsubscribe. */
-    foobar.topic.buf_p = "foo/bar";
-    foobar.topic.size = 7;
-    BTASSERT(mqtt_client_unsubscribe(&client, &foobar) == 0);
-
-    BTASSERT(queue_read(&qserverout, buf, 13) == 13);
-    BTASSERT(buf[0] == ((10 << 4) | 2));
-    BTASSERT(buf[1] == 11);
-    BTASSERT(buf[2] == 0);
-    BTASSERT(buf[3] == 2);
-    BTASSERT(buf[4] == 0);
-    BTASSERT(buf[5] == 7);
-    BTASSERT(buf[6] == 'f');
-    BTASSERT(buf[7] == 'o');
-    BTASSERT(buf[8] == 'o');
-    BTASSERT(buf[9] == '/');
-    BTASSERT(buf[10] == 'b');
-    BTASSERT(buf[11] == 'a');
-    BTASSERT(buf[12] == 'r');
-
     return (0);
 }
 
@@ -588,43 +446,6 @@ static int test_incoming_publish_qos2(struct harness_t *harness_p)
     uint8_t buf[16];
     struct message_t message;
     struct mqtt_application_message_t foobar;
-
-    /* Prepare the server to receive the subscribe message. */
-    message.buf_p = NULL;
-    message.size = 14;
-    BTASSERT(queue_write(&qserverin, &message, sizeof(message)) == sizeof(message));
-
-    /* Prepare the server to send the subscibe ack message. */
-    buf[0] = (9 << 4);
-    buf[1] = 3;
-    buf[2] = 0;
-    buf[3] = 1;
-    buf[4] = 0;
-    message.buf_p = buf;
-    message.size = 5;
-    BTASSERT(queue_write(&qserverin, &message, sizeof(message)) == sizeof(message));
-
-    /* Subscribe. */
-    foobar.topic.buf_p = "foo/bar";
-    foobar.topic.size = 7;
-    foobar.qos = mqtt_qos_2_t;
-    BTASSERT(mqtt_client_subscribe(&client, &foobar) == 0);
-
-    BTASSERT(queue_read(&qserverout, buf, 14) == 14);
-    BTASSERT(buf[0] == ((8 << 4) | 2));
-    BTASSERT(buf[1] == 12);
-    BTASSERT(buf[2] == 0);
-    BTASSERT(buf[3] == 1);
-    BTASSERT(buf[4] == 0);
-    BTASSERT(buf[5] == 7);
-    BTASSERT(buf[6] == 'f');
-    BTASSERT(buf[7] == 'o');
-    BTASSERT(buf[8] == 'o');
-    BTASSERT(buf[9] == '/');
-    BTASSERT(buf[10] == 'b');
-    BTASSERT(buf[11] == 'a');
-    BTASSERT(buf[12] == 'r');
-    BTASSERT(buf[13] == 0x02);
 
     /* Prepare the server to send a publish message. */
     /* Packet fixed header */
@@ -654,7 +475,7 @@ static int test_incoming_publish_qos2(struct harness_t *harness_p)
     /* Resumed from the callback. */
     thrd_suspend(NULL);
 
-    /* Prepare the server to receive the ACK message. */
+    /* Prepare the server to receive the REC message. */
     message.buf_p = NULL;
     message.size = 4;
     BTASSERT(queue_write(&qserverin, &message, sizeof(message)) == sizeof(message));
@@ -665,40 +486,6 @@ static int test_incoming_publish_qos2(struct harness_t *harness_p)
     BTASSERT(buf[1] == 2);
     BTASSERT(buf[2] == 0);
     BTASSERT(buf[3] == 1);
-
-    /* Prepare the server to receive the unsubscribe message. */
-    message.buf_p = NULL;
-    message.size = 13;
-    BTASSERT(queue_write(&qserverin, &message, sizeof(message)) == sizeof(message));
-
-    /* Prepare the server to send the unsubscibe ack message. */
-    buf[0] = (11 << 4);
-    buf[1] = 2;
-    buf[2] = 0;
-    buf[3] = 2;
-    message.buf_p = buf;
-    message.size = 4;
-    BTASSERT(queue_write(&qserverin, &message, sizeof(message)) == sizeof(message));
-
-    /* Unsubscribe. */
-    foobar.topic.buf_p = "foo/bar";
-    foobar.topic.size = 7;
-    BTASSERT(mqtt_client_unsubscribe(&client, &foobar) == 0);
-
-    BTASSERT(queue_read(&qserverout, buf, 13) == 13);
-    BTASSERT(buf[0] == ((10 << 4) | 2));
-    BTASSERT(buf[1] == 11);
-    BTASSERT(buf[2] == 0);
-    BTASSERT(buf[3] == 2);
-    BTASSERT(buf[4] == 0);
-    BTASSERT(buf[5] == 7);
-    BTASSERT(buf[6] == 'f');
-    BTASSERT(buf[7] == 'o');
-    BTASSERT(buf[8] == 'o');
-    BTASSERT(buf[9] == '/');
-    BTASSERT(buf[10] == 'b');
-    BTASSERT(buf[11] == 'a');
-    BTASSERT(buf[12] == 'r');
 
     return (0);
 }
