@@ -9,6 +9,7 @@ import socket
 import argparse
 import threading
 import datetime
+import binascii
 
 
 # Simba socket device types.
@@ -217,6 +218,26 @@ def reader_main(device):
         print(prefix, byte)
 
 
+def reader_hex_line_main(device):
+    """Reads data from the application.
+
+    """
+
+    while True:
+        byte = device.read(1)
+
+        if not byte:
+            print('Connection closed.')
+            break
+
+        timestamp = datetime.datetime.now().strftime("%H:%M:%S.%f")
+        prefix = '{} {}({}) RX:'.format(timestamp,
+                                        device.device_type,
+                                        device.device_name)
+
+        print(prefix, binascii.hexlify(byte))
+
+
 def reader_line_main(device):
     """Reads data from the application, one line at a time.
 
@@ -257,7 +278,7 @@ def monitor(device_type, device_name, address, port):
         device.write(sys.stdin.read(1).encode('utf-8'))
 
 
-def monitor_raw_line(device_type, device_name, address, port):
+def monitor_escaped_line(device_type, device_name, address, port):
     """Monitor given device.
 
     """
@@ -276,6 +297,27 @@ def monitor_raw_line(device_type, device_name, address, port):
         print(prefix, line)
         line = line.encode().decode('unicode_escape')
         device.write(line.encode('utf-8'))
+
+
+def monitor_hex_line(device_type, device_name, address, port):
+    """Monitor given device.
+
+    """
+
+    device = SocketDevice(device_type, device_name, address, port)
+    device.start()
+    reader = threading.Thread(target=reader_hex_line_main, args=(device, ))
+    reader.setDaemon(True)
+    reader.start()
+
+    while True:
+        line = input('$ ')
+        line = line.strip('\r\n')
+        timestamp = datetime.datetime.now().strftime("%H:%M:%S.%f")
+        prefix = '{} {}({}) TX:'.format(timestamp, device_type, device_name)
+        line = binascii.unhexlify(line)
+        print(prefix, line)
+        device.write(line)
 
 
 def monitor_line(device_type, device_name, address, port):
@@ -356,8 +398,10 @@ def do_pin(args):
 
 
 def do_uart(args):
-    if args.raw_lines:
-        monitor_raw_line('uart', args.device, args.address, args.port)
+    if args.mode == 'escaped':
+        monitor_escaped_line('uart', args.device, args.address, args.port)
+    elif args.mode == 'hex':
+        monitor_hex_line('uart', args.device, args.address, args.port)
     else:
         monitor('uart', args.device, args.address, args.port)
 
@@ -411,9 +455,9 @@ def main():
     subparsers.required = True
 
     uart_parser = subparsers.add_parser('uart')
-    uart_parser.add_argument('-r', '--raw-lines',
-                             action='store_true',
-                             help='Raw line based data.')
+    uart_parser.add_argument('-m', '--mode',
+                             choices=['escaped', 'hex'],
+                             help='Input and output mode.')
     uart_parser.add_argument('device', help='Uart device to request.')
     uart_parser.set_defaults(func=do_uart)
 
