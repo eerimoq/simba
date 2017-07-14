@@ -29,7 +29,7 @@ semaphore.
    /* Initialize the semaphore. */
    sem_init(&sem, 0, 1);
 
-   /* Increment the resource by one. */
+   /* Increment the shared resource by one. */
    sem_take(&sem, NULL);
    resource++;
    sem_give(&sem, 1);

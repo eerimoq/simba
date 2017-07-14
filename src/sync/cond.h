@@ -59,7 +59,7 @@ int cond_module_init(void);
 int cond_init(struct cond_t *self_p);
 
 /**
- * Wait until given condition variable is signalled or an timeout
+ * Wait until given condition variable is unblocked or an timeout
  * occurs. Given mutex must be locked when this function is called,
  * and it is still locked when this function returns.
  *
@@ -73,21 +73,23 @@ int cond_wait(struct cond_t *self_p,
               struct time_t *timeout_p);
 
 /**
- * Signal one thread waiting on given condition variable.
+ * Unblock one thread waiting on given condition variable. This
+ * function is a no-op if no threads are waiting on given condition
+ * variable.
  *
  * @param[in] self_p Condition variable.
  *
- * @return One(1) if a thread was signalled, zero(0) if no thread was
- *         signalled, or negative error code.
+ * @return One(1) if a thread was unblocked, zero(0) if no thread was
+ *         unblocked, or negative error code.
  */
 int cond_signal(struct cond_t *self_p);
 
 /**
- * Signal all threads waiting on given condition variable.
+ * Unblock all threads waiting on given condition variable.
  *
  * @param[in] self_p Condition variable.
  *
- * @return Number of signalled threads or negative error code.
+ * @return Number of unblocked threads or negative error code.
  */
 int cond_broadcast(struct cond_t *self_p);
 
