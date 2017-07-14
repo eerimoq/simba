@@ -696,6 +696,13 @@
 #endif
 
 /**
+ * xbee_client packet response timeout in milliseconds.
+ */
+#ifndef CONFIG_XBEE_CLIENT_RESPONSE_TIMEOUT_MS
+#    define CONFIG_XBEE_CLIENT_RESPONSE_TIMEOUT_MS       1000
+#endif
+
+/**
  * Enable the hx711 driver.
  */
 #ifndef CONFIG_HX711

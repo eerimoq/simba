@@ -79,8 +79,9 @@ static int communicate(struct xbee_client_t *self_p,
 
         /* Resumed when (or if) the response is received. */
         if (res == 0) {
-            timeout.seconds = 1;
-            timeout.nanoseconds = 0;
+            timeout.seconds = (CONFIG_XBEE_CLIENT_RESPONSE_TIMEOUT_MS / 1000);
+            timeout.nanoseconds =
+                (1000000L * (CONFIG_XBEE_CLIENT_RESPONSE_TIMEOUT_MS % 1000));
             res = cond_wait(&self_p->rpc.rx.cond,
                             &self_p->rpc.rx.mutex,
                             &timeout);
