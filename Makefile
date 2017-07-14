@@ -104,7 +104,8 @@ ifeq ($(BOARD), linux)
 	bmp280 \
 	gnss \
 	hx711 \
-	xbee)
+	xbee \
+	xbee_client)
     TESTS += $(addprefix tst/science/, \
 	science)
 endif
