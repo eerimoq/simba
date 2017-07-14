@@ -37,6 +37,6 @@ CDEFS += \
 	CONFIG_FS_CMD_THRD_LIST=1 \
 	CONFIG_THRD_TERMINATE=1
 
-SYNC_SRC += cond.c mutex.c
+SYNC_SRC += cond.c
 
 include $(SIMBA_ROOT)/make/app.mk
