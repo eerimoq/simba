@@ -21,7 +21,7 @@ This example shows how to receive and tramsmit data from/to a remote
 XBee module and control IO on the local XBee module.
 
 See :github-blob:`examples/xbee_client/main.c` for the full example,
-including initialization of the driver and error handling.
+including initialization and error handling.
 
 Declaration of the variables used in this example:
 
