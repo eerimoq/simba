@@ -145,7 +145,6 @@ static int read_fixed_header(struct mqtt_client_t *self_p,
     *flags_p = (byte & 0xf);
     *type_p = ((byte >> 4) & 0xf);
 
-
     /* Read the variablie size field. */
     multiplier = 1;
     *size_p = 0;
@@ -584,7 +583,7 @@ static int handle_publish(struct mqtt_client_t *self_p,
                           size_t size,
                           int flags)
 {
-    int res = 0;
+    int res;
     size_t topic_size;
     size_t payload_size;
     uint8_t buf[2];
@@ -612,26 +611,26 @@ static int handle_publish(struct mqtt_client_t *self_p,
     topic[topic_size] = '\0';
     qos = ((flags >> 1) & 0x3);
 
-
     log_object_print(self_p->log_object_p,
                      LOG_DEBUG,
-                     OSTR("QoS: %d, Flags: %x.\r\n"),
+                     OSTR("QoS: %d, Flags: Flags: 0x%02x.\r\n"),
                      qos,
                      flags);
 
     if (qos == 0) {
         payload_size = (size - topic_size - 2);
     } else {
-        if (chan_read(self_p->transport.in_p, buf, 2) != 2) { /* read the packet identifier */
+        /* Read the packet identifier. */
+        if (chan_read(self_p->transport.in_p, buf, 2) != 2) { 
             return (-EIO);
         }
 
-
         if (qos == 1) {
             res = write_fixed_header(self_p, MQTT_PUBACK, 0, 2);
-
-        } else { /* qos == 2 */ 
+        } else if(qos == 2) { 
             res = write_fixed_header(self_p, MQTT_PUBREC, 0, 2);
+        } else {
+            return (-EPROTO);
         }
 
         if (res != 0) {

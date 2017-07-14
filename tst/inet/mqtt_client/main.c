@@ -253,7 +253,111 @@ static int test_publish(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_subscribe_qos0(struct harness_t *harness_p)
+static int test_subscribe(struct harness_t *harness_p)
+{
+    uint8_t buf[16];
+    struct message_t message;
+    struct mqtt_application_message_t foobar;
+
+    /* Prepare the server to receive the subscribe message. */
+    message.buf_p = NULL;
+    message.size = 14;
+    BTASSERT(queue_write(&qserverin, &message, sizeof(message)) == sizeof(message));
+
+    /* Prepare the server to send the subscibe ack message. */
+    buf[0] = (9 << 4);
+    buf[1] = 3;
+    buf[2] = 0;
+    buf[3] = 1;
+    buf[4] = 0;
+    message.buf_p = buf;
+    message.size = 5;
+    BTASSERT(queue_write(&qserverin, &message, sizeof(message)) == sizeof(message));
+
+    /* Subscribe. */
+    foobar.topic.buf_p = "foo/bar";
+    foobar.topic.size = 7;
+    foobar.qos = mqtt_qos_1_t;
+    BTASSERT(mqtt_client_subscribe(&client, &foobar) == 0);
+
+    BTASSERT(queue_read(&qserverout, buf, 14) == 14);
+    BTASSERT(buf[0] == ((8 << 4) | 2));
+    BTASSERT(buf[1] == 12);
+    BTASSERT(buf[2] == 0);
+    BTASSERT(buf[3] == 1);
+    BTASSERT(buf[4] == 0);
+    BTASSERT(buf[5] == 7);
+    BTASSERT(buf[6] == 'f');
+    BTASSERT(buf[7] == 'o');
+    BTASSERT(buf[8] == 'o');
+    BTASSERT(buf[9] == '/');
+    BTASSERT(buf[10] == 'b');
+    BTASSERT(buf[11] == 'a');
+    BTASSERT(buf[12] == 'r');
+    BTASSERT(buf[13] == 0x01);
+
+    /* Prepare the server to send a publish message. */
+    buf[0] = (3 << 4);
+    buf[1] = 14;
+    buf[2] = 0;
+    buf[3] = 7;
+    buf[4] = 'f';
+    buf[5] = 'o';
+    buf[6] = 'o';
+    buf[7] = '/';
+    buf[8] = 'b';
+    buf[9] = 'a';
+    buf[10] = 'r';
+    buf[11] = 0;
+    buf[12] = 1;
+    buf[13] = 'f';
+    buf[14] = 'i';
+    buf[15] = 'e';
+    message.buf_p = buf;
+    message.size = 16;
+    BTASSERT(queue_write(&qserverin, &message, sizeof(message)) == sizeof(message));
+
+    /* Resumed from the callback. */
+    thrd_suspend(NULL);
+
+    /* Prepare the server to receive the unsubscribe message. */
+    message.buf_p = NULL;
+    message.size = 13;
+    BTASSERT(queue_write(&qserverin, &message, sizeof(message)) == sizeof(message));
+
+    /* Prepare the server to send the unsubscibe ack message. */
+    buf[0] = (11 << 4);
+    buf[1] = 2;
+    buf[2] = 0;
+    buf[3] = 2;
+    message.buf_p = buf;
+    message.size = 4;
+    BTASSERT(queue_write(&qserverin, &message, sizeof(message)) == sizeof(message));
+
+    /* Unsubscribe. */
+    foobar.topic.buf_p = "foo/bar";
+    foobar.topic.size = 7;
+    BTASSERT(mqtt_client_unsubscribe(&client, &foobar) == 0);
+
+    BTASSERT(queue_read(&qserverout, buf, 13) == 13);
+    BTASSERT(buf[0] == ((10 << 4) | 2));
+    BTASSERT(buf[1] == 11);
+    BTASSERT(buf[2] == 0);
+    BTASSERT(buf[3] == 2);
+    BTASSERT(buf[4] == 0);
+    BTASSERT(buf[5] == 7);
+    BTASSERT(buf[6] == 'f');
+    BTASSERT(buf[7] == 'o');
+    BTASSERT(buf[8] == 'o');
+    BTASSERT(buf[9] == '/');
+    BTASSERT(buf[10] == 'b');
+    BTASSERT(buf[11] == 'a');
+    BTASSERT(buf[12] == 'r');
+
+    return (0);
+}
+
+static int test_incoming_publish_qos0(struct harness_t *harness_p)
 {
     uint8_t buf[16];
     struct message_t message;
@@ -358,7 +462,7 @@ static int test_subscribe_qos0(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_subscribe_qos1(struct harness_t *harness_p)
+static int test_incoming_publish_qos1(struct harness_t *harness_p)
 {
     uint8_t buf[16];
     struct message_t message;
@@ -479,7 +583,7 @@ static int test_subscribe_qos1(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_subscribe_qos2(struct harness_t *harness_p)
+static int test_incoming_publish_qos2(struct harness_t *harness_p)
 {
     uint8_t buf[16];
     struct message_t message;
@@ -627,9 +731,10 @@ int main()
         { test_connect, "test_connect" },
         { test_ping, "test_ping" },
         { test_publish, "test_publish" },
-        { test_subscribe_qos0, "test_subscribe_qos0" },
-        { test_subscribe_qos1, "test_subscribe_qos1" },
-        { test_subscribe_qos2, "test_subscribe_qos2" },
+        { test_subscribe, "test_subscribe" },
+        { test_incoming_publish_qos0, "test_incoming_publish_qos0" },
+        { test_incoming_publish_qos1, "test_incoming_publish_qos1" },
+        { test_incoming_publish_qos2, "test_incoming_publish_qos2" },
         { test_disconnect, "test_disconnect" },
         { NULL, NULL }
     };
