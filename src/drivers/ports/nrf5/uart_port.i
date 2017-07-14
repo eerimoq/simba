@@ -81,7 +81,7 @@ static ssize_t uart_port_write_cb(void *arg_p,
     regs_p = self_p->dev_p->regs_p;
     u8_buf_p = buf_p;
 
-    sem_take(&self_p->sem, NULL);
+    mutex_lock(&self_p->mutex);
 
     for (i = 0; i < size; i++) {
         regs_p->TXD = u8_buf_p[i];
@@ -89,7 +89,7 @@ static ssize_t uart_port_write_cb(void *arg_p,
         while (regs_p->EVENTS.TXDRDY == 0);
     }
 
-    sem_give(&self_p->sem, 1);
+    mutex_unlock(&self_p->mutex);
 
     return (size);
 }

@@ -59,7 +59,7 @@ int uart_init(struct uart_driver_t *self_p,
     self_p->dev_p = dev_p;
     self_p->baudrate = baudrate;
 
-    sem_init(&self_p->sem, 0, 1);
+    mutex_init(&self_p->mutex);
 
     chan_init(&self_p->chout,
               chan_read_null,

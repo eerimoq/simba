@@ -41,7 +41,7 @@ struct uart_device_t {
 struct uart_driver_t {
     struct queue_t chin;
     struct uart_device_t *dev_p;
-    struct sem_t sem;
+    struct mutex_t mutex;
     const char *txbuf_p;
     size_t txsize;
     size_t rxsize;

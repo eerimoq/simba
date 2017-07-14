@@ -158,7 +158,7 @@ static ssize_t uart_port_write_cb(void *arg_p,
 
     self_p = container_of(arg_p, struct uart_driver_t, chout);
 
-    sem_take(&self_p->sem, NULL);
+    mutex_lock(&self_p->mutex);
 
     /* Initiate transfer by writing the first byte. */
     self_p->txbuf_p = (txbuf_p + 1);
@@ -170,7 +170,7 @@ static ssize_t uart_port_write_cb(void *arg_p,
     thrd_suspend_isr(NULL);
     sys_unlock();
 
-    sem_give(&self_p->sem, 1);
+    mutex_unlock(&self_p->mutex);
 
     return (size);
 }

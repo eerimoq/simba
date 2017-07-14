@@ -130,7 +130,7 @@ static ssize_t uart_port_write_cb(void *arg_p,
     self_p = container_of(arg_p, struct uart_driver_t, chout);
     dev_p = self_p->dev_p;
 
-    sem_take(&self_p->sem, NULL);
+    mutex_lock(&self_p->mutex);
 
     sys_lock();
 
@@ -152,7 +152,7 @@ static ssize_t uart_port_write_cb(void *arg_p,
 
     sys_unlock();
 
-    sem_give(&self_p->sem, 1);
+    mutex_unlock(&self_p->mutex);
 
     return (size);
 }
