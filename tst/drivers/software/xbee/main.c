@@ -42,7 +42,6 @@ static int test_init(struct harness_t *harness_p)
     BTASSERT(xbee_module_init() == 0);
 
     BTASSERT(queue_init(&queue, &queue_buf[0], sizeof(queue_buf)) == 0);
-    BTASSERT(queue_init(&queue, &queue_buf[0], sizeof(queue_buf)) == 0);
     BTASSERT(chan_init(&transport,
                        chan_read_null,
                        chan_write_null,

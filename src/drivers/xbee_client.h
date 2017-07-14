@@ -70,7 +70,8 @@ struct xbee_client_t {
             struct cond_t cond;
             struct xbee_frame_t *frame_p;
             void *buf_p;
-            size_t size;
+            size_t *size_p;
+            int res;
         } rx;
         struct mutex_t mutex;
     } rpc;
@@ -240,12 +241,12 @@ ssize_t xbee_client_at_command_read(struct xbee_client_t *self_p,
  * @param[in] parameter_p Parameter buffer to write.
  * @param[in] size Buffer size in bytes.
  *
- * @return Number of read bytes or negative error code.
+ * @return zero(0 or negative error code.
  */
-ssize_t xbee_client_at_command_write(struct xbee_client_t *self_p,
-                                     const char *command_p,
-                                     const uint8_t *parameter_p,
-                                     size_t size);
+int xbee_client_at_command_write(struct xbee_client_t *self_p,
+                                 const char *command_p,
+                                 const uint8_t *parameter_p,
+                                 size_t size);
 
 /**
  * Execute given AT command and store its read 8 bits parameter in

@@ -48,11 +48,13 @@ static uint8_t next_frame_id(struct xbee_client_t *self_p)
     return (self_p->frame_id);
 }
 
-static ssize_t communicate(struct xbee_client_t *self_p,
-                           struct xbee_frame_t *frame_p,
-                           uint8_t *response_buf_p,
-                           size_t response_size,
-                           int request_ack)
+/**
+ * @return zero(0) or negative error code.
+ */
+static int communicate(struct xbee_client_t *self_p,
+                       struct xbee_frame_t *frame_p,
+                       uint8_t *response_buf_p,
+                       size_t *response_size_p)
 {
     ssize_t res;
     uint8_t frame_id;
@@ -60,7 +62,7 @@ static ssize_t communicate(struct xbee_client_t *self_p,
 
     mutex_lock(&self_p->rpc.mutex);
 
-    if (request_ack == 1) {
+    if (response_size_p != NULL) {
         mutex_lock(&self_p->rpc.rx.mutex);
 
         /* Set the frame id. */
@@ -70,7 +72,7 @@ static ssize_t communicate(struct xbee_client_t *self_p,
         /* Response expected. */
         self_p->rpc.rx.frame_p = frame_p;
         self_p->rpc.rx.buf_p = response_buf_p;
-        self_p->rpc.rx.size = response_size;
+        self_p->rpc.rx.size_p = response_size_p;
 
         /* Write the frame. */
         res = xbee_write(&self_p->driver, frame_p);
@@ -82,6 +84,11 @@ static ssize_t communicate(struct xbee_client_t *self_p,
             res = cond_wait(&self_p->rpc.rx.cond,
                             &self_p->rpc.rx.mutex,
                             &timeout);
+
+            if (res == 0) {
+                res = self_p->rpc.rx.res;
+            }
+            
             self_p->rpc.rx.frame_p = NULL;
         }
 
@@ -99,26 +106,31 @@ static ssize_t communicate(struct xbee_client_t *self_p,
     return (res);
 }
 
-static ssize_t execute_at_command(struct xbee_client_t *self_p,
-                                  const char *command_p,
-                                  const uint8_t *parameter_p,
-                                  size_t size,
-                                  uint8_t *response_parameter_p,
-                                  size_t response_size)
+static int execute_at_command(struct xbee_client_t *self_p,
+                              const char *command_p,
+                              const uint8_t *parameter_p,
+                              size_t size,
+                              uint8_t *response_parameter_p,
+                              size_t *response_size_p)
 {
     struct xbee_frame_t frame;
-
+    size_t response_size;
+    
     /* Initiate the AT command frame (frame id assigned later). */
     frame.type = XBEE_FRAME_TYPE_AT_COMMAND;
     frame.data.size = (size + 3);
     memcpy(&frame.data.buf[1], command_p, 2);
     memcpy(&frame.data.buf[3], parameter_p, size);
 
+    if (response_size_p == NULL) {
+        response_size = 0;
+        response_size_p = &response_size;
+    }
+    
     return (communicate(self_p,
                         &frame,
                         response_parameter_p,
-                        response_size,
-                        1));
+                        response_size_p));
 }
 
 static int handle_tx_status(struct xbee_client_t *self_p,
@@ -155,6 +167,7 @@ static int handle_tx_status(struct xbee_client_t *self_p,
             }
 
             self_p->rpc.rx.frame_p = NULL;
+            self_p->rpc.rx.res = status;
             cond_signal(&self_p->rpc.rx.cond);
         } else {
             DLOG(DEBUG,
@@ -164,7 +177,7 @@ static int handle_tx_status(struct xbee_client_t *self_p,
                  frame_id);
         }
     } else {
-        DLOG(DEBUG, "Unexpected AT Command Response received.\r\n");
+        DLOG(DEBUG, "Unexpected TX Status received.\r\n");
     }
 
     mutex_unlock(&self_p->rpc.rx.mutex);
@@ -190,7 +203,7 @@ static int handle_at_command_response(struct xbee_client_t *self_p,
     }
 
     frame_id = frame_p->data.buf[0];
-    status = frame_p->data.buf[2];
+    status = frame_p->data.buf[3];
 
     mutex_lock(&self_p->rpc.rx.mutex);
 
@@ -199,18 +212,20 @@ static int handle_at_command_response(struct xbee_client_t *self_p,
 
         if (expected_frame_id == frame_id) {
             if (status == 0) {
-                size = MIN(size - 4, self_p->rpc.rx.size);
-                memcpy(self_p->rpc.rx.buf_p, &frame_p->data.buf[3], size);
+                size = MIN(size - 4, *self_p->rpc.rx.size_p);
+                memcpy(self_p->rpc.rx.buf_p, &frame_p->data.buf[4], size);
             } else {
                 DLOG(WARNING,
                      "Negative response %d in AT Command Response for "
                      "frame id 0x%02x.\r\n",
                      status,
                      frame_id);
-                size = -EPROTO;
+                status = -EPROTO;
             }
 
             self_p->rpc.rx.frame_p = NULL;
+            *self_p->rpc.rx.size_p = size;
+            self_p->rpc.rx.res = status;
             cond_signal(&self_p->rpc.rx.cond);
         } else {
             DLOG(DEBUG,
@@ -356,7 +371,8 @@ ssize_t xbee_client_write_to(struct xbee_client_t *self_p,
 {
     struct xbee_frame_t frame;
     size_t pos;
-    int request_ack;
+    size_t response_size;
+    int res;
 
     switch (address_p->type) {
 
@@ -376,30 +392,29 @@ ssize_t xbee_client_write_to(struct xbee_client_t *self_p,
         return (-EINVAL);
     }
 
+    frame.data.size = (pos + size);
+    frame.data.buf[pos - 1] = 0;
     memcpy(&frame.data.buf[pos], buf_p, size);
 
-    request_ack = ((flags & XBEE_CLIENT_NO_ACK) != 0);
+    if (flags & XBEE_CLIENT_NO_ACK) {
+        res = communicate(self_p, &frame, NULL, NULL);
+    } else {
+        response_size = 0;
+        res = communicate(self_p, &frame, NULL, &response_size);
+    }
 
-    return (communicate(self_p,
-                        &frame,
-                        NULL,
-                        0,
-                        request_ack));
+    if (res != 0) {
+        return (res);
+    }
+    
+    return (size);
 }
 
 int xbee_client_pin_set_mode(struct xbee_client_t *self_p,
                              int pin,
                              int mode)
 {
-    char command[] = "D0";
-
-    command[1] += pin;
-
-    self_p->pins.value &= ~(1 << pin);
-
-    return (xbee_client_at_command_write_u8(self_p,
-                                            &command[0],
-                                            mode));
+    return (xbee_client_pin_write(self_p, pin, 0));
 }
 
 int xbee_client_pin_write(struct xbee_client_t *self_p,
@@ -446,23 +461,31 @@ ssize_t xbee_client_at_command_read(struct xbee_client_t *self_p,
                                     uint8_t *parameter_p,
                                     size_t size)
 {
-    return (execute_at_command(self_p,
-                               command_p,
-                               NULL,
-                               0,
-                               parameter_p,
-                               size));
+    int res;
+
+    res = execute_at_command(self_p,
+                             command_p,
+                             NULL,
+                             0,
+                             parameter_p,
+                             &size);
+
+    if (res != 0) {
+        return (res);
+    }
+
+    return (size);
 }
 
-ssize_t xbee_client_at_command_write(struct xbee_client_t *self_p,
-                                     const char *command_p,
-                                     const uint8_t *parameter_p,
-                                     size_t size)
+int xbee_client_at_command_write(struct xbee_client_t *self_p,
+                                 const char *command_p,
+                                 const uint8_t *parameter_p,
+                                 size_t size)
 {
     return (execute_at_command(self_p,
                                command_p,
                                parameter_p,
-                               0,
+                               size,
                                NULL,
                                0));
 }
