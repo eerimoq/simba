@@ -43,7 +43,7 @@ ifeq ($(TYPE),suite)
   OAM_SRC += console.c settings.c nvm.c
   FILESYSTEMS_SRC += fs.c
   SPIFFS_SRC +=
-  SYNC_SRC += chan.c queue.c rwlock.c sem.c
+  SYNC_SRC += chan.c queue.c rwlock.c sem.c mutex.c
   TEXT_SRC += std.c
   SCIENCE_SRC +=
 
