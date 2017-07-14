@@ -42,8 +42,10 @@ ifeq ($(BOARD), linux)
 	timer)
     TESTS += $(addprefix tst/sync/, \
 	bus \
+	cond \
 	chan \
 	event \
+	mutex \
 	queue \
 	rwlock \
 	sem)

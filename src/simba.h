@@ -97,6 +97,8 @@ extern "C" {
 #include "kernel/timer.h"
 #include "kernel/thrd.h"
 
+#include "sync/mutex.h"
+#include "sync/cond.h"
 #include "sync/queue.h"
 #include "sync/event.h"
 #include "sync/rwlock.h"

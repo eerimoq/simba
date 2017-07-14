@@ -380,7 +380,9 @@ SRC += $(SPIFFS_SRC:%=$(SIMBA_ROOT)/%)
 # Sync package.
 SYNC_SRC ?= bus.c \
 	    chan.c \
+	    cond.c \
 	    event.c \
+	    mutex.c \
 	    queue.c \
 	    rwlock.c \
 	    sem.c
