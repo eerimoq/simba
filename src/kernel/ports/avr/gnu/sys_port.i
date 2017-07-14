@@ -51,6 +51,9 @@
 
 ISR(TIMER1_COMPA_vect)
 {
+    /* Clear the overflow flag. */
+    TIFR1 = _BV(TOV1);
+
     sys_tick_isr();
 }
 
@@ -116,8 +119,9 @@ static long sys_port_get_time_into_tick()
 
     cpu_cycles = (CPU_CYCLES_PER_TIMER_TICK * (uint32_t)TCNT1);
 
-    /* Interrupt pending? */
-    if (TIFR1 & _BV(OCF1A)) {
+    /* Did the counter wrap around to zero, but the system tick
+       interrupt handler has not been executed? */
+    if (TIFR1 & _BV(TOV1)) {
         cpu_cycles += CPU_CYCLES_PER_SYS_TICK;
     }
 

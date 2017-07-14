@@ -51,6 +51,7 @@ int test_single_shot(struct harness_t *harness_p)
         .seconds = 0,
         .nanoseconds = 100000000
     };
+    struct time_t start, stop, elapsed;
 
     event_init(&event);
     callback_mask = 0x1;
@@ -58,11 +59,27 @@ int test_single_shot(struct harness_t *harness_p)
 
     thrd_p = thrd_self();
 
+    std_printf(OSTR("timer.timeout: %d\r\n"), timer.timeout);
+
+    /* Start the timer 3 ms into the 10 ms system tick. */
+    thrd_sleep_ms(1);
+    time_busy_wait_us(3000);
+    sys_uptime(&start);
+
     /* Single shot timer. */
     BTASSERT(timer_start(&timer) == 0);
 
     mask = 0x1;
     event_read(&event, &mask, sizeof(mask));
+
+    BTASSERT(sys_uptime(&stop) == 0);
+    BTASSERT(time_subtract(&elapsed, &stop, &start) == 0);
+
+    std_printf(OSTR("Start:    %lu %lu\r\n"), start.seconds, start.nanoseconds);
+    std_printf(OSTR("Stop:     %lu %lu\r\n"), stop.seconds, stop.nanoseconds);
+    std_printf(OSTR("Elapsed:  %lu %lu\r\n"), elapsed.seconds, elapsed.nanoseconds);
+
+    BTASSERTI(elapsed.nanoseconds, >=, 100000000);
 
     /* Not necessary to stop an expired timer, but should still
        work. */
@@ -76,6 +93,8 @@ int test_periodic(struct harness_t *harness_p)
     int i;
     uint32_t mask;
     uint32_t callback_mask;
+    int millisecond;
+    int prev_millisecond;
     struct timer_t timer;
     struct time_t now;
     struct time_t timeout = {
@@ -96,15 +115,26 @@ int test_periodic(struct harness_t *harness_p)
                         TIMER_PERIODIC) == 0);
     BTASSERT(timer_start(&timer) == 0);
 
+    prev_millisecond = -1;
+
     std_printf(FSTR(" MS  MESSAGE\r\n"));
 
     for (i = 0; i < 5; i++) {
         mask = 0x1;
         event_read(&event, &mask, sizeof(mask));
-        time_get(&now);
+
+        BTASSERT(sys_uptime(&now) == 0);
+        millisecond = (now.nanoseconds / 1000000);
+
         std_printf(FSTR("%03u: timeout %d.\r\n"),
-                   (now.nanoseconds / 1000000),
+                   millisecond,
                    i);
+
+        if (prev_millisecond != -1) {
+            BTASSERTI(millisecond, ==, (prev_millisecond + 100) % 1000);
+        }
+
+        prev_millisecond = millisecond;
     }
 
     BTASSERT(timer_stop(&timer) == 1);
