@@ -66,13 +66,13 @@ struct xbee_client_t {
     } pins;
     struct {
         struct {
-            struct sem_t sem;
+            struct mutex_t mutex;
+            struct cond_t cond;
             struct xbee_frame_t *frame_p;
             void *buf_p;
             size_t size;
-            struct thrd_t *thrd_p;
         } rx;
-        struct sem_t sem;
+        struct mutex_t mutex;
     } rpc;
 #if CONFIG_XBEE_CLIENT_DEBUG_LOG_MASK > -1
     struct log_object_t log;

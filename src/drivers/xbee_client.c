@@ -58,10 +58,10 @@ static ssize_t communicate(struct xbee_client_t *self_p,
     uint8_t frame_id;
     struct time_t timeout;
 
-    sem_take(&self_p->rpc.sem, NULL);
+    mutex_lock(&self_p->rpc.mutex);
 
     if (request_ack == 1) {
-        sem_take(&self_p->rpc.rx.sem, NULL);
+        mutex_lock(&self_p->rpc.rx.mutex);
 
         /* Set the frame id. */
         frame_id = next_frame_id(self_p);
@@ -71,22 +71,21 @@ static ssize_t communicate(struct xbee_client_t *self_p,
         self_p->rpc.rx.frame_p = frame_p;
         self_p->rpc.rx.buf_p = response_buf_p;
         self_p->rpc.rx.size = response_size;
-        self_p->rpc.rx.thrd_p = thrd_self();
 
         /* Write the frame. */
         res = xbee_write(&self_p->driver, frame_p);
-
-        sem_give(&self_p->rpc.rx.sem, 1);
 
         /* Resumed when (or if) the response is received. */
         if (res == 0) {
             timeout.seconds = 1;
             timeout.nanoseconds = 0;
-            sys_lock();
-            res = thrd_suspend_isr(&timeout);
-            self_p->rpc.rx.thrd_p = NULL;
-            sys_unlock();
+            res = cond_wait(&self_p->rpc.rx.cond,
+                            &self_p->rpc.rx.mutex,
+                            &timeout);
+            self_p->rpc.rx.frame_p = NULL;
         }
+
+        mutex_unlock(&self_p->rpc.rx.mutex);
     } else {
         /* Set the frame id. */
         frame_p->data.buf[0] = XBEE_FRAME_ID_NO_ACK;
@@ -95,7 +94,7 @@ static ssize_t communicate(struct xbee_client_t *self_p,
         res = xbee_write(&self_p->driver, frame_p);
     }
 
-    sem_give(&self_p->rpc.sem, 1);
+    mutex_unlock(&self_p->rpc.mutex);
 
     return (res);
 }
@@ -140,9 +139,9 @@ static int handle_tx_status(struct xbee_client_t *self_p,
     frame_id = frame_p->data.buf[0];
     status = frame_p->data.buf[1];
 
-    sem_take(&self_p->rpc.rx.sem, NULL);
+    mutex_lock(&self_p->rpc.rx.mutex);
 
-    if (self_p->rpc.rx.thrd_p != NULL) {
+    if (self_p->rpc.rx.frame_p != NULL) {
         expected_frame_id = self_p->rpc.rx.frame_p->data.buf[0];
 
         if (expected_frame_id == frame_id) {
@@ -155,8 +154,8 @@ static int handle_tx_status(struct xbee_client_t *self_p,
                 status = -EPROTO;
             }
 
-            thrd_resume(self_p->rpc.rx.thrd_p, status);
-            self_p->rpc.rx.thrd_p = NULL;
+            self_p->rpc.rx.frame_p = NULL;
+            cond_signal(&self_p->rpc.rx.cond);
         } else {
             DLOG(DEBUG,
                  "Expected frame id 0x%02x in TX Status but "
@@ -168,7 +167,7 @@ static int handle_tx_status(struct xbee_client_t *self_p,
         DLOG(DEBUG, "Unexpected AT Command Response received.\r\n");
     }
 
-    sem_give(&self_p->rpc.rx.sem, 1);
+    mutex_unlock(&self_p->rpc.rx.mutex);
 
     return (0);
 }
@@ -193,9 +192,9 @@ static int handle_at_command_response(struct xbee_client_t *self_p,
     frame_id = frame_p->data.buf[0];
     status = frame_p->data.buf[2];
 
-    sem_take(&self_p->rpc.rx.sem, NULL);
+    mutex_lock(&self_p->rpc.rx.mutex);
 
-    if (self_p->rpc.rx.thrd_p != NULL) {
+    if (self_p->rpc.rx.frame_p != NULL) {
         expected_frame_id = self_p->rpc.rx.frame_p->data.buf[0];
 
         if (expected_frame_id == frame_id) {
@@ -211,8 +210,8 @@ static int handle_at_command_response(struct xbee_client_t *self_p,
                 size = -EPROTO;
             }
 
-            thrd_resume(self_p->rpc.rx.thrd_p, size);
-            self_p->rpc.rx.thrd_p = NULL;
+            self_p->rpc.rx.frame_p = NULL;
+            cond_signal(&self_p->rpc.rx.cond);
         } else {
             DLOG(DEBUG,
                  "Expected frame id 0x%02x in AT Command Response but "
@@ -224,7 +223,7 @@ static int handle_at_command_response(struct xbee_client_t *self_p,
         DLOG(DEBUG, "Unexpected AT Command Response received.\r\n");
     }
 
-    sem_give(&self_p->rpc.rx.sem, 1);
+    mutex_unlock(&self_p->rpc.rx.mutex);
 
     return (0);
 }
@@ -253,10 +252,11 @@ int xbee_client_init(struct xbee_client_t *self_p,
     }
 
     self_p->frame_id = XBEE_FRAME_ID_NO_ACK;
-    self_p->rpc.rx.thrd_p = NULL;
+    self_p->rpc.rx.frame_p = NULL;
 
-    sem_init(&self_p->rpc.sem, 0, 1);
-    sem_init(&self_p->rpc.rx.sem, 0, 1);
+    mutex_init(&self_p->rpc.mutex);
+    mutex_init(&self_p->rpc.rx.mutex);
+    cond_init(&self_p->rpc.rx.cond);
 
 #if CONFIG_XBEE_CLIENT_DEBUG_LOG_MASK > -1
     log_object_init(&self_p->log,
