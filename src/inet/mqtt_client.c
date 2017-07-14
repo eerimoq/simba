@@ -132,6 +132,7 @@ static int write_fixed_header(struct mqtt_client_t *self_p,
  */
 static int read_fixed_header(struct mqtt_client_t *self_p,
                              int *type_p,
+                             int *flags_p,
                              size_t *size_p)
 {
     uint8_t byte;
@@ -141,7 +142,9 @@ static int read_fixed_header(struct mqtt_client_t *self_p,
         return (-EIO);
     }
 
+    *flags_p = byte & 0xf
     *type_p = ((byte >> 4) & 0xf);
+
 
     /* Read the variablie size field. */
     multiplier = 1;
@@ -578,11 +581,13 @@ static int handle_response_unsuback(struct mqtt_client_t *self_p,
  * Handle the publish message from the server.
  */
 static int handle_publish(struct mqtt_client_t *self_p,
-                          size_t size)
+                          size_t size,
+                          int flags)
 {
     size_t topic_size;
     size_t payload_size;
     uint8_t buf[2];
+    uint8_t qos;
     char topic[128];
 
     /* Read the variable header. */
@@ -604,12 +609,16 @@ static int handle_publish(struct mqtt_client_t *self_p,
     }
 
     topic[topic_size] = '\0';
+    qos = ((flags >> 1) & 0x3);
 
-    if (chan_read(self_p->transport.in_p, buf, 2) != 2) {
-        return (-EIO);
+    if(qos == 0){
+        payload_size = (size - topic_size - 2);
+    }else{
+        if (chan_read(self_p->transport.in_p, buf, 2) != 2) {
+            return (-EIO);
+        }
+        payload_size = (size - topic_size - 4);
     }
-
-    payload_size = (size - topic_size - 4);
 
     if (self_p->on_publish(self_p,
                            topic,
@@ -695,10 +704,11 @@ static int read_control_message(struct mqtt_client_t *self_p)
 static int read_server_message(struct mqtt_client_t *self_p)
 {
     int type;
+    int flags;
     size_t size = 0;
     int res = 0;
 
-    if (read_fixed_header(self_p, &type, &size) != 0) {
+    if (read_fixed_header(self_p, &type, &flags, &size) != 0) {
         return (-EIO);
     }
 
@@ -740,7 +750,7 @@ static int read_server_message(struct mqtt_client_t *self_p)
         break;
 
     case MQTT_PUBLISH:
-        res = handle_publish(self_p, size);
+        res = handle_publish(self_p, size, flags);
         break;
 
     default:
