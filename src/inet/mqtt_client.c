@@ -142,7 +142,7 @@ static int read_fixed_header(struct mqtt_client_t *self_p,
         return (-EIO);
     }
 
-    *flags_p = byte & 0xf
+    *flags_p = byte & 0xf;
     *type_p = ((byte >> 4) & 0xf);
 
 
