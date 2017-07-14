@@ -572,6 +572,43 @@ static int test_at_command_error(struct harness_t *harness_p)
     return (0);
 }
 
+static int test_tx_packet_negative_response(struct harness_t *harness_p)
+{
+    struct xbee_frame_t frame;
+    struct xbee_client_address_t receiver;
+    uint32_t mask;
+
+    /* Prepare the TX Status frame. */
+    frame.type = 0x89;
+    frame.data.size = 2;
+    memcpy(&frame.data.buf[0], "\x0e\x01", frame.data.size);
+
+    harness_mock_write("xbee_read(): return (frame)",
+                       &frame,
+                       sizeof(frame));
+
+    mask = 1;
+    harness_mock_write("xbee_write(): event mask", &mask, sizeof(mask));
+
+    /* Perform the write. */
+    receiver.type = xbee_client_address_type_16_bits_t;
+    receiver.buf[0] = 0x56;
+    receiver.buf[1] = 0x78;
+
+    BTASSERTI(xbee_client_write_to(&xbee,
+                                   "hello",
+                                   5,
+                                   0,
+                                   &receiver), ==, -EPROTO);
+
+    harness_mock_read("xbee_write(frame)", &frame, sizeof(frame));
+    BTASSERTI(frame.type, ==, XBEE_FRAME_TYPE_TX_REQUEST_16_BIT_ADDRESS);
+    BTASSERTI(frame.data.size, ==, 9);
+    BTASSERTM(&frame.data.buf[0], "\x0e\x56\x78\x00hello", frame.data.size);
+
+    return (0);
+}
+
 static int test_print_address(struct harness_t *harness_p)
 {
     struct xbee_client_address_t address;
@@ -691,6 +728,10 @@ int main()
         { test_at_command_write_u16, "test_at_command_write_u16" },
         { test_at_command_write_u32, "test_at_command_write_u32" },
         { test_at_command_error, "test_at_command_error" },
+        {
+            test_tx_packet_negative_response,
+            "test_tx_packet_negative_response"
+        },
         { test_print_address, "test_print_address" },
         { NULL, NULL }
     };
