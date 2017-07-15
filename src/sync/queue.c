@@ -148,7 +148,6 @@ ssize_t queue_read(struct queue_t *self_p, void *buf_p, size_t size)
 {
     ASSERTN(self_p != NULL, EINVAL);
     ASSERTN(buf_p != NULL, EINVAL);
-    ASSERTN(size > 0, EINVAL);
 
     size_t left, n;
     char *c_buf_p;
@@ -220,7 +219,6 @@ ssize_t queue_write(struct queue_t *self_p,
 {
     ASSERTN(self_p != NULL, EINVAL);
     ASSERTN(buf_p != NULL, EINVAL);
-    ASSERTN(size > 0, EINVAL);
 
     ssize_t res;
     size_t left;
@@ -229,7 +227,7 @@ ssize_t queue_write(struct queue_t *self_p,
 
     left = size;
     c_buf_p = buf_p;
-
+    
     sys_lock();
 
     res = queue_write_isr(self_p, c_buf_p, size);

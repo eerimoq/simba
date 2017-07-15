@@ -489,6 +489,17 @@ static int test_ignore(struct harness_t *harness_p)
     return (0);
 }
 
+static int test_read_write_zero(struct harness_t *harness_p)
+{
+    int a[2];
+
+    a[0] = 0;
+    BTASSERTI(queue_write(&buffered_queue, &a[0], 0), ==, 0);
+    BTASSERTI(queue_read(&buffered_queue, &a[0], 0), ==, 0);
+    
+    return (0);
+}
+
 int main()
 {
     struct harness_t harness;
@@ -502,6 +513,7 @@ int main()
         { test_poll_write_two_channels, "test_poll_write_two_channels" },
         { test_non_blocking, "test_non_blocking" },
         { test_ignore, "test_ignore" },
+        { test_read_write_zero, "test_read_write_zero" },
         { NULL, NULL }
     };
 
