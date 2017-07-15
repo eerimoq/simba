@@ -30,6 +30,14 @@
 
 #include "simba.h"
 
+static int test_init(struct harness_t *harness_p)
+{
+    BTASSERT(science_module_init() == 0);
+    BTASSERT(science_module_init() == 0);
+
+    return (0);
+}
+
 static int test_pressure_to_altitude(struct harness_t *harness_p)
 {
     float altitude;
@@ -85,44 +93,44 @@ static int test_pressure_from_altitude(struct harness_t *harness_p)
 
     /* 22632.2 Pa, 11000.0 meters. */
     pressure = science_pressure_from_altitude(
-                  10999.9,
-                  SCIENCE_SEA_LEVEL_STANDARD_PRESSURE);
+        10999.9,
+        SCIENCE_SEA_LEVEL_STANDARD_PRESSURE);
     BTASSERT_IN_RANGE(pressure, 22632.4, 22632.5);
 
     /* 46563.3 Pa, 6096.0 meters. */
     pressure = science_pressure_from_altitude(
-                  6096.0,
-                  SCIENCE_SEA_LEVEL_STANDARD_PRESSURE);
+        6096.0,
+        SCIENCE_SEA_LEVEL_STANDARD_PRESSURE);
     BTASSERT_IN_RANGE(pressure, 46563.2, 46563.3);
 
     /* 101225 Pa, 8.3 meters. */
     pressure = science_pressure_from_altitude(
-                  8.3,
-                  SCIENCE_SEA_LEVEL_STANDARD_PRESSURE);
+        8.3,
+        SCIENCE_SEA_LEVEL_STANDARD_PRESSURE);
     BTASSERT_IN_RANGE(pressure, 101225.3, 101225.4);
 
     /* 101325 Pa, 0.0 meters. */
     pressure = science_pressure_from_altitude(
-                  0.0,
-                  SCIENCE_SEA_LEVEL_STANDARD_PRESSURE);
+        0.0,
+        SCIENCE_SEA_LEVEL_STANDARD_PRESSURE);
     BTASSERT(pressure == 101325.0);
 
     /* 101425 Pa, -8.3 meters. */
     pressure = science_pressure_from_altitude(
-                  -8.3,
-                  SCIENCE_SEA_LEVEL_STANDARD_PRESSURE);
+        -8.3,
+        SCIENCE_SEA_LEVEL_STANDARD_PRESSURE);
     BTASSERT_IN_RANGE(pressure, 101424.7, 101424.8);
 
     /* 121023 Pa, -1524.0 meters. */
     pressure = science_pressure_from_altitude(
-                  -1524.0,
-                  SCIENCE_SEA_LEVEL_STANDARD_PRESSURE);
+        -1524.0,
+        SCIENCE_SEA_LEVEL_STANDARD_PRESSURE);
     BTASSERT_IN_RANGE(pressure, 121023.2, 121023.3);
 
     /* Too high altitude. */
-    pressure = science_pressure_to_altitude(
-                  11000.1,
-                  SCIENCE_SEA_LEVEL_STANDARD_PRESSURE);
+    pressure = science_pressure_from_altitude(
+        11000.1,
+        SCIENCE_SEA_LEVEL_STANDARD_PRESSURE);
     BTASSERT(isnan(pressure));
 
     return (0);
@@ -174,6 +182,7 @@ int main()
 {
     struct harness_t harness;
     struct harness_testcase_t harness_testcases[] = {
+        { test_init, "test_init" },
         { test_pressure_to_altitude, "test_pressure_to_altitude" },
         { test_pressure_from_altitude, "test_pressure_from_altitude" },
         { test_mps_to_kmph, "test_mps_to_kmph" },
