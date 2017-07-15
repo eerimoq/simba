@@ -621,7 +621,7 @@ static int handle_publish(struct mqtt_client_t *self_p,
         payload_size = (size - topic_size - 2);
     } else {
         /* Read the packet identifier. */
-        if (chan_read(self_p->transport.in_p, buf, 2) != 2) { 
+        if (chan_read(self_p->transport.in_p, buf, 2) != 2) {
             return (-EIO);
         }
 
@@ -637,6 +637,7 @@ static int handle_publish(struct mqtt_client_t *self_p,
             return (res);
         }
 
+        /* Write the variable header. */
         if (chan_write(self_p->transport.out_p, &buf[0], 2) != 2) {
             return (-EIO);
         }
