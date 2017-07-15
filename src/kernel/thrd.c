@@ -668,14 +668,17 @@ int thrd_sleep_ms(int milliseconds)
 int thrd_sleep_us(long microseconds)
 {
     struct time_t timeout;
-    int res;
 
     timeout.seconds = (microseconds / 1000000);
     timeout.nanoseconds = 1000 * (microseconds % 1000000);
 
+#if !defined(CONFIG_PANIC_ASSERT)
+    thrd_suspend(&timeout);
+#else
+    int res;
     res = thrd_suspend(&timeout);
-
     PANIC_ASSERT(res == -ETIMEDOUT);
+#endif
 
     return (0);
 }
