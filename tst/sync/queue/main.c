@@ -149,6 +149,11 @@ static void *t1_main(void *arg_p)
     BTASSERTN(queue_write(&queue[1], &c[0], sizeof(c)) == sizeof(c));
 
     /* Test: ignore. */
+
+    /* Wait for testcase test_poll_write_all_channels start event. */
+    mask = 1;
+    BTASSERTN(event_read(&event, &mask, sizeof(mask)) == sizeof(mask));
+
     c[0] = 26;
     c[1] = 27;
     c[2] = 28;
@@ -408,11 +413,17 @@ static int test_non_blocking(struct harness_t *harness_p)
 
 static int test_ignore(struct harness_t *harness_p)
 {
+    uint32_t mask;
     int a[2];
     char b[2];
 
-    /* A thread is blocked trying to write four integers. */
+    /* Signal tester thread to start. It will sleep for a while to let
+       this thread start polling. */
+    mask = 1;
+    BTASSERT(event_write(&event, &mask, sizeof(mask)) == 4);
     thrd_sleep_ms(10);
+
+    /* A thread is blocked trying to write four integers. */
     BTASSERTI(queue_size(&buffered_queue), ==, 4 * sizeof(a[0]));
 
     /* Ignore two of them. */
