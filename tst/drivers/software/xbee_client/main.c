@@ -199,6 +199,120 @@ static int test_rx_packet_64_bits_address_short(struct harness_t *harness_p)
     return (0);
 }
 
+static int test_rx_packet_16_bits_address_bad_size(struct harness_t *harness_p)
+{
+    struct xbee_frame_t frame;
+    uint32_t mask;
+    struct time_t timeout;
+
+    /* Prepare input frame. */
+    frame.type = 0x81;
+    frame.data.size = 3;
+    memcpy(&frame.data.buf[0], "\x12\x34\x37", frame.data.size);
+    harness_mock_write("xbee_read(): return (frame)",
+                       &frame,
+                       sizeof(frame));
+    mask = 1;
+    event_write(&event, &mask, sizeof(mask));
+
+    /* Packet discarded in the client. */
+    timeout.seconds = 0;
+    timeout.nanoseconds = 1000000;
+    BTASSERT(chan_poll(&xbee, &timeout) == NULL);
+
+    return (0);
+}
+
+static int test_rx_packet_64_bits_address_bad_size(struct harness_t *harness_p)
+{
+    struct xbee_frame_t frame;
+    uint32_t mask;
+    struct time_t timeout;
+
+    /* Prepare input frame. */
+    frame.type = 0x80;
+    frame.data.size = 9;
+    memcpy(&frame.data.buf[0],
+           "\x88\x77\x66\x55\x44\x33\x22\x11"
+           "\x00", frame.data.size);
+    harness_mock_write("xbee_read(): return (frame)",
+                       &frame,
+                       sizeof(frame));
+    mask = 1;
+    event_write(&event, &mask, sizeof(mask));
+
+    /* Packet discarded in the client. */
+    timeout.seconds = 0;
+    timeout.nanoseconds = 1000000;
+    BTASSERT(chan_poll(&xbee, &timeout) == NULL);
+
+    return (0);
+}
+
+static int test_rx_packet_16_bits_address_no_data(struct harness_t *harness_p)
+{
+    struct xbee_frame_t frame;
+    uint32_t mask;
+    struct xbee_client_address_t sender;
+    uint8_t buf[1];
+    ssize_t size;
+
+    /* Prepare input frame. */
+    frame.type = 0x81;
+    frame.data.size = 4;
+    memcpy(&frame.data.buf[0], "\x12\x34\x37\x05", frame.data.size);
+    harness_mock_write("xbee_read(): return (frame)",
+                       &frame,
+                       sizeof(frame));
+    mask = 1;
+    event_write(&event, &mask, sizeof(mask));
+
+    /* Read the frame from the client. */
+    size = xbee_client_read_from(&xbee,
+                                 &buf[0],
+                                 sizeof(buf),
+                                 &sender);
+
+    BTASSERTI(size, ==, 0);
+    BTASSERTI(sender.type, ==, xbee_client_address_type_16_bits_t);
+    BTASSERTM(&sender.buf[0], "\x12\x34", 2);
+
+    return (0);
+}
+
+static int test_rx_packet_64_bits_address_no_data(struct harness_t *harness_p)
+{
+    struct xbee_frame_t frame;
+    uint32_t mask;
+    struct xbee_client_address_t sender;
+    uint8_t buf[1];
+    ssize_t size;
+
+    /* Prepare input frame. */
+    frame.type = 0x80;
+    frame.data.size = 10;
+    memcpy(&frame.data.buf[0],
+           "\x88\x77\x66\x55\x44\x33\x22\x11"
+           "\x00\x01", frame.data.size);
+    harness_mock_write("xbee_read(): return (frame)",
+                       &frame,
+                       sizeof(frame));
+    mask = 1;
+    event_write(&event, &mask, sizeof(mask));
+
+    /* Read the frame from the client. */
+    size = xbee_client_read_from(&xbee,
+                                 &buf[0],
+                                 sizeof(buf),
+                                 &sender);
+
+    BTASSERTI(size, ==, 0);
+    BTASSERTI(sender.type, ==, xbee_client_address_type_64_bits_t);
+    BTASSERTM(&sender.buf[0], "\x88\x77\x66\x55\x44\x33\x22\x11", 8);
+
+    return (0);
+}
+
 static int test_tx_packet_16_bits_address(struct harness_t *harness_p)
 {
     struct xbee_frame_t frame;
@@ -754,6 +868,22 @@ int main()
         {
             test_rx_packet_64_bits_address_short,
             "test_rx_packet_64_bits_address_short"
+        },
+        {
+            test_rx_packet_16_bits_address_bad_size,
+            "test_rx_packet_16_bits_address_bad_size"
+        },
+        {
+            test_rx_packet_64_bits_address_bad_size,
+            "test_rx_packet_64_bits_address_bad_size"
+        },
+        {
+            test_rx_packet_16_bits_address_no_data,
+            "test_rx_packet_16_bits_address_no_data"
+        },
+        {
+            test_rx_packet_64_bits_address_no_data,
+            "test_rx_packet_64_bits_address_no_data"
         },
         { test_tx_packet_16_bits_address, "test_tx_packet_16_bits_address" },
         {

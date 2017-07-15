@@ -143,7 +143,10 @@ static int handle_rx_packet_16_bit_address(struct xbee_client_t *self_p,
     size = frame_p->data.size;
 
     if (size < 4) {
-        DLOG(DEBUG, "Wrong TX Status data size %u.\r\n", size);
+        DLOG(DEBUG,
+             "Expected RX Packet 16 Bit Address of at least 4 bytes "
+             "but got %u.\r\n",
+             size);
         return (-EPROTO);
     }
 
@@ -166,7 +169,10 @@ static int handle_rx_packet_64_bit_address(struct xbee_client_t *self_p,
     size = frame_p->data.size;
 
     if (size < 10) {
-        DLOG(DEBUG, "Wrong TX Status data size %u.\r\n", size);
+        DLOG(DEBUG,
+             "Expected RX Packet 64 Bit Address of at least 10 bytes "
+             "but got %u.\r\n",
+             size);
         return (-EPROTO);
     }
 
@@ -191,7 +197,7 @@ static int handle_tx_status(struct xbee_client_t *self_p,
     size = frame_p->data.size;
 
     if (size != 2) {
-        DLOG(DEBUG, "Wrong TX Status data size %u.\r\n", size);
+        DLOG(DEBUG, "Expected TX Status of 2 bytes but got %u.\r\n", size);
         return (-EPROTO);
     }
 
@@ -244,7 +250,8 @@ static int handle_at_command_response(struct xbee_client_t *self_p,
 
     if (size < 4) {
         DLOG(DEBUG,
-             "AT Command Response data size %u too small.\r\n",
+             "Expected AT Command Response of at least 4 bytes "
+             "but got %u.\r\n",
              size);
         return (-EPROTO);
     }
