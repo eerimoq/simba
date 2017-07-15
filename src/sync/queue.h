@@ -100,11 +100,14 @@ struct queue_t {
 };
 
 /**
- * Initialize given queue.
+ * Initialize given queue with given optional buffer.
  *
  * @param[in] self_p Queue to initialize.
- * @param[in] buf_p Buffer.
- * @param[in] size Size of buffer.
+ * @param[in] buf_p Buffer for data storage. Give as NULL to disable
+ *                  buffering and only allow the writer to write
+ *                  directly into the reader's buffer, blocking the
+ *                  writer until all data has been written.
+ * @param[in] size Size of given buffer.
  *
  * @return zero(0) or negative error code
  */
@@ -148,7 +151,7 @@ int queue_stop_isr(struct queue_t *self_p);
  * @param[in] buf_p Buffer to read to.
  * @param[in] size Size to read.
  *
- * @return Number of read bytes or negative error code.
+ * @return Number of bytes read or negative error code.
  */
 ssize_t queue_read(struct queue_t *self_p,
                    void *buf_p,
@@ -162,7 +165,7 @@ ssize_t queue_read(struct queue_t *self_p,
  * @param[in] buf_p Buffer to write from.
  * @param[in] size Number of bytes to write.
  *
- * @return Number of written bytes or negative error code.
+ * @return Number of bytes written or negative error code.
  */
 ssize_t queue_write(struct queue_t *self_p,
                     const void *buf_p,
@@ -176,7 +179,7 @@ ssize_t queue_write(struct queue_t *self_p,
  * @param[in] buf_p Buffer to write from.
  * @param[in] size Number of bytes to write.
  *
- * @return Number of written bytes or negative error code.
+ * @return Number of bytes written or negative error code.
  */
 ssize_t queue_write_isr(struct queue_t *self_p,
                         const void *buf_p,
@@ -188,7 +191,7 @@ ssize_t queue_write_isr(struct queue_t *self_p,
  *
  * @param[in] self_p Queue.
  *
- * @return Number of bytes in queue.
+ * @return Number of bytes in given queue.
  */
 ssize_t queue_size(struct queue_t *self_p);
 
@@ -197,7 +200,7 @@ ssize_t queue_size(struct queue_t *self_p);
  *
  * @param[in] self_p Queue.
  *
- * @return Number of bytes unused in the queue.
+ * @return Number of unused bytes in given queue.
  */
 ssize_t queue_unused_size(struct queue_t *self_p);
 
@@ -207,12 +210,12 @@ ssize_t queue_unused_size(struct queue_t *self_p);
  *
  * @param[in] self_p Queue.
  *
- * @return Number of bytes unused in the queue.
+ * @return Number of unused bytes in given queue.
  */
 ssize_t queue_unused_size_isr(struct queue_t *self_p);
 
 /**
- * Ignore given number of byte at the beginning of the queue by
+ * Ignore given number of bytes at the beginning of the queue by
  * discarding them.
  *
  * @param[in] self_p Queue.
