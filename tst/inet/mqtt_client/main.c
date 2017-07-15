@@ -409,7 +409,6 @@ static int test_incoming_publish_qos1(struct harness_t *harness_p)
     /* Prepare the server to send a publish message. */
     /* Packet fixed header */
     buf[0] = ((3 << 4) | (1 << 1)); /* QoS 1. */
-
     buf[1] = 14;
     /* Variable header */
     buf[2] = 0;
