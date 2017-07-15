@@ -76,13 +76,6 @@ enum queue_state_t {
     QUEUE_STATE_STOPPED,
 };
 
-struct queue_writer_elem_t {
-    struct thrd_prio_list_elem_t base;
-    void *buf_p;
-    size_t size;
-    size_t left;
-};
-
 /* Queue. */
 struct queue_t {
     struct chan_t base;

@@ -36,6 +36,13 @@
 #define READER_SIZE(queue_p)                                            \
     (((queue_p)->base.reader_p != NULL) * (queue_p)->reader.left)
 
+struct queue_writer_elem_t {
+    struct thrd_prio_list_elem_t base;
+    void *buf_p;
+    size_t size;
+    size_t left;
+};
+
 static int control(struct queue_t *self_p, int operation)
 {
     int res;
