@@ -637,7 +637,7 @@ static int handle_publish(struct mqtt_client_t *self_p,
             return (res);
         }
 
-        if (chan_write(self_p->transport.out_p, &buf, 2) != 2) {
+        if (chan_write(self_p->transport.out_p, &buf[0], 2) != 2) {
             return (-EIO);
         }
 

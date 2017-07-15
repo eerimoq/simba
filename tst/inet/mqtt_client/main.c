@@ -77,14 +77,17 @@ static void *server_main(void *arg_p)
     return (NULL);
 }
 
+
+static uint8_t msg_buf[16];
+static size_t msg_size;
+
 static size_t on_publish(struct mqtt_client_t *client_p,
                          const char *topic_p,
                          void *chin_p,
                          size_t size)
 {
-    uint8_t buf[16];
-
-    chan_read(chin_p, buf, size);
+    msg_size = size;
+    chan_read(chin_p, msg_buf, size);
     thrd_resume(self_p, 0);
 
     return (0);
@@ -365,7 +368,7 @@ static int test_incoming_publish_qos0(struct harness_t *harness_p)
 
     /* Prepare the server to send a publish message. */
     /* Packet fixed header */
-    buf[0] = (3 << 4);
+    buf[0] = ((3 << 4) | (0 << 1)); /* QoS 0. */
     buf[1] = 12;
     /* Variable header */
     buf[2] = 0;
@@ -388,6 +391,12 @@ static int test_incoming_publish_qos0(struct harness_t *harness_p)
     /* Resumed from the callback. */
     thrd_suspend(NULL);
 
+    /* Check the received message. */
+    BTASSERT(msg_size == 3);
+    BTASSERT(msg_buf[0] == 'f');
+    BTASSERT(msg_buf[1] == 'i');
+    BTASSERT(msg_buf[2] == 'e');
+
     return (0);
 }
 
@@ -399,7 +408,8 @@ static int test_incoming_publish_qos1(struct harness_t *harness_p)
 
     /* Prepare the server to send a publish message. */
     /* Packet fixed header */
-    buf[0] = (3 << 4) | 2;
+    buf[0] = ((3 << 4) | (1 << 1)); /* QoS 1. */
+
     buf[1] = 14;
     /* Variable header */
     buf[2] = 0;
@@ -425,6 +435,11 @@ static int test_incoming_publish_qos1(struct harness_t *harness_p)
     /* Resumed from the callback. */
     thrd_suspend(NULL);
 
+    /* Check the received message. */
+    BTASSERT(msg_size == 3);
+    BTASSERT(msg_buf[0] == 'f');
+    BTASSERT(msg_buf[1] == 'i');
+    BTASSERT(msg_buf[2] == 'e');
 
     /* Prepare the server to receive the ACK message. */
     message.buf_p = NULL;
@@ -449,7 +464,7 @@ static int test_incoming_publish_qos2(struct harness_t *harness_p)
 
     /* Prepare the server to send a publish message. */
     /* Packet fixed header */
-    buf[0] = (3 << 4) | 4;
+    buf[0] = ((3 << 4) | (2 << 1)); /* QoS 2. */
     buf[1] = 14;
     /* Variable header */
     buf[2] = 0;
@@ -474,6 +489,12 @@ static int test_incoming_publish_qos2(struct harness_t *harness_p)
 
     /* Resumed from the callback. */
     thrd_suspend(NULL);
+
+    /* Check the received message. */
+    BTASSERT(msg_size == 3);
+    BTASSERT(msg_buf[0] == 'f');
+    BTASSERT(msg_buf[1] == 'i');
+    BTASSERT(msg_buf[2] == 'e');
 
     /* Prepare the server to receive the REC message. */
     message.buf_p = NULL;
