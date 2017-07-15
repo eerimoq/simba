@@ -33,17 +33,6 @@
 
 #include "simba.h"
 
-enum queue_state_t {
-    /** Queue initialized state. */
-    QUEUE_STATE_INITIALIZED = 0,
-
-    /** Queue running state. */
-    QUEUE_STATE_RUNNING,
-
-    /** Queue stopped state. */
-    QUEUE_STATE_STOPPED,
-};
-
 #define QUEUE_FLAGS_NON_BLOCKING_READ                     0x1
 
 /* Compile time declaration and initialization of a channel. */
@@ -61,12 +50,12 @@ enum queue_state_t {
             .head_p = NULL,                             \
         },                                              \
         .writer_p = NULL,                               \
+        .buf_p = _buf,                                  \
         .buffer = {                                     \
-            .begin_p = _buf,                            \
-            .read_p = _buf,                             \
-            .write_p = _buf,                            \
-            .end_p = &_buf[_size],                      \
-            .size = _size                               \
+            .buf_p = _buf,                              \
+            .size = _size,                              \
+            .writepos = 0,                              \
+            .readpos = 0                                \
         },                                              \
         .state = QUEUE_STATE_INITIALIZED,               \
         .reader = {                                     \
@@ -76,12 +65,15 @@ enum queue_state_t {
         }                                               \
     }
 
-struct queue_buffer_t{
-    char *begin_p;
-    char *read_p;
-    char *write_p;
-    char *end_p;
-    size_t size;
+enum queue_state_t {
+    /** Queue initialized state. */
+    QUEUE_STATE_INITIALIZED = 0,
+
+    /** Queue running state. */
+    QUEUE_STATE_RUNNING,
+
+    /** Queue stopped state. */
+    QUEUE_STATE_STOPPED,
 };
 
 struct queue_writer_elem_t {
@@ -101,7 +93,8 @@ struct queue_t {
         size_t size;
         size_t left;
     } reader;
-    struct queue_buffer_t buffer;
+    void *buf_p;
+    struct circular_buffer_t buffer;
     enum queue_state_t state;
     int flags;
 };
@@ -217,5 +210,16 @@ ssize_t queue_unused_size(struct queue_t *self_p);
  * @return Number of bytes unused in the queue.
  */
 ssize_t queue_unused_size_isr(struct queue_t *self_p);
+
+/**
+ * Ignore given number of byte at the beginning of the queue by
+ * discarding them.
+ *
+ * @param[in] self_p Queue.
+ *
+ * @return Number of bytes ignored or negative error code.
+ */
+ssize_t queue_ignore(struct queue_t *self_p,
+                     size_t size);
 
 #endif

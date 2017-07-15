@@ -148,6 +148,19 @@ static void *t1_main(void *arg_p)
     c[3] = 25;
     BTASSERTN(queue_write(&queue[1], &c[0], sizeof(c)) == sizeof(c));
 
+    /* Test: ignore. */
+    c[0] = 26;
+    c[1] = 27;
+    c[2] = 28;
+    c[3] = 29;
+    BTASSERTN(queue_write(&buffered_queue, &c[0], sizeof(c)) == sizeof(c));
+
+    c[0] = 30;
+    c[1] = 31;
+    c[2] = 32;
+    c[3] = 33;
+    BTASSERTN(queue_write(&buffered_queue, &c[0], sizeof(c)) == sizeof(c));
+
     thrd_suspend(NULL);
 
     return (0);
@@ -393,6 +406,78 @@ static int test_non_blocking(struct harness_t *harness_p)
     return (0);
 }
 
+static int test_ignore(struct harness_t *harness_p)
+{
+    int a[2];
+    char b[2];
+
+    /* A thread is blocked trying to write four integers. */
+    thrd_sleep_ms(10);
+    BTASSERTI(queue_size(&buffered_queue), ==, 4 * sizeof(a[0]));
+
+    /* Ignore two of them. */
+    BTASSERTI(queue_ignore(&buffered_queue, 2 * sizeof(a[0])),
+              ==,
+              2 * sizeof(a[0]));
+
+    /* Ignore one more. */
+    BTASSERTI(queue_ignore(&buffered_queue, sizeof(a[0])),
+              ==,
+              sizeof(a[0]));
+
+    /* Ignore the last. */
+    BTASSERTI(queue_ignore(&buffered_queue, sizeof(a[0])),
+              ==,
+              sizeof(a[0]));
+
+    /* A thread is blocked trying to write four integers. */
+    thrd_sleep_ms(10);
+    BTASSERTI(queue_size(&buffered_queue), ==, 4 * sizeof(a[0]));
+
+    /* Ignore one of them. */
+    BTASSERTI(queue_ignore(&buffered_queue, sizeof(a[0])),
+              ==,
+              sizeof(a[0]));
+
+    /* Read one. */
+    BTASSERTI(queue_read(&buffered_queue, &a[0], sizeof(a[0])),
+              ==,
+              sizeof(a[0]));
+    BTASSERTI(a[0], ==, 31);
+
+    /* Ignore one. */
+    BTASSERTI(queue_ignore(&buffered_queue, sizeof(a[0])),
+              ==,
+              sizeof(a[0]));
+
+    /* Read the last. */
+    BTASSERTI(queue_read(&buffered_queue, &a[0], sizeof(a[0])),
+              ==,
+              sizeof(a[0]));
+    BTASSERTI(a[0], ==, 33);
+
+    /* Ignore from empty queue. */
+    BTASSERTI(queue_ignore(&buffered_queue, 1), ==, 0);
+
+    /* Write two chars. */
+    b[0] = 105;
+    b[1] = 106;
+    BTASSERTI(queue_write(&buffered_queue,
+                          &b[0],
+                          sizeof(b)), ==, sizeof(b));
+
+    /* Ignore one of them. */
+    BTASSERTI(queue_ignore(&buffered_queue, 1), ==, 1);
+
+    /* Read the second. */
+    BTASSERTI(queue_write(&buffered_queue,
+                          &b[0],
+                          sizeof(b[0])), ==, sizeof(b[0]));
+    BTASSERTI(b[0], ==, 105);
+
+    return (0);
+}
+
 int main()
 {
     struct harness_t harness;
@@ -405,6 +490,7 @@ int main()
         { test_multiple_writers, "test_multiple_writers" },
         { test_poll_write_two_channels, "test_poll_write_two_channels" },
         { test_non_blocking, "test_non_blocking" },
+        { test_ignore, "test_ignore" },
         { NULL, NULL }
     };
 

@@ -30,39 +30,11 @@
 
 #include "simba.h"
 
-#define BUFFER_SIZE(buffer_p)                           \
-    ((buffer_p)->size > 0 ? (buffer_p)->size - 1 : 0)
-
-#define BUFFER_USED_UNTIL_END(buffer_p)         \
-    ((buffer_p)->end_p - (buffer_p)->read_p)
-
 #define WRITER_SIZE(queue_p)                                            \
     ((queue_p)->writer_p == NULL ? 0 : (queue_p)->writer_p->left)
 
 #define READER_SIZE(queue_p)                                            \
     (((queue_p)->base.reader_p != NULL) * (queue_p)->reader.left)
-
-#define BUFFER_UNUSED_UNTIL_END(buffer_p)       \
-    ((buffer_p)->end_p - (buffer_p)->write_p)
-
-#define BUFFER_UNUSED(buffer_p)                         \
-    (BUFFER_SIZE(buffer_p) - get_buffer_used(buffer_p))
-
-RAM_CODE static inline size_t get_buffer_used(struct queue_buffer_t *buffer_p)
-{
-    if (buffer_p->begin_p == NULL) {
-        return (0);
-    }
-
-    if (buffer_p->write_p == buffer_p->read_p) {
-        return (0);
-    } else if (buffer_p->write_p > buffer_p->read_p) {
-        return (buffer_p->write_p - buffer_p->read_p);
-    } else {
-        return ((buffer_p->end_p - buffer_p->begin_p)
-                - (buffer_p->read_p - buffer_p->write_p));
-    }
-}
 
 static int control(struct queue_t *self_p, int operation)
 {
@@ -111,11 +83,11 @@ int queue_init(struct queue_t *self_p,
     self_p->reader.size = 0;
     self_p->reader.left = 0;
 
-    self_p->buffer.begin_p = buf_p;
-    self_p->buffer.read_p = buf_p;
-    self_p->buffer.write_p = buf_p;
-    self_p->buffer.end_p = &((char*)buf_p)[size];
-    self_p->buffer.size = size;
+    self_p->buf_p = buf_p;
+
+    if (buf_p != NULL) {
+        circular_buffer_init(&self_p->buffer, buf_p, size);
+    }
 
     self_p->state = QUEUE_STATE_INITIALIZED;
     self_p->flags = 0;
@@ -178,57 +150,28 @@ ssize_t queue_read(struct queue_t *self_p, void *buf_p, size_t size)
     ASSERTN(buf_p != NULL, EINVAL);
     ASSERTN(size > 0, EINVAL);
 
-    size_t left, n, buffer_used_until_end, buffer_used;
-    char *cbuf_p;
+    size_t left, n;
+    char *c_buf_p;
 
     left = size;
-    cbuf_p = buf_p;
+    c_buf_p = buf_p;
 
     sys_lock();
 
     /* Copy data from queue buffer. */
-    if (self_p->buffer.begin_p != NULL) {
-        buffer_used = get_buffer_used(&self_p->buffer);
-
-        /* Number of bytes to read from the buffer. */
-        if (left < buffer_used) {
-            n = left;
-        } else {
-            n = buffer_used;
-        }
-
-        buffer_used_until_end = BUFFER_USED_UNTIL_END(&self_p->buffer);
-
-        if (n <= buffer_used_until_end) {
-            /* Read one chunk. */
-            memcpy(cbuf_p, self_p->buffer.read_p, n);
-            self_p->buffer.read_p += n;
-        } else {
-            /* Read two chunks, to end and then from beginning. */
-            memcpy(cbuf_p, self_p->buffer.read_p, buffer_used_until_end);
-            memcpy(cbuf_p + buffer_used_until_end,
-                   self_p->buffer.begin_p,
-                   (n - buffer_used_until_end));
-            self_p->buffer.read_p = self_p->buffer.begin_p;
-            self_p->buffer.read_p += (n - buffer_used_until_end);
-        }
-
-        cbuf_p += n;
+    if (self_p->buf_p != NULL) {
+        n = circular_buffer_read(&self_p->buffer, buf_p, left);
         left -= n;
+        c_buf_p += n;
     }
 
     /* Copy data from the writer, if one is present. */
     while ((self_p->writer_p != NULL) && (left > 0)) {
-        if (left < self_p->writer_p->left) {
-            n = left;
-        } else {
-            n = self_p->writer_p->left;
-        }
-
-        memcpy(cbuf_p, self_p->writer_p->buf_p, n);
+        n = MIN(left, self_p->writer_p->left);
+        memcpy(c_buf_p, self_p->writer_p->buf_p, n);
         self_p->writer_p->buf_p += n;
         self_p->writer_p->left -= n;
-        cbuf_p += n;
+        c_buf_p += n;
         left -= n;
 
         /* Writer buffer empty. */
@@ -236,7 +179,6 @@ ssize_t queue_read(struct queue_t *self_p, void *buf_p, size_t size)
             /* Wake the writer. */
             thrd_resume_isr(self_p->writer_p->base.thrd_p,
                             self_p->writer_p->size);
-            self_p->writer_p = NULL;
 
             /* More writers waiting? */
             self_p->writer_p =
@@ -259,7 +201,7 @@ ssize_t queue_read(struct queue_t *self_p, void *buf_p, size_t size)
         } else {
             /* The writer writes the remaining data to the reader buffer. */
             self_p->base.reader_p = thrd_self();
-            self_p->reader.buf_p = cbuf_p;
+            self_p->reader.buf_p = c_buf_p;
             self_p->reader.size = size;
             self_p->reader.left = left;
 
@@ -282,24 +224,24 @@ ssize_t queue_write(struct queue_t *self_p,
 
     ssize_t res;
     size_t left;
-    const char *cbuf_p;
+    const char *c_buf_p;
     struct queue_writer_elem_t elem;
 
     left = size;
-    cbuf_p = buf_p;
+    c_buf_p = buf_p;
 
     sys_lock();
 
-    res = queue_write_isr(self_p, cbuf_p, size);
+    res = queue_write_isr(self_p, c_buf_p, size);
 
     if (res >= 0) {
         left -= res;
 
         /* The reader reads the remaining data. */
         if (left > 0) {
-            cbuf_p += (size - left);
+            c_buf_p += (size - left);
             elem.base.thrd_p = thrd_self();
-            elem.buf_p = (void *)cbuf_p;
+            elem.buf_p = (void *)c_buf_p;
             elem.size = size;
             elem.left = left;
 
@@ -324,11 +266,10 @@ RAM_CODE ssize_t queue_write_isr(struct queue_t *self_p,
                                  size_t size)
 {
     size_t n, left;
-    size_t buffer_unused_until_end, buffer_unused;
-    const char *cbuf_p;
+    const char *c_buf_p;
 
     left = size;
-    cbuf_p = buf_p;
+    c_buf_p = buf_p;
 
     /* Resume any polling thread. */
     if (chan_is_polled_isr(&self_p->base)) {
@@ -343,17 +284,11 @@ RAM_CODE ssize_t queue_write_isr(struct queue_t *self_p,
 
     /* Copy data to the reader, if one is present. */
     if (self_p->base.reader_p != NULL) {
-        if (left < self_p->reader.left) {
-            n = left;
-        } else {
-            n = self_p->reader.left;
-        }
-
-        memcpy(self_p->reader.buf_p, cbuf_p, n);
-
+        n = MIN(left, self_p->reader.left);
+        memcpy(self_p->reader.buf_p, c_buf_p, n);
         self_p->reader.buf_p += n;
         self_p->reader.left -= n;
-        cbuf_p += n;
+        c_buf_p += n;
         left -= n;
 
         /* Read buffer full. */
@@ -364,34 +299,8 @@ RAM_CODE ssize_t queue_write_isr(struct queue_t *self_p,
         }
     }
 
-    if ((left > 0) && (self_p->buffer.begin_p != NULL)) {
-        buffer_unused = BUFFER_UNUSED(&self_p->buffer);
-
-        if (left < buffer_unused) {
-            n = left;
-        } else {
-            n = buffer_unused;
-        }
-
-        buffer_unused_until_end = BUFFER_UNUSED_UNTIL_END(&self_p->buffer);
-
-        if (n <= buffer_unused_until_end) {
-            /* Data fits before the end of the buffer. */
-            memcpy(self_p->buffer.write_p, cbuf_p, n);
-            self_p->buffer.write_p += n;
-        } else {
-            /* The data does not fit begore the end of the
-             * buffer. Write until end and then start from the
-             * beginning. */
-            memcpy(self_p->buffer.write_p, cbuf_p, buffer_unused_until_end);
-            memcpy(self_p->buffer.begin_p,
-                   cbuf_p + buffer_unused_until_end,
-                   (n - buffer_unused_until_end));
-            self_p->buffer.write_p = self_p->buffer.begin_p;
-            self_p->buffer.write_p += (n - buffer_unused_until_end);
-        }
-
-        left -= n;
+    if ((left > 0) && (self_p->buf_p != NULL)) {
+        left -= circular_buffer_write(&self_p->buffer, c_buf_p, left);
     }
 
     return (size - left);
@@ -401,7 +310,9 @@ RAM_CODE ssize_t queue_size(struct queue_t *self_p)
 {
     ASSERTN(self_p != NULL, EINVAL);
 
-    return (get_buffer_used(&self_p->buffer) + WRITER_SIZE(self_p));
+    return ((self_p->buf_p != NULL
+             ? circular_buffer_used_size(&self_p->buffer)
+             : 0) + WRITER_SIZE(self_p));
 }
 
 ssize_t queue_unused_size(struct queue_t *self_p)
@@ -411,9 +322,7 @@ ssize_t queue_unused_size(struct queue_t *self_p)
     ssize_t res;
 
     sys_lock();
-
     res = queue_unused_size_isr(self_p);
-
     sys_unlock();
 
     return (res);
@@ -421,5 +330,49 @@ ssize_t queue_unused_size(struct queue_t *self_p)
 
 RAM_CODE ssize_t queue_unused_size_isr(struct queue_t *self_p)
 {
-    return (BUFFER_UNUSED(&self_p->buffer) + READER_SIZE(self_p));
+    return ((self_p->buf_p != NULL
+             ? circular_buffer_unused_size(&self_p->buffer)
+             : 0) + READER_SIZE(self_p));
+}
+
+ssize_t queue_ignore(struct queue_t *self_p,
+                     size_t size)
+{
+    ASSERTN(self_p != NULL, EINVAL);
+    ASSERTN(size >= 0, EINVAL);
+
+    size_t left, n;
+
+    left = size;
+
+    sys_lock();
+
+    /* Ignore data in queue buffer. */
+    if (self_p->buf_p != NULL) {
+        left -= circular_buffer_skip_front(&self_p->buffer, size);
+    }
+
+    /* Ignore data in writers. */
+    while ((self_p->writer_p != NULL) && (left > 0)) {
+        n = MIN(left, self_p->writer_p->left);
+        self_p->writer_p->buf_p += n;
+        self_p->writer_p->left -= n;
+        left -= n;
+
+        /* Writer buffer empty. */
+        if (self_p->writer_p->left == 0) {
+            /* Wake the writer. */
+            thrd_resume_isr(self_p->writer_p->base.thrd_p,
+                            self_p->writer_p->size);
+
+            /* More writers waiting? */
+            self_p->writer_p =
+                (struct queue_writer_elem_t *)thrd_prio_list_pop_isr(
+                    &self_p->writers);
+        }
+    }
+
+    sys_unlock();
+
+    return (size - left);
 }
