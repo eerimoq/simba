@@ -35,6 +35,4 @@ BOARD ?= linux
 CDEFS += CONFIG_MINIMAL_SYSTEM=1 \
 	CONFIG_FS_CMD_THRD_LIST=1
 
-COLLECTIONS_SRC += circular_buffer.c
-
 include $(SIMBA_ROOT)/make/app.mk
