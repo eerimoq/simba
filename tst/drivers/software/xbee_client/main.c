@@ -79,7 +79,6 @@ static int test_rx_packet_16_bits_address(struct harness_t *harness_p)
     frame.type = 0x81;
     frame.data.size = 7;
     memcpy(&frame.data.buf[0], "\x12\x34\x37\x05""foo", frame.data.size);
-
     harness_mock_write("xbee_read(): return (frame)",
                        &frame,
                        sizeof(frame));
@@ -114,7 +113,6 @@ static int test_rx_packet_64_bits_address(struct harness_t *harness_p)
     memcpy(&frame.data.buf[0],
            "\x88\x77\x66\x55\x44\x33\x22\x11"
            "\x00\x01""foobar", frame.data.size);
-
     harness_mock_write("xbee_read(): return (frame)",
                        &frame,
                        sizeof(frame));
@@ -135,6 +133,72 @@ static int test_rx_packet_64_bits_address(struct harness_t *harness_p)
     return (0);
 }
 
+static int test_rx_packet_16_bits_address_short(struct harness_t *harness_p)
+{
+    struct xbee_frame_t frame;
+    uint32_t mask;
+    struct xbee_client_address_t sender;
+    uint8_t buf[2];
+    ssize_t size;
+
+    /* Prepare input frame. */
+    frame.type = 0x81;
+    frame.data.size = 7;
+    memcpy(&frame.data.buf[0], "\x12\x34\x37\x05""bar", frame.data.size);
+    harness_mock_write("xbee_read(): return (frame)",
+                       &frame,
+                       sizeof(frame));
+    mask = 1;
+    event_write(&event, &mask, sizeof(mask));
+
+    /* Read the frame from the client. */
+    size = xbee_client_read_from(&xbee,
+                                 &buf[0],
+                                 sizeof(buf),
+                                 &sender);
+
+    BTASSERTI(size, ==, 2);
+    BTASSERTI(sender.type, ==, xbee_client_address_type_16_bits_t);
+    BTASSERTM(&sender.buf[0], "\x12\x34", 2);
+    BTASSERTM(&buf[0], "ba", size);
+
+    return (0);
+}
+
+static int test_rx_packet_64_bits_address_short(struct harness_t *harness_p)
+{
+    struct xbee_frame_t frame;
+    uint32_t mask;
+    struct xbee_client_address_t sender;
+    uint8_t buf[3];
+    ssize_t size;
+
+    /* Prepare input frame. */
+    frame.type = 0x80;
+    frame.data.size = 16;
+    memcpy(&frame.data.buf[0],
+           "\x88\x77\x66\x55\x44\x33\x22\x11"
+           "\x00\x01""hello", frame.data.size);
+    harness_mock_write("xbee_read(): return (frame)",
+                       &frame,
+                       sizeof(frame));
+    mask = 1;
+    event_write(&event, &mask, sizeof(mask));
+
+    /* Read the frame from the client. */
+    size = xbee_client_read_from(&xbee,
+                                 &buf[0],
+                                 sizeof(buf),
+                                 &sender);
+
+    BTASSERTI(size, ==, 3);
+    BTASSERTI(sender.type, ==, xbee_client_address_type_64_bits_t);
+    BTASSERTM(&sender.buf[0], "\x88\x77\x66\x55\x44\x33\x22\x11", 8);
+    BTASSERTM(&buf[0], "hel", size);
+
+    return (0);
+}
+
 static int test_tx_packet_16_bits_address(struct harness_t *harness_p)
 {
     struct xbee_frame_t frame;
@@ -146,11 +210,9 @@ static int test_tx_packet_16_bits_address(struct harness_t *harness_p)
     frame.type = 0x89;
     frame.data.size = 2;
     memcpy(&frame.data.buf[0], "\x01\x00", frame.data.size);
-
     harness_mock_write("xbee_read(): return (frame)",
                        &frame,
                        sizeof(frame));
-
     mask = 1;
     harness_mock_write("xbee_write(): event mask", &mask, sizeof(mask));
 
@@ -164,7 +226,6 @@ static int test_tx_packet_16_bits_address(struct harness_t *harness_p)
                                 5,
                                 0,
                                 &receiver);
-
     BTASSERTI(size, ==, 5);
 
     harness_mock_read("xbee_write(frame)", &frame, sizeof(frame));
@@ -197,7 +258,6 @@ static int test_tx_packet_64_bits_address_no_ack(struct harness_t *harness_p)
                                 8,
                                 XBEE_CLIENT_NO_ACK,
                                 &receiver);
-
     BTASSERTI(size, ==, 8);
 
     harness_mock_read("xbee_write(frame)", &frame, sizeof(frame));
@@ -226,7 +286,6 @@ static int test_tx_packet_timeout(struct harness_t *harness_p)
                                 5,
                                 0,
                                 &receiver);
-
     BTASSERTI(size, ==, -ETIMEDOUT);
 
     harness_mock_read("xbee_write(frame)", &frame, sizeof(frame));
@@ -246,11 +305,9 @@ static int test_pin_set_mode(struct harness_t *harness_p)
     frame.type = 0x88;
     frame.data.size = 4;
     memcpy(&frame.data.buf[0], "\x03""D0\x00", frame.data.size);
-
     harness_mock_write("xbee_read(): return (frame)",
                        &frame,
                        sizeof(frame));
-
     mask = 1;
     harness_mock_write("xbee_write(): event mask", &mask, sizeof(mask));
 
@@ -276,11 +333,9 @@ static int test_pin_write_high(struct harness_t *harness_p)
     frame.type = 0x88;
     frame.data.size = 4;
     memcpy(&frame.data.buf[0], "\x04""D0\x00", frame.data.size);
-
     harness_mock_write("xbee_read(): return (frame)",
                        &frame,
                        sizeof(frame));
-
     mask = 1;
     harness_mock_write("xbee_write(): event mask", &mask, sizeof(mask));
 
@@ -306,21 +361,17 @@ static int test_pin_toggle(struct harness_t *harness_p)
     frame.type = 0x88;
     frame.data.size = 4;
     memcpy(&frame.data.buf[0], "\x05""D0\x00", frame.data.size);
-
     harness_mock_write("xbee_read(): return (frame)",
                        &frame,
                        sizeof(frame));
-
     mask = 1;
     harness_mock_write("xbee_write(): event mask", &mask, sizeof(mask));
 
     /* Toggle high. */
     frame.data.buf[0] = 6;
-
     harness_mock_write("xbee_read(): return (frame)",
                        &frame,
                        sizeof(frame));
-
     mask = 1;
     harness_mock_write("xbee_write(): event mask", &mask, sizeof(mask));
 
@@ -352,11 +403,9 @@ static int test_at_command_read_u8(struct harness_t *harness_p)
     frame.type = 0x88;
     frame.data.size = 5;
     memcpy(&frame.data.buf[0], "\x07""DL\x00\xbe", frame.data.size);
-
     harness_mock_write("xbee_read(): return (frame)",
                        &frame,
                        sizeof(frame));
-
     mask = 1;
     harness_mock_write("xbee_write(): event mask", &mask, sizeof(mask));
 
@@ -386,11 +435,9 @@ static int test_at_command_read_u16(struct harness_t *harness_p)
     frame.type = 0x88;
     frame.data.size = 6;
     memcpy(&frame.data.buf[0], "\x08""DL\x00\xca\xfe", frame.data.size);
-
     harness_mock_write("xbee_read(): return (frame)",
                        &frame,
                        sizeof(frame));
-
     mask = 1;
     harness_mock_write("xbee_write(): event mask", &mask, sizeof(mask));
 
@@ -422,11 +469,9 @@ static int test_at_command_read_u32(struct harness_t *harness_p)
     memcpy(&frame.data.buf[0],
            "\x09""DL\x00\xbe\xef\xba\xbe",
            frame.data.size);
-
     harness_mock_write("xbee_read(): return (frame)",
                        &frame,
                        sizeof(frame));
-
     mask = 1;
     harness_mock_write("xbee_write(): event mask", &mask, sizeof(mask));
 
@@ -455,11 +500,9 @@ static int test_at_command_write_u8(struct harness_t *harness_p)
     frame.type = 0x88;
     frame.data.size = 4;
     memcpy(&frame.data.buf[0], "\x0a""DL\x00", frame.data.size);
-
     harness_mock_write("xbee_read(): return (frame)",
                        &frame,
                        sizeof(frame));
-
     mask = 1;
     harness_mock_write("xbee_write(): event mask", &mask, sizeof(mask));
 
@@ -484,11 +527,9 @@ static int test_at_command_write_u16(struct harness_t *harness_p)
     frame.type = 0x88;
     frame.data.size = 4;
     memcpy(&frame.data.buf[0], "\x0b""DL\x00", frame.data.size);
-
     harness_mock_write("xbee_read(): return (frame)",
                        &frame,
                        sizeof(frame));
-
     mask = 1;
     harness_mock_write("xbee_write(): event mask", &mask, sizeof(mask));
 
@@ -515,11 +556,9 @@ static int test_at_command_write_u32(struct harness_t *harness_p)
     frame.type = 0x88;
     frame.data.size = 4;
     memcpy(&frame.data.buf[0], "\x0c""DL\x00", frame.data.size);
-
     harness_mock_write("xbee_read(): return (frame)",
                        &frame,
                        sizeof(frame));
-
     mask = 1;
     harness_mock_write("xbee_write(): event mask", &mask, sizeof(mask));
 
@@ -548,11 +587,9 @@ static int test_at_command_error(struct harness_t *harness_p)
     frame.type = 0x88;
     frame.data.size = 4;
     memcpy(&frame.data.buf[0], "\x0d""DL\x01", frame.data.size);
-
     harness_mock_write("xbee_read(): return (frame)",
                        &frame,
                        sizeof(frame));
-
     mask = 1;
     harness_mock_write("xbee_write(): event mask", &mask, sizeof(mask));
 
@@ -582,11 +619,9 @@ static int test_tx_packet_negative_response(struct harness_t *harness_p)
     frame.type = 0x89;
     frame.data.size = 2;
     memcpy(&frame.data.buf[0], "\x0e\x01", frame.data.size);
-
     harness_mock_write("xbee_read(): return (frame)",
                        &frame,
                        sizeof(frame));
-
     mask = 1;
     harness_mock_write("xbee_write(): event mask", &mask, sizeof(mask));
 
@@ -712,6 +747,14 @@ int main()
         { test_init, "test_init" },
         { test_rx_packet_16_bits_address, "test_rx_packet_16_bits_address" },
         { test_rx_packet_64_bits_address, "test_rx_packet_64_bits_address" },
+        {
+            test_rx_packet_16_bits_address_short,
+            "test_rx_packet_16_bits_address_short"
+        },
+        {
+            test_rx_packet_64_bits_address_short,
+            "test_rx_packet_64_bits_address_short"
+        },
         { test_tx_packet_16_bits_address, "test_tx_packet_16_bits_address" },
         {
             test_tx_packet_64_bits_address_no_ack,

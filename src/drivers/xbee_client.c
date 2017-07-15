@@ -89,7 +89,7 @@ static int communicate(struct xbee_client_t *self_p,
             if (res == 0) {
                 res = self_p->rpc.rx.res;
             }
-            
+
             self_p->rpc.rx.frame_p = NULL;
         }
 
@@ -116,7 +116,7 @@ static int execute_at_command(struct xbee_client_t *self_p,
 {
     struct xbee_frame_t frame;
     size_t response_size;
-    
+
     /* Initiate the AT command frame (frame id assigned later). */
     frame.type = XBEE_FRAME_TYPE_AT_COMMAND;
     frame.data.size = (size + 3);
@@ -127,11 +127,57 @@ static int execute_at_command(struct xbee_client_t *self_p,
         response_size = 0;
         response_size_p = &response_size;
     }
-    
+
     return (communicate(self_p,
                         &frame,
                         response_parameter_p,
                         response_size_p));
+}
+
+static int handle_rx_packet_16_bit_address(struct xbee_client_t *self_p,
+                                           struct xbee_frame_t *frame_p)
+{
+    ssize_t size;
+    struct xbee_client_address_t address;
+
+    size = frame_p->data.size;
+
+    if (size < 4) {
+        DLOG(DEBUG, "Wrong TX Status data size %u.\r\n", size);
+        return (-EPROTO);
+    }
+
+    address.type = xbee_client_address_type_16_bits_t;
+    memcpy(&address.buf[0], &frame_p->data.buf[0], 2);
+    size -= 4;
+    queue_write(&self_p->chin, &size, sizeof(size));
+    queue_write(&self_p->chin, &address, sizeof(address));
+    queue_write(&self_p->chin, &frame_p->data.buf[4], size);
+
+    return (0);
+}
+
+static int handle_rx_packet_64_bit_address(struct xbee_client_t *self_p,
+                                           struct xbee_frame_t *frame_p)
+{
+    ssize_t size;
+    struct xbee_client_address_t address;
+
+    size = frame_p->data.size;
+
+    if (size < 10) {
+        DLOG(DEBUG, "Wrong TX Status data size %u.\r\n", size);
+        return (-EPROTO);
+    }
+
+    address.type = xbee_client_address_type_64_bits_t;
+    memcpy(&address.buf[0], &frame_p->data.buf[0], 8);
+    size -= 10;
+    queue_write(&self_p->chin, &size, sizeof(size));
+    queue_write(&self_p->chin, &address, sizeof(address));
+    queue_write(&self_p->chin, &frame_p->data.buf[10], size);
+
+    return (0);
 }
 
 static int handle_tx_status(struct xbee_client_t *self_p,
@@ -305,8 +351,11 @@ void *xbee_client_main(void *arg_p)
         switch (frame.type) {
 
         case XBEE_FRAME_TYPE_RX_PACKET_16_BIT_ADDRESS:
+            handle_rx_packet_16_bit_address(self_p, &frame);
+            break;
+
         case XBEE_FRAME_TYPE_RX_PACKET_64_BIT_ADDRESS:
-            queue_write(&self_p->chin, &frame, sizeof(frame));
+            handle_rx_packet_64_bit_address(self_p, &frame);
             break;
 
         case XBEE_FRAME_TYPE_TX_STATUS:
@@ -330,36 +379,13 @@ ssize_t xbee_client_read_from(struct xbee_client_t *self_p,
                               size_t size,
                               struct xbee_client_address_t *address_p)
 {
-    struct xbee_frame_t frame;
-    ssize_t res;
-    size_t pos;
+    size_t data_size;
 
-    res = queue_read(&self_p->chin, &frame, sizeof(frame));
-
-    if (res != sizeof(frame)) {
-        return (res);
-    }
-
-    switch (frame.type) {
-
-    case XBEE_FRAME_TYPE_RX_PACKET_16_BIT_ADDRESS:
-        address_p->type = xbee_client_address_type_16_bits_t;
-        memcpy(&address_p->buf[0], &frame.data.buf[0], 2);
-        pos = 4;
-        break;
-
-    case XBEE_FRAME_TYPE_RX_PACKET_64_BIT_ADDRESS:
-        address_p->type = xbee_client_address_type_64_bits_t;
-        memcpy(&address_p->buf[0], &frame.data.buf[0], 8);
-        pos = 10;
-        break;
-
-    default:
-        return (-EPROTO);
-    }
-
-    size = MIN(size, frame.data.size - pos);
-    memcpy(buf_p, &frame.data.buf[pos], size);
+    queue_read(&self_p->chin, &data_size, sizeof(data_size));
+    size = MIN(size, data_size);
+    queue_read(&self_p->chin, address_p, sizeof(*address_p));
+    queue_read(&self_p->chin, buf_p, size);
+    queue_ignore(&self_p->chin, data_size - size);
 
     return (size);
 }
@@ -407,7 +433,7 @@ ssize_t xbee_client_write_to(struct xbee_client_t *self_p,
     if (res != 0) {
         return (res);
     }
-    
+
     return (size);
 }
 
