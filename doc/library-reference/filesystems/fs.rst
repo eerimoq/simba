@@ -1,8 +1,8 @@
-:mod:`fs` --- Debug file system
-===============================
+:mod:`fs` --- Debug and virtual file system
+===========================================
 
 .. module:: fs
-   :synopsis: Debug file system.
+   :synopsis: Debug and virtual file system.
 
 The debug file system is not really a file system, but rather a file
 system like tree of commands, counters, parameters, and "real" file
@@ -23,7 +23,7 @@ systems.
   ``fs_parameter_register()``.
 
 - A "real" file system is a file path, or mount point, mapped to a
-  file system instance. The debug file system has a file access
+  file system instance. The virtual file system has a file access
   interface. The purpose of this interface is to have a common file
   access interface, independent of the underlying file systems
   interface. File systems are registered into the debug file system by
