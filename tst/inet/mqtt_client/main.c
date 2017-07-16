@@ -364,7 +364,6 @@ static int test_incoming_publish_qos0(struct harness_t *harness_p)
 {
     uint8_t buf[16];
     struct message_t message;
-    struct mqtt_application_message_t foobar;
 
     /* Prepare the server to send a publish message. */
     /* Packet fixed header */
@@ -404,7 +403,6 @@ static int test_incoming_publish_qos1(struct harness_t *harness_p)
 {
     uint8_t buf[16];
     struct message_t message;
-    struct mqtt_application_message_t foobar;
 
     /* Prepare the server to send a publish message. */
     /* Packet fixed header */
@@ -459,7 +457,6 @@ static int test_incoming_publish_qos2(struct harness_t *harness_p)
 {
     uint8_t buf[16];
     struct message_t message;
-    struct mqtt_application_message_t foobar;
 
     /* Prepare the server to send a publish message. */
     /* Packet fixed header */

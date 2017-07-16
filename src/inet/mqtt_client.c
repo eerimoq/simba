@@ -142,8 +142,8 @@ static int read_fixed_header(struct mqtt_client_t *self_p,
         return (-EIO);
     }
 
-    *flags_p = (byte & 0xf);
     *type_p = ((byte >> 4) & 0xf);
+    *flags_p = (byte & 0xf);
 
     /* Read the variablie size field. */
     multiplier = 1;
@@ -300,20 +300,20 @@ static int handle_control_publish(struct mqtt_client_t *self_p)
     uint8_t buf[2];
     struct mqtt_application_message_t *message_p;
     size_t size;
-    
+
     if (queue_read(&self_p->control.in,
                    &message_p,
                    sizeof(message_p)) != sizeof(message_p)) {
         return (-1);
     }
-    
+
     /* Write the fixed header. */
     size = (message_p->topic.size + message_p->payload.size + 2);
 
     if (message_p->qos > 0) {
         size += 2;
     }
-       
+
     res = write_fixed_header(self_p,
                              MQTT_PUBLISH,
                              (message_p->qos << 1),
@@ -340,12 +340,12 @@ static int handle_control_publish(struct mqtt_client_t *self_p)
     if (message_p->qos > 0) {
         buf[0] = 0;
         buf[1] = 1;
-        
+
         if (chan_write(self_p->transport.out_p, &buf[0], 2) != 2) {
             return (-EIO);
         }
     }
-    
+
     /* Write the payload. */
     if (message_p->payload.size > 0) {
         if (chan_write(self_p->transport.out_p,
@@ -486,7 +486,7 @@ static int handle_response_suback(struct mqtt_client_t *self_p,
     if (buf[2] > 2) {
         return (-1);
     }
-    
+
     return (0);
 }
 
@@ -613,7 +613,7 @@ static int handle_publish(struct mqtt_client_t *self_p,
 
     log_object_print(self_p->log_object_p,
                      LOG_DEBUG,
-                     OSTR("QoS: %d, Flags: Flags: 0x%02x.\r\n"),
+                     OSTR("QoS: %d, Flags: 0x%02x.\r\n"),
                      qos,
                      flags);
 
@@ -627,7 +627,7 @@ static int handle_publish(struct mqtt_client_t *self_p,
 
         if (qos == 1) {
             res = write_fixed_header(self_p, MQTT_PUBACK, 0, 2);
-        } else if (qos == 2) { 
+        } else if (qos == 2) {
             res = write_fixed_header(self_p, MQTT_PUBREC, 0, 2);
         } else {
             res = (-EPROTO);
@@ -728,10 +728,14 @@ static int read_control_message(struct mqtt_client_t *self_p)
  */
 static int read_server_message(struct mqtt_client_t *self_p)
 {
+    int res;
     int type;
     int flags;
-    size_t size = 0;
-    int res = 0;
+    size_t size;
+
+    res = 0;
+    flags = 0;
+    size = 0;
 
     if (read_fixed_header(self_p, &type, &flags, &size) != 0) {
         return (-EIO);
