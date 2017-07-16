@@ -112,17 +112,18 @@
 #define exti_d20_dev exti_device[1]
 #define exti_d21_dev exti_device[0]
 
-/* PWM d4 and d13 cannot be used since the timer is used for the system tick. */
+/* PWM d11 and d12 cannot be used since timer 1 is used for the
+   system tick. */
 #define pwm_d2_dev pwm_device[0]
 #define pwm_d3_dev pwm_device[1]
+#define pwm_d4_dev pwm_device[9]
 #define pwm_d5_dev pwm_device[2]
 #define pwm_d6_dev pwm_device[3]
 #define pwm_d7_dev pwm_device[4]
 #define pwm_d8_dev pwm_device[5]
 #define pwm_d9_dev pwm_device[6]
 #define pwm_d10_dev pwm_device[7]
-#define pwm_d11_dev pwm_device[8]
-#define pwm_d12_dev pwm_device[9]
+#define pwm_d13_dev pwm_device[8]
 
 #define adc_0_dev adc_device[0]
 

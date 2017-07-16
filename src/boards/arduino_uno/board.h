@@ -56,9 +56,11 @@
 #define exti_d2_dev exti_device[0]
 #define exti_d3_dev exti_device[1]
 
+/* PWM d9 and d10 cannot be used since timer 1 is used for the system
+   tick. */
 #define pwm_d3_dev pwm_device[3]
-#define pwm_d9_dev pwm_device[0]
-#define pwm_d10_dev pwm_device[1]
+#define pwm_d5_dev pwm_device[0]
+#define pwm_d6_dev pwm_device[1]
 #define pwm_d11_dev pwm_device[2]
 
 #define adc_0_dev adc_device[0]

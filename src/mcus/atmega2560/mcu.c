@@ -145,8 +145,8 @@ struct pwm_device_t pwm_device[PWM_DEVICE_MAX] = {
     { .index = 5, .pin_dev_p = &pin_device[8] }, /* timer 4 */
     { .index = 6, .pin_dev_p = &pin_device[9] }, /* timer 2 */
     { .index = 7, .pin_dev_p = &pin_device[10] }, /* timer 2 */
-    { .index = 8, .pin_dev_p = &pin_device[11] }, /* timer 1 */
-    { .index = 9, .pin_dev_p = &pin_device[12] }, /* timer 1 */
+    { .index = 8, .pin_dev_p = &pin_device[13] }, /* timer 0 */
+    { .index = 9, .pin_dev_p = &pin_device[4] }, /* timer 0 */
 };
 
 struct adc_device_t adc_device[ADC_DEVICE_MAX] = {

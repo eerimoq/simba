@@ -42,7 +42,7 @@ static int pwm_port_init(struct pwm_driver_t *self_p,
 
     case 0:
     case 1:
-        TCCR1A |= _BV(WGM10);
+        TCCR0A |= _BV(WGM00);
         break;
 
     case 2:
@@ -64,13 +64,13 @@ static int pwm_port_set_frequency(struct pwm_driver_t *self_p,
     switch (self_p->dev_p->index) {
 
     case 0:
-        TCCR1A |= _BV(COM1A1);
-        TCCR1B |= _BV(CS11) | _BV(CS10);
+        TCCR0A |= _BV(COM0A1);
+        TCCR0B |= _BV(CS01) | _BV(CS00);
         break;
 
     case 1:
-        TCCR1A |= _BV(COM1B1);
-        TCCR1B |= _BV(CS11) | _BV(CS10);
+        TCCR0A |= _BV(COM1B1);
+        TCCR0B |= _BV(CS01) | _BV(CS00);
         break;
 
     case 2:
@@ -96,11 +96,11 @@ static int pwm_port_set_duty_cycle(struct pwm_driver_t *self_p,
     switch (self_p->dev_p->index) {
 
     case 0:
-        OCR1A = value;
+        OCR0A = value;
         break;
 
     case 1:
-        OCR1B = value;
+        OCR0B = value;
         break;
 
     case 2:
@@ -151,8 +151,8 @@ static int pwm_port_init(struct pwm_driver_t *self_p,
 
     case 8:
     case 9:
-        /* Timer 1. */
-        TCCR1A |= _BV(WGM10);
+        /* Timer 0. */
+        TCCR0A |= _BV(WGM00);
         break;
 
     default:
@@ -208,13 +208,13 @@ static int pwm_port_set_frequency(struct pwm_driver_t *self_p,
         break;
 
     case 8:
-        TCCR1A |= _BV(COM1A1);
-        TCCR1B |= _BV(CS12) | /*_BV(CS11) |*/ _BV(CS10);
+        TCCR0A |= _BV(COM0A1);
+        TCCR0B |= _BV(CS02) | /*_BV(CS01) |*/ _BV(CS00);
         break;
 
     case 9:
-        TCCR1A |= _BV(COM1B1);
-        TCCR1B |= _BV(CS12) | /*_BV(CS11) |*/ _BV(CS10);
+        TCCR0A |= _BV(COM0B1);
+        TCCR0B |= _BV(CS02) | /*_BV(CS01) |*/ _BV(CS00);
         break;
 
     default:
@@ -262,11 +262,11 @@ static int pwm_port_set_duty_cycle(struct pwm_driver_t *self_p,
         break;
 
     case 8:
-        OCR1A = value;
+        OCR0A = value;
         break;
 
     case 9:
-        OCR1B = value;
+        OCR0B = value;
         break;
 
     default:
@@ -281,19 +281,19 @@ static int pwm_port_set_duty_cycle(struct pwm_driver_t *self_p,
 static int pwm_port_init(struct pwm_driver_t *self_p,
                          struct pwm_device_t *dev_p)
 {
-    return (-1);
+    return (-ENOSYS);
 }
 
 static int pwm_port_set_frequency(struct pwm_driver_t *self_p,
                                   long value)
 {
-    return (-1);
+    return (-ENOSYS);
 }
 
 static int pwm_port_set_duty_cycle(struct pwm_driver_t *self_p,
                                    long value)
 {
-    return (-1);
+    return (-ENOSYS);
 }
 
 #else
