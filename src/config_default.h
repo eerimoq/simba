@@ -597,6 +597,17 @@
 #endif
 
 /**
+ * Debug file system uart counters.
+ */
+#ifndef CONFIG_UART_FS_COUNTERS
+#    if defined(CONFIG_MINIMAL_SYSTEM)
+#        define CONFIG_UART_FS_COUNTERS                     0
+#    else
+#        define CONFIG_UART_FS_COUNTERS                     1
+#    endif
+#endif
+
+/**
  * Enable the uart_soft driver.
  */
 #ifndef CONFIG_UART_SOFT

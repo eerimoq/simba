@@ -37,8 +37,10 @@
 #define UBRRn(dev_p) ((volatile uint16_t *)((dev_p)->sfr_p + 4))
 #define UDRn(dev_p) ((dev_p)->sfr_p + 6)
 
+#if CONFIG_UART_FS_COUNTERS == 1
 static struct fs_counter_t rx_channel_overflow;
 static struct fs_counter_t rx_errors;
+#endif
 
 static void tx_isr(int index)
 {
@@ -75,10 +77,14 @@ static void rx_isr(int index)
     if (error == 0) {
         /* Write data to input queue. */
         if (queue_write_isr(&drv_p->chin, &c, 1) != 1) {
+#if CONFIG_UART_FS_COUNTERS == 1
             fs_counter_increment(&rx_channel_overflow, 1);
+#endif
         }
     } else {
+#if CONFIG_UART_FS_COUNTERS == 1
         fs_counter_increment(&rx_errors, 1);
+#endif
     }
 }
 
@@ -117,6 +123,7 @@ UART_ISR(USART3, 3)
 
 static int uart_port_module_init()
 {
+#if CONFIG_UART_FS_COUNTERS == 1
     fs_counter_init(&rx_channel_overflow,
                     FSTR("/drivers/uart/rx_channel_overflow"),
                     0);
@@ -126,6 +133,7 @@ static int uart_port_module_init()
                     FSTR("/drivers/uart/rx_errors"),
                     0);
     fs_counter_register(&rx_errors);
+#endif
 
     return (0);
 }
