@@ -31,6 +31,241 @@
 #ifndef __CONFIG_DEFAULT_H__
 #define __CONFIG_DEFAULT_H__
 
+#ifdef CONFIG_FS_CMD_DS18B20_LIST
+#    pragma message "CONFIG_FS_CMD_DS18B20_LIST is deprecated. Use CONFIG_DS18B20_FS_COMMAND_LIST instead."
+#    define CONFIG_DS18B20_FS_COMMAND_LIST CONFIG_FS_CMD_DS18B20_LIST
+#endif
+
+#ifdef CONFIG_FS_CMD_ESP_WIFI_STATUS
+#    pragma message "CONFIG_FS_CMD_ESP_WIFI_STATUS is deprecated. Use CONFIG_ESP_WIFI_FS_COMMAND_STATUS instead."
+#    define CONFIG_ESP_WIFI_FS_COMMAND_STATUS CONFIG_FS_CMD_ESP_WIFI_STATUS
+#endif
+
+#ifdef CONFIG_FS_CMD_FS_APPEND
+#    pragma message "CONFIG_FS_CMD_FS_APPEND is deprecated. Use CONFIG_FS_FS_COMMAND_APPEND instead."
+#    define CONFIG_FS_FS_COMMAND_APPEND CONFIG_FS_CMD_FS_APPEND
+#endif
+
+#ifdef CONFIG_FS_CMD_FS_COUNTERS_LIST
+#    pragma message "CONFIG_FS_CMD_FS_COUNTERS_LIST is deprecated. Use CONFIG_FS_FS_COMMAND_COUNTERS_LIST instead."
+#    define CONFIG_FS_FS_COMMAND_COUNTERS_LIST CONFIG_FS_CMD_FS_COUNTERS_LIST
+#endif
+
+#ifdef CONFIG_FS_CMD_FS_COUNTERS_RESET
+#    pragma message "CONFIG_FS_CMD_FS_COUNTERS_RESET is deprecated. Use CONFIG_FS_FS_COMMAND_COUNTERS_RESET instead."
+#    define CONFIG_FS_FS_COMMAND_COUNTERS_RESET CONFIG_FS_CMD_FS_COUNTERS_RESET
+#endif
+
+#ifdef CONFIG_FS_CMD_FS_FILESYSTEMS_LIST
+#    pragma message "CONFIG_FS_CMD_FS_FILESYSTEMS_LIST is deprecated. Use CONFIG_FS_FS_COMMAND_FILESYSTEMS_LIST instead."
+#    define CONFIG_FS_FS_COMMAND_FILESYSTEMS_LIST CONFIG_FS_CMD_FS_FILESYSTEMS_LIST
+#endif
+
+#ifdef CONFIG_FS_CMD_FS_LIST
+#    pragma message "CONFIG_FS_CMD_FS_LIST is deprecated. Use CONFIG_FS_FS_COMMAND_LIST instead."
+#    define CONFIG_FS_FS_COMMAND_LIST CONFIG_FS_CMD_FS_LIST
+#endif
+
+#ifdef CONFIG_FS_CMD_FS_FORMAT
+#    pragma message "CONFIG_FS_CMD_FS_FORMAT is deprecated. Use CONFIG_FS_FS_COMMAND_FORMAT instead."
+#    define CONFIG_FS_FS_COMMAND_FORMAT CONFIG_FS_CMD_FS_FORMAT
+#endif
+
+#ifdef CONFIG_FS_CMD_FS_PARAMETERS_LIST
+#    pragma message "CONFIG_FS_CMD_FS_PARAMETERS_LIST is deprecated. Use CONFIG_FS_FS_COMMAND_PARAMETERS_LIST instead."
+#    define CONFIG_FS_FS_COMMAND_PARAMETERS_LIST CONFIG_FS_CMD_FS_PARAMETERS_LIST
+#endif
+
+#ifdef CONFIG_FS_CMD_FS_READ
+#    pragma message "CONFIG_FS_CMD_FS_READ is deprecated. Use CONFIG_FS_FS_COMMAND_READ instead."
+#    define CONFIG_FS_FS_COMMAND_READ CONFIG_FS_CMD_FS_READ
+#endif
+
+#ifdef CONFIG_FS_CMD_FS_REMOVE
+#    pragma message "CONFIG_FS_CMD_FS_REMOVE is deprecated. Use CONFIG_FS_FS_COMMAND_REMOVE instead."
+#    define CONFIG_FS_FS_COMMAND_REMOVE CONFIG_FS_CMD_FS_REMOVE
+#endif
+
+#ifdef CONFIG_FS_CMD_FS_WRITE
+#    pragma message "CONFIG_FS_CMD_FS_WRITE is deprecated. Use CONFIG_FS_FS_COMMAND_WRITE instead."
+#    define CONFIG_FS_FS_COMMAND_WRITE CONFIG_FS_CMD_FS_WRITE
+#endif
+
+#ifdef CONFIG_FS_CMD_I2C_READ
+#    pragma message "CONFIG_FS_CMD_I2C_READ is deprecated. Use CONFIG_I2C_FS_COMMAND_READ instead."
+#    define CONFIG_I2C_FS_COMMAND_READ CONFIG_FS_CMD_I2C_READ
+#endif
+
+#ifdef CONFIG_FS_CMD_I2C_WRITE
+#    pragma message "CONFIG_FS_CMD_I2C_WRITE is deprecated. Use CONFIG_I2C_FS_COMMAND_WRITE instead."
+#    define CONFIG_I2C_FS_COMMAND_WRITE CONFIG_FS_CMD_I2C_WRITE
+#endif
+
+#ifdef CONFIG_FS_CMD_I2C_SCAN
+#    pragma message "CONFIG_FS_CMD_I2C_SCAN is deprecated. Use CONFIG_I2C_FS_COMMAND_SCAN instead."
+#    define CONFIG_I2C_FS_COMMAND_SCAN CONFIG_FS_CMD_I2C_SCAN
+#endif
+
+#ifdef CONFIG_FS_CMD_LOG_LIST
+#    pragma message "CONFIG_FS_CMD_LOG_LIST is deprecated. Use CONFIG_LOG_FS_COMMAND_LIST instead."
+#    define CONFIG_LOG_FS_COMMAND_LIST CONFIG_FS_CMD_LOG_LIST
+#endif
+
+#ifdef CONFIG_FS_CMD_LOG_PRINT
+#    pragma message "CONFIG_FS_CMD_LOG_PRINT is deprecated. Use CONFIG_LOG_FS_COMMAND_PRINT instead."
+#    define CONFIG_LOG_FS_COMMAND_PRINT CONFIG_FS_CMD_LOG_PRINT
+#endif
+
+#ifdef CONFIG_FS_CMD_LOG_SET_LOG_MASK
+#    pragma message "CONFIG_FS_CMD_LOG_SET_LOG_MASK is deprecated. Use CONFIG_LOG_FS_COMMAND_SET_LOG_MASK instead."
+#    define CONFIG_LOG_FS_COMMAND_SET_LOG_MASK CONFIG_FS_CMD_LOG_SET_LOG_MASK
+#endif
+
+#ifdef CONFIG_FS_CMD_NETWORK_INTERFACE_LIST
+#    pragma message "CONFIG_FS_CMD_NETWORK_INTERFACE_LIST is deprecated. Use CONFIG_NETWORK_INTERFACE_FS_COMMAND_LIST instead."
+#    define CONFIG_NETWORK_INTERFACE_FS_COMMAND_LIST CONFIG_FS_CMD_NETWORK_INTERFACE_LIST
+#endif
+
+#ifdef CONFIG_FS_CMD_PIN_READ
+#    pragma message "CONFIG_FS_CMD_PIN_READ is deprecated. Use CONFIG_PIN_FS_COMMAND_READ instead."
+#    define CONFIG_PIN_FS_COMMAND_READ CONFIG_FS_CMD_PIN_READ
+#endif
+
+#ifdef CONFIG_FS_CMD_PIN_SET_MODE
+#    pragma message "CONFIG_FS_CMD_PIN_SET_MODE is deprecated. Use CONFIG_PIN_FS_COMMAND_SET_MODE instead."
+#    define CONFIG_PIN_FS_COMMAND_SET_MODE CONFIG_FS_CMD_PIN_SET_MODE
+#endif
+
+#ifdef CONFIG_FS_CMD_PIN_WRITE
+#    pragma message "CONFIG_FS_CMD_PIN_WRITE is deprecated. Use CONFIG_PIN_FS_COMMAND_WRITE instead."
+#    define CONFIG_PIN_FS_COMMAND_WRITE CONFIG_FS_CMD_PIN_WRITE
+#endif
+
+#ifdef CONFIG_FS_CMD_PING_PING
+#    pragma message "CONFIG_FS_CMD_PING_PING is deprecated. Use CONFIG_PING_FS_COMMAND_PING instead."
+#    define CONFIG_PING_FS_COMMAND_PING CONFIG_FS_CMD_PING_PING
+#endif
+
+#ifdef CONFIG_FS_CMD_SERVICE_LIST
+#    pragma message "CONFIG_FS_CMD_SERVICE_LIST is deprecated. Use CONFIG_SERVICE_FS_COMMAND_LIST instead."
+#    define CONFIG_SERVICE_FS_COMMAND_LIST CONFIG_FS_CMD_SERVICE_LIST
+#endif
+
+#ifdef CONFIG_FS_CMD_SERVICE_START
+#    pragma message "CONFIG_FS_CMD_SERVICE_START is deprecated. Use CONFIG_SERVICE_FS_COMMAND_START instead."
+#    define CONFIG_SERVICE_FS_COMMAND_START CONFIG_FS_CMD_SERVICE_START
+#endif
+
+#ifdef CONFIG_FS_CMD_SERVICE_STOP
+#    pragma message "CONFIG_FS_CMD_SERVICE_STOP is deprecated. Use CONFIG_SERVICE_FS_COMMAND_STOP instead."
+#    define CONFIG_SERVICE_FS_COMMAND_STOP CONFIG_FS_CMD_SERVICE_STOP
+#endif
+
+#ifdef CONFIG_FS_CMD_SETTINGS_LIST
+#    pragma message "CONFIG_FS_CMD_SETTINGS_LIST is deprecated. Use CONFIG_SETTINGS_FS_COMMAND_LIST instead."
+#    define CONFIG_SETTINGS_FS_COMMAND_LIST CONFIG_FS_CMD_SETTINGS_LIST
+#endif
+
+#ifdef CONFIG_FS_CMD_SETTINGS_READ
+#    pragma message "CONFIG_FS_CMD_SETTINGS_READ is deprecated. Use CONFIG_SETTINGS_FS_COMMAND_READ instead."
+#    define CONFIG_SETTINGS_FS_COMMAND_READ CONFIG_FS_CMD_SETTINGS_READ
+#endif
+
+#ifdef CONFIG_FS_CMD_SETTINGS_RESET
+#    pragma message "CONFIG_FS_CMD_SETTINGS_RESET is deprecated. Use CONFIG_SETTINGS_FS_COMMAND_RESET instead."
+#    define CONFIG_SETTINGS_FS_COMMAND_RESET CONFIG_FS_CMD_SETTINGS_RESET
+#endif
+
+#ifdef CONFIG_FS_CMD_SETTINGS_WRITE
+#    pragma message "CONFIG_FS_CMD_SETTINGS_WRITE is deprecated. Use CONFIG_SETTINGS_FS_COMMAND_WRITE instead."
+#    define CONFIG_SETTINGS_FS_COMMAND_WRITE CONFIG_FS_CMD_SETTINGS_WRITE
+#endif
+
+#ifdef CONFIG_FS_CMD_SYS_CONFIG
+#    pragma message "CONFIG_FS_CMD_SYS_CONFIG is deprecated. Use CONFIG_FS_FS_COMMAND_CMD_SYS_CONFIG instead."
+#    define CONFIG_FS_FS_COMMAND_CMD_SYS_CONFIG CONFIG_FS_CMD_SYS_CONFIG
+#endif
+
+#ifdef CONFIG_FS_CMD_SYS_INFO
+#    pragma message "CONFIG_FS_CMD_SYS_INFO is deprecated. Use CONFIG_SYS_FS_COMMAND_INFO instead."
+#    define CONFIG_SYS_FS_COMMAND_INFO CONFIG_FS_CMD_SYS_INFO
+#endif
+
+#ifdef CONFIG_FS_CMD_SYS_UPTIME
+#    pragma message "CONFIG_FS_CMD_SYS_UPTIME is deprecated. Use CONFIG_SYS_FS_COMMAND_UPTIME instead."
+#    define CONFIG_SYS_FS_COMMAND_UPTIME CONFIG_FS_CMD_SYS_UPTIME
+#endif
+
+#ifdef CONFIG_FS_CMD_SYS_PANIC
+#    pragma message "CONFIG_FS_CMD_SYS_PANIC is deprecated. Use CONFIG_SYS_FS_COMMAND_PANIC instead."
+#    define CONFIG_SYS_FS_COMMAND_PANIC CONFIG_FS_CMD_SYS_PANIC
+#endif
+
+#ifdef CONFIG_FS_CMD_SYS_REBOOT
+#    pragma message "CONFIG_FS_CMD_SYS_REBOOT is deprecated. Use CONFIG_SYS_FS_COMMAND_REBOOT instead."
+#    define CONFIG_SYS_FS_COMMAND_REBOOT CONFIG_FS_CMD_SYS_REBOOT
+#endif
+
+#ifdef CONFIG_FS_CMD_SYS_BACKTRACE
+#    pragma message "CONFIG_FS_CMD_SYS_BACKTRACE is deprecated. Use CONFIG_SYS_FS_COMMAND_BACKTRACE instead."
+#    define CONFIG_SYS_FS_COMMAND_BACKTRACE CONFIG_FS_CMD_SYS_BACKTRACE
+#endif
+
+#ifdef CONFIG_FS_CMD_SYS_RESET_CAUSE
+#    pragma message "CONFIG_FS_CMD_SYS_RESET_CAUSE is deprecated. Use CONFIG_SYS_FS_COMMAND_RESET_CAUSE instead."
+#    define CONFIG_SYS_FS_COMMAND_RESET_CAUSE CONFIG_FS_CMD_SYS_RESET_CAUSE
+#endif
+
+#ifdef CONFIG_FS_CMD_THRD_LIST
+#    pragma message "CONFIG_FS_CMD_THRD_LIST is deprecated. Use CONFIG_THRD_FS_COMMAND_LIST instead."
+#    define CONFIG_THRD_FS_COMMAND_LIST CONFIG_FS_CMD_THRD_LIST
+#endif
+
+#ifdef CONFIG_FS_CMD_THRD_SET_LOG_MASK
+#    pragma message "CONFIG_FS_CMD_THRD_SET_LOG_MASK is deprecated. Use CONFIG_THRD_FS_COMMAND_SET_LOG_MASK instead."
+#    define CONFIG_THRD_FS_COMMAND_SET_LOG_MASK CONFIG_FS_CMD_THRD_SET_LOG_MASK
+#endif
+
+#ifdef CONFIG_FS_CMD_UPGRADE_APPLICATION_ENTER
+#    pragma message "CONFIG_FS_CMD_UPGRADE_APPLICATION_ENTER is deprecated. Use CONFIG_UPGRADE_FS_COMMAND_APPLICATION_ENTER instead."
+#    define CONFIG_UPGRADE_FS_COMMAND_APPLICATION_ENTER CONFIG_FS_CMD_UPGRADE_APPLICATION_ENTER
+#endif
+
+#ifdef CONFIG_FS_CMD_UPGRADE_APPLICATION_ERASE
+#    pragma message "CONFIG_FS_CMD_UPGRADE_APPLICATION_ERASE is deprecated. Use CONFIG_UPGRADE_FS_COMMAND_APPLICATION_ERASE instead."
+#    define CONFIG_UPGRADE_FS_COMMAND_APPLICATION_ERASE CONFIG_FS_CMD_UPGRADE_APPLICATION_ERASE
+#endif
+
+#ifdef CONFIG_FS_CMD_UPGRADE_APPLICATION_IS_VALID
+#    pragma message "CONFIG_FS_CMD_UPGRADE_APPLICATION_IS_VALID is deprecated. Use CONFIG_UPGRADE_FS_COMMAND_APPLICATION_IS_VALID instead."
+#    define CONFIG_UPGRADE_FS_COMMAND_APPLICATION_IS_VALID CONFIG_FS_CMD_UPGRADE_APPLICATION_IS_VALID
+#endif
+
+#ifdef CONFIG_FS_CMD_UPGRADE_BOOTLOADER_ENTER
+#    pragma message "CONFIG_FS_CMD_UPGRADE_BOOTLOADER_ENTER is deprecated. Use CONFIG_UPGRADE_FS_COMMAND_BOOTLOADER_ENTER instead."
+#    define CONFIG_UPGRADE_FS_COMMAND_BOOTLOADER_ENTER CONFIG_FS_CMD_UPGRADE_BOOTLOADER_ENTER
+#endif
+
+#ifdef CONFIG_FS_CMD_USB_DEVICE_LIST
+#    pragma message "CONFIG_FS_CMD_USB_DEVICE_LIST is deprecated. Use CONFIG_USB_FS_COMMAND_DEVICE_LIST instead."
+#    define CONFIG_USB_FS_COMMAND_DEVICE_LIST CONFIG_FS_CMD_USB_DEVICE_LIST
+#endif
+
+#ifdef CONFIG_FS_CMD_USB_HOST_LIST
+#    pragma message "CONFIG_FS_CMD_USB_HOST_LIST is deprecated. Use CONFIG_USB_FS_COMMAND_HOST_LIST instead."
+#    define CONFIG_USB_FS_COMMAND_HOST_LIST CONFIG_FS_CMD_USB_HOST_LIST
+#endif
+
+#ifdef CONFIG_FS_CMD_NVM_READ
+#    pragma message "CONFIG_FS_CMD_NVM_READ is deprecated. Use CONFIG_NVM_FS_COMMAND_READ instead."
+#    define CONFIG_NVM_FS_COMMAND_READ CONFIG_FS_CMD_NVM_READ
+#endif
+
+#ifdef CONFIG_FS_CMD_NVM_WRITE
+#    pragma message "CONFIG_FS_CMD_NVM_WRITE is deprecated. Use CONFIG_NVM_FS_COMMAND_WRITE instead."
+#    define CONFIG_NVM_FS_COMMAND_WRITE CONFIG_FS_CMD_NVM_WRITE
+#endif
+
 /* All ports must implement uart and pin drivers. */
 #define PORT_HAS_I2C_SOFT
 #define PORT_HAS_OWI
@@ -439,6 +674,19 @@
 #endif
 
 /**
+ * Debug file system command to print the Espressif WiFi status.
+ */
+#ifndef CONFIG_ESP_WIFI_FS_COMMAND_STATUS
+#    if defined(CONFIG_MINIMAL_SYSTEM)
+#        define CONFIG_ESP_WIFI_FS_COMMAND_STATUS           0
+#    elif defined(BOARD_ESP12E) || defined(BOARD_ESP01) || defined(BOARD_NODEMCU)
+#        define CONFIG_ESP_WIFI_FS_COMMAND_STATUS           1
+#    else
+#        define CONFIG_ESP_WIFI_FS_COMMAND_STATUS           0
+#    endif
+#endif
+
+/**
  * Enable the exti driver.
  */
 #ifndef CONFIG_EXTI
@@ -546,6 +794,39 @@
 #endif
 
 /**
+ * Debug file system command to read the current value of a pin.
+ */
+#ifndef CONFIG_PIN_FS_COMMAND_READ
+#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(CONFIG_MINIMAL_SYSTEM)
+#        define CONFIG_PIN_FS_COMMAND_READ                  0
+#    else
+#        define CONFIG_PIN_FS_COMMAND_READ                  1
+#    endif
+#endif
+
+/**
+ * Debug file system command to set the mode of a pin.
+ */
+#ifndef CONFIG_PIN_FS_COMMAND_SET_MODE
+#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(CONFIG_MINIMAL_SYSTEM)
+#        define CONFIG_PIN_FS_COMMAND_SET_MODE              0
+#    else
+#        define CONFIG_PIN_FS_COMMAND_SET_MODE              1
+#    endif
+#endif
+
+/**
+ * Debug file system command to write a value to a pin.
+ */
+#ifndef CONFIG_PIN_FS_COMMAND_WRITE
+#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(CONFIG_MINIMAL_SYSTEM)
+#        define CONFIG_PIN_FS_COMMAND_WRITE                 0
+#    else
+#        define CONFIG_PIN_FS_COMMAND_WRITE                 1
+#    endif
+#endif
+
+/**
  * Enable the pwm driver.
  */
 #ifndef CONFIG_PWM
@@ -643,6 +924,17 @@
 #endif
 
 /**
+ * Debug file system command to list all USB devices.
+ */
+#ifndef CONFIG_USB_DEVICE_FS_COMMAND_LIST
+#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(CONFIG_MINIMAL_SYSTEM)
+#        define CONFIG_USB_DEVICE_FS_COMMAND_LIST           0
+#    else
+#        define CONFIG_USB_DEVICE_FS_COMMAND_LIST           1
+#    endif
+#endif
+
+/**
  * Enable the usb_host driver.
  */
 #ifndef CONFIG_USB_HOST
@@ -652,6 +944,18 @@
 #        define CONFIG_USB_HOST                             1
 #    else
 #        define CONFIG_USB_HOST                             0
+#    endif
+#endif
+
+/**
+ * Debug file system command to list all USB devices connected to the
+ * USB host.
+ */
+#ifndef CONFIG_USB_FS_COMMAND_HOST_LIST
+#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(CONFIG_MINIMAL_SYSTEM)
+#        define CONFIG_USB_HOST_FS_COMMAND_LIST             0
+#    else
+#        define CONFIG_USB_HOST_FS_COMMAND_LIST             1
 #    endif
 #endif
 
@@ -954,6 +1258,17 @@
 #        define CONFIG_MODULE_INIT_DS18B20                  1
 #    else
 #        define CONFIG_MODULE_INIT_DS18B20                  0
+#    endif
+#endif
+
+/**
+ * Debug file system command to list all DS18B20 sensors on the bus.
+ */
+#ifndef CONFIG_DS18B20_FS_COMMAND_LIST
+#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(CONFIG_MINIMAL_SYSTEM)
+#        define CONFIG_DS18B20_FS_COMMAND_LIST              0
+#    else
+#        define CONFIG_DS18B20_FS_COMMAND_LIST              1
 #    endif
 #endif
 
@@ -1270,180 +1585,46 @@
 #endif
 
 /**
- * Debug file system command to list all DS18B20 sensors on the bus.
- */
-#ifndef CONFIG_FS_CMD_DS18B20_LIST
-#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(CONFIG_MINIMAL_SYSTEM)
-#        define CONFIG_FS_CMD_DS18B20_LIST                  0
-#    else
-#        define CONFIG_FS_CMD_DS18B20_LIST                  1
-#    endif
-#endif
-
-/**
- * Debug file system command to print the Espressif WiFi status.
- */
-#ifndef CONFIG_FS_CMD_ESP_WIFI_STATUS
-#    if defined(CONFIG_MINIMAL_SYSTEM)
-#        define CONFIG_FS_CMD_ESP_WIFI_STATUS               0
-#    elif defined(BOARD_ESP12E) || defined(BOARD_ESP01) || defined(BOARD_NODEMCU)
-#        define CONFIG_FS_CMD_ESP_WIFI_STATUS               1
-#    else
-#        define CONFIG_FS_CMD_ESP_WIFI_STATUS               0
-#    endif
-#endif
-
-/**
- * Debug file system command to append to a file.
- */
-#ifndef CONFIG_FS_CMD_FS_APPEND
-#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(FAMILY_SPC5) || defined(CONFIG_MINIMAL_SYSTEM)
-#        define CONFIG_FS_CMD_FS_APPEND                     0
-#    else
-#        define CONFIG_FS_CMD_FS_APPEND                     1
-#    endif
-#endif
-
-/**
- * Debug file system command to list all counters.
- */
-#ifndef CONFIG_FS_CMD_FS_COUNTERS_LIST
-#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(FAMILY_SPC5) || defined(CONFIG_MINIMAL_SYSTEM)
-#        define CONFIG_FS_CMD_FS_COUNTERS_LIST              0
-#    else
-#        define CONFIG_FS_CMD_FS_COUNTERS_LIST              1
-#    endif
-#endif
-
-/**
- * Debug file system command to set all counters to zero.
- */
-#ifndef CONFIG_FS_CMD_FS_COUNTERS_RESET
-#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(FAMILY_SPC5) || defined(CONFIG_MINIMAL_SYSTEM)
-#        define CONFIG_FS_CMD_FS_COUNTERS_RESET             0
-#    else
-#        define CONFIG_FS_CMD_FS_COUNTERS_RESET             1
-#    endif
-#endif
-
-/**
- * Debug file system command to list all registered file systems.
- */
-#ifndef CONFIG_FS_CMD_FS_FILESYSTEMS_LIST
-#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(FAMILY_SPC5) || defined(CONFIG_MINIMAL_SYSTEM)
-#        define CONFIG_FS_CMD_FS_FILESYSTEMS_LIST           0
-#    else
-#        define CONFIG_FS_CMD_FS_FILESYSTEMS_LIST           1
-#    endif
-#endif
-
-/**
- * Debug file system command to list all registered file systems.
- */
-#ifndef CONFIG_FS_CMD_FS_LIST
-#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(FAMILY_SPC5) || defined(CONFIG_MINIMAL_SYSTEM)
-#        define CONFIG_FS_CMD_FS_LIST                       0
-#    else
-#        define CONFIG_FS_CMD_FS_LIST                       1
-#    endif
-#endif
-
-/**
- * Debug file system command to format a file system.
- */
-#ifndef CONFIG_FS_CMD_FS_FORMAT
-#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(FAMILY_SPC5) || defined(CONFIG_MINIMAL_SYSTEM)
-#        define CONFIG_FS_CMD_FS_FORMAT                     0
-#    else
-#        define CONFIG_FS_CMD_FS_FORMAT                     1
-#    endif
-#endif
-
-/**
- * Debug file system command to list all parameters.
- */
-#ifndef CONFIG_FS_CMD_FS_PARAMETERS_LIST
-#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(FAMILY_SPC5) || defined(CONFIG_MINIMAL_SYSTEM)
-#        define CONFIG_FS_CMD_FS_PARAMETERS_LIST            0
-#    else
-#        define CONFIG_FS_CMD_FS_PARAMETERS_LIST            1
-#    endif
-#endif
-
-/**
- * Debug file system command to read from a file.
- */
-#ifndef CONFIG_FS_CMD_FS_READ
-#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(FAMILY_SPC5) || defined(CONFIG_MINIMAL_SYSTEM)
-#        define CONFIG_FS_CMD_FS_READ                       0
-#    else
-#        define CONFIG_FS_CMD_FS_READ                       1
-#    endif
-#endif
-
-/**
- * Debug file system command to remove a file.
- */
-#ifndef CONFIG_FS_CMD_FS_REMOVE
-#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(FAMILY_SPC5) || defined(CONFIG_MINIMAL_SYSTEM)
-#        define CONFIG_FS_CMD_FS_REMOVE                     0
-#    else
-#        define CONFIG_FS_CMD_FS_REMOVE                     1
-#    endif
-#endif
-
-/**
- * Debug file system command to write to a file.
- */
-#ifndef CONFIG_FS_CMD_FS_WRITE
-#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(FAMILY_SPC5) || defined(CONFIG_MINIMAL_SYSTEM)
-#        define CONFIG_FS_CMD_FS_WRITE                      0
-#    else
-#        define CONFIG_FS_CMD_FS_WRITE                      1
-#    endif
-#endif
-
-/**
  * Debug file system command to read from a i2c bus.
  */
-#ifndef CONFIG_FS_CMD_I2C_READ
+#ifndef CONFIG_I2C_FS_COMMAND_READ
 #    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(CONFIG_MINIMAL_SYSTEM)
-#        define CONFIG_FS_CMD_I2C_READ                      0
+#        define CONFIG_I2C_FS_COMMAND_READ                  0
 #    else
-#        define CONFIG_FS_CMD_I2C_READ                      1
+#        define CONFIG_I2C_FS_COMMAND_READ                  1
 #    endif
 #endif
 
 /**
  * Debug file system command to write to a i2c bus.
  */
-#ifndef CONFIG_FS_CMD_I2C_WRITE
+#ifndef CONFIG_I2C_FS_COMMAND_WRITE
 #    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(CONFIG_MINIMAL_SYSTEM)
-#        define CONFIG_FS_CMD_I2C_WRITE                     0
+#        define CONFIG_I2C_FS_COMMAND_WRITE                 0
 #    else
-#        define CONFIG_FS_CMD_I2C_WRITE                     1
+#        define CONFIG_I2C_FS_COMMAND_WRITE                 1
 #    endif
 #endif
 
 /**
  * Debug file system command to scan a i2c bus.
  */
-#ifndef CONFIG_FS_CMD_I2C_SCAN
+#ifndef CONFIG_I2C_FS_COMMAND_SCAN
 #    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(CONFIG_MINIMAL_SYSTEM)
-#        define CONFIG_FS_CMD_I2C_SCAN                      0
+#        define CONFIG_I2C_FS_COMMAND_SCAN                  0
 #    else
-#        define CONFIG_FS_CMD_I2C_SCAN                      1
+#        define CONFIG_I2C_FS_COMMAND_SCAN                  1
 #    endif
 #endif
 
 /**
  * Debug file system command to list all log objects.
  */
-#ifndef CONFIG_FS_CMD_LOG_LIST
+#ifndef CONFIG_LOG_FS_COMMAND_LIST
 #    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(CONFIG_MINIMAL_SYSTEM)
-#        define CONFIG_FS_CMD_LOG_LIST                      0
+#        define CONFIG_LOG_FS_COMMAND_LIST                  0
 #    else
-#        define CONFIG_FS_CMD_LOG_LIST                      1
+#        define CONFIG_LOG_FS_COMMAND_LIST                  1
 #    endif
 #endif
 
@@ -1451,132 +1632,99 @@
  * Debug file system command to create a log entry and print
  * it. Mainly used for debugging.
  */
-#ifndef CONFIG_FS_CMD_LOG_PRINT
+#ifndef CONFIG_LOG_FS_COMMAND_PRINT
 #    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(CONFIG_MINIMAL_SYSTEM)
-#        define CONFIG_FS_CMD_LOG_PRINT                     0
+#        define CONFIG_LOG_FS_COMMAND_PRINT                 0
 #    else
-#        define CONFIG_FS_CMD_LOG_PRINT                     1
+#        define CONFIG_LOG_FS_COMMAND_PRINT                 1
 #    endif
 #endif
 
 /**
  * Debug file system command to set the log mask of a log object.
  */
-#ifndef CONFIG_FS_CMD_LOG_SET_LOG_MASK
+#ifndef CONFIG_LOG_FS_COMMAND_SET_LOG_MASK
 #    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(CONFIG_MINIMAL_SYSTEM)
-#        define CONFIG_FS_CMD_LOG_SET_LOG_MASK              0
+#        define CONFIG_LOG_FS_COMMAND_SET_LOG_MASK          0
 #    else
-#        define CONFIG_FS_CMD_LOG_SET_LOG_MASK              1
+#        define CONFIG_LOG_FS_COMMAND_SET_LOG_MASK          1
 #    endif
 #endif
 
 /**
  * Debug file system command to list all network interfaces.
  */
-#ifndef CONFIG_FS_CMD_NETWORK_INTERFACE_LIST
+#ifndef CONFIG_NETWORK_INTERFACE_FS_COMMAND_LIST
 #    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(CONFIG_MINIMAL_SYSTEM)
-#        define CONFIG_FS_CMD_NETWORK_INTERFACE_LIST        0
+#        define CONFIG_NETWORK_INTERFACE_FS_COMMAND_LIST    0
 #    else
-#        define CONFIG_FS_CMD_NETWORK_INTERFACE_LIST        1
-#    endif
-#endif
-
-/**
- * Debug file system command to read the current value of a pin.
- */
-#ifndef CONFIG_FS_CMD_PIN_READ
-#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(CONFIG_MINIMAL_SYSTEM)
-#        define CONFIG_FS_CMD_PIN_READ                      0
-#    else
-#        define CONFIG_FS_CMD_PIN_READ                      1
-#    endif
-#endif
-
-/**
- * Debug file system command to set the mode of a pin.
- */
-#ifndef CONFIG_FS_CMD_PIN_SET_MODE
-#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(CONFIG_MINIMAL_SYSTEM)
-#        define CONFIG_FS_CMD_PIN_SET_MODE                  0
-#    else
-#        define CONFIG_FS_CMD_PIN_SET_MODE                  1
-#    endif
-#endif
-
-/**
- * Debug file system command to write a value to a pin.
- */
-#ifndef CONFIG_FS_CMD_PIN_WRITE
-#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(CONFIG_MINIMAL_SYSTEM)
-#        define CONFIG_FS_CMD_PIN_WRITE                     0
-#    else
-#        define CONFIG_FS_CMD_PIN_WRITE                     1
+#        define CONFIG_NETWORK_INTERFACE_FS_COMMAND_LIST    1
 #    endif
 #endif
 
 /**
  * Debug file system command to ping a host.
  */
-#ifndef CONFIG_FS_CMD_PING_PING
+#ifndef CONFIG_PING_FS_COMMAND_PING
 #    if defined(CONFIG_MINIMAL_SYSTEM)
-#        define CONFIG_FS_CMD_PING_PING                     0
+#        define CONFIG_PING_FS_COMMAND_PING                 0
 #    else
-#        define CONFIG_FS_CMD_PING_PING                     1
+#        define CONFIG_PING_FS_COMMAND_PING                 1
 #    endif
 #endif
 
 /**
  * Debug file system command to list all services.
  */
-#ifndef CONFIG_FS_CMD_SERVICE_LIST
+#ifndef CONFIG_SERVICE_FS_COMMAND_LIST
 #    if defined(CONFIG_MINIMAL_SYSTEM)
-#        define CONFIG_FS_CMD_SERVICE_LIST                  0
+#        define CONFIG_SERVICE_FS_COMMAND_LIST              0
 #    else
-#        define CONFIG_FS_CMD_SERVICE_LIST                  1
+#        define CONFIG_SERVICE_FS_COMMAND_LIST              1
 #    endif
 #endif
 
 /**
  * Debug file system command to start a service.
  */
-#ifndef CONFIG_FS_CMD_SERVICE_START
+#ifndef CONFIG_SERVICE_FS_COMMAND_START
 #    if defined(CONFIG_MINIMAL_SYSTEM)
-#        define CONFIG_FS_CMD_SERVICE_START                 0
+#        define CONFIG_SERVICE_FS_COMMAND_START             0
 #    else
-#        define CONFIG_FS_CMD_SERVICE_START                 1
+#        define CONFIG_SERVICE_FS_COMMAND_START             1
 #    endif
 #endif
 
 /**
  * Debug file system command to stop a services.
  */
-#ifndef CONFIG_FS_CMD_SERVICE_STOP
+#ifndef CONFIG_SERVICE_FS_COMMAND_STOP
 #    if defined(CONFIG_MINIMAL_SYSTEM)
-#        define CONFIG_FS_CMD_SERVICE_STOP                  0
+#        define CONFIG_SERVICE_FS_COMMAND_STOP              0
 #    else
-#        define CONFIG_FS_CMD_SERVICE_STOP                  1
+#        define CONFIG_SERVICE_FS_COMMAND_STOP              1
 #    endif
 #endif
 
 /**
  * Debug file system command to list all settings.
  */
-#ifndef CONFIG_FS_CMD_SETTINGS_LIST
+#ifndef CONFIG_SETTINGS_FS_COMMAND_LIST
 #    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(CONFIG_MINIMAL_SYSTEM)
-#        define CONFIG_FS_CMD_SETTINGS_LIST                 0
+#        define CONFIG_SETTINGS_FS_COMMAND_LIST             0
 #    else
-#        define CONFIG_FS_CMD_SETTINGS_LIST                 1
+#        define CONFIG_SETTINGS_FS_COMMAND_LIST             1
 #    endif
 #endif
 
 /**
  * Debug file system command to read the value of a setting.
  */
-#ifndef CONFIG_FS_CMD_SETTINGS_READ
+#ifndef CONFIG_SETTINGS_FS_COMMAND_READ
 #    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(CONFIG_MINIMAL_SYSTEM)
-#        define CONFIG_FS_CMD_SETTINGS_READ                 0
+#        define CONFIG_SETTINGS_FS_COMMAND_READ             0
 #    else
-#        define CONFIG_FS_CMD_SETTINGS_READ                 1
+#        define CONFIG_SETTINGS_FS_COMMAND_READ             1
 #    endif
 #endif
 
@@ -1584,195 +1732,150 @@
  * Debug file system command to reset the settings to their original
  * values.
  */
-#ifndef CONFIG_FS_CMD_SETTINGS_RESET
+#ifndef CONFIG_SETTINGS_FS_COMMAND_RESET
 #    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(CONFIG_MINIMAL_SYSTEM)
-#        define CONFIG_FS_CMD_SETTINGS_RESET                0
+#        define CONFIG_SETTINGS_FS_COMMAND_RESET            0
 #    else
-#        define CONFIG_FS_CMD_SETTINGS_RESET                1
+#        define CONFIG_SETTINGS_FS_COMMAND_RESET            1
 #    endif
 #endif
 
 /**
  * Debug file system command to write a value to a setting.
  */
-#ifndef CONFIG_FS_CMD_SETTINGS_WRITE
+#ifndef CONFIG_SETTINGS_FS_COMMAND_WRITE
 #    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(CONFIG_MINIMAL_SYSTEM)
-#        define CONFIG_FS_CMD_SETTINGS_WRITE                0
+#        define CONFIG_SETTINGS_FS_COMMAND_WRITE            0
 #    else
-#        define CONFIG_FS_CMD_SETTINGS_WRITE                1
+#        define CONFIG_SETTINGS_FS_COMMAND_WRITE            1
 #    endif
 #endif
 
 /**
  * Debug file system command to print the system configuration.
  */
-#ifndef CONFIG_FS_CMD_SYS_CONFIG
+#ifndef CONFIG_SYS_FS_COMMAND_CONFIG
 #    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(CONFIG_MINIMAL_SYSTEM)
-#        define CONFIG_FS_CMD_SYS_CONFIG                    0
+#        define CONFIG_SYS_FS_COMMAND_CONFIG                0
 #    else
-#        define CONFIG_FS_CMD_SYS_CONFIG                    1
+#        define CONFIG_SYS_FS_COMMAND_CONFIG                1
 #    endif
 #endif
 
 /**
  * Debug file system command to print the system information.
  */
-#ifndef CONFIG_FS_CMD_SYS_INFO
+#ifndef CONFIG_SYS_FS_COMMAND_INFO
 #    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(CONFIG_MINIMAL_SYSTEM)
-#        define CONFIG_FS_CMD_SYS_INFO                      0
+#        define CONFIG_SYS_FS_COMMAND_INFO                  0
 #    else
-#        define CONFIG_FS_CMD_SYS_INFO                      1
+#        define CONFIG_SYS_FS_COMMAND_INFO                  1
 #    endif
 #endif
 
 /**
  * Debug file system command to print the system uptime.
  */
-#ifndef CONFIG_FS_CMD_SYS_UPTIME
+#ifndef CONFIG_SYS_FS_COMMAND_UPTIME
 #    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(CONFIG_MINIMAL_SYSTEM)
-#        define CONFIG_FS_CMD_SYS_UPTIME                    0
+#        define CONFIG_SYS_FS_COMMAND_UPTIME                0
 #    else
-#        define CONFIG_FS_CMD_SYS_UPTIME                    1
+#        define CONFIG_SYS_FS_COMMAND_UPTIME                1
 #    endif
 #endif
 
 /**
  * Debug file system command to force a panic of the system.
  */
-#ifndef CONFIG_FS_CMD_SYS_PANIC
+#ifndef CONFIG_SYS_FS_COMMAND_PANIC
 #    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(CONFIG_MINIMAL_SYSTEM)
-#        define CONFIG_FS_CMD_SYS_PANIC                     0
+#        define CONFIG_SYS_FS_COMMAND_PANIC                 0
 #    else
-#        define CONFIG_FS_CMD_SYS_PANIC                     1
+#        define CONFIG_SYS_FS_COMMAND_PANIC                 1
 #    endif
 #endif
 
 /**
  * Debug file system command to reboot the system.
  */
-#ifndef CONFIG_FS_CMD_SYS_REBOOT
+#ifndef CONFIG_SYS_FS_COMMAND_REBOOT
 #    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(CONFIG_MINIMAL_SYSTEM)
-#        define CONFIG_FS_CMD_SYS_REBOOT                    0
+#        define CONFIG_SYS_FS_COMMAND_REBOOT                0
 #    else
-#        define CONFIG_FS_CMD_SYS_REBOOT                    1
+#        define CONFIG_SYS_FS_COMMAND_REBOOT                1
 #    endif
 #endif
 
 /**
  * Debug file system command to print a backtrace.
  */
-#ifndef CONFIG_FS_CMD_SYS_BACKTRACE
+#ifndef CONFIG_SYS_FS_COMMAND_BACKTRACE
 #    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(CONFIG_MINIMAL_SYSTEM)
-#        define CONFIG_FS_CMD_SYS_BACKTRACE                 0
+#        define CONFIG_SYS_FS_COMMAND_BACKTRACE             0
 #    else
-#        define CONFIG_FS_CMD_SYS_BACKTRACE                 1
+#        define CONFIG_SYS_FS_COMMAND_BACKTRACE             1
 #    endif
 #endif
 
 /**
  * Debug file system command to print the system reset cause.
  */
-#ifndef CONFIG_FS_CMD_SYS_RESET_CAUSE
+#ifndef CONFIG_SYS_FS_COMMAND_RESET_CAUSE
 #    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(CONFIG_MINIMAL_SYSTEM)
-#        define CONFIG_FS_CMD_SYS_RESET_CAUSE               0
+#        define CONFIG_SYS_FS_COMMAND_RESET_CAUSE           0
 #    else
-#        define CONFIG_FS_CMD_SYS_RESET_CAUSE               1
+#        define CONFIG_SYS_FS_COMMAND_RESET_CAUSE           1
 #    endif
 #endif
 
 /**
  * Debug file system command to list threads' information.
  */
-#ifndef CONFIG_FS_CMD_THRD_LIST
+#ifndef CONFIG_THRD_FS_COMMAND_LIST
 #    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(CONFIG_MINIMAL_SYSTEM)
-#        define CONFIG_FS_CMD_THRD_LIST                     0
+#        define CONFIG_THRD_FS_COMMAND_LIST                 0
 #    else
-#        define CONFIG_FS_CMD_THRD_LIST                     1
+#        define CONFIG_THRD_FS_COMMAND_LIST                 1
 #    endif
 #endif
 
 /**
  * Debug file system command to set the log mask of a thread.
  */
-#ifndef CONFIG_FS_CMD_THRD_SET_LOG_MASK
+#ifndef CONFIG_THRD_FS_COMMAND_SET_LOG_MASK
 #    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(CONFIG_MINIMAL_SYSTEM)
-#        define CONFIG_FS_CMD_THRD_SET_LOG_MASK             0
+#        define CONFIG_THRD_FS_COMMAND_SET_LOG_MASK         0
 #    else
-#        define CONFIG_FS_CMD_THRD_SET_LOG_MASK             1
+#        define CONFIG_THRD_FS_COMMAND_SET_LOG_MASK         1
 #    endif
 #endif
 
 /**
  * Debug file system command to enter the application.
  */
-#ifndef CONFIG_FS_CMD_UPGRADE_APPLICATION_ENTER
-#    define CONFIG_FS_CMD_UPGRADE_APPLICATION_ENTER         1
+#ifndef CONFIG_UPGRADE_FS_COMMAND_APPLICATION_ENTER
+#    define CONFIG_UPGRADE_FS_COMMAND_APPLICATION_ENTER     1
 #endif
 
 /**
  * Debug file system command to erase the application.
  */
-#ifndef CONFIG_FS_CMD_UPGRADE_APPLICATION_ERASE
-#    define CONFIG_FS_CMD_UPGRADE_APPLICATION_ERASE         1
+#ifndef CONFIG_UPGRADE_FS_COMMAND_APPLICATION_ERASE
+#    define CONFIG_UPGRADE_FS_COMMAND_APPLICATION_ERASE     1
 #endif
 
 /**
  * Debug file system command to check if the application is valid.
  */
-#ifndef CONFIG_FS_CMD_UPGRADE_APPLICATION_IS_VALID
-#    define CONFIG_FS_CMD_UPGRADE_APPLICATION_IS_VALID      1
+#ifndef CONFIG_UPGRADE_FS_COMMAND_APPLICATION_IS_VALID
+#    define CONFIG_UPGRADE_FS_COMMAND_APPLICATION_IS_VALID  1
 #endif
 
 /**
  * Debug file system command to enter the bootloader.
  */
-#ifndef CONFIG_FS_CMD_UPGRADE_BOOTLOADER_ENTER
-#    define CONFIG_FS_CMD_UPGRADE_BOOTLOADER_ENTER          1
-#endif
-
-/**
- * Debug file system command to list all USB devices.
- */
-#ifndef CONFIG_FS_CMD_USB_DEVICE_LIST
-#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(CONFIG_MINIMAL_SYSTEM)
-#        define CONFIG_FS_CMD_USB_DEVICE_LIST               0
-#    else
-#        define CONFIG_FS_CMD_USB_DEVICE_LIST               1
-#    endif
-#endif
-
-/**
- * Debug file system command to list all USB devices connected to the
- * USB host.
- */
-#ifndef CONFIG_FS_CMD_USB_HOST_LIST
-#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(CONFIG_MINIMAL_SYSTEM)
-#        define CONFIG_FS_CMD_USB_HOST_LIST                 0
-#    else
-#        define CONFIG_FS_CMD_USB_HOST_LIST                 1
-#    endif
-#endif
-
-/**
- * Debug file system command to read for non-volatile memory.
- */
-#ifndef CONFIG_FS_CMD_NVM_READ
-#    if defined(CONFIG_MINIMAL_SYSTEM)
-#        define CONFIG_FS_CMD_NVM_READ                      0
-#    else
-#        define CONFIG_FS_CMD_NVM_READ                      1
-#    endif
-#endif
-
-/**
- * Debug file system command to write for non-volatile memory.
- */
-#ifndef CONFIG_FS_CMD_NVM_WRITE
-#    if defined(CONFIG_MINIMAL_SYSTEM)
-#        define CONFIG_FS_CMD_NVM_WRITE                      0
-#    else
-#        define CONFIG_FS_CMD_NVM_WRITE                      1
-#    endif
+#ifndef CONFIG_UPGRADE_FS_COMMAND_BOOTLOADER_ENTER
+#    define CONFIG_UPGRADE_FS_COMMAND_BOOTLOADER_ENTER      1
 #endif
 
 /**
@@ -1780,6 +1883,116 @@
  */
 #ifndef CONFIG_FS_PATH_MAX
 #    define CONFIG_FS_PATH_MAX                             64
+#endif
+
+/**
+ * Debug file system command to append to a file.
+ */
+#ifndef CONFIG_FS_FS_COMMAND_APPEND
+#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(FAMILY_SPC5) || defined(CONFIG_MINIMAL_SYSTEM)
+#        define CONFIG_FS_FS_COMMAND_APPEND                 0
+#    else
+#        define CONFIG_FS_FS_COMMAND_APPEND                 1
+#    endif
+#endif
+
+/**
+ * Debug file system command to list all counters.
+ */
+#ifndef CONFIG_FS_FS_COMMAND_COUNTERS_LIST
+#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(FAMILY_SPC5) || defined(CONFIG_MINIMAL_SYSTEM)
+#        define CONFIG_FS_FS_COMMAND_COUNTERS_LIST          0
+#    else
+#        define CONFIG_FS_FS_COMMAND_COUNTERS_LIST          1
+#    endif
+#endif
+
+/**
+ * Debug file system command to set all counters to zero.
+ */
+#ifndef CONFIG_FS_FS_COMMAND_COUNTERS_RESET
+#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(FAMILY_SPC5) || defined(CONFIG_MINIMAL_SYSTEM)
+#        define CONFIG_FS_FS_COMMAND_COUNTERS_RESET         0
+#    else
+#        define CONFIG_FS_FS_COMMAND_COUNTERS_RESET         1
+#    endif
+#endif
+
+/**
+ * Debug file system command to list all registered file systems.
+ */
+#ifndef CONFIG_FS_FS_COMMAND_FILESYSTEMS_LIST
+#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(FAMILY_SPC5) || defined(CONFIG_MINIMAL_SYSTEM)
+#        define CONFIG_FS_FS_COMMAND_FILESYSTEMS_LIST       0
+#    else
+#        define CONFIG_FS_FS_COMMAND_FILESYSTEMS_LIST       1
+#    endif
+#endif
+
+/**
+ * Debug file system command to list all registered file systems.
+ */
+#ifndef CONFIG_FS_FS_COMMAND_LIST
+#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(FAMILY_SPC5) || defined(CONFIG_MINIMAL_SYSTEM)
+#        define CONFIG_FS_FS_COMMAND_LIST                   0
+#    else
+#        define CONFIG_FS_FS_COMMAND_LIST                   1
+#    endif
+#endif
+
+/**
+ * Debug file system command to format a file system.
+ */
+#ifndef CONFIG_FS_FS_COMMAND_FORMAT
+#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(FAMILY_SPC5) || defined(CONFIG_MINIMAL_SYSTEM)
+#        define CONFIG_FS_FS_COMMAND_FORMAT                 0
+#    else
+#        define CONFIG_FS_FS_COMMAND_FORMAT                 1
+#    endif
+#endif
+
+/**
+ * Debug file system command to list all parameters.
+ */
+#ifndef CONFIG_FS_FS_COMMAND_PARAMETERS_LIST
+#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(FAMILY_SPC5) || defined(CONFIG_MINIMAL_SYSTEM)
+#        define CONFIG_FS_FS_COMMAND_PARAMETERS_LIST        0
+#    else
+#        define CONFIG_FS_FS_COMMAND_PARAMETERS_LIST        1
+#    endif
+#endif
+
+/**
+ * Debug file system command to read from a file.
+ */
+#ifndef CONFIG_FS_FS_COMMAND_READ
+#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(FAMILY_SPC5) || defined(CONFIG_MINIMAL_SYSTEM)
+#        define CONFIG_FS_FS_COMMAND_READ                   0
+#    else
+#        define CONFIG_FS_FS_COMMAND_READ                   1
+#    endif
+#endif
+
+/**
+ * Debug file system command to remove a file.
+ */
+#ifndef CONFIG_FS_FS_COMMAND_REMOVE
+#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(FAMILY_SPC5) || defined(CONFIG_MINIMAL_SYSTEM)
+#        define CONFIG_FS_FS_COMMAND_REMOVE                 0
+#    else
+#        define CONFIG_FS_FS_COMMAND_REMOVE                 1
+#    endif
+#endif
+
+/**
+ * Debug file system command to write to a file.
+ */
+#ifndef CONFIG_FS_FS_COMMAND_WRITE
+#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(FAMILY_SPC5) || defined(CONFIG_MINIMAL_SYSTEM)
+#        define CONFIG_FS_FS_COMMAND_WRITE                  0
+#    else
+#        define CONFIG_FS_FS_COMMAND_WRITE                  1
+#    endif
 #endif
 
 /**
@@ -2098,6 +2311,28 @@
 #        define CONFIG_NVM_EEPROM_SOFT_FLASH_DEVICE_INDEX   1
 #    else
 #        define CONFIG_NVM_EEPROM_SOFT_FLASH_DEVICE_INDEX   0
+#    endif
+#endif
+
+/**
+ * Debug file system command to read for non-volatile memory.
+ */
+#ifndef CONFIG_NVM_FS_COMMAND_READ
+#    if defined(CONFIG_MINIMAL_SYSTEM)
+#        define CONFIG_NVM_FS_COMMAND_READ                  0
+#    else
+#        define CONFIG_NVM_FS_COMMAND_READ                  1
+#    endif
+#endif
+
+/**
+ * Debug file system command to write for non-volatile memory.
+ */
+#ifndef CONFIG_NVM_FS_COMMAND_WRITE
+#    if defined(CONFIG_MINIMAL_SYSTEM)
+#        define CONFIG_NVM_FS_COMMAND_WRITE                  0
+#    else
+#        define CONFIG_NVM_FS_COMMAND_WRITE                  1
 #    endif
 #endif
 

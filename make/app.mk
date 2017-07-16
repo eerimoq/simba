@@ -97,6 +97,9 @@ ifeq ($(TYPE),suite)
     CDEFS += \
 	CONFIG_PANIC_ASSERT=1
   endif
+    CDEFS += \
+	CONFIG_MINIMAL_SYSTEM=1 \
+	CONFIG_THRD_FS_COMMAND_LIST=1
 endif
 CDEFS += $(CDEFS_EXTRA)
 

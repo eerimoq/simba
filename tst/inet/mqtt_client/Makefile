@@ -34,8 +34,6 @@ BOARD ?= linux
 
 SRC += socket_stub.c
 CDEFS += \
-	CONFIG_MINIMAL_SYSTEM=1 \
-	CONFIG_FS_CMD_THRD_LIST=1 \
 	CONFIG_MODULE_INIT_LOG=1
 
 SRC_IGNORE = $(SIMBA_ROOT)/src/inet/socket.c

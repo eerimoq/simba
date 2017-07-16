@@ -52,14 +52,14 @@ struct ds18b20_scratchpad_t {
 struct module_t {
     int initialized;
     struct ds18b20_driver_t *list_p;
-#if CONFIG_FS_CMD_DS18B20_LIST == 1
+#if CONFIG_DS18B20_FS_COMMAND_LIST == 1
     struct fs_command_t cmd_list;
 #endif
 };
 
 static struct module_t module;
 
-#if CONFIG_FS_CMD_DS18B20_LIST == 1
+#if CONFIG_DS18B20_FS_COMMAND_LIST == 1
 
 static int cmd_list_cb(int argc,
                        const char *argv[],
@@ -148,14 +148,12 @@ int ds18b20_module_init()
 
     module.initialized = 1;
 
-#if CONFIG_FS_CMD_DS18B20_LIST == 1
-
+#if CONFIG_DS18B20_FS_COMMAND_LIST == 1
     fs_command_init(&module.cmd_list,
                     CSTR("/drivers/ds18b20/list"),
                     cmd_list_cb,
                     NULL);
     fs_command_register(&module.cmd_list);
-
 #endif
 
     return (0);

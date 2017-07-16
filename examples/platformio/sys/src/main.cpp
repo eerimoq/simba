@@ -53,13 +53,11 @@ static int test_info(struct harness_t *harness_p)
 {
     std_printf(sys_get_info());
 
-#if CONFIG_FS_CMD_SYS_INFO == 1
-
+#if CONFIG_SYS_FS_COMMAND_INFO == 1
     char buf[32];
 
     strcpy(buf, "/kernel/sys/info");
     BTASSERT(fs_call(buf, chan_null(), sys_get_stdout(), NULL) == 0);
-
 #endif
 
     return (0);
@@ -69,13 +67,11 @@ static int test_config(struct harness_t *harness_p)
 {
     std_printf(sys_get_config());
 
-#if CONFIG_FS_CMD_SYS_CONFIG == 1
-
+#if CONFIG_SYS_FS_COMMAND_CONFIG == 1
     char buf[32];
 
     strcpy(buf, "/kernel/sys/config");
     BTASSERT(fs_call(buf, chan_null(), sys_get_stdout(), NULL) == 0);
-
 #endif
 
     return (0);
@@ -83,19 +79,15 @@ static int test_config(struct harness_t *harness_p)
 
 static int test_uptime(struct harness_t *harness_p)
 {
-#if CONFIG_FS_CMD_SYS_UPTIME == 1
-
+#if CONFIG_SYS_FS_COMMAND_UPTIME == 1
     char buf[32];
 
     strcpy(buf, "/kernel/sys/uptime");
     BTASSERT(fs_call(buf, chan_null(), sys_get_stdout(), NULL) == 0);
 
     return (0);
-
 #else
-
     return (1);
-
 #endif
 }
 

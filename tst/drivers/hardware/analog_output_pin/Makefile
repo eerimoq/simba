@@ -33,11 +33,9 @@ TYPE = suite
 BOARD ?= linux
 
 CDEFS += \
-	CONFIG_MINIMAL_SYSTEM=1 \
 	CONFIG_ANALOG_OUTPUT_PIN=1 \
 	CONFIG_PIN=1 \
-	CONFIG_PWM=1 \
-	CONFIG_FS_CMD_THRD_LIST=1
+	CONFIG_PWM=1
 
 DRIVERS_SRC = analog_output_pin.c pwm.c pin.c
 

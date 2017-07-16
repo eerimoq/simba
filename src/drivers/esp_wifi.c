@@ -36,14 +36,14 @@
 
 struct module_t {
     int initialized;
-#if CONFIG_FS_CMD_ESP_WIFI_STATUS == 1
+#if CONFIG_ESP_WIFI_FS_COMMAND_STATUS == 1
     struct fs_command_t cmd_status;
 #endif
 };
 
 static struct module_t module;
 
-#if CONFIG_FS_CMD_ESP_WIFI_STATUS == 1
+#if CONFIG_ESP_WIFI_FS_COMMAND_STATUS == 1
 
 static int cmd_status_cb(int argc,
                          const char *argv[],
@@ -68,14 +68,12 @@ int esp_wifi_module_init(void)
 
     module.initialized = 1;
 
-#if CONFIG_FS_CMD_ESP_WIFI_STATUS == 1
-
+#if CONFIG_ESP_WIFI_FS_COMMAND_STATUS == 1
     fs_command_init(&module.cmd_status,
                     CSTR("/drivers/esp_wifi/status"),
                     cmd_status_cb,
                     NULL);
     fs_command_register(&module.cmd_status);
-
 #endif
 
     return (esp_wifi_port_module_init());

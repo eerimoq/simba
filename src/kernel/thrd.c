@@ -57,10 +57,10 @@ struct module_t {
         struct sem_t sem;
     } env;
 #endif
-#if CONFIG_FS_CMD_THRD_LIST == 1
+#if CONFIG_THRD_FS_COMMAND_LIST == 1
     struct fs_command_t cmd_list;
 #endif
-#if CONFIG_FS_CMD_THRD_SET_LOG_MASK == 1
+#if CONFIG_THRD_FS_COMMAND_SET_LOG_MASK == 1
     struct fs_command_t cmd_set_log_mask;
 #endif
 #if CONFIG_MONITOR_THREAD == 1
@@ -280,7 +280,7 @@ static void thrd_fill_pattern(char *from_p, size_t size)
   }
 }
 
-#if CONFIG_FS_CMD_THRD_LIST == 1
+#if CONFIG_THRD_FS_COMMAND_LIST == 1
 
 static int thrd_get_used_stack(struct thrd_t *thrd_p)
 {
@@ -304,7 +304,7 @@ static int thrd_get_used_stack(struct thrd_t *thrd_p)
 
 #endif
 
-#if CONFIG_FS_CMD_THRD_LIST == 1
+#if CONFIG_THRD_FS_COMMAND_LIST == 1
 
 static char *state_fmt[] = {
     "current",
@@ -377,7 +377,7 @@ static int cmd_list_cb(int argc,
 
 #endif
 
-#if CONFIG_FS_CMD_THRD_SET_LOG_MASK == 1
+#if CONFIG_THRD_FS_COMMAND_SET_LOG_MASK == 1
 
 static int cmd_set_log_mask_cb(int argc,
                                const char *argv[],
@@ -511,7 +511,7 @@ int thrd_module_init(void)
                sizeof(monitor_thrd_stack));
 #endif
 
-#if CONFIG_FS_CMD_THRD_LIST == 1
+#if CONFIG_THRD_FS_COMMAND_LIST == 1
     fs_command_init(&module.cmd_list,
                     CSTR("/kernel/thrd/list"),
                     cmd_list_cb,
@@ -519,7 +519,7 @@ int thrd_module_init(void)
     fs_command_register(&module.cmd_list);
 #endif
 
-#if CONFIG_FS_CMD_THRD_SET_LOG_MASK == 1
+#if CONFIG_THRD_FS_COMMAND_SET_LOG_MASK == 1
     fs_command_init(&module.cmd_set_log_mask,
                     CSTR("/kernel/thrd/set_log_mask"),
                     cmd_set_log_mask_cb,

@@ -209,7 +209,7 @@ static int setup_isr(struct usb_device_driver_base_t *base_p,
     return (res);
 }
 
-#if CONFIG_FS_CMD_USB_DEVICE_LIST == 1
+#if CONFIG_USB_DEVICE_FS_COMMAND_LIST == 1
 
 static int print(struct usb_device_driver_base_t *base_p,
                  void *chout_p)
@@ -256,7 +256,7 @@ int usb_device_class_cdc_init(struct usb_device_class_cdc_driver_t *self_p,
 {
     self_p->base.start_of_frame_isr = start_of_frame_isr;
     self_p->base.setup_isr = setup_isr;
-#if CONFIG_FS_CMD_USB_DEVICE_LIST == 1
+#if CONFIG_USB_DEVICE_FS_COMMAND_LIST == 1
     self_p->base.print = print;
 #endif
 

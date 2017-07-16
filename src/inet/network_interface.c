@@ -34,14 +34,14 @@ struct module_t {
     int initialized;
     /* A linked list of all network interfaces. */
     struct network_interface_t *network_interfaces_p;
-#if CONFIG_FS_CMD_NETWORK_INTERFACE_LIST == 1
+#if CONFIG_NETWORK_INTERFACE_FS_COMMAND_LIST == 1
     struct fs_command_t cmd_list;
 #endif
 };
 
 static struct module_t module;
 
-#if CONFIG_FS_CMD_NETWORK_INTERFACE_LIST == 1
+#if CONFIG_NETWORK_INTERFACE_FS_COMMAND_LIST == 1
 
 static int cmd_list_cb(int argc,
                        const char *argv[],
@@ -95,14 +95,12 @@ int network_interface_module_init()
 
     module.initialized = 1;
 
-#if CONFIG_FS_CMD_NETWORK_INTERFACE_LIST == 1
-
+#if CONFIG_NETWORK_INTERFACE_FS_COMMAND_LIST == 1
     fs_command_init(&module.cmd_list,
                     CSTR("/inet/network_interface/list"),
                     cmd_list_cb,
                     NULL);
     fs_command_register(&module.cmd_list);
-
 #endif
 
     return (0);

@@ -32,16 +32,16 @@
 
 struct module_t {
     int initialized;
-#if CONFIG_FS_CMD_SETTINGS_LIST == 1
+#if CONFIG_SETTINGS_FS_COMMAND_LIST == 1
     struct fs_command_t cmd_list;
 #endif
-#if CONFIG_FS_CMD_SETTINGS_RESET == 1
+#if CONFIG_SETTINGS_FS_COMMAND_RESET == 1
     struct fs_command_t cmd_reset;
 #endif
-#if CONFIG_FS_CMD_SETTINGS_READ == 1
+#if CONFIG_SETTINGS_FS_COMMAND_READ == 1
     struct fs_command_t cmd_read;
 #endif
-#if CONFIG_FS_CMD_SETTINGS_WRITE == 1
+#if CONFIG_SETTINGS_FS_COMMAND_WRITE == 1
     struct fs_command_t cmd_write;
 #endif
 };
@@ -54,7 +54,7 @@ const FAR struct setting_t settings[] __attribute__ ((weak)) = {
 const FAR uint8_t settings_default[CONFIG_SETTINGS_AREA_SIZE]
 __attribute__ ((weak)) = { 0xff, };
 
-#if CONFIG_FS_CMD_SETTINGS_LIST == 1
+#if CONFIG_SETTINGS_FS_COMMAND_LIST == 1
 
 static int cmd_list_cb(int argc,
                        const char *argv[],
@@ -137,7 +137,7 @@ static int cmd_list_cb(int argc,
 
 #endif
 
-#if CONFIG_FS_CMD_SETTINGS_RESET == 1
+#if CONFIG_SETTINGS_FS_COMMAND_RESET == 1
 
 static int cmd_reset_cb(int argc,
                         const char *argv[],
@@ -151,7 +151,7 @@ static int cmd_reset_cb(int argc,
 
 #endif
 
-#if CONFIG_FS_CMD_SETTINGS_READ == 1
+#if CONFIG_SETTINGS_FS_COMMAND_READ == 1
 
 static int cmd_read_cb(int argc,
                        const char *argv[],
@@ -232,7 +232,7 @@ static int cmd_read_cb(int argc,
 
 #endif
 
-#if CONFIG_FS_CMD_SETTINGS_WRITE == 1
+#if CONFIG_SETTINGS_FS_COMMAND_WRITE == 1
 
 static int cmd_write_cb(int argc,
                         const char *argv[],
@@ -363,44 +363,36 @@ int settings_module_init(void)
 
     module.initialized = 1;
 
-#if CONFIG_FS_CMD_SETTINGS_LIST == 1
-
+#if CONFIG_SETTINGS_FS_COMMAND_LIST == 1
     fs_command_init(&module.cmd_list,
                     CSTR("/oam/settings/list"),
                     cmd_list_cb,
                     NULL);
     fs_command_register(&module.cmd_list);
-
 #endif
 
-#if CONFIG_FS_CMD_SETTINGS_RESET == 1
-
+#if CONFIG_SETTINGS_FS_COMMAND_RESET == 1
     fs_command_init(&module.cmd_reset,
                     CSTR("/oam/settings/reset"),
                     cmd_reset_cb,
                     NULL);
     fs_command_register(&module.cmd_reset);
-
 #endif
 
-#if CONFIG_FS_CMD_SETTINGS_READ == 1
-
+#if CONFIG_SETTINGS_FS_COMMAND_READ == 1
     fs_command_init(&module.cmd_read,
                     CSTR("/oam/settings/read"),
                     cmd_read_cb,
                     NULL);
     fs_command_register(&module.cmd_read);
-
 #endif
 
-#if CONFIG_FS_CMD_SETTINGS_WRITE == 1
-
+#if CONFIG_SETTINGS_FS_COMMAND_WRITE == 1
     fs_command_init(&module.cmd_write,
                     CSTR("/oam/settings/write"),
                     cmd_write_cb,
                     NULL);
     fs_command_register(&module.cmd_write);
-
 #endif
 
     return (nvm_module_init());

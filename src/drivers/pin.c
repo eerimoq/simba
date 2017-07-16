@@ -34,13 +34,13 @@
 
 struct module_t {
     int initialized;
-#if CONFIG_FS_CMD_PIN_SET_MODE == 1
+#if CONFIG_PIN_FS_COMMAND_SET_MODE == 1
     struct fs_command_t cmd_set_mode;
 #endif
-#if CONFIG_FS_CMD_PIN_READ == 1
+#if CONFIG_PIN_FS_COMMAND_READ == 1
     struct fs_command_t cmd_read;
 #endif
-#if CONFIG_FS_CMD_PIN_WRITE == 1
+#if CONFIG_PIN_FS_COMMAND_WRITE == 1
     struct fs_command_t cmd_write;
 #endif
 };
@@ -49,7 +49,7 @@ struct module_t {
 
 struct module_t module;
 
-#if CONFIG_FS_CMD_PIN_SET_MODE == 1
+#if CONFIG_PIN_FS_COMMAND_SET_MODE == 1
 
 static int cmd_set_mode_cb(int argc,
                            const char *argv[],
@@ -94,7 +94,7 @@ static int cmd_set_mode_cb(int argc,
 
 #endif
 
-#if CONFIG_FS_CMD_PIN_READ == 1
+#if CONFIG_PIN_FS_COMMAND_READ == 1
 
 static int cmd_read_cb(int argc,
                        const char *argv[],
@@ -134,7 +134,7 @@ static int cmd_read_cb(int argc,
 
 #endif
 
-#if CONFIG_FS_CMD_PIN_WRITE == 1
+#if CONFIG_PIN_FS_COMMAND_WRITE == 1
 
 static int cmd_write_cb(int argc,
                         const char *argv[],
@@ -185,34 +185,28 @@ int pin_module_init(void)
 
     module.initialized = 1;
 
-#if CONFIG_FS_CMD_PIN_SET_MODE == 1
-
+#if CONFIG_PIN_FS_COMMAND_SET_MODE == 1
     fs_command_init(&module.cmd_set_mode,
                     CSTR("/drivers/pin/set_mode"),
                     cmd_set_mode_cb,
                     NULL);
     fs_command_register(&module.cmd_set_mode);
-
 #endif
 
-#if CONFIG_FS_CMD_PIN_READ == 1
-
+#if CONFIG_PIN_FS_COMMAND_READ == 1
     fs_command_init(&module.cmd_read,
                     CSTR("/drivers/pin/read"),
                     cmd_read_cb,
                     NULL);
     fs_command_register(&module.cmd_read);
-
 #endif
 
-#if CONFIG_FS_CMD_PIN_WRITE == 1
-
+#if CONFIG_PIN_FS_COMMAND_WRITE == 1
     fs_command_init(&module.cmd_write,
                     CSTR("/drivers/pin/write"),
                     cmd_write_cb,
                     NULL);
     fs_command_register(&module.cmd_write);
-
 #endif
 
     return (pin_port_module_init());

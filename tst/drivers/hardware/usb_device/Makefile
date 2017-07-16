@@ -36,7 +36,4 @@ TIMEOUT ?= 40
 
 SRC += descriptors.c
 
-CDEFS += CONFIG_MINIMAL_SYSTEM=1 \
-	CONFIG_FS_CMD_THRD_LIST=1
-
 include $(SIMBA_ROOT)/make/app.mk

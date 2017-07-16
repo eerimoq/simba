@@ -40,7 +40,7 @@ struct module_t {
     /* A list of all drivers. */
     struct usb_host_driver_t *drivers_p;
     struct usb_host_device_driver_t *device_drivers_p;
-#if CONFIG_FS_CMD_USB_HOST_LIST == 1
+#if CONFIG_USB_HOST_FS_COMMAND_LIST == 1
     struct fs_command_t cmd_list;
 #endif
 };
@@ -51,7 +51,7 @@ static int device_enumerate(struct usb_host_device_t *device_p);
 
 static struct module_t module;
 
-#if CONFIG_FS_CMD_USB_HOST_LIST == 1
+#if CONFIG_USB_HOST_FS_COMMAND_LIST == 1
 
 static int cmd_list_cb(int argc,
                        const char *argv[],
@@ -457,7 +457,7 @@ int usb_host_module_init(void)
 
     module.initialized = 1;
 
-#if CONFIG_FS_CMD_USB_HOST_LIST == 1
+#if CONFIG_USB_HOST_FS_COMMAND_LIST == 1
 
     fs_command_init(&module.cmd_list,
                     CSTR("/drivers/usb_host/list"),

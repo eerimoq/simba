@@ -40,34 +40,34 @@ struct module_t {
     struct fs_filesystem_t *filesystems_p;
     struct fs_counter_t *counters_p;
     struct fs_parameter_t *parameters_p;
-#if CONFIG_FS_CMD_FS_FILESYSTEMS_LIST == 1
+#if CONFIG_FS_FS_COMMAND_FILESYSTEMS_LIST == 1
     struct fs_command_t cmd_filesystems_list;
 #endif
-#if CONFIG_FS_CMD_FS_READ == 1
+#if CONFIG_FS_FS_COMMAND_READ == 1
     struct fs_command_t cmd_read;
 #endif
-#if CONFIG_FS_CMD_FS_WRITE == 1
+#if CONFIG_FS_FS_COMMAND_WRITE == 1
     struct fs_command_t cmd_write;
 #endif
-#if CONFIG_FS_CMD_FS_APPEND == 1
+#if CONFIG_FS_FS_COMMAND_APPEND == 1
     struct fs_command_t cmd_append;
 #endif
-#if CONFIG_FS_CMD_FS_REMOVE == 1
+#if CONFIG_FS_FS_COMMAND_REMOVE == 1
     struct fs_command_t cmd_remove;
 #endif
-#if CONFIG_FS_CMD_FS_LIST == 1
+#if CONFIG_FS_FS_COMMAND_LIST == 1
     struct fs_command_t cmd_list;
 #endif
-#if CONFIG_FS_CMD_FS_FORMAT == 1
+#if CONFIG_FS_FS_COMMAND_FORMAT == 1
     struct fs_command_t cmd_format;
 #endif
-#if CONFIG_FS_CMD_FS_COUNTERS_LIST == 1
+#if CONFIG_FS_FS_COMMAND_COUNTERS_LIST == 1
     struct fs_command_t cmd_counters_list;
 #endif
-#if CONFIG_FS_CMD_FS_COUNTERS_RESET == 1
+#if CONFIG_FS_FS_COMMAND_COUNTERS_RESET == 1
     struct fs_command_t cmd_counters_reset;
 #endif
-#if CONFIG_FS_CMD_FS_PARAMETERS_LIST == 1
+#if CONFIG_FS_FS_COMMAND_PARAMETERS_LIST == 1
     struct fs_command_t cmd_parameters_list;
 #endif
 };
@@ -115,7 +115,7 @@ static int cmd_parameter_cb(int argc,
     return (res);
 }
 
-#if CONFIG_FS_CMD_FS_FILESYSTEMS_LIST == 1
+#if CONFIG_FS_FS_COMMAND_FILESYSTEMS_LIST == 1
 
 static int cmd_filesystems_list_cb(int argc,
                                    const char *argv[],
@@ -166,7 +166,7 @@ static int cmd_filesystems_list_cb(int argc,
 
 #endif
 
-#if CONFIG_FS_CMD_FS_READ == 1
+#if CONFIG_FS_FS_COMMAND_READ == 1
 
 static int cmd_read_cb(int argc,
                        const char *argv[],
@@ -200,7 +200,7 @@ static int cmd_read_cb(int argc,
 
 #endif
 
-#if CONFIG_FS_CMD_FS_WRITE == 1
+#if CONFIG_FS_FS_COMMAND_WRITE == 1
 
 static int cmd_write_cb(int argc,
                         const char *argv[],
@@ -264,7 +264,7 @@ static int cmd_write_cb(int argc,
 
 #endif
 
-#if CONFIG_FS_CMD_FS_APPEND == 1
+#if CONFIG_FS_FS_COMMAND_APPEND == 1
 
 static int cmd_append_cb(int argc,
                          const char *argv[],
@@ -300,7 +300,7 @@ static int cmd_append_cb(int argc,
 
 #endif
 
-#if CONFIG_FS_CMD_FS_REMOVE == 1
+#if CONFIG_FS_FS_COMMAND_REMOVE == 1
 
 static int cmd_remove_cb(int argc,
                          const char *argv[],
@@ -324,7 +324,7 @@ static int cmd_remove_cb(int argc,
 
 #endif
 
-#if CONFIG_FS_CMD_FS_LIST == 1
+#if CONFIG_FS_FS_COMMAND_LIST == 1
 
 static int cmd_list_cb(int argc,
                        const char *argv[],
@@ -343,7 +343,7 @@ static int cmd_list_cb(int argc,
 
 #endif
 
-#if CONFIG_FS_CMD_FS_FORMAT == 1
+#if CONFIG_FS_FS_COMMAND_FORMAT == 1
 
 static int cmd_format_cb(int argc,
                          const char *argv[],
@@ -362,7 +362,7 @@ static int cmd_format_cb(int argc,
 
 #endif
 
-#if CONFIG_FS_CMD_FS_COUNTERS_LIST == 1
+#if CONFIG_FS_FS_COMMAND_COUNTERS_LIST == 1
 
 static int cmd_counters_list_cb(int argc,
                                 const char *argv[],
@@ -397,7 +397,7 @@ static int cmd_counters_list_cb(int argc,
 
 #endif
 
-#if CONFIG_FS_CMD_FS_COUNTERS_RESET == 1
+#if CONFIG_FS_FS_COMMAND_COUNTERS_RESET == 1
 
 static int cmd_counters_reset_cb(int argc,
                                  const char *argv[],
@@ -426,7 +426,7 @@ static int cmd_counters_reset_cb(int argc,
 
 #endif
 
-#if CONFIG_FS_CMD_FS_PARAMETERS_LIST == 1
+#if CONFIG_FS_FS_COMMAND_PARAMETERS_LIST == 1
 
 static int cmd_parameters_list_cb(int argc,
                                   const char *argv[],
@@ -570,104 +570,84 @@ int fs_module_init()
     module.counters_p = NULL;
     module.parameters_p = NULL;
 
-#if CONFIG_FS_CMD_FS_FILESYSTEMS_LIST == 1
-
+#if CONFIG_FS_FS_COMMAND_FILESYSTEMS_LIST == 1
     fs_command_init(&module.cmd_filesystems_list,
                     CSTR("/filesystems/fs/filesystems/list"),
                     cmd_filesystems_list_cb,
                     NULL);
     fs_command_register(&module.cmd_filesystems_list);
-
 #endif
 
-#if CONFIG_FS_CMD_FS_READ == 1
-
+#if CONFIG_FS_FS_COMMAND_READ == 1
     fs_command_init(&module.cmd_read,
                     CSTR("/filesystems/fs/read"),
                     cmd_read_cb,
                     NULL);
     fs_command_register(&module.cmd_read);
-
 #endif
 
-#if CONFIG_FS_CMD_FS_WRITE == 1
-
+#if CONFIG_FS_FS_COMMAND_WRITE == 1
     fs_command_init(&module.cmd_write,
                     CSTR("/filesystems/fs/write"),
                     cmd_write_cb,
                     NULL);
     fs_command_register(&module.cmd_write);
-
 #endif
 
-#if CONFIG_FS_CMD_FS_APPEND == 1
-
+#if CONFIG_FS_FS_COMMAND_APPEND == 1
     fs_command_init(&module.cmd_append,
                     CSTR("/filesystems/fs/append"),
                     cmd_append_cb,
                     NULL);
     fs_command_register(&module.cmd_append);
-
 #endif
 
-#if CONFIG_FS_CMD_FS_REMOVE == 1
-
+#if CONFIG_FS_FS_COMMAND_REMOVE == 1
     fs_command_init(&module.cmd_remove,
                     CSTR("/filesystems/fs/remove"),
                     cmd_remove_cb,
                     NULL);
     fs_command_register(&module.cmd_remove);
-
 #endif
 
-#if CONFIG_FS_CMD_FS_LIST == 1
-
+#if CONFIG_FS_FS_COMMAND_LIST == 1
     fs_command_init(&module.cmd_list,
                     CSTR("/filesystems/fs/list"),
                     cmd_list_cb,
                     NULL);
     fs_command_register(&module.cmd_list);
-
 #endif
 
-#if CONFIG_FS_CMD_FS_FORMAT == 1
-
+#if CONFIG_FS_FS_COMMAND_FORMAT == 1
     fs_command_init(&module.cmd_format,
                     CSTR("/filesystems/fs/format"),
                     cmd_format_cb,
                     NULL);
     fs_command_register(&module.cmd_format);
-
 #endif
 
-#if CONFIG_FS_CMD_FS_COUNTERS_LIST == 1
-
+#if CONFIG_FS_FS_COMMAND_COUNTERS_LIST == 1
     fs_command_init(&module.cmd_counters_list,
                     CSTR("/filesystems/fs/counters/list"),
                     cmd_counters_list_cb,
                     NULL);
     fs_command_register(&module.cmd_counters_list);
-
 #endif
 
-#if CONFIG_FS_CMD_FS_COUNTERS_RESET == 1
-
+#if CONFIG_FS_FS_COMMAND_COUNTERS_RESET == 1
     fs_command_init(&module.cmd_counters_reset,
                     CSTR("/filesystems/fs/counters/reset"),
                     cmd_counters_reset_cb,
                     NULL);
     fs_command_register(&module.cmd_counters_reset);
-
 #endif
 
-#if CONFIG_FS_CMD_FS_PARAMETERS_LIST == 1
-
+#if CONFIG_FS_FS_COMMAND_PARAMETERS_LIST == 1
     fs_command_init(&module.cmd_parameters_list,
                     CSTR("/filesystems/fs/parameters/list"),
                     cmd_parameters_list_cb,
                     NULL);
     fs_command_register(&module.cmd_parameters_list);
-
 #endif
 
     return (0);

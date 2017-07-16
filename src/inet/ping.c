@@ -45,14 +45,14 @@ struct echo_header_t {
 struct module_t {
     int initialized;
     short ping_id;
-#if CONFIG_FS_CMD_PING_PING == 1
+#if CONFIG_PING_FS_COMMAND_PING == 1
     struct fs_command_t cmd_ping;
 #endif
 };
 
 static struct module_t module;
 
-#if CONFIG_FS_CMD_PING_PING == 1
+#if CONFIG_PING_FS_COMMAND_PING == 1
 
 static int cmd_ping_cb(int argc,
                        const char *argv[],
@@ -109,14 +109,12 @@ int ping_module_init(void)
 
     module.initialized = 1;
 
-#if CONFIG_FS_CMD_PING_PING == 1
-
+#if CONFIG_PING_FS_COMMAND_PING == 1
     fs_command_init(&module.cmd_ping,
                     CSTR("/inet/ping/ping"),
                     cmd_ping_cb,
                     NULL);
     fs_command_register(&module.cmd_ping);
-
 #endif
 
     return (socket_module_init());

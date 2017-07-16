@@ -45,7 +45,7 @@ struct usb_device_driver_base_t {
     struct usb_device_driver_base_t *next_p;
     usb_device_start_of_frame_cb_t start_of_frame_isr;
     usb_device_setup_cb_t setup_isr;
-#if CONFIG_FS_CMD_USB_DEVICE_LIST == 1
+#if CONFIG_USB_DEVICE_FS_COMMAND_LIST == 1
     usb_device_print_cb_t print;
 #endif
 };

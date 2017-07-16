@@ -33,20 +33,20 @@
 struct module_t {
     int initialized;
     struct service_t *services_p;
-#if CONFIG_FS_CMD_SERVICE_LIST == 1
+#if CONFIG_SERVICE_FS_COMMAND_LIST == 1
     struct fs_command_t cmd_list;
 #endif
-#if CONFIG_FS_CMD_SERVICE_START == 1
+#if CONFIG_SERVICE_FS_COMMAND_START == 1
     struct fs_command_t cmd_start;
 #endif
-#if CONFIG_FS_CMD_SERVICE_STOP == 1
+#if CONFIG_SERVICE_FS_COMMAND_STOP == 1
     struct fs_command_t cmd_stop;
 #endif
 };
 
 static struct module_t module;
 
-#if CONFIG_FS_CMD_SERVICE_LIST == 1
+#if CONFIG_SERVICE_FS_COMMAND_LIST == 1
 
 static int cmd_list_cb(int argc,
                        const char *argv[],
@@ -75,7 +75,7 @@ static int cmd_list_cb(int argc,
 
 #endif
 
-#if CONFIG_FS_CMD_SERVICE_START == 1
+#if CONFIG_SERVICE_FS_COMMAND_START == 1
 
 static int cmd_start_cb(int argc,
                         const char *argv[],
@@ -110,7 +110,7 @@ static int cmd_start_cb(int argc,
 
 #endif
 
-#if CONFIG_FS_CMD_SERVICE_STOP == 1
+#if CONFIG_SERVICE_FS_COMMAND_STOP == 1
 
 static int cmd_stop_cb(int argc,
                        const char *argv[],
@@ -154,7 +154,7 @@ int service_module_init(void)
 
     module.initialized = 1;
 
-#if CONFIG_FS_CMD_SERVICE_LIST == 1
+#if CONFIG_SERVICE_FS_COMMAND_LIST == 1
     fs_command_init(&module.cmd_list,
                     CSTR("/oam/service/list"),
                     cmd_list_cb,
@@ -162,7 +162,7 @@ int service_module_init(void)
     fs_command_register(&module.cmd_list);
 #endif
 
-#if CONFIG_FS_CMD_SERVICE_START == 1
+#if CONFIG_SERVICE_FS_COMMAND_START == 1
     fs_command_init(&module.cmd_start,
                     CSTR("/oam/service/start"),
                     cmd_start_cb,
@@ -170,7 +170,7 @@ int service_module_init(void)
     fs_command_register(&module.cmd_start);
 #endif
 
-#if CONFIG_FS_CMD_SERVICE_STOP == 1
+#if CONFIG_SERVICE_FS_COMMAND_STOP == 1
     fs_command_init(&module.cmd_stop,
                     CSTR("/oam/service/stop"),
                     cmd_stop_cb,

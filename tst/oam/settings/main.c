@@ -42,8 +42,7 @@ static int test_reset(struct harness_t *harness_p)
 
 static int test_cmd_list(struct harness_t *harness_p)
 {
-#if CONFIG_FS_CMD_SETTINGS_LIST == 1
-
+#if CONFIG_SETTINGS_FS_COMMAND_LIST == 1
     char buf[64];
 
     /* Call the list command and validate the output. */
@@ -59,18 +58,14 @@ static int test_cmd_list(struct harness_t *harness_p)
                              NULL), ==, 380);
 
     return (0);
-
 #else
-
     return (1);
-
 #endif
 }
 
 static int test_cmd_read(struct harness_t *harness_p)
 {
-#if CONFIG_FS_CMD_SETTINGS_READ == 1
-
+#if CONFIG_SETTINGS_FS_COMMAND_READ == 1
     char buf[64];
 
     /* Bad number of arguments. */
@@ -88,18 +83,14 @@ static int test_cmd_read(struct harness_t *harness_p)
                              NULL), ==, 28);
 
     return (0);
-
 #else
-
     return (1);
-
 #endif
 }
 
 static int test_cmd_write(struct harness_t *harness_p)
 {
-#if CONFIG_FS_CMD_SETTINGS_READ == 1
-
+#if CONFIG_SETTINGS_FS_COMMAND_READ == 1
     char buf[128];
 
     /* Write a string that is too long. */
@@ -157,18 +148,14 @@ static int test_cmd_write(struct harness_t *harness_p)
                              NULL), ==, 28);
 
     return (0);
-
 #else
-
     return (1);
-
 #endif
 }
 
 static int test_cmd_read_write_read(struct harness_t *harness_p)
 {
-#if CONFIG_FS_CMD_SETTINGS_READ == 1
-
+#if CONFIG_SETTINGS_FS_COMMAND_READ == 1
     int i;
     char buf[128];
     char response[64];
@@ -212,18 +199,14 @@ static int test_cmd_read_write_read(struct harness_t *harness_p)
     }
 
     return (0);
-
 #else
-
     return (1);
-
 #endif
 }
 
 static int test_cmd_reset(struct harness_t *harness_p)
 {
-#if CONFIG_FS_CMD_SETTINGS_RESET == 1
-
+#if CONFIG_SETTINGS_FS_COMMAND_RESET == 1
     char buf[64];
 
     /* Call the list command and validate the output. */
@@ -243,11 +226,8 @@ static int test_cmd_reset(struct harness_t *harness_p)
                              NULL), ==, 380);
 
     return (0);
-
 #else
-
     return (1);
-
 #endif
 }
 
@@ -322,8 +302,7 @@ static int test_read_write_by_name(struct harness_t *harness_p)
 
 static int test_cmd_list_after_updates(struct harness_t *harness_p)
 {
-#if CONFIG_FS_CMD_SETTINGS_LIST == 1
-
+#if CONFIG_SETTINGS_FS_COMMAND_LIST == 1
     char buf[64];
 
     /* Call the list command and validate the output. */
@@ -339,11 +318,8 @@ static int test_cmd_list_after_updates(struct harness_t *harness_p)
                              NULL), ==, 380);
 
     return (0);
-
 #else
-
     return (1);
-
 #endif
 }
 

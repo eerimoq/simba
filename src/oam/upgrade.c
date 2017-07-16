@@ -42,16 +42,16 @@ struct module_t {
     ssize_t header_size;
     size_t offset;
     struct upgrade_binary_header_t header;
-#if CONFIG_FS_CMD_UPGRADE_BOOTLOADER_ENTER == 1
+#if CONFIG_UPGRADE_FS_COMMAND_BOOTLOADER_ENTER == 1
     struct fs_command_t cmd_bootloader_enter;
 #endif
-#if CONFIG_FS_CMD_UPGRADE_APPLICATION_ENTER == 1
+#if CONFIG_UPGRADE_FS_COMMAND_APPLICATION_ENTER == 1
     struct fs_command_t cmd_application_enter;
 #endif
-#if CONFIG_FS_CMD_UPGRADE_APPLICATION_ERASE == 1
+#if CONFIG_UPGRADE_FS_COMMAND_APPLICATION_ERASE == 1
     struct fs_command_t cmd_application_erase;
 #endif
-#if CONFIG_FS_CMD_UPGRADE_APPLICATION_IS_VALID == 1
+#if CONFIG_UPGRADE_FS_COMMAND_APPLICATION_IS_VALID == 1
     struct fs_command_t cmd_application_is_valid;
 #endif
 };
@@ -100,7 +100,7 @@ static int binary_header_parse(struct upgrade_binary_header_t *header_p,
     return (0);
 }
 
-#if CONFIG_FS_CMD_UPGRADE_BOOTLOADER_ENTER == 1
+#if CONFIG_UPGRADE_FS_COMMAND_BOOTLOADER_ENTER == 1
 
 /**
  * File system command to enter the bootloader.
@@ -117,7 +117,7 @@ static int cmd_bootloader_enter_cb(int argc,
 
 #endif
 
-#if CONFIG_FS_CMD_UPGRADE_APPLICATION_ENTER == 1
+#if CONFIG_UPGRADE_FS_COMMAND_APPLICATION_ENTER == 1
 
 /**
  * File system command to enter the application.
@@ -134,7 +134,7 @@ static int cmd_application_enter_cb(int argc,
 
 #endif
 
-#if CONFIG_FS_CMD_UPGRADE_APPLICATION_ERASE == 1
+#if CONFIG_UPGRADE_FS_COMMAND_APPLICATION_ERASE == 1
 
 /**
  * Shell command that erases the application from the flash memory.
@@ -151,7 +151,7 @@ static int cmd_application_erase_cb(int argc,
 
 #endif
 
-#if CONFIG_FS_CMD_UPGRADE_APPLICATION_IS_VALID == 1
+#if CONFIG_UPGRADE_FS_COMMAND_APPLICATION_IS_VALID == 1
 
 /**
  * Check if the application is valid.
@@ -189,7 +189,7 @@ int upgrade_module_init()
 
     module.initialized = 1;
 
-#if CONFIG_FS_CMD_UPGRADE_BOOTLOADER_ENTER == 1
+#if CONFIG_UPGRADE_FS_COMMAND_BOOTLOADER_ENTER == 1
     fs_command_init(&module.cmd_bootloader_enter,
                     CSTR("/oam/upgrade/bootloader/enter"),
                     cmd_bootloader_enter_cb,
@@ -197,7 +197,7 @@ int upgrade_module_init()
     fs_command_register(&module.cmd_bootloader_enter);
 #endif
 
-#if CONFIG_FS_CMD_UPGRADE_APPLICATION_ENTER == 1
+#if CONFIG_UPGRADE_FS_COMMAND_APPLICATION_ENTER == 1
     fs_command_init(&module.cmd_application_enter,
                     CSTR("/oam/upgrade/application/enter"),
                     cmd_application_enter_cb,
@@ -205,7 +205,7 @@ int upgrade_module_init()
     fs_command_register(&module.cmd_application_enter);
 #endif
 
-#if CONFIG_FS_CMD_UPGRADE_APPLICATION_ERASE == 1
+#if CONFIG_UPGRADE_FS_COMMAND_APPLICATION_ERASE == 1
     fs_command_init(&module.cmd_application_erase,
                     CSTR("/oam/upgrade/application/erase"),
                     cmd_application_erase_cb,
@@ -213,7 +213,7 @@ int upgrade_module_init()
     fs_command_register(&module.cmd_application_erase);
 #endif
 
-#if CONFIG_FS_CMD_UPGRADE_APPLICATION_IS_VALID == 1
+#if CONFIG_UPGRADE_FS_COMMAND_APPLICATION_IS_VALID == 1
     fs_command_init(&module.cmd_application_is_valid,
                     CSTR("/oam/upgrade/application/is_valid"),
                     cmd_application_is_valid_cb,

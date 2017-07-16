@@ -39,10 +39,10 @@
 struct module_t {
     int initialized;
     struct module_port_t port;
-#if CONFIG_FS_CMD_NVM_READ == 1
+#if CONFIG_NVM_FS_COMMAND_READ == 1
     struct fs_command_t cmd_read;
 #endif
-#if CONFIG_FS_CMD_NVM_WRITE == 1
+#if CONFIG_NVM_FS_COMMAND_WRITE == 1
     struct fs_command_t cmd_write;
 #endif
 };
@@ -55,7 +55,7 @@ static struct module_t module;
 #    include "nvm_port.i"
 #endif
 
-#if CONFIG_FS_CMD_NVM_READ == 1
+#if CONFIG_NVM_FS_COMMAND_READ == 1
 
 static int cmd_read_cb(int argc,
                        const char *argv[],
@@ -93,7 +93,7 @@ static int cmd_read_cb(int argc,
 
 #endif
 
-#if CONFIG_FS_CMD_NVM_WRITE == 1
+#if CONFIG_NVM_FS_COMMAND_WRITE == 1
 
 static int cmd_write_cb(int argc,
                         const char *argv[],
@@ -153,24 +153,20 @@ int nvm_module_init(void)
 
     module.initialized = 1;
 
-#if CONFIG_FS_CMD_NVM_READ == 1
-
+#if CONFIG_NVM_FS_COMMAND_READ == 1
     fs_command_init(&module.cmd_read,
                     CSTR("/oam/nvm/read"),
                     cmd_read_cb,
                     NULL);
     fs_command_register(&module.cmd_read);
-
 #endif
 
-#if CONFIG_FS_CMD_NVM_WRITE == 1
-
+#if CONFIG_NVM_FS_COMMAND_WRITE == 1
     fs_command_init(&module.cmd_write,
                     CSTR("/oam/nvm/write"),
                     cmd_write_cb,
                     NULL);
     fs_command_register(&module.cmd_write);
-
 #endif
 
     return (nvm_port_module_init());

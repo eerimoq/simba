@@ -31,6 +31,6 @@
 #ifndef __CONFIG_H__
 #define __CONFIG_H__
 
-#define CONFIG_FS_CMD_DS18B20_LIST        1
+#define CONFIG_DS18B20_FS_COMMAND_LIST        1
 
 #endif

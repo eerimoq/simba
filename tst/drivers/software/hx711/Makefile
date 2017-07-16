@@ -33,11 +33,9 @@ TYPE = suite
 BOARD ?= linux
 
 CDEFS += \
-	CONFIG_MINIMAL_SYSTEM=1 \
 	CONFIG_HX711=1 \
 	CONFIG_HARNESS_HEAP_MAX=131072 \
-	CONFIG_HARNESS_MOCK_VERBOSE=0 \
-	CONFIG_FS_CMD_THRD_LIST=1
+	CONFIG_HARNESS_MOCK_VERBOSE=0
 
 STUB = $(SIMBA_ROOT)/src/drivers/hx711.c:pin_port_device_set_mode,pin_port_device_read,pin_port_device_write_high,pin_port_device_write_low,sys_lock,sys_unlock
 

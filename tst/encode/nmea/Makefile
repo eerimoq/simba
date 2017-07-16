@@ -32,10 +32,6 @@ NAME = nmea_suite
 TYPE = suite
 BOARD ?= linux
 
-CDEFS += \
-	CONFIG_MINIMAL_SYSTEM=1 \
-	CONFIG_FS_CMD_THRD_LIST=1
-
 ENCODE_SRC = nmea.c
 
 include $(SIMBA_ROOT)/make/app.mk
