@@ -672,7 +672,7 @@ int thrd_sleep_us(long microseconds)
     timeout.seconds = (microseconds / 1000000);
     timeout.nanoseconds = 1000 * (microseconds % 1000000);
 
-#if !defined(CONFIG_PANIC_ASSERT)
+#if CONFIG_PANIC_ASSERT == 0
     thrd_suspend(&timeout);
 #else
     int res;
