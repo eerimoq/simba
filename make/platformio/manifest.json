@@ -1,6 +1,11 @@
 {
     "framework-simba": [
         {
+            "url": "https://github.com/eerimoq/simba-releases/raw/master/platformio/15.0.3.zip",
+            "sha1": "0ea843a31e68904a2ee0ce6e75ac0cfd1253637c",
+            "version": "15.0.3"
+        },
+        {
             "url": "https://github.com/eerimoq/simba-releases/raw/master/platformio/15.0.2.zip",
             "sha1": "cfb2697a378442d5365ee07d2f5edd5a1381d2c7",
             "version": "15.0.2"
