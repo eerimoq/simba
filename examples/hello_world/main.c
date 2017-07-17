@@ -35,7 +35,7 @@ int main()
     /* Start the system. */
     sys_start();
 
-    std_printf(FSTR("Hello world!\r\n"));
+    std_printf(OSTR("Hello world!\r\n"));
 
     return (0);
 }
