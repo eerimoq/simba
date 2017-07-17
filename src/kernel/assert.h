@@ -160,11 +160,18 @@
  * ``CONFIG_PANIC_ASSERT``.
  */
 #if CONFIG_PANIC_ASSERT == 1
-#    define PANIC_ASSERTN(cond, n, ...)                         \
+#    if CONFIG_PANIC_ASSERT_FILE_LINE == 1
+#        define PANIC_ASSERTN(cond, n, ...)                     \
     if (!(cond)) {                                              \
         sys_panic(#n ":" __FILE__ ":" STRINGIFY(__LINE__)       \
                   ": ASSERT: (" #cond ") " #__VA_ARGS__);       \
     }
+#    else
+#        define PANIC_ASSERTN(cond, n, ...)                     \
+    if (!(cond)) {                                              \
+        sys_panic(#n ": ASSERT: (" #cond ") " #__VA_ARGS__);    \
+    }
+#    endif
 #else
 #    define PANIC_ASSERTN(cond, n, ...)
 #endif

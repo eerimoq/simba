@@ -494,6 +494,17 @@
 #endif
 
 /**
+ * Include file and line in panic assert output.
+ */
+#ifndef CONFIG_PANIC_ASSERT_FILE_LINE
+#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(CONFIG_MINIMAL_SYSTEM)
+#        define CONFIG_PANIC_ASSERT_FILE_LINE               0
+#    else
+#        define CONFIG_PANIC_ASSERT_FILE_LINE               1
+#    endif
+#endif
+
+/**
  * Include more debug information.
  */
 #ifndef CONFIG_DEBUG
