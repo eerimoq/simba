@@ -65,11 +65,6 @@ enum sys_reset_cause_t {
 
 
 /**
- * System reset cause strings map.
- */
-extern const char *sys_reset_cause_string_map[sys_reset_cause_max_t];
-
-/**
  * Convertion from the time struct to system ticks.
  */
 static inline sys_tick_t t2st(const struct time_t *time_p)

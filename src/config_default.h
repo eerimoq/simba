@@ -2731,6 +2731,16 @@
 #endif
 
 /**
+ * Save reset cause at startup.
+ */
+#ifndef CONFIG_SYS_RESET_CAUSE
+#    if defined(CONFIG_MINIMAL_SYSTEM) || defined(ARCH_AVR)
+#        define CONFIG_SYS_RESET_CAUSE                      0
+#    else
+#        define CONFIG_SYS_RESET_CAUSE                      1
+#    endif
+#endif
+
  * The external oscillator frequency in Hertz.
  */
 #ifndef CONFIG_EXTERNAL_OSCILLATOR_FREQUENCY_HZ

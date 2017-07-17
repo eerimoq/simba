@@ -317,7 +317,8 @@ int test_reset_cause(struct harness_t *harness_p)
     char buf[32];
     enum sys_reset_cause_t reset_cause;
 
-    BTASSERT(sys_reset_cause_string_map[sys_reset_cause_max_t - 1] != NULL);
+    reset_cause = (enum sys_reset_cause_t)(sys_reset_cause_max_t - 1);
+    BTASSERT(sys_reset_cause_as_string(reset_cause) != NULL);
 
     reset_cause = sys_reset_cause();
 
@@ -325,7 +326,7 @@ int test_reset_cause(struct harness_t *harness_p)
     BTASSERT(reset_cause < sys_reset_cause_max_t);
 
     std_printf(FSTR("Reset cause: %s (%d)\r\n"),
-               sys_reset_cause_string_map[reset_cause],
+               sys_reset_cause_as_string(reset_cause),
                reset_cause);
 
     strcpy(&buf[0], "/kernel/sys/reset_cause");

@@ -49,7 +49,9 @@ struct tick_t {
 struct module_t {
     int8_t initialized;
     struct tick_t tick;
+#if CONFIG_SYS_RESET_CAUSE == 1
     enum sys_reset_cause_t reset_cause;
+#endif
 #if CONFIG_SYS_FS_COMMAND_INFO == 1
     struct fs_command_t cmd_info;
 #endif
@@ -101,13 +103,20 @@ static const FAR char config[] =
 
     "";
 
-const char *sys_reset_cause_string_map[sys_reset_cause_max_t] = {
-    "unknown",
-    "power_on",
-    "watchdog_timeout",
-    "software",
-    "external",
-    "jtag",
+static const FAR char reset_cause_unknown[] = "unknown";
+static const FAR char reset_cause_power_on[] = "power_on";
+static const FAR char reset_cause_watchdog_timeout[] = "watchdog_timeout";
+static const FAR char reset_cause_software[] = "software";
+static const FAR char reset_cause_external[] = "external";
+static const FAR char reset_cause_jtag[] = "jtag";
+
+static const FAR char * const FAR reset_cause_string_map[sys_reset_cause_max_t] = {
+    reset_cause_unknown,
+        reset_cause_power_on,
+        reset_cause_watchdog_timeout,
+        reset_cause_software,
+        reset_cause_external,
+        reset_cause_jtag,
 #if defined(SYS_PORT_RESET_CAUSE_STRINGS_MAP)
     SYS_PORT_RESET_CAUSE_STRINGS_MAP
 #endif
@@ -523,7 +532,7 @@ static int cmd_reset_cause_cb(int argc,
 {
     std_fprintf(out_p,
                 OSTR("%s\r\n"),
-                sys_reset_cause_string_map[sys_reset_cause()]);
+                sys_reset_cause_as_string(sys_reset_cause()));
 
     return (0);
 }
@@ -747,7 +756,11 @@ int sys_backtrace(void **buf_pp, size_t size)
 
 enum sys_reset_cause_t sys_reset_cause()
 {
+#if CONFIG_SYS_RESET_CAUSE == 1
     return (module.reset_cause);
+#else
+    return (sys_reset_cause_unknown_t);
+#endif
 }
 
 int sys_uptime(struct time_t *uptime_p)
@@ -857,4 +870,9 @@ cpu_usage_t sys_interrupt_cpu_usage_get()
 void sys_interrupt_cpu_usage_reset()
 {
     sys_port_interrupt_cpu_usage_reset();
+}
+
+const FAR char *sys_reset_cause_as_string(enum sys_reset_cause_t reset_cause)
+{
+    return (reset_cause_string_map[reset_cause]);
 }

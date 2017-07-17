@@ -75,7 +75,7 @@ int exti_module_init(void);
  *                    ``EXTI_TRIGGER_RISING_EDGE``.
  * @param[in] on_interrupt Function callback called when an interrupt
  *                         occurs.
- * @param[in] arg_p Fucntion callback argument.
+ * @param[in] arg_p Function callback argument.
  *
  * @return zero(0) or negative error code.
  */
@@ -86,7 +86,8 @@ int exti_init(struct exti_driver_t *self_p,
               void *arg_p);
 
 /**
- * Starts the EXTI device using given driver object.
+ * Starts the EXTI device using given driver object. Enables
+ * interrupts for given external interrupt driver.
  *
  * @param[in] self_p Driver object.
  *
@@ -95,7 +96,8 @@ int exti_init(struct exti_driver_t *self_p,
 int exti_start(struct exti_driver_t *self_p);
 
 /**
- * Stops the EXTI device referenced by given driver object.
+ * Stops the EXTI device referenced by given driver object. Disables
+ * interrupts for given external interrupt driver.
  *
  * @param[in] self_p Driver object.
  *
