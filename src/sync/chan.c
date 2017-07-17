@@ -84,6 +84,14 @@ int chan_set_write_filter_isr_cb(struct chan_t *self_p,
     return (0);
 }
 
+int chan_set_write_cb(struct chan_t *self_p,
+                      chan_write_fn_t write_cb)
+{
+    self_p->write = write_cb;
+
+    return (0);
+}
+
 int chan_set_write_isr_cb(struct chan_t *self_p,
                           chan_write_fn_t write_isr_cb)
 {

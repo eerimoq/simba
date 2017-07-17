@@ -185,10 +185,21 @@ int chan_init(struct chan_t *self_p,
               chan_size_fn_t size);
 
 /**
+ * Set the write function callback.
+ *
+ * @param[in] self_p Initialized driver object.
+ * @param[in] write_cb Write function to set.
+ *
+ * @return zero(0) or negative error code.
+ */
+int chan_set_write_cb(struct chan_t *self_p,
+                      chan_write_fn_t write_cb);
+
+/**
  * Set the write isr function callback.
  *
  * @param[in] self_p Initialized driver object.
- * @param[in] filter Write isr function to set.
+ * @param[in] write_isr_cb Write isr function to set.
  *
  * @return zero(0) or negative error code.
  */
