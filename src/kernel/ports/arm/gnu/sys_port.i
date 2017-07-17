@@ -166,7 +166,7 @@ int _getpid()
 
 static cpu_usage_t sys_port_interrupt_cpu_usage_get(void)
 {
-#if defined(FAMILY_SAM)
+#if defined(FAMILY_SAM) && CONFIG_SYS_MEASURE_INTERRUPT_LOAD == 1
     return (((cpu_usage_t)100 * sys.interrupt.time) /
             (SAM_TC0->CHANNEL[0].CV - sys.interrupt.start));
 #else
@@ -176,7 +176,7 @@ static cpu_usage_t sys_port_interrupt_cpu_usage_get(void)
 
 static void sys_port_interrupt_cpu_usage_reset(void)
 {
-#if defined(FAMILY_SAM)
+#if defined(FAMILY_SAM) && CONFIG_SYS_MEASURE_INTERRUPT_LOAD == 1
     sys.interrupt.start = SAM_TC0->CHANNEL[0].CV;
     sys.interrupt.time = 0;
 #endif

@@ -88,10 +88,12 @@ struct sys_t {
     sys_on_fatal_fn_t on_fatal_callback;
     void *stdin_p;
     void *stdout_p;
+#if CONFIG_SYS_MEASURE_INTERRUPT_LOAD == 1
     struct {
         uint32_t start;
         uint32_t time;
     } interrupt;
+#endif
 };
 
 extern struct sys_t sys;
@@ -291,5 +293,10 @@ cpu_usage_t sys_interrupt_cpu_usage_get(void);
  * Reset the interrupt cpu usage counter.
  */
 void sys_interrupt_cpu_usage_reset(void);
+
+/**
+ * Get the reset cause as a far string.
+ */
+const FAR char *sys_reset_cause_as_string(enum sys_reset_cause_t reset_cause);
 
 #endif

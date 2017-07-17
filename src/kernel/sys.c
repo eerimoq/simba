@@ -81,10 +81,12 @@ struct sys_t sys = {
     .on_fatal_callback = sys_stop,
     .stdin_p = NULL,
     .stdout_p = NULL,
+#if CONFIG_SYS_MEASURE_INTERRUPT_LOAD == 1
     .interrupt = {
         .start = 0,
         .time = 0
     }
+#endif
 };
 
 static const FAR char config[] =
