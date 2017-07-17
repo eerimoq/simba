@@ -88,9 +88,9 @@ int test_read_fixed_point(struct harness_t *harness_p)
     }
 
     for (i = 0; i < 2; i++) {
-        BTASSERT(ds18b20_get_temperature(&ds,
-                                         &devices[i].id[0],
-                                         &temperature) == 0);
+        BTASSERT(ds18b20_read_fixed_point(&ds,
+                                          &devices[i].id[0],
+                                          &temperature) == 0);
         std_printf(OSTR("temperature: 0x%x\r\n"), temperature);
         BTASSERT(temperature > 0);
     }
@@ -111,9 +111,9 @@ int test_read_string(struct harness_t *harness_p)
     }
 
     for (i = 0; i < 2; i++) {
-        BTASSERT(ds18b20_get_temperature_str(&ds,
-                                             &devices[i].id[0],
-                                             &temperature[0]) != NULL);
+        BTASSERT(ds18b20_read_string(&ds,
+                                     &devices[i].id[0],
+                                     &temperature[0]) != NULL);
         std_printf(OSTR("temperature: %s\r\n"), &temperature[0]);
     }
 
