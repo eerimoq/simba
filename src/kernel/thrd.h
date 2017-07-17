@@ -89,10 +89,10 @@ struct thrd_t {
         struct thrd_prio_list_elem_t elem;
     } scheduler;
     struct thrd_port_t port;
-    int prio;
-    int state;
+    int8_t prio;
+    int8_t state;
     int err;
-    int log_mask;
+    uint8_t log_mask;
     struct timer_t *timer_p;
     const char *name_p;
     struct thrd_t *next_p;
