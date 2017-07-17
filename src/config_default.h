@@ -892,7 +892,7 @@
  * Debug file system uart counters.
  */
 #ifndef CONFIG_UART_FS_COUNTERS
-#    if defined(CONFIG_MINIMAL_SYSTEM)
+#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(CONFIG_MINIMAL_SYSTEM)
 #        define CONFIG_UART_FS_COUNTERS                     0
 #    else
 #        define CONFIG_UART_FS_COUNTERS                     1
