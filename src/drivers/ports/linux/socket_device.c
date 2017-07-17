@@ -153,7 +153,7 @@ static void *uart_client_main(void *arg_p)
         sys_lock();
 
         if (client_p->dev_p->drv_p != NULL) {
-            queue_write_isr(&client_p->dev_p->drv_p->chin,
+            queue_write_isr(&client_p->dev_p->drv_p->base,
                             &byte,
                             sizeof(byte));
         }

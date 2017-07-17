@@ -93,7 +93,7 @@ static inline void rx_isr(struct uart_driver_t *drv_p,
     while (dev_p->regs_p->STATUS & ESP32_UART_STATUS_RXFIFO_CNT_MASK) {
         c = dev_p->regs_p->FIFO;
 
-        if (chan_write_isr(&drv_p->chin, &c, 1) != 1) {
+        if (chan_write_isr(&drv_p->base, &c, 1) != 1) {
             fs_counter_increment(&rx_channel_overflow, 1);
         }
     }
@@ -228,7 +228,7 @@ static ssize_t uart_port_write_cb(void *arg_p,
 {
     struct uart_driver_t *self_p;
 
-    self_p = container_of(arg_p, struct uart_driver_t, chout);
+    self_p = container_of(arg_p, struct uart_driver_t, base);
 
     mutex_lock(&self_p->mutex);
 
@@ -257,7 +257,7 @@ static ssize_t uart_port_write_cb_isr(void *arg_p,
 {
     struct uart_driver_t *self_p;
 
-    self_p = container_of(arg_p, struct uart_driver_t, chout);
+    self_p = container_of(arg_p, struct uart_driver_t, base);
 
     /* Initiate transfer by writing to the fifo. */
     self_p->txbuf_p = txbuf_p;

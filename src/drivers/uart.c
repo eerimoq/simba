@@ -65,16 +65,10 @@ int uart_init(struct uart_driver_t *self_p,
 
     mutex_init(&self_p->mutex);
 
-    chan_init(&self_p->chout,
-              chan_read_null,
-              (ssize_t (*)(void *, const void *, size_t))uart_port_write_cb,
-              chan_size_null);
-
-    chan_set_write_isr_cb(&self_p->chout, uart_port_write_cb_isr);
-
-    if (size > 0) {
-        queue_init(&self_p->chin, rxbuf_p, size);
-    }
+    /* The base channel is used for both TX and RX. */
+    queue_init(&self_p->base, rxbuf_p, size);
+    chan_set_write_cb(&self_p->base.base, uart_port_write_cb);
+    chan_set_write_isr_cb(&self_p->base.base, uart_port_write_cb_isr);
 
     return (0);
 }

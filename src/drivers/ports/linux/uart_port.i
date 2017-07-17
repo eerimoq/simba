@@ -57,7 +57,7 @@ static ssize_t uart_port_write_cb(void *arg_p,
     const char *c_p;
     ssize_t res;
 
-    self_p = container_of(arg_p, struct uart_driver_t, chout);
+    self_p = container_of(arg_p, struct uart_driver_t, base);
     dev_p = self_p->dev_p;
 
     sys_lock();

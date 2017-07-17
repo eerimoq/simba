@@ -73,7 +73,7 @@ int console_set_input_channel(void *chan_p)
 
 void *console_get_input_channel(void)
 {
-    return (&module.console.uart.chin);
+    return (&module.console.uart.base);
 }
 
 void *console_set_output_channel(void *chan_p)
