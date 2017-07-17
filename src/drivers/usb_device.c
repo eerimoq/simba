@@ -33,7 +33,7 @@
 #if CONFIG_USB_DEVICE == 1
 
 struct module_t {
-    int initialized;
+    int8_t initialized;
     struct usb_device_driver_t *driver_p;
 #if CONFIG_USB_DEVICE_FS_COMMAND_LIST == 1
     struct fs_command_t cmd_list;

@@ -37,7 +37,7 @@ struct upgrade_binary_header_t {
 };
 
 struct module_t {
-    int initialized;
+    int8_t initialized;
     uint8_t buf[256];
     ssize_t header_size;
     size_t offset;

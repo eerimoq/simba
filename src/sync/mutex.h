@@ -35,7 +35,7 @@
 
 struct mutex_t {
     /** Mutex lock state. */
-    int is_locked;
+    int8_t is_locked;
     /** Wait list. */
     struct thrd_prio_list_t waiters;
 };

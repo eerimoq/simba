@@ -44,7 +44,7 @@
 #define ALT                   27
 
 struct module_t {
-    int initialized;
+    int8_t initialized;
 };
 
 static struct module_t module;

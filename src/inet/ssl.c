@@ -43,7 +43,7 @@
 #include "mbedtls/timing.h"
 
 struct module_t {
-    int initialized;
+    int8_t initialized;
     mbedtls_entropy_context entropy;
     mbedtls_ctr_drbg_context ctr_drbg;
     mbedtls_ssl_context ssl;

@@ -33,7 +33,7 @@
 #if CONFIG_SPI == 1
 
 struct module_t {
-    int initialized;
+    int8_t initialized;
 };
 
 #include "spi_port.i"

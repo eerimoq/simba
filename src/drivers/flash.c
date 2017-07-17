@@ -33,7 +33,7 @@
 #if CONFIG_FLASH == 1
 
 struct module_t {
-    int initialized;
+    int8_t initialized;
 };
 
 #include "flash_port.i"

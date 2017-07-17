@@ -31,7 +31,7 @@
 #include "simba.h"
 
 struct module_t {
-    int initialized;
+    int8_t initialized;
 #if CONFIG_SETTINGS_FS_COMMAND_LIST == 1
     struct fs_command_t cmd_list;
 #endif

@@ -33,7 +33,7 @@
 #if CONFIG_START_CONSOLE == CONFIG_START_CONSOLE_UART
 
 struct module_t {
-    int initialized;
+    int8_t initialized;
     struct {
         struct uart_driver_t uart;
         char rxbuf[CONFIG_START_CONSOLE_UART_RX_BUFFER_SIZE];
@@ -83,13 +83,13 @@ void *console_set_output_channel(void *chan_p)
 
 void *console_get_output_channel()
 {
-    return (&module.console.uart.chout);
+    return (&module.console.uart.base);
 }
 
 #elif CONFIG_START_CONSOLE == CONFIG_START_CONSOLE_USB_CDC
 
 struct module_t {
-    int initialized;
+    int8_t initialized;
     struct {
         struct usb_device_driver_t usb;
         struct usb_device_driver_base_t *drivers[1];
@@ -175,7 +175,7 @@ void *console_get_output_channel(void)
 #elif CONFIG_START_CONSOLE == CONFIG_START_CONSOLE_NONE
 
 struct module_t {
-    int initialized;
+    int8_t initialized;
     struct {
         void *chin_p;
         void *chout_p;

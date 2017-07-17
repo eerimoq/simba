@@ -32,17 +32,21 @@
 
 #if CONFIG_UART == 1
 
+struct module_t {
+    int8_t initialized;
+};
+
 #include "uart_port.i"
 
-static int initialized = 0;
+static struct module_t module;
 
 int uart_module_init(void)
 {
-    if (initialized == 1) {
+    if (module.initialized == 1) {
         return (0);
     }
 
-    initialized = 1;
+    module.initialized = 1;
 
     return (uart_port_module_init());
 }

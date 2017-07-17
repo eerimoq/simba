@@ -50,7 +50,7 @@ struct ds18b20_scratchpad_t {
 } PACKED;
 
 struct module_t {
-    int initialized;
+    int8_t initialized;
     struct ds18b20_driver_t *list_p;
 #if CONFIG_DS18B20_FS_COMMAND_LIST == 1
     struct fs_command_t cmd_list;

@@ -33,7 +33,7 @@
 #if CONFIG_PIN == 1
 
 struct module_t {
-    int initialized;
+    int8_t initialized;
 #if CONFIG_PIN_FS_COMMAND_SET_MODE == 1
     struct fs_command_t cmd_set_mode;
 #endif

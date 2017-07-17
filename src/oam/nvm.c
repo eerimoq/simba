@@ -37,7 +37,7 @@
 #endif
 
 struct module_t {
-    int initialized;
+    int8_t initialized;
     struct module_port_t port;
 #if CONFIG_NVM_FS_COMMAND_READ == 1
     struct fs_command_t cmd_read;

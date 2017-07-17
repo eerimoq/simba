@@ -61,7 +61,7 @@
 #define I2C_INDEX(dev_p) (dev_p - &i2c_device[0])
 
 struct module_t {
-    int initialized;
+    int8_t initialized;
     pthread_t thrd;
 };
 

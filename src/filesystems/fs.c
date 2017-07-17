@@ -35,7 +35,7 @@
 #define FS_NAME_MAX 64
 
 struct module_t {
-    int initialized;
+    int8_t initialized;
     struct fs_command_t *commands_p;
     struct fs_filesystem_t *filesystems_p;
     struct fs_counter_t *counters_p;

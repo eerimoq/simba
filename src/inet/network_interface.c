@@ -31,7 +31,7 @@
 #include "simba.h"
 
 struct module_t {
-    int initialized;
+    int8_t initialized;
     /* A linked list of all network interfaces. */
     struct network_interface_t *network_interfaces_p;
 #if CONFIG_NETWORK_INTERFACE_FS_COMMAND_LIST == 1

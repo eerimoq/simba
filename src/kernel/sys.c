@@ -47,7 +47,7 @@ struct tick_t {
 };
 
 struct module_t {
-    int initialized;
+    int8_t initialized;
     struct tick_t tick;
     enum sys_reset_cause_t reset_cause;
 #if CONFIG_SYS_FS_COMMAND_INFO == 1

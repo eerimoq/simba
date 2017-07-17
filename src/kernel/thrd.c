@@ -44,7 +44,7 @@ enum thrd_state_t {
 #define THRD_FILL_PATTERN           0x19
 
 struct module_t {
-    int initialized;
+    int8_t initialized;
     struct {
         struct thrd_t *current_p;
         struct thrd_prio_list_t ready;

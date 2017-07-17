@@ -65,7 +65,7 @@ extern xSemaphoreHandle thrd_idle_sem;
 #endif
 
 struct module_t {
-    int initialized;
+    int8_t initialized;
     struct fs_counter_t udp_rx_bytes;
     struct fs_counter_t udp_tx_bytes;
     struct fs_counter_t tcp_accepts;

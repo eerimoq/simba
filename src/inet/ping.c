@@ -43,7 +43,7 @@ struct echo_header_t {
 };
 
 struct module_t {
-    int initialized;
+    int8_t initialized;
     short ping_id;
 #if CONFIG_PING_FS_COMMAND_PING == 1
     struct fs_command_t cmd_ping;

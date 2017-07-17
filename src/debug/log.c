@@ -32,7 +32,7 @@
 #include <stdarg.h>
 
 struct module_t {
-    int initialized;
+    int8_t initialized;
     struct log_handler_t handler;
     struct log_object_t object;
     struct sem_t sem;

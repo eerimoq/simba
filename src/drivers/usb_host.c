@@ -36,7 +36,7 @@
 #define DEVICE_ADDRESS    1
 
 struct module_t {
-    int initialized;
+    int8_t initialized;
     /* A list of all drivers. */
     struct usb_host_driver_t *drivers_p;
     struct usb_host_device_driver_t *device_drivers_p;

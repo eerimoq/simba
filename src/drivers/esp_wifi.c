@@ -35,7 +35,7 @@
 #include "esp_wifi_port.i"
 
 struct module_t {
-    int initialized;
+    int8_t initialized;
 #if CONFIG_ESP_WIFI_FS_COMMAND_STATUS == 1
     struct fs_command_t cmd_status;
 #endif

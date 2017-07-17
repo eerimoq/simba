@@ -182,7 +182,7 @@ struct match_t {
 };
 
 struct module_t {
-    int initialized;
+    int8_t initialized;
 #if CONFIG_RE_DEBUG_LOG_MASK > -1
     struct log_object_t log;
 #endif

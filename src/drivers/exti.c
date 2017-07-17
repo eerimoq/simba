@@ -33,7 +33,7 @@
 #if CONFIG_EXTI == 1
 
 struct module_t {
-    int initialized;
+    int8_t initialized;
 };
 
 #include "exti_port.i"
