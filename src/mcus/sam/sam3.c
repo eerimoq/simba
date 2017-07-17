@@ -30,14 +30,22 @@
 
 #include "simba.h"
 
-#define ISR_WRAPPER(vector)                                             \
-    static void isr_ ## vector ## _wrapper(void)                        \
-    {                                                                   \
-        uint32_t start;                                                 \
-        start = SAM_TC0->CHANNEL[0].CV;                                 \
-        isr_ ## vector();                                               \
-            sys.interrupt.time += (SAM_TC0->CHANNEL[0].CV - start);     \
+#if CONFIG_SYS_MEASURE_INTERRUPT_LOAD == 1
+#    define ISR_WRAPPER(vector)                                 \
+    static void isr_ ## vector ## _wrapper(void)                \
+    {                                                           \
+        uint32_t start;                                         \
+        start = SAM_TC0->CHANNEL[0].CV;                         \
+        isr_ ## vector();                                       \
+        sys.interrupt.time += (SAM_TC0->CHANNEL[0].CV - start); \
     }
+#else
+#    define ISR_WRAPPER(vector)                         \
+    static void isr_ ## vector ## _wrapper(void)        \
+    {                                                   \
+        isr_ ## vector();                               \
+    }
+#endif
 
 /* Defined in the linker script. */
 extern uint32_t __main_stack_end;
@@ -124,7 +132,7 @@ void isr_emac(void)             __attribute__ ((weak, alias("isr_none")));
 void isr_can0(void)             __attribute__ ((weak, alias("isr_none")));
 void isr_can1(void)             __attribute__ ((weak, alias("isr_none")));
 
-/* Wrapper functions with interrupt load measurements. */
+/* Wrapper functions with optional interrupt load measurements. */
 ISR_WRAPPER(supc);
 ISR_WRAPPER(rstc);
 ISR_WRAPPER(rtc);
