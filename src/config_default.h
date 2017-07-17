@@ -2741,6 +2741,18 @@
 #    endif
 #endif
 
+/**
+ * Save reset cause at startup.
+ */
+#ifndef CONFIG_SYS_MEASURE_INTERRUPT_LOAD
+#    if defined(CONFIG_MINIMAL_SYSTEM) || defined(ARCH_AVR)
+#        define CONFIG_SYS_MEASURE_INTERRUPT_LOAD           0
+#    else
+#        define CONFIG_SYS_MEASURE_INTERRUPT_LOAD           1
+#    endif
+#endif
+
+/**
  * The external oscillator frequency in Hertz.
  */
 #ifndef CONFIG_EXTERNAL_OSCILLATOR_FREQUENCY_HZ
