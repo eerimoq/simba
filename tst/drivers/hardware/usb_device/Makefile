@@ -34,6 +34,10 @@ BOARD ?= linux
 
 TIMEOUT ?= 40
 
+CDEFS += \
+	CONFIG_USB=1 \
+	CONFIG_DEVICE=1
+
 SRC += descriptors.c
 
 include $(SIMBA_ROOT)/make/app.mk

@@ -33,4 +33,9 @@ TYPE = suite
 BOARD ?= linux
 TIMEOUT=60
 
+CDEFS += \
+	CONFIG_DAC=1
+
+DRIVERS_SRC += dac.c
+
 include $(SIMBA_ROOT)/make/app.mk
