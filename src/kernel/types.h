@@ -103,6 +103,11 @@
  */
 #define membersof(a) ((ssize_t)(sizeof(a) / sizeof((a)[0])))
 
+/**
+ * Get the index of given element in an array.
+ */
+#define indexof(e_p, a) ((e_p - &a[0]) / sizeof((a)[0]))
+
 #define container_of(ptr, type, member)                         \
     ({                                                          \
         const typeof( ((type *)0)->member ) *__mptr = (ptr);    \

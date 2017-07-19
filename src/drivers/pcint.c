@@ -3,7 +3,7 @@
  *
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2017, Erik Moqvist
+ * Copyright (c) 2017, Erik Moqvist
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -28,53 +28,61 @@
  * This file is part of the Simba project.
  */
 
-#ifndef __DRIVERS_PIN_PORT_H__
-#define __DRIVERS_PIN_PORT_H__
+#include "simba.h"
 
-#include <avr/io.h>
+#if CONFIG_PCINT == 1
 
-#define PIN(sfr_p)  ((sfr_p) + 0)
-#define DDR(sfr_p)  ((sfr_p) + 1)
-#define PORT(sfr_p) ((sfr_p) + 2)
-
-struct pin_device_t {
-    volatile uint8_t* sfr_p;
-    uint8_t mask;
+struct module_t {
+    int8_t initialized;
+    struct pcint_port_module_t port;
 };
 
-struct pin_driver_t {
-    const struct pin_device_t *dev_p;
-};
+static struct module_t module;
 
-static inline int pin_port_device_set_mode(const struct pin_device_t *dev_p,
-                                           int mode)           
+#include "pcint_port.i"
+
+int pcint_module_init()
 {
-    if (mode == PIN_OUTPUT) {                           
-        *DDR((dev_p)->sfr_p) |= (dev_p)->mask;         
-    } else {                                            
-        *DDR((dev_p)->sfr_p) &= ~((dev_p)->mask);       
+    /* Return immediately if the module is already initialized. */
+    if (module.initialized == 1) {
+        return (0);
     }
- 
-    return (0);
+
+    module.initialized = 1;
+
+    return (pcint_port_module_init());
 }
 
-static inline int pin_port_device_read(const struct pin_device_t *dev_p)
+int pcint_init(struct pcint_driver_t *self_p,
+              struct pcint_device_t *dev_p,
+              int trigger,
+              void (*on_interrupt)(void *arg_p),
+              void *arg_p)
 {
-    return ((*PIN((dev_p)->sfr_p) & (dev_p)->mask) != 0);
+    ASSERTN(self_p != NULL, EINVAL);
+    ASSERTN(dev_p != NULL, EINVAL);
+    ASSERTN(on_interrupt != NULL, EINVAL);
+
+    self_p->dev_p = dev_p;
+    self_p->trigger = trigger;
+    self_p->on_interrupt = on_interrupt;
+    self_p->arg_p = arg_p;
+
+    return (pcint_port_init(self_p));
 }
 
-static inline int pin_port_device_write_high(const struct pin_device_t *dev_p)
+int pcint_start(struct pcint_driver_t *self_p)
 {
-    *PORT((dev_p)->sfr_p) |= (dev_p)->mask;
-    
-    return (0);
+    ASSERTN(self_p != NULL, EINVAL);
+
+    return (pcint_port_start(self_p));
 }
 
-static inline int pin_port_device_write_low(const struct pin_device_t *dev_p) 
+int pcint_stop(struct pcint_driver_t *self_p)
 {
-    *PORT((dev_p)->sfr_p) &= ~((dev_p)->mask);
+    ASSERTN(self_p != NULL, EINVAL);
 
-    return (0);
+    return (pcint_port_stop(self_p));
 }
 
 #endif

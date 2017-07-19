@@ -3,7 +3,7 @@
  *
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2017, Erik Moqvist
+ * Copyright (c) 2017, Erik Moqvist
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -28,32 +28,32 @@
  * This file is part of the Simba project.
  */
 
-#ifndef __DRIVERS_EXTI_H__
-#define __DRIVERS_EXTI_H__
+#ifndef __DRIVERS_PCINT_H__
+#define __DRIVERS_PCINT_H__
 
 #include "simba.h"
 
-#include "exti_port.h"
+#include "pcint_port.h"
 
 /**
  * Trigger an interrupt on both rising and falling edges.
  */
-#define EXTI_TRIGGER_BOTH_EDGES   EXTI_PORT_TRIGGER_BOTH_EDGES   
+#define PCINT_TRIGGER_BOTH_EDGES   PCINT_PORT_TRIGGER_BOTH_EDGES
 
 /**
  * Trigger an interrupt on falling edges.
  */
-#define EXTI_TRIGGER_FALLING_EDGE EXTI_PORT_TRIGGER_FALLING_EDGE 
+#define PCINT_TRIGGER_FALLING_EDGE PCINT_PORT_TRIGGER_FALLING_EDGE
 
 /**
  * Trigger an interrupt on rising edges.
  */
-#define EXTI_TRIGGER_RISING_EDGE  EXTI_PORT_TRIGGER_RISING_EDGE  
+#define PCINT_TRIGGER_RISING_EDGE  PCINT_PORT_TRIGGER_RISING_EDGE
 
-extern struct exti_device_t exti_device[EXTI_DEVICE_MAX];
+extern struct pcint_device_t pcint_device[PCINT_DEVICE_MAX];
 
 /**
- * Initialize the external interrupt (EXTI) module. This function must
+ * Initialize the external change interrupt module. This function must
  * be called before calling any other function in this module.
  *
  * The module will only be initialized once even if this function is
@@ -61,55 +61,49 @@ extern struct exti_device_t exti_device[EXTI_DEVICE_MAX];
  *
  * @return zero(0) or negative error code.
  */
-int exti_module_init(void);
+int pcint_module_init(void);
 
 /**
- * Initialize given driver object.
+ * Initialize given change interrupt driver object.
  *
  * @param[in] self_p Driver object to be initialized.
  * @param[in] dev_p Device to use.
- * @param[in] trigger One of ``EXTI_TRIGGER_BOTH_EDGES``,
- *                    ``EXTI_TRIGGER_FALLING_EDGE`` or
- *                    ``EXTI_TRIGGER_RISING_EDGE``.
+ * @param[in] trigger One of ``PCINT_TRIGGER_BOTH_EDGES``,
+ *                    ``PCINT_TRIGGER_FALLING_EDGE`` or
+ *                    ``PCINT_TRIGGER_RISING_EDGE``.
  * @param[in] on_interrupt Function callback called when an interrupt
  *                         occurs.
  * @param[in] arg_p Function callback argument.
  *
  * @return zero(0) or negative error code.
  */
-int exti_init(struct exti_driver_t *self_p,
-              struct exti_device_t *dev_p,
-              int trigger,
-              void (*on_interrupt)(void *arg_p),
-              void *arg_p);
+int pcint_init(struct pcint_driver_t *self_p,
+               struct pcint_device_t *dev_p,
+               int trigger,
+               void (*on_interrupt)(void *arg_p),
+               void *arg_p);
 
 /**
- * Starts the EXTI device using given driver object. Enables
- * interrupts for given external interrupt driver.
+ * Starts the pin change interrupt device using given driver object.
+ *
+ * Enables interrupts for given pin change interrupt driver.
  *
  * @param[in] self_p Driver object.
  *
  * @return zero(0) or negative error code.
  */
-int exti_start(struct exti_driver_t *self_p);
+int pcint_start(struct pcint_driver_t *self_p);
 
 /**
- * Stops the EXTI device referenced by given driver object. Disables
- * interrupts for given external interrupt driver.
+ * Stops the pin change interrupt device referenced by given driver
+ * object.
+ *
+ * Disables interrupts for given pin change interrupt driver.
  *
  * @param[in] self_p Driver object.
  *
  * @return zero(0) or negative error code.
  */
-int exti_stop(struct exti_driver_t *self_p);
-
-/**
- * Clear the interrupt flag.
- *
- * @param[in] self_p Driver object.
- *
- * @return zero(0) or negative error code.
- */
-int exti_clear(struct exti_driver_t *self_p);
+int pcint_stop(struct pcint_driver_t *self_p);
 
 #endif

@@ -259,6 +259,9 @@ extern "C" {
 #ifdef PORT_HAS_DHT
 #    include "drivers/dht.h"
 #endif
+#ifdef PORT_HAS_PCINT
+#    include "drivers/pcint.h"
+#endif
 
 #include "inet/isotp.h"
 

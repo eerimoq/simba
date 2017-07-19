@@ -31,7 +31,7 @@
 #ifndef __MCU_H__
 #define __MCU_H__
 
-#define PIN_DEVICE_MAX     20
+#define PIN_DEVICE_MAX      23
 #define EXTI_DEVICE_MAX     2
 #define SPI_DEVICE_MAX      1
 #define UART_DEVICE_MAX     1
@@ -39,9 +39,10 @@
 #define PWM_DEVICE_MAX      4
 #define ADC_DEVICE_MAX      1
 #define I2C_DEVICE_MAX      1
+#define PCINT_DEVICE_MAX    23
 
-#define USART0_TX_vect USART_TX_vect
-#define USART0_RX_vect USART_RX_vect
-#define USART0_UDRE_vect USART_UDRE_vect
+#define USART0_TX_vect      USART_TX_vect
+#define USART0_RX_vect      USART_RX_vect
+#define USART0_UDRE_vect    USART_UDRE_vect
 
 #endif

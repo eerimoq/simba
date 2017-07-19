@@ -30,10 +30,6 @@
 
 #include <avr/interrupt.h>
 
-#define PIN(sfr) ((sfr) + 0)
-#define DDR(sfr) ((sfr) + 1)
-#define PORT(sfr) ((sfr) + 2)
-
 #define EXTI_ISR(number)                                                \
     ISR(INT ## number ## _vect)                                         \
     {                                                                   \

@@ -300,6 +300,9 @@
 #    define PORT_HAS_I2C
 #    define PORT_HAS_MCP2515
 #    define PORT_HAS_NRF24L01
+#    if !defined(MCU_ATMEGA32U4)
+#        define PORT_HAS_PCINT
+#    endif
 #    define PORT_HAS_PWM
 #    if !defined(BOARD_ARDUINO_NANO) && !defined(BOARD_ARDUINO_UNO) && !defined(BOARD_ARDUINO_PRO_MICRO)
 #        define PORT_HAS_PWM_SOFT
@@ -705,6 +708,17 @@
 #        define CONFIG_EXTI                                 0
 #    else
 #        define CONFIG_EXTI                                 1
+#    endif
+#endif
+
+/**
+ * Enable the pin change interrupt driver.
+ */
+#ifndef CONFIG_PCINT
+#    if defined(CONFIG_MINIMAL_SYSTEM) || !defined(PORT_HAS_PCINT)
+#        define CONFIG_PCINT                                0
+#    else
+#        define CONFIG_PCINT                                1
 #    endif
 #endif
 

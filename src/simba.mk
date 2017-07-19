@@ -127,6 +127,7 @@ DRIVERS_SRC ?= \
 	mcp2515.c \
 	nrf24l01.c \
 	owi.c \
+	pcint.c \
 	pin.c \
 	pwm.c \
 	pwm_soft.c \

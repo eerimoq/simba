@@ -28,53 +28,24 @@
  * This file is part of the Simba project.
  */
 
-#ifndef __DRIVERS_PIN_PORT_H__
-#define __DRIVERS_PIN_PORT_H__
+#define PCINT_PORT_TRIGGER_FALLING_EDGE 0
+#define PCINT_PORT_TRIGGER_RISING_EDGE  1
+#define PCINT_PORT_TRIGGER_BOTH_EDGES   2
 
-#include <avr/io.h>
+struct pcint_driver_t;
 
-#define PIN(sfr_p)  ((sfr_p) + 0)
-#define DDR(sfr_p)  ((sfr_p) + 1)
-#define PORT(sfr_p) ((sfr_p) + 2)
-
-struct pin_device_t {
-    volatile uint8_t* sfr_p;
-    uint8_t mask;
+struct pcint_device_t {
+    struct pcint_driver_t *drv_p;
 };
 
-struct pin_driver_t {
-    const struct pin_device_t *dev_p;
+struct pcint_driver_t {
+    struct pcint_device_t *dev_p;
+    volatile uint8_t *pcmsk_p;
+    int8_t trigger;
+    void (*on_interrupt)(void *arg_p);
+    void *arg_p;
 };
 
-static inline int pin_port_device_set_mode(const struct pin_device_t *dev_p,
-                                           int mode)           
-{
-    if (mode == PIN_OUTPUT) {                           
-        *DDR((dev_p)->sfr_p) |= (dev_p)->mask;         
-    } else {                                            
-        *DDR((dev_p)->sfr_p) &= ~((dev_p)->mask);       
-    }
- 
-    return (0);
-}
-
-static inline int pin_port_device_read(const struct pin_device_t *dev_p)
-{
-    return ((*PIN((dev_p)->sfr_p) & (dev_p)->mask) != 0);
-}
-
-static inline int pin_port_device_write_high(const struct pin_device_t *dev_p)
-{
-    *PORT((dev_p)->sfr_p) |= (dev_p)->mask;
-    
-    return (0);
-}
-
-static inline int pin_port_device_write_low(const struct pin_device_t *dev_p) 
-{
-    *PORT((dev_p)->sfr_p) &= ~((dev_p)->mask);
-
-    return (0);
-}
-
-#endif
+struct pcint_port_module_t {
+    uint8_t levels[3];
+};

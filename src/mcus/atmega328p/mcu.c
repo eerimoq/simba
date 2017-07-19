@@ -48,6 +48,8 @@ struct pin_device_t pin_device[PIN_DEVICE_MAX] = {
     { .sfr_p = &PINB, .mask = _BV(PINB3) },
     { .sfr_p = &PINB, .mask = _BV(PINB4) },
     { .sfr_p = &PINB, .mask = _BV(PINB5) },
+    { .sfr_p = &PINB, .mask = _BV(PINB6) },
+    { .sfr_p = &PINB, .mask = _BV(PINB7) },
 
     /* PIN C */
     { .sfr_p = &PINC, .mask = _BV(PINC0) },
@@ -56,11 +58,43 @@ struct pin_device_t pin_device[PIN_DEVICE_MAX] = {
     { .sfr_p = &PINC, .mask = _BV(PINC3) },
     { .sfr_p = &PINC, .mask = _BV(PINC4) },
     { .sfr_p = &PINC, .mask = _BV(PINC5) },
+    { .sfr_p = &PINC, .mask = _BV(PINC6) },
 };
 
 struct exti_device_t exti_device[EXTI_DEVICE_MAX] = {
     { .drv_p = NULL, .pin_p = &pin_device[2], .id = 0 },
     { .drv_p = NULL, .pin_p = &pin_device[3], .id = 1 }
+};
+
+struct pcint_device_t pcint_device[PCINT_DEVICE_MAX] = {
+    /* PIN D */
+    { .drv_p = NULL },
+    { .drv_p = NULL },
+    { .drv_p = NULL },
+    { .drv_p = NULL },
+    { .drv_p = NULL },
+    { .drv_p = NULL },
+    { .drv_p = NULL },
+    { .drv_p = NULL },
+
+    /* PIN B */
+    { .drv_p = NULL },
+    { .drv_p = NULL },
+    { .drv_p = NULL },
+    { .drv_p = NULL },
+    { .drv_p = NULL },
+    { .drv_p = NULL },
+    { .drv_p = NULL },
+    { .drv_p = NULL },
+
+    /* PIN C */
+    { .drv_p = NULL },
+    { .drv_p = NULL },
+    { .drv_p = NULL },
+    { .drv_p = NULL },
+    { .drv_p = NULL },
+    { .drv_p = NULL },
+    { .drv_p = NULL }
 };
 
 struct spi_device_t spi_device[SPI_DEVICE_MAX] = {

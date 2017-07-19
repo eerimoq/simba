@@ -306,7 +306,7 @@ static int thrd_get_used_stack(struct thrd_t *thrd_p)
 
 #if CONFIG_THRD_FS_COMMAND_LIST == 1
 
-static char *state_fmt[] = {
+static char * const FAR state_fmt[] = {
     "current",
     "ready",
     "suspended",
