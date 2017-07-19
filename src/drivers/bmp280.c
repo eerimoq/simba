@@ -517,7 +517,6 @@ int bmp280_transport_i2c_init(struct bmp280_transport_i2c_t *self_p,
             || (i2c_address == BMP280_I2C_ADDRESS_1), EINVAL);
 
 #if CONFIG_I2C == 1
-
     self_p->base.protocol_p = &transport_i2c_protocol;
     self_p->i2c_p = i2c_p;
     self_p->i2c_address = i2c_address;
@@ -535,7 +534,6 @@ int bmp280_transport_spi_init(struct bmp280_transport_spi_t *self_p,
     ASSERTN(spi_p != NULL, EINVAL);
 
 #if CONFIG_SPI == 1
-
     self_p->base.protocol_p = &transport_spi_protocol;
     self_p->spi_p = spi_p;
 

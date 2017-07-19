@@ -81,6 +81,10 @@ static int cmd_set_mode_cb(int argc,
         mode = PIN_OUTPUT;
     } else if (strcmp(argv[2], "input") == 0) {
         mode = PIN_INPUT;
+    } else if (strcmp(argv[2], "input_pull_up") == 0) {
+        mode = PIN_INPUT_PULL_UP;
+    } else if (strcmp(argv[2], "input_pull_down") == 0) {
+        mode = PIN_INPUT_PULL_DOWN;
     } else {
         std_fprintf(out_p, OSTR("%s: bad mode\r\n"), argv[2]);
 

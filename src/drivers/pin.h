@@ -36,12 +36,24 @@
 /**
  * Configure the pin as an output pin.
  */
-#define PIN_OUTPUT 0
+#define PIN_OUTPUT                                          0
 
 /**
  * Configure the pin as an input pin.
  */
-#define PIN_INPUT  1
+#define PIN_INPUT                                           1
+
+/**
+ * Configure the pin as an input pin with the internal pull-up
+ * resistor enabled.
+ */
+#define PIN_INPUT_PULL_UP                                   2
+
+/**
+ * Configure the pin as an input pin with the internal pull-down
+ * resistor enabled.
+ */
+#define PIN_INPUT_PULL_DOWN                                 3
 
 #include "pin_port.h"
 
@@ -66,7 +78,8 @@ int pin_module_init(void);
  *
  * @param[out] self_p Driver object to be initialized.
  * @param[in] dev_p Device to use.
- * @param[in] mode Pin mode. One of ``PIN_INPUT`` or ``PIN_OUTPUT``.
+ * @param[in] mode Pin mode. One of ``PIN_OUTPUT``, ``PIN_INPUT``,
+ *                 ``PIN_INPUT_PULL_UP`` and ``PIN_INPUT_PULL_DOWN``.
  *
  * @return zero(0) or negative error code.
  */
@@ -119,20 +132,22 @@ int pin_toggle(struct pin_driver_t *self_p);
  * system lock taken.
  *
  * @param[in] self_p Driver object.
- * @param[in] mode New pin mode.
+ * @param[in] mode New pin mode. One of ``PIN_OUTPUT``, ``PIN_INPUT``,
+ *                 ``PIN_INPUT_PULL_UP`` and ``PIN_INPUT_PULL_DOWN``.
  *
  * @return zero(0) or negative error code.
  */
 int pin_set_mode(struct pin_driver_t *self_p, int mode);
 
 /**
- * Pin device mode to set. One of ``PIN_INPUT`` or ``PIN_OUTPUT``.
+ * Pin device mode to set.
  *
  * This function may be called from interrupt context and with the
  * system lock taken.
  *
  * @param[in] self_p Pin device.
- * @param[in] mode New pin mode.
+ * @param[in] mode New pin mode. One of ``PIN_OUTPUT``, ``PIN_INPUT``,
+ *                 ``PIN_INPUT_PULL_UP`` and ``PIN_INPUT_PULL_DOWN``.
  *
  * @return zero(0) or negative error code.
  */
