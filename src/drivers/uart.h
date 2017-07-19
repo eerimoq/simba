@@ -118,7 +118,7 @@ int uart_stop(struct uart_driver_t *self_p);
  * @return Number of written bytes or negative error code.
  */
 #define uart_write(self_p, buf_p, size)                  \
-    (self_p)->base.write(&(self_p)->base, buf_p, size)
+    (self_p)->base.base.write(&(self_p)->base.base, buf_p, size)
 
 /**
  * Starts the UART device using given configration. The UART device
