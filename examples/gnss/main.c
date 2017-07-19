@@ -51,7 +51,7 @@ int main()
               sizeof(uart_rxbuf));
     chan_control(&uart, CHAN_CONTROL_NON_BLOCKING_READ);
     uart_start(&uart);
-    gnss_init(&gnss, &uart);
+    gnss_init(&gnss, &uart, &uart);
 
     timeout.seconds = 1;
     timeout.nanoseconds = 0;

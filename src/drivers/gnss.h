@@ -34,7 +34,8 @@
 #include "simba.h"
 
 struct gnss_driver_t {
-    void *transport_p;
+    void *chin_p;
+    void *chout_p;
     struct time_t rmc_timestamp;
     struct time_t gga_timestamp;
     struct date_t date;
@@ -73,12 +74,14 @@ int gnss_module_init(void);
  * Initialize given driver object from given configuration.
  *
  * @param[out] self_p Driver object to be initialized.
- * @param[in] transport_p Transport channel.
+ * @param[in] chin_p Incoming transport channel.
+ * @param[in] chout_p Outgoing transport channel.
  *
  * @return zero(0) or negative error code.
  */
 int gnss_init(struct gnss_driver_t *self_p,
-              void *transport_p);
+              void *chin_p,
+              void *chout_p);
 
 /**
  * Update the GNSS driver state by reading and parsing a NMEA sentence

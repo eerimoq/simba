@@ -60,7 +60,7 @@ static int read_byte(struct gnss_driver_t *self_p,
 {
     int res;
 
-    res = chan_read(self_p->transport_p,
+    res = chan_read(self_p->chin_p,
                     byte_p,
                     sizeof(*byte_p));
 
@@ -320,12 +320,15 @@ int gnss_module_init()
 }
 
 int gnss_init(struct gnss_driver_t *self_p,
-              void *transport_p)
+              void *chin_p,
+              void *chout_p)
 {
     ASSERTN(self_p != NULL, EINVAL);
-    ASSERTN(transport_p != NULL, EINVAL);
+    ASSERTN(chin_p != NULL, EINVAL);
+    ASSERTN(chout_p != NULL, EINVAL);
 
-    self_p->transport_p = transport_p;
+    self_p->chin_p = chin_p;
+    self_p->chout_p = chout_p;
     self_p->rmc_timestamp.seconds = -1;
     self_p->gga_timestamp.seconds = -1;
     self_p->position.timestamp_p = &self_p->rmc_timestamp;
@@ -384,7 +387,7 @@ int gnss_write(struct gnss_driver_t *self_p,
         return (res);
     }
 
-    if (chan_write(self_p->transport_p, &encoded[0], res) == res) {
+    if (chan_write(self_p->chout_p, &encoded[0], res) == res) {
         res = 0;
     } else {
         res = -EIO;

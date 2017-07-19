@@ -7,9 +7,9 @@
 `GNSS`_ is a set of global coverage satellite system, including GPS,
 GLONASS and Galileo.
 
-This driver reads `NMEA 0183`_ sentences from a channel (often a UART
-driver), parses them and stores position, time and speed in the driver
-object.
+This driver reads `NMEA 0183`_ sentences from an input channel (often
+a UART driver), parses them and stores position, time and speed in the
+driver object.
 
 This driver should be compatible with all GNSS devices sending and
 receiving NMEA sentences over a serial port.
