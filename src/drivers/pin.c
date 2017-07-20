@@ -79,6 +79,10 @@ static int cmd_set_mode_cb(int argc,
     /* Get mode. */
     if (strcmp(argv[2], "output") == 0) {
         mode = PIN_OUTPUT;
+    } else if (strcmp(argv[2], "output_open_drain") == 0) {
+        mode = PIN_OUTPUT_OPEN_DRAIN;
+    } else if (strcmp(argv[2], "output_open_drain_pull_up") == 0) {
+        mode = PIN_OUTPUT_OPEN_DRAIN_PULL_UP;
     } else if (strcmp(argv[2], "input") == 0) {
         mode = PIN_INPUT;
     } else if (strcmp(argv[2], "input_pull_up") == 0) {
