@@ -43,6 +43,7 @@ Example output from the shell:
 
    $ oam/upgrade/application/is_valid
    yes
+   OK
 
 HTTP requests
 -------------
@@ -139,6 +140,7 @@ Then start it using the serial port.
    C-Kermit>connect
    $ oam/upgrade/application/is_valid
    yes
+   OK
    $ oam/upgrade/application/enter
    Welcome to the test application!
 
@@ -162,7 +164,9 @@ Due over the serial port.
    C-Kermit>connect
    $ oam/upgrade/application/is_valid
    no
+   OK
    $ oam/upgrade/application/erase
+   OK
    $ oam/upgrade/kermit/upload       # Type '\+c' to return to kermit.
    C-Kermit> send application.ubin
 
@@ -172,6 +176,7 @@ Then start it using the serial port.
 
    C-Kermit> connect
    $ oam/upgrade/application/is_valid
+   OK
    yes
    $ oam/upgrade/application/enter
    Welcome to the test application!

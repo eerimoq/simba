@@ -32,13 +32,17 @@ Example output from the shell:
    http_server            running
    ftp_server             stopped
    network_manager        running
+   OK
    $ oam/service/start ftp_server
+   OK
    $ oam/service/stop http_server
+   OK
    $ oam/service/list
    NAME                   STATE
    http_server            stopped
    ftp_server             running
    network_manager        running
+   OK
 
 ----------------------------------------------
 

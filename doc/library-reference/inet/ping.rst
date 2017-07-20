@@ -22,7 +22,7 @@ Example output from the shell:
 
    $ inet/ping/ping 192.168.1.100
    Successfully pinged '192.168.1.100' in 10 ms.
-   $ 
+   OK
 
 ----------------------------------------------
 

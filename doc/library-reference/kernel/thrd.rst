@@ -65,6 +65,7 @@ Example output from the shell:
                main      current     0    0%           1     0x0f
                            ready   127    0%           0     0x0f
                            ready   -80    0%           0     0x0f
+   OK
 
 ----------------------------------------------
 

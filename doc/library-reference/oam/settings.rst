@@ -58,18 +58,24 @@ Example output from the shell:
    value_1               int32_t      4  24567
    value_2               blob_t       4  cafebabe
    value_3               string_t    16  foobar
+   OK
    $ oam/settings/read value_1
    24567
+   OK
    $ oam/settings/write value_1 -5
+   OK
    $ oam/settings/read value_1
    -5
+   OK
    $ oam/settings/reset
+   OK
    $ oam/settings/list
    NAME                  TYPE      SIZE  VALUE
    version               int32_t      4  1
    value_1               int32_t      4  24567
    value_2               blob_t       4  cafebabe
    value_3               string_t    16  foobar
+   OK
 
 Example
 -------

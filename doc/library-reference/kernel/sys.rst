@@ -65,12 +65,13 @@ Example output from the shell:
    app:    shell-master built 2017-07-06 09:03 CEST by erik.
    board:  Arduino Mega
    mcu:    Atmel ATMega2560 AVR @ 16MHz, 8k sram, 256k flash
-
+   OK
    $ kenel/sys/uptime
    0.120 seconds
-
+   OK
    $ kenel/sys/reset_cause
    power_on
+   OK
 
 ----------------------------------------------
 

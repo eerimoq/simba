@@ -35,6 +35,7 @@ Example output from the shell:
    NAME            STATE  ADDRESS            TX BYTES    RX BYTES
    esp-wlan-ap     up     192.168.4.1               -           -
    esp-wlan-sta    up     192.168.0.5               -           -
+   OK
 
 ----------------------------------------------
 

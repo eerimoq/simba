@@ -69,16 +69,21 @@ Example output from the shell:
 
 .. code-block:: text
 
-    $ debug/log/list
-         OBJECT NAME  MASK
-             default  0x0f
-    $ debug/log/print "Hello World!"
-    $ debug/log/set_log_mask default 0x1f
-    $ debug/log/list
-         OBJECT NAME  MASK
-             default  0x1f
-    $ debug/log/print "Hello World!!!"
-    56:info:main:default: Hello World!!!
+   $ debug/log/list
+        OBJECT NAME  MASK
+            default  0x0f
+   OK
+   $ debug/log/print "Hello World!"
+   OK
+   $ debug/log/set_log_mask default 0x1f
+   OK
+   $ debug/log/list
+        OBJECT NAME  MASK
+            default  0x1f
+   OK
+   $ debug/log/print "Hello World!!!"
+   56:info:main:default: Hello World!!!
+   OK
 
 Example
 -------

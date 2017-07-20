@@ -64,24 +64,33 @@ Example output from the shell:
    /tmp                           ram      fat16          54K   64K    14%
    /home/erik                     sd       fat16         1.9G    2G     5%
    /etc                           flash    spiffs        124K  128K     3%
+   OK
    $ filesystems/fs/write tmp/foo.txt "Hello "
+   OK
    $ filesystems/fs/append tmp/foo.txt world!
+   OK
    $ filesystems/fs/read tmp/foo.txt
    Hello world!
+   OK
    $ filesystems/fs/list tmp
    xxxx-xx-xx xx-xx       12 foo.txt
+   OK
    $ filesystems/fs/counters/list
    NAME                                                 VALUE
    /your/counter                                        0000000000000034
    /my/counter                                          0000000000000002
+   OK
    $ filesystems/fs/counters/reset
+   OK
    $ filesystems/fs/counters/list
    NAME                                                 VALUE
    /your/counter                                        0000000000000000
    /my/counter                                          0000000000000000
+   OK
    $ filesystems/fs/parameters/list
    NAME                                                 VALUE
    /foo/bar                                             -2
+   OK
 
 ----------------------------------------------
 

@@ -31,11 +31,16 @@ Example output from the shell:
 .. code-block:: text
 
    $ drivers/pin/set_mode d2 output
+   OK
    $ drivers/pin/write d2 high
+   OK
    $ drivers/pin/write d2 low
+   OK
    $ drivers/pin/set_mode d3 input
+   OK
    $ drivers/pin/read d3
    low
+   OK
 
 ----------------------------------------------
 
