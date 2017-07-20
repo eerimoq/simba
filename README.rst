@@ -48,14 +48,20 @@ Need help?
 Contributing
 ============
 
-#. Fork the repository.
+Contributing is very easy, using GitHub for pull requests and code
+review. Just follow the steps below for a smooth process.
 
-#. Implement the new feature, bug fix or improvement.
+#. Fork this repository.
+
+#. Implement the new feature, bug fix or other improvement, usually on
+   the master branch.
 
 #. Implement test case(s) to ensure that future changes do not break
    legacy.
 
-#. Create a pull request.
+#. Create a pull request and wait for the code to be reviewed, usually
+   done within a day or two.
+
 
 License
 =======
