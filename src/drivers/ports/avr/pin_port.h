@@ -49,19 +49,31 @@ struct pin_driver_t {
 static inline int pin_port_device_set_mode(const struct pin_device_t *dev_p,
                                            int mode)
 {
-    if (mode == PIN_OUTPUT) {
-        *DDR(dev_p->sfr_p) |= dev_p->mask;
-    } else {
-        *DDR(dev_p->sfr_p) &= ~dev_p->mask;
+    int res;
 
-        if (mode == PIN_INPUT_PULL_UP) {
-            *PORT(dev_p->sfr_p) |= dev_p->mask;
-        } else {
-            *PORT(dev_p->sfr_p) &= ~dev_p->mask;
-        }
+    res = 0;
+
+    switch (mode) {
+
+    case PIN_OUTPUT:
+        *DDR(dev_p->sfr_p) |= dev_p->mask;
+        break;
+
+    case PIN_INPUT:
+        *DDR(dev_p->sfr_p) &= ~dev_p->mask;
+        break;
+
+    case PIN_INPUT_PULL_UP:
+        *DDR(dev_p->sfr_p) &= ~dev_p->mask;
+        *PORT(dev_p->sfr_p) |= dev_p->mask;
+        break;
+
+    default:
+        res = -ENOSYS;
+        break;
     }
 
-    return (0);
+    return (res);
 }
 
 static inline int pin_port_device_read(const struct pin_device_t *dev_p)

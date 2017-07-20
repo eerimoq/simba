@@ -39,21 +39,32 @@
 #define PIN_OUTPUT                                          0
 
 /**
+ * Configure the pin as an output open drain pin.
+ */
+#define PIN_OUTPUT_OPEN_DRAIN                               1
+
+/**
+ * Configure the pin as an output open drain pin with the internal
+ * pull-up resistor enabled.
+ */
+#define PIN_OUTPUT_OPEN_DRAIN_PULL_UP                       2
+
+/**
  * Configure the pin as an input pin.
  */
-#define PIN_INPUT                                           1
+#define PIN_INPUT                                           3
 
 /**
  * Configure the pin as an input pin with the internal pull-up
  * resistor enabled.
  */
-#define PIN_INPUT_PULL_UP                                   2
+#define PIN_INPUT_PULL_UP                                   4
 
 /**
  * Configure the pin as an input pin with the internal pull-down
  * resistor enabled.
  */
-#define PIN_INPUT_PULL_DOWN                                 3
+#define PIN_INPUT_PULL_DOWN                                 5
 
 #include "pin_port.h"
 
@@ -78,8 +89,8 @@ int pin_module_init(void);
  *
  * @param[out] self_p Driver object to be initialized.
  * @param[in] dev_p Device to use.
- * @param[in] mode Pin mode. One of ``PIN_OUTPUT``, ``PIN_INPUT``,
- *                 ``PIN_INPUT_PULL_UP`` and ``PIN_INPUT_PULL_DOWN``.
+ * @param[in] mode Pin mode. One of the ``PIN_OUTPUT*`` and
+ *                 ``PIN_INPUT*`` defines.
  *
  * @return zero(0) or negative error code.
  */
@@ -132,8 +143,8 @@ int pin_toggle(struct pin_driver_t *self_p);
  * system lock taken.
  *
  * @param[in] self_p Driver object.
- * @param[in] mode New pin mode. One of ``PIN_OUTPUT``, ``PIN_INPUT``,
- *                 ``PIN_INPUT_PULL_UP`` and ``PIN_INPUT_PULL_DOWN``.
+ * @param[in] mode Pin mode. One of the ``PIN_OUTPUT*`` and
+ *                 ``PIN_INPUT*`` defines.
  *
  * @return zero(0) or negative error code.
  */
@@ -146,8 +157,8 @@ int pin_set_mode(struct pin_driver_t *self_p, int mode);
  * system lock taken.
  *
  * @param[in] self_p Pin device.
- * @param[in] mode New pin mode. One of ``PIN_OUTPUT``, ``PIN_INPUT``,
- *                 ``PIN_INPUT_PULL_UP`` and ``PIN_INPUT_PULL_DOWN``.
+ * @param[in] mode Pin mode. One of the ``PIN_OUTPUT*`` and
+ *                 ``PIN_INPUT*`` defines.
  *
  * @return zero(0) or negative error code.
  */
