@@ -20,7 +20,7 @@ improve Simba!
 Try it out!
 ===========
 
-1. Download the `Arduino IDE`_ and install Simba using the Boards Manager.
+#. Download the `Arduino IDE`_ and install Simba using the Boards Manager.
 
    .. code-block:: text
 
@@ -29,20 +29,33 @@ Try it out!
       https://raw.githubusercontent.com/eerimoq/simba-releases/master/arduino/esp/package_simba_esp_index.json
       https://raw.githubusercontent.com/eerimoq/simba-releases/master/arduino/esp32/package_simba_esp32_index.json
 
-2. Select a Simba board.
-3. Open the blink example.
-4. Upload!
+#. Select a Simba board.
+#. Open the blink example.
+#. Upload!
 
 See the `Simba installation documentation`_ for detailed step-by-step instructions.
 
 Need help?
 ==========
 
-1. Have a look at the `Simba documentation`_. It's actually pretty good. =)
+#. Have a look at the `Simba documentation`_. It's actually pretty good. =)
 
-2. Visit the `Simba forum`_.
+#. Visit the `Simba forum`_.
 
-3. Write an issue here on GitHub.
+#. Write an issue here on GitHub.
+
+
+Contributing
+============
+
+#. Fork the repository.
+
+#. Implement the new feature, bug fix or improvement.
+
+#. Implement test case(s) to ensure that future changes do not break
+   legacy.
+
+#. Create a pull request.
 
 License
 =======
