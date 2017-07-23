@@ -32,7 +32,6 @@
 #define __DRIVERS_PWM_H__
 
 #include "simba.h"
-
 #include "pwm_port.h"
 
 extern struct pwm_device_t pwm_device[PWM_DEVICE_MAX];

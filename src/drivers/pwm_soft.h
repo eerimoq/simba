@@ -32,7 +32,6 @@
 #define __DRIVERS_PWM_SOFT_H__
 
 #include "simba.h"
-
 #include "pwm_soft_port.h"
 
 struct pwm_soft_driver_t {

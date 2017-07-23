@@ -32,7 +32,6 @@
 #define __DRIVERS_EXTI_H__
 
 #include "simba.h"
-
 #include "exti_port.h"
 
 /**

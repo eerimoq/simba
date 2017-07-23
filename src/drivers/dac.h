@@ -32,7 +32,6 @@
 #define __DRIVERS_DAC_H__
 
 #include "simba.h"
-
 #include "dac_port.h"
 
 extern struct dac_device_t dac_device[DAC_DEVICE_MAX];

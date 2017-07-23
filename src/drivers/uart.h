@@ -32,10 +32,9 @@
 #define __DRIVERS_UART_H__
 
 #include "simba.h"
+#include "uart_port.h"
 
 typedef int (*uart_rx_filter_cb_t)(char c);
-
-#include "uart_port.h"
 
 extern struct uart_device_t uart_device[UART_DEVICE_MAX];
 

@@ -32,7 +32,6 @@
 #define __DRIVERS_ADC_H__
 
 #include "simba.h"
-
 #include "adc_port.h"
 
 /**

@@ -32,7 +32,6 @@
 #define __DRIVERS_PCINT_H__
 
 #include "simba.h"
-
 #include "pcint_port.h"
 
 /**

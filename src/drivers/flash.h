@@ -32,7 +32,6 @@
 #define __DRIVERS_FLASH_H__
 
 #include "simba.h"
-
 #include "flash_port.h"
 
 extern struct flash_device_t flash_device[FLASH_DEVICE_MAX];

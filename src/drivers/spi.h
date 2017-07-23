@@ -32,7 +32,6 @@
 #define __DRIVERS_SPI_H__
 
 #include "simba.h"
-
 #include "spi_port.h"
 
 /* SPI modes. */

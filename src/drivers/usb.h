@@ -32,7 +32,6 @@
 #define __DRIVERS_USB_H__
 
 #include "simba.h"
-
 #include "usb_port.h"
 
 /* Request types. */

@@ -32,7 +32,6 @@
 #define __DRIVERS_WATCHDOG_H__
 
 #include "simba.h"
-
 #include "watchdog_port.h"
 
 /**
