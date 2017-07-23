@@ -31,6 +31,7 @@
 NAME = adc_print_all
 BOARD ?= linux
 
-CDEFS += CONFIG_THRD_FS_COMMAND_LIST=1
+CDEFS += \
+	CONFIG_THRD_FS_COMMANDS=1
 
 include $(SIMBA_ROOT)/make/app.mk

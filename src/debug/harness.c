@@ -133,7 +133,7 @@ int harness_run(struct harness_t *self_p,
         testcase_p++;
     }
 
-#if CONFIG_THRD_FS_COMMAND_LIST == 1
+#if CONFIG_THRD_FS_COMMANDS == 1
     char buf[18];
 
     std_strcpy(buf, FSTR("/kernel/thrd/list"));

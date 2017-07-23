@@ -52,25 +52,13 @@ struct module_t {
 #if CONFIG_SYS_RESET_CAUSE == 1
     enum sys_reset_cause_t reset_cause;
 #endif
-#if CONFIG_SYS_FS_COMMAND_INFO == 1
+#if CONFIG_SYS_FS_COMMANDS == 1
     struct fs_command_t cmd_info;
-#endif
-#if CONFIG_SYS_FS_COMMAND_CONFIG == 1
     struct fs_command_t cmd_config;
-#endif
-#if CONFIG_SYS_FS_COMMAND_UPTIME == 1
     struct fs_command_t cmd_uptime;
-#endif
-#if CONFIG_SYS_FS_COMMAND_PANIC == 1
     struct fs_command_t cmd_panic;
-#endif
-#if CONFIG_SYS_FS_COMMAND_REBOOT == 1
     struct fs_command_t cmd_reboot;
-#endif
-#if CONFIG_SYS_FS_COMMAND_BACKTRACE == 1
     struct fs_command_t cmd_backtrace;
-#endif
-#if CONFIG_SYS_FS_COMMAND_RESET_CAUSE == 1
     struct fs_command_t cmd_reset_cause;
 #endif
 };
@@ -311,7 +299,7 @@ static void init_inet(void)
 #    include "sys/nvm.i"
 #endif
 
-#if CONFIG_SYS_FS_COMMAND_INFO == 1
+#if CONFIG_SYS_FS_COMMANDS == 1
 
 static int cmd_info_cb(int argc,
                        const char *argv[],
@@ -325,10 +313,6 @@ static int cmd_info_cb(int argc,
     return (0);
 }
 
-#endif
-
-#if CONFIG_SYS_FS_COMMAND_CONFIG == 1
-
 static int cmd_config_cb(int argc,
                          const char *argv[],
                          void *out_p,
@@ -340,10 +324,6 @@ static int cmd_config_cb(int argc,
 
     return (0);
 }
-
-#endif
-
-#if CONFIG_SYS_FS_COMMAND_UPTIME == 1
 
 static int cmd_uptime_cb(int argc,
                          const char *argv[],
@@ -364,10 +344,6 @@ static int cmd_uptime_cb(int argc,
     return (0);
 }
 
-#endif
-
-#if CONFIG_SYS_FS_COMMAND_PANIC == 1
-
 static int cmd_panic_cb(int argc,
                          const char *argv[],
                          void *out_p,
@@ -380,10 +356,6 @@ static int cmd_panic_cb(int argc,
     return (0);
 }
 
-#endif
-
-#if CONFIG_SYS_FS_COMMAND_REBOOT == 1
-
 static int cmd_reboot_cb(int argc,
                          const char *argv[],
                          void *out_p,
@@ -395,10 +367,6 @@ static int cmd_reboot_cb(int argc,
 
     return (0);
 }
-
-#endif
-
-#if CONFIG_SYS_FS_COMMAND_BACKTRACE == 1
 
 static int cmd_backtrace_cb(int argc,
                             const char *argv[],
@@ -427,10 +395,6 @@ static int cmd_backtrace_cb(int argc,
     return (0);
 }
 
-#endif
-
-#if CONFIG_SYS_FS_COMMAND_RESET_CAUSE == 1
-
 static int cmd_reset_cause_cb(int argc,
                               const char *argv[],
                               void *out_p,
@@ -456,55 +420,43 @@ int sys_module_init(void)
 
     module.initialized = 1;
 
-#if CONFIG_SYS_FS_COMMAND_INFO == 1
+#if CONFIG_SYS_FS_COMMANDS == 1
     fs_command_init(&module.cmd_info,
                     CSTR("/kernel/sys/info"),
                     cmd_info_cb,
                     NULL);
     fs_command_register(&module.cmd_info);
-#endif
 
-#if CONFIG_SYS_FS_COMMAND_CONFIG == 1
     fs_command_init(&module.cmd_config,
                     CSTR("/kernel/sys/config"),
                     cmd_config_cb,
                     NULL);
     fs_command_register(&module.cmd_config);
-#endif
 
-#if CONFIG_SYS_FS_COMMAND_UPTIME == 1
     fs_command_init(&module.cmd_uptime,
                     CSTR("/kernel/sys/uptime"),
                     cmd_uptime_cb,
                     NULL);
     fs_command_register(&module.cmd_uptime);
-#endif
 
-#if CONFIG_SYS_FS_COMMAND_PANIC == 1
     fs_command_init(&module.cmd_panic,
                     CSTR("/kernel/sys/panic"),
                     cmd_panic_cb,
                     NULL);
     fs_command_register(&module.cmd_panic);
-#endif
 
-#if CONFIG_SYS_FS_COMMAND_REBOOT == 1
     fs_command_init(&module.cmd_reboot,
                     CSTR("/kernel/sys/reboot"),
                     cmd_reboot_cb,
                     NULL);
     fs_command_register(&module.cmd_reboot);
-#endif
 
-#if CONFIG_SYS_FS_COMMAND_BACKTRACE == 1
     fs_command_init(&module.cmd_backtrace,
                     CSTR("/kernel/sys/backtrace"),
                     cmd_backtrace_cb,
                     NULL);
     fs_command_register(&module.cmd_backtrace);
-#endif
 
-#if CONFIG_SYS_FS_COMMAND_RESET_CAUSE == 1
     fs_command_init(&module.cmd_reset_cause,
                     CSTR("/kernel/sys/reset_cause"),
                     cmd_reset_cause_cb,

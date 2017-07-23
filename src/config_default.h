@@ -1542,101 +1542,24 @@
 #endif
 
 /**
- * Debug file system command to print the system configuration.
+ * Sys module debug file system commands.
  */
-#ifndef CONFIG_SYS_FS_COMMAND_CONFIG
+#ifndef CONFIG_SYS_FS_COMMANDS
 #    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(CONFIG_MINIMAL_SYSTEM)
-#        define CONFIG_SYS_FS_COMMAND_CONFIG                0
+#        define CONFIG_SYS_FS_COMMANDS                      0
 #    else
-#        define CONFIG_SYS_FS_COMMAND_CONFIG                1
+#        define CONFIG_SYS_FS_COMMANDS                      1
 #    endif
 #endif
 
 /**
- * Debug file system command to print the system information.
+ * Thrd module debug file system commands.
  */
-#ifndef CONFIG_SYS_FS_COMMAND_INFO
+#ifndef CONFIG_THRD_FS_COMMANDS
 #    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(CONFIG_MINIMAL_SYSTEM)
-#        define CONFIG_SYS_FS_COMMAND_INFO                  0
+#        define CONFIG_THRD_FS_COMMANDS                     0
 #    else
-#        define CONFIG_SYS_FS_COMMAND_INFO                  1
-#    endif
-#endif
-
-/**
- * Debug file system command to print the system uptime.
- */
-#ifndef CONFIG_SYS_FS_COMMAND_UPTIME
-#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(CONFIG_MINIMAL_SYSTEM)
-#        define CONFIG_SYS_FS_COMMAND_UPTIME                0
-#    else
-#        define CONFIG_SYS_FS_COMMAND_UPTIME                1
-#    endif
-#endif
-
-/**
- * Debug file system command to force a panic of the system.
- */
-#ifndef CONFIG_SYS_FS_COMMAND_PANIC
-#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(CONFIG_MINIMAL_SYSTEM)
-#        define CONFIG_SYS_FS_COMMAND_PANIC                 0
-#    else
-#        define CONFIG_SYS_FS_COMMAND_PANIC                 1
-#    endif
-#endif
-
-/**
- * Debug file system command to reboot the system.
- */
-#ifndef CONFIG_SYS_FS_COMMAND_REBOOT
-#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(CONFIG_MINIMAL_SYSTEM)
-#        define CONFIG_SYS_FS_COMMAND_REBOOT                0
-#    else
-#        define CONFIG_SYS_FS_COMMAND_REBOOT                1
-#    endif
-#endif
-
-/**
- * Debug file system command to print a backtrace.
- */
-#ifndef CONFIG_SYS_FS_COMMAND_BACKTRACE
-#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(CONFIG_MINIMAL_SYSTEM)
-#        define CONFIG_SYS_FS_COMMAND_BACKTRACE             0
-#    else
-#        define CONFIG_SYS_FS_COMMAND_BACKTRACE             1
-#    endif
-#endif
-
-/**
- * Debug file system command to print the system reset cause.
- */
-#ifndef CONFIG_SYS_FS_COMMAND_RESET_CAUSE
-#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(CONFIG_MINIMAL_SYSTEM)
-#        define CONFIG_SYS_FS_COMMAND_RESET_CAUSE           0
-#    else
-#        define CONFIG_SYS_FS_COMMAND_RESET_CAUSE           1
-#    endif
-#endif
-
-/**
- * Debug file system command to list threads' information.
- */
-#ifndef CONFIG_THRD_FS_COMMAND_LIST
-#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(CONFIG_MINIMAL_SYSTEM)
-#        define CONFIG_THRD_FS_COMMAND_LIST                 0
-#    else
-#        define CONFIG_THRD_FS_COMMAND_LIST                 1
-#    endif
-#endif
-
-/**
- * Debug file system command to set the log mask of a thread.
- */
-#ifndef CONFIG_THRD_FS_COMMAND_SET_LOG_MASK
-#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(CONFIG_MINIMAL_SYSTEM)
-#        define CONFIG_THRD_FS_COMMAND_SET_LOG_MASK         0
-#    else
-#        define CONFIG_THRD_FS_COMMAND_SET_LOG_MASK         1
+#        define CONFIG_THRD_FS_COMMANDS                     1
 #    endif
 #endif
 
