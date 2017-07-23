@@ -33,6 +33,7 @@
 struct command_t {
     char *command_p;
     int res;
+    char *output_p;
 };
 
 int test_init(struct harness_t *harness_p)
@@ -100,7 +101,7 @@ int test_handler(struct harness_t *harness_p)
                              "foo",
                              LOG_UPTO(INFO)) == 0);
     BTASSERT(log_handler_init(&handler, sys_get_stdout()) == 0);
-    
+
     /* This should be printed once for the default handler. */
     BTASSERT(log_object_print(&foo,
                               LOG_INFO,
@@ -166,19 +167,46 @@ int test_log_mask(struct harness_t *harness_p)
 int test_fs(struct harness_t *harness_p)
 {
     char command[64];
+    struct queue_t queue;
+    uint8_t buf[256];
     struct command_t *command_p;
     struct command_t commands[] = {
-        { "/debug/log/list", 0 },
-        { "/debug/log/print foo", 0 },
-        { "/debug/log/set_log_mask log 0xff", 0 },
-        
-        { "/debug/log/list d", -EINVAL },
-        { "/debug/log/print d d", -EINVAL },
-        { "/debug/log/set_log_mask invalid_object 0xff", -EINVAL },
-        { "/debug/log/set_log_mask missing_mask", -EINVAL },
-        { "/debug/log/set_log_mask bad_mask ds", -EINVAL },
-        { NULL, 0 }
+        { "/debug/log/list",
+          0,
+          "OBJECT-NAME       MASK\r\n"
+          "log               0x0f\r\n"
+        },
+        { "/debug/log/print foo", 0, NULL },
+        { "/debug/log/set_log_mask log 0xff", 0, NULL },
+
+        {
+            "/debug/log/list d",
+            -EINVAL,
+            "Usage: list\r\n"
+        },
+        {
+            "/debug/log/print d d",
+            -EINVAL,
+            "Usage: print <string>\r\n"
+        },
+        {
+            "/debug/log/set_log_mask invalid_object 0xff",
+            -EINVAL,
+            "No log object with name 'invalid_object'.\r\n" },
+        {
+            "/debug/log/set_log_mask missing_mask",
+            -EINVAL,
+            "Usage: set_log_mask <object> <mask>\r\n"
+        },
+        {
+            "/debug/log/set_log_mask bad_mask ds",
+            -EINVAL,
+            "Bad mask 'ds'.\r\n"
+        },
+        { NULL, 0, NULL }
     };
+
+    BTASSERT(queue_init(&queue, &buf[0], sizeof(buf)) == 0);
 
     command_p = &commands[0];
 
@@ -186,8 +214,14 @@ int test_fs(struct harness_t *harness_p)
         strcpy(command, command_p->command_p);
         BTASSERT(fs_call(command,
                          NULL,
-                         sys_get_stdout(),
+                         &queue,
                          NULL) == command_p->res);
+
+        if (command_p->output_p != NULL) {
+            BTASSERTI(harness_expect(&queue,
+                                     command_p->output_p,
+                                     NULL), ==, strlen(command_p->output_p));
+        }
 
         command_p++;
     }
@@ -209,7 +243,7 @@ int main()
     };
 
     sys_start();
-    
+
     harness_init(&harness);
     harness_run(&harness, harness_testcases);
 

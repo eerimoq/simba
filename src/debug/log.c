@@ -35,7 +35,7 @@ struct module_t {
     int8_t initialized;
     struct log_handler_t handler;
     struct log_object_t object;
-    struct sem_t sem;
+    struct mutex_t mutex;
 #if CONFIG_LOG_FS_COMMANDS == 1
     struct fs_command_t cmd_print;
     struct fs_command_t cmd_list;
@@ -103,7 +103,7 @@ static int cmd_list_cb(int argc,
         return (-EINVAL);
     }
 
-    sem_take(&module.sem, NULL);
+    mutex_lock(&module.mutex);
 
     std_fprintf(out_p, OSTR("OBJECT-NAME       MASK\r\n"));
 
@@ -118,7 +118,7 @@ static int cmd_list_cb(int argc,
         object_p = object_p->next_p;
     }
 
-    sem_give(&module.sem, 1);
+    mutex_unlock(&module.mutex);
 
     return (0);
 }
@@ -139,13 +139,13 @@ static int cmd_set_log_mask_cb(int argc,
     const char *name_p;
 
     if (argc != 3) {
-        std_fprintf(out_p, OSTR("Usage: set_log_mask <obejct> <mask>\r\n"));
+        std_fprintf(out_p, OSTR("Usage: set_log_mask <object> <mask>\r\n"));
 
         return (-EINVAL);
     }
 
     if (std_strtol(argv[2], &mask) == NULL) {
-        std_fprintf(out_p, OSTR("bad mask %s\r\n"), argv[2]);
+        std_fprintf(out_p, OSTR("Bad mask '%s'.\r\n"), argv[2]);
 
         return (-EINVAL);
     }
@@ -153,7 +153,7 @@ static int cmd_set_log_mask_cb(int argc,
     name_p = argv[1];
     found = 0;
 
-    sem_take(&module.sem, NULL);
+    mutex_lock(&module.mutex);
 
     object_p = &module.object;
 
@@ -166,11 +166,11 @@ static int cmd_set_log_mask_cb(int argc,
         object_p = object_p->next_p;
     }
 
-    sem_give(&module.sem, 1);
+    mutex_unlock(&module.mutex);
 
     if (found == 0) {
         std_fprintf(out_p,
-                    OSTR("warning: no log object with name %s\r\n"),
+                    OSTR("No log object with name '%s'.\r\n"),
                     name_p);
 
         return (-EINVAL);
@@ -190,7 +190,7 @@ int log_module_init()
 
     module.initialized = 1;
 
-    sem_init(&module.sem, 0, 1);
+    mutex_init(&module.mutex);
 
     module.handler.chout_p = sys_get_stdout();
     module.handler.next_p = NULL;
@@ -226,12 +226,12 @@ int log_add_handler(struct log_handler_t *handler_p)
 {
     ASSERTN(handler_p != NULL, EINVAL);
 
-    sem_take(&module.sem, NULL);
+    mutex_lock(&module.mutex);
 
     handler_p->next_p = module.handler.next_p;
     module.handler.next_p = handler_p;
 
-    sem_give(&module.sem, 1);
+    mutex_unlock(&module.mutex);
 
     return (0);
 }
@@ -242,7 +242,7 @@ int log_remove_handler(struct log_handler_t *handler_p)
 
     struct log_handler_t *curr_p, *prev_p;
 
-    sem_take(&module.sem, NULL);
+    mutex_lock(&module.mutex);
 
     curr_p = module.handler.next_p;
     prev_p = &module.handler;
@@ -254,13 +254,13 @@ int log_remove_handler(struct log_handler_t *handler_p)
             }
 
             curr_p->next_p = NULL;
-            sem_give(&module.sem, 1);
+            mutex_unlock(&module.mutex);
 
             return (0);
         }
     }
 
-    sem_give(&module.sem, 1);
+    mutex_unlock(&module.mutex);
 
     return (1);
 }
@@ -269,12 +269,12 @@ int log_add_object(struct log_object_t *object_p)
 {
     ASSERTN(object_p != NULL, EINVAL);
 
-    sem_take(&module.sem, NULL);
+    mutex_lock(&module.mutex);
 
     object_p->next_p = module.object.next_p;
     module.object.next_p = object_p;
 
-    sem_give(&module.sem, 1);
+    mutex_unlock(&module.mutex);
 
     return (0);
 }
@@ -285,7 +285,7 @@ int log_remove_object(struct log_object_t *object_p)
 
     struct log_object_t *curr_p, *prev_p;
 
-    sem_take(&module.sem, NULL);
+    mutex_lock(&module.mutex);
 
     curr_p = module.object.next_p;
     prev_p = &module.object;
@@ -297,13 +297,13 @@ int log_remove_object(struct log_object_t *object_p)
             }
 
             curr_p->next_p = NULL;
-            sem_give(&module.sem, 1);
+            mutex_unlock(&module.mutex);
 
             return (0);
         }
     }
 
-    sem_give(&module.sem, 1);
+    mutex_unlock(&module.mutex);
 
     return (1);
 }
@@ -398,7 +398,7 @@ int log_object_print(struct log_object_t *self_p,
     count = 0;
     handler_p = &module.handler;
 
-    sem_take(&module.sem, NULL);
+    mutex_lock(&module.mutex);
 
     time_get(&now);
 
@@ -430,7 +430,7 @@ int log_object_print(struct log_object_t *self_p,
         handler_p = handler_p->next_p;
     }
 
-    sem_give(&module.sem, 1);
+    mutex_unlock(&module.mutex);
 
     return (count);
 }
