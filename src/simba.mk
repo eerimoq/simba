@@ -33,7 +33,7 @@ ifeq ($(TYPE),suite)
   ALLOC_SRC += heap.c
   COLLECTIONS_SRC += circular_buffer.c
   DEBUG_SRC += log.c harness.c
-  DRIVERS_SRC += flash.c uart.c
+  DRIVERS_SRC += storage/flash.c network/uart.c
   ENCODE_SRC +=
   HASH_SRC +=
   INET_SRC +=
@@ -102,52 +102,52 @@ SRC += $(DEBUG_SRC:%=$(SIMBA_ROOT)/src/debug/%)
 INC += $(SIMBA_ROOT)/src/drivers/ports/$(FAMILY)
 
 DRIVERS_SRC ?= \
-	adc.c \
-	analog_input_pin.c \
-	analog_output_pin.c \
-	bmp280.c \
-	can.c \
-	chipid.c \
-	dac.c \
-	dht.c \
-	ds18b20.c \
-	ds3231.c \
-	eeprom_i2c.c \
-	eeprom_soft.c \
-	esp_wifi.c \
-	esp_wifi/station.c \
-	esp_wifi/softap.c \
-	exti.c \
-	flash.c \
-	gnss.c \
-	hx711.c \
-	i2c.c \
-	i2c_soft.c \
-	led_7seg_ht16k33.c \
-	mcp2515.c \
-	nrf24l01.c \
-	owi.c \
-	pcint.c \
-	pin.c \
-	pwm.c \
-	pwm_soft.c \
-	random.c \
-	sht3xd.c \
-	sd.c \
-	spi.c \
-	uart.c \
-	uart_soft.c \
-	usb.c \
-	usb_device.c \
-	usb/device/descriptors.c \
-	usb/device/class/cdc.c \
-	watchdog.c \
-	usb_host.c \
-	usb/host/class/hid.c \
-	usb/host/class/mass_storage.c \
-	ws2812.c \
-	xbee.c \
-	xbee_client.c
+	basic/adc.c \
+	basic/analog_input_pin.c \
+	basic/analog_output_pin.c \
+	basic/chipid.c \
+	basic/dac.c \
+	basic/exti.c \
+	basic/pcint.c \
+	basic/pin.c \
+	basic/pwm.c \
+	basic/pwm_soft.c \
+	basic/random.c \
+	basic/watchdog.c \
+	displays/led_7seg_ht16k33.c \
+	displays/ws2812.c \
+	network/can.c \
+	network/esp_wifi.c \
+	network/esp_wifi/station.c \
+	network/esp_wifi/softap.c \
+	network/i2c.c \
+	network/i2c_soft.c \
+	network/mcp2515.c \
+	network/nrf24l01.c \
+	network/owi.c \
+	network/spi.c \
+	network/uart.c \
+	network/uart_soft.c \
+	network/usb.c \
+	network/usb_device.c \
+	network/usb/device/descriptors.c \
+	network/usb/device/class/cdc.c \
+	network/usb_host.c \
+	network/usb/host/class/hid.c \
+	network/usb/host/class/mass_storage.c \
+	network/xbee.c \
+	network/xbee_client.c \
+	sensors/bmp280.c \
+	sensors/dht.c \
+	sensors/ds18b20.c \
+	sensors/gnss.c \
+	sensors/hx711.c \
+	sensors/sht3xd.c \
+	storage/eeprom_i2c.c \
+	storage/eeprom_soft.c \
+	storage/flash.c \
+	storage/sd.c \
+	various/ds3231.c
 
 SRC += $(DRIVERS_SRC:%=$(SIMBA_ROOT)/src/drivers/%)
 

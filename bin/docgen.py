@@ -9,6 +9,7 @@ import os
 import argparse
 import json
 import subprocess
+import glob
 
 
 BOARD_FMT = """{desc}
@@ -125,7 +126,9 @@ def boards_generate(database):
         # Board drivers.
         drivers = []
         for driver in sorted(data["drivers"]):
-            drivers.append("- :doc:`../library-reference/drivers/{}`".format(
+            subsystem = glob.glob('src/drivers/*/' + driver + '.h')[0].split('/')[2]
+            drivers.append("- :doc:`../library-reference/drivers/{}/{}`".format(
+                subsystem,
                 driver))
 
         targets = []

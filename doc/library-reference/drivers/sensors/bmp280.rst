@@ -1,0 +1,81 @@
+:mod:`bmp280` --- BMP280 temperature and pressure sensor
+========================================================
+
+.. module:: bmp280
+   :synopsis: BMP280 temperature and pressure sensor.
+
+BMP280 is a temperature and pressure sensor from Bosch Sensortec.
+
+.. image:: ../../images/drivers/MFG_BST-BMP280-DS001-12.jpg
+   :width: 40%
+   :target: ../../_images/MFG_BST-BMP280-DS001-12.jpg
+
+This driver supports both I2C and SPI for device communication.
+
+Datasheet: `Datasheet BMP280`_
+
+Example usage
+-------------
+
+This example illustrates how to initialize the driver with an I2C
+transport layer and then read temperature and pressure from the BMP280
+device.
+
+.. code-block:: c
+
+   struct bmp280_driver_t bmp280;
+   struct i2c_driver_t i2c;
+   struct bmp280_transport_i2c_t transport;
+   float temperature;
+   float pressure;
+   float altitude;
+
+   /* Initialize and start a I2C driver. */
+   i2c_init(&i2c, &i2c_device[0], I2C_BAUDRATE_100KBPS, -1);
+   i2c_start(&i2c);
+
+   /* Initialize the BMP280 I2C transport layer. */
+   bmp280_transport_i2c_init(&transport,
+                             &i2c,
+                             BMP280_I2C_ADDRESS_0);
+
+   /* Initialize and start the BMP280 driver with the I2C
+      transport layer. */
+   bmp280_init(&bmp280,
+               &transport.base,
+               bmp280_mode_normal_t,
+               bmp280_standby_time_500_us_t,
+               bmp280_filter_off_t,
+               bmp280_temperature_oversampling_1_t,
+               bmp280_pressure_oversampling_1_t);
+   bmp280_start(&bmp280);
+
+   /* Read temperature and pressure from the BMP280. */
+   bmp280_read(&bmp280, &temperature, &pressure);
+
+   /* Calculate the altitude from read pressure. */
+   altitude = science_pressure_to_altitude(
+       pressure,
+       SCIENCE_SEA_LEVEL_STANDARD_PRESSURE);
+
+   std_printf(OSTR("Temperature: %f\r\n"
+                   "Pressure: %f\r\n"
+                   "Altitude: %f\r\n"),
+              temperature,
+              pressure,
+              altitude);
+
+----------------------------------------------
+
+Source code: :github-blob:`src/drivers/sensors/bmp280.h`, :github-blob:`src/drivers/sensors/bmp280.c`
+
+Test code: :github-blob:`tst/drivers/software/bmp280/main.c`
+
+Example code: :github-blob:`examples/bmp280/main.c`
+
+----------------------------------------------
+
+.. doxygenfile:: drivers/sensors/bmp280.h
+   :project: simba
+
+.. _Datasheet BMP280: https://github.com/eerimoq/hardware-reference/raw/master/Bosch%20Sensortec/BST-BMP280-DS001-11.pdf

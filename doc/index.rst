@@ -59,8 +59,8 @@ Features
 
 * :doc:`Counting semaphores<library-reference/sync/sem>`.
 
-* Device drivers (:doc:`SPI<library-reference/drivers/spi>`,
-  :doc:`UART<library-reference/drivers/uart>`, ...)
+* Device drivers (:doc:`SPI<library-reference/drivers/network/spi>`,
+  :doc:`UART<library-reference/drivers/network/uart>`, ...)
 
 * A simple :doc:`shell<library-reference/oam/shell>`.
 

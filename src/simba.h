@@ -137,130 +137,130 @@ extern "C" {
 #include "inet/inet.h"
 
 #ifdef PORT_HAS_EXTI
-#    include "drivers/exti.h"
+#    include "drivers/basic/exti.h"
 #endif
 #ifdef PORT_HAS_PIN
-#    include "drivers/pin.h"
+#    include "drivers/basic/pin.h"
 #endif
 #ifdef PORT_HAS_I2C_SOFT
-#    include "drivers/i2c_soft.h"
+#    include "drivers/network/i2c_soft.h"
 #endif
 #ifdef PORT_HAS_PWM
-#    include "drivers/pwm.h"
+#    include "drivers/basic/pwm.h"
 #endif
 #ifdef PORT_HAS_PWM_SOFT
-#    include "drivers/pwm_soft.h"
+#    include "drivers/basic/pwm_soft.h"
 #endif
 #ifdef PORT_HAS_ADC
-#    include "drivers/adc.h"
+#    include "drivers/basic/adc.h"
 #endif
 #ifdef PORT_HAS_DAC
-#    include "drivers/dac.h"
+#    include "drivers/basic/dac.h"
 #endif
 #ifdef PORT_HAS_SPI
-#    include "drivers/spi.h"
+#    include "drivers/network/spi.h"
 #endif
 #ifdef PORT_HAS_UART
-#    include "drivers/uart.h"
+#    include "drivers/network/uart.h"
 #endif
 #ifdef PORT_HAS_SD
-#    include "drivers/sd.h"
+#    include "drivers/storage/sd.h"
 #endif
 #ifdef PORT_HAS_DS18B20
-#    include "drivers/ds18b20.h"
+#    include "drivers/sensors/ds18b20.h"
 #endif
 #ifdef PORT_HAS_OWI
-#    include "drivers/owi.h"
+#    include "drivers/network/owi.h"
 #endif
 #ifdef PORT_HAS_FLASH
-#    include "drivers/flash.h"
+#    include "drivers/storage/flash.h"
 #endif
 #ifdef PORT_HAS_ANALOG_INPUT_PIN
-#    include "drivers/analog_input_pin.h"
+#    include "drivers/basic/analog_input_pin.h"
 #endif
 #ifdef PORT_HAS_ANALOG_OUTPUT_PIN
-#    include "drivers/analog_output_pin.h"
+#    include "drivers/basic/analog_output_pin.h"
 #endif
 #ifdef PORT_HAS_CAN
-#    include "drivers/can.h"
+#    include "drivers/network/can.h"
 #endif
 #ifdef PORT_HAS_I2C
-#    include "drivers/i2c.h"
+#    include "drivers/network/i2c.h"
 #endif
 #ifdef PORT_HAS_UART_SOFT
-#    include "drivers/uart_soft.h"
+#    include "drivers/network/uart_soft.h"
 #endif
 #ifdef PORT_HAS_DS3231
-#    include "drivers/ds3231.h"
+#    include "drivers/various/ds3231.h"
 #endif
 #ifdef PORT_HAS_MCP2515
-#    include "drivers/mcp2515.h"
+#    include "drivers/network/mcp2515.h"
 #endif
 #ifdef PORT_HAS_NRF24L01
-#    include "drivers/nrf24l01.h"
+#    include "drivers/network/nrf24l01.h"
 #endif
 #ifdef PORT_HAS_WATCHDOG
-#    include "drivers/watchdog.h"
+#    include "drivers/basic/watchdog.h"
 #endif
 #ifdef PORT_HAS_USB
-#    include "drivers/usb.h"
+#    include "drivers/network/usb.h"
 #endif
 #ifdef PORT_HAS_USB_DEVICE
-#    include "drivers/usb_device.h"
-#    include "drivers/usb/device/descriptors.h"
-#    include "drivers/usb/device/class/cdc.h"
+#    include "drivers/network/usb_device.h"
+#    include "drivers/network/usb/device/descriptors.h"
+#    include "drivers/network/usb/device/class/cdc.h"
 #endif
 #ifdef PORT_HAS_CHIPID
-#    include "drivers/chipid.h"
+#    include "drivers/basic/chipid.h"
 #endif
 #ifdef PORT_HAS_USB_HOST
-#    include "drivers/usb_host.h"
-#    include "drivers/usb/host/class/hid.h"
-#    include "drivers/usb/host/class/mass_storage.h"
+#    include "drivers/network/usb_host.h"
+#    include "drivers/network/usb/host/class/hid.h"
+#    include "drivers/network/usb/host/class/mass_storage.h"
 #endif
 #ifdef PORT_HAS_ESP_WIFI
-#    include "drivers/esp_wifi.h"
-#    include "drivers/esp_wifi/station.h"
-#    include "drivers/esp_wifi/softap.h"
+#    include "drivers/network/esp_wifi.h"
+#    include "drivers/network/esp_wifi/station.h"
+#    include "drivers/network/esp_wifi/softap.h"
 #endif
 #ifdef PORT_HAS_RANDOM
-#    include "drivers/random.h"
+#    include "drivers/basic/random.h"
 #endif
 #ifdef CONFIG_LED_7SEG_HT16K33
-#    include "drivers/led_7seg_ht16k33.h"
+#    include "drivers/displays/led_7seg_ht16k33.h"
 #endif
 #ifdef PORT_HAS_WS2812
-#    include "drivers/ws2812.h"
+#    include "drivers/displays/ws2812.h"
 #endif
 #ifdef PORT_HAS_SHT3XD
-#    include "drivers/sht3xd.h"
+#    include "drivers/sensors/sht3xd.h"
 #endif
 #ifdef PORT_HAS_EEPROM_SOFT
-#    include "drivers/eeprom_soft.h"
+#    include "drivers/storage/eeprom_soft.h"
 #endif
 #ifdef PORT_HAS_EEPROM_I2C
-#    include "drivers/eeprom_i2c.h"
+#    include "drivers/storage/eeprom_i2c.h"
 #endif
 #ifdef PORT_HAS_XBEE
-#    include "drivers/xbee.h"
+#    include "drivers/network/xbee.h"
 #endif
 #ifdef PORT_HAS_XBEE_CLIENT
-#    include "drivers/xbee_client.h"
+#    include "drivers/network/xbee_client.h"
 #endif
 #ifdef PORT_HAS_HX711
-#    include "drivers/hx711.h"
+#    include "drivers/sensors/hx711.h"
 #endif
 #ifdef PORT_HAS_GNSS
-#    include "drivers/gnss.h"
+#    include "drivers/sensors/gnss.h"
 #endif
 #ifdef PORT_HAS_BMP280
-#    include "drivers/bmp280.h"
+#    include "drivers/sensors/bmp280.h"
 #endif
 #ifdef PORT_HAS_DHT
-#    include "drivers/dht.h"
+#    include "drivers/sensors/dht.h"
 #endif
 #ifdef PORT_HAS_PCINT
-#    include "drivers/pcint.h"
+#    include "drivers/basic/pcint.h"
 #endif
 
 #include "inet/isotp.h"
