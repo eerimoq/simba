@@ -63,6 +63,7 @@
 #endif
 
 struct bmp280_transport_protocol_t {
+    int (*start)(struct bmp280_driver_t *self_p);
     int (*read)(struct bmp280_driver_t *self_p,
                 uint8_t address,
                 uint8_t *buf_p,
@@ -73,6 +74,45 @@ struct bmp280_transport_protocol_t {
 };
 
 #if CONFIG_I2C == 1
+
+static int transport_i2c_start(struct bmp280_driver_t *self_p)
+{
+    struct bmp280_transport_i2c_t *transport_p;
+    int res;
+
+    transport_p = (struct bmp280_transport_i2c_t *)self_p->transport_p;
+
+    if (transport_p->i2c_address == BMP280_I2C_ADDRESS_AUTOMATIC) {
+        res = i2c_scan(transport_p->i2c_p, BMP280_I2C_ADDRESS_0);
+
+        if (res == 1) {
+            transport_p->i2c_address = BMP280_I2C_ADDRESS_0;
+        } else {
+            res = i2c_scan(transport_p->i2c_p, BMP280_I2C_ADDRESS_1);
+
+            if (res == 1) {
+                transport_p->i2c_address = BMP280_I2C_ADDRESS_1;
+            }
+        }
+    } else {
+        res = i2c_scan(transport_p->i2c_p, transport_p->i2c_address);
+    }
+
+    if (res == 1) {
+        res = 0;
+    } else if (res == 0) {
+        res = -ENODEV;
+    }
+
+    if (res != 0) {
+        DLOG(INFO,
+             "I2C transport start failed with %d: %S.\r\n",
+             res,
+             errno_as_string(res));
+    }
+
+    return (res);
+}
 
 static int transport_i2c_read(struct bmp280_driver_t *self_p,
                               uint8_t address,
@@ -143,6 +183,7 @@ static int transport_i2c_write(struct bmp280_driver_t *self_p,
 }
 
 struct bmp280_transport_protocol_t transport_i2c_protocol = {
+    .start = transport_i2c_start,
     .read = transport_i2c_read,
     .write = transport_i2c_write
 };
@@ -150,6 +191,11 @@ struct bmp280_transport_protocol_t transport_i2c_protocol = {
 #endif
 
 #if CONFIG_SPI == 1
+
+static int transport_spi_start(struct bmp280_driver_t *self_p)
+{
+    return (0);
+}
 
 static int transport_spi_read(struct bmp280_driver_t *self_p,
                               uint8_t address,
@@ -223,6 +269,7 @@ static int transport_spi_write(struct bmp280_driver_t *self_p,
 }
 
 struct bmp280_transport_protocol_t transport_spi_protocol = {
+    .start = transport_spi_start,
     .read = transport_spi_read,
     .write = transport_spi_write
 };
@@ -364,7 +411,11 @@ int bmp280_start(struct bmp280_driver_t *self_p)
     uint8_t buf[24];
     int i;
 
-    res = 0;
+    res = self_p->transport_p->protocol_p->start(self_p);
+
+    if (res != 0) {
+        return (res);
+    }
 
     if (is_normal_mode(self_p)) {
         res = write_ctrl_meas(self_p);
@@ -514,7 +565,8 @@ int bmp280_transport_i2c_init(struct bmp280_transport_i2c_t *self_p,
     ASSERTN(self_p != NULL, EINVAL);
     ASSERTN(i2c_p != NULL, EINVAL);
     ASSERTN((i2c_address == BMP280_I2C_ADDRESS_0)
-            || (i2c_address == BMP280_I2C_ADDRESS_1), EINVAL);
+            || (i2c_address == BMP280_I2C_ADDRESS_1)
+            || (i2c_address == BMP280_I2C_ADDRESS_AUTOMATIC), EINVAL);
 
 #if CONFIG_I2C == 1
     self_p->base.protocol_p = &transport_i2c_protocol;

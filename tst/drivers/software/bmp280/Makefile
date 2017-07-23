@@ -41,7 +41,7 @@ CDEFS += \
 	CONFIG_HARNESS_HEAP_MAX=4096 \
 	CONFIG_HARNESS_MOCK_VERBOSE=0
 
-STUB = $(SIMBA_ROOT)/src/drivers/bmp280.c:i2c_write,i2c_read,spi_write,spi_read,spi_select,spi_deselect
+STUB = $(SIMBA_ROOT)/src/drivers/bmp280.c:i2c_write,i2c_read,i2c_scan,spi_write,spi_read,spi_select,spi_deselect
 
 KERNEL_SRC += errno.c
 DRIVERS_SRC = bmp280.c spi.c i2c.c

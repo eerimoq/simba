@@ -52,6 +52,7 @@ static int test_i2c_start(struct harness_t *harness_p)
     size_t size;
     ssize_t res;
     uint8_t address;
+    int i_res;
 
     BTASSERT(bmp280_transport_i2c_init(&transport_i2c,
                                        &i2c,
@@ -71,6 +72,8 @@ static int test_i2c_start(struct harness_t *harness_p)
                        "\x43\xd6\xd0\x0b\x27\x0b\x8c\x00"
                        "\xf9\xff\x8c\x3c\xf8\xc6\x70\x17",
                        res);
+    i_res = 1;
+    harness_mock_write("i2c_scan(): return (res)", &i_res, sizeof(i_res));
 
     BTASSERT(bmp280_start(&bmp280_i2c) == 0);
 
@@ -85,6 +88,9 @@ static int test_i2c_start(struct harness_t *harness_p)
     BTASSERTI(address, ==, 0x76);
     harness_mock_read("i2c_read(size)", &size, sizeof(size));
     BTASSERTI(size, ==, 24);
+
+    harness_mock_read("i2c_scan(address)", &address, sizeof(address));
+    BTASSERTI(address, ==, 0x76);
 
     return (0);
 }
@@ -294,6 +300,91 @@ static int test_i2c_stop(struct harness_t *harness_p)
     return (0);
 }
 
+static int test_i2c_start_automatic(struct harness_t *harness_p)
+{
+    uint8_t byte;
+    size_t size;
+    ssize_t res;
+    uint8_t address;
+    int i_res;
+
+    BTASSERT(bmp280_transport_i2c_init(&transport_i2c,
+                                       &i2c,
+                                       BMP280_I2C_ADDRESS_AUTOMATIC) == 0);
+    BTASSERT(bmp280_init(&bmp280_i2c,
+                         &transport_i2c.base,
+                         bmp280_mode_forced_t,
+                         bmp280_standby_time_500_us_t,
+                         bmp280_filter_off_t,
+                         bmp280_temperature_oversampling_1_t,
+                         bmp280_pressure_oversampling_1_t) == 0);
+
+    res = 24;
+    harness_mock_write("i2c_read(): return (res)", &res, sizeof(res));
+    harness_mock_write("i2c_read(): return (buf_p)",
+                       "\x70\x6b\x43\x67\x18\xfc\x5f\x8e"
+                       "\x43\xd6\xd0\x0b\x27\x0b\x8c\x00"
+                       "\xf9\xff\x8c\x3c\xf8\xc6\x70\x17",
+                       res);
+    i_res = 0;
+    harness_mock_write("i2c_scan(): return (res)", &i_res, sizeof(i_res));
+    i_res = 1;
+    harness_mock_write("i2c_scan(): return (res)", &i_res, sizeof(i_res));
+
+    BTASSERTI(bmp280_start(&bmp280_i2c), ==, 0);
+
+    harness_mock_read("i2c_write(address)", &address, sizeof(address));
+    BTASSERTI(address, ==, 0x77);
+    harness_mock_read("i2c_write(size)", &size, sizeof(size));
+    BTASSERTI(size, ==, 1);
+    harness_mock_read("i2c_write(buf_p)", &byte, size);
+    BTASSERTM(&byte, "\x88", size);
+
+    harness_mock_read("i2c_read(address)", &address, sizeof(address));
+    BTASSERTI(address, ==, 0x77);
+    harness_mock_read("i2c_read(size)", &size, sizeof(size));
+    BTASSERTI(size, ==, 24);
+
+    harness_mock_read("i2c_scan(address)", &address, sizeof(address));
+    BTASSERTI(address, ==, 0x76);
+
+    harness_mock_read("i2c_scan(address)", &address, sizeof(address));
+    BTASSERTI(address, ==, 0x77);
+
+    return (0);
+}
+
+static int test_i2c_start_automatic_no_dev(struct harness_t *harness_p)
+{
+    int res;
+    uint8_t address;
+
+    BTASSERT(bmp280_transport_i2c_init(&transport_i2c,
+                                       &i2c,
+                                       BMP280_I2C_ADDRESS_AUTOMATIC) == 0);
+    BTASSERT(bmp280_init(&bmp280_i2c,
+                         &transport_i2c.base,
+                         bmp280_mode_forced_t,
+                         bmp280_standby_time_500_us_t,
+                         bmp280_filter_off_t,
+                         bmp280_temperature_oversampling_1_t,
+                         bmp280_pressure_oversampling_1_t) == 0);
+
+    res = 0;
+    harness_mock_write("i2c_scan(): return (res)", &res, sizeof(res));
+    harness_mock_write("i2c_scan(): return (res)", &res, sizeof(res));
+
+    BTASSERTI(bmp280_start(&bmp280_i2c), ==, -ENODEV);
+
+    harness_mock_read("i2c_scan(address)", &address, sizeof(address));
+    BTASSERTI(address, ==, 0x76);
+
+    harness_mock_read("i2c_scan(address)", &address, sizeof(address));
+    BTASSERTI(address, ==, 0x77);
+
+    return (0);
+}
+
 static int test_spi_start(struct harness_t *harness_p)
 {
     size_t size;
@@ -414,6 +505,17 @@ ssize_t STUB(i2c_write)(struct i2c_driver_t *self_p,
     return (res);
 }
 
+int STUB(i2c_scan)(struct i2c_driver_t *self_p,
+                   int address)
+{
+    int res;
+
+    harness_mock_write("i2c_scan(address)", &address, sizeof(address));
+    harness_mock_read("i2c_scan(): return (res)", &res, sizeof(res));
+
+    return (res);
+}
+
 int STUB(spi_select)(struct spi_driver_t *self_p)
 {
     return (-1);
@@ -466,6 +568,8 @@ int main()
         { test_i2c_read_status_error, "test_i2c_read_status_error" },
         { test_i2c_read_status_timeout, "test_i2c_read_status_timeout" },
         { test_i2c_stop, "test_i2c_stop" },
+        { test_i2c_start_automatic, "test_i2c_start_automatic" },
+        { test_i2c_start_automatic_no_dev, "test_i2c_start_automatic_no_dev" },
         { test_spi_start, "test_spi_start" },
         { test_spi_read_fixed_point, "test_spi_read_fixed_point" },
         { test_spi_stop, "test_spi_stop" },

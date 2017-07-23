@@ -34,14 +34,19 @@
 #include "simba.h"
 
 /**
- * I2C addresses #0.
+ * I2C address #0.
  */
 #define BMP280_I2C_ADDRESS_0                             0x76
 
 /**
- * I2C addresses #1.
+ * I2C address #1.
  */
 #define BMP280_I2C_ADDRESS_1                             0x77
+
+/**
+ * Automatic I2C address detection.
+ */
+#define BMP280_I2C_ADDRESS_AUTOMATIC                     0xff
 
 /**
  * Default SPI polarity and phase. Polarity 1 and phase 1 is also
@@ -227,7 +232,10 @@ int bmp280_read_fixed_point(struct bmp280_driver_t *self_p,
  *
  * @param[out] self_p I2C transport object to be initialized.
  * @param[in] transport_p I2C driver to use.
- * @param[in] i2c_address Device I2C address.
+ * @param[in] i2c_address Device I2C address, one of
+ *                        ``BMP280_I2C_ADDRESS_0``,
+ *                        ``BMP280_I2C_ADDRESS_1`` and
+ *                        ``BMP280_I2C_ADDRESS_AUTOMATIC``.
  *
  * @return zero(0) or negative error code.
  */
