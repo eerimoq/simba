@@ -162,9 +162,17 @@ int harness_expect(void *chan_p,
     size_t length;
     size_t pattern_length;
     static char buf[CONFIG_HARNESS_EXPECT_BUFFER_SIZE];
+    static struct time_t timeout = {
+        .seconds = 1,
+        .nanoseconds = 0
+    };
 
     length = 0;
     pattern_length = strlen(pattern_p);
+
+    if (timeout_p == NULL) {
+        timeout_p = &timeout;
+    }
 
     while (length < sizeof(buf) - 1) {
         if (chan_poll(chan_p, timeout_p) == NULL) {

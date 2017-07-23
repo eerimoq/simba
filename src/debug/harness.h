@@ -144,7 +144,7 @@ struct harness_t;
 /**
  * The testcase function callback.
  *
- * @param[in] harness_t The harness object.
+ * @param[in] harness_p The harness object.
  *
  * @return zero(0) if the testcase passed, a negative error code if
  *         the testcase failed, and a positive value if the testcase
@@ -158,7 +158,7 @@ struct harness_testcase_t {
 };
 
 struct harness_t {
-    struct uart_driver_t uart;
+    int dummy;
 };
 
 /**
@@ -184,12 +184,13 @@ int harness_run(struct harness_t *self_p,
                 struct harness_testcase_t *testcases_p);
 
 /**
- * Continiously read from the channel and return when given pattern
- * has been read, or when a timeout occurs.
+ * Continiously read from given channel and return when given pattern
+ * has been read, or when given timeout occurs.
  *
  * @param[in] chan_p Channel to read from.
  * @param[in] pattern_p Pattern to wait for.
- * @param[in] timeout_p Timeout, or NULL to wait forever.
+ * @param[in] timeout_p Timeout, or NULL to wait the default timeout
+ *                      of one second.
  *
  * @return Number of bytes read from the channel when match occured,
  *         or negative error code.
