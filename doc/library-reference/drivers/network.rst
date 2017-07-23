@@ -1,4 +1,4 @@
-Network
+network
 =======
 
 .. toctree::

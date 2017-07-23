@@ -1,4 +1,4 @@
-Displays
+displays
 ========
 
 .. toctree::

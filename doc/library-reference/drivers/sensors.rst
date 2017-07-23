@@ -1,4 +1,4 @@
-Sensors
+sensors
 =======
 
 .. toctree::

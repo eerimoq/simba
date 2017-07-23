@@ -1,4 +1,4 @@
-Various
+various
 =======
 
 .. toctree::

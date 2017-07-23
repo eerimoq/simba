@@ -1,4 +1,4 @@
-Storage
+storage
 =======
 
 .. toctree::
