@@ -6,9 +6,9 @@
 
 BMP280 is a temperature and pressure sensor from Bosch Sensortec.
 
-.. image:: ../../images/drivers/MFG_BST-BMP280-DS001-12.jpg
+.. image:: ../../../images/drivers/MFG_BST-BMP280-DS001-12.jpg
    :width: 40%
-   :target: ../../_images/MFG_BST-BMP280-DS001-12.jpg
+   :target: ../../../_images/MFG_BST-BMP280-DS001-12.jpg
 
 This driver supports both I2C and SPI for device communication.
 

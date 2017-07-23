@@ -6,9 +6,9 @@
 
 MCP2515 is a CAN controller.
               
-.. image:: ../../images/drivers/mcp2515-can-bus-module-board-tja1050-receiver.jpg
+.. image:: ../../../images/drivers/mcp2515-can-bus-module-board-tja1050-receiver.jpg
    :width: 50%
-   :target: ../../_images/mcp2515-can-bus-module-board-tja1050-receiver.jpg
+   :target: ../../../_images/mcp2515-can-bus-module-board-tja1050-receiver.jpg
 
 Source code: :github-blob:`src/drivers/network/mcp2515.h`, :github-blob:`src/drivers/network/mcp2515.c`
 

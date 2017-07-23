@@ -4,9 +4,9 @@
 .. module:: sht3xd
    :synopsis: SHT3x-D Humidity and Temperature Sensor
 
-.. image:: ../../images/drivers/sensirion-humidity-sensors-sht3x-a6271.png
+.. image:: ../../../images/drivers/sensirion-humidity-sensors-sht3x-a6271.png
    :width: 50%
-   :target: ../../_images/sensirion-humidity-sensors-sht3x-a6271.png
+   :target: ../../../_images/sensirion-humidity-sensors-sht3x-a6271.png
 
 The `Sensirion SHT3x-D`_ is a series of digital of Humidity and
 Temperature Sensors.  This driver supports the SHT30-D, SHT31-D, and

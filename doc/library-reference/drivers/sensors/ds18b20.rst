@@ -6,9 +6,9 @@
 
 DS18B20 is a one-wire temperature sensor.
               
-.. image:: ../../images/drivers/ds18b20.png
+.. image:: ../../../images/drivers/ds18b20.png
    :width: 30%
-   :target: ../../_images/ds18b20.png
+   :target: ../../../_images/ds18b20.png
 
 Source code: :github-blob:`src/drivers/sensors/ds18b20.h`, :github-blob:`src/drivers/sensors/ds18b20.c`
 
