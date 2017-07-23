@@ -35,6 +35,6 @@ BOARD ?= arduino_mega
 CDEFS += \
 	CONFIG_I2C=1
 
-DRIVERS_SRC = i2c.c
+DRIVERS_SRC = network/i2c.c
 
 include $(SIMBA_ROOT)/make/app.mk

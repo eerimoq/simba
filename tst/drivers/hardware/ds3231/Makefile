@@ -38,6 +38,6 @@ CDEFS += \
 	CONFIG_I2C=1 \
 	CONFIG_I2C_SOFT=1
 
-DRIVERS_SRC = ds3231.c i2c.c i2c_soft.c pin.c
+DRIVERS_SRC = various/ds3231.c network/i2c.c network/i2c_soft.c basic/pin.c
 
 include $(SIMBA_ROOT)/make/app.mk

@@ -59,9 +59,9 @@ CDEFS += \
 
 SYNC_SRC = event.c
 DRIVERS_SRC = \
-	esp_wifi.c \
-	esp_wifi/station.c \
-	esp_wifi/softap.c
+	network/esp_wifi.c \
+	network/esp_wifi/station.c \
+	network/esp_wifi/softap.c
 INET_SRC = \
 	socket.c \
 	inet.c \

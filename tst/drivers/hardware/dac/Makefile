@@ -36,6 +36,6 @@ TIMEOUT=60
 CDEFS += \
 	CONFIG_DAC=1
 
-DRIVERS_SRC += dac.c
+DRIVERS_SRC += basic/dac.c
 
 include $(SIMBA_ROOT)/make/app.mk

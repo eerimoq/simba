@@ -38,6 +38,6 @@ CDEFS += \
 	CONFIG_I2C_SOFT=1 \
 	CONFIG_SHT3XD_DEBUG_LOG_MASK="LOG_UPTO(WARNING)"
 
-DRIVERS_SRC = sht3xd.c i2c_soft.c i2c.c
+DRIVERS_SRC = sensors/sht3xd.c network/i2c_soft.c network/i2c.c
 
 include $(SIMBA_ROOT)/make/app.mk

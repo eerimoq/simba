@@ -38,8 +38,8 @@ CDEFS += \
 	CONFIG_UART_SOFT=1
 
 DRIVERS_SRC += \
-	pin.c \
-	exti.c \
-	uart_soft.c
+	basic/pin.c \
+	basic/exti.c \
+	network/uart_soft.c
 
 include $(SIMBA_ROOT)/make/app.mk

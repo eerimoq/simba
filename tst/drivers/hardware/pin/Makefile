@@ -35,6 +35,6 @@ BOARD ?= linux
 CDEFS += \
 	CONFIG_PIN=1
 
-DRIVERS_SRC = pin.c
+DRIVERS_SRC = basic/pin.c
 
 include $(SIMBA_ROOT)/make/app.mk

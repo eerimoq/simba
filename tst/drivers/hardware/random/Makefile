@@ -35,6 +35,6 @@ BOARD = arduino_due
 CDEFS += \
 	CONFIG_RANDOM=1
 
-DRIVERS_SRC = random.c
+DRIVERS_SRC = basic/random.c
 
 include $(SIMBA_ROOT)/make/app.mk

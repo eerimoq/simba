@@ -38,9 +38,9 @@ CDEFS += \
 	CONFIG_HARNESS_HEAP_MAX=131072 \
 	CONFIG_HARNESS_MOCK_VERBOSE=0
 
-DRIVERS_SRC = gnss.c
+DRIVERS_SRC = sensors/gnss.c
 ENCODE_SRC = nmea.c
 
-STUB = $(SIMBA_ROOT)/src/drivers/gnss.c:chan_read,chan_write
+STUB = $(SIMBA_ROOT)/src/drivers/sensors/gnss.c:chan_read,chan_write
 
 include $(SIMBA_ROOT)/make/app.mk

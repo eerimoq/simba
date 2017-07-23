@@ -38,6 +38,6 @@ CDEFS += \
 	CONFIG_I2C=1 \
 	CONFIG_I2C_SOFT=1
 
-DRIVERS_SRC = eeprom_i2c.c i2c.c i2c_soft.c
+DRIVERS_SRC = storage/eeprom_i2c.c network/i2c.c network/i2c_soft.c
 
 include $(SIMBA_ROOT)/make/app.mk

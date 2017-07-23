@@ -36,6 +36,6 @@ CDEFS += \
 	CONFIG_HX711=1 \
 	CONFIG_PIN=1
 
-DRIVERS_SRC = hx711.c pin.c
+DRIVERS_SRC = sensors/hx711.c basic/pin.c
 
 include $(SIMBA_ROOT)/make/app.mk

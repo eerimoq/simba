@@ -36,6 +36,6 @@ CDEFS += \
 	CONFIG_CAN=1 \
 	CONFIG_MODULE_INIT_FS=1
 
-DRIVERS_SRC = can.c
+DRIVERS_SRC = network/can.c
 
 include $(SIMBA_ROOT)/make/app.mk

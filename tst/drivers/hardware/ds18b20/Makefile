@@ -37,7 +37,7 @@ CDEFS += \
 	CONFIG_OWI=1 \
 	CONFIG_DS18B20=1
 
-DRIVERS_SRC = ds18b20.c pin.c owi.c
+DRIVERS_SRC = sensors/ds18b20.c basic/pin.c network/owi.c
 HASH_SRC = crc.c
 
 include $(SIMBA_ROOT)/make/app.mk

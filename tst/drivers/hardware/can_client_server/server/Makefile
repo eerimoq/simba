@@ -38,6 +38,6 @@ CDEFS += \
 	CONFIG_CAN=1 \
 	CONFIG_LINUX_SOCKET_DEVICE=1
 
-DRIVERS_SRC = can.c
+DRIVERS_SRC = network/can.c
 
 include $(SIMBA_ROOT)/make/app.mk

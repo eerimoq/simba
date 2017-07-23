@@ -36,6 +36,6 @@ CDEFS += \
 	CONFIG_PIN=1 \
 	CONFIG_SPI=1
 
-DRIVERS_SRC = spi.c pin.c
+DRIVERS_SRC = network/spi.c basic/pin.c
 
 include $(SIMBA_ROOT)/make/app.mk

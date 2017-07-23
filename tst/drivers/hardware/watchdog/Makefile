@@ -35,6 +35,6 @@ BOARD ?= linux
 CDEFS += \
 	CONFIG_WATCHDOG=1
 
-DRIVERS_SRC = watchdog.c
+DRIVERS_SRC = basic/watchdog.c
 
 include $(SIMBA_ROOT)/make/app.mk

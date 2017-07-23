@@ -36,6 +36,6 @@ CDEFS += \
 	CONFIG_PIN=1 \
 	CONFIG_OWI=1
 
-DRIVERS_SRC = owi.c pin.c
+DRIVERS_SRC = network/owi.c basic/pin.c
 
 include $(SIMBA_ROOT)/make/app.mk

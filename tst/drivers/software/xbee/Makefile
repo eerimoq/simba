@@ -36,8 +36,8 @@ CDEFS += \
 	CONFIG_XBEE=1 \
 	CONFIG_HARNESS_MOCK_VERBOSE=0
 
-DRIVERS_SRC = xbee.c
+DRIVERS_SRC = network/xbee.c
 
-STUB = $(SIMBA_ROOT)/src/drivers/xbee.c:chan_write,chan_read
+STUB = $(SIMBA_ROOT)/src/drivers/network/xbee.c:chan_write,chan_read
 
 include $(SIMBA_ROOT)/make/app.mk

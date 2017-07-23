@@ -36,6 +36,6 @@ CDEFS += \
 	CONFIG_PCINT=1 \
 	CONFIG_PIN=1
 
-DRIVERS_SRC = pcint.c pin.c
+DRIVERS_SRC = basic/pcint.c basic/pin.c
 
 include $(SIMBA_ROOT)/make/app.mk

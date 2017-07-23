@@ -62,7 +62,7 @@ ifeq ($(TYPE),suite)
   endif
 
   ifneq ($(FAMILY),avr)
-    DRIVERS_SRC += eeprom_soft.c
+    DRIVERS_SRC += storage/eeprom_soft.c
   endif
 
   ifeq ($(MCU),atmega32u4)

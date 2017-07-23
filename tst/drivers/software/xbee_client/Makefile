@@ -40,8 +40,8 @@ CDEFS += \
 	CONFIG_HARNESS_MOCK_VERBOSE=0
 
 SYNC_SRC += cond.c event.c
-DRIVERS_SRC = xbee_client.c
+DRIVERS_SRC = network/xbee_client.c
 
-STUB = $(SIMBA_ROOT)/src/drivers/xbee_client.c:xbee_module_init,xbee_init,xbee_read,xbee_write
+STUB = $(SIMBA_ROOT)/src/drivers/network/xbee_client.c:xbee_module_init,xbee_init,xbee_read,xbee_write
 
 include $(SIMBA_ROOT)/make/app.mk

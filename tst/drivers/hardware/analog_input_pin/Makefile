@@ -37,6 +37,6 @@ CDEFS += \
 	CONFIG_ADC=1 \
 	CONFIG_ANALOG_INPUT_PIN=1
 
-DRIVERS_SRC = analog_input_pin.c adc.c pin.c
+DRIVERS_SRC = basic/analog_input_pin.c basic/adc.c basic/pin.c
 
 include $(SIMBA_ROOT)/make/app.mk

@@ -35,6 +35,6 @@ BOARD = arduino_due
 CDEFS += \
 	CONFIG_CHIPID=1
 
-DRIVERS_SRC = chipid.c
+DRIVERS_SRC = basic/chipid.c
 
 include $(SIMBA_ROOT)/make/app.mk

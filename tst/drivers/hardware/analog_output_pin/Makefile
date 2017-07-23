@@ -37,6 +37,6 @@ CDEFS += \
 	CONFIG_PIN=1 \
 	CONFIG_PWM=1
 
-DRIVERS_SRC = analog_output_pin.c pwm.c pin.c
+DRIVERS_SRC = basic/analog_output_pin.c basic/pwm.c basic/pin.c
 
 include $(SIMBA_ROOT)/make/app.mk

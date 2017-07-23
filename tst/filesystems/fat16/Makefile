@@ -41,7 +41,7 @@ CDEFS += \
 	CONFIG_PIN=1
 
 FILESYSTEMS_SRC = fat16.c
-DRIVERS_SRC = spi.c sd.c pin.c
+DRIVERS_SRC = network/spi.c storage/sd.c basic/pin.c
 HASH_SRC = crc.c
 
 include $(SIMBA_ROOT)/make/app.mk

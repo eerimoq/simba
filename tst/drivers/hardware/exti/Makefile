@@ -36,6 +36,6 @@ CDEFS += \
 	CONFIG_EXTI=1 \
 	CONFIG_PIN=1
 
-DRIVERS_SRC = exti.c pin.c
+DRIVERS_SRC = basic/exti.c basic/pin.c
 
 include $(SIMBA_ROOT)/make/app.mk

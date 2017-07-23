@@ -35,6 +35,6 @@ BOARD = arduino_due
 CDEFS += \
 	CONFIG_CAN=1
 
-DRIVERS_SRC = can.c
+DRIVERS_SRC = network/can.c
 
 include $(SIMBA_ROOT)/make/app.mk
