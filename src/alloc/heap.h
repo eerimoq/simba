@@ -33,6 +33,9 @@
 
 #include "simba.h"
 
+/**
+ * Number of fixed size buffer sizes.
+ */
 #define HEAP_FIXED_SIZES_MAX 8
 
 struct heap_fixed_t {
@@ -44,7 +47,9 @@ struct heap_dynamic_t {
     void *free_p;
 };
 
-/* Heap. */
+/**
+ * The heap struct.
+ */
 struct heap_t {
     void *buf_p;
     size_t size;
@@ -68,19 +73,23 @@ int heap_init(struct heap_t *self_p,
               size_t sizes[HEAP_FIXED_SIZES_MAX]);
 
 /**
- * Allocate a buffer of given size from given heap.
+ * Allocate a buffer of given size from given heap. Tries to allocate
+ * a fixed size buffer, and allocates a buffer from the dynamic heap
+ * if the requested buffer size is greater than the biggest fixed size
+ * buffer.
  *
  * @param[in] self_p Heap to allocate from.
  * @param[in] size Number of bytes to allocate.
  *
- * @return Pointer to allocated buffer, or NULL on failure.
+ * @return Pointer to allocated buffer, or NULL if no memory could be
+ *         allocated.
  */
 void *heap_alloc(struct heap_t *self_p,
                  size_t size);
 
 /**
- * Decrement the share count by once and free the buffer if the count
- * becomes zero(0).
+ * Decrement the buffer share counter by one and free the buffer if
+ * the count becomes zero(0).
  *
  * @param[in] self_p Heap of given buffer.
  * @param[in] buf_p Memory buffer to free.

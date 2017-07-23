@@ -36,15 +36,15 @@
 /* Severity levels' log masks. */
 
 /** An unhandleable error that results in a program crash. */
-#define LOG_FATAL     0
+#define LOG_FATAL       0
 /** A handable error conditions. */
-#define LOG_ERROR     1
+#define LOG_ERROR       1
 /** A warning. */
-#define LOG_WARNING   2
+#define LOG_WARNING     2
 /** Generic (useful) information about system operation. */
-#define LOG_INFO      3
+#define LOG_INFO        3
 /** Developer debugging messages. */
-#define LOG_DEBUG     4
+#define LOG_DEBUG       4
 
 /** Craete a log mask with given level set. */
 #define LOG_MASK(level) (1 << (LOG_ ## level))
@@ -53,10 +53,10 @@
 #define LOG_UPTO(level) ((1 << (LOG_ ## level + 1)) - 1)
 
 /** Set all levels. */
-#define LOG_ALL    LOG_UPTO(DEBUG)
+#define LOG_ALL         LOG_UPTO(DEBUG)
 
 /** Clear all levels. */
-#define LOG_NONE   0x00
+#define LOG_NONE        0x00
 
 struct log_handler_t {
     void *chout_p;
@@ -83,7 +83,7 @@ int log_module_init(void);
 /**
  * Initialize given log object with given name and mask.
  *
- * @param[in] self_p Log object to initialize.
+ * @param[out] self_p Log object to initialize.
  * @param[in] name_p Log object name.
  * @param[in] mask Log object mask.
  *

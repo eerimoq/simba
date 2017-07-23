@@ -42,10 +42,11 @@ struct circular_heap_t {
 };
 
 /**
- * Initialize given circular_heap.
+ * Initialize given circular heap. Buffers must be freed in the same
+ * order as they were allocated.
  *
  * @param[in] self_p Circular heap to initialize.
- * @param[in] buf_p Memory buffer.
+ * @param[in] buf_p Memory buffer to use for the circular heap.
  * @param[in] size Size of the memory buffer.
  *
  * @return zero(0) or negative error code.
@@ -60,13 +61,15 @@ int circular_heap_init(struct circular_heap_t *self_p,
  * @param[in] self_p Circular heap to allocate from.
  * @param[in] size Number of bytes to allocate.
  *
- * @return Pointer to allocated buffer, or NULL on failure.
+ * @return Pointer to allocated buffer, or NULL if no memory could be
+ *         allocated.
  */
 void *circular_heap_alloc(struct circular_heap_t *self_p,
                           size_t size);
 
 /**
- * Free the oldest allocated buffer.
+ * Free the oldest allocated buffer, previously allocated with
+ * ``circular_heap_alloc()``.
  *
  * @param[in] self_p Circular heap to free to.
  * @param[in] buf_p Buffer to free. Must be the oldest allocated
