@@ -288,109 +288,15 @@ static void init_inet(void)
 }
 
 #if CONFIG_START_CONSOLE != CONFIG_START_CONSOLE_NONE
-
-static int start_console(void)
-{
-    console_module_init();
-    console_init();
-    console_start();
-
-    sys_set_stdin(console_get_input_channel());
-    sys_set_stdout(console_get_output_channel());
-    log_set_default_handler_output_channel(console_get_output_channel());
-
-    return (0);
-}
-
+#    include "sys/console.i"
 #endif
 
 #if CONFIG_START_SHELL == 1
-
-static struct shell_t shell;
-static THRD_STACK(shell_stack, CONFIG_START_SHELL_STACK_SIZE);
-
-static int start_shell(void)
-{
-    shell_init(&shell,
-               sys_get_stdin(),
-               sys_get_stdout(),
-               NULL,
-               NULL,
-               NULL,
-               NULL);
-
-    thrd_spawn(shell_main,
-               &shell,
-               CONFIG_START_SHELL_PRIO,
-               shell_stack,
-               sizeof(shell_stack));
-
-    return (0);
-}
-
+#    include "sys/shell.i"
 #endif
 
 #if CONFIG_START_SOAM == 1
-
-static struct slip_t slip;
-static uint8_t slip_buf[128];
-
-static struct soam_t soam;
-static uint8_t soam_buf[128];
-
-static THRD_STACK(soam_stack, CONFIG_START_SOAM_STACK_SIZE);
-
-/**
- * This thread executes file system commands.
- */
-static void *soam_main(void *arg_p)
-{
-    uint8_t byte;
-    ssize_t size;
-
-    thrd_set_name("soam");
-
-    while (1) {
-        chan_read(sys_get_stdin(), &byte, sizeof(byte));
-
-        size = slip_input(&slip, byte);
-
-        if (size > 0) {
-            soam_input(&soam, &slip_buf[0], size);
-        }
-    }
-
-    return (NULL);
-}
-
-static int start_soam(void)
-{
-    if (slip_init(&slip,
-                  &slip_buf[0],
-                  sizeof(slip_buf),
-                  sys_get_stdout()) != 0) {
-        return (-1);
-    }
-
-    if (soam_init(&soam,
-                  &soam_buf[0],
-                  sizeof(soam_buf),
-                  slip_get_output_channel(&slip)) != 0) {
-        return (-1);
-    }
-
-    log_set_default_handler_output_channel(soam_get_log_input_channel(&soam));
-    sys_set_stdout(soam_get_stdout_input_channel(&soam));
-
-    thrd_spawn(soam_main,
-               &soam,
-               CONFIG_START_SOAM_PRIO,
-               soam_stack,
-               sizeof(soam_stack));
-
-    return (0);
-}
-
+#    include "sys/soam.i"
 #endif
 
 #if CONFIG_START_FILESYSTEM == 1
