@@ -37,12 +37,11 @@ struct uart_device_t {
 };
 
 struct uart_driver_t {
-    struct queue_t chin;
+    struct queue_t base;
     const struct uart_device_t *dev_p;
     struct mutex_t mutex;
     long baudrate;
     size_t rxsize;
-    struct chan_t chout;
 };
 
 #endif

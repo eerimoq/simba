@@ -77,7 +77,7 @@ static ssize_t uart_port_write_cb(void *arg_p,
     volatile struct nrf5_uart_t *regs_p;
     const uint8_t *u8_buf_p;
 
-    self_p = container_of(arg_p, struct uart_driver_t, chout);
+    self_p = container_of(arg_p, struct uart_driver_t, base);
     regs_p = self_p->dev_p->regs_p;
     u8_buf_p = buf_p;
 

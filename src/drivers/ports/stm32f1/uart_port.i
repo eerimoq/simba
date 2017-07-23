@@ -71,7 +71,7 @@ static void isr(int index)
             byte = regs_p->DR;
 
             /* Write data to input queue. */
-            if (queue_write_isr(&drv_p->chin, &byte, 1) != 1) {
+            if (queue_write_isr(&drv_p->base, &byte, 1) != 1) {
                 fs_counter_increment(&rx_channel_overflow, 1);
             }
         } else {
@@ -156,7 +156,7 @@ static ssize_t uart_port_write_cb(void *arg_p,
 {
     struct uart_driver_t *self_p;
 
-    self_p = container_of(arg_p, struct uart_driver_t, chout);
+    self_p = container_of(arg_p, struct uart_driver_t, base);
 
     mutex_lock(&self_p->mutex);
 
