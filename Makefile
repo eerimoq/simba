@@ -107,6 +107,7 @@ ifeq ($(BOARD), linux)
 	xbee \
 	xbee_client)
     TESTS += $(addprefix tst/science/, \
+	math \
 	science)
 endif
 
