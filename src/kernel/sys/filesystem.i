@@ -28,7 +28,7 @@
  * This file is part of the Simba project.
  */
 
-#if defined(ARCH_LINUX)
+#if CONFIG_START_FILESYSTEM_FAT16 == 1
 
 #define BLOCK_SIZE 512
 
@@ -104,7 +104,7 @@ static int start_filesystem(void)
     return (0);
 }
 
-#else
+#elif CONFIG_START_FILESYSTEM_SPIFFS == 1
 
 #if defined(ARCH_ESP) || defined(ARDUINO_DUE) || defined(ARCH_ESP32)
 

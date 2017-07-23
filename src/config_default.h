@@ -1928,6 +1928,28 @@
 #endif
 
 /**
+ * Start a FAT16 file system.
+ */
+#ifndef CONFIG_START_FILESYSTEM_FAT16
+#    if defined(ARCH_LINUX)
+#        define CONFIG_START_FILESYSTEM_FAT16               1
+#    else
+#        define CONFIG_START_FILESYSTEM_FAT16               0
+#    endif
+#endif
+
+/**
+ * Start a flash file system.
+ */
+#ifndef CONFIG_START_FILESYSTEM_SPIFFS
+#    if !defined(ARCH_LINUX)
+#        define CONFIG_START_FILESYSTEM_SPIFFS              1
+#    else
+#        define CONFIG_START_FILESYSTEM_SPIFFS              0
+#    endif
+#endif
+
+/**
  * Configure a default file system start address.
  */
 #ifndef CONFIG_START_FILESYSTEM_ADDRESS
