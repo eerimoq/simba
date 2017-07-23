@@ -165,7 +165,7 @@ static ssize_t uart_port_write_cb(void *arg_p,
 {
     struct uart_driver_t *self_p;
 
-    self_p = container_of(arg_p, struct uart_driver_t, chout);
+    self_p = container_of(arg_p, struct uart_driver_t, base);
 
     mutex_lock(&self_p->mutex);
 
