@@ -423,6 +423,7 @@ SRC += $(TEXT_SRC:%=$(SIMBA_ROOT)/src/text/%)
 
 # Science package.
 SCIENCE_SRC ?= \
+	math.c \
 	science.c
 
 SRC += $(SCIENCE_SRC:%=$(SIMBA_ROOT)/src/science/%)

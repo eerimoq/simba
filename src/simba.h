@@ -301,6 +301,7 @@ extern "C" {
 #endif
 
 #include "science/science.h"
+#include "science/math.h"
 
 #include <simba_gen.h>
 
