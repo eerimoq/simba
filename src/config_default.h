@@ -1410,34 +1410,11 @@
 /**
  * Debug file system command to list all log objects.
  */
-#ifndef CONFIG_LOG_FS_COMMAND_LIST
+#ifndef CONFIG_LOG_FS_COMMANDS
 #    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(CONFIG_MINIMAL_SYSTEM)
-#        define CONFIG_LOG_FS_COMMAND_LIST                  0
+#        define CONFIG_LOG_FS_COMMANDS                      0
 #    else
-#        define CONFIG_LOG_FS_COMMAND_LIST                  1
-#    endif
-#endif
-
-/**
- * Debug file system command to create a log entry and print
- * it. Mainly used for debugging.
- */
-#ifndef CONFIG_LOG_FS_COMMAND_PRINT
-#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(CONFIG_MINIMAL_SYSTEM)
-#        define CONFIG_LOG_FS_COMMAND_PRINT                 0
-#    else
-#        define CONFIG_LOG_FS_COMMAND_PRINT                 1
-#    endif
-#endif
-
-/**
- * Debug file system command to set the log mask of a log object.
- */
-#ifndef CONFIG_LOG_FS_COMMAND_SET_LOG_MASK
-#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(CONFIG_MINIMAL_SYSTEM)
-#        define CONFIG_LOG_FS_COMMAND_SET_LOG_MASK          0
-#    else
-#        define CONFIG_LOG_FS_COMMAND_SET_LOG_MASK          1
+#        define CONFIG_LOG_FS_COMMANDS                      1
 #    endif
 #endif
 

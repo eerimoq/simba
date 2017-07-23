@@ -36,13 +36,9 @@ struct module_t {
     struct log_handler_t handler;
     struct log_object_t object;
     struct sem_t sem;
-#if CONFIG_LOG_FS_COMMAND_PRINT == 1
+#if CONFIG_LOG_FS_COMMANDS == 1
     struct fs_command_t cmd_print;
-#endif
-#if CONFIG_LOG_FS_COMMAND_LIST == 1
     struct fs_command_t cmd_list;
-#endif
-#if CONFIG_LOG_FS_COMMAND_SET_LOG_MASK == 1
     struct fs_command_t cmd_set_log_mask;
 #endif
 };
@@ -65,7 +61,7 @@ static const char FAR *level_as_string[] = {
 /* The module state. */
 static struct module_t module;
 
-#if CONFIG_LOG_FS_COMMAND_PRINT == 1
+#if CONFIG_LOG_FS_COMMANDS == 1
 
 /**
  * The shell command callback for "/debug/log/print".
@@ -88,10 +84,6 @@ static int cmd_print_cb(int argc,
 
     return (0);
 }
-
-#endif
-
-#if CONFIG_LOG_FS_COMMAND_LIST == 1
 
 /**
  * The shell command callback for "/debug/log/print".
@@ -131,10 +123,6 @@ static int cmd_list_cb(int argc,
     return (0);
 }
 
-#endif
-
-#if CONFIG_LOG_FS_COMMAND_SET_LOG_MASK == 1
-
 /**
  * The shell command callback for "/debug/log/set_log_mask".
  */
@@ -173,8 +161,6 @@ static int cmd_set_log_mask_cb(int argc,
         if (strcmp(object_p->name_p, name_p) == 0) {
             (void)log_object_set_log_mask(object_p, mask);
             found = 1;
-
-            break;
         }
 
         object_p = object_p->next_p;
@@ -213,23 +199,19 @@ int log_module_init()
     module.object.mask = LOG_UPTO(INFO);
     module.object.next_p = NULL;
 
-#if CONFIG_LOG_FS_COMMAND_PRINT == 1
+#if CONFIG_LOG_FS_COMMANDS == 1
     fs_command_init(&module.cmd_print,
                     CSTR("/debug/log/print"),
                     cmd_print_cb,
                     NULL);
     fs_command_register(&module.cmd_print);
-#endif
 
-#if CONFIG_LOG_FS_COMMAND_LIST == 1
     fs_command_init(&module.cmd_list,
                     CSTR("/debug/log/list"),
                     cmd_list_cb,
                     NULL);
     fs_command_register(&module.cmd_list);
-#endif
 
-#if CONFIG_LOG_FS_COMMAND_SET_LOG_MASK == 1
     fs_command_init(&module.cmd_set_log_mask,
                     CSTR("/debug/log/set_log_mask"),
                     cmd_set_log_mask_cb,
