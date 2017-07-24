@@ -30,7 +30,7 @@
 
 NAME = pcint_suite
 TYPE = suite
-BOARD ?= avr
+BOARD ?= arduino_mega
 
 CDEFS += \
 	CONFIG_PCINT=1 \

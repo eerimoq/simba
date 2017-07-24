@@ -56,11 +56,13 @@ static inline int pin_port_device_set_mode(const struct pin_device_t *dev_p,
     switch (mode) {
 
     case PIN_OUTPUT:
+        *PORT(dev_p->sfr_p) &= ~dev_p->mask;
         *DDR(dev_p->sfr_p) |= dev_p->mask;
         break;
 
     case PIN_INPUT:
         *DDR(dev_p->sfr_p) &= ~dev_p->mask;
+        *PORT(dev_p->sfr_p) &= ~dev_p->mask;
         break;
 
     case PIN_INPUT_PULL_UP:
