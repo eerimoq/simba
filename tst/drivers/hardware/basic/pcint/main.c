@@ -43,7 +43,7 @@ int test_init(struct harness_t *harness_p)
     BTASSERT(pcint_module_init() == 0);
     BTASSERT(pcint_module_init() == 0);
 
-    pin_init(&pin, &pin_d4_dev, PIN_OUTPUT);
+    pin_init(&pin, &pin_a8_dev, PIN_OUTPUT);
 
     return (0);
 }
@@ -57,7 +57,7 @@ int test_rising(struct harness_t *harness_p)
     count = 0;
 
     BTASSERT(pcint_init(&pcint,
-                        &pcint_d3_dev,
+                        &pcint_a9_dev,
                         PCINT_TRIGGER_RISING_EDGE,
                         isr,
                         NULL) == 0);
@@ -79,7 +79,7 @@ int test_rising(struct harness_t *harness_p)
     pin_write(&pin, 1);
     time_busy_wait_us(10000);
 
-    std_printf(FSTR("count = %d\r\n"), count);
+    std_printf(FSTR("count: %d\r\n"), count);
     BTASSERT(count == 10);
 
     return (0);
@@ -94,7 +94,7 @@ int test_falling(struct harness_t *harness_p)
     count = 0;
 
     BTASSERT(pcint_init(&pcint,
-                        &pcint_d3_dev,
+                        &pcint_a9_dev,
                         PCINT_TRIGGER_FALLING_EDGE,
                         isr,
                         NULL) == 0);
@@ -116,7 +116,7 @@ int test_falling(struct harness_t *harness_p)
     pin_write(&pin, 0);
     time_busy_wait_us(10000);
 
-    std_printf(FSTR("count = %d\r\n"), count);
+    std_printf(FSTR("count: %d\r\n"), count);
     BTASSERT(count == 10);
 
     return (0);
@@ -131,7 +131,7 @@ int test_both(struct harness_t *harness_p)
     count = 0;
 
     BTASSERT(pcint_init(&pcint,
-                        &pcint_d3_dev,
+                        &pcint_a9_dev,
                         PCINT_TRIGGER_BOTH_EDGES,
                         isr,
                         NULL) == 0);
@@ -153,7 +153,7 @@ int test_both(struct harness_t *harness_p)
     pin_write(&pin, 0);
     time_busy_wait_us(10000);
 
-    std_printf(FSTR("count = %d\r\n"), count);
+    std_printf(FSTR("count: %d\r\n"), count);
     BTASSERT(count == 19);
 
     return (0);

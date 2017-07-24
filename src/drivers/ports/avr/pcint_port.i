@@ -51,9 +51,9 @@ static void isr(int number,
     uint8_t changed;
     uint8_t edge;
     struct pcint_driver_t *drv_p;
-
+    
     changed = (levels ^ module.port.levels[number]);
-    changed &= ~pcmsk;
+    changed &= pcmsk;
     module.port.levels[number] = levels;
     first_device_index = (8 * number);
 
@@ -64,7 +64,7 @@ static void isr(int number,
             drv_p = pcint_device[first_device_index + i].drv_p;
             edge = (levels & 0x1);
 
-            if ((drv_p->trigger == EXTI_TRIGGER_BOTH_EDGES)
+            if ((drv_p->trigger == PCINT_TRIGGER_BOTH_EDGES)
                 || (drv_p->trigger == edge)) {
                 drv_p->on_interrupt(drv_p->arg_p);
             }
@@ -90,15 +90,15 @@ PCINT_ISR(2, PINK);
 static struct pin_device_t *device_index_to_pin(int index)
 {
     struct pin_device_t *pin_p;
-
+    
 #if defined(MCU_ATMEGA328P)
     pin_p = &pin_device[index];
 #elif defined(MCU_ATMEGA2560)
-    if ((index >= 0) && (index < 8)) {
+    if ((index >= 0) && (index <= 7)) {
         pin_p = &pin_device[8 - index];
-    } else if ((index >= 8) && (index < 16)) {
+    } else if ((index >= 8) && (index <= 15)) {
         pin_p = &pin_device[62 - index - 8];
-    } else if ((index >= 16) && (index < 24)) {
+    } else if ((index >= 16) && (index <= 23)) {
         pin_p = &pin_device[70 + index - 16];
     } else {
         pin_p = NULL;
@@ -112,7 +112,7 @@ static struct pin_device_t *device_index_to_pin(int index)
 
 static int pcint_port_module_init()
 {
-    PCIFR = _BV(PCIF2) | _BV(PCIF1) | _BV(PCIF0);
+    PCICR = _BV(PCIE2) | _BV(PCIE1) | _BV(PCIE0);
 
     return (0);
 }
@@ -127,11 +127,15 @@ static int pcint_port_init(struct pcint_driver_t *self_p)
     index = indexof(dev_p, pcint_device);
     pin_p = device_index_to_pin(index);
 
+    if (pin_p == NULL) {
+        return (-ENODEV);
+    }
+    
     sys_lock();
     module.port.levels[index / 8] |= (*PIN(pin_p->sfr_p) & pin_p->mask);
     self_p->pcmsk_p = (volatile uint8_t *)(_SFR_MEM_ADDR(PCMSK0) + (index / 8));
     sys_unlock();
-
+    
     return (0);
 }
 
@@ -140,12 +144,13 @@ static int pcint_port_start(struct pcint_driver_t *self_p)
     struct pcint_device_t *dev_p;
     struct pin_device_t *pin_p;
     int index;
-
+    
     dev_p = self_p->dev_p;
     index = indexof(dev_p, pcint_device);
     pin_p = device_index_to_pin(index);
 
     sys_lock();
+    pin_device_set_mode(pin_p, PIN_INPUT);
     module.port.levels[index / 8] |= (*PIN(pin_p->sfr_p) & pin_p->mask);
     *self_p->pcmsk_p |= pin_p->mask;
     dev_p->drv_p = self_p;

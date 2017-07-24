@@ -106,7 +106,7 @@
 /**
  * Get the index of given element in an array.
  */
-#define indexof(e_p, a) ((e_p - &a[0]) / sizeof((a)[0]))
+#define indexof(e_p, a) (e_p - &(a)[0])
 
 #define container_of(ptr, type, member)                         \
     ({                                                          \
