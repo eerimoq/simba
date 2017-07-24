@@ -101,11 +101,11 @@ ifeq ($(BOARD), linux)
     TESTS += $(addprefix tst/multimedia/, \
 	midi)
     TESTS += $(addprefix tst/drivers/software/, \
-	bmp280 \
-	gnss \
-	hx711 \
-	xbee \
-	xbee_client)
+	sensors/bmp280 \
+	sensors/gnss \
+	sensors/hx711 \
+	network/xbee \
+	network/xbee_client)
     TESTS += $(addprefix tst/science/, \
 	math \
 	science)
@@ -150,9 +150,9 @@ ifeq ($(BOARD), arduino_due)
 	crc \
 	sha1)
     TESTS += $(addprefix tst/drivers/hardware/, \
-	chipid \
-	can \
-	flash)
+	basic/chipid \
+	network/can \
+	storage/flash)
 endif
 
 ifeq ($(BOARD), arduino_mega)
@@ -199,19 +199,19 @@ ifeq ($(BOARD), arduino_mega)
 	mqtt_client \
 	ping)
     TESTS += $(addprefix tst/drivers/hardware/, \
-	adc \
-	analog_input_pin \
-	ds3231 \
-	sd \
-	pin)
+	basic/adc \
+	basic/analog_input_pin \
+	various/ds3231 \
+	storage/sd \
+	basic/pin)
 endif
 
 ifeq ($(BOARD), arduino_nano)
     TESTS = $(addprefix tst/drivers/hardware/, \
-	ds18b20 \
-	analog_output_pin \
-	exti \
-	owi)
+	sensors/ds18b20 \
+	basic/analog_output_pin \
+	basic/exti \
+	network/owi)
 endif
 
 ifeq ($(BOARD), arduino_pro_micro)
@@ -267,8 +267,8 @@ ifeq ($(BOARD), nodemcu)
 	network_interface/wifi_esp \
 	ping)
     TESTS += $(addprefix tst/drivers/hardware/, \
-	pin \
-	random)
+	basic/pin \
+	basic/random)
     TESTS += $(addprefix tst/filesystems/, \
 	fs \
 	spiffs)
@@ -355,8 +355,8 @@ ifeq ($(BOARD), stm32vldiscovery)
 	mqtt_client \
 	ping)
     TESTS += $(addprefix tst/drivers/hardware/, \
-	pin \
-	random)
+	basic/pin \
+	basic/random)
 endif
 
 ifeq ($(BOARD), photon)
@@ -433,7 +433,7 @@ ifeq ($(BOARD), spc56ddiscovery)
 	crc \
 	sha1)
     TESTS += $(addprefix tst/drivers/hardware/, \
-	eeprom_soft)
+	storage/eeprom_soft)
 endif
 
 # List of all application to build
@@ -592,13 +592,13 @@ test-nodemcu-platformio:
 
 test-i2c-nano-mega:
 	@echo "I2C Nano Mega"
-	$(MAKE) -C tst/drivers/hardware/i2c/slave BOARD=arduino_nano SERIAL_PORT=/dev/simba-arduino_nano upload
-	$(MAKE) -C tst/drivers/hardware/i2c/master_soft BOARD=arduino_mega SERIAL_PORT=/dev/simba-arduino_mega run
+	$(MAKE) -C tst/drivers/hardware/network/i2c/slave BOARD=arduino_nano SERIAL_PORT=/dev/simba-arduino_nano upload
+	$(MAKE) -C tst/drivers/hardware/network/i2c/master_soft BOARD=arduino_mega SERIAL_PORT=/dev/simba-arduino_mega run
 
 clean-i2c-nano-mega:
 	@echo "I2C Nano Mega"
-	$(MAKE) -C tst/drivers/hardware/i2c/slave BOARD=arduino_nano clean
-	$(MAKE) -C tst/drivers/hardware/i2c/master_soft BOARD=arduino_mega clean
+	$(MAKE) -C tst/drivers/hardware/network/i2c/slave BOARD=arduino_nano clean
+	$(MAKE) -C tst/drivers/hardware/network/i2c/master_soft BOARD=arduino_mega clean
 
 test-all-boards:
 	$(MAKE) test-arduino-due
