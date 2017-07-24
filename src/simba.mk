@@ -140,14 +140,14 @@ DRIVERS_SRC ?= \
 	sensors/bmp280.c \
 	sensors/dht.c \
 	sensors/ds18b20.c \
-	sensors/gnss.c \
 	sensors/hx711.c \
 	sensors/sht3xd.c \
 	storage/eeprom_i2c.c \
 	storage/eeprom_soft.c \
 	storage/flash.c \
 	storage/sd.c \
-	various/ds3231.c
+	various/ds3231.c \
+	various/gnss.c
 
 SRC += $(DRIVERS_SRC:%=$(SIMBA_ROOT)/src/drivers/%)
 

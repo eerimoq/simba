@@ -251,7 +251,7 @@ extern "C" {
 #    include "drivers/sensors/hx711.h"
 #endif
 #ifdef PORT_HAS_GNSS
-#    include "drivers/sensors/gnss.h"
+#    include "drivers/various/gnss.h"
 #endif
 #ifdef PORT_HAS_BMP280
 #    include "drivers/sensors/bmp280.h"
