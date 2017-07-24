@@ -38,24 +38,56 @@ int board_pin_string_to_device_index(const char *str_p)
         if (std_strtol(&str_p[1], &pin) == NULL) {
             return (-1);
         }
-        
-        if ((pin < 0) || (pin > 53)) {
-            return (-1);
+
+        if ((pin >= 0) && (pin <= 1)) {
+            pin += 32;
+        } else if ((pin >= 2) && (pin <= 3)) {
+            pin += 36;
+        } else if (pin == 4) {
+            pin = 53;
+        } else if (pin == 5) {
+            pin = 35;
+        } else if ((pin >= 6) && (pin <= 9)) {
+            pin += 51;
+        } else if ((pin >= 10) && (pin <= 13)) {
+            pin += 2;
+        } else if ((pin >= 14) && (pin <= 15)) {
+            pin = (77 - pin);
+        } else if ((pin >= 16) && (pin <= 17)) {
+            pin = (71 - pin);
+        } else if ((pin >= 18) && (pin <= 21)) {
+            pin = (45 - pin);
+        } else if ((pin >= 22) && (pin <= 29)) {
+            pin -= 22;
+        } else if ((pin >= 30) && (pin <= 37)) {
+            pin = (53 - pin);
+        } else if (pin == 38) {
+            pin = 31;
+        } else if ((pin >= 39) && (pin <= 41)) {
+            pin = (89 - pin);
+        } else if ((pin >= 42) && (pin <= 49)) {
+            pin = (127 - pin);
+        } else if ((pin >= 50) && (pin <= 53)) {
+            pin = (61 - pin);
+        } else {
+            pin = -ENODEV;
         }
     } else if (tolower((int)str_p[0]) == 'a') {
         if (std_strtol(&str_p[1], &pin) == NULL) {
             return (-1);
         }
-        
-        if ((pin < 0) || (pin > 15)) {
-            return (-1);
+
+        if ((pin >= 0) && (pin <= 7)) {
+            pin += 40;
+        } else if ((pin >= 8) && (pin <= 15)) {
+            pin += 62;
+        } else {
+            pin = -ENODEV;
         }
-        
-        pin += 54;
     } else if (strcmp(str_p, "led") == 0) {
-        pin = 13;
+        pin = 15;
     } else {
-        return (-1);
+        pin = -ENODEV;
     }
 
     return (pin);
