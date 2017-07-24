@@ -36,7 +36,7 @@ is left out for readability.
 
 Source code: :github-blob:`src/drivers/network/can.h`, :github-blob:`src/drivers/network/can.c`
 
-Test code: :github-blob:`tst/drivers/hardware/can/main.c`
+Test code: :github-blob:`tst/drivers/hardware/network/network/can/main.c`
 
 --------------------------------------------------
 

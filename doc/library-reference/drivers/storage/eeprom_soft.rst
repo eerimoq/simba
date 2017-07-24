@@ -7,7 +7,7 @@
 Source code: :github-blob:`src/drivers/storage/eeprom_soft.h`,
 :github-blob:`src/drivers/storage/eeprom_soft.c`
 
-Test code: :github-blob:`tst/drivers/hardware/eeprom_soft/main.c`
+Test code: :github-blob:`tst/drivers/hardware/storage/eeprom_soft/main.c`
 
 ----------------------------------------------
 

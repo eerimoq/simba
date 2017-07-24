@@ -6,7 +6,7 @@
 
 Source code: :github-blob:`src/drivers/basic/exti.h`, :github-blob:`src/drivers/basic/exti.c`
 
-Test code: :github-blob:`tst/drivers/hardware/exti/main.c`
+Test code: :github-blob:`tst/drivers/hardware/basic/exti/main.c`
 
 ----------------------------------------------
 

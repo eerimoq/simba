@@ -10,7 +10,7 @@ This module is a wrapper for the Espressif WiFi station interface.
 
 Source code: :github-blob:`src/drivers/network/esp_wifi/station.h`, :github-blob:`src/drivers/network/esp_wifi/station.c`
 
-Test code: :github-blob:`tst/drivers/hardware/esp_wifi/station/main.c`
+Test code: :github-blob:`tst/drivers/hardware/network/esp_wifi/station/main.c`
 
 ----------------------------------------------
 

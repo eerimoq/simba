@@ -14,7 +14,7 @@ More information on Wikipedia_.
 
 Source code: :github-blob:`src/drivers/network/usb/device/class/cdc.h`, :github-blob:`src/drivers/network/usb/device/class/cdc.c`
 
-Test code: :github-blob:`tst/drivers/hardware/usb_device/main.c`
+Test code: :github-blob:`tst/drivers/hardware/network/usb_device/main.c`
 
 ----------------------------------------------
 

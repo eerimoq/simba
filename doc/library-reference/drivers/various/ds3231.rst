@@ -12,7 +12,7 @@ DS3231 is a real time clock.
 
 Source code: :github-blob:`src/drivers/various/ds3231.h`, :github-blob:`src/drivers/various/ds3231.c`
 
-Test code: :github-blob:`tst/drivers/hardware/ds3231/main.c`
+Test code: :github-blob:`tst/drivers/hardware/various/ds3231/main.c`
 
 ----------------------------------------------
 

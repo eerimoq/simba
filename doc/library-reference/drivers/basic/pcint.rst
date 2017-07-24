@@ -11,7 +11,7 @@ triggers on rising and/or falling edges.
 
 Source code: :github-blob:`src/drivers/basic/pcint.h`, :github-blob:`src/drivers/basic/pcint.c`
 
-Test code: :github-blob:`tst/drivers/hardware/pcint/main.c`
+Test code: :github-blob:`tst/drivers/hardware/basic/pcint/main.c`
 
 ----------------------------------------------
 

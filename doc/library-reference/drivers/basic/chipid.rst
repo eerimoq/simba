@@ -6,7 +6,7 @@
 
 Source code: :github-blob:`src/drivers/basic/chipid.h`, :github-blob:`src/drivers/basic/chipid.c`
 
-Test code: :github-blob:`tst/drivers/hardware/chipid/main.c`
+Test code: :github-blob:`tst/drivers/hardware/basic/chipid/main.c`
 
 --------------------------------------------------
 

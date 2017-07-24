@@ -22,7 +22,7 @@ without hardware I2C support the :doc:`i2c_soft` driver can be used.
 
 Source code: :github-blob:`src/drivers/network/i2c.h`, :github-blob:`src/drivers/network/i2c.c`
 
-Test code: :github-blob:`tst/drivers/hardware/i2c/master/main.c`
+Test code: :github-blob:`tst/drivers/hardware/network/i2c/master/main.c`
 
 --------------------------------------------------
 

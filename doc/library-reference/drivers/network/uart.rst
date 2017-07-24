@@ -6,7 +6,7 @@
 
 Source code: :github-blob:`src/drivers/network/uart.h`, :github-blob:`src/drivers/network/uart.c`
 
-Test code: :github-blob:`tst/drivers/hardware/uart/main.c`
+Test code: :github-blob:`tst/drivers/hardware/network/uart/main.c`
 
 ----------------------------------------------
 

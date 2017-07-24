@@ -6,7 +6,7 @@
 
 Source code: :github-blob:`src/drivers/basic/random.h`, :github-blob:`src/drivers/basic/random.c`
 
-Test code: :github-blob:`tst/drivers/hardware/random/main.c`
+Test code: :github-blob:`tst/drivers/hardware/basic/random/main.c`
 
 --------------------------------------------------
 

@@ -46,7 +46,7 @@ Example output from the shell:
 
 Source code: :github-blob:`src/drivers/basic/pin.h`, :github-blob:`src/drivers/basic/pin.c`
 
-Test code: :github-blob:`tst/drivers/hardware/pin/main.c`
+Test code: :github-blob:`tst/drivers/hardware/basic/pin/main.c`
 
 ----------------------------------------------
 

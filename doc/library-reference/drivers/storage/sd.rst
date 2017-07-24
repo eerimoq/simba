@@ -6,7 +6,7 @@
 
 Source code: :github-blob:`src/drivers/storage/sd.h`, :github-blob:`src/drivers/storage/sd.c`
 
-Test code: :github-blob:`tst/drivers/hardware/sd/main.c`
+Test code: :github-blob:`tst/drivers/hardware/storage/sd/main.c`
 
 ----------------------------------------------
 

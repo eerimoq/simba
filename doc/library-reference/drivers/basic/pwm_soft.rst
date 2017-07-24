@@ -41,7 +41,7 @@ Stop outputting the software PWM signal to D3 by calling
 
 Source code: :github-blob:`src/drivers/basic/pwm_soft.h`, :github-blob:`src/drivers/basic/pwm_soft.c`
 
-Test code: :github-blob:`tst/drivers/hardware/pwm_soft/main.c`
+Test code: :github-blob:`tst/drivers/hardware/basic/pwm_soft/main.c`
 
 ----------------------------------------------
 

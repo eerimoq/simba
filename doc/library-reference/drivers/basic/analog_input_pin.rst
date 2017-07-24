@@ -6,7 +6,7 @@
 
 Source code: :github-blob:`src/drivers/basic/analog_input_pin.h`, :github-blob:`src/drivers/basic/analog_input_pin.c`
 
-Test code: :github-blob:`tst/drivers/hardware/analog_input_pin/main.c`
+Test code: :github-blob:`tst/drivers/hardware/basic/analog_input_pin/main.c`
 
 --------------------------------------------------
 

@@ -6,7 +6,7 @@
 
 Source code: :github-blob:`src/drivers/storage/flash.h`, :github-blob:`src/drivers/storage/flash.c`
 
-Test code: :github-blob:`tst/drivers/hardware/flash/main.c`
+Test code: :github-blob:`tst/drivers/hardware/storage/flash/main.c`
 
 --------------------------------------------------
 

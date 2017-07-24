@@ -31,7 +31,7 @@ Class driver modules:
 
 Source code: :github-blob:`src/drivers/network/usb_device.h`, :github-blob:`src/drivers/network/usb_device.c`
 
-Test code: :github-blob:`tst/drivers/hardware/usb_device/main.c`
+Test code: :github-blob:`tst/drivers/hardware/network/usb_device/main.c`
 
 ----------------------------------------------
 
