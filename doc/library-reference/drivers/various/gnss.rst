@@ -20,7 +20,7 @@ Devices known to work with this driver:
 
 --------------------------------------------------
 
-Source code: :github-blob:`src/drivers/sensors/gnss.h`, :github-blob:`src/drivers/sensors/gnss.c`
+Source code: :github-blob:`src/drivers/various/gnss.h`, :github-blob:`src/drivers/various/gnss.c`
 
 Test code: :github-blob:`tst/drivers/software/gnss/main.c`
 
@@ -28,7 +28,7 @@ Example code: :github-blob:`examples/gnss/main.c`
 
 --------------------------------------------------
 
-.. doxygenfile:: drivers/sensors/gnss.h
+.. doxygenfile:: drivers/various/gnss.h
    :project: simba
 
 .. _GNSS: https://en.wikipedia.org/wiki/Satellite_navigation

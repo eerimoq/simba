@@ -1,6 +1,8 @@
 sensors
 =======
 
+Sensor drivers.
+
 .. toctree::
    :glob:
    :titlesonly:

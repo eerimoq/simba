@@ -102,7 +102,7 @@ ifeq ($(BOARD), linux)
 	midi)
     TESTS += $(addprefix tst/drivers/software/, \
 	sensors/bmp280 \
-	sensors/gnss \
+	various/gnss \
 	sensors/hx711 \
 	network/xbee \
 	network/xbee_client)
