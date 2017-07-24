@@ -49,7 +49,7 @@ channel and gain combination.
 
 Source code: :github-blob:`src/drivers/sensors/hx711.h`, :github-blob:`src/drivers/sensors/hx711.c`
 
-Test code: :github-blob:`tst/drivers/software/hx711/main.c`
+Test code: :github-blob:`tst/drivers/software/sensors/hx711/main.c`
 
 Test coverage: :codecov:`src/drivers/sensors/hx711.c`
 

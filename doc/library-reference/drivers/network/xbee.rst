@@ -24,7 +24,7 @@ Manufacturer homepage: https://www.digi.com/
 
 Source code: :github-blob:`src/drivers/network/xbee.h`, :github-blob:`src/drivers/network/xbee.c`
 
-Test code: :github-blob:`tst/drivers/software/xbee/main.c`
+Test code: :github-blob:`tst/drivers/software/network/xbee/main.c`
 
 Test coverage: :codecov:`src/drivers/network/xbee.c`
 

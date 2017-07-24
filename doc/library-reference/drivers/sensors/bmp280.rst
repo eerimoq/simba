@@ -69,7 +69,7 @@ device.
 
 Source code: :github-blob:`src/drivers/sensors/bmp280.h`, :github-blob:`src/drivers/sensors/bmp280.c`
 
-Test code: :github-blob:`tst/drivers/software/bmp280/main.c`
+Test code: :github-blob:`tst/drivers/software/sensors/bmp280/main.c`
 
 Example code: :github-blob:`examples/bmp280/main.c`
 

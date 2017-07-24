@@ -22,7 +22,7 @@ Devices known to work with this driver:
 
 Source code: :github-blob:`src/drivers/various/gnss.h`, :github-blob:`src/drivers/various/gnss.c`
 
-Test code: :github-blob:`tst/drivers/software/gnss/main.c`
+Test code: :github-blob:`tst/drivers/software/various/gnss/main.c`
 
 Example code: :github-blob:`examples/gnss/main.c`
 
