@@ -20,6 +20,9 @@ export PATH=$PATH:$(readlink -f ../stlink)
 # dfu-util (Photon)
 export PATH=$PATH:$(readlink -f ../dfu-util/src)
 
+# nrfjprog (nRF5)
+export PATH=$PATH:$(readlink -f ../nrf/nrfjprog)
+
 export SIMBA_ROOT=$(readlink -f .)
 
 export PYLINTRC=$(readlink -f environment/pylintrc)

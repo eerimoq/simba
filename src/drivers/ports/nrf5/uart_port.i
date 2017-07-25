@@ -47,16 +47,25 @@ static int uart_port_module_init()
 
 static int uart_port_start(struct uart_driver_t *self_p)
 {
+    const struct uart_device_t *dev_p;
     volatile struct nrf5_uart_t *regs_p;
-
-    regs_p = self_p->dev_p->regs_p;
+    int port;
+    
+    dev_p = self_p->dev_p;
+    regs_p = dev_p->regs_p;
 
     /* Configure pin functions. */
-
-    regs_p->ENABLE = 1;
-    regs_p->BAUDRATE = self_p->baudrate;
+    port = (dev_p->tx_pin_p->regs_p == NRF5_GPIO_P1);
+    regs_p->PSEL.TXD = ((port << 5) | dev_p->tx_pin_p->pin);
+    port = (dev_p->rx_pin_p->regs_p == NRF5_GPIO_P1);
+    regs_p->PSEL.RXD = ((port << 5) | dev_p->rx_pin_p->pin);
+    
+    regs_p->BAUDRATE = 0x01d7e000;
+    regs_p->ENABLE = 4;
     regs_p->TASKS.STARTTX = 1;
     regs_p->TASKS.STARTRX = 1;
+    regs_p->EVENTS.TXDRDY = 0;
+    regs_p->EVENTS.RXDRDY = 0;
 
     return (0);
 }
@@ -87,6 +96,8 @@ static ssize_t uart_port_write_cb(void *arg_p,
         regs_p->TXD = u8_buf_p[i];
 
         while (regs_p->EVENTS.TXDRDY == 0);
+
+        regs_p->EVENTS.TXDRDY = 0;
     }
 
     mutex_unlock(&self_p->mutex);

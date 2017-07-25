@@ -33,29 +33,39 @@ static int pin_port_module_init(void)
     return (0);
 }
 
-static int pin_port_init(struct pin_driver_t *drv,
-                         const struct pin_device_t *dev,
+static int pin_port_init(struct pin_driver_t *self_p,
+                         const struct pin_device_t *dev_p,
                          int mode)
 {
-    return (-ENOSYS);
+    return (pin_device_set_mode(dev_p, mode));
 }
 
-static int pin_port_read(struct pin_driver_t *drv)
+static int pin_port_read(struct pin_driver_t *self_p)
 {
     return (-ENOSYS);
 }
 
-static int pin_port_write(struct pin_driver_t *drv, int value)
+static int pin_port_write(struct pin_driver_t *self_p, int value)
 {
-    return (-ENOSYS);
+    if (value == 0) {
+        pin_device_write_low(self_p->dev_p);
+    } else {
+        pin_device_write_high(self_p->dev_p);
+    }
+    
+    return (0);
 }
 
-static int pin_port_toggle(struct pin_driver_t *drv)
+static int pin_port_toggle(struct pin_driver_t *self_p)
 {
-    return (-ENOSYS);
+    int value;
+
+    value = (self_p->dev_p->regs_p->OUT & BIT(self_p->dev_p->pin));
+
+    return (pin_port_write(self_p, value));
 }
 
-static int pin_port_set_mode(struct pin_driver_t *drv, int mode)
+static int pin_port_set_mode(struct pin_driver_t *self_p, int mode)
 {
-    return (-ENOSYS);
+    return (pin_device_set_mode(self_p->dev_p, mode));
 }

@@ -38,13 +38,15 @@ BOARD_DESC = "nRF52840-PDK"
 MCU = nrf52840
 SERIAL_PORT ?= /dev/arduino
 BOARD_PY = $(SIMBA_ROOT)/src/boards/nrf52840_pdk/board.py
+BAUDRATE ?= 115200
 
 upload:
-	@echo "Uploading $(NAME).bin"
-	python -u $(BOARD_PY) upload --port $(SERIAL_PORT) $(BIN)
+	@echo "Uploading $(HEX)"
+	nrfjprog --family nrf52 --chiperase --program $(HEX) --reset
 
 rerun:
 	@echo "Running $(EXE)"
+	nrfjprog --family nrf52 --reset
 	python -u $(RUN_PY) --port $(SERIAL_PORT) \
 			    --baudrate $(BAUDRATE) \
 			    --pattern $(RUN_END_PATTERN)\

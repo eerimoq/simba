@@ -34,6 +34,8 @@
 struct uart_device_t {
     struct uart_driver_t *drv_p;
     volatile struct nrf5_uart_t *regs_p;
+    const struct pin_device_t *tx_pin_p;
+    const struct pin_device_t *rx_pin_p;
 };
 
 struct uart_driver_t {

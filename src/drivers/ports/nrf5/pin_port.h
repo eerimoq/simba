@@ -32,17 +32,35 @@
 #define __DRIVERS_PIN_PORT_H__
 
 struct pin_device_t {
-    int id;
+    volatile struct nrf5_gpio_t *regs_p;
+    int pin;
 };
 
 struct pin_driver_t {
     const struct pin_device_t *dev_p;
 };
 
+extern struct pin_device_t pin_device[PIN_DEVICE_MAX];
+
 static inline int pin_port_device_set_mode(const struct pin_device_t *dev_p,
                                            int mode)
 {
-    return (-ENOSYS);
+    int res;
+    int index;
+
+    index = indexof(dev_p, pin_device);
+    
+    switch (mode) {
+
+    case PIN_OUTPUT:
+        dev_p->regs_p->PIN_CNF[index] = NRF5_GPIO_PIN_CNF_DIR_OUTPUT;
+        break;
+
+    default:
+        res = -ENOSYS;
+    }
+
+    return (res);
 }
 
 static inline int pin_port_device_read(const struct pin_device_t *dev_p)
@@ -52,12 +70,16 @@ static inline int pin_port_device_read(const struct pin_device_t *dev_p)
 
 static inline int pin_port_device_write_high(const struct pin_device_t *dev_p)
 {
-    return (-ENOSYS);
+    dev_p->regs_p->OUTCLR = BIT(dev_p->pin);
+
+    return (0);
 }
 
 static inline int pin_port_device_write_low(const struct pin_device_t *dev_p)
 {
-    return (-ENOSYS);
+    dev_p->regs_p->OUTSET = BIT(dev_p->pin);
+
+    return (0);
 }
 
 #endif

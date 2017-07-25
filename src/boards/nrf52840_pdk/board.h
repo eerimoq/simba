@@ -76,16 +76,16 @@
 #define pin_ain7_dev  pin_p31_dev
 
 /* Button pins. */
-#define pin_btn1_dev  pin_p13_dev
-#define pin_btn2_dev  pin_p14_dev
-#define pin_btn3_dev  pin_p15_dev
-#define pin_btn4_dev  pin_p16_dev
+#define pin_btn1_dev  pin_p11_dev
+#define pin_btn2_dev  pin_p12_dev
+#define pin_btn3_dev  pin_p24_dev
+#define pin_btn4_dev  pin_p25_dev
 
 /* LED pins. */
-#define pin_led1_dev  pin_p17_dev
-#define pin_led2_dev  pin_p18_dev
-#define pin_led3_dev  pin_p19_dev
-#define pin_led4_dev  pin_p20_dev
+#define pin_led1_dev  pin_p13_dev
+#define pin_led2_dev  pin_p14_dev
+#define pin_led3_dev  pin_p15_dev
+#define pin_led4_dev  pin_p16_dev
 
 /* On board LED.*/
 #define pin_led_dev  pin_led1_dev

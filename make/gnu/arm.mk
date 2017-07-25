@@ -67,8 +67,14 @@ LDFLAGS += \
         -T$(LINKER_SCRIPT) \
         -mthumb
 
-build: $(BIN)
+build: $(BIN) $(HEX)
+
 $(BIN): $(EXE)
+	@echo "Creating $@"
 	$(CROSS_COMPILE)objcopy -O binary $< $@
+
+$(HEX): $(EXE)
+	@echo "Creating $@"
+	$(CROSS_COMPILE)objcopy -O ihex $< $@
 
 include $(SIMBA_ROOT)/make/gnu.mk

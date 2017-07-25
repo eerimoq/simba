@@ -31,6 +31,24 @@
 #ifndef __NRF52840_H__
 #define __NRF52840_H__
 
+/* 19. GPIO. */
+struct nrf5_gpio_t {
+    uint32_t RESERVED0[321];
+    uint32_t OUT;
+    uint32_t OUTSET;
+    uint32_t OUTCLR;
+    uint32_t IN;
+    uint32_t DIR;
+    uint32_t DIRSET;
+    uint32_t DIRCLR;
+    uint32_t LATCH;
+    uint32_t DETECTMODE;
+    uint32_t RESERVED1[118];
+    uint32_t PIN_CNF[32];
+};
+
+#define NRF5_GPIO_PIN_CNF_DIR_OUTPUT                   BIT(0)
+
 /* 49. UART. */
 struct nrf5_uart_t {
     struct {
@@ -38,9 +56,10 @@ struct nrf5_uart_t {
         uint32_t STOPRX;
         uint32_t STARTTX;
         uint32_t STOPTX;
-        uint32_t RESERVED0[4];
+        uint32_t RESERVED0[3];
         uint32_t SUSPEND;
     } TASKS;
+    uint32_t RESERVED0[56];
     struct {
         uint32_t CTS;
         uint32_t NCTS;
@@ -49,14 +68,19 @@ struct nrf5_uart_t {
         uint32_t TXDRDY;
         uint32_t RESERVED1;
         uint32_t ERROR;
-        uint32_t RESERVED2[8];
+        uint32_t RESERVED2[7];
         uint32_t RXTO;
     } EVENTS;
+    uint32_t RESERVED1[46];
     uint32_t SHORTS;
+    uint32_t RESERVED2[64];
     uint32_t INTENSET;
     uint32_t INTENCLR;
+    uint32_t RESERVED3[93];
     uint32_t ERRORSRC;
+    uint32_t RESERVED4[31];
     uint32_t ENABLE;
+    uint32_t RESERVED5;
     struct {
         uint32_t RTS;
         uint32_t TXD;
@@ -65,7 +89,9 @@ struct nrf5_uart_t {
     } PSEL;
     uint32_t RXD;
     uint32_t TXD;
+    uint32_t RESERVED6;
     uint32_t BAUDRATE;
+    uint32_t RESERVED7[17];
     uint32_t CONFIG;
 };
 
@@ -140,9 +166,8 @@ struct nrf5_uart_t {
 #define NRF5_QSPI            ((volatile struct nrf5__t *)0x40029000u)
 #define NRF5_SPIM3           ((volatile struct nrf5__t *)0x4002b000u)
 #define NRF5_PWM3            ((volatile struct nrf5__t *)0x4002d000u)
-#define NRF5_GPIO            ((volatile struct nrf5__t *)0x50000000u)
-#define NRF5_P0              ((volatile struct nrf5__t *)0x50000000u)
-#define NRF5_P1              ((volatile struct nrf5__t *)0x50000300u)
+#define NRF5_GPIO_P0     ((volatile struct nrf5_gpio_t *)0x50000000u)
+#define NRF5_GPIO_P1     ((volatile struct nrf5_gpio_t *)0x50000300u)
 #define NRF5_CRYPTOCELL      ((volatile struct nrf5__t *)0x5002a000u)
 #define NRF5_FICR            ((volatile struct nrf5__t *)0x10000000u)
 #define NRF5_UICR            ((volatile struct nrf5__t *)0x10001000u)
