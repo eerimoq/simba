@@ -1111,6 +1111,16 @@ struct esp32_can_t {
 #define ESP32_CAN_INT_ARB_LOST                          BIT(6)
 #define ESP32_CAN_INT_BUS_ERR                           BIT(7)
 
+/* Status register. */
+#define ESP32_CAN_STATUS_RX_BUFFER                      BIT(0)
+#define ESP32_CAN_STATUS_DATA_OVERRUN                   BIT(1)
+#define ESP32_CAN_STATUS_TX_BUFFER                      BIT(2)
+#define ESP32_CAN_STATUS_TX_COMPLETE                    BIT(3)
+#define ESP32_CAN_STATUS_RX                             BIT(4)
+#define ESP32_CAN_STATUS_TX                             BIT(5)
+#define ESP32_CAN_STATUS_ERR                            BIT(6)
+#define ESP32_CAN_STATUS_BUS                            BIT(7)
+
 /* Bus timing register 0. */
 #define ESP32_CAN_BTIM0_BRP_POS                            (0)
 #define ESP32_CAN_BTIM0_BRP_MASK          (0x3f << ESP32_CAN_BTIM0_BRP_POS)

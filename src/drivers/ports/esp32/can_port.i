@@ -40,6 +40,37 @@ static struct fs_counter_t rx_channel_overflow;
 static struct fs_counter_t errors;
 
 /**
+ * Reset the hardware by clearing counters, errors and interrupts, and
+ * then setting the device into normal mode.
+ */
+static void reset_hw(struct can_driver_t *self_p)
+{
+    struct can_device_t *dev_p;
+    volatile struct esp32_can_t *regs_p;
+
+    dev_p = self_p->dev_p;
+    regs_p = dev_p->regs_p;
+
+    /* Reset the chip. */
+    regs_p->MODE = 1;
+
+    /* Clear error counters and error code capture */
+    regs_p->TXERR = 0;
+    regs_p->RXERR = 0;
+    (void)regs_p->ECC;
+
+    /* Clear interrupt flags by reading the interrupt status
+       register.  */
+    (void)regs_p->INT;
+
+    /* Set chip to normal mode. */
+    regs_p->MODE = 0;
+
+    /* Enable all interrupts. */
+    regs_p->INTE = 0xff;
+}
+
+/**
  * Read a frame from the hardware.
  */
 static void read_frame_from_hw(struct can_driver_t *self_p,
@@ -139,33 +170,41 @@ static void isr(void *arg_p)
 
     regs_p = self_p->dev_p->regs_p;
 
-    /* Read the interrupt status. */
+    /* Read the interrupt status and status registers. */
     interrupt = regs_p->INT;
 
     /* Handle TX complete interrupt. */
-    if ((interrupt & ESP32_CAN_INT_TX) != 0) {
+    if (interrupt & ESP32_CAN_INT_TX) {
         if (self_p->txsize > 0) {
             write_frame_to_hw(regs_p, self_p->txframe_p);
             self_p->txsize -= sizeof(*self_p->txframe_p);
             self_p->txframe_p++;
         } else {
             thrd_resume_isr(self_p->thrd_p, 0);
+            self_p->thrd_p = NULL;
         }
     }
 
     /* Handle RX frame available interrupt. */
-    if ((interrupt & ESP32_CAN_INT_RX) != 0) {
+    if (interrupt & ESP32_CAN_INT_RX) {
         read_frame_from_hw(self_p, regs_p);
     }
 
     /* Handle error interrupts. */
-    if ((interrupt & (ESP32_CAN_INT_ERR
-                      | ESP32_CAN_INT_DATA_OVERRUN
-                      | ESP32_CAN_INT_WAKEUP
-                      | ESP32_CAN_INT_ERR_PASSIVE
-                      | ESP32_CAN_INT_ARB_LOST
-                      | ESP32_CAN_INT_BUS_ERR)) != 0) {
+    if (interrupt & (ESP32_CAN_INT_ERR
+                     | ESP32_CAN_INT_DATA_OVERRUN
+                     | ESP32_CAN_INT_WAKEUP
+                     | ESP32_CAN_INT_ERR_PASSIVE
+                     | ESP32_CAN_INT_ARB_LOST
+                     | ESP32_CAN_INT_BUS_ERR)) {
         fs_counter_increment(&errors, 1);
+
+        if (self_p->thrd_p != NULL) {
+            thrd_resume_isr(self_p->thrd_p, -EIO);
+            self_p->thrd_p = NULL;
+        }
+
+        reset_hw(self_p);
     }
 }
 
@@ -176,6 +215,7 @@ static ssize_t write_cb(void *arg_p,
     struct can_driver_t *self_p;
     struct can_device_t *dev_p;
     const struct can_frame_t *frame_p = (struct can_frame_t *)buf_p;
+    ssize_t res;
 
     self_p = arg_p;
     dev_p = self_p->dev_p;
@@ -188,12 +228,16 @@ static ssize_t write_cb(void *arg_p,
 
     sys_lock();
     write_frame_to_hw(dev_p->regs_p, frame_p);
-    thrd_suspend_isr(NULL);
+    res = thrd_suspend_isr(NULL);
     sys_unlock();
 
     sem_give(&self_p->sem, 1);
 
-    return (size);
+    if (res == 0) {
+        res = size;
+    }
+
+    return (res);
 }
 
 int can_port_module_init()
@@ -247,15 +291,23 @@ int can_port_start(struct can_driver_t *self_p)
     ESP32_IO_MUX->PIN[rx_pin_p->iomux] = (ESP32_IO_MUX_PIN_MCU_SEL_GPIO
                                           | ESP32_IO_MUX_PIN_FUNC_IE);
 
+    /* Install the interrupt handler. */
+    esp_xt_set_interrupt_handler(ESP32_CPU_INTR_CAN_NUM,
+                                 isr,
+                                 NULL);
+    esp_xt_ints_on(BIT(ESP32_CPU_INTR_CAN_NUM));
+
+    /* Map the CAN peripheral interrupt to the CAN CPU interrupt. */
+    intr_matrix_set(xPortGetCoreID(),
+                    ESP32_INTR_SOURCE_CAN,
+                    ESP32_CPU_INTR_CAN_NUM);
+
     /* Clock configuration. */
     regs_p->CDIV = (ESP32_CAN_CDIV_PELICAN);
 
     /* Bus speed configuration. */
     regs_p->BTIM0 = (self_p->speed & 0xff);
     regs_p->BTIM1 = ((self_p->speed >> 8) & 0xff);
-
-    /* Enable all interrupts. */
-    regs_p->INTE = 0xff;
 
     /* Accept all frames. */
     regs_p->U.ACC.CODE[0] = 0;
@@ -269,28 +321,7 @@ int can_port_start(struct can_driver_t *self_p)
 
     regs_p->OCTRL = (ESP32_CAN_OCTRL_MODE_NORMAL);
 
-    /* Clear error counters and error code capture */
-    regs_p->TXERR = 0;
-    regs_p->RXERR = 0;
-    (void)regs_p->ECC;
-
-    /* Clear interrupt flags by reading the interrupt status
-       register.  */
-    (void)regs_p->INT;
-
-    /* Install the interrupt handler. */
-    esp_xt_set_interrupt_handler(ESP32_CPU_INTR_CAN_NUM,
-                                 isr,
-                                 NULL);
-    esp_xt_ints_on(BIT(ESP32_CPU_INTR_CAN_NUM));
-
-    /* Map the CAN peripheral interrupt to the CAN CPU interrupt. */
-    intr_matrix_set(xPortGetCoreID(),
-                    ESP32_INTR_SOURCE_CAN,
-                    ESP32_CPU_INTR_CAN_NUM);
-
-    /* Set chip to normal mode. */
-    regs_p->MODE = 0;
+    reset_hw(self_p);
 
     dev_p->drv_p = self_p;
 
