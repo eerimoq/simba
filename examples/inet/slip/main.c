@@ -60,7 +60,7 @@ int main()
                                 &ipaddr,
                                 &netmask,
                                 &gateway,
-                                &ipuart.chout);
+                                &ipuart.base);
     network_interface_add(&slip.network_interface);
     network_interface_start(&slip.network_interface);
 
