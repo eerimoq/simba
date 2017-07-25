@@ -164,7 +164,7 @@ struct thrd_t *thrd_spawn(void *(*main)(void *),
  * @param[in] timeout_p Time to wait to be resumed before a timeout
  *                      occurs and the function returns.
  *
- * @return zero(0), -ETIMEOUT on timeout or other negative error code.
+ * @return zero(0), -ETIMEDOUT on timeout or other negative error code.
  */
 int thrd_suspend(const struct time_t *timeout_p);
 
@@ -372,7 +372,7 @@ const char *thrd_get_env(const char *name_p);
  * @param[in] timeout_p Time to wait to be resumed before a timeout
  *                      occurs and the function returns.
  *
- * @return zero(0), -ETIMEOUT on timeout or other negative error code.
+ * @return zero(0), -ETIMEDOUT on timeout or other negative error code.
  */
 int thrd_suspend_isr(const struct time_t *timeout_p);
 
