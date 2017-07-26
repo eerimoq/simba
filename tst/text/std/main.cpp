@@ -59,6 +59,12 @@ static ssize_t test_vfprintf_wrapper(void *chan_p,
     return (res);
 }
 
+static void on_printf_isr_expired(void *arg_p)
+{
+    std_printf_isr(FSTR("std_printf_isr(): %d\r\n"), 1);
+    std_fprintf_isr(arg_p, FSTR("std_fprintf_isr(): %d\r\n"), 2);
+}
+
 static int test_sprintf(struct harness_t *harness_p)
 {
     char buf[128];
@@ -660,6 +666,32 @@ static int test_hexdump(struct harness_t *harness_p)
     return (0);
 }
 
+static int test_printf_isr(struct harness_t *harness_p)
+{
+    struct time_t timeout;
+    struct timer_t timer;
+    struct queue_t queue;
+    uint8_t buf[64];
+    
+    queue_init(&queue, &buf[0], sizeof(buf));
+    
+    timeout.seconds = 0;
+    timeout.nanoseconds = 1;
+
+    timer_init(&timer,
+               &timeout,
+               on_printf_isr_expired,
+               &queue,
+               0);
+    timer_start(&timer);
+
+    BTASSERTI(harness_expect(&queue,
+                             "std_fprintf_isr(): 2\r\n",
+                             NULL), ==, 22);
+    
+    return (0);
+}
+
 int main()
 {
     struct harness_t harness;
@@ -680,6 +712,7 @@ int main()
         { test_strtod, "test_strtod" },
         { test_strtodfp, "test_strtodfp" },
         { test_hexdump, "test_hexdump" },
+        { test_printf_isr, "test_printf_isr" },
         { NULL, NULL }
     };
 

@@ -121,12 +121,13 @@ ssize_t std_vsprintf(char *dst_p, far_string_t fmt_p, va_list *ap_p);
 ssize_t std_vsnprintf(char *dst_p, size_t size, far_string_t fmt_p, va_list *ap_p);
 
 /**
- * Format and print data to standard output. The output is not null terminated.
+ * Format and print data to standard output. The output is not null
+ * terminated.
  *
  * See `std_sprintf()` for the the format string specification.
  *
  * @param[in] fmt_p Format string.
- * @param[in] ... Variable arguemnts list.
+ * @param[in] ... Variable arguments list.
  *
  * @return Number of characters written to standard output, or
  *         negative error code.
@@ -134,12 +135,13 @@ ssize_t std_vsnprintf(char *dst_p, size_t size, far_string_t fmt_p, va_list *ap_
 ssize_t std_printf(far_string_t fmt_p, ...);
 
 /**
- * Format and print data to standard output. The output is not null terminated.
+ * Format and print data to standard output. The output is not null
+ * terminated.
  *
  * See `std_sprintf()` for the the format string specification.
  *
  * @param[in] fmt_p Format string.
- * @param[in] ap_p Variable arguemnts list.
+ * @param[in] ap_p Variable arguments list.
  *
  * @return Number of characters written to standard output, or
  *         negative error code.
@@ -147,13 +149,14 @@ ssize_t std_printf(far_string_t fmt_p, ...);
 ssize_t std_vprintf(far_string_t fmt_p, va_list *ap_p);
 
 /**
- * Format and print data to channel. The output is not null terminated.
+ * Format and print data to given channel. The output is not null
+ * terminated.
  *
  * See `std_sprintf()` for the the format string specification.
  *
  * @param[in] chan_p Output channel.
  * @param[in] fmt_p Format string.
- * @param[in] ... Variable arguemnts list.
+ * @param[in] ... Variable arguments list.
  *
  * @return Number of characters written to given channel, or negative
  *         error code.
@@ -161,18 +164,48 @@ ssize_t std_vprintf(far_string_t fmt_p, va_list *ap_p);
 ssize_t std_fprintf(void *chan_p, far_string_t fmt_p, ...);
 
 /**
- * Format and print data to channel. The output is not null terminated.
+ * Format and print data to given channel. The output is not null
+ * terminated.
  *
  * See `std_sprintf()` for the the format string specification.
  *
  * @param[in] chan_p Output channel.
  * @param[in] fmt_p Format string.
- * @param[in] ... Variable arguemnts list.
+ * @param[in] ... Variable arguments list.
  *
  * @return Number of characters written to given channel, or negative
  *         error code.
  */
 ssize_t std_vfprintf(void *chan_p, far_string_t fmt_p, va_list *ap_p);
+
+/**
+ * Format and print data to standard output from interrupt context or
+ * with the system lock taken. The output is not null terminated.
+ *
+ * See `std_sprintf()` for the the format string specification.
+ *
+ * @param[in] fmt_p Format string.
+ * @param[in] ... Variable arguments list.
+ *
+ * @return Number of characters written to standard output, or
+ *         negative error code.
+ */
+ssize_t std_printf_isr(far_string_t fmt_p, ...);
+
+/**
+ * Format and print data to given channel from interrupt context or
+ * with the system lock taken. The output is not null terminated.
+ *
+ * See `std_sprintf()` for the the format string specification.
+ *
+ * @param[in] chan_p Output channel.
+ * @param[in] fmt_p Format string.
+ * @param[in] ... Variable arguments list.
+ *
+ * @return Number of characters written to given channel, or negative
+ *         error code.
+ */
+ssize_t std_fprintf_isr(void *chan_p, far_string_t fmt_p, ...);
 
 /**
  * Convert given string to an integer in given base.

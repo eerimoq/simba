@@ -130,6 +130,34 @@ static void output_flush(struct buffered_output_t *output_p)
     }
 }
 
+/**
+ * Put characters to standard output from interrupt context or with
+ * the system lock taken.
+ */
+static void fprintf_putc_isr(char c, void *arg_p)
+{
+    struct buffered_output_t *output_p = arg_p;
+
+    output_p->buffer[output_p->pos++] = c;
+    output_p->size++;
+
+    if (output_p->pos == membersof(output_p->buffer)) {
+        chan_write_isr(output_p->chan_p, output_p->buffer, output_p->pos);
+        output_p->pos = 0;
+    }
+}
+
+/**
+ * Flush output buffer to channel.
+ */
+static void output_flush_isr(struct buffered_output_t *output_p)
+{
+    if (output_p->pos > 0) {
+        chan_write_isr(output_p->chan_p, output_p->buffer, output_p->pos);
+        output_p->pos = 0;
+    }
+}
+
 static void formats(void (*std_putc)(char c, void *arg_p),
                     void *arg_p,
                     char *str_p,
@@ -558,6 +586,40 @@ ssize_t std_vfprintf(void *chan_p, far_string_t fmt_p, va_list *ap_p)
     output.chan_p = chan_p;
 
     cvcprintf(&output, fmt_p, ap_p);
+
+    return (output.size);
+}
+
+ssize_t std_printf_isr(far_string_t fmt_p, ...)
+{
+    va_list ap;
+    struct buffered_output_t output;
+
+    output.pos = 0;
+    output.size = 0;
+    output.chan_p = sys_get_stdout();
+
+    va_start(ap, fmt_p);
+    vcprintf(fprintf_putc_isr, &output, fmt_p, &ap);
+    output_flush_isr(&output);
+    va_end(ap);
+
+    return (output.size);
+}
+
+ssize_t std_fprintf_isr(void *chan_p, far_string_t fmt_p, ...)
+{
+    va_list ap;
+    struct buffered_output_t output;
+
+    output.pos = 0;
+    output.size = 0;
+    output.chan_p = chan_p;
+
+    va_start(ap, fmt_p);
+    vcprintf(fprintf_putc_isr, &output, fmt_p, &ap);
+    output_flush_isr(&output);
+    va_end(ap);
 
     return (output.size);
 }

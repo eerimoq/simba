@@ -30,6 +30,10 @@
 
 #include "socket_device.h"
 
+static ssize_t uart_port_write_cb_isr(void *arg_p,
+                                      const void *txbuf_p,
+                                      size_t size);
+
 static int uart_port_module_init()
 {
     return (socket_device_module_init());
@@ -51,6 +55,19 @@ static ssize_t uart_port_write_cb(void *arg_p,
                                   const void *txbuf_p,
                                   size_t size)
 {
+    ssize_t res;
+
+    sys_lock();
+    res = uart_port_write_cb_isr(arg_p, txbuf_p, size);
+    sys_unlock();
+
+    return (res);
+}
+
+static ssize_t uart_port_write_cb_isr(void *arg_p,
+                                      const void *txbuf_p,
+                                      size_t size)
+{
     struct uart_driver_t *self_p;
     struct uart_device_t *dev_p;
     size_t i;
@@ -59,8 +76,6 @@ static ssize_t uart_port_write_cb(void *arg_p,
 
     self_p = container_of(arg_p, struct uart_driver_t, base);
     dev_p = self_p->dev_p;
-
-    sys_lock();
 
     if (socket_device_is_uart_device_connected_isr(dev_p) == 0) {
         c_p = txbuf_p;
@@ -75,16 +90,7 @@ static ssize_t uart_port_write_cb(void *arg_p,
         res = socket_device_uart_device_write_isr(dev_p, txbuf_p, size);
     }
 
-    sys_unlock();
-
     return (res);
-}
-
-static ssize_t uart_port_write_cb_isr(void *arg_p,
-                                      const void *txbuf_p,
-                                      size_t size)
-{
-    return (uart_port_write_cb(arg_p, txbuf_p, size));
 }
 
 static int uart_port_device_start(struct uart_device_t *dev_p,
