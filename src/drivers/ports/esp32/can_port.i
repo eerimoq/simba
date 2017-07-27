@@ -39,6 +39,8 @@
 static struct fs_counter_t rx_channel_overflow;
 static struct fs_counter_t errors;
 
+extern xSemaphoreHandle thrd_idle_sem;
+
 /**
  * Reset the hardware by clearing counters, errors and interrupts, and
  * then setting the device into normal mode.
@@ -161,6 +163,7 @@ static void isr(void *arg_p)
     struct can_driver_t *self_p;
     volatile struct esp32_can_t *regs_p;
     uint8_t interrupt;
+    portBASE_TYPE higher_prio_task_woken;
 
     self_p = can_device[0].drv_p;
 
@@ -182,6 +185,13 @@ static void isr(void *arg_p)
         } else {
             thrd_resume_isr(self_p->thrd_p, 0);
             self_p->thrd_p = NULL;
+
+            higher_prio_task_woken = pdFALSE;
+            xSemaphoreGiveFromISR(thrd_idle_sem, &higher_prio_task_woken);
+
+            if (higher_prio_task_woken == pdTRUE) {
+                portYIELD_FROM_ISR() ;
+            }
         }
     }
 
@@ -207,6 +217,12 @@ static void isr(void *arg_p)
                 thrd_resume_isr(self_p->thrd_p, -EIO);
                 self_p->thrd_p = NULL;
 
+                higher_prio_task_woken = pdFALSE;
+                xSemaphoreGiveFromISR(thrd_idle_sem, &higher_prio_task_woken);
+
+                if (higher_prio_task_woken == pdTRUE) {
+                    portYIELD_FROM_ISR() ;
+                }
             }
             
             reset_hw(self_p);
