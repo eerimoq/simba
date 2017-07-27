@@ -220,11 +220,19 @@ static ssize_t write_cb(void *arg_p,
 {
     struct can_driver_t *self_p;
     struct can_device_t *dev_p;
+    volatile struct esp32_can_t *regs_p;
     const struct can_frame_t *frame_p = (struct can_frame_t *)buf_p;
     ssize_t res;
 
     self_p = arg_p;
     dev_p = self_p->dev_p;
+    regs_p = dev_p->regs_p;
+    
+    /* return error if CAN-module is waiting to be idle again */
+    if ( ( regs_p->STATUS & (ESP32_CAN_STATUS_RX | ESP32_CAN_STATUS_TX) ) ==
+                            (ESP32_CAN_STATUS_RX | ESP32_CAN_STATUS_TX)         ) {
+        return (-EIO);
+    }
 
     sem_take(&self_p->sem, NULL);
 
