@@ -199,12 +199,18 @@ static void isr(void *arg_p)
                      | ESP32_CAN_INT_BUS_ERR)) {
         fs_counter_increment(&errors, 1);
 
-        if (self_p->thrd_p != NULL) {
-            thrd_resume_isr(self_p->thrd_p, -EIO);
-            self_p->thrd_p = NULL;
-        }
+        /* In case of many errors or bus-off state reset the hardware */
+        if (regs_p->STATUS & (ESP32_CAN_STATUS_ERR | ESP32_CAN_STATUS_BUS)) {
 
-        reset_hw(self_p);
+            /* if any thread is waiting for write(...) finish, wake them with error code */
+            if (self_p->thrd_p != NULL) {
+                thrd_resume_isr(self_p->thrd_p, -EIO);
+                self_p->thrd_p = NULL;
+
+            }
+            
+            reset_hw(self_p);
+        }
     }
 }
 
