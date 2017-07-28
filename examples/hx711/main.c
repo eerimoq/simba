@@ -3,7 +3,7 @@
  *
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2017, Erik Moqvist
+ * Copyright (c) 2017, Erik Moqvist
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -26,10 +26,6 @@
  * SOFTWARE.
  *
  * This file is part of the Simba project.
- */
-
-/**
- * Setup a shell on the UART towards the PC
  */
 
 #include "simba.h"
