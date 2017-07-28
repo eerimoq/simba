@@ -42,6 +42,26 @@ static struct fs_counter_t errors;
 extern xSemaphoreHandle thrd_idle_sem;
 
 /**
+ * Check if module is waiting for bus idle.
+ *
+ * Note 3 to Status register description in SJA1000 reference:
+ *     "If both the receive status and the transmit status bits are
+ *      logic 0 (idle) the CAN-bus is idle. If both bits are set the
+ *      controller is waiting to become idle again..."
+ */
+static int is_waiting_for_bus_idle(struct can_driver_t *self_p)
+{
+    struct can_device_t *dev_p;
+    volatile struct esp32_can_t *regs_p;
+
+    dev_p = self_p->dev_p;
+    regs_p = dev_p->regs_p;
+
+    return (( regs_p->STATUS & (ESP32_CAN_STATUS_RX | ESP32_CAN_STATUS_TX) ) ==
+                               (ESP32_CAN_STATUS_RX | ESP32_CAN_STATUS_TX)   );
+}
+
+/**
  * Reset the hardware by clearing counters, errors and interrupts, and
  * then setting the device into normal mode.
  */
@@ -185,13 +205,6 @@ static void isr(void *arg_p)
         } else {
             thrd_resume_isr(self_p->thrd_p, 0);
             self_p->thrd_p = NULL;
-
-            higher_prio_task_woken = pdFALSE;
-            xSemaphoreGiveFromISR(thrd_idle_sem, &higher_prio_task_woken);
-
-            if (higher_prio_task_woken == pdTRUE) {
-                portYIELD_FROM_ISR() ;
-            }
         }
     }
 
@@ -216,17 +229,17 @@ static void isr(void *arg_p)
             if (self_p->thrd_p != NULL) {
                 thrd_resume_isr(self_p->thrd_p, -EIO);
                 self_p->thrd_p = NULL;
-
-                higher_prio_task_woken = pdFALSE;
-                xSemaphoreGiveFromISR(thrd_idle_sem, &higher_prio_task_woken);
-
-                if (higher_prio_task_woken == pdTRUE) {
-                    portYIELD_FROM_ISR() ;
-                }
             }
             
             reset_hw(self_p);
         }
+    }
+
+    higher_prio_task_woken = pdFALSE;
+    xSemaphoreGiveFromISR(thrd_idle_sem, &higher_prio_task_woken);
+
+    if (higher_prio_task_woken == pdTRUE) {
+        portYIELD_FROM_ISR() ;
     }
 }
 
@@ -236,18 +249,15 @@ static ssize_t write_cb(void *arg_p,
 {
     struct can_driver_t *self_p;
     struct can_device_t *dev_p;
-    volatile struct esp32_can_t *regs_p;
     const struct can_frame_t *frame_p = (struct can_frame_t *)buf_p;
     ssize_t res;
 
     self_p = arg_p;
     dev_p = self_p->dev_p;
-    regs_p = dev_p->regs_p;
     
-    /* return error if CAN-module is waiting to be idle again */
-    if ( ( regs_p->STATUS & (ESP32_CAN_STATUS_RX | ESP32_CAN_STATUS_TX) ) ==
-                            (ESP32_CAN_STATUS_RX | ESP32_CAN_STATUS_TX)         ) {
-        return (-EIO);
+    /* Return error if CAN-module is waiting to be idle again. */
+    if ( is_waiting_for_bus_idle(self_p) ) {
+        return (-ENETDOWN);
     }
 
     sem_take(&self_p->sem, NULL);
@@ -300,7 +310,7 @@ int can_port_start(struct can_driver_t *self_p)
     volatile struct esp32_can_t *regs_p;
     struct pin_device_t *tx_pin_p;
     struct pin_device_t *rx_pin_p;
-    struct time_t now, stop, delta; ///< for time measurement in STATUS reg polling
+    struct time_t now, stop, delta;
     uint8_t still_waiting_for_bus_idle;
 
     dev_p = self_p->dev_p;
@@ -361,20 +371,19 @@ int can_port_start(struct can_driver_t *self_p)
        Return error if "CAN-module is waiting to be idle again".
        CAN-module in this state is waiting for 11 consecutive recessive bits,
        so we will wait for at least 170 bit-periods (128*1.2+11 = 164, where
-       128 - is maximum CAN-frame length, 1.2 - bit stuffing koeff)
-    */
+       128 - is maximum CAN-frame length, 1.2 - bit stuffing koeff). */
     still_waiting_for_bus_idle = 1;
     time_get(&now);
     delta.seconds = 0;
     delta.nanoseconds = 17000L * 1000;    // 17000 = 170 * 100: 170 cycles of bit-period @ 10 KBPS (100 us per bit)
     time_add(&stop, &now, &delta);
     while ( (now.seconds < stop.seconds) || (now.nanoseconds < stop.nanoseconds) ) {   
-        if ( ( regs_p->STATUS & (ESP32_CAN_STATUS_RX | ESP32_CAN_STATUS_TX) ) !=
-                                (ESP32_CAN_STATUS_RX | ESP32_CAN_STATUS_TX)         ) {
-            
-            still_waiting_for_bus_idle = 0;
+
+        still_waiting_for_bus_idle = is_waiting_for_bus_idle(self_p);
+        if ( ! still_waiting_for_bus_idle ) {
             break;
         }    
+
         time_get(&now);
     }
     if ( still_waiting_for_bus_idle  ) {
