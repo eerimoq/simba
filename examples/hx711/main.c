@@ -72,7 +72,7 @@ int main()
         return (res);
     }
 
-    /* Continiously Read samples from the device. */
+    /* Continiously read samples from the device and print them. */
     while (1) {
         res = hx711_read(&hx711, &weight_a_128, hx711_channel_gain_a_128_t);
 
