@@ -62,14 +62,14 @@ static void *server_main(void *arg_p)
         queue_read(&qserverin, &message, sizeof(message));
 
         if (message.buf_p == NULL) {
-            /* Read the message written by the client, and write it to the
-               test thread queue. */
+            /* Read the message written by the MQTT client, and write
+               it to the test thread queue. */
             for (i = 0; i < message.size; i++) {
                 chan_read(&qout, &byte, sizeof(byte));
                 chan_write(&qserverout, &byte, sizeof(byte));
             }
         } else {
-            /* Write the response to the client. */
+            /* Write the response to the MQTT client. */
             chan_write(&qin, message.buf_p, message.size);
         }
     }
@@ -78,16 +78,23 @@ static void *server_main(void *arg_p)
 }
 
 
-static uint8_t msg_buf[16];
-static size_t msg_size;
+static char published_topic[16];
+static uint8_t published_message[16];
+static size_t published_message_size;
 
 static size_t on_publish(struct mqtt_client_t *client_p,
                          const char *topic_p,
                          void *chin_p,
                          size_t size)
 {
-    msg_size = size;
-    chan_read(chin_p, msg_buf, size);
+    std_printf(OSTR("Published topic '%s' of size %d.\r\n"),
+               topic_p,
+               size);
+
+    strncpy(&published_topic[0], topic_p, sizeof(published_topic));
+    chan_read(chin_p, &published_message[0], size);
+    published_message_size = size;
+
     thrd_resume(self_p, 0);
 
     return (0);
@@ -384,18 +391,17 @@ static int test_incoming_publish_qos0(struct harness_t *harness_p)
     buf[12] = 'i';
     buf[13] = 'e';
     message.buf_p = buf;
-    message.size = 16;
+    message.size = 14;
     BTASSERT(queue_write(&qserverin, &message, sizeof(message)) == sizeof(message));
 
     /* Resumed from the callback. */
     thrd_suspend(NULL);
 
     /* Check the received message. */
-    BTASSERT(msg_size == 3);
-    BTASSERT(msg_buf[0] == 'f');
-    BTASSERT(msg_buf[1] == 'i');
-    BTASSERT(msg_buf[2] == 'e');
-
+    BTASSERTM(&published_topic[0], "foo/bar", 8);
+    BTASSERTM(&published_message[0], "fie", 3);
+    BTASSERT(published_message_size == 3);
+    
     return (0);
 }
 
@@ -428,15 +434,14 @@ static int test_incoming_publish_qos1(struct harness_t *harness_p)
     message.buf_p = buf;
     message.size = 16;
     BTASSERT(queue_write(&qserverin, &message, sizeof(message)) == sizeof(message));
-
+    
     /* Resumed from the callback. */
     thrd_suspend(NULL);
 
     /* Check the received message. */
-    BTASSERT(msg_size == 3);
-    BTASSERT(msg_buf[0] == 'f');
-    BTASSERT(msg_buf[1] == 'i');
-    BTASSERT(msg_buf[2] == 'e');
+    BTASSERTM(&published_topic[0], "foo/bar", 8);
+    BTASSERTM(&published_message[0], "fie", 3);
+    BTASSERT(published_message_size == 3);
 
     /* Prepare the server to receive the ACK message. */
     message.buf_p = NULL;
@@ -487,10 +492,9 @@ static int test_incoming_publish_qos2(struct harness_t *harness_p)
     thrd_suspend(NULL);
 
     /* Check the received message. */
-    BTASSERT(msg_size == 3);
-    BTASSERT(msg_buf[0] == 'f');
-    BTASSERT(msg_buf[1] == 'i');
-    BTASSERT(msg_buf[2] == 'e');
+    BTASSERTM(&published_topic[0], "foo/bar", 8);
+    BTASSERTM(&published_message[0], "fie", 3);
+    BTASSERT(published_message_size == 3);
 
     /* Prepare the server to receive the REC message. */
     message.buf_p = NULL;
