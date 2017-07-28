@@ -300,6 +300,8 @@ int can_port_start(struct can_driver_t *self_p)
     volatile struct esp32_can_t *regs_p;
     struct pin_device_t *tx_pin_p;
     struct pin_device_t *rx_pin_p;
+    struct time_t now, stop, delta; ///< for time measurement in STATUS reg polling
+    uint8_t still_waiting_for_bus_idle;
 
     dev_p = self_p->dev_p;
     regs_p = dev_p->regs_p;
@@ -355,6 +357,30 @@ int can_port_start(struct can_driver_t *self_p)
 
     dev_p->drv_p = self_p;
 
+    /* Check CAN-RX pin is connected to the trasceiver.
+       Return error if "CAN-module is waiting to be idle again".
+       CAN-module in this state is waiting for 11 consecutive recessive bits,
+       so we will wait for at least 170 bit-periods (128*1.2+11 = 164, where
+       128 - is maximum CAN-frame length, 1.2 - bit stuffing koeff)
+    */
+    still_waiting_for_bus_idle = 1;
+    time_get(&now);
+    delta.seconds = 0;
+    delta.nanoseconds = 17000L * 1000;    // 17000 = 170 * 100: 170 cycles of bit-period @ 10 KBPS (100 us per bit)
+    time_add(&stop, &now, &delta);
+    while ( (now.seconds < stop.seconds) || (now.nanoseconds < stop.nanoseconds) ) {   
+        if ( ( regs_p->STATUS & (ESP32_CAN_STATUS_RX | ESP32_CAN_STATUS_TX) ) !=
+                                (ESP32_CAN_STATUS_RX | ESP32_CAN_STATUS_TX)         ) {
+            
+            still_waiting_for_bus_idle = 0;
+            break;
+        }    
+        time_get(&now);
+    }
+    if ( still_waiting_for_bus_idle  ) {
+        return (-ENETDOWN);
+    }
+    
     return (0);
 }
 
