@@ -24,8 +24,8 @@ channel and gain combination.
 
    struct hx711_driver_t hx711;
    float weight_a_128;
-   float weight_b_64;
-   float weight_a_32;
+   float weight_a_64;
+   float weight_b_32;
 
    /* Initialize and start the deivce. */
    hx711_init(&hx711, &pin_d2_dev, &pin_d3_dev, 1.0, 0.0);
@@ -33,14 +33,14 @@ channel and gain combination.
 
    /* Read a few samples from the device. */
    hx711_read(&hx711, &weight_a_128, hx711_channel_gain_a_128_t);
-   hx711_read(&hx711, &weight_b_64, hx711_channel_gain_b_64_t);
-   hx711_read(&hx711, &weight_a_32, hx711_channel_gain_a_32_t);
+   hx711_read(&hx711, &weight_a_64, hx711_channel_gain_a_64_t);
+   hx711_read(&hx711, &weight_b_32, hx711_channel_gain_b_32_t);
 
    /* Print the samples. */
-   std_printf(OSTR("weight_a_128: %f, weight_b_64: %f, weight_a_32: %f\r\n"),
+   std_printf(OSTR("weight_a_128: %f, weight_a_64: %f, weight_b_32: %f\r\n"),
               weight_a_128,
-              weight_b_64,
-              weight_a_32);
+              weight_a_64,
+              weight_b_32);
 
    /* Stop the deivce. */
    hx711_stop(&hx711);
