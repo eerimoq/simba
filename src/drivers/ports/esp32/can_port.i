@@ -49,16 +49,10 @@ extern xSemaphoreHandle thrd_idle_sem;
  *      logic 0 (idle) the CAN-bus is idle. If both bits are set the
  *      controller is waiting to become idle again..."
  */
-static int is_waiting_for_bus_idle(struct can_driver_t *self_p)
+static int is_waiting_for_bus_idle(uint32_t status_reg_value)
 {
-    struct can_device_t *dev_p;
-    volatile struct esp32_can_t *regs_p;
-
-    dev_p = self_p->dev_p;
-    regs_p = dev_p->regs_p;
-
-    return (( regs_p->STATUS & (ESP32_CAN_STATUS_RX | ESP32_CAN_STATUS_TX) ) ==
-                               (ESP32_CAN_STATUS_RX | ESP32_CAN_STATUS_TX)   );
+    return (( status_reg_value & (ESP32_CAN_STATUS_RX | ESP32_CAN_STATUS_TX) ) ==
+                                 (ESP32_CAN_STATUS_RX | ESP32_CAN_STATUS_TX)   );
 }
 
 /**
@@ -249,14 +243,16 @@ static ssize_t write_cb(void *arg_p,
 {
     struct can_driver_t *self_p;
     struct can_device_t *dev_p;
+    volatile struct esp32_can_t *regs_p;
     const struct can_frame_t *frame_p = (struct can_frame_t *)buf_p;
     ssize_t res;
 
     self_p = arg_p;
     dev_p = self_p->dev_p;
-    
+    regs_p = dev_p->regs_p;
+
     /* Return error if CAN-module is waiting to be idle again. */
-    if ( is_waiting_for_bus_idle(self_p) ) {
+    if (is_waiting_for_bus_idle(regs_p->STATUS)) {
         return (-ENETDOWN);
     }
 
@@ -304,14 +300,55 @@ int can_port_init(struct can_driver_t *self_p,
     return (0);
 }
 
+/**
+ *  Wait some time for bus is idle.
+ *
+ * @param[in] self_p Driver object to work with.
+ *
+ * @return zero(0) if success or (-ENETDOWN) is case of timeout.
+ *
+ * CAN-module can be in state waiting for bus idle. At reset it waits for
+ * 11 consecutive recessive bits, so we will wait for at least 170 bit-periods
+ * (128*1.2+11 = 164, where 128 - is maximum CAN-frame length, 1.2 - bit stuffing koeff).
+ * In transition from bus-off to bus-on state it waits by default for 128 periods of
+ * 11 consecutive recessive bits but this number 128 is readed from TXERR register. So
+ * this function will work in all situations if TXERR is cleared.
+ */
+static int wait_for_bus_idle(struct can_driver_t *self_p)
+{
+    volatile struct esp32_can_t *regs_p;
+    struct time_t now, stop, delta;
+    uint8_t still_waiting_for_bus_idle;
+
+    regs_p = self_p->dev_p->regs_p;
+
+    still_waiting_for_bus_idle = 1;
+    time_get(&now);
+    delta.seconds = 0;
+    delta.nanoseconds = 17000L * 1000;    // 17000 = 170 * 100: 170 cycles of bit-period @ 10 KBPS (100 us per bit)
+    time_add(&stop, &now, &delta);
+    while ( (now.seconds < stop.seconds) || (now.nanoseconds < stop.nanoseconds) ) {
+
+        still_waiting_for_bus_idle = is_waiting_for_bus_idle(regs_p->STATUS);
+        if (! still_waiting_for_bus_idle) {
+            break;
+        }
+
+        time_get(&now);
+    }
+    if (still_waiting_for_bus_idle) {
+        return (-ENETDOWN);
+    } else {
+        return (0);
+    }
+}
+
 int can_port_start(struct can_driver_t *self_p)
 {
     struct can_device_t *dev_p;
     volatile struct esp32_can_t *regs_p;
     struct pin_device_t *tx_pin_p;
     struct pin_device_t *rx_pin_p;
-    struct time_t now, stop, delta;
-    uint8_t still_waiting_for_bus_idle;
 
     dev_p = self_p->dev_p;
     regs_p = dev_p->regs_p;
@@ -367,30 +404,7 @@ int can_port_start(struct can_driver_t *self_p)
 
     dev_p->drv_p = self_p;
 
-    /* Check CAN-RX pin is connected to the trasceiver.
-       Return error if "CAN-module is waiting to be idle again".
-       CAN-module in this state is waiting for 11 consecutive recessive bits,
-       so we will wait for at least 170 bit-periods (128*1.2+11 = 164, where
-       128 - is maximum CAN-frame length, 1.2 - bit stuffing koeff). */
-    still_waiting_for_bus_idle = 1;
-    time_get(&now);
-    delta.seconds = 0;
-    delta.nanoseconds = 17000L * 1000;    // 17000 = 170 * 100: 170 cycles of bit-period @ 10 KBPS (100 us per bit)
-    time_add(&stop, &now, &delta);
-    while ( (now.seconds < stop.seconds) || (now.nanoseconds < stop.nanoseconds) ) {   
-
-        still_waiting_for_bus_idle = is_waiting_for_bus_idle(self_p);
-        if ( ! still_waiting_for_bus_idle ) {
-            break;
-        }    
-
-        time_get(&now);
-    }
-    if ( still_waiting_for_bus_idle  ) {
-        return (-ENETDOWN);
-    }
-    
-    return (0);
+    return (wait_for_bus_idle(self_p));
 }
 
 int can_port_stop(struct can_driver_t *self_p)
