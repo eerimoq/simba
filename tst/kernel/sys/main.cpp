@@ -325,7 +325,7 @@ int test_reset_cause(struct harness_t *harness_p)
     BTASSERT(reset_cause >= sys_reset_cause_unknown_t);
     BTASSERT(reset_cause < sys_reset_cause_max_t);
 
-    std_printf(FSTR("Reset cause: %s (%d)\r\n"),
+    std_printf(FSTR("Reset cause: %S (%d)\r\n"),
                sys_reset_cause_as_string(reset_cause),
                reset_cause);
 

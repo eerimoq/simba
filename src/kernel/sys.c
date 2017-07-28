@@ -403,7 +403,7 @@ static int cmd_reset_cause_cb(int argc,
                               void *call_arg_p)
 {
     std_fprintf(out_p,
-                OSTR("%s\r\n"),
+                OSTR("%S\r\n"),
                 sys_reset_cause_as_string(sys_reset_cause()));
 
     return (0);
@@ -732,7 +732,7 @@ void sys_interrupt_cpu_usage_reset()
     sys_port_interrupt_cpu_usage_reset();
 }
 
-const FAR char *sys_reset_cause_as_string(enum sys_reset_cause_t reset_cause)
+far_string_t sys_reset_cause_as_string(enum sys_reset_cause_t reset_cause)
 {
     return (reset_cause_string_map[reset_cause]);
 }

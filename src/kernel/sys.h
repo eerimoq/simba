@@ -297,6 +297,6 @@ void sys_interrupt_cpu_usage_reset(void);
 /**
  * Get the reset cause as a far string.
  */
-const FAR char *sys_reset_cause_as_string(enum sys_reset_cause_t reset_cause);
+far_string_t sys_reset_cause_as_string(enum sys_reset_cause_t reset_cause);
 
 #endif
