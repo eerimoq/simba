@@ -35,14 +35,16 @@
 
 enum hx711_channel_gain_t {
     hx711_channel_gain_a_128_t = 1,
-    hx711_channel_gain_b_64_t,
-    hx711_channel_gain_a_32_t
+    hx711_channel_gain_b_32_t,
+    hx711_channel_gain_a_64_t
 };
 
 /* The HX711 driver. */
 struct hx711_driver_t {
     struct pin_device_t *pd_sck_p;
     struct pin_device_t *dout_p;
+    float scale;
+    float offset;
 };
 
 /**
@@ -62,12 +64,18 @@ int hx711_module_init(void);
  * @param[in,out] self_p Driver object to initialize.
  * @param[in] pd_sck_p PD_SCK pin device.
  * @param[in] dout_p DOUT pin device.
+ * @param[in] scale Scale value to multiple with read samples after
+ *                  the offset has been added.
+ * @param[in] offset Offset value to add to read samples before they
+ *                   are scaled.
  *
  * @return zero(0) or negative error code.
  */
 int hx711_init(struct hx711_driver_t *self_p,
                struct pin_device_t *pd_sck_p,
-               struct pin_device_t *dout_p);
+               struct pin_device_t *dout_p,
+               float scale,
+               float offset);
 
 /**
  * Start the driver by configuring the pins and resetting the HX711.
@@ -91,13 +99,51 @@ int hx711_stop(struct hx711_driver_t *self_p);
  * Read a sample from given channel and gain combination.
  *
  * @param[in] self_p Initialized driver object.
- * @param[out] sample_p Buffer to read the sample into.
+ * @param[out] weight_p Measured weight in grams.
  * @param[in] channel_gain Channel and gain combination.
  *
  * @return zero(0) or negative error code.
  */
 int hx711_read(struct hx711_driver_t *self_p,
-               uint32_t *sample_p,
+               float *weight_p,
                enum hx711_channel_gain_t channel_gain);
+
+/**
+ * Read a sample from given channel and gain combination and output
+ * the raw read value. No offset of scaling is performed.
+ *
+ * @param[in] self_p Initialized driver object.
+ * @param[out] sample_p Sign extended read sample.
+ * @param[in] channel_gain Channel and gain combination.
+ *
+ * @return zero(0) or negative error code.
+ */
+int hx711_read_raw(struct hx711_driver_t *self_p,
+                   int32_t *sample_p,
+                   enum hx711_channel_gain_t channel_gain);
+
+/**
+ * Set the scale value.
+ *
+ * @param[in] self_p Initialized driver object.
+ * @param[in] scale Scale value to multiple with read samples after
+ *                  the offset has been added.
+ *
+ * @return zero(0) or negative error code.
+ */
+int hx711_set_scale(struct hx711_driver_t *self_p,
+                    float scale);
+
+/**
+ * Set the offset value.
+ *
+ * @param[in] self_p Initialized driver object.
+ * @param[in] offset Offset value to add to read samples before they
+ *                   are scaled.
+ *
+ * @return zero(0) or negative error code.
+ */
+int hx711_set_offset(struct hx711_driver_t *self_p,
+                     float offset);
 
 #endif

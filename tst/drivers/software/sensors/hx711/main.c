@@ -41,7 +41,9 @@ static int test_init(struct harness_t *harness_p)
     BTASSERT(hx711_module_init() == 0);
     BTASSERT(hx711_init(&hx711,
                         PD_SCK_DEV_P,
-                        DOUT_DEV_P) == 0);
+                        DOUT_DEV_P,
+                        1,
+                        0) == 0);
 
     return (0);
 }
@@ -105,11 +107,11 @@ static int test_start(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_read(struct harness_t *harness_p)
+static int test_read_raw(struct harness_t *harness_p)
 {
     int i;
     int value;
-    uint32_t sample;
+    int32_t sample;
     struct pin_device_t *dev_p;
 
     /* First read bit (MSB) as one(1). First read is channel & gain
@@ -129,10 +131,104 @@ static int test_read(struct harness_t *harness_p)
 
     sample = 0xffffffff;
 
+    BTASSERT(hx711_read_raw(&hx711,
+                            &sample,
+                            hx711_channel_gain_a_128_t) == 0);
+    BTASSERTI(sample, ==, (int32_t)0xff800000);
+
+    /* A channel-gain of length 2 and sample has been read. */
+    for (i = 0; i < 24 + 2; i++) {
+        harness_mock_read("pin_port_device_write_high(dev_p)",
+                          &dev_p,
+                          sizeof(dev_p));
+        BTASSERT(dev_p == PD_SCK_DEV_P);
+
+        harness_mock_read("pin_port_device_write_low(dev_p)",
+                          &dev_p,
+                          sizeof(dev_p));
+        BTASSERT(dev_p == PD_SCK_DEV_P);
+    }
+
+    return (0);
+}
+
+static int test_read(struct harness_t *harness_p)
+{
+    int i;
+    int value;
+    float weight;
+    struct pin_device_t *dev_p;
+
+    /* First read bit (MSB) as one(1). First read is channel & gain
+       config, then read the ready bit, then one sample bit. */
+    value = 1;
+    harness_mock_write("pin_port_device_read(): return (value)",
+                       &value,
+                       sizeof(value));
+    value = 0;
+    harness_mock_write("pin_port_device_read(): return (value)",
+                       &value,
+                       sizeof(value));
+    value = 1;
+    harness_mock_write("pin_port_device_read(): return (value)",
+                       &value,
+                       sizeof(value));
+
+    weight = 0.0;
+
     BTASSERT(hx711_read(&hx711,
-                        &sample,
+                        &weight,
                         hx711_channel_gain_a_128_t) == 0);
-    BTASSERTI(sample, ==, 0x00800000);
+    BTASSERT(weight== -8388608.0);
+
+    /* A channel-gain of length 2 and sample has been read. */
+    for (i = 0; i < 24 + 2; i++) {
+        harness_mock_read("pin_port_device_write_high(dev_p)",
+                          &dev_p,
+                          sizeof(dev_p));
+        BTASSERT(dev_p == PD_SCK_DEV_P);
+
+        harness_mock_read("pin_port_device_write_low(dev_p)",
+                          &dev_p,
+                          sizeof(dev_p));
+        BTASSERT(dev_p == PD_SCK_DEV_P);
+    }
+
+    return (0);
+}
+
+static int test_read_scale_offset(struct harness_t *harness_p)
+{
+    int i;
+    int value;
+    float weight;
+    struct pin_device_t *dev_p;
+
+    /* Set scale and offset. */
+    BTASSERT(hx711_set_scale(&hx711, 0.1) == 0);
+    BTASSERT(hx711_set_offset(&hx711, 10.0) == 0);
+
+    /* First read bit (MSB) as one(1). First read is channel & gain
+       config, then read the ready bit, then one sample bit. */
+    value = 1;
+    harness_mock_write("pin_port_device_read(): return (value)",
+                       &value,
+                       sizeof(value));
+    value = 0;
+    harness_mock_write("pin_port_device_read(): return (value)",
+                       &value,
+                       sizeof(value));
+    value = 1;
+    harness_mock_write("pin_port_device_read(): return (value)",
+                       &value,
+                       sizeof(value));
+
+    weight = 0.0;
+
+    BTASSERT(hx711_read(&hx711,
+                        &weight,
+                        hx711_channel_gain_a_128_t) == 0);
+    BTASSERT(weight== -838859.8125);
 
     /* A channel-gain of length 2 and sample has been read. */
     for (i = 0; i < 24 + 2; i++) {
@@ -232,7 +328,9 @@ int main()
     struct harness_testcase_t harness_testcases[] = {
         { test_init, "test_init" },
         { test_start, "test_start" },
+        { test_read_raw, "test_read_raw" },
         { test_read, "test_read" },
+        { test_read_scale_offset, "test_read_scale_offset" },
         { test_stop, "test_stop" },
         { NULL, NULL }
     };

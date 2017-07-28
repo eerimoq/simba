@@ -23,24 +23,24 @@ channel and gain combination.
 .. code-block:: c
 
    struct hx711_driver_t hx711;
-   uint32_t samples_a_128;
-   uint32_t samples_b_64;
-   uint32_t samples_a_32;
+   float weight_a_128;
+   float weight_b_64;
+   float weight_a_32;
 
    /* Initialize and start the deivce. */
-   hx711_init(&hx711, &pin_d2_dev, &pin_d3_dev);
+   hx711_init(&hx711, &pin_d2_dev, &pin_d3_dev, 1.0, 0.0);
    hx711_start(&hx711);
 
    /* Read a few samples from the device. */
-   hx711_read(&hx711, &sample_a_128, hx711_channel_gain_a_128_t);
-   hx711_read(&hx711, &sample_b_64, hx711_channel_gain_b_64_t);
-   hx711_read(&hx711, &sample_a_32, hx711_channel_gain_a_32_t);
+   hx711_read(&hx711, &weight_a_128, hx711_channel_gain_a_128_t);
+   hx711_read(&hx711, &weight_b_64, hx711_channel_gain_b_64_t);
+   hx711_read(&hx711, &weight_a_32, hx711_channel_gain_a_32_t);
 
    /* Print the samples. */
-   std_printf(OSTR("sample_a_128: %lu, sample_b_64: %lu, sample_a_32: %lu\r\n"),
-              sample_a_128,
-              sample_b_64,
-              sample_a_32);
+   std_printf(OSTR("weight_a_128: %f, weight_b_64: %f, weight_a_32: %f\r\n"),
+              weight_a_128,
+              weight_b_64,
+              weight_a_32);
 
    /* Stop the deivce. */
    hx711_stop(&hx711);
@@ -52,6 +52,8 @@ Source code: :github-blob:`src/drivers/sensors/hx711.h`, :github-blob:`src/drive
 Test code: :github-blob:`tst/drivers/software/sensors/hx711/main.c`
 
 Test coverage: :codecov:`src/drivers/sensors/hx711.c`
+
+Example code: :github-blob:`examples/hx711/main.c`
 
 --------------------------------------------------
 

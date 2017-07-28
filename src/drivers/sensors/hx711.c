@@ -56,16 +56,21 @@ static int read_bit(struct hx711_driver_t *self_p)
     return (value);
 }
 
-static uint32_t read_sample(struct hx711_driver_t *self_p)
+static int32_t read_sample(struct hx711_driver_t *self_p)
 {
     int i;
-    uint32_t sample;
+    int32_t sample;
 
     sample = 0;
 
     for (i = 0; i < 24; i++) {
         sample <<= 1;
         sample |= read_bit(self_p);
+    }
+
+    /* Sign extension. */
+    if (0x800000 & sample) {
+        sample |= 0xff000000;
     }
 
     return (sample);
@@ -78,10 +83,14 @@ int hx711_module_init()
 
 int hx711_init(struct hx711_driver_t *self_p,
                struct pin_device_t *pd_sck_p,
-               struct pin_device_t *dout_p)
+               struct pin_device_t *dout_p,
+               float scale,
+               float offset)
 {
     self_p->pd_sck_p = pd_sck_p;
     self_p->dout_p = dout_p;
+    self_p->scale = scale;
+    self_p->offset = offset;
 
     return (0);
 }
@@ -111,8 +120,26 @@ int hx711_stop(struct hx711_driver_t *self_p)
 }
 
 int hx711_read(struct hx711_driver_t *self_p,
-               uint32_t *sample_p,
+               float *weight_p,
                enum hx711_channel_gain_t channel_gain)
+{
+    int res;
+    int32_t sample;
+
+    res = hx711_read_raw(self_p, &sample, channel_gain);
+
+    if (res != 0) {
+        return (res);
+    }
+
+    *weight_p = (((float)sample + self_p->offset) * self_p->scale);
+
+    return (0);
+}
+
+int hx711_read_raw(struct hx711_driver_t *self_p,
+                   int32_t *sample_p,
+                   enum hx711_channel_gain_t channel_gain)
 {
     int i;
 
@@ -127,6 +154,22 @@ int hx711_read(struct hx711_driver_t *self_p,
 
     /* Read the sample. */
     *sample_p = read_sample(self_p);
+
+    return (0);
+}
+
+int hx711_set_scale(struct hx711_driver_t *self_p,
+                    float scale)
+{
+    self_p->scale = scale;
+
+    return (0);
+}
+
+int hx711_set_offset(struct hx711_driver_t *self_p,
+                     float offset)
+{
+    self_p->offset = offset;
 
     return (0);
 }
