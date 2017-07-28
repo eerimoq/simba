@@ -29,3 +29,4 @@ build
 .*.passed
 
 spc5tool_gui.json
+*.bak

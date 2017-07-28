@@ -39,6 +39,8 @@
 static struct fs_counter_t rx_channel_overflow;
 static struct fs_counter_t errors;
 
+extern xSemaphoreHandle thrd_idle_sem;
+
 /**
  * Reset the hardware by clearing counters, errors and interrupts, and
  * then setting the device into normal mode.
@@ -161,6 +163,7 @@ static void isr(void *arg_p)
     struct can_driver_t *self_p;
     volatile struct esp32_can_t *regs_p;
     uint8_t interrupt;
+    portBASE_TYPE higher_prio_task_woken;
 
     self_p = can_device[0].drv_p;
 
@@ -182,6 +185,13 @@ static void isr(void *arg_p)
         } else {
             thrd_resume_isr(self_p->thrd_p, 0);
             self_p->thrd_p = NULL;
+
+            higher_prio_task_woken = pdFALSE;
+            xSemaphoreGiveFromISR(thrd_idle_sem, &higher_prio_task_woken);
+
+            if (higher_prio_task_woken == pdTRUE) {
+                portYIELD_FROM_ISR() ;
+            }
         }
     }
 
@@ -199,12 +209,24 @@ static void isr(void *arg_p)
                      | ESP32_CAN_INT_BUS_ERR)) {
         fs_counter_increment(&errors, 1);
 
-        if (self_p->thrd_p != NULL) {
-            thrd_resume_isr(self_p->thrd_p, -EIO);
-            self_p->thrd_p = NULL;
-        }
+        /* In case of many errors or bus-off state reset the hardware */
+        if (regs_p->STATUS & (ESP32_CAN_STATUS_ERR | ESP32_CAN_STATUS_BUS)) {
 
-        reset_hw(self_p);
+            /* if any thread is waiting for write(...) finish, wake them with error code */
+            if (self_p->thrd_p != NULL) {
+                thrd_resume_isr(self_p->thrd_p, -EIO);
+                self_p->thrd_p = NULL;
+
+                higher_prio_task_woken = pdFALSE;
+                xSemaphoreGiveFromISR(thrd_idle_sem, &higher_prio_task_woken);
+
+                if (higher_prio_task_woken == pdTRUE) {
+                    portYIELD_FROM_ISR() ;
+                }
+            }
+            
+            reset_hw(self_p);
+        }
     }
 }
 
@@ -214,11 +236,19 @@ static ssize_t write_cb(void *arg_p,
 {
     struct can_driver_t *self_p;
     struct can_device_t *dev_p;
+    volatile struct esp32_can_t *regs_p;
     const struct can_frame_t *frame_p = (struct can_frame_t *)buf_p;
     ssize_t res;
 
     self_p = arg_p;
     dev_p = self_p->dev_p;
+    regs_p = dev_p->regs_p;
+    
+    /* return error if CAN-module is waiting to be idle again */
+    if ( ( regs_p->STATUS & (ESP32_CAN_STATUS_RX | ESP32_CAN_STATUS_TX) ) ==
+                            (ESP32_CAN_STATUS_RX | ESP32_CAN_STATUS_TX)         ) {
+        return (-EIO);
+    }
 
     sem_take(&self_p->sem, NULL);
 
@@ -270,6 +300,8 @@ int can_port_start(struct can_driver_t *self_p)
     volatile struct esp32_can_t *regs_p;
     struct pin_device_t *tx_pin_p;
     struct pin_device_t *rx_pin_p;
+    struct time_t now, stop, delta; ///< for time measurement in STATUS reg polling
+    uint8_t still_waiting_for_bus_idle;
 
     dev_p = self_p->dev_p;
     regs_p = dev_p->regs_p;
@@ -325,6 +357,30 @@ int can_port_start(struct can_driver_t *self_p)
 
     dev_p->drv_p = self_p;
 
+    /* Check CAN-RX pin is connected to the trasceiver.
+       Return error if "CAN-module is waiting to be idle again".
+       CAN-module in this state is waiting for 11 consecutive recessive bits,
+       so we will wait for at least 170 bit-periods (128*1.2+11 = 164, where
+       128 - is maximum CAN-frame length, 1.2 - bit stuffing koeff)
+    */
+    still_waiting_for_bus_idle = 1;
+    time_get(&now);
+    delta.seconds = 0;
+    delta.nanoseconds = 17000L * 1000;    // 17000 = 170 * 100: 170 cycles of bit-period @ 10 KBPS (100 us per bit)
+    time_add(&stop, &now, &delta);
+    while ( (now.seconds < stop.seconds) || (now.nanoseconds < stop.nanoseconds) ) {   
+        if ( ( regs_p->STATUS & (ESP32_CAN_STATUS_RX | ESP32_CAN_STATUS_TX) ) !=
+                                (ESP32_CAN_STATUS_RX | ESP32_CAN_STATUS_TX)         ) {
+            
+            still_waiting_for_bus_idle = 0;
+            break;
+        }    
+        time_get(&now);
+    }
+    if ( still_waiting_for_bus_idle  ) {
+        return (-ENETDOWN);
+    }
+    
     return (0);
 }
 
