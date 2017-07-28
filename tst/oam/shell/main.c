@@ -204,7 +204,7 @@ static int test_auto_completion(struct harness_t *harness_p)
     BTASSERT(harness_expect(&qout,
                             "\r\n"
                             "bar\r\n"
-#if !defined(ARCH_LINUX) && !defined(ARCH_PPC)
+#if !defined(ARCH_LINUX) && !defined(ARCH_PPC) && !defined(ARCH_AVR)
                             "drivers/\r\n"
 #endif
                             "fie\r\n"
