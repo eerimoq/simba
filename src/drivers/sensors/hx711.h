@@ -96,10 +96,11 @@ int hx711_start(struct hx711_driver_t *self_p);
 int hx711_stop(struct hx711_driver_t *self_p);
 
 /**
- * Read a sample from given channel and gain combination.
+ * Read a offsetted and scaled weight from given channel and gain
+ * combination.
  *
  * @param[in] self_p Initialized driver object.
- * @param[out] weight_p Measured weight in grams.
+ * @param[out] weight_p Measured offsetted and scaled weight.
  * @param[in] channel_gain Channel and gain combination.
  *
  * @return zero(0) or negative error code.
@@ -110,7 +111,8 @@ int hx711_read(struct hx711_driver_t *self_p,
 
 /**
  * Read a sample from given channel and gain combination and output
- * the raw read value. No offset of scaling is performed.
+ * the sign extended raw read value. No offsetting or scaling is
+ * performed.
  *
  * @param[in] self_p Initialized driver object.
  * @param[out] sample_p Sign extended read sample.
