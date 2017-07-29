@@ -39,7 +39,7 @@ static struct module_t module;
 
 static void adjust_result(struct time_t *res_p)
 {
-    /* abs(nanosecons) must be less than 1000000000. */
+    /* abs(nanoseconds) must be less than 1000000000. */
     if (res_p->nanoseconds < -999999999L) {
         res_p->seconds--;
         res_p->nanoseconds += 1000000000L;
@@ -112,6 +112,21 @@ int time_subtract(struct time_t *res_p,
     adjust_result(res_p);
 
     return (0);
+}
+
+enum time_compare_t time_compare(struct time_t *left_p,
+                                 struct time_t *right_p)
+{
+    if ((left_p->seconds == right_p->seconds)
+        && (left_p->nanoseconds == right_p->nanoseconds)) {
+        return (time_compare_equal_t);
+    } else if ((left_p->seconds < right_p->seconds) ||
+               ((left_p->seconds == right_p->seconds)
+                && (left_p->nanoseconds < right_p->nanoseconds))) {
+        return (time_compare_less_than_t);
+    } else {
+        return (time_compare_greater_than_t);
+    }
 }
 
 #if CONFIG_TIME_UNIX_TIME_TO_DATE == 1

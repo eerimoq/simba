@@ -273,6 +273,49 @@ static int test_subtract(struct harness_t *harness_p)
     return (0);
 }
 
+static int test_compare(struct harness_t *harness_p)
+{
+    int i;
+
+    /* Left and right. */
+    struct time_t times[][2] = {
+        { {  0,          0 }, {  0,          0 } },
+        { {  1,          0 }, {  0,  100000000 } },
+        { { -1,          0 }, {  0, -100000000 } },
+        { {  1,          0 }, {  2,          0 } },
+        { {  0,          0 }, {  0,  100000000 } },
+        { {  1,          0 }, {  0, -100000000 } },
+        { { 10,  100000000 }, {  2,  700000000 } },
+        { { 10,  100000000 }, { 20,  700000000 } },
+        { {  0, -600000000 }, {  0,  700000000 } },
+        { {  0,  600000000 }, {  0, -700000000 } },
+        { {  0, -600000000 }, {  0, -700000000 } },
+        { {  -1,         0 }, {  0, -999999999 } }
+    };
+
+    /* Result. */
+    enum time_compare_t results[membersof(times)] = {
+        time_compare_equal_t,
+        time_compare_greater_than_t,
+        time_compare_less_than_t,
+        time_compare_less_than_t,
+        time_compare_less_than_t,
+        time_compare_greater_than_t,
+        time_compare_greater_than_t,
+        time_compare_less_than_t,
+        time_compare_less_than_t,
+        time_compare_greater_than_t,
+        time_compare_greater_than_t,
+        time_compare_less_than_t
+    };
+
+    for (i = 0; i < membersof(times); i++) {
+        BTASSERTI(time_compare(&times[i][0], &times[i][1]), ==, results[i]);
+    }
+
+    return (0);
+}
+
 static int test_micros(struct harness_t *harness_p)
 {
     int i;
@@ -319,6 +362,7 @@ int main()
         { test_sleep, "test_sleep" },
         { test_add, "test_add" },
         { test_subtract, "test_subtract" },
+        { test_compare, "test_compare" },
         { test_micros, "test_micros" },
         { NULL, NULL }
     };

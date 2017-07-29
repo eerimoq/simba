@@ -65,6 +65,15 @@ struct date_t {
 };
 
 /**
+ * A comparsion result.
+ */
+enum time_compare_t {
+    time_compare_less_than_t = 0,
+    time_compare_equal_t = 1,
+    time_compare_greater_than_t = 2
+};
+
+/**
  * Get current time in seconds and nanoseconds. The resolution of the
  * time is implementation specific and may vary a lot between
  * different architectures.
@@ -111,6 +120,18 @@ int time_add(struct time_t *res_p,
 int time_subtract(struct time_t *res_p,
                   struct time_t *left_p,
                   struct time_t *right_p);
+
+/**
+ * Compare given times and return their relationship as `less than`,
+ * `equal`, or `greater than`.
+ *
+ * @param[in] left_p First time to compare.
+ * @param[in] right_p Second time to compare.
+ *
+ * @return The result of the comparsion.
+ */
+enum time_compare_t time_compare(struct time_t *left_p,
+                                 struct time_t *right_p);
 
 /**
  * Convert given unix time to a date.
