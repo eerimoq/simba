@@ -30,8 +30,8 @@
 
 #include "simba.h"
 
-/* Timeout of 1 ms. */
-#define READY_TIMEOUT_NS 1000000
+/* Timeout of 2 s. */
+#define READY_TIMEOUT_S 2
 
 /**
  * Wait for the sensor to be ready.
@@ -41,8 +41,8 @@ static int wait_ready(struct hx711_driver_t *self_p)
     struct time_t stop;
     struct time_t now;
 
-    stop.seconds = 0;
-    stop.nanoseconds = READY_TIMEOUT_NS;
+    stop.seconds = READY_TIMEOUT_S;
+    stop.nanoseconds = 0;
 
     sys_uptime(&now);
     time_add(&stop, &stop, &now);
@@ -53,6 +53,7 @@ static int wait_ready(struct hx711_driver_t *self_p)
         }
 
         sys_uptime(&now);
+        thrd_yield();
     }
 
     return (-ETIMEDOUT);
