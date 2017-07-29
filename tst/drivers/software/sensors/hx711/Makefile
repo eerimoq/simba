@@ -37,7 +37,7 @@ CDEFS += \
 	CONFIG_HARNESS_HEAP_MAX=131072 \
 	CONFIG_HARNESS_MOCK_VERBOSE=0
 
-STUB = $(SIMBA_ROOT)/src/drivers/sensors/hx711.c:pin_port_device_set_mode,pin_port_device_read,pin_port_device_write_high,pin_port_device_write_low,sys_lock,sys_unlock
+STUB = $(SIMBA_ROOT)/src/drivers/sensors/hx711.c:pin_port_device_set_mode,pin_port_device_read,pin_port_device_write_high,pin_port_device_write_low,sys_lock,sys_unlock,time_compare
 
 DRIVERS_SRC = sensors/hx711.c
 
