@@ -64,7 +64,7 @@ int hx711_module_init(void);
  * @param[in,out] self_p Driver object to initialize.
  * @param[in] pd_sck_p PD_SCK pin device.
  * @param[in] dout_p DOUT pin device.
- * @param[in] scale Scale value to multiple with read samples after
+ * @param[in] scale Scale value to multiply with read samples after
  *                  the offset has been added.
  * @param[in] offset Offset value to add to read samples before they
  *                   are scaled.
@@ -128,7 +128,7 @@ int hx711_read_raw(struct hx711_driver_t *self_p,
  * Set the scale value.
  *
  * @param[in] self_p Initialized driver object.
- * @param[in] scale Scale value to multiple with read samples after
+ * @param[in] scale Scale value to multiply with read samples after
  *                  the offset has been added.
  *
  * @return zero(0) or negative error code.
