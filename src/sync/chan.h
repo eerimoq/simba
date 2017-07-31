@@ -282,7 +282,7 @@ ssize_t chan_write(void *self_p,
  *
  * @param[in] self_p Channel to read from.
  *
- * @return The read character as an unsigned char casted to an int or
+ * @return The read character as an unsigned char casted to an int, or
  *         negative error code.
  */
 int chan_getc(void *self_p);
@@ -294,8 +294,8 @@ int chan_getc(void *self_p);
  * and some returns immediately.
  *
  * @param[in] self_p Channel to write to.
- * @param[in] value Character to write as un unsigned char casted to
- *                  an int.
+ * @param[in] character Character to write as un unsigned char casted
+ *                      to an int.
  *
  * @return zero(0) or negative error code.
  */
