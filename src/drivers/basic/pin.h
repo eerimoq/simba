@@ -105,7 +105,7 @@ int pin_init(struct pin_driver_t *self_p,
  * system lock taken.
  *
  * @param[in] self_p Driver object.
- * @param[in] value ``1`` for high and ``0`` for low output.
+ * @param[in] value Non-zero for high and ``0`` for low output.
  *
  * @return zero(0) or negative error code.
  */
@@ -183,6 +183,20 @@ static inline int pin_device_read(const struct pin_device_t *dev_p)
 {
     return (pin_port_device_read(dev_p));
 }
+
+/**
+ * Write given value to given pin device.
+ *
+ * This function may be called from interrupt context and with the
+ * system lock taken.
+ *
+ * @param[in] self_p Pin device.
+ * @param[in] value Non-zero for high and ``0`` for low output.
+ *
+ * @return zero(0) or negative error code.
+ */
+int pin_device_write(const struct pin_device_t *dev_p,
+                     int value);
 
 /**
  * Write high to given pin device.
