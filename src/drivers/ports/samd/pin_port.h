@@ -28,36 +28,47 @@
  * This file is part of the Simba project.
  */
 
-#ifndef __MCU_H__
-#define __MCU_H__
+#ifndef __DRIVERS_PIN_PORT_H__
+#define __DRIVERS_PIN_PORT_H__
 
-#include "sam3.h"
+struct pin_device_t {
+    volatile struct sam_pio_t *pio_p;
+    uint32_t mask;
+};
 
-/* Pin controller start indexes in devices array. */
-#define SAM_PA 0
-#define SAM_PB 30
-#define SAM_PC 62
-#define SAM_PD 93
+struct pin_driver_t {
+    const struct pin_device_t *dev_p;
+};
 
-#if defined(MCU_SAM3X8E)
-#    define PIN_DEVICE_MAX             103
-#    define EXTI_DEVICE_MAX PIN_DEVICE_MAX
-#    define SPI_DEVICE_MAX               1
-#    define UART_DEVICE_MAX              4
-#    define PWM_DEVICE_MAX              12
-#    define ADC_DEVICE_MAX               1
-#    define DAC_DEVICE_MAX               1
-#    define FLASH_DEVICE_MAX             1
-#    define CAN_DEVICE_MAX               2
-#    define USB_DEVICE_MAX               1
-#    define I2C_DEVICE_MAX               2
-#elif defined(MCU_SAMD21G18)
-#    define PIN_DEVICE_MAX              10
-#    define UART_DEVICE_MAX              2
-#    define I2C_DEVICE_MAX               1
-#    define FLASH_DEVICE_MAX             1
-#else
-#     error "Unsupported MCU."
-#endif
+static inline int pin_port_device_set_mode(const struct pin_device_t *dev_p,
+                                           int mode)           
+{
+    if (mode == PIN_OUTPUT) {
+        dev_p->pio_p->OER = dev_p->mask;
+    } else {
+        dev_p->pio_p->ODR = dev_p->mask;
+    }
+
+    return (0);
+}
+
+static inline int pin_port_device_read(const struct pin_device_t *dev_p)
+{
+    return ((dev_p->pio_p->PDSR & dev_p->mask) != 0);
+}
+
+static inline int pin_port_device_write_high(const struct pin_device_t *dev_p)
+{
+    dev_p->pio_p->SODR = dev_p->mask;
+    
+    return (0);
+}
+
+static inline int pin_port_device_write_low(const struct pin_device_t *dev_p) 
+{
+    dev_p->pio_p->CODR = dev_p->mask;
+    
+    return (0);
+}
 
 #endif

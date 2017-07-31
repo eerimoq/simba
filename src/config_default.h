@@ -101,6 +101,11 @@
 #    define PORT_HAS_USB_HOST
 #endif
 
+#if defined(FAMILY_SAMD)
+#    define PORT_HAS_EEPROM_SOFT
+#    define PORT_HAS_FLASH
+#endif
+
 #if defined(FAMILY_ESP)
 #    define PORT_HAS_ADC
 #    define PORT_HAS_EEPROM_SOFT

@@ -30,6 +30,7 @@
 
 static void time_port_busy_wait_us(long microseconds)
 {
+#if !defined(FAMILY_SAMD)
     /*
      * Based on Paul Stoffregen's implementation
      * for Teensy 3.0 (http://www.pjrc.com/)
@@ -46,6 +47,7 @@ static void time_port_busy_wait_us(long microseconds)
                  "subs   %0, #1"               "\n\t"
                  "bne    L_%=_time_port_busy_wait_us" "\n"
                  : "+r" (iterations) : );
+#endif
 }
 
 static int time_port_micros(void)

@@ -28,36 +28,26 @@
  * This file is part of the Simba project.
  */
 
-#ifndef __MCU_H__
-#define __MCU_H__
+#ifndef __DRIVERS_FLASH_PORT_H__
+#define __DRIVERS_FLASH_PORT_H__
 
-#include "sam3.h"
+#include <io.h>
 
-/* Pin controller start indexes in devices array. */
-#define SAM_PA 0
-#define SAM_PB 30
-#define SAM_PC 62
-#define SAM_PD 93
+struct flash_device_bank_t {
+    int index;
+    volatile struct sam_eefc_t *regs_p;
+    uint32_t begin;
+    uint32_t end;
+    uint32_t page_size;
+};
 
-#if defined(MCU_SAM3X8E)
-#    define PIN_DEVICE_MAX             103
-#    define EXTI_DEVICE_MAX PIN_DEVICE_MAX
-#    define SPI_DEVICE_MAX               1
-#    define UART_DEVICE_MAX              4
-#    define PWM_DEVICE_MAX              12
-#    define ADC_DEVICE_MAX               1
-#    define DAC_DEVICE_MAX               1
-#    define FLASH_DEVICE_MAX             1
-#    define CAN_DEVICE_MAX               2
-#    define USB_DEVICE_MAX               1
-#    define I2C_DEVICE_MAX               2
-#elif defined(MCU_SAMD21G18)
-#    define PIN_DEVICE_MAX              10
-#    define UART_DEVICE_MAX              2
-#    define I2C_DEVICE_MAX               1
-#    define FLASH_DEVICE_MAX             1
-#else
-#     error "Unsupported MCU."
-#endif
+struct flash_device_t {
+    struct flash_device_bank_t banks[2];
+    struct sem_t sem;
+};
+
+struct flash_driver_t {
+    struct flash_device_t *dev_p;
+};
 
 #endif

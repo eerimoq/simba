@@ -28,36 +28,36 @@
  * This file is part of the Simba project.
  */
 
-#ifndef __MCU_H__
-#define __MCU_H__
+#ifndef __DRIVERS_UART_PORT_H__
+#define __DRIVERS_UART_PORT_H__
 
-#include "sam3.h"
+#include <io.h>
 
-/* Pin controller start indexes in devices array. */
-#define SAM_PA 0
-#define SAM_PB 30
-#define SAM_PC 62
-#define SAM_PD 93
+struct uart_device_t {
+    struct uart_driver_t *drv_p;         /* Current started driver. */
+    volatile struct sam_uart_t *regs_p;
+    struct {
+        struct {
+            volatile struct sam_pio_t *regs_p;
+            uint32_t mask;
+        } rx;
+        struct {
+            volatile struct sam_pio_t *regs_p;
+            uint32_t mask;
+        } tx;
+    } pio;
+    int id;
+    uint8_t rxbuf[1];
+};
 
-#if defined(MCU_SAM3X8E)
-#    define PIN_DEVICE_MAX             103
-#    define EXTI_DEVICE_MAX PIN_DEVICE_MAX
-#    define SPI_DEVICE_MAX               1
-#    define UART_DEVICE_MAX              4
-#    define PWM_DEVICE_MAX              12
-#    define ADC_DEVICE_MAX               1
-#    define DAC_DEVICE_MAX               1
-#    define FLASH_DEVICE_MAX             1
-#    define CAN_DEVICE_MAX               2
-#    define USB_DEVICE_MAX               1
-#    define I2C_DEVICE_MAX               2
-#elif defined(MCU_SAMD21G18)
-#    define PIN_DEVICE_MAX              10
-#    define UART_DEVICE_MAX              2
-#    define I2C_DEVICE_MAX               1
-#    define FLASH_DEVICE_MAX             1
-#else
-#     error "Unsupported MCU."
-#endif
+struct uart_driver_t {
+    struct queue_t base;
+    struct uart_device_t *dev_p;
+    struct mutex_t mutex;
+    const char *txbuf_p;
+    size_t txsize;
+    struct thrd_t *thrd_p;
+    long baudrate;
+};
 
 #endif

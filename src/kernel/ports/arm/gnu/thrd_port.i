@@ -45,6 +45,8 @@ static char *thrd_port_get_main_thrd_stack_top(void)
     return (&__main_stack_end);
 }
 
+#if !defined(FAMILY_SAMD)
+
 __attribute__((naked))
 static void thrd_port_swap(struct thrd_t *in_p,
                            struct thrd_t *out_p)
@@ -62,7 +64,17 @@ static void thrd_port_swap(struct thrd_t *in_p,
     /* Load registers. pop lr to pc and continue execution. */
     asm volatile ("pop {r4-r11}");
     asm volatile ("pop {pc}");
- }
+}
+
+#else
+
+__attribute__((naked))
+static void thrd_port_swap(struct thrd_t *in_p,
+                           struct thrd_t *out_p)
+{
+}
+
+#endif
 
 static void thrd_port_init_main(struct thrd_port_t *port)
 {
