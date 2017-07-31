@@ -8,7 +8,7 @@ Pinout
    :width: 50%
    :target: ../_images/nrf52_dk_pinout_armmbed_enabled_v2.png
 
-
+.. include:: extra/nrf52840_pdk.rst
 
 Default system features
 -----------------------
