@@ -40,6 +40,7 @@
 #define PORT_HAS_XBEE_CLIENT
 #define PORT_HAS_HX711
 #define PORT_HAS_GNSS
+#define PORT_HAS_HD44780
 
 /**
  * Used to include driver header files and the c-file source.

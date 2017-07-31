@@ -1,0 +1,15 @@
+:mod:`hd44780` --- Dot matrix LCD
+=================================
+
+.. module:: hd44780
+   :synopsis: Dot matrix LCD.
+
+Source code: :github-blob:`src/drivers/displays/hd44780.h`,
+:github-blob:`src/drivers/displays/hd44780.c`
+
+Example code: :github-blob:`examples/drivers/displays/hd44780/main.c`
+
+----------------------------------------------
+
+.. doxygenfile:: drivers/displays/hd44780.h
+   :project: simba

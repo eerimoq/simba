@@ -262,6 +262,9 @@ extern "C" {
 #ifdef PORT_HAS_PCINT
 #    include "drivers/basic/pcint.h"
 #endif
+#ifdef PORT_HAS_HD44780
+#    include "drivers/displays/hd44780.h"
+#endif
 
 #include "inet/isotp.h"
 

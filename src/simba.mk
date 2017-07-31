@@ -114,6 +114,7 @@ DRIVERS_SRC ?= \
 	basic/pwm_soft.c \
 	basic/random.c \
 	basic/watchdog.c \
+	displays/hd44780.c \
 	displays/led_7seg_ht16k33.c \
 	displays/ws2812.c \
 	network/can.c \

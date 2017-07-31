@@ -278,7 +278,7 @@ ssize_t chan_write(void *self_p,
 /**
  * Read a character from given channel. The behaviour of this function
  * depends on the channel implementation. Often, the calling thread
- * will be blocked until all data has been read or an error occurs.
+ * will be blocked until the character has been read or an error occurs.
  *
  * @param[in] self_p Channel to read from.
  *
@@ -290,8 +290,8 @@ int chan_getc(void *self_p);
 /**
  * Write given character to given channel. The behaviour of this
  * function depends on the channel implementation. Some channel
- * implementations blocks until the receiver has read the data, and
- * some returns immediately.
+ * implementations blocks until the receiver has read the character,
+ * and some returns immediately.
  *
  * @param[in] self_p Channel to write to.
  * @param[in] value Character to write as un unsigned char casted to
