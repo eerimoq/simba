@@ -184,6 +184,35 @@ ssize_t chan_write(void *v_self_p,
     return (self_p->write(self_p, buf_p, size));
 }
 
+int chan_getc(void *self_p)
+{
+    ssize_t res;
+    unsigned char character;
+
+    res = chan_read(self_p, &character, sizeof(character));
+
+    if (res == sizeof(character)) {
+        res = (int)character;
+    }
+
+    return (res);
+}
+
+int chan_putc(void *self_p, int character)
+{
+    ssize_t res;
+    unsigned char uc_character;
+
+    uc_character = (unsigned char)character;
+    res = chan_write(self_p, &uc_character, sizeof(uc_character));
+
+    if (res == sizeof(uc_character)) {
+        res = 0;
+    }
+
+    return (res);
+}
+
 int chan_control(void *self_p,
                  int operation)
 {

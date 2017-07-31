@@ -33,6 +33,41 @@
 static int write_filter_return_value;
 static char buffer[8];
 
+static ssize_t read_mock(void *self_p,
+                         void *buf_p,
+                         size_t size)
+{
+    ssize_t res;
+
+    harness_mock_read("read_mock(): return (res)",
+                      &res,
+                      sizeof(res));
+
+    if (res > 0) {
+        harness_mock_read("read_mock(): return (buf_p)",
+                          buf_p,
+                          size);
+    }
+
+    return (res);
+}
+
+static ssize_t write_mock(void *self_p,
+                          const void *buf_p,
+                          size_t size)
+{
+    ssize_t res;
+
+    harness_mock_write("write_mock(buf_p)",
+                       buf_p,
+                       size);
+    harness_mock_read("write_mock(): return (res)",
+                      &res,
+                      sizeof(res));
+
+    return (res);
+}
+
 static ssize_t write_cb(void *self_p,
                         const void *buf_p,
                         size_t size)
@@ -140,6 +175,108 @@ static int test_list(struct harness_t *harness_p)
     return (0);
 }
 
+static int test_getc(struct harness_t *harness_p)
+{
+    struct chan_t chan;
+    ssize_t res;
+    unsigned char character;
+    
+    BTASSERT(chan_init(&chan,
+                       read_mock,
+                       chan_write_null,
+                       chan_size_null) == 0);
+
+    /* A positive signed char. */
+    res = sizeof(character);
+    harness_mock_write("read_mock(): return (res)",
+                       &res,
+                       sizeof(res));
+    character = 'f';
+    harness_mock_write("read_mock(): return (buf_p)",
+                       &character,
+                       sizeof(character));
+
+    BTASSERTI(chan_getc(&chan), ==, 'f');
+
+    /* A negative signed char. */
+    res = sizeof(character);
+    harness_mock_write("read_mock(): return (res)",
+                       &res,
+                       sizeof(res));
+    character = 0xff;
+    harness_mock_write("read_mock(): return (buf_p)",
+                       &character,
+                       sizeof(character));
+
+    BTASSERTI(chan_getc(&chan), ==, 0xff);
+
+    /* Input output error gives negative error code. */
+    res = -EIO;
+    harness_mock_write("read_mock(): return (res)",
+                       &res,
+                       sizeof(res));
+
+    BTASSERTI(chan_getc(&chan), ==, -EIO);
+    
+    return (0);
+}
+
+static int test_putc(struct harness_t *harness_p)
+{
+    struct chan_t chan;
+    ssize_t res;
+    unsigned char character;
+    
+    BTASSERT(chan_init(&chan,
+                       chan_read_null,
+                       write_mock,
+                       chan_size_null) == 0);
+
+    /* A positive signed char. */
+    res = sizeof(character);
+    harness_mock_write("write_mock(): return (res)",
+                       &res,
+                       sizeof(res));
+
+    BTASSERTI(chan_putc(&chan, 'f'), ==, 0);
+
+    character = '\0';
+    harness_mock_read("write_mock(buf_p)",
+                       &character,
+                       sizeof(character));
+    BTASSERTI(character, ==, 'f');
+
+    /* A negative signed char. */
+    res = sizeof(character);
+    harness_mock_write("write_mock(): return (res)",
+                       &res,
+                       sizeof(res));
+
+    BTASSERTI(chan_putc(&chan, 0xfe), ==, 0);
+
+    character = '\0';
+    harness_mock_read("write_mock(buf_p)",
+                       &character,
+                       sizeof(character));
+    BTASSERTI(character, ==, 0xfe);
+
+    /* Input output error gives negative error code. */
+    res = -EIO;
+    harness_mock_write("write_mock(): return (res)",
+                       &res,
+                       sizeof(res));
+
+    BTASSERTI(chan_putc(&chan, ' '), ==, -EIO);
+
+    character = '\0';
+    harness_mock_read("write_mock(buf_p)",
+                       &character,
+                       sizeof(character));
+    BTASSERTI(character, ==, ' ');
+    
+    return (0);
+}
+
 int main()
 {
     struct harness_t harness;
@@ -147,6 +284,8 @@ int main()
         { test_filter, "test_filter" },
         { test_null_channels, "test_null_channels" },
         { test_list, "test_list" },
+        { test_getc, "test_getc" },
+        { test_putc, "test_putc" },
         { NULL, NULL }
     };
 
