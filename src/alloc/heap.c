@@ -177,7 +177,7 @@ int heap_init(struct heap_t *self_p,
 
     self_p->dynamic.free_p = NULL;
 
-    return (0);
+    return (mutex_init(&self_p->mutex));
 }
 
 void *heap_alloc(struct heap_t *self_p,
@@ -188,7 +188,7 @@ void *heap_alloc(struct heap_t *self_p,
 
     void *buf_p = NULL;
 
-    sys_lock();
+    mutex_lock(&self_p->mutex);
 
     if (size <= self_p->fixed[HEAP_FIXED_SIZES_MAX - 1].size) {
         buf_p = alloc_fixed_size(self_p, size);
@@ -196,7 +196,7 @@ void *heap_alloc(struct heap_t *self_p,
         buf_p = alloc_dynamic_size(self_p, size);
     }
 
-    sys_unlock();
+    mutex_unlock(&self_p->mutex);
 
     return (buf_p);
 }
@@ -212,7 +212,7 @@ int heap_free(struct heap_t *self_p,
 
     header_p = &((struct heap_buffer_header_t *)buf_p)[-1];
 
-    sys_lock();
+    mutex_lock(&self_p->mutex);
 
     if (header_p->count > 0) {
         header_p->count--;
@@ -230,7 +230,7 @@ int heap_free(struct heap_t *self_p,
         count = -1;
     }
 
-    sys_unlock();
+    mutex_unlock(&self_p->mutex);
 
     return (count);
 }
@@ -247,9 +247,9 @@ int heap_share(struct heap_t *self_p,
 
     header_p = &((struct heap_buffer_header_t *)buf_p)[-1];
 
-    sys_lock();
+    mutex_lock(&self_p->mutex);
     header_p->count += count;
-    sys_unlock();
+    mutex_unlock(&self_p->mutex);
 
     return (0);
 }

@@ -56,6 +56,7 @@ struct heap_t {
     void *next_p;
     struct heap_fixed_t fixed[HEAP_FIXED_SIZES_MAX];
     struct heap_dynamic_t dynamic;
+    struct mutex_t mutex;
 };
 
 /**
