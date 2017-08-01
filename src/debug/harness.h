@@ -203,6 +203,9 @@ int harness_expect(void *chan_p,
  * Write given data buffer to a mock entry with given id.
  *
  * @param[in] id_p Mock id string to write.
+ *
+ *                 NOTE: Only a reference to this string is stored in
+ *                       the mock entry.
  * @param[in] buf_p Data for given mock id.
  * @param[in] size Buffer size in words.
  *
