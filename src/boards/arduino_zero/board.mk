@@ -32,7 +32,7 @@ INC += $(SIMBA_ROOT)/src/boards/arduino_zero
 SRC += $(SIMBA_ROOT)/src/boards/arduino_zero/board.c
 
 BOARD_HOMEPAGE = "https://www.arduino.cc/en/Main/ArduinoBoardZero"
-BOARD_PINOUT = "arduino-zero-pinout.png"
+BOARD_PINOUT = "arduino-uno-pinout.png"
 BOARD_DESC = "Arduino Zero"
 
 MCU = samd21g18

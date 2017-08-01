@@ -4,9 +4,9 @@ Arduino Zero
 Pinout
 ------
 
-.. image:: ../images/boards/arduino-zero-pinout.png
+.. image:: ../images/boards/arduino-uno-pinout.png
    :width: 50%
-   :target: ../_images/arduino-zero-pinout.png
+   :target: ../_images/arduino-uno-pinout.png
 
 .. include:: extra/arduino_zero.rst
 
