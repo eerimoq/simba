@@ -33,6 +33,7 @@
 #if CONFIG_BMP280 == 1
 
 #define REG_CALIBRATION                              0x88
+#define REG_ID                                       0xd0
 #define REG_STATUS                                   0xf3
 #define REG_CTRL_MEAS                                0xf4
 #define REG_CONFIG                                   0xf5
@@ -99,6 +100,9 @@ static int transport_i2c_start(struct bmp280_driver_t *self_p)
     }
 
     if (res == 1) {
+        DLOG(INFO,
+             "Found device with I2C address 0x%02x.\r\n",
+             transport_p->i2c_address);
         res = 0;
     } else if (res == 0) {
         res = -ENODEV;
@@ -410,12 +414,25 @@ int bmp280_start(struct bmp280_driver_t *self_p)
     int res;
     uint8_t buf[24];
     int i;
+    uint8_t chip_id;
 
     res = self_p->transport_p->protocol_p->start(self_p);
 
     if (res != 0) {
         return (res);
     }
+
+    res = self_p->transport_p->protocol_p->read(self_p,
+                                                REG_ID,
+                                                &chip_id,
+                                                sizeof(chip_id));
+
+    if (res != 0) {
+        DLOG(WARNING, "Failed to read chip id with %d.\r\n", res);
+        return (res);
+    }
+
+    DLOG(INFO, "Chip id: 0x%02x.\r\n", chip_id);
 
     if (is_normal_mode(self_p)) {
         res = write_ctrl_meas(self_p);
@@ -551,7 +568,7 @@ int bmp280_read_fixed_point(struct bmp280_driver_t *self_p,
         }
 
         if (pressure_p != NULL) {
-            *pressure_p = pressure;
+            *pressure_p = (1000 * pressure);
         }
     }
 

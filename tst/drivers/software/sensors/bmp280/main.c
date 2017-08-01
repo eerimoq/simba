@@ -65,6 +65,12 @@ static int test_i2c_start(struct harness_t *harness_p)
                          bmp280_temperature_oversampling_1_t,
                          bmp280_pressure_oversampling_1_t) == 0);
 
+    /* Chip id. */
+    res = 1;
+    harness_mock_write("i2c_read(): return (res)", &res, sizeof(res));
+    harness_mock_write("i2c_read(): return (buf_p)", "\x58", res);
+
+    /* Calibration data. */
     res = 24;
     harness_mock_write("i2c_read(): return (res)", &res, sizeof(res));
     harness_mock_write("i2c_read(): return (buf_p)",
@@ -77,6 +83,20 @@ static int test_i2c_start(struct harness_t *harness_p)
 
     BTASSERT(bmp280_start(&bmp280_i2c) == 0);
 
+    /* Chip id. */
+    harness_mock_read("i2c_write(address)", &address, sizeof(address));
+    BTASSERTI(address, ==, 0x76);
+    harness_mock_read("i2c_write(size)", &size, sizeof(size));
+    BTASSERTI(size, ==, 1);
+    harness_mock_read("i2c_write(buf_p)", &byte, size);
+    BTASSERTM(&byte, "\xd0", size);
+
+    harness_mock_read("i2c_read(address)", &address, sizeof(address));
+    BTASSERTI(address, ==, 0x76);
+    harness_mock_read("i2c_read(size)", &size, sizeof(size));
+    BTASSERTI(size, ==, 1);
+
+    /* Calibration data. */
     harness_mock_read("i2c_write(address)", &address, sizeof(address));
     BTASSERTI(address, ==, 0x76);
     harness_mock_read("i2c_write(size)", &size, sizeof(size));
@@ -124,8 +144,8 @@ static int test_i2c_read(struct harness_t *harness_p)
     BTASSERT(bmp280_read(&bmp280_i2c, &temperature, &pressure) == 0);
     BTASSERT(temperature > 25.082);
     BTASSERT(temperature < 25.083);
-    BTASSERT(pressure > 100.7);
-    BTASSERT(pressure < 100.8);
+    BTASSERT(pressure > 100700.0);
+    BTASSERT(pressure < 100800.0);
 
     /* Start a convertion. */
     harness_mock_read("i2c_write(address)", &address, sizeof(address));
@@ -319,6 +339,12 @@ static int test_i2c_start_automatic(struct harness_t *harness_p)
                          bmp280_temperature_oversampling_1_t,
                          bmp280_pressure_oversampling_1_t) == 0);
 
+    /* Chip id. */
+    res = 1;
+    harness_mock_write("i2c_read(): return (res)", &res, sizeof(res));
+    harness_mock_write("i2c_read(): return (buf_p)", "\x48", res);
+
+    /* Calibration data. */
     res = 24;
     harness_mock_write("i2c_read(): return (res)", &res, sizeof(res));
     harness_mock_write("i2c_read(): return (buf_p)",
@@ -333,6 +359,20 @@ static int test_i2c_start_automatic(struct harness_t *harness_p)
 
     BTASSERTI(bmp280_start(&bmp280_i2c), ==, 0);
 
+    /* Chip id. */
+    harness_mock_read("i2c_write(address)", &address, sizeof(address));
+    BTASSERTI(address, ==, 0x77);
+    harness_mock_read("i2c_write(size)", &size, sizeof(size));
+    BTASSERTI(size, ==, 1);
+    harness_mock_read("i2c_write(buf_p)", &byte, size);
+    BTASSERTM(&byte, "\xd0", size);
+
+    harness_mock_read("i2c_read(address)", &address, sizeof(address));
+    BTASSERTI(address, ==, 0x77);
+    harness_mock_read("i2c_read(size)", &size, sizeof(size));
+    BTASSERTI(size, ==, 1);
+
+    /* Calibration data. */
     harness_mock_read("i2c_write(address)", &address, sizeof(address));
     BTASSERTI(address, ==, 0x77);
     harness_mock_read("i2c_write(size)", &size, sizeof(size));
@@ -401,7 +441,12 @@ static int test_spi_start(struct harness_t *harness_p)
                          bmp280_temperature_oversampling_1_t,
                          bmp280_pressure_oversampling_1_t) == 0);
 
-    /* Calibration data read. */
+    /* Chip id. */
+    res = 1;
+    harness_mock_write("spi_read(): return (res)", &res, sizeof(res));
+    harness_mock_write("spi_read(): return (buf_p)", "\x58", res);
+
+    /* Calibration data. */
     res = 24;
     harness_mock_write("spi_read(): return (res)", &res, sizeof(res));
     harness_mock_write("spi_read(): return (buf_p)",
@@ -411,6 +456,15 @@ static int test_spi_start(struct harness_t *harness_p)
                        res);
 
     BTASSERT(bmp280_start(&bmp280_spi) == 0);
+
+    /* Chip id. */
+    harness_mock_read("spi_write(size)", &size, sizeof(size));
+    BTASSERTI(size, ==, 1);
+    harness_mock_read("spi_write(buf_p)", &buf[0], size);
+    BTASSERTM(&buf[0], "\xd0", size);
+
+    harness_mock_read("spi_read(size)", &size, sizeof(size));
+    BTASSERTI(size, ==, 1);
 
     /* Normal mode configuration. */
     harness_mock_read("spi_write(size)", &size, sizeof(size));
@@ -449,7 +503,7 @@ static int test_spi_read_fixed_point(struct harness_t *harness_p)
                                      &temperature,
                                      &pressure) == 0);
     BTASSERTI(temperature, ==, 25082);
-    BTASSERTI(pressure, ==, 100739);
+    BTASSERTI(pressure, ==, 100739000);
 
     /* Read temperature and pressure. */
     harness_mock_read("spi_write(size)", &size, sizeof(size));

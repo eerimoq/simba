@@ -31,4 +31,7 @@
 NAME = bmp280
 BOARD ?= linux
 
+CDEFS += \
+	CONFIG_BMP280_DEBUG_LOG_MASK=LOG_ALL
+
 include $(SIMBA_ROOT)/make/app.mk
