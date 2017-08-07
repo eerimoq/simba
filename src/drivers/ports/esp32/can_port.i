@@ -72,9 +72,7 @@ static int is_waiting_for_bus_idle(uint32_t status_reg_value)
 static int wait_for_bus_idle(volatile struct esp32_can_t *regs_p)
 {
     struct time_t now, stop, delta;
-    uint8_t still_waiting_for_bus_idle;
 
-    still_waiting_for_bus_idle = 1;
     time_get(&now);
     delta.seconds = 0;
     delta.nanoseconds = 17000L * 1000;    // 17000 = 170 * 100: 170 cycles of bit-period @ 10 KBPS (100 us per bit)
@@ -82,18 +80,14 @@ static int wait_for_bus_idle(volatile struct esp32_can_t *regs_p)
     while ((now.seconds < stop.seconds) ||
            ((now.seconds == stop.seconds) && (now.nanoseconds < stop.nanoseconds))) {
 
-        still_waiting_for_bus_idle = is_waiting_for_bus_idle(regs_p->STATUS);
-        if (! still_waiting_for_bus_idle) {
-            break;
+        if (!is_waiting_for_bus_idle(regs_p->STATUS)) {
+            return (0);
         }
 
         time_get(&now);
     }
-    if (still_waiting_for_bus_idle) {
-        return (-ENETDOWN);
-    } else {
-        return (0);
-    }
+
+    return (-ENETDOWN);
 }
 
 /**
