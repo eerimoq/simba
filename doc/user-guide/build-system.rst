@@ -1,10 +1,13 @@
 Build system
 ============
 
+Simba build system
+------------------
+
 The `Simba` build system is based on `GNU Make`.
 
 Targets
--------
+^^^^^^^
 
 +-----------------+----------------------------------------------------------------+
 |  Name           |  Description                                                   |
@@ -35,7 +38,7 @@ Targets
 +-----------------+----------------------------------------------------------------+
 
 Variables
----------
+^^^^^^^^^
 
 There are plenty of make variables used to control the build
 process. Below is a list of the most frequently used variables. The
@@ -70,6 +73,41 @@ advanced user may read the make files in :github-tree:`make`.
 |  NASSERT        |  Build the application without assertions.                                                       |
 +-----------------+--------------------------------------------------------------------------------------------------+
 
+PlatformIO
+----------
+
+This section describes Simba specific usage of the PlatformIO build
+system. Consult the `PlatformIO documentation`_ for a general
+description.
+
+Application name
+^^^^^^^^^^^^^^^^
+
+Create a file called ``config.py`` in the same folder as your projects
+``platformio.ini``. The contents of ``config.py`` can be seen below,
+and you can change ``MyApplicationName`` to the name of your
+application.
+
+.. code-block:: python
+
+   Import('env')
+
+   # Set the Simba application name.
+   env.Replace(NAME='MyApplicationName')
+
+Then add ``extra_scripts = config.py`` to your ``platformio.ini``, as
+in the example below.
+
+.. code-block:: ini
+
+   [env:my_project]
+   platform = atmelavr
+   framework = simba
+   board = uno
+   extra_scripts = config.py
+
 .. |br| raw:: html
 
    <br />
+
+.. _PlatformIO documentation: http://docs.platformio.org/en/latest/projectconf.html
