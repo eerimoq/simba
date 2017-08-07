@@ -327,7 +327,8 @@ static int wait_for_bus_idle(struct can_driver_t *self_p)
     delta.seconds = 0;
     delta.nanoseconds = 17000L * 1000;    // 17000 = 170 * 100: 170 cycles of bit-period @ 10 KBPS (100 us per bit)
     time_add(&stop, &now, &delta);
-    while ( (now.seconds < stop.seconds) || (now.nanoseconds < stop.nanoseconds) ) {
+    while ((now.seconds < stop.seconds) ||
+           ((now.seconds == stop.seconds) && (now.nanoseconds < stop.nanoseconds))) {
 
         still_waiting_for_bus_idle = is_waiting_for_bus_idle(regs_p->STATUS);
         if (! still_waiting_for_bus_idle) {
