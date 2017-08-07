@@ -108,7 +108,7 @@ def set_default_values(env):
             env.Append(VERSION=f.read().strip())
 
     if "NAME" not in env:
-        env.Append(NAME="app_name")
+        env.Append(NAME=os.getenv("APP_NAME", "app_name"))
 
 
 def setup_mcu_esp(env, linker_script, flash_size_map):
