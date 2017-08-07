@@ -74,9 +74,12 @@ static int wait_for_bus_idle(volatile struct esp32_can_t *regs_p)
     struct time_t now, stop, delta;
 
     time_get(&now);
+    /* 17000 = 170 * 100: 170 cycles of bit-period @ 10 KBPS (100 us 
+       per bit) */
     delta.seconds = 0;
-    delta.nanoseconds = 17000L * 1000;    // 17000 = 170 * 100: 170 cycles of bit-period @ 10 KBPS (100 us per bit)
+    delta.nanoseconds = 17000L * 1000;
     time_add(&stop, &now, &delta);
+
     while ((now.seconds < stop.seconds) ||
            ((now.seconds == stop.seconds) && (now.nanoseconds < stop.nanoseconds))) {
 
@@ -216,7 +219,7 @@ static void isr(void *arg_p)
 
     regs_p = self_p->dev_p->regs_p;
 
-    /* Read the interrupt status and status registers. */
+    /* Read the interrupt status register. */
     interrupt = regs_p->INT;
 
     /* Handle TX complete interrupt. */
@@ -247,7 +250,6 @@ static void isr(void *arg_p)
 
         /* In case of many errors or bus-off state reset the hardware */
         if (regs_p->STATUS & (ESP32_CAN_STATUS_ERR | ESP32_CAN_STATUS_BUS)) {
-
             /* if any thread is waiting for write(...) finish, wake them with error code */
             if (self_p->thrd_p != NULL) {
                 thrd_resume_isr(self_p->thrd_p, -EIO);
