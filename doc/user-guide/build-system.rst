@@ -83,10 +83,10 @@ description.
 Application name
 ^^^^^^^^^^^^^^^^
 
-Create a file called ``config.py`` in the same folder as your projects
-``platformio.ini``. The contents of ``config.py`` can be seen below,
-and you can change ``MyApplicationName`` to the name of your
-application.
+To set the application name, create a file called ``config.py`` in the
+same folder as your projects ``platformio.ini``. The contents of
+``config.py`` can be seen below, and you can change
+``MyApplicationName`` to the name of your application.
 
 .. code-block:: python
 
