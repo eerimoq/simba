@@ -67,11 +67,11 @@ static int test_ping_pong_500k(struct harness_t *harness_p)
 
         std_printf("\r\n");
 
-        BTASSERT(can_write(&can, &frame, sizeof(frame)) == sizeof(frame));
+        BTASSERTI(can_write(&can, &frame, sizeof(frame)), ==, sizeof(frame));
 
         /* ... and read the response. */
         memset(&frame, 0, sizeof(frame));
-        BTASSERT(can_read(&can, &frame, sizeof(frame)) == sizeof(frame));
+        BTASSERTI(can_read(&can, &frame, sizeof(frame)), ==, sizeof(frame));
 
         std_printf(FSTR("Read frame.    id: 0x%x, size: %d, data:"),
                    frame.id,

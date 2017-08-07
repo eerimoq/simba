@@ -91,7 +91,8 @@ int can_init(struct can_driver_t *self_p,
  *
  * @param[in] self_p Initialized driver object.
  *
- * @return zero(0) or negative error code.
+ * @return zero(0) or negative error code. Value -ENETDOWN indicates a problem
+ *         with connection to the bus and probably to the transceiver.
  */
 int can_start(struct can_driver_t *self_p);
 
