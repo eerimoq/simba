@@ -74,7 +74,7 @@ static int wait_for_bus_idle(volatile struct esp32_can_t *regs_p)
     struct time_t now, stop, delta;
 
     time_get(&now);
-    /* 17000 = 170 * 100: 170 cycles of bit-period @ 10 KBPS (100 us 
+    /* 17000 = 170 * 100: 170 cycles of bit-period @ 10 KBPS (100 us
        per bit) */
     delta.seconds = 0;
     delta.nanoseconds = 17000L * 1000;
@@ -255,7 +255,7 @@ static void isr(void *arg_p)
                 thrd_resume_isr(self_p->thrd_p, -EIO);
                 self_p->thrd_p = NULL;
             }
-            
+
             reset_hw(regs_p);
         }
     }

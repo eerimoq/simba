@@ -36,7 +36,7 @@
                                  | ((ESP32_CAN_BTIM1_TSEG1(0x4)         \
                                      | ESP32_CAN_BTIM1_TSEG2(0x1)       \
                                      | ESP32_CAN_BTIM1_SAM) << 8))
-                                   
+
 #define CAN_PORT_SPEED_500KBPS (ESP32_CAN_BTIM0_BRP(0x4)                \
                                 | ESP32_CAN_BTIM0_SJW(0x1)              \
                                 | ((ESP32_CAN_BTIM1_TSEG1(0xc)          \
