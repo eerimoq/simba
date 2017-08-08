@@ -105,4 +105,14 @@ ssize_t event_write_isr(struct event_t *self_p,
  */
 ssize_t event_size(struct event_t *self_p);
 
+/**
+ * Clear given events on the event channel.
+ *
+ * @param[in] self_p Event channel object.
+ * @param[in] mask The mask of events to clear.
+ *
+ * @return zero(0) or negative error code.
+ */
+int event_clear(struct event_t *self_p, uint32_t mask);
+
 #endif

@@ -59,7 +59,7 @@ static void *tester_main(void *arg_p)
     /* Wait a while before checking if the reader was resumed. */
     thrd_sleep_ms(5);
     BTASSERTN(event_size(&tester_event_tx) != 0);
-    
+
     /* Write the event that the reader is waiting for. */
     mask = EVENT_BIT_1;
     BTASSERTN(event_write(&tester_event_tx,
@@ -67,7 +67,7 @@ static void *tester_main(void *arg_p)
                           sizeof(mask)) == sizeof(mask));
 
     thrd_suspend(NULL);
-    
+
     return (0);
 }
 
@@ -84,7 +84,7 @@ static int test_init(struct harness_t *harness_p)
 
     return (0);
 }
-    
+
 static int test_read_write(struct harness_t *harness_p)
 {
     uint32_t mask;
@@ -212,7 +212,7 @@ static int test_poll_list_timeout(struct harness_t *harness_p)
     char workspace[64];
     struct time_t timeout;
     int is_polled;
-    
+
     BTASSERT(event_init(&event) == 0);
 
     /* Use a list with one chan.*/
@@ -227,7 +227,7 @@ static int test_poll_list_timeout(struct harness_t *harness_p)
     sys_lock();
     is_polled = chan_is_polled_isr(&event.base);
     sys_unlock();
-    
+
     BTASSERT(is_polled == 0);
 
     /* Poll the list of channels and make sure an timeout occured. */
@@ -245,7 +245,7 @@ static int test_write_not_read_mask(struct harness_t *harness_p)
     /* Signal tester thread to start. */
     mask = EVENT_BIT_0;
     BTASSERT(event_write(&tester_event_rx, &mask, sizeof(mask)) == 4);
-    
+
     /* Wait for the second event written by the tester thread. */
     mask = EVENT_BIT_1;
     BTASSERT(event_read(&tester_event_tx, &mask, sizeof(mask)) == 4);
@@ -261,6 +261,38 @@ static int test_write_not_read_mask(struct harness_t *harness_p)
     return (0);
 }
 
+static int test_clear(struct harness_t *harness_p)
+{
+    struct event_t event;
+    uint32_t mask;
+
+    BTASSERT(event_init(&event) == 0);
+
+    /* Write two events to the channel. */
+    mask = (EVENT_BIT_0 | EVENT_BIT_1);
+    BTASSERT(event_write(&event, &mask, sizeof(mask)) == 4);
+    BTASSERT(event_size(&event) == 1);
+
+    /* Clear one of the two events and make sure there is still an
+       event set. */
+    BTASSERT(event_clear(&event, EVENT_BIT_0) == 0);
+    BTASSERT(event_size(&event) == 1);
+
+    /* Clear the already cleared event. */
+    BTASSERT(event_clear(&event, EVENT_BIT_0) == 0);
+    BTASSERT(event_size(&event) == 1);
+
+    /* Clear all events but the one set one. */
+    BTASSERT(event_clear(&event, ~EVENT_BIT_1) == 0);
+    BTASSERT(event_size(&event) == 1);
+
+    /* Clear the second, and last event. */
+    BTASSERT(event_clear(&event, EVENT_BIT_1) == 0);
+    BTASSERT(event_size(&event) == 0);
+
+    return (0);
+}
+
 int main()
 {
     struct harness_t harness;
@@ -272,6 +304,7 @@ int main()
         { test_poll_list, "test_poll_list" },
         { test_poll_list_timeout, "test_poll_list_timeout" },
         { test_write_not_read_mask, "test_write_not_read_mask" },
+        { test_clear, "test_clear" },
         { NULL, NULL }
     };
 

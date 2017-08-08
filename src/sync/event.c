@@ -121,3 +121,14 @@ ssize_t event_size(struct event_t *self_p)
 
     return (self_p->mask != 0);
 }
+
+int event_clear(struct event_t *self_p, uint32_t mask)
+{
+    ASSERTN(self_p != NULL, EINVAL);
+
+    sys_lock();
+    self_p->mask &= ~mask;
+    sys_unlock();
+
+    return (0);
+}
