@@ -168,11 +168,13 @@ class Settings(object):
         self.endianess = endianess
         self.settings = OrderedDict()
 
-        if filename is None:
+        if not filename:
             return
 
         settings_parser = ConfigParser()
-        settings_parser.read(filename)
+        if not settings_parser.read(filename):
+            print("Failed to load config file from {}".format(filename))
+            return
 
         addresses = []
         sizes = {}

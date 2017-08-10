@@ -29,7 +29,7 @@
 #
 
 import os
-from os.path import join
+from os.path import join, isabs, isfile, normpath
 import subprocess
 import shutil
 
@@ -4260,6 +4260,14 @@ source_files = []
 for src in env.LookupSources(variant_dir, src_dir, True, src_filter):
     source_files.append(env.Object(src))
 
+# get settings file path
+settings_ini_path = next(
+                    (x[1] for x in env["CPPDEFINES"]
+                          if len(x) > 1 and x[0] == "SETTINGS_INI"),
+                    "")
+if settings_ini_path and not (isabs(settings_ini_path)):
+    settings_ini_path = normpath(join(env['PROJECT_DIR'], settings_ini_path))
+
 # Command to generate simba_gen.c
 env.Command(SIMBA_GEN_C,
             source_files,
@@ -4271,7 +4279,8 @@ env.Command(SIMBA_GEN_C,
              '--board "$BOARD_DESC" '
              '--mcu "$MCU_DESC" '
              '--endianess little '
-             '--eeprom-soft-chunk-size 2048 '))
+             '--eeprom-soft-chunk-size 2048 '
+             '--settings "{}" '.format(settings_ini_path)))
 source_files.append(SIMBA_GEN_C)
 
 lib = env.Library(target=join("$BUILD_DIR", "SimbaFramework"), source=source_files)
