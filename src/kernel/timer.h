@@ -107,7 +107,8 @@ int timer_start_isr(struct timer_t *self_p);
 
 /**
  * Stop given timer object. This has no effect on a timer that already
- * expired or was never started.
+ * expired or was never started. A stopped timer may be restarted with
+ * the initial timeout by calling `timer_start()`.
  *
  * @param[in] self_p Timer object to stop.
  *

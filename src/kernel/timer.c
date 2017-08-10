@@ -164,10 +164,6 @@ int timer_init(struct timer_t *self_p,
         self_p->timeout = 1;
     }
 
-    /* Must wait at least two ticks to ensure the timer does not
-       expire early since it may be started close to the next tick
-       occurs. */
-    self_p->delta = (self_p->timeout + 1);
     self_p->flags = flags;
     self_p->callback = callback;
     self_p->arg_p = arg_p;
@@ -188,6 +184,11 @@ int timer_start(struct timer_t *self_p)
 
 int RAM_CODE timer_start_isr(struct timer_t *self_p)
 {
+    /* Must wait at least two ticks to ensure the timer does not
+       expire early since it may be started close to the next tick
+       occurs. */
+    self_p->delta = (self_p->timeout + 1);
+
     timer_insert_isr(self_p);
 
     return (0);
