@@ -29,7 +29,7 @@
 #
 
 import os
-from os.path import join, isabs, isfile, normpath
+from os.path import join, exists
 import subprocess
 import shutil
 
@@ -4261,15 +4261,15 @@ for src in env.LookupSources(variant_dir, src_dir, True, src_filter):
     source_files.append(env.Object(src))
 
 # get settings file path
-settings_ini_path = next(
-                    (x[1] for x in env["CPPDEFINES"]
-                          if len(x) > 1 and x[0] == "SETTINGS_INI"),
-                    "")
-if settings_ini_path and not (isabs(settings_ini_path)):
-    settings_ini_path = normpath(join(env['PROJECT_DIR'], settings_ini_path))
+settings_ini_path = ARGUMENTS.get('SETTINGS_PATH', "").decode('base64')
+if settings_ini_path:
+    settings_ini_file = env.File(settings_ini_path, env['PROJECT_DIR'])
+    settings_ini_path = str(settings_ini_file)
+    if not exists(settings_ini_path):
+        settings_ini_path = ""
 
 # Command to generate simba_gen.c
-env.Command(SIMBA_GEN_C,
+gen_command = env.Command(SIMBA_GEN_C,
             source_files,
             ('"$PYTHONEXE" "$PLATFORMFW_DIR/bin/simbagen.py" '
              '--output-directory "$BUILD_DIR/SimbaFramework" '
@@ -4282,6 +4282,9 @@ env.Command(SIMBA_GEN_C,
              '--eeprom-soft-chunk-size 2048 '
              '--settings "{}" '.format(settings_ini_path)))
 source_files.append(SIMBA_GEN_C)
+
+if settings_ini_path:
+    env.Depends(gen_command, settings_ini_path)
 
 lib = env.Library(target=join("$BUILD_DIR", "SimbaFramework"), source=source_files)
 
