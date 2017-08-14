@@ -91,6 +91,15 @@ static ssize_t uart_port_write_cb_isr(void *arg_p,
 static int uart_port_device_start(struct uart_device_t *dev_p,
                                   long baudrate)
 {
+    /* UART frame format implementation
+
+    volatile struct stm32_usart_t *regs_p;
+    regs_p = dev_p->regs_p;
+    regs_p->CR1 = (self_p->format & 0xFFFFFF00)
+    regs_p->CR2 = ((self_p->format << 8) & 0x0000FF00);
+
+    */
+
     return (-1);
 }
 
