@@ -34,8 +34,7 @@
 #include <io.h>
 
 /*
- * UART modes. See https://en.wikipedia.org/wiki/Serial_port
- * ESP32 supports data bits (5-8), parity (N,O,E) and stop bits (1 and 1.5)
+ * ESP32 supports 5/6/7/8 data bits, N/E/O parity, 1/1.5 stop bits
  */
 #define ESP32_UART_DATA_BITS_5  (0b00 << ESP32_UART_CONF0_BIT_NUM_POS)
 #define ESP32_UART_DATA_BITS_6  (0b01 << ESP32_UART_CONF0_BIT_NUM_POS)
