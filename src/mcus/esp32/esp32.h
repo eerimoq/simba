@@ -525,6 +525,9 @@ struct esp32_uart_t {
 /* UART CONF0. */
 #define ESP32_UART_CONF0_PARITY                     BIT(0)
 #define ESP32_UART_CONF0_PARITY_EN                  BIT(1)
+#define ESP32_UART_CONF0_PARITY_POS                    (0)
+#define ESP32_UART_CONF0_PARITY_MASK            \
+    (0x3 << ESP32_UART_CONF0_PARITY_POS)
 #define ESP32_UART_CONF0_BIT_NUM_POS                   (2)
 #define ESP32_UART_CONF0_BIT_NUM_MASK           \
     (0x3 << ESP32_UART_CONF0_BIT_NUM_POS)

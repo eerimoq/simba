@@ -33,6 +33,11 @@
 
 #include <io.h>
 
+/*
+ * UART modes. See https://en.wikipedia.org/wiki/Serial_port
+ */
+#define UART_PORT_FRAME_FORMAT_DEFAULT 0
+
 struct uart_device_t {
     struct uart_driver_t *drv_p;         /* Current started driver. */
     volatile struct sam_uart_t *regs_p;
@@ -58,6 +63,7 @@ struct uart_driver_t {
     size_t txsize;
     struct thrd_t *thrd_p;
     long baudrate;
+    int format;
 };
 
 #endif

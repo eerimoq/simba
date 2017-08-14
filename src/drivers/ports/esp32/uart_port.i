@@ -34,6 +34,7 @@
 #include "freertos/FreeRTOS.h"
 #include "freertos/semphr.h"
 #include "esp_intr.h"
+#include "uart_port.h"
 
 extern xSemaphoreHandle thrd_idle_sem;
 
@@ -188,8 +189,7 @@ static int uart_port_start(struct uart_driver_t *self_p)
 
     /* Configure the hardware and reset the fifos. */
     regs_p->CLKDIV = (80000000 / self_p->baudrate);
-    regs_p->CONF0 = (ESP32_UART_CONF0_BIT_NUM(3)
-                     | ESP32_UART_CONF0_STOP_BIT_NUM(1)
+    regs_p->CONF0 = (self_p->format
                      | ESP32_UART_CONF0_UART_ERR_WR_MASK
                      | ESP32_UART_CONF0_UART_TICK_REF_ALWAYS_ON);
     regs_p->CONF1 = (ESP32_UART_CONF1_RX_TOUT_EN
