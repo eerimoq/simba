@@ -125,15 +125,16 @@ static int uart_port_start(struct uart_driver_t *self_p)
     /* Configure the TX and RX pins. */
     STM32_GPIOA->CRH = bits_insert_32(STM32_GPIOA->CRH, 4, 8, 0x8b);
 
-    regs_p->CR2 = 0;
     regs_p->CR3 = 0;
     regs_p->BRR = ((F_CPU / 16 / self_p->baudrate) << 4);
     regs_p->SR = 0;
-    regs_p->CR1 = (STM32_USART_CR1_UE
+    regs_p->CR1 = (((self_p->format << 8) & 0x0000FF00)
+                   | STM32_USART_CR1_UE
                    | STM32_USART_CR1_TCIE
                    | STM32_USART_CR1_RXNEIE
                    | STM32_USART_CR1_TE
                    | STM32_USART_CR1_RE);
+    regs_p->CR2 = (self_p->format & 0x0000FF00);
 
     /* nvic */
     nvic_enable_interrupt(37);

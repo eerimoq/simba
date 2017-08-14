@@ -35,8 +35,26 @@
 
 /*
  * UART modes. See https://en.wikipedia.org/wiki/Serial_port
+ * STM32F1xx product line supports 8/9 data bits, N/E/O parity, 0/1 stop bits
+ * NOTE format field codification:
+ *      bits 0-7 are 8-15 of CR1 (coded 8 bits to the right)
+ *      bits 8-15 are 8-15 of CR2
  */
-#define UART_PORT_FRAME_FORMAT_DEFAULT 0
+#define STM32_USART_CR2_STOP          BIT(12)
+#define STM32_UART_DATA_BITS_8  ((0b0 << STM32_USART_CR1_M) >> 8)
+#define STM32_UART_DATA_BITS_9  ((0b1 << STM32_USART_CR1_M) >> 8)
+#define STM32_UART_PARITY_N     ((0b00 << STM32_USART_CR1_PS) >> 8)
+#define STM32_UART_PARITY_E     ((0b10 << STM32_USART_CR1_PS) >> 8)
+#define STM32_UART_PARITY_O     ((0b11 << STM32_USART_CR1_PS) >> 8)
+#define STM32_UART_STOP_BITS_1  (0b00 << STM32_USART_CR2_STOP)
+#define STM32_UART_STOP_BITS_2  (0b10 << STM32_USART_CR2_STOP)
+#define UART_PORT_FRAME_FORMAT_8N1 (STM32_UART_DATA_BITS_8 | STM32_UART_PARITY_N | STM32_UART_STOP_BITS_1)
+#define UART_PORT_FRAME_FORMAT_8N2 (STM32_UART_DATA_BITS_8 | STM32_UART_PARITY_N | STM32_UART_STOP_BITS_2)
+#define UART_PORT_FRAME_FORMAT_8O1 (STM32_UART_DATA_BITS_8 | STM32_UART_PARITY_O | STM32_UART_STOP_BITS_1)
+#define UART_PORT_FRAME_FORMAT_8O2 (STM32_UART_DATA_BITS_8 | STM32_UART_PARITY_O | STM32_UART_STOP_BITS_2)
+#define UART_PORT_FRAME_FORMAT_8E1 (STM32_UART_DATA_BITS_8 | STM32_UART_PARITY_E | STM32_UART_STOP_BITS_1)
+#define UART_PORT_FRAME_FORMAT_8E2 (STM32_UART_DATA_BITS_8 | STM32_UART_PARITY_E | STM32_UART_STOP_BITS_2)
+#define UART_PORT_FRAME_FORMAT_DEFAULT UART_PORT_FRAME_FORMAT_8N1
 
 struct uart_device_t {
     struct uart_driver_t *drv_p;
@@ -51,7 +69,7 @@ struct uart_driver_t {
     size_t txsize;
     struct thrd_t *thrd_p;
     long baudrate;
-    int format;
+    int format; /* bits 0-7 are 8-15 of CR1, bits 8-15 are 8-15 of CR2 */
 };
 
 #endif
