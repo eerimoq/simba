@@ -95,8 +95,8 @@ static int uart_port_device_start(struct uart_device_t *dev_p,
 
     volatile struct stm32_usart_t *regs_p;
     regs_p = dev_p->regs_p;
-    regs_p->CR1 = (self_p->format & 0xFFFFFF00)
-    regs_p->CR2 = ((self_p->format << 8) & 0x0000FF00);
+    regs_p->CR1 = (self_p->format & 0xffffff00)
+    regs_p->CR2 = ((self_p->format << 8) & 0x0000ff00);
 
     */
 

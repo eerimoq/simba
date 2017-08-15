@@ -140,7 +140,7 @@ static int uart_port_start(struct uart_driver_t *drv_p)
 
     /* Configure the hardware and reset the fifos. */
     regs_p->CLKDIV = (F_CPU / drv_p->baudrate);
-    regs_p->CONF0 = (regs_p->CONF0 & ~(0b00111111)) | drv_p->format;
+    regs_p->CONF0 = (regs_p->CONF0 & ~0x3f) | drv_p->format;
     regs_p->CONF0 |= (ESP8266_UART_CONF0_TXFIFO_RST
                       | ESP8266_UART_CONF0_RXFIFO_RST);
     regs_p->CONF0 &= (~(ESP8266_UART_CONF0_TXFIFO_RST
