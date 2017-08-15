@@ -38,21 +38,21 @@ int watchdog_port_start_ms(int timeout,
     /*
      * http://www.nongnu.org/avr-libc/user-manual/group__avr__watchdog.html
      *
-     * Possible timeout values are:
-     * 15ms => prescaler 0
-     * 30ms => prescaler 1
-     * 60ms => prescaler 2
-     * 120ms => prescaler 3
-     * 250ms => prescaler 4
-     * 500ms => prescaler 5
-     * 1s => prescaler 6
-     * 2s => prescaler 7
+     * Timeout value is approximated to:
+     *     < 16 ms    => prescaler 0 (~15 ms)
+     *     < 32 ms    => prescaler 1 (~30 ms)
+     *     < 64 ms    => prescaler 2 (~60 ms)
+     *     < 128 ms   => prescaler 3 (~120 ms)
+     *     < 256 ms   => prescaler 4 (~250 ms)
+     *     < 512 ms   => prescaler 5 (~500 ms)
+     *     < 1024 ms  => prescaler 6 (~1 s)
+     *     >= 1024 ms => prescaler 7 (~2 s)
      */
-    timeout /= 15;
+    timeout /= 16;
     prescaler = 0;
-    while ((1 << prescaler) < timeout) {
+    while (prescaler < 7) {
+        if ((1 << prescaler) > timeout) break;
         prescaler++;
-        if (prescaler == 7) break;
     }
 
     wdt_enable(prescaler);
