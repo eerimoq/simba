@@ -149,7 +149,7 @@ int uart_stop(struct uart_driver_t *self_p);
  * and before uart_start().
  *
  * @param[in] self_p Initialized driver object.
- * @param[in] format An UART_FORMAT_* constant.
+ * @param[in] format An UART_FRAME_FORMAT_* constant.
  *
  * @return zero(0) or negative error code.
  */
