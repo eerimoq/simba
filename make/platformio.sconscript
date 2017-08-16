@@ -4273,7 +4273,7 @@ gen_command_action = ('"$PYTHONEXE" "$PLATFORMFW_DIR/bin/simbagen.py" '
              '--eeprom-soft-chunk-size 2048 ')
 
 # get settings file path
-settings_ini = ARGUMENTS.get('SETTINGS_PATH')
+settings_ini = ARGUMENTS.get('SETTINGS_INI')
 if settings_ini is not None:
     try:
         settings_ini = str(env.File(settings_ini.decode('base64'), 

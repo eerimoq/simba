@@ -420,14 +420,14 @@ gen_command_action = ('"$PYTHONEXE" "$PLATFORMFW_DIR/bin/simbagen.py" '
              '--eeprom-soft-chunk-size 2048 ')
 
 # get settings file path
-settings_ini = ARGUMENTS.get('SETTINGS_PATH')
+settings_ini = ARGUMENTS.get('SETTINGS_INI')
 if settings_ini is not None:
     try:
         settings_ini = str(env.File(settings_ini.decode('base64'), 
                                     env['PROJECT_DIR']))
     except Exception, e:
         sys.exit("Failed to load config file. " + str(e))
-    gen_command_action += '--settings "{}" '.format(str(settings_ini))
+    gen_command_action += '--settings "{{}}" '.format(str(settings_ini))
 
 # Command to generate simba_gen.c
 gen_command = env.Command(SIMBA_GEN_C,
