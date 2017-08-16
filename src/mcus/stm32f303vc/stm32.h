@@ -46,12 +46,18 @@ struct stm32_usart_t {
     uint32_t TDR;
 };
 
-/* Auxiliary Control Register */
+/* Auxiliary Control Register 1 */
 #define STM32_USART_CR1_UE            BIT(0)
 #define STM32_USART_CR1_UESM          BIT(1)
 #define STM32_USART_CR1_RE            BIT(2)
 #define STM32_USART_CR1_TE            BIT(3)
 #define STM32_USART_CR1_IDLEIE        BIT(4)
+#define STM32_USART_CR1_PS            BIT(9)
+#define STM32_USART_CR1_M0            BIT(12)
+#define STM32_USART_CR1_M1            BIT(28)
+
+/* Auxiliary Control Register 2 */
+#define STM32_USART_CR2_STOP          BIT(12)
 
 /* Base addresses of peripherals. */
 #define STM32_TIM2              ((volatile struct stm32_tim_t *)0x40000000u)

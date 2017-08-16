@@ -36,6 +36,7 @@ struct module_t {
     int8_t initialized;
 };
 
+#include "uart_port.h"
 #include "uart_port.i"
 
 static struct module_t module;
@@ -62,6 +63,7 @@ int uart_init(struct uart_driver_t *self_p,
 
     self_p->dev_p = dev_p;
     self_p->baudrate = baudrate;
+    self_p->format = UART_FRAME_FORMAT_DEFAULT;
 
     mutex_init(&self_p->mutex);
 
@@ -85,6 +87,15 @@ int uart_stop(struct uart_driver_t *self_p)
     ASSERTN(self_p != NULL, EINVAL);
 
     return (uart_port_stop(self_p));
+}
+
+int uart_set_frame_format(struct uart_driver_t *self_p, int format)
+{
+    ASSERTN(self_p != NULL, EINVAL);
+
+    self_p->format = format;
+
+    return (0);
 }
 
 int uart_device_start(struct uart_device_t *dev_p,

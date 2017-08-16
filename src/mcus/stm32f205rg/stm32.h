@@ -54,13 +54,18 @@ struct stm32_usart_t {
 #define STM32_USART_SR_LBD            BIT(8)
 #define STM32_USART_SR_CTS            BIT(9)
 
-/* Auxiliary Control Register */
+/* Auxiliary Control Register 1 */
 #define STM32_USART_CR1_RE            BIT(2)
 #define STM32_USART_CR1_TE            BIT(3)
 #define STM32_USART_CR1_RXNEIE        BIT(5)
 #define STM32_USART_CR1_TCIE          BIT(6)
 #define STM32_USART_CR1_TXEIE         BIT(7)
+#define STM32_USART_CR1_PS            BIT(9)
+#define STM32_USART_CR1_M             BIT(12)
 #define STM32_USART_CR1_UE            BIT(13)
+
+/* Auxiliary Control Register 2 */
+#define STM32_USART_CR2_STOP          BIT(12)
 
 struct stm32_rcc_t {
     uint32_t CR;
