@@ -28,8 +28,9 @@
 # This file is part of the Simba project.
 #
 
+import sys
 import os
-from os.path import join, exists
+from os.path import join, isfile
 import subprocess
 import shutil
 
@@ -4260,18 +4261,8 @@ source_files = []
 for src in env.LookupSources(variant_dir, src_dir, True, src_filter):
     source_files.append(env.Object(src))
 
-# get settings file path
-settings_ini_path = ARGUMENTS.get('SETTINGS_PATH', "").decode('base64')
-if settings_ini_path:
-    settings_ini_file = env.File(settings_ini_path, env['PROJECT_DIR'])
-    settings_ini_path = str(settings_ini_file)
-    if not exists(settings_ini_path):
-        settings_ini_path = ""
-
-# Command to generate simba_gen.c
-gen_command = env.Command(SIMBA_GEN_C,
-            source_files,
-            ('"$PYTHONEXE" "$PLATFORMFW_DIR/bin/simbagen.py" '
+# action string to generate simba_gen.c
+gen_command_action = ('"$PYTHONEXE" "$PLATFORMFW_DIR/bin/simbagen.py" '
              '--output-directory "$BUILD_DIR/SimbaFramework" '
              'source '
              '--name "$NAME" '
@@ -4279,12 +4270,26 @@ gen_command = env.Command(SIMBA_GEN_C,
              '--board "$BOARD_DESC" '
              '--mcu "$MCU_DESC" '
              '--endianess little '
-             '--eeprom-soft-chunk-size 2048 '
-             '--settings "{}" '.format(settings_ini_path)))
+             '--eeprom-soft-chunk-size 2048 ')
+
+# get settings file path
+settings_ini = ARGUMENTS.get('SETTINGS_PATH')
+if settings_ini is not None:
+    try:
+        settings_ini = str(env.File(settings_ini.decode('base64'), 
+                                    env['PROJECT_DIR']))
+    except Exception, e:
+        sys.exit("Failed to load config file. " + str(e))
+    gen_command_action += '--settings "{}" '.format(str(settings_ini))
+
+# Command to generate simba_gen.c
+gen_command = env.Command(SIMBA_GEN_C,
+            source_files,
+            gen_command_action)
 source_files.append(SIMBA_GEN_C)
 
-if settings_ini_path:
-    env.Depends(gen_command, settings_ini_path)
+if settings_ini and isfile(settings_ini):
+    env.Depends(gen_command, settings_ini)
 
 lib = env.Library(target=join("$BUILD_DIR", "SimbaFramework"), source=source_files)
 
