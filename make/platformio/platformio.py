@@ -425,7 +425,7 @@ if settings_ini is not None:
     try:
         settings_ini = str(env.File(settings_ini.decode('base64'), 
                                     env['PROJECT_DIR']))
-    except Exception, e:
+    except Exception as e:
         sys.exit("Failed to load config file. " + str(e))
     gen_command_action += '--settings "{{}}" '.format(str(settings_ini))
 
