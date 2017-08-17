@@ -54,7 +54,8 @@ int watchdog_module_init(void);
  * Start the watchdog with given timeout. Use `watchdog_kick()` to
  * periodically restart the timer.
  *
- * @param[in] timeout Watchdog timeout in milliseconds.
+ * @param[in] timeout Watchdog timeout in milliseconds. The timeout is rounded
+ *                    up to the closest timeout the hardware supports.
  * @param[in] on_interrupt Function callback called when a watchdog
  *                         interrupt occurs. Not all MCU:s supports
  *                         this feature.
