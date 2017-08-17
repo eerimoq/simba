@@ -172,7 +172,8 @@ class Settings(object):
             return
 
         settings_parser = ConfigParser()
-        settings_parser.read(filename)
+        if not settings_parser.read(filename):
+            sys.exit("Failed to load config file '{}'.".format(filename))
 
         addresses = []
         sizes = {}

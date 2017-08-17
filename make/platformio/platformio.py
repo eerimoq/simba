@@ -47,8 +47,9 @@ PLATFORMIO_SCONSSCRIPT_FMT = """#
 # This file is part of the Simba project.
 #
 
+import sys
 import os
-from os.path import join
+from os.path import join, isfile
 import subprocess
 import shutil
 
@@ -407,10 +408,8 @@ source_files = []
 for src in env.LookupSources(variant_dir, src_dir, True, src_filter):
     source_files.append(env.Object(src))
 
-# Command to generate simba_gen.c
-env.Command(SIMBA_GEN_C,
-            source_files,
-            ('"$PYTHONEXE" "$PLATFORMFW_DIR/bin/simbagen.py" '
+# action string to generate simba_gen.c
+gen_command_action = ('"$PYTHONEXE" "$PLATFORMFW_DIR/bin/simbagen.py" '
              '--output-directory "$BUILD_DIR/SimbaFramework" '
              'source '
              '--name "$NAME" '
@@ -418,8 +417,26 @@ env.Command(SIMBA_GEN_C,
              '--board "$BOARD_DESC" '
              '--mcu "$MCU_DESC" '
              '--endianess little '
-             '--eeprom-soft-chunk-size 2048 '))
+             '--eeprom-soft-chunk-size 2048 ')
+
+# get settings file path
+settings_ini = ARGUMENTS.get('SETTINGS_INI')
+if settings_ini is not None:
+    try:
+        settings_ini = str(env.File(settings_ini.decode('base64'), 
+                                    env['PROJECT_DIR']))
+    except Exception as e:
+        sys.exit("Failed to load config file. " + str(e))
+    gen_command_action += '--settings "{{}}" '.format(str(settings_ini))
+
+# Command to generate simba_gen.c
+gen_command = env.Command(SIMBA_GEN_C,
+            source_files,
+            gen_command_action)
 source_files.append(SIMBA_GEN_C)
+
+if settings_ini and isfile(settings_ini):
+    env.Depends(gen_command, settings_ini)
 
 lib = env.Library(target=join("$BUILD_DIR", "SimbaFramework"), source=source_files)
 
