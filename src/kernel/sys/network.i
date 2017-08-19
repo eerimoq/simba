@@ -38,7 +38,9 @@ static struct network_interface_wifi_t wifi;
 static int start_network(void)
 {
     struct inet_if_ip_info_t info;
+#if CONFIG_SYS_LOG_MASK > 0
     char buf[20];
+#endif
     const char ssid[] = STRINGIFY(CONFIG_START_NETWORK_INTERFACE_WIFI_SSID);
     const char password[] = STRINGIFY(CONFIG_START_NETWORK_INTERFACE_WIFI_PASSWORD);
     int i;

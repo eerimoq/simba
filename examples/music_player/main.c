@@ -528,7 +528,7 @@ static void init(void)
     uart_init(&uart, &uart_device[0], 38400, qinbuf, sizeof(qinbuf));
     uart_start(&uart);
 
-    sys_set_stdout(&uart.chout);
+    sys_set_stdout(&uart.base.base);
 
     std_printf(sys_get_info());
 
@@ -670,7 +670,7 @@ int main()
     init();
 
     /* Spawn the shell. */
-    shell_init(&shell, &uart.chin, &uart.chout, NULL, NULL, NULL, NULL);
+    shell_init(&shell, &uart, &uart, NULL, NULL, NULL, NULL);
     thrd_spawn(shell_main,
                &shell,
                0,

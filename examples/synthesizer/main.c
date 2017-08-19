@@ -642,7 +642,7 @@ static int init(void)
               sizeof(uart_midi_inbuf));
     uart_start(&uart_midi);
 
-    sys_set_stdout(&uart.chout);
+    sys_set_stdout(&uart);
 
     std_printf(sys_get_info());
 
@@ -671,7 +671,7 @@ static int init(void)
     synthesizer.release = 1000;
 
     /* Spawn the shell. */
-    shell_init(&shell, &uart.chin, &uart.chout, NULL, NULL, NULL, NULL);
+    shell_init(&shell, &uart, &uart, NULL, NULL, NULL, NULL);
     thrd_spawn(shell_main,
                &shell,
                15,

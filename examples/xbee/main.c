@@ -61,7 +61,7 @@ int main()
     }
 
     /* Initialize the XBee driver. */
-    res = xbee_init(&xbee, &uart.chin, &uart.chout);
+    res = xbee_init(&xbee, &uart, &uart);
 
     if (res != 0) {
         std_printf(OSTR("Failed to initialize the XBee driver.\r\n"));
