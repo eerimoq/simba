@@ -424,7 +424,7 @@ class SoamDb(object):
         fmt = 'const size_t soam_database_compressed_size = {};\n\n'
         compressed_database_size = fmt.format(len(compressed))
         data = ', '.join([str(byte) for byte in bytearray(compressed)])
-        fmt = 'const uint8_t soam_database_compressed[] = {{ {} }};\n\n'
+        fmt = 'const FAR uint8_t soam_database_compressed[] = {{ {} }};\n\n'
         compressed_database = fmt.format(data)
 
         return (database_id

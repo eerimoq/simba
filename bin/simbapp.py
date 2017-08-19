@@ -1,8 +1,6 @@
 #!/usr/bin/env python
 #
 
-from __future__ import print_function
-
 import sys
 import argparse
 import re
@@ -69,13 +67,12 @@ def process_format_strings(contents, canonical_filename):
         end = contents.find('__simbapp_fmtstr_end__', begin)
 
         if end == -1:
-            print('End of log point missing.')
-            sys.exit(1)
+            sys.exit('End of log point missing.')
 
         format_string = pack_c_string(contents[begin+25:end-1])
-        formats = re.findall(r'%-?[0-9]*?l?[dsuxcf]', format_string)
+        formats = re.findall(r'%-?[0-9]*?l?[dsuxcfS]', format_string)
         soam_format_string = '"' + '\\x1f'.join(formats) + '"'
-        decoder_format_string = re.sub(r'%-?[0-9]*?l?[dsuxcf]', "{}",
+        decoder_format_string = re.sub(r'%-?[0-9]*?l?[dsuxcfS]', "{}",
                                        format_string)
         decoder_format_string = re.sub(r'%%', "%", decoder_format_string)
         c_variable = '__fmt_' + base64.b32encode(format_string).replace('=', '_').lower()
@@ -118,8 +115,7 @@ def process_commands(contents, canonical_filename):
         end = contents.find('__simbapp_cmdstr_end__', begin)
 
         if end == -1:
-            print('End of command missing.')
-            sys.exit(1)
+            sys.exit('End of command missing.')
 
         command = pack_c_string(contents[begin+25:end-1])
         c_variable = '__cmd_' + base64.b32encode(command).replace('=', '_').lower()
