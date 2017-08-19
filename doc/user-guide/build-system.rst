@@ -106,8 +106,23 @@ in the example below.
    board = uno
    extra_scripts = config.py
 
+Settings
+^^^^^^^^
+
+Select your :doc:`settings <../library-reference/oam/settings>`
+configuration file with the ``platfomio.ini`` configuration variable
+``settings_ini``.
+
+.. code-block:: ini
+
+   [env:my_project]
+   platform = atmelavr
+   framework = simba
+   board = uno
+   settings_ini = settings.ini
+
 .. |br| raw:: html
 
    <br />
-
+  
 .. _PlatformIO documentation: http://docs.platformio.org/en/latest/projectconf.html

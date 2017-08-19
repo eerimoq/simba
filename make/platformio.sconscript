@@ -33,11 +33,12 @@ import os
 from os.path import join, isfile
 import subprocess
 import shutil
+from base64 import b64decode
 
 from SCons.Script import DefaultEnvironment
 from platformio.builder.tools.platformio import SRC_DEFAULT_FILTER
 
-# Map the PlatformIO board name to the Simba board name
+# Map the PlatformIO board name to the Simba board name.
 BOARD_MAP = {
     "due": "arduino_due",
     "megaatmega2560": "arduino_mega",
@@ -48,7 +49,7 @@ BOARD_MAP = {
     "d1_mini": "wemos_d1_mini"
 }
 
-# Map the PlatformIO board name to the Simba board name
+# Map the PlatformIO board name to the Simba board name.
 SUPPORTED_BOARDS = [
     "arduino_due",
     "arduino_mega",
@@ -5367,10 +5368,10 @@ elif 'ARCH_AVR' in BOARDS[board]['cdefs']:
         ccflags.append(flag)
     env.Replace(CCFLAGS=ccflags)
 
-# generated files
+# Generated files.
 SIMBA_GEN_C = "$BUILD_DIR/SimbaFramework/simba_gen.c"
 
-# create a list of all sources
+# Create a list of all sources.
 variant_dir = join("$BUILD_DIR", "SimbaFramework")
 src_dir = join("$PLATFORMFW_DIR")
 
@@ -5379,36 +5380,33 @@ source_files = []
 for src in env.LookupSources(variant_dir, src_dir, True, src_filter):
     source_files.append(env.Object(src))
 
-# action string to generate simba_gen.c
+# Action string to generate simba_gen.c.
 gen_command_action = ('"$PYTHONEXE" "$PLATFORMFW_DIR/bin/simbagen.py" '
-             '--output-directory "$BUILD_DIR/SimbaFramework" '
-             'source '
-             '--name "$NAME" '
-             '--version "$VERSION" '
-             '--board "$BOARD_DESC" '
-             '--mcu "$MCU_DESC" '
-             '--endianess little '
-             '--eeprom-soft-chunk-size 2048 ')
+                      '--output-directory "$BUILD_DIR/SimbaFramework" '
+                      'source '
+                      '--name "$NAME" '
+                      '--version "$VERSION" '
+                      '--board "$BOARD_DESC" '
+                      '--mcu "$MCU_DESC" '
+                      '--endianess little '
+                      '--eeprom-soft-chunk-size 2048 ')
 
-# get settings file path
-settings_ini = ARGUMENTS.get('SETTINGS_INI')
-if settings_ini is not None:
-    try:
-        settings_ini = str(env.File(settings_ini.decode('base64'), 
-                                    env['PROJECT_DIR']))
-    except Exception as e:
-        sys.exit("Failed to load config file. " + str(e))
-    gen_command_action += '--settings "{}" '.format(str(settings_ini))
+# Get settings file path.
+settings_ini_encoded = ARGUMENTS.get('SETTINGS_INI')
 
-# Command to generate simba_gen.c
+if settings_ini_encoded is not None:
+    settings_ini = join('$PROJECT_DIR', b64decode(settings_ini_encoded))
+    gen_command_action += '--settings "{}" '.format(settings_ini)
+    
+# Command to generate simba_gen.c.
 gen_command = env.Command(SIMBA_GEN_C,
             source_files,
             gen_command_action)
-source_files.append(SIMBA_GEN_C)
 
-if settings_ini and isfile(settings_ini):
+if settings_ini_encoded is not None:
     env.Depends(gen_command, settings_ini)
 
+source_files.append(SIMBA_GEN_C)
 lib = env.Library(target=join("$BUILD_DIR", "SimbaFramework"), source=source_files)
 
 env.Append(LIBS=[lib])
