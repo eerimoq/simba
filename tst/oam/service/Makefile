@@ -37,7 +37,6 @@ CDEFS += \
 	CONFIG_SERVICE_FS_COMMAND_START=1 \
 	CONFIG_SERVICE_FS_COMMAND_STOP=1
 
-SYNC_SRC += event.c
 OAM_SRC += service.c
 
 include $(SIMBA_ROOT)/make/app.mk

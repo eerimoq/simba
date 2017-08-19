@@ -50,7 +50,6 @@ CDEFS += \
 	CONFIG_START_NETWORK_INTERFACE_WIFI_SSID=$(SSID) \
 	CONFIG_START_NETWORK_INTERFACE_WIFI_PASSWORD=$(PASSWORD)
 
-SYNC_SRC = event.c
 DRIVERS_SRC = \
 	network/esp_wifi.c \
 	network/esp_wifi/station.c \

@@ -550,9 +550,9 @@ ssize_t STUB(i2c_write)(struct i2c_driver_t *self_p,
     harness_mock_write("i2c_write(buf_p)", buf_p, size);
     harness_mock_write("i2c_write(size)", &size, sizeof(size));
 
-    if (harness_mock_read("i2c_write(): return (res)",
-                          &res,
-                          sizeof(res)) != sizeof(res)) {
+    if (harness_mock_try_read("i2c_write(): return (res)",
+                              &res,
+                              sizeof(res)) != sizeof(res)) {
         res = size;
     }
 
@@ -602,9 +602,9 @@ ssize_t STUB(spi_write)(struct spi_driver_t *self_p,
     harness_mock_write("spi_write(buf_p)", buf_p, size);
     harness_mock_write("spi_write(size)", &size, sizeof(size));
 
-    if (harness_mock_read("spi_write(): return (res)",
-                          &res,
-                          sizeof(res)) != sizeof(res)) {
+    if (harness_mock_try_read("spi_write(): return (res)",
+                              &res,
+                              sizeof(res)) != sizeof(res)) {
         res = size;
     }
 

@@ -44,7 +44,6 @@ endif
 SRC_IGNORE = $(SIMBA_ROOT)/src/inet/socket.c
 
 ENCODE_SRC = base64.c
-SYNC_SRC = event.c
 HASH_SRC = sha1.c
 INET_SRC = \
 	http_server.c \

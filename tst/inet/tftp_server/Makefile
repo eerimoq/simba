@@ -40,8 +40,6 @@ CDEFS += \
 	CONFIG_MODULE_INIT_LOG=1
 
 SRC += socket_stub.c
-SYNC_SRC = \
-	event.c
 INET_SRC = \
 	inet.c \
 	tftp_server.c

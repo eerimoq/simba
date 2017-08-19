@@ -38,8 +38,7 @@ CDEFS += \
 	CONFIG_BMP280_DEBUG_LOG_MASK=LOG_ALL \
 	CONFIG_I2C=1 \
 	CONFIG_SPI=1 \
-	CONFIG_HARNESS_HEAP_MAX=4096 \
-	CONFIG_HARNESS_MOCK_VERBOSE=0
+	CONFIG_HARNESS_HEAP_MAX=4096
 
 STUB = $(SIMBA_ROOT)/src/drivers/sensors/bmp280.c:i2c_write,i2c_read,i2c_scan,spi_write,spi_read,spi_select,spi_deselect
 

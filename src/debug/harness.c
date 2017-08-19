@@ -49,6 +49,8 @@ struct module_t {
         struct mock_entry_t *tail_p;
     } mock_list;
     struct sem_t sem;
+    struct bus_t bus;
+    int testcase_failed;
 };
 
 static struct module_t module;
@@ -98,6 +100,9 @@ int harness_run(struct harness_t *self_p,
                   sizeof(module.heap.buf),
                   &sizes[0]);
 
+        /* Mark current testcase as non-failed before its executed. */
+        module.testcase_failed = 0;
+
         std_printf(OSTR("enter: %s\r\n"), testcase_p->name_p);
 
         err = testcase_p->callback(self_p);
@@ -112,13 +117,13 @@ int harness_run(struct harness_t *self_p,
             }
         } while (entry_p != NULL);
 
-        if (err == 0) {
-            passed++;
-            std_printf(OSTR("exit: %s: PASSED\r\n\r\n"),
-                       testcase_p->name_p);
-        } else if (err < 0) {
+        if ((err < 0) || (module.testcase_failed != 0)) {
             failed++;
             std_printf(OSTR("exit: %s: FAILED\r\n\r\n"),
+                       testcase_p->name_p);
+        } else if (err == 0) {
+            passed++;
+            std_printf(OSTR("exit: %s: PASSED\r\n\r\n"),
                        testcase_p->name_p);
         } else {
             skipped++;
@@ -227,6 +232,25 @@ ssize_t harness_mock_read(const char *id_p,
                           void *buf_p,
                           size_t size)
 {
+    ssize_t res;
+
+    res = harness_mock_try_read(id_p, buf_p, size);
+
+    /* Mark testcase as failed if the mock id was not found. */
+    if (res == -1) {
+#if CONFIG_HARNESS_MOCK_VERBOSE == 1
+        std_printf(FSTR("error: %s: mock id not found\r\n"), id_p);
+#endif
+        module.testcase_failed = 1;
+    }
+
+    return (res);
+}
+
+ssize_t harness_mock_try_read(const char *id_p,
+                              void *buf_p,
+                              size_t size)
+{
     struct list_sl_iterator_t iterator;
     struct mock_entry_t *entry_p;
     struct mock_entry_t *iterator_entry_p;
@@ -243,9 +267,6 @@ ssize_t harness_mock_read(const char *id_p,
         LIST_SL_ITERATOR_NEXT(&iterator, &entry_p);
 
         if (entry_p == NULL) {
-#if CONFIG_HARNESS_MOCK_VERBOSE == 1
-            std_printf(FSTR("error: %s: mock id not found\r\n"), id_p);
-#endif
             break;
         }
 
@@ -273,4 +294,46 @@ ssize_t harness_mock_read(const char *id_p,
     sem_give(&module.sem, 1);
 
     return (res);
+}
+
+ssize_t harness_mock_write_notify(const char *id_p,
+                                  const void *buf_p,
+                                  size_t size)
+{
+    uint32_t mask;
+
+    harness_mock_write(id_p, buf_p, size);
+    mask = 1;
+    bus_write(&module.bus, 0, &mask, sizeof(mask));
+
+    return (size);
+}
+
+ssize_t harness_mock_read_wait(const char *id_p,
+                               void *buf_p,
+                               size_t size,
+                               struct time_t *timeout_p)
+{
+    struct event_t event;
+    struct bus_listener_t listener;
+    ssize_t res;
+    uint32_t mask;
+
+    event_init(&event);
+    bus_listener_init(&listener, 0, &event);
+    bus_attach(&module.bus, &listener);
+
+    while (1) {
+        res = harness_mock_try_read(id_p, buf_p, size);
+
+        if (res == size) {
+            bus_detatch(&module.bus, &listener);
+            break;
+        }
+
+        mask = 1;
+        event_read(&event, &mask, sizeof(mask));
+    }
+
+    return (size);
 }

@@ -32,6 +32,4 @@ NAME = event_suite
 TYPE = suite
 BOARD ?= linux
 
-SYNC_SRC += event.c
-
 include $(SIMBA_ROOT)/make/app.mk

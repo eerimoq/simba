@@ -36,10 +36,9 @@ CDEFS += \
 	CONFIG_XBEE=1 \
 	CONFIG_XBEE_CLIENT=1 \
 	CONFIG_XBEE_CLIENT_DEBUG_LOG_MASK=LOG_ALL \
-	CONFIG_XBEE_CLIENT_RESPONSE_TIMEOUT_MS=10 \
-	CONFIG_HARNESS_MOCK_VERBOSE=0
+	CONFIG_XBEE_CLIENT_RESPONSE_TIMEOUT_MS=10
 
-SYNC_SRC += cond.c event.c
+SYNC_SRC += cond.c
 DRIVERS_SRC = network/xbee_client.c
 
 STUB = $(SIMBA_ROOT)/src/drivers/network/xbee_client.c:xbee_module_init,xbee_init,xbee_read,xbee_write

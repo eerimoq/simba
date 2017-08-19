@@ -57,7 +57,6 @@ CDEFS += \
 	CONFIG_NETWORK_INTERFACE_FS_COMMAND_LIST=1 \
 	CONFIG_ESP_WIFI_FS_COMMAND_STATUS=1
 
-SYNC_SRC = event.c
 DRIVERS_SRC = \
 	network/esp_wifi.c \
 	network/esp_wifi/station.c \

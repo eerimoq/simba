@@ -31,7 +31,7 @@
 # Minimal set of files for a test suite.
 ifeq ($(TYPE),suite)
   ALLOC_SRC += heap.c
-  COLLECTIONS_SRC += circular_buffer.c
+  COLLECTIONS_SRC += circular_buffer.c binary_tree.c
   DEBUG_SRC += log.c harness.c
   DRIVERS_SRC += storage/flash.c network/uart.c
   ENCODE_SRC +=
@@ -43,7 +43,7 @@ ifeq ($(TYPE),suite)
   OAM_SRC += console.c settings.c nvm.c
   FILESYSTEMS_SRC += fs.c
   SPIFFS_SRC +=
-  SYNC_SRC += chan.c queue.c rwlock.c sem.c mutex.c
+  SYNC_SRC += chan.c queue.c rwlock.c sem.c mutex.c bus.c event.c
   TEXT_SRC += std.c
   SCIENCE_SRC +=
 

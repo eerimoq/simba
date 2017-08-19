@@ -32,6 +32,4 @@ NAME = binary_tree_suite
 TYPE = suite
 BOARD ?= linux
 
-COLLECTIONS_SRC += binary_tree.c
-
 include $(SIMBA_ROOT)/make/app.mk

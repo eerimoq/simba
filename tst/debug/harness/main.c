@@ -79,6 +79,26 @@ static ssize_t my_memcpy(char *dst_p,
     return (res);
 }
 
+static THRD_STACK(mock_thread_stack, 512);
+
+static void *mock_thread(void *arg_p)
+{
+    int value;
+
+    while (1) {
+        harness_mock_read_wait("chan_request",
+                               &value,
+                               sizeof(value),
+                               NULL);
+        value++;
+        harness_mock_write_notify("chan_response",
+                                  &value,
+                                  sizeof(value));
+    }
+
+    return (NULL);
+}
+
 static int test_mock(struct harness_t *harness_p)
 {
     char buf[16];
@@ -95,10 +115,36 @@ static int test_mock(struct harness_t *harness_p)
     BTASSERTM(&buf[0], "bar", 4);
 
     /* Validate function input. */
-    harness_mock_read("my_memcpy(src_p)", &buf[0], sizeof("foo"));
+    harness_mock_try_read("my_memcpy(src_p)", &buf[0], sizeof("foo"));
     harness_mock_read("my_memcpy(size)", &size, sizeof(size));
     BTASSERTM(&buf[0], "foo", sizeof("foo"));
     BTASSERTI(size, ==, 4);
+
+    return (0);
+}
+
+static int test_mock_wait_notify(struct harness_t *harness_p)
+{
+    int value;
+    int i;
+
+    thrd_spawn(mock_thread,
+               NULL,
+               0,
+               mock_thread_stack,
+               sizeof(mock_thread_stack));
+
+    for (i = 0; i < 5; i++) {
+        value = i;
+        BTASSERT(harness_mock_write_notify("chan_request",
+                                           &value,
+                                           sizeof(value)) == sizeof(value));
+        BTASSERTI(harness_mock_read_wait("chan_response",
+                                         &value,
+                                         sizeof(value),
+                                         NULL), ==, sizeof(value));
+        BTASSERTI(value, ==, i + 1);
+    }
 
     return (0);
 }
@@ -110,6 +156,7 @@ int main()
         { test_asserti, "test_asserti" },
         { test_assertm, "test_assertm" },
         { test_mock, "test_mock" },
+        { test_mock_wait_notify, "test_mock_wait_notify" },
         { NULL, NULL }
     };
 

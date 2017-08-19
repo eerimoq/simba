@@ -36,7 +36,6 @@ CDEFS += \
 	CONFIG_USB=1 \
 	CONFIG_USB_HOST=1
 
-SYNC_SRC += event.c
 DRIVERS_SRC += network/usb.c network/usb_host.c
 
 include $(SIMBA_ROOT)/make/app.mk

@@ -216,7 +216,8 @@ ssize_t harness_mock_write(const char *id_p,
                            size_t size);
 
 /**
- * Read data from mock entry with given id.
+ * Read data from mock entry with given id, and make the testcase fail
+ * if the mock id is not found.
  *
  * @param[in] id_p Mock id string to read.
  * @param[out] buf_p Buffer to read into.
@@ -227,5 +228,51 @@ ssize_t harness_mock_write(const char *id_p,
 ssize_t harness_mock_read(const char *id_p,
                           void *buf_p,
                           size_t size);
+
+/**
+ * Try to read data from mock entry with given id.
+ *
+ * @param[in] id_p Mock id string to read.
+ * @param[out] buf_p Buffer to read into.
+ * @param[in] size Buffer size in words.
+ *
+ * @return Number of read words or negative error code.
+ */
+ssize_t harness_mock_try_read(const char *id_p,
+                              void *buf_p,
+                              size_t size);
+
+/**
+ * Write given data buffer to a mock entry with given id and notify
+ * all raeders that data is available.
+ *
+ * @param[in] id_p Mock id string to write.
+ *
+ *                 NOTE: Only a reference to this string is stored in
+ *                       the mock entry.
+ * @param[in] buf_p Data for given mock id.
+ * @param[in] size Buffer size in words.
+ *
+ * @return Number of written words or negative error code.
+ */
+ssize_t harness_mock_write_notify(const char *id_p,
+                                  const void *buf_p,
+                                  size_t size);
+
+/**
+ * Read data from mock entry with given id. Suspends the current
+ * thread if the mock id is not found.
+ *
+ * @param[in] id_p Mock id string to read.
+ * @param[out] buf_p Buffer to read into.
+ * @param[in] size Buffer size in words.
+ * @param[in] timeout_p Read timeout.
+ *
+ * @return Number of read words or negative error code.
+ */
+ssize_t harness_mock_read_wait(const char *id_p,
+                               void *buf_p,
+                               size_t size,
+                               struct time_t *timeout_p);
 
 #endif

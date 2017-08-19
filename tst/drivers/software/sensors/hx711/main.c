@@ -180,8 +180,8 @@ static int test_read_raw(struct harness_t *harness_p)
                             hx711_channel_gain_a_128_t) == 0);
     BTASSERTI(sample, ==, (int32_t)0xff800000);
 
-    /* A channel-gain of length 2 and sample has been read. */
-    for (i = 0; i < 24 + 2; i++) {
+    /* A channel-gain of length 1 and sample has been read. */
+    for (i = 0; i < 24 + 1; i++) {
         harness_mock_read("pin_port_device_write_high(dev_p)",
                           &dev_p,
                           sizeof(dev_p));
@@ -258,8 +258,8 @@ static int test_read(struct harness_t *harness_p)
                         hx711_channel_gain_a_128_t) == 0);
     BTASSERT(weight== -8388608.0);
 
-    /* A channel-gain of length 2 and sample has been read. */
-    for (i = 0; i < 24 + 2; i++) {
+    /* A channel-gain of length 1 and sample has been read. */
+    for (i = 0; i < 24 + 1; i++) {
         harness_mock_read("pin_port_device_write_high(dev_p)",
                           &dev_p,
                           sizeof(dev_p));
@@ -307,8 +307,8 @@ static int test_read_scale_offset(struct harness_t *harness_p)
                         hx711_channel_gain_a_128_t) == 0);
     BTASSERT(weight== -838859.8125);
 
-    /* A channel-gain of length 2 and sample has been read. */
-    for (i = 0; i < 24 + 2; i++) {
+    /* A channel-gain of length 1 and sample has been read. */
+    for (i = 0; i < 24 + 1; i++) {
         harness_mock_read("pin_port_device_write_high(dev_p)",
                           &dev_p,
                           sizeof(dev_p));
@@ -364,9 +364,9 @@ int STUB(pin_port_device_read)(const struct pin_device_t *dev_p)
 
     BTASSERT(dev_p == DOUT_DEV_P);
 
-    if (harness_mock_read("pin_port_device_read(): return (value)",
-                          &value,
-                          sizeof(value)) == -1) {
+    if (harness_mock_try_read("pin_port_device_read(): return (value)",
+                              &value,
+                              sizeof(value)) == -1) {
         value = 0;
     }
 
@@ -404,9 +404,9 @@ enum time_compare_t STUB(time_compare)(struct time_t *left_p,
 {
     enum time_compare_t res;
 
-    if (harness_mock_read("time_compare(): return (res)",
-                          &res,
-                          sizeof(res)) == -1) {
+    if (harness_mock_try_read("time_compare(): return (res)",
+                              &res,
+                              sizeof(res)) == -1) {
         res = time_compare_less_than_t;
     }
 

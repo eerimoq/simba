@@ -33,8 +33,7 @@ TYPE = suite
 BOARD ?= linux
 
 CDEFS += \
-	CONFIG_XBEE=1 \
-	CONFIG_HARNESS_MOCK_VERBOSE=0
+	CONFIG_XBEE=1
 
 DRIVERS_SRC = network/xbee.c
 

@@ -844,9 +844,9 @@ int STUB(xbee_write)(struct xbee_driver_t *self_p,
                        frame_p,
                        sizeof(*frame_p));
 
-    if (harness_mock_read("xbee_write(): event mask",
-                          &mask,
-                          sizeof(mask)) == sizeof(mask)) {
+    if (harness_mock_try_read("xbee_write(): event mask",
+                              &mask,
+                              sizeof(mask)) == sizeof(mask)) {
         /* Signal that the response packet is available. */
         event_write(&event, &mask, sizeof(mask));
     }

@@ -402,7 +402,7 @@ static int test_at_command_response_status_as_string(struct harness_t *harness_p
 
     actual_p = xbee_at_command_response_status_as_string(0x04);
     BTASSERT(actual_p == NULL);
-    
+
     return (0);
 }
 
@@ -563,9 +563,9 @@ ssize_t STUB(chan_read)(void *self_p,
 {
     ssize_t res;
 
-    if (harness_mock_read("chan_read(): return (res)",
-                          &res,
-                          sizeof(res)) == -1) {
+    if (harness_mock_try_read("chan_read(): return (res)",
+                              &res,
+                              sizeof(res)) == -1) {
         res = size;
     }
 
@@ -582,9 +582,9 @@ ssize_t STUB(chan_write)(void *self_p,
 {
     ssize_t res;
 
-    if (harness_mock_read("chan_write(): return (res)",
-                          &res,
-                          sizeof(res)) == -1) {
+    if (harness_mock_try_read("chan_write(): return (res)",
+                              &res,
+                              sizeof(res)) == -1) {
         res = size;
     }
 

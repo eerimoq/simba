@@ -348,15 +348,17 @@ ssize_t STUB(chan_read)(void *self_p,
 {
     ssize_t res;
 
-    if (harness_mock_read("chan_read(): return (res)",
-                          &res,
-                          sizeof(res)) == -1) {
+    if (harness_mock_try_read("chan_read(): return (res)",
+                              &res,
+                              sizeof(res)) == -1) {
         res = size;
     }
 
-    harness_mock_read("chan_read(): return (buf_p)",
-                      buf_p,
-                      res);
+    if (res > 0) {
+        harness_mock_read("chan_read(): return (buf_p)",
+                          buf_p,
+                          res);
+    }
 
     return (res);
 }
@@ -370,9 +372,9 @@ ssize_t STUB(chan_write)(void *self_p,
     harness_mock_write("chan_write(buf_p)", buf_p, size);
     harness_mock_write("chan_write(size)", &size, sizeof(size));
 
-    if (harness_mock_read("chan_write(): return (res)",
-                          &res,
-                          sizeof(res)) == -1) {
+    if (harness_mock_try_read("chan_write(): return (res)",
+                              &res,
+                              sizeof(res)) == -1) {
         res = size;
     }
 

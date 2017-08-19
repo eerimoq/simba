@@ -32,7 +32,4 @@ NAME = bus_suite
 TYPE = suite
 BOARD ?= linux
 
-SYNC_SRC += bus.c event.c
-COLLECTIONS_SRC += binary_tree.c
-
 include $(SIMBA_ROOT)/make/app.mk
