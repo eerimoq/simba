@@ -59,6 +59,7 @@ _rchw:
         .globl    _start
         .type     _start,@function
         .align    2
+        .size     _start, .L_start_end - _start
 _start:
         se_bl     _ecc_init
         se_bl     _relocate_init
@@ -155,7 +156,12 @@ _relocate_init:
         .type     _interrupt_init,@function
 _interrupt_init:
         /* Interrupt vector prefix register. The base address of the
-           interrupt vector. */
+           interrupt vector.
+
+           Each interrupt has an associated interrupt vector address,
+           obtained by concatenating the IVPR and IVOR values
+           (IVPR[32–47] || IVORn[48–59] || 0b0000).
+        */
         e_lis     %r3, ivor@h
         e_or2i    %r3, ivor@l
         mtivpr    %r3
@@ -169,6 +175,7 @@ _interrupt_init:
 
         .type     isr_external_input,@function
         .weak     isr_external_input
+        .size     isr_external_input, .L_isr_external_input_end - isr_external_input
 isr_external_input:
 #if CONFIG_SYSTEM_INTERRUPT_STACK_SIZE == 0
         /* Store registers on the stack to allow an interrupt handler
@@ -260,6 +267,7 @@ isr_external_input:
 #endif
 
         se_rfi
+.L_isr_external_input_end:
 
 .section .ivor
 
@@ -269,6 +277,7 @@ isr_external_input:
         .globl    ivor
         .type     ivor,@object
         .align    12                              /* 2 ^ 12 = 4096 */
+        .size     ivor, .L_ivor_end - ivor
 ivor:
         .align    4
         e_b       isr_critical_input
@@ -302,6 +311,7 @@ ivor:
         e_b       isr_instruction_tlb_error
         .align    4
         e_b       isr_debug
+.L_ivor_end:
 
 /**
  * Interrupt debug strings.
@@ -385,6 +395,7 @@ isr_debug_string:
         .type     isr_critical_input,@function
         .weak     isr_critical_input
         .align    4
+        .size     isr_critical_input, .L_isr_critical_input - isr_critical_input
 isr_critical_input:
         e_stwu    %r1, -8(%r1)
         mfsrr0    %r0
@@ -392,11 +403,13 @@ isr_critical_input:
         e_lis     %r3, isr_critical_input_string@h
         e_add16i  %r3, %r3, isr_critical_input_string@l
         e_bl      sys_panic
+.L_isr_critical_input:
 
         .globl    isr_machine_check
         .type     isr_machine_check,@function
         .weak     isr_machine_check
         .align    4
+        .size     isr_machine_check, .L_isr_machine_check - isr_machine_check
 isr_machine_check:
         e_stwu    %r1, -8(%r1)
         mfsrr0    %r0
@@ -404,11 +417,13 @@ isr_machine_check:
         e_lis     %r3, isr_machine_check_string@h
         e_add16i  %r3, %r3, isr_machine_check_string@l
         e_bl      sys_panic
+.L_isr_machine_check:
 
         .globl    isr_data_storage
         .type     isr_data_storage,@function
         .weak     isr_data_storage
         .align    4
+        .size     isr_data_storage, .L_isr_data_storage - isr_data_storage
 isr_data_storage:
         e_stwu    %r1, -8(%r1)
         mfsrr0    %r0
@@ -416,11 +431,13 @@ isr_data_storage:
         e_lis     %r3, isr_data_storage_string@h
         e_add16i  %r3, %r3, isr_data_storage_string@l
         e_bl      sys_panic
+.L_isr_data_storage:
 
         .globl    isr_instruction_storage
         .type     isr_instruction_storage,@function
         .weak     isr_instruction_storage
         .align    4
+        .size     isr_instruction_storage, .L_isr_instruction_storage - isr_instruction_storage
 isr_instruction_storage:
         e_stwu    %r1, -8(%r1)
         mfsrr0    %r0
@@ -428,11 +445,13 @@ isr_instruction_storage:
         e_lis     %r3, isr_instruction_storage_string@h
         e_add16i  %r3, %r3, isr_instruction_storage_string@l
         e_bl      sys_panic
+.L_isr_instruction_storage:
 
         .globl    isr_alignment
         .type     isr_alignment,@function
         .weak     isr_alignment
         .align    4
+        .size     isr_alignment, .L_isr_alignment - isr_alignment
 isr_alignment:
         e_stwu    %r1, -8(%r1)
         mfsrr0    %r0
@@ -440,11 +459,13 @@ isr_alignment:
         e_lis     %r3, isr_alignment_string@h
         e_add16i  %r3, %r3, isr_alignment_string@l
         e_bl      sys_panic
+.L_isr_alignment:
 
         .globl    isr_program
         .type     isr_program,@function
         .weak     isr_program
         .align    4
+        .size     isr_program, .L_isr_program - isr_program
 isr_program:
         e_stwu    %r1, -8(%r1)
         mfsrr0    %r0
@@ -452,11 +473,13 @@ isr_program:
         e_lis     %r3, isr_program_string@h
         e_add16i  %r3, %r3, isr_program_string@l
         e_bl      sys_panic
+.L_isr_program:
 
         .globl    isr_reserved
         .type     isr_reserved,@function
         .weak     isr_reserved
         .align    4
+        .size     isr_reserved, .L_isr_reserved - isr_reserved
 isr_reserved:
         e_stwu    %r1, -8(%r1)
         mfsrr0    %r0
@@ -464,11 +487,13 @@ isr_reserved:
         e_lis     %r3, isr_reserved_string@h
         e_add16i  %r3, %r3, isr_reserved_string@l
         e_bl      sys_panic
+.L_isr_reserved:
 
         .globl    isr_system_call
         .type     isr_system_call,@function
         .weak     isr_system_call
         .align    4
+        .size     isr_system_call, .L_isr_system_call - isr_system_call
 isr_system_call:
         e_stwu    %r1, -8(%r1)
         mfsrr0    %r0
@@ -476,11 +501,13 @@ isr_system_call:
         e_lis     %r3, isr_system_call_string@h
         e_add16i  %r3, %r3, isr_system_call_string@l
         e_bl      sys_panic
+.L_isr_system_call:
 
         .globl    isr_auxiliary_processor_unavailable
         .type     isr_auxiliary_processor_unavailable,@function
         .weak     isr_auxiliary_processor_unavailable
         .align    4
+        .size     isr_auxiliary_processor_unavailable, .L_isr_auxiliary_processor_unavailable - isr_auxiliary_processor_unavailable
 isr_auxiliary_processor_unavailable:
         e_stwu    %r1, -8(%r1)
         mfsrr0    %r0
@@ -488,11 +515,13 @@ isr_auxiliary_processor_unavailable:
         e_lis     %r3, isr_auxiliary_processor_unavailable_string@h
         e_add16i  %r3, %r3, isr_auxiliary_processor_unavailable_string@l
         e_bl      sys_panic
+.L_isr_auxiliary_processor_unavailable:
 
         .globl    isr_decrementer
         .type     isr_decrementer,@function
         .weak     isr_decrementer
         .align    4
+        .size     isr_decrementer, .L_isr_decrementer - isr_decrementer
 isr_decrementer:
         e_stwu    %r1, -8(%r1)
         mfsrr0    %r0
@@ -500,11 +529,13 @@ isr_decrementer:
         e_lis     %r3, isr_decrementer_string@h
         e_add16i  %r3, %r3, isr_decrementer_string@l
         e_bl      sys_panic
+.L_isr_decrementer:
 
         .globl    isr_fixed_interval_timer_interrupt
         .type     isr_fixed_interval_timer_interrupt,@function
         .weak     isr_fixed_interval_timer_interrupt
         .align    4
+        .size     isr_fixed_interval_timer_interrupt, .L_isr_fixed_interval_timer_interrupt - isr_fixed_interval_timer_interrupt
 isr_fixed_interval_timer_interrupt:
         e_stwu    %r1, -8(%r1)
         mfsrr0    %r0
@@ -512,11 +543,13 @@ isr_fixed_interval_timer_interrupt:
         e_lis     %r3, isr_fixed_interval_timer_interrupt_string@h
         e_add16i  %r3, %r3, isr_fixed_interval_timer_interrupt_string@l
         e_bl      sys_panic
+.L_isr_fixed_interval_timer_interrupt:
 
         .globl    isr_watchdog_timer_interrupt
         .type     isr_watchdog_timer_interrupt,@function
         .weak     isr_watchdog_timer_interrupt
         .align    4
+        .size     isr_watchdog_timer_interrupt, .L_isr_watchdog_timer_interrupt - isr_watchdog_timer_interrupt
 isr_watchdog_timer_interrupt:
         e_stwu    %r1, -8(%r1)
         mfsrr0    %r0
@@ -524,11 +557,13 @@ isr_watchdog_timer_interrupt:
         e_lis     %r3, isr_watchdog_timer_interrupt_string@h
         e_add16i  %r3, %r3, isr_watchdog_timer_interrupt_string@l
         e_bl      sys_panic
+.L_isr_watchdog_timer_interrupt:
 
         .globl    isr_data_tlb_error
         .type     isr_data_tlb_error,@function
         .weak     isr_data_tlb_error
         .align    4
+        .size     isr_data_tlb_error, .L_isr_data_tlb_error - isr_data_tlb_error
 isr_data_tlb_error:
         e_stwu    %r1, -8(%r1)
         mfsrr0    %r0
@@ -536,11 +571,13 @@ isr_data_tlb_error:
         e_lis     %r3, isr_data_tlb_error_string@h
         e_add16i  %r3, %r3, isr_data_tlb_error_string@l
         e_bl      sys_panic
+.L_isr_data_tlb_error:
 
         .globl    isr_instruction_tlb_error
         .type     isr_instruction_tlb_error,@function
         .weak     isr_instruction_tlb_error
         .align    4
+        .size     isr_instruction_tlb_error, .L_isr_instruction_tlb_error - isr_instruction_tlb_error
 isr_instruction_tlb_error:
         e_stwu    %r1, -8(%r1)
         mfsrr0    %r0
@@ -548,11 +585,13 @@ isr_instruction_tlb_error:
         e_lis     %r3, isr_instruction_tlb_error_string@h
         e_add16i  %r3, %r3, isr_instruction_tlb_error_string@l
         e_bl      sys_panic
+.L_isr_instruction_tlb_error:
 
         .globl    isr_debug
         .type     isr_debug,@function
         .weak     isr_debug
         .align    4
+        .size     isr_debug, .L_isr_debug - isr_debug
 isr_debug:
         e_stwu    %r1, -8(%r1)
         mfsrr0    %r0
@@ -560,5 +599,6 @@ isr_debug:
         e_lis     %r3, isr_debug_string@h
         e_add16i  %r3, %r3, isr_debug_string@l
         e_bl      sys_panic
+.L_isr_debug:
 
 #endif
