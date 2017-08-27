@@ -39,7 +39,7 @@
         .globl    thrd_port_swap
         .type     thrd_port_swap,@function
         .align    4
-        .size     thrd_port_swap, .L_thrd_port_swap - thrd_port_swap
+        .size     thrd_port_swap, .L_thrd_port_swap_end - thrd_port_swap
 thrd_port_swap:
         /* Store registers on the stack. lr is the return address. */
         e_add16i  %r1, %r1, -84
@@ -73,7 +73,7 @@ thrd_port_swap:
         e_add16i  %r1, %r1, 84
 
         se_blr
-.L_thrd_port_swap:
+.L_thrd_port_swap_end:
 
 /**
  * Thread entry function wrapper.
@@ -81,7 +81,7 @@ thrd_port_swap:
         .globl    thrd_port_main
         .type     thrd_port_main,@function
         .align    4
-        .size     thrd_port_main, .L_thrd_port_main - thrd_port_main
+        .size     thrd_port_main, .L_thrd_port_main_end - thrd_port_main
 thrd_port_main:
         /* Enable interrupts. */
         wrteei    1
@@ -93,4 +93,4 @@ thrd_port_main:
 
         /* Call termination function. */
         e_bl      terminate
-.L_thrd_port_main:
+.L_thrd_port_main_end:

@@ -45,7 +45,7 @@
     .globl  thrd_port_swap
     .type   thrd_port_swap,@function
     .align  4
-    .size   thrd_port_swap, .L_thrd_port_swap - thrd_port_swap
+    .size   thrd_port_swap, .L_thrd_port_swap_end - thrd_port_swap
 thrd_port_swap:
     entry   a1, 32
 
@@ -84,7 +84,7 @@ thrd_port_swap:
     wsr     a6, PS
 
     retw.n
-.L_thrd_port_swap:
+.L_thrd_port_swap_end:
 
 /**
  * Entry function of all threads except the main thread. Calls the
@@ -94,7 +94,7 @@ thrd_port_swap:
     .type   thrd_port_main,@function
     .literal_position
     .align  4
-    .size   thrd_port_main, .L_thrd_port_main - thrd_port_main
+    .size   thrd_port_main, .L_thrd_port_main_end - thrd_port_main
 thrd_port_main:
     //call4   sys_unlock
 
@@ -106,7 +106,7 @@ thrd_port_main:
 
     /* Thread termination. */
     call4   terminate
-.L_thrd_port_main:
+.L_thrd_port_main_end:
 
 /**
  * Return the stack address of the current thread.
@@ -114,9 +114,9 @@ thrd_port_main:
     .globl  thrd_port_get_bottom_of_stack_current_thread
     .type   thrd_port_get_bottom_of_stack_current_thread,@function
     .align  4
-    .size   thrd_port_get_bottom_of_stack_current_thread, .L_thrd_port_get_bottom_of_stack_current_thread - thrd_port_get_bottom_of_stack_current_thread
+    .size   thrd_port_get_bottom_of_stack_current_thread, .L_thrd_port_get_bottom_of_stack_current_thread_end - thrd_port_get_bottom_of_stack_current_thread
 thrd_port_get_bottom_of_stack_current_thread:
     entry   a1, 32
     mov     a2, a1
     retw.n
-.L_thrd_port_get_bottom_of_stack_current_thread:
+.L_thrd_port_get_bottom_of_stack_current_thread_end:
