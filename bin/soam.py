@@ -4,6 +4,7 @@
 #
 
 from __future__ import print_function
+from __future__ import unicode_literals
 
 import sys
 import struct
@@ -12,7 +13,6 @@ import cmd
 import threading
 import serial
 import hashlib
-#import binascii
 
 try:
     import lzma
@@ -33,7 +33,7 @@ except ImportError:
 
 from errnos import human_readable_errno
 
-__version__ = '2.0'
+__version__ = '3.0'
 
 # SOAM protocol definitions.
 SOAM_TYPE_STDOUT_PRINTF                = 1
@@ -529,33 +529,52 @@ class CommandStatus(object):
     ERROR = "ERROR"
 
 
-def handle_errors(func):
-    """Decorator that catches exceptions and prints them.
+def output_exception(e, ostream, debug):
+    if debug:
+        for entry in traceback.format_exception(type(e), e, e.__traceback__):
+            for line in entry.splitlines():
+                print(line.rstrip(), file=ostream)
+    else:
+        text = "{module}.{name}: {message}".format(module=type(e).__module__,
+                                                   name=type(e).__name__,
+                                                   message=str(e))
+        print(text, file=ostream)
+        print(text, file=ostream)
 
-    """
-
-    def wrapper(*args, **kwargs):
-        self = args[0]
-
-        try:
-            return func(*args, **kwargs)
-        except KeyboardInterrupt:
-            print("Keyboard interrupt.")
-            self.output(CommandStatus.ERROR)
-        except CommandNotFoundError as e:
-            print(e)
-            self.output(CommandStatus.ERROR)
-        except TimeoutError as e:
-            print(e)
-            self.output(CommandStatus.ERROR)
-        except BaseException as e:
-            self.output_exception(e)
-            self.output(CommandStatus.ERROR)
-
-    # The command help needs the docstring on the wrapper function.
-    wrapper.__doc__ = func.__doc__
-
-    return wrapper
+        
+def execute_command(client, command, ostream, debug):
+    try:
+        code, output = client.execute_command(command)
+    except KeyboardInterrupt:
+        print("Keyboard interrupt.")
+        print(CommandStatus.ERROR, file=ostream)
+    except CommandNotFoundError as e:
+        print(e, file=ostream)
+        print(CommandStatus.ERROR, file=ostream)
+    except TimeoutError as e:
+        print(e, file=ostream)
+        print(CommandStatus.ERROR, file=ostream)
+    except BaseException as e:
+        output_exception(e, ostream, debug)
+        print(CommandStatus.ERROR, file=ostream)
+    else:
+        print(output, file=ostream, end='')
+    
+        if code == 0:
+            print(CommandStatus.OK, file=ostream)
+        else:
+            if code < 0:
+                message = human_readable_errno(-code)
+    
+                if message is None:
+                    message = code
+                else:
+                    message = '{}: {}'.format(code, message)
+            else:
+                message = code
+    
+            print(CommandStatus.ERROR + '({})'.format(message),
+                  file=ostream)
 
 
 class Shell(cmd.Cmd):
@@ -586,25 +605,11 @@ class Shell(cmd.Cmd):
     def emptyline(self):
         pass
 
-    @handle_errors
     def default(self, line):
-        code, output = self.client.execute_command(self.line)
-        self.output(output, end='')
-
-        if code == 0:
-            self.output(CommandStatus.OK)
-        else:
-            if code < 0:
-                message = human_readable_errno(-code)
-
-                if message is None:
-                    message = code
-                else:
-                    message = '{}: {}'.format(code, message)
-            else:
-                message = code
-
-            self.output(CommandStatus.ERROR + '({})'.format(message))
+        execute_command(self.client,
+                        self.line,
+                        self.stdout,
+                        self.debug)
 
     def completedefault(self, *args):
         _, line, begidx, _ = args
@@ -630,18 +635,6 @@ class Shell(cmd.Cmd):
 
         return completions
 
-    def output_exception(self, e):
-        if self.debug:
-            for entry in traceback.format_exception(type(e), e, e.__traceback__):
-                for line in entry.splitlines():
-                    self.output(line.rstrip())
-        else:
-            text = "{module}.{name}: {message}".format(module=type(e).__module__,
-                                                       name=type(e).__name__,
-                                                       message=str(e))
-            print(text)
-            self.output(text)
-
     def output(self, text="", end="\n"):
         print(text, file=self.stdout, end=end)
 
@@ -653,7 +646,6 @@ class Shell(cmd.Cmd):
         self.line = line
         return line
 
-    @handle_errors
     def do_exit(self, args):
         """Exit the shell.
 
@@ -665,7 +657,6 @@ class Shell(cmd.Cmd):
         self.output("Bye!")
         return True
 
-    @handle_errors
     def do_EOF(self, args):
         """Exit the shell.
 
@@ -872,6 +863,43 @@ def decode_unframed_text_stream(stream, database):
             entry += byte
 
 
+def prompt_toolkit_shell(client, stdout, debug):
+    '''A shell built on the prompt toolkit.
+
+    '''
+
+    try:
+        from prompt_toolkit.contrib.completers import WordCompleter
+        from prompt_toolkit import prompt
+        from prompt_toolkit.history import FileHistory
+        from prompt_toolkit.interface import AbortAction
+        from prompt_toolkit.auto_suggest import AutoSuggestFromHistory
+    except ImportError:
+        sys.exit('Failed to import prompt_toolkit. Add --cmd-shell '
+                 'to start a standard library cmd shell instead.')
+    
+    commands = [command[1:] for command in client.database.commands]
+    completer = WordCompleter(commands, WORD=True)
+    history = FileHistory('soam-history.txt')
+
+    print("\nWelcome to the SOAM shell.\n")
+
+    while True:
+        try:
+            line = prompt('$ ',
+                          completer=completer,
+                          complete_while_typing=True,
+                          auto_suggest=AutoSuggestFromHistory(),
+                          enable_history_search=True,
+                          history=history,
+                          on_abort=AbortAction.RETRY)
+        except EOFError:
+            return
+
+        if line:
+            execute_command(client, line, stdout, debug)
+
+
 def do_serial(args):
     client = SlipSerialClient(args.port,
                               args.baudrate,
@@ -879,8 +907,13 @@ def do_serial(args):
                               sys.stdout,
                               args.response_timeout,
                               args.database_response_timeout)
-    shell = Shell(client, debug=args.debug)
-    shell.cmdloop()
+
+    if args.cmd_shell:
+        shell = Shell(client, debug=args.debug)
+        shell.cmdloop()
+    else:
+        prompt_toolkit_shell(client, sys.stdout, args.debug)
+
     client.reader.stop()
 
 
@@ -891,8 +924,13 @@ def do_tcp(args):
                            sys.stdout,
                            args.response_timeout,
                            args.database_response_timeout)
-    shell = Shell(client, debug=args.debug)
-    shell.cmdloop()
+
+    if args.cmd_shell:
+        shell = Shell(client, debug=args.debug)
+        shell.cmdloop()
+    else:
+        prompt_toolkit_shell(client, sys.stdout, args.debug)
+
     client.reader.stop()
 
 
@@ -930,6 +968,10 @@ def main():
                                type=int,
                                default=115200,
                                help='Baudrate.')
+    serial_parser.add_argument('-c', '--cmd-shell',
+                               action='store_true',
+                               help=('Use the standard library cmd module instead '
+                                     'of prompt_toolkit.'))
     serial_parser.add_argument('database', nargs='?')
     serial_parser.set_defaults(func=do_serial)
 
@@ -941,6 +983,10 @@ def main():
                             type=int,
                             default=47000,
                             help='TCP port to connect to.')
+    tcp_parser.add_argument('-c', '--cmd-shell',
+                            action='store_true',
+                            help=('Use the standard library cmd module instead '
+                                  'of prompt_toolkit.'))
     tcp_parser.add_argument('database', nargs='?')
     tcp_parser.set_defaults(func=do_tcp)
 
