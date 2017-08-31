@@ -76,6 +76,9 @@ static ssize_t my_memcpy(char *dst_p,
     harness_mock_read("my_memcpy(dst_p)", dst_p, 16);
     harness_mock_read("my_memcpy: return (res)", &res, sizeof(res));
 
+    /* Dummy write to test NULL buffer of size zero(0). */
+    harness_mock_write("my_memcpy()", NULL, 0);
+
     return (res);
 }
 
@@ -120,6 +123,9 @@ static int test_mock(struct harness_t *harness_p)
     BTASSERTM(&buf[0], "foo", sizeof("foo"));
     BTASSERTI(size, ==, 4);
 
+    /* Read the NULL write. */
+    BTASSERT(harness_mock_read("my_memcpy()", NULL, 0) == 0);
+    
     return (0);
 }
 

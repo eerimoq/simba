@@ -206,8 +206,9 @@ int harness_expect(void *chan_p,
  *
  *                 NOTE: Only a reference to this string is stored in
  *                       the mock entry.
- * @param[in] buf_p Data for given mock id.
- * @param[in] size Buffer size in words.
+ * @param[in] buf_p Data for given mock id, or NULL if no data shall
+ *                  be written.
+ * @param[in] size Buffer size in words, or zero(0) if buf_p is NULL.
  *
  * @return Number of written words or negative error code.
  */
@@ -220,8 +221,9 @@ ssize_t harness_mock_write(const char *id_p,
  * if the mock id is not found.
  *
  * @param[in] id_p Mock id string to read.
- * @param[out] buf_p Buffer to read into.
- * @param[in] size Buffer size in words.
+ * @param[out] buf_p Buffer to read into, or NULL if no data shall
+ *                   be read.
+ * @param[in] size Buffer size in words, or zero(0) if buf_p is NULL.
  *
  * @return Number of read words or negative error code.
  */
@@ -233,8 +235,9 @@ ssize_t harness_mock_read(const char *id_p,
  * Try to read data from mock entry with given id.
  *
  * @param[in] id_p Mock id string to read.
- * @param[out] buf_p Buffer to read into.
- * @param[in] size Buffer size in words.
+ * @param[out] buf_p Buffer to read into, or NULL if no data shall
+ *                   be loaded.
+ * @param[in] size Buffer size in words, or zero(0) if buf_p is NULL.
  *
  * @return Number of read words or negative error code.
  */
@@ -250,8 +253,9 @@ ssize_t harness_mock_try_read(const char *id_p,
  *
  *                 NOTE: Only a reference to this string is stored in
  *                       the mock entry.
- * @param[in] buf_p Data for given mock id.
- * @param[in] size Buffer size in words.
+ * @param[in] buf_p Data for given mock id, or NULL if no data shall
+ *                  be written.
+ * @param[in] size Buffer size in words, or zero(0) if buf_p is NULL.
  *
  * @return Number of written words or negative error code.
  */
@@ -264,8 +268,9 @@ ssize_t harness_mock_write_notify(const char *id_p,
  * thread if the mock id is not found.
  *
  * @param[in] id_p Mock id string to read.
- * @param[out] buf_p Buffer to read into.
- * @param[in] size Buffer size in words.
+ * @param[out] buf_p Buffer to read into, or NULL if no data shall
+ *                   be read.
+ * @param[in] size Buffer size in words, or zero(0) if buf_p is NULL.
  * @param[in] timeout_p Read timeout.
  *
  * @return Number of read words or negative error code.

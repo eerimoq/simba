@@ -219,7 +219,11 @@ ssize_t harness_mock_write(const char *id_p,
 
     /* Initiate the object. */
     entry_p->id_p = id_p;
-    memcpy(&entry_p->data.buf[0], buf_p, size);
+
+    if (buf_p != NULL) {
+        memcpy(&entry_p->data.buf[0], buf_p, size);
+    }
+
     entry_p->data.size = size;
 
     /* Add the entry at the end of the list. */
@@ -285,7 +289,11 @@ ssize_t harness_mock_try_read(const char *id_p,
                             prev_entry_p);
 
         /* Copy the value to the output buffer. */
-        memcpy(buf_p, &entry_p->data.buf[0], entry_p->data.size);
+        if (buf_p != NULL) {
+            memcpy(buf_p,
+                   &entry_p->data.buf[0],
+                   entry_p->data.size);
+        }
 
         /* Free allocated memory. */
         heap_free(&module.heap.obj, entry_p);
