@@ -539,7 +539,6 @@ def output_exception(e, ostream, debug):
                                                    name=type(e).__name__,
                                                    message=str(e))
         print(text, file=ostream)
-        print(text, file=ostream)
 
         
 def execute_command(client, command, ostream, debug):
