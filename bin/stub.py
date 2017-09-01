@@ -6,6 +6,17 @@ import subprocess
 import re
 
 
+def get_pattern_symbols(pattern):
+    try:
+        symbols = pattern.split(':')[1]
+    except IndexError:
+        sys.exit("error: bad stub pattern '{}'".format(pattern))
+    else:
+        if not symbols:
+            return []
+        else:
+            return symbols.split(',')
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('crosscompile')
@@ -14,26 +25,15 @@ def main():
     parser.add_argument('patterns', nargs='+')
     args = parser.parse_args()
 
-    # Find th pattern for this source file (if any).
-    found = False
+    # Find symbols to stub in given source file (if any).
+    symbols = []
 
     for pattern in args.patterns:
         if pattern.startswith(args.sourcefile):
-            found = True
-            break
+            symbols += get_pattern_symbols(pattern)
 
-    if not found:
+    if not symbols:
         return
-
-    try:
-        c_source, symbols = pattern.split(':')
-
-        if not symbols:
-            return
-
-        symbols = symbols.split(',')
-    except:
-        sys.exit("error: bad stub pattern '{}'".format(pattern))
 
     # Find all symbols in the object file.
     command = [args.crosscompile + 'readelf']
@@ -59,7 +59,7 @@ def main():
         if symbol not in symbols_in_objectfile:
             sys.exit("error: cannot stub missing symbol {}".format(symbol))
 
-        print("Stubbing symbol '{}' in '{}'.".format(symbol, c_source))
+        print("Stubbing symbol '{}' in '{}'.".format(symbol, args.sourcefile))
 
         command += [
             '--redefine-sym', '{symbol}=__stub_{symbol}'.format(symbol=symbol)

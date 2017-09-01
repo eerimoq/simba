@@ -29,6 +29,7 @@
  */
 
 #include "simba.h"
+#include "my_module.h"
 
 static int asserti(int actual, int expected)
 {
@@ -155,6 +156,24 @@ static int test_mock_wait_notify(struct harness_t *harness_p)
     return (0);
 }
 
+static int test_stub(struct harness_t *harness_p)
+{
+    BTASSERT(foo() == 0);
+    BTASSERT(bar() == 0);
+
+    return (0);
+}
+
+int STUB(foo)()
+{
+    return (0);
+}
+
+int STUB(bar)()
+{
+    return (0);
+}
+
 int main()
 {
     struct harness_t harness;
@@ -163,6 +182,7 @@ int main()
         { test_assertm, "test_assertm" },
         { test_mock, "test_mock" },
         { test_mock_wait_notify, "test_mock_wait_notify" },
+        { test_stub, "test_stub" },
         { NULL, NULL }
     };
 
