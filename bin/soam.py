@@ -7,6 +7,7 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 import sys
+import os
 import struct
 import argparse
 import cmd
@@ -22,6 +23,15 @@ except ImportError:
     except ImportError:
         print("Failed to import lmza.")
 
+try:
+    from prompt_toolkit.contrib.completers import WordCompleter
+    from prompt_toolkit import prompt
+    from prompt_toolkit.history import FileHistory
+    from prompt_toolkit.interface import AbortAction
+    from prompt_toolkit.auto_suggest import AutoSuggestFromHistory
+except ImportError:
+    print("Failed to import prompt_toolkit.")
+
 import traceback
 import _thread
 from socket_device import SocketDevice
@@ -33,7 +43,7 @@ except ImportError:
 
 from errnos import human_readable_errno
 
-__version__ = '3.0'
+__version__ = '4.0'
 
 # SOAM protocol definitions.
 SOAM_TYPE_STDOUT_PRINTF                = 1
@@ -540,7 +550,7 @@ def output_exception(e, ostream, debug):
                                                    message=str(e))
         print(text, file=ostream)
 
-        
+
 def execute_command(client, command, ostream, debug):
     try:
         code, output = client.execute_command(command)
@@ -558,20 +568,20 @@ def execute_command(client, command, ostream, debug):
         print(CommandStatus.ERROR, file=ostream)
     else:
         print(output, file=ostream, end='')
-    
+
         if code == 0:
             print(CommandStatus.OK, file=ostream)
         else:
             if code < 0:
                 message = human_readable_errno(-code)
-    
+
                 if message is None:
                     message = code
                 else:
                     message = '{}: {}'.format(code, message)
             else:
                 message = code
-    
+
             print(CommandStatus.ERROR + '({})'.format(message),
                   file=ostream)
 
@@ -867,19 +877,10 @@ def prompt_toolkit_shell(client, stdout, debug):
 
     '''
 
-    try:
-        from prompt_toolkit.contrib.completers import WordCompleter
-        from prompt_toolkit import prompt
-        from prompt_toolkit.history import FileHistory
-        from prompt_toolkit.interface import AbortAction
-        from prompt_toolkit.auto_suggest import AutoSuggestFromHistory
-    except ImportError:
-        sys.exit('Failed to import prompt_toolkit. Add --cmd-shell '
-                 'to start a standard library cmd shell instead.')
-    
     commands = [command[1:] for command in client.database.commands]
     completer = WordCompleter(commands, WORD=True)
-    history = FileHistory('soam-history.txt')
+    user_home = os.path.expanduser('~')
+    history = FileHistory(os.path.join(user_home, '.soam-history.txt'))
 
     print("\nWelcome to the SOAM shell.\n")
 
@@ -899,6 +900,26 @@ def prompt_toolkit_shell(client, stdout, debug):
             execute_command(client, line, stdout, debug)
 
 
+def cmd_shell(client, debug):
+    '''A shell built on the standard library cmd module.
+
+    '''
+
+    Shell(client, debug=debug).cmdloop()
+
+
+def shell(args, client):
+    if args.cmd_shell:
+        cmd_shell(client, args.debug)
+    elif 'prompt_toolkit' in sys.modules:
+        prompt_toolkit_shell(client, sys.stdout, args.debug)
+    else:
+        print('prompt_toolkit is not available, falling back to a cmd shell.')
+        cmd_shell(client, args.debug)
+
+    client.reader.stop()
+
+
 def do_serial(args):
     client = SlipSerialClient(args.port,
                               args.baudrate,
@@ -906,14 +927,7 @@ def do_serial(args):
                               sys.stdout,
                               args.response_timeout,
                               args.database_response_timeout)
-
-    if args.cmd_shell:
-        shell = Shell(client, debug=args.debug)
-        shell.cmdloop()
-    else:
-        prompt_toolkit_shell(client, sys.stdout, args.debug)
-
-    client.reader.stop()
+    shell(args, client)
 
 
 def do_tcp(args):
@@ -923,14 +937,7 @@ def do_tcp(args):
                            sys.stdout,
                            args.response_timeout,
                            args.database_response_timeout)
-
-    if args.cmd_shell:
-        shell = Shell(client, debug=args.debug)
-        shell.cmdloop()
-    else:
-        prompt_toolkit_shell(client, sys.stdout, args.debug)
-
-    client.reader.stop()
+    shell(args, client)
 
 
 def do_unframed_text(args):
