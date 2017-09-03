@@ -232,6 +232,20 @@ ssize_t harness_mock_read(const char *id_p,
                           size_t size);
 
 /**
+ * Find mock entry with given id and compare its data to given
+ * buffer. The testcase fails if the mock id is not found or on data
+ * mismatch.
+ *
+ * @param[in] id_p Mock id string to assert.
+ * @param[in] buf_p Buffer with expected data, or NULL if no data
+ *                  shall be compared.
+ *
+ * @return zero(0) or negative error code.
+ */
+int harness_mock_assert(const char *id_p,
+                        const void *buf_p);
+
+/**
  * Try to read data from mock entry with given id.
  *
  * @param[in] id_p Mock id string to read.

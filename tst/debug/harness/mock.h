@@ -28,23 +28,12 @@
  * This file is part of the Simba project.
  */
 
-#include "simba.h"
+#ifndef __STUB_H__
+#define __STUB_H__
 
-int foo()
-{
-    return (-1);
-}
+int mock_write_my_memcpy(char *dst_p,
+                         const char *src_p,
+                         size_t size,
+                         ssize_t res);
 
-int bar()
-{
-    return (-1);
-}
-
-ssize_t my_memcpy(char *dst_p,
-                  const char *src_p,
-                  size_t size)
-{
-    memcpy(dst_p, src_p, size);
-
-    return (size);
-}
+#endif

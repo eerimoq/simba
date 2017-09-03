@@ -32,10 +32,10 @@ NAME = harness_suite
 TYPE = suite
 BOARD ?= linux
 
-SRC += my_module.c
+SRC += my_module.c mock.c
 
 STUB = $(addprefix main.c:, \
-	foo \
-	bar)
+	foo,bar \
+	my_memcpy)
 
 include $(SIMBA_ROOT)/make/app.mk

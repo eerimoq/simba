@@ -55,6 +55,39 @@ struct module_t {
 
 static struct module_t module;
 
+static struct mock_entry_t *find_mock_entry(const char *id_p)
+{
+    struct list_sl_iterator_t iterator;
+    struct mock_entry_t *entry_p;
+    struct mock_entry_t *iterator_entry_p;
+    struct mock_entry_t *prev_entry_p;
+
+    sem_take(&module.sem, NULL);
+
+    LIST_SL_ITERATOR_INIT(&iterator, &module.mock_list);
+
+    while (1) {
+        LIST_SL_ITERATOR_NEXT(&iterator, &entry_p);
+
+        if (entry_p == NULL) {
+            break;
+        }
+
+        if (strcmp(entry_p->id_p, id_p) == 0) {
+            LIST_SL_REMOVE_ELEM(&module.mock_list,
+                                &iterator,
+                                entry_p,
+                                iterator_entry_p,
+                                prev_entry_p);
+            break;
+        }
+    }
+
+    sem_give(&module.sem, 1);
+
+    return (entry_p);
+}
+
 int harness_init(struct harness_t *self_p)
 {
     sem_init(&module.sem, 0, 1);
@@ -203,6 +236,8 @@ ssize_t harness_mock_write(const char *id_p,
                            const void *buf_p,
                            size_t size)
 {
+    ASSERTN(id_p != NULL, EINVAL);
+
     struct mock_entry_t *entry_p;
 
     /* Allocate memory for the mock entry and data. */
@@ -255,39 +290,15 @@ ssize_t harness_mock_try_read(const char *id_p,
                               void *buf_p,
                               size_t size)
 {
-    struct list_sl_iterator_t iterator;
+    ASSERTN(id_p != NULL, EINVAL);
+
     struct mock_entry_t *entry_p;
-    struct mock_entry_t *iterator_entry_p;
-    struct mock_entry_t *prev_entry_p;
     ssize_t res;
 
     res = -1;
+    entry_p = find_mock_entry(id_p);
 
-    sem_take(&module.sem, NULL);
-
-    LIST_SL_ITERATOR_INIT(&iterator, &module.mock_list);
-
-    while (1) {
-        LIST_SL_ITERATOR_NEXT(&iterator, &entry_p);
-
-        if (entry_p == NULL) {
-            break;
-        }
-
-        if (strcmp(entry_p->id_p, id_p) == 0) {
-            res = size;
-            break;
-        }
-    }
-
-    if (res == size) {
-        /* Remove the element from the list. */
-        LIST_SL_REMOVE_ELEM(&module.mock_list,
-                            &iterator,
-                            entry_p,
-                            iterator_entry_p,
-                            prev_entry_p);
-
+    if (entry_p != NULL) {
         /* Copy the value to the output buffer. */
         if (buf_p != NULL) {
             memcpy(buf_p,
@@ -295,11 +306,51 @@ ssize_t harness_mock_try_read(const char *id_p,
                    entry_p->data.size);
         }
 
+        res = entry_p->data.size;
+
         /* Free allocated memory. */
+        sem_take(&module.sem, NULL);
         heap_free(&module.heap.obj, entry_p);
+        sem_give(&module.sem, 1);
     }
 
-    sem_give(&module.sem, 1);
+    return (res);
+}
+
+int harness_mock_assert(const char *id_p,
+                        const void *buf_p)
+{
+    ASSERTN(id_p != NULL, EINVAL);
+
+    struct mock_entry_t *entry_p;
+    int res;
+
+    res = -1;
+    entry_p = find_mock_entry(id_p);
+
+    if (entry_p != NULL) {
+        /* Compare the value to the expected value. */
+        if (buf_p != NULL) {
+            res = memcmp(buf_p, &entry_p->data.buf[0], entry_p->data.size);
+
+            if (res != 0) {
+                module.testcase_failed = 1;
+                std_printf(FSTR("harness_mock_assert: %s: data mismatch "),
+                           id_p);
+                _ASSERTHEX("actual",
+                           buf_p,
+                           "expected",
+                           &entry_p->data.buf[0],
+                           entry_p->data.size);
+            }
+        }
+
+        /* Free allocated memory. */
+        sem_take(&module.sem, NULL);
+        heap_free(&module.heap.obj, entry_p);
+        sem_give(&module.sem, 1);
+        res = 0;
+    }
 
     return (res);
 }
@@ -308,6 +359,8 @@ ssize_t harness_mock_write_notify(const char *id_p,
                                   const void *buf_p,
                                   size_t size)
 {
+    ASSERTN(id_p != NULL, EINVAL);
+
     uint32_t mask;
 
     harness_mock_write(id_p, buf_p, size);
@@ -322,6 +375,8 @@ ssize_t harness_mock_read_wait(const char *id_p,
                                size_t size,
                                struct time_t *timeout_p)
 {
+    ASSERTN(id_p != NULL, EINVAL);
+
     struct event_t event;
     struct bus_listener_t listener;
     ssize_t res;

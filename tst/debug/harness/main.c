@@ -30,6 +30,7 @@
 
 #include "simba.h"
 #include "my_module.h"
+#include "mock.h"
 
 static int asserti(int actual, int expected)
 {
@@ -63,26 +64,6 @@ static int test_assertm(struct harness_t *harness_p)
     return (0);
 }
 
-static ssize_t my_memcpy(char *dst_p,
-                         const char *src_p,
-                         size_t size)
-{
-    ssize_t res;
-
-    /* Save input. */
-    harness_mock_write("my_memcpy(src_p)", src_p, strlen(src_p) + 1);
-    harness_mock_write("my_memcpy(size)", &size, sizeof(size));
-
-    /* Get output. */
-    harness_mock_read("my_memcpy(dst_p)", dst_p, 16);
-    harness_mock_read("my_memcpy: return (res)", &res, sizeof(res));
-
-    /* Dummy write to test NULL buffer of size zero(0). */
-    harness_mock_write("my_memcpy()", NULL, 0);
-
-    return (res);
-}
-
 static THRD_STACK(mock_thread_stack, 512);
 
 static void *mock_thread(void *arg_p)
@@ -106,27 +87,15 @@ static void *mock_thread(void *arg_p)
 static int test_mock(struct harness_t *harness_p)
 {
     char buf[16];
-    size_t size;
-    ssize_t res;
 
-    /* Prepare function output. */
-    harness_mock_write("my_memcpy(dst_p)", "bar", sizeof("bar"));
-    res = 4;
-    harness_mock_write("my_memcpy: return (res)", &res, sizeof(res));
-
-    /* Call the function and validate its output. */
+    mock_write_my_memcpy("bar", "foo", 4, 4);
     BTASSERTI(my_memcpy(&buf[0], "foo", 4), ==, 4);
     BTASSERTM(&buf[0], "bar", 4);
 
-    /* Validate function input. */
-    harness_mock_try_read("my_memcpy(src_p)", &buf[0], sizeof("foo"));
-    harness_mock_read("my_memcpy(size)", &size, sizeof(size));
-    BTASSERTM(&buf[0], "foo", sizeof("foo"));
-    BTASSERTI(size, ==, 4);
+    mock_write_my_memcpy("bar", "foo", 4, -1);
+    BTASSERTI(my_memcpy(&buf[0], "foo", 4), ==, -1);
+    BTASSERTM(&buf[0], "bar", 4);
 
-    /* Read the NULL write. */
-    BTASSERT(harness_mock_read("my_memcpy()", NULL, 0) == 0);
-    
     return (0);
 }
 

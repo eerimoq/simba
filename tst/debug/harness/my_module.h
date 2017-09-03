@@ -35,4 +35,17 @@ int foo();
 
 int bar();
 
+/**
+ * Copies data from one memory address to another.
+ *
+ * @param[out] dst_p Destination buffer.
+ * @param[in] src_p Source buffer.
+ * @param[in] size Buffer size in words.
+ *
+ * @return Number of copied words or negative error code.
+ */
+ssize_t my_memcpy(char *dst_p,
+                  const char *src_p,
+                  size_t size);
+
 #endif

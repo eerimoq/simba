@@ -30,21 +30,29 @@
 
 #include "simba.h"
 
-int foo()
+int mock_write_my_memcpy(char *dst_p,
+                         const char *src_p,
+                         size_t size,
+                         ssize_t res)
 {
-    return (-1);
+    harness_mock_write("my_memcpy(): return (dst_p)", dst_p, strlen(dst_p) + 1);
+    harness_mock_write("my_memcpy(src_p)", src_p, strlen(src_p) + 1);
+    harness_mock_write("my_memcpy(size)", &size, sizeof(size));
+    harness_mock_write("my_memcpy: return (res)", &res, sizeof(res));
+
+    return (0);
 }
 
-int bar()
+ssize_t STUB(my_memcpy)(char *dst_p,
+                        const char *src_p,
+                        size_t size)
 {
-    return (-1);
-}
+    ssize_t res;
 
-ssize_t my_memcpy(char *dst_p,
-                  const char *src_p,
-                  size_t size)
-{
-    memcpy(dst_p, src_p, size);
+    harness_mock_read("my_memcpy(): return (dst_p)", dst_p, size);
+    harness_mock_assert("my_memcpy(src_p)", src_p);
+    harness_mock_assert("my_memcpy(size)", &size);
+    harness_mock_read("my_memcpy: return (res)", &res, sizeof(res));
 
-    return (size);
+    return (res);
 }
