@@ -31,6 +31,12 @@
 #ifndef __MY_MODULE_MOCK_H__
 #define __MY_MODULE_MOCK_H__
 
+#include "simba.h"
+
+int mock_write_foo(int res);
+
+int mock_write_bar(int res);
+
 int mock_write_my_memcpy(char *dst_p,
                          const char *src_p,
                          size_t size,

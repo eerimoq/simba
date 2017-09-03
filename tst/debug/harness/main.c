@@ -127,20 +127,19 @@ static int test_mock_wait_notify(struct harness_t *harness_p)
 
 static int test_stub(struct harness_t *harness_p)
 {
+    mock_write_foo(0);
     BTASSERT(foo() == 0);
-    BTASSERT(bar() == 0);
 
-    return (0);
-}
+    /* Override the weak generated function with the stub function
+       defined in this file. */
+    BTASSERT(bar() == 1);
 
-int STUB(foo)()
-{
     return (0);
 }
 
 int STUB(bar)()
 {
-    return (0);
+    return (1);
 }
 
 int main()

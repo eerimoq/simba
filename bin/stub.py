@@ -10,15 +10,30 @@ import re
 __version__ = '0.1'
 
 
-STUB_FMT = '''\
+STUB_H_FMT = '''\
 {header}
+
+#ifndef __{header_name}_MOCK_H__
+#define __{header_name}_MOCK_H__
 
 #include "simba.h"
 
 {functions}
+#endif
 '''
 
-STUB_WRITE_FUNCTION_FMT = '''\
+
+STUB_C_FMT = '''\
+{header}
+
+#include "simba.h"
+#include "{header_name}_mock.h"
+
+{functions}\
+'''
+
+
+MOCK_WRITE_FUNCTION_FMT = '''\
 {declaration}
 {{
 {body}\
@@ -34,27 +49,88 @@ STUB_FUNCTION_FMT = '''\
 }}
 '''
 
-STUB_WRITE_ARGUMENT_OUTPUT_P_FMT = '''\
+MOCK_WRITE_ARGUMENT_IN_P_FMT = '''\
     harness_mock_write("{function_name}({name})",
                        {name},
                        {size});
 '''
 
-STUB_WRITE_ARGUMENT_FMT = '''\
+MOCK_WRITE_ARGUMENT_OUT_P_FMT = '''\
+    harness_mock_write("{function_name}(): return ({name})",
+                       {name},
+                       {size});
+'''
+
+MOCK_WRITE_ARGUMENT_IN_FMT = '''\
     harness_mock_write("{function_name}({name})",
                        &{name},
                        {size});
 '''
 
-STUB_ARGUMENT_OUTPUT_P_FMT = '''\
+MOCK_WRITE_ARGUMENT_OUT_FMT = '''\
+    harness_mock_write("{function_name}(): return ({name})",
+                       &{name},
+                       {size});
+'''
+
+MOCK_ARGUMENT_IN_P_FMT = '''\
     harness_mock_assert("{function_name}({name})",
                         {name});
 '''
 
-STUB_ARGUMENT_FMT = '''\
+MOCK_ARGUMENT_OUT_P_FMT = '''\
+    harness_mock_read("{function_name}(): return ({name})",
+                      {name},
+                      size);
+'''
+
+MOCK_ARGUMENT_IN_FMT = '''\
     harness_mock_assert("{function_name}({name})",
                         &{name});
 '''
+
+MOCK_ARGUMENT_OUT_FMT = '''\
+    harness_mock_read("{function_name}(): return ({name})",
+                      &{name},
+                      sizeof({name}));
+'''
+
+
+class Argument(object):
+
+    def __init__(self, name, type_, direction):
+        self.name = name
+        self.type_ = type_
+        self.direction = direction
+
+    def __repr__(self):
+        return str(vars(self))
+
+    def __str__(self):
+        return '{}{}'.format(self.type_, self.name)
+
+
+def parse_args(args, comment):
+    if args == ['void']:
+        return []
+
+    arguments = []
+
+    for arg in args:
+        type_, name = re.match(r'(.+[^\w])(\w+)', arg).groups()
+        mo = re.search(r'\[(\w+)\]\s+{}\s'.format(name),
+                       comment,
+                       re.DOTALL)
+
+        if mo:
+            direction = mo.group(1).split(',')
+        else:
+            direction = []
+
+        arguments.append(Argument(name, type_, direction))
+
+    return arguments
+
 
 def get_pattern_symbols(pattern):
     try:
@@ -118,71 +194,113 @@ def do_patch(args):
     subprocess.check_call(command)
 
 
-def generate_function_stub_write(return_type, name, args, comment):
-    '''Generate a stub write definition of given function.
+def generate_function_mock_write(return_type,
+                                 name,
+                                 arguments):
+    '''Generate a mock write definition of given function.
 
     '''
 
     body = []
 
-    for arg in args:
-        arg_name = arg.split(' ')[-1].strip('*')
+    for argument in arguments:
+        if '*' in argument.type_:
+            if 'char' in argument.type_:
+                size = 'strlen({name}) + 1'.format(name=argument.name)
+            elif 'void' in argument.type_:
+                size = 'size'
+            else:
+                size = 'sizeof(*{name})'.format(name=argument.name)
 
-        if arg == 'void':
-            continue
-        elif '*' in arg:
-            size = 'sizeof(*{name})'.format(name=arg_name)
-            body.append(STUB_WRITE_ARGUMENT_OUTPUT_P_FMT.format(
-                function_name=name,
-                name=arg_name,
-                size=size))
+            if 'in' in argument.direction:
+                body.append(MOCK_WRITE_ARGUMENT_IN_P_FMT.format(
+                    function_name=name,
+                    name=argument.name,
+                    size=size))
+            else:
+                body.append(MOCK_WRITE_ARGUMENT_OUT_P_FMT.format(
+                    function_name=name,
+                    name=argument.name,
+                    size=size))
         else:
-            size = 'sizeof({name})'.format(name=arg_name)
-            body.append(STUB_WRITE_ARGUMENT_FMT.format(
+            size = 'sizeof({name})'.format(name=argument.name)
+            body.append(MOCK_WRITE_ARGUMENT_IN_FMT.format(
                 function_name=name,
-                name=arg_name,
+                name=argument.name,
                 size=size))
+
+    if return_type == 'void':
+        return_argument = []
+    else:
+        body.append(MOCK_WRITE_ARGUMENT_OUT_FMT.format(
+            function_name=name,
+            name='res',
+            size='sizeof(res)'))
+        return_argument = [Argument('res', return_type, [])]
 
     if len(body) > 0:
-        body += ['']
+        body.append('')
 
-    function_start = '{}stub_write_{}('.format(return_type, name)
-    padding = ' ' * len(function_start)
-    declaration = function_start + '{})'.format((',\n' + padding).join(args))
+    function_open = 'int mock_write_{}('.format(name)
+    padding = ' ' * len(function_open)
+    declaration = function_open
+    declaration += (',\n' + padding).join([str(argument)
+                                           for argument in arguments + return_argument])
+    declaration += ')'
 
-    return STUB_WRITE_FUNCTION_FMT.format(declaration=declaration,
-                                          body='\n'.join(body))
+    mock_h = declaration + ';\n'
+    mock_c = MOCK_WRITE_FUNCTION_FMT.format(declaration=declaration,
+                                            body='\n'.join(body))
+
+    return mock_h, mock_c
 
 
-def generate_function_stub(return_type, name, args, comment):
+def generate_function_stub(return_type,
+                           name,
+                           arguments):
     '''Generate a stub definition of given function.
 
     '''
 
     body = []
 
-    for arg in args:
-        arg_name = arg.split(' ')[-1].strip('*')
+    if return_type == 'void':
+        return_argument = []
+    else:
+        body.append('    {}res;\n'.format(return_type))
+        body.append(MOCK_ARGUMENT_OUT_FMT.format(
+            function_name=name,
+            name='res',
+            size='sizeof(res)'))
+        return_argument = [Argument('res', return_type, [])]
 
-        if arg == 'void':
-            continue
-        elif '*' in arg:
-            size = 'sizeof(*{name})'.format(name=arg_name)
-            body.append(STUB_ARGUMENT_OUTPUT_P_FMT.format(function_name=name,
-                                                          name=arg_name,
+    for argument in arguments:
+        if '*' in argument.type_:
+            if 'in' in argument.direction:
+                size = 'sizeof(*{name})'.format(name=argument.name)
+                body.append(MOCK_ARGUMENT_IN_P_FMT.format(function_name=name,
+                                                          name=argument.name,
                                                           size=size))
+            else:
+                size = 'sizeof(*{name})'.format(name=argument.name)
+                body.append(MOCK_ARGUMENT_OUT_P_FMT.format(function_name=name,
+                                                           name=argument.name,
+                                                           size=size))
         else:
-            size = 'sizeof({name})'.format(name=arg_name)
-            body.append(STUB_ARGUMENT_FMT.format(function_name=name,
-                                                 name=arg_name,
+            size = 'sizeof({name})'.format(name=argument.name)
+            body.append(MOCK_ARGUMENT_IN_FMT.format(function_name=name,
+                                                 name=argument.name,
                                                  size=size))
 
     if len(body) > 0:
         body += ['']
 
-    function_start = '{}STUB({})('.format(return_type, name)
-    padding = ' ' * len(function_start)
-    declaration = function_start + '{})'.format((',\n' + padding).join(args))
+    function_open = '{}__attribute__ ((weak)) STUB({})('.format(return_type, name)
+    padding = ' ' * len(function_open)
+    declaration = function_open
+    declaration += (',\n' + padding).join([str(argument)
+                                           for argument in arguments])
+    declaration += ')'
 
     return STUB_FUNCTION_FMT.format(declaration=declaration,
                                     body='\n'.join(body))
@@ -198,18 +316,17 @@ def generate_function_stubs(declaration, comment):
 
     return_type, name, args = re_declaration.match(declaration).groups()
     args = [arg.strip() for arg in args.split(',')]
+    arguments = parse_args(args, comment)
 
-    stub = generate_function_stub_write(return_type,
-                                        name,
-                                        args,
-                                        comment)
-    stub += '\n'
-    stub += generate_function_stub(return_type,
-                                   name,
-                                   args,
-                                   comment)
+    stub_h, stub_c = generate_function_mock_write(return_type,
+                                                  name,
+                                                  arguments)
+    stub_c += '\n'
+    stub_c += generate_function_stub(return_type,
+                                     name,
+                                     arguments)
 
-    return stub
+    return stub_h, stub_c
 
 
 def do_generate(args):
@@ -223,10 +340,13 @@ def do_generate(args):
                                 re.MULTILINE | re.DOTALL)
 
     for header in args.headers:
-        stub_path = header[:-2] + '_mock.c'
-        print("Generating stub '{}' from '{}'.".format(stub_path,
-                                                       header))
-        stub = []
+        header_name = os.path.split(header)[1][:-2]
+        mock_h_path = header_name + '_mock.h'
+        mock_c_path = header_name + '_mock.c'
+        print("Generating '{}' and '{}' from '{}'.".format(
+            mock_h_path,
+            mock_c_path,
+            header))
 
         with open(header, 'r') as fin:
             header_contents = fin.read()
@@ -234,13 +354,24 @@ def do_generate(args):
         functions = re_function.findall(header_contents)
         file_header = re_file_header.search(header_contents)
 
-        for comment, declaration in functions:
-            stub.append(generate_function_stubs(declaration.strip(),
-                                                comment))
+        mock_h = []
+        mock_c = []
 
-        with open(stub_path, 'w') as fout:
-            fout.write(STUB_FMT.format(header=file_header.group(1),
-                                       functions='\n'.join(stub)))
+        for comment, declaration in functions:
+            func_h, func_c = generate_function_stubs(declaration.strip(),
+                                                     comment)
+            mock_h.append(func_h)
+            mock_c.append(func_c)
+
+        with open(mock_h_path, 'w') as fout:
+            fout.write(STUB_H_FMT.format(header=file_header.group(1),
+                                         header_name=header_name.upper(),
+                                         functions='\n'.join(mock_h)))
+
+        with open(mock_c_path, 'w') as fout:
+            fout.write(STUB_C_FMT.format(header=file_header.group(1),
+                                         header_name=header_name,
+                                         functions='\n'.join(mock_c)))
 
 
 def main():

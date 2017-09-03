@@ -29,6 +29,47 @@
  */
 
 #include "simba.h"
+#include "my_module_mock.h"
+
+int mock_write_foo(int res)
+{
+    harness_mock_write("foo(): return (res)",
+                       &res,
+                       sizeof(res));
+
+    return (0);
+}
+
+int __attribute__ ((weak)) STUB(foo)()
+{
+    int res;
+
+    harness_mock_read("foo(): return (res)",
+                      &res,
+                      sizeof(res));
+
+    return (res);
+}
+
+int mock_write_bar(int res)
+{
+    harness_mock_write("bar(): return (res)",
+                       &res,
+                       sizeof(res));
+
+    return (0);
+}
+
+int __attribute__ ((weak)) STUB(bar)()
+{
+    int res;
+
+    harness_mock_read("bar(): return (res)",
+                      &res,
+                      sizeof(res));
+
+    return (res);
+}
 
 int mock_write_my_memcpy(char *dst_p,
                          const char *src_p,
@@ -47,18 +88,22 @@ int mock_write_my_memcpy(char *dst_p,
                        &size,
                        sizeof(size));
 
-    harness_mock_write("my_memcpy: return (res)",
+    harness_mock_write("my_memcpy(): return (res)",
                        &res,
                        sizeof(res));
 
     return (0);
 }
 
-ssize_t STUB(my_memcpy)(char *dst_p,
-                        const char *src_p,
-                        size_t size)
+ssize_t __attribute__ ((weak)) STUB(my_memcpy)(char *dst_p,
+                                               const char *src_p,
+                                               size_t size)
 {
     ssize_t res;
+
+    harness_mock_read("my_memcpy(): return (res)",
+                      &res,
+                      sizeof(res));
 
     harness_mock_read("my_memcpy(): return (dst_p)",
                       dst_p,
@@ -69,10 +114,6 @@ ssize_t STUB(my_memcpy)(char *dst_p,
 
     harness_mock_assert("my_memcpy(size)",
                         &size);
-
-    harness_mock_read("my_memcpy: return (res)",
-                      &res,
-                      sizeof(res));
 
     return (res);
 }
