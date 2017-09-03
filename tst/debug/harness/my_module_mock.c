@@ -28,28 +28,51 @@
  * This file is part of the Simba project.
  */
 
-#ifndef __MY_MODULE_H__
-#define __MY_MODULE_H__
+#include "simba.h"
 
-/**
- */
-int foo(void);
+int mock_write_my_memcpy(char *dst_p,
+                         const char *src_p,
+                         size_t size,
+                         ssize_t res)
+{
+    harness_mock_write("my_memcpy(): return (dst_p)",
+                       dst_p,
+                       strlen(dst_p) + 1);
 
-/**
- */
-int bar(void);
+    harness_mock_write("my_memcpy(src_p)",
+                       src_p,
+                       strlen(src_p) + 1);
 
-/**
- * Copies data from one memory address to another.
- *
- * @param[out] dst_p Destination buffer.
- * @param[in] src_p Source buffer.
- * @param[in] size Buffer size in words.
- *
- * @return Number of copied words or negative error code.
- */
-ssize_t my_memcpy(char *dst_p,
-                  const char *src_p,
-                  size_t size);
+    harness_mock_write("my_memcpy(size)",
+                       &size,
+                       sizeof(size));
 
-#endif
+    harness_mock_write("my_memcpy: return (res)",
+                       &res,
+                       sizeof(res));
+
+    return (0);
+}
+
+ssize_t STUB(my_memcpy)(char *dst_p,
+                        const char *src_p,
+                        size_t size)
+{
+    ssize_t res;
+
+    harness_mock_read("my_memcpy(): return (dst_p)",
+                      dst_p,
+                      size);
+
+    harness_mock_assert("my_memcpy(src_p)",
+                        src_p);
+
+    harness_mock_assert("my_memcpy(size)",
+                        &size);
+
+    harness_mock_read("my_memcpy: return (res)",
+                      &res,
+                      sizeof(res));
+
+    return (res);
+}

@@ -32,7 +32,7 @@ NAME = harness_suite
 TYPE = suite
 BOARD ?= linux
 
-SRC += my_module.c mock.c
+SRC += my_module.c my_module_mock.c
 
 STUB = $(addprefix main.c:, \
 	foo,bar \

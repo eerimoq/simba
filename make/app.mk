@@ -217,7 +217,7 @@ else
 	$$(CC) $$(INC:%=-I%) $$(CDEFS:%=-D%) $$(CFLAGS) -o $$@ $$<
 endif
 ifneq ($(STUB),)
-	stub.py "$(CROSS_COMPILE)" $$@ $$< $(STUB)
+	stub.py patch "$(CROSS_COMPILE)" $$@ $$< $(STUB)
 endif
 	gcc -MM -MT $$@ $$(INC:%=-I%) $$(CDEFS:%=-D%) -o $(patsubst %.c,$(DEPSDIR)%.o.dep,$(abspath $1)) $$<
 endef

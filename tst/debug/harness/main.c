@@ -30,7 +30,7 @@
 
 #include "simba.h"
 #include "my_module.h"
-#include "mock.h"
+#include "my_module_mock.h"
 
 static int asserti(int actual, int expected)
 {
