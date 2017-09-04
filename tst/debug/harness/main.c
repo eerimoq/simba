@@ -32,17 +32,11 @@
 #include "my_module.h"
 #include "my_module_mock.h"
 
+static THRD_STACK(mock_thread_stack, 512);
+
 static int asserti(int actual, int expected)
 {
     BTASSERTI(actual, ==, expected);
-
-    return (0);
-}
-
-static int test_asserti(struct harness_t *harness_p)
-{
-    BTASSERT(asserti(1, 2) == -1);
-    BTASSERT(asserti(1, 1) == 0);
 
     return (0);
 }
@@ -55,16 +49,6 @@ static int assertm(const void *actual_p,
 
     return (0);
 }
-
-static int test_assertm(struct harness_t *harness_p)
-{
-    BTASSERT(assertm("foo", "bar", 3) == -1);
-    BTASSERT(assertm("foo", "foo", 3) == 0);
-
-    return (0);
-}
-
-static THRD_STACK(mock_thread_stack, 512);
 
 static void *mock_thread(void *arg_p)
 {
@@ -82,6 +66,22 @@ static void *mock_thread(void *arg_p)
     }
 
     return (NULL);
+}
+
+static int test_asserti(struct harness_t *harness_p)
+{
+    BTASSERT(asserti(1, 2) == -1);
+    BTASSERT(asserti(1, 1) == 0);
+
+    return (0);
+}
+
+static int test_assertm(struct harness_t *harness_p)
+{
+    BTASSERT(assertm("foo", "bar", 3) == -1);
+    BTASSERT(assertm("foo", "foo", 3) == 0);
+
+    return (0);
 }
 
 static int test_mock(struct harness_t *harness_p)
@@ -137,6 +137,7 @@ static int test_stub(struct harness_t *harness_p)
     return (0);
 }
 
+/* Overrides the weak definition in my_module_mock.c. */
 int STUB(bar)()
 {
     return (1);
