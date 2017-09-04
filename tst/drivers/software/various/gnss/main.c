@@ -336,7 +336,7 @@ static int test_write(struct harness_t *harness_p)
     harness_mock_read("chan_write(size)", &size, sizeof(size));
     BTASSERTI(size, ==, 15);
 
-    harness_mock_read("chan_write(buf_p)", &sentence[0], 1);
+    harness_mock_read("chan_write(buf_p)", &sentence[0], size);
     BTASSERTM(&sentence[0], "$GPFOO,BAR*2C\r\n", size);
 
     return (0);

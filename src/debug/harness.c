@@ -269,7 +269,7 @@ ssize_t harness_mock_write(const char *id_p,
 
 ssize_t harness_mock_read(const char *id_p,
                           void *buf_p,
-                          size_t size)
+                          ssize_t size)
 {
     ssize_t res;
 
@@ -288,7 +288,7 @@ ssize_t harness_mock_read(const char *id_p,
 
 ssize_t harness_mock_try_read(const char *id_p,
                               void *buf_p,
-                              size_t size)
+                              ssize_t size)
 {
     ASSERTN(id_p != NULL, EINVAL);
 
@@ -300,13 +300,17 @@ ssize_t harness_mock_try_read(const char *id_p,
 
     if (entry_p != NULL) {
         /* Copy the value to the output buffer. */
+        if (size == -1) {
+            size = entry_p->data.size;
+        }
+
         if (buf_p != NULL) {
             memcpy(buf_p,
                    &entry_p->data.buf[0],
-                   entry_p->data.size);
+                   size);
         }
 
-        res = entry_p->data.size;
+        res = size;
 
         /* Free allocated memory. */
         sem_take(&module.sem, NULL);
@@ -350,6 +354,10 @@ int harness_mock_assert(const char *id_p,
         heap_free(&module.heap.obj, entry_p);
         sem_give(&module.sem, 1);
         res = 0;
+    } else {
+#if CONFIG_HARNESS_MOCK_VERBOSE == 1
+        std_printf(FSTR("error: %s: mock id not found\r\n"), id_p);
+#endif
     }
 
     return (res);

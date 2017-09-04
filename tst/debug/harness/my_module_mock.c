@@ -107,7 +107,7 @@ ssize_t __attribute__ ((weak)) STUB(my_memcpy)(char *dst_p,
 
     harness_mock_read("my_memcpy(): return (dst_p)",
                       dst_p,
-                      size);
+                      -1);
 
     harness_mock_assert("my_memcpy(src_p)",
                         src_p);
