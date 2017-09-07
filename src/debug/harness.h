@@ -200,7 +200,9 @@ int harness_expect(void *chan_p,
                    const struct time_t *timeout_p);
 
 /**
- * Write given data buffer to a mock entry with given id.
+ * Write given data buffer to a mock entry with given id. The mock
+ * entry can later be read with `harness_mock_read()` or
+ * `harness_mock_try_read()`.
  *
  * @param[in] id_p Mock id string to write.
  *
@@ -247,7 +249,8 @@ int harness_mock_assert(const char *id_p,
                         const void *buf_p);
 
 /**
- * Try to read data from mock entry with given id.
+ * Try to read data from mock entry with given id.The testcase does
+ * not fail if the mock entry is missing.
  *
  * @param[in] id_p Mock id string to read.
  * @param[out] buf_p Buffer to read into, or NULL if no data shall
@@ -263,7 +266,10 @@ ssize_t harness_mock_try_read(const char *id_p,
 
 /**
  * Write given data buffer to a mock entry with given id and notify
- * all raeders that data is available.
+ * all raeders that data is available. The
+ * `harness_mock_write_notify()` and `harness_mock_read_wait()`
+ * functions are useful to mock communication interfaces between
+ * threads.
  *
  * @param[in] id_p Mock id string to write.
  *
