@@ -43,7 +43,7 @@ except ImportError:
 
 from errnos import human_readable_errno
 
-__version__ = '4.0'
+__version__ = '4.1'
 
 # SOAM protocol definitions.
 SOAM_TYPE_STDOUT_PRINTF                = 1
@@ -586,6 +586,14 @@ def execute_command(client, command, ostream, debug):
                   file=ostream)
 
 
+def is_comment(line):
+    '''Lines starting with "#" are comments.
+
+    '''
+
+    return line.strip().startswith('#')
+
+
 class Shell(cmd.Cmd):
 
     intro = "\nWelcome to the SOAM shell.\n\nType help or ? to list commands.\n"
@@ -648,8 +656,7 @@ class Shell(cmd.Cmd):
         print(text, file=self.stdout, end=end)
 
     def precmd(self, line):
-        # Lines starting with # is a comment.
-        if line.strip().startswith('#'):
+        if is_comment(line):
             return ''
 
         self.line = line
@@ -878,6 +885,7 @@ def prompt_toolkit_shell(client, stdout, debug):
     '''
 
     commands = [command[1:] for command in client.database.commands]
+    commands.append('exit')
     completer = WordCompleter(commands, WORD=True)
     user_home = os.path.expanduser('~')
     history = FileHistory(os.path.join(user_home, '.soam-history.txt'))
@@ -897,6 +905,15 @@ def prompt_toolkit_shell(client, stdout, debug):
             return
 
         if line:
+            if is_comment(line):
+                continue
+
+            if line == 'exit':
+                print(file=stdout)
+                print(file=stdout)
+                print("Bye!", file=stdout)
+                break
+
             execute_command(client, line, stdout, debug)
 
 
