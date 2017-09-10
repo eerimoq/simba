@@ -143,7 +143,7 @@ int spi_deselect(struct spi_driver_t *self_p);
  * Simultaniuos read/write operation over the SPI bus.
  *
  * @param[in] self_p Initialized driver object.
- * @param[in] rxbuf_p Buffer to read into.
+ * @param[out] rxbuf_p Buffer to read into.
  * @param[in] txbuf_p Buffer to write.
  * @param[in] size Number of bytes to transfer.
  *
@@ -158,7 +158,7 @@ ssize_t spi_transfer(struct spi_driver_t *self_p,
  * Read data from the SPI bus.
  *
  * @param[in] self_p Initialized driver object.
- * @param[in] buf_p Buffer to read into.
+ * @param[out] buf_p Buffer to read into.
  * @param[in] size Number of bytes to receive.
  *
  * @return Number of read bytes or negative error code.

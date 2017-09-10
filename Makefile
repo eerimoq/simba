@@ -677,6 +677,28 @@ pmccabe:
 print-%:
 	@echo $($*)
 
+generate-stubs:
+	rm -rf tst/stubs
+	stub.py -d generate \
+	  --ignore-function fs_split \
+	  --ignore-function chipid_read \
+	  --ignore-function pin_device_set_mode \
+	  --ignore-function pin_device_read \
+	  --ignore-function pin_device_write \
+	  --ignore-function pin_device_write_high \
+	  --ignore-function pin_device_write_low \
+	  $$(find src -name "*.h" \
+	     | grep -v ports \
+	     | grep -v boards \
+	     | grep -v mcus \
+	     | grep -v simba.h \
+	     | grep -v simba_gen.h \
+	     | grep -v config_default.h \
+	     | grep -v config.h) \
+	  tst/stubs
+	mv tst/stubs/src/* tst/stubs
+	rmdir tst/stubs/src
+
 help:
 	@echo "--------------------------------------------------------------------------------"
 	@echo "  target                      description"

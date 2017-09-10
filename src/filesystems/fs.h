@@ -369,7 +369,7 @@ ssize_t fs_read_line(struct fs_file_t *self_p, void *dst_p, size_t size);
  * Write from given buffer into given file.
  *
  * @param[in] self_p Initialized file object.
- * @param[in] dst_p Buffer to write.
+ * @param[in] src_p Buffer to write.
  * @param[in] size Number of bytes to write.
  *
  * @return Number of bytes written or negative error code.

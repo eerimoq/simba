@@ -7,7 +7,7 @@ import subprocess
 import re
 
 
-__version__ = '0.1'
+__version__ = '0.2'
 
 
 STUB_H_FMT = '''\
@@ -44,7 +44,6 @@ STUB_FUNCTION_FMT = '''\
 {declaration}
 {{
 {body}\
-    return (res);
 }}
 '''
 
@@ -116,7 +115,15 @@ def parse_args(args, comment):
     arguments = []
 
     for arg in args:
-        type_, name = re.match(r'(.+[^\w])(\w+)', arg).groups()
+        try:
+            type_, name = re.match(r'(.+[^\w\[\]])([\w\[\]]+)', arg).groups()
+        except AttributeError:
+            if arg in ['...', '']:
+                print("Skipping unsupported argument '{}'".format(arg))
+                continue
+
+            sys.exit("Invalid argument '{}'.".format(arg))
+
         mo = re.search(r'\[(\w+)\]\s+{}\s'.format(name),
                        comment,
                        re.DOTALL)
@@ -204,11 +211,17 @@ def generate_function_mock_write(return_type,
     body = []
 
     for argument in arguments:
+        if argument.name == 'self_p':
+            continue
+
         if '*' in argument.type_:
             if 'char' in argument.type_:
                 size = 'strlen({}) + 1'.format(argument.name)
             elif 'void' in argument.type_:
-                size = 'size'
+                if any([arg.name == 'size' for arg in arguments]):
+                    size = 'size'
+                else:
+                    size = 'sizeof({})'.format(argument.name)
             else:
                 size = 'sizeof(*{})'.format(argument.name)
 
@@ -224,7 +237,7 @@ def generate_function_mock_write(return_type,
                                name=argument.name,
                                size=size))
 
-    if return_type == 'void':
+    if return_type.strip() == 'void':
         return_argument = []
     else:
         body.append(MOCK_WRITE_ARGUMENT_OUT_FMT.format(
@@ -239,8 +252,10 @@ def generate_function_mock_write(return_type,
     function_open = 'int mock_write_{}('.format(name)
     padding = ' ' * len(function_open)
     declaration = function_open
-    declaration += (',\n' + padding).join([str(argument)
-                                           for argument in arguments + return_argument])
+    args = [str(argument)
+            for argument in arguments + return_argument
+            if argument.name != 'self_p']
+    declaration += (',\n' + padding).join(args)
     declaration += ')'
 
     mock_h = declaration + ';\n'
@@ -259,13 +274,13 @@ def generate_function_stub(return_type,
 
     body = []
 
-    if return_type != 'void':
+    if return_type.strip() != 'void':
         body.append('    {}res;\n'.format(return_type))
-        body.append(MOCK_ARGUMENT_OUT_FMT.format(function_name=name,
-                                                 name='res',
-                                                 size='sizeof(res)'))
 
     for argument in arguments:
+        if argument.name == 'self_p':
+            continue
+
         if '*' in argument.type_:
             if 'in' in argument.direction:
                 size = 'sizeof(*{})'.format(argument.name)
@@ -281,8 +296,11 @@ def generate_function_stub(return_type,
                                name=argument.name,
                                size=size))
 
-    if len(body) > 0:
-        body += ['']
+    if return_type.strip() != 'void':
+        body.append(MOCK_ARGUMENT_OUT_FMT.format(function_name=name,
+                                                 name='res',
+                                                 size='sizeof(res)'))
+        body += ['    return (res);', '']
 
     function_open = '{}__attribute__ ((weak)) STUB({})('.format(return_type, name)
     padding = ' ' * len(function_open)
@@ -295,15 +313,22 @@ def generate_function_stub(return_type,
                                     body='\n'.join(body))
 
 
-def generate_function_stubs(declaration, comment):
+def generate_function_stubs(declaration, comment, functions_to_ignore):
     '''Generate the stub definitions of given function.
 
     '''
 
-    re_declaration = re.compile(r'([\w \r\n\*]+?)(\w+)\((.*?)\)',
+    re_declaration = re.compile(r'([\w \r\n\*]+?)(\w+)\((.*?)\)$',
                                 re.MULTILINE | re.DOTALL)
 
     return_type, name, args = re_declaration.match(declaration).groups()
+
+    if 'inline' in return_type:
+        return None, None
+
+    if name in functions_to_ignore:
+        return None, None
+
     args = [arg.strip() for arg in args.split(',')]
     arguments = parse_args(args, comment)
 
@@ -318,6 +343,61 @@ def generate_function_stubs(declaration, comment):
     return stub_h, stub_c
 
 
+def generate_from_header(args,
+                         re_function,
+                         re_file_header,
+                         header_path):
+    """Generate stub files for given header file.
+
+    """
+
+    header_dir, header_file = os.path.split(header_path)
+    header_name = os.path.splitext(header_file)[0]
+    mock_dir = os.path.join(args.outdir, header_dir)
+
+    try:
+        os.makedirs(mock_dir)
+    except FileExistsError:
+        pass
+
+    mock_h_path = os.path.join(mock_dir, header_name + '_mock.h')
+    mock_c_path = os.path.join(mock_dir, header_name + '_mock.c')
+
+    print("Generating '{}' and '{}' from '{}'.".format(
+        mock_h_path,
+        mock_c_path,
+        header_path))
+
+    with open(header_path, 'r') as fin:
+        header_contents = fin.read()
+
+    functions = re_function.findall(header_contents)
+    file_header = re_file_header.search(header_contents)
+
+    mock_h = []
+    mock_c = []
+
+    for comment, declaration in functions:
+        func_h, func_c = generate_function_stubs(declaration.strip(),
+                                                 comment,
+                                                 args.ignore_function)
+        if func_h and func_c:
+            mock_h.append(func_h)
+            mock_c.append(func_c)
+
+    with open(mock_h_path, 'w') as fout:
+        fout.write(STUB_H_FMT.format(header=file_header.group(1),
+                                     header_name=header_name.upper(),
+                                     functions='\n'.join(mock_h)))
+
+    with open(mock_c_path, 'w') as fout:
+        fout.write(STUB_C_FMT.format(header=file_header.group(1),
+                                     header_name=header_name,
+                                     functions='\n'.join(mock_c)))
+
+    return mock_h_path, mock_c_path
+
+
 def do_generate(args):
     '''Generate stubs of given header files.
 
@@ -329,39 +409,14 @@ def do_generate(args):
                                 re.MULTILINE | re.DOTALL)
 
     for header_path in args.headers:
-        header_name = os.path.split(header_path)[1][:-2]
-        mock_h_path = header_name + '_mock.h'
-        mock_c_path = header_name + '_mock.c'
-
-        print("Generating '{}' and '{}' from '{}'.".format(
-            mock_h_path,
-            mock_c_path,
-            header_path))
-
-        with open(header_path, 'r') as fin:
-            header_contents = fin.read()
-
-        functions = re_function.findall(header_contents)
-        file_header = re_file_header.search(header_contents)
-
-        mock_h = []
-        mock_c = []
-
-        for comment, declaration in functions:
-            func_h, func_c = generate_function_stubs(declaration.strip(),
-                                                     comment)
-            mock_h.append(func_h)
-            mock_c.append(func_c)
-
-        with open(mock_h_path, 'w') as fout:
-            fout.write(STUB_H_FMT.format(header=file_header.group(1),
-                                         header_name=header_name.upper(),
-                                         functions='\n'.join(mock_h)))
-
-        with open(mock_c_path, 'w') as fout:
-            fout.write(STUB_C_FMT.format(header=file_header.group(1),
-                                         header_name=header_name,
-                                         functions='\n'.join(mock_c)))
+        try:
+            generate_from_header(args,
+                                 re_function,
+                                 re_file_header,
+                                 header_path)
+        except AttributeError:
+            print("Failed to generate stub for '{}'".format(
+                header_path))
 
 
 def main():
@@ -385,7 +440,14 @@ def main():
     patch_parser.set_defaults(func=do_patch)
 
     generate_parser = subparsers.add_parser('generate')
-    generate_parser.add_argument('headers', nargs='+')
+    generate_parser.add_argument('-i', '--ignore-function',
+                                 action='append',
+                                 help='One or more functions to ignore.')
+    generate_parser.add_argument('headers',
+                                 nargs='+',
+                                 help='One or more header files to generate stubs for.')
+    generate_parser.add_argument('outdir',
+                                 help='Output directory.')
     generate_parser.set_defaults(func=do_generate)
 
     args = parser.parse_args()

@@ -262,7 +262,9 @@ ssize_t harness_mock_write(const char *id_p,
     entry_p->data.size = size;
 
     /* Add the entry at the end of the list. */
+    sem_take(&module.sem, NULL);
     LIST_SL_ADD_TAIL(&module.mock_list, entry_p);
+    sem_give(&module.sem, 1);
 
     return (size);
 }

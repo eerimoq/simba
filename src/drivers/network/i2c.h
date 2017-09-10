@@ -56,7 +56,7 @@ extern struct i2c_device_t i2c_device[I2C_DEVICE_MAX];
  *
  * @return zero(0) or negative error code.
  */
-int i2c_module_init();
+int i2c_module_init(void);
 
 /**
  * Initialize given driver object. The same driver object is used for
