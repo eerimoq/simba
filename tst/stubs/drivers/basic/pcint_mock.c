@@ -58,8 +58,8 @@ int mock_write_pcint_init(struct pcint_device_t *dev_p,
                           int res)
 {
     harness_mock_write("pcint_init(dev_p)",
-                       dev_p,
-                       sizeof(*dev_p));
+                       &dev_p,
+                       sizeof(dev_p));
 
     harness_mock_write("pcint_init(trigger)",
                        &trigger,
@@ -89,7 +89,7 @@ int __attribute__ ((weak)) STUB(pcint_init)(struct pcint_driver_t *self_p,
     int res;
 
     harness_mock_assert("pcint_init(dev_p)",
-                        dev_p);
+                        &dev_p);
 
     harness_mock_assert("pcint_init(trigger)",
                         &trigger);

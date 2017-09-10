@@ -60,8 +60,8 @@ int mock_write_spi_init(struct spi_device_t *dev_p,
                         int res)
 {
     harness_mock_write("spi_init(dev_p)",
-                       dev_p,
-                       sizeof(*dev_p));
+                       &dev_p,
+                       sizeof(dev_p));
 
     harness_mock_write("spi_init(ss_pin_p)",
                        ss_pin_p,
@@ -101,7 +101,7 @@ int __attribute__ ((weak)) STUB(spi_init)(struct spi_driver_t *self_p,
     int res;
 
     harness_mock_assert("spi_init(dev_p)",
-                        dev_p);
+                        &dev_p);
 
     harness_mock_assert("spi_init(ss_pin_p)",
                         ss_pin_p);

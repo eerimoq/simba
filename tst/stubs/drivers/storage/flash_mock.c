@@ -55,8 +55,8 @@ int mock_write_flash_init(struct flash_device_t *dev_p,
                           int res)
 {
     harness_mock_write("flash_init(dev_p)",
-                       dev_p,
-                       sizeof(*dev_p));
+                       &dev_p,
+                       sizeof(dev_p));
 
     harness_mock_write("flash_init(): return (res)",
                        &res,
@@ -71,7 +71,7 @@ int __attribute__ ((weak)) STUB(flash_init)(struct flash_driver_t *self_p,
     int res;
 
     harness_mock_assert("flash_init(dev_p)",
-                        dev_p);
+                        &dev_p);
 
     harness_mock_read("flash_init(): return (res)",
                       &res,

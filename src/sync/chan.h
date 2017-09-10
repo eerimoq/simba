@@ -93,7 +93,7 @@ typedef ssize_t (*chan_write_fn_t)(void *self_p,
 /**
  * Channel control function callback type.
  *
- * @param[in] self_p Channel to read from.
+ * @param[in] self_p Channel to control.
  * @param[in] operation Control operation.
  *
  * @return Operation specific.
@@ -313,6 +313,9 @@ size_t chan_size(void *self_p);
 /**
  * Control given channel.
  *
+ * @param[in] self_p Channel to control.
+ * @param[in] operation Operation to perform.
+ *
  * @return Operation specific.
  */
 int chan_control(void *self_p, int operation);
@@ -426,6 +429,10 @@ void *chan_null(void);
  * Null channel read function callback. Pass to ``chan_init()`` if no
  * read function callback is needed for the channel.
  *
+ * @param[in] self_p Channel to read from.
+ * @param[out] buf_p Buffer to read into.
+ * @param[in] size Number of bytes to read.
+ *
  * @return Always returns -1.
  */
 ssize_t chan_read_null(void *self_p,
@@ -435,6 +442,10 @@ ssize_t chan_read_null(void *self_p,
 /**
  * Null channel write function callback. Pass to ``chan_init()`` if no
  * write function callback is needed for the channel.
+ *
+ * @param[in] self_p Channel to write to.
+ * @param[in] buf_p Buffer to write.
+ * @param[in] size Number of bytes to write.
  *
  * @return Always returns ``size``.
  */
@@ -446,6 +457,8 @@ ssize_t chan_write_null(void *self_p,
  * Null channel size function callback. Pass to ``chan_init()`` if no
  * size function callback is needed for the channel.
  *
+ * @param[in] self_p Channel to get the size of.
+ *
  * @return Always returns zero(0).
  */
 size_t chan_size_null(void *self_p);
@@ -453,6 +466,9 @@ size_t chan_size_null(void *self_p);
 /**
  * Null channel control function callback. Will silently ignore the
  * control request.
+ *
+ * @param[in] self_p Channel to control.
+ * @param[in] operation Operation to perform.
  *
  * @return Always returns zero(0).
  */

@@ -761,7 +761,7 @@ int mock_write_chan_write_null(const void *buf_p,
                                size_t size,
                                ssize_t res)
 {
-    harness_mock_write("chan_write_null(): return (buf_p)",
+    harness_mock_write("chan_write_null(buf_p)",
                        buf_p,
                        size);
 
@@ -782,9 +782,8 @@ ssize_t __attribute__ ((weak)) STUB(chan_write_null)(void *self_p,
 {
     ssize_t res;
 
-    harness_mock_read("chan_write_null(): return (buf_p)",
-                      buf_p,
-                      -1);
+    harness_mock_assert("chan_write_null(buf_p)",
+                        buf_p);
 
     harness_mock_assert("chan_write_null(size)",
                         &size);

@@ -112,8 +112,8 @@ int mock_write_pwm_soft_init(struct pin_device_t *pin_dev_p,
                              int res)
 {
     harness_mock_write("pwm_soft_init(pin_dev_p)",
-                       pin_dev_p,
-                       sizeof(*pin_dev_p));
+                       &pin_dev_p,
+                       sizeof(pin_dev_p));
 
     harness_mock_write("pwm_soft_init(duty_cycle)",
                        &duty_cycle,
@@ -133,7 +133,7 @@ int __attribute__ ((weak)) STUB(pwm_soft_init)(struct pwm_soft_driver_t *self_p,
     int res;
 
     harness_mock_assert("pwm_soft_init(pin_dev_p)",
-                        pin_dev_p);
+                        &pin_dev_p);
 
     harness_mock_assert("pwm_soft_init(duty_cycle)",
                         &duty_cycle);

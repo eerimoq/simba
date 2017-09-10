@@ -58,8 +58,8 @@ int mock_write_exti_init(struct exti_device_t *dev_p,
                          int res)
 {
     harness_mock_write("exti_init(dev_p)",
-                       dev_p,
-                       sizeof(*dev_p));
+                       &dev_p,
+                       sizeof(dev_p));
 
     harness_mock_write("exti_init(trigger)",
                        &trigger,
@@ -89,7 +89,7 @@ int __attribute__ ((weak)) STUB(exti_init)(struct exti_driver_t *self_p,
     int res;
 
     harness_mock_assert("exti_init(dev_p)",
-                        dev_p);
+                        &dev_p);
 
     harness_mock_assert("exti_init(trigger)",
                         &trigger);

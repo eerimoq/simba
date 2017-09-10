@@ -351,7 +351,7 @@ ssize_t __attribute__ ((weak)) STUB(harness_mock_write_notify)(const char *id_p,
 
 int mock_write_harness_mock_read_wait(const char *id_p,
                                       void *buf_p,
-                                      size_t size,
+                                      ssize_t size,
                                       struct time_t *timeout_p,
                                       ssize_t res)
 {
@@ -380,7 +380,7 @@ int mock_write_harness_mock_read_wait(const char *id_p,
 
 ssize_t __attribute__ ((weak)) STUB(harness_mock_read_wait)(const char *id_p,
                                                             void *buf_p,
-                                                            size_t size,
+                                                            ssize_t size,
                                                             struct time_t *timeout_p)
 {
     ssize_t res;

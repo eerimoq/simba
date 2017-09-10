@@ -37,8 +37,8 @@ int mock_write_owi_init(struct pin_device_t *dev_p,
                         int res)
 {
     harness_mock_write("owi_init(dev_p)",
-                       dev_p,
-                       sizeof(*dev_p));
+                       &dev_p,
+                       sizeof(dev_p));
 
     harness_mock_write("owi_init(devices_p)",
                        devices_p,
@@ -63,7 +63,7 @@ int __attribute__ ((weak)) STUB(owi_init)(struct owi_driver_t *self_p,
     int res;
 
     harness_mock_assert("owi_init(dev_p)",
-                        dev_p);
+                        &dev_p);
 
     harness_mock_assert("owi_init(devices_p)",
                         devices_p);

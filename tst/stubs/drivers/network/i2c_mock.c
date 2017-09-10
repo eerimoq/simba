@@ -57,8 +57,8 @@ int mock_write_i2c_init(struct i2c_device_t *dev_p,
                         int res)
 {
     harness_mock_write("i2c_init(dev_p)",
-                       dev_p,
-                       sizeof(*dev_p));
+                       &dev_p,
+                       sizeof(dev_p));
 
     harness_mock_write("i2c_init(baudrate)",
                        &baudrate,
@@ -83,7 +83,7 @@ int __attribute__ ((weak)) STUB(i2c_init)(struct i2c_driver_t *self_p,
     int res;
 
     harness_mock_assert("i2c_init(dev_p)",
-                        dev_p);
+                        &dev_p);
 
     harness_mock_assert("i2c_init(baudrate)",
                         &baudrate);

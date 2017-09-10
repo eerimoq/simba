@@ -292,14 +292,15 @@ ssize_t harness_mock_write_notify(const char *id_p,
  * @param[in] id_p Mock id string to read.
  * @param[out] buf_p Buffer to read into, or NULL if no data shall
  *                   be read.
- * @param[in] size Buffer size in words, or zero(0) if buf_p is NULL.
+ * @param[in] size Buffer size in words, or zero(0) if buf_p is NULL,
+ *                 or -1 to read all data available.
  * @param[in] timeout_p Read timeout.
  *
  * @return Number of read words or negative error code.
  */
 ssize_t harness_mock_read_wait(const char *id_p,
                                void *buf_p,
-                               size_t size,
+                               ssize_t size,
                                struct time_t *timeout_p);
 
 #endif

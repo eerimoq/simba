@@ -57,8 +57,8 @@ int mock_write_pwm_init(struct pwm_device_t *dev_p,
                         int res)
 {
     harness_mock_write("pwm_init(dev_p)",
-                       dev_p,
-                       sizeof(*dev_p));
+                       &dev_p,
+                       sizeof(dev_p));
 
     harness_mock_write("pwm_init(frequency)",
                        &frequency,
@@ -83,7 +83,7 @@ int __attribute__ ((weak)) STUB(pwm_init)(struct pwm_driver_t *self_p,
     int res;
 
     harness_mock_assert("pwm_init(dev_p)",
-                        dev_p);
+                        &dev_p);
 
     harness_mock_assert("pwm_init(frequency)",
                         &frequency);

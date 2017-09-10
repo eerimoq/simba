@@ -58,8 +58,8 @@ int mock_write_uart_init(struct uart_device_t *dev_p,
                          int res)
 {
     harness_mock_write("uart_init(dev_p)",
-                       dev_p,
-                       sizeof(*dev_p));
+                       &dev_p,
+                       sizeof(dev_p));
 
     harness_mock_write("uart_init(baudrate)",
                        &baudrate,
@@ -89,7 +89,7 @@ int __attribute__ ((weak)) STUB(uart_init)(struct uart_driver_t *self_p,
     int res;
 
     harness_mock_assert("uart_init(dev_p)",
-                        dev_p);
+                        &dev_p);
 
     harness_mock_assert("uart_init(baudrate)",
                         &baudrate);
@@ -210,8 +210,8 @@ int mock_write_uart_device_start(struct uart_device_t *dev_p,
                                  int res)
 {
     harness_mock_write("uart_device_start(dev_p)",
-                       dev_p,
-                       sizeof(*dev_p));
+                       &dev_p,
+                       sizeof(dev_p));
 
     harness_mock_write("uart_device_start(baudrate)",
                        &baudrate,
@@ -230,7 +230,7 @@ int __attribute__ ((weak)) STUB(uart_device_start)(struct uart_device_t *dev_p,
     int res;
 
     harness_mock_assert("uart_device_start(dev_p)",
-                        dev_p);
+                        &dev_p);
 
     harness_mock_assert("uart_device_start(baudrate)",
                         &baudrate);
@@ -246,8 +246,8 @@ int mock_write_uart_device_stop(struct uart_device_t *dev_p,
                                 int res)
 {
     harness_mock_write("uart_device_stop(dev_p)",
-                       dev_p,
-                       sizeof(*dev_p));
+                       &dev_p,
+                       sizeof(dev_p));
 
     harness_mock_write("uart_device_stop(): return (res)",
                        &res,
@@ -261,7 +261,7 @@ int __attribute__ ((weak)) STUB(uart_device_stop)(struct uart_device_t *dev_p)
     int res;
 
     harness_mock_assert("uart_device_stop(dev_p)",
-                        dev_p);
+                        &dev_p);
 
     harness_mock_read("uart_device_stop(): return (res)",
                       &res,
@@ -276,8 +276,8 @@ int mock_write_uart_device_read(struct uart_device_t *dev_p,
                                 ssize_t res)
 {
     harness_mock_write("uart_device_read(dev_p)",
-                       dev_p,
-                       sizeof(*dev_p));
+                       &dev_p,
+                       sizeof(dev_p));
 
     harness_mock_write("uart_device_read(buf_p)",
                        buf_p,
@@ -301,7 +301,7 @@ ssize_t __attribute__ ((weak)) STUB(uart_device_read)(struct uart_device_t *dev_
     ssize_t res;
 
     harness_mock_assert("uart_device_read(dev_p)",
-                        dev_p);
+                        &dev_p);
 
     harness_mock_assert("uart_device_read(buf_p)",
                         buf_p);
@@ -322,8 +322,8 @@ int mock_write_uart_device_write(struct uart_device_t *dev_p,
                                  ssize_t res)
 {
     harness_mock_write("uart_device_write(dev_p)",
-                       dev_p,
-                       sizeof(*dev_p));
+                       &dev_p,
+                       sizeof(dev_p));
 
     harness_mock_write("uart_device_write(buf_p)",
                        buf_p,
@@ -347,7 +347,7 @@ ssize_t __attribute__ ((weak)) STUB(uart_device_write)(struct uart_device_t *dev
     ssize_t res;
 
     harness_mock_assert("uart_device_write(dev_p)",
-                        dev_p);
+                        &dev_p);
 
     harness_mock_assert("uart_device_write(buf_p)",
                         buf_p);

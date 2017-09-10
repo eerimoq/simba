@@ -58,8 +58,8 @@ int mock_write_can_init(struct can_device_t *dev_p,
                         int res)
 {
     harness_mock_write("can_init(dev_p)",
-                       dev_p,
-                       sizeof(*dev_p));
+                       &dev_p,
+                       sizeof(dev_p));
 
     harness_mock_write("can_init(speed)",
                        &speed,
@@ -89,7 +89,7 @@ int __attribute__ ((weak)) STUB(can_init)(struct can_driver_t *self_p,
     int res;
 
     harness_mock_assert("can_init(dev_p)",
-                        dev_p);
+                        &dev_p);
 
     harness_mock_assert("can_init(speed)",
                         &speed);

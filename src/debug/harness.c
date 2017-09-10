@@ -382,7 +382,7 @@ ssize_t harness_mock_write_notify(const char *id_p,
 
 ssize_t harness_mock_read_wait(const char *id_p,
                                void *buf_p,
-                               size_t size,
+                               ssize_t size,
                                struct time_t *timeout_p)
 {
     ASSERTN(id_p != NULL, EINVAL);
@@ -399,7 +399,7 @@ ssize_t harness_mock_read_wait(const char *id_p,
     while (1) {
         res = harness_mock_try_read(id_p, buf_p, size);
 
-        if (res == size) {
+        if (res != -1) {
             bus_detatch(&module.bus, &listener);
             break;
         }

@@ -58,8 +58,8 @@ int mock_write_dac_init(struct dac_device_t *dev_p,
                         int res)
 {
     harness_mock_write("dac_init(dev_p)",
-                       dev_p,
-                       sizeof(*dev_p));
+                       &dev_p,
+                       sizeof(dev_p));
 
     harness_mock_write("dac_init(pin0_dev_p)",
                        pin0_dev_p,
@@ -89,7 +89,7 @@ int __attribute__ ((weak)) STUB(dac_init)(struct dac_driver_t *self_p,
     int res;
 
     harness_mock_assert("dac_init(dev_p)",
-                        dev_p);
+                        &dev_p);
 
     harness_mock_assert("dac_init(pin0_dev_p)",
                         pin0_dev_p);

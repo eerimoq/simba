@@ -58,8 +58,8 @@ int mock_write_usb_device_init(struct usb_device_t *dev_p,
                                int res)
 {
     harness_mock_write("usb_device_init(dev_p)",
-                       dev_p,
-                       sizeof(*dev_p));
+                       &dev_p,
+                       sizeof(dev_p));
 
     harness_mock_write("usb_device_init(drivers_pp)",
                        drivers_pp,
@@ -89,7 +89,7 @@ int __attribute__ ((weak)) STUB(usb_device_init)(struct usb_device_driver_t *sel
     int res;
 
     harness_mock_assert("usb_device_init(dev_p)",
-                        dev_p);
+                        &dev_p);
 
     harness_mock_assert("usb_device_init(drivers_pp)",
                         drivers_pp);

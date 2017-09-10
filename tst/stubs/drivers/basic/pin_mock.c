@@ -56,8 +56,8 @@ int mock_write_pin_init(struct pin_device_t *dev_p,
                         int res)
 {
     harness_mock_write("pin_init(dev_p)",
-                       dev_p,
-                       sizeof(*dev_p));
+                       &dev_p,
+                       sizeof(dev_p));
 
     harness_mock_write("pin_init(mode)",
                        &mode,
@@ -77,7 +77,7 @@ int __attribute__ ((weak)) STUB(pin_init)(struct pin_driver_t *self_p,
     int res;
 
     harness_mock_assert("pin_init(dev_p)",
-                        dev_p);
+                        &dev_p);
 
     harness_mock_assert("pin_init(mode)",
                         &mode);
@@ -191,8 +191,8 @@ int mock_write_pin_is_valid_device(struct pin_device_t *dev_p,
                                    int res)
 {
     harness_mock_write("pin_is_valid_device(dev_p)",
-                       dev_p,
-                       sizeof(*dev_p));
+                       &dev_p,
+                       sizeof(dev_p));
 
     harness_mock_write("pin_is_valid_device(): return (res)",
                        &res,
@@ -206,7 +206,7 @@ int __attribute__ ((weak)) STUB(pin_is_valid_device)(struct pin_device_t *dev_p)
     int res;
 
     harness_mock_assert("pin_is_valid_device(dev_p)",
-                        dev_p);
+                        &dev_p);
 
     harness_mock_read("pin_is_valid_device(): return (res)",
                       &res,

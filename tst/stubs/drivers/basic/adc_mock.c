@@ -58,12 +58,12 @@ int mock_write_adc_init(struct adc_device_t *dev_p,
                         int res)
 {
     harness_mock_write("adc_init(dev_p)",
-                       dev_p,
-                       sizeof(*dev_p));
+                       &dev_p,
+                       sizeof(dev_p));
 
     harness_mock_write("adc_init(pin_dev_p)",
-                       pin_dev_p,
-                       sizeof(*pin_dev_p));
+                       &pin_dev_p,
+                       sizeof(pin_dev_p));
 
     harness_mock_write("adc_init(reference)",
                        &reference,
@@ -89,10 +89,10 @@ int __attribute__ ((weak)) STUB(adc_init)(struct adc_driver_t *self_p,
     int res;
 
     harness_mock_assert("adc_init(dev_p)",
-                        dev_p);
+                        &dev_p);
 
     harness_mock_assert("adc_init(pin_dev_p)",
-                        pin_dev_p);
+                        &pin_dev_p);
 
     harness_mock_assert("adc_init(reference)",
                         &reference);
@@ -239,8 +239,8 @@ int mock_write_adc_is_valid_device(struct adc_device_t *dev_p,
                                    int res)
 {
     harness_mock_write("adc_is_valid_device(dev_p)",
-                       dev_p,
-                       sizeof(*dev_p));
+                       &dev_p,
+                       sizeof(dev_p));
 
     harness_mock_write("adc_is_valid_device(): return (res)",
                        &res,
@@ -254,7 +254,7 @@ int __attribute__ ((weak)) STUB(adc_is_valid_device)(struct adc_device_t *dev_p)
     int res;
 
     harness_mock_assert("adc_is_valid_device(dev_p)",
-                        dev_p);
+                        &dev_p);
 
     harness_mock_read("adc_is_valid_device(): return (res)",
                       &res,

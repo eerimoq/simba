@@ -29,6 +29,7 @@
  */
 
 #include "simba.h"
+#include "sync/chan_mock.h"
 
 struct xbee_driver_t xbee;
 struct chan_t transport;
@@ -54,7 +55,13 @@ static int test_init(struct harness_t *harness_p)
 static int test_write_escape(struct harness_t *harness_p)
 {
     struct xbee_frame_t frame;
-    uint8_t buf[7];
+
+    mock_write_chan_write("\x7e", 1, 1);
+    mock_write_chan_write("\x00", 1, 1);
+    mock_write_chan_write("\x02", 1, 1);
+    mock_write_chan_write("\x23", 1, 1);
+    mock_write_chan_write("\x7d\x31", 2, 2);
+    mock_write_chan_write("\xcb", 1, 1);
 
     /* Prepare a frame where 0x11 will be escaped to 0x7d 0x31. */
     frame.type = 0x23;
@@ -63,23 +70,21 @@ static int test_write_escape(struct harness_t *harness_p)
 
     BTASSERT(xbee_write(&xbee, &frame) == 0);
 
-    /* Validate the written frame. */
-    harness_mock_read("chan_write(buf_p)", &buf[0], 1);
-    harness_mock_read("chan_write(buf_p)", &buf[1], 1);
-    harness_mock_read("chan_write(buf_p)", &buf[2], 1);
-    harness_mock_read("chan_write(buf_p)", &buf[3], 1);
-    harness_mock_read("chan_write(buf_p)", &buf[4], 2);
-    harness_mock_read("chan_write(buf_p)", &buf[6], 1);
-
-    BTASSERTM(&buf[0], "\x7e\x00\x02\x23\x7d\x31\xcb", 7);
-
     return (0);
 }
 
 static int test_write_at(struct harness_t *harness_p)
 {
     struct xbee_frame_t frame;
-    uint8_t buf[7];
+
+    mock_write_chan_write("\x7e", 1, 1);
+    mock_write_chan_write("\x00", 1, 1);
+    mock_write_chan_write("\x04", 1, 1);
+    mock_write_chan_write("\x08", 1, 1);
+    mock_write_chan_write("\x52", 1, 1);
+    mock_write_chan_write("\x44", 1, 1);
+    mock_write_chan_write("\x4c", 1, 1);
+    mock_write_chan_write("\x15", 1, 1);
 
     /* Prepare a frame reading the AT frame "DL". */
     frame.type = XBEE_FRAME_TYPE_AT_COMMAND;
@@ -90,25 +95,27 @@ static int test_write_at(struct harness_t *harness_p)
 
     BTASSERT(xbee_write(&xbee, &frame) == 0);
 
-    /* Validate the written frame. */
-    harness_mock_read("chan_write(buf_p)", &buf[0], 1);
-    harness_mock_read("chan_write(buf_p)", &buf[1], 1);
-    harness_mock_read("chan_write(buf_p)", &buf[2], 1);
-    harness_mock_read("chan_write(buf_p)", &buf[3], 1);
-    harness_mock_read("chan_write(buf_p)", &buf[4], 1);
-    harness_mock_read("chan_write(buf_p)", &buf[5], 1);
-    harness_mock_read("chan_write(buf_p)", &buf[6], 1);
-    harness_mock_read("chan_write(buf_p)", &buf[7], 1);
-
-    BTASSERTM(&buf[0], "\x7e\x00\x04\x08\x52\x44\x4c\x15", 8);
-
     return (0);
 }
 
 static int test_write_tx_request(struct harness_t *harness_p)
 {
     struct xbee_frame_t frame;
-    uint8_t buf[14];
+
+    mock_write_chan_write("\x7e", 1, 1);
+    mock_write_chan_write("\x00", 1, 1);
+    mock_write_chan_write("\x0a", 1, 1);
+    mock_write_chan_write("\x01", 1, 1);
+    mock_write_chan_write("\x01", 1, 1);
+    mock_write_chan_write("\x50", 1, 1);
+    mock_write_chan_write("\x01", 1, 1);
+    mock_write_chan_write("\x00", 1, 1);
+    mock_write_chan_write("\x48", 1, 1);
+    mock_write_chan_write("\x65", 1, 1);
+    mock_write_chan_write("\x6c", 1, 1);
+    mock_write_chan_write("\x6c", 1, 1);
+    mock_write_chan_write("\x6f", 1, 1);
+    mock_write_chan_write("\xb8", 1, 1);
 
     /* Prepare a frame. */
     frame.type = XBEE_FRAME_TYPE_TX_REQUEST_16_BIT_ADDRESS;
@@ -125,26 +132,6 @@ static int test_write_tx_request(struct harness_t *harness_p)
 
     BTASSERT(xbee_write(&xbee, &frame) == 0);
 
-    /* Validate the written frame. */
-    harness_mock_read("chan_write(buf_p)", &buf[0],  1);
-    harness_mock_read("chan_write(buf_p)", &buf[1],  1);
-    harness_mock_read("chan_write(buf_p)", &buf[2],  1);
-    harness_mock_read("chan_write(buf_p)", &buf[3],  1);
-    harness_mock_read("chan_write(buf_p)", &buf[4],  1);
-    harness_mock_read("chan_write(buf_p)", &buf[5],  1);
-    harness_mock_read("chan_write(buf_p)", &buf[6],  1);
-    harness_mock_read("chan_write(buf_p)", &buf[7],  1);
-    harness_mock_read("chan_write(buf_p)", &buf[8],  1);
-    harness_mock_read("chan_write(buf_p)", &buf[9],  1);
-    harness_mock_read("chan_write(buf_p)", &buf[10], 1);
-    harness_mock_read("chan_write(buf_p)", &buf[11], 1);
-    harness_mock_read("chan_write(buf_p)", &buf[12], 1);
-    harness_mock_read("chan_write(buf_p)", &buf[13], 1);
-
-    BTASSERTM(&buf[0],
-              "\x7e\x00\x0a\x01\x01\x50\x01\x00\x48\x65\x6c\x6c\x6f\xb8",
-              14);
-
     return (0);
 }
 
@@ -157,13 +144,13 @@ static int test_read_unescape(struct harness_t *harness_p)
 
     /* Prepare a frame from the XBee module where 0x7d 0x31 will be
        unescaped to 0x11. */
-    harness_mock_write("chan_read(): return (buf_p)", &buf[0], 1);
-    harness_mock_write("chan_read(): return (buf_p)", &buf[1], 1);
-    harness_mock_write("chan_read(): return (buf_p)", &buf[2], 1);
-    harness_mock_write("chan_read(): return (buf_p)", &buf[3], 1);
-    harness_mock_write("chan_read(): return (buf_p)", &buf[4], 1);
-    harness_mock_write("chan_read(): return (buf_p)", &buf[5], 1);
-    harness_mock_write("chan_read(): return (buf_p)", &buf[6], 1);
+    mock_write_chan_read(&buf[0], 1, 1);
+    mock_write_chan_read(&buf[1], 1, 1);
+    mock_write_chan_read(&buf[2], 1, 1);
+    mock_write_chan_read(&buf[3], 1, 1);
+    mock_write_chan_read(&buf[4], 1, 1);
+    mock_write_chan_read(&buf[5], 1, 1);
+    mock_write_chan_read(&buf[6], 1, 1);
 
     BTASSERT(xbee_read(&xbee, &frame) == 0);
 
@@ -555,42 +542,6 @@ static int test_frame_as_string(struct harness_t *harness_p)
                              NULL), ==, 86);
 
     return (0);
-}
-
-ssize_t STUB(chan_read)(void *self_p,
-                        void *buf_p,
-                        size_t size)
-{
-    ssize_t res;
-
-    if (harness_mock_try_read("chan_read(): return (res)",
-                              &res,
-                              sizeof(res)) == -1) {
-        res = size;
-    }
-
-    harness_mock_read("chan_read(): return (buf_p)",
-                      buf_p,
-                      res);
-
-    return (res);
-}
-
-ssize_t STUB(chan_write)(void *self_p,
-                         const void *buf_p,
-                         size_t size)
-{
-    ssize_t res;
-
-    if (harness_mock_try_read("chan_write(): return (res)",
-                              &res,
-                              sizeof(res)) == -1) {
-        res = size;
-    }
-
-    harness_mock_write("chan_write(buf_p)", buf_p, size);
-
-    return (res);
 }
 
 int main()
