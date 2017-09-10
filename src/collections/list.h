@@ -172,8 +172,8 @@ struct list_sl_iterator_t {
             } else {                                                    \
                 (list_p)->head_p = (void *)((element_p)->next_p);       \
             }                                                           \
-            if ((element_p)->next_p == NULL) {                          \
-                (list_p)->tail_p = NULL;                                \
+            if (element_p == (list_p)->tail_p) {                        \
+                (list_p)->tail_p = (previous_element_p);                \
             }                                                           \
             break;                                                      \
         }                                                               \
