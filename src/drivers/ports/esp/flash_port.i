@@ -217,7 +217,7 @@ static ssize_t flash_port_write(struct flash_driver_t *self_p,
 
 static int flash_port_erase(struct flash_driver_t *self_p,
                             uintptr_t addr,
-                            uint32_t size)
+                            size_t size)
 {
     ASSERTN(addr < (uintptr_t)&__rom_size, EINVAL);
     ASSERTN(size <= ((uintptr_t)&__rom_size - addr), EINVAL);
