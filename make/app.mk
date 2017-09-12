@@ -43,6 +43,7 @@ INC += . $(GENDIR) $(SIMBA_ROOT)/src
 MAIN_C ?= main.c
 SRC += $(MAIN_C)
 SETTINGS_INI ?=
+MAKEFILE ?= Makefile
 SRC_FILTERED = $(filter-out $(SRC_IGNORE),$(SRC))
 CSRC += $(filter %.c,$(SRC_FILTERED))
 CXXSRC += $(filter %.cpp,$(SRC_FILTERED))
@@ -259,14 +260,14 @@ endif
 endef
 $(foreach file,$(ASMSRC),$(eval $(call COMPILE_ASM_template,$(file))))
 
-$(SIMBA_GEN_H): $(SETTINGS_INI)
+$(SIMBA_GEN_H): $(SETTINGS_INI) $(MAKEFILE)
 	@echo "GEN $@"
 	mkdir -p $(GENDIR)
 	$(SIMBA_ROOT)/bin/simbagen.py \
 	    --output-directory $(GENDIR) \
 	    header \
 	    --endianess $(ENDIANESS) \
-	    $(<:%=--settings %)
+	    $(SETTINGS_INI:%=--settings %)
 
 $(SOAMDBAPP) $(SIMBA_GEN_O): $(OBJ)
 	@echo "GEN $(SIMBA_GEN_C)"
