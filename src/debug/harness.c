@@ -340,7 +340,6 @@ int harness_mock_assert(const char *id_p,
             res = memcmp(buf_p, &entry_p->data.buf[0], entry_p->data.size);
 
             if (res != 0) {
-                module.testcase_failed = 1;
                 std_printf(FSTR("harness_mock_assert: %s: data mismatch "),
                            id_p);
                 _ASSERTHEX("actual",
@@ -362,6 +361,10 @@ int harness_mock_assert(const char *id_p,
 #endif
     }
 
+    if (res != 0) {
+        module.testcase_failed = 1;
+    }
+    
     return (res);
 }
 
