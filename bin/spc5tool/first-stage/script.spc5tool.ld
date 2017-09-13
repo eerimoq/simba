@@ -7,7 +7,7 @@ MEMORY
 {
         cflash (rx)  : ORIGIN = 0x00000000, LENGTH = 0x00040000 /* Code flash, 256K */
         dflash (rx)  : ORIGIN = 0x00800000, LENGTH = 0x00010000 /* Data flash,  64K */
-        ram (rwx)    : ORIGIN = 0x40000100, LENGTH = 0x00002000 /* SRAM,        8K */
+        ram (rwx)    : ORIGIN = 0x40000100, LENGTH = 0x00002f00 /* SRAM,        12K */
 }
 
 __cflash_begin = ORIGIN(cflash);
@@ -96,6 +96,12 @@ SECTIONS
           . = ALIGN(4);
           __bss_end = . ;
           __zero_end = . ;
+    } > ram
+
+    .second_stage (NOLOAD) :
+    {
+        . = ALIGN(0x1000);
+        *(.second_stage);
     } > ram
 
     /* Main thread stack section. */

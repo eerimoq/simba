@@ -18,7 +18,7 @@ import bincopy
 from tqdm import tqdm
 
 
-__version__ = '1.2'
+__version__ = '1.3'
 
 
 # Command types.
@@ -153,34 +153,15 @@ def flash_read(serial_connection, address, size, progress=None):
     return response_payload
 
 
-def upload(serial_connection, mcu, baudrate, bam_baudrate, control_port):
-    """Upload the spc5tool SRAM application using the BAM.
+def upload_first_stage(serial_connection, filename_bin):
+    """Upload the first stage loader to SRAM using the BAM.
 
     """
 
     spc5tool_bin = os.path.join(SCRIPT_PATH,
                                 'spc5tool',
-                                'spc5tool-{}-{}-{}.bin'.format(mcu,
-                                                               baudrate,
-                                                               bam_baudrate))
-
-    if control_port:
-        control_port_connection = serial.Serial(control_port)
-
-        # Set FAB high for serial boot mode.
-        control_port_connection.dtr = False
-        time.sleep(0.05)
-
-        # Toggle RESET.
-        control_port_connection.rts = False
-        time.sleep(0.1)
-        control_port_connection.rts = True
-        time.sleep(0.1)
-        control_port_connection.rts = False
-        time.sleep(0.05)
-
-        # Flush any received garbage.
-        serial_connection.flushInput()
+                                'first-stage',
+                                filename_bin)
 
     with open(spc5tool_bin, 'rb') as fin:
         binary_data = fin.read()
@@ -219,7 +200,72 @@ def upload(serial_connection, mcu, baudrate, bam_baudrate, control_port):
     # Give the uploaded application 10 ms to start.
     time.sleep(0.01)
 
-    print('Upload to SRAM complete.')
+    print('Upload of the first stage loader to SRAM complete.')
+
+
+def upload_second_stage(serial_connection, filename_bin):
+    """Upload the second stage loader to SRAM using the first stage
+    loader.
+
+    """
+
+    spc5tool_bin = os.path.join(SCRIPT_PATH,
+                                'spc5tool',
+                                'second-stage',
+                                filename_bin)
+
+    with open(spc5tool_bin, 'rb') as fin:
+        binary_data = fin.read()
+
+    length = len(binary_data)
+
+    # All data to send to the first stage loader.
+    payload = struct.pack('>H', length)
+    payload += binary_data
+    chunks = [bytearray(payload[i:i+64]) for i in range(0, length, 64)]
+
+    print('Uploading {} to SRAM using the first stage loader.'.format(spc5tool_bin))
+
+    with tqdm(total=len(payload), unit=' bytes') as progress:
+        for chunk in chunks:
+            serial_connection.write(chunk)
+            progress.update(len(chunk))
+
+    # Give the uploaded application 10 ms to start.
+    time.sleep(0.01)
+
+    print('Upload of the second stage loader to SRAM complete.')
+
+
+def upload(serial_connection, mcu, baudrate, bam_baudrate, control_port):
+    """Upload the spc5tool SRAM application using the BAM.
+
+    """
+
+    if control_port:
+        control_port_connection = serial.Serial(control_port)
+
+        # Set FAB high for serial boot mode.
+        control_port_connection.dtr = False
+        time.sleep(0.05)
+
+        # Toggle RESET.
+        control_port_connection.rts = False
+        time.sleep(0.1)
+        control_port_connection.rts = True
+        time.sleep(0.1)
+        control_port_connection.rts = False
+        time.sleep(0.05)
+
+        # Flush any received garbage.
+        serial_connection.flushInput()
+
+    filename_bin = 'spc5tool-{}-{}-{}.bin'.format(mcu,
+                                                  baudrate,
+                                                  bam_baudrate)
+    upload_first_stage(serial_connection, filename_bin)
+    serial_connection.baudrate = baudrate
+    upload_second_stage(serial_connection, filename_bin)
 
 
 def erase(serial_connection, address, size):
@@ -309,7 +355,6 @@ def do_flash_write(args):
                args.baudrate,
                args.bam_baudrate,
                args.control_port)
-        serial_connection.baudrate = args.baudrate
 
     f = bincopy.BinFile()
     f.add_file(args.binfile)
@@ -319,6 +364,7 @@ def do_flash_write(args):
 
     for address, _, data in f.iter_segments():
         erase_segments.append((address, len(data)))
+        total += len(data)
 
     if args.erase:
         for address, size in erase_segments:
