@@ -37,11 +37,11 @@ int mock_write_sys_module_init(int res);
 
 int mock_write_sys_start(int res);
 
-int mock_write_sys_stop(int error) __attribute__ ((noreturn);
+int mock_write_sys_stop(int error);
 
-int mock_write_sys_panic(const char *message_p) __attribute__ ((noreturn);
+int mock_write_sys_panic(const char *message_p);
 
-int mock_write_sys_reboot(void) __attribute__ ((noreturn);
+int mock_write_sys_reboot();
 
 int mock_write_sys_backtrace(void **buf_p,
                              size_t size,

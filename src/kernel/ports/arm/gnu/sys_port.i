@@ -60,7 +60,6 @@ static int sys_port_module_init(void)
     return (0);
 }
 
-__attribute__ ((noreturn))
 static void sys_port_stop(int error)
 {
     exit(error);
@@ -70,7 +69,6 @@ static void sys_port_panic_putc(char c)
 {
 }
 
-__attribute__ ((noreturn))
 static void sys_port_reboot()
 {
 #if defined(FAMILY_SAM)

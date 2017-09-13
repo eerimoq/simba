@@ -71,50 +71,43 @@ int __attribute__ ((weak)) STUB(sys_start)()
     return (res);
 }
 
-int mock_write_sys_stop(int error) __attribute__ ((noreturn)
+int mock_write_sys_stop(int error)
 {
-    harness_mock_write("sys_stop(noreturn)",
-                       &noreturn,
-                       sizeof(noreturn));
+    harness_mock_write("sys_stop(error)",
+                       &error,
+                       sizeof(error));
 
     return (0);
 }
 
-void __attribute__ ((weak)) STUB(sys_stop)(int error) __attribute__ ((noreturn)
+void __attribute__ ((weak)) STUB(sys_stop)(int error)
 {
-    harness_mock_assert("sys_stop(noreturn)",
-                        &noreturn);
+    harness_mock_assert("sys_stop(error)",
+                        &error);
 }
 
-int mock_write_sys_panic(const char *message_p) __attribute__ ((noreturn)
+int mock_write_sys_panic(const char *message_p)
 {
-    harness_mock_write("sys_panic(): return (noreturn)",
-                       noreturn,
-                       strlen(noreturn) + 1);
+    harness_mock_write("sys_panic(message_p)",
+                       message_p,
+                       strlen(message_p) + 1);
 
     return (0);
 }
 
-void __attribute__ ((weak)) STUB(sys_panic)(const char *message_p) __attribute__ ((noreturn)
+void __attribute__ ((weak)) STUB(sys_panic)(const char *message_p)
 {
-    harness_mock_read("sys_panic(): return (noreturn)",
-                      noreturn,
-                      -1);
+    harness_mock_assert("sys_panic(message_p)",
+                        message_p);
 }
 
-int mock_write_sys_reboot(void) __attribute__ ((noreturn)
+int mock_write_sys_reboot()
 {
-    harness_mock_write("sys_reboot(noreturn)",
-                       &noreturn,
-                       sizeof(noreturn));
-
     return (0);
 }
 
-void __attribute__ ((weak)) STUB(sys_reboot)(void) __attribute__ ((noreturn)
+void __attribute__ ((weak)) STUB(sys_reboot)()
 {
-    harness_mock_assert("sys_reboot(noreturn)",
-                        &noreturn);
 }
 
 int mock_write_sys_backtrace(void **buf_p,

@@ -45,7 +45,7 @@ typedef float cpu_usage_t;
 typedef uint32_t cpu_usage_t;
 #endif
 
-typedef void (*sys_on_fatal_fn_t)(int error) __attribute__ ((noreturn));
+typedef void (*sys_on_fatal_fn_t)(int error);
 
 /**
  * System reset causes.
@@ -130,7 +130,7 @@ int sys_start(void);
  *
  * @return Never returns.
  */
-void sys_stop(int error) __attribute__ ((noreturn));
+void sys_stop(int error);
 
 /**
  * System panic. Write given message, a backtrace and other port
@@ -144,14 +144,14 @@ void sys_stop(int error) __attribute__ ((noreturn));
  *
  * @return Never returns.
  */
-void sys_panic(const char *message_p) __attribute__ ((noreturn));
+void sys_panic(const char *message_p);
 
 /**
  * Reboot the system. Also known as a soft reset.
  *
  * @return Never returns.
  */
-void sys_reboot(void) __attribute__ ((noreturn));
+void sys_reboot(void);
 
 /**
  * Store the backtrace in given buffer.
