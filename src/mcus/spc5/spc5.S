@@ -61,8 +61,12 @@ _rchw:
         .align    2
         .size     _start, .L_start_end - _start
 _start:
+#if CONFIG_SPC5_ECC_INIT == 1
         se_bl     _ecc_init
+#endif
+#if CONFIG_SPC5_RELOCATE_INIT == 1
         se_bl     _relocate_init
+#endif
 
 #if CONFIG_SYSTEM_INTERRUPTS == 1
         /* Configure the MSR register. */
@@ -87,19 +91,21 @@ _start:
 .L_start_end:
         se_b .L_start_end
 
+#if CONFIG_SPC5_ECC_INIT == 1
+
 /**
  * SRAM ECC initialization by writing zero to all addresses. This
  * implicitly clears the zero segment.
  */
         .type     _ecc_init,@function
 _ecc_init:
-#if CONFIG_SPC5_RAM_CLEAR_ALL == 1
+#    if CONFIG_SPC5_RAM_CLEAR_ALL == 1
         e_lis     %r3, __ram_begin@h
         e_or2i    %r3, __ram_begin@l
-#else
+#    else
         e_lis     %r3, __bss_begin@h
         e_or2i    %r3, __bss_begin@l
-#endif
+#    endif
         e_lis     %r4, __ram_end@h
         e_or2i    %r4, __ram_end@l
 
@@ -115,6 +121,10 @@ _ecc_init:
         e_bdnz    .L_ecc_init_loop
 
         se_blr
+
+#endif
+
+#if CONFIG_SPC5_RELOCATE_INIT == 1
 
 /**
  * Initialize the relocate segment.
@@ -147,6 +157,8 @@ _relocate_init:
 
 .L_relocate_init_end:
         se_blr
+
+#endif
 
 #if CONFIG_SYSTEM_INTERRUPTS == 1
 

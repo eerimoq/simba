@@ -2413,6 +2413,18 @@
 #endif
 
 /**
+ */
+#ifndef CONFIG_SPC5_ECC_INIT
+#    define CONFIG_SPC5_ECC_INIT                            1
+#endif
+
+/**
+ */
+#ifndef CONFIG_SPC5_RELOCATE_INIT
+#    define CONFIG_SPC5_RELOCATE_INIT                       1
+#endif
+
+/**
  * Include the function time_unix_time_to_date().
  */
 #ifndef CONFIG_TIME_UNIX_TIME_TO_DATE

@@ -35,10 +35,13 @@ static __attribute__ ((section (".second_stage"))) uint8_t buf[4096];
 int main()
 {
     uint16_t size;
+    struct uart_device_t uart_device = {
+        .drv_p = NULL, .regs_p = SPC5_LINFLEX_0
+    };
 
-    uart_device_start(&uart_device[0], BAUDRATE);
-    uart_device_read(&uart_device[0], &size, 2);
-    uart_device_read(&uart_device[0], &buf[0], size);
+    uart_device_start(&uart_device, BAUDRATE);
+    uart_device_read(&uart_device, &size, 2);
+    uart_device_read(&uart_device, &buf[0], size);
 
     ((void (*)())(&buf[0]))();
 
