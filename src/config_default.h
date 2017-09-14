@@ -2425,6 +2425,12 @@
 #endif
 
 /**
+ */
+#ifndef CONFIG_SPC5_WATCHDOG_DISABLE
+#    define CONFIG_SPC5_WATCHDOG_DISABLE                    1
+#endif
+
+/**
  * Include the function time_unix_time_to_date().
  */
 #ifndef CONFIG_TIME_UNIX_TIME_TO_DATE

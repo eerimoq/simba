@@ -350,6 +350,7 @@ void spc5_init(void)
     SPC5_MC_ME->MCTL = 0x30005af0;
     SPC5_MC_ME->MCTL = 0x3000a50f;
 
+#if CONFIG_SPC5_WATCHDOG_DISABLE == 1
     /* Disable the watchdog. */
     SPC5_SWT->SR = 0x0000c520;
     SPC5_SWT->SR = 0x0000d928;
@@ -357,6 +358,7 @@ void spc5_init(void)
                     | SPC5_SWT_CR_RIA
                     | SPC5_SWT_CR_CSL
                     | SPC5_SWT_CR_FRZ);
+#endif
 
 #if CONFIG_SYSTEM_INTERRUPTS == 1
     /* Software vector mode. */
