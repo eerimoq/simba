@@ -149,7 +149,8 @@ static int uart_port_start(struct uart_driver_t *self_p)
     *UBRRn(dev_p) = baudrate;
     *UCSRnA(dev_p) = _BV(U2X0);
     *UCSRnB(dev_p) = (_BV(RXCIE0) | _BV(TXCIE0) | _BV(RXEN0) | _BV(TXEN0));
-    *UCSRnC(dev_p) = (_BV(UCSZ00) | _BV(UCSZ01));
+    // *UCSRnC(dev_p) = (_BV(UCSZ00) | _BV(UCSZ01));
+    *UCSRnC(dev_p) = self_p->format;
 
     dev_p->drv_p = self_p;
 
