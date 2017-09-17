@@ -37,7 +37,7 @@ struct flash_device_t {
     uint32_t address;
     uint32_t size;
     int program_size;
-    struct sem_t sem;
+    struct mutex_t mutex;
 };
 
 struct flash_driver_t {

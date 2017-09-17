@@ -48,7 +48,7 @@ struct module_t {
         struct mock_entry_t *head_p;
         struct mock_entry_t *tail_p;
     } mock_list;
-    struct sem_t sem;
+    struct mutex_t mutex;
     struct bus_t bus;
     int testcase_failed;
 };
@@ -62,7 +62,7 @@ static struct mock_entry_t *find_mock_entry(const char *id_p)
     struct mock_entry_t *iterator_entry_p;
     struct mock_entry_t *prev_entry_p;
 
-    sem_take(&module.sem, NULL);
+    mutex_lock(&module.mutex);
 
     LIST_SL_ITERATOR_INIT(&iterator, &module.mock_list);
 
@@ -83,14 +83,14 @@ static struct mock_entry_t *find_mock_entry(const char *id_p)
         }
     }
 
-    sem_give(&module.sem, 1);
+    mutex_unlock(&module.mutex);
 
     return (entry_p);
 }
 
 int harness_init(struct harness_t *self_p)
 {
-    sem_init(&module.sem, 0, 1);
+    mutex_init(&module.mutex);
 
     return (0);
 }
@@ -241,9 +241,9 @@ ssize_t harness_mock_write(const char *id_p,
     struct mock_entry_t *entry_p;
 
     /* Allocate memory for the mock entry and data. */
-    sem_take(&module.sem, NULL);
+    mutex_lock(&module.mutex);
     entry_p = heap_alloc(&module.heap.obj, sizeof(*entry_p) + size - 1);
-    sem_give(&module.sem, 1);
+    mutex_unlock(&module.mutex);
 
     if (entry_p == NULL) {
         std_printf(FSTR("error: %s: mock id memory allocation failed\r\n"),
@@ -262,9 +262,9 @@ ssize_t harness_mock_write(const char *id_p,
     entry_p->data.size = size;
 
     /* Add the entry at the end of the list. */
-    sem_take(&module.sem, NULL);
+    mutex_lock(&module.mutex);
     LIST_SL_ADD_TAIL(&module.mock_list, entry_p);
-    sem_give(&module.sem, 1);
+    mutex_unlock(&module.mutex);
 
     return (size);
 }
@@ -315,9 +315,9 @@ ssize_t harness_mock_try_read(const char *id_p,
         res = size;
 
         /* Free allocated memory. */
-        sem_take(&module.sem, NULL);
+        mutex_lock(&module.mutex);
         heap_free(&module.heap.obj, entry_p);
-        sem_give(&module.sem, 1);
+        mutex_unlock(&module.mutex);
     }
 
     return (res);
@@ -351,9 +351,9 @@ int harness_mock_assert(const char *id_p,
         }
 
         /* Free allocated memory. */
-        sem_take(&module.sem, NULL);
+        mutex_lock(&module.mutex);
         heap_free(&module.heap.obj, entry_p);
-        sem_give(&module.sem, 1);
+        mutex_unlock(&module.mutex);
         res = 0;
     } else {
 #if CONFIG_HARNESS_MOCK_VERBOSE == 1

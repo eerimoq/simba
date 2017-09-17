@@ -37,7 +37,7 @@ struct soam_t {
         uint8_t *buf_p;
         size_t size;
         ssize_t pos;
-        struct sem_t sem;
+        struct mutex_t mutex;
         void *chout_p;
         uint8_t packet_index;
     } tx;

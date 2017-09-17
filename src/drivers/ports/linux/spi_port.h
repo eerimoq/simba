@@ -46,7 +46,7 @@ struct spi_driver_t;
 
 struct spi_device_t {
     struct spi_driver_t *drv_p;
-    struct sem_t sem;
+    struct mutex_t mutex;
 };
 
 struct spi_driver_t {

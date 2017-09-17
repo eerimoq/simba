@@ -59,7 +59,7 @@ struct spi_device_t {
         int source;
         int cpu;
     } interrupt;
-    struct sem_t sem;
+    struct mutex_t mutex;
 };
 
 struct spi_driver_t {

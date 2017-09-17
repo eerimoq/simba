@@ -54,7 +54,7 @@ struct module_t {
     struct {
         struct thrd_environment_variable_t global_variables[4];
         struct thrd_environment_t global;
-        struct sem_t sem;
+        struct mutex_t mutex;
     } env;
 #endif
 #if CONFIG_THRD_FS_COMMANDS == 1
@@ -446,7 +446,7 @@ int thrd_module_init(void)
     module.env.global.number_of_variables = 0;
     module.env.global.max_number_of_variables =
         membersof(module.env.global_variables);
-    sem_init(&module.env.sem, 0, 1);
+    mutex_init(&module.env.mutex);
 #endif
 
 #if CONFIG_PROFILE_STACK == 1
@@ -744,11 +744,11 @@ int thrd_init_global_env(struct thrd_environment_variable_t *variables_p,
                          int length)
 {
 #if CONFIG_THRD_ENV == 1
-    sem_take(&module.env.sem, NULL);
+    mutex_lock(&module.env.mutex);
     module.env.global.variables_p = variables_p;
     module.env.global.number_of_variables = 0;
     module.env.global.max_number_of_variables = length;
-    sem_give(&module.env.sem, 1);
+    mutex_unlock(&module.env.mutex);
 
     return (0);
 #else
@@ -763,9 +763,9 @@ int thrd_set_global_env(const char *name_p, const char *value_p)
 #if CONFIG_THRD_ENV == 1
     int res;
 
-    sem_take(&module.env.sem, NULL);
+    mutex_lock(&module.env.mutex);
     res = set_env(&module.env.global, name_p, value_p);
-    sem_give(&module.env.sem, 1);
+    mutex_unlock(&module.env.mutex);
 
     return (res);
 #else
@@ -780,9 +780,9 @@ const char *thrd_get_global_env(const char *name_p)
 #if CONFIG_THRD_ENV == 1
     const char *value_p;
 
-    sem_take(&module.env.sem, NULL);
+    mutex_lock(&module.env.mutex);
     value_p  = get_env(&module.env.global, name_p);
-    sem_give(&module.env.sem, 1);
+    mutex_unlock(&module.env.mutex);
 
     return (value_p);
 #else

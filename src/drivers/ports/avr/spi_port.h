@@ -50,7 +50,7 @@ struct spi_device_t {
     struct pin_device_t *miso_p;
     struct pin_device_t *sck_p;
     struct pin_device_t *ss_p;
-    struct sem_t sem;
+    struct mutex_t mutex;
 };
 
 struct spi_driver_t {

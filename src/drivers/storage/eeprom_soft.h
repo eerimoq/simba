@@ -50,7 +50,7 @@ struct eeprom_soft_driver_t {
         uint16_t revision;
     } current;
 #if CONFIG_EEPROM_SOFT_SEMAPHORE == 1
-    struct sem_t sem;
+    struct mutex_t mutex;
 #endif
 };
 

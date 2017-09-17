@@ -43,7 +43,7 @@ struct flash_device_bank_t {
 
 struct flash_device_t {
     struct flash_device_bank_t banks[2];
-    struct sem_t sem;
+    struct mutex_t mutex;
 };
 
 struct flash_driver_t {

@@ -51,7 +51,7 @@ struct spi_device_t {
     struct pin_device_t *miso_p;
     struct pin_device_t *sck_p;
     int id;
-    struct sem_t sem;
+    struct mutex_t mutex;
 };
 
 struct spi_driver_t {

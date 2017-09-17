@@ -80,9 +80,8 @@ struct spi_device_t spi_device[SPI_DEVICE_MAX] = {
     {
         .drv_p = NULL,
         .regs_p = ESP8266_SPI0,
-        .sem = {
-            .count = 0,
-            .count_max = 1,
+        .mutex = {
+            .is_locked = 0,
             .waiters = {
                 .head_p = NULL
             }
@@ -92,9 +91,8 @@ struct spi_device_t spi_device[SPI_DEVICE_MAX] = {
 
 struct flash_device_t flash_device[FLASH_DEVICE_MAX] = {
     {
-        .sem = {
-            .count = 0,
-            .count_max = 1,
+        .mutex = {
+            .is_locked = 0,
             .waiters = {
                 .head_p = NULL
             }
