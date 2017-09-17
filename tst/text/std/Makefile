@@ -33,4 +33,7 @@ TYPE = suite
 BOARD ?= linux
 MAIN_C = main.cpp
 
+CDEFS += \
+	CONFIG_SYSTEM_INTERRUPT_STACK_SIZE=512
+
 include $(SIMBA_ROOT)/make/app.mk
