@@ -33,6 +33,7 @@ TYPE = suite
 BOARD ?= linux
 
 CDEFS += \
+	CONFIG_EEPROM_SOFT=1 \
 	CONFIG_HARNESS_MOCK_VERBOSE=0
 
 ifeq ($(BOARD), linux)
