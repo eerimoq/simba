@@ -2414,12 +2414,6 @@
 
 /**
  */
-#ifndef CONFIG_SPC5_ECC_INIT
-#    define CONFIG_SPC5_ECC_INIT                            1
-#endif
-
-/**
- */
 #ifndef CONFIG_SPC5_RELOCATE_INIT
 #    define CONFIG_SPC5_RELOCATE_INIT                       1
 #endif

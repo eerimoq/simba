@@ -61,9 +61,7 @@ _rchw:
         .align    2
         .size     _start, .L_start_end - _start
 _start:
-#if CONFIG_SPC5_ECC_INIT == 1
         se_bl     _ecc_init
-#endif
 #if CONFIG_SPC5_RELOCATE_INIT == 1
         se_bl     _relocate_init
 #endif
@@ -90,8 +88,6 @@ _start:
 
 .L_start_end:
         se_b .L_start_end
-
-#if CONFIG_SPC5_ECC_INIT == 1
 
 /**
  * SRAM ECC initialization by writing zero to all addresses. This
@@ -121,8 +117,6 @@ _ecc_init:
         e_bdnz    .L_ecc_init_loop
 
         se_blr
-
-#endif
 
 #if CONFIG_SPC5_RELOCATE_INIT == 1
 
