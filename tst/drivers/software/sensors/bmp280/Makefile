@@ -45,10 +45,7 @@ STUB = $(SIMBA_ROOT)/src/drivers/sensors/bmp280.c:i2c_write,i2c_read,i2c_scan,sp
 KERNEL_SRC += errno.c
 DRIVERS_SRC = sensors/bmp280.c network/spi.c network/i2c.c
 
-STUBS_ROOT = ../../../../stubs
-
-INC += $(STUBS_ROOT)
-SRC += $(addprefix $(STUBS_ROOT)/, \
+SRC += $(addprefix ../../../../stubs/, \
 	drivers/network/i2c_mock.c \
 	drivers/network/spi_mock.c)
 

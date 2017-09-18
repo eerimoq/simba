@@ -39,10 +39,7 @@ DRIVERS_SRC = network/xbee.c
 
 STUB = $(SIMBA_ROOT)/src/drivers/network/xbee.c:chan_write,chan_read
 
-STUBS_ROOT = ../../../../stubs
-
-INC += $(STUBS_ROOT)
-SRC += $(addprefix $(STUBS_ROOT)/, \
+SRC += $(addprefix ../../../../stubs/, \
 	sync/chan_mock.c)
 
 include $(SIMBA_ROOT)/make/app.mk
