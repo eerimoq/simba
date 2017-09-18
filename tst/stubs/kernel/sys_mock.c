@@ -33,6 +33,10 @@
 
 int mock_write_sys_module_init(int res)
 {
+    harness_mock_write("sys_module_init()",
+                       NULL,
+                       0);
+
     harness_mock_write("sys_module_init(): return (res)",
                        &res,
                        sizeof(res));
@@ -44,6 +48,9 @@ int __attribute__ ((weak)) STUB(sys_module_init)()
 {
     int res;
 
+    harness_mock_assert("sys_module_init()",
+                        NULL);
+
     harness_mock_read("sys_module_init(): return (res)",
                       &res,
                       sizeof(res));
@@ -53,6 +60,10 @@ int __attribute__ ((weak)) STUB(sys_module_init)()
 
 int mock_write_sys_start(int res)
 {
+    harness_mock_write("sys_start()",
+                       NULL,
+                       0);
+
     harness_mock_write("sys_start(): return (res)",
                        &res,
                        sizeof(res));
@@ -63,6 +74,9 @@ int mock_write_sys_start(int res)
 int __attribute__ ((weak)) STUB(sys_start)()
 {
     int res;
+
+    harness_mock_assert("sys_start()",
+                        NULL);
 
     harness_mock_read("sys_start(): return (res)",
                       &res,
@@ -103,11 +117,17 @@ void __attribute__ ((weak)) STUB(sys_panic)(const char *message_p)
 
 int mock_write_sys_reboot()
 {
+    harness_mock_write("sys_reboot()",
+                       NULL,
+                       0);
+
     return (0);
 }
 
 void __attribute__ ((weak)) STUB(sys_reboot)()
 {
+    harness_mock_assert("sys_reboot()",
+                        NULL);
 }
 
 int mock_write_sys_backtrace(void **buf_p,
@@ -150,6 +170,10 @@ int __attribute__ ((weak)) STUB(sys_backtrace)(void **buf_p,
 
 int mock_write_sys_reset_cause(enum sys_reset_cause_t res)
 {
+    harness_mock_write("sys_reset_cause()",
+                       NULL,
+                       0);
+
     harness_mock_write("sys_reset_cause(): return (res)",
                        &res,
                        sizeof(res));
@@ -160,6 +184,9 @@ int mock_write_sys_reset_cause(enum sys_reset_cause_t res)
 enum sys_reset_cause_t __attribute__ ((weak)) STUB(sys_reset_cause)()
 {
     enum sys_reset_cause_t res;
+
+    harness_mock_assert("sys_reset_cause()",
+                        NULL);
 
     harness_mock_read("sys_reset_cause(): return (res)",
                       &res,
@@ -258,6 +285,10 @@ void __attribute__ ((weak)) STUB(sys_set_stdin)(void *chan_p)
 
 int mock_write_sys_get_stdin(void *res)
 {
+    harness_mock_write("sys_get_stdin()",
+                       NULL,
+                       0);
+
     harness_mock_write("sys_get_stdin(): return (res)",
                        &res,
                        sizeof(res));
@@ -268,6 +299,9 @@ int mock_write_sys_get_stdin(void *res)
 void *__attribute__ ((weak)) STUB(sys_get_stdin)()
 {
     void *res;
+
+    harness_mock_assert("sys_get_stdin()",
+                        NULL);
 
     harness_mock_read("sys_get_stdin(): return (res)",
                       &res,
@@ -293,6 +327,10 @@ void __attribute__ ((weak)) STUB(sys_set_stdout)(void *chan_p)
 
 int mock_write_sys_get_stdout(void *res)
 {
+    harness_mock_write("sys_get_stdout()",
+                       NULL,
+                       0);
+
     harness_mock_write("sys_get_stdout(): return (res)",
                        &res,
                        sizeof(res));
@@ -304,6 +342,9 @@ void *__attribute__ ((weak)) STUB(sys_get_stdout)()
 {
     void *res;
 
+    harness_mock_assert("sys_get_stdout()",
+                        NULL);
+
     harness_mock_read("sys_get_stdout(): return (res)",
                       &res,
                       sizeof(res));
@@ -313,42 +354,70 @@ void *__attribute__ ((weak)) STUB(sys_get_stdout)()
 
 int mock_write_sys_lock()
 {
+    harness_mock_write("sys_lock()",
+                       NULL,
+                       0);
+
     return (0);
 }
 
 void __attribute__ ((weak)) STUB(sys_lock)()
 {
+    harness_mock_assert("sys_lock()",
+                        NULL);
 }
 
 int mock_write_sys_unlock()
 {
+    harness_mock_write("sys_unlock()",
+                       NULL,
+                       0);
+
     return (0);
 }
 
 void __attribute__ ((weak)) STUB(sys_unlock)()
 {
+    harness_mock_assert("sys_unlock()",
+                        NULL);
 }
 
 int mock_write_sys_lock_isr()
 {
+    harness_mock_write("sys_lock_isr()",
+                       NULL,
+                       0);
+
     return (0);
 }
 
 void __attribute__ ((weak)) STUB(sys_lock_isr)()
 {
+    harness_mock_assert("sys_lock_isr()",
+                        NULL);
 }
 
 int mock_write_sys_unlock_isr()
 {
+    harness_mock_write("sys_unlock_isr()",
+                       NULL,
+                       0);
+
     return (0);
 }
 
 void __attribute__ ((weak)) STUB(sys_unlock_isr)()
 {
+    harness_mock_assert("sys_unlock_isr()",
+                        NULL);
 }
 
 int mock_write_sys_get_info(far_string_t res)
 {
+    harness_mock_write("sys_get_info()",
+                       NULL,
+                       0);
+
     harness_mock_write("sys_get_info(): return (res)",
                        &res,
                        sizeof(res));
@@ -360,6 +429,9 @@ far_string_t __attribute__ ((weak)) STUB(sys_get_info)()
 {
     far_string_t res;
 
+    harness_mock_assert("sys_get_info()",
+                        NULL);
+
     harness_mock_read("sys_get_info(): return (res)",
                       &res,
                       sizeof(res));
@@ -369,6 +441,10 @@ far_string_t __attribute__ ((weak)) STUB(sys_get_info)()
 
 int mock_write_sys_get_config(far_string_t res)
 {
+    harness_mock_write("sys_get_config()",
+                       NULL,
+                       0);
+
     harness_mock_write("sys_get_config(): return (res)",
                        &res,
                        sizeof(res));
@@ -380,6 +456,9 @@ far_string_t __attribute__ ((weak)) STUB(sys_get_config)()
 {
     far_string_t res;
 
+    harness_mock_assert("sys_get_config()",
+                        NULL);
+
     harness_mock_read("sys_get_config(): return (res)",
                       &res,
                       sizeof(res));
@@ -389,6 +468,10 @@ far_string_t __attribute__ ((weak)) STUB(sys_get_config)()
 
 int mock_write_sys_interrupt_cpu_usage_get(cpu_usage_t res)
 {
+    harness_mock_write("sys_interrupt_cpu_usage_get()",
+                       NULL,
+                       0);
+
     harness_mock_write("sys_interrupt_cpu_usage_get(): return (res)",
                        &res,
                        sizeof(res));
@@ -400,6 +483,9 @@ cpu_usage_t __attribute__ ((weak)) STUB(sys_interrupt_cpu_usage_get)()
 {
     cpu_usage_t res;
 
+    harness_mock_assert("sys_interrupt_cpu_usage_get()",
+                        NULL);
+
     harness_mock_read("sys_interrupt_cpu_usage_get(): return (res)",
                       &res,
                       sizeof(res));
@@ -409,11 +495,17 @@ cpu_usage_t __attribute__ ((weak)) STUB(sys_interrupt_cpu_usage_get)()
 
 int mock_write_sys_interrupt_cpu_usage_reset()
 {
+    harness_mock_write("sys_interrupt_cpu_usage_reset()",
+                       NULL,
+                       0);
+
     return (0);
 }
 
 void __attribute__ ((weak)) STUB(sys_interrupt_cpu_usage_reset)()
 {
+    harness_mock_assert("sys_interrupt_cpu_usage_reset()",
+                        NULL);
 }
 
 int mock_write_sys_reset_cause_as_string(enum sys_reset_cause_t reset_cause,

@@ -679,7 +679,8 @@ print-%:
 
 generate-stubs:
 	rm -rf tst/stubs
-	stub.py -d generate \
+	(cd src && \
+	 stub.py -d generate \
 	  --ignore-function fs_split \
 	  --ignore-function chipid_read \
 	  --ignore-function pin_device_set_mode \
@@ -687,7 +688,7 @@ generate-stubs:
 	  --ignore-function pin_device_write \
 	  --ignore-function pin_device_write_high \
 	  --ignore-function pin_device_write_low \
-	  $$(find src -name "*.h" \
+	  $$(find . -name "*.h" \
 	     | grep -v ports \
 	     | grep -v boards \
 	     | grep -v mcus \
@@ -695,9 +696,7 @@ generate-stubs:
 	     | grep -v simba_gen.h \
 	     | grep -v config_default.h \
 	     | grep -v config.h) \
-	  tst/stubs
-	mv tst/stubs/src/* tst/stubs
-	rmdir tst/stubs/src
+	  ../tst/stubs)
 
 help:
 	@echo "--------------------------------------------------------------------------------"

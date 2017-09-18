@@ -88,6 +88,10 @@ int __attribute__ ((weak)) STUB(esp_wifi_station_init)(const char *ssid_p,
 
 int mock_write_esp_wifi_station_connect(int res)
 {
+    harness_mock_write("esp_wifi_station_connect()",
+                       NULL,
+                       0);
+
     harness_mock_write("esp_wifi_station_connect(): return (res)",
                        &res,
                        sizeof(res));
@@ -99,6 +103,9 @@ int __attribute__ ((weak)) STUB(esp_wifi_station_connect)()
 {
     int res;
 
+    harness_mock_assert("esp_wifi_station_connect()",
+                        NULL);
+
     harness_mock_read("esp_wifi_station_connect(): return (res)",
                       &res,
                       sizeof(res));
@@ -108,6 +115,10 @@ int __attribute__ ((weak)) STUB(esp_wifi_station_connect)()
 
 int mock_write_esp_wifi_station_disconnect(int res)
 {
+    harness_mock_write("esp_wifi_station_disconnect()",
+                       NULL,
+                       0);
+
     harness_mock_write("esp_wifi_station_disconnect(): return (res)",
                        &res,
                        sizeof(res));
@@ -118,6 +129,9 @@ int mock_write_esp_wifi_station_disconnect(int res)
 int __attribute__ ((weak)) STUB(esp_wifi_station_disconnect)()
 {
     int res;
+
+    harness_mock_assert("esp_wifi_station_disconnect()",
+                        NULL);
 
     harness_mock_read("esp_wifi_station_disconnect(): return (res)",
                       &res,
@@ -214,6 +228,10 @@ int __attribute__ ((weak)) STUB(esp_wifi_station_set_reconnect_policy)(int polic
 
 int mock_write_esp_wifi_station_get_reconnect_policy(int res)
 {
+    harness_mock_write("esp_wifi_station_get_reconnect_policy()",
+                       NULL,
+                       0);
+
     harness_mock_write("esp_wifi_station_get_reconnect_policy(): return (res)",
                        &res,
                        sizeof(res));
@@ -225,6 +243,9 @@ int __attribute__ ((weak)) STUB(esp_wifi_station_get_reconnect_policy)()
 {
     int res;
 
+    harness_mock_assert("esp_wifi_station_get_reconnect_policy()",
+                        NULL);
+
     harness_mock_read("esp_wifi_station_get_reconnect_policy(): return (res)",
                       &res,
                       sizeof(res));
@@ -234,6 +255,10 @@ int __attribute__ ((weak)) STUB(esp_wifi_station_get_reconnect_policy)()
 
 int mock_write_esp_wifi_station_get_status(enum esp_wifi_station_status_t res)
 {
+    harness_mock_write("esp_wifi_station_get_status()",
+                       NULL,
+                       0);
+
     harness_mock_write("esp_wifi_station_get_status(): return (res)",
                        &res,
                        sizeof(res));
@@ -245,6 +270,9 @@ enum esp_wifi_station_status_t __attribute__ ((weak)) STUB(esp_wifi_station_get_
 {
     enum esp_wifi_station_status_t res;
 
+    harness_mock_assert("esp_wifi_station_get_status()",
+                        NULL);
+
     harness_mock_read("esp_wifi_station_get_status(): return (res)",
                       &res,
                       sizeof(res));
@@ -254,6 +282,10 @@ enum esp_wifi_station_status_t __attribute__ ((weak)) STUB(esp_wifi_station_get_
 
 int mock_write_esp_wifi_station_dhcp_client_start(int res)
 {
+    harness_mock_write("esp_wifi_station_dhcp_client_start()",
+                       NULL,
+                       0);
+
     harness_mock_write("esp_wifi_station_dhcp_client_start(): return (res)",
                        &res,
                        sizeof(res));
@@ -265,6 +297,9 @@ int __attribute__ ((weak)) STUB(esp_wifi_station_dhcp_client_start)()
 {
     int res;
 
+    harness_mock_assert("esp_wifi_station_dhcp_client_start()",
+                        NULL);
+
     harness_mock_read("esp_wifi_station_dhcp_client_start(): return (res)",
                       &res,
                       sizeof(res));
@@ -274,6 +309,10 @@ int __attribute__ ((weak)) STUB(esp_wifi_station_dhcp_client_start)()
 
 int mock_write_esp_wifi_station_dhcp_client_stop(int res)
 {
+    harness_mock_write("esp_wifi_station_dhcp_client_stop()",
+                       NULL,
+                       0);
+
     harness_mock_write("esp_wifi_station_dhcp_client_stop(): return (res)",
                        &res,
                        sizeof(res));
@@ -285,6 +324,9 @@ int __attribute__ ((weak)) STUB(esp_wifi_station_dhcp_client_stop)()
 {
     int res;
 
+    harness_mock_assert("esp_wifi_station_dhcp_client_stop()",
+                        NULL);
+
     harness_mock_read("esp_wifi_station_dhcp_client_stop(): return (res)",
                       &res,
                       sizeof(res));
@@ -294,6 +336,10 @@ int __attribute__ ((weak)) STUB(esp_wifi_station_dhcp_client_stop)()
 
 int mock_write_esp_wifi_station_dhcp_client_status(enum esp_wifi_dhcp_status_t res)
 {
+    harness_mock_write("esp_wifi_station_dhcp_client_status()",
+                       NULL,
+                       0);
+
     harness_mock_write("esp_wifi_station_dhcp_client_status(): return (res)",
                        &res,
                        sizeof(res));
@@ -304,6 +350,9 @@ int mock_write_esp_wifi_station_dhcp_client_status(enum esp_wifi_dhcp_status_t r
 enum esp_wifi_dhcp_status_t __attribute__ ((weak)) STUB(esp_wifi_station_dhcp_client_status)()
 {
     enum esp_wifi_dhcp_status_t res;
+
+    harness_mock_assert("esp_wifi_station_dhcp_client_status()",
+                        NULL);
 
     harness_mock_read("esp_wifi_station_dhcp_client_status(): return (res)",
                       &res,

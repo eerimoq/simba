@@ -89,6 +89,10 @@ int __attribute__ ((weak)) STUB(pwm_soft_set_frequency)(long value)
 
 int mock_write_pwm_soft_get_frequency(long res)
 {
+    harness_mock_write("pwm_soft_get_frequency()",
+                       NULL,
+                       0);
+
     harness_mock_write("pwm_soft_get_frequency(): return (res)",
                        &res,
                        sizeof(res));
@@ -99,6 +103,9 @@ int mock_write_pwm_soft_get_frequency(long res)
 long __attribute__ ((weak)) STUB(pwm_soft_get_frequency)()
 {
     long res;
+
+    harness_mock_assert("pwm_soft_get_frequency()",
+                        NULL);
 
     harness_mock_read("pwm_soft_get_frequency(): return (res)",
                       &res,

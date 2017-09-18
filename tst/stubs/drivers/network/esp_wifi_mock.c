@@ -33,6 +33,10 @@
 
 int mock_write_esp_wifi_module_init(int res)
 {
+    harness_mock_write("esp_wifi_module_init()",
+                       NULL,
+                       0);
+
     harness_mock_write("esp_wifi_module_init(): return (res)",
                        &res,
                        sizeof(res));
@@ -43,6 +47,9 @@ int mock_write_esp_wifi_module_init(int res)
 int __attribute__ ((weak)) STUB(esp_wifi_module_init)()
 {
     int res;
+
+    harness_mock_assert("esp_wifi_module_init()",
+                        NULL);
 
     harness_mock_read("esp_wifi_module_init(): return (res)",
                       &res,
@@ -81,6 +88,10 @@ int __attribute__ ((weak)) STUB(esp_wifi_set_op_mode)(enum esp_wifi_op_mode_t mo
 
 int mock_write_esp_wifi_get_op_mode(enum esp_wifi_op_mode_t res)
 {
+    harness_mock_write("esp_wifi_get_op_mode()",
+                       NULL,
+                       0);
+
     harness_mock_write("esp_wifi_get_op_mode(): return (res)",
                        &res,
                        sizeof(res));
@@ -91,6 +102,9 @@ int mock_write_esp_wifi_get_op_mode(enum esp_wifi_op_mode_t res)
 enum esp_wifi_op_mode_t __attribute__ ((weak)) STUB(esp_wifi_get_op_mode)()
 {
     enum esp_wifi_op_mode_t res;
+
+    harness_mock_assert("esp_wifi_get_op_mode()",
+                        NULL);
 
     harness_mock_read("esp_wifi_get_op_mode(): return (res)",
                       &res,
@@ -129,6 +143,10 @@ int __attribute__ ((weak)) STUB(esp_wifi_set_phy_mode)(enum esp_wifi_phy_mode_t 
 
 int mock_write_esp_wifi_get_phy_mode(enum esp_wifi_phy_mode_t res)
 {
+    harness_mock_write("esp_wifi_get_phy_mode()",
+                       NULL,
+                       0);
+
     harness_mock_write("esp_wifi_get_phy_mode(): return (res)",
                        &res,
                        sizeof(res));
@@ -139,6 +157,9 @@ int mock_write_esp_wifi_get_phy_mode(enum esp_wifi_phy_mode_t res)
 enum esp_wifi_phy_mode_t __attribute__ ((weak)) STUB(esp_wifi_get_phy_mode)()
 {
     enum esp_wifi_phy_mode_t res;
+
+    harness_mock_assert("esp_wifi_get_phy_mode()",
+                        NULL);
 
     harness_mock_read("esp_wifi_get_phy_mode(): return (res)",
                       &res,

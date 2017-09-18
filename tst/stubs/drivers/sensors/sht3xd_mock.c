@@ -35,6 +35,10 @@
 
 int mock_write_sht3xd_module_init(int res)
 {
+    harness_mock_write("sht3xd_module_init()",
+                       NULL,
+                       0);
+
     harness_mock_write("sht3xd_module_init(): return (res)",
                        &res,
                        sizeof(res));
@@ -45,6 +49,9 @@ int mock_write_sht3xd_module_init(int res)
 int __attribute__ ((weak)) STUB(sht3xd_module_init)()
 {
     int res;
+
+    harness_mock_assert("sht3xd_module_init()",
+                        NULL);
 
     harness_mock_read("sht3xd_module_init(): return (res)",
                       &res,

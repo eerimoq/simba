@@ -33,6 +33,10 @@
 
 int mock_write_console_module_init(int res)
 {
+    harness_mock_write("console_module_init()",
+                       NULL,
+                       0);
+
     harness_mock_write("console_module_init(): return (res)",
                        &res,
                        sizeof(res));
@@ -44,6 +48,9 @@ int __attribute__ ((weak)) STUB(console_module_init)()
 {
     int res;
 
+    harness_mock_assert("console_module_init()",
+                        NULL);
+
     harness_mock_read("console_module_init(): return (res)",
                       &res,
                       sizeof(res));
@@ -53,6 +60,10 @@ int __attribute__ ((weak)) STUB(console_module_init)()
 
 int mock_write_console_init(int res)
 {
+    harness_mock_write("console_init()",
+                       NULL,
+                       0);
+
     harness_mock_write("console_init(): return (res)",
                        &res,
                        sizeof(res));
@@ -64,6 +75,9 @@ int __attribute__ ((weak)) STUB(console_init)()
 {
     int res;
 
+    harness_mock_assert("console_init()",
+                        NULL);
+
     harness_mock_read("console_init(): return (res)",
                       &res,
                       sizeof(res));
@@ -73,6 +87,10 @@ int __attribute__ ((weak)) STUB(console_init)()
 
 int mock_write_console_start(int res)
 {
+    harness_mock_write("console_start()",
+                       NULL,
+                       0);
+
     harness_mock_write("console_start(): return (res)",
                        &res,
                        sizeof(res));
@@ -84,6 +102,9 @@ int __attribute__ ((weak)) STUB(console_start)()
 {
     int res;
 
+    harness_mock_assert("console_start()",
+                        NULL);
+
     harness_mock_read("console_start(): return (res)",
                       &res,
                       sizeof(res));
@@ -93,6 +114,10 @@ int __attribute__ ((weak)) STUB(console_start)()
 
 int mock_write_console_stop(int res)
 {
+    harness_mock_write("console_stop()",
+                       NULL,
+                       0);
+
     harness_mock_write("console_stop(): return (res)",
                        &res,
                        sizeof(res));
@@ -103,6 +128,9 @@ int mock_write_console_stop(int res)
 int __attribute__ ((weak)) STUB(console_stop)()
 {
     int res;
+
+    harness_mock_assert("console_stop()",
+                        NULL);
 
     harness_mock_read("console_stop(): return (res)",
                       &res,
@@ -142,6 +170,10 @@ int __attribute__ ((weak)) STUB(console_set_input_channel)(void *chan_p)
 
 int mock_write_console_get_input_channel(void *res)
 {
+    harness_mock_write("console_get_input_channel()",
+                       NULL,
+                       0);
+
     harness_mock_write("console_get_input_channel(): return (res)",
                        &res,
                        sizeof(res));
@@ -152,6 +184,9 @@ int mock_write_console_get_input_channel(void *res)
 void *__attribute__ ((weak)) STUB(console_get_input_channel)()
 {
     void *res;
+
+    harness_mock_assert("console_get_input_channel()",
+                        NULL);
 
     harness_mock_read("console_get_input_channel(): return (res)",
                       &res,
@@ -191,6 +226,10 @@ void *__attribute__ ((weak)) STUB(console_set_output_channel)(void *chan_p)
 
 int mock_write_console_get_output_channel(void *res)
 {
+    harness_mock_write("console_get_output_channel()",
+                       NULL,
+                       0);
+
     harness_mock_write("console_get_output_channel(): return (res)",
                        &res,
                        sizeof(res));
@@ -201,6 +240,9 @@ int mock_write_console_get_output_channel(void *res)
 void *__attribute__ ((weak)) STUB(console_get_output_channel)()
 {
     void *res;
+
+    harness_mock_assert("console_get_output_channel()",
+                        NULL);
 
     harness_mock_read("console_get_output_channel(): return (res)",
                       &res,

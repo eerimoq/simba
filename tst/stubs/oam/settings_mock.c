@@ -33,6 +33,10 @@
 
 int mock_write_settings_module_init(int res)
 {
+    harness_mock_write("settings_module_init()",
+                       NULL,
+                       0);
+
     harness_mock_write("settings_module_init(): return (res)",
                        &res,
                        sizeof(res));
@@ -43,6 +47,9 @@ int mock_write_settings_module_init(int res)
 int __attribute__ ((weak)) STUB(settings_module_init)()
 {
     int res;
+
+    harness_mock_assert("settings_module_init()",
+                        NULL);
 
     harness_mock_read("settings_module_init(): return (res)",
                       &res,
@@ -239,6 +246,10 @@ ssize_t __attribute__ ((weak)) STUB(settings_write_by_name)(const char *name_p,
 
 int mock_write_settings_reset(int res)
 {
+    harness_mock_write("settings_reset()",
+                       NULL,
+                       0);
+
     harness_mock_write("settings_reset(): return (res)",
                        &res,
                        sizeof(res));
@@ -249,6 +260,9 @@ int mock_write_settings_reset(int res)
 int __attribute__ ((weak)) STUB(settings_reset)()
 {
     int res;
+
+    harness_mock_assert("settings_reset()",
+                        NULL);
 
     harness_mock_read("settings_reset(): return (res)",
                       &res,

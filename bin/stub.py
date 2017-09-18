@@ -71,6 +71,12 @@ MOCK_WRITE_ARGUMENT_OUT_FMT = '''\
                        {size});
 '''
 
+MOCK_WRITE_ARGUMENT_VOID_FMT = '''\
+    harness_mock_write("{function_name}()",
+                       NULL,
+                       0);
+'''
+
 MOCK_ARGUMENT_IN_PTR_FMT = '''\
     harness_mock_assert("{function_name}({name})",
                         {name});
@@ -85,6 +91,11 @@ MOCK_ARGUMENT_OUT_PTR_FMT = '''\
 MOCK_ARGUMENT_IN_FMT = '''\
     harness_mock_assert("{function_name}({name})",
                         &{name});
+'''
+
+MOCK_ARGUMENT_VOID_FMT = '''\
+    harness_mock_assert("{function_name}()",
+                        NULL);
 '''
 
 MOCK_ARGUMENT_OUT_FMT = '''\
@@ -210,33 +221,36 @@ def generate_function_mock_write(return_type,
 
     body = []
 
-    for argument in arguments:
-        if argument.name == 'self_p':
-            continue
-
-        if (('*' in argument.type_)
-            and (argument.name not in ['dev_p', 'pin_dev_p'])):
-            if 'char' in argument.type_:
-                size = 'strlen({}) + 1'.format(argument.name)
-            elif 'void' in argument.type_:
-                if any([arg.name == 'size' for arg in arguments]):
-                    size = 'size'
+    if arguments:
+        for argument in arguments:
+            if argument.name == 'self_p':
+                continue
+    
+            if (('*' in argument.type_)
+                and (argument.name not in ['dev_p', 'pin_dev_p'])):
+                if 'char' in argument.type_:
+                    size = 'strlen({}) + 1'.format(argument.name)
+                elif 'void' in argument.type_:
+                    if any([arg.name == 'size' for arg in arguments]):
+                        size = 'size'
+                    else:
+                        size = 'sizeof({})'.format(argument.name)
                 else:
-                    size = 'sizeof({})'.format(argument.name)
+                    size = 'sizeof(*{})'.format(argument.name)
+    
+                if 'in' in argument.direction:
+                    fmt = MOCK_WRITE_ARGUMENT_IN_PTR_FMT
+                else:
+                    fmt = MOCK_WRITE_ARGUMENT_OUT_PTR_FMT
             else:
-                size = 'sizeof(*{})'.format(argument.name)
-
-            if 'in' in argument.direction:
-                fmt = MOCK_WRITE_ARGUMENT_IN_PTR_FMT
-            else:
-                fmt = MOCK_WRITE_ARGUMENT_OUT_PTR_FMT
-        else:
-            size = 'sizeof({})'.format(argument.name)
-            fmt = MOCK_WRITE_ARGUMENT_IN_FMT
-
-        body.append(fmt.format(function_name=name,
-                               name=argument.name,
-                               size=size))
+                size = 'sizeof({})'.format(argument.name)
+                fmt = MOCK_WRITE_ARGUMENT_IN_FMT
+    
+            body.append(fmt.format(function_name=name,
+                                   name=argument.name,
+                                   size=size))
+    else:
+        body.append(MOCK_WRITE_ARGUMENT_VOID_FMT.format(function_name=name))
 
     if return_type.strip() == 'void':
         return_argument = []
@@ -278,25 +292,28 @@ def generate_function_stub(return_type,
     if return_type.strip() != 'void':
         body.append('    {}res;\n'.format(return_type))
 
-    for argument in arguments:
-        if argument.name == 'self_p':
-            continue
-
-        if (('*' in argument.type_)
-            and (argument.name not in ['dev_p', 'pin_dev_p'])):
-            if 'in' in argument.direction:
-                size = 'sizeof(*{})'.format(argument.name)
-                fmt = MOCK_ARGUMENT_IN_PTR_FMT
+    if arguments:
+        for argument in arguments:
+            if argument.name == 'self_p':
+                continue
+    
+            if (('*' in argument.type_)
+                and (argument.name not in ['dev_p', 'pin_dev_p'])):
+                if 'in' in argument.direction:
+                    size = 'sizeof(*{})'.format(argument.name)
+                    fmt = MOCK_ARGUMENT_IN_PTR_FMT
+                else:
+                    size = 'sizeof(*{})'.format(argument.name)
+                    fmt = MOCK_ARGUMENT_OUT_PTR_FMT
             else:
-                size = 'sizeof(*{})'.format(argument.name)
-                fmt = MOCK_ARGUMENT_OUT_PTR_FMT
-        else:
-            size = 'sizeof({})'.format(argument.name)
-            fmt = MOCK_ARGUMENT_IN_FMT
-
-        body.append(fmt.format(function_name=name,
-                               name=argument.name,
-                               size=size))
+                size = 'sizeof({})'.format(argument.name)
+                fmt = MOCK_ARGUMENT_IN_FMT
+    
+            body.append(fmt.format(function_name=name,
+                                   name=argument.name,
+                                   size=size))
+    else:
+        body.append(MOCK_ARGUMENT_VOID_FMT.format(function_name=name))
 
     if return_type.strip() != 'void':
         body.append(MOCK_ARGUMENT_OUT_FMT.format(function_name=name,
@@ -444,6 +461,7 @@ def main():
     generate_parser = subparsers.add_parser('generate')
     generate_parser.add_argument('-i', '--ignore-function',
                                  action='append',
+                                 default=[],
                                  help='One or more functions to ignore.')
     generate_parser.add_argument('headers',
                                  nargs='+',

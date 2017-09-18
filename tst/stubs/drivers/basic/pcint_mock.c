@@ -33,6 +33,10 @@
 
 int mock_write_pcint_module_init(int res)
 {
+    harness_mock_write("pcint_module_init()",
+                       NULL,
+                       0);
+
     harness_mock_write("pcint_module_init(): return (res)",
                        &res,
                        sizeof(res));
@@ -43,6 +47,9 @@ int mock_write_pcint_module_init(int res)
 int __attribute__ ((weak)) STUB(pcint_module_init)()
 {
     int res;
+
+    harness_mock_assert("pcint_module_init()",
+                        NULL);
 
     harness_mock_read("pcint_module_init(): return (res)",
                       &res,

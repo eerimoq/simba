@@ -33,6 +33,10 @@
 
 int mock_write_usb_device_class_cdc_module_init(int res)
 {
+    harness_mock_write("usb_device_class_cdc_module_init()",
+                       NULL,
+                       0);
+
     harness_mock_write("usb_device_class_cdc_module_init(): return (res)",
                        &res,
                        sizeof(res));
@@ -43,6 +47,9 @@ int mock_write_usb_device_class_cdc_module_init(int res)
 int __attribute__ ((weak)) STUB(usb_device_class_cdc_module_init)()
 {
     int res;
+
+    harness_mock_assert("usb_device_class_cdc_module_init()",
+                        NULL);
 
     harness_mock_read("usb_device_class_cdc_module_init(): return (res)",
                       &res,

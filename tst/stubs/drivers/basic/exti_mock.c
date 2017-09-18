@@ -33,6 +33,10 @@
 
 int mock_write_exti_module_init(int res)
 {
+    harness_mock_write("exti_module_init()",
+                       NULL,
+                       0);
+
     harness_mock_write("exti_module_init(): return (res)",
                        &res,
                        sizeof(res));
@@ -43,6 +47,9 @@ int mock_write_exti_module_init(int res)
 int __attribute__ ((weak)) STUB(exti_module_init)()
 {
     int res;
+
+    harness_mock_assert("exti_module_init()",
+                        NULL);
 
     harness_mock_read("exti_module_init(): return (res)",
                       &res,

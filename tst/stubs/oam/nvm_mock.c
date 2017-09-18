@@ -33,6 +33,10 @@
 
 int mock_write_nvm_module_init(int res)
 {
+    harness_mock_write("nvm_module_init()",
+                       NULL,
+                       0);
+
     harness_mock_write("nvm_module_init(): return (res)",
                        &res,
                        sizeof(res));
@@ -44,6 +48,9 @@ int __attribute__ ((weak)) STUB(nvm_module_init)()
 {
     int res;
 
+    harness_mock_assert("nvm_module_init()",
+                        NULL);
+
     harness_mock_read("nvm_module_init(): return (res)",
                       &res,
                       sizeof(res));
@@ -53,6 +60,10 @@ int __attribute__ ((weak)) STUB(nvm_module_init)()
 
 int mock_write_nvm_mount(int res)
 {
+    harness_mock_write("nvm_mount()",
+                       NULL,
+                       0);
+
     harness_mock_write("nvm_mount(): return (res)",
                        &res,
                        sizeof(res));
@@ -64,6 +75,9 @@ int __attribute__ ((weak)) STUB(nvm_mount)()
 {
     int res;
 
+    harness_mock_assert("nvm_mount()",
+                        NULL);
+
     harness_mock_read("nvm_mount(): return (res)",
                       &res,
                       sizeof(res));
@@ -73,6 +87,10 @@ int __attribute__ ((weak)) STUB(nvm_mount)()
 
 int mock_write_nvm_format(int res)
 {
+    harness_mock_write("nvm_format()",
+                       NULL,
+                       0);
+
     harness_mock_write("nvm_format(): return (res)",
                        &res,
                        sizeof(res));
@@ -83,6 +101,9 @@ int mock_write_nvm_format(int res)
 int __attribute__ ((weak)) STUB(nvm_format)()
 {
     int res;
+
+    harness_mock_assert("nvm_format()",
+                        NULL);
 
     harness_mock_read("nvm_format(): return (res)",
                       &res,

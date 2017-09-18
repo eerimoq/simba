@@ -33,6 +33,10 @@
 
 int mock_write_upgrade_module_init(int res)
 {
+    harness_mock_write("upgrade_module_init()",
+                       NULL,
+                       0);
+
     harness_mock_write("upgrade_module_init(): return (res)",
                        &res,
                        sizeof(res));
@@ -44,6 +48,9 @@ int __attribute__ ((weak)) STUB(upgrade_module_init)()
 {
     int res;
 
+    harness_mock_assert("upgrade_module_init()",
+                        NULL);
+
     harness_mock_read("upgrade_module_init(): return (res)",
                       &res,
                       sizeof(res));
@@ -53,6 +60,10 @@ int __attribute__ ((weak)) STUB(upgrade_module_init)()
 
 int mock_write_upgrade_bootloader_enter(int res)
 {
+    harness_mock_write("upgrade_bootloader_enter()",
+                       NULL,
+                       0);
+
     harness_mock_write("upgrade_bootloader_enter(): return (res)",
                        &res,
                        sizeof(res));
@@ -64,6 +75,9 @@ int __attribute__ ((weak)) STUB(upgrade_bootloader_enter)()
 {
     int res;
 
+    harness_mock_assert("upgrade_bootloader_enter()",
+                        NULL);
+
     harness_mock_read("upgrade_bootloader_enter(): return (res)",
                       &res,
                       sizeof(res));
@@ -73,6 +87,10 @@ int __attribute__ ((weak)) STUB(upgrade_bootloader_enter)()
 
 int mock_write_upgrade_bootloader_stay_set(int res)
 {
+    harness_mock_write("upgrade_bootloader_stay_set()",
+                       NULL,
+                       0);
+
     harness_mock_write("upgrade_bootloader_stay_set(): return (res)",
                        &res,
                        sizeof(res));
@@ -84,6 +102,9 @@ int __attribute__ ((weak)) STUB(upgrade_bootloader_stay_set)()
 {
     int res;
 
+    harness_mock_assert("upgrade_bootloader_stay_set()",
+                        NULL);
+
     harness_mock_read("upgrade_bootloader_stay_set(): return (res)",
                       &res,
                       sizeof(res));
@@ -93,6 +114,10 @@ int __attribute__ ((weak)) STUB(upgrade_bootloader_stay_set)()
 
 int mock_write_upgrade_bootloader_stay_clear(int res)
 {
+    harness_mock_write("upgrade_bootloader_stay_clear()",
+                       NULL,
+                       0);
+
     harness_mock_write("upgrade_bootloader_stay_clear(): return (res)",
                        &res,
                        sizeof(res));
@@ -104,6 +129,9 @@ int __attribute__ ((weak)) STUB(upgrade_bootloader_stay_clear)()
 {
     int res;
 
+    harness_mock_assert("upgrade_bootloader_stay_clear()",
+                        NULL);
+
     harness_mock_read("upgrade_bootloader_stay_clear(): return (res)",
                       &res,
                       sizeof(res));
@@ -113,6 +141,10 @@ int __attribute__ ((weak)) STUB(upgrade_bootloader_stay_clear)()
 
 int mock_write_upgrade_bootloader_stay_get(int res)
 {
+    harness_mock_write("upgrade_bootloader_stay_get()",
+                       NULL,
+                       0);
+
     harness_mock_write("upgrade_bootloader_stay_get(): return (res)",
                        &res,
                        sizeof(res));
@@ -124,6 +156,9 @@ int __attribute__ ((weak)) STUB(upgrade_bootloader_stay_get)()
 {
     int res;
 
+    harness_mock_assert("upgrade_bootloader_stay_get()",
+                        NULL);
+
     harness_mock_read("upgrade_bootloader_stay_get(): return (res)",
                       &res,
                       sizeof(res));
@@ -133,6 +168,10 @@ int __attribute__ ((weak)) STUB(upgrade_bootloader_stay_get)()
 
 int mock_write_upgrade_application_enter(int res)
 {
+    harness_mock_write("upgrade_application_enter()",
+                       NULL,
+                       0);
+
     harness_mock_write("upgrade_application_enter(): return (res)",
                        &res,
                        sizeof(res));
@@ -144,6 +183,9 @@ int __attribute__ ((weak)) STUB(upgrade_application_enter)()
 {
     int res;
 
+    harness_mock_assert("upgrade_application_enter()",
+                        NULL);
+
     harness_mock_read("upgrade_application_enter(): return (res)",
                       &res,
                       sizeof(res));
@@ -153,6 +195,10 @@ int __attribute__ ((weak)) STUB(upgrade_application_enter)()
 
 int mock_write_upgrade_application_erase(int res)
 {
+    harness_mock_write("upgrade_application_erase()",
+                       NULL,
+                       0);
+
     harness_mock_write("upgrade_application_erase(): return (res)",
                        &res,
                        sizeof(res));
@@ -163,6 +209,9 @@ int mock_write_upgrade_application_erase(int res)
 int __attribute__ ((weak)) STUB(upgrade_application_erase)()
 {
     int res;
+
+    harness_mock_assert("upgrade_application_erase()",
+                        NULL);
 
     harness_mock_read("upgrade_application_erase(): return (res)",
                       &res,
@@ -201,6 +250,10 @@ int __attribute__ ((weak)) STUB(upgrade_application_is_valid)(int quick)
 
 int mock_write_upgrade_binary_upload_begin(int res)
 {
+    harness_mock_write("upgrade_binary_upload_begin()",
+                       NULL,
+                       0);
+
     harness_mock_write("upgrade_binary_upload_begin(): return (res)",
                        &res,
                        sizeof(res));
@@ -211,6 +264,9 @@ int mock_write_upgrade_binary_upload_begin(int res)
 int __attribute__ ((weak)) STUB(upgrade_binary_upload_begin)()
 {
     int res;
+
+    harness_mock_assert("upgrade_binary_upload_begin()",
+                        NULL);
 
     harness_mock_read("upgrade_binary_upload_begin(): return (res)",
                       &res,
@@ -258,6 +314,10 @@ int __attribute__ ((weak)) STUB(upgrade_binary_upload)(const void *buf_p,
 
 int mock_write_upgrade_binary_upload_end(int res)
 {
+    harness_mock_write("upgrade_binary_upload_end()",
+                       NULL,
+                       0);
+
     harness_mock_write("upgrade_binary_upload_end(): return (res)",
                        &res,
                        sizeof(res));
@@ -268,6 +328,9 @@ int mock_write_upgrade_binary_upload_end(int res)
 int __attribute__ ((weak)) STUB(upgrade_binary_upload_end)()
 {
     int res;
+
+    harness_mock_assert("upgrade_binary_upload_end()",
+                        NULL);
 
     harness_mock_read("upgrade_binary_upload_end(): return (res)",
                       &res,

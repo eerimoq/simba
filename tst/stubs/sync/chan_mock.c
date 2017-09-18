@@ -33,6 +33,10 @@
 
 int mock_write_chan_module_init(int res)
 {
+    harness_mock_write("chan_module_init()",
+                       NULL,
+                       0);
+
     harness_mock_write("chan_module_init(): return (res)",
                        &res,
                        sizeof(res));
@@ -43,6 +47,9 @@ int mock_write_chan_module_init(int res)
 int __attribute__ ((weak)) STUB(chan_module_init)()
 {
     int res;
+
+    harness_mock_assert("chan_module_init()",
+                        NULL);
 
     harness_mock_read("chan_module_init(): return (res)",
                       &res,
@@ -700,6 +707,10 @@ void *__attribute__ ((weak)) STUB(chan_poll)(void *chan_p,
 
 int mock_write_chan_null(void *res)
 {
+    harness_mock_write("chan_null()",
+                       NULL,
+                       0);
+
     harness_mock_write("chan_null(): return (res)",
                        &res,
                        sizeof(res));
@@ -710,6 +721,9 @@ int mock_write_chan_null(void *res)
 void *__attribute__ ((weak)) STUB(chan_null)()
 {
     void *res;
+
+    harness_mock_assert("chan_null()",
+                        NULL);
 
     harness_mock_read("chan_null(): return (res)",
                       &res,

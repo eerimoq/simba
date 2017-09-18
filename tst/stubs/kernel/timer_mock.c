@@ -33,6 +33,10 @@
 
 int mock_write_timer_module_init(int res)
 {
+    harness_mock_write("timer_module_init()",
+                       NULL,
+                       0);
+
     harness_mock_write("timer_module_init(): return (res)",
                        &res,
                        sizeof(res));
@@ -43,6 +47,9 @@ int mock_write_timer_module_init(int res)
 int __attribute__ ((weak)) STUB(timer_module_init)()
 {
     int res;
+
+    harness_mock_assert("timer_module_init()",
+                        NULL);
 
     harness_mock_read("timer_module_init(): return (res)",
                       &res,

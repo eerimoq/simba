@@ -33,6 +33,10 @@
 
 int mock_write_thrd_module_init(int res)
 {
+    harness_mock_write("thrd_module_init()",
+                       NULL,
+                       0);
+
     harness_mock_write("thrd_module_init(): return (res)",
                        &res,
                        sizeof(res));
@@ -43,6 +47,9 @@ int mock_write_thrd_module_init(int res)
 int __attribute__ ((weak)) STUB(thrd_module_init)()
 {
     int res;
+
+    harness_mock_assert("thrd_module_init()",
+                        NULL);
 
     harness_mock_read("thrd_module_init(): return (res)",
                       &res,
@@ -183,6 +190,10 @@ int __attribute__ ((weak)) STUB(thrd_resume)(struct thrd_t *thrd_p,
 
 int mock_write_thrd_yield(int res)
 {
+    harness_mock_write("thrd_yield()",
+                       NULL,
+                       0);
+
     harness_mock_write("thrd_yield(): return (res)",
                        &res,
                        sizeof(res));
@@ -193,6 +204,9 @@ int mock_write_thrd_yield(int res)
 int __attribute__ ((weak)) STUB(thrd_yield)()
 {
     int res;
+
+    harness_mock_assert("thrd_yield()",
+                        NULL);
 
     harness_mock_read("thrd_yield(): return (res)",
                       &res,
@@ -315,6 +329,10 @@ int __attribute__ ((weak)) STUB(thrd_sleep_us)(long microseconds)
 
 int mock_write_thrd_self(struct thrd_t *res)
 {
+    harness_mock_write("thrd_self()",
+                       NULL,
+                       0);
+
     harness_mock_write("thrd_self(): return (res)",
                        &res,
                        sizeof(res));
@@ -325,6 +343,9 @@ int mock_write_thrd_self(struct thrd_t *res)
 struct thrd_t *__attribute__ ((weak)) STUB(thrd_self)()
 {
     struct thrd_t *res;
+
+    harness_mock_assert("thrd_self()",
+                        NULL);
 
     harness_mock_read("thrd_self(): return (res)",
                       &res,
@@ -363,6 +384,10 @@ int __attribute__ ((weak)) STUB(thrd_set_name)(const char *name_p)
 
 int mock_write_thrd_get_name(const char *res)
 {
+    harness_mock_write("thrd_get_name()",
+                       NULL,
+                       0);
+
     harness_mock_write("thrd_get_name(): return (res)",
                        &res,
                        sizeof(res));
@@ -373,6 +398,9 @@ int mock_write_thrd_get_name(const char *res)
 const char *__attribute__ ((weak)) STUB(thrd_get_name)()
 {
     const char *res;
+
+    harness_mock_assert("thrd_get_name()",
+                        NULL);
 
     harness_mock_read("thrd_get_name(): return (res)",
                       &res,
@@ -449,6 +477,10 @@ int __attribute__ ((weak)) STUB(thrd_set_log_mask)(struct thrd_t *thrd_p,
 
 int mock_write_thrd_get_log_mask(int res)
 {
+    harness_mock_write("thrd_get_log_mask()",
+                       NULL,
+                       0);
+
     harness_mock_write("thrd_get_log_mask(): return (res)",
                        &res,
                        sizeof(res));
@@ -459,6 +491,9 @@ int mock_write_thrd_get_log_mask(int res)
 int __attribute__ ((weak)) STUB(thrd_get_log_mask)()
 {
     int res;
+
+    harness_mock_assert("thrd_get_log_mask()",
+                        NULL);
 
     harness_mock_read("thrd_get_log_mask(): return (res)",
                       &res,
@@ -506,6 +541,10 @@ int __attribute__ ((weak)) STUB(thrd_set_prio)(struct thrd_t *thrd_p,
 
 int mock_write_thrd_get_prio(int res)
 {
+    harness_mock_write("thrd_get_prio()",
+                       NULL,
+                       0);
+
     harness_mock_write("thrd_get_prio(): return (res)",
                        &res,
                        sizeof(res));
@@ -516,6 +555,9 @@ int mock_write_thrd_get_prio(int res)
 int __attribute__ ((weak)) STUB(thrd_get_prio)()
 {
     int res;
+
+    harness_mock_assert("thrd_get_prio()",
+                        NULL);
 
     harness_mock_read("thrd_get_prio(): return (res)",
                       &res,
@@ -795,6 +837,10 @@ int __attribute__ ((weak)) STUB(thrd_resume_isr)(struct thrd_t *thrd_p,
 
 int mock_write_thrd_yield_isr(int res)
 {
+    harness_mock_write("thrd_yield_isr()",
+                       NULL,
+                       0);
+
     harness_mock_write("thrd_yield_isr(): return (res)",
                        &res,
                        sizeof(res));
@@ -805,6 +851,9 @@ int mock_write_thrd_yield_isr(int res)
 int __attribute__ ((weak)) STUB(thrd_yield_isr)()
 {
     int res;
+
+    harness_mock_assert("thrd_yield_isr()",
+                        NULL);
 
     harness_mock_read("thrd_yield_isr(): return (res)",
                       &res,

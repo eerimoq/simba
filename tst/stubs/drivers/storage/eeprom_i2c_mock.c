@@ -33,6 +33,10 @@
 
 int mock_write_eeprom_i2c_module_init(int res)
 {
+    harness_mock_write("eeprom_i2c_module_init()",
+                       NULL,
+                       0);
+
     harness_mock_write("eeprom_i2c_module_init(): return (res)",
                        &res,
                        sizeof(res));
@@ -43,6 +47,9 @@ int mock_write_eeprom_i2c_module_init(int res)
 int __attribute__ ((weak)) STUB(eeprom_i2c_module_init)()
 {
     int res;
+
+    harness_mock_assert("eeprom_i2c_module_init()",
+                        NULL);
 
     harness_mock_read("eeprom_i2c_module_init(): return (res)",
                       &res,

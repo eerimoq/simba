@@ -33,6 +33,10 @@
 
 int mock_write_hx711_module_init(int res)
 {
+    harness_mock_write("hx711_module_init()",
+                       NULL,
+                       0);
+
     harness_mock_write("hx711_module_init(): return (res)",
                        &res,
                        sizeof(res));
@@ -43,6 +47,9 @@ int mock_write_hx711_module_init(int res)
 int __attribute__ ((weak)) STUB(hx711_module_init)()
 {
     int res;
+
+    harness_mock_assert("hx711_module_init()",
+                        NULL);
 
     harness_mock_read("hx711_module_init(): return (res)",
                       &res,

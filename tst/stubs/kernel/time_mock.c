@@ -274,6 +274,10 @@ void __attribute__ ((weak)) STUB(time_busy_wait_us)(int microseconds)
 
 int mock_write_time_micros(int res)
 {
+    harness_mock_write("time_micros()",
+                       NULL,
+                       0);
+
     harness_mock_write("time_micros(): return (res)",
                        &res,
                        sizeof(res));
@@ -284,6 +288,9 @@ int mock_write_time_micros(int res)
 int __attribute__ ((weak)) STUB(time_micros)()
 {
     int res;
+
+    harness_mock_assert("time_micros()",
+                        NULL);
 
     harness_mock_read("time_micros(): return (res)",
                       &res,
@@ -331,6 +338,10 @@ int __attribute__ ((weak)) STUB(time_micros_elapsed)(int start,
 
 int mock_write_time_micros_resolution(int res)
 {
+    harness_mock_write("time_micros_resolution()",
+                       NULL,
+                       0);
+
     harness_mock_write("time_micros_resolution(): return (res)",
                        &res,
                        sizeof(res));
@@ -342,6 +353,9 @@ int __attribute__ ((weak)) STUB(time_micros_resolution)()
 {
     int res;
 
+    harness_mock_assert("time_micros_resolution()",
+                        NULL);
+
     harness_mock_read("time_micros_resolution(): return (res)",
                       &res,
                       sizeof(res));
@@ -351,6 +365,10 @@ int __attribute__ ((weak)) STUB(time_micros_resolution)()
 
 int mock_write_time_micros_maximum(int res)
 {
+    harness_mock_write("time_micros_maximum()",
+                       NULL,
+                       0);
+
     harness_mock_write("time_micros_maximum(): return (res)",
                        &res,
                        sizeof(res));
@@ -361,6 +379,9 @@ int mock_write_time_micros_maximum(int res)
 int __attribute__ ((weak)) STUB(time_micros_maximum)()
 {
     int res;
+
+    harness_mock_assert("time_micros_maximum()",
+                        NULL);
 
     harness_mock_read("time_micros_maximum(): return (res)",
                       &res,

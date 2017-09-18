@@ -61,6 +61,10 @@ int __attribute__ ((weak)) STUB(upgrade_http_init)(int port)
 
 int mock_write_upgrade_http_start(int res)
 {
+    harness_mock_write("upgrade_http_start()",
+                       NULL,
+                       0);
+
     harness_mock_write("upgrade_http_start(): return (res)",
                        &res,
                        sizeof(res));
@@ -71,6 +75,9 @@ int mock_write_upgrade_http_start(int res)
 int __attribute__ ((weak)) STUB(upgrade_http_start)()
 {
     int res;
+
+    harness_mock_assert("upgrade_http_start()",
+                        NULL);
 
     harness_mock_read("upgrade_http_start(): return (res)",
                       &res,
