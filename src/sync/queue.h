@@ -141,8 +141,8 @@ int queue_stop_isr(struct queue_t *self_p);
  * Read from given queue. Blocks until size bytes has been read.
  *
  * @param[in] self_p Queue to read from.
- * @param[in] buf_p Buffer to read to.
- * @param[in] size Size to read.
+ * @param[out] buf_p Buffer to read into.
+ * @param[in] size Number of bytes to read.
  *
  * @return Number of bytes read or negative error code.
  */
