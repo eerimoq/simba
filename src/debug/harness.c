@@ -331,7 +331,7 @@ int harness_mock_assert(const char *id_p,
     struct mock_entry_t *entry_p;
     int res;
 
-    res = -1;
+    res = 0;
     entry_p = find_mock_entry(id_p);
 
     if (entry_p != NULL) {
@@ -347,6 +347,7 @@ int harness_mock_assert(const char *id_p,
                            "expected",
                            &entry_p->data.buf[0],
                            entry_p->data.size);
+                res = -1;
             }
         }
 
@@ -354,11 +355,11 @@ int harness_mock_assert(const char *id_p,
         mutex_lock(&module.mutex);
         heap_free(&module.heap.obj, entry_p);
         mutex_unlock(&module.mutex);
-        res = 0;
     } else {
 #if CONFIG_HARNESS_MOCK_VERBOSE == 1
         std_printf(FSTR("error: %s: mock id not found\r\n"), id_p);
 #endif
+        res = -1;
     }
 
     if (res != 0) {
