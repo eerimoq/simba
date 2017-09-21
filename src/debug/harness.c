@@ -55,6 +55,53 @@ struct module_t {
 
 static struct module_t module;
 
+#if defined(ARCH_LINUX)
+
+#include <execinfo.h>
+
+static int print_backtrace(void)
+{
+    void *array[128];
+    size_t size;
+    size_t i;
+    char command[1024];
+    const char *program_path_p;
+
+    program_path_p = getenv("SIMBA_PROGRAM_PATH");
+
+    if (program_path_p == NULL) {
+        fprintf(stderr,
+                "Environment variable SIMBA_PROGRAM_PATH "
+                "missing. Skipping the backtrace.\n");
+
+        return (-1);
+    }
+
+    size = backtrace(array, membersof(array));
+
+    fprintf(stderr, "Backtrace:\n");
+
+    for (i = 0; i < size; i++) {
+        fprintf(stderr, "[%zd]: ", i);
+        sprintf(&command[0],
+                "addr2line -f -p -e %s %p",
+                program_path_p,
+                array[i]);
+        system(command);
+    }
+
+    return (0);
+}
+
+#else
+
+static int print_backtrace(void)
+{
+    return (0);
+}
+
+#endif
+
 static struct mock_entry_t *find_mock_entry(const char *id_p)
 {
     struct list_sl_iterator_t iterator;
@@ -347,6 +394,7 @@ int harness_mock_assert(const char *id_p,
                            "expected",
                            &entry_p->data.buf[0],
                            entry_p->data.size);
+                print_backtrace();
                 res = -1;
             }
         }
@@ -356,16 +404,15 @@ int harness_mock_assert(const char *id_p,
         heap_free(&module.heap.obj, entry_p);
         mutex_unlock(&module.mutex);
     } else {
-#if CONFIG_HARNESS_MOCK_VERBOSE == 1
         std_printf(FSTR("error: %s: mock id not found\r\n"), id_p);
-#endif
+        print_backtrace();
         res = -1;
     }
 
     if (res != 0) {
         module.testcase_failed = 1;
     }
-    
+
     return (res);
 }
 
