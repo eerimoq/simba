@@ -84,14 +84,16 @@ static void sys_port_reboot()
 static int sys_port_backtrace(void **buf_pp, size_t size)
 {
     int i;
+    int depth;
 
-    size = backtrace(buf_pp, size / sizeof(void *) / 2);
+    depth = (size / sizeof(void *) / 2);
+    depth = backtrace(buf_pp, depth);
 
-    for (i = size - 1; i > 0; i--) {
+    for (i = depth - 1; i > 0; i--) {
         buf_pp[2 * i] = buf_pp[i];
     }
 
-    return (size);
+    return (depth);
 }
 
 static int sys_port_get_time_into_tick()

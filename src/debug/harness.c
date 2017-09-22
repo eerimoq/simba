@@ -35,7 +35,7 @@ struct mock_entry_t {
     const char *id_p;
     struct {
         void *array[2 * CONFIG_HARNESS_BACKTRACE_DEPTH_MAX];
-        size_t size;
+        size_t depth;
     } backtrace;
     struct {
         size_t size;
@@ -59,7 +59,7 @@ struct module_t {
 
 static struct module_t module;
 
-static int print_backtrace(void *array[], size_t size, const char *name_p)
+static int print_backtrace(void *array[], int depth, const char *name_p)
 {
     int i;
 
@@ -67,11 +67,11 @@ static int print_backtrace(void *array[], size_t size, const char *name_p)
                     "Mock %s backtrace (most recent call first):\r\n"),
                name_p);
 
-    for (i = 0; i < size; i++) {
+    for (i = 0; i < depth; i++) {
 #if defined(ARCH_LINUX)
-        fprintf(stderr, "  [%d]: %p\r\n", i, array[2 * i]);
+        fprintf(stderr, ": %p\r\n", array[2 * i]);
 #else
-        std_printf(OSTR("  [%d]: 0x%08x\r\n"), i, array[2 * i]);
+        std_printf(OSTR(": 0x%08x\r\n"), array[2 * i]);
 #endif
     }
 
@@ -81,27 +81,27 @@ static int print_backtrace(void *array[], size_t size, const char *name_p)
 static int print_assert_backtrace(void)
 {
     void *array[2 * CONFIG_HARNESS_BACKTRACE_DEPTH_MAX];
-    size_t size;
+    int depth;
 
-    size = sys_backtrace(array, sizeof(array));
+    depth = sys_backtrace(array, sizeof(array));
 
-    return (print_backtrace(array, size, "assert"));
+    return (print_backtrace(array, depth, "assert"));
 }
 
 static int print_read_backtrace(void)
 {
     void *array[2 * CONFIG_HARNESS_BACKTRACE_DEPTH_MAX];
-    size_t size;
+    int depth;
 
-    size = sys_backtrace(array, sizeof(array));
+    depth = sys_backtrace(array, sizeof(array));
 
-    return (print_backtrace(array, size, "read"));
+    return (print_backtrace(array, depth, "read"));
 }
 
 static int create_write_backtrace(struct mock_entry_t *entry_p)
 {
-    entry_p->backtrace.size = sys_backtrace(entry_p->backtrace.array,
-                                            sizeof(entry_p->backtrace.array));
+    entry_p->backtrace.depth = sys_backtrace(entry_p->backtrace.array,
+                                             sizeof(entry_p->backtrace.array));
 
     return (0);
 }
@@ -109,7 +109,7 @@ static int create_write_backtrace(struct mock_entry_t *entry_p)
 static int print_write_backtrace(struct mock_entry_t *entry_p)
 {
     return (print_backtrace(entry_p->backtrace.array,
-                            entry_p->backtrace.size,
+                            entry_p->backtrace.depth,
                             "write"));
 }
 
