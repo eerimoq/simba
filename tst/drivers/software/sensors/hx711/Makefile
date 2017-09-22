@@ -33,8 +33,11 @@ TYPE = suite
 BOARD ?= linux
 
 CDEFS += \
-	CONFIG_HX711=1 \
-	CONFIG_HARNESS_HEAP_MAX=4096
+	CONFIG_HX711=1
+
+ifneq ($(BOARD), linux)
+CDEFS += CONFIG_HARNESS_HEAP_MAX=4096
+endif
 
 STUB = $(SIMBA_ROOT)/src/drivers/sensors/hx711.c:pin_port_device_set_mode,pin_port_device_read,pin_port_device_write_high,pin_port_device_write_low,sys_lock,sys_unlock,time_compare
 

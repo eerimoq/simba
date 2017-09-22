@@ -34,6 +34,10 @@ struct mock_entry_t {
     struct entry_t *next_p;
     const char *id_p;
     struct {
+        void *array[2 * CONFIG_HARNESS_BACKTRACE_DEPTH_MAX];
+        size_t size;
+    } backtrace;
+    struct {
         size_t size;
         uint8_t buf[1];
     } data;
@@ -55,52 +59,59 @@ struct module_t {
 
 static struct module_t module;
 
-#if defined(ARCH_LINUX)
-
-#include <execinfo.h>
-
-static int print_backtrace(void)
+static int print_backtrace(void *array[], size_t size, const char *name_p)
 {
-    void *array[128];
-    size_t size;
-    size_t i;
-    char command[1024];
-    const char *program_path_p;
+    int i;
 
-    program_path_p = getenv("SIMBA_PROGRAM_PATH");
-
-    if (program_path_p == NULL) {
-        fprintf(stderr,
-                "Environment variable SIMBA_PROGRAM_PATH "
-                "missing. Skipping the backtrace.\n");
-
-        return (-1);
-    }
-
-    size = backtrace(array, membersof(array));
-
-    fprintf(stderr, "Backtrace:\n");
+    std_printf(OSTR("\r\n"
+                    "Mock %s backtrace (most recent call first):\r\n"),
+               name_p);
 
     for (i = 0; i < size; i++) {
-        fprintf(stderr, "[%zd]: ", i);
-        sprintf(&command[0],
-                "addr2line -f -p -e %s %p",
-                program_path_p,
-                array[i]);
-        system(command);
+#if defined(ARCH_LINUX)
+        fprintf(stderr, "  [%d]: %p\r\n", i, array[2 * i]);
+#else
+        std_printf(OSTR("  [%d]: 0x%08x\r\n"), i, array[2 * i]);
+#endif
     }
 
     return (0);
 }
 
-#else
-
-static int print_backtrace(void)
+static int print_assert_backtrace(void)
 {
+    void *array[2 * CONFIG_HARNESS_BACKTRACE_DEPTH_MAX];
+    size_t size;
+
+    size = sys_backtrace(array, sizeof(array));
+
+    return (print_backtrace(array, size, "assert"));
+}
+
+static int print_read_backtrace(void)
+{
+    void *array[2 * CONFIG_HARNESS_BACKTRACE_DEPTH_MAX];
+    size_t size;
+
+    size = sys_backtrace(array, sizeof(array));
+
+    return (print_backtrace(array, size, "read"));
+}
+
+static int create_write_backtrace(struct mock_entry_t *entry_p)
+{
+    entry_p->backtrace.size = sys_backtrace(entry_p->backtrace.array,
+                                            sizeof(entry_p->backtrace.array));
+
     return (0);
 }
 
-#endif
+static int print_write_backtrace(struct mock_entry_t *entry_p)
+{
+    return (print_backtrace(entry_p->backtrace.array,
+                            entry_p->backtrace.size,
+                            "write"));
+}
 
 static struct mock_entry_t *find_mock_entry(const char *id_p)
 {
@@ -307,6 +318,7 @@ ssize_t harness_mock_write(const char *id_p,
     }
 
     entry_p->data.size = size;
+    create_write_backtrace(entry_p);
 
     /* Add the entry at the end of the list. */
     mutex_lock(&module.mutex);
@@ -326,9 +338,8 @@ ssize_t harness_mock_read(const char *id_p,
 
     /* Mark testcase as failed if the mock id was not found. */
     if (res == -1) {
-#if CONFIG_HARNESS_MOCK_VERBOSE == 1
         std_printf(FSTR("error: %s: mock id not found\r\n"), id_p);
-#endif
+        print_read_backtrace();
         module.testcase_failed = 1;
     }
 
@@ -394,7 +405,8 @@ int harness_mock_assert(const char *id_p,
                            "expected",
                            &entry_p->data.buf[0],
                            entry_p->data.size);
-                print_backtrace();
+                print_assert_backtrace();
+                print_write_backtrace(entry_p);
                 res = -1;
             }
         }
@@ -405,7 +417,7 @@ int harness_mock_assert(const char *id_p,
         mutex_unlock(&module.mutex);
     } else {
         std_printf(FSTR("error: %s: mock id not found\r\n"), id_p);
-        print_backtrace();
+        print_assert_backtrace();
         res = -1;
     }
 

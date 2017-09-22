@@ -2366,22 +2366,30 @@
 #endif
 
 /**
+ * The maximum harness backtrace depth.
+ */
+#ifndef CONFIG_HARNESS_BACKTRACE_DEPTH_MAX
+#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO)
+#        define CONFIG_HARNESS_BACKTRACE_DEPTH_MAX          1
+#    elif defined(ARCH_LINUX)
+#        define CONFIG_HARNESS_BACKTRACE_DEPTH_MAX         32
+#    else
+#        define CONFIG_HARNESS_BACKTRACE_DEPTH_MAX          8
+#    endif
+#endif
+
+/**
  * Size of the harness heap, required for harness_mock_write() and
  * harness_mock_read().
  */
 #ifndef CONFIG_HARNESS_HEAP_MAX
 #    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO)
 #        define CONFIG_HARNESS_HEAP_MAX                    16
+#    elif defined(ARCH_LINUX)
+#        define CONFIG_HARNESS_HEAP_MAX                262144
 #    else
 #        define CONFIG_HARNESS_HEAP_MAX                  4096
 #    endif
-#endif
-
-/**
- * Verbose mock framework.
- */
-#ifndef CONFIG_HARNESS_MOCK_VERBOSE
-#    define CONFIG_HARNESS_MOCK_VERBOSE                     1
 #endif
 
 /**

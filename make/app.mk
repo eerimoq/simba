@@ -239,7 +239,7 @@ else
 	$$(CXX) $$(INC:%=-I%) $$(CDEFS:%=-D%) $$(CXXFLAGS) -o $$@ $$<
 endif
 ifneq ($(STUB),)
-	stub.py "$(CROSS_COMPILE)" $$@ $$< $(STUB)
+	stub.py patch "$(CROSS_COMPILE)" $$@ $$< $(STUB)
 endif
 	$$(CXX) -MM -MT $$@ $$(INC:%=-I%) $$(CDEFS:%=-D%) -std=c++11 -o $(patsubst %.cpp,$(DEPSDIR)%.o.dep,$(abspath $1)) $$<
 endef
@@ -254,7 +254,7 @@ $(patsubst %.S,$(OBJDIR)%.obj,$(abspath $1)): $1
 	mkdir -p $(GENDIR)
 	$$(CC) $$(INC:%=-I%) $$(CDEFS:%=-D%) $$(CFLAGS) -o $$@ $$<
 ifneq ($(STUB),)
-	stub.py "$(CROSS_COMPILE)" $$@ $$< $(STUB)
+	stub.py patch "$(CROSS_COMPILE)" $$@ $$< $(STUB)
 endif
 	gcc -MM -MT $$@ $$(INC:%=-I%) $$(CDEFS:%=-D%) -o $(patsubst %.S,$(DEPSDIR)%.obj.dep,$(abspath $1)) $$<
 endef

@@ -57,4 +57,5 @@ rerun:
 			    --baudrate $(BAUDRATE) \
 			    --pattern $(RUN_END_PATTERN)\
 			    --pattern-success $(RUN_END_PATTERN_SUCCESS) \
+			    | backtrace.py $(EXE) $(CROSS_COMPILE) \
 			    | tee $(RUNLOG) ; test $${PIPESTATUS[0]} -eq 0

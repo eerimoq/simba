@@ -48,10 +48,10 @@ upload:
 
 rerun:
 	@echo "Running $(EXE)"
-	(cd $(BUILDDIR) && \
-	 env SIMBA_PROGRAM_PATH=$(notdir $(EXE)) ./$(notdir $(EXE))) 2>&1 \
-	 | tee $(RUNLOG) ; \
-	 test $${PIPESTATUS[0]} -eq 0
+	(cd $(BUILDDIR) && ./$(notdir $(EXE))) 2>&1 \
+	| backtrace.py $(EXE) "" \
+	| tee $(RUNLOG) ; \
+	test $${PIPESTATUS[0]} -eq 0
 
 run-debugger: all
 	gdb $(EXE) --eval-command "break main" --eval-command run
