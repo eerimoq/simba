@@ -49,7 +49,7 @@ upload:
 rerun:
 	@echo "Running $(EXE)"
 	(cd $(BUILDDIR) && ./$(notdir $(EXE))) 2>&1 \
-	| backtrace.py $(EXE) "" \
+	| python3 -u $(BACKTRACE_PY) $(EXE) "" \
 	| tee $(RUNLOG) ; \
 	test $${PIPESTATUS[0]} -eq 0
 

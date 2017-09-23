@@ -27,7 +27,7 @@ def main():
 
     backtrace_lines = None
 
-    for line in sys.stdin.readlines():
+    for line in sys.stdin:
         if backtrace_lines is None:
             # Look for a backtrace header.
             mo = RE_BACKTRACE_HEADER.match(line)

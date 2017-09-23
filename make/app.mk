@@ -139,6 +139,8 @@ RUN_PY ?= $(SIMBA_ROOT)/make/run.py
 RUN_END_PATTERN ?= "=============================== TEST END \(\w+\) ==============================\r\n\r\n"
 RUN_END_PATTERN_SUCCESS ?= "=============================== TEST END \(PASSED\) ==============================\r\n\r\n"
 
+BACKTRACE_PY ?= $(SIMBA_ROOT)/bin/backtrace.py
+
 CONSOLESCRIPT = $(SIMBA_ROOT)/make/console.py
 
 clean:
