@@ -121,6 +121,27 @@ class Argument(object):
         return '{}{}'.format(self.type_, self.name)
 
 
+def find_symbols_for_file(sourcefile, patterns):
+    '''Convert given pattern 'foo.c:bar,fum' to a list of the symbols for
+    given file.
+
+    '''
+
+    symbols = []
+
+    for pattern in patterns:
+        if ':' not in pattern:
+            sys.exit("error: stub pattern '{}' does not contain a ':'".format(
+                pattern))
+
+        pattern_file, pattern_symbols = pattern.split(':')
+
+        if pattern_file == sourcefile:
+            symbols += pattern_symbols.split(',')
+
+    return symbols
+
+
 def parse_args(args, comment):
     '''Parse given function argument string and return a list of argument
     object.
@@ -156,27 +177,6 @@ def parse_args(args, comment):
         arguments.append(Argument(name, type_, direction))
 
     return arguments
-
-
-def find_symbols_for_file(sourcefile, patterns):
-    '''Convert given pattern 'foo.c:bar,fum' to a list of the symbols for
-    given file.
-
-    '''
-
-    symbols = []
-
-    for pattern in patterns:
-        if ':' not in pattern:
-            sys.exit("error: stub pattern '{}' does not contain a ':'".format(
-                pattern))
-
-        pattern_file, pattern_symbols = pattern.split(':')
-
-        if pattern_file == sourcefile:
-            symbols += pattern_symbols.split(',')
-
-    return symbols
 
 
 def generate_function_mock_write(return_type,
