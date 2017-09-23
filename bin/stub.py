@@ -22,7 +22,6 @@ STUB_H_FMT = '''\
 #endif
 '''
 
-
 STUB_C_FMT = '''\
 {header}
 
@@ -106,7 +105,10 @@ MOCK_ARGUMENT_OUT_FMT = '''\
 
 
 class Argument(object):
+    """A function argument.
 
+    """
+    
     def __init__(self, name, type_, direction):
         self.name = name
         self.type_ = type_
@@ -120,6 +122,11 @@ class Argument(object):
 
 
 def parse_args(args, comment):
+    """Parse given function argument string and return a list of argument
+    object.
+
+    """
+    
     if args == ['void']:
         return []
 
