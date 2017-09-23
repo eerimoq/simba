@@ -105,10 +105,10 @@ MOCK_ARGUMENT_OUT_FMT = '''\
 
 
 class Argument(object):
-    """A function argument.
+    '''A function argument.
 
-    """
-    
+    '''
+
     def __init__(self, name, type_, direction):
         self.name = name
         self.type_ = type_
@@ -122,26 +122,28 @@ class Argument(object):
 
 
 def parse_args(args, comment):
-    """Parse given function argument string and return a list of argument
+    '''Parse given function argument string and return a list of argument
     object.
 
-    """
-    
+    '''
+
+    # Functions with 'void' as the only argument does not take any
+    # arguments.
     if args == ['void']:
         return []
 
     arguments = []
 
     for arg in args:
-        try:
-            type_, name = re.match(r'(.+[^\w\[\]])([\w\[\]]+)', arg).groups()
-        except AttributeError:
-            if arg in ['...', '']:
-                print("Skipping unsupported argument '{}'".format(arg))
-                continue
+        if arg in ['...', '']:
+            continue
 
+        mo = re.match(r'(.+[^\w\[\]])([\w\[\]]+)', arg)
+
+        if not mo:
             sys.exit("Invalid argument '{}'.".format(arg))
 
+        type_, name = mo.groups()
         mo = re.search(r'\[(\w+)\]\s+{}\s'.format(name),
                        comment,
                        re.DOTALL)
@@ -156,66 +158,25 @@ def parse_args(args, comment):
     return arguments
 
 
-def get_pattern_symbols(pattern):
-    try:
-        symbols = pattern.split(':')[1]
-    except IndexError:
-        sys.exit("error: bad stub pattern '{}'".format(pattern))
-    else:
-        if not symbols:
-            return []
-        else:
-            return symbols.split(',')
-
-
-def do_patch(args):
-    '''Repalce symbols in an object file with their stubbed version.
+def find_symbols_for_file(sourcefile, patterns):
+    '''Convert given pattern 'foo.c:bar,fum' to a list of the symbols for
+    given file.
 
     '''
 
-    # Find symbols to stub in given source file (if any).
     symbols = []
 
-    for pattern in args.patterns:
-        if pattern.startswith(args.sourcefile):
-            symbols += get_pattern_symbols(pattern)
+    for pattern in patterns:
+        if ':' not in pattern:
+            sys.exit("error: stub pattern '{}' does not contain a ':'".format(
+                pattern))
 
-    if not symbols:
-        return
+        pattern_file, pattern_symbols = pattern.split(':')
 
-    # Find all symbols in the object file.
-    command = [args.crosscompile + 'readelf']
-    command += ['-s']
-    command += ['-W']
-    command += [args.objectfile]
+        if pattern_file == sourcefile:
+            symbols += pattern_symbols.split(',')
 
-    readelf_output = subprocess.check_output(command)
-    re_symbol = re.compile(r"\s+\d+: \w+\s+\d+\s+(NOTYPE|OBJECT|FUNC)"
-                           "\s+\w+\s+\w+\s+\w+\s+(.+)")
-    symbols_in_objectfile = []
-
-    for line in readelf_output.decode('ascii').splitlines():
-        mo = re_symbol.match(line)
-
-        if mo:
-            symbols_in_objectfile.append(mo.group(2).strip())
-
-    # Redefine given symbols in the object file.
-    command = [args.crosscompile + 'objcopy']
-
-    for symbol in symbols:
-        if symbol not in symbols_in_objectfile:
-            sys.exit("error: cannot stub missing symbol {}".format(symbol))
-
-        print("Stubbing symbol '{}' in '{}'.".format(symbol, args.sourcefile))
-
-        command += [
-            '--redefine-sym', '{symbol}=__stub_{symbol}'.format(symbol=symbol)
-        ]
-
-    command += [args.objectfile, args.objectfile]
-
-    subprocess.check_call(command)
+    return symbols
 
 
 def generate_function_mock_write(return_type,
@@ -232,7 +193,7 @@ def generate_function_mock_write(return_type,
         for argument in arguments:
             if argument.name == 'self_p':
                 continue
-    
+
             if (('*' in argument.type_)
                 and (argument.name not in ['dev_p', 'pin_dev_p'])):
                 if 'char' in argument.type_:
@@ -244,7 +205,7 @@ def generate_function_mock_write(return_type,
                         size = 'sizeof({})'.format(argument.name)
                 else:
                     size = 'sizeof(*{})'.format(argument.name)
-    
+
                 if 'in' in argument.direction:
                     fmt = MOCK_WRITE_ARGUMENT_IN_PTR_FMT
                 else:
@@ -252,7 +213,7 @@ def generate_function_mock_write(return_type,
             else:
                 size = 'sizeof({})'.format(argument.name)
                 fmt = MOCK_WRITE_ARGUMENT_IN_FMT
-    
+
             body.append(fmt.format(function_name=name,
                                    name=argument.name,
                                    size=size))
@@ -303,7 +264,7 @@ def generate_function_stub(return_type,
         for argument in arguments:
             if argument.name == 'self_p':
                 continue
-    
+
             if (('*' in argument.type_)
                 and (argument.name not in ['dev_p', 'pin_dev_p'])):
                 if 'in' in argument.direction:
@@ -315,7 +276,7 @@ def generate_function_stub(return_type,
             else:
                 size = 'sizeof({})'.format(argument.name)
                 fmt = MOCK_ARGUMENT_IN_FMT
-    
+
             body.append(fmt.format(function_name=name,
                                    name=argument.name,
                                    size=size))
@@ -373,9 +334,9 @@ def generate_from_header(args,
                          re_function,
                          re_file_header,
                          header_path):
-    """Generate stub files for given header file.
+    '''Generate stub files for given header file.
 
-    """
+    '''
 
     header_dir, header_file = os.path.split(header_path)
     header_name = os.path.splitext(header_file)[0]
@@ -424,8 +385,54 @@ def generate_from_header(args,
     return mock_h_path, mock_c_path
 
 
+def do_patch(args):
+    '''Repalce symbols in an object file with their stubbed version.
+
+    '''
+
+    # Find symbols to stub in given source file (if any).
+    symbols = find_symbols_for_file(args.sourcefile, args.patterns)
+
+    if not symbols:
+        return
+
+    # Find all symbols in the object file.
+    command = [args.crosscompile + 'readelf']
+    command += ['-s']
+    command += ['-W']
+    command += [args.objectfile]
+
+    readelf_output = subprocess.check_output(command)
+    re_symbol = re.compile(r"\s+\d+: \w+\s+\d+\s+(NOTYPE|OBJECT|FUNC)"
+                           r"\s+\w+\s+\w+\s+\w+\s+(.+)")
+    symbols_in_objectfile = []
+
+    for line in readelf_output.decode('ascii').splitlines():
+        mo = re_symbol.match(line)
+
+        if mo:
+            symbols_in_objectfile.append(mo.group(2).strip())
+
+    # Redefine given symbols in the object file.
+    command = [args.crosscompile + 'objcopy']
+
+    for symbol in symbols:
+        if symbol not in symbols_in_objectfile:
+            sys.exit("error: cannot stub missing symbol '{}'".format(symbol))
+
+        print("Stubbing symbol '{}' in '{}'.".format(symbol, args.sourcefile))
+
+        command += [
+            '--redefine-sym', '{symbol}=__stub_{symbol}'.format(symbol=symbol)
+        ]
+
+    command += [args.objectfile, args.objectfile]
+
+    subprocess.check_call(command)
+
+
 def do_generate(args):
-    '''Generate stubs of given header files.
+    '''Generate stubs for given header files.
 
     '''
 
@@ -458,6 +465,7 @@ def main():
                                        dest='subcommand')
     subparsers.required = True
 
+    # The 'patch' subparser.
     patch_parser = subparsers.add_parser('patch')
     patch_parser.add_argument('crosscompile')
     patch_parser.add_argument('objectfile')
@@ -465,6 +473,7 @@ def main():
     patch_parser.add_argument('patterns', nargs='+')
     patch_parser.set_defaults(func=do_patch)
 
+    # The 'generate' subparser.
     generate_parser = subparsers.add_parser('generate')
     generate_parser.add_argument('-i', '--ignore-function',
                                  action='append',
