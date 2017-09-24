@@ -35,7 +35,7 @@ static struct chan_t transport;
 static struct queue_t queue;
 static uint8_t buf[768];
 
-static int test_init(struct harness_t *harness_p)
+static int test_init(void)
 {
     BTASSERT(queue_init(&queue, &buf[0], sizeof(buf)) == 0);
 
@@ -51,7 +51,7 @@ static int test_init(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_get_no_data(struct harness_t *harness_p)
+static int test_get_no_data(void)
 {
     struct date_t date;
     float latitude;
@@ -92,7 +92,7 @@ static int test_get_no_data(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_print_no_data(struct harness_t *harness_p)
+static int test_print_no_data(void)
 {
     BTASSERTI(gnss_print(&gnss, &queue), ==, 0);
     BTASSERTI(harness_expect(&queue,
@@ -106,7 +106,7 @@ static int test_print_no_data(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_read_rmc(struct harness_t *harness_p)
+static int test_read_rmc(void)
 {
     int i;
     ssize_t res;
@@ -161,7 +161,7 @@ static int test_read_rmc(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_read_gga_glonass(struct harness_t *harness_p)
+static int test_read_gga_glonass(void)
 {
     int i;
     ssize_t res;
@@ -229,7 +229,7 @@ static int test_read_gga_glonass(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_read_read_failed(struct harness_t *harness_p)
+static int test_read_read_failed(void)
 {
     ssize_t res;
 
@@ -250,7 +250,7 @@ static int test_read_read_failed(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_read_sentence_too_long(struct harness_t *harness_p)
+static int test_read_sentence_too_long(void)
 {
     int i;
     char byte;
@@ -269,7 +269,7 @@ static int test_read_sentence_too_long(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_read_start_not_first(struct harness_t *harness_p)
+static int test_read_start_not_first(void)
 {
     int i;
     ssize_t res;
@@ -289,7 +289,7 @@ static int test_read_start_not_first(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_read_unsupported_sentence(struct harness_t *harness_p)
+static int test_read_unsupported_sentence(void)
 {
     int i;
     ssize_t res;
@@ -307,7 +307,7 @@ static int test_read_unsupported_sentence(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_read_wrong_crc(struct harness_t *harness_p)
+static int test_read_wrong_crc(void)
 {
     int i;
     ssize_t res;
@@ -325,7 +325,7 @@ static int test_read_wrong_crc(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_write(struct harness_t *harness_p)
+static int test_write(void)
 {
     char data[] = "GPFOO,BAR";
     char sentence[NMEA_SENTENCE_SIZE_MAX];
@@ -383,7 +383,6 @@ ssize_t STUB(chan_write)(void *self_p,
 
 int main()
 {
-    struct harness_t harness;
     struct harness_testcase_t harness_testcases[] = {
         { test_init, "test_init" },
         { test_get_no_data, "test_get_no_data" },
@@ -401,8 +400,7 @@ int main()
 
     sys_start();
 
-    harness_init(&harness);
-    harness_run(&harness, harness_testcases);
+    harness_run(harness_testcases);
 
     return (0);
 }

@@ -38,7 +38,7 @@ static uint8_t inbuf[128];
 static uint8_t outbuf[128];
 static char buf[128];
 
-static int test_send_file_kermit(struct harness_t *self_p)
+static int test_send_file_kermit(void)
 {
     struct queue_t qin;
     struct queue_t qout;
@@ -74,7 +74,6 @@ static int test_send_file_kermit(struct harness_t *self_p)
 
 int main()
 {
-    struct harness_t harness;
     struct harness_testcase_t harness_testcases[] = {
         { test_send_file_kermit, "test_send_file_kermit" },
         { NULL, NULL }
@@ -82,8 +81,7 @@ int main()
 
     sys_start();
 
-    harness_init(&harness);
-    harness_run(&harness, harness_testcases);
+    harness_run(harness_testcases);
 
     return (0);
 }

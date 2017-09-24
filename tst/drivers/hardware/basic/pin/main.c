@@ -30,7 +30,7 @@
 
 #include "simba.h"
 
-static int test_init(struct harness_t *harness_p)
+static int test_init(void)
 {
     BTASSERT(pin_module_init() == 0);
     BTASSERT(pin_module_init() == 0);
@@ -38,7 +38,7 @@ static int test_init(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_output(struct harness_t *harness_p)
+static int test_output(void)
 {
     struct pin_driver_t testpin;
     struct pin_driver_t pin;
@@ -74,7 +74,7 @@ static int test_output(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_output_open_drain(struct harness_t *harness_p)
+static int test_output_open_drain(void)
 {
     int res;
     struct pin_driver_t testpin;
@@ -98,7 +98,7 @@ static int test_output_open_drain(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_output_open_drain_pull_up(struct harness_t *harness_p)
+static int test_output_open_drain_pull_up(void)
 {
     int res;
     struct pin_driver_t testpin;
@@ -126,7 +126,7 @@ static int test_output_open_drain_pull_up(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_input(struct harness_t *harness_p)
+static int test_input(void)
 {
     struct pin_driver_t testpin;
     struct pin_driver_t pin;
@@ -145,7 +145,7 @@ static int test_input(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_input_pull_up(struct harness_t *harness_p)
+static int test_input_pull_up(void)
 {
     struct pin_driver_t testpin;
     struct pin_driver_t pin;
@@ -164,7 +164,7 @@ static int test_input_pull_up(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_input_pull_down(struct harness_t *harness_p)
+static int test_input_pull_down(void)
 {
     int res;
     struct pin_driver_t testpin;
@@ -189,7 +189,7 @@ static int test_input_pull_down(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_device_output(struct harness_t *harness_p)
+static int test_device_output(void)
 {
     struct pin_driver_t testpin;
 
@@ -217,7 +217,7 @@ static int test_device_output(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_device_output_open_drain(struct harness_t *harness_p)
+static int test_device_output_open_drain(void)
 {
     int res;
     struct pin_driver_t testpin;
@@ -240,7 +240,7 @@ static int test_device_output_open_drain(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_device_output_open_drain_pull_up(struct harness_t *harness_p)
+static int test_device_output_open_drain_pull_up(void)
 {
     int res;
     struct pin_driver_t testpin;
@@ -263,7 +263,7 @@ static int test_device_output_open_drain_pull_up(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_device_input(struct harness_t *harness_p)
+static int test_device_input(void)
 {
     struct pin_driver_t testpin;
 
@@ -281,7 +281,7 @@ static int test_device_input(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_device_input_pull_up(struct harness_t *harness_p)
+static int test_device_input_pull_up(void)
 {
     struct pin_driver_t testpin;
 
@@ -301,7 +301,7 @@ static int test_device_input_pull_up(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_device_input_pull_down(struct harness_t *harness_p)
+static int test_device_input_pull_down(void)
 {
     int res;
     struct pin_driver_t testpin;
@@ -327,7 +327,6 @@ static int test_device_input_pull_down(struct harness_t *harness_p)
 
 int main()
 {
-    struct harness_t harness;
     struct harness_testcase_t harness_testcases[] = {
         { test_init, "test_init" },
         { test_output, "test_output" },
@@ -348,8 +347,7 @@ int main()
     sys_start();
     pin_module_init();
 
-    harness_init(&harness);
-    harness_run(&harness, harness_testcases);
+    harness_run(harness_testcases);
 
     return (0);
 }

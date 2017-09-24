@@ -69,7 +69,7 @@ static void *reader_main(void *arg_p)
     return (NULL);
 }
 
-static int test_one_thread(struct harness_t *harness_p)
+static int test_one_thread(void)
 {
     struct rwlock_t foo;
 
@@ -84,7 +84,7 @@ static int test_one_thread(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_multi_thread(struct harness_t *harness_p)
+static int test_multi_thread(void)
 {
     struct thrd_t *reader_0_p;
     struct thrd_t *reader_1_p;
@@ -132,7 +132,6 @@ static int test_multi_thread(struct harness_t *harness_p)
 
 int main()
 {
-    struct harness_t harness;
     struct harness_testcase_t harness_testcases[] = {
         { test_one_thread, "test_one_thread" },
         { test_multi_thread, "test_multi_thread" },
@@ -141,8 +140,7 @@ int main()
 
     sys_start();
 
-    harness_init(&harness);
-    harness_run(&harness, harness_testcases);
+    harness_run(harness_testcases);
 
     return (0);
 }

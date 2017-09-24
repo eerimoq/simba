@@ -32,7 +32,7 @@
 
 static struct analog_input_pin_t pins[2];
 
-static int test_init(struct harness_t *harness_p)
+static int test_init(void)
 {
     BTASSERT(analog_input_pin_init(&pins[0], &pin_a0_dev) == 0);
     BTASSERT(analog_input_pin_init(&pins[1], &pin_a1_dev) == 0);
@@ -40,7 +40,7 @@ static int test_init(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_read(struct harness_t *harness_p)
+static int test_read(void)
 {
     int value;
 
@@ -55,7 +55,7 @@ static int test_read(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_read_isr(struct harness_t *harness_p)
+static int test_read_isr(void)
 {
     int value;
 
@@ -76,7 +76,6 @@ static int test_read_isr(struct harness_t *harness_p)
 
 int main()
 {
-    struct harness_t harness;
     struct harness_testcase_t harness_testcases[] = {
         { test_init, "test_init" },
         { test_read, "test_read" },
@@ -87,8 +86,7 @@ int main()
     sys_start();
     analog_input_pin_module_init();
 
-    harness_init(&harness);
-    harness_run(&harness, harness_testcases);
+    harness_run(harness_testcases);
 
     return (0);
 }

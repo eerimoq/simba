@@ -61,7 +61,7 @@ static struct eeprom_soft_block_t blocks[2] = {
 static struct flash_driver_t flash;
 static struct eeprom_soft_driver_t eeprom_soft;
 
-static int test_init(struct harness_t *harness_p)
+static int test_init(void)
 {
     struct flash_device_t *dev_p;
 
@@ -82,7 +82,7 @@ static int test_init(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_format_mount(struct harness_t *harness_p)
+static int test_format_mount(void)
 {
     BTASSERT(eeprom_soft_mount(&eeprom_soft) == -1);
     BTASSERT(eeprom_soft_format(&eeprom_soft) == 0);
@@ -91,7 +91,7 @@ static int test_format_mount(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_read_write_sizes(struct harness_t *harness_p)
+static int test_read_write_sizes(void)
 {
     int i;
     uint8_t buf[55];
@@ -152,7 +152,7 @@ static int test_read_write_sizes(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_read_write_low_high(struct harness_t *harness_p)
+static int test_read_write_low_high(void)
 {
     uint8_t byte;
 
@@ -186,7 +186,7 @@ static int test_read_write_low_high(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_read_write_bad_address(struct harness_t *harness_p)
+static int test_read_write_bad_address(void)
 {
     uint8_t buf[2];
 
@@ -217,7 +217,7 @@ static int test_read_write_bad_address(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_mount_corrupt_data(struct harness_t *harness_p)
+static int test_mount_corrupt_data(void)
 {
     uint8_t byte;
 
@@ -236,7 +236,7 @@ static int test_mount_corrupt_data(struct harness_t *harness_p)
 
 #if defined(ARCH_LINUX)
 
-static int test_mount_corrupt_header_valid(struct harness_t *harness_p)
+static int test_mount_corrupt_header_valid(void)
 {
     BTASSERT(eeprom_soft_format(&eeprom_soft) == 0);
 
@@ -248,7 +248,7 @@ static int test_mount_corrupt_header_valid(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_mount_corrupt_header_crc(struct harness_t *harness_p)
+static int test_mount_corrupt_header_crc(void)
 {
     BTASSERT(eeprom_soft_format(&eeprom_soft) == 0);
 
@@ -260,7 +260,7 @@ static int test_mount_corrupt_header_crc(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_mount_flash_read_fails(struct harness_t *harness_p)
+static int test_mount_flash_read_fails(void)
 {
     ssize_t res;
 
@@ -273,7 +273,7 @@ static int test_mount_flash_read_fails(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_mount_after_write(struct harness_t *harness_p)
+static int test_mount_after_write(void)
 {
     uint8_t byte;
 
@@ -291,7 +291,7 @@ static int test_mount_after_write(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_write_flash_read_fails_blank_chunk(struct harness_t *harness_p)
+static int test_write_flash_read_fails_blank_chunk(void)
 {
     uint8_t byte;
     ssize_t res;
@@ -312,7 +312,7 @@ static int test_write_flash_read_fails_blank_chunk(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_write_blank_chunk_not_blank(struct harness_t *harness_p)
+static int test_write_blank_chunk_not_blank(void)
 {
     uint8_t byte;
 
@@ -331,7 +331,7 @@ static int test_write_blank_chunk_not_blank(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_format_flash_erase_fails(struct harness_t *harness_p)
+static int test_format_flash_erase_fails(void)
 {
     int res;
 
@@ -425,7 +425,6 @@ int __wrap_flash_erase(struct flash_driver_t *self_p,
 
 int main()
 {
-    struct harness_t harness;
     struct harness_testcase_t harness_testcases[] = {
         { test_init, "test_init" },
         { test_format_mount, "test_format_mount" },
@@ -450,8 +449,7 @@ int main()
 
     sys_start();
 
-    harness_init(&harness);
-    harness_run(&harness, harness_testcases);
+    harness_run(harness_testcases);
 
     return (0);
 }

@@ -34,7 +34,7 @@
 
 struct i2c_driver_t i2c;
 
-static int test_init(struct harness_t *harness_p)
+static int test_init(void)
 {
     BTASSERT(i2c_init(&i2c,
                       &i2c_0_dev,
@@ -45,7 +45,7 @@ static int test_init(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_slave_write(struct harness_t *harness_p)
+static int test_slave_write(void)
 {
     uint8_t buf[3];
 
@@ -59,7 +59,7 @@ static int test_slave_write(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_slave_read(struct harness_t *harness_p)
+static int test_slave_read(void)
 {
     uint8_t buf[5];
 
@@ -77,7 +77,7 @@ static int test_slave_read(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_echo(struct harness_t *harness_p)
+static int test_echo(void)
 {
     uint8_t value;
 
@@ -94,7 +94,7 @@ static int test_echo(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_mem_read(struct harness_t *harness_p)
+static int test_mem_read(void)
 {
     uint8_t address;
     uint8_t value;
@@ -107,7 +107,7 @@ static int test_mem_read(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_stop(struct harness_t *harness_p)
+static int test_stop(void)
 {
     BTASSERT(i2c_slave_stop(&i2c) == 0);
 
@@ -116,7 +116,6 @@ static int test_stop(struct harness_t *harness_p)
 
 int main()
 {
-    struct harness_t harness;
     struct harness_testcase_t harness_testcases[] = {
         { test_init, "test_init" },
         { test_slave_write, "test_slave_write" },
@@ -130,8 +129,7 @@ int main()
     sys_start();
     i2c_module_init();
 
-    harness_init(&harness);
-    harness_run(&harness, harness_testcases);
+    harness_run(harness_testcases);
 
     return (0);
 }

@@ -32,7 +32,7 @@
 
 #if defined(BOARD_ARDUINO_DUE)
 
-static int test_read_write(struct harness_t *harness_p)
+static int test_read_write(void)
 {
     struct flash_driver_t drv;
     char name[] = "Kalle kula";
@@ -68,7 +68,7 @@ static int test_read_write(struct harness_t *harness_p)
 
 extern char __rom_size;
 
-static int test_read_write(struct harness_t *harness_p)
+static int test_read_write(void)
 {
     struct flash_driver_t drv;
     char buf[32];
@@ -128,7 +128,7 @@ static int test_read_write(struct harness_t *harness_p)
 
 #elif defined(BOARD_SPC56DDISCOVERY)
 
-static int test_read_write(struct harness_t *harness_p)
+static int test_read_write(void)
 {
     struct flash_driver_t drv;
     char name[] = "Kalle kula";
@@ -153,7 +153,7 @@ static int test_read_write(struct harness_t *harness_p)
 
 #else
 
-static int test_read_write(struct harness_t *harness_p)
+static int test_read_write(void)
 {
     return (1);
 }
@@ -162,7 +162,6 @@ static int test_read_write(struct harness_t *harness_p)
 
 int main()
 {
-    struct harness_t harness;
     struct harness_testcase_t harness_testcases[] = {
         { test_read_write, "test_read_write" },
         { NULL, NULL }
@@ -171,8 +170,7 @@ int main()
     sys_start();
     flash_module_init();
 
-    harness_init(&harness);
-    harness_run(&harness, harness_testcases);
+    harness_run(harness_testcases);
 
     return (0);
 }

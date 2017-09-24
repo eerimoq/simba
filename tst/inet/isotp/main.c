@@ -30,7 +30,7 @@
 
 #include "simba.h"
 
-static int test_input_single_frame(struct harness_t *harness_p)
+static int test_input_single_frame(void)
 {
     struct isotp_t isotp;
     uint8_t buf[8];
@@ -50,7 +50,7 @@ static int test_input_single_frame(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_input_multi_frame(struct harness_t *harness_p)
+static int test_input_multi_frame(void)
 {
     struct isotp_t isotp;
     uint8_t buf[32];
@@ -115,7 +115,7 @@ static int test_input_multi_frame(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_output_single_frame(struct harness_t *harness_p)
+static int test_output_single_frame(void)
 {
     struct isotp_t isotp;
     uint8_t message[8];
@@ -138,7 +138,7 @@ static int test_output_single_frame(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_output_multi_frame(struct harness_t *harness_p)
+static int test_output_multi_frame(void)
 {
     struct isotp_t isotp;
     char message[] = "1234567890abcdefghi";
@@ -200,7 +200,7 @@ static int test_output_multi_frame(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_input_single_frame_excessive_data(struct harness_t *harness_p)
+static int test_input_single_frame_excessive_data(void)
 {
     struct isotp_t isotp;
     uint8_t buf[8];
@@ -221,7 +221,7 @@ static int test_input_single_frame_excessive_data(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_input_multi_frame_excessive_data(struct harness_t *harness_p)
+static int test_input_multi_frame_excessive_data(void)
 {
     struct isotp_t isotp;
     uint8_t buf[32];
@@ -281,7 +281,7 @@ static int test_input_multi_frame_excessive_data(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_input_single_frame_too_long(struct harness_t *harness_p)
+static int test_input_single_frame_too_long(void)
 {
     struct isotp_t isotp;
     uint8_t buf[8];
@@ -297,7 +297,7 @@ static int test_input_single_frame_too_long(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_input_single_frame_no_data(struct harness_t *harness_p)
+static int test_input_single_frame_no_data(void)
 {
     struct isotp_t isotp;
     uint8_t buf[32];
@@ -313,7 +313,7 @@ static int test_input_single_frame_no_data(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_input_first_frame_no_data(struct harness_t *harness_p)
+static int test_input_first_frame_no_data(void)
 {
     struct isotp_t isotp;
     uint8_t buf[32];
@@ -330,7 +330,7 @@ static int test_input_first_frame_no_data(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_input_unexpected_consecutive_frame(struct harness_t *harness_p)
+static int test_input_unexpected_consecutive_frame(void)
 {
     struct isotp_t isotp;
     uint8_t buf[32];
@@ -346,7 +346,7 @@ static int test_input_unexpected_consecutive_frame(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_input_unexpected_flow_control_frame(struct harness_t *harness_p)
+static int test_input_unexpected_flow_control_frame(void)
 {
     struct isotp_t isotp;
     uint8_t buf[32];
@@ -362,7 +362,7 @@ static int test_input_unexpected_flow_control_frame(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_input_bad_multi_frame_consecutive(struct harness_t *harness_p)
+static int test_input_bad_multi_frame_consecutive(void)
 {
     struct isotp_t isotp;
     uint8_t buf[32];
@@ -412,7 +412,7 @@ static int test_input_bad_multi_frame_consecutive(struct harness_t *harness_p)
 }
 
 static int test_output_multi_frame_unexpected_non_flow_control(
-    struct harness_t *harness_p)
+    void)
 {
     struct isotp_t isotp;
     char message[] = "1234567890abcdefghi";
@@ -464,7 +464,6 @@ static int test_output_multi_frame_unexpected_non_flow_control(
 
 int main()
 {
-    struct harness_t harness;
     struct harness_testcase_t testcases[] = {
         { test_input_single_frame, "test_input_single_frame" },
         { test_input_multi_frame, "test_input_multi_frame" },
@@ -493,8 +492,7 @@ int main()
 
     sys_start();
 
-    harness_init(&harness);
-    harness_run(&harness, testcases);
+    harness_run(testcases);
 
     return (0);
 }

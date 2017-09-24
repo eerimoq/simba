@@ -41,7 +41,7 @@ static struct sd_driver_t sd;
 
 static uint8_t buf[SD_BLOCK_SIZE];
 
-static int test_init(struct harness_t *harness_p)
+static int test_init(void)
 {
     int res;
 
@@ -63,7 +63,7 @@ static int test_init(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_read_cid(struct harness_t *harness_p)
+static int test_read_cid(void)
 {
     struct sd_cid_t cid;
     static const char *mdt_month[16] = {
@@ -98,7 +98,7 @@ static int test_read_cid(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_read_csd(struct harness_t *harness_p)
+static int test_read_csd(void)
 {
     union sd_csd_t csd;
 
@@ -232,7 +232,7 @@ static int test_read_csd(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_read_write(struct harness_t *harness_p)
+static int test_read_write(void)
 {
     int i, block, res;
 
@@ -275,7 +275,7 @@ static int test_read_write(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_write_performance(struct harness_t *harness_p)
+static int test_write_performance(void)
 {
     int i, block, res;
     struct time_t start, stop, diff;
@@ -310,7 +310,7 @@ static int test_write_performance(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_read_performance(struct harness_t *harness_p)
+static int test_read_performance(void)
 {
     int i, block, res;
     struct time_t start, stop, diff;
@@ -347,7 +347,6 @@ static int test_read_performance(struct harness_t *harness_p)
 
 int main()
 {
-    struct harness_t harness;
     struct harness_testcase_t harness_testcases[] = {
         { test_init, "test_init" },
         { test_read_cid, "test_read_cid" },
@@ -360,8 +359,7 @@ int main()
 
     sys_start();
 
-    harness_init(&harness);
-    harness_run(&harness, harness_testcases);
+    harness_run(harness_testcases);
 
     BTASSERT(sd_stop(&sd) == 0);
 

@@ -119,7 +119,7 @@ static void *worker_main(void *arg_p)
     return (NULL);
 }
 
-static int test_all(struct harness_t *harness_p)
+static int test_all(void)
 {
     int i;
     int global_sem_counter;
@@ -186,7 +186,6 @@ static int test_all(struct harness_t *harness_p)
 
 int main()
 {
-    struct harness_t harness;
     struct harness_testcase_t harness_testcases[] = {
         { test_all, "test_all" },
         { NULL, NULL }
@@ -194,8 +193,7 @@ int main()
 
     sys_start();
 
-    harness_init(&harness);
-    harness_run(&harness, harness_testcases);
+    harness_run(harness_testcases);
 
     return (0);
 }

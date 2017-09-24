@@ -38,7 +38,7 @@ extern void socket_stub_output(void *buf_p, size_t size);
 static char qoutbuf[BUFFER_SIZE];
 static QUEUE_INIT_DECL(qout, qoutbuf, sizeof(qoutbuf));
 
-static int test_host_by_ip_address(struct harness_t *harness_p)
+static int test_host_by_ip_address(void)
 {
     struct inet_ip_addr_t address;
     struct time_t round_trip_time, timeout;
@@ -84,7 +84,7 @@ static int test_host_by_ip_address(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_bad_reply_crc(struct harness_t *harness_p)
+static int test_bad_reply_crc(void)
 {
     struct inet_ip_addr_t address;
     struct time_t round_trip_time, timeout;
@@ -126,7 +126,7 @@ static int test_bad_reply_crc(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_cmd_ping(struct harness_t *harness_p)
+static int test_cmd_ping(void)
 {
     uint8_t request[8];
     uint8_t reply[28];
@@ -163,7 +163,7 @@ static int test_cmd_ping(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_cmd_ping_bad_reply(struct harness_t *harness_p)
+static int test_cmd_ping_bad_reply(void)
 {
     uint8_t reply[28];
     char buf[128];
@@ -188,7 +188,7 @@ static int test_cmd_ping_bad_reply(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_cmd_ping_bad_input(struct harness_t *harness_p)
+static int test_cmd_ping_bad_input(void)
 {
     char buf[128];
     
@@ -211,7 +211,6 @@ static int test_cmd_ping_bad_input(struct harness_t *harness_p)
 
 int main()
 {
-    struct harness_t harness;
     struct harness_testcase_t harness_testcases[] = {
         { test_host_by_ip_address, "test_host_by_ip_address" },
         { test_bad_reply_crc, "test_bad_reply_crc" },
@@ -223,8 +222,7 @@ int main()
 
     sys_start();
 
-    harness_init(&harness);
-    harness_run(&harness, harness_testcases);
+    harness_run(harness_testcases);
 
     return (0);
 }

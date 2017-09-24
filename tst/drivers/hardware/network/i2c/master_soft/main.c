@@ -38,7 +38,7 @@
 
 struct i2c_soft_driver_t i2c_soft;
 
-static int test_init(struct harness_t *harness_p)
+static int test_init(void)
 {
     BTASSERT(i2c_soft_init(&i2c_soft, SCL, SDA, 10000, 1000000, 1000) == 0);
     BTASSERT(i2c_soft_start(&i2c_soft) == 0);
@@ -46,7 +46,7 @@ static int test_init(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_bad_slave(struct harness_t *harness_p)
+static int test_bad_slave(void)
 {
     uint8_t buf[3];
 
@@ -67,7 +67,7 @@ static int test_bad_slave(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_read(struct harness_t *harness_p)
+static int test_read(void)
 {
     uint8_t buf[3];
 
@@ -86,7 +86,7 @@ static int test_read(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_write(struct harness_t *harness_p)
+static int test_write(void)
 {
     uint8_t buf[5];
     
@@ -105,7 +105,7 @@ static int test_write(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_echo(struct harness_t *harness_p)
+static int test_echo(void)
 {
     uint8_t value;
 
@@ -132,7 +132,7 @@ static int test_echo(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_mem_read(struct harness_t *harness_p)
+static int test_mem_read(void)
 {
     uint8_t address;
     uint8_t value;
@@ -154,14 +154,14 @@ static int test_mem_read(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_stop(struct harness_t *harness_p)
+static int test_stop(void)
 {
     BTASSERT(i2c_soft_stop(&i2c_soft) == 0);
 
     return (0);
 }
 
-static int test_baudrates(struct harness_t *harness_p)
+static int test_baudrates(void)
 {
     uint8_t value;
     int i;
@@ -190,7 +190,6 @@ static int test_baudrates(struct harness_t *harness_p)
 
 int main()
 {
-    struct harness_t harness;
     struct harness_testcase_t harness_testcases[] = {
         { test_init, "test_init" },
         { test_bad_slave, "test_bad_slave" },
@@ -206,8 +205,7 @@ int main()
     sys_start();
     i2c_soft_module_init();
 
-    harness_init(&harness);
-    harness_run(&harness, harness_testcases);
+    harness_run(harness_testcases);
 
     return (0);
 }

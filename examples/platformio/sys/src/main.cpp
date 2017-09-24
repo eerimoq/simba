@@ -41,7 +41,7 @@ static void on_fatal(int error)
     std_printf(FSTR("on_fatal: error: %d\r\n"), error);
 }
 
-static int test_set_on_fatal_callback(struct harness_t *harness_p)
+static int test_set_on_fatal_callback(void)
 {
     sys_set_on_fatal_callback(on_fatal);
     ASSERT(0 == 1, "intentional fatal assert");
@@ -49,7 +49,7 @@ static int test_set_on_fatal_callback(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_info(struct harness_t *harness_p)
+static int test_info(void)
 {
     std_printf(sys_get_info());
 
@@ -63,7 +63,7 @@ static int test_info(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_config(struct harness_t *harness_p)
+static int test_config(void)
 {
     std_printf(sys_get_config());
 
@@ -77,7 +77,7 @@ static int test_config(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_uptime(struct harness_t *harness_p)
+static int test_uptime(void)
 {
 #if CONFIG_SYS_FS_COMMAND_UPTIME == 1
     char buf[32];
@@ -91,7 +91,7 @@ static int test_uptime(struct harness_t *harness_p)
 #endif
 }
 
-static int test_time(struct harness_t *harness_p)
+static int test_time(void)
 {
     int i;
     struct time_t time;
@@ -166,7 +166,7 @@ static int test_time(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_stdin(struct harness_t *harness_p)
+static int test_stdin(void)
 {
     void *original_stdin_p;
     void *stdin_p;
@@ -184,7 +184,7 @@ static int test_stdin(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_stdout(struct harness_t *harness_p)
+static int test_stdout(void)
 {
     void *original_stdout_p;
     void *stdout_p;
@@ -204,7 +204,6 @@ static int test_stdout(struct harness_t *harness_p)
 
 int main()
 {
-    struct harness_t harness;
     struct harness_testcase_t harness_testcases[] = {
         { test_set_on_fatal_callback, "test_set_on_fatal_callback" },
         { test_info, "test_info" },
@@ -218,8 +217,7 @@ int main()
 
     sys_start();
 
-    harness_init(&harness);
-    harness_run(&harness, harness_testcases);
+    harness_run(harness_testcases);
     
     return (0);
 }

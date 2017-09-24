@@ -255,7 +255,7 @@ static int parse_no_check(const FAR char *s_p)
     return (json_parse(&json, buf, strlen(buf)));
 }
 
-static int test_empty(struct harness_t *harness_p)
+static int test_empty(void)
 {
     BTASSERT(parse(FSTR("{}"), 1, 1,
                    JSON_OBJECT, 0, 2, 0));
@@ -272,7 +272,7 @@ static int test_empty(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_object(struct harness_t *harness_p)
+static int test_object(void)
 {
     BTASSERT(parse(FSTR("{\"a\":0}"), 3, 3,
                    JSON_OBJECT, 0, 7, 1,
@@ -322,7 +322,7 @@ static int test_object(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_array(struct harness_t *harness_p)
+static int test_array(void)
 {
     /* FIXME */
     /*BTASSERT(parse("[10}", JSON_ERROR_INVAL, 3));*/
@@ -339,7 +339,7 @@ static int test_array(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_primitive(struct harness_t *harness_p)
+static int test_primitive(void)
 {
     BTASSERT(parse(FSTR("{\"boolVar\":true }"), 3, 3,
                    JSON_OBJECT, -1, -1, 1,
@@ -367,7 +367,7 @@ static int test_primitive(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_string(struct harness_t *harness_p)
+static int test_string(void)
 {
     BTASSERT(parse(FSTR("{\"strVar\":\"hello world\"}"), 3, 3,
                    JSON_OBJECT, -1, -1, 1,
@@ -408,7 +408,7 @@ static int test_string(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_partial_string(struct harness_t *harness_p)
+static int test_partial_string(void)
 {
     int i;
     int r;
@@ -436,7 +436,7 @@ static int test_partial_string(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_partial_array(struct harness_t *harness_p)
+static int test_partial_array(void)
 {
 #ifdef JSON_STRICT
     int r;
@@ -470,7 +470,7 @@ static int test_partial_array(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_array_nomem(struct harness_t *harness_p)
+static int test_array_nomem(void)
 {
     int i;
     int r;
@@ -504,7 +504,7 @@ static int test_array_nomem(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_unquoted_keys(struct harness_t *harness_p)
+static int test_unquoted_keys(void)
 {
 #ifndef JSON_STRICT
     int r;
@@ -528,7 +528,7 @@ static int test_unquoted_keys(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_issue_22(struct harness_t *harness_p)
+static int test_issue_22(void)
 {
     const FAR char *js_p;
 
@@ -547,7 +547,7 @@ static int test_issue_22(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_issue_27(struct harness_t *harness_p)
+static int test_issue_27(void)
 {
     const FAR char *js_p;
 
@@ -558,7 +558,7 @@ static int test_issue_27(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_input_length(struct harness_t *harness_p)
+static int test_input_length(void)
 {
     const char *js_p;
     int r;
@@ -577,7 +577,7 @@ static int test_input_length(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_count(struct harness_t *harness_p)
+static int test_count(void)
 {
     BTASSERT(parse_no_check(FSTR("{}")) == 1);
     BTASSERT(parse_no_check("[]") == 1);
@@ -593,7 +593,7 @@ static int test_count(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_nonstrict(struct harness_t *harness_p)
+static int test_nonstrict(void)
 {
 #ifndef JSON_STRICT
     BTASSERT(parse(FSTR("a:0garbage"), 2, 2,
@@ -612,7 +612,7 @@ static int test_nonstrict(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_dumps(struct harness_t *harness_p)
+static int test_dumps(void)
 {
     ssize_t status;
     struct json_tok_t tokens[32];
@@ -691,7 +691,7 @@ static int test_dumps(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_dumps_fail(struct harness_t *harness_p)
+static int test_dumps_fail(void)
 {
     struct json_tok_t tokens[32];
     char buf[128];
@@ -757,7 +757,7 @@ static int test_dumps_fail(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_dump(struct harness_t *harness_p)
+static int test_dump(void)
 {
     ssize_t status;
     struct json_tok_t tokens[32];
@@ -777,7 +777,7 @@ static int test_dump(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_get(struct harness_t *harness_p)
+static int test_get(void)
 {
     struct json_t json;
     struct json_tok_t tokens[64];
@@ -835,7 +835,6 @@ static int test_get(struct harness_t *harness_p)
 
 int main()
 {
-    struct harness_t harness;
     struct harness_testcase_t harness_testcases[] = {
         { test_empty, "test_empty" },
         { test_object, "test_object" },
@@ -860,8 +859,7 @@ int main()
 
     sys_start();
 
-    harness_init(&harness);
-    harness_run(&harness, harness_testcases);
+    harness_run(harness_testcases);
 
     return (0);
 }

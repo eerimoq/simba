@@ -33,7 +33,7 @@
 static struct i2c_driver_t i2c;
 static struct ds3231_driver_t ds3231;
 
-static int test_init(struct harness_t *harness_p)
+static int test_init(void)
 {
     BTASSERT(i2c_init(&i2c,
                       &i2c_device[0],
@@ -45,7 +45,7 @@ static int test_init(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_scan(struct harness_t *harness_p)
+static int test_scan(void)
 {
     int number_of_slaves_found;
     int address;
@@ -66,7 +66,7 @@ static int test_scan(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_date(struct harness_t *harness_p)
+static int test_date(void)
 {
     int i;
     struct date_t date;
@@ -123,7 +123,6 @@ static int test_date(struct harness_t *harness_p)
 
 int main()
 {
-    struct harness_t harness;
     struct harness_testcase_t harness_testcases[] = {
         { test_init, "test_init" },
         { test_scan, "test_scan" },
@@ -134,8 +133,7 @@ int main()
     sys_start();
     i2c_module_init();
 
-    harness_init(&harness);
-    harness_run(&harness, harness_testcases);
+    harness_run(harness_testcases);
 
     return (0);
 }

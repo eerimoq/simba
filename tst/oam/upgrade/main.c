@@ -30,7 +30,7 @@
 
 #include "simba.h"
 
-static int test_bootloader(struct harness_t *self_p)
+static int test_bootloader(void)
 {
     BTASSERT(upgrade_bootloader_enter() == -1);
     BTASSERT(upgrade_bootloader_stay_set() == 0);
@@ -41,7 +41,7 @@ static int test_bootloader(struct harness_t *self_p)
     return (0);
 }
 
-static int test_binary_upload(struct harness_t *self_p)
+static int test_binary_upload(void)
 {
     uint8_t header_data_size_2[64] = {
         /* Version. */
@@ -69,7 +69,7 @@ static int test_binary_upload(struct harness_t *self_p)
     return (0);
 }
 
-static int test_binary_upload_bad_version(struct harness_t *self_p)
+static int test_binary_upload_bad_version(void)
 {
     uint8_t buf[42] = {
         /* Version. */
@@ -97,7 +97,7 @@ static int test_binary_upload_bad_version(struct harness_t *self_p)
     return (0);
 }
 
-static int test_binary_upload_bad_crc(struct harness_t *self_p)
+static int test_binary_upload_bad_crc(void)
 {
     uint8_t buf[42] = {
         /* Version. */
@@ -125,7 +125,7 @@ static int test_binary_upload_bad_crc(struct harness_t *self_p)
     return (0);
 }
 
-static int test_binary_upload_short_header(struct harness_t *self_p)
+static int test_binary_upload_short_header(void)
 {
     uint8_t buf[39] = {
         /* Version. */
@@ -151,7 +151,7 @@ static int test_binary_upload_short_header(struct harness_t *self_p)
     return (0);
 }
 
-static int test_binary_upload_long_header(struct harness_t *self_p)
+static int test_binary_upload_long_header(void)
 {
     uint8_t buf[40] = {
         /* Version. */
@@ -179,7 +179,6 @@ static int test_binary_upload_long_header(struct harness_t *self_p)
 
 int main()
 {
-    struct harness_t harness;
     struct harness_testcase_t harness_testcases[] = {
         { test_bootloader, "test_bootloader" },
         { test_binary_upload, "test_binary_upload" },
@@ -192,8 +191,7 @@ int main()
 
     sys_start();
 
-    harness_init(&harness);
-    harness_run(&harness, harness_testcases);
+    harness_run(harness_testcases);
 
     return (0);
 }

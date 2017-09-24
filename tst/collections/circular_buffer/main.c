@@ -30,7 +30,7 @@
 
 #include "simba.h"
 
-int test_read_write(struct harness_t *harness_p)
+int test_read_write(void)
 {
     struct circular_buffer_t foo;
     uint8_t foobuf[32];
@@ -89,7 +89,7 @@ int test_read_write(struct harness_t *harness_p)
     return (0);
 }
 
-int test_skip(struct harness_t *harness_p)
+int test_skip(void)
 {
     struct circular_buffer_t foo;
     uint8_t foobuf[8];
@@ -136,7 +136,7 @@ int test_skip(struct harness_t *harness_p)
     return (0);
 }
 
-int test_array(struct harness_t *harness_p)
+int test_array(void)
 {
     struct circular_buffer_t foo;
     uint8_t foobuf[8];
@@ -189,7 +189,6 @@ int test_array(struct harness_t *harness_p)
 
 int main()
 {
-    struct harness_t harness;
     struct harness_testcase_t harness_testcases[] = {
         { test_read_write, "test_read_write" },
         { test_skip, "test_skip" },
@@ -199,8 +198,7 @@ int main()
 
     sys_start();
 
-    harness_init(&harness);
-    harness_run(&harness, harness_testcases);
+    harness_run(harness_testcases);
 
     return (0);
 }

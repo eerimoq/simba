@@ -79,13 +79,13 @@ conditions.
 
    #include "simba.h"
 
-   static int test_passed(struct harness_t *harness_p)
+   static int test_passed(void)
    {
        /* Return zero(0) when a test case passes. */
        return (0);
    }
 
-   static int test_failed(struct harness_t *harness_p)
+   static int test_failed(void)
    {
        /* Return a negative integer when a test case fails. BTASSERT
           will return -1 when the condition is false. */
@@ -94,7 +94,7 @@ conditions.
        return (0);
    }
 
-   static int test_skipped(struct harness_t *harness_p)
+   static int test_skipped(void)
    {
        /* Return a positive integer when a test case is skipped. */
        return (1);
@@ -103,7 +103,6 @@ conditions.
    int main()
    {
        /* Test harness and NULL terminated list of test cases.*/
-       struct harness_t harness;
        struct harness_testcase_t harness_testcases[] = {
            { test_passed, "test_passed" },
            { test_failed, "test_failed" },
@@ -113,7 +112,6 @@ conditions.
 
        sys_start();
 
-       harness_init(&harness);
        harness_run(&harness, harness_testcases);
 
        return (0);

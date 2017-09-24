@@ -146,15 +146,7 @@ static struct mock_entry_t *find_mock_entry(const char *id_p)
     return (entry_p);
 }
 
-int harness_init(struct harness_t *self_p)
-{
-    mutex_init(&module.mutex);
-
-    return (0);
-}
-
-int harness_run(struct harness_t *self_p,
-                struct harness_testcase_t *testcases_p)
+int harness_run(struct harness_testcase_t *testcases_p)
 {
     int err;
     struct harness_testcase_t *testcase_p;
@@ -163,6 +155,8 @@ int harness_run(struct harness_t *self_p,
     size_t sizes[HEAP_FIXED_SIZES_MAX] = {
         8, 16, 32, 32, 32, 32, 32, 32
     };
+
+    mutex_init(&module.mutex);
 
     total = 0;
     passed = 0;
@@ -196,7 +190,7 @@ int harness_run(struct harness_t *self_p,
 
         std_printf(OSTR("enter: %s\r\n"), testcase_p->name_p);
 
-        err = testcase_p->callback(self_p);
+        err = testcase_p->callback();
 
         do {
             LIST_SL_REMOVE_HEAD(&module.mock_list, &entry_p);

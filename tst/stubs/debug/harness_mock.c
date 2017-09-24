@@ -31,26 +31,6 @@
 #include "simba.h"
 #include "harness_mock.h"
 
-int mock_write_harness_init(int res)
-{
-    harness_mock_write("harness_init(): return (res)",
-                       &res,
-                       sizeof(res));
-
-    return (0);
-}
-
-int __attribute__ ((weak)) STUB(harness_init)(struct harness_t *self_p)
-{
-    int res;
-
-    harness_mock_read("harness_init(): return (res)",
-                      &res,
-                      sizeof(res));
-
-    return (res);
-}
-
 int mock_write_harness_run(struct harness_testcase_t *testcases_p,
                            int res)
 {
@@ -65,8 +45,7 @@ int mock_write_harness_run(struct harness_testcase_t *testcases_p,
     return (0);
 }
 
-int __attribute__ ((weak)) STUB(harness_run)(struct harness_t *self_p,
-                                             struct harness_testcase_t *testcases_p)
+int __attribute__ ((weak)) STUB(harness_run)(struct harness_testcase_t *testcases_p)
 {
     int res;
 

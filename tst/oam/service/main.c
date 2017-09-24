@@ -47,7 +47,7 @@ enum service_status_t bar_status_cb(struct service_t *self_p)
     return (bar_status);
 }
 
-static int test_init(struct harness_t *harness_p)
+static int test_init(void)
 {
     BTASSERT(event_init(&foo_event) == 0);
     BTASSERT(event_init(&bar_event) == 0);
@@ -65,7 +65,7 @@ static int test_init(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_register(struct harness_t *harness_p)
+static int test_register(void)
 {
     BTASSERT(service_register(&foo_service) == 0);
     BTASSERT(service_register(&bar_service) == 0);
@@ -73,7 +73,7 @@ static int test_register(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_control(struct harness_t *harness_p)
+static int test_control(void)
 {
     uint32_t mask;
 
@@ -96,7 +96,7 @@ static int test_control(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_fs_commands(struct harness_t *harness_p)
+static int test_fs_commands(void)
 {
     uint32_t mask;
     char buf[64];
@@ -140,7 +140,7 @@ static int test_fs_commands(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_unregister(struct harness_t *harness_p)
+static int test_unregister(void)
 {
     BTASSERT(service_deregister(&foo_service) == -ENOSYS);
     BTASSERT(service_deregister(&bar_service) == -ENOSYS);
@@ -150,7 +150,6 @@ static int test_unregister(struct harness_t *harness_p)
 
 int main()
 {
-    struct harness_t harness;
     struct harness_testcase_t harness_testcases[] = {
         { test_init, "test_init" },
         { test_register, "test_register" },
@@ -162,8 +161,7 @@ int main()
 
     sys_start();
 
-    harness_init(&harness);
-    harness_run(&harness, harness_testcases);
+    harness_run(harness_testcases);
 
     return (0);
 }

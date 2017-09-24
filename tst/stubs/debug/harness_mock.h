@@ -33,8 +33,6 @@
 
 #include "simba.h"
 
-int mock_write_harness_init(int res);
-
 int mock_write_harness_run(struct harness_testcase_t *testcases_p,
                            int res);
 

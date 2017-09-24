@@ -34,7 +34,7 @@
 static char can_rx_buf[256];
 struct can_driver_t can;
 
-static int test_ping_pong_500k(struct harness_t *harness_p)
+static int test_ping_pong_500k(void)
 {
     int i, j;
     struct can_frame_t frame;
@@ -99,7 +99,6 @@ static int test_ping_pong_500k(struct harness_t *harness_p)
 
 int main()
 {
-    struct harness_t harness;
     struct harness_testcase_t testcases[] = {
         { test_ping_pong_500k, "test_ping_pong_500k" },
         { NULL, NULL }
@@ -107,8 +106,7 @@ int main()
 
     sys_start();
 
-    harness_init(&harness);
-    harness_run(&harness, testcases);
+    harness_run(testcases);
 
     return (0);
 }

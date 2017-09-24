@@ -33,7 +33,7 @@
 #define ID_FOO 0x0
 #define ID_BAR 0x1
 
-static int test_init(struct harness_t *harness)
+static int test_init(void)
 {
     /* This function may be called multiple times. */
     BTASSERT(bus_module_init() == 0);
@@ -42,7 +42,7 @@ static int test_init(struct harness_t *harness)
     return (0);
 }
 
-static int test_attach_detach(struct harness_t *harness)
+static int test_attach_detach(void)
 {
     struct bus_t bus;
     struct bus_listener_t chan;
@@ -61,7 +61,7 @@ static int test_attach_detach(struct harness_t *harness)
     return (0);
 }
 
-static int test_write_read(struct harness_t *harness)
+static int test_write_read(void)
 {
     struct bus_t bus;
     struct bus_listener_t chans[5];
@@ -115,7 +115,7 @@ static int test_write_read(struct harness_t *harness)
     return (0);
 }
 
-static int test_multiple_ids(struct harness_t *harness)
+static int test_multiple_ids(void)
 {
     struct bus_t bus;
     struct bus_listener_t chans[2];
@@ -167,7 +167,6 @@ static int test_multiple_ids(struct harness_t *harness)
 
 int main()
 {
-    struct harness_t harness;
     struct harness_testcase_t harness_testcases[] = {
         { test_init, "test_init" },
         { test_attach_detach, "test_attach_detach" },
@@ -178,8 +177,7 @@ int main()
 
     sys_start();
 
-    harness_init(&harness);
-    harness_run(&harness, harness_testcases);
+    harness_run(harness_testcases);
 
     return (0);
 }

@@ -57,7 +57,7 @@ static void *sem_main(void *arg_p)
     return (NULL);
 }
 
-static int test_multi_thread(struct harness_t *harness_p)
+static int test_multi_thread(void)
 {
     struct time_t timeout = {
         .seconds = 0,
@@ -96,7 +96,7 @@ static int test_multi_thread(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_binary(struct harness_t *harness_p)
+static int test_binary(void)
 {
     struct time_t timeout = {
         .seconds = 0,
@@ -120,7 +120,6 @@ static int test_binary(struct harness_t *harness_p)
 
 int main()
 {
-    struct harness_t harness;
     struct harness_testcase_t harness_testcases[] = {
         { test_multi_thread, "test_multi_thread" },
         { test_binary, "test_binary" },
@@ -129,8 +128,7 @@ int main()
 
     sys_start();
 
-    harness_init(&harness);
-    harness_run(&harness, harness_testcases);
+    harness_run(harness_testcases);
 
     return (0);
 }

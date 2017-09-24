@@ -35,7 +35,7 @@ static int hash(long key)
     return (0);
 }
 
-int test_add_get_remove(struct harness_t *harness)
+int test_add_get_remove(void)
 {
     struct hash_map_t map;
     struct hash_map_bucket_t buckets[8];
@@ -86,7 +86,6 @@ int test_add_get_remove(struct harness_t *harness)
 
 int main()
 {
-    struct harness_t harness;
     struct harness_testcase_t harness_testcases[] = {
         { test_add_get_remove, "test_add_get_remove" },
         { NULL, NULL }
@@ -94,8 +93,7 @@ int main()
 
     sys_start();
 
-    harness_init(&harness);
-    harness_run(&harness, harness_testcases);
+    harness_run(harness_testcases);
 
     return (0);
 }

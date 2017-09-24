@@ -36,7 +36,7 @@ struct test_date_t {
     struct date_t date;
 };
 
-static int test_get_set(struct harness_t *harness_p)
+static int test_get_set(void)
 {
     struct time_t time1;
     struct time_t time2;
@@ -83,7 +83,7 @@ static int test_get_set(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_date(struct harness_t *harness_p)
+static int test_date(void)
 {
     int i;
     struct date_t date;
@@ -128,7 +128,7 @@ static int test_date(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_sleep(struct harness_t *harness_p)
+static int test_sleep(void)
 {
     uint16_t start, stop, diff;
     int i;
@@ -177,7 +177,7 @@ static int test_sleep(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_add(struct harness_t *harness_p)
+static int test_add(void)
 {
     struct time_t *left_p, *right_p, res;
     float fleft, fright, fres;
@@ -225,7 +225,7 @@ static int test_add(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_subtract(struct harness_t *harness_p)
+static int test_subtract(void)
 {
     struct time_t *left_p, *right_p, res;
     float fleft, fright, fres;
@@ -273,7 +273,7 @@ static int test_subtract(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_compare(struct harness_t *harness_p)
+static int test_compare(void)
 {
     int i;
 
@@ -316,7 +316,7 @@ static int test_compare(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_micros(struct harness_t *harness_p)
+static int test_micros(void)
 {
     int i;
     int times[100];
@@ -355,7 +355,6 @@ static int test_micros(struct harness_t *harness_p)
 
 int main()
 {
-    struct harness_t harness;
     struct harness_testcase_t harness_testcases[] = {
         { test_get_set, "test_get_set" },
         { test_date, "test_date" },
@@ -369,8 +368,7 @@ int main()
 
     sys_start();
 
-    harness_init(&harness);
-    harness_run(&harness, harness_testcases);
+    harness_run(harness_testcases);
 
     return (0);
 }

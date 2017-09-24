@@ -48,21 +48,21 @@ int call_assert(void)
     return (0);
 }
 
-int test_set_on_fatal_callback(struct harness_t *harness_p)
+int test_set_on_fatal_callback(void)
 {
     sys_set_on_fatal_callback(on_fatal);
 
     return (0);
 }
 
-int test_non_fatal_assert(struct harness_t *harness_p)
+int test_non_fatal_assert(void)
 {
     BTASSERT(call_assert() == -EASSERT);
 
     return (0);
 }
 
-int test_info(struct harness_t *harness_p)
+int test_info(void)
 {
     std_printf(sys_get_info());
 
@@ -76,7 +76,7 @@ int test_info(struct harness_t *harness_p)
     return (0);
 }
 
-int test_config(struct harness_t *harness_p)
+int test_config(void)
 {
     std_printf(sys_get_config());
 
@@ -90,7 +90,7 @@ int test_config(struct harness_t *harness_p)
     return (0);
 }
 
-int test_uptime(struct harness_t *harness_p)
+int test_uptime(void)
 {
     int res;
     struct time_t uptime;
@@ -120,7 +120,7 @@ int test_uptime(struct harness_t *harness_p)
     return (0);
 }
 
-int test_repeated_uptime(struct harness_t *harness_p)
+int test_repeated_uptime(void)
 {
     struct time_t uptime[150];
     struct time_t diff;
@@ -153,7 +153,7 @@ int test_repeated_uptime(struct harness_t *harness_p)
     return (0);
 }
 
-int test_time(struct harness_t *harness_p)
+int test_time(void)
 {
     int i;
     struct time_t time;
@@ -221,7 +221,7 @@ int test_time(struct harness_t *harness_p)
     return (0);
 }
 
-int test_stdin(struct harness_t *harness_p)
+int test_stdin(void)
 {
     void *original_stdin_p;
     void *stdin_p;
@@ -241,7 +241,7 @@ int test_stdin(struct harness_t *harness_p)
     return (0);
 }
 
-int test_stdout(struct harness_t *harness_p)
+int test_stdout(void)
 {
     void *original_stdout_p;
     void *stdout_p;
@@ -261,7 +261,7 @@ int test_stdout(struct harness_t *harness_p)
     return (0);
 }
 
-int test_backtrace(struct harness_t *harness_p)
+int test_backtrace(void)
 {
 #if defined(ARCH_PPC)
     void *backtrace[4];
@@ -286,7 +286,7 @@ int test_backtrace(struct harness_t *harness_p)
 #endif
 }
 
-int test_div_ceil(struct harness_t *harness_p)
+int test_div_ceil(void)
 {
     BTASSERT(DIV_CEIL(0, 1) == 0);
     BTASSERT(DIV_CEIL(11, 5) == 3);
@@ -295,7 +295,7 @@ int test_div_ceil(struct harness_t *harness_p)
     return (0);
 }
 
-int test_div_round(struct harness_t *harness_p)
+int test_div_round(void)
 {
     BTASSERT(DIV_ROUND(11, 1) == 11);
     BTASSERT(DIV_ROUND(11, 2) == 6);
@@ -312,7 +312,7 @@ int test_div_round(struct harness_t *harness_p)
     return (0);
 }
 
-int test_reset_cause(struct harness_t *harness_p)
+int test_reset_cause(void)
 {
     char buf[32];
     enum sys_reset_cause_t reset_cause;
@@ -335,7 +335,7 @@ int test_reset_cause(struct harness_t *harness_p)
     return (0);
 }
 
-int test_errno(struct harness_t *harness_p)
+int test_errno(void)
 {
     BTASSERT(std_strcmp("Operation not permitted",
                         errno_as_string(EPERM)) == 0);
@@ -358,7 +358,6 @@ int test_errno(struct harness_t *harness_p)
 
 int main()
 {
-    struct harness_t harness;
     struct harness_testcase_t harness_testcases[] = {
         { test_set_on_fatal_callback, "test_set_on_fatal_callback" },
         { test_non_fatal_assert, "test_non_fatal_assert" },
@@ -383,8 +382,7 @@ int main()
 
     sys_start();
 
-    harness_init(&harness);
-    harness_run(&harness, harness_testcases);
+    harness_run(harness_testcases);
 
     return (0);
 }

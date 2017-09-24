@@ -193,22 +193,22 @@ static int test_ping_pong(uint32_t speed, int extended_frame)
 /**
  * Ping-pong tests with differnet configurations.
  */
-static int test_ping_pong_250k(struct harness_t *harness_p)
+static int test_ping_pong_250k(void)
 {
     return (test_ping_pong(CAN_SPEED_250KBPS, 0));
 }
 
-static int test_ping_pong_500k(struct harness_t *harness_p)
+static int test_ping_pong_500k(void)
 {
     return (test_ping_pong(CAN_SPEED_500KBPS, 0));
 }
 
-static int test_ping_pong_1000k(struct harness_t *harness_p)
+static int test_ping_pong_1000k(void)
 {
     return (test_ping_pong(CAN_SPEED_1000KBPS, 0));
 }
 
-static int test_ping_pong_1000k_extended_frame(struct harness_t *harness_p)
+static int test_ping_pong_1000k_extended_frame(void)
 {
     return (test_ping_pong(CAN_SPEED_1000KBPS, 1));
 }
@@ -216,7 +216,7 @@ static int test_ping_pong_1000k_extended_frame(struct harness_t *harness_p)
 /**
  * Test the maximum throughput on the CAN bus.
  */
-static int test_max_throughput(struct harness_t *harness_p)
+static int test_max_throughput(void)
 {
     int i, j, k, id;
     struct can_frame_t frames[8];
@@ -287,7 +287,6 @@ static int test_max_throughput(struct harness_t *harness_p)
 
 int main()
 {
-    struct harness_t harness;
     struct harness_testcase_t testcases[] = {
         { test_ping_pong_250k, "test_ping_pong_250k" },
         { test_ping_pong_500k, "test_ping_pong_500k" },
@@ -299,8 +298,7 @@ int main()
 
     sys_start();
 
-    harness_init(&harness);
-    harness_run(&harness, testcases);
+    harness_run(testcases);
 
     return (0);
 }

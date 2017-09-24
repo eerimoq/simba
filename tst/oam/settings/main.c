@@ -33,14 +33,14 @@
 static char qbuf[512];
 static struct queue_t queue;
 
-static int test_reset(struct harness_t *harness_p)
+static int test_reset(void)
 {
     BTASSERTI(settings_reset(), ==, 0);
 
     return (0);
 }
 
-static int test_cmd_list(struct harness_t *harness_p)
+static int test_cmd_list(void)
 {
 #if CONFIG_SETTINGS_FS_COMMAND_LIST == 1
     char buf[64];
@@ -63,7 +63,7 @@ static int test_cmd_list(struct harness_t *harness_p)
 #endif
 }
 
-static int test_cmd_read(struct harness_t *harness_p)
+static int test_cmd_read(void)
 {
 #if CONFIG_SETTINGS_FS_COMMAND_READ == 1
     char buf[64];
@@ -88,7 +88,7 @@ static int test_cmd_read(struct harness_t *harness_p)
 #endif
 }
 
-static int test_cmd_write(struct harness_t *harness_p)
+static int test_cmd_write(void)
 {
 #if CONFIG_SETTINGS_FS_COMMAND_READ == 1
     char buf[128];
@@ -153,7 +153,7 @@ static int test_cmd_write(struct harness_t *harness_p)
 #endif
 }
 
-static int test_cmd_read_write_read(struct harness_t *harness_p)
+static int test_cmd_read_write_read(void)
 {
 #if CONFIG_SETTINGS_FS_COMMAND_READ == 1
     int i;
@@ -204,7 +204,7 @@ static int test_cmd_read_write_read(struct harness_t *harness_p)
 #endif
 }
 
-static int test_cmd_reset(struct harness_t *harness_p)
+static int test_cmd_reset(void)
 {
 #if CONFIG_SETTINGS_FS_COMMAND_RESET == 1
     char buf[64];
@@ -231,7 +231,7 @@ static int test_cmd_reset(struct harness_t *harness_p)
 #endif
 }
 
-static int test_integer(struct harness_t *harness_p)
+static int test_integer(void)
 {
     int32_t int32;
 
@@ -254,7 +254,7 @@ static int test_integer(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_string(struct harness_t *harness_p)
+static int test_string(void)
 {
     char string[SETTING_STRING_SIZE];
 
@@ -282,7 +282,7 @@ static int test_string(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_read_write_by_name(struct harness_t *harness_p)
+static int test_read_write_by_name(void)
 {
     int32_t int32;
 
@@ -300,7 +300,7 @@ static int test_read_write_by_name(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_cmd_list_after_updates(struct harness_t *harness_p)
+static int test_cmd_list_after_updates(void)
 {
 #if CONFIG_SETTINGS_FS_COMMAND_LIST == 1
     char buf[64];
@@ -325,7 +325,6 @@ static int test_cmd_list_after_updates(struct harness_t *harness_p)
 
 int main()
 {
-    struct harness_t harness;
     struct harness_testcase_t harness_testcases[] = {
         { test_reset, "test_reset" },
         { test_cmd_list, "test_cmd_list" },
@@ -344,8 +343,7 @@ int main()
 
     queue_init(&queue, qbuf, sizeof(qbuf));
 
-    harness_init(&harness);
-    harness_run(&harness, harness_testcases);
+    harness_run(harness_testcases);
 
     return (0);
 }

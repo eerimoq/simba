@@ -33,7 +33,7 @@
 static struct uart_driver_t uarts[UART_DEVICE_MAX - 1];
 static char rxbufs[UART_DEVICE_MAX - 1][8];
 
-static int test_echo_server(struct harness_t *harness_p)
+static int test_echo_server(void)
 {
     struct uart_driver_t *uart_p;
     char byte;
@@ -82,7 +82,6 @@ static int test_echo_server(struct harness_t *harness_p)
 
 int main()
 {
-    struct harness_t harness;
     struct harness_testcase_t harness_testcases[] = {
         { test_echo_server, "test_echo_server" },
         { NULL, NULL }
@@ -90,8 +89,7 @@ int main()
 
     sys_start();
 
-    harness_init(&harness);
-    harness_run(&harness, harness_testcases);
+    harness_run(harness_testcases);
 
     return (0);
 }

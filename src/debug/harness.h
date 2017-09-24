@@ -139,49 +139,30 @@
  */
 #define STUB(function) __stub_ ## function
 
-struct harness_t;
-
 /**
  * The testcase function callback.
- *
- * @param[in] harness_p The harness object.
  *
  * @return zero(0) if the testcase passed, a negative error code if
  *         the testcase failed, and a positive value if the testcase
  *         was skipped.
  */
-typedef int (*harness_testcase_cb_t)(struct harness_t *harness_p);
+typedef int (*harness_testcase_cb_t)(void);
 
 struct harness_testcase_t {
     harness_testcase_cb_t callback;
     const char *name_p;
 };
 
-struct harness_t {
-    int dummy;
-};
-
 /**
- * Initialize given test harness.
+ * Run given testcases in the test harness.
  *
- * @param[in] self_p Test harness to initialize.
- *
- * @return zero(0) or negative error code.
- */
-int harness_init(struct harness_t *self_p);
-
-/**
- * Run given testcases in given test harness.
- *
- * @param[in] self_p Test harness.
  * @param[in] testcases_p An array of testcases to run. The last
  *                        element in the array must have ``callback``
  *                        and ``name_p`` set to NULL.
  *
- * @return zero(0) or negative error code.
+ * @return Never returns.
  */
-int harness_run(struct harness_t *self_p,
-                struct harness_testcase_t *testcases_p);
+int harness_run(struct harness_testcase_t *testcases_p);
 
 /**
  * Continiously read from given channel and return when given pattern

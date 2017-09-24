@@ -34,7 +34,7 @@ extern int http_server_stub_request(const char *path_p,
                                     struct http_server_connection_t *connection_p,
                                     struct http_server_request_t *request_p);
 
-static int test_init(struct harness_t *self_p)
+static int test_init(void)
 {
     BTASSERT(upgrade_http_init(80) == 0);
     BTASSERT(upgrade_http_start() == 0);
@@ -42,7 +42,7 @@ static int test_init(struct harness_t *self_p)
     return (0);
 }
 
-static int test_request_application_enter(struct harness_t *self_p)
+static int test_request_application_enter(void)
 {
     struct http_server_connection_t connection;
     struct http_server_request_t request;
@@ -76,7 +76,7 @@ static int test_request_application_enter(struct harness_t *self_p)
 /*     { .path_p = "/oam/upgrade/upload", */
 /*       .callback = http_request_upload }, */
 
-static int test_request_bootloader_enter(struct harness_t *self_p)
+static int test_request_bootloader_enter(void)
 {
     struct http_server_connection_t connection;
     struct http_server_request_t request;
@@ -105,7 +105,6 @@ static int test_request_bootloader_enter(struct harness_t *self_p)
 
 int main()
 {
-    struct harness_t harness;
     struct harness_testcase_t harness_testcases[] = {
         { test_init, "test_init" },
         { test_request_application_enter, "test_request_application_enter" },
@@ -115,8 +114,7 @@ int main()
 
     sys_start();
 
-    harness_init(&harness);
-    harness_run(&harness, harness_testcases);
+    harness_run(harness_testcases);
 
     return (0);
 }

@@ -32,7 +32,7 @@
 
 struct hx711_driver_t hx711;
 
-static int test_start(struct harness_t *harness_p)
+static int test_start(void)
 {
     BTASSERT(hx711_module_init() == 0);
     BTASSERT(hx711_module_init() == 0);
@@ -44,7 +44,7 @@ static int test_start(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_read(struct harness_t *harness_p)
+static int test_read(void)
 {
     int i;
     uint32_t sample;
@@ -60,7 +60,7 @@ static int test_read(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_stop(struct harness_t *harness_p)
+static int test_stop(void)
 {
     BTASSERT(hx711_stop(&hx711) == 0);
 
@@ -69,7 +69,6 @@ static int test_stop(struct harness_t *harness_p)
 
 int main()
 {
-    struct harness_t harness;
     struct harness_testcase_t harness_testcases[] = {
         { test_start, "test_start" },
         { test_read, "test_read" },
@@ -79,8 +78,7 @@ int main()
 
     sys_start();
 
-    harness_init(&harness);
-    harness_run(&harness, harness_testcases);
+    harness_run(harness_testcases);
 
     return (0);
 }

@@ -40,7 +40,7 @@ struct bmp280_driver_t bmp280_spi;
 struct spi_driver_t spi;
 struct bmp280_transport_spi_t transport_spi;
 
-static int test_init(struct harness_t *harness_p)
+static int test_init(void)
 {
     BTASSERT(bmp280_module_init() == 0);
     BTASSERT(bmp280_module_init() == 0);
@@ -48,7 +48,7 @@ static int test_init(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_i2c_start(struct harness_t *harness_p)
+static int test_i2c_start(void)
 {
     BTASSERT(bmp280_transport_i2c_init(&transport_i2c,
                                        &i2c,
@@ -81,7 +81,7 @@ static int test_i2c_start(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_i2c_read(struct harness_t *harness_p)
+static int test_i2c_read(void)
 {
     float temperature;
     float pressure;
@@ -110,7 +110,7 @@ static int test_i2c_read(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_i2c_read_meas_start_error(struct harness_t *harness_p)
+static int test_i2c_read_meas_start_error(void)
 {
     float temperature;
     float pressure;
@@ -123,7 +123,7 @@ static int test_i2c_read_meas_start_error(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_i2c_read_status_error(struct harness_t *harness_p)
+static int test_i2c_read_status_error(void)
 {
     float temperature;
     float pressure;
@@ -139,7 +139,7 @@ static int test_i2c_read_status_error(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_i2c_read_status_timeout(struct harness_t *harness_p)
+static int test_i2c_read_status_timeout(void)
 {
     float temperature;
     float pressure;
@@ -159,14 +159,14 @@ static int test_i2c_read_status_timeout(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_i2c_stop(struct harness_t *harness_p)
+static int test_i2c_stop(void)
 {
     BTASSERT(bmp280_stop(&bmp280_i2c) == -ENOSYS);
 
     return (0);
 }
 
-static int test_i2c_start_automatic(struct harness_t *harness_p)
+static int test_i2c_start_automatic(void)
 {
     BTASSERT(bmp280_transport_i2c_init(&transport_i2c,
                                        &i2c,
@@ -201,7 +201,7 @@ static int test_i2c_start_automatic(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_i2c_start_automatic_no_dev(struct harness_t *harness_p)
+static int test_i2c_start_automatic_no_dev(void)
 {
     BTASSERT(bmp280_transport_i2c_init(&transport_i2c,
                                        &i2c,
@@ -223,7 +223,7 @@ static int test_i2c_start_automatic_no_dev(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_spi_start(struct harness_t *harness_p)
+static int test_spi_start(void)
 {
     BTASSERT(bmp280_transport_spi_init(&transport_spi,
                                        &spi) == 0);
@@ -261,7 +261,7 @@ static int test_spi_start(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_spi_read_fixed_point(struct harness_t *harness_p)
+static int test_spi_read_fixed_point(void)
 {
     long temperature;
     long pressure;
@@ -281,7 +281,7 @@ static int test_spi_read_fixed_point(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_spi_stop(struct harness_t *harness_p)
+static int test_spi_stop(void)
 {
     BTASSERT(bmp280_stop(&bmp280_spi) == -ENOSYS);
 
@@ -290,7 +290,6 @@ static int test_spi_stop(struct harness_t *harness_p)
 
 int main()
 {
-    struct harness_t harness;
     struct harness_testcase_t harness_testcases[] = {
         { test_init, "test_init" },
         { test_i2c_start, "test_i2c_start" },
@@ -309,8 +308,7 @@ int main()
 
     sys_start();
 
-    harness_init(&harness);
-    harness_run(&harness, harness_testcases);
+    harness_run(harness_testcases);
 
     return (0);
 }

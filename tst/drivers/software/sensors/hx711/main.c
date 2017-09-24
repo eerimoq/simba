@@ -35,7 +35,7 @@
 
 struct hx711_driver_t hx711;
 
-static int test_init(struct harness_t *harness_p)
+static int test_init(void)
 {
     BTASSERT(hx711_module_init() == 0);
     BTASSERT(hx711_module_init() == 0);
@@ -48,7 +48,7 @@ static int test_init(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_start_timeout(struct harness_t *harness_p)
+static int test_start_timeout(void)
 {
     int mode;
     struct pin_device_t *dev_p;
@@ -93,7 +93,7 @@ static int test_start_timeout(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_start(struct harness_t *harness_p)
+static int test_start(void)
 {
     int i;
     int mode;
@@ -151,7 +151,7 @@ static int test_start(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_read_raw(struct harness_t *harness_p)
+static int test_read_raw(void)
 {
     int i;
     int value;
@@ -196,7 +196,7 @@ static int test_read_raw(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_read_raw_timeout(struct harness_t *harness_p)
+static int test_read_raw_timeout(void)
 {
     int32_t sample;
     struct pin_device_t *dev_p;
@@ -229,7 +229,7 @@ static int test_read_raw_timeout(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_read(struct harness_t *harness_p)
+static int test_read(void)
 {
     int i;
     int value;
@@ -274,7 +274,7 @@ static int test_read(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_read_scale_offset(struct harness_t *harness_p)
+static int test_read_scale_offset(void)
 {
     int i;
     int value;
@@ -323,7 +323,7 @@ static int test_read_scale_offset(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_stop(struct harness_t *harness_p)
+static int test_stop(void)
 {
     int mode;
     struct pin_device_t *dev_p;
@@ -416,7 +416,6 @@ enum time_compare_t STUB(time_compare)(struct time_t *left_p,
 
 int main()
 {
-    struct harness_t harness;
     struct harness_testcase_t harness_testcases[] = {
         { test_init, "test_init" },
         { test_start_timeout, "test_start_timeout" },
@@ -431,8 +430,7 @@ int main()
 
     sys_start();
 
-    harness_init(&harness);
-    harness_run(&harness, harness_testcases);
+    harness_run(harness_testcases);
 
     return (0);
 }

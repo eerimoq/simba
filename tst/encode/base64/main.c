@@ -71,7 +71,7 @@ static char *decoded[] = {
     "foobar"
 };
 
-static int test_encode(struct harness_t *harness_p)
+static int test_encode(void)
 {
     int i;
     char buf[512];
@@ -107,7 +107,7 @@ static int test_encode(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_decode(struct harness_t *harness_p)
+static int test_decode(void)
 {
     int i;
     char buf[512];
@@ -147,7 +147,6 @@ static int test_decode(struct harness_t *harness_p)
 
 int main()
 {
-    struct harness_t harness;
     struct harness_testcase_t harness_testcases[] = {
         { test_encode, "test_encode" },
         { test_decode, "test_decode" },
@@ -156,8 +155,7 @@ int main()
 
     sys_start();
 
-    harness_init(&harness);
-    harness_run(&harness, harness_testcases);
+    harness_run(harness_testcases);
 
     return (0);
 }

@@ -71,7 +71,7 @@ static void *tester_main(void *arg_p)
     return (0);
 }
 
-static int test_init(struct harness_t *harness_p)
+static int test_init(void)
 {
     BTASSERT(event_init(&tester_event_rx) == 0);
     BTASSERT(event_init(&tester_event_tx) == 0);
@@ -85,7 +85,7 @@ static int test_init(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_read_write(struct harness_t *harness_p)
+static int test_read_write(void)
 {
     uint32_t mask;
     struct event_t event;
@@ -131,7 +131,7 @@ static int test_read_write(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_poll(struct harness_t *harness_p)
+static int test_poll(void)
 {
     uint32_t mask;
     struct event_t event;
@@ -149,7 +149,7 @@ static int test_poll(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_poll_timeout(struct harness_t *harness_p)
+static int test_poll_timeout(void)
 {
     struct event_t event;
     struct time_t timeout;
@@ -165,7 +165,7 @@ static int test_poll_timeout(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_poll_list(struct harness_t *harness_p)
+static int test_poll_list(void)
 {
     uint32_t mask;
     struct event_t event;
@@ -205,7 +205,7 @@ static int test_poll_list(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_poll_list_timeout(struct harness_t *harness_p)
+static int test_poll_list_timeout(void)
 {
     struct event_t event;
     struct chan_list_t list;
@@ -238,7 +238,7 @@ static int test_poll_list_timeout(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_write_not_read_mask(struct harness_t *harness_p)
+static int test_write_not_read_mask(void)
 {
     uint32_t mask;
 
@@ -261,7 +261,7 @@ static int test_write_not_read_mask(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_clear(struct harness_t *harness_p)
+static int test_clear(void)
 {
     struct event_t event;
     uint32_t mask;
@@ -295,7 +295,6 @@ static int test_clear(struct harness_t *harness_p)
 
 int main()
 {
-    struct harness_t harness;
     struct harness_testcase_t harness_testcases[] = {
         { test_init, "test_init" },
         { test_read_write, "test_read_write" },
@@ -310,8 +309,7 @@ int main()
 
     sys_start();
 
-    harness_init(&harness);
-    harness_run(&harness, harness_testcases);
+    harness_run(harness_testcases);
 
     return (0);
 }

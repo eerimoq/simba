@@ -30,7 +30,7 @@
 
 #include "simba.h"
 
-int test_map(struct harness_t *harness_p)
+int test_map(void)
 {
     BTASSERT(midi_note_to_frequency(0) == 8.1757989156f);
 
@@ -39,7 +39,6 @@ int test_map(struct harness_t *harness_p)
 
 int main()
 {
-    struct harness_t harness;
     struct harness_testcase_t harness_testcases[] = {
         { test_map, "test_map" },
         { NULL, NULL }
@@ -47,8 +46,7 @@ int main()
 
     sys_start();
 
-    harness_init(&harness);
-    harness_run(&harness, harness_testcases);
+    harness_run(harness_testcases);
 
     return (0);
 }

@@ -30,7 +30,7 @@
 
 #include "simba.h"
 
-static int test_insert(struct harness_t *harness)
+static int test_insert(void)
 {
     uint32_t dst;
     uint32_t src;
@@ -70,7 +70,6 @@ static int test_insert(struct harness_t *harness)
 
 int main()
 {
-    struct harness_t harness;
     struct harness_testcase_t harness_testcases[] = {
         { test_insert, "test_insert" },
         { NULL, NULL }
@@ -78,8 +77,7 @@ int main()
 
     sys_start();
 
-    harness_init(&harness);
-    harness_run(&harness, harness_testcases);
+    harness_run(harness_testcases);
 
     return (0);
 }

@@ -30,7 +30,7 @@
 
 #include "simba.h"
 
-static int test_read(struct harness_t *harness_p)
+static int test_read(void)
 {
     struct chipid_t id;
 
@@ -56,7 +56,6 @@ static int test_read(struct harness_t *harness_p)
 
 int main()
 {
-    struct harness_t harness;
     struct harness_testcase_t testcases[] = {
         { test_read, "test_read" },
         { NULL, NULL }
@@ -64,8 +63,7 @@ int main()
 
     sys_start();
 
-    harness_init(&harness);
-    harness_run(&harness, testcases);
+    harness_run(testcases);
 
     return (0);
 }

@@ -195,7 +195,7 @@ static struct queue_t qin;
 static char qinbuf[32];
 #endif
 
-static int test_init(struct harness_t *harness_p)
+static int test_init(void)
 {
     queue_init(&qout, &qoutbuf[0], sizeof(qoutbuf));
 
@@ -226,7 +226,7 @@ static int test_init(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_auto_complete(struct harness_t *harness_p)
+static int test_auto_complete(void)
 {
     char buf[CONFIG_FS_PATH_MAX];
 
@@ -256,7 +256,7 @@ static int test_auto_complete(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_command(struct harness_t *harness_p)
+static int test_command(void)
 {
     char buf[256];
 
@@ -277,7 +277,7 @@ static int test_command(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_counter(struct harness_t *harness_p)
+static int test_counter(void)
 {
     char buf[384];
 
@@ -303,7 +303,7 @@ static int test_counter(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_parameter(struct harness_t *harness_p)
+static int test_parameter(void)
 {
     char buf[256];
 
@@ -332,7 +332,7 @@ static int test_parameter(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_list(struct harness_t *harness_p)
+static int test_list(void)
 {
     BTASSERT(fs_list("filesystems", NULL, &qout) == 0);
     BTASSERT(harness_expect(&qout, "fs/\r\n", NULL) > 0);
@@ -359,7 +359,7 @@ static int test_list(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_split_merge(struct harness_t *harness_p)
+static int test_split_merge(void)
 {
     char buf[256];
     char *path_p;
@@ -408,7 +408,7 @@ static int test_split_merge(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_quotes(struct harness_t *harness_p)
+static int test_quotes(void)
 {
     char buf[64];
 
@@ -429,7 +429,7 @@ static int test_quotes(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_escape(struct harness_t *harness_p)
+static int test_escape(void)
 {
     char buf[64];
 
@@ -443,7 +443,7 @@ static int test_escape(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_filesystem_fat16(struct harness_t *harness_p)
+static int test_filesystem_fat16(void)
 {
 #if defined(ARCH_LINUX)
 
@@ -513,7 +513,7 @@ static int test_filesystem_fat16(struct harness_t *harness_p)
 #endif
 }
 
-static int test_filesystem_spiffs(struct harness_t *harness_p)
+static int test_filesystem_spiffs(void)
 {
 #if defined(ARCH_LINUX)
 
@@ -608,7 +608,7 @@ static int test_filesystem_spiffs(struct harness_t *harness_p)
 #endif
 }
 
-static int test_filesystem_generic(struct harness_t *harness_p)
+static int test_filesystem_generic(void)
 {
     char buf[32];
     struct fs_file_t file;
@@ -632,7 +632,7 @@ static int test_filesystem_generic(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_filesystem(struct harness_t *harness_p)
+static int test_filesystem(void)
 {
 #if defined(ARCH_LINUX)
 
@@ -652,7 +652,7 @@ static int test_filesystem(struct harness_t *harness_p)
 #endif
 }
 
-static int test_filesystem_commands(struct harness_t *harness_p)
+static int test_filesystem_commands(void)
 {
 #if defined(ARCH_LINUX)
 
@@ -771,7 +771,7 @@ static int test_filesystem_commands(struct harness_t *harness_p)
 #endif
 }
 
-static int test_read_line(struct harness_t *harness_p)
+static int test_read_line(void)
 {
 #if defined(ARCH_LINUX)
 
@@ -829,7 +829,7 @@ static int test_read_line(struct harness_t *harness_p)
 #endif
 }
 
-static int test_cwd(struct harness_t *harness_p)
+static int test_cwd(void)
 {
 #if defined(ARCH_LINUX)
 
@@ -876,7 +876,6 @@ static int test_cwd(struct harness_t *harness_p)
 
 int main()
 {
-    struct harness_t harness;
     struct harness_testcase_t harness_testcases[] = {
         { test_init, "test_init" },
         { test_auto_complete, "test_auto_complete" },
@@ -899,8 +898,7 @@ int main()
 
     sys_start();
 
-    harness_init(&harness);
-    harness_run(&harness, harness_testcases);
+    harness_run(harness_testcases);
 
     return (0);
 }

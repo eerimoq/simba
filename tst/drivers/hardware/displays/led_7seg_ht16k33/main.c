@@ -33,7 +33,7 @@
 #define pin_scl_dev pin_d5_dev
 #define pin_sca_dev pin_d6_dev
 
-int test_led_brightness(struct harness_t *harness_p)
+int test_led_brightness(void)
 {
     struct led_7seg_ht16k33_driver_t led;
     struct i2c_soft_driver_t i2c;
@@ -57,7 +57,7 @@ int test_led_brightness(struct harness_t *harness_p)
     return (0);
 }
 
-int test_led_dot(struct harness_t *harness_p)
+int test_led_dot(void)
 {
     struct led_7seg_ht16k33_driver_t led;
     struct i2c_soft_driver_t i2c;
@@ -112,7 +112,7 @@ int test_led_dot(struct harness_t *harness_p)
     return (0);
 }
 
-int test_led_colon(struct harness_t *harness_p)
+int test_led_colon(void)
 {
     struct led_7seg_ht16k33_driver_t led;
     struct i2c_soft_driver_t i2c;
@@ -134,7 +134,7 @@ int test_led_colon(struct harness_t *harness_p)
     return (0);
 }
 
-int test_led_send_nums(struct harness_t *harness_p)
+int test_led_send_nums(void)
 {
     struct led_7seg_ht16k33_driver_t led;
     struct i2c_soft_driver_t i2c;
@@ -166,7 +166,6 @@ int test_led_send_nums(struct harness_t *harness_p)
 
 int main()
 {
-    struct harness_t harness;
     struct harness_testcase_t harness_testcases[] = {
         { test_led_send_nums, "led_send_nums" },
         { test_led_brightness, "test_led_brightness" },
@@ -178,8 +177,7 @@ int main()
     sys_start();
     led_7seg_ht16k33_module_init();
 
-    harness_init(&harness);
-    harness_run(&harness, harness_testcases);
+    harness_run(harness_testcases);
 
     return (0);
 }

@@ -33,7 +33,7 @@
 struct usb_host_driver_t usb;
 static struct usb_host_device_t host_devices[1];
 
-static int test_list_devices(struct harness_t *harness_p)
+static int test_list_devices(void)
 {
     BTASSERT(usb_host_init(&usb,
                            &usb_device[0],
@@ -50,7 +50,6 @@ static int test_list_devices(struct harness_t *harness_p)
 
 int main()
 {
-    struct harness_t harness;
     struct harness_testcase_t testcases[] = {
         { test_list_devices, "test_list_devices" },
         { NULL, NULL }
@@ -58,8 +57,7 @@ int main()
 
     sys_start();
 
-    harness_init(&harness);
-    harness_run(&harness, testcases);
+    harness_run(testcases);
 
     return (0);
 }

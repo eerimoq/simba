@@ -39,7 +39,7 @@ static THRD_STACK(client_stack, 512);
 static struct queue_t queue;
 static uint8_t queue_buf[256];
 
-static int test_init(struct harness_t *harness_p)
+static int test_init(void)
 {
     BTASSERT(xbee_client_module_init() == 0);
     BTASSERT(xbee_client_module_init() == 0);
@@ -67,7 +67,7 @@ static int test_init(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_rx_packet_16_bits_address(struct harness_t *harness_p)
+static int test_rx_packet_16_bits_address(void)
 {
     struct xbee_frame_t frame;
     uint32_t mask;
@@ -99,7 +99,7 @@ static int test_rx_packet_16_bits_address(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_rx_packet_64_bits_address(struct harness_t *harness_p)
+static int test_rx_packet_64_bits_address(void)
 {
     struct xbee_frame_t frame;
     uint32_t mask;
@@ -133,7 +133,7 @@ static int test_rx_packet_64_bits_address(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_rx_packet_16_bits_address_short(struct harness_t *harness_p)
+static int test_rx_packet_16_bits_address_short(void)
 {
     struct xbee_frame_t frame;
     uint32_t mask;
@@ -165,7 +165,7 @@ static int test_rx_packet_16_bits_address_short(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_rx_packet_64_bits_address_short(struct harness_t *harness_p)
+static int test_rx_packet_64_bits_address_short(void)
 {
     struct xbee_frame_t frame;
     uint32_t mask;
@@ -199,7 +199,7 @@ static int test_rx_packet_64_bits_address_short(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_rx_packet_16_bits_address_bad_size(struct harness_t *harness_p)
+static int test_rx_packet_16_bits_address_bad_size(void)
 {
     struct xbee_frame_t frame;
     uint32_t mask;
@@ -223,7 +223,7 @@ static int test_rx_packet_16_bits_address_bad_size(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_rx_packet_64_bits_address_bad_size(struct harness_t *harness_p)
+static int test_rx_packet_64_bits_address_bad_size(void)
 {
     struct xbee_frame_t frame;
     uint32_t mask;
@@ -249,7 +249,7 @@ static int test_rx_packet_64_bits_address_bad_size(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_rx_packet_16_bits_address_no_data(struct harness_t *harness_p)
+static int test_rx_packet_16_bits_address_no_data(void)
 {
     struct xbee_frame_t frame;
     uint32_t mask;
@@ -280,7 +280,7 @@ static int test_rx_packet_16_bits_address_no_data(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_rx_packet_64_bits_address_no_data(struct harness_t *harness_p)
+static int test_rx_packet_64_bits_address_no_data(void)
 {
     struct xbee_frame_t frame;
     uint32_t mask;
@@ -313,7 +313,7 @@ static int test_rx_packet_64_bits_address_no_data(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_tx_packet_16_bits_address(struct harness_t *harness_p)
+static int test_tx_packet_16_bits_address(void)
 {
     struct xbee_frame_t frame;
     struct xbee_client_address_t receiver;
@@ -350,7 +350,7 @@ static int test_tx_packet_16_bits_address(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_tx_packet_64_bits_address_no_ack(struct harness_t *harness_p)
+static int test_tx_packet_64_bits_address_no_ack(void)
 {
     struct xbee_frame_t frame;
     struct xbee_client_address_t receiver;
@@ -384,7 +384,7 @@ static int test_tx_packet_64_bits_address_no_ack(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_tx_packet_timeout(struct harness_t *harness_p)
+static int test_tx_packet_timeout(void)
 {
     struct xbee_frame_t frame;
     struct xbee_client_address_t receiver;
@@ -410,7 +410,7 @@ static int test_tx_packet_timeout(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_pin_set_mode(struct harness_t *harness_p)
+static int test_pin_set_mode(void)
 {
     struct xbee_frame_t frame;
     uint32_t mask;
@@ -438,7 +438,7 @@ static int test_pin_set_mode(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_pin_write_high(struct harness_t *harness_p)
+static int test_pin_write_high(void)
 {
     struct xbee_frame_t frame;
     uint32_t mask;
@@ -464,7 +464,7 @@ static int test_pin_write_high(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_pin_toggle(struct harness_t *harness_p)
+static int test_pin_toggle(void)
 {
     struct xbee_frame_t frame;
     uint32_t mask;
@@ -507,7 +507,7 @@ static int test_pin_toggle(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_at_command_read_u8(struct harness_t *harness_p)
+static int test_at_command_read_u8(void)
 {
     struct xbee_frame_t frame;
     uint32_t mask;
@@ -539,7 +539,7 @@ static int test_at_command_read_u8(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_at_command_read_u16(struct harness_t *harness_p)
+static int test_at_command_read_u16(void)
 {
     struct xbee_frame_t frame;
     uint32_t mask;
@@ -571,7 +571,7 @@ static int test_at_command_read_u16(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_at_command_read_u32(struct harness_t *harness_p)
+static int test_at_command_read_u32(void)
 {
     struct xbee_frame_t frame;
     uint32_t mask;
@@ -605,7 +605,7 @@ static int test_at_command_read_u32(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_at_command_write_u8(struct harness_t *harness_p)
+static int test_at_command_write_u8(void)
 {
     struct xbee_frame_t frame;
     uint32_t mask;
@@ -632,7 +632,7 @@ static int test_at_command_write_u8(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_at_command_write_u16(struct harness_t *harness_p)
+static int test_at_command_write_u16(void)
 {
     struct xbee_frame_t frame;
     uint32_t mask;
@@ -661,7 +661,7 @@ static int test_at_command_write_u16(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_at_command_write_u32(struct harness_t *harness_p)
+static int test_at_command_write_u32(void)
 {
     struct xbee_frame_t frame;
     uint32_t mask;
@@ -692,7 +692,7 @@ static int test_at_command_write_u32(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_at_command_error(struct harness_t *harness_p)
+static int test_at_command_error(void)
 {
     struct xbee_frame_t frame;
     uint32_t mask;
@@ -723,7 +723,7 @@ static int test_at_command_error(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_tx_packet_negative_response(struct harness_t *harness_p)
+static int test_tx_packet_negative_response(void)
 {
     struct xbee_frame_t frame;
     struct xbee_client_address_t receiver;
@@ -758,7 +758,7 @@ static int test_tx_packet_negative_response(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_print_address(struct harness_t *harness_p)
+static int test_print_address(void)
 {
     struct xbee_client_address_t address;
 
@@ -856,7 +856,6 @@ int STUB(xbee_write)(struct xbee_driver_t *self_p,
 
 int main()
 {
-    struct harness_t harness;
     struct harness_testcase_t harness_testcases[] = {
         { test_init, "test_init" },
         { test_rx_packet_16_bits_address, "test_rx_packet_16_bits_address" },
@@ -911,8 +910,7 @@ int main()
 
     sys_start();
 
-    harness_init(&harness);
-    harness_run(&harness, harness_testcases);
+    harness_run(harness_testcases);
 
     return (0);
 }

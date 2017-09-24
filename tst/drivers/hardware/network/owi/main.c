@@ -30,7 +30,7 @@
 
 #include "simba.h"
 
-int test_search(struct harness_t *harness_p)
+int test_search(void)
 {
     struct owi_driver_t owi;
     struct owi_device_t devices[4];
@@ -63,7 +63,6 @@ int test_search(struct harness_t *harness_p)
 
 int main()
 {
-    struct harness_t harness;
     struct harness_testcase_t harness_testcases[] = {
         { test_search, "test_search" },
         { NULL, NULL }
@@ -71,8 +70,7 @@ int main()
 
     sys_start();
 
-    harness_init(&harness);
-    harness_run(&harness, harness_testcases);
+    harness_run(harness_testcases);
 
     return (0);
 }

@@ -43,7 +43,7 @@ static uint8_t buf[131072];
 static uint8_t buf[256];
 #endif
 
-static int test_init(struct harness_t *harness_p)
+static int test_init(void)
 {
     socket_stub_init();
 
@@ -54,7 +54,7 @@ static int test_init(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_handshake(struct harness_t *harness_p)
+static int test_handshake(void)
 {
     struct http_server_request_t request;
 
@@ -77,7 +77,7 @@ static int test_handshake(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_handshake_key_missing(struct harness_t *harness_p)
+static int test_handshake_key_missing(void)
 {
     struct http_server_request_t request;
 
@@ -92,7 +92,7 @@ static int test_handshake_key_missing(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_handshake_bad_action(struct harness_t *harness_p)
+static int test_handshake_bad_action(void)
 {
     struct http_server_request_t request;
 
@@ -108,7 +108,7 @@ static int test_handshake_bad_action(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_read(struct harness_t *harness_p)
+static int test_read(void)
 {
     int type;
 
@@ -226,7 +226,7 @@ static int test_read(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_write(struct harness_t *harness_p)
+static int test_write(void)
 {
     buf[0] = 'f';
     buf[1] = 'o';
@@ -298,7 +298,6 @@ static int test_write(struct harness_t *harness_p)
 
 int main()
 {
-    struct harness_t harness;
     struct harness_testcase_t harness_testcases[] = {
         { test_init, "test_init" },
         { test_handshake, "test_handshake" },
@@ -311,8 +310,7 @@ int main()
 
     sys_start();
 
-    harness_init(&harness);
-    harness_run(&harness, harness_testcases);
+    harness_run(harness_testcases);
 
     return (0);
 }

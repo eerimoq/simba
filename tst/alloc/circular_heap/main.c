@@ -32,7 +32,7 @@
 
 static char buffer[256];
 
-static int test_alloc_free(struct harness_t *harness_p)
+static int test_alloc_free(void)
 {
     struct circular_heap_t circular_heap;
     void *bufs[16];
@@ -86,7 +86,6 @@ static int test_alloc_free(struct harness_t *harness_p)
 
 int main()
 {
-    struct harness_t harness;
     struct harness_testcase_t harness_testcases[] = {
         { test_alloc_free, "test_alloc_free" },
         { NULL, NULL }
@@ -94,8 +93,7 @@ int main()
 
     sys_start();
 
-    harness_init(&harness);
-    harness_run(&harness, harness_testcases);
+    harness_run(harness_testcases);
 
     return (0);
 }
