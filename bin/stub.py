@@ -7,7 +7,7 @@ import subprocess
 import re
 
 
-__version__ = '0.2'
+__version__ = '0.3'
 
 
 STUB_H_FMT = '''\
@@ -406,8 +406,8 @@ def do_patch(args):
     command += [args.objectfile]
 
     readelf_output = subprocess.check_output(command)
-    re_symbol = re.compile(r"\s+\d+: \w+\s+\d+\s+(NOTYPE|OBJECT|FUNC)"
-                           r"\s+\w+\s+\w+\s+\w+\s+(.+)")
+    re_symbol = re.compile(
+        r'\s+\d+: \w+\s+\d+\s+(NOTYPE|OBJECT|FUNC)\s+\w+\s+\w+\s+\w+\s+(.+)')
     symbols_in_objectfile = []
 
     for line in readelf_output.decode('ascii').splitlines():
@@ -451,7 +451,9 @@ def do_generate(args):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('-d', '--debug', action='store_true')
+    parser.add_argument('-d', '--debug',
+                        action='store_true',
+                        help='Print debug information.')
     parser.add_argument('--version',
                         action='version',
                         version=__version__,
