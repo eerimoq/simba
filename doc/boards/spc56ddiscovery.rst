@@ -31,7 +31,8 @@ Supported drivers for this board.
 - :doc:`../library-reference/drivers/storage/eeprom_i2c`
 - :doc:`../library-reference/drivers/storage/eeprom_soft`
 - :doc:`../library-reference/drivers/storage/flash`
-- :doc:`../library-reference/drivers/sensors/gnss`
+- :doc:`../library-reference/drivers/various/gnss`
+- :doc:`../library-reference/drivers/displays/hd44780`
 - :doc:`../library-reference/drivers/sensors/hx711`
 - :doc:`../library-reference/drivers/network/i2c`
 - :doc:`../library-reference/drivers/network/i2c_soft`
@@ -70,9 +71,9 @@ Below is the memory usage of two applications:
 +--------------------------+-----------+-----------+
 | Application              | Flash     | RAM       |
 +==========================+===========+===========+
-| minimal-configuration    |     13644 |       919 |
+| minimal-configuration    |     13628 |       919 |
 +--------------------------+-----------+-----------+
-| default-configuration    |     83580 |      5813 |
+| default-configuration    |     86764 |      5793 |
 +--------------------------+-----------+-----------+
 
 Default configuration
@@ -185,11 +186,11 @@ Default Standard Library configuration.
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_GNSS_DEBUG_LOG_MASK_                           |  -1                                                 |
 +--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_HARNESS_BACKTRACE_DEPTH_MAX_                   |  8                                                  |
++--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_HARNESS_EXPECT_BUFFER_SIZE_                    |  512                                                |
 +--------------------------------------------------------+-----------------------------------------------------+
-|  CONFIG_HARNESS_HEAP_MAX_                              |  2048                                               |
-+--------------------------------------------------------+-----------------------------------------------------+
-|  CONFIG_HARNESS_MOCK_VERBOSE_                          |  1                                                  |
+|  CONFIG_HARNESS_HEAP_MAX_                              |  4096                                               |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_HARNESS_SLEEP_MS_                              |  300                                                |
 +--------------------------------------------------------+-----------------------------------------------------+
@@ -400,6 +401,10 @@ Default Standard Library configuration.
 |  CONFIG_SPC5_BOOT_ENTRY_RCHW_                          |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_SPC5_RAM_CLEAR_ALL_                            |  1                                                  |
++--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_SPC5_RELOCATE_INIT_                            |  1                                                  |
++--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_SPC5_WATCHDOG_DISABLE_                         |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_SPI_                                           |  0                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
@@ -655,11 +660,11 @@ Mcu
 
 .. _CONFIG_GNSS_DEBUG_LOG_MASK: ../user-guide/configuration.html#c.CONFIG_GNSS_DEBUG_LOG_MASK
 
+.. _CONFIG_HARNESS_BACKTRACE_DEPTH_MAX: ../user-guide/configuration.html#c.CONFIG_HARNESS_BACKTRACE_DEPTH_MAX
+
 .. _CONFIG_HARNESS_EXPECT_BUFFER_SIZE: ../user-guide/configuration.html#c.CONFIG_HARNESS_EXPECT_BUFFER_SIZE
 
 .. _CONFIG_HARNESS_HEAP_MAX: ../user-guide/configuration.html#c.CONFIG_HARNESS_HEAP_MAX
-
-.. _CONFIG_HARNESS_MOCK_VERBOSE: ../user-guide/configuration.html#c.CONFIG_HARNESS_MOCK_VERBOSE
 
 .. _CONFIG_HARNESS_SLEEP_MS: ../user-guide/configuration.html#c.CONFIG_HARNESS_SLEEP_MS
 
@@ -870,6 +875,10 @@ Mcu
 .. _CONFIG_SPC5_BOOT_ENTRY_RCHW: ../user-guide/configuration.html#c.CONFIG_SPC5_BOOT_ENTRY_RCHW
 
 .. _CONFIG_SPC5_RAM_CLEAR_ALL: ../user-guide/configuration.html#c.CONFIG_SPC5_RAM_CLEAR_ALL
+
+.. _CONFIG_SPC5_RELOCATE_INIT: ../user-guide/configuration.html#c.CONFIG_SPC5_RELOCATE_INIT
+
+.. _CONFIG_SPC5_WATCHDOG_DISABLE: ../user-guide/configuration.html#c.CONFIG_SPC5_WATCHDOG_DISABLE
 
 .. _CONFIG_SPI: ../user-guide/configuration.html#c.CONFIG_SPI
 

@@ -28,9 +28,9 @@ Arduino Due
 - :github-blob:`encode/json<tst/encode/json/main.c>`
 - :github-blob:`hash/crc<tst/hash/crc/main.c>`
 - :github-blob:`hash/sha1<tst/hash/sha1/main.c>`
-- :github-blob:`drivers/hardware/chipid<tst/drivers/hardware/chipid/main.c>`
-- :github-blob:`drivers/hardware/can<tst/drivers/hardware/can/main.c>`
-- :github-blob:`drivers/hardware/flash<tst/drivers/hardware/flash/main.c>`
+- :github-blob:`drivers/hardware/basic/chipid<tst/drivers/hardware/basic/chipid/main.c>`
+- :github-blob:`drivers/hardware/network/can<tst/drivers/hardware/network/can/main.c>`
+- :github-blob:`drivers/hardware/storage/flash<tst/drivers/hardware/storage/flash/main.c>`
 
 Arduino Mega
 ------------
@@ -66,19 +66,19 @@ Arduino Mega
 - :github-blob:`inet/inet<tst/inet/inet/main.c>`
 - :github-blob:`inet/mqtt_client<tst/inet/mqtt_client/main.c>`
 - :github-blob:`inet/ping<tst/inet/ping/main.c>`
-- :github-blob:`drivers/hardware/adc<tst/drivers/hardware/adc/main.c>`
-- :github-blob:`drivers/hardware/analog_input_pin<tst/drivers/hardware/analog_input_pin/main.c>`
-- :github-blob:`drivers/hardware/ds3231<tst/drivers/hardware/ds3231/main.c>`
-- :github-blob:`drivers/hardware/sd<tst/drivers/hardware/sd/main.c>`
-- :github-blob:`drivers/hardware/pin<tst/drivers/hardware/pin/main.c>`
+- :github-blob:`drivers/hardware/basic/adc<tst/drivers/hardware/basic/adc/main.c>`
+- :github-blob:`drivers/hardware/basic/analog_input_pin<tst/drivers/hardware/basic/analog_input_pin/main.c>`
+- :github-blob:`drivers/hardware/various/ds3231<tst/drivers/hardware/various/ds3231/main.c>`
+- :github-blob:`drivers/hardware/storage/sd<tst/drivers/hardware/storage/sd/main.c>`
+- :github-blob:`drivers/hardware/basic/pin<tst/drivers/hardware/basic/pin/main.c>`
 
 Arduino Nano
 ------------
 
-- :github-blob:`drivers/hardware/ds18b20<tst/drivers/hardware/ds18b20/main.c>`
-- :github-blob:`drivers/hardware/analog_output_pin<tst/drivers/hardware/analog_output_pin/main.c>`
-- :github-blob:`drivers/hardware/exti<tst/drivers/hardware/exti/main.c>`
-- :github-blob:`drivers/hardware/owi<tst/drivers/hardware/owi/main.c>`
+- :github-blob:`drivers/hardware/sensors/ds18b20<tst/drivers/hardware/sensors/ds18b20/main.c>`
+- :github-blob:`drivers/hardware/basic/analog_output_pin<tst/drivers/hardware/basic/analog_output_pin/main.c>`
+- :github-blob:`drivers/hardware/basic/exti<tst/drivers/hardware/basic/exti/main.c>`
+- :github-blob:`drivers/hardware/network/owi<tst/drivers/hardware/network/owi/main.c>`
 
 Arduino Pro Micro
 -----------------
@@ -89,6 +89,10 @@ Arduino Pro Micro
 
 Arduino Uno
 -----------
+
+
+Arduino Zero
+------------
 
 
 ESP-01
@@ -166,11 +170,11 @@ Linux
 - :github-blob:`inet/ssl<tst/inet/ssl/main.c>`
 - :github-blob:`inet/tftp_server<tst/inet/tftp_server/main.c>`
 - :github-blob:`multimedia/midi<tst/multimedia/midi/main.c>`
-- :github-blob:`drivers/software/bmp280<tst/drivers/software/bmp280/main.c>`
-- :github-blob:`drivers/software/gnss<tst/drivers/software/gnss/main.c>`
-- :github-blob:`drivers/software/hx711<tst/drivers/software/hx711/main.c>`
-- :github-blob:`drivers/software/xbee<tst/drivers/software/xbee/main.c>`
-- :github-blob:`drivers/software/xbee_client<tst/drivers/software/xbee_client/main.c>`
+- :github-blob:`drivers/software/sensors/bmp280<tst/drivers/software/sensors/bmp280/main.c>`
+- :github-blob:`drivers/software/various/gnss<tst/drivers/software/various/gnss/main.c>`
+- :github-blob:`drivers/software/sensors/hx711<tst/drivers/software/sensors/hx711/main.c>`
+- :github-blob:`drivers/software/network/xbee<tst/drivers/software/network/xbee/main.c>`
+- :github-blob:`drivers/software/network/xbee_client<tst/drivers/software/network/xbee_client/main.c>`
 - :github-blob:`science/math<tst/science/math/main.c>`
 - :github-blob:`science/science<tst/science/science/main.c>`
 
@@ -241,8 +245,8 @@ NodeMCU
 - :github-blob:`inet/mqtt_client<tst/inet/mqtt_client/main.c>`
 - :github-blob:`inet/network_interface/wifi_esp<tst/inet/network_interface/wifi_esp/main.c>`
 - :github-blob:`inet/ping<tst/inet/ping/main.c>`
-- :github-blob:`drivers/hardware/pin<tst/drivers/hardware/pin/main.c>`
-- :github-blob:`drivers/hardware/random<tst/drivers/hardware/random/main.c>`
+- :github-blob:`drivers/hardware/basic/pin<tst/drivers/hardware/basic/pin/main.c>`
+- :github-blob:`drivers/hardware/basic/random<tst/drivers/hardware/basic/random/main.c>`
 - :github-blob:`filesystems/fs<tst/filesystems/fs/main.c>`
 - :github-blob:`filesystems/spiffs<tst/filesystems/spiffs/main.c>`
 
@@ -307,7 +311,7 @@ SPC56D Discovery
 - :github-blob:`encode/json<tst/encode/json/main.c>`
 - :github-blob:`hash/crc<tst/hash/crc/main.c>`
 - :github-blob:`hash/sha1<tst/hash/sha1/main.c>`
-- :github-blob:`drivers/hardware/eeprom_soft<tst/drivers/hardware/eeprom_soft/main.c>`
+- :github-blob:`drivers/hardware/storage/eeprom_soft<tst/drivers/hardware/storage/eeprom_soft/main.c>`
 
 STM32F3DISCOVERY
 ----------------
@@ -342,8 +346,8 @@ STM32VLDISCOVERY
 - :github-blob:`inet/inet<tst/inet/inet/main.c>`
 - :github-blob:`inet/mqtt_client<tst/inet/mqtt_client/main.c>`
 - :github-blob:`inet/ping<tst/inet/ping/main.c>`
-- :github-blob:`drivers/hardware/pin<tst/drivers/hardware/pin/main.c>`
-- :github-blob:`drivers/hardware/random<tst/drivers/hardware/random/main.c>`
+- :github-blob:`drivers/hardware/basic/pin<tst/drivers/hardware/basic/pin/main.c>`
+- :github-blob:`drivers/hardware/basic/random<tst/drivers/hardware/basic/random/main.c>`
 
 WEMOS D1 mini
 -------------
