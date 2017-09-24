@@ -104,6 +104,11 @@ MOCK_ARGUMENT_OUT_FMT = '''\
 '''
 
 
+RE_FUNCTION = re.compile(r'/\*\*(.+?)\*/([\w \r\n\*]+?\w+\(.*?\));',
+                         re.MULTILINE | re.DOTALL)
+RE_FILE_HEADER = re.compile(r'(/\*\*(.+?)\*/)', re.MULTILINE | re.DOTALL)
+
+
 class Argument(object):
     '''A function argument.
 
@@ -330,25 +335,23 @@ def generate_function_stubs(declaration, comment, functions_to_ignore):
     return stub_h, stub_c
 
 
-def generate_from_header(args,
-                         re_function,
-                         re_file_header,
-                         header_path):
+def generate_from_header(header_path,
+                         ignore_functions,
+                         output_dir):
     '''Generate stub files for given header file.
 
     '''
 
-    header_dir, header_file = os.path.split(header_path)
+    header_file = os.path.split(header_path)[1]
     header_name = os.path.splitext(header_file)[0]
-    mock_dir = os.path.join(args.outdir, header_dir)
 
     try:
-        os.makedirs(mock_dir)
+        os.makedirs(output_dir)
     except FileExistsError:
         pass
 
-    mock_h_path = os.path.join(mock_dir, header_name + '_mock.h')
-    mock_c_path = os.path.join(mock_dir, header_name + '_mock.c')
+    mock_h_path = os.path.join(output_dir, header_name + '_mock.h')
+    mock_c_path = os.path.join(output_dir, header_name + '_mock.c')
 
     print("Generating '{}' and '{}' from '{}'.".format(
         mock_h_path,
@@ -358,8 +361,8 @@ def generate_from_header(args,
     with open(header_path, 'r') as fin:
         header_contents = fin.read()
 
-    functions = re_function.findall(header_contents)
-    file_header = re_file_header.search(header_contents)
+    functions = RE_FUNCTION.findall(header_contents)
+    file_header = RE_FILE_HEADER.search(header_contents)
 
     mock_h = []
     mock_c = []
@@ -367,7 +370,7 @@ def generate_from_header(args,
     for comment, declaration in functions:
         func_h, func_c = generate_function_stubs(declaration.strip(),
                                                  comment,
-                                                 args.ignore_function)
+                                                 ignore_functions)
         if func_h and func_c:
             mock_h.append(func_h)
             mock_c.append(func_c)
@@ -436,17 +439,11 @@ def do_generate(args):
 
     '''
 
-    re_function = re.compile(r'/\*\*(.+?)\*/([\w \r\n\*]+?\w+\(.*?\));',
-                             re.MULTILINE | re.DOTALL)
-    re_file_header = re.compile(r'(/\*\*(.+?)\*/)',
-                                re.MULTILINE | re.DOTALL)
-
     for header_path in args.headers:
         try:
-            generate_from_header(args,
-                                 re_function,
-                                 re_file_header,
-                                 header_path)
+            generate_from_header(header_path,
+                                 args.ignore_function,
+                                 args.outdir)
         except AttributeError:
             print("Failed to generate stub for '{}'".format(
                 header_path))
