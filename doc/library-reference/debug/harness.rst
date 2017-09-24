@@ -30,7 +30,14 @@ Prototypes for ``foo_bar()`` and ``foo_fie()`` in ``foo.h``:
 
 .. code-block:: c
 
+   /**
+    * The bar function.
+    */
    int foo_bar();
+
+   /**
+    * The fie function.
+    */
    int foo_fie();
 
 ``foo_bar()`` and ``foo_fie()`` called in ``fum.c``. Both function
