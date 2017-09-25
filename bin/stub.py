@@ -78,23 +78,26 @@ MOCK_WRITE_ARGUMENT_VOID_FMT = '''\
 
 MOCK_ARGUMENT_IN_PTR_FMT = '''\
     harness_mock_assert("{function_name}({name})",
-                        {name});
+                        {name},
+                        {size});
 '''
 
 MOCK_ARGUMENT_OUT_PTR_FMT = '''\
     harness_mock_read("{function_name}(): return ({name})",
                       {name},
-                      HARNESS_MOCK_READ_ALL);
+                      {size});
 '''
 
 MOCK_ARGUMENT_IN_FMT = '''\
     harness_mock_assert("{function_name}({name})",
-                        &{name});
+                        &{name},
+                        sizeof({name}));
 '''
 
 MOCK_ARGUMENT_VOID_FMT = '''\
     harness_mock_assert("{function_name}()",
-                        NULL);
+                        NULL,
+                        0);
 '''
 
 MOCK_ARGUMENT_OUT_FMT = '''\
@@ -272,11 +275,17 @@ def generate_function_stub(return_type,
 
             if (('*' in argument.type_)
                 and (argument.name not in ['dev_p', 'pin_dev_p'])):
-                if 'in' in argument.direction:
-                    size = 'sizeof(*{})'.format(argument.name)
-                    fmt = MOCK_ARGUMENT_IN_PTR_FMT
+                if 'void' in argument.type_:
+                    if any([arg.name == 'size' for arg in arguments]):
+                        size = 'size'
+                    else:
+                        size = 'sizeof(*{})'.format(argument.name)
                 else:
                     size = 'sizeof(*{})'.format(argument.name)
+
+                if 'in' in argument.direction:
+                    fmt = MOCK_ARGUMENT_IN_PTR_FMT
+                else:
                     fmt = MOCK_ARGUMENT_OUT_PTR_FMT
             else:
                 size = 'sizeof({})'.format(argument.name)

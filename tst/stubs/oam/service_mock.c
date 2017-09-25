@@ -49,7 +49,8 @@ int __attribute__ ((weak)) STUB(service_module_init)()
     int res;
 
     harness_mock_assert("service_module_init()",
-                        NULL);
+                        NULL,
+                        0);
 
     harness_mock_read("service_module_init(): return (res)",
                       &res,
@@ -84,10 +85,12 @@ int __attribute__ ((weak)) STUB(service_init)(struct service_t *self_p,
     int res;
 
     harness_mock_assert("service_init(name_p)",
-                        name_p);
+                        name_p,
+                        sizeof(*name_p));
 
     harness_mock_assert("service_init(status_cb)",
-                        &status_cb);
+                        &status_cb,
+                        sizeof(status_cb));
 
     harness_mock_read("service_init(): return (res)",
                       &res,
@@ -155,7 +158,8 @@ int __attribute__ ((weak)) STUB(service_register)(struct service_t *service_p)
     int res;
 
     harness_mock_assert("service_register(service_p)",
-                        service_p);
+                        service_p,
+                        sizeof(*service_p));
 
     harness_mock_read("service_register(): return (res)",
                       &res,
@@ -183,7 +187,8 @@ int __attribute__ ((weak)) STUB(service_deregister)(struct service_t *service_p)
     int res;
 
     harness_mock_assert("service_deregister(service_p)",
-                        service_p);
+                        service_p,
+                        sizeof(*service_p));
 
     harness_mock_read("service_deregister(): return (res)",
                       &res,

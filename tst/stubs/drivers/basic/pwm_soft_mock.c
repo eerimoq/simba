@@ -50,7 +50,8 @@ int __attribute__ ((weak)) STUB(pwm_soft_module_init)(long frequency)
     int res;
 
     harness_mock_assert("pwm_soft_module_init(frequency)",
-                        &frequency);
+                        &frequency,
+                        sizeof(frequency));
 
     harness_mock_read("pwm_soft_module_init(): return (res)",
                       &res,
@@ -78,7 +79,8 @@ int __attribute__ ((weak)) STUB(pwm_soft_set_frequency)(long value)
     int res;
 
     harness_mock_assert("pwm_soft_set_frequency(value)",
-                        &value);
+                        &value,
+                        sizeof(value));
 
     harness_mock_read("pwm_soft_set_frequency(): return (res)",
                       &res,
@@ -105,7 +107,8 @@ long __attribute__ ((weak)) STUB(pwm_soft_get_frequency)()
     long res;
 
     harness_mock_assert("pwm_soft_get_frequency()",
-                        NULL);
+                        NULL,
+                        0);
 
     harness_mock_read("pwm_soft_get_frequency(): return (res)",
                       &res,
@@ -140,10 +143,12 @@ int __attribute__ ((weak)) STUB(pwm_soft_init)(struct pwm_soft_driver_t *self_p,
     int res;
 
     harness_mock_assert("pwm_soft_init(pin_dev_p)",
-                        &pin_dev_p);
+                        &pin_dev_p,
+                        sizeof(pin_dev_p));
 
     harness_mock_assert("pwm_soft_init(duty_cycle)",
-                        &duty_cycle);
+                        &duty_cycle,
+                        sizeof(duty_cycle));
 
     harness_mock_read("pwm_soft_init(): return (res)",
                       &res,
@@ -212,7 +217,8 @@ int __attribute__ ((weak)) STUB(pwm_soft_set_duty_cycle)(struct pwm_soft_driver_
     int res;
 
     harness_mock_assert("pwm_soft_set_duty_cycle(value)",
-                        &value);
+                        &value,
+                        sizeof(value));
 
     harness_mock_read("pwm_soft_set_duty_cycle(): return (res)",
                       &res,
@@ -260,7 +266,8 @@ long __attribute__ ((weak)) STUB(pwm_soft_duty_cycle)(int percentage)
     long res;
 
     harness_mock_assert("pwm_soft_duty_cycle(percentage)",
-                        &percentage);
+                        &percentage,
+                        sizeof(percentage));
 
     harness_mock_read("pwm_soft_duty_cycle(): return (res)",
                       &res,
@@ -288,7 +295,8 @@ int __attribute__ ((weak)) STUB(pwm_soft_duty_cycle_as_percent)(long value)
     int res;
 
     harness_mock_assert("pwm_soft_duty_cycle_as_percent(value)",
-                        &value);
+                        &value,
+                        sizeof(value));
 
     harness_mock_read("pwm_soft_duty_cycle_as_percent(): return (res)",
                       &res,

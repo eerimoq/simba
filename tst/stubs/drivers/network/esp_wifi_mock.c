@@ -49,7 +49,8 @@ int __attribute__ ((weak)) STUB(esp_wifi_module_init)()
     int res;
 
     harness_mock_assert("esp_wifi_module_init()",
-                        NULL);
+                        NULL,
+                        0);
 
     harness_mock_read("esp_wifi_module_init(): return (res)",
                       &res,
@@ -77,7 +78,8 @@ int __attribute__ ((weak)) STUB(esp_wifi_set_op_mode)(enum esp_wifi_op_mode_t mo
     int res;
 
     harness_mock_assert("esp_wifi_set_op_mode(mode)",
-                        &mode);
+                        &mode,
+                        sizeof(mode));
 
     harness_mock_read("esp_wifi_set_op_mode(): return (res)",
                       &res,
@@ -104,7 +106,8 @@ enum esp_wifi_op_mode_t __attribute__ ((weak)) STUB(esp_wifi_get_op_mode)()
     enum esp_wifi_op_mode_t res;
 
     harness_mock_assert("esp_wifi_get_op_mode()",
-                        NULL);
+                        NULL,
+                        0);
 
     harness_mock_read("esp_wifi_get_op_mode(): return (res)",
                       &res,
@@ -132,7 +135,8 @@ int __attribute__ ((weak)) STUB(esp_wifi_set_phy_mode)(enum esp_wifi_phy_mode_t 
     int res;
 
     harness_mock_assert("esp_wifi_set_phy_mode(mode)",
-                        &mode);
+                        &mode,
+                        sizeof(mode));
 
     harness_mock_read("esp_wifi_set_phy_mode(): return (res)",
                       &res,
@@ -159,7 +163,8 @@ enum esp_wifi_phy_mode_t __attribute__ ((weak)) STUB(esp_wifi_get_phy_mode)()
     enum esp_wifi_phy_mode_t res;
 
     harness_mock_assert("esp_wifi_get_phy_mode()",
-                        NULL);
+                        NULL,
+                        0);
 
     harness_mock_read("esp_wifi_get_phy_mode(): return (res)",
                       &res,
@@ -181,5 +186,5 @@ void __attribute__ ((weak)) STUB(esp_wifi_print)(void *chout_p)
 {
     harness_mock_read("esp_wifi_print(): return (chout_p)",
                       chout_p,
-                      HARNESS_MOCK_READ_ALL);
+                      sizeof(*chout_p));
 }

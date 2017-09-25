@@ -49,7 +49,8 @@ int __attribute__ ((weak)) STUB(can_module_init)()
     int res;
 
     harness_mock_assert("can_module_init()",
-                        NULL);
+                        NULL,
+                        0);
 
     harness_mock_read("can_module_init(): return (res)",
                       &res,
@@ -96,16 +97,20 @@ int __attribute__ ((weak)) STUB(can_init)(struct can_driver_t *self_p,
     int res;
 
     harness_mock_assert("can_init(dev_p)",
-                        &dev_p);
+                        &dev_p,
+                        sizeof(dev_p));
 
     harness_mock_assert("can_init(speed)",
-                        &speed);
+                        &speed,
+                        sizeof(speed));
 
     harness_mock_assert("can_init(rxbuf_p)",
-                        rxbuf_p);
+                        rxbuf_p,
+                        size);
 
     harness_mock_assert("can_init(size)",
-                        &size);
+                        &size,
+                        sizeof(size));
 
     harness_mock_read("can_init(): return (res)",
                       &res,
@@ -181,10 +186,11 @@ ssize_t __attribute__ ((weak)) STUB(can_read)(struct can_driver_t *self_p,
 
     harness_mock_read("can_read(): return (frame_p)",
                       frame_p,
-                      HARNESS_MOCK_READ_ALL);
+                      sizeof(*frame_p));
 
     harness_mock_assert("can_read(size)",
-                        &size);
+                        &size,
+                        sizeof(size));
 
     harness_mock_read("can_read(): return (res)",
                       &res,
@@ -219,10 +225,12 @@ ssize_t __attribute__ ((weak)) STUB(can_write)(struct can_driver_t *self_p,
     ssize_t res;
 
     harness_mock_assert("can_write(frame_p)",
-                        frame_p);
+                        frame_p,
+                        sizeof(*frame_p));
 
     harness_mock_assert("can_write(size)",
-                        &size);
+                        &size,
+                        sizeof(size));
 
     harness_mock_read("can_write(): return (res)",
                       &res,

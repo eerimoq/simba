@@ -57,10 +57,12 @@ int __attribute__ ((weak)) STUB(circular_heap_init)(struct circular_heap_t *self
     int res;
 
     harness_mock_assert("circular_heap_init(buf_p)",
-                        buf_p);
+                        buf_p,
+                        size);
 
     harness_mock_assert("circular_heap_init(size)",
-                        &size);
+                        &size,
+                        sizeof(size));
 
     harness_mock_read("circular_heap_init(): return (res)",
                       &res,
@@ -89,7 +91,8 @@ void *__attribute__ ((weak)) STUB(circular_heap_alloc)(struct circular_heap_t *s
     void *res;
 
     harness_mock_assert("circular_heap_alloc(size)",
-                        &size);
+                        &size,
+                        sizeof(size));
 
     harness_mock_read("circular_heap_alloc(): return (res)",
                       &res,
@@ -118,7 +121,8 @@ int __attribute__ ((weak)) STUB(circular_heap_free)(struct circular_heap_t *self
     int res;
 
     harness_mock_assert("circular_heap_free(buf_p)",
-                        buf_p);
+                        buf_p,
+                        sizeof(*buf_p));
 
     harness_mock_read("circular_heap_free(): return (res)",
                       &res,

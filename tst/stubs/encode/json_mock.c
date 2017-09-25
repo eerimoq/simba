@@ -57,10 +57,12 @@ int __attribute__ ((weak)) STUB(json_init)(struct json_t *self_p,
     int res;
 
     harness_mock_assert("json_init(tokens_p)",
-                        tokens_p);
+                        tokens_p,
+                        sizeof(*tokens_p));
 
     harness_mock_assert("json_init(num_tokens)",
-                        &num_tokens);
+                        &num_tokens,
+                        sizeof(num_tokens));
 
     harness_mock_read("json_init(): return (res)",
                       &res,
@@ -95,10 +97,12 @@ int __attribute__ ((weak)) STUB(json_parse)(struct json_t *self_p,
     int res;
 
     harness_mock_assert("json_parse(js_p)",
-                        js_p);
+                        js_p,
+                        sizeof(*js_p));
 
     harness_mock_assert("json_parse(len)",
-                        &len);
+                        &len,
+                        sizeof(len));
 
     harness_mock_read("json_parse(): return (res)",
                       &res,
@@ -133,11 +137,12 @@ ssize_t __attribute__ ((weak)) STUB(json_dumps)(struct json_t *self_p,
     ssize_t res;
 
     harness_mock_assert("json_dumps(tokens_p)",
-                        tokens_p);
+                        tokens_p,
+                        sizeof(*tokens_p));
 
     harness_mock_read("json_dumps(): return (js_p)",
                       js_p,
-                      HARNESS_MOCK_READ_ALL);
+                      sizeof(*js_p));
 
     harness_mock_read("json_dumps(): return (res)",
                       &res,
@@ -172,10 +177,12 @@ ssize_t __attribute__ ((weak)) STUB(json_dump)(struct json_t *self_p,
     ssize_t res;
 
     harness_mock_assert("json_dump(tokens_p)",
-                        tokens_p);
+                        tokens_p,
+                        sizeof(*tokens_p));
 
     harness_mock_assert("json_dump(out_p)",
-                        out_p);
+                        out_p,
+                        sizeof(*out_p));
 
     harness_mock_read("json_dump(): return (res)",
                       &res,
@@ -230,10 +237,12 @@ struct json_tok_t *__attribute__ ((weak)) STUB(json_object_get)(struct json_t *s
     struct json_tok_t *res;
 
     harness_mock_assert("json_object_get(key_p)",
-                        key_p);
+                        key_p,
+                        sizeof(*key_p));
 
     harness_mock_assert("json_object_get(object_p)",
-                        object_p);
+                        object_p,
+                        sizeof(*object_p));
 
     harness_mock_read("json_object_get(): return (res)",
                       &res,
@@ -268,10 +277,12 @@ struct json_tok_t *__attribute__ ((weak)) STUB(json_object_get_primitive)(struct
     struct json_tok_t *res;
 
     harness_mock_assert("json_object_get_primitive(key_p)",
-                        key_p);
+                        key_p,
+                        sizeof(*key_p));
 
     harness_mock_assert("json_object_get_primitive(object_p)",
-                        object_p);
+                        object_p,
+                        sizeof(*object_p));
 
     harness_mock_read("json_object_get_primitive(): return (res)",
                       &res,
@@ -306,10 +317,12 @@ struct json_tok_t *__attribute__ ((weak)) STUB(json_array_get)(struct json_t *se
     struct json_tok_t *res;
 
     harness_mock_assert("json_array_get(index)",
-                        &index);
+                        &index,
+                        sizeof(index));
 
     harness_mock_assert("json_array_get(array_p)",
-                        array_p);
+                        array_p,
+                        sizeof(*array_p));
 
     harness_mock_read("json_array_get(): return (res)",
                       &res,
@@ -337,10 +350,11 @@ void __attribute__ ((weak)) STUB(json_token_object)(struct json_tok_t *token_p,
 {
     harness_mock_read("json_token_object(): return (token_p)",
                       token_p,
-                      HARNESS_MOCK_READ_ALL);
+                      sizeof(*token_p));
 
     harness_mock_assert("json_token_object(num_keys)",
-                        &num_keys);
+                        &num_keys,
+                        sizeof(num_keys));
 }
 
 int mock_write_json_token_array(struct json_tok_t *token_p,
@@ -362,10 +376,11 @@ void __attribute__ ((weak)) STUB(json_token_array)(struct json_tok_t *token_p,
 {
     harness_mock_read("json_token_array(): return (token_p)",
                       token_p,
-                      HARNESS_MOCK_READ_ALL);
+                      sizeof(*token_p));
 
     harness_mock_assert("json_token_array(num_elements)",
-                        &num_elements);
+                        &num_elements,
+                        sizeof(num_elements));
 }
 
 int mock_write_json_token_true(struct json_tok_t *token_p)
@@ -381,7 +396,7 @@ void __attribute__ ((weak)) STUB(json_token_true)(struct json_tok_t *token_p)
 {
     harness_mock_read("json_token_true(): return (token_p)",
                       token_p,
-                      HARNESS_MOCK_READ_ALL);
+                      sizeof(*token_p));
 }
 
 int mock_write_json_token_false(struct json_tok_t *token_p)
@@ -397,7 +412,7 @@ void __attribute__ ((weak)) STUB(json_token_false)(struct json_tok_t *token_p)
 {
     harness_mock_read("json_token_false(): return (token_p)",
                       token_p,
-                      HARNESS_MOCK_READ_ALL);
+                      sizeof(*token_p));
 }
 
 int mock_write_json_token_null(struct json_tok_t *token_p)
@@ -413,7 +428,7 @@ void __attribute__ ((weak)) STUB(json_token_null)(struct json_tok_t *token_p)
 {
     harness_mock_read("json_token_null(): return (token_p)",
                       token_p,
-                      HARNESS_MOCK_READ_ALL);
+                      sizeof(*token_p));
 }
 
 int mock_write_json_token_number(struct json_tok_t *token_p,
@@ -441,13 +456,15 @@ void __attribute__ ((weak)) STUB(json_token_number)(struct json_tok_t *token_p,
 {
     harness_mock_read("json_token_number(): return (token_p)",
                       token_p,
-                      HARNESS_MOCK_READ_ALL);
+                      sizeof(*token_p));
 
     harness_mock_assert("json_token_number(buf_p)",
-                        buf_p);
+                        buf_p,
+                        sizeof(*buf_p));
 
     harness_mock_assert("json_token_number(size)",
-                        &size);
+                        &size,
+                        sizeof(size));
 }
 
 int mock_write_json_token_string(struct json_tok_t *token_p,
@@ -475,11 +492,13 @@ void __attribute__ ((weak)) STUB(json_token_string)(struct json_tok_t *token_p,
 {
     harness_mock_read("json_token_string(): return (token_p)",
                       token_p,
-                      HARNESS_MOCK_READ_ALL);
+                      sizeof(*token_p));
 
     harness_mock_assert("json_token_string(buf_p)",
-                        buf_p);
+                        buf_p,
+                        sizeof(*buf_p));
 
     harness_mock_assert("json_token_string(size)",
-                        &size);
+                        &size,
+                        sizeof(size));
 }

@@ -49,7 +49,8 @@ int __attribute__ ((weak)) STUB(rwlock_module_init)()
     int res;
 
     harness_mock_assert("rwlock_module_init()",
-                        NULL);
+                        NULL,
+                        0);
 
     harness_mock_read("rwlock_module_init(): return (res)",
                       &res,

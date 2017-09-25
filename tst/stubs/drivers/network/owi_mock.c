@@ -63,13 +63,16 @@ int __attribute__ ((weak)) STUB(owi_init)(struct owi_driver_t *self_p,
     int res;
 
     harness_mock_assert("owi_init(dev_p)",
-                        &dev_p);
+                        &dev_p,
+                        sizeof(dev_p));
 
     harness_mock_assert("owi_init(devices_p)",
-                        devices_p);
+                        devices_p,
+                        sizeof(*devices_p));
 
     harness_mock_assert("owi_init(nmemb)",
-                        &nmemb);
+                        &nmemb,
+                        sizeof(nmemb));
 
     harness_mock_read("owi_init(): return (res)",
                       &res,
@@ -144,10 +147,12 @@ ssize_t __attribute__ ((weak)) STUB(owi_read)(struct owi_driver_t *self_p,
     ssize_t res;
 
     harness_mock_assert("owi_read(buf_p)",
-                        buf_p);
+                        buf_p,
+                        size);
 
     harness_mock_assert("owi_read(size)",
-                        &size);
+                        &size,
+                        sizeof(size));
 
     harness_mock_read("owi_read(): return (res)",
                       &res,
@@ -182,10 +187,12 @@ ssize_t __attribute__ ((weak)) STUB(owi_write)(struct owi_driver_t *self_p,
     ssize_t res;
 
     harness_mock_assert("owi_write(buf_p)",
-                        buf_p);
+                        buf_p,
+                        size);
 
     harness_mock_assert("owi_write(size)",
-                        &size);
+                        &size,
+                        sizeof(size));
 
     harness_mock_read("owi_write(): return (res)",
                       &res,

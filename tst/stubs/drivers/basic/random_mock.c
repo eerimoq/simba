@@ -49,7 +49,8 @@ int __attribute__ ((weak)) STUB(random_module_init)()
     int res;
 
     harness_mock_assert("random_module_init()",
-                        NULL);
+                        NULL,
+                        0);
 
     harness_mock_read("random_module_init(): return (res)",
                       &res,
@@ -76,7 +77,8 @@ uint32_t __attribute__ ((weak)) STUB(random_read)()
     uint32_t res;
 
     harness_mock_assert("random_read()",
-                        NULL);
+                        NULL,
+                        0);
 
     harness_mock_read("random_read(): return (res)",
                       &res,

@@ -68,16 +68,20 @@ int __attribute__ ((weak)) STUB(esp_wifi_station_init)(const char *ssid_p,
     int res;
 
     harness_mock_assert("esp_wifi_station_init(ssid_p)",
-                        ssid_p);
+                        ssid_p,
+                        sizeof(*ssid_p));
 
     harness_mock_assert("esp_wifi_station_init(password_p)",
-                        password_p);
+                        password_p,
+                        sizeof(*password_p));
 
     harness_mock_assert("esp_wifi_station_init(bssid_p)",
-                        bssid_p);
+                        bssid_p,
+                        sizeof(*bssid_p));
 
     harness_mock_assert("esp_wifi_station_init(info_p)",
-                        info_p);
+                        info_p,
+                        sizeof(*info_p));
 
     harness_mock_read("esp_wifi_station_init(): return (res)",
                       &res,
@@ -104,7 +108,8 @@ int __attribute__ ((weak)) STUB(esp_wifi_station_connect)()
     int res;
 
     harness_mock_assert("esp_wifi_station_connect()",
-                        NULL);
+                        NULL,
+                        0);
 
     harness_mock_read("esp_wifi_station_connect(): return (res)",
                       &res,
@@ -131,7 +136,8 @@ int __attribute__ ((weak)) STUB(esp_wifi_station_disconnect)()
     int res;
 
     harness_mock_assert("esp_wifi_station_disconnect()",
-                        NULL);
+                        NULL,
+                        0);
 
     harness_mock_read("esp_wifi_station_disconnect(): return (res)",
                       &res,
@@ -160,7 +166,7 @@ int __attribute__ ((weak)) STUB(esp_wifi_station_set_ip_info)(const struct inet_
 
     harness_mock_read("esp_wifi_station_set_ip_info(): return (info_p)",
                       info_p,
-                      HARNESS_MOCK_READ_ALL);
+                      sizeof(*info_p));
 
     harness_mock_read("esp_wifi_station_set_ip_info(): return (res)",
                       &res,
@@ -189,7 +195,7 @@ int __attribute__ ((weak)) STUB(esp_wifi_station_get_ip_info)(struct inet_if_ip_
 
     harness_mock_read("esp_wifi_station_get_ip_info(): return (info_p)",
                       info_p,
-                      HARNESS_MOCK_READ_ALL);
+                      sizeof(*info_p));
 
     harness_mock_read("esp_wifi_station_get_ip_info(): return (res)",
                       &res,
@@ -217,7 +223,8 @@ int __attribute__ ((weak)) STUB(esp_wifi_station_set_reconnect_policy)(int polic
     int res;
 
     harness_mock_assert("esp_wifi_station_set_reconnect_policy(policy)",
-                        &policy);
+                        &policy,
+                        sizeof(policy));
 
     harness_mock_read("esp_wifi_station_set_reconnect_policy(): return (res)",
                       &res,
@@ -244,7 +251,8 @@ int __attribute__ ((weak)) STUB(esp_wifi_station_get_reconnect_policy)()
     int res;
 
     harness_mock_assert("esp_wifi_station_get_reconnect_policy()",
-                        NULL);
+                        NULL,
+                        0);
 
     harness_mock_read("esp_wifi_station_get_reconnect_policy(): return (res)",
                       &res,
@@ -271,7 +279,8 @@ enum esp_wifi_station_status_t __attribute__ ((weak)) STUB(esp_wifi_station_get_
     enum esp_wifi_station_status_t res;
 
     harness_mock_assert("esp_wifi_station_get_status()",
-                        NULL);
+                        NULL,
+                        0);
 
     harness_mock_read("esp_wifi_station_get_status(): return (res)",
                       &res,
@@ -298,7 +307,8 @@ int __attribute__ ((weak)) STUB(esp_wifi_station_dhcp_client_start)()
     int res;
 
     harness_mock_assert("esp_wifi_station_dhcp_client_start()",
-                        NULL);
+                        NULL,
+                        0);
 
     harness_mock_read("esp_wifi_station_dhcp_client_start(): return (res)",
                       &res,
@@ -325,7 +335,8 @@ int __attribute__ ((weak)) STUB(esp_wifi_station_dhcp_client_stop)()
     int res;
 
     harness_mock_assert("esp_wifi_station_dhcp_client_stop()",
-                        NULL);
+                        NULL,
+                        0);
 
     harness_mock_read("esp_wifi_station_dhcp_client_stop(): return (res)",
                       &res,
@@ -352,7 +363,8 @@ enum esp_wifi_dhcp_status_t __attribute__ ((weak)) STUB(esp_wifi_station_dhcp_cl
     enum esp_wifi_dhcp_status_t res;
 
     harness_mock_assert("esp_wifi_station_dhcp_client_status()",
-                        NULL);
+                        NULL,
+                        0);
 
     harness_mock_read("esp_wifi_station_dhcp_client_status(): return (res)",
                       &res,
@@ -380,7 +392,8 @@ const char *__attribute__ ((weak)) STUB(esp_wifi_station_status_as_string)(enum 
     const char *res;
 
     harness_mock_assert("esp_wifi_station_status_as_string(status)",
-                        &status);
+                        &status,
+                        sizeof(status));
 
     harness_mock_read("esp_wifi_station_status_as_string(): return (res)",
                       &res,

@@ -63,13 +63,16 @@ int __attribute__ ((weak)) STUB(isotp_init)(struct isotp_t *self_p,
     int res;
 
     harness_mock_assert("isotp_init(message_p)",
-                        message_p);
+                        message_p,
+                        sizeof(*message_p));
 
     harness_mock_assert("isotp_init(size)",
-                        &size);
+                        &size,
+                        sizeof(size));
 
     harness_mock_assert("isotp_init(flags)",
-                        &flags);
+                        &flags,
+                        sizeof(flags));
 
     harness_mock_read("isotp_init(): return (res)",
                       &res,
@@ -104,10 +107,12 @@ ssize_t __attribute__ ((weak)) STUB(isotp_input)(struct isotp_t *self_p,
     ssize_t res;
 
     harness_mock_assert("isotp_input(buf_p)",
-                        buf_p);
+                        buf_p,
+                        sizeof(*buf_p));
 
     harness_mock_assert("isotp_input(size)",
-                        &size);
+                        &size,
+                        sizeof(size));
 
     harness_mock_read("isotp_input(): return (res)",
                       &res,
@@ -143,11 +148,11 @@ ssize_t __attribute__ ((weak)) STUB(isotp_output)(struct isotp_t *self_p,
 
     harness_mock_read("isotp_output(): return (buf_p)",
                       buf_p,
-                      HARNESS_MOCK_READ_ALL);
+                      sizeof(*buf_p));
 
     harness_mock_read("isotp_output(): return (size_p)",
                       size_p,
-                      HARNESS_MOCK_READ_ALL);
+                      sizeof(*size_p));
 
     harness_mock_read("isotp_output(): return (res)",
                       &res,

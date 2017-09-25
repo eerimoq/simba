@@ -49,7 +49,8 @@ int __attribute__ ((weak)) STUB(eeprom_i2c_module_init)()
     int res;
 
     harness_mock_assert("eeprom_i2c_module_init()",
-                        NULL);
+                        NULL,
+                        0);
 
     harness_mock_read("eeprom_i2c_module_init(): return (res)",
                       &res,
@@ -90,13 +91,16 @@ int __attribute__ ((weak)) STUB(eeprom_i2c_init)(struct eeprom_i2c_driver_t *sel
     int res;
 
     harness_mock_assert("eeprom_i2c_init(i2c_p)",
-                        i2c_p);
+                        i2c_p,
+                        sizeof(*i2c_p));
 
     harness_mock_assert("eeprom_i2c_init(i2c_address)",
-                        &i2c_address);
+                        &i2c_address,
+                        sizeof(i2c_address));
 
     harness_mock_assert("eeprom_i2c_init(size)",
-                        &size);
+                        &size,
+                        sizeof(size));
 
     harness_mock_read("eeprom_i2c_init(): return (res)",
                       &res,
@@ -138,13 +142,15 @@ ssize_t __attribute__ ((weak)) STUB(eeprom_i2c_read)(struct eeprom_i2c_driver_t 
 
     harness_mock_read("eeprom_i2c_read(): return (dst_p)",
                       dst_p,
-                      HARNESS_MOCK_READ_ALL);
+                      size);
 
     harness_mock_assert("eeprom_i2c_read(src)",
-                        &src);
+                        &src,
+                        sizeof(src));
 
     harness_mock_assert("eeprom_i2c_read(size)",
-                        &size);
+                        &size,
+                        sizeof(size));
 
     harness_mock_read("eeprom_i2c_read(): return (res)",
                       &res,
@@ -185,13 +191,16 @@ ssize_t __attribute__ ((weak)) STUB(eeprom_i2c_write)(struct eeprom_i2c_driver_t
     ssize_t res;
 
     harness_mock_assert("eeprom_i2c_write(dst)",
-                        &dst);
+                        &dst,
+                        sizeof(dst));
 
     harness_mock_assert("eeprom_i2c_write(src_p)",
-                        src_p);
+                        src_p,
+                        size);
 
     harness_mock_assert("eeprom_i2c_write(size)",
-                        &size);
+                        &size,
+                        sizeof(size));
 
     harness_mock_read("eeprom_i2c_write(): return (res)",
                       &res,

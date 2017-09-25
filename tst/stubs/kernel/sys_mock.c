@@ -49,7 +49,8 @@ int __attribute__ ((weak)) STUB(sys_module_init)()
     int res;
 
     harness_mock_assert("sys_module_init()",
-                        NULL);
+                        NULL,
+                        0);
 
     harness_mock_read("sys_module_init(): return (res)",
                       &res,
@@ -76,7 +77,8 @@ int __attribute__ ((weak)) STUB(sys_start)()
     int res;
 
     harness_mock_assert("sys_start()",
-                        NULL);
+                        NULL,
+                        0);
 
     harness_mock_read("sys_start(): return (res)",
                       &res,
@@ -97,7 +99,8 @@ int mock_write_sys_stop(int error)
 void __attribute__ ((weak)) STUB(sys_stop)(int error)
 {
     harness_mock_assert("sys_stop(error)",
-                        &error);
+                        &error,
+                        sizeof(error));
 }
 
 int mock_write_sys_panic(const char *message_p)
@@ -112,7 +115,8 @@ int mock_write_sys_panic(const char *message_p)
 void __attribute__ ((weak)) STUB(sys_panic)(const char *message_p)
 {
     harness_mock_assert("sys_panic(message_p)",
-                        message_p);
+                        message_p,
+                        sizeof(*message_p));
 }
 
 int mock_write_sys_reboot()
@@ -127,7 +131,8 @@ int mock_write_sys_reboot()
 void __attribute__ ((weak)) STUB(sys_reboot)()
 {
     harness_mock_assert("sys_reboot()",
-                        NULL);
+                        NULL,
+                        0);
 }
 
 int mock_write_sys_backtrace(void **buf_p,
@@ -156,10 +161,11 @@ int __attribute__ ((weak)) STUB(sys_backtrace)(void **buf_p,
 
     harness_mock_read("sys_backtrace(): return (buf_p)",
                       buf_p,
-                      HARNESS_MOCK_READ_ALL);
+                      size);
 
     harness_mock_assert("sys_backtrace(size)",
-                        &size);
+                        &size,
+                        sizeof(size));
 
     harness_mock_read("sys_backtrace(): return (res)",
                       &res,
@@ -186,7 +192,8 @@ enum sys_reset_cause_t __attribute__ ((weak)) STUB(sys_reset_cause)()
     enum sys_reset_cause_t res;
 
     harness_mock_assert("sys_reset_cause()",
-                        NULL);
+                        NULL,
+                        0);
 
     harness_mock_read("sys_reset_cause(): return (res)",
                       &res,
@@ -215,7 +222,7 @@ int __attribute__ ((weak)) STUB(sys_uptime)(struct time_t *uptime_p)
 
     harness_mock_read("sys_uptime(): return (uptime_p)",
                       uptime_p,
-                      HARNESS_MOCK_READ_ALL);
+                      sizeof(*uptime_p));
 
     harness_mock_read("sys_uptime(): return (res)",
                       &res,
@@ -244,7 +251,7 @@ int __attribute__ ((weak)) STUB(sys_uptime_isr)(struct time_t *uptime_p)
 
     harness_mock_read("sys_uptime_isr(): return (uptime_p)",
                       uptime_p,
-                      HARNESS_MOCK_READ_ALL);
+                      sizeof(*uptime_p));
 
     harness_mock_read("sys_uptime_isr(): return (res)",
                       &res,
@@ -265,7 +272,8 @@ int mock_write_sys_set_on_fatal_callback(sys_on_fatal_fn_t callback)
 void __attribute__ ((weak)) STUB(sys_set_on_fatal_callback)(sys_on_fatal_fn_t callback)
 {
     harness_mock_assert("sys_set_on_fatal_callback(callback)",
-                        &callback);
+                        &callback,
+                        sizeof(callback));
 }
 
 int mock_write_sys_set_stdin(void *chan_p)
@@ -280,7 +288,8 @@ int mock_write_sys_set_stdin(void *chan_p)
 void __attribute__ ((weak)) STUB(sys_set_stdin)(void *chan_p)
 {
     harness_mock_assert("sys_set_stdin(chan_p)",
-                        chan_p);
+                        chan_p,
+                        sizeof(*chan_p));
 }
 
 int mock_write_sys_get_stdin(void *res)
@@ -301,7 +310,8 @@ void *__attribute__ ((weak)) STUB(sys_get_stdin)()
     void *res;
 
     harness_mock_assert("sys_get_stdin()",
-                        NULL);
+                        NULL,
+                        0);
 
     harness_mock_read("sys_get_stdin(): return (res)",
                       &res,
@@ -322,7 +332,8 @@ int mock_write_sys_set_stdout(void *chan_p)
 void __attribute__ ((weak)) STUB(sys_set_stdout)(void *chan_p)
 {
     harness_mock_assert("sys_set_stdout(chan_p)",
-                        chan_p);
+                        chan_p,
+                        sizeof(*chan_p));
 }
 
 int mock_write_sys_get_stdout(void *res)
@@ -343,7 +354,8 @@ void *__attribute__ ((weak)) STUB(sys_get_stdout)()
     void *res;
 
     harness_mock_assert("sys_get_stdout()",
-                        NULL);
+                        NULL,
+                        0);
 
     harness_mock_read("sys_get_stdout(): return (res)",
                       &res,
@@ -364,7 +376,8 @@ int mock_write_sys_lock()
 void __attribute__ ((weak)) STUB(sys_lock)()
 {
     harness_mock_assert("sys_lock()",
-                        NULL);
+                        NULL,
+                        0);
 }
 
 int mock_write_sys_unlock()
@@ -379,7 +392,8 @@ int mock_write_sys_unlock()
 void __attribute__ ((weak)) STUB(sys_unlock)()
 {
     harness_mock_assert("sys_unlock()",
-                        NULL);
+                        NULL,
+                        0);
 }
 
 int mock_write_sys_lock_isr()
@@ -394,7 +408,8 @@ int mock_write_sys_lock_isr()
 void __attribute__ ((weak)) STUB(sys_lock_isr)()
 {
     harness_mock_assert("sys_lock_isr()",
-                        NULL);
+                        NULL,
+                        0);
 }
 
 int mock_write_sys_unlock_isr()
@@ -409,7 +424,8 @@ int mock_write_sys_unlock_isr()
 void __attribute__ ((weak)) STUB(sys_unlock_isr)()
 {
     harness_mock_assert("sys_unlock_isr()",
-                        NULL);
+                        NULL,
+                        0);
 }
 
 int mock_write_sys_get_info(far_string_t res)
@@ -430,7 +446,8 @@ far_string_t __attribute__ ((weak)) STUB(sys_get_info)()
     far_string_t res;
 
     harness_mock_assert("sys_get_info()",
-                        NULL);
+                        NULL,
+                        0);
 
     harness_mock_read("sys_get_info(): return (res)",
                       &res,
@@ -457,7 +474,8 @@ far_string_t __attribute__ ((weak)) STUB(sys_get_config)()
     far_string_t res;
 
     harness_mock_assert("sys_get_config()",
-                        NULL);
+                        NULL,
+                        0);
 
     harness_mock_read("sys_get_config(): return (res)",
                       &res,
@@ -484,7 +502,8 @@ cpu_usage_t __attribute__ ((weak)) STUB(sys_interrupt_cpu_usage_get)()
     cpu_usage_t res;
 
     harness_mock_assert("sys_interrupt_cpu_usage_get()",
-                        NULL);
+                        NULL,
+                        0);
 
     harness_mock_read("sys_interrupt_cpu_usage_get(): return (res)",
                       &res,
@@ -505,7 +524,8 @@ int mock_write_sys_interrupt_cpu_usage_reset()
 void __attribute__ ((weak)) STUB(sys_interrupt_cpu_usage_reset)()
 {
     harness_mock_assert("sys_interrupt_cpu_usage_reset()",
-                        NULL);
+                        NULL,
+                        0);
 }
 
 int mock_write_sys_reset_cause_as_string(enum sys_reset_cause_t reset_cause,
@@ -527,7 +547,8 @@ far_string_t __attribute__ ((weak)) STUB(sys_reset_cause_as_string)(enum sys_res
     far_string_t res;
 
     harness_mock_assert("sys_reset_cause_as_string(reset_cause)",
-                        &reset_cause);
+                        &reset_cause,
+                        sizeof(reset_cause));
 
     harness_mock_read("sys_reset_cause_as_string(): return (res)",
                       &res,

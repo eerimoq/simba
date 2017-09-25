@@ -49,7 +49,8 @@ int __attribute__ ((weak)) STUB(exti_module_init)()
     int res;
 
     harness_mock_assert("exti_module_init()",
-                        NULL);
+                        NULL,
+                        0);
 
     harness_mock_read("exti_module_init(): return (res)",
                       &res,
@@ -96,16 +97,20 @@ int __attribute__ ((weak)) STUB(exti_init)(struct exti_driver_t *self_p,
     int res;
 
     harness_mock_assert("exti_init(dev_p)",
-                        &dev_p);
+                        &dev_p,
+                        sizeof(dev_p));
 
     harness_mock_assert("exti_init(trigger)",
-                        &trigger);
+                        &trigger,
+                        sizeof(trigger));
 
     harness_mock_assert("exti_init(arg_p)",
-                        arg_p);
+                        arg_p,
+                        sizeof(*arg_p));
 
     harness_mock_assert("exti_init(arg_p)",
-                        arg_p);
+                        arg_p,
+                        sizeof(*arg_p));
 
     harness_mock_read("exti_init(): return (res)",
                       &res,

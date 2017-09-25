@@ -81,22 +81,28 @@ int __attribute__ ((weak)) STUB(tftp_server_init)(struct tftp_server_t *self_p,
     int res;
 
     harness_mock_assert("tftp_server_init(addr_p)",
-                        addr_p);
+                        addr_p,
+                        sizeof(*addr_p));
 
     harness_mock_assert("tftp_server_init(timeout_ms)",
-                        &timeout_ms);
+                        &timeout_ms,
+                        sizeof(timeout_ms));
 
     harness_mock_assert("tftp_server_init(name_p)",
-                        name_p);
+                        name_p,
+                        sizeof(*name_p));
 
     harness_mock_assert("tftp_server_init(root_p)",
-                        root_p);
+                        root_p,
+                        sizeof(*root_p));
 
     harness_mock_assert("tftp_server_init(stack_p)",
-                        stack_p);
+                        stack_p,
+                        sizeof(*stack_p));
 
     harness_mock_assert("tftp_server_init(stack_size)",
-                        &stack_size);
+                        &stack_size,
+                        sizeof(stack_size));
 
     harness_mock_read("tftp_server_init(): return (res)",
                       &res,

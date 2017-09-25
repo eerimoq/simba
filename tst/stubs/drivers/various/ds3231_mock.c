@@ -51,7 +51,8 @@ int __attribute__ ((weak)) STUB(ds3231_init)(struct ds3231_driver_t *self_p,
     int res;
 
     harness_mock_assert("ds3231_init(i2c_p)",
-                        i2c_p);
+                        i2c_p,
+                        sizeof(*i2c_p));
 
     harness_mock_read("ds3231_init(): return (res)",
                       &res,
@@ -80,7 +81,8 @@ int __attribute__ ((weak)) STUB(ds3231_set_date)(struct ds3231_driver_t *self_p,
     int res;
 
     harness_mock_assert("ds3231_set_date(date_p)",
-                        date_p);
+                        date_p,
+                        sizeof(*date_p));
 
     harness_mock_read("ds3231_set_date(): return (res)",
                       &res,
@@ -110,7 +112,7 @@ int __attribute__ ((weak)) STUB(ds3231_get_date)(struct ds3231_driver_t *self_p,
 
     harness_mock_read("ds3231_get_date(): return (date_p)",
                       date_p,
-                      HARNESS_MOCK_READ_ALL);
+                      sizeof(*date_p));
 
     harness_mock_read("ds3231_get_date(): return (res)",
                       &res,

@@ -64,14 +64,15 @@ int __attribute__ ((weak)) STUB(slip_init)(struct slip_t *self_p,
 
     harness_mock_read("slip_init(): return (buf_p)",
                       buf_p,
-                      HARNESS_MOCK_READ_ALL);
+                      size);
 
     harness_mock_assert("slip_init(size)",
-                        &size);
+                        &size,
+                        sizeof(size));
 
     harness_mock_read("slip_init(): return (chout_p)",
                       chout_p,
-                      HARNESS_MOCK_READ_ALL);
+                      size);
 
     harness_mock_read("slip_init(): return (res)",
                       &res,
@@ -100,7 +101,8 @@ ssize_t __attribute__ ((weak)) STUB(slip_input)(struct slip_t *self_p,
     ssize_t res;
 
     harness_mock_assert("slip_input(data)",
-                        &data);
+                        &data,
+                        sizeof(data));
 
     harness_mock_read("slip_input(): return (res)",
                       &res,

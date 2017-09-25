@@ -75,19 +75,24 @@ int __attribute__ ((weak)) STUB(hash_map_init)(struct hash_map_t *self_p,
     int res;
 
     harness_mock_assert("hash_map_init(buckets_p)",
-                        buckets_p);
+                        buckets_p,
+                        sizeof(*buckets_p));
 
     harness_mock_assert("hash_map_init(buckets_max)",
-                        &buckets_max);
+                        &buckets_max,
+                        sizeof(buckets_max));
 
     harness_mock_assert("hash_map_init(entries_p)",
-                        entries_p);
+                        entries_p,
+                        sizeof(*entries_p));
 
     harness_mock_assert("hash_map_init(entries_max)",
-                        &entries_max);
+                        &entries_max,
+                        sizeof(entries_max));
 
     harness_mock_assert("hash_map_init(hash)",
-                        &hash);
+                        &hash,
+                        sizeof(hash));
 
     harness_mock_read("hash_map_init(): return (res)",
                       &res,
@@ -122,10 +127,12 @@ int __attribute__ ((weak)) STUB(hash_map_add)(struct hash_map_t *self_p,
     int res;
 
     harness_mock_assert("hash_map_add(key)",
-                        &key);
+                        &key,
+                        sizeof(key));
 
     harness_mock_assert("hash_map_add(value_p)",
-                        value_p);
+                        value_p,
+                        sizeof(*value_p));
 
     harness_mock_read("hash_map_add(): return (res)",
                       &res,
@@ -154,7 +161,8 @@ int __attribute__ ((weak)) STUB(hash_map_remove)(struct hash_map_t *self_p,
     int res;
 
     harness_mock_assert("hash_map_remove(key)",
-                        &key);
+                        &key,
+                        sizeof(key));
 
     harness_mock_read("hash_map_remove(): return (res)",
                       &res,
@@ -183,7 +191,8 @@ void *__attribute__ ((weak)) STUB(hash_map_get)(struct hash_map_t *self_p,
     void *res;
 
     harness_mock_assert("hash_map_get(key)",
-                        &key);
+                        &key,
+                        sizeof(key));
 
     harness_mock_read("hash_map_get(): return (res)",
                       &res,

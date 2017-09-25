@@ -49,7 +49,8 @@ int __attribute__ ((weak)) STUB(settings_module_init)()
     int res;
 
     harness_mock_assert("settings_module_init()",
-                        NULL);
+                        NULL,
+                        0);
 
     harness_mock_read("settings_module_init(): return (res)",
                       &res,
@@ -90,13 +91,15 @@ ssize_t __attribute__ ((weak)) STUB(settings_read)(void *dst_p,
 
     harness_mock_read("settings_read(): return (dst_p)",
                       dst_p,
-                      HARNESS_MOCK_READ_ALL);
+                      size);
 
     harness_mock_assert("settings_read(src)",
-                        &src);
+                        &src,
+                        sizeof(src));
 
     harness_mock_assert("settings_read(size)",
-                        &size);
+                        &size,
+                        sizeof(size));
 
     harness_mock_read("settings_read(): return (res)",
                       &res,
@@ -136,13 +139,16 @@ ssize_t __attribute__ ((weak)) STUB(settings_write)(size_t dst,
     ssize_t res;
 
     harness_mock_assert("settings_write(dst)",
-                        &dst);
+                        &dst,
+                        sizeof(dst));
 
     harness_mock_assert("settings_write(src_p)",
-                        src_p);
+                        src_p,
+                        size);
 
     harness_mock_assert("settings_write(size)",
-                        &size);
+                        &size,
+                        sizeof(size));
 
     harness_mock_read("settings_write(): return (res)",
                       &res,
@@ -182,14 +188,16 @@ ssize_t __attribute__ ((weak)) STUB(settings_read_by_name)(const char *name_p,
     ssize_t res;
 
     harness_mock_assert("settings_read_by_name(name_p)",
-                        name_p);
+                        name_p,
+                        sizeof(*name_p));
 
     harness_mock_read("settings_read_by_name(): return (dst_p)",
                       dst_p,
-                      HARNESS_MOCK_READ_ALL);
+                      size);
 
     harness_mock_assert("settings_read_by_name(size)",
-                        &size);
+                        &size,
+                        sizeof(size));
 
     harness_mock_read("settings_read_by_name(): return (res)",
                       &res,
@@ -229,13 +237,16 @@ ssize_t __attribute__ ((weak)) STUB(settings_write_by_name)(const char *name_p,
     ssize_t res;
 
     harness_mock_assert("settings_write_by_name(name_p)",
-                        name_p);
+                        name_p,
+                        sizeof(*name_p));
 
     harness_mock_assert("settings_write_by_name(src_p)",
-                        src_p);
+                        src_p,
+                        size);
 
     harness_mock_assert("settings_write_by_name(size)",
-                        &size);
+                        &size,
+                        sizeof(size));
 
     harness_mock_read("settings_write_by_name(): return (res)",
                       &res,
@@ -262,7 +273,8 @@ int __attribute__ ((weak)) STUB(settings_reset)()
     int res;
 
     harness_mock_assert("settings_reset()",
-                        NULL);
+                        NULL,
+                        0);
 
     harness_mock_read("settings_reset(): return (res)",
                       &res,

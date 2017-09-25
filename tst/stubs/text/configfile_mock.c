@@ -57,10 +57,12 @@ int __attribute__ ((weak)) STUB(configfile_init)(struct configfile_t *self_p,
     int res;
 
     harness_mock_assert("configfile_init(buf_p)",
-                        buf_p);
+                        buf_p,
+                        sizeof(*buf_p));
 
     harness_mock_assert("configfile_init(size)",
-                        &size);
+                        &size,
+                        sizeof(size));
 
     harness_mock_read("configfile_init(): return (res)",
                       &res,
@@ -101,13 +103,16 @@ int __attribute__ ((weak)) STUB(configfile_set)(struct configfile_t *self_p,
     int res;
 
     harness_mock_assert("configfile_set(section_p)",
-                        section_p);
+                        section_p,
+                        sizeof(*section_p));
 
     harness_mock_assert("configfile_set(property_p)",
-                        property_p);
+                        property_p,
+                        sizeof(*property_p));
 
     harness_mock_assert("configfile_set(value_p)",
-                        value_p);
+                        value_p,
+                        sizeof(*value_p));
 
     harness_mock_read("configfile_set(): return (res)",
                       &res,
@@ -154,17 +159,20 @@ char *__attribute__ ((weak)) STUB(configfile_get)(struct configfile_t *self_p,
     char *res;
 
     harness_mock_assert("configfile_get(section_p)",
-                        section_p);
+                        section_p,
+                        sizeof(*section_p));
 
     harness_mock_assert("configfile_get(property_p)",
-                        property_p);
+                        property_p,
+                        sizeof(*property_p));
 
     harness_mock_read("configfile_get(): return (value_p)",
                       value_p,
-                      HARNESS_MOCK_READ_ALL);
+                      sizeof(*value_p));
 
     harness_mock_assert("configfile_get(length)",
-                        &length);
+                        &length,
+                        sizeof(length));
 
     harness_mock_read("configfile_get(): return (res)",
                       &res,
@@ -205,14 +213,16 @@ int __attribute__ ((weak)) STUB(configfile_get_long)(struct configfile_t *self_p
     int res;
 
     harness_mock_assert("configfile_get_long(section_p)",
-                        section_p);
+                        section_p,
+                        sizeof(*section_p));
 
     harness_mock_assert("configfile_get_long(property_p)",
-                        property_p);
+                        property_p,
+                        sizeof(*property_p));
 
     harness_mock_read("configfile_get_long(): return (value_p)",
                       value_p,
-                      HARNESS_MOCK_READ_ALL);
+                      sizeof(*value_p));
 
     harness_mock_read("configfile_get_long(): return (res)",
                       &res,
@@ -253,14 +263,16 @@ int __attribute__ ((weak)) STUB(configfile_get_float)(struct configfile_t *self_
     int res;
 
     harness_mock_assert("configfile_get_float(section_p)",
-                        section_p);
+                        section_p,
+                        sizeof(*section_p));
 
     harness_mock_assert("configfile_get_float(property_p)",
-                        property_p);
+                        property_p,
+                        sizeof(*property_p));
 
     harness_mock_read("configfile_get_float(): return (value_p)",
                       value_p,
-                      HARNESS_MOCK_READ_ALL);
+                      sizeof(*value_p));
 
     harness_mock_read("configfile_get_float(): return (res)",
                       &res,

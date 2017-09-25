@@ -49,7 +49,8 @@ int __attribute__ ((weak)) STUB(log_module_init)()
     int res;
 
     harness_mock_assert("log_module_init()",
-                        NULL);
+                        NULL,
+                        0);
 
     harness_mock_read("log_module_init(): return (res)",
                       &res,
@@ -84,10 +85,12 @@ int __attribute__ ((weak)) STUB(log_object_init)(struct log_object_t *self_p,
     int res;
 
     harness_mock_assert("log_object_init(name_p)",
-                        name_p);
+                        name_p,
+                        sizeof(*name_p));
 
     harness_mock_assert("log_object_init(mask)",
-                        &mask);
+                        &mask,
+                        sizeof(mask));
 
     harness_mock_read("log_object_init(): return (res)",
                       &res,
@@ -116,7 +119,8 @@ int __attribute__ ((weak)) STUB(log_object_set_log_mask)(struct log_object_t *se
     int res;
 
     harness_mock_assert("log_object_set_log_mask(mask)",
-                        &mask);
+                        &mask,
+                        sizeof(mask));
 
     harness_mock_read("log_object_set_log_mask(): return (res)",
                       &res,
@@ -165,7 +169,8 @@ int __attribute__ ((weak)) STUB(log_object_is_enabled_for)(struct log_object_t *
     int res;
 
     harness_mock_assert("log_object_is_enabled_for(level)",
-                        &level);
+                        &level,
+                        sizeof(level));
 
     harness_mock_read("log_object_is_enabled_for(): return (res)",
                       &res,
@@ -200,10 +205,12 @@ int __attribute__ ((weak)) STUB(log_object_print)(struct log_object_t *self_p,
     int res;
 
     harness_mock_assert("log_object_print(level)",
-                        &level);
+                        &level,
+                        sizeof(level));
 
     harness_mock_assert("log_object_print(fmt_p)",
-                        fmt_p);
+                        fmt_p,
+                        sizeof(*fmt_p));
 
     harness_mock_read("log_object_print(): return (res)",
                       &res,
@@ -232,7 +239,8 @@ int __attribute__ ((weak)) STUB(log_handler_init)(struct log_handler_t *self_p,
     int res;
 
     harness_mock_assert("log_handler_init(chout_p)",
-                        chout_p);
+                        chout_p,
+                        sizeof(*chout_p));
 
     harness_mock_read("log_handler_init(): return (res)",
                       &res,
@@ -260,7 +268,8 @@ int __attribute__ ((weak)) STUB(log_add_handler)(struct log_handler_t *handler_p
     int res;
 
     harness_mock_assert("log_add_handler(handler_p)",
-                        handler_p);
+                        handler_p,
+                        sizeof(*handler_p));
 
     harness_mock_read("log_add_handler(): return (res)",
                       &res,
@@ -288,7 +297,8 @@ int __attribute__ ((weak)) STUB(log_remove_handler)(struct log_handler_t *handle
     int res;
 
     harness_mock_assert("log_remove_handler(handler_p)",
-                        handler_p);
+                        handler_p,
+                        sizeof(*handler_p));
 
     harness_mock_read("log_remove_handler(): return (res)",
                       &res,
@@ -316,7 +326,8 @@ int __attribute__ ((weak)) STUB(log_add_object)(struct log_object_t *object_p)
     int res;
 
     harness_mock_assert("log_add_object(object_p)",
-                        object_p);
+                        object_p,
+                        sizeof(*object_p));
 
     harness_mock_read("log_add_object(): return (res)",
                       &res,
@@ -344,7 +355,8 @@ int __attribute__ ((weak)) STUB(log_remove_object)(struct log_object_t *object_p
     int res;
 
     harness_mock_assert("log_remove_object(object_p)",
-                        object_p);
+                        object_p,
+                        sizeof(*object_p));
 
     harness_mock_read("log_remove_object(): return (res)",
                       &res,
@@ -372,7 +384,8 @@ int __attribute__ ((weak)) STUB(log_set_default_handler_output_channel)(void *ch
     int res;
 
     harness_mock_assert("log_set_default_handler_output_channel(chout_p)",
-                        chout_p);
+                        chout_p,
+                        sizeof(*chout_p));
 
     harness_mock_read("log_set_default_handler_output_channel(): return (res)",
                       &res,

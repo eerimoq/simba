@@ -77,10 +77,12 @@ int __attribute__ ((weak)) STUB(sha1_update)(struct sha1_t *self_p,
     int res;
 
     harness_mock_assert("sha1_update(buf_p)",
-                        buf_p);
+                        buf_p,
+                        size);
 
     harness_mock_assert("sha1_update(size)",
-                        &size);
+                        &size,
+                        sizeof(size));
 
     harness_mock_read("sha1_update(): return (res)",
                       &res,
@@ -109,7 +111,8 @@ int __attribute__ ((weak)) STUB(sha1_digest)(struct sha1_t *self_p,
     int res;
 
     harness_mock_assert("sha1_digest(hash_p)",
-                        hash_p);
+                        hash_p,
+                        sizeof(*hash_p));
 
     harness_mock_read("sha1_digest(): return (res)",
                       &res,

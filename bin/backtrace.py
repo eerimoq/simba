@@ -9,8 +9,10 @@ IGNORED_FUNCTIONS = [
     'sys_port_backtrace',
     'sys_backtrace',
     'print_assert_backtrace',
-    'harness_mock_assert',
+    'print_read_backtrace',
     'create_write_backtrace',
+    'harness_mock_assert',
+    'harness_mock_read',
     'harness_mock_write',
     '??',
     '_start'

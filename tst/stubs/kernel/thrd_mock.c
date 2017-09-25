@@ -49,7 +49,8 @@ int __attribute__ ((weak)) STUB(thrd_module_init)()
     int res;
 
     harness_mock_assert("thrd_module_init()",
-                        NULL);
+                        NULL,
+                        0);
 
     harness_mock_read("thrd_module_init(): return (res)",
                       &res,
@@ -102,19 +103,23 @@ struct thrd_t *__attribute__ ((weak)) STUB(thrd_spawn)(void *(*main)(void,
 
     harness_mock_read("thrd_spawn(): return (void)",
                       void,
-                      HARNESS_MOCK_READ_ALL);
+                      sizeof(*void));
 
     harness_mock_assert("thrd_spawn(arg_p)",
-                        arg_p);
+                        arg_p,
+                        sizeof(*arg_p));
 
     harness_mock_assert("thrd_spawn(prio)",
-                        &prio);
+                        &prio,
+                        sizeof(prio));
 
     harness_mock_assert("thrd_spawn(stack_p)",
-                        stack_p);
+                        stack_p,
+                        sizeof(*stack_p));
 
     harness_mock_assert("thrd_spawn(stack_size)",
-                        &stack_size);
+                        &stack_size,
+                        sizeof(stack_size));
 
     harness_mock_read("thrd_spawn(): return (res)",
                       &res,
@@ -142,7 +147,8 @@ int __attribute__ ((weak)) STUB(thrd_suspend)(const struct time_t *timeout_p)
     int res;
 
     harness_mock_assert("thrd_suspend(timeout_p)",
-                        timeout_p);
+                        timeout_p,
+                        sizeof(*timeout_p));
 
     harness_mock_read("thrd_suspend(): return (res)",
                       &res,
@@ -176,10 +182,12 @@ int __attribute__ ((weak)) STUB(thrd_resume)(struct thrd_t *thrd_p,
     int res;
 
     harness_mock_assert("thrd_resume(thrd_p)",
-                        thrd_p);
+                        thrd_p,
+                        sizeof(*thrd_p));
 
     harness_mock_assert("thrd_resume(err)",
-                        &err);
+                        &err,
+                        sizeof(err));
 
     harness_mock_read("thrd_resume(): return (res)",
                       &res,
@@ -206,7 +214,8 @@ int __attribute__ ((weak)) STUB(thrd_yield)()
     int res;
 
     harness_mock_assert("thrd_yield()",
-                        NULL);
+                        NULL,
+                        0);
 
     harness_mock_read("thrd_yield(): return (res)",
                       &res,
@@ -234,7 +243,8 @@ int __attribute__ ((weak)) STUB(thrd_join)(struct thrd_t *thrd_p)
     int res;
 
     harness_mock_assert("thrd_join(thrd_p)",
-                        thrd_p);
+                        thrd_p,
+                        sizeof(*thrd_p));
 
     harness_mock_read("thrd_join(): return (res)",
                       &res,
@@ -262,7 +272,8 @@ int __attribute__ ((weak)) STUB(thrd_sleep)(float seconds)
     int res;
 
     harness_mock_assert("thrd_sleep(seconds)",
-                        &seconds);
+                        &seconds,
+                        sizeof(seconds));
 
     harness_mock_read("thrd_sleep(): return (res)",
                       &res,
@@ -290,7 +301,8 @@ int __attribute__ ((weak)) STUB(thrd_sleep_ms)(int milliseconds)
     int res;
 
     harness_mock_assert("thrd_sleep_ms(milliseconds)",
-                        &milliseconds);
+                        &milliseconds,
+                        sizeof(milliseconds));
 
     harness_mock_read("thrd_sleep_ms(): return (res)",
                       &res,
@@ -318,7 +330,8 @@ int __attribute__ ((weak)) STUB(thrd_sleep_us)(long microseconds)
     int res;
 
     harness_mock_assert("thrd_sleep_us(microseconds)",
-                        &microseconds);
+                        &microseconds,
+                        sizeof(microseconds));
 
     harness_mock_read("thrd_sleep_us(): return (res)",
                       &res,
@@ -345,7 +358,8 @@ struct thrd_t *__attribute__ ((weak)) STUB(thrd_self)()
     struct thrd_t *res;
 
     harness_mock_assert("thrd_self()",
-                        NULL);
+                        NULL,
+                        0);
 
     harness_mock_read("thrd_self(): return (res)",
                       &res,
@@ -373,7 +387,8 @@ int __attribute__ ((weak)) STUB(thrd_set_name)(const char *name_p)
     int res;
 
     harness_mock_assert("thrd_set_name(name_p)",
-                        name_p);
+                        name_p,
+                        sizeof(*name_p));
 
     harness_mock_read("thrd_set_name(): return (res)",
                       &res,
@@ -400,7 +415,8 @@ const char *__attribute__ ((weak)) STUB(thrd_get_name)()
     const char *res;
 
     harness_mock_assert("thrd_get_name()",
-                        NULL);
+                        NULL,
+                        0);
 
     harness_mock_read("thrd_get_name(): return (res)",
                       &res,
@@ -429,7 +445,7 @@ struct thrd_t *__attribute__ ((weak)) STUB(thrd_get_by_name)(const char *name_p)
 
     harness_mock_read("thrd_get_by_name(): return (name_p)",
                       name_p,
-                      HARNESS_MOCK_READ_ALL);
+                      sizeof(*name_p));
 
     harness_mock_read("thrd_get_by_name(): return (res)",
                       &res,
@@ -463,10 +479,12 @@ int __attribute__ ((weak)) STUB(thrd_set_log_mask)(struct thrd_t *thrd_p,
     int res;
 
     harness_mock_assert("thrd_set_log_mask(thrd_p)",
-                        thrd_p);
+                        thrd_p,
+                        sizeof(*thrd_p));
 
     harness_mock_assert("thrd_set_log_mask(mask)",
-                        &mask);
+                        &mask,
+                        sizeof(mask));
 
     harness_mock_read("thrd_set_log_mask(): return (res)",
                       &res,
@@ -493,7 +511,8 @@ int __attribute__ ((weak)) STUB(thrd_get_log_mask)()
     int res;
 
     harness_mock_assert("thrd_get_log_mask()",
-                        NULL);
+                        NULL,
+                        0);
 
     harness_mock_read("thrd_get_log_mask(): return (res)",
                       &res,
@@ -527,10 +546,12 @@ int __attribute__ ((weak)) STUB(thrd_set_prio)(struct thrd_t *thrd_p,
     int res;
 
     harness_mock_assert("thrd_set_prio(thrd_p)",
-                        thrd_p);
+                        thrd_p,
+                        sizeof(*thrd_p));
 
     harness_mock_assert("thrd_set_prio(prio)",
-                        &prio);
+                        &prio,
+                        sizeof(prio));
 
     harness_mock_read("thrd_set_prio(): return (res)",
                       &res,
@@ -557,7 +578,8 @@ int __attribute__ ((weak)) STUB(thrd_get_prio)()
     int res;
 
     harness_mock_assert("thrd_get_prio()",
-                        NULL);
+                        NULL,
+                        0);
 
     harness_mock_read("thrd_get_prio(): return (res)",
                       &res,
@@ -591,10 +613,12 @@ int __attribute__ ((weak)) STUB(thrd_init_global_env)(struct thrd_environment_va
     int res;
 
     harness_mock_assert("thrd_init_global_env(variables_p)",
-                        variables_p);
+                        variables_p,
+                        sizeof(*variables_p));
 
     harness_mock_assert("thrd_init_global_env(length)",
-                        &length);
+                        &length,
+                        sizeof(length));
 
     harness_mock_read("thrd_init_global_env(): return (res)",
                       &res,
@@ -628,10 +652,12 @@ int __attribute__ ((weak)) STUB(thrd_set_global_env)(const char *name_p,
     int res;
 
     harness_mock_assert("thrd_set_global_env(name_p)",
-                        name_p);
+                        name_p,
+                        sizeof(*name_p));
 
     harness_mock_assert("thrd_set_global_env(value_p)",
-                        value_p);
+                        value_p,
+                        sizeof(*value_p));
 
     harness_mock_read("thrd_set_global_env(): return (res)",
                       &res,
@@ -659,7 +685,8 @@ const char *__attribute__ ((weak)) STUB(thrd_get_global_env)(const char *name_p)
     const char *res;
 
     harness_mock_assert("thrd_get_global_env(name_p)",
-                        name_p);
+                        name_p,
+                        sizeof(*name_p));
 
     harness_mock_read("thrd_get_global_env(): return (res)",
                       &res,
@@ -693,10 +720,12 @@ int __attribute__ ((weak)) STUB(thrd_init_env)(struct thrd_environment_variable_
     int res;
 
     harness_mock_assert("thrd_init_env(variables_p)",
-                        variables_p);
+                        variables_p,
+                        sizeof(*variables_p));
 
     harness_mock_assert("thrd_init_env(length)",
-                        &length);
+                        &length,
+                        sizeof(length));
 
     harness_mock_read("thrd_init_env(): return (res)",
                       &res,
@@ -730,10 +759,12 @@ int __attribute__ ((weak)) STUB(thrd_set_env)(const char *name_p,
     int res;
 
     harness_mock_assert("thrd_set_env(name_p)",
-                        name_p);
+                        name_p,
+                        sizeof(*name_p));
 
     harness_mock_assert("thrd_set_env(value_p)",
-                        value_p);
+                        value_p,
+                        sizeof(*value_p));
 
     harness_mock_read("thrd_set_env(): return (res)",
                       &res,
@@ -761,7 +792,8 @@ const char *__attribute__ ((weak)) STUB(thrd_get_env)(const char *name_p)
     const char *res;
 
     harness_mock_assert("thrd_get_env(name_p)",
-                        name_p);
+                        name_p,
+                        sizeof(*name_p));
 
     harness_mock_read("thrd_get_env(): return (res)",
                       &res,
@@ -789,7 +821,8 @@ int __attribute__ ((weak)) STUB(thrd_suspend_isr)(const struct time_t *timeout_p
     int res;
 
     harness_mock_assert("thrd_suspend_isr(timeout_p)",
-                        timeout_p);
+                        timeout_p,
+                        sizeof(*timeout_p));
 
     harness_mock_read("thrd_suspend_isr(): return (res)",
                       &res,
@@ -823,10 +856,12 @@ int __attribute__ ((weak)) STUB(thrd_resume_isr)(struct thrd_t *thrd_p,
     int res;
 
     harness_mock_assert("thrd_resume_isr(thrd_p)",
-                        thrd_p);
+                        thrd_p,
+                        sizeof(*thrd_p));
 
     harness_mock_assert("thrd_resume_isr(err)",
-                        &err);
+                        &err,
+                        sizeof(err));
 
     harness_mock_read("thrd_resume_isr(): return (res)",
                       &res,
@@ -853,7 +888,8 @@ int __attribute__ ((weak)) STUB(thrd_yield_isr)()
     int res;
 
     harness_mock_assert("thrd_yield_isr()",
-                        NULL);
+                        NULL,
+                        0);
 
     harness_mock_read("thrd_yield_isr(): return (res)",
                       &res,
@@ -881,7 +917,8 @@ void *__attribute__ ((weak)) STUB(thrd_stack_alloc)(size_t size)
     void *res;
 
     harness_mock_assert("thrd_stack_alloc(size)",
-                        &size);
+                        &size,
+                        sizeof(size));
 
     harness_mock_read("thrd_stack_alloc(): return (res)",
                       &res,
@@ -910,7 +947,7 @@ int __attribute__ ((weak)) STUB(thrd_stack_free)(void *stack_p)
 
     harness_mock_read("thrd_stack_free(): return (stack_p)",
                       stack_p,
-                      HARNESS_MOCK_READ_ALL);
+                      sizeof(*stack_p));
 
     harness_mock_read("thrd_stack_free(): return (res)",
                       &res,
@@ -939,7 +976,7 @@ const void *__attribute__ ((weak)) STUB(thrd_get_bottom_of_stack)(struct thrd_t 
 
     harness_mock_read("thrd_get_bottom_of_stack(): return (thrd_p)",
                       thrd_p,
-                      HARNESS_MOCK_READ_ALL);
+                      sizeof(*thrd_p));
 
     harness_mock_read("thrd_get_bottom_of_stack(): return (res)",
                       &res,
@@ -968,7 +1005,7 @@ const void *__attribute__ ((weak)) STUB(thrd_get_top_of_stack)(struct thrd_t *th
 
     harness_mock_read("thrd_get_top_of_stack(): return (thrd_p)",
                       thrd_p,
-                      HARNESS_MOCK_READ_ALL);
+                      sizeof(*thrd_p));
 
     harness_mock_read("thrd_get_top_of_stack(): return (res)",
                       &res,
@@ -1010,7 +1047,8 @@ void __attribute__ ((weak)) STUB(thrd_prio_list_push_isr)(struct thrd_prio_list_
                                                           struct thrd_prio_list_elem_t *elem_p)
 {
     harness_mock_assert("thrd_prio_list_push_isr(elem_p)",
-                        elem_p);
+                        elem_p,
+                        sizeof(*elem_p));
 }
 
 int mock_write_thrd_prio_list_pop_isr(struct thrd_prio_list_elem_t *res)
@@ -1053,7 +1091,8 @@ int __attribute__ ((weak)) STUB(thrd_prio_list_remove_isr)(struct thrd_prio_list
     int res;
 
     harness_mock_assert("thrd_prio_list_remove_isr(elem_p)",
-                        elem_p);
+                        elem_p,
+                        sizeof(*elem_p));
 
     harness_mock_read("thrd_prio_list_remove_isr(): return (res)",
                       &res,

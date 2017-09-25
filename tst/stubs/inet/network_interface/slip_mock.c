@@ -49,7 +49,8 @@ int __attribute__ ((weak)) STUB(network_interface_slip_module_init)()
     int res;
 
     harness_mock_assert("network_interface_slip_module_init()",
-                        NULL);
+                        NULL,
+                        0);
 
     harness_mock_read("network_interface_slip_module_init(): return (res)",
                       &res,
@@ -96,16 +97,20 @@ int __attribute__ ((weak)) STUB(network_interface_slip_init)(struct network_inte
     int res;
 
     harness_mock_assert("network_interface_slip_init(ipaddr_p)",
-                        ipaddr_p);
+                        ipaddr_p,
+                        sizeof(*ipaddr_p));
 
     harness_mock_assert("network_interface_slip_init(netmask_p)",
-                        netmask_p);
+                        netmask_p,
+                        sizeof(*netmask_p));
 
     harness_mock_assert("network_interface_slip_init(gateway_p)",
-                        gateway_p);
+                        gateway_p,
+                        sizeof(*gateway_p));
 
     harness_mock_assert("network_interface_slip_init(chout_p)",
-                        chout_p);
+                        chout_p,
+                        sizeof(*chout_p));
 
     harness_mock_read("network_interface_slip_init(): return (res)",
                       &res,
@@ -134,7 +139,8 @@ int __attribute__ ((weak)) STUB(network_interface_slip_input)(struct network_int
     int res;
 
     harness_mock_assert("network_interface_slip_input(data)",
-                        &data);
+                        &data,
+                        sizeof(data));
 
     harness_mock_read("network_interface_slip_input(): return (res)",
                       &res,

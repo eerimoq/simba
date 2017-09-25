@@ -49,7 +49,8 @@ int __attribute__ ((weak)) STUB(watchdog_module_init)()
     int res;
 
     harness_mock_assert("watchdog_module_init()",
-                        NULL);
+                        NULL,
+                        0);
 
     harness_mock_read("watchdog_module_init(): return (res)",
                       &res,
@@ -83,10 +84,12 @@ int __attribute__ ((weak)) STUB(watchdog_start_ms)(int timeout,
     int res;
 
     harness_mock_assert("watchdog_start_ms(timeout)",
-                        &timeout);
+                        &timeout,
+                        sizeof(timeout));
 
     harness_mock_assert("watchdog_start_ms(on_interrupt)",
-                        &on_interrupt);
+                        &on_interrupt,
+                        sizeof(on_interrupt));
 
     harness_mock_read("watchdog_start_ms(): return (res)",
                       &res,
@@ -113,7 +116,8 @@ int __attribute__ ((weak)) STUB(watchdog_stop)()
     int res;
 
     harness_mock_assert("watchdog_stop()",
-                        NULL);
+                        NULL,
+                        0);
 
     harness_mock_read("watchdog_stop(): return (res)",
                       &res,
@@ -140,7 +144,8 @@ int __attribute__ ((weak)) STUB(watchdog_kick)()
     int res;
 
     harness_mock_assert("watchdog_kick()",
-                        NULL);
+                        NULL,
+                        0);
 
     harness_mock_read("watchdog_kick(): return (res)",
                       &res,

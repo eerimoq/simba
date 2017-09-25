@@ -34,12 +34,14 @@ BOARD ?= linux
 
 CDEFS += \
 	CONFIG_GNSS=1 \
-	CONFIG_GNSS_DEBUG_LOG_MASK=LOG_ALL \
-	CONFIG_HARNESS_HEAP_MAX=131072
+	CONFIG_GNSS_DEBUG_LOG_MASK=LOG_ALL
 
 DRIVERS_SRC = various/gnss.c
 ENCODE_SRC = nmea.c
 
 STUB = $(SIMBA_ROOT)/src/drivers/various/gnss.c:chan_read,chan_write
+
+SRC += $(addprefix $(SIMBA_ROOT)/tst/stubs/, \
+	sync/chan_mock.c)
 
 include $(SIMBA_ROOT)/make/app.mk

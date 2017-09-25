@@ -51,7 +51,8 @@ int __attribute__ ((weak)) STUB(sht3xd_module_init)()
     int res;
 
     harness_mock_assert("sht3xd_module_init()",
-                        NULL);
+                        NULL,
+                        0);
 
     harness_mock_read("sht3xd_module_init(): return (res)",
                       &res,
@@ -86,10 +87,12 @@ int __attribute__ ((weak)) STUB(sht3xd_init)(struct sht3xd_driver_t *self_p,
     int res;
 
     harness_mock_assert("sht3xd_init(i2c_p)",
-                        i2c_p);
+                        i2c_p,
+                        sizeof(*i2c_p));
 
     harness_mock_assert("sht3xd_init(i2c_addr)",
-                        &i2c_addr);
+                        &i2c_addr,
+                        sizeof(i2c_addr));
 
     harness_mock_read("sht3xd_init(): return (res)",
                       &res,
@@ -145,11 +148,11 @@ int __attribute__ ((weak)) STUB(sht3xd_get_temp_humid)(struct sht3xd_driver_t *s
 
     harness_mock_read("sht3xd_get_temp_humid(): return (temp_p)",
                       temp_p,
-                      HARNESS_MOCK_READ_ALL);
+                      sizeof(*temp_p));
 
     harness_mock_read("sht3xd_get_temp_humid(): return (humid_p)",
                       humid_p,
-                      HARNESS_MOCK_READ_ALL);
+                      sizeof(*humid_p));
 
     harness_mock_read("sht3xd_get_temp_humid(): return (res)",
                       &res,
@@ -179,7 +182,7 @@ int __attribute__ ((weak)) STUB(sht3xd_get_serial)(struct sht3xd_driver_t *self_
 
     harness_mock_read("sht3xd_get_serial(): return (serial_p)",
                       serial_p,
-                      HARNESS_MOCK_READ_ALL);
+                      sizeof(*serial_p));
 
     harness_mock_read("sht3xd_get_serial(): return (res)",
                       &res,

@@ -139,8 +139,6 @@
  */
 #define STUB(function) __stub_ ## function
 
-#define HARNESS_MOCK_READ_ALL                              -1
-
 /**
  * The testcase function callback.
  *
@@ -203,20 +201,35 @@ ssize_t harness_mock_write(const char *id_p,
 
 /**
  * Read data from mock entry with given id, and make the testcase fail
- * if the mock id is not found.
+ * if the mock id is not found or if given size does not match the
+ * size in the mock entry.
  *
  * @param[in] id_p Mock id string to read.
  * @param[out] buf_p Buffer to read into, or NULL if no data shall
  *                   be read.
- * @param[in] size Buffer size in words, or zero(0) if buf_p is NULL,
- *                 or ``HARNESS_MOCK_READ_ALL`` to read all data
- *                 available.
+ * @param[in] size Buffer size in words, or zero(0) if buf_p is NULL.
  *
  * @return Number of read words or negative error code.
  */
 ssize_t harness_mock_read(const char *id_p,
                           void *buf_p,
-                          ssize_t size);
+                          size_t size);
+
+/**
+ * Try to read data from mock entry with given id.The testcase does
+ * not fail if the mock entry is missing. However, the test case faild
+ * if the mock id is found and the data size does not match
+ *
+ * @param[in] id_p Mock id string to read.
+ * @param[out] buf_p Buffer to read into, or NULL if no data shall
+ *                   be loaded.
+ * @param[in] size Buffer size in words, or zero(0) if buf_p is NULL.
+ *
+ * @return Number of read words or negative error code.
+ */
+ssize_t harness_mock_try_read(const char *id_p,
+                              void *buf_p,
+                              size_t size);
 
 /**
  * Find mock entry with given id and compare its data to given
@@ -226,28 +239,13 @@ ssize_t harness_mock_read(const char *id_p,
  * @param[in] id_p Mock id string to assert.
  * @param[in] buf_p Buffer with expected data, or NULL if no data
  *                  shall be compared.
+ * @param[in] size Buffer size in words, or zero(0) if buf_p is NULL.
  *
  * @return zero(0) or negative error code.
  */
 int harness_mock_assert(const char *id_p,
-                        const void *buf_p);
-
-/**
- * Try to read data from mock entry with given id.The testcase does
- * not fail if the mock entry is missing.
- *
- * @param[in] id_p Mock id string to read.
- * @param[out] buf_p Buffer to read into, or NULL if no data shall
- *                   be loaded.
- * @param[in] size Buffer size in words, or zero(0) if buf_p is NULL,
- *                 or ``HARNESS_MOCK_READ_ALL`` to read all data
- *                 available.
- *
- * @return Number of read words or negative error code.
- */
-ssize_t harness_mock_try_read(const char *id_p,
-                              void *buf_p,
-                              ssize_t size);
+                        const void *buf_p,
+                        size_t size);
 
 /**
  * Write given data buffer to a mock entry with given id and notify
@@ -277,16 +275,14 @@ ssize_t harness_mock_write_notify(const char *id_p,
  * @param[in] id_p Mock id string to read.
  * @param[out] buf_p Buffer to read into, or NULL if no data shall
  *                   be read.
- * @param[in] size Buffer size in words, or zero(0) if buf_p is NULL,
- *                 or ``HARNESS_MOCK_READ_ALL`` to read all data
- *                 available.
+ * @param[in] size Buffer size in words, or zero(0) if buf_p is NULL.
  * @param[in] timeout_p Read timeout.
  *
  * @return Number of read words or negative error code.
  */
 ssize_t harness_mock_read_wait(const char *id_p,
                                void *buf_p,
-                               ssize_t size,
+                               size_t size,
                                struct time_t *timeout_p);
 
 #endif

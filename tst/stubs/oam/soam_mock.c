@@ -49,7 +49,8 @@ int __attribute__ ((weak)) STUB(soam_module_init)()
     int res;
 
     harness_mock_assert("soam_module_init()",
-                        NULL);
+                        NULL,
+                        0);
 
     harness_mock_read("soam_module_init(): return (res)",
                       &res,
@@ -90,13 +91,16 @@ int __attribute__ ((weak)) STUB(soam_init)(struct soam_t *self_p,
     int res;
 
     harness_mock_assert("soam_init(buf_p)",
-                        buf_p);
+                        buf_p,
+                        size);
 
     harness_mock_assert("soam_init(size)",
-                        &size);
+                        &size,
+                        sizeof(size));
 
     harness_mock_assert("soam_init(chout_p)",
-                        chout_p);
+                        chout_p,
+                        size);
 
     harness_mock_read("soam_init(): return (res)",
                       &res,
@@ -131,10 +135,12 @@ int __attribute__ ((weak)) STUB(soam_input)(struct soam_t *self_p,
     int res;
 
     harness_mock_assert("soam_input(buf_p)",
-                        buf_p);
+                        buf_p,
+                        sizeof(*buf_p));
 
     harness_mock_assert("soam_input(size)",
-                        &size);
+                        &size,
+                        sizeof(size));
 
     harness_mock_read("soam_input(): return (res)",
                       &res,
@@ -163,7 +169,8 @@ ssize_t __attribute__ ((weak)) STUB(soam_write_begin)(struct soam_t *self_p,
     ssize_t res;
 
     harness_mock_assert("soam_write_begin(type)",
-                        &type);
+                        &type,
+                        sizeof(type));
 
     harness_mock_read("soam_write_begin(): return (res)",
                       &res,
@@ -198,10 +205,12 @@ ssize_t __attribute__ ((weak)) STUB(soam_write_chunk)(struct soam_t *self_p,
     ssize_t res;
 
     harness_mock_assert("soam_write_chunk(buf_p)",
-                        buf_p);
+                        buf_p,
+                        size);
 
     harness_mock_assert("soam_write_chunk(size)",
-                        &size);
+                        &size,
+                        sizeof(size));
 
     harness_mock_read("soam_write_chunk(): return (res)",
                       &res,
@@ -262,13 +271,16 @@ ssize_t __attribute__ ((weak)) STUB(soam_write)(struct soam_t *self_p,
     ssize_t res;
 
     harness_mock_assert("soam_write(type)",
-                        &type);
+                        &type,
+                        sizeof(type));
 
     harness_mock_assert("soam_write(buf_p)",
-                        buf_p);
+                        buf_p,
+                        size);
 
     harness_mock_assert("soam_write(size)",
-                        &size);
+                        &size,
+                        sizeof(size));
 
     harness_mock_read("soam_write(): return (res)",
                       &res,

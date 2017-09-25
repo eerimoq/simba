@@ -49,7 +49,8 @@ int __attribute__ ((weak)) STUB(science_module_init)()
     int res;
 
     harness_mock_assert("science_module_init()",
-                        NULL);
+                        NULL,
+                        0);
 
     harness_mock_read("science_module_init(): return (res)",
                       &res,
@@ -83,10 +84,12 @@ float __attribute__ ((weak)) STUB(science_pressure_to_altitude)(float pressure,
     float res;
 
     harness_mock_assert("science_pressure_to_altitude(pressure)",
-                        &pressure);
+                        &pressure,
+                        sizeof(pressure));
 
     harness_mock_assert("science_pressure_to_altitude(pressure_at_sea_level)",
-                        &pressure_at_sea_level);
+                        &pressure_at_sea_level,
+                        sizeof(pressure_at_sea_level));
 
     harness_mock_read("science_pressure_to_altitude(): return (res)",
                       &res,
@@ -120,10 +123,12 @@ float __attribute__ ((weak)) STUB(science_pressure_from_altitude)(float altitude
     float res;
 
     harness_mock_assert("science_pressure_from_altitude(altitude)",
-                        &altitude);
+                        &altitude,
+                        sizeof(altitude));
 
     harness_mock_assert("science_pressure_from_altitude(pressure_at_sea_level)",
-                        &pressure_at_sea_level);
+                        &pressure_at_sea_level,
+                        sizeof(pressure_at_sea_level));
 
     harness_mock_read("science_pressure_from_altitude(): return (res)",
                       &res,
@@ -151,7 +156,8 @@ float __attribute__ ((weak)) STUB(science_mps_to_kmph)(float speed)
     float res;
 
     harness_mock_assert("science_mps_to_kmph(speed)",
-                        &speed);
+                        &speed,
+                        sizeof(speed));
 
     harness_mock_read("science_mps_to_kmph(): return (res)",
                       &res,
@@ -179,7 +185,8 @@ float __attribute__ ((weak)) STUB(science_mps_from_kmph)(float speed)
     float res;
 
     harness_mock_assert("science_mps_from_kmph(speed)",
-                        &speed);
+                        &speed,
+                        sizeof(speed));
 
     harness_mock_read("science_mps_from_kmph(): return (res)",
                       &res,
@@ -207,7 +214,8 @@ float __attribute__ ((weak)) STUB(science_mps_to_knots)(float speed)
     float res;
 
     harness_mock_assert("science_mps_to_knots(speed)",
-                        &speed);
+                        &speed,
+                        sizeof(speed));
 
     harness_mock_read("science_mps_to_knots(): return (res)",
                       &res,
@@ -235,7 +243,8 @@ float __attribute__ ((weak)) STUB(science_mps_from_knots)(float speed)
     float res;
 
     harness_mock_assert("science_mps_from_knots(speed)",
-                        &speed);
+                        &speed,
+                        sizeof(speed));
 
     harness_mock_read("science_mps_from_knots(): return (res)",
                       &res,
@@ -263,7 +272,8 @@ float __attribute__ ((weak)) STUB(science_mps_to_mph)(float speed)
     float res;
 
     harness_mock_assert("science_mps_to_mph(speed)",
-                        &speed);
+                        &speed,
+                        sizeof(speed));
 
     harness_mock_read("science_mps_to_mph(): return (res)",
                       &res,
@@ -291,7 +301,8 @@ float __attribute__ ((weak)) STUB(science_mps_from_mph)(float speed)
     float res;
 
     harness_mock_assert("science_mps_from_mph(speed)",
-                        &speed);
+                        &speed,
+                        sizeof(speed));
 
     harness_mock_read("science_mps_from_mph(): return (res)",
                       &res,

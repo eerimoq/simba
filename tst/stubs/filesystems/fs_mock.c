@@ -49,7 +49,8 @@ int __attribute__ ((weak)) STUB(fs_module_init)()
     int res;
 
     harness_mock_assert("fs_module_init()",
-                        NULL);
+                        NULL,
+                        0);
 
     harness_mock_read("fs_module_init(): return (res)",
                       &res,
@@ -96,16 +97,19 @@ int __attribute__ ((weak)) STUB(fs_call)(char *command_p,
 
     harness_mock_read("fs_call(): return (command_p)",
                       command_p,
-                      HARNESS_MOCK_READ_ALL);
+                      sizeof(*command_p));
 
     harness_mock_assert("fs_call(chin_p)",
-                        chin_p);
+                        chin_p,
+                        sizeof(*chin_p));
 
     harness_mock_assert("fs_call(chout_p)",
-                        chout_p);
+                        chout_p,
+                        sizeof(*chout_p));
 
     harness_mock_assert("fs_call(arg_p)",
-                        arg_p);
+                        arg_p,
+                        sizeof(*arg_p));
 
     harness_mock_read("fs_call(): return (res)",
                       &res,
@@ -140,10 +144,12 @@ int __attribute__ ((weak)) STUB(fs_open)(struct fs_file_t *self_p,
     int res;
 
     harness_mock_assert("fs_open(path_p)",
-                        path_p);
+                        path_p,
+                        sizeof(*path_p));
 
     harness_mock_assert("fs_open(flags)",
-                        &flags);
+                        &flags,
+                        sizeof(flags));
 
     harness_mock_read("fs_open(): return (res)",
                       &res,
@@ -199,10 +205,11 @@ ssize_t __attribute__ ((weak)) STUB(fs_read)(struct fs_file_t *self_p,
 
     harness_mock_read("fs_read(): return (dst_p)",
                       dst_p,
-                      HARNESS_MOCK_READ_ALL);
+                      size);
 
     harness_mock_assert("fs_read(size)",
-                        &size);
+                        &size,
+                        sizeof(size));
 
     harness_mock_read("fs_read(): return (res)",
                       &res,
@@ -238,10 +245,11 @@ ssize_t __attribute__ ((weak)) STUB(fs_read_line)(struct fs_file_t *self_p,
 
     harness_mock_read("fs_read_line(): return (dst_p)",
                       dst_p,
-                      HARNESS_MOCK_READ_ALL);
+                      size);
 
     harness_mock_assert("fs_read_line(size)",
-                        &size);
+                        &size,
+                        sizeof(size));
 
     harness_mock_read("fs_read_line(): return (res)",
                       &res,
@@ -276,10 +284,12 @@ ssize_t __attribute__ ((weak)) STUB(fs_write)(struct fs_file_t *self_p,
     ssize_t res;
 
     harness_mock_assert("fs_write(src_p)",
-                        src_p);
+                        src_p,
+                        size);
 
     harness_mock_assert("fs_write(size)",
-                        &size);
+                        &size,
+                        sizeof(size));
 
     harness_mock_read("fs_write(): return (res)",
                       &res,
@@ -314,10 +324,12 @@ int __attribute__ ((weak)) STUB(fs_seek)(struct fs_file_t *self_p,
     int res;
 
     harness_mock_assert("fs_seek(offset)",
-                        &offset);
+                        &offset,
+                        sizeof(offset));
 
     harness_mock_assert("fs_seek(whence)",
-                        &whence);
+                        &whence,
+                        sizeof(whence));
 
     harness_mock_read("fs_seek(): return (res)",
                       &res,
@@ -378,13 +390,15 @@ int __attribute__ ((weak)) STUB(fs_dir_open)(struct fs_dir_t *dir_p,
 
     harness_mock_read("fs_dir_open(): return (dir_p)",
                       dir_p,
-                      HARNESS_MOCK_READ_ALL);
+                      sizeof(*dir_p));
 
     harness_mock_assert("fs_dir_open(path_p)",
-                        path_p);
+                        path_p,
+                        sizeof(*path_p));
 
     harness_mock_assert("fs_dir_open(oflag)",
-                        &oflag);
+                        &oflag,
+                        sizeof(oflag));
 
     harness_mock_read("fs_dir_open(): return (res)",
                       &res,
@@ -412,7 +426,8 @@ int __attribute__ ((weak)) STUB(fs_dir_close)(struct fs_dir_t *dir_p)
     int res;
 
     harness_mock_assert("fs_dir_close(dir_p)",
-                        dir_p);
+                        dir_p,
+                        sizeof(*dir_p));
 
     harness_mock_read("fs_dir_close(): return (res)",
                       &res,
@@ -446,11 +461,12 @@ int __attribute__ ((weak)) STUB(fs_dir_read)(struct fs_dir_t *dir_p,
     int res;
 
     harness_mock_assert("fs_dir_read(dir_p)",
-                        dir_p);
+                        dir_p,
+                        sizeof(*dir_p));
 
     harness_mock_read("fs_dir_read(): return (entry_p)",
                       entry_p,
-                      HARNESS_MOCK_READ_ALL);
+                      sizeof(*entry_p));
 
     harness_mock_read("fs_dir_read(): return (res)",
                       &res,
@@ -478,7 +494,8 @@ int __attribute__ ((weak)) STUB(fs_remove)(const char *path_p)
     int res;
 
     harness_mock_assert("fs_remove(path_p)",
-                        path_p);
+                        path_p,
+                        sizeof(*path_p));
 
     harness_mock_read("fs_remove(): return (res)",
                       &res,
@@ -512,10 +529,12 @@ int __attribute__ ((weak)) STUB(fs_stat)(const char *path_p,
     int res;
 
     harness_mock_assert("fs_stat(path_p)",
-                        path_p);
+                        path_p,
+                        sizeof(*path_p));
 
     harness_mock_assert("fs_stat(stat_p)",
-                        stat_p);
+                        stat_p,
+                        sizeof(*stat_p));
 
     harness_mock_read("fs_stat(): return (res)",
                       &res,
@@ -543,7 +562,8 @@ int __attribute__ ((weak)) STUB(fs_mkdir)(const char *path_p)
     int res;
 
     harness_mock_assert("fs_mkdir(path_p)",
-                        path_p);
+                        path_p,
+                        sizeof(*path_p));
 
     harness_mock_read("fs_mkdir(): return (res)",
                       &res,
@@ -571,7 +591,8 @@ int __attribute__ ((weak)) STUB(fs_format)(const char *path_p)
     int res;
 
     harness_mock_assert("fs_format(path_p)",
-                        path_p);
+                        path_p,
+                        sizeof(*path_p));
 
     harness_mock_read("fs_format(): return (res)",
                       &res,
@@ -611,13 +632,16 @@ int __attribute__ ((weak)) STUB(fs_ls)(const char *path_p,
     int res;
 
     harness_mock_assert("fs_ls(path_p)",
-                        path_p);
+                        path_p,
+                        sizeof(*path_p));
 
     harness_mock_assert("fs_ls(filter_p)",
-                        filter_p);
+                        filter_p,
+                        sizeof(*filter_p));
 
     harness_mock_assert("fs_ls(chout_p)",
-                        chout_p);
+                        chout_p,
+                        sizeof(*chout_p));
 
     harness_mock_read("fs_ls(): return (res)",
                       &res,
@@ -657,13 +681,16 @@ int __attribute__ ((weak)) STUB(fs_list)(const char *path_p,
     int res;
 
     harness_mock_assert("fs_list(path_p)",
-                        path_p);
+                        path_p,
+                        sizeof(*path_p));
 
     harness_mock_assert("fs_list(filter_p)",
-                        filter_p);
+                        filter_p,
+                        sizeof(*filter_p));
 
     harness_mock_assert("fs_list(chout_p)",
-                        chout_p);
+                        chout_p,
+                        sizeof(*chout_p));
 
     harness_mock_read("fs_list(): return (res)",
                       &res,
@@ -692,7 +719,7 @@ int __attribute__ ((weak)) STUB(fs_auto_complete)(char *path_p)
 
     harness_mock_read("fs_auto_complete(): return (path_p)",
                       path_p,
-                      HARNESS_MOCK_READ_ALL);
+                      sizeof(*path_p));
 
     harness_mock_read("fs_auto_complete(): return (res)",
                       &res,
@@ -719,10 +746,12 @@ void __attribute__ ((weak)) STUB(fs_merge)(char *path_p,
                                            char *cmd_p)
 {
     harness_mock_assert("fs_merge(path_p)",
-                        path_p);
+                        path_p,
+                        sizeof(*path_p));
 
     harness_mock_assert("fs_merge(cmd_p)",
-                        cmd_p);
+                        cmd_p,
+                        sizeof(*cmd_p));
 }
 
 int mock_write_fs_filesystem_init_generic(const char *name_p,
@@ -751,10 +780,12 @@ int __attribute__ ((weak)) STUB(fs_filesystem_init_generic)(struct fs_filesystem
     int res;
 
     harness_mock_assert("fs_filesystem_init_generic(name_p)",
-                        name_p);
+                        name_p,
+                        sizeof(*name_p));
 
     harness_mock_assert("fs_filesystem_init_generic(ops_p)",
-                        ops_p);
+                        ops_p,
+                        sizeof(*ops_p));
 
     harness_mock_read("fs_filesystem_init_generic(): return (res)",
                       &res,
@@ -789,10 +820,12 @@ int __attribute__ ((weak)) STUB(fs_filesystem_init_fat16)(struct fs_filesystem_t
     int res;
 
     harness_mock_assert("fs_filesystem_init_fat16(name_p)",
-                        name_p);
+                        name_p,
+                        sizeof(*name_p));
 
     harness_mock_assert("fs_filesystem_init_fat16(fat16_p)",
-                        fat16_p);
+                        fat16_p,
+                        sizeof(*fat16_p));
 
     harness_mock_read("fs_filesystem_init_fat16(): return (res)",
                       &res,
@@ -833,13 +866,16 @@ int __attribute__ ((weak)) STUB(fs_filesystem_init_spiffs)(struct fs_filesystem_
     int res;
 
     harness_mock_assert("fs_filesystem_init_spiffs(name_p)",
-                        name_p);
+                        name_p,
+                        sizeof(*name_p));
 
     harness_mock_assert("fs_filesystem_init_spiffs(spiffs_p)",
-                        spiffs_p);
+                        spiffs_p,
+                        sizeof(*spiffs_p));
 
     harness_mock_assert("fs_filesystem_init_spiffs(config_p)",
-                        config_p);
+                        config_p,
+                        sizeof(*config_p));
 
     harness_mock_read("fs_filesystem_init_spiffs(): return (res)",
                       &res,
@@ -920,13 +956,16 @@ int __attribute__ ((weak)) STUB(fs_command_init)(struct fs_command_t *self_p,
     int res;
 
     harness_mock_assert("fs_command_init(path_p)",
-                        &path_p);
+                        &path_p,
+                        sizeof(path_p));
 
     harness_mock_assert("fs_command_init(callback)",
-                        &callback);
+                        &callback,
+                        sizeof(callback));
 
     harness_mock_assert("fs_command_init(arg_p)",
-                        arg_p);
+                        arg_p,
+                        sizeof(*arg_p));
 
     harness_mock_read("fs_command_init(): return (res)",
                       &res,
@@ -954,7 +993,8 @@ int __attribute__ ((weak)) STUB(fs_command_register)(struct fs_command_t *comman
     int res;
 
     harness_mock_assert("fs_command_register(command_p)",
-                        command_p);
+                        command_p,
+                        sizeof(*command_p));
 
     harness_mock_read("fs_command_register(): return (res)",
                       &res,
@@ -982,7 +1022,8 @@ int __attribute__ ((weak)) STUB(fs_command_deregister)(struct fs_command_t *comm
     int res;
 
     harness_mock_assert("fs_command_deregister(command_p)",
-                        command_p);
+                        command_p,
+                        sizeof(*command_p));
 
     harness_mock_read("fs_command_deregister(): return (res)",
                       &res,
@@ -1017,10 +1058,12 @@ int __attribute__ ((weak)) STUB(fs_counter_init)(struct fs_counter_t *self_p,
     int res;
 
     harness_mock_assert("fs_counter_init(path_p)",
-                        &path_p);
+                        &path_p,
+                        sizeof(path_p));
 
     harness_mock_assert("fs_counter_init(value)",
-                        &value);
+                        &value,
+                        sizeof(value));
 
     harness_mock_read("fs_counter_init(): return (res)",
                       &res,
@@ -1049,7 +1092,8 @@ int __attribute__ ((weak)) STUB(fs_counter_increment)(struct fs_counter_t *self_
     int res;
 
     harness_mock_assert("fs_counter_increment(value)",
-                        &value);
+                        &value,
+                        sizeof(value));
 
     harness_mock_read("fs_counter_increment(): return (res)",
                       &res,
@@ -1077,7 +1121,8 @@ int __attribute__ ((weak)) STUB(fs_counter_register)(struct fs_counter_t *counte
     int res;
 
     harness_mock_assert("fs_counter_register(counter_p)",
-                        counter_p);
+                        counter_p,
+                        sizeof(*counter_p));
 
     harness_mock_read("fs_counter_register(): return (res)",
                       &res,
@@ -1105,7 +1150,8 @@ int __attribute__ ((weak)) STUB(fs_counter_deregister)(struct fs_counter_t *coun
     int res;
 
     harness_mock_assert("fs_counter_deregister(counter_p)",
-                        counter_p);
+                        counter_p,
+                        sizeof(*counter_p));
 
     harness_mock_read("fs_counter_deregister(): return (res)",
                       &res,
@@ -1152,16 +1198,20 @@ int __attribute__ ((weak)) STUB(fs_parameter_init)(struct fs_parameter_t *self_p
     int res;
 
     harness_mock_assert("fs_parameter_init(path_p)",
-                        &path_p);
+                        &path_p,
+                        sizeof(path_p));
 
     harness_mock_assert("fs_parameter_init(set_cb)",
-                        &set_cb);
+                        &set_cb,
+                        sizeof(set_cb));
 
     harness_mock_assert("fs_parameter_init(print_cb)",
-                        &print_cb);
+                        &print_cb,
+                        sizeof(print_cb));
 
     harness_mock_assert("fs_parameter_init(value_p)",
-                        value_p);
+                        value_p,
+                        sizeof(*value_p));
 
     harness_mock_read("fs_parameter_init(): return (res)",
                       &res,
@@ -1189,7 +1239,8 @@ int __attribute__ ((weak)) STUB(fs_parameter_register)(struct fs_parameter_t *pa
     int res;
 
     harness_mock_assert("fs_parameter_register(parameter_p)",
-                        parameter_p);
+                        parameter_p,
+                        sizeof(*parameter_p));
 
     harness_mock_read("fs_parameter_register(): return (res)",
                       &res,
@@ -1217,7 +1268,8 @@ int __attribute__ ((weak)) STUB(fs_parameter_deregister)(struct fs_parameter_t *
     int res;
 
     harness_mock_assert("fs_parameter_deregister(parameter_p)",
-                        parameter_p);
+                        parameter_p,
+                        sizeof(*parameter_p));
 
     harness_mock_read("fs_parameter_deregister(): return (res)",
                       &res,
@@ -1252,10 +1304,11 @@ int __attribute__ ((weak)) STUB(fs_parameter_int_set)(void *value_p,
 
     harness_mock_read("fs_parameter_int_set(): return (value_p)",
                       value_p,
-                      HARNESS_MOCK_READ_ALL);
+                      sizeof(*value_p));
 
     harness_mock_assert("fs_parameter_int_set(src_p)",
-                        src_p);
+                        src_p,
+                        sizeof(*src_p));
 
     harness_mock_read("fs_parameter_int_set(): return (res)",
                       &res,
@@ -1289,10 +1342,12 @@ int __attribute__ ((weak)) STUB(fs_parameter_int_print)(void *chout_p,
     int res;
 
     harness_mock_assert("fs_parameter_int_print(chout_p)",
-                        chout_p);
+                        chout_p,
+                        sizeof(*chout_p));
 
     harness_mock_assert("fs_parameter_int_print(value_p)",
-                        value_p);
+                        value_p,
+                        sizeof(*value_p));
 
     harness_mock_read("fs_parameter_int_print(): return (res)",
                       &res,

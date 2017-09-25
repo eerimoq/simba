@@ -49,7 +49,8 @@ int __attribute__ ((weak)) STUB(sem_module_init)()
     int res;
 
     harness_mock_assert("sem_module_init()",
-                        NULL);
+                        NULL,
+                        0);
 
     harness_mock_read("sem_module_init(): return (res)",
                       &res,
@@ -84,10 +85,12 @@ int __attribute__ ((weak)) STUB(sem_init)(struct sem_t *self_p,
     int res;
 
     harness_mock_assert("sem_init(count)",
-                        &count);
+                        &count,
+                        sizeof(count));
 
     harness_mock_assert("sem_init(count_max)",
-                        &count_max);
+                        &count_max,
+                        sizeof(count_max));
 
     harness_mock_read("sem_init(): return (res)",
                       &res,
@@ -116,7 +119,8 @@ int __attribute__ ((weak)) STUB(sem_take)(struct sem_t *self_p,
     int res;
 
     harness_mock_assert("sem_take(timeout_p)",
-                        timeout_p);
+                        timeout_p,
+                        sizeof(*timeout_p));
 
     harness_mock_read("sem_take(): return (res)",
                       &res,
@@ -145,7 +149,8 @@ int __attribute__ ((weak)) STUB(sem_give)(struct sem_t *self_p,
     int res;
 
     harness_mock_assert("sem_give(count)",
-                        &count);
+                        &count,
+                        sizeof(count));
 
     harness_mock_read("sem_give(): return (res)",
                       &res,
@@ -174,7 +179,8 @@ int __attribute__ ((weak)) STUB(sem_give_isr)(struct sem_t *self_p,
     int res;
 
     harness_mock_assert("sem_give_isr(count)",
-                        &count);
+                        &count,
+                        sizeof(count));
 
     harness_mock_read("sem_give_isr(): return (res)",
                       &res,

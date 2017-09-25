@@ -69,7 +69,7 @@ MAP = $(BUILDDIR)/$(NAME).map
 RUNLOG = $(BUILDDIR)/run.log
 CLEAN = $(BUILDDIR) $(EXE) $(RUNLOG) size.log \
         coverage.log coverage.xml gmon.out *.gcov profile.log \
-	index.*html
+	index.*html coverage coverage.info
 STUB ?=
 ENDIANESS ?= little
 

@@ -300,8 +300,9 @@ ssize_t harness_mock_write(const char *id_p,
     mutex_unlock(&module.mutex);
 
     if (entry_p == NULL) {
-        std_printf(FSTR("error: %s: mock id memory allocation failed\r\n"),
-                   id_p);
+        std_printf(
+            FSTR("harness_mock_write: %s: mock id memory allocation failed\r\n"),
+            id_p);
 
         return (-ENOMEM);
     }
@@ -326,17 +327,40 @@ ssize_t harness_mock_write(const char *id_p,
 
 ssize_t harness_mock_read(const char *id_p,
                           void *buf_p,
-                          ssize_t size)
+                          size_t size)
 {
+    struct mock_entry_t *entry_p;
     ssize_t res;
 
-    res = harness_mock_try_read(id_p, buf_p, size);
+    entry_p = find_mock_entry(id_p);
 
-    /* Mark testcase as failed if the mock id was not found. */
-    if (res == -1) {
-        std_printf(FSTR("error: %s: mock id not found\r\n"), id_p);
+    if (entry_p != NULL) {
+        if (size == entry_p->data.size) {
+            if (buf_p != NULL) {
+                memcpy(buf_p,
+                       &entry_p->data.buf[0],
+                       size);
+            }
+
+            res = size;
+        } else {
+            std_printf(FSTR("harness_mock_read: %d != %d: data size mismatch\r\n"),
+                       size,
+                       entry_p->data.size);
+            print_read_backtrace();
+            module.current_testcase_failed = 1;
+            res = -1;
+        }
+
+        /* Free allocated memory. */
+        mutex_lock(&module.mutex);
+        heap_free(&module.heap.obj, entry_p);
+        mutex_unlock(&module.mutex);
+    } else {
+        std_printf(FSTR("harness_mock_read: %s: mock id not found\r\n"), id_p);
         print_read_backtrace();
         module.current_testcase_failed = 1;
+        res = -1;
     }
 
     return (res);
@@ -344,10 +368,8 @@ ssize_t harness_mock_read(const char *id_p,
 
 ssize_t harness_mock_try_read(const char *id_p,
                               void *buf_p,
-                              ssize_t size)
+                              size_t size)
 {
-    ASSERTN(id_p != NULL, EINVAL);
-
     struct mock_entry_t *entry_p;
     ssize_t res;
 
@@ -355,18 +377,23 @@ ssize_t harness_mock_try_read(const char *id_p,
     entry_p = find_mock_entry(id_p);
 
     if (entry_p != NULL) {
-        /* Copy the value to the output buffer. */
-        if (size == HARNESS_MOCK_READ_ALL) {
-            size = entry_p->data.size;
-        }
+        if (size == entry_p->data.size) {
+            if (buf_p != NULL) {
+                memcpy(buf_p,
+                       &entry_p->data.buf[0],
+                       size);
+            }
 
-        if (buf_p != NULL) {
-            memcpy(buf_p,
-                   &entry_p->data.buf[0],
-                   size);
+            res = size;
+        } else {
+            std_printf(
+                FSTR("harness_mock_try_read: %d != %d: data size mismatch\r\n"),
+                size,
+                entry_p->data.size);
+            print_read_backtrace();
+            module.current_testcase_failed = 1;
+            res = -1;
         }
-
-        res = size;
 
         /* Free allocated memory. */
         mutex_lock(&module.mutex);
@@ -378,7 +405,8 @@ ssize_t harness_mock_try_read(const char *id_p,
 }
 
 int harness_mock_assert(const char *id_p,
-                        const void *buf_p)
+                        const void *buf_p,
+                        size_t size)
 {
     ASSERTN(id_p != NULL, EINVAL);
 
@@ -389,22 +417,30 @@ int harness_mock_assert(const char *id_p,
     entry_p = find_mock_entry(id_p);
 
     if (entry_p != NULL) {
-        /* Compare the value to the expected value. */
-        if (buf_p != NULL) {
-            res = memcmp(buf_p, &entry_p->data.buf[0], entry_p->data.size);
+        if (size == entry_p->data.size) {
+            if (buf_p != NULL) {
+                res = memcmp(buf_p, &entry_p->data.buf[0], entry_p->data.size);
 
-            if (res != 0) {
-                std_printf(FSTR("harness_mock_assert: %s: data mismatch "),
-                           id_p);
-                _ASSERTHEX("actual",
-                           buf_p,
-                           "expected",
-                           &entry_p->data.buf[0],
-                           entry_p->data.size);
-                print_assert_backtrace();
-                print_write_backtrace(entry_p);
-                res = -1;
+                if (res != 0) {
+                    std_printf(FSTR("harness_mock_assert: %s: data mismatch "),
+                               id_p);
+                    _ASSERTHEX("actual",
+                               buf_p,
+                               "expected",
+                               &entry_p->data.buf[0],
+                               entry_p->data.size);
+                    print_assert_backtrace();
+                    print_write_backtrace(entry_p);
+                    res = -1;
+                }
             }
+        } else {
+            std_printf(FSTR("harness_mock_assert: %d != %d: data size mismatch\r\n"),
+                       size,
+                       entry_p->data.size);
+            print_assert_backtrace();
+            print_write_backtrace(entry_p);
+            res = -1;
         }
 
         /* Free allocated memory. */
@@ -412,7 +448,7 @@ int harness_mock_assert(const char *id_p,
         heap_free(&module.heap.obj, entry_p);
         mutex_unlock(&module.mutex);
     } else {
-        std_printf(FSTR("error: %s: mock id not found\r\n"), id_p);
+        std_printf(FSTR("harness_mock_assert: %s: mock id not found\r\n"), id_p);
         print_assert_backtrace();
         res = -1;
     }
@@ -441,7 +477,7 @@ ssize_t harness_mock_write_notify(const char *id_p,
 
 ssize_t harness_mock_read_wait(const char *id_p,
                                void *buf_p,
-                               ssize_t size,
+                               size_t size,
                                struct time_t *timeout_p)
 {
     ASSERTN(id_p != NULL, EINVAL);
@@ -450,15 +486,40 @@ ssize_t harness_mock_read_wait(const char *id_p,
     struct bus_listener_t listener;
     ssize_t res;
     uint32_t mask;
+    struct mock_entry_t *entry_p;
+
+    res = 0;
 
     event_init(&event);
     bus_listener_init(&listener, 0, &event);
     bus_attach(&module.bus, &listener);
 
     while (1) {
-        res = harness_mock_try_read(id_p, buf_p, size);
+        entry_p = find_mock_entry(id_p);
 
-        if (res != -1) {
+        if (entry_p != NULL) {
+            if (size == entry_p->data.size) {
+                if (buf_p != NULL) {
+                    memcpy(buf_p,
+                           &entry_p->data.buf[0],
+                           size);
+                }
+
+                res = size;
+            } else {
+                std_printf(FSTR("harness_mock_read_wait: %d != %d: data size mismatch\r\n"),
+                           size,
+                           entry_p->data.size);
+                print_read_backtrace();
+                module.current_testcase_failed = 1;
+                res = -1;
+            }
+
+            /* Free allocated memory. */
+            mutex_lock(&module.mutex);
+            heap_free(&module.heap.obj, entry_p);
+            mutex_unlock(&module.mutex);
+
             bus_detatch(&module.bus, &listener);
             break;
         }
@@ -467,5 +528,5 @@ ssize_t harness_mock_read_wait(const char *id_p,
         event_read(&event, &mask, sizeof(mask));
     }
 
-    return (size);
+    return (res);
 }

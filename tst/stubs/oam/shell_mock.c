@@ -49,7 +49,8 @@ int __attribute__ ((weak)) STUB(shell_module_init)()
     int res;
 
     harness_mock_assert("shell_module_init()",
-                        NULL);
+                        NULL,
+                        0);
 
     harness_mock_read("shell_module_init(): return (res)",
                       &res,
@@ -108,22 +109,28 @@ int __attribute__ ((weak)) STUB(shell_init)(struct shell_t *self_p,
     int res;
 
     harness_mock_assert("shell_init(chin_p)",
-                        chin_p);
+                        chin_p,
+                        sizeof(*chin_p));
 
     harness_mock_assert("shell_init(chout_p)",
-                        chout_p);
+                        chout_p,
+                        sizeof(*chout_p));
 
     harness_mock_assert("shell_init(arg_p)",
-                        arg_p);
+                        arg_p,
+                        sizeof(*arg_p));
 
     harness_mock_assert("shell_init(name_p)",
-                        name_p);
+                        name_p,
+                        sizeof(*name_p));
 
     harness_mock_assert("shell_init(username_p)",
-                        username_p);
+                        username_p,
+                        sizeof(*username_p));
 
     harness_mock_assert("shell_init(password_p)",
-                        password_p);
+                        password_p,
+                        sizeof(*password_p));
 
     harness_mock_read("shell_init(): return (res)",
                       &res,
@@ -151,7 +158,8 @@ void *__attribute__ ((weak)) STUB(shell_main)(void *arg_p)
     void *res;
 
     harness_mock_assert("shell_main(arg_p)",
-                        arg_p);
+                        arg_p,
+                        sizeof(*arg_p));
 
     harness_mock_read("shell_main(): return (res)",
                       &res,

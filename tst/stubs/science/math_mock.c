@@ -50,7 +50,8 @@ float __attribute__ ((weak)) STUB(math_radians_to_degrees)(float value)
     float res;
 
     harness_mock_assert("math_radians_to_degrees(value)",
-                        &value);
+                        &value,
+                        sizeof(value));
 
     harness_mock_read("math_radians_to_degrees(): return (res)",
                       &res,
@@ -78,7 +79,8 @@ float __attribute__ ((weak)) STUB(math_degrees_to_radians)(float value)
     float res;
 
     harness_mock_assert("math_degrees_to_radians(value)",
-                        &value);
+                        &value,
+                        sizeof(value));
 
     harness_mock_read("math_degrees_to_radians(): return (res)",
                       &res,

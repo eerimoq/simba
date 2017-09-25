@@ -63,13 +63,16 @@ int __attribute__ ((weak)) STUB(http_websocket_client_init)(struct http_websocke
     int res;
 
     harness_mock_assert("http_websocket_client_init(server_p)",
-                        server_p);
+                        server_p,
+                        sizeof(*server_p));
 
     harness_mock_assert("http_websocket_client_init(port)",
-                        &port);
+                        &port,
+                        sizeof(port));
 
     harness_mock_assert("http_websocket_client_init(path_p)",
-                        path_p);
+                        path_p,
+                        sizeof(*path_p));
 
     harness_mock_read("http_websocket_client_init(): return (res)",
                       &res,
@@ -144,10 +147,12 @@ ssize_t __attribute__ ((weak)) STUB(http_websocket_client_read)(struct http_webs
     ssize_t res;
 
     harness_mock_assert("http_websocket_client_read(buf_p)",
-                        buf_p);
+                        buf_p,
+                        size);
 
     harness_mock_assert("http_websocket_client_read(size)",
-                        &size);
+                        &size,
+                        sizeof(size));
 
     harness_mock_read("http_websocket_client_read(): return (res)",
                       &res,
@@ -188,13 +193,16 @@ ssize_t __attribute__ ((weak)) STUB(http_websocket_client_write)(struct http_web
     ssize_t res;
 
     harness_mock_assert("http_websocket_client_write(type)",
-                        &type);
+                        &type,
+                        sizeof(type));
 
     harness_mock_assert("http_websocket_client_write(buf_p)",
-                        buf_p);
+                        buf_p,
+                        size);
 
     harness_mock_assert("http_websocket_client_write(size)",
-                        &size);
+                        &size,
+                        sizeof(size));
 
     harness_mock_read("http_websocket_client_write(): return (res)",
                       &res,

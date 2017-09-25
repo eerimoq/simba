@@ -49,7 +49,8 @@ int __attribute__ ((weak)) STUB(bmp280_module_init)()
     int res;
 
     harness_mock_assert("bmp280_module_init()",
-                        NULL);
+                        NULL,
+                        0);
 
     harness_mock_read("bmp280_module_init(): return (res)",
                       &res,
@@ -108,22 +109,28 @@ int __attribute__ ((weak)) STUB(bmp280_init)(struct bmp280_driver_t *self_p,
     int res;
 
     harness_mock_assert("bmp280_init(transport_p)",
-                        transport_p);
+                        transport_p,
+                        sizeof(*transport_p));
 
     harness_mock_assert("bmp280_init(mode)",
-                        &mode);
+                        &mode,
+                        sizeof(mode));
 
     harness_mock_assert("bmp280_init(standby_time)",
-                        &standby_time);
+                        &standby_time,
+                        sizeof(standby_time));
 
     harness_mock_assert("bmp280_init(filter)",
-                        &filter);
+                        &filter,
+                        sizeof(filter));
 
     harness_mock_assert("bmp280_init(temperature_oversampling)",
-                        &temperature_oversampling);
+                        &temperature_oversampling,
+                        sizeof(temperature_oversampling));
 
     harness_mock_assert("bmp280_init(pressure_oversampling)",
-                        &pressure_oversampling);
+                        &pressure_oversampling,
+                        sizeof(pressure_oversampling));
 
     harness_mock_read("bmp280_init(): return (res)",
                       &res,
@@ -199,11 +206,11 @@ int __attribute__ ((weak)) STUB(bmp280_read)(struct bmp280_driver_t *self_p,
 
     harness_mock_read("bmp280_read(): return (temperature_p)",
                       temperature_p,
-                      HARNESS_MOCK_READ_ALL);
+                      sizeof(*temperature_p));
 
     harness_mock_read("bmp280_read(): return (pressure_p)",
                       pressure_p,
-                      HARNESS_MOCK_READ_ALL);
+                      sizeof(*pressure_p));
 
     harness_mock_read("bmp280_read(): return (res)",
                       &res,
@@ -239,11 +246,11 @@ int __attribute__ ((weak)) STUB(bmp280_read_fixed_point)(struct bmp280_driver_t 
 
     harness_mock_read("bmp280_read_fixed_point(): return (temperature_p)",
                       temperature_p,
-                      HARNESS_MOCK_READ_ALL);
+                      sizeof(*temperature_p));
 
     harness_mock_read("bmp280_read_fixed_point(): return (pressure_p)",
                       pressure_p,
-                      HARNESS_MOCK_READ_ALL);
+                      sizeof(*pressure_p));
 
     harness_mock_read("bmp280_read_fixed_point(): return (res)",
                       &res,
@@ -279,10 +286,11 @@ int __attribute__ ((weak)) STUB(bmp280_transport_i2c_init)(struct bmp280_transpo
 
     harness_mock_read("bmp280_transport_i2c_init(): return (i2c_p)",
                       i2c_p,
-                      HARNESS_MOCK_READ_ALL);
+                      sizeof(*i2c_p));
 
     harness_mock_assert("bmp280_transport_i2c_init(i2c_address)",
-                        &i2c_address);
+                        &i2c_address,
+                        sizeof(i2c_address));
 
     harness_mock_read("bmp280_transport_i2c_init(): return (res)",
                       &res,
@@ -311,7 +319,8 @@ int __attribute__ ((weak)) STUB(bmp280_transport_spi_init)(struct bmp280_transpo
     int res;
 
     harness_mock_assert("bmp280_transport_spi_init(spi_p)",
-                        spi_p);
+                        spi_p,
+                        sizeof(*spi_p));
 
     harness_mock_read("bmp280_transport_spi_init(): return (res)",
                       &res,

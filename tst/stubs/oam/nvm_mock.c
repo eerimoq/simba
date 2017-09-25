@@ -49,7 +49,8 @@ int __attribute__ ((weak)) STUB(nvm_module_init)()
     int res;
 
     harness_mock_assert("nvm_module_init()",
-                        NULL);
+                        NULL,
+                        0);
 
     harness_mock_read("nvm_module_init(): return (res)",
                       &res,
@@ -76,7 +77,8 @@ int __attribute__ ((weak)) STUB(nvm_mount)()
     int res;
 
     harness_mock_assert("nvm_mount()",
-                        NULL);
+                        NULL,
+                        0);
 
     harness_mock_read("nvm_mount(): return (res)",
                       &res,
@@ -103,7 +105,8 @@ int __attribute__ ((weak)) STUB(nvm_format)()
     int res;
 
     harness_mock_assert("nvm_format()",
-                        NULL);
+                        NULL,
+                        0);
 
     harness_mock_read("nvm_format(): return (res)",
                       &res,
@@ -144,13 +147,15 @@ ssize_t __attribute__ ((weak)) STUB(nvm_read)(void *dst_p,
 
     harness_mock_read("nvm_read(): return (dst_p)",
                       dst_p,
-                      HARNESS_MOCK_READ_ALL);
+                      size);
 
     harness_mock_assert("nvm_read(src)",
-                        &src);
+                        &src,
+                        sizeof(src));
 
     harness_mock_assert("nvm_read(size)",
-                        &size);
+                        &size,
+                        sizeof(size));
 
     harness_mock_read("nvm_read(): return (res)",
                       &res,
@@ -190,13 +195,16 @@ ssize_t __attribute__ ((weak)) STUB(nvm_write)(uint32_t dst,
     ssize_t res;
 
     harness_mock_assert("nvm_write(dst)",
-                        &dst);
+                        &dst,
+                        sizeof(dst));
 
     harness_mock_assert("nvm_write(src_p)",
-                        src_p);
+                        src_p,
+                        size);
 
     harness_mock_assert("nvm_write(size)",
-                        &size);
+                        &size,
+                        sizeof(size));
 
     harness_mock_read("nvm_write(): return (res)",
                       &res,

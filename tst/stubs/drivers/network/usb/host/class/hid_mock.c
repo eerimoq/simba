@@ -63,13 +63,16 @@ int __attribute__ ((weak)) STUB(usb_host_class_hid_init)(struct usb_host_class_h
     int res;
 
     harness_mock_assert("usb_host_class_hid_init(usb_p)",
-                        usb_p);
+                        usb_p,
+                        sizeof(*usb_p));
 
     harness_mock_assert("usb_host_class_hid_init(devices_p)",
-                        devices_p);
+                        devices_p,
+                        sizeof(*devices_p));
 
     harness_mock_assert("usb_host_class_hid_init(length)",
-                        &length);
+                        &length,
+                        sizeof(length));
 
     harness_mock_read("usb_host_class_hid_init(): return (res)",
                       &res,

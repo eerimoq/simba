@@ -75,19 +75,24 @@ int __attribute__ ((weak)) STUB(http_server_init)(struct http_server_t *self_p,
     int res;
 
     harness_mock_assert("http_server_init(listener_p)",
-                        listener_p);
+                        listener_p,
+                        sizeof(*listener_p));
 
     harness_mock_assert("http_server_init(connections_p)",
-                        connections_p);
+                        connections_p,
+                        sizeof(*connections_p));
 
     harness_mock_assert("http_server_init(root_path_p)",
-                        root_path_p);
+                        root_path_p,
+                        sizeof(*root_path_p));
 
     harness_mock_assert("http_server_init(routes_p)",
-                        routes_p);
+                        routes_p,
+                        sizeof(*routes_p));
 
     harness_mock_assert("http_server_init(on_no_route)",
-                        &on_no_route);
+                        &on_no_route,
+                        sizeof(on_no_route));
 
     harness_mock_read("http_server_init(): return (res)",
                       &res,
@@ -116,7 +121,8 @@ int __attribute__ ((weak)) STUB(http_server_wrap_ssl)(struct http_server_t *self
     int res;
 
     harness_mock_assert("http_server_wrap_ssl(context_p)",
-                        context_p);
+                        context_p,
+                        sizeof(*context_p));
 
     harness_mock_read("http_server_wrap_ssl(): return (res)",
                       &res,
@@ -196,13 +202,16 @@ int __attribute__ ((weak)) STUB(http_server_response_write)(struct http_server_c
     int res;
 
     harness_mock_assert("http_server_response_write(connection_p)",
-                        connection_p);
+                        connection_p,
+                        sizeof(*connection_p));
 
     harness_mock_assert("http_server_response_write(request_p)",
-                        request_p);
+                        request_p,
+                        sizeof(*request_p));
 
     harness_mock_assert("http_server_response_write(response_p)",
-                        response_p);
+                        response_p,
+                        sizeof(*response_p));
 
     harness_mock_read("http_server_response_write(): return (res)",
                       &res,

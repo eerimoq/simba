@@ -49,7 +49,8 @@ int __attribute__ ((weak)) STUB(flash_module_init)()
     int res;
 
     harness_mock_assert("flash_module_init()",
-                        NULL);
+                        NULL,
+                        0);
 
     harness_mock_read("flash_module_init(): return (res)",
                       &res,
@@ -78,7 +79,8 @@ int __attribute__ ((weak)) STUB(flash_init)(struct flash_driver_t *self_p,
     int res;
 
     harness_mock_assert("flash_init(dev_p)",
-                        &dev_p);
+                        &dev_p,
+                        sizeof(dev_p));
 
     harness_mock_read("flash_init(): return (res)",
                       &res,
@@ -119,13 +121,16 @@ ssize_t __attribute__ ((weak)) STUB(flash_read)(struct flash_driver_t *self_p,
     ssize_t res;
 
     harness_mock_assert("flash_read(dst_p)",
-                        dst_p);
+                        dst_p,
+                        size);
 
     harness_mock_assert("flash_read(src)",
-                        &src);
+                        &src,
+                        sizeof(src));
 
     harness_mock_assert("flash_read(size)",
-                        &size);
+                        &size,
+                        sizeof(size));
 
     harness_mock_read("flash_read(): return (res)",
                       &res,
@@ -166,13 +171,16 @@ ssize_t __attribute__ ((weak)) STUB(flash_write)(struct flash_driver_t *self_p,
     ssize_t res;
 
     harness_mock_assert("flash_write(dst)",
-                        &dst);
+                        &dst,
+                        sizeof(dst));
 
     harness_mock_assert("flash_write(src_p)",
-                        src_p);
+                        src_p,
+                        size);
 
     harness_mock_assert("flash_write(size)",
-                        &size);
+                        &size,
+                        sizeof(size));
 
     harness_mock_read("flash_write(): return (res)",
                       &res,
@@ -207,10 +215,12 @@ int __attribute__ ((weak)) STUB(flash_erase)(struct flash_driver_t *self_p,
     int res;
 
     harness_mock_assert("flash_erase(addr)",
-                        &addr);
+                        &addr,
+                        sizeof(addr));
 
     harness_mock_assert("flash_erase(size)",
-                        &size);
+                        &size,
+                        sizeof(size));
 
     harness_mock_read("flash_erase(): return (res)",
                       &res,

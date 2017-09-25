@@ -49,7 +49,8 @@ int __attribute__ ((weak)) STUB(mutex_module_init)()
     int res;
 
     harness_mock_assert("mutex_module_init()",
-                        NULL);
+                        NULL,
+                        0);
 
     harness_mock_read("mutex_module_init(): return (res)",
                       &res,

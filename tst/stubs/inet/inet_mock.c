@@ -49,7 +49,8 @@ int __attribute__ ((weak)) STUB(inet_module_init)()
     int res;
 
     harness_mock_assert("inet_module_init()",
-                        NULL);
+                        NULL,
+                        0);
 
     harness_mock_read("inet_module_init(): return (res)",
                       &res,
@@ -83,11 +84,12 @@ int __attribute__ ((weak)) STUB(inet_aton)(const char *src_p,
     int res;
 
     harness_mock_assert("inet_aton(src_p)",
-                        src_p);
+                        src_p,
+                        sizeof(*src_p));
 
     harness_mock_read("inet_aton(): return (dst_p)",
                       dst_p,
-                      HARNESS_MOCK_READ_ALL);
+                      sizeof(*dst_p));
 
     harness_mock_read("inet_aton(): return (res)",
                       &res,
@@ -121,11 +123,12 @@ char *__attribute__ ((weak)) STUB(inet_ntoa)(const struct inet_ip_addr_t *src_p,
     char *res;
 
     harness_mock_assert("inet_ntoa(src_p)",
-                        src_p);
+                        src_p,
+                        sizeof(*src_p));
 
     harness_mock_read("inet_ntoa(): return (dst_p)",
                       dst_p,
-                      HARNESS_MOCK_READ_ALL);
+                      sizeof(*dst_p));
 
     harness_mock_read("inet_ntoa(): return (res)",
                       &res,
@@ -159,10 +162,12 @@ uint16_t __attribute__ ((weak)) STUB(inet_checksum)(void *buf_p,
     uint16_t res;
 
     harness_mock_assert("inet_checksum(buf_p)",
-                        buf_p);
+                        buf_p,
+                        size);
 
     harness_mock_assert("inet_checksum(size)",
-                        &size);
+                        &size,
+                        sizeof(size));
 
     harness_mock_read("inet_checksum(): return (res)",
                       &res,

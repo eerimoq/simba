@@ -49,7 +49,8 @@ int __attribute__ ((weak)) STUB(ssl_module_init)()
     int res;
 
     harness_mock_assert("ssl_module_init()",
-                        NULL);
+                        NULL,
+                        0);
 
     harness_mock_read("ssl_module_init(): return (res)",
                       &res,
@@ -78,7 +79,8 @@ int __attribute__ ((weak)) STUB(ssl_context_init)(struct ssl_context_t *self_p,
     int res;
 
     harness_mock_assert("ssl_context_init(protocol)",
-                        &protocol);
+                        &protocol,
+                        sizeof(protocol));
 
     harness_mock_read("ssl_context_init(): return (res)",
                       &res,
@@ -134,11 +136,11 @@ int __attribute__ ((weak)) STUB(ssl_context_load_cert_chain)(struct ssl_context_
 
     harness_mock_read("ssl_context_load_cert_chain(): return (cert_p)",
                       cert_p,
-                      HARNESS_MOCK_READ_ALL);
+                      sizeof(*cert_p));
 
     harness_mock_read("ssl_context_load_cert_chain(): return (key_p)",
                       key_p,
-                      HARNESS_MOCK_READ_ALL);
+                      sizeof(*key_p));
 
     harness_mock_read("ssl_context_load_cert_chain(): return (res)",
                       &res,
@@ -167,7 +169,8 @@ int __attribute__ ((weak)) STUB(ssl_context_load_verify_location)(struct ssl_con
     int res;
 
     harness_mock_assert("ssl_context_load_verify_location(ca_certs_p)",
-                        ca_certs_p);
+                        ca_certs_p,
+                        sizeof(*ca_certs_p));
 
     harness_mock_read("ssl_context_load_verify_location(): return (res)",
                       &res,
@@ -196,7 +199,8 @@ int __attribute__ ((weak)) STUB(ssl_context_set_verify_mode)(struct ssl_context_
     int res;
 
     harness_mock_assert("ssl_context_set_verify_mode(mode)",
-                        &mode);
+                        &mode,
+                        sizeof(mode));
 
     harness_mock_read("ssl_context_set_verify_mode(): return (res)",
                       &res,
@@ -243,16 +247,20 @@ int __attribute__ ((weak)) STUB(ssl_socket_open)(struct ssl_socket_t *self_p,
     int res;
 
     harness_mock_assert("ssl_socket_open(context_p)",
-                        context_p);
+                        context_p,
+                        sizeof(*context_p));
 
     harness_mock_assert("ssl_socket_open(socket_p)",
-                        socket_p);
+                        socket_p,
+                        sizeof(*socket_p));
 
     harness_mock_assert("ssl_socket_open(flags)",
-                        &flags);
+                        &flags,
+                        sizeof(flags));
 
     harness_mock_assert("ssl_socket_open(server_hostname_p)",
-                        server_hostname_p);
+                        server_hostname_p,
+                        sizeof(*server_hostname_p));
 
     harness_mock_read("ssl_socket_open(): return (res)",
                       &res,
@@ -307,10 +315,12 @@ ssize_t __attribute__ ((weak)) STUB(ssl_socket_write)(struct ssl_socket_t *self_
     ssize_t res;
 
     harness_mock_assert("ssl_socket_write(buf_p)",
-                        buf_p);
+                        buf_p,
+                        size);
 
     harness_mock_assert("ssl_socket_write(size)",
-                        &size);
+                        &size,
+                        sizeof(size));
 
     harness_mock_read("ssl_socket_write(): return (res)",
                       &res,
@@ -345,10 +355,12 @@ ssize_t __attribute__ ((weak)) STUB(ssl_socket_read)(struct ssl_socket_t *self_p
     ssize_t res;
 
     harness_mock_assert("ssl_socket_read(buf_p)",
-                        buf_p);
+                        buf_p,
+                        size);
 
     harness_mock_assert("ssl_socket_read(size)",
-                        &size);
+                        &size,
+                        sizeof(size));
 
     harness_mock_read("ssl_socket_read(): return (res)",
                       &res,
@@ -430,15 +442,15 @@ int __attribute__ ((weak)) STUB(ssl_socket_get_cipher)(struct ssl_socket_t *self
 
     harness_mock_read("ssl_socket_get_cipher(): return (cipher_pp)",
                       cipher_pp,
-                      HARNESS_MOCK_READ_ALL);
+                      sizeof(*cipher_pp));
 
     harness_mock_read("ssl_socket_get_cipher(): return (protocol_pp)",
                       protocol_pp,
-                      HARNESS_MOCK_READ_ALL);
+                      sizeof(*protocol_pp));
 
     harness_mock_read("ssl_socket_get_cipher(): return (number_of_secret_bits_p)",
                       number_of_secret_bits_p,
-                      HARNESS_MOCK_READ_ALL);
+                      sizeof(*number_of_secret_bits_p));
 
     harness_mock_read("ssl_socket_get_cipher(): return (res)",
                       &res,

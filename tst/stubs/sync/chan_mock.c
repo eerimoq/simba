@@ -49,7 +49,8 @@ int __attribute__ ((weak)) STUB(chan_module_init)()
     int res;
 
     harness_mock_assert("chan_module_init()",
-                        NULL);
+                        NULL,
+                        0);
 
     harness_mock_read("chan_module_init(): return (res)",
                       &res,
@@ -90,13 +91,16 @@ int __attribute__ ((weak)) STUB(chan_init)(struct chan_t *self_p,
     int res;
 
     harness_mock_assert("chan_init(read)",
-                        &read);
+                        &read,
+                        sizeof(read));
 
     harness_mock_assert("chan_init(write)",
-                        &write);
+                        &write,
+                        sizeof(write));
 
     harness_mock_assert("chan_init(size)",
-                        &size);
+                        &size,
+                        sizeof(size));
 
     harness_mock_read("chan_init(): return (res)",
                       &res,
@@ -125,7 +129,8 @@ int __attribute__ ((weak)) STUB(chan_set_write_cb)(struct chan_t *self_p,
     int res;
 
     harness_mock_assert("chan_set_write_cb(write_cb)",
-                        &write_cb);
+                        &write_cb,
+                        sizeof(write_cb));
 
     harness_mock_read("chan_set_write_cb(): return (res)",
                       &res,
@@ -154,7 +159,8 @@ int __attribute__ ((weak)) STUB(chan_set_write_isr_cb)(struct chan_t *self_p,
     int res;
 
     harness_mock_assert("chan_set_write_isr_cb(write_isr_cb)",
-                        &write_isr_cb);
+                        &write_isr_cb,
+                        sizeof(write_isr_cb));
 
     harness_mock_read("chan_set_write_isr_cb(): return (res)",
                       &res,
@@ -183,7 +189,8 @@ int __attribute__ ((weak)) STUB(chan_set_write_filter_cb)(struct chan_t *self_p,
     int res;
 
     harness_mock_assert("chan_set_write_filter_cb(write_filter_cb)",
-                        &write_filter_cb);
+                        &write_filter_cb,
+                        sizeof(write_filter_cb));
 
     harness_mock_read("chan_set_write_filter_cb(): return (res)",
                       &res,
@@ -212,7 +219,8 @@ int __attribute__ ((weak)) STUB(chan_set_write_filter_isr_cb)(struct chan_t *sel
     int res;
 
     harness_mock_assert("chan_set_write_filter_isr_cb(write_filter_isr_cb)",
-                        &write_filter_isr_cb);
+                        &write_filter_isr_cb,
+                        sizeof(write_filter_isr_cb));
 
     harness_mock_read("chan_set_write_filter_isr_cb(): return (res)",
                       &res,
@@ -241,7 +249,8 @@ int __attribute__ ((weak)) STUB(chan_set_control_cb)(struct chan_t *self_p,
     int res;
 
     harness_mock_assert("chan_set_control_cb(control_cb)",
-                        &control_cb);
+                        &control_cb,
+                        sizeof(control_cb));
 
     harness_mock_read("chan_set_control_cb(): return (res)",
                       &res,
@@ -277,10 +286,11 @@ ssize_t __attribute__ ((weak)) STUB(chan_read)(void *self_p,
 
     harness_mock_read("chan_read(): return (buf_p)",
                       buf_p,
-                      HARNESS_MOCK_READ_ALL);
+                      size);
 
     harness_mock_assert("chan_read(size)",
-                        &size);
+                        &size,
+                        sizeof(size));
 
     harness_mock_read("chan_read(): return (res)",
                       &res,
@@ -315,10 +325,12 @@ ssize_t __attribute__ ((weak)) STUB(chan_write)(void *self_p,
     ssize_t res;
 
     harness_mock_assert("chan_write(buf_p)",
-                        buf_p);
+                        buf_p,
+                        size);
 
     harness_mock_assert("chan_write(size)",
-                        &size);
+                        &size,
+                        sizeof(size));
 
     harness_mock_read("chan_write(): return (res)",
                       &res,
@@ -367,7 +379,8 @@ int __attribute__ ((weak)) STUB(chan_putc)(void *self_p,
     int res;
 
     harness_mock_assert("chan_putc(character)",
-                        &character);
+                        &character,
+                        sizeof(character));
 
     harness_mock_read("chan_putc(): return (res)",
                       &res,
@@ -416,7 +429,8 @@ int __attribute__ ((weak)) STUB(chan_control)(void *self_p,
     int res;
 
     harness_mock_assert("chan_control(operation)",
-                        &operation);
+                        &operation,
+                        sizeof(operation));
 
     harness_mock_read("chan_control(): return (res)",
                       &res,
@@ -451,10 +465,12 @@ ssize_t __attribute__ ((weak)) STUB(chan_write_isr)(void *self_p,
     ssize_t res;
 
     harness_mock_assert("chan_write_isr(buf_p)",
-                        buf_p);
+                        buf_p,
+                        size);
 
     harness_mock_assert("chan_write_isr(size)",
-                        &size);
+                        &size,
+                        sizeof(size));
 
     harness_mock_read("chan_write_isr(): return (res)",
                       &res,
@@ -514,13 +530,16 @@ int __attribute__ ((weak)) STUB(chan_list_init)(struct chan_list_t *list_p,
     int res;
 
     harness_mock_assert("chan_list_init(list_p)",
-                        list_p);
+                        list_p,
+                        sizeof(*list_p));
 
     harness_mock_assert("chan_list_init(workspace_p)",
-                        workspace_p);
+                        workspace_p,
+                        size);
 
     harness_mock_assert("chan_list_init(size)",
-                        &size);
+                        &size,
+                        sizeof(size));
 
     harness_mock_read("chan_list_init(): return (res)",
                       &res,
@@ -548,7 +567,8 @@ int __attribute__ ((weak)) STUB(chan_list_destroy)(struct chan_list_t *list_p)
     int res;
 
     harness_mock_assert("chan_list_destroy(list_p)",
-                        list_p);
+                        list_p,
+                        sizeof(*list_p));
 
     harness_mock_read("chan_list_destroy(): return (res)",
                       &res,
@@ -582,10 +602,12 @@ int __attribute__ ((weak)) STUB(chan_list_add)(struct chan_list_t *list_p,
     int res;
 
     harness_mock_assert("chan_list_add(list_p)",
-                        list_p);
+                        list_p,
+                        sizeof(*list_p));
 
     harness_mock_assert("chan_list_add(chan_p)",
-                        chan_p);
+                        chan_p,
+                        sizeof(*chan_p));
 
     harness_mock_read("chan_list_add(): return (res)",
                       &res,
@@ -619,10 +641,12 @@ int __attribute__ ((weak)) STUB(chan_list_remove)(struct chan_list_t *list_p,
     int res;
 
     harness_mock_assert("chan_list_remove(list_p)",
-                        list_p);
+                        list_p,
+                        sizeof(*list_p));
 
     harness_mock_assert("chan_list_remove(chan_p)",
-                        chan_p);
+                        chan_p,
+                        sizeof(*chan_p));
 
     harness_mock_read("chan_list_remove(): return (res)",
                       &res,
@@ -656,10 +680,12 @@ void *__attribute__ ((weak)) STUB(chan_list_poll)(struct chan_list_t *list_p,
     void *res;
 
     harness_mock_assert("chan_list_poll(list_p)",
-                        list_p);
+                        list_p,
+                        sizeof(*list_p));
 
     harness_mock_assert("chan_list_poll(timeout_p)",
-                        timeout_p);
+                        timeout_p,
+                        sizeof(*timeout_p));
 
     harness_mock_read("chan_list_poll(): return (res)",
                       &res,
@@ -693,10 +719,12 @@ void *__attribute__ ((weak)) STUB(chan_poll)(void *chan_p,
     void *res;
 
     harness_mock_assert("chan_poll(chan_p)",
-                        chan_p);
+                        chan_p,
+                        sizeof(*chan_p));
 
     harness_mock_assert("chan_poll(timeout_p)",
-                        timeout_p);
+                        timeout_p,
+                        sizeof(*timeout_p));
 
     harness_mock_read("chan_poll(): return (res)",
                       &res,
@@ -723,7 +751,8 @@ void *__attribute__ ((weak)) STUB(chan_null)()
     void *res;
 
     harness_mock_assert("chan_null()",
-                        NULL);
+                        NULL,
+                        0);
 
     harness_mock_read("chan_null(): return (res)",
                       &res,
@@ -759,10 +788,11 @@ ssize_t __attribute__ ((weak)) STUB(chan_read_null)(void *self_p,
 
     harness_mock_read("chan_read_null(): return (buf_p)",
                       buf_p,
-                      HARNESS_MOCK_READ_ALL);
+                      size);
 
     harness_mock_assert("chan_read_null(size)",
-                        &size);
+                        &size,
+                        sizeof(size));
 
     harness_mock_read("chan_read_null(): return (res)",
                       &res,
@@ -797,10 +827,12 @@ ssize_t __attribute__ ((weak)) STUB(chan_write_null)(void *self_p,
     ssize_t res;
 
     harness_mock_assert("chan_write_null(buf_p)",
-                        buf_p);
+                        buf_p,
+                        size);
 
     harness_mock_assert("chan_write_null(size)",
-                        &size);
+                        &size,
+                        sizeof(size));
 
     harness_mock_read("chan_write_null(): return (res)",
                       &res,
@@ -849,7 +881,8 @@ int __attribute__ ((weak)) STUB(chan_control_null)(void *self_p,
     int res;
 
     harness_mock_assert("chan_control_null(operation)",
-                        &operation);
+                        &operation,
+                        sizeof(operation));
 
     harness_mock_read("chan_control_null(): return (res)",
                       &res,

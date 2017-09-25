@@ -49,7 +49,8 @@ int __attribute__ ((weak)) STUB(cond_module_init)()
     int res;
 
     harness_mock_assert("cond_module_init()",
-                        NULL);
+                        NULL,
+                        0);
 
     harness_mock_read("cond_module_init(): return (res)",
                       &res,
@@ -104,11 +105,12 @@ int __attribute__ ((weak)) STUB(cond_wait)(struct cond_t *self_p,
     int res;
 
     harness_mock_assert("cond_wait(mutex_p)",
-                        mutex_p);
+                        mutex_p,
+                        sizeof(*mutex_p));
 
     harness_mock_read("cond_wait(): return (timeout_p)",
                       timeout_p,
-                      HARNESS_MOCK_READ_ALL);
+                      sizeof(*timeout_p));
 
     harness_mock_read("cond_wait(): return (res)",
                       &res,

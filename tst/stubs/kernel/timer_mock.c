@@ -49,7 +49,8 @@ int __attribute__ ((weak)) STUB(timer_module_init)()
     int res;
 
     harness_mock_assert("timer_module_init()",
-                        NULL);
+                        NULL,
+                        0);
 
     harness_mock_read("timer_module_init(): return (res)",
                       &res,
@@ -96,16 +97,20 @@ int __attribute__ ((weak)) STUB(timer_init)(struct timer_t *self_p,
     int res;
 
     harness_mock_assert("timer_init(timeout_p)",
-                        timeout_p);
+                        timeout_p,
+                        sizeof(*timeout_p));
 
     harness_mock_assert("timer_init(callback)",
-                        &callback);
+                        &callback,
+                        sizeof(callback));
 
     harness_mock_assert("timer_init(arg_p)",
-                        arg_p);
+                        arg_p,
+                        sizeof(*arg_p));
 
     harness_mock_assert("timer_init(flags)",
-                        &flags);
+                        &flags,
+                        sizeof(flags));
 
     harness_mock_read("timer_init(): return (res)",
                       &res,
