@@ -356,7 +356,7 @@ ssize_t harness_mock_try_read(const char *id_p,
 
     if (entry_p != NULL) {
         /* Copy the value to the output buffer. */
-        if (size == -1) {
+        if (size == HARNESS_MOCK_READ_ALL) {
             size = entry_p->data.size;
         }
 
