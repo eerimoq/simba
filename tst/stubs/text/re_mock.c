@@ -96,7 +96,7 @@ char *__attribute__ ((weak)) STUB(re_compile)(char *compiled_p,
 
     harness_mock_read("re_compile(): return (compiled_p)",
                       compiled_p,
-                      -1);
+                      HARNESS_MOCK_READ_ALL);
 
     harness_mock_assert("re_compile(pattern_p)",
                         pattern_p);
@@ -167,11 +167,11 @@ ssize_t __attribute__ ((weak)) STUB(re_match)(const char *compiled_p,
 
     harness_mock_read("re_match(): return (groups_p)",
                       groups_p,
-                      -1);
+                      HARNESS_MOCK_READ_ALL);
 
     harness_mock_read("re_match(): return (number_of_groups_p)",
                       number_of_groups_p,
-                      -1);
+                      HARNESS_MOCK_READ_ALL);
 
     harness_mock_read("re_match(): return (res)",
                       &res,

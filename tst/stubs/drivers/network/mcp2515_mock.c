@@ -166,7 +166,7 @@ ssize_t __attribute__ ((weak)) STUB(mcp2515_read)(struct mcp2515_driver_t *self_
 
     harness_mock_read("mcp2515_read(): return (frame_p)",
                       frame_p,
-                      -1);
+                      HARNESS_MOCK_READ_ALL);
 
     harness_mock_read("mcp2515_read(): return (res)",
                       &res,
@@ -196,7 +196,7 @@ ssize_t __attribute__ ((weak)) STUB(mcp2515_write)(struct mcp2515_driver_t *self
 
     harness_mock_read("mcp2515_write(): return (frame_p)",
                       frame_p,
-                      -1);
+                      HARNESS_MOCK_READ_ALL);
 
     harness_mock_read("mcp2515_write(): return (res)",
                       &res,

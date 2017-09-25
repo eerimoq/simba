@@ -187,7 +187,7 @@ ssize_t __attribute__ ((weak)) STUB(eeprom_soft_read)(struct eeprom_soft_driver_
 
     harness_mock_read("eeprom_soft_read(): return (dst_p)",
                       dst_p,
-                      -1);
+                      HARNESS_MOCK_READ_ALL);
 
     harness_mock_assert("eeprom_soft_read(src)",
                         &src);

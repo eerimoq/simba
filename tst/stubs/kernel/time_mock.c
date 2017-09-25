@@ -51,7 +51,7 @@ int __attribute__ ((weak)) STUB(time_get)(struct time_t *now_p)
 
     harness_mock_read("time_get(): return (now_p)",
                       now_p,
-                      -1);
+                      HARNESS_MOCK_READ_ALL);
 
     harness_mock_read("time_get(): return (res)",
                       &res,
@@ -120,7 +120,7 @@ int __attribute__ ((weak)) STUB(time_add)(struct time_t *res_p,
 
     harness_mock_read("time_add(): return (res_p)",
                       res_p,
-                      -1);
+                      HARNESS_MOCK_READ_ALL);
 
     harness_mock_assert("time_add(left_p)",
                         left_p);
@@ -167,7 +167,7 @@ int __attribute__ ((weak)) STUB(time_subtract)(struct time_t *res_p,
 
     harness_mock_read("time_subtract(): return (res_p)",
                       res_p,
-                      -1);
+                      HARNESS_MOCK_READ_ALL);
 
     harness_mock_assert("time_subtract(left_p)",
                         left_p);
@@ -245,7 +245,7 @@ int __attribute__ ((weak)) STUB(time_unix_time_to_date)(struct date_t *date_p,
 
     harness_mock_read("time_unix_time_to_date(): return (date_p)",
                       date_p,
-                      -1);
+                      HARNESS_MOCK_READ_ALL);
 
     harness_mock_assert("time_unix_time_to_date(time_p)",
                         time_p);

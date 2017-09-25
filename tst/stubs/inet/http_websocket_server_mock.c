@@ -122,7 +122,7 @@ ssize_t __attribute__ ((weak)) STUB(http_websocket_server_read)(struct http_webs
 
     harness_mock_read("http_websocket_server_read(): return (type_p)",
                       type_p,
-                      -1);
+                      HARNESS_MOCK_READ_ALL);
 
     harness_mock_assert("http_websocket_server_read(buf_p)",
                         buf_p);

@@ -96,7 +96,7 @@ int __attribute__ ((weak)) STUB(fs_call)(char *command_p,
 
     harness_mock_read("fs_call(): return (command_p)",
                       command_p,
-                      -1);
+                      HARNESS_MOCK_READ_ALL);
 
     harness_mock_assert("fs_call(chin_p)",
                         chin_p);
@@ -199,7 +199,7 @@ ssize_t __attribute__ ((weak)) STUB(fs_read)(struct fs_file_t *self_p,
 
     harness_mock_read("fs_read(): return (dst_p)",
                       dst_p,
-                      -1);
+                      HARNESS_MOCK_READ_ALL);
 
     harness_mock_assert("fs_read(size)",
                         &size);
@@ -238,7 +238,7 @@ ssize_t __attribute__ ((weak)) STUB(fs_read_line)(struct fs_file_t *self_p,
 
     harness_mock_read("fs_read_line(): return (dst_p)",
                       dst_p,
-                      -1);
+                      HARNESS_MOCK_READ_ALL);
 
     harness_mock_assert("fs_read_line(size)",
                         &size);
@@ -378,7 +378,7 @@ int __attribute__ ((weak)) STUB(fs_dir_open)(struct fs_dir_t *dir_p,
 
     harness_mock_read("fs_dir_open(): return (dir_p)",
                       dir_p,
-                      -1);
+                      HARNESS_MOCK_READ_ALL);
 
     harness_mock_assert("fs_dir_open(path_p)",
                         path_p);
@@ -450,7 +450,7 @@ int __attribute__ ((weak)) STUB(fs_dir_read)(struct fs_dir_t *dir_p,
 
     harness_mock_read("fs_dir_read(): return (entry_p)",
                       entry_p,
-                      -1);
+                      HARNESS_MOCK_READ_ALL);
 
     harness_mock_read("fs_dir_read(): return (res)",
                       &res,
@@ -692,7 +692,7 @@ int __attribute__ ((weak)) STUB(fs_auto_complete)(char *path_p)
 
     harness_mock_read("fs_auto_complete(): return (path_p)",
                       path_p,
-                      -1);
+                      HARNESS_MOCK_READ_ALL);
 
     harness_mock_read("fs_auto_complete(): return (res)",
                       &res,
@@ -1252,7 +1252,7 @@ int __attribute__ ((weak)) STUB(fs_parameter_int_set)(void *value_p,
 
     harness_mock_read("fs_parameter_int_set(): return (value_p)",
                       value_p,
-                      -1);
+                      HARNESS_MOCK_READ_ALL);
 
     harness_mock_assert("fs_parameter_int_set(src_p)",
                         src_p);

@@ -84,7 +84,7 @@ ssize_t __attribute__ ((weak)) STUB(std_sprintf)(char *dst_p,
 
     harness_mock_read("std_sprintf(): return (dst_p)",
                       dst_p,
-                      -1);
+                      HARNESS_MOCK_READ_ALL);
 
     harness_mock_assert("std_sprintf(fmt_p)",
                         &fmt_p);
@@ -128,7 +128,7 @@ ssize_t __attribute__ ((weak)) STUB(std_snprintf)(char *dst_p,
 
     harness_mock_read("std_snprintf(): return (dst_p)",
                       dst_p,
-                      -1);
+                      HARNESS_MOCK_READ_ALL);
 
     harness_mock_assert("std_snprintf(size)",
                         &size);
@@ -175,7 +175,7 @@ ssize_t __attribute__ ((weak)) STUB(std_vsprintf)(char *dst_p,
 
     harness_mock_read("std_vsprintf(): return (dst_p)",
                       dst_p,
-                      -1);
+                      HARNESS_MOCK_READ_ALL);
 
     harness_mock_assert("std_vsprintf(fmt_p)",
                         &fmt_p);
@@ -228,7 +228,7 @@ ssize_t __attribute__ ((weak)) STUB(std_vsnprintf)(char *dst_p,
 
     harness_mock_read("std_vsnprintf(): return (dst_p)",
                       dst_p,
-                      -1);
+                      HARNESS_MOCK_READ_ALL);
 
     harness_mock_assert("std_vsnprintf(size)",
                         &size);
@@ -386,7 +386,7 @@ ssize_t __attribute__ ((weak)) STUB(std_vfprintf)(void *chan_p,
 
     harness_mock_read("std_vfprintf(): return (ap_p)",
                       ap_p,
-                      -1);
+                      HARNESS_MOCK_READ_ALL);
 
     harness_mock_read("std_vfprintf(): return (res)",
                       &res,
@@ -495,7 +495,7 @@ const char *__attribute__ ((weak)) STUB(std_strtolb)(const char *str_p,
 
     harness_mock_read("std_strtolb(): return (value_p)",
                       value_p,
-                      -1);
+                      HARNESS_MOCK_READ_ALL);
 
     harness_mock_assert("std_strtolb(base)",
                         &base);
@@ -536,7 +536,7 @@ const char *__attribute__ ((weak)) STUB(std_strtol)(const char *str_p,
 
     harness_mock_read("std_strtol(): return (value_p)",
                       value_p,
-                      -1);
+                      HARNESS_MOCK_READ_ALL);
 
     harness_mock_read("std_strtol(): return (res)",
                       &res,
@@ -574,7 +574,7 @@ const char *__attribute__ ((weak)) STUB(std_strtod)(const char *str_p,
 
     harness_mock_read("std_strtod(): return (value_p)",
                       value_p,
-                      -1);
+                      HARNESS_MOCK_READ_ALL);
 
     harness_mock_read("std_strtod(): return (res)",
                       &res,
@@ -618,7 +618,7 @@ const char *__attribute__ ((weak)) STUB(std_strtodfp)(const char *str_p,
 
     harness_mock_read("std_strtodfp(): return (value_p)",
                       value_p,
-                      -1);
+                      HARNESS_MOCK_READ_ALL);
 
     harness_mock_assert("std_strtodfp(precision)",
                         &precision);

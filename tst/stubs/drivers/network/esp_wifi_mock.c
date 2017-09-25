@@ -181,5 +181,5 @@ void __attribute__ ((weak)) STUB(esp_wifi_print)(void *chout_p)
 {
     harness_mock_read("esp_wifi_print(): return (chout_p)",
                       chout_p,
-                      -1);
+                      HARNESS_MOCK_READ_ALL);
 }

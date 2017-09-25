@@ -166,7 +166,7 @@ int __attribute__ ((weak)) STUB(gnss_get_date)(struct gnss_driver_t *self_p,
 
     harness_mock_read("gnss_get_date(): return (date_p)",
                       date_p,
-                      -1);
+                      HARNESS_MOCK_READ_ALL);
 
     harness_mock_read("gnss_get_date(): return (res)",
                       &res,
@@ -202,11 +202,11 @@ int __attribute__ ((weak)) STUB(gnss_get_position)(struct gnss_driver_t *self_p,
 
     harness_mock_read("gnss_get_position(): return (latitude_p)",
                       latitude_p,
-                      -1);
+                      HARNESS_MOCK_READ_ALL);
 
     harness_mock_read("gnss_get_position(): return (longitude_p)",
                       longitude_p,
-                      -1);
+                      HARNESS_MOCK_READ_ALL);
 
     harness_mock_read("gnss_get_position(): return (res)",
                       &res,
@@ -236,7 +236,7 @@ int __attribute__ ((weak)) STUB(gnss_get_speed)(struct gnss_driver_t *self_p,
 
     harness_mock_read("gnss_get_speed(): return (speed_p)",
                       speed_p,
-                      -1);
+                      HARNESS_MOCK_READ_ALL);
 
     harness_mock_read("gnss_get_speed(): return (res)",
                       &res,
@@ -266,7 +266,7 @@ int __attribute__ ((weak)) STUB(gnss_get_number_of_satellites)(struct gnss_drive
 
     harness_mock_read("gnss_get_number_of_satellites(): return (number_of_satellites_p)",
                       number_of_satellites_p,
-                      -1);
+                      HARNESS_MOCK_READ_ALL);
 
     harness_mock_read("gnss_get_number_of_satellites(): return (res)",
                       &res,
@@ -296,7 +296,7 @@ int __attribute__ ((weak)) STUB(gnss_get_altitude)(struct gnss_driver_t *self_p,
 
     harness_mock_read("gnss_get_altitude(): return (altitude_p)",
                       altitude_p,
-                      -1);
+                      HARNESS_MOCK_READ_ALL);
 
     harness_mock_read("gnss_get_altitude(): return (res)",
                       &res,
@@ -326,7 +326,7 @@ int __attribute__ ((weak)) STUB(gnss_print)(struct gnss_driver_t *self_p,
 
     harness_mock_read("gnss_print(): return (chan_p)",
                       chan_p,
-                      -1);
+                      HARNESS_MOCK_READ_ALL);
 
     harness_mock_read("gnss_print(): return (res)",
                       &res,

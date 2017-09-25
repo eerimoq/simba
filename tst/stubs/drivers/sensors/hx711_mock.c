@@ -181,7 +181,7 @@ int __attribute__ ((weak)) STUB(hx711_read)(struct hx711_driver_t *self_p,
 
     harness_mock_read("hx711_read(): return (weight_p)",
                       weight_p,
-                      -1);
+                      HARNESS_MOCK_READ_ALL);
 
     harness_mock_assert("hx711_read(channel_gain)",
                         &channel_gain);
@@ -220,7 +220,7 @@ int __attribute__ ((weak)) STUB(hx711_read_raw)(struct hx711_driver_t *self_p,
 
     harness_mock_read("hx711_read_raw(): return (sample_p)",
                       sample_p,
-                      -1);
+                      HARNESS_MOCK_READ_ALL);
 
     harness_mock_assert("hx711_read_raw(channel_gain)",
                         &channel_gain);

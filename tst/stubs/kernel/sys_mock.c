@@ -156,7 +156,7 @@ int __attribute__ ((weak)) STUB(sys_backtrace)(void **buf_p,
 
     harness_mock_read("sys_backtrace(): return (buf_p)",
                       buf_p,
-                      -1);
+                      HARNESS_MOCK_READ_ALL);
 
     harness_mock_assert("sys_backtrace(size)",
                         &size);
@@ -215,7 +215,7 @@ int __attribute__ ((weak)) STUB(sys_uptime)(struct time_t *uptime_p)
 
     harness_mock_read("sys_uptime(): return (uptime_p)",
                       uptime_p,
-                      -1);
+                      HARNESS_MOCK_READ_ALL);
 
     harness_mock_read("sys_uptime(): return (res)",
                       &res,
@@ -244,7 +244,7 @@ int __attribute__ ((weak)) STUB(sys_uptime_isr)(struct time_t *uptime_p)
 
     harness_mock_read("sys_uptime_isr(): return (uptime_p)",
                       uptime_p,
-                      -1);
+                      HARNESS_MOCK_READ_ALL);
 
     harness_mock_read("sys_uptime_isr(): return (res)",
                       &res,

@@ -102,7 +102,7 @@ struct thrd_t *__attribute__ ((weak)) STUB(thrd_spawn)(void *(*main)(void,
 
     harness_mock_read("thrd_spawn(): return (void)",
                       void,
-                      -1);
+                      HARNESS_MOCK_READ_ALL);
 
     harness_mock_assert("thrd_spawn(arg_p)",
                         arg_p);
@@ -429,7 +429,7 @@ struct thrd_t *__attribute__ ((weak)) STUB(thrd_get_by_name)(const char *name_p)
 
     harness_mock_read("thrd_get_by_name(): return (name_p)",
                       name_p,
-                      -1);
+                      HARNESS_MOCK_READ_ALL);
 
     harness_mock_read("thrd_get_by_name(): return (res)",
                       &res,
@@ -910,7 +910,7 @@ int __attribute__ ((weak)) STUB(thrd_stack_free)(void *stack_p)
 
     harness_mock_read("thrd_stack_free(): return (stack_p)",
                       stack_p,
-                      -1);
+                      HARNESS_MOCK_READ_ALL);
 
     harness_mock_read("thrd_stack_free(): return (res)",
                       &res,
@@ -939,7 +939,7 @@ const void *__attribute__ ((weak)) STUB(thrd_get_bottom_of_stack)(struct thrd_t 
 
     harness_mock_read("thrd_get_bottom_of_stack(): return (thrd_p)",
                       thrd_p,
-                      -1);
+                      HARNESS_MOCK_READ_ALL);
 
     harness_mock_read("thrd_get_bottom_of_stack(): return (res)",
                       &res,
@@ -968,7 +968,7 @@ const void *__attribute__ ((weak)) STUB(thrd_get_top_of_stack)(struct thrd_t *th
 
     harness_mock_read("thrd_get_top_of_stack(): return (thrd_p)",
                       thrd_p,
-                      -1);
+                      HARNESS_MOCK_READ_ALL);
 
     harness_mock_read("thrd_get_top_of_stack(): return (res)",
                       &res,

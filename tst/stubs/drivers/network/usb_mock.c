@@ -112,7 +112,7 @@ res;
 
     harness_mock_read("usb_desc_get_configuration(): return (desc_p)",
                       desc_p,
-                      -1);
+                      HARNESS_MOCK_READ_ALL);
 
     harness_mock_assert("usb_desc_get_configuration(size)",
                         &size);
@@ -168,7 +168,7 @@ res;
 
     harness_mock_read("usb_desc_get_interface(): return (desc_p)",
                       desc_p,
-                      -1);
+                      HARNESS_MOCK_READ_ALL);
 
     harness_mock_assert("usb_desc_get_interface(size)",
                         &size);
@@ -233,7 +233,7 @@ res;
 
     harness_mock_read("usb_desc_get_endpoint(): return (desc_p)",
                       desc_p,
-                      -1);
+                      HARNESS_MOCK_READ_ALL);
 
     harness_mock_assert("usb_desc_get_endpoint(size)",
                         &size);

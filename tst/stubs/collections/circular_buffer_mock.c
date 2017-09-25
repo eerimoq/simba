@@ -270,7 +270,7 @@ ssize_t __attribute__ ((weak)) STUB(circular_buffer_array_one)(struct circular_b
 
     harness_mock_read("circular_buffer_array_one(): return (buf_pp)",
                       buf_pp,
-                      -1);
+                      HARNESS_MOCK_READ_ALL);
 
     harness_mock_assert("circular_buffer_array_one(size)",
                         &size);
@@ -309,7 +309,7 @@ ssize_t __attribute__ ((weak)) STUB(circular_buffer_array_two)(struct circular_b
 
     harness_mock_read("circular_buffer_array_two(): return (buf_pp)",
                       buf_pp,
-                      -1);
+                      HARNESS_MOCK_READ_ALL);
 
     harness_mock_assert("circular_buffer_array_two(size)",
                         &size);

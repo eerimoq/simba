@@ -186,7 +186,7 @@ ssize_t __attribute__ ((weak)) STUB(harness_mock_read)(const char *id_p,
 
     harness_mock_read("harness_mock_read(): return (buf_p)",
                       buf_p,
-                      -1);
+                      HARNESS_MOCK_READ_ALL);
 
     harness_mock_assert("harness_mock_read(size)",
                         &size);
@@ -270,7 +270,7 @@ ssize_t __attribute__ ((weak)) STUB(harness_mock_try_read)(const char *id_p,
 
     harness_mock_read("harness_mock_try_read(): return (buf_p)",
                       buf_p,
-                      -1);
+                      HARNESS_MOCK_READ_ALL);
 
     harness_mock_assert("harness_mock_try_read(size)",
                         &size);
@@ -369,7 +369,7 @@ ssize_t __attribute__ ((weak)) STUB(harness_mock_read_wait)(const char *id_p,
 
     harness_mock_read("harness_mock_read_wait(): return (buf_p)",
                       buf_p,
-                      -1);
+                      HARNESS_MOCK_READ_ALL);
 
     harness_mock_assert("harness_mock_read_wait(size)",
                         &size);

@@ -161,7 +161,7 @@ char *__attribute__ ((weak)) STUB(configfile_get)(struct configfile_t *self_p,
 
     harness_mock_read("configfile_get(): return (value_p)",
                       value_p,
-                      -1);
+                      HARNESS_MOCK_READ_ALL);
 
     harness_mock_assert("configfile_get(length)",
                         &length);
@@ -212,7 +212,7 @@ int __attribute__ ((weak)) STUB(configfile_get_long)(struct configfile_t *self_p
 
     harness_mock_read("configfile_get_long(): return (value_p)",
                       value_p,
-                      -1);
+                      HARNESS_MOCK_READ_ALL);
 
     harness_mock_read("configfile_get_long(): return (res)",
                       &res,
@@ -260,7 +260,7 @@ int __attribute__ ((weak)) STUB(configfile_get_float)(struct configfile_t *self_
 
     harness_mock_read("configfile_get_float(): return (value_p)",
                       value_p,
-                      -1);
+                      HARNESS_MOCK_READ_ALL);
 
     harness_mock_read("configfile_get_float(): return (res)",
                       &res,

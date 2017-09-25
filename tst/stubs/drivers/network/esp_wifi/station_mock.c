@@ -160,7 +160,7 @@ int __attribute__ ((weak)) STUB(esp_wifi_station_set_ip_info)(const struct inet_
 
     harness_mock_read("esp_wifi_station_set_ip_info(): return (info_p)",
                       info_p,
-                      -1);
+                      HARNESS_MOCK_READ_ALL);
 
     harness_mock_read("esp_wifi_station_set_ip_info(): return (res)",
                       &res,
@@ -189,7 +189,7 @@ int __attribute__ ((weak)) STUB(esp_wifi_station_get_ip_info)(struct inet_if_ip_
 
     harness_mock_read("esp_wifi_station_get_ip_info(): return (info_p)",
                       info_p,
-                      -1);
+                      HARNESS_MOCK_READ_ALL);
 
     harness_mock_read("esp_wifi_station_get_ip_info(): return (res)",
                       &res,

@@ -199,7 +199,7 @@ int __attribute__ ((weak)) STUB(fat16_file_open)(struct fat16_t *self_p,
 
     harness_mock_read("fat16_file_open(): return (file_p)",
                       file_p,
-                      -1);
+                      HARNESS_MOCK_READ_ALL);
 
     harness_mock_assert("fat16_file_open(path_p)",
                         path_p);
@@ -534,7 +534,7 @@ int __attribute__ ((weak)) STUB(fat16_dir_open)(struct fat16_t *self_p,
 
     harness_mock_read("fat16_dir_open(): return (dir_p)",
                       dir_p,
-                      -1);
+                      HARNESS_MOCK_READ_ALL);
 
     harness_mock_assert("fat16_dir_open(path_p)",
                         path_p);
@@ -606,7 +606,7 @@ int __attribute__ ((weak)) STUB(fat16_dir_read)(struct fat16_dir_t *dir_p,
 
     harness_mock_read("fat16_dir_read(): return (entry_p)",
                       entry_p,
-                      -1);
+                      HARNESS_MOCK_READ_ALL);
 
     harness_mock_read("fat16_dir_read(): return (res)",
                       &res,

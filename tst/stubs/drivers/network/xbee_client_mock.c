@@ -143,7 +143,7 @@ void *__attribute__ ((weak)) STUB(xbee_client_main)(void *arg_p)
 
     harness_mock_read("xbee_client_main(): return (arg_p)",
                       arg_p,
-                      -1);
+                      HARNESS_MOCK_READ_ALL);
 
     harness_mock_read("xbee_client_main(): return (res)",
                       &res,
@@ -185,14 +185,14 @@ ssize_t __attribute__ ((weak)) STUB(xbee_client_read_from)(struct xbee_client_t 
 
     harness_mock_read("xbee_client_read_from(): return (buf_p)",
                       buf_p,
-                      -1);
+                      HARNESS_MOCK_READ_ALL);
 
     harness_mock_assert("xbee_client_read_from(size)",
                         &size);
 
     harness_mock_read("xbee_client_read_from(): return (address_p)",
                       address_p,
-                      -1);
+                      HARNESS_MOCK_READ_ALL);
 
     harness_mock_read("xbee_client_read_from(): return (res)",
                       &res,
@@ -249,7 +249,7 @@ ssize_t __attribute__ ((weak)) STUB(xbee_client_write_to)(struct xbee_client_t *
 
     harness_mock_read("xbee_client_write_to(): return (address_p)",
                       address_p,
-                      -1);
+                      HARNESS_MOCK_READ_ALL);
 
     harness_mock_read("xbee_client_write_to(): return (res)",
                       &res,
@@ -457,7 +457,7 @@ ssize_t __attribute__ ((weak)) STUB(xbee_client_at_command_read)(struct xbee_cli
 
     harness_mock_read("xbee_client_at_command_read(): return (parameter_p)",
                       parameter_p,
-                      -1);
+                      HARNESS_MOCK_READ_ALL);
 
     harness_mock_assert("xbee_client_at_command_read(size)",
                         &size);
@@ -546,7 +546,7 @@ int __attribute__ ((weak)) STUB(xbee_client_at_command_read_u8)(struct xbee_clie
 
     harness_mock_read("xbee_client_at_command_read_u8(): return (parameter_p)",
                       parameter_p,
-                      -1);
+                      HARNESS_MOCK_READ_ALL);
 
     harness_mock_read("xbee_client_at_command_read_u8(): return (res)",
                       &res,
@@ -623,7 +623,7 @@ int __attribute__ ((weak)) STUB(xbee_client_at_command_read_u16)(struct xbee_cli
 
     harness_mock_read("xbee_client_at_command_read_u16(): return (parameter_p)",
                       parameter_p,
-                      -1);
+                      HARNESS_MOCK_READ_ALL);
 
     harness_mock_read("xbee_client_at_command_read_u16(): return (res)",
                       &res,
@@ -700,7 +700,7 @@ int __attribute__ ((weak)) STUB(xbee_client_at_command_read_u32)(struct xbee_cli
 
     harness_mock_read("xbee_client_at_command_read_u32(): return (parameter_p)",
                       parameter_p,
-                      -1);
+                      HARNESS_MOCK_READ_ALL);
 
     harness_mock_read("xbee_client_at_command_read_u32(): return (res)",
                       &res,

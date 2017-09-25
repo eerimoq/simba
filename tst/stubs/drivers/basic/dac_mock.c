@@ -141,7 +141,7 @@ int __attribute__ ((weak)) STUB(dac_async_convert)(struct dac_driver_t *self_p,
 
     harness_mock_read("dac_async_convert(): return (samples_p)",
                       samples_p,
-                      -1);
+                      HARNESS_MOCK_READ_ALL);
 
     harness_mock_assert("dac_async_convert(length)",
                         &length);
@@ -200,7 +200,7 @@ int __attribute__ ((weak)) STUB(dac_convert)(struct dac_driver_t *self_p,
 
     harness_mock_read("dac_convert(): return (samples_p)",
                       samples_p,
-                      -1);
+                      HARNESS_MOCK_READ_ALL);
 
     harness_mock_assert("dac_convert(length)",
                         &length);

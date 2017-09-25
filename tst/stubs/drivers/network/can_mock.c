@@ -181,7 +181,7 @@ ssize_t __attribute__ ((weak)) STUB(can_read)(struct can_driver_t *self_p,
 
     harness_mock_read("can_read(): return (frame_p)",
                       frame_p,
-                      -1);
+                      HARNESS_MOCK_READ_ALL);
 
     harness_mock_assert("can_read(size)",
                         &size);

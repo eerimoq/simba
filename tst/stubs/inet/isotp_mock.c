@@ -143,11 +143,11 @@ ssize_t __attribute__ ((weak)) STUB(isotp_output)(struct isotp_t *self_p,
 
     harness_mock_read("isotp_output(): return (buf_p)",
                       buf_p,
-                      -1);
+                      HARNESS_MOCK_READ_ALL);
 
     harness_mock_read("isotp_output(): return (size_p)",
                       size_p,
-                      -1);
+                      HARNESS_MOCK_READ_ALL);
 
     harness_mock_read("isotp_output(): return (res)",
                       &res,

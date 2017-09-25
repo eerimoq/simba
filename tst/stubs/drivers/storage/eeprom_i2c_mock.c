@@ -138,7 +138,7 @@ ssize_t __attribute__ ((weak)) STUB(eeprom_i2c_read)(struct eeprom_i2c_driver_t 
 
     harness_mock_read("eeprom_i2c_read(): return (dst_p)",
                       dst_p,
-                      -1);
+                      HARNESS_MOCK_READ_ALL);
 
     harness_mock_assert("eeprom_i2c_read(src)",
                         &src);

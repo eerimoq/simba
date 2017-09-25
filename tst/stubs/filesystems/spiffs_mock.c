@@ -269,7 +269,7 @@ spiffs_file_t __attribute__ ((weak)) STUB(spiffs_open_by_dirent)(struct spiffs_t
 
     harness_mock_read("spiffs_open_by_dirent(): return (ent_p)",
                       ent_p,
-                      -1);
+                      HARNESS_MOCK_READ_ALL);
 
     harness_mock_assert("spiffs_open_by_dirent(flags)",
                         &flags);

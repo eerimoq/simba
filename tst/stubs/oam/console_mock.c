@@ -159,7 +159,7 @@ int __attribute__ ((weak)) STUB(console_set_input_channel)(void *chan_p)
 
     harness_mock_read("console_set_input_channel(): return (chan_p)",
                       chan_p,
-                      -1);
+                      HARNESS_MOCK_READ_ALL);
 
     harness_mock_read("console_set_input_channel(): return (res)",
                       &res,
@@ -215,7 +215,7 @@ void *__attribute__ ((weak)) STUB(console_set_output_channel)(void *chan_p)
 
     harness_mock_read("console_set_output_channel(): return (chan_p)",
                       chan_p,
-                      -1);
+                      HARNESS_MOCK_READ_ALL);
 
     harness_mock_read("console_set_output_channel(): return (res)",
                       &res,

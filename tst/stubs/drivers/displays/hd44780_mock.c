@@ -121,27 +121,27 @@ int __attribute__ ((weak)) STUB(hd44780_init)(struct hd44780_driver_t *self_p,
 
     harness_mock_read("hd44780_init(): return (rs_p)",
                       rs_p,
-                      -1);
+                      HARNESS_MOCK_READ_ALL);
 
     harness_mock_read("hd44780_init(): return (enable_p)",
                       enable_p,
-                      -1);
+                      HARNESS_MOCK_READ_ALL);
 
     harness_mock_read("hd44780_init(): return (data_4_p)",
                       data_4_p,
-                      -1);
+                      HARNESS_MOCK_READ_ALL);
 
     harness_mock_read("hd44780_init(): return (data_5_p)",
                       data_5_p,
-                      -1);
+                      HARNESS_MOCK_READ_ALL);
 
     harness_mock_read("hd44780_init(): return (data_6_p)",
                       data_6_p,
-                      -1);
+                      HARNESS_MOCK_READ_ALL);
 
     harness_mock_read("hd44780_init(): return (data_7_p)",
                       data_7_p,
-                      -1);
+                      HARNESS_MOCK_READ_ALL);
 
     harness_mock_assert("hd44780_init(number_of_rows)",
                         &number_of_rows);

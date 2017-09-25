@@ -264,7 +264,7 @@ int __attribute__ ((weak)) STUB(network_interface_get_ip_info)(struct network_in
 
     harness_mock_read("network_interface_get_ip_info(): return (info_p)",
                       info_p,
-                      -1);
+                      HARNESS_MOCK_READ_ALL);
 
     harness_mock_read("network_interface_get_ip_info(): return (res)",
                       &res,

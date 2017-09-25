@@ -175,7 +175,7 @@ int __attribute__ ((weak)) STUB(usb_host_driver_add)(struct usb_host_driver_t *s
 
     harness_mock_read("usb_host_driver_add(): return (arg_p)",
                       arg_p,
-                      -1);
+                      HARNESS_MOCK_READ_ALL);
 
     harness_mock_read("usb_host_driver_add(): return (res)",
                       &res,

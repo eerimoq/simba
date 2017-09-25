@@ -117,7 +117,7 @@ int __attribute__ ((weak)) STUB(xbee_read)(struct xbee_driver_t *self_p,
 
     harness_mock_read("xbee_read(): return (frame_p)",
                       frame_p,
-                      -1);
+                      HARNESS_MOCK_READ_ALL);
 
     harness_mock_read("xbee_read(): return (res)",
                       &res,

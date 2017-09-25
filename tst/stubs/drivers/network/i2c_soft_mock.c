@@ -199,7 +199,7 @@ ssize_t __attribute__ ((weak)) STUB(i2c_soft_read)(struct i2c_soft_driver_t *sel
 
     harness_mock_read("i2c_soft_read(): return (buf_p)",
                       buf_p,
-                      -1);
+                      HARNESS_MOCK_READ_ALL);
 
     harness_mock_assert("i2c_soft_read(size)",
                         &size);

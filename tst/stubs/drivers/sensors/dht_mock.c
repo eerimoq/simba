@@ -114,11 +114,11 @@ int __attribute__ ((weak)) STUB(dht_read)(struct dht_driver_t *self_p,
 
     harness_mock_read("dht_read(): return (temperature_p)",
                       temperature_p,
-                      -1);
+                      HARNESS_MOCK_READ_ALL);
 
     harness_mock_read("dht_read(): return (humidty_p)",
                       humidty_p,
-                      -1);
+                      HARNESS_MOCK_READ_ALL);
 
     harness_mock_read("dht_read(): return (res)",
                       &res,

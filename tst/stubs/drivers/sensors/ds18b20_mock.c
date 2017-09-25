@@ -137,7 +137,7 @@ int __attribute__ ((weak)) STUB(ds18b20_read)(struct ds18b20_driver_t *self_p,
 
     harness_mock_read("ds18b20_read(): return (temperature_p)",
                       temperature_p,
-                      -1);
+                      HARNESS_MOCK_READ_ALL);
 
     harness_mock_read("ds18b20_read(): return (res)",
                       &res,
@@ -176,7 +176,7 @@ int __attribute__ ((weak)) STUB(ds18b20_read_fixed_point)(struct ds18b20_driver_
 
     harness_mock_read("ds18b20_read_fixed_point(): return (temperature_p)",
                       temperature_p,
-                      -1);
+                      HARNESS_MOCK_READ_ALL);
 
     harness_mock_read("ds18b20_read_fixed_point(): return (res)",
                       &res,
@@ -215,7 +215,7 @@ char *__attribute__ ((weak)) STUB(ds18b20_read_string)(struct ds18b20_driver_t *
 
     harness_mock_read("ds18b20_read_string(): return (temperature_p)",
                       temperature_p,
-                      -1);
+                      HARNESS_MOCK_READ_ALL);
 
     harness_mock_read("ds18b20_read_string(): return (res)",
                       &res,
@@ -254,7 +254,7 @@ int __attribute__ ((weak)) STUB(ds18b20_get_temperature)(struct ds18b20_driver_t
 
     harness_mock_read("ds18b20_get_temperature(): return (temperature_p)",
                       temperature_p,
-                      -1);
+                      HARNESS_MOCK_READ_ALL);
 
     harness_mock_read("ds18b20_get_temperature(): return (res)",
                       &res,
@@ -293,7 +293,7 @@ char *__attribute__ ((weak)) STUB(ds18b20_get_temperature_str)(struct ds18b20_dr
 
     harness_mock_read("ds18b20_get_temperature_str(): return (temperature_p)",
                       temperature_p,
-                      -1);
+                      HARNESS_MOCK_READ_ALL);
 
     harness_mock_read("ds18b20_get_temperature_str(): return (res)",
                       &res,

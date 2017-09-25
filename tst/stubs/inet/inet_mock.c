@@ -87,7 +87,7 @@ int __attribute__ ((weak)) STUB(inet_aton)(const char *src_p,
 
     harness_mock_read("inet_aton(): return (dst_p)",
                       dst_p,
-                      -1);
+                      HARNESS_MOCK_READ_ALL);
 
     harness_mock_read("inet_aton(): return (res)",
                       &res,
@@ -125,7 +125,7 @@ char *__attribute__ ((weak)) STUB(inet_ntoa)(const struct inet_ip_addr_t *src_p,
 
     harness_mock_read("inet_ntoa(): return (dst_p)",
                       dst_p,
-                      -1);
+                      HARNESS_MOCK_READ_ALL);
 
     harness_mock_read("inet_ntoa(): return (res)",
                       &res,

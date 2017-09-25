@@ -141,7 +141,7 @@ int __attribute__ ((weak)) STUB(adc_async_convert)(struct adc_driver_t *self_p,
 
     harness_mock_read("adc_async_convert(): return (samples_p)",
                       samples_p,
-                      -1);
+                      HARNESS_MOCK_READ_ALL);
 
     harness_mock_assert("adc_async_convert(length)",
                         &length);
@@ -200,7 +200,7 @@ int __attribute__ ((weak)) STUB(adc_convert)(struct adc_driver_t *self_p,
 
     harness_mock_read("adc_convert(): return (samples_p)",
                       samples_p,
-                      -1);
+                      HARNESS_MOCK_READ_ALL);
 
     harness_mock_assert("adc_convert(length)",
                         &length);
@@ -233,7 +233,7 @@ int __attribute__ ((weak)) STUB(adc_convert_isr)(struct adc_driver_t *self_p,
 
     harness_mock_read("adc_convert_isr(): return (sample_p)",
                       sample_p,
-                      -1);
+                      HARNESS_MOCK_READ_ALL);
 
     harness_mock_read("adc_convert_isr(): return (res)",
                       &res,

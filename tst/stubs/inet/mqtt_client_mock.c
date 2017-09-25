@@ -214,7 +214,7 @@ int __attribute__ ((weak)) STUB(mqtt_client_publish)(struct mqtt_client_t *self_
 
     harness_mock_read("mqtt_client_publish(): return (message_p)",
                       message_p,
-                      -1);
+                      HARNESS_MOCK_READ_ALL);
 
     harness_mock_read("mqtt_client_publish(): return (res)",
                       &res,

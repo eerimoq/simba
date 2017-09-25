@@ -237,7 +237,7 @@ ssize_t __attribute__ ((weak)) STUB(usb_device_read_isr)(struct usb_device_drive
 
     harness_mock_read("usb_device_read_isr(): return (buf_p)",
                       buf_p,
-                      -1);
+                      HARNESS_MOCK_READ_ALL);
 
     harness_mock_assert("usb_device_read_isr(size)",
                         &size);

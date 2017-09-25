@@ -144,7 +144,7 @@ ssize_t __attribute__ ((weak)) STUB(nvm_read)(void *dst_p,
 
     harness_mock_read("nvm_read(): return (dst_p)",
                       dst_p,
-                      -1);
+                      HARNESS_MOCK_READ_ALL);
 
     harness_mock_assert("nvm_read(src)",
                         &src);

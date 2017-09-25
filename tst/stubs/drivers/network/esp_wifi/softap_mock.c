@@ -88,7 +88,7 @@ int __attribute__ ((weak)) STUB(esp_wifi_softap_set_ip_info)(const struct inet_i
 
     harness_mock_read("esp_wifi_softap_set_ip_info(): return (info_p)",
                       info_p,
-                      -1);
+                      HARNESS_MOCK_READ_ALL);
 
     harness_mock_read("esp_wifi_softap_set_ip_info(): return (res)",
                       &res,
@@ -117,7 +117,7 @@ int __attribute__ ((weak)) STUB(esp_wifi_softap_get_ip_info)(struct inet_if_ip_i
 
     harness_mock_read("esp_wifi_softap_get_ip_info(): return (info_p)",
                       info_p,
-                      -1);
+                      HARNESS_MOCK_READ_ALL);
 
     harness_mock_read("esp_wifi_softap_get_ip_info(): return (res)",
                       &res,
@@ -179,7 +179,7 @@ int __attribute__ ((weak)) STUB(esp_wifi_softap_get_station_info)(struct esp_wif
 
     harness_mock_read("esp_wifi_softap_get_station_info(): return (info_p)",
                       info_p,
-                      -1);
+                      HARNESS_MOCK_READ_ALL);
 
     harness_mock_assert("esp_wifi_softap_get_station_info(length)",
                         &length);

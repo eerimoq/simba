@@ -156,7 +156,7 @@ ssize_t __attribute__ ((weak)) STUB(queue_read)(struct queue_t *self_p,
 
     harness_mock_read("queue_read(): return (buf_p)",
                       buf_p,
-                      -1);
+                      HARNESS_MOCK_READ_ALL);
 
     harness_mock_assert("queue_read(size)",
                         &size);

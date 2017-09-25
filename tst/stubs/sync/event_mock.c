@@ -78,7 +78,7 @@ ssize_t __attribute__ ((weak)) STUB(event_read)(struct event_t *self_p,
 
     harness_mock_read("event_read(): return (buf_p)",
                       buf_p,
-                      -1);
+                      HARNESS_MOCK_READ_ALL);
 
     harness_mock_assert("event_read(size)",
                         &size);

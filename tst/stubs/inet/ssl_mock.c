@@ -134,11 +134,11 @@ int __attribute__ ((weak)) STUB(ssl_context_load_cert_chain)(struct ssl_context_
 
     harness_mock_read("ssl_context_load_cert_chain(): return (cert_p)",
                       cert_p,
-                      -1);
+                      HARNESS_MOCK_READ_ALL);
 
     harness_mock_read("ssl_context_load_cert_chain(): return (key_p)",
                       key_p,
-                      -1);
+                      HARNESS_MOCK_READ_ALL);
 
     harness_mock_read("ssl_context_load_cert_chain(): return (res)",
                       &res,
@@ -430,15 +430,15 @@ int __attribute__ ((weak)) STUB(ssl_socket_get_cipher)(struct ssl_socket_t *self
 
     harness_mock_read("ssl_socket_get_cipher(): return (cipher_pp)",
                       cipher_pp,
-                      -1);
+                      HARNESS_MOCK_READ_ALL);
 
     harness_mock_read("ssl_socket_get_cipher(): return (protocol_pp)",
                       protocol_pp,
-                      -1);
+                      HARNESS_MOCK_READ_ALL);
 
     harness_mock_read("ssl_socket_get_cipher(): return (number_of_secret_bits_p)",
                       number_of_secret_bits_p,
-                      -1);
+                      HARNESS_MOCK_READ_ALL);
 
     harness_mock_read("ssl_socket_get_cipher(): return (res)",
                       &res,

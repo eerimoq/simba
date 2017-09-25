@@ -145,11 +145,11 @@ int __attribute__ ((weak)) STUB(sht3xd_get_temp_humid)(struct sht3xd_driver_t *s
 
     harness_mock_read("sht3xd_get_temp_humid(): return (temp_p)",
                       temp_p,
-                      -1);
+                      HARNESS_MOCK_READ_ALL);
 
     harness_mock_read("sht3xd_get_temp_humid(): return (humid_p)",
                       humid_p,
-                      -1);
+                      HARNESS_MOCK_READ_ALL);
 
     harness_mock_read("sht3xd_get_temp_humid(): return (res)",
                       &res,
@@ -179,7 +179,7 @@ int __attribute__ ((weak)) STUB(sht3xd_get_serial)(struct sht3xd_driver_t *self_
 
     harness_mock_read("sht3xd_get_serial(): return (serial_p)",
                       serial_p,
-                      -1);
+                      HARNESS_MOCK_READ_ALL);
 
     harness_mock_read("sht3xd_get_serial(): return (res)",
                       &res,

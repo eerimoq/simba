@@ -277,7 +277,7 @@ ssize_t __attribute__ ((weak)) STUB(chan_read)(void *self_p,
 
     harness_mock_read("chan_read(): return (buf_p)",
                       buf_p,
-                      -1);
+                      HARNESS_MOCK_READ_ALL);
 
     harness_mock_assert("chan_read(size)",
                         &size);
@@ -759,7 +759,7 @@ ssize_t __attribute__ ((weak)) STUB(chan_read_null)(void *self_p,
 
     harness_mock_read("chan_read_null(): return (buf_p)",
                       buf_p,
-                      -1);
+                      HARNESS_MOCK_READ_ALL);
 
     harness_mock_assert("chan_read_null(size)",
                         &size);

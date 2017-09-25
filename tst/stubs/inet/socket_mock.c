@@ -337,11 +337,11 @@ int __attribute__ ((weak)) STUB(socket_accept)(struct socket_t *self_p,
 
     harness_mock_read("socket_accept(): return (accepted_p)",
                       accepted_p,
-                      -1);
+                      HARNESS_MOCK_READ_ALL);
 
     harness_mock_read("socket_accept(): return (remote_addr_p)",
                       remote_addr_p,
-                      -1);
+                      HARNESS_MOCK_READ_ALL);
 
     harness_mock_read("socket_accept(): return (res)",
                       &res,

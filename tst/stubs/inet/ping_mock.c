@@ -96,7 +96,7 @@ int __attribute__ ((weak)) STUB(ping_host_by_ip_address)(struct inet_ip_addr_t *
 
     harness_mock_read("ping_host_by_ip_address(): return (round_trip_time_p)",
                       round_trip_time_p,
-                      -1);
+                      HARNESS_MOCK_READ_ALL);
 
     harness_mock_read("ping_host_by_ip_address(): return (res)",
                       &res,

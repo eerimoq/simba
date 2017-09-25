@@ -84,7 +84,7 @@ MOCK_ARGUMENT_IN_PTR_FMT = '''\
 MOCK_ARGUMENT_OUT_PTR_FMT = '''\
     harness_mock_read("{function_name}(): return ({name})",
                       {name},
-                      -1);
+                      HARNESS_MOCK_READ_ALL);
 '''
 
 MOCK_ARGUMENT_IN_FMT = '''\

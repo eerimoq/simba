@@ -108,7 +108,7 @@ int __attribute__ ((weak)) STUB(cond_wait)(struct cond_t *self_p,
 
     harness_mock_read("cond_wait(): return (timeout_p)",
                       timeout_p,
-                      -1);
+                      HARNESS_MOCK_READ_ALL);
 
     harness_mock_read("cond_wait(): return (res)",
                       &res,

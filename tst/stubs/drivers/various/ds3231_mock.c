@@ -110,7 +110,7 @@ int __attribute__ ((weak)) STUB(ds3231_get_date)(struct ds3231_driver_t *self_p,
 
     harness_mock_read("ds3231_get_date(): return (date_p)",
                       date_p,
-                      -1);
+                      HARNESS_MOCK_READ_ALL);
 
     harness_mock_read("ds3231_get_date(): return (res)",
                       &res,

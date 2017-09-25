@@ -90,7 +90,7 @@ ssize_t __attribute__ ((weak)) STUB(settings_read)(void *dst_p,
 
     harness_mock_read("settings_read(): return (dst_p)",
                       dst_p,
-                      -1);
+                      HARNESS_MOCK_READ_ALL);
 
     harness_mock_assert("settings_read(src)",
                         &src);
@@ -186,7 +186,7 @@ ssize_t __attribute__ ((weak)) STUB(settings_read_by_name)(const char *name_p,
 
     harness_mock_read("settings_read_by_name(): return (dst_p)",
                       dst_p,
-                      -1);
+                      HARNESS_MOCK_READ_ALL);
 
     harness_mock_assert("settings_read_by_name(size)",
                         &size);
