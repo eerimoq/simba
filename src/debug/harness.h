@@ -139,6 +139,8 @@
  */
 #define STUB(function) __stub_ ## function
 
+#define HARNESS_MOCK_READ_ALL                              -1
+
 /**
  * The testcase function callback.
  *
@@ -207,7 +209,8 @@ ssize_t harness_mock_write(const char *id_p,
  * @param[out] buf_p Buffer to read into, or NULL if no data shall
  *                   be read.
  * @param[in] size Buffer size in words, or zero(0) if buf_p is NULL,
- *                 or -1 to read all data available.
+ *                 or ``HARNESS_MOCK_READ_ALL`` to read all data
+ *                 available.
  *
  * @return Number of read words or negative error code.
  */
@@ -237,7 +240,8 @@ int harness_mock_assert(const char *id_p,
  * @param[out] buf_p Buffer to read into, or NULL if no data shall
  *                   be loaded.
  * @param[in] size Buffer size in words, or zero(0) if buf_p is NULL,
- *                 or -1 to read all data available.
+ *                 or ``HARNESS_MOCK_READ_ALL`` to read all data
+ *                 available.
  *
  * @return Number of read words or negative error code.
  */
@@ -274,7 +278,8 @@ ssize_t harness_mock_write_notify(const char *id_p,
  * @param[out] buf_p Buffer to read into, or NULL if no data shall
  *                   be read.
  * @param[in] size Buffer size in words, or zero(0) if buf_p is NULL,
- *                 or -1 to read all data available.
+ *                 or ``HARNESS_MOCK_READ_ALL`` to read all data
+ *                 available.
  * @param[in] timeout_p Read timeout.
  *
  * @return Number of read words or negative error code.

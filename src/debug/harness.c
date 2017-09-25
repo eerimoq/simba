@@ -54,7 +54,7 @@ struct module_t {
     } mock_list;
     struct mutex_t mutex;
     struct bus_t bus;
-    int testcase_failed;
+    int current_testcase_failed;
 };
 
 static struct module_t module;
@@ -171,7 +171,8 @@ int harness_run(struct harness_testcase_t *testcases_p)
     /* Print a header. */
     std_printf(OSTR("\r\n"));
 
-    std_printf(OSTR("================================== TEST BEGIN ==================================\r\n\r\n"));
+    std_printf(OSTR("================================== TEST BEGIN =========="
+                    "========================\r\n\r\n"));
     std_printf(sys_get_info());
     std_printf(OSTR("\r\n"));
 
@@ -186,7 +187,7 @@ int harness_run(struct harness_testcase_t *testcases_p)
                   &sizes[0]);
 
         /* Mark current testcase as non-failed before its executed. */
-        module.testcase_failed = 0;
+        module.current_testcase_failed = 0;
 
         std_printf(OSTR("enter: %s\r\n"), testcase_p->name_p);
 
@@ -202,7 +203,7 @@ int harness_run(struct harness_testcase_t *testcases_p)
             }
         } while (entry_p != NULL);
 
-        if ((err < 0) || (module.testcase_failed != 0)) {
+        if ((err < 0) || (module.current_testcase_failed != 0)) {
             failed++;
             std_printf(OSTR("exit: %s: FAILED\r\n\r\n"),
                        testcase_p->name_p);
@@ -233,7 +234,8 @@ int harness_run(struct harness_testcase_t *testcases_p)
                     "failed(%d), skipped(%d)\r\n\r\n"),
                total, passed, failed, skipped);
 
-    std_printf(OSTR("=============================== TEST END (%s) ==============================\r\n\r\n"),
+    std_printf(OSTR("=============================== TEST END (%s) =========="
+                    "====================\r\n\r\n"),
                ((passed + skipped) == total ? "PASSED" : "FAILED"));
 
     sys_stop(failed);
@@ -334,7 +336,7 @@ ssize_t harness_mock_read(const char *id_p,
     if (res == -1) {
         std_printf(FSTR("error: %s: mock id not found\r\n"), id_p);
         print_read_backtrace();
-        module.testcase_failed = 1;
+        module.current_testcase_failed = 1;
     }
 
     return (res);
@@ -416,7 +418,7 @@ int harness_mock_assert(const char *id_p,
     }
 
     if (res != 0) {
-        module.testcase_failed = 1;
+        module.current_testcase_failed = 1;
     }
 
     return (res);
