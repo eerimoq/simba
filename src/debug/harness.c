@@ -113,6 +113,26 @@ static int print_write_backtrace(struct mock_entry_t *entry_p)
                             "write"));
 }
 
+static struct mock_entry_t *alloc_mock_entry(size_t size)
+{
+    struct mock_entry_t *entry_p;
+
+    mutex_lock(&module.mutex);
+    entry_p = heap_alloc(&module.heap.obj, sizeof(*entry_p) + size - 1);
+    mutex_unlock(&module.mutex);
+
+    return (entry_p);
+}
+
+static int free_mock_entry(struct mock_entry_t *entry_p)
+{
+    mutex_lock(&module.mutex);
+    heap_free(&module.heap.obj, entry_p);
+    mutex_unlock(&module.mutex);
+
+    return (0);
+}
+
 static struct mock_entry_t *find_mock_entry(const char *id_p)
 {
     struct list_sl_iterator_t iterator;
@@ -294,10 +314,7 @@ ssize_t harness_mock_write(const char *id_p,
 
     struct mock_entry_t *entry_p;
 
-    /* Allocate memory for the mock entry and data. */
-    mutex_lock(&module.mutex);
-    entry_p = heap_alloc(&module.heap.obj, sizeof(*entry_p) + size - 1);
-    mutex_unlock(&module.mutex);
+    entry_p = alloc_mock_entry(size);
 
     if (entry_p == NULL) {
         std_printf(
@@ -359,10 +376,7 @@ ssize_t harness_mock_read(const char *id_p,
             res = -1;
         }
 
-        /* Free allocated memory. */
-        mutex_lock(&module.mutex);
-        heap_free(&module.heap.obj, entry_p);
-        mutex_unlock(&module.mutex);
+        free_mock_entry(entry_p);
     } else {
         std_printf(FSTR("harness_mock_read(): %s: mock id not found\r\n"),
                    id_p);
@@ -405,10 +419,7 @@ ssize_t harness_mock_try_read(const char *id_p,
             res = -1;
         }
 
-        /* Free allocated memory. */
-        mutex_lock(&module.mutex);
-        heap_free(&module.heap.obj, entry_p);
-        mutex_unlock(&module.mutex);
+        free_mock_entry(entry_p);
     }
 
     return (res);
@@ -462,10 +473,7 @@ int harness_mock_assert(const char *id_p,
             res = -1;
         }
 
-        /* Free allocated memory. */
-        mutex_lock(&module.mutex);
-        heap_free(&module.heap.obj, entry_p);
-        mutex_unlock(&module.mutex);
+        free_mock_entry(entry_p);
     } else {
         std_printf(FSTR("harness_mock_assert(): %s: mock id not found\r\n"), id_p);
         print_assert_backtrace();
@@ -535,12 +543,9 @@ ssize_t harness_mock_read_wait(const char *id_p,
                 res = -1;
             }
 
-            /* Free allocated memory. */
-            mutex_lock(&module.mutex);
-            heap_free(&module.heap.obj, entry_p);
-            mutex_unlock(&module.mutex);
-
+            free_mock_entry(entry_p);
             bus_detatch(&module.bus, &listener);
+
             break;
         }
 

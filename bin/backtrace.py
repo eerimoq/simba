@@ -14,6 +14,8 @@ IGNORED_FUNCTIONS = [
     'harness_mock_assert',
     'harness_mock_read',
     'harness_mock_write',
+    'harness_mock_write_notify',
+    'harness_mock_read_wait',
     '??',
     '_start'
 ]
