@@ -301,7 +301,7 @@ ssize_t harness_mock_write(const char *id_p,
 
     if (entry_p == NULL) {
         std_printf(
-            FSTR("harness_mock_write: %s: mock id memory allocation failed\r\n"),
+            FSTR("harness_mock_write(): %s: mock id memory allocation failed\r\n"),
             id_p);
 
         return (-ENOMEM);
@@ -344,10 +344,17 @@ ssize_t harness_mock_read(const char *id_p,
 
             res = size;
         } else {
-            std_printf(FSTR("harness_mock_read: %d != %d: data size mismatch\r\n"),
+            std_printf(FSTR("harness_mock_read(): %s: %d != %d: data "
+                            "size mismatch\r\n"),
+                       id_p,
                        size,
                        entry_p->data.size);
+            std_printf(FSTR("Read data\r\n"));
+            std_hexdump(sys_get_stdout(),
+                        &entry_p->data.buf[0],
+                        entry_p->data.size);
             print_read_backtrace();
+            print_write_backtrace(entry_p);
             module.current_testcase_failed = 1;
             res = -1;
         }
@@ -357,7 +364,8 @@ ssize_t harness_mock_read(const char *id_p,
         heap_free(&module.heap.obj, entry_p);
         mutex_unlock(&module.mutex);
     } else {
-        std_printf(FSTR("harness_mock_read: %s: mock id not found\r\n"), id_p);
+        std_printf(FSTR("harness_mock_read(): %s: mock id not found\r\n"),
+                   id_p);
         print_read_backtrace();
         module.current_testcase_failed = 1;
         res = -1;
@@ -387,7 +395,9 @@ ssize_t harness_mock_try_read(const char *id_p,
             res = size;
         } else {
             std_printf(
-                FSTR("harness_mock_try_read: %d != %d: data size mismatch\r\n"),
+                FSTR("harness_mock_try_read(): %s: %d != %d: data size "
+                     "mismatch\r\n"),
+                id_p,
                 size,
                 entry_p->data.size);
             print_read_backtrace();
@@ -422,12 +432,13 @@ int harness_mock_assert(const char *id_p,
                 res = memcmp(buf_p, &entry_p->data.buf[0], entry_p->data.size);
 
                 if (res != 0) {
-                    std_printf(FSTR("harness_mock_assert: %s: data mismatch "),
+                    std_printf(FSTR("harness_mock_assert(): %s: data mismatch "),
                                id_p);
                     _ASSERTHEX("actual",
                                buf_p,
                                "expected",
                                &entry_p->data.buf[0],
+                               size,
                                entry_p->data.size);
                     print_assert_backtrace();
                     print_write_backtrace(entry_p);
@@ -435,7 +446,15 @@ int harness_mock_assert(const char *id_p,
                 }
             }
         } else {
-            std_printf(FSTR("harness_mock_assert: %d != %d: data size mismatch\r\n"),
+            std_printf(FSTR("harness_mock_assert(): %s: %d != %d: data size "
+                            "mismatch "),
+                       id_p,
+                       size,
+                       entry_p->data.size);
+            _ASSERTHEX("actual",
+                       buf_p,
+                       "expected",
+                       &entry_p->data.buf[0],
                        size,
                        entry_p->data.size);
             print_assert_backtrace();
@@ -448,7 +467,7 @@ int harness_mock_assert(const char *id_p,
         heap_free(&module.heap.obj, entry_p);
         mutex_unlock(&module.mutex);
     } else {
-        std_printf(FSTR("harness_mock_assert: %s: mock id not found\r\n"), id_p);
+        std_printf(FSTR("harness_mock_assert(): %s: mock id not found\r\n"), id_p);
         print_assert_backtrace();
         res = -1;
     }
@@ -507,7 +526,8 @@ ssize_t harness_mock_read_wait(const char *id_p,
 
                 res = size;
             } else {
-                std_printf(FSTR("harness_mock_read_wait: %d != %d: data size mismatch\r\n"),
+                std_printf(FSTR("harness_mock_read_wait(): %s: %d != %d: data size mismatch\r\n"),
+                           id_p,
                            size,
                            entry_p->data.size);
                 print_read_backtrace();

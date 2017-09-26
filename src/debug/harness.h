@@ -35,12 +35,17 @@
 
 #define _ASSERTFMT(fmt, ...) std_printf(FSTR(fmt "\n"), ##__VA_ARGS__);
 
-#define _ASSERTHEX(actual_str, actual, expected_str, expected, size)    \
+#define _ASSERTHEX(actual_str, \
+                   actual, \
+                   expected_str, \
+                   expected, \
+                   actual_size, \
+                   expected_size)                                       \
     std_printf(FSTR(":: \r\n"                                           \
                     "Memory buffer '" actual_str "'\r\n"));             \
-    std_hexdump(sys_get_stdout(), actual, size);                        \
+    std_hexdump(sys_get_stdout(), actual, actual_size);                 \
     std_printf(FSTR("is not equal to memory buffer '" expected_str "'\r\n")); \
-    std_hexdump(sys_get_stdout(), expected, size);
+    std_hexdump(sys_get_stdout(), expected, expected_size);
 
 /**
  * Assert given condition. Print an error message and return given
@@ -109,6 +114,7 @@
                    -1,                                                  \
                    _ASSERTHEX(#actual, UNIQUE(_actual),                 \
                               #expected, UNIQUE(_expected),             \
+                              size,                                     \
                               size));                                   \
     } while (0)
 
