@@ -11,6 +11,7 @@ IGNORED_FUNCTIONS = [
     'print_assert_backtrace',
     'print_read_backtrace',
     'create_write_backtrace',
+    'read_mock_entry',
     'harness_mock_assert',
     'harness_mock_read',
     'harness_mock_write',

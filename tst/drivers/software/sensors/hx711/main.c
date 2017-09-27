@@ -366,7 +366,7 @@ int STUB(pin_port_device_read)(const struct pin_device_t *dev_p)
 
     if (harness_mock_try_read("pin_port_device_read(): return (value)",
                               &value,
-                              sizeof(value)) == -1) {
+                              sizeof(value)) == -ENOENT) {
         value = 0;
     }
 
@@ -406,7 +406,7 @@ enum time_compare_t STUB(time_compare)(struct time_t *left_p,
 
     if (harness_mock_try_read("time_compare(): return (res)",
                               &res,
-                              sizeof(res)) == -1) {
+                              sizeof(res)) == -ENOENT) {
         res = time_compare_less_than_t;
     }
 

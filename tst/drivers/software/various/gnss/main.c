@@ -224,10 +224,14 @@ static int test_read_gga_glonass(void)
 
 static int test_read_read_failed(void)
 {
-    mock_write_chan_read(NULL, 1, -EIO);
+    uint8_t byte;
+
+    byte = 0;
+
+    mock_write_chan_read(&byte, 1, -EIO);
     BTASSERTI(gnss_read(&gnss), ==, -EIO);
 
-    mock_write_chan_read(NULL, 1, -EIO);
+    mock_write_chan_read(&byte, 1, -EIO);
     BTASSERTI(gnss_read(&gnss), ==, -EIO);
 
     return (0);

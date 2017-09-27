@@ -96,6 +96,23 @@ static int test_mock(void)
     BTASSERTI(my_memcpy(&buf[0], "foo", 4), ==, -1);
     BTASSERTM(&buf[0], "bar", 4);
 
+    harness_mock_write("foo", NULL, 0);
+    harness_mock_assert("foo", NULL, 0);
+
+    harness_mock_write("foo", NULL, 0);
+    harness_mock_read("foo", NULL, 0);
+
+    buf[0] = 1;
+    harness_mock_write("foo", &buf[0], 1);
+    harness_mock_assert("foo", &buf[0], 1);
+
+    harness_mock_write("foo", &buf[0], 1);
+    buf[0] = 0;
+    harness_mock_read("foo", &buf[0], 1);
+    BTASSERT(buf[0] == 1);
+
+    harness_mock_try_read("foo", NULL, 0);
+
     return (0);
 }
 

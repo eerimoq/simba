@@ -222,16 +222,17 @@ ssize_t harness_mock_read(const char *id_p,
                           size_t size);
 
 /**
- * Try to read data from mock entry with given id.The testcase does
- * not fail if the mock entry is missing. However, the test case faild
- * if the mock id is found and the data size does not match
+ * Try to read data from mock entry with given id. The testcase does
+ * not fail if the mock entry is missing. However, the test case fails
+ * if the mock id is found and the data size does not match.
  *
  * @param[in] id_p Mock id string to read.
  * @param[out] buf_p Buffer to read into, or NULL if no data shall
  *                   be loaded.
  * @param[in] size Buffer size in words, or zero(0) if buf_p is NULL.
  *
- * @return Number of read words or negative error code.
+ * @return Number of read words, -ENOENT if no mock entry was found
+ *         for given id, or negative error code.
  */
 ssize_t harness_mock_try_read(const char *id_p,
                               void *buf_p,
