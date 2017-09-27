@@ -172,7 +172,7 @@ static int is_blank_chunk(struct eeprom_soft_driver_t *self_p,
 }
 
 /**
- * Get a black chunk.
+ * Get a blank chunk.
  */
 static int get_blank_chunk(struct eeprom_soft_driver_t *self_p,
                            const struct eeprom_soft_block_t **block_pp,
