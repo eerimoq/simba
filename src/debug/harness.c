@@ -190,14 +190,7 @@ static int read_mock_entry(struct mock_entry_t *entry_p,
                            id_p);
             }
         } else {
-            if (buf_p == NULL) {
-                res = 0;
-            } else {
-                std_printf(FSTR("\r\n%s(): Got non-NULL pointer with size "
-                                "zero(0) for mock id '%s'."),
-                           function_p,
-                           id_p);
-            }
+            res = 0;
         }
     } else {
         std_printf(FSTR("\r\n%s(): Trying to read exactly %d bytes(s) from "
@@ -485,14 +478,7 @@ int harness_mock_assert(const char *id_p,
                                id_p);
                 }
             } else {
-                if (buf_p == NULL) {
-                    res = 0;
-                } else {
-                    std_printf(FSTR("\r\nharness_mock_assert(): Got non-NULL "
-                                    "pointer with size zero(0) for mock id "
-                                    "'%s' "),
-                               id_p);
-                }
+                res = 0;
             }
         } else {
             std_printf(FSTR("\r\nharness_mock_assert(): Trying to read exactly "
