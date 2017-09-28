@@ -85,8 +85,8 @@ int bus_attach(struct bus_t *self_p,
     return (0);
 }
 
-int bus_detatch(struct bus_t *self_p,
-                struct bus_listener_t *listener_p)
+int bus_detach(struct bus_t *self_p,
+               struct bus_listener_t *listener_p)
 {
     ASSERTN(self_p != NULL, EINVAL);
     ASSERTN(listener_p != NULL, EINVAL);

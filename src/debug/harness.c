@@ -568,7 +568,7 @@ ssize_t harness_mock_read_wait(const char *id_p,
                                   buf_p,
                                   size,
                                   "harness_mock_read_wait");
-            bus_detatch(&module.bus, &listener);
+            bus_detach(&module.bus, &listener);
             break;
         }
 

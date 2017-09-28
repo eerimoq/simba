@@ -44,8 +44,8 @@ int mock_write_bus_listener_init(int id,
 int mock_write_bus_attach(struct bus_listener_t *listener_p,
                           int res);
 
-int mock_write_bus_detatch(struct bus_listener_t *listener_p,
-                           int res);
+int mock_write_bus_detach(struct bus_listener_t *listener_p,
+                          int res);
 
 int mock_write_bus_write(int id,
                          const void *buf_p,

@@ -149,30 +149,30 @@ int __attribute__ ((weak)) STUB(bus_attach)(struct bus_t *self_p,
     return (res);
 }
 
-int mock_write_bus_detatch(struct bus_listener_t *listener_p,
-                           int res)
+int mock_write_bus_detach(struct bus_listener_t *listener_p,
+                          int res)
 {
-    harness_mock_write("bus_detatch(listener_p)",
+    harness_mock_write("bus_detach(listener_p)",
                        listener_p,
                        sizeof(*listener_p));
 
-    harness_mock_write("bus_detatch(): return (res)",
+    harness_mock_write("bus_detach(): return (res)",
                        &res,
                        sizeof(res));
 
     return (0);
 }
 
-int __attribute__ ((weak)) STUB(bus_detatch)(struct bus_t *self_p,
-                                             struct bus_listener_t *listener_p)
+int __attribute__ ((weak)) STUB(bus_detach)(struct bus_t *self_p,
+                                            struct bus_listener_t *listener_p)
 {
     int res;
 
-    harness_mock_assert("bus_detatch(listener_p)",
+    harness_mock_assert("bus_detach(listener_p)",
                         listener_p,
                         sizeof(*listener_p));
 
-    harness_mock_read("bus_detatch(): return (res)",
+    harness_mock_read("bus_detach(): return (res)",
                       &res,
                       sizeof(res));
 

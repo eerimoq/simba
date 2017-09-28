@@ -103,8 +103,8 @@ int bus_attach(struct bus_t *self_p,
  *
  * @return zero(0) or negative error code.
  */
-int bus_detatch(struct bus_t *self_p,
-                struct bus_listener_t *listener_p);
+int bus_detach(struct bus_t *self_p,
+               struct bus_listener_t *listener_p);
 
 /**
  * Write given message to given bus. All attached listeners to given

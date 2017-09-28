@@ -38,7 +38,7 @@ static int test_init(void)
     /* This function may be called multiple times. */
     BTASSERT(bus_module_init() == 0);
     BTASSERT(bus_module_init() == 0);
-    
+
     return (0);
 }
 
@@ -53,10 +53,10 @@ static int test_attach_detach(void)
 
     /* Attach-detach a channel. */
     BTASSERT(bus_attach(&bus, &chan) == 0);
-    BTASSERT(bus_detatch(&bus, &chan) == 0);
+    BTASSERT(bus_detach(&bus, &chan) == 0);
 
     /* Detach already detached channel fails. */
-    BTASSERT(bus_detatch(&bus, &chan) == -1);
+    BTASSERT(bus_detach(&bus, &chan) == -1);
 
     return (0);
 }
@@ -104,13 +104,13 @@ static int test_write_read(void)
     BTASSERT(value == 5);
 
     /* Detach the channels with id ID_FOO. */
-    BTASSERT(bus_detatch(&bus, &chans[0]) == 0);
-    BTASSERT(bus_detatch(&bus, &chans[1]) == 0);
+    BTASSERT(bus_detach(&bus, &chans[0]) == 0);
+    BTASSERT(bus_detach(&bus, &chans[1]) == 0);
 
     /* Detach the channels with id -1. */
-    BTASSERT(bus_detatch(&bus, &chans[3]) == 0);
-    BTASSERT(bus_detatch(&bus, &chans[4]) == 0);
-    BTASSERT(bus_detatch(&bus, &chans[2]) == 0);
+    BTASSERT(bus_detach(&bus, &chans[3]) == 0);
+    BTASSERT(bus_detach(&bus, &chans[4]) == 0);
+    BTASSERT(bus_detach(&bus, &chans[2]) == 0);
 
     return (0);
 }
@@ -157,10 +157,10 @@ static int test_multiple_ids(void)
     mask = 0xffffffff;
     BTASSERT(event_read(&event, &mask, sizeof(mask)) == sizeof(mask));
     BTASSERT(mask == 0x80);
-    
+
     /* Detach the channels. */
-    BTASSERT(bus_detatch(&bus, &chans[0]) == 0);
-    BTASSERT(bus_detatch(&bus, &chans[1]) == 0);
+    BTASSERT(bus_detach(&bus, &chans[0]) == 0);
+    BTASSERT(bus_detach(&bus, &chans[1]) == 0);
 
     return (0);
 }
