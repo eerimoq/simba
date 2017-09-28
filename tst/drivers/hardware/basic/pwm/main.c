@@ -126,7 +126,7 @@ static int test_frequency(void)
 
 int main()
 {
-    struct harness_testcase_t harness_testcases[] = {
+    struct harness_testcase_t testcases[] = {
         { test_duty_cycle_convert, "test_duty_cycle_convert" },
         { test_duty_cycle, "test_duty_cycle" },
         { test_frequency, "test_frequency" },
@@ -136,7 +136,7 @@ int main()
     sys_start();
     pwm_module_init();
 
-    harness_run(harness_testcases);
+    harness_run(testcases);
 
     return (0);
 }

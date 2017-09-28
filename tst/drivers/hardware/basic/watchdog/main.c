@@ -88,7 +88,7 @@ static int test_no_interrupt(void)
 
 int main()
 {
-    struct harness_testcase_t harness_testcases[] = {
+    struct harness_testcase_t testcases[] = {
         { test_interrupt, "test_interrupt" },
         { test_no_interrupt, "test_no_interrupt" },
         { NULL, NULL }
@@ -96,7 +96,7 @@ int main()
 
     sys_start();
 
-    harness_run(harness_testcases);
+    harness_run(testcases);
 
     return (0);
 }

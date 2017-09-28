@@ -835,7 +835,7 @@ static int test_get(void)
 
 int main()
 {
-    struct harness_testcase_t harness_testcases[] = {
+    struct harness_testcase_t testcases[] = {
         { test_empty, "test_empty" },
         { test_object, "test_object" },
         { test_array, "test_array" },
@@ -859,7 +859,7 @@ int main()
 
     sys_start();
 
-    harness_run(harness_testcases);
+    harness_run(testcases);
 
     return (0);
 }

@@ -793,7 +793,7 @@ static int test_decode_position(void)
 
 int main()
 {
-    struct harness_testcase_t harness_testcases[] = {
+    struct harness_testcase_t testcases[] = {
         { test_encode_raw, "test_encode_raw" },
         { test_encode_gga, "test_encode_gga" },
         { test_encode_gll, "test_encode_gll" },
@@ -833,7 +833,7 @@ int main()
 
     sys_start();
 
-    harness_run(harness_testcases);
+    harness_run(testcases);
 
     return (0);
 }

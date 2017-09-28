@@ -68,7 +68,7 @@ int test_exti(void)
 
 int main()
 {
-    struct harness_testcase_t harness_testcases[] = {
+    struct harness_testcase_t testcases[] = {
         { test_exti, "test_exti" },
         { NULL, NULL }
     };
@@ -76,7 +76,7 @@ int main()
     sys_start();
     exti_module_init();
 
-    harness_run(harness_testcases);
+    harness_run(testcases);
 
     return (0);
 }

@@ -122,7 +122,7 @@ static int test_fs_commands(void)
 
 int main()
 {
-    struct harness_testcase_t harness_testcases[] = {
+    struct harness_testcase_t testcases[] = {
         { test_init, "test_init" },
         { test_format_mount, "test_format_mount" },
         { test_read_write, "test_read_write" },
@@ -133,7 +133,7 @@ int main()
 
     sys_start();
 
-    harness_run(harness_testcases);
+    harness_run(testcases);
 
     return (0);
 }

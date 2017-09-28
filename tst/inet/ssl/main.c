@@ -239,7 +239,7 @@ static int test_errors(void)
 
 int main()
 {
-    struct harness_testcase_t harness_testcases[] = {
+    struct harness_testcase_t testcases[] = {
         { test_init, "test_init" },
         { test_client, "test_client" },
         { test_server, "test_server" },
@@ -251,7 +251,7 @@ int main()
     sys_start();
     ssl_module_init();
 
-    harness_run(harness_testcases);
+    harness_run(testcases);
 
     return (0);
 }

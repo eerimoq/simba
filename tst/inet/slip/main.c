@@ -120,7 +120,7 @@ static int test_truncate_input(void)
 
 int main()
 {
-    struct harness_testcase_t harness_testcases[] = {
+    struct harness_testcase_t testcases[] = {
         { test_init, "test_init" },
         { test_input, "test_input" },
         { test_output, "test_output" },
@@ -131,7 +131,7 @@ int main()
 
     sys_start();
 
-    harness_run(harness_testcases);
+    harness_run(testcases);
 
     return (0);
 }

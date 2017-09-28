@@ -86,14 +86,14 @@ int test_add_get_remove(void)
 
 int main()
 {
-    struct harness_testcase_t harness_testcases[] = {
+    struct harness_testcase_t testcases[] = {
         { test_add_get_remove, "test_add_get_remove" },
         { NULL, NULL }
     };
 
     sys_start();
 
-    harness_run(harness_testcases);
+    harness_run(testcases);
 
     return (0);
 }

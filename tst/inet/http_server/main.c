@@ -648,7 +648,7 @@ static int test_https_stop(void)
 
 int main()
 {
-    struct harness_testcase_t harness_testcases[] = {
+    struct harness_testcase_t testcases[] = {
         { test_start, "test_start" },
         { test_request_index, "test_request_index" },
         { test_request_index_with_query_string, "test_request_index_with_query_string" },
@@ -676,7 +676,7 @@ int main()
 
     socket_stub_init();
 
-    harness_run(harness_testcases);
+    harness_run(testcases);
 
     return (0);
 }

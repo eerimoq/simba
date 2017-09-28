@@ -546,7 +546,7 @@ static int test_frame_as_string(void)
 
 int main()
 {
-    struct harness_testcase_t harness_testcases[] = {
+    struct harness_testcase_t testcases[] = {
         { test_init, "test_init" },
         { test_write_escape, "test_write_escape" },
         { test_write_at, "test_write_at" },
@@ -565,7 +565,7 @@ int main()
 
     sys_start();
 
-    harness_run(harness_testcases);
+    harness_run(testcases);
 
     return (0);
 }

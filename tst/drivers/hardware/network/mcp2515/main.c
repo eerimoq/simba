@@ -68,14 +68,14 @@ int test_read_write(void)
 
 int main()
 {
-    struct harness_testcase_t harness_testcases[] = {
+    struct harness_testcase_t testcases[] = {
         { test_read_write, "test_read_write" },
         { NULL, NULL }
     };
 
     sys_start();
 
-    harness_run(harness_testcases);
+    harness_run(testcases);
 
     return (0);
 }

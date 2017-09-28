@@ -97,7 +97,7 @@ static int test_put_get_int(void)
 
 int main()
 {
-    struct harness_testcase_t harness_testcases[] = {
+    struct harness_testcase_t testcases[] = {
         { test_put_get, "test_put_get" },
         { test_put_get_int, "test_put_get_int" },
         { NULL, NULL }
@@ -105,7 +105,7 @@ int main()
 
     sys_start();
 
-    harness_run(harness_testcases);
+    harness_run(testcases);
 
     return (0);
 }

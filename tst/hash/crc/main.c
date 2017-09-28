@@ -101,7 +101,7 @@ static int test_crc_8(void)
 
 int main()
 {
-    struct harness_testcase_t harness_testcases[] = {
+    struct harness_testcase_t testcases[] = {
         { test_crc_32, "test_crc_32" },
         { test_crc_ccitt, "test_crc_ccitt" },
         { test_crc_xmodem, "test_crc_xmodem" },
@@ -112,7 +112,7 @@ int main()
 
     sys_start();
 
-    harness_run(harness_testcases);
+    harness_run(testcases);
 
     return (0);
 }

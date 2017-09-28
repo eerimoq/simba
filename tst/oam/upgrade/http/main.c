@@ -105,7 +105,7 @@ static int test_request_bootloader_enter(void)
 
 int main()
 {
-    struct harness_testcase_t harness_testcases[] = {
+    struct harness_testcase_t testcases[] = {
         { test_init, "test_init" },
         { test_request_application_enter, "test_request_application_enter" },
         { test_request_bootloader_enter, "test_request_bootloader_enter" },
@@ -114,7 +114,7 @@ int main()
 
     sys_start();
 
-    harness_run(harness_testcases);
+    harness_run(testcases);
 
     return (0);
 }

@@ -48,7 +48,7 @@ static int test_degrees_to_radians(void)
 
 int main()
 {
-    struct harness_testcase_t harness_testcases[] = {
+    struct harness_testcase_t testcases[] = {
         { test_radians_to_degrees, "test_radians_to_degrees" },
         { test_degrees_to_radians, "test_degrees_to_radians" },
         { NULL, NULL }
@@ -56,7 +56,7 @@ int main()
 
     sys_start();
 
-    harness_run(harness_testcases);
+    harness_run(testcases);
 
     return (0);
 }

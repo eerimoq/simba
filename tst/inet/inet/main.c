@@ -81,7 +81,7 @@ static int test_inet_checksum(void)
 
 int main()
 {
-    struct harness_testcase_t harness_testcases[] = {
+    struct harness_testcase_t testcases[] = {
         { test_aton, "test_aton" },
         { test_ntoa, "test_ntoa" },
         { test_inet_checksum, "test_inet_checksum" },
@@ -90,7 +90,7 @@ int main()
 
     sys_start();
 
-    harness_run(harness_testcases);
+    harness_run(testcases);
 
     return (0);
 }

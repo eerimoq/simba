@@ -179,7 +179,7 @@ static int test_binary_upload_long_header(void)
 
 int main()
 {
-    struct harness_testcase_t harness_testcases[] = {
+    struct harness_testcase_t testcases[] = {
         { test_bootloader, "test_bootloader" },
         { test_binary_upload, "test_binary_upload" },
         { test_binary_upload_bad_version, "test_binary_upload_bad_version" },
@@ -191,7 +191,7 @@ int main()
 
     sys_start();
 
-    harness_run(harness_testcases);
+    harness_run(testcases);
 
     return (0);
 }

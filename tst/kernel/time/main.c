@@ -355,7 +355,7 @@ static int test_micros(void)
 
 int main()
 {
-    struct harness_testcase_t harness_testcases[] = {
+    struct harness_testcase_t testcases[] = {
         { test_get_set, "test_get_set" },
         { test_date, "test_date" },
         { test_sleep, "test_sleep" },
@@ -368,7 +368,7 @@ int main()
 
     sys_start();
 
-    harness_run(harness_testcases);
+    harness_run(testcases);
 
     return (0);
 }

@@ -91,7 +91,7 @@ static int test_transfer(void)
 
 int main()
 {
-    struct harness_testcase_t harness_testcases[] = {
+    struct harness_testcase_t testcases[] = {
         { test_init, "test_init" },
         { test_transfer, "test_transfer" },
         { NULL, NULL }
@@ -99,7 +99,7 @@ int main()
 
     sys_start();
 
-    harness_run(harness_testcases);
+    harness_run(testcases);
 
     return (0);
 }

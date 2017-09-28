@@ -327,7 +327,7 @@ static int test_device_input_pull_down(void)
 
 int main()
 {
-    struct harness_testcase_t harness_testcases[] = {
+    struct harness_testcase_t testcases[] = {
         { test_init, "test_init" },
         { test_output, "test_output" },
         { test_output_open_drain, "test_output_open_drain" },
@@ -347,7 +347,7 @@ int main()
     sys_start();
     pin_module_init();
 
-    harness_run(harness_testcases);
+    harness_run(testcases);
 
     return (0);
 }

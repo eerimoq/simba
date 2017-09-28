@@ -116,7 +116,7 @@ static int test_stop(void)
 
 int main()
 {
-    struct harness_testcase_t harness_testcases[] = {
+    struct harness_testcase_t testcases[] = {
         { test_init, "test_init" },
         { test_slave_write, "test_slave_write" },
         { test_slave_read, "test_slave_read" },
@@ -129,7 +129,7 @@ int main()
     sys_start();
     i2c_module_init();
 
-    harness_run(harness_testcases);
+    harness_run(testcases);
 
     return (0);
 }

@@ -180,7 +180,7 @@ static int test_mps_from_mph(void)
 
 int main()
 {
-    struct harness_testcase_t harness_testcases[] = {
+    struct harness_testcase_t testcases[] = {
         { test_init, "test_init" },
         { test_pressure_to_altitude, "test_pressure_to_altitude" },
         { test_pressure_from_altitude, "test_pressure_from_altitude" },
@@ -195,7 +195,7 @@ int main()
 
     sys_start();
 
-    harness_run(harness_testcases);
+    harness_run(testcases);
 
     return (0);
 }

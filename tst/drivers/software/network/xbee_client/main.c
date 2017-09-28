@@ -856,7 +856,7 @@ int STUB(xbee_write)(struct xbee_driver_t *self_p,
 
 int main()
 {
-    struct harness_testcase_t harness_testcases[] = {
+    struct harness_testcase_t testcases[] = {
         { test_init, "test_init" },
         { test_rx_packet_16_bits_address, "test_rx_packet_16_bits_address" },
         { test_rx_packet_64_bits_address, "test_rx_packet_64_bits_address" },
@@ -910,7 +910,7 @@ int main()
 
     sys_start();
 
-    harness_run(harness_testcases);
+    harness_run(testcases);
 
     return (0);
 }

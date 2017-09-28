@@ -744,7 +744,7 @@ static int test_logout(void)
 
 int main()
 {
-    struct harness_testcase_t harness_testcases[] = {
+    struct harness_testcase_t testcases[] = {
         { test_init, "test_init" },
         { test_login, "test_login" },
         { test_empty_line, "test_empty_line" },
@@ -795,7 +795,7 @@ int main()
                       &tmp_fie_value);
     fs_parameter_register(&tmp_fie);
 
-    harness_run(harness_testcases);
+    harness_run(testcases);
 
     return (0);
 }

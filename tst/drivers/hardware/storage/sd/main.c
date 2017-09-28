@@ -347,7 +347,7 @@ static int test_read_performance(void)
 
 int main()
 {
-    struct harness_testcase_t harness_testcases[] = {
+    struct harness_testcase_t testcases[] = {
         { test_init, "test_init" },
         { test_read_cid, "test_read_cid" },
         { test_read_csd, "test_read_csd" },
@@ -359,7 +359,7 @@ int main()
 
     sys_start();
 
-    harness_run(harness_testcases);
+    harness_run(testcases);
 
     BTASSERT(sd_stop(&sd) == 0);
 

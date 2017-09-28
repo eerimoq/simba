@@ -126,14 +126,14 @@ int test_sha1(void)
 
 int main()
 {
-    struct harness_testcase_t harness_testcases[] = {
+    struct harness_testcase_t testcases[] = {
         { test_sha1, "test_sha1" },
         { NULL, NULL }
     };
 
     sys_start();
 
-    harness_run(harness_testcases);
+    harness_run(testcases);
 
     return (0);
 }

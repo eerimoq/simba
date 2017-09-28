@@ -166,7 +166,7 @@ int test_led_send_nums(void)
 
 int main()
 {
-    struct harness_testcase_t harness_testcases[] = {
+    struct harness_testcase_t testcases[] = {
         { test_led_send_nums, "led_send_nums" },
         { test_led_brightness, "test_led_brightness" },
         { test_led_dot, "test_led_dot" },
@@ -177,7 +177,7 @@ int main()
     sys_start();
     led_7seg_ht16k33_module_init();
 
-    harness_run(harness_testcases);
+    harness_run(testcases);
 
     return (0);
 }

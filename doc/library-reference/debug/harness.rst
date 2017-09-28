@@ -111,14 +111,14 @@ and write data to output arguments.
 
    int main()
    {
-       struct harness_testcase_t harness_testcases[] = {
+       struct harness_testcase_t testcases[] = {
            { test_init, "test_init" },
            { NULL, NULL }
        };
 
        sys_start();
 
-       harness_run(harness_testcases);
+       harness_run(testcases);
 
        return (0);
    }
@@ -167,7 +167,7 @@ conditions.
    int main()
    {
        /* Test harness and NULL terminated list of test cases.*/
-       struct harness_testcase_t harness_testcases[] = {
+       struct harness_testcase_t testcases[] = {
            { test_passed, "test_passed" },
            { test_failed, "test_failed" },
            { test_skipped, "test_skipped" },
@@ -176,7 +176,7 @@ conditions.
 
        sys_start();
 
-       harness_run(harness_testcases);
+       harness_run(testcases);
 
        return (0);
    }

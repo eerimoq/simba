@@ -590,7 +590,7 @@ static int test_request_transfer_exit(void)
 
 int main()
 {
-    struct harness_testcase_t harness_testcases[] = {
+    struct harness_testcase_t testcases[] = {
         { test_bad_size, "test_bad_size" },
         { test_unknown_service_id, "test_unknown_service_id" },
         { test_read_data_by_identifier, "test_read_data_by_identifier" },
@@ -605,7 +605,7 @@ int main()
 
     sys_start();
 
-    harness_run(harness_testcases);
+    harness_run(testcases);
 
     return (0);
 }

@@ -279,7 +279,7 @@ static int test_putc(void)
 
 int main()
 {
-    struct harness_testcase_t harness_testcases[] = {
+    struct harness_testcase_t testcases[] = {
         { test_filter, "test_filter" },
         { test_null_channels, "test_null_channels" },
         { test_list, "test_list" },
@@ -290,7 +290,7 @@ int main()
 
     sys_start();
 
-    harness_run(harness_testcases);
+    harness_run(testcases);
 
     return (0);
 }

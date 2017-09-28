@@ -74,14 +74,14 @@ static int test_send_file_kermit(void)
 
 int main()
 {
-    struct harness_testcase_t harness_testcases[] = {
+    struct harness_testcase_t testcases[] = {
         { test_send_file_kermit, "test_send_file_kermit" },
         { NULL, NULL }
     };
 
     sys_start();
 
-    harness_run(harness_testcases);
+    harness_run(testcases);
 
     return (0);
 }

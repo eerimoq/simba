@@ -162,7 +162,7 @@ int STUB(bar)()
 
 int main()
 {
-    struct harness_testcase_t harness_testcases[] = {
+    struct harness_testcase_t testcases[] = {
         { test_asserti, "test_asserti" },
         { test_assertm, "test_assertm" },
         { test_mock, "test_mock" },
@@ -173,7 +173,7 @@ int main()
 
     sys_start();
 
-    harness_run(harness_testcases);
+    harness_run(testcases);
 
     return (0);
 }

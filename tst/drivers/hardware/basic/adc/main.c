@@ -105,7 +105,7 @@ static int test_convert_isr(void)
 
 int main()
 {
-    struct harness_testcase_t harness_testcases[] = {
+    struct harness_testcase_t testcases[] = {
         { test_init, "test_init" },
         { test_convert, "test_convert" },
         { test_convert_isr, "test_convert_isr" },
@@ -115,7 +115,7 @@ int main()
     sys_start();
     adc_module_init();
 
-    harness_run(harness_testcases);
+    harness_run(testcases);
 
     return (0);
 }

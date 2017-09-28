@@ -211,7 +211,7 @@ static int test_cmd_ping_bad_input(void)
 
 int main()
 {
-    struct harness_testcase_t harness_testcases[] = {
+    struct harness_testcase_t testcases[] = {
         { test_host_by_ip_address, "test_host_by_ip_address" },
         { test_bad_reply_crc, "test_bad_reply_crc" },
         { test_cmd_ping, "test_cmd_ping" },
@@ -222,7 +222,7 @@ int main()
 
     sys_start();
 
-    harness_run(harness_testcases);
+    harness_run(testcases);
 
     return (0);
 }

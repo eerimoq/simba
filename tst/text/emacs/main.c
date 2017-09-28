@@ -282,7 +282,7 @@ static int test_start_multiline_quit(void)
 
 int main()
 {
-    struct harness_testcase_t harness_testcases[] = {
+    struct harness_testcase_t testcases[] = {
         { test_setup, "test_setup" },
         { test_start_quit, "test_start_quit" },
         { test_start_space_quit, "test_start_space_quit" },
@@ -292,7 +292,7 @@ int main()
 
     sys_start();
 
-    harness_run(harness_testcases);
+    harness_run(testcases);
 
     return (0);
 }

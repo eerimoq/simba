@@ -694,7 +694,7 @@ static int test_printf_isr(void)
 
 int main()
 {
-    struct harness_testcase_t harness_testcases[] = {
+    struct harness_testcase_t testcases[] = {
         { test_sprintf, "test_sprintf" },
         { test_snprintf, "test_snprintf" },
         { test_vprintf, "test_vprintf" },
@@ -717,7 +717,7 @@ int main()
 
     sys_start();
 
-    harness_run(harness_testcases);
+    harness_run(testcases);
 
     return (0);
 }

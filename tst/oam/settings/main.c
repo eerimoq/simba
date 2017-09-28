@@ -325,7 +325,7 @@ static int test_cmd_list_after_updates(void)
 
 int main()
 {
-    struct harness_testcase_t harness_testcases[] = {
+    struct harness_testcase_t testcases[] = {
         { test_reset, "test_reset" },
         { test_cmd_list, "test_cmd_list" },
         { test_cmd_read, "test_cmd_read" },
@@ -343,7 +343,7 @@ int main()
 
     queue_init(&queue, qbuf, sizeof(qbuf));
 
-    harness_run(harness_testcases);
+    harness_run(testcases);
 
     return (0);
 }

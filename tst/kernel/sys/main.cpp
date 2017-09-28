@@ -358,7 +358,7 @@ int test_errno(void)
 
 int main()
 {
-    struct harness_testcase_t harness_testcases[] = {
+    struct harness_testcase_t testcases[] = {
         { test_set_on_fatal_callback, "test_set_on_fatal_callback" },
         { test_non_fatal_assert, "test_non_fatal_assert" },
         { test_info, "test_info" },
@@ -382,7 +382,7 @@ int main()
 
     sys_start();
 
-    harness_run(harness_testcases);
+    harness_run(testcases);
 
     return (0);
 }
