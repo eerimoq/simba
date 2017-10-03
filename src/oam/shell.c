@@ -33,7 +33,8 @@
 #define TAB                 '\t'
 #define CARRIAGE_RETURN     '\r'
 #define NEWLINE             '\n'
-#define BACKSPACE            127
+#define BACKSPACE              8
+#define DELETE               127
 #define CTRL_A                 1
 #define CTRL_E                 5
 #define CTRL_D                 4
@@ -492,6 +493,7 @@ static int read_line(struct shell_t *self_p,
         case CARRIAGE_RETURN:
             break;
 
+        case DELETE:
         case BACKSPACE:
             if (line_seek(&self_p->line, -1) == 0) {
                 line_delete(&self_p->line);
@@ -759,6 +761,7 @@ static int handle_ctrl_r(struct shell_t *self_p)
 
         switch (c) {
 
+        case DELETE:
         case BACKSPACE:
             if (!line_is_empty(&self_p->history.pattern)) {
                 std_fprintf(self_p->chout_p, FSTR("\x1b[1D"
@@ -1096,6 +1099,7 @@ static int read_command(struct shell_t *self_p)
             handle_newline(self_p);
             break;
 
+        case DELETE:
         case BACKSPACE:
             handle_backspace(self_p);
             break;
