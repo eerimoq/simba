@@ -30,7 +30,7 @@
 
 #include "simba.h"
 
-static int test_radians_to_degrees(struct harness_t *harness_p)
+static int test_radians_to_degrees(void)
 {
     BTASSERT(math_radians_to_degrees(0) == 0);
     BTASSERT(math_radians_to_degrees(MATH_PI) == 180);
@@ -38,7 +38,7 @@ static int test_radians_to_degrees(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_degrees_to_radians(struct harness_t *harness_p)
+static int test_degrees_to_radians(void)
 {
     BTASSERT(math_degrees_to_radians(0) == 0);
     BTASSERT(math_degrees_to_radians(180) == MATH_PI);
@@ -48,8 +48,7 @@ static int test_degrees_to_radians(struct harness_t *harness_p)
 
 int main()
 {
-    struct harness_t harness;
-    struct harness_testcase_t harness_testcases[] = {
+    struct harness_testcase_t testcases[] = {
         { test_radians_to_degrees, "test_radians_to_degrees" },
         { test_degrees_to_radians, "test_degrees_to_radians" },
         { NULL, NULL }
@@ -57,8 +56,7 @@ int main()
 
     sys_start();
 
-    harness_init(&harness);
-    harness_run(&harness, harness_testcases);
+    harness_run(testcases);
 
     return (0);
 }

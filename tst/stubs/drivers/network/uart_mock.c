@@ -33,6 +33,10 @@
 
 int mock_write_uart_module_init(int res)
 {
+    harness_mock_write("uart_module_init()",
+                       NULL,
+                       0);
+
     harness_mock_write("uart_module_init(): return (res)",
                        &res,
                        sizeof(res));
@@ -43,6 +47,10 @@ int mock_write_uart_module_init(int res)
 int __attribute__ ((weak)) STUB(uart_module_init)()
 {
     int res;
+
+    harness_mock_assert("uart_module_init()",
+                        NULL,
+                        0);
 
     harness_mock_read("uart_module_init(): return (res)",
                       &res,
@@ -89,16 +97,20 @@ int __attribute__ ((weak)) STUB(uart_init)(struct uart_driver_t *self_p,
     int res;
 
     harness_mock_assert("uart_init(dev_p)",
-                        &dev_p);
+                        &dev_p,
+                        sizeof(dev_p));
 
     harness_mock_assert("uart_init(baudrate)",
-                        &baudrate);
+                        &baudrate,
+                        sizeof(baudrate));
 
     harness_mock_assert("uart_init(rxbuf_p)",
-                        rxbuf_p);
+                        rxbuf_p,
+                        size);
 
     harness_mock_assert("uart_init(size)",
-                        &size);
+                        &size,
+                        sizeof(size));
 
     harness_mock_read("uart_init(): return (res)",
                       &res,
@@ -127,7 +139,8 @@ int __attribute__ ((weak)) STUB(uart_set_rx_filter_cb)(struct uart_driver_t *sel
     int res;
 
     harness_mock_assert("uart_set_rx_filter_cb(rx_filter_cb)",
-                        &rx_filter_cb);
+                        &rx_filter_cb,
+                        sizeof(rx_filter_cb));
 
     harness_mock_read("uart_set_rx_filter_cb(): return (res)",
                       &res,
@@ -196,7 +209,8 @@ int __attribute__ ((weak)) STUB(uart_set_frame_format)(struct uart_driver_t *sel
     int res;
 
     harness_mock_assert("uart_set_frame_format(format)",
-                        &format);
+                        &format,
+                        sizeof(format));
 
     harness_mock_read("uart_set_frame_format(): return (res)",
                       &res,
@@ -230,10 +244,12 @@ int __attribute__ ((weak)) STUB(uart_device_start)(struct uart_device_t *dev_p,
     int res;
 
     harness_mock_assert("uart_device_start(dev_p)",
-                        &dev_p);
+                        &dev_p,
+                        sizeof(dev_p));
 
     harness_mock_assert("uart_device_start(baudrate)",
-                        &baudrate);
+                        &baudrate,
+                        sizeof(baudrate));
 
     harness_mock_read("uart_device_start(): return (res)",
                       &res,
@@ -261,7 +277,8 @@ int __attribute__ ((weak)) STUB(uart_device_stop)(struct uart_device_t *dev_p)
     int res;
 
     harness_mock_assert("uart_device_stop(dev_p)",
-                        &dev_p);
+                        &dev_p,
+                        sizeof(dev_p));
 
     harness_mock_read("uart_device_stop(): return (res)",
                       &res,
@@ -301,13 +318,16 @@ ssize_t __attribute__ ((weak)) STUB(uart_device_read)(struct uart_device_t *dev_
     ssize_t res;
 
     harness_mock_assert("uart_device_read(dev_p)",
-                        &dev_p);
+                        &dev_p,
+                        sizeof(dev_p));
 
     harness_mock_assert("uart_device_read(buf_p)",
-                        buf_p);
+                        buf_p,
+                        size);
 
     harness_mock_assert("uart_device_read(size)",
-                        &size);
+                        &size,
+                        sizeof(size));
 
     harness_mock_read("uart_device_read(): return (res)",
                       &res,
@@ -347,13 +367,16 @@ ssize_t __attribute__ ((weak)) STUB(uart_device_write)(struct uart_device_t *dev
     ssize_t res;
 
     harness_mock_assert("uart_device_write(dev_p)",
-                        &dev_p);
+                        &dev_p,
+                        sizeof(dev_p));
 
     harness_mock_assert("uart_device_write(buf_p)",
-                        buf_p);
+                        buf_p,
+                        size);
 
     harness_mock_assert("uart_device_write(size)",
-                        &size);
+                        &size,
+                        sizeof(size));
 
     harness_mock_read("uart_device_write(): return (res)",
                       &res,

@@ -84,7 +84,7 @@ static struct shell_t shell;
 
 #define BUFFER_SIZE 512
 
-static int test_init(struct harness_t *harness_p)
+static int test_init(void)
 {
     BTASSERT(shell_init(&shell,
                         &qin,
@@ -103,7 +103,7 @@ static int test_init(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_login(struct harness_t *harness_p)
+static int test_login(void)
 {
     /* Bad username. */
     BTASSERT(harness_expect(&qout, "username: ", NULL) > 0);
@@ -148,7 +148,7 @@ static int test_login(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_empty_line(struct harness_t *harness_p)
+static int test_empty_line(void)
 {
     /* Empty line. */
     chan_write(&qin, "\n", sizeof("\n") - 1);
@@ -159,7 +159,7 @@ static int test_empty_line(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_command_not_found(struct harness_t *harness_p)
+static int test_command_not_found(void)
 {
     /* Command not found. */
     chan_write(&qin, "/1/2/3\r\n", sizeof("/1/2/3\r\n") - 1);
@@ -175,7 +175,7 @@ static int test_command_not_found(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_command_too_long(struct harness_t *harness_p)
+static int test_command_too_long(void)
 {
     /* Command too long. */
     chan_write(&qin,
@@ -197,7 +197,7 @@ static int test_command_too_long(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_auto_completion(struct harness_t *harness_p)
+static int test_auto_completion(void)
 {
     /* Auto completion. */
     chan_write(&qin, "\t", 1);
@@ -232,7 +232,7 @@ static int test_auto_completion(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_commands_foo_and_bar(struct harness_t *harness_p)
+static int test_commands_foo_and_bar(void)
 {
     /* Test command foo. */
     chan_write(&qin, "/tmp/foo 3 2 1\n", 15);
@@ -257,7 +257,7 @@ static int test_commands_foo_and_bar(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_parameters(struct harness_t *harness_p)
+static int test_parameters(void)
 {
     /* Get parameter value. */
     chan_write(&qin, "/tmp/fie\n", 9);
@@ -290,7 +290,7 @@ static int test_parameters(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_set_log_mask(struct harness_t *harness_p)
+static int test_set_log_mask(void)
 {
     /* Set main thread log mask. */
     chan_write(&qin, "/kernel/thrd/set_log_mask shell 0xff\r\n", 38);
@@ -303,7 +303,7 @@ static int test_set_log_mask(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_thrd_list(struct harness_t *harness_p)
+static int test_thrd_list(void)
 {
 #if defined(ARCH_LINUX)
     /* List thrds. */
@@ -318,7 +318,7 @@ static int test_thrd_list(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_fs_counters_list(struct harness_t *harness_p)
+static int test_fs_counters_list(void)
 {
 #if defined(ARCH_LINUX)
 
@@ -348,7 +348,7 @@ static int test_fs_counters_list(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_cursor_movement(struct harness_t *harness_p)
+static int test_cursor_movement(void)
 {
     /* Write '123' to the shell. */
     chan_write(&qin, "123", 3);
@@ -393,7 +393,7 @@ static int test_cursor_movement(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_cursor_insert(struct harness_t *harness_p)
+static int test_cursor_insert(void)
 {
     /* Write 'ep' to the shell. */
     chan_write(&qin, "ep", 2);
@@ -450,7 +450,7 @@ static int test_cursor_insert(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_cursor_cut(struct harness_t *harness_p)
+static int test_cursor_cut(void)
 {
     /* Write 'foo' to the shell. */
     chan_write(&qin, "foo", 3);
@@ -473,7 +473,7 @@ static int test_cursor_cut(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_swap_characters(struct harness_t *harness_p)
+static int test_swap_characters(void)
 {
     /* Write 'b' to the shell. */
     chan_write(&qin, "b", 1);
@@ -518,7 +518,7 @@ static int test_swap_characters(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_backspace(struct harness_t *harness_p)
+static int test_backspace(void)
 {
     /* Delete from empty line. */
     chan_write(&qin, "\x7f", 1);
@@ -556,7 +556,7 @@ static int test_backspace(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_delete_word(struct harness_t *harness_p)
+static int test_delete_word(void)
 {
     int i;
 
@@ -592,7 +592,7 @@ static int test_delete_word(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_history_clear(struct harness_t *harness_p)
+static int test_history_clear(void)
 {
     /* Clear the history. */
     chan_write(&qin, "history -c\n", 11);
@@ -603,7 +603,7 @@ static int test_history_clear(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_history(struct harness_t *harness_p)
+static int test_history(void)
 {
     /* Print the history. */
     chan_write(&qin, "history\n", 8);
@@ -618,7 +618,7 @@ static int test_history(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_history_up_down(struct harness_t *harness_p)
+static int test_history_up_down(void)
 {
     /* Clear the history. */
     chan_write(&qin, "history -c\n", 11);
@@ -666,7 +666,7 @@ static int test_history_up_down(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_history_search(struct harness_t *harness_p)
+static int test_history_search(void)
 {
     /* Send Ctrl+R and search for the 'hello' command. */
     chan_write(&qin, "\x12", 1);
@@ -720,7 +720,7 @@ static int test_history_search(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_comment(struct harness_t *harness_p)
+static int test_comment(void)
 {
     /* Logout. */
     chan_write(&qin, " # this is a comment\n", 21);
@@ -731,7 +731,7 @@ static int test_comment(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_logout(struct harness_t *harness_p)
+static int test_logout(void)
 {
     /* Logout. */
     chan_write(&qin, "logout\n", 7);
@@ -744,8 +744,7 @@ static int test_logout(struct harness_t *harness_p)
 
 int main()
 {
-    struct harness_t harness;
-    struct harness_testcase_t harness_testcases[] = {
+    struct harness_testcase_t testcases[] = {
         { test_init, "test_init" },
         { test_login, "test_login" },
         { test_empty_line, "test_empty_line" },
@@ -796,8 +795,7 @@ int main()
                       &tmp_fie_value);
     fs_parameter_register(&tmp_fie);
 
-    harness_init(&harness);
-    harness_run(&harness, harness_testcases);
+    harness_run(testcases);
 
     return (0);
 }

@@ -30,7 +30,7 @@
 
 #include "simba.h"
 
-int test_init(struct harness_t *harness_p)
+int test_init(void)
 {
     BTASSERT(re_module_init() == 0);
     BTASSERT(re_module_init() == 0);
@@ -38,7 +38,7 @@ int test_init(struct harness_t *harness_p)
     return (0);
 }
 
-int test_text(struct harness_t *harness_p)
+int test_text(void)
 {
     char re[8];
 
@@ -57,7 +57,7 @@ int test_text(struct harness_t *harness_p)
     return (0);
 }
 
-int test_newline(struct harness_t *harness_p)
+int test_newline(void)
 {
     char re[32];
 
@@ -78,7 +78,7 @@ int test_newline(struct harness_t *harness_p)
     return (0);
 }
 
-int test_special_escaped(struct harness_t *harness_p)
+int test_special_escaped(void)
 {
     char re[32];
 
@@ -103,7 +103,7 @@ int test_special_escaped(struct harness_t *harness_p)
     return (0);
 }
 
-int test_special(struct harness_t *harness_p)
+int test_special(void)
 {
     char re[32];
 
@@ -121,7 +121,7 @@ int test_special(struct harness_t *harness_p)
     return (0);
 }
 
-int test_repetition(struct harness_t *harness_p)
+int test_repetition(void)
 {
     char re[32];
 
@@ -167,7 +167,7 @@ int test_repetition(struct harness_t *harness_p)
     return (0);
 }
 
-int test_set(struct harness_t *harness_p)
+int test_set(void)
 {
     char re[32];
 
@@ -239,7 +239,7 @@ int test_set(struct harness_t *harness_p)
     return (0);
 }
 
-int test_groups(struct harness_t *harness_p)
+int test_groups(void)
 {
 /*     char re[32]; */
 /*     struct re_group_t groups[2]; */
@@ -303,7 +303,7 @@ int test_groups(struct harness_t *harness_p)
     return (1);
 }
 
-int test_alternatives(struct harness_t *harness_p)
+int test_alternatives(void)
 {
     /* char re[32]; */
 
@@ -313,7 +313,7 @@ int test_alternatives(struct harness_t *harness_p)
     return (1);
 }
 
-int test_greed(struct harness_t *harness_p)
+int test_greed(void)
 {
     char re[32];
 
@@ -347,7 +347,7 @@ int test_greed(struct harness_t *harness_p)
     return (0);
 }
 
-int test_complex(struct harness_t *harness_p)
+int test_complex(void)
 {
     char re[64];
 
@@ -357,7 +357,7 @@ int test_complex(struct harness_t *harness_p)
     return (0);
 }
 
-int test_compile(struct harness_t *harness_p)
+int test_compile(void)
 {
     char re[64];
 
@@ -382,8 +382,7 @@ int test_compile(struct harness_t *harness_p)
 
 int main()
 {
-    struct harness_t harness;
-    struct harness_testcase_t harness_testcases[] = {
+    struct harness_testcase_t testcases[] = {
         { test_init, "test_init" },
         { test_text, "test_text" },
         { test_newline, "test_newline" },
@@ -401,8 +400,7 @@ int main()
 
     sys_start();
 
-    harness_init(&harness);
-    harness_run(&harness, harness_testcases);
+    harness_run(testcases);
 
     return (0);
 }

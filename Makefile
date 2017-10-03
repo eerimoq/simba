@@ -679,7 +679,16 @@ print-%:
 
 generate-stubs:
 	rm -rf tst/stubs
-	stub.py -d generate \
+	(cd src && \
+	 for f in $$(find . -name "*.h" \
+		     | grep -v ports \
+		     | grep -v boards \
+		     | grep -v mcus \
+		     | grep -v simba.h \
+		     | grep -v simba_gen.h \
+		     | grep -v config_default.h \
+		     | grep -v config.h) ; do \
+	 stub.py -d generate \
 	  --ignore-function fs_split \
 	  --ignore-function chipid_read \
 	  --ignore-function pin_device_set_mode \
@@ -687,17 +696,7 @@ generate-stubs:
 	  --ignore-function pin_device_write \
 	  --ignore-function pin_device_write_high \
 	  --ignore-function pin_device_write_low \
-	  $$(find src -name "*.h" \
-	     | grep -v ports \
-	     | grep -v boards \
-	     | grep -v mcus \
-	     | grep -v simba.h \
-	     | grep -v simba_gen.h \
-	     | grep -v config_default.h \
-	     | grep -v config.h) \
-	  tst/stubs
-	mv tst/stubs/src/* tst/stubs
-	rmdir tst/stubs/src
+	  $$f ../tst/stubs/$$(dirname $$f) ; done)
 
 help:
 	@echo "--------------------------------------------------------------------------------"

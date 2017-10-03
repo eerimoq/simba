@@ -33,6 +33,10 @@
 
 int mock_write_xbee_module_init(int res)
 {
+    harness_mock_write("xbee_module_init()",
+                       NULL,
+                       0);
+
     harness_mock_write("xbee_module_init(): return (res)",
                        &res,
                        sizeof(res));
@@ -43,6 +47,10 @@ int mock_write_xbee_module_init(int res)
 int __attribute__ ((weak)) STUB(xbee_module_init)()
 {
     int res;
+
+    harness_mock_assert("xbee_module_init()",
+                        NULL,
+                        0);
 
     harness_mock_read("xbee_module_init(): return (res)",
                       &res,
@@ -77,10 +85,12 @@ int __attribute__ ((weak)) STUB(xbee_init)(struct xbee_driver_t *self_p,
     int res;
 
     harness_mock_assert("xbee_init(chin_p)",
-                        chin_p);
+                        chin_p,
+                        sizeof(*chin_p));
 
     harness_mock_assert("xbee_init(chout_p)",
-                        chout_p);
+                        chout_p,
+                        sizeof(*chout_p));
 
     harness_mock_read("xbee_init(): return (res)",
                       &res,
@@ -110,7 +120,7 @@ int __attribute__ ((weak)) STUB(xbee_read)(struct xbee_driver_t *self_p,
 
     harness_mock_read("xbee_read(): return (frame_p)",
                       frame_p,
-                      -1);
+                      sizeof(*frame_p));
 
     harness_mock_read("xbee_read(): return (res)",
                       &res,
@@ -139,7 +149,8 @@ int __attribute__ ((weak)) STUB(xbee_write)(struct xbee_driver_t *self_p,
     int res;
 
     harness_mock_assert("xbee_write(frame_p)",
-                        frame_p);
+                        frame_p,
+                        sizeof(*frame_p));
 
     harness_mock_read("xbee_write(): return (res)",
                       &res,
@@ -173,10 +184,12 @@ int __attribute__ ((weak)) STUB(xbee_print_frame)(void *chan_p,
     int res;
 
     harness_mock_assert("xbee_print_frame(chan_p)",
-                        chan_p);
+                        chan_p,
+                        sizeof(*chan_p));
 
     harness_mock_assert("xbee_print_frame(frame_p)",
-                        frame_p);
+                        frame_p,
+                        sizeof(*frame_p));
 
     harness_mock_read("xbee_print_frame(): return (res)",
                       &res,
@@ -204,7 +217,8 @@ const char *__attribute__ ((weak)) STUB(xbee_frame_type_as_string)(uint8_t frame
     const char *res;
 
     harness_mock_assert("xbee_frame_type_as_string(frame_type)",
-                        &frame_type);
+                        &frame_type,
+                        sizeof(frame_type));
 
     harness_mock_read("xbee_frame_type_as_string(): return (res)",
                       &res,
@@ -232,7 +246,8 @@ const char *__attribute__ ((weak)) STUB(xbee_tx_status_as_string)(uint8_t tx_sta
     const char *res;
 
     harness_mock_assert("xbee_tx_status_as_string(tx_status)",
-                        &tx_status);
+                        &tx_status,
+                        sizeof(tx_status));
 
     harness_mock_read("xbee_tx_status_as_string(): return (res)",
                       &res,
@@ -260,7 +275,8 @@ const char *__attribute__ ((weak)) STUB(xbee_modem_status_as_string)(uint8_t mod
     const char *res;
 
     harness_mock_assert("xbee_modem_status_as_string(modem_status)",
-                        &modem_status);
+                        &modem_status,
+                        sizeof(modem_status));
 
     harness_mock_read("xbee_modem_status_as_string(): return (res)",
                       &res,
@@ -288,7 +304,8 @@ const char *__attribute__ ((weak)) STUB(xbee_at_command_response_status_as_strin
     const char *res;
 
     harness_mock_assert("xbee_at_command_response_status_as_string(response_status)",
-                        &response_status);
+                        &response_status,
+                        sizeof(response_status));
 
     harness_mock_read("xbee_at_command_response_status_as_string(): return (res)",
                       &res,

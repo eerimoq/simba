@@ -33,6 +33,10 @@
 
 int mock_write_led_7seg_ht16k33_module_init(int res)
 {
+    harness_mock_write("led_7seg_ht16k33_module_init()",
+                       NULL,
+                       0);
+
     harness_mock_write("led_7seg_ht16k33_module_init(): return (res)",
                        &res,
                        sizeof(res));
@@ -43,6 +47,10 @@ int mock_write_led_7seg_ht16k33_module_init(int res)
 int __attribute__ ((weak)) STUB(led_7seg_ht16k33_module_init)()
 {
     int res;
+
+    harness_mock_assert("led_7seg_ht16k33_module_init()",
+                        NULL,
+                        0);
 
     harness_mock_read("led_7seg_ht16k33_module_init(): return (res)",
                       &res,
@@ -77,10 +85,12 @@ int __attribute__ ((weak)) STUB(led_7seg_ht16k33_init)(struct led_7seg_ht16k33_d
     int res;
 
     harness_mock_assert("led_7seg_ht16k33_init(i2c_p)",
-                        i2c_p);
+                        i2c_p,
+                        sizeof(*i2c_p));
 
     harness_mock_assert("led_7seg_ht16k33_init(i2c_addr)",
-                        &i2c_addr);
+                        &i2c_addr,
+                        sizeof(i2c_addr));
 
     harness_mock_read("led_7seg_ht16k33_init(): return (res)",
                       &res,
@@ -169,7 +179,8 @@ int __attribute__ ((weak)) STUB(led_7seg_ht16k33_brightness)(struct led_7seg_ht1
     int res;
 
     harness_mock_assert("led_7seg_ht16k33_brightness(brightness)",
-                        &brightness);
+                        &brightness,
+                        sizeof(brightness));
 
     harness_mock_read("led_7seg_ht16k33_brightness(): return (res)",
                       &res,
@@ -204,10 +215,12 @@ int __attribute__ ((weak)) STUB(led_7seg_ht16k33_set_num)(struct led_7seg_ht16k3
     int res;
 
     harness_mock_assert("led_7seg_ht16k33_set_num(num)",
-                        &num);
+                        &num,
+                        sizeof(num));
 
     harness_mock_assert("led_7seg_ht16k33_set_num(base)",
-                        &base);
+                        &base,
+                        sizeof(base));
 
     harness_mock_read("led_7seg_ht16k33_set_num(): return (res)",
                       &res,
@@ -236,7 +249,8 @@ int __attribute__ ((weak)) STUB(led_7seg_ht16k33_show_colon)(struct led_7seg_ht1
     int res;
 
     harness_mock_assert("led_7seg_ht16k33_show_colon(show_colon)",
-                        &show_colon);
+                        &show_colon,
+                        sizeof(show_colon));
 
     harness_mock_read("led_7seg_ht16k33_show_colon(): return (res)",
                       &res,
@@ -271,10 +285,12 @@ int __attribute__ ((weak)) STUB(led_7seg_ht16k33_show_dot)(struct led_7seg_ht16k
     int res;
 
     harness_mock_assert("led_7seg_ht16k33_show_dot(position)",
-                        &position);
+                        &position,
+                        sizeof(position));
 
     harness_mock_assert("led_7seg_ht16k33_show_dot(show_colon)",
-                        &show_colon);
+                        &show_colon,
+                        sizeof(show_colon));
 
     harness_mock_read("led_7seg_ht16k33_show_dot(): return (res)",
                       &res,

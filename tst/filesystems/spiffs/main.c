@@ -216,7 +216,7 @@ static struct spiffs_t fs;
 static struct spiffs_config_t config;
 static uint8_t workspace[2 * LOG_PAGE_SIZE];
 
-static int test_init(struct harness_t *harness_p)
+static int test_init(void)
 {
     BTASSERT(hal_init() == 0);
 
@@ -243,7 +243,7 @@ static int test_init(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_format(struct harness_t *harness_p)
+static int test_format(void)
 {
     /* Format and mount the file system again. */
     BTASSERT(spiffs_format(&fs) == 0);
@@ -265,7 +265,7 @@ static int test_format(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_read_write(struct harness_t *harness_p)
+static int test_read_write(void)
 {
     char buf[12];
     spiffs_file fd;
@@ -298,7 +298,7 @@ static int test_read_write(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_read_write_performance(struct harness_t *harness_p)
+static int test_read_write_performance(void)
 {
     int res;
     spiffs_file fd;
@@ -370,8 +370,7 @@ static int test_read_write_performance(struct harness_t *harness_p)
 
 int main()
 {
-    struct harness_t harness;
-    struct harness_testcase_t harness_testcases[] = {
+    struct harness_testcase_t testcases[] = {
         { test_init, "test_init" },
         { test_format, "test_format" },
         { test_read_write, "test_read_write" },
@@ -381,8 +380,7 @@ int main()
 
     sys_start();
 
-    harness_init(&harness);
-    harness_run(&harness, harness_testcases);
+    harness_run(testcases);
 
     return (0);
 }

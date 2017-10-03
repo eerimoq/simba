@@ -33,6 +33,10 @@
 
 int mock_write_re_module_init(int res)
 {
+    harness_mock_write("re_module_init()",
+                       NULL,
+                       0);
+
     harness_mock_write("re_module_init(): return (res)",
                        &res,
                        sizeof(res));
@@ -43,6 +47,10 @@ int mock_write_re_module_init(int res)
 int __attribute__ ((weak)) STUB(re_module_init)()
 {
     int res;
+
+    harness_mock_assert("re_module_init()",
+                        NULL,
+                        0);
 
     harness_mock_read("re_module_init(): return (res)",
                       &res,
@@ -89,16 +97,19 @@ char *__attribute__ ((weak)) STUB(re_compile)(char *compiled_p,
 
     harness_mock_read("re_compile(): return (compiled_p)",
                       compiled_p,
-                      -1);
+                      sizeof(*compiled_p));
 
     harness_mock_assert("re_compile(pattern_p)",
-                        pattern_p);
+                        pattern_p,
+                        sizeof(*pattern_p));
 
     harness_mock_assert("re_compile(flags)",
-                        &flags);
+                        &flags,
+                        sizeof(flags));
 
     harness_mock_assert("re_compile(size)",
-                        &size);
+                        &size,
+                        sizeof(size));
 
     harness_mock_read("re_compile(): return (res)",
                       &res,
@@ -150,21 +161,24 @@ ssize_t __attribute__ ((weak)) STUB(re_match)(const char *compiled_p,
     ssize_t res;
 
     harness_mock_assert("re_match(compiled_p)",
-                        compiled_p);
+                        compiled_p,
+                        sizeof(*compiled_p));
 
     harness_mock_assert("re_match(buf_p)",
-                        buf_p);
+                        buf_p,
+                        sizeof(*buf_p));
 
     harness_mock_assert("re_match(size)",
-                        &size);
+                        &size,
+                        sizeof(size));
 
     harness_mock_read("re_match(): return (groups_p)",
                       groups_p,
-                      -1);
+                      sizeof(*groups_p));
 
     harness_mock_read("re_match(): return (number_of_groups_p)",
                       number_of_groups_p,
-                      -1);
+                      sizeof(*number_of_groups_p));
 
     harness_mock_read("re_match(): return (res)",
                       &res,

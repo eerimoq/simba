@@ -33,6 +33,10 @@
 
 int mock_write_dht_module_init(int res)
 {
+    harness_mock_write("dht_module_init()",
+                       NULL,
+                       0);
+
     harness_mock_write("dht_module_init(): return (res)",
                        &res,
                        sizeof(res));
@@ -43,6 +47,10 @@ int mock_write_dht_module_init(int res)
 int __attribute__ ((weak)) STUB(dht_module_init)()
 {
     int res;
+
+    harness_mock_assert("dht_module_init()",
+                        NULL,
+                        0);
 
     harness_mock_read("dht_module_init(): return (res)",
                       &res,
@@ -71,7 +79,8 @@ int __attribute__ ((weak)) STUB(dht_init)(struct dht_driver_t *self_p,
     int res;
 
     harness_mock_assert("dht_init(pin_p)",
-                        pin_p);
+                        pin_p,
+                        sizeof(*pin_p));
 
     harness_mock_read("dht_init(): return (res)",
                       &res,
@@ -107,11 +116,11 @@ int __attribute__ ((weak)) STUB(dht_read)(struct dht_driver_t *self_p,
 
     harness_mock_read("dht_read(): return (temperature_p)",
                       temperature_p,
-                      -1);
+                      sizeof(*temperature_p));
 
     harness_mock_read("dht_read(): return (humidty_p)",
                       humidty_p,
-                      -1);
+                      sizeof(*humidty_p));
 
     harness_mock_read("dht_read(): return (res)",
                       &res,

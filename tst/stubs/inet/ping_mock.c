@@ -33,6 +33,10 @@
 
 int mock_write_ping_module_init(int res)
 {
+    harness_mock_write("ping_module_init()",
+                       NULL,
+                       0);
+
     harness_mock_write("ping_module_init(): return (res)",
                        &res,
                        sizeof(res));
@@ -43,6 +47,10 @@ int mock_write_ping_module_init(int res)
 int __attribute__ ((weak)) STUB(ping_module_init)()
 {
     int res;
+
+    harness_mock_assert("ping_module_init()",
+                        NULL,
+                        0);
 
     harness_mock_read("ping_module_init(): return (res)",
                       &res,
@@ -82,14 +90,16 @@ int __attribute__ ((weak)) STUB(ping_host_by_ip_address)(struct inet_ip_addr_t *
     int res;
 
     harness_mock_assert("ping_host_by_ip_address(address_p)",
-                        address_p);
+                        address_p,
+                        sizeof(*address_p));
 
     harness_mock_assert("ping_host_by_ip_address(timeout_p)",
-                        timeout_p);
+                        timeout_p,
+                        sizeof(*timeout_p));
 
     harness_mock_read("ping_host_by_ip_address(): return (round_trip_time_p)",
                       round_trip_time_p,
-                      -1);
+                      sizeof(*round_trip_time_p));
 
     harness_mock_read("ping_host_by_ip_address(): return (res)",
                       &res,

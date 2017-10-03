@@ -33,6 +33,10 @@
 
 int mock_write_hx711_module_init(int res)
 {
+    harness_mock_write("hx711_module_init()",
+                       NULL,
+                       0);
+
     harness_mock_write("hx711_module_init(): return (res)",
                        &res,
                        sizeof(res));
@@ -43,6 +47,10 @@ int mock_write_hx711_module_init(int res)
 int __attribute__ ((weak)) STUB(hx711_module_init)()
 {
     int res;
+
+    harness_mock_assert("hx711_module_init()",
+                        NULL,
+                        0);
 
     harness_mock_read("hx711_module_init(): return (res)",
                       &res,
@@ -89,16 +97,20 @@ int __attribute__ ((weak)) STUB(hx711_init)(struct hx711_driver_t *self_p,
     int res;
 
     harness_mock_assert("hx711_init(pd_sck_p)",
-                        pd_sck_p);
+                        pd_sck_p,
+                        sizeof(*pd_sck_p));
 
     harness_mock_assert("hx711_init(dout_p)",
-                        dout_p);
+                        dout_p,
+                        sizeof(*dout_p));
 
     harness_mock_assert("hx711_init(scale)",
-                        &scale);
+                        &scale,
+                        sizeof(scale));
 
     harness_mock_assert("hx711_init(offset)",
-                        &offset);
+                        &offset,
+                        sizeof(offset));
 
     harness_mock_read("hx711_init(): return (res)",
                       &res,
@@ -174,10 +186,11 @@ int __attribute__ ((weak)) STUB(hx711_read)(struct hx711_driver_t *self_p,
 
     harness_mock_read("hx711_read(): return (weight_p)",
                       weight_p,
-                      -1);
+                      sizeof(*weight_p));
 
     harness_mock_assert("hx711_read(channel_gain)",
-                        &channel_gain);
+                        &channel_gain,
+                        sizeof(channel_gain));
 
     harness_mock_read("hx711_read(): return (res)",
                       &res,
@@ -213,10 +226,11 @@ int __attribute__ ((weak)) STUB(hx711_read_raw)(struct hx711_driver_t *self_p,
 
     harness_mock_read("hx711_read_raw(): return (sample_p)",
                       sample_p,
-                      -1);
+                      sizeof(*sample_p));
 
     harness_mock_assert("hx711_read_raw(channel_gain)",
-                        &channel_gain);
+                        &channel_gain,
+                        sizeof(channel_gain));
 
     harness_mock_read("hx711_read_raw(): return (res)",
                       &res,
@@ -245,7 +259,8 @@ int __attribute__ ((weak)) STUB(hx711_set_scale)(struct hx711_driver_t *self_p,
     int res;
 
     harness_mock_assert("hx711_set_scale(scale)",
-                        &scale);
+                        &scale,
+                        sizeof(scale));
 
     harness_mock_read("hx711_set_scale(): return (res)",
                       &res,
@@ -274,7 +289,8 @@ int __attribute__ ((weak)) STUB(hx711_set_offset)(struct hx711_driver_t *self_p,
     int res;
 
     harness_mock_assert("hx711_set_offset(offset)",
-                        &offset);
+                        &offset,
+                        sizeof(offset));
 
     harness_mock_read("hx711_set_offset(): return (res)",
                       &res,

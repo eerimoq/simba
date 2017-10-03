@@ -40,7 +40,7 @@ extern void socket_stub_close_connection(void);
 static struct tftp_server_t server;
 static THRD_STACK(listener_stack, 2048);
 
-static int test_start(struct harness_t *harness_p)
+static int test_start(void)
 {
     struct inet_addr_t addr;
 
@@ -62,7 +62,7 @@ static int test_start(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_read(struct harness_t *harness_p)
+static int test_read(void)
 {
     struct fs_file_t file;
     uint8_t byte;
@@ -138,7 +138,7 @@ static int test_read(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_write(struct harness_t *harness_p)
+static int test_write(void)
 {
     struct fs_file_t file;
     uint8_t byte;
@@ -244,7 +244,7 @@ static int test_write(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_read_timeout(struct harness_t *harness_p)
+static int test_read_timeout(void)
 {
     struct fs_file_t file;
     uint8_t byte;
@@ -287,7 +287,7 @@ static int test_read_timeout(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_write_timeout(struct harness_t *harness_p)
+static int test_write_timeout(void)
 {
     uint8_t buf[4];
     int i;
@@ -309,7 +309,7 @@ static int test_write_timeout(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_bad_request(struct harness_t *harness_p)
+static int test_bad_request(void)
 {
     uint8_t buf[516];
 
@@ -374,8 +374,7 @@ static int test_bad_request(struct harness_t *harness_p)
 
 int main()
 {
-    struct harness_t harness;
-    struct harness_testcase_t harness_testcases[] = {
+    struct harness_testcase_t testcases[] = {
         { test_start, "test_start" },
         { test_read, "test_read" },
         { test_write, "test_write" },
@@ -387,8 +386,7 @@ int main()
 
     sys_start();
 
-    harness_init(&harness);
-    harness_run(&harness, harness_testcases);
+    harness_run(testcases);
 
     return (0);
 }

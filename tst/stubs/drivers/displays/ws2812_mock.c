@@ -33,6 +33,10 @@
 
 int mock_write_ws2812_module_init(int res)
 {
+    harness_mock_write("ws2812_module_init()",
+                       NULL,
+                       0);
+
     harness_mock_write("ws2812_module_init(): return (res)",
                        &res,
                        sizeof(res));
@@ -43,6 +47,10 @@ int mock_write_ws2812_module_init(int res)
 int __attribute__ ((weak)) STUB(ws2812_module_init)()
 {
     int res;
+
+    harness_mock_assert("ws2812_module_init()",
+                        NULL,
+                        0);
 
     harness_mock_read("ws2812_module_init(): return (res)",
                       &res,
@@ -77,10 +85,12 @@ int __attribute__ ((weak)) STUB(ws2812_init)(struct ws2812_driver_t *self_p,
     int res;
 
     harness_mock_assert("ws2812_init(pin_devices_pp)",
-                        pin_devices_pp);
+                        pin_devices_pp,
+                        sizeof(*pin_devices_pp));
 
     harness_mock_assert("ws2812_init(number_of_pin_devices)",
-                        &number_of_pin_devices);
+                        &number_of_pin_devices,
+                        sizeof(number_of_pin_devices));
 
     harness_mock_read("ws2812_init(): return (res)",
                       &res,
@@ -115,10 +125,12 @@ int __attribute__ ((weak)) STUB(ws2812_write)(struct ws2812_driver_t *self_p,
     int res;
 
     harness_mock_assert("ws2812_write(colors_p)",
-                        colors_p);
+                        colors_p,
+                        sizeof(*colors_p));
 
     harness_mock_assert("ws2812_write(number_of_pixles)",
-                        &number_of_pixles);
+                        &number_of_pixles,
+                        sizeof(number_of_pixles));
 
     harness_mock_read("ws2812_write(): return (res)",
                       &res,

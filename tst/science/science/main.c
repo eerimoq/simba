@@ -30,7 +30,7 @@
 
 #include "simba.h"
 
-static int test_init(struct harness_t *harness_p)
+static int test_init(void)
 {
     BTASSERT(science_module_init() == 0);
     BTASSERT(science_module_init() == 0);
@@ -38,7 +38,7 @@ static int test_init(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_pressure_to_altitude(struct harness_t *harness_p)
+static int test_pressure_to_altitude(void)
 {
     float altitude;
 
@@ -87,7 +87,7 @@ static int test_pressure_to_altitude(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_pressure_from_altitude(struct harness_t *harness_p)
+static int test_pressure_from_altitude(void)
 {
     float pressure;
 
@@ -136,42 +136,42 @@ static int test_pressure_from_altitude(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_mps_to_kmph(struct harness_t *harness_p)
+static int test_mps_to_kmph(void)
 {
     BTASSERT_IN_RANGE(science_mps_to_kmph(1.0), 3.5999, 3.6001);
 
     return (0);
 }
 
-static int test_mps_from_kmph(struct harness_t *harness_p)
+static int test_mps_from_kmph(void)
 {
     BTASSERT_IN_RANGE(science_mps_from_kmph(3.6), 0.9999, 1.0001);
 
     return (0);
 }
 
-static int test_mps_to_knots(struct harness_t *harness_p)
+static int test_mps_to_knots(void)
 {
     BTASSERT_IN_RANGE(science_mps_to_knots(1.0), 1.94383, 1.94385);
 
     return (0);
 }
 
-static int test_mps_from_knots(struct harness_t *harness_p)
+static int test_mps_from_knots(void)
 {
     BTASSERT_IN_RANGE(science_mps_from_knots(1.0), 0.51443, 0.51445);
 
     return (0);
 }
 
-static int test_mps_to_mph(struct harness_t *harness_p)
+static int test_mps_to_mph(void)
 {
     BTASSERT_IN_RANGE(science_mps_to_mph(1.0), 2.23693, 2.23695);
 
     return (0);
 }
 
-static int test_mps_from_mph(struct harness_t *harness_p)
+static int test_mps_from_mph(void)
 {
     BTASSERT_IN_RANGE(science_mps_from_mph(1.0), 0.44703, 0.44705);
 
@@ -180,8 +180,7 @@ static int test_mps_from_mph(struct harness_t *harness_p)
 
 int main()
 {
-    struct harness_t harness;
-    struct harness_testcase_t harness_testcases[] = {
+    struct harness_testcase_t testcases[] = {
         { test_init, "test_init" },
         { test_pressure_to_altitude, "test_pressure_to_altitude" },
         { test_pressure_from_altitude, "test_pressure_from_altitude" },
@@ -196,8 +195,7 @@ int main()
 
     sys_start();
 
-    harness_init(&harness);
-    harness_run(&harness, harness_testcases);
+    harness_run(testcases);
 
     return (0);
 }

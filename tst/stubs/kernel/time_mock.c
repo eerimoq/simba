@@ -51,7 +51,7 @@ int __attribute__ ((weak)) STUB(time_get)(struct time_t *now_p)
 
     harness_mock_read("time_get(): return (now_p)",
                       now_p,
-                      -1);
+                      sizeof(*now_p));
 
     harness_mock_read("time_get(): return (res)",
                       &res,
@@ -79,7 +79,8 @@ int __attribute__ ((weak)) STUB(time_set)(struct time_t *new_p)
     int res;
 
     harness_mock_assert("time_set(new_p)",
-                        new_p);
+                        new_p,
+                        sizeof(*new_p));
 
     harness_mock_read("time_set(): return (res)",
                       &res,
@@ -120,13 +121,15 @@ int __attribute__ ((weak)) STUB(time_add)(struct time_t *res_p,
 
     harness_mock_read("time_add(): return (res_p)",
                       res_p,
-                      -1);
+                      sizeof(*res_p));
 
     harness_mock_assert("time_add(left_p)",
-                        left_p);
+                        left_p,
+                        sizeof(*left_p));
 
     harness_mock_assert("time_add(right_p)",
-                        right_p);
+                        right_p,
+                        sizeof(*right_p));
 
     harness_mock_read("time_add(): return (res)",
                       &res,
@@ -167,13 +170,15 @@ int __attribute__ ((weak)) STUB(time_subtract)(struct time_t *res_p,
 
     harness_mock_read("time_subtract(): return (res_p)",
                       res_p,
-                      -1);
+                      sizeof(*res_p));
 
     harness_mock_assert("time_subtract(left_p)",
-                        left_p);
+                        left_p,
+                        sizeof(*left_p));
 
     harness_mock_assert("time_subtract(right_p)",
-                        right_p);
+                        right_p,
+                        sizeof(*right_p));
 
     harness_mock_read("time_subtract(): return (res)",
                       &res,
@@ -207,10 +212,12 @@ enum time_compare_t __attribute__ ((weak)) STUB(time_compare)(struct time_t *lef
     enum time_compare_t res;
 
     harness_mock_assert("time_compare(left_p)",
-                        left_p);
+                        left_p,
+                        sizeof(*left_p));
 
     harness_mock_assert("time_compare(right_p)",
-                        right_p);
+                        right_p,
+                        sizeof(*right_p));
 
     harness_mock_read("time_compare(): return (res)",
                       &res,
@@ -245,10 +252,11 @@ int __attribute__ ((weak)) STUB(time_unix_time_to_date)(struct date_t *date_p,
 
     harness_mock_read("time_unix_time_to_date(): return (date_p)",
                       date_p,
-                      -1);
+                      sizeof(*date_p));
 
     harness_mock_assert("time_unix_time_to_date(time_p)",
-                        time_p);
+                        time_p,
+                        sizeof(*time_p));
 
     harness_mock_read("time_unix_time_to_date(): return (res)",
                       &res,
@@ -269,11 +277,16 @@ int mock_write_time_busy_wait_us(int microseconds)
 void __attribute__ ((weak)) STUB(time_busy_wait_us)(int microseconds)
 {
     harness_mock_assert("time_busy_wait_us(microseconds)",
-                        &microseconds);
+                        &microseconds,
+                        sizeof(microseconds));
 }
 
 int mock_write_time_micros(int res)
 {
+    harness_mock_write("time_micros()",
+                       NULL,
+                       0);
+
     harness_mock_write("time_micros(): return (res)",
                        &res,
                        sizeof(res));
@@ -284,6 +297,10 @@ int mock_write_time_micros(int res)
 int __attribute__ ((weak)) STUB(time_micros)()
 {
     int res;
+
+    harness_mock_assert("time_micros()",
+                        NULL,
+                        0);
 
     harness_mock_read("time_micros(): return (res)",
                       &res,
@@ -317,10 +334,12 @@ int __attribute__ ((weak)) STUB(time_micros_elapsed)(int start,
     int res;
 
     harness_mock_assert("time_micros_elapsed(start)",
-                        &start);
+                        &start,
+                        sizeof(start));
 
     harness_mock_assert("time_micros_elapsed(stop)",
-                        &stop);
+                        &stop,
+                        sizeof(stop));
 
     harness_mock_read("time_micros_elapsed(): return (res)",
                       &res,
@@ -331,6 +350,10 @@ int __attribute__ ((weak)) STUB(time_micros_elapsed)(int start,
 
 int mock_write_time_micros_resolution(int res)
 {
+    harness_mock_write("time_micros_resolution()",
+                       NULL,
+                       0);
+
     harness_mock_write("time_micros_resolution(): return (res)",
                        &res,
                        sizeof(res));
@@ -342,6 +365,10 @@ int __attribute__ ((weak)) STUB(time_micros_resolution)()
 {
     int res;
 
+    harness_mock_assert("time_micros_resolution()",
+                        NULL,
+                        0);
+
     harness_mock_read("time_micros_resolution(): return (res)",
                       &res,
                       sizeof(res));
@@ -351,6 +378,10 @@ int __attribute__ ((weak)) STUB(time_micros_resolution)()
 
 int mock_write_time_micros_maximum(int res)
 {
+    harness_mock_write("time_micros_maximum()",
+                       NULL,
+                       0);
+
     harness_mock_write("time_micros_maximum(): return (res)",
                        &res,
                        sizeof(res));
@@ -361,6 +392,10 @@ int mock_write_time_micros_maximum(int res)
 int __attribute__ ((weak)) STUB(time_micros_maximum)()
 {
     int res;
+
+    harness_mock_assert("time_micros_maximum()",
+                        NULL,
+                        0);
 
     harness_mock_read("time_micros_maximum(): return (res)",
                       &res,

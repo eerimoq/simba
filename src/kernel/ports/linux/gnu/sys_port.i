@@ -29,6 +29,7 @@
  */
 
 #include <pthread.h>
+#include <execinfo.h>
 
 static pthread_mutex_t mutex;
 
@@ -82,7 +83,17 @@ static void sys_port_reboot()
 
 static int sys_port_backtrace(void **buf_pp, size_t size)
 {
-    return (0);
+    int i;
+    int depth;
+
+    depth = (size / sizeof(void *) / 2);
+    depth = backtrace(buf_pp, depth);
+
+    for (i = depth - 1; i > 0; i--) {
+        buf_pp[2 * i] = buf_pp[i];
+    }
+
+    return (depth);
 }
 
 static int sys_port_get_time_into_tick()

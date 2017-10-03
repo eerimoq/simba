@@ -33,6 +33,10 @@
 
 int mock_write_i2c_soft_module_init(int res)
 {
+    harness_mock_write("i2c_soft_module_init()",
+                       NULL,
+                       0);
+
     harness_mock_write("i2c_soft_module_init(): return (res)",
                        &res,
                        sizeof(res));
@@ -43,6 +47,10 @@ int mock_write_i2c_soft_module_init(int res)
 int __attribute__ ((weak)) STUB(i2c_soft_module_init)()
 {
     int res;
+
+    harness_mock_assert("i2c_soft_module_init()",
+                        NULL,
+                        0);
 
     harness_mock_read("i2c_soft_module_init(): return (res)",
                       &res,
@@ -95,19 +103,24 @@ int __attribute__ ((weak)) STUB(i2c_soft_init)(struct i2c_soft_driver_t *self_p,
     int res;
 
     harness_mock_assert("i2c_soft_init(scl_dev_p)",
-                        scl_dev_p);
+                        scl_dev_p,
+                        sizeof(*scl_dev_p));
 
     harness_mock_assert("i2c_soft_init(sda_dev_p)",
-                        sda_dev_p);
+                        sda_dev_p,
+                        sizeof(*sda_dev_p));
 
     harness_mock_assert("i2c_soft_init(baudrate)",
-                        &baudrate);
+                        &baudrate,
+                        sizeof(baudrate));
 
     harness_mock_assert("i2c_soft_init(max_clock_stretching_us)",
-                        &max_clock_stretching_us);
+                        &max_clock_stretching_us,
+                        sizeof(max_clock_stretching_us));
 
     harness_mock_assert("i2c_soft_init(clock_stretching_sleep_us)",
-                        &clock_stretching_sleep_us);
+                        &clock_stretching_sleep_us,
+                        sizeof(clock_stretching_sleep_us));
 
     harness_mock_read("i2c_soft_init(): return (res)",
                       &res,
@@ -188,14 +201,16 @@ ssize_t __attribute__ ((weak)) STUB(i2c_soft_read)(struct i2c_soft_driver_t *sel
     ssize_t res;
 
     harness_mock_assert("i2c_soft_read(address)",
-                        &address);
+                        &address,
+                        sizeof(address));
 
     harness_mock_read("i2c_soft_read(): return (buf_p)",
                       buf_p,
-                      -1);
+                      size);
 
     harness_mock_assert("i2c_soft_read(size)",
-                        &size);
+                        &size,
+                        sizeof(size));
 
     harness_mock_read("i2c_soft_read(): return (res)",
                       &res,
@@ -236,13 +251,16 @@ ssize_t __attribute__ ((weak)) STUB(i2c_soft_write)(struct i2c_soft_driver_t *se
     ssize_t res;
 
     harness_mock_assert("i2c_soft_write(address)",
-                        &address);
+                        &address,
+                        sizeof(address));
 
     harness_mock_assert("i2c_soft_write(buf_p)",
-                        buf_p);
+                        buf_p,
+                        size);
 
     harness_mock_assert("i2c_soft_write(size)",
-                        &size);
+                        &size,
+                        sizeof(size));
 
     harness_mock_read("i2c_soft_write(): return (res)",
                       &res,
@@ -271,7 +289,8 @@ int __attribute__ ((weak)) STUB(i2c_soft_scan)(struct i2c_soft_driver_t *self_p,
     int res;
 
     harness_mock_assert("i2c_soft_scan(address)",
-                        &address);
+                        &address,
+                        sizeof(address));
 
     harness_mock_read("i2c_soft_scan(): return (res)",
                       &res,

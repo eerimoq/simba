@@ -37,7 +37,7 @@ static void isr(void *arg_p)
     flag++;
 }
 
-int test_exti(struct harness_t *harness_p)
+int test_exti(void)
 {
     int i;
     struct exti_driver_t exti;
@@ -68,8 +68,7 @@ int test_exti(struct harness_t *harness_p)
 
 int main()
 {
-    struct harness_t harness;
-    struct harness_testcase_t harness_testcases[] = {
+    struct harness_testcase_t testcases[] = {
         { test_exti, "test_exti" },
         { NULL, NULL }
     };
@@ -77,8 +76,7 @@ int main()
     sys_start();
     exti_module_init();
 
-    harness_init(&harness);
-    harness_run(&harness, harness_testcases);
+    harness_run(testcases);
 
     return (0);
 }

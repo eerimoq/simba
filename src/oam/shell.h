@@ -59,7 +59,6 @@ struct shell_t {
     int authorized;
 
 #if CONFIG_SHELL_MINIMAL == 0
-
     struct {
         struct shell_history_elem_t *head_p;
         struct shell_history_elem_t *tail_p;
@@ -74,7 +73,6 @@ struct shell_t {
             uint8_t buf[CONFIG_SHELL_HISTORY_SIZE];
         } heap;
     } history;
-
 #endif
 };
 
@@ -117,27 +115,6 @@ int shell_init(struct shell_t *self_p,
  * channel and send response on the output channel. All received
  * commands are passed to the debug file system function `fs_call()`
  * for execution.
- *
- * Here is an example of using the shell to list and execute debug
- * file system commands.
- *
- * @rst
- * .. code-block:: text
- *
- *    $ <tab>
- *    drivers/
- *    kernel/
- *    $ kernel/ <tab>
- *    fs/
- *    sys/
- *    thrd/
- *    $ kernel/thrd/list
- *                NAME        STATE  PRIO   CPU  LOGMASK
- *                main      current     0    0%     0x0f
- *                idle        ready   127    0%     0x0f
- *             monitor        ready   -80    0%     0x0f
- *    $
- * @endrst
  *
  * @param[in] arg_p Pointer to the shell arguemnt struct `struct
  *                  shell_t`. See the struct definition for a

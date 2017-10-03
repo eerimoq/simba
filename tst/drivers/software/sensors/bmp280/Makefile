@@ -37,18 +37,25 @@ CDEFS += \
 	CONFIG_BMP280_COVERTION_TIMEOUT_MS=3 \
 	CONFIG_BMP280_DEBUG_LOG_MASK=LOG_ALL \
 	CONFIG_I2C=1 \
-	CONFIG_SPI=1 \
-	CONFIG_HARNESS_HEAP_MAX=4096
+	CONFIG_SPI=1
 
-STUB = $(SIMBA_ROOT)/src/drivers/sensors/bmp280.c:i2c_write,i2c_read,i2c_scan,spi_write,spi_read,spi_select,spi_deselect
+ifneq ($(BOARD), linux)
+CDEFS += CONFIG_HARNESS_HEAP_MAX=4096
+endif
+
+STUB = $(addprefix $(SIMBA_ROOT)/src/drivers/sensors/bmp280.c:, \
+	 i2c_write \
+	 i2c_read \
+	 i2c_scan \
+	 spi_write \
+	 spi_read \
+	 spi_select \
+	 spi_deselect)
 
 KERNEL_SRC += errno.c
 DRIVERS_SRC = sensors/bmp280.c network/spi.c network/i2c.c
 
-STUBS_ROOT = ../../../../stubs
-
-INC += $(STUBS_ROOT)
-SRC += $(addprefix $(STUBS_ROOT)/, \
+SRC += $(addprefix $(SIMBA_ROOT)/tst/stubs/, \
 	drivers/network/i2c_mock.c \
 	drivers/network/spi_mock.c)
 

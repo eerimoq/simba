@@ -105,7 +105,7 @@ static int check_emacs_output(const char *expected_output_p)
     }
 }
 
-static int test_setup(struct harness_t *harness_p)
+static int test_setup(void)
 {
     queue_init(&emacs_input, input_buffer, sizeof(input_buffer));
     queue_init(&emacs_output, output_buffer, sizeof(output_buffer));
@@ -113,7 +113,7 @@ static int test_setup(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_start_quit(struct harness_t *harness_p)
+static int test_start_quit(void)
 {
     static const char expected_output[] =
         "0d1b5b4b0d0a1b5b4b0d0a1b5b4b0d0a"
@@ -149,7 +149,7 @@ static int test_start_quit(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_start_space_quit(struct harness_t *harness_p)
+static int test_start_space_quit(void)
 {
     static const char expected_output[] =
         "0d1b5b4b0d0a1b5b4b0d0a1b5b4b0d0a"
@@ -198,7 +198,7 @@ static int test_start_space_quit(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_start_multiline_quit(struct harness_t *harness_p)
+static int test_start_multiline_quit(void)
 {
     static const char expected_output[] =
         "0d1b5b4b0d0a1b5b4b0d0a1b5b4b0d0a"
@@ -282,8 +282,7 @@ static int test_start_multiline_quit(struct harness_t *harness_p)
 
 int main()
 {
-    struct harness_t harness;
-    struct harness_testcase_t harness_testcases[] = {
+    struct harness_testcase_t testcases[] = {
         { test_setup, "test_setup" },
         { test_start_quit, "test_start_quit" },
         { test_start_space_quit, "test_start_space_quit" },
@@ -293,8 +292,7 @@ int main()
 
     sys_start();
 
-    harness_init(&harness);
-    harness_run(&harness, harness_testcases);
+    harness_run(testcases);
 
     return (0);
 }

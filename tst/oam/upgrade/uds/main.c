@@ -37,7 +37,7 @@
 static uint8_t inbuf[128];
 static uint8_t outbuf[128];
 
-static int test_bad_size(struct harness_t *self_p)
+static int test_bad_size(void)
 {
     struct upgrade_uds_t uds;
     struct queue_t qin;
@@ -56,7 +56,7 @@ static int test_bad_size(struct harness_t *self_p)
     return (0);
 }
 
-static int test_unknown_service_id(struct harness_t *self_p)
+static int test_unknown_service_id(void)
 {
     struct upgrade_uds_t uds;
     struct queue_t qin;
@@ -84,7 +84,7 @@ static int test_unknown_service_id(struct harness_t *self_p)
     return (0);
 }
 
-static int test_read_data_by_identifier(struct harness_t *self_p)
+static int test_read_data_by_identifier(void)
 {
     struct upgrade_uds_t uds;
     struct queue_t qin;
@@ -156,7 +156,7 @@ static int test_read_data_by_identifier(struct harness_t *self_p)
     return (0);
 }
 
-static int test_read_memory_by_address(struct harness_t *self_p)
+static int test_read_memory_by_address(void)
 {
     struct upgrade_uds_t uds;
     struct queue_t qin;
@@ -201,7 +201,7 @@ static int test_read_memory_by_address(struct harness_t *self_p)
     return (0);
 }
 
-static int test_routine_control(struct harness_t *self_p)
+static int test_routine_control(void)
 {
     struct upgrade_uds_t uds;
     struct queue_t qin;
@@ -251,7 +251,7 @@ static int test_routine_control(struct harness_t *self_p)
     return (0);
 }
 
-static int test_diagnostic_session_control(struct harness_t *self_p)
+static int test_diagnostic_session_control(void)
 {
     struct upgrade_uds_t uds;
     struct queue_t qin;
@@ -301,7 +301,7 @@ static int test_diagnostic_session_control(struct harness_t *self_p)
     return (0);
 }
 
-static int test_request_download(struct harness_t *self_p)
+static int test_request_download(void)
 {
     struct upgrade_uds_t uds;
     struct queue_t qin;
@@ -409,7 +409,7 @@ static int test_request_download(struct harness_t *self_p)
     return (0);
 }
 
-static int test_transfer_data(struct harness_t *self_p)
+static int test_transfer_data(void)
 {
     struct upgrade_uds_t uds;
     struct queue_t qin;
@@ -505,7 +505,7 @@ static int test_transfer_data(struct harness_t *self_p)
     return (0);
 }
 
-static int test_request_transfer_exit(struct harness_t *self_p)
+static int test_request_transfer_exit(void)
 {
     struct upgrade_uds_t uds;
     struct queue_t qin;
@@ -590,8 +590,7 @@ static int test_request_transfer_exit(struct harness_t *self_p)
 
 int main()
 {
-    struct harness_t harness;
-    struct harness_testcase_t harness_testcases[] = {
+    struct harness_testcase_t testcases[] = {
         { test_bad_size, "test_bad_size" },
         { test_unknown_service_id, "test_unknown_service_id" },
         { test_read_data_by_identifier, "test_read_data_by_identifier" },
@@ -606,8 +605,7 @@ int main()
 
     sys_start();
 
-    harness_init(&harness);
-    harness_run(&harness, harness_testcases);
+    harness_run(testcases);
 
     return (0);
 }

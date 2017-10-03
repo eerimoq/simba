@@ -304,7 +304,7 @@ int soam_init(struct soam_t *self_p,
     self_p->tx.chout_p = chout_p;
     self_p->tx.packet_index = 1;
 
-    sem_init(&self_p->tx.sem, 0, 1);
+    mutex_init(&self_p->tx.mutex);
 
     self_p->is_printf = 0;
     self_p->transaction_id = 0;
@@ -394,7 +394,7 @@ int soam_input(struct soam_t *self_p,
 ssize_t soam_write_begin(struct soam_t *self_p,
                          int type)
 {
-    sem_take(&self_p->tx.sem, NULL);
+    mutex_lock(&self_p->tx.mutex);
 
     /* First packet initialization. */
     self_p->tx.buf_p[0] = type;
@@ -457,7 +457,7 @@ ssize_t soam_write_end(struct soam_t *self_p)
         size = -1;
     }
 
-    sem_give(&self_p->tx.sem, 1);
+    mutex_unlock(&self_p->tx.mutex);
 
     return (size);
 }

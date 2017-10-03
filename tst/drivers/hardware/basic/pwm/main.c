@@ -30,7 +30,7 @@
 
 #include "simba.h"
 
-static int test_duty_cycle_convert(struct harness_t *harness_p)
+static int test_duty_cycle_convert(void)
 {
     BTASSERT(pwm_duty_cycle_as_percent(pwm_duty_cycle(0)) == 0);
     BTASSERT(pwm_duty_cycle_as_percent(pwm_duty_cycle(100)) == 100);
@@ -38,7 +38,7 @@ static int test_duty_cycle_convert(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_duty_cycle(struct harness_t *harness_p)
+static int test_duty_cycle(void)
 {
     struct pwm_driver_t pwm[PWM_DEVICE_MAX];
     int i, j;
@@ -89,7 +89,7 @@ static int test_duty_cycle(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_frequency(struct harness_t *harness_p)
+static int test_frequency(void)
 {
     struct pwm_driver_t pwm[PWM_DEVICE_MAX];
     int i, j;
@@ -126,8 +126,7 @@ static int test_frequency(struct harness_t *harness_p)
 
 int main()
 {
-    struct harness_t harness;
-    struct harness_testcase_t harness_testcases[] = {
+    struct harness_testcase_t testcases[] = {
         { test_duty_cycle_convert, "test_duty_cycle_convert" },
         { test_duty_cycle, "test_duty_cycle" },
         { test_frequency, "test_frequency" },
@@ -137,8 +136,7 @@ int main()
     sys_start();
     pwm_module_init();
 
-    harness_init(&harness);
-    harness_run(&harness, harness_testcases);
+    harness_run(testcases);
 
     return (0);
 }

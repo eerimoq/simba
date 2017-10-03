@@ -75,13 +75,13 @@ ssize_t flash_read(struct flash_driver_t *self_p,
     ssize_t res;
 
 #if CONFIG_FLASH_DEVICE_SEMAPHORE == 1
-    sem_take(&self_p->dev_p->sem, NULL);
+    mutex_lock(&self_p->dev_p->mutex);
 #endif
 
     res = flash_port_read(self_p, dst_p, src, size);
 
 #if CONFIG_FLASH_DEVICE_SEMAPHORE == 1
-    sem_give(&self_p->dev_p->sem, 1);
+    mutex_unlock(&self_p->dev_p->mutex);
 #endif
 
     return (res);
@@ -99,13 +99,13 @@ ssize_t flash_write(struct flash_driver_t *self_p,
     ssize_t res;
 
 #if CONFIG_FLASH_DEVICE_SEMAPHORE == 1
-    sem_take(&self_p->dev_p->sem, NULL);
+    mutex_lock(&self_p->dev_p->mutex);
 #endif
 
     res = flash_port_write(self_p, dst, src_p, size);
 
 #if CONFIG_FLASH_DEVICE_SEMAPHORE == 1
-    sem_give(&self_p->dev_p->sem, 1);
+    mutex_unlock(&self_p->dev_p->mutex);
 #endif
 
     return (res);
@@ -121,13 +121,13 @@ int flash_erase(struct flash_driver_t *self_p,
     ssize_t res;
 
 #if CONFIG_FLASH_DEVICE_SEMAPHORE == 1
-    sem_take(&self_p->dev_p->sem, NULL);
+    mutex_lock(&self_p->dev_p->mutex);
 #endif
 
     res = flash_port_erase(self_p, addr, size);
 
 #if CONFIG_FLASH_DEVICE_SEMAPHORE == 1
-    sem_give(&self_p->dev_p->sem, 1);
+    mutex_unlock(&self_p->dev_p->mutex);
 #endif
 
     return (res);

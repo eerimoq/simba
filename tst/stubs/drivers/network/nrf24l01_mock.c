@@ -33,6 +33,10 @@
 
 int mock_write_nrf24l01_module_init(int res)
 {
+    harness_mock_write("nrf24l01_module_init()",
+                       NULL,
+                       0);
+
     harness_mock_write("nrf24l01_module_init(): return (res)",
                        &res,
                        sizeof(res));
@@ -43,6 +47,10 @@ int mock_write_nrf24l01_module_init(int res)
 int __attribute__ ((weak)) STUB(nrf24l01_module_init)()
 {
     int res;
+
+    harness_mock_assert("nrf24l01_module_init()",
+                        NULL,
+                        0);
 
     harness_mock_read("nrf24l01_module_init(): return (res)",
                       &res,
@@ -95,19 +103,24 @@ int __attribute__ ((weak)) STUB(nrf24l01_init)(struct nrf24l01_driver_t *self_p,
     int res;
 
     harness_mock_assert("nrf24l01_init(spi_p)",
-                        spi_p);
+                        spi_p,
+                        sizeof(*spi_p));
 
     harness_mock_assert("nrf24l01_init(cs_p)",
-                        cs_p);
+                        cs_p,
+                        sizeof(*cs_p));
 
     harness_mock_assert("nrf24l01_init(ce_p)",
-                        ce_p);
+                        ce_p,
+                        sizeof(*ce_p));
 
     harness_mock_assert("nrf24l01_init(exti_p)",
-                        exti_p);
+                        exti_p,
+                        sizeof(*exti_p));
 
     harness_mock_assert("nrf24l01_init(address)",
-                        &address);
+                        &address,
+                        sizeof(address));
 
     harness_mock_read("nrf24l01_init(): return (res)",
                       &res,
@@ -182,10 +195,12 @@ ssize_t __attribute__ ((weak)) STUB(nrf24l01_read)(struct nrf24l01_driver_t *sel
     ssize_t res;
 
     harness_mock_assert("nrf24l01_read(buf_p)",
-                        buf_p);
+                        buf_p,
+                        size);
 
     harness_mock_assert("nrf24l01_read(size)",
-                        &size);
+                        &size,
+                        sizeof(size));
 
     harness_mock_read("nrf24l01_read(): return (res)",
                       &res,
@@ -232,16 +247,20 @@ ssize_t __attribute__ ((weak)) STUB(nrf24l01_write)(struct nrf24l01_driver_t *se
     ssize_t res;
 
     harness_mock_assert("nrf24l01_write(address)",
-                        &address);
+                        &address,
+                        sizeof(address));
 
     harness_mock_assert("nrf24l01_write(pipe)",
-                        &pipe);
+                        &pipe,
+                        sizeof(pipe));
 
     harness_mock_assert("nrf24l01_write(buf_p)",
-                        buf_p);
+                        buf_p,
+                        size);
 
     harness_mock_assert("nrf24l01_write(size)",
-                        &size);
+                        &size,
+                        sizeof(size));
 
     harness_mock_read("nrf24l01_write(): return (res)",
                       &res,

@@ -32,7 +32,7 @@
 
 struct pwm_soft_driver_t pwm_soft[2];
 
-static int test_init(struct harness_t *harness_p)
+static int test_init(void)
 {
     BTASSERT(pwm_soft_module_init(1000) == 0);
 
@@ -47,7 +47,7 @@ static int test_init(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_duty_cycles(struct harness_t *harness_p)
+static int test_duty_cycles(void)
 {
     int percentage;
     long duty_cycle;
@@ -73,7 +73,7 @@ static int test_duty_cycles(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_duty_cycle_min(struct harness_t *harness_p)
+static int test_duty_cycle_min(void)
 {
     long duty_cycle;
 
@@ -94,7 +94,7 @@ static int test_duty_cycle_min(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_duty_cycle_max(struct harness_t *harness_p)
+static int test_duty_cycle_max(void)
 {
     long duty_cycle;
     
@@ -114,7 +114,7 @@ static int test_duty_cycle_max(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_frequency(struct harness_t *harness_p)
+static int test_frequency(void)
 {
     long frequency;
 
@@ -138,7 +138,7 @@ static int test_frequency(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_duty_cycle_convert(struct harness_t *harness_p)
+static int test_duty_cycle_convert(void)
 {
     BTASSERT(pwm_soft_duty_cycle_as_percent(pwm_soft_duty_cycle(0)) == 0);
     BTASSERT(pwm_soft_duty_cycle_as_percent(pwm_soft_duty_cycle(100)) == 100);
@@ -148,8 +148,7 @@ static int test_duty_cycle_convert(struct harness_t *harness_p)
 
 int main()
 {
-    struct harness_t harness;
-    struct harness_testcase_t harness_testcases[] = {
+    struct harness_testcase_t testcases[] = {
         { test_init, "test_init" },
         { test_duty_cycles, "test_duty_cycles" },
         { test_duty_cycle_min, "test_duty_cycle_min" },
@@ -161,8 +160,7 @@ int main()
 
     sys_start();
 
-    harness_init(&harness);
-    harness_run(&harness, harness_testcases);
+    harness_run(testcases);
 
     return (0);
 }

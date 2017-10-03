@@ -34,7 +34,7 @@ static struct owi_driver_t owi;
 static struct ds18b20_driver_t ds;
 static struct owi_device_t devices[4];
 
-int test_init(struct harness_t *harness_p)
+int test_init(void)
 {
     BTASSERT(owi_init(&owi, &pin_d7_dev, devices, membersof(devices)) == 0);
     BTASSERT(ds18b20_init(&ds, &owi) == 0);
@@ -44,21 +44,21 @@ int test_init(struct harness_t *harness_p)
     return (0);
 }
 
-int test_scan(struct harness_t *harness_p)
+int test_scan(void)
 {
     BTASSERTI(owi_search(&owi), ==, 2);
 
     return (0);
 }
 
-int test_convert(struct harness_t *harness_p)
+int test_convert(void)
 {
     BTASSERT(ds18b20_convert(&ds) == 0);
 
     return (0);
 }
 
-int test_read(struct harness_t *harness_p)
+int test_read(void)
 {
     int i;
     float temperature;
@@ -74,7 +74,7 @@ int test_read(struct harness_t *harness_p)
     return (0);
 }
 
-int test_read_fixed_point(struct harness_t *harness_p)
+int test_read_fixed_point(void)
 {
     int i;
     int temperature;
@@ -98,7 +98,7 @@ int test_read_fixed_point(struct harness_t *harness_p)
     return (0);
 }
 
-int test_read_string(struct harness_t *harness_p)
+int test_read_string(void)
 {
     int i;
     char temperature[16];
@@ -120,7 +120,7 @@ int test_read_string(struct harness_t *harness_p)
     return (0);
 }
 
-int test_command_list(struct harness_t *harness_p)
+int test_command_list(void)
 {
     char buf[24];
 
@@ -132,8 +132,7 @@ int test_command_list(struct harness_t *harness_p)
 
 int main()
 {
-    struct harness_t harness;
-    struct harness_testcase_t harness_testcases[] = {
+    struct harness_testcase_t testcases[] = {
         { test_init, "test_init" },
         { test_scan, "test_scan" },
         { test_convert, "test_convert" },
@@ -147,8 +146,7 @@ int main()
     sys_start();
     ds18b20_module_init();
 
-    harness_init(&harness);
-    harness_run(&harness, harness_testcases);
+    harness_run(testcases);
 
     return (0);
 }

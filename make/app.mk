@@ -69,7 +69,7 @@ MAP = $(BUILDDIR)/$(NAME).map
 RUNLOG = $(BUILDDIR)/run.log
 CLEAN = $(BUILDDIR) $(EXE) $(RUNLOG) size.log \
         coverage.log coverage.xml gmon.out *.gcov profile.log \
-	index.*html
+	index.*html coverage coverage.info
 STUB ?=
 ENDIANESS ?= little
 
@@ -138,6 +138,8 @@ UPPER_BOARD := $(shell python -c "import sys; sys.stdout.write(sys.argv[1].upper
 RUN_PY ?= $(SIMBA_ROOT)/make/run.py
 RUN_END_PATTERN ?= "=============================== TEST END \(\w+\) ==============================\r\n\r\n"
 RUN_END_PATTERN_SUCCESS ?= "=============================== TEST END \(PASSED\) ==============================\r\n\r\n"
+
+BACKTRACE_PY ?= $(SIMBA_ROOT)/bin/backtrace.py
 
 CONSOLESCRIPT = $(SIMBA_ROOT)/make/console.py
 
@@ -239,7 +241,7 @@ else
 	$$(CXX) $$(INC:%=-I%) $$(CDEFS:%=-D%) $$(CXXFLAGS) -o $$@ $$<
 endif
 ifneq ($(STUB),)
-	stub.py "$(CROSS_COMPILE)" $$@ $$< $(STUB)
+	stub.py patch "$(CROSS_COMPILE)" $$@ $$< $(STUB)
 endif
 	$$(CXX) -MM -MT $$@ $$(INC:%=-I%) $$(CDEFS:%=-D%) -std=c++11 -o $(patsubst %.cpp,$(DEPSDIR)%.o.dep,$(abspath $1)) $$<
 endef
@@ -254,7 +256,7 @@ $(patsubst %.S,$(OBJDIR)%.obj,$(abspath $1)): $1
 	mkdir -p $(GENDIR)
 	$$(CC) $$(INC:%=-I%) $$(CDEFS:%=-D%) $$(CFLAGS) -o $$@ $$<
 ifneq ($(STUB),)
-	stub.py "$(CROSS_COMPILE)" $$@ $$< $(STUB)
+	stub.py patch "$(CROSS_COMPILE)" $$@ $$< $(STUB)
 endif
 	gcc -MM -MT $$@ $$(INC:%=-I%) $$(CDEFS:%=-D%) -o $(patsubst %.S,$(DEPSDIR)%.obj.dep,$(abspath $1)) $$<
 endef

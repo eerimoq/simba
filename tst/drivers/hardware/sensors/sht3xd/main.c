@@ -30,7 +30,7 @@
 
 #include "simba.h"
 
-int test_get_temp_humid(struct harness_t *harness_p)
+int test_get_temp_humid(void)
 {
     struct sht3xd_driver_t sht3xd;
     struct i2c_driver_t i2c;
@@ -56,8 +56,7 @@ int test_get_temp_humid(struct harness_t *harness_p)
 
 int main()
 {
-    struct harness_t harness;
-    struct harness_testcase_t harness_testcases[] = {
+    struct harness_testcase_t testcases[] = {
         { test_get_temp_humid, "test_get_temp_humid" },
         { NULL, NULL }
     };
@@ -65,8 +64,7 @@ int main()
     sys_start();
     sht3xd_module_init();
 
-    harness_init(&harness);
-    harness_run(&harness, harness_testcases);
+    harness_run(testcases);
 
     return (0);
 }

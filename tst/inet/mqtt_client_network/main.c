@@ -65,7 +65,7 @@ static size_t on_publish(struct mqtt_client_t *client_p,
     return (0);
 }
 
-static int test_init(struct harness_t *harness_p)
+static int test_init(void)
 {
     struct thrd_t *thrd_p;
     int port = REMOTE_HOST_PORT;
@@ -101,21 +101,21 @@ static int test_init(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_connect(struct harness_t *harness_p)
+static int test_connect(void)
 {
     BTASSERT(mqtt_client_connect(&client) == 0);
 
     return (0);
 }
 
-static int test_ping(struct harness_t *harness_p)
+static int test_ping(void)
 {
     BTASSERT(mqtt_client_ping(&client) == 0);
 
     return (0);
 }
 
-static int test_publish(struct harness_t *harness_p)
+static int test_publish(void)
 {
     struct mqtt_application_message_t foobar;
 
@@ -130,7 +130,7 @@ static int test_publish(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_subscribe(struct harness_t *harness_p)
+static int test_subscribe(void)
 {
     struct mqtt_application_message_t foobar;
 
@@ -150,7 +150,7 @@ static int test_subscribe(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_disconnect(struct harness_t *harness_p)
+static int test_disconnect(void)
 {
     BTASSERT(mqtt_client_disconnect(&client) == 0);
     BTASSERT(socket_close(&server_sock) == 0);
@@ -160,8 +160,7 @@ static int test_disconnect(struct harness_t *harness_p)
 
 int main()
 {
-    struct harness_t harness;
-    struct harness_testcase_t harness_testcases[] = {
+    struct harness_testcase_t testcases[] = {
         { test_init, "test_init" },
         { test_connect, "test_connect" },
         { test_ping, "test_ping" },
@@ -173,8 +172,7 @@ int main()
 
     sys_start();
 
-    harness_init(&harness);
-    harness_run(&harness, harness_testcases);
+    harness_run(testcases);
 
     return (0);
 }

@@ -171,7 +171,7 @@ static void *t1_main(void *arg_p)
     return (0);
 }
 
-static int test_init(struct harness_t *harness)
+static int test_init(void)
 {
     BTASSERT(queue_init(&queue[0], NULL, 0) == 0);
     BTASSERT(queue_init(&queue[1], NULL, 0) == 0);
@@ -187,7 +187,7 @@ static int test_init(struct harness_t *harness)
     return (0);
 }
 
-static int test_read_write(struct harness_t *harness)
+static int test_read_write(void)
 {
     int b, c[4];
 
@@ -212,7 +212,7 @@ static int test_read_write(struct harness_t *harness)
     return (0);
 }
 
-static int test_poll(struct harness_t *harness_p)
+static int test_poll(void)
 {
     int b;
     struct chan_list_t list;
@@ -249,7 +249,7 @@ static int test_poll(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_size(struct harness_t *harness_p)
+static int test_size(void)
 {
     int b;
     struct queue_t foo;
@@ -277,7 +277,7 @@ static int test_size(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_stopped(struct harness_t *harness_p)
+static int test_stopped(void)
 {
     int a[2];
 
@@ -306,7 +306,7 @@ static int test_stopped(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_multiple_writers(struct harness_t *harness_p)
+static int test_multiple_writers(void)
 {
     int c[4];
 
@@ -336,7 +336,7 @@ static int test_multiple_writers(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_poll_write_two_channels(struct harness_t *harness_p)
+static int test_poll_write_two_channels(void)
 {
     uint32_t mask;
     struct chan_list_t list;
@@ -378,7 +378,7 @@ static int test_poll_write_two_channels(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_non_blocking(struct harness_t *harness_p)
+static int test_non_blocking(void)
 {
     int a[2];
 
@@ -411,7 +411,7 @@ static int test_non_blocking(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_ignore(struct harness_t *harness_p)
+static int test_ignore(void)
 {
     uint32_t mask;
     int a[2];
@@ -489,7 +489,7 @@ static int test_ignore(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_read_write_zero(struct harness_t *harness_p)
+static int test_read_write_zero(void)
 {
     int a[2];
 
@@ -502,8 +502,7 @@ static int test_read_write_zero(struct harness_t *harness_p)
 
 int main()
 {
-    struct harness_t harness;
-    struct harness_testcase_t harness_testcases[] = {
+    struct harness_testcase_t testcases[] = {
         { test_init, "test_init" },
         { test_read_write, "test_read_write" },
         { test_poll, "test_poll" },
@@ -519,8 +518,7 @@ int main()
 
     sys_start();
 
-    harness_init(&harness);
-    harness_run(&harness, harness_testcases);
+    harness_run(testcases);
 
     return (0);
 }

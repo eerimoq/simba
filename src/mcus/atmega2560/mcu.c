@@ -185,9 +185,8 @@ struct spi_device_t spi_device[SPI_DEVICE_MAX] = {
         .sck_p = &pin_device[9],
         .mosi_p = &pin_device[10],
         .miso_p = &pin_device[11],
-        .sem = {
-            .count = 0,
-            .count_max = 1,
+        .mutex = {
+            .is_locked = 0,
             .waiters = {
                 .head_p = NULL
             }

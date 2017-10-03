@@ -50,7 +50,8 @@ far_string_t __attribute__ ((weak)) STUB(errno_as_string)(int errno)
     far_string_t res;
 
     harness_mock_assert("errno_as_string(errno)",
-                        &errno);
+                        &errno,
+                        sizeof(errno));
 
     harness_mock_read("errno_as_string(): return (res)",
                       &res,

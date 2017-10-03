@@ -30,7 +30,7 @@
 
 #include "simba.h"
 
-static int test_crc_32(struct harness_t *harness_p)
+static int test_crc_32(void)
 {
     uint32_t crc;
     char string[] = "The quick brown fox jumps over the lazy dog";
@@ -44,7 +44,7 @@ static int test_crc_32(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_crc_ccitt(struct harness_t *harness_p)
+static int test_crc_ccitt(void)
 {
     uint16_t crc;
 
@@ -58,7 +58,7 @@ static int test_crc_ccitt(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_crc_xmodem(struct harness_t *harness_p)
+static int test_crc_xmodem(void)
 {
     uint16_t crc;
 
@@ -72,7 +72,7 @@ static int test_crc_xmodem(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_crc_7(struct harness_t *harness_p)
+static int test_crc_7(void)
 {
     BTASSERT(crc_7("", 0) == 0x01);
     BTASSERT(crc_7("1", 1) == 0x45);
@@ -81,7 +81,7 @@ static int test_crc_7(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_crc_8(struct harness_t *harness_p)
+static int test_crc_8(void)
 {
     BTASSERT(crc_8(0,
                    CRC_8_POLYNOMIAL_8_5_4_0,
@@ -101,8 +101,7 @@ static int test_crc_8(struct harness_t *harness_p)
 
 int main()
 {
-    struct harness_t harness;
-    struct harness_testcase_t harness_testcases[] = {
+    struct harness_testcase_t testcases[] = {
         { test_crc_32, "test_crc_32" },
         { test_crc_ccitt, "test_crc_ccitt" },
         { test_crc_xmodem, "test_crc_xmodem" },
@@ -113,8 +112,7 @@ int main()
 
     sys_start();
 
-    harness_init(&harness);
-    harness_run(&harness, harness_testcases);
+    harness_run(testcases);
 
     return (0);
 }

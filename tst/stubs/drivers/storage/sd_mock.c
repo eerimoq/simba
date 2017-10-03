@@ -52,7 +52,7 @@ int __attribute__ ((weak)) STUB(sd_init)(struct sd_driver_t *self_p,
 
     harness_mock_read("sd_init(): return (spi_p)",
                       spi_p,
-                      -1);
+                      sizeof(*spi_p));
 
     harness_mock_read("sd_init(): return (res)",
                       &res,
@@ -122,7 +122,7 @@ ssize_t __attribute__ ((weak)) STUB(sd_read_cid)(struct sd_driver_t *self_p,
 
     harness_mock_read("sd_read_cid(): return (cid_p)",
                       cid_p,
-                      -1);
+                      sizeof(*cid_p));
 
     harness_mock_read("sd_read_cid(): return (res)",
                       &res,
@@ -152,7 +152,7 @@ ssize_t __attribute__ ((weak)) STUB(sd_read_csd)(struct sd_driver_t *self_p,
 
     harness_mock_read("sd_read_csd(): return (csd_p)",
                       csd_p,
-                      -1);
+                      sizeof(*csd_p));
 
     harness_mock_read("sd_read_csd(): return (res)",
                       &res,
@@ -187,10 +187,12 @@ int __attribute__ ((weak)) STUB(sd_erase_blocks)(struct sd_driver_t *self_p,
     int res;
 
     harness_mock_assert("sd_erase_blocks(start_block)",
-                        &start_block);
+                        &start_block,
+                        sizeof(start_block));
 
     harness_mock_assert("sd_erase_blocks(end_block)",
-                        &end_block);
+                        &end_block,
+                        sizeof(end_block));
 
     harness_mock_read("sd_erase_blocks(): return (res)",
                       &res,
@@ -226,10 +228,11 @@ ssize_t __attribute__ ((weak)) STUB(sd_read_block)(struct sd_driver_t *self_p,
 
     harness_mock_read("sd_read_block(): return (dst_p)",
                       dst_p,
-                      -1);
+                      sizeof(*dst_p));
 
     harness_mock_assert("sd_read_block(src_block)",
-                        &src_block);
+                        &src_block,
+                        sizeof(src_block));
 
     harness_mock_read("sd_read_block(): return (res)",
                       &res,
@@ -264,10 +267,12 @@ ssize_t __attribute__ ((weak)) STUB(sd_write_block)(struct sd_driver_t *self_p,
     ssize_t res;
 
     harness_mock_assert("sd_write_block(dst_block)",
-                        &dst_block);
+                        &dst_block,
+                        sizeof(dst_block));
 
     harness_mock_assert("sd_write_block(src_p)",
-                        src_p);
+                        src_p,
+                        sizeof(*src_p));
 
     harness_mock_read("sd_write_block(): return (res)",
                       &res,

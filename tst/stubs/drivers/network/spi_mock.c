@@ -33,6 +33,10 @@
 
 int mock_write_spi_module_init(int res)
 {
+    harness_mock_write("spi_module_init()",
+                       NULL,
+                       0);
+
     harness_mock_write("spi_module_init(): return (res)",
                        &res,
                        sizeof(res));
@@ -43,6 +47,10 @@ int mock_write_spi_module_init(int res)
 int __attribute__ ((weak)) STUB(spi_module_init)()
 {
     int res;
+
+    harness_mock_assert("spi_module_init()",
+                        NULL,
+                        0);
 
     harness_mock_read("spi_module_init(): return (res)",
                       &res,
@@ -101,22 +109,28 @@ int __attribute__ ((weak)) STUB(spi_init)(struct spi_driver_t *self_p,
     int res;
 
     harness_mock_assert("spi_init(dev_p)",
-                        &dev_p);
+                        &dev_p,
+                        sizeof(dev_p));
 
     harness_mock_assert("spi_init(ss_pin_p)",
-                        ss_pin_p);
+                        ss_pin_p,
+                        sizeof(*ss_pin_p));
 
     harness_mock_assert("spi_init(mode)",
-                        &mode);
+                        &mode,
+                        sizeof(mode));
 
     harness_mock_assert("spi_init(speed)",
-                        &speed);
+                        &speed,
+                        sizeof(speed));
 
     harness_mock_assert("spi_init(polarity)",
-                        &polarity);
+                        &polarity,
+                        sizeof(polarity));
 
     harness_mock_assert("spi_init(phase)",
-                        &phase);
+                        &phase,
+                        sizeof(phase));
 
     harness_mock_read("spi_init(): return (res)",
                       &res,
@@ -278,13 +292,15 @@ ssize_t __attribute__ ((weak)) STUB(spi_transfer)(struct spi_driver_t *self_p,
 
     harness_mock_read("spi_transfer(): return (rxbuf_p)",
                       rxbuf_p,
-                      -1);
+                      size);
 
     harness_mock_assert("spi_transfer(txbuf_p)",
-                        txbuf_p);
+                        txbuf_p,
+                        size);
 
     harness_mock_assert("spi_transfer(size)",
-                        &size);
+                        &size,
+                        sizeof(size));
 
     harness_mock_read("spi_transfer(): return (res)",
                       &res,
@@ -320,10 +336,11 @@ ssize_t __attribute__ ((weak)) STUB(spi_read)(struct spi_driver_t *self_p,
 
     harness_mock_read("spi_read(): return (buf_p)",
                       buf_p,
-                      -1);
+                      size);
 
     harness_mock_assert("spi_read(size)",
-                        &size);
+                        &size,
+                        sizeof(size));
 
     harness_mock_read("spi_read(): return (res)",
                       &res,
@@ -358,10 +375,12 @@ ssize_t __attribute__ ((weak)) STUB(spi_write)(struct spi_driver_t *self_p,
     ssize_t res;
 
     harness_mock_assert("spi_write(buf_p)",
-                        buf_p);
+                        buf_p,
+                        size);
 
     harness_mock_assert("spi_write(size)",
-                        &size);
+                        &size,
+                        sizeof(size));
 
     harness_mock_read("spi_write(): return (res)",
                       &res,
@@ -391,7 +410,7 @@ ssize_t __attribute__ ((weak)) STUB(spi_get)(struct spi_driver_t *self_p,
 
     harness_mock_read("spi_get(): return (data_p)",
                       data_p,
-                      -1);
+                      sizeof(*data_p));
 
     harness_mock_read("spi_get(): return (res)",
                       &res,
@@ -420,7 +439,8 @@ ssize_t __attribute__ ((weak)) STUB(spi_put)(struct spi_driver_t *self_p,
     ssize_t res;
 
     harness_mock_assert("spi_put(data)",
-                        &data);
+                        &data,
+                        sizeof(data));
 
     harness_mock_read("spi_put(): return (res)",
                       &res,

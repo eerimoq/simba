@@ -155,7 +155,7 @@ static ssize_t write_cb(void *arg_p,
     self_p = arg_p;
     dev_p = self_p->dev_p;
 
-    sem_take(&self_p->sem, NULL);
+    mutex_lock(&self_p->mutex);
 
     self_p->txframe_p = (frame_p + 1);
     self_p->txsize = (size - sizeof(*frame_p));
@@ -169,7 +169,7 @@ static ssize_t write_cb(void *arg_p,
     thrd_suspend_isr(NULL);
     sys_unlock();
 
-    sem_give(&self_p->sem, 1);
+    mutex_unlock(&self_p->mutex);
 
     return (size);
 }

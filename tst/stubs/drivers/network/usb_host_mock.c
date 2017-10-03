@@ -33,6 +33,10 @@
 
 int mock_write_usb_host_module_init(int res)
 {
+    harness_mock_write("usb_host_module_init()",
+                       NULL,
+                       0);
+
     harness_mock_write("usb_host_module_init(): return (res)",
                        &res,
                        sizeof(res));
@@ -43,6 +47,10 @@ int mock_write_usb_host_module_init(int res)
 int __attribute__ ((weak)) STUB(usb_host_module_init)()
 {
     int res;
+
+    harness_mock_assert("usb_host_module_init()",
+                        NULL,
+                        0);
 
     harness_mock_read("usb_host_module_init(): return (res)",
                       &res,
@@ -83,13 +91,16 @@ int __attribute__ ((weak)) STUB(usb_host_init)(struct usb_host_driver_t *self_p,
     int res;
 
     harness_mock_assert("usb_host_init(dev_p)",
-                        &dev_p);
+                        &dev_p,
+                        sizeof(dev_p));
 
     harness_mock_assert("usb_host_init(devices_p)",
-                        devices_p);
+                        devices_p,
+                        sizeof(*devices_p));
 
     harness_mock_assert("usb_host_init(length)",
-                        &length);
+                        &length,
+                        sizeof(length));
 
     harness_mock_read("usb_host_init(): return (res)",
                       &res,
@@ -164,11 +175,12 @@ int __attribute__ ((weak)) STUB(usb_host_driver_add)(struct usb_host_driver_t *s
     int res;
 
     harness_mock_assert("usb_host_driver_add(driver_p)",
-                        driver_p);
+                        driver_p,
+                        sizeof(*driver_p));
 
     harness_mock_read("usb_host_driver_add(): return (arg_p)",
                       arg_p,
-                      -1);
+                      sizeof(*arg_p));
 
     harness_mock_read("usb_host_driver_add(): return (res)",
                       &res,
@@ -197,7 +209,8 @@ int __attribute__ ((weak)) STUB(usb_host_driver_remove)(struct usb_host_driver_t
     int res;
 
     harness_mock_assert("usb_host_driver_remove(driver_p)",
-                        driver_p);
+                        driver_p,
+                        sizeof(*driver_p));
 
     harness_mock_read("usb_host_driver_remove(): return (res)",
                       &res,
@@ -229,7 +242,8 @@ __attribute__ ((weak)) STUB(usb_host_device_open)(struct usb_host_driver_t *self
 res;
 
     harness_mock_assert("usb_host_device_open(device)",
-                        &device);
+                        &device,
+                        sizeof(device));
 
     harness_mock_read("usb_host_device_open(): return (res)",
                       &res,
@@ -258,7 +272,8 @@ int __attribute__ ((weak)) STUB(usb_host_device_close)(struct usb_host_driver_t 
     int res;
 
     harness_mock_assert("usb_host_device_close(device)",
-                        &device);
+                        &device,
+                        sizeof(device));
 
     harness_mock_read("usb_host_device_close(): return (res)",
                       &res,
@@ -304,16 +319,20 @@ ssize_t __attribute__ ((weak)) STUB(usb_host_device_read)(struct usb_host_device
     ssize_t res;
 
     harness_mock_assert("usb_host_device_read(device_p)",
-                        device_p);
+                        device_p,
+                        sizeof(*device_p));
 
     harness_mock_assert("usb_host_device_read(endpoint)",
-                        &endpoint);
+                        &endpoint,
+                        sizeof(endpoint));
 
     harness_mock_assert("usb_host_device_read(buf_p)",
-                        buf_p);
+                        buf_p,
+                        size);
 
     harness_mock_assert("usb_host_device_read(size)",
-                        &size);
+                        &size,
+                        sizeof(size));
 
     harness_mock_read("usb_host_device_read(): return (res)",
                       &res,
@@ -359,16 +378,20 @@ ssize_t __attribute__ ((weak)) STUB(usb_host_device_write)(struct usb_host_devic
     ssize_t res;
 
     harness_mock_assert("usb_host_device_write(device_p)",
-                        device_p);
+                        device_p,
+                        sizeof(*device_p));
 
     harness_mock_assert("usb_host_device_write(endpoint)",
-                        &endpoint);
+                        &endpoint,
+                        sizeof(endpoint));
 
     harness_mock_assert("usb_host_device_write(buf_p)",
-                        buf_p);
+                        buf_p,
+                        size);
 
     harness_mock_assert("usb_host_device_write(size)",
-                        &size);
+                        &size,
+                        sizeof(size));
 
     harness_mock_read("usb_host_device_write(): return (res)",
                       &res,
@@ -414,16 +437,20 @@ ssize_t __attribute__ ((weak)) STUB(usb_host_device_control_transfer)(struct usb
     ssize_t res;
 
     harness_mock_assert("usb_host_device_control_transfer(device_p)",
-                        device_p);
+                        device_p,
+                        sizeof(*device_p));
 
     harness_mock_assert("usb_host_device_control_transfer(setup_p)",
-                        setup_p);
+                        setup_p,
+                        sizeof(*setup_p));
 
     harness_mock_assert("usb_host_device_control_transfer(buf_p)",
-                        buf_p);
+                        buf_p,
+                        size);
 
     harness_mock_assert("usb_host_device_control_transfer(size)",
-                        &size);
+                        &size,
+                        sizeof(size));
 
     harness_mock_read("usb_host_device_control_transfer(): return (res)",
                       &res,
@@ -457,10 +484,12 @@ int __attribute__ ((weak)) STUB(usb_host_device_set_configuration)(struct usb_ho
     int res;
 
     harness_mock_assert("usb_host_device_set_configuration(device_p)",
-                        device_p);
+                        device_p,
+                        sizeof(*device_p));
 
     harness_mock_assert("usb_host_device_set_configuration(configuration)",
-                        &configuration);
+                        &configuration,
+                        sizeof(configuration));
 
     harness_mock_read("usb_host_device_set_configuration(): return (res)",
                       &res,

@@ -215,7 +215,7 @@ static int request_404_not_found(struct http_server_connection_t *connection_p,
     return (0);
 }
 
-static int test_start(struct harness_t *harness_p)
+static int test_start(void)
 {
     static struct http_server_listener_t listener = {
         .address_p = "127.0.0.1",
@@ -263,7 +263,7 @@ static int test_start(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_request_index(struct harness_t *harness_p)
+static int test_request_index(void)
 {
     char *str_p;
     char buf[256];
@@ -297,7 +297,7 @@ static int test_request_index(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_request_index_with_query_string(struct harness_t *harness_p)
+static int test_request_index_with_query_string(void)
 {
     char *str_p;
     char buf[256];
@@ -331,7 +331,7 @@ static int test_request_index_with_query_string(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_request_auth(struct harness_t *harness_p)
+static int test_request_auth(void)
 {
     char *str_p;
     char buf[256];
@@ -366,7 +366,7 @@ static int test_request_auth(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_request_form(struct harness_t *harness_p)
+static int test_request_form(void)
 {
     char *str_p;
     char buf[256];
@@ -403,7 +403,7 @@ static int test_request_form(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_request_websocket(struct harness_t *harness_p)
+static int test_request_websocket(void)
 {
     int i;
     char *str_p;
@@ -461,7 +461,7 @@ static int test_request_websocket(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_request_no_route(struct harness_t *harness_p)
+static int test_request_no_route(void)
 {
     char *str_p;
     char buf[256];
@@ -495,7 +495,7 @@ static int test_request_no_route(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_request_url_too_long(struct harness_t *harness_p)
+static int test_request_url_too_long(void)
 {
     char *str_p;
     char buf[256];
@@ -531,7 +531,7 @@ static int test_request_url_too_long(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_request_header_field_too_long(struct harness_t *harness_p)
+static int test_request_header_field_too_long(void)
 {
     char *str_p;
     char buf[256];
@@ -568,14 +568,14 @@ static int test_request_header_field_too_long(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_stop(struct harness_t *harness_p)
+static int test_stop(void)
 {
     BTASSERT(http_server_stop(&foo) == 0);
 
     return (0);
 }
 
-static int test_https_start(struct harness_t *harness_p)
+static int test_https_start(void)
 {
 #if CONFIG_HTTP_SERVER_SSL == 1
     struct ssl_context_t context;
@@ -629,7 +629,7 @@ static int test_https_start(struct harness_t *harness_p)
 #endif
 }
 
-static int test_https_stop(struct harness_t *harness_p)
+static int test_https_stop(void)
 {
 #if CONFIG_HTTP_SERVER_SSL == 1
     BTASSERT(http_server_stop(&foo) == 0);
@@ -648,8 +648,7 @@ static int test_https_stop(struct harness_t *harness_p)
 
 int main()
 {
-    struct harness_t harness;
-    struct harness_testcase_t harness_testcases[] = {
+    struct harness_testcase_t testcases[] = {
         { test_start, "test_start" },
         { test_request_index, "test_request_index" },
         { test_request_index_with_query_string, "test_request_index_with_query_string" },
@@ -677,8 +676,7 @@ int main()
 
     socket_stub_init();
 
-    harness_init(&harness);
-    harness_run(&harness, harness_testcases);
+    harness_run(testcases);
 
     return (0);
 }

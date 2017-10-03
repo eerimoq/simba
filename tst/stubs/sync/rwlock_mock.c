@@ -33,6 +33,10 @@
 
 int mock_write_rwlock_module_init(int res)
 {
+    harness_mock_write("rwlock_module_init()",
+                       NULL,
+                       0);
+
     harness_mock_write("rwlock_module_init(): return (res)",
                        &res,
                        sizeof(res));
@@ -43,6 +47,10 @@ int mock_write_rwlock_module_init(int res)
 int __attribute__ ((weak)) STUB(rwlock_module_init)()
 {
     int res;
+
+    harness_mock_assert("rwlock_module_init()",
+                        NULL,
+                        0);
 
     harness_mock_read("rwlock_module_init(): return (res)",
                       &res,

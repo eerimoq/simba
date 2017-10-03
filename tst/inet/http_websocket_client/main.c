@@ -42,7 +42,7 @@ static uint8_t buf[131072];
 static uint8_t buf[256];
 #endif
 
-static int test_connect(struct harness_t *harness_p)
+static int test_connect(void)
 {
     char *str_p;
 
@@ -76,7 +76,7 @@ static int test_connect(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_read(struct harness_t *harness_p)
+static int test_read(void)
 {
     /* Prepare socket input with 1 length byte. */
     buf[0] = 0x81; /* FIN & TEXT. */
@@ -142,7 +142,7 @@ static int test_read(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_write(struct harness_t *harness_p)
+static int test_write(void)
 {
     buf[0] = 'f';
     buf[1] = 'o';
@@ -224,7 +224,7 @@ static int test_write(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_disconnect(struct harness_t *harness_p)
+static int test_disconnect(void)
 {
     BTASSERT(http_websocket_client_disconnect(&foo) == 0);
 
@@ -233,8 +233,7 @@ static int test_disconnect(struct harness_t *harness_p)
 
 int main()
 {
-    struct harness_t harness;
-    struct harness_testcase_t harness_testcases[] = {
+    struct harness_testcase_t testcases[] = {
         { test_connect, "test_connect" },
         { test_read, "test_read" },
         { test_write, "test_write" },
@@ -244,8 +243,7 @@ int main()
 
     sys_start();
 
-    harness_init(&harness);
-    harness_run(&harness, harness_testcases);
+    harness_run(testcases);
 
     return (0);
 }

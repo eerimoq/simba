@@ -33,6 +33,10 @@
 
 int mock_write_socket_module_init(int res)
 {
+    harness_mock_write("socket_module_init()",
+                       NULL,
+                       0);
+
     harness_mock_write("socket_module_init(): return (res)",
                        &res,
                        sizeof(res));
@@ -43,6 +47,10 @@ int mock_write_socket_module_init(int res)
 int __attribute__ ((weak)) STUB(socket_module_init)()
 {
     int res;
+
+    harness_mock_assert("socket_module_init()",
+                        NULL,
+                        0);
 
     harness_mock_read("socket_module_init(): return (res)",
                       &res,
@@ -143,13 +151,16 @@ int __attribute__ ((weak)) STUB(socket_open)(struct socket_t *self_p,
     int res;
 
     harness_mock_assert("socket_open(domain)",
-                        &domain);
+                        &domain,
+                        sizeof(domain));
 
     harness_mock_assert("socket_open(type)",
-                        &type);
+                        &type,
+                        sizeof(type));
 
     harness_mock_assert("socket_open(protocol)",
-                        &protocol);
+                        &protocol,
+                        sizeof(protocol));
 
     harness_mock_read("socket_open(): return (res)",
                       &res,
@@ -198,7 +209,8 @@ int __attribute__ ((weak)) STUB(socket_bind)(struct socket_t *self_p,
     int res;
 
     harness_mock_assert("socket_bind(local_addr_p)",
-                        local_addr_p);
+                        local_addr_p,
+                        sizeof(*local_addr_p));
 
     harness_mock_read("socket_bind(): return (res)",
                       &res,
@@ -227,7 +239,8 @@ int __attribute__ ((weak)) STUB(socket_listen)(struct socket_t *self_p,
     int res;
 
     harness_mock_assert("socket_listen(backlog)",
-                        &backlog);
+                        &backlog,
+                        sizeof(backlog));
 
     harness_mock_read("socket_listen(): return (res)",
                       &res,
@@ -256,7 +269,8 @@ int __attribute__ ((weak)) STUB(socket_connect)(struct socket_t *self_p,
     int res;
 
     harness_mock_assert("socket_connect(remote_addr_p)",
-                        remote_addr_p);
+                        remote_addr_p,
+                        sizeof(*remote_addr_p));
 
     harness_mock_read("socket_connect(): return (res)",
                       &res,
@@ -291,10 +305,12 @@ int __attribute__ ((weak)) STUB(socket_connect_by_hostname)(struct socket_t *sel
     int res;
 
     harness_mock_assert("socket_connect_by_hostname(hostname_p)",
-                        hostname_p);
+                        hostname_p,
+                        sizeof(*hostname_p));
 
     harness_mock_assert("socket_connect_by_hostname(port)",
-                        &port);
+                        &port,
+                        sizeof(port));
 
     harness_mock_read("socket_connect_by_hostname(): return (res)",
                       &res,
@@ -330,11 +346,11 @@ int __attribute__ ((weak)) STUB(socket_accept)(struct socket_t *self_p,
 
     harness_mock_read("socket_accept(): return (accepted_p)",
                       accepted_p,
-                      -1);
+                      sizeof(*accepted_p));
 
     harness_mock_read("socket_accept(): return (remote_addr_p)",
                       remote_addr_p,
-                      -1);
+                      sizeof(*remote_addr_p));
 
     harness_mock_read("socket_accept(): return (res)",
                       &res,
@@ -381,16 +397,20 @@ ssize_t __attribute__ ((weak)) STUB(socket_sendto)(struct socket_t *self_p,
     ssize_t res;
 
     harness_mock_assert("socket_sendto(buf_p)",
-                        buf_p);
+                        buf_p,
+                        size);
 
     harness_mock_assert("socket_sendto(size)",
-                        &size);
+                        &size,
+                        sizeof(size));
 
     harness_mock_assert("socket_sendto(flags)",
-                        &flags);
+                        &flags,
+                        sizeof(flags));
 
     harness_mock_assert("socket_sendto(remote_addr_p)",
-                        remote_addr_p);
+                        remote_addr_p,
+                        sizeof(*remote_addr_p));
 
     harness_mock_read("socket_sendto(): return (res)",
                       &res,
@@ -437,16 +457,20 @@ ssize_t __attribute__ ((weak)) STUB(socket_recvfrom)(struct socket_t *self_p,
     ssize_t res;
 
     harness_mock_assert("socket_recvfrom(buf_p)",
-                        buf_p);
+                        buf_p,
+                        size);
 
     harness_mock_assert("socket_recvfrom(size)",
-                        &size);
+                        &size,
+                        sizeof(size));
 
     harness_mock_assert("socket_recvfrom(flags)",
-                        &flags);
+                        &flags,
+                        sizeof(flags));
 
     harness_mock_assert("socket_recvfrom(remote_addr_p)",
-                        remote_addr_p);
+                        remote_addr_p,
+                        sizeof(*remote_addr_p));
 
     harness_mock_read("socket_recvfrom(): return (res)",
                       &res,
@@ -481,10 +505,12 @@ ssize_t __attribute__ ((weak)) STUB(socket_write)(struct socket_t *self_p,
     ssize_t res;
 
     harness_mock_assert("socket_write(buf_p)",
-                        buf_p);
+                        buf_p,
+                        size);
 
     harness_mock_assert("socket_write(size)",
-                        &size);
+                        &size,
+                        sizeof(size));
 
     harness_mock_read("socket_write(): return (res)",
                       &res,
@@ -519,10 +545,12 @@ ssize_t __attribute__ ((weak)) STUB(socket_read)(struct socket_t *self_p,
     ssize_t res;
 
     harness_mock_assert("socket_read(buf_p)",
-                        buf_p);
+                        buf_p,
+                        size);
 
     harness_mock_assert("socket_read(size)",
-                        &size);
+                        &size,
+                        sizeof(size));
 
     harness_mock_read("socket_read(): return (res)",
                       &res,

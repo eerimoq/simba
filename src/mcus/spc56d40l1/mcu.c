@@ -116,9 +116,8 @@ struct flash_device_t flash_device[FLASH_DEVICE_MAX] = {
         .size = SPC5_CFLASH_SIZE,
         .sector_sizes_p = cflash_sector_sizes,
         .program_size = 2,
-        .sem = {
-            .count = 0,
-            .count_max = 1,
+        .mutex = {
+            .is_locked = 0,
             .waiters = {
                 .head_p = NULL
             }
@@ -130,9 +129,8 @@ struct flash_device_t flash_device[FLASH_DEVICE_MAX] = {
         .size = SPC5_DFLASH_SIZE,
         .sector_sizes_p = dflash_sector_sizes,
         .program_size = 1,
-        .sem = {
-            .count = 0,
-            .count_max = 1,
+        .mutex = {
+            .is_locked = 0,
             .waiters = {
                 .head_p = NULL
             }

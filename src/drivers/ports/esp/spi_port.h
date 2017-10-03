@@ -45,7 +45,7 @@ struct spi_driver_t;
 struct spi_device_t {
     struct spi_driver_t *drv_p;
     volatile struct esp8266_spi_t *regs_p;
-    struct sem_t sem;
+    struct mutex_t mutex;
 };
 
 struct spi_driver_t {

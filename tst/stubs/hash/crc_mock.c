@@ -62,13 +62,16 @@ uint32_t __attribute__ ((weak)) STUB(crc_32)(uint32_t crc,
     uint32_t res;
 
     harness_mock_assert("crc_32(crc)",
-                        &crc);
+                        &crc,
+                        sizeof(crc));
 
     harness_mock_assert("crc_32(buf_p)",
-                        buf_p);
+                        buf_p,
+                        size);
 
     harness_mock_assert("crc_32(size)",
-                        &size);
+                        &size,
+                        sizeof(size));
 
     harness_mock_read("crc_32(): return (res)",
                       &res,
@@ -108,13 +111,16 @@ uint16_t __attribute__ ((weak)) STUB(crc_ccitt)(uint16_t crc,
     uint16_t res;
 
     harness_mock_assert("crc_ccitt(crc)",
-                        &crc);
+                        &crc,
+                        sizeof(crc));
 
     harness_mock_assert("crc_ccitt(buf_p)",
-                        buf_p);
+                        buf_p,
+                        size);
 
     harness_mock_assert("crc_ccitt(size)",
-                        &size);
+                        &size,
+                        sizeof(size));
 
     harness_mock_read("crc_ccitt(): return (res)",
                       &res,
@@ -154,13 +160,16 @@ uint16_t __attribute__ ((weak)) STUB(crc_xmodem)(uint16_t crc,
     uint16_t res;
 
     harness_mock_assert("crc_xmodem(crc)",
-                        &crc);
+                        &crc,
+                        sizeof(crc));
 
     harness_mock_assert("crc_xmodem(buf_p)",
-                        buf_p);
+                        buf_p,
+                        size);
 
     harness_mock_assert("crc_xmodem(size)",
-                        &size);
+                        &size,
+                        sizeof(size));
 
     harness_mock_read("crc_xmodem(): return (res)",
                       &res,
@@ -194,10 +203,12 @@ uint8_t __attribute__ ((weak)) STUB(crc_7)(const void* buf_p,
     uint8_t res;
 
     harness_mock_assert("crc_7(buf_p)",
-                        buf_p);
+                        buf_p,
+                        size);
 
     harness_mock_assert("crc_7(size)",
-                        &size);
+                        &size,
+                        sizeof(size));
 
     harness_mock_read("crc_7(): return (res)",
                       &res,
@@ -243,16 +254,20 @@ uint8_t __attribute__ ((weak)) STUB(crc_8)(uint8_t crc,
     uint8_t res;
 
     harness_mock_assert("crc_8(crc)",
-                        &crc);
+                        &crc,
+                        sizeof(crc));
 
     harness_mock_assert("crc_8(polynomial)",
-                        &polynomial);
+                        &polynomial,
+                        sizeof(polynomial));
 
     harness_mock_assert("crc_8(buf_p)",
-                        buf_p);
+                        buf_p,
+                        size);
 
     harness_mock_assert("crc_8(size)",
-                        &size);
+                        &size,
+                        sizeof(size));
 
     harness_mock_read("crc_8(): return (res)",
                       &res,

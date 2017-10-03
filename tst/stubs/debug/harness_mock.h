@@ -33,8 +33,6 @@
 
 #include "simba.h"
 
-int mock_write_harness_init(int res);
-
 int mock_write_harness_run(struct harness_testcase_t *testcases_p,
                            int res);
 
@@ -50,17 +48,18 @@ int mock_write_harness_mock_write(const char *id_p,
 
 int mock_write_harness_mock_read(const char *id_p,
                                  void *buf_p,
-                                 ssize_t size,
+                                 size_t size,
                                  ssize_t res);
-
-int mock_write_harness_mock_assert(const char *id_p,
-                                   const void *buf_p,
-                                   int res);
 
 int mock_write_harness_mock_try_read(const char *id_p,
                                      void *buf_p,
-                                     ssize_t size,
+                                     size_t size,
                                      ssize_t res);
+
+int mock_write_harness_mock_assert(const char *id_p,
+                                   const void *buf_p,
+                                   size_t size,
+                                   int res);
 
 int mock_write_harness_mock_write_notify(const char *id_p,
                                          const void *buf_p,
@@ -69,7 +68,7 @@ int mock_write_harness_mock_write_notify(const char *id_p,
 
 int mock_write_harness_mock_read_wait(const char *id_p,
                                       void *buf_p,
-                                      ssize_t size,
+                                      size_t size,
                                       struct time_t *timeout_p,
                                       ssize_t res);
 

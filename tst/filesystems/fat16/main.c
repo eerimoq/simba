@@ -79,7 +79,7 @@ static ssize_t linux_write_block(void *arg_p,
 }
 #endif
 
-int test_init(struct harness_t *harness_p)
+int test_init(void)
 {
 #if defined(ARCH_LINUX)
     /* Create an empty sd card file. */
@@ -110,21 +110,21 @@ int test_init(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_format(struct harness_t *harness_p)
+static int test_format(void)
 {
     BTASSERT(fat16_format(&fs) == 0);
 
     return (0);
 }
 
-static int test_mount(struct harness_t *harness_p)
+static int test_mount(void)
 {
     BTASSERT(fat16_mount(&fs) == 0);
 
     return (0);
 }
 
-static int test_print(struct harness_t *harness_p)
+static int test_print(void)
 {
     /* Print various information about the file system. */
     BTASSERT(fat16_print(&fs, sys_get_stdout()) == 0);
@@ -132,7 +132,7 @@ static int test_print(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_file_operations(struct harness_t *harness_p)
+static int test_file_operations(void)
 {
     struct fat16_file_t foo;
     char buf[16];
@@ -154,7 +154,7 @@ static int test_file_operations(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_create_multiple_files(struct harness_t *harness_p)
+static int test_create_multiple_files(void)
 {
     struct fat16_file_t file;
     char filename[32];
@@ -170,7 +170,7 @@ static int test_create_multiple_files(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_reopen(struct harness_t *harness_p)
+static int test_reopen(void)
 {
     struct fat16_file_t bar;
     char buf[16];
@@ -189,7 +189,7 @@ static int test_reopen(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_directory(struct harness_t *harness_p)
+static int test_directory(void)
 {
     struct fat16_dir_t dir;
     struct fat16_file_t foo;
@@ -278,7 +278,7 @@ static int test_directory(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_bad_file(struct harness_t *harness_p)
+static int test_bad_file(void)
 {
     struct fat16_file_t foo;
 
@@ -309,7 +309,7 @@ static int test_bad_file(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_truncate(struct harness_t *harness_p)
+static int test_truncate(void)
 {
     struct fat16_file_t bar;
     char buf[32];
@@ -352,7 +352,7 @@ static int test_truncate(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_append(struct harness_t *harness_p)
+static int test_append(void)
 {
     struct fat16_file_t bar;
     char buf[32];
@@ -384,7 +384,7 @@ static int test_append(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_seek(struct harness_t *harness_p)
+static int test_seek(void)
 {
     struct fat16_file_t bar;
     char buf[128];
@@ -439,7 +439,7 @@ static int test_seek(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_unmount(struct harness_t *harness_p)
+static int test_unmount(void)
 {
     BTASSERT(fat16_unmount(&fs) == 0);
 
@@ -452,8 +452,7 @@ static int test_unmount(struct harness_t *harness_p)
 
 int main()
 {
-    struct harness_t harness;
-    struct harness_testcase_t harness_testcases[] = {
+    struct harness_testcase_t testcases[] = {
         { test_init, "test_init" },
         { test_format, "test_format" },
         { test_mount, "test_mount" },
@@ -472,8 +471,7 @@ int main()
 
     sys_start();
 
-    harness_init(&harness);
-    harness_run(&harness, harness_testcases);
+    harness_run(testcases);
 
     return (0);
 }

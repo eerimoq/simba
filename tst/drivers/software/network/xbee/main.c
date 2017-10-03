@@ -37,7 +37,7 @@ struct chan_t transport;
 static struct queue_t queue;
 static uint8_t queue_buf[256];
 
-static int test_init(struct harness_t *harness_p)
+static int test_init(void)
 {
     BTASSERT(xbee_module_init() == 0);
     BTASSERT(xbee_module_init() == 0);
@@ -52,7 +52,7 @@ static int test_init(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_write_escape(struct harness_t *harness_p)
+static int test_write_escape(void)
 {
     struct xbee_frame_t frame;
 
@@ -73,7 +73,7 @@ static int test_write_escape(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_write_at(struct harness_t *harness_p)
+static int test_write_at(void)
 {
     struct xbee_frame_t frame;
 
@@ -98,7 +98,7 @@ static int test_write_at(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_write_tx_request(struct harness_t *harness_p)
+static int test_write_tx_request(void)
 {
     struct xbee_frame_t frame;
 
@@ -135,7 +135,7 @@ static int test_write_tx_request(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_read_unescape(struct harness_t *harness_p)
+static int test_read_unescape(void)
 {
     struct xbee_frame_t frame;
     uint8_t buf[] = {
@@ -162,7 +162,7 @@ static int test_read_unescape(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_frame_type_as_string(struct harness_t *harness_p)
+static int test_frame_type_as_string(void)
 {
     const char *actual_p;
     const char *expected_p;
@@ -277,7 +277,7 @@ static int test_frame_type_as_string(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_tx_status_as_string(struct harness_t *harness_p)
+static int test_tx_status_as_string(void)
 {
     const char *actual_p;
     const char *expected_p;
@@ -329,7 +329,7 @@ static int test_tx_status_as_string(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_modem_status_as_string(struct harness_t *harness_p)
+static int test_modem_status_as_string(void)
 {
     const char *actual_p;
     const char *expected_p;
@@ -366,7 +366,7 @@ static int test_modem_status_as_string(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_at_command_response_status_as_string(struct harness_t *harness_p)
+static int test_at_command_response_status_as_string(void)
 {
     const char *actual_p;
     const char *expected_p;
@@ -393,7 +393,7 @@ static int test_at_command_response_status_as_string(struct harness_t *harness_p
     return (0);
 }
 
-static int test_frame_as_string(struct harness_t *harness_p)
+static int test_frame_as_string(void)
 {
     struct xbee_frame_t frame;
 
@@ -546,8 +546,7 @@ static int test_frame_as_string(struct harness_t *harness_p)
 
 int main()
 {
-    struct harness_t harness;
-    struct harness_testcase_t harness_testcases[] = {
+    struct harness_testcase_t testcases[] = {
         { test_init, "test_init" },
         { test_write_escape, "test_write_escape" },
         { test_write_at, "test_write_at" },
@@ -566,8 +565,7 @@ int main()
 
     sys_start();
 
-    harness_init(&harness);
-    harness_run(&harness, harness_testcases);
+    harness_run(testcases);
 
     return (0);
 }

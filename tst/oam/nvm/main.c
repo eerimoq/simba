@@ -33,7 +33,7 @@
 static struct queue_t queue;
 static char queue_buf[256];
 
-static int test_init(struct harness_t *harness_p)
+static int test_init(void)
 {
     BTASSERT(queue_init(&queue, queue_buf, sizeof(queue_buf)) == 0);
 
@@ -43,7 +43,7 @@ static int test_init(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_format_mount(struct harness_t *harness_p)
+static int test_format_mount(void)
 {
     BTASSERT(nvm_format() == 0);
     BTASSERT(nvm_mount() == 0);
@@ -51,7 +51,7 @@ static int test_format_mount(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_read_write(struct harness_t *harness_p)
+static int test_read_write(void)
 {
     uint8_t byte;
 
@@ -63,7 +63,7 @@ static int test_read_write(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_read_write_bad_address(struct harness_t *harness_p)
+static int test_read_write_bad_address(void)
 {
     uint8_t byte;
 
@@ -74,7 +74,7 @@ static int test_read_write_bad_address(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_fs_commands(struct harness_t *harness_p)
+static int test_fs_commands(void)
 {
     char buf[64];
 
@@ -122,8 +122,7 @@ static int test_fs_commands(struct harness_t *harness_p)
 
 int main()
 {
-    struct harness_t harness;
-    struct harness_testcase_t harness_testcases[] = {
+    struct harness_testcase_t testcases[] = {
         { test_init, "test_init" },
         { test_format_mount, "test_format_mount" },
         { test_read_write, "test_read_write" },
@@ -134,8 +133,7 @@ int main()
 
     sys_start();
 
-    harness_init(&harness);
-    harness_run(&harness, harness_testcases);
+    harness_run(testcases);
 
     return (0);
 }

@@ -56,7 +56,7 @@ static uint16_t samples[4096];
 
 #endif
 
-static int test_ramp(struct harness_t *harness_p)
+static int test_ramp(void)
 {
     int i;
     struct dac_driver_t dac;
@@ -80,7 +80,7 @@ static int test_ramp(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_sine_440_hz(struct harness_t *harness_p)
+static int test_sine_440_hz(void)
 {
 #if !defined(SKIP_TEST_SINE_440_HZ)
     
@@ -133,7 +133,7 @@ static int test_sine_440_hz(struct harness_t *harness_p)
 #endif
 }
 
-static int test_pcm1611s(struct harness_t *harness_p)
+static int test_pcm1611s(void)
 {
 #if !defined(SKIP_TEST_PCM1611S)
 
@@ -167,7 +167,6 @@ static int test_pcm1611s(struct harness_t *harness_p)
 
 int main()
 {
-    struct harness_t harness;
     struct harness_testcase_t testcases[] = {
         { test_ramp, "test_ramp" },
         { test_sine_440_hz, "test_sine_440_hz" },
@@ -178,8 +177,7 @@ int main()
     sys_start();
     dac_module_init();
 
-    harness_init(&harness);
-    harness_run(&harness, testcases);
+    harness_run(testcases);
 
     return (0);
 }

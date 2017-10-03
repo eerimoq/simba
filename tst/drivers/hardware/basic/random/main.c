@@ -30,7 +30,7 @@
 
 #include "simba.h"
 
-static int test_init(struct harness_t *harness_p)
+static int test_init(void)
 {
     BTASSERT(random_module_init() == 0);
     BTASSERT(random_module_init() == 0);
@@ -38,7 +38,7 @@ static int test_init(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_read(struct harness_t *harness_p)
+static int test_read(void)
 {
     uint32_t random[16];
     int i;
@@ -56,7 +56,6 @@ static int test_read(struct harness_t *harness_p)
 
 int main()
 {
-    struct harness_t harness;
     struct harness_testcase_t testcases[] = {
         { test_init, "test_init" },
         { test_read, "test_read" },
@@ -65,8 +64,7 @@ int main()
 
     sys_start();
 
-    harness_init(&harness);
-    harness_run(&harness, testcases);
+    harness_run(testcases);
 
     return (0);
 }

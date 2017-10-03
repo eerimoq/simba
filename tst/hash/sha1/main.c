@@ -30,7 +30,7 @@
 
 #include "simba.h"
 
-int test_sha1(struct harness_t *harness_p)
+int test_sha1(void)
 {
     struct sha1_t foo;
     uint8_t hash[20];
@@ -126,16 +126,14 @@ int test_sha1(struct harness_t *harness_p)
 
 int main()
 {
-    struct harness_t harness;
-    struct harness_testcase_t harness_testcases[] = {
+    struct harness_testcase_t testcases[] = {
         { test_sha1, "test_sha1" },
         { NULL, NULL }
     };
 
     sys_start();
 
-    harness_init(&harness);
-    harness_run(&harness, harness_testcases);
+    harness_run(testcases);
 
     return (0);
 }

@@ -57,10 +57,12 @@ int __attribute__ ((weak)) STUB(circular_buffer_init)(struct circular_buffer_t *
     int res;
 
     harness_mock_assert("circular_buffer_init(buf_p)",
-                        buf_p);
+                        buf_p,
+                        size);
 
     harness_mock_assert("circular_buffer_init(size)",
-                        &size);
+                        &size,
+                        sizeof(size));
 
     harness_mock_read("circular_buffer_init(): return (res)",
                       &res,
@@ -95,10 +97,12 @@ ssize_t __attribute__ ((weak)) STUB(circular_buffer_write)(struct circular_buffe
     ssize_t res;
 
     harness_mock_assert("circular_buffer_write(buf_p)",
-                        buf_p);
+                        buf_p,
+                        size);
 
     harness_mock_assert("circular_buffer_write(size)",
-                        &size);
+                        &size,
+                        sizeof(size));
 
     harness_mock_read("circular_buffer_write(): return (res)",
                       &res,
@@ -133,10 +137,12 @@ ssize_t __attribute__ ((weak)) STUB(circular_buffer_read)(struct circular_buffer
     ssize_t res;
 
     harness_mock_assert("circular_buffer_read(buf_p)",
-                        buf_p);
+                        buf_p,
+                        size);
 
     harness_mock_assert("circular_buffer_read(size)",
-                        &size);
+                        &size,
+                        sizeof(size));
 
     harness_mock_read("circular_buffer_read(): return (res)",
                       &res,
@@ -205,7 +211,8 @@ ssize_t __attribute__ ((weak)) STUB(circular_buffer_skip_front)(struct circular_
     ssize_t res;
 
     harness_mock_assert("circular_buffer_skip_front(size)",
-                        &size);
+                        &size,
+                        sizeof(size));
 
     harness_mock_read("circular_buffer_skip_front(): return (res)",
                       &res,
@@ -234,7 +241,8 @@ ssize_t __attribute__ ((weak)) STUB(circular_buffer_reverse_skip_back)(struct ci
     ssize_t res;
 
     harness_mock_assert("circular_buffer_reverse_skip_back(size)",
-                        &size);
+                        &size,
+                        sizeof(size));
 
     harness_mock_read("circular_buffer_reverse_skip_back(): return (res)",
                       &res,
@@ -270,10 +278,11 @@ ssize_t __attribute__ ((weak)) STUB(circular_buffer_array_one)(struct circular_b
 
     harness_mock_read("circular_buffer_array_one(): return (buf_pp)",
                       buf_pp,
-                      -1);
+                      size);
 
     harness_mock_assert("circular_buffer_array_one(size)",
-                        &size);
+                        &size,
+                        sizeof(size));
 
     harness_mock_read("circular_buffer_array_one(): return (res)",
                       &res,
@@ -309,10 +318,11 @@ ssize_t __attribute__ ((weak)) STUB(circular_buffer_array_two)(struct circular_b
 
     harness_mock_read("circular_buffer_array_two(): return (buf_pp)",
                       buf_pp,
-                      -1);
+                      size);
 
     harness_mock_assert("circular_buffer_array_two(size)",
-                        &size);
+                        &size,
+                        sizeof(size));
 
     harness_mock_read("circular_buffer_array_two(): return (res)",
                       &res,

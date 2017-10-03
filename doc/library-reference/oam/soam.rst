@@ -6,7 +6,7 @@
 
 Simba Operation And Maintenence (SOAM) is a framed debug protocol with
 enumerated format strings and file system commands. This both saves
-memory and makes the communication more reliable.
+memory and makes serial port communication more reliable.
 
 Two macros are defined; ``OSTR()`` and ``CSTR()``, both required by
 the SOAM build system. It is considered good practice to always use
@@ -43,7 +43,7 @@ these macros, even if SOAM is not used.
 Usage
 -----
 
-Enable SOAM by adding ``SOAM=yes`` to the application makefile.
+Enable SOAM by adding ``SOAM = yes`` to the application makefile.
 
 Connect to the board with ``soam.py`` instead of a serial terminal
 program. The only required argument is the string database file.

@@ -81,22 +81,28 @@ int __attribute__ ((weak)) STUB(mqtt_client_init)(struct mqtt_client_t *self_p,
     int res;
 
     harness_mock_assert("mqtt_client_init(name_p)",
-                        name_p);
+                        name_p,
+                        sizeof(*name_p));
 
     harness_mock_assert("mqtt_client_init(log_object_p)",
-                        log_object_p);
+                        log_object_p,
+                        sizeof(*log_object_p));
 
     harness_mock_assert("mqtt_client_init(chout_p)",
-                        chout_p);
+                        chout_p,
+                        sizeof(*chout_p));
 
     harness_mock_assert("mqtt_client_init(chin_p)",
-                        chin_p);
+                        chin_p,
+                        sizeof(*chin_p));
 
     harness_mock_assert("mqtt_client_init(on_publish)",
-                        &on_publish);
+                        &on_publish,
+                        sizeof(on_publish));
 
     harness_mock_assert("mqtt_client_init(on_error)",
-                        &on_error);
+                        &on_error,
+                        sizeof(on_error));
 
     harness_mock_read("mqtt_client_init(): return (res)",
                       &res,
@@ -124,7 +130,8 @@ void *__attribute__ ((weak)) STUB(mqtt_client_main)(void *arg_p)
     void *res;
 
     harness_mock_assert("mqtt_client_main(arg_p)",
-                        arg_p);
+                        arg_p,
+                        sizeof(*arg_p));
 
     harness_mock_read("mqtt_client_main(): return (res)",
                       &res,
@@ -214,7 +221,7 @@ int __attribute__ ((weak)) STUB(mqtt_client_publish)(struct mqtt_client_t *self_
 
     harness_mock_read("mqtt_client_publish(): return (message_p)",
                       message_p,
-                      -1);
+                      sizeof(*message_p));
 
     harness_mock_read("mqtt_client_publish(): return (res)",
                       &res,
@@ -243,7 +250,8 @@ int __attribute__ ((weak)) STUB(mqtt_client_subscribe)(struct mqtt_client_t *sel
     int res;
 
     harness_mock_assert("mqtt_client_subscribe(message_p)",
-                        message_p);
+                        message_p,
+                        sizeof(*message_p));
 
     harness_mock_read("mqtt_client_subscribe(): return (res)",
                       &res,
@@ -272,7 +280,8 @@ int __attribute__ ((weak)) STUB(mqtt_client_unsubscribe)(struct mqtt_client_t *s
     int res;
 
     harness_mock_assert("mqtt_client_unsubscribe(message_p)",
-                        message_p);
+                        message_p,
+                        sizeof(*message_p));
 
     harness_mock_read("mqtt_client_unsubscribe(): return (res)",
                       &res,

@@ -63,13 +63,16 @@ int __attribute__ ((weak)) STUB(heap_init)(struct heap_t *self_p,
     int res;
 
     harness_mock_assert("heap_init(buf_p)",
-                        buf_p);
+                        buf_p,
+                        size);
 
     harness_mock_assert("heap_init(size)",
-                        &size);
+                        &size,
+                        sizeof(size));
 
     harness_mock_assert("heap_init(sizes[HEAP_FIXED_SIZES_MAX])",
-                        &sizes[HEAP_FIXED_SIZES_MAX]);
+                        &sizes[HEAP_FIXED_SIZES_MAX],
+                        sizeof(sizes[HEAP_FIXED_SIZES_MAX]));
 
     harness_mock_read("heap_init(): return (res)",
                       &res,
@@ -98,7 +101,8 @@ void *__attribute__ ((weak)) STUB(heap_alloc)(struct heap_t *self_p,
     void *res;
 
     harness_mock_assert("heap_alloc(size)",
-                        &size);
+                        &size,
+                        sizeof(size));
 
     harness_mock_read("heap_alloc(): return (res)",
                       &res,
@@ -127,7 +131,8 @@ int __attribute__ ((weak)) STUB(heap_free)(struct heap_t *self_p,
     int res;
 
     harness_mock_assert("heap_free(buf_p)",
-                        buf_p);
+                        buf_p,
+                        sizeof(*buf_p));
 
     harness_mock_read("heap_free(): return (res)",
                       &res,
@@ -162,10 +167,12 @@ int __attribute__ ((weak)) STUB(heap_share)(struct heap_t *self_p,
     int res;
 
     harness_mock_assert("heap_share(buf_p)",
-                        buf_p);
+                        buf_p,
+                        sizeof(*buf_p));
 
     harness_mock_assert("heap_share(count)",
-                        &count);
+                        &count,
+                        sizeof(count));
 
     harness_mock_read("heap_share(): return (res)",
                       &res,

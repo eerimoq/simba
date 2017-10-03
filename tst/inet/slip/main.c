@@ -35,7 +35,7 @@ static uint8_t slip_buf[64];
 static struct queue_t queue;
 static uint8_t queue_buf[64];
 
-static int test_init(struct harness_t *harness_p)
+static int test_init(void)
 {
     BTASSERT(queue_init(&queue, &queue_buf[0], sizeof(queue_buf)) == 0);
     BTASSERT(slip_init(&slip, &slip_buf[0], sizeof(slip_buf), &queue) == 0);
@@ -43,7 +43,7 @@ static int test_init(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_input(struct harness_t *harness_p)
+static int test_input(void)
 {
     /* Write a packet to the slip channel. */
     BTASSERT(slip_input(&slip, 0xc0) == 0);
@@ -65,7 +65,7 @@ static int test_input(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_output(struct harness_t *harness_p)
+static int test_output(void)
 {
     uint8_t buf[64];
 
@@ -88,7 +88,7 @@ static int test_output(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_bad_input(struct harness_t *harness_p)
+static int test_bad_input(void)
 {
     /* Bad byte (0x00) after escape byte. */
     BTASSERT(slip_input(&slip, 0xc0) == 0);
@@ -98,7 +98,7 @@ static int test_bad_input(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_truncate_input(struct harness_t *harness_p)
+static int test_truncate_input(void)
 {
     int i;
 
@@ -120,8 +120,7 @@ static int test_truncate_input(struct harness_t *harness_p)
 
 int main()
 {
-    struct harness_t harness;
-    struct harness_testcase_t harness_testcases[] = {
+    struct harness_testcase_t testcases[] = {
         { test_init, "test_init" },
         { test_input, "test_input" },
         { test_output, "test_output" },
@@ -132,8 +131,7 @@ int main()
 
     sys_start();
 
-    harness_init(&harness);
-    harness_run(&harness, harness_testcases);
+    harness_run(testcases);
 
     return (0);
 }

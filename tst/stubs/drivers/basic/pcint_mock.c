@@ -33,6 +33,10 @@
 
 int mock_write_pcint_module_init(int res)
 {
+    harness_mock_write("pcint_module_init()",
+                       NULL,
+                       0);
+
     harness_mock_write("pcint_module_init(): return (res)",
                        &res,
                        sizeof(res));
@@ -43,6 +47,10 @@ int mock_write_pcint_module_init(int res)
 int __attribute__ ((weak)) STUB(pcint_module_init)()
 {
     int res;
+
+    harness_mock_assert("pcint_module_init()",
+                        NULL,
+                        0);
 
     harness_mock_read("pcint_module_init(): return (res)",
                       &res,
@@ -89,16 +97,20 @@ int __attribute__ ((weak)) STUB(pcint_init)(struct pcint_driver_t *self_p,
     int res;
 
     harness_mock_assert("pcint_init(dev_p)",
-                        &dev_p);
+                        &dev_p,
+                        sizeof(dev_p));
 
     harness_mock_assert("pcint_init(trigger)",
-                        &trigger);
+                        &trigger,
+                        sizeof(trigger));
 
     harness_mock_assert("pcint_init(arg_p)",
-                        arg_p);
+                        arg_p,
+                        sizeof(*arg_p));
 
     harness_mock_assert("pcint_init(arg_p)",
-                        arg_p);
+                        arg_p,
+                        sizeof(*arg_p));
 
     harness_mock_read("pcint_init(): return (res)",
                       &res,

@@ -63,13 +63,15 @@ int __attribute__ ((weak)) STUB(base64_encode)(char *dst_p,
 
     harness_mock_read("base64_encode(): return (dst_p)",
                       dst_p,
-                      -1);
+                      sizeof(*dst_p));
 
     harness_mock_assert("base64_encode(src_p)",
-                        src_p);
+                        src_p,
+                        size);
 
     harness_mock_assert("base64_encode(size)",
-                        &size);
+                        &size,
+                        sizeof(size));
 
     harness_mock_read("base64_encode(): return (res)",
                       &res,
@@ -110,13 +112,15 @@ int __attribute__ ((weak)) STUB(base64_decode)(void *dst_p,
 
     harness_mock_read("base64_decode(): return (dst_p)",
                       dst_p,
-                      -1);
+                      size);
 
     harness_mock_assert("base64_decode(src_p)",
-                        src_p);
+                        src_p,
+                        sizeof(*src_p));
 
     harness_mock_assert("base64_decode(size)",
-                        &size);
+                        &size,
+                        sizeof(size));
 
     harness_mock_read("base64_decode(): return (res)",
                       &res,

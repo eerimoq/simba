@@ -33,6 +33,10 @@
 
 int mock_write_network_interface_wifi_module_init(int res)
 {
+    harness_mock_write("network_interface_wifi_module_init()",
+                       NULL,
+                       0);
+
     harness_mock_write("network_interface_wifi_module_init(): return (res)",
                        &res,
                        sizeof(res));
@@ -43,6 +47,10 @@ int mock_write_network_interface_wifi_module_init(int res)
 int __attribute__ ((weak)) STUB(network_interface_wifi_module_init)()
 {
     int res;
+
+    harness_mock_assert("network_interface_wifi_module_init()",
+                        NULL,
+                        0);
 
     harness_mock_read("network_interface_wifi_module_init(): return (res)",
                       &res,
@@ -95,19 +103,24 @@ int __attribute__ ((weak)) STUB(network_interface_wifi_init)(struct network_inte
     int res;
 
     harness_mock_assert("network_interface_wifi_init(name_p)",
-                        name_p);
+                        name_p,
+                        sizeof(*name_p));
 
     harness_mock_assert("network_interface_wifi_init(driver_p)",
-                        driver_p);
+                        driver_p,
+                        sizeof(*driver_p));
 
     harness_mock_assert("network_interface_wifi_init(arg_p)",
-                        arg_p);
+                        arg_p,
+                        sizeof(*arg_p));
 
     harness_mock_assert("network_interface_wifi_init(ssid_p)",
-                        ssid_p);
+                        ssid_p,
+                        sizeof(*ssid_p));
 
     harness_mock_assert("network_interface_wifi_init(password_p)",
-                        password_p);
+                        password_p,
+                        sizeof(*password_p));
 
     harness_mock_read("network_interface_wifi_init(): return (res)",
                       &res,
@@ -196,7 +209,8 @@ int __attribute__ ((weak)) STUB(network_interface_wifi_set_ip_info)(struct netwo
     int res;
 
     harness_mock_assert("network_interface_wifi_set_ip_info(info_p)",
-                        info_p);
+                        info_p,
+                        sizeof(*info_p));
 
     harness_mock_read("network_interface_wifi_set_ip_info(): return (res)",
                       &res,
@@ -226,7 +240,7 @@ int __attribute__ ((weak)) STUB(network_interface_wifi_get_ip_info)(struct netwo
 
     harness_mock_read("network_interface_wifi_get_ip_info(): return (info_p)",
                       info_p,
-                      -1);
+                      sizeof(*info_p));
 
     harness_mock_read("network_interface_wifi_get_ip_info(): return (res)",
                       &res,

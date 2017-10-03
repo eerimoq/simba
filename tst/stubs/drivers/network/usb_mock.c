@@ -62,13 +62,16 @@ int __attribute__ ((weak)) STUB(usb_format_descriptors)(void *out_p,
     int res;
 
     harness_mock_assert("usb_format_descriptors(out_p)",
-                        out_p);
+                        out_p,
+                        size);
 
     harness_mock_assert("usb_format_descriptors(buf_p)",
-                        buf_p);
+                        buf_p,
+                        sizeof(*buf_p));
 
     harness_mock_assert("usb_format_descriptors(size)",
-                        &size);
+                        &size,
+                        sizeof(size));
 
     harness_mock_read("usb_format_descriptors(): return (res)",
                       &res,
@@ -112,13 +115,15 @@ res;
 
     harness_mock_read("usb_desc_get_configuration(): return (desc_p)",
                       desc_p,
-                      -1);
+                      sizeof(*desc_p));
 
     harness_mock_assert("usb_desc_get_configuration(size)",
-                        &size);
+                        &size,
+                        sizeof(size));
 
     harness_mock_assert("usb_desc_get_configuration(configuration)",
-                        &configuration);
+                        &configuration,
+                        sizeof(configuration));
 
     harness_mock_read("usb_desc_get_configuration(): return (res)",
                       &res,
@@ -168,16 +173,19 @@ res;
 
     harness_mock_read("usb_desc_get_interface(): return (desc_p)",
                       desc_p,
-                      -1);
+                      sizeof(*desc_p));
 
     harness_mock_assert("usb_desc_get_interface(size)",
-                        &size);
+                        &size,
+                        sizeof(size));
 
     harness_mock_assert("usb_desc_get_interface(configuration)",
-                        &configuration);
+                        &configuration,
+                        sizeof(configuration));
 
     harness_mock_assert("usb_desc_get_interface(interface)",
-                        &interface);
+                        &interface,
+                        sizeof(interface));
 
     harness_mock_read("usb_desc_get_interface(): return (res)",
                       &res,
@@ -233,19 +241,23 @@ res;
 
     harness_mock_read("usb_desc_get_endpoint(): return (desc_p)",
                       desc_p,
-                      -1);
+                      sizeof(*desc_p));
 
     harness_mock_assert("usb_desc_get_endpoint(size)",
-                        &size);
+                        &size,
+                        sizeof(size));
 
     harness_mock_assert("usb_desc_get_endpoint(configuration)",
-                        &configuration);
+                        &configuration,
+                        sizeof(configuration));
 
     harness_mock_assert("usb_desc_get_endpoint(interface)",
-                        &interface);
+                        &interface,
+                        sizeof(interface));
 
     harness_mock_assert("usb_desc_get_endpoint(endpoint)",
-                        &endpoint);
+                        &endpoint,
+                        sizeof(endpoint));
 
     harness_mock_read("usb_desc_get_endpoint(): return (res)",
                       &res,
@@ -291,16 +303,20 @@ int __attribute__ ((weak)) STUB(usb_desc_get_class)(uint8_t *buf_p,
     int res;
 
     harness_mock_assert("usb_desc_get_class(buf_p)",
-                        buf_p);
+                        buf_p,
+                        sizeof(*buf_p));
 
     harness_mock_assert("usb_desc_get_class(size)",
-                        &size);
+                        &size,
+                        sizeof(size));
 
     harness_mock_assert("usb_desc_get_class(configuration)",
-                        &configuration);
+                        &configuration,
+                        sizeof(configuration));
 
     harness_mock_assert("usb_desc_get_class(interface)",
-                        &interface);
+                        &interface,
+                        sizeof(interface));
 
     harness_mock_read("usb_desc_get_class(): return (res)",
                       &res,

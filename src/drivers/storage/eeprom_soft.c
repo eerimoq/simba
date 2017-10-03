@@ -172,7 +172,7 @@ static int is_blank_chunk(struct eeprom_soft_driver_t *self_p,
 }
 
 /**
- * Get a black chunk.
+ * Get a blank chunk.
  */
 static int get_blank_chunk(struct eeprom_soft_driver_t *self_p,
                            const struct eeprom_soft_block_t **block_pp,
@@ -352,7 +352,7 @@ int eeprom_soft_init(struct eeprom_soft_driver_t *self_p,
     self_p->current.chunk_address = 0xffffffff;
 
 #if CONFIG_EEPROM_SOFT_SEMAPHORE == 1
-    sem_init(&self_p->sem, 0, 1);
+    mutex_init(&self_p->mutex);
 #endif
 
     return (0);
@@ -460,14 +460,14 @@ ssize_t eeprom_soft_read(struct eeprom_soft_driver_t *self_p,
     }
 
 #if CONFIG_EEPROM_SOFT_SEMAPHORE == 1
-    sem_take(&self_p->sem, NULL);
+    mutex_lock(&self_p->mutex);
 #endif
 
     src += (self_p->current.chunk_address + CHUNK_HEADER_SIZE);
     res = flash_read(self_p->flash_p, dst_p, src, size);
 
 #if CONFIG_EEPROM_SOFT_SEMAPHORE == 1
-    sem_give(&self_p->sem, 1);
+    mutex_unlock(&self_p->mutex);
 #endif
 
     return (res);
@@ -484,13 +484,13 @@ ssize_t eeprom_soft_write(struct eeprom_soft_driver_t *self_p,
     ssize_t res;
 
 #if CONFIG_EEPROM_SOFT_SEMAPHORE == 1
-    sem_take(&self_p->sem, NULL);
+    mutex_lock(&self_p->mutex);
 #endif
 
     res = write_inner(self_p, dst, src_p, size);
 
 #if CONFIG_EEPROM_SOFT_SEMAPHORE == 1
-    sem_give(&self_p->sem, 1);
+    mutex_unlock(&self_p->mutex);
 #endif
 
     return (res);

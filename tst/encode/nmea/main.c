@@ -30,7 +30,7 @@
 
 #include "simba.h"
 
-static int test_encode_raw(struct harness_t *harness_p)
+static int test_encode_raw(void)
 {
     size_t size;
     char encoded[] =
@@ -48,7 +48,7 @@ static int test_encode_raw(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_encode_gga(struct harness_t *harness_p)
+static int test_encode_gga(void)
 {
     ssize_t size;
     char encoded[] =
@@ -77,7 +77,7 @@ static int test_encode_gga(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_encode_gll(struct harness_t *harness_p)
+static int test_encode_gll(void)
 {
     size_t size;
     char encoded[] =
@@ -100,7 +100,7 @@ static int test_encode_gll(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_encode_gsa(struct harness_t *harness_p)
+static int test_encode_gsa(void)
 {
     size_t size;
     char encoded[] =
@@ -134,7 +134,7 @@ static int test_encode_gsa(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_encode_gsv(struct harness_t *harness_p)
+static int test_encode_gsv(void)
 {
     size_t size;
     char encoded[] =
@@ -170,7 +170,7 @@ static int test_encode_gsv(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_encode_rmc(struct harness_t *harness_p)
+static int test_encode_rmc(void)
 {
     size_t size;
     char encoded[] =
@@ -198,7 +198,7 @@ static int test_encode_rmc(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_encode_vtg(struct harness_t *harness_p)
+static int test_encode_vtg(void)
 {
     size_t size;
     char encoded[] =
@@ -223,7 +223,7 @@ static int test_encode_vtg(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_decode_bad_dollar(struct harness_t *harness_p)
+static int test_decode_bad_dollar(void)
 {
     size_t size;
     char encoded[] =
@@ -236,7 +236,7 @@ static int test_decode_bad_dollar(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_decode_bad_line_termination(struct harness_t *harness_p)
+static int test_decode_bad_line_termination(void)
 {
     size_t size;
     char encoded[] =
@@ -249,7 +249,7 @@ static int test_decode_bad_line_termination(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_decode_bad_asterix(struct harness_t *harness_p)
+static int test_decode_bad_asterix(void)
 {
     size_t size;
     char encoded[] =
@@ -262,7 +262,7 @@ static int test_decode_bad_asterix(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_decode_wrong_crc(struct harness_t *harness_p)
+static int test_decode_wrong_crc(void)
 {
     size_t size;
     char encoded[] =
@@ -275,7 +275,7 @@ static int test_decode_wrong_crc(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_decode_corrupt_crc(struct harness_t *harness_p)
+static int test_decode_corrupt_crc(void)
 {
     size_t size;
     char encoded[] =
@@ -288,7 +288,7 @@ static int test_decode_corrupt_crc(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_decode_raw(struct harness_t *harness_p)
+static int test_decode_raw(void)
 {
     size_t size;
     char encoded[] =
@@ -303,7 +303,7 @@ static int test_decode_raw(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_decode_gga(struct harness_t *harness_p)
+static int test_decode_gga(void)
 {
     size_t size;
     char encoded[] =
@@ -330,7 +330,7 @@ static int test_decode_gga(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_decode_gga_empty(struct harness_t *harness_p)
+static int test_decode_gga_empty(void)
 {
     size_t size;
     char encoded[] =
@@ -357,7 +357,7 @@ static int test_decode_gga_empty(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_decode_gga_short(struct harness_t *harness_p)
+static int test_decode_gga_short(void)
 {
     size_t size;
     char encoded[] =
@@ -370,7 +370,7 @@ static int test_decode_gga_short(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_decode_gll(struct harness_t *harness_p)
+static int test_decode_gll(void)
 {
     size_t size;
     char encoded[] =
@@ -391,7 +391,7 @@ static int test_decode_gll(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_decode_gll_empty(struct harness_t *harness_p)
+static int test_decode_gll_empty(void)
 {
     size_t size;
     char encoded[] =
@@ -412,7 +412,7 @@ static int test_decode_gll_empty(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_decode_gll_short(struct harness_t *harness_p)
+static int test_decode_gll_short(void)
 {
     size_t size;
     char encoded[] =
@@ -425,7 +425,7 @@ static int test_decode_gll_short(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_decode_gsa(struct harness_t *harness_p)
+static int test_decode_gsa(void)
 {
     size_t size;
     char encoded[] =
@@ -457,7 +457,7 @@ static int test_decode_gsa(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_decode_gsa_empty(struct harness_t *harness_p)
+static int test_decode_gsa_empty(void)
 {
     size_t size;
     char encoded[] =
@@ -489,7 +489,7 @@ static int test_decode_gsa_empty(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_decode_gsa_short(struct harness_t *harness_p)
+static int test_decode_gsa_short(void)
 {
     size_t size;
     char encoded[] =
@@ -502,7 +502,7 @@ static int test_decode_gsa_short(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_decode_gsv(struct harness_t *harness_p)
+static int test_decode_gsv(void)
 {
     size_t size;
     char encoded[] =
@@ -536,7 +536,7 @@ static int test_decode_gsv(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_decode_gsv_empty(struct harness_t *harness_p)
+static int test_decode_gsv_empty(void)
 {
     size_t size;
     char encoded[] =
@@ -570,7 +570,7 @@ static int test_decode_gsv_empty(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_decode_gsv_short(struct harness_t *harness_p)
+static int test_decode_gsv_short(void)
 {
     size_t size;
     char encoded[] =
@@ -583,7 +583,7 @@ static int test_decode_gsv_short(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_decode_rmc(struct harness_t *harness_p)
+static int test_decode_rmc(void)
 {
     size_t size;
     char encoded[] =
@@ -609,7 +609,7 @@ static int test_decode_rmc(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_decode_rmc_empty(struct harness_t *harness_p)
+static int test_decode_rmc_empty(void)
 {
     size_t size;
     char encoded[] =
@@ -635,7 +635,7 @@ static int test_decode_rmc_empty(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_decode_rmc_short(struct harness_t *harness_p)
+static int test_decode_rmc_short(void)
 {
     size_t size;
     char encoded[] =
@@ -648,7 +648,7 @@ static int test_decode_rmc_short(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_decode_vtg(struct harness_t *harness_p)
+static int test_decode_vtg(void)
 {
     size_t size;
     char encoded[] =
@@ -671,7 +671,7 @@ static int test_decode_vtg(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_decode_vtg_empty(struct harness_t *harness_p)
+static int test_decode_vtg_empty(void)
 {
     size_t size;
     char encoded[] =
@@ -694,7 +694,7 @@ static int test_decode_vtg_empty(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_decode_vtg_short(struct harness_t *harness_p)
+static int test_decode_vtg_short(void)
 {
     size_t size;
     char encoded[] =
@@ -707,7 +707,7 @@ static int test_decode_vtg_short(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_decode_fix_time(struct harness_t *harness_p)
+static int test_decode_fix_time(void)
 {
     char early_morning[] = "052859";
     int hour;
@@ -725,7 +725,7 @@ static int test_decode_fix_time(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_decode_date(struct harness_t *harness_p)
+static int test_decode_date(void)
 {
     char late_spring[] = "140517";
     int year;
@@ -743,7 +743,7 @@ static int test_decode_date(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_decode_position(struct harness_t *harness_p)
+static int test_decode_position(void)
 {
     long degrees;
 
@@ -793,8 +793,7 @@ static int test_decode_position(struct harness_t *harness_p)
 
 int main()
 {
-    struct harness_t harness;
-    struct harness_testcase_t harness_testcases[] = {
+    struct harness_testcase_t testcases[] = {
         { test_encode_raw, "test_encode_raw" },
         { test_encode_gga, "test_encode_gga" },
         { test_encode_gll, "test_encode_gll" },
@@ -834,8 +833,7 @@ int main()
 
     sys_start();
 
-    harness_init(&harness);
-    harness_run(&harness, harness_testcases);
+    harness_run(testcases);
 
     return (0);
 }

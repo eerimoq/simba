@@ -74,7 +74,7 @@ static void *mutex_main(void *arg_p)
     return (NULL);
 }
 
-static int test_multi_thread(struct harness_t *harness_p)
+static int test_multi_thread(void)
 {
     int done;
 
@@ -111,16 +111,14 @@ static int test_multi_thread(struct harness_t *harness_p)
 
 int main()
 {
-    struct harness_t harness;
-    struct harness_testcase_t harness_testcases[] = {
+    struct harness_testcase_t testcases[] = {
         { test_multi_thread, "test_multi_thread" },
         { NULL, NULL }
     };
 
     sys_start();
 
-    harness_init(&harness);
-    harness_run(&harness, harness_testcases);
+    harness_run(testcases);
 
     return (0);
 }

@@ -30,7 +30,7 @@
 
 #include "simba.h"
 
-static int test_init(struct harness_t *harness)
+static int test_init(void)
 {
     /* This function may be called multiple times. */
     BTASSERT(ssl_module_init() == 0);
@@ -39,7 +39,7 @@ static int test_init(struct harness_t *harness)
     return (0);
 }
 
-static int test_client(struct harness_t *harness_p)
+static int test_client(void)
 {
     struct ssl_context_t context;
     struct ssl_socket_t ssl_socket;
@@ -103,7 +103,7 @@ static int test_client(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_server(struct harness_t *harness_p)
+static int test_server(void)
 {
     struct ssl_context_t context;
     struct ssl_socket_t ssl_socket;
@@ -165,7 +165,7 @@ static int test_server(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_client_server_context(struct harness_t *harness_p)
+static int test_client_server_context(void)
 {
     struct ssl_context_t context;
     struct ssl_socket_t ssl_socket;
@@ -195,7 +195,7 @@ static int test_client_server_context(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_errors(struct harness_t *harness_p)
+static int test_errors(void)
 {
     struct ssl_context_t context;
     struct ssl_context_t context2;
@@ -239,8 +239,7 @@ static int test_errors(struct harness_t *harness_p)
 
 int main()
 {
-    struct harness_t harness;
-    struct harness_testcase_t harness_testcases[] = {
+    struct harness_testcase_t testcases[] = {
         { test_init, "test_init" },
         { test_client, "test_client" },
         { test_server, "test_server" },
@@ -252,8 +251,7 @@ int main()
     sys_start();
     ssl_module_init();
 
-    harness_init(&harness);
-    harness_run(&harness, harness_testcases);
+    harness_run(testcases);
 
     return (0);
 }

@@ -81,22 +81,28 @@ int __attribute__ ((weak)) STUB(mcp2515_init)(struct mcp2515_driver_t *self_p,
     int res;
 
     harness_mock_assert("mcp2515_init(spi_p)",
-                        spi_p);
+                        spi_p,
+                        sizeof(*spi_p));
 
     harness_mock_assert("mcp2515_init(cs_p)",
-                        cs_p);
+                        cs_p,
+                        sizeof(*cs_p));
 
     harness_mock_assert("mcp2515_init(exti_p)",
-                        exti_p);
+                        exti_p,
+                        sizeof(*exti_p));
 
     harness_mock_assert("mcp2515_init(chin_p)",
-                        chin_p);
+                        chin_p,
+                        sizeof(*chin_p));
 
     harness_mock_assert("mcp2515_init(mode)",
-                        &mode);
+                        &mode,
+                        sizeof(mode));
 
     harness_mock_assert("mcp2515_init(speed)",
-                        &speed);
+                        &speed,
+                        sizeof(speed));
 
     harness_mock_read("mcp2515_init(): return (res)",
                       &res,
@@ -166,7 +172,7 @@ ssize_t __attribute__ ((weak)) STUB(mcp2515_read)(struct mcp2515_driver_t *self_
 
     harness_mock_read("mcp2515_read(): return (frame_p)",
                       frame_p,
-                      -1);
+                      sizeof(*frame_p));
 
     harness_mock_read("mcp2515_read(): return (res)",
                       &res,
@@ -196,7 +202,7 @@ ssize_t __attribute__ ((weak)) STUB(mcp2515_write)(struct mcp2515_driver_t *self
 
     harness_mock_read("mcp2515_write(): return (frame_p)",
                       frame_p,
-                      -1);
+                      sizeof(*frame_p));
 
     harness_mock_read("mcp2515_write(): return (res)",
                       &res,

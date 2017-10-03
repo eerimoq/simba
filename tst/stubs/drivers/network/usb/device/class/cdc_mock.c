@@ -33,6 +33,10 @@
 
 int mock_write_usb_device_class_cdc_module_init(int res)
 {
+    harness_mock_write("usb_device_class_cdc_module_init()",
+                       NULL,
+                       0);
+
     harness_mock_write("usb_device_class_cdc_module_init(): return (res)",
                        &res,
                        sizeof(res));
@@ -43,6 +47,10 @@ int mock_write_usb_device_class_cdc_module_init(int res)
 int __attribute__ ((weak)) STUB(usb_device_class_cdc_module_init)()
 {
     int res;
+
+    harness_mock_assert("usb_device_class_cdc_module_init()",
+                        NULL,
+                        0);
 
     harness_mock_read("usb_device_class_cdc_module_init(): return (res)",
                       &res,
@@ -95,19 +103,24 @@ int __attribute__ ((weak)) STUB(usb_device_class_cdc_init)(struct usb_device_cla
     int res;
 
     harness_mock_assert("usb_device_class_cdc_init(control_interface)",
-                        &control_interface);
+                        &control_interface,
+                        sizeof(control_interface));
 
     harness_mock_assert("usb_device_class_cdc_init(endpoint_in)",
-                        &endpoint_in);
+                        &endpoint_in,
+                        sizeof(endpoint_in));
 
     harness_mock_assert("usb_device_class_cdc_init(endpoint_out)",
-                        &endpoint_out);
+                        &endpoint_out,
+                        sizeof(endpoint_out));
 
     harness_mock_assert("usb_device_class_cdc_init(rxbuf_p)",
-                        rxbuf_p);
+                        rxbuf_p,
+                        size);
 
     harness_mock_assert("usb_device_class_cdc_init(size)",
-                        &size);
+                        &size,
+                        sizeof(size));
 
     harness_mock_read("usb_device_class_cdc_init(): return (res)",
                       &res,

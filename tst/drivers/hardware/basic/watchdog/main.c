@@ -41,7 +41,7 @@ static void isr_watchdog_timeout(void)
 
 #endif
 
-static int test_interrupt(struct harness_t *harness_p)
+static int test_interrupt(void)
 {
 #if defined(FAMILY_SPC5)
 
@@ -67,7 +67,7 @@ static int test_interrupt(struct harness_t *harness_p)
 #endif
 }
 
-static int test_no_interrupt(struct harness_t *harness_p)
+static int test_no_interrupt(void)
 {
     watchdog_start_ms(20, 0);
 
@@ -88,8 +88,7 @@ static int test_no_interrupt(struct harness_t *harness_p)
 
 int main()
 {
-    struct harness_t harness;
-    struct harness_testcase_t harness_testcases[] = {
+    struct harness_testcase_t testcases[] = {
         { test_interrupt, "test_interrupt" },
         { test_no_interrupt, "test_no_interrupt" },
         { NULL, NULL }
@@ -97,8 +96,7 @@ int main()
 
     sys_start();
 
-    harness_init(&harness);
-    harness_run(&harness, harness_testcases);
+    harness_run(testcases);
 
     return (0);
 }

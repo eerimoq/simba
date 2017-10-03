@@ -78,10 +78,11 @@ ssize_t __attribute__ ((weak)) STUB(event_read)(struct event_t *self_p,
 
     harness_mock_read("event_read(): return (buf_p)",
                       buf_p,
-                      -1);
+                      size);
 
     harness_mock_assert("event_read(size)",
-                        &size);
+                        &size,
+                        sizeof(size));
 
     harness_mock_read("event_read(): return (res)",
                       &res,
@@ -116,10 +117,12 @@ ssize_t __attribute__ ((weak)) STUB(event_write)(struct event_t *self_p,
     ssize_t res;
 
     harness_mock_assert("event_write(buf_p)",
-                        buf_p);
+                        buf_p,
+                        size);
 
     harness_mock_assert("event_write(size)",
-                        &size);
+                        &size,
+                        sizeof(size));
 
     harness_mock_read("event_write(): return (res)",
                       &res,
@@ -154,10 +157,12 @@ ssize_t __attribute__ ((weak)) STUB(event_write_isr)(struct event_t *self_p,
     ssize_t res;
 
     harness_mock_assert("event_write_isr(buf_p)",
-                        buf_p);
+                        buf_p,
+                        size);
 
     harness_mock_assert("event_write_isr(size)",
-                        &size);
+                        &size,
+                        sizeof(size));
 
     harness_mock_read("event_write_isr(): return (res)",
                       &res,
@@ -206,7 +211,8 @@ int __attribute__ ((weak)) STUB(event_clear)(struct event_t *self_p,
     int res;
 
     harness_mock_assert("event_clear(mask)",
-                        &mask);
+                        &mask,
+                        sizeof(mask));
 
     harness_mock_read("event_clear(): return (res)",
                       &res,

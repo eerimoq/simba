@@ -33,6 +33,10 @@
 
 int mock_write_random_module_init(int res)
 {
+    harness_mock_write("random_module_init()",
+                       NULL,
+                       0);
+
     harness_mock_write("random_module_init(): return (res)",
                        &res,
                        sizeof(res));
@@ -44,6 +48,10 @@ int __attribute__ ((weak)) STUB(random_module_init)()
 {
     int res;
 
+    harness_mock_assert("random_module_init()",
+                        NULL,
+                        0);
+
     harness_mock_read("random_module_init(): return (res)",
                       &res,
                       sizeof(res));
@@ -53,6 +61,10 @@ int __attribute__ ((weak)) STUB(random_module_init)()
 
 int mock_write_random_read(uint32_t res)
 {
+    harness_mock_write("random_read()",
+                       NULL,
+                       0);
+
     harness_mock_write("random_read(): return (res)",
                        &res,
                        sizeof(res));
@@ -63,6 +75,10 @@ int mock_write_random_read(uint32_t res)
 uint32_t __attribute__ ((weak)) STUB(random_read)()
 {
     uint32_t res;
+
+    harness_mock_assert("random_read()",
+                        NULL,
+                        0);
 
     harness_mock_read("random_read(): return (res)",
                       &res,

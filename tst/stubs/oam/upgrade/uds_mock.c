@@ -57,10 +57,12 @@ int __attribute__ ((weak)) STUB(upgrade_uds_init)(struct upgrade_uds_t *self_p,
     int res;
 
     harness_mock_assert("upgrade_uds_init(chin_p)",
-                        chin_p);
+                        chin_p,
+                        sizeof(*chin_p));
 
     harness_mock_assert("upgrade_uds_init(chout_p)",
-                        chout_p);
+                        chout_p,
+                        sizeof(*chout_p));
 
     harness_mock_read("upgrade_uds_init(): return (res)",
                       &res,

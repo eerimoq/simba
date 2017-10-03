@@ -34,14 +34,14 @@ static struct binary_tree_t foo;
 static struct binary_tree_node_t nodes[16];
 static struct binary_tree_node_t duplicate;
 
-int test_init(struct harness_t *harness_p)
+int test_init(void)
 {
     BTASSERT(binary_tree_init(&foo) == 0);
 
     return (0);
 }
 
-int test_insert(struct harness_t *harness_p)
+int test_insert(void)
 {
     int i;
 
@@ -70,7 +70,7 @@ int test_insert(struct harness_t *harness_p)
     return (0);
 }
 
-int test_search(struct harness_t *harness_p)
+int test_search(void)
 {
     int i;
     int key;
@@ -93,7 +93,7 @@ int test_search(struct harness_t *harness_p)
     return (0);
 }
 
-int test_delete(struct harness_t *harness_p)
+int test_delete(void)
 {
     int i;
     int key;
@@ -136,7 +136,7 @@ int test_delete(struct harness_t *harness_p)
     return (0);
 }
 
-int test_search_empty(struct harness_t *harness_p)
+int test_search_empty(void)
 {
     /* Search for a non-existing node in the empty tree. */
     BTASSERT(binary_tree_search(&foo, 30) == NULL);
@@ -146,8 +146,7 @@ int test_search_empty(struct harness_t *harness_p)
 
 int main()
 {
-    struct harness_t harness;
-    struct harness_testcase_t harness_testcases[] = {
+    struct harness_testcase_t testcases[] = {
         { test_init, "test_init" },
         { test_insert, "test_insert" },
         { test_search, "test_search" },
@@ -158,8 +157,7 @@ int main()
 
     sys_start();
 
-    harness_init(&harness);
-    harness_run(&harness, harness_testcases);
+    harness_run(testcases);
 
     return (0);
 }

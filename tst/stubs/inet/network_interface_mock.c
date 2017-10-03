@@ -33,6 +33,10 @@
 
 int mock_write_network_interface_module_init(int res)
 {
+    harness_mock_write("network_interface_module_init()",
+                       NULL,
+                       0);
+
     harness_mock_write("network_interface_module_init(): return (res)",
                        &res,
                        sizeof(res));
@@ -43,6 +47,10 @@ int mock_write_network_interface_module_init(int res)
 int __attribute__ ((weak)) STUB(network_interface_module_init)()
 {
     int res;
+
+    harness_mock_assert("network_interface_module_init()",
+                        NULL,
+                        0);
 
     harness_mock_read("network_interface_module_init(): return (res)",
                       &res,
@@ -70,7 +78,8 @@ int __attribute__ ((weak)) STUB(network_interface_add)(struct network_interface_
     int res;
 
     harness_mock_assert("network_interface_add(netif_p)",
-                        netif_p);
+                        netif_p,
+                        sizeof(*netif_p));
 
     harness_mock_read("network_interface_add(): return (res)",
                       &res,
@@ -98,7 +107,8 @@ int __attribute__ ((weak)) STUB(network_interface_start)(struct network_interfac
     int res;
 
     harness_mock_assert("network_interface_start(netif_p)",
-                        netif_p);
+                        netif_p,
+                        sizeof(*netif_p));
 
     harness_mock_read("network_interface_start(): return (res)",
                       &res,
@@ -126,7 +136,8 @@ int __attribute__ ((weak)) STUB(network_interface_stop)(struct network_interface
     int res;
 
     harness_mock_assert("network_interface_stop(netif_p)",
-                        netif_p);
+                        netif_p,
+                        sizeof(*netif_p));
 
     harness_mock_read("network_interface_stop(): return (res)",
                       &res,
@@ -154,7 +165,8 @@ int __attribute__ ((weak)) STUB(network_interface_is_up)(struct network_interfac
     int res;
 
     harness_mock_assert("network_interface_is_up(netif_p)",
-                        netif_p);
+                        netif_p,
+                        sizeof(*netif_p));
 
     harness_mock_read("network_interface_is_up(): return (res)",
                       &res,
@@ -182,7 +194,8 @@ struct network_interface_t *__attribute__ ((weak)) STUB(network_interface_get_by
     struct network_interface_t *res;
 
     harness_mock_assert("network_interface_get_by_name(name_p)",
-                        name_p);
+                        name_p,
+                        sizeof(*name_p));
 
     harness_mock_read("network_interface_get_by_name(): return (res)",
                       &res,
@@ -216,10 +229,12 @@ int __attribute__ ((weak)) STUB(network_interface_set_ip_info)(struct network_in
     int res;
 
     harness_mock_assert("network_interface_set_ip_info(netif_p)",
-                        netif_p);
+                        netif_p,
+                        sizeof(*netif_p));
 
     harness_mock_assert("network_interface_set_ip_info(info_p)",
-                        info_p);
+                        info_p,
+                        sizeof(*info_p));
 
     harness_mock_read("network_interface_set_ip_info(): return (res)",
                       &res,
@@ -253,11 +268,12 @@ int __attribute__ ((weak)) STUB(network_interface_get_ip_info)(struct network_in
     int res;
 
     harness_mock_assert("network_interface_get_ip_info(netif_p)",
-                        netif_p);
+                        netif_p,
+                        sizeof(*netif_p));
 
     harness_mock_read("network_interface_get_ip_info(): return (info_p)",
                       info_p,
-                      -1);
+                      sizeof(*info_p));
 
     harness_mock_read("network_interface_get_ip_info(): return (res)",
                       &res,

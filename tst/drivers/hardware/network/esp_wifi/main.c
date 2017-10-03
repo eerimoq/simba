@@ -40,7 +40,7 @@
 #    define PASSWORD password
 #endif
 
-static int test_init(struct harness_t *harness_p)
+static int test_init(void)
 {
     BTASSERT(esp_wifi_module_init() == 0);
     BTASSERT(esp_wifi_set_op_mode(esp_wifi_op_mode_null_t) == 0);
@@ -50,7 +50,7 @@ static int test_init(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_softap(struct harness_t *harness_p)
+static int test_softap(void)
 {
     int number_of_stations;
     int i;
@@ -80,7 +80,7 @@ static int test_softap(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_station(struct harness_t *harness_p)
+static int test_station(void)
 {
     enum esp_wifi_station_status_t status;
 
@@ -111,8 +111,7 @@ static int test_station(struct harness_t *harness_p)
 
 int main()
 {
-    struct harness_t harness;
-    struct harness_testcase_t harness_testcases[] = {
+    struct harness_testcase_t testcases[] = {
         { test_init, "test_init" },
         { test_softap, "test_softap" },
         { test_station, "test_station" },
@@ -121,8 +120,7 @@ int main()
 
     sys_start();
 
-    harness_init(&harness);
-    harness_run(&harness, harness_testcases);
+    harness_run(testcases);
 
     return (0);
 }

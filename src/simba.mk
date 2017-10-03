@@ -30,6 +30,8 @@
 
 # Minimal set of files for a test suite.
 ifeq ($(TYPE),suite)
+  INC += $(SIMBA_ROOT)/tst/stubs
+
   ALLOC_SRC += heap.c
   COLLECTIONS_SRC += circular_buffer.c binary_tree.c
   DEBUG_SRC += log.c harness.c

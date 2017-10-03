@@ -109,7 +109,7 @@ static void *udp_reader(void *arg_p)
 }
 
 
-static int test_init(struct harness_t *harness_p)
+static int test_init(void)
 {
     struct inet_if_ip_info_t info;
     char buf[20];
@@ -164,7 +164,7 @@ static int test_init(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_udp(struct harness_t *harness_p)
+static int test_udp(void)
 {
     struct socket_t sock;
     struct inet_addr_t addr;
@@ -247,7 +247,7 @@ static int test_udp(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_tcp(struct harness_t *harness_p)
+static int test_tcp(void)
 {
     struct socket_t listener;
     struct socket_t client;
@@ -312,7 +312,7 @@ static int test_tcp(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_tcp_write_close(struct harness_t *harness_p)
+static int test_tcp_write_close(void)
 {
     struct socket_t listener;
     struct socket_t client;
@@ -355,7 +355,7 @@ static int test_tcp_write_close(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_tcp_sizes(struct harness_t *harness_p)
+static int test_tcp_sizes(void)
 {
     struct socket_t listener;
     struct socket_t client;
@@ -425,7 +425,7 @@ static int test_tcp_sizes(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_tcp_connect(struct harness_t *harness_p)
+static int test_tcp_connect(void)
 {
     struct socket_t socket;
     struct inet_addr_t addr;
@@ -443,7 +443,7 @@ static int test_tcp_connect(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_print(struct harness_t *harness_p)
+static int test_print(void)
 {
     char command[64];
 
@@ -461,8 +461,7 @@ static int test_print(struct harness_t *harness_p)
 
 int main()
 {
-    struct harness_t harness;
-    struct harness_testcase_t harness_testcases[] = {
+    struct harness_testcase_t testcases[] = {
         { test_init, "test_init" },
         { test_udp, "test_udp" },
         { test_tcp, "test_tcp" },
@@ -476,8 +475,7 @@ int main()
     sys_start();
     inet_module_init();
 
-    harness_init(&harness);
-    harness_run(&harness, harness_testcases);
+    harness_run(testcases);
 
     return (0);
 }

@@ -33,7 +33,7 @@
 /* Define the integer fifo. */
 FIFO_DEFINE_TEMPLATE(int);
 
-static int test_put_get(struct harness_t *harness)
+static int test_put_get(void)
 {
     struct fifo_t fifo;
 
@@ -65,7 +65,7 @@ static int test_put_get(struct harness_t *harness)
     return (0);
 }
 
-static int test_put_get_int(struct harness_t *harness)
+static int test_put_get_int(void)
 {
     struct fifo_int_t fifo;
     int buf[4];
@@ -97,8 +97,7 @@ static int test_put_get_int(struct harness_t *harness)
 
 int main()
 {
-    struct harness_t harness;
-    struct harness_testcase_t harness_testcases[] = {
+    struct harness_testcase_t testcases[] = {
         { test_put_get, "test_put_get" },
         { test_put_get_int, "test_put_get_int" },
         { NULL, NULL }
@@ -106,8 +105,7 @@ int main()
 
     sys_start();
 
-    harness_init(&harness);
-    harness_run(&harness, harness_testcases);
+    harness_run(testcases);
 
     return (0);
 }

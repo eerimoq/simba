@@ -30,7 +30,7 @@
 
 #include "simba.h"
 
-static int test_get_colon(struct harness_t *harness_p)
+static int test_get_colon(void)
 {
     struct configfile_t configfile;
     char buf[] =
@@ -77,7 +77,7 @@ static int test_get_colon(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_get_equal_sign(struct harness_t *harness_p)
+static int test_get_equal_sign(void)
 {
     struct configfile_t configfile;
     char buf[] =
@@ -99,7 +99,7 @@ static int test_get_equal_sign(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_get_long(struct harness_t *harness_p)
+static int test_get_long(void)
 {
     struct configfile_t configfile;
     char buf[] =
@@ -142,7 +142,7 @@ static int test_get_long(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_get_float(struct harness_t *harness_p)
+static int test_get_float(void)
 {
     struct configfile_t configfile;
     char buf[] =
@@ -193,7 +193,7 @@ static int test_get_float(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_get_line_termination(struct harness_t *harness_p)
+static int test_get_line_termination(void)
 {
     struct configfile_t configfile;
     char buf[] =
@@ -233,7 +233,7 @@ static int test_get_line_termination(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_get_null_after_section(struct harness_t *harness_p)
+static int test_get_null_after_section(void)
 {
     struct configfile_t configfile;
     char buf[] = "[shopping list]";
@@ -251,7 +251,7 @@ static int test_get_null_after_section(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_get_missing_section_termination(struct harness_t *harness_p)
+static int test_get_missing_section_termination(void)
 {
     struct configfile_t configfile;
     char buf[] = "[shopping list\r\n";
@@ -269,7 +269,7 @@ static int test_get_missing_section_termination(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_get_comments(struct harness_t *harness_p)
+static int test_get_comments(void)
 {
     struct configfile_t configfile;
     char buf[] =
@@ -301,7 +301,7 @@ static int test_get_comments(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_get_whitespace(struct harness_t *harness_p)
+static int test_get_whitespace(void)
 {
     struct configfile_t configfile;
     char buf[] =
@@ -332,7 +332,7 @@ static int test_get_whitespace(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_get_bad_property_format(struct harness_t *harness_p)
+static int test_get_bad_property_format(void)
 {
     struct configfile_t configfile;
     char buf[] =
@@ -352,7 +352,7 @@ static int test_get_bad_property_format(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_get_value_too_long(struct harness_t *harness_p)
+static int test_get_value_too_long(void)
 {
     struct configfile_t configfile;
     char buf[] =
@@ -372,7 +372,7 @@ static int test_get_value_too_long(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_set(struct harness_t *harness_p)
+static int test_set(void)
 {
     struct configfile_t configfile;
     char buf[68];
@@ -409,7 +409,7 @@ static int test_set(struct harness_t *harness_p)
 }
 
 
-static int test_get_complex(struct harness_t *harness_p)
+static int test_get_complex(void)
 {
     struct configfile_t configfile;
     char buf[] = 
@@ -472,8 +472,7 @@ static int test_get_complex(struct harness_t *harness_p)
 
 int main()
 {
-    struct harness_t harness;
-    struct harness_testcase_t harness_testcases[] = {
+    struct harness_testcase_t testcases[] = {
         { test_get_colon, "test_get_colon" },
         { test_get_equal_sign, "test_get_equal_sign" },
         { test_get_long, "test_get_long" },
@@ -492,8 +491,7 @@ int main()
 
     sys_start();
 
-    harness_init(&harness);
-    harness_run(&harness, harness_testcases);
+    harness_run(testcases);
 
     return (0);
 }

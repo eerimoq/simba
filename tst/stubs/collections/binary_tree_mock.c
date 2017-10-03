@@ -71,7 +71,8 @@ int __attribute__ ((weak)) STUB(binary_tree_insert)(struct binary_tree_t *self_p
     int res;
 
     harness_mock_assert("binary_tree_insert(node_p)",
-                        node_p);
+                        node_p,
+                        sizeof(*node_p));
 
     harness_mock_read("binary_tree_insert(): return (res)",
                       &res,
@@ -100,7 +101,8 @@ int __attribute__ ((weak)) STUB(binary_tree_delete)(struct binary_tree_t *self_p
     int res;
 
     harness_mock_assert("binary_tree_delete(key)",
-                        &key);
+                        &key,
+                        sizeof(key));
 
     harness_mock_read("binary_tree_delete(): return (res)",
                       &res,
@@ -132,7 +134,8 @@ __attribute__ ((weak)) STUB(binary_tree_search)(struct binary_tree_t *self_p,
 res;
 
     harness_mock_assert("binary_tree_search(key)",
-                        &key);
+                        &key,
+                        sizeof(key));
 
     harness_mock_read("binary_tree_search(): return (res)",
                       &res,

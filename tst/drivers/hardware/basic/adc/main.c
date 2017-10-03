@@ -33,7 +33,7 @@
 struct pin_driver_t pin;
 struct adc_driver_t adc;
 
-static int test_init(struct harness_t *harness_p)
+static int test_init(void)
 {
     BTASSERT(adc_init(&adc,
                       &adc_0_dev,
@@ -47,7 +47,7 @@ static int test_init(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_convert(struct harness_t *harness_p)
+static int test_convert(void)
 {
     int i;
     uint16_t samples[16];
@@ -64,7 +64,7 @@ static int test_convert(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_convert_isr(struct harness_t *harness_p)
+static int test_convert_isr(void)
 {
     uint16_t sample;
 
@@ -105,8 +105,7 @@ static int test_convert_isr(struct harness_t *harness_p)
 
 int main()
 {
-    struct harness_t harness;
-    struct harness_testcase_t harness_testcases[] = {
+    struct harness_testcase_t testcases[] = {
         { test_init, "test_init" },
         { test_convert, "test_convert" },
         { test_convert_isr, "test_convert_isr" },
@@ -116,8 +115,7 @@ int main()
     sys_start();
     adc_module_init();
 
-    harness_init(&harness);
-    harness_run(&harness, harness_testcases);
+    harness_run(testcases);
 
     return (0);
 }

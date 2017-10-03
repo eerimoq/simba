@@ -50,7 +50,8 @@ int32_t __attribute__ ((weak)) STUB(spiffs_probe_fs)(struct spiffs_config_t *con
     int32_t res;
 
     harness_mock_assert("spiffs_probe_fs(config_p)",
-                        config_p);
+                        config_p,
+                        sizeof(*config_p));
 
     harness_mock_read("spiffs_probe_fs(): return (res)",
                       &res,
@@ -115,25 +116,32 @@ int32_t __attribute__ ((weak)) STUB(spiffs_mount)(struct spiffs_t *self_p,
     int32_t res;
 
     harness_mock_assert("spiffs_mount(config_p)",
-                        config_p);
+                        config_p,
+                        sizeof(*config_p));
 
     harness_mock_assert("spiffs_mount(work_p)",
-                        work_p);
+                        work_p,
+                        sizeof(*work_p));
 
     harness_mock_assert("spiffs_mount(fd_space_p)",
-                        fd_space_p);
+                        fd_space_p,
+                        sizeof(*fd_space_p));
 
     harness_mock_assert("spiffs_mount(fd_space_size)",
-                        &fd_space_size);
+                        &fd_space_size,
+                        sizeof(fd_space_size));
 
     harness_mock_assert("spiffs_mount(cache_p)",
-                        cache_p);
+                        cache_p,
+                        sizeof(*cache_p));
 
     harness_mock_assert("spiffs_mount(cache_size)",
-                        &cache_size);
+                        &cache_size,
+                        sizeof(cache_size));
 
     harness_mock_assert("spiffs_mount(check_cb)",
-                        &check_cb);
+                        &check_cb,
+                        sizeof(check_cb));
 
     harness_mock_read("spiffs_mount(): return (res)",
                       &res,
@@ -177,10 +185,12 @@ int32_t __attribute__ ((weak)) STUB(spiffs_creat)(struct spiffs_t *self_p,
     int32_t res;
 
     harness_mock_assert("spiffs_creat(path_p)",
-                        path_p);
+                        path_p,
+                        sizeof(*path_p));
 
     harness_mock_assert("spiffs_creat(mode)",
-                        &mode);
+                        &mode,
+                        sizeof(mode));
 
     harness_mock_read("spiffs_creat(): return (res)",
                       &res,
@@ -221,13 +231,16 @@ spiffs_file_t __attribute__ ((weak)) STUB(spiffs_open)(struct spiffs_t *self_p,
     spiffs_file_t res;
 
     harness_mock_assert("spiffs_open(path_p)",
-                        path_p);
+                        path_p,
+                        sizeof(*path_p));
 
     harness_mock_assert("spiffs_open(flags)",
-                        &flags);
+                        &flags,
+                        sizeof(flags));
 
     harness_mock_assert("spiffs_open(mode)",
-                        &mode);
+                        &mode,
+                        sizeof(mode));
 
     harness_mock_read("spiffs_open(): return (res)",
                       &res,
@@ -269,13 +282,15 @@ spiffs_file_t __attribute__ ((weak)) STUB(spiffs_open_by_dirent)(struct spiffs_t
 
     harness_mock_read("spiffs_open_by_dirent(): return (ent_p)",
                       ent_p,
-                      -1);
+                      sizeof(*ent_p));
 
     harness_mock_assert("spiffs_open_by_dirent(flags)",
-                        &flags);
+                        &flags,
+                        sizeof(flags));
 
     harness_mock_assert("spiffs_open_by_dirent(mode)",
-                        &mode);
+                        &mode,
+                        sizeof(mode));
 
     harness_mock_read("spiffs_open_by_dirent(): return (res)",
                       &res,
@@ -316,13 +331,16 @@ spiffs_file_t __attribute__ ((weak)) STUB(spiffs_open_by_page)(struct spiffs_t *
     spiffs_file_t res;
 
     harness_mock_assert("spiffs_open_by_page(page_ix)",
-                        &page_ix);
+                        &page_ix,
+                        sizeof(page_ix));
 
     harness_mock_assert("spiffs_open_by_page(flags)",
-                        &flags);
+                        &flags,
+                        sizeof(flags));
 
     harness_mock_assert("spiffs_open_by_page(mode)",
-                        &mode);
+                        &mode,
+                        sizeof(mode));
 
     harness_mock_read("spiffs_open_by_page(): return (res)",
                       &res,
@@ -363,13 +381,16 @@ int32_t __attribute__ ((weak)) STUB(spiffs_read)(struct spiffs_t *self_p,
     int32_t res;
 
     harness_mock_assert("spiffs_read(fh)",
-                        &fh);
+                        &fh,
+                        sizeof(fh));
 
     harness_mock_assert("spiffs_read(buf_p)",
-                        buf_p);
+                        buf_p,
+                        sizeof(*buf_p));
 
     harness_mock_assert("spiffs_read(len)",
-                        &len);
+                        &len,
+                        sizeof(len));
 
     harness_mock_read("spiffs_read(): return (res)",
                       &res,
@@ -410,13 +431,16 @@ int32_t __attribute__ ((weak)) STUB(spiffs_write)(struct spiffs_t *self_p,
     int32_t res;
 
     harness_mock_assert("spiffs_write(fh)",
-                        &fh);
+                        &fh,
+                        sizeof(fh));
 
     harness_mock_assert("spiffs_write(buf_p)",
-                        buf_p);
+                        buf_p,
+                        sizeof(*buf_p));
 
     harness_mock_assert("spiffs_write(len)",
-                        &len);
+                        &len,
+                        sizeof(len));
 
     harness_mock_read("spiffs_write(): return (res)",
                       &res,
@@ -457,13 +481,16 @@ int32_t __attribute__ ((weak)) STUB(spiffs_lseek)(struct spiffs_t *self_p,
     int32_t res;
 
     harness_mock_assert("spiffs_lseek(fh)",
-                        &fh);
+                        &fh,
+                        sizeof(fh));
 
     harness_mock_assert("spiffs_lseek(offs)",
-                        &offs);
+                        &offs,
+                        sizeof(offs));
 
     harness_mock_assert("spiffs_lseek(whence)",
-                        &whence);
+                        &whence,
+                        sizeof(whence));
 
     harness_mock_read("spiffs_lseek(): return (res)",
                       &res,
@@ -492,7 +519,8 @@ int32_t __attribute__ ((weak)) STUB(spiffs_remove)(struct spiffs_t *self_p,
     int32_t res;
 
     harness_mock_assert("spiffs_remove(path_p)",
-                        path_p);
+                        path_p,
+                        sizeof(*path_p));
 
     harness_mock_read("spiffs_remove(): return (res)",
                       &res,
@@ -521,7 +549,8 @@ int32_t __attribute__ ((weak)) STUB(spiffs_fremove)(struct spiffs_t *self_p,
     int32_t res;
 
     harness_mock_assert("spiffs_fremove(fh)",
-                        &fh);
+                        &fh,
+                        sizeof(fh));
 
     harness_mock_read("spiffs_fremove(): return (res)",
                       &res,
@@ -556,10 +585,12 @@ int32_t __attribute__ ((weak)) STUB(spiffs_stat)(struct spiffs_t *self_p,
     int32_t res;
 
     harness_mock_assert("spiffs_stat(path_p)",
-                        path_p);
+                        path_p,
+                        sizeof(*path_p));
 
     harness_mock_assert("spiffs_stat(stat_p)",
-                        stat_p);
+                        stat_p,
+                        sizeof(*stat_p));
 
     harness_mock_read("spiffs_stat(): return (res)",
                       &res,
@@ -594,10 +625,12 @@ int32_t __attribute__ ((weak)) STUB(spiffs_fstat)(struct spiffs_t *self_p,
     int32_t res;
 
     harness_mock_assert("spiffs_fstat(fh)",
-                        &fh);
+                        &fh,
+                        sizeof(fh));
 
     harness_mock_assert("spiffs_fstat(stat_p)",
-                        stat_p);
+                        stat_p,
+                        sizeof(*stat_p));
 
     harness_mock_read("spiffs_fstat(): return (res)",
                       &res,
@@ -626,7 +659,8 @@ int32_t __attribute__ ((weak)) STUB(spiffs_fflush)(struct spiffs_t *self_p,
     int32_t res;
 
     harness_mock_assert("spiffs_fflush(fh)",
-                        &fh);
+                        &fh,
+                        sizeof(fh));
 
     harness_mock_read("spiffs_fflush(): return (res)",
                       &res,
@@ -655,7 +689,8 @@ int32_t __attribute__ ((weak)) STUB(spiffs_close)(struct spiffs_t *self_p,
     int32_t res;
 
     harness_mock_assert("spiffs_close(fh)",
-                        &fh);
+                        &fh,
+                        sizeof(fh));
 
     harness_mock_read("spiffs_close(): return (res)",
                       &res,
@@ -690,10 +725,12 @@ int32_t __attribute__ ((weak)) STUB(spiffs_rename)(struct spiffs_t *self_p,
     int32_t res;
 
     harness_mock_assert("spiffs_rename(old_path_p)",
-                        old_path_p);
+                        old_path_p,
+                        sizeof(*old_path_p));
 
     harness_mock_assert("spiffs_rename(new_path_p)",
-                        new_path_p);
+                        new_path_p,
+                        sizeof(*new_path_p));
 
     harness_mock_read("spiffs_rename(): return (res)",
                       &res,
@@ -757,10 +794,12 @@ struct spiffs_dir_t *__attribute__ ((weak)) STUB(spiffs_opendir)(struct spiffs_t
     struct spiffs_dir_t *res;
 
     harness_mock_assert("spiffs_opendir(name_p)",
-                        name_p);
+                        name_p,
+                        sizeof(*name_p));
 
     harness_mock_assert("spiffs_opendir(dir_p)",
-                        dir_p);
+                        dir_p,
+                        sizeof(*dir_p));
 
     harness_mock_read("spiffs_opendir(): return (res)",
                       &res,
@@ -788,7 +827,8 @@ int32_t __attribute__ ((weak)) STUB(spiffs_closedir)(struct spiffs_dir_t *dir_p)
     int32_t res;
 
     harness_mock_assert("spiffs_closedir(dir_p)",
-                        dir_p);
+                        dir_p,
+                        sizeof(*dir_p));
 
     harness_mock_read("spiffs_closedir(): return (res)",
                       &res,
@@ -822,10 +862,12 @@ struct spiffs_dirent_t *__attribute__ ((weak)) STUB(spiffs_readdir)(struct spiff
     struct spiffs_dirent_t *res;
 
     harness_mock_assert("spiffs_readdir(dir_p)",
-                        dir_p);
+                        dir_p,
+                        sizeof(*dir_p));
 
     harness_mock_assert("spiffs_readdir(ent_p)",
-                        ent_p);
+                        ent_p,
+                        sizeof(*ent_p));
 
     harness_mock_read("spiffs_readdir(): return (res)",
                       &res,
@@ -880,10 +922,12 @@ int32_t __attribute__ ((weak)) STUB(spiffs_info)(struct spiffs_t *self_p,
     int32_t res;
 
     harness_mock_assert("spiffs_info(total_p)",
-                        total_p);
+                        total_p,
+                        sizeof(*total_p));
 
     harness_mock_assert("spiffs_info(used_p)",
-                        used_p);
+                        used_p,
+                        sizeof(*used_p));
 
     harness_mock_read("spiffs_info(): return (res)",
                       &res,
@@ -952,7 +996,8 @@ int32_t __attribute__ ((weak)) STUB(spiffs_gc_quick)(struct spiffs_t *self_p,
     int32_t res;
 
     harness_mock_assert("spiffs_gc_quick(max_free_pages)",
-                        &max_free_pages);
+                        &max_free_pages,
+                        sizeof(max_free_pages));
 
     harness_mock_read("spiffs_gc_quick(): return (res)",
                       &res,
@@ -981,7 +1026,8 @@ int32_t __attribute__ ((weak)) STUB(spiffs_gc)(struct spiffs_t *self_p,
     int32_t res;
 
     harness_mock_assert("spiffs_gc(size)",
-                        &size);
+                        &size,
+                        sizeof(size));
 
     harness_mock_read("spiffs_gc(): return (res)",
                       &res,
@@ -1010,7 +1056,8 @@ int32_t __attribute__ ((weak)) STUB(spiffs_eof)(struct spiffs_t *self_p,
     int32_t res;
 
     harness_mock_assert("spiffs_eof(fh)",
-                        &fh);
+                        &fh,
+                        sizeof(fh));
 
     harness_mock_read("spiffs_eof(): return (res)",
                       &res,
@@ -1039,7 +1086,8 @@ int32_t __attribute__ ((weak)) STUB(spiffs_tell)(struct spiffs_t *self_p,
     int32_t res;
 
     harness_mock_assert("spiffs_tell(fh)",
-                        &fh);
+                        &fh,
+                        sizeof(fh));
 
     harness_mock_read("spiffs_tell(): return (res)",
                       &res,
@@ -1068,7 +1116,8 @@ int32_t __attribute__ ((weak)) STUB(spiffs_set_file_callback_func)(struct spiffs
     int32_t res;
 
     harness_mock_assert("spiffs_set_file_callback_func(cb_func)",
-                        &cb_func);
+                        &cb_func,
+                        sizeof(cb_func));
 
     harness_mock_read("spiffs_set_file_callback_func(): return (res)",
                       &res,
@@ -1117,7 +1166,8 @@ uint32_t __attribute__ ((weak)) STUB(spiffs_buffer_bytes_for_filedescs)(struct s
     uint32_t res;
 
     harness_mock_assert("spiffs_buffer_bytes_for_filedescs(num_descs)",
-                        &num_descs);
+                        &num_descs,
+                        sizeof(num_descs));
 
     harness_mock_read("spiffs_buffer_bytes_for_filedescs(): return (res)",
                       &res,
@@ -1146,7 +1196,8 @@ uint32_t __attribute__ ((weak)) STUB(spiffs_buffer_bytes_for_cache)(struct spiff
     uint32_t res;
 
     harness_mock_assert("spiffs_buffer_bytes_for_cache(num_pages)",
-                        &num_pages);
+                        &num_pages,
+                        sizeof(num_pages));
 
     harness_mock_read("spiffs_buffer_bytes_for_cache(): return (res)",
                       &res,

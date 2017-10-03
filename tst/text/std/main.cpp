@@ -65,7 +65,7 @@ static void on_printf_isr_expired(void *arg_p)
     std_fprintf_isr(arg_p, FSTR("std_fprintf_isr(): %d\r\n"), 2);
 }
 
-static int test_sprintf(struct harness_t *harness_p)
+static int test_sprintf(void)
 {
     char buf[128];
     ssize_t size;
@@ -142,7 +142,7 @@ static int test_sprintf(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_snprintf(struct harness_t *harness_p)
+static int test_snprintf(void)
 {
     char buf[128];
 
@@ -157,14 +157,14 @@ static int test_snprintf(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_vprintf(struct harness_t *harness_p)
+static int test_vprintf(void)
 {
     BTASSERT(test_vprintf_wrapper(FSTR("vprintf: %i\r\n"), 1) == 12);
 
     return (0);
 }
 
-static int test_vfprintf(struct harness_t *harness_p)
+static int test_vfprintf(void)
 {
     BTASSERT(test_vfprintf_wrapper(sys_get_stdout(),
                                    FSTR("vprintf: %d\r\n"),
@@ -173,7 +173,7 @@ static int test_vfprintf(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_sprintf_double(struct harness_t *harness_p)
+static int test_sprintf_double(void)
 {
     char buf[128];
     ssize_t size;
@@ -237,7 +237,7 @@ static int test_sprintf_double(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_sprintf_unsigned(struct harness_t *harness_p)
+static int test_sprintf_unsigned(void)
 {
     char buf[32];
     ssize_t size;
@@ -265,7 +265,7 @@ static int test_sprintf_unsigned(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_sprintf_far_string(struct harness_t *harness_p)
+static int test_sprintf_far_string(void)
 {
     char buf[8];
     ssize_t size;
@@ -292,7 +292,7 @@ static int test_sprintf_far_string(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_strtol(struct harness_t *harness_p)
+static int test_strtol(void)
 {
     long value;
     const char *next_p;
@@ -387,7 +387,7 @@ static int test_strtol(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_strcpy(struct harness_t *harness_p)
+static int test_strcpy(void)
 {
     char buf[16];
 
@@ -403,7 +403,7 @@ static int test_strcpy(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_strcmp(struct harness_t *harness_p)
+static int test_strcmp(void)
 {
     /* Far + local. */
     BTASSERT(std_strncmp(FSTR("foo"), "foo", 3) == 0);
@@ -420,7 +420,7 @@ static int test_strcmp(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_strlen(struct harness_t *harness_p)
+static int test_strlen(void)
 {
     BTASSERT(std_strlen(FSTR("foo")) == 3);
     BTASSERT(std_strlen(FSTR("")) == 0);
@@ -428,7 +428,7 @@ static int test_strlen(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_strip(struct harness_t *harness_p)
+static int test_strip(void)
 {
     char leading_whitespace[] = "\t hej";
     char trailing_whitespace[] = "hej \r\n";
@@ -463,7 +463,7 @@ static int test_strip(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_libc(struct harness_t *harness_p)
+static int test_libc(void)
 {
     int c;
     const char *c_p;
@@ -523,7 +523,7 @@ static int strtod_test(const char *str_p,
     return (0);
 }
 
-static int test_strtod(struct harness_t *harness_p)
+static int test_strtod(void)
 {
     BTASSERT(strtod_test(".1", 2, .1, .1000001) == 0);
     BTASSERT(strtod_test("  .", 0, .0, .0) == 0);
@@ -603,7 +603,7 @@ static int test_strtod(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_strtodfp(struct harness_t *harness_p)
+static int test_strtodfp(void)
 {
     long value;
 
@@ -657,7 +657,7 @@ static int test_strtodfp(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_hexdump(struct harness_t *harness_p)
+static int test_hexdump(void)
 {
     BTASSERT(std_hexdump(sys_get_stdout(),
                          "1234567890abcdefghijkl\xff\r\n",
@@ -666,7 +666,7 @@ static int test_hexdump(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_printf_isr(struct harness_t *harness_p)
+static int test_printf_isr(void)
 {
     struct time_t timeout;
     struct timer_t timer;
@@ -694,8 +694,7 @@ static int test_printf_isr(struct harness_t *harness_p)
 
 int main()
 {
-    struct harness_t harness;
-    struct harness_testcase_t harness_testcases[] = {
+    struct harness_testcase_t testcases[] = {
         { test_sprintf, "test_sprintf" },
         { test_snprintf, "test_snprintf" },
         { test_vprintf, "test_vprintf" },
@@ -718,8 +717,7 @@ int main()
 
     sys_start();
 
-    harness_init(&harness);
-    harness_run(&harness, harness_testcases);
+    harness_run(testcases);
 
     return (0);
 }

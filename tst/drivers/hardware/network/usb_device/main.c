@@ -46,7 +46,7 @@ static uint8_t console_rxbuf[8];
 static struct usb_device_class_cdc_driver_t echo;
 static uint8_t echo_rxbuf[8];
 
-static int test_start(struct harness_t *harness_p)
+static int test_start(void)
 {
     BTASSERT(usb_device_module_init() == 0);
     BTASSERT(usb_device_class_cdc_module_init() == 0);
@@ -95,7 +95,7 @@ static int test_start(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_echo(struct harness_t *harness_p)
+static int test_echo(void)
 {
     int res = 0;
     char c;
@@ -128,7 +128,7 @@ static int test_echo(struct harness_t *harness_p)
     return (res);
 }
 
-static int test_stop(struct harness_t *harness_p)
+static int test_stop(void)
 {
     /* Stop the USB device driver. */
     std_printf(FSTR("Will not stop the driver since "
@@ -139,7 +139,6 @@ static int test_stop(struct harness_t *harness_p)
 
 int main()
 {
-    struct harness_t harness;
     struct harness_testcase_t testcases[] = {
         { test_start, "test_start" },
         { test_echo, "test_echo" },
@@ -149,8 +148,7 @@ int main()
 
     sys_start();
 
-    harness_init(&harness);
-    harness_run(&harness, testcases);
+    harness_run(testcases);
 
     return (0);
 }

@@ -33,6 +33,10 @@
 
 int mock_write_eeprom_soft_module_init(int res)
 {
+    harness_mock_write("eeprom_soft_module_init()",
+                       NULL,
+                       0);
+
     harness_mock_write("eeprom_soft_module_init(): return (res)",
                        &res,
                        sizeof(res));
@@ -43,6 +47,10 @@ int mock_write_eeprom_soft_module_init(int res)
 int __attribute__ ((weak)) STUB(eeprom_soft_module_init)()
 {
     int res;
+
+    harness_mock_assert("eeprom_soft_module_init()",
+                        NULL,
+                        0);
 
     harness_mock_read("eeprom_soft_module_init(): return (res)",
                       &res,
@@ -89,16 +97,20 @@ int __attribute__ ((weak)) STUB(eeprom_soft_init)(struct eeprom_soft_driver_t *s
     int res;
 
     harness_mock_assert("eeprom_soft_init(flash_p)",
-                        flash_p);
+                        flash_p,
+                        sizeof(*flash_p));
 
     harness_mock_assert("eeprom_soft_init(blocks_p)",
-                        blocks_p);
+                        blocks_p,
+                        sizeof(*blocks_p));
 
     harness_mock_assert("eeprom_soft_init(number_of_blocks)",
-                        &number_of_blocks);
+                        &number_of_blocks,
+                        sizeof(number_of_blocks));
 
     harness_mock_assert("eeprom_soft_init(chunk_size)",
-                        &chunk_size);
+                        &chunk_size,
+                        sizeof(chunk_size));
 
     harness_mock_read("eeprom_soft_init(): return (res)",
                       &res,
@@ -180,13 +192,15 @@ ssize_t __attribute__ ((weak)) STUB(eeprom_soft_read)(struct eeprom_soft_driver_
 
     harness_mock_read("eeprom_soft_read(): return (dst_p)",
                       dst_p,
-                      -1);
+                      size);
 
     harness_mock_assert("eeprom_soft_read(src)",
-                        &src);
+                        &src,
+                        sizeof(src));
 
     harness_mock_assert("eeprom_soft_read(size)",
-                        &size);
+                        &size,
+                        sizeof(size));
 
     harness_mock_read("eeprom_soft_read(): return (res)",
                       &res,
@@ -227,13 +241,16 @@ ssize_t __attribute__ ((weak)) STUB(eeprom_soft_write)(struct eeprom_soft_driver
     ssize_t res;
 
     harness_mock_assert("eeprom_soft_write(dst)",
-                        &dst);
+                        &dst,
+                        sizeof(dst));
 
     harness_mock_assert("eeprom_soft_write(src_p)",
-                        src_p);
+                        src_p,
+                        size);
 
     harness_mock_assert("eeprom_soft_write(size)",
-                        &size);
+                        &size,
+                        sizeof(size));
 
     harness_mock_read("eeprom_soft_write(): return (res)",
                       &res,

@@ -82,7 +82,7 @@ static int write_filter(void *self_p, const void *buf_p, size_t size)
     return (write_filter_return_value);
 }
 
-static int test_filter(struct harness_t *harness_p)
+static int test_filter(void)
 {
     struct chan_t chan;
     char buf[2];
@@ -132,7 +132,7 @@ static int test_filter(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_null_channels(struct harness_t *harness_p)
+static int test_null_channels(void)
 {
     struct chan_t chan;
     char value;
@@ -149,7 +149,7 @@ static int test_null_channels(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_list(struct harness_t *harness_p)
+static int test_list(void)
 {
     struct chan_list_t list;
     void *workspace[1];
@@ -175,7 +175,7 @@ static int test_list(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_getc(struct harness_t *harness_p)
+static int test_getc(void)
 {
     struct chan_t chan;
     ssize_t res;
@@ -221,7 +221,7 @@ static int test_getc(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_putc(struct harness_t *harness_p)
+static int test_putc(void)
 {
     struct chan_t chan;
     ssize_t res;
@@ -279,8 +279,7 @@ static int test_putc(struct harness_t *harness_p)
 
 int main()
 {
-    struct harness_t harness;
-    struct harness_testcase_t harness_testcases[] = {
+    struct harness_testcase_t testcases[] = {
         { test_filter, "test_filter" },
         { test_null_channels, "test_null_channels" },
         { test_list, "test_list" },
@@ -291,8 +290,7 @@ int main()
 
     sys_start();
 
-    harness_init(&harness);
-    harness_run(&harness, harness_testcases);
+    harness_run(testcases);
 
     return (0);
 }

@@ -33,6 +33,10 @@
 
 int mock_write_pwm_module_init(int res)
 {
+    harness_mock_write("pwm_module_init()",
+                       NULL,
+                       0);
+
     harness_mock_write("pwm_module_init(): return (res)",
                        &res,
                        sizeof(res));
@@ -43,6 +47,10 @@ int mock_write_pwm_module_init(int res)
 int __attribute__ ((weak)) STUB(pwm_module_init)()
 {
     int res;
+
+    harness_mock_assert("pwm_module_init()",
+                        NULL,
+                        0);
 
     harness_mock_read("pwm_module_init(): return (res)",
                       &res,
@@ -83,13 +91,16 @@ int __attribute__ ((weak)) STUB(pwm_init)(struct pwm_driver_t *self_p,
     int res;
 
     harness_mock_assert("pwm_init(dev_p)",
-                        &dev_p);
+                        &dev_p,
+                        sizeof(dev_p));
 
     harness_mock_assert("pwm_init(frequency)",
-                        &frequency);
+                        &frequency,
+                        sizeof(frequency));
 
     harness_mock_assert("pwm_init(duty_cycle)",
-                        &duty_cycle);
+                        &duty_cycle,
+                        sizeof(duty_cycle));
 
     harness_mock_read("pwm_init(): return (res)",
                       &res,
@@ -158,7 +169,8 @@ int __attribute__ ((weak)) STUB(pwm_set_frequency)(struct pwm_driver_t *self_p,
     int res;
 
     harness_mock_assert("pwm_set_frequency(value)",
-                        &value);
+                        &value,
+                        sizeof(value));
 
     harness_mock_read("pwm_set_frequency(): return (res)",
                       &res,
@@ -207,7 +219,8 @@ int __attribute__ ((weak)) STUB(pwm_set_duty_cycle)(struct pwm_driver_t *self_p,
     int res;
 
     harness_mock_assert("pwm_set_duty_cycle(value)",
-                        &value);
+                        &value,
+                        sizeof(value));
 
     harness_mock_read("pwm_set_duty_cycle(): return (res)",
                       &res,
@@ -255,7 +268,8 @@ long __attribute__ ((weak)) STUB(pwm_frequency)(int hertz)
     long res;
 
     harness_mock_assert("pwm_frequency(hertz)",
-                        &hertz);
+                        &hertz,
+                        sizeof(hertz));
 
     harness_mock_read("pwm_frequency(): return (res)",
                       &res,
@@ -283,7 +297,8 @@ int __attribute__ ((weak)) STUB(pwm_frequency_as_hertz)(long value)
     int res;
 
     harness_mock_assert("pwm_frequency_as_hertz(value)",
-                        &value);
+                        &value,
+                        sizeof(value));
 
     harness_mock_read("pwm_frequency_as_hertz(): return (res)",
                       &res,
@@ -311,7 +326,8 @@ long __attribute__ ((weak)) STUB(pwm_duty_cycle)(int percentage)
     long res;
 
     harness_mock_assert("pwm_duty_cycle(percentage)",
-                        &percentage);
+                        &percentage,
+                        sizeof(percentage));
 
     harness_mock_read("pwm_duty_cycle(): return (res)",
                       &res,
@@ -339,7 +355,8 @@ int __attribute__ ((weak)) STUB(pwm_duty_cycle_as_percent)(long value)
     int res;
 
     harness_mock_assert("pwm_duty_cycle_as_percent(value)",
-                        &value);
+                        &value,
+                        sizeof(value));
 
     harness_mock_read("pwm_duty_cycle_as_percent(): return (res)",
                       &res,
@@ -367,7 +384,8 @@ struct pwm_device_t *__attribute__ ((weak)) STUB(pwm_pin_to_device)(struct pin_d
     struct pwm_device_t *res;
 
     harness_mock_assert("pwm_pin_to_device(pin_p)",
-                        pin_p);
+                        pin_p,
+                        sizeof(*pin_p));
 
     harness_mock_read("pwm_pin_to_device(): return (res)",
                       &res,

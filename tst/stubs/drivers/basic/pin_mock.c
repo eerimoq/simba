@@ -33,6 +33,10 @@
 
 int mock_write_pin_module_init(int res)
 {
+    harness_mock_write("pin_module_init()",
+                       NULL,
+                       0);
+
     harness_mock_write("pin_module_init(): return (res)",
                        &res,
                        sizeof(res));
@@ -43,6 +47,10 @@ int mock_write_pin_module_init(int res)
 int __attribute__ ((weak)) STUB(pin_module_init)()
 {
     int res;
+
+    harness_mock_assert("pin_module_init()",
+                        NULL,
+                        0);
 
     harness_mock_read("pin_module_init(): return (res)",
                       &res,
@@ -77,10 +85,12 @@ int __attribute__ ((weak)) STUB(pin_init)(struct pin_driver_t *self_p,
     int res;
 
     harness_mock_assert("pin_init(dev_p)",
-                        &dev_p);
+                        &dev_p,
+                        sizeof(dev_p));
 
     harness_mock_assert("pin_init(mode)",
-                        &mode);
+                        &mode,
+                        sizeof(mode));
 
     harness_mock_read("pin_init(): return (res)",
                       &res,
@@ -109,7 +119,8 @@ int __attribute__ ((weak)) STUB(pin_write)(struct pin_driver_t *self_p,
     int res;
 
     harness_mock_assert("pin_write(value)",
-                        &value);
+                        &value,
+                        sizeof(value));
 
     harness_mock_read("pin_write(): return (res)",
                       &res,
@@ -178,7 +189,8 @@ int __attribute__ ((weak)) STUB(pin_set_mode)(struct pin_driver_t *self_p,
     int res;
 
     harness_mock_assert("pin_set_mode(mode)",
-                        &mode);
+                        &mode,
+                        sizeof(mode));
 
     harness_mock_read("pin_set_mode(): return (res)",
                       &res,
@@ -206,7 +218,8 @@ int __attribute__ ((weak)) STUB(pin_is_valid_device)(struct pin_device_t *dev_p)
     int res;
 
     harness_mock_assert("pin_is_valid_device(dev_p)",
-                        &dev_p);
+                        &dev_p,
+                        sizeof(dev_p));
 
     harness_mock_read("pin_is_valid_device(): return (res)",
                       &res,

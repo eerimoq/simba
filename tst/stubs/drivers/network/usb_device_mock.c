@@ -33,6 +33,10 @@
 
 int mock_write_usb_device_module_init(int res)
 {
+    harness_mock_write("usb_device_module_init()",
+                       NULL,
+                       0);
+
     harness_mock_write("usb_device_module_init(): return (res)",
                        &res,
                        sizeof(res));
@@ -43,6 +47,10 @@ int mock_write_usb_device_module_init(int res)
 int __attribute__ ((weak)) STUB(usb_device_module_init)()
 {
     int res;
+
+    harness_mock_assert("usb_device_module_init()",
+                        NULL,
+                        0);
 
     harness_mock_read("usb_device_module_init(): return (res)",
                       &res,
@@ -89,16 +97,20 @@ int __attribute__ ((weak)) STUB(usb_device_init)(struct usb_device_driver_t *sel
     int res;
 
     harness_mock_assert("usb_device_init(dev_p)",
-                        &dev_p);
+                        &dev_p,
+                        sizeof(dev_p));
 
     harness_mock_assert("usb_device_init(drivers_pp)",
-                        drivers_pp);
+                        drivers_pp,
+                        sizeof(*drivers_pp));
 
     harness_mock_assert("usb_device_init(drivers_max)",
-                        &drivers_max);
+                        &drivers_max,
+                        sizeof(drivers_max));
 
     harness_mock_assert("usb_device_init(descriptors_pp)",
-                        descriptors_pp);
+                        descriptors_pp,
+                        sizeof(*descriptors_pp));
 
     harness_mock_read("usb_device_init(): return (res)",
                       &res,
@@ -179,13 +191,16 @@ ssize_t __attribute__ ((weak)) STUB(usb_device_write)(struct usb_device_driver_t
     ssize_t res;
 
     harness_mock_assert("usb_device_write(endpoint)",
-                        &endpoint);
+                        &endpoint,
+                        sizeof(endpoint));
 
     harness_mock_assert("usb_device_write(buf_p)",
-                        buf_p);
+                        buf_p,
+                        size);
 
     harness_mock_assert("usb_device_write(size)",
-                        &size);
+                        &size,
+                        sizeof(size));
 
     harness_mock_read("usb_device_write(): return (res)",
                       &res,
@@ -226,14 +241,16 @@ ssize_t __attribute__ ((weak)) STUB(usb_device_read_isr)(struct usb_device_drive
     ssize_t res;
 
     harness_mock_assert("usb_device_read_isr(endpoint)",
-                        &endpoint);
+                        &endpoint,
+                        sizeof(endpoint));
 
     harness_mock_read("usb_device_read_isr(): return (buf_p)",
                       buf_p,
-                      -1);
+                      size);
 
     harness_mock_assert("usb_device_read_isr(size)",
-                        &size);
+                        &size,
+                        sizeof(size));
 
     harness_mock_read("usb_device_read_isr(): return (res)",
                       &res,
@@ -274,13 +291,16 @@ ssize_t __attribute__ ((weak)) STUB(usb_device_write_isr)(struct usb_device_driv
     ssize_t res;
 
     harness_mock_assert("usb_device_write_isr(endpoint)",
-                        &endpoint);
+                        &endpoint,
+                        sizeof(endpoint));
 
     harness_mock_assert("usb_device_write_isr(buf_p)",
-                        buf_p);
+                        buf_p,
+                        size);
 
     harness_mock_assert("usb_device_write_isr(size)",
-                        &size);
+                        &size,
+                        sizeof(size));
 
     harness_mock_read("usb_device_write_isr(): return (res)",
                       &res,

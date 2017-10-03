@@ -57,10 +57,12 @@ int __attribute__ ((weak)) STUB(queue_init)(struct queue_t *self_p,
     int res;
 
     harness_mock_assert("queue_init(buf_p)",
-                        buf_p);
+                        buf_p,
+                        size);
 
     harness_mock_assert("queue_init(size)",
-                        &size);
+                        &size,
+                        sizeof(size));
 
     harness_mock_read("queue_init(): return (res)",
                       &res,
@@ -133,7 +135,7 @@ int mock_write_queue_read(void *buf_p,
                           size_t size,
                           ssize_t res)
 {
-    harness_mock_write("queue_read(buf_p)",
+    harness_mock_write("queue_read(): return (buf_p)",
                        buf_p,
                        size);
 
@@ -154,11 +156,13 @@ ssize_t __attribute__ ((weak)) STUB(queue_read)(struct queue_t *self_p,
 {
     ssize_t res;
 
-    harness_mock_assert("queue_read(buf_p)",
-                        buf_p);
+    harness_mock_read("queue_read(): return (buf_p)",
+                      buf_p,
+                      size);
 
     harness_mock_assert("queue_read(size)",
-                        &size);
+                        &size,
+                        sizeof(size));
 
     harness_mock_read("queue_read(): return (res)",
                       &res,
@@ -193,10 +197,12 @@ ssize_t __attribute__ ((weak)) STUB(queue_write)(struct queue_t *self_p,
     ssize_t res;
 
     harness_mock_assert("queue_write(buf_p)",
-                        buf_p);
+                        buf_p,
+                        size);
 
     harness_mock_assert("queue_write(size)",
-                        &size);
+                        &size,
+                        sizeof(size));
 
     harness_mock_read("queue_write(): return (res)",
                       &res,
@@ -231,10 +237,12 @@ ssize_t __attribute__ ((weak)) STUB(queue_write_isr)(struct queue_t *self_p,
     ssize_t res;
 
     harness_mock_assert("queue_write_isr(buf_p)",
-                        buf_p);
+                        buf_p,
+                        size);
 
     harness_mock_assert("queue_write_isr(size)",
-                        &size);
+                        &size,
+                        sizeof(size));
 
     harness_mock_read("queue_write_isr(): return (res)",
                       &res,
@@ -323,7 +331,8 @@ ssize_t __attribute__ ((weak)) STUB(queue_ignore)(struct queue_t *self_p,
     ssize_t res;
 
     harness_mock_assert("queue_ignore(size)",
-                        &size);
+                        &size,
+                        sizeof(size));
 
     harness_mock_read("queue_ignore(): return (res)",
                       &res,

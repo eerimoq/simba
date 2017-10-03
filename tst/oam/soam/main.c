@@ -71,7 +71,7 @@ static int cmd_foo_cb(int argc,
     return (-1);
 }
 
-static int test_init(struct harness_t *harness_p)
+static int test_init(void)
 {
     void *chin_p;
 
@@ -93,7 +93,7 @@ static int test_init(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_database_request(struct harness_t *harness_p)
+static int test_database_request(void)
 {
     uint8_t buf[64];
     size_t size;
@@ -122,7 +122,7 @@ static int test_database_request(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_log(struct harness_t *harness_p)
+static int test_log(void)
 {
     uint8_t buf[64];
     size_t size;
@@ -188,7 +188,7 @@ static int test_log(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_command(struct harness_t *harness_p)
+static int test_command(void)
 {
     uint8_t buf[64];
     size_t size;
@@ -326,7 +326,7 @@ static int test_command(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_bad_input(struct harness_t *harness_p)
+static int test_bad_input(void)
 {
     /* Short packet. */
     BTASSERT(soam_input(&soam, (uint8_t *)"1234", 4) == -1);
@@ -352,7 +352,7 @@ static int test_bad_input(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_invalid_type(struct harness_t *harness_p)
+static int test_invalid_type(void)
 {
     uint8_t buf[64];
     size_t size;
@@ -385,7 +385,7 @@ static int test_invalid_type(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_stdout(struct harness_t *harness_p)
+static int test_stdout(void)
 {
     void *stdout_p;
     uint8_t buf[64];
@@ -419,8 +419,7 @@ static int test_stdout(struct harness_t *harness_p)
 
 int main()
 {
-    struct harness_t harness;
-    struct harness_testcase_t harness_testcases[] = {
+    struct harness_testcase_t testcases[] = {
         { test_init, "test_init" },
         { test_database_request, "test_database_request" },
         { test_log, "test_log" },
@@ -433,8 +432,7 @@ int main()
 
     sys_start();
 
-    harness_init(&harness);
-    harness_run(&harness, harness_testcases);
+    harness_run(testcases);
 
     return (0);
 }

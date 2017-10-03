@@ -36,7 +36,7 @@ struct command_t {
     char *output_p;
 };
 
-int test_init(struct harness_t *harness_p)
+int test_init(void)
 {
     /* Call init two times. */
     BTASSERT(log_module_init() == 0);
@@ -45,7 +45,7 @@ int test_init(struct harness_t *harness_p)
     return (0);
 }
 
-int test_print(struct harness_t *harness_p)
+int test_print(void)
 {
     struct log_object_t foo;
     struct log_object_t bar;
@@ -74,7 +74,7 @@ int test_print(struct harness_t *harness_p)
     return (0);
 }
 
-int test_object(struct harness_t *harness_p)
+int test_object(void)
 {
     struct log_object_t foo;
 
@@ -91,7 +91,7 @@ int test_object(struct harness_t *harness_p)
     return (0);
 }
 
-int test_handler(struct harness_t *harness_p)
+int test_handler(void)
 {
     struct log_object_t foo;
     struct log_handler_t handler;
@@ -128,7 +128,7 @@ int test_handler(struct harness_t *harness_p)
     return (0);
 }
 
-int test_log_mask(struct harness_t *harness_p)
+int test_log_mask(void)
 {
     struct log_object_t foo;
 
@@ -164,7 +164,7 @@ int test_log_mask(struct harness_t *harness_p)
     return (0);
 }
 
-int test_fs(struct harness_t *harness_p)
+int test_fs(void)
 {
     char command[64];
     struct queue_t queue;
@@ -231,8 +231,7 @@ int test_fs(struct harness_t *harness_p)
 
 int main()
 {
-    struct harness_t harness;
-    struct harness_testcase_t harness_testcases[] = {
+    struct harness_testcase_t testcases[] = {
         { test_init, "test_init" },
         { test_print, "test_print" },
         { test_object, "test_object" },
@@ -244,8 +243,7 @@ int main()
 
     sys_start();
 
-    harness_init(&harness);
-    harness_run(&harness, harness_testcases);
+    harness_run(testcases);
 
     return (0);
 }

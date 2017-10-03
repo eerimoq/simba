@@ -59,16 +59,20 @@ int __attribute__ ((weak)) STUB(fat16_init)(struct fat16_t *self_p,
     int res;
 
     harness_mock_assert("fat16_init(read)",
-                        &read);
+                        &read,
+                        sizeof(read));
 
     harness_mock_assert("fat16_init(write)",
-                        &write);
+                        &write,
+                        sizeof(write));
 
     harness_mock_assert("fat16_init(arg_p)",
-                        arg_p);
+                        arg_p,
+                        sizeof(*arg_p));
 
     harness_mock_assert("fat16_init(partition)",
-                        &partition);
+                        &partition,
+                        sizeof(partition));
 
     harness_mock_read("fat16_init(): return (res)",
                       &res,
@@ -157,7 +161,8 @@ int __attribute__ ((weak)) STUB(fat16_print)(struct fat16_t *self_p,
     int res;
 
     harness_mock_assert("fat16_print(chan_p)",
-                        chan_p);
+                        chan_p,
+                        sizeof(*chan_p));
 
     harness_mock_read("fat16_print(): return (res)",
                       &res,
@@ -199,13 +204,15 @@ int __attribute__ ((weak)) STUB(fat16_file_open)(struct fat16_t *self_p,
 
     harness_mock_read("fat16_file_open(): return (file_p)",
                       file_p,
-                      -1);
+                      sizeof(*file_p));
 
     harness_mock_assert("fat16_file_open(path_p)",
-                        path_p);
+                        path_p,
+                        sizeof(*path_p));
 
     harness_mock_assert("fat16_file_open(oflag)",
-                        &oflag);
+                        &oflag,
+                        sizeof(oflag));
 
     harness_mock_read("fat16_file_open(): return (res)",
                       &res,
@@ -233,7 +240,8 @@ int __attribute__ ((weak)) STUB(fat16_file_close)(struct fat16_file_t *file_p)
     int res;
 
     harness_mock_assert("fat16_file_close(file_p)",
-                        file_p);
+                        file_p,
+                        sizeof(*file_p));
 
     harness_mock_read("fat16_file_close(): return (res)",
                       &res,
@@ -273,13 +281,16 @@ ssize_t __attribute__ ((weak)) STUB(fat16_file_read)(struct fat16_file_t *file_p
     ssize_t res;
 
     harness_mock_assert("fat16_file_read(file_p)",
-                        file_p);
+                        file_p,
+                        sizeof(*file_p));
 
     harness_mock_assert("fat16_file_read(buf_p)",
-                        buf_p);
+                        buf_p,
+                        size);
 
     harness_mock_assert("fat16_file_read(size)",
-                        &size);
+                        &size,
+                        sizeof(size));
 
     harness_mock_read("fat16_file_read(): return (res)",
                       &res,
@@ -319,13 +330,16 @@ ssize_t __attribute__ ((weak)) STUB(fat16_file_write)(struct fat16_file_t *file_
     ssize_t res;
 
     harness_mock_assert("fat16_file_write(file_p)",
-                        file_p);
+                        file_p,
+                        sizeof(*file_p));
 
     harness_mock_assert("fat16_file_write(buf_p)",
-                        buf_p);
+                        buf_p,
+                        size);
 
     harness_mock_assert("fat16_file_write(size)",
-                        &size);
+                        &size,
+                        sizeof(size));
 
     harness_mock_read("fat16_file_write(): return (res)",
                       &res,
@@ -365,13 +379,16 @@ int __attribute__ ((weak)) STUB(fat16_file_seek)(struct fat16_file_t *file_p,
     int res;
 
     harness_mock_assert("fat16_file_seek(file_p)",
-                        file_p);
+                        file_p,
+                        sizeof(*file_p));
 
     harness_mock_assert("fat16_file_seek(pos)",
-                        &pos);
+                        &pos,
+                        sizeof(pos));
 
     harness_mock_assert("fat16_file_seek(whence)",
-                        &whence);
+                        &whence,
+                        sizeof(whence));
 
     harness_mock_read("fat16_file_seek(): return (res)",
                       &res,
@@ -399,7 +416,8 @@ ssize_t __attribute__ ((weak)) STUB(fat16_file_tell)(struct fat16_file_t *file_p
     ssize_t res;
 
     harness_mock_assert("fat16_file_tell(file_p)",
-                        file_p);
+                        file_p,
+                        sizeof(*file_p));
 
     harness_mock_read("fat16_file_tell(): return (res)",
                       &res,
@@ -433,10 +451,12 @@ int __attribute__ ((weak)) STUB(fat16_file_truncate)(struct fat16_file_t *file_p
     int res;
 
     harness_mock_assert("fat16_file_truncate(file_p)",
-                        file_p);
+                        file_p,
+                        sizeof(*file_p));
 
     harness_mock_assert("fat16_file_truncate(size)",
-                        &size);
+                        &size,
+                        sizeof(size));
 
     harness_mock_read("fat16_file_truncate(): return (res)",
                       &res,
@@ -464,7 +484,8 @@ ssize_t __attribute__ ((weak)) STUB(fat16_file_size)(struct fat16_file_t *file_p
     ssize_t res;
 
     harness_mock_assert("fat16_file_size(file_p)",
-                        file_p);
+                        file_p,
+                        sizeof(*file_p));
 
     harness_mock_read("fat16_file_size(): return (res)",
                       &res,
@@ -492,7 +513,8 @@ int __attribute__ ((weak)) STUB(fat16_file_sync)(struct fat16_file_t *file_p)
     int res;
 
     harness_mock_assert("fat16_file_sync(file_p)",
-                        file_p);
+                        file_p,
+                        sizeof(*file_p));
 
     harness_mock_read("fat16_file_sync(): return (res)",
                       &res,
@@ -534,13 +556,15 @@ int __attribute__ ((weak)) STUB(fat16_dir_open)(struct fat16_t *self_p,
 
     harness_mock_read("fat16_dir_open(): return (dir_p)",
                       dir_p,
-                      -1);
+                      sizeof(*dir_p));
 
     harness_mock_assert("fat16_dir_open(path_p)",
-                        path_p);
+                        path_p,
+                        sizeof(*path_p));
 
     harness_mock_assert("fat16_dir_open(oflag)",
-                        &oflag);
+                        &oflag,
+                        sizeof(oflag));
 
     harness_mock_read("fat16_dir_open(): return (res)",
                       &res,
@@ -568,7 +592,8 @@ int __attribute__ ((weak)) STUB(fat16_dir_close)(struct fat16_dir_t *dir_p)
     int res;
 
     harness_mock_assert("fat16_dir_close(dir_p)",
-                        dir_p);
+                        dir_p,
+                        sizeof(*dir_p));
 
     harness_mock_read("fat16_dir_close(): return (res)",
                       &res,
@@ -602,11 +627,12 @@ int __attribute__ ((weak)) STUB(fat16_dir_read)(struct fat16_dir_t *dir_p,
     int res;
 
     harness_mock_assert("fat16_dir_read(dir_p)",
-                        dir_p);
+                        dir_p,
+                        sizeof(*dir_p));
 
     harness_mock_read("fat16_dir_read(): return (entry_p)",
                       entry_p,
-                      -1);
+                      sizeof(*entry_p));
 
     harness_mock_read("fat16_dir_read(): return (res)",
                       &res,
@@ -641,10 +667,12 @@ int __attribute__ ((weak)) STUB(fat16_stat)(struct fat16_t *self_p,
     int res;
 
     harness_mock_assert("fat16_stat(path_p)",
-                        path_p);
+                        path_p,
+                        sizeof(*path_p));
 
     harness_mock_assert("fat16_stat(stat_p)",
-                        stat_p);
+                        stat_p,
+                        sizeof(*stat_p));
 
     harness_mock_read("fat16_stat(): return (res)",
                       &res,

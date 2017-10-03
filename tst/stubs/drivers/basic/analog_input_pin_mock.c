@@ -33,6 +33,10 @@
 
 int mock_write_analog_input_pin_module_init(int res)
 {
+    harness_mock_write("analog_input_pin_module_init()",
+                       NULL,
+                       0);
+
     harness_mock_write("analog_input_pin_module_init(): return (res)",
                        &res,
                        sizeof(res));
@@ -43,6 +47,10 @@ int mock_write_analog_input_pin_module_init(int res)
 int __attribute__ ((weak)) STUB(analog_input_pin_module_init)()
 {
     int res;
+
+    harness_mock_assert("analog_input_pin_module_init()",
+                        NULL,
+                        0);
 
     harness_mock_read("analog_input_pin_module_init(): return (res)",
                       &res,
@@ -71,7 +79,8 @@ int __attribute__ ((weak)) STUB(analog_input_pin_init)(struct analog_input_pin_t
     int res;
 
     harness_mock_assert("analog_input_pin_init(dev_p)",
-                        &dev_p);
+                        &dev_p,
+                        sizeof(dev_p));
 
     harness_mock_read("analog_input_pin_init(): return (res)",
                       &res,

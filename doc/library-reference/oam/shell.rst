@@ -7,9 +7,24 @@
 The shell is a command line interface where the user can execute
 various commands to control, debug and monitor its application.
 
-.. image:: ../../images/shell.png
-   :width: 70%
-   :target: ../../_images/shell.png
+.. code-block:: text
+
+   > make -s console
+   $ kernel/sys/info
+   app:    shell-master built 2017-03-05 21:26 CET by erik.
+   board:  Arduino Due
+   mcu:    Atmel SAM3X8E Cortex-M3 @ 84MHz, 96k sram, 512k flash
+   OK
+   $ kernel/thrd/list
+               NAME        STATE  PRIO   CPU   SCHEDULED  MAX-STACK-USAGE  LOGMASK
+            monitor    suspended   -80    0%          22       176/   518     0x0f
+               idle        ready   127   99%         594       276/   390     0x0f
+               main      current     0    0%         305       540/ 88898     0x00
+   OK
+   $ kernel/thrd/set_log_mask foo 0
+   ERROR(-3)
+   $ <Ctrl-D>
+   >
 
 The shell module has a few configuration variables that can be used to
 tailor the shell to the application requirements. Most noticeably is

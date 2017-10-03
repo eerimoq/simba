@@ -50,7 +50,8 @@ float __attribute__ ((weak)) STUB(midi_note_to_frequency)(int note)
     float res;
 
     harness_mock_assert("midi_note_to_frequency(note)",
-                        &note);
+                        &note,
+                        sizeof(note));
 
     harness_mock_read("midi_note_to_frequency(): return (res)",
                       &res,

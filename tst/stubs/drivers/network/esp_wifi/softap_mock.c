@@ -56,10 +56,12 @@ int __attribute__ ((weak)) STUB(esp_wifi_softap_init)(const char *ssid_p,
     int res;
 
     harness_mock_assert("esp_wifi_softap_init(ssid_p)",
-                        ssid_p);
+                        ssid_p,
+                        sizeof(*ssid_p));
 
     harness_mock_assert("esp_wifi_softap_init(password_p)",
-                        password_p);
+                        password_p,
+                        sizeof(*password_p));
 
     harness_mock_read("esp_wifi_softap_init(): return (res)",
                       &res,
@@ -88,7 +90,7 @@ int __attribute__ ((weak)) STUB(esp_wifi_softap_set_ip_info)(const struct inet_i
 
     harness_mock_read("esp_wifi_softap_set_ip_info(): return (info_p)",
                       info_p,
-                      -1);
+                      sizeof(*info_p));
 
     harness_mock_read("esp_wifi_softap_set_ip_info(): return (res)",
                       &res,
@@ -117,7 +119,7 @@ int __attribute__ ((weak)) STUB(esp_wifi_softap_get_ip_info)(struct inet_if_ip_i
 
     harness_mock_read("esp_wifi_softap_get_ip_info(): return (info_p)",
                       info_p,
-                      -1);
+                      sizeof(*info_p));
 
     harness_mock_read("esp_wifi_softap_get_ip_info(): return (res)",
                       &res,
@@ -128,6 +130,10 @@ int __attribute__ ((weak)) STUB(esp_wifi_softap_get_ip_info)(struct inet_if_ip_i
 
 int mock_write_esp_wifi_softap_get_number_of_connected_stations(int res)
 {
+    harness_mock_write("esp_wifi_softap_get_number_of_connected_stations()",
+                       NULL,
+                       0);
+
     harness_mock_write("esp_wifi_softap_get_number_of_connected_stations(): return (res)",
                        &res,
                        sizeof(res));
@@ -138,6 +144,10 @@ int mock_write_esp_wifi_softap_get_number_of_connected_stations(int res)
 int __attribute__ ((weak)) STUB(esp_wifi_softap_get_number_of_connected_stations)()
 {
     int res;
+
+    harness_mock_assert("esp_wifi_softap_get_number_of_connected_stations()",
+                        NULL,
+                        0);
 
     harness_mock_read("esp_wifi_softap_get_number_of_connected_stations(): return (res)",
                       &res,
@@ -172,10 +182,11 @@ int __attribute__ ((weak)) STUB(esp_wifi_softap_get_station_info)(struct esp_wif
 
     harness_mock_read("esp_wifi_softap_get_station_info(): return (info_p)",
                       info_p,
-                      -1);
+                      sizeof(*info_p));
 
     harness_mock_assert("esp_wifi_softap_get_station_info(length)",
-                        &length);
+                        &length,
+                        sizeof(length));
 
     harness_mock_read("esp_wifi_softap_get_station_info(): return (res)",
                       &res,
@@ -186,6 +197,10 @@ int __attribute__ ((weak)) STUB(esp_wifi_softap_get_station_info)(struct esp_wif
 
 int mock_write_esp_wifi_softap_dhcp_server_start(int res)
 {
+    harness_mock_write("esp_wifi_softap_dhcp_server_start()",
+                       NULL,
+                       0);
+
     harness_mock_write("esp_wifi_softap_dhcp_server_start(): return (res)",
                        &res,
                        sizeof(res));
@@ -197,6 +212,10 @@ int __attribute__ ((weak)) STUB(esp_wifi_softap_dhcp_server_start)()
 {
     int res;
 
+    harness_mock_assert("esp_wifi_softap_dhcp_server_start()",
+                        NULL,
+                        0);
+
     harness_mock_read("esp_wifi_softap_dhcp_server_start(): return (res)",
                       &res,
                       sizeof(res));
@@ -206,6 +225,10 @@ int __attribute__ ((weak)) STUB(esp_wifi_softap_dhcp_server_start)()
 
 int mock_write_esp_wifi_softap_dhcp_server_stop(int res)
 {
+    harness_mock_write("esp_wifi_softap_dhcp_server_stop()",
+                       NULL,
+                       0);
+
     harness_mock_write("esp_wifi_softap_dhcp_server_stop(): return (res)",
                        &res,
                        sizeof(res));
@@ -217,6 +240,10 @@ int __attribute__ ((weak)) STUB(esp_wifi_softap_dhcp_server_stop)()
 {
     int res;
 
+    harness_mock_assert("esp_wifi_softap_dhcp_server_stop()",
+                        NULL,
+                        0);
+
     harness_mock_read("esp_wifi_softap_dhcp_server_stop(): return (res)",
                       &res,
                       sizeof(res));
@@ -226,6 +253,10 @@ int __attribute__ ((weak)) STUB(esp_wifi_softap_dhcp_server_stop)()
 
 int mock_write_esp_wifi_softap_dhcp_server_status(enum esp_wifi_dhcp_status_t res)
 {
+    harness_mock_write("esp_wifi_softap_dhcp_server_status()",
+                       NULL,
+                       0);
+
     harness_mock_write("esp_wifi_softap_dhcp_server_status(): return (res)",
                        &res,
                        sizeof(res));
@@ -236,6 +267,10 @@ int mock_write_esp_wifi_softap_dhcp_server_status(enum esp_wifi_dhcp_status_t re
 enum esp_wifi_dhcp_status_t __attribute__ ((weak)) STUB(esp_wifi_softap_dhcp_server_status)()
 {
     enum esp_wifi_dhcp_status_t res;
+
+    harness_mock_assert("esp_wifi_softap_dhcp_server_status()",
+                        NULL,
+                        0);
 
     harness_mock_read("esp_wifi_softap_dhcp_server_status(): return (res)",
                       &res,

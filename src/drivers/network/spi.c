@@ -84,7 +84,7 @@ int spi_start(struct spi_driver_t *self_p)
     ASSERTN(self_p != NULL, EINVAL);
 
     spi_take_bus(self_p);
-    sem_give(&self_p->dev_p->sem, 1);
+    mutex_unlock(&self_p->dev_p->mutex);
 
     return (0);
 }
@@ -106,7 +106,7 @@ int spi_take_bus(struct spi_driver_t *self_p)
 {
     ASSERTN(self_p != NULL, EINVAL);
 
-    sem_take(&self_p->dev_p->sem, NULL);
+    mutex_lock(&self_p->dev_p->mutex);
 
     /* Configure and start SPI hardware with driver configuration. */
     if (self_p->dev_p->drv_p != self_p) {
@@ -121,7 +121,7 @@ int spi_give_bus(struct spi_driver_t *self_p)
 {
     ASSERTN(self_p != NULL, EINVAL);
 
-    sem_give(&self_p->dev_p->sem, 1);
+    mutex_unlock(&self_p->dev_p->mutex);
 
     return (0);
 }

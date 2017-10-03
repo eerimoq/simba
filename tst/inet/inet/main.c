@@ -30,7 +30,7 @@
 
 #include "simba.h"
 
-static int test_aton(struct harness_t *harness_p)
+static int test_aton(void)
 {
     const char src[] = "1.2.3.4";
     const char bad_src_1[] = "1.2.g.4";
@@ -46,7 +46,7 @@ static int test_aton(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_ntoa(struct harness_t *harness_p)
+static int test_ntoa(void)
 {
     struct inet_ip_addr_t src;
     char dst[16];
@@ -59,7 +59,7 @@ static int test_ntoa(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_inet_checksum(struct harness_t *harness_p)
+static int test_inet_checksum(void)
 {
     char buf[8] = { 1, 5, 3, 9, 7, 13, 11, 17 };
 
@@ -81,8 +81,7 @@ static int test_inet_checksum(struct harness_t *harness_p)
 
 int main()
 {
-    struct harness_t harness;
-    struct harness_testcase_t harness_testcases[] = {
+    struct harness_testcase_t testcases[] = {
         { test_aton, "test_aton" },
         { test_ntoa, "test_ntoa" },
         { test_inet_checksum, "test_inet_checksum" },
@@ -91,8 +90,7 @@ int main()
 
     sys_start();
 
-    harness_init(&harness);
-    harness_run(&harness, harness_testcases);
+    harness_run(testcases);
 
     return (0);
 }

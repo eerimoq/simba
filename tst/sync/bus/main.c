@@ -33,16 +33,16 @@
 #define ID_FOO 0x0
 #define ID_BAR 0x1
 
-static int test_init(struct harness_t *harness)
+static int test_init(void)
 {
     /* This function may be called multiple times. */
     BTASSERT(bus_module_init() == 0);
     BTASSERT(bus_module_init() == 0);
-    
+
     return (0);
 }
 
-static int test_attach_detach(struct harness_t *harness)
+static int test_attach_detach(void)
 {
     struct bus_t bus;
     struct bus_listener_t chan;
@@ -53,15 +53,15 @@ static int test_attach_detach(struct harness_t *harness)
 
     /* Attach-detach a channel. */
     BTASSERT(bus_attach(&bus, &chan) == 0);
-    BTASSERT(bus_detatch(&bus, &chan) == 0);
+    BTASSERT(bus_detach(&bus, &chan) == 0);
 
     /* Detach already detached channel fails. */
-    BTASSERT(bus_detatch(&bus, &chan) == -1);
+    BTASSERT(bus_detach(&bus, &chan) == -1);
 
     return (0);
 }
 
-static int test_write_read(struct harness_t *harness)
+static int test_write_read(void)
 {
     struct bus_t bus;
     struct bus_listener_t chans[5];
@@ -104,18 +104,18 @@ static int test_write_read(struct harness_t *harness)
     BTASSERT(value == 5);
 
     /* Detach the channels with id ID_FOO. */
-    BTASSERT(bus_detatch(&bus, &chans[0]) == 0);
-    BTASSERT(bus_detatch(&bus, &chans[1]) == 0);
+    BTASSERT(bus_detach(&bus, &chans[0]) == 0);
+    BTASSERT(bus_detach(&bus, &chans[1]) == 0);
 
     /* Detach the channels with id -1. */
-    BTASSERT(bus_detatch(&bus, &chans[3]) == 0);
-    BTASSERT(bus_detatch(&bus, &chans[4]) == 0);
-    BTASSERT(bus_detatch(&bus, &chans[2]) == 0);
+    BTASSERT(bus_detach(&bus, &chans[3]) == 0);
+    BTASSERT(bus_detach(&bus, &chans[4]) == 0);
+    BTASSERT(bus_detach(&bus, &chans[2]) == 0);
 
     return (0);
 }
 
-static int test_multiple_ids(struct harness_t *harness)
+static int test_multiple_ids(void)
 {
     struct bus_t bus;
     struct bus_listener_t chans[2];
@@ -157,18 +157,17 @@ static int test_multiple_ids(struct harness_t *harness)
     mask = 0xffffffff;
     BTASSERT(event_read(&event, &mask, sizeof(mask)) == sizeof(mask));
     BTASSERT(mask == 0x80);
-    
+
     /* Detach the channels. */
-    BTASSERT(bus_detatch(&bus, &chans[0]) == 0);
-    BTASSERT(bus_detatch(&bus, &chans[1]) == 0);
+    BTASSERT(bus_detach(&bus, &chans[0]) == 0);
+    BTASSERT(bus_detach(&bus, &chans[1]) == 0);
 
     return (0);
 }
 
 int main()
 {
-    struct harness_t harness;
-    struct harness_testcase_t harness_testcases[] = {
+    struct harness_testcase_t testcases[] = {
         { test_init, "test_init" },
         { test_attach_detach, "test_attach_detach" },
         { test_write_read, "test_write_read" },
@@ -178,8 +177,7 @@ int main()
 
     sys_start();
 
-    harness_init(&harness);
-    harness_run(&harness, harness_testcases);
+    harness_run(testcases);
 
     return (0);
 }

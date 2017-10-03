@@ -102,9 +102,8 @@ struct uart_device_t uart_device[UART_DEVICE_MAX] = {
 
 struct flash_device_t flash_device[FLASH_DEVICE_MAX] = {
     {
-        .sem = {
-            .count = 0,
-            .count_max = 1,
+        .mutex = {
+            .is_locked = 0,
             .waiters = {
                 .head_p = NULL
             }

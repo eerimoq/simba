@@ -57,10 +57,11 @@ ssize_t __attribute__ ((weak)) STUB(nmea_encode)(char *dst_p,
 
     harness_mock_read("nmea_encode(): return (dst_p)",
                       dst_p,
-                      -1);
+                      sizeof(*dst_p));
 
     harness_mock_assert("nmea_encode(src_p)",
-                        src_p);
+                        src_p,
+                        sizeof(*src_p));
 
     harness_mock_read("nmea_encode(): return (res)",
                       &res,
@@ -101,14 +102,15 @@ ssize_t __attribute__ ((weak)) STUB(nmea_decode)(struct nmea_sentence_t *dst_p,
 
     harness_mock_read("nmea_decode(): return (dst_p)",
                       dst_p,
-                      -1);
+                      sizeof(*dst_p));
 
     harness_mock_read("nmea_decode(): return (src_p)",
                       src_p,
-                      -1);
+                      sizeof(*src_p));
 
     harness_mock_assert("nmea_decode(size)",
-                        &size);
+                        &size,
+                        sizeof(size));
 
     harness_mock_read("nmea_decode(): return (res)",
                       &res,
@@ -154,19 +156,20 @@ int __attribute__ ((weak)) STUB(nmea_decode_fix_time)(char *src_p,
     int res;
 
     harness_mock_assert("nmea_decode_fix_time(src_p)",
-                        src_p);
+                        src_p,
+                        sizeof(*src_p));
 
     harness_mock_read("nmea_decode_fix_time(): return (hour_p)",
                       hour_p,
-                      -1);
+                      sizeof(*hour_p));
 
     harness_mock_read("nmea_decode_fix_time(): return (minute_p)",
                       minute_p,
-                      -1);
+                      sizeof(*minute_p));
 
     harness_mock_read("nmea_decode_fix_time(): return (second_p)",
                       second_p,
-                      -1);
+                      sizeof(*second_p));
 
     harness_mock_read("nmea_decode_fix_time(): return (res)",
                       &res,
@@ -212,19 +215,20 @@ int __attribute__ ((weak)) STUB(nmea_decode_date)(char *src_p,
     int res;
 
     harness_mock_assert("nmea_decode_date(src_p)",
-                        src_p);
+                        src_p,
+                        sizeof(*src_p));
 
     harness_mock_read("nmea_decode_date(): return (year_p)",
                       year_p,
-                      -1);
+                      sizeof(*year_p));
 
     harness_mock_read("nmea_decode_date(): return (month_p)",
                       month_p,
-                      -1);
+                      sizeof(*month_p));
 
     harness_mock_read("nmea_decode_date(): return (date_p)",
                       date_p,
-                      -1);
+                      sizeof(*date_p));
 
     harness_mock_read("nmea_decode_date(): return (res)",
                       &res,
@@ -258,11 +262,12 @@ int __attribute__ ((weak)) STUB(nmea_decode_position)(struct nmea_position_t *sr
     int res;
 
     harness_mock_assert("nmea_decode_position(src_p)",
-                        src_p);
+                        src_p,
+                        sizeof(*src_p));
 
     harness_mock_read("nmea_decode_position(): return (degrees_p)",
                       degrees_p,
-                      -1);
+                      sizeof(*degrees_p));
 
     harness_mock_read("nmea_decode_position(): return (res)",
                       &res,

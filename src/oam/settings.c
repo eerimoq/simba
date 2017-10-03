@@ -48,9 +48,7 @@ struct module_t {
 
 static struct module_t module;
 
-const FAR struct setting_t settings[] __attribute__ ((weak)) = {
-    { NULL, 0, 0, 0 }
-};
+extern const FAR struct setting_t settings[];
 const FAR uint8_t settings_default[CONFIG_SETTINGS_AREA_SIZE]
 __attribute__ ((weak)) = { 0xff, };
 

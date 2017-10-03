@@ -33,7 +33,7 @@
 struct uart_soft_driver_t uart_soft;
 static char rxbuf[32];
 
-static int test_write(struct harness_t *harness_p)
+static int test_write(void)
 {
     uint8_t i;
     int baudrate;
@@ -57,7 +57,7 @@ static int test_write(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_echo(struct harness_t *harness_p)
+static int test_echo(void)
 {
     uint8_t i;
 
@@ -79,8 +79,7 @@ static int test_echo(struct harness_t *harness_p)
 
 int main()
 {
-    struct harness_t harness;
-    struct harness_testcase_t harness_testcases[] = {
+    struct harness_testcase_t testcases[] = {
         { test_write, "test_write" },
         { test_echo, "test_echo" },
         { NULL, NULL }
@@ -88,8 +87,7 @@ int main()
 
     sys_start();
 
-    harness_init(&harness);
-    harness_run(&harness, harness_testcases);
+    harness_run(testcases);
 
     return (0);
 }

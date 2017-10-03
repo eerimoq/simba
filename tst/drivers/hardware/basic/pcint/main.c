@@ -38,7 +38,7 @@ static void isr(void *arg_p)
     count++;
 }
 
-int test_init(struct harness_t *harness_p)
+int test_init(void)
 {
     BTASSERT(pcint_module_init() == 0);
     BTASSERT(pcint_module_init() == 0);
@@ -48,7 +48,7 @@ int test_init(struct harness_t *harness_p)
     return (0);
 }
 
-int test_rising(struct harness_t *harness_p)
+int test_rising(void)
 {
     int i;
     struct pcint_driver_t pcint;
@@ -85,7 +85,7 @@ int test_rising(struct harness_t *harness_p)
     return (0);
 }
 
-int test_falling(struct harness_t *harness_p)
+int test_falling(void)
 {
     int i;
     struct pcint_driver_t pcint;
@@ -122,7 +122,7 @@ int test_falling(struct harness_t *harness_p)
     return (0);
 }
 
-int test_both(struct harness_t *harness_p)
+int test_both(void)
 {
     int i;
     struct pcint_driver_t pcint;
@@ -161,8 +161,7 @@ int test_both(struct harness_t *harness_p)
 
 int main()
 {
-    struct harness_t harness;
-    struct harness_testcase_t harness_testcases[] = {
+    struct harness_testcase_t testcases[] = {
         { test_init, "test_init" },
         { test_rising, "test_rising" },
         { test_falling, "test_falling" },
@@ -172,8 +171,7 @@ int main()
 
     sys_start();
 
-    harness_init(&harness);
-    harness_run(&harness, harness_testcases);
+    harness_run(testcases);
 
     return (0);
 }

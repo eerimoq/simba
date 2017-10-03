@@ -68,7 +68,7 @@ static void *mock_thread(void *arg_p)
     return (NULL);
 }
 
-static int test_asserti(struct harness_t *harness_p)
+static int test_asserti(void)
 {
     BTASSERT(asserti(1, 2) == -1);
     BTASSERT(asserti(1, 1) == 0);
@@ -76,7 +76,7 @@ static int test_asserti(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_assertm(struct harness_t *harness_p)
+static int test_assertm(void)
 {
     BTASSERT(assertm("foo", "bar", 3) == -1);
     BTASSERT(assertm("foo", "foo", 3) == 0);
@@ -84,7 +84,7 @@ static int test_assertm(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_mock(struct harness_t *harness_p)
+static int test_mock(void)
 {
     char buf[16];
 
@@ -96,10 +96,27 @@ static int test_mock(struct harness_t *harness_p)
     BTASSERTI(my_memcpy(&buf[0], "foo", 4), ==, -1);
     BTASSERTM(&buf[0], "bar", 4);
 
+    harness_mock_write("foo", NULL, 0);
+    harness_mock_assert("foo", NULL, 0);
+
+    harness_mock_write("foo", NULL, 0);
+    harness_mock_read("foo", NULL, 0);
+
+    buf[0] = 1;
+    harness_mock_write("foo", &buf[0], 1);
+    harness_mock_assert("foo", &buf[0], 1);
+
+    harness_mock_write("foo", &buf[0], 1);
+    buf[0] = 0;
+    harness_mock_read("foo", &buf[0], 1);
+    BTASSERT(buf[0] == 1);
+
+    harness_mock_try_read("foo", NULL, 0);
+
     return (0);
 }
 
-static int test_mock_wait_notify(struct harness_t *harness_p)
+static int test_mock_wait_notify(void)
 {
     int value;
     int i;
@@ -125,7 +142,7 @@ static int test_mock_wait_notify(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_stub(struct harness_t *harness_p)
+static int test_stub(void)
 {
     mock_write_foo(0);
     BTASSERT(foo() == 0);
@@ -145,8 +162,7 @@ int STUB(bar)()
 
 int main()
 {
-    struct harness_t harness;
-    struct harness_testcase_t harness_testcases[] = {
+    struct harness_testcase_t testcases[] = {
         { test_asserti, "test_asserti" },
         { test_assertm, "test_assertm" },
         { test_mock, "test_mock" },
@@ -157,8 +173,7 @@ int main()
 
     sys_start();
 
-    harness_init(&harness);
-    harness_run(&harness, harness_testcases);
+    harness_run(testcases);
 
     return (0);
 }

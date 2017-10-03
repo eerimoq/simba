@@ -63,7 +63,7 @@ struct can_driver_t {
     const struct can_frame_t *txframe_p;
     size_t txsize;
     struct queue_t chin;
-    struct sem_t sem;
+    struct mutex_t mutex;
 };
 
 #endif

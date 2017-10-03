@@ -56,10 +56,12 @@ int __attribute__ ((weak)) STUB(upgrade_tftp_init)(int port,
     int res;
 
     harness_mock_assert("upgrade_tftp_init(port)",
-                        &port);
+                        &port,
+                        sizeof(port));
 
     harness_mock_assert("upgrade_tftp_init(timeout_ms)",
-                        &timeout_ms);
+                        &timeout_ms,
+                        sizeof(timeout_ms));
 
     harness_mock_read("upgrade_tftp_init(): return (res)",
                       &res,
@@ -70,6 +72,10 @@ int __attribute__ ((weak)) STUB(upgrade_tftp_init)(int port,
 
 int mock_write_upgrade_tftp_start(int res)
 {
+    harness_mock_write("upgrade_tftp_start()",
+                       NULL,
+                       0);
+
     harness_mock_write("upgrade_tftp_start(): return (res)",
                        &res,
                        sizeof(res));
@@ -80,6 +86,10 @@ int mock_write_upgrade_tftp_start(int res)
 int __attribute__ ((weak)) STUB(upgrade_tftp_start)()
 {
     int res;
+
+    harness_mock_assert("upgrade_tftp_start()",
+                        NULL,
+                        0);
 
     harness_mock_read("upgrade_tftp_start(): return (res)",
                       &res,

@@ -33,6 +33,10 @@
 
 int mock_write_hd44780_module_init(int res)
 {
+    harness_mock_write("hd44780_module_init()",
+                       NULL,
+                       0);
+
     harness_mock_write("hd44780_module_init(): return (res)",
                        &res,
                        sizeof(res));
@@ -43,6 +47,10 @@ int mock_write_hd44780_module_init(int res)
 int __attribute__ ((weak)) STUB(hd44780_module_init)()
 {
     int res;
+
+    harness_mock_assert("hd44780_module_init()",
+                        NULL,
+                        0);
 
     harness_mock_read("hd44780_module_init(): return (res)",
                       &res,
@@ -114,33 +122,35 @@ int __attribute__ ((weak)) STUB(hd44780_init)(struct hd44780_driver_t *self_p,
 
     harness_mock_read("hd44780_init(): return (rs_p)",
                       rs_p,
-                      -1);
+                      sizeof(*rs_p));
 
     harness_mock_read("hd44780_init(): return (enable_p)",
                       enable_p,
-                      -1);
+                      sizeof(*enable_p));
 
     harness_mock_read("hd44780_init(): return (data_4_p)",
                       data_4_p,
-                      -1);
+                      sizeof(*data_4_p));
 
     harness_mock_read("hd44780_init(): return (data_5_p)",
                       data_5_p,
-                      -1);
+                      sizeof(*data_5_p));
 
     harness_mock_read("hd44780_init(): return (data_6_p)",
                       data_6_p,
-                      -1);
+                      sizeof(*data_6_p));
 
     harness_mock_read("hd44780_init(): return (data_7_p)",
                       data_7_p,
-                      -1);
+                      sizeof(*data_7_p));
 
     harness_mock_assert("hd44780_init(number_of_rows)",
-                        &number_of_rows);
+                        &number_of_rows,
+                        sizeof(number_of_rows));
 
     harness_mock_assert("hd44780_init(number_of_columns)",
-                        &number_of_columns);
+                        &number_of_columns,
+                        sizeof(number_of_columns));
 
     harness_mock_read("hd44780_init(): return (res)",
                       &res,
@@ -209,7 +219,8 @@ int __attribute__ ((weak)) STUB(hd44780_display)(struct hd44780_driver_t *self_p
     int res;
 
     harness_mock_assert("hd44780_display(text_p)",
-                        text_p);
+                        text_p,
+                        sizeof(*text_p));
 
     harness_mock_read("hd44780_display(): return (res)",
                       &res,
@@ -238,7 +249,8 @@ int __attribute__ ((weak)) STUB(hd44780_write)(struct hd44780_driver_t *self_p,
     int res;
 
     harness_mock_assert("hd44780_write(text_p)",
-                        text_p);
+                        text_p,
+                        sizeof(*text_p));
 
     harness_mock_read("hd44780_write(): return (res)",
                       &res,
@@ -267,7 +279,8 @@ int __attribute__ ((weak)) STUB(hd44780_put)(struct hd44780_driver_t *self_p,
     int res;
 
     harness_mock_assert("hd44780_put(character)",
-                        &character);
+                        &character,
+                        sizeof(character));
 
     harness_mock_read("hd44780_put(): return (res)",
                       &res,
@@ -322,10 +335,12 @@ int __attribute__ ((weak)) STUB(hd44780_cursor_move)(struct hd44780_driver_t *se
     int res;
 
     harness_mock_assert("hd44780_cursor_move(row)",
-                        &row);
+                        &row,
+                        sizeof(row));
 
     harness_mock_assert("hd44780_cursor_move(column)",
-                        &column);
+                        &column,
+                        sizeof(column));
 
     harness_mock_read("hd44780_cursor_move(): return (res)",
                       &res,

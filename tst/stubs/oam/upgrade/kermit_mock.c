@@ -56,10 +56,12 @@ int __attribute__ ((weak)) STUB(upgrade_kermit_init)(void *chin_p,
     int res;
 
     harness_mock_assert("upgrade_kermit_init(chin_p)",
-                        chin_p);
+                        chin_p,
+                        sizeof(*chin_p));
 
     harness_mock_assert("upgrade_kermit_init(chout_p)",
-                        chout_p);
+                        chout_p,
+                        sizeof(*chout_p));
 
     harness_mock_read("upgrade_kermit_init(): return (res)",
                       &res,
@@ -70,6 +72,10 @@ int __attribute__ ((weak)) STUB(upgrade_kermit_init)(void *chin_p,
 
 int mock_write_upgrade_kermit_load_file(int res)
 {
+    harness_mock_write("upgrade_kermit_load_file()",
+                       NULL,
+                       0);
+
     harness_mock_write("upgrade_kermit_load_file(): return (res)",
                        &res,
                        sizeof(res));
@@ -80,6 +86,10 @@ int mock_write_upgrade_kermit_load_file(int res)
 int __attribute__ ((weak)) STUB(upgrade_kermit_load_file)()
 {
     int res;
+
+    harness_mock_assert("upgrade_kermit_load_file()",
+                        NULL,
+                        0);
 
     harness_mock_read("upgrade_kermit_load_file(): return (res)",
                       &res,

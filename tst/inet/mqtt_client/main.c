@@ -108,7 +108,7 @@ static int on_error(struct mqtt_client_t *client_p,
     return (0);
 }
 
-static int test_init(struct harness_t *harness_p)
+static int test_init(void)
 {
     struct thrd_t *thrd_p;
 
@@ -141,7 +141,7 @@ static int test_init(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_connect(struct harness_t *harness_p)
+static int test_connect(void)
 {
     struct message_t message;
     uint8_t buf[16];
@@ -184,7 +184,7 @@ static int test_connect(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_ping(struct harness_t *harness_p)
+static int test_ping(void)
 {
     struct message_t message;
     uint8_t response[2];
@@ -213,7 +213,7 @@ static int test_ping(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_publish(struct harness_t *harness_p)
+static int test_publish(void)
 {
     struct mqtt_application_message_t foobar;
     struct message_t message;
@@ -263,7 +263,7 @@ static int test_publish(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_subscribe(struct harness_t *harness_p)
+static int test_subscribe(void)
 {
     uint8_t buf[16];
     struct message_t message;
@@ -367,7 +367,7 @@ static int test_subscribe(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_incoming_publish_qos0(struct harness_t *harness_p)
+static int test_incoming_publish_qos0(void)
 {
     uint8_t buf[16];
     struct message_t message;
@@ -405,7 +405,7 @@ static int test_incoming_publish_qos0(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_incoming_publish_qos1(struct harness_t *harness_p)
+static int test_incoming_publish_qos1(void)
 {
     uint8_t buf[16];
     struct message_t message;
@@ -458,7 +458,7 @@ static int test_incoming_publish_qos1(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_incoming_publish_qos2(struct harness_t *harness_p)
+static int test_incoming_publish_qos2(void)
 {
     uint8_t buf[16];
     struct message_t message;
@@ -511,7 +511,7 @@ static int test_incoming_publish_qos2(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_disconnect(struct harness_t *harness_p)
+static int test_disconnect(void)
 {
     struct message_t message;
     uint8_t buf[16];
@@ -533,8 +533,7 @@ static int test_disconnect(struct harness_t *harness_p)
 
 int main()
 {
-    struct harness_t harness;
-    struct harness_testcase_t harness_testcases[] = {
+    struct harness_testcase_t testcases[] = {
         { test_init, "test_init" },
         { test_connect, "test_connect" },
         { test_ping, "test_ping" },
@@ -551,8 +550,7 @@ int main()
 
     self_p = thrd_self();
 
-    harness_init(&harness);
-    harness_run(&harness, harness_testcases);
+    harness_run(testcases);
 
     return (0);
 }

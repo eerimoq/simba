@@ -32,7 +32,7 @@
 
 static char buffer[2048];
 
-static int test_alloc_free(struct harness_t *harness)
+static int test_alloc_free(void)
 {
     int i;
     struct heap_t heap;
@@ -68,7 +68,7 @@ static int test_alloc_free(struct harness_t *harness)
     return (0);
 }
 
-static int test_double_free(struct harness_t *harness)
+static int test_double_free(void)
 {
     struct heap_t heap;
     void *buf_p;
@@ -84,7 +84,7 @@ static int test_double_free(struct harness_t *harness)
     return (0);
 }
 
-static int test_share(struct harness_t *harness)
+static int test_share(void)
 {
     struct heap_t heap;
     void *buf_p;
@@ -101,7 +101,7 @@ static int test_share(struct harness_t *harness)
     return (0);
 }
 
-static int test_big_buffer(struct harness_t *harness)
+static int test_big_buffer(void)
 {
     struct heap_t heap;
     void *buffers[4];
@@ -138,7 +138,7 @@ static int test_big_buffer(struct harness_t *harness)
     return (0);
 }
 
-static int test_out_of_memory(struct harness_t *harness)
+static int test_out_of_memory(void)
 {
     struct heap_t heap;
     void *buf_p;
@@ -161,8 +161,7 @@ static int test_out_of_memory(struct harness_t *harness)
 
 int main()
 {
-    struct harness_t harness;
-    struct harness_testcase_t harness_testcases[] = {
+    struct harness_testcase_t testcases[] = {
         { test_alloc_free, "test_alloc_free" },
         { test_double_free, "test_double_free" },
         { test_share, "test_share" },
@@ -173,8 +172,7 @@ int main()
 
     sys_start();
 
-    harness_init(&harness);
-    harness_run(&harness, harness_testcases);
+    harness_run(testcases);
 
     return (0);
 }

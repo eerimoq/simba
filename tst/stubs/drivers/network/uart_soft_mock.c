@@ -81,22 +81,28 @@ int __attribute__ ((weak)) STUB(uart_soft_init)(struct uart_soft_driver_t *self_
     int res;
 
     harness_mock_assert("uart_soft_init(tx_dev_p)",
-                        tx_dev_p);
+                        tx_dev_p,
+                        sizeof(*tx_dev_p));
 
     harness_mock_assert("uart_soft_init(rx_dev_p)",
-                        rx_dev_p);
+                        rx_dev_p,
+                        sizeof(*rx_dev_p));
 
     harness_mock_assert("uart_soft_init(rx_exti_dev_p)",
-                        rx_exti_dev_p);
+                        rx_exti_dev_p,
+                        sizeof(*rx_exti_dev_p));
 
     harness_mock_assert("uart_soft_init(baudrate)",
-                        &baudrate);
+                        &baudrate,
+                        sizeof(baudrate));
 
     harness_mock_assert("uart_soft_init(rxbuf_p)",
-                        rxbuf_p);
+                        rxbuf_p,
+                        size);
 
     harness_mock_assert("uart_soft_init(size)",
-                        &size);
+                        &size,
+                        sizeof(size));
 
     harness_mock_read("uart_soft_init(): return (res)",
                       &res,

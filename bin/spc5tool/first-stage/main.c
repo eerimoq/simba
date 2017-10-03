@@ -43,7 +43,5 @@ int main()
     uart_device_read(&uart_device, &size, 2);
     uart_device_read(&uart_device, &buf[0], size);
 
-    ((void (*)())(&buf[0]))();
-
-    return (0);
+    return (((int (*)())(&buf[0]))());
 }

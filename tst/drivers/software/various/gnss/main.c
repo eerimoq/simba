@@ -29,13 +29,14 @@
  */
 
 #include "simba.h"
+#include "sync/chan_mock.h"
 
 static struct gnss_driver_t gnss;
 static struct chan_t transport;
 static struct queue_t queue;
 static uint8_t buf[768];
 
-static int test_init(struct harness_t *harness_p)
+static int test_init(void)
 {
     BTASSERT(queue_init(&queue, &buf[0], sizeof(buf)) == 0);
 
@@ -51,7 +52,7 @@ static int test_init(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_get_no_data(struct harness_t *harness_p)
+static int test_get_no_data(void)
 {
     struct date_t date;
     float latitude;
@@ -92,7 +93,7 @@ static int test_get_no_data(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_print_no_data(struct harness_t *harness_p)
+static int test_print_no_data(void)
 {
     BTASSERTI(gnss_print(&gnss, &queue), ==, 0);
     BTASSERTI(harness_expect(&queue,
@@ -106,10 +107,9 @@ static int test_print_no_data(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_read_rmc(struct harness_t *harness_p)
+static int test_read_rmc(void)
 {
     int i;
-    ssize_t res;
     char sentence[] =
         "$GPRMC,123519,A,4807.038,N,01131.000,W,022.4,084.4,230394,003.1,W*78\r\n";
     struct date_t date;
@@ -117,11 +117,8 @@ static int test_read_rmc(struct harness_t *harness_p)
     float longitude;
     float speed;
 
-    res = 1;
-
     for (i = 0; i < strlen(sentence); i++) {
-        harness_mock_write("chan_read(): return (res)", &res, sizeof(res));
-        harness_mock_write("chan_read(): return (buf_p)", &sentence[i], 1);
+        mock_write_chan_read(&sentence[i], 1, 1);
     }
 
     BTASSERTI(gnss_read(&gnss), ==, 0);
@@ -161,10 +158,9 @@ static int test_read_rmc(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_read_gga_glonass(struct harness_t *harness_p)
+static int test_read_gga_glonass(void)
 {
     int i;
-    ssize_t res;
     char sentence[] =
         "$GNGGA,123520,4907.038,N,01031.000,E,1,08,0.9,545.4,M,46.9,M,,*53\r\n";
     struct date_t date;
@@ -174,11 +170,8 @@ static int test_read_gga_glonass(struct harness_t *harness_p)
     int number_of_satellites;
     float altitude;
 
-    res = 1;
-
     for (i = 0; i < strlen(sentence); i++) {
-        harness_mock_write("chan_read(): return (res)", &res, sizeof(res));
-        harness_mock_write("chan_read(): return (buf_p)", &sentence[i], 1);
+        mock_write_chan_read(&sentence[i], 1, 1);
     }
 
     BTASSERTI(gnss_read(&gnss), ==, 0);
@@ -229,39 +222,30 @@ static int test_read_gga_glonass(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_read_read_failed(struct harness_t *harness_p)
+static int test_read_read_failed(void)
 {
-    ssize_t res;
+    uint8_t byte;
 
-    res = -EIO;
-    harness_mock_write("chan_read(): return (res)",
-                       &res,
-                       sizeof(res));
+    byte = 0;
 
+    mock_write_chan_read(&byte, 1, -EIO);
     BTASSERTI(gnss_read(&gnss), ==, -EIO);
 
-    res = 0;
-    harness_mock_write("chan_read(): return (res)",
-                       &res,
-                       sizeof(res));
-
+    mock_write_chan_read(&byte, 1, -EIO);
     BTASSERTI(gnss_read(&gnss), ==, -EIO);
 
     return (0);
 }
 
-static int test_read_sentence_too_long(struct harness_t *harness_p)
+static int test_read_sentence_too_long(void)
 {
     int i;
     char byte;
-    ssize_t res;
 
-    res = 1;
     byte = '$';
 
     for (i = 0; i < NMEA_SENTENCE_SIZE_MAX; i++) {
-        harness_mock_write("chan_read(): return (res)", &res, sizeof(res));
-        harness_mock_write("chan_read(): return (buf_p)", &byte, sizeof(byte));
+        mock_write_chan_read(&byte, 1, 1);
     }
 
     BTASSERTI(gnss_read(&gnss), ==, -ENOMEM);
@@ -269,19 +253,15 @@ static int test_read_sentence_too_long(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_read_start_not_first(struct harness_t *harness_p)
+static int test_read_start_not_first(void)
 {
     int i;
-    ssize_t res;
     char sentence[] =
         "\r\n$GPRMC,123519,A,4807.038,N,01131.000,W,022.4,084.4,230394,"
         "003.1,W*78\r\n";
 
-    res = 1;
-
     for (i = 0; i < strlen(sentence); i++) {
-        harness_mock_write("chan_read(): return (res)", &res, sizeof(res));
-        harness_mock_write("chan_read(): return (buf_p)", &sentence[i], 1);
+        mock_write_chan_read(&sentence[i], 1, 1);
     }
 
     BTASSERTI(gnss_read(&gnss), ==, 0);
@@ -289,17 +269,13 @@ static int test_read_start_not_first(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_read_unsupported_sentence(struct harness_t *harness_p)
+static int test_read_unsupported_sentence(void)
 {
     int i;
-    ssize_t res;
     char sentence[] = "$GPFOO,BAR*2C\r\n";
 
-    res = 1;
-
     for (i = 0; i < strlen(sentence); i++) {
-        harness_mock_write("chan_read(): return (res)", &res, sizeof(res));
-        harness_mock_write("chan_read(): return (buf_p)", &sentence[i], 1);
+        mock_write_chan_read(&sentence[i], 1, 1);
     }
 
     BTASSERTI(gnss_read(&gnss), ==, 0);
@@ -307,17 +283,13 @@ static int test_read_unsupported_sentence(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_read_wrong_crc(struct harness_t *harness_p)
+static int test_read_wrong_crc(void)
 {
     int i;
-    ssize_t res;
     char sentence[] = "$GPFOO,BAR*2D\r\n";
 
-    res = 1;
-
     for (i = 0; i < strlen(sentence); i++) {
-        harness_mock_write("chan_read(): return (res)", &res, sizeof(res));
-        harness_mock_write("chan_read(): return (buf_p)", &sentence[i], 1);
+        mock_write_chan_read(&sentence[i], 1, 1);
     }
 
     BTASSERTI(gnss_read(&gnss), ==, -EPROTO);
@@ -325,66 +297,17 @@ static int test_read_wrong_crc(struct harness_t *harness_p)
     return (0);
 }
 
-static int test_write(struct harness_t *harness_p)
+static int test_write(void)
 {
-    char data[] = "GPFOO,BAR";
-    char sentence[NMEA_SENTENCE_SIZE_MAX];
-    ssize_t size;
-
-    BTASSERTI(gnss_write(&gnss, &data[0]), ==, 0);
-
-    harness_mock_read("chan_write(size)", &size, sizeof(size));
-    BTASSERTI(size, ==, 15);
-
-    harness_mock_read("chan_write(buf_p)", &sentence[0], size);
-    BTASSERTM(&sentence[0], "$GPFOO,BAR*2C\r\n", size);
+    mock_write_chan_write("$GPFOO,BAR*2C\r\n", 15, 15);
+    BTASSERTI(gnss_write(&gnss, "GPFOO,BAR"), ==, 0);
 
     return (0);
 }
 
-ssize_t STUB(chan_read)(void *self_p,
-                        void *buf_p,
-                        size_t size)
-{
-    ssize_t res;
-
-    if (harness_mock_try_read("chan_read(): return (res)",
-                              &res,
-                              sizeof(res)) == -1) {
-        res = size;
-    }
-
-    if (res > 0) {
-        harness_mock_read("chan_read(): return (buf_p)",
-                          buf_p,
-                          res);
-    }
-
-    return (res);
-}
-
-ssize_t STUB(chan_write)(void *self_p,
-                         const void *buf_p,
-                         size_t size)
-{
-    ssize_t res;
-
-    harness_mock_write("chan_write(buf_p)", buf_p, size);
-    harness_mock_write("chan_write(size)", &size, sizeof(size));
-
-    if (harness_mock_try_read("chan_write(): return (res)",
-                              &res,
-                              sizeof(res)) == -1) {
-        res = size;
-    }
-
-    return (res);
-}
-
 int main()
 {
-    struct harness_t harness;
-    struct harness_testcase_t harness_testcases[] = {
+    struct harness_testcase_t testcases[] = {
         { test_init, "test_init" },
         { test_get_no_data, "test_get_no_data" },
         { test_print_no_data, "test_print_no_data" },
@@ -401,8 +324,7 @@ int main()
 
     sys_start();
 
-    harness_init(&harness);
-    harness_run(&harness, harness_testcases);
+    harness_run(testcases);
 
     return (0);
 }

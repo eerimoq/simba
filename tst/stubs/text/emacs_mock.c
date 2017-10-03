@@ -62,13 +62,16 @@ int __attribute__ ((weak)) STUB(emacs)(const char *path_p,
     int res;
 
     harness_mock_assert("emacs(path_p)",
-                        path_p);
+                        path_p,
+                        sizeof(*path_p));
 
     harness_mock_assert("emacs(chin_p)",
-                        chin_p);
+                        chin_p,
+                        sizeof(*chin_p));
 
     harness_mock_assert("emacs(chout_p)",
-                        chout_p);
+                        chout_p,
+                        sizeof(*chout_p));
 
     harness_mock_read("emacs(): return (res)",
                       &res,

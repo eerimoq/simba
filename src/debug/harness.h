@@ -35,12 +35,17 @@
 
 #define _ASSERTFMT(fmt, ...) std_printf(FSTR(fmt "\n"), ##__VA_ARGS__);
 
-#define _ASSERTHEX(actual_str, actual, expected_str, expected, size)    \
+#define _ASSERTHEX(actual_str, \
+                   actual, \
+                   expected_str, \
+                   expected, \
+                   actual_size, \
+                   expected_size)                                       \
     std_printf(FSTR(":: \r\n"                                           \
                     "Memory buffer '" actual_str "'\r\n"));             \
-    std_hexdump(sys_get_stdout(), actual, size);                        \
+    std_hexdump(sys_get_stdout(), actual, actual_size);                 \
     std_printf(FSTR("is not equal to memory buffer '" expected_str "'\r\n")); \
-    std_hexdump(sys_get_stdout(), expected, size);
+    std_hexdump(sys_get_stdout(), expected, expected_size);
 
 /**
  * Assert given condition. Print an error message and return given
@@ -109,6 +114,7 @@
                    -1,                                                  \
                    _ASSERTHEX(#actual, UNIQUE(_actual),                 \
                               #expected, UNIQUE(_expected),             \
+                              size,                                     \
                               size));                                   \
     } while (0)
 
@@ -139,49 +145,30 @@
  */
 #define STUB(function) __stub_ ## function
 
-struct harness_t;
-
 /**
  * The testcase function callback.
- *
- * @param[in] harness_p The harness object.
  *
  * @return zero(0) if the testcase passed, a negative error code if
  *         the testcase failed, and a positive value if the testcase
  *         was skipped.
  */
-typedef int (*harness_testcase_cb_t)(struct harness_t *harness_p);
+typedef int (*harness_testcase_cb_t)(void);
 
 struct harness_testcase_t {
     harness_testcase_cb_t callback;
     const char *name_p;
 };
 
-struct harness_t {
-    int dummy;
-};
-
 /**
- * Initialize given test harness.
+ * Run given testcases in the test harness.
  *
- * @param[in] self_p Test harness to initialize.
- *
- * @return zero(0) or negative error code.
- */
-int harness_init(struct harness_t *self_p);
-
-/**
- * Run given testcases in given test harness.
- *
- * @param[in] self_p Test harness.
  * @param[in] testcases_p An array of testcases to run. The last
  *                        element in the array must have ``callback``
  *                        and ``name_p`` set to NULL.
  *
- * @return zero(0) or negative error code.
+ * @return Never returns.
  */
-int harness_run(struct harness_t *self_p,
-                struct harness_testcase_t *testcases_p);
+int harness_run(struct harness_testcase_t *testcases_p);
 
 /**
  * Continiously read from given channel and return when given pattern
@@ -220,19 +207,36 @@ ssize_t harness_mock_write(const char *id_p,
 
 /**
  * Read data from mock entry with given id, and make the testcase fail
- * if the mock id is not found.
+ * if the mock id is not found or if given size does not match the
+ * size in the mock entry.
  *
  * @param[in] id_p Mock id string to read.
  * @param[out] buf_p Buffer to read into, or NULL if no data shall
  *                   be read.
- * @param[in] size Buffer size in words, or zero(0) if buf_p is NULL,
- *                 or -1 to read all data available.
+ * @param[in] size Buffer size in words, or zero(0) if buf_p is NULL.
  *
  * @return Number of read words or negative error code.
  */
 ssize_t harness_mock_read(const char *id_p,
                           void *buf_p,
-                          ssize_t size);
+                          size_t size);
+
+/**
+ * Try to read data from mock entry with given id. The testcase does
+ * not fail if the mock entry is missing. However, the test case fails
+ * if the mock id is found and the data size does not match.
+ *
+ * @param[in] id_p Mock id string to read.
+ * @param[out] buf_p Buffer to read into, or NULL if no data shall
+ *                   be loaded.
+ * @param[in] size Buffer size in words, or zero(0) if buf_p is NULL.
+ *
+ * @return Number of read words, -ENOENT if no mock entry was found
+ *         for given id, or negative error code.
+ */
+ssize_t harness_mock_try_read(const char *id_p,
+                              void *buf_p,
+                              size_t size);
 
 /**
  * Find mock entry with given id and compare its data to given
@@ -242,27 +246,13 @@ ssize_t harness_mock_read(const char *id_p,
  * @param[in] id_p Mock id string to assert.
  * @param[in] buf_p Buffer with expected data, or NULL if no data
  *                  shall be compared.
+ * @param[in] size Buffer size in words, or zero(0) if buf_p is NULL.
  *
  * @return zero(0) or negative error code.
  */
 int harness_mock_assert(const char *id_p,
-                        const void *buf_p);
-
-/**
- * Try to read data from mock entry with given id.The testcase does
- * not fail if the mock entry is missing.
- *
- * @param[in] id_p Mock id string to read.
- * @param[out] buf_p Buffer to read into, or NULL if no data shall
- *                   be loaded.
- * @param[in] size Buffer size in words, or zero(0) if buf_p is NULL,
- *                 or -1 to read all data available.
- *
- * @return Number of read words or negative error code.
- */
-ssize_t harness_mock_try_read(const char *id_p,
-                              void *buf_p,
-                              ssize_t size);
+                        const void *buf_p,
+                        size_t size);
 
 /**
  * Write given data buffer to a mock entry with given id and notify
@@ -292,15 +282,14 @@ ssize_t harness_mock_write_notify(const char *id_p,
  * @param[in] id_p Mock id string to read.
  * @param[out] buf_p Buffer to read into, or NULL if no data shall
  *                   be read.
- * @param[in] size Buffer size in words, or zero(0) if buf_p is NULL,
- *                 or -1 to read all data available.
+ * @param[in] size Buffer size in words, or zero(0) if buf_p is NULL.
  * @param[in] timeout_p Read timeout.
  *
  * @return Number of read words or negative error code.
  */
 ssize_t harness_mock_read_wait(const char *id_p,
                                void *buf_p,
-                               ssize_t size,
+                               size_t size,
                                struct time_t *timeout_p);
 
 #endif
