@@ -100,11 +100,11 @@ static int test_echo(void)
     int res = 0;
     char c;
     struct chan_list_t list;
-    int workspace[16];
+    struct chan_list_elem_t elements[1];
     void *chan_p;
     struct time_t timeout;
 
-    chan_list_init(&list, workspace, sizeof(workspace));
+    chan_list_init(&list, &elements[0], membersof(elements));
     chan_list_add(&list, &echo.chin);
 
     timeout.seconds = 30;

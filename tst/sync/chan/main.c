@@ -152,7 +152,7 @@ static int test_null_channels(void)
 static int test_list(void)
 {
     struct chan_list_t list;
-    void *workspace[1];
+    struct chan_list_elem_t elements[1];
     struct chan_t chan[2];
 
     BTASSERT(chan_init(&chan[0],
@@ -164,7 +164,7 @@ static int test_list(void)
                        chan_write_null,
                        chan_size_null) == 0);
 
-    BTASSERT(chan_list_init(&list, &workspace[0], sizeof(workspace)) == 0);
+    BTASSERT(chan_list_init(&list, &elements[0], membersof(elements)) == 0);
     BTASSERT(chan_list_add(&list, &chan[0]) == 0);
     BTASSERT(chan[0].list_p != NULL);
     BTASSERT(chan_list_add(&list, &chan[1]) == -ENOMEM);

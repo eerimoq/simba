@@ -124,9 +124,13 @@ typedef int (*chan_write_filter_fn_t)(void *self_p,
  */
 typedef size_t (*chan_size_fn_t)(void *self_p);
 
+struct chan_list_elem_t {
+    struct chan_t *chan_p;
+};
+
 struct chan_list_t {
-    struct chan_t **chans_pp;
-    size_t max;
+    struct chan_list_elem_t *elements_p;
+    size_t number_of_elements;
     size_t len;
     int flags;
 };
@@ -353,14 +357,14 @@ int chan_is_polled_isr(struct chan_t *self_p);
  * can read from the channel with data.
  *
  * @param[in] list_p List to initialize.
- * @param[in] workspace_p Workspace for internal use.
- * @param[in] size Size of the workspace in bytes.
+ * @param[in] elements_p Array of elements to store added channels in.
+ * @param[in] number_of_elements Number of elements in the element array.
  *
  * @return zero(0) or negative error code.
  */
 int chan_list_init(struct chan_list_t *list_p,
-                   void *workspace_p,
-                   size_t size);
+                   struct chan_list_elem_t *elements_p,
+                   size_t number_of_elements);
 
 /**
  * Destroy an initialized list of channels.

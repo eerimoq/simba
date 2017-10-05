@@ -80,8 +80,8 @@ int mock_write_chan_write_isr(const void *buf_p,
 int mock_write_chan_is_polled_isr(int res);
 
 int mock_write_chan_list_init(struct chan_list_t *list_p,
-                              void *workspace_p,
-                              size_t size,
+                              struct chan_list_elem_t *elements_p,
+                              size_t number_of_elements,
                               int res);
 
 int mock_write_chan_list_destroy(struct chan_list_t *list_p,

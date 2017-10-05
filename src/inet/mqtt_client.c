@@ -908,13 +908,13 @@ void *mqtt_client_main(void *arg_p)
 {
     struct mqtt_client_t *self_p = arg_p;
     struct chan_list_t list;
-    int buf[32];
+    struct chan_list_elem_t elements[2];
     void *chan_p;
     int res;
 
     thrd_set_name(self_p->name_p);
 
-    chan_list_init(&list, buf, sizeof(buf));
+    chan_list_init(&list, &elements[0], membersof(elements));
     chan_list_add(&list, &self_p->control.in);
     chan_list_add(&list, self_p->transport.in_p);
 

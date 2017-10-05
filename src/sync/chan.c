@@ -101,16 +101,15 @@ int chan_set_write_isr_cb(struct chan_t *self_p,
 }
 
 int chan_list_init(struct chan_list_t *list_p,
-                   void *workspace_p,
-                   size_t size)
+                   struct chan_list_elem_t *elements_p,
+                   size_t number_of_elements)
 {
     ASSERTN(list_p != NULL, EINVAL);
-    ASSERTN(workspace_p != NULL, EINVAL);
-    ASSERTN(size > 0, EINVAL);
-    ASSERTN((size / sizeof(list_p->chans_pp[0])) > 0, EINVAL);
+    ASSERTN(elements_p != NULL, EINVAL);
+    ASSERTN(number_of_elements > 0, EINVAL);
 
-    list_p->max = (size / sizeof(list_p->chans_pp[0]));
-    list_p->chans_pp = workspace_p;
+    list_p->elements_p = elements_p;
+    list_p->number_of_elements = number_of_elements;
     list_p->len = 0;
     list_p->flags = 0;
 
@@ -127,7 +126,7 @@ int chan_list_destroy(struct chan_list_t *list_p)
     sys_lock();
 
     for (i = 0; i < list_p->len; i++) {
-        chan_p = list_p->chans_pp[i];
+        chan_p = list_p->elements_p[i].chan_p;
         chan_p->list_p = NULL;
     }
 
@@ -254,10 +253,10 @@ int chan_list_add(struct chan_list_t *list_p, void *chan_p)
 
     sys_lock();
 
-    if (list_p->len == list_p->max) {
+    if (list_p->len == list_p->number_of_elements) {
         res = -ENOMEM;
     } else {
-        list_p->chans_pp[list_p->len] = chan_p;
+        list_p->elements_p[list_p->len].chan_p = chan_p;
         list_p->len++;
         ((struct chan_t *)chan_p)->list_p = list_p;
     }
@@ -278,9 +277,9 @@ int chan_list_remove(struct chan_list_t *list_p, void *chan_p)
     sys_lock();
 
     for (i = 0; i < list_p->len; i++) {
-        if (list_p->chans_pp[i] == chan_p) {
+        if (list_p->elements_p[i].chan_p == chan_p) {
             list_p->len--;
-            list_p->chans_pp[i] = list_p->chans_pp[list_p->len];
+            list_p->elements_p[i] = list_p->elements_p[list_p->len];
             ((struct chan_t *)chan_p)->list_p = NULL;
             res = 0;
             break;
@@ -305,7 +304,7 @@ void *chan_list_poll(struct chan_list_t *list_p,
     while (1) {
         /* Check if data is available on any channel. */
         for (i = 0; i < list_p->len; i++) {
-            chan_p = list_p->chans_pp[i];
+            chan_p = list_p->elements_p[i].chan_p;
 
             if (chan_p->size(chan_p) > 0) {
                 goto out;
@@ -316,7 +315,7 @@ void *chan_list_poll(struct chan_list_t *list_p,
         list_p->flags = CHAN_LIST_POLLING;
 
         for (i = 0; i < list_p->len; i++) {
-            chan_p = list_p->chans_pp[i];
+            chan_p = list_p->elements_p[i].chan_p;
             chan_p->reader_p = thrd_self();
         }
 
@@ -324,7 +323,7 @@ void *chan_list_poll(struct chan_list_t *list_p,
            of the channels. */
         if (thrd_suspend_isr(timeout_p) == -ETIMEDOUT) {
             for (i = 0; i < list_p->len; i++) {
-                chan_p = list_p->chans_pp[i];
+                chan_p = list_p->elements_p[i].chan_p;
                 chan_p->reader_p = NULL;
             }
 
@@ -345,9 +344,9 @@ void *chan_poll(void *chan_p, const struct time_t *timeout_p)
 {
     void *res_p;
     struct chan_list_t list;
-    struct chan_t *workspace_p;
+    struct chan_list_elem_t element;
 
-    chan_list_init(&list, &workspace_p, sizeof(workspace_p));
+    chan_list_init(&list, &element, 1);
     chan_list_add(&list, chan_p);
     res_p = chan_list_poll(&list, timeout_p);
     chan_list_remove(&list, chan_p);
@@ -399,7 +398,7 @@ RAM_CODE int chan_is_polled_isr(struct chan_t *self_p)
             self_p->list_p->flags = 0;
 
             for (i = 0; i < self_p->list_p->len; i++) {
-                chan_p = self_p->list_p->chans_pp[i];
+                chan_p = self_p->list_p->elements_p[i].chan_p;
 
                 if (self_p != chan_p) {
                     chan_p->reader_p = NULL;

@@ -39,9 +39,9 @@ static int test_echo_server(void)
     char byte;
     int i;
     struct chan_list_t list;
-    void *workspace[UART_DEVICE_MAX];
+    struct chan_list_elem_t elements[UART_DEVICE_MAX];
     
-    chan_list_init(&list, workspace, sizeof(workspace));
+    chan_list_init(&list, &elements[0], membersof(elements));
 
     /* Initialize and start all UART drivers except the UART used for
        the console. */

@@ -40,12 +40,12 @@
 static THRD_STACK(tcpip_stack, TCPIP_THREAD_STACKSIZE);
 static uint8_t mboxbuf[32];
 static struct chan_list_t poll;
-static uint8_t workspace[32];
+static struct chan_list_elem_t elements[1];
 
 err_t sys_mbox_new(sys_mbox_t *self_p, int queue_sz)
 {
     queue_init(&self_p->queue, mboxbuf, sizeof(mboxbuf));
-    chan_list_init(&poll, workspace, sizeof(workspace));
+    chan_list_init(&poll, &elements[0], membersof(elements));
     chan_list_add(&poll, &self_p->queue);
     self_p->valid = 1;
 

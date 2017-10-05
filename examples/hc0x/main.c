@@ -54,12 +54,12 @@ static int cmd_at_cb(int argc,
     struct chan_list_t list;
     void *chan_p;
     char c;
-    char buf[32];
+    struct chan_list_elem_t elements[2];
 
     std_fprintf(out_p, OSTR("type ctrl-d to exit\r\n"));
 
     /* Wait for data from PC and HC-0X. */
-    chan_list_init(&list, buf, sizeof(buf));
+    chan_list_init(&list, &elements[0], membersof(elements));
     chan_list_add(&list, &uart.chin);
     chan_list_add(&list, in_p);
 

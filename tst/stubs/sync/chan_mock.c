@@ -500,21 +500,13 @@ int __attribute__ ((weak)) STUB(chan_is_polled_isr)(struct chan_t *self_p)
 }
 
 int mock_write_chan_list_init(struct chan_list_t *list_p,
-                              void *workspace_p,
-                              size_t size,
+                              struct chan_list_elem_t *elements_p,
+                              size_t number_of_elements,
                               int res)
 {
-    harness_mock_write("chan_list_init(list_p)",
-                       list_p,
-                       sizeof(*list_p));
-
-    harness_mock_write("chan_list_init(workspace_p)",
-                       workspace_p,
-                       size);
-
-    harness_mock_write("chan_list_init(size)",
-                       &size,
-                       sizeof(size));
+    harness_mock_write("chan_list_init(number_of_elements)",
+                       &number_of_elements,
+                       sizeof(number_of_elements));
 
     harness_mock_write("chan_list_init(): return (res)",
                        &res,
@@ -524,22 +516,14 @@ int mock_write_chan_list_init(struct chan_list_t *list_p,
 }
 
 int __attribute__ ((weak)) STUB(chan_list_init)(struct chan_list_t *list_p,
-                                                void *workspace_p,
-                                                size_t size)
+                                                struct chan_list_elem_t *elements_p,
+                                                size_t number_of_elements)
 {
     int res;
 
-    harness_mock_assert("chan_list_init(list_p)",
-                        list_p,
-                        sizeof(*list_p));
-
-    harness_mock_assert("chan_list_init(workspace_p)",
-                        workspace_p,
-                        size);
-
-    harness_mock_assert("chan_list_init(size)",
-                        &size,
-                        sizeof(size));
+    harness_mock_assert("chan_list_init(number_of_elements)",
+                        &number_of_elements,
+                        sizeof(number_of_elements));
 
     harness_mock_read("chan_list_init(): return (res)",
                       &res,

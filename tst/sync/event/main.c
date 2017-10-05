@@ -171,13 +171,13 @@ static int test_poll_list(void)
     struct event_t event;
     struct event_t event_dummy;
     struct chan_list_t list;
-    char workspace[64];
+    struct chan_list_elem_t elements[2];
 
     BTASSERT(event_init(&event) == 0);
     BTASSERT(event_init(&event_dummy) == 0);
 
     /* Use a list with one chan.*/
-    BTASSERT(chan_list_init(&list, workspace, sizeof(workspace)) == 0);
+    BTASSERT(chan_list_init(&list, &elements[0], membersof(elements)) == 0);
     BTASSERT(chan_list_add(&list, &event) == 0);
     BTASSERT(chan_list_add(&list, &event_dummy) == 0);
 
@@ -209,14 +209,14 @@ static int test_poll_list_timeout(void)
 {
     struct event_t event;
     struct chan_list_t list;
-    char workspace[64];
+    struct chan_list_elem_t elements[1];
     struct time_t timeout;
     int is_polled;
 
     BTASSERT(event_init(&event) == 0);
 
     /* Use a list with one chan.*/
-    BTASSERT(chan_list_init(&list, workspace, sizeof(workspace)) == 0);
+    BTASSERT(chan_list_init(&list, &elements[0], membersof(elements)) == 0);
     BTASSERT(chan_list_add(&list, &event) == 0);
 
     /* Poll the list of channels and make sure an timeout occured. */

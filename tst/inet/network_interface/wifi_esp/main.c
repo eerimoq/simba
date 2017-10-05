@@ -172,12 +172,12 @@ static int test_udp(void)
     char addrbuf[20];
     size_t size;
     struct chan_list_t list;
-    int workspace[16];
+    struct chan_list_elem_t elements[1];
     uint32_t mask;
 
     event_init(&event);
 
-    BTASSERT(chan_list_init(&list, workspace, sizeof(workspace)) == 0);
+    BTASSERT(chan_list_init(&list, &elements[0], membersof(elements)) == 0);
 
     std_printf(FSTR("UDP test\r\n"));
 
@@ -256,9 +256,9 @@ static int test_tcp(void)
     char addrbuf[20];
     size_t size;
     struct chan_list_t list;
-    int workspace[16];
+    struct chan_list_elem_t elements[1];
 
-    BTASSERT(chan_list_init(&list, workspace, sizeof(workspace)) == 0);
+    BTASSERT(chan_list_init(&list, &elements[0], membersof(elements)) == 0);
 
     std_printf(FSTR("TCP test\r\n"));
 
@@ -364,11 +364,11 @@ static int test_tcp_sizes(void)
     ssize_t size;
     size_t offset;
     struct chan_list_t list;
-    int workspace[16];
+    struct chan_list_elem_t elements[1];
 
     std_printf(FSTR("TCP test\r\n"));
 
-    BTASSERT(chan_list_init(&list, workspace, sizeof(workspace)) == 0);
+    BTASSERT(chan_list_init(&list, &elements[0], sizeof(elements)) == 0);
 
     std_printf(FSTR("opening listener socket\r\n"));
     BTASSERT(socket_open_tcp(&listener) == 0);

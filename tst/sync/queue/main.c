@@ -216,10 +216,10 @@ static int test_poll(void)
 {
     int b;
     struct chan_list_t list;
-    char workspace[64];
+    struct chan_list_elem_t elements[2];
 
     /* Use a list with one chan.*/
-    BTASSERT(chan_list_init(&list, workspace, sizeof(workspace)) == 0);
+    BTASSERT(chan_list_init(&list, &elements[0], membersof(elements)) == 0);
 
     BTASSERT(chan_list_add(&list, &queue[0]) == 0);
     BTASSERT(chan_list_add(&list, &queue[1]) == 0);
@@ -340,13 +340,13 @@ static int test_poll_write_two_channels(void)
 {
     uint32_t mask;
     struct chan_list_t list;
-    char workspace[64];
+    struct chan_list_elem_t elements[2];
     int c[4];
 
     BTASSERT(queue_start(&queue[0]) == 0);
 
     /* Use a list with two channels.*/
-    BTASSERT(chan_list_init(&list, workspace, sizeof(workspace)) == 0);
+    BTASSERT(chan_list_init(&list, &elements[0], membersof(elements)) == 0);
     BTASSERT(chan_list_add(&list, &queue[0]) == 0);
     BTASSERT(chan_list_add(&list, &queue[1]) == 0);
 
