@@ -6,10 +6,6 @@
 
 MQTT is a publish-subscribe-based lightweight messaging protocol.
 
-.. note:: This driver only implements the MQTT protocol, not the
-          transport layer (normally TCP). That has to be set up using
-          channels.
-
 The driver works by running the processing code in a thread which
 communicate with the MQTT broker on one side using channels, and the
 application on the other side using queues.
@@ -17,6 +13,23 @@ application on the other side using queues.
 This means the application has to set up appropriate channels, which
 is already ready to communicate with the MQTT server, e.g. using TCP,
 and the thread running the MQTT client.
+
+MQTT Notes
+----------
+
+MQTT requires the client to send packets regularly, otherwise the
+broker will disconnect the client. Any packet from the client to the
+broker will fulfill the requirement, so a regular stream of publish
+messages will work or sending MQTT Ping packets as needed. The keep
+alive interval is set by the client on connect, and can be changed
+from the default in the mqtt_conn_options_t.
+
+.. note:: The current client does not gracefully handle the underlying
+          channel (e.g. TCP connection) to the broker disconnecting,
+          and requires complete restart of the MQTT client to recover.
+
+Basic MQTT client usage
+-----------------------
 
 Basic example of initializing MQTT over TCP (error checking left out
 for brevity).

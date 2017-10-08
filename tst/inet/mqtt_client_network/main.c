@@ -103,7 +103,7 @@ static int test_init(void)
 
 static int test_connect(void)
 {
-    BTASSERT(mqtt_client_connect(&client) == 0);
+    BTASSERT(mqtt_client_connect(&client, NULL) == 0);
 
     return (0);
 }

@@ -144,7 +144,7 @@ static int mqtt_init(void)
     thrd_set_log_mask(thrd_p, LOG_UPTO(DEBUG));
 
     /* Start MQTT connection. */
-    res = mqtt_client_connect(&client);
+    res = mqtt_client_connect(&client, NULL);
 
     if (res != 0) {
         std_printf(OSTR("Failed to connect to Broker: %d'\r\n"),
