@@ -150,15 +150,15 @@ static int test_connect(void)
     /* Setup */
     memset(&conn_options, 0, sizeof(conn_options));
     conn_options.keep_alive_s = 4242;
-    conn_options.client_id.buf_p = FSTR("cid");
+    conn_options.client_id.buf_p = "cid";
     conn_options.client_id.size = 3;
-    conn_options.will.topic.buf_p = FSTR("wtop");
+    conn_options.will.topic.buf_p = "wtop";
     conn_options.will.topic.size = 4;
-    conn_options.will.payload.buf_p = FSTR("wpay");
+    conn_options.will.payload.buf_p = "wpay";
     conn_options.will.payload.size = 4;
-    conn_options.user_name.buf_p = FSTR("john");
+    conn_options.user_name.buf_p = "john";
     conn_options.user_name.size = 4;
-    conn_options.password.buf_p = FSTR("secret");
+    conn_options.password.buf_p = "secret";
     conn_options.password.size = 6;
 
     /* Prepare the server to receive the connection message. */

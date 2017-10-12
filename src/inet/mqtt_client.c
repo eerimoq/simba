@@ -263,7 +263,7 @@ static int handle_control_connect(struct mqtt_client_t *self_p)
      * currently have an way to get a random number on all platforms.
      */
     if (options_p->client_id.size == 0) {
-        options_p->client_id.buf_p = FSTR("simba_mqtt");
+        options_p->client_id.buf_p = "simba_mqtt";
         options_p->client_id.size = strlen(options_p->client_id.buf_p);
     }
 
