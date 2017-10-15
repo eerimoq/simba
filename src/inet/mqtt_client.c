@@ -52,6 +52,12 @@
 
 /** Connection flags. */
 #define CLEAN_SESSION   0x2
+#define WILL_FLAG       0x4
+#define WILL_QOS_1      0x8
+#define WILL_QOS_2      0x10
+#define WILL_RETAIN     0x20
+#define PASSWORD_FLAG   0x40
+#define USER_NAME_FLAG  0x80
 
 #define CONNECTION_ACCEPTED 0
 
@@ -62,6 +68,9 @@
 #define CONTROL_SUBSCRIBE      4
 #define CONTROL_UNSUBSCRIBE    5
 #define CONTROL_NONE           6
+
+//! Length of a MQTT CONNECT variable header.
+#define CONNECT_VAR_HDR_LEN   10
 
 static const char *message_fmt[] = {
     "forbidden",
@@ -82,8 +91,47 @@ static const char *message_fmt[] = {
     "forbidden"
 };
 
-//! Interval required between MQTT packets.
-#define KEEP_ALIVE 300
+/** Extract Most Significant Byte from a 16bit value. */
+#define MSB(b) ((b >> 8) & 0xff)
+
+/** Extract Least Significant Byte from a 16bit value. */
+#define LSB(b) (b & 0xff)
+
+/**
+ * Write a single variable length string with header to the server.
+ */
+static int write_mqtt_string(struct mqtt_client_t *self_p,
+                             struct mqtt_string_t *mqtt_string)
+{
+    int res;
+    uint8_t buf[2];
+
+    if (mqtt_string->size == 0 || mqtt_string->buf_p == NULL) {
+        return (-EINVAL);
+    }
+
+    if (mqtt_string->size > 0xffff) {
+        return (-EINVAL);
+    }
+
+    /* Write length header */
+    buf[0] = MSB(mqtt_string->size);
+    buf[1] = LSB(mqtt_string->size);
+
+    if (chan_write(self_p->transport.out_p, &buf[0], 2) != 2) {
+        return (-EIO);
+    }
+
+    res = chan_write(self_p->transport.out_p,
+                     mqtt_string->buf_p,
+                     mqtt_string->size);
+
+    if (res != mqtt_string->size) {
+        return (-EIO);
+    }
+
+    return (0);
+}
 
 /**
  * Write the fixed header of the MQTT message to the server.
@@ -170,32 +218,151 @@ static int read_fixed_header(struct mqtt_client_t *self_p,
  */
 static int handle_control_connect(struct mqtt_client_t *self_p)
 {
-    int res = 0;
-    uint8_t buf[12];
+    struct mqtt_conn_options_t *options_p;
+    struct mqtt_conn_options_t default_options;
+    int res = 0, payload_length = 0;
+    uint8_t buf[CONNECT_VAR_HDR_LEN], flags = 0;
+
+    /*
+     * Note: Each payload string requires a 2 byte length header, so
+     * that must be accounted for in the payload length hence "+ 2" a
+     * number of length calculations below.
+     */
+
+    if (queue_read(&self_p->control.in,
+                   &options_p,
+                   sizeof(options_p)) != sizeof(options_p)) {
+        return (-1);
+    }
+
+    if (options_p == NULL) {
+        options_p = &default_options;
+        memset(options_p, 0, sizeof(*options_p));
+    }
+
+    /*
+     * We currently do not support ressuming session, so force clean
+     * session.
+     */
+    flags = CLEAN_SESSION;
+
+    /*
+      * Be sure that 'will' topic and payload are both either set or
+      * unset.
+      */
+    if ((options_p->will.topic.size == 0) !=
+        (options_p->will.payload.size == 0)) {
+        return (-EINVAL);
+    }
+
+    /*
+     * As per MQTT-3.1.3-3 a Client ID is required, so if the user has
+     * not specified one, we set one.
+     *
+     * We should preferably set a random client id, but we don't
+     * currently have an way to get a random number on all platforms.
+     */
+    if (options_p->client_id.size == 0) {
+        options_p->client_id.buf_p = "simba_mqtt";
+        options_p->client_id.size = strlen(options_p->client_id.buf_p);
+    }
+
+    /*
+     * Calculate payload length first as we need to send length in
+     * CONNECT header. We also set flags as they are also in the
+     * header.
+     */
+    payload_length = options_p->client_id.size + 2;
+
+    if (options_p->will.topic.size > 0) {
+        flags |= WILL_FLAG;
+
+        if (options_p->will.qos == mqtt_qos_1_t) {
+            flags |= WILL_QOS_1;
+        } else if (options_p->will.qos == mqtt_qos_2_t) {
+            flags |= WILL_QOS_2;
+        }
+
+        payload_length += options_p->will.topic.size + 2;
+        payload_length += options_p->will.payload.size + 2;
+    }
+
+    if (options_p->user_name.size > 0) {
+        flags |= USER_NAME_FLAG;
+        payload_length += options_p->user_name.size + 2;
+    }
+
+    if (options_p->password.size > 0) {
+        flags |= PASSWORD_FLAG;
+        payload_length += options_p->password.size + 2;
+    }
+
+    if (options_p->keep_alive_s == 0) {
+        options_p->keep_alive_s = DEFAULT_KEEP_ALIVE_S;
+    }
 
     /* Write the fixed header. */
-    res = write_fixed_header(self_p, MQTT_CONNECT, 0, 12);
+    res = write_fixed_header(self_p,
+                             MQTT_CONNECT,
+                             0,
+                             CONNECT_VAR_HDR_LEN + payload_length);
 
     if (res != 0) {
         return (res);
     }
 
     /* Write the variable header. */
-    buf[0] = 0;                          /* Protocol Name - Length MSB */
-    buf[1] = 4;                          /* Protocol Name - Length LSB */
-    buf[2] = 'M';                        /* Protocol Name */
-    buf[3] = 'Q';                        /* Protocol Name */
-    buf[4] = 'T';                        /* Protocol Name */
-    buf[5] = 'T';                        /* Protocol Name */
-    buf[6] = 4;                          /* Protocol Level */
-    buf[7] = (CLEAN_SESSION);            /* Connect Flags */
-    buf[8] = ((KEEP_ALIVE) >> 8) & 0xff; /* Keep Alive MSB */
-    buf[9] = (KEEP_ALIVE) & 0xff;        /* Keep Alive LSB */
-    buf[10] = 0;                         /* Payload - Length MSB */
-    buf[11] = 0;                         /* Payload - Length LSB */
+    buf[0] = 0;                            /* Protocol Name - Length MSB */
+    buf[1] = 4;                            /* Protocol Name - Length LSB */
+    buf[2] = 'M';                          /* Protocol Name */
+    buf[3] = 'Q';                          /* Protocol Name */
+    buf[4] = 'T';                          /* Protocol Name */
+    buf[5] = 'T';                          /* Protocol Name */
+    buf[6] = 4;                            /* Protocol Level */
+    buf[7] = flags;                        /* Connect Flags */
+    buf[8] = MSB(options_p->keep_alive_s); /* Keep Alive MSB */
+    buf[9] = LSB(options_p->keep_alive_s); /* Keep Alive LSB */
 
-    if (chan_write(self_p->transport.out_p, &buf[0], 12) != 12) {
+    if (chan_write(self_p->transport.out_p, &buf[0], CONNECT_VAR_HDR_LEN)
+        != CONNECT_VAR_HDR_LEN) {
         return (-EIO);
+    }
+
+    /* Write paylaod string by string. */
+    res = write_mqtt_string(self_p, &options_p->client_id);
+
+    if (res != 0) {
+        return (res);
+    }
+
+    if (options_p->will.topic.size > 0) {
+        res = write_mqtt_string(self_p, &options_p->will.topic);
+
+        if (res != 0) {
+            return (res);
+        }
+
+        res = write_mqtt_string(self_p, &options_p->will.payload);
+
+        if (res != 0) {
+            return (res);
+        }
+    }
+
+    if (options_p->user_name.size > 0) {
+        res = write_mqtt_string(self_p, &options_p->user_name);
+
+        if (res != 0) {
+            return (res);
+        }
+    }
+
+    if (options_p->password.size > 0) {
+        res = write_mqtt_string(self_p, &options_p->password);
+
+        if (res != 0) {
+            return (res);
+        }
     }
 
     self_p->message.type = CONTROL_CONNECT;
@@ -847,11 +1014,15 @@ static int control_routine(struct mqtt_client_t *self_p,
     return (res);
 }
 
-int mqtt_client_connect(struct mqtt_client_t *self_p)
+int mqtt_client_connect(struct mqtt_client_t *self_p,
+                        struct mqtt_conn_options_t *options_p)
 {
     ASSERTN(self_p != NULL, EINVAL)
 
-    return (control_routine(self_p, CONTROL_CONNECT, NULL, 0));
+    return (control_routine(self_p,
+                            CONTROL_CONNECT,
+                            &options_p,
+                            sizeof(options_p)));
 }
 
 int mqtt_client_disconnect(struct mqtt_client_t *self_p)
