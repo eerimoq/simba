@@ -316,7 +316,7 @@ help:
 	@echo "  rerun                       Run the application wihtout uploading it."
 	@echo "  report                      Print the test report."
 	@echo "  test                        run + report"
-	@echo "  console                     Open a serial console on /dev/arduino with"
+	@echo "  console                     Open a serial console on port SERIAL_PORT with"
 	@echo "                              baudrate BAUDRATE."
 	@echo "  release                     Compile with NASSERT=yes."
 	@echo "  size                        Print application size information."
@@ -332,6 +332,7 @@ help:
 	@echo "  variable                    description"
 	@echo "--------------------------------------------------------------------------------"
 	@echo "  NASSERT                      yes - build without assertions"
+	@echo "  SERIAL_PORT                  Serial port used by console and run targets."
 	@IFS=$$'\n' ; for h in $(HELP_VARIABLES) ; do \
 	  echo $$h ; \
 	done
