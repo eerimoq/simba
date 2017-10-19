@@ -71,6 +71,8 @@ static void *mock_thread(void *arg_p)
 static int test_asserti(void)
 {
     BTASSERT(asserti(1, 2) == -1);
+    BTASSERT(harness_get_testcase_result() == -1);
+    BTASSERT(harness_set_testcase_result(0) == 0);
     BTASSERT(asserti(1, 1) == 0);
 
     return (0);
@@ -79,6 +81,8 @@ static int test_asserti(void)
 static int test_assertm(void)
 {
     BTASSERT(assertm("foo", "bar", 3) == -1);
+    BTASSERT(harness_get_testcase_result() == -1);
+    BTASSERT(harness_set_testcase_result(0) == 0);
     BTASSERT(assertm("foo", "foo", 3) == 0);
 
     return (0);

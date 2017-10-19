@@ -54,7 +54,7 @@ struct module_t {
     } mock_list;
     struct mutex_t mutex;
     struct bus_t bus;
-    int current_testcase_failed;
+    int current_testcase_result;
 };
 
 static struct module_t module;
@@ -226,7 +226,7 @@ static int read_mock_entry(struct mock_entry_t *entry_p,
                     entry_p->data.size);
         print_read_backtrace();
         print_write_backtrace(entry_p);
-        module.current_testcase_failed = 1;
+        module.current_testcase_result = -1;
     }
 
     free_mock_entry(entry_p);
@@ -274,8 +274,8 @@ int harness_run(struct harness_testcase_t *testcases_p)
                   sizeof(module.heap.buf),
                   &sizes[0]);
 
-        /* Mark current testcase as non-failed before its executed. */
-        module.current_testcase_failed = 0;
+        /* Mark current testcase as passed before its executed. */
+        module.current_testcase_result = 0;
 
         std_printf(OSTR("enter: %s\r\n"), testcase_p->name_p);
 
@@ -291,11 +291,11 @@ int harness_run(struct harness_testcase_t *testcases_p)
             }
         } while (entry_p != NULL);
 
-        if ((err < 0) || (module.current_testcase_failed != 0)) {
+        if ((err < 0) || (module.current_testcase_result == -1)) {
             failed++;
             std_printf(OSTR("exit: %s: FAILED\r\n\r\n"),
                        testcase_p->name_p);
-        } else if (err == 0) {
+        } else if ((err == 0) && (module.current_testcase_result == 0)) {
             passed++;
             std_printf(OSTR("exit: %s: PASSED\r\n\r\n"),
                        testcase_p->name_p);
@@ -386,7 +386,7 @@ ssize_t harness_mock_write(const char *id_p,
         std_printf(FSTR("harness_mock_write(): Got NULL pointer with size "
                         "greater than zero(0) for mock id '%s'\r\n"),
                    id_p);
-        module.current_testcase_failed = 1;
+        module.current_testcase_result = -1;
 
         return (-EINVAL);
     }
@@ -398,7 +398,7 @@ ssize_t harness_mock_write(const char *id_p,
             FSTR("harness_mock_write(): Mock entry memory allocation failed "
                  "for id '%s'\r\n"),
             id_p);
-        module.current_testcase_failed = 1;
+        module.current_testcase_result = -1;
 
         return (-ENOMEM);
     }
@@ -437,7 +437,7 @@ ssize_t harness_mock_read(const char *id_p,
         std_printf(FSTR("\r\nharness_mock_read(): Mock id '%s' not found.\r\n"),
                    id_p);
         print_read_backtrace();
-        module.current_testcase_failed = 1;
+        module.current_testcase_result = -1;
     }
 
     return (res);
@@ -522,7 +522,7 @@ int harness_mock_assert(const char *id_p,
 
             print_assert_backtrace();
             print_write_backtrace(entry_p);
-            module.current_testcase_failed = 1;
+            module.current_testcase_result = -1;
         }
 
         free_mock_entry(entry_p);
@@ -530,7 +530,7 @@ int harness_mock_assert(const char *id_p,
         std_printf(FSTR("\r\nharness_mock_assert(): %s: mock id not found\r\n"),
                    id_p);
         print_assert_backtrace();
-        module.current_testcase_failed = 1;
+        module.current_testcase_result = -1;
     }
 
     return (res);
@@ -594,4 +594,16 @@ ssize_t harness_mock_read_wait(const char *id_p,
     }
 
     return (res);
+}
+
+int harness_set_testcase_result(int result)
+{
+    module.current_testcase_result = result;
+
+    return (0);
+}
+
+int harness_get_testcase_result(void)
+{
+    return (module.current_testcase_result);
 }

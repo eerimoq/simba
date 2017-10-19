@@ -48,39 +48,41 @@
     std_hexdump(sys_get_stdout(), expected, expected_size);
 
 /**
- * Assert given condition. Print an error message and return given
- * value ``res`` on error.
+ * Assert given condition. Mark testcase as failed, print an error
+ * message and return given value ``res`` on error.
  */
 #define BTASSERTRM(cond, cond_str, res, msg)                            \
     if (!(cond)) {                                                      \
         std_printf(FSTR(__FILE__ ":" STRINGIFY(__LINE__) ": BTASSERT: " \
                         cond_str " "));                                 \
         msg;                                                            \
+        harness_set_testcase_result(-1);                                \
         return (res);                                                   \
     }
 
 /**
- * Assert given condition. Print an error message and return given
- * value ``res`` on error.
+ * Assert given condition. Mark testcase as failed, print an error
+ * message and return given value ``res`` on error.
  */
 #define BTASSERTR(cond, cond_str, res, ...) \
     BTASSERTRM(cond, cond_str, res, _ASSERTFMT(__VA_ARGS__));
 
 /**
- * Assert given condition. Print an error message and return given
- * value on error.
+ * Assert given condition. Mark testcase as failed, print an error
+ * message and return given value on error.
  */
 #define BTASSERTN(cond, ...) BTASSERTR(cond, #cond, NULL, __VA_ARGS__)
 
 /**
- * Assert given condition. Print an error message and return.
+ * Assert given condition. Mark testcase as failed, print an error
+ * message and return -1 on error.
  */
 #define BTASSERT(cond, ...) BTASSERTR(cond, #cond, -1, __VA_ARGS__)
 
 /**
  * Compare two integers `actual` and `expected` with given operator
- * `operator`. Print an error message if the condition is not true and
- * return.
+ * `operator`. Mark testcase as failed, print an error message if the
+ * condition is not true and return -1 on error.
  */
 #define BTASSERTI(actual, operator, expected)                           \
     do {                                                                \
@@ -100,8 +102,9 @@
     } while (0)
 
 /**
- * Comapre two memory positions `actual` and `expected`. Print an
- * error message if they are not equal and return.
+ * Comapre two memory positions `actual` and `expected`. Mark testcase
+ * as failed, print an error message if they are not equal and return
+ * -1 on error.
  */
 #define BTASSERTM(actual, expected, size)                               \
     do {                                                                \
@@ -119,19 +122,20 @@
     } while (0)
 
 /**
- * Assert given condition in a testcase. Print an error message and
- * return -1 on error.
+ * Assert given condition in a testcase. Mark testcase as failed,
+ * print an error message and return on error.
  */
 #define BTASSERTV(cond, ...)                                            \
     if (!(cond)) {                                                      \
         std_printf(FSTR(__FILE__ ":" STRINGIFY(__LINE__) ": BTASSERT: " #cond " ")); \
         _ASSERTFMT(__VA_ARGS__);                                        \
+        harness_set_testcase_result(-1);                                \
         return;                                                         \
     }
 
 /**
- * Assert that given value is in given range. Print an error message
- * and return.
+ * Assert that given value is in given range. Mark testcase as failed,
+ * print an error message and return.
  */
 #define BTASSERT_IN_RANGE(value, low, high)     \
     do {                                        \
@@ -291,5 +295,22 @@ ssize_t harness_mock_read_wait(const char *id_p,
                                void *buf_p,
                                size_t size,
                                struct time_t *timeout_p);
+
+/**
+ * Set currently executing testcase result to passed(0), skipped(1) or
+ * failed(-1).
+ *
+ * @param[in] result Testcase result to set.
+ *
+ * @return zero(0) or negative error code.
+ */
+int harness_set_testcase_result(int result);
+
+/**
+ * Get currently executing testcase result.
+ *
+ * @return passed(0), skipped(1) or failed(-1).
+ */
+int harness_get_testcase_result(void);
 
 #endif
