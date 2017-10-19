@@ -101,21 +101,44 @@ static int test_mock(void)
     BTASSERTM(&buf[0], "bar", 4);
 
     harness_mock_write("foo", NULL, 0);
-    harness_mock_assert("foo", NULL, 0);
-
-    harness_mock_write("foo", NULL, 0);
     harness_mock_read("foo", NULL, 0);
 
     buf[0] = 1;
-    harness_mock_write("foo", &buf[0], 1);
-    harness_mock_assert("foo", &buf[0], 1);
-
     harness_mock_write("foo", &buf[0], 1);
     buf[0] = 0;
     harness_mock_read("foo", &buf[0], 1);
     BTASSERT(buf[0] == 1);
 
     harness_mock_try_read("foo", NULL, 0);
+
+    return (0);
+}
+
+static int test_mock_assert(void)
+{
+    char buf[16];
+
+    /* Without data. */
+    harness_mock_write("foo", NULL, 0);
+    harness_mock_assert("foo", NULL, 0);
+
+    /* With data. */
+    buf[0] = 1;
+    harness_mock_write("foo", &buf[0], 1);
+    harness_mock_assert("foo", &buf[0], 1);
+
+    /* Wrong data. */
+    buf[1] = 0;
+    harness_mock_write("foo", &buf[0], 1);
+    buf[0] = 0;
+    harness_mock_assert("foo", &buf[0], 1);
+    BTASSERT(harness_get_testcase_result() == -1);
+    BTASSERT(harness_set_testcase_result(0) == 0);
+
+    /* Mock id not found. */
+    harness_mock_assert("foo", &buf[0], 1);
+    BTASSERT(harness_get_testcase_result() == -1);
+    BTASSERT(harness_set_testcase_result(0) == 0);
 
     return (0);
 }
@@ -170,6 +193,7 @@ int main()
         { test_asserti, "test_asserti" },
         { test_assertm, "test_assertm" },
         { test_mock, "test_mock" },
+        { test_mock_assert, "test_mock_assert" },
         { test_mock_wait_notify, "test_mock_wait_notify" },
         { test_stub, "test_stub" },
         { NULL, NULL }
