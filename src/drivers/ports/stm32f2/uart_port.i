@@ -65,7 +65,7 @@ static void isr(int index)
             byte = regs_p->DR;
 
             /* Write data to input queue. */
-            if (chan_write_isr(&drv_p->base, &byte, 1) != 1) {
+            if (queue_write_isr(&drv_p->base, &byte, 1) != 1) {
                 fs_counter_increment(&rx_channel_overflow, 1);
             }
         } else {

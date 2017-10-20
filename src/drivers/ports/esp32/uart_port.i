@@ -94,7 +94,7 @@ static inline void rx_isr(struct uart_driver_t *drv_p,
     while (dev_p->regs_p->STATUS & ESP32_UART_STATUS_RXFIFO_CNT_MASK) {
         c = dev_p->regs_p->FIFO;
 
-        if (chan_write_isr(&drv_p->base, &c, 1) != 1) {
+        if (queue_write_isr(&drv_p->base, &c, 1) != 1) {
             fs_counter_increment(&rx_channel_overflow, 1);
         }
     }
