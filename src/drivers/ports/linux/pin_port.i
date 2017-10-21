@@ -49,10 +49,10 @@ static int pin_port_read(struct pin_driver_t *drv_p)
 
 static int pin_port_write(struct pin_driver_t *drv_p, int value)
 {
-    if (value == 1) {
-        return (pin_device_write_high(drv_p->dev_p));
-    } else {
+    if (value == 0) {
         return (pin_device_write_low(drv_p->dev_p));
+    } else {
+        return (pin_device_write_high(drv_p->dev_p));
     }
 }
 

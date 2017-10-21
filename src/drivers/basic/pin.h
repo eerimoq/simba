@@ -105,7 +105,7 @@ int pin_init(struct pin_driver_t *self_p,
  * system lock taken.
  *
  * @param[in] self_p Driver object.
- * @param[in] value high(1) or low(0).
+ * @param[in] value Non-zero for high and ``0`` for low output.
  *
  * @return zero(0) or negative error code.
  */
@@ -119,7 +119,8 @@ int pin_write(struct pin_driver_t *self_p, int value);
  *
  * @param[in] self_p Driver object.
  *
- * @return high(1) or low(0), or negative error code.
+ * @return ``1`` for high and ``0`` for low input, otherwise negative
+ *         error code.
  */
 int pin_read(struct pin_driver_t *self_p);
 
@@ -175,7 +176,8 @@ static inline int pin_device_set_mode(const struct pin_device_t *dev_p,
  *
  * @param[in] self_p Pin device.
  *
- * @return high(1) or low(0), otherwise negative error code.
+ * @return ``1`` for high and ``0`` for low input, otherwise negative
+ *         error code.
  */
 static inline int pin_device_read(const struct pin_device_t *dev_p)
 {
@@ -189,7 +191,7 @@ static inline int pin_device_read(const struct pin_device_t *dev_p)
  * system lock taken.
  *
  * @param[in] self_p Pin device.
- * @param[in] value high(1) or low(0).
+ * @param[in] value Non-zero for high and ``0`` for low output.
  *
  * @return zero(0) or negative error code.
  */

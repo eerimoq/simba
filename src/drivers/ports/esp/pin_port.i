@@ -53,10 +53,10 @@ static int pin_port_write(struct pin_driver_t *self_p, int value)
 {
     const struct pin_device_t *dev_p = self_p->dev_p;
 
-    if (value == 1) {
-        pin_device_write_high(dev_p);
-    } else {
+    if (value == 0) {
         pin_device_write_low(dev_p);
+    } else {
+        pin_device_write_high(dev_p);
     }
 
     return (0);

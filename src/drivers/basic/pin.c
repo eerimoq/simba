@@ -242,7 +242,6 @@ int pin_read(struct pin_driver_t *self_p)
 int pin_write(struct pin_driver_t *self_p, int value)
 {
     ASSERTN(self_p != NULL, EINVAL);
-    ASSERTN((value == 0) || (value == 1), EINVAL);
 
     return (pin_port_write(self_p, value));
 }
