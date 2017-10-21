@@ -4,6 +4,22 @@
 .. module:: esp8266
    :synopsis: Esp8266.
 
+I2C
+---
+
+The ESP8266 does not have hardware I2C support, but can use the
+:doc:`../drivers/network/i2c_soft` driver instead. By default two
+:doc:`../drivers/network/i2c` compatability devices are instantiated:
+
+====== ====== =======
+Device SCL    SDA
+====== ====== =======
+i2c0   GPIO5  GPIO4
+i2c1   GPIO12 GPIO13
+====== ====== =======
+
+--------------------------------------------------
+
 Hardware reference: https://github.com/eerimoq/hardware-reference/tree/master/esp8266
 
 Source code: :github-blob:`src/mcus/esp8266/mcu.h`
