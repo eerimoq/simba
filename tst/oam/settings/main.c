@@ -48,14 +48,17 @@ static int test_cmd_list(void)
     /* Call the list command and validate the output. */
     strcpy(buf, "oam/settings/list");
     BTASSERTI(fs_call(buf, NULL, &queue, NULL), ==, 0);
-    BTASSERTI(harness_expect(&queue,
-                             "NAME                                      TYPE      SIZE  VALUE\r\n"
-                             "int32                                     int32_t      4  -2\r\n"
-                             "string                                    string_t     4  y\r\n"
-                             "blob                                      blob_t       2  1112\r\n"
-                             "blob_with_empty_default_data              blob_t       4  ffffffff\r\n"
-                             "max_name_length_40_123456789012345678901  string_t     4  \r\n",
-                             NULL), ==, 380);
+    BTASSERTI(harness_expect(
+                  &queue,
+                  "NAME                                      TYPE      SIZE  VALUE\r\n"
+                  "int32                                     int32_t      4  -2\r\n"
+                  "string                                    string_t     4  y\r\n"
+                  "blob                                      blob_t       2  1112\r\n"
+                  "blob_with_empty_default_data              blob_t       4  ffffffff\r\n"
+                  "max_name_length_40_123456789012345678901  string_t     4  \r\n"
+                  "string_space                              string_t     4     \r\n"
+                  "string_escape                             string_t     8  \"\n\t\r\\\r\n",
+                  NULL), ==, 508);
 
     return (0);
 #else
@@ -160,13 +163,13 @@ static int test_cmd_read_write_read(void)
     char buf[128];
     char response[64];
     char *names_p[] = {
-        "int32", "string", "blob"
+        "int32", "string", "blob", "string_space"
     };
     char *values_before_p[] = {
-        "-2", "y", "1112"
+        "-2", "y", "1112", "   "
     };
     char *values_after_p[] = {
-        "12345678", "hi", "ffff"
+        "12345678", "hi", "ffff", "123"
     };
 
     for (i = 0; i < membersof(names_p); i++) {
@@ -216,14 +219,17 @@ static int test_cmd_reset(void)
     /* Check the list output. */
     strcpy(buf, "oam/settings/list");
     BTASSERTI(fs_call(buf, NULL, &queue, NULL), ==, 0);
-    BTASSERTI(harness_expect(&queue,
-                             "NAME                                      TYPE      SIZE  VALUE\r\n"
-                             "int32                                     int32_t      4  -2\r\n"
-                             "string                                    string_t     4  y\r\n"
-                             "blob                                      blob_t       2  1112\r\n"
-                             "blob_with_empty_default_data              blob_t       4  ffffffff\r\n"
-                             "max_name_length_40_123456789012345678901  string_t     4  \r\n",
-                             NULL), ==, 380);
+    BTASSERTI(harness_expect(
+                  &queue,
+                  "NAME                                      TYPE      SIZE  VALUE\r\n"
+                  "int32                                     int32_t      4  -2\r\n"
+                  "string                                    string_t     4  y\r\n"
+                  "blob                                      blob_t       2  1112\r\n"
+                  "blob_with_empty_default_data              blob_t       4  ffffffff\r\n"
+                  "max_name_length_40_123456789012345678901  string_t     4  \r\n"
+                  "string_space                              string_t     4     \r\n"
+                  "string_escape                             string_t     8  \"\n\t\r\\\r\n",
+                  NULL), ==, 508);
 
     return (0);
 #else

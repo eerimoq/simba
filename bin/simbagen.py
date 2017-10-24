@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python2
 
 from __future__ import print_function
 
@@ -216,6 +216,22 @@ class Settings(object):
 
             self.settings[name]["value"] = values[name]
 
+        # Add string quotes if missing.
+        for name, item in self.settings.items():
+            if item["type"] == "string_t":
+                value = item["value"]
+
+                if len(value) == 0:
+                    value = '""'
+
+                if not value.startswith('"'):
+                    value = '"' + value
+
+                if not value.endswith('"'):
+                    value += '"'
+
+                item["value"] = value
+
         # Validate the settings.
         address = 0
 
@@ -224,7 +240,9 @@ class Settings(object):
                 if item["size"] != 4:
                     sys.exit("error: {}: bad int32_t size".format(item["size"]))
             elif item["type"] == "string_t":
-                if len(item["value"]) >= item["size"]:
+                value = item["value"].decode('string_escape')[1:-1]
+
+                if len(value) >= item["size"]:
                     sys.exit("error: {}: string value too long".format(
                         item["value"]))
             elif item["type"] == "blob_t":
@@ -250,7 +268,7 @@ class Settings(object):
                 item["address"]))
 
             if item["type"] == "string_t":
-                data = item["value"].encode('ascii') + b'\x00'
+                data = item["value"][1:-1].decode('string_escape') + b'\x00'
             elif item["type"] == "blob_t":
                 data = binascii.unhexlify(item["value"])
             elif item["type"] == 'int32_t':
