@@ -43,7 +43,7 @@ except ImportError:
 
 from errnos import human_readable_errno
 
-__version__ = '4.1'
+__version__ = '4.2'
 
 # SOAM protocol definitions.
 SOAM_TYPE_STDOUT_PRINTF                = 1
@@ -195,10 +195,11 @@ class Database(object):
 
 class ReaderThread(threading.Thread):
 
-    def __init__(self, client, ostream):
+    def __init__(self, client, ostream, debug):
         super(ReaderThread, self).__init__()
         self.client = client
         self.ostream = ostream
+        self.debug = debug
         self.running = True
         self.response_packet_cond = threading.Condition()
         self.response_packet = None
@@ -229,7 +230,7 @@ class ReaderThread(threading.Thread):
 
         return packet
 
-    def run(self):
+    def _run(self):
         """Read packets from the soam server.
 
         """
@@ -239,12 +240,7 @@ class ReaderThread(threading.Thread):
         segment_index = None
 
         while self.running:
-            try:
-                segment = self.read_soam_segment()
-            except BaseException:
-                print("warning: failed to read segment", file=self.ostream)
-                continue
-
+            segment = self.read_soam_segment()
             #print(binascii.hexlify(segment), file=self.ostream)
 
             # Parse the received packet.
@@ -338,6 +334,15 @@ class ReaderThread(threading.Thread):
 
             segments = None
 
+    def run(self):
+        if self.debug:
+            self._run()
+        else:
+            try:
+                self._run()
+            except BaseException:
+                pass
+
     def stop(self):
         self.running = False
 
@@ -359,6 +364,25 @@ class Client(object):
         self.transaction_id = 0
         self.response_timeout = response_timeout
         self.database_response_timeout = database_response_timeout
+
+        attempts_max = 5
+
+        for attempt in range(1, attempts_max + 1):
+            try:
+                print('Reading database id from device attempt {}/{}... '.format(
+                    attempt,
+                    attempts_max),
+                      end='',
+                      flush=True,
+                      file=self.ostream)
+                device_database_id = self.get_database_id_from_device()
+                print('done.', flush=True, file=self.ostream)
+                break
+            except TimeoutError:
+                print('failed. ', flush=True, file=self.ostream)
+            except BaseException:
+                print('failed. ', flush=True, file=self.ostream)
+                sys.exit('error: failed to read the database id from the device')
 
         if database:
             with open(database, 'rb') as fin:
@@ -385,17 +409,6 @@ class Client(object):
                     database_compressed[0]))
 
         self.database.set_database(StringIO(database.decode('ascii')))
-
-        try:
-            print('Reading database id from device... ',
-                  end='',
-                  flush=True,
-                  file=self.ostream)
-            device_database_id = self.get_database_id_from_device()
-            print('done.', flush=True, file=self.ostream)
-        except BaseException:
-            print('failed. ', flush=True, file=self.ostream)
-            sys.exit('error: failed to read the database id from the device')
 
         print('Comparing read and calculated database ids... ',
               end='',
@@ -683,9 +696,6 @@ class Shell(cmd.Cmd):
 
 class SlipReaderThread(ReaderThread):
 
-    def __init__(self, client, ostream):
-        super(SlipReaderThread, self).__init__(client, ostream)
-
     def read_soam_segment(self):
         """Read an SLIP packet.
 
@@ -697,12 +707,12 @@ class SlipReaderThread(ReaderThread):
         while self.running:
             try:
                 byte = self.client.read(1)
-            except ClientClosedError:
+            except BaseException:
                 if len(packet) > 0:
                     print('warning: {}: client closed, discarding '
                           'packet'.format(packet), file=self.ostream)
-                self.running = False
-                continue
+                _thread.interrupt_main()
+                raise
 
             # Print stored packet on timeout. Likely non-framed data,
             # for example from a panic.
@@ -756,15 +766,16 @@ class SlipClient(Client):
     def __init__(self,
                  database,
                  ostream,
+                 debug,
                  response_timeout=3.0,
                  database_response_timeout=10.0):
         super(SlipClient, self).__init__(database,
-                                         SlipReaderThread(self, ostream),
+                                         SlipReaderThread(self, ostream, debug),
                                          ostream,
                                          response_timeout,
                                          database_response_timeout)
 
-    def write(self, buff):
+    def write(self, buf):
         raise NotImplementedError('')
 
     def read(self, size):
@@ -797,6 +808,7 @@ class SlipSerialClient(SlipClient):
                  baudrate,
                  database,
                  ostream,
+                 debug,
                  response_timeout=3.0,
                  database_response_timeout=10.0):
         self.serial = serial.Serial(serial_port,
@@ -805,6 +817,7 @@ class SlipSerialClient(SlipClient):
 
         super(SlipSerialClient, self).__init__(database,
                                                ostream,
+                                               debug,
                                                response_timeout,
                                                database_response_timeout)
 
@@ -822,6 +835,7 @@ class SlipTcpClient(SlipClient):
                  port,
                  database,
                  ostream,
+                 debug,
                  response_timeout=3.0,
                  database_response_timeout=10.0):
         self.socket = SocketDevice('uart', '0', address, port)
@@ -829,6 +843,7 @@ class SlipTcpClient(SlipClient):
 
         super(SlipTcpClient, self).__init__(database,
                                             ostream,
+                                            debug,
                                             response_timeout,
                                             database_response_timeout)
 
@@ -840,7 +855,6 @@ class SlipTcpClient(SlipClient):
 
         if not buf:
             print('Connection closed.', file=self.ostream)
-            _thread.interrupt_main()
             raise ClientClosedError()
 
         return buf
@@ -942,6 +956,7 @@ def do_serial(args):
                               args.baudrate,
                               args.database,
                               sys.stdout,
+                              args.debug,
                               args.response_timeout,
                               args.database_response_timeout)
     shell(args, client)
@@ -952,6 +967,7 @@ def do_tcp(args):
                            args.port,
                            args.database,
                            sys.stdout,
+                           args.debug,
                            args.response_timeout,
                            args.database_response_timeout)
     shell(args, client)
