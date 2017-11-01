@@ -120,7 +120,7 @@ static void *t1_main(void *arg_p)
 
     thrd_set_name("t1");
 
-    /* Multiple writer test. */
+    /* Test: test_multiple_writers. */
     c[0] = 14;
     c[1] = 15;
     c[2] = 16;
@@ -147,6 +147,12 @@ static void *t1_main(void *arg_p)
     c[2] = 24;
     c[3] = 25;
     BTASSERTN(queue_write(&queue[1], &c[0], sizeof(c)) == sizeof(c));
+
+    /* Test: test_nested_poll. */
+    c[0] = 34;
+    BTASSERTN(queue_write(&queue[0],
+                          &c[0],
+                          sizeof(c[0])) == sizeof(c[0]));
 
     /* Test: ignore. */
 
@@ -378,6 +384,45 @@ static int test_poll_write_two_channels(void)
     return (0);
 }
 
+static int test_nested_poll(void)
+{
+    struct chan_list_t outer_list;
+    struct chan_list_elem_t outer_elements[2];
+    struct chan_list_t inner_list;
+    struct chan_list_elem_t inner_elements[2];
+    int c;
+    struct time_t timeout;
+
+    timeout.seconds = 0;
+    timeout.nanoseconds = 1000000;
+
+    /* Add the channel to the outer list.*/
+    BTASSERT(chan_list_init(&outer_list,
+                            &outer_elements[0],
+                            membersof(outer_elements)) == 0);
+    BTASSERT(chan_list_add(&outer_list, &queue[0]) == 0);
+
+    /* Add the channel to the inner list.*/
+    BTASSERT(chan_list_init(&inner_list,
+                            &inner_elements[0],
+                            membersof(inner_elements)) == 0);
+    BTASSERT(chan_list_add(&inner_list, &queue[0]) == 0);
+
+    /* Poll the inner and outer list with no read inbetween. */
+    BTASSERT(chan_list_poll(&inner_list, NULL) == &queue[0]);
+    BTASSERT(chan_list_poll(&outer_list, &timeout) == &queue[0]);
+
+    /* Poll the inner list, read from the queue, and then poll the
+       outer list. The outer list should time out since there is no
+       more data to read from the channel. */
+    BTASSERT(chan_list_poll(&inner_list, NULL) == &queue[0]);
+    BTASSERT(queue_read(&queue[0], &c, sizeof(c)) == sizeof(c));
+    BTASSERT(c == 34);
+    BTASSERT(chan_list_poll(&outer_list, &timeout) == NULL);
+
+    return (0);
+}
+
 static int test_non_blocking(void)
 {
     int a[2];
@@ -496,7 +541,7 @@ static int test_read_write_zero(void)
     a[0] = 0;
     BTASSERTI(queue_write(&buffered_queue, &a[0], 0), ==, 0);
     BTASSERTI(queue_read(&buffered_queue, &a[0], 0), ==, 0);
-    
+
     return (0);
 }
 
@@ -510,6 +555,7 @@ int main()
         { test_stopped, "test_stopped" },
         { test_multiple_writers, "test_multiple_writers" },
         { test_poll_write_two_channels, "test_poll_write_two_channels" },
+        { test_nested_poll, "test_nested_poll" },
         { test_non_blocking, "test_non_blocking" },
         { test_ignore, "test_ignore" },
         { test_read_write_zero, "test_read_write_zero" },

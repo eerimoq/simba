@@ -132,7 +132,6 @@ struct chan_list_t {
     struct chan_list_elem_t *elements_p;
     size_t number_of_elements;
     size_t len;
-    int flags;
 };
 
 /**
@@ -356,57 +355,57 @@ int chan_is_polled_isr(struct chan_t *self_p);
  * least one channel, the poll function returns and the application
  * can read from the channel with data.
  *
- * @param[in] list_p List to initialize.
+ * @param[in] self_p List to initialize.
  * @param[in] elements_p Array of elements to store added channels in.
  * @param[in] number_of_elements Number of elements in the element array.
  *
  * @return zero(0) or negative error code.
  */
-int chan_list_init(struct chan_list_t *list_p,
+int chan_list_init(struct chan_list_t *self_p,
                    struct chan_list_elem_t *elements_p,
                    size_t number_of_elements);
 
 /**
  * Destroy an initialized list of channels.
  *
- * @param[in] list_p List to destroy.
+ * @param[in] self_p List to destroy.
  *
  * @return zero(0) or negative error code.
  */
-int chan_list_destroy(struct chan_list_t *list_p);
+int chan_list_destroy(struct chan_list_t *self_p);
 
 /**
  * Add given channel to list of channels.
  *
- * @param[in] list_p List of channels.
+ * @param[in] self_p List of channels.
  * @param[in] chan_p Channel to add.
  *
  * @return zero(0) or negative error code.
  */
-int chan_list_add(struct chan_list_t *list_p, void *chan_p);
+int chan_list_add(struct chan_list_t *self_p, void *chan_p);
 
 /**
  * Remove given channel from list of channels.
  *
- * @param[in] list_p List of channels.
+ * @param[in] self_p List of channels.
  * @param[in] chan_p Channel to remove.
  *
  * @return zero(0) or negative error code.
  */
-int chan_list_remove(struct chan_list_t *list_p, void *chan_p);
+int chan_list_remove(struct chan_list_t *self_p, void *chan_p);
 
 /**
  * Poll given list of channels for events. Blocks until at least one
  * of the channels in the list has data ready to be read or an timeout
  * occurs.
  *
- * @param[in] list_p List of channels to poll.
+ * @param[in] self_p List of channels to poll.
  * @param[in] timeout_p Time to wait for data on any channel before a
  *                      timeout occurs. Set to NULL to wait forever.
  *
  * @return Channel with data or NULL on timeout.
  */
-void *chan_list_poll(struct chan_list_t *list_p,
+void *chan_list_poll(struct chan_list_t *self_p,
                      const struct time_t *timeout_p);
 
 /**

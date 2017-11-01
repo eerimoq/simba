@@ -166,7 +166,7 @@ static int test_list(void)
 
     BTASSERT(chan_list_init(&list, &elements[0], membersof(elements)) == 0);
     BTASSERT(chan_list_add(&list, &chan[0]) == 0);
-    BTASSERT(chan[0].list_p != NULL);
+    BTASSERT(chan[0].list_p == NULL);
     BTASSERT(chan_list_add(&list, &chan[1]) == -ENOMEM);
     BTASSERT(chan_list_remove(&list, &chan[1]) == -1);
     BTASSERT(chan_list_remove(&list, &chan[0]) == 0);
