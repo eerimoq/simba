@@ -32,8 +32,24 @@
 
 #if CONFIG_ESP_WIFI == 1
 
+static int module_initialized = 0;
+
 static int esp_station_init(void *arg_p)
 {
+    /* Return immediately if the module is already initialized. */
+    if (module_initialized == 1) {
+        return (0);
+    }
+
+    module_initialized = 1;
+
+    /*
+     * Set station mode by default, esp_station_start() by default
+     * will only set station mode, but if the application has enabled
+     * the AP mode, we won't disable that.
+     */
+    esp_wifi_set_op_mode(esp_wifi_op_mode_station_t);
+
     return (0);
 }
 
@@ -44,6 +60,11 @@ static int esp_station_start(void *arg_p,
 {
     int mode;
 
+    /*
+     * If the application has enabled AP mode, we will keep the AP
+     * running by switching to station + AP mode, instead of just AP
+     * mode.
+     */
     mode = esp_wifi_get_op_mode();
     mode |= esp_wifi_op_mode_station_t;
 
