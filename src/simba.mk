@@ -33,7 +33,7 @@ ifeq ($(TYPE),suite)
   INC += $(SIMBA_ROOT)/tst/stubs
 
   ALLOC_SRC += heap.c
-  COLLECTIONS_SRC += circular_buffer.c binary_tree.c
+  COLLECTIONS_SRC += circular_buffer.c binary_tree.c list.c
   DEBUG_SRC += log.c harness.c
   DRIVERS_SRC += storage/flash.c network/uart.c
   ENCODE_SRC +=
@@ -90,7 +90,8 @@ SRC += $(ALLOC_SRC:%=$(SIMBA_ROOT)/src/alloc/%)
 COLLECTIONS_SRC ?= \
 	binary_tree.c \
 	circular_buffer.c \
-	hash_map.c
+	hash_map.c \
+	list.c
 
 SRC += $(COLLECTIONS_SRC:%=$(SIMBA_ROOT)/src/collections/%)
 

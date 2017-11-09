@@ -33,151 +33,112 @@
 
 #include "simba.h"
 
-struct list_next_t {
-    void *next_p;
+/**
+ * Elements must have this struct as their first member.
+ */
+struct list_elem_t {
+    struct list_elem_t *next_p;
 };
 
-struct list_singly_linked_t {
-    void *head_p;
-    void *tail_p;
+/**
+ * A singly linked list.
+ */
+struct list_t {
+    struct list_elem_t *head_p;
+    struct list_elem_t *tail_p;
 };
 
-struct list_sl_iterator_t {
-    void *next_p;
+/**
+ * A singly linked list iterator.
+ */
+struct list_iter_t {
+    struct list_elem_t *next_p;
 };
 
 /**
  * Initialize given singly linked list object.
  *
+ * Elements in the list must have a `struct list_elem_t` as their
+ * first struct member.
+ *
+ * An element can only be part of one list at a time.
+ *
  * @param[in] list_p List object to initialize.
+ *
+ * @return zero(0) or negative error code.
  */
-#define LIST_SL_INIT(list_p)                    \
-    do {                                        \
-        (list_p)->head_p = NULL;                \
-        (list_p)->tail_p = NULL;                \
-    } while (0);
-
-#define LIST_SL_INIT_STRUCT                     \
-    { .head_p = NULL, .tail_p = NULL }
+int list_init(struct list_t *self_p);
 
 /**
  * Peek at the first element in the list.
  *
  * @param[in] list_p List object.
- * @param[out] element_pp First element of the list.
+ *
+ * @return First element of the list, or NULL if the list is empty.
  */
-#define LIST_SL_PEEK_HEAD(list_p, element_pp)   \
-    do {                                        \
-        *(element_pp) = (list_p)->head_p;       \
-    } while (0);
+void *list_peek_head(struct list_t *self_p);
 
 /**
  * Add given element to the beginning of given list.
  *
  * @param[in] list_p List object.
- * @param[in] element_p Element to add.
+ * @param[in] elem_p Element to add.
+ *
+ * @return zero(0) or negative error code.
  */
-#define LIST_SL_ADD_HEAD(list_p, element_p)     \
-    do {                                        \
-        (element_p)->next_p = (list_p)->head_p; \
-        (list_p)->head_p = element_p;           \
-        if ((list_p)->tail_p == NULL) {         \
-            (list_p)->tail_p = (element_p);     \
-        }                                       \
-    } while (0);
+int list_add_head(struct list_t *self_p,
+                  void *elem_p);
 
 /**
  * Add given element to the end of given list.
  *
  * @param[in] list_p List object.
- * @param[in] element_p Element to add.
+ * @param[in] elem_p Element to add.
+ *
+ * @return zero(0) or negative error code.
  */
-#define LIST_SL_ADD_TAIL(list_p, element_p)                             \
-    do {                                                                \
-        (element_p)->next_p = NULL;                                     \
-        if ((list_p)->tail_p != NULL) {                                 \
-            ((struct list_next_t *)((list_p)->tail_p))->next_p = element_p; \
-        } else if ((list_p)->head_p == NULL) {                          \
-            (list_p)->head_p = (element_p);                             \
-        }                                                               \
-        (list_p)->tail_p = element_p;                                   \
-    } while (0);
+int list_add_tail(struct list_t *self_p,
+                  void *elem_p);
 
 /**
  * Get the first element of given list and then remove it from given
  * list.
  *
  * @param[in] list_p List object.
- * @param[out] element_pp First element of the list.
+ *
+ * @return Removed element, or NULL if the list was empty.
  */
-#define LIST_SL_REMOVE_HEAD(list_p, element_pp)                 \
-    do {                                                        \
-        *(element_pp) = (list_p)->head_p;                       \
-        if (*(element_pp) != NULL) {                            \
-            (list_p)->head_p = (void *)(*(element_pp))->next_p; \
-            (*(element_pp))->next_p = NULL;                     \
-            if ((list_p)->tail_p == *(element_pp)) {            \
-                (list_p)->tail_p = NULL;                        \
-            }                                                   \
-        }                                                       \
-    } while (0)
+void *list_remove_head(struct list_t *self_p);
+
+/**
+ * Remove given element from given list.
+ *
+ * @param[in] list_p List object.
+ * @param[in] elem_p Element to remove.
+ *
+ * @return Removed element, or NULL if the element was not found.
+ */
+void *list_remove(struct list_t *self_p,
+                  void *elem_p);
 
 /**
  * Initialize given iterator object.
  *
  * @param[in] iterator_p Iterator to initialize.
  * @param[in] list_p List object to iterate over.
+ *
+ * @return zero(0) or negative error code.
  */
-#define LIST_SL_ITERATOR_INIT(iterator_p, list_p)       \
-    do {                                                \
-        (iterator_p)->next_p = (list_p)->head_p;        \
-    } while (0)
+int list_iter_init(struct list_iter_t *self_p,
+                   struct list_t *list_p);
 
 /**
  * Get the next element from given iterator object.
  *
  * @param[in] iterator_p Iterator object.
- * @param[out] element_pp Next element of the list.
- */
-#define LIST_SL_ITERATOR_NEXT(iterator_p, element_pp)                   \
-    do {                                                                \
-        *(element_pp) = (iterator_p)->next_p;                           \
-        if ((iterator_p)->next_p != NULL) {                             \
-            (iterator_p)->next_p =                                      \
-                ((struct list_sl_iterator_t *)(iterator_p)->next_p)->next_p; \
-        }                                                               \
-    } while (0)
-
-/**
- * Remove given element from given list.
  *
- * @param[in] list_p List object.
- * @param[in] iterator_p Used internally.
- * @param[in] element_p Element to remove.
- * @param[in] iterator_element_p Used internally.
- * @param[in] previous_element_p Used internally.
+ * @return Next element, or NULL on end of list.
  */
-#define LIST_SL_REMOVE_ELEM(list_p, iterator_p, element_p, iterator_element_p, previous_element_p) \
-    LIST_SL_ITERATOR_INIT((iterator_p), (list_p));                      \
-    (previous_element_p) = NULL;                                        \
-    while (1) {                                                         \
-        LIST_SL_ITERATOR_NEXT((iterator_p), &(iterator_element_p));     \
-        if ((iterator_element_p) == NULL) {                             \
-            /* Element not found.*/                                     \
-            break;                                                      \
-        } else if ((iterator_element_p) == (element_p)) {               \
-            /* Element found. Remove it. */                             \
-            if ((previous_element_p) != NULL) {                         \
-                (previous_element_p)->next_p = (element_p)->next_p;     \
-            } else {                                                    \
-                (list_p)->head_p = (void *)((element_p)->next_p);       \
-            }                                                           \
-            if (element_p == (list_p)->tail_p) {                        \
-                (list_p)->tail_p = (previous_element_p);                \
-            }                                                           \
-            break;                                                      \
-        }                                                               \
-        (previous_element_p) = (iterator_element_p);                    \
-    }
+void *list_iter_next(struct list_iter_t *self_p);
 
 #endif

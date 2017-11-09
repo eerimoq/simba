@@ -31,6 +31,7 @@
 #include "simba.h"
 
 struct mock_entry_t {
+    struct list_elem_t base;
     struct entry_t *next_p;
     const char *id_p;
     struct {
@@ -48,10 +49,7 @@ struct module_t {
         struct heap_t obj;
         uint8_t buf[CONFIG_HARNESS_HEAP_MAX];
     } heap;
-    struct {
-        struct mock_entry_t *head_p;
-        struct mock_entry_t *tail_p;
-    } mock_list;
+    struct list_t mock_list;
     struct mutex_t mutex;
     struct bus_t bus;
     int current_testcase_result;
@@ -152,28 +150,23 @@ static int free_mock_entry(struct mock_entry_t *entry_p)
 
 static struct mock_entry_t *find_mock_entry(const char *id_p)
 {
-    struct list_sl_iterator_t iterator;
+    struct list_iter_t iter;
     struct mock_entry_t *entry_p;
-    struct mock_entry_t *iterator_entry_p;
-    struct mock_entry_t *prev_entry_p;
 
     mutex_lock(&module.mutex);
 
-    LIST_SL_ITERATOR_INIT(&iterator, &module.mock_list);
+    list_iter_init(&iter, &module.mock_list);
 
     while (1) {
-        LIST_SL_ITERATOR_NEXT(&iterator, &entry_p);
+        entry_p = (struct mock_entry_t *)list_iter_next(&iter);
 
         if (entry_p == NULL) {
             break;
         }
 
         if (strcmp(entry_p->id_p, id_p) == 0) {
-            LIST_SL_REMOVE_ELEM(&module.mock_list,
-                                &iterator,
-                                entry_p,
-                                iterator_entry_p,
-                                prev_entry_p);
+            list_remove(&module.mock_list,
+                        &entry_p->base);
             break;
         }
     }
@@ -267,7 +260,7 @@ int harness_run(struct harness_testcase_t *testcases_p)
     while (testcase_p->callback != NULL) {
         /* Reinitialize the heap before every testcase for minimal
            memory usage. */
-        LIST_SL_INIT(&module.mock_list);
+        list_init(&module.mock_list);
 
         heap_init(&module.heap.obj,
                   &module.heap.buf[0],
@@ -282,7 +275,7 @@ int harness_run(struct harness_testcase_t *testcases_p)
         err = testcase_p->callback();
 
         do {
-            LIST_SL_REMOVE_HEAD(&module.mock_list, &entry_p);
+            entry_p = (struct mock_entry_t *)list_remove_head(&module.mock_list);
 
             if (entry_p != NULL) {
                 std_printf(OSTR("Found unread mock id '%s'. Failing test.\r\n"),
@@ -415,7 +408,7 @@ ssize_t harness_mock_write(const char *id_p,
 
     /* Add the entry at the end of the list. */
     mutex_lock(&module.mutex);
-    LIST_SL_ADD_TAIL(&module.mock_list, entry_p);
+    list_add_tail(&module.mock_list, &entry_p->base);
     mutex_unlock(&module.mutex);
 
     return (size);
