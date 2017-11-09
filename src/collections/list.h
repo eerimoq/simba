@@ -34,7 +34,8 @@
 #include "simba.h"
 
 /**
- * Elements must have this struct as their first member.
+ * Singly linked list elements must have this struct as their first
+ * member.
  */
 struct list_elem_t {
     struct list_elem_t *next_p;
