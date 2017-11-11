@@ -502,9 +502,14 @@ class SoamDb(object):
         self.id += 1
 
         # The command parser function does not accept string
-        # termination (0x00), quotes (0x22), space (0x20) or percent
-        # sign (0x25) in the command string.
-        if (self.id & 0xff) in [0x00, 0x22, 0x25, 0x20]:
+        # termination (0x00), quotes (0x22) or percent sign (0x25) in
+        # the command string. Also, whitespace characters are stripped
+        # from the command string.
+        ignore_chars = [
+            0x00, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x20, 0x22, 0x25
+        ]
+        
+        while (self.id & 0xff) in ignore_chars:
             self.id += 1
 
         if self.id == 0xffff:
