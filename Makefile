@@ -54,7 +54,8 @@ ifeq ($(BOARD), linux)
 	bits \
 	circular_buffer \
 	fifo \
-	hash_map)
+	hash_map \
+	list)
     TESTS += $(addprefix tst/alloc/, \
 	circular_heap \
 	heap)
