@@ -33,12 +33,12 @@
 
 #include "simba.h"
 
-typedef int (*hash_function_t)(long key);
+typedef int (*hash_map_hash_t)(longptr_t key);
 
 struct hash_map_entry_t {
     struct hash_map_entry_t *next_p;
-    long key;
-    void *value_p;
+    longptr_t key;
+    longptr_t value;
 };
 
 struct hash_map_bucket_t {
@@ -49,7 +49,7 @@ struct hash_map_t {
     struct hash_map_bucket_t *buckets_p;
     size_t buckets_max;
     struct hash_map_entry_t *entries_p;
-    hash_function_t hash;
+    hash_map_hash_t hash;
 };
 
 /**
@@ -69,42 +69,46 @@ int hash_map_init(struct hash_map_t *self_p,
                   size_t buckets_max,
                   struct hash_map_entry_t *entries_p,
                   size_t entries_max,
-                  hash_function_t hash);
+                  hash_map_hash_t hash);
 
 /**
  * Add given key-value pair into hash map. Overwrites old value if the
  * key is already present in map.
  *
  * @param[in] self_p Initialized hash map.
- * @param[in] key Key to hash.
- * @param[in] value_p Value to insert for key.
+ * @param[in] key Key to add.
+ * @param[in] value Value to insert for key.
  *
  * @return zero(0) or negative error code.
  */
 int hash_map_add(struct hash_map_t *self_p,
-                 long key,
-                 void *value_p);
+                 longptr_t key,
+                 longptr_t value);
 
 /**
  * Remove given key from hash map.
  *
  * @param[in] self_p Initialized hash map.
- * @param[in] key Key to hash.
+ * @param[in] key Key to remove.
  *
  * @return zero(0) or negative error code.
  */
 int hash_map_remove(struct hash_map_t *self_p,
-                    long key);
+                    longptr_t key);
 
 /**
  * Get value for given key.
  *
  * @param[in] self_p Initialized hash map.
- * @param[in] key Key to hash.
+ * @param[in] key Key to find.
+ * @param[out] value_p Value found for given key. Unmodified if the
+ *                     key was not found.
  *
- * @return Value for key or NULL if key was not found in the map.
+ * @return zero(0) if the key was found, otherwise negative error
+ *         code.
  */
-void *hash_map_get(struct hash_map_t *self_p,
-                   long key);
+int hash_map_get(struct hash_map_t *self_p,
+                 longptr_t key,
+                 longptr_t *value_p);
 
 #endif

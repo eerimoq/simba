@@ -55,7 +55,7 @@ int hash_map_init(struct hash_map_t *self_p,
                   size_t buckets_max,
                   struct hash_map_entry_t *entries_p,
                   size_t entries_max,
-                  hash_function_t hash)
+                  hash_map_hash_t hash)
 {
     ASSERTN(self_p != NULL, EINVAL);
     ASSERTN(buckets_p != NULL, EINVAL);
@@ -88,11 +88,10 @@ int hash_map_init(struct hash_map_t *self_p,
 }
 
 int hash_map_add(struct hash_map_t *self_p,
-                 long key,
-                 void *value_p)
+                 longptr_t key,
+                 longptr_t value)
 {
     ASSERTN(self_p != NULL, EINVAL);
-    ASSERTN(value_p != NULL, EINVAL);
 
     int hash;
     struct hash_map_bucket_t *bucket_p;
@@ -109,7 +108,7 @@ int hash_map_add(struct hash_map_t *self_p,
 
         while (entry_p != NULL) {
             if (entry_p->key == key) {
-                entry_p->value_p = value_p;
+                entry_p->value = value;
 
                 return (0);
             }
@@ -127,7 +126,7 @@ int hash_map_add(struct hash_map_t *self_p,
 
     /* Initiate entry.*/
     entry_p->key = key;
-    entry_p->value_p = value_p;
+    entry_p->value = value;
 
     /* Insert in list. */
     entry_p->next_p = bucket_p->list_p;
@@ -137,7 +136,7 @@ int hash_map_add(struct hash_map_t *self_p,
 }
 
 int hash_map_remove(struct hash_map_t *self_p,
-                    long key)
+                    longptr_t key)
 {
     ASSERTN(self_p != NULL, EINVAL);
 
@@ -176,10 +175,11 @@ int hash_map_remove(struct hash_map_t *self_p,
     return (-1);
 }
 
-void *hash_map_get(struct hash_map_t *self_p,
-                   long key)
+int hash_map_get(struct hash_map_t *self_p,
+                 longptr_t key,
+                 longptr_t *value_p)
 {
-    ASSERTNRN(self_p != NULL, EINVAL);
+    ASSERTN(self_p != NULL, EINVAL);
 
     int hash;
     struct hash_map_bucket_t *bucket_p;
@@ -193,15 +193,17 @@ void *hash_map_get(struct hash_map_t *self_p,
     /* Search for key. */
     if (bucket_p->list_p != NULL) {
         entry_p = bucket_p->list_p;
-        
+
         while (entry_p != NULL) {
             if (entry_p->key == key) {
-                return (entry_p->value_p);
+                *value_p = entry_p->value;
+
+                return (0);
             }
-            
+
             entry_p = entry_p->next_p;
-        }        
+        }
     }
 
-    return (NULL);
+    return (-ENODATA);
 }

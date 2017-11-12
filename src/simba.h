@@ -69,6 +69,11 @@ extern "C" {
 
 #endif
 
+/**
+ * A type that can hold a long or a pointer.
+ */
+typedef intptr_t longptr_t;
+
 #include "compiler.h"
 #include <config.h>
 #include "config_default.h"
