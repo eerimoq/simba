@@ -68,6 +68,20 @@ static void *mock_thread(void *arg_p)
     return (NULL);
 }
 
+static int cwrite_cb(void *arg_p, void *buf_p)
+{
+    int *length_p;
+    int *value_p;
+
+    length_p = arg_p;
+    value_p = buf_p;
+
+    (*length_p)--;
+    *value_p += 2;
+
+    return (*length_p == 0);
+}
+
 static int test_asserti(void)
 {
     BTASSERT(asserti(1, 2) == -1);
@@ -169,6 +183,70 @@ static int test_mock_wait_notify(void)
     return (0);
 }
 
+static int test_mock_mwrite(void)
+{
+    int value;
+    int i;
+
+    value = 1;
+
+    BTASSERT(harness_mock_mwrite("mwrite(value)",
+                                 &value,
+                                 sizeof(value),
+                                 3) == sizeof(value));
+
+    for (i = 0; i < 3; i++) {
+        value = 0;
+        BTASSERT(harness_mock_read("mwrite(value)",
+                                   &value,
+                                   sizeof(value)) == sizeof(value));
+        BTASSERT(value == 1);
+    }
+
+    BTASSERT(harness_mock_read("mwrite(value)",
+                               &value,
+                               sizeof(value)) == -1);
+
+    harness_set_testcase_result(0);
+
+    return (0);
+}
+
+static int test_mock_cwrite(void)
+{
+    int value;
+    int length;
+
+    value = 1;
+    length = 2;
+
+    BTASSERT(harness_mock_cwrite("cwrite(value)",
+                                 &value,
+                                 sizeof(value),
+                                 cwrite_cb,
+                                 &length,
+                                 sizeof(length)) == sizeof(value));
+
+    value = 0;
+    BTASSERT(harness_mock_read("cwrite(value)",
+                               &value,
+                               sizeof(value)) == sizeof(value));
+    BTASSERT(value == 1);
+
+    BTASSERT(harness_mock_read("cwrite(value)",
+                               &value,
+                               sizeof(value)) == sizeof(value));
+    BTASSERT(value == 3);
+
+    BTASSERT(harness_mock_read("cwrite(value)",
+                               &value,
+                               sizeof(value)) == -1);
+
+    harness_set_testcase_result(0);
+
+    return (0);
+}
+
 static int test_stub(void)
 {
     mock_write_foo(0);
@@ -195,6 +273,8 @@ int main()
         { test_mock, "test_mock" },
         { test_mock_assert, "test_mock_assert" },
         { test_mock_wait_notify, "test_mock_wait_notify" },
+        { test_mock_mwrite, "test_mock_mwrite" },
+        { test_mock_cwrite, "test_mock_cwrite" },
         { test_stub, "test_stub" },
         { NULL, NULL }
     };

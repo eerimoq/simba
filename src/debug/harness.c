@@ -322,11 +322,11 @@ static int read_mock_entry(struct mock_entry_t *entry_p,
     return (res);
 }
 
-static int mwrite_cb(void *v_arg_p, void *buf_p)
+static int mwrite_cb(void *arg_p, void *buf_p)
 {
     int *length_p;
 
-    length_p = v_arg_p;
+    length_p = arg_p;
 
     (*length_p)--;
 
