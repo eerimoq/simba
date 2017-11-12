@@ -255,6 +255,7 @@ static ssize_t write_inner(struct eeprom_soft_driver_t *self_p,
     const uint8_t *u8_src_p;
     int overwrite_index;
     size_t overwrite_size;
+    ssize_t res;
 
     if (dst >= self_p->eeprom_size) {
         return (-EINVAL);
@@ -273,10 +274,12 @@ static ssize_t write_inner(struct eeprom_soft_driver_t *self_p,
 
     for (offset = 0; offset < self_p->eeprom_size; offset += sizeof(buf)) {
         /* Read from old chunk. */
-        if (flash_read(self_p->flash_p,
-                       &buf[0],
-                       self_p->current.chunk_address + CHUNK_HEADER_SIZE + offset,
-                       sizeof(buf)) != sizeof(buf)) {
+        res = flash_read(self_p->flash_p,
+                         &buf[0],
+                         self_p->current.chunk_address + CHUNK_HEADER_SIZE + offset,
+                         sizeof(buf));
+
+        if (res != sizeof(buf)) {
             return (-1);
         }
 
@@ -301,10 +304,12 @@ static ssize_t write_inner(struct eeprom_soft_driver_t *self_p,
         }
 
         /* Write to new chunk. */
-        if (flash_write(self_p->flash_p,
-                        chunk_address + CHUNK_HEADER_SIZE + offset,
-                        &buf[0],
-                        sizeof(buf)) != sizeof(buf)) {
+        res = flash_write(self_p->flash_p,
+                          chunk_address + CHUNK_HEADER_SIZE + offset,
+                          &buf[0],
+                          sizeof(buf));
+
+        if (res != sizeof(buf)) {
             return (-1);
         }
 

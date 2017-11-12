@@ -158,6 +158,20 @@
  */
 typedef int (*harness_testcase_cb_t)(void);
 
+/**
+ * The read/assert callback function.
+ *
+ * @param[in] arg_p `arg_size` bytes copied from `arg_p` given to
+ *                  `harness_mock_cwrite()`.
+ * @param[in] buf_p Mock entry data buffer, equivalent to `buf_p`
+ *                  given to `harness_mock_cwrite()`.
+ *
+ * @return true(1) if the mock entry shall be removed, otherwise
+ *         false(0).
+ */
+typedef int (*harness_mock_cb_t)(void *arg_p,
+                                 void *buf_p);
+
 struct harness_testcase_t {
     harness_testcase_cb_t callback;
     const char *name_p;
@@ -208,6 +222,56 @@ int harness_expect(void *chan_p,
 ssize_t harness_mock_write(const char *id_p,
                            const void *buf_p,
                            size_t size);
+
+/**
+ * Write given data buffer to a mock entry with given id. The mock
+ * entry can later be read `length` times with `harness_mock_read()`,
+ * `harness_mock_try_read()` or `harness_mock_assert()`.
+ *
+ * @param[in] id_p Mock id string to write.
+ *
+ *                 NOTE: Only a reference to this string is stored in
+ *                       the mock entry.
+ * @param[in] buf_p Data for given mock id, or NULL if no data shall
+ *                  be written.
+ * @param[in] size Buffer size in words, or zero(0) if buf_p is NULL.
+ * @param[in] length Number of times this mock entry will be
+ *                   read/asserted.
+ *
+ * @return Number of written words or negative error code.
+ */
+ssize_t harness_mock_mwrite(const char *id_p,
+                            const void *buf_p,
+                            size_t size,
+                            int length);
+
+/**
+ * Write given data buffer to a mock entry with given id. The mock
+ * entry can later be read with `harness_mock_read()`,
+ * `harness_mock_try_read()` or `harness_mock_assert()` until the
+ * callback `cb` returns true(1).
+ *
+ * @param[in] id_p Mock id string to write.
+ *
+ *                 NOTE: Only a reference to this string is stored in
+ *                       the mock entry.
+ * @param[in] buf_p Data for given mock id, or NULL if no data shall
+ *                  be written.
+ * @param[in] size Buffer size in words, or zero(0) if buf_p is NULL.
+ * @param[in] cb Callback function called on each read/assert of this
+ *               mock entry. The mock entry will be removed once the
+ *               callback returns true(1).
+ * @param[in] arg_p Callback argument pointer.
+ * @param[in] arg_size Callback argument size.
+ *
+ * @return Number of written words or negative error code.
+ */
+ssize_t harness_mock_cwrite(const char *id_p,
+                            const void *buf_p,
+                            size_t size,
+                            harness_mock_cb_t cb,
+                            void *arg_p,
+                            size_t arg_size);
 
 /**
  * Read data from mock entry with given id, and make the testcase fail

@@ -105,7 +105,8 @@ ifeq ($(BOARD), linux)
 	various/gnss \
 	sensors/hx711 \
 	network/xbee \
-	network/xbee_client)
+	network/xbee_client \
+	storage/eeprom_soft)
     TESTS += $(addprefix tst/science/, \
 	math \
 	science)

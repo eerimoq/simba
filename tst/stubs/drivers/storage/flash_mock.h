@@ -43,10 +43,22 @@ int mock_write_flash_read(void *dst_p,
                           size_t size,
                           ssize_t res);
 
+int mock_write_flash_read_seq(void *dst_p,
+                              uintptr_t src,
+                              size_t size,
+                              ssize_t res,
+                              size_t length);
+
 int mock_write_flash_write(uintptr_t dst,
                            const void *src_p,
                            size_t size,
                            ssize_t res);
+
+int mock_write_flash_write_seq(uintptr_t dst,
+                               const void *src_p,
+                               size_t size,
+                               ssize_t res,
+                               size_t length);
 
 int mock_write_flash_erase(uintptr_t addr,
                            size_t size,

@@ -44,12 +44,22 @@ struct mock_entry_t {
     } data;
 };
 
+struct mock_entry_cb_t {
+    struct list_elem_t base;
+    struct mock_entry_t *entry_p;
+    harness_mock_cb_t fn;
+    char arg[1];
+};
+
 struct module_t {
     struct {
         struct heap_t obj;
         uint8_t buf[CONFIG_HARNESS_HEAP_MAX];
     } heap;
-    struct list_t mock_list;
+    struct {
+        struct list_t list;
+        struct list_t cb_list;
+    } mock;
     struct mutex_t mutex;
     struct bus_t bus;
     int current_testcase_result;
@@ -128,12 +138,64 @@ static int print_write_backtrace(struct mock_entry_t *entry_p)
     return (print_backtrace(&array[0], depth, "write"));
 }
 
+static struct mock_entry_cb_t *alloc_mock_entry_cb(size_t size)
+{
+    struct mock_entry_cb_t *entry_cb_p;
+
+    mutex_lock(&module.mutex);
+    entry_cb_p = heap_alloc(&module.heap.obj,
+                            sizeof(*entry_cb_p) + size - 1);
+    mutex_unlock(&module.mutex);
+
+    return (entry_cb_p);
+}
+
+static int free_mock_entry_cb_no_lock(struct mock_entry_cb_t *entry_cb_p)
+{
+    heap_free(&module.heap.obj, entry_cb_p);
+
+    return (0);
+}
+
+static struct mock_entry_cb_t *find_mock_entry_cb(struct mock_entry_t *entry_p)
+{
+    struct list_iter_t iter;
+    struct mock_entry_cb_t *entry_cb_p;
+
+    list_iter_init(&iter, &module.mock.cb_list);
+
+    while (1) {
+        entry_cb_p = (struct mock_entry_cb_t *)list_iter_next(&iter);
+
+        if (entry_cb_p == NULL) {
+            break;
+        }
+
+        if (entry_cb_p->entry_p == entry_p) {
+            list_remove(&module.mock.cb_list, entry_cb_p);
+            break;
+        }
+    }
+
+    return (entry_cb_p);
+}
+
+static struct mock_entry_t *alloc_mock_entry_no_lock(size_t size)
+{
+    struct mock_entry_t *entry_p;
+
+    entry_p = heap_alloc(&module.heap.obj,
+                         sizeof(*entry_p) + size - 1);
+
+    return (entry_p);
+}
+
 static struct mock_entry_t *alloc_mock_entry(size_t size)
 {
     struct mock_entry_t *entry_p;
 
     mutex_lock(&module.mutex);
-    entry_p = heap_alloc(&module.heap.obj, sizeof(*entry_p) + size - 1);
+    entry_p = alloc_mock_entry_no_lock(size);
     mutex_unlock(&module.mutex);
 
     return (entry_p);
@@ -148,14 +210,27 @@ static int free_mock_entry(struct mock_entry_t *entry_p)
     return (0);
 }
 
+static struct mock_entry_t *copy_mock_entry_no_lock(struct mock_entry_t *entry_p)
+{
+    struct mock_entry_t *copy_p;
+
+    copy_p = alloc_mock_entry_no_lock(entry_p->data.size);
+    memcpy(copy_p, entry_p, sizeof(*entry_p) + entry_p->data.size - 1);
+
+    return (copy_p);
+}
+
 static struct mock_entry_t *find_mock_entry(const char *id_p)
 {
     struct list_iter_t iter;
     struct mock_entry_t *entry_p;
+    struct mock_entry_t *unmodified_entry_p;
+    struct mock_entry_cb_t *entry_cb_p;
+    int res;
 
     mutex_lock(&module.mutex);
 
-    list_iter_init(&iter, &module.mock_list);
+    list_iter_init(&iter, &module.mock.list);
 
     while (1) {
         entry_p = (struct mock_entry_t *)list_iter_next(&iter);
@@ -165,8 +240,28 @@ static struct mock_entry_t *find_mock_entry(const char *id_p)
         }
 
         if (strcmp(entry_p->id_p, id_p) == 0) {
-            list_remove(&module.mock_list,
-                        &entry_p->base);
+            entry_cb_p = find_mock_entry_cb(entry_p);
+
+            if (entry_cb_p == NULL) {
+                list_remove(&module.mock.list, entry_p);
+            } else {
+                /* Make a copy of the mock entry since the mock
+                   callback may modify it. */
+                unmodified_entry_p = copy_mock_entry_no_lock(entry_p);
+
+                res = entry_cb_p->fn(&entry_cb_p->arg[0],
+                                     &entry_p->data.buf[0]);
+
+                if (res == 1) {
+                    list_remove(&module.mock.list, entry_p);
+                    free_mock_entry_cb_no_lock(entry_cb_p);
+                } else {
+                    list_add_tail(&module.mock.cb_list, entry_cb_p);
+                }
+
+                entry_p = unmodified_entry_p;
+            }
+
             break;
         }
     }
@@ -227,6 +322,62 @@ static int read_mock_entry(struct mock_entry_t *entry_p,
     return (res);
 }
 
+static int mwrite_cb(void *v_arg_p, void *buf_p)
+{
+    int *length_p;
+
+    length_p = v_arg_p;
+
+    (*length_p)--;
+
+    return (*length_p == 0);
+}
+
+ssize_t create_mock_entry(const char *id_p,
+                          const void *buf_p,
+                          size_t size,
+                          struct mock_entry_t **entry_pp)
+{
+    ASSERTN(id_p != NULL, EINVAL);
+
+    struct mock_entry_t *entry_p;
+
+    if ((buf_p == NULL) && (size > 0)) {
+        std_printf(FSTR("create_mock_entry(): Got NULL pointer with size "
+                        "greater than zero(0) for mock id '%s'\r\n"),
+                   id_p);
+        module.current_testcase_result = -1;
+
+        return (-EINVAL);
+    }
+
+    entry_p = alloc_mock_entry(size);
+
+    if (entry_p == NULL) {
+        std_printf(
+            FSTR("create_mock_entry(): Mock entry memory allocation failed "
+                 "for id '%s'\r\n"),
+            id_p);
+        module.current_testcase_result = -1;
+
+        return (-ENOMEM);
+    }
+
+    /* Initiate the object. */
+    entry_p->id_p = id_p;
+
+    if (size > 0) {
+        memcpy(&entry_p->data.buf[0], buf_p, size);
+    }
+
+    entry_p->data.size = size;
+    create_write_backtrace(entry_p);
+
+    *entry_pp = entry_p;
+
+    return (size);
+}
+
 int harness_run(struct harness_testcase_t *testcases_p)
 {
     int err;
@@ -260,7 +411,8 @@ int harness_run(struct harness_testcase_t *testcases_p)
     while (testcase_p->callback != NULL) {
         /* Reinitialize the heap before every testcase for minimal
            memory usage. */
-        list_init(&module.mock_list);
+        list_init(&module.mock.list);
+        list_init(&module.mock.cb_list);
 
         heap_init(&module.heap.obj,
                   &module.heap.buf[0],
@@ -275,7 +427,7 @@ int harness_run(struct harness_testcase_t *testcases_p)
         err = testcase_p->callback();
 
         do {
-            entry_p = (struct mock_entry_t *)list_remove_head(&module.mock_list);
+            entry_p = (struct mock_entry_t *)list_remove_head(&module.mock.list);
 
             if (entry_p != NULL) {
                 std_printf(OSTR("Found unread mock id '%s'. Failing test.\r\n"),
@@ -373,42 +525,81 @@ ssize_t harness_mock_write(const char *id_p,
 {
     ASSERTN(id_p != NULL, EINVAL);
 
+    ssize_t res;
     struct mock_entry_t *entry_p;
 
-    if ((buf_p == NULL) && (size > 0)) {
-        std_printf(FSTR("harness_mock_write(): Got NULL pointer with size "
-                        "greater than zero(0) for mock id '%s'\r\n"),
-                   id_p);
-        module.current_testcase_result = -1;
+    res = create_mock_entry(id_p, buf_p, size, &entry_p);
 
-        return (-EINVAL);
+    if (res != size) {
+        return (res);
     }
 
-    entry_p = alloc_mock_entry(size);
+    /* Add the entry at the end of the list. */
+    mutex_lock(&module.mutex);
+    list_add_tail(&module.mock.list, entry_p);
+    mutex_unlock(&module.mutex);
 
-    if (entry_p == NULL) {
+    return (res);
+}
+
+ssize_t harness_mock_mwrite(const char *id_p,
+                            const void *buf_p,
+                            size_t size,
+                            int length)
+{
+    return (harness_mock_cwrite(id_p,
+                                buf_p,
+                                size,
+                                mwrite_cb,
+                                &length,
+                                sizeof(length)));
+}
+
+ssize_t harness_mock_cwrite(const char *id_p,
+                            const void *buf_p,
+                            size_t size,
+                            harness_mock_cb_t cb,
+                            void *arg_p,
+                            size_t arg_size)
+{
+    ssize_t res;
+    struct mock_entry_t *entry_p;
+    struct mock_entry_cb_t *entry_cb_p;
+
+    res = create_mock_entry(id_p,
+                            buf_p,
+                            size,
+                            &entry_p);
+
+    if (res != size) {
+        return (res);
+    }
+
+    /* Allocate a callback entry. */
+    entry_cb_p = alloc_mock_entry_cb(arg_size);
+
+    if (entry_cb_p == NULL) {
         std_printf(
-            FSTR("harness_mock_write(): Mock entry memory allocation failed "
-                 "for id '%s'\r\n"),
+            FSTR("harness_mock_cwrite(): Mock entry callback memory allocation "
+                 "failed for id '%s'\r\n"),
             id_p);
         module.current_testcase_result = -1;
+        free_mock_entry(entry_p);
 
         return (-ENOMEM);
     }
 
-    /* Initiate the object. */
-    entry_p->id_p = id_p;
+    /* Initiate the callback entry. */
+    entry_cb_p->entry_p = entry_p;
+    entry_cb_p->fn = cb;
 
-    if (size > 0) {
-        memcpy(&entry_p->data.buf[0], buf_p, size);
+    if (arg_p != NULL) {
+        memcpy(&entry_cb_p->arg[0], arg_p, arg_size);
     }
 
-    entry_p->data.size = size;
-    create_write_backtrace(entry_p);
-
-    /* Add the entry at the end of the list. */
     mutex_lock(&module.mutex);
-    list_add_tail(&module.mock_list, &entry_p->base);
+    list_add_tail(&module.mock.list, entry_p);
+    list_add_tail(&module.mock.cb_list, entry_cb_p);
     mutex_unlock(&module.mutex);
 
     return (size);
