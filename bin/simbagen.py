@@ -34,7 +34,8 @@ MAJOR = 1
 MINOR = 2
 
 
-SIMBA_GEN_H_FMT = """/**
+SIMBA_GEN_H_FMT = """\
+/**
  * @section License
  *
  * The MIT License (MIT)
@@ -79,7 +80,8 @@ SIMBA_GEN_H_FMT = """/**
 """
 
 
-SIMBA_GEN_C_FMT = """/**
+SIMBA_GEN_C_FMT = """\
+/**
  * @section License
  *
  * The MIT License (MIT)
@@ -126,7 +128,8 @@ SIMBA_GEN_C_FMT = """/**
 {soamdb}
 """
 
-SYSINFO_FMT = """const FAR char sysinfo[] = "app:    {name}-{version} built {date} by {user}.\\r\\n"
+SYSINFO_FMT = """\
+const FAR char sysinfo[] = "app:    {name}-{version} built {date} by {user}.\\r\\n"
                            "board:  {board}\\r\\n"
                            "mcu:    {mcu}\\r\\n";
 """
@@ -134,6 +137,8 @@ SYSINFO_FMT = """const FAR char sysinfo[] = "app:    {name}-{version} built {dat
 
 SETTINGS_FMT = """
 {names}
+
+{functions}
 
 const FAR struct setting_t settings[] = {{
 {array}
@@ -143,6 +148,93 @@ const FAR struct setting_t settings[] = {{
 const FAR uint8_t settings_default[CONFIG_SETTINGS_AREA_SIZE] = {{{default_data}}};
 """
 
+SETTING_HELPER_FUNCTIONS = """\
+static int setting_read(void *dst_p, size_t src, size_t size)
+{
+    ssize_t res;
+
+    res = settings_read(dst_p, src, size);
+
+    return (res == size ? 0 : res);
+}
+
+static int setting_write(size_t dst, const void *src_p, size_t size)
+{
+    ssize_t res;
+
+    res = settings_write(dst, src_p, size);
+
+    return (res == size ? 0 : res);
+}
+"""
+
+SETTING_INT32_H_FMT = """\
+int setting_{name}_read(int32_t *value_p);
+int setting_{name}_write(int32_t value);
+"""
+
+
+SETTING_STRING_H_FMT = """\
+int setting_{name}_read(char *value_p);
+int setting_{name}_write(const char *value_p);
+"""
+
+
+SETTING_BLOB_H_FMT = """\
+int setting_{name}_read(void *value_p);
+int setting_{name}_write(const void *value_p);
+"""
+
+
+SETTING_INT32_C_FMT = """\
+int setting_{name}_read(int32_t *value_p)
+{{
+    return (setting_read(value_p,
+                         SETTING_{name_upper}_ADDR,
+                         SETTING_{name_upper}_SIZE));
+}}
+
+int setting_{name}_write(int32_t value)
+{{
+    return (setting_write(SETTING_{name_upper}_ADDR,
+                          &value,
+                          SETTING_{name_upper}_SIZE));
+}}
+"""
+
+
+SETTING_STRING_C_FMT = """\
+int setting_{name}_read(char *value_p)
+{{
+    return (setting_read(value_p,
+                         SETTING_{name_upper}_ADDR,
+                         SETTING_{name_upper}_SIZE));
+}}
+
+int setting_{name}_write(const char *value_p)
+{{
+    return (setting_write(SETTING_{name_upper}_ADDR,
+                          value_p,
+                          SETTING_{name_upper}_SIZE));
+}}
+"""
+
+
+SETTING_BLOB_C_FMT = """\
+int setting_{name}_read(void *value_p)
+{{
+    return (setting_read(value_p,
+                         SETTING_{name_upper}_ADDR,
+                         SETTING_{name_upper}_SIZE));
+}}
+
+int setting_{name}_write(const void *value_p)
+{{
+    return (setting_write(SETTING_{name_upper}_ADDR,
+                          value_p,
+                          SETTING_{name_upper}_SIZE));
+}}
+"""
 
 EEPROM_SOFT_FMT = """
 uint8_t nvm_eeprom_soft_block_0[CONFIG_NVM_EEPROM_SOFT_BLOCK_0_SIZE]
@@ -302,6 +394,7 @@ class Settings(object):
         sizes = []
         types = []
         values = []
+        functions = []
 
         for name, item in self.settings.items():
             addresses.append(
@@ -321,22 +414,46 @@ class Settings(object):
                     name=name.upper(),
                     value=item["value"]))
 
+            if item["type"] == 'int32_t':
+                fmt = SETTING_INT32_H_FMT
+            elif item["type"] == 'string_t':
+                fmt = SETTING_STRING_H_FMT
+            else:
+                fmt = SETTING_BLOB_H_FMT
+
+            functions.append(fmt.format(name=name,
+                                        name_upper=name.upper()))
+
         return ("\n".join(addresses)
                 + "\n\n"
                 + "\n".join(sizes)
                 + "\n\n"
                 + "\n".join(types)
                 + "\n\n"
-                + "\n".join(values))
+                + "\n".join(values)
+                + "\n\n"
+                + "\n".join(functions))
 
     def as_simba_gen_c_section(self):
         names = []
+        functions = []
         array = []
 
         for name, item in self.settings.items():
             names.append(
                 "static const FAR char {name}_name[] = \"{name}\";".format(
                     name=name))
+
+            if item["type"] == 'int32_t':
+                fmt = SETTING_INT32_C_FMT
+            elif item["type"] == 'string_t':
+                fmt = SETTING_STRING_C_FMT
+            else:
+                fmt = SETTING_BLOB_C_FMT
+
+            functions.append(fmt.format(name=name,
+                                        name_upper=name.upper()))
+
             array.append(
                 "    {{ .name_p = {name}_name, .type = setting_type_{type}, "
                 ".address = {address}, "
@@ -345,10 +462,14 @@ class Settings(object):
                                             address=item["address"],
                                             size=item["size"]))
 
+        if len(functions) > 0:
+            functions.insert(0, SETTING_HELPER_FUNCTIONS)
+
         default_data = ', '.join([str(byte)
                                   for byte in bytearray(self.as_binary())])
 
         return SETTINGS_FMT.format(names='\n'.join(names),
+                                   functions='\n'.join(functions),
                                    array='\n'.join(array),
                                    default_data=default_data)
 
@@ -508,7 +629,7 @@ class SoamDb(object):
         ignore_chars = [
             0x00, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x20, 0x22, 0x25
         ]
-        
+
         while (self.id & 0xff) in ignore_chars:
             self.id += 1
 

@@ -265,11 +265,11 @@ static int test_string(void)
     char string[SETTING_STRING_SIZE];
 
     /* Read the default value. */
-    memset(string, 0, sizeof(string));
-    BTASSERTI(settings_read(string,
+    memset(&string[0], 0, sizeof(string));
+    BTASSERTI(settings_read(&string[0],
                             SETTING_STRING_ADDR,
                             SETTING_STRING_SIZE), ==, SETTING_STRING_SIZE);
-    BTASSERTM(string, "y", 1);
+    BTASSERTM(&string[0], "y", 2);
 
     /* Overwrite the default value with "x". */
     string[0] = 'x';
@@ -279,11 +279,56 @@ static int test_string(void)
                              SETTING_STRING_SIZE), ==, SETTING_STRING_SIZE);
 
     /* Read the overwritten value. */
-    memset(string, 0, sizeof(string));
-    BTASSERTI(settings_read(string,
+    memset(&string[0], 0, sizeof(string));
+    BTASSERTI(settings_read(&string[0],
                             SETTING_STRING_ADDR,
                             SETTING_STRING_SIZE), ==, SETTING_STRING_SIZE);
-    BTASSERTM(string, "x", 1);
+    BTASSERTM(string, "x", 2);
+
+    return (0);
+}
+
+static int test_setting_int32_read_write(void)
+{
+    int32_t int32;
+
+    int32 = 45;
+    BTASSERTI(setting_int32_write(int32), ==, 0);
+
+    int32 = 0;
+    BTASSERTI(setting_int32_read(&int32), ==, 0);
+    BTASSERTI(int32, ==, 45);
+
+    return (0);
+}
+
+static int test_setting_string_read_write(void)
+{
+    char string[SETTING_STRING_SIZE];
+
+    string[0] = 't';
+    string[1] = '\0';
+    BTASSERTI(setting_string_write(&string[0]), ==, 0);
+
+    memset(&string[0], 0, sizeof(string));
+    BTASSERTI(setting_string_read(&string[0]), ==, 0);
+    BTASSERTM(&string[0], "t", 2);
+
+    return (0);
+}
+
+static int test_setting_blob_read_write(void)
+{
+    uint8_t blob[SETTING_BLOB_SIZE];
+
+    blob[0] = 1;
+    blob[1] = 2;
+    BTASSERTI(setting_blob_write(&blob[0]), ==, 0);
+
+    memset(&blob[0], 0, sizeof(blob));
+    BTASSERTI(setting_blob_read(&blob[0]), ==, 0);
+    BTASSERTI(blob[0], ==, 1);
+    BTASSERTI(blob[1], ==, 2);
 
     return (0);
 }
@@ -314,14 +359,15 @@ static int test_cmd_list_after_updates(void)
     /* Call the list command and validate the output. */
     strcpy(buf, "oam/settings/list");
     BTASSERTI(fs_call(buf, NULL, &queue, NULL), ==, 0);
-    BTASSERTI(harness_expect(&queue,
-                             "NAME                                      TYPE      SIZE  VALUE\r\n"
-                             "int32                                     int32_t      4  10\r\n"
-                             "string                                    string_t     4  x\r\n"
-                             "blob                                      blob_t       2  1112\r\n"
-                             "blob_with_empty_default_data              blob_t       4  ffffffff\r\n"
-                             "max_name_length_40_123456789012345678901  string_t     4  \r\n",
-                             NULL), ==, 380);
+    BTASSERTI(harness_expect(
+                  &queue,
+                  "NAME                                      TYPE      SIZE  VALUE\r\n"
+                  "int32                                     int32_t      4  10\r\n"
+                  "string                                    string_t     4  t\r\n"
+                  "blob                                      blob_t       2  0102\r\n"
+                  "blob_with_empty_default_data              blob_t       4  ffffffff\r\n"
+                  "max_name_length_40_123456789012345678901  string_t     4  \r\n",
+                  NULL), ==, 380);
 
     return (0);
 #else
@@ -340,6 +386,9 @@ int main()
         { test_cmd_reset, "test_cmd_reset" },
         { test_integer, "test_integer" },
         { test_string, "test_string" },
+        { test_setting_int32_read_write, "test_setting_int32_read_write" },
+        { test_setting_string_read_write, "test_setting_string_read_write" },
+        { test_setting_blob_read_write, "test_setting_blob_read_write" },
         { test_read_write_by_name, "test_read_write_by_name" },
         { test_cmd_list_after_updates, "test_cmd_list_after_updates" },
         { NULL, NULL }
