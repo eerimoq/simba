@@ -67,7 +67,7 @@ struct module_t {
 
 static struct module_t module;
 
-static int print_backtrace(void *array[], int depth, const char *name_p)
+static int print_backtrace_array(void *array[], int depth, const char *name_p)
 {
     int i;
 
@@ -86,27 +86,32 @@ static int print_backtrace(void *array[], int depth, const char *name_p)
     return (0);
 }
 
-static int print_assert_backtrace(void)
+static int print_backtrace(const char *name_p)
 {
-    void *array[2 * CONFIG_HARNESS_BACKTRACE_DEPTH_MAX];
+    void *array[2 * (CONFIG_HARNESS_BACKTRACE_DEPTH_MAX + 8)];
     int depth;
 
     depth = sys_backtrace(array, sizeof(array));
 
-    return (print_backtrace(array, depth, "assert"));
+    return (print_backtrace_array(array, depth, name_p));
+}
+
+static int print_assert_backtrace(void)
+{
+    return (print_backtrace("assert"));
 }
 
 static int print_read_backtrace(void)
 {
-    void *array[2 * CONFIG_HARNESS_BACKTRACE_DEPTH_MAX];
-    int depth;
-
-    depth = sys_backtrace(array, sizeof(array));
-
-    return (print_backtrace(array, depth, "read"));
+    return (print_backtrace("read"));
 }
 
-static int create_write_backtrace(struct mock_entry_t *entry_p)
+static int print_write_backtrace(void)
+{
+    return (print_backtrace("write"));
+}
+
+static int mock_entry_create_write_backtrace(struct mock_entry_t *entry_p)
 {
     void *array[2 * CONFIG_HARNESS_BACKTRACE_DEPTH_MAX];
     int depth;
@@ -123,7 +128,7 @@ static int create_write_backtrace(struct mock_entry_t *entry_p)
     return (0);
 }
 
-static int print_write_backtrace(struct mock_entry_t *entry_p)
+static int mock_entry_print_write_backtrace(struct mock_entry_t *entry_p)
 {
     void *array[2 * CONFIG_HARNESS_BACKTRACE_DEPTH_MAX];
     int depth;
@@ -135,7 +140,7 @@ static int print_write_backtrace(struct mock_entry_t *entry_p)
         array[2 * i] = entry_p->backtrace.array[i];
     }
 
-    return (print_backtrace(&array[0], depth, "write"));
+    return (print_backtrace_array(&array[0], depth, "write"));
 }
 
 static struct mock_entry_cb_t *alloc_mock_entry_cb(size_t size)
@@ -313,8 +318,8 @@ static int read_mock_entry(struct mock_entry_t *entry_p,
                     &entry_p->data.buf[0],
                     entry_p->data.size);
         print_read_backtrace();
-        print_write_backtrace(entry_p);
-        module.current_testcase_result = -1;
+        mock_entry_print_write_backtrace(entry_p);
+        harness_set_testcase_result(-1);
     }
 
     free_mock_entry(entry_p);
@@ -346,7 +351,8 @@ ssize_t create_mock_entry(const char *id_p,
         std_printf(FSTR("create_mock_entry(): Got NULL pointer with size "
                         "greater than zero(0) for mock id '%s'\r\n"),
                    id_p);
-        module.current_testcase_result = -1;
+        print_write_backtrace();
+        harness_set_testcase_result(-1);
 
         return (-EINVAL);
     }
@@ -358,7 +364,8 @@ ssize_t create_mock_entry(const char *id_p,
             FSTR("create_mock_entry(): Mock entry memory allocation failed "
                  "for id '%s'\r\n"),
             id_p);
-        module.current_testcase_result = -1;
+        print_write_backtrace();
+        harness_set_testcase_result(-1);
 
         return (-ENOMEM);
     }
@@ -371,7 +378,7 @@ ssize_t create_mock_entry(const char *id_p,
     }
 
     entry_p->data.size = size;
-    create_write_backtrace(entry_p);
+    mock_entry_create_write_backtrace(entry_p);
 
     *entry_pp = entry_p;
 
@@ -420,7 +427,7 @@ int harness_run(struct harness_testcase_t *testcases_p)
                   &sizes[0]);
 
         /* Mark current testcase as passed before its executed. */
-        module.current_testcase_result = 0;
+        harness_set_testcase_result(0);
 
         std_printf(OSTR("enter: %s\r\n"), testcase_p->name_p);
 
@@ -436,11 +443,14 @@ int harness_run(struct harness_testcase_t *testcases_p)
             }
         } while (entry_p != NULL);
 
-        if ((err < 0) || (module.current_testcase_result == -1)) {
+        if ((err < 0) || (harness_get_testcase_result() == -1)) {
             failed++;
             std_printf(OSTR("exit: %s: FAILED\r\n\r\n"),
                        testcase_p->name_p);
-        } else if ((err == 0) && (module.current_testcase_result == 0)) {
+#if CONFIG_HARNESS_EARLY_EXIT == 1
+            sys_stop(-1);
+#endif
+        } else if ((err == 0) && (harness_get_testcase_result() == 0)) {
             passed++;
             std_printf(OSTR("exit: %s: PASSED\r\n\r\n"),
                        testcase_p->name_p);
@@ -583,7 +593,8 @@ ssize_t harness_mock_cwrite(const char *id_p,
             FSTR("harness_mock_cwrite(): Mock entry callback memory allocation "
                  "failed for id '%s'\r\n"),
             id_p);
-        module.current_testcase_result = -1;
+        print_write_backtrace();
+        harness_set_testcase_result(-1);
         free_mock_entry(entry_p);
 
         return (-ENOMEM);
@@ -621,7 +632,7 @@ ssize_t harness_mock_read(const char *id_p,
         std_printf(FSTR("\r\nharness_mock_read(): Mock id '%s' not found.\r\n"),
                    id_p);
         print_read_backtrace();
-        module.current_testcase_result = -1;
+        harness_set_testcase_result(-1);
     }
 
     return (res);
@@ -705,8 +716,8 @@ int harness_mock_assert(const char *id_p,
             }
 
             print_assert_backtrace();
-            print_write_backtrace(entry_p);
-            module.current_testcase_result = -1;
+            mock_entry_print_write_backtrace(entry_p);
+            harness_set_testcase_result(-1);
         }
 
         free_mock_entry(entry_p);
@@ -714,7 +725,7 @@ int harness_mock_assert(const char *id_p,
         std_printf(FSTR("\r\nharness_mock_assert(): %s: mock id not found\r\n"),
                    id_p);
         print_assert_backtrace();
-        module.current_testcase_result = -1;
+        harness_set_testcase_result(-1);
     }
 
     return (res);
@@ -783,6 +794,12 @@ ssize_t harness_mock_read_wait(const char *id_p,
 int harness_set_testcase_result(int result)
 {
     module.current_testcase_result = result;
+
+#if CONFIG_HARNESS_EARLY_EXIT == 1
+    if (result == -1) {
+        sys_stop(result);
+    }
+#endif
 
     return (0);
 }

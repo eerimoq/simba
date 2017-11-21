@@ -2393,6 +2393,14 @@
 #endif
 
 /**
+ * Call sys_exit() immediately on test failure to stop the test suite
+ * execution as early as possible.
+ */
+#ifndef CONFIG_HARNESS_EARLY_EXIT
+#    define CONFIG_HARNESS_EARLY_EXIT                       0
+#endif
+
+/**
  * Size of the HTTP server request buffer. This buffer is used when
  * parsing received HTTP request headers.
  */

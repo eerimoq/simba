@@ -8,13 +8,19 @@ import subprocess
 IGNORED_FUNCTIONS = [
     'sys_port_backtrace',
     'sys_backtrace',
+    'print_backtrace',
     'print_assert_backtrace',
     'print_read_backtrace',
-    'create_write_backtrace',
+    'print_write_backtrace',
+    'mock_entry_create_write_backtrace',
+    'mock_entry_print_write_backtrace',
+    'create_mock_entry',
     'read_mock_entry',
     'harness_mock_assert',
     'harness_mock_read',
     'harness_mock_write',
+    'harness_mock_mwrite',
+    'harness_mock_cwrite',
     'harness_mock_write_notify',
     'harness_mock_read_wait',
     '??',
@@ -24,6 +30,17 @@ IGNORED_FUNCTIONS = [
 RE_BACKTRACE_ADDRESS = re.compile(r'^(: )(0x[0-9a-f]+)')
 RE_BACKTRACE_HEADER = re.compile(
     r'^Mock \w+ backtrace \(most recent call first\):')
+
+
+def print_backtrace_lines(backtrace_lines):
+    depth = 0
+
+    for backtrace_line in backtrace_lines:
+        function = backtrace_line.split(' ')[1]
+
+        if function not in IGNORED_FUNCTIONS:
+            print('[{}]{}'.format(depth, backtrace_line), end='')
+            depth += 1
 
 
 def main():
@@ -58,17 +75,12 @@ def main():
                 line += subprocess.check_output(command).decode('utf-8')
                 backtrace_lines.append(line)
             else:
-                depth = 0
-
-                for backtrace_line in backtrace_lines:
-                    function = backtrace_line.split(' ')[1]
-
-                    if function not in IGNORED_FUNCTIONS:
-                        print('[{}]{}'.format(depth, backtrace_line), end='')
-                        depth += 1
-
+                print_backtrace_lines(backtrace_lines)
                 print(line, end='')
                 backtrace_lines = None
+
+    if backtrace_lines is not None:
+        print_backtrace_lines(backtrace_lines)
 
 
 if __name__ == '__main__':
