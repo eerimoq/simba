@@ -30,7 +30,7 @@
 
 #include "simba.h"
 
-static int hash(long key)
+static int hash(longptr_t key)
 {
     return (0);
 }
