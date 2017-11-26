@@ -44,6 +44,9 @@ TIMEOUT ?= 10
 SPC5TOOL_PY ?= $(SIMBA_ROOT)/bin/spc5tool.py
 RUN_PY ?= $(SIMBA_ROOT)/src/boards/spc56ddiscovery/run.py
 BAUDRATE ?= 115200
+CFLASH_BIN ?= cflash.bin
+DFLASH_BIN ?= dflash.bin
+EEPROM_SOFT_BIN ?= eeprom_soft.bin
 
 upload:
 	python -u $(SPC5TOOL_PY) --port $(SERIAL_PORT) $(CONTROL_PORT_ARG) \
@@ -63,8 +66,37 @@ rerun:
 erase:
 	@echo "Erasing."
 	python -u $(SPC5TOOL_PY) --port $(SERIAL_PORT) $(CONTROL_PORT_ARG) \
-	upload
+	  upload
 	python -u $(SPC5TOOL_PY) --port $(SERIAL_PORT) $(CONTROL_PORT_ARG) \
-	flash_erase 0x0 0x40000
+	  flash_erase 0x0 0x40000
 	python -u $(SPC5TOOL_PY) --port $(SERIAL_PORT) $(CONTROL_PORT_ARG) \
-	flash_erase 0x800000 0x10000
+	  flash_erase 0x800000 0x10000
+
+dump:
+	python -u $(SPC5TOOL_PY) --port $(SERIAL_PORT) $(CONTROL_PORT_ARG) \
+	  upload
+
+	@echo -n "Dumping code flash to '$(CFLASH_BIN)'... "
+	python -u $(SPC5TOOL_PY) --port $(SERIAL_PORT) $(CONTROL_PORT_ARG) \
+	  flash_read -o $(CFLASH_BIN) 0x0 0x40000 || echo "failed."
+	@echo "done."
+
+	@echo -n "Dumping data flash to '$(DFLASH_BIN)'..."
+	python -u $(SPC5TOOL_PY) --port $(SERIAL_PORT) $(CONTROL_PORT_ARG) \
+	  flash_read -o $(DFLASH_BIN) 0x800000 0x10000 || echo "failed."
+	@echo "done."
+
+dump-decode:
+	@echo "Decoding dumps $(CFLASH_BIN) and $(DFLASH_BIN)."
+	echo "$(SETTINGS_INI) $(EEPROM_SOFT_CHUNK_SIZE) $(ENDIANESS)"
+	eeprom_soft.py decode \
+	  --block 0x0000,0x4000 \
+	  --block 0x4000,0x4000 \
+	  --chunk-size $(EEPROM_SOFT_CHUNK_SIZE) \
+	  --endianess $(ENDIANESS) \
+	  --output-file $(EEPROM_SOFT_BIN) \
+	  $(DFLASH_BIN)
+	settings.py decode \
+	  --settings $(SETTINGS_INI) \
+	  --endianess $(ENDIANESS) \
+	  $(EEPROM_SOFT_BIN)
