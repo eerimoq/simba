@@ -6,10 +6,10 @@ import struct
 from collections import namedtuple
 
 
-Header = namedtuple('Header', ['crc', 'revision', 'magic'])
-
-
 MAGIC = 0xa5c3
+
+
+Header = namedtuple('Header', ['crc', 'revision', 'magic'])
 
 
 def calc_chunk_addresses(blocks, chunk_size):
@@ -20,20 +20,22 @@ def calc_chunk_addresses(blocks, chunk_size):
     chunk_addresses = []
 
     for block in blocks:
-        # Find block information.
         address, size = block.split(',')
         address = int(address, 0)
         size = int(size, 0)
         number_of_chunks_in_block = (size // chunk_size)
 
-        for chunk_index in range(number_of_chunks_in_block):
-            chunk_addresses.append(address + chunk_index * chunk_size)
+        for i in range(number_of_chunks_in_block):
+            chunk_addresses.append(address + i * chunk_size)
 
     return chunk_addresses
 
 
-def decode_chunk_header(binary):
-    return Header(*struct.unpack('>IHH', binary))
+def decode_chunk_header(binary, endianess):
+    if endianess == 'big':
+        return Header(*struct.unpack('>IHH', binary))
+    else:
+        return Header(*struct.unpack('<IHH', binary))
 
 
 def is_valid_chunk(header, data):
@@ -50,13 +52,16 @@ def is_valid_chunk(header, data):
     return True
 
 
-def decode_chunk(iostream, chunk_address, chunk_size):
+def decode_chunk(iostream,
+                 chunk_address,
+                 chunk_size,
+                 endianess):
     '''Decode given chunk.
 
     '''
 
     iostream.seek(chunk_address)
-    header = decode_chunk_header(iostream.read(8))
+    header = decode_chunk_header(iostream.read(8), endianess)
     data = iostream.read(chunk_size - 8)
 
     if is_valid_chunk(header, data):
@@ -84,7 +89,10 @@ def do_decode(args):
 
     with open(args.binfile, 'rb') as fin:
         for chunk_address in chunk_addresses:
-            decoded_chunk = decode_chunk(fin, chunk_address, chunk_size)
+            decoded_chunk = decode_chunk(fin,
+                                         chunk_address,
+                                         chunk_size,
+                                         args.endianess)
 
             if decoded_chunk is None:
                 print('Failed to decode chunk at address 0x{:08x}.'.format(

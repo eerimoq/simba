@@ -88,7 +88,6 @@ dump:
 
 dump-decode:
 	@echo "Decoding dumps $(CFLASH_BIN) and $(DFLASH_BIN)."
-	echo "$(SETTINGS_INI) $(EEPROM_SOFT_CHUNK_SIZE) $(ENDIANESS)"
 	eeprom_soft.py decode \
 	  --block 0x0000,0x4000 \
 	  --block 0x4000,0x4000 \

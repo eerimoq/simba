@@ -130,7 +130,10 @@ def do_decode(args):
             data = fin.read(item['size'])
 
             if item['type'] == 'int32_t':
-                value = struct.unpack('>I', data)[0]
+                if args.endianess == 'big':
+                    value = struct.unpack('>I', data)[0]
+                else:
+                    value = struct.unpack('<I', data)[0]
             elif item['type'] == 'string_t':
                 value = data.split(b'\x00')[0].encode('string_escape')
             elif item['type'] == 'blob_t':
