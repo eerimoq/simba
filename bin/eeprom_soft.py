@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import sys
 import argparse
 import zlib
 import struct
@@ -61,8 +62,23 @@ def decode_chunk(iostream,
     '''
 
     iostream.seek(chunk_address)
-    header = decode_chunk_header(iostream.read(8), endianess)
-    data = iostream.read(chunk_size - 8)
+
+    # Header.
+    data = iostream.read(8)
+
+    if len(data) != 8:
+        print('Failed to read chunk header.')
+        return
+
+    header = decode_chunk_header(data, endianess)
+
+    # Data
+    data_size = chunk_size - 8
+    data = iostream.read(data_size)
+
+    if len(data) != data_size:
+        print('Failed to read chunk data')
+        return
 
     if is_valid_chunk(header, data):
         return header.revision, data
@@ -108,6 +124,9 @@ def do_decode(args):
             latest_chunk_revision = revision
             latest_chunk_data = data
 
+    if latest_chunk_revision is None:
+        sys.exit('error: no valid chunk found')
+
     print("Writing chunk with revision {} to '{}'.".format(
         latest_chunk_revision,
         args.output_file))
@@ -122,10 +141,16 @@ def main():
     subparsers = parser.add_subparsers()
 
     decode_parser = subparsers.add_parser('decode')
-    decode_parser.add_argument("--block", action="append")
-    decode_parser.add_argument("--chunk-size")
-    decode_parser.add_argument("--endianess")
-    decode_parser.add_argument("--output-file")
+    decode_parser.add_argument("--block",
+                               action="append",
+                               required=True)
+    decode_parser.add_argument("--chunk-size",
+                               required=True)
+    decode_parser.add_argument("--endianess",
+                               choices=('big', 'litte'),
+                               required=True)
+    decode_parser.add_argument("--output-file",
+                               required=True)
     decode_parser.add_argument("binfile")
     decode_parser.set_defaults(func=do_decode)
 
