@@ -160,29 +160,8 @@ static THRD_STACK(idle_thrd_stack, CONFIG_THRD_IDLE_STACK_SIZE);
 void terminate(void)
 {
 #if CONFIG_THRD_TERMINATE == 1
-    struct thrd_t *thrd_p, *prev_p;
-
     /* Remove the thread from the global list of threads. */
     sys_lock();
-
-    thrd_p = module.threads_p;
-    prev_p = NULL;
-
-    while (thrd_p != NULL) {
-        if (thrd_p == thrd_self()) {
-            if (prev_p != NULL) {
-                prev_p->next_p = thrd_p->next_p;
-            } else {
-                module.threads_p = thrd_p->next_p;
-            }
-
-            break;
-        }
-
-        prev_p = thrd_p;
-        thrd_p = thrd_p->next_p;
-    }
-
     sem_give_isr(&thrd_self()->join_sem, 1);
     thrd_self()->state = THRD_STATE_TERMINATED;
     thrd_reschedule();
@@ -498,7 +477,7 @@ int thrd_module_init(void)
     thrd_spawn(idle_thrd, NULL, 127, idle_thrd_stack, sizeof(idle_thrd_stack));
 
 #if CONFIG_MONITOR_THREAD == 1
-    thrd_spawn(monitor_thrd,
+    thrd_spawn(monitor_main,
                NULL,
                THRD_MONITOR_PRIO,
                monitor_thrd_stack,
@@ -645,6 +624,20 @@ int thrd_join(struct thrd_t *thrd_p)
 #else
     return (-1);
 #endif
+}
+
+int thrd_terminate(struct thrd_t *thrd_p)
+{
+    sys_lock();
+    thrd_prio_list_remove_isr(&module.scheduler.ready,
+                              &thrd_p->scheduler.elem);
+#if CONFIG_THRD_TERMINATE == 1
+    sem_give_isr(&thrd_self()->join_sem, 1);
+#endif
+    thrd_p->state = THRD_STATE_TERMINATED;
+    sys_unlock();
+
+    return (0);
 }
 
 int thrd_sleep(float seconds)

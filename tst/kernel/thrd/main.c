@@ -32,14 +32,27 @@
 
 #if defined(ARCH_ESP32)
 static THRD_STACK(suspend_resume_stack, 512);
+static THRD_STACK(terminate_stack, 512);
 #else
 static THRD_STACK(suspend_resume_stack, 256);
+static THRD_STACK(terminate_stack, 256);
 #endif
 
 static void *suspend_resume_main(void *arg_p)
 {
     thrd_set_name("resumer");
     thrd_resume(arg_p, 3);
+
+    return (NULL);
+}
+
+static void *terminate_main(void *arg_p)
+{
+    thrd_set_name("terminate");
+    thrd_suspend(NULL);
+
+    /* Should never get here. */
+    BTASSERTN(0);
 
     return (NULL);
 }
@@ -70,6 +83,29 @@ int test_suspend_resume(void)
     /* Wait for the spawned thread to terminate, twice. */
     BTASSERT(thrd_join(thrd_p) == 0);
     BTASSERT(thrd_join(thrd_p) == 0);
+
+    /* Try to resume the terminated thread. */
+    BTASSERT(thrd_resume(thrd_p, 0) == -1);
+
+    return (0);
+}
+
+int test_terminate(void)
+{
+    struct thrd_t *thrd_p;
+
+    thrd_p = thrd_spawn(terminate_main,
+                        thrd_self(),
+                        -10,
+                        terminate_stack,
+                        sizeof(terminate_stack));
+    thrd_yield();
+
+    BTASSERT(thrd_terminate(thrd_p) == 0);
+    BTASSERT(thrd_terminate(thrd_p) == 0);
+
+    /* Try to resume a terminated thread. */
+    BTASSERT(thrd_resume(thrd_p, 0) == -1);
 
     return (0);
 }
@@ -358,6 +394,7 @@ int main()
         { test_init, "test_init" },
 #if !defined(BOARD_ARDUINO_NANO) && !defined(BOARD_ARDUINO_UNO) && !defined(BOARD_ARDUINO_PRO_MICRO)
         { test_suspend_resume, "test_suspend_resume" },
+        { test_terminate, "test_terminate" },
 #endif
         { test_yield, "test_yield" },
         { test_sleep, "test_sleep" },

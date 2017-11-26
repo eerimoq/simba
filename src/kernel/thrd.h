@@ -203,6 +203,16 @@ int thrd_yield(void);
 int thrd_join(struct thrd_t *thrd_p);
 
 /**
+ * Terminate given thread. The stack of a terminated thread may _not_
+ * be reused in the current implementation.
+ *
+ * @param[in] thrd_p Thread to terminate.
+ *
+ * @return zero(0) or negative error code.
+ */
+int thrd_terminate(struct thrd_t *thrd_p);
+
+/**
  * Pauses the current thread for given number of seconds.
  *
  * @param[in] seconds Seconds to sleep.

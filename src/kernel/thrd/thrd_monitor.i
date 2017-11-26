@@ -135,7 +135,7 @@ static int update_cpu_usage(int print)
 /**
  * The monitor thread monitors the cpu usage of all threads.
  */
-static void *monitor_thrd(void *arg_p)
+static void *monitor_main(void *arg_p)
 {
     int print;
     cpu_usage_t irq_usage;
