@@ -103,20 +103,20 @@ void __attribute__ ((weak)) STUB(sys_stop)(int error)
                         sizeof(error));
 }
 
-int mock_write_sys_panic(const char *message_p)
+int mock_write_sys_panic(far_string_t fmt_p)
 {
-    harness_mock_write("sys_panic(message_p)",
-                       message_p,
-                       strlen(message_p) + 1);
+    harness_mock_write("sys_panic(fmt_p, ...)",
+                       fmt_p,
+                       std_strlen(fmt_p) + 1);
 
     return (0);
 }
 
-void __attribute__ ((weak)) STUB(sys_panic)(const char *message_p)
+void __attribute__ ((weak)) STUB(sys_panic)(far_string_t fmt_p, ...)
 {
-    harness_mock_assert("sys_panic(message_p)",
-                        message_p,
-                        sizeof(*message_p));
+    harness_mock_assert("sys_panic(fmt_p, ...)",
+                        fmt_p,
+                        std_strlen(fmt_p) + 1);
 }
 
 int mock_write_sys_reboot()

@@ -351,7 +351,7 @@ static int cmd_panic_cb(int argc,
                          void *arg_p,
                          void *call_arg_p)
 {
-    sys_panic("Panic!\r\n");
+    sys_panic(FSTR("Panic!\r\n"));
 
     return (0);
 }
@@ -410,6 +410,22 @@ static int cmd_reset_cause_cb(int argc,
 }
 
 #endif
+
+static ssize_t panic_write(void *self_p,
+                           const void *buf_p,
+                           size_t size)
+{
+    size_t i;
+    const char *c_buf_p;
+
+    c_buf_p = buf_p;
+
+    for (i = 0; i < size; i++) {
+        sys_port_panic_putc(c_buf_p[i]);
+    }
+
+    return (size);
+}
 
 int sys_module_init(void)
 {
@@ -547,14 +563,13 @@ void sys_stop(int error)
     sys_port_stop(error);
 }
 
-void sys_panic(const char *message_p)
+void sys_panic(far_string_t fmt_p, ...)
 {
     int i;
     int count;
     void *backtrace[24];
-    char buf[23];
-    char *buf_p;
-    FAR const char *info_p;
+    struct chan_t chan;
+    va_list ap;
 
 #if !defined(ARCH_LINUX)
     sys_lock();
@@ -564,10 +579,15 @@ void sys_panic(const char *message_p)
     watchdog_kick();
 #endif
 
+    chan_init(&chan,
+              chan_read_null,
+              panic_write,
+              chan_size_null);
+
     /* Output the message. */
-    while (*message_p != '\0') {
-        sys_port_panic_putc(*message_p++);
-    }
+    va_start(ap, fmt_p);
+    std_vfprintf(&chan, fmt_p, &ap);
+    va_end(ap);
 
     sys_port_panic_putc(':');
     sys_port_panic_putc(' ');
@@ -576,30 +596,17 @@ void sys_panic(const char *message_p)
     count = sys_backtrace(&backtrace[0], sizeof(backtrace));
 
     for (i = 0; i < count; i++) {
-        std_sprintf(&buf[0],
+        std_fprintf(&chan,
                     FSTR("0x%08lx:0x%08lx "),
                     (long)(uintptr_t)backtrace[2 * i],
                     (long)(uintptr_t)backtrace[2 * i + 1]);
-        buf_p = &buf[0];
-
-        while (*buf_p != '\0') {
-            sys_port_panic_putc(*buf_p++);
-        }
     }
 
     /* Print system information. */
-    info_p = &sysinfo[0];
-
-    while (*info_p != '\0') {
-        sys_port_panic_putc(*info_p++);
-    }
+    std_fprintf(&chan, &sysinfo[0]);
 
     /* Reboot the system. */
-    message_p = "Rebooting...";
-
-    while (*message_p != '\0') {
-        sys_port_panic_putc(*message_p++);
-    }
+    std_fprintf(&chan, FSTR("Rebooting..."));
 
     sys_reboot();
 }

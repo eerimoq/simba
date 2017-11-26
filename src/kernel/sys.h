@@ -140,11 +140,12 @@ void sys_stop(int error);
  * This function may be called from interrupt context and with the
  * system lock taken.
  *
- * @param[in] message_p Panic message to write to the console.
+ * @param[in] fmt_p Format string.
+ * @param[in] ... Variable arguments list.
  *
  * @return Never returns.
  */
-void sys_panic(const char *message_p);
+void sys_panic(far_string_t fmt_p, ...);
 
 /**
  * Reboot the system. Also known as a soft reset.

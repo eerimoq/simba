@@ -246,6 +246,13 @@
 #endif
 
 /**
+ * Force all assertions to be panics.
+ */
+#ifndef CONFIG_ASSERT_FORCE_PANIC
+#    define CONFIG_ASSERT_FORCE_PANIC                       0
+#endif
+
+/**
  * Enable fatal assertions, ``FATAL_ASSERT*()``.
  */
 #ifndef CONFIG_FATAL_ASSERT

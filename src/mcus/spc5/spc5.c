@@ -42,13 +42,8 @@ char interrupt_stack[CONFIG_SYSTEM_INTERRUPT_STACK_SIZE];
  */
 static void isr_none(uint32_t address)
 {
-    char buf[40];
-
-    std_sprintf(&buf[0],
-                FSTR("unhandled external interrupt %d"),
-                (address - 0x800) / 4);
-
-    sys_panic(&buf[0]);
+    sys_panic(FSTR("unhandled external interrupt %d"),
+              (address - 0x800) / 4);
 }
 
 #if CONFIG_FLASH == 1
@@ -58,7 +53,7 @@ ISR(data_storage)
     if (SPC5_DFLASH->MCR & SPC5_FLASH_MCR_EER) {
         /* DFlash ECC errors are handled by the flash driver. */
     } else {
-        sys_panic("isr_data_storage");
+        sys_panic(FSTR("isr_data_storage"));
     }
 
 }

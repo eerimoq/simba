@@ -35,7 +35,7 @@ int main()
     /* Start the system. */
     sys_start();
 
-    sys_panic("Intentional panic!\r\n");
+    sys_panic(FSTR("Intentional %s!\r\n"), "panic");
 
     return (0);
 }

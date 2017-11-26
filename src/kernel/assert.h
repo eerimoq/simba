@@ -79,7 +79,14 @@
  * otherwise return given error code ``res``.
  */
 #if CONFIG_ASSERT == 1
-#    define ASSERTNR(cond, n, res, ...)                                 \
+#    if CONFIG_ASSERT_FORCE_PANIC == 1
+#        define ASSERTNR(cond, n, res, ...)                             \
+    if (!(cond)) {                                                      \
+        sys_panic(OSTR(__FILE__ ":" STRINGIFY(__LINE__) ": ASSERT: ("   \
+                       #cond ", " #n ") " #__VA_ARGS__));               \
+    }
+#    else
+#        define ASSERTNR(cond, n, res, ...)                             \
     if (!(cond)) {                                                      \
         std_printf(OSTR(__FILE__ ":" STRINGIFY(__LINE__) ": ASSERT: ("  \
                         #cond ", " #n ") " #__VA_ARGS__ "\r\n"));       \
@@ -90,6 +97,7 @@
             return (res);                                               \
         }                                                               \
     }
+#    endif
 #else
 #    define ASSERTNR(cond, n, ...)
 #endif
@@ -100,6 +108,13 @@
  * ``n`` on fatal error, otherwise return.
  */
 #if CONFIG_ASSERT == 1
+#    if CONFIG_ASSERT_FORCE_PANIC == 1
+#        define ASSERTNRV(cond, n, ...)                                 \
+    if (!(cond)) {                                                      \
+        sys_panic(OSTR(__FILE__ ":" STRINGIFY(__LINE__) ": ASSERT: ("   \
+                       #cond ", " #n ") " #__VA_ARGS__ ));              \
+    }
+#    else
 #    define ASSERTNRV(cond, n, ...)                                     \
     if (!(cond)) {                                                      \
         std_printf(OSTR(__FILE__ ":" STRINGIFY(__LINE__) ": ASSERT: ("  \
@@ -111,6 +126,7 @@
             return;                                                     \
         }                                                               \
     }
+#    endif
 #else
 #    define ASSERTNRV(cond, n, ...)
 #endif
@@ -163,13 +179,13 @@
 #    if CONFIG_PANIC_ASSERT_FILE_LINE == 1
 #        define PANIC_ASSERTN(cond, n, ...)                     \
     if (!(cond)) {                                              \
-        sys_panic(#n ":" __FILE__ ":" STRINGIFY(__LINE__)       \
-                  ": ASSERT: (" #cond ") " #__VA_ARGS__);       \
+        sys_panic(FSTR(#n ":" __FILE__ ":" STRINGIFY(__LINE__)  \
+                       ": ASSERT: (" #cond ") " #__VA_ARGS__)); \
     }
 #    else
-#        define PANIC_ASSERTN(cond, n, ...)                     \
-    if (!(cond)) {                                              \
-        sys_panic(#n ": ASSERT: (" #cond ") " #__VA_ARGS__);    \
+#        define PANIC_ASSERTN(cond, n, ...)                             \
+    if (!(cond)) {                                                      \
+        sys_panic(FSTR(#n ": ASSERT: (" #cond ") " #__VA_ARGS__));      \
     }
 #    endif
 #else
