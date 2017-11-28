@@ -35,6 +35,11 @@
 
 /**
  * WiFi operational mode.
+ *
+ * \note The driver code rely on the combined station + softap mode
+ *       being bitwise-or of station and softap mode, and the enum
+ *       integer values of the modes matching the ESP8266 SDKs values
+ *       for the modes.
  */
 enum esp_wifi_op_mode_t {
     esp_wifi_op_mode_null_t = 0,
