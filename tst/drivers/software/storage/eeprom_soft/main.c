@@ -501,6 +501,44 @@ static int test_write(void)
     return (0);
 }
 
+static int test_read_write_after_failed_mount(void)
+{
+    struct eeprom_soft_driver_t eeprom;
+    uint8_t data;
+
+    BTASSERT(eeprom_soft_init(&eeprom,
+                              &flash,
+                              &blocks[0],
+                              membersof(blocks),
+                              512) == 0);
+
+    /* Mount fails (with chunk CRC mismatch). */
+    mock_write_mount_block_0_chunk_0_latest();
+    mock_write_read_header(blocks[0].address,
+                           0x12345678, /* Does not match a blank chunk
+                                          CRC. */
+                           0,
+                           0xa5c3);
+    mock_write_calculate_chunk_crc_blank(blocks[0].address,
+                                         512);
+
+    BTASSERT(eeprom_soft_mount(&eeprom) == -1);
+
+    /* Write should fail. */
+    BTASSERT(eeprom_soft_write(&eeprom,
+                               0,
+                               &data,
+                               sizeof(data)) == -ENOTMOUNTED);
+
+    /* Read should fail. */
+    BTASSERT(eeprom_soft_read(&eeprom,
+                              &data,
+                              0,
+                              sizeof(data)) == -ENOTMOUNTED);
+
+    return (0);
+}
+
 int main()
 {
     struct harness_testcase_t testcases[] = {
@@ -537,6 +575,10 @@ int main()
             "test_mount_is_valid_chunk_crc_mismatch"
         },
         { test_write, "test_write" },
+        {
+            test_read_write_after_failed_mount,
+            "test_read_write_after_failed_mount"
+        },
         { NULL, NULL }
     };
 

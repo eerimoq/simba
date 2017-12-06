@@ -430,6 +430,9 @@
 /** Command not found. */
 #define ENOCOMMAND     1003
 
+/** Resource not mounted. */
+#define ENOTMOUNTED    1004
+
 /**
  * Map given error number to a string.
  *

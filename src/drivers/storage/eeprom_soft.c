@@ -257,6 +257,10 @@ static ssize_t write_inner(struct eeprom_soft_driver_t *self_p,
     size_t overwrite_size;
     ssize_t res;
 
+    if (self_p->current.block_p == NULL) {
+        return (-ENOTMOUNTED);
+    }
+
     if (dst >= self_p->eeprom_size) {
         return (-EINVAL);
     }
@@ -455,6 +459,10 @@ ssize_t eeprom_soft_read(struct eeprom_soft_driver_t *self_p,
     ASSERTN(dst_p != NULL, EINVAL);
 
     ssize_t res;
+
+    if (self_p->current.block_p == NULL) {
+        return (-ENOTMOUNTED);
+    }
 
     if (src >= self_p->eeprom_size) {
         return (-EINVAL);

@@ -372,11 +372,11 @@ ssize_t __wrap_flash_read(struct flash_driver_t *self_p,
     ssize_t res;
     int res2;
 
-    res2 = harness_mock_read("flash_read(): return (res)",
-                            &res,
-                            sizeof(res));
+    res2 = harness_mock_try_read("flash_read(): return (res)",
+                                 &res,
+                                 sizeof(res));
 
-    if (res2 == -1) {
+    if (res2 == -ENOENT) {
         memcpy(dst_p, &flash_buf[src], size);
         res = size;
     }
@@ -409,11 +409,11 @@ int __wrap_flash_erase(struct flash_driver_t *self_p,
     int res;
     int res2;
 
-    res2 = harness_mock_read("flash_erase(): return (res)",
-                            &res,
-                            sizeof(res));
+    res2 = harness_mock_try_read("flash_erase(): return (res)",
+                                 &res,
+                                 sizeof(res));
 
-    if (res2 == -1) {
+    if (res2 == -ENOENT) {
         memset(&flash_buf[addr], 0xff, size);
         res = 0;
     }
