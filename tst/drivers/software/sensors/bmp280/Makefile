@@ -44,13 +44,8 @@ CDEFS += CONFIG_HARNESS_HEAP_MAX=4096
 endif
 
 STUB = $(addprefix $(SIMBA_ROOT)/src/drivers/sensors/bmp280.c:, \
-	 i2c_write \
-	 i2c_read \
-	 i2c_scan \
-	 spi_write \
-	 spi_read \
-	 spi_select \
-	 spi_deselect)
+	 i2c_* \
+	 spi_*)
 
 KERNEL_SRC += errno.c
 DRIVERS_SRC = sensors/bmp280.c network/spi.c network/i2c.c

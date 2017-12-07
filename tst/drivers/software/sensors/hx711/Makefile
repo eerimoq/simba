@@ -40,10 +40,7 @@ CDEFS += CONFIG_HARNESS_HEAP_MAX=4096
 endif
 
 STUB = $(addprefix $(SIMBA_ROOT)/src/drivers/sensors/hx711.c:, \
-	 pin_port_device_set_mode \
-	 pin_port_device_read \
-	 pin_port_device_write_high \
-	 pin_port_device_write_low \
+	 pin_port_device_* \
 	 sys_lock \
 	 sys_unlock \
 	 time_compare)

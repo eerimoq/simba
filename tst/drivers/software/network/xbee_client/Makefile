@@ -41,6 +41,6 @@ CDEFS += \
 SYNC_SRC += cond.c
 DRIVERS_SRC = network/xbee_client.c
 
-STUB = $(SIMBA_ROOT)/src/drivers/network/xbee_client.c:xbee_module_init,xbee_init,xbee_read,xbee_write
+STUB = $(SIMBA_ROOT)/src/drivers/network/xbee_client.c:xbee_[!c]*
 
 include $(SIMBA_ROOT)/make/app.mk

@@ -37,7 +37,7 @@ CDEFS += \
 
 DRIVERS_SRC = network/xbee.c
 
-STUB = $(SIMBA_ROOT)/src/drivers/network/xbee.c:chan_write,chan_read
+STUB = $(SIMBA_ROOT)/src/drivers/network/xbee.c:chan_*
 
 SRC += $(addprefix ../../../../stubs/, \
 	sync/chan_mock.c)

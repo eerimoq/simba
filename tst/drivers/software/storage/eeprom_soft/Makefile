@@ -39,10 +39,7 @@ CDEFS += \
 HASH_SRC += crc.c
 
 STUB = $(addprefix $(SIMBA_ROOT)/src/drivers/storage/eeprom_soft.c:, \
-	   flash_module_init \
-	   flash_erase \
-	   flash_write \
-	   flash_read)
+	   flash_*)
 
 SRC += $(addprefix ../../../../stubs/, \
 	drivers/storage/flash_mock.c)

@@ -5,6 +5,7 @@ import os
 import argparse
 import subprocess
 import re
+from fnmatch import fnmatch
 
 
 __version__ = '0.3'
@@ -129,9 +130,9 @@ class Argument(object):
         return '{}{}'.format(self.type_, self.name)
 
 
-def find_symbols_for_file(sourcefile, patterns):
-    '''Convert given pattern 'foo.c:bar,fum' to a list of the symbols for
-    given file.
+def find_symbol_patterns_for_file(sourcefile, patterns):
+    '''Convert given pattern 'foo.c:bar,fum' to a list of the symbol
+    patterns for given source file.
 
     '''
 
@@ -402,10 +403,10 @@ def do_patch(args):
 
     '''
 
-    # Find symbols to stub in given source file (if any).
-    symbols = find_symbols_for_file(args.sourcefile, args.patterns)
+    # Find symbol patterns to stub in given source file (if any).
+    symbol_patterns = find_symbol_patterns_for_file(args.sourcefile, args.patterns)
 
-    if not symbols:
+    if not symbol_patterns:
         return
 
     # Find all symbols in the object file.
@@ -426,19 +427,35 @@ def do_patch(args):
             symbols_in_objectfile.append(mo.group(2).strip())
 
     # Redefine given symbols in the object file.
+    symbols_to_stub = []
+
+    for symbol_pattern in symbol_patterns:
+        found = False
+
+        for symbol in symbols_in_objectfile:
+            if fnmatch(symbol, symbol_pattern):
+                if symbol not in symbols_to_stub:
+                    symbols_to_stub.append(symbol)
+
+                found = True
+
+        if not found:
+            sys.exit("error: cannot stub missing symbol(s) '{}' in '{}'.".format(
+                symbol_pattern,
+                args.sourcefile))
+
+
     command = [args.crosscompile + 'objcopy']
 
-    for symbol in symbols:
-        if symbol not in symbols_in_objectfile:
-            sys.exit("error: cannot stub missing symbol '{}'".format(symbol))
-
-        print("Stubbing symbol '{}' in '{}'.".format(symbol, args.sourcefile))
-
+    for symbol in symbols_to_stub:
+        print("Stubbing symbol '{}' in '{}'.".format(symbol,
+                                                     args.sourcefile))
         command += [
             '--redefine-sym', '{symbol}=__stub_{symbol}'.format(symbol=symbol)
         ]
 
     command += [args.objectfile, args.objectfile]
+
 
     subprocess.check_call(command)
 

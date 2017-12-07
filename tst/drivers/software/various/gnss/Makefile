@@ -39,7 +39,7 @@ CDEFS += \
 DRIVERS_SRC = various/gnss.c
 ENCODE_SRC = nmea.c
 
-STUB = $(SIMBA_ROOT)/src/drivers/various/gnss.c:chan_read,chan_write
+STUB = $(SIMBA_ROOT)/src/drivers/various/gnss.c:chan_*
 
 SRC += $(addprefix $(SIMBA_ROOT)/tst/stubs/, \
 	sync/chan_mock.c)
