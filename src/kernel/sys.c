@@ -567,7 +567,7 @@ void sys_panic(far_string_t fmt_p, ...)
 {
     int i;
     int count;
-    void *backtrace[24];
+    void *backtrace[2 * CONFIG_SYS_PANIC_BACKTRACE_DEPTH];
     struct chan_t chan;
     va_list ap;
 

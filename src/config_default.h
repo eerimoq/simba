@@ -224,6 +224,13 @@
 #endif
 
 /**
+ * Maximum backtrace depth in `sys_panic()`.
+ */
+#ifndef CONFIG_SYS_PANIC_BACKTRACE_DEPTH
+#    define CONFIG_SYS_PANIC_BACKTRACE_DEPTH               24
+#endif
+
+/**
  * Assertions are used to check various conditions during the
  * application execution. A typical usage is to validate function
  * input arguments.
