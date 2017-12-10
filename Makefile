@@ -105,6 +105,7 @@ ifeq ($(BOARD), linux)
 	sensors/bmp280 \
 	various/gnss \
 	sensors/hx711 \
+	network/jtag_soft \
 	network/xbee \
 	network/xbee_client \
 	storage/eeprom_soft)

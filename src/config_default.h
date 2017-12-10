@@ -41,6 +41,7 @@
 #define PORT_HAS_HX711
 #define PORT_HAS_GNSS
 #define PORT_HAS_HD44780
+#define PORT_HAS_JTAG_SOFT
 
 /**
  * Used to include driver header files and the c-file source.
@@ -537,6 +538,17 @@
 #        define CONFIG_I2C_SOFT                             0
 #    else
 #        define CONFIG_I2C_SOFT                             1
+#    endif
+#endif
+
+/**
+ * Enable the jtag_soft driver.
+ */
+#ifndef CONFIG_JTAG_SOFT
+#    if defined(CONFIG_MINIMAL_SYSTEM) || !defined(PORT_HAS_JTAG_SOFT)
+#        define CONFIG_JTAG_SOFT                            0
+#    else
+#        define CONFIG_JTAG_SOFT                            1
 #    endif
 #endif
 

@@ -270,6 +270,9 @@ typedef intptr_t longptr_t;
 #ifdef PORT_HAS_HD44780
 #    include "drivers/displays/hd44780.h"
 #endif
+#ifdef PORT_HAS_JTAG_SOFT
+#    include "drivers/network/jtag_soft.h"
+#endif
 
 #include "inet/isotp.h"
 
