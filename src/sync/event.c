@@ -79,6 +79,39 @@ ssize_t event_read(struct event_t *self_p,
     return (size);
 }
 
+ssize_t event_try_read(struct event_t *self_p,
+                       void *buf_p,
+                       size_t size)
+{
+    ASSERTN(self_p != NULL, EINVAL);
+    ASSERTN(buf_p != NULL, EINVAL);
+    ASSERTN(size == sizeof(uint32_t), EINVAL);
+
+    uint32_t *mask_p, mask;
+    ssize_t res;
+
+    mask_p = (uint32_t *)buf_p;
+
+    sys_lock();
+
+    mask = (self_p->mask & *mask_p);
+
+    /* Event set? Otherwise return -EAGAIN. */
+    if (mask != 0) {
+        res = size;
+        *mask_p = mask;
+
+        /* Remove read events from the event channel. */
+        self_p->mask &= (~(*mask_p));
+    } else {
+        res = -EAGAIN;
+    }
+
+    sys_unlock();
+
+    return (res);
+}
+
 ssize_t event_write(struct event_t *self_p,
                     const void *buf_p,
                     size_t size)

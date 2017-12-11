@@ -293,6 +293,39 @@ static int test_clear(void)
     return (0);
 }
 
+static int test_try_read(void)
+{
+    struct event_t event;
+    uint32_t mask;
+
+    BTASSERT(event_init(&event) == 0);
+
+    /* Write two events to the channel. */
+    mask = (EVENT_BIT_0 | EVENT_BIT_1);
+    BTASSERT(event_write(&event, &mask, sizeof(mask)) == 4);
+
+    /* Try to read an unset event. */
+    mask = EVENT_BIT_2;
+    BTASSERT(event_try_read(&event, &mask, sizeof(mask)) == -EAGAIN);
+
+    /* Read both set events. */
+    mask = EVENT_BIT_0;
+    BTASSERT(event_try_read(&event, &mask, sizeof(mask)) == sizeof(mask));
+    BTASSERT(mask == EVENT_BIT_0);
+    BTASSERT(event_size(&event) > 0);
+
+    mask = (EVENT_BIT_0 | EVENT_BIT_1);
+    BTASSERT(event_try_read(&event, &mask, sizeof(mask)) == sizeof(mask));
+    BTASSERT(mask == EVENT_BIT_1);
+    BTASSERT(event_size(&event) == 0);
+
+    /* Try to read any event (from the emtpy channel). */
+    mask = 0xffffffff;
+    BTASSERT(event_try_read(&event, &mask, sizeof(mask)) == -EAGAIN);
+
+    return (0);
+}
+
 int main()
 {
     struct harness_testcase_t testcases[] = {
@@ -304,6 +337,7 @@ int main()
         { test_poll_list_timeout, "test_poll_list_timeout" },
         { test_write_not_read_mask, "test_write_not_read_mask" },
         { test_clear, "test_clear" },
+        { test_try_read, "test_try_read" },
         { NULL, NULL }
     };
 

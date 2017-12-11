@@ -52,10 +52,11 @@ struct event_t {
 int event_init(struct event_t *self_p);
 
 /**
- * Wait for an event to occur in given event mask. This function
- * blocks until at least one of the events in the event mask has been
- * set. When the function returns, given event mask has been
- * overwritten with the events that actually occured.
+ * Wait for one or more events to occur in given event mask. This
+ * function blocks until at least one of the events in the event mask
+ * has been set. When the function returns, given event mask has been
+ * overwritten with the events that actually occured. Read events are
+ * automatically cleared.
  *
  * @param[in] self_p Event channel object.
  * @param[in, out] buf_p The mask of events to wait for. When the
@@ -68,6 +69,25 @@ int event_init(struct event_t *self_p);
 ssize_t event_read(struct event_t *self_p,
                    void *buf_p,
                    size_t size);
+
+/**
+ * Try to read one or more events in given event mask. This function
+ * returns immediately, even if no event has occured. When the
+ * function returns, given mask has been overwritten with the events
+ * that actually occured. Read events are automatically cleared.
+ *
+ * @param[in] self_p Event channel object.
+ * @param[in, out] buf_p The mask of events to wait for. When the
+ *                       function returns the mask contains the events
+ *                       that have occured.
+ * @param[in] size Size to read (always sizeof(mask)).
+ *
+ * @return sizeof(mask) on success, -EAGAIN if no event was read, and
+ *         otherwise other negative error code.
+ */
+ssize_t event_try_read(struct event_t *self_p,
+                       void *buf_p,
+                       size_t size);
 
 /**
  * Write given event(s) to given event channel.
@@ -101,7 +121,8 @@ ssize_t event_write_isr(struct event_t *self_p,
  *
  * @param[in] self_p Event channel object.
  *
- * @return one(1) is at least one event is active, otherwise zero(0).
+ * @return one(1) is at least one event has occured, otherwise
+ *         zero(0).
  */
 ssize_t event_size(struct event_t *self_p);
 
