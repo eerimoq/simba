@@ -104,6 +104,7 @@ ssize_t event_try_read(struct event_t *self_p,
         /* Remove read events from the event channel. */
         self_p->mask &= (~(*mask_p));
     } else {
+        *mask_p = 0;
         res = -EAGAIN;
     }
 

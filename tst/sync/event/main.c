@@ -307,6 +307,7 @@ static int test_try_read(void)
     /* Try to read an unset event. */
     mask = EVENT_BIT_2;
     BTASSERT(event_try_read(&event, &mask, sizeof(mask)) == -EAGAIN);
+    BTASSERT(mask == 0);
 
     /* Read both set events. */
     mask = EVENT_BIT_0;
@@ -322,6 +323,7 @@ static int test_try_read(void)
     /* Try to read any event (from the emtpy channel). */
     mask = 0xffffffff;
     BTASSERT(event_try_read(&event, &mask, sizeof(mask)) == -EAGAIN);
+    BTASSERT(mask == 0);
 
     return (0);
 }
