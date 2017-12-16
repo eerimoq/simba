@@ -34,6 +34,9 @@ BOARD ?= linux
 
 SRC += my_module.c my_module_mock.c
 
+CDEFS += \
+	CONFIG_HARNESS_EARLY_EXIT=0
+
 STUB = $(addprefix main.c:, \
 	foo,bar \
 	my_memcpy)

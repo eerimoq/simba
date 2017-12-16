@@ -35,10 +35,6 @@ BOARD ?= linux
 CDEFS += \
 	CONFIG_HX711=1
 
-ifneq ($(BOARD), linux)
-CDEFS += CONFIG_HARNESS_HEAP_MAX=4096
-endif
-
 STUB = $(addprefix $(SIMBA_ROOT)/src/drivers/sensors/hx711.c:, \
 	 pin_port_device_* \
 	 sys_lock \

@@ -39,10 +39,6 @@ CDEFS += \
 	CONFIG_I2C=1 \
 	CONFIG_SPI=1
 
-ifneq ($(BOARD), linux)
-CDEFS += CONFIG_HARNESS_HEAP_MAX=4096
-endif
-
 STUB = $(addprefix $(SIMBA_ROOT)/src/drivers/sensors/bmp280.c:, \
 	 i2c_* \
 	 spi_*)

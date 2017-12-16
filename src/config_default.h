@@ -2405,16 +2405,27 @@
 #endif
 
 /**
- * Size of the harness heap, required for harness_mock_write() and
- * harness_mock_read().
+ * The maximum harness write backtrace depth.
  */
-#ifndef CONFIG_HARNESS_HEAP_MAX
-#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO)
-#        define CONFIG_HARNESS_HEAP_MAX                    16
-#    elif defined(ARCH_LINUX)
-#        define CONFIG_HARNESS_HEAP_MAX                262144
+#ifndef CONFIG_HARNESS_WRITE_BACKTRACE_DEPTH_MAX
+#    if defined(ARCH_LINUX)
+#        define CONFIG_HARNESS_WRITE_BACKTRACE_DEPTH_MAX   32
 #    else
-#        define CONFIG_HARNESS_HEAP_MAX                  4096
+#        define CONFIG_HARNESS_WRITE_BACKTRACE_DEPTH_MAX    0
+#    endif
+#endif
+
+/**
+ * Maximum number of mock entries that can be allocated at any given
+ * moment, required for harness_mock_() functions.
+ */
+#ifndef CONFIG_HARNESS_MOCK_ENTRIES_MAX
+#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO)
+#        define CONFIG_HARNESS_MOCK_ENTRIES_MAX             1
+#    elif defined(ARCH_LINUX)
+#        define CONFIG_HARNESS_MOCK_ENTRIES_MAX          1024
+#    else
+#        define CONFIG_HARNESS_MOCK_ENTRIES_MAX            64
 #    endif
 #endif
 
@@ -2423,7 +2434,7 @@
  * execution as early as possible.
  */
 #ifndef CONFIG_HARNESS_EARLY_EXIT
-#    define CONFIG_HARNESS_EARLY_EXIT                       0
+#    define CONFIG_HARNESS_EARLY_EXIT                       1
 #endif
 
 /**

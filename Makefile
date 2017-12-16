@@ -102,13 +102,13 @@ ifeq ($(BOARD), linux)
     TESTS += $(addprefix tst/multimedia/, \
 	midi)
     TESTS += $(addprefix tst/drivers/software/, \
-	sensors/bmp280 \
-	various/gnss \
-	sensors/hx711 \
 	network/jtag_soft \
 	network/xbee \
 	network/xbee_client \
-	storage/eeprom_soft)
+	sensors/bmp280 \
+	sensors/hx711 \
+	storage/eeprom_soft \
+	various/gnss)
     TESTS += $(addprefix tst/science/, \
 	math \
 	science)

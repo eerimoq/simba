@@ -30,14 +30,22 @@
 
 #include "simba.h"
 
+/* A rough estimate of the average mock entry size, including heap
+   allocation overhead. */
+#define MOCK_ENTRY_SIZE (sizeof(struct mock_entry_t) + 8 * sizeof(void *))
+
+#define HEAP_SIZE (MOCK_ENTRY_SIZE * CONFIG_HARNESS_MOCK_ENTRIES_MAX)
+
 struct mock_entry_t {
     struct list_elem_t base;
     struct entry_t *next_p;
     const char *id_p;
+#if CONFIG_HARNESS_WRITE_BACKTRACE_DEPTH_MAX > 0
     struct {
-        void *array[CONFIG_HARNESS_BACKTRACE_DEPTH_MAX];
+        void *array[CONFIG_HARNESS_WRITE_BACKTRACE_DEPTH_MAX];
         int8_t depth;
     } backtrace;
+#endif
     struct {
         size_t size;
         uint8_t buf[1];
@@ -54,7 +62,7 @@ struct mock_entry_cb_t {
 struct module_t {
     struct {
         struct heap_t obj;
-        uint8_t buf[CONFIG_HARNESS_HEAP_MAX];
+        uint8_t buf[HEAP_SIZE];
     } heap;
     struct {
         struct list_t list;
@@ -62,6 +70,10 @@ struct module_t {
     } mock;
     struct mutex_t mutex;
     struct bus_t bus;
+    int total;
+    int passed;
+    int failed;
+    int skipped;
     int current_testcase_result;
 };
 
@@ -106,6 +118,8 @@ static int print_read_backtrace(void)
     return (print_backtrace("read"));
 }
 
+#if CONFIG_HARNESS_WRITE_BACKTRACE_DEPTH_MAX > 0
+
 static int print_write_backtrace(void)
 {
     return (print_backtrace("write"));
@@ -113,7 +127,7 @@ static int print_write_backtrace(void)
 
 static int mock_entry_create_write_backtrace(struct mock_entry_t *entry_p)
 {
-    void *array[2 * CONFIG_HARNESS_BACKTRACE_DEPTH_MAX];
+    void *array[2 * CONFIG_HARNESS_WRITE_BACKTRACE_DEPTH_MAX];
     int depth;
     int i;
 
@@ -142,6 +156,25 @@ static int mock_entry_print_write_backtrace(struct mock_entry_t *entry_p)
 
     return (print_backtrace_array(&array[0], depth, "write"));
 }
+
+#else
+
+static int print_write_backtrace(void)
+{
+    return (0);
+}
+
+static int mock_entry_create_write_backtrace(struct mock_entry_t *entry_p)
+{
+    return (0);
+}
+
+static int mock_entry_print_write_backtrace(struct mock_entry_t *entry_p)
+{
+    return (0);
+}
+
+#endif
 
 static struct mock_entry_cb_t *alloc_mock_entry_cb(size_t size)
 {
@@ -338,10 +371,10 @@ static int mwrite_cb(void *arg_p, void *buf_p)
     return (*length_p == 0);
 }
 
-ssize_t create_mock_entry(const char *id_p,
-                          const void *buf_p,
-                          size_t size,
-                          struct mock_entry_t **entry_pp)
+static ssize_t create_mock_entry(const char *id_p,
+                                 const void *buf_p,
+                                 size_t size,
+                                 struct mock_entry_t **entry_pp)
 {
     ASSERTN(id_p != NULL, EINVAL);
 
@@ -385,11 +418,54 @@ ssize_t create_mock_entry(const char *id_p,
     return (size);
 }
 
+static int number_of_testcases(struct harness_testcase_t *testcase_p)
+{
+    int number_of_testcases;
+
+    number_of_testcases = 0;
+
+    while (testcase_p->callback != NULL) {
+        number_of_testcases++;
+        testcase_p++;
+    }
+
+    return (number_of_testcases);
+}
+
+static int print_report_and_stop(void)
+{
+    int total;
+    int passed;
+    int failed;
+    int skipped;
+
+    total = module.total;
+    passed = module.passed;
+    failed = module.failed;
+    skipped = module.skipped;
+    skipped += (total - passed - failed - skipped);
+
+    std_printf(OSTR("\r\n"
+                    "harness report: total(%d), passed(%d), "
+                    "failed(%d), skipped(%d)\r\n\r\n"),
+               total,
+               passed,
+               failed,
+               skipped);
+
+    std_printf(OSTR("=============================== TEST END (%s) =========="
+                    "====================\r\n\r\n"),
+               ((passed + skipped) == total ? "PASSED" : "FAILED"));
+
+    sys_stop(module.failed);
+
+    return (0);
+}
+
 int harness_run(struct harness_testcase_t *testcases_p)
 {
     int err;
     struct harness_testcase_t *testcase_p;
-    int total, passed, failed, skipped;
     struct mock_entry_t *entry_p;
     size_t sizes[HEAP_FIXED_SIZES_MAX] = {
         8, 16, 32, 32, 32, 32, 32, 32
@@ -397,10 +473,10 @@ int harness_run(struct harness_testcase_t *testcases_p)
 
     mutex_init(&module.mutex);
 
-    total = 0;
-    passed = 0;
-    failed = 0;
-    skipped = 0;
+    module.total = number_of_testcases(testcases_p);
+    module.passed = 0;
+    module.failed = 0;
+    module.skipped = 0;
     testcase_p = testcases_p;
 
 #if !defined(ARCH_LINUX)
@@ -414,6 +490,7 @@ int harness_run(struct harness_testcase_t *testcases_p)
                     "========================\r\n\r\n"));
     std_printf(sys_get_info());
     std_printf(OSTR("\r\n"));
+    std_printf(OSTR("mock heap size: %u bytes\r\n"), sizeof(module.heap.buf));
 
     while (testcase_p->callback != NULL) {
         /* Reinitialize the heap before every testcase for minimal
@@ -429,7 +506,7 @@ int harness_run(struct harness_testcase_t *testcases_p)
         /* Mark current testcase as passed before its executed. */
         harness_set_testcase_result(0);
 
-        std_printf(OSTR("enter: %s\r\n"), testcase_p->name_p);
+        std_printf(OSTR("\r\nenter: %s\r\n"), testcase_p->name_p);
 
         err = testcase_p->callback();
 
@@ -444,46 +521,34 @@ int harness_run(struct harness_testcase_t *testcases_p)
         } while (entry_p != NULL);
 
         if ((err < 0) || (harness_get_testcase_result() == -1)) {
-            failed++;
-            std_printf(OSTR("exit: %s: FAILED\r\n\r\n"),
+            module.failed++;
+            std_printf(OSTR("exit: %s: FAILED\r\n"),
                        testcase_p->name_p);
 #if CONFIG_HARNESS_EARLY_EXIT == 1
-            sys_stop(-1);
+            print_report_and_stop();
 #endif
         } else if ((err == 0) && (harness_get_testcase_result() == 0)) {
-            passed++;
-            std_printf(OSTR("exit: %s: PASSED\r\n\r\n"),
+            module.passed++;
+            std_printf(OSTR("exit: %s: PASSED\r\n"),
                        testcase_p->name_p);
         } else {
-            skipped++;
-            std_printf(OSTR("exit: %s: SKIPPED\r\n\r\n"),
+            module.skipped++;
+            std_printf(OSTR("exit: %s: SKIPPED\r\n"),
                        testcase_p->name_p);
         }
 
-        total++;
         testcase_p++;
     }
 
 #if CONFIG_THRD_FS_COMMANDS == 1
     char buf[18];
 
+    std_printf(OSTR("\r\n"));
     std_strcpy(buf, FSTR("/kernel/thrd/list"));
     fs_call(buf, NULL, sys_get_stdout(), NULL);
-
-    std_printf(OSTR("\r\n"));
 #endif
 
-    std_printf(OSTR("harness report: total(%d), passed(%d), "
-                    "failed(%d), skipped(%d)\r\n\r\n"),
-               total, passed, failed, skipped);
-
-    std_printf(OSTR("=============================== TEST END (%s) =========="
-                    "====================\r\n\r\n"),
-               ((passed + skipped) == total ? "PASSED" : "FAILED"));
-
-    sys_stop(failed);
-
-    return (0);
+    return (print_report_and_stop());
 }
 
 int harness_expect(void *chan_p,
@@ -797,7 +862,8 @@ int harness_set_testcase_result(int result)
 
 #if CONFIG_HARNESS_EARLY_EXIT == 1
     if (result == -1) {
-        sys_stop(result);
+        module.failed++;
+        print_report_and_stop();
     }
 #endif
 
