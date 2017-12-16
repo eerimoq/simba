@@ -2438,6 +2438,13 @@
 #endif
 
 /**
+ * Output debug information from the harness.
+ */
+#ifndef CONFIG_HARNESS_DEBUG
+#    define CONFIG_HARNESS_DEBUG                            0
+#endif
+
+/**
  * Size of the HTTP server request buffer. This buffer is used when
  * parsing received HTTP request headers.
  */

@@ -30,6 +30,12 @@
 
 #include "simba.h"
 
+#if CONFIG_HARNESS_DEBUG == 1
+#    define DPRINT(fmt, ...) std_printf(OSTR(fmt), ##__VA_ARGS__)
+#else
+#    define DPRINT(fmt, ...)
+#endif
+
 /* A rough estimate of the average mock entry size, including heap
    allocation overhead. */
 #define MOCK_ENTRY_SIZE (sizeof(struct mock_entry_t) + 8 * sizeof(void *))
@@ -118,12 +124,12 @@ static int print_read_backtrace(void)
     return (print_backtrace("read"));
 }
 
-#if CONFIG_HARNESS_WRITE_BACKTRACE_DEPTH_MAX > 0
-
 static int print_write_backtrace(void)
 {
     return (print_backtrace("write"));
 }
+
+#if CONFIG_HARNESS_WRITE_BACKTRACE_DEPTH_MAX > 0
 
 static int mock_entry_create_write_backtrace(struct mock_entry_t *entry_p)
 {
@@ -158,11 +164,6 @@ static int mock_entry_print_write_backtrace(struct mock_entry_t *entry_p)
 }
 
 #else
-
-static int print_write_backtrace(void)
-{
-    return (0);
-}
 
 static int mock_entry_create_write_backtrace(struct mock_entry_t *entry_p)
 {
@@ -218,22 +219,30 @@ static struct mock_entry_cb_t *find_mock_entry_cb(struct mock_entry_t *entry_p)
     return (entry_cb_p);
 }
 
-static struct mock_entry_t *alloc_mock_entry_no_lock(size_t size)
+static struct mock_entry_t *alloc_mock_entry_no_lock(const char *id_p,
+                                                     size_t size)
 {
     struct mock_entry_t *entry_p;
+
+    DPRINT("Allocating mock entry for id '%s'.\r\n", id_p);
 
     entry_p = heap_alloc(&module.heap.obj,
                          sizeof(*entry_p) + size - 1);
 
+    if (entry_p != NULL) {
+        entry_p->id_p = id_p;
+    }
+
     return (entry_p);
 }
 
-static struct mock_entry_t *alloc_mock_entry(size_t size)
+static struct mock_entry_t *alloc_mock_entry(const char *id_p,
+                                             size_t size)
 {
     struct mock_entry_t *entry_p;
 
     mutex_lock(&module.mutex);
-    entry_p = alloc_mock_entry_no_lock(size);
+    entry_p = alloc_mock_entry_no_lock(id_p, size);
     mutex_unlock(&module.mutex);
 
     return (entry_p);
@@ -241,6 +250,8 @@ static struct mock_entry_t *alloc_mock_entry(size_t size)
 
 static int free_mock_entry(struct mock_entry_t *entry_p)
 {
+    DPRINT("Freeing mock entry with id '%s'.\r\n", entry_p->id_p);
+
     mutex_lock(&module.mutex);
     heap_free(&module.heap.obj, entry_p);
     mutex_unlock(&module.mutex);
@@ -252,7 +263,8 @@ static struct mock_entry_t *copy_mock_entry_no_lock(struct mock_entry_t *entry_p
 {
     struct mock_entry_t *copy_p;
 
-    copy_p = alloc_mock_entry_no_lock(entry_p->data.size);
+    copy_p = alloc_mock_entry_no_lock(entry_p->id_p,
+                                      entry_p->data.size);
     memcpy(copy_p, entry_p, sizeof(*entry_p) + entry_p->data.size - 1);
 
     return (copy_p);
@@ -327,7 +339,7 @@ static int read_mock_entry(struct mock_entry_t *entry_p,
                        size);
                 res = size;
             } else {
-                std_printf(FSTR("\r\n%s(): Got NULL pointer with size greater "
+                std_printf(OSTR("\r\n%s(): Got NULL pointer with size greater "
                                 "than zero(0) for mock id '%s'."),
                            function_p,
                            id_p);
@@ -336,7 +348,7 @@ static int read_mock_entry(struct mock_entry_t *entry_p,
             res = 0;
         }
     } else {
-        std_printf(FSTR("\r\n%s(): Trying to read exactly %d bytes(s) from "
+        std_printf(OSTR("\r\n%s(): Trying to read exactly %d bytes(s) from "
                         "mock entry with id '%s' but got %d"),
                    function_p,
                    size,
@@ -345,7 +357,7 @@ static int read_mock_entry(struct mock_entry_t *entry_p,
     }
 
     if (res < 0) {
-        std_printf(FSTR(" ::\r\n"
+        std_printf(OSTR(" ::\r\n"
                         "Mock entry data:\r\n"));
         std_hexdump(sys_get_stdout(),
                     &entry_p->data.buf[0],
@@ -381,7 +393,7 @@ static ssize_t create_mock_entry(const char *id_p,
     struct mock_entry_t *entry_p;
 
     if ((buf_p == NULL) && (size > 0)) {
-        std_printf(FSTR("create_mock_entry(): Got NULL pointer with size "
+        std_printf(OSTR("create_mock_entry(): Got NULL pointer with size "
                         "greater than zero(0) for mock id '%s'\r\n"),
                    id_p);
         print_write_backtrace();
@@ -390,12 +402,11 @@ static ssize_t create_mock_entry(const char *id_p,
         return (-EINVAL);
     }
 
-    entry_p = alloc_mock_entry(size);
+    entry_p = alloc_mock_entry(id_p, size);
 
     if (entry_p == NULL) {
         std_printf(
-            FSTR("create_mock_entry(): Mock entry memory allocation failed "
-                 "for id '%s'\r\n"),
+            OSTR("Mock entry memory allocation failed for id '%s'\r\n"),
             id_p);
         print_write_backtrace();
         harness_set_testcase_result(-1);
@@ -404,8 +415,6 @@ static ssize_t create_mock_entry(const char *id_p,
     }
 
     /* Initiate the object. */
-    entry_p->id_p = id_p;
-
     if (size > 0) {
         memcpy(&entry_p->data.buf[0], buf_p, size);
     }
@@ -544,7 +553,7 @@ int harness_run(struct harness_testcase_t *testcases_p)
     char buf[18];
 
     std_printf(OSTR("\r\n"));
-    std_strcpy(buf, FSTR("/kernel/thrd/list"));
+    std_strcpy(buf, OSTR("/kernel/thrd/list"));
     fs_call(buf, NULL, sys_get_stdout(), NULL);
 #endif
 
@@ -578,7 +587,7 @@ int harness_expect(void *chan_p,
 
         chan_read(chan_p, &c, sizeof(c));
 
-        std_printf(FSTR("%c"), c);
+        std_printf(OSTR("%c"), c);
 
         buf[length++] = c;
         buf[length] = '\0';
@@ -655,7 +664,7 @@ ssize_t harness_mock_cwrite(const char *id_p,
 
     if (entry_cb_p == NULL) {
         std_printf(
-            FSTR("harness_mock_cwrite(): Mock entry callback memory allocation "
+            OSTR("harness_mock_cwrite(): Mock entry callback memory allocation "
                  "failed for id '%s'\r\n"),
             id_p);
         print_write_backtrace();
@@ -694,7 +703,7 @@ ssize_t harness_mock_read(const char *id_p,
     if (entry_p != NULL) {
         res = read_mock_entry(entry_p, id_p, buf_p, size, "harness_mock_read");
     } else {
-        std_printf(FSTR("\r\nharness_mock_read(): Mock id '%s' not found.\r\n"),
+        std_printf(OSTR("\r\nharness_mock_read(): Mock id '%s' not found.\r\n"),
                    id_p);
         print_read_backtrace();
         harness_set_testcase_result(-1);
@@ -743,13 +752,13 @@ int harness_mock_assert(const char *id_p,
                     res = memcmp(buf_p, &entry_p->data.buf[0], entry_p->data.size);
 
                     if (res != 0) {
-                        std_printf(FSTR("\r\nharness_mock_assert(): Data "
+                        std_printf(OSTR("\r\nharness_mock_assert(): Data "
                                         "mismatch for mock id '%s' "),
                                    id_p);
                         res = -1;
                     }
                 } else {
-                    std_printf(FSTR("\r\nharness_mock_assert(): Got NULL pointer "
+                    std_printf(OSTR("\r\nharness_mock_assert(): Got NULL pointer "
                                     "with size greater than zero(0) for mock id "
                                     "'%s' "),
                                id_p);
@@ -758,7 +767,7 @@ int harness_mock_assert(const char *id_p,
                 res = 0;
             }
         } else {
-            std_printf(FSTR("\r\nharness_mock_assert(): Trying to read exactly "
+            std_printf(OSTR("\r\nharness_mock_assert(): Trying to read exactly "
                             "%d bytes(s) from mock id '%s' but got %d"),
                        size,
                        id_p,
@@ -774,7 +783,7 @@ int harness_mock_assert(const char *id_p,
                            size,
                            entry_p->data.size);
             } else {
-                std_printf(FSTR("::\r\nMock entry data:\r\n"));
+                std_printf(OSTR("::\r\nMock entry data:\r\n"));
                 std_hexdump(sys_get_stdout(),
                             &entry_p->data.buf[0],
                             entry_p->data.size);
@@ -787,7 +796,7 @@ int harness_mock_assert(const char *id_p,
 
         free_mock_entry(entry_p);
     } else {
-        std_printf(FSTR("\r\nharness_mock_assert(): %s: mock id not found\r\n"),
+        std_printf(OSTR("\r\nharness_mock_assert(): %s: mock id not found\r\n"),
                    id_p);
         print_assert_backtrace();
         harness_set_testcase_result(-1);
