@@ -3,6 +3,7 @@
 import sys
 import re
 import subprocess
+import io
 
 
 IGNORED_FUNCTIONS = [
@@ -48,8 +49,11 @@ def main():
     cross_compile = sys.argv[2]
 
     backtrace_lines = None
+    stdin = io.TextIOWrapper(sys.stdin.buffer,
+                             encoding='utf-8',
+                             errors='ignore')
 
-    for line in sys.stdin:
+    for line in stdin:
         if backtrace_lines is None:
             # Look for a backtrace header.
             mo = RE_BACKTRACE_HEADER.match(line)
