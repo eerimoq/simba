@@ -43,17 +43,17 @@ int main()
 {
     struct json_t json;
     struct json_tok_t tokens[64];
-    
+
     sys_start();
 
     json_init(&json, tokens, membersof(tokens));
     json_parse(&json, text, strlen(text));
-        
+
     /* Dump 'root'. */
     std_printf(FSTR("root             = "));
     json_dump(&json, NULL, sys_get_stdout());
     std_printf(FSTR("\r\n"));
-    
+
     /* Dump 'root["array"]'. */
     std_printf(FSTR("root[\"array\"]    = "));
     json_dump(&json,
@@ -66,8 +66,10 @@ int main()
     json_dump(&json,
               json_array_get(&json,
                              1,
-                             json_object_get(&json, "array", json_root(&json))),
+                             json_object_get(&json,
+                                             "array",
+                                             json_root(&json))),
               sys_get_stdout());
-    
+
     return (0);
 }
