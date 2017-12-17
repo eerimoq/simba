@@ -30,7 +30,7 @@ IGNORED_FUNCTIONS = [
 
 RE_BACKTRACE_ADDRESS = re.compile(r'^(: )(0x[0-9a-f]+)')
 RE_BACKTRACE_HEADER = re.compile(
-    r'^Mock \w+ backtrace \(most recent call first\):')
+    r'^(Backtrace|Mock \w+ backtrace) \(most recent call first\):')
 
 
 def print_backtrace_lines(backtrace_lines):

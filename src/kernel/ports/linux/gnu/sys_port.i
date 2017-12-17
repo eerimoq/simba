@@ -30,6 +30,7 @@
 
 #include <pthread.h>
 #include <execinfo.h>
+#include <signal.h>
 
 static pthread_mutex_t mutex;
 
@@ -121,9 +122,34 @@ static void sys_port_unlock_isr(void)
     pthread_mutex_unlock(&mutex);
 }
 
+static void signal_handler(int signal)
+{
+    void *array[CONFIG_SYS_PANIC_BACKTRACE_DEPTH];
+    int depth;
+    int i;
+
+    depth = backtrace(&array[0], membersof(array));
+
+    fprintf(stderr,
+            "\r\n"
+            "Caught signal %d: %s.\r\n"
+            "\r\n"
+            "Backtrace (most recent call first):\r\n",
+            signal,
+            strsignal(signal));
+
+    for (i = 0; i < depth; i++) {
+        fprintf(stderr, ": %p\r\n", array[i]);
+    }
+
+    exit(1);
+}
+
 int sys_port_module_init(void)
 {
     pthread_mutex_init(&mutex, NULL);
+
+    signal(SIGSEGV, signal_handler);
 
     /* Start sys tick thrd.*/
     if (pthread_create(&sys_port.thrd, NULL, sys_port_ticker, NULL)) {
