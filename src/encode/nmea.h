@@ -169,11 +169,14 @@ struct nmea_sentence_t {
  *
  * @param[out] dst_p Null-terminated encoded sentence.
  * @param[in] src_p Sentence to encode.
+ * @param[in] size Size of the destination buffer `dst_p`.
  *
  * @return Number of bytes in the encoded string, not including the
  *         null-termination, or negative error code.
  */
-ssize_t nmea_encode(char *dst_p, struct nmea_sentence_t *src_p);
+ssize_t nmea_encode(char *dst_p,
+                    struct nmea_sentence_t *src_p,
+                    size_t size);
 
 /**
  * Decode given NMEA sentence into given struct.

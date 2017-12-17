@@ -42,7 +42,7 @@ static int test_encode_raw(void)
     decoded.raw.str_p = "GPFOO,BAR";
 
     size = strlen(encoded);
-    BTASSERTI(nmea_encode(&buf[0], &decoded), ==, size);
+    BTASSERTI(nmea_encode(&buf[0], &decoded, sizeof(buf)), ==, size);
     BTASSERTM(&buf[0], &encoded[0], size);
 
     return (0);
@@ -71,7 +71,7 @@ static int test_encode_gga(void)
     decoded.gga.height_of_geoid.unit_p = "M";
 
     size = strlen(encoded);
-    BTASSERTI(nmea_encode(&buf[0], &decoded), ==, size);
+    BTASSERTI(nmea_encode(&buf[0], &decoded, sizeof(buf)), ==, size);
     BTASSERTM(&buf[0], &encoded[0], size);
 
     return (0);
@@ -94,7 +94,7 @@ static int test_encode_gll(void)
     decoded.gll.data_active_p = "A";
 
     size = strlen(encoded);
-    BTASSERTI(nmea_encode(&buf[0], &decoded), ==, size);
+    BTASSERTI(nmea_encode(&buf[0], &decoded, sizeof(buf)), ==, size);
     BTASSERTM(&buf[0], &encoded[0], size);
 
     return (0);
@@ -128,7 +128,7 @@ static int test_encode_gsa(void)
     decoded.gsa.vdop_p = "2.1";
 
     size = strlen(encoded);
-    BTASSERTI(nmea_encode(&buf[0], &decoded), ==, size);
+    BTASSERTI(nmea_encode(&buf[0], &decoded, sizeof(buf)), ==, size);
     BTASSERTM(&buf[0], &encoded[0], size);
 
     return (0);
@@ -164,7 +164,7 @@ static int test_encode_gsv(void)
     decoded.gsv.satellites[3].snr_p = "45";
 
     size = strlen(encoded);
-    BTASSERTI(nmea_encode(&buf[0], &decoded), ==, size);
+    BTASSERTI(nmea_encode(&buf[0], &decoded, sizeof(buf)), ==, size);
     BTASSERTM(&buf[0], &encoded[0], size);
 
     return (0);
@@ -192,7 +192,7 @@ static int test_encode_rmc(void)
     decoded.rmc.magnetic_variation.direction_p = "W";
 
     size = strlen(encoded);
-    BTASSERTI(nmea_encode(&buf[0], &decoded), ==, size);
+    BTASSERTI(nmea_encode(&buf[0], &decoded, sizeof(buf)), ==, size);
     BTASSERTM(&buf[0], &encoded[0], size);
 
     return (0);
@@ -217,8 +217,28 @@ static int test_encode_vtg(void)
     decoded.vtg.ground_speed_kmph.unit_p = "K";
 
     size = strlen(encoded);
-    BTASSERTI(nmea_encode(&buf[0], &decoded), ==, size);
+    BTASSERTI(nmea_encode(&buf[0], &decoded, sizeof(buf)), ==, size);
     BTASSERTM(&buf[0], &encoded[0], size);
+
+    return (0);
+}
+
+static int test_encode_too_long(void)
+{
+    struct nmea_sentence_t decoded;
+    char buf[10];
+
+    decoded.type = nmea_sentence_type_vtg_t;
+    decoded.vtg.track_made_good_true.value_p = "054.7";
+    decoded.vtg.track_made_good_true.relative_to_p = "T";
+    decoded.vtg.track_made_good_magnetic.value_p = "034.4";
+    decoded.vtg.track_made_good_magnetic.relative_to_p = "M";
+    decoded.vtg.ground_speed_knots.value_p = "005.5";
+    decoded.vtg.ground_speed_knots.unit_p = "N";
+    decoded.vtg.ground_speed_kmph.value_p = "010.2";
+    decoded.vtg.ground_speed_kmph.unit_p = "K";
+
+    BTASSERTI(nmea_encode(&buf[0], &decoded, sizeof(buf)), ==, -ENOMEM);
 
     return (0);
 }
@@ -801,6 +821,7 @@ int main()
         { test_encode_gsv, "test_encode_gsv" },
         { test_encode_rmc, "test_encode_rmc" },
         { test_encode_vtg, "test_encode_vtg" },
+        { test_encode_too_long, "test_encode_too_long" },
         { test_decode_bad_dollar, "test_decode_bad_dollar" },
         { test_decode_bad_line_termination, "test_decode_bad_line_termination" },
         { test_decode_bad_asterix, "test_decode_bad_asterix" },
