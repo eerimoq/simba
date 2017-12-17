@@ -223,10 +223,12 @@ static int test_encode_vtg(void)
     return (0);
 }
 
-static int test_encode_too_long(void)
+static int test_encode_nomem(void)
 {
     struct nmea_sentence_t decoded;
-    char buf[10];
+    char encoded[] =
+        "$GPVTG,054.7,T,034.4,M,005.5,N,010.2,K*48\r\n";
+    char buf[NMEA_SENTENCE_SIZE_MAX];
 
     decoded.type = nmea_sentence_type_vtg_t;
     decoded.vtg.track_made_good_true.value_p = "054.7";
@@ -238,7 +240,21 @@ static int test_encode_too_long(void)
     decoded.vtg.ground_speed_kmph.value_p = "010.2";
     decoded.vtg.ground_speed_kmph.unit_p = "K";
 
-    BTASSERTI(nmea_encode(&buf[0], &decoded, sizeof(buf)), ==, -ENOMEM);
+    BTASSERTI(nmea_encode(&buf[0], &decoded, 0), ==, -ENOMEM);
+    BTASSERTI(nmea_encode(&buf[0], &decoded, 1), ==, -ENOMEM);
+    BTASSERTI(nmea_encode(&buf[0], &decoded, strlen(encoded)), ==, -ENOMEM);
+
+    return (0);
+}
+
+static int test_encode_bad_type(void)
+{
+    struct nmea_sentence_t decoded;
+    char buf[NMEA_SENTENCE_SIZE_MAX];
+
+    decoded.type = nmea_sentence_type_max_t;
+
+    BTASSERTI(nmea_encode(&buf[0], &decoded, sizeof(buf)), ==, -ENOSYS);
 
     return (0);
 }
@@ -763,6 +779,29 @@ static int test_decode_date(void)
     return (0);
 }
 
+static int test_decode_bad_date(void)
+{
+    int i;
+    int year;
+    int month;
+    int date;
+    char bad_dates[][7] = {
+        "xx0517",
+        "14xx17",
+        "1405xx",
+        "111111f"
+    };
+
+    for (i = 0; i < membersof(bad_dates); i++) {
+        BTASSERTI(nmea_decode_date(&bad_dates[i][0],
+                                   &year,
+                                   &month,
+                                   &date), ==, -EPROTO);
+    }
+
+    return (0);
+}
+
 static int test_decode_position(void)
 {
     long degrees;
@@ -803,10 +842,57 @@ static int test_decode_position(void)
     BTASSERTI(nmea_decode_position(&position_6, &degrees), ==, 0);
     BTASSERTI(degrees, ==, 360000000);
 
+    return (0);
+}
+
+static int test_decode_bad_position(void)
+{
+    long degrees;
+
+    /* Position 1. */
+    char angle_1[] = "10012";
+    struct nmea_position_t position_1 = { &angle_1[0], "N" };
+    BTASSERTI(nmea_decode_position(&position_1, &degrees), ==, -EPROTO);
+
+    /* Position 2. */
+    char angle_2[] = ".10012";
+    struct nmea_position_t position_2 = { &angle_2[0], "N" };
+    BTASSERTI(nmea_decode_position(&position_2, &degrees), ==, -EPROTO);
+
+    /* Position 3. */
+    char angle_3[] = "123.10012";
+    struct nmea_position_t position_3 = { &angle_3[0], "N" };
+    BTASSERTI(nmea_decode_position(&position_3, &degrees), ==, -EPROTO);
+
+    /* Position 4. */
+    char angle_4[] = "36x00.0";
+    struct nmea_position_t position_4 = { &angle_4[0], "N" };
+    BTASSERTI(nmea_decode_position(&position_4, &degrees), ==, -EPROTO);
+
+    /* Position 5. */
+    char angle_5[] = "x6000.0";
+    struct nmea_position_t position_5 = { &angle_5[0], "N" };
+    BTASSERTI(nmea_decode_position(&position_5, &degrees), ==, -EPROTO);
+
+    /* Position 6. */
+    char angle_6[] = "360x0.0";
+    struct nmea_position_t position_6 = { &angle_6[0], "N" };
+    BTASSERTI(nmea_decode_position(&position_6, &degrees), ==, -EPROTO);
+
     /* Position 7. */
-    char angle_7[] = "10012";
+    char angle_7[] = "36000.0x";
     struct nmea_position_t position_7 = { &angle_7[0], "N" };
     BTASSERTI(nmea_decode_position(&position_7, &degrees), ==, -EPROTO);
+
+    /* Position 8. */
+    char angle_8[] = "36000.000000a";
+    struct nmea_position_t position_8 = { &angle_8[0], "N" };
+    BTASSERTI(nmea_decode_position(&position_8, &degrees), ==, -EPROTO);
+
+    /* Position 9. */
+    char angle_9[] = "36000.0";
+    struct nmea_position_t position_9 = { &angle_9[0], "R" };
+    BTASSERTI(nmea_decode_position(&position_9, &degrees), ==, -EPROTO);
 
     return (0);
 }
@@ -821,7 +907,8 @@ int main()
         { test_encode_gsv, "test_encode_gsv" },
         { test_encode_rmc, "test_encode_rmc" },
         { test_encode_vtg, "test_encode_vtg" },
-        { test_encode_too_long, "test_encode_too_long" },
+        { test_encode_nomem, "test_encode_nomem" },
+        { test_encode_bad_type, "test_encode_bad_type" },
         { test_decode_bad_dollar, "test_decode_bad_dollar" },
         { test_decode_bad_line_termination, "test_decode_bad_line_termination" },
         { test_decode_bad_asterix, "test_decode_bad_asterix" },
@@ -848,7 +935,9 @@ int main()
         { test_decode_vtg_short, "test_decode_vtg_short" },
         { test_decode_fix_time, "test_decode_fix_time" },
         { test_decode_date, "test_decode_date" },
+        { test_decode_bad_date, "test_decode_bad_date" },
         { test_decode_position, "test_decode_position" },
+        { test_decode_bad_position, "test_decode_bad_position" },
         { NULL, NULL }
     };
 

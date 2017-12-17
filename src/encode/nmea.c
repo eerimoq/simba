@@ -53,6 +53,11 @@ static int decode_triple(char *src_p,
     long v1;
     long v2;
 
+    /* The string length must be exactly 6. */
+    if (src_p[6] != '\0') {
+        return (-EPROTO);
+    }
+
     /* v2. */
     if (std_strtolb(&src_p[4], &v2, 10) != &src_p[6]) {
         return (-EPROTO);
@@ -622,20 +627,31 @@ int nmea_decode_position(struct nmea_position_t *src_p,
     long minutes;
     char *angle_p;
     char *direction_p;
+    const char *minutes_end_p;
 
     angle_p = src_p->angle_p;
     direction_p = src_p->direction_p;
 
     pos = strcspn(angle_p, ".");
 
-    /* The string must contain a dot. */
-    if (angle_p[pos] == '\0') {
+    /* The string must contain a dot at position 4 or later. */
+    if ((angle_p[pos] == '\0') || (pos < 4)) {
         return (-EPROTO);
     }
 
     minutes_pos = (pos - 2);
 
-    if (std_strtodfp(&angle_p[minutes_pos], &minutes, 6) == NULL) {
+    /* Minutes. */
+    minutes_end_p = std_strtodfp(&angle_p[minutes_pos], &minutes, 6);
+
+    if (minutes_end_p == NULL) {
+        return (-EPROTO);
+    }
+
+    /* Only truncated digits may be left in the string. */
+    pos = strspn(minutes_end_p, "0123456789");
+
+    if (minutes_end_p[pos] != '\0') {
         return (-EPROTO);
     }
 
@@ -652,6 +668,8 @@ int nmea_decode_position(struct nmea_position_t *src_p,
        west. */
     if ((*direction_p == 'S') || (*direction_p == 'W')) {
         *degrees_p *= -1;
+    } else if ((*direction_p != 'N') && (*direction_p != 'E')) {
+        return (-EPROTO);
     }
 
     return (0);

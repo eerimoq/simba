@@ -505,10 +505,13 @@ ssize_t std_vsnprintf(char *dst_p,
                       va_list *ap_p)
 {
     ASSERTN(dst_p != NULL, EINVAL);
-    ASSERTN(size > 0, EINVAL);
     ASSERTN(fmt_p != NULL, EINVAL);
 
     struct snprintf_output_t output;
+
+    if (size == 0) {
+        return (-ENOMEM);
+    }
 
     output.dst_p = dst_p;
     output.size = 0;

@@ -146,6 +146,7 @@ enum nmea_sentence_type_t {
     nmea_sentence_type_gsv_t,
     nmea_sentence_type_rmc_t,
     nmea_sentence_type_vtg_t,
+    nmea_sentence_type_max_t
 };
 
 /**

@@ -381,7 +381,7 @@ int gnss_write(struct gnss_driver_t *self_p,
     decoded.type = nmea_sentence_type_raw_t;
     decoded.raw.str_p = str_p;
 
-    res = nmea_encode(&encoded[0], &decoded);
+    res = nmea_encode(&encoded[0], &decoded, sizeof(encoded));
 
     if (res < 0) {
         return (res);
